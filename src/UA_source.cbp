@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="UA_source" />
+		<Option pch_mode="2" />
+		<Option compiler="wine_gnu_gcc_compiler" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/UA_source.exe" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="GAME" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="wine_gnu_gcc_compiler" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/UA_source.exe" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="GAME" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="wine_gnu_gcc_compiler" />
+				<Option host_application="wine" />
+				<Option run_host_application_in_terminal="0" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Linker>
+			<Add library="ole32" />
+		</Linker>
+		<Unit filename="MC.cpp" />
+		<Unit filename="MC.h" />
+		<Unit filename="MFILE.cpp" />
+		<Unit filename="MFILE.h" />
+		<Unit filename="classes.cpp" />
+		<Unit filename="classes.h" />
+		<Unit filename="engine_gfx.cpp" />
+		<Unit filename="engine_gfx.h" />
+		<Unit filename="engine_input.cpp" />
+		<Unit filename="engine_input.h" />
+		<Unit filename="engine_miles.cpp" />
+		<Unit filename="engine_miles.h" />
+		<Unit filename="engine_tform.cpp" />
+		<Unit filename="engine_tform.h" />
+		<Unit filename="glob_funcs.cpp" />
+		<Unit filename="glob_funcs.h" />
+		<Unit filename="global.h" />
+		<Unit filename="includes.h" />
+		<Unit filename="ini.cpp" />
+		<Unit filename="ini.h" />
+		<Unit filename="log.cpp" />
+		<Unit filename="log.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="nlist.cpp" />
+		<Unit filename="nlist.h" />
+		<Unit filename="nucleas.cpp" />
+		<Unit filename="nucleas.h" />
+		<Unit filename="utils.cpp" />
+		<Unit filename="utils.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

@@ -1,0 +1,110 @@
+# depslib dependency file v1.0
+1443079450 source:/home/marisa/work/openUA/UA_source/main.cpp
+	"includes.h"
+
+1442997917 /home/marisa/work/openUA/UA_source/includes.h
+	<windows.h>
+	<objbase.h>
+	<stdio.h>
+	"classes.h"
+	"MFILE.h"
+	"global.h"
+	"log.h"
+
+1443074787 /home/marisa/work/openUA/UA_source/global.h
+	"glob_funcs.h"
+
+1443087327 source:/home/marisa/work/openUA/UA_source/nlist.cpp
+	"stdio.h"
+	"nlist.h"
+	"log.h"
+
+1443087335 /home/marisa/work/openUA/UA_source/nlist.h
+
+1443091049 source:/home/marisa/work/openUA/UA_source/classes.cpp
+	"includes.h"
+	"classes.h"
+
+1443087497 source:/home/marisa/work/openUA/UA_source/glob_funcs.cpp
+	"includes.h"
+
+1443064338 source:/home/marisa/work/openUA/UA_source/MFILE.cpp
+	<stdio.h>
+	<stdlib.h>
+	"includes.h"
+	"MFILE.h"
+	"utils.h"
+
+1443080177 source:/home/marisa/work/openUA/UA_source/MC.cpp
+	"includes.h"
+	"MC.h"
+	"classes.h"
+	"nucleas.h"
+	"engine_gfx.h"
+	"engine_miles.h"
+	"engine_tform.h"
+	"engine_input.h"
+
+1443091055 /home/marisa/work/openUA/UA_source/classes.h
+	"nlist.h"
+
+1443087488 /home/marisa/work/openUA/UA_source/glob_funcs.h
+	"MFILE.h"
+	"MC.h"
+	"classes.h"
+	"ini.h"
+
+1443064353 /home/marisa/work/openUA/UA_source/MFILE.h
+	"nlist.h"
+
+1442979223 /home/marisa/work/openUA/UA_source/MC.h
+
+1442981139 /home/marisa/work/openUA/UA_source/nucleas.h
+
+1443089114 source:/home/marisa/work/openUA/UA_source/log.cpp
+	<stdio.h>
+	<stdarg.h>
+	"log.h"
+
+1443089122 /home/marisa/work/openUA/UA_source/log.h
+
+1443086248 source:/home/marisa/work/openUA/UA_source/nucleas.cpp
+	"includes.h"
+	"nucleas.h"
+	"utils.h"
+
+1443081643 source:/home/marisa/work/openUA/UA_source/ini.cpp
+	<stdio.h>
+	"ini.h"
+	"includes.h"
+
+1443088732 /home/marisa/work/openUA/UA_source/ini.h
+
+1443064238 /home/marisa/work/openUA/UA_source/utils.h
+
+1442997710 source:/home/marisa/work/openUA/UA_source/utils.cpp
+
+1443075220 /home/marisa/work/openUA/UA_source/engine_gfx.h
+
+1443088657 source:/home/marisa/work/openUA/UA_source/engine_gfx.cpp
+	"includes.h"
+	"engine_gfx.h"
+
+1443079434 source:/home/marisa/work/openUA/UA_source/engine_miles.cpp
+	"includes.h"
+	"engine_miles.h"
+
+1443075807 /home/marisa/work/openUA/UA_source/engine_miles.h
+
+1443079730 source:/home/marisa/work/openUA/UA_source/engine_input.cpp
+	"includes.h"
+	"engine_input.h"
+
+1443079816 /home/marisa/work/openUA/UA_source/engine_input.h
+
+1443079867 source:/home/marisa/work/openUA/UA_source/engine_tform.cpp
+	"includes.h"
+	"engine_tform.h"
+
+1443079826 /home/marisa/work/openUA/UA_source/engine_tform.h
+
