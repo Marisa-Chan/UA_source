@@ -47,10 +47,10 @@ struct stored_functions
 
 struct stored_functions_engine
 {
-	int (*init)(int, ...);
+	int (*init)(unsigned int, ...);
 	void (*deinit)();
-	void (*setter)(int, ...);
-	void (*getter)(int, ...);
+	void (*setter)(unsigned int, ...);
+	void (*getter)(unsigned int, ...);
 };
 
 struct class_named_nnode : public nnode
@@ -102,10 +102,14 @@ struct NC_STACK_class
 
 class_stored * FIND(nlist *list, const char *name);
 stored_functions * find_class(const char *name, unk_class *out);
-size_t call_method(NC_STACK_class *a1, int a2, stack_vals *a3);
+size_t call_method(NC_STACK_class *a1, int idx, void *a3);
+size_t call_method(NC_STACK_class *a1, int idx);
 size_t call_vtbl(NC_STACK_class *a1, int idx, ...);
 
 NC_STACK_class * init_get_class(const char *classname, ...);
 int delete_class_obj(NC_STACK_class *cls);
+stack_vals * find_id_in_stack2(unsigned int id, stack_vals *a2);
+size_t find_id_in_stack_def_val(unsigned int find_id, size_t def_value, stack_vals *a3);
+size_t call_parent(class_stru *zis, void *caller, int idx, stack_vals *stk);
 
 #endif // CLASSES_H_INCLUDED

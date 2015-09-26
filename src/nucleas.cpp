@@ -40,6 +40,7 @@ void nucleus_func0__sub0(void *, NC_STACK_nucleus *a1, stack_vals *a2)
 		else if ( a2->id == 3 )
 		{
 			a2 += a2->value;
+			////a2++; ////BUGFIX?
 		}
 		else
 		{
@@ -52,8 +53,8 @@ void nucleus_func0__sub0(void *, NC_STACK_nucleus *a1, stack_vals *a2)
 						strncpy(a1->NAME, (const char *)a2->value, 32);
 				}
 			}
+			a2++;
 		}
-		a2++;
 	}
 }
 
@@ -89,7 +90,7 @@ size_t nucleus_func1(NC_STACK_nucleus *a1, class_stru *, stack_vals *)
 	return 1;
 }
 
-void nucleus_setter(void *, NC_STACK_nucleus *a1, stack_vals *a2)
+void nucleus_setter(NC_STACK_nucleus *a1, stack_vals *a2)
 {
 	while ( 1 )
 	{
@@ -103,6 +104,7 @@ void nucleus_setter(void *, NC_STACK_nucleus *a1, stack_vals *a2)
 		else if ( a2->id == 3 )
 		{
 			a2 += a2->value;
+			////a2++; ////BUGFIX?
 		}
 		else
 		{
@@ -126,18 +128,18 @@ void nucleus_setter(void *, NC_STACK_nucleus *a1, stack_vals *a2)
 					a1->NAME = NULL;
 				}
 			}
+			a2++;
 		}
-		a2++;
 	}
 }
 
 void nucleus_func2(NC_STACK_nucleus *a1, class_stru *a2, stack_vals *a3)
 {
-	nucleus_setter(a1, a1, a3);
+	nucleus_setter(a1, a3);
 }
 
 
-void nucleus_getter(void *, NC_STACK_nucleus *a1, stack_vals *a2)
+void nucleus_getter(NC_STACK_nucleus *a1, stack_vals *a2)
 {
 	while ( 1 )
 	{
@@ -151,24 +153,25 @@ void nucleus_getter(void *, NC_STACK_nucleus *a1, stack_vals *a2)
 		else if ( a2->id == 3 )
 		{
 			a2 += a2->value;
+			////a2++; ////BUGFIX?
 		}
 		else
 		{
 			if ( a2->id == 0x80000000 )
-				a2->value = (size_t)a1->NAME;
+				*(void **)a2->value = a1->NAME;
 			else if ( a2->id == 0x80000001 )
-				a2->value = (size_t)a1->class_owner;
+				*(class_stru **)a2->value = a1->class_owner;
 			else if ( a2->id == 0x80000002 )
-				a2->value = (size_t)a1->class_owner->name;
-		}
-		a2++;
+				*(const char **)a2->value = a1->class_owner->name;
+            a2++;
+		};
 	}
 }
 
 
 void nucleus_func3(NC_STACK_nucleus *caller, class_stru *a2, stack_vals *stk)
 {
-	nucleus_getter(caller, caller, stk);
+	nucleus_getter(caller, stk);
 }
 
 NC_STACK_nucleus *nucleus_func5(class_stru *caller, class_stru *zis, MFILE **file)

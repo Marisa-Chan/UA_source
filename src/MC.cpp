@@ -2,6 +2,9 @@
 #include "MC.h"
 #include "classes.h"
 #include "nucleas.h"
+#include "rsrc.h"
+#include "bitmap.h"
+
 #include "engine_gfx.h"
 #include "engine_miles.h"
 #include "engine_tform.h"
@@ -45,13 +48,15 @@ void add_to_classes_list(nnode *a1)
 int set_classes_list()
 {
 	init_list(&classes_list);
+
 	engines.__AllocCount = 0;
 	engines.__AllocSize = 0;
 	engines.__AllocMax = 0;
 	engines.file_handles = 0;
+
 	add_to_classes_list(&nucleas_class_off);
-////	add_to_classes_list(&rsrc_class_off.nodeBase);
-////	add_to_classes_list(&bitmap_class_off.nodeBase);
+	add_to_classes_list(&rsrc_class_off);
+	add_to_classes_list(&bitmap_class_off);
 ////	add_to_classes_list(&skeleton_class_off.nodeBase);
 ////	add_to_classes_list(&ilbm_class_off.nodeBase);
 ////	add_to_classes_list(&sklt_class_off.nodeBase);

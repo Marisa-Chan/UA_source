@@ -3,10 +3,10 @@
 
 stored_functions *classvtbl_get_tformEngine();
 
-int tformEngine__init(int, ...);
+int tformEngine__init(unsigned int, ...);
 void tformEngine__deinit();
-void tformEngine__setter(int, ...);
-void tformEngine__getter(int, ...);
+void tformEngine__setter(unsigned int, ...);
+void tformEngine__getter(unsigned int, ...);
 
 
 stored_functions_engine tform_engine_vtbl = {tformEngine__init, tformEngine__deinit, tformEngine__setter, tformEngine__getter};
@@ -23,7 +23,7 @@ stored_functions *classvtbl_get_tformEngine()
 	return (stored_functions *)&tform_engine_vtbl;
 }
 
-int tformEngine__init(int, ...)
+int tformEngine__init(unsigned int, ...)
 {
 ////TODO
     return 1;
@@ -34,12 +34,12 @@ void tformEngine__deinit()
 ////TODO
 }
 
-void tformEngine__setter(int, ...)
+void tformEngine__setter(unsigned int, ...)
 {
 ////TODO
 }
 
-void tformEngine__getter(int, ...)
+void tformEngine__getter(unsigned int, ...)
 {
 ////TODO
 }

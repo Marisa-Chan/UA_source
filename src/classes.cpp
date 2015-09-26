@@ -40,10 +40,19 @@ stored_functions * find_class(const char *name, unk_class *out)
 	return NULL;
 }
 
-size_t call_method(NC_STACK_class *a1, int a2, stack_vals *a3)
+size_t call_method(NC_STACK_class *a1, int a2, void *a3)
 {
 	if ( a1 )
-		return a1->class_owner->clvtbl[a2].cl_func(a1, a1->class_owner->clvtbl[a2].p_cl, a3);
+		return a1->class_owner->clvtbl[a2].cl_func(a1, a1->class_owner->clvtbl[a2].p_cl, (stack_vals *)a3);
+
+	ypa_log_out("ERROR: Method invocation on NULL Object!\n");
+	return 0;
+}
+
+size_t call_method(NC_STACK_class *a1, int a2)
+{
+	if ( a1 )
+		return a1->class_owner->clvtbl[a2].cl_func(a1, a1->class_owner->clvtbl[a2].p_cl, NULL);
 
 	ypa_log_out("ERROR: Method invocation on NULL Object!\n");
 	return 0;
@@ -56,10 +65,10 @@ size_t call_vtbl(NC_STACK_class *a1, int idx, ...)
 	va_list va;
 
 	va_start(va, idx);
-	for (int i = 0; i < 127; i++)
+	for (int i = 0; i < 128; i++)
 	{
 		unsigned int id = va_arg(va, unsigned int);
-		if (id == 0)
+		if (id == 0 || i == 127)
 		{
 			vals[i].id = 0;
 			vals[i].value = 0;
@@ -236,10 +245,10 @@ NC_STACK_class * init_get_class(const char *classname, ...)
 	va_list va;
 
 	va_start(va, classname);
-	for (int i = 0; i < 127; i++)
+	for (int i = 0; i < 128; i++)
 	{
 		unsigned int id = va_arg(va, unsigned int);
-		if (id == 0)
+		if (id == 0 || i == 127)
 		{
 			vals[i].id = 0;
 			vals[i].value = 0;
@@ -278,4 +287,47 @@ int delete_class_obj(NC_STACK_class *cls)
 		sub_411E90(owner);
 
 	return ret;
+}
+
+
+stack_vals * find_id_in_stack2(unsigned int id, stack_vals *a2)
+{
+	while ( 1 )
+	{
+		if ( a2->id == id )
+			return a2;
+		if ( a2->id == 0 )
+			return NULL;
+
+		if ( a2->id == 2 )
+			a2 = (stack_vals *)a2->value;
+		else if ( a2->id == 3 )
+			a2 += a2->value;
+		else
+			a2++;
+	}
+}
+
+size_t find_id_in_stack_def_val(unsigned int find_id, size_t def_value, stack_vals *a3)
+{
+	while ( 1 )
+	{
+		if ( a3->id == find_id )
+			return a3->value;
+		if ( a3->id == 0 )
+			return def_value;
+
+		if ( a3->id == 2 )
+			a3 = (stack_vals *)a3->value;
+		else if ( a3->id == 3 )
+			a3 += a3->value;
+		else
+			a3++;
+	}
+}
+
+size_t call_parent(class_stru *zis, void *caller, int idx, stack_vals *stk)
+{
+	clvt *v4 = &zis->parent_class->clvtbl[idx];
+	return v4->cl_func((NC_STACK_class *)caller, v4->p_cl, stk);
 }

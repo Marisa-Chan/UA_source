@@ -73,7 +73,7 @@ int get_keyvalue_from_ini(const char *ini_filename, key_value_stru *key, unsigne
 								strncpy((char *)kkey->value.pval, tmp, 128);
 							break;
 						default:
-							continue;
+							break;
 						}
 					}
 				}

@@ -43,6 +43,8 @@
 		<Unit filename="MC.h" />
 		<Unit filename="MFILE.cpp" />
 		<Unit filename="MFILE.h" />
+		<Unit filename="bitmap.cpp" />
+		<Unit filename="bitmap.h" />
 		<Unit filename="classes.cpp" />
 		<Unit filename="classes.h" />
 		<Unit filename="engine_gfx.cpp" />
@@ -66,8 +68,12 @@
 		<Unit filename="nlist.h" />
 		<Unit filename="nucleas.cpp" />
 		<Unit filename="nucleas.h" />
+		<Unit filename="rsrc.cpp" />
+		<Unit filename="rsrc.h" />
 		<Unit filename="utils.cpp" />
 		<Unit filename="utils.h" />
+		<Unit filename="win3d.cpp" />
+		<Unit filename="win3d.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
