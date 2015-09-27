@@ -23,6 +23,7 @@ void ypa_log_out(const char *format, ...)
 		vfprintf(f, format, va);
 		fclose(f);
 	}
+	va_end(va);
 }
 
 void init_d3dlog()
@@ -45,6 +46,7 @@ void log_d3dlog(const char *format, ...)
 		vfprintf(f, format, va);
 		fclose(f);
 	}
+	va_end(va);
 }
 
 void init_dinputlog()

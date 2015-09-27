@@ -1,5 +1,6 @@
 #include "includes.h"
 #include "classes.h"
+#include "utils.h"
 
 int class_def_deinit()
 {
@@ -65,21 +66,7 @@ size_t call_vtbl(NC_STACK_class *a1, int idx, ...)
 	va_list va;
 
 	va_start(va, idx);
-	for (int i = 0; i < 128; i++)
-	{
-		unsigned int id = va_arg(va, unsigned int);
-		if (id == 0 || i == 127)
-		{
-			vals[i].id = 0;
-			vals[i].value = 0;
-			break;
-		}
-
-		size_t value = va_arg(va,size_t);
-
-		vals[i].id = id;
-		vals[i].value = value;
-	}
+	va_to_arr(vals, 128, &va);
 	va_end(va);
 
 	if ( a1 )
@@ -245,21 +232,7 @@ NC_STACK_class * init_get_class(const char *classname, ...)
 	va_list va;
 
 	va_start(va, classname);
-	for (int i = 0; i < 128; i++)
-	{
-		unsigned int id = va_arg(va, unsigned int);
-		if (id == 0 || i == 127)
-		{
-			vals[i].id = 0;
-			vals[i].value = 0;
-			break;
-		}
-
-		size_t value = va_arg(va,size_t);
-
-		vals[i].id = id;
-		vals[i].value = value;
-	}
+	va_to_arr(vals, 128, &va);
 	va_end(va);
 
 

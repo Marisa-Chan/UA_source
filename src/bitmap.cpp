@@ -20,6 +20,7 @@ stored_functions *classvtbl_get_bitmap()
 }
 
 CLASSFUNC bitmap_funcs[1024];
+g_engines *engines___bitmap;
 
 
 unsigned int sub_416704(NC_STACK_bitmap *a1, __NC_STACK_bitmap *a2, bitmap__opl *a3)
@@ -226,8 +227,23 @@ void bitmap_func130(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
 
 class_return bitmap_class_descr;
 
-class_return * class_set_bitmap(int, ...)
+class_return * class_set_bitmap(int a1, ...)
 {
+
+    stack_vals vals[128];
+
+	if (a1 != 0)
+	{
+		va_list va;
+		va_start(va, a1);
+
+		va_to_arr(vals, 128, a1, &va);
+
+		va_end(va);
+	}
+
+	engines___bitmap = (g_engines *)find_id_in_stack_def_val(0x80000002, 0, vals);
+
 	memset(bitmap_funcs, 0, sizeof(CLASSFUNC) * 1024);
 
 	bitmap_funcs[0] = (CLASSFUNC)bitmap_func0;

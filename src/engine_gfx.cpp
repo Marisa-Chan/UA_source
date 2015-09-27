@@ -1,5 +1,6 @@
 #include "includes.h"
 #include "engine_gfx.h"
+#include "utils.h"
 
 stored_functions *classvtbl_get_gfxEngine();
 
@@ -118,24 +119,7 @@ void gfxEngine__setter(unsigned int a1, ...)
 		va_list va;
 		va_start(va, a1);
 
-		vals[0].id = a1;
-		vals[0].value = va_arg(va, size_t);
-
-		for (int i = 1; i < 128; i++)
-		{
-			unsigned int id = va_arg(va, unsigned int);
-			if (id == 0 || i == 127)
-			{
-				vals[i].id = 0;
-				vals[i].value = 0;
-				break;
-			}
-
-			size_t value = va_arg(va,size_t);
-
-			vals[i].id = id;
-			vals[i].value = value;
-		}
+		va_to_arr(vals, 128, a1, &va);
 
 		va_end(va);
 	}
@@ -186,26 +170,7 @@ void gfxEngine__getter(unsigned int a1, ...)
 	{
 		va_list va;
 		va_start(va, a1);
-
-		vals[0].id = a1;
-		vals[0].value = va_arg(va, size_t);
-
-		for (int i = 1; i < 128; i++)
-		{
-			unsigned int id = va_arg(va, unsigned int);
-			if (id == 0 || i == 127)
-			{
-				vals[i].id = 0;
-				vals[i].value = 0;
-				break;
-			}
-
-			size_t value = va_arg(va,size_t);
-
-			vals[i].id = id;
-			vals[i].value = value;
-		}
-
+		va_to_arr(vals, 128, a1, &va);
 		va_end(va);
 	}
 

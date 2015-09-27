@@ -10,4 +10,7 @@
 #define TAG_NAME   MKTAG('N','A','M','E')
 #define TAG_ROOT   MKTAG('R','O','O','T')
 
+void va_to_arr(stack_vals *out, int sz, va_list*in);
+void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list*in);
+
 #endif // UTILS_H_INCLUDED
