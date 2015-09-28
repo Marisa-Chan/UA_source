@@ -81,7 +81,7 @@ struct g_engines
 	char MC_RES_CLASS_ENGINE[3][256];
 	const char *some_params_pointers[32];
 	int some_params_count;
-	void *display___win3d;
+	NC_STACK_class *display___win3d;
 	int field_3D4;
 	nlist stru_525D68;
 };

@@ -35,8 +35,10 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add option="-m32" />
 		</Compiler>
 		<Linker>
+			<Add option="-m32" />
 			<Add library="ole32" />
 		</Linker>
 		<Unit filename="MC.cpp" />

@@ -171,20 +171,20 @@ void bitmap_func3(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
 			case 0x80002002:
 				if ( internal->bitm_intern )
 					*(int *)stk->value = internal->bitm_intern->width;
-                else
-                    *(int *)stk->value = 0;
+				else
+					*(int *)stk->value = 0;
 				break;
 			case 0x80002003:
 				if ( internal->bitm_intern )
 					*(int *)stk->value = internal->bitm_intern->height;
-                else
-                    *(int *)stk->value = 0;
+				else
+					*(int *)stk->value = 0;
 				break;
 			case 0x80002005:
-			    if ( internal->bitm_intern )
+				if ( internal->bitm_intern )
 					*(void **)stk->value = internal->bitm_intern->buffer;
-                else
-                    *(void **)stk->value = 0;
+				else
+					*(void **)stk->value = 0;
 				break;
 			case 0x80002006:
 				*(int *)stk = internal->bitm_intern->pallete != NULL;
@@ -199,29 +199,122 @@ void bitmap_func3(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
 	call_parent(zis, obj, 3, stak);
 }
 
-void bitmap_func64(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
+rsrc * bitmap_func64(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
 {
+	rsrc *res = (rsrc *)call_parent(zis, obj, 64, stak);// rsrc_func64
+	if ( res )
+	{
+		int width = find_id_in_stack_def_val(0x80002002, 0, stak);
+		int height = find_id_in_stack_def_val(0x80002003, 0, stak);
+		int v22 = find_id_in_stack_def_val(0x80002006, 0, stak);
+		int v20 = find_id_in_stack_def_val(0x80002008, 0, stak);
+		int v21 = find_id_in_stack_def_val(0x80002009, 0, stak);// software surface
 
+
+		if ( (width && height) || v22 )
+		{
+			bitmap_intern *intern = (bitmap_intern *)AllocVec(sizeof(bitmap_intern), 65537);
+
+			if ( intern )
+			{
+				if (v22)
+				{
+					intern->flags |= BITMAP_FLAG_HAS_PALETTE;
+					intern->pallete = (BYTE *)AllocVec(256 * 3, 65537);
+				}
+
+				if ( !v22 || intern->pallete != NULL )
+				{
+					if ( width && height )
+					{
+						intern->width = width;
+						intern->height = height;
+						if ( v20 && engines___bitmap->display___win3d )
+						{
+							intern->width = width;
+							intern->flags = intern->flags | 2;
+							intern->height = height;
+
+							if ( v21 )
+								intern->flags = intern->flags | BITMAP_FLAG_SOFTWARE;
+
+							// allocate buffer, create palette, surface and texture
+							if ( ! call_method( engines___bitmap->display___win3d, 266, &intern) )
+							{
+								nc_FreeMem(intern);
+								return res;
+							}
+						}
+						else
+						{
+							void *buf = (void *)find_id_in_stack_def_val(0x80002005, 0, stak);
+							intern->pitch = width;
+							if ( buf )
+							{
+								intern->buffer = buf;
+								intern->flags = intern->flags | 1;
+							}
+							else
+							{
+								intern->buffer = AllocVec(height * width, 65537);
+								if ( !intern->buffer )
+								{
+									nc_FreeMem(intern);
+									return res;
+								}
+							}
+						}
+					}
+					res->data = intern;
+				}
+				else
+				{
+					nc_FreeMem(intern);
+				}
+			}
+		}
+	}
+	return res;
 }
 
-void bitmap_func65(NC_STACK_bitmap *obj, class_stru *zis, void **res)
+void bitmap_func65(NC_STACK_bitmap *obj, class_stru *zis, rsrc **pres)
 {
+	bitmap_intern *intern = (bitmap_intern *)(*pres)->data;
+	rsrc *res = *pres;
+	if ( intern )
+	{
+		if ( intern->flags & 2 && engines___bitmap->display___win3d )
+		{
+			call_method(engines___bitmap->display___win3d, 268, &intern);
+		}
+		else if ( !(intern->flags & 1) )
+		{
+			if ( intern->buffer )
+				nc_FreeMem(intern->buffer);
+		}
 
+		if ( intern->pallete )
+			nc_FreeMem(intern->pallete);
+
+		nc_FreeMem(intern);
+		res->data = NULL;
+	}
+	call_parent(zis, obj, 65, (stack_vals *)pres);
 }
 
-void bitmap_func128(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
+size_t bitmap_func128(NC_STACK_bitmap *, class_stru *, stack_vals *)
 {
-
+    return 0;
 }
 
-void bitmap_func129(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
+size_t bitmap_func129(NC_STACK_bitmap *, class_stru *, stack_vals *)
 {
-
+    return 0;
 }
 
-void bitmap_func130(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
+void bitmap_func130(NC_STACK_bitmap *, class_stru *, stack_vals *)
 {
-
+////TODO
 }
 
 
@@ -230,7 +323,7 @@ class_return bitmap_class_descr;
 class_return * class_set_bitmap(int a1, ...)
 {
 
-    stack_vals vals[128];
+	stack_vals vals[128];
 
 	if (a1 != 0)
 	{

@@ -196,9 +196,9 @@ rsrc *rsrc_func64(NC_STACK_rsrc *obj, class_stru *zis, stack_vals *stak)
 
 void rsrc_func65(NC_STACK_rsrc *obj, class_stru *zis, rsrc **res)
 {
-    Remove(*res);
-  if ( *res )
-    nc_FreeMem(*res);
+	Remove(*res);
+	if ( *res )
+		nc_FreeMem(*res);
 }
 
 

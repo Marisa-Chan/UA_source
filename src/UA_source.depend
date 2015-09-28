@@ -21,9 +21,10 @@
 
 1443087335 /home/marisa/work/openUA/UA_source/nlist.h
 
-1443163156 source:/home/marisa/work/openUA/UA_source/classes.cpp
+1443412238 source:/home/marisa/work/openUA/UA_source/classes.cpp
 	"includes.h"
 	"classes.h"
+	"utils.h"
 
 1443087497 source:/home/marisa/work/openUA/UA_source/glob_funcs.cpp
 	"includes.h"
@@ -50,7 +51,7 @@
 1443163141 /home/marisa/work/openUA/UA_source/classes.h
 	"nlist.h"
 
-1443087488 /home/marisa/work/openUA/UA_source/glob_funcs.h
+1443416886 /home/marisa/work/openUA/UA_source/glob_funcs.h
 	"MFILE.h"
 	"MC.h"
 	"classes.h"
@@ -63,7 +64,7 @@
 
 1442981139 /home/marisa/work/openUA/UA_source/nucleas.h
 
-1443089114 source:/home/marisa/work/openUA/UA_source/log.cpp
+1443412238 source:/home/marisa/work/openUA/UA_source/log.cpp
 	<stdio.h>
 	<stdarg.h>
 	"log.h"
@@ -82,15 +83,18 @@
 
 1443088732 /home/marisa/work/openUA/UA_source/ini.h
 
-1443064238 /home/marisa/work/openUA/UA_source/utils.h
+1443412238 /home/marisa/work/openUA/UA_source/utils.h
 
-1442997710 source:/home/marisa/work/openUA/UA_source/utils.cpp
+1443412238 source:/home/marisa/work/openUA/UA_source/utils.cpp
+	"includes.h"
+	"utils.h"
 
 1443174570 /home/marisa/work/openUA/UA_source/engine_gfx.h
 
-1443159641 source:/home/marisa/work/openUA/UA_source/engine_gfx.cpp
+1443412238 source:/home/marisa/work/openUA/UA_source/engine_gfx.cpp
 	"includes.h"
 	"engine_gfx.h"
+	"utils.h"
 
 1443157271 source:/home/marisa/work/openUA/UA_source/engine_miles.cpp
 	"includes.h"
@@ -112,7 +116,7 @@
 
 1443162662 /home/marisa/work/openUA/UA_source/rsrc.h
 
-1443173917 source:/home/marisa/work/openUA/UA_source/rsrc.cpp
+1443417176 source:/home/marisa/work/openUA/UA_source/rsrc.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -120,14 +124,14 @@
 
 1443174613 source:/home/marisa/work/openUA/UA_source/win3d.cpp
 
-1443178197 source:/home/marisa/work/openUA/UA_source/bitmap.cpp
+1443418316 source:/home/marisa/work/openUA/UA_source/bitmap.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
 	"bitmap.h"
 	"utils.h"
 
-1443176985 /home/marisa/work/openUA/UA_source/bitmap.h
+1443412238 /home/marisa/work/openUA/UA_source/bitmap.h
 	"win3d.h"
 
 1443174692 /home/marisa/work/openUA/UA_source/win3d.h
