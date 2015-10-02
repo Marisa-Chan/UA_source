@@ -16,6 +16,11 @@ union valP
 	{
 	    pval = (void *)str;
 	}
+
+	valP(int d)
+	{
+	    val = d;
+	}
 };
 
 enum KEY_TYPE

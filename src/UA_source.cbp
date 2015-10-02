@@ -36,10 +36,15 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 			<Add option="-m32" />
+			<Add option="-Wno-invalid-offsetof" />
 		</Compiler>
 		<Linker>
 			<Add option="-m32" />
 			<Add library="ole32" />
+			<Add library="gdi32" />
+			<Add library="dxguid" />
+			<Add library="ddraw" />
+			<Add library="imm32" />
 		</Linker>
 		<Unit filename="MC.cpp" />
 		<Unit filename="MC.h" />
@@ -49,6 +54,8 @@
 		<Unit filename="bitmap.h" />
 		<Unit filename="classes.cpp" />
 		<Unit filename="classes.h" />
+		<Unit filename="display.cpp" />
+		<Unit filename="display.h" />
 		<Unit filename="engine_gfx.cpp" />
 		<Unit filename="engine_gfx.h" />
 		<Unit filename="engine_input.cpp" />
@@ -70,12 +77,16 @@
 		<Unit filename="nlist.h" />
 		<Unit filename="nucleas.cpp" />
 		<Unit filename="nucleas.h" />
+		<Unit filename="raster.cpp" />
+		<Unit filename="raster.h" />
 		<Unit filename="rsrc.cpp" />
 		<Unit filename="rsrc.h" />
 		<Unit filename="utils.cpp" />
 		<Unit filename="utils.h" />
 		<Unit filename="win3d.cpp" />
 		<Unit filename="win3d.h" />
+		<Unit filename="windd.cpp" />
+		<Unit filename="windd.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

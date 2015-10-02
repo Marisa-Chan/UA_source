@@ -66,7 +66,7 @@ size_t call_vtbl(NC_STACK_class *a1, int idx, ...)
 	va_list va;
 
 	va_start(va, idx);
-	va_to_arr(vals, 128, &va);
+	va_to_arr(vals, 128, va);
 	va_end(va);
 
 	if ( a1 )
@@ -232,9 +232,8 @@ NC_STACK_class * init_get_class(const char *classname, ...)
 	va_list va;
 
 	va_start(va, classname);
-	va_to_arr(vals, 128, &va);
+	va_to_arr(vals, 128, va);
 	va_end(va);
-
 
 	class_stru * cls_descr = get_class(classname);
 

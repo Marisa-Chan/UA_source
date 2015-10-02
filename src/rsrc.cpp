@@ -27,6 +27,7 @@ nlist g_rsrc_list2;
 NC_STACK_rsrc * rsrc_func0(class_stru *caller, class_stru *zis, stack_vals *stak)
 {
 	NC_STACK_rsrc *clss = (NC_STACK_rsrc *)call_parent(zis, caller, 0, stak); // nucleus_func0
+
 	if (clss)
 	{
 		__NC_STACK_rsrc *internal = &clss->stack__rsrc;
@@ -153,6 +154,7 @@ void rsrc_func3(NC_STACK_rsrc *caller, class_stru *zis, stack_vals *stak)
 	call_parent(zis, caller, 3, stak);
 }
 
+// Allocate resource node
 rsrc *rsrc_func64(NC_STACK_rsrc *obj, class_stru *zis, stack_vals *stak)
 {
 	char *title = (char *)find_id_in_stack_def_val(0x80001000, 0, stak);
@@ -206,6 +208,8 @@ class_return rsrc_class_descr;
 
 class_return * class_set_rsrc(int, ...)
 {
+	init_list(&g_rsrc_list1);
+	init_list(&g_rsrc_list2);
 	memset(rsrc_funcs, 0, sizeof(CLASSFUNC) * 1024);
 
 	rsrc_funcs[0] = (CLASSFUNC)rsrc_func0;

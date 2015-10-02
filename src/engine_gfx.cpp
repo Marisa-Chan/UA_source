@@ -119,7 +119,7 @@ void gfxEngine__setter(unsigned int a1, ...)
 		va_list va;
 		va_start(va, a1);
 
-		va_to_arr(vals, 128, a1, &va);
+		va_to_arr(vals, 128, a1, va);
 
 		va_end(va);
 	}
@@ -170,7 +170,7 @@ void gfxEngine__getter(unsigned int a1, ...)
 	{
 		va_list va;
 		va_start(va, a1);
-		va_to_arr(vals, 128, a1, &va);
+		va_to_arr(vals, 128, a1, va);
 		va_end(va);
 	}
 

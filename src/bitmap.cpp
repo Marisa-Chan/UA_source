@@ -97,7 +97,7 @@ NC_STACK_bitmap * bitmap_func0(class_stru *obj, class_stru *zis, stack_vals *sta
 		if ( v9 )
 			sub_416704(clss, internal, (bitmap__opl *)v9);
 
-		call_vtbl(clss, 3, 0x80001002, internal, 0);// bitmap_func3
+		call_vtbl(clss, 3, 0x80001002, &internal->bitm_intern, 0); // Copy rsrc->data to bitm_intern
 	}
 
 	return clss;
@@ -199,6 +199,7 @@ void bitmap_func3(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
 	call_parent(zis, obj, 3, stak);
 }
 
+// Create bitmap resource node and fill rsrc field data
 rsrc * bitmap_func64(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
 {
 	rsrc *res = (rsrc *)call_parent(zis, obj, 64, stak);// rsrc_func64
@@ -330,7 +331,7 @@ class_return * class_set_bitmap(int a1, ...)
 		va_list va;
 		va_start(va, a1);
 
-		va_to_arr(vals, 128, a1, &va);
+		va_to_arr(vals, 128, a1, va);
 
 		va_end(va);
 	}

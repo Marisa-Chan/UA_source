@@ -11,5 +11,17 @@ struct texStru
   IDirectDrawPalette *palette;
 };
 
+extern class_stored win3d_class_off;
+
+struct __NC_STACK_win3d
+{
+  int field_0;
+};
+
+struct NC_STACK_win3d : public NC_STACK_windd
+{
+    __NC_STACK_windd stack__win3d;
+};
+
 
 #endif //WIN3D_H_INCLUDED

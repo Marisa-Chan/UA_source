@@ -4,6 +4,10 @@
 #include "nucleas.h"
 #include "rsrc.h"
 #include "bitmap.h"
+#include "raster.h"
+#include "display.h"
+#include "windd.h"
+#include "win3d.h"
 
 #include "engine_gfx.h"
 #include "engine_miles.h"
@@ -73,13 +77,13 @@ int set_classes_list()
 ////	add_to_classes_list(&iwimp_class_off.nodeBase);
 ////	add_to_classes_list(&sample_class_off.nodeBase);
 ////	add_to_classes_list(&wav_class_off.nodeBase);
-////	add_to_classes_list(&raster_class_off.nodeBase);
-////	add_to_classes_list(&display_class_off.nodeBase);
+	add_to_classes_list(&raster_class_off);
+	add_to_classes_list(&display_class_off);
 ////	add_to_classes_list(&button_class_off.nodeBase);
 ////	add_to_classes_list(&requester_class_off.nodeBase);
 ////	add_to_classes_list(&network_class_off.nodeBase);
-////	add_to_classes_list(&windd_class_off.nodeBase);
-////	add_to_classes_list(&win3d_class_off.nodeBase);
+	add_to_classes_list(&windd_class_off);
+	add_to_classes_list(&win3d_class_off);
 ////	add_to_classes_list(&winp_class_off.nodeBase);
 ////	add_to_classes_list(&wintimer_class_off.nodeBase);
 ////	add_to_classes_list(&windp_class_off.nodeBase);

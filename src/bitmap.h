@@ -1,9 +1,9 @@
 #ifndef BITMAP_H_INCLUDED
 #define BITMAP_H_INCLUDED
 
-#include "win3d.h"
-
 extern class_stored bitmap_class_off;
+
+struct texStru;
 
 struct bitmap_intern
 {

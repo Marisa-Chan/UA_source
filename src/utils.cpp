@@ -2,9 +2,9 @@
 #include "utils.h"
 
 
-void va_to_arr(stack_vals *out, int sz, va_list*in)
+void va_to_arr(stack_vals *out, int sz, va_list in)
 {
-    for (int i = 0; i < sz; i++)
+	for (int i = 0; i < sz; i++)
 	{
 		unsigned int id = va_arg(in, unsigned int);
 		if (id == 0 || i == sz - 1)
@@ -21,9 +21,9 @@ void va_to_arr(stack_vals *out, int sz, va_list*in)
 	}
 }
 
-void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list*in)
+void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list in)
 {
-    if (_id != 0)
+	if (_id != 0)
 	{
 		out[0].id = _id;
 		out[0].value = va_arg(in, size_t);
@@ -44,4 +44,24 @@ void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list*in)
 			out[i].value = value;
 		}
 	}
+}
+
+
+int read_yes_no_status(const char *file, int result)
+{
+	char buf[128];
+
+	FILE *fil = fopen(file, "r");
+	if ( fil )
+	{
+		if ( fgets(buf, 128, fil) )
+		{
+			char *lend = strpbrk(buf, "; \n");
+			if ( lend )
+				*lend = 0;
+			result = strcasecmp(buf, "yes") == 0;
+		}
+		fclose(fil);
+	}
+	return result;
 }

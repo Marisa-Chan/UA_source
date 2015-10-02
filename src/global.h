@@ -36,5 +36,16 @@ EXTR stored_functions_engine* paudio_engine;
 EXTR stored_functions_engine* pinput_engine;
 EXTR stored_functions_engine* ptform_engine;
 
+EXTR nlist modes_list;
+EXTR nlist graph_drivers_list;
+
+EXTR int can_srcblend;
+EXTR int can_destblend;
+EXTR int can_stippling;
+
+extern int dword_514EFC;
+EXTR int dword_514F24;
+EXTR HIMC dword_514F1C;
+
 
 #endif // GLOBAL_H_INCLUDED1
