@@ -15,4 +15,6 @@ void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list in);
 
 int read_yes_no_status(const char *file, int result);
 
+void sub_4BF181(DWORD sec);
+
 #endif // UTILS_H_INCLUDED

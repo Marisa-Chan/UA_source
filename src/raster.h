@@ -88,7 +88,7 @@ struct __NC_STACK_raster
 //  int field_140;
 //  int field_144;
 //  int field_148;
-//  int field_14c;
+  int field_14c;
 //  int field_150;
 //  int field_154;
 //  int field_158;

@@ -65,3 +65,9 @@ int read_yes_no_status(const char *file, int result)
 	}
 	return result;
 }
+
+
+void sub_4BF181(DWORD sec)
+{
+    Sleep(sec);
+}

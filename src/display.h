@@ -5,9 +5,17 @@
 
 extern class_stored display_class_off;
 
+
+struct UA_PALENTRY
+{
+    BYTE r;
+    BYTE g;
+    BYTE b;
+};
+
 struct __NC_STACK_display
 {
-  int field_0;
+  UA_PALENTRY palette[256];
 
 };
 

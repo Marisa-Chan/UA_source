@@ -52,6 +52,13 @@ struct windd_params
 	int field_AD04;
 };
 
+struct windd__window_params
+{
+	HWND hwnd;
+	int width;
+	int height;
+};
+
 struct mode_node : public nnode
 {
 	int sort_id;
@@ -126,19 +133,56 @@ struct __NC_STACK_windd
 	char field_51;
 	char field_52;
 	char field_53;
-	int field_54______rsrc_field4;
+	bitmap_intern *field_54______rsrc_field4;
 	windd_intern *intern;
 };
 
 struct __attribute__((packed)) LOGPALETTE256
 {
-    LOGPALETTE pal;
-    PALETTEENTRY entrs[255];
+	LOGPALETTE pal;
+	PALETTEENTRY entrs[255];
 };
 
 struct NC_STACK_windd : public NC_STACK_display
 {
 	__NC_STACK_windd stack__windd;
+};
+
+
+
+
+
+
+
+
+struct windd_arg256
+{
+	int sort_id;
+	int width;
+	int height;
+	char name[32];
+};
+
+struct windd_dlgBox
+{
+  const char *title;
+  const char *ok;
+  const char *cancel;
+  const char *startText;
+  int time;
+  void (*timer_func)(int, int, int);
+  void *timer_context;
+  int replace;
+  int maxLen;
+  char *result;
+};
+
+
+struct wdd_func324arg
+{
+  const char *name;
+  const char *guid;
+  int currr;
 };
 
 
