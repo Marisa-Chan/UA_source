@@ -26,7 +26,7 @@ CLASSFUNC raster_funcs[1024];
 NC_STACK_raster * raster_func0(class_stru *obj, class_stru *zis, stack_vals *stak)
 {
 	NC_STACK_raster *clss = (NC_STACK_raster *)call_parent(zis, obj, 0, stak); // bitmap_func0
-
+    printf("MAKE ME %s\n","raster_func0");
 	if (clss)
 	{
 	}
@@ -36,17 +36,19 @@ NC_STACK_raster * raster_func0(class_stru *obj, class_stru *zis, stack_vals *sta
 
 size_t raster_func1(NC_STACK_raster *obj, class_stru *zis, stack_vals *stak)
 {
+    printf("MAKE ME %s\n","raster_func1");
 	return call_parent(zis, obj, 1, stak);
 }
 
 void raster_func2(NC_STACK_raster *obj, class_stru *zis, stack_vals *stak)
 {
+    printf("MAKE ME %s\n","raster_func2");
 	call_parent(zis, obj, 2, stak);
 }
 
 void raster_func3(NC_STACK_raster *obj, class_stru *zis, stack_vals *stak)
 {
-
+    printf("MAKE ME %s\n","raster_func3");
 	//__NC_STACK_raster *internal = &obj->stack__raster;
 
 	stack_vals *stk = stak;
@@ -75,116 +77,139 @@ void raster_func3(NC_STACK_raster *obj, class_stru *zis, stack_vals *stak)
 
 size_t raster_func192(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func192");
 	return 0;
 }
 
 size_t raster_func193(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func193");
 	return 0;
 }
 
 size_t raster_func198(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func198");
 	return 0;
 }
 
 size_t raster_func199(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func199");
 	return 0;
 }
 
 size_t raster_func200(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func200");
 	return 0;
 }
 
 size_t raster_func201(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func201");
 	return 0;
 }
 
 size_t raster_func202(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func202");
 	return 0;
 }
 
 size_t raster_func203(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func203");
 	return 0;
 }
 
 size_t raster_func204(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func204");
 	return 0;
 }
 
 size_t raster_func205(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func205");
 	return 0;
 }
 
 size_t raster_func206(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func206");
 	return 0;
 }
 
 size_t raster_func207(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func207");
 	return 0;
 }
 
 size_t raster_func208(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func208");
 	return 0;
 }
 
 size_t raster_func209(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func209");
 	return 0;
 }
 
 size_t raster_func210(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func210");
 	return 0;
 }
 
 size_t raster_func211(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func211");
 	return 0;
 }
 
 size_t raster_func212(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func212");
 	return 0;
 }
 
 size_t raster_func214(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func214");
 	return 0;
 }
 
 size_t raster_func217(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func217");
 	return 0;
 }
 
 size_t raster_func218(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func218");
 	return 0;
 }
 
 size_t raster_func219(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func219");
 	return 0;
 }
 
 size_t raster_func220(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func220");
 	return 0;
 }
 
 size_t raster_func221(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","raster_func221");
 	return 0;
 }
 

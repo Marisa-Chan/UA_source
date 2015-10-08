@@ -29,6 +29,8 @@ NC_STACK_display * display_func0(class_stru *obj, class_stru *zis, stack_vals *s
 {
 	NC_STACK_display *clss = (NC_STACK_display *)call_parent(zis, obj, 0, stak); // raster_func0
 
+	printf("MAKE ME %s\n","display_func0");
+
 	if (clss)
 	{
 	}
@@ -38,17 +40,19 @@ NC_STACK_display * display_func0(class_stru *obj, class_stru *zis, stack_vals *s
 
 size_t display_func1(NC_STACK_display *obj, class_stru *zis, stack_vals *stak)
 {
+    printf("MAKE ME %s\n","display_func1");
 	return call_parent(zis, obj, 1, stak);
 }
 
 void display_func2(NC_STACK_display *obj, class_stru *zis, stack_vals *stak)
 {
+    printf("MAKE ME %s\n","display_func2");
 	call_parent(zis, obj, 2, stak);
 }
 
 void display_func3(NC_STACK_display *obj, class_stru *zis, stack_vals *stak)
 {
-
+    printf("MAKE ME %s\n","display_func3");
 	//__NC_STACK_display *internal = &obj->stack__display;
 
 	stack_vals *stk = stak;
@@ -77,61 +81,73 @@ void display_func3(NC_STACK_display *obj, class_stru *zis, stack_vals *stak)
 
 size_t display_func261(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","display_func261");
 	return 0;
 }
 
 size_t display_func262(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","display_func262");
 	return 0;
 }
 
 size_t display_func263(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","display_func263");
 	return 0;
 }
 
 size_t display_func264(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","display_func264");
 	return 0;
 }
 
 size_t display_func265(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","display_func265");
 	return 0;
 }
 
 size_t display_func266(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","display_func266");
 	return 0;
 }
 
 size_t display_func267(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","display_func267");
 	return 0;
 }
 
 size_t display_func268(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","display_func268");
 	return 0;
 }
 
 size_t display_func269(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","display_func269");
 	return 0;
 }
 
 size_t display_func270(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","display_func270");
 	return 0;
 }
 
 size_t display_func273(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","display_func273");
 	return 0;
 }
 
 size_t display_func274(void *, class_stru *, stack_vals *)
 {
+    printf("MAKE ME %s\n","display_func274");
 	return 0;
 }
 
