@@ -3,27 +3,61 @@
 
 extern class_stored raster_class_off;
 
+struct xyxyNNN
+{
+  int x1;
+  int y1;
+  int x2;
+  int y2;
+  int NNN;
+};
+
+struct tile_xy
+{
+  int chr;
+  int width;
+};
+
+struct tiles_stru
+{
+  void *font_image; //FFFFFIX ME
+  int field_4;
+  int field_8;
+  tile_xy *chars;
+  int font_height;
+  int field_12;
+  int field_14;
+};
+
+struct ua_dRect
+{
+    int x1;
+    int y1;
+    int x2;
+    int y2;
+};
+
+struct ua_fRect
+{
+    float x1;
+    float y1;
+    float x2;
+    float y2;
+};
+
 struct __NC_STACK_raster
 {
-  int field_0;
-//  int field_4;
-//  int field_8;
+	int field_0;
+	DWORD field_4; // Color?
+	DWORD field_8; // and Color2 ?
 //  int field_c;
 //  int field_10;
 //  int field_14;
 //  int field_18;
 //  int field_1c;
 //  int field_20;
-//  int field_24;
-//  int field_28;
-//  int field_2c;
-//  int field_30;
-//  int field_34;
-//  int field_38;
-//  int field_3c;
-//  int field_40;
-//  int field_44;
-//  int field_48;
+    xyxyNNN field_24;
+    xyxyNNN field_38;
 //  int field_4c;
 //  int field_50;
 //  int field_54;
@@ -88,178 +122,7 @@ struct __NC_STACK_raster
 //  int field_140;
 //  int field_144;
 //  int field_148;
-  int field_14c;
-//  int field_150;
-//  int field_154;
-//  int field_158;
-//  int field_15c;
-//  int field_160;
-//  int field_164;
-//  int field_168;
-//  int field_16c;
-//  int field_170;
-//  int field_174;
-//  int field_178;
-//  int field_17c;
-//  int field_180;
-//  int field_184;
-//  int field_188;
-//  int field_18c;
-//  int field_190;
-//  int field_194;
-//  int field_198;
-//  int field_19c;
-//  int field_1a0;
-//  int field_1a4;
-//  int field_1a8;
-//  int field_1ac;
-//  int field_1b0;
-//  int field_1b4;
-//  int field_1b8;
-//  int field_1bc;
-//  int field_1c0;
-//  int field_1c4;
-//  int field_1c8;
-//  int field_1cc;
-//  int field_1d0;
-//  int field_1d4;
-//  int field_1d8;
-//  int field_1dc;
-//  int field_1e0;
-//  int field_1e4;
-//  int field_1e8;
-//  int field_1ec;
-//  int field_1f0;
-//  int field_1f4;
-//  int field_1f8;
-//  int field_1fc;
-//  int field_200;
-//  int field_204;
-//  int field_208;
-//  int field_20c;
-//  int field_210;
-//  int field_214;
-//  int field_218;
-//  int field_21c;
-//  int field_220;
-//  int field_224;
-//  int field_228;
-//  int field_22c;
-//  int field_230;
-//  int field_234;
-//  int field_238;
-//  int field_23c;
-//  int field_240;
-//  int field_244;
-//  int field_248;
-//  int field_24c;
-//  int field_250;
-//  int field_254;
-//  int field_258;
-//  int field_25c;
-//  int field_260;
-//  int field_264;
-//  int field_268;
-//  int field_26c;
-//  int field_270;
-//  int field_274;
-//  int field_278;
-//  int field_27c;
-//  int field_280;
-//  int field_284;
-//  int field_288;
-//  int field_28c;
-//  int field_290;
-//  int field_294;
-//  int field_298;
-//  int field_29c;
-//  int field_2a0;
-//  int field_2a4;
-//  int field_2a8;
-//  int field_2ac;
-//  int field_2b0;
-//  int field_2b4;
-//  int field_2b8;
-//  int field_2bc;
-//  int field_2c0;
-//  int field_2c4;
-//  int field_2c8;
-//  int field_2cc;
-//  int field_2d0;
-//  int field_2d4;
-//  int field_2d8;
-//  int field_2dc;
-//  int field_2e0;
-//  int field_2e4;
-//  int field_2e8;
-//  int field_2ec;
-//  int field_2f0;
-//  int field_2f4;
-//  int field_2f8;
-//  int field_2fc;
-//  int field_300;
-//  int field_304;
-//  int field_308;
-//  int field_30c;
-//  int field_310;
-//  int field_314;
-//  int field_318;
-//  int field_31c;
-//  int field_320;
-//  int field_324;
-//  int field_328;
-//  int field_32c;
-//  int field_330;
-//  int field_334;
-//  int field_338;
-//  int field_33c;
-//  int field_340;
-//  int field_344;
-//  int field_348;
-//  int field_34c;
-//  int field_350;
-//  int field_354;
-//  int field_358;
-//  int field_35c;
-//  int field_360;
-//  int field_364;
-//  int field_368;
-//  int field_36c;
-//  int field_370;
-//  int field_374;
-//  int field_378;
-//  int field_37c;
-//  int field_380;
-//  int field_384;
-//  int field_388;
-//  int field_38c;
-//  int field_390;
-//  int field_394;
-//  int field_398;
-//  int field_39c;
-//  int field_3a0;
-//  int field_3a4;
-//  int field_3a8;
-//  int field_3ac;
-//  int field_3b0;
-//  int field_3b4;
-//  int field_3b8;
-//  int field_3bc;
-//  int field_3c0;
-//  int field_3c4;
-//  int field_3c8;
-//  int field_3cc;
-//  int field_3d0;
-//  int field_3d4;
-//  int field_3d8;
-//  int field_3dc;
-//  int field_3e0;
-//  int field_3e4;
-//  int field_3e8;
-//  int field_3ec;
-//  int field_3f0;
-//  int field_3f4;
-//  int field_3f8;
+	tiles_stru *tiles[172];
 //  int field_3fc;
 //  int field_400;
 //  int field_404;
@@ -344,10 +207,10 @@ struct __NC_STACK_raster
 //  int field_540;
 //  int field_544;
 //  int field_548;
-//  int field_54c;
-//  int field_550;
-//  int field_554;
-//  int field_558;
+	int field_54c;
+	int field_550;
+	float field_554;
+	float field_558;
 //  int field_55c;
 //  int field_560;
 //  int field_564;
@@ -369,8 +232,67 @@ struct __NC_STACK_raster
 
 struct NC_STACK_raster : public NC_STACK_bitmap
 {
-    __NC_STACK_raster stack__raster;
+	__NC_STACK_raster stack__raster;
 };
 
+
+struct w3d_func198arg
+{
+	float x1;
+	float y1;
+	float x2;
+	float y2;
+};
+
+struct w3d_func199arg
+{
+	int x1;
+	int y1;
+	int x2;
+	int y2;
+};
+
+struct rstr_arg204
+{
+  bitmap_intern *pbitm;
+  float float4;
+  float float8;
+  float floatC;
+  float float10;
+  float float14;
+  float float18;
+  float float1C;
+  float float20;
+};
+
+struct rstr_loc204
+{
+  bitmap_intern *pbitm;
+  int dword4;
+  int dword8;
+  int dwordC;
+  int dword10;
+  int dword14;
+  int dword18;
+  int dword1C;
+  int dword20;
+  int dword24;
+};
+
+struct rstr_218_arg
+{
+  bitmap_intern *bitm_intern;
+  bitmap_intern *bitm_intern2;
+  int flg;
+  ua_fRect rect1;
+  ua_fRect rect2;
+};
+
+struct rstr_262_arg
+{
+  int dword0;
+  int *pdword4;
+  int *pdword8;
+};
 
 #endif // RASTER_H_INCLUDED

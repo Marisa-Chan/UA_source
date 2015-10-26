@@ -2588,14 +2588,14 @@ void windd_func206(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
 		call_parent(zis, obj, 206, stak);
 }
 
-void windd_func209__sub0(__NC_STACK_windd *wdd, void *, int, int)
+void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **, int, int)
 {
 	printf("MAKE ME %s\n","windd_func209__sub0");
 }
 
 void windd_func209(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
 {
-	windd_func209__sub0(&obj->stack__windd, &obj->stack__raster.field_14c, stak->id, stak->value);
+	windd_func209__sub0(&obj->stack__windd, obj->stack__raster.tiles, stak->id, stak->value);
 }
 
 void windd_func213(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)

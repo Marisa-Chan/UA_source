@@ -186,4 +186,11 @@ struct wdd_func324arg
 };
 
 
+
+extern windd_params dd_params;
+
+
+
+void sub_42A640(__NC_STACK_windd *obj);
+
 #endif // RASTER_H_INCLUDED
