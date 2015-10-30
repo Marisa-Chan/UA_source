@@ -303,9 +303,11 @@ size_t bitmap_func129(NC_STACK_bitmap *, class_stru *, stack_vals *)
 	return 0;
 }
 
-void bitmap_func130(NC_STACK_bitmap *, class_stru *, stack_vals *)
+void bitmap_func130(NC_STACK_bitmap *obj, class_stru *zis, bitmap_arg130 *out)
 {
-////TODO
+    __NC_STACK_bitmap *bitm = &obj->stack__bitmap;
+    out->pbitm = bitm->bitm_intern;
+    out->opl2 = bitm->field_4.opl2;
 }
 
 

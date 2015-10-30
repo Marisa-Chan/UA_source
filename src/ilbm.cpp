@@ -258,7 +258,7 @@ void close_ilbm_file(MFILE *mfil)
 
 void ILBM_BODY_READ__sub0(BMHD_type *bmhd, BYTE *ilbm_data, void *_img_buffer)
 {
-    BYTE masks[8] = {1, 2, 4, 8, 16, 32, 64, 128};
+	BYTE masks[8] = {1, 2, 4, 8, 16, 32, 64, 128};
 
 	BYTE *img_buffer = (BYTE *)_img_buffer;
 	BYTE udp[1024];
@@ -624,9 +624,159 @@ rsrc * ilbm_func64(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak)
 	return res;
 }
 
-void ilbm_func66(NC_STACK_ilbm *obj, class_stru *zis, rsrc **pres)
+void ILBM__WRITE_TO_FILE_BMHD(MFILE *mfile, bitmap_intern *bitm)
 {
-	call_parent(zis, obj, 66, (stack_vals *)pres);
+	BMHD_type bmhd;
+
+	bmhd.width = SWAP16(bitm->width);
+	bmhd.height = SWAP16(bitm->height);
+	bmhd.y = 0;
+	bmhd.x = 0;
+	bmhd.pad1 = 0x80u;
+	bmhd.transparentColor = 0;
+	bmhd.nPlanes = 8;
+	bmhd.masking = 0;
+	bmhd.compression = 0;
+	bmhd.pageWidth = SWAP16(bitm->width);
+	bmhd.pageHeight = SWAP16(bitm->height);
+	bmhd.xAspect = 22;
+	bmhd.yAspect = 22;
+
+	sub_412FC0(mfile, 0, TAG_BMHD, sizeof(BMHD_type));
+	sub_413564(mfile, sizeof(BMHD_type), &bmhd);
+	sub_413290(mfile);
+}
+
+int ILBM__WRITE_TO_FILE_BODY(MFILE *mfile, bitmap_intern *bitm)
+{
+	int planeSz = 2 * ((bitm->width + 15) / 16);
+	BYTE *buf = (BYTE *)AllocVec(planeSz, 1);
+
+	if (!buf)
+		return 0;
+
+	sub_412FC0(mfile, 0, TAG_BODY, 8 * bitm->height * planeSz);
+
+	BYTE *bfline = (BYTE *)bitm->buffer;
+
+	for (int i = bitm->height; i > 0; i-- )
+	{
+		for (int plane = 0; plane < 8; plane++)
+		{
+			memset((void *)buf, 0, planeSz);
+
+			for (int x = 0; x < bitm->width; x++)
+			{
+				if ( (1 << plane) & bfline[x] )
+					buf[ x / 8 ] |= ( 1 << ( (x & 7) ^ 7) );
+			}
+
+			sub_413564(mfile, planeSz, (const void *)buf);
+		}
+
+		bfline += bitm->width;
+	}
+
+	sub_413290(mfile);
+	nc_FreeMem(buf);
+	return 1;
+}
+
+int ILBM__WRITE_TO_FILE(MFILE *mfile, bitmap_intern *bitm)
+{
+	if ( sub_412FC0(mfile, TAG_ILBM, TAG_FORM, -1) )
+		return 0;
+
+
+	ILBM__WRITE_TO_FILE_BMHD(mfile, bitm);
+
+	if ( bitm->pallete )
+	{
+		sub_412FC0(mfile, 0, TAG_CMAP, 256 * 3);
+		sub_413564(mfile, 256 * 3, bitm->pallete);
+		sub_413290(mfile);
+	}
+
+	if ( !ILBM__WRITE_TO_FILE_BODY(mfile, bitm) )
+		return 0;
+
+	return sub_413290(mfile) == 0;
+}
+
+int VBMP__WRITE_TO_FILE(MFILE *mfile, bitmap_intern *bitm)
+{
+	int pixelCount = bitm->height * bitm->width;
+	if ( sub_412FC0(mfile, TAG_VBMP, TAG_FORM, -1) )
+		return 0;
+
+	sub_412FC0(mfile, 0, TAG_HEAD, sizeof(VBMP_type));
+
+	VBMP_type vbmp;
+	vbmp.width = SWAP16(bitm->width);
+	vbmp.height = SWAP16(bitm->height);
+	vbmp.pad1 = 0;
+
+	sub_413564(mfile, sizeof(VBMP_type), &vbmp);
+	sub_413290(mfile);
+
+	if ( bitm->pallete )
+	{
+		sub_412FC0(mfile, 0, TAG_CMAP, 256 * 3);
+		sub_413564(mfile, 256 * 3, bitm->pallete);
+		sub_413290(mfile);
+	}
+
+	sub_412FC0(mfile, 0, TAG_BODY, pixelCount);
+	sub_413564(mfile, pixelCount, bitm->buffer);
+	sub_413290(mfile);
+
+	return sub_413290(mfile) == 0;
+}
+
+size_t ilbm_func66(NC_STACK_ilbm *obj, class_stru *zis, ilbm_func66_arg *arg)
+{
+	__NC_STACK_ilbm *ilbm = &obj->stack__ilbm;
+
+	MFILE *mfile;
+
+	if ( arg->OpenedStream == 1 )
+	{
+		if ( !arg->filename )
+			return 0;
+
+		mfile = open_ilbm_file_(arg->filename, 1);
+	}
+	else
+		mfile = arg->file;
+
+	if ( !mfile )
+		return 0;
+
+	bitmap_arg130 v6;
+	v6.field_0 = 1;
+	v6.field_4 = 1;
+
+	call_method(obj, 130, &v6);
+
+	if ( !v6.pbitm || !v6.pbitm->buffer )
+		return 0;
+
+	int res;
+
+	if ( ilbm->field_0 & 1 )
+		res = ILBM__WRITE_TO_FILE(mfile, v6.pbitm);
+	else
+		res = VBMP__WRITE_TO_FILE(mfile, v6.pbitm);
+
+	//// CHECK THIS---
+	if ( res )
+	{
+		if ( arg->OpenedStream == 1 )
+			close_ilbm_file(mfile);
+		res = arg->OpenedStream;
+	}
+	return res;
+	//// CHECK THIS+++
 }
 
 class_return ilbm_class_descr;

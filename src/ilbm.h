@@ -20,26 +20,33 @@ struct NC_STACK_ilbm : public NC_STACK_bitmap
 
 struct __attribute__((packed)) BMHD_type
 {
-  WORD width;
-  WORD height;
-  WORD x;
-  WORD y;
-  char nPlanes;
-  char masking;
-  char compression;
-  char pad1;
-  WORD transparentColor;
-  char xAspect;
-  char yAspect;
-  WORD pageWidth;
-  WORD pageHeight;
+	WORD width;
+	WORD height;
+	WORD x;
+	WORD y;
+	char nPlanes;
+	char masking;
+	char compression;
+	char pad1;
+	WORD transparentColor;
+	char xAspect;
+	char yAspect;
+	WORD pageWidth;
+	WORD pageHeight;
 };
 
 struct __attribute__((packed)) VBMP_type
 {
-  WORD width;
-  WORD height;
-  WORD pad1;
+	WORD width;
+	WORD height;
+	WORD pad1;
+};
+
+struct ilbm_func66_arg
+{
+	const char *filename;
+	MFILE *file;
+	int OpenedStream;
 };
 
 #endif // ILBM_H_INCLUDED
