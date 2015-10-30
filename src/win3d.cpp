@@ -2683,19 +2683,19 @@ void win3d_func274__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, FILE *fil
 				{
 					WORD px = line[i];
 
-					int r = px & fmt->dwRBitMask;
+					DWORD r = px & fmt->dwRBitMask;
 					if (fmt->dwRShift <= 0)
 						r <<= -fmt->dwRShift;
 					else
 						r >>= fmt->dwRShift;
 
-					int g = px & fmt->dwGBitMask;
+					DWORD g = px & fmt->dwGBitMask;
 					if (fmt->dwGShift <= 0)
 						g <<= -fmt->dwGShift;
 					else
 						g >>= fmt->dwGShift;
 
-					int b = px & fmt->dwBBitMask;
+					DWORD b = px & fmt->dwBBitMask;
 					if (fmt->dwBShift <= 0)
 						b <<= -fmt->dwBShift;
 					else
