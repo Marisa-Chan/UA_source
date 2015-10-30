@@ -90,4 +90,13 @@ struct g_engines
 void nc_FreeMem(void *);
 void *AllocVec(size_t size, int a2);
 
+struct nnode_str: nnode
+{
+	char str[32];
+	char str2[32];
+};
+
+FILE * FOpen(const char *src_path, const char *mode);
+int FClose(FILE *a1);
+
 #endif // GLOB_FUNCS_H_INCLUDED

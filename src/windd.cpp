@@ -538,7 +538,7 @@ signed int __stdcall DDRAW_ENUMERATE_CallBack(GUID *lpGUID, LPSTR DRIVER_NAME, L
 
 
 
-int __stdcall gfx_modes_callback(LPDDSURFACEDESC a1, LPVOID lpContext)
+HRESULT __stdcall gfx_modes_callback(LPDDSURFACEDESC a1, LPVOID lpContext)
 {
 ////	if ( a1->dwWidth <= 1024 && a1->dwHeight <= 768 ) ////HACK
 	{
@@ -1085,8 +1085,8 @@ void sub_42A7BC(__NC_STACK_windd *obj)
 
 					if ( obj->field_50 & 8 )
 					{
-						h = obj->height >> 1;
-						w = obj->width >> 1;
+						h = obj->height / 2;
+						w = obj->width / 2;
 					}
 					else
 					{
@@ -1556,7 +1556,7 @@ int wdd_Create3DFullEnv(__NC_STACK_windd *obj, int width, int height, int bits)
 
 
 
-int __stdcall EnumTextureFormats__CallBack(DDSURFACEDESC *descr, void *lpContext)
+HRESULT __stdcall EnumTextureFormats__CallBack(DDSURFACEDESC *descr, void *lpContext)
 {
 	__NC_STACK_windd *windd = (__NC_STACK_windd *)lpContext;
 
@@ -1582,7 +1582,7 @@ int __stdcall EnumTextureFormats__CallBack(DDSURFACEDESC *descr, void *lpContext
 		int rbits = 0;
 		if ( descr->ddpfPixelFormat.dwRBitMask )
 		{
-			int bits = descr->ddpfPixelFormat.dwRBitMask;
+			DWORD bits = descr->ddpfPixelFormat.dwRBitMask;
 
 			while( !(bits & 1) )
 				bits >>= 1;
@@ -1594,7 +1594,7 @@ int __stdcall EnumTextureFormats__CallBack(DDSURFACEDESC *descr, void *lpContext
 		int gbits = 0;
 		if ( descr->ddpfPixelFormat.dwGBitMask )
 		{
-			int bits = descr->ddpfPixelFormat.dwGBitMask;
+			DWORD bits = descr->ddpfPixelFormat.dwGBitMask;
 
 			while( !(bits & 1) )
 				bits >>= 1;
@@ -1606,7 +1606,7 @@ int __stdcall EnumTextureFormats__CallBack(DDSURFACEDESC *descr, void *lpContext
 		int bbits = 0;
 		if ( descr->ddpfPixelFormat.dwBBitMask )
 		{
-			int bits = descr->ddpfPixelFormat.dwBBitMask;
+			DWORD bits = descr->ddpfPixelFormat.dwBBitMask;
 
 			while( !(bits & 1) )
 				bits >>= 1;
@@ -1618,7 +1618,7 @@ int __stdcall EnumTextureFormats__CallBack(DDSURFACEDESC *descr, void *lpContext
 		int abits = 0;
 		if ( descr->ddpfPixelFormat.dwRGBAlphaBitMask )
 		{
-			int bits = descr->ddpfPixelFormat.dwRGBAlphaBitMask;
+			DWORD bits = descr->ddpfPixelFormat.dwRGBAlphaBitMask;
 
 			while( !(bits & 1) )
 				bits >>= 1;
@@ -3177,7 +3177,7 @@ void windd_func324(NC_STACK_windd *obj, class_stru *zis, wdd_func324arg *inout)
 
 size_t windd_func325(void *, class_stru *, stack_vals *)
 {
-    printf("MAKE ME %s\n","windd_func325");
+	printf("MAKE ME %s\n","windd_func325");
 	return 0;
 }
 

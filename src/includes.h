@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <objbase.h>
 #include <stdio.h>
+#include <stddef.h>
 
 #include "classes.h"
 #include "MFILE.h"

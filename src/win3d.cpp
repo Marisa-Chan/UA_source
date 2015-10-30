@@ -1084,7 +1084,7 @@ int sub_420C74(xyxyNNN *a1, xyxyNNN *inout)
 		int dy = tmp_y2 - tmp_y1;
 		int dx = tmp_x2 - tmp_x1;
 
-		int vX, vY;
+		int vX = 0, vY = 0;
 
 		if ( flag & 4 )
 		{
@@ -1232,41 +1232,60 @@ void win3d_func201(NC_STACK_win3d *obj, class_stru *zis, w3d_func199arg *arg)
 			   rstr->field_8 & 0xFF);
 }
 
-void sub_43CEE0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, WORD *srcBuf, int width, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8)
+void sub_43CEE0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, void *srcBuf, int width, int a1, int a2, int a3, int a4, int x1, int y1, int x2, int y2)
 {
-	WORD *v12; // ebx@5
-	unsigned int v13; // edx@5
-	WORD *v14; // eax@6
-	WORD *v15; // esi@6
-	WORD v16; // bx@7
-	WORD *dstSurf; // [sp+0h] [bp-30h]@2
-	int v21; // [sp+1Ch] [bp-14h]@4
-	int i; // [sp+20h] [bp-10h]@4
-
 	if ( wdd->surface_locked_surfaceData )
 	{
-		dstSurf = (WORD *)wdd->surface_locked_surfaceData;
-		if ( a7 != a5 && a8 != a6 )
+		if (w3d->bigdata->primary__pixelformat.BytesPerColor == 2)
 		{
-			v21 = a2 << 16;
-			for ( i = a6; i < a8; v21 += ((a4 - a2) << 16) / (a8 - a6) )
+			WORD *dstSurf = (WORD *)wdd->surface_locked_surfaceData;
+			if ( x2 != x1 && y2 != y1 )
 			{
-				v12 = &dstSurf[i * ((unsigned int)wdd->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor)];
-				v13 = a1 << 16;
-				if ( a5 < a7 )
+				DWORD v21 = a2 << 16;
+				for (int i = y1; i < y2; i++ )
 				{
-					v14 = &v12[a5];
-					v15 = &v12[a7];
-					do
+					WORD *buf = &dstSurf[i * (wdd->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor)];
+
+					DWORD v13 = a1 << 16;
+					if ( x1 < x2 )
 					{
-						++v14;
-						v16 = *(&srcBuf[width * ((unsigned int)v21 >> 16)] + (v13 >> 16));
-						v13 += ((a3 - a1) << 16) / (a7 - a5);
-						*(v14 - 1) = v16;
+						WORD *cur = buf + x1;
+						WORD *bend = buf + x2;
+						while(cur < bend)
+						{
+							*cur = ((WORD *)srcBuf)[width * (v21 >> 16) + (v13 >> 16)];
+							v13 += ((a3 - a1) << 16) / (x2 - x1);
+							cur++;
+						}
 					}
-					while ( v14 < v15 );
+					v21 += ((a4 - a2) << 16) / (y2 - y1);
 				}
-				++i;
+			}
+		}
+		else if (w3d->bigdata->primary__pixelformat.BytesPerColor == 4)
+		{
+			DWORD *dstSurf = (DWORD *)wdd->surface_locked_surfaceData;
+			if ( x2 != x1 && y2 != y1 )
+			{
+				DWORD v21 = a2 << 16;
+				for (int i = y1; i < y2; i++ )
+				{
+					DWORD *buf = &dstSurf[i * (wdd->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor)];
+
+					DWORD v13 = a1 << 16;
+					if ( x1 < x2 )
+					{
+						DWORD *cur = buf + x1;
+						DWORD *bend = buf + x2;
+						while(cur < bend)
+						{
+							*cur =  ((DWORD*)srcBuf)[width * (v21 >> 16) + (v13 >> 16)];
+							v13 += ((a3 - a1) << 16) / (x2 - x1);
+							cur++;
+						}
+					}
+					v21 += ((a4 - a2) << 16) / (y2 - y1);
+				}
 			}
 		}
 	}
@@ -1285,7 +1304,7 @@ void win3d_func202(NC_STACK_win3d *obj, class_stru *zis, rstr_arg204 *arg)
 	int a3 = (arg->floatC + 1.0) * (arg->pbitm->width / 2);
 	int a4 = (arg->float10 + 1.0) * (arg->pbitm->height / 2);
 
-	int a5 = rstr->field_554 *(arg->float14 + 1.0);
+	int a5 = rstr->field_554 * (arg->float14 + 1.0);
 	int a6 = rstr->field_558 * (arg->float18 + 1.0);
 	int a7 = rstr->field_554 * (arg->float1C + 1.0);
 	int a8 = rstr->field_558 * (arg->float20 + 1.0);
@@ -1589,7 +1608,7 @@ void DrawPrimitive(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, D3DTLVERTEX *vt
 
 void sb_0x43b518(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, polysDatSub *polysDat, texStru *tex, int a5, int a6)
 {
-	D3DTEXTUREHANDLE texHndl;
+	D3DTEXTUREHANDLE texHndl = 0;
 
 	win3d_bigdata *bigdata = w3d->bigdata;
 	if ( !bigdata->sceneBeginned )
@@ -2125,7 +2144,7 @@ int win3d__allocTexBuffer(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int w, i
 	return w * w3d->bigdata->primary__pixelformat.BytesPerColor;
 }
 
-signed int __fastcall win3d__createSurfTexPal(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int w, int h, texStru **_tex)
+signed int win3d__createSurfTexPal(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int w, int h, texStru **_tex)
 {
 	*_tex = NULL;
 
@@ -2215,19 +2234,19 @@ void win3d__tex_apply_palette_hw(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, B
 
 	win3d_bigdata *bigdata = w3d->bigdata;
 
-	int dwRBitMask = w3d->bigdata->primary__pixelformat.dwRBitMask;
-	int dwRShift = bigdata->primary__pixelformat.dwRShift;
+	int dwRBitMask = w3d->bigdata->selected__pixelformat.dwRBitMask;
+	int dwRShift = bigdata->selected__pixelformat.dwRShift;
 
-	int dwGBitMask = bigdata->primary__pixelformat.dwGBitMask;
-	int dwGShift = bigdata->primary__pixelformat.dwGShift;
+	int dwGBitMask = bigdata->selected__pixelformat.dwGBitMask;
+	int dwGShift = bigdata->selected__pixelformat.dwGShift;
 
-	int dwBBitMask = bigdata->primary__pixelformat.dwBBitMask;
-	int dwBShift = bigdata->primary__pixelformat.dwBShift;
+	int dwBBitMask = bigdata->selected__pixelformat.dwBBitMask;
+	int dwBShift = bigdata->selected__pixelformat.dwBShift;
 
 	int dwAlphaBitMask = bigdata->selected__pixelformat.dwAlphaBitMask;
 	int dwAShift = bigdata->selected__pixelformat.dwAShift;
 
-	int BytesPerColor = bigdata->primary__pixelformat.BytesPerColor;
+	int BytesPerColor = bigdata->selected__pixelformat.BytesPerColor;
 
 	if ( BytesPerColor == 1 )
 	{
@@ -2266,7 +2285,7 @@ void win3d__tex_apply_palette_hw(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, B
 			{
 				r = pal[i * 3];
 				g = pal[1 + i * 3];
-				r = pal[2 + i * 3];
+				b = pal[2 + i * 3];
 			}
 			else
 			{
@@ -2345,7 +2364,7 @@ void win3d__tex_apply_palette_hw(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, B
 			{
 				r = pal[i * 3];
 				g = pal[1 + i * 3];
-				r = pal[2 + i * 3];
+				b = pal[2 + i * 3];
 			}
 			else
 			{
@@ -2403,7 +2422,7 @@ void win3d__tex_apply_palette_hw(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, B
 		{
 
 			BYTE *indexes = (BYTE *)surfDesc.lpSurface + (surfDesc.dwHeight * surfDesc.dwWidth) - 1;
-			DWORD *dwords = (DWORD *)surfDesc.lpSurface + (surfDesc.dwHeight * surfDesc.dwWidth) - 1;
+			DWORD *dwords = ((DWORD *)surfDesc.lpSurface) + (surfDesc.dwHeight * surfDesc.dwWidth) - 1;
 
 			for (int i = surfDesc.dwHeight * surfDesc.dwWidth; i > 0; i--)
 			{
@@ -2703,13 +2722,13 @@ void win3d_func274(NC_STACK_win3d *obj, class_stru *zis, const char **name)
 	strcpy(filename, *name);
 	strcat(filename, ".ppm");
 
-	FILE *fil = fopen(filename, "wb");
+	FILE *fil = FOpen(filename, "wb");
 	if ( fil )
 	{
 		call_method(obj, 215);
 		win3d_func274__sub0(wdd, w3d, fil);
 		call_method(obj, 216);
-		fclose(fil);
+		FClose(fil);
 	}
 }
 

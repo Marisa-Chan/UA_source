@@ -1,6 +1,8 @@
 #ifndef RSRC_H_INCLUDED
 #define RSRC_H_INCLUDED
 
+#include "nucleas.h"
+
 extern class_stored rsrc_class_off;
 
 struct rsrc : class_named_nnode

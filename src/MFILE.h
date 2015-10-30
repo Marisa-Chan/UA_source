@@ -34,5 +34,9 @@ int read_default(MFILE *a1);
 int sub_413564(MFILE *a1, int a2, const void *a3);
 signed int sub_412FC0(MFILE *a1, unsigned int TAG1, unsigned int TAG2, int a4);
 int sub_413290(MFILE *a1);
+MFILE *new_MFILE();
+
+int sub_412F98(MFILE *a1, int a2);
+void del_MFILE(MFILE *fil);
 
 #endif // MFILE_H_INCLUDED

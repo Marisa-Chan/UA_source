@@ -1,11 +1,18 @@
 # depslib dependency file v1.0
-1443079450 source:/home/marisa/work/openUA/UA_source/main.cpp
+1446174912 source:/home/marisa/work/openUA/UA_source/main.cpp
 	"includes.h"
+	"bitmap.h"
+	"raster.h"
+	"display.h"
+	"windd.h"
+	"win3d.h"
+	"ilbm.h"
 
-1442997917 /home/marisa/work/openUA/UA_source/includes.h
+1446027991 /home/marisa/work/openUA/UA_source/includes.h
 	<windows.h>
 	<objbase.h>
 	<stdio.h>
+	<stddef.h>
 	"classes.h"
 	"MFILE.h"
 	"global.h"
@@ -26,23 +33,24 @@
 	"classes.h"
 	"utils.h"
 
-1443087497 source:/home/marisa/work/openUA/UA_source/glob_funcs.cpp
+1446091329 source:/home/marisa/work/openUA/UA_source/glob_funcs.cpp
 	"includes.h"
 
-1443064338 source:/home/marisa/work/openUA/UA_source/MFILE.cpp
+1445940666 source:/home/marisa/work/openUA/UA_source/MFILE.cpp
 	<stdio.h>
 	<stdlib.h>
 	"includes.h"
 	"MFILE.h"
 	"utils.h"
 
-1444015558 source:/home/marisa/work/openUA/UA_source/MC.cpp
+1445937002 source:/home/marisa/work/openUA/UA_source/MC.cpp
 	"includes.h"
 	"MC.h"
 	"classes.h"
 	"nucleas.h"
 	"rsrc.h"
 	"bitmap.h"
+	"ilbm.h"
 	"raster.h"
 	"display.h"
 	"windd.h"
@@ -55,16 +63,16 @@
 1443163141 /home/marisa/work/openUA/UA_source/classes.h
 	"nlist.h"
 
-1443416886 /home/marisa/work/openUA/UA_source/glob_funcs.h
+1445940399 /home/marisa/work/openUA/UA_source/glob_funcs.h
 	"MFILE.h"
 	"MC.h"
 	"classes.h"
 	"ini.h"
 
-1443064353 /home/marisa/work/openUA/UA_source/MFILE.h
+1445940678 /home/marisa/work/openUA/UA_source/MFILE.h
 	"nlist.h"
 
-1442979223 /home/marisa/work/openUA/UA_source/MC.h
+1445937010 /home/marisa/work/openUA/UA_source/MC.h
 
 1442981139 /home/marisa/work/openUA/UA_source/nucleas.h
 
@@ -87,7 +95,7 @@
 
 1444015558 /home/marisa/work/openUA/UA_source/ini.h
 
-1444285258 /home/marisa/work/openUA/UA_source/utils.h
+1446091637 /home/marisa/work/openUA/UA_source/utils.h
 
 1444285236 source:/home/marisa/work/openUA/UA_source/utils.cpp
 	"includes.h"
@@ -95,7 +103,7 @@
 
 1443174570 /home/marisa/work/openUA/UA_source/engine_gfx.h
 
-1444015558 source:/home/marisa/work/openUA/UA_source/engine_gfx.cpp
+1446171409 source:/home/marisa/work/openUA/UA_source/engine_gfx.cpp
 	"includes.h"
 	"engine_gfx.h"
 	"utils.h"
@@ -118,7 +126,8 @@
 
 1443079826 /home/marisa/work/openUA/UA_source/engine_tform.h
 
-1443162662 /home/marisa/work/openUA/UA_source/rsrc.h
+1446026878 /home/marisa/work/openUA/UA_source/rsrc.h
+	"nucleas.h"
 
 1444015558 source:/home/marisa/work/openUA/UA_source/rsrc.cpp
 	"includes.h"
@@ -126,7 +135,7 @@
 	"rsrc.h"
 	"utils.h"
 
-1445856543 source:/home/marisa/work/openUA/UA_source/win3d.cpp
+1446177710 source:/home/marisa/work/openUA/UA_source/win3d.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -138,20 +147,21 @@
 	"utils.h"
 	"MS/d3dmacs.h"
 
-1445594813 source:/home/marisa/work/openUA/UA_source/bitmap.cpp
+1446171225 source:/home/marisa/work/openUA/UA_source/bitmap.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
 	"bitmap.h"
 	"utils.h"
 
-1445594819 /home/marisa/work/openUA/UA_source/bitmap.h
+1446026864 /home/marisa/work/openUA/UA_source/bitmap.h
+	"rsrc.h"
 
-1445577501 /home/marisa/work/openUA/UA_source/win3d.h
+1446095543 /home/marisa/work/openUA/UA_source/win3d.h
 	<ddraw.h>
 	<d3d.h>
 
-1444279013 source:/home/marisa/work/openUA/UA_source/raster.cpp
+1446176094 source:/home/marisa/work/openUA/UA_source/raster.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -159,9 +169,9 @@
 	"raster.h"
 	"utils.h"
 
-1445588461 /home/marisa/work/openUA/UA_source/raster.h
+1446175720 /home/marisa/work/openUA/UA_source/raster.h
 
-1445572568 source:/home/marisa/work/openUA/UA_source/windd.cpp
+1446115054 source:/home/marisa/work/openUA/UA_source/windd.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -172,7 +182,7 @@
 	"utils.h"
 	<wingdi.h>
 
-1444277948 source:/home/marisa/work/openUA/UA_source/display.cpp
+1446096162 source:/home/marisa/work/openUA/UA_source/display.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -184,7 +194,7 @@
 1444277794 /home/marisa/work/openUA/UA_source/display.h
 	"raster.h"
 
-1445581679 /home/marisa/work/openUA/UA_source/windd.h
+1446095570 /home/marisa/work/openUA/UA_source/windd.h
 	<ddraw.h>
 	<d3d.h>
 
@@ -366,4 +376,14 @@
 	"utils.h"
 
 1444729285 /home/marisa/work/openUA/UA_source/MS/d3dmacs.h
+
+1446171908 source:/home/marisa/work/openUA/UA_source/ilbm.cpp
+	"includes.h"
+	"nucleas.h"
+	"rsrc.h"
+	"ilbm.h"
+	"utils.h"
+
+1446020473 /home/marisa/work/openUA/UA_source/ilbm.h
+	"bitmap.h"
 

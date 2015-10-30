@@ -4,6 +4,8 @@
 #include <ddraw.h>
 #include <d3d.h>
 
+struct bitmap_intern;
+
 union unitex
 {
 	IDirect3DTexture *dx1;

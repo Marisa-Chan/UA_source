@@ -29,6 +29,11 @@ NC_STACK_raster * raster_func0(class_stru *obj, class_stru *zis, stack_vals *sta
     printf("MAKE ME %s\n","raster_func0");
 	if (clss)
 	{
+	    __NC_STACK_raster *rstr = &clss->stack__raster;
+	    call_vtbl(clss, 3, 0x80001002, &rstr->bitm_intern, 0);
+
+	    rstr->field_554 = (rstr->bitm_intern->width / 2);
+	    rstr->field_558 = (rstr->bitm_intern->height / 2);
 	}
 
 	return clss;

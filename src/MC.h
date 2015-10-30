@@ -25,5 +25,6 @@ stored_functions_engine *init_engine(unsigned int engineID);
 void deinit_engine(unsigned int engineID);
 
 void sb_0x411c08();
+const char * get_MC_str(MC_TYPE a1);
 
 #endif // MC_H_INCLUDED

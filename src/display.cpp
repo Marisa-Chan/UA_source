@@ -31,6 +31,8 @@ NC_STACK_display * display_func0(class_stru *obj, class_stru *zis, stack_vals *s
 
 	printf("MAKE ME %s\n","display_func0");
 
+	engines.display___win3d = clss;
+
 	if (clss)
 	{
 	}

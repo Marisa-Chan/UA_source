@@ -42,39 +42,29 @@ unsigned int sub_416704(NC_STACK_bitmap *a1, __NC_STACK_bitmap *a2, bitmap__opl 
 		return 1;
 	}
 
-	signed int v6 = 1;
+	int opl_count = 1;
 
-	bitmap__opl *v7 = a3;
-	if ( v7->field_E >= 0 )
+	bitmap__opl *opl_cur = a3;
+
+	while (opl_cur->field_E >= 0)
 	{
-		__int16 v8;
-		do
-		{
-			++v6;
-			v8 = v7[1].field_E;
-			++v7;
-		}
-		while ( v8 >= 0 );
+		opl_count++;
+		opl_cur++;
 	}
 
-	bitmap_opl2 *unk = (bitmap_opl2 *)AllocVec(sizeof(bitmap_opl2) * v6, 1);
+	bitmap_opl2 *unk = (bitmap_opl2 *)AllocVec(sizeof(bitmap_opl2) * opl_count, 1);
 
 	if ( unk )
 	{
 		bitmap_opl2 *tmp = unk;
-		bitmap_opl2 *up = &unk[v6 - 1];
-		bitmap__opl *v12 = a3;
-		if ( tmp < up )
+		bitmap__opl *opl = a3;
+
+		for (int i = 0; i < opl_count; i++)
 		{
-			do
-			{
-				tmp->field_0 = (long double)v12->field_0 * (1.0 / 256.0);
-				tmp->field_4 = (long double)v12->field_2 * (1.0 / 256.0);
-				tmp += 2;
-				++v12;
-			}
-			while ( tmp < up );
+			tmp[i].field_0 = (long double)opl[i].field_0 * (1.0 / 256.0);
+			tmp[i].field_4 = (long double)opl[i].field_2 * (1.0 / 256.0);
 		}
+
 		tmp->field_0 = -1;
 		tmp->field_4 = -1;
 
@@ -187,10 +177,10 @@ void bitmap_func3(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
 					*(void **)stk->value = 0;
 				break;
 			case 0x80002006:
-				*(int *)stk = internal->bitm_intern->pallete != NULL;
+				*(int *)stk->value = internal->bitm_intern->pallete != NULL;
 				break;
 			case 0x80002007:
-				*(void **)stk = internal->bitm_intern->pallete;
+				*(void **)stk->value = internal->bitm_intern->pallete;
 				break;
 			}
 			stk++;
@@ -305,12 +295,12 @@ void bitmap_func65(NC_STACK_bitmap *obj, class_stru *zis, rsrc **pres)
 
 size_t bitmap_func128(NC_STACK_bitmap *, class_stru *, stack_vals *)
 {
-    return 0;
+	return 0;
 }
 
 size_t bitmap_func129(NC_STACK_bitmap *, class_stru *, stack_vals *)
 {
-    return 0;
+	return 0;
 }
 
 void bitmap_func130(NC_STACK_bitmap *, class_stru *, stack_vals *)

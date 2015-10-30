@@ -47,7 +47,7 @@ struct ua_fRect
 
 struct __NC_STACK_raster
 {
-	int field_0;
+	bitmap_intern *bitm_intern;
 	DWORD field_4; // Color?
 	DWORD field_8; // and Color2 ?
 //  int field_c;

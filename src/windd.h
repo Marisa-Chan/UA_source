@@ -6,6 +6,8 @@
 
 extern class_stored windd_class_off;
 
+struct bitmap_intern;
+
 struct enum_gfx_modes
 {
 	int width;

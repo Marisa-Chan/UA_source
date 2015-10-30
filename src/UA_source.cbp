@@ -67,6 +67,8 @@
 		<Unit filename="glob_funcs.cpp" />
 		<Unit filename="glob_funcs.h" />
 		<Unit filename="global.h" />
+		<Unit filename="ilbm.cpp" />
+		<Unit filename="ilbm.h" />
 		<Unit filename="includes.h" />
 		<Unit filename="ini.cpp" />
 		<Unit filename="ini.h" />

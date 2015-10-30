@@ -357,3 +357,55 @@ int sub_413564(MFILE *a1, int a2, const void *a3)
 
 	return writed;
 }
+
+
+MFILE *new_MFILE()
+{
+	MFILE *mfile = (MFILE *)AllocVec(sizeof(MFILE), 65537);
+
+	if ( !mfile )
+		return NULL;
+
+	init_list(&mfile->list);
+
+	MFILE_S1 *sub = (MFILE_S1 *)AllocVec(sizeof(MFILE_S1), 65537);
+
+	if ( !sub )
+	{
+		nc_FreeMem(mfile);
+		return NULL;
+	}
+
+	sub->TAG = TAG_FORM;
+	sub->TAG_EXTENSION = TAG_NONE;
+	sub->TAG_SIZE = 0x80000000;
+
+	AddHead(&mfile->list, sub);
+	return mfile;
+}
+
+int sub_412F98(MFILE *a1, int a2)
+{
+	a1->flags.write_stream = a2;
+	return 0;
+}
+
+
+void del_MFILE(MFILE *fil)
+{
+	if ( fil )
+	{
+		nlist *lst = &fil->list;
+
+		while ( true )
+		{
+			nnode *tmp = RemHead(lst);
+			if (!tmp)
+				break;
+
+			if (tmp)
+				nc_FreeMem(tmp);
+		}
+		nc_FreeMem(fil);
+	}
+}

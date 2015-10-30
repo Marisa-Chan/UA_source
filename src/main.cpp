@@ -1,5 +1,11 @@
 #define GLOBAL
 #include "includes.h"
+#include "bitmap.h"
+#include "raster.h"
+#include "display.h"
+#include "windd.h"
+#include "win3d.h"
+#include "ilbm.h"
 
 int sb_0x411324()
 {
@@ -153,6 +159,13 @@ int WinMain__sub0()
 ////			return 1;
 ////		deinit_globl_engines();
 	}
+
+
+//// TEST PLACE
+
+	return 1;
+//// TEST PLACE
+
 	return 0;
 }
 
@@ -206,7 +219,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			WaitMessage();
 		}
 	}
-	while ( sb_0x411324() );
+    while ( sb_0x411324() || true);
 
 	if ( ghWnd )
 		DestroyWindow(ghWnd);

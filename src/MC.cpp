@@ -4,6 +4,7 @@
 #include "nucleas.h"
 #include "rsrc.h"
 #include "bitmap.h"
+#include "ilbm.h"
 #include "raster.h"
 #include "display.h"
 #include "windd.h"
@@ -62,7 +63,7 @@ int set_classes_list()
 	add_to_classes_list(&rsrc_class_off);
 	add_to_classes_list(&bitmap_class_off);
 ////	add_to_classes_list(&skeleton_class_off.nodeBase);
-////	add_to_classes_list(&ilbm_class_off.nodeBase);
+	add_to_classes_list(&ilbm_class_off);
 ////	add_to_classes_list(&sklt_class_off.nodeBase);
 ////	add_to_classes_list(&ade_class_off.nodeBase);
 ////	add_to_classes_list(&area_class_off.nodeBase);
@@ -161,7 +162,7 @@ stored_functions_engine *init_engine(unsigned int engineID)
 				return NULL;
 		}
 		else
-            ypa_log_out("Can't find %s\n", v10);
+			ypa_log_out("Can't find %s\n", v10);
 	}
 	return NULL;
 }
@@ -221,4 +222,12 @@ void sb_0x411c08()
 		nc_FreeMem(tmp);
 	}
 	sb_0x411c08__sub0();
+}
+
+const char * get_MC_str(MC_TYPE a1)
+{
+	if ( a1 < MC_TYPE_UNKNOWN )
+		return engines.MC_RES_CLASS_ENGINE[a1];
+	else
+		return NULL;
 }
