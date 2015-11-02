@@ -96,6 +96,9 @@ struct nnode_str: nnode
 	char str2[32];
 };
 
+const char * get_prefix_replacement(const char *prefix);
+int set_prefix_replacement(const char *str1, const char *str2);
+
 FILE * FOpen(const char *src_path, const char *mode);
 int FClose(FILE *a1);
 

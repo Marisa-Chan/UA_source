@@ -1,11 +1,84 @@
 #define GLOBAL
 #include "includes.h"
+#include "engine_gfx.h"
 #include "bitmap.h"
 #include "raster.h"
 #include "display.h"
 #include "windd.h"
 #include "win3d.h"
 #include "ilbm.h"
+
+
+
+
+
+//// TEST FUNCS
+
+NC_STACK_ilbm * loadDisk_screen(int  wdth)
+{
+	const char *diskImage = "disk320.ilbm";
+
+	if (wdth > 360)
+	{
+		if (wdth > 600)
+			diskImage = "disk640.ilbm";
+		else
+			diskImage = "disk512.ilbm";
+	}
+
+	char rsrc_def[128];
+
+	const char *pref = get_prefix_replacement("rsrc");
+	strcpy(rsrc_def, pref);
+
+	set_prefix_replacement("rsrc", "data:mc2res");
+
+	NC_STACK_ilbm *ilbm = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, diskImage, 0x80002008, 1, 0x80002009, 1, 0);
+	set_prefix_replacement("rsrc", rsrc_def);
+
+	return ilbm;
+}
+
+void draw_splashScreen( NC_STACK_ilbm *splashScreen)
+{
+	if ( splashScreen )
+	{
+		rstr_arg204 a4;
+		call_vtbl(splashScreen, 3, 0x80002000, &a4.pbitm, 0); // bitmap_func3
+
+		a4.float4 = -1.0;
+		a4.float8 = -1.0;
+		a4.floatC = 1.0;
+		a4.float10 = 1.0;
+
+		a4.float14 = -1.0;
+		a4.float18 = -1.0;
+		a4.float1C = 1.0;
+		a4.float20 = 1.0;
+
+		NC_STACK_win3d *win3d = NULL;
+
+		pgfx_engine->getter(0x8000300D, &win3d, 0);
+
+		if ( win3d )
+		{
+			call_method(win3d, 257);
+			call_method(win3d, 215);
+			call_method(win3d, 202, &a4);
+			call_method(win3d, 216);
+			call_method(win3d, 258);
+			call_method(win3d, 257);
+			call_method(win3d, 215);
+			call_method(win3d, 202, &a4);
+			call_method(win3d, 216);
+			call_method(win3d, 258);
+		}
+	}
+}
+
+
+//// TEST FUNCS ////
+
 
 int sb_0x411324()
 {
@@ -162,7 +235,21 @@ int WinMain__sub0()
 
 
 //// TEST PLACE
+    init_mc_res_class_engine_strings(MC_TYPE_RES, "rsrc:");
+	set_prefix_replacement("rsrc", "mc2res");
+	set_prefix_replacement("data", "Data");
+	set_prefix_replacement("save", "Save");
+	set_prefix_replacement("help", "Help");
+	set_prefix_replacement("mov", "Data:mov");
+	set_prefix_replacement("levels", "Levels");
+	set_prefix_replacement("mbpix", "levels:mbpix");
 
+	NC_STACK_ilbm *disk_img = loadDisk_screen(640);
+	if (disk_img)
+	{
+		draw_splashScreen(disk_img);
+		delete_class_obj(disk_img);
+	}
 	return 1;
 //// TEST PLACE
 
@@ -219,7 +306,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			WaitMessage();
 		}
 	}
-    while ( sb_0x411324() || true);
+	while ( sb_0x411324() || true);
 
 	if ( ghWnd )
 		DestroyWindow(ghWnd);

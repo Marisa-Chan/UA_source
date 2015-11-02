@@ -45,6 +45,7 @@
 			<Add library="dxguid" />
 			<Add library="ddraw" />
 			<Add library="imm32" />
+			<Add library="msvcrt" />
 		</Linker>
 		<Unit filename="MC.cpp" />
 		<Unit filename="MC.h" />

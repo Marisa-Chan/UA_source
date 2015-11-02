@@ -38,9 +38,8 @@ char * file_path_copy_manipul(const char *src, char *dst, int size)
 			v8 = NULL;
 			break;
 		}
-		v8++;;
+		v8++;
 	}
-
 
 	if ( !v8 )
 		return strncpy(dst, buf1, size - 1);
@@ -49,7 +48,7 @@ char * file_path_copy_manipul(const char *src, char *dst, int size)
 
 	nnode_str *v11 = (nnode_str *)engines.stru_525D68.head;
 
-	if ( engines.stru_525D68.head->next )
+	if ( v11->next )
 	{
 		while ( strcasecmp(v11->str, buf1) )
 		{
@@ -87,6 +86,63 @@ char * file_path_copy_manipul(const char *src, char *dst, int size)
 	return strncpy(dst, buf1, size - 1);
 }
 
+const char * get_prefix_replacement(const char *prefix)
+{
+	nnode_str *cur = (nnode_str *)engines.stru_525D68.head;
+
+	if ( !cur->next )
+		return NULL;
+
+	while ( strcasecmp(cur->str, prefix) )
+	{
+		cur = (nnode_str *)cur->next;
+		if ( !cur->next )
+			return NULL;
+	}
+
+	if ( cur )
+		return cur->str2;
+
+	return NULL;
+}
+
+int set_prefix_replacement(const char *str1, const char *str2)
+{
+	nnode_str *cur = (nnode_str *)engines.stru_525D68.head;
+
+	if ( cur->next )
+	{
+		while ( strcasecmp(cur->str, str1) )
+		{
+			cur = (nnode_str *)cur->next;
+			if ( !cur->next )
+			{
+				cur = NULL;
+				break;
+			}
+		}
+	}
+	else
+		cur = NULL;
+
+	if ( !cur )
+	{
+		cur = (nnode_str *)AllocVec(sizeof(nnode_str), 65537);
+
+		if (cur)
+			AddHead(&engines.stru_525D68, cur);
+	}
+
+	if ( cur )
+	{
+		strcpy(cur->str, str1);
+		strcpy(cur->str2, str2);
+	}
+
+	return cur != NULL;
+}
+
+
 void correct_slashes_and_3_ext(const char *src, char *dst, int sz)
 {
 	strncpy(dst, src, sz - 1);
@@ -95,8 +151,8 @@ void correct_slashes_and_3_ext(const char *src, char *dst, int sz)
 
 	while( (*v4) )
 	{
-		if (*v4 == '\\')
-			*v4 = '/';
+		if (*v4 == '/')
+			*v4 = '\\';
 		v4++;
 	}
 
@@ -110,7 +166,7 @@ void correct_slashes_and_3_ext(const char *src, char *dst, int sz)
 			if (strlen(v4) > 3)
 				v4[3] = 0;
 
-            break;
+			break;
 		}
 		v4++;
 	}
@@ -136,6 +192,6 @@ FILE * FOpen(const char *src_path, const char *mode)
 
 int FClose(FILE *a1)
 {
-  engines.file_handles--;
-  return fclose(a1);
+	engines.file_handles--;
+	return fclose(a1);
 }
