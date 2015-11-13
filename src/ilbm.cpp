@@ -175,7 +175,7 @@ int ilbm_func6(NC_STACK_ilbm *obj, class_stru *zis, MFILE **pmfile)
 
 	call_method(obj, 130, &bitmap_info);
 
-	bitmap_opl2 *opl2 = bitmap_info.opl2;
+	tUtV *opl2 = bitmap_info.opl2;
 
 	if ( sub_412FC0(mfile, TAG_CIBO, TAG_FORM, -1) )
 	{
@@ -193,12 +193,12 @@ int ilbm_func6(NC_STACK_ilbm *obj, class_stru *zis, MFILE **pmfile)
 			BYTE buf[128];
 			int opl_count = 0;
 
-			bitmap_opl2 *tmp = opl2;
+			tUtV *tmp = opl2;
 
-			while(tmp->field_0 >= 0.0)
+			while(tmp->tu >= 0.0)
 			{
-				buf[opl_count * 2] = tmp->field_0 * 256.0;
-				buf[1 + opl_count * 2] = tmp->field_4 * 256.0;
+				buf[opl_count * 2] = tmp->tu * 256.0;
+				buf[1 + opl_count * 2] = tmp->tv * 256.0;
 				tmp++;
 				opl_count++;
 			}
@@ -210,50 +210,6 @@ int ilbm_func6(NC_STACK_ilbm *obj, class_stru *zis, MFILE **pmfile)
 		return sub_413290(mfile) == 0;
 	}
 	return 0;
-}
-
-
-MFILE * open_ilbm_file_(const char *filename, int flag)
-{
-	char tmpBuf[256];
-	const char *mc_type = get_MC_str(MC_TYPE_RES);
-
-	strcpy(tmpBuf, mc_type);
-	strcat(tmpBuf, filename);
-
-	MFILE *mfil = new_MFILE();
-
-	if ( !mfil )
-		return NULL;
-
-	const char *mode;
-	if (flag)
-		mode = "wb";
-	else
-		mode = "rb";
-
-	FILE *fil = FOpen(tmpBuf, mode);
-
-	mfil->file_handle = fil;
-	if ( fil )
-	{
-		if ( !sub_412F98(mfil, flag) )
-			return mfil;
-
-		fclose(mfil->file_handle);
-	}
-	del_MFILE(mfil);
-
-	return NULL;
-}
-
-void close_ilbm_file(MFILE *mfil)
-{
-	if ( mfil )
-	{
-		FClose(mfil->file_handle);
-		del_MFILE(mfil);
-	}
 }
 
 void ILBM_BODY_READ__sub0(BMHD_type *bmhd, BYTE *ilbm_data, void *_img_buffer)
@@ -590,7 +546,7 @@ rsrc * ilbm_func64(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak)
 			read_default(mfile);
 		}
 
-		mfile = open_ilbm_file_(reassignName, 0);
+		mfile = open_mfile(reassignName, 0);
 
 		if ( !mfile )
 			return NULL;
@@ -608,7 +564,7 @@ rsrc * ilbm_func64(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak)
 		}
 		else
 		{
-			mfile = open_ilbm_file_(resName, 0);
+			mfile = open_mfile(resName, 0);
 			if ( !mfile )
 				return NULL;
 
@@ -619,7 +575,7 @@ rsrc * ilbm_func64(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak)
 	rsrc *res = READ_ILBM(obj, zis, stk, mfile, reassignName != 0);
 
 	if ( selfOpened )
-		close_ilbm_file(mfile);
+		close_mfile(mfile);
 
 	return res;
 }
@@ -733,7 +689,7 @@ int VBMP__WRITE_TO_FILE(MFILE *mfile, bitmap_intern *bitm)
 	return sub_413290(mfile) == 0;
 }
 
-size_t ilbm_func66(NC_STACK_ilbm *obj, class_stru *zis, ilbm_func66_arg *arg)
+size_t ilbm_func66(NC_STACK_ilbm *obj, class_stru *zis, rsrc_func66_arg *arg)
 {
 	__NC_STACK_ilbm *ilbm = &obj->stack__ilbm;
 
@@ -744,7 +700,7 @@ size_t ilbm_func66(NC_STACK_ilbm *obj, class_stru *zis, ilbm_func66_arg *arg)
 		if ( !arg->filename )
 			return 0;
 
-		mfile = open_ilbm_file_(arg->filename, 1);
+		mfile = open_mfile(arg->filename, 1);
 	}
 	else
 		mfile = arg->file;
@@ -772,7 +728,7 @@ size_t ilbm_func66(NC_STACK_ilbm *obj, class_stru *zis, ilbm_func66_arg *arg)
 	if ( res )
 	{
 		if ( arg->OpenedStream == 1 )
-			close_ilbm_file(mfile);
+			close_mfile(mfile);
 		res = arg->OpenedStream;
 	}
 	return res;

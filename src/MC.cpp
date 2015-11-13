@@ -10,6 +10,15 @@
 #include "windd.h"
 #include "win3d.h"
 
+#include "skeleton.h"
+#include "sklt.h"
+#include "ade.h"
+#include "area.h"
+#include "amesh.h"
+#include "base.h"
+
+#include "embed.h"
+
 #include "engine_gfx.h"
 #include "engine_miles.h"
 #include "engine_tform.h"
@@ -62,16 +71,16 @@ int set_classes_list()
 	add_to_classes_list(&nucleas_class_off);
 	add_to_classes_list(&rsrc_class_off);
 	add_to_classes_list(&bitmap_class_off);
-////	add_to_classes_list(&skeleton_class_off.nodeBase);
+	add_to_classes_list(&skeleton_class_off);
 	add_to_classes_list(&ilbm_class_off);
-////	add_to_classes_list(&sklt_class_off.nodeBase);
-////	add_to_classes_list(&ade_class_off.nodeBase);
-////	add_to_classes_list(&area_class_off.nodeBase);
-////	add_to_classes_list(&base_class_off.nodeBase);
+	add_to_classes_list(&sklt_class_off);
+	add_to_classes_list(&ade_class_off);
+	add_to_classes_list(&area_class_off);
+	add_to_classes_list(&base_class_off);
 ////	add_to_classes_list(&bmpanim_class_off.nodeBase);
-////	add_to_classes_list(&amesh_class_off.nodeBase);
+	add_to_classes_list(&amesh_class_off);
 ////	add_to_classes_list(&particle_class_off.nodeBase);
-////	add_to_classes_list(&embed_class_off.nodeBase);
+	add_to_classes_list(&embed_class_off);
 ////	add_to_classes_list(&idev_class_off.nodeBase);
 ////	add_to_classes_list(&input_class_off.nodeBase);
 ////	add_to_classes_list(&itimer_class_off.nodeBase);

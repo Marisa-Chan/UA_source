@@ -303,3 +303,75 @@ size_t call_parent(class_stru *zis, void *caller, int idx, stack_vals *stk)
 	clvt *v4 = &zis->parent_class->clvtbl[idx];
 	return v4->cl_func((NC_STACK_class *)caller, v4->p_cl, stk);
 }
+
+
+NC_STACK_class * READ_OBJT(MFILE *mfile)
+{
+	class_stru *clss = NULL;
+	NC_STACK_class *obj = NULL;
+	while ( 1 )
+	{
+		int v4 = read_next_IFF(mfile, 2);
+
+		if ( v4 == -2 )
+			break;
+
+		if ( v4 )
+			return NULL;
+
+		int tag = GET_FORM_INFO_OR_NULL(mfile)->TAG;
+
+		if ( tag == TAG_CLID )
+		{
+			char classname[256];
+			if ( mfread(mfile, classname, 256) < 0 )
+				return NULL;
+
+			clss = get_class(classname);
+
+			if ( !clss )
+				return NULL;
+
+			read_next_IFF(mfile, 2);
+		}
+		else if ( tag == TAG_FORM )
+		{
+			MFILE *v11 = mfile;
+
+			obj = (NC_STACK_class *)clss->clvtbl[5].cl_func(clss, clss->clvtbl[5].p_cl, (stack_vals *)&v11);
+
+			if ( !obj )
+			{
+				sub_411E90(clss);
+				return NULL;
+			}
+		}
+		else
+		{
+			if ( !read_default(mfile) )
+				return NULL;
+		}
+	}
+	return obj;
+}
+
+int sub_4117F8(NC_STACK_class *obj, MFILE *mfile)
+{
+	if ( sub_412FC0(mfile, TAG_OBJT, TAG_FORM, -1) )
+		return 0;
+
+	const char *clsname = obj->class_owner->name;
+	int namesz = strlen(clsname) + 1;
+
+	if ( sub_412FC0(mfile, 0, TAG_CLID, namesz) )
+		return 0;
+
+	if ( sub_413564(mfile, namesz, clsname) < 0 )
+		return 0;
+
+	sub_413290(mfile);
+	int res = (int)call_vtbl(obj, 6, mfile);
+	sub_413290(mfile);
+
+	return res;
+}

@@ -38,5 +38,7 @@ MFILE *new_MFILE();
 
 int sub_412F98(MFILE *a1, int a2);
 void del_MFILE(MFILE *fil);
+MFILE * open_mfile(const char *filename, int flag);
+void close_mfile(MFILE *mfil);
 
 #endif // MFILE_H_INCLUDED

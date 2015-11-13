@@ -31,12 +31,6 @@ struct texCache
 	texStru *txStru;
 };
 
-struct tUtV
-{
-	float tu;
-	float tv;
-};
-
 struct xyz
 {
 	float sx;

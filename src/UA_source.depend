@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1446268330 source:/home/marisa/work/openUA/UA_source/main.cpp
+1447396742 source:/home/marisa/work/openUA/UA_source/main.cpp
 	"includes.h"
 	"engine_gfx.h"
 	"bitmap.h"
@@ -29,7 +29,7 @@
 
 1443087335 /home/marisa/work/openUA/UA_source/nlist.h
 
-1444015558 source:/home/marisa/work/openUA/UA_source/classes.cpp
+1447219671 source:/home/marisa/work/openUA/UA_source/classes.cpp
 	"includes.h"
 	"classes.h"
 	"utils.h"
@@ -37,14 +37,14 @@
 1446269048 source:/home/marisa/work/openUA/UA_source/glob_funcs.cpp
 	"includes.h"
 
-1445940666 source:/home/marisa/work/openUA/UA_source/MFILE.cpp
+1447044490 source:/home/marisa/work/openUA/UA_source/MFILE.cpp
 	<stdio.h>
 	<stdlib.h>
 	"includes.h"
 	"MFILE.h"
 	"utils.h"
 
-1445937002 source:/home/marisa/work/openUA/UA_source/MC.cpp
+1447066533 source:/home/marisa/work/openUA/UA_source/MC.cpp
 	"includes.h"
 	"MC.h"
 	"classes.h"
@@ -56,13 +56,18 @@
 	"display.h"
 	"windd.h"
 	"win3d.h"
+	"skeleton.h"
+	"sklt.h"
+	"ade.h"
+	"embed.h"
 	"engine_gfx.h"
 	"engine_miles.h"
 	"engine_tform.h"
 	"engine_input.h"
 
-1443163141 /home/marisa/work/openUA/UA_source/classes.h
+1447219657 /home/marisa/work/openUA/UA_source/classes.h
 	"nlist.h"
+	"MFILE.h"
 
 1446202072 /home/marisa/work/openUA/UA_source/glob_funcs.h
 	"MFILE.h"
@@ -70,7 +75,7 @@
 	"classes.h"
 	"ini.h"
 
-1445940678 /home/marisa/work/openUA/UA_source/MFILE.h
+1447044525 /home/marisa/work/openUA/UA_source/MFILE.h
 	"nlist.h"
 
 1445937010 /home/marisa/work/openUA/UA_source/MC.h
@@ -96,15 +101,16 @@
 
 1444015558 /home/marisa/work/openUA/UA_source/ini.h
 
-1446091637 /home/marisa/work/openUA/UA_source/utils.h
+1447399322 /home/marisa/work/openUA/UA_source/utils.h
 
-1444285236 source:/home/marisa/work/openUA/UA_source/utils.cpp
+1447322912 source:/home/marisa/work/openUA/UA_source/utils.cpp
 	"includes.h"
 	"utils.h"
+	"inttypes.h"
 
-1443174570 /home/marisa/work/openUA/UA_source/engine_gfx.h
+1447397043 /home/marisa/work/openUA/UA_source/engine_gfx.h
 
-1446171409 source:/home/marisa/work/openUA/UA_source/engine_gfx.cpp
+1447235998 source:/home/marisa/work/openUA/UA_source/engine_gfx.cpp
 	"includes.h"
 	"engine_gfx.h"
 	"utils.h"
@@ -121,16 +127,18 @@
 
 1443079816 /home/marisa/work/openUA/UA_source/engine_input.h
 
-1443157280 source:/home/marisa/work/openUA/UA_source/engine_tform.cpp
+1446704288 source:/home/marisa/work/openUA/UA_source/engine_tform.cpp
 	"includes.h"
 	"engine_tform.h"
+	"math.h"
+	"utils.h"
 
-1443079826 /home/marisa/work/openUA/UA_source/engine_tform.h
+1446702768 /home/marisa/work/openUA/UA_source/engine_tform.h
 
-1446026878 /home/marisa/work/openUA/UA_source/rsrc.h
+1447059862 /home/marisa/work/openUA/UA_source/rsrc.h
 	"nucleas.h"
 
-1444015558 source:/home/marisa/work/openUA/UA_source/rsrc.cpp
+1446712412 source:/home/marisa/work/openUA/UA_source/rsrc.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -148,17 +156,17 @@
 	"utils.h"
 	"MS/d3dmacs.h"
 
-1446265384 source:/home/marisa/work/openUA/UA_source/bitmap.cpp
+1447222375 source:/home/marisa/work/openUA/UA_source/bitmap.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
 	"bitmap.h"
 	"utils.h"
 
-1446026864 /home/marisa/work/openUA/UA_source/bitmap.h
+1447222239 /home/marisa/work/openUA/UA_source/bitmap.h
 	"rsrc.h"
 
-1446095543 /home/marisa/work/openUA/UA_source/win3d.h
+1447234820 /home/marisa/work/openUA/UA_source/win3d.h
 	<ddraw.h>
 	<d3d.h>
 
@@ -172,7 +180,7 @@
 
 1446175720 /home/marisa/work/openUA/UA_source/raster.h
 
-1446179952 source:/home/marisa/work/openUA/UA_source/windd.cpp
+1446716497 source:/home/marisa/work/openUA/UA_source/windd.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -378,13 +386,125 @@
 
 1444729285 /home/marisa/work/openUA/UA_source/MS/d3dmacs.h
 
-1446193798 source:/home/marisa/work/openUA/UA_source/ilbm.cpp
+1447231676 source:/home/marisa/work/openUA/UA_source/ilbm.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
 	"ilbm.h"
 	"utils.h"
 
-1446190189 /home/marisa/work/openUA/UA_source/ilbm.h
+1447059858 /home/marisa/work/openUA/UA_source/ilbm.h
 	"bitmap.h"
+
+1447241296 source:/home/marisa/work/openUA/UA_source/ade.cpp
+	"includes.h"
+	"nucleas.h"
+	"ade.h"
+	"utils.h"
+
+1446547998 /home/marisa/work/openUA/UA_source/ade.h
+	"nucleas.h"
+	"nlist.h"
+
+1447397303 source:/home/marisa/work/openUA/UA_source/base.cpp
+	"includes.h"
+	"nucleas.h"
+	"bitmap.h"
+	"raster.h"
+	"display.h"
+	"windd.h"
+	"win3d.h"
+	"base.h"
+	"utils.h"
+	"engine_tform.h"
+	"skeleton.h"
+	"ade.h"
+	"engine_gfx.h"
+
+1447397415 /home/marisa/work/openUA/UA_source/base.h
+	"nucleas.h"
+	"nlist.h"
+
+1447053551 /home/marisa/work/openUA/UA_source/skeleton.h
+	"rsrc.h"
+
+1447054140 source:/home/marisa/work/openUA/UA_source/skeleton.cpp
+	"includes.h"
+	"nucleas.h"
+	"rsrc.h"
+	"bitmap.h"
+	"raster.h"
+	"display.h"
+	"windd.h"
+	"win3d.h"
+	"skeleton.h"
+	"base.h"
+	"utils.h"
+	"math.h"
+
+1447061145 source:/home/marisa/work/openUA/UA_source/sklt.cpp
+	"includes.h"
+	"nucleas.h"
+	"rsrc.h"
+	"bitmap.h"
+	"raster.h"
+	"display.h"
+	"windd.h"
+	"win3d.h"
+	"skeleton.h"
+	"sklt.h"
+	"base.h"
+	"utils.h"
+	"math.h"
+	"inttypes.h"
+
+1447043199 /home/marisa/work/openUA/UA_source/sklt.h
+	"skeleton.h"
+
+1447066511 source:/home/marisa/work/openUA/UA_source/embed.cpp
+	"includes.h"
+	"nucleas.h"
+	"embed.h"
+	"utils.h"
+	"rsrc.h"
+	"math.h"
+	"inttypes.h"
+
+1447063902 /home/marisa/work/openUA/UA_source/embed.h
+	"nucleas.h"
+	"nlist.h"
+
+1447241296 source:/home/marisa/work/openUA/UA_source/area.cpp
+	"includes.h"
+	"nucleas.h"
+	"area.h"
+	"utils.h"
+	"raster.h"
+	"display.h"
+	"windd.h"
+	"win3d.h"
+	"skeleton.h"
+	"base.h"
+	"engine_gfx.h"
+
+1447234100 /home/marisa/work/openUA/UA_source/area.h
+	"ade.h"
+	"bitmap.h"
+
+1447312672 source:/home/marisa/work/openUA/UA_source/amesh.cpp
+	"includes.h"
+	"inttypes.h"
+	"nucleas.h"
+	"amesh.h"
+	"utils.h"
+	"raster.h"
+	"display.h"
+	"windd.h"
+	"win3d.h"
+	"skeleton.h"
+	"base.h"
+	"engine_gfx.h"
+
+1447311325 /home/marisa/work/openUA/UA_source/amesh.h
+	"area.h"
 

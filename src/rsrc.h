@@ -26,4 +26,11 @@ struct NC_STACK_rsrc : public NC_STACK_nucleus
     __NC_STACK_rsrc stack__rsrc;
 };
 
+struct rsrc_func66_arg
+{
+	const char *filename;
+	MFILE *file;
+	int OpenedStream;
+};
+
 #endif // RSRC_H_INCLUDED

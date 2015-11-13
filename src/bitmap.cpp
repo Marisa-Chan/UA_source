@@ -52,21 +52,21 @@ unsigned int sub_416704(NC_STACK_bitmap *a1, __NC_STACK_bitmap *a2, bitmap__opl 
 		opl_cur++;
 	}
 
-	bitmap_opl2 *unk = (bitmap_opl2 *)AllocVec(sizeof(bitmap_opl2) * opl_count, 1);
+	tUtV *unk = (tUtV *)AllocVec(sizeof(tUtV) * opl_count, 1);
 
 	if ( unk )
 	{
-		bitmap_opl2 *tmp = unk;
+		tUtV *tmp = unk;
 		bitmap__opl *opl = a3;
 
 		for (int i = 0; i < opl_count; i++)
 		{
-			tmp[i].field_0 = (long double)opl[i].field_0 * (1.0 / 256.0);
-			tmp[i].field_4 = (long double)opl[i].field_2 * (1.0 / 256.0);
+			tmp[i].tu = (long double)opl[i].field_0 * (1.0 / 256.0);
+			tmp[i].tv = (long double)opl[i].field_2 * (1.0 / 256.0);
 		}
 
-		tmp->field_0 = -1;
-		tmp->field_4 = -1;
+		tmp[opl_count].tu = -1;
+		tmp[opl_count].tv = -1;
 
 		a2->field_4.opl2 = unk;
 

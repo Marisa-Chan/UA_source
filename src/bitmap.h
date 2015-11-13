@@ -34,16 +34,16 @@ struct bitmap__opl
 	__int16 field_E;
 };
 
-struct bitmap_opl2
+struct tUtV
 {
-	float field_0;
-	float field_4;
+	float tu;
+	float tv;
 };
 
 union bitmap_uniopl
 {
 	bitmap__opl *opl1;
-	bitmap_opl2 *opl2;
+	tUtV *opl2;
 };
 
 struct __NC_STACK_bitmap
@@ -69,7 +69,7 @@ struct bitmap_arg130
 	int field_0;
 	int field_4;
 	bitmap_intern *pbitm;
-	bitmap_opl2 *opl2;
+	tUtV *opl2;
 };
 
 #endif // BITMAP_H_INCLUDED

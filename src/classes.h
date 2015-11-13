@@ -3,6 +3,8 @@
 
 #include "nlist.h"
 
+#include "MFILE.h"
+
 int class_def_deinit();
 
 struct stack_vals
@@ -111,5 +113,8 @@ int delete_class_obj(NC_STACK_class *cls);
 stack_vals * find_id_in_stack2(unsigned int id, stack_vals *a2);
 size_t find_id_in_stack_def_val(unsigned int find_id, size_t def_value, stack_vals *a3);
 size_t call_parent(class_stru *zis, void *caller, int idx, stack_vals *stk);
+
+NC_STACK_class * READ_OBJT(MFILE *mfile);
+int sub_4117F8(NC_STACK_class *obj, MFILE *mfile);
 
 #endif // CLASSES_H_INCLUDED

@@ -1,5 +1,6 @@
 #include "includes.h"
 #include "utils.h"
+#include "inttypes.h"
 
 
 void va_to_arr(stack_vals *out, int sz, va_list in)
@@ -70,4 +71,11 @@ int read_yes_no_status(const char *file, int result)
 void sub_4BF181(DWORD sec)
 {
     Sleep(sec);
+}
+
+float SWAP32F(float f)
+{
+    uint32_t tmp = *(uint32_t *)&f;
+    tmp = SWAP32(tmp);
+    return *(float *)&tmp;
 }

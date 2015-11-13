@@ -409,3 +409,46 @@ void del_MFILE(MFILE *fil)
 		nc_FreeMem(fil);
 	}
 }
+
+MFILE * open_mfile(const char *filename, int flag)
+{
+	char tmpBuf[256];
+	const char *mc_type = get_MC_str(MC_TYPE_RES);
+
+	strcpy(tmpBuf, mc_type);
+	strcat(tmpBuf, filename);
+
+	MFILE *mfil = new_MFILE();
+
+	if ( !mfil )
+		return NULL;
+
+	const char *mode;
+	if (flag)
+		mode = "wb";
+	else
+		mode = "rb";
+
+	FILE *fil = FOpen(tmpBuf, mode);
+
+	mfil->file_handle = fil;
+	if ( fil )
+	{
+		if ( !sub_412F98(mfil, flag) )
+			return mfil;
+
+		fclose(mfil->file_handle);
+	}
+	del_MFILE(mfil);
+
+	return NULL;
+}
+
+void close_mfile(MFILE *mfil)
+{
+	if ( mfil )
+	{
+		FClose(mfil->file_handle);
+		del_MFILE(mfil);
+	}
+}

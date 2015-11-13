@@ -36,6 +36,11 @@ key_value_stru gfx_keys[6] = {{"gfx.mode", KEY_TYPE_DIGIT, 0},
 
 NC_STACK_class *win3d_class_pointer;
 
+void sub_4231FC(void *dat)
+{
+    call_method(win3d_class_pointer, 206, dat);
+}
+
 
 int sub_422CE8(const char *display, const char *display2, void *a5)
 {

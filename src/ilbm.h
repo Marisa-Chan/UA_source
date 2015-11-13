@@ -42,11 +42,4 @@ struct __attribute__((packed)) VBMP_type
 	WORD pad1;
 };
 
-struct ilbm_func66_arg
-{
-	const char *filename;
-	MFILE *file;
-	int OpenedStream;
-};
-
 #endif // ILBM_H_INCLUDED

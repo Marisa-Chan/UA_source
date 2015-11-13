@@ -2822,7 +2822,7 @@ void  windd_func258__sub1(__NC_STACK_windd *wdd)
 
 void windd_func258__sub2(__NC_STACK_windd *wdd, int *x, int *y)
 {
-	POINT point; // [sp+0h] [bp-18h]@1
+	POINT point;
 	GetCursorPos(&point);
 
 	*x = (wdd->width * point.x) / GetSystemMetrics(SM_CXSCREEN);
