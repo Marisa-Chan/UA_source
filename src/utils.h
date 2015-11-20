@@ -41,6 +41,10 @@
 #define TAG_OLPL   MKTAG('O','L','P','L')
 #define TAG_AMSH   MKTAG('A','M','S','H')
 #define TAG_BASE   MKTAG('B','A','S','E')
+#define TAG_WAVE   MKTAG('W','A','V','E')
+#define TAG_RIFF   MKTAG('R','I','F','F')
+#define TAG_data   MKTAG('d','a','t','a')
+#define TAG_fmt    MKTAG('f','m','t',' ')
 
 void va_to_arr(stack_vals *out, int sz, va_list in);
 void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list in);
@@ -50,5 +54,19 @@ int read_yes_no_status(const char *file, int result);
 void sub_4BF181(DWORD sec);
 
 float SWAP32F(float f);
+
+struct __attribute__((packed)) shortPoint
+{
+	short x;
+	short y;
+
+	shortPoint(int a)
+	{
+	    x = a & 0xFFFF;
+	    y = a >> 16;
+	}
+
+	shortPoint(): x(0), y(0) {}
+};
 
 #endif // UTILS_H_INCLUDED

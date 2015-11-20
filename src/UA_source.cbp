@@ -46,6 +46,7 @@
 			<Add library="ddraw" />
 			<Add library="imm32" />
 			<Add library="msvcrt" />
+			<Add library="dinput" />
 		</Linker>
 		<Unit filename="MC.cpp" />
 		<Unit filename="MC.h" />
@@ -61,6 +62,8 @@
 		<Unit filename="base.h" />
 		<Unit filename="bitmap.cpp" />
 		<Unit filename="bitmap.h" />
+		<Unit filename="button.cpp" />
+		<Unit filename="button.h" />
 		<Unit filename="classes.cpp" />
 		<Unit filename="classes.h" />
 		<Unit filename="display.cpp" />
@@ -78,11 +81,17 @@
 		<Unit filename="glob_funcs.cpp" />
 		<Unit filename="glob_funcs.h" />
 		<Unit filename="global.h" />
+		<Unit filename="idev.cpp" />
+		<Unit filename="idev.h" />
 		<Unit filename="ilbm.cpp" />
 		<Unit filename="ilbm.h" />
 		<Unit filename="includes.h" />
 		<Unit filename="ini.cpp" />
 		<Unit filename="ini.h" />
+		<Unit filename="itimer.cpp" />
+		<Unit filename="itimer.h" />
+		<Unit filename="iwimp.cpp" />
+		<Unit filename="iwimp.h" />
 		<Unit filename="log.cpp" />
 		<Unit filename="log.h" />
 		<Unit filename="main.cpp" />
@@ -94,16 +103,24 @@
 		<Unit filename="raster.h" />
 		<Unit filename="rsrc.cpp" />
 		<Unit filename="rsrc.h" />
+		<Unit filename="sample.cpp" />
+		<Unit filename="sample.h" />
 		<Unit filename="skeleton.cpp" />
 		<Unit filename="skeleton.h" />
 		<Unit filename="sklt.cpp" />
 		<Unit filename="sklt.h" />
 		<Unit filename="utils.cpp" />
 		<Unit filename="utils.h" />
+		<Unit filename="wav.cpp" />
+		<Unit filename="wav.h" />
 		<Unit filename="win3d.cpp" />
 		<Unit filename="win3d.h" />
 		<Unit filename="windd.cpp" />
 		<Unit filename="windd.h" />
+		<Unit filename="winp.cpp" />
+		<Unit filename="winp.h" />
+		<Unit filename="wintimer.cpp" />
+		<Unit filename="wintimer.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

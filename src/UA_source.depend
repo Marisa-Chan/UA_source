@@ -9,7 +9,7 @@
 	"win3d.h"
 	"ilbm.h"
 
-1446027991 /home/marisa/work/openUA/UA_source/includes.h
+1447922243 /home/marisa/work/openUA/UA_source/includes.h
 	<windows.h>
 	<objbase.h>
 	<stdio.h>
@@ -44,7 +44,7 @@
 	"MFILE.h"
 	"utils.h"
 
-1447066533 source:/home/marisa/work/openUA/UA_source/MC.cpp
+1447749741 source:/home/marisa/work/openUA/UA_source/MC.cpp
 	"includes.h"
 	"MC.h"
 	"classes.h"
@@ -59,6 +59,17 @@
 	"skeleton.h"
 	"sklt.h"
 	"ade.h"
+	"area.h"
+	"amesh.h"
+	"sample.h"
+	"wav.h"
+	"base.h"
+	"button.h"
+	"itimer.h"
+	"wintimer.h"
+	"idev.h"
+	"iwimp.h"
+	"winp.h"
 	"embed.h"
 	"engine_gfx.h"
 	"engine_miles.h"
@@ -82,12 +93,12 @@
 
 1442981139 /home/marisa/work/openUA/UA_source/nucleas.h
 
-1444015558 source:/home/marisa/work/openUA/UA_source/log.cpp
+1447922900 source:/home/marisa/work/openUA/UA_source/log.cpp
 	<stdio.h>
 	<stdarg.h>
 	"log.h"
 
-1444015558 /home/marisa/work/openUA/UA_source/log.h
+1447922917 /home/marisa/work/openUA/UA_source/log.h
 
 1443165224 source:/home/marisa/work/openUA/UA_source/nucleas.cpp
 	"includes.h"
@@ -101,7 +112,7 @@
 
 1444015558 /home/marisa/work/openUA/UA_source/ini.h
 
-1447399322 /home/marisa/work/openUA/UA_source/utils.h
+1447934273 /home/marisa/work/openUA/UA_source/utils.h
 
 1447322912 source:/home/marisa/work/openUA/UA_source/utils.cpp
 	"includes.h"
@@ -406,7 +417,7 @@
 	"nucleas.h"
 	"nlist.h"
 
-1447397303 source:/home/marisa/work/openUA/UA_source/base.cpp
+1447399612 source:/home/marisa/work/openUA/UA_source/base.cpp
 	"includes.h"
 	"nucleas.h"
 	"bitmap.h"
@@ -487,7 +498,8 @@
 	"base.h"
 	"engine_gfx.h"
 
-1447234100 /home/marisa/work/openUA/UA_source/area.h
+1447399900 /home/marisa/work/openUA/UA_source/area.h
+	<inttypes.h>
 	"ade.h"
 	"bitmap.h"
 
@@ -505,6 +517,91 @@
 	"base.h"
 	"engine_gfx.h"
 
-1447311325 /home/marisa/work/openUA/UA_source/amesh.h
+1447399781 /home/marisa/work/openUA/UA_source/amesh.h
+	<inttypes.h>
 	"area.h"
+
+1447741873 source:/home/marisa/work/openUA/UA_source/wav.cpp
+	<inttypes.h>
+	"includes.h"
+	"nucleas.h"
+	"wav.h"
+	"utils.h"
+
+1447734411 /home/marisa/work/openUA/UA_source/wav.h
+	"sample.h"
+
+1447736762 /home/marisa/work/openUA/UA_source/sample.h
+	"rsrc.h"
+
+1447741725 source:/home/marisa/work/openUA/UA_source/sample.cpp
+	"includes.h"
+	"nucleas.h"
+	"sample.h"
+	"utils.h"
+
+1447745116 source:/home/marisa/work/openUA/UA_source/button.cpp
+	<inttypes.h>
+	"includes.h"
+	"nucleas.h"
+	"button.h"
+	"utils.h"
+
+1448016448 /home/marisa/work/openUA/UA_source/button.h
+	"nucleas.h"
+
+1447745507 source:/home/marisa/work/openUA/UA_source/itimer.cpp
+	<inttypes.h>
+	"includes.h"
+	"nucleas.h"
+	"itimer.h"
+	"utils.h"
+
+1447745488 /home/marisa/work/openUA/UA_source/itimer.h
+	"nucleas.h"
+
+1447746199 /home/marisa/work/openUA/UA_source/wintimer.h
+	"itimer.h"
+
+1447747000 source:/home/marisa/work/openUA/UA_source/idev.cpp
+	<inttypes.h>
+	"includes.h"
+	"nucleas.h"
+	"idev.h"
+	"utils.h"
+
+1447746941 /home/marisa/work/openUA/UA_source/idev.h
+	"nucleas.h"
+
+1447746906 source:/home/marisa/work/openUA/UA_source/wintimer.cpp
+	<inttypes.h>
+	<windows.h>
+	"includes.h"
+	"nucleas.h"
+	"wintimer.h"
+	"utils.h"
+
+1448003825 source:/home/marisa/work/openUA/UA_source/iwimp.cpp
+	<inttypes.h>
+	"includes.h"
+	"nucleas.h"
+	"iwimp.h"
+	"utils.h"
+
+1448015949 /home/marisa/work/openUA/UA_source/iwimp.h
+	"idev.h"
+	"button.h"
+	"utils.h"
+
+1448004115 source:/home/marisa/work/openUA/UA_source/winp.cpp
+	<inttypes.h>
+	"includes.h"
+	"nucleas.h"
+	"winp.h"
+	"utils.h"
+	"dinput.h"
+
+1448015571 /home/marisa/work/openUA/UA_source/winp.h
+	"iwimp.h"
+	"utils.h"
 

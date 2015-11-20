@@ -473,3 +473,96 @@ void log_d3d_fail(const char *title, const char *msg, unsigned int errID)
 	}
 	log_d3dlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, err);
 }
+
+
+
+
+
+
+
+void log_dinputlog(const char *format, ...)
+{
+	va_list va;
+	va_start(va, format);
+	FILE *f = fopen("env/dinplog.txt", "a");
+	if ( f )
+	{
+		vfprintf(f, format, va);
+		fclose(f);
+	}
+	va_end(va);
+}
+
+
+void log_dinput_error(const char *title, const char *msg, int msgid)
+{
+	switch ( msgid )
+	{
+	case 0x800700AA:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "Acquired");
+		break;
+	case 0x80070077:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "BadDriverVer");
+		break;
+	case 0x80040201:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "DeviceFull");
+		break;
+	case 0x80040154:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "DeviceNotReg");
+		break;
+	case 0x80040208:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "EffectPlaying");
+		break;
+	case 0x80040204:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "HasEffects");
+		break;
+	case 0x80004005:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "Generic");
+		break;
+	case 0x80070005:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "HandleExists or ReadOnly");
+		break;
+	case 0x8007001E:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "InputLost");
+		break;
+	case 0x80070057:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "InvalidParam");
+		break;
+	case 0x80040110:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "NoAggregation");
+		break;
+	case 0x8007000C:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "NotAcquired");
+		break;
+	case 0x80040205:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "NotExclusiveAcquired");
+		break;
+	case 0x80040202:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "MoreData");
+		break;
+	case 0x80004002:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "NoInterface");
+		break;
+	case 0x80040203:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "NotDownloaded");
+		break;
+	case 0x80040207:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "NotBuffered");
+		break;
+	case 0x80070015:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "NotInitialized");
+		break;
+	case 0x80070002:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "ObjectNotFound");
+		break;
+	case 0x8007000E:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "OutOfMemory");
+		break;
+	case 0x80004001:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "Unsupported");
+		break;
+	default:
+		log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "<unknown>");
+		break;
+	}
+}

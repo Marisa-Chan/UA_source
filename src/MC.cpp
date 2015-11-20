@@ -15,7 +15,18 @@
 #include "ade.h"
 #include "area.h"
 #include "amesh.h"
+#include "sample.h"
+#include "wav.h"
 #include "base.h"
+
+#include "button.h"
+
+#include "itimer.h"
+#include "wintimer.h"
+
+#include "idev.h"
+#include "iwimp.h"
+#include "winp.h"
 
 #include "embed.h"
 
@@ -51,8 +62,6 @@ void init_mc_res_class_engine_strings(MC_TYPE a1, const char *str)
 
 
 
-
-
 void add_to_classes_list(nnode *a1)
 {
 	AddTail(&classes_list, a1);
@@ -81,21 +90,21 @@ int set_classes_list()
 	add_to_classes_list(&amesh_class_off);
 ////	add_to_classes_list(&particle_class_off.nodeBase);
 	add_to_classes_list(&embed_class_off);
-////	add_to_classes_list(&idev_class_off.nodeBase);
+	add_to_classes_list(&idev_class_off);
 ////	add_to_classes_list(&input_class_off.nodeBase);
-////	add_to_classes_list(&itimer_class_off.nodeBase);
-////	add_to_classes_list(&iwimp_class_off.nodeBase);
-////	add_to_classes_list(&sample_class_off.nodeBase);
-////	add_to_classes_list(&wav_class_off.nodeBase);
+	add_to_classes_list(&itimer_class_off);
+	add_to_classes_list(&iwimp_class_off);
+	add_to_classes_list(&sample_class_off);
+	add_to_classes_list(&wav_class_off);
 	add_to_classes_list(&raster_class_off);
 	add_to_classes_list(&display_class_off);
-////	add_to_classes_list(&button_class_off.nodeBase);
+	add_to_classes_list(&button_class_off);
 ////	add_to_classes_list(&requester_class_off.nodeBase);
 ////	add_to_classes_list(&network_class_off.nodeBase);
 	add_to_classes_list(&windd_class_off);
 	add_to_classes_list(&win3d_class_off);
-////	add_to_classes_list(&winp_class_off.nodeBase);
-////	add_to_classes_list(&wintimer_class_off.nodeBase);
+	add_to_classes_list(&winp_class_off);
+	add_to_classes_list(&wintimer_class_off);
 ////	add_to_classes_list(&windp_class_off.nodeBase);
 	add_to_classes_list(&gfx_engine_off);
 	add_to_classes_list(&tform_engine_off);
