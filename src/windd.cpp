@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include "includes.h"
 #include "nucleas.h"
 #include "rsrc.h"
@@ -8,6 +9,7 @@
 #include "utils.h"
 
 #include <wingdi.h>
+#include "font.h"
 
 
 stored_functions *classvtbl_get_windd();
@@ -51,6 +53,8 @@ int txt16bit = 0;
 GUID *driver_guid;
 char *driver_descript;
 char *driver_name;
+
+wdd_font *font;
 
 int dword_514EFC = 0;
 
@@ -990,37 +994,37 @@ void sub_42D410(__NC_STACK_windd *obj, int a2, int a3)
 				switch ( a2 )
 				{
 				case 1:
-					cur = LoadCursor(obj->cursor, "Pointer");
+					cur = uaLoadCursor(obj->cursor, "Pointer");
 					break;
 				case 2:
-					cur = LoadCursor(obj->cursor, "Cancel");
+					cur = uaLoadCursor(obj->cursor, "Cancel");
 					break;
 				case 3:
-					cur = LoadCursor(obj->cursor, "Select");
+					cur = uaLoadCursor(obj->cursor, "Select");
 					break;
 				case 4:
-					cur = LoadCursor(obj->cursor, "Attack");
+					cur = uaLoadCursor(obj->cursor, "Attack");
 					break;
 				case 5:
-					cur = LoadCursor(obj->cursor, "Goto");
+					cur = uaLoadCursor(obj->cursor, "Goto");
 					break;
 				case 6:
-					cur = LoadCursor(obj->cursor, "Disk");
+					cur = uaLoadCursor(obj->cursor, "Disk");
 					break;
 				case 7:
-					cur = LoadCursor(obj->cursor, "New");
+					cur = uaLoadCursor(obj->cursor, "New");
 					break;
 				case 8:
-					cur = LoadCursor(obj->cursor, "Add");
+					cur = uaLoadCursor(obj->cursor, "Add");
 					break;
 				case 9:
-					cur = LoadCursor(obj->cursor, "Control");
+					cur = uaLoadCursor(obj->cursor, "Control");
 					break;
 				case 10:
-					cur = LoadCursor(obj->cursor, "Beam");
+					cur = uaLoadCursor(obj->cursor, "Beam");
 					break;
 				case 11:
-					cur = LoadCursor(obj->cursor, "Build");
+					cur = uaLoadCursor(obj->cursor, "Build");
 					break;
 				default:
 					break;
@@ -1360,8 +1364,8 @@ long int __stdcall sub_42A978(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
 int createWindow(__NC_STACK_windd *obj, HINSTANCE hInstance, int cmdShow, int width, int height)
 {
-	HICON big256 = LoadIconA(hInstance, "Big256");
-	HCURSOR hCursor = LoadCursorA(hInstance, "Pointer");
+	HICON big256 = uaLoadIcon(hInstance, "Big256");
+	HCURSOR hCursor = uaLoadCursor(hInstance, "Pointer");
 
 	if ( ghWnd )
 	{
@@ -2045,10 +2049,90 @@ int wdd_Create2DFullEnv(__NC_STACK_windd *obj, LPPALETTEENTRY pal, int width, in
 	return 1;
 }
 
-int windd_func0__sub2__sub4(IDirectDraw *a1, IDirectDrawSurface *a2, const char *a4)
+int load_font(const char *fontname)
 {
-	printf("MAKE ME %s\n","windd_func0__sub2__sub4");
+	if ( !font )
+		return 0;
+
+	char buf[128];
+
+	strcpy(buf, fontname);
+
+	const char *facename = strtok(buf, ",");
+	const char *s_height = strtok(0, ",");
+	const char *s_weight = strtok(0, ",");
+	const char *s_charset = strtok(0, ",");
+
+	int height, weight, charset;
+	if ( facename && s_height && s_weight && s_charset )
+	{
+		height = atoi(s_height);
+		weight = atoi(s_weight);
+		charset = atoi(s_charset);
+	}
+	else
+	{
+		height = 12;
+		charset = 0;
+		facename = "MS Sans Serif";
+		weight = 400;
+	}
+
+	if ( font )
+	{
+		if ( font->hFont )
+		{
+			DeleteObject(font->hFont);
+			font->hFont = 0;
+		}
+	}
+
+	font->height = height;
+
+	font->hFont = CreateFont(-height, 0, 0, 0, weight, 0, 0, 0, charset, 0, 0, 1, 0, facename);
+	if ( font->hFont )
+		return 1;
+
 	return 0;
+}
+
+void windd_func0__sub2__sub4__sub0()
+{
+	if ( font )
+	{
+		if ( font->hFont )
+		{
+			DeleteObject(font->hFont);
+			font->hFont = NULL;
+		}
+	}
+}
+
+int windd_func0__sub2__sub4(IDirectDraw *ddraw, IDirectDrawSurface *ddsurf, const char *fontname)
+{
+	font = (wdd_font *)AllocVec(sizeof(wdd_font), 0);
+
+	int v6 = 0;
+
+	if ( font )
+	{
+		font->ddraw = ddraw;
+		font->ddsurf = ddsurf;
+		if ( load_font(fontname) )
+			v6 = 1;
+	}
+
+	if ( !v6 )
+	{
+		if ( font )
+		{
+			windd_func0__sub2__sub4__sub0();
+			nc_FreeMem(font);
+			font = NULL;
+		}
+	}
+
+	return v6;
 }
 
 int windd_func0__sub2(__NC_STACK_windd *obj, BYTE *palette, int width, unsigned int height, int bits)
@@ -2282,7 +2366,16 @@ NC_STACK_windd * windd_func0(class_stru *obj, class_stru *zis, stack_vals *stak)
 
 void windd_func1__sub1__sub0()
 {
-	printf("MAKE ME %s\n","windd_func1__sub1__sub0");
+	if ( font )
+	{
+		if ( font->hFont )
+		{
+			DeleteObject(font->hFont);
+			font->hFont = NULL;
+		}
+		nc_FreeMem(font);
+		font = NULL;
+	}
 }
 
 void wdd_KillDDrawStuff(__NC_STACK_windd *windd)
@@ -2588,14 +2681,449 @@ void windd_func206(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
 		call_parent(zis, obj, 206, stak);
 }
 
-void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **, int, int)
+int dbcs_StartText()
 {
-	printf("MAKE ME %s\n","windd_func209__sub0");
+	if ( !font )
+		return 0;
+
+	font->ddsurf->Unlock(NULL);
+	if ( font->ddsurf->GetDC(&font->hDC) )
+		return 0;
+
+	SelectObject(font->hDC, font->hFont);
+	SetTextColor(font->hDC, 0xFFFFu);
+	font->TextColor = 0xFFFF;
+	SetBkMode(font->hDC, 1);
+
+	return 1;
 }
 
-void windd_func209(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+void dbcs_DrawText(const char *string, int p1, int p2, int p3, int p4, char flag)
 {
-	windd_func209__sub0(&obj->stack__windd, obj->stack__raster.tiles, stak->id, stak->value);
+	int newColor;
+
+	if ( font )
+	{
+		if ( flag & 0x20 )
+		{
+			newColor = (p3 << 16) | p1 | (p2 << 8);
+			if ( newColor != font->TextColor )
+			{
+				SetTextColor(font->hDC, newColor);
+				font->TextColor = newColor;
+			}
+		}
+		else
+		{
+			tagSIZE psizl;
+			psizl.cx = 0;
+			psizl.cy = 0;
+
+			if ( flag & 0xE )
+			{
+				GetTextExtentPoint32A(font->hDC, string, strlen(string), &psizl);
+			}
+
+			if ( flag & 8 )
+				p3 = psizl.cx * p3 / 100;
+
+			RECT rect;
+
+			rect.left = p1;
+			rect.right = p1 + p3 + 4;
+			rect.bottom = p2 + p4 + 1;
+			rect.top = p2;
+
+			if ( flag & 2 )
+			{
+				if ( flag & 8 )
+				{
+					p1 -= psizl.cx;
+					rect.left = p1;
+					rect.right = p1 + p3 + 4;
+				}
+				else
+				{
+					p1 += (p3 - psizl.cx);
+				}
+			}
+			else if ( flag & 4 )
+			{
+				if ( flag & 8 )
+				{
+					p1 -= psizl.cx / 2;
+					rect.left = p1;
+					rect.right = p1 + p3 + 4;
+				}
+				else
+				{
+					p1 += (p3 - psizl.cx) / 2;
+				}
+			}
+
+			int v10 = ((p4 - font->height) / 2) - 1 + p2;
+			if ( flag & 0x10 )
+			{
+				v10++;
+				p1++;
+			}
+
+			SetTextColor(font->hDC, 0);
+			ExtTextOut(font->hDC, p1 + 2, v10 + 1, 4, &rect, string, strlen(string), 0);
+			SetTextColor(font->hDC, font->TextColor);
+			ExtTextOut(font->hDC, p1 + 1, v10, 4, &rect, string, strlen(string), 0);
+		}
+	}
+}
+
+int dbcs_EndText(LPDDSURFACEDESC surfDesc)
+{
+	if ( !font )
+	{
+		log_d3dlog("dbcs_EndText(): no DBCS pointer (back ptr invalid!)\n");
+		return 0;
+	}
+	if ( !font->hDC )
+	{
+		log_d3dlog("dbcs_EndText(): no device context (back ptr invalid!)\n");
+		return 0;
+	}
+
+	font->ddsurf->ReleaseDC(font->hDC);
+	font->hDC = NULL;
+
+	memset(surfDesc, 0, sizeof(DDSURFACEDESC));
+	surfDesc->dwSize = sizeof(DDSURFACEDESC);
+
+	HRESULT err = font->ddsurf->Lock( NULL, surfDesc, DDLOCK_NOSYSLOCK | DDLOCK_WAIT, 0);
+	if ( err )
+		log_d3d_fail("dbcs_EndText()", "Lock on backsurface failed.", err);
+
+	return 1;
+}
+
+void dbcs_AddText(const char *string, int p1, int p2, int p3, int p4, int flag)
+{
+	int cnt = font->strings_count;
+	if ( cnt < 64 )
+	{
+		wdd_font_st1 *v8 = &font->field_18[cnt];
+		font->strings_count = cnt + 1;
+
+		v8->string = string;
+		v8->p1 = p1;
+		v8->p2 = p2;
+		v8->p3 = p3;
+		v8->p4 = p4;
+		v8->flag = flag;
+	}
+}
+
+int sb_0x4bf0a0(LPDDSURFACEDESC surf)
+{
+	if ( font->strings_count )
+	{
+		dbcs_StartText();
+		for ( int i = 0; i < font->strings_count; i++ )
+			dbcs_DrawText(font->field_18[i].string, font->field_18[i].p1, font->field_18[i].p2, font->field_18[i].p3, font->field_18[i].p4, font->field_18[i].flag);
+
+		font->strings_count = 0;
+		return dbcs_EndText(surf);
+	}
+	return 0;
+}
+
+void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdline, char **arr)
+{
+	printf("CLEAN ME %s\n","windd_func209__sub0");
+
+	int v11;
+
+	if ( wdd->surface_locked_surfaceData )
+	{
+		char *curpos = cmdline;
+		int pitch = wdd->surface_locked_pitch;
+		tiles_stru *tile = NULL;
+
+
+		int x_out = 0;
+		int y_out = 0;
+
+		int x_out_txt = 0;
+		int y_out_txt = 0;
+		int txt_flag = 0;
+
+		int y_pos_line = 0;
+		int x_pos_line = 0;
+
+
+
+		int rilHeight, rilWidth;
+
+		if ( wdd->field_50 & 8 )
+		{
+			rilHeight = wdd->height / 2;
+			rilWidth = wdd->width / 2;
+		}
+		else
+		{
+			rilHeight = wdd->height;
+			rilWidth = wdd->width;
+		}
+
+		int halfWidth = rilWidth / 2;
+		int halfHeight = rilHeight / 2;
+
+		int line_width = 0;
+		int line_height = 0;
+
+        //if v11 = 0 - clone first column of tile  (count = line_width)
+        //if v11 = 1 - normal copy of tile
+		v11 = 1;
+
+
+		int x_off = 0;
+		int y_off = 0;
+
+
+		char *positions[64];
+		int position_idx = 0;
+
+		positions[position_idx] = NULL;
+		position_idx++;
+
+		while ( 1 )
+		{
+			int v13 = fntcmd_get_u8(&curpos);
+
+			if ( v13 )
+			{
+				tile_xy *chrr = &tile->chars[v13];
+
+				int cpy_width, src_width;
+
+				if ( line_width )
+					cpy_width = line_width - x_off;
+				else
+					cpy_width = chrr->width - x_off;
+
+				int cpy_height = line_height - y_off;
+
+				if ( v11 )
+					src_width = tile->field_4->width - cpy_width;
+				else
+					src_width = tile->field_4->width;
+
+                BYTE *srcpixel = (BYTE *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
+					BYTE *dstpixel = (BYTE *)wdd->surface_locked_surfaceData + pitch * y_out + x_out;
+
+					for (int j = cpy_height; j > 0; j--)
+					{
+						for (int i = cpy_width; i > 0; i--)
+						{
+							if (*srcpixel)
+								*dstpixel = *srcpixel;
+
+							srcpixel += v11;
+							dstpixel++;
+						}
+
+						srcpixel += src_width;
+						dstpixel += (pitch - cpy_width);
+					}
+
+				line_width = 0;
+				x_off = 0;
+				x_out += cpy_width;
+				v11 = 1;
+			}
+			else // 0
+			{
+				int opcode = fntcmd_get_u8(&curpos);
+
+				switch ( opcode )
+				{
+				case 0: // End
+					position_idx--;
+
+					curpos = positions[position_idx];
+					if ( curpos )
+						break;
+
+					DDSURFACEDESC a1;
+					if ( sb_0x4bf0a0(&a1) )
+					{
+						wdd->surface_locked_surfaceData = a1.lpSurface;
+						wdd->surface_locked_pitch = a1.lPitch;
+					}
+					return;
+
+				case 1: // x pos from center
+					x_out = halfWidth + fntcmd_get_s16(&curpos);
+					x_pos_line = x_out;
+
+					y_pos_line = y_out;
+					y_off = 0;
+
+					line_height = tile->font_height;
+					break;
+
+				case 2: // y pos from center
+					y_out = halfHeight + fntcmd_get_s16(&curpos);
+					x_pos_line = x_out;
+
+					y_pos_line = y_out;
+					y_off = 0;
+
+					line_height = tile->font_height;
+					break;
+
+				case 3: //xpos
+					x_out = fntcmd_get_s16(&curpos);
+					if ( x_out < 0 )
+						x_out += pitch;
+
+					x_pos_line = x_out;
+					y_pos_line = y_out;
+
+					line_height = tile->font_height;
+					y_off = 0;
+					break;
+
+				case 4: //ypos
+					y_out = fntcmd_get_s16(&curpos);
+					if ( y_out < 0 )
+						y_out += rilHeight;
+
+					x_pos_line = x_out;
+					y_pos_line = y_out;
+
+					line_height = tile->font_height;
+					y_off = 0;
+					break;
+
+				case 5: //add to x pos
+					x_out += fntcmd_get_s16(&curpos);
+					break;
+
+				case 6: //add to y pos
+					y_out += fntcmd_get_s16(&curpos);
+					break;
+
+				case 7: //next line
+					y_out = (line_height - y_off) + y_pos_line;
+					y_pos_line = y_out;
+					x_out = x_pos_line;
+
+					y_off = 0;
+					line_height = tile->font_height;
+					break;
+
+				case 8: // Select tileset
+					tile = tiles[fntcmd_get_u8(&curpos)];
+					break;
+
+				case 9: // Include another cmdlist source
+				{
+					int azaza = fntcmd_get_u8(&curpos);
+					positions[position_idx] = curpos;
+					position_idx++;
+					curpos = arr[azaza];
+				}
+				break;
+
+				case 10:
+					line_width = fntcmd_get_u8(&curpos);
+
+					v11 = 0;
+					x_off = 0;
+
+					break;
+
+				case 11:
+
+					line_width = fntcmd_get_u8(&curpos);
+
+					v11 = 0;
+					x_off = 0;
+
+					line_width -= (x_out - x_pos_line);
+					break;
+
+				case 12: // Set x offset
+					x_off = fntcmd_get_u8(&curpos);
+					break;
+
+				case 13: // Set x width
+					line_width = fntcmd_get_u8(&curpos);
+					break;
+
+				case 14: // Set y offset
+					y_off = fntcmd_get_u8(&curpos);
+					break;
+
+				case 15: // Set y height
+					line_height = fntcmd_get_u8(&curpos);
+					break;
+
+				case 16: // Full reset tileset
+					tile = tiles[fntcmd_get_u8(&curpos)];
+					line_height = tile->font_height;
+					y_off = 0;
+					break;
+
+				case 17:
+					line_width = fntcmd_get_s16(&curpos);
+					v11 = 0;
+					x_off = 0;
+					line_width -= (x_out - x_pos_line);
+					break;
+
+				case 18: // Add text
+				{
+					int block_width = fntcmd_get_s16(&curpos);
+					int flag = txt_flag | fntcmd_get_u16(&curpos);
+
+					char *txtpos = (char *)curpos;
+
+					curpos += strlen(txtpos) + 1;
+					dbcs_AddText(txtpos, x_out_txt, y_out_txt, block_width, tile->font_height, flag);
+				}
+				break;
+
+				case 19: // Copy current x/y pos for text output
+					x_out_txt = x_out;
+					y_out_txt = y_out;
+					break;
+
+				case 20: // Add txtout flag
+					txt_flag |= fntcmd_get_u16(&curpos);
+					break;
+
+				case 21: // Delete txtout flag
+					txt_flag &= ~(fntcmd_get_u16(&curpos));
+					break;
+
+				case 22: // set color for font
+				{
+					int r = fntcmd_get_u16(&curpos);
+
+					int g = fntcmd_get_u16(&curpos);
+
+					int b = fntcmd_get_u16(&curpos);
+
+					dbcs_AddText(0, r, g, b, 0, 0x20);
+				}
+				break;
+				}
+			}
+		}
+	}
+}
+
+void windd_func209(NC_STACK_windd *obj, class_stru *zis, w3d_a209 *arg)
+{
+	windd_func209__sub0(&obj->stack__windd, obj->stack__raster.tiles, (char *)arg->field_0, (char **)arg->field_4);
 }
 
 void windd_func213(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
@@ -2998,7 +3526,7 @@ void sb_0x42d530(__NC_STACK_windd *wdd, int a2)
 		while ( ShowCursor(1) < 0 )
 		{}
 
-		HCURSOR Pointer = LoadCursor(wdd->cursor, "Pointer");
+		HCURSOR Pointer = uaLoadCursor(wdd->cursor, "Pointer");
 
 		if ( Pointer )
 			SetCursor(Pointer);

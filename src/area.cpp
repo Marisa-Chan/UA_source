@@ -2,6 +2,7 @@
 #include "nucleas.h"
 #include "area.h"
 #include "utils.h"
+#include "engine_input.h"
 
 #include "raster.h"
 #include "display.h"

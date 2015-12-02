@@ -1,6 +1,7 @@
 #include <inttypes.h>
 #include "includes.h"
 #include "nucleas.h"
+#include "engine_input.h"
 #include "winp.h"
 #include "utils.h"
 
@@ -39,70 +40,70 @@ struct winp_loc
 	int field_3C;
 	int field_40;
 	winp_effects effects;
-	int field_128;
-	int field_12C;
-	int field_130;
-	int field_134;
-	int field_138;
-	int field_13C;
-	int field_140;
-	int field_144;
-	int field_148;
-	int field_14C;
-	int field_150;
-	int field_154;
-	int field_158;
-	int field_15C;
-	int field_160;
-	int field_164;
-	int field_168;
-	int field_16C;
-	int field_170;
-	int field_174;
-	int field_178;
-	int field_17C;
-	int field_180;
-	int field_184;
-	int field_188;
-	int field_18C;
-	int field_190;
-	int field_194;
-	int field_198;
-	int field_19C;
-	int field_1A0;
-	int field_1A4;
-	int field_1A8;
-	int field_1AC;
-	int field_1B0;
-	int field_1B4;
-	int field_1B8;
-	int field_1BC;
-	int field_1C0;
-	int field_1C4;
-	int field_1C8;
-	int field_1CC;
-	int field_1D0;
-	int field_1D4;
-	int field_1D8;
-	int field_1DC;
-	int field_1E0;
-	int field_1E4;
-	int field_1E8;
-	int field_1EC;
-	int field_1F0;
-	int field_1F4;
-	int field_1F8;
-	int field_1FC;
-	int field_200;
-	int field_204;
-	int field_208;
-	int field_20C;
-	int field_210;
-	int field_214;
-	int field_218;
-	int field_21C;
-	int field_220;
-	int field_224;
+//	int field_128;
+//	int field_12C;
+//	int field_130;
+//	int field_134;
+//	int field_138;
+//	int field_13C;
+//	int field_140;
+//	int field_144;
+//	int field_148;
+//	int field_14C;
+//	int field_150;
+//	int field_154;
+//	int field_158;
+//	int field_15C;
+//	int field_160;
+//	int field_164;
+//	int field_168;
+//	int field_16C;
+//	int field_170;
+//	int field_174;
+//	int field_178;
+//	int field_17C;
+//	int field_180;
+//	int field_184;
+//	int field_188;
+//	int field_18C;
+//	int field_190;
+//	int field_194;
+//	int field_198;
+//	int field_19C;
+//	int field_1A0;
+//	int field_1A4;
+//	int field_1A8;
+//	int field_1AC;
+//	int field_1B0;
+//	int field_1B4;
+//	int field_1B8;
+//	int field_1BC;
+//	int field_1C0;
+//	int field_1C4;
+//	int field_1C8;
+//	int field_1CC;
+//	int field_1D0;
+//	int field_1D4;
+//	int field_1D8;
+//	int field_1DC;
+//	int field_1E0;
+//	int field_1E4;
+//	int field_1E8;
+//	int field_1EC;
+//	int field_1F0;
+//	int field_1F4;
+//	int field_1F8;
+//	int field_1FC;
+//	int field_200;
+//	int field_204;
+//	int field_208;
+//	int field_20C;
+//	int field_210;
+//	int field_214;
+//	int field_218;
+//	int field_21C;
+//	int field_220;
+//	int field_224;
 };
 
 
@@ -127,7 +128,7 @@ winp__func67__internal winp_keys[129] = {{"nop", 1, 0xFF, 0},       {"esc", 1, V
 	{"numdiv", 1, VK_DIVIDE, 0},{"extra1", 1, VK_OEM_COMMA, 0},{"extra2", 1, VK_OEM_PERIOD, 0},{"extra3", 1, VK_OEM_MINUS, 0},{"extra4", 1, VK_OEM_102, 0},
 	{"extra5", 1, VK_OEM_1, 0}, {"extra6", 1, VK_OEM_PLUS, 0}, {"extra7", 1, VK_OEM_3, 0},     {"extra8", 1, VK_OEM_7, 0}, {"extra9", 1, VK_OEM_2, 0},
 	{"extra10", 1, VK_OEM_6, 0},{"extra11", 1, VK_OEM_5, 0},   {"extra12", 1, VK_OEM_4, 0},    {"extra13", 1, VK_OEM_8, 0},{"extra14", 1, VK_SCROLL, 0},
-	{"extra15", 1, VK_NUMLOCK, 0},{"extra16", 1, VK_F13, 0},      {"extra17", 1, VK_F14, 0},      {"extra18", 1, VK_F15, 0},  {"lmb", 1, VK_F18, 0},
+	{"extra15", 1, VK_NUMLOCK, 0},{"extra16", 1, VK_F13, 0},   {"extra17", 1, VK_F14, 0},      {"extra18", 1, VK_F15, 0},  {"lmb", 1, VK_F18, 0},
 	{"rmb", 1, VK_F19, 0},     {"mmb", 1, VK_F20, 0},          {"mousex", 2, VK_F21, 0},       {"mousey", 2, VK_F22, 0},   {"joyb0", 1, 0x86, 0},
 	{"joyb1", 1, 0x87, 0},     {"joyb2", 1, 0x88, 0},          {"joyb3", 1, 0x89, 0},          {"joyb4", 1, 0x8a, 0},      {"joyb5", 1, 0x8b, 0},
 	{"joyb6", 1, 0x8c, 0},     {"joyb7", 1, 0x8d, 0},          {"joyx", 2, 0x8e, 0},           {"joyy", 2, 0x8f, 0},       {"joythrottle", 2, VK_NUMLOCK, 0},
@@ -1033,7 +1034,7 @@ class_return * class_set_winp(int, ...);
 stored_functions winp_class_vtbl(class_set_winp);
 
 
-class_stored winp_class_off (NULL, NULL, "MC2classes:winp.class", classvtbl_get_winp);
+class_stored winp_class_off (NULL, NULL, "MC2classes:drivers/input/winp.class", classvtbl_get_winp);
 
 
 stored_functions *classvtbl_get_winp()

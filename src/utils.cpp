@@ -70,12 +70,56 @@ int read_yes_no_status(const char *file, int result)
 
 void sub_4BF181(DWORD sec)
 {
-    Sleep(sec);
+	Sleep(sec);
 }
 
 float SWAP32F(float f)
 {
-    uint32_t tmp = *(uint32_t *)&f;
-    tmp = SWAP32(tmp);
-    return *(float *)&tmp;
+	uint32_t tmp = *(uint32_t *)&f;
+	tmp = SWAP32(tmp);
+	return *(float *)&tmp;
+}
+
+
+static HCURSOR cursorCache[11];
+static char    cursorNames[11][128];
+static int     cursor_num = 0;
+
+
+HCURSOR uaLoadCursor(HINSTANCE, const char *name)
+{
+	for(int i = 0; i < cursor_num; i++)
+	{
+		if (strcasecmp(name, cursorNames[i]) == 0)
+		{
+			return cursorCache[i];
+		}
+	}
+
+	char buf[256];
+	strcpy(buf, "res/");
+	strcat(buf, name);
+	strcat(buf, ".cur");
+
+	HCURSOR tmp = LoadCursorFromFile(buf);
+	if (!tmp)
+		return NULL;
+
+	if (cursor_num < 11)
+	{
+		cursorCache[cursor_num] = tmp;
+		strcpy(cursorNames[cursor_num], name);
+		cursor_num++;
+	}
+	return tmp;
+}
+
+HICON uaLoadIcon(HINSTANCE, const char *name)
+{
+	char buf[256];
+	strcpy(buf, "res/");
+	strcat(buf, name);
+	strcat(buf, ".ico");
+
+	return (HICON) LoadImage(NULL, buf, IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE | LR_SHARED);
 }

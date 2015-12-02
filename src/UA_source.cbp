@@ -78,6 +78,8 @@
 		<Unit filename="engine_miles.h" />
 		<Unit filename="engine_tform.cpp" />
 		<Unit filename="engine_tform.h" />
+		<Unit filename="font.cpp" />
+		<Unit filename="font.h" />
 		<Unit filename="glob_funcs.cpp" />
 		<Unit filename="glob_funcs.h" />
 		<Unit filename="global.h" />
@@ -88,6 +90,8 @@
 		<Unit filename="includes.h" />
 		<Unit filename="ini.cpp" />
 		<Unit filename="ini.h" />
+		<Unit filename="input.cpp" />
+		<Unit filename="input.h" />
 		<Unit filename="itimer.cpp" />
 		<Unit filename="itimer.h" />
 		<Unit filename="iwimp.cpp" />
@@ -121,6 +125,8 @@
 		<Unit filename="winp.h" />
 		<Unit filename="wintimer.cpp" />
 		<Unit filename="wintimer.h" />
+		<Unit filename="yw.cpp" />
+		<Unit filename="yw.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

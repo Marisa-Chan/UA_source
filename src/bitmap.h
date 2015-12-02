@@ -2,25 +2,11 @@
 #define BITMAP_H_INCLUDED
 
 #include "rsrc.h"
+#include "engine_gfx.h"
 
 extern class_stored bitmap_class_off;
 
 struct texStru;
-
-struct bitmap_intern
-{
-	void *buffer;
-	__int16 width;
-	__int16 height;
-	int pitch;
-	BYTE *pallete;
-	char flags;
-	char field_11;
-	__int16 field_12;
-	texStru *ddrawSurfTex;
-	int field_18;
-	int field_1C;
-};
 
 struct bitmap__opl
 {

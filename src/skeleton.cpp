@@ -1,5 +1,8 @@
 #include "includes.h"
 #include "nucleas.h"
+#include "utils.h"
+#include "engine_input.h"
+
 #include "rsrc.h"
 
 #include "bitmap.h"
@@ -10,7 +13,7 @@
 
 #include "skeleton.h"
 #include "base.h"
-#include "utils.h"
+
 
 #include "math.h"
 

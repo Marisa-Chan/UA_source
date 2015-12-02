@@ -2,6 +2,12 @@
 #include "MC.h"
 #include "classes.h"
 #include "nucleas.h"
+
+#include "engine_gfx.h"
+#include "engine_miles.h"
+#include "engine_tform.h"
+#include "engine_input.h"
+
 #include "rsrc.h"
 #include "bitmap.h"
 #include "ilbm.h"
@@ -27,13 +33,9 @@
 #include "idev.h"
 #include "iwimp.h"
 #include "winp.h"
+#include "input.h"
 
 #include "embed.h"
-
-#include "engine_gfx.h"
-#include "engine_miles.h"
-#include "engine_tform.h"
-#include "engine_input.h"
 
 const char MC2RES[] = "MC2RES\\";
 const char MC2CLASSES[] = "MC2classes:";
@@ -91,7 +93,7 @@ int set_classes_list()
 ////	add_to_classes_list(&particle_class_off.nodeBase);
 	add_to_classes_list(&embed_class_off);
 	add_to_classes_list(&idev_class_off);
-////	add_to_classes_list(&input_class_off.nodeBase);
+	add_to_classes_list(&input_class_off);
 	add_to_classes_list(&itimer_class_off);
 	add_to_classes_list(&iwimp_class_off);
 	add_to_classes_list(&sample_class_off);

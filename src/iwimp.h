@@ -26,17 +26,7 @@ struct iwimp_arg129
 {
 	nnode *node;
 	int field_4;
-	int field_8;
 };
 
-struct winp_131arg
-{
-	int flag;
-	__NC_STACK_button *selected_btn;
-	int selected_btnID;
-	shortPoint move[3];
-	shortPoint ldw_pos[3];
-	shortPoint lup_pos[3];
-};
 
 #endif // IWIMP_H_INCLUDED

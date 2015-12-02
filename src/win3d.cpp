@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include "includes.h"
 #include "nucleas.h"
 #include "rsrc.h"
@@ -8,6 +9,8 @@
 #include "win3d.h"
 #include "utils.h"
 #include "MS/d3dmacs.h"
+
+#include "font.h"
 
 extern IDirectDraw *ddraw;  //FROM windd.cpp
 extern IDirect3D2 *d3d2;    //FROM windd.cpp
@@ -1812,12 +1815,332 @@ void win3d_func206(NC_STACK_win3d *obj, class_stru *zis, polysDatSub *arg)
 		sb_0x43b518(wdd, w3d, arg, NULL, 0, 0);
 }
 
-size_t win3d_func209(void *, class_stru *, stack_vals *)
+void win3d_func209__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, tiles_stru **tiles, char *cmdline, char **arr)
 {
-	printf("MAKE ME %s\n","win3d_func209");
-	return 0;
+	//printf("CLEAN ME %s\n","win3d_func209__sub0");
+
+	int v11;
+
+
+	if ( wdd->surface_locked_surfaceData )
+	{
+		win3d_bigdata *bigdata = w3d->bigdata;
+		int bytesPerColor = bigdata->primary__pixelformat.BytesPerColor;
+		DWORD FFFF0000__color = w3d->bigdata->primary__pixelformat.FFFF0000__color;
+
+		char *curpos = cmdline;
+		int w_pixels = wdd->surface_locked_pitch / bytesPerColor;
+		tiles_stru *tile = NULL;
+
+
+		int x_out = 0;
+		int y_out = 0;
+
+		int x_out_txt = 0;
+		int y_out_txt = 0;
+		int txt_flag = 0;
+
+		int y_pos_line = 0;
+		int x_pos_line = 0;
+
+
+
+		int rilHeight, rilWidth;
+
+		if ( wdd->field_50 & 8 )
+		{
+			rilHeight = wdd->height / 2;
+			rilWidth = wdd->width / 2;
+		}
+		else
+		{
+			rilHeight = wdd->height;
+			rilWidth = wdd->width;
+		}
+
+		int halfWidth = rilWidth / 2;
+		int halfHeight = rilHeight / 2;
+
+		int line_width = 0;
+		int line_height = 0;
+
+        //if v11 = 0 - clone first column of tile  (count = line_width)
+        //if v11 = 1 - normal copy of tile
+		v11 = 1;
+
+
+		int x_off = 0;
+		int y_off = 0;
+
+
+		char *positions[64];
+		int position_idx = 0;
+
+		positions[position_idx] = NULL;
+		position_idx++;
+
+		while ( 1 )
+		{
+			int v13 = fntcmd_get_u8(&curpos);
+
+			if ( v13 )
+			{
+				tile_xy *chrr = &tile->chars[v13];
+
+				int cpy_width, src_width;
+
+				if ( line_width )
+					cpy_width = line_width - x_off;
+				else
+					cpy_width = chrr->width - x_off;
+
+				int cpy_height = line_height - y_off;
+
+				if ( v11 )
+					src_width = tile->field_4->width - cpy_width;
+				else
+					src_width = tile->field_4->width;
+
+				if (bytesPerColor == 2)
+				{
+
+					WORD *srcpixel = (WORD *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
+					WORD *dstpixel = (WORD *)wdd->surface_locked_surfaceData + w_pixels * y_out + x_out;
+
+					for (int j = cpy_height; j > 0; j--)
+					{
+						for (int i = cpy_width; i > 0; i--)
+						{
+							if (*srcpixel != FFFF0000__color)
+								*dstpixel = *srcpixel;
+
+							srcpixel += v11;
+							dstpixel++;
+						}
+
+						srcpixel += src_width;
+						dstpixel += (w_pixels - cpy_width);
+					}
+
+				}
+				else if (bytesPerColor == 4)
+                {
+                    DWORD *srcpixel = (DWORD *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
+					DWORD *dstpixel = (DWORD *)wdd->surface_locked_surfaceData + w_pixels * y_out + x_out;
+
+					for (int j = cpy_height; j > 0; j--)
+					{
+						for (int i = cpy_width; i > 0; i--)
+						{
+							if (*srcpixel != FFFF0000__color)
+								*dstpixel = *srcpixel;
+
+							srcpixel += v11;
+							dstpixel++;
+						}
+
+						srcpixel += src_width;
+						dstpixel += (w_pixels - cpy_width);
+					}
+                }
+                else
+                {
+                    printf("win3d_func209__sub0, BytesPerPixel == %d\n", bytesPerColor);
+                }
+
+				line_width = 0;
+				x_off = 0;
+				x_out += cpy_width;
+				v11 = 1;
+			}
+			else // 0
+			{
+				int opcode = fntcmd_get_u8(&curpos);
+
+				switch ( opcode )
+				{
+				case 0: // End
+					position_idx--;
+
+					curpos = positions[position_idx];
+					if ( curpos )
+						break;
+
+					DDSURFACEDESC a1;
+					if ( sb_0x4bf0a0(&a1) )
+					{
+						wdd->surface_locked_surfaceData = a1.lpSurface;
+						wdd->surface_locked_pitch = a1.lPitch;
+					}
+					return;
+
+				case 1: // x pos from center
+					x_out = halfWidth + fntcmd_get_s16(&curpos);
+					x_pos_line = x_out;
+
+					y_pos_line = y_out;
+					y_off = 0;
+
+					line_height = tile->font_height;
+					break;
+
+				case 2: // y pos from center
+					y_out = halfHeight + fntcmd_get_s16(&curpos);
+					x_pos_line = x_out;
+
+					y_pos_line = y_out;
+					y_off = 0;
+
+					line_height = tile->font_height;
+					break;
+
+				case 3: //xpos
+					x_out = fntcmd_get_s16(&curpos);
+					if ( x_out < 0 )
+						x_out += w_pixels;
+
+					x_pos_line = x_out;
+					y_pos_line = y_out;
+
+					line_height = tile->font_height;
+					y_off = 0;
+					break;
+
+				case 4: //ypos
+					y_out = fntcmd_get_s16(&curpos);
+					if ( y_out < 0 )
+						y_out += rilHeight;
+
+					x_pos_line = x_out;
+					y_pos_line = y_out;
+
+					line_height = tile->font_height;
+					y_off = 0;
+					break;
+
+				case 5: //add to x pos
+					x_out += fntcmd_get_s16(&curpos);
+					break;
+
+				case 6: //add to y pos
+					y_out += fntcmd_get_s16(&curpos);
+					break;
+
+				case 7: //next line
+					y_out = (line_height - y_off) + y_pos_line;
+					y_pos_line = y_out;
+					x_out = x_pos_line;
+
+					y_off = 0;
+					line_height = tile->font_height;
+					break;
+
+				case 8: // Select tileset
+                    tile = tiles[fntcmd_get_u8(&curpos)];
+					break;
+
+				case 9: // Include another cmdlist source
+				{
+					int azaza = fntcmd_get_u8(&curpos);
+					positions[position_idx] = curpos;
+					position_idx++;
+					curpos = arr[azaza];
+				}
+				break;
+
+				case 10:
+					line_width = fntcmd_get_u8(&curpos);
+
+					v11 = 0;
+					x_off = 0;
+
+					break;
+
+				case 11:
+
+					line_width = fntcmd_get_u8(&curpos);
+
+					v11 = 0;
+					x_off = 0;
+
+					line_width -= (x_out - x_pos_line);
+					break;
+
+				case 12: // Set x offset
+					x_off = fntcmd_get_u8(&curpos);
+					break;
+
+				case 13: // Set x width
+					line_width = fntcmd_get_u8(&curpos);
+					break;
+
+				case 14: // Set y offset
+					y_off = fntcmd_get_u8(&curpos);
+					break;
+
+				case 15: // Set y height
+					line_height = fntcmd_get_u8(&curpos);
+					break;
+
+				case 16: // Full reset tileset
+					tile = tiles[fntcmd_get_u8(&curpos)];
+					line_height = tile->font_height;
+					y_off = 0;
+					break;
+
+				case 17:
+					line_width = fntcmd_get_s16(&curpos);
+					v11 = 0;
+					x_off = 0;
+					line_width -= (x_out - x_pos_line);
+					break;
+
+				case 18: // Add text
+				{
+					int block_width = fntcmd_get_s16(&curpos);
+					int flag = txt_flag | fntcmd_get_u16(&curpos);
+
+					char *txtpos = (char *)curpos;
+
+					curpos += strlen(txtpos) + 1;
+					dbcs_AddText(txtpos, x_out_txt, y_out_txt, block_width, tile->font_height, flag);
+				}
+				break;
+
+				case 19: // Copy current x/y pos for text output
+					x_out_txt = x_out;
+					y_out_txt = y_out;
+					break;
+
+				case 20: // Add txtout flag
+					txt_flag |= fntcmd_get_u16(&curpos);
+					break;
+
+				case 21: // Delete txtout flag
+					txt_flag &= ~(fntcmd_get_u16(&curpos));
+					break;
+
+				case 22: // set color for font
+				{
+					int r = fntcmd_get_u16(&curpos);
+
+					int g = fntcmd_get_u16(&curpos);
+
+					int b = fntcmd_get_u16(&curpos);
+
+					dbcs_AddText(0, r, g, b, 0, 0x20);
+				}
+				break;
+				}
+			}
+		}
+	}
 }
 
+void win3d_func209(NC_STACK_win3d *obj, class_stru *zis, w3d_a209 *arg)
+{
+	win3d_func209__sub0(&obj->stack__windd, &obj->stack__win3d, obj->stack__raster.tiles, arg->field_0, arg->field_4);
+}
 
 void win3d_func213__sub0__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
 {

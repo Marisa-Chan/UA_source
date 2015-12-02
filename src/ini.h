@@ -17,6 +17,11 @@ union valP
 	    pval = (void *)str;
 	}
 
+	valP(void *str)
+	{
+	    pval = str;
+	}
+
 	valP(int d)
 	{
 	    val = d;

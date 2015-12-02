@@ -1,6 +1,8 @@
 #ifndef RASTER_H_INCLUDED
 #define RASTER_H_INCLUDED
 
+#include "engine_gfx.h"
+
 extern class_stored raster_class_off;
 
 struct xyxyNNN
@@ -10,23 +12,6 @@ struct xyxyNNN
   int x2;
   int y2;
   int NNN;
-};
-
-struct tile_xy
-{
-  int chr;
-  int width;
-};
-
-struct tiles_stru
-{
-  void *font_image; //FFFFFIX ME
-  int field_4;
-  int field_8;
-  tile_xy *chars;
-  int font_height;
-  int field_12;
-  int field_14;
 };
 
 struct ua_dRect
@@ -122,91 +107,7 @@ struct __NC_STACK_raster
 //  int field_140;
 //  int field_144;
 //  int field_148;
-	tiles_stru *tiles[172];
-//  int field_3fc;
-//  int field_400;
-//  int field_404;
-//  int field_408;
-//  int field_40c;
-//  int field_410;
-//  int field_414;
-//  int field_418;
-//  int field_41c;
-//  int field_420;
-//  int field_424;
-//  int field_428;
-//  int field_42c;
-//  int field_430;
-//  int field_434;
-//  int field_438;
-//  int field_43c;
-//  int field_440;
-//  int field_444;
-//  int field_448;
-//  int field_44c;
-//  int field_450;
-//  int field_454;
-//  int field_458;
-//  int field_45c;
-//  int field_460;
-//  int field_464;
-//  int field_468;
-//  int field_46c;
-//  int field_470;
-//  int field_474;
-//  int field_478;
-//  int field_47c;
-//  int field_480;
-//  int field_484;
-//  int field_488;
-//  int field_48c;
-//  int field_490;
-//  int field_494;
-//  int field_498;
-//  int field_49c;
-//  int field_4a0;
-//  int field_4a4;
-//  int field_4a8;
-//  int field_4ac;
-//  int field_4b0;
-//  int field_4b4;
-//  int field_4b8;
-//  int field_4bc;
-//  int field_4c0;
-//  int field_4c4;
-//  int field_4c8;
-//  int field_4cc;
-//  int field_4d0;
-//  int field_4d4;
-//  int field_4d8;
-//  int field_4dc;
-//  int field_4e0;
-//  int field_4e4;
-//  int field_4e8;
-//  int field_4ec;
-//  int field_4f0;
-//  int field_4f4;
-//  int field_4f8;
-//  int field_4fc;
-//  int field_500;
-//  int field_504;
-//  int field_508;
-//  int field_50c;
-//  int field_510;
-//  int field_514;
-//  int field_518;
-//  int field_51c;
-//  int field_520;
-//  int field_524;
-//  int field_528;
-//  int field_52c;
-//  int field_530;
-//  int field_534;
-//  int field_538;
-//  int field_53c;
-//  int field_540;
-//  int field_544;
-//  int field_548;
+	tiles_stru *tiles[256];
 	int field_54c;
 	int field_550;
 	float field_554;

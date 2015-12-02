@@ -195,4 +195,10 @@ extern windd_params dd_params;
 
 void sub_42A640(__NC_STACK_windd *obj);
 
+int dbcs_StartText();
+void dbcs_DrawText(const char *string, int p1, int p2, int p3, int p4, char flag);
+int dbcs_EndText(LPDDSURFACEDESC surfDesc);
+void dbcs_AddText(const char *string, int p1, int p2, int p3, int p4, int flag);
+int sb_0x4bf0a0(LPDDSURFACEDESC surf);
+
 #endif // RASTER_H_INCLUDED

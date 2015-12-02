@@ -60,7 +60,7 @@ struct wind3d_pixelformat
 {
 	int BytesPerColor;
 	int color_mode;
-	int FFFF0000__color;
+	DWORD FFFF0000__color;
 	int dwRBitMask;
 	int dwRShift;
 	int dwGBitMask;

@@ -1,6 +1,7 @@
 #include <inttypes.h>
 #include "includes.h"
 #include "nucleas.h"
+#include "engine_input.h"
 #include "iwimp.h"
 #include "utils.h"
 
@@ -111,7 +112,7 @@ void iwimp_func131(NC_STACK_iwimp *obj, class_stru *zis, winp_131arg *arg)
 	{
 		if ( arg->selected_btnID >= 0 &&
 				wimp->selected_btn == arg->selected_btn &&
-				arg->selected_btnID == wimp->selected_btnID )
+				wimp->selected_btnID == arg->selected_btnID )
 			arg->flag |= 0x20;
 	}
 
@@ -139,7 +140,7 @@ void iwimp_func131(NC_STACK_iwimp *obj, class_stru *zis, winp_131arg *arg)
 		if ( arg->selected_btn )
 		{
 			if ( arg->selected_btn == wimp->selected_btn &&
-					wimp->selected_btnID == arg->selected_btnID )
+					arg->selected_btnID == wimp->selected_btnID )
 				arg->flag |= 0x40;
 		}
 		wimp->selected_btnID = -1;

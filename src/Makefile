@@ -19,10 +19,12 @@ OBJS =  \
 	engine_input.cpp\
 	engine_miles.cpp\
 	engine_tform.cpp\
+	font.cpp\
 	glob_funcs.cpp\
 	idev.cpp\
 	ilbm.cpp\
 	ini.cpp\
+	input.cpp\
 	itimer.cpp\
 	iwimp.cpp\
 	log.cpp\
@@ -41,7 +43,8 @@ OBJS =  \
 	win3d.cpp\
 	windd.cpp\
 	winp.cpp\
-	wintimer.cpp
+	wintimer.cpp\
+	yw.cpp
 	
 WINOBJ = \
 	win_funct.cpp

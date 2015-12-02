@@ -38,7 +38,7 @@ NC_STACK_class *win3d_class_pointer;
 
 void sub_4231FC(void *dat)
 {
-    call_method(win3d_class_pointer, 206, dat);
+	call_method(win3d_class_pointer, 206, dat);
 }
 
 
@@ -206,4 +206,33 @@ void gfxEngine__getter(unsigned int a1, ...)
 		call_vtbl(win3d_class_pointer, 3, 0x80002000, &bitmap, 0);
 		tmp = *bitmap;
 	}
+}
+
+
+tiles_stru * sub_42324C(int id)
+{
+	rstr_207_arg arg207;
+
+	arg207.tiles = 0;
+	arg207.id = id;
+
+	call_method(win3d_class_pointer, 208, &arg207);
+	return arg207.tiles;
+}
+
+size_t sub_423288(w3d_a209 *arg)
+{
+	w3d_a209 arg209;
+	arg209 = *arg;
+	return call_method(win3d_class_pointer, 209, &arg209);
+}
+
+void gfx_set_tileset(tiles_stru *a1, int id)
+{
+	rstr_207_arg arg;
+
+	arg.tiles = a1;
+	arg.id = id;
+
+	call_method(win3d_class_pointer, 207, &arg);
 }

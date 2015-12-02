@@ -8,8 +8,17 @@
 #include "win3d.h"
 #include "ilbm.h"
 
+#include "font.h"
+#include "yw.h"
+
+#include "button.h"
+
+#include "engine_input.h"
 
 
+char tttast[50];
+NC_STACK_button *btn;
+NC_STACK_ilbm *disk_img;
 
 
 //// TEST FUNCS
@@ -39,7 +48,48 @@ NC_STACK_ilbm * loadDisk_screen(int  wdth)
 	return ilbm;
 }
 
-void draw_splashScreen( NC_STACK_ilbm *splashScreen)
+char * sub_4515D8(char *curpos, char *str, int width_space, char chr)
+{
+	if ( width_space > 0 )
+	{
+		fntcmd_copy_position(&curpos);
+
+		fntcmd_add_txt(&curpos, width_space, 1, str);
+	}
+	return curpos;
+}
+
+void splashScreen_OutTextTMP(NC_STACK_win3d *w3d, const char *txt, int x, int y)
+{
+	char cmdbuf[2048];
+	char txtbuf[256];
+
+	if ( txt )
+	{
+		char *v7 = (char *)cmdbuf;
+		fntcmd_select_tileset(&v7, 15);
+		fntcmd_set_center_xpos(&v7, x);
+		fntcmd_set_ypos(&v7, y);
+		fntcmd_set_txtColor(&v7, 255, 255, 255);
+
+		strcpy(txtbuf, txt);
+
+		v7 = sub_4515D8(v7, txtbuf, 640 - x, ' ');
+
+		fntcmd_next_line(&v7);
+
+		v7 = sub_4515D8(v7, txtbuf, 640 - x, ' ');
+
+		fntcmd_set_end(&v7);
+
+		w3d_a209 v16;
+		v16.field_0 = cmdbuf;
+		v16.field_4 = 0;
+		call_method(w3d, 209, &v16);
+	}
+}
+
+void draw_splashScreen( NC_STACK_ilbm *splashScreen, NC_STACK_button *btn)
 {
 	if ( splashScreen )
 	{
@@ -65,11 +115,8 @@ void draw_splashScreen( NC_STACK_ilbm *splashScreen)
 			call_method(win3d, 257);
 			call_method(win3d, 215);
 			call_method(win3d, 202, &a4);
-			call_method(win3d, 216);
-			call_method(win3d, 258);
-			call_method(win3d, 257);
-			call_method(win3d, 215);
-			call_method(win3d, 202, &a4);
+			splashScreen_OutTextTMP(win3d, "AZAZAZA", 640 / 7, 480 / 5);
+			call_method(btn, 70);
 			call_method(win3d, 216);
 			call_method(win3d, 258);
 		}
@@ -82,6 +129,17 @@ void draw_splashScreen( NC_STACK_ilbm *splashScreen)
 
 int sb_0x411324()
 {
+	struC5 sttt;
+	memset(&sttt, 0, sizeof(struC5));
+
+	sub_412D28(&sttt);
+	size_t tmp = call_method(btn, 69, &sttt);
+
+	draw_splashScreen(disk_img, btn);
+
+	if (tmp & 0xFFFF)
+		printf("%x\n", tmp);
+
 	return 0;
 }
 
@@ -235,7 +293,7 @@ int WinMain__sub0()
 
 
 //// TEST PLACE
-    init_mc_res_class_engine_strings(MC_TYPE_RES, "rsrc:");
+	init_mc_res_class_engine_strings(MC_TYPE_RES, "rsrc:");
 	set_prefix_replacement("rsrc", "mc2res");
 	set_prefix_replacement("data", "Data");
 	set_prefix_replacement("save", "Save");
@@ -244,12 +302,49 @@ int WinMain__sub0()
 	set_prefix_replacement("levels", "Levels");
 	set_prefix_replacement("mbpix", "levels:mbpix");
 
-	NC_STACK_ilbm *disk_img = loadDisk_screen(640);
-	if (disk_img)
-	{
-		draw_splashScreen(disk_img);
-		delete_class_obj(disk_img);
-	}
+	disk_img = loadDisk_screen(640);
+
+	set_prefix_replacement("rsrc", "data:set46");
+	_NC_STACK_ypaworld yw;
+	yw.screen_width = 640;
+	yw.screen_height = 480;
+	load_fonts_and_icons(&yw);
+
+	btn = (NC_STACK_button *)init_get_class("button.class", 0x80001003, 0, 0x80001004, 0, 0x80001005, yw.screen_width, 0x80001006, yw.screen_height, 0);
+
+	button_64_arg v250;
+	v250.tileset_down = 19;
+	v250.tileset_up = 18;
+	v250.button_type = 1;
+	v250.field_3A = 30;
+	v250.xpos = yw.screen_width * 0.3328125;
+	v250.ypos = yw.screen_height * 0.2291666666666666;
+	v250.width = yw.screen_width / 3;
+	v250.caption = "Single-Player";
+	v250.caption2 = 0;
+	v250.field_1C = 0;
+	v250.down_id = 1251; //downed
+	v250.pressed_id = 0;
+	v250.button_id = 1018; //tip
+	v250.up_id = 1024; //upped
+	v250.state = 112;
+	v250.txt_r = 180;
+	v250.txt_g = 221;
+	v250.txt_b = 221;
+	call_method(btn, 64, &v250);
+
+	v250.button_id = 1019; //tip
+
+	v250.ypos = yw.screen_height * 0.2291666666666666 + 50;
+	v250.caption = "Testing this great game";
+
+	call_method(btn, 64, &v250);
+
+	int v270 = 1;
+	call_method(btn, 68, &v270);
+
+	draw_splashScreen(disk_img, btn);
+
 	return 1;
 //// TEST PLACE
 

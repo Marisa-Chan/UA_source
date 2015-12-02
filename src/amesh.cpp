@@ -3,6 +3,7 @@
 #include "nucleas.h"
 #include "amesh.h"
 #include "utils.h"
+#include "engine_input.h"
 
 #include "raster.h"
 #include "display.h"

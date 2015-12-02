@@ -69,4 +69,7 @@ struct __attribute__((packed)) shortPoint
 	shortPoint(): x(0), y(0) {}
 };
 
+HCURSOR uaLoadCursor(HINSTANCE, const char *name);
+HICON uaLoadIcon(HINSTANCE, const char *name);
+
 #endif // UTILS_H_INCLUDED

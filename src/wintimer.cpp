@@ -12,7 +12,7 @@ class_return * class_set_wintimer(int, ...);
 stored_functions wintimer_class_vtbl(class_set_wintimer);
 
 
-class_stored wintimer_class_off (NULL, NULL, "MC2classes:wintimer.class", classvtbl_get_wintimer);
+class_stored wintimer_class_off (NULL, NULL, "MC2classes:drivers/input/wintimer.class", classvtbl_get_wintimer);
 
 
 stored_functions *classvtbl_get_wintimer()
