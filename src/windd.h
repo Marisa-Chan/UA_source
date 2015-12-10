@@ -54,13 +54,6 @@ struct windd_params
 	int field_AD04;
 };
 
-struct windd__window_params
-{
-	HWND hwnd;
-	int width;
-	int height;
-};
-
 struct mode_node : public nnode
 {
 	int sort_id;
@@ -200,5 +193,6 @@ void dbcs_DrawText(const char *string, int p1, int p2, int p3, int p4, char flag
 int dbcs_EndText(LPDDSURFACEDESC surfDesc);
 void dbcs_AddText(const char *string, int p1, int p2, int p3, int p4, int flag);
 int sb_0x4bf0a0(LPDDSURFACEDESC surf);
+int load_font(const char *fontname);
 
 #endif // RASTER_H_INCLUDED

@@ -13,6 +13,7 @@ OBJS =  \
 	base.cpp\
 	button.cpp\
 	classes.cpp\
+	def_parser.cpp\
 	display.cpp\
 	embed.cpp\
 	engine_gfx.cpp\
@@ -44,13 +45,15 @@ OBJS =  \
 	windd.cpp\
 	winp.cpp\
 	wintimer.cpp\
-	yw.cpp
+	yw.cpp\
+	yw_funcs.cpp\
+	yw_protos.cpp
 	
 WINOBJ = \
 	win_funct.cpp
 
 win32: $(OBJS)
-	$(CXX_WIN) -Wno-write-strings -O3 -Os -o $(TARGET).exe $(OBJS) $(LIBS_WIN) -m32 -I $(MINGW)/include/
+	$(CXX_WIN) -Wno-write-strings -O3 -Os -g -o $(TARGET).exe $(OBJS) $(LIBS_WIN) -m32 -I $(MINGW)/include/
 
 clean:
 	rm -f $(TARGET) $(TARGET_DINGOO) *.o

@@ -15,7 +15,8 @@
 #include "base.h"
 
 
-#include "math.h"
+#include <math.h>
+#include <float.h>
 
 
 stored_functions *classvtbl_get_skeleton();

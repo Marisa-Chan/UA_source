@@ -9,6 +9,8 @@
 #include "classes.h"
 #include "MFILE.h"
 
+#include "yw.h"
+
 #include "global.h"
 
 #include "log.h"

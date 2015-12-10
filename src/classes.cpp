@@ -46,7 +46,7 @@ size_t call_method(NC_STACK_class *a1, int a2, void *a3)
 	if ( a1 )
 		return a1->class_owner->clvtbl[a2].cl_func(a1, a1->class_owner->clvtbl[a2].p_cl, (stack_vals *)a3);
 
-	ypa_log_out("ERROR: Method invocation on NULL Object!\n");
+	ypa_log_out("ERROR: Method (%d) invocation on NULL Object!\n", a2);
 	return 0;
 }
 
@@ -55,7 +55,7 @@ size_t call_method(NC_STACK_class *a1, int a2)
 	if ( a1 )
 		return a1->class_owner->clvtbl[a2].cl_func(a1, a1->class_owner->clvtbl[a2].p_cl, NULL);
 
-	ypa_log_out("ERROR: Method invocation on NULL Object!\n");
+	ypa_log_out("ERROR: Method (%d) invocation on NULL Object!\n", a2);
 	return 0;
 }
 

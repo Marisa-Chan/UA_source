@@ -4,18 +4,12 @@
 #include "nucleas.h"
 #include "inttypes.h"
 #include "utils.h"
+#include "input.h"
 
 extern class_stored button_class_off;
 
 struct NC_STACK_button;
 
-struct button_str1
-{
-	int16_t xpos;
-	int16_t ypos;
-	int16_t width;
-	int16_t fnt_height;
-};
 
 struct button_str2_t2
 {
@@ -53,15 +47,8 @@ struct button_str2
 	uint8_t field_42E;
 };
 
-struct __NC_STACK_button : public nnode
+struct __NC_STACK_button : public inp_node
 {
-	int16_t btn_xpos;
-	int16_t btn_ypos;
-	int16_t btn_width;
-	int16_t btn_height;
-	int field_10;
-	int field_14;
-	button_str1 *field_18[48];
 	button_str2 *field_d8[48];
 	int16_t idd;
 	int16_t field_19A;

@@ -71,5 +71,7 @@ struct __attribute__((packed)) shortPoint
 
 HCURSOR uaLoadCursor(HINSTANCE, const char *name);
 HICON uaLoadIcon(HINSTANCE, const char *name);
+int read_reg_key(const CHAR *keyname, char *outBuf, int bufsize);
+const char *get_lang_string(char **array, int id, const char *def);
 
 #endif // UTILS_H_INCLUDED

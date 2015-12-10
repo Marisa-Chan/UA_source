@@ -66,6 +66,8 @@
 		<Unit filename="button.h" />
 		<Unit filename="classes.cpp" />
 		<Unit filename="classes.h" />
+		<Unit filename="def_parser.cpp" />
+		<Unit filename="def_parser.h" />
 		<Unit filename="display.cpp" />
 		<Unit filename="display.h" />
 		<Unit filename="embed.cpp" />
@@ -127,6 +129,9 @@
 		<Unit filename="wintimer.h" />
 		<Unit filename="yw.cpp" />
 		<Unit filename="yw.h" />
+		<Unit filename="yw_funcs.cpp" />
+		<Unit filename="yw_internal.h" />
+		<Unit filename="yw_protos.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

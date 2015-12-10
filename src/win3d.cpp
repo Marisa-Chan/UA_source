@@ -1817,7 +1817,7 @@ void win3d_func206(NC_STACK_win3d *obj, class_stru *zis, polysDatSub *arg)
 
 void win3d_func209__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, tiles_stru **tiles, char *cmdline, char **arr)
 {
-	//printf("CLEAN ME %s\n","win3d_func209__sub0");
+	////printf("CLEAN ME %s\n","win3d_func209__sub0");
 
 	int v11;
 

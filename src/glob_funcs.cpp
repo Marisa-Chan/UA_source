@@ -195,3 +195,220 @@ int FClose(FILE *a1)
 	engines.file_handles--;
 	return fclose(a1);
 }
+
+int _NTFindNextFileWithAttr(HANDLE hFindFile, DWORD attr, WIN32_FIND_DATA *data)
+{
+	while ( 1 )
+	{
+		if ( !data->dwFileAttributes )
+			data->dwFileAttributes = 128;
+
+		if ( attr & data->dwFileAttributes )
+			break;
+
+		if ( !FindNextFile(hFindFile, data) )
+			return 0;
+	}
+	return 1;
+}
+
+void _MakeDOSDT(const FILETIME *lpFileTime, LPWORD lpFatDate, LPWORD lpFatTime)
+{
+	FILETIME FileTime;
+
+	FileTimeToLocalFileTime(lpFileTime, &FileTime);
+	FileTimeToDosDateTime(&FileTime, lpFatDate, lpFatTime);
+}
+
+void _GetNTDirInfo(ncDir *dir, WIN32_FIND_DATA *data)
+{
+	_MakeDOSDT(&data->ftLastWriteTime, (LPWORD)&dir->field_18, (LPWORD)&dir->field_16);
+	dir->field_15 = data->dwFileAttributes;
+	dir->field_1A = data->nFileSizeLow;
+
+	strncpy(dir->cFileName, data->cFileName, 255);
+	dir->cFileName[255] = 0;
+}
+
+ncDir * _int_opendir(LPCSTR lpFileName, DWORD attr, ncDir *dir)
+{
+	WIN32_FIND_DATA v11;
+
+	HANDLE hndl = FindFirstFile(lpFileName, &v11);
+	if ( hndl == (HANDLE)-1 )
+	{
+		return 0;
+	}
+	if ( !_NTFindNextFileWithAttr(hndl, attr, &v11) )
+	{
+		return 0;
+	}
+	dir->hndl = hndl;
+	dir->attr = attr;
+
+	_GetNTDirInfo(dir, &v11);
+
+	dir->field_120 = 1;
+	return dir;
+}
+
+
+int is_directory(const char *a1)
+{
+	if ( !*a1 )
+		return 0;
+
+	while ( a1[1] )
+		a1++;
+
+	if ( *a1 == '\\' || *a1 == '/' || *a1 == '.' )
+		return 1;
+
+	return 0;
+}
+
+ncDir *_r_nc_opendir(const char *path, DWORD flags)
+{
+	char buf[260];
+
+	ncDir *dir = (ncDir *)AllocVec(sizeof(ncDir), 0);
+	dir->hndl = 0;
+	dir->field_15 = 0x10;
+
+	if ( is_directory(path) )
+	{
+		dir->field_15 = 0x10;
+	}
+	else if ( !_int_opendir(path, flags, dir) )
+	{
+		nc_FreeMem(dir);
+		return 0;
+	}
+
+	if ( dir->field_15 & 0x10 )
+	{
+		int v7 = 0;
+		while ( 1 )
+		{
+			char v8 = *path;
+			buf[v7] = *path;
+
+			if ( !v8 )
+				break;
+
+			char v10 = *path;
+			if ( v10 != '*' && v10 != '?' )
+			{
+				v7++;
+				path++;
+				if ( v7 >= 260 )
+					break;
+			}
+			else
+				return dir;
+		}
+
+		if ( v7 )
+		{
+			if ( buf[v7 - 1] != '\\' && buf[v7 - 1] != '/' )
+			{
+				v7++;
+				buf[v7 - 1] = '\\';
+			}
+		}
+		strcat(buf, "*.*");
+
+		if ( dir->hndl )
+			FindClose(dir->hndl);
+
+		if ( !_int_opendir(buf, flags, dir) )
+		{
+			nc_FreeMem(dir);
+			return 0;
+		}
+	}
+	return dir;
+}
+
+ncDir *nc_opendir(const char *a2)
+{
+	return _r_nc_opendir(a2, 0xFFFFFFF7);
+}
+
+
+ncDir *OpenDir(const char *dir)
+{
+	char v3[256];
+	char src[256];
+
+	file_path_copy_manipul(dir, src, 256);
+	correct_slashes_and_3_ext(src, v3, 256);
+	return nc_opendir(v3);
+}
+
+
+
+ncDir *_readdir(ncDir *dir)
+{
+	WIN32_FIND_DATA v6;
+
+	if ( dir )
+	{
+		if ( dir->field_120 )
+		{
+			dir->field_120 = 0;
+			return dir;
+		}
+
+		if ( !FindNextFile(dir->hndl, &v6) )
+			return NULL;
+
+		if ( !_NTFindNextFileWithAttr(dir->hndl, dir->attr, &v6) )
+			return NULL;
+
+		_GetNTDirInfo(dir, &v6);
+	}
+
+	return dir;
+}
+
+
+dirEntry *ReadDir(ncDir *_dir, dirEntry *dir_entry)
+{
+	memset(dir_entry, 0, sizeof(dirEntry));
+	ncDir *dir = _readdir(_dir);
+
+	if ( dir )
+	{
+		if ( dir->field_15 & 0x10 )
+			dir_entry->field_0 |= 1;
+		else
+			dir_entry->field_4 = dir->field_1A;
+
+		strcpy(dir_entry->e_name, dir->cFileName);
+		return dir_entry;
+	}
+
+	return NULL;
+}
+
+
+
+int __closedir(ncDir *dir)
+{
+	if ( dir && dir->field_120 <= 1 )
+	{
+		if ( FindClose(dir->hndl) )
+		{
+			dir->field_120 = 2;
+			nc_FreeMem(dir);
+		}
+	}
+
+	return 0;
+}
+
+void CloseDir(ncDir *dir)
+{
+  __closedir(dir);
+}

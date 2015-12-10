@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1449032671 source:/home/marisa/work/openUA/UA_source/main.cpp
+1449653975 source:/home/marisa/work/openUA/UA_source/main.cpp
 	"includes.h"
 	"engine_gfx.h"
 	"bitmap.h"
@@ -11,19 +11,21 @@
 	"font.h"
 	"yw.h"
 	"button.h"
+	"engine_gfx.h"
 	"engine_input.h"
 
-1447922243 /home/marisa/work/openUA/UA_source/includes.h
+1449728287 /home/marisa/work/openUA/UA_source/includes.h
 	<windows.h>
 	<objbase.h>
 	<stdio.h>
 	<stddef.h>
 	"classes.h"
 	"MFILE.h"
+	"yw.h"
 	"global.h"
 	"log.h"
 
-1444299982 /home/marisa/work/openUA/UA_source/global.h
+1449655729 /home/marisa/work/openUA/UA_source/global.h
 	"glob_funcs.h"
 
 1443087327 source:/home/marisa/work/openUA/UA_source/nlist.cpp
@@ -33,12 +35,12 @@
 
 1443087335 /home/marisa/work/openUA/UA_source/nlist.h
 
-1447219671 source:/home/marisa/work/openUA/UA_source/classes.cpp
+1449652750 source:/home/marisa/work/openUA/UA_source/classes.cpp
 	"includes.h"
 	"classes.h"
 	"utils.h"
 
-1446269048 source:/home/marisa/work/openUA/UA_source/glob_funcs.cpp
+1449732274 source:/home/marisa/work/openUA/UA_source/glob_funcs.cpp
 	"includes.h"
 
 1447044490 source:/home/marisa/work/openUA/UA_source/MFILE.cpp
@@ -48,7 +50,7 @@
 	"MFILE.h"
 	"utils.h"
 
-1448353945 source:/home/marisa/work/openUA/UA_source/MC.cpp
+1449137894 source:/home/marisa/work/openUA/UA_source/MC.cpp
 	"includes.h"
 	"MC.h"
 	"classes.h"
@@ -80,12 +82,13 @@
 	"winp.h"
 	"input.h"
 	"embed.h"
+	"yw.h"
 
 1447219657 /home/marisa/work/openUA/UA_source/classes.h
 	"nlist.h"
 	"MFILE.h"
 
-1446202072 /home/marisa/work/openUA/UA_source/glob_funcs.h
+1449732168 /home/marisa/work/openUA/UA_source/glob_funcs.h
 	"MFILE.h"
 	"MC.h"
 	"classes.h"
@@ -117,14 +120,14 @@
 
 1448351228 /home/marisa/work/openUA/UA_source/ini.h
 
-1449027403 /home/marisa/work/openUA/UA_source/utils.h
+1449727061 /home/marisa/work/openUA/UA_source/utils.h
 
-1449028159 source:/home/marisa/work/openUA/UA_source/utils.cpp
+1449727064 source:/home/marisa/work/openUA/UA_source/utils.cpp
 	"includes.h"
 	"utils.h"
 	"inttypes.h"
 
-1448957137 /home/marisa/work/openUA/UA_source/engine_gfx.h
+1449645991 /home/marisa/work/openUA/UA_source/engine_gfx.h
 	<inttypes.h>
 	<ddraw.h>
 
@@ -139,14 +142,13 @@
 
 1443075807 /home/marisa/work/openUA/UA_source/engine_miles.h
 
-1448448683 source:/home/marisa/work/openUA/UA_source/engine_input.cpp
+1449642169 source:/home/marisa/work/openUA/UA_source/engine_input.cpp
 	"includes.h"
 	"engine_input.h"
 	"input.h"
 
-1448448683 /home/marisa/work/openUA/UA_source/engine_input.h
+1449642144 /home/marisa/work/openUA/UA_source/engine_input.h
 	"utils.h"
-	"button.h"
 
 1448353656 source:/home/marisa/work/openUA/UA_source/engine_tform.cpp
 	"includes.h"
@@ -165,7 +167,7 @@
 	"rsrc.h"
 	"utils.h"
 
-1449030649 source:/home/marisa/work/openUA/UA_source/win3d.cpp
+1449548420 source:/home/marisa/work/openUA/UA_source/win3d.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -230,7 +232,7 @@
 1444277794 /home/marisa/work/openUA/UA_source/display.h
 	"raster.h"
 
-1448617263 /home/marisa/work/openUA/UA_source/windd.h
+1449645935 /home/marisa/work/openUA/UA_source/windd.h
 	<ddraw.h>
 	<d3d.h>
 
@@ -456,7 +458,7 @@
 1447053551 /home/marisa/work/openUA/UA_source/skeleton.h
 	"rsrc.h"
 
-1448276176 source:/home/marisa/work/openUA/UA_source/skeleton.cpp
+1449727932 source:/home/marisa/work/openUA/UA_source/skeleton.cpp
 	"includes.h"
 	"nucleas.h"
 	"utils.h"
@@ -469,9 +471,10 @@
 	"win3d.h"
 	"skeleton.h"
 	"base.h"
-	"math.h"
+	<math.h>
+	<float.h>
 
-1448276176 source:/home/marisa/work/openUA/UA_source/sklt.cpp
+1449727935 source:/home/marisa/work/openUA/UA_source/sklt.cpp
 	"includes.h"
 	"nucleas.h"
 	"utils.h"
@@ -571,10 +574,11 @@
 	"engine_input.h"
 	"font.h"
 
-1449032843 /home/marisa/work/openUA/UA_source/button.h
+1449641615 /home/marisa/work/openUA/UA_source/button.h
 	"nucleas.h"
 	"inttypes.h"
 	"utils.h"
+	"input.h"
 
 1447745507 source:/home/marisa/work/openUA/UA_source/itimer.cpp
 	<inttypes.h>
@@ -607,7 +611,7 @@
 	"wintimer.h"
 	"utils.h"
 
-1449030386 source:/home/marisa/work/openUA/UA_source/iwimp.cpp
+1449642185 source:/home/marisa/work/openUA/UA_source/iwimp.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -615,12 +619,12 @@
 	"iwimp.h"
 	"utils.h"
 
-1448354751 /home/marisa/work/openUA/UA_source/iwimp.h
+1449642079 /home/marisa/work/openUA/UA_source/iwimp.h
 	"idev.h"
-	"button.h"
+	"engine_input.h"
 	"utils.h"
 
-1449029587 source:/home/marisa/work/openUA/UA_source/winp.cpp
+1449646553 source:/home/marisa/work/openUA/UA_source/winp.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -629,7 +633,7 @@
 	"utils.h"
 	<dinput.h>
 
-1448015571 /home/marisa/work/openUA/UA_source/winp.h
+1449645913 /home/marisa/work/openUA/UA_source/winp.h
 	"iwimp.h"
 	"utils.h"
 
@@ -641,8 +645,9 @@
 	"engine_input.h"
 	"input.h"
 
-1448347545 /home/marisa/work/openUA/UA_source/input.h
+1449642065 /home/marisa/work/openUA/UA_source/input.h
 	"nucleas.h"
+	"nlist.h"
 	"wintimer.h"
 	"winp.h"
 
@@ -653,12 +658,128 @@
 1448874062 /home/marisa/work/openUA/UA_source/font.h
 	<inttypes.h>
 
-1448960691 source:/home/marisa/work/openUA/UA_source/yw.cpp
+1449722212 source:/home/marisa/work/openUA/UA_source/yw.cpp
+	<inttypes.h>
+	<string.h>
+	<math.h>
+	"includes.h"
+	"yw.h"
+	"def_parser.h"
+	"yw_internal.h"
+
+1449739021 /home/marisa/work/openUA/UA_source/yw.h
+	"engine_gfx.h"
+	"engine_input.h"
+	"bitmap.h"
+	"ilbm.h"
+	"raster.h"
+	"display.h"
+	"windd.h"
+	"win3d.h"
+	"base.h"
+	"sklt.h"
+
+1449740806 source:/home/marisa/work/openUA/UA_source/yw_funcs.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
+	"def_parser.h"
+	"yw.h"
+	"yw_internal.h"
+
+1449740805 source:/home/marisa/work/openUA/UA_source/def_parser.cpp
+	<stdio.h>
+	"includes.h"
+	"yw.h"
+	"def_parser.h"
+
+1449127883 /home/marisa/work/openUA/UA_source/def_parser.h
+
+1449737254 /home/marisa/work/openUA/UA_source/yw_internal.h
+
+1449737400 source:/home/marisa/work/openUA/UA_source/yw_protos.cpp
+	<inttypes.h>
+	<string.h>
+	"includes.h"
+	"def_parser.h"
+	"yw_internal.h"
 	"yw.h"
 
-1448960286 /home/marisa/work/openUA/UA_source/yw.h
-	"engine_gfx.h"
+1441443526 /usr/include/wine/msvcrt//stdio.h
+	<crtdefs.h>
+	<stdarg.h>
+	<pshpack8.h>
+	<poppack.h>
+
+1441443526 /usr/include/wine/msvcrt//crtdefs.h
+
+1441443526 /usr/include/wine/msvcrt//stddef.h
+	<crtdefs.h>
+
+1441443526 /usr/include/wine/msvcrt//dirent.h
+	<direct.h>
+
+1441443526 /usr/include/wine/msvcrt//direct.h
+	<crtdefs.h>
+	<pshpack8.h>
+	<poppack.h>
+
+1441443526 /usr/include/wine/msvcrt//math.h
+	<crtdefs.h>
+	<pshpack8.h>
+	<poppack.h>
+
+1441443526 /usr/include/wine/msvcrt//string.h
+	<crtdefs.h>
+
+1441443526 /usr/include/wine/msvcrt//stdlib.h
+	<crtdefs.h>
+	<pshpack8.h>
+	<poppack.h>
+
+1449727611 /home/marisa/work/openUA/UA_source/dirent.h
+
+1449727709 source:/home/marisa/work/openUA/UA_source/dirent.c
+	"dirent.h"
+	<errno.h>
+	<io.h>
+	<stdlib.h>
+	<string.h>
+
+1441443526 /usr/include/wine/msvcrt/stdio.h
+	<crtdefs.h>
+	<stdarg.h>
+	<pshpack8.h>
+	<poppack.h>
+
+1441443526 /usr/include/wine/msvcrt/crtdefs.h
+
+1441443526 /usr/include/wine/msvcrt/stddef.h
+	<crtdefs.h>
+
+1441443526 /usr/include/wine/msvcrt/errno.h
+	<crtdefs.h>
+
+1441443526 /usr/include/wine/msvcrt/io.h
+	<crtdefs.h>
+	<pshpack8.h>
+	<poppack.h>
+
+1441443526 /usr/include/wine/msvcrt/stdlib.h
+	<crtdefs.h>
+	<pshpack8.h>
+	<poppack.h>
+
+1441443526 /usr/include/wine/msvcrt/string.h
+	<crtdefs.h>
+
+1441443526 /usr/include/wine/msvcrt/math.h
+	<crtdefs.h>
+	<pshpack8.h>
+	<poppack.h>
+
+1441443526 /usr/include/wine/msvcrt/float.h
+	<crtdefs.h>
+
+1449728292 source:/home/marisa/work/openUA/UA_source/dirs.cpp
 

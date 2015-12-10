@@ -338,7 +338,7 @@ void sub_412D28(struC5 *a1)
 	call_method(input_class, 65, a1);
 }
 
-void sub_412D48(__NC_STACK_button *btn, int a2)
+void sub_412D48(inp_node *btn, int a2)
 {
 	input__func66__params arg66;
 	iwimp_arg129 iwimp129;
@@ -354,7 +354,7 @@ void sub_412D48(__NC_STACK_button *btn, int a2)
 	call_method(input_class, 66, &arg66);
 }
 
-void sub_412D9C(__NC_STACK_button *btn)
+void sub_412D9C(inp_node *btn)
 {
     input__func66__params arg66;
 	iwimp_arg129 iwimp129;

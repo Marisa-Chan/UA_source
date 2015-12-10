@@ -123,3 +123,33 @@ HICON uaLoadIcon(HINSTANCE, const char *name)
 
 	return (HICON) LoadImage(NULL, buf, IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE | LR_SHARED);
 }
+
+int read_reg_key(const CHAR *keyname, char *outBuf, int bufsize)
+{
+	char Data[260];
+
+	memset(outBuf, 0, bufsize);
+	int v5 = 0;
+	HKEY phkResult;
+
+	if ( !RegOpenKeyExA(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Microsoft Games\\Urban Assault\\1.0", 0, 1, &phkResult) )
+	{
+		DWORD cbData = 260;
+		DWORD Type;
+		if ( !RegQueryValueExA(phkResult, keyname, 0, &Type, (LPBYTE)Data, &cbData) && Type == 1 )
+		{
+			v5 = 1;
+			strncpy(outBuf, Data, bufsize - 1);
+		}
+		RegCloseKey(phkResult);
+	}
+	return v5;
+}
+
+const char *get_lang_string(char **array, int id, const char *def)
+{
+	const char *v4 = array[id];
+	if ( !v4 || !strcmp(v4, "<>") )
+		return def;
+	return v4;
+}

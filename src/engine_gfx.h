@@ -82,6 +82,13 @@ struct wdd_font
 	int TextColor;
 };
 
+struct windd__window_params
+{
+	HWND hwnd;
+	int width;
+	int height;
+};
+
 void gfx_set_tileset(tiles_stru *a1, int id);
 
 #endif // ENGINE_GFX_H_INCLUDED

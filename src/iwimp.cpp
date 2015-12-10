@@ -58,7 +58,7 @@ void iwimp_func130(NC_STACK_iwimp *obj, class_stru *zis, iwimp_arg129 *arg)
 
 void sub_41D538(__NC_STACK_iwimp *wimp, winp_131arg *arg, shortPoint *points)
 {
-	__NC_STACK_button *btn = (__NC_STACK_button *)wimp->list.head;
+	inp_node *btn = (inp_node *)wimp->list.head;
 
 	if ( btn->next )
 	{
@@ -71,7 +71,7 @@ void sub_41D538(__NC_STACK_iwimp *wimp, winp_131arg *arg, shortPoint *points)
 					points[1].y >= 0 && points[1].y < btn->btn_height )
 				break;
 
-			btn = (__NC_STACK_button *)btn->next;
+			btn = (inp_node *)btn->next;
 			if ( !btn->next )
 				return;
 		}

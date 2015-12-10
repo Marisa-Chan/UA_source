@@ -37,6 +37,8 @@
 
 #include "embed.h"
 
+#include "yw.h"
+
 const char MC2RES[] = "MC2RES\\";
 const char MC2CLASSES[] = "MC2classes:";
 const char MC2ENGINES[] = "MC2engines:";
@@ -112,7 +114,7 @@ int set_classes_list()
 	add_to_classes_list(&tform_engine_off);
 	add_to_classes_list(&input_engine_off);
 	add_to_classes_list(&miles_engine_off);
-////	add_to_classes_list(&ypaworld_class_off.nodeBase);
+	add_to_classes_list(&ypaworld_class_off);
 ////	add_to_classes_list(&ypabact_class_off.nodeBase);
 ////	add_to_classes_list(&ypatank_class_off.nodeBase);
 ////	add_to_classes_list(&yparobo_class_off.nodeBase);

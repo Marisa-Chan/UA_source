@@ -1215,12 +1215,12 @@ NC_STACK_winp * winp_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
 	{
 		__NC_STACK_winp *winp = &obj->stack__winp;
 		winp->field_4 = -1;
-		winp_s2000 *v8 = (winp_s2000 *)find_id_in_stack_def_val(0x80002000, 0, stak);
+		windd__window_params *v8 = (windd__window_params *)find_id_in_stack_def_val(0x80002000, 0, stak);
 		if ( v8 )
 		{
 			winp->hWND = v8->hwnd;
-			winp_max_y = v8->pos.y;
-			winp_max_x = v8->pos.x;
+			winp_max_y = v8->height;
+			winp_max_x = v8->width;
 			sub_43E59A(winp->hWND);
 		}
 	}
@@ -1242,14 +1242,14 @@ void winp_func2(NC_STACK_winp *obj, class_stru *zis, stack_vals *stak)
 {
 	__NC_STACK_winp *winp = &obj->stack__winp;
 
-	winp_s2000 *v7 = (winp_s2000 *)find_id_in_stack_def_val(0x80002000, 0, stak);
+	windd__window_params *v7 = (windd__window_params *)find_id_in_stack_def_val(0x80002000, 0, stak);
 	if ( v7 )
 	{
 		if ( winp->hWND )
 			sub_43E5CB(winp->hWND);
 		winp->hWND = v7->hwnd;
-		winp_max_x = v7->pos.x;
-		winp_max_y = v7->pos.y;
+		winp_max_x = v7->width;
+		winp_max_y = v7->height;
 
 		sub_43E59A(winp->hWND);
 	}

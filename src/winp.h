@@ -46,12 +46,6 @@ struct winp_68arg
 	DWORD id;
 };
 
-struct winp_s2000
-{
-	HWND hwnd;
-	POINT pos;
-};
-
 struct win_64arg
 {
 	int field_0;
@@ -61,12 +55,12 @@ struct win_64arg
 
 struct winp_71arg
 {
-  DWORD effID;
-  DWORD state;
-  float p1;
-  float p2;
-  float p3;
-  float p4;
+	DWORD effID;
+	DWORD state;
+	float p1;
+	float p2;
+	float p3;
+	float p4;
 };
 
 #endif // WINP_H_INCLUDED

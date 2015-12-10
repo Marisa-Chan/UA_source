@@ -235,19 +235,17 @@ int skeleton_read_pol2(NC_STACK_sklt *obj, MFILE *mfile, skeleton_64_stru *sklt)
 
 	pol_count = SWAP32(pol_count);
 
-	int v9 = (chunk->TAG_SIZE - 4) / 2;
-
 	skeleton_130_arg arg130;
 	arg130.skeleton = sklt;
 	arg130.pol_count = pol_count;
-	arg130.num_indexes = v9 - pol_count;
+	arg130.num_indexes = ((chunk->TAG_SIZE - 4) / 2) - pol_count;
 
 	if ( call_method(obj, 130, &arg130) )
 	{
 		pol_indixes *indixes = sklt->pol_entries[0];
 		mfread(mfile, sklt->pol_entries[0], chunk->TAG_SIZE - 4);
 
-		for (int i = 0; i < v9; i++)
+		for (int i = 0; i < pol_count; i++)
 		{
 			sklt->pol_entries[i] = indixes;
 

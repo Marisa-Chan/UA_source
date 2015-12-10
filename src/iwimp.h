@@ -2,7 +2,7 @@
 #define IWIMP_H_INCLUDED
 
 #include "idev.h"
-#include "button.h"
+#include "engine_input.h"
 #include "utils.h"
 
 extern class_stored iwimp_class_off;
@@ -13,7 +13,7 @@ struct __NC_STACK_iwimp
 {
 	int field_0;
 	nlist list;
-	__NC_STACK_button *selected_btn;
+	inp_node *selected_btn;
 	int selected_btnID;
 };
 
