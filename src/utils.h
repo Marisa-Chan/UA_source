@@ -45,6 +45,7 @@
 #define TAG_RIFF   MKTAG('R','I','F','F')
 #define TAG_data   MKTAG('d','a','t','a')
 #define TAG_fmt    MKTAG('f','m','t',' ')
+#define TAG_MC2    MKTAG('M','C','2',' ')
 
 void va_to_arr(stack_vals *out, int sz, va_list in);
 void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list in);

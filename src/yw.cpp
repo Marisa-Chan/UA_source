@@ -8,6 +8,8 @@
 
 #include "yw_internal.h"
 
+#include "button.h"
+
 
 
 stored_functions *classvtbl_get_ypaworld();
@@ -29,6 +31,8 @@ CLASSFUNC ypaworld_funcs[1024];
 polys *p_outPolys;
 polysDat *p_polysdata;
 polysDat *p_polysdata_end;
+
+char **ypaworld__string_pointers;
 
 
 int sub_4493B0(scrCallBack *arg)
@@ -197,7 +201,7 @@ int init_prototypes(_NC_STACK_ypaworld *yw)
 
 int yw_initAttrs(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stack_vals *stak)
 {
-	yw->field_7492 = 16;
+	yw->fxnumber = 16;
 	yw->field_1368 = find_id_in_stack_def_val(0x8000200E, 5, stak);
 	yw->field_15e4 = find_id_in_stack_def_val(0x80002007, 1400, stak);
 	yw->field_15e8 = find_id_in_stack_def_val(0x80002008, 600, stak);
@@ -237,187 +241,6 @@ int yw_InitSceneRecorder(_NC_STACK_ypaworld *yw)
 {
 	yw->sceneRecorder = sub_48025C();
 	return yw->sceneRecorder != 0;
-}
-
-int yw_InitTooltips(_NC_STACK_ypaworld *yw)
-{
-	const char **tips = (const char **)AllocVec(sizeof(char *) * 199, 65537);
-	yw->tooltips = tips;
-	if ( tips )
-	{
-		tips[0] = NULL;
-		tips[1] = "GIVE ORDERS TO SELECTED SQUADRON";
-		tips[2] = "SWITCH INTO DEFENSE GUNS";
-		tips[3] = "CREATE A NEW SQUADRON LEADER";
-		tips[4] = "ADD A DRONE TO SELECTED SQUADRON";
-		tips[5] = "TAKE OVER CONTROL OF A DRONE";
-		tips[6] = "CREATE A NEW BUILDING";
-		tips[7] = "BEAM TO SOME OTHER PLACE";
-		tips[8] = "OPEN/CLOSE THE MAP WINDOW";
-		tips[9] = "OPEN/CLOSE THE FINDER WINDOW";
-		tips[10] = "OPEN/CLOSE THE MESSAGE LOG WINDOW";
-		tips[11] = "OPEN/CLOSE THE ENERGY WINDOW";
-		tips[12] = "AGGR SETTING: ESCAPE NOW";
-		tips[13] = "AGGR SETTING: ATTACK PRIMARY TARGET ONLY";
-		tips[14] = "AGGR SETTING: SEARCH AND DESTROY NEARBY ENEMY DRONES";
-		tips[15] = "AGGR SETTING: ATTACK ALL ENEMY TARGETS ON YOUR WAY";
-		tips[16] = "AGGR SETTING: GO AMOK";
-		tips[17] = "SWITCH BACK INTO HOST STATION";
-		tips[18] = "SWITCH INTO COMMANDER OF SQUAD";
-		tips[19] = "SWITCH INTO NEXT UNIT OF SQUAD";
-		tips[20] = "SWITCH INTO NEXT SQUADRON COMMANDER";
-		tips[21] = "PAUSE OR CANCEL CURRENT MISSION";
-		tips[22] = "SHOW/HIDE SECTOR DETAIL LAYER";
-		tips[23] = "SHOW/HIDE SECTOR OWNER LAYER";
-		tips[24] = "SHOW/HIDE EXTENDED INFO LAYER";
-		tips[25] = "FREE MAP SCROLLING";
-		tips[26] = "MAP SCROLLING LOCKED ON CURRENT VIEWER";
-		tips[27] = "MAP SCROLLING LOCKED ON SELECTED SQUADRON";
-		tips[28] = "ZOOM OUT";
-		tips[29] = "ZOOM IN";
-		tips[30] = "TOGGLE MAP SIZE";
-		tips[31] = "SQUADRON ACTION: AWAITING ORDER";
-		tips[32] = "SQUADRON ACTION: FIGHT ENEMY";
-		tips[33] = "SQUADRON ACTION: ON THE WAY";
-		tips[34] = "SQUADRON ACTION: ESCAPING";
-		tips[35] = "ENERGY RELOAD LEVEL";
-		tips[36] = "MAIN SYSTEM BATTERY LEVEL";
-		tips[37] = "DRONE CREATION BATTERY LEVEL";
-		tips[38] = "BUILDING CREATION BATTERY LEVEL";
-		tips[39] = "BEAM TRANSPORTER BATTERY LEVEL";
-		tips[40] = "SELECT ANOTHER ACTION MODE";
-		tips[41] = "SELECT A DEFENSE GUN";
-		tips[42] = "SELECT A DRONE TYPE";
-		tips[43] = "SELECT A BUILDING TYPE";
-		tips[44] = "SHOW/HIDE HEAD UP DISPLAY";
-		tips[45] = "CONTROL TO LAST MESSAGE SENDER";
-		tips[46] = "NUMBER OF VEHICLES IN SELECTED SQUAD";
-		tips[47] = "SITUATION ANALYZER";
-		tips[48] = "ONLINE HELP";
-		tips[64] = "MAKE SQUADRON THE SELECTED ONE";
-		tips[65] = "ADVANCE TO THIS LOCATION";
-		tips[66] = "ATTACK THIS SECTOR";
-		tips[67] = "ATTACK THIS DRONE";
-		tips[68] = "CREATE A NEW SQUADRON LEADER";
-		tips[69] = "ADD A NEW DRONE TO SELECTED SQUAD";
-		tips[70] = "TAKE OVER HAND CONTROL OF THIS DRONE";
-		tips[71] = "CREATE A NEW BUILDING HERE";
-		tips[72] = "BEAM HOST STATION TO THIS LOCATION";
-		tips[73] = "EXIT DEBRIEFING";
-		tips[74] = "GOTO LOAD/SAVE SCREEN";
-		tips[75] = "SELECT 3D DEVICE";
-		tips[76] = "SEND THIS MESSAGE";
-		tips[77] = "USE ALTERNATE JOYSTICK MODEL";
-		tips[78] = "USE 16 BIT TEXTURES";
-		tips[79] = "USE DRAW PRIMITIVE D3D MODEL";
-		tips[80] = "880 == MOUSE CONTROL MODE ACTIVE (PRESS RMB TO DEACTIVATE)";
-		tips[81] = "881 == UNIT LIMIT REACHED";
-		tips[96] = "ERROR: NO VALID TARGET GIVEN!";
-		tips[97] = "ERROR: NOT ENOUGH ROOM HERE!";
-		tips[98] = "ERROR: CURRENTLY NOT ENOUGH ENERGY!";
-		tips[99] = "ERROR: SECTOR MUST BE CONQUERED!";
-		tips[100] = "ERROR: LOCATION TOO FAR AWAY!";
-		tips[101] = "ERROR: LOCATION TOO CLOSE TO HOST STATION!";
-		tips[102] = "ERROR: BUILDING CREATION SYSTEM BUSY!";
-		tips[103] = "ERROR: MUST BE NO DRONES IN TARGET SECTOR!";
-		tips[104] = "ERROR: TARGET LOCATION TOO JAGGY!";
-		tips[105] = "ERROR: LOCATION NOT IN SENSOR AREA!";
-		tips[106] = "GO TO LEVEL SELECTION MAP";
-		tips[107] = "GO TO TRAINING AREA";
-		tips[108] = "USE SELECTED LANGUAGE";
-		tips[109] = "CLOSE LOCALE REQUESTER";
-		tips[110] = "CHOOSE A NEW LEVEL";
-		tips[111] = "SEND MESSAGE MTO ALL PLAYERS";
-		tips[112] = "SELECT RESISTANCE AS RACE";
-		tips[113] = "SELECT GHORKOV AS RACE";
-		tips[114] = "SELECT MYKONIANS AS RACE";
-		tips[115] = "SELECT TAERKASTEN AS RACE";
-		tips[116] = "MARK GAME AS STARTABLE";
-		tips[117] = "MARK GAME AS NOT STARTBALE";
-		tips[118] = "LOAD SELECTED PLAYER";
-		tips[119] = "SAVE ACTUAL PLAYER";
-		tips[120] = "OPEN/CLOSE INPUTREQUESTER";
-		tips[121] = "OPEN/CLOSE VIDEOREQUESTER";
-		tips[122] = "OPEN/CLOSE SOUNDREQUESTER";
-		tips[123] = "OPEN/CLOSE IN-OUT-REQUESTER";
-		tips[124] = "OPEN/CLOSE LANGUAGEREQUESTER";
-		tips[125] = "PAUSE/CONTINUE MISSION BRIEFING";
-		tips[126] = "STOP MISSION BRIEFING";
-		tips[127] = "LOAD LAST SAVEGAME";
-		tips[128] = "WIND FORWARD MISSION BRIEFING";
-		tips[129] = "RESET MISSION BRIEFING";
-		tips[130] = "PLAY THE LEVEL";
-		tips[131] = "UHHHMMM... QUIT? YEAH RIGHT, DUDE, KILL IT!";
-		tips[132] = "PRESS FOR ADDITIONAL SELECTION";
-		tips[133] = "ENTER NEW KEY IF BUTTON IS PRESSED";
-		tips[134] = "YOU HEAR THE SOUND AT LEFT";
-		tips[135] = "YOU HEAR THE SOUND AT RIGHT";
-		tips[136] = "OPEN/CLOSE NETWORKREQUESTER";
-		tips[137] = "GIVE ME MORE INFORMATION";
-		tips[138] = "GO BACK TO START PAGE";
-		tips[139] = "GO BACK TO LEVELSELECTION";
-		tips[140] = "CLOSE NETWORK REQUESTER";
-		tips[141] = "???";
-		tips[142] = "APPLY THIS PROVIDER";
-		tips[143] = "APPLY THIS PLAYERNAME";
-		tips[144] = "CREATE GAME WITH THIS LEVEL";
-		tips[145] = "JOIN THIS SESSION";
-		tips[146] = "START GAME";
-		tips[147] = "GO BACK TO PROVIDER SELECTION";
-		tips[148] = "GO BACK TO ENTER A NEW NAME";
-		tips[149] = "GO BACK TO SESSION SELECTION";
-		tips[151] = "EXIT DEBRIEFING";
-		tips[152] = "REWIND DEBRIEFING";
-		tips[153] = "PLAYING TIME - THIS LEVEL";
-		tips[154] = "PLAYING TIME - OVERALL";
-		tips[155] = "KILLS - THIS LEVEL";
-		tips[156] = "KILLS - OVERALL";
-		tips[157] = "LOSSES - THIS LEVEL";
-		tips[158] = "LOSSES - OVERALL";
-		tips[159] = "SECTORS CONQUERED - THIS LEVEL";
-		tips[160] = "SECTORS CONQUERED - OVERALL";
-		tips[161] = "SCORE - THIS LEVEL";
-		tips[162] = "SCORE - OVERALL";
-		tips[163] = "POWERSTATIONS CAPTURED - THIS LEVEL";
-		tips[164] = "POWERSTATIONS CAPTURED - OVERALL";
-		tips[165] = "TECH UPGRADES CAPTURED - THIS LEVEL";
-		tips[166] = "TECH UPGRADES CAPTURED - OVERALL";
-		tips[167] = "SHOW STATISTICS FOR THIS RACE";
-		tips[168] = "DELETE SELECTED PLAYER";
-		tips[169] = "CREATE A NEW PLAYER";
-		tips[170] = "LOAD PLAYER WITH THIS NAME";
-		tips[171] = "SAVE ACTUAL PLAYER UNDER THIS NAME";
-		tips[172] = "DELETE PLAYER WITH THIS NAME";
-		tips[173] = "CREATE PLAYER WITH THIS NAME";
-		tips[174] = "CLOSE PLAYER REQUESTER";
-		tips[175] = "STOP LOADING PLAYER";
-		tips[176] = "STOP SAVING PLAYER";
-		tips[177] = "STOP DELETING PLAYER";
-		tips[178] = "STOP CREATING PLAYER";
-		tips[179] = "CLOSE SETTINGS REQUESTER";
-		tips[180] = "APPLY NEW SETTINGS";
-		tips[181] = "PRESS TO CHANGE SCREEN RESOLUTION";
-		tips[182] = "SWITCH FX-SOUND";
-		tips[183] = "TOGGLE CHANNEL ASSIGNMENT";
-		tips[184] = "CHANGE HORIZON DEPTH";
-		tips[185] = "SWITCH ON/OFF SKY";
-		tips[186] = "SWITCH ON/OFF FILTERING";
-		tips[187] = "ENABLE/DISABLE CD SOUND";
-		tips[188] = "USE SOFTWARE OR HARDWARE MOUSEPOINTER";
-		tips[189] = "ALLOW/FORBID ENEMYINDICATORS";
-		tips[190] = "CHANGE FX VOLUME";
-		tips[191] = "CHANGE CD VOLUME";
-		tips[192] = "CHANGE NUMBER OF EXPLODE EFFECTS";
-		tips[193] = "APPLY INPUT CHANGES";
-		tips[194] = "IGNORE INPUT CHANGES";
-		tips[195] = "RESET TO DEFAULT KEYS";
-		tips[196] = "USE JOYSTICK";
-		tips[197] = "USE FORCEFEEDBACK FOR JOSTICK";
-		tips[198] = "REMOVE KEY FROM ACTION";
-	}
-	else
-		return 0;
-	return 1;
 }
 
 NC_STACK_ypaworld *ypaworld_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
@@ -577,8 +400,49 @@ void ypaworld_func2(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
-void ypaworld_func3(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func3__sub0(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stack_vals *stak)
 {
+	stack_vals *stk = stak;
+
+	while ( 1 )
+	{
+		if (stk->id == 0)
+			break;
+		else if (stk->id == 2)
+		{
+			stk = (stack_vals *)stk->value;
+		}
+		else if ( stk->id == 3 )
+		{
+			stk += stk->value;
+			////a2++; ////BUGFIX?
+		}
+		else
+		{
+			switch ( stk->id )
+			{
+			default:
+				break;
+
+
+			case 0x80002018:
+				*(char ***)stk->value = yw->string_pointers;
+				break;
+
+
+			}
+			stk++;
+		}
+	}
+}
+
+void ypaworld_func3(NC_STACK_ypaworld *obj, class_stru *zis, stack_vals *stak)
+{
+	_NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+	ypaworld_func3__sub0(obj, yw, stak);
+
+	call_parent(zis, obj, 3, stak);
 }
 
 
@@ -697,8 +561,18 @@ void ypaworld_func153(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
-void ypaworld_func154(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+size_t ypaworld_func154(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 {
+	_NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+	yw->GameShell = usr;
+
+	usr->p_ypaworld = yw;
+	usr->field_46 = 1;
+
+	call_vtbl(obj, 3, 0x80002018, &ypaworld__string_pointers, 0);
+
+	return 1;
 }
 
 
@@ -707,8 +581,472 @@ void ypaworld_func155(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
-void ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+
+void sub_4E6FEC(_NC_STACK_ypaworld *yw)
 {
+	stru_LevelNet *lvlnet;
+
+	lvlnet = yw->LevelNet;
+	if ( lvlnet->ilbm_menu_map )
+	{
+		delete_class_obj(lvlnet->ilbm_menu_map);
+		lvlnet->ilbm_menu_map = NULL;
+	}
+	if ( lvlnet->ilbm_rollover_map )
+	{
+		delete_class_obj(lvlnet->ilbm_rollover_map);
+		lvlnet->ilbm_rollover_map = NULL;
+	}
+	if ( lvlnet->ilbm_finished_map )
+	{
+		delete_class_obj(lvlnet->ilbm_finished_map);
+		lvlnet->ilbm_finished_map = NULL;
+	}
+	if ( lvlnet->ilbm_enabled_map )
+	{
+		delete_class_obj(lvlnet->ilbm_enabled_map);
+		lvlnet->ilbm_enabled_map = NULL;
+	}
+	if ( lvlnet->ilbm_mask_map )
+	{
+		delete_class_obj(lvlnet->ilbm_mask_map);
+		lvlnet->ilbm_mask_map = NULL;
+	}
+}
+
+
+void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int a2)
+{
+	int v37 = 1;
+
+	if ( yw->LevelNet->bg_n )
+	{
+		char buf[256];
+		strcpy(buf, get_prefix_replacement("rsrc"));
+
+		set_prefix_replacement("rsrc", "levels:");
+
+		int v38 = 0;
+		int v39 = 65535;
+		for (int i = 0; i < yw->LevelNet->bg_n; i++)
+		{
+
+			int xx = (yw->LevelNet->background_map[i].size_x - yw->screen_width);
+			int yy = (yw->LevelNet->background_map[i].size_y - yw->screen_height);
+
+			int sq = sqrt(xx * xx + yy * yy);
+
+			if (sq < v39)
+			{
+				v38 = i;
+				v39 = sq;
+			}
+		}
+
+		char *menu_map = NULL;
+		char *rollover_map = NULL;
+		char *mask_map = NULL;
+		char *finished_map = NULL;
+		char *enabled_map = NULL;
+
+		NC_STACK_ilbm *ilbm_menu_map  = NULL;
+		NC_STACK_ilbm *ilbm_rollover_map = NULL;
+		NC_STACK_ilbm *ilbm_mask_map = NULL;
+		NC_STACK_ilbm *ilbm_finished_map = NULL;
+		NC_STACK_ilbm *ilbm_enabled_map = NULL;
+
+		switch ( a2 )
+		{
+		case 1:
+		case 2:
+		case 3:
+		case 6:
+		case 7:
+		case 8:
+		case 9:
+		case 10:
+			menu_map  = yw->LevelNet->menu_map[v38].map_name;
+			rollover_map = yw->LevelNet->settings_map[v38].map_name;
+			break;
+		case 4:
+			menu_map  = yw->LevelNet->tut_background_map[v38].map_name;
+			mask_map = yw->LevelNet->tut_mask_map[v38].map_name;
+			rollover_map = yw->LevelNet->tut_rollover_map[v38].map_name;
+			break;
+		case 5:
+			menu_map  = yw->LevelNet->background_map[v38].map_name;
+			rollover_map = yw->LevelNet->rollover_map[v38].map_name;
+			finished_map = yw->LevelNet->finished_map[v38].map_name;
+			mask_map = yw->LevelNet->mask_map[v38].map_name;
+			enabled_map = yw->LevelNet->enabled_map[v38].map_name;
+			break;
+		default:
+			break;
+		}
+
+		if ( menu_map )
+		{
+			ilbm_menu_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, menu_map, 0x80002008, 1, 0x80002009, 1, 0);
+			if ( !ilbm_menu_map )
+			{
+				ypa_log_out("world.ini: Could not load %s\n", menu_map);
+				v37 = 0;
+			}
+		}
+
+		if ( rollover_map )
+		{
+			ilbm_rollover_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, rollover_map, 0x80002008, 1, 0x80002009, 1, 0);
+			if ( !ilbm_rollover_map )
+			{
+				ypa_log_out("world.ini: Could not load %s\n", rollover_map);
+				v37 = 0;
+			}
+		}
+
+		if ( finished_map )
+		{
+			ilbm_finished_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, finished_map, 0x80002008, 1, 0x80002009, 1, 0);
+			if ( !ilbm_finished_map )
+			{
+				ypa_log_out("world.ini: Could not load %s\n", finished_map);
+				v37 = 0;
+			}
+		}
+
+		if ( enabled_map )
+		{
+			ilbm_enabled_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, enabled_map, 0x80002008, 1, 0x80002009, 1, 0);
+			if ( !ilbm_enabled_map )
+			{
+				ypa_log_out("world.ini: Could not load %s\n", enabled_map);
+				v37 = 0;
+			}
+		}
+		if ( mask_map )
+		{
+			ilbm_mask_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, mask_map, 0);
+			if ( !ilbm_mask_map )
+			{
+				ypa_log_out("world.ini: Could not load %s\n", mask_map);
+				v37 = 0;
+			}
+		}
+
+		set_prefix_replacement("rsrc", buf);
+
+		if ( !v37 )
+		{
+			if ( ilbm_menu_map )
+			{
+				delete_class_obj(ilbm_menu_map);
+				ilbm_menu_map = NULL;
+			}
+			if ( ilbm_rollover_map )
+			{
+				delete_class_obj(ilbm_rollover_map);
+				ilbm_rollover_map = NULL;
+			}
+			if ( ilbm_finished_map )
+			{
+				delete_class_obj(ilbm_finished_map);
+				ilbm_finished_map = NULL;
+			}
+			if ( ilbm_enabled_map )
+			{
+				delete_class_obj(ilbm_enabled_map);
+				ilbm_enabled_map = NULL;
+			}
+			if ( ilbm_mask_map )
+			{
+				delete_class_obj(ilbm_mask_map);
+				ilbm_mask_map = NULL;
+			}
+		}
+		sub_4E6FEC(yw);
+		yw->LevelNet->ilbm_menu_map = ilbm_menu_map;
+		yw->LevelNet->ilbm_mask_map = ilbm_mask_map;
+		yw->LevelNet->ilbm_rollover_map = ilbm_rollover_map;
+		yw->LevelNet->ilbm_finished_map = ilbm_finished_map;
+		yw->LevelNet->ilbm_enabled_map = ilbm_enabled_map;
+	}
+}
+
+void sb_0x4e75e8__sub0(_NC_STACK_ypaworld *yw)
+{
+	lvlnet_t1 regions[256];
+
+	if ( yw->LevelNet->ilbm_mask_map )
+	{
+		for (int i = 0; i < 256; i++)
+		{
+			regions[i].field_0 = 10000;
+			regions[i].field_4 = 10000;
+			regions[i].field_8 = -10000;
+			regions[i].field_C = -10000;
+		}
+
+		bitmap_intern *bitm;
+		call_vtbl(yw->LevelNet->ilbm_mask_map, 3, 0x80002000, &bitm, 0);
+
+		for (int y = 0; y < bitm->height; y++ )
+		{
+			uint8_t *ln = ((uint8_t *)bitm->buffer + y * bitm->pitch);
+
+			for (int x = 0; x < bitm->width; x++)
+			{
+
+				int v7 = ln[x];
+				if ( v7 < 256 )
+				{
+					lvlnet_t1 *v8 = &regions[v7];
+
+					if ( x < v8->field_0 )
+						v8->field_0 = x;
+
+					if ( x > v8->field_8 )
+						v8->field_8 = x;
+
+					if ( y < v8->field_4 )
+						v8->field_4 = y;
+
+					if ( y > v8->field_C )
+						v8->field_C = y;
+				}
+			}
+		}
+
+		for (int i = 0; i < 256; i++)
+		{
+			mapINFO *minf = &yw->LevelNet->mapInfos[i];
+
+			if ( minf->field_0 && minf->field_0 != 4 && regions[i].field_0 != 10000 )
+			{
+				minf->field_9C.x1 = 2.0 * ((float)(regions[i].field_0) / (float)bitm->width) + -1.0;
+				minf->field_9C.x2 = 2.0 * ((float)(regions[i].field_8) / (float)bitm->width) + -1.0;
+				minf->field_9C.y1 = 2.0 * ((float)(regions[i].field_4) / (float)bitm->height) + -1.0;
+				minf->field_9C.y2 = 2.0 * ((float)(regions[i].field_C) / (float)bitm->height) + -1.0;
+			}
+			else
+			{
+				minf->field_9C.x2 = 0;
+				minf->field_9C.y1 = 0;
+				minf->field_9C.y2 = 0;
+				minf->field_9C.x1 = 0;
+			}
+		}
+	}
+}
+
+void sb_0x4e75e8(_NC_STACK_ypaworld *yw, int a2)
+{
+	sb_0x4e75e8__sub1(yw, a2);
+	if ( a2 >= 4 && a2 <= 5 )
+	{
+		yw->field_81AB = 0;
+		yw->brief.field_2E68 = 0;
+		yw->LevelNet->field_BE38 = 0;
+
+		sb_0x4e75e8__sub0(yw);
+
+		yw->TOD_ID = loadTOD(yw, "tod.def");
+
+		int v6 = yw->TOD_ID + 1;
+
+		if ( (v6 + 2490) > 2510 )
+			v6 = 0;
+		writeTOD(yw, "tod.def", v6);
+	}
+}
+
+int ypaworld_func156__sub2(_NC_STACK_ypaworld *yw)
+{
+	NC_STACK_win3d *win3d;
+	gfxEngine__getter(0x8000300D, &win3d, 0);
+
+	int v5[4];
+	v5[0] = -(yw->screen_width >> 1);
+	v5[2] = yw->screen_width >> 1;
+	v5[1] = -(yw->screen_height >> 1);
+	v5[3] = yw->screen_height >> 1;
+
+	call_method(win3d, 211, v5);
+	sb_0x4e75e8(yw, yw->GameShell->field_46);
+	return 1;
+}
+
+size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
+{
+	_NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+	//_yw = usr->p_ypaworld;
+	if ( !yw->one_game_res )
+	{
+//    v247 = yw->shell_default_res;
+//    v248 = 0;
+//    call_method(yw, 174, &247);
+	}
+
+	if ( !yw_LoadSet(yw, 46) )
+	{
+		ypa_log_out("Unable to load set for shell\n");
+		return 0;
+	}
+
+
+
+
+
+	if ( !ypaworld_func156__sub2(yw) )
+	{
+		ypa_log_out("Could not init level select stuff!\n");
+		return 0;
+	}
+
+
+
+	usr->titel_button = (NC_STACK_button *)init_get_class("button.class", 0x80001003, 0, 0x80001004, 0, 0x80001005, yw->screen_width, 0x80001006, yw->screen_height, 0);
+	if ( !usr->titel_button )
+	{
+		ypa_log_out("Unable to create Titel-Button-Object\n");
+		return 0;
+	}
+
+	int v70 = 0;
+
+	button_64_arg btn_64arg;
+
+	btn_64arg.tileset_down = 19;
+	btn_64arg.tileset_up = 18;
+	btn_64arg.button_type = 1;
+	btn_64arg.field_3A = 30;
+	btn_64arg.xpos = yw->screen_width * 0.3328125;
+	btn_64arg.ypos = yw->screen_height * 0.2291666666666666;
+	btn_64arg.width = yw->screen_width / 3;
+	btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 80, "GAME");
+	btn_64arg.caption2 = 0;
+	btn_64arg.field_1C = 0;
+	btn_64arg.down_id = 1251;
+	btn_64arg.pressed_id = 0;
+	btn_64arg.button_id = 1018;
+	btn_64arg.up_id = 1024;
+	btn_64arg.state = 112;
+	btn_64arg.txt_r = yw->iniColors[68].r;
+	btn_64arg.txt_g = yw->iniColors[68].g;
+	btn_64arg.txt_b = yw->iniColors[68].b;
+
+	if ( call_method(usr->titel_button, 64, &btn_64arg) )
+	{
+		btn_64arg.ypos = yw->screen_height * 0.3083333333333334;
+		btn_64arg.field_1C = 0;
+		btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 81, "NETWORK");
+		btn_64arg.caption2 = 0;
+		btn_64arg.up_id = 1022;
+		btn_64arg.pressed_id = 0;
+		btn_64arg.down_id = 1251;
+		btn_64arg.button_id = 1016;
+
+		if ( call_method(usr->titel_button, 64, &btn_64arg) )
+		{
+			btn_64arg.xpos = yw->screen_width * 0.3328125;
+			btn_64arg.ypos = yw->screen_height * 0.4333333333333334;
+			btn_64arg.width = yw->screen_width / 3;
+			btn_64arg.field_1C = 0;
+			btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 83, "INPUT");
+			btn_64arg.caption2 = 0;
+			btn_64arg.pressed_id = 0;
+			btn_64arg.down_id = 1251;
+			btn_64arg.button_id = 1003;
+			btn_64arg.up_id = 1007;
+
+			if ( call_method(usr->titel_button, 64, &btn_64arg) )
+			{
+				btn_64arg.ypos = yw->screen_height * 0.5125;
+				btn_64arg.field_1C = 0;
+				btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 84, "SETTINGS");
+				btn_64arg.caption2 = 0;
+				btn_64arg.up_id = 1005;
+				btn_64arg.pressed_id = 0;
+				btn_64arg.down_id = 1251;
+				btn_64arg.button_id = 1004;
+
+				if ( call_method(usr->titel_button, 64, &btn_64arg) )
+				{
+					btn_64arg.ypos = yw->screen_height * 0.5916666666666667;
+					btn_64arg.field_1C = 0;
+					btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 85, "PLAYER");
+					btn_64arg.caption2 = 0;
+					btn_64arg.pressed_id = 0;
+					btn_64arg.down_id = 1251;
+					btn_64arg.up_id = 1001;
+					btn_64arg.button_id = 1001;
+
+					if ( call_method(usr->titel_button, 64, &btn_64arg) )
+					{
+						btn_64arg.xpos = yw->screen_width * 0.890625;
+						btn_64arg.ypos = yw->screen_height * 0.9583333333333334;
+						btn_64arg.width = yw->screen_width * 0.1;
+						btn_64arg.field_1C = 0;
+						btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 86, "LOCALE");
+						btn_64arg.caption2 = 0;
+						btn_64arg.up_id = 1011;
+						btn_64arg.pressed_id = 0;
+						btn_64arg.down_id = 1251;
+						btn_64arg.button_id = 1008;
+
+						if ( call_method(usr->titel_button, 64, &btn_64arg) )
+						{
+							btn_64arg.xpos = yw->screen_width * 0.3328125;
+							btn_64arg.ypos = yw->screen_height * 0.7166666666666667;
+							btn_64arg.width = yw->screen_width / 3;
+							btn_64arg.field_1C = 0;
+							btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 87, "HELP");
+							btn_64arg.caption2 = 0;
+							btn_64arg.pressed_id = 0;
+							btn_64arg.down_id = 1251;
+							btn_64arg.button_id = 1017;
+							btn_64arg.up_id = 1025;
+
+							if ( call_method(usr->titel_button, 64, &btn_64arg) )
+							{
+								btn_64arg.ypos = yw->screen_height * 0.7958333333333333;
+								btn_64arg.field_1C = 0;
+								btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 88, "QUIT");
+								btn_64arg.caption2 = 0;
+								btn_64arg.up_id = 1013;
+								btn_64arg.pressed_id = 0;
+								btn_64arg.down_id = 1251;
+								btn_64arg.button_id = 1007;
+
+								if ( call_method(usr->titel_button, 64, &btn_64arg) )
+									v70 = 1;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if ( !v70 )
+	{
+		ypa_log_out("Unable to add button to Titel\n");
+		return 0;
+	}
+
+	/*if ( usr->lang_dlls_count <= 1 )
+	{
+	  v240.butID = 1008;
+	  usr->titel_button->baseClass_nucleus.baseClass.class_owner->clvtbl[67].cl_func(
+	    usr->titel_button,
+	    usr->titel_button->baseClass_nucleus.baseClass.class_owner->clvtbl[67].p_cl,
+	    &v240);
+	}*/
+
+	int v250 = 1;
+	call_method(usr->titel_button, 68, &v250);
+
+
+	return 1;
 }
 
 
@@ -717,9 +1055,49 @@ void ypaworld_func157(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
+void ypaworld_func158__sub4(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *struc5)
+{
+	if ( usr->field_4A )
+	  sb_0x4e75e8(yw, usr->field_46);
+
+	if ( yw->GameShell->field_46 == 0 )
+	{
+		ypaworld_func158__sub4__sub0(yw, yw->LevelNet->ilbm_rollover_map);
+	}
+	else if ( yw->GameShell->field_46 == 1 )
+	{
+		ypaworld_func158__sub4__sub0(yw, yw->LevelNet->ilbm_menu_map);
+	}
+	else if ( yw->GameShell->field_46 >= 4 && yw->GameShell->field_46 <= 5 )
+	{
+		//ypaworld_func158__sub4__sub1(yw, usr, struc5);
+	}
+	else
+	{
+		ypaworld_func158__sub4__sub0(yw, yw->LevelNet->ilbm_rollover_map);
+	}
+}
+
+
 void ypaworld_func158(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 {
+	_NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
 	usr->field_0x2fbc = 0;
+
+	call_method(yw->win3d, 257);
+
+
+
+	ypaworld_func158__sub4(yw, usr, usr->field_3A);
+
+	call_method(yw->win3d, 215);
+
+	call_method(usr->titel_button, 69, usr->field_3A);
+	call_method(usr->titel_button, 70, 0);
+
+	call_method(yw->win3d, 216);
+
+	call_method(yw->win3d, 258);
 }
 
 

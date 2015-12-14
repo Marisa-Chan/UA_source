@@ -126,44 +126,44 @@ void draw_splashScreen( NC_STACK_ilbm *splashScreen, NC_STACK_button *btn)
 
 int sb_0x411324__sub0()
 {
-    printf("MAKE ME %s\n","sb_0x411324__sub0");
-    return 0;
+	printf("MAKE ME %s\n","sb_0x411324__sub0");
+	return 0;
 }
 
 int sb_0x411324__sub2()
 {
-    printf("MAKE ME %s\n","sb_0x411324__sub0");
-    return 0;
+	printf("MAKE ME %s\n","sb_0x411324__sub0");
+	return 0;
 }
 
 int sb_0x411324__sub1()
 {
-    userdata.field_42 = world_update_arg.field_0;
-    userdata.field_3E = world_update_arg.field_4;
-    userdata.field_3A = &input_states;
+	userdata.field_42 = world_update_arg.field_0;
+	userdata.field_3E = world_update_arg.field_4;
+	userdata.field_3A = &input_states;
 
-    call_method(ypaworld, 158, &userdata);
+	call_method(ypaworld, 158, &userdata);
 
-    if ( userdata.field_0x2fbc == 1 )
-        return 0;
-    else if ( userdata.field_0x2fbc == 2 )
-    {
+	if ( userdata.field_0x2fbc == 1 )
+		return 0;
+	else if ( userdata.field_0x2fbc == 2 )
+	{
 
-    }
-    else if ( userdata.field_0x2fbc == 3 )
-    {
+	}
+	else if ( userdata.field_0x2fbc == 3 )
+	{
 
-    }
-    else if ( userdata.field_0x2fbc == 4 )
-    {
+	}
+	else if ( userdata.field_0x2fbc == 4 )
+	{
 
-    }
-    else if ( userdata.field_0x2fbc == 5 )
-    {
+	}
+	else if ( userdata.field_0x2fbc == 5 )
+	{
 
-    }
+	}
 
-    return 1;
+	return 1;
 }
 
 
@@ -552,7 +552,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			WaitMessage();
 		}
 	}
-	while ( sb_0x411324() || true);
+	while ( sb_0x411324());
 
 	if ( ghWnd )
 		DestroyWindow(ghWnd);

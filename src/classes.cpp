@@ -355,6 +355,46 @@ NC_STACK_class * READ_OBJT(MFILE *mfile)
 	return obj;
 }
 
+NC_STACK_base *READ_BAS_FILE(const char *fname)
+{
+	NC_STACK_base *result = NULL;
+
+	MFILE *mfile = new_MFILE();
+	if ( !mfile )
+		return NULL;
+
+	FILE *fil = FOpen(fname, "rb");
+	mfile->file_handle = fil;
+	if ( !fil )
+	{
+		del_MFILE(mfile);
+		return NULL;
+	}
+
+	if ( sub_412F98(mfile, 0) )
+	{
+		FClose(mfile->file_handle);
+		del_MFILE(mfile);
+		return NULL;
+	}
+
+	if ( !read_next_IFF(mfile, 2) )
+	{
+		MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
+		if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_MC2 && !read_next_IFF(mfile, 2) )
+		{
+			chunk = GET_FORM_INFO_OR_NULL(mfile);
+			if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
+				result = (NC_STACK_base *)READ_OBJT(mfile);
+		}
+	}
+
+	FClose(fil);
+	del_MFILE(mfile);
+
+	return result;
+}
+
 int sub_4117F8(NC_STACK_class *obj, MFILE *mfile)
 {
 	if ( sub_412FC0(mfile, TAG_OBJT, TAG_FORM, -1) )

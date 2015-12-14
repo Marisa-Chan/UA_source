@@ -15,6 +15,8 @@
 extern class_stored ypaworld_class_off;
 
 struct NC_STACK_ypaworld;
+struct _NC_STACK_ypaworld;
+struct NC_STACK_button;
 
 struct vhclBases;
 struct cityBases;
@@ -33,10 +35,16 @@ struct UserData
 	int field_0x0;
 
 	int field_0x10;
+	char user_name[34];
 
+    _NC_STACK_ypaworld *p_ypaworld;
 	struC5 *field_3A;
 	int field_3E;
 	int field_42;
+	int field_46;
+	int field_4A;
+
+	NC_STACK_button *titel_button;
 
 	int field_0x2fbc;
 };
@@ -97,7 +105,7 @@ struct gateProto
 
 struct big_ypa_Brf
 {
-
+    int field_2E68;
 };
 
 struct supetItemProto
@@ -188,7 +196,7 @@ struct mapINFO
 	int field_14[2];
 	char mapPath[64];
 	char map_name[64];
-	float field_9C[4];
+	ua_fRect field_9C;
 	char robos_count;
 	char fractions_mask;
 	char secXsize;
@@ -218,11 +226,11 @@ struct stru_LevelNet
 	bkg_pct brief_map[4];
 	bkg_pct debrief_map[4];
 	mapINFO mapInfos[256];
-	NC_STACK_ilbm *field_BE24;
-	NC_STACK_ilbm *field_BE28;
-	NC_STACK_ilbm *field_BE2C;
-	NC_STACK_ilbm *field_BE30;
-	NC_STACK_ilbm *field_BE34;
+	NC_STACK_ilbm *ilbm_menu_map;
+	NC_STACK_ilbm *ilbm_mask_map;
+	NC_STACK_ilbm *ilbm_rollover_map;
+	NC_STACK_ilbm *ilbm_finished_map;
+	NC_STACK_ilbm *ilbm_enabled_map;
 	int field_BE38;
 };
 
@@ -249,6 +257,12 @@ struct yw_movies
 	char black_intro[256];
 };
 
+struct slurp
+{
+	NC_STACK_base *skeletons_bas;
+	skeleton_64_stru *skeleton_internal;
+};
+
 
 struct _NC_STACK_ypaworld
 {
@@ -261,7 +275,8 @@ struct _NC_STACK_ypaworld
 	int sectors_maxY2;
 	cellArea *cells;
 
-
+	int set_number;
+	NC_STACK_base *additionalSet;
 	nlist field_48;
 	nlist field_54;
 	vhclBases *vhcls_models;
@@ -276,12 +291,24 @@ struct _NC_STACK_ypaworld
 	int16_t field_130[256];
 	BYTE sqrt_table[64][64];
 
+	NC_STACK_base *sky_loaded_base;
 	int field_1368;
-
+	NC_STACK_base *additionalBeeBox;
+	NC_STACK_sklt *colsub_sklt;
+	NC_STACK_sklt *colcomp_sklt;
+	skeleton_64_stru *colsub_sklt_intrn;
+	skeleton_64_stru *colcomp_sklt_intrn;
+	NC_STACK_ilbm *tracyrmp_ilbm;
+	NC_STACK_ilbm *shadermp_ilbm;
 	NC_STACK_win3d *win3d;
 	int field_138c;
 	int str17_NOT_FALSE;
-
+	slurp slurps1[6][6];
+	slurp slurps2[6][6];
+	NC_STACK_sklt *ColSide;
+	skeleton_64_stru *ColSide__skeletonIntern;
+	NC_STACK_sklt *ColCross;
+	skeleton_64_stru *ColCross__skeletonIntern;
 	int field_15e4;
 	int field_15e8;
 	int field_15ec;
@@ -297,6 +324,8 @@ struct _NC_STACK_ypaworld
 	nlist field_17a0;
 	int16_t screen_width;
 	int16_t screen_height;
+
+	int field_17c0;
 
 	const char **tooltips;
 	rgbiColor iniColors[70];
@@ -314,6 +343,9 @@ struct _NC_STACK_ypaworld
 	int icon_help__h;
 	int icon_energy__h;
 	int icon0___h;
+
+	NC_STACK_ilbm *pointers[11];
+	bitmap_intern *pointers__bitm[11];
 
 
 	recorder *sceneRecorder;
@@ -340,9 +372,10 @@ struct _NC_STACK_ypaworld
 
 	char field_73CE;
 
-	int field_7492;
+	int fxnumber;
 
 	yw_movies movies;
+	int field_81AB;
 
 	int one_game_res;
 	int shell_default_res;
@@ -378,84 +411,26 @@ struct vhclBases
 	base_1c_struct *trigo;
 };
 
+struct lego_xyz
+{
+	int field_0;
+	float pos_x;
+	float pos_y;
+	float pos_z;
+};
+
 struct cityBases
 {
 	NC_STACK_base *base;
-	int field_4;
-	int field_8;
-	int field_C;
+	NC_STACK_sklt *sklt_obj;
+	skeleton_64_stru *sklt_obj_intern;
+	skeleton_64_stru *selected_sklt_intern;
 	char field_10;
 	char field_11;
 	char field_12;
 	char field_13;
-	int field_14;
-	int field_18;
-	int field_1C;
-	int field_20;
-	int field_24;
-	int field_28;
-	int field_2C;
-	int field_30;
-	int field_34;
-	int field_38;
-	int field_3C;
-	int field_40;
-	int field_44;
-	int field_48;
-	int field_4C;
-	int field_50;
-	int field_54;
-	int field_58;
-	int field_5C;
-	int field_60;
-	int field_64;
-	int field_68;
-	int field_6C;
-	int field_70;
-	int field_74;
-	int field_78;
-	int field_7C;
-	int field_80;
-	int field_84;
-	int field_88;
-	int field_8C;
-	int field_90;
-	int field_94;
-	int field_98;
-	int field_9C;
-	int field_A0;
-	int field_A4;
-	int field_A8;
-	int field_AC;
-	int field_B0;
-	int field_B4;
-	int field_B8;
-	int field_BC;
-	int field_C0;
-	int field_C4;
-	int field_C8;
-	int field_CC;
-	int field_D0;
-	int field_D4;
-	int field_D8;
-	int field_DC;
-	int field_E0;
-	int field_E4;
-	int field_E8;
-	int field_EC;
-	int field_F0;
-	int field_F4;
-	int field_F8;
-	int field_FC;
-	int field_100;
-	int field_104;
-	int field_108;
-	int field_10C;
-	int field_110;
-	int field_114;
-	int field_118;
-	int field_11C;
-	int field_120;
+	uint8_t field_14[16];
+	lego_xyz field_24[16];
 };
 
 struct subSec
@@ -474,15 +449,7 @@ struct secType
 	char field_1;
 	char field_2;
 	char field_3;
-	int field_4;
-	int field_8;
-	int field_C;
-	int field_10;
-	int field_14;
-	int field_18;
-	int field_1C;
-	int field_20;
-	int field_24;
+	subSec *field_4[3][3];
 };
 
 struct destFX
@@ -762,7 +729,8 @@ struct roboProto
 	roboColl roboColls[16];
 };
 
-void load_fonts_and_icons(_NC_STACK_ypaworld *yw);
+int load_fonts_and_icons(_NC_STACK_ypaworld *yw);
+int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID);
 
 
 #endif

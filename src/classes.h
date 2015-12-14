@@ -117,4 +117,8 @@ size_t call_parent(class_stru *zis, void *caller, int idx, stack_vals *stk);
 NC_STACK_class * READ_OBJT(MFILE *mfile);
 int sub_4117F8(NC_STACK_class *obj, MFILE *mfile);
 
+struct NC_STACK_base;
+
+NC_STACK_base *READ_BAS_FILE(const char *fname);
+
 #endif // CLASSES_H_INCLUDED

@@ -2330,6 +2330,7 @@ int LevelDataParser(scrCallBack *arg)
 
 	if ( strstr(_p1, "title_") )
 	{
+
 		char title_lang[32];
 		strcpy(title_lang, "title_");
 		strcat(title_lang, yw->lang_name);
@@ -2347,7 +2348,7 @@ int LevelDataParser(scrCallBack *arg)
 			}
 		}
 	}
-	if ( !strcasecmp(_p1, "set") )
+	else if ( !strcasecmp(_p1, "set") )
 	{
 		mapp->setNumber = atoi(_p2);
 		mapp->flags |= 1;
@@ -2523,7 +2524,7 @@ int LevelDataParser(scrCallBack *arg)
 	{
 		yw->unit_limit_type_1 = atoi(_p2);
 	}
-	else if ( strcasecmp(_p1, "unit_limit_arg") )
+	else if ( !strcasecmp(_p1, "unit_limit_arg") )
 	{
 		yw->unit_limit_arg_1 = atoi(_p2);
 	}

@@ -76,6 +76,15 @@ struct mapProto
 	dbmapProto dbmaps[4];
 };
 
+struct lvlnet_t1
+{
+	int field_0;
+	int field_4;
+	int field_8;
+	int field_C;
+	int field_10;
+};
+
 
 int VhclProtoParser(scrCallBack *);
 int WeaponProtoParser(scrCallBack *);
@@ -100,5 +109,11 @@ int yw_ScanLevels(_NC_STACK_ypaworld *yw);
 
 
 int sub_4DA354(_NC_STACK_ypaworld *yw, const char *filename);
+int yw_InitTooltips(_NC_STACK_ypaworld *yw);
+
+int loadTOD(_NC_STACK_ypaworld *yw, const char *fname);
+int writeTOD(_NC_STACK_ypaworld *yw, const char *fname, int tod);
+
+void ypaworld_func158__sub4__sub0(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *bitm);
 
 #endif
