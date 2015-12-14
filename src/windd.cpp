@@ -2877,8 +2877,8 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
 		int line_width = 0;
 		int line_height = 0;
 
-        //if v11 = 0 - clone first column of tile  (count = line_width)
-        //if v11 = 1 - normal copy of tile
+		//if v11 = 0 - clone first column of tile  (count = line_width)
+		//if v11 = 1 - normal copy of tile
 		v11 = 1;
 
 
@@ -2914,23 +2914,23 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
 				else
 					src_width = tile->field_4->width;
 
-                BYTE *srcpixel = (BYTE *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
-					BYTE *dstpixel = (BYTE *)wdd->surface_locked_surfaceData + pitch * y_out + x_out;
+				BYTE *srcpixel = (BYTE *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
+				BYTE *dstpixel = (BYTE *)wdd->surface_locked_surfaceData + pitch * y_out + x_out;
 
-					for (int j = cpy_height; j > 0; j--)
+				for (int j = cpy_height; j > 0; j--)
+				{
+					for (int i = cpy_width; i > 0; i--)
 					{
-						for (int i = cpy_width; i > 0; i--)
-						{
-							if (*srcpixel)
-								*dstpixel = *srcpixel;
+						if (*srcpixel)
+							*dstpixel = *srcpixel;
 
-							srcpixel += v11;
-							dstpixel++;
-						}
-
-						srcpixel += src_width;
-						dstpixel += (pitch - cpy_width);
+						srcpixel += v11;
+						dstpixel++;
 					}
+
+					srcpixel += src_width;
+					dstpixel += (pitch - cpy_width);
+				}
 
 				line_width = 0;
 				x_off = 0;
@@ -3359,7 +3359,81 @@ void windd_func258__sub2(__NC_STACK_windd *wdd, int *x, int *y)
 
 void windd_func258__sub0(NC_STACK_windd *obj, __NC_STACK_display *dspl, __NC_STACK_windd *wdd, int xx, signed int yy)
 {
-	printf("MAKE ME %s\n","windd_func258__sub0");
+	if ( dspl->pointer_bitm )
+	{
+		int w = wdd->width;
+		int h = wdd->height;
+
+		if ( wdd->field_50 & 8 )
+		{
+			xx *= 2;
+			yy *= 2;
+			w *= 2;
+			h *= 2;
+		}
+
+		if ( xx >= 0 && yy >= 0 && xx < w && yy < h )
+		{
+			tile_xy v15[2];
+
+			v15[1].byteoff = 0;
+			v15[1].width = dspl->pointer_bitm->width;
+
+			tiles_stru v13;
+
+			v13.font_image = NULL;
+			v13.field_4 = dspl->pointer_bitm;
+			v13.field_8 = v13.field_4->buffer;
+			v13.chars = v15;
+			v13.font_height = dspl->pointer_bitm->height;
+
+			rstr_207_arg v16;
+			v16.id = 127;
+			v16.tiles = &v13;
+
+			call_method(obj, 207, &v16);
+
+			int v21 = 0;
+			int v20 = 0;
+
+			if ( xx + dspl->pointer_bitm->width > w)
+			{
+				v21 = w - xx;
+				if (w == xx)
+					return;
+			}
+
+			if ( yy + dspl->pointer_bitm->height > h)
+			{
+				v21 = h - yy;
+				if (h == yy)
+					return;
+			}
+
+			char cmdBuff[64];
+			char *cmdPoint = &cmdBuff[0];
+
+			fntcmd_select_tileset(&cmdPoint, 127);
+			fntcmd_set_center_xpos(&cmdPoint, xx - (w / 2));
+			fntcmd_set_center_ypos(&cmdPoint, yy - (h / 2));
+
+			if (v21)
+				fntcmd_set_xwidth(&cmdPoint, v21);
+
+			if (v20)
+				fntcmd_set_yheight(&cmdPoint, 20);
+
+			fntcmd_store_u8(&cmdPoint, 1);
+
+			fntcmd_set_end(&cmdPoint);
+
+			w3d_a209 a209;
+			a209.field_0 = cmdBuff;
+			a209.field_4 = NULL;
+
+			call_method(obj, 209, &a209);
+		}
+	}
 }
 
 void windd_func258(NC_STACK_windd *obj, class_stru *zis, stack_vals *)
@@ -3389,10 +3463,15 @@ void windd_func260(void *, class_stru *, stack_vals *)
 {
 }
 
-size_t windd_func261(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+void windd_func261(NC_STACK_windd *obj, class_stru *zis, rstr_261_arg *arg)
 {
-	printf("MAKE ME %s\n","windd_func261");
-	return call_parent(zis, obj, 261, stak);
+	if ( !dword_514EFC && !arg->pal_id && !arg->entrie_id )
+	{
+		arg->pal_entries[0].g = arg->pal_entries[0].b;
+		arg->pal_entries[0].r = arg->pal_entries[0].b;
+		arg->pal_entries[0].b = 0;
+	}
+	call_parent(zis, obj, 261, (stack_vals *)arg);
 }
 
 void sub_42D37C(__NC_STACK_windd *wdd, UA_PALENTRY *pal)
@@ -3424,10 +3503,12 @@ void windd_func262(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
 	sub_42D37C(wdd, dspl->palette);
 }
 
-size_t windd_func263(void *, class_stru *, stack_vals *)
+void windd_func263(NC_STACK_windd *obj, class_stru *zis, displ_arg263 *arg)
 {
-	printf("MAKE ME %s\n","windd_func263");
-	return 0;
+	__NC_STACK_windd *wdd = &obj->stack__windd;
+
+	sub_42D410(wdd, arg->pointer_id, 0);
+	call_parent(zis, obj, 263, (stack_vals *)arg);
 }
 
 

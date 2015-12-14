@@ -29,127 +29,165 @@ NC_STACK_display * display_func0(class_stru *obj, class_stru *zis, stack_vals *s
 {
 	NC_STACK_display *clss = (NC_STACK_display *)call_parent(zis, obj, 0, stak); // raster_func0
 
-	printf("MAKE ME %s\n","display_func0");
-
 	engines.display___win3d = clss;
-
-	if (clss)
-	{
-	}
 
 	return clss;
 }
 
 size_t display_func1(NC_STACK_display *obj, class_stru *zis, stack_vals *stak)
 {
-    printf("MAKE ME %s\n","display_func1");
+	engines.display___win3d = NULL;
 	return call_parent(zis, obj, 1, stak);
 }
 
 void display_func2(NC_STACK_display *obj, class_stru *zis, stack_vals *stak)
 {
-    printf("MAKE ME %s\n","display_func2");
+	stack_vals *val = find_id_in_stack2(0x80002007, stak);
+	if ( val )
+	{
+		if ( val->value )
+		{
+			rstr_261_arg arg_261;
+			rstr_262_arg arg_262;
+
+			arg_261.pal_entries = (UA_PALENTRY *)val->value;
+			arg_261.pal_id = 0;
+			arg_261.entrie_id = 0;
+			arg_261.pal_num = 256;
+
+			call_method(obj, 261, &arg_261);
+
+			int v11 = 0;
+			int v12 = 256;
+			arg_262.pdword4 = &v11;
+			arg_262.dword0 = 1;
+			arg_262.pdword8 = &v12;
+
+			call_method(obj, 262,  &arg_262);
+		}
+	}
+
 	call_parent(zis, obj, 2, stak);
 }
 
 void display_func3(NC_STACK_display *obj, class_stru *zis, stack_vals *stak)
 {
-    printf("MAKE ME %s\n","display_func3");
-	//__NC_STACK_display *internal = &obj->stack__display;
+	__NC_STACK_display *displ = &obj->stack__display;
 
-	stack_vals *stk = stak;
-
-	while ( 1 )
+	stack_vals *val = find_id_in_stack2(0x80002007, stak);
+	if ( val )
 	{
-		if (stk->id == 0)
-			break;
-		else if (stk->id == 2)
-		{
-			stk = (stack_vals *)stk->value;
-		}
-		else if ( stk->id == 3 )
-		{
-			stk += stk->value;
-			////a2++; ////BUGFIX?
-		}
-		else
-		{
-			stk++;
-		}
+		*(UA_PALENTRY **)val->value = displ->palette;
+		val->id = 1;
 	}
+
 	call_parent(zis, obj, 3, stak);
 }
 
 
-size_t display_func261(void *, class_stru *, stack_vals *)
+void display_func261(NC_STACK_display *obj, class_stru *zis, rstr_261_arg *arg)
 {
-    printf("MAKE ME %s\n","display_func261");
-	return 0;
+	__NC_STACK_display *displ = &obj->stack__display;
+
+	memcpy(&displ->field_300[arg->pal_id].pal_entries[arg->entrie_id], arg->pal_entries, sizeof(UA_PALENTRY) * arg->pal_num);
 }
 
-size_t display_func262(void *, class_stru *, stack_vals *)
+void display_func262(NC_STACK_display *obj, class_stru *zis, rstr_262_arg *arg)
 {
-    printf("MAKE ME %s\n","display_func262");
-	return 0;
+	__NC_STACK_display *displ = &obj->stack__display;
+
+	for (int i = 0; i < 256; i++)
+	{
+		int tmpr = 0;
+		int tmpg = 0;
+		int tmpb = 0;
+
+		for (int j = 0; j < arg->dword0; j++)
+		{
+			UA_PALETTE *pal = &displ->field_300[ arg->pdword4[j] ];
+			tmpr += arg->pdword8[j] * pal->pal_entries[i].r;
+			tmpg += arg->pdword8[j] * pal->pal_entries[i].g;
+			tmpb += arg->pdword8[j] * pal->pal_entries[i].b;
+		}
+		if (tmpr > 255)
+			tmpr = 255;
+		if (tmpg > 255)
+			tmpg = 255;
+		if (tmpb > 255)
+			tmpb = 255;
+
+		displ->palette[i].r = tmpr;
+		displ->palette[i].g = tmpg;
+		displ->palette[i].b = tmpb;
+	}
 }
 
-size_t display_func263(void *, class_stru *, stack_vals *)
+void display_func263(NC_STACK_display *obj, class_stru *zis, displ_arg263 *arg)
 {
-    printf("MAKE ME %s\n","display_func263");
-	return 0;
+	__NC_STACK_display *displ = &obj->stack__display;
+
+	call_method(obj, 265, 0);
+	displ->pointer_bitm = arg->bitm;
+	call_method(obj, 264, 0);
 }
 
-size_t display_func264(void *, class_stru *, stack_vals *)
+void display_func264(NC_STACK_display *obj, class_stru *zis, void *)
 {
-    printf("MAKE ME %s\n","display_func264");
-	return 0;
+	__NC_STACK_display *displ = &obj->stack__display;
+	displ->field_1b04 &= 0xFFFFFFFE;
 }
 
-size_t display_func265(void *, class_stru *, stack_vals *)
+void display_func265(NC_STACK_display *obj, class_stru *zis, void *)
 {
-    printf("MAKE ME %s\n","display_func265");
-	return 0;
+	__NC_STACK_display *displ = &obj->stack__display;
+	displ->field_1b04 |= 1;
 }
 
-size_t display_func266(void *, class_stru *, stack_vals *)
+
+size_t display_func266(NC_STACK_display *obj, class_stru *zis, bitmap_intern **pbitm)
 {
-    printf("MAKE ME %s\n","display_func266");
-	return 0;
+	bitmap_intern *bitm = *pbitm;
+
+	bitm->pitch = bitm->width;
+	bitm->buffer = AllocVec(bitm->width * bitm->height, 65537);
+	bitm->flags |= 2;
+	return bitm->buffer != NULL;
 }
 
-size_t display_func267(void *, class_stru *, stack_vals *)
+void display_func267(NC_STACK_display *obj, class_stru *zis, void *)
 {
-    printf("MAKE ME %s\n","display_func267");
-	return 0;
 }
 
-size_t display_func268(void *, class_stru *, stack_vals *)
+void display_func268(NC_STACK_display *obj, class_stru *zis, bitmap_intern **pbitm)
 {
-    printf("MAKE ME %s\n","display_func268");
-	return 0;
+	bitmap_intern *bitm = *pbitm;
+	if (bitm->buffer)
+	{
+		nc_FreeMem(bitm->buffer);
+		bitm->buffer = NULL;
+	}
 }
 
-size_t display_func269(void *, class_stru *, stack_vals *)
+size_t display_func269(NC_STACK_display *obj, class_stru *zis, void *)
 {
-    printf("MAKE ME %s\n","display_func269");
-	return 0;
+	return 1;
 }
 
-size_t display_func270(void *, class_stru *, stack_vals *)
+void display_func270(NC_STACK_display *obj, class_stru *zis, void *)
 {
-    printf("MAKE ME %s\n","display_func270");
-	return 0;
 }
 
-size_t display_func273(void *, class_stru *, stack_vals *)
+UA_PALENTRY *display_func273(NC_STACK_display *obj, class_stru *zis, rstr_261_arg *arg)
 {
-    printf("MAKE ME %s\n","display_func273");
-	return 0;
+    __NC_STACK_display *displ = &obj->stack__display;
+
+  arg->pal_entries = displ->field_300[arg->pal_id].pal_entries;
+  return arg->pal_entries;
 }
 
 size_t display_func274(void *, class_stru *, stack_vals *)
 {
-    printf("MAKE ME %s\n","display_func274");
+	printf("MAKE ME %s(Save pcx screenshot)\n","display_func274");
 	return 0;
 }
 

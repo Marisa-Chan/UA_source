@@ -56,6 +56,7 @@ struct w3d_a209
 
 void sub_4231FC(void *dat);
 void gfxEngine__getter(unsigned int a1, ...);
+void gfxEngine__setter(unsigned int a1, ...);
 
 tiles_stru * sub_42324C(int id);
 size_t sub_423288(w3d_a209 *arg);
@@ -90,5 +91,6 @@ struct windd__window_params
 };
 
 void gfx_set_tileset(tiles_stru *a1, int id);
+int win3d__load_palette_from_ilbm(const char *palette);
 
 #endif // ENGINE_GFX_H_INCLUDED

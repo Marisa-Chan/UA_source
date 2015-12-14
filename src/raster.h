@@ -7,27 +7,27 @@ extern class_stored raster_class_off;
 
 struct xyxyNNN
 {
-  int x1;
-  int y1;
-  int x2;
-  int y2;
-  int NNN;
+	int x1;
+	int y1;
+	int x2;
+	int y2;
+	int NNN;
 };
 
 struct ua_dRect
 {
-    int x1;
-    int y1;
-    int x2;
-    int y2;
+	int x1;
+	int y1;
+	int x2;
+	int y2;
 };
 
 struct ua_fRect
 {
-    float x1;
-    float y1;
-    float x2;
-    float y2;
+	float x1;
+	float y1;
+	float x2;
+	float y2;
 };
 
 struct __NC_STACK_raster
@@ -41,8 +41,8 @@ struct __NC_STACK_raster
 //  int field_18;
 //  int field_1c;
 //  int field_20;
-    xyxyNNN field_24;
-    xyxyNNN field_38;
+	xyxyNNN field_24;
+	xyxyNNN field_38;
 //  int field_4c;
 //  int field_50;
 //  int field_54;
@@ -155,45 +155,38 @@ struct w3d_func199arg
 
 struct rstr_arg204
 {
-  bitmap_intern *pbitm;
-  float float4;
-  float float8;
-  float floatC;
-  float float10;
-  float float14;
-  float float18;
-  float float1C;
-  float float20;
+	bitmap_intern *pbitm;
+	float float4;
+	float float8;
+	float floatC;
+	float float10;
+	float float14;
+	float float18;
+	float float1C;
+	float float20;
 };
 
 struct rstr_loc204
 {
-  bitmap_intern *pbitm;
-  int dword4;
-  int dword8;
-  int dwordC;
-  int dword10;
-  int dword14;
-  int dword18;
-  int dword1C;
-  int dword20;
-  int dword24;
+	bitmap_intern *pbitm;
+	int dword4;
+	int dword8;
+	int dwordC;
+	int dword10;
+	int dword14;
+	int dword18;
+	int dword1C;
+	int dword20;
+	int dword24;
 };
 
 struct rstr_218_arg
 {
-  bitmap_intern *bitm_intern;
-  bitmap_intern *bitm_intern2;
-  int flg;
-  ua_fRect rect1;
-  ua_fRect rect2;
-};
-
-struct rstr_262_arg
-{
-  int dword0;
-  int *pdword4;
-  int *pdword8;
+	bitmap_intern *bitm_intern;
+	bitmap_intern *bitm_intern2;
+	int flg;
+	ua_fRect rect1;
+	ua_fRect rect2;
 };
 
 #endif // RASTER_H_INCLUDED
