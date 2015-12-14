@@ -178,7 +178,7 @@ rsrc *rsrc_func64(NC_STACK_rsrc *obj, class_stru *zis, stack_vals *stak)
 			res->name = res->title;
 			res->what_list = what_list;
 
-			call_vtbl(obj, 3, 0x80000002, &res->name, 0);
+			call_vtbl(obj, 3, 0x80000002, &res->class_name, 0);
 
 			nlist *lst;
 

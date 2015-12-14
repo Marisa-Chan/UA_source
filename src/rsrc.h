@@ -11,7 +11,7 @@ struct rsrc : class_named_nnode
   __int16 ref_cnt;
   __int16 what_list;
   void *data;
-  int class_name;
+  char *class_name;
 };
 
 struct __NC_STACK_rsrc
