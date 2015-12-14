@@ -653,7 +653,8 @@ void base_getter(NC_STACK_base *obj, __NC_STACK_base *base, stack_vals *stak)
 					*(int *)stk->value = 0;
 				break;
 			}
-		};
+			stk++;
+		}
 	}
 }
 
