@@ -102,7 +102,7 @@ struct NC_STACK_class
 	char *NAME;
 };
 
-class_stored * FIND(nlist *list, const char *name);
+class_named_nnode * FIND(nlist *list, const char *name);
 stored_functions * find_class(const char *name, unk_class *out);
 size_t call_method(NC_STACK_class *a1, int idx, void *a3);
 size_t call_method(NC_STACK_class *a1, int idx);

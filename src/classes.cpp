@@ -7,14 +7,14 @@ int class_def_deinit()
 	return 1;
 }
 
-class_stored * FIND(nlist *list, const char *name)
+class_named_nnode * FIND(nlist *list, const char *name)
 {
-	class_stored *current = (class_stored *)list->head;
+	class_named_nnode *current = (class_named_nnode *)list->head;
 	if ( current->next )
 	{
 		while ( strcasecmp(name, current->name) )
 		{
-			current = (class_stored *)current->next;
+			current = (class_named_nnode *)current->next;
 			if ( !current->next )
 				return NULL;
 		}
@@ -27,7 +27,7 @@ class_stored * FIND(nlist *list, const char *name)
 
 stored_functions * find_class(const char *name, unk_class *out)
 {
-	class_stored *cls = FIND(&classes_list, name);
+	class_stored *cls = (class_stored *)FIND(&classes_list, name);
 	if ( cls )
 	{
 		stored_functions *funcs = cls->get_stored_functions();
