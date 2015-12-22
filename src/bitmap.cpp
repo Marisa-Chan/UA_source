@@ -42,7 +42,7 @@ unsigned int sub_416704(NC_STACK_bitmap *a1, __NC_STACK_bitmap *a2, bitmap__opl 
 		return 1;
 	}
 
-	int opl_count = 1;
+	int opl_count = 1; //Mandatory end (tu/tv = -1/-1)
 
 	bitmap__opl *opl_cur = a3;
 
@@ -59,14 +59,14 @@ unsigned int sub_416704(NC_STACK_bitmap *a1, __NC_STACK_bitmap *a2, bitmap__opl 
 		tUtV *tmp = unk;
 		bitmap__opl *opl = a3;
 
-		for (int i = 0; i < opl_count; i++)
+		for (int i = 0; i < (opl_count - 1); i++)
 		{
-			tmp[i].tu = (long double)opl[i].field_0 * (1.0 / 256.0);
-			tmp[i].tv = (long double)opl[i].field_2 * (1.0 / 256.0);
+			tmp[i].tu = (float)opl[i].field_0 * (1.0 / 256.0);
+			tmp[i].tv = (float)opl[i].field_2 * (1.0 / 256.0);
 		}
 
-		tmp[opl_count].tu = -1;
-		tmp[opl_count].tv = -1;
+		tmp[opl_count - 1].tu = -1;
+		tmp[opl_count - 1].tv = -1;
 
 		a2->field_4.opl2 = unk;
 
@@ -180,7 +180,7 @@ void bitmap_func3(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
 				*(int *)stk->value = internal->bitm_intern->pallete != NULL;
 				break;
 			case 0x80002007:
-				*(void **)stk->value = internal->bitm_intern->pallete;
+				*(BYTE **)stk->value = internal->bitm_intern->pallete;
 				break;
 			}
 			stk++;
