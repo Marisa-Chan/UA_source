@@ -49,7 +49,7 @@ NC_STACK_ilbm * loadDisk_screen(int  wdth)
 	return ilbm;
 }
 
-char * sub_4515D8(char *curpos, char *str, int width_space, char chr)
+char * sub_4515D8(char *curpos, char *str, int width_space, char )
 {
 	if ( width_space > 0 )
 	{
@@ -502,7 +502,7 @@ int WinMain__sub0()
 	return 0;
 }
 
-int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE , LPSTR lpCmdLine, int nCmdShow)
 {
 	struct tagMSG Msg; // [sp+0h] [bp-28h]@8
 

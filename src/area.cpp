@@ -345,13 +345,13 @@ void area_func2__sub0(__NC_STACK_area *area, stack_vals *stak)
 	area->field_16 = v4;
 }
 
-void area_func2(NC_STACK_area *obj, class_stru *zis, stack_vals *stak)
+size_t area_func2(NC_STACK_area *obj, class_stru *zis, stack_vals *stak)
 {
 	__NC_STACK_area *area = &obj->stack__area;
 
 	area_func2__sub0(area, stak);
 
-	call_parent(zis, obj, 2, stak);
+	return call_parent(zis, obj, 2, stak);
 }
 
 void area_func3__sub0(__NC_STACK_area *area, stack_vals *stak)
@@ -487,17 +487,17 @@ void area_func3__sub0(__NC_STACK_area *area, stack_vals *stak)
 	}
 }
 
-void area_func3(NC_STACK_area *obj, class_stru *zis, stack_vals *stak)
+size_t area_func3(NC_STACK_area *obj, class_stru *zis, stack_vals *stak)
 {
 
 	__NC_STACK_area *area = &obj->stack__area;
 
 	area_func3__sub0(area, stak);
 
-	call_parent(zis, obj, 3, stak);
+	return call_parent(zis, obj, 3, stak);
 }
 
-int area_func5__sub0(NC_STACK_area *obj, __NC_STACK_area *area, MFILE *mfile)
+int area_func5__sub0(NC_STACK_area *obj, __NC_STACK_area *, MFILE *mfile)
 {
 	if ( obj )
 	{
@@ -626,7 +626,7 @@ NC_STACK_area *area_func5(class_stru *clss, class_stru *zis, MFILE **file)
 	return obj;
 }
 
-int area_func6(NC_STACK_area *obj, class_stru *zis, MFILE **file)
+size_t area_func6(NC_STACK_area *obj, class_stru *zis, MFILE **file)
 {
 	MFILE *mfile = *file;
 	__NC_STACK_area *area = &obj->stack__area;
@@ -670,7 +670,7 @@ int area_func6(NC_STACK_area *obj, class_stru *zis, MFILE **file)
 }
 
 // Add area to list
-void area_func65(NC_STACK_area *obj, class_stru *zis, area_arg_65 *arg)
+size_t area_func65(NC_STACK_area *obj, class_stru *, area_arg_65 *arg)
 {
 	__NC_STACK_area *area = &obj->stack__area;
 	polysDatSub *datSub = &arg->polyDat->datSub;
@@ -698,7 +698,7 @@ void area_func65(NC_STACK_area *obj, class_stru *zis, area_arg_65 *arg)
 	else if (v5 == 0x82)
 		v5 = 33;
 	else
-		return;
+		return 1;
 
 	datSub->renderFlags = v5;
 
@@ -785,12 +785,12 @@ void area_func65(NC_STACK_area *obj, class_stru *zis, area_arg_65 *arg)
 		arg->polyDat->render_func = sub_4231FC;
 		arg->polyDat = v19;
 	}
-
+    return 1;
 }
 
 class_return area_class_descr;
 
-class_return * class_set_area(int a1, ...)
+class_return * class_set_area(int, ...)
 {
 
 	memset(area_funcs, 0, sizeof(CLASSFUNC) * 1024);

@@ -85,14 +85,14 @@ void display_func3(NC_STACK_display *obj, class_stru *zis, stack_vals *stak)
 }
 
 
-void display_func261(NC_STACK_display *obj, class_stru *zis, rstr_261_arg *arg)
+void display_func261(NC_STACK_display *obj, class_stru *, rstr_261_arg *arg)
 {
 	__NC_STACK_display *displ = &obj->stack__display;
 
 	memcpy(&displ->field_300[arg->pal_id].pal_entries[arg->entrie_id], arg->pal_entries, sizeof(UA_PALENTRY) * arg->pal_num);
 }
 
-void display_func262(NC_STACK_display *obj, class_stru *zis, rstr_262_arg *arg)
+void display_func262(NC_STACK_display *obj, class_stru *, rstr_262_arg *arg)
 {
 	__NC_STACK_display *displ = &obj->stack__display;
 
@@ -109,6 +109,11 @@ void display_func262(NC_STACK_display *obj, class_stru *zis, rstr_262_arg *arg)
 			tmpg += arg->pdword8[j] * pal->pal_entries[i].g;
 			tmpb += arg->pdword8[j] * pal->pal_entries[i].b;
 		}
+
+		tmpr >>= 8;
+		tmpg >>= 8;
+		tmpb >>= 8;
+
 		if (tmpr > 255)
 			tmpr = 255;
 		if (tmpg > 255)
@@ -122,7 +127,7 @@ void display_func262(NC_STACK_display *obj, class_stru *zis, rstr_262_arg *arg)
 	}
 }
 
-void display_func263(NC_STACK_display *obj, class_stru *zis, displ_arg263 *arg)
+void display_func263(NC_STACK_display *obj, class_stru *, displ_arg263 *arg)
 {
 	__NC_STACK_display *displ = &obj->stack__display;
 
@@ -131,20 +136,20 @@ void display_func263(NC_STACK_display *obj, class_stru *zis, displ_arg263 *arg)
 	call_method(obj, 264, 0);
 }
 
-void display_func264(NC_STACK_display *obj, class_stru *zis, void *)
+void display_func264(NC_STACK_display *obj, class_stru *, void *)
 {
 	__NC_STACK_display *displ = &obj->stack__display;
 	displ->field_1b04 &= 0xFFFFFFFE;
 }
 
-void display_func265(NC_STACK_display *obj, class_stru *zis, void *)
+void display_func265(NC_STACK_display *obj, class_stru *, void *)
 {
 	__NC_STACK_display *displ = &obj->stack__display;
 	displ->field_1b04 |= 1;
 }
 
 
-size_t display_func266(NC_STACK_display *obj, class_stru *zis, bitmap_intern **pbitm)
+size_t display_func266(NC_STACK_display *, class_stru *, bitmap_intern **pbitm)
 {
 	bitmap_intern *bitm = *pbitm;
 
@@ -154,11 +159,11 @@ size_t display_func266(NC_STACK_display *obj, class_stru *zis, bitmap_intern **p
 	return bitm->buffer != NULL;
 }
 
-void display_func267(NC_STACK_display *obj, class_stru *zis, void *)
+void display_func267(NC_STACK_display *, class_stru *, void *)
 {
 }
 
-void display_func268(NC_STACK_display *obj, class_stru *zis, bitmap_intern **pbitm)
+void display_func268(NC_STACK_display *, class_stru *, bitmap_intern **pbitm)
 {
 	bitmap_intern *bitm = *pbitm;
 	if (bitm->buffer)
@@ -168,16 +173,16 @@ void display_func268(NC_STACK_display *obj, class_stru *zis, bitmap_intern **pbi
 	}
 }
 
-size_t display_func269(NC_STACK_display *obj, class_stru *zis, void *)
+size_t display_func269(NC_STACK_display *, class_stru *, void *)
 {
 	return 1;
 }
 
-void display_func270(NC_STACK_display *obj, class_stru *zis, void *)
+void display_func270(NC_STACK_display *, class_stru *, void *)
 {
 }
 
-UA_PALENTRY *display_func273(NC_STACK_display *obj, class_stru *zis, rstr_261_arg *arg)
+UA_PALENTRY *display_func273(NC_STACK_display *obj, class_stru *, rstr_261_arg *arg)
 {
     __NC_STACK_display *displ = &obj->stack__display;
 

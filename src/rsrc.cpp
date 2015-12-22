@@ -85,7 +85,7 @@ size_t rsrc_func1(NC_STACK_rsrc *a1, class_stru *a2, stack_vals *a3)
 	return call_parent(a2, a1, 1, a3);
 }
 
-void rsrc_func3(NC_STACK_rsrc *caller, class_stru *zis, stack_vals *stak)
+size_t rsrc_func3(NC_STACK_rsrc *caller, class_stru *zis, stack_vals *stak)
 {
 
 	__NC_STACK_rsrc *internal = &caller->stack__rsrc;
@@ -151,11 +151,11 @@ void rsrc_func3(NC_STACK_rsrc *caller, class_stru *zis, stack_vals *stak)
 			stk++;
 		}
 	}
-	call_parent(zis, caller, 3, stak);
+	return call_parent(zis, caller, 3, stak);
 }
 
 // Allocate resource node
-rsrc *rsrc_func64(NC_STACK_rsrc *obj, class_stru *zis, stack_vals *stak)
+rsrc *rsrc_func64(NC_STACK_rsrc *obj, class_stru *, stack_vals *stak)
 {
 	char *title = (char *)find_id_in_stack_def_val(0x80001000, 0, stak);
 
@@ -196,11 +196,13 @@ rsrc *rsrc_func64(NC_STACK_rsrc *obj, class_stru *zis, stack_vals *stak)
 	return res;
 }
 
-void rsrc_func65(NC_STACK_rsrc *obj, class_stru *zis, rsrc **res)
+size_t rsrc_func65(NC_STACK_rsrc *, class_stru *, rsrc **res)
 {
 	Remove(*res);
 	if ( *res )
 		nc_FreeMem(*res);
+
+    return 1;
 }
 
 

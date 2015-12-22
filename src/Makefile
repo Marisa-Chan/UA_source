@@ -11,6 +11,7 @@ OBJS =  \
 	amesh.cpp\
         bitmap.cpp\
 	base.cpp\
+	bmpAnm.cpp\
 	button.cpp\
 	classes.cpp\
 	def_parser.cpp\
@@ -34,6 +35,7 @@ OBJS =  \
 	MFILE.cpp\
 	nlist.cpp\
 	nucleas.cpp\
+	particle.cpp\
 	raster.cpp\
 	rsrc.cpp\
 	sample.cpp\
@@ -47,6 +49,7 @@ OBJS =  \
 	wintimer.cpp\
 	yw.cpp\
 	yw_funcs.cpp\
+	yw_func2.cpp\
 	yw_protos.cpp
 	
 WINOBJ = \

@@ -953,7 +953,8 @@ NC_STACK_base * sub_44AD8C(const char *fname)
 				return 0;
 			}
 
-			call_vtbl(obj, 65, kid); //Add to kid list
+            //call_vtbl(obj, 65, kid);
+			call_method(obj, 65, &kid); //Add to kid list
 		}
 		FClose(fil);
 	}
@@ -981,7 +982,8 @@ NC_STACK_base *load_set_base()
 				delete_class_obj(base);
 				return NULL;
 			}
-			call_vtbl(base, 65, visproto);
+			//call_vtbl(base, 65, visproto);
+			call_method(base, 65, &visproto);
 
 			NC_STACK_base *lego = READ_BAS_FILE("rsrc:objects/lego.base");
 			if ( !lego )
@@ -994,7 +996,8 @@ NC_STACK_base *load_set_base()
 				delete_class_obj(base);
 				return NULL;
 			}
-			call_vtbl(base, 65, lego);
+			//call_vtbl(base, 65, lego);
+			call_method(base, 65, &lego);
 
 			NC_STACK_base *slurp = READ_BAS_FILE("rsrc:objects/slurp.base");
 			if ( !slurp )
@@ -1007,7 +1010,8 @@ NC_STACK_base *load_set_base()
 				delete_class_obj(base);
 				return NULL;
 			}
-			call_vtbl(base, 65, slurp);
+			//call_vtbl(base, 65, slurp);
+			call_method(base, 65, &slurp);
 		}
 	}
 	return base;

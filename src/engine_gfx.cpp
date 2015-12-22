@@ -81,7 +81,7 @@ int win3d__load_palette_from_ilbm(const char *palette)
 	if (!ilbm)
 		return 0;
 
-	void *bitmap_palette;
+	BYTE *bitmap_palette;
 	call_vtbl(ilbm, 3, 0x80002007, &bitmap_palette, 0); //Getter
 	call_vtbl(win3d_class_pointer, 2, 0x80002007, bitmap_palette, 0); //Setter
 

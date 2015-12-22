@@ -28,7 +28,7 @@ void idev_func69(void *, void *, void *)
 
 class_return idev_class_descr;
 
-class_return * class_set_idev(int a1, ...)
+class_return * class_set_idev(int , ...)
 {
 
 	memset(idev_funcs, 0, sizeof(CLASSFUNC) * 1024);

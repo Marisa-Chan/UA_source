@@ -36,12 +36,12 @@ NC_STACK_iwimp * iwimp_func0(class_stru *clss, class_stru *zis, stack_vals *stak
 	return obj;
 }
 
-size_t iwimp_func128(NC_STACK_iwimp *obj, class_stru *zis, stack_vals *stak)
+size_t iwimp_func128(NC_STACK_iwimp *, class_stru *, stack_vals *)
 {
 	return 1;
 }
 
-void iwimp_func129(NC_STACK_iwimp *obj, class_stru *zis, iwimp_arg129 *arg)
+void iwimp_func129(NC_STACK_iwimp *obj, class_stru *, iwimp_arg129 *arg)
 {
 	nlist *lst = &obj->stack__iwimp.list;
 
@@ -51,7 +51,7 @@ void iwimp_func129(NC_STACK_iwimp *obj, class_stru *zis, iwimp_arg129 *arg)
 		AddTail(lst, arg->node);
 }
 
-void iwimp_func130(NC_STACK_iwimp *obj, class_stru *zis, iwimp_arg129 *arg)
+void iwimp_func130(NC_STACK_iwimp *, class_stru *, iwimp_arg129 *arg)
 {
 	Remove(arg->node);
 }
@@ -98,7 +98,7 @@ void sub_41D538(__NC_STACK_iwimp *wimp, winp_131arg *arg, shortPoint *points)
 	}
 }
 
-void iwimp_func131(NC_STACK_iwimp *obj, class_stru *zis, winp_131arg *arg)
+void iwimp_func131(NC_STACK_iwimp *obj, class_stru *, winp_131arg *arg)
 {
 	__NC_STACK_iwimp *wimp = &obj->stack__iwimp;
 
@@ -151,7 +151,7 @@ void iwimp_func131(NC_STACK_iwimp *obj, class_stru *zis, winp_131arg *arg)
 
 class_return iwimp_class_descr;
 
-class_return * class_set_iwimp(int a1, ...)
+class_return * class_set_iwimp(int , ...)
 {
 
 	memset(iwimp_funcs, 0, sizeof(CLASSFUNC) * 1024);

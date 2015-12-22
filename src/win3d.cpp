@@ -358,7 +358,7 @@ int initPixelFormats(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
 	return 1;
 }
 
-void sub_439E30(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+void sub_439E30(__NC_STACK_windd *, __NC_STACK_win3d *w3d)
 {
 	if ( w3d->bigdata )
 	{
@@ -980,7 +980,7 @@ void sub_43CD40(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int x1, int y1, in
 	}
 }
 
-void win3d_func198(NC_STACK_win3d *obj, class_stru *zis, w3d_func198arg *arg)
+void win3d_func198(NC_STACK_win3d *obj, class_stru *, w3d_func198arg *arg)
 {
 	__NC_STACK_raster *rstr = &obj->stack__raster;
 	__NC_STACK_windd *wdd = &obj->stack__windd;
@@ -1004,7 +1004,7 @@ void win3d_func198(NC_STACK_win3d *obj, class_stru *zis, w3d_func198arg *arg)
 }
 
 
-void win3d_func199(NC_STACK_win3d *obj, class_stru *zis, w3d_func199arg *arg)
+void win3d_func199(NC_STACK_win3d *obj, class_stru *, w3d_func199arg *arg)
 {
 	__NC_STACK_raster *rstr = &obj->stack__raster;
 	__NC_STACK_windd *wdd = &obj->stack__windd;
@@ -1193,7 +1193,7 @@ void sub_420EDC(__NC_STACK_raster *rstr, __NC_STACK_windd *wdd, __NC_STACK_win3d
 	}
 }
 
-void win3d_func200(NC_STACK_win3d *obj, class_stru *zis, w3d_func198arg *arg)
+void win3d_func200(NC_STACK_win3d *obj, class_stru *, w3d_func198arg *arg)
 {
 	__NC_STACK_raster *rstr = &obj->stack__raster;
 	__NC_STACK_windd *wdd = &obj->stack__windd;
@@ -1216,7 +1216,7 @@ void win3d_func200(NC_STACK_win3d *obj, class_stru *zis, w3d_func198arg *arg)
 			   rstr->field_8 & 0xFF);
 }
 
-void win3d_func201(NC_STACK_win3d *obj, class_stru *zis, w3d_func199arg *arg)
+void win3d_func201(NC_STACK_win3d *obj, class_stru *, w3d_func199arg *arg)
 {
 	__NC_STACK_raster *rstr = &obj->stack__raster;
 	__NC_STACK_windd *wdd = &obj->stack__windd;
@@ -1294,7 +1294,7 @@ void sub_43CEE0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, void *srcBuf, int 
 	}
 }
 
-void win3d_func202(NC_STACK_win3d *obj, class_stru *zis, rstr_arg204 *arg)
+void win3d_func202(NC_STACK_win3d *obj, class_stru *, rstr_arg204 *arg)
 {
 	__NC_STACK_raster *rstr = &obj->stack__raster;
 	__NC_STACK_windd *wdd = &obj->stack__windd;
@@ -1369,7 +1369,7 @@ int win3d_func204__sub0(__NC_STACK_raster *rstr, rstr_loc204 *arg)
 }
 
 
-void win3d_func204(NC_STACK_win3d *obj, class_stru *zis, rstr_arg204 *arg)
+void win3d_func204(NC_STACK_win3d *obj, class_stru *, rstr_arg204 *arg)
 {
 
 	__NC_STACK_raster *rstr = &obj->stack__raster;
@@ -1438,7 +1438,7 @@ int loadTextureToCache(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, texStru *te
 	return ptx->d3dtex2->Load(ptx->loadedFromTexture.dx2) == D3D_OK;
 }
 
-D3DTEXTUREHANDLE getTexHandle(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, texCache *tex)
+D3DTEXTUREHANDLE getTexHandle(__NC_STACK_windd *wdd, __NC_STACK_win3d *, texCache *tex)
 {
 	D3DTEXTUREHANDLE d3dtexHandle;
 	HRESULT res;
@@ -1804,7 +1804,7 @@ void sb_0x43b518(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, polysDatSub *poly
 	return;
 }
 
-void win3d_func206(NC_STACK_win3d *obj, class_stru *zis, polysDatSub *arg)
+void win3d_func206(NC_STACK_win3d *obj, class_stru *, polysDatSub *arg)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
 	__NC_STACK_win3d *w3d = &obj->stack__win3d;
@@ -2137,7 +2137,7 @@ void win3d_func209__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, tiles_str
 	}
 }
 
-void win3d_func209(NC_STACK_win3d *obj, class_stru *zis, w3d_a209 *arg)
+void win3d_func209(NC_STACK_win3d *obj, class_stru *, w3d_a209 *arg)
 {
 	win3d_func209__sub0(&obj->stack__windd, &obj->stack__win3d, obj->stack__raster.tiles, arg->field_0, arg->field_4);
 }
@@ -2166,7 +2166,7 @@ void win3d_func213__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
 	}
 }
 
-void win3d_func213(NC_STACK_win3d *obj, class_stru *zis, polysDatSub *arg)
+void win3d_func213(NC_STACK_win3d *obj, class_stru *, polysDatSub *)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
 	__NC_STACK_win3d *w3d = &obj->stack__win3d;
@@ -2255,7 +2255,7 @@ void win3d_func214__sub2(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
 	}
 }
 
-void win3d_func214__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+void win3d_func214__sub0(__NC_STACK_windd *, __NC_STACK_win3d *w3d)
 {
 	win3d_bigdata *bigdata = w3d->bigdata;
 
@@ -2264,7 +2264,7 @@ void win3d_func214__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
 			bigdata->texCh[i].used |= 1;
 }
 
-void win3d_func214(NC_STACK_win3d *obj, class_stru *zis, void *arg)
+void win3d_func214(NC_STACK_win3d *obj, class_stru *, void *)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
 	__NC_STACK_win3d *w3d = &obj->stack__win3d;
@@ -2276,7 +2276,7 @@ void win3d_func214(NC_STACK_win3d *obj, class_stru *zis, void *arg)
 }
 
 
-int win3d_func215__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+int win3d_func215__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *)
 {
 	if ( !wdd->hwnd )
 	{
@@ -2309,7 +2309,7 @@ int win3d_func215__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
 	return 1;
 }
 
-void win3d_func215(NC_STACK_win3d *obj, class_stru *zis, void *arg)
+void win3d_func215(NC_STACK_win3d *obj, class_stru *, void *)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
 	__NC_STACK_win3d *w3d = &obj->stack__win3d;
@@ -2318,7 +2318,7 @@ void win3d_func215(NC_STACK_win3d *obj, class_stru *zis, void *arg)
 }
 
 
-void win3d_func216__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+void win3d_func216__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *)
 {
 	if ( wdd->hwnd )
 	{
@@ -2331,7 +2331,7 @@ void win3d_func216__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
 	}
 }
 
-void win3d_func216(NC_STACK_win3d *obj, class_stru *zis, void *arg)
+void win3d_func216(NC_STACK_win3d *obj, class_stru *, void *)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
 	__NC_STACK_win3d *w3d = &obj->stack__win3d;
@@ -2382,7 +2382,7 @@ void win3d_func218__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, WORD *buf
 }
 
 
-void win3d_func218(NC_STACK_win3d *obj, class_stru *zis, rstr_218_arg *arg)
+void win3d_func218(NC_STACK_win3d *obj, class_stru *, rstr_218_arg *arg)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
 	__NC_STACK_win3d *w3d = &obj->stack__win3d;
@@ -2455,7 +2455,7 @@ void win3d_func262(NC_STACK_win3d *obj, class_stru *zis, rstr_262_arg *arg)
 
 
 
-int win3d__allocTexBuffer(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int w, int h, bitmap_intern *arg)
+int win3d__allocTexBuffer(__NC_STACK_windd *, __NC_STACK_win3d *w3d, int w, int h, bitmap_intern *arg)
 {
 	arg->buffer = NULL;
 
@@ -2467,7 +2467,7 @@ int win3d__allocTexBuffer(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int w, i
 	return w * w3d->bigdata->primary__pixelformat.BytesPerColor;
 }
 
-signed int win3d__createSurfTexPal(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int w, int h, texStru **_tex)
+signed int win3d__createSurfTexPal(__NC_STACK_windd *wdd, __NC_STACK_win3d *, int w, int h, texStru **_tex)
 {
 	*_tex = NULL;
 
@@ -2532,7 +2532,7 @@ signed int win3d__createSurfTexPal(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d,
 	return 1;
 }
 
-size_t win3d_func266(NC_STACK_win3d *obj, class_stru *zis, bitmap_intern **arg)
+size_t win3d_func266(NC_STACK_win3d *obj, class_stru *, bitmap_intern **arg)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
 	__NC_STACK_win3d *w3d = &obj->stack__win3d;
@@ -2551,23 +2551,23 @@ size_t win3d_func266(NC_STACK_win3d *obj, class_stru *zis, bitmap_intern **arg)
 }
 
 
-void win3d__tex_apply_palette_hw(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, BYTE *pal, __NC_STACK_display *dspl, texStru *tex, int a5)
+void win3d__tex_apply_palette_hw(__NC_STACK_windd *, __NC_STACK_win3d *w3d, BYTE *pal, __NC_STACK_display *dspl, texStru *tex, int a5)
 {
 	printf("CHECK ME %s\n","win3d__tex_apply_palette_hw");
 
 	win3d_bigdata *bigdata = w3d->bigdata;
 
-	int dwRBitMask = w3d->bigdata->selected__pixelformat.dwRBitMask;
-	int dwRShift = bigdata->selected__pixelformat.dwRShift;
+	DWORD dwRBitMask = bigdata->selected__pixelformat.dwRBitMask;
+	DWORD dwRShift = bigdata->selected__pixelformat.dwRShift;
 
-	int dwGBitMask = bigdata->selected__pixelformat.dwGBitMask;
-	int dwGShift = bigdata->selected__pixelformat.dwGShift;
+	DWORD dwGBitMask = bigdata->selected__pixelformat.dwGBitMask;
+	DWORD dwGShift = bigdata->selected__pixelformat.dwGShift;
 
-	int dwBBitMask = bigdata->selected__pixelformat.dwBBitMask;
-	int dwBShift = bigdata->selected__pixelformat.dwBShift;
+	DWORD dwBBitMask = bigdata->selected__pixelformat.dwBBitMask;
+	DWORD dwBShift = bigdata->selected__pixelformat.dwBShift;
 
-	int dwAlphaBitMask = bigdata->selected__pixelformat.dwAlphaBitMask;
-	int dwAShift = bigdata->selected__pixelformat.dwAShift;
+	DWORD dwAlphaBitMask = bigdata->selected__pixelformat.dwAlphaBitMask;
+	DWORD dwAShift = bigdata->selected__pixelformat.dwAShift;
 
 	int BytesPerColor = bigdata->selected__pixelformat.BytesPerColor;
 
@@ -2674,6 +2674,8 @@ void win3d__tex_apply_palette_hw(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, B
 				words--;
 				indexes--;
 			}
+
+			tex->surface->Unlock(surfDesc.lpSurface);
 		}
 	}
 	else if (BytesPerColor == 4)
@@ -2753,11 +2755,13 @@ void win3d__tex_apply_palette_hw(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, B
 				dwords--;
 				indexes--;
 			}
+
+			tex->surface->Unlock(surfDesc.lpSurface);
 		}
 	}
 }
 
-void win3d__tex_apply_palette(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, BYTE *pal, __NC_STACK_display *dspl, int w, int h, void *buf)
+void win3d__tex_apply_palette(__NC_STACK_windd *, __NC_STACK_win3d *w3d, BYTE *pal, __NC_STACK_display *dspl, int w, int h, void *buf)
 {
 	win3d_bigdata *bigdata = w3d->bigdata;
 
@@ -2842,7 +2846,7 @@ void win3d__tex_apply_palette(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, BYTE
 	}
 }
 
-void win3d_func267(NC_STACK_win3d *obj, class_stru *zis, bitmap_intern **arg)
+void win3d_func267(NC_STACK_win3d *obj, class_stru *, bitmap_intern **arg)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
 	__NC_STACK_win3d *w3d = &obj->stack__win3d;
@@ -2887,7 +2891,7 @@ void win3d_func268__sub1(texStru *tex)
 }
 
 
-void win3d_func268(NC_STACK_win3d *obj, class_stru *zis, bitmap_intern **arg)
+void win3d_func268(NC_STACK_win3d *, class_stru *, bitmap_intern **arg)
 {
 	bitmap_intern *bitm = *arg;
 
@@ -2921,7 +2925,7 @@ int win3d__IDirectDrawSurface__Lock(bitmap_intern *bitm, texStru *tex)
 	}
 }
 
-size_t win3d_func269(NC_STACK_win3d *obj, class_stru *zis, bitmap_intern **arg)
+size_t win3d_func269(NC_STACK_win3d *, class_stru *, bitmap_intern **arg)
 {
 	bitmap_intern *bitm = *arg;
 	if ( bitm->flags & BITMAP_FLAG_SOFTWARE )
@@ -2940,7 +2944,7 @@ int win3d__IDirectDrawSurface__Unlock(bitmap_intern *bitm, texStru *tex)
 	return res;
 }
 
-void win3d_func270(NC_STACK_win3d *obj, class_stru *zis, bitmap_intern **arg)
+void win3d_func270(NC_STACK_win3d *, class_stru *, bitmap_intern **arg)
 {
 	bitmap_intern *bitm = *arg;
 
@@ -2957,7 +2961,7 @@ void win3d_func272(void *, class_stru *, stack_vals *)
 }
 
 
-void win3d_func271__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+void win3d_func271__sub0(__NC_STACK_windd *, __NC_STACK_win3d *w3d)
 {
 	for ( int i = 0; i < w3d->bigdata->texCh_count; i++ )
 	{
@@ -3035,7 +3039,7 @@ void win3d_func274__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, FILE *fil
 	}
 }
 
-void win3d_func274(NC_STACK_win3d *obj, class_stru *zis, const char **name)
+void win3d_func274(NC_STACK_win3d *obj, class_stru *, const char **name)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
 	__NC_STACK_win3d *w3d = &obj->stack__win3d;

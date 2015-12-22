@@ -86,9 +86,12 @@ size_t raster_func192(void *, class_stru *, stack_vals *)
 	return 0;
 }
 
-size_t raster_func193(void *, class_stru *, stack_vals *)
+size_t raster_func193(NC_STACK_raster *obj, class_stru *, bitmap_intern **out)
 {
-	printf("MAKE ME %s\n","raster_func193");
+	__NC_STACK_raster *rstr = &obj->stack__raster;
+	bitmap_intern *bitm = rstr->bitm_intern;
+
+	memcpy((*out)->buffer, bitm->buffer, bitm->width * bitm->height);
 	return 0;
 }
 
@@ -146,13 +149,13 @@ size_t raster_func206(void *, class_stru *, stack_vals *)
 	return 0;
 }
 
-void raster_func207(NC_STACK_raster *obj, class_stru *zis, rstr_207_arg *arg)
+void raster_func207(NC_STACK_raster *obj, class_stru *, rstr_207_arg *arg)
 {
 	__NC_STACK_raster *rstr = &obj->stack__raster;
 	rstr->tiles[arg->id] = arg->tiles;
 }
 
-void raster_func208(NC_STACK_raster *obj, class_stru *zis, rstr_207_arg *arg)
+void raster_func208(NC_STACK_raster *obj, class_stru *, rstr_207_arg *arg)
 {
 	__NC_STACK_raster *rstr = &obj->stack__raster;
 
@@ -205,9 +208,19 @@ size_t raster_func214(void *, class_stru *, stack_vals *)
 	return 0;
 }
 
-size_t raster_func217(void *, class_stru *, stack_vals *)
+size_t raster_func217(NC_STACK_raster *obj, class_stru *, rstr_arg217 *arg)
 {
-	printf("MAKE ME %s\n","raster_func217");
+	__NC_STACK_raster *rstr = &obj->stack__raster;
+
+	if ( arg->dword0 != 0xFFFFFFFF )
+		rstr->field_4 = arg->dword0;
+
+	if ( arg->dword4 != 0xFFFFFFFF )
+		rstr->field_8 = arg->dword4;
+
+	if ( arg->dword8 != 0xFFFFFFFF )
+		rstr->field_c = arg->dword8;
+
 	return 0;
 }
 

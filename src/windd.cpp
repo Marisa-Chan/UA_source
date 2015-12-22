@@ -264,7 +264,7 @@ void sub_41F490(unsigned int width, unsigned int height, int bits, int a4)
 
 
 
-HRESULT __stdcall enumdevice_callback(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR lpDeviceName, LPD3DDEVICEDESC hw, LPD3DDEVICEDESC sw, LPVOID a6)
+HRESULT __stdcall enumdevice_callback(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR lpDeviceName, LPD3DDEVICEDESC hw, LPD3DDEVICEDESC , LPVOID )
 {
 	_devices *device = &dd_params.enum_devices_[dd_params.number_of_devices];
 
@@ -474,7 +474,7 @@ HRESULT __stdcall enumdevice_callback(LPGUID lpGuid, LPSTR lpDeviceDescription, 
 	return 1;
 }
 
-signed int __stdcall DDRAW_ENUMERATE_CallBack(GUID *lpGUID, LPSTR DRIVER_NAME, LPSTR DRIVER_DESCR, void *a4)
+signed int __stdcall DDRAW_ENUMERATE_CallBack(GUID *lpGUID, LPSTR DRIVER_NAME, LPSTR DRIVER_DESCR, void *)
 {
 	char buf[144];
 
@@ -542,7 +542,7 @@ signed int __stdcall DDRAW_ENUMERATE_CallBack(GUID *lpGUID, LPSTR DRIVER_NAME, L
 
 
 
-HRESULT __stdcall gfx_modes_callback(LPDDSURFACEDESC a1, LPVOID lpContext)
+HRESULT __stdcall gfx_modes_callback(LPDDSURFACEDESC a1, LPVOID )
 {
 ////	if ( a1->dwWidth <= 1024 && a1->dwHeight <= 768 ) ////HACK
 	{
@@ -3121,7 +3121,7 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
 	}
 }
 
-void windd_func209(NC_STACK_windd *obj, class_stru *zis, w3d_a209 *arg)
+void windd_func209(NC_STACK_windd *obj, class_stru *, w3d_a209 *arg)
 {
 	windd_func209__sub0(&obj->stack__windd, obj->stack__raster.tiles, (char *)arg->field_0, (char **)arg->field_4);
 }
@@ -3162,7 +3162,7 @@ void windd_func219(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
 		call_parent(zis, obj, 219, stak);
 }
 
-size_t windd_func256(NC_STACK_windd *obj, class_stru *zis, mode_node *nod, windd_arg256 *inout)
+size_t windd_func256(NC_STACK_windd *obj, class_stru *, mode_node *nod, windd_arg256 *inout)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
 
@@ -3296,7 +3296,7 @@ void clearAndLockBackBufferSurface(__NC_STACK_windd *wdd)
 	}
 }
 
-void windd_func257(NC_STACK_windd *obj, class_stru *zis, stack_vals *)
+void windd_func257(NC_STACK_windd *obj, class_stru *, stack_vals *)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
 	clearAndLockBackBufferSurface(wdd);
@@ -3436,7 +3436,7 @@ void windd_func258__sub0(NC_STACK_windd *obj, __NC_STACK_display *dspl, __NC_STA
 	}
 }
 
-void windd_func258(NC_STACK_windd *obj, class_stru *zis, stack_vals *)
+void windd_func258(NC_STACK_windd *obj, class_stru *, stack_vals *)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
 	__NC_STACK_display *dspl = &obj->stack__display;
@@ -3614,7 +3614,7 @@ void sb_0x42d530(__NC_STACK_windd *wdd, int a2)
 	}
 }
 
-void windd_func320(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+void windd_func320(NC_STACK_windd *obj, class_stru *, stack_vals *)
 {
 	sb_0x42d530(&obj->stack__windd, 0);
 }
@@ -3668,7 +3668,7 @@ void sub_42D724(__NC_STACK_windd *wdd, int a2)
 	}
 }
 
-void windd_func321(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+void windd_func321(NC_STACK_windd *obj, class_stru *, stack_vals *)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
 	__NC_STACK_display *dspl = &obj->stack__display;
@@ -3688,7 +3688,7 @@ char * windd_func322__sub0(__NC_STACK_windd *wdd, const char *box_title, const c
 }
 
 //Show DLGBox with edit field and get entered value
-void windd_func322(NC_STACK_windd *obj, class_stru *zis, windd_dlgBox *dlgBox)
+void windd_func322(NC_STACK_windd *obj, class_stru *, windd_dlgBox *dlgBox)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
 
@@ -3733,7 +3733,7 @@ void windd_func323__sub0(__NC_STACK_windd *wdd, const char *filename)
 }
 
 //Play movie file
-void windd_func323(NC_STACK_windd *obj, class_stru *zis, const char **filename)
+void windd_func323(NC_STACK_windd *obj, class_stru *, const char **filename)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
 	__NC_STACK_display *dspl = &obj->stack__display;
@@ -3742,7 +3742,7 @@ void windd_func323(NC_STACK_windd *obj, class_stru *zis, const char **filename)
 	sub_42D37C(wdd, dspl->palette);
 }
 
-void windd_func324(NC_STACK_windd *obj, class_stru *zis, wdd_func324arg *inout)
+void windd_func324(NC_STACK_windd *, class_stru *, wdd_func324arg *inout)
 {
 	wddDevice *findedNode;
 	wddDevice *node;

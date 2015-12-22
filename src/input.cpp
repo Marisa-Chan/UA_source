@@ -210,7 +210,7 @@ int input__set_buttons_and_sliders(__NC_STACK_input *inp, input__func64__params 
 	return 1;
 }
 
-size_t input_func64(NC_STACK_input *obj, class_stru *zis, input__func64__params *arg)
+size_t input_func64(NC_STACK_input *obj, class_stru *, input__func64__params *arg)
 {
 	char classname[256];
 
@@ -331,7 +331,7 @@ void sub_41CC94(nlist *lst, inp_l65 *loc, int arg)
 	}
 }
 
-void input_func65(NC_STACK_input *obj, class_stru *zis, struC5 *arg)
+void input_func65(NC_STACK_input *obj, class_stru *, struC5 *arg)
 {
 	__NC_STACK_input *inp = &obj->stack__input;
 	memset(arg, 0, sizeof(struC5));
@@ -398,7 +398,7 @@ void input_func65(NC_STACK_input *obj, class_stru *zis, struC5 *arg)
 	}
 }
 
-size_t input_func66(NC_STACK_input *obj, class_stru *zis, input__func66__params *arg)
+size_t input_func66(NC_STACK_input *obj, class_stru *, input__func66__params *arg)
 {
 	__NC_STACK_input *inpt = &obj->stack__input;
 
@@ -447,7 +447,7 @@ size_t input_func66(NC_STACK_input *obj, class_stru *zis, input__func66__params 
 
 class_return input_class_descr;
 
-class_return * class_set_input(int a1, ...)
+class_return * class_set_input(int , ...)
 {
 
 	memset(input_funcs, 0, sizeof(CLASSFUNC) * 1024);

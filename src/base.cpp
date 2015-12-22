@@ -427,14 +427,18 @@ void base_setter(__NC_STACK_base *base, stack_vals *stak)
 						delete_class_obj(base->OBJ_SKELETON);
 
 					base->OBJ_SKELETON = (NC_STACK_skeleton *)stk->value;
+					base->field_DC.field_20 = NULL;
 					call_vtbl(base->OBJ_SKELETON, 3, 0x80002000, &base->field_DC.field_20, 0);
 				}
 				break;
 
 			case 0x80001001:
 				if (stk->value)
-					call_vtbl((NC_STACK_class *)stk->value, 64, &base->ADES);
-
+                {
+                    //call_vtbl((NC_STACK_class *)stk->value, 64, &base->ADES);
+                    nlist *tmp = &base->ADES;
+                    call_method((NC_STACK_class *)stk->value, 64, &tmp);
+                }
 				break;
 
 			case 0x80001002:
@@ -499,16 +503,16 @@ void base_setter(__NC_STACK_base *base, stack_vals *stak)
 	}
 }
 
-void base_func2(NC_STACK_base *obj, class_stru *zis, stack_vals *stak)
+size_t base_func2(NC_STACK_base *obj, class_stru *zis, stack_vals *stak)
 {
 	__NC_STACK_base *base = &obj->stack__base;
 
 	base_setter(base, stak);
 
-	call_parent(zis, obj, 2, stak);
+	return call_parent(zis, obj, 2, stak);
 }
 
-void base_getter(NC_STACK_base *obj, __NC_STACK_base *base, stack_vals *stak)
+void base_getter(NC_STACK_base *, __NC_STACK_base *base, stack_vals *stak)
 {
 	stack_vals *stk = stak;
 
@@ -658,17 +662,17 @@ void base_getter(NC_STACK_base *obj, __NC_STACK_base *base, stack_vals *stak)
 	}
 }
 
-void base_func3(NC_STACK_base *obj, class_stru *zis, stack_vals *stak)
+size_t base_func3(NC_STACK_base *obj, class_stru *zis, stack_vals *stak)
 {
 
 	__NC_STACK_base *base = &obj->stack__base;
 
 	base_getter(obj, base, stak);
 
-	call_parent(zis, obj, 3, stak);
+	return call_parent(zis, obj, 3, stak);
 }
 
-int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *base, MFILE *mfile)
+int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
 {
 	if ( obj )
 	{
@@ -726,8 +730,10 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *base, MFILE *mfile)
 
 				v4 = &stk[7];
 
+				NC_STACK_base *zzz[2] = {NULL, NULL};
+
 				if ( dst.p17 & 4 )
-					call_vtbl(obj, 67, 0, 0);
+					call_method(obj, 67, zzz);
 
 				flag_xyz v38;
 
@@ -792,7 +798,7 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *base, MFILE *mfile)
 	return 0;
 }
 
-int base_READ_ADES(NC_STACK_base *obj, __NC_STACK_base *base, MFILE *mfile)
+int base_READ_ADES(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
 {
 	if (!obj)
 		return 0;
@@ -818,6 +824,7 @@ int base_READ_ADES(NC_STACK_base *obj, __NC_STACK_base *base, MFILE *mfile)
 			v7[0].id = 0x80001001;
 			v7[0].value = (size_t)objt;
 			v7[1].id = 0;
+			v7[1].value = 0;
 
 			call_method(obj, 2, v7);
 		}
@@ -829,10 +836,12 @@ int base_READ_ADES(NC_STACK_base *obj, __NC_STACK_base *base, MFILE *mfile)
 	return 1;
 }
 
-int base_READ_KIDS(NC_STACK_base *obj, __NC_STACK_base *base, MFILE *mfile)
+int base_READ_KIDS(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
 {
 	if (!obj)
 		return 0;
+
+    int kidid = 0;
 
 	while ( 1 )
 	{
@@ -844,11 +853,14 @@ int base_READ_KIDS(NC_STACK_base *obj, __NC_STACK_base *base, MFILE *mfile)
 
 		MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
 
-		if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_KIDS )
+		if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
 		{
 			NC_STACK_class *objt = READ_OBJT(mfile);
 			if ( !objt )
-				return 0;
+            {
+                return 0;
+            }
+            kidid++;
 
 			call_method(obj, 65, &objt);
 		}
@@ -969,7 +981,7 @@ NC_STACK_base *base_func5(class_stru *clss, class_stru *zis, MFILE **file)
 	return obj;
 }
 
-int base_func6(NC_STACK_base *obj, class_stru *zis, MFILE **file)
+size_t base_func6(NC_STACK_base *obj, class_stru *zis, MFILE **file)
 {
 	MFILE *mfile = *file;
 	__NC_STACK_base *base = &obj->stack__base;
@@ -1124,7 +1136,7 @@ int sub_430880(const void * a, const void * b)
 }
 
 
-void base_func64(NC_STACK_base *obj, class_stru *zis, base_64arg *arg)
+size_t base_func64(NC_STACK_base *obj, class_stru *, base_64arg *arg)
 {
 	__NC_STACK_base *base = &obj->stack__base;
 
@@ -1173,10 +1185,12 @@ void base_func64(NC_STACK_base *obj, class_stru *zis, base_64arg *arg)
 
 	call_method(win3d, 214, 0);
 	call_method(win3d, 258, 0);
+
+	return 1;
 }
 
 // Fill parent info struct and push it to kid
-void base_func65(NC_STACK_base *obj, class_stru *zis, NC_STACK_base **kid)
+size_t base_func65(NC_STACK_base *obj, class_stru *, NC_STACK_base **kid)
 {
 	__NC_STACK_base *base = &obj->stack__base;
 
@@ -1191,10 +1205,12 @@ void base_func65(NC_STACK_base *obj, class_stru *zis, NC_STACK_base **kid)
 		v6.parent_field_1c = NULL;
 
 	call_method(*kid , 66, &v6);
+
+	return 1;
 }
 
 // Add object to parent kids list
-void base_func66(NC_STACK_base *obj, class_stru *zis, base_66_arg_struct *prnt_info)
+size_t base_func66(NC_STACK_base *obj, class_stru *, base_66_arg_struct *prnt_info)
 {
 	__NC_STACK_base *base = &obj->stack__base;
 
@@ -1214,7 +1230,7 @@ void base_func66(NC_STACK_base *obj, class_stru *zis, base_66_arg_struct *prnt_i
 	base->parent_base = prnt_info->parent;
 	if ( prnt_info->parent )
 	{
-		AddTail(prnt_info->KIDS, (nnode *)&base->kid_node.next);
+		AddTail(prnt_info->KIDS, &base->kid_node);
 		if ( base->field_4 & 4 )
 		{
 			NC_STACK_base *v7[2];
@@ -1225,6 +1241,8 @@ void base_func66(NC_STACK_base *obj, class_stru *zis, base_66_arg_struct *prnt_i
 		}
 	}
 	base->params3D.parent_1c = prnt_info->parent_field_1c;
+
+	return 1;
 }
 
 void sub_430A20(base_1c_struct *s3d)
@@ -1237,7 +1255,7 @@ base_1c_struct *sub_430A28()
 	return dword_546DC0;
 }
 
-void base_func67(NC_STACK_base *obj, class_stru *zis, NC_STACK_base **arg)
+size_t base_func67(NC_STACK_base *obj, class_stru *, NC_STACK_base **arg)
 {
 	__NC_STACK_base *base = &obj->stack__base;
 
@@ -1263,7 +1281,7 @@ void base_func67(NC_STACK_base *obj, class_stru *zis, NC_STACK_base **arg)
 		base->field_4 &= 0xBB;
 
 		if ( !base->parent_base )
-			return;
+			return 1;
 
 		call_method(base->parent_base, 67, arg);
 	}
@@ -1276,15 +1294,17 @@ void base_func67(NC_STACK_base *obj, class_stru *zis, NC_STACK_base **arg)
 		base->field_4 &= 0xBF;
 
 		if ( !base->parent_base )
-			return;
+			return 1;
 
 		arg[0] = obj;
 
 		call_method(base->parent_base, 67, arg);
 	}
+
+	return 1;
 }
 
-void base_func68(NC_STACK_base *obj, class_stru *zis, flag_xyz *arg)
+size_t base_func68(NC_STACK_base *obj, class_stru *, flag_xyz *arg)
 {
 	__NC_STACK_base *base = &obj->stack__base;
 
@@ -1310,9 +1330,10 @@ void base_func68(NC_STACK_base *obj, class_stru *zis, flag_xyz *arg)
 		if ( flg & 4 )
 			s3d->grp1_p3 = arg->z;
 	}
+	return 1;
 }
 
-void base_func69(NC_STACK_base *obj, class_stru *zis, flag_xyz *arg)
+size_t base_func69(NC_STACK_base *obj, class_stru *, flag_xyz *arg)
 {
 	__NC_STACK_base *base = &obj->stack__base;
 
@@ -1347,9 +1368,11 @@ void base_func69(NC_STACK_base *obj, class_stru *zis, flag_xyz *arg)
 				s3d->grp3_p3 = arg->z;
 		}
 	}
+
+	return 1;
 }
 
-void base_func70(NC_STACK_base *obj, class_stru *zis, flag_xyz2 *arg)
+size_t base_func70(NC_STACK_base *obj, class_stru *, flag_xyz2 *arg)
 {
 	__NC_STACK_base *base = &obj->stack__base;
 
@@ -1377,9 +1400,11 @@ void base_func70(NC_STACK_base *obj, class_stru *zis, flag_xyz2 *arg)
 	}
 
 	make_scale_rotation__matrix(s3d);
+
+	return 1;
 }
 
-void base_func71(NC_STACK_base *obj, class_stru *zis, flag_xyz2 *arg)
+size_t base_func71(NC_STACK_base *obj, class_stru *, flag_xyz2 *arg)
 {
 	__NC_STACK_base *base = &obj->stack__base;
 
@@ -1414,9 +1439,11 @@ void base_func71(NC_STACK_base *obj, class_stru *zis, flag_xyz2 *arg)
 				s3d->grp5_p3 = arg->z << 6;
 		}
 	}
+
+	return 1;
 }
 
-void base_func72(NC_STACK_base *obj, class_stru *zis, flag_xyz *arg)
+size_t base_func72(NC_STACK_base *obj, class_stru *, flag_xyz *arg)
 {
 	__NC_STACK_base *base = &obj->stack__base;
 
@@ -1444,9 +1471,11 @@ void base_func72(NC_STACK_base *obj, class_stru *zis, flag_xyz *arg)
 	}
 
 	make_scale_rotation__matrix(s3d);
+
+    return 1;
 }
 
-void base_func73(NC_STACK_base *obj, class_stru *zis, base73arg *arg)
+size_t base_func73(NC_STACK_base *obj, class_stru *, base73arg *arg)
 {
 	printf("%s - NOT RECOGINZED ARGUMENT\n","base_func73");
 	__NC_STACK_base *base = &obj->stack__base;
@@ -1485,9 +1514,11 @@ void base_func73(NC_STACK_base *obj, class_stru *zis, base73arg *arg)
 
 	for ( base_node *kid = (base_node *)base->KIDS.head; kid->next; kid = (base_node *)kid->next )
 		call_method(kid->self_full, 73, arg);
+
+    return 1;
 }
 
-size_t base_func77(NC_STACK_base *obj, class_stru *zis, base77Func *arg)
+size_t base_func77(NC_STACK_base *obj, class_stru *, base77Func *arg)
 {
 	__NC_STACK_base *base = &obj->stack__base;
 
@@ -1557,7 +1588,7 @@ size_t base_func77(NC_STACK_base *obj, class_stru *zis, base77Func *arg)
 	return v12;
 }
 
-void base_func78(NC_STACK_base *obj, class_stru *zis, base73arg *arg)
+size_t base_func78(NC_STACK_base *obj, class_stru *, base73arg *arg)
 {
 	printf("%s - NOT RECOGINZED ARGUMENT\n","base_func78");
 
@@ -1583,9 +1614,11 @@ void base_func78(NC_STACK_base *obj, class_stru *zis, base73arg *arg)
 	base->params3D.grp3_p1 += -arg->dword8->float7D * base->params3D.scale_rotation.m20;
 	base->params3D.grp3_p2 += -arg->dword8->float7D * base->params3D.scale_rotation.m21;
 	base->params3D.grp3_p3 += -arg->dword8->float7D * base->params3D.scale_rotation.m22;
+
+    return 1;
 }
 
-void base_func79(NC_STACK_base *obj, class_stru *zis, NC_STACK_base **arg)
+size_t base_func79(NC_STACK_base *obj, class_stru *, NC_STACK_base **arg)
 {
 	printf("%s - NOT RECOGINZED ARGUMENT\n","base_func79");
 
@@ -1609,11 +1642,13 @@ void base_func79(NC_STACK_base *obj, class_stru *zis, NC_STACK_base **arg)
 
 		call_method(arg[0], 67, v4);
 	}
+
+	return 1;
 }
 
 class_return base_class_descr;
 
-class_return * class_set_base(int a1, ...)
+class_return * class_set_base(int , ...)
 {
 
 	memset(base_funcs, 0, sizeof(CLASSFUNC) * 1024);

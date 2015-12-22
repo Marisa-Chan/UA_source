@@ -143,13 +143,13 @@ void ade_func2__sub0(__NC_STACK_ade *ade, stack_vals *stak)
 	}
 }
 
-void ade_func2(NC_STACK_ade *obj, class_stru *zis, stack_vals *stak)
+size_t ade_func2(NC_STACK_ade *obj, class_stru *zis, stack_vals *stak)
 {
 	__NC_STACK_ade *ade = &obj->stack__ade;
 
 	ade_func2__sub0(ade, stak);
 
-	call_parent(zis, obj, 2, stak);
+	return call_parent(zis, obj, 2, stak);
 }
 
 void ade_func3__sub0(__NC_STACK_ade *ade, stack_vals *stak)
@@ -203,21 +203,21 @@ void ade_func3__sub0(__NC_STACK_ade *ade, stack_vals *stak)
 	}
 }
 
-void ade_func3(NC_STACK_ade *obj, class_stru *zis, stack_vals *stak)
+size_t ade_func3(NC_STACK_ade *obj, class_stru *zis, stack_vals *stak)
 {
 
 	__NC_STACK_ade *ade = &obj->stack__ade;
 
 	ade_func3__sub0(ade, stak);
 
-	call_parent(zis, obj, 3, stak);
+	return call_parent(zis, obj, 3, stak);
 }
 
 
-NC_STACK_ade *ade_func5(class_stru *obj, class_stru *zis, MFILE **file)
+NC_STACK_ade *ade_func5(class_stru *clss, class_stru *zis, MFILE **file)
 {
 	MFILE *mfile = *file;
-	NC_STACK_ade *clss = NULL;
+	NC_STACK_ade *obj = NULL;
 	while ( 1 )
 	{
 		int iff_res = read_next_IFF(mfile, 2);
@@ -227,8 +227,8 @@ NC_STACK_ade *ade_func5(class_stru *obj, class_stru *zis, MFILE **file)
 
 		if ( iff_res )
 		{
-			if ( clss )
-				call_method(clss, 1);
+			if ( obj )
+				call_method(obj, 1);
 			return NULL;
 		}
 
@@ -236,17 +236,17 @@ NC_STACK_ade *ade_func5(class_stru *obj, class_stru *zis, MFILE **file)
 
 		if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ROOT )
 		{
-			clss = (NC_STACK_ade *)call_parent(zis, obj, 5, (stack_vals *)file);
+			obj = (NC_STACK_ade *)call_parent(zis, clss, 5, (stack_vals *)file);
 
-			if ( !clss )
+			if ( !obj )
 				break;
 
-			clss->stack__ade.self = clss;
+			obj->stack__ade.self = obj;
 
 		}
 		else if ( chunk->TAG == TAG_STRC )
 		{
-			if ( clss )
+			if ( obj )
 			{
 				ADE_STRC hdr;
 
@@ -270,7 +270,7 @@ NC_STACK_ade *ade_func5(class_stru *obj, class_stru *zis, MFILE **file)
 					stk[3].value = hdr.field_6;
 					stk[4].id = 0;
 
-					call_method(clss, 2, stk);
+					call_method(obj, 2, stk);
 				}
 			}
 			read_next_IFF(mfile, 2);
@@ -281,10 +281,10 @@ NC_STACK_ade *ade_func5(class_stru *obj, class_stru *zis, MFILE **file)
 		}
 	}
 
-	return clss;
+	return obj;
 }
 
-int ade_func6(NC_STACK_ade *obj, class_stru *zis, MFILE **file)
+size_t ade_func6(NC_STACK_ade *obj, class_stru *zis, MFILE **file)
 {
 	MFILE *mfile = *file;
 	__NC_STACK_ade *ade = &obj->stack__ade;
@@ -311,7 +311,7 @@ int ade_func6(NC_STACK_ade *obj, class_stru *zis, MFILE **file)
 }
 
 // Add ade to list
-void ade_func64(NC_STACK_ade *obj, class_stru *zis, nlist **lst)
+size_t ade_func64(NC_STACK_ade *obj, class_stru *, nlist **lst)
 {
 	__NC_STACK_ade *ade = &obj->stack__ade;
 
@@ -320,11 +320,13 @@ void ade_func64(NC_STACK_ade *obj, class_stru *zis, nlist **lst)
 
 	AddTail(*lst, ade);
 	ade->flags |= 1;
+
+	return 1;
 }
 
 class_return ade_class_descr;
 
-class_return * class_set_ade(int a1, ...)
+class_return * class_set_ade(int , ...)
 {
 
 	memset(ade_funcs, 0, sizeof(CLASSFUNC) * 1024);

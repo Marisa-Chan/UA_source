@@ -11,6 +11,7 @@
 #include "rsrc.h"
 #include "bitmap.h"
 #include "ilbm.h"
+#include "bmpAnm.h"
 #include "raster.h"
 #include "display.h"
 #include "windd.h"
@@ -24,6 +25,8 @@
 #include "sample.h"
 #include "wav.h"
 #include "base.h"
+
+#include "particle.h"
 
 #include "button.h"
 
@@ -90,9 +93,9 @@ int set_classes_list()
 	add_to_classes_list(&ade_class_off);
 	add_to_classes_list(&area_class_off);
 	add_to_classes_list(&base_class_off);
-////	add_to_classes_list(&bmpanim_class_off.nodeBase);
+	add_to_classes_list(&bmpanim_class_off);
 	add_to_classes_list(&amesh_class_off);
-////	add_to_classes_list(&particle_class_off.nodeBase);
+	add_to_classes_list(&particle_class_off);
 	add_to_classes_list(&embed_class_off);
 	add_to_classes_list(&idev_class_off);
 	add_to_classes_list(&input_class_off);
@@ -131,10 +134,10 @@ int set_classes_list()
 stored_functions_engine *init_engine(unsigned int engineID)
 {
 	unk_class *unkClss = NULL;
-	stored_functions_engine **engineFuncs = NULL; // ecx@8
+	stored_functions_engine **engineFuncs = NULL;
 
-	char v10[256]; // [sp+0h] [bp-1A8h]@14
-	char v11[128]; // [sp+100h] [bp-A8h]@1
+	char v10[256];
+	char v11[128];
 
 	memset(v11, 0, 128);
 	strcpy(v11, "dummy.engine");
@@ -169,7 +172,7 @@ stored_functions_engine *init_engine(unsigned int engineID)
 		engine.key = "tform.engine";
 	}
 
-	if ( get_keyvalue_from_ini(0, &engine, 1u) )
+	if ( get_keyvalue_from_ini(0, &engine, 1) )
 	{
 		strcpy(v10, "MC2engines:");
 		strcat(v10, (char *)engine.value.pval);

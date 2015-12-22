@@ -892,17 +892,13 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 		return 0;
 	}
 
-
-
-
+	printf("%d\n", yw_LoadSet(yw, 1)); //// HACK TEST LOAD SET
 
 	if ( !ypaworld_func156__sub2(yw) )
 	{
 		ypa_log_out("Could not init level select stuff!\n");
 		return 0;
 	}
-
-
 
 	usr->titel_button = (NC_STACK_button *)init_get_class("button.class", 0x80001003, 0, 0x80001004, 0, 0x80001005, yw->screen_width, 0x80001006, yw->screen_height, 0);
 	if ( !usr->titel_button )
@@ -1046,6 +1042,8 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 	call_method(usr->titel_button, 68, &v250);
 
 
+
+
 	return 1;
 }
 
@@ -1058,7 +1056,7 @@ void ypaworld_func157(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 void ypaworld_func158__sub4(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *struc5)
 {
 	if ( usr->field_4A )
-	  sb_0x4e75e8(yw, usr->field_46);
+		sb_0x4e75e8(yw, usr->field_46);
 
 	if ( yw->GameShell->field_46 == 0 )
 	{
@@ -1094,6 +1092,14 @@ void ypaworld_func158(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
 	call_method(usr->titel_button, 69, usr->field_3A);
 	call_method(usr->titel_button, 70, 0);
+
+	yw->brief.brf_objs.field_0 = 2;
+	yw->brief.brf_objs.object_id = 24;
+
+	yw->brief.brf_objs.field_C = 1000;
+	yw->brief.field_2E7C += usr->field_3A->period;
+
+	ypaworld_func158__DrawVehicle(yw, &yw->brief, usr->field_3A);
 
 	call_method(yw->win3d, 216);
 
@@ -1254,7 +1260,7 @@ size_t ypaworld_func166(NC_STACK_ypaworld *obj, class_stru *zis,const char **lan
 
 	if ( v19 || load_lang_lng(yw, yw->lang_name) )
 	{
-		const char *v11;
+		const char *v11 = NULL;
 
 		if ( yw->screen_width >= 512 )
 			v11 = get_lang_string(yw->string_pointers_p2, 15, "MS Sans Serif,12,400,0");
@@ -1263,8 +1269,8 @@ size_t ypaworld_func166(NC_STACK_ypaworld *obj, class_stru *zis,const char **lan
 
 		load_font(v11);
 
-		NC_STACK_win3d *win3d;
-		gfxEngine__getter(0x8000300D, &win3d);
+		NC_STACK_win3d *win3d = NULL;
+		gfxEngine__getter(0x8000300D, &win3d, 0);
 
 		if ( !strcasecmp( get_lang_string(yw->string_pointers_p2, 17, "FALSE") , "FALSE") )
 		{

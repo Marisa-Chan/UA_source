@@ -5,8 +5,16 @@
 
 void va_to_arr(stack_vals *out, int sz, va_list in)
 {
+	int previd = -1;
 	for (int i = 0; i < sz; i++)
 	{
+		if (previd == 2)
+		{
+			out[i].id = 0;
+			out[i].value = 0;
+			break;
+		}
+
 		unsigned int id = va_arg(in, unsigned int);
 		if (id == 0 || i == sz - 1)
 		{
@@ -19,11 +27,14 @@ void va_to_arr(stack_vals *out, int sz, va_list in)
 
 		out[i].id = id;
 		out[i].value = value;
+
+		previd = id;
 	}
 }
 
 void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list in)
 {
+	int previd = -1;
 	if (_id != 0)
 	{
 		out[0].id = _id;
@@ -31,6 +42,13 @@ void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list in)
 
 		for (int i = 1; i < sz; i++)
 		{
+			if (previd == 2)
+			{
+				out[i].id = 0;
+				out[i].value = 0;
+				break;
+			}
+
 			unsigned int id = va_arg(in, unsigned int);
 			if (id == 0 || i == sz - 1)
 			{
@@ -43,6 +61,8 @@ void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list in)
 
 			out[i].id = id;
 			out[i].value = value;
+
+			previd = id;
 		}
 	}
 }

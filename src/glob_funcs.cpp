@@ -7,7 +7,7 @@ void nc_FreeMem(void *mem)
 
 void *AllocVec(size_t size, int a2)
 {
-	void *mem = calloc(size, 1);
+	void *mem = calloc(1, size);
 
 	if (!mem)
 		ypa_log_out("_AllocVec(%d, %d) failed (Out of mem)!\n", size, a2);

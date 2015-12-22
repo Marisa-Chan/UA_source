@@ -14,6 +14,7 @@
 				<Option compiler="wine_gnu_gcc_compiler" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-O0" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -62,6 +63,8 @@
 		<Unit filename="base.h" />
 		<Unit filename="bitmap.cpp" />
 		<Unit filename="bitmap.h" />
+		<Unit filename="bmpAnm.cpp" />
+		<Unit filename="bmpAnm.h" />
 		<Unit filename="button.cpp" />
 		<Unit filename="button.h" />
 		<Unit filename="classes.cpp" />
@@ -105,6 +108,8 @@
 		<Unit filename="nlist.h" />
 		<Unit filename="nucleas.cpp" />
 		<Unit filename="nucleas.h" />
+		<Unit filename="particle.cpp" />
+		<Unit filename="particle.h" />
 		<Unit filename="raster.cpp" />
 		<Unit filename="raster.h" />
 		<Unit filename="rsrc.cpp" />
@@ -129,6 +134,7 @@
 		<Unit filename="wintimer.h" />
 		<Unit filename="yw.cpp" />
 		<Unit filename="yw.h" />
+		<Unit filename="yw_func2.cpp" />
 		<Unit filename="yw_funcs.cpp" />
 		<Unit filename="yw_internal.h" />
 		<Unit filename="yw_protos.cpp" />

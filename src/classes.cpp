@@ -44,7 +44,10 @@ stored_functions * find_class(const char *name, unk_class *out)
 size_t call_method(NC_STACK_class *a1, int a2, void *a3)
 {
 	if ( a1 )
-		return a1->class_owner->clvtbl[a2].cl_func(a1, a1->class_owner->clvtbl[a2].p_cl, (stack_vals *)a3);
+    {
+        //printf("call_method %s (%s) %d\n", a1->class_owner->name, a1->NAME, a2);
+        return a1->class_owner->clvtbl[a2].cl_func(a1, a1->class_owner->clvtbl[a2].p_cl, (stack_vals *)a3);
+    }
 
 	ypa_log_out("ERROR: Method (%d) invocation on NULL Object!\n", a2);
 	return 0;
@@ -53,7 +56,10 @@ size_t call_method(NC_STACK_class *a1, int a2, void *a3)
 size_t call_method(NC_STACK_class *a1, int a2)
 {
 	if ( a1 )
-		return a1->class_owner->clvtbl[a2].cl_func(a1, a1->class_owner->clvtbl[a2].p_cl, NULL);
+    {
+        //printf("call_method %s (%s) %d\n", a1->class_owner->name, a1->NAME, a2);
+        return a1->class_owner->clvtbl[a2].cl_func(a1, a1->class_owner->clvtbl[a2].p_cl, NULL);
+    }
 
 	ypa_log_out("ERROR: Method (%d) invocation on NULL Object!\n", a2);
 	return 0;
@@ -163,6 +169,7 @@ class_stru * get_class(const char *a1)
 
 		stored_functions *class_initiator = find_class(buf, &class_descr->class_descriptor_in_list);
 
+
 		if ( !class_initiator )
 		{
 			nc_FreeMem(classname);
@@ -182,6 +189,7 @@ class_stru * get_class(const char *a1)
 		}
 
 		class_descr->class_stack_size = class_ret->varSize;
+		class_descr->stack_offset = 0;
 		class_descr->clret_fieldA = class_ret->field_A;
 
 		for (int i = 0; i < 1024; i++)
@@ -282,6 +290,9 @@ stack_vals * find_id_in_stack2(unsigned int id, stack_vals *a2)
 
 size_t find_id_in_stack_def_val(unsigned int find_id, size_t def_value, stack_vals *a3)
 {
+    if (!a3)
+        return def_value;
+
 	while ( 1 )
 	{
 		if ( a3->id == find_id )
@@ -290,7 +301,12 @@ size_t find_id_in_stack_def_val(unsigned int find_id, size_t def_value, stack_va
 			return def_value;
 
 		if ( a3->id == 2 )
-			a3 = (stack_vals *)a3->value;
+        {
+            if (a3->value == 0)
+                printf("find_id_in_stack_def_val, stack NULL pointer\n");
+            else
+                a3 = (stack_vals *)a3->value;
+        }
 		else if ( a3->id == 3 )
 			a3 += a3->value;
 		else
@@ -300,10 +316,10 @@ size_t find_id_in_stack_def_val(unsigned int find_id, size_t def_value, stack_va
 
 size_t call_parent(class_stru *zis, void *caller, int idx, stack_vals *stk)
 {
+    //printf("call_parent %s %d\n", zis->name, idx);
 	clvt *v4 = &zis->parent_class->clvtbl[idx];
 	return v4->cl_func((NC_STACK_class *)caller, v4->p_cl, stk);
 }
-
 
 NC_STACK_class * READ_OBJT(MFILE *mfile)
 {
@@ -323,14 +339,19 @@ NC_STACK_class * READ_OBJT(MFILE *mfile)
 
 		if ( tag == TAG_CLID )
 		{
-			char classname[256];
+			char classname[300];
+			memset(classname, 0 , 300);
+
 			if ( mfread(mfile, classname, 256) < 0 )
 				return NULL;
 
 			clss = get_class(classname);
 
 			if ( !clss )
-				return NULL;
+            {
+                return NULL;
+            }
+
 
 			read_next_IFF(mfile, 2);
 		}
@@ -349,7 +370,10 @@ NC_STACK_class * READ_OBJT(MFILE *mfile)
 		else
 		{
 			if ( !read_default(mfile) )
-				return NULL;
+            {
+                return NULL;
+            }
+
 		}
 	}
 	return obj;
@@ -410,7 +434,9 @@ int sub_4117F8(NC_STACK_class *obj, MFILE *mfile)
 		return 0;
 
 	sub_413290(mfile);
-	int res = (int)call_vtbl(obj, 6, mfile);
+	MFILE *tmp = mfile;
+	//int res = (int)call_vtbl(obj, 6, mfile);
+	int res = (int)call_method(obj, 6, &tmp);
 	sub_413290(mfile);
 
 	return res;

@@ -48,7 +48,7 @@ NC_STACK_skeleton * skeleton_func0(class_stru *clss, class_stru *zis, stack_vals
 	return obj;
 }
 
-void skeleton_func3(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak)
+size_t skeleton_func3(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak)
 {
 
 	__NC_STACK_skeleton *skelt = &obj->stack__skeleton;
@@ -100,7 +100,7 @@ void skeleton_func3(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak)
 			stk++;
 		}
 	}
-	call_parent(zis, obj, 3, stak);
+	return call_parent(zis, obj, 3, stak);
 }
 
 // Create skeleton resource node and fill rsrc field data
@@ -115,7 +115,8 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
 
 	if (!elm_num)
 	{
-		call_vtbl(obj, 65, res);
+		//call_vtbl(obj, 65, res);
+		call_method(obj, 65, &res);
 		return NULL;
 	}
 
@@ -123,7 +124,8 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
 
 	if (!sklt)
 	{
-		call_vtbl(obj, 65, res);
+		//call_vtbl(obj, 65, res);
+		call_method(obj, 65, &res);
 		return NULL;
 	}
 
@@ -135,7 +137,8 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
 
 	if (!POO)
 	{
-		call_vtbl(obj, 65, res);
+		//call_vtbl(obj, 65, res);
+		call_method(obj, 65, &res);
 		return NULL;
 	}
 
@@ -145,7 +148,8 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
 
 	if (!POO2)
 	{
-		call_vtbl(obj, 65, res);
+		//call_vtbl(obj, 65, res);
+		call_method(obj, 65, &res);
 		return NULL;
 	}
 
@@ -162,7 +166,8 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
 		////if ( !call_vtbl(obj, 129, sklt, sen_count) ) //// OPTIMIZATION
 		if ( !call_method(obj, 129, &arg129) )
 		{
-			call_vtbl(obj, 65, res);
+			//call_vtbl(obj, 65, res);
+			call_method(obj, 65, &res);
 			return NULL;
 		}
 	}
@@ -174,7 +179,8 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
 	{
 		if (num_indexes <= 0)
 		{
-			call_vtbl(obj, 65, res);
+			//call_vtbl(obj, 65, res);
+			call_method(obj, 65, &res);
 			return NULL;
 		}
 
@@ -186,7 +192,8 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
 		////if ( !call_vtbl(obj, 130, sklt, pol_count, num_indexes) ) //// OPTIMIZATION
 		if ( !call_method(obj, 130, &arg130) )
 		{
-			call_vtbl(obj, 65, res);
+			//call_vtbl(obj, 65, res);
+			call_method(obj, 65, &res);
 			return NULL;
 		}
 	}
@@ -194,7 +201,7 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
 	return res;
 }
 
-void skeleton_func65(NC_STACK_skeleton *obj, class_stru *zis, rsrc **pres)
+size_t skeleton_func65(NC_STACK_skeleton *obj, class_stru *zis, rsrc **pres)
 {
 	rsrc *res = *pres;
 	skeleton_64_stru *sklt = (skeleton_64_stru *)res->data;
@@ -220,10 +227,10 @@ void skeleton_func65(NC_STACK_skeleton *obj, class_stru *zis, rsrc **pres)
 
 		res->data = NULL;
 	}
-	call_parent(zis, obj, 65, (stack_vals *)pres);
+	return call_parent(zis, obj, 65, (stack_vals *)pres);
 }
 
-__NC_STACK_skeleton * skeleton_func128(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *)
+__NC_STACK_skeleton * skeleton_func128(NC_STACK_skeleton *obj, class_stru *, stack_vals *)
 {
 	return &obj->stack__skeleton;
 }
@@ -241,7 +248,7 @@ size_t skeleton_func129(NC_STACK_skeleton *, class_stru *, skeleton_129_arg *arg
 	return 1;
 }
 
-size_t skeleton_func130(NC_STACK_skeleton *obj, class_stru *zis, skeleton_130_arg *arg)
+size_t skeleton_func130(NC_STACK_skeleton *, class_stru *, skeleton_130_arg *arg)
 {
 	skeleton_64_stru *sklt = arg->skeleton;
 
@@ -266,7 +273,7 @@ size_t skeleton_func130(NC_STACK_skeleton *obj, class_stru *zis, skeleton_130_ar
 	return 1;
 }
 
-void skeleton_func131(NC_STACK_skeleton *obj, class_stru *zis, int *arg)
+size_t skeleton_func131(NC_STACK_skeleton *obj, class_stru *, int *arg)
 {
 	skeleton_64_stru *sklt = obj->stack__skeleton.data;
 
@@ -319,6 +326,8 @@ void skeleton_func131(NC_STACK_skeleton *obj, class_stru *zis, int *arg)
 			sklt->triangles[vtxid].field_C = 0;
 		}
 	}
+
+	return 1;
 }
 
 
@@ -396,7 +405,7 @@ int sub_428D5C(skeleton_arg_132 *arg, skeleton_type1 *in, skeleton_type1 *out, i
 	return flag == 0;
 }
 
-size_t skeleton_func132(NC_STACK_skeleton *obj, class_stru *zis, skeleton_arg_132 *arg)
+size_t skeleton_func132(NC_STACK_skeleton *obj, class_stru *, skeleton_arg_132 *arg)
 {
 	skeleton_64_stru *sklt = obj->stack__skeleton.data;
 	int result = 1;
@@ -425,7 +434,7 @@ void sub_4BE1C4(skeleton_intern133 *arg, skeleton_type1 *skt1, skeleton_type1 *s
 	float sz = skt2->pos3f.sz - skt1->pos3f.sz;
 	float sx = skt2->pos3f.sx - skt1->pos3f.sx;
 
-	float tmp;
+	float tmp = 1.0;
 
 	if (flag == 1)
 	{
@@ -644,7 +653,7 @@ int skeleton_func133__sub0(skeleton_type1 *skt, skeleton_type1 *out, pol_indixes
 }
 
 
-void * skeleton_func133(NC_STACK_skeleton *obj, class_stru *zis, skeleton_arg133 *arg)
+void * skeleton_func133(NC_STACK_skeleton *obj, class_stru *, skeleton_arg133 *arg)
 {
 	void *result;
 	skeleton_64_stru *sklt = obj->stack__skeleton.data;
@@ -715,7 +724,7 @@ void * skeleton_func133(NC_STACK_skeleton *obj, class_stru *zis, skeleton_arg133
 
 	if ( arg->field_4 & 2 )
 	{
-		arg->polysubDat->color = (float *)tmpuv;
+		arg->polysubDat->color = (float *)result;
 		int k = 0;
 
 		if ( arg->field_4 & 4 )

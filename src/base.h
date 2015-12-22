@@ -3,6 +3,7 @@
 
 #include "nucleas.h"
 #include "nlist.h"
+#include "skeleton.h"
 
 extern class_stored base_class_off;
 
@@ -81,7 +82,7 @@ struct area_arg_65
 	base_1c_struct *glob_1c;
 	base_1c_struct *base_1c;
 	NC_STACK_skeleton *OBJ_SKELETON;
-	int field_20;
+	skeleton_64_stru *field_20;
 	float field_24;
 	float field_28;
 	float field_2C;
@@ -208,5 +209,6 @@ struct base73arg
 
 void sub_430A20(base_1c_struct *s3d);
 base_1c_struct *sub_430A28();
+void sub_430A38(base_1c_struct *s3d);
 
 #endif // BASE_H_INCLUDED

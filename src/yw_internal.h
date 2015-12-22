@@ -1,80 +1,9 @@
 #ifndef  YWINT_H_INCLUDED
 #define YWINT_H_INCLUDED
 
-struct squadProto
-{
-	int field_0;
-	int useable;
-	int owner;
-	int vehicle;
-	int num;
-	float pos_x;
-	int field_18;
-	float pos_z;
-	int mb_status;
-};
-
-struct mapRobo
-{
-	int16_t owner;
-	int16_t vehicle;
-	char gap_4[4];
-	float pos_x;
-	float pos_y;
-	float pos_z;
-	int energy;
-	char con_budget;
-	char rad_budget;
-	char pow_budget;
-	char def_budget;
-	int reload_const;
-	char saf_budget;
-	char rec_budget;
-	char cpl_budget;
-	char rob_budget;
-	int mb_status;
-	int16_t viewangle;
-	int saf_delay;
-	int pow_delay;
-	int rad_delay;
-	int cpl_delay;
-	int def_delay;
-	int con_delay;
-	int rec_delay;
-	int rob_delay;
-};
-
-struct dbmapProto
-{
-	int16_t size_x;
-	int16_t size_y;
-	char name[32];
-};
-
-struct mapProto
-{
-	char flags;
-	char gap_1[3];
-	int setNumber;
-	int event_loop;
-	int secXsize;
-	int secYsize;
-	int slow_connection;
-	char sky[64];
-	char typ[64];
-	char own[64];
-	char hgt[64];
-	char blg[64];
-	int mapRobos_count;
-	mapRobo mapRobos[8];
-	int squad_count;
-	squadProto squads[96];
-	char palettes[8][64];
-	int mbmaps_count;
-	dbmapProto mbmaps[4];
-	int dbmap_count;
-	dbmapProto dbmaps[4];
-};
+extern polys *p_outPolys;
+extern polysDat *p_polysdata;
+extern polysDat *p_polysdata_end;
 
 struct lvlnet_t1
 {
@@ -115,5 +44,8 @@ int loadTOD(_NC_STACK_ypaworld *yw, const char *fname);
 int writeTOD(_NC_STACK_ypaworld *yw, const char *fname, int tod);
 
 void ypaworld_func158__sub4__sub0(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *bitm);
+
+void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int object_id, int a5);
+void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc);
 
 #endif

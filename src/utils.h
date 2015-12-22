@@ -46,6 +46,10 @@
 #define TAG_data   MKTAG('d','a','t','a')
 #define TAG_fmt    MKTAG('f','m','t',' ')
 #define TAG_MC2    MKTAG('M','C','2',' ')
+#define TAG_BANI   MKTAG('B','A','N','I')
+#define TAG_VANM   MKTAG('V','A','N','M')
+#define TAG_DATA   MKTAG('D','A','T','A')
+#define TAG_PTCL   MKTAG('P','T','C','L')
 
 void va_to_arr(stack_vals *out, int sz, va_list in);
 void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list in);

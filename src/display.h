@@ -13,7 +13,7 @@ struct __attribute__((packed)) UA_PALENTRY
 	BYTE b;
 };
 
-struct UA_PALETTE
+struct __attribute__((packed)) UA_PALETTE
 {
 	UA_PALENTRY pal_entries[256];
 };

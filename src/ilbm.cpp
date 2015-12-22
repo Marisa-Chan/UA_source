@@ -162,7 +162,7 @@ NC_STACK_ilbm * ilbm_func5(class_stru *obj, class_stru *zis, MFILE **file)
 	return NULL;
 }
 
-int ilbm_func6(NC_STACK_ilbm *obj, class_stru *zis, MFILE **pmfile)
+int ilbm_func6(NC_STACK_ilbm *obj, class_stru *, MFILE **pmfile)
 {
 	MFILE *mfile = *pmfile;
 
@@ -354,7 +354,11 @@ rsrc * READ_ILBM(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak, MFILE *m
 		if ( v10 )
 		{
 			if ( res )
-				call_vtbl(obj, 65, res);
+            {
+                //call_vtbl(obj, 65, res);
+                call_method(obj, 65, &res);
+            }
+
 			return 0;
 		}
 
@@ -379,7 +383,8 @@ rsrc * READ_ILBM(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak, MFILE *m
 				bitm = (bitmap_intern *)res->data;
 				if ( !bitm )
 				{
-					call_vtbl(obj, 65, res);
+					//call_vtbl(obj, 65, res);
+					call_method(obj, 65, &res);
 					return NULL;
 				}
 			}
@@ -405,7 +410,8 @@ rsrc * READ_ILBM(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak, MFILE *m
 				bitm = (bitmap_intern *)res->data;
 				if ( !bitm )
 				{
-					call_vtbl(obj, 65, res);
+					//call_vtbl(obj, 65, res);
+					call_method(obj, 65, &res);
 					return NULL;
 				}
 			}
@@ -469,7 +475,8 @@ rsrc * READ_ILBM(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak, MFILE *m
 			}
 			if ( !success )
 			{
-				call_vtbl(obj, 65, res);
+				//call_vtbl(obj, 65, res);
+				call_method(obj, 65, &res);
 				return NULL;
 			}
 			read_next_IFF(mfil, 2);
@@ -689,7 +696,7 @@ int VBMP__WRITE_TO_FILE(MFILE *mfile, bitmap_intern *bitm)
 	return sub_413290(mfile) == 0;
 }
 
-size_t ilbm_func66(NC_STACK_ilbm *obj, class_stru *zis, rsrc_func66_arg *arg)
+size_t ilbm_func66(NC_STACK_ilbm *obj, class_stru *, rsrc_func66_arg *arg)
 {
 	__NC_STACK_ilbm *ilbm = &obj->stack__ilbm;
 

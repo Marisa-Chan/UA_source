@@ -51,7 +51,7 @@ int sub_41C418(nlist *list, NC_STACK_class *obj)
 }
 
 // Create embed resource node and fill rsrc field data
-NC_STACK_embed * embed_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
+NC_STACK_embed * embed_func0(class_stru *, class_stru *, stack_vals *)
 {
     printf("MAKE ME %s\n","embed_func0");
 	return NULL;
@@ -100,7 +100,6 @@ NC_STACK_embed * embed_func5(class_stru *clss, class_stru *zis, MFILE **file)
 
 		if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ROOT )
 		{
-
 			obj = (NC_STACK_embed *)call_parent(zis, clss, 5, (stack_vals *)file);
 
 			if ( !obj )

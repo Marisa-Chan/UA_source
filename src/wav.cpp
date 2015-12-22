@@ -98,7 +98,8 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, class_stru *zis, stack_vals *stak, co
 
 						if ( !smpl )
 						{
-							call_vtbl(obj, 65, res);
+						    //call_vtbl(obj, 65, res);
+						    call_method(obj, 65, &res);
 							FClose(fil);
 							return NULL;
 						}
@@ -144,7 +145,7 @@ rsrc *wav_func64(NC_STACK_wav *obj, class_stru *zis, stack_vals *stak)
 
 class_return wav_class_descr;
 
-class_return * class_set_wav(int a1, ...)
+class_return * class_set_wav(int , ...)
 {
 
 	memset(wav_funcs, 0, sizeof(CLASSFUNC) * 1024);

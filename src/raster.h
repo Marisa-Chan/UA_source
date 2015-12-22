@@ -35,7 +35,7 @@ struct __NC_STACK_raster
 	bitmap_intern *bitm_intern;
 	DWORD field_4; // Color?
 	DWORD field_8; // and Color2 ?
-//  int field_c;
+    DWORD field_c;
 //  int field_10;
 //  int field_14;
 //  int field_18;
@@ -178,6 +178,13 @@ struct rstr_loc204
 	int dword1C;
 	int dword20;
 	int dword24;
+};
+
+struct rstr_arg217
+{
+	DWORD dword0;
+	DWORD dword4;
+	DWORD dword8;
 };
 
 struct rstr_218_arg

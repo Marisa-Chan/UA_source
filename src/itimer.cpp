@@ -23,7 +23,7 @@ CLASSFUNC itimer_funcs[1024];
 
 class_return itimer_class_descr;
 
-class_return * class_set_itimer(int a1, ...)
+class_return * class_set_itimer(int , ...)
 {
 
 	memset(itimer_funcs, 0, sizeof(CLASSFUNC) * 1024);

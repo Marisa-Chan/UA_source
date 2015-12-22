@@ -37,7 +37,7 @@ struct UserData
 	int field_0x10;
 	char user_name[34];
 
-    _NC_STACK_ypaworld *p_ypaworld;
+	_NC_STACK_ypaworld *p_ypaworld;
 	struC5 *field_3A;
 	int field_3E;
 	int field_42;
@@ -103,9 +103,87 @@ struct gateProto
 	int mb_status;
 };
 
-struct big_ypa_Brf
+struct squadProto
 {
-    int field_2E68;
+	int field_0;
+	int useable;
+	int owner;
+	int vehicle;
+	int num;
+	float pos_x;
+	int field_18;
+	float pos_z;
+	int mb_status;
+};
+
+struct mapRobo
+{
+	int16_t owner;
+	int16_t vehicle;
+	char gap_4[4];
+	float pos_x;
+	float pos_y;
+	float pos_z;
+	int energy;
+	char con_budget;
+	char rad_budget;
+	char pow_budget;
+	char def_budget;
+	int reload_const;
+	char saf_budget;
+	char rec_budget;
+	char cpl_budget;
+	char rob_budget;
+	int mb_status;
+	int16_t viewangle;
+	int saf_delay;
+	int pow_delay;
+	int rad_delay;
+	int cpl_delay;
+	int def_delay;
+	int con_delay;
+	int rec_delay;
+	int rob_delay;
+};
+
+struct dbmapProto
+{
+	int16_t size_x;
+	int16_t size_y;
+	char name[32];
+};
+
+struct mapProto
+{
+	char flags;
+	char gap_1[3];
+	int setNumber;
+	int event_loop;
+	int secXsize;
+	int secYsize;
+	int slow_connection;
+	char sky[64];
+	char typ[64];
+	char own[64];
+	char hgt[64];
+	char blg[64];
+	int mapRobos_count;
+	mapRobo mapRobos[8];
+	int squad_count;
+	squadProto squads[96];
+	char palettes[8][64];
+	int mbmaps_count;
+	dbmapProto mbmaps[4];
+	int dbmap_count;
+	dbmapProto dbmaps[4];
+};
+
+struct yw_buddy
+{
+	int commandid;
+	int16_t type;
+	int16_t field_6;
+	int energy;
 };
 
 struct supetItemProto
@@ -149,26 +227,8 @@ struct stru_2d90
 	int field_6C;
 	int field_70;
 	int field_74;
-	int field_78;
-	int field_7C;
-	int field_80;
-	int field_84;
-	int field_88;
-	int field_8C;
-	int field_90;
-	char gap_94[1388];
-	int field_600;
-	int field_604;
-	int field_608;
-	int field_60C;
-	char gap_610[48];
-	int field_640;
-	char gap_644[28];
-	int field_660;
-	char gap_664[12];
-	int field_670;
-	int field_674;
-	int field_678;
+	int buddies_count;
+	yw_buddy buddies[128];
 	int gate_count;
 	gateProto gates[8];
 	int supetItems_count;
@@ -178,6 +238,40 @@ struct stru_2d90
 	char win_movie[256];
 	char lose_movie[256];
 };
+
+struct brf_obj
+{
+	int field_0;
+	int object_id;
+	int field_8;
+	int field_C;
+	float field_10;
+	float field_14;
+	float field_18;
+	float field_1C;
+	float xpos;
+	int field_24;
+	float ypos;
+	int field_2C;
+	char title[128];
+};
+
+struct big_ypa_Brf
+{
+	NC_STACK_ilbm *mbmap_img;
+	NC_STACK_ilbm *briefing_map;
+	bitmap_intern *typ_map_bitm;
+	stru_2d90 s2d90;
+	mapProto map_prototype;
+	int field_2E68;
+
+    int field_2E7C;
+
+	brf_obj brf_objs;
+
+	base77Func field_4174;
+};
+
 
 struct bkg_pct
 {
@@ -436,7 +530,7 @@ struct cityBases
 struct subSec
 {
 	int field_0;
-	char field_4;
+	BYTE field_4;
 	char field_5;
 	char field_6;
 	char field_7;

@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1449815770 source:/home/marisa/work/openUA/UA_source/main.cpp
+1450679998 source:/home/marisa/work/openUA/UA_source/main.cpp
 	"includes.h"
 	"engine_gfx.h"
 	"bitmap.h"
@@ -35,12 +35,12 @@
 
 1443087335 /home/marisa/work/openUA/UA_source/nlist.h
 
-1450077495 source:/home/marisa/work/openUA/UA_source/classes.cpp
+1450683373 source:/home/marisa/work/openUA/UA_source/classes.cpp
 	"includes.h"
 	"classes.h"
 	"utils.h"
 
-1450077542 source:/home/marisa/work/openUA/UA_source/glob_funcs.cpp
+1450590984 source:/home/marisa/work/openUA/UA_source/glob_funcs.cpp
 	"includes.h"
 
 1447044490 source:/home/marisa/work/openUA/UA_source/MFILE.cpp
@@ -50,7 +50,7 @@
 	"MFILE.h"
 	"utils.h"
 
-1449137894 source:/home/marisa/work/openUA/UA_source/MC.cpp
+1450668958 source:/home/marisa/work/openUA/UA_source/MC.cpp
 	"includes.h"
 	"MC.h"
 	"classes.h"
@@ -62,6 +62,7 @@
 	"rsrc.h"
 	"bitmap.h"
 	"ilbm.h"
+	"bmpAnm.h"
 	"raster.h"
 	"display.h"
 	"windd.h"
@@ -74,6 +75,7 @@
 	"sample.h"
 	"wav.h"
 	"base.h"
+	"particle.h"
 	"button.h"
 	"itimer.h"
 	"wintimer.h"
@@ -108,7 +110,7 @@
 
 1447922917 /home/marisa/work/openUA/UA_source/log.h
 
-1443165224 source:/home/marisa/work/openUA/UA_source/nucleas.cpp
+1450683229 source:/home/marisa/work/openUA/UA_source/nucleas.cpp
 	"includes.h"
 	"nucleas.h"
 	"utils.h"
@@ -120,9 +122,9 @@
 
 1448351228 /home/marisa/work/openUA/UA_source/ini.h
 
-1449818785 /home/marisa/work/openUA/UA_source/utils.h
+1450773719 /home/marisa/work/openUA/UA_source/utils.h
 
-1449727064 source:/home/marisa/work/openUA/UA_source/utils.cpp
+1450425430 source:/home/marisa/work/openUA/UA_source/utils.cpp
 	"includes.h"
 	"utils.h"
 	"inttypes.h"
@@ -131,7 +133,7 @@
 	<inttypes.h>
 	<ddraw.h>
 
-1450069538 source:/home/marisa/work/openUA/UA_source/engine_gfx.cpp
+1450543872 source:/home/marisa/work/openUA/UA_source/engine_gfx.cpp
 	"includes.h"
 	"engine_gfx.h"
 	"utils.h"
@@ -161,13 +163,13 @@
 1450077352 /home/marisa/work/openUA/UA_source/rsrc.h
 	"nucleas.h"
 
-1450077523 source:/home/marisa/work/openUA/UA_source/rsrc.cpp
+1450680307 source:/home/marisa/work/openUA/UA_source/rsrc.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
 	"utils.h"
 
-1450069411 source:/home/marisa/work/openUA/UA_source/win3d.cpp
+1450759957 source:/home/marisa/work/openUA/UA_source/win3d.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -181,7 +183,7 @@
 	"MS/d3dmacs.h"
 	"font.h"
 
-1450069470 source:/home/marisa/work/openUA/UA_source/bitmap.cpp
+1450682919 source:/home/marisa/work/openUA/UA_source/bitmap.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -196,7 +198,7 @@
 	<ddraw.h>
 	<d3d.h>
 
-1450069480 source:/home/marisa/work/openUA/UA_source/raster.cpp
+1450764190 source:/home/marisa/work/openUA/UA_source/raster.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -204,10 +206,10 @@
 	"raster.h"
 	"utils.h"
 
-1450057849 /home/marisa/work/openUA/UA_source/raster.h
+1450761293 /home/marisa/work/openUA/UA_source/raster.h
 	"engine_gfx.h"
 
-1450069299 source:/home/marisa/work/openUA/UA_source/windd.cpp
+1450680460 source:/home/marisa/work/openUA/UA_source/windd.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -220,7 +222,7 @@
 	<wingdi.h>
 	"font.h"
 
-1450069453 source:/home/marisa/work/openUA/UA_source/display.cpp
+1450679859 source:/home/marisa/work/openUA/UA_source/display.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -229,7 +231,7 @@
 	"display.h"
 	"utils.h"
 
-1450059679 /home/marisa/work/openUA/UA_source/display.h
+1450544097 /home/marisa/work/openUA/UA_source/display.h
 	"raster.h"
 
 1449645935 /home/marisa/work/openUA/UA_source/windd.h
@@ -415,7 +417,7 @@
 
 1444729285 /home/marisa/work/openUA/UA_source/MS/d3dmacs.h
 
-1447231676 source:/home/marisa/work/openUA/UA_source/ilbm.cpp
+1450679859 source:/home/marisa/work/openUA/UA_source/ilbm.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -425,7 +427,7 @@
 1447059858 /home/marisa/work/openUA/UA_source/ilbm.h
 	"bitmap.h"
 
-1447241296 source:/home/marisa/work/openUA/UA_source/ade.cpp
+1450679507 source:/home/marisa/work/openUA/UA_source/ade.cpp
 	"includes.h"
 	"nucleas.h"
 	"ade.h"
@@ -435,7 +437,7 @@
 	"nucleas.h"
 	"nlist.h"
 
-1450080718 source:/home/marisa/work/openUA/UA_source/base.cpp
+1450683399 source:/home/marisa/work/openUA/UA_source/base.cpp
 	"includes.h"
 	"nucleas.h"
 	"utils.h"
@@ -451,14 +453,15 @@
 	"ade.h"
 	"engine_gfx.h"
 
-1448276018 /home/marisa/work/openUA/UA_source/base.h
+1450328032 /home/marisa/work/openUA/UA_source/base.h
 	"nucleas.h"
 	"nlist.h"
+	"skeleton.h"
 
-1447053551 /home/marisa/work/openUA/UA_source/skeleton.h
+1450500123 /home/marisa/work/openUA/UA_source/skeleton.h
 	"rsrc.h"
 
-1449727932 source:/home/marisa/work/openUA/UA_source/skeleton.cpp
+1450680306 source:/home/marisa/work/openUA/UA_source/skeleton.cpp
 	"includes.h"
 	"nucleas.h"
 	"utils.h"
@@ -474,7 +477,7 @@
 	<math.h>
 	<float.h>
 
-1449727935 source:/home/marisa/work/openUA/UA_source/sklt.cpp
+1450680306 source:/home/marisa/work/openUA/UA_source/sklt.cpp
 	"includes.h"
 	"nucleas.h"
 	"utils.h"
@@ -494,7 +497,7 @@
 1447043199 /home/marisa/work/openUA/UA_source/sklt.h
 	"skeleton.h"
 
-1447066511 source:/home/marisa/work/openUA/UA_source/embed.cpp
+1450683272 source:/home/marisa/work/openUA/UA_source/embed.cpp
 	"includes.h"
 	"nucleas.h"
 	"embed.h"
@@ -507,7 +510,7 @@
 	"nucleas.h"
 	"nlist.h"
 
-1448276108 source:/home/marisa/work/openUA/UA_source/area.cpp
+1450679514 source:/home/marisa/work/openUA/UA_source/area.cpp
 	"includes.h"
 	"nucleas.h"
 	"area.h"
@@ -526,7 +529,7 @@
 	"ade.h"
 	"bitmap.h"
 
-1448276094 source:/home/marisa/work/openUA/UA_source/amesh.cpp
+1450682232 source:/home/marisa/work/openUA/UA_source/amesh.cpp
 	"includes.h"
 	"inttypes.h"
 	"nucleas.h"
@@ -545,7 +548,7 @@
 	<inttypes.h>
 	"area.h"
 
-1447741873 source:/home/marisa/work/openUA/UA_source/wav.cpp
+1450680307 source:/home/marisa/work/openUA/UA_source/wav.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -558,13 +561,13 @@
 1447736762 /home/marisa/work/openUA/UA_source/sample.h
 	"rsrc.h"
 
-1447741725 source:/home/marisa/work/openUA/UA_source/sample.cpp
+1450680306 source:/home/marisa/work/openUA/UA_source/sample.cpp
 	"includes.h"
 	"nucleas.h"
 	"sample.h"
 	"utils.h"
 
-1449032866 source:/home/marisa/work/openUA/UA_source/button.cpp
+1450679859 source:/home/marisa/work/openUA/UA_source/button.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -580,7 +583,7 @@
 	"utils.h"
 	"input.h"
 
-1447745507 source:/home/marisa/work/openUA/UA_source/itimer.cpp
+1450679859 source:/home/marisa/work/openUA/UA_source/itimer.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -593,7 +596,7 @@
 1447746199 /home/marisa/work/openUA/UA_source/wintimer.h
 	"itimer.h"
 
-1447747000 source:/home/marisa/work/openUA/UA_source/idev.cpp
+1450679859 source:/home/marisa/work/openUA/UA_source/idev.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -611,7 +614,7 @@
 	"wintimer.h"
 	"utils.h"
 
-1449642185 source:/home/marisa/work/openUA/UA_source/iwimp.cpp
+1450679998 source:/home/marisa/work/openUA/UA_source/iwimp.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -624,7 +627,7 @@
 	"engine_input.h"
 	"utils.h"
 
-1449646553 source:/home/marisa/work/openUA/UA_source/winp.cpp
+1450419372 source:/home/marisa/work/openUA/UA_source/winp.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -637,7 +640,7 @@
 	"iwimp.h"
 	"utils.h"
 
-1448347568 source:/home/marisa/work/openUA/UA_source/input.cpp
+1450679859 source:/home/marisa/work/openUA/UA_source/input.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -658,7 +661,7 @@
 1448874062 /home/marisa/work/openUA/UA_source/font.h
 	<inttypes.h>
 
-1450087972 source:/home/marisa/work/openUA/UA_source/yw.cpp
+1450756649 source:/home/marisa/work/openUA/UA_source/yw.cpp
 	<inttypes.h>
 	<string.h>
 	<math.h>
@@ -668,7 +671,7 @@
 	"yw_internal.h"
 	"button.h"
 
-1450088303 /home/marisa/work/openUA/UA_source/yw.h
+1450171929 /home/marisa/work/openUA/UA_source/yw.h
 	"engine_gfx.h"
 	"engine_input.h"
 	"bitmap.h"
@@ -680,7 +683,7 @@
 	"base.h"
 	"sklt.h"
 
-1450087252 source:/home/marisa/work/openUA/UA_source/yw_funcs.cpp
+1450760102 source:/home/marisa/work/openUA/UA_source/yw_funcs.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -696,7 +699,7 @@
 
 1449127883 /home/marisa/work/openUA/UA_source/def_parser.h
 
-1450087243 /home/marisa/work/openUA/UA_source/yw_internal.h
+1450173123 /home/marisa/work/openUA/UA_source/yw_internal.h
 
 1450074437 source:/home/marisa/work/openUA/UA_source/yw_protos.cpp
 	<inttypes.h>
@@ -783,4 +786,37 @@
 	<crtdefs.h>
 
 1449728292 source:/home/marisa/work/openUA/UA_source/dirs.cpp
+
+1450761365 source:/home/marisa/work/openUA/UA_source/yw_func2.cpp
+	<inttypes.h>
+	<string.h>
+	"includes.h"
+	"def_parser.h"
+	"yw.h"
+	"yw_internal.h"
+
+1450780689 source:/home/marisa/work/openUA/UA_source/bmpAnm.cpp
+	"includes.h"
+	"nucleas.h"
+	"rsrc.h"
+	"bitmap.h"
+	"bmpAnm.h"
+	"utils.h"
+
+1450777477 /home/marisa/work/openUA/UA_source/bmpAnm.h
+	"rsrc.h"
+	"engine_gfx.h"
+	"bitmap.h"
+
+1450776367 source:/home/marisa/work/openUA/UA_source/particle.cpp
+	"includes.h"
+	"nucleas.h"
+	"particle.h"
+	"utils.h"
+	<math.h>
+
+1450776365 /home/marisa/work/openUA/UA_source/particle.h
+	"nucleas.h"
+	"area.h"
+	"ade.h"
 

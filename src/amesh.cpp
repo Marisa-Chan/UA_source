@@ -59,6 +59,7 @@ int sub_419E6C(__NC_STACK_amesh *amesh, tUtV **olpl)
 		return 0;
 
 	tUtV *uv = (tUtV *)&amesh->olpl[amesh->cnt];
+	//void *ed = ((char *)amesh->olpl + sizeof(tUtV *) * amesh->cnt + sizeof(tUtV) * olpl_cnt);
 
 	for (int i = 0; i < amesh->cnt; i++)
 	{
@@ -435,7 +436,7 @@ int amesh_func6(NC_STACK_amesh *obj, class_stru *zis, MFILE **file)
 }
 
 // Add amesh to list
-void amesh_func65(NC_STACK_amesh *obj, class_stru *zis, area_arg_65 *arg)
+void amesh_func65(NC_STACK_amesh *obj, class_stru *, area_arg_65 *arg)
 {
 	__NC_STACK_amesh *amesh = &obj->stack__amesh;
 
@@ -567,7 +568,7 @@ void amesh_func65(NC_STACK_amesh *obj, class_stru *zis, area_arg_65 *arg)
 
 class_return amesh_class_descr;
 
-class_return * class_set_amesh(int a1, ...)
+class_return * class_set_amesh(int , ...)
 {
 
 	memset(amesh_funcs, 0, sizeof(CLASSFUNC) * 1024);

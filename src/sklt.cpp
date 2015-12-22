@@ -73,13 +73,14 @@ NC_STACK_sklt * sklt_func5(class_stru *clss, class_stru *zis, MFILE **file)
 		stk[1].id = 0x80001001;
 		stk[1].value = 1;
 		stk[2].id = 0;
+		stk[2].value = 0;
 
 		obj = (NC_STACK_sklt *)call_parent(zis, clss, 0, stk);
 	}
 	return obj;
 }
 
-size_t sklt_func6(NC_STACK_sklt *obj, class_stru *zis, MFILE **file)
+size_t sklt_func6(NC_STACK_sklt *obj, class_stru *, MFILE **file)
 {
 	MFILE *mfile = *file;
 
@@ -394,7 +395,10 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, class_stru *zis, stack_vals *stak, 
 		if ( iff_flag )
 		{
 			if ( res )
-				call_vtbl(obj, 65, res);
+            {
+                //call_vtbl(obj, 65, res);
+                call_method(obj, 65, &res);
+            }
 
 			return NULL;
 		}
@@ -484,7 +488,10 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, class_stru *zis, stack_vals *stak, 
 	if ( !read_ok || !sklt )
 	{
 		if ( res )
-			call_vtbl(obj, 65, res);
+        {
+            //call_vtbl(obj, 65, res);
+            call_method(obj, 65, &res);
+        }
 
 		return NULL;
 	}
@@ -526,7 +533,7 @@ rsrc * sklt_func64(NC_STACK_sklt *obj, class_stru *zis, stack_vals *stak)
 		return NULL;
 }
 
-size_t sklt_func66(NC_STACK_sklt *obj, class_stru *zis, rsrc_func66_arg *arg)
+size_t sklt_func66(NC_STACK_sklt *obj, class_stru *, rsrc_func66_arg *arg)
 {
 	skeleton_64_stru *sklt = NULL;
 

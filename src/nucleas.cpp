@@ -26,7 +26,7 @@ size_t nucleus_func_default(void *, class_stru *, stack_vals *)
 	return 0;
 }
 
-void nucleus_func0__sub0(void *, NC_STACK_nucleus *a1, stack_vals *a2)
+void nucleus_func0__sub0(NC_STACK_nucleus *a1, stack_vals *a2)
 {
 	while ( 1 )
 	{
@@ -60,7 +60,7 @@ void nucleus_func0__sub0(void *, NC_STACK_nucleus *a1, stack_vals *a2)
 
 
 
-NC_STACK_nucleus * nucleus_func0(class_stru *caller, class_stru *zis, stack_vals *stack)
+NC_STACK_nucleus * nucleus_func0(class_stru *caller, class_stru *, stack_vals *stack)
 {
 	int clsSize;
 
@@ -76,7 +76,7 @@ NC_STACK_nucleus * nucleus_func0(class_stru *caller, class_stru *zis, stack_vals
 
 		clss->class_owner = caller;
 
-		nucleus_func0__sub0(clss, clss, stack);
+		nucleus_func0__sub0(clss, stack);
 	}
 	return clss;
 }
@@ -133,9 +133,11 @@ void nucleus_setter(NC_STACK_nucleus *a1, stack_vals *a2)
 	}
 }
 
-void nucleus_func2(NC_STACK_nucleus *a1, class_stru *a2, stack_vals *a3)
+size_t nucleus_func2(NC_STACK_nucleus *a1, class_stru *, stack_vals *a3)
 {
 	nucleus_setter(a1, a3);
+
+	return 1;
 }
 
 
@@ -158,7 +160,7 @@ void nucleus_getter(NC_STACK_nucleus *a1, stack_vals *a2)
 		else
 		{
 			if ( a2->id == 0x80000000 )
-				*(void **)a2->value = a1->NAME;
+				*(char **)a2->value = a1->NAME;
 			else if ( a2->id == 0x80000001 )
 				*(class_stru **)a2->value = a1->class_owner;
 			else if ( a2->id == 0x80000002 )
@@ -169,15 +171,16 @@ void nucleus_getter(NC_STACK_nucleus *a1, stack_vals *a2)
 }
 
 
-void nucleus_func3(NC_STACK_nucleus *caller, class_stru *a2, stack_vals *stk)
+size_t nucleus_func3(NC_STACK_nucleus *caller, class_stru *, stack_vals *stk)
 {
 	nucleus_getter(caller, stk);
+
+	return 1;
 }
 
-NC_STACK_nucleus *nucleus_func5(class_stru *caller, class_stru *zis, MFILE **file)
+NC_STACK_nucleus *nucleus_func5(class_stru *caller, class_stru *, MFILE **file)
 {
 	MFILE *mfile = *file;
-
 	NC_STACK_nucleus *new_class = (NC_STACK_nucleus *)AllocVec(caller->stack_offset + caller->class_stack_size, 65537);
 	if ( new_class )
 	{
@@ -203,7 +206,8 @@ NC_STACK_nucleus *nucleus_func5(class_stru *caller, class_stru *zis, MFILE **fil
 					call_method(new_class, 1, 0);
 					return 0;
 				}
-				call_vtbl(new_class, 2, 0x80000000, &a4, 0);  // nucleus::SetName(new_name)
+
+				call_vtbl(new_class, 2, 0x80000000, a4, 0,0);  // nucleus::SetName(new_name)
 				read_next_IFF(mfile, 2);
 			}
 			else
@@ -216,7 +220,7 @@ NC_STACK_nucleus *nucleus_func5(class_stru *caller, class_stru *zis, MFILE **fil
 }
 
 
-int nucleus_func6(NC_STACK_nucleus *caller, class_stru *zis, MFILE **val)
+size_t nucleus_func6(NC_STACK_nucleus *caller, class_stru *, MFILE **val)
 {
 	MFILE *mfile = *val;
 	if ( sub_412FC0(mfile, TAG_ROOT, TAG_FORM, -1) )

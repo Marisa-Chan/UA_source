@@ -152,7 +152,7 @@ void sample_func65(NC_STACK_sample *obj, class_stru *zis, rsrc **pres)
 	call_parent(zis, obj, 65, (stack_vals *)pres);
 }
 
-void *sample_func128(NC_STACK_sample *obj, class_stru *zis, void **arg)
+void *sample_func128(NC_STACK_sample *obj, class_stru *, void **arg)
 {
 	printf("%s - NOT RECOGINZED ARGUMENT\n","sample_func128");
 	sampl *smpl = obj->stack__sample.p_sampl;
@@ -162,7 +162,7 @@ void *sample_func128(NC_STACK_sample *obj, class_stru *zis, void **arg)
 
 class_return sample_class_descr;
 
-class_return * class_set_sample(int a1, ...)
+class_return * class_set_sample(int , ...)
 {
 
 	memset(sample_funcs, 0, sizeof(CLASSFUNC) * 1024);
