@@ -56,7 +56,7 @@ WINOBJ = \
 	win_funct.cpp
 
 win32: $(OBJS)
-	$(CXX_WIN) -Wno-write-strings -O3 -Os -g -o $(TARGET).exe $(OBJS) $(LIBS_WIN) -m32 -I $(MINGW)/include/
+	$(CXX_WIN) -mno-ms-bitfields -O0 -g -o $(TARGET).exe $(OBJS) $(LIBS_WIN) -m32 -I $(MINGW)/include/
 
 clean:
 	rm -f $(TARGET) $(TARGET_DINGOO) *.o
