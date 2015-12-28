@@ -1528,7 +1528,7 @@ void winp_func66(NC_STACK_winp *obj, class_stru *zis, winp_66arg *arg)
 	downed_key = 0;
 	if ( arg->downed_key )
 	{
-		for (int i = 0; i < 32; i++)
+		for (int i = 0; i < 48; i++)
 		{
 			if (winp->field_10[i] == arg->downed_key)
 			{
@@ -1591,7 +1591,7 @@ void winp_func70(NC_STACK_winp *obj, class_stru *zis, int *arg)
 
 	if ( *arg )
 	{
-		for ( int i = 0; i < 32; i++ )
+		for ( int i = 0; i < 48; i++ )
 		{
 			if ( winp->field_10[i] == *arg )
 			{
