@@ -84,8 +84,8 @@ void splashScreen_OutTextTMP(NC_STACK_win3d *w3d, const char *txt, int x, int y)
 		fntcmd_set_end(&v7);
 
 		w3d_a209 v16;
-		v16.field_0 = cmdbuf;
-		v16.field_4 = 0;
+		v16.cmdbuf = cmdbuf;
+		v16.includ = 0;
 		call_method(w3d, 209, &v16);
 	}
 }

@@ -20,7 +20,7 @@ struct inp_node : public nnode
 	int16_t btn_width;
 	int16_t btn_height;
 	int field_10;
-	int field_14;
+	void *pobject;
 	button_str1 *field_18[48];
 };
 
@@ -53,6 +53,8 @@ struct struC5
 void sub_412D28(struC5 *a1);
 void sub_412D48(inp_node *btn, int a2);
 void sub_412D9C(inp_node *btn);
+
+void inputEngine__getter(unsigned int, ...);
 
 
 #endif // ENGINE_INPUT_H_INCLUDED

@@ -2139,7 +2139,7 @@ void win3d_func209__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, tiles_str
 
 void win3d_func209(NC_STACK_win3d *obj, class_stru *, w3d_a209 *arg)
 {
-	win3d_func209__sub0(&obj->stack__windd, &obj->stack__win3d, obj->stack__raster.tiles, arg->field_0, arg->field_4);
+	win3d_func209__sub0(&obj->stack__windd, &obj->stack__win3d, obj->stack__raster.tiles, arg->cmdbuf, arg->includ);
 }
 
 void win3d_func213__sub0__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)

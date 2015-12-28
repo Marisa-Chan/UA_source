@@ -422,7 +422,7 @@ size_t button_func64(NC_STACK_button *obj, class_stru *, button_64_arg *arg)
 	if ( sbt->button_type == 3 )
 		bt->fnt_height = 0;
 	else
-		bt->fnt_height = sub_42324C(arg->tileset_up)->font_height;
+		bt->fnt_height = win3d_select_tileset(arg->tileset_up)->font_height;
 
 	btn->field_10++;
 
@@ -495,7 +495,7 @@ size_t button_func66(NC_STACK_button *obj, class_stru *, button_66arg *arg)
 		if ( btn->field_d8[id]->button_type != 3 )
 		{
 			btn->field_18[id]->width = btn->field_d8[id]->width;
-			btn->field_18[id]->fnt_height = sub_42324C(btn->field_d8[id]->tileset_down)->font_height;
+			btn->field_18[id]->fnt_height = win3d_select_tileset(btn->field_d8[id]->tileset_down)->font_height;
 		}
 
 		btn->field_d8[id]->state &= 0xFFFD;
@@ -776,7 +776,7 @@ void button_func70__sub1(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
 		v6 = sbt->tileset_down;
 	}
 
-	tiles_stru *v7 = sub_42324C(v6);
+	tiles_stru *v7 = win3d_select_tileset(v6);
 
 
 	char *v8 = *pbuf;
@@ -869,7 +869,7 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
 		v7 = sbt->tileset_up;
 	}
 
-	tiles_stru *v8 = sub_42324C(v7);
+	tiles_stru *v8 = win3d_select_tileset(v7);
 
 	int strwdth = 0;
 
@@ -1011,8 +1011,8 @@ void button_func70(NC_STACK_button *obj, class_stru *, void *)
 		fntcmd_set_end(&pbuf);
 
 		w3d_a209 arg209;
-		arg209.field_0 = button_tmpbuf;
-		arg209.field_4 = NULL;
+		arg209.cmdbuf = button_tmpbuf;
+		arg209.includ = NULL;
 
 		sub_423288(&arg209);
 	}

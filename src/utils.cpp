@@ -5,6 +5,8 @@
 
 void va_to_arr(stack_vals *out, int sz, va_list in)
 {
+    memset(out, 0, sizeof(stack_vals) * sz);
+
 	int previd = -1;
 	for (int i = 0; i < sz; i++)
 	{
@@ -34,6 +36,8 @@ void va_to_arr(stack_vals *out, int sz, va_list in)
 
 void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list in)
 {
+    memset(out, 0, sizeof(stack_vals) * sz);
+
 	int previd = -1;
 	if (_id != 0)
 	{

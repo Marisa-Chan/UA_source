@@ -103,6 +103,8 @@
 		<Unit filename="iwimp.h" />
 		<Unit filename="log.cpp" />
 		<Unit filename="log.h" />
+		<Unit filename="lstvw.cpp" />
+		<Unit filename="lstvw.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="nlist.cpp" />
 		<Unit filename="nlist.h" />

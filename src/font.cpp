@@ -1,4 +1,5 @@
 #include <string.h>
+#include "includes.h"
 #include "font.h"
 
 
@@ -302,3 +303,40 @@ void fntcmd_set_txtColor(char **pos, uint8_t r, uint8_t g, uint8_t b)
 }
 
 
+
+
+
+
+
+// Funcs
+
+char * txtcmd_txt_w_bkg(tiles_stru *, char *curpos, const char *str, int width_space, char chr)
+{
+	char *tmp = curpos;
+
+	if ( width_space > 0 )
+	{
+		fntcmd_copy_position(&tmp);
+
+		int v6 = width_space;
+
+		while (v6 > 0)
+		{
+			if ( v6 <= 255 )
+			{
+				fntcmd_op10(&tmp, v6);
+			}
+			else
+			{
+				fntcmd_op10(&tmp, 255);
+			}
+
+			fntcmd_store_s8(&tmp, chr);
+
+			v6 -= 255;
+		}
+
+		fntcmd_add_txt(&tmp, width_space, 1, str);
+	}
+	return tmp;
+}

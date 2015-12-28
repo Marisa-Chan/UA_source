@@ -68,4 +68,8 @@ void fntcmd_unset_flag(char **pos, uint16_t flag);
 void fntcmd_set_txtColor(char **pos, uint8_t r, uint8_t g, uint8_t b);
 
 
+// funcs related
+char * txtcmd_txt_w_bkg(tiles_stru *, char *curpos, const char *str, int width_space, char chr);
+
+
 #endif //FONT_H_INCLUDED

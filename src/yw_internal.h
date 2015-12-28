@@ -14,6 +14,16 @@ struct lvlnet_t1
 	int field_10;
 };
 
+struct Key_stru
+{
+	const char *title_by_language;
+	const char *short_name;
+	char KEYCODE;
+	char field_9;
+	char field_A;
+	char field_B;
+};
+
 
 int VhclProtoParser(scrCallBack *);
 int WeaponProtoParser(scrCallBack *);
@@ -47,5 +57,11 @@ void ypaworld_func158__sub4__sub0(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *bitm);
 
 void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int object_id, int a5);
 void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc);
+
+void set_keys_vals(_NC_STACK_ypaworld *yw);
+int yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr);
+
+int yw_loadSky(_NC_STACK_ypaworld *yw, const char *skyname);
+//void yw_renderSky_test(_NC_STACK_ypaworld *yw, base77Func *rndr_params);
 
 #endif

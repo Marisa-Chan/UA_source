@@ -9,6 +9,7 @@
 #include "yw_internal.h"
 
 #include "button.h"
+#include "font.h"
 
 
 
@@ -31,6 +32,7 @@ CLASSFUNC ypaworld_funcs[1024];
 polys *p_outPolys;
 polysDat *p_polysdata;
 polysDat *p_polysdata_end;
+Key_stru keySS[256];
 
 char **ypaworld__string_pointers;
 
@@ -560,6 +562,39 @@ void ypaworld_func153(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
 }
 
+void sub_46D2B4(NC_STACK_ypaworld *obj, UserData *usr)
+{
+	NC_STACK_input *input_class = NULL;
+
+	int v10 = usr->field_D36;
+
+	inputEngine__getter(0x80001009, &input_class, 0);
+
+	for (int i = 0; i <= 48; i++)
+	{
+		winp_68arg winpArg;
+		input__func66__params v7;
+
+		winpArg.id = i;
+		winpArg.keyname = "nop";
+
+		v7.field_0 = 3;
+		v7.funcID = 68;
+		v7.field_4 = 0;
+		v7.vals = &winpArg;
+
+		call_method(input_class, 66, &v7);
+	}
+
+	for (int i = 1; i <= 45; i++)
+	{
+		usr->field_D36 = i;
+		call_method(obj, 173, usr);
+	}
+
+	usr->field_D36 = v10;
+}
+
 
 size_t ypaworld_func154(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 {
@@ -571,6 +606,215 @@ size_t ypaworld_func154(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 	usr->field_46 = 1;
 
 	call_vtbl(obj, 3, 0x80002018, &ypaworld__string_pointers, 0);
+
+	set_keys_vals(yw);
+
+	usr->field_D36 = 1;
+
+
+	//usr->field_FBE = 0;
+
+	usr->keyConfig[2].inp_type = 2;
+	usr->keyConfig[2].keyID = 3;
+	usr->keyConfig[2].KeyCode = 39;
+	usr->keyConfig[2].slider_neg = 37;
+
+
+	usr->keyConfig[3].inp_type = 2;
+	usr->keyConfig[3].keyID = 4;
+	usr->keyConfig[3].KeyCode = 38;
+	usr->keyConfig[3].slider_neg = 40;
+
+	usr->keyConfig[7].inp_type = 2;
+	usr->keyConfig[7].keyID = 0;
+	usr->keyConfig[7].KeyCode = 39;
+	usr->keyConfig[7].slider_neg = 37;
+
+
+	usr->keyConfig[5].inp_type = 2;
+	usr->keyConfig[5].keyID = 1;
+	usr->keyConfig[5].KeyCode = 38;
+	usr->keyConfig[5].slider_neg = 40;
+
+	usr->keyConfig[6].inp_type = 2;
+	usr->keyConfig[6].keyID = 2;
+	usr->keyConfig[6].KeyCode = 17;
+	usr->keyConfig[6].slider_neg = 16;
+
+	usr->keyConfig[4].inp_type = 2;
+	usr->keyConfig[4].keyID = 5;
+	usr->keyConfig[4].KeyCode = 65;
+	usr->keyConfig[4].slider_neg = 89;
+
+	usr->keyConfig[9].inp_type = 1;
+	usr->keyConfig[9].keyID = 0;
+	usr->keyConfig[9].KeyCode = 32;
+
+	usr->keyConfig[10].inp_type = 1;
+	usr->keyConfig[10].keyID = 1;
+	usr->keyConfig[10].KeyCode = 9;
+
+	usr->keyConfig[11].inp_type = 1;
+	usr->keyConfig[11].keyID = 2;
+	usr->keyConfig[11].KeyCode = 13;
+
+	usr->keyConfig[8].inp_type = 1;
+	usr->keyConfig[8].keyID = 3;
+	usr->keyConfig[8].KeyCode = 96;
+
+	usr->keyConfig[13].inp_type = 3;
+	usr->keyConfig[13].keyID = 25;
+	usr->keyConfig[13].KeyCode = 86;
+
+	usr->keyConfig[16].inp_type = 3;
+	usr->keyConfig[16].keyID = 2;
+	usr->keyConfig[16].KeyCode = 78;
+
+	usr->keyConfig[17].inp_type = 3;
+	usr->keyConfig[17].keyID = 3;
+	usr->keyConfig[17].KeyCode = 65;
+
+	usr->keyConfig[15].inp_type = 3;
+	usr->keyConfig[15].keyID = 0;
+	usr->keyConfig[15].KeyCode = 79;
+
+	usr->keyConfig[36].inp_type = 3;
+	usr->keyConfig[36].keyID = 1;
+	usr->keyConfig[36].KeyCode = 32;
+
+	usr->keyConfig[34].inp_type = 3;
+	usr->keyConfig[34].keyID = 4;
+	usr->keyConfig[34].KeyCode = 67;
+
+	usr->keyConfig[14].inp_type = 3;
+	usr->keyConfig[14].keyID = 7;
+	usr->keyConfig[14].KeyCode = 71;
+
+	usr->keyConfig[24].inp_type = 3;
+	usr->keyConfig[24].keyID = 8;
+	usr->keyConfig[24].KeyCode = 77;
+
+	usr->keyConfig[18].inp_type = 3;
+	usr->keyConfig[18].keyID = 9;
+	usr->keyConfig[18].KeyCode = 70;
+
+	usr->keyConfig[26].inp_type = 3;
+	usr->keyConfig[26].keyID = 10;
+	usr->keyConfig[26].KeyCode = 0;
+
+	usr->keyConfig[27].inp_type = 3;
+	usr->keyConfig[27].keyID = 11;
+	usr->keyConfig[27].KeyCode = 0;
+
+	usr->keyConfig[28].inp_type = 3;
+	usr->keyConfig[28].keyID = 12;
+	usr->keyConfig[28].KeyCode = 0;
+
+	usr->keyConfig[30].inp_type = 3;
+	usr->keyConfig[30].keyID = 14;
+	usr->keyConfig[30].KeyCode = 0;
+
+	usr->keyConfig[31].inp_type = 3;
+	usr->keyConfig[31].keyID = 16;
+	usr->keyConfig[31].KeyCode = 0;
+
+	usr->keyConfig[32].inp_type = 3;
+	usr->keyConfig[32].keyID = 17;
+	usr->keyConfig[32].KeyCode = 0;
+
+	usr->keyConfig[29].inp_type = 3;
+	usr->keyConfig[29].keyID = 18;
+	usr->keyConfig[29].KeyCode = 0;
+
+	usr->keyConfig[40].inp_type = 3;
+	usr->keyConfig[40].keyID = 20;
+	usr->keyConfig[40].KeyCode = 112;
+
+	usr->keyConfig[37].inp_type = 3;
+	usr->keyConfig[37].keyID = 21;
+	usr->keyConfig[37].KeyCode = 113;
+
+	usr->keyConfig[39].inp_type = 3;
+	usr->keyConfig[39].keyID = 22;
+	usr->keyConfig[39].KeyCode = 114;
+
+	usr->keyConfig[38].inp_type = 3;
+	usr->keyConfig[38].keyID = 23;
+	usr->keyConfig[38].KeyCode = 115;
+
+	usr->keyConfig[1].inp_type = 3;
+	usr->keyConfig[1].keyID = 24;
+	usr->keyConfig[1].KeyCode = 27;
+
+	usr->keyConfig[33].inp_type = 3;
+	usr->keyConfig[33].keyID = 27;
+	usr->keyConfig[33].KeyCode = 0;
+
+	usr->keyConfig[41].inp_type = 3;
+	usr->keyConfig[41].keyID = 31;
+	usr->keyConfig[41].KeyCode = 8;
+
+	usr->keyConfig[0].inp_type = 3;
+	usr->keyConfig[0].keyID = 32;
+	usr->keyConfig[0].KeyCode = 0;
+
+	usr->keyConfig[42].inp_type = 3;
+	usr->keyConfig[42].keyID = 37;
+	usr->keyConfig[42].KeyCode = 101;
+
+	usr->keyConfig[19].inp_type = 3;
+	usr->keyConfig[19].keyID = 38;
+	usr->keyConfig[19].KeyCode = 49;
+
+	usr->keyConfig[20].inp_type = 3;
+	usr->keyConfig[20].keyID = 39;
+	usr->keyConfig[20].KeyCode = 50;
+
+	usr->keyConfig[21].inp_type = 3;
+	usr->keyConfig[21].keyID = 40;
+	usr->keyConfig[21].KeyCode = 51;
+
+	usr->keyConfig[22].inp_type = 3;
+	usr->keyConfig[22].keyID = 41;
+	usr->keyConfig[22].KeyCode = 52;
+
+	usr->keyConfig[23].inp_type = 3;
+	usr->keyConfig[23].keyID = 42;
+	usr->keyConfig[23].KeyCode = 53;
+
+	usr->keyConfig[25].inp_type = 1;
+	usr->keyConfig[25].keyID = 4;
+	usr->keyConfig[25].KeyCode = 16;
+
+	usr->keyConfig[43].inp_type = 3;
+	usr->keyConfig[43].keyID = 43;
+	usr->keyConfig[43].KeyCode = 0;
+
+	usr->keyConfig[35].inp_type = 3;
+	usr->keyConfig[35].keyID = 44;
+	usr->keyConfig[35].KeyCode = 0;
+
+	usr->keyConfig[12].inp_type = 3;
+	usr->keyConfig[12].keyID = 45;
+	usr->keyConfig[12].KeyCode = 0;
+
+	usr->keyConfig[44].inp_type = 3;
+	usr->keyConfig[44].keyID = 46;
+	usr->keyConfig[44].KeyCode = 0;
+
+	sub_46D2B4(obj, usr);
+
+	for (int i = 0; i < 45; i++)
+	{
+		usr->keyConfig[i].field_8 = usr->keyConfig[i].KeyCode;
+		usr->keyConfig[i].field_A = usr->keyConfig[i].slider_neg;
+	}
+
+	for (int i = 0; i < 45; i++)
+	{
+		usr->keyConfig[i].field_C = usr->keyConfig[i].KeyCode;
+		usr->keyConfig[i].field_E = usr->keyConfig[i].slider_neg;
+	}
 
 	return 1;
 }
@@ -894,11 +1138,66 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
 	printf("%d\n", yw_LoadSet(yw, 1)); //// HACK TEST LOAD SET
 
+    const char *langname = "language";
+	call_method(obj, 166, &langname);
+
 	if ( !ypaworld_func156__sub2(yw) )
 	{
 		ypa_log_out("Could not init level select stuff!\n");
 		return 0;
 	}
+
+
+
+    usr->keyConfig[0].slider_name = get_lang_string(ypaworld__string_pointers, 544, "PAUSE");
+    usr->keyConfig[1].slider_name = get_lang_string(ypaworld__string_pointers, 536, "QUIT");
+	usr->keyConfig[2].slider_name = get_lang_string(ypaworld__string_pointers, 500, "DRIVE DIR");
+	usr->keyConfig[3].slider_name = get_lang_string(ypaworld__string_pointers, 501, "DRIVE SPEED");
+	usr->keyConfig[4].slider_name = get_lang_string(ypaworld__string_pointers, 511, "GUN HEIGHT");
+	usr->keyConfig[5].slider_name = get_lang_string(ypaworld__string_pointers, 502, "FLY HEIGHT");
+	usr->keyConfig[6].slider_name = get_lang_string(ypaworld__string_pointers, 503, "FLY SPEED");
+	usr->keyConfig[7].slider_name = get_lang_string(ypaworld__string_pointers, 504, "FLY DIR");
+	usr->keyConfig[8].slider_name = get_lang_string(ypaworld__string_pointers, 505, "STOP");
+	usr->keyConfig[9].slider_name = get_lang_string(ypaworld__string_pointers, 506, "FIRE");
+	usr->keyConfig[10].slider_name = get_lang_string(ypaworld__string_pointers, 507, "FIRE VIEW");
+	usr->keyConfig[11].slider_name = get_lang_string(ypaworld__string_pointers, 508, "FIRE GUN");
+	usr->keyConfig[12].slider_name = get_lang_string(ypaworld__string_pointers, 561, "MAKE CURRENT VEHICLE COMMANDER");
+	usr->keyConfig[13].slider_name = get_lang_string(ypaworld__string_pointers, 541, "HEADUP DISPLAY");
+	usr->keyConfig[14].slider_name = get_lang_string(ypaworld__string_pointers, 520, "AUTOPILOT");
+	usr->keyConfig[15].slider_name = get_lang_string(ypaworld__string_pointers, 513, "ORDER");
+	usr->keyConfig[16].slider_name = get_lang_string(ypaworld__string_pointers, 515, "NEW");
+	usr->keyConfig[17].slider_name = get_lang_string(ypaworld__string_pointers, 516, "ADD");
+	usr->keyConfig[18].slider_name = get_lang_string(ypaworld__string_pointers, 522, "FINDER");
+	usr->keyConfig[19].slider_name = get_lang_string(ypaworld__string_pointers, 553, "AGGR: COME BACK");
+	usr->keyConfig[20].slider_name = get_lang_string(ypaworld__string_pointers, 554, "AGGR: FIGHT TARGET");
+	usr->keyConfig[21].slider_name = get_lang_string(ypaworld__string_pointers, 555, "AGGR: FIGHT ENEMIES TOO");
+	usr->keyConfig[22].slider_name = get_lang_string(ypaworld__string_pointers, 556, "AGGR: CONQUER ALL ENEMY AREA TOO");
+	usr->keyConfig[23].slider_name = get_lang_string(ypaworld__string_pointers, 557, "AGGR: GO AMOK");
+	usr->keyConfig[24].slider_name = get_lang_string(ypaworld__string_pointers, 521, "MAP");
+	usr->keyConfig[25].slider_name = get_lang_string(ypaworld__string_pointers, 558, "SELECT WAYPOINT");
+	usr->keyConfig[26].slider_name = get_lang_string(ypaworld__string_pointers, 523, "LANDSCAPE");
+	usr->keyConfig[27].slider_name = get_lang_string(ypaworld__string_pointers, 524, "OWNER");
+	usr->keyConfig[28].slider_name = get_lang_string(ypaworld__string_pointers, 525, "HEIGHT");
+	usr->keyConfig[29].slider_name = get_lang_string(ypaworld__string_pointers, 531, "MAP MINI");
+	usr->keyConfig[30].slider_name = get_lang_string(ypaworld__string_pointers, 527, "LOCK VIEWER");
+	usr->keyConfig[31].slider_name = get_lang_string(ypaworld__string_pointers, 529, "ZOOM IN");
+	usr->keyConfig[32].slider_name = get_lang_string(ypaworld__string_pointers, 530, "ZOOM OUT");
+	usr->keyConfig[33].slider_name = get_lang_string(ypaworld__string_pointers, 538, "LOGWIN");
+	usr->keyConfig[34].slider_name = get_lang_string(ypaworld__string_pointers, 517, "CONTROL");
+	usr->keyConfig[35].slider_name = get_lang_string(ypaworld__string_pointers, 560, "GOTO LAST OCCUPIED VEHICLE");
+	usr->keyConfig[36].slider_name = get_lang_string(ypaworld__string_pointers, 514, "FIGHT");
+    usr->keyConfig[37].slider_name = get_lang_string(ypaworld__string_pointers, 533, "TO ROBO");
+    usr->keyConfig[38].slider_name = get_lang_string(ypaworld__string_pointers, 535, "TO COMMANDER");
+	usr->keyConfig[39].slider_name = get_lang_string(ypaworld__string_pointers, 534, "NEXT MAN");
+	usr->keyConfig[40].slider_name = get_lang_string(ypaworld__string_pointers, 532, "NEXT COM");
+	usr->keyConfig[41].slider_name = get_lang_string(ypaworld__string_pointers, 543, "JUMP TO LASTMSG-SENDER");
+	usr->keyConfig[42].slider_name = get_lang_string(ypaworld__string_pointers, 552, "MESSAGE TO ALL PLAYERS");
+	usr->keyConfig[43].slider_name = get_lang_string(ypaworld__string_pointers, 559, "HELP");
+	usr->keyConfig[44].slider_name = get_lang_string(ypaworld__string_pointers, 562, "SITUATION ANALYZER");
+
+
+
+
 
 	usr->titel_button = (NC_STACK_button *)init_get_class("button.class", 0x80001003, 0, 0x80001004, 0, 0x80001005, yw->screen_width, 0x80001006, yw->screen_height, 0);
 	if ( !usr->titel_button )
@@ -1029,6 +1328,47 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 		return 0;
 	}
 
+	int v250 = 1;
+	call_method(usr->titel_button, 68, &v250);
+
+
+	if ( !lstvw_init(
+				yw,
+				&usr->input_listview,
+				0x80000002,
+				0,
+				0x80000003,
+				45,
+				0x80000004,
+				8,
+				0x80000005,
+				0,
+				0x80000006,
+				0,
+				0x80000007,
+				8,
+				0x80000008,
+				0,
+				0x8000000B,
+				yw->font_default_h,
+				0x8000000C,
+				(int)(yw->screen_width * 0.7 ),
+				0x8000000F,
+				1,
+				0x80000010,
+				yw->field_1a38,
+				0x80000011,
+				0,
+				0x80000017,
+				0,
+				0) )
+	{
+		ypa_log_out("Unable to create Input-ListView\n");
+		return 0;
+	}
+
+	sub_4C31EC(yw, &usr->input_listview);
+
 	/*if ( usr->lang_dlls_count <= 1 )
 	{
 	  v240.butID = 1008;
@@ -1038,9 +1378,7 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 	    &v240);
 	}*/
 
-	int v250 = 1;
-	call_method(usr->titel_button, 68, &v250);
-
+    yw_loadSky(yw, "objects/wowc.base");
 
 
 
@@ -1092,6 +1430,21 @@ void ypaworld_func158(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
 	call_method(usr->titel_button, 69, usr->field_3A);
 	call_method(usr->titel_button, 70, 0);
+
+
+    lstvw_update_input(yw, &usr->input_listview, usr->field_3A);
+
+    int v64 = usr->field_D36;
+    usr->field_D36 = usr->input_listview.field_1DE + 1;
+    if ( usr->input_listview.field_1D0 & 0x80 )
+    {
+        usr->keyConfig[v64 - 1].field_10 = 0;
+//      usr->field_D3A = 1;
+ //     usr->field_D52 = 0;
+    }
+
+    lstvw_update(yw, &usr->input_listview);
+	yw_draw_input_list(yw, usr);
 
 	yw->brief.brf_objs.field_0 = 2;
 	yw->brief.brf_objs.object_id = 24;
@@ -1235,11 +1588,13 @@ int load_lang_lng(_NC_STACK_ypaworld *yw, const char *lang)
 	pars.dataForStore = yw;
 	pars.func = locale_parser;
 
-	if ( def_parseFile(buf, 1, &pars, 1) )
-		return 1;
+	if ( !def_parseFile(buf, 1, &pars, 1) )
+	{
+	    ypa_log_out("ERROR: Could not load language file '%s'!!!\n", buf);
+        return 0;
+	}
 
-	ypa_log_out("ERROR: Could not load language file '%s'!!!\n", buf);
-	return 0;
+	return 1;
 }
 
 size_t ypaworld_func166(NC_STACK_ypaworld *obj, class_stru *zis,const char **langname)
@@ -1323,8 +1678,82 @@ void ypaworld_func172(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
-void ypaworld_func173(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+size_t ypaworld_func173(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 {
+	char v28[500];
+	memset(v28, 0, 500);
+
+	if ( usr->field_D36 < 1 || usr->field_D36 > 45 )
+		return 0;
+
+	int id = usr->field_D36 - 1;
+	inp_key_setting *v5 = &usr->keyConfig[id];
+
+	if ( !keySS[v5->field_10].short_name )
+		return 0;
+
+	if ( v5->inp_type == 2 && !keySS[v5->slider_neg].short_name )
+		return 0;
+
+	if ( v5->inp_type == 2 )
+	{
+		strcpy(v28, "~#");
+		strcat(v28, "winp:");
+		strcat(v28, keySS[v5->slider_neg].short_name);
+		strcat(v28, " #");
+		strcat(v28, "winp:");
+	}
+	else if ( v5->inp_type == 1 )
+	{
+		strcpy(v28, "winp:");
+	}
+
+	if ( !keySS[ v5->KeyCode ].short_name )
+		return 0;
+
+	strcat(v28, keySS[ v5->KeyCode ].short_name);
+
+	NC_STACK_input *v38 = NULL;
+
+	inputEngine__getter(0x80001009, &v38, 0);
+
+	if ( v5->inp_type == 3 )
+	{
+		input__func66__params v29;
+		winp_68arg v33;
+
+		v33.keyname = v28;
+		v33.id = v5->keyID;
+
+		v29.field_0 = 3;
+		v29.vals = &v33;
+		v29.field_4 = 0;
+		v29.funcID = 68;
+
+		if ( !call_method(v38, 66, &v29) )
+			ypa_log_out("input.engine: WARNING: Hotkey[%d] (%s) not accepted.\n", v5->keyID, v33.keyname);
+	}
+	else
+	{
+		input__func64__params v30;
+		v30.item_number = v5->keyID;
+		v30.value = v28;
+		if ( v5->inp_type == 1 )
+		{
+			v30.type_id = 4;
+			if ( !call_method(v38, 64, &v30) )
+				ypa_log_out("input.engine: WARNING: Button[%d] (%s) not accepted.\n", v5->keyID, v28);
+		}
+		else
+		{
+			v30.type_id = 5;
+			if ( !call_method(v38, 64, &v30) )
+				ypa_log_out("input.engine: WARNING: Slider[%d] (%s) not accepted.\n", v5->keyID, v28);
+		}
+	}
+	v5->field_A = v5->slider_neg;
+	v5->field_8 = v5->KeyCode;
+	return 1;
 }
 
 

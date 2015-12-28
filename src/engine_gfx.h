@@ -49,8 +49,8 @@ struct rstr_207_arg
 
 struct w3d_a209
 {
-	char *field_0;
-	char **field_4;
+	char *cmdbuf;
+	char **includ;
 };
 
 
@@ -58,7 +58,7 @@ void sub_4231FC(void *dat);
 void gfxEngine__getter(unsigned int a1, ...);
 void gfxEngine__setter(unsigned int a1, ...);
 
-tiles_stru * sub_42324C(int id);
+tiles_stru * win3d_select_tileset(int id);
 size_t sub_423288(w3d_a209 *arg);
 
 struct wdd_font_st1

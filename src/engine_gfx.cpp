@@ -209,7 +209,7 @@ void gfxEngine__getter(unsigned int a1, ...)
 }
 
 
-tiles_stru * sub_42324C(int id)
+tiles_stru * win3d_select_tileset(int id)
 {
 	rstr_207_arg arg207;
 

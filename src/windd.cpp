@@ -3123,7 +3123,7 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
 
 void windd_func209(NC_STACK_windd *obj, class_stru *, w3d_a209 *arg)
 {
-	windd_func209__sub0(&obj->stack__windd, obj->stack__raster.tiles, (char *)arg->field_0, (char **)arg->field_4);
+	windd_func209__sub0(&obj->stack__windd, obj->stack__raster.tiles, arg->cmdbuf, arg->includ);
 }
 
 void windd_func213(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
@@ -3428,8 +3428,8 @@ void windd_func258__sub0(NC_STACK_windd *obj, __NC_STACK_display *dspl, __NC_STA
 			fntcmd_set_end(&cmdPoint);
 
 			w3d_a209 a209;
-			a209.field_0 = cmdBuff;
-			a209.field_4 = NULL;
+			a209.cmdbuf = cmdBuff;
+			a209.includ = NULL;
 
 			call_method(obj, 209, &a209);
 		}

@@ -12,6 +12,8 @@
 #include "base.h"
 #include "sklt.h"
 
+#include "lstvw.h"
+
 extern class_stored ypaworld_class_off;
 
 struct NC_STACK_ypaworld;
@@ -28,7 +30,19 @@ struct BuildProto;
 struct roboProto;
 
 
-
+struct inp_key_setting
+{
+	int16_t inp_type;
+	int16_t keyID;
+	int16_t KeyCode;
+	int16_t slider_neg;
+	int16_t field_8;
+	int16_t field_A;
+	int16_t field_C;
+	int16_t field_E;
+	int field_10;
+	const char *slider_name;
+};
 
 struct UserData
 {
@@ -46,7 +60,12 @@ struct UserData
 
 	NC_STACK_button *titel_button;
 
+	listview input_listview;
+	int field_D36;
+
 	int field_0x2fbc;
+
+	inp_key_setting keyConfig[45];
 };
 
 struct recorder
@@ -265,7 +284,7 @@ struct big_ypa_Brf
 	mapProto map_prototype;
 	int field_2E68;
 
-    int field_2E7C;
+	int field_2E7C;
 
 	brf_obj brf_objs;
 
@@ -419,6 +438,7 @@ struct _NC_STACK_ypaworld
 	int16_t screen_width;
 	int16_t screen_height;
 
+    int field_17bc;
 	int field_17c0;
 
 	const char **tooltips;

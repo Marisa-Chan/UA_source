@@ -30,6 +30,7 @@ OBJS =  \
 	itimer.cpp\
 	iwimp.cpp\
 	log.cpp\
+	lstvw.cpp\
 	main.cpp\
 	MC.cpp\
 	MFILE.cpp\
