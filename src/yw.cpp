@@ -1514,15 +1514,32 @@ void ypaworld_func165(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 
 char * sb_0x471428__sub0(char *a1, const char *a2)
 {
-	strcpy(a1, a2);
+	const char *tmp = a2;
 
-	while ( *a1 )
+	while ( *tmp )
 	{
-		if ( *a1 == '\\' )
-			*a1 = '\n';
-		a1 = CharNext(a1);
+	    if (tmp[0] == '\\')
+        {
+            if (tmp[1] == '\\')
+            {
+                *a1 = '\n';
+                tmp++;
+            }
+            else if (tmp[1] == 's')
+            {
+                *a1 = ' ';
+                tmp++;
+            }
+        }
+        else
+            *a1 = *tmp;
+
+		a1++;
+		tmp++;
 	}
-	return a1 + 1;
+	*a1 = 0;
+	a1++;
+	return a1;
 }
 
 int locale_parser(scrCallBack *arg)
