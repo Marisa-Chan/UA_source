@@ -4,6 +4,10 @@ MINGW = /usr/i686-w64-mingw32
 CC_WIN = i686-w64-mingw32-gcc
 CXX_WIN = i686-w64-mingw32-g++
 LIBS_WIN = -L$(MINGW)/lib/ -lmingw32  -mwindows -lole32 -lgdi32 -ldxguid -ldinput -lddraw -limm32
+
+LIBS_WINE = -lole32 -lgdi32 -ldxguid -ldinput -lddraw -limm32 -lmsvcrt
+CXX_WINE = wineg++
+
 TARGET = UA_source
 OBJS =  \
 	ade.cpp\
@@ -58,6 +62,9 @@ WINOBJ = \
 
 win32: $(OBJS)
 	$(CXX_WIN) -mno-ms-bitfields -O0 -g -o $(TARGET).exe $(OBJS) $(LIBS_WIN) -m32 -I $(MINGW)/include/
+
+wine: $(OBJS)
+	$(CXX_WINE) -mno-ms-bitfields -O0 -g -o $(TARGET) $(OBJS) $(LIBS_WINE) -m32
 
 clean:
 	rm -f $(TARGET) $(TARGET_DINGOO) *.o
