@@ -1446,6 +1446,23 @@ void ypaworld_func158(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
     lstvw_update(yw, &usr->input_listview);
 	yw_draw_input_list(yw, usr);
 
+    rstr_arg217 cvt;
+    cvt.dword0 = 0xFFFF0000;
+    cvt.dword4 = 0xFFFFFF00;
+    cvt.dword8 = 0xFFFFFF00;
+
+    call_method(yw->win3d, 217, &cvt);
+
+	w3d_func198arg ttt;
+	ttt.x1 = -1.0;
+	ttt.x2 = 1.0;
+	ttt.y1 = -1.0;
+	ttt.y2 = 1.0;
+
+	call_method(yw->win3d, 200, &ttt);
+
+
+
 	yw->brief.brf_objs.field_0 = 2;
 	yw->brief.brf_objs.object_id = 24;
 

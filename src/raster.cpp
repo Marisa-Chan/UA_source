@@ -32,6 +32,14 @@ NC_STACK_raster * raster_func0(class_stru *obj, class_stru *zis, stack_vals *sta
 		__NC_STACK_raster *rstr = &clss->stack__raster;
 		call_vtbl(clss, 3, 0x80001002, &rstr->bitm_intern, 0);
 
+		rstr->field_24.x1 = 0;
+		rstr->field_24.y1 = 0;
+		rstr->field_24.x2 = rstr->bitm_intern->width - 1;
+		rstr->field_24.y2 = rstr->bitm_intern->height - 1;
+
+		rstr->field_54c = rstr->bitm_intern->width / 2;
+		rstr->field_550 = rstr->bitm_intern->height / 2;
+
 		rstr->field_554 = (rstr->bitm_intern->width / 2);
 		rstr->field_558 = (rstr->bitm_intern->height / 2);
 	}

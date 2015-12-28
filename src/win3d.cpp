@@ -909,7 +909,7 @@ void sub_43CD40(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int x1, int y1, in
 		int xCount = abs(x2 - x1);
 		int yCount = abs(y2 - y1);
 
-		WORD color = RGBAToColor(
+		DWORD color = RGBAToColor(
 						 r,
 						 g,
 						 b,
@@ -960,7 +960,26 @@ void sub_43CD40(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int x1, int y1, in
 
 		if ( BytesPerColor == 2 )
 		{
-			WORD *surf = (WORD *)((char *)wdd->surface_locked_surfaceData + 2 * rilWidth * y1 + 2 * x1);
+			WORD *surf = ((WORD *)wdd->surface_locked_surfaceData + rilWidth * y1 + x1);
+
+			for (int i = 0; i <= xCount; i++) // Verify i bound
+			{
+				*surf = color;
+				if ( v17 > 0 )
+				{
+					v17 += v18;
+					surf += dx;
+				}
+				else
+				{
+					v17 += v27;
+				}
+				surf += dy;
+			}
+		}
+		else if ( BytesPerColor == 4 )
+		{
+			DWORD *surf = ((DWORD *)wdd->surface_locked_surfaceData + rilWidth * y1 + x1);
 
 			for (int i = 0; i <= xCount; i++) // Verify i bound
 			{
@@ -1029,12 +1048,12 @@ int sub_420C74(xyxyNNN *a1, xyxyNNN *inout)
 
 	if ( inout->y1 > a1->y2 )
 		flag1 = 8;
-	else if ( inout->y1 < a1->y2 )
+	else if ( inout->y1 < a1->y1 )
 		flag1 = 4;
 
 	if ( inout->x1 > a1->x2 )
 		flag1 |= 2;
-	else if ( inout->x1 < a1->x2 )
+	else if ( inout->x1 < a1->x1 )
 		flag1 |= 1;
 
 
@@ -1047,7 +1066,7 @@ int sub_420C74(xyxyNNN *a1, xyxyNNN *inout)
 
 	if ( inout->x2 > a1->x2 )
 		flag2 |= 2;
-	else if ( inout->x2 < a1->x2 )
+	else if ( inout->x2 < a1->x1 )
 		flag2 |= 1;
 
 
@@ -1065,14 +1084,14 @@ int sub_420C74(xyxyNNN *a1, xyxyNNN *inout)
 		if ( (flag2 | flag1) == 0 )
 		{
 			loop = 0;
-			continue;
+			break;
 		}
 
 		if ( (flag2 & flag1) != 0 )
 		{
 			loop = 0;
 			v18 = -1;
-			continue;
+			break;
 		}
 
 		v18 = 0;
@@ -1125,7 +1144,7 @@ int sub_420C74(xyxyNNN *a1, xyxyNNN *inout)
 
 		if ( vY > a1->y2 )
 			newFlag = 8;
-		else if ( vY < a1->y2 )
+		else if ( vY < a1->y1 )
 			newFlag = 4;
 
 		if ( vX > a1->x2 )
@@ -1133,7 +1152,10 @@ int sub_420C74(xyxyNNN *a1, xyxyNNN *inout)
 		else if ( vX < a1->x1 )
 			newFlag |= 1;
 
-		flag1 = newFlag;
+        if ( flag == flag1 )
+            flag1 = newFlag;
+        else
+            flag2 = newFlag;
 	}
 
 	if ( v18 == 0 )
