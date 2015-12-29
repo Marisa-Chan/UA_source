@@ -27,6 +27,14 @@ stored_functions *classvtbl_get_ypaworld()
 	return &ypaworld_class_vtbl;
 }
 
+key_value_stru ypaworld_keys[4] =
+{
+	{"netgame.exclusivegem", KEY_TYPE_BOOL, 1},
+	{"net.waitstart", KEY_TYPE_DIGIT, 150000},
+	{"net.kickoff", KEY_TYPE_DIGIT, 20000},
+	{"game.debug", KEY_TYPE_BOOL, 0}
+};
+
 CLASSFUNC ypaworld_funcs[1024];
 
 polys *p_outPolys;
@@ -601,16 +609,68 @@ size_t ypaworld_func154(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 	_NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
 
 	yw->GameShell = usr;
-
 	usr->p_ypaworld = yw;
+
+	yw->field_2d90->field_40 = 8;
 	usr->field_46 = 1;
+
+	get_keyvalue_from_ini(0, ypaworld_keys, 4);
+
+	yw->netgame_exclusivegem = ypaworld_keys[0].value.val;
 
 	call_vtbl(obj, 3, 0x80002018, &ypaworld__string_pointers, 0);
 
+	init_list(&usr->files_list);
+	init_list(&usr->video_mode_list);
+	init_list(&usr->lang_dlls);
+
 	set_keys_vals(yw);
 
+	fill_videmodes_list(usr);
+	listSaveDir(usr, "save:");
+	listLocaleDir(usr, "locale");
+
+
+	strcpy(usr->usernamedir, "NEWUSER");
+
+	usr->field_0x8 = 1;
+	usr->field_1612 = 0;
 	usr->field_D36 = 1;
 
+
+	usr->usernamedir_len = strlen(usr->usernamedir);
+
+	usr->samples2_info.field_0 = 0;
+	usr->samples2_info.field_4 = 0;
+	usr->samples2_info.field_8 = 0;
+	usr->samples2_info.field_C = 0;
+	usr->samples2_info.field_10 = 0;
+	usr->samples2_info.field_14 = 0;
+
+	usr->samples1_info.field_0 = usr->samples2_info.field_0;
+	usr->samples1_info.field_4 = usr->samples2_info.field_4;
+	usr->samples1_info.field_8 = usr->samples2_info.field_8;
+	usr->samples1_info.field_C = usr->samples2_info.field_C;
+	usr->samples1_info.field_10 = usr->samples2_info.field_10;
+	usr->samples1_info.field_14 = usr->samples2_info.field_14;
+
+	for (int i = 0; i < 16; i++)
+	{
+		usr->samples2_info.samples_data[i].volume = 127;
+		usr->samples2_info.samples_data[i].pitch = 0;
+		usr->samples1_info.samples_data[i].volume = usr->samples2_info.samples_data[i].volume;
+		usr->samples1_info.samples_data[i].pitch = usr->samples2_info.samples_data[i].pitch;
+	}
+
+	sub_423DB0(&usr->samples1_info);
+	sub_423DB0(&usr->samples2_info);
+	sub_423DB0(&usr->field_782);
+
+	if ( !ShellSoundsLoad(usr) )
+	{
+		ypa_log_out("Error: Unable to load from Shell.ini\n");
+		return 0;
+	}
 
 	//usr->field_FBE = 0;
 
@@ -815,6 +875,62 @@ size_t ypaworld_func154(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 		usr->keyConfig[i].field_C = usr->keyConfig[i].KeyCode;
 		usr->keyConfig[i].field_E = usr->keyConfig[i].slider_neg;
 	}
+
+	usr->field_1756 = -2;
+
+//	if (! call_method(yw->windp, 87, &v67) )
+//	{
+//		ypa_log_out("Error while remote start check\n");
+//		return  0;
+//	}
+
+//	if ( v67.field_41 )
+//	{
+//		strcpy(yw->GameShell->callSIGN, v67.callSIGN);
+//
+//		if ( v67.field_40 )
+//			yw->GameShell->field_0x1cd8 = 1;
+//		else
+//			yw->GameShell->field_0x1cd8 = 0;
+//
+//		yw->GameShell->field_1CEA = 1;
+//
+//		usr->field_1C86 = 0;
+//		usr->field_46 = 6;
+//
+//		if ( usr->field_0x1cd8 )
+//		{
+//			v68[0] = 0;
+//			v68[1] = 0;
+//			while ( call_method(yw->windp, 79, v68) && strcasecmp((const char *)v68[2], usr->callSIGN) )
+//				++v68[1];
+//			usr->field_0x2db0[v68[1]].field_3 = 1;
+//			usr->field_1CE9 = 1;
+//			usr->field_1C3A = 3;
+//		}
+//		else
+//		{
+//			usr->field_1C3A = 4;
+//		}
+//		v68[0] = 0;
+//		v68[1] = 0;
+//		while ( call_method(yw->windp, 79, v68) )
+//		{
+//			strncpy(yw->GameShell->field_0x2db0[v68[1]].field_10, (const char *)v68[2], 64);
+//			++v68[1];
+//		}
+//		usr->field_2888 = 400;
+//		usr->field_288C = 400;
+//	}
+//	else
+	{
+		yw->GameShell->field_1CEA = 0;
+	}
+
+	usr->field_545B = 200000;
+
+	if ( !usr->field_1CEA )
+		ypaworld_func154__sub0(yw);
 
 	return 1;
 }
@@ -1138,7 +1254,7 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
 	printf("%d\n", yw_LoadSet(yw, 1)); //// HACK TEST LOAD SET
 
-    const char *langname = "language";
+	const char *langname = "language";
 	call_method(obj, 166, &langname);
 
 	if ( !ypaworld_func156__sub2(yw) )
@@ -1149,8 +1265,8 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
 
 
-    usr->keyConfig[0].slider_name = get_lang_string(ypaworld__string_pointers, 544, "PAUSE");
-    usr->keyConfig[1].slider_name = get_lang_string(ypaworld__string_pointers, 536, "QUIT");
+	usr->keyConfig[0].slider_name = get_lang_string(ypaworld__string_pointers, 544, "PAUSE");
+	usr->keyConfig[1].slider_name = get_lang_string(ypaworld__string_pointers, 536, "QUIT");
 	usr->keyConfig[2].slider_name = get_lang_string(ypaworld__string_pointers, 500, "DRIVE DIR");
 	usr->keyConfig[3].slider_name = get_lang_string(ypaworld__string_pointers, 501, "DRIVE SPEED");
 	usr->keyConfig[4].slider_name = get_lang_string(ypaworld__string_pointers, 511, "GUN HEIGHT");
@@ -1186,8 +1302,8 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 	usr->keyConfig[34].slider_name = get_lang_string(ypaworld__string_pointers, 517, "CONTROL");
 	usr->keyConfig[35].slider_name = get_lang_string(ypaworld__string_pointers, 560, "GOTO LAST OCCUPIED VEHICLE");
 	usr->keyConfig[36].slider_name = get_lang_string(ypaworld__string_pointers, 514, "FIGHT");
-    usr->keyConfig[37].slider_name = get_lang_string(ypaworld__string_pointers, 533, "TO ROBO");
-    usr->keyConfig[38].slider_name = get_lang_string(ypaworld__string_pointers, 535, "TO COMMANDER");
+	usr->keyConfig[37].slider_name = get_lang_string(ypaworld__string_pointers, 533, "TO ROBO");
+	usr->keyConfig[38].slider_name = get_lang_string(ypaworld__string_pointers, 535, "TO COMMANDER");
 	usr->keyConfig[39].slider_name = get_lang_string(ypaworld__string_pointers, 534, "NEXT MAN");
 	usr->keyConfig[40].slider_name = get_lang_string(ypaworld__string_pointers, 532, "NEXT COM");
 	usr->keyConfig[41].slider_name = get_lang_string(ypaworld__string_pointers, 543, "JUMP TO LASTMSG-SENDER");
@@ -1378,7 +1494,7 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 	    &v240);
 	}*/
 
-    yw_loadSky(yw, "objects/wowc.base");
+	yw_loadSky(yw, "objects/wowc.base");
 
 
 
@@ -1432,26 +1548,26 @@ void ypaworld_func158(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 	call_method(usr->titel_button, 70, 0);
 
 
-    lstvw_update_input(yw, &usr->input_listview, usr->field_3A);
+	lstvw_update_input(yw, &usr->input_listview, usr->field_3A);
 
-    int v64 = usr->field_D36;
-    usr->field_D36 = usr->input_listview.field_1DE + 1;
-    if ( usr->input_listview.field_1D0 & 0x80 )
-    {
-        usr->keyConfig[v64 - 1].field_10 = 0;
+	int v64 = usr->field_D36;
+	usr->field_D36 = usr->input_listview.field_1DE + 1;
+	if ( usr->input_listview.field_1D0 & 0x80 )
+	{
+		usr->keyConfig[v64 - 1].field_10 = 0;
 //      usr->field_D3A = 1;
- //     usr->field_D52 = 0;
-    }
+//     usr->field_D52 = 0;
+	}
 
-    lstvw_update(yw, &usr->input_listview);
+	lstvw_update(yw, &usr->input_listview);
 	yw_draw_input_list(yw, usr);
 
-    rstr_arg217 cvt;
-    cvt.dword0 = 0xFFFF0000;
-    cvt.dword4 = 0xFFFFFF00;
-    cvt.dword8 = 0xFFFFFF00;
+	rstr_arg217 cvt;
+	cvt.dword0 = 0xFFFF0000;
+	cvt.dword4 = 0xFFFFFF00;
+	cvt.dword8 = 0xFFFFFF00;
 
-    call_method(yw->win3d, 217, &cvt);
+	call_method(yw->win3d, 217, &cvt);
 
 	w3d_func198arg ttt;
 	ttt.x1 = -1.0;
@@ -1518,21 +1634,21 @@ char * sb_0x471428__sub0(char *a1, const char *a2)
 
 	while ( *tmp )
 	{
-	    if (tmp[0] == '\\')
-        {
-            if (tmp[1] == '\\')
-            {
-                *a1 = '\n';
-                tmp++;
-            }
-            else if (tmp[1] == 's')
-            {
-                *a1 = ' ';
-                tmp++;
-            }
-        }
-        else
-            *a1 = *tmp;
+		if (tmp[0] == '\\')
+		{
+			if (tmp[1] == '\\')
+			{
+				*a1 = '\n';
+				tmp++;
+			}
+			else if (tmp[1] == 's')
+			{
+				*a1 = ' ';
+				tmp++;
+			}
+		}
+		else
+			*a1 = *tmp;
 
 		a1++;
 		tmp++;
@@ -1624,8 +1740,8 @@ int load_lang_lng(_NC_STACK_ypaworld *yw, const char *lang)
 
 	if ( !def_parseFile(buf, 1, &pars, 1) )
 	{
-	    ypa_log_out("ERROR: Could not load language file '%s'!!!\n", buf);
-        return 0;
+		ypa_log_out("ERROR: Could not load language file '%s'!!!\n", buf);
+		return 0;
 	}
 
 	return 1;

@@ -24,6 +24,14 @@ struct Key_stru
 	char field_B;
 };
 
+struct video_mode_node : public nnode
+{
+	char name[128];
+	int sort_id;
+	int16_t width;
+	int16_t height;
+};
+
 
 int VhclProtoParser(scrCallBack *);
 int WeaponProtoParser(scrCallBack *);
@@ -63,5 +71,15 @@ int yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr);
 
 int yw_loadSky(_NC_STACK_ypaworld *yw, const char *skyname);
 //void yw_renderSky_test(_NC_STACK_ypaworld *yw, base77Func *rndr_params);
+
+void fill_videmodes_list(UserData *usr);
+void listSaveDir(UserData *usr, const char *saveDir);
+int parseSaveUser(scrCallBack *arg);
+
+void listLocaleDir(UserData *usr, const char *dirname);
+
+int  ShellSoundsLoad(UserData *usr);
+
+void ypaworld_func154__sub0(_NC_STACK_ypaworld *yw);
 
 #endif

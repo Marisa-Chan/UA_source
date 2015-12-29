@@ -2236,7 +2236,7 @@ int SuperItem_Parse(scrCallBack *arg)
 
 void parse_map_sizes(FILE *fil, int *sec_x, int *sec_y)
 {
-    char buf[1024];
+	char buf[1024];
 	fgets(buf, 1024, fil);
 
 	char *tmp = strtok(buf, " \n");
@@ -2536,157 +2536,887 @@ int LevelDataParser(scrCallBack *arg)
 
 int parse_map_robos(scrCallBack *arg)
 {
-  mapProto *mapp = (mapProto *)arg->dataForStore;
-  char *_p2 = arg->p2;
-  char *_p1 = arg->p1;
-  mapRobo *robo = &mapp->mapRobos[mapp->mapRobos_count];
+	mapProto *mapp = (mapProto *)arg->dataForStore;
+	char *_p2 = arg->p2;
+	char *_p1 = arg->p1;
+	mapRobo *robo = &mapp->mapRobos[mapp->mapRobos_count];
 
-  if ( !arg->field_18 )
-  {
-    if ( !strcasecmp(_p1, "begin_robo") )
-    {
-      robo->mb_status = 0;
-      arg->field_18 = 1;
-      return 1;
-    }
-    return 3;
-  }
+	if ( !arg->field_18 )
+	{
+		if ( !strcasecmp(_p1, "begin_robo") )
+		{
+			robo->mb_status = 0;
+			arg->field_18 = 1;
+			return 1;
+		}
+		return 3;
+	}
 
-  if ( !strcasecmp(_p1, "end") )
-  {
-    arg->field_18 = 0;
-    mapp->mapRobos_count++;
-    mapp->flags |= 0x40;
-    return 2;
-  }
+	if ( !strcasecmp(_p1, "end") )
+	{
+		arg->field_18 = 0;
+		mapp->mapRobos_count++;
+		mapp->flags |= 0x40;
+		return 2;
+	}
 
-  if ( !strcasecmp(_p1, "owner") )
-  {
-    robo->owner = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "vehicle") )
-  {
-    robo->vehicle = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "sec_x") )
-  {
-      int tmp = atoi(_p2);
-    robo->pos_y = -300;
-    robo->pos_x = tmp * 1200.0 + 600.0;
-  }
-  else if ( !strcasecmp(_p1, "sec_y") )
-  {
-    int tmp = atoi(_p2);
-    robo->pos_y = -300;
-    robo->pos_z = -(tmp * 1200.0 + 600.0);
-  }
-  else if ( !strcasecmp(_p1, "pos_x") )
-  {
-    robo->pos_x = strtof(_p2, 0) + 0.3;
-  }
-  else if ( !strcasecmp(_p1, "pos_y") )
-  {
-    robo->pos_y = strtof(_p2, 0) + 0.3;
-  }
-  else if ( !strcasecmp(_p1, "pos_z") )
-  {
-    robo->pos_z = strtof(_p2, 0) + 0.3;
-  }
-  else if ( !strcasecmp(_p1, "energy") )
-  {
-    robo->energy = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "con_budget") )
-  {
-    robo->con_budget = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "rad_budget") )
-  {
-    robo->rad_budget = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "pow_budget") )
-  {
-    robo->pow_budget = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "def_budget") )
-  {
-    robo->def_budget = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "saf_budget") )
-  {
-    robo->saf_budget = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "rec_budget") )
-  {
-    robo->rec_budget = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "cpl_budget") )
-  {
-    robo->cpl_budget = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "rob_budget") )
-  {
-    robo->rob_budget = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "viewangle") )
-  {
-    robo->viewangle = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "saf_delay") )
-  {
-    robo->saf_delay = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "pow_delay") )
-  {
-    robo->pow_delay = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "rad_delay") )
-  {
-    robo->rad_delay = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "cpl_delay") )
-  {
-    robo->cpl_delay = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "def_delay") )
-  {
-    robo->def_delay = atoi(_p2);
-    }
-  else if ( !strcasecmp(_p1, "con_delay") )
-  {
-    robo->con_delay = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "rec_delay") )
-  {
-    robo->rec_delay = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "rob_delay") )
-  {
-    robo->rob_delay = atoi(_p2);
-  }
-  else if ( !strcasecmp(_p1, "mb_status") )
-  {
-      if ( !strcasecmp(_p2, "known") )
-  {
-    robo->mb_status = 0;
-  }
-  else if ( !strcasecmp(_p2, "unknown") )
-  {
-    robo->mb_status = 1;
-  }
-  else if ( !strcasecmp(_p2, "hidden") )
-  {
-    robo->mb_status = 2;
-  }
-  else
-    return 4;
-  }
-    else if ( !strcasecmp(_p1, "reload_const") )
-    {
-        robo->reload_const = atoi(_p2);
-    }
-    else
-      return 3;
+	if ( !strcasecmp(_p1, "owner") )
+	{
+		robo->owner = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "vehicle") )
+	{
+		robo->vehicle = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "sec_x") )
+	{
+		int tmp = atoi(_p2);
+		robo->pos_y = -300;
+		robo->pos_x = tmp * 1200.0 + 600.0;
+	}
+	else if ( !strcasecmp(_p1, "sec_y") )
+	{
+		int tmp = atoi(_p2);
+		robo->pos_y = -300;
+		robo->pos_z = -(tmp * 1200.0 + 600.0);
+	}
+	else if ( !strcasecmp(_p1, "pos_x") )
+	{
+		robo->pos_x = strtof(_p2, 0) + 0.3;
+	}
+	else if ( !strcasecmp(_p1, "pos_y") )
+	{
+		robo->pos_y = strtof(_p2, 0) + 0.3;
+	}
+	else if ( !strcasecmp(_p1, "pos_z") )
+	{
+		robo->pos_z = strtof(_p2, 0) + 0.3;
+	}
+	else if ( !strcasecmp(_p1, "energy") )
+	{
+		robo->energy = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "con_budget") )
+	{
+		robo->con_budget = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "rad_budget") )
+	{
+		robo->rad_budget = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "pow_budget") )
+	{
+		robo->pow_budget = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "def_budget") )
+	{
+		robo->def_budget = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "saf_budget") )
+	{
+		robo->saf_budget = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "rec_budget") )
+	{
+		robo->rec_budget = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "cpl_budget") )
+	{
+		robo->cpl_budget = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "rob_budget") )
+	{
+		robo->rob_budget = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "viewangle") )
+	{
+		robo->viewangle = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "saf_delay") )
+	{
+		robo->saf_delay = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "pow_delay") )
+	{
+		robo->pow_delay = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "rad_delay") )
+	{
+		robo->rad_delay = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "cpl_delay") )
+	{
+		robo->cpl_delay = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "def_delay") )
+	{
+		robo->def_delay = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "con_delay") )
+	{
+		robo->con_delay = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "rec_delay") )
+	{
+		robo->rec_delay = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "rob_delay") )
+	{
+		robo->rob_delay = atoi(_p2);
+	}
+	else if ( !strcasecmp(_p1, "mb_status") )
+	{
+		if ( !strcasecmp(_p2, "known") )
+		{
+			robo->mb_status = 0;
+		}
+		else if ( !strcasecmp(_p2, "unknown") )
+		{
+			robo->mb_status = 1;
+		}
+		else if ( !strcasecmp(_p2, "hidden") )
+		{
+			robo->mb_status = 2;
+		}
+		else
+			return 4;
+	}
+	else if ( !strcasecmp(_p1, "reload_const") )
+	{
+		robo->reload_const = atoi(_p2);
+	}
+	else
+		return 3;
 
-  return 0;
+	return 0;
+}
+
+
+
+int sb_0x4739e8__sub0(_NC_STACK_ypaworld *yw, const char *a2, char *a4, int buf_size)
+{
+	int v7 = 0;
+	char buf[256];
+
+	memset(a4, 0, buf_size);
+
+	UserData *usr = yw->GameShell;
+
+	if ( usr )
+	{
+		if ( usr->user_name[0] != 0 )
+		{
+			sprintf(buf, "save:%s/%s", usr->user_name, a2);
+			FILE *v8 = FOpen(buf, "r");
+
+			if ( v8 )
+			{
+				if ( fgets(a4, buf_size - 1, v8) )
+					v7 = 1;
+				FClose(v8);
+			}
+		}
+	}
+	return v7;
+}
+
+int parseSaveUser(scrCallBack *arg)
+{
+	_NC_STACK_ypaworld *yw = arg->world2;
+
+	if ( !arg->field_18 )
+	{
+		if ( !strcasecmp(arg->p1, "new_user") )
+		{
+			if ( !yw->GameShell->field_1CEA )
+			{
+				if ( !sb_0x4739e8__sub0(yw, "callsign.def", yw->GameShell->callSIGN, 64) )
+				{
+					strcpy(yw->GameShell->callSIGN , get_lang_string(yw->string_pointers_p2, 366, "UNNAMED") );
+				}
+			}
+			arg->field_18 = 1;
+			return 1;
+		}
+		else
+			return 3;
+	}
+	else
+	{
+		if ( !strcasecmp(arg->p1, "end") )
+		{
+			arg->field_18 = 0;
+			return 2;
+		}
+
+		if ( !arg->world || !arg->world2 )
+			return 3;
+
+		if ( !strcasecmp(arg->p1, "username") )
+		{
+		}
+		else if ( strcasecmp(arg->p1, "netname") )
+		{
+		}
+		else if ( !strcasecmp(arg->p1, "maxroboenergy") )
+		{
+			yw->maxroboenergy = atoi(arg->p2);
+		}
+		else if ( !strcasecmp(arg->p1, "maxreloadconst") )
+		{
+			yw->maxreloadconst = atoi(arg->p2);
+		}
+		else if ( !strcasecmp(arg->p1, "numbuddies") )
+		{
+		}
+		else if ( !strcasecmp(arg->p1, "beamenergy") )
+		{
+			yw->beamenergy = atoi(arg->p2);
+		}
+		else if ( !strcasecmp(arg->p1, "playerstatus") )
+		{
+			char *v10 = strtok(arg->p2, "_ \t");
+			if ( v10 )
+			{
+				int plid = atoi(v10);
+				v10 = strtok(0, "_ \t");
+				if ( v10 )
+				{
+					yw->playerstatus[plid].p1 = atoi(v10);
+					v10 = strtok(0, "_ \t");
+					if ( v10 )
+					{
+						yw->playerstatus[plid].p2 = atoi(v10);
+						v10 = strtok(0, "_ \t");
+						if ( v10 )
+						{
+							yw->playerstatus[plid].p3 = atoi(v10);
+							v10 = strtok(0, "_ \t");
+							if ( v10 )
+							{
+								yw->playerstatus[plid].p4 = atoi(v10);
+								v10 = strtok(0, "_ \t");
+								if ( v10 )
+								{
+									yw->playerstatus[plid].p5 = atoi(v10);
+									v10 = strtok(0, "_ \t");
+									if ( v10 )
+									{
+										yw->playerstatus[plid].p6 = atoi(v10);
+										v10 = strtok(0, "_ \t");
+										if ( v10 )
+										{
+											yw->playerstatus[plid].p7 = atoi(v10);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		else if ( !strcasecmp(arg->p1, "jodiefoster") )
+		{
+			char *v20 = strtok(arg->p2, "_ \t");
+			if ( v20 )
+			{
+				yw->field_2d90->jodiefoster[0] = atoi(v20);
+				v20 = strtok(0, "_ \t");
+				if ( v20 )
+				{
+					yw->field_2d90->jodiefoster[1] = atoi(v20);
+					v20 = strtok(0, "_ \t");
+					if ( v20 )
+					{
+						yw->field_2d90->jodiefoster[2] = atoi(v20);
+						v20 = strtok(0, "_ \t");
+						if ( v20 )
+						{
+							yw->field_2d90->jodiefoster[3] = atoi(v20);
+							v20 = strtok(0, "_ \t");
+							if ( v20 )
+							{
+								yw->field_2d90->jodiefoster[4] = atoi(v20);
+								v20 = strtok(0, "_ \t");
+								if ( v20 )
+								{
+									yw->field_2d90->jodiefoster[5] = atoi(v20);
+									v20 = strtok(0, "_ \t");
+									if ( v20 )
+									{
+										yw->field_2d90->jodiefoster[6] = atoi(v20);
+										v20 = strtok(0, "_ \t");
+										if ( v20 )
+											yw->field_2d90->jodiefoster[7] = atoi(v20);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		else
+			return 3;
+
+		return 0;
+	}
+	return 0;
+}
+
+
+int ShellSoundsParse_sample(UserData *usr, scrCallBack *arg)
+{
+	NC_STACK_wav **v3;
+	int v4;
+	samples_collection1 *v13;
+
+	if ( !strcasecmp(arg->p1, "quit_sample") )
+	{
+		v3 = usr->samples1;
+		v4 = 4;
+		v13 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "volume_sample") )
+	{
+		v3 = usr->samples1;
+		v4 = 0;
+		v13 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "button_sample") )
+	{
+		v3 = usr->samples1;
+		v4 = 3;
+		v13 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "left_sample") )
+	{
+		v3 = usr->samples1;
+		v4 = 2;
+		v13 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "right_sample") )
+	{
+		v3 = usr->samples1;
+		v4 = 1;
+		v13 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "slider_sample") )
+	{
+		v3 = usr->samples1;
+		v4 = 5;
+		v13 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "welcome_sample") )
+	{
+		v3 = usr->samples1;
+		v4 = 6;
+		v13 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "menuopen_sample") )
+	{
+		v3 = usr->samples1;
+		v4 = 7;
+		v13 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "overlevel_sample") )
+	{
+		v3 = usr->samples1;
+		v4 = 8;
+		v13 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "levelselect_sample") )
+	{
+		v3 = usr->samples1;
+		v4 = 9;
+		v13 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "textappear_sample") )
+	{
+		v3 = usr->samples1;
+		v4 = 10;
+		v13 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "objectappear_sample") )
+	{
+		v3 = usr->samples1;
+		v4 = 11;
+		v13 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "sectorconquered_sample") )
+	{
+		v3 = usr->samples1;
+		v13 = &usr->samples1_info;
+		v4 = 12;
+	}
+	else if ( !strcasecmp(arg->p1, "vhcldestroyed_sample") )
+	{
+		v3 = usr->samples1;
+		v13 = &usr->samples1_info;
+		v4 = 13;
+	}
+	else if ( !strcasecmp(arg->p1, "bldgconquered_sample") )
+	{
+		v3 = usr->samples1;
+		v13 = &usr->samples1_info;
+		v4 = 14;
+	}
+	else if ( !strcasecmp(arg->p1, "timercount_sample") )
+	{
+		v3 = usr->samples1;
+		v13 = &usr->samples1_info;
+		v4 = 15;
+	}
+	else if ( !strcasecmp(arg->p1, "select_sample") )
+	{
+		v13 = &usr->samples2_info;
+		v4 = 0;
+		v3 = usr->samples2;
+	}
+	else if ( !strcasecmp(arg->p1, "error_sample") )
+	{
+		v13 = &usr->samples2_info;
+		v4 = 1;
+		v3 = usr->samples2;
+	}
+	else if ( !strcasecmp(arg->p1, "attention_sample") )
+	{
+		v13 = &usr->samples2_info;
+		v4 = 2;
+		v3 = usr->samples2;
+	}
+	else if ( !strcasecmp(arg->p1, "secret_sample") )
+	{
+		v13 = &usr->samples2_info;
+		v4 = 3;
+		v3 = usr->samples2;
+	}
+	else if ( !strcasecmp(arg->p1, "plasma_sample") )
+	{
+		v13 = &usr->samples2_info;
+		v4 = 4;
+		v3 = usr->samples2;
+	}
+	else
+		return 3;
+
+	char buf[300];
+
+	strcpy(buf, get_prefix_replacement("rsrc"));
+
+	set_prefix_replacement("rsrc", "data:");
+
+	v3[v4] = (NC_STACK_wav *)init_get_class("wav.class", 0x80001000, arg->p2, 0);
+	if ( !v3[v4] )
+		return 4;
+
+	call_vtbl(v3[v4], 3, 0x80002000, &v13->samples_data[v4], 0);
+
+	if ( v3 == usr->samples1 && (v4 == 0 || v4 == 5 || v4 == 10 || v4 == 15 ) )
+		v13->samples_data[v4].field_12 |= 1;
+
+	set_prefix_replacement("rsrc", buf);
+	return 0;
+}
+
+signed int __fastcall ShellSoundsParse_volume(UserData *usr, scrCallBack *arg)
+{
+	samples_collection1 *v6;
+	int v7;
+
+	if ( !strcasecmp(arg->p1, "quit_volume") )
+	{
+		v6 = &usr->samples1_info;
+		v7 = 4;
+	}
+	else if ( !strcasecmp(arg->p1, "volume_volume") )
+	{
+		v6 = &usr->samples1_info;
+		v7 = 0;
+	}
+	else if ( !strcasecmp(arg->p1, "button_volume") )
+	{
+		v6 = &usr->samples1_info;
+		v7 = 3;
+	}
+	else if ( !strcasecmp(arg->p1, "left_volume") )
+	{
+		v6 = &usr->samples1_info;
+		v7 = 2;
+	}
+	else if ( !strcasecmp(arg->p1, "right_volume") )
+	{
+		v6 = &usr->samples1_info;
+		v7 = 1;
+	}
+	else if ( !strcasecmp(arg->p1, "slider_volume") )
+	{
+		v6 = &usr->samples1_info;
+		v7 = 5;
+	}
+	else if ( !strcasecmp(arg->p1, "welcome_volume") )
+	{
+		v6 = &usr->samples1_info;
+		v7 = 6;
+	}
+	else if ( !strcasecmp(arg->p1, "menuopen_volume") )
+	{
+		v6 = &usr->samples1_info;
+		v7 = 7;
+	}
+	else if ( !strcasecmp(arg->p1, "overlevel_volume") )
+	{
+		v6 = &usr->samples1_info;
+		v7 = 8;
+	}
+	else if ( !strcasecmp(arg->p1, "levelselect_volume") )
+	{
+		v6 = &usr->samples1_info;
+		v7 = 9;
+	}
+	else if ( !strcasecmp(arg->p1, "textappear_volume") )
+	{
+		v6 = &usr->samples1_info;
+		v7 = 10;
+	}
+	else if ( !strcasecmp(arg->p1, "objectappear_volume") )
+	{
+		v6 = &usr->samples1_info;
+		v7 = 11;
+	}
+	else if ( !strcasecmp(arg->p1, "sectorconquered_volume") )
+	{
+		v7 = 12;
+		v6 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "vhcldestroyed_volume") )
+	{
+		v7 = 13;
+		v6 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "bldgconquered_volume") )
+	{
+		v7 = 14;
+		v6 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "timercount_volume") )
+	{
+		v7 = 15;
+		v6 = &usr->samples1_info;
+	}
+	else if ( !strcasecmp(arg->p1, "select_volume") )
+	{
+		v6 = &usr->samples2_info;
+		v7 = 0;
+	}
+	else if ( !strcasecmp(arg->p1, "error_volume") )
+	{
+		v6 = &usr->samples2_info;
+		v7 = 1;
+	}
+	else if ( !strcasecmp(arg->p1, "attention_volume") )
+	{
+		v6 = &usr->samples2_info;
+		v7 = 2;
+	}
+	else if ( !strcasecmp(arg->p1, "secret_volume") )
+	{
+		v6 = &usr->samples2_info;
+		v7 = 3;
+	}
+	else if ( !strcasecmp(arg->p1, "plasma_volume") )
+	{
+		v6 = &usr->samples2_info;
+		v7 = 4;
+	}
+	else
+		return 3;
+
+	v6->samples_data[v7].volume = atoi(arg->p2);
+	return 0;
+}
+
+int ShellSoundsParse_pitch(UserData *usr, scrCallBack *arg)
+{
+	samples_collection1 *v4;
+	int v5;
+
+	if ( !strcasecmp(arg->p1, "quit_pitch") )
+	{
+		v4 = &usr->samples1_info;
+		v5 = 4;
+
+	}
+	else if ( !strcasecmp(arg->p1, "volume_pitch") )
+	{
+		v4 = &usr->samples1_info;
+		v5 = 0;
+	}
+	else if ( !strcasecmp(arg->p1, "button_pitch") )
+	{
+		v4 = &usr->samples1_info;
+		v5 = 3;
+
+	}
+	else if ( !strcasecmp(arg->p1, "left_pitch") )
+	{
+		v4 = &usr->samples1_info;
+		v5 = 2;
+
+	}
+	else if ( !strcasecmp(arg->p1, "right_pitch") )
+	{
+		v4 = &usr->samples1_info;
+		v5 = 1;
+
+	}
+	else if ( !strcasecmp(arg->p1, "slider_pitch") )
+	{
+		v4 = &usr->samples1_info;
+		v5 = 5;
+
+	}
+	else if ( !strcasecmp(arg->p1, "welcome_pitch") )
+	{
+		v4 = &usr->samples1_info;
+		v5 = 6;
+
+	}
+	else if ( !strcasecmp(arg->p1, "menuopen_pitch") )
+	{
+		v4 = &usr->samples1_info;
+		v5 = 7;
+
+	}
+	else if ( !strcasecmp(arg->p1, "overlevel_pitch") )
+	{
+		v4 = &usr->samples1_info;
+		v5 = 8;
+
+	}
+	else if ( !strcasecmp(arg->p1, "levelselect_pitch") )
+	{
+		v4 = &usr->samples1_info;
+		v5 = 9;
+
+	}
+	else if ( !strcasecmp(arg->p1, "textappear_pitch") )
+	{
+		v4 = &usr->samples1_info;
+		v5 = 10;
+
+	}
+	else if ( !strcasecmp(arg->p1, "objectappear_pitch") )
+	{
+		v4 = &usr->samples1_info;
+		v5 = 11;
+
+	}
+	else if ( !strcasecmp(arg->p1, "sectorconquered_pitch") )
+	{
+		v5 = 12;
+		v4 = &usr->samples1_info;
+
+	}
+	else if ( !strcasecmp(arg->p1, "vhcldestroyed_pitch") )
+	{
+		v5 = 13;
+		v4 = &usr->samples1_info;
+
+	}
+	else if ( !strcasecmp(arg->p1, "bldgconquered_pitch") )
+	{
+		v5 = 14;
+		v4 = &usr->samples1_info;
+
+	}
+	else if ( !strcasecmp(arg->p1, "timercount_pitch") )
+	{
+		v5 = 15;
+		v4 = &usr->samples1_info;
+
+	}
+	else if ( !strcasecmp(arg->p1, "select_pitch") )
+	{
+		v4 = &usr->samples2_info;
+		v5 = 0;
+	}
+	else if ( !strcasecmp(arg->p1, "error_pitch") )
+	{
+		v4 = &usr->samples2_info;
+		v5 = 1;
+	}
+	else if ( !strcasecmp(arg->p1, "attention_pitch") )
+	{
+		v4 = &usr->samples2_info;
+		v5 = 2;
+	}
+	else if ( !strcasecmp(arg->p1, "secret_pitch") )
+	{
+		v4 = &usr->samples2_info;
+		v5 = 3;
+	}
+	else if ( !strcasecmp(arg->p1, "plasma_pitch") )
+	{
+		v4 = &usr->samples2_info;
+		v5 = 4;
+	}
+	else
+		return 3;
+
+	v4->samples_data[v5].pitch = atoi(arg->p2);
+	return 0;
+}
+
+
+int ShellSoundsParse(scrCallBack *arg)
+{
+	UserData *usr = NULL;
+	if ( arg->dataForStore )
+		usr = (UserData *)arg->dataForStore;
+
+	if ( !arg->field_18 )
+	{
+		if ( !strcasecmp(arg->p1, "begin_shellsounds") )
+		{
+			arg->field_18 = 1;
+			return 1;
+		}
+		else
+			return 3;
+	}
+	else
+	{
+		if ( !strcasecmp(arg->p1, "end") )
+		{
+			arg->field_18 = 0;
+			return 2;
+		}
+		else if ( usr )
+		{
+			int result = ShellSoundsParse_sample(usr, arg);
+			if ( result == 3 )
+			{
+				result = ShellSoundsParse_volume(usr, arg);
+				if ( result == 3 )
+					result = ShellSoundsParse_pitch(usr, arg);
+			}
+			return result;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	return 0;
+}
+
+int ShellTracksParse(scrCallBack *arg)
+{
+	UserData *usr = NULL;
+	if ( arg->dataForStore )
+		usr = (UserData *)arg->dataForStore;
+
+	if ( !arg->field_18 )
+	{
+		if ( !strcasecmp(arg->p1, "begin_shelltracks") )
+		{
+			arg->field_18 = 1;
+			return 1;
+		}
+		else
+			return 3;
+	}
+	else
+	{
+		if ( !strcasecmp(arg->p1, "end") )
+		{
+			arg->field_18 = 0;
+			return 2;
+		}
+
+		if ( usr )
+		{
+			char buf[300];
+			strcpy(buf, arg->p2);
+
+			if ( !strcasecmp(arg->p1, "shelltrack") )
+			{
+				usr->shelltrack__adv.field_0 = 0;
+				usr->shelltrack__adv.field_4 = 0;
+				char *v8 = strtok(buf, " \t_\n");
+				usr->shelltrack = atoi(v8);
+				v8 = strtok(0, " \t_\n");
+				if ( v8 )
+				{
+					usr->shelltrack__adv.field_0 = atoi(v8);
+					v8 = strtok(0, " \t_\n");
+					if ( v8 )
+						usr->shelltrack__adv.field_4 = atoi(v8);
+				}
+			}
+			else if ( !strcasecmp(arg->p1, "missiontrack") )
+			{
+				usr->missiontrack__adv.field_0 = 0;
+				usr->missiontrack__adv.field_4 = 0;
+				char *v8 = strtok(buf, " \t_\n");
+				usr->missiontrack = atoi(v8);
+				v8 = strtok(0, " \t_\n");
+				if ( v8 )
+				{
+					usr->missiontrack__adv.field_0 = atoi(v8);
+					v8 = strtok(0, " \t_\n");
+					if ( v8 )
+						usr->missiontrack__adv.field_4 = atoi(v8);
+				}
+			}
+			else if ( !strcasecmp(arg->p1, "debriefingtrack") )
+			{
+				usr->debriefingtrack__adv.field_0 = 0;
+				usr->debriefingtrack__adv.field_4 = 0;
+				char *v8 = strtok(buf, " \t_\n");
+				usr->debriefingtrack = atoi(v8);
+				v8 = strtok(0, " \t_\n");
+				if ( v8 )
+				{
+					usr->debriefingtrack__adv.field_0 = atoi(v8);
+					v8 = strtok(0, " \t_\n");
+					if ( v8 )
+						usr->debriefingtrack__adv.field_4 = atoi(v8);
+				}
+			}
+			else if ( !strcasecmp(arg->p1, "loadingtrack") )
+			{
+				usr->loadingtrack__adv.field_0 = 0;
+				usr->loadingtrack__adv.field_4 = 0;
+				char *v8 = strtok(buf, " \t_\n");
+				usr->loadingtrack = atoi(v8);
+				v8 = strtok(0, " \t_\n");
+				if ( v8 )
+				{
+					usr->loadingtrack__adv.field_0 = atoi(v8);
+					v8 = strtok(0, " \t_\n");
+					if ( v8 )
+						usr->loadingtrack__adv.field_4 = atoi(v8);
+				}
+			}
+			else
+				return 3;
+		}
+	}
+	return 0;
+}
+
+
+int  ShellSoundsLoad(UserData *usr)
+{
+	scrCallBack v4[2];
+
+	v4[0].dataForStore = usr;
+	v4[0].func = ShellSoundsParse;
+	v4[1].dataForStore = usr;
+	v4[1].func = ShellTracksParse;
+
+	return def_parseFile("data:world.ini", 2, v4, 2) != 0;
 }

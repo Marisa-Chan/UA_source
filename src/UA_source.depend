@@ -40,7 +40,7 @@
 	"classes.h"
 	"utils.h"
 
-1450590984 source:/home/marisa/work/openUA/UA_source/glob_funcs.cpp
+1451392235 source:/home/marisa/work/openUA/UA_source/glob_funcs.cpp
 	"includes.h"
 
 1447044490 source:/home/marisa/work/openUA/UA_source/MFILE.cpp
@@ -90,7 +90,7 @@
 	"nlist.h"
 	"MFILE.h"
 
-1449732168 /home/marisa/work/openUA/UA_source/glob_funcs.h
+1451392242 /home/marisa/work/openUA/UA_source/glob_funcs.h
 	"MFILE.h"
 	"MC.h"
 	"classes.h"
@@ -138,11 +138,11 @@
 	"engine_gfx.h"
 	"utils.h"
 
-1443157271 source:/home/marisa/work/openUA/UA_source/engine_miles.cpp
+1451382575 source:/home/marisa/work/openUA/UA_source/engine_miles.cpp
 	"includes.h"
 	"engine_miles.h"
 
-1443075807 /home/marisa/work/openUA/UA_source/engine_miles.h
+1451382581 /home/marisa/work/openUA/UA_source/engine_miles.h
 
 1449642169 source:/home/marisa/work/openUA/UA_source/engine_input.cpp
 	"includes.h"
@@ -209,7 +209,7 @@
 1450761293 /home/marisa/work/openUA/UA_source/raster.h
 	"engine_gfx.h"
 
-1451112971 source:/home/marisa/work/openUA/UA_source/windd.cpp
+1451381697 source:/home/marisa/work/openUA/UA_source/windd.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -662,7 +662,7 @@
 1451147218 /home/marisa/work/openUA/UA_source/font.h
 	<inttypes.h>
 
-1451292627 source:/home/marisa/work/openUA/UA_source/yw.cpp
+1451391894 source:/home/marisa/work/openUA/UA_source/yw.cpp
 	<inttypes.h>
 	<string.h>
 	<math.h>
@@ -673,9 +673,10 @@
 	"button.h"
 	"font.h"
 
-1451040944 /home/marisa/work/openUA/UA_source/yw.h
+1451391991 /home/marisa/work/openUA/UA_source/yw.h
 	"engine_gfx.h"
 	"engine_input.h"
+	"engine_miles.h"
 	"bitmap.h"
 	"ilbm.h"
 	"raster.h"
@@ -684,7 +685,9 @@
 	"win3d.h"
 	"base.h"
 	"sklt.h"
+	"wav.h"
 	"lstvw.h"
+	"glob_funcs.h"
 
 1450760102 source:/home/marisa/work/openUA/UA_source/yw_funcs.cpp
 	<inttypes.h>
@@ -702,9 +705,9 @@
 
 1449127883 /home/marisa/work/openUA/UA_source/def_parser.h
 
-1451292627 /home/marisa/work/openUA/UA_source/yw_internal.h
+1451392323 /home/marisa/work/openUA/UA_source/yw_internal.h
 
-1450074437 source:/home/marisa/work/openUA/UA_source/yw_protos.cpp
+1451388895 source:/home/marisa/work/openUA/UA_source/yw_protos.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -790,7 +793,7 @@
 
 1449728292 source:/home/marisa/work/openUA/UA_source/dirs.cpp
 
-1451292627 source:/home/marisa/work/openUA/UA_source/yw_func2.cpp
+1451392353 source:/home/marisa/work/openUA/UA_source/yw_func2.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"

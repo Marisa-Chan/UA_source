@@ -3162,9 +3162,10 @@ void windd_func219(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
 		call_parent(zis, obj, 219, stak);
 }
 
-size_t windd_func256(NC_STACK_windd *obj, class_stru *, mode_node *nod, windd_arg256 *inout)
+size_t windd_func256(NC_STACK_windd *obj, class_stru *, windd_arg256 *inout)
 {
 	__NC_STACK_windd *wdd = &obj->stack__windd;
+	mode_node *nod;
 
 	if ( inout->sort_id )
 	{

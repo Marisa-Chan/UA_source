@@ -133,4 +133,6 @@ ncDir *OpenDir(const char *dir);
 dirEntry *ReadDir(ncDir *_dir, dirEntry *dir_entry);
 void CloseDir(ncDir *dir);
 
+void sub_412810(char *a1, char *a2, int num);
+
 #endif // GLOB_FUNCS_H_INCLUDED

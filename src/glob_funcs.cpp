@@ -410,5 +410,15 @@ int __closedir(ncDir *dir)
 
 void CloseDir(ncDir *dir)
 {
-  __closedir(dir);
+	__closedir(dir);
+}
+
+
+
+
+void sub_412810(char *a1, char *a2, int num)
+{
+	char v6[256];
+	file_path_copy_manipul(a1, v6, 256);
+	correct_slashes_and_3_ext(v6, a2, num);
 }

@@ -43,3 +43,14 @@ void milesEngine__getter(unsigned int, ...)
 {
 ////TODO
 }
+
+
+void sub_423DB0(samples_collection1 *smpls)
+{
+  memset(smpls, 0, sizeof(samples_collection1));
+
+  for (int i = 0; i < 16; i++)
+  {
+      smpls->samples_data[i].parent_sample_collection = smpls;
+  }
+}

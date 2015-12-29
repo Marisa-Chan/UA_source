@@ -3,6 +3,7 @@
 
 #include "engine_gfx.h"
 #include "engine_input.h"
+#include "engine_miles.h"
 #include "bitmap.h"
 #include "ilbm.h"
 #include "raster.h"
@@ -11,8 +12,11 @@
 #include "win3d.h"
 #include "base.h"
 #include "sklt.h"
+#include "wav.h"
 
 #include "lstvw.h"
+
+#include "glob_funcs.h"
 
 extern class_stored ypaworld_class_off;
 
@@ -30,6 +34,12 @@ struct BuildProto;
 struct roboProto;
 
 
+struct audiotrack_adv
+{
+	int field_0;
+	int field_4;
+};
+
 struct inp_key_setting
 {
 	int16_t inp_type;
@@ -44,9 +54,35 @@ struct inp_key_setting
 	const char *slider_name;
 };
 
+struct player_status
+{
+	int p1;
+	int p2;
+	int p3;
+	int p4;
+	int p5;
+	int p6;
+	int p7;
+};
+
+struct langDll_node : public nnode
+{
+	char langDllName[32];
+};
+
+struct profilesNode : public nnode
+{
+	int pStatus_3;
+	char field_C;
+	char profile_subdir[32];
+	int16_t field_2D;
+};
+
 struct UserData
 {
 	int field_0x0;
+
+	int field_0x8;
 
 	int field_0x10;
 	char user_name[34];
@@ -58,14 +94,51 @@ struct UserData
 	int field_46;
 	int field_4A;
 
+	samples_collection1 samples1_info;
+	NC_STACK_wav *samples1[16];
+	samples_collection1 samples2_info;
+	NC_STACK_wav *samples2[16];
+	samples_collection1 field_782;
+
 	NC_STACK_button *titel_button;
 
 	listview input_listview;
 	int field_D36;
 
+	nlist video_mode_list;
+
+	int field_1612;
+	char usernamedir[300];
+	int usernamedir_len;
+
+	ncDir *opened_dir;
+	nlist files_list;
+	char field_1756;
+
+	nlist lang_dlls;
+
+	langDll_node *default_lang_dll;
+
+	int lang_dlls_count;
+
+	char callSIGN[64];
+
+	char field_1CEA;
+
 	int field_0x2fbc;
 
 	inp_key_setting keyConfig[45];
+
+	int16_t shelltrack;
+	int16_t missiontrack;
+	int16_t loadingtrack;
+	int16_t debriefingtrack;
+	audiotrack_adv shelltrack__adv;
+	audiotrack_adv missiontrack__adv;
+	audiotrack_adv loadingtrack__adv;
+	audiotrack_adv debriefingtrack__adv;
+
+	int field_545B;
 };
 
 struct recorder
@@ -438,7 +511,7 @@ struct _NC_STACK_ypaworld
 	int16_t screen_width;
 	int16_t screen_height;
 
-    int field_17bc;
+	int field_17bc;
 	int field_17c0;
 
 	const char **tooltips;
@@ -487,6 +560,14 @@ struct _NC_STACK_ypaworld
 	char field_73CE;
 
 	int fxnumber;
+
+
+	int netgame_exclusivegem;
+
+	player_status playerstatus[8];
+
+	int maxroboenergy;
+	int maxreloadconst;
 
 	yw_movies movies;
 	int field_81AB;

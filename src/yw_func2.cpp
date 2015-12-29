@@ -877,3 +877,208 @@ int yw_loadSky(_NC_STACK_ypaworld *yw, const char *skyname)
 //		rndr_params->field_24 = v6;
 //	}
 //}
+
+
+void fill_videmodes_list(UserData *usr)
+{
+	while ( 1 )
+	{
+		nnode *nod = RemHead(&usr->video_mode_list);
+		if ( !nod )
+			break;
+		nc_FreeMem(nod);
+	}
+
+	gfxEngine__getter(0x8000300D, &usr->p_ypaworld->win3d, 0);
+
+	windd_arg256 warg_256;
+	warg_256.sort_id = 0;
+
+	int id = -1;
+
+	while( id )
+	{
+		id = call_method(usr->p_ypaworld->win3d, 256, &warg_256);
+
+		video_mode_node *vnode = (video_mode_node *)AllocVec(sizeof(video_mode_node), 65536);
+
+		if ( vnode )
+		{
+			vnode->sort_id = warg_256.sort_id;
+			vnode->width = warg_256.width;
+			vnode->height = warg_256.height;
+
+			memset(vnode->name, 0, 128);
+			strncpy(vnode->name, warg_256.name, 127);
+
+			AddTail(&usr->video_mode_list, vnode);
+		}
+		warg_256.sort_id = id;
+	}
+}
+
+
+void listSaveDir(UserData *usr, const char *saveDir)
+{
+	player_status statuses[8];
+
+	memcpy(statuses, usr->p_ypaworld->playerstatus, sizeof(player_status) * 8);
+
+	char v21[300];
+
+	strcpy(v21, usr->callSIGN);
+
+	int v5 = usr->p_ypaworld->maxroboenergy;
+	int v27 = usr->p_ypaworld->maxreloadconst;
+
+	usr->opened_dir = OpenDir(saveDir);
+	if ( usr->opened_dir )
+	{
+		dirEntry a2a;
+		while ( ReadDir(usr->opened_dir, &a2a) )
+		{
+			if ( a2a.field_0 & 1 )
+			{
+				if ( strcmp(a2a.e_name, ".") && strcmp(a2a.e_name, "..") )
+				{
+					profilesNode *v10 = (profilesNode *)AllocVec(sizeof(profilesNode), 65537);
+					if ( v10 )
+					{
+						strcpy(v10->profile_subdir, a2a.e_name);
+
+						AddTail(&usr->files_list, v10);
+
+						scrCallBack v25;
+
+						v25.func = parseSaveUser;
+						v25.world = (_NC_STACK_ypaworld *)usr->p_ypaworld->self_full;
+						v25.world2 = usr->p_ypaworld;
+
+						char buf[300];
+
+						sprintf(buf, "%s/%s/user.txt\n", saveDir, a2a.e_name);
+
+						if ( !def_parseFile(buf, 1, &v25, 2) )
+							ypa_log_out("Warning, cannot parse %s for time scanning\n", buf);
+
+						v10->field_C = 1;
+						v10->pStatus_3 = usr->p_ypaworld->playerstatus[1].p3;
+					}
+				}
+			}
+		}
+		CloseDir(usr->opened_dir);
+	}
+	else
+	{
+		ypa_log_out("Unknown Game-Directory %s\n", saveDir);
+	}
+
+	memcpy(usr->p_ypaworld->playerstatus, statuses, sizeof(player_status) * 8);
+
+	usr->p_ypaworld->maxreloadconst = v27;
+	usr->p_ypaworld->maxroboenergy = v5;
+
+	strcpy(usr->callSIGN, v21);
+}
+
+
+void listLocaleDir(UserData *usr, const char *dirname)
+{
+	usr->lang_dlls_count = 0;
+
+	langDll_node *deflng = NULL;
+	ncDir *dir = OpenDir(dirname);
+	if ( dir )
+	{
+		dirEntry v18;
+
+		while ( ReadDir(dir, &v18) )
+		{
+			char *v3 = strstr(v18.e_name, ".LNG");
+			if ( !v3 )
+				v3 = strstr(v18.e_name, ".lng");
+			/*if ( !v3 )
+			  v3 = strstr(v18.e_name, ".dll");
+			if ( !v3 )
+			  v3 = strstr(v18.e_name, ".DLL");*/
+
+			if ( !(v18.field_0 & 1) && v3 )
+			{
+				char v19[256];
+				memset(v19, 0, 256);
+
+				for (int i = 0; i < 31; i++)
+				{
+					char v5 = v18.e_name[i];
+					if (v5 <= ' ')
+						break;
+					if (v5 == '.')
+						break;
+
+					v19[i] = toupper(v5);
+				}
+
+				langDll_node *v7 = (langDll_node *)usr->lang_dlls.head;
+
+				int finded = 0;
+
+				while( v7->next )
+				{
+					if ( !strcasecmp(v7->langDllName, v19) )
+					{
+						finded = 1;
+						break;
+					}
+					v7 = (langDll_node *)v7->next;
+				}
+
+				if ( !finded )
+				{
+					usr->lang_dlls_count++;
+
+					langDll_node *v9 = (langDll_node *)AllocVec(sizeof(langDll_node), 65537);
+					if ( v9 )
+					{
+						strcpy(v9->langDllName, v19);
+						AddTail(&usr->lang_dlls, v9);
+
+						if ( !strcasecmp(v9->langDllName, "language") )
+							deflng = v9;
+					}
+				}
+			}
+		}
+
+		CloseDir(dir);
+	}
+	else
+	{
+		ypa_log_out("Unknown Locale-Directory %s\n", dirname);
+	}
+
+	if ( deflng )
+		usr->default_lang_dll = deflng;
+}
+
+
+
+void ypaworld_func154__sub0(_NC_STACK_ypaworld *yw)
+{
+	if ( yw->movies.movies_names_present[0] )
+	{
+		gfxEngine__getter(0x8000300D, &yw->win3d, 0);
+
+		char buf[256];
+
+		sub_412810(yw->movies.game_intro, buf, 256);
+		char *v5 = buf;
+
+		call_method(yw->win3d, 323, &v5);
+
+		sub_412D28(&input_states);
+		input_states.downed_key = 0;
+		input_states.downed_key_2 = 0;
+		input_states.dword8 = 0;
+	}
+}
