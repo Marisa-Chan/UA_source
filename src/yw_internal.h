@@ -82,4 +82,8 @@ int  ShellSoundsLoad(UserData *usr);
 
 void ypaworld_func154__sub0(_NC_STACK_ypaworld *yw);
 
+void ypaworld_func156__sub1(UserData *usr);
+void sub_46C524(UserData *usr);
+void yw_netcleanup(_NC_STACK_ypaworld *yw);
+
 #endif

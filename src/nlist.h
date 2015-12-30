@@ -21,5 +21,6 @@ void AddTail(nlist *list, nnode *node);
 void AddHead(nlist *list, nnode *node);
 nnode * RemHead(nlist *list);
 void Remove(nnode *node);
+int listCnt(nlist *list);
 
 #endif // NLIST_H_INCLUDED

@@ -66,5 +66,6 @@ char *lstvw_txt_line_tiles(_NC_STACK_ypaworld *yw, char *cmdbuf, listview_t1 *ar
 void lstvw_update_input(_NC_STACK_ypaworld *yw, listview *lstvw, struC5 *struc);
 void sub_4C31EC(_NC_STACK_ypaworld *yw, listview *lstview);
 void lstvw_update(_NC_STACK_ypaworld *yw, listview *lstview);
+void  sub_4C31C0(_NC_STACK_ypaworld *yw, listview *lstvw);
 
 #endif //LSTVW_H_INCLUDED

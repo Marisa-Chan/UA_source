@@ -56,13 +56,25 @@ nnode * RemHead(nlist *list)
 
 void Remove(nnode *node)
 {
-  if ( !node->next || !node->prev )
-    ypa_log_out("_Remove(): Node not in list!\n");
+	if ( !node->next || !node->prev )
+		ypa_log_out("_Remove(): Node not in list!\n");
 
-  node->prev->next = node->next;
-  node->next->prev = node->prev;
+	node->prev->next = node->next;
+	node->next->prev = node->prev;
 
-  node->next = 0;
-  node->prev = 0;
+	node->next = 0;
+	node->prev = 0;
 }
 
+int listCnt(nlist *list)
+{
+	nnode *v1 = list->head;
+	int num = 0;
+
+	while (v1->next)
+	{
+		v1 = v1->next;
+		num++;
+	}
+	return num;
+}

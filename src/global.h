@@ -54,5 +54,7 @@ EXTR base_64arg world_update_arg;
 EXTR NC_STACK_ypaworld *ypaworld;
 EXTR int dword_520400;
 
+EXTR int dword_546F10;
+
 
 #endif // GLOBAL_H_INCLUDED1
