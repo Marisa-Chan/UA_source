@@ -255,15 +255,15 @@ void button_func3(NC_STACK_button *obj, class_stru *zis, stack_vals *stak)
     button_func3__sub0(obj, btn, stak);
 }
 
-
-int sub_436F58(__NC_STACK_button *btn, button_str2 *sbt)
+// Update slider
+void sub_436F58(__NC_STACK_button *btn, button_str2 *sbt)
 {
     button_str2_t2 *sbttt = sbt->field_41C;
 
     if ( sbttt->field_0 > sbttt->field_2 )
         sbttt->field_0 = sbttt->field_2;
 
-    if ( sbttt->field_4 > sbttt->field_0 )
+    if ( sbttt->field_0 < sbttt->field_4)
         sbttt->field_0 = sbttt->field_4;
 
     int v7 = sbt->width / (sbttt->field_2 - sbttt->field_4 + 1) + 1;
@@ -281,83 +281,51 @@ int sub_436F58(__NC_STACK_button *btn, button_str2 *sbt)
     if ( sbttt->field_8 > sbt->width )
         sbttt->field_8 = sbt->width;
 
-    int v12 = 0;
+    char *cpt = sbt->caption;
 
     if ( sbttt->field_6 > 0 )
     {
         if ( sbt->state & 0x10 )
         {
-            sbt->caption[0] = btn->field_19F;
-            v12 = 1;
+            fntcmd_store_u8(&cpt, btn->field_19F);
 
             if ( sbttt->field_6 > 1 )
             {
-                sbt->caption[1] = 0;
-                sbt->caption[2] = 17;
-                sbt->caption[3] = (sbttt->field_6 >> 8) & 0xFF;
-                sbt->caption[4] = sbttt->field_6 & 0xFF;
-                sbt->caption[5] = btn->field_1A0;
-                v12 = 6;
+                fntcmd_op17(&cpt, sbttt->field_6);
+                fntcmd_store_u8(&cpt, btn->field_1A0);
             }
         }
         else
         {
-            sbt->caption[0] = 0;
-            sbt->caption[1] = 17;
-            sbt->caption[2] = (sbttt->field_6 >> 8) & 0xFF;
-            sbt->caption[3] = sbttt->field_6 & 0xFF;
-            sbt->caption[4] = btn->field_1A0;
-            v12 = 5;
+            fntcmd_op17(&cpt, sbttt->field_6);
+            fntcmd_store_u8(&cpt, btn->field_1A0);
         }
     }
 
-    sbt->caption[v12] = btn->field_19c;
-    v12++;
+    fntcmd_store_u8(&cpt, btn->field_19c);
 
-    sbt->caption[v12] = 0;
-    v12++;
+    fntcmd_op17(&cpt, sbttt->field_8);
 
-    sbt->caption[v12] = 17;
-    v12++;
-
-    sbt->caption[v12] = ((sbttt->field_8 - 1) >> 8) & 0xFF;
-    v12++;
-
-    sbt->caption[v12] = (sbttt->field_8 - 1) & 0xFF;
-    v12++;
-
-    sbt->caption[v12] = btn->field_19E;
-    v12++;
-
-    sbt->caption[v12] = btn->field_19D;
-    v12++;
+    fntcmd_store_u8(&cpt, btn->field_19E);
+    fntcmd_store_u8(&cpt, btn->field_19D);
 
     if ( sbt->state & 0x10 )
     {
         if ( sbttt->field_8 < sbt->width - 1 )
         {
-            sbt->caption[v12] = 0;
-            sbt->caption[v12 + 1] = 17;
-            sbt->caption[v12 + 2] = ((sbt->width - 1) >> 8) & 0xFF;
-            sbt->caption[v12 + 3] = (sbt->width - 1) & 0xFF;
-            sbt->caption[v12 + 4] = btn->field_1A0;
-            sbt->caption[v12 + 5] = btn->field_1A1;
-            v12 += 6;
+            fntcmd_op17(&cpt, sbt->width - 1);
+
+            fntcmd_store_u8(&cpt, btn->field_1A0);
+            fntcmd_store_u8(&cpt, btn->field_1A1);
         }
     }
     else if ( sbttt->field_8 < sbt->width )
     {
-        sbt->caption[v12] = 0;
-        sbt->caption[v12 + 1] = 17;
-        sbt->caption[v12 + 2] = (sbt->width >> 8) & 0xFF;
-        sbt->caption[v12 + 3] = sbt->width & 0xFF;
-        sbt->caption[v12 + 4] = btn->field_1A0;
-        v12 += 5;
+        fntcmd_op17(&cpt, sbt->width - 1);
+
+        fntcmd_store_u8(&cpt, btn->field_1A0);
     }
-    sbt->caption[v12] = 0;
-    v12++;
-    sbt->caption[v12] = 0;
-    return v12;
+    fntcmd_set_end(&cpt);
 }
 
 size_t button_func64(NC_STACK_button *obj, class_stru *, button_64_arg *arg)

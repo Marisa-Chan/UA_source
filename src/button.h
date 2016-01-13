@@ -11,11 +11,11 @@ extern class_stored button_class_off;
 struct NC_STACK_button;
 
 
-struct button_str2_t2
+struct button_str2_t2 //slider
 {
-    int16_t field_0;
-    int16_t field_2;
-    int16_t field_4;
+    int16_t field_0; // current value
+    int16_t field_2; // maximal value
+    int16_t field_4; // minimal value
     int16_t field_6;
     int16_t field_8;
     int16_t field_A;
