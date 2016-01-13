@@ -898,7 +898,7 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
     if ( sbt->button_type == 5 )
     {
         int v22 = 0;
-        while ( sbt->caption[v22] != 0 && sbt->caption[v22 + 1] != 0 )
+        while ( sbt->caption[v22] != 0 || sbt->caption[v22 + 1] != 0 )
         {
             *v5 = sbt->caption[v22];
             v22++;
