@@ -38,6 +38,7 @@ OBJS =  \
 	main.cpp\
 	MC.cpp\
 	MFILE.cpp\
+	network.cpp\
 	nlist.cpp\
 	nucleas.cpp\
 	particle.cpp\
@@ -50,6 +51,7 @@ OBJS =  \
 	wav.cpp\
 	win3d.cpp\
 	windd.cpp\
+	windp.cpp\
 	winp.cpp\
 	wintimer.cpp\
 	yw.cpp\

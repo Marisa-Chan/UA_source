@@ -1257,3 +1257,24 @@ void  sub_4C31C0(_NC_STACK_ypaworld *yw, listview *lstvw)
         yw->field_17bc = 0;
     }
 }
+
+void sub_4DDFA4(listview *lstvw, int a2)
+{
+    int v2 = lstvw->element_count_max + lstvw->scroll_pos;
+
+    if ( a2 >= lstvw->scroll_pos && a2 <= (v2 - 1) )
+    {
+        if ( v2 > lstvw->elements_for_scroll_size )
+            lstvw->scroll_pos = lstvw->elements_for_scroll_size - lstvw->element_count_max;
+        if ( lstvw->scroll_pos < 0 )
+            lstvw->scroll_pos = 0;
+    }
+    else if ( lstvw->elements_for_scroll_size - a2 <= lstvw->element_count_max )
+    {
+        lstvw->scroll_pos = lstvw->elements_for_scroll_size - lstvw->element_count_max;
+    }
+    else
+    {
+        lstvw->scroll_pos = a2;
+    }
+}

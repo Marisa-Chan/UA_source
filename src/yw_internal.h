@@ -86,4 +86,10 @@ void ypaworld_func156__sub1(UserData *usr);
 void sub_46C524(UserData *usr);
 void yw_netcleanup(_NC_STACK_ypaworld *yw);
 
+void sub_46D2B4(NC_STACK_ypaworld *obj, UserData *usr);
+int parseSaveInput(scrCallBack *arg);
+
+
+void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr);
+
 #endif

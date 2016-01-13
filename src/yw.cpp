@@ -686,205 +686,205 @@ size_t ypaworld_func154(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
         return 0;
     }
 
-    //usr->field_FBE = 0;
-
-    usr->keyConfig[2].inp_type = 2;
-    usr->keyConfig[2].keyID = 3;
-    usr->keyConfig[2].KeyCode = 39;
-    usr->keyConfig[2].slider_neg = 37;
-
+    usr->field_FBE = 0;
 
     usr->keyConfig[3].inp_type = 2;
-    usr->keyConfig[3].keyID = 4;
-    usr->keyConfig[3].KeyCode = 38;
-    usr->keyConfig[3].slider_neg = 40;
+    usr->keyConfig[3].keyID = 3;
+    usr->keyConfig[3].KeyCode = 39;
+    usr->keyConfig[3].slider_neg = 37;
 
-    usr->keyConfig[7].inp_type = 2;
-    usr->keyConfig[7].keyID = 0;
-    usr->keyConfig[7].KeyCode = 39;
-    usr->keyConfig[7].slider_neg = 37;
-
-
-    usr->keyConfig[5].inp_type = 2;
-    usr->keyConfig[5].keyID = 1;
-    usr->keyConfig[5].KeyCode = 38;
-    usr->keyConfig[5].slider_neg = 40;
-
-    usr->keyConfig[6].inp_type = 2;
-    usr->keyConfig[6].keyID = 2;
-    usr->keyConfig[6].KeyCode = 17;
-    usr->keyConfig[6].slider_neg = 16;
 
     usr->keyConfig[4].inp_type = 2;
-    usr->keyConfig[4].keyID = 5;
-    usr->keyConfig[4].KeyCode = 65;
-    usr->keyConfig[4].slider_neg = 89;
+    usr->keyConfig[4].keyID = 4;
+    usr->keyConfig[4].KeyCode = 38;
+    usr->keyConfig[4].slider_neg = 40;
 
-    usr->keyConfig[9].inp_type = 1;
-    usr->keyConfig[9].keyID = 0;
-    usr->keyConfig[9].KeyCode = 32;
+    usr->keyConfig[8].inp_type = 2;
+    usr->keyConfig[8].keyID = 0;
+    usr->keyConfig[8].KeyCode = 39;
+    usr->keyConfig[8].slider_neg = 37;
+
+
+    usr->keyConfig[6].inp_type = 2;
+    usr->keyConfig[6].keyID = 1;
+    usr->keyConfig[6].KeyCode = 38;
+    usr->keyConfig[6].slider_neg = 40;
+
+    usr->keyConfig[7].inp_type = 2;
+    usr->keyConfig[7].keyID = 2;
+    usr->keyConfig[7].KeyCode = 17;
+    usr->keyConfig[7].slider_neg = 16;
+
+    usr->keyConfig[5].inp_type = 2;
+    usr->keyConfig[5].keyID = 5;
+    usr->keyConfig[5].KeyCode = 65;
+    usr->keyConfig[5].slider_neg = 89;
 
     usr->keyConfig[10].inp_type = 1;
-    usr->keyConfig[10].keyID = 1;
-    usr->keyConfig[10].KeyCode = 9;
+    usr->keyConfig[10].keyID = 0;
+    usr->keyConfig[10].KeyCode = 32;
 
     usr->keyConfig[11].inp_type = 1;
-    usr->keyConfig[11].keyID = 2;
-    usr->keyConfig[11].KeyCode = 13;
+    usr->keyConfig[11].keyID = 1;
+    usr->keyConfig[11].KeyCode = 9;
 
-    usr->keyConfig[8].inp_type = 1;
-    usr->keyConfig[8].keyID = 3;
-    usr->keyConfig[8].KeyCode = 96;
+    usr->keyConfig[12].inp_type = 1;
+    usr->keyConfig[12].keyID = 2;
+    usr->keyConfig[12].KeyCode = 13;
 
-    usr->keyConfig[13].inp_type = 3;
-    usr->keyConfig[13].keyID = 25;
-    usr->keyConfig[13].KeyCode = 86;
-
-    usr->keyConfig[16].inp_type = 3;
-    usr->keyConfig[16].keyID = 2;
-    usr->keyConfig[16].KeyCode = 78;
-
-    usr->keyConfig[17].inp_type = 3;
-    usr->keyConfig[17].keyID = 3;
-    usr->keyConfig[17].KeyCode = 65;
-
-    usr->keyConfig[15].inp_type = 3;
-    usr->keyConfig[15].keyID = 0;
-    usr->keyConfig[15].KeyCode = 79;
-
-    usr->keyConfig[36].inp_type = 3;
-    usr->keyConfig[36].keyID = 1;
-    usr->keyConfig[36].KeyCode = 32;
-
-    usr->keyConfig[34].inp_type = 3;
-    usr->keyConfig[34].keyID = 4;
-    usr->keyConfig[34].KeyCode = 67;
+    usr->keyConfig[9].inp_type = 1;
+    usr->keyConfig[9].keyID = 3;
+    usr->keyConfig[9].KeyCode = 96;
 
     usr->keyConfig[14].inp_type = 3;
-    usr->keyConfig[14].keyID = 7;
-    usr->keyConfig[14].KeyCode = 71;
+    usr->keyConfig[14].keyID = 25;
+    usr->keyConfig[14].KeyCode = 86;
 
-    usr->keyConfig[24].inp_type = 3;
-    usr->keyConfig[24].keyID = 8;
-    usr->keyConfig[24].KeyCode = 77;
+    usr->keyConfig[17].inp_type = 3;
+    usr->keyConfig[17].keyID = 2;
+    usr->keyConfig[17].KeyCode = 78;
 
     usr->keyConfig[18].inp_type = 3;
-    usr->keyConfig[18].keyID = 9;
-    usr->keyConfig[18].KeyCode = 70;
+    usr->keyConfig[18].keyID = 3;
+    usr->keyConfig[18].KeyCode = 65;
 
-    usr->keyConfig[26].inp_type = 3;
-    usr->keyConfig[26].keyID = 10;
-    usr->keyConfig[26].KeyCode = 0;
+    usr->keyConfig[16].inp_type = 3;
+    usr->keyConfig[16].keyID = 0;
+    usr->keyConfig[16].KeyCode = 79;
+
+    usr->keyConfig[37].inp_type = 3;
+    usr->keyConfig[37].keyID = 1;
+    usr->keyConfig[37].KeyCode = 32;
+
+    usr->keyConfig[35].inp_type = 3;
+    usr->keyConfig[35].keyID = 4;
+    usr->keyConfig[35].KeyCode = 67;
+
+    usr->keyConfig[15].inp_type = 3;
+    usr->keyConfig[15].keyID = 7;
+    usr->keyConfig[15].KeyCode = 71;
+
+    usr->keyConfig[25].inp_type = 3;
+    usr->keyConfig[25].keyID = 8;
+    usr->keyConfig[25].KeyCode = 77;
+
+    usr->keyConfig[19].inp_type = 3;
+    usr->keyConfig[19].keyID = 9;
+    usr->keyConfig[19].KeyCode = 70;
 
     usr->keyConfig[27].inp_type = 3;
-    usr->keyConfig[27].keyID = 11;
+    usr->keyConfig[27].keyID = 10;
     usr->keyConfig[27].KeyCode = 0;
 
     usr->keyConfig[28].inp_type = 3;
-    usr->keyConfig[28].keyID = 12;
+    usr->keyConfig[28].keyID = 11;
     usr->keyConfig[28].KeyCode = 0;
 
-    usr->keyConfig[30].inp_type = 3;
-    usr->keyConfig[30].keyID = 14;
-    usr->keyConfig[30].KeyCode = 0;
+    usr->keyConfig[29].inp_type = 3;
+    usr->keyConfig[29].keyID = 12;
+    usr->keyConfig[29].KeyCode = 0;
 
     usr->keyConfig[31].inp_type = 3;
-    usr->keyConfig[31].keyID = 16;
+    usr->keyConfig[31].keyID = 14;
     usr->keyConfig[31].KeyCode = 0;
 
     usr->keyConfig[32].inp_type = 3;
-    usr->keyConfig[32].keyID = 17;
+    usr->keyConfig[32].keyID = 16;
     usr->keyConfig[32].KeyCode = 0;
 
-    usr->keyConfig[29].inp_type = 3;
-    usr->keyConfig[29].keyID = 18;
-    usr->keyConfig[29].KeyCode = 0;
-
-    usr->keyConfig[40].inp_type = 3;
-    usr->keyConfig[40].keyID = 20;
-    usr->keyConfig[40].KeyCode = 112;
-
-    usr->keyConfig[37].inp_type = 3;
-    usr->keyConfig[37].keyID = 21;
-    usr->keyConfig[37].KeyCode = 113;
-
-    usr->keyConfig[39].inp_type = 3;
-    usr->keyConfig[39].keyID = 22;
-    usr->keyConfig[39].KeyCode = 114;
-
-    usr->keyConfig[38].inp_type = 3;
-    usr->keyConfig[38].keyID = 23;
-    usr->keyConfig[38].KeyCode = 115;
-
-    usr->keyConfig[1].inp_type = 3;
-    usr->keyConfig[1].keyID = 24;
-    usr->keyConfig[1].KeyCode = 27;
-
     usr->keyConfig[33].inp_type = 3;
-    usr->keyConfig[33].keyID = 27;
+    usr->keyConfig[33].keyID = 17;
     usr->keyConfig[33].KeyCode = 0;
 
-    usr->keyConfig[41].inp_type = 3;
-    usr->keyConfig[41].keyID = 31;
-    usr->keyConfig[41].KeyCode = 8;
+    usr->keyConfig[30].inp_type = 3;
+    usr->keyConfig[30].keyID = 18;
+    usr->keyConfig[30].KeyCode = 0;
 
-    usr->keyConfig[0].inp_type = 3;
-    usr->keyConfig[0].keyID = 32;
-    usr->keyConfig[0].KeyCode = 0;
+    usr->keyConfig[41].inp_type = 3;
+    usr->keyConfig[41].keyID = 20;
+    usr->keyConfig[41].KeyCode = 112;
+
+    usr->keyConfig[38].inp_type = 3;
+    usr->keyConfig[38].keyID = 21;
+    usr->keyConfig[38].KeyCode = 113;
+
+    usr->keyConfig[40].inp_type = 3;
+    usr->keyConfig[40].keyID = 22;
+    usr->keyConfig[40].KeyCode = 114;
+
+    usr->keyConfig[39].inp_type = 3;
+    usr->keyConfig[39].keyID = 23;
+    usr->keyConfig[39].KeyCode = 115;
+
+    usr->keyConfig[2].inp_type = 3;
+    usr->keyConfig[2].keyID = 24;
+    usr->keyConfig[2].KeyCode = 27;
+
+    usr->keyConfig[34].inp_type = 3;
+    usr->keyConfig[34].keyID = 27;
+    usr->keyConfig[34].KeyCode = 0;
 
     usr->keyConfig[42].inp_type = 3;
-    usr->keyConfig[42].keyID = 37;
-    usr->keyConfig[42].KeyCode = 101;
+    usr->keyConfig[42].keyID = 31;
+    usr->keyConfig[42].KeyCode = 8;
 
-    usr->keyConfig[19].inp_type = 3;
-    usr->keyConfig[19].keyID = 38;
-    usr->keyConfig[19].KeyCode = 49;
-
-    usr->keyConfig[20].inp_type = 3;
-    usr->keyConfig[20].keyID = 39;
-    usr->keyConfig[20].KeyCode = 50;
-
-    usr->keyConfig[21].inp_type = 3;
-    usr->keyConfig[21].keyID = 40;
-    usr->keyConfig[21].KeyCode = 51;
-
-    usr->keyConfig[22].inp_type = 3;
-    usr->keyConfig[22].keyID = 41;
-    usr->keyConfig[22].KeyCode = 52;
-
-    usr->keyConfig[23].inp_type = 3;
-    usr->keyConfig[23].keyID = 42;
-    usr->keyConfig[23].KeyCode = 53;
-
-    usr->keyConfig[25].inp_type = 1;
-    usr->keyConfig[25].keyID = 4;
-    usr->keyConfig[25].KeyCode = 16;
+    usr->keyConfig[1].inp_type = 3;
+    usr->keyConfig[1].keyID = 32;
+    usr->keyConfig[1].KeyCode = 0;
 
     usr->keyConfig[43].inp_type = 3;
-    usr->keyConfig[43].keyID = 43;
-    usr->keyConfig[43].KeyCode = 0;
+    usr->keyConfig[43].keyID = 37;
+    usr->keyConfig[43].KeyCode = 101;
 
-    usr->keyConfig[35].inp_type = 3;
-    usr->keyConfig[35].keyID = 44;
-    usr->keyConfig[35].KeyCode = 0;
+    usr->keyConfig[20].inp_type = 3;
+    usr->keyConfig[20].keyID = 38;
+    usr->keyConfig[20].KeyCode = 49;
 
-    usr->keyConfig[12].inp_type = 3;
-    usr->keyConfig[12].keyID = 45;
-    usr->keyConfig[12].KeyCode = 0;
+    usr->keyConfig[21].inp_type = 3;
+    usr->keyConfig[21].keyID = 39;
+    usr->keyConfig[21].KeyCode = 50;
+
+    usr->keyConfig[22].inp_type = 3;
+    usr->keyConfig[22].keyID = 40;
+    usr->keyConfig[22].KeyCode = 51;
+
+    usr->keyConfig[23].inp_type = 3;
+    usr->keyConfig[23].keyID = 41;
+    usr->keyConfig[23].KeyCode = 52;
+
+    usr->keyConfig[24].inp_type = 3;
+    usr->keyConfig[24].keyID = 42;
+    usr->keyConfig[24].KeyCode = 53;
+
+    usr->keyConfig[26].inp_type = 1;
+    usr->keyConfig[26].keyID = 4;
+    usr->keyConfig[26].KeyCode = 16;
 
     usr->keyConfig[44].inp_type = 3;
-    usr->keyConfig[44].keyID = 46;
+    usr->keyConfig[44].keyID = 43;
     usr->keyConfig[44].KeyCode = 0;
+
+    usr->keyConfig[36].inp_type = 3;
+    usr->keyConfig[36].keyID = 44;
+    usr->keyConfig[36].KeyCode = 0;
+
+    usr->keyConfig[13].inp_type = 3;
+    usr->keyConfig[13].keyID = 45;
+    usr->keyConfig[13].KeyCode = 0;
+
+    usr->keyConfig[45].inp_type = 3;
+    usr->keyConfig[45].keyID = 46;
+    usr->keyConfig[45].KeyCode = 0;
 
     sub_46D2B4(obj, usr);
 
-    for (int i = 0; i < 45; i++)
+    for (int i = 1; i < 46; i++)
     {
         usr->keyConfig[i].field_8 = usr->keyConfig[i].KeyCode;
         usr->keyConfig[i].field_A = usr->keyConfig[i].slider_neg;
     }
 
-    for (int i = 0; i < 45; i++)
+    for (int i = 1; i < 46; i++)
     {
         usr->keyConfig[i].field_C = usr->keyConfig[i].KeyCode;
         usr->keyConfig[i].field_E = usr->keyConfig[i].slider_neg;
@@ -892,51 +892,59 @@ size_t ypaworld_func154(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
     usr->field_1756 = -2;
 
-//	if (! call_method(yw->windp, 87, &v67) )
-//	{
-//		ypa_log_out("Error while remote start check\n");
-//		return  0;
-//	}
+    windp_arg87 v67;
 
-//	if ( v67.field_41 )
-//	{
-//		strcpy(yw->GameShell->callSIGN, v67.callSIGN);
-//
-//		if ( v67.field_40 )
-//			yw->GameShell->field_0x1cd8 = 1;
-//		else
-//			yw->GameShell->field_0x1cd8 = 0;
-//
-//		yw->GameShell->field_1CEA = 1;
-//
-//		usr->field_1C86 = 0;
-//		usr->field_46 = 6;
-//
-//		if ( usr->field_0x1cd8 )
-//		{
-//			v68[0] = 0;
-//			v68[1] = 0;
-//			while ( call_method(yw->windp, 79, v68) && strcasecmp((const char *)v68[2], usr->callSIGN) )
-//				++v68[1];
-//			usr->field_0x2db0[v68[1]].field_3 = 1;
-//			usr->field_1CE9 = 1;
-//			usr->field_1C3A = 3;
-//		}
-//		else
-//		{
-//			usr->field_1C3A = 4;
-//		}
-//		v68[0] = 0;
-//		v68[1] = 0;
-//		while ( call_method(yw->windp, 79, v68) )
-//		{
-//			strncpy(yw->GameShell->field_0x2db0[v68[1]].field_10, (const char *)v68[2], 64);
-//			++v68[1];
-//		}
-//		usr->field_2888 = 400;
-//		usr->field_288C = 400;
-//	}
-//	else
+    if (!call_method(yw->windp, 87, &v67) )
+    {
+        ypa_log_out("Error while remote start check\n");
+        return  0;
+    }
+
+    if ( v67.field_41 )
+    {
+        strcpy(yw->GameShell->callSIGN, v67.callSIGN);
+
+        if ( v67.field_40 )
+            yw->GameShell->field_0x1cd8 = 1;
+        else
+            yw->GameShell->field_0x1cd8 = 0;
+
+        yw->GameShell->field_1CEA = 1;
+
+        usr->field_1C86 = 0;
+        usr->field_46 = 6;
+
+        windp_arg79 v68;
+
+        if ( usr->field_0x1cd8 )
+        {
+            v68.field_0 = 0;
+            v68.field_4 = 0;
+
+            while ( call_method(yw->windp, 79, &v68) && strcasecmp(v68.field_8, usr->callSIGN) )
+                v68.field_4++;
+
+            usr->netTP1[v68.field_4].field_43 = 1;
+            usr->field_1CE9 = 1;
+            usr->field_1C3A = 3;
+        }
+        else
+        {
+            usr->field_1C3A = 4;
+        }
+
+        v68.field_0 = 0;
+        v68.field_4 = 0;
+
+        while ( call_method(yw->windp, 79, &v68) )
+        {
+            strncpy(yw->GameShell->netTP1[v68.field_4].field_50, v68.field_8, 64);
+            v68.field_4++;
+        }
+        usr->field_2888 = 400;
+        usr->field_288C = 400;
+    }
+    else
     {
         yw->GameShell->field_1CEA = 0;
     }
@@ -1272,7 +1280,7 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
     usr->field_5457 = 0;
     usr->p_ypaworld->icon_energy__h = 0;
     usr->field_D52 = 0;
-    usr->p_ypaworld->field_81AF = 0;
+    usr->p_ypaworld->field_81AF = NULL;
     usr->field_1CEF = 0;
 
     if ( usr->default_lang_dll )
@@ -1369,51 +1377,51 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
     set_keys_vals(yw);
 
-    usr->keyConfig[0].slider_name = get_lang_string(ypaworld__string_pointers, 544, "PAUSE");
-    usr->keyConfig[1].slider_name = get_lang_string(ypaworld__string_pointers, 536, "QUIT");
-    usr->keyConfig[2].slider_name = get_lang_string(ypaworld__string_pointers, 500, "DRIVE DIR");
-    usr->keyConfig[3].slider_name = get_lang_string(ypaworld__string_pointers, 501, "DRIVE SPEED");
-    usr->keyConfig[4].slider_name = get_lang_string(ypaworld__string_pointers, 511, "GUN HEIGHT");
-    usr->keyConfig[5].slider_name = get_lang_string(ypaworld__string_pointers, 502, "FLY HEIGHT");
-    usr->keyConfig[6].slider_name = get_lang_string(ypaworld__string_pointers, 503, "FLY SPEED");
-    usr->keyConfig[7].slider_name = get_lang_string(ypaworld__string_pointers, 504, "FLY DIR");
-    usr->keyConfig[8].slider_name = get_lang_string(ypaworld__string_pointers, 505, "STOP");
-    usr->keyConfig[9].slider_name = get_lang_string(ypaworld__string_pointers, 506, "FIRE");
-    usr->keyConfig[10].slider_name = get_lang_string(ypaworld__string_pointers, 507, "FIRE VIEW");
-    usr->keyConfig[11].slider_name = get_lang_string(ypaworld__string_pointers, 508, "FIRE GUN");
-    usr->keyConfig[12].slider_name = get_lang_string(ypaworld__string_pointers, 561, "MAKE CURRENT VEHICLE COMMANDER");
-    usr->keyConfig[13].slider_name = get_lang_string(ypaworld__string_pointers, 541, "HEADUP DISPLAY");
-    usr->keyConfig[14].slider_name = get_lang_string(ypaworld__string_pointers, 520, "AUTOPILOT");
-    usr->keyConfig[15].slider_name = get_lang_string(ypaworld__string_pointers, 513, "ORDER");
-    usr->keyConfig[16].slider_name = get_lang_string(ypaworld__string_pointers, 515, "NEW");
-    usr->keyConfig[17].slider_name = get_lang_string(ypaworld__string_pointers, 516, "ADD");
-    usr->keyConfig[18].slider_name = get_lang_string(ypaworld__string_pointers, 522, "FINDER");
-    usr->keyConfig[19].slider_name = get_lang_string(ypaworld__string_pointers, 553, "AGGR: COME BACK");
-    usr->keyConfig[20].slider_name = get_lang_string(ypaworld__string_pointers, 554, "AGGR: FIGHT TARGET");
-    usr->keyConfig[21].slider_name = get_lang_string(ypaworld__string_pointers, 555, "AGGR: FIGHT ENEMIES TOO");
-    usr->keyConfig[22].slider_name = get_lang_string(ypaworld__string_pointers, 556, "AGGR: CONQUER ALL ENEMY AREA TOO");
-    usr->keyConfig[23].slider_name = get_lang_string(ypaworld__string_pointers, 557, "AGGR: GO AMOK");
-    usr->keyConfig[24].slider_name = get_lang_string(ypaworld__string_pointers, 521, "MAP");
-    usr->keyConfig[25].slider_name = get_lang_string(ypaworld__string_pointers, 558, "SELECT WAYPOINT");
-    usr->keyConfig[26].slider_name = get_lang_string(ypaworld__string_pointers, 523, "LANDSCAPE");
-    usr->keyConfig[27].slider_name = get_lang_string(ypaworld__string_pointers, 524, "OWNER");
-    usr->keyConfig[28].slider_name = get_lang_string(ypaworld__string_pointers, 525, "HEIGHT");
-    usr->keyConfig[29].slider_name = get_lang_string(ypaworld__string_pointers, 531, "MAP MINI");
-    usr->keyConfig[30].slider_name = get_lang_string(ypaworld__string_pointers, 527, "LOCK VIEWER");
-    usr->keyConfig[31].slider_name = get_lang_string(ypaworld__string_pointers, 529, "ZOOM IN");
-    usr->keyConfig[32].slider_name = get_lang_string(ypaworld__string_pointers, 530, "ZOOM OUT");
-    usr->keyConfig[33].slider_name = get_lang_string(ypaworld__string_pointers, 538, "LOGWIN");
-    usr->keyConfig[34].slider_name = get_lang_string(ypaworld__string_pointers, 517, "CONTROL");
-    usr->keyConfig[35].slider_name = get_lang_string(ypaworld__string_pointers, 560, "GOTO LAST OCCUPIED VEHICLE");
-    usr->keyConfig[36].slider_name = get_lang_string(ypaworld__string_pointers, 514, "FIGHT");
-    usr->keyConfig[37].slider_name = get_lang_string(ypaworld__string_pointers, 533, "TO ROBO");
-    usr->keyConfig[38].slider_name = get_lang_string(ypaworld__string_pointers, 535, "TO COMMANDER");
-    usr->keyConfig[39].slider_name = get_lang_string(ypaworld__string_pointers, 534, "NEXT MAN");
-    usr->keyConfig[40].slider_name = get_lang_string(ypaworld__string_pointers, 532, "NEXT COM");
-    usr->keyConfig[41].slider_name = get_lang_string(ypaworld__string_pointers, 543, "JUMP TO LASTMSG-SENDER");
-    usr->keyConfig[42].slider_name = get_lang_string(ypaworld__string_pointers, 552, "MESSAGE TO ALL PLAYERS");
-    usr->keyConfig[43].slider_name = get_lang_string(ypaworld__string_pointers, 559, "HELP");
-    usr->keyConfig[44].slider_name = get_lang_string(ypaworld__string_pointers, 562, "SITUATION ANALYZER");
+    usr->keyConfig[1].slider_name = get_lang_string(ypaworld__string_pointers, 544, "PAUSE");
+    usr->keyConfig[2].slider_name = get_lang_string(ypaworld__string_pointers, 536, "QUIT");
+    usr->keyConfig[3].slider_name = get_lang_string(ypaworld__string_pointers, 500, "DRIVE DIR");
+    usr->keyConfig[4].slider_name = get_lang_string(ypaworld__string_pointers, 501, "DRIVE SPEED");
+    usr->keyConfig[5].slider_name = get_lang_string(ypaworld__string_pointers, 511, "GUN HEIGHT");
+    usr->keyConfig[6].slider_name = get_lang_string(ypaworld__string_pointers, 502, "FLY HEIGHT");
+    usr->keyConfig[7].slider_name = get_lang_string(ypaworld__string_pointers, 503, "FLY SPEED");
+    usr->keyConfig[8].slider_name = get_lang_string(ypaworld__string_pointers, 504, "FLY DIR");
+    usr->keyConfig[9].slider_name = get_lang_string(ypaworld__string_pointers, 505, "STOP");
+    usr->keyConfig[10].slider_name = get_lang_string(ypaworld__string_pointers, 506, "FIRE");
+    usr->keyConfig[11].slider_name = get_lang_string(ypaworld__string_pointers, 507, "FIRE VIEW");
+    usr->keyConfig[12].slider_name = get_lang_string(ypaworld__string_pointers, 508, "FIRE GUN");
+    usr->keyConfig[13].slider_name = get_lang_string(ypaworld__string_pointers, 561, "MAKE CURRENT VEHICLE COMMANDER");
+    usr->keyConfig[14].slider_name = get_lang_string(ypaworld__string_pointers, 541, "HEADUP DISPLAY");
+    usr->keyConfig[15].slider_name = get_lang_string(ypaworld__string_pointers, 520, "AUTOPILOT");
+    usr->keyConfig[16].slider_name = get_lang_string(ypaworld__string_pointers, 513, "ORDER");
+    usr->keyConfig[17].slider_name = get_lang_string(ypaworld__string_pointers, 515, "NEW");
+    usr->keyConfig[18].slider_name = get_lang_string(ypaworld__string_pointers, 516, "ADD");
+    usr->keyConfig[19].slider_name = get_lang_string(ypaworld__string_pointers, 522, "FINDER");
+    usr->keyConfig[20].slider_name = get_lang_string(ypaworld__string_pointers, 553, "AGGR: COME BACK");
+    usr->keyConfig[21].slider_name = get_lang_string(ypaworld__string_pointers, 554, "AGGR: FIGHT TARGET");
+    usr->keyConfig[22].slider_name = get_lang_string(ypaworld__string_pointers, 555, "AGGR: FIGHT ENEMIES TOO");
+    usr->keyConfig[23].slider_name = get_lang_string(ypaworld__string_pointers, 556, "AGGR: CONQUER ALL ENEMY AREA TOO");
+    usr->keyConfig[24].slider_name = get_lang_string(ypaworld__string_pointers, 557, "AGGR: GO AMOK");
+    usr->keyConfig[25].slider_name = get_lang_string(ypaworld__string_pointers, 521, "MAP");
+    usr->keyConfig[26].slider_name = get_lang_string(ypaworld__string_pointers, 558, "SELECT WAYPOINT");
+    usr->keyConfig[27].slider_name = get_lang_string(ypaworld__string_pointers, 523, "LANDSCAPE");
+    usr->keyConfig[28].slider_name = get_lang_string(ypaworld__string_pointers, 524, "OWNER");
+    usr->keyConfig[29].slider_name = get_lang_string(ypaworld__string_pointers, 525, "HEIGHT");
+    usr->keyConfig[30].slider_name = get_lang_string(ypaworld__string_pointers, 531, "MAP MINI");
+    usr->keyConfig[31].slider_name = get_lang_string(ypaworld__string_pointers, 527, "LOCK VIEWER");
+    usr->keyConfig[32].slider_name = get_lang_string(ypaworld__string_pointers, 529, "ZOOM IN");
+    usr->keyConfig[33].slider_name = get_lang_string(ypaworld__string_pointers, 530, "ZOOM OUT");
+    usr->keyConfig[34].slider_name = get_lang_string(ypaworld__string_pointers, 538, "LOGWIN");
+    usr->keyConfig[35].slider_name = get_lang_string(ypaworld__string_pointers, 517, "CONTROL");
+    usr->keyConfig[36].slider_name = get_lang_string(ypaworld__string_pointers, 560, "GOTO LAST OCCUPIED VEHICLE");
+    usr->keyConfig[37].slider_name = get_lang_string(ypaworld__string_pointers, 514, "FIGHT");
+    usr->keyConfig[38].slider_name = get_lang_string(ypaworld__string_pointers, 533, "TO ROBO");
+    usr->keyConfig[39].slider_name = get_lang_string(ypaworld__string_pointers, 535, "TO COMMANDER");
+    usr->keyConfig[40].slider_name = get_lang_string(ypaworld__string_pointers, 534, "NEXT MAN");
+    usr->keyConfig[41].slider_name = get_lang_string(ypaworld__string_pointers, 532, "NEXT COM");
+    usr->keyConfig[42].slider_name = get_lang_string(ypaworld__string_pointers, 543, "JUMP TO LASTMSG-SENDER");
+    usr->keyConfig[43].slider_name = get_lang_string(ypaworld__string_pointers, 552, "MESSAGE TO ALL PLAYERS");
+    usr->keyConfig[44].slider_name = get_lang_string(ypaworld__string_pointers, 559, "HELP");
+    usr->keyConfig[45].slider_name = get_lang_string(ypaworld__string_pointers, 562, "SITUATION ANALYZER");
 
     int v259_4;
 
@@ -4082,23 +4090,34 @@ void ypaworld_func158(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
     call_method(yw->win3d, 215);
 
-    call_method(usr->titel_button, 69, usr->field_3A);
+    ypaworld_func158__sub0(yw, usr);
+
+    //call_method(usr->titel_button, 69, usr->field_3A);
+    call_method(usr->confirm_button, 70, 0);
     call_method(usr->titel_button, 70, 0);
+    call_method(usr->button_input_button, 70, 0);
+    call_method(usr->video_button, 70, 0);
+    call_method(usr->sub_bar_button, 70, 0);
+    call_method(usr->disk_button, 70, 0);
+    call_method(usr->network_button, 70, 0);
 
 
-    lstvw_update_input(yw, &usr->input_listview, usr->field_3A);
+    printf("%d \n", usr->field_46);
 
-    int v64 = usr->field_D36;
-    usr->field_D36 = usr->input_listview.field_1DE + 1;
-    if ( usr->input_listview.field_1D0 & 0x80 )
-    {
-        usr->keyConfig[v64 - 1].field_10 = 0;
-        //      usr->field_D3A = 1;
-        //     usr->field_D52 = 0;
-    }
 
-    lstvw_update(yw, &usr->input_listview);
-    yw_draw_input_list(yw, usr);
+    //lstvw_update_input(yw, &usr->input_listview, usr->field_3A);
+
+//    int v64 = usr->field_D36;
+//    usr->field_D36 = usr->input_listview.field_1DE + 1;
+//    if ( usr->input_listview.field_1D0 & 0x80 )
+//    {
+//        usr->keyConfig[v64].field_10 = 0;
+//    //      usr->field_D3A = 1;
+//    //     usr->field_D52 = 0;
+//    }
+//
+//    lstvw_update(yw, &usr->input_listview);
+    // yw_draw_input_list(yw, usr);
 
     rstr_arg217 cvt;
     cvt.dword0 = 0xFFFF0000;
@@ -4118,7 +4137,7 @@ void ypaworld_func158(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
 
     yw->brief.brf_objs.field_0 = 2;
-    yw->brief.brf_objs.object_id = 24;
+    yw->brief.brf_objs.object_id = 56;
 
     yw->brief.brf_objs.field_C = 1000;
     yw->brief.field_2E7C += usr->field_3A->period;
@@ -4374,8 +4393,7 @@ size_t ypaworld_func173(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
     if ( usr->field_D36 < 1 || usr->field_D36 > 45 )
         return 0;
 
-    int id = usr->field_D36 - 1;
-    inp_key_setting *v5 = &usr->keyConfig[id];
+    inp_key_setting *v5 = &usr->keyConfig[usr->field_D36];
 
     if ( !keySS[v5->field_10].short_name )
         return 0;

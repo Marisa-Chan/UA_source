@@ -106,6 +106,8 @@
 		<Unit filename="lstvw.cpp" />
 		<Unit filename="lstvw.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="network.cpp" />
+		<Unit filename="network.h" />
 		<Unit filename="nlist.cpp" />
 		<Unit filename="nlist.h" />
 		<Unit filename="nucleas.cpp" />
@@ -130,6 +132,8 @@
 		<Unit filename="win3d.h" />
 		<Unit filename="windd.cpp" />
 		<Unit filename="windd.h" />
+		<Unit filename="windp.cpp" />
+		<Unit filename="windp.h" />
 		<Unit filename="winp.cpp" />
 		<Unit filename="winp.h" />
 		<Unit filename="wintimer.cpp" />

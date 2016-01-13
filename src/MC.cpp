@@ -40,6 +40,9 @@
 
 #include "embed.h"
 
+#include "network.h"
+#include "windp.h"
+
 #include "yw.h"
 
 const char MC2RES[] = "MC2RES\\";
@@ -107,12 +110,12 @@ int set_classes_list()
     add_to_classes_list(&display_class_off);
     add_to_classes_list(&button_class_off);
 ////	add_to_classes_list(&requester_class_off.nodeBase);
-////	add_to_classes_list(&network_class_off.nodeBase);
+    add_to_classes_list(&network_class_off);
     add_to_classes_list(&windd_class_off);
     add_to_classes_list(&win3d_class_off);
     add_to_classes_list(&winp_class_off);
     add_to_classes_list(&wintimer_class_off);
-////	add_to_classes_list(&windp_class_off.nodeBase);
+    add_to_classes_list(&windp_class_off);
     add_to_classes_list(&gfx_engine_off);
     add_to_classes_list(&tform_engine_off);
     add_to_classes_list(&input_engine_off);

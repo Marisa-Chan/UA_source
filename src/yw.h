@@ -13,6 +13,7 @@
 #include "base.h"
 #include "sklt.h"
 #include "wav.h"
+#include "windp.h"
 
 #include "lstvw.h"
 
@@ -83,6 +84,50 @@ struct profilesNode : public nnode
     int16_t field_2D;
 };
 
+
+struct netType1
+{
+    int field_0;
+    int field_4;
+    int field_8;
+    int field_C;
+    int field_10;
+    int field_14;
+    int field_18;
+    int field_1C;
+    int field_20;
+    int field_24;
+    int field_28;
+    int field_2C;
+    int field_30;
+    int field_34;
+    int field_38;
+    int field_3C;
+    char field_40;
+    char field_41;
+    char field_42;
+    char field_43;
+    int field_44;
+    int field_48;
+    int field_4C;
+    char field_50[64];
+};
+
+struct netType2
+{
+    char field_0[128];
+    char field_80;
+    char field_81;
+    char field_82;
+    char field_83;
+    char field_84;
+    int field_85;
+    int field_89;
+    int field_8D;
+    int field_91;
+    int field_95;
+};
+
 struct UserData
 {
     int field_0x0;
@@ -98,6 +143,7 @@ struct UserData
     int field_42;
     int field_46;
     int field_4A;
+    int field_4E;
 
     samples_collection1 samples1_info;
     NC_STACK_wav *samples1[16];
@@ -106,33 +152,50 @@ struct UserData
     samples_collection1 field_782;
 
     NC_STACK_button *sub_bar_button;
-
+    int field_AE2;
     NC_STACK_button *titel_button;
     NC_STACK_button *button_input_button;
     listview input_listview;
     int field_D36;
     int field_D3A;
-
+    int inp_joystick;
+    int field_D42;
+    int inp_altjoystick;
+    int field_D4A;
+    int field_D4E;
     int field_D52;
 
     int16_t field_D5A;
     int16_t field_0xd5c;
 
+    int field_D5E;
     NC_STACK_button *video_button;
     listview video_listvw;
     int game_default_res;
     nlist video_mode_list;
-
+    int field_FBE;
     listview d3d_listvw;
     char win3d_guid[100];
     char win3d_name[300];
 
+    const char *field_139A;
+    const char *field_139E;
+    int16_t fxnumber;
+    int16_t field_0x13a4;
     char GFX_flags;
-
+    int16_t field_0x13a8;
     int16_t field_13AA;
     int16_t field_0x13ac;
     char snd__flags2;
 
+    int16_t field_0x13b0;
+    int16_t snd__volume;
+    int16_t field_0x13b4;
+    int16_t snd__cdvolume;
+    int16_t field_0x13b8;
+    int enemyindicator;
+    int field_13BE;
+    int field_13C2;
     NC_STACK_button *disk_button;
     listview disk_listvw;
     int field_1612;
@@ -147,18 +210,20 @@ struct UserData
     int16_t field_175A;
     int16_t field_0x175c;
     int16_t field_175E;
-
+    int16_t field_0x1760;
     NC_STACK_button *locale_button;
     nlist lang_dlls;
     listview local_listvw;
     langDll_node *default_lang_dll;
+    langDll_node *prev_lang;
 
     int16_t field_19C6;
     int16_t field_0x19c8;
-
+    int field_19CA;
     int lang_dlls_count;
     NC_STACK_button *about_button;
-
+    int field_19D6;
+    int field_19DA;
     int16_t field_19DE;
     int16_t field_0x19e0;
     NC_STACK_button *network_button;
@@ -168,26 +233,51 @@ struct UserData
     int16_t field_1C32;
     int16_t field_0x1c34;
 
+    int field_1C36;
     int16_t field_1C3A;
     int16_t field_0x1c3c;
+    int field_1C3E;
+    char field_1C42[64];
+
+    int16_t field_1C84;
+    int16_t field_1C86;
+    const char *field_0x1c88;
 
     char callSIGN[64];
 
     char field_1CD5;
     char field_1CD6;
+    char field_1CD7;
 
+    int field_0x1cd8;
+    int field_0x1cdc;
+
+    char field_1CE8;
+    char field_1CE9;
     char field_1CEA;
 
     int field_1CEF;
 
+    int16_t field_1CF7;
+
+    char field_24F9;
+
     usr_str map_descriptions[256];
     int map_descriptions_count;
 
+    int field_2888;
+    int field_288C;
+
+    netType2 netTP2[8];
+    netType1 netTP1[4];
     NC_STACK_button *confirm_button;
+    int field_0x2fb4;
 
     int field_0x2fbc;
+    int field_0x2fc0;
+    int field_0x2fc4;
 
-    inp_key_setting keyConfig[45];
+    inp_key_setting keyConfig[46];
 
     int16_t field_3426;
     int16_t shelltrack;
@@ -240,7 +330,7 @@ struct keysec
 {
     int x;
     int y;
-    int z;
+    cellArea *cell;
 };
 
 struct gateProto
@@ -418,6 +508,7 @@ struct big_ypa_Brf
     stru_2d90 s2d90;
     mapProto map_prototype;
     int field_2E68;
+    int field_2E6C;
 
     int field_2E7C;
 
@@ -575,7 +666,8 @@ struct _NC_STACK_ypaworld
 
     int field_17bc;
     int field_17c0;
-
+    int field_17c4;
+    int field_17c8;
     const char **tooltips;
     rgbiColor iniColors[70];
 
@@ -624,7 +716,15 @@ struct _NC_STACK_ypaworld
 
     int fxnumber;
 
+    NC_STACK_windp *windp;
+
     int field_757E;
+
+    int field_759A;
+    int field_759E;
+    char field_75A2; //array 64?
+
+    char field_75E2[64]; //array 64?
 
 
     int netgame_exclusivegem;
@@ -636,7 +736,7 @@ struct _NC_STACK_ypaworld
 
     yw_movies movies;
     int field_81AB;
-    int field_81AF;
+    const char *field_81AF;
 
     int one_game_res;
     int shell_default_res;
@@ -993,5 +1093,44 @@ struct roboProto
 int load_fonts_and_icons(_NC_STACK_ypaworld *yw);
 int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID);
 
+
+struct yw_arg172
+{
+    char *usertxt;
+    char *field_4;
+    int field_8;
+    UserData *usr;
+    int field_10;
+};
+
+struct yw_arg181_a
+{
+    int fld_0;
+    int fld_1;
+    int fld_2;
+    int fld_3;
+    int16_t fld_4_1;
+    int16_t fld_4_2;
+};
+
+struct yw_arg181_b
+{
+    int fld_0;
+    int fld_1;
+    int fld_2;
+    int fld_3;
+    char fld_4[64];
+};
+
+struct yw_arg181
+{
+    yw_arg181_a *field_0;
+    int field_4;
+    char *field_8;
+    int field_C;
+    int field_10;
+    int field_14;
+    int field_18;
+};
 
 #endif

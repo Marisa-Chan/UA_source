@@ -4,8 +4,9 @@
 #include "def_parser.h"
 #include "yw_internal.h"
 #include "yw.h"
+#include "input.h"
 
-
+extern Key_stru keySS[256];
 
 int get_snd_type(const char *snd_typ_name)
 {
@@ -3419,4 +3420,470 @@ int  ShellSoundsLoad(UserData *usr)
     v4[1].func = ShellTracksParse;
 
     return def_parseFile("data:world.ini", 2, v4, 2) != 0;
+}
+
+
+int sub_476074(int tp, int id)
+{
+    int result = -1;
+
+    if ( tp == 1 )
+    {
+        switch ( id )
+        {
+        case 0:
+            result = 10;
+            break;
+        case 1:
+            result = 11;
+            break;
+        case 2:
+            result = 12;
+            break;
+        case 3:
+            result = 9;
+            break;
+        case 4:
+            result = 26;
+            break;
+        default:
+            break;
+        }
+    }
+    else if ( tp == 2 )
+    {
+        switch ( id )
+        {
+        case 0:
+            result = 8;
+            break;
+        case 1:
+            result = 6;
+            break;
+        case 2:
+            result = 7;
+            break;
+        case 3:
+            result = 3;
+            break;
+        case 4:
+            result = 4;
+            break;
+        case 5:
+            result = 5;
+            break;
+        default:
+            break;
+        }
+    }
+    else if ( tp == 3 )
+    {
+        switch ( id )
+        {
+        case 0:
+            result = 16;
+            break;
+        case 1:
+            result = 37;
+            break;
+        case 2:
+            result = 17;
+            break;
+        case 3:
+            result = 18;
+            break;
+        case 4:
+            result = 35;
+            break;
+        case 7:
+            result = 15;
+            break;
+        case 8:
+            result = 25;
+            break;
+        case 9:
+            result = 19;
+            break;
+        case 10:
+            result = 27;
+            break;
+        case 11:
+            result = 28;
+            break;
+        case 12:
+            result = 29;
+            break;
+        case 14:
+            result = 31;
+            break;
+        case 16:
+            result = 32;
+            break;
+        case 17:
+            result = 33;
+            break;
+        case 18:
+            result = 30;
+            break;
+        case 20:
+            result = 41;
+            break;
+        case 21:
+            result = 38;
+            break;
+        case 22:
+            result = 40;
+            break;
+        case 23:
+            result = 39;
+            break;
+        case 24:
+            result = 2;
+            break;
+        case 25:
+            result = 14;
+            break;
+        case 27:
+            result = 34;
+            break;
+        case 31:
+            result = 42;
+            break;
+        case 32:
+            result = 1;
+            break;
+        case 37:
+            result = 43;
+            break;
+        case 38:
+            result = 20;
+            break;
+        case 39:
+            result = 21;
+            break;
+        case 40:
+            result = 22;
+            break;
+        case 41:
+            result = 23;
+            break;
+        case 42:
+            result = 24;
+            break;
+        case 43:
+            result = 44;
+            break;
+        case 44:
+            result = 36;
+            break;
+        case 45:
+            result = 13;
+            break;
+        case 46:
+            result = 45;
+            break;
+        default:
+            break;
+        }
+    }
+    return result;
+}
+
+int sub_476204(const char *a4)
+{
+    for (int i = 0; i < 256; i++)
+    {
+        if (keySS[i].short_name && !strcasecmp(keySS[i].short_name, a4) )
+            return i;
+    }
+    return -1;
+}
+
+int parseSaveInput(scrCallBack *arg)
+{
+    NC_STACK_input *inpt;
+    inputEngine__getter(0x80001009, &inpt, 0);
+
+    UserData *usr = (UserData *)arg->dataForStore;
+
+    if ( !arg->field_18 )
+    {
+        if ( !strcasecmp(arg->p1, "new_input") || !strcasecmp(arg->p1, "modify_input") )
+        {
+            if ( !strcasecmp(arg->p1, "new_input") )
+            {
+                if ( usr )
+                {
+                    for (int i = 0; i < 46; i++)
+                        usr->keyConfig[i].KeyCode = 0;
+                }
+            }
+            arg->field_18 = 1;
+            return 1;
+        }
+        else
+        {
+            return 3;
+        }
+    }
+    else
+    {
+        if ( !strcasecmp(arg->p1, "end") )
+        {
+            arg->field_18 = 0;
+            return 2;
+        }
+
+        if ( !usr )
+            return 0;
+
+        usr->snd__flags1 |= 2;
+
+        if ( !strcasecmp(arg->p1, "qualmode") )
+        {
+
+        }
+        else if ( !strcasecmp(arg->p1, "joystick") )
+        {
+            if ( !strcasecmp(arg->p2, "yes") || !strcasecmp(arg->p2, "on") )
+            {
+                usr->inp_joystick = 1;
+                usr->p_ypaworld->field_73CE &= 0xFB;
+            }
+            else
+            {
+                usr->inp_joystick = 0;
+                usr->p_ypaworld->field_73CE |= 4;
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "altjoystick") )
+        {
+            if ( !strcasecmp(arg->p2, "yes") || !strcasecmp(arg->p2, "on") )
+            {
+                usr->inp_altjoystick = 1;
+                usr->p_ypaworld->snd__cdsound |= 2;
+            }
+            else
+            {
+                usr->inp_altjoystick = 0;
+                usr->p_ypaworld->snd__cdsound &= 0xFD;
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "forcefeedback") )
+        {
+            if ( !strcasecmp(arg->p2, "yes") || !strcasecmp(arg->p2, "on") )
+            {
+                usr->p_ypaworld->field_73CE &= 0xF7;
+            }
+            else
+            {
+                usr->p_ypaworld->field_73CE |= 8;
+            }
+        }
+        else
+        {
+            char *v11 = arg->p2;
+            while ( 1 )
+            {
+                v11 = strpbrk(v11, "_");
+                if ( !v11 )
+                    break;
+                *v11 = ' ';
+            }
+
+            char v39[500];
+
+            char *v13 = v39;
+            int ln = strlen(arg->p2);
+
+            for (int i = 0; i < ln ; i++ )
+            {
+                if ( (arg->p2[i] == '$') )
+                {
+                    strcat(v13, "winp:");
+                }
+                else
+                {
+                    *v13 = arg->p2[i];
+                    v13++;
+                }
+            }
+            *v13 = 0;
+
+            if ( !strnicmp(arg->p1, "input.slider[", 13) )
+            {
+                int v18 = 0;
+
+                char *tmp = strtok(arg->p1 + 13, "] \t=\n");
+                int v16 = atoi(tmp);
+
+                input__func64__params v44;
+                v44.value = v39;
+                v44.type_id = 5;
+                v44.item_number = v16;
+
+                if ( call_method(inpt, 64, &v44) )
+                {
+                    int v19 = sub_476074(2, v16);
+                    if ( v19 == -1 )
+                    {
+                        ypa_log_out("Unknown number in slider-declaration (%d)\n", v16);
+                        return 4;
+                    }
+                    usr->keyConfig[ v19 ].inp_type = 2;
+                    usr->keyConfig[ v19 ].keyID = v16;
+
+                    if ( strtok(v39, ":") )
+                    {
+                        tmp = strtok(0, " \t");
+
+                        if ( tmp )
+                        {
+                            usr->keyConfig[ v19 ].slider_neg = sub_476204(tmp);
+
+                            if ( usr->keyConfig[ v19 ].slider_neg == -1 )
+                            {
+                                ypa_log_out("Unknown keyword for slider %s\n", tmp);
+                                return 4;
+                            }
+
+                            if ( strtok(0, ":") )
+                            {
+                                tmp = strtok(0, " \t\n");
+
+                                if ( tmp )
+                                {
+                                    usr->keyConfig[ v19 ].KeyCode = sub_476204(tmp);
+
+                                    if ( usr->keyConfig[ v19 ].KeyCode == -1 )
+                                    {
+                                        ypa_log_out("Unknown keyword for slider %s\n", tmp);
+                                        return 4;
+                                    }
+                                    v18 = 1;
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    ypa_log_out("WARNING: cannot set slider %d with %s\n", v16, v39);
+                }
+
+                if ( !v18 )
+                {
+                    ypa_log_out("Wrong input expression for slider %d\n", v16);
+                    return 4;
+                }
+            }
+            else if ( !strnicmp(arg->p1, "input.button[", 13) )
+            {
+                int v18 = 0;
+
+                char *tmp = strtok(arg->p1 + 13, "] \t=\n");
+                int v16 = atoi(tmp);
+
+                input__func64__params v44;
+                v44.value = v39;
+                v44.type_id = 4;
+                v44.item_number = v16;
+
+                if ( call_method(inpt, 64, &v44) )
+                {
+                    int v19 = sub_476074(1, v16);
+                    if ( v19 == -1 )
+                    {
+                        ypa_log_out("Unknown number in button-declaration (%d)\n", v16);
+                        return 4;
+                    }
+                    usr->keyConfig[ v19 ].inp_type = 1;
+                    usr->keyConfig[ v19 ].keyID = v16;
+
+                    if ( strtok(v39, ":") )
+                    {
+                        tmp = strtok(0, " \t");
+                        if ( tmp )
+                        {
+                            usr->keyConfig[ v19 ].KeyCode = sub_476204(tmp);
+
+                            if ( usr->keyConfig[ v19 ].KeyCode == -1 )
+                            {
+                                ypa_log_out("Unknown keyword for button %s\n", tmp);
+                                return 4;
+                            }
+                            v18 = 1;
+                        }
+                    }
+                }
+                else
+                {
+                    ypa_log_out("WARNING: cannot set button %d with %s\n", v16, v39);
+                }
+
+                if ( !v18 )
+                {
+                    ypa_log_out("Wrong input expression for button %d\n", v16);
+                    return 4;
+                }
+            }
+            else if ( !strnicmp(arg->p1, "input.hotkey[", 13) )
+            {
+                int v18 = 0;
+
+                char *tmp = strtok(arg->p1 + 13, "] \t=\n");
+                int v16 = atoi(tmp);
+
+                winp_68arg zz;
+                zz.keyname = v39;
+                zz.id = v16;
+
+                input__func66__params v44;
+                v44.funcID = 68;
+                v44.field_4 = 0;
+                v44.field_0 = 3;
+                v44.vals = &zz;
+
+                if ( call_method(inpt, 66, &v44) )
+                {
+                    int v19 = sub_476074(1, v16);
+                    if ( v19 == -1 )
+                    {
+                        ypa_log_out("Unknown number in hotkey-declaration (%d)\n", v16);
+                        return 0;
+                    }
+
+                    usr->keyConfig[ v19 ].inp_type = 3;
+                    usr->keyConfig[ v19 ].keyID = v16;
+
+                    tmp = strtok(v39, " \t\n");
+                    if ( tmp )
+                    {
+                        usr->keyConfig[ v19 ].KeyCode = sub_476204(tmp);
+                        if ( usr->keyConfig[ v19 ].KeyCode == -1 )
+                        {
+                            ypa_log_out("Unknown keyword for hotkey: %s\n", tmp);
+                            return 4;
+                        }
+                        v18 = 1;
+                    }
+                }
+                else
+                {
+                    ypa_log_out("WARNING: cannot set hotkey %d with %s\n", v16, v39);
+                }
+                if ( !v18 )
+                {
+                    ypa_log_out("Wrong input expression for hotkey %d\n", v16);
+                    return 4;
+                }
+            }
+            else
+            {
+                ypa_log_out("Unknown keyword %s in InputExpression\n", arg->p1);
+                return 3;
+            }
+        }
+    }
+    return 0;
 }

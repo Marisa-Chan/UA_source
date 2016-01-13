@@ -49,5 +49,10 @@ struct CDAUDIO_t
 void sub_423DB0(samples_collection1 *smpls);
 int sub_4444D4(CDAUDIO_t *arg);
 userdata_sample_info *sub_423F74(samples_collection1 *a1, int a2);
+void sub_424000(samples_collection1 *smpls, int a2);
+int sub_4448C0(int *a1);
+
+void milesEngine__setter(unsigned int, ...);
+
 
 #endif // ENGINE_MILES_H_INCLUDED

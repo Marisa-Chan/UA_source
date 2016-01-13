@@ -546,7 +546,27 @@ int yw_InitLevelNet(_NC_STACK_ypaworld *yw)
 
 int yw_InitNetwork(_NC_STACK_ypaworld *yw)
 {
-    printf("MAKE ME %s\n","yw_InitNetwork");
+
+    NC_STACK_windp *windp = (NC_STACK_windp *)init_get_class("windp.class", 0);
+
+    yw->windp = windp;
+
+    if ( !windp )
+    {
+        ypa_log_out("Unable to create network-Object\n");
+        return 0;
+    }
+
+    yw->field_759A = 1;
+
+    memset(&yw->field_759E, 0, 4);
+
+    yw->field_75A2 = 0;
+    yw->field_75E2[0] = 0;
+
+    char *v6 = yw->buildDate;
+    call_method(yw->windp, 89, &v6);
+
     return 1;
 }
 

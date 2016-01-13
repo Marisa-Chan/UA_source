@@ -499,7 +499,6 @@ void amesh_func65(NC_STACK_amesh *obj, class_stru *, area_arg_65 *arg)
         v21 = NULL;
     }
 
-
     for (int i = 0; i < amesh->cnt; i++)
     {
         polysDatSub *datSub = &arg->polyDat->datSub;
