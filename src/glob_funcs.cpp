@@ -422,3 +422,44 @@ void sub_412810(char *a1, char *a2, int num)
     file_path_copy_manipul(a1, v6, 256);
     correct_slashes_and_3_ext(v6, a2, num);
 }
+
+
+
+
+int _delete_file(const char *lpFileName)
+{
+    if ( DeleteFile(lpFileName) )
+        return 0;
+
+    return -1;
+}
+
+int delete_file(const char *path)
+{
+    char tmp2[256];
+    char tmp[256];
+
+    file_path_copy_manipul(path, tmp, 256);
+    correct_slashes_and_3_ext(tmp, tmp2, 256);
+    return _delete_file(tmp2) == 0;
+}
+
+
+
+int rmdir(const char *a1)
+{
+    if ( RemoveDirectory(a1) )
+        return 0;
+
+    return -1;
+}
+
+int removeDirectory(const char *path)
+{
+    char tmp2[256];
+    char tmp[256];
+
+    file_path_copy_manipul(path, tmp, 256);
+    correct_slashes_and_3_ext(tmp, tmp2, 256);
+    return rmdir(tmp2) == 0;
+}
