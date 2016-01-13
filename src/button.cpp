@@ -1049,8 +1049,11 @@ int button_func72(NC_STACK_button *obj, class_stru *, int *butid)
 
     for (int i = 0; i < 48; i++)
     {
-        if (btn->field_d8[i]->button_id == *butid)
-            return i;
+        if (btn->field_d8[i])
+        {
+            if (btn->field_d8[i]->button_id == *butid)
+                return i;
+        }
     }
     return -1;
 }
