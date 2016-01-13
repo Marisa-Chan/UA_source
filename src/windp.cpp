@@ -233,3 +233,29 @@ class_return * class_set_windp(int , ...)
     windp_class_descr.field_A = 0;
     return &windp_class_descr;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void sb_0x4c9f14(_NC_STACK_ypaworld *yw)
+{
+    printf("MAKE ME %s (multiplayer)\n", "sb_0x4c9f14");
+}

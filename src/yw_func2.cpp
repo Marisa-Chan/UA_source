@@ -2312,7 +2312,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     if ( usr->field_3A->winp131arg.flag & 0x10 )
         sub_423F74(&usr->samples1_info, 3);
 
-    /*if ( usr->field_1C3A )
+    if ( usr->field_1C3A )
         sb_0x4c9f14(usr->p_ypaworld);
 
     if ( usr->field_1C3A == 1 )
@@ -2329,11 +2329,11 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 }
             }
         }
-        else if ( call_method(usr->p_ypaworld->windp, 90, 0) != 3 || usr->field_3A->downed_key == 32 )
+        else if ( call_method(usr->p_ypaworld->windp, 90, 0) != 3 || usr->field_3A->downed_key == VK_SPACE )
         {
             call_method(yw->windp, 68, 0);
         }
-    }*/
+    }
 
     button_66arg v408;
     button_66arg v410;

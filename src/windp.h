@@ -46,4 +46,11 @@ struct windp_arg87
     char field_41;
 };
 
+
+
+
+struct _NC_STACK_ypaworld;
+
+void sb_0x4c9f14(_NC_STACK_ypaworld *yw);
+
 #endif // WINDP_H_INCLUDED
