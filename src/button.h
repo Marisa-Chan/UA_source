@@ -100,7 +100,7 @@ struct button_66arg
 struct button_71arg
 {
     int butID;
-    char *field_4;
+    const char *field_4;
     char *field_8;
 };
 
