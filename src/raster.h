@@ -7,42 +7,42 @@ extern class_stored raster_class_off;
 
 struct xyxyNNN
 {
-	int x1;
-	int y1;
-	int x2;
-	int y2;
-	int NNN;
+    int x1;
+    int y1;
+    int x2;
+    int y2;
+    int NNN;
 };
 
 struct ua_dRect
 {
-	int x1;
-	int y1;
-	int x2;
-	int y2;
+    int x1;
+    int y1;
+    int x2;
+    int y2;
 };
 
 struct ua_fRect
 {
-	float x1;
-	float y1;
-	float x2;
-	float y2;
+    float x1;
+    float y1;
+    float x2;
+    float y2;
 };
 
 struct __NC_STACK_raster
 {
-	bitmap_intern *bitm_intern;
-	DWORD field_4; // Color?
-	DWORD field_8; // and Color2 ?
+    bitmap_intern *bitm_intern;
+    DWORD field_4; // Color?
+    DWORD field_8; // and Color2 ?
     DWORD field_c;
 //  int field_10;
 //  int field_14;
 //  int field_18;
 //  int field_1c;
 //  int field_20;
-	xyxyNNN field_24;
-	xyxyNNN field_38;
+    xyxyNNN field_24;
+    xyxyNNN field_38;
 //  int field_4c;
 //  int field_50;
 //  int field_54;
@@ -107,11 +107,11 @@ struct __NC_STACK_raster
 //  int field_140;
 //  int field_144;
 //  int field_148;
-	tiles_stru *tiles[256];
-	int field_54c;
-	int field_550;
-	float field_554;
-	float field_558;
+    tiles_stru *tiles[256];
+    int field_54c;
+    int field_550;
+    float field_554;
+    float field_558;
 //  int field_55c;
 //  int field_560;
 //  int field_564;
@@ -133,67 +133,67 @@ struct __NC_STACK_raster
 
 struct NC_STACK_raster : public NC_STACK_bitmap
 {
-	__NC_STACK_raster stack__raster;
+    __NC_STACK_raster stack__raster;
 };
 
 
 struct w3d_func198arg
 {
-	float x1;
-	float y1;
-	float x2;
-	float y2;
+    float x1;
+    float y1;
+    float x2;
+    float y2;
 };
 
 struct w3d_func199arg
 {
-	int x1;
-	int y1;
-	int x2;
-	int y2;
+    int x1;
+    int y1;
+    int x2;
+    int y2;
 };
 
 struct rstr_arg204
 {
-	bitmap_intern *pbitm;
-	float float4;
-	float float8;
-	float floatC;
-	float float10;
-	float float14;
-	float float18;
-	float float1C;
-	float float20;
+    bitmap_intern *pbitm;
+    float float4;
+    float float8;
+    float floatC;
+    float float10;
+    float float14;
+    float float18;
+    float float1C;
+    float float20;
 };
 
 struct rstr_loc204
 {
-	bitmap_intern *pbitm;
-	int dword4;
-	int dword8;
-	int dwordC;
-	int dword10;
-	int dword14;
-	int dword18;
-	int dword1C;
-	int dword20;
-	int dword24;
+    bitmap_intern *pbitm;
+    int dword4;
+    int dword8;
+    int dwordC;
+    int dword10;
+    int dword14;
+    int dword18;
+    int dword1C;
+    int dword20;
+    int dword24;
 };
 
 struct rstr_arg217
 {
-	DWORD dword0;
-	DWORD dword4;
-	DWORD dword8;
+    DWORD dword0;
+    DWORD dword4;
+    DWORD dword8;
 };
 
 struct rstr_218_arg
 {
-	bitmap_intern *bitm_intern;
-	bitmap_intern *bitm_intern2;
-	int flg;
-	ua_fRect rect1;
-	ua_fRect rect2;
+    bitmap_intern *bitm_intern;
+    bitmap_intern *bitm_intern2;
+    int flg;
+    ua_fRect rect1;
+    ua_fRect rect2;
 };
 
 #endif // RASTER_H_INCLUDED

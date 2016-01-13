@@ -62,16 +62,16 @@ float SWAP32F(float f);
 
 struct __attribute__((packed)) shortPoint
 {
-	short x;
-	short y;
+    short x;
+    short y;
 
-	shortPoint(int a)
-	{
-	    x = a & 0xFFFF;
-	    y = a >> 16;
-	}
+    shortPoint(int a)
+    {
+        x = a & 0xFFFF;
+        y = a >> 16;
+    }
 
-	shortPoint(): x(0), y(0) {}
+    shortPoint(): x(0), y(0) {}
 };
 
 HCURSOR uaLoadCursor(HINSTANCE, const char *name);

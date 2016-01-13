@@ -14,7 +14,7 @@ struct __NC_STACK_itimer
 
 struct NC_STACK_itimer : public NC_STACK_nucleus
 {
-	__NC_STACK_itimer stack__itimer;
+    __NC_STACK_itimer stack__itimer;
 };
 
 #endif // ITIMER_H_INCLUDED

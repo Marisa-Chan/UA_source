@@ -7,29 +7,29 @@ extern polysDat *p_polysdata_end;
 
 struct lvlnet_t1
 {
-	int field_0;
-	int field_4;
-	int field_8;
-	int field_C;
-	int field_10;
+    int field_0;
+    int field_4;
+    int field_8;
+    int field_C;
+    int field_10;
 };
 
 struct Key_stru
 {
-	const char *title_by_language;
-	const char *short_name;
-	char KEYCODE;
-	char field_9;
-	char field_A;
-	char field_B;
+    const char *title_by_language;
+    const char *short_name;
+    char KEYCODE;
+    char field_9;
+    char field_A;
+    char field_B;
 };
 
 struct video_mode_node : public nnode
 {
-	char name[128];
-	int sort_id;
-	int16_t width;
-	int16_t height;
+    char name[128];
+    int sort_id;
+    int16_t width;
+    int16_t height;
 };
 
 

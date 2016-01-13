@@ -5,26 +5,26 @@
 
 struct MFILE_flags
 {
-  char write_stream;
-  char fl0;
-  char fl1;
-  char fl2;
+    char write_stream;
+    char fl0;
+    char fl1;
+    char fl2;
 };
 
 struct MFILE
 {
-	FILE *file_handle;
-	MFILE_flags flags;
-	int field_8;
-	nlist list;
+    FILE *file_handle;
+    MFILE_flags flags;
+    int field_8;
+    nlist list;
 };
 
 struct MFILE_S1 : public nnode
 {
-	int TAG;
-	int TAG_EXTENSION;
-	int TAG_SIZE;
-	int cur_pos;
+    int TAG;
+    int TAG_EXTENSION;
+    int TAG_SIZE;
+    int cur_pos;
 };
 
 MFILE_S1 * GET_FORM_INFO_OR_NULL(MFILE *a1);

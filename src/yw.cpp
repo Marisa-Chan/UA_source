@@ -4093,8 +4093,8 @@ void ypaworld_func158(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
     if ( usr->input_listview.field_1D0 & 0x80 )
     {
         usr->keyConfig[v64 - 1].field_10 = 0;
-    //      usr->field_D3A = 1;
-    //     usr->field_D52 = 0;
+        //      usr->field_D3A = 1;
+        //     usr->field_D52 = 0;
     }
 
     lstvw_update(yw, &usr->input_listview);

@@ -11,21 +11,21 @@ struct NC_STACK_iwimp;
 
 struct __NC_STACK_iwimp
 {
-	int field_0;
-	nlist list;
-	inp_node *selected_btn;
-	int selected_btnID;
+    int field_0;
+    nlist list;
+    inp_node *selected_btn;
+    int selected_btnID;
 };
 
 struct NC_STACK_iwimp : public NC_STACK_idev
 {
-	__NC_STACK_iwimp stack__iwimp;
+    __NC_STACK_iwimp stack__iwimp;
 };
 
 struct iwimp_arg129
 {
-	nnode *node;
-	int field_4;
+    nnode *node;
+    int field_4;
 };
 
 

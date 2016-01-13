@@ -13,7 +13,7 @@ struct __NC_STACK_sklt
 
 struct NC_STACK_sklt : public NC_STACK_skeleton
 {
-	__NC_STACK_sklt stack__sklt;
+    __NC_STACK_sklt stack__sklt;
 };
 
 #endif // SKLT_H_INCLUDED

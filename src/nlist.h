@@ -4,15 +4,15 @@
 
 struct nnode
 {
-	nnode *next;
-	nnode *prev;
+    nnode *next;
+    nnode *prev;
 };
 
 struct nlist
 {
-	nnode *head;
-	nnode *tail;
-	nnode *tailpred;
+    nnode *head;
+    nnode *tail;
+    nnode *tailpred;
 };
 
 void init_list(nlist *list);

@@ -14,7 +14,7 @@ struct __NC_STACK_idev
 
 struct NC_STACK_idev : public NC_STACK_nucleus
 {
-	__NC_STACK_idev stack__idev;
+    __NC_STACK_idev stack__idev;
 };
 
 #endif // IDEV_H_INCLUDED

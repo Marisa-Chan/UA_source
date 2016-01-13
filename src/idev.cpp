@@ -16,7 +16,7 @@ class_stored idev_class_off (NULL, NULL, "MC2classes:idev.class", classvtbl_get_
 
 stored_functions *classvtbl_get_idev()
 {
-	return &idev_class_vtbl;
+    return &idev_class_vtbl;
 }
 
 CLASSFUNC idev_funcs[1024];
@@ -31,15 +31,15 @@ class_return idev_class_descr;
 class_return * class_set_idev(int , ...)
 {
 
-	memset(idev_funcs, 0, sizeof(CLASSFUNC) * 1024);
+    memset(idev_funcs, 0, sizeof(CLASSFUNC) * 1024);
 
-	idev_funcs[69] = (CLASSFUNC)idev_func69;
+    idev_funcs[69] = (CLASSFUNC)idev_func69;
 
-	idev_class_descr.parent = "nucleus.class";
+    idev_class_descr.parent = "nucleus.class";
 
-	idev_class_descr.vtbl = idev_funcs;
-	////idev_class_descr.varSize = sizeof(__NC_STACK_idev);
-	idev_class_descr.varSize = sizeof(NC_STACK_idev) - offsetof(NC_STACK_idev, stack__idev); //// HACK
-	idev_class_descr.field_A = 0;
-	return &idev_class_descr;
+    idev_class_descr.vtbl = idev_funcs;
+    ////idev_class_descr.varSize = sizeof(__NC_STACK_idev);
+    idev_class_descr.varSize = sizeof(NC_STACK_idev) - offsetof(NC_STACK_idev, stack__idev); //// HACK
+    idev_class_descr.field_A = 0;
+    return &idev_class_descr;
 }

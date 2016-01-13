@@ -14,7 +14,7 @@ struct __NC_STACK_wintimer
 
 struct NC_STACK_wintimer : public NC_STACK_itimer
 {
-	__NC_STACK_wintimer stack__wintimer;
+    __NC_STACK_wintimer stack__wintimer;
 };
 
 #endif // WINTIMER_H_INCLUDED
