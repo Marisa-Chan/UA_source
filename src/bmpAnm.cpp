@@ -610,13 +610,11 @@ bmpAnim_t1 *bmpanim_func64__sub1(char *name, MFILE *a2)
             {
                 if ( bmpanim_func64__sub1__sub2(fil, v19) )
                 {
-                    void *dat = AllocVec(1234, 1234);
                     if ( bmpanim_func64__sub1__sub1(fil, v19) )
                     {
                         if ( bmpanim_func64__sub1__sub0(fil, v19) )
                             v23 = 1;
                     }
-                    nc_FreeMem(dat);
                 }
             }
             if ( !v23 )
