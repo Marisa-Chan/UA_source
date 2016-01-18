@@ -58,6 +58,8 @@ int dword_5A50B6_h;
 
 char **ypaworld__string_pointers;
 
+listview stru_5C91D0;
+
 
 int sub_4493B0(scrCallBack *arg)
 {
@@ -4042,8 +4044,6 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
         sub_4444D4(&cdaud);
     }
 
-
-    printf("%d\n", yw_LoadSet(yw, 1)); //// HACK TEST LOAD SET
     return 1;
 }
 
@@ -4068,7 +4068,7 @@ void ypaworld_func158__sub4(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *struc
     }
     else if ( yw->GameShell->field_46 >= 4 && yw->GameShell->field_46 <= 5 )
     {
-        //ypaworld_func158__sub4__sub1(yw, usr, struc5);
+        ypaworld_func158__sub4__sub1(yw, usr, struc5);
     }
     else
     {
@@ -4084,13 +4084,17 @@ void ypaworld_func158(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
     call_method(yw->win3d, 257);
 
+    int v7 = usr->field_46;
+    usr->field_4A = 0;
 
+    ypaworld_func158__sub0(yw, usr);
+
+    if ( v7 != usr->field_46 )
+        usr->field_4A = 1;
 
     ypaworld_func158__sub4(yw, usr, usr->field_3A);
 
     call_method(yw->win3d, 215);
-
-    ypaworld_func158__sub0(yw, usr);
 
     //call_method(usr->titel_button, 69, usr->field_3A);
     call_method(usr->confirm_button, 70, 0);
@@ -4119,30 +4123,6 @@ void ypaworld_func158(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 //    lstvw_update(yw, &usr->input_listview);
     // yw_draw_input_list(yw, usr);
 
-    rstr_arg217 cvt;
-    cvt.dword0 = 0xFFFF0000;
-    cvt.dword4 = 0xFFFFFF00;
-    cvt.dword8 = 0xFFFFFF00;
-
-    call_method(yw->win3d, 217, &cvt);
-
-    w3d_func198arg ttt;
-    ttt.x1 = -1.0;
-    ttt.x2 = 1.0;
-    ttt.y1 = -1.0;
-    ttt.y2 = 1.0;
-
-    call_method(yw->win3d, 200, &ttt);
-
-
-
-    yw->brief.brf_objs.field_0 = 2;
-    yw->brief.brf_objs.object_id = 56;
-
-    yw->brief.brf_objs.field_C = 1000;
-    yw->brief.field_2E7C += usr->field_3A->period;
-
-    ypaworld_func158__DrawVehicle(yw, &yw->brief, usr->field_3A);
 
     call_method(yw->win3d, 216);
 
@@ -4227,7 +4207,7 @@ int locale_parser(scrCallBack *arg)
             return 2;
         }
 
-        int id = atoi(arg->p1);
+        int id = strtol(arg->p1, NULL, 0);
         int err = 0;
 
         if ( id < 2600 )
@@ -4503,8 +4483,9 @@ void ypaworld_func182(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
-void ypaworld_func183(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+size_t ypaworld_func183(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    return 0;
 }
 
 

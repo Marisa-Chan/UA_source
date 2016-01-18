@@ -411,28 +411,24 @@ HRESULT __stdcall enumdevice_callback(LPGUID lpGuid, LPSTR lpDeviceDescription, 
 
         log_d3dlog("enum devices: can do srcblend = srcalpha; destblend = one\n");
     }
+    else if ( (device->dev_descr.dpcTriCaps.dwShadeCaps & (D3DPSHADECAPS_ALPHAFLATSTIPPLED | D3DPSHADECAPS_ALPHAFLATSTIPPLED)) &&
+              !(device->dev_descr.dpcTriCaps.dwShadeCaps & D3DPSHADECAPS_ALPHAFLATBLEND) )
+    {
+        device->can_stippling = 1;
+
+        log_d3dlog("enum devices: can do alpha stippling\n");
+    }
+    else if ( (device->dev_descr.dpcTriCaps.dwSrcBlendCaps & D3DPBLENDCAPS_SRCALPHA) && (device->dev_descr.dpcTriCaps.dwDestBlendCaps & D3DPBLENDCAPS_INVSRCALPHA) )
+    {
+        device->can_srcblend = 1;
+        device->can_destblend = 0;
+
+        log_d3dlog("enum devices: can do srcblend = srcalpha; destblend = invsrcalpha\n");
+    }
     else
     {
-        if ( !(device->dev_descr.dpcTriCaps.dwShadeCaps & (D3DPSHADECAPS_ALPHAFLATSTIPPLED | D3DPSHADECAPS_ALPHAFLATSTIPPLED)) ||
-                (device->dev_descr.dpcTriCaps.dwShadeCaps & D3DPSHADECAPS_ALPHAFLATBLEND) )
-        {
-            if ( !(device->dev_descr.dpcTriCaps.dwSrcBlendCaps & D3DPBLENDCAPS_SRCALPHA) || !(device->dev_descr.dpcTriCaps.dwDestBlendCaps & D3DPBLENDCAPS_INVSRCALPHA) )
-            {
-                log_d3dlog("enum devices: skip, no alpha, no stipple...\n");
-                return 1;
-            }
-
-            device->can_srcblend = 1;
-            device->can_destblend = 0;
-
-            log_d3dlog("enum devices: can do srcblend = srcalpha; destblend = invsrcalpha\n");
-        }
-        else
-        {
-            device->can_stippling = 1;
-
-            log_d3dlog("enum devices: can do alpha stippling\n");
-        }
+        log_d3dlog("enum devices: skip, no alpha, no stipple...\n");
+        return 1;
     }
 
     can_srcblend = device->can_srcblend;
@@ -1412,12 +1408,14 @@ int createWindow(__NC_STACK_windd *obj, HINSTANCE hInstance, int cmdShow, int wi
         const char *lpclassname = "UA Window Class";
         const char *windname = "Urban Assault";
 
-        if ( obj->field_50 & 1 )
+        if ( obj->field_50 & 1 ) // WINDOWED
         {
             h = height;
             w = width;
             wndstyle = WS_OVERLAPPEDWINDOW;
             dwExStyle = 0;
+
+            obj->hwnd = CreateWindowEx(dwExStyle, lpclassname, windname, wndstyle, CW_USEDEFAULT, CW_USEDEFAULT, w, h, 0, 0, hInstance, 0);
         }
         else
         {
@@ -1425,9 +1423,9 @@ int createWindow(__NC_STACK_windd *obj, HINSTANCE hInstance, int cmdShow, int wi
             w = GetSystemMetrics(SM_CXSCREEN);
             wndstyle = WS_POPUP | WS_SYSMENU;
             dwExStyle = WS_EX_TOPMOST;
-        }
 
-        obj->hwnd = CreateWindowEx(dwExStyle, lpclassname, windname, wndstyle, 0, 0, w, h, 0, 0, hInstance, 0);
+            obj->hwnd = CreateWindowEx(dwExStyle, lpclassname, windname, wndstyle, 0, 0, w, h, 0, 0, hInstance, 0);
+        }
 
         if ( obj->hwnd )
         {

@@ -58,11 +58,11 @@ int ParseExtSampleDef(vhclSndFX *sndfx, char *p2)
 
         sndExt *sndEx = &sndfx->sndExts[curid];
         sndEx->field_0 = 0;
-        sndEx->field_4 = atoi(pp1);
-        sndEx->field_6 = atoi(pp2);
-        sndEx->field_8 = atoi(pp3);
-        sndEx->field_C = atoi(pp4);
-        sndEx->field_10 = atoi(pp5);
+        sndEx->field_4 = strtol(pp1, NULL, 0);
+        sndEx->field_6 = strtol(pp2, NULL, 0);
+        sndEx->field_8 = strtol(pp3, NULL, 0);
+        sndEx->field_C = strtol(pp4, NULL, 0);
+        sndEx->field_10 = strtol(pp5, NULL, 0);
 
         if ( strlen(pname) >= 31 )
         {
@@ -106,9 +106,9 @@ int ParseVhclSndFX(VhclProto *vhcl, const char *p1, char *p2)
         strcpy(sndfx->sample_name, p2);
     }
     else if ( !strcasecmp(tp, "volume") )
-        sndfx->volume = atoi(p2);
+        sndfx->volume = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "pitch") )
-        sndfx->pitch = atoi(p2);
+        sndfx->pitch = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "ext") )
     {
         if ( !ParseExtSampleDef(sndfx, p2) )
@@ -140,13 +140,13 @@ int ParseVhclPal(VhclProto *vhcl, const char *p1, const char *p2)
 
     char *tp = strtok(0, "_");
     if ( !strcasecmp(tp, "slot") )
-        sndfx->slot = atoi(p2);
+        sndfx->slot = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "mag0") )
         sndfx->mag0 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "mag1") )
         sndfx->mag1 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "time") )
-        sndfx->time = atoi(p2);
+        sndfx->time = strtol(p2, NULL, 0);
     else
         return 3;
 
@@ -173,13 +173,13 @@ int ParseVhclShk(VhclProto *vhcl, const char *p1, const char *p2)
 
     char *tp = strtok(0, "_");
     if ( !strcasecmp(tp, "slot") )
-        sndfx->shk_slot = atoi(p2);
+        sndfx->shk_slot = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "mag0") )
         sndfx->shk_mag0 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "mag1") )
         sndfx->shk_mag1 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "time") )
-        sndfx->shk_time = atoi(p2);
+        sndfx->shk_time = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "mute") )
         sndfx->mute = strtof(p2, 0);
     else if ( !strcasecmp(tp, "x") )
@@ -209,7 +209,7 @@ int VhclProtoParser(scrCallBack *arg)
 
         if ( !strcasecmp(_p1, "new_vehicle") )
         {
-            int vhcl_id = atoi(_p2);
+            int vhcl_id = strtol(_p2, NULL, 0);
             if ( vhcl_id >= 256 )
                 return 4;
 
@@ -307,7 +307,7 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "modify_vehicle") )
         {
-            int vhcl_id = atoi(_p2);
+            int vhcl_id = strtol(_p2, NULL, 0);
             if ( vhcl_id >= 256 )
                 return 4;
 
@@ -449,11 +449,11 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "enable") )
         {
-            vhcl->disable_enable_bitmask |= 1 << atoi(_p2);
+            vhcl->disable_enable_bitmask |= 1 << strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "disable") )
         {
-            vhcl->disable_enable_bitmask &= ~(1 << atoi(_p2));
+            vhcl->disable_enable_bitmask &= ~(1 << strtol(_p2, NULL, 0));
         }
         else if ( !strcasecmp(_p1, "name") )
         {
@@ -473,11 +473,11 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "energy") )
         {
-            vhcl->energy = atoi(_p2);
+            vhcl->energy = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "shield") )
         {
-            vhcl->shield = atoi(_p2);
+            vhcl->shield = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "mass") )
         {
@@ -533,43 +533,43 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "radar") )
         {
-            vhcl->radar = atoi(_p2);
+            vhcl->radar = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "add_energy") )
         {
-            vhcl->energy += atoi(_p2);
+            vhcl->energy += strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "add_shield") )
         {
-            vhcl->shield += atoi(_p2);
+            vhcl->shield += strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "add_radar") )
         {
-            vhcl->radar += atoi(_p2);
+            vhcl->radar += strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "vp_normal") )
         {
-            vhcl->vp_normal = atoi(_p2);
+            vhcl->vp_normal = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "vp_fire") )
         {
-            vhcl->vp_fire = atoi(_p2);
+            vhcl->vp_fire = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "vp_megadeth") )
         {
-            vhcl->vp_megadeth = atoi(_p2);
+            vhcl->vp_megadeth = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "vp_wait") )
         {
-            vhcl->vp_wait = atoi(_p2);
+            vhcl->vp_wait = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "vp_dead") )
         {
-            vhcl->vp_dead = atoi(_p2);
+            vhcl->vp_dead = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "vp_genesis") )
         {
-            vhcl->vp_genesis = atoi(_p2);
+            vhcl->vp_genesis = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "type_icon") )
         {
@@ -608,7 +608,7 @@ int VhclProtoParser(scrCallBack *arg)
                 {
                     return 4;
                 }
-                dfx->p1 = atoi(pp1);
+                dfx->p1 = strtol(pp1, NULL, 0);
                 dfx->p2 = strtof(pp2, 0);
                 dfx->p3 = strtof(pp3, 0);
                 dfx->p4 = strtof(pp4, 0);
@@ -625,11 +625,11 @@ int VhclProtoParser(scrCallBack *arg)
         else if ( !strcasecmp(_p1, "weapon") )
         {
             vhcl->field_3 = -1;
-            vhcl->weapon = atoi(_p2);
+            vhcl->weapon = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "mgun") )
         {
-            vhcl->mgun = atoi(_p2);
+            vhcl->mgun = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "fire_x") )
         {
@@ -657,11 +657,11 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "num_weapons") )
         {
-            vhcl->num_weapons = atoi(_p2);
+            vhcl->num_weapons = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "kill_after_shot") )
         {
-            vhcl->kill_after_shot = atoi(_p2);
+            vhcl->kill_after_shot = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "job_fighthelicopter") )
         {
@@ -692,12 +692,12 @@ int VhclProtoParser(scrCallBack *arg)
             stack_vals *val = find_id_in_stack2(0x80002000, vhcl->stak);
             if ( val )
             {
-                val->value = atoi(_p2);
+                val->value = strtol(_p2, NULL, 0);
             }
             else
             {
                 vhcl->stack_pointer__position->id = 0x80002000;
-                vhcl->stack_pointer__position->value = atoi(_p2);
+                vhcl->stack_pointer__position->value = strtol(_p2, NULL, 0);
                 vhcl->stack_pointer__position++;
                 vhcl->stack_pointer__position->id = 0;
             }
@@ -707,12 +707,12 @@ int VhclProtoParser(scrCallBack *arg)
             stack_vals *val = find_id_in_stack2(0x80002001, vhcl->stak);
             if ( val )
             {
-                val->value = atoi(_p2);
+                val->value = strtol(_p2, NULL, 0);
             }
             else
             {
                 vhcl->stack_pointer__position->id = 0x80002001;
-                vhcl->stack_pointer__position->value = atoi(_p2);
+                vhcl->stack_pointer__position->value = strtol(_p2, NULL, 0);
                 vhcl->stack_pointer__position++;
                 vhcl->stack_pointer__position->id = 0;
             }
@@ -722,12 +722,12 @@ int VhclProtoParser(scrCallBack *arg)
             stack_vals *val = find_id_in_stack2(0x80002002, vhcl->stak);
             if ( val )
             {
-                val->value = atoi(_p2);
+                val->value = strtol(_p2, NULL, 0);
             }
             else
             {
                 vhcl->stack_pointer__position->id = 0x80002002;
-                vhcl->stack_pointer__position->value = atoi(_p2);
+                vhcl->stack_pointer__position->value = strtol(_p2, NULL, 0);
                 vhcl->stack_pointer__position++;
                 vhcl->stack_pointer__position->id = 0;
             }
@@ -781,12 +781,12 @@ int VhclProtoParser(scrCallBack *arg)
             val = find_id_in_stack2(0x80003001, vhcl->stak);
             if ( val )
             {
-                val->value = atoi(_p2);
+                val->value = strtol(_p2, NULL, 0);
             }
             else
             {
                 vhcl->stack_pointer__position->id = 0x80003001;
-                vhcl->stack_pointer__position->value = atoi(_p2);
+                vhcl->stack_pointer__position->value = strtol(_p2, NULL, 0);
                 vhcl->stack_pointer__position++;
                 vhcl->stack_pointer__position->id = 0;
             }
@@ -838,7 +838,7 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "vo_type") )
         {
-            vhcl->vo_type = atoi(_p2);
+            vhcl->vo_type = strtol(_p2, NULL, 16);
         }
         else if ( !strcasecmp(_p1, "max_pitch") )
         {
@@ -871,7 +871,7 @@ int VhclProtoParser(scrCallBack *arg)
                 vhcl->scale_fx_p0 = strtof(pp0, 0);
                 vhcl->scale_fx_p1 = strtof(pp1, 0);
                 vhcl->scale_fx_p2 = strtof(pp2, 0);
-                vhcl->scale_fx_p3 = atoi(pp3);
+                vhcl->scale_fx_p3 = strtol(pp3, NULL, 0);
                 int16_t * tmp = &vhcl->scale_fx_pXX;
                 while ( 1 )
                 {
@@ -879,7 +879,7 @@ int VhclProtoParser(scrCallBack *arg)
                     if ( !v65 )
                         break;
 
-                    *tmp = atoi(v65);
+                    *tmp = strtol(v65, NULL, 0);
                     tmp++;
                 }
             }
@@ -889,11 +889,11 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "robo_num_guns") )
         {
-            robo->robo_num_guns = atoi(_p2);
+            robo->robo_num_guns = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "robo_act_gun") )
         {
-            v76 = atoi(_p2);
+            v76 = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "robo_gun_pos_x") )
         {
@@ -921,7 +921,7 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "robo_gun_type") )
         {
-            robo->guns[v76].robo_gun_type = atoi(_p2);
+            robo->guns[v76].robo_gun_type = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "robo_gun_name") )
         {
@@ -941,7 +941,7 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "robo_coll_num") )
         {
-            robo->robo_coll_num = atoi(_p2);
+            robo->robo_coll_num = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "robo_coll_radius") )
         {
@@ -949,7 +949,7 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "robo_coll_act") )
         {
-            v77 = atoi(_p2);
+            v77 = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "robo_coll_x") )
         {
@@ -1074,9 +1074,9 @@ int ParseWeaponSndFX(WeapProto *wpn, const char *p1, char *p2)
         strcpy(sndfx->sample_name, p2);
     }
     else if ( !strcasecmp(tp, "volume") )
-        sndfx->volume = atoi(p2);
+        sndfx->volume = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "pitch") )
-        sndfx->pitch = atoi(p2);
+        sndfx->pitch = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "ext") )
     {
         if ( !ParseExtSampleDef(sndfx, p2) )
@@ -1108,13 +1108,13 @@ int ParseWeaponPal(WeapProto *wpn, const char *p1, const char *p2)
 
     char *tp = strtok(0, "_");
     if ( !strcasecmp(tp, "slot") )
-        sndfx->slot = atoi(p2);
+        sndfx->slot = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "mag0") )
         sndfx->mag0 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "mag1") )
         sndfx->mag1 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "time") )
-        sndfx->time = atoi(p2);
+        sndfx->time = strtol(p2, NULL, 0);
     else
         return 3;
 
@@ -1142,13 +1142,13 @@ int ParseWeaponShk(WeapProto *wpn, const char *p1, const char *p2)
     char *tp = strtok(0, "_");
 
     if ( !strcasecmp(tp, "slot") )
-        sndfx->shk_slot = atoi(p2);
+        sndfx->shk_slot = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "mag0") )
         sndfx->shk_mag0 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "mag1") )
         sndfx->shk_mag1 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "time") )
-        sndfx->shk_time = atoi(p2);
+        sndfx->shk_time = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "mute") )
         sndfx->mute = strtof(p2, 0);
     else if ( !strcasecmp(tp, "x") )
@@ -1176,7 +1176,7 @@ int WeaponProtoParser(scrCallBack *arg)
         WeapProto *wpn;
         if ( !strcasecmp(_p1, "new_weapon") )
         {
-            int wpn_id = atoi(_p2);
+            int wpn_id = strtol(_p2, NULL, 0);
             if ( wpn_id >= 128 )
                 return 4;
             wpn = &yw->WeaponProtos[wpn_id];
@@ -1241,7 +1241,7 @@ int WeaponProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "modify_weapon") )
         {
-            int wpn_id = atoi(_p2);
+            int wpn_id = strtol(_p2, NULL, 0);
 
             if ( wpn_id >= 128 )
                 return 4;
@@ -1281,11 +1281,11 @@ int WeaponProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "enable") )
         {
-            wpn->enable_mask |= 1 << atoi(_p2);
+            wpn->enable_mask |= 1 << strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "disable") )
         {
-            wpn->enable_mask &= ~(1 << atoi(_p2));
+            wpn->enable_mask &= ~(1 << strtol(_p2, NULL, 0));
         }
         else if ( !strcasecmp(_p1, "name") )
         {
@@ -1305,7 +1305,7 @@ int WeaponProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "energy") )
         {
-            wpn->energy = atoi(_p2);
+            wpn->energy = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "energy_heli") )
         {
@@ -1377,87 +1377,87 @@ int WeaponProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "life_time") )
         {
-            wpn->life_time = atoi(_p2);
+            wpn->life_time = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "life_time_nt") )
         {
-            wpn->life_time_nt = atoi(_p2);
+            wpn->life_time_nt = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "drive_time") )
         {
-            wpn->drive_time = atoi(_p2);
+            wpn->drive_time = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "delay_time") )
         {
-            wpn->delay_time = atoi(_p2);
+            wpn->delay_time = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "shot_time") )
         {
-            wpn->shot_time = atoi(_p2);
+            wpn->shot_time = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "shot_time_user") )
         {
-            wpn->shot_time_user = atoi(_p2);
+            wpn->shot_time_user = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "salve_shots") )
         {
-            wpn->salve_shots = atoi(_p2);
+            wpn->salve_shots = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "salve_delay") )
         {
-            wpn->salve_delay = atoi(_p2);
+            wpn->salve_delay = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "add_energy") )
         {
-            wpn->energy += atoi(_p2);
+            wpn->energy += strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "add_energy_heli") )
         {
-            wpn->energy_heli += atoi(_p2);
+            wpn->energy_heli += strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "add_energy_tank") )
         {
-            wpn->energy_tank += atoi(_p2);
+            wpn->energy_tank += strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "add_energy_flyer") )
         {
-            wpn->energy_flyer += atoi(_p2);
+            wpn->energy_flyer += strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "add_energy_Robo") )
         {
-            wpn->energy_robo += atoi(_p2);
+            wpn->energy_robo += strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "add_shot_time") )
         {
-            wpn->shot_time += atoi(_p2);
+            wpn->shot_time += strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "add_shot_time_user") )
         {
-            wpn->shot_time_user += atoi(_p2);
+            wpn->shot_time_user += strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "vp_normal") )
         {
-            wpn->vp_normal = atoi(_p2);
+            wpn->vp_normal = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "vp_fire") )
         {
-            wpn->vp_fire = atoi(_p2);
+            wpn->vp_fire = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "vp_megadeth") )
         {
-            wpn->vp_megadeth = atoi(_p2);
+            wpn->vp_megadeth = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "vp_wait") )
         {
-            wpn->vp_wait = atoi(_p2);
+            wpn->vp_wait = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "vp_dead") )
         {
-            wpn->vp_dead = atoi(_p2);
+            wpn->vp_dead = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "vp_genesis") )
         {
-            wpn->vp_genesis = atoi(_p2);
+            wpn->vp_genesis = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "type_icon") )
         {
@@ -1505,7 +1505,7 @@ int WeaponProtoParser(scrCallBack *arg)
                 {
                     return 4;
                 }
-                dfx->p1 = atoi(pp1);
+                dfx->p1 = strtol(pp1, NULL, 0);
                 dfx->p2 = strtof(pp2, 0);
                 dfx->p3 = strtof(pp3, 0);
                 dfx->p4 = strtof(pp4, 0);
@@ -1561,7 +1561,7 @@ int BuildProtoParser(scrCallBack *arg)
 
         if ( !strcasecmp(_p1, "new_building") )
         {
-            int bld_id = atoi(_p2);
+            int bld_id = strtol(_p2, NULL, 0);
             if ( bld_id >= 128 )
                 return 4;
 
@@ -1573,7 +1573,7 @@ int BuildProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "modify_building") )
         {
-            int bld_id = atoi(_p2);
+            int bld_id = strtol(_p2, NULL, 0);
             if ( bld_id >= 128 )
                 return 4;
 
@@ -1623,11 +1623,11 @@ int BuildProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "enable") )
         {
-            bld->enable_mask |= 1 << atoi(_p2);
+            bld->enable_mask |= 1 << strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "disable") )
         {
-            bld->enable_mask &= ~(1 << atoi(_p2));
+            bld->enable_mask &= ~(1 << strtol(_p2, NULL, 0));
         }
         else if ( !strcasecmp(_p1, "name") )
         {
@@ -1647,15 +1647,15 @@ int BuildProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "power") )
         {
-            bld->power = atoi(_p2);
+            bld->power = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "energy") )
         {
-            bld->energy = atoi(_p2);
+            bld->energy = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "sec_type") )
         {
-            bld->sec_type = atoi(_p2);
+            bld->sec_type = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "type_icon") )
         {
@@ -1672,22 +1672,22 @@ int BuildProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "snd_normal_volume") )
         {
-            bld->sndfx.volume = atoi(_p2);
+            bld->sndfx.volume = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "snd_normal_pitch") )
         {
-            bld->sndfx.pitch = atoi(_p2);
+            bld->sndfx.pitch = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "sbact_act") )
         {
-            v20 = atoi(_p2);
+            v20 = strtol(_p2, NULL, 0);
         }
         else
         {
             buildSbact *v19 = &bld->sbacts[v20];
             if ( !strcasecmp(_p1, "sbact_vehicle") )
             {
-                v19->sbact_vehicle = atoi(_p2);
+                v19->sbact_vehicle = strtol(_p2, NULL, 0);
             }
             else if ( !strcasecmp(_p1, "sbact_pos_x") )
             {
@@ -1901,11 +1901,11 @@ int BkgParser(scrCallBack *arg)
     }
     else if ( !strcasecmp(_p1, "size_x") )
     {
-        lvlnet->background_map[lvlnet->bg_n].size_x = atoi(_p2);
+        lvlnet->background_map[lvlnet->bg_n].size_x = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "size_y") )
     {
-        lvlnet->background_map[lvlnet->bg_n].size_y = atoi(_p2);
+        lvlnet->background_map[lvlnet->bg_n].size_y = strtol(_p2, NULL, 0);
     }
     else
         return 3;
@@ -2151,7 +2151,7 @@ int Misc_Parse(scrCallBack *arg)
 
         if ( pp1 && pp2 )
         {
-            yw->shell_default_res = atoi(pp2) | (atoi(pp1) << 12);
+            yw->shell_default_res = strtol(pp2, NULL, 0) | (strtol(pp1, NULL, 0) << 12);
         }
     }
     else if ( !strcasecmp(_p1, "game_default_res") )
@@ -2161,7 +2161,7 @@ int Misc_Parse(scrCallBack *arg)
 
         if ( pp1 && pp2 )
         {
-            yw->game_default_res = atoi(pp2) | (atoi(pp1) << 12);
+            yw->game_default_res = strtol(pp2, NULL, 0) | (strtol(pp1, NULL, 0) << 12);
         }
     }
     else if ( !strcasecmp(_p1, "max_impulse") )
@@ -2170,27 +2170,27 @@ int Misc_Parse(scrCallBack *arg)
     }
     else if ( !strcasecmp(_p1, "unit_limit") )
     {
-        yw->unit_limit = atoi(_p2);
+        yw->unit_limit = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "unit_limit_type") )
     {
-        yw->unit_limit_type = atoi(_p2);
+        yw->unit_limit_type = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "unit_limit_arg") )
     {
-        yw->unit_limit_arg = atoi(_p2);
+        yw->unit_limit_arg = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "beam_energy_start") )
     {
-        yw->beam_energy_start = atoi(_p2);
+        yw->beam_energy_start = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "beam_energy_add") )
     {
-        yw->beam_energy_add = atoi(_p2);
+        yw->beam_energy_add = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "easy_cheat_keys") )
     {
-        yw->easy_cheat_keys = atoi(_p2);
+        yw->easy_cheat_keys = strtol(_p2, NULL, 0);
     }
     else
         return 3;
@@ -2224,11 +2224,11 @@ int SuperItem_Parse(scrCallBack *arg)
 
     if ( !strcasecmp(_p1, "superbomb_center_vproto") )
     {
-        yw->superbomb_center_vproto = atoi(_p2);
+        yw->superbomb_center_vproto = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "superbomb_wall_vproto") )
     {
-        yw->superbomb_wall_vproto = atoi(_p2);
+        yw->superbomb_wall_vproto = strtol(_p2, NULL, 0);
     }
     else
         return 3;
@@ -2241,10 +2241,10 @@ void parse_map_sizes(FILE *fil, int *sec_x, int *sec_y)
     fgets(buf, 1024, fil);
 
     char *tmp = strtok(buf, " \n");
-    int xsz = atoi(tmp);
+    int xsz = strtol(tmp, NULL, 0);
 
     tmp = strtok(0, " \n");
-    int ysz = atoi(tmp);
+    int ysz = strtol(tmp, NULL, 0);
 
     for (int i = 0; i < ysz; i++)
         fgets(buf, 1024, fil);
@@ -2351,7 +2351,7 @@ int LevelDataParser(scrCallBack *arg)
     }
     else if ( !strcasecmp(_p1, "set") )
     {
-        mapp->setNumber = atoi(_p2);
+        mapp->setNumber = strtol(_p2, NULL, 0);
         mapp->flags |= 1;
     }
     else if ( !strcasecmp(_p1, "sky") )
@@ -2472,17 +2472,17 @@ int LevelDataParser(scrCallBack *arg)
 
         char *tmp = strtok(_p2, " \t_\n");
 
-        yw->field_2d90->amb_track_p0 = atoi(tmp);
+        yw->field_2d90->amb_track_p0 = strtol(tmp, NULL, 0);
 
         tmp = strtok(0, " \t_\n");
         if ( tmp )
         {
-            yw->field_2d90->amb_track_p1 = atoi(tmp);
+            yw->field_2d90->amb_track_p1 = strtol(tmp, NULL, 0);
 
             tmp = strtok(0, " \t_\n");
             if ( tmp )
             {
-                yw->field_2d90->amb_track_p2 = atoi(tmp);
+                yw->field_2d90->amb_track_p2 = strtol(tmp, NULL, 0);
             }
         }
     }
@@ -2500,7 +2500,7 @@ int LevelDataParser(scrCallBack *arg)
     }
     else if ( !strcasecmp(_p1, "event_loop") )
     {
-        mapp->event_loop = atoi(_p2);
+        mapp->event_loop = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "slow_connection") )
     {
@@ -2519,15 +2519,15 @@ int LevelDataParser(scrCallBack *arg)
     }
     else if ( !strcasecmp(_p1, "unit_limit") )
     {
-        yw->unit_limit_1 = atoi(_p2);
+        yw->unit_limit_1 = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "unit_limit_type") )
     {
-        yw->unit_limit_type_1 = atoi(_p2);
+        yw->unit_limit_type_1 = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "unit_limit_arg") )
     {
-        yw->unit_limit_arg_1 = atoi(_p2);
+        yw->unit_limit_arg_1 = strtol(_p2, NULL, 0);
     }
     else
         return 3;
@@ -2563,21 +2563,21 @@ int parse_map_robos(scrCallBack *arg)
 
     if ( !strcasecmp(_p1, "owner") )
     {
-        robo->owner = atoi(_p2);
+        robo->owner = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "vehicle") )
     {
-        robo->vehicle = atoi(_p2);
+        robo->vehicle = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "sec_x") )
     {
-        int tmp = atoi(_p2);
+        int tmp = strtol(_p2, NULL, 0);
         robo->pos_y = -300;
         robo->pos_x = tmp * 1200.0 + 600.0;
     }
     else if ( !strcasecmp(_p1, "sec_y") )
     {
-        int tmp = atoi(_p2);
+        int tmp = strtol(_p2, NULL, 0);
         robo->pos_y = -300;
         robo->pos_z = -(tmp * 1200.0 + 600.0);
     }
@@ -2595,75 +2595,75 @@ int parse_map_robos(scrCallBack *arg)
     }
     else if ( !strcasecmp(_p1, "energy") )
     {
-        robo->energy = atoi(_p2);
+        robo->energy = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "con_budget") )
     {
-        robo->con_budget = atoi(_p2);
+        robo->con_budget = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "rad_budget") )
     {
-        robo->rad_budget = atoi(_p2);
+        robo->rad_budget = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "pow_budget") )
     {
-        robo->pow_budget = atoi(_p2);
+        robo->pow_budget = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "def_budget") )
     {
-        robo->def_budget = atoi(_p2);
+        robo->def_budget = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "saf_budget") )
     {
-        robo->saf_budget = atoi(_p2);
+        robo->saf_budget = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "rec_budget") )
     {
-        robo->rec_budget = atoi(_p2);
+        robo->rec_budget = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "cpl_budget") )
     {
-        robo->cpl_budget = atoi(_p2);
+        robo->cpl_budget = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "rob_budget") )
     {
-        robo->rob_budget = atoi(_p2);
+        robo->rob_budget = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "viewangle") )
     {
-        robo->viewangle = atoi(_p2);
+        robo->viewangle = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "saf_delay") )
     {
-        robo->saf_delay = atoi(_p2);
+        robo->saf_delay = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "pow_delay") )
     {
-        robo->pow_delay = atoi(_p2);
+        robo->pow_delay = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "rad_delay") )
     {
-        robo->rad_delay = atoi(_p2);
+        robo->rad_delay = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "cpl_delay") )
     {
-        robo->cpl_delay = atoi(_p2);
+        robo->cpl_delay = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "def_delay") )
     {
-        robo->def_delay = atoi(_p2);
+        robo->def_delay = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "con_delay") )
     {
-        robo->con_delay = atoi(_p2);
+        robo->con_delay = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "rec_delay") )
     {
-        robo->rec_delay = atoi(_p2);
+        robo->rec_delay = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "rob_delay") )
     {
-        robo->rob_delay = atoi(_p2);
+        robo->rob_delay = strtol(_p2, NULL, 0);
     }
     else if ( !strcasecmp(_p1, "mb_status") )
     {
@@ -2684,7 +2684,7 @@ int parse_map_robos(scrCallBack *arg)
     }
     else if ( !strcasecmp(_p1, "reload_const") )
     {
-        robo->reload_const = atoi(_p2);
+        robo->reload_const = strtol(_p2, NULL, 0);
     }
     else
         return 3;
@@ -2761,53 +2761,53 @@ int parseSaveUser(scrCallBack *arg)
         }
         else if ( !strcasecmp(arg->p1, "maxroboenergy") )
         {
-            yw->maxroboenergy = atoi(arg->p2);
+            yw->maxroboenergy = strtol(arg->p2, NULL, 0);
         }
         else if ( !strcasecmp(arg->p1, "maxreloadconst") )
         {
-            yw->maxreloadconst = atoi(arg->p2);
+            yw->maxreloadconst = strtol(arg->p2, NULL, 0);
         }
         else if ( !strcasecmp(arg->p1, "numbuddies") )
         {
         }
         else if ( !strcasecmp(arg->p1, "beamenergy") )
         {
-            yw->beamenergy = atoi(arg->p2);
+            yw->beamenergy = strtol(arg->p2, NULL, 0);
         }
         else if ( !strcasecmp(arg->p1, "playerstatus") )
         {
             char *v10 = strtok(arg->p2, "_ \t");
             if ( v10 )
             {
-                int plid = atoi(v10);
+                int plid = strtol(v10, NULL, 0);
                 v10 = strtok(0, "_ \t");
                 if ( v10 )
                 {
-                    yw->playerstatus[plid].p1 = atoi(v10);
+                    yw->playerstatus[plid].p1 = strtol(v10, NULL, 0);
                     v10 = strtok(0, "_ \t");
                     if ( v10 )
                     {
-                        yw->playerstatus[plid].p2 = atoi(v10);
+                        yw->playerstatus[plid].p2 = strtol(v10, NULL, 0);
                         v10 = strtok(0, "_ \t");
                         if ( v10 )
                         {
-                            yw->playerstatus[plid].p3 = atoi(v10);
+                            yw->playerstatus[plid].p3 = strtol(v10, NULL, 0);
                             v10 = strtok(0, "_ \t");
                             if ( v10 )
                             {
-                                yw->playerstatus[plid].p4 = atoi(v10);
+                                yw->playerstatus[plid].p4 = strtol(v10, NULL, 0);
                                 v10 = strtok(0, "_ \t");
                                 if ( v10 )
                                 {
-                                    yw->playerstatus[plid].p5 = atoi(v10);
+                                    yw->playerstatus[plid].p5 = strtol(v10, NULL, 0);
                                     v10 = strtok(0, "_ \t");
                                     if ( v10 )
                                     {
-                                        yw->playerstatus[plid].p6 = atoi(v10);
+                                        yw->playerstatus[plid].p6 = strtol(v10, NULL, 0);
                                         v10 = strtok(0, "_ \t");
                                         if ( v10 )
                                         {
-                                            yw->playerstatus[plid].p7 = atoi(v10);
+                                            yw->playerstatus[plid].p7 = strtol(v10, NULL, 0);
                                         }
                                     }
                                 }
@@ -2822,34 +2822,34 @@ int parseSaveUser(scrCallBack *arg)
             char *v20 = strtok(arg->p2, "_ \t");
             if ( v20 )
             {
-                yw->field_2d90->jodiefoster[0] = atoi(v20);
+                yw->field_2d90->jodiefoster[0] = strtol(v20, NULL, 0);
                 v20 = strtok(0, "_ \t");
                 if ( v20 )
                 {
-                    yw->field_2d90->jodiefoster[1] = atoi(v20);
+                    yw->field_2d90->jodiefoster[1] = strtol(v20, NULL, 0);
                     v20 = strtok(0, "_ \t");
                     if ( v20 )
                     {
-                        yw->field_2d90->jodiefoster[2] = atoi(v20);
+                        yw->field_2d90->jodiefoster[2] = strtol(v20, NULL, 0);
                         v20 = strtok(0, "_ \t");
                         if ( v20 )
                         {
-                            yw->field_2d90->jodiefoster[3] = atoi(v20);
+                            yw->field_2d90->jodiefoster[3] = strtol(v20, NULL, 0);
                             v20 = strtok(0, "_ \t");
                             if ( v20 )
                             {
-                                yw->field_2d90->jodiefoster[4] = atoi(v20);
+                                yw->field_2d90->jodiefoster[4] = strtol(v20, NULL, 0);
                                 v20 = strtok(0, "_ \t");
                                 if ( v20 )
                                 {
-                                    yw->field_2d90->jodiefoster[5] = atoi(v20);
+                                    yw->field_2d90->jodiefoster[5] = strtol(v20, NULL, 0);
                                     v20 = strtok(0, "_ \t");
                                     if ( v20 )
                                     {
-                                        yw->field_2d90->jodiefoster[6] = atoi(v20);
+                                        yw->field_2d90->jodiefoster[6] = strtol(v20, NULL, 0);
                                         v20 = strtok(0, "_ \t");
                                         if ( v20 )
-                                            yw->field_2d90->jodiefoster[7] = atoi(v20);
+                                            yw->field_2d90->jodiefoster[7] = strtol(v20, NULL, 0);
                                     }
                                 }
                             }
@@ -3347,14 +3347,14 @@ int ShellTracksParse(scrCallBack *arg)
                 usr->shelltrack__adv.field_0 = 0;
                 usr->shelltrack__adv.field_4 = 0;
                 char *v8 = strtok(buf, " \t_\n");
-                usr->shelltrack = atoi(v8);
+                usr->shelltrack = strtol(v8, NULL, 0);
                 v8 = strtok(0, " \t_\n");
                 if ( v8 )
                 {
-                    usr->shelltrack__adv.field_0 = atoi(v8);
+                    usr->shelltrack__adv.field_0 = strtol(v8, NULL, 0);
                     v8 = strtok(0, " \t_\n");
                     if ( v8 )
-                        usr->shelltrack__adv.field_4 = atoi(v8);
+                        usr->shelltrack__adv.field_4 = strtol(v8, NULL, 0);
                 }
             }
             else if ( !strcasecmp(arg->p1, "missiontrack") )
@@ -3362,14 +3362,14 @@ int ShellTracksParse(scrCallBack *arg)
                 usr->missiontrack__adv.field_0 = 0;
                 usr->missiontrack__adv.field_4 = 0;
                 char *v8 = strtok(buf, " \t_\n");
-                usr->missiontrack = atoi(v8);
+                usr->missiontrack = strtol(v8, NULL, 0);
                 v8 = strtok(0, " \t_\n");
                 if ( v8 )
                 {
-                    usr->missiontrack__adv.field_0 = atoi(v8);
+                    usr->missiontrack__adv.field_0 = strtol(v8, NULL, 0);
                     v8 = strtok(0, " \t_\n");
                     if ( v8 )
-                        usr->missiontrack__adv.field_4 = atoi(v8);
+                        usr->missiontrack__adv.field_4 = strtol(v8, NULL, 0);
                 }
             }
             else if ( !strcasecmp(arg->p1, "debriefingtrack") )
@@ -3377,14 +3377,14 @@ int ShellTracksParse(scrCallBack *arg)
                 usr->debriefingtrack__adv.field_0 = 0;
                 usr->debriefingtrack__adv.field_4 = 0;
                 char *v8 = strtok(buf, " \t_\n");
-                usr->debriefingtrack = atoi(v8);
+                usr->debriefingtrack = strtol(v8, NULL, 0);
                 v8 = strtok(0, " \t_\n");
                 if ( v8 )
                 {
-                    usr->debriefingtrack__adv.field_0 = atoi(v8);
+                    usr->debriefingtrack__adv.field_0 = strtol(v8, NULL, 0);
                     v8 = strtok(0, " \t_\n");
                     if ( v8 )
-                        usr->debriefingtrack__adv.field_4 = atoi(v8);
+                        usr->debriefingtrack__adv.field_4 = strtol(v8, NULL, 0);
                 }
             }
             else if ( !strcasecmp(arg->p1, "loadingtrack") )
@@ -3392,14 +3392,14 @@ int ShellTracksParse(scrCallBack *arg)
                 usr->loadingtrack__adv.field_0 = 0;
                 usr->loadingtrack__adv.field_4 = 0;
                 char *v8 = strtok(buf, " \t_\n");
-                usr->loadingtrack = atoi(v8);
+                usr->loadingtrack = strtol(v8, NULL, 0);
                 v8 = strtok(0, " \t_\n");
                 if ( v8 )
                 {
-                    usr->loadingtrack__adv.field_0 = atoi(v8);
+                    usr->loadingtrack__adv.field_0 = strtol(v8, NULL, 0);
                     v8 = strtok(0, " \t_\n");
                     if ( v8 )
-                        usr->loadingtrack__adv.field_4 = atoi(v8);
+                        usr->loadingtrack__adv.field_4 = strtol(v8, NULL, 0);
                 }
             }
             else
@@ -3886,4 +3886,862 @@ int parseSaveInput(scrCallBack *arg)
         }
     }
     return 0;
+}
+
+
+
+int LevelSquadParser(scrCallBack *arg)
+{
+    mapProto *mapp = (mapProto *)arg->dataForStore;
+
+    squadProto *squad = &mapp->squads[ mapp->squad_count ];
+
+    if ( !arg->field_18 )
+    {
+        if ( !strcasecmp(arg->p1, "begin_squad") )
+        {
+            squad->mb_status = 0;
+            arg->field_18 = 1;
+            return 1;
+        }
+        else
+            return 3;
+    }
+    else
+    {
+        if ( mapp->squad_count >= 96 )
+            return 4;
+
+        if ( !strcasecmp(arg->p1, "end") )
+        {
+            if ( !squad->vehicle )
+            {
+                ypa_log_out("Squad init: squad[%d]аno vehicle defined!\n", mapp->squad_count);
+                return 4;
+            }
+
+            if ( !squad->num )
+            {
+                ypa_log_out("Squad init: squad[%d] num of vehicles is 0!\n", mapp->squad_count);
+                return 4;
+            }
+
+            if ( squad->pos_x == 0.0 || squad->pos_z == 0.0 )
+            {
+                ypa_log_out("Squad init: squad[%d] no pos given!\n", mapp->squad_count);
+                return 4;
+            }
+
+            arg->field_18 = 0;
+            squad->field_0 = 1;
+            mapp->squad_count++;
+            return 2;
+        }
+        else if ( !strcasecmp(arg->p1, "owner") )
+        {
+            squad->owner = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "useable") )
+        {
+            squad->useable = 1;
+        }
+        else if ( !strcasecmp(arg->p1, "vehicle") )
+        {
+            squad->vehicle = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "num") )
+        {
+            squad->num = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "pos_x") )
+        {
+            squad->pos_x = strtod(arg->p2, 0) + 0.3;
+        }
+        else if ( !strcasecmp(arg->p1, "pos_z") )
+        {
+            squad->pos_z = strtod(arg->p2, 0) + 0.3;
+        }
+        else if ( !strcasecmp(arg->p1, "mb_status") )
+        {
+            if ( !strcasecmp(arg->p2, "known") )
+            {
+                squad->mb_status = 0;
+            }
+            else if ( !strcasecmp(arg->p2, "unknown") )
+            {
+                squad->mb_status = 1;
+            }
+            else if ( !strcasecmp(arg->p2, "hidden") )
+            {
+                squad->mb_status = 2;
+            }
+            else
+                return 4;
+        }
+        else
+            return 3;
+
+        return 0;
+    }
+}
+
+int LevelGatesParser(scrCallBack *arg)
+{
+    _NC_STACK_ypaworld *yw = arg->world;
+    gateProto *gate = &yw->field_2d90->gates[ yw->field_2d90->gate_count ];
+
+    if ( !arg->field_18 )
+    {
+        if ( !strcasecmp(arg->p1, "begin_gate") )
+        {
+            gate->mb_status = 0;
+            arg->field_18 = 1;
+            return 1;
+        }
+        else
+            return 3;
+    }
+    else
+    {
+
+        if ( yw->field_2d90->gate_count > 8 )
+            return 4;
+
+        if ( !strcasecmp(arg->p1, "end") )
+        {
+            if ( !gate->closed_bp )
+            {
+                ypa_log_out("Gate init: gate[%d] no closed building defined!\n", yw->field_2d90->gate_count);
+                return 4;
+            }
+
+            if ( !gate->opened_bp )
+            {
+                ypa_log_out("Gate init: gate[%d] no opened building defined!\n", yw->field_2d90->gate_count);
+                return 4;
+            }
+
+            if ( gate->sec_x == 0 || gate->sec_y == 0)
+            {
+                ypa_log_out("Gate init: gate[%d] no sector coords!\n", yw->field_2d90->gate_count);
+                return 4;
+            }
+
+            if ( !gate->target_level_count )
+            {
+                ypa_log_out("Gate init: gate[%d] no target levels defined!\n", yw->field_2d90->gate_count);
+                return 4;
+            }
+
+            yw->field_2d90->gate_count++;
+            arg->field_18 = 0;
+            return 2;
+        }
+        else if ( !strcasecmp(arg->p1, "sec_x") )
+        {
+            gate->sec_x = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "sec_y") )
+        {
+            gate->sec_y = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "closed_bp") )
+        {
+            gate->closed_bp = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "opened_bp") )
+        {
+            gate->opened_bp = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "target_level") )
+        {
+            if ( gate->target_level_count < 8 )
+            {
+                gate->target_levels[ gate->target_level_count ] = strtol(arg->p2, NULL, 0);
+                gate->target_level_count++;
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "keysec_x") )
+        {
+            if ( gate->keySectors_count < 16 )
+            {
+                gate->keySectors[gate->keySectors_count].x = strtol(arg->p2, NULL, 0);
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "keysec_y") )
+        {
+            if ( gate->keySectors_count < 16 )
+            {
+                gate->keySectors[ gate->keySectors_count ].y = strtol(arg->p2, NULL, 0);
+                gate->keySectors_count++;
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "mb_status") )
+        {
+            if ( !strcasecmp(arg->p2, "known") )
+            {
+                gate->mb_status = 0;
+            }
+            else if ( !strcasecmp(arg->p2, "unknown") )
+            {
+                gate->mb_status = 1;
+            }
+            else if ( !strcasecmp(arg->p2, "hidden") )
+            {
+                gate->mb_status = 2;
+            }
+            else
+                return 4;
+        }
+        else
+            return 3;
+        return 0;
+    }
+}
+
+
+int LevelMbMapParser(scrCallBack *arg)
+{
+    mapProto *mapp = (mapProto *)arg->dataForStore;
+    dbmapProto *mbmap = (dbmapProto *)&mapp->mbmaps[ mapp->mbmaps_count ];
+
+    if ( !arg->field_18 )
+    {
+        if ( !strcasecmp(arg->p1, "begin_mbmap") )
+        {
+            arg->field_18 = 1;
+            return 1;
+        }
+        else
+            return 3;
+    }
+    else
+    {
+
+        if ( mapp->mbmaps_count >= 4 )
+        {
+            ypa_log_out("Mission Briefing Init: Too many bg maps (max=%d)!\n", 4);
+            return 4;
+        }
+
+        if ( !strcasecmp(arg->p1, "end") )
+        {
+            mapp->mbmaps_count++;
+            arg->field_18 = 0;
+            return 2;
+        }
+
+        if ( !strcasecmp(arg->p1, "name") )
+        {
+            strcpy(mbmap->name, arg->p2);
+        }
+        else if ( !strcasecmp(arg->p1, "size_x") )
+        {
+            mbmap->size_x = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "size_y") )
+        {
+            mbmap->size_y = strtol(arg->p2, NULL, 0);
+        }
+        else
+            return 3;
+
+        return 0;
+    }
+}
+
+
+int LevelGemParser(scrCallBack *arg)
+{
+    int v33 = (int)arg->world2;
+
+    _NC_STACK_ypaworld *yw = arg->world;
+    gemProto *v3 = &yw->gems[v33];
+
+    if ( !arg->field_18 )
+    {
+        if ( !strcasecmp(arg->p1, "begin_gem") )
+        {
+            v3->mb_status = 0;
+            arg->field_18 = 1;
+            arg->field_24 = 0;
+            return 1;
+        }
+        else
+            return 3;
+    }
+    else
+    {
+
+        if ( v33 > 7 )
+            return 4;
+
+        char v29[32];
+
+        sprintf(v29, "msg_%s", yw->lang_name);
+
+        if ( arg->field_24 )
+        {
+            if ( !strcasecmp(arg->p1, "end_action") )
+            {
+                v3->end_action__line = arg->line_number;
+                arg->field_24 = 0;
+            }
+            return 0;
+        }
+
+        if ( !strcasecmp(arg->p1, "end") )
+        {
+            if ( !v3->building )
+            {
+                ypa_log_out("WStein init: gem[%d] no building defined!\n", v33);
+                return 4;
+            }
+
+            if ( v3->sec_x == 0 || v3->sec_y == 0 )
+            {
+                ypa_log_out("WStein init: gem[%d] sector pos wonky tonk!\n", v33);
+                return 4;
+            }
+
+            v3->field_0 = 1;
+            arg->field_18 = 0;
+            arg->world2 = (_NC_STACK_ypaworld *)(v33 + 1);
+            return 2;
+        }
+
+        if ( strstr(arg->p1, "msg_") )
+        {
+            if ( strcasecmp(arg->p1, "msg_default") && strcasecmp(arg->p1, v29) )
+                return 0;
+
+            if ( strlen(arg->p2) >= 127 )
+            {
+                ypa_log_out("LevelGemParser(): Msg too long!");
+                return 4;
+            }
+
+            strcpy(v3->msg_default, arg->p2);
+        }
+        else if ( !strcasecmp(arg->p1, "sec_x") )
+        {
+            v3->sec_x = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "sec_y") )
+        {
+            v3->sec_y = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "building") )
+        {
+            v3->building = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "type") )
+        {
+            switch ( strtol(arg->p2, NULL, 0) )
+            {
+            case 1:
+                v3->type = 25;
+                break;
+            case 2:
+                v3->type = 26;
+                break;
+            case 3:
+                v3->type = 27;
+                break;
+            case 4:
+                v3->type = 28;
+                break;
+            case 5:
+                v3->type = 78;
+                break;
+            case 6:
+                v3->type = 79;
+                break;
+            default:
+                v3->type = 80;
+                break;
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "script") )
+        {
+            if ( strlen(arg->p2) >= 63 )
+            {
+                ypa_log_out("LevelGemParser(): Script name too long!");
+                return 4;
+            }
+
+            strcpy(v3->script, arg->p2);
+
+            FILE *v20 = FOpen(v3->script, "r");
+
+            if ( v20 )
+            {
+                FClose(v20);
+            }
+            else
+            {
+                return 4;
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "mb_status") )
+        {
+            if ( !strcasecmp(arg->p2, "known") )
+            {
+                v3->mb_status = 0;
+            }
+            else if ( !strcasecmp(arg->p2, "unknown") )
+            {
+                v3->mb_status = 1;
+            }
+            else if ( !strcasecmp(arg->p2, "hidden") )
+            {
+                v3->mb_status = 2;
+            }
+            else
+            {
+                return 4;
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "nw_vproto_num") )
+        {
+            char *v21 = strtok(arg->p2, "_ \t");
+            if ( v21 )
+            {
+                v3->nw_vproto_num_1 = strtol(v21, NULL, 0);
+                v21 = strtok(0, "_ \t");
+                if ( v21 )
+                {
+                    v3->nw_vproto_num_2 = strtol(v21, NULL, 0);
+                    v21 = strtok(0, "_ \t");
+                    if ( v21 )
+                    {
+                        v3->nw_vproto_num_3 = strtol(v21, NULL, 0);
+                        v21 = strtok(0, "_ \t");
+                        if ( v21 )
+                        {
+                            v3->nw_vproto_num_4 = strtol(v21, NULL, 0);
+                        }
+                    }
+                }
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "nw_bproto_num") )
+        {
+            char *v25 = strtok(arg->p2, "_ \t");
+            if ( v25 )
+            {
+                v3->nw_bproto_num_1 = strtol(v25, NULL, 0);
+                v25 = strtok(0, "_ \t");
+                if ( v25 )
+                {
+                    v3->nw_bproto_num_2 = strtol(v25, NULL, 0);
+                    v25 = strtok(0, "_ \t");
+                    if ( v25 )
+                    {
+                        v3->nw_bproto_num_3 = strtol(v25, NULL, 0);
+                        v25 = strtok(0, "_ \t");
+                        if ( v25 )
+                        {
+                            v3->nw_bproto_num_4 = strtol(v25, NULL, 0);
+                        }
+                    }
+                }
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "begin_action") )
+        {
+            v3->begin_action__line = arg->line_number;
+            arg->field_24 = 1;
+            return 0;
+        }
+        else if ( !arg->field_24 )
+            return 3;
+
+        return 0;
+    }
+}
+
+
+
+int LevelEnableParser(scrCallBack *arg)
+{
+    if ( arg->field_18 )
+    {
+        int v15 = (int)arg->world2;
+
+        if ( !strcasecmp(arg->p1, "end") )
+        {
+            arg->field_18 = 0;
+            return 2;
+        }
+
+        if ( !strcasecmp(arg->p1, "vehicle") )
+        {
+
+            int v17 = strtol(arg->p2, NULL, 0);
+            if ( v17 >= 0 && v17 < 256 )
+            {
+                arg->world->VhclProtos[v17].disable_enable_bitmask |= (1 << v15);
+            }
+            else
+                return 4;
+        }
+        else if ( !strcasecmp(arg->p1, "building") )
+        {
+            int v20 = strtol(arg->p2, NULL, 0);
+            if ( v20 >= 0 && v20 < 128 )
+            {
+                arg->world->BuildProtos[v20].enable_mask |= (1 << v15);
+            }
+            else
+                return 4;
+        }
+        else
+            return 3;
+
+        return 0;
+    }
+    else
+    {
+        if ( !strcasecmp(arg->p1, "begin_enable") )
+        {
+            int v5 = strtol(arg->p2, NULL, 0);
+
+            for (int i = 0; i < 256; i++)
+            {
+                arg->world->VhclProtos[i].disable_enable_bitmask &= ~(1 << v5);
+            }
+
+            for (int i = 0; i < 128; i++)
+            {
+                arg->world->BuildProtos[i].enable_mask &= ~(1 << v5);
+            }
+
+            arg->field_18 = 1;
+            arg->world2 = (_NC_STACK_ypaworld *)v5;
+
+            return 1;
+        }
+        else
+            return 3;
+    }
+}
+
+int LeveldbMapParser(scrCallBack *arg)
+{
+    mapProto *mapp = (mapProto *)arg->dataForStore;
+    dbmapProto *dbmap = (dbmapProto *)&mapp->dbmaps[ mapp->dbmap_count ];
+
+    if ( !arg->field_18 )
+    {
+        if ( !strcasecmp(arg->p1, "begin_dbmap") )
+        {
+            arg->field_18 = 1;
+            return 1;
+        }
+        else
+            return 3;
+    }
+    else
+    {
+
+        if ( mapp->mbmaps_count >= 4 )
+        {
+            ypa_log_out("Debriefing Init: Too many bg maps (max=%d)!\n", 4);
+            return 4;
+        }
+
+        if ( !strcasecmp(arg->p1, "end") )
+        {
+            mapp->mbmaps_count++;
+            arg->field_18 = 0;
+            return 2;
+        }
+
+        if ( !strcasecmp(arg->p1, "name") )
+        {
+            strcpy(dbmap->name, arg->p2);
+        }
+        else if ( !strcasecmp(arg->p1, "size_x") )
+        {
+            dbmap->size_x = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "size_y") )
+        {
+            dbmap->size_y = strtol(arg->p2, NULL, 0);
+        }
+        else
+            return 3;
+
+        return 0;
+    }
+}
+
+int LevelSuperItemsParser(scrCallBack *arg)
+{
+    _NC_STACK_ypaworld *yw = arg->world;
+
+    supetItemProto *sitem = &yw->field_2d90->supetItems[yw->field_2d90->supetItems_count];
+
+    if ( !arg->field_18 )
+    {
+        if ( !strcasecmp(arg->p1, "begin_item") )
+        {
+            memset(sitem, 0, 268);
+            sitem->type = 0;
+            sitem->countdown = 60000;
+            sitem->field_4 = 0;
+            sitem->mb_status = 0;
+            arg->field_18 = 1;
+            return 1;
+        }
+        return 3;
+    }
+    else
+    {
+        if ( yw->field_2d90->supetItems_count > 8 )
+            return 4;
+
+        if ( !strcasecmp(arg->p1, "end") )
+        {
+            if ( sitem->sec_x == 0 || sitem->sec_y == 0)
+            {
+                ypa_log_out("Super item #%d: invalid sector coordinates!\n", yw->field_2d90->supetItems_count);
+                return 4;
+            }
+
+            if ( !sitem->inactive_bp )
+            {
+                ypa_log_out("Super item #%d: no <inactive_bp> defined!\n", yw->field_2d90->supetItems_count);
+                return 4;
+            }
+
+            if ( !sitem->active_bp )
+            {
+                ypa_log_out("Super item #%d: no <active_bp> defined!\n", yw->field_2d90->supetItems_count);
+                return 4;
+            }
+
+            if ( !sitem->trigger_bp )
+            {
+                ypa_log_out("Super item #%d: no <trigger_bp> defined!\n", yw->field_2d90->supetItems_count);
+                return 4;
+            }
+
+            if ( sitem->type != 1 && sitem->type != 2 )
+            {
+                ypa_log_out("Super item #%d: no valid <type> defined!\n", yw->field_2d90->supetItems_count);
+                return 4;
+            }
+
+            yw->field_2d90->supetItems_count++;
+            arg->field_18 = 0;
+            return 2;
+        }
+
+        if ( !strcasecmp(arg->p1, "sec_x") )
+        {
+            sitem->sec_x = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "sec_y") )
+        {
+            sitem->sec_y = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "inactive_bp") )
+        {
+            sitem->inactive_bp = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "active_bp") )
+        {
+            sitem->active_bp = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "trigger_bp") )
+        {
+            sitem->trigger_bp = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "keysec_x") )
+        {
+            if ( sitem->keySectors_count < 16 )
+            {
+                sitem->keySectors[sitem->keySectors_count].x = strtol(arg->p2, NULL, 0);
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "keysec_y") )
+        {
+            if ( sitem->keySectors_count < 16 )
+            {
+                sitem->keySectors[sitem->keySectors_count].y = strtol(arg->p2, NULL, 0);
+                sitem->keySectors_count++;
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "mb_status") )
+        {
+            if ( !strcasecmp(arg->p2, "known") )
+            {
+                sitem->mb_status = 0;
+            }
+            else if ( !strcasecmp(arg->p2, "unknown") )
+            {
+                sitem->mb_status = 1;
+            }
+            else if ( !strcasecmp(arg->p2, "hidden") )
+            {
+                sitem->mb_status = 2;
+            }
+            else
+                return 4;
+        }
+        else if ( !strcasecmp(arg->p1, "type") )
+        {
+            sitem->type = strtol(arg->p2, NULL, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "countdown") )
+        {
+            sitem->countdown = strtol(arg->p2, NULL, 0);
+        }
+        else
+            return 3;
+
+        return 0;
+    }
+}
+
+
+NC_STACK_ilbm * readMapDumpAsILBM(_NC_STACK_ypaworld *yw, const char *mapName, FILE *scrFile)
+{
+    char v15[1024];
+
+    fgets(v15, 1024, scrFile);
+
+    char *v3 = strtok(v15, " \n");
+    int w = strtol(v3, NULL, 0);
+
+    v3 = strtok(0, " \n");
+    int h = strtol(v3, NULL, 0);
+
+    NC_STACK_bitmap *v7 = (NC_STACK_bitmap *)init_get_class("bitmap.class", 0x80001000, mapName, 0x80002002, w, 0x80002003, h, 0x80002006, 1, 0);
+    if ( !v7 )
+        return NULL;
+
+    bitmap_intern *a4;
+    call_vtbl(v7, 3, 0x80002000, &a4, 0);       // bitmap_func3
+
+    uint8_t *bf = (uint8_t *)a4->buffer;
+
+    for (int j = 0; j < a4->height; j++)
+    {
+        fgets(v15, 1024, scrFile);
+
+        uint8_t *ln = bf + j * a4->width;
+
+        char *pos = v15;
+
+        for (int i = 0; i < a4->width; i++)
+        {
+            char * v12 = strtok(pos, " \n");
+
+            if (pos)
+                pos = NULL;
+
+            ln[i] = strtol(v12, NULL, 16);
+
+        }
+    }
+
+    NC_STACK_ilbm *tmp = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, mapName, 0x80003000, 1, 0);
+    delete_class_obj(v7);
+
+    return tmp;
+}
+
+
+int LevelMapsParser(scrCallBack *arg)
+{
+    _NC_STACK_ypaworld *yw = arg->world;
+
+    if ( !arg->field_18 )
+    {
+        if ( !strcasecmp(arg->p1, "begin_maps") )
+        {
+            if ( yw->typ_map )
+            {
+                delete_class_obj(yw->typ_map);
+                yw->typ_map = NULL;
+            }
+
+            if ( yw->own_map )
+            {
+                delete_class_obj(yw->own_map);
+                yw->own_map = NULL;
+            }
+
+            if ( yw->hgt_map )
+            {
+                delete_class_obj(yw->hgt_map);
+                yw->hgt_map = NULL;
+            }
+
+            if ( yw->blg_map )
+            {
+                delete_class_obj(yw->blg_map);
+                yw->blg_map = NULL;
+            }
+
+            arg->field_18 = 1;
+            return 1;
+        }
+        else
+            return 3;
+    }
+    else
+    {
+        mapProto *mapp = (mapProto *)arg->dataForStore;
+
+        if ( !strcasecmp(arg->p1, "end") )
+        {
+            arg->field_18 = 0;
+            return 2;
+        }
+
+        if ( !strcasecmp(arg->p1, "typ_map") )
+        {
+            yw->typ_map = readMapDumpAsILBM(yw, "typmap", arg->file);
+
+            if ( !yw->typ_map )
+                return 4;
+
+            call_vtbl(yw->typ_map, 3, 0x80002002, &mapp->secXsize, 0);
+            call_vtbl(yw->typ_map, 3, 0x80002003, &mapp->secYsize, 0);
+
+            mapp->flags |= 4;
+        }
+        else if ( !strcasecmp(arg->p1, "own_map") )
+        {
+            yw->own_map = readMapDumpAsILBM(yw, "ownmap", arg->file);
+            if ( !yw->own_map )
+                return 4;
+
+            mapp->flags |= 8;
+        }
+        else if ( !strcasecmp(arg->p1, "hgt_map") )
+        {
+            yw->hgt_map = readMapDumpAsILBM(yw, "hgtmap", arg->file);
+            if ( !yw->hgt_map )
+                return 4;
+
+            mapp->flags |= 0x10;
+        }
+        else if ( !strcasecmp(arg->p1, "blg_map") )
+        {
+            yw->blg_map = readMapDumpAsILBM(yw, "blgmap", arg->file);
+            if ( !yw->blg_map )
+                return 4;
+
+            mapp->flags |= 0x20;
+        }
+        else
+            return 3;
+
+        return 0;
+    }
 }

@@ -192,10 +192,14 @@ size_t raster_func209(void *, class_stru *, stack_vals *)
     return 0;
 }
 
-size_t raster_func210(void *, class_stru *, stack_vals *)
+void raster_func210(NC_STACK_raster *obj, class_stru *zis, ua_fRect *arg)
 {
-    printf("MAKE ME %s\n","raster_func210");
-    return 0;
+    __NC_STACK_raster *rstr = &obj->stack__raster;
+
+    rstr->field_24.x1 = (arg->x1 + 1.0) * (rstr->field_554 + -1.0);
+    rstr->field_24.y1 = (arg->y1 + 1.0) * (rstr->field_558 + -1.0);
+    rstr->field_24.x2 = (arg->x2 + 1.0) * (rstr->field_554 + -1.0);
+    rstr->field_24.y2 = (arg->y2 + 1.0) * (rstr->field_558 + -1.0);
 }
 
 size_t raster_func211(void *, class_stru *, stack_vals *)

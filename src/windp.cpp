@@ -259,3 +259,23 @@ void sb_0x4c9f14(_NC_STACK_ypaworld *yw)
 {
     printf("MAKE ME %s (multiplayer)\n", "sb_0x4c9f14");
 }
+
+void sub_46B328(UserData *usr)
+{
+    printf("MAKE ME %s (multiplayer)\n", "sub_46B328");
+}
+
+void sub_46B1B8(UserData *usr)
+{
+    printf("MAKE ME %s (multiplayer)\n", "sub_46B1B8");
+}
+
+void sb_0x46bb54(UserData *usr)
+{
+    printf("MAKE ME %s (multiplayer)\n", "sb_0x46bb54");
+}
+
+void sub_46D698(UserData *usr)
+{
+    printf("MAKE ME %s (multiplayer)\n", "sub_46D698");
+}

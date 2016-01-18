@@ -150,7 +150,7 @@ struct UserData
     samples_collection1 samples2_info;
     NC_STACK_wav *samples2[16];
     samples_collection1 field_782;
-
+    NC_STACK_wav *field_ADA;
     NC_STACK_button *sub_bar_button;
     int field_AE2;
     NC_STACK_button *titel_button;
@@ -259,9 +259,7 @@ struct UserData
     int field_1CEF;
 
     int16_t field_1CF7;
-
-    char field_24F9;
-
+    char field_1CF9[33][64];
     usr_str map_descriptions[256];
     int map_descriptions_count;
 
@@ -390,6 +388,28 @@ struct mapRobo
     int rob_delay;
 };
 
+struct gemProto
+{
+    int16_t field_0;
+    int16_t building;
+    int16_t sec_x;
+    int16_t sec_y;
+    int mb_status;
+    char script[64];
+    char msg_default[128];
+    int16_t nw_vproto_num_1;
+    int16_t nw_vproto_num_2;
+    int16_t nw_vproto_num_3;
+    int16_t nw_vproto_num_4;
+    int16_t nw_bproto_num_1;
+    int16_t nw_bproto_num_2;
+    int16_t nw_bproto_num_3;
+    int16_t nw_bproto_num_4;
+    int16_t begin_action__line;
+    int16_t end_action__line;
+    int type;
+};
+
 struct dbmapProto
 {
     int16_t size_x;
@@ -500,6 +520,18 @@ struct brf_obj
     char title[128];
 };
 
+struct brf_t2
+{
+    float xpos;
+    float ypos;
+    int16_t field_8;
+    int16_t vehicle_id;
+    int field_C;
+    int field_D;
+    int field_E;
+    char title[128];
+};
+
 struct big_ypa_Brf
 {
     NC_STACK_ilbm *mbmap_img;
@@ -509,12 +541,41 @@ struct big_ypa_Brf
     mapProto map_prototype;
     int field_2E68;
     int field_2E6C;
-
+    int field_2E70;
+    int field_2E74;
+    int field_2E78;
     int field_2E7C;
-
+    int field_2E80;
+    int field_2E84;
+    const char *field_2E88;
+    const char *LEVEL_BRIEF_INFO;
     brf_obj brf_objs;
-
+    rstr_arg204 field_2F40;
+    float field_2F64;
+    float field_2F68;
+    float field_2F6C;
+    float field_2F70;
+    float field_2F74;
+    float field_2F78;
+    float field_2F7C;
+    float field_2F80;
+    int field_2F84;
+    int tp2_count;
+    int field_2F8C;
+    int field_2F90;
+    brf_t2 tp2[32];
     base77Func field_4174;
+    int field_419C;
+    int field_41A0;
+    NC_STACK_sklt *wireless_db[4];
+    skeleton_64_stru *wireless_db_skels[4];
+    NC_STACK_bitmap *copy2_of_ownmap;
+    NC_STACK_bitmap *copy2_of_typmap;
+    bitmap_intern *copy2_of_ownmap_bitm;
+    bitmap_intern *copy2_of_typmap_bitm;
+    int field_41D4;
+
+    char movie[256];
 };
 
 
@@ -602,6 +663,12 @@ struct slurp
     skeleton_64_stru *skeleton_internal;
 };
 
+struct slurp2
+{
+    NC_STACK_sklt *skeleton;
+    skeleton_64_stru *skeleton_internal;
+};
+
 
 struct _NC_STACK_ypaworld
 {
@@ -613,6 +680,9 @@ struct _NC_STACK_ypaworld
     int sectors_maxX2;
     int sectors_maxY2;
     cellArea *cells;
+
+    float map_Width_meters;
+    float map_Height_meters;
 
     int set_number;
     NC_STACK_base *additionalSet;
@@ -644,10 +714,8 @@ struct _NC_STACK_ypaworld
     int str17_NOT_FALSE;
     slurp slurps1[6][6];
     slurp slurps2[6][6];
-    NC_STACK_sklt *ColSide;
-    skeleton_64_stru *ColSide__skeletonIntern;
-    NC_STACK_sklt *ColCross;
-    skeleton_64_stru *ColCross__skeletonIntern;
+    slurp2 ColSide;
+    slurp2 ColCross;
     int field_15e4;
     int field_15e8;
     int field_15ec;
@@ -657,6 +725,7 @@ struct _NC_STACK_ypaworld
     int field_15fc;
 
     char *buildDate;
+    int field_1624;
 
     tiles_stru *tiles[64];
 
@@ -691,6 +760,7 @@ struct _NC_STACK_ypaworld
 
     recorder *sceneRecorder;
 
+    gemProto gems[8];
 
     int last_modify_vhcl;
     int last_modify_weapon;
@@ -702,6 +772,7 @@ struct _NC_STACK_ypaworld
 
     int superbomb_wall_vproto;
     int superbomb_center_vproto;
+    int field_7278;
 
 
     char lang_name[32];
@@ -710,6 +781,13 @@ struct _NC_STACK_ypaworld
     char *lang_strings__end;
     char **string_pointers;
     char **string_pointers_p2;
+    NC_STACK_ilbm *typ_map;
+    NC_STACK_ilbm *own_map;
+    NC_STACK_ilbm *blg_map;
+    NC_STACK_ilbm *hgt_map;
+
+    NC_STACK_bitmap *copyof_typemap;
+    NC_STACK_bitmap *copyof_ownermap;
 
     char field_73CE;
     char snd__cdsound;
@@ -1034,7 +1112,7 @@ struct buildSbact
 
 struct BuildProto
 {
-    char sec_type;
+    uint8_t sec_type;
     char enable_mask;
     char model_id;
     char power;
@@ -1132,5 +1210,12 @@ struct yw_arg181
     int field_14;
     int field_18;
 };
+
+struct yw_arg161
+{
+    int lvlID;
+    int field_4;
+};
+
 
 #endif

@@ -47,6 +47,15 @@ int LevelDataParser(scrCallBack *arg);
 int MapParseSizes(scrCallBack *arg);
 int parse_map_robos(scrCallBack *arg);
 
+int LevelSquadParser(scrCallBack *arg);
+int LevelGatesParser(scrCallBack *arg);
+int LevelMbMapParser(scrCallBack *arg);
+int LevelGemParser(scrCallBack *arg);
+int LevelEnableParser(scrCallBack *arg);
+int LevelMapsParser(scrCallBack *arg);
+int LeveldbMapParser(scrCallBack *arg);
+int LevelSuperItemsParser(scrCallBack *arg);
+
 int yw_InitLevelNet(_NC_STACK_ypaworld *yw);
 int yw_InitNetwork(_NC_STACK_ypaworld *yw);
 
@@ -91,5 +100,27 @@ int parseSaveInput(scrCallBack *arg);
 
 
 void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr);
+
+void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
+
+void sub_4491A0(_NC_STACK_ypaworld *yw, const char *movie_fname);
+
+void sub_4EE04C(_NC_STACK_ypaworld *yw);
+void sub_4F0FFC(_NC_STACK_ypaworld *yw);
+
+int sub_4DA41C(_NC_STACK_ypaworld *yw, mapProto *mapp, const char *fname);
+
+
+void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
+
+NC_STACK_base *load_set_base();
+
+int sub_44A12C(_NC_STACK_ypaworld *yw, NC_STACK_base *base);
+int yw_parse_lego(_NC_STACK_ypaworld *yw, FILE *fil, NC_STACK_base *base);
+int yw_parse_subSect(_NC_STACK_ypaworld *yw, FILE *fil);
+int yw_parse_sektor(_NC_STACK_ypaworld *yw, FILE *fil);
+int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base);
+
+NC_STACK_bitmap * sub_44816C(NC_STACK_bitmap *src, const char *name);
 
 #endif

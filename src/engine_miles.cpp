@@ -98,3 +98,8 @@ int sub_4448C0(int *a1)
     printf("STUB %s\n", "sub_4448C0");
     return 1;//AIL_driver && dword_546DDC && AIL_redbook_set_volume(AIL_driver, *a1) == *a1;
 }
+
+void sub_423DD8(samples_collection1 *smpls)
+{
+    printf("STUB %s\n", "sub_423DD8");
+}

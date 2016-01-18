@@ -618,7 +618,7 @@ void skeleton_func133__sub1(skeleton_intern133 *arg)
 int skeleton_func133__sub0(skeleton_type1 *skt, skeleton_type1 *out, pol_indixes *pol)
 {
     WORD v4 = 0xFFFF;
-    __int16 *p_cur_vertex = &pol->v1;
+    int16_t *p_cur_vertex = &pol->v1;
     int v7 = 0;
 
     skeleton_type1 *skt_out = out;
@@ -637,11 +637,11 @@ int skeleton_func133__sub0(skeleton_type1 *skt, skeleton_type1 *out, pol_indixes
 
     if ( pol->num_vertices > 2 && !v4 )
     {
-        float sy  = out[1].pos3f.sy - out->pos3f.sy;
+        float sy  = out[1].pos3f.sy - out[0].pos3f.sy;
         float sz2 = out[2].pos3f.sz - out[1].pos3f.sz;
-        float sz  = out[1].pos3f.sz - out->pos3f.sz;
+        float sz  = out[1].pos3f.sz - out[0].pos3f.sz;
         float sx2 = out[2].pos3f.sx - out[1].pos3f.sx;
-        float sx  = out[1].pos3f.sx - out->pos3f.sx;
+        float sx  = out[1].pos3f.sx - out[0].pos3f.sx;
         float sy2 = out[2].pos3f.sy - out[1].pos3f.sy;
 
         if ( (sy * sz2 - sy2 * sz) * out->pos3f.sx +

@@ -416,7 +416,7 @@ void CloseDir(ncDir *dir)
 
 
 
-void sub_412810(char *a1, char *a2, int num)
+void sub_412810(const char *a1, char *a2, int num)
 {
     char v6[256];
     file_path_copy_manipul(a1, v6, 256);

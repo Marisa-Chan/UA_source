@@ -5,6 +5,10 @@
 #include "def_parser.h"
 #include "yw.h"
 #include "yw_internal.h"
+#include "lstvw.h"
+#include "font.h"
+
+extern listview stru_5C91D0;
 
 
 void delete_tile_stuct(tiles_stru *tileset)
@@ -123,7 +127,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
             return NULL;
         }
 
-        tileset->font_height = atoi(fntHeight);
+        tileset->font_height = strtol(fntHeight, NULL, 0);
 
         while ( fgets(buf, 128, fil) )
         {
@@ -155,7 +159,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
                 if (chrname)
                 {
                     if ( *chrname == '#' && chrname[1] )
-                        chr = atoi(chrname + 1);
+                        chr = strtol(chrname + 1, NULL, 0);
                     else
                         chr = *(uint8_t *)chrname;
 
@@ -169,18 +173,18 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
                 char *str_x = strtok(nxt, " \t");
                 if ( str_x )
                 {
-                    int xpos = atoi(str_x);
+                    int xpos = strtol(str_x, NULL, 0);
 
                     char *str_y = strtok(0, " \t");
                     if ( str_y )
                     {
-                        int ypos = atoi(str_y);
+                        int ypos = strtol(str_y, NULL, 0);
 
                         char *str_w = strtok(0, " \t");
                         if ( str_w )
                         {
                             tileset->chars[chr].byteoff = tileset->field_4->width * ypos + xpos;
-                            tileset->chars[chr].width = atoi(str_w);
+                            tileset->chars[chr].width = strtol(str_w, NULL, 0);
                         }
                     }
                 }
@@ -1114,25 +1118,25 @@ int yw_parse_lego(_NC_STACK_ypaworld *yw, FILE *fil, NC_STACK_base *base)
             if ( !v11 )
                 return 0;
 
-            lego->field_11 = atoi(v11);
+            lego->field_11 = strtol(v11, NULL, 0);
 
             v11 = strtok(0, " \t");
             if ( !v11 )
                 return 0;
 
-            lego->field_12 = atoi(v11);
+            lego->field_12 = strtol(v11, NULL, 0);
 
             v11 = strtok(0, " \t");
             if ( !v11 )
                 return 0;
 
-            lego->field_10 = atoi(v11);
+            lego->field_10 = strtol(v11, NULL, 0);
 
             v11 = strtok(0, " \t");
             if ( !v11 )
                 return 0;
 
-            switch(atoi(v11))
+            switch( strtol(v11, NULL, 0) )
             {
             default:
             case 0:
@@ -1159,7 +1163,7 @@ int yw_parse_lego(_NC_STACK_ypaworld *yw, FILE *fil, NC_STACK_base *base)
                 float y = 0.0;
                 float z = 0.0;
 
-                lego->field_14[fxnumb] = atoi(v11);
+                lego->field_14[fxnumb] = strtol(v11, NULL, 0);
 
                 v11 = strtok(0, " \t");
                 if ( v11 )
@@ -1208,25 +1212,25 @@ int yw_parse_subSect(_NC_STACK_ypaworld *yw, FILE *fil)
         {
             subSec *ssec = &yw->subSectors[id];
 
-            ssec->field_4 = atoi(pp);
+            ssec->field_4 = strtol(pp, NULL, 0);
 
             pp = strtok(0, " \t");
             if ( !pp )
                 return 0;
 
-            ssec->field_5 = atoi(pp);
+            ssec->field_5 = strtol(pp, NULL, 0);
 
             pp = strtok(0, " \t");
             if ( !pp )
                 return 0;
 
-            ssec->field_6 = atoi(pp);
+            ssec->field_6 = strtol(pp, NULL, 0);
 
             pp = strtok(0, " \t");
             if ( !pp )
                 return 0;
 
-            ssec->field_7 = atoi(pp);
+            ssec->field_7 = strtol(pp, NULL, 0);
 
             pp = strtok(0, " \t");
             if ( !pp )
@@ -1239,7 +1243,7 @@ int yw_parse_subSect(_NC_STACK_ypaworld *yw, FILE *fil)
 
             pp = strtok(0, " \t");
             if ( pp )
-                ssec->field_8 = atoi(pp);
+                ssec->field_8 = strtol(pp, NULL, 0);
 
             id++;
         }
@@ -1263,7 +1267,7 @@ int yw_parse_sektor(_NC_STACK_ypaworld *yw, FILE *fil)
         char *pp = strtok(buf, " \t");
         if ( pp )
         {
-            secType *sektp = &yw->secTypes[atoi(pp)];
+            secType *sektp = &yw->secTypes[ strtol(pp, NULL, 0) ];
 
             pp = strtok(0, " \t");
             if ( !pp )
@@ -1272,7 +1276,7 @@ int yw_parse_sektor(_NC_STACK_ypaworld *yw, FILE *fil)
                 return 0;
             }
 
-            sektp->field_0 = atoi(pp);
+            sektp->field_0 = strtol(pp, NULL, 0);
 
             pp = strtok(0, " \t");
             if ( !pp )
@@ -1281,7 +1285,7 @@ int yw_parse_sektor(_NC_STACK_ypaworld *yw, FILE *fil)
                 return 0;
             }
 
-            sektp->field_1 = atoi(pp);
+            sektp->field_1 = strtol(pp, NULL, 0);
 
             pp = strtok(0, " \t");
             if ( !pp )
@@ -1290,7 +1294,7 @@ int yw_parse_sektor(_NC_STACK_ypaworld *yw, FILE *fil)
                 return 0;
             }
 
-            sektp->field_3 = atoi(pp);
+            sektp->field_3 = strtol(pp, NULL, 0);
 
             memset(sektp->field_4, 0, sizeof(sektp->field_4));
 
@@ -1302,7 +1306,7 @@ int yw_parse_sektor(_NC_STACK_ypaworld *yw, FILE *fil)
                     ypa_log_out("Error reading '%s', line '%s'.\n", "set.sdf", line_buf);
                     return 0;
                 }
-                sektp->field_4[0][0] = &yw->subSectors[atoi(pp)];
+                sektp->field_4[0][0] = &yw->subSectors[ strtol(pp, NULL, 0) ];
             }
             else
             {
@@ -1317,7 +1321,7 @@ int yw_parse_sektor(_NC_STACK_ypaworld *yw, FILE *fil)
                             return 0;
                         }
 
-                        sektp->field_4[i][2 - j] = &yw->subSectors[atoi(pp)];
+                        sektp->field_4[i][2 - j] = &yw->subSectors[ strtol(pp, NULL, 0) ];
                     }
                 }
             }
@@ -1384,8 +1388,8 @@ int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
         return 0;
     }
 
-    yw->ColSide = tmp_skel;
-    call_vtbl(yw->ColSide, 3, 0x80002000, &yw->ColSide__skeletonIntern, 0);
+    yw->ColSide.skeleton = tmp_skel;
+    call_vtbl(yw->ColSide.skeleton, 3, 0x80002000, &yw->ColSide.skeleton_internal, 0);
 
     tmp_skel = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, "Skeleton/ColCross.sklt", 0);
     if ( !tmp_skel )
@@ -1394,8 +1398,8 @@ int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
         return 0;
     }
 
-    yw->ColCross = tmp_skel;
-    call_vtbl(yw->ColCross, 3, 0x80002000, &yw->ColCross__skeletonIntern, 0);
+    yw->ColCross.skeleton = tmp_skel;
+    call_vtbl(yw->ColCross.skeleton, 3, 0x80002000, &yw->ColCross.skeleton_internal, 0);
 
     set_prefix_replacement("rsrc", rsr);
 
@@ -1555,23 +1559,38 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
             if ( kid_id == 0 )
             {
                 if ( !sub_44A12C(yw, bnode->self_full) )
+                {
+                    FClose(fil);
                     return 0;
+                }
             }
             else if ( kid_id == 1 )
             {
                 if ( !yw_parse_lego(yw, fil, bnode->self_full) )
+                {
+                    FClose(fil);
                     return 0;
+                }
 
                 if ( !yw_parse_subSect(yw, fil) )
+                {
+                    FClose(fil);
                     return 0;
+                }
 
                 if ( !yw_parse_sektor(yw, fil) )
+                {
+                    FClose(fil);
                     return 0;
+                }
             }
             else if ( kid_id == 2 )
             {
                 if ( !sub_44A97C(yw, bnode->self_full) )
+                {
+                    FClose(fil);
                     return 0;
+                }
             }
 
             kid_id++;
@@ -1641,7 +1660,7 @@ int loadTOD(_NC_STACK_ypaworld *yw, const char *fname)
                 if ( lnbrk )
                     *lnbrk = 0;
 
-                tod = atoi(lnbuf);
+                tod = strtol(lnbuf, NULL, 0);
             }
             FClose(fil);
         }
@@ -1692,3 +1711,1014 @@ void ypaworld_func158__sub4__sub0(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *bitm)
         call_method(yw->win3d, 216, 0);
     }
 }
+
+void sub_4491A0(_NC_STACK_ypaworld *yw, const char *movie_fname)
+{
+    char v5[256];
+    sub_412810(movie_fname, v5, 256);
+
+    char *v6;
+    v6 = v5;
+
+    call_method(yw->win3d, 323, &v6);
+
+    sub_412D28(&input_states);
+
+    input_states.downed_key = 0;
+    input_states.downed_key_2 = 0;
+    input_states.dword8 = 0;
+}
+
+void sub_44A908(_NC_STACK_ypaworld *yw)
+{
+    memset(yw->slurps1, 0, sizeof(slurp) * 6 * 6);
+    memset(yw->slurps2, 0, sizeof(slurp) * 6 * 6);
+
+    if ( yw->ColSide.skeleton )
+    {
+        delete_class_obj(yw->ColSide.skeleton);
+        memset(&yw->ColSide, 0, sizeof(slurp2));
+    }
+
+    if ( yw->ColCross.skeleton )
+    {
+        delete_class_obj(yw->ColCross.skeleton);
+        memset(&yw->ColCross, 0, sizeof(slurp2));
+    }
+}
+
+void sb_0x4ea37c__sub1(_NC_STACK_ypaworld *yw)
+{
+    for (int i = 0 ; i < 256; i++)
+    {
+        if (yw->legos[i].sklt_obj)
+            delete_class_obj(yw->legos[i].sklt_obj);
+    }
+
+    memset(yw->legos, 0, sizeof(cityBases) * 256);
+}
+
+void sb_0x4ea37c(_NC_STACK_ypaworld *yw)
+{
+    memset(yw->vhcls_models, 0, sizeof(vhclBases) * 512);
+    sb_0x4ea37c__sub1(yw);
+    sub_44A908(yw);
+    memset(yw->subSectors, 0, sizeof(subSec) * 256);
+    memset(yw->secTypes, 0, sizeof(secType) * 256);
+
+    if ( yw->additionalSet )
+    {
+        delete_class_obj(yw->additionalSet);
+        yw->additionalSet = NULL;
+        yw->set_number = 0;
+    }
+
+    NC_STACK_win3d *win3d;
+    gfxEngine__getter(0x8000300D, &win3d, 0);
+
+    call_method(win3d, 272, 0);
+}
+
+void sub_4EAC80(_NC_STACK_ypaworld *yw)
+{
+    big_ypa_Brf *brf = &yw->brief;
+
+    sb_0x4ea37c(yw);
+
+    if ( yw->typ_map )
+    {
+        delete_class_obj(yw->typ_map);
+        yw->typ_map = NULL;
+    }
+
+    if ( brf->mbmap_img )
+    {
+        delete_class_obj(brf->mbmap_img);
+        brf->mbmap_img = NULL;
+    }
+
+    if ( brf->briefing_map )
+    {
+        delete_class_obj(brf->briefing_map);
+        brf->briefing_map = NULL;
+    }
+
+    brf->field_2E68 = 0;
+    sub_4C31C0(yw, &stru_5C91D0);
+    sub_4E866C(&stru_5C91D0);
+}
+
+void sub_4EE04C(_NC_STACK_ypaworld *yw)
+{
+    big_ypa_Brf *brf = &yw->brief;
+
+    if ( yw->brief.copy2_of_ownmap )
+    {
+        delete_class_obj(yw->brief.copy2_of_ownmap);
+        brf->copy2_of_ownmap = NULL;
+    }
+
+    if ( brf->copy2_of_typmap )
+    {
+        delete_class_obj(brf->copy2_of_typmap);
+        brf->copy2_of_typmap = NULL;
+    }
+
+    if ( brf->mbmap_img )
+    {
+        delete_class_obj(brf->mbmap_img);
+        brf->mbmap_img = 0;
+    }
+
+    if ( brf->briefing_map )
+    {
+        delete_class_obj(brf->briefing_map);
+        brf->briefing_map = NULL;
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (brf->wireless_db[i])
+        {
+            delete_class_obj(brf->wireless_db[i]);
+
+            brf->wireless_db[i] = NULL;
+            brf->wireless_db_skels[i] = NULL;
+        }
+    }
+    brf->field_2E68 = 0;
+
+    yw->field_2d90->field_40 = 8;
+}
+
+void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
+{
+    printf("%s \n","ypaworld_func158__sub4__sub1__sub6");
+}
+
+
+// Select map
+void ypaworld_func158__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
+{
+    float v3 = (float)inpt->winp131arg.move[0].x / (float)yw->screen_width;
+    float v4 = (float)inpt->winp131arg.move[0].y / (float)yw->screen_height;
+
+    int v6 = 0;
+    int v7 = 0;
+
+    if ( yw->LevelNet->ilbm_mask_map )
+    {
+        if ( inpt->winp131arg.selected_btnID == -1 )
+        {
+            bitmap_intern *a4;
+            call_vtbl(yw->LevelNet->ilbm_mask_map, 3, 0x80002000, &a4, 0);
+
+            int xpos = a4->width * v3;
+            int ypos = a4->height * v4;
+
+            uint8_t *pos = (uint8_t *)a4->buffer + a4->pitch * ypos + xpos;
+
+            v7 = *pos;
+            if ( v7 > 0 && v7 < 256 )
+            {
+                int v15 = yw->LevelNet->mapInfos[v7].field_0;
+                if ( v15 != 0 && v15 != 1 && v15 != 4 )
+                    v6 = 1;
+            }
+        }
+    }
+
+    if ( v6 )
+    {
+        if ( v7 != yw->LevelNet->field_BE38 )
+        {
+            if ( yw->GameShell )
+                sub_423F74(&yw->GameShell->samples1_info, 8);
+        }
+        yw->LevelNet->field_BE38 = v7;
+    }
+    else
+    {
+        yw->LevelNet->field_BE38 = 0;
+    }
+}
+
+
+void splashScreen_OutText(_NC_STACK_ypaworld *yw, NC_STACK_win3d *w3d, const char *txt, int x, int y)
+{
+    char cmdbuf[2048];
+    char txtbuf[256];
+
+    char *cur = cmdbuf;
+
+    if ( txt )
+    {
+        fntcmd_select_tileset(&cur, 15);
+        fntcmd_set_xpos(&cur, x);
+        fntcmd_set_ypos(&cur, y);
+
+        fntcmd_set_txtColor(&cur, yw->iniColors[13].r, yw->iniColors[13].g, yw->iniColors[13].b);
+
+        const char *txtpos = txt;
+
+        int lastline = 0;
+        while ( !lastline )
+        {
+            const char *en = strpbrk(txtpos, "\n");
+
+            if (en)
+            {
+                int num = en - txtpos;
+
+                memcpy(txtbuf, txtpos, num);
+                txtbuf[num] = 0;
+
+                txtpos = en + 1;
+            }
+            else
+            {
+                strcpy(txtbuf, txtpos);
+                lastline = 1;
+            }
+
+            cur = txtcmd_txt_w_bkg(yw->tiles[15], cur, txtbuf, yw->screen_width - x, ' ');
+
+            fntcmd_next_line(&cur);
+
+        }
+
+        fntcmd_set_end(&cur);
+
+        w3d_a209 v15;
+        v15.cmdbuf = cmdbuf;
+        v15.includ = NULL;
+
+        call_method(yw->win3d, 209, &v15);
+    }
+}
+
+void ypaworld_func158__sub4__sub1__sub2(_NC_STACK_ypaworld *yw)
+{
+    stru_LevelNet *lvlnet = yw->LevelNet;
+
+    if ( lvlnet->ilbm_menu_map && lvlnet->ilbm_mask_map && lvlnet->ilbm_rollover_map )
+    {
+        call_method(yw->win3d, 215);
+
+        rstr_arg204 a4;
+        call_vtbl(yw->LevelNet->ilbm_menu_map, 3, 0x80002000, &a4.pbitm, 0);
+
+        a4.float4 = -1.0;
+        a4.float8 = -1.0;
+        a4.floatC = 1.0;
+        a4.float10 = 1.0;
+
+        a4.float14 = -1.0;
+        a4.float18 = -1.0;
+        a4.float1C = 1.0;
+        a4.float20 = 1.0;
+
+        call_method(yw->win3d, 202, &a4);
+
+        for (int i = 0; i < 256; i++)
+        {
+            mapINFO *v5 = &yw->LevelNet->mapInfos[i];
+
+            if ( v5->field_9C.x1 != v5->field_9C.x2 )
+            {
+                bitmap_intern *v20 = NULL;
+
+                if ( v5->field_0 == 2 ||  v5->field_0 == 3)
+                {
+                    if ( i == yw->LevelNet->field_BE38 )
+                    {
+                        call_vtbl(yw->LevelNet->ilbm_rollover_map, 3, 0x80002000, &v20, 0);
+                    }
+                }
+
+                if ( v20 )
+                {
+                    rstr_218_arg v17;
+                    v17.bitm_intern = v20;
+                    call_vtbl(yw->LevelNet->ilbm_mask_map, 3, 0x80002000, &v17.bitm_intern2, 0);
+
+                    v17.flg = i;
+                    v17.rect2.x1 = v5->field_9C.x1;
+                    v17.rect1.x1 = v17.rect2.x1;
+                    v17.rect2.y1 = v5->field_9C.y1;
+                    v17.rect1.y1 = v17.rect2.y1;
+                    v17.rect2.x2 = v5->field_9C.x2;
+                    v17.rect1.x2 = v17.rect2.x2;
+                    v17.rect2.y2 = v5->field_9C.y2;
+                    v17.rect1.y2 = v17.rect2.y2;
+
+                    call_method(yw->win3d, 218, &v17);
+                }
+            }
+        }
+
+        if ( yw->LevelNet->field_BE38 )
+        {
+            char cmdBuff[256];
+            char *v11 = cmdBuff;
+
+            if ( yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].field_0 )
+            {
+                if ( yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name[0] )
+                {
+                    const char *v12 = get_lang_string(yw->string_pointers_p2, yw->LevelNet->field_BE38 + 1800, yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name);
+
+                    fntcmd_select_tileset(&v11, 15);
+                    fntcmd_set_xpos(&v11, 0);
+                    fntcmd_set_ypos(&v11, -(yw->font_default_h + yw->icon_order__h + 4) );
+                    fntcmd_set_txtColor(&v11, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
+
+                    v11 = sub_45148C(yw->tiles[15], v11, v12, yw->screen_width);
+                }
+            }
+            fntcmd_set_end(&v11);
+
+            w3d_a209 v19;
+
+            v19.cmdbuf = cmdBuff;
+            v19.includ = NULL;
+
+            call_method(yw->win3d, 209, &v19);
+        }
+
+        call_method(yw->win3d, 216);
+    }
+
+}
+
+void ypaworld_func158__sub4__sub1__sub1(_NC_STACK_ypaworld *yw)
+{
+    stru_LevelNet *lvlnet = yw->LevelNet;
+
+    if ( lvlnet->ilbm_menu_map && lvlnet->ilbm_mask_map && lvlnet->ilbm_rollover_map && lvlnet->ilbm_finished_map && lvlnet->ilbm_enabled_map )
+    {
+        call_method(yw->win3d, 215);
+
+        rstr_arg204 a4;
+        call_vtbl(yw->LevelNet->ilbm_menu_map, 3, 0x80002000, &a4.pbitm, 0);
+
+        a4.float4 = -1.0;
+        a4.float8 = -1.0;
+        a4.floatC = 1.0;
+        a4.float10 = 1.0;
+
+        a4.float14 = -1.0;
+        a4.float18 = -1.0;
+        a4.float1C = 1.0;
+        a4.float20 = 1.0;
+
+        call_method(yw->win3d, 202, &a4);
+        //printf("field_BE38 %d \n",yw->LevelNet->field_BE38);
+
+        for (int i = 0; i < 256; i++)
+        {
+            mapINFO *v5 = &yw->LevelNet->mapInfos[i];
+
+            if ( v5->field_9C.x1 != v5->field_9C.x2 )
+            {
+                bitmap_intern *v20 = NULL;
+
+                if ( v5->field_0 == 2 )
+                {
+                    if ( i == yw->LevelNet->field_BE38 )
+                    {
+                        call_vtbl(yw->LevelNet->ilbm_rollover_map, 3, 0x80002000, &v20, 0);
+                    }
+                    else
+                    {
+                        call_vtbl(yw->LevelNet->ilbm_enabled_map, 3, 0x80002000, &v20, 0);
+                    }
+                }
+                else if ( v5->field_0 == 3 )
+                {
+                    call_vtbl(yw->LevelNet->ilbm_finished_map, 3, 0x80002000, &v20, 0);
+                }
+
+                if ( v20 )
+                {
+                    rstr_218_arg v17;
+                    v17.bitm_intern = v20;
+                    call_vtbl(yw->LevelNet->ilbm_mask_map, 3, 0x80002000, &v17.bitm_intern2, 0);
+
+                    v17.flg = i;
+                    v17.rect2.x1 = v5->field_9C.x1;
+                    v17.rect1.x1 = v17.rect2.x1;
+                    v17.rect2.y1 = v5->field_9C.y1;
+                    v17.rect1.y1 = v17.rect2.y1;
+                    v17.rect2.x2 = v5->field_9C.x2;
+                    v17.rect1.x2 = v17.rect2.x2;
+                    v17.rect2.y2 = v5->field_9C.y2;
+                    v17.rect1.y2 = v17.rect2.y2;
+
+                    call_method(yw->win3d, 218, &v17);
+                }
+            }
+        }
+
+        if ( yw->LevelNet->field_BE38 )
+        {
+            char cmdBuff[256];
+            char *v11 = cmdBuff;
+
+            if ( yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].field_0 )
+            {
+                if ( yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name[0] )
+                {
+                    const char *v12 = get_lang_string(yw->string_pointers_p2, yw->LevelNet->field_BE38 + 1800, yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name);
+
+                    fntcmd_select_tileset(&v11, 15);
+                    fntcmd_set_xpos(&v11, 0);
+                    fntcmd_set_ypos(&v11, -(yw->font_default_h + yw->icon_order__h + 4) );
+                    fntcmd_set_txtColor(&v11, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
+
+                    v11 = sub_45148C(yw->tiles[15], v11, v12, yw->screen_width);
+                }
+            }
+            fntcmd_set_end(&v11);
+
+            w3d_a209 v19;
+
+            v19.cmdbuf = cmdBuff;
+            v19.includ = NULL;
+
+            call_method(yw->win3d, 209, &v19);
+        }
+        const char *v13 = get_lang_string(yw->string_pointers_p2, yw->TOD_ID + 2490, " ");
+        splashScreen_OutText(yw, yw->win3d, v13, yw->screen_width / 20, yw->screen_width / 20);
+
+        call_method(yw->win3d, 216);
+    }
+}
+
+
+int ypaworld_func158__sub4__sub1__sub3__sub0(_NC_STACK_ypaworld *yw)
+{
+    int lft = yw->screen_width * 0.575;
+    int rght = yw->screen_width * 0.9734375;
+    int top = yw->screen_height * 0.08958333333333329;
+    int bottom = yw->screen_height * 0.9083333333333334;
+
+    int v5 = (bottom - top) / yw->font_default_h;
+
+    memset(&stru_5C91D0, 0, sizeof(listview));
+
+    int result = lstvw_init(
+                     yw,
+                     &stru_5C91D0,
+                     0x80000003,
+                     1,
+                     0x80000004,
+                     v5,
+                     0x80000012,
+                     v5,
+                     0x80000007,
+                     v5,
+                     0x80000008,
+                     0,
+                     0x8000000B,
+                     yw->font_default_h,
+                     0x8000000C,
+                     (rght - lft),
+                     0x80000010,
+                     yw->field_1a38,
+                     0);
+
+    if ( !result )
+        return 0;
+
+
+    lstvw_updlimits(yw, &stru_5C91D0, lft, top);
+    sub_4C31EC(yw, &stru_5C91D0);
+
+    return 1;
+}
+
+int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
+{
+    big_ypa_Brf *brf = &yw->brief;
+
+    memset(brf, 0, sizeof(big_ypa_Brf));
+
+    brf->field_2F8C = -1;
+    brf->field_2F90 = -1;
+
+    CDAUDIO_t v34;
+    v34.command = 1;
+    sub_4444D4(&v34);
+
+    if ( !ypaworld_func158__sub4__sub1__sub3__sub0(yw) )
+        return 0; // May be HACK
+
+    call_method(yw->win3d, 271, 0);
+    call_method(yw->win3d, 215, 0);
+    call_method(yw->win3d, 192, 0);
+    call_method(yw->win3d, 216, 0);
+
+    memcpy(&brf->s2d90, yw->field_2d90, sizeof(brf->s2d90));
+
+    brf->field_2E68 = 0;
+    brf->field_2E6C = 0;
+    brf->field_2E7C = 0;
+    brf->field_2E80 = 0;
+
+    yw->field_2d90->levelID = lvlid;
+    yw->field_2d90->field_40 = 5;
+    yw->field_2d90->gate_count = 0;
+
+    memset(yw->field_2d90->gates, 0, sizeof(gateProto) * 8);
+    memset(yw->gems, 0, sizeof(gemProto) * 8);
+
+    set_prefix_replacement("rsrc", "data:");
+
+    mapProto *mproto = &brf->map_prototype;
+
+    if ( sub_4DA41C(yw, mproto, yw->LevelNet->mapInfos[ lvlid ].mapPath) )
+    {
+        if ( (brf->map_prototype.flags & 0x7F) == 127 )
+        {
+            brf->LEVEL_BRIEF_INFO = get_lang_string(yw->string_pointers_p2, yw->field_2d90->levelID + 2100, "<NO INFO AVAILABLE>");
+
+            if ( mproto->mbmaps_count )
+            {
+                yw->field_2d90 = yw->field_2d90;
+                if ( !yw->field_2d90->movie[0] || brf->field_2E68 )
+                {
+                    for (int i = 0; i < mproto->mapRobos_count; i++)
+                    {
+                        int owner = mproto->mapRobos[i].owner;
+                        if ( !yw->field_2d90->jodiefoster[ owner ] )
+                        {
+                            int v19;
+
+                            switch ( owner )
+                            {
+                            case 2:
+                                v19 = 7;
+                                break;
+                            case 3:
+                                v19 = 6;
+                                break;
+                            case 4:
+                                v19 = 5;
+                                break;
+                            case 5:
+                                v19 = 8;
+                                break;
+                            case 6:
+                                v19 = 4;
+                                break;
+                            default:
+                                v19 = -1;
+                                break;
+                            }
+
+                            if ( v19 != -1 && yw->movies.movies_names_present[v19] )
+                            {
+                                char *from;
+                                switch (v19)
+                                {
+                                default:
+                                case 0:
+                                    from = yw->movies.game_intro;
+                                    break;
+
+                                case 1:
+                                    from = yw->movies.lose_extro;
+                                    break;
+
+                                case 2:
+                                    from = yw->movies.win_extro;
+                                    break;
+
+                                case 3:
+                                    from = yw->movies.user_intro;
+                                    break;
+
+                                case 4:
+                                    from = yw->movies.kyt_intro;
+                                    break;
+
+                                case 5:
+                                    from = yw->movies.taer_intro;
+                                    break;
+
+                                case 6:
+                                    from = yw->movies.myk_intro;
+                                    break;
+
+                                case 7:
+                                    from = yw->movies.sulg_intro;
+                                    break;
+
+                                case 8:
+                                    from = yw->movies.black_intro;
+                                    break;
+                                }
+
+                                strcpy(brf->movie, from);
+
+                                yw->field_81AB = owner;
+                                brf->field_2E68 = 28;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    strcpy(brf->movie, yw->field_2d90->movie);
+                    brf->field_2E68 = 28;
+                }
+
+                set_prefix_replacement("rsrc", "levels:");
+
+                if ( yw->LevelNet->brief_map[0].map_name[0] )
+                    brf->briefing_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, yw->LevelNet->brief_map[0].map_name, 0x80002008, 1, 0x80002009, 1, 0);
+
+                set_prefix_replacement("rsrc", "mbpix:");
+
+                brf->mbmap_img = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, mproto->mbmaps[0].name, 0x80002008, 1, 0x80002009, 1, 0);
+
+                if ( brf->mbmap_img )
+                {
+                    if ( !yw->typ_map )
+                        yw->typ_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, mproto->typ, 0);
+
+                    if ( yw->typ_map )
+                    {
+                        call_vtbl(yw->typ_map, 3, 0x80002000, &brf->typ_map_bitm, 0);
+
+                        yw->sectors_maxX2 = brf->typ_map_bitm->width;
+                        yw->sectors_maxY2 = brf->typ_map_bitm->height;
+
+                        yw->map_Width_meters = yw->sectors_maxX2 * 1200.0;
+                        yw->map_Height_meters = yw->sectors_maxY2 * 1200.0;
+
+                        //Set transitions
+                        brf->brf_objs.field_10 = -0.98750001;
+                        brf->brf_objs.field_14 = 0.34999999;
+                        brf->brf_objs.field_18 = -0.003125;
+                        brf->brf_objs.field_1C = 0.85416669;
+
+                        if ( !brf->field_2E68 )
+                            brf->field_2E68 = 4;
+
+                        sb_0x4ea37c(yw);
+                        return 1;
+                    }
+
+                    delete_class_obj(brf->mbmap_img);
+                    brf->mbmap_img = NULL;
+                }
+            }
+        }
+    }
+
+    sub_4C31C0(yw, &stru_5C91D0);
+    sub_4E866C(&stru_5C91D0);
+
+    memcpy(yw->field_2d90, &brf->s2d90, sizeof(stru_2d90));
+
+    return 0;
+}
+
+int ypaworld_func158__sub4__sub1__sub5__sub0(_NC_STACK_ypaworld *yw, mapProto *mapproto, const char *filename)
+{
+    scrCallBack parsers[6];
+
+    memset(parsers, 0, sizeof(parsers));
+    memset(mapproto, 0, sizeof(mapProto));
+
+    parsers[0].dataForStore = mapproto;
+    parsers[0].world = yw;
+    parsers[0].func = LevelDataParser;
+
+    parsers[1].dataForStore = mapproto;
+    parsers[1].world = yw;
+    parsers[1].func = LevelGatesParser;
+
+    parsers[2].func = LevelMbMapParser;
+    parsers[2].dataForStore = mapproto;
+
+    parsers[3].dataForStore = mapproto;
+    parsers[3].world = yw;
+    parsers[3].func = LevelMapsParser;
+
+    parsers[4].dataForStore = mapproto;
+    parsers[4].func = LeveldbMapParser;
+
+    parsers[5].dataForStore = mapproto;
+    parsers[5].func = LevelSuperItemsParser;
+    parsers[5].world = yw;
+
+    return def_parseFile(filename, 6, parsers, 6);
+}
+
+NC_STACK_bitmap * sub_44816C(NC_STACK_bitmap *src, const char *name)
+{
+    bitmap_intern *a4;
+    call_vtbl(src, 3, 0x80002000, &a4, 0);
+
+    NC_STACK_bitmap *v3 = (NC_STACK_bitmap *)init_get_class("bitmap.class", 0x80001000, name, 0x80002002, a4->width, 0x80002003, a4->height, 0);
+
+    if ( v3 )
+    {
+        bitmap_intern *v6;
+
+        call_vtbl(v3, 3, 0x80002000, &v6, 0);
+
+        memcpy(v6->buffer, a4->buffer, a4->width * a4->height);
+    }
+
+    return v3;
+}
+
+size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
+{
+    big_ypa_Brf *brf = &yw->brief;
+
+    memset(&yw->brief, 0, sizeof(big_ypa_Brf));
+
+    if ( !yw->copyof_ownermap || !yw->copyof_typemap )
+    {
+        sub_4EE04C(yw);
+        return 0;
+    }
+
+    brf->field_41A0 = yw->field_2d90->field_40 == 1;
+
+    ua_fRect v17;
+    v17.x1 = -1.0;
+    v17.y1 = -1.0;
+    v17.x2 = 1.0;
+    v17.y2 = 1.0;
+
+    call_method(yw->win3d, 210, &v17);
+
+    brf->field_2E68 = 0;
+    brf->field_2E6C = 0;
+    brf->field_2E7C = 0;
+    brf->field_41D4 = 1;
+
+    yw->field_2d90->field_40 = 9;
+
+    set_prefix_replacement("rsrc", "data:");
+
+    const char *wireless_db[4] =
+    {
+        "wireless/db_genes.sklt",
+        "wireless/db_death.sklt",
+        "wireless/db_death.sklt",
+        "wireless/db_sec.sklt"
+    };
+
+    for (int i = 0; i < 4; i++)
+    {
+        brf->wireless_db[i] = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, wireless_db[i], 0);
+        if (brf->wireless_db[i])
+            call_vtbl(brf->wireless_db[i], 3, 0x80002000, &brf->wireless_db_skels[i], 0);
+    }
+
+    if ( yw->copyof_ownermap )
+    {
+        brf->copy2_of_ownmap = sub_44816C(yw->copyof_ownermap, "copy2_of_ownmap");
+        call_vtbl(brf->copy2_of_ownmap, 3, 0x80002000, &brf->copy2_of_ownmap_bitm, 0);
+    }
+
+    if ( yw->copyof_typemap )
+    {
+        brf->copy2_of_typmap = sub_44816C(yw->copyof_typemap, "copy2_of_typmap");
+        call_vtbl(brf->copy2_of_typmap, 3, 0x80002000, &brf->copy2_of_typmap_bitm, 0);
+    }
+
+    brf->field_419C = 0;
+
+    if ( dword_514EFC )
+        brf->field_419C = 1;
+
+    if ( !ypaworld_func158__sub4__sub1__sub5__sub0(yw, &brf->map_prototype, yw->LevelNet->mapInfos[yw->field_2d90->levelID].mapPath) )
+    {
+        sub_4EE04C(yw);
+        return 0;
+    }
+
+    dbmapProto *v8 = brf->map_prototype.dbmap_count ? brf->map_prototype.dbmaps : brf->map_prototype.mbmaps;
+
+    if ( !v8->name[0] )
+    {
+        sub_4EE04C(yw);
+        return 0;
+    }
+
+    set_prefix_replacement("rsrc", "levels:");
+
+    if ( yw->LevelNet->debrief_map[0].map_name[0] )
+        brf->briefing_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, yw->LevelNet->debrief_map[0].map_name, 0x80002008, 1, 0x80002009, 1, 0);
+
+    set_prefix_replacement("rsrc", "mbpix:");
+
+    brf->mbmap_img = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, v8->name, 0x80002008, 1, 0x80002009, 1, 0);;
+    if ( !brf->mbmap_img )
+    {
+        sub_4EE04C(yw);
+        return 0;
+    }
+
+    call_vtbl(yw->copyof_typemap, 3, 0x80002000, &brf->typ_map_bitm, 0);
+
+    yw->sectors_maxX2 = brf->typ_map_bitm->width;
+    yw->sectors_maxY2 = brf->typ_map_bitm->height;
+    yw->map_Width_meters = yw->sectors_maxX2 * 1200.0;
+    yw->map_Height_meters = yw->sectors_maxY2 * 1200.0;
+
+    brf->field_2E68 = 4;
+
+    return 1;
+}
+
+
+void sub_4F0FFC(_NC_STACK_ypaworld *yw)
+{
+    printf("MAKE ME %s \n","sub_4F0FFC");
+}
+
+void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
+{
+    if ( yw->field_2d90->field_40 != 1 && yw->field_2d90->field_40 != 2 )
+    {
+        if ( yw->brief.field_2E68 )
+        {
+            if ( yw->field_2d90->field_40 == 5 )
+            {
+                if ( inpt->downed_key == VK_RETURN )
+                    yw->brief.field_2E68 = 1;
+
+                if ( yw->brief.field_2E68 == 1 )
+                {
+                    usr->field_0x2fbc = 2;
+                    usr->field_0x2fc0 = yw->field_2d90->levelID;
+                    usr->field_0x2fc4 = yw->field_2d90->levelID;
+                    sub_4EAC80(yw);
+                }
+                else if ( yw->brief.field_2E68 == 2 )
+                {
+                    sub_4EAC80(yw);
+                    yw->field_2d90->field_40 = 8;
+                }
+                else
+                {
+                    ypaworld_func158__sub4__sub1__sub4(yw, usr, inpt);
+                }
+            }
+            else if ( yw->field_2d90->field_40 == 9 )
+            {
+                if ( yw->brief.field_2E68 == 2 )
+                {
+                    sub_4F0FFC(yw);
+                    sub_4EE04C(yw);
+                }
+                else
+                {
+                    ypaworld_func158__sub4__sub1__sub6(yw, usr, inpt);
+                }
+            }
+        }
+        else
+        {
+            ypaworld_func158__sub4__sub1__sub0(yw, inpt);
+
+            if ( yw->GameShell->field_46 == 4 )
+                ypaworld_func158__sub4__sub1__sub2(yw);
+            else
+                ypaworld_func158__sub4__sub1__sub1(yw);
+
+
+            if ( yw->LevelNet->field_BE38 )
+            {
+                if ( inpt->winp131arg.flag & 2 )
+                {
+                    if ( yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].field_0 == 3 )
+                    {
+//            v14 = get_lang_string(yw->string_pointers_p2, 2466, "2466 == THE YPA CD IS REQUIRED.");
+//            v15 = get_lang_string(yw->string_pointers_p2, 21, "21 == YOUR PERSONAL AMOK");
+//            if ( make_CD_CHECK(0, 1, v15, v14) )
+//            {
+                        usr->field_0x2fbc = 2;
+                        usr->field_0x2fc0 = yw->LevelNet->field_BE38;
+                        usr->field_0x2fc4 = yw->LevelNet->field_BE38;
+//            }
+                    }
+                    else
+                    {
+//            v16 = get_lang_string(yw->string_pointers_p2, 2466, "2466 == THE YPA CD IS REQUIRED.");
+//            v17 = get_lang_string(yw->string_pointers_p2, 21, "21 == YOUR PERSONAL AMOK");
+//            if ( make_CD_CHECK(0, 1, v17, v16) )
+//            {
+                        if ( !ypaworld_func158__sub4__sub1__sub3(yw, yw->LevelNet->field_BE38) )// LOAD LEVEL INFO
+                        {
+                            usr->field_0x2fbc = 2;
+                            usr->field_0x2fc0 = yw->LevelNet->field_BE38;
+                            usr->field_0x2fc4 = yw->LevelNet->field_BE38;
+                        }
+//            }
+                    }
+                }
+                else if ( inpt->winp131arg.flag & 0x80 )
+                {
+//          v18 = get_lang_string(yw->string_pointers_p2, 2466, "2466 == THE YPA CD IS REQUIRED.");
+//          v19 = get_lang_string(yw->string_pointers_p2, 21, "21 == YOUR PERSONAL AMOK");
+//          if ( make_CD_CHECK(0, 1, v19, v18) )
+//          {
+                    usr->field_0x2fbc = 2;
+                    usr->field_0x2fc0 = yw->LevelNet->field_BE38;
+                    usr->field_0x2fc4 = yw->LevelNet->field_BE38;
+//          }
+                }
+            }
+        }
+    }
+    else
+    {
+        if ( yw->field_2d90->field_40 == 1 )
+        {
+            if ( yw->field_2d90->win_movie[0] )
+                sub_4491A0(yw, yw->field_2d90->win_movie);
+        }
+
+        if ( yw->field_2d90->field_40 == 2 )
+        {
+            if ( yw->field_2d90->lose_movie[0] )
+            {
+                if ( yw->field_1624 )
+                    sub_4491A0(yw, yw->field_2d90->lose_movie);
+            }
+        }
+
+        yw->brief.field_2E68 = 0;
+        yw->field_2d90->field_40 = 8;
+
+        if ( yw->field_7278 )
+            ypaworld_func158__sub4__sub1__sub5(yw);
+    }
+}
+
+
+int sub_4DA41C(_NC_STACK_ypaworld *yw, mapProto *mapp, const char *fname)
+{
+    scrCallBack parsers[13];
+
+    memset(parsers, 0, sizeof(parsers));
+    memset(mapp, 0, sizeof(mapProto));
+
+    parsers[0].dataForStore = mapp;
+    parsers[0].world = yw;
+    parsers[0].func = LevelDataParser;
+
+    parsers[1].dataForStore = mapp;
+    parsers[1].func = parse_map_robos;
+
+    parsers[2].func = LevelGemParser;
+    parsers[2].dataForStore = mapp;
+    parsers[2].world = yw;
+
+    parsers[3].dataForStore = mapp;
+    parsers[3].func = LevelSquadParser;
+
+    parsers[4].dataForStore = mapp;
+    parsers[4].world = yw;
+    parsers[4].func = LevelGatesParser;
+
+    parsers[5].dataForStore = mapp;
+    parsers[5].func = LevelMbMapParser;
+
+    parsers[6].world = yw;
+    parsers[6].func = VhclProtoParser;
+
+    parsers[7].world = yw;
+    parsers[7].func = WeaponProtoParser;
+
+    parsers[8].world2 = yw;
+    parsers[8].func = BuildProtoParser;
+
+    parsers[9].world = yw;
+    parsers[9].func = LevelEnableParser;
+
+    parsers[10].dataForStore = mapp;
+    parsers[10].world = yw;
+    parsers[10].func = LevelMapsParser;
+
+    parsers[11].dataForStore = mapp;
+    parsers[11].func = LeveldbMapParser;
+
+    parsers[12].dataForStore = mapp;
+    parsers[12].world = yw;
+    parsers[12].func = LevelSuperItemsParser;
+
+    return def_parseFile(fname, 13, parsers, 1);
+}
+

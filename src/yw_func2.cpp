@@ -70,7 +70,8 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz
 {
     brf_obj *brobj = &yw->brief.brf_objs + obj_id;
 
-    secType *secType = &yw->secTypes[brobj->object_id];
+    secType *scType = &yw->secTypes[brobj->object_id];
+    printf("obj_id %d\n", brobj->object_id);
 
     NC_STACK_base *v7 = yw->vhcls_models[0].base;
 
@@ -101,7 +102,7 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz
     int first;
     int demens;
 
-    if ( secType->field_0 == 1 )
+    if ( scType->field_0 == 1 )
     {
         first = 0;
         demens = 1;
@@ -127,7 +128,7 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz
             v16.y = p3d->scale_rotation.m10 * v13 + pos->sy + 0.0 * p3d->scale_rotation.m11 + p3d->scale_rotation.m12 * v14;
             v16.z = p3d->scale_rotation.m20 * v13 + pos->sz + 0.0 * p3d->scale_rotation.m21 + p3d->scale_rotation.m22 * v14;
 
-            NC_STACK_base *lego = yw->legos[ secType->field_4[j][i]->field_4 ].base;
+            NC_STACK_base *lego = yw->legos[ scType->field_4[j][i]->field_4 ].base;
             call_vtbl(lego, 2, 0x80001024, 0, 0);
             call_vtbl(lego, 2, 0x80001004, 16000, 0);
             call_vtbl(lego, 2, 0x80001023, 100, 0);
@@ -1654,35 +1655,6 @@ void ypaworld_func158__sub0__sub1(UserData *usr)
     sub_4C31EC(usr->p_ypaworld, &usr->input_listview);
 }
 
-void sub_4F0FFC(_NC_STACK_ypaworld *yw)
-{
-    printf("MAKE ME %s\n", "sub_4F0FFC");
-}
-
-void sub_4EE04C(_NC_STACK_ypaworld *yw)
-{
-    printf("MAKE ME %s\n", "sub_4EE04C");
-}
-
-void sub_46D698(UserData *usr)
-{
-    printf("MAKE ME %s\n", "sub_46D698");
-}
-
-void sb_0x46bb54(UserData *usr)
-{
-    printf("MAKE ME %s\n", "sb_0x46bb54");
-}
-
-void sub_46B1B8(UserData *usr)
-{
-    printf("MAKE ME %s\n", "sub_46B1B8");
-}
-
-void sub_46B328(UserData *usr)
-{
-    printf("MAKE ME %s\n", "sub_46B328");
-}
 
 int ypaworld_func158__sub0__sub8(UserData *usr, const char**, const char**)
 {
@@ -1692,12 +1664,107 @@ int ypaworld_func158__sub0__sub8(UserData *usr, const char**, const char**)
 
 void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
 {
-    printf("MAKE ME %s\n", "sub_4D9550");
+    char a1a[260];
+
+    UserData *usr = yw->GameShell;
+
+    if ( usr->default_lang_dll )
+        sprintf(a1a, "sounds/speech/%s/9%d.wav", usr->default_lang_dll->langDllName, arg);
+    else
+        sprintf(a1a, "sounds/speech/language/9%d.wav", arg);
+
+
+
+    if ( usr->field_ADA )
+    {
+        sub_424000(&usr->field_782, 0);
+        sub_423DD8(&usr->field_782);
+        delete_class_obj(usr->field_ADA);
+        usr->field_ADA = 0;
+    }
+
+    char rsr[256];
+    strcpy(rsr, get_prefix_replacement("rsrc"));
+
+    set_prefix_replacement("rsrc", "data:");
+
+    usr->field_ADA = (NC_STACK_wav *)init_get_class("wav.class", 0x80001000, a1a, 0);
+    if ( usr->field_ADA )
+    {
+        sub_423DB0(&usr->field_782);
+
+        usr->field_782.field_C = 0;
+        usr->field_782.field_10 = 0;
+        usr->field_782.field_14 = 0;
+        usr->field_782.field_0 = 0;
+        usr->field_782.field_4 = 0;
+        usr->field_782.field_8 = 0;
+        usr->field_782.samples_data[0].volume = 500;
+        usr->field_782.samples_data[0].pitch = 0;
+
+        call_vtbl(usr->field_ADA, 3, 0x80002000, usr->field_782.samples_data, 0);
+        sub_423F74(&usr->field_782, 0);
+    }
+
+    set_prefix_replacement("rsrc", rsr);
 }
 
-void sub_4D0C24(_NC_STACK_ypaworld *yw, const char *, const char *)
+void sub_4D0C24(_NC_STACK_ypaworld *yw, const char *a1, const char *a2)
 {
-    printf("MAKE ME %s\n", "sub_4D0C24");
+    UserData *usr = yw->GameShell;
+
+    if ( strcasecmp(a1, usr->field_1CF9[32]) )
+    {
+        if ( usr->field_1CF7 >= 31 )
+        {
+            usr->field_1CF7 = 31;
+
+            for (int i = 0; i < 31; i++ )
+                strcpy(usr->field_1CF9[i], usr->field_1CF9[i + 1]);
+        }
+
+        memset(usr->field_1CF9[usr->field_1CF7], 0, 64);
+        sprintf(usr->field_1CF9[usr->field_1CF7], "> %s:", a1);
+        memset(usr->field_1CF9[32], 0, 64);
+        strncpy(usr->field_1CF9[32], a1, 63);
+
+        usr->field_1CF7++;
+    }
+
+    if ( usr->field_1CF7 >= 31 )
+    {
+        usr->field_1CF7 = 31;
+
+        for (int i = 0; i < 31; i++ )
+            strcpy(usr->field_1CF9[i], usr->field_1CF9[i + 1]);
+    }
+
+    memset(usr->field_1CF9[usr->field_1CF7], 0, 64);
+    strncpy(usr->field_1CF9[usr->field_1CF7], a2, 63);
+
+    usr->field_1CF7++;
+
+    if ( usr->field_1C3A == 4 )
+    {
+        int v22 = usr->field_1CF7 - 6;
+
+        if ( v22 < 0 )
+            v22 = 0;
+
+        yw->GameShell->network_listvw.scroll_pos = v22;
+
+
+        yw->GameShell->network_listvw.elements_for_scroll_size = yw->GameShell->field_1CF7;
+
+        int v24;
+
+        if ( usr->network_listvw.elements_for_scroll_size >= 6 )
+            v24 = 6;
+        else
+            v24 = usr->network_listvw.elements_for_scroll_size;
+
+        yw->GameShell->network_listvw.element_count = v24;
+    }
 }
 
 
@@ -4145,7 +4212,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     usr->field_0x1c3c = -1;
                     usr->network_listvw.scroll_pos = 0;
                     usr->field_1CF7 = 0;
-                    usr->field_24F9 = 0;
+                    usr->field_1CF9[32][0] = 0;
                     usr->field_1C42[0] = 0;
                     usr->field_1C3A = 3;
                 }
@@ -4265,7 +4332,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     usr->field_1C42[0] = 0;
                     usr->field_1C84 = 0;
 
-                    int v223 = atoi(v312.fld_4);
+                    int v223 = strtol(v312.fld_4, NULL, 0);
                     if ( v223 > 0 )
                         sub_4D9550(yw, v223);
                 }
@@ -4470,7 +4537,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                         usr->field_1C42[0] = 0;
                         usr->field_1C84 = 0;
 
-                        int v271 = atoi(v309.fld_4);
+                        int v271 = strtol(v309.fld_4, NULL, 0);
                         if ( v271 > 0 )
                             sub_4D9550(yw, v271);
                     }

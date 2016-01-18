@@ -1278,3 +1278,43 @@ void sub_4DDFA4(listview *lstvw, int a2)
         lstvw->scroll_pos = a2;
     }
 }
+
+
+void sub_4E866C(listview *lstvw)
+{
+    if ( lstvw->field_1C4 )
+    {
+        nc_FreeMem(lstvw->field_1C4);
+        lstvw->field_1C4 = NULL;
+    }
+
+    if ( lstvw->data_cmdbuf )
+    {
+        nc_FreeMem(lstvw->data_cmdbuf);
+        lstvw->data_cmdbuf = NULL;
+    }
+
+    if ( lstvw->slider_cmdbuf )
+    {
+        nc_FreeMem(lstvw->slider_cmdbuf);
+        lstvw->slider_cmdbuf = NULL;
+    }
+
+    if ( lstvw->draw_cmd )
+    {
+        nc_FreeMem(lstvw->draw_cmd);
+        lstvw->draw_cmd = NULL;
+    }
+
+    if ( lstvw->field_1BC )
+    {
+        nc_FreeMem(lstvw->field_1BC);
+        lstvw->field_1BC = NULL;
+    }
+
+    if ( lstvw->frm_1.field_18[0] )
+    {
+        nc_FreeMem(lstvw->frm_1.field_18[0]);
+        lstvw->frm_1.field_18[0] = NULL;
+    }
+}

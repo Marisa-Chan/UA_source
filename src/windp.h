@@ -50,7 +50,12 @@ struct windp_arg87
 
 
 struct _NC_STACK_ypaworld;
+struct UserData;
 
 void sb_0x4c9f14(_NC_STACK_ypaworld *yw);
+void sub_46B328(UserData *usr);
+void sub_46B1B8(UserData *usr);
+void sb_0x46bb54(UserData *usr);
+void sub_46D698(UserData *usr);
 
 #endif // WINDP_H_INCLUDED

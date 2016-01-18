@@ -69,4 +69,6 @@ void lstvw_update(_NC_STACK_ypaworld *yw, listview *lstview);
 void  sub_4C31C0(_NC_STACK_ypaworld *yw, listview *lstvw);
 void sub_4DDFA4(listview *lstvw, int a2);
 
+void sub_4E866C(listview *lstvw);
+
 #endif //LSTVW_H_INCLUDED

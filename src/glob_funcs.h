@@ -133,7 +133,7 @@ ncDir *OpenDir(const char *dir);
 dirEntry *ReadDir(ncDir *_dir, dirEntry *dir_entry);
 void CloseDir(ncDir *dir);
 
-void sub_412810(char *a1, char *a2, int num);
+void sub_412810(const char *a1, char *a2, int num);
 int delete_file(const char *path);
 int removeDirectory(const char *path);
 

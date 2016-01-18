@@ -144,11 +144,33 @@ int sb_0x411324__sub1()
 
     call_method(ypaworld, 158, &userdata);
 
+    int result = 1;
+
     if ( userdata.field_0x2fbc == 1 )
         return 0;
     else if ( userdata.field_0x2fbc == 2 )
     {
+        //	sub_410628();
+        call_method(ypaworld, 157, &userdata);
 
+        dword_520400 = 0;
+
+        /*	if ( !sub_4107FC(&userdata) )
+        		return 0;*/
+
+        yw_arg161 v22;
+        v22.lvlID = userdata.field_0x2fc0;
+        v22.field_4 = 0;
+
+        if ( !call_method(ypaworld, 183, &v22) )
+        {
+            ypa_log_out("Sorry, unable to init this level!\n");
+
+            call_method(ypaworld, 155, &userdata);
+            result = 0;
+        }
+        dword_520400 = 2;
+        sub_412D28(&input_states);
     }
     else if ( userdata.field_0x2fbc == 3 )
     {
@@ -163,7 +185,7 @@ int sb_0x411324__sub1()
 
     }
 
-    return 1;
+    return result;
 }
 
 

@@ -1630,7 +1630,6 @@ void DrawPrimitive(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, D3DTLVERTEX *vt
     }
 }
 
-
 void sb_0x43b518(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, polysDatSub *polysDat, texStru *tex, int a5, int a6)
 {
     D3DTEXTUREHANDLE texHndl = 0;
@@ -1642,6 +1641,7 @@ void sb_0x43b518(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, polysDatSub *poly
     if ( polysDat->vertexCount < 3 || polysDat->vertexCount > 12 )
         return;
 
+    //Store for rendering later ( from 214 method )
     if ( polysDat->renderFlags & 0x30 && !a6 )
     {
         if ( bigdata->dat_1C14_count < 512 )
@@ -1653,6 +1653,7 @@ void sb_0x43b518(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, polysDatSub *poly
         return;
     }
 
+    //Store for rendering later ( from 214 method )
     if ( polysDat->renderFlags & 3 )
     {
         texHndl = sb_0x43b518__sub0(wdd, w3d, tex, a5);
@@ -1667,6 +1668,7 @@ void sb_0x43b518(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, polysDatSub *poly
             return;
         }
     }
+
 
     D3DTLVERTEX vOut[24];
 
@@ -1716,11 +1718,11 @@ void sb_0x43b518(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, polysDatSub *poly
     execBuf *execBuff = &bigdata->rendStates;
 
     execBuff->rendStates2[TEXTUREPERSPECTIVE].value = 0;
-    execBuff->rendStates2[SHADEMODE].value = 1;
+    execBuff->rendStates2[SHADEMODE].value = D3DSHADE_FLAT;
     execBuff->rendStates2[STIPPLEENABLE].value = 0;
-    execBuff->rendStates2[SRCBLEND].value = 2;
-    execBuff->rendStates2[DESTBLEND].value = 1;
-    execBuff->rendStates2[TEXTUREMAPBLEND].value = 7;
+    execBuff->rendStates2[SRCBLEND].value = D3DBLEND_ONE;
+    execBuff->rendStates2[DESTBLEND].value = D3DBLEND_ZERO;
+    execBuff->rendStates2[TEXTUREMAPBLEND].value = D3DTBLEND_COPY;
     execBuff->rendStates2[ALPHABLENDENABLE].value = 0;
     execBuff->rendStates2[ZWRITEENABLE].value = 1;
     execBuff->rendStates2[TEXTUREHANDLE].value = 0;
@@ -1797,7 +1799,6 @@ void sb_0x43b518(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, polysDatSub *poly
             execBuff->rendStates2[STIPPLEENABLE].value = 1;
             execBuff->rendStates2[SHADEMODE].value = D3DSHADE_FLAT;
         }
-
         for (int i = 0; i < polysDat->vertexCount; i++)
         {
             vOut[i].color &= 0x00FFFFFF;
@@ -2270,7 +2271,7 @@ void win3d_func214__sub2(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
             qsort(bigdata->dat_1C14, bigdata->dat_1C14_count, sizeof(wind3d_sub1), sub_43BB80);
 
             for (int i = 0; i < bigdata->dat_1C14_count; i++)
-                sb_0x43b518(wdd, w3d, bigdata->dat_1C14[i].polyData, bigdata->dat_1C14[i].tex, 1, 0);
+                sb_0x43b518(wdd, w3d, bigdata->dat_1C14[i].polyData, bigdata->dat_1C14[i].tex, 1, 1);
 
             bigdata->dat_1C14_count = 0;
         }
@@ -2286,6 +2287,7 @@ void win3d_func214__sub0(__NC_STACK_windd *, __NC_STACK_win3d *w3d)
             bigdata->texCh[i].used |= 1;
 }
 
+// Draw transparent
 void win3d_func214(NC_STACK_win3d *obj, class_stru *, void *)
 {
     __NC_STACK_windd *wdd = &obj->stack__windd;
@@ -2364,40 +2366,80 @@ void win3d_func216(NC_STACK_win3d *obj, class_stru *, void *)
 
 
 
-void win3d_func218__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, WORD *buf1, int width, BYTE *buf2, int elmnt, ua_dRect rect, ua_dRect rect2)
+void win3d_func218__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, void *buf1, int width, BYTE *buf2, int elmnt, ua_dRect rect, ua_dRect rect2)
 {
-    WORD *locked = (WORD *)wdd->surface_locked_surfaceData;
-    if ( locked )
+    if ( wdd->surface_locked_surfaceData )
     {
-
-        int wdth = wdd->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor;
-
-
-        if ( rect2.x2 != rect2.x1 && rect2.y2 != rect2.y1 )
+        if (w3d->bigdata->primary__pixelformat.BytesPerColor == 2)
         {
-            int v15 = rect.y1 << 16;
+            WORD *locked = (WORD *)wdd->surface_locked_surfaceData;
 
-            WORD *lkdLine = &locked[wdth * rect2.y1];
+            int wdth = wdd->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor;
 
-            for (int i = rect2.y1; i < rect2.y2; i++)
+
+            if ( rect2.x2 != rect2.x1 && rect2.y2 != rect2.y1 )
             {
-                WORD *bf1line = &buf1[width * (v15 >> 16)];
-                BYTE *bf2line = &buf2[width * (v15 >> 16)];
+                int v15 = rect.y1 << 16;
 
-                int v13 = rect.x1 << 16;
+                WORD *lkdLine = &locked[wdth * rect2.y1];
 
-                WORD *lkdPos = &lkdLine[rect2.x1];
-                for (int j = rect2.x1; j < rect2.x2; j++)
+                for (int i = rect2.y1; i < rect2.y2; i++)
                 {
-                    if (bf2line[v13 >> 16] == elmnt)
-                        *lkdPos = bf1line[v13 >> 16];
-                    lkdPos++;
-                    v13 += ((rect.x2 - rect.x1) << 16) / (rect2.x2 - rect2.x1);
+                    WORD *bf = (WORD *)buf1;
+                    WORD *bf1line = &bf[width * (v15 >> 16)];
+                    BYTE *bf2line = &buf2[width * (v15 >> 16)];
+
+                    int v13 = rect.x1 << 16;
+
+                    WORD *lkdPos = &lkdLine[rect2.x1];
+                    for (int j = rect2.x1; j < rect2.x2; j++)
+                    {
+                        if (bf2line[v13 >> 16] == elmnt)
+                            *lkdPos = bf1line[v13 >> 16];
+                        lkdPos++;
+                        v13 += ((rect.x2 - rect.x1) << 16) / (rect2.x2 - rect2.x1);
+                    }
+
+
+                    lkdLine += wdth;
+                    v15 += ((rect.y2 - rect.y1) << 16) / (rect2.y2 - rect2.y1);
                 }
+            }
+        }
+        else if (w3d->bigdata->primary__pixelformat.BytesPerColor == 4)
+        {
+            DWORD *locked = (DWORD *)wdd->surface_locked_surfaceData;
+
+            int wdth = wdd->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor;
 
 
-                lkdLine += wdth;
-                v15 += ((rect.y2 - rect.y1) << 16) / (rect2.y2 - rect2.y1);
+            if ( rect2.x2 != rect2.x1 && rect2.y2 != rect2.y1 )
+            {
+                int v15 = rect.y1 << 16;
+
+                DWORD *lkdLine = &locked[wdth * rect2.y1];
+
+                for (int i = rect2.y1; i < rect2.y2; i++)
+                {
+                    DWORD *bf = (DWORD *)buf1;
+                    DWORD *bf1line = &bf[width * (v15 >> 16)];
+                    BYTE *bf2line = &buf2[width * (v15 >> 16)];
+
+                    int v13 = rect.x1 << 16;
+
+                    DWORD *lkdPos = &lkdLine[rect2.x1];
+                    for (int j = rect2.x1; j < rect2.x2; j++)
+                    {
+                        if (bf2line[v13 >> 16] == elmnt)
+                            *lkdPos = bf1line[v13 >> 16];
+                        lkdPos++;
+                        v13 += ((rect.x2 - rect.x1) << 16) / (rect2.x2 - rect2.x1);
+                    }
+
+
+                    lkdLine += wdth;
+                    v15 += ((rect.y2 - rect.y1) << 16) / (rect2.y2 - rect2.y1);
+                }
             }
         }
     }
@@ -2572,11 +2614,8 @@ size_t win3d_func266(NC_STACK_win3d *obj, class_stru *, bitmap_intern **arg)
     }
 }
 
-
 void win3d__tex_apply_palette_hw(__NC_STACK_windd *, __NC_STACK_win3d *w3d, BYTE *pal, __NC_STACK_display *dspl, texStru *tex, int a5)
 {
-    printf("CHECK ME %s\n","win3d__tex_apply_palette_hw");
-
     win3d_bigdata *bigdata = w3d->bigdata;
 
     DWORD dwRBitMask = bigdata->selected__pixelformat.dwRBitMask;
@@ -2650,7 +2689,7 @@ void win3d__tex_apply_palette_hw(__NC_STACK_windd *, __NC_STACK_win3d *w3d, BYTE
             {
                 if (!dd_params.selected_device.can_destblend && dd_params.selected_device.can_srcblend && a5)
                 {
-                    int mx = (r > g) ? (r > b ? r: b) : (g > b ? g : b);
+                    int mx = (r >= g) ? (r > b ? r: b) : (g > b ? g : b);
 
                     if (mx <= 8)
                     {
@@ -2665,7 +2704,7 @@ void win3d__tex_apply_palette_hw(__NC_STACK_windd *, __NC_STACK_win3d *w3d, BYTE
                         r = 255.0 * (r * prm);
                         g = 255.0 * (g * prm);
                         b = 255.0 * (b * prm);
-                        a = b; //// CHECK IT
+                        a = mx;
                     }
                 }
                 else
@@ -2731,7 +2770,7 @@ void win3d__tex_apply_palette_hw(__NC_STACK_windd *, __NC_STACK_win3d *w3d, BYTE
             {
                 if (!dd_params.selected_device.can_destblend && dd_params.selected_device.can_srcblend && a5)
                 {
-                    int mx = (r > g) ? (r > b ? r: b) : (g > b ? g : b);
+                    int mx = (r >= g) ? (r > b ? r: b) : (g > b ? g : b);
 
                     if (mx <= 8)
                     {
@@ -2746,7 +2785,7 @@ void win3d__tex_apply_palette_hw(__NC_STACK_windd *, __NC_STACK_win3d *w3d, BYTE
                         r = 255.0 * (r * prm);
                         g = 255.0 * (g * prm);
                         b = 255.0 * (b * prm);
-                        a = b; //// CHECK IT
+                        a = mx;
                     }
                 }
                 else

@@ -55,6 +55,7 @@ OBJS =  \
 	winp.cpp\
 	wintimer.cpp\
 	yw.cpp\
+	yw_brif.cpp\
 	yw_funcs.cpp\
 	yw_func2.cpp\
 	yw_protos.cpp

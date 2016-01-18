@@ -340,3 +340,34 @@ char * txtcmd_txt_w_bkg(tiles_stru *, char *curpos, const char *str, int width_s
     }
     return tmp;
 }
+
+char * sub_45148C(tiles_stru *, char *in, const char *str, int width)
+{
+    char *cur = in;
+    if ( width > 0 )
+    {
+        fntcmd_copy_position(&cur);
+        fntcmd_add_txt(&cur, width, 4, str);
+    }
+    return cur;
+}
+
+char * sub_451E64(tiles_stru *, char *pos, const char *txt, int wdth, int arg)
+{
+    char *tmp = pos;
+
+    fntcmd_copy_position(&tmp);
+
+    int flag;
+
+    if ( arg == 4)
+        flag = 9;
+    else if ( arg == 8 )
+        flag = 10;
+    else
+        flag = 12;
+
+    fntcmd_add_txt(&tmp, wdth, flag, txt);
+
+    return tmp;
+}
