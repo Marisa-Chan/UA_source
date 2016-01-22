@@ -129,5 +129,23 @@ int sub_449678(_NC_STACK_ypaworld *yw, struC5 *struc, int kkode);
 void sub_46D0F8(const char *path);
 
 int init_prototypes(_NC_STACK_ypaworld *yw);
+void sub_457BC0(UserData *usr);
+
+int parseSaveVideo(scrCallBack *arg);
+void sub_46D370(NC_STACK_ypaworld *obj, int a2);
+int parseSaveSound(scrCallBack *arg);
+int parseSaveLevelStatus(scrCallBack *arg);
+int parseSaveBuddy(scrCallBack *arg);
+int parseSaveShell(scrCallBack *arg);
+
+int yw_write_callSign(_NC_STACK_ypaworld *yw, const char *filename, const char *callsign);
+int yw_write_user(FILE *fil, UserData *usr);
+int yw_write_input(FILE *fil, UserData *usr);
+int yw_write_sound(FILE *fil, UserData *usr);
+int yw_write_video(FILE *fil, UserData *usr);
+int yw_write_levels_statuses(FILE *fil, _NC_STACK_ypaworld *yw);
+int yw_write_buddies(FILE *fil, _NC_STACK_ypaworld *yw);
+int yw_write_shell(FILE *fil, UserData *usr);
+int yw_write_item_modifers(_NC_STACK_ypaworld *yw, FILE *fil);
 
 #endif

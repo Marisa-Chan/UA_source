@@ -669,6 +669,16 @@ struct slurp2
     skeleton_64_stru *skeleton_internal;
 };
 
+struct save_status
+{
+    int p1;
+    int p2;
+    int16_t p3;
+    int16_t p4;
+    int16_t p5;
+    int16_t p6;
+    int pX[8];
+};
 
 struct _NC_STACK_ypaworld
 {
@@ -791,9 +801,15 @@ struct _NC_STACK_ypaworld
     NC_STACK_bitmap *copyof_typemap;
     NC_STACK_bitmap *copyof_ownermap;
 
+    int field_739A;
+
     char field_73CE;
     char snd__cdsound;
 
+    save_status robo_map_status;
+    save_status robo_finder_status;
+    save_status vhcl_map_status;
+    save_status vhcl_finder_status;
     int fxnumber;
 
     NC_STACK_windp *windp;

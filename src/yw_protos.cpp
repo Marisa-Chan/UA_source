@@ -3700,7 +3700,8 @@ int parseSaveInput(scrCallBack *arg)
             {
                 if ( (arg->p2[i] == '$') )
                 {
-                    strcat(v13, "winp:");
+                    strcpy(v13, "winp:");
+                    v13 += strlen("winp:");
                 }
                 else
                 {
@@ -3846,7 +3847,7 @@ int parseSaveInput(scrCallBack *arg)
 
                 if ( call_method(inpt, 66, &v44) )
                 {
-                    int v19 = sub_476074(1, v16);
+                    int v19 = sub_476074(3, v16);
                     if ( v19 == -1 )
                     {
                         ypa_log_out("Unknown number in hotkey-declaration (%d)\n", v16);
@@ -4742,6 +4743,517 @@ int LevelMapsParser(scrCallBack *arg)
         else
             return 3;
 
+        return 0;
+    }
+}
+
+
+
+int parseSaveVideo(scrCallBack *arg)
+{
+    NC_STACK_ypaworld *ywo = (NC_STACK_ypaworld *)arg->world;
+
+    UserData *usr = (UserData *)arg->dataForStore;
+
+    if ( !arg->field_18 )
+    {
+        if ( !strcasecmp(arg->p1, "new_video") )
+        {
+            arg->field_18 = 1;
+            return 1;
+        }
+        else
+            return 3;
+    }
+    else
+    {
+        if ( !strcasecmp(arg->p1, "end") )
+        {
+            NC_STACK_win3d *win3d = NULL;
+            gfxEngine__getter(0x8000300D, &win3d, 0);
+
+            if ( win3d )
+            {
+                int txt16bit;
+                int simple_d3d;
+
+                call_vtbl(win3d, 3, 0x80005003, &txt16bit, 0);
+                call_vtbl(win3d, 3, 0x80005004, &simple_d3d, 0);
+
+                if ( simple_d3d )
+                    usr->GFX_flags |= 8;
+                else
+                    usr->GFX_flags &= 0xF7;
+
+                if ( txt16bit )
+                    usr->GFX_flags |= 0x10;
+                else
+                    usr->GFX_flags &= 0xEF;
+            }
+
+            arg->field_18 = 0;
+
+            return 2;
+        }
+
+        if ( !arg->dataForStore )
+            return 0;
+
+        usr->snd__flags1 |= 4;
+
+        if ( !strcasecmp(arg->p1, "videomode") )
+        {
+            int v5 = atoi(arg->p2);
+
+            video_mode_node *nod = (video_mode_node *)usr->video_mode_list.head;
+            video_mode_node *vdmd = NULL;
+            int v7 = 0;
+
+            while (nod->next)
+            {
+                if (v5 == nod->sort_id)
+                {
+                    vdmd = nod;
+                    break;
+                }
+
+                v7++;
+                nod = (video_mode_node *)nod->next;
+            }
+
+            if ( !vdmd )
+            {
+                ypa_log_out("Warning: This machine doesn't support mode %d\n", v5);
+
+                v7 = 0;
+
+                while (nod->next)
+                {
+                    if (nod->sort_id == 0x2801E0)
+                    {
+                        vdmd = nod;
+                        break;
+                    }
+
+                    v7++;
+                    nod = (video_mode_node *)nod->next;
+                }
+            }
+
+            usr->field_FBE = v7;
+            usr->p_ypaworld->game_default_res = vdmd->sort_id;
+            usr->game_default_res = vdmd->sort_id;
+        }
+        else if ( !strcasecmp(arg->p1, "farview") )
+        {
+            if ( !strcasecmp(arg->p2, "yes") )
+            {
+                usr->GFX_flags |= 1;
+                sub_46D370(ywo, 1);
+            }
+            else
+            {
+                usr->GFX_flags &= 0xFE;
+                sub_46D370(ywo, 0);
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "filtering") )
+        {
+        }
+        else if ( !strcasecmp(arg->p1, "drawprimitive") )
+        {
+            if ( !strcasecmp(arg->p2, "yes") )
+            {
+                usr->GFX_flags |= 8;
+            }
+            else
+            {
+                usr->GFX_flags &= 0xF7;
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "16bittexture") )
+        {
+            if ( !strcasecmp(arg->p2, "yes") )
+            {
+                usr->GFX_flags |= 0x10;
+            }
+            else
+            {
+                usr->GFX_flags &= 0xEF;
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "softmouse") )
+        {
+            if ( !strcasecmp(arg->p2, "yes") )
+            {
+                usr->GFX_flags |= 4;
+                usr->p_ypaworld->field_73CE |= 0x40;
+
+                call_vtbl(usr->p_ypaworld->win3d, 2, 0x80005000, 1, 0);
+            }
+            else
+            {
+                usr->GFX_flags &= 0xFB;
+                usr->p_ypaworld->field_73CE &= 0xBF;
+
+                call_vtbl(usr->p_ypaworld->win3d, 2, 0x80005000, 0, 0);
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "palettefx") )
+        {
+        }
+        else if ( !strcasecmp(arg->p1, "heaven") )
+        {
+            if ( !strcasecmp(arg->p2, "yes") )
+            {
+                usr->GFX_flags |= 2;
+                call_vtbl(ywo, 2, 0x8000200C, 1, 0);
+            }
+            else
+            {
+                usr->GFX_flags &= 0xFD;
+                call_vtbl(ywo, 2, 0x8000200C, 0, 0);
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "fxnumber") )
+        {
+            usr->fxnumber = atoi(arg->p2);
+            usr->p_ypaworld->fxnumber = usr->fxnumber;
+        }
+        else if ( !strcasecmp(arg->p1, "enemyindicator") )
+        {
+            if ( !strcasecmp(arg->p2, "yes") )
+            {
+                usr->p_ypaworld->field_73CE |= 0x20;
+                usr->enemyindicator = 1;
+            }
+            else
+            {
+                usr->p_ypaworld->field_73CE &= 0xDF;
+                usr->enemyindicator = 0;
+            }
+        }
+        else
+            return 3;
+        return 0;
+    }
+}
+
+int parseSaveSound(scrCallBack *arg)
+{
+    if ( !arg->field_18 )
+    {
+        if ( !strcasecmp(arg->p1, "new_sound") )
+        {
+            arg->field_18 = 1;
+            return 1;
+        }
+        else
+            return 3;
+    }
+    else
+    {
+        if ( !strcasecmp(arg->p1, "end") )
+        {
+            arg->field_18 = 0;
+            return 2;
+        }
+
+        UserData *usr = (UserData *)arg->dataForStore;
+
+        if ( !usr )
+            return 0;
+
+        usr->snd__flags1 |= 8;
+
+        if ( !strcasecmp(arg->p1, "channels") )
+        {
+        }
+        else if ( !strcasecmp(arg->p1, "volume") )
+        {
+            usr->snd__volume = atoi(arg->p2);
+            milesEngine__setter(0x80004003, usr->snd__volume, 0);
+        }
+        else if ( !strcasecmp(arg->p1, "cdvolume") )
+        {
+            int v4 = atoi(arg->p2);
+
+            usr->snd__cdvolume = v4;
+
+            sub_4448C0(&v4);
+        }
+        else if ( !strcasecmp(arg->p1, "invertlr") )
+        {
+            if ( !strcasecmp(arg->p2, "yes") )
+            {
+                usr->snd__flags2 |= 1;
+                milesEngine__setter(0x80004005, 1, 0);
+            }
+            else
+            {
+                usr->snd__flags2 &= 0xFE;
+                milesEngine__setter(0x80004005, 0, 0);
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "sound") )
+        {
+        }
+        else if ( !strcasecmp(arg->p1, "cdsound") )
+        {
+            if ( !strcasecmp(arg->p2, "yes") )
+            {
+                usr->snd__flags2 |= 0x10;
+                usr->p_ypaworld->snd__cdsound |= 1;
+
+                CDAUDIO_t v10;
+                v10.command = 8;
+                v10.track_id = 1;
+
+                sub_4444D4(&v10);
+            }
+            else
+            {
+                usr->snd__flags2 &= 0xEF;
+                usr->p_ypaworld->snd__cdsound &= 0xFE;
+
+                CDAUDIO_t v10;
+                v10.command = 8;
+                v10.track_id = 0;
+
+                sub_4444D4(&v10);
+            }
+        }
+        else
+            return 3;
+
+        return 0;
+    }
+}
+
+
+int level_id;
+
+int parseSaveLevelStatus(scrCallBack *arg)
+{
+    _NC_STACK_ypaworld *yw = NULL;
+
+    if ( arg->dataForStore )
+        yw = (_NC_STACK_ypaworld *)arg->dataForStore;
+
+    if ( !arg->field_18 )
+    {
+        if ( !strcasecmp(arg->p1, "begin_levelstatus") )
+        {
+            arg->field_18 = 1;
+            level_id = atoi(arg->p2);
+            return 1;
+        }
+        else
+            return 3;
+    }
+    else
+    {
+        if ( !strcasecmp(arg->p1, "end") )
+        {
+            arg->field_18 = 0;
+            return 2;
+        }
+        else
+        {
+            if ( arg->dataForStore )
+            {
+                uint8_t *v5 = (BYTE *)arg->world;
+
+                if ( v5 )
+                    *v5 |= 0x10;
+
+                if ( !strcasecmp(arg->p1, "status") )
+                {
+                    if ( yw->LevelNet->mapInfos[level_id].field_0 )
+                        yw->LevelNet->mapInfos[level_id].field_0 = atoi(arg->p2);
+                }
+                else
+                    return 3;
+            }
+            return 0;
+        }
+    }
+}
+
+
+int parseSaveBuddy(scrCallBack *arg)
+{
+    _NC_STACK_ypaworld *yw = NULL;
+
+    if ( arg->dataForStore )
+        yw = (_NC_STACK_ypaworld *)arg->dataForStore;
+
+    if ( !arg->field_18 )
+    {
+        if ( !strcasecmp(arg->p1, "begin_buddy") )
+        {
+            arg->field_18 = 1;
+            return 1;
+        }
+        else
+            return 3;
+    }
+    else
+    {
+        if ( !strcasecmp(arg->p1, "end") )
+        {
+            arg->field_18 = 0;
+
+            if ( arg->dataForStore )
+                yw->field_2d90->buddies_count++;
+
+            return 2;
+        }
+
+        if ( arg->dataForStore )
+        {
+            if ( !strcasecmp(arg->p1, "commandid") )
+            {
+                yw->field_2d90->buddies[ yw->field_2d90->buddies_count ].commandid = atoi(arg->p2);
+            }
+            else if ( !strcasecmp(arg->p1, "type") )
+            {
+                yw->field_2d90->buddies[ yw->field_2d90->buddies_count ].type = atoi(arg->p2);
+            }
+            else if ( !strcasecmp(arg->p1, "energy") )
+            {
+                yw->field_2d90->buddies[ yw->field_2d90->buddies_count ].energy = atoi(arg->p2);
+            }
+            else
+                return 3;
+        }
+
+        return 0;
+    }
+}
+
+void yw_parse_status(save_status *status, char *txt)
+{
+    memset(status, 0, sizeof(save_status));
+
+    char *v5 = strtok(txt, " _");
+    if ( v5 )
+        status->p1 = atoi(v5);
+
+    v5 = strtok(0, " _");
+    if ( v5 )
+        status->p2 = atoi(v5);
+
+    v5 = strtok(0, " _");
+    if ( v5 )
+        status->p3 = atoi(v5);
+
+    v5 = strtok(0, " _");
+    if ( v5 )
+        status->p4 = atoi(v5);
+
+    v5 = strtok(0, " _");
+    if ( v5 )
+        status->p5 = atoi(v5);
+
+    v5 = strtok(0, " _");
+    if ( v5 )
+        status->p6 = atoi(v5);
+
+    for (int i = 0; i < 8; i++)
+    {
+        v5 = strtok(0, " _");
+        if ( v5 )
+            status->pX[i] = atoi(v5);
+    }
+}
+
+int parseSaveShell(scrCallBack *arg)
+{
+    UserData *usr = (UserData *)arg->dataForStore;
+    _NC_STACK_ypaworld *yw = usr->p_ypaworld;
+    NC_STACK_ypaworld *ywo = (NC_STACK_ypaworld *)&arg->world->self_full;
+
+    if ( !arg->field_18 )
+    {
+        if ( !strcasecmp(arg->p1, "new_shell") )
+        {
+            arg->field_18 = 1;
+            return 1;
+        }
+        else
+            return 3;
+    }
+    else
+    {
+        if ( !strcasecmp(arg->p1, "end") )
+        {
+            yw->field_739A = 1;
+            arg->field_18 = 0;
+            return 2;
+        }
+
+        usr->snd__flags1 |= 0x20;
+
+        char v12[300];
+        strncpy(v12, arg->p2, 299);
+
+        if ( !strcasecmp(arg->p1, "LANGUAGE") )
+        {
+            langDll_node *nod = (langDll_node *)usr->lang_dlls.head;
+
+            langDll_node * deflt = NULL;
+            langDll_node * slct = NULL;
+
+            while ( nod->next )
+            {
+                if ( !strcasecmp(nod->langDllName, arg->p2) )
+                    slct = nod;
+                if ( !strcasecmp(nod->langDllName, "language") )
+                    deflt = nod;
+
+                nod = (langDll_node *)nod->next;
+            }
+
+            if ( slct )
+                usr->default_lang_dll = slct;
+            else
+                usr->default_lang_dll = deflt;
+
+            usr->prev_lang = usr->default_lang_dll;
+
+            if ( !call_method(ywo, 175, usr) )
+            {
+                ypa_log_out("Unable to set new language\n");
+            }
+        }
+        else if ( !strcasecmp(arg->p1, "SOUND") || !strcasecmp(arg->p1, "VIDEO") ||
+                  !strcasecmp(arg->p1, "INPUT") || !strcasecmp(arg->p1, "DISK") ||
+                  !strcasecmp(arg->p1, "LOCALE") || !strcasecmp(arg->p1, "NET") ||
+                  !strcasecmp(arg->p1, "FINDER") || !strcasecmp(arg->p1, "LOG") ||
+                  !strcasecmp(arg->p1, "ENERGY") || !strcasecmp(arg->p1, "MESSAGE") ||
+                  !strcasecmp(arg->p1, "MAP") )
+        {
+
+        }
+        else if ( !strcasecmp(arg->p1, "robo_map_status") )
+        {
+            yw_parse_status(&yw->robo_map_status, arg->p2);
+        }
+        else if ( !strcasecmp(arg->p1, "robo_finder_status") )
+        {
+            yw_parse_status(&yw->robo_finder_status, arg->p2);
+        }
+        else if ( !strcasecmp(arg->p1, "vhcl_map_status") )
+        {
+            yw_parse_status(&yw->vhcl_map_status, arg->p2);
+        }
+        else if ( !strcasecmp(arg->p1, "vhcl_finder_status") )
+        {
+            yw_parse_status(&yw->vhcl_finder_status, arg->p2);
+        }
+        else
+            return 3;
         return 0;
     }
 }

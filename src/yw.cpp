@@ -4497,8 +4497,152 @@ size_t ypaworld_func166(NC_STACK_ypaworld *obj, class_stru *zis,const char **lan
 }
 
 
-void ypaworld_func167(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func167__sub0(UserData *usr)
 {
+    button_66arg v9;
+    v9.butID = 1050;
+    v9.field_4 = ((usr->p_ypaworld->field_73CE & 4) != 0) + 1;
+
+    call_method(usr->button_input_button, 73, &v9);
+
+    v9.butID = 1061;
+    v9.field_4 = (usr->inp_altjoystick == 0) + 1;
+    call_method(usr->button_input_button, 73, &v9);
+
+    v9.butID = 1055;
+    v9.field_4 = ((usr->p_ypaworld->field_73CE & 8) != 0) + 1;
+    call_method(usr->button_input_button, 73, &v9);
+
+    if ( usr->field_D36 )
+    {
+        int v7 = usr->field_D36 - 1;
+        int v8 = usr->input_listview.element_count_max + usr->input_listview.scroll_pos;
+
+        if ( v7 >= usr->input_listview.scroll_pos && v7 < v8 )
+        {
+            if ( v8 > usr->input_listview.elements_for_scroll_size )
+                usr->input_listview.scroll_pos = usr->input_listview.elements_for_scroll_size - usr->input_listview.element_count_max;
+
+            if ( usr->input_listview.scroll_pos < 0 )
+                usr->input_listview.scroll_pos = 0;
+        }
+        else if ( usr->input_listview.elements_for_scroll_size - v7 <= usr->input_listview.element_count_max )
+        {
+            usr->input_listview.scroll_pos = usr->input_listview.elements_for_scroll_size - usr->input_listview.element_count_max;
+        }
+        else
+        {
+            usr->input_listview.scroll_pos = v7;
+        }
+    }
+}
+
+// Update menu values
+void ypaworld_func167(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
+{
+    if ( usr->field_1612 )
+    {
+        sub_4DDFA4(&usr->disk_listvw, usr->field_1612 - 1);
+
+        button_66arg v18;
+        v18.field_4 = 1;
+        v18.butID = 1101;
+        call_method(usr->disk_button, 66, &v18);
+
+        v18.butID = 1102;
+        call_method(usr->disk_button, 66, &v18);
+
+        v18.butID = 1103;
+        call_method(usr->disk_button, 66, &v18);
+    }
+    else
+    {
+        button_66arg v18;
+        v18.field_4 = 1;
+        v18.butID = 1101;
+        call_method(usr->disk_button, 67, &v18);
+
+        v18.butID = 1102;
+        call_method(usr->disk_button, 67, &v18);
+
+        v18.butID = 1103;
+        call_method(usr->disk_button, 67, &v18);
+    }
+
+    button_66arg v16;
+    v16.butID = 1151;
+    v16.field_4 = ((usr->snd__flags2 & 1) == 0) + 1;
+
+    call_method(usr->video_button, 73, &v16);
+
+
+    v16.butID = 1150;
+    v16.field_4 = ((usr->GFX_flags & 0x10) == 0) + 1;
+    call_method(usr->video_button, 73, &v16);
+
+    v16.field_4 = ((usr->snd__flags2 & 0x10) == 0) + 1;
+    v16.butID = 1164;
+    call_method(usr->video_button, 73, &v16);
+
+    int v19;
+    v19 = 1152;
+
+    button_str2_t2 *tmp = (button_str2_t2 *)call_method(usr->video_button, 74, &v19);
+    tmp->field_0 = usr->snd__volume;
+
+    call_method(usr->video_button, 75, &v19);
+
+
+    v19 = 1154;
+    tmp = (button_str2_t2 *)call_method(usr->video_button, 74, &v19);
+    tmp->field_0 = usr->snd__cdvolume;
+
+    call_method(usr->video_button, 75, &v19);
+
+    v16.butID = 1163;
+    v16.field_4 = (usr->enemyindicator == 0) + 1;
+    call_method(usr->video_button, 73, &v16);
+
+    v16.butID = 1157;
+    v16.field_4 = ((usr->GFX_flags & 1) == 0) + 1;
+    call_method(usr->video_button, 73, &v16);
+
+    v16.field_4 = ((usr->GFX_flags & 2) == 0) + 1;
+    v16.butID = 1160;
+    call_method(usr->video_button, 73, &v16);
+
+    v16.butID = 1165;
+    v16.field_4 = ((usr->GFX_flags & 4) == 0) + 1;
+    call_method(usr->video_button, 73, &v16);
+
+    v16.butID = 1166;
+    v16.field_4 = ((usr->GFX_flags & 8) == 0) + 1;
+    call_method(usr->video_button, 73, &v16);
+
+    video_mode_node *node = (video_mode_node *)usr->video_mode_list.head;
+
+    while (node->next)
+    {
+        if (usr->p_ypaworld->game_default_res == node->sort_id )
+            break;
+
+        node = (video_mode_node *)node->next;
+    }
+
+    button_71arg v15;
+    v15.field_4 = node->name;
+    v15.field_8 = node->name;
+    v15.butID = 1156;
+
+    call_method(usr->video_button, 71, &v15);
+
+    v19 = 1159;
+    tmp = (button_str2_t2 *)call_method(usr->video_button, 74, &v19);
+    tmp->field_0 = usr->fxnumber;
+
+    call_method(usr->video_button, 75, &v19);
+
+    ypaworld_func167__sub0(usr);
 }
 
 
@@ -4517,13 +4661,238 @@ void ypaworld_func170(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
-void ypaworld_func171(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+// Saving game
+size_t ypaworld_func171(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg172 *arg)
 {
+    UserData *usr = arg->usr;
+
+    if ( !arg->usertxt || !arg->field_4 )
+    {
+        ypa_log_out("No names for save action\n");
+        return 0;
+    }
+
+    char a1a[300];
+    sprintf(a1a, "save:%s", arg->usertxt);
+
+    FILE *sfil = FOpen(a1a, "w");
+
+    if ( !sfil )
+        return 1;
+
+    if ( arg->field_8 & 1 && !yw_write_user(sfil, usr) )
+    {
+        ypa_log_out("Unable to write user data to file\n");
+        FClose(sfil);
+        return 0;
+    }
+
+    if ( arg->field_8 & 2 && !yw_write_input(sfil, usr) )
+    {
+        ypa_log_out("Unable to write input data to file\n");
+        FClose(sfil);
+        return 0;
+    }
+
+    if ( arg->field_8 & 8 && !yw_write_sound(sfil, usr) )
+    {
+        ypa_log_out("Unable to write sound data to file\n");
+        FClose(sfil);
+        return 0;
+    }
+
+    if ( arg->field_8 & 4 && !yw_write_video(sfil, usr) )
+    {
+        ypa_log_out("Unable to write video data to file\n");
+        FClose(sfil);
+        return 0;
+    }
+
+    if ( arg->field_8 & 0x10 && !yw_write_levels_statuses(sfil, usr->p_ypaworld) )
+    {
+        ypa_log_out("Unable to write score data to file\n");
+        FClose(sfil);
+        return 0;
+    }
+
+    if ( arg->field_8 & 0x80 && !yw_write_buddies(sfil, usr->p_ypaworld) )
+    {
+        ypa_log_out("Unable to write buddies to file\n");
+        FClose(sfil);
+        return 0;
+    }
+
+    if ( arg->field_8 & 0x20 && !yw_write_shell(sfil, usr) )
+    {
+        ypa_log_out("Unable to write shell data to file\n");
+        FClose(sfil);
+        return 0;
+    }
+
+    if ( arg->field_8 & 0x40 && !yw_write_item_modifers(usr->p_ypaworld, sfil) )
+    {
+        ypa_log_out("Unable to write build info to file\n");
+        FClose(sfil);
+        return 0;
+    }
+
+    FClose(sfil);
+    return 1;
 }
 
 
-void ypaworld_func172(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+
+int ypaworld_func172__sub0(UserData *usr, const char *fname, int parsers_mask, NC_STACK_ypaworld *ywo)
 {
+    scrCallBack v18[10];
+
+    memset(v18, 0, sizeof(v18));
+
+    int parsers_number = 0;
+
+    if ( parsers_mask & 1 )
+    {
+        v18[parsers_number].world = (_NC_STACK_ypaworld *)ywo;
+        v18[parsers_number].func = parseSaveUser;
+        v18[parsers_number].world2 = usr->p_ypaworld;
+
+        parsers_number++;
+    }
+
+    if ( parsers_mask & 2 )
+    {
+        v18[parsers_number].world = (_NC_STACK_ypaworld *)ywo;
+        v18[parsers_number].func = parseSaveInput;
+        v18[parsers_number].dataForStore = usr;
+
+        parsers_number++;
+    }
+
+    if ( parsers_mask & 4 )
+    {
+        v18[parsers_number].world = (_NC_STACK_ypaworld *)ywo;
+        v18[parsers_number].func = parseSaveVideo;
+        v18[parsers_number].dataForStore = usr;
+
+        parsers_number++;
+    }
+
+    if ( parsers_mask & 8 )
+    {
+        v18[parsers_number].world = (_NC_STACK_ypaworld *)ywo;
+        v18[parsers_number].func = parseSaveSound;
+        v18[parsers_number].dataForStore = usr;
+
+        parsers_number++;
+    }
+
+    if ( parsers_mask & 0x10 )
+    {
+        v18[parsers_number].world = (_NC_STACK_ypaworld *)&usr->snd__flags1;
+        v18[parsers_number].func = parseSaveLevelStatus;
+        v18[parsers_number].dataForStore = usr->p_ypaworld;
+
+        parsers_number++;
+    }
+
+    if ( parsers_mask & 0x80 )
+    {
+        v18[parsers_number].func = parseSaveBuddy;
+        v18[parsers_number].dataForStore = usr->p_ypaworld;
+
+        parsers_number++;
+    }
+
+    if ( parsers_mask & 0x20 )
+    {
+        v18[parsers_number].world = (_NC_STACK_ypaworld *)ywo;
+        v18[parsers_number].func = parseSaveShell;
+        v18[parsers_number].dataForStore = usr->p_ypaworld;
+
+        parsers_number++;
+    }
+
+    if ( parsers_mask & 0x40 )
+    {
+        v18[parsers_number].world = usr->p_ypaworld;
+        v18[parsers_number].func = VhclProtoParser;
+
+        parsers_number++;
+
+        v18[parsers_number].world = usr->p_ypaworld;
+        v18[parsers_number].func = WeaponProtoParser;
+
+        parsers_number++;
+
+        v18[parsers_number].world2 = usr->p_ypaworld;
+        v18[parsers_number].func = BuildProtoParser;
+
+        parsers_number++;
+    }
+
+    return def_parseFile(fname, parsers_number, v18, 2);
+}
+
+// Load user save
+size_t ypaworld_func172(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg172 *arg)
+{
+    char a1a[300];
+
+    UserData *usr = arg->usr;
+
+    if ( arg->field_8 & 0x10 )
+    {
+        if ( usr->field_0x8 )
+        {
+            usr->field_0x8 = 0;
+        }
+        else
+        {
+            sprintf(a1a, "%s/user.txt", usr->user_name);
+
+            yw_arg172 v12;
+            v12.usr = usr;
+            v12.usertxt = a1a;
+            v12.field_10 = 0;
+            v12.field_4 = usr->user_name;
+            v12.field_8 = 255;
+
+            call_method(obj, 171, &v12);
+        }
+    }
+
+    usr->snd__flags1 = 0;
+
+    if ( arg->field_8 & 0x80 )
+        usr->p_ypaworld->field_2d90->buddies_count = 0;
+
+    char buf[300];
+    sprintf(buf, "save:%s", arg->usertxt);
+
+    if ( !ypaworld_func172__sub0(usr, buf, arg->field_8, obj) )
+    {
+        ypa_log_out("Error while loading information from %s\n", arg->usertxt);
+        return 0;
+    }
+
+    if ( (arg->field_10 & 1) && !usr->field_0x0 && !call_method(obj, 156, usr) ) // Init menus
+    {
+        ypa_log_out("Unable to open GameShell\n");
+        return 0;
+    }
+
+    if ( arg->field_8 & 0x10 && usr->snd__flags1 & 0x10 )
+    {
+        strcpy(usr->user_name, arg->field_4);
+    }
+
+    if ( arg->field_8 & 2 )
+        sub_457BC0(usr);
+
+    if ( arg->field_10 & 1 )
+        call_method(obj, 167, usr); // Update menu values
+
+    return 1;
 }
 
 

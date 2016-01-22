@@ -247,8 +247,67 @@ int WinMain__sub0__sub0()
 
 int yw_initGameWithSettings()
 {
-    printf("MAKE ME %s\n","yw_initGameWithSettings");
-    return 1;
+    FILE *user_def = FOpen("env:user.def", "r");
+
+    char a1[300];
+
+    if ( user_def )
+    {
+        char v11[300];
+
+        fgets(v11, 300, user_def);
+
+        sprintf(a1, "save:%s/user.txt", v11);
+
+        FILE *user_txt = FOpen(a1, "r");
+
+        if ( user_txt )
+        {
+            strcpy(userdata.user_name, v11);
+            sprintf(a1, "%s/user.txt", v11);
+        }
+        else
+        {
+            ypa_log_out("Warning: default user file doesn't exist (%s)\n", a1);
+            strcpy(a1, "sdu7/user.txt");
+            strcpy(userdata.user_name, "SDU7");
+        }
+
+        FClose(user_def);
+    }
+    else
+    {
+        strcpy(a1, "sdu7/user.txt");
+        strcpy(userdata.user_name, "SDU7");
+        ypa_log_out("Warning: No default user set\n");
+    }
+
+    userdata.field_1612 = -1;
+
+    int v8 = 1;
+    profilesNode *node = (profilesNode *)userdata.files_list.head;
+
+    while ( node->next )
+    {
+        if ( !strcasecmp(node->profile_subdir, userdata.user_name) )
+        {
+            userdata.field_1612 = v8;
+            break;
+        }
+
+        v8++;
+        node = (profilesNode *)node->next;
+    }
+
+    yw_arg172 v13;
+
+    v13.usertxt = a1;
+    v13.usr = &userdata;
+    v13.field_4 = userdata.user_name;
+    v13.field_8 = 255;
+    v13.field_10 = 1;
+
+    return call_method(ypaworld, 172, &v13) != 0;
 }
 
 void ReadSnapsDir()
@@ -309,7 +368,7 @@ int WinMain__sub0()
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE , LPSTR lpCmdLine, int nCmdShow)
 {
-    struct tagMSG Msg; // [sp+0h] [bp-28h]@8
+    struct tagMSG Msg;
 
     ghInstance = hInstance;
     gCmdShow = nCmdShow;
