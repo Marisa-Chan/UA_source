@@ -463,3 +463,23 @@ int removeDirectory(const char *path)
     correct_slashes_and_3_ext(tmp, tmp2, 256);
     return rmdir(tmp2) == 0;
 }
+
+
+int createdir(const char *a1)
+{
+    if ( CreateDirectory(a1, 0) )
+        return 0;
+
+    return -1;
+}
+
+int createDirectory(const char *a1)
+{
+    char src[256];
+    char v3[256];
+
+    file_path_copy_manipul(a1, src, 256);
+    correct_slashes_and_3_ext(src, v3, 256);
+
+    return createdir(v3) == 0;
+}

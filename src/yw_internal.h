@@ -123,4 +123,11 @@ int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base);
 
 NC_STACK_bitmap * sub_44816C(NC_STACK_bitmap *src, const char *name);
 
+void ypaworld_func158__sub3(_NC_STACK_ypaworld *yw, UserData *usr);
+
+int sub_449678(_NC_STACK_ypaworld *yw, struC5 *struc, int kkode);
+void sub_46D0F8(const char *path);
+
+int init_prototypes(_NC_STACK_ypaworld *yw);
+
 #endif

@@ -756,7 +756,9 @@ struct _NC_STACK_ypaworld
 
     NC_STACK_ilbm *pointers[11];
     bitmap_intern *pointers__bitm[11];
+    int field_1b1c;
 
+    int field_2424;
 
     recorder *sceneRecorder;
 
@@ -797,6 +799,8 @@ struct _NC_STACK_ypaworld
     NC_STACK_windp *windp;
 
     int field_757E;
+
+    int field_7586;
 
     int field_759A;
     int field_759E;
@@ -1217,5 +1221,10 @@ struct yw_arg161
     int field_4;
 };
 
+struct yw_174arg
+{
+    int resolution;
+    int make_changes;
+};
 
 #endif

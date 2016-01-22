@@ -31,13 +31,6 @@ struct texCache
     texStru *txStru;
 };
 
-struct xyz
-{
-    float sx;
-    float sy;
-    float sz;
-};
-
 struct polysDatSub
 {
     int renderFlags;

@@ -3097,6 +3097,43 @@ void win3d_func274__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, FILE *fil
                 pos += ril_width;
             }
         }
+        else if ( BytesPerColor == 4 )
+        {
+            int pos = 0;
+            for (int j = 0; j < height; j++)
+            {
+                DWORD *line = (DWORD *)wdd->surface_locked_surfaceData + pos;
+
+                for (int i = 0; i < width; i++)
+                {
+                    DWORD px = line[i];
+
+                    DWORD r = px & fmt->dwRBitMask;
+                    if (fmt->dwRShift <= 0)
+                        r <<= -fmt->dwRShift;
+                    else
+                        r >>= fmt->dwRShift;
+
+                    DWORD g = px & fmt->dwGBitMask;
+                    if (fmt->dwGShift <= 0)
+                        g <<= -fmt->dwGShift;
+                    else
+                        g >>= fmt->dwGShift;
+
+                    DWORD b = px & fmt->dwBBitMask;
+                    if (fmt->dwBShift <= 0)
+                        b <<= -fmt->dwBShift;
+                    else
+                        b >>= fmt->dwBShift;
+
+                    fputc(r, fil);
+                    fputc(g, fil);
+                    fputc(b, fil);
+                }
+
+                pos += ril_width;
+            }
+        }
     }
 }
 

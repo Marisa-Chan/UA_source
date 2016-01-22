@@ -3,6 +3,8 @@
 
 #include "nucleas.h"
 #include "nlist.h"
+
+#include "engine_tform.h"
 #include "skeleton.h"
 
 extern class_stored base_class_off;
@@ -10,19 +12,6 @@ extern class_stored base_class_off;
 
 struct NC_STACK_base;
 struct NC_STACK_skeleton;
-
-struct mat3x3
-{
-    float m00;
-    float m01;
-    float m02;
-    float m10;
-    float m11;
-    float m12;
-    float m20;
-    float m21;
-    float m22;
-};
 
 struct base_node: public nnode
 {

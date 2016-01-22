@@ -15,7 +15,14 @@ stored_functions_engine miles_engine_vtbl = {milesEngine__init, milesEngine__dei
 
 class_stored miles_engine_off (NULL, NULL, "MC2engines:miles.engine", classvtbl_get_milesEngine);
 
+userdata_sample_info *soundSources[8];
+int ShakeFXs[4];
+int palFXs[8];
 
+int dword_546DD8;
+xyz stru_547018;
+xyz stru_547024;
+mat3x3 stru_547030;
 
 
 
@@ -95,11 +102,42 @@ void sub_424000(samples_collection1 *smpls, int a2)
 
 int sub_4448C0(int *a1)
 {
-    printf("STUB %s\n", "sub_4448C0");
+    //printf("STUB %s\n", "sub_4448C0");
     return 1;//AIL_driver && dword_546DDC && AIL_redbook_set_volume(AIL_driver, *a1) == *a1;
 }
 
 void sub_423DD8(samples_collection1 *smpls)
 {
     printf("STUB %s\n", "sub_423DD8");
+}
+
+void sb_0x4242e0(samples_collection1 *smpls)
+{
+    //printf("STUB %s\n", "sb_0x4242e0");
+}
+
+void sb_0x424c74()
+{
+    printf("STUB %s\n", "sb_0x424c74");
+}
+
+void sub_423EFC(int a1, xyz *a2, xyz *a3, mat3x3 *a4)
+{
+    dword_546F10 += a1;
+
+    stru_547018.sx = a2->sx;
+    stru_547018.sy = a2->sy;
+    stru_547018.sz = a2->sz;
+
+    stru_547024.sx = a3->sx;
+    stru_547024.sy = a3->sy;
+    stru_547024.sz = a3->sz;
+
+    memcpy(&stru_547030, a4, sizeof(mat3x3));
+
+    memset(soundSources, 0, sizeof(stored_functions) * 8);
+    memset(palFXs, 0, sizeof(int) * 8);
+    memset(ShakeFXs, 0, sizeof(int) * 4);
+
+    dword_546DD8 = dword_546F10;
 }

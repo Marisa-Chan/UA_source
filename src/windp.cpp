@@ -279,3 +279,29 @@ void sub_46D698(UserData *usr)
 {
     printf("MAKE ME %s (multiplayer)\n", "sub_46D698");
 }
+
+void ypaworld_func158__sub1(UserData *usr)
+{
+    printf("MAKE ME %s (multiplayer)\n", "ypaworld_func158__sub1");
+}
+
+void ypaworld_func158__sub2(_NC_STACK_ypaworld *yw)
+{
+    printf("MAKE ME %s (multiplayer)\n", "ypaworld_func158__sub2");
+}
+
+int ypaworld_func158__sub0__sub8(UserData *usr, const char**, const char**)
+{
+    printf("MAKE ME %s (multiplayer)\n", "ypaworld_func158__sub0__sub8");
+    return 0;
+}
+
+void sb_0x4deac0(UserData *usr)
+{
+    printf("MAKE ME %s (multiplayer)\n", "sb_0x4deac0");
+}
+
+void yw_netcleanup(_NC_STACK_ypaworld *yw)
+{
+    printf("MAKE ME %s (multiplayer)\n", "yw_netcleanup");
+}

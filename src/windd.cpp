@@ -3783,10 +3783,26 @@ void windd_func324(NC_STACK_windd *, class_stru *, wdd_func324arg *inout)
     }
 }
 
-size_t windd_func325(void *, class_stru *, stack_vals *)
+void windd_func325(void *, class_stru *, wdd_func324arg *arg)
 {
-    printf("MAKE ME %s\n","windd_func325");
-    return 0;
+    const char *v4 = arg->guid;
+    const char *v5 = "<error>";
+
+    if ( v4 )
+    {
+        if ( !strcmp(v4, "<primary>") )
+        {
+            v5 = v4;
+            v4 = NULL;
+        }
+        if ( !strcmp(v4, "<software>") )
+        {
+            v5 = v4;
+            v4 = NULL;
+        }
+    }
+
+    out_guid_to_file("env/guid3d.def", (GUID *)v4, v5);
 }
 
 

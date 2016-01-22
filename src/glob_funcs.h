@@ -136,5 +136,6 @@ void CloseDir(ncDir *dir);
 void sub_412810(const char *a1, char *a2, int num);
 int delete_file(const char *path);
 int removeDirectory(const char *path);
+int createDirectory(const char *a1);
 
 #endif // GLOB_FUNCS_H_INCLUDED

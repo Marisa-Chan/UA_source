@@ -4052,7 +4052,7 @@ void ypaworld_func157(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
 }
 
-
+//Draw bkg or briefing
 void ypaworld_func158__sub4(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *struc5)
 {
     if ( usr->field_4A )
@@ -4077,10 +4077,140 @@ void ypaworld_func158__sub4(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *struc
 }
 
 
+char byte_5AFC10[64];
+
+char * sb_0x481264__sub0(_NC_STACK_ypaworld *yw, int a2)
+{
+    byte_5AFC10[0] = 0;
+
+    if (  !yw->GameShell || !keySS[a2].title_by_language )
+        return NULL;
+
+    sprintf(byte_5AFC10, "[%s]", keySS[a2].title_by_language);
+    return byte_5AFC10;
+}
+
+void draw_tooltip(_NC_STACK_ypaworld *yw)
+{
+    if ( yw->field_17c0 || (yw->field_17c4 && !yw->field_1b1c) )
+    {
+        const char *tooltip = get_lang_string(yw->string_pointers_p2, yw->field_17c4 + 800, yw->tooltips[ yw->field_17c4 ]);
+        int v15 = -(yw->font_default_h + yw->icon0___h + yw->font_default_h / 4);
+        char *v2 = NULL;
+        if ( yw->field_17c8 )
+        {
+            NC_STACK_input *v13;
+            inputEngine__getter(0x80001009, &v13, 0);
+
+            int v11[2];
+            v11[0] = 0;
+            v11[1] = yw->field_17c8;
+
+            input__func66__params v9;
+
+            v9.funcID = 70;
+            v9.vals = &v11;
+            v9.field_0 = 3;
+            v9.field_4 = 0;
+
+            call_method(v13, 66, &v9);
+
+            if ( v11[0] )
+            {
+                v2 = sb_0x481264__sub0(yw, v11[0]);
+                if ( v2 )
+                    v15 = -(yw->icon0___h + 2 * yw->font_default_h + yw->font_default_h / 4);
+            }
+        }
+
+        char buf[1024];
+
+        char *pos = buf;
+
+        fntcmd_select_tileset(&pos, 15);
+        fntcmd_set_xpos(&pos, 0);
+        fntcmd_set_ypos(&pos, v15);
+
+        if ( v2 )
+        {
+            fntcmd_set_txtColor(&pos, yw->iniColors[61].r, yw->iniColors[61].g, yw->iniColors[61].b);
+
+            pos = sub_45148C(yw->tiles[15], pos, v2, yw->screen_width);
+
+            fntcmd_next_line(&pos);
+        }
+
+        fntcmd_set_txtColor(&pos, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
+
+        pos = sub_45148C(yw->tiles[15], pos, tooltip, yw->screen_width);
+
+        fntcmd_set_end(&pos);
+
+        w3d_a209 v10;
+
+        v10.cmdbuf = buf;
+        v10.includ = 0;
+
+        call_method(yw->win3d, 209, &v10);
+    }
+    yw->field_17c8 = 0;
+    yw->field_17c4 = 0;
+}
+
+//Make screenshot
+void sub_4476AC(_NC_STACK_ypaworld *yw)
+{
+    char a1a[256];
+    sprintf(a1a, "env/snaps/f_%04d", yw->field_2424);
+
+    yw->field_2424++;
+
+    NC_STACK_win3d *w3d;
+    gfxEngine__getter(0x8000300D, &w3d, 0);
+
+    char *v7 = a1a;
+
+    call_method(w3d, 274, &v7);
+}
+
+int word_5A50DA = 0;
+int word_5A50D8 = 0;
+
+int sub_46D3EC(struC5 *struc)
+{
+    int v1 = struc->winp131arg.flag & 0xFE;
+    int v2 = struc->winp131arg.move[0].x != word_5A50DA || word_5A50D8 != struc->winp131arg.move[0].y;
+
+    word_5A50DA = struc->winp131arg.move[0].x;
+    word_5A50D8 = struc->winp131arg.move[0].y;
+
+    return struc->downed_key_2 || struc->downed_key || struc->dword8 || v2 || v1;
+}
+
 void ypaworld_func158(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 {
     _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
     usr->field_0x2fbc = 0;
+
+    xyz stru_515034;
+    stru_515034.sx = 0;
+    stru_515034.sy = 0;
+    stru_515034.sz = 0;
+
+    mat3x3 stru_515040;
+    stru_515040.m00 = 1.0;
+    stru_515040.m01 = 0.0;
+    stru_515040.m02 = 0.0;
+    stru_515040.m10 = 0.0;
+    stru_515040.m11 = 1.0;
+    stru_515040.m12 = 0.0;
+    stru_515040.m20 = 0.0;
+    stru_515040.m21 = 0.0;
+    stru_515040.m22 = 1.0;
+
+    sub_423EFC(usr->field_3E, &stru_515034, &stru_515034, &stru_515040);
+
+    gfxEngine__getter(0x8000300D, &yw->win3d, 0);
 
     call_method(yw->win3d, 257);
 
@@ -4096,37 +4226,69 @@ void ypaworld_func158(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
     call_method(yw->win3d, 215);
 
-    //call_method(usr->titel_button, 69, usr->field_3A);
-    call_method(usr->confirm_button, 70, 0);
-    call_method(usr->titel_button, 70, 0);
-    call_method(usr->button_input_button, 70, 0);
-    call_method(usr->video_button, 70, 0);
-    call_method(usr->sub_bar_button, 70, 0);
-    call_method(usr->disk_button, 70, 0);
-    call_method(usr->network_button, 70, 0);
+    draw_tooltip(yw);
 
-
-    printf("%d \n", usr->field_46);
-
-
-    //lstvw_update_input(yw, &usr->input_listview, usr->field_3A);
-
-//    int v64 = usr->field_D36;
-//    usr->field_D36 = usr->input_listview.field_1DE + 1;
-//    if ( usr->input_listview.field_1D0 & 0x80 )
-//    {
-//        usr->keyConfig[v64].field_10 = 0;
-//    //      usr->field_D3A = 1;
-//    //     usr->field_D52 = 0;
-//    }
-//
-//    lstvw_update(yw, &usr->input_listview);
-    // yw_draw_input_list(yw, usr);
-
+    ypaworld_func158__sub3(yw, usr);
 
     call_method(yw->win3d, 216);
 
-    call_method(yw->win3d, 258);
+    if ( yw->field_757E )
+    {
+        yw->field_7586 -= usr->field_3E;
+        if ( yw->field_7586 <= 0 )
+        {
+//      v18 = 1;
+//      v17 = usr->callSIGN;
+//      v20 = 2;
+//      v19 = 0;
+//      v21 = 1;
+//
+//      call_method(yw->windp, 82, &v17);
+            yw->field_7586 = 100;
+        }
+    }
+
+    sb_0x4242e0(&usr->samples1_info);
+    sb_0x4242e0(&usr->samples2_info);
+    sb_0x4242e0(&usr->field_782);
+
+//  if ( usr->field_0x4 )
+//    nullsub_7();
+
+    call_method(yw->win3d, 258, 0);
+
+    if ( usr->field_0x4 )
+    {
+        usr->field_0x4 = 0;
+//    nullsub_7();
+    }
+
+    if ( sub_449678(yw, usr->field_3A, VK_MULTIPLY) )
+        sub_4476AC(yw);
+
+    if ( usr->field_1C3A == 4 )
+    {
+        ypaworld_func158__sub2(yw);
+        ypaworld_func158__sub1(usr);
+    }
+
+    int v15 = sub_46D3EC(usr->field_3A);
+
+    if ( v15 )
+        usr->field_5457 = usr->field_42;
+
+    if ( (usr->field_42 - usr->field_5457) > usr->field_545B && usr->field_46 == 1 )
+        usr->field_0x2fbc = 5;
+
+    usr->field_0xc = 0;
+
+    if ( yw->field_81AF )
+    {
+        const char *v22 = yw->field_81AF;
+        call_method(obj, 185, &v22);
+
+        yw->field_81AF = NULL;
+    }
 }
 
 

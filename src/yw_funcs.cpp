@@ -7,6 +7,7 @@
 #include "yw_internal.h"
 #include "lstvw.h"
 #include "font.h"
+#include "button.h"
 
 extern listview stru_5C91D0;
 
@@ -2722,3 +2723,448 @@ int sub_4DA41C(_NC_STACK_ypaworld *yw, mapProto *mapp, const char *fname)
     return def_parseFile(fname, 13, parsers, 1);
 }
 
+
+char * sub_4C4284(_NC_STACK_ypaworld *yw, listview *lstvw, char *out, const char *txt)
+{
+    char * tmp = out;
+
+    fntcmd_store_u8(&tmp, 123);
+    fntcmd_select_tileset(&tmp, 9);
+
+    fntcmd_store_u8(&tmp, 98);
+
+    fntcmd_set_txtColor(&tmp, yw->iniColors[62].r, yw->iniColors[62].g, yw->iniColors[62].b);
+
+    tmp = txtcmd_txt_w_bkg(yw->tiles[9], tmp, txt, lstvw->width - 4 * yw->font_default_w__b, 99);
+
+    fntcmd_store_u8(&tmp, 100);
+
+    fntcmd_select_tileset(&tmp, 0);
+
+    fntcmd_store_u8(&tmp, 125);
+    fntcmd_next_line(&tmp);
+
+    return tmp;
+}
+
+char * sub_4C41DC(_NC_STACK_ypaworld *yw, listview *lstvw, char *out, const char *txt)
+{
+
+    char * tmp = out;
+
+    fntcmd_store_u8(&tmp, 123);
+
+    fntcmd_set_txtColor(&tmp, yw->iniColors[61].r, yw->iniColors[61].g, yw->iniColors[61].b);
+
+    tmp = txtcmd_txt_w_bkg(yw->tiles[0], tmp, txt, lstvw->width - 2 * yw->font_default_w__b, 32);
+
+    fntcmd_store_u8(&tmp, 125);
+    fntcmd_next_line(&tmp);
+
+    return tmp;
+}
+
+void ypaworld_func158__video_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
+{
+    char *v3 = usr->video_listvw.data_cmdbuf;
+
+    lstvw_updlimits(yw, &usr->video_listvw, -2, -2);
+
+    v3 = lstvw_up_border(yw, &usr->video_listvw, v3, 0, "uvw");
+
+    int v5 = 0;
+
+    video_mode_node *v20 = (video_mode_node *)usr->video_mode_list.head;
+
+    while (v20->next)
+    {
+        if ( v5 >= usr->video_listvw.scroll_pos && v5 < usr->video_listvw.scroll_pos + usr->video_listvw.element_count)
+        {
+            if ( usr->video_listvw.field_1DE == v5 )
+                v3 = sub_4C4284(yw, &usr->video_listvw, v3, v20->name);
+            else
+                v3 = sub_4C41DC(yw, &usr->video_listvw, v3, v20->name);
+        }
+        v5++;
+        v20 = (video_mode_node *)v20->next;
+    }
+
+    if ( v5 >= 4 )
+        v5 = 4;
+
+    usr->video_listvw.element_count = v5;
+    v3 = lstvw_down_border(yw, &usr->video_listvw, v3, 0, "xyz");
+    fntcmd_set_end(&v3);
+
+    w3d_a209 v16;
+    v16.cmdbuf = usr->video_listvw.draw_cmd;
+    v16.includ = usr->video_listvw.field_1C4;
+
+    sub_423288(&v16);
+}
+
+void ypaworld_func158__d3d_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
+{
+    char *v3 = usr->d3d_listvw.data_cmdbuf;
+
+    lstvw_updlimits(yw, &usr->d3d_listvw, -2, -2);
+
+    v3 = lstvw_up_border(yw, &usr->d3d_listvw, v3, 0, "uvw");
+
+    int v5 = 0;
+
+    wdd_func324arg v15;
+    v15.name = NULL;
+    v15.guid = NULL;
+    v15.currr = 0;
+
+    call_method(yw->win3d, 324, &v15);
+
+    while (v15.name)
+    {
+        if ( v15.name )
+        {
+            const char *v6;
+
+            if ( !strcmp(v15.name, "software") )
+                v6 = get_lang_string(yw->string_pointers_p2, 2472, "2472 = Software");
+            else
+                v6 = v15.name;
+
+            if ( v5 >= usr->d3d_listvw.scroll_pos && v5 < usr->d3d_listvw.scroll_pos + usr->d3d_listvw.element_count )
+            {
+                if ( usr->d3d_listvw.field_1DE == v5 )
+                    v3 = sub_4C4284(yw, &usr->d3d_listvw, v3, v6);
+                else
+                    v3 = sub_4C41DC(yw, &usr->d3d_listvw, v3, v6);
+            }
+            v5++;
+        }
+        call_method(yw->win3d, 324, &v15);
+    }
+
+
+    if ( v5 >= 4)
+        usr->d3d_listvw.element_count = 4;
+    else
+        usr->d3d_listvw.element_count = v5;
+
+    usr->d3d_listvw.elements_for_scroll_size = v5;
+    v3 = lstvw_down_border(yw, &usr->d3d_listvw, v3, 0, "xyz");
+
+    fntcmd_set_end(&v3);
+
+    w3d_a209 v16;
+    v16.cmdbuf = usr->d3d_listvw.draw_cmd;
+    v16.includ = usr->d3d_listvw.field_1C4;
+
+    sub_423288(&v16);
+}
+
+char * sub_4DDF78(_NC_STACK_ypaworld *yw, listview *lstvw, char *pos, int a3)
+{
+    char *v3 = pos;
+
+    for ( int i = 0; i < a3; i++ )
+        v3 = sub_4C41DC(yw, lstvw, v3, " ");
+
+    return v3;
+}
+
+void ypaworld_func158__network_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
+{
+
+}
+
+void ypaworld_func158__locale_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
+{
+    char *v3 = usr->local_listvw.data_cmdbuf;
+
+    lstvw_updlimits(yw, &usr->local_listvw, -2, -2);
+
+    v3 = lstvw_up_border(yw, &usr->local_listvw, v3, 0, "uvw");
+
+    langDll_node *node = (langDll_node *)usr->lang_dlls.head;
+
+    int v5 = 0;
+
+    while ( node->next )
+    {
+        if ( v5 >= usr->local_listvw.scroll_pos && v5 < usr->local_listvw.element_count + usr->local_listvw.scroll_pos)
+        {
+            if ( v5 == usr->local_listvw.field_1DE )
+                v3 = sub_4C4284(yw, &usr->local_listvw, v3, node->langDllName);
+            else
+                v3 = sub_4C41DC(yw, &usr->local_listvw, v3, node->langDllName);
+        }
+
+        v5++;
+
+        node = (langDll_node *)node->next;
+    }
+
+    if ( v5 > 10 )
+        usr->local_listvw.element_count = 10;
+    else
+        usr->local_listvw.element_count = v5;
+
+    usr->local_listvw.elements_for_scroll_size = usr->local_listvw.element_count;
+
+    if ( usr->local_listvw.element_count < 10 )
+        v3 = sub_4DDF78(yw, &usr->local_listvw, v3, 10 - usr->local_listvw.element_count);
+
+    v3 = lstvw_down_border(yw, &usr->local_listvw, v3, 0, "xyz");
+
+    fntcmd_set_end(&v3);
+
+    w3d_a209 v13;
+    v13.cmdbuf = usr->local_listvw.draw_cmd;
+    v13.includ = usr->local_listvw.field_1C4;
+
+    sub_423288(&v13);
+}
+
+void ypaworld_func158__saveload_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
+{
+    char *v4 = usr->disk_listvw.data_cmdbuf;
+
+    lstvw_updlimits(yw, &usr->disk_listvw, -2, -2);
+
+    v4 = lstvw_up_border(yw, &usr->disk_listvw, v4, 0, "uvw");
+
+    profilesNode *v6 = (profilesNode *)usr->files_list.head;
+
+    int v54 = 0;
+
+    while ( v6->next )
+    {
+        if ( v54 >= usr->disk_listvw.scroll_pos && v54 < usr->disk_listvw.element_count + usr->disk_listvw.scroll_pos )
+        {
+            listview_t1 v31[2];
+            memset(&v31, 0, sizeof(v31));
+
+            int v8, v9, v45, v44;
+
+            if ( v54 + 1 == usr->field_1612 )
+            {
+                v8 = 9;
+                v9 = 99;
+                v45 = 98;
+                v44 = 100;
+            }
+            else
+            {
+                v8 = 0;
+                v9 = 102;
+                v45 = 102;
+                v44 = 102;
+            }
+
+            int v37 = usr->disk_listvw.width - 2 * usr->p_ypaworld->font_default_w__b;
+
+            char a1a[20];
+            sprintf(a1a, "%02d:%02d:%02d", (v6->pStatus_3 / 1000) / 3600 , (v6->pStatus_3 / 1000) % 3600 / 60, (v6->pStatus_3 / 1000) % 3600 % 60 );
+
+            v31[0].tileset_id = v8;
+            v31[0].bkg_tile = v9;
+            v31[0].flags = 37;
+            v31[0].field_width = (v37 * 0.75);
+            v31[0].left_tile = v45;
+            v31[0].right_tile = 0;
+            v31[0].txt = v6->profile_subdir;
+
+            v31[1].tileset_id = v8;
+            v31[1].bkg_tile = v9;
+            v31[1].txt = a1a;
+            v31[1].field_width = v37 - (v37 * 0.75);
+            v31[1].left_tile = 0;
+            v31[1].flags = 38;
+            v31[1].right_tile = v44;
+
+            fntcmd_select_tileset(&v4, 0);
+
+            fntcmd_store_u8(&v4, 123);
+
+            if ( !strcasecmp(v6->profile_subdir, usr->user_name) )
+            {
+                fntcmd_set_txtColor(&v4, yw->iniColors[2].r, yw->iniColors[2].g, yw->iniColors[2].b);
+            }
+            else
+            {
+                if ( v54 + 1 == usr->field_1612 )
+                {
+                    fntcmd_set_txtColor(&v4, yw->iniColors[62].r, yw->iniColors[62].g, yw->iniColors[62].b);
+                }
+                else
+                {
+                    fntcmd_set_txtColor(&v4, yw->iniColors[61].r, yw->iniColors[61].g, yw->iniColors[61].b);
+                }
+            }
+
+            v4 = lstvw_txt_line(yw, v4, 2, v31);
+
+            fntcmd_select_tileset(&v4, 0);
+
+            fntcmd_store_u8(&v4, 125);
+
+            fntcmd_next_line(&v4);
+        }
+
+        v54++;
+        v6 = (profilesNode *)v6->next;
+    }
+
+    if ( v54 <= 10 )
+    {
+        usr->disk_listvw.element_count = v54;
+
+        for (int i = 0; i < 10 - v54; i++)
+        {
+            v4 = sub_4C41DC(yw, &usr->disk_listvw, v4, " ");
+        }
+    }
+
+    usr->disk_listvw.elements_for_scroll_size = v54;
+    v4 = lstvw_down_border(yw, &usr->disk_listvw, v4, 0, "xyz");
+
+    fntcmd_set_end(&v4);
+
+    w3d_a209 arg;
+
+    arg.cmdbuf = usr->disk_listvw.draw_cmd;
+    arg.includ = usr->disk_listvw.field_1C4;
+    sub_423288(&arg);
+}
+
+void sb_0x4dee74__sub0(UserData *usr, int x1, int y1, int w, int h)
+{
+    char buf[300];
+
+    char *tmp = buf;
+
+    fntcmd_select_tileset(&tmp, 0);
+
+    fntcmd_set_center_xpos(&tmp, x1 - usr->p_ypaworld->screen_width / 2);
+    fntcmd_set_center_ypos(&tmp, y1 - usr->p_ypaworld->screen_height / 2);
+
+    int v9 = 1;
+
+    int v6 = h;
+
+    tiles_stru *v7 = win3d_select_tileset(0);
+
+    while ( v6 > v7->font_height )
+    {
+        if ( v9 )
+            fntcmd_store_u8(&tmp, 117);
+        else
+            fntcmd_store_u8(&tmp, 123);
+
+        fntcmd_op17(&tmp, w);
+
+        if ( v9 )
+            fntcmd_store_u8(&tmp, 118);
+        else
+            fntcmd_store_u8(&tmp, 123);
+
+        if ( v9 )
+            fntcmd_store_u8(&tmp, 119);
+        else
+            fntcmd_store_u8(&tmp, 125);
+
+        fntcmd_next_line(&tmp);
+
+        v9 = 0;
+
+        v6 -= v7->font_height;
+    }
+
+    fntcmd_set_yoff(&tmp, v7->font_height - 1);
+
+    fntcmd_store_u8(&tmp, 120);
+
+    fntcmd_op17(&tmp, w);
+
+    fntcmd_store_u8(&tmp, 121);
+    fntcmd_store_u8(&tmp, 122);
+
+    fntcmd_set_end(&tmp);
+
+    w3d_a209 a1a;
+    a1a.cmdbuf = buf;
+    a1a.includ = NULL;
+
+    sub_423288(&a1a);
+}
+
+void ypaworld_func158__confirm_draw(UserData *usr)
+{
+    _NC_STACK_ypaworld *yw = usr->p_ypaworld;
+
+    if ( usr->field_0x2fb4 )
+    {
+        int v4 = yw->screen_height * 0.21875;
+        int v6 = yw->screen_width * 0.53125;
+        int v7 = yw->screen_height * 0.3854166666666667;
+        int v8 = yw->screen_width * 0.234375;
+
+        sb_0x4dee74__sub0(usr, v8, v7, v6, v4);
+
+        call_method(usr->confirm_button, 70, 0);
+    }
+}
+
+void ypaworld_func158__sub3(_NC_STACK_ypaworld *yw, UserData *usr)
+{
+    switch ( usr->field_46 )
+    {
+    case 1:
+        call_method(usr->titel_button, 70, 0);
+        break;
+
+    case 2:
+        call_method(usr->button_input_button, 70, 0);
+        yw_draw_input_list(yw, usr);
+        break;
+
+    case 3:
+        call_method(usr->video_button, 70, 0);
+
+        if ( !(usr->video_listvw.cmd_flag & 0x20) )
+            ypaworld_func158__video_list_draw(yw, usr);
+
+        if ( !(usr->d3d_listvw.cmd_flag & 0x20) )
+            ypaworld_func158__d3d_list_draw(yw, usr);
+        break;
+
+    case 4:
+    case 5:
+        call_method(usr->sub_bar_button, 70, 0);
+        break;
+
+    case 6:
+        call_method(usr->network_button, 70, 0);
+
+        if ( usr->field_1C3A != 2 )
+            ypaworld_func158__network_list_draw(yw, usr);
+        break;
+
+    case 7:
+        call_method(usr->locale_button, 70, 0);
+        ypaworld_func158__locale_list_draw(yw, usr);
+        break;
+
+    case 8:
+        call_method(usr->about_button, 70, 0);
+        break;
+
+    case 9:
+        call_method(usr->disk_button, 70, 0);
+        ypaworld_func158__saveload_list_draw(yw, usr);
+        break;
+
+    default:
+        break;
+    }
+    ypaworld_func158__confirm_draw(usr);
+}

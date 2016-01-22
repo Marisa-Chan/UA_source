@@ -1,6 +1,8 @@
 #ifndef ENGINE_MILES_H_INCLUDED
 #define ENGINE_MILES_H_INCLUDED
 
+#include "engine_tform.h"
+
 extern class_stored miles_engine_off;
 
 
@@ -55,5 +57,9 @@ void sub_423DD8(samples_collection1 *smpls);
 
 void milesEngine__setter(unsigned int, ...);
 
+void sb_0x4242e0(samples_collection1 *smpls);
+void sb_0x424c74();
+
+void sub_423EFC(int a1, xyz *a2, xyz *a3, mat3x3 *a4);
 
 #endif // ENGINE_MILES_H_INCLUDED

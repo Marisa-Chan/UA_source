@@ -57,5 +57,9 @@ void sub_46B328(UserData *usr);
 void sub_46B1B8(UserData *usr);
 void sb_0x46bb54(UserData *usr);
 void sub_46D698(UserData *usr);
+void ypaworld_func158__sub1(UserData *usr);
+void ypaworld_func158__sub2(_NC_STACK_ypaworld *yw);
+int ypaworld_func158__sub0__sub8(UserData *usr, const char**, const char**);
+void sb_0x4deac0(UserData *usr);
 
 #endif // WINDP_H_INCLUDED

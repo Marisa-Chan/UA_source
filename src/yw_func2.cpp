@@ -71,7 +71,6 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz
     brf_obj *brobj = &yw->brief.brf_objs + obj_id;
 
     secType *scType = &yw->secTypes[brobj->object_id];
-    printf("obj_id %d\n", brobj->object_id);
 
     NC_STACK_base *v7 = yw->vhcls_models[0].base;
 
@@ -1168,15 +1167,622 @@ void sub_46C524(UserData *usr)
     sub_4C31EC(usr->p_ypaworld, &usr->network_listvw);
 }
 
-void sb_0x4deac0(UserData *usr)
+
+
+void sb_0x46ca74__sub0(const char *a1, const char *a2)
 {
-    printf("MAKE ME %s\n", "sb_0x4deac0");
+    FILE *f1 = FOpen(a1, "r");
+    if ( f1 )
+    {
+        FILE *f2 = FOpen(a2, "w");
+
+        if ( f2 )
+        {
+            char v9[300];
+
+            while ( fgets(v9, 299, f1) )
+                fputs(v9, f2);
+
+            FClose(f2);
+        }
+
+        FClose(f1);
+    }
 }
 
-void yw_netcleanup(_NC_STACK_ypaworld *yw)
+void sb_0x46ca74(UserData *usr)
 {
-    printf("MAKE ME %s\n", "yw_netcleanup");
+    const char *usernamedir = usr->usernamedir;
+
+    char list[300];
+
+    if ( usr->field_1612 )
+    {
+        if ( strcasecmp(usr->usernamedir, usr->user_name) )
+        {
+            sprintf(list, "save:%s", usernamedir);
+            sub_46D0F8(list);
+        }
+    }
+    else
+    {
+        profilesNode *v3 = (profilesNode *)AllocVec(sizeof(profilesNode), 65537);
+
+        if ( !v3 )
+        {
+            ypa_log_out("Warning: No Memory!\n");
+            return;
+        }
+
+        strncpy(v3->profile_subdir, usernamedir, 32);
+
+        AddTail(&usr->files_list, v3);
+
+        char a1a[300];
+
+        sprintf(a1a, "save:%s", usernamedir);
+
+        if ( !createDirectory(a1a) )
+        {
+            ypa_log_out("Unable to create directory %s\n", a1a);
+            return;
+        }
+
+        usr->disk_listvw.elements_for_scroll_size++;
+        usr->field_1612 = usr->disk_listvw.elements_for_scroll_size;
+    }
+
+    sprintf(list, "%s/user.txt", usr->usernamedir);
+
+    yw_arg172 v15;
+    v15.usertxt = list;
+    v15.field_4 = usr->usernamedir;
+    v15.usr = usr;
+    v15.field_8 = 255;
+    v15.field_10 = 0;
+
+    if ( ! call_method(usr->p_ypaworld->self_full, 171, &v15) )
+        ypa_log_out("Warning! Error while saving user data for %s\n", usr->usernamedir);
+
+    sprintf(list, "save:%s", usr->user_name);
+
+    if ( strcasecmp(usr->usernamedir, usr->user_name) )
+    {
+        ncDir *v8 = OpenDir(list);
+        dirEntry a2a;
+
+        if ( v8 )
+        {
+            while ( ReadDir(v8, &a2a) )
+            {
+                if ( !(a2a.field_0 & 1)
+                        && (strstr(a2a.e_name, ".sgm")
+                            || strstr(a2a.e_name, ".SGM")
+                            || strstr(a2a.e_name, ".rst")
+                            || strstr(a2a.e_name, ".RST")
+                            || strstr(a2a.e_name, ".fin")
+                            || strstr(a2a.e_name, ".FIN")
+                            || strstr(a2a.e_name, ".def")
+                            || strstr(a2a.e_name, ".DEF")) )
+                {
+                    char v11[300];
+                    char v12[300];
+
+                    sprintf(v11, "%s/%s", list, a2a.e_name);
+                    sprintf(v12, "save:%s/%s", usr->usernamedir, a2a.e_name);
+                    sb_0x46ca74__sub0(v11, v12);
+                }
+            }
+            CloseDir(v8);
+        }
+    }
+
+    usr->field_0x1744 = 0;
+    strncpy(usr->user_name, usr->usernamedir, 32);
+
+    int v16 = 2;
+    call_method(usr->disk_button, 68, &v16);
+
+    sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
+
+    if ( usr->field_0x1760 )
+    {
+        usr->field_46 = 5;
+
+        int v16 = 1;
+        call_method(usr->sub_bar_button, 68, &v16);
+    }
+    else
+    {
+        usr->field_46 = 1;
+
+        int v16 = 1;
+        call_method(usr->titel_button, 68, &v16);
+    }
 }
+
+void sb_0x47f810__sub0(_NC_STACK_ypaworld *yw)
+{
+    if ( yw->VhclProtos )
+    {
+        for (int i = 0; i < 256; i++)
+        {
+            VhclProto *v3 = &yw->VhclProtos[i];
+
+            if ( v3->wireframe )
+            {
+                delete_class_obj(v3->wireframe);
+                v3->wireframe = NULL;
+            }
+
+            if ( v3->hud_wireframe )
+            {
+                delete_class_obj(v3->hud_wireframe);
+                v3->hud_wireframe = NULL;
+            }
+
+            if ( v3->mg_wireframe )
+            {
+                delete_class_obj(v3->mg_wireframe);
+                v3->mg_wireframe = NULL;
+            }
+
+            if ( v3->wpn_wireframe_1 )
+            {
+                delete_class_obj(v3->wpn_wireframe_1);
+                v3->wpn_wireframe_1 = NULL;
+            }
+
+            if ( v3->wpn_wireframe_2 )
+            {
+                delete_class_obj(v3->wpn_wireframe_2);
+                v3->wpn_wireframe_2 = NULL;
+            }
+        }
+    }
+
+    if ( yw->WeaponProtos )
+    {
+        for (int i = 0; i < 128; i++)
+        {
+            WeapProto *v6 = &yw->WeaponProtos[i];
+            if ( v6->wireframe )
+            {
+                delete_class_obj(v6->wireframe);
+                v6->wireframe = NULL;
+            }
+        }
+    }
+}
+
+void sb_0x47f810(_NC_STACK_ypaworld *yw)
+{
+    sb_0x47f810__sub0(yw);
+
+    if ( yw->RoboProtos )
+    {
+        nc_FreeMem(yw->RoboProtos);
+        yw->RoboProtos = NULL;
+    }
+
+    if ( yw->BuildProtos )
+    {
+        nc_FreeMem(yw->BuildProtos);
+        yw->BuildProtos = NULL;
+    }
+
+    if ( yw->WeaponProtos )
+    {
+        nc_FreeMem(yw->WeaponProtos);
+        yw->WeaponProtos = NULL;
+    }
+
+    if ( yw->VhclProtos )
+    {
+        nc_FreeMem(yw->VhclProtos);
+        yw->VhclProtos = NULL;
+    }
+}
+
+void sb_0x46cdf8(UserData *usr)
+{
+    char a1a[300];
+    sprintf(a1a, "%s/user.txt", usr->user_name);
+
+    yw_arg172 v12;
+    v12.usertxt = a1a;
+    v12.field_4 = usr->user_name;
+    v12.usr = usr;
+    v12.field_8 = 255;
+    v12.field_10 = 0;
+
+    if ( ! call_method(usr->p_ypaworld->self_full, 171, &v12) )
+        ypa_log_out("Warning! Error while saving user data for %s\n", usr->user_name);
+
+    if ( usr->field_1612 )
+    {
+        sprintf(a1a, "save:%s", usr->usernamedir);
+        sub_46D0F8(a1a);
+    }
+    else
+    {
+        profilesNode *v4 = (profilesNode *)AllocVec(47, 65537);
+
+        if ( !v4 )
+        {
+            ypa_log_out("Warning: No Memory!\n");
+            return;
+        }
+
+        strncpy(v4->profile_subdir, usr->usernamedir, 32);
+
+        AddTail(&usr->files_list, v4);
+
+        char v10[300];
+        sprintf(v10, "save:%s", usr->usernamedir);
+
+        if ( !createDirectory(v10) )
+        {
+            ypa_log_out("Unable to create directory %s\n", v10);
+            return;
+        }
+
+        strncpy(usr->user_name, usr->usernamedir, 32);
+        usr->disk_listvw.elements_for_scroll_size++;
+        usr->field_1612 = usr->disk_listvw.elements_for_scroll_size;
+    }
+
+    usr->p_ypaworld->field_2d90->buddies_count = 0;
+
+    sb_0x47f810(usr->p_ypaworld);
+
+    if ( init_prototypes(usr->p_ypaworld) )
+    {
+        for (int i = 0; i < 256; i++)
+        {
+            mapINFO *mp = &usr->p_ypaworld->LevelNet->mapInfos[i];
+            if ( mp->field_0 && mp->field_0 != 4 )
+                mp->field_0 = 1;
+        }
+
+        usr->p_ypaworld->LevelNet->mapInfos[1].field_0 = 2;
+        usr->p_ypaworld->LevelNet->mapInfos[25].field_0 = 2;
+        usr->p_ypaworld->LevelNet->mapInfos[26].field_0 = 2;
+        usr->p_ypaworld->LevelNet->mapInfos[27].field_0 = 2;
+        usr->p_ypaworld->maxroboenergy = 0;
+        usr->p_ypaworld->maxreloadconst = 0;
+
+        memset(usr->p_ypaworld->playerstatus, 0, sizeof(player_status) * 8);
+
+        usr->field_0x1744 = 0;
+
+        usr->p_ypaworld->field_2d90->field_74 = 128;
+        usr->p_ypaworld->beamenergy = usr->p_ypaworld->beam_energy_start;
+
+        memset(usr->p_ypaworld->field_2d90->jodiefoster, 0, sizeof(int) * 8);
+
+        usr->field_3426 = 0;
+
+        int v13 = 2;
+        call_method(usr->disk_button, 68, &v13);
+
+        sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
+
+        usr->field_46 = 5;
+
+        v13 = 1;
+        call_method(usr->sub_bar_button, 68, &v13);
+    }
+    else
+    {
+        ypa_log_out("Warning, error while parsing prototypes\n");
+    }
+}
+
+void sub_46D960(UserData *usr)
+{
+    int v4 = 1300;
+    call_method(usr->confirm_button, 67, &v4);
+
+    v4 = 1301;
+    call_method(usr->confirm_button, 67, &v4);
+
+    int v5 = 2;
+    call_method(usr->confirm_button, 68, &v5);
+
+    usr->field_0x2fb4 = 0;
+}
+
+void sub_46D370(NC_STACK_ypaworld *obj, int a2)
+{
+    if ( a2 )
+    {
+        call_vtbl(obj, 2, 0x8000200E, 9, 0);
+        call_vtbl(obj, 2, 0x80002007, 2100, 0);
+        call_vtbl(obj, 2, 0x80002008, 900, 0);
+    }
+    else
+    {
+        call_vtbl(obj, 2, 0x8000200E, 5, 0);
+        call_vtbl(obj, 2, 0x80002007, 1400, 0);
+        call_vtbl(obj, 2, 0x80002008, 600, 0);
+    }
+}
+
+//Options OK
+void sb_0x46aa8c(UserData *usr)
+{
+    _NC_STACK_ypaworld *yw = usr->p_ypaworld;
+
+    int v3 = 0;
+
+    yw_174arg v40;
+    v40.make_changes = 0;
+    int v5 = 0;
+    int resolution;
+
+    if ( usr->field_13C2 & 0x200 )
+    {
+        CDAUDIO_t v35;
+
+        if ( usr->field_0x13b0 & 0x10 )
+        {
+            usr->snd__flags2 |= 0x10;
+            yw->snd__cdsound |= 1;
+
+            v35.track_id = 1;
+            v35.command = 8;
+
+            sub_4444D4(&v35);
+
+            if ( usr->shelltrack )
+            {
+
+                v35.command = 7;
+                v35.track_id = usr->shelltrack;
+                v35.field_8 = usr->shelltrack__adv.field_0;
+                v35.field_C = usr->shelltrack__adv.field_4;
+                sub_4444D4(&v35);
+
+                sub_4444D4(&v35);
+            }
+        }
+        else
+        {
+            usr->snd__flags2 &= 0xEF;
+            yw->snd__cdsound &= 0xFE;
+
+            v35.command = 1;
+            sub_4444D4(&v35);
+
+            v35.command = 8;
+            v35.track_id = 0;
+            sub_4444D4(&v35);
+        }
+
+    }
+
+    if ( usr->field_13C2 & 2 )
+    {
+        if ( usr->field_0x13b0 & 1 )
+        {
+            usr->snd__flags2 |= 1;
+            milesEngine__setter(0x80004005, 1, 0);
+        }
+        else
+        {
+            usr->snd__flags2 &= 0xFE;
+            milesEngine__setter(0x80004005, 0, 0);
+        }
+    }
+
+    if ( usr->field_13C2 & 0x10 )
+    {
+        if ( usr->field_0x13a8 & 1 )
+        {
+            usr->GFX_flags |= 1;
+            sub_46D370(yw->self_full, 1);
+        }
+        else
+        {
+            usr->GFX_flags &= 0xFE;
+            sub_46D370(yw->self_full, 0);
+        }
+    }
+
+    if ( usr->field_13C2 & 8 )
+    {
+        if ( usr->field_0x13a8 & 2 )
+        {
+            usr->GFX_flags |= 2;
+            call_vtbl(yw->self_full, 2, 0x8000200C, 1, 0);
+        }
+        else
+        {
+            usr->GFX_flags &= 0xFD;
+            call_vtbl(yw->self_full, 2, 0x8000200C, 0, 0);
+        }
+
+    }
+
+    if ( usr->field_13C2 & 0x800 )
+    {
+        if ( usr->field_0x13a8 & 4 )
+        {
+            usr->GFX_flags |= 4;
+            yw->field_73CE |= 0x40;
+            call_vtbl(yw->win3d, 2, 0x80005000, 1, 0);
+        }
+        else
+        {
+            usr->GFX_flags &= 0xFB;
+            yw->field_73CE &= 0xBF;
+            call_vtbl(yw->win3d, 2, 0x80005000, 0, 0);
+        }
+
+    }
+
+    if ( usr->field_13C2 & 0x20 )
+    {
+        usr->enemyindicator = usr->field_13BE;
+
+        if ( usr->enemyindicator )
+            usr->p_ypaworld->field_73CE |= 0x20;
+        else
+            usr->p_ypaworld->field_73CE &= 0xDF;
+    }
+
+    if ( usr->field_13C2 & 0x40 )
+    {
+        usr->fxnumber = usr->field_0x13a4;
+        yw->fxnumber = usr->fxnumber;
+    }
+
+    if ( usr->field_13C2 & 0x100 )
+    {
+        usr->snd__cdvolume = usr->field_0x13b8;
+        int a1a = usr->field_0x13b8;
+
+        sub_4448C0(&a1a);
+    }
+
+    if ( usr->field_13C2 & 0x80 )
+    {
+        usr->snd__volume = usr->field_0x13b4;
+        milesEngine__setter(0x80004003, usr->snd__volume, 0);
+    }
+
+    if ( usr->field_13C2 & 1 )
+    {
+        if ( usr->game_default_res != yw->game_default_res && usr->game_default_res )
+        {
+            v3 = 1;
+            resolution = yw->game_default_res;
+
+            yw->game_default_res = usr->game_default_res;
+        }
+    }
+
+    if ( usr->field_13C2 & 0x1000 )
+    {
+        if ( usr->field_139A )
+        {
+            if ( strcasecmp(usr->field_139A, usr->win3d_guid) )
+            {
+                strcpy(usr->win3d_name, usr->field_139E);
+
+                strcpy(usr->win3d_guid, usr->field_139A);
+
+                wdd_func324arg v37;
+
+                v37.name = usr->win3d_name;
+                v37.guid = usr->win3d_guid;
+                v37.currr = 0;
+
+                call_method(yw->win3d, 325, &v37); //Save to file new resolution
+
+                yw->game_default_res = 0x2801E0; //640 x 480
+                resolution = 0x2801E0; //640 x 480
+                v5 = 1;
+                v40.make_changes = 1;
+            }
+        }
+    }
+
+    if ( usr->field_13C2 & 4 )
+    {
+        if ( usr->field_0x13a8 & 0x10 )
+        {
+            usr->GFX_flags |= 0x10;
+            call_vtbl(yw->win3d, 2, 0x80005003, 1, 0);
+        }
+        else
+        {
+            usr->GFX_flags &= 0xEF;
+            call_vtbl(yw->win3d, 2, 0x80005003, 0, 0);
+        }
+
+        resolution = yw->game_default_res;
+        v5 = 1;
+        v40.make_changes = 1;
+    }
+
+    if ( usr->field_13C2 & 0x400 )
+    {
+        if ( usr->field_0x13a8 & 8 )
+        {
+            usr->GFX_flags |= 8;
+            call_vtbl(yw->win3d, 2, 0x80005004, 1, 0);
+        }
+        else
+        {
+            usr->GFX_flags &= 0xF7;
+            call_vtbl(yw->win3d, 2, 0x80005004, 0, 0);
+        }
+
+
+        resolution = yw->game_default_res;
+        v5 = 1;
+        v40.make_changes = 1;
+    }
+
+    if ( (v3 && usr->p_ypaworld->one_game_res) || v5 )
+    {
+        if ( usr->p_ypaworld->one_game_res || !v3 )
+            v40.resolution = usr->p_ypaworld->game_default_res;
+        else
+            v40.resolution = resolution;
+
+        call_method(yw->self_full, 174, &v40);
+
+        video_mode_node *nod = (video_mode_node *)usr->video_mode_list.head;
+        int v24 = 0;
+
+        while (nod->next)
+        {
+            if (yw->game_default_res == nod->sort_id)
+            {
+                usr->field_FBE = v24;
+
+                button_71arg v36;
+                v36.field_4 = nod->name;
+                v36.butID = 1156;
+                v36.field_8 = 0;
+                call_method(usr->video_button, 71, &v36);
+
+                break;
+            }
+
+            v24++;
+            nod = (video_mode_node *)nod->next;
+        }
+    }
+
+    usr->field_13C2 = 0;
+    usr->field_46 = 1;
+
+    int v42 = 2;
+    call_method(usr->video_button, 68, &v42);
+
+    if ( !(usr->video_listvw.cmd_flag & 0x20) )
+        sub_4C31C0(usr->p_ypaworld, &usr->video_listvw);
+
+    if ( !(usr->d3d_listvw.cmd_flag & 0x20) )
+        sub_4C31C0(usr->p_ypaworld, &usr->d3d_listvw);
+
+    button_66arg v38;
+    v38.field_4 = 2;
+    v38.butID = 1156;
+
+    call_method(usr->video_button, 73, &v38);
+
+    v38.butID = 1172;
+    call_method(usr->video_button, 73, &v38);
+
+    v42 = 1;
+    call_method(usr->titel_button, 68, &v42);
+}
+
 
 void sub_46DC1C(UserData *usr)
 {
@@ -1214,26 +1820,6 @@ void sub_46DC1C(UserData *usr)
     call_method(usr->p_ypaworld->windp, 84, &v12);
 
     sb_0x4deac0(usr);
-}
-
-void sb_0x46ca74(UserData *usr)
-{
-    printf("MAKE ME %s\n", "sb_0x46ca74");
-}
-
-void sb_0x46cdf8(UserData *usr)
-{
-    printf("MAKE ME %s\n", "sb_0x46cdf8");
-}
-
-void sub_46D960(UserData *usr)
-{
-    printf("MAKE ME %s\n", "sub_46D960");
-}
-
-void sb_0x46aa8c(UserData *usr)
-{
-    printf("MAKE ME %s\n", "sb_0x46aa8c");
 }
 
 int sub_4EDCC4(_NC_STACK_ypaworld *yw)
@@ -1601,6 +2187,7 @@ void sub_4DE248(UserData *usr, int id)
     }
 }
 
+// Go to options menu
 void ypaworld_func158__sub0__sub2(UserData *usr)
 {
     int v5 = 2;
@@ -1610,11 +2197,13 @@ void ypaworld_func158__sub0__sub2(UserData *usr)
     call_method(usr->video_button, 68, &v5);
 
     usr->field_46 = 3;
+
     if ( !(usr->video_listvw.cmd_flag & 0x20) )
     {
         sub_4C31C0(usr->p_ypaworld, &usr->video_listvw);
         sub_4C31EC(usr->p_ypaworld, &usr->video_listvw);
     }
+
     usr->video_listvw.field_1DE = usr->field_FBE;
 }
 
@@ -1653,13 +2242,6 @@ void ypaworld_func158__sub0__sub1(UserData *usr)
     usr->field_46 = 2;
     sub_4C31C0(usr->p_ypaworld, &usr->input_listview);
     sub_4C31EC(usr->p_ypaworld, &usr->input_listview);
-}
-
-
-int ypaworld_func158__sub0__sub8(UserData *usr, const char**, const char**)
-{
-    printf("MAKE ME %s\n", "ypaworld_func158__sub0__sub8");
-    return 0;
 }
 
 void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
@@ -1996,6 +2578,7 @@ void sub_46C5F0(UserData *usr, int a2)
     }
 }
 
+//Options Cancel
 void sub_46A3C0(UserData *usr)
 {
     usr->field_13C2 = 0;
@@ -2598,14 +3181,14 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             case 3:
                 sb_0x46ca74(usr);
                 break;
-            case 6:
-                sb_0x46cdf8(usr);
-                break;
             case 4:
                 sub_46D960(usr);
                 break;
             case 5:
                 sb_0x46aa8c(usr);
+                break;
+            case 6:
+                sb_0x46cdf8(usr);
                 break;
             default:
                 break;
@@ -2692,7 +3275,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             sub_46C3E4(usr);
             usr->field_0x1760 = 0;
         }
-        else if ( v6_l == 1005 )
+        else if ( v6_l == 1005 ) // Options button
         {
             ypaworld_func158__sub0__sub2(usr);
         }
@@ -2896,7 +3479,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     else
                     {
                         usr->keyConfig[usr->field_D36].slider_neg = usr->field_3A->downed_key;
-                        usr->keyConfig[usr->field_D36].field_10 &= 0xFFFFFFFDu;
+                        usr->keyConfig[usr->field_D36].field_10 &= 0xFFFFFFFD;
                         usr->field_D3A = 1;
                     }
                 }
@@ -2925,6 +3508,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             }
         }
     }
+
     if ( usr->keyConfig[usr->field_D36].inp_type == 2 )
     {
         v410.field_4 = 0;
@@ -3040,13 +3624,12 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     if ( usr->field_46 == 2 )
     {
         lstvw_update_input(yw, &usr->input_listview, usr->field_3A);
-        int v41 = usr->field_D36;
 
         usr->field_D36 = usr->input_listview.field_1DE + 1;
 
         if ( usr->input_listview.field_1D0 & 0x80 )
         {
-            usr->keyConfig[v41].field_10 = 0;
+            usr->keyConfig[ usr->field_D36 ].field_10 = 0;
             usr->field_D3A = 1;
             usr->field_D52 = 0;
         }
@@ -3192,7 +3775,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 sb_0x46aa8c(usr);
             }
         }
-        else if ( v6_l == 1125 )
+        else if ( v6_l == 1125 ) // Options CANCEL
         {
             sub_46A3C0(usr);
         }
