@@ -45,6 +45,16 @@
 
 #include "yw.h"
 
+#include "ypabact.h"
+#include "ypatank.h"
+#include "ypacar.h"
+#include "ypaufo.h"
+#include "ypaflyer.h"
+#include "ypagun.h"
+#include "ypamissile.h"
+#include "yparobo.h"
+#include "ypaufo.h"
+
 const char MC2RES[] = "MC2RES\\";
 const char MC2CLASSES[] = "MC2classes:";
 const char MC2ENGINES[] = "MC2engines:";
@@ -121,14 +131,14 @@ int set_classes_list()
     add_to_classes_list(&input_engine_off);
     add_to_classes_list(&miles_engine_off);
     add_to_classes_list(&ypaworld_class_off);
-////	add_to_classes_list(&ypabact_class_off.nodeBase);
-////	add_to_classes_list(&ypatank_class_off.nodeBase);
-////	add_to_classes_list(&yparobo_class_off.nodeBase);
-////	add_to_classes_list(&ypamissile_class_off.nodeBase);
-////	add_to_classes_list(&ypaflyer_class_off.nodeBase);
-////	add_to_classes_list(&ypacar_class_off.nodeBase);
-////	add_to_classes_list(&ypaufo_class_off.nodeBase);
-////	add_to_classes_list(&ypagun_class_off.nodeBase);
+    add_to_classes_list(&ypabact_class_off);
+    add_to_classes_list(&ypatank_class_off);
+    add_to_classes_list(&yparobo_class_off);
+    add_to_classes_list(&ypamissile_class_off);
+    add_to_classes_list(&ypaflyer_class_off);
+    add_to_classes_list(&ypacar_class_off);
+    add_to_classes_list(&ypaufo_class_off);
+    add_to_classes_list(&ypagun_class_off);
     return 1;
 }
 

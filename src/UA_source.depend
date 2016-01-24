@@ -241,14 +241,14 @@
 	<ddraw.h>
 	<d3d.h>
 
-1452100634 source:/home/zidane/Projects/UA_source/bitmap.cpp
+1453519231 source:/home/zidane/Projects/UA_source/bitmap.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
 	"bitmap.h"
 	"utils.h"
 
-1451874702 /home/zidane/Projects/UA_source/includes.h
+1449728287 /home/zidane/Projects/UA_source/includes.h
 	<windows.h>
 	<objbase.h>
 	<stdio.h>
@@ -259,47 +259,47 @@
 	"global.h"
 	"log.h"
 
-1451874699 /home/zidane/Projects/UA_source/classes.h
+1453519231 /home/zidane/Projects/UA_source/classes.h
 	"nlist.h"
 	"MFILE.h"
 
-1451874703 /home/zidane/Projects/UA_source/nlist.h
+1453519231 /home/zidane/Projects/UA_source/nlist.h
 
-1451874703 /home/zidane/Projects/UA_source/MFILE.h
+1453519231 /home/zidane/Projects/UA_source/MFILE.h
 	"nlist.h"
 
-1451874701 /home/zidane/Projects/UA_source/global.h
+1451482213 /home/zidane/Projects/UA_source/global.h
 	"glob_funcs.h"
 
-1451998039 /home/zidane/Projects/UA_source/glob_funcs.h
+1453519231 /home/zidane/Projects/UA_source/glob_funcs.h
 	"MFILE.h"
 	"MC.h"
 	"classes.h"
 	"ini.h"
 
-1451874703 /home/zidane/Projects/UA_source/MC.h
+1453519231 /home/zidane/Projects/UA_source/MC.h
 
-1451874702 /home/zidane/Projects/UA_source/ini.h
+1453519231 /home/zidane/Projects/UA_source/ini.h
 
-1451874702 /home/zidane/Projects/UA_source/log.h
+1447922917 /home/zidane/Projects/UA_source/log.h
 
-1451874703 /home/zidane/Projects/UA_source/nucleas.h
+1442981139 /home/zidane/Projects/UA_source/nucleas.h
 
-1451874703 /home/zidane/Projects/UA_source/rsrc.h
+1453519231 /home/zidane/Projects/UA_source/rsrc.h
 	"nucleas.h"
 
-1451874699 /home/zidane/Projects/UA_source/bitmap.h
+1453519231 /home/zidane/Projects/UA_source/bitmap.h
 	"rsrc.h"
 	"engine_gfx.h"
 
-1451885400 /home/zidane/Projects/UA_source/utils.h
+1453519231 /home/zidane/Projects/UA_source/utils.h
 
-1451874699 source:/home/zidane/Projects/UA_source/classes.cpp
+1453519231 source:/home/zidane/Projects/UA_source/classes.cpp
 	"includes.h"
 	"classes.h"
 	"utils.h"
 
-1451874700 source:/home/zidane/Projects/UA_source/display.cpp
+1453519231 source:/home/zidane/Projects/UA_source/display.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -308,57 +308,58 @@
 	"display.h"
 	"utils.h"
 
-1451874703 /home/zidane/Projects/UA_source/raster.h
+1453519231 /home/zidane/Projects/UA_source/raster.h
 	"engine_gfx.h"
 
-1451874700 /home/zidane/Projects/UA_source/display.h
+1453519231 /home/zidane/Projects/UA_source/display.h
 	"raster.h"
 
-1451874700 source:/home/zidane/Projects/UA_source/engine_gfx.cpp
+1453522142 source:/home/zidane/Projects/UA_source/engine_gfx.cpp
 	"includes.h"
 	"engine_gfx.h"
 	"utils.h"
 
-1451874700 /home/zidane/Projects/UA_source/engine_gfx.h
+1453519231 /home/zidane/Projects/UA_source/engine_gfx.h
 	<inttypes.h>
 	<ddraw.h>
 
-1451874700 source:/home/zidane/Projects/UA_source/engine_input.cpp
+1453519231 source:/home/zidane/Projects/UA_source/engine_input.cpp
 	"includes.h"
 	"engine_input.h"
 	"input.h"
 
-1451874701 /home/zidane/Projects/UA_source/engine_input.h
+1453552103 /home/zidane/Projects/UA_source/engine_input.h
 	"utils.h"
 
-1451910325 source:/home/zidane/Projects/UA_source/engine_miles.cpp
+1453609305 source:/home/zidane/Projects/UA_source/engine_miles.cpp
 	"includes.h"
 	"engine_miles.h"
 
-1451910315 /home/zidane/Projects/UA_source/engine_miles.h
+1453609312 /home/zidane/Projects/UA_source/engine_miles.h
+	"engine_tform.h"
 
-1451874701 source:/home/zidane/Projects/UA_source/engine_tform.cpp
+1453519231 source:/home/zidane/Projects/UA_source/engine_tform.cpp
 	"includes.h"
 	"engine_tform.h"
 	"math.h"
 	"utils.h"
 
-1451874701 /home/zidane/Projects/UA_source/engine_tform.h
+1453519231 /home/zidane/Projects/UA_source/engine_tform.h
 
-1452095745 source:/home/zidane/Projects/UA_source/glob_funcs.cpp
+1453519231 source:/home/zidane/Projects/UA_source/glob_funcs.cpp
 	"includes.h"
 
-1451874702 source:/home/zidane/Projects/UA_source/ini.cpp
+1453519231 source:/home/zidane/Projects/UA_source/ini.cpp
 	<stdio.h>
 	"ini.h"
 	"includes.h"
 
-1451874702 source:/home/zidane/Projects/UA_source/log.cpp
+1453519231 source:/home/zidane/Projects/UA_source/log.cpp
 	<stdio.h>
 	<stdarg.h>
 	"log.h"
 
-1451874703 source:/home/zidane/Projects/UA_source/main.cpp
+1453645799 source:/home/zidane/Projects/UA_source/main.cpp
 	"includes.h"
 	"engine_gfx.h"
 	"bitmap.h"
@@ -373,7 +374,7 @@
 	"engine_gfx.h"
 	"engine_input.h"
 
-1452403342 source:/home/zidane/Projects/UA_source/MC.cpp
+1453642529 source:/home/zidane/Projects/UA_source/MC.cpp
 	"includes.h"
 	"MC.h"
 	"classes.h"
@@ -408,34 +409,44 @@
 	"input.h"
 	"embed.h"
 	"network.h"
+	"windp.h"
 	"yw.h"
+	"ypabact.h"
+	"ypatank.h"
+	"ypacar.h"
+	"ypaufo.h"
+	"ypaflyer.h"
+	"ypagun.h"
+	"ypamissile.h"
+	"yparobo.h"
+	"ypaufo.h"
 
-1451874705 /home/zidane/Projects/UA_source/windd.h
+1453519231 /home/zidane/Projects/UA_source/windd.h
 	<ddraw.h>
 	<d3d.h>
 
-1451874705 /home/zidane/Projects/UA_source/win3d.h
+1453519231 /home/zidane/Projects/UA_source/win3d.h
 	<ddraw.h>
 	<d3d.h>
 
-1451874703 source:/home/zidane/Projects/UA_source/MFILE.cpp
+1453519231 source:/home/zidane/Projects/UA_source/MFILE.cpp
 	<stdio.h>
 	<stdlib.h>
 	"includes.h"
 	"MFILE.h"
 	"utils.h"
 
-1451874703 source:/home/zidane/Projects/UA_source/nlist.cpp
+1453519231 source:/home/zidane/Projects/UA_source/nlist.cpp
 	"stdio.h"
 	"nlist.h"
 	"log.h"
 
-1451874703 source:/home/zidane/Projects/UA_source/nucleas.cpp
+1453519231 source:/home/zidane/Projects/UA_source/nucleas.cpp
 	"includes.h"
 	"nucleas.h"
 	"utils.h"
 
-1451874703 source:/home/zidane/Projects/UA_source/raster.cpp
+1453519231 source:/home/zidane/Projects/UA_source/raster.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -443,18 +454,18 @@
 	"raster.h"
 	"utils.h"
 
-1451874703 source:/home/zidane/Projects/UA_source/rsrc.cpp
+1453519231 source:/home/zidane/Projects/UA_source/rsrc.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
 	"utils.h"
 
-1451885385 source:/home/zidane/Projects/UA_source/utils.cpp
+1453519231 source:/home/zidane/Projects/UA_source/utils.cpp
 	"includes.h"
 	"utils.h"
 	"inttypes.h"
 
-1451874705 source:/home/zidane/Projects/UA_source/win3d.cpp
+1453519231 source:/home/zidane/Projects/UA_source/win3d.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -898,7 +909,7 @@
 	"lstvw.h"
 	"font.h"
 
-1452144764 /home/zidane/Projects/UA_source/yw.h
+1453614940 /home/zidane/Projects/UA_source/yw.h
 	"engine_gfx.h"
 	"engine_input.h"
 	"engine_miles.h"
@@ -912,42 +923,44 @@
 	"sklt.h"
 	"wav.h"
 	"windp.h"
+	"ypabact.h"
 	"lstvw.h"
 	"glob_funcs.h"
 
-1451874702 /home/zidane/Projects/UA_source/ilbm.h
+1453519231 /home/zidane/Projects/UA_source/ilbm.h
 	"bitmap.h"
 
-1451874699 /home/zidane/Projects/UA_source/base.h
+1453519231 /home/zidane/Projects/UA_source/base.h
 	"nucleas.h"
 	"nlist.h"
+	"engine_tform.h"
 	"skeleton.h"
 
-1451874704 /home/zidane/Projects/UA_source/skeleton.h
+1453519231 /home/zidane/Projects/UA_source/skeleton.h
 	"rsrc.h"
 
-1451874704 /home/zidane/Projects/UA_source/sklt.h
+1453519231 /home/zidane/Projects/UA_source/sklt.h
 	"skeleton.h"
 
-1451874704 /home/zidane/Projects/UA_source/wav.h
+1453519231 /home/zidane/Projects/UA_source/wav.h
 	"sample.h"
 
-1451874704 /home/zidane/Projects/UA_source/sample.h
+1453519231 /home/zidane/Projects/UA_source/sample.h
 	"rsrc.h"
 
-1452000040 /home/zidane/Projects/UA_source/lstvw.h
+1453519231 /home/zidane/Projects/UA_source/lstvw.h
 
-1451874698 source:/home/zidane/Projects/UA_source/ade.cpp
+1453519231 source:/home/zidane/Projects/UA_source/ade.cpp
 	"includes.h"
 	"nucleas.h"
 	"ade.h"
 	"utils.h"
 
-1451874698 /home/zidane/Projects/UA_source/ade.h
+1453519231 /home/zidane/Projects/UA_source/ade.h
 	"nucleas.h"
 	"nlist.h"
 
-1452103240 source:/home/zidane/Projects/UA_source/amesh.cpp
+1453519231 source:/home/zidane/Projects/UA_source/amesh.cpp
 	"includes.h"
 	"inttypes.h"
 	"nucleas.h"
@@ -962,16 +975,16 @@
 	"base.h"
 	"engine_gfx.h"
 
-1451874699 /home/zidane/Projects/UA_source/amesh.h
+1453519231 /home/zidane/Projects/UA_source/amesh.h
 	<inttypes.h>
 	"area.h"
 
-1451874699 /home/zidane/Projects/UA_source/area.h
+1453519231 /home/zidane/Projects/UA_source/area.h
 	<inttypes.h>
 	"ade.h"
 	"bitmap.h"
 
-1452099721 source:/home/zidane/Projects/UA_source/area.cpp
+1453519231 source:/home/zidane/Projects/UA_source/area.cpp
 	"includes.h"
 	"nucleas.h"
 	"area.h"
@@ -985,7 +998,7 @@
 	"base.h"
 	"engine_gfx.h"
 
-1452098684 source:/home/zidane/Projects/UA_source/base.cpp
+1453519231 source:/home/zidane/Projects/UA_source/base.cpp
 	"includes.h"
 	"nucleas.h"
 	"utils.h"
@@ -1001,7 +1014,7 @@
 	"ade.h"
 	"engine_gfx.h"
 
-1452095227 source:/home/zidane/Projects/UA_source/bmpAnm.cpp
+1453519231 source:/home/zidane/Projects/UA_source/bmpAnm.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -1009,12 +1022,12 @@
 	"bmpAnm.h"
 	"utils.h"
 
-1451874699 /home/zidane/Projects/UA_source/bmpAnm.h
+1453519231 /home/zidane/Projects/UA_source/bmpAnm.h
 	"rsrc.h"
 	"engine_gfx.h"
 	"bitmap.h"
 
-1452076992 source:/home/zidane/Projects/UA_source/button.cpp
+1453519231 source:/home/zidane/Projects/UA_source/button.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -1024,48 +1037,48 @@
 	"engine_input.h"
 	"font.h"
 
-1451874699 /home/zidane/Projects/UA_source/button.h
+1453519231 /home/zidane/Projects/UA_source/button.h
 	"nucleas.h"
 	"inttypes.h"
 	"utils.h"
 	"input.h"
 
-1451874702 /home/zidane/Projects/UA_source/input.h
+1453519231 /home/zidane/Projects/UA_source/input.h
 	"nucleas.h"
 	"nlist.h"
 	"wintimer.h"
 	"winp.h"
 
-1451874705 /home/zidane/Projects/UA_source/wintimer.h
+1453519231 /home/zidane/Projects/UA_source/wintimer.h
 	"itimer.h"
 
-1451874702 /home/zidane/Projects/UA_source/itimer.h
+1453519231 /home/zidane/Projects/UA_source/itimer.h
 	"nucleas.h"
 
-1451874705 /home/zidane/Projects/UA_source/winp.h
+1453519231 /home/zidane/Projects/UA_source/winp.h
 	"iwimp.h"
 	"utils.h"
 
-1451874702 /home/zidane/Projects/UA_source/iwimp.h
+1453519231 /home/zidane/Projects/UA_source/iwimp.h
 	"idev.h"
 	"engine_input.h"
 	"utils.h"
 
-1451874701 /home/zidane/Projects/UA_source/idev.h
+1453519231 /home/zidane/Projects/UA_source/idev.h
 	"nucleas.h"
 
-1451874701 /home/zidane/Projects/UA_source/font.h
+1453519231 /home/zidane/Projects/UA_source/font.h
 	<inttypes.h>
 
-1451874700 source:/home/zidane/Projects/UA_source/def_parser.cpp
+1453519231 source:/home/zidane/Projects/UA_source/def_parser.cpp
 	<stdio.h>
 	"includes.h"
 	"yw.h"
 	"def_parser.h"
 
-1451874700 /home/zidane/Projects/UA_source/def_parser.h
+1453519231 /home/zidane/Projects/UA_source/def_parser.h
 
-1451874700 source:/home/zidane/Projects/UA_source/embed.cpp
+1453519231 source:/home/zidane/Projects/UA_source/embed.cpp
 	"includes.h"
 	"nucleas.h"
 	"embed.h"
@@ -1074,30 +1087,30 @@
 	"math.h"
 	"inttypes.h"
 
-1451874700 /home/zidane/Projects/UA_source/embed.h
+1453519231 /home/zidane/Projects/UA_source/embed.h
 	"nucleas.h"
 	"nlist.h"
 
-1451874701 source:/home/zidane/Projects/UA_source/font.cpp
+1453519231 source:/home/zidane/Projects/UA_source/font.cpp
 	<string.h>
 	"includes.h"
 	"font.h"
 
-1451874701 source:/home/zidane/Projects/UA_source/idev.cpp
+1453519231 source:/home/zidane/Projects/UA_source/idev.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
 	"idev.h"
 	"utils.h"
 
-1452100736 source:/home/zidane/Projects/UA_source/ilbm.cpp
+1453519231 source:/home/zidane/Projects/UA_source/ilbm.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
 	"ilbm.h"
 	"utils.h"
 
-1451874702 source:/home/zidane/Projects/UA_source/input.cpp
+1453519231 source:/home/zidane/Projects/UA_source/input.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -1105,14 +1118,14 @@
 	"engine_input.h"
 	"input.h"
 
-1451874702 source:/home/zidane/Projects/UA_source/itimer.cpp
+1453519231 source:/home/zidane/Projects/UA_source/itimer.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
 	"itimer.h"
 	"utils.h"
 
-1451874702 source:/home/zidane/Projects/UA_source/iwimp.cpp
+1453519231 source:/home/zidane/Projects/UA_source/iwimp.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -1120,7 +1133,7 @@
 	"iwimp.h"
 	"utils.h"
 
-1452000046 source:/home/zidane/Projects/UA_source/lstvw.cpp
+1453519231 source:/home/zidane/Projects/UA_source/lstvw.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -1128,25 +1141,25 @@
 	"lstvw.h"
 	"font.h"
 
-1451874703 /home/zidane/Projects/UA_source/particle.h
+1453519231 /home/zidane/Projects/UA_source/particle.h
 	"nucleas.h"
 	"area.h"
 	"ade.h"
 
-1451874703 source:/home/zidane/Projects/UA_source/particle.cpp
+1453519231 source:/home/zidane/Projects/UA_source/particle.cpp
 	"includes.h"
 	"nucleas.h"
 	"particle.h"
 	"utils.h"
 	<math.h>
 
-1451874704 source:/home/zidane/Projects/UA_source/sample.cpp
+1453519231 source:/home/zidane/Projects/UA_source/sample.cpp
 	"includes.h"
 	"nucleas.h"
 	"sample.h"
 	"utils.h"
 
-1451874704 source:/home/zidane/Projects/UA_source/skeleton.cpp
+1453519231 source:/home/zidane/Projects/UA_source/skeleton.cpp
 	"includes.h"
 	"nucleas.h"
 	"utils.h"
@@ -1162,7 +1175,7 @@
 	<math.h>
 	<float.h>
 
-1451874704 source:/home/zidane/Projects/UA_source/sklt.cpp
+1453519231 source:/home/zidane/Projects/UA_source/sklt.cpp
 	"includes.h"
 	"nucleas.h"
 	"utils.h"
@@ -1179,16 +1192,16 @@
 	"math.h"
 	"inttypes.h"
 
-1451874704 source:/home/zidane/Projects/UA_source/wav.cpp
+1453519231 source:/home/zidane/Projects/UA_source/wav.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
 	"wav.h"
 	"utils.h"
 
-1444729285 /home/zidane/Projects/UA_source/MS/d3dmacs.h
+1451236405 /home/zidane/Projects/UA_source/MS/d3dmacs.h
 
-1451874705 source:/home/zidane/Projects/UA_source/windd.cpp
+1453519231 source:/home/zidane/Projects/UA_source/windd.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -1201,7 +1214,7 @@
 	<wingdi.h>
 	"font.h"
 
-1451874705 source:/home/zidane/Projects/UA_source/winp.cpp
+1453519231 source:/home/zidane/Projects/UA_source/winp.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -1210,7 +1223,7 @@
 	"utils.h"
 	<dinput.h>
 
-1451874705 source:/home/zidane/Projects/UA_source/wintimer.cpp
+1453519231 source:/home/zidane/Projects/UA_source/wintimer.cpp
 	<inttypes.h>
 	<windows.h>
 	"includes.h"
@@ -1218,7 +1231,7 @@
 	"wintimer.h"
 	"utils.h"
 
-1452093062 source:/home/zidane/Projects/UA_source/yw.cpp
+1453649232 source:/home/zidane/Projects/UA_source/yw.cpp
 	<inttypes.h>
 	<string.h>
 	<math.h>
@@ -1229,9 +1242,9 @@
 	"button.h"
 	"font.h"
 
-1452076028 /home/zidane/Projects/UA_source/yw_internal.h
+1453609424 /home/zidane/Projects/UA_source/yw_internal.h
 
-1452077177 source:/home/zidane/Projects/UA_source/yw_func2.cpp
+1453645461 source:/home/zidane/Projects/UA_source/yw_func2.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -1242,15 +1255,18 @@
 	"button.h"
 	<math.h>
 
-1451874705 source:/home/zidane/Projects/UA_source/yw_funcs.cpp
+1453609471 source:/home/zidane/Projects/UA_source/yw_funcs.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
 	"def_parser.h"
 	"yw.h"
 	"yw_internal.h"
+	"lstvw.h"
+	"font.h"
+	"button.h"
 
-1451885422 source:/home/zidane/Projects/UA_source/yw_protos.cpp
+1453519231 source:/home/zidane/Projects/UA_source/yw_protos.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -1833,13 +1849,13 @@
 	"yw_internal.h"
 	"yw.h"
 
-1452403615 /home/zidane/Projects/UA_source/windp.h
+1453519231 /home/zidane/Projects/UA_source/windp.h
 	"nucleas.h"
 
-1452227751 /home/zidane/Projects/UA_source/network.h
+1453519231 /home/zidane/Projects/UA_source/network.h
 	"nucleas.h"
 
-1452403278 source:/home/zidane/Projects/UA_source/network.cpp
+1453519231 source:/home/zidane/Projects/UA_source/network.cpp
 	<inttypes.h>
 	<stdio.h>
 	<stddef.h>
@@ -1847,7 +1863,7 @@
 	"classes.h"
 	"network.h"
 
-1452405151 source:/home/zidane/Projects/UA_source/windp.cpp
+1453519231 source:/home/zidane/Projects/UA_source/windp.cpp
 	<inttypes.h>
 	<stdio.h>
 	<stddef.h>
@@ -1895,4 +1911,118 @@
 	"yw_internal.h"
 	"yw.h"
 	"input.h"
+
+1453519231 source:/home/zidane/Projects/UA_source/yw_brif.cpp
+	<inttypes.h>
+	<string.h>
+	"includes.h"
+	"def_parser.h"
+	"yw.h"
+	"yw_internal.h"
+	"lstvw.h"
+	"font.h"
+
+1453519231 source:/home/zidane/Projects/UA_source/yw_save.cpp
+	<inttypes.h>
+	<string.h>
+	"includes.h"
+	"def_parser.h"
+	"yw_internal.h"
+	"yw.h"
+	"input.h"
+
+1453634968 /home/zidane/Projects/UA_source/ypabact.h
+	"nucleas.h"
+
+1453614405 source:/home/zidane/Projects/UA_source/ypabact.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"ypabact.h"
+
+1453639557 /home/zidane/Projects/UA_source/ypatank.h
+	"nucleas.h"
+	"ypabact.h"
+
+1453639768 /home/zidane/Projects/UA_source/ypacar.h
+	"nucleas.h"
+	"ypatank.h"
+
+1453634959 /home/zidane/Projects/UA_source/ypaufo.h
+	"nucleas.h"
+	"ypabact.h"
+
+1453639751 /home/zidane/Projects/UA_source/ypaflyer.h
+	"nucleas.h"
+	"ypabact.h"
+
+1453639660 /home/zidane/Projects/UA_source/ypagun.h
+	"nucleas.h"
+	"ypabact.h"
+
+1453639742 /home/zidane/Projects/UA_source/ypamissile.h
+	"nucleas.h"
+	"ypabact.h"
+
+1453639742 /home/zidane/Projects/UA_source/yparobo.h
+	"nucleas.h"
+	"ypabact.h"
+
+1453640289 source:/home/zidane/Projects/UA_source/ypacar.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"ypacar.h"
+
+1453640288 source:/home/zidane/Projects/UA_source/ypaflyer.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"ypaflyer.h"
+
+1453640287 source:/home/zidane/Projects/UA_source/ypagun.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"ypagun.h"
+
+1453640314 source:/home/zidane/Projects/UA_source/ypamissile.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"ypamissile.h"
+
+1453640338 source:/home/zidane/Projects/UA_source/yparobo.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"yparobo.h"
+
+1453640408 source:/home/zidane/Projects/UA_source/ypatank.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"ypatank.h"
+
+1453640424 source:/home/zidane/Projects/UA_source/ypaufo.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"ypaufo.h"
 

@@ -3168,3 +3168,111 @@ void ypaworld_func158__sub3(_NC_STACK_ypaworld *yw, UserData *usr)
     }
     ypaworld_func158__confirm_draw(usr);
 }
+
+void yw_freeTileSets(_NC_STACK_ypaworld *yw)
+{
+    for (int i = 0; i < 92; i++)
+    {
+        tiles_stru *tile = yw->tiles[i];
+
+        if (tile != NULL)
+        {
+            if (tile->font_image)
+                delete_class_obj(tile->font_image);
+
+            if (tile->chars)
+                nc_FreeMem(tile->chars);
+
+            nc_FreeMem(tile);
+        }
+
+    }
+
+    memset(yw->tiles, 0, 0x170);
+}
+
+void sb_0x44ac24__sub0(_NC_STACK_ypaworld *yw)
+{
+    if ( yw->win3d )
+    {
+        displ_arg263 v5;
+        v5.bitm = 0;
+        v5.pointer_id = 0;
+        call_method(yw->win3d, 263, &v5);
+    }
+
+    for (int i = 0; i < 11; i++)
+    {
+        if ( yw->pointers[i] )
+        {
+            delete_class_obj(yw->pointers[i]);
+            yw->pointers[i] = NULL;
+            yw->pointers__bitm[i] = NULL;
+        }
+    }
+}
+
+void sb_0x44ac24(_NC_STACK_ypaworld *yw)
+{
+    memset(yw->vhcls_models, 0, sizeof(vhclBases) * 512);
+
+    for (int i = 0; i < 256; i++)
+    {
+        if (yw->legos[i].sklt_obj)
+            delete_class_obj(yw->legos[i].sklt_obj);
+    }
+    memset(yw->legos, 0, sizeof(cityBases) * 256);
+
+    sub_44A908(yw);
+
+    memset(yw->subSectors, 0, sizeof(subSec) * 256);
+    memset(yw->secTypes, 0, sizeof(secType) * 256);
+
+    if ( yw->additionalBeeBox )
+    {
+        delete_class_obj(yw->additionalBeeBox);
+        yw->additionalBeeBox = NULL;
+    }
+
+    if ( yw->colsub_sklt )
+    {
+        delete_class_obj(yw->colsub_sklt);
+        yw->colsub_sklt = NULL;
+        yw->colsub_sklt_intrn = NULL;
+    }
+
+    if ( yw->colcomp_sklt )
+    {
+        delete_class_obj(yw->colcomp_sklt);
+        yw->colcomp_sklt = NULL;
+        yw->colcomp_sklt_intrn = NULL;
+    }
+
+    if ( yw->tracyrmp_ilbm )
+    {
+        delete_class_obj(yw->tracyrmp_ilbm);
+        yw->tracyrmp_ilbm = NULL;
+    }
+
+    if ( yw->shadermp_ilbm )
+    {
+        delete_class_obj(yw->shadermp_ilbm);
+        yw->shadermp_ilbm = NULL;
+    }
+
+    yw_freeTileSets(yw);
+
+    if ( yw->additionalSet )
+    {
+        delete_class_obj(yw->additionalSet);
+        yw->additionalSet = NULL;
+        yw->set_number = 0;
+    }
+
+    NC_STACK_win3d *win3d;
+    gfxEngine__getter(0x8000300D, &win3d, 0);
+
+    call_method(win3d, 272, 0);
+
+    sb_0x44ac24__sub0(yw);
+}

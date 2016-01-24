@@ -312,7 +312,21 @@ int yw_initGameWithSettings()
 
 void ReadSnapsDir()
 {
-    printf("MAKE ME %s\n","ReadSnapsDir");
+    ncDir *dir = OpenDir("env/snaps/");
+
+    if ( dir )
+    {
+        dirEntry entr;
+        while ( ReadDir(dir, &entr) )
+        {
+            if ( !(entr.field_0 & 1) && userdata.snap_count < 32 && !strnicmp(entr.e_name, "demo", 4) )
+            {
+                sprintf( userdata.snaps[ userdata.snap_count ], "env/snaps/%s", entr.e_name);
+                userdata.snap_count++;
+            }
+        }
+        CloseDir(dir);
+    }
 }
 
 int WinMain__sub0__sub1()

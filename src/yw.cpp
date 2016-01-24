@@ -960,8 +960,66 @@ size_t ypaworld_func154(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 }
 
 
-void ypaworld_func155(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func155(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 {
+    yw_netcleanup(usr->p_ypaworld);
+
+    while ( 1 )
+    {
+        nnode *v4 = RemHead(&usr->files_list);
+
+        if ( !v4 )
+            break;
+
+        nc_FreeMem(v4);
+    }
+
+    while ( 1 )
+    {
+        nnode *v5 = RemHead(&usr->video_mode_list);
+
+        if ( !v5 )
+            break;
+
+        nc_FreeMem(v5);
+    }
+
+    while ( 1 )
+    {
+        nnode *v6 = RemHead(&usr->lang_dlls);
+
+        if ( !v6 )
+            break;
+
+        nc_FreeMem(v6);
+    }
+
+    sub_424CC8();
+
+    for (int i = 0; i < 16; i++)
+    {
+        if (usr->samples1[i])
+        {
+            delete_class_obj(usr->samples1[i]);
+            usr->samples1[i] = NULL;
+        }
+
+        if (usr->samples2[i])
+        {
+            delete_class_obj(usr->samples2[i]);
+            usr->samples2[i] = NULL;
+        }
+    }
+
+    if ( usr->field_ADA )
+    {
+        delete_class_obj(usr->field_ADA);
+        usr->field_ADA = NULL;
+    }
+
+    sub_423DD8(&usr->samples1_info);
+    sub_423DD8(&usr->samples2_info);
+    sub_423DD8(&usr->field_782);
 }
 
 
@@ -4048,8 +4106,140 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 }
 
 
-void ypaworld_func157(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func157__sub0(_NC_STACK_ypaworld *yw)
 {
+    sub_4E6FEC(yw);
+
+    if ( yw->GameShell->field_46 >= 4 && yw->GameShell->field_46 <= 5 )
+    {
+        if ( yw->field_2d90->field_40 == 5 )
+        {
+            sub_4EAC80(yw);
+        }
+        else if ( yw->field_2d90->field_40 == 9 )
+        {
+            sub_4EE04C(yw);
+        }
+    }
+}
+
+void ypaworld_func157(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
+{
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    if ( usr->field_0x0 )
+    {
+        int v9;
+
+        if ( usr->confirm_button )
+        {
+            v9 = 2;
+
+            call_method(usr->confirm_button, 68, &v9);
+            delete_class_obj(usr->confirm_button);
+        }
+        usr->confirm_button = NULL;
+
+        if ( usr->sub_bar_button )
+        {
+            v9 = 2;
+
+            call_method(usr->sub_bar_button, 68, &v9);
+            delete_class_obj(usr->sub_bar_button);
+        }
+        usr->sub_bar_button = NULL;
+
+        if ( usr->titel_button )
+        {
+            v9 = 2;
+
+            call_method(usr->titel_button, 68, &v9);
+            delete_class_obj(usr->titel_button);
+        }
+        usr->titel_button = 0;
+
+        if ( usr->button_input_button )
+        {
+            if ( !(usr->input_listview.cmd_flag & 0x20) )
+                sub_4C31C0(usr->p_ypaworld, &usr->input_listview);
+            sub_4E866C(&usr->input_listview);
+
+            v9 = 2;
+            call_method(usr->button_input_button, 68, &v9);
+            delete_class_obj(usr->button_input_button);
+            usr->button_input_button = NULL;
+        }
+
+        if ( usr->video_button )
+        {
+            if ( !(usr->video_listvw.cmd_flag & 0x20) )
+                sub_4C31C0(usr->p_ypaworld, &usr->video_listvw);
+            sub_4E866C(&usr->video_listvw);
+
+            if ( !(usr->d3d_listvw.cmd_flag & 0x20) )
+                sub_4C31C0(usr->p_ypaworld, &usr->d3d_listvw);
+            sub_4E866C(&usr->d3d_listvw);
+
+            v9 = 2;
+            call_method(usr->button_input_button, 68, &v9);
+            delete_class_obj(usr->video_button);
+            usr->video_button = NULL;
+        }
+
+        if ( usr->disk_button )
+        {
+            if ( !(usr->disk_listvw.cmd_flag & 0x20) )
+                sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
+            sub_4E866C(&usr->disk_listvw);
+
+            v9 = 2;
+            call_method(usr->disk_button, 68, &v9);
+            delete_class_obj(usr->disk_button);
+            usr->disk_button = NULL;
+        }
+
+        if ( usr->locale_button )
+        {
+            if ( !(usr->local_listvw.cmd_flag & 0x20) )
+                sub_4C31C0(usr->p_ypaworld, &usr->local_listvw);
+            sub_4E866C(&usr->local_listvw);
+
+            v9 = 2;
+            call_method(usr->locale_button, 68, &v9);
+            delete_class_obj(usr->locale_button);
+            usr->locale_button = NULL;
+        }
+
+        if ( usr->about_button )
+        {
+            v9 = 2;
+            call_method(usr->about_button, 68, &v9);
+            delete_class_obj(usr->about_button);
+            usr->about_button = NULL;
+        }
+
+        if ( usr->network_button )
+        {
+            if ( !(usr->network_listvw.cmd_flag & 0x20) )
+                sub_4C31C0(usr->p_ypaworld, &usr->network_listvw);
+            sub_4E866C(&usr->network_listvw);
+
+            v9 = 2;
+            call_method(usr->network_button, 68, &v9);
+            delete_class_obj(usr->network_button);
+            usr->network_button = NULL;
+        }
+
+        sub_424CC8();
+
+        ypaworld_func157__sub0(yw);
+
+        sb_0x44ac24(yw);
+
+        //nullsub_7();
+
+        usr->field_0x0 = 0;
+    }
 }
 
 //Draw bkg or briefing
@@ -4974,13 +5164,128 @@ size_t ypaworld_func173(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 }
 
 
-void ypaworld_func174(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+size_t ypaworld_func174(NC_STACK_ypaworld *obj, class_stru *zis, yw_174arg *arg)
 {
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    UserData *usr = yw->GameShell;
+
+    NC_STACK_win3d *win3d;
+    gfxEngine__getter(0x8000300D, &win3d, 0);
+
+    int current_resolution;
+
+    call_vtbl(win3d, 3, 0x80004000, &current_resolution, 0);
+
+    if ( arg->resolution == current_resolution && !arg->make_changes )
+        return 1;
+
+    int v6;
+
+    if ( usr->field_0x0 )
+    {
+        call_method(obj, 157, usr);
+        v6 = 1;
+    }
+    else
+    {
+        v6 = 0;
+    }
+
+    inputEngine__setter(0x80001007, 0, 0);
+
+    gfxEngine__setter(0x80003007, arg->resolution, 0);
+
+    windd__window_params *a2a;
+
+    gfxEngine__getter(0x80003007, &a2a, 0);
+    inputEngine__setter(0x80001007, a2a, 0);
+
+    int width, height;
+
+    gfxEngine__getter(0x80003003, &width, 0x80003004, &height, 0);
+
+    yw->screen_width = width;
+    yw->screen_height = height;
+
+    if ( v6 && !call_method(obj, 156, usr))
+    {
+        ypa_log_out("Warning: Unable to open GameShell with mode %d\n", arg->resolution);
+
+        inputEngine__setter(0x80001007, 0, 0);
+
+        gfxEngine__setter(0x80003007, usr->p_ypaworld->shell_default_res, 0);
+
+        gfxEngine__getter(0x80003007, &a2a, 0);
+        inputEngine__setter(0x80001007, a2a, 0);
+
+        gfxEngine__getter(0x80003003, &width, 0x80003004, &height, 0);
+
+        yw->screen_width = width;
+        yw->screen_height = height;
+
+        if ( !call_method(yw->self_full, 156, usr) )
+        {
+            return 0;
+        }
+    }
+
+    gfxEngine__getter(0x8000300D, &win3d, 0);
+
+    if ( usr->GFX_flags & 4 )
+    {
+        call_vtbl(win3d, 2, 0x80005000, 1, 0);
+    }
+    else
+    {
+        call_vtbl(win3d, 2, 0x80005000, 0, 0);
+    }
+
+
+    if ( yw->screen_width >= 512 )
+    {
+        load_font( get_lang_string(yw->string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
+    }
+    else
+    {
+        load_font( get_lang_string(yw->string_pointers_p2, 16, "Arial,8,400,0") );
+    }
+
+    return 1;
 }
 
 
-void ypaworld_func175(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+size_t ypaworld_func175(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 {
+    if ( !usr->default_lang_dll )
+    {
+        ypa_log_out("Set Language, but no language selected\n");
+        return 0;
+    }
+
+    int v6;
+
+    if ( usr->field_0x0 )
+    {
+        call_method(obj, 157, usr);
+        v6 = 1;
+    }
+    else
+    {
+        v6 = 0;
+    }
+
+    const char *v7 = usr->default_lang_dll->langDllName;
+    if ( !call_method(obj, 166, &v7) )
+        ypa_log_out("Warning: SETLANGUAGE failed\n");
+
+    if ( v6 && !call_method(obj, 156, usr) )
+    {
+        ypa_log_out("Unable to open GameShell\n");
+        return 0;
+    }
+
+    return 1;
 }
 
 
@@ -5013,10 +5318,87 @@ void ypaworld_func182(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
 }
 
-
-size_t ypaworld_func183(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+int ypaworld_func183__sub0(int lvlID, const char *userName)
 {
-    return 0;
+    char buf[300];
+
+    sprintf(buf, "save:%s/%d.fin", userName, lvlID);
+
+    FILE *fil = FOpen(buf, "r");
+
+    if ( !fil )
+        return 0;
+
+    FClose(fil);
+    return 1;
+}
+
+// Advanced Create Level
+size_t ypaworld_func183(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg161 *arg)
+{
+    char buf[128];
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    int v6;
+
+    if ( yw->LevelNet->mapInfos[ arg->lvlID ].field_0 == 3 && ypaworld_func183__sub0(arg->lvlID, yw->GameShell->user_name) )
+    {
+        sprintf(buf, "save:%s/%d.fin", yw->GameShell->user_name, arg->lvlID);
+
+        yw_arg169 v11;
+        v11.saveFile = buf;
+        v11.usr = yw->GameShell;
+
+        v6 = call_method(obj, 169, &v11);
+
+        if ( !v6 )
+            ypa_log_out("Warning: in YWM_ADVANCEDCREATELEVEL: YWM_LOADGAME of %s failed!\n", buf);
+
+        yw->field_1b80->energy = yw->field_1b80->energy_2;
+
+        printf("MAKE ME %s\n", "if ( yw->map_events ) yw->map_events->field_0 = 0;");
+        /*if ( yw->map_events )
+            yw->map_events->field_0 = 0;*/ //MAKE ME
+    }
+    else
+    {
+        v6 = call_method(obj, 161, arg);
+
+        if ( !v6 )
+            ypa_log_out("Warning: in YWM_ADVANCEDCREATELEVEL: YWM_CREATELEVEL %d failed!\n", arg->lvlID);
+    }
+
+    if ( v6 )
+    {
+        yw_arg169 v11;
+        v11.usr = yw->GameShell;
+        v11.saveFile = buf;
+
+        sprintf(buf, "save:%s/%d.rst", yw->GameShell->user_name, yw->field_2d90->levelID);
+
+        if ( !call_method(obj, 170, &v11) )
+            ypa_log_out("Warning: could not create restart file for level %d, user %s.\n", yw->field_2d90->levelID, yw->GameShell->user_name);
+    }
+
+    if ( yw->copyof_typemap )
+    {
+        delete_class_obj(yw->copyof_typemap);
+        yw->copyof_typemap = NULL;
+    }
+
+    if ( yw->copyof_ownermap )
+    {
+        delete_class_obj(yw->copyof_ownermap);
+        yw->copyof_ownermap = NULL;
+    }
+
+    if ( yw->typ_map )
+        yw->copyof_typemap = sub_44816C(yw->typ_map, "copyof_typemap");
+
+    if ( yw->own_map )
+        yw->copyof_ownermap = sub_44816C(yw->own_map, "copyof_ownermap");
+
+    return v6;
 }
 
 

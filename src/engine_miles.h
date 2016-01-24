@@ -54,6 +54,7 @@ userdata_sample_info *sub_423F74(samples_collection1 *a1, int a2);
 void sub_424000(samples_collection1 *smpls, int a2);
 int sub_4448C0(int *a1);
 void sub_423DD8(samples_collection1 *smpls);
+void sub_424CC8();
 
 void milesEngine__setter(unsigned int, ...);
 

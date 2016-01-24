@@ -141,3 +141,8 @@ void sub_423EFC(int a1, xyz *a2, xyz *a3, mat3x3 *a4)
 
     dword_546DD8 = dword_546F10;
 }
+
+void sub_424CC8()
+{
+    printf("STUB %s\n", "sub_424CC8");
+}

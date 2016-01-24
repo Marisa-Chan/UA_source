@@ -59,7 +59,15 @@ OBJS =  \
 	yw_funcs.cpp\
 	yw_func2.cpp\
 	yw_protos.cpp\
-	yw_save.cpp
+	yw_save.cpp\
+	ypabact.cpp\
+	ypacar.cpp\
+	ypaflyer.cpp\
+	ypagun.cpp\
+	ypamissile.cpp\
+	yparobo.cpp\
+	ypatank.cpp\
+	ypaufo.cpp
 	
 WINOBJ = \
 	win_funct.cpp

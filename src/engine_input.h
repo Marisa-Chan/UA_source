@@ -55,6 +55,7 @@ void sub_412D48(inp_node *btn, int a2);
 void sub_412D9C(inp_node *btn);
 
 void inputEngine__getter(unsigned int, ...);
+void inputEngine__setter(unsigned int a1, ...);
 
 
 #endif // ENGINE_INPUT_H_INCLUDED

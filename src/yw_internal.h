@@ -148,4 +148,7 @@ int yw_write_buddies(FILE *fil, _NC_STACK_ypaworld *yw);
 int yw_write_shell(FILE *fil, UserData *usr);
 int yw_write_item_modifers(_NC_STACK_ypaworld *yw, FILE *fil);
 
+void sb_0x44ac24(_NC_STACK_ypaworld *yw);
+void sub_4EAC80(_NC_STACK_ypaworld *yw);
+
 #endif

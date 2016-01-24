@@ -42,7 +42,7 @@ void sub_4231FC(void *dat)
 }
 
 
-int sub_422CE8(const char *display, const char *display2, void *a5)
+int sub_422CE8(const char *display, const char *display2, int gfxmode)
 {
     char buf[33];
 
@@ -51,8 +51,8 @@ int sub_422CE8(const char *display, const char *display2, void *a5)
         strcpy(buf, "drivers/gfx/");
         strcat(buf, display);
 
-////		win3d_class_pointer = (NC_STACK_win3d *)init_get_class(buf,  0x80001000, "display",  0x80001001,  2,  0x80004000,  a5,  0);
-        win3d_class_pointer = init_get_class(buf,  0x80001000, "display",  0x80001001,  2,  0x80004000,  a5,  0);
+////		win3d_class_pointer = (NC_STACK_win3d *)init_get_class(buf,  0x80001000, "display",  0x80001001,  2,  0x80004000,  gfxmode,  0);
+        win3d_class_pointer = init_get_class(buf,  0x80001000, "display",  0x80001001,  2,  0x80004000,  gfxmode,  0);
 
         if ( !win3d_class_pointer )
         {
@@ -60,8 +60,8 @@ int sub_422CE8(const char *display, const char *display2, void *a5)
             {
                 strcpy(buf, "drivers/gfx/");
                 strcat(buf, display2);
-////		win3d_class_pointer = (NC_STACK_win3d *)init_get_class(buf,  0x80001000, "display",  0x80001001,  2,  0x80004000,  a5,  0);
-                win3d_class_pointer = init_get_class(buf,  0x80001000, "display",  0x80001001,  2,  0x80004000,  a5,  0);
+////		win3d_class_pointer = (NC_STACK_win3d *)init_get_class(buf,  0x80001000, "display",  0x80001001,  2,  0x80004000,  gfxmode,  0);
+                win3d_class_pointer = init_get_class(buf,  0x80001000, "display",  0x80001001,  2,  0x80004000,  gfxmode,  0);
             }
         }
         if ( !win3d_class_pointer )
@@ -157,7 +157,7 @@ void gfxEngine__setter(unsigned int a1, ...)
 
         delete_class_obj(win3d_class_pointer);
 
-        if ( sub_422CE8(gfx_display, gfx_display2, (void *)v4->value) )
+        if ( sub_422CE8(gfx_display, gfx_display2, v4->value) )
         {
             call_method(win3d_class_pointer, 257);
 

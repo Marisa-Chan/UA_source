@@ -14,6 +14,7 @@
 #include "sklt.h"
 #include "wav.h"
 #include "windp.h"
+#include "ypabact.h"
 
 #include "lstvw.h"
 
@@ -286,6 +287,8 @@ struct UserData
     audiotrack_adv missiontrack__adv;
     audiotrack_adv loadingtrack__adv;
     audiotrack_adv debriefingtrack__adv;
+    char snaps[32][256];
+    int16_t snap_count;
 
     int field_5457;
     int field_545B;
@@ -737,8 +740,7 @@ struct _NC_STACK_ypaworld
     char *buildDate;
     int field_1624;
 
-    tiles_stru *tiles[64];
-
+    tiles_stru *tiles[92];
     nlist field_17a0;
     int16_t screen_width;
     int16_t screen_height;
@@ -767,6 +769,8 @@ struct _NC_STACK_ypaworld
     NC_STACK_ilbm *pointers[11];
     bitmap_intern *pointers__bitm[11];
     int field_1b1c;
+
+    __NC_STACK_ypabact *field_1b80;
 
     int field_2424;
 
@@ -1241,6 +1245,12 @@ struct yw_174arg
 {
     int resolution;
     int make_changes;
+};
+
+struct yw_arg169
+{
+    UserData *usr;
+    const char *saveFile;
 };
 
 #endif
