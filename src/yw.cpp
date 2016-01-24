@@ -418,11 +418,13 @@ NC_STACK_ypaworld *ypaworld_func0(class_stru *clss, class_stru *zis, stack_vals 
 
 void ypaworld_func1(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func1");
 }
 
 
 void ypaworld_func2(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func2");
 }
 
 
@@ -474,116 +476,139 @@ void ypaworld_func3(NC_STACK_ypaworld *obj, class_stru *zis, stack_vals *stak)
 
 void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func64");
 }
 
 
 void ypaworld_func129(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func129");
 }
 
 
 void ypaworld_func130(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func130");
 }
 
 
 void ypaworld_func131(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func131");
 }
 
 
 void ypaworld_func132(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func132");
 }
 
 
 void ypaworld_func133(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func133");
 }
 
 
 void ypaworld_func134(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func134");
 }
 
 
 void ypaworld_func135(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func135");
 }
 
 
 void ypaworld_func136(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func136");
 }
 
 
 void ypaworld_func137(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func137");
 }
 
 
 void ypaworld_func138(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func138");
 }
 
 
 void ypaworld_func139(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func139");
 }
 
 
 void ypaworld_func140(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func140");
 }
 
 
 void ypaworld_func143(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func143");
 }
 
 
 void ypaworld_func144(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func144");
 }
 
 
 void ypaworld_func145(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func145");
 }
 
 
 void ypaworld_func146(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func146");
 }
 
 
 void ypaworld_func147(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func147");
 }
 
 
 void ypaworld_func148(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func148");
 }
 
 
 void ypaworld_func149(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func149");
 }
 
 
 void ypaworld_func150(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func150");
 }
 
 
 void ypaworld_func151(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func151");
 }
 
 
 void ypaworld_func153(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func153");
 }
 
 void sub_46D2B4(NC_STACK_ypaworld *obj, UserData *usr)
@@ -4484,36 +4509,44 @@ void ypaworld_func158(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
 void ypaworld_func159(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func159");
 }
 
 
 void ypaworld_func160(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func160");
 }
 
-
-void ypaworld_func161(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+// Load Level
+size_t ypaworld_func161(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func161");
+    return 0;
 }
 
 
 void ypaworld_func162(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func162");
 }
 
 
 void ypaworld_func163(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func163");
 }
 
 
 void ypaworld_func164(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func164");
 }
 
 
 void ypaworld_func165(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func165");
 }
 
 
@@ -4838,16 +4871,19 @@ void ypaworld_func167(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
 void ypaworld_func168(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func168");
 }
 
 
 void ypaworld_func169(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func169");
 }
 
 
 void ypaworld_func170(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func170");
 }
 
 
@@ -5291,31 +5327,37 @@ size_t ypaworld_func175(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
 void ypaworld_func176(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func176");
 }
 
 
 void ypaworld_func177(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func177");
 }
 
 
 void ypaworld_func179(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func179");
 }
 
 
 void ypaworld_func180(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func180");
 }
 
 
 void ypaworld_func181(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func181");
 }
 
 
 void ypaworld_func182(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func182");
 }
 
 int ypaworld_func183__sub0(int lvlID, const char *userName)
@@ -5404,11 +5446,13 @@ size_t ypaworld_func183(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg161 *arg)
 
 void ypaworld_func184(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func184");
 }
 
 
 void ypaworld_func185(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
+    printf("MAKE ME %s\n","ypaworld_func185");
 }
 
 
