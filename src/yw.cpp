@@ -4997,7 +4997,7 @@ int ypaworld_func172__sub0(UserData *usr, const char *fname, int parsers_mask, N
     {
         v18[parsers_number].world = (_NC_STACK_ypaworld *)ywo;
         v18[parsers_number].func = parseSaveShell;
-        v18[parsers_number].dataForStore = usr->p_ypaworld;
+        v18[parsers_number].dataForStore = usr;
 
         parsers_number++;
     }
