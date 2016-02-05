@@ -127,7 +127,7 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz
             v16.y = p3d->scale_rotation.m10 * v13 + pos->sy + 0.0 * p3d->scale_rotation.m11 + p3d->scale_rotation.m12 * v14;
             v16.z = p3d->scale_rotation.m20 * v13 + pos->sz + 0.0 * p3d->scale_rotation.m21 + p3d->scale_rotation.m22 * v14;
 
-            NC_STACK_base *lego = yw->legos[ scType->field_4[j][i]->field_4 ].base;
+            NC_STACK_base *lego = yw->legos[ scType->buildings[j][i]->health_models[0] ].base;
             call_vtbl(lego, 2, 0x80001024, 0, 0);
             call_vtbl(lego, 2, 0x80001004, 16000, 0);
             call_vtbl(lego, 2, 0x80001023, 100, 0);
@@ -871,28 +871,6 @@ int yw_loadSky(_NC_STACK_ypaworld *yw, const char *skyname)
     call_vtbl(sky, 2, 0x80001023, yw->field_15f0, 0);
     return 1;
 }
-
-//void yw_renderSky_test(_NC_STACK_ypaworld *yw, base77Func *rndr_params)
-//{
-//	if ( yw->sky_loaded_base )
-//	{
-//		float v6 = rndr_params->field_24;
-//		flag_xyz v5;
-//		v5.x = 0;
-//		v5.y = 0;
-//		v5.z = 0;
-//		v5.flag = 7;
-//
-//		call_method(yw->sky_loaded_base, 68, &v5);
-//
-//		rndr_params->field_24 = 32000.0;
-//
-//		call_method(yw->sky_loaded_base, 77, rndr_params);
-//
-//		rndr_params->field_24 = v6;
-//	}
-//}
-
 
 void fill_videmodes_list(UserData *usr)
 {
@@ -2278,9 +2256,9 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
         usr->field_782.field_C = 0;
         usr->field_782.field_10 = 0;
         usr->field_782.field_14 = 0;
-        usr->field_782.field_0 = 0;
-        usr->field_782.field_4 = 0;
-        usr->field_782.field_8 = 0;
+        usr->field_782.field_0.sx = 0;
+        usr->field_782.field_0.sy = 0;
+        usr->field_782.field_0.sz = 0;
         usr->field_782.samples_data[0].volume = 500;
         usr->field_782.samples_data[0].pitch = 0;
 

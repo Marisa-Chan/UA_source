@@ -60,6 +60,8 @@ char **ypaworld__string_pointers;
 
 listview stru_5C91D0;
 
+int bact_id;
+
 
 int sub_4493B0(scrCallBack *arg)
 {
@@ -334,9 +336,9 @@ NC_STACK_ypaworld *ypaworld_func0(class_stru *clss, class_stru *zis, stack_vals 
         yw->screen_width = width;
         yw->screen_height = height;
 
-        init_list(&yw->field_48);
+        init_list(&yw->bact_list);
         init_list(&yw->field_17a0);
-        init_list(&yw->field_54);
+        init_list(&yw->dead_cache);
 
         if ( !yw_initAttrs(obj, yw, stak) )
         {
@@ -345,13 +347,13 @@ NC_STACK_ypaworld *ypaworld_func0(class_stru *clss, class_stru *zis, stack_vals 
             return 0;
         }
 
-        yw->field_130[0] = 3;
+        yw->build_hp_ref[0] = 3;
         for (int i = 1; i <= 100; i++ )
-            yw->field_130[i] = 2;
+            yw->build_hp_ref[i] = 2;
         for (int i = 101; i <= 200; i++ )
-            yw->field_130[i] = 1;
+            yw->build_hp_ref[i] = 1;
         for (int i = 201; i < 256; i++ )
-            yw->field_130[i] = 0;
+            yw->build_hp_ref[i] = 0;
 
         for (int j = 0; j < 64; j++)
         {
@@ -421,10 +423,124 @@ void ypaworld_func1(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
     printf("MAKE ME %s\n","ypaworld_func1");
 }
 
-
-void ypaworld_func2(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func2__sub0(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stack_vals *stak)
 {
-    printf("MAKE ME %s\n","ypaworld_func2");
+    stack_vals *stk = stak;
+
+    while ( 1 )
+    {
+        if (stk->id == 0)
+            break;
+        else if (stk->id == 2)
+        {
+            stk = (stack_vals *)stk->value;
+        }
+        else if ( stk->id == 3 )
+        {
+            stk += stk->value;
+            ////a2++; ////BUGFIX?
+        }
+        else
+        {
+            switch ( stk->id )
+            {
+            default:
+                break;
+
+            case 0x80002007:
+                yw->field_15e4 = stk->value;
+                break;
+
+            case 0x80002008:
+                yw->field_15e8 = stk->value;
+                break;
+
+            case 0x80002009:
+                yw->field_15ec = stk->value;
+                break;
+
+            case 0x8000200A:
+                yw->field_15f0 = stk->value;
+                break;
+
+            case 0x8000200B:
+                yw->field_15f4 = stk->value;
+                break;
+
+            case 0x8000200C:
+                yw->field_15f8 = stk->value;
+                break;
+
+            case 0x8000200D:
+                yw->field_15fc = stk->value;
+                break;
+
+            case 0x8000200E:
+                yw->field_1368 = stk->value;
+                break;
+
+            case 0x80002010:
+                yw->field_1b78 = (NC_STACK_ypabact *)stk->value;
+
+                call_vtbl(yw->field_1b78, 3, 0x80001003, &yw->field_1b80, 0);
+
+                yw->field_1b88 = &yw->field_1b80->list2;
+                break;
+
+            case 0x80002011:
+            {
+                NC_STACK_ypabact *tmp = (NC_STACK_ypabact *)stk->value;
+
+                if ( tmp != yw->field_1b7c )
+                {
+                    if ( yw->field_1b84 )
+                        yw->field_241c = yw->field_1b84->ypabact__id;
+
+                    yw->field_1b7c = tmp;
+                    call_vtbl(tmp, 3, 0x80001003, &yw->field_1b84, 0);
+
+                    yw->field_1a0c = yw->field_1614;
+                    yw->field_1a10 = yw->field_1b84->field_2E;
+                    yw->field_17bc = 0;
+
+                    if ( yw->field_1b84->field_24 == 3 )
+                    {
+                        yw->field_7886 = 1;
+                        yw->field_7882 = 1;
+                    }
+                    ypaworld_func2__sub0__sub0(yw);
+
+                    if ( yw->field_1b84 )
+                        ypaworld_func2__sub0__sub1(yw, yw->field_1b84, yw->field_1b84);
+                }
+            }
+            break;
+
+            case 0x80002016:
+                yw->screen_width = stk->value;
+                break;
+
+            case 0x80002017:
+                yw->screen_height = stk->value;
+                break;
+
+            case 0x8000201E:
+                yw->field_138c = stk->value;
+                break;
+            }
+
+            stk++;
+        }
+    }
+}
+
+void ypaworld_func2(NC_STACK_ypaworld *obj, class_stru *zis, stack_vals *stak)
+{
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    ypaworld_func2__sub0(obj, yw, stak);
+
+    call_parent(zis, obj, 2, stak);
 }
 
 
@@ -452,11 +568,112 @@ void ypaworld_func3__sub0(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stack_
             default:
                 break;
 
+            case 0x80002000:
+                *(int *)stk->value = yw->sectors_maxX;
+                break;
+
+            case 0x80002001:
+                *(int *)stk->value = yw->sectors_maxY;
+                break;
+
+            case 0x80002002:
+                *(int *)stk->value = yw->sectors_maxX2;
+                break;
+
+            case 0x80002003:
+                *(int *)stk->value = yw->sectors_maxY2;
+                break;
+
+            case 0x80002004:
+                //*(int *)stk->value = yw->field_20;
+                break;
+
+            case 0x80002005:
+                //*(int *)stk->value = yw->field_24;
+                break;
+
+            case 0x80002007:
+                *(int *)stk->value = yw->field_15e4;
+                break;
+
+            case 0x80002008:
+                *(int *)stk->value = yw->field_15e8;
+                break;
+
+            case 0x8000200B:
+                *(int *)stk->value = yw->field_15f4;
+                break;
+
+            case 0x8000200C:
+                *(int *)stk->value = yw->field_15f8;
+                break;
+
+            case 0x8000200D:
+                *(int *)stk->value = yw->field_15fc;
+                break;
+
+            case 0x8000200E:
+                *(int *)stk->value = yw->field_1368;
+                break;
+
+            case 0x8000200F:
+                *(int *)stk->value = 0;
+                break;
+
+            case 0x80002010:
+                *(NC_STACK_ypabact **)stk->value = yw->field_1b78;
+                break;
+
+            case 0x80002011:
+                *(NC_STACK_ypabact **)stk->value = yw->field_1b7c;
+                break;
+
+            case 0x80002012:
+                *(WeapProto **)stk->value = yw->WeaponProtos;
+                break;
+
+            case 0x80002013:
+                *(BuildProto **)stk->value = yw->BuildProtos;
+                break;
+
+            case 0x80002014:
+                *(VhclProto **)stk->value = yw->VhclProtos;
+                break;
+
+            case 0x80002015:
+                if ( yw->field_2d90->field_40 != 1 && yw->field_2d90->field_40 != 2 )
+                    *(int *)stk->value = 0;
+                else
+                    *(int *)stk->value = 1;
+                break;
+
+            case 0x80002016:
+                *(int *)stk->value = yw->screen_width;
+                break;
+
+            case 0x80002017:
+                *(int *)stk->value = yw->screen_height;
+                break;
 
             case 0x80002018:
                 *(char ***)stk->value = yw->string_pointers;
                 break;
 
+            case 0x8000201A:
+                *(stru_2d90 **)stk->value = yw->field_2d90;
+                break;
+
+            case 0x8000201B:
+                *(int *)stk->value = yw->fxnumber;
+                break;
+
+            case 0x8000201C:
+                *(NC_STACK_windp **)stk->value = yw->windp;
+                break;
+
+            case 0x8000201F:
+                *(int *)stk->value = yw->field_1a20;
+                break;
 
             }
             stk++;
@@ -474,9 +691,36 @@ void ypaworld_func3(NC_STACK_ypaworld *obj, class_stru *zis, stack_vals *stak)
 }
 
 
-void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
 {
     printf("MAKE ME %s\n","ypaworld_func64");
+
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    yw->field_161c++;
+    yw->field_1b24.field_0 = yw->field_1614;
+    yw->field_1b24.field_4 = arg->field_4;
+    yw->field_1b24.numid = 0;
+    yw->field_1b24.inpt = arg->field_8;
+
+    bact_node *nnode = (bact_node *)yw->bact_list.head;
+    while ( nnode->next )
+    {
+        if (yw->field_757E && nnode->bacto != yw->field_1b78 && nnode->bact->field_24 == 3)
+            call_method(nnode->bacto, 116, &yw->field_1b24);
+        else
+            call_method(nnode->bacto, 65, &yw->field_1b24);
+
+        yw->field_1b24.numid++;
+
+        nnode = (bact_node *)nnode->next;
+    }
+
+    call_method(yw->win3d, 257, 0);
+
+    sb_0x4d7c08(obj, yw, arg, 1);
+
+    call_method(yw->win3d, 258, 0);
 }
 
 
@@ -486,15 +730,37 @@ void ypaworld_func129(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
-void ypaworld_func130(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+size_t ypaworld_func130(NC_STACK_ypaworld *obj, class_stru *zis, yw_130arg *arg)
 {
-    printf("MAKE ME %s\n","ypaworld_func130");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    arg->sec_x = arg->pos_x / 1200;
+    arg->sec_z = -arg->pos_z / 1200;
+
+    arg->pos_x_cntr = arg->pos_x - arg->sec_x * 1200.0 + -600.0;
+    arg->pos_y_cntr = arg->pos_z + arg->sec_z * 1200.0 + 600.0;
+
+    if ( arg->sec_x < 0 || arg->sec_z < 0 || arg->sec_x >= yw->sectors_maxX2 || arg->sec_z >= yw->sectors_maxY2 )
+    {
+        ypa_log_out("YWM_GETSECTORINFO ausserhalb!!!\n");
+
+        arg->pcell = NULL;
+
+        return 0;
+    }
+
+    arg->pcell = &yw->cells[yw->sectors_maxX2 * arg->sec_z + arg->sec_x];
+    return 1;
 }
 
 
-void ypaworld_func131(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func131(NC_STACK_ypaworld *obj, class_stru *zis, __NC_STACK_ypabact *bact)
 {
-    printf("MAKE ME %s\n","ypaworld_func131");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    yw->current_bact = bact;
+
+    call_vtbl(obj, 2, 0x80002011, bact->self, 0);
 }
 
 
@@ -510,9 +776,17 @@ void ypaworld_func133(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
-void ypaworld_func134(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func134(NC_STACK_ypaworld *obj, class_stru *zis, NC_STACK_ypabact *bact)
 {
-    printf("MAKE ME %s\n","ypaworld_func134");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    bact_arg73 arg73;
+
+    arg73.bacto = (NC_STACK_ypabact *)1;
+    arg73.bact = NULL;
+    arg73.list = &yw->bact_list;
+
+    call_method(bact, 73, &arg73);
 }
 
 
@@ -522,9 +796,75 @@ void ypaworld_func135(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
-void ypaworld_func136(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func136(NC_STACK_ypaworld *obj, class_stru *zis, ypaworld_arg136 *arg)
 {
-    printf("MAKE ME %s\n","ypaworld_func136");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    float pos_x = arg->pos_x;
+    float pos_y = arg->pos_y;
+    float pos_z = arg->pos_z;
+
+    arg->field_24 = 2.0;
+    arg->field_20 = 0;
+
+    float pos_xx = pos_x + arg->field_14;
+    float pos_zz = pos_z + arg->field_1C;
+
+    int dx = (pos_x + 150) / 300;
+    int dxx = (pos_xx + 150) / 300;
+
+    int dz = (-pos_z + 150) / 300;
+
+    int dzz = (-pos_zz + 150) / 300;
+
+    int elems = 0;
+    struct_44dbf8 a6[4];
+
+
+    if ( dx == dxx && dz == dzz )
+    {
+        elems = 1;
+        a6[0].field_1C = 0;
+        sub_44DBF8(yw, dx, dz, dx, dz, &a6[0], arg->field_40);
+    }
+    else if ( dx == dxx || dz == dzz )
+    {
+        elems = 2;
+        a6[0].field_1C = 0;
+        a6[1].field_1C = 0;
+        sub_44DBF8(yw, dx, dz, dx,  dz,  &a6[0], arg->field_40);
+        sub_44DBF8(yw, dx, dz, dxx, dzz, &a6[1], arg->field_40);
+    }
+    else
+    {
+        elems = 4;
+        a6[0].field_1C = 0;
+        a6[1].field_1C = 0;
+        a6[2].field_1C = 0;
+        a6[3].field_1C = 0;
+        sub_44DBF8(yw, dx, dz, dx,  dz,  &a6[0], arg->field_40);
+        sub_44DBF8(yw, dx, dz, dx,  dzz, &a6[1], arg->field_40);
+        sub_44DBF8(yw, dx, dz, dxx, dz,  &a6[2], arg->field_40);
+        sub_44DBF8(yw, dx, dz, dxx, dzz, &a6[3], arg->field_40);
+    }
+
+    for (int i = 0; i < elems; i++)
+    {
+        if ( a6[i].field_1C )
+        {
+            if ( a6[i].field_1C != 1)
+                sub_44E07C(yw, &a6[i]);
+
+            arg->pos_x = pos_x - a6[i].pos_x;
+            arg->pos_y = pos_y - a6[i].pos_y;
+            arg->pos_z = pos_z - a6[i].pos_z;
+
+            sub_44D8B8(arg, &a6[i]);
+
+            if ( arg->field_20 )
+                break;
+        }
+    }
 }
 
 
@@ -570,9 +910,163 @@ void ypaworld_func145(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
-void ypaworld_func146(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+NC_STACK_ypabact *ypaworld_func146(NC_STACK_ypaworld *obj, class_stru *zis, ypaworld_arg146 *vhcl_id)
 {
-    printf("MAKE ME %s\n","ypaworld_func146");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    if ( vhcl_id->vehicle_id > 256 )
+        return NULL;
+
+    VhclProto *vhcl = &yw->VhclProtos[vhcl_id->vehicle_id];
+
+    NC_STACK_ypabact *bacto = yw_createUnit(obj, yw, vhcl->model_id);
+
+    if ( bacto )
+    {
+        __NC_STACK_ypabact *bact;
+
+        call_vtbl(bacto, 3, 0x80001003, &bact, 0);// bact
+
+        bact->energy = vhcl->energy;
+        bact->energy_2 = vhcl->energy;
+        bact->shield = vhcl->shield;
+        bact->mass = vhcl->mass;
+        bact->force = vhcl->force;
+        bact->maxrot = vhcl->maxrot;
+        bact->height = vhcl->height;
+        bact->radius = vhcl->radius;
+        bact->vwr_radius = vhcl->vwr_radius;
+        bact->overeof = vhcl->overeof;
+        bact->vwr_overeof = vhcl->vwr_overeof;
+        bact->airconst = vhcl->airconst;
+        bact->airconst2 = vhcl->airconst;
+        bact->adist_sector = vhcl->adist_sector;
+        bact->adist_bact = vhcl->adist_bact;
+        bact->sdist_sector = vhcl->sdist_sector;
+        bact->sdist_bact = vhcl->sdist_bact;
+        bact->radar = vhcl->radar;
+        bact->gun_radius = vhcl->gun_radius;
+        bact->gun_power = vhcl->gun_power;
+        bact->max_pitch = vhcl->max_pitch;
+        bact->id = vhcl_id->vehicle_id;
+        bact->weapon = vhcl->weapon;
+
+        if ( vhcl->weapon == -1 )
+            bact->field_96E = 0;
+        else
+            bact->field_96E = yw->WeaponProtos[ vhcl->weapon ].model_id;
+
+        bact->mgun = vhcl->mgun;
+        bact->fire_x = vhcl->fire_x;
+        bact->fire_y = vhcl->fire_y;
+        bact->fire_z = vhcl->fire_z;
+        bact->gun_angle = vhcl->gun_angle;
+        bact->gun_angle2 = vhcl->gun_angle;
+        bact->num_weapons = vhcl->num_weapons;
+        bact->kill_after_shot = vhcl->kill_after_shot;
+        bact->vp_normal.base = yw->vhcls_models[ vhcl->vp_normal ].base;
+        bact->vp_normal.trigo = yw->vhcls_models[ vhcl->vp_normal ].trigo;
+        bact->vp_fire.base = yw->vhcls_models[ vhcl->vp_fire ].base;
+        bact->vp_fire.trigo = yw->vhcls_models[ vhcl->vp_fire ].trigo;
+        bact->vp_dead.base = yw->vhcls_models[ vhcl->vp_dead ].base;
+        bact->vp_dead.trigo = yw->vhcls_models[ vhcl->vp_dead ].trigo;
+        bact->vp_wait.base = yw->vhcls_models[ vhcl->vp_wait ].base;
+        bact->vp_wait.trigo = yw->vhcls_models[ vhcl->vp_wait ].trigo;
+        bact->vp_megadeth.base = yw->vhcls_models[ vhcl->vp_megadeth ].base;
+        bact->vp_megadeth.trigo = yw->vhcls_models[ vhcl->vp_megadeth ].trigo;
+        bact->vp_genesis.base = yw->vhcls_models[ vhcl->vp_genesis ].base;
+        bact->vp_genesis.trigo = yw->vhcls_models[ vhcl->vp_genesis ].trigo;
+
+        memcpy(bact->dest_fx, vhcl->dest_fx, sizeof(bact->dest_fx));
+
+        memset(bact->models_bases, 0, sizeof(NC_STACK_base *) * 32);
+        memset(bact->models_trigo, 0, sizeof(base_1c_struct *) * 32);
+
+        bact->field_a14 = vhcl->scale_fx_p0;
+        bact->field_a18 = vhcl->scale_fx_p1;
+        bact->field_a1c = vhcl->scale_fx_p2;
+        bact->field_a20 = vhcl->scale_fx_p3;
+        bact->field_a24 = 0;
+
+        for (int i = 0; vhcl->scale_fx_pXX[ i ]; i++ )
+        {
+            bact->models_bases[i] = yw->vhcls_models[ vhcl->scale_fx_pXX[ i ] ].base;
+            bact->models_trigo[i] = yw->vhcls_models[ vhcl->scale_fx_pXX[ i ] ].trigo;
+
+            bact->field_3D6 |= 0x1000000;
+        }
+
+        sub_423DB0(&bact->field_5A);
+
+        for (int i = 0; i < 12; i++)
+            sub_44BF34(&vhcl->sndFX[i]);
+
+        for (int i = 0; i < 12; i++)
+        {
+            userdata_sample_info *smpl_inf = &bact->field_5A.samples_data[ i ];
+
+            smpl_inf->volume = vhcl->sndFX[i].volume;
+            smpl_inf->pitch = vhcl->sndFX[i].pitch;
+
+            if ( i <= 3 || (i >= 7 && i <= 8) )
+                smpl_inf->field_12 |= 1;
+
+            if ( vhcl->sndFX[i].single_sample )
+                call_vtbl(vhcl->sndFX[i].single_sample, 3, 0x80002000, &smpl_inf->field_0, 0);
+            else
+                smpl_inf->field_0 = 0;
+
+            if ( vhcl->sndFX[i].sndPrm.slot )
+            {
+                smpl_inf->field_4 = &vhcl->sndFX[i].sndPrm;
+                smpl_inf->field_12 |= 8;
+            }
+            else
+            {
+                smpl_inf->field_12 &= 0xF7;
+            }
+
+            if ( vhcl->sndFX[i].sndPrm_shk.slot )
+            {
+                smpl_inf->field_8 = &vhcl->sndFX[i].sndPrm_shk;
+                smpl_inf->field_12 |= 0x40;
+            }
+            else
+            {
+                smpl_inf->field_12 &= 0xBF;
+            }
+
+            if ( vhcl->sndFX[i].extCount )
+            {
+                smpl_inf->field_C = &vhcl->sndFX[i].extCount; //CHECK IT
+                smpl_inf->field_13 |= 2;
+            }
+            else
+            {
+                smpl_inf->field_13 &= 0xFD;
+            }
+        }
+
+        bact->field_3BA = bact->field_5A.samples_data[0].pitch;
+        bact->field_3B6 = bact->field_5A.samples_data[0].volume;
+
+        call_method(bacto, 2, vhcl->stak);
+
+        bact_arg80 arg80;
+        arg80.pos.sx = vhcl_id->pos.sx;
+        arg80.pos.sy = vhcl_id->pos.sy;
+        arg80.pos.sz = vhcl_id->pos.sz;
+        arg80.field_C = 0;
+        call_method(bacto, 80, &arg80);
+
+        bact_arg119 arg119;
+        arg119.field_0 = 1;
+        arg119.field_4 = 0;
+        arg119.field_8 = 0;
+        call_method(bacto, 119, &arg119);
+    }
+
+    return bacto;
 }
 
 
@@ -681,16 +1175,14 @@ size_t ypaworld_func154(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
     usr->usernamedir_len = strlen(usr->usernamedir);
 
-    usr->samples2_info.field_0 = 0;
-    usr->samples2_info.field_4 = 0;
-    usr->samples2_info.field_8 = 0;
+    usr->samples2_info.field_0.sx = 0;
+    usr->samples2_info.field_0.sy = 0;
+    usr->samples2_info.field_0.sz = 0;
     usr->samples2_info.field_C = 0;
     usr->samples2_info.field_10 = 0;
     usr->samples2_info.field_14 = 0;
 
     usr->samples1_info.field_0 = usr->samples2_info.field_0;
-    usr->samples1_info.field_4 = usr->samples2_info.field_4;
-    usr->samples1_info.field_8 = usr->samples2_info.field_8;
     usr->samples1_info.field_C = usr->samples2_info.field_C;
     usr->samples1_info.field_10 = usr->samples2_info.field_10;
     usr->samples1_info.field_14 = usr->samples2_info.field_14;
@@ -4519,10 +5011,62 @@ void ypaworld_func160(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 // Load Level
-size_t ypaworld_func161(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+size_t ypaworld_func161(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg161 *arg)
 {
-    printf("MAKE ME %s\n","ypaworld_func161");
-    return 0;
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    int ok = 0;
+    mapProto mapp;
+
+    if ( sb_0x44ca90(yw, &mapp, arg->lvlID, arg->field_4) )
+    {
+        if ( cells_mark_type(yw, mapp.typ) )
+        {
+            if ( cells_mark_owner(yw, mapp.own) )
+            {
+                if ( cells_mark_hight(yw, mapp.hgt) )
+                {
+                    if ( yw_createRobos(obj, yw, mapp.mapRobos_count, mapp.mapRobos) )
+                    {
+                        if ( sub_44B9B8(obj, yw, mapp.blg) )
+                        {
+                            if ( yw->field_2d90->field_48 != 1 )
+                            {
+                                ypaworld_func161__sub1(yw, mapp.squad_count, mapp.squads);
+                                sub_471CA0(yw);
+
+                                for (int yy = 0; yy < yw->sectors_maxY2; yy++)
+                                {
+                                    for (int xx = 0; xx < yw->sectors_maxX2; xx++)
+                                    {
+                                        cellArea *cell = &yw->cells[xx + yy * yw->sectors_maxX2];
+                                        sb_0x44fc60(yw, cell, xx, yy, 0xFF, 0);
+                                    }
+                                }
+
+                                sub_44C248(obj, yw);
+                                sub_472130(yw);
+                                sub_4D1084(yw);
+                                sub_44F748(yw);
+                            }
+
+                            if ( sb_0x451034(obj, yw) )
+                                ok = 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if ( !ok )
+    {
+        printf("Load level not OK\n");
+        call_method(obj, 151);
+    }
+
+
+    return ok;
 }
 
 
@@ -5343,9 +5887,139 @@ void ypaworld_func179(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
-void ypaworld_func180(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func180(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg180 *arg)
 {
-    printf("MAKE ME %s\n","ypaworld_func180");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    if ( !yw->field_739A || (!(yw->field_73CE & 4) && !(yw->field_73CE & 8)) )
+    {
+        winp_71arg arg71;
+        input__func66__params arg66;
+
+        switch ( arg->effects_type )
+        {
+        case 0:
+            arg71.state = 0;
+            arg71.p4 = 0;
+            arg71.p3 = 0;
+            arg71.p2 = 0;
+            arg71.p1 = 0;
+            arg71.effID = 6;
+
+            if ( yw->input_class )
+            {
+                arg66.field_0 = 1;
+                arg66.funcID = 71;
+                arg66.field_4 = 0;
+                arg66.vals = &arg71;
+
+                call_method(yw->input_class, 66, &arg66);
+            }
+
+            break;
+
+        case 1:
+            arg71.state = 0;
+            arg71.p4 = 0;
+            arg71.p3 = 0;
+            arg71.p2 = 0;
+            arg71.p1 = 0;
+            arg71.effID = 7;
+
+            if ( yw->input_class )
+            {
+                arg66.field_0 = 1;
+                arg66.field_4 = 0;
+                arg66.funcID = 71;
+                arg66.vals = &arg71;
+
+                call_method(yw->input_class, 66, &arg66);
+            }
+            break;
+
+        case 2:
+            arg71.state = 0;
+            arg71.p4 = 0;
+            arg71.p3 = 0;
+            arg71.p2 = 0;
+            arg71.p1 = 0;
+            arg71.effID = 8;
+
+            if ( yw->input_class )
+            {
+                arg66.field_0 = 1;
+                arg66.field_4 = 0;
+                arg66.vals = &arg71;
+
+                call_method(yw->input_class, 66, &arg66);
+            }
+            break;
+
+        case 3:
+            arg71.state = 0;
+            arg71.p4 = 0;
+            arg71.p3 = 0;
+            arg71.p2 = 0;
+            arg71.p1 = 0;
+            arg71.effID = 5;
+
+            if ( yw->input_class )
+            {
+                arg66.field_0 = 1;
+                arg66.funcID = 71;
+                arg66.field_4 = 0;
+                arg66.vals = &arg71;
+
+                call_method(yw->input_class, 66, &arg66);
+            }
+            break;
+
+        case 4:
+            arg71.state = 1;
+            arg71.p4 = 0;
+            arg71.p3 = 0;
+            arg71.p2 = 0;
+            arg71.p1 = 0;
+            arg71.effID = 5;
+
+            if ( yw->input_class )
+            {
+                arg66.field_0 = 1;
+                arg66.field_4 = 0;
+                arg66.funcID = 71;
+                arg66.vals = &arg71;
+
+                call_method(yw->input_class, 66, &arg66);
+            }
+            break;
+
+        case 5:
+        {
+            __NC_STACK_ypabact *bct = yw->field_1b84;
+
+            arg71.effID = 9;
+            arg71.state = 0;
+            arg71.p1 = arg->field_4;
+            arg71.p2 = 0;
+            arg71.p3 = (arg->field_C - bct->field_621.sz) * bct->field_651.m02 + (arg->field_8 - bct->field_621.sx) * bct->field_651.m00;
+            arg71.p4 = -((arg->field_8 - bct->field_621.sx) * bct->field_651.m20 + (arg->field_C - bct->field_621.sz) * bct->field_651.m22);
+
+            if ( yw->input_class )
+            {
+                arg66.field_4 = 0;
+                arg66.field_0 = 1;
+                arg66.funcID = 71;
+                arg66.vals = &arg71;
+
+                call_method(yw->input_class, 66, &arg66);
+            }
+        }
+        break;
+
+        default:
+            break;
+        }
+    }
 }
 
 
@@ -5522,6 +6196,8 @@ class_return * class_set_ypaworld(int, ...)
     ypaworld_funcs[183] = (CLASSFUNC)ypaworld_func183;
     ypaworld_funcs[184] = (CLASSFUNC)ypaworld_func184;
     ypaworld_funcs[185] = (CLASSFUNC)ypaworld_func185;
+
+    bact_id = 0x10000;
 
     ypaworld_class_descr.parent = "base.class";
 

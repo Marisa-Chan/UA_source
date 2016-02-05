@@ -12,7 +12,7 @@ struct __NC_STACK_ypacar
 {
 };
 
-struct NC_STACK_ypacar : public NC_STACK_ypabact
+struct NC_STACK_ypacar : public NC_STACK_ypatank
 {
     __NC_STACK_ypacar stack__ypacar;
 };

@@ -31,4 +31,16 @@ struct mat3x3
     float m22;
 };
 
+struct destFX
+{
+    char type_flag;
+    char p1;
+    float p2;
+    float p3;
+    float p4;
+};
+
+void mat_mult(mat3x3 *mat1, mat3x3 *mat2, mat3x3 *dst);
+void mat_rotate_y(mat3x3 *mat, float a2);
+
 #endif // ENGINE_TFORM_H_INCLUDED

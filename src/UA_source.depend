@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1453453111 source:/home/marisa/work/openUA/UA_source/main.cpp
+1454559577 source:/home/marisa/work/openUA/UA_source/main.cpp
 	"includes.h"
 	"engine_gfx.h"
 	"bitmap.h"
@@ -14,7 +14,7 @@
 	"engine_gfx.h"
 	"engine_input.h"
 
-1453438005 /home/marisa/work/openUA/UA_source/includes.h
+1453438006 /home/marisa/work/openUA/UA_source/includes.h
 	<windows.h>
 	<objbase.h>
 	<stdio.h>
@@ -33,7 +33,7 @@
 	"nlist.h"
 	"log.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/nlist.h
+1452677404 /home/marisa/work/openUA/UA_source/nlist.h
 
 1452677392 source:/home/marisa/work/openUA/UA_source/classes.cpp
 	"includes.h"
@@ -50,331 +50,7 @@
 	"MFILE.h"
 	"utils.h"
 
-1452677392 source:/home/marisa/work/openUA/UA_source/MC.cpp
-	"includes.h"
-	"MC.h"
-	"classes.h"
-	"nucleas.h"
-	"engine_gfx.h"
-	"engine_miles.h"
-	"engine_tform.h"
-	"engine_input.h"
-	"rsrc.h"
-	"bitmap.h"
-	"ilbm.h"
-	"bmpAnm.h"
-	"raster.h"
-	"display.h"
-	"windd.h"
-	"win3d.h"
-	"skeleton.h"
-	"sklt.h"
-	"ade.h"
-	"area.h"
-	"amesh.h"
-	"sample.h"
-	"wav.h"
-	"base.h"
-	"particle.h"
-	"button.h"
-	"itimer.h"
-	"wintimer.h"
-	"idev.h"
-	"iwimp.h"
-	"winp.h"
-	"input.h"
-	"embed.h"
-	"network.h"
-	"windp.h"
-	"yw.h"
-
-1452677403 /home/marisa/work/openUA/UA_source/classes.h
-	"nlist.h"
-	"MFILE.h"
-
-1453361146 /home/marisa/work/openUA/UA_source/glob_funcs.h
-	"MFILE.h"
-	"MC.h"
-	"classes.h"
-	"ini.h"
-
-1452677403 /home/marisa/work/openUA/UA_source/MFILE.h
-	"nlist.h"
-
-1452677403 /home/marisa/work/openUA/UA_source/MC.h
-
-1451874704 /home/marisa/work/openUA/UA_source/nucleas.h
-
-1452677392 source:/home/marisa/work/openUA/UA_source/log.cpp
-	<stdio.h>
-	<stdarg.h>
-	"log.h"
-
-1451874702 /home/marisa/work/openUA/UA_source/log.h
-
-1452677392 source:/home/marisa/work/openUA/UA_source/nucleas.cpp
-	"includes.h"
-	"nucleas.h"
-	"utils.h"
-
-1452677392 source:/home/marisa/work/openUA/UA_source/ini.cpp
-	<stdio.h>
-	"ini.h"
-	"includes.h"
-
-1452677403 /home/marisa/work/openUA/UA_source/ini.h
-
-1452677403 /home/marisa/work/openUA/UA_source/utils.h
-
-1451885386 source:/home/marisa/work/openUA/UA_source/utils.cpp
-	"includes.h"
-	"utils.h"
-	"inttypes.h"
-
-1452677403 /home/marisa/work/openUA/UA_source/engine_gfx.h
-	<inttypes.h>
-	<ddraw.h>
-
-1452677392 source:/home/marisa/work/openUA/UA_source/engine_gfx.cpp
-	"includes.h"
-	"engine_gfx.h"
-	"utils.h"
-
-1453443280 source:/home/marisa/work/openUA/UA_source/engine_miles.cpp
-	"includes.h"
-	"engine_miles.h"
-
-1453438086 /home/marisa/work/openUA/UA_source/engine_miles.h
-	"engine_tform.h"
-
-1452677392 source:/home/marisa/work/openUA/UA_source/engine_input.cpp
-	"includes.h"
-	"engine_input.h"
-	"input.h"
-
-1452677403 /home/marisa/work/openUA/UA_source/engine_input.h
-	"utils.h"
-
-1452677392 source:/home/marisa/work/openUA/UA_source/engine_tform.cpp
-	"includes.h"
-	"engine_tform.h"
-	"math.h"
-	"utils.h"
-
-1453438130 /home/marisa/work/openUA/UA_source/engine_tform.h
-
-1452677403 /home/marisa/work/openUA/UA_source/rsrc.h
-	"nucleas.h"
-
-1452677392 source:/home/marisa/work/openUA/UA_source/rsrc.cpp
-	"includes.h"
-	"nucleas.h"
-	"rsrc.h"
-	"utils.h"
-
-1453303296 source:/home/marisa/work/openUA/UA_source/win3d.cpp
-	<inttypes.h>
-	"includes.h"
-	"nucleas.h"
-	"rsrc.h"
-	"bitmap.h"
-	"raster.h"
-	"display.h"
-	"windd.h"
-	"win3d.h"
-	"utils.h"
-	"MS/d3dmacs.h"
-	"font.h"
-
-1452677392 source:/home/marisa/work/openUA/UA_source/bitmap.cpp
-	"includes.h"
-	"nucleas.h"
-	"rsrc.h"
-	"bitmap.h"
-	"utils.h"
-
-1452677403 /home/marisa/work/openUA/UA_source/bitmap.h
-	"rsrc.h"
-	"engine_gfx.h"
-
-1453437912 /home/marisa/work/openUA/UA_source/win3d.h
-	<ddraw.h>
-	<d3d.h>
-
-1453114970 source:/home/marisa/work/openUA/UA_source/raster.cpp
-	"includes.h"
-	"nucleas.h"
-	"rsrc.h"
-	"bitmap.h"
-	"raster.h"
-	"utils.h"
-
-1452677403 /home/marisa/work/openUA/UA_source/raster.h
-	"engine_gfx.h"
-
-1453443281 source:/home/marisa/work/openUA/UA_source/windd.cpp
-	<inttypes.h>
-	"includes.h"
-	"nucleas.h"
-	"rsrc.h"
-	"bitmap.h"
-	"raster.h"
-	"display.h"
-	"windd.h"
-	"utils.h"
-	<wingdi.h>
-	"font.h"
-
-1452677392 source:/home/marisa/work/openUA/UA_source/display.cpp
-	"includes.h"
-	"nucleas.h"
-	"rsrc.h"
-	"bitmap.h"
-	"raster.h"
-	"display.h"
-	"utils.h"
-
-1452677403 /home/marisa/work/openUA/UA_source/display.h
-	"raster.h"
-
-1452677403 /home/marisa/work/openUA/UA_source/windd.h
-	<ddraw.h>
-	<d3d.h>
-
-1453519231 source:/home/zidane/Projects/UA_source/bitmap.cpp
-	"includes.h"
-	"nucleas.h"
-	"rsrc.h"
-	"bitmap.h"
-	"utils.h"
-
-1449728287 /home/zidane/Projects/UA_source/includes.h
-	<windows.h>
-	<objbase.h>
-	<stdio.h>
-	<stddef.h>
-	"classes.h"
-	"MFILE.h"
-	"yw.h"
-	"global.h"
-	"log.h"
-
-1453519231 /home/zidane/Projects/UA_source/classes.h
-	"nlist.h"
-	"MFILE.h"
-
-1453519231 /home/zidane/Projects/UA_source/nlist.h
-
-1453519231 /home/zidane/Projects/UA_source/MFILE.h
-	"nlist.h"
-
-1451482213 /home/zidane/Projects/UA_source/global.h
-	"glob_funcs.h"
-
-1453519231 /home/zidane/Projects/UA_source/glob_funcs.h
-	"MFILE.h"
-	"MC.h"
-	"classes.h"
-	"ini.h"
-
-1453519231 /home/zidane/Projects/UA_source/MC.h
-
-1453519231 /home/zidane/Projects/UA_source/ini.h
-
-1447922917 /home/zidane/Projects/UA_source/log.h
-
-1442981139 /home/zidane/Projects/UA_source/nucleas.h
-
-1453519231 /home/zidane/Projects/UA_source/rsrc.h
-	"nucleas.h"
-
-1453519231 /home/zidane/Projects/UA_source/bitmap.h
-	"rsrc.h"
-	"engine_gfx.h"
-
-1453519231 /home/zidane/Projects/UA_source/utils.h
-
-1453519231 source:/home/zidane/Projects/UA_source/classes.cpp
-	"includes.h"
-	"classes.h"
-	"utils.h"
-
-1453519231 source:/home/zidane/Projects/UA_source/display.cpp
-	"includes.h"
-	"nucleas.h"
-	"rsrc.h"
-	"bitmap.h"
-	"raster.h"
-	"display.h"
-	"utils.h"
-
-1453519231 /home/zidane/Projects/UA_source/raster.h
-	"engine_gfx.h"
-
-1453519231 /home/zidane/Projects/UA_source/display.h
-	"raster.h"
-
-1453522142 source:/home/zidane/Projects/UA_source/engine_gfx.cpp
-	"includes.h"
-	"engine_gfx.h"
-	"utils.h"
-
-1453519231 /home/zidane/Projects/UA_source/engine_gfx.h
-	<inttypes.h>
-	<ddraw.h>
-
-1453519231 source:/home/zidane/Projects/UA_source/engine_input.cpp
-	"includes.h"
-	"engine_input.h"
-	"input.h"
-
-1453552103 /home/zidane/Projects/UA_source/engine_input.h
-	"utils.h"
-
-1453609305 source:/home/zidane/Projects/UA_source/engine_miles.cpp
-	"includes.h"
-	"engine_miles.h"
-
-1453609312 /home/zidane/Projects/UA_source/engine_miles.h
-	"engine_tform.h"
-
-1453519231 source:/home/zidane/Projects/UA_source/engine_tform.cpp
-	"includes.h"
-	"engine_tform.h"
-	"math.h"
-	"utils.h"
-
-1453519231 /home/zidane/Projects/UA_source/engine_tform.h
-
-1453519231 source:/home/zidane/Projects/UA_source/glob_funcs.cpp
-	"includes.h"
-
-1453519231 source:/home/zidane/Projects/UA_source/ini.cpp
-	<stdio.h>
-	"ini.h"
-	"includes.h"
-
-1453519231 source:/home/zidane/Projects/UA_source/log.cpp
-	<stdio.h>
-	<stdarg.h>
-	"log.h"
-
-1453645799 source:/home/zidane/Projects/UA_source/main.cpp
-	"includes.h"
-	"engine_gfx.h"
-	"bitmap.h"
-	"raster.h"
-	"display.h"
-	"windd.h"
-	"win3d.h"
-	"ilbm.h"
-	"font.h"
-	"yw.h"
-	"button.h"
-	"engine_gfx.h"
-	"engine_input.h"
-
-1453642529 source:/home/zidane/Projects/UA_source/MC.cpp
+1453692882 source:/home/marisa/work/openUA/UA_source/MC.cpp
 	"includes.h"
 	"MC.h"
 	"classes.h"
@@ -421,32 +97,120 @@
 	"yparobo.h"
 	"ypaufo.h"
 
-1453519231 /home/zidane/Projects/UA_source/windd.h
-	<ddraw.h>
-	<d3d.h>
-
-1453519231 /home/zidane/Projects/UA_source/win3d.h
-	<ddraw.h>
-	<d3d.h>
-
-1453519231 source:/home/zidane/Projects/UA_source/MFILE.cpp
-	<stdio.h>
-	<stdlib.h>
-	"includes.h"
-	"MFILE.h"
-	"utils.h"
-
-1453519231 source:/home/zidane/Projects/UA_source/nlist.cpp
-	"stdio.h"
+1452677404 /home/marisa/work/openUA/UA_source/classes.h
 	"nlist.h"
+	"MFILE.h"
+
+1453361146 /home/marisa/work/openUA/UA_source/glob_funcs.h
+	"MFILE.h"
+	"MC.h"
+	"classes.h"
+	"ini.h"
+
+1452677404 /home/marisa/work/openUA/UA_source/MFILE.h
+	"nlist.h"
+
+1452677404 /home/marisa/work/openUA/UA_source/MC.h
+
+1451874704 /home/marisa/work/openUA/UA_source/nucleas.h
+
+1452677392 source:/home/marisa/work/openUA/UA_source/log.cpp
+	<stdio.h>
+	<stdarg.h>
 	"log.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/nucleas.cpp
+1451874702 /home/marisa/work/openUA/UA_source/log.h
+
+1452677392 source:/home/marisa/work/openUA/UA_source/nucleas.cpp
 	"includes.h"
 	"nucleas.h"
 	"utils.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/raster.cpp
+1452677392 source:/home/marisa/work/openUA/UA_source/ini.cpp
+	<stdio.h>
+	"ini.h"
+	"includes.h"
+
+1452677404 /home/marisa/work/openUA/UA_source/ini.h
+
+1452677404 /home/marisa/work/openUA/UA_source/utils.h
+
+1451885386 source:/home/marisa/work/openUA/UA_source/utils.cpp
+	"includes.h"
+	"utils.h"
+	"inttypes.h"
+
+1454158302 /home/marisa/work/openUA/UA_source/engine_gfx.h
+	<inttypes.h>
+	<ddraw.h>
+
+1453692882 source:/home/marisa/work/openUA/UA_source/engine_gfx.cpp
+	"includes.h"
+	"engine_gfx.h"
+	"utils.h"
+
+1454669342 source:/home/marisa/work/openUA/UA_source/engine_miles.cpp
+	"includes.h"
+	"engine_miles.h"
+
+1454669342 /home/marisa/work/openUA/UA_source/engine_miles.h
+	"engine_tform.h"
+
+1452677392 source:/home/marisa/work/openUA/UA_source/engine_input.cpp
+	"includes.h"
+	"engine_input.h"
+	"input.h"
+
+1453692882 /home/marisa/work/openUA/UA_source/engine_input.h
+	"utils.h"
+
+1454163726 source:/home/marisa/work/openUA/UA_source/engine_tform.cpp
+	"includes.h"
+	"engine_tform.h"
+	"math.h"
+	"utils.h"
+
+1454402558 /home/marisa/work/openUA/UA_source/engine_tform.h
+
+1452677404 /home/marisa/work/openUA/UA_source/rsrc.h
+	"nucleas.h"
+
+1452677392 source:/home/marisa/work/openUA/UA_source/rsrc.cpp
+	"includes.h"
+	"nucleas.h"
+	"rsrc.h"
+	"utils.h"
+
+1453303296 source:/home/marisa/work/openUA/UA_source/win3d.cpp
+	<inttypes.h>
+	"includes.h"
+	"nucleas.h"
+	"rsrc.h"
+	"bitmap.h"
+	"raster.h"
+	"display.h"
+	"windd.h"
+	"win3d.h"
+	"utils.h"
+	"MS/d3dmacs.h"
+	"font.h"
+
+1452677392 source:/home/marisa/work/openUA/UA_source/bitmap.cpp
+	"includes.h"
+	"nucleas.h"
+	"rsrc.h"
+	"bitmap.h"
+	"utils.h"
+
+1454158296 /home/marisa/work/openUA/UA_source/bitmap.h
+	"rsrc.h"
+	"engine_gfx.h"
+
+1453437912 /home/marisa/work/openUA/UA_source/win3d.h
+	<ddraw.h>
+	<d3d.h>
+
+1453114970 source:/home/marisa/work/openUA/UA_source/raster.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -454,18 +218,263 @@
 	"raster.h"
 	"utils.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/rsrc.cpp
+1452677404 /home/marisa/work/openUA/UA_source/raster.h
+	"engine_gfx.h"
+
+1453443282 source:/home/marisa/work/openUA/UA_source/windd.cpp
+	<inttypes.h>
+	"includes.h"
+	"nucleas.h"
+	"rsrc.h"
+	"bitmap.h"
+	"raster.h"
+	"display.h"
+	"windd.h"
+	"utils.h"
+	<wingdi.h>
+	"font.h"
+
+1452677392 source:/home/marisa/work/openUA/UA_source/display.cpp
+	"includes.h"
+	"nucleas.h"
+	"rsrc.h"
+	"bitmap.h"
+	"raster.h"
+	"display.h"
+	"utils.h"
+
+1452677404 /home/marisa/work/openUA/UA_source/display.h
+	"raster.h"
+
+1452677404 /home/marisa/work/openUA/UA_source/windd.h
+	<ddraw.h>
+	<d3d.h>
+
+1452677392 source:/home/zidane/Projects/UA_source/bitmap.cpp
+	"includes.h"
+	"nucleas.h"
+	"rsrc.h"
+	"bitmap.h"
+	"utils.h"
+
+1453438005 /home/zidane/Projects/UA_source/includes.h
+	<windows.h>
+	<objbase.h>
+	<stdio.h>
+	<stddef.h>
+	"classes.h"
+	"MFILE.h"
+	"yw.h"
+	"global.h"
+	"log.h"
+
+1452677403 /home/zidane/Projects/UA_source/classes.h
+	"nlist.h"
+	"MFILE.h"
+
+1452677403 /home/zidane/Projects/UA_source/nlist.h
+
+1452677403 /home/zidane/Projects/UA_source/MFILE.h
+	"nlist.h"
+
+1453438022 /home/zidane/Projects/UA_source/global.h
+	"glob_funcs.h"
+
+1453361146 /home/zidane/Projects/UA_source/glob_funcs.h
+	"MFILE.h"
+	"MC.h"
+	"classes.h"
+	"ini.h"
+
+1452677403 /home/zidane/Projects/UA_source/MC.h
+
+1452677403 /home/zidane/Projects/UA_source/ini.h
+
+1451874702 /home/zidane/Projects/UA_source/log.h
+
+1451874704 /home/zidane/Projects/UA_source/nucleas.h
+
+1452677403 /home/zidane/Projects/UA_source/rsrc.h
+	"nucleas.h"
+
+1454158295 /home/zidane/Projects/UA_source/bitmap.h
+	"rsrc.h"
+	"engine_gfx.h"
+
+1452677403 /home/zidane/Projects/UA_source/utils.h
+
+1452677392 source:/home/zidane/Projects/UA_source/classes.cpp
+	"includes.h"
+	"classes.h"
+	"utils.h"
+
+1452677392 source:/home/zidane/Projects/UA_source/display.cpp
+	"includes.h"
+	"nucleas.h"
+	"rsrc.h"
+	"bitmap.h"
+	"raster.h"
+	"display.h"
+	"utils.h"
+
+1452677403 /home/zidane/Projects/UA_source/raster.h
+	"engine_gfx.h"
+
+1452677403 /home/zidane/Projects/UA_source/display.h
+	"raster.h"
+
+1453692882 source:/home/zidane/Projects/UA_source/engine_gfx.cpp
+	"includes.h"
+	"engine_gfx.h"
+	"utils.h"
+
+1454158302 /home/zidane/Projects/UA_source/engine_gfx.h
+	<inttypes.h>
+	<ddraw.h>
+
+1452677392 source:/home/zidane/Projects/UA_source/engine_input.cpp
+	"includes.h"
+	"engine_input.h"
+	"input.h"
+
+1453692882 /home/zidane/Projects/UA_source/engine_input.h
+	"utils.h"
+
+1453711086 source:/home/zidane/Projects/UA_source/engine_miles.cpp
+	"includes.h"
+	"engine_miles.h"
+
+1453789536 /home/zidane/Projects/UA_source/engine_miles.h
+	"engine_tform.h"
+
+1454163726 source:/home/zidane/Projects/UA_source/engine_tform.cpp
+	"includes.h"
+	"engine_tform.h"
+	"math.h"
+	"utils.h"
+
+1454163716 /home/zidane/Projects/UA_source/engine_tform.h
+
+1453443280 source:/home/zidane/Projects/UA_source/glob_funcs.cpp
+	"includes.h"
+
+1452677392 source:/home/zidane/Projects/UA_source/ini.cpp
+	<stdio.h>
+	"ini.h"
+	"includes.h"
+
+1452677392 source:/home/zidane/Projects/UA_source/log.cpp
+	<stdio.h>
+	<stdarg.h>
+	"log.h"
+
+1453692882 source:/home/zidane/Projects/UA_source/main.cpp
+	"includes.h"
+	"engine_gfx.h"
+	"bitmap.h"
+	"raster.h"
+	"display.h"
+	"windd.h"
+	"win3d.h"
+	"ilbm.h"
+	"font.h"
+	"yw.h"
+	"button.h"
+	"engine_gfx.h"
+	"engine_input.h"
+
+1453692882 source:/home/zidane/Projects/UA_source/MC.cpp
+	"includes.h"
+	"MC.h"
+	"classes.h"
+	"nucleas.h"
+	"engine_gfx.h"
+	"engine_miles.h"
+	"engine_tform.h"
+	"engine_input.h"
+	"rsrc.h"
+	"bitmap.h"
+	"ilbm.h"
+	"bmpAnm.h"
+	"raster.h"
+	"display.h"
+	"windd.h"
+	"win3d.h"
+	"skeleton.h"
+	"sklt.h"
+	"ade.h"
+	"area.h"
+	"amesh.h"
+	"sample.h"
+	"wav.h"
+	"base.h"
+	"particle.h"
+	"button.h"
+	"itimer.h"
+	"wintimer.h"
+	"idev.h"
+	"iwimp.h"
+	"winp.h"
+	"input.h"
+	"embed.h"
+	"network.h"
+	"windp.h"
+	"yw.h"
+	"ypabact.h"
+	"ypatank.h"
+	"ypacar.h"
+	"ypaufo.h"
+	"ypaflyer.h"
+	"ypagun.h"
+	"ypamissile.h"
+	"yparobo.h"
+	"ypaufo.h"
+
+1452677403 /home/zidane/Projects/UA_source/windd.h
+	<ddraw.h>
+	<d3d.h>
+
+1453437912 /home/zidane/Projects/UA_source/win3d.h
+	<ddraw.h>
+	<d3d.h>
+
+1452677392 source:/home/zidane/Projects/UA_source/MFILE.cpp
+	<stdio.h>
+	<stdlib.h>
+	"includes.h"
+	"MFILE.h"
+	"utils.h"
+
+1452677392 source:/home/zidane/Projects/UA_source/nlist.cpp
+	"stdio.h"
+	"nlist.h"
+	"log.h"
+
+1452677392 source:/home/zidane/Projects/UA_source/nucleas.cpp
+	"includes.h"
+	"nucleas.h"
+	"utils.h"
+
+1453114970 source:/home/zidane/Projects/UA_source/raster.cpp
+	"includes.h"
+	"nucleas.h"
+	"rsrc.h"
+	"bitmap.h"
+	"raster.h"
+	"utils.h"
+
+1452677392 source:/home/zidane/Projects/UA_source/rsrc.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
 	"utils.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/utils.cpp
+1451885386 source:/home/zidane/Projects/UA_source/utils.cpp
 	"includes.h"
 	"utils.h"
 	"inttypes.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/win3d.cpp
+1453303296 source:/home/zidane/Projects/UA_source/win3d.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -488,7 +497,7 @@
 	"ilbm.h"
 	"utils.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/ilbm.h
+1452677404 /home/marisa/work/openUA/UA_source/ilbm.h
 	"bitmap.h"
 
 1452677392 source:/home/marisa/work/openUA/UA_source/ade.cpp
@@ -497,11 +506,11 @@
 	"ade.h"
 	"utils.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/ade.h
+1452677404 /home/marisa/work/openUA/UA_source/ade.h
 	"nucleas.h"
 	"nlist.h"
 
-1452864675 source:/home/marisa/work/openUA/UA_source/base.cpp
+1454053688 source:/home/marisa/work/openUA/UA_source/base.cpp
 	"includes.h"
 	"nucleas.h"
 	"utils.h"
@@ -517,14 +526,15 @@
 	"ade.h"
 	"engine_gfx.h"
 
-1453438164 /home/marisa/work/openUA/UA_source/base.h
+1454123780 /home/marisa/work/openUA/UA_source/base.h
 	"nucleas.h"
 	"nlist.h"
 	"engine_tform.h"
 	"skeleton.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/skeleton.h
+1454158376 /home/marisa/work/openUA/UA_source/skeleton.h
 	"rsrc.h"
+	"engine_gfx.h"
 
 1452863028 source:/home/marisa/work/openUA/UA_source/skeleton.cpp
 	"includes.h"
@@ -559,7 +569,7 @@
 	"math.h"
 	"inttypes.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/sklt.h
+1452677404 /home/marisa/work/openUA/UA_source/sklt.h
 	"skeleton.h"
 
 1452677392 source:/home/marisa/work/openUA/UA_source/embed.cpp
@@ -571,11 +581,11 @@
 	"math.h"
 	"inttypes.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/embed.h
+1452677404 /home/marisa/work/openUA/UA_source/embed.h
 	"nucleas.h"
 	"nlist.h"
 
-1452863661 source:/home/marisa/work/openUA/UA_source/area.cpp
+1452863662 source:/home/marisa/work/openUA/UA_source/area.cpp
 	"includes.h"
 	"nucleas.h"
 	"area.h"
@@ -589,7 +599,7 @@
 	"base.h"
 	"engine_gfx.h"
 
-1452855037 /home/marisa/work/openUA/UA_source/area.h
+1452855038 /home/marisa/work/openUA/UA_source/area.h
 	<inttypes.h>
 	"ade.h"
 	"bitmap.h"
@@ -609,7 +619,7 @@
 	"base.h"
 	"engine_gfx.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/amesh.h
+1452677404 /home/marisa/work/openUA/UA_source/amesh.h
 	<inttypes.h>
 	"area.h"
 
@@ -620,10 +630,10 @@
 	"wav.h"
 	"utils.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/wav.h
+1452677404 /home/marisa/work/openUA/UA_source/wav.h
 	"sample.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/sample.h
+1452677404 /home/marisa/work/openUA/UA_source/sample.h
 	"rsrc.h"
 
 1452677392 source:/home/marisa/work/openUA/UA_source/sample.cpp
@@ -642,7 +652,7 @@
 	"engine_input.h"
 	"font.h"
 
-1452679285 /home/marisa/work/openUA/UA_source/button.h
+1452679286 /home/marisa/work/openUA/UA_source/button.h
 	"nucleas.h"
 	"inttypes.h"
 	"utils.h"
@@ -655,10 +665,10 @@
 	"itimer.h"
 	"utils.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/itimer.h
+1452677404 /home/marisa/work/openUA/UA_source/itimer.h
 	"nucleas.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/wintimer.h
+1452677404 /home/marisa/work/openUA/UA_source/wintimer.h
 	"itimer.h"
 
 1452677392 source:/home/marisa/work/openUA/UA_source/idev.cpp
@@ -668,7 +678,7 @@
 	"idev.h"
 	"utils.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/idev.h
+1452677404 /home/marisa/work/openUA/UA_source/idev.h
 	"nucleas.h"
 
 1452677392 source:/home/marisa/work/openUA/UA_source/wintimer.cpp
@@ -687,7 +697,7 @@
 	"iwimp.h"
 	"utils.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/iwimp.h
+1452677404 /home/marisa/work/openUA/UA_source/iwimp.h
 	"idev.h"
 	"engine_input.h"
 	"utils.h"
@@ -701,7 +711,7 @@
 	"utils.h"
 	<dinput.h>
 
-1452677403 /home/marisa/work/openUA/UA_source/winp.h
+1452677404 /home/marisa/work/openUA/UA_source/winp.h
 	"iwimp.h"
 	"utils.h"
 
@@ -713,7 +723,7 @@
 	"engine_input.h"
 	"input.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/input.h
+1452677404 /home/marisa/work/openUA/UA_source/input.h
 	"nucleas.h"
 	"nlist.h"
 	"wintimer.h"
@@ -727,7 +737,7 @@
 1453042992 /home/marisa/work/openUA/UA_source/font.h
 	<inttypes.h>
 
-1453457441 source:/home/marisa/work/openUA/UA_source/yw.cpp
+1454669606 source:/home/marisa/work/openUA/UA_source/yw.cpp
 	<inttypes.h>
 	<string.h>
 	<math.h>
@@ -738,7 +748,7 @@
 	"button.h"
 	"font.h"
 
-1453451147 /home/marisa/work/openUA/UA_source/yw.h
+1454669606 /home/marisa/work/openUA/UA_source/yw.h
 	"engine_gfx.h"
 	"engine_input.h"
 	"engine_miles.h"
@@ -752,10 +762,12 @@
 	"sklt.h"
 	"wav.h"
 	"windp.h"
+	"ypabact.h"
 	"lstvw.h"
+	"input.h"
 	"glob_funcs.h"
 
-1453443281 source:/home/marisa/work/openUA/UA_source/yw_funcs.cpp
+1453868948 source:/home/marisa/work/openUA/UA_source/yw_funcs.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -772,11 +784,11 @@
 	"yw.h"
 	"def_parser.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/def_parser.h
+1452677404 /home/marisa/work/openUA/UA_source/def_parser.h
 
-1453457630 /home/marisa/work/openUA/UA_source/yw_internal.h
+1454573371 /home/marisa/work/openUA/UA_source/yw_internal.h
 
-1453453182 source:/home/marisa/work/openUA/UA_source/yw_protos.cpp
+1454485296 source:/home/marisa/work/openUA/UA_source/yw_protos.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -863,7 +875,7 @@
 
 1449728292 source:/home/marisa/work/openUA/UA_source/dirs.cpp
 
-1453443281 source:/home/marisa/work/openUA/UA_source/yw_func2.cpp
+1454665013 source:/home/marisa/work/openUA/UA_source/yw_func2.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -882,24 +894,24 @@
 	"bmpAnm.h"
 	"utils.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/bmpAnm.h
+1452677404 /home/marisa/work/openUA/UA_source/bmpAnm.h
 	"rsrc.h"
 	"engine_gfx.h"
 	"bitmap.h"
 
-1452850817 source:/home/marisa/work/openUA/UA_source/particle.cpp
+1452850818 source:/home/marisa/work/openUA/UA_source/particle.cpp
 	"includes.h"
 	"nucleas.h"
 	"particle.h"
 	"utils.h"
 	<math.h>
 
-1452677403 /home/marisa/work/openUA/UA_source/particle.h
+1452677404 /home/marisa/work/openUA/UA_source/particle.h
 	"nucleas.h"
 	"area.h"
 	"ade.h"
 
-1452763485 /home/marisa/work/openUA/UA_source/lstvw.h
+1452763486 /home/marisa/work/openUA/UA_source/lstvw.h
 
 1453197686 source:/home/marisa/work/openUA/UA_source/lstvw.cpp
 	<inttypes.h>
@@ -909,7 +921,7 @@
 	"lstvw.h"
 	"font.h"
 
-1453614940 /home/zidane/Projects/UA_source/yw.h
+1454245528 /home/zidane/Projects/UA_source/yw.h
 	"engine_gfx.h"
 	"engine_input.h"
 	"engine_miles.h"
@@ -925,42 +937,44 @@
 	"windp.h"
 	"ypabact.h"
 	"lstvw.h"
+	"input.h"
 	"glob_funcs.h"
 
-1453519231 /home/zidane/Projects/UA_source/ilbm.h
+1452677403 /home/zidane/Projects/UA_source/ilbm.h
 	"bitmap.h"
 
-1453519231 /home/zidane/Projects/UA_source/base.h
+1454123779 /home/zidane/Projects/UA_source/base.h
 	"nucleas.h"
 	"nlist.h"
 	"engine_tform.h"
 	"skeleton.h"
 
-1453519231 /home/zidane/Projects/UA_source/skeleton.h
+1454158376 /home/zidane/Projects/UA_source/skeleton.h
 	"rsrc.h"
+	"engine_gfx.h"
 
-1453519231 /home/zidane/Projects/UA_source/sklt.h
+1452677403 /home/zidane/Projects/UA_source/sklt.h
 	"skeleton.h"
 
-1453519231 /home/zidane/Projects/UA_source/wav.h
+1452677403 /home/zidane/Projects/UA_source/wav.h
 	"sample.h"
 
-1453519231 /home/zidane/Projects/UA_source/sample.h
+1452677403 /home/zidane/Projects/UA_source/sample.h
 	"rsrc.h"
 
-1453519231 /home/zidane/Projects/UA_source/lstvw.h
+1452763485 /home/zidane/Projects/UA_source/lstvw.h
 
-1453519231 source:/home/zidane/Projects/UA_source/ade.cpp
+1452677392 source:/home/zidane/Projects/UA_source/ade.cpp
 	"includes.h"
 	"nucleas.h"
 	"ade.h"
 	"utils.h"
 
-1453519231 /home/zidane/Projects/UA_source/ade.h
+1452677403 /home/zidane/Projects/UA_source/ade.h
 	"nucleas.h"
 	"nlist.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/amesh.cpp
+1452853984 source:/home/zidane/Projects/UA_source/amesh.cpp
 	"includes.h"
 	"inttypes.h"
 	"nucleas.h"
@@ -975,16 +989,16 @@
 	"base.h"
 	"engine_gfx.h"
 
-1453519231 /home/zidane/Projects/UA_source/amesh.h
+1452677403 /home/zidane/Projects/UA_source/amesh.h
 	<inttypes.h>
 	"area.h"
 
-1453519231 /home/zidane/Projects/UA_source/area.h
+1452855037 /home/zidane/Projects/UA_source/area.h
 	<inttypes.h>
 	"ade.h"
 	"bitmap.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/area.cpp
+1452863661 source:/home/zidane/Projects/UA_source/area.cpp
 	"includes.h"
 	"nucleas.h"
 	"area.h"
@@ -998,7 +1012,7 @@
 	"base.h"
 	"engine_gfx.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/base.cpp
+1454053688 source:/home/zidane/Projects/UA_source/base.cpp
 	"includes.h"
 	"nucleas.h"
 	"utils.h"
@@ -1014,7 +1028,7 @@
 	"ade.h"
 	"engine_gfx.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/bmpAnm.cpp
+1452860410 source:/home/zidane/Projects/UA_source/bmpAnm.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
@@ -1022,12 +1036,12 @@
 	"bmpAnm.h"
 	"utils.h"
 
-1453519231 /home/zidane/Projects/UA_source/bmpAnm.h
+1452677403 /home/zidane/Projects/UA_source/bmpAnm.h
 	"rsrc.h"
 	"engine_gfx.h"
 	"bitmap.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/button.cpp
+1452680320 source:/home/zidane/Projects/UA_source/button.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -1037,48 +1051,48 @@
 	"engine_input.h"
 	"font.h"
 
-1453519231 /home/zidane/Projects/UA_source/button.h
+1452679285 /home/zidane/Projects/UA_source/button.h
 	"nucleas.h"
 	"inttypes.h"
 	"utils.h"
 	"input.h"
 
-1453519231 /home/zidane/Projects/UA_source/input.h
+1452677403 /home/zidane/Projects/UA_source/input.h
 	"nucleas.h"
 	"nlist.h"
 	"wintimer.h"
 	"winp.h"
 
-1453519231 /home/zidane/Projects/UA_source/wintimer.h
+1452677403 /home/zidane/Projects/UA_source/wintimer.h
 	"itimer.h"
 
-1453519231 /home/zidane/Projects/UA_source/itimer.h
+1452677403 /home/zidane/Projects/UA_source/itimer.h
 	"nucleas.h"
 
-1453519231 /home/zidane/Projects/UA_source/winp.h
+1452677403 /home/zidane/Projects/UA_source/winp.h
 	"iwimp.h"
 	"utils.h"
 
-1453519231 /home/zidane/Projects/UA_source/iwimp.h
+1452677403 /home/zidane/Projects/UA_source/iwimp.h
 	"idev.h"
 	"engine_input.h"
 	"utils.h"
 
-1453519231 /home/zidane/Projects/UA_source/idev.h
+1452677403 /home/zidane/Projects/UA_source/idev.h
 	"nucleas.h"
 
-1453519231 /home/zidane/Projects/UA_source/font.h
+1453042992 /home/zidane/Projects/UA_source/font.h
 	<inttypes.h>
 
-1453519231 source:/home/zidane/Projects/UA_source/def_parser.cpp
+1452677392 source:/home/zidane/Projects/UA_source/def_parser.cpp
 	<stdio.h>
 	"includes.h"
 	"yw.h"
 	"def_parser.h"
 
-1453519231 /home/zidane/Projects/UA_source/def_parser.h
+1452677403 /home/zidane/Projects/UA_source/def_parser.h
 
-1453519231 source:/home/zidane/Projects/UA_source/embed.cpp
+1452677392 source:/home/zidane/Projects/UA_source/embed.cpp
 	"includes.h"
 	"nucleas.h"
 	"embed.h"
@@ -1087,30 +1101,30 @@
 	"math.h"
 	"inttypes.h"
 
-1453519231 /home/zidane/Projects/UA_source/embed.h
+1452677403 /home/zidane/Projects/UA_source/embed.h
 	"nucleas.h"
 	"nlist.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/font.cpp
+1453114970 source:/home/zidane/Projects/UA_source/font.cpp
 	<string.h>
 	"includes.h"
 	"font.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/idev.cpp
+1452677392 source:/home/zidane/Projects/UA_source/idev.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
 	"idev.h"
 	"utils.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/ilbm.cpp
+1452867656 source:/home/zidane/Projects/UA_source/ilbm.cpp
 	"includes.h"
 	"nucleas.h"
 	"rsrc.h"
 	"ilbm.h"
 	"utils.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/input.cpp
+1452677392 source:/home/zidane/Projects/UA_source/input.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -1118,14 +1132,14 @@
 	"engine_input.h"
 	"input.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/itimer.cpp
+1452677392 source:/home/zidane/Projects/UA_source/itimer.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
 	"itimer.h"
 	"utils.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/iwimp.cpp
+1452677392 source:/home/zidane/Projects/UA_source/iwimp.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -1133,7 +1147,7 @@
 	"iwimp.h"
 	"utils.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/lstvw.cpp
+1453197686 source:/home/zidane/Projects/UA_source/lstvw.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -1141,25 +1155,25 @@
 	"lstvw.h"
 	"font.h"
 
-1453519231 /home/zidane/Projects/UA_source/particle.h
+1452677403 /home/zidane/Projects/UA_source/particle.h
 	"nucleas.h"
 	"area.h"
 	"ade.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/particle.cpp
+1452850817 source:/home/zidane/Projects/UA_source/particle.cpp
 	"includes.h"
 	"nucleas.h"
 	"particle.h"
 	"utils.h"
 	<math.h>
 
-1453519231 source:/home/zidane/Projects/UA_source/sample.cpp
+1452677392 source:/home/zidane/Projects/UA_source/sample.cpp
 	"includes.h"
 	"nucleas.h"
 	"sample.h"
 	"utils.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/skeleton.cpp
+1452863028 source:/home/zidane/Projects/UA_source/skeleton.cpp
 	"includes.h"
 	"nucleas.h"
 	"utils.h"
@@ -1175,7 +1189,7 @@
 	<math.h>
 	<float.h>
 
-1453519231 source:/home/zidane/Projects/UA_source/sklt.cpp
+1452677392 source:/home/zidane/Projects/UA_source/sklt.cpp
 	"includes.h"
 	"nucleas.h"
 	"utils.h"
@@ -1192,16 +1206,16 @@
 	"math.h"
 	"inttypes.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/wav.cpp
+1452677392 source:/home/zidane/Projects/UA_source/wav.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
 	"wav.h"
 	"utils.h"
 
-1451236405 /home/zidane/Projects/UA_source/MS/d3dmacs.h
+1444729286 /home/zidane/Projects/UA_source/MS/d3dmacs.h
 
-1453519231 source:/home/zidane/Projects/UA_source/windd.cpp
+1453443281 source:/home/zidane/Projects/UA_source/windd.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -1214,7 +1228,7 @@
 	<wingdi.h>
 	"font.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/winp.cpp
+1452677392 source:/home/zidane/Projects/UA_source/winp.cpp
 	<inttypes.h>
 	"includes.h"
 	"nucleas.h"
@@ -1223,7 +1237,7 @@
 	"utils.h"
 	<dinput.h>
 
-1453519231 source:/home/zidane/Projects/UA_source/wintimer.cpp
+1452677392 source:/home/zidane/Projects/UA_source/wintimer.cpp
 	<inttypes.h>
 	<windows.h>
 	"includes.h"
@@ -1231,7 +1245,7 @@
 	"wintimer.h"
 	"utils.h"
 
-1453649232 source:/home/zidane/Projects/UA_source/yw.cpp
+1454169062 source:/home/zidane/Projects/UA_source/yw.cpp
 	<inttypes.h>
 	<string.h>
 	<math.h>
@@ -1242,9 +1256,9 @@
 	"button.h"
 	"font.h"
 
-1453609424 /home/zidane/Projects/UA_source/yw_internal.h
+1454249323 /home/zidane/Projects/UA_source/yw_internal.h
 
-1453645461 source:/home/zidane/Projects/UA_source/yw_func2.cpp
+1453868278 source:/home/zidane/Projects/UA_source/yw_func2.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -1255,7 +1269,7 @@
 	"button.h"
 	<math.h>
 
-1453609471 source:/home/zidane/Projects/UA_source/yw_funcs.cpp
+1453868948 source:/home/zidane/Projects/UA_source/yw_funcs.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -1266,7 +1280,7 @@
 	"font.h"
 	"button.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/yw_protos.cpp
+1453711399 source:/home/zidane/Projects/UA_source/yw_protos.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -1849,13 +1863,13 @@
 	"yw_internal.h"
 	"yw.h"
 
-1453519231 /home/zidane/Projects/UA_source/windp.h
+1453362894 /home/zidane/Projects/UA_source/windp.h
 	"nucleas.h"
 
-1453519231 /home/zidane/Projects/UA_source/network.h
+1452677403 /home/zidane/Projects/UA_source/network.h
 	"nucleas.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/network.cpp
+1452677392 source:/home/zidane/Projects/UA_source/network.cpp
 	<inttypes.h>
 	<stdio.h>
 	<stddef.h>
@@ -1863,7 +1877,7 @@
 	"classes.h"
 	"network.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/windp.cpp
+1453360947 source:/home/zidane/Projects/UA_source/windp.cpp
 	<inttypes.h>
 	<stdio.h>
 	<stddef.h>
@@ -1874,7 +1888,7 @@
 1453362894 /home/marisa/work/openUA/UA_source/windp.h
 	"nucleas.h"
 
-1452677403 /home/marisa/work/openUA/UA_source/network.h
+1452677404 /home/marisa/work/openUA/UA_source/network.h
 	"nucleas.h"
 
 1452677392 source:/home/marisa/work/openUA/UA_source/network.cpp
@@ -1885,7 +1899,7 @@
 	"classes.h"
 	"network.h"
 
-1453360947 source:/home/marisa/work/openUA/UA_source/windp.cpp
+1453360948 source:/home/marisa/work/openUA/UA_source/windp.cpp
 	<inttypes.h>
 	<stdio.h>
 	<stddef.h>
@@ -1893,7 +1907,7 @@
 	"classes.h"
 	"windp.h"
 
-1453114970 source:/home/marisa/work/openUA/UA_source/yw_brif.cpp
+1453869012 source:/home/marisa/work/openUA/UA_source/yw_brif.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -1903,7 +1917,7 @@
 	"lstvw.h"
 	"font.h"
 
-1453461263 source:/home/marisa/work/openUA/UA_source/yw_save.cpp
+1453461412 source:/home/marisa/work/openUA/UA_source/yw_save.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -1912,7 +1926,7 @@
 	"yw.h"
 	"input.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/yw_brif.cpp
+1453869011 source:/home/zidane/Projects/UA_source/yw_brif.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -1922,7 +1936,7 @@
 	"lstvw.h"
 	"font.h"
 
-1453519231 source:/home/zidane/Projects/UA_source/yw_save.cpp
+1453461412 source:/home/zidane/Projects/UA_source/yw_save.cpp
 	<inttypes.h>
 	<string.h>
 	"includes.h"
@@ -1931,98 +1945,237 @@
 	"yw.h"
 	"input.h"
 
-1453634968 /home/zidane/Projects/UA_source/ypabact.h
+1454216995 /home/zidane/Projects/UA_source/ypabact.h
 	"nucleas.h"
+	"engine_tform.h"
+	"base.h"
 
-1453614405 source:/home/zidane/Projects/UA_source/ypabact.cpp
+1454215654 source:/home/zidane/Projects/UA_source/ypabact.cpp
 	<inttypes.h>
 	<stdio.h>
 	<stddef.h>
 	<string.h>
 	"classes.h"
+	"yw.h"
 	"ypabact.h"
 
-1453639557 /home/zidane/Projects/UA_source/ypatank.h
+1453692882 /home/zidane/Projects/UA_source/ypatank.h
 	"nucleas.h"
 	"ypabact.h"
 
-1453639768 /home/zidane/Projects/UA_source/ypacar.h
+1454158256 /home/zidane/Projects/UA_source/ypacar.h
 	"nucleas.h"
 	"ypatank.h"
 
-1453634959 /home/zidane/Projects/UA_source/ypaufo.h
+1453692882 /home/zidane/Projects/UA_source/ypaufo.h
 	"nucleas.h"
 	"ypabact.h"
 
-1453639751 /home/zidane/Projects/UA_source/ypaflyer.h
+1453692882 /home/zidane/Projects/UA_source/ypaflyer.h
 	"nucleas.h"
 	"ypabact.h"
 
-1453639660 /home/zidane/Projects/UA_source/ypagun.h
+1453692882 /home/zidane/Projects/UA_source/ypagun.h
 	"nucleas.h"
 	"ypabact.h"
 
-1453639742 /home/zidane/Projects/UA_source/ypamissile.h
+1453692882 /home/zidane/Projects/UA_source/ypamissile.h
 	"nucleas.h"
 	"ypabact.h"
 
-1453639742 /home/zidane/Projects/UA_source/yparobo.h
+1454168124 /home/zidane/Projects/UA_source/yparobo.h
 	"nucleas.h"
 	"ypabact.h"
 
-1453640289 source:/home/zidane/Projects/UA_source/ypacar.cpp
+1454158197 source:/home/zidane/Projects/UA_source/ypacar.cpp
 	<inttypes.h>
 	<stdio.h>
+	<stdlib.h>
 	<stddef.h>
 	<string.h>
 	"classes.h"
+	"yw.h"
 	"ypacar.h"
 
-1453640288 source:/home/zidane/Projects/UA_source/ypaflyer.cpp
+1454158459 source:/home/zidane/Projects/UA_source/ypaflyer.cpp
 	<inttypes.h>
 	<stdio.h>
 	<stddef.h>
 	<string.h>
 	"classes.h"
+	"yw.h"
 	"ypaflyer.h"
 
-1453640287 source:/home/zidane/Projects/UA_source/ypagun.cpp
+1454158490 source:/home/zidane/Projects/UA_source/ypagun.cpp
 	<inttypes.h>
 	<stdio.h>
 	<stddef.h>
 	<string.h>
 	"classes.h"
+	"yw.h"
 	"ypagun.h"
 
-1453640314 source:/home/zidane/Projects/UA_source/ypamissile.cpp
+1454158490 source:/home/zidane/Projects/UA_source/ypamissile.cpp
 	<inttypes.h>
 	<stdio.h>
 	<stddef.h>
 	<string.h>
 	"classes.h"
+	"yw.h"
 	"ypamissile.h"
 
-1453640338 source:/home/zidane/Projects/UA_source/yparobo.cpp
+1454168095 source:/home/zidane/Projects/UA_source/yparobo.cpp
 	<inttypes.h>
 	<stdio.h>
 	<stddef.h>
 	<string.h>
 	"classes.h"
+	"yw.h"
 	"yparobo.h"
+	"math.h"
 
-1453640408 source:/home/zidane/Projects/UA_source/ypatank.cpp
+1454158490 source:/home/zidane/Projects/UA_source/ypatank.cpp
 	<inttypes.h>
 	<stdio.h>
 	<stddef.h>
 	<string.h>
 	"classes.h"
+	"yw.h"
 	"ypatank.h"
 
-1453640424 source:/home/zidane/Projects/UA_source/ypaufo.cpp
+1454158490 source:/home/zidane/Projects/UA_source/ypaufo.cpp
 	<inttypes.h>
 	<stdio.h>
 	<stddef.h>
 	<string.h>
 	"classes.h"
+	"yw.h"
 	"ypaufo.h"
+
+1454668685 /home/marisa/work/openUA/UA_source/ypabact.h
+	"nucleas.h"
+	"engine_tform.h"
+	"base.h"
+
+1453692882 /home/marisa/work/openUA/UA_source/ypatank.h
+	"nucleas.h"
+	"ypabact.h"
+
+1454158256 /home/marisa/work/openUA/UA_source/ypacar.h
+	"nucleas.h"
+	"ypatank.h"
+
+1453692882 /home/marisa/work/openUA/UA_source/ypaufo.h
+	"nucleas.h"
+	"ypabact.h"
+
+1453692882 /home/marisa/work/openUA/UA_source/ypaflyer.h
+	"nucleas.h"
+	"ypabact.h"
+
+1453692882 /home/marisa/work/openUA/UA_source/ypagun.h
+	"nucleas.h"
+	"ypabact.h"
+
+1453692882 /home/marisa/work/openUA/UA_source/ypamissile.h
+	"nucleas.h"
+	"ypabact.h"
+
+1454168124 /home/marisa/work/openUA/UA_source/yparobo.h
+	"nucleas.h"
+	"ypabact.h"
+
+1454669313 source:/home/marisa/work/openUA/UA_source/ypabact.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"yw.h"
+	"ypabact.h"
+
+1454487958 source:/home/marisa/work/openUA/UA_source/ypacar.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"yw.h"
+	"ypacar.h"
+
+1454487958 source:/home/marisa/work/openUA/UA_source/ypaflyer.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"yw.h"
+	"ypaflyer.h"
+
+1454487958 source:/home/marisa/work/openUA/UA_source/ypagun.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"yw.h"
+	"ypagun.h"
+
+1454487958 source:/home/marisa/work/openUA/UA_source/ypamissile.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"yw.h"
+	"ypamissile.h"
+
+1454487958 source:/home/marisa/work/openUA/UA_source/yparobo.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"yw.h"
+	"yparobo.h"
+	"math.h"
+
+1454487958 source:/home/marisa/work/openUA/UA_source/ypatank.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"yw.h"
+	"ypatank.h"
+
+1454487958 source:/home/marisa/work/openUA/UA_source/ypaufo.cpp
+	<inttypes.h>
+	<stdio.h>
+	<stddef.h>
+	<string.h>
+	"classes.h"
+	"yw.h"
+	"ypaufo.h"
+
+1454669186 source:/home/marisa/work/openUA/UA_source/yw_game.cpp
+	<inttypes.h>
+	<string.h>
+	<math.h>
+	"includes.h"
+	"def_parser.h"
+	"yw_internal.h"
+	"yw.h"
+	"input.h"
+
+1454051070 source:/home/zidane/Projects/UA_source/yw_game.cpp
+	<inttypes.h>
+	<string.h>
+	<math.h>
+	"includes.h"
+	"def_parser.h"
+	"yw_internal.h"
+	"yw.h"
+	"input.h"
 

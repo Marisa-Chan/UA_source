@@ -567,13 +567,13 @@ void base_getter(NC_STACK_base *, __NC_STACK_base *base, stack_vals *stak)
                     *(int *)stk->value = 1;
                 break;
             case 0x80001009:
-                *(float *)stk->value = base->params3D.grp1_p1;
+                *(float *)stk->value = base->params3D.grp_1.sx;
                 break;
             case 0x8000100A:
-                *(float *)stk->value = base->params3D.grp1_p2;
+                *(float *)stk->value = base->params3D.grp_1.sy;
                 break;
             case 0x8000100B:
-                *(float *)stk->value = base->params3D.grp1_p3;
+                *(float *)stk->value = base->params3D.grp_1.sz;
                 break;
             case 0x8000100C:
                 *(float *)stk->value = base->params3D.grp3_p1;
@@ -684,9 +684,9 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
         {
             dst.p1 = SWAP16(dst.p1);
 
-            dst.grp1_p1 = SWAP32F(dst.grp1_p1);
-            dst.grp1_p2 = SWAP32F(dst.grp1_p2);
-            dst.grp1_p3 = SWAP32F(dst.grp1_p3);
+            dst.grp_1.sx = SWAP32F(dst.grp_1.sx);
+            dst.grp_1.sy = SWAP32F(dst.grp_1.sy);
+            dst.grp_1.sz = SWAP32F(dst.grp_1.sz);
 
             dst.grp3_p1 = SWAP32F(dst.grp3_p1);
             dst.grp3_p2 = SWAP32F(dst.grp3_p2);
@@ -738,9 +738,9 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
                 flag_xyz v38;
 
                 v38.flag = 7;
-                v38.x = dst.grp1_p1;
-                v38.y = dst.grp1_p2;
-                v38.z = dst.grp1_p3;
+                v38.x = dst.grp_1.sx;
+                v38.y = dst.grp_1.sy;
+                v38.z = dst.grp_1.sz;
 
                 call_method(obj, 68, &v38);
 
@@ -1036,9 +1036,9 @@ size_t base_func6(NC_STACK_base *obj, class_stru *zis, MFILE **file)
 
     a1.p17 = SWAP16(a1.p17);
 
-    a1.grp1_p1 = SWAP32F(base->params3D.grp1_p1);
-    a1.grp1_p2 = SWAP32F(base->params3D.grp1_p2);
-    a1.grp1_p3 = SWAP32F(base->params3D.grp1_p3);
+    a1.grp_1.sx = SWAP32F(base->params3D.grp_1.sx);
+    a1.grp_1.sy = SWAP32F(base->params3D.grp_1.sy);
+    a1.grp_1.sz = SWAP32F(base->params3D.grp_1.sz);
 
     a1.grp3_p1 = SWAP32F(base->params3D.grp3_p1);
     a1.grp3_p2 = SWAP32F(base->params3D.grp3_p2);
@@ -1103,9 +1103,9 @@ void sub_430A38(base_1c_struct *s3d)
 
     if ( s3d->parent_1c && s3d->field_94 & 1 )
     {
-        s3d->field_10 = prnt_s3d->field_58.m00 * s3d->grp1_p1 + prnt_s3d->field_58.m01 * s3d->grp1_p2 + prnt_s3d->field_58.m02 * s3d->grp1_p3 + prnt_s3d->field_10;
-        s3d->field_14 = prnt_s3d->field_58.m10 * s3d->grp1_p1 + prnt_s3d->field_58.m11 * s3d->grp1_p2 + prnt_s3d->field_58.m12 * s3d->grp1_p3 + prnt_s3d->field_14;
-        s3d->field_18 = prnt_s3d->field_58.m20 * s3d->grp1_p1 + prnt_s3d->field_58.m21 * s3d->grp1_p2 + prnt_s3d->field_58.m22 * s3d->grp1_p3 + prnt_s3d->field_18;
+        s3d->field_10 = prnt_s3d->field_58.m00 * s3d->grp_1.sx + prnt_s3d->field_58.m01 * s3d->grp_1.sy + prnt_s3d->field_58.m02 * s3d->grp_1.sz + prnt_s3d->field_10;
+        s3d->field_14 = prnt_s3d->field_58.m10 * s3d->grp_1.sx + prnt_s3d->field_58.m11 * s3d->grp_1.sy + prnt_s3d->field_58.m12 * s3d->grp_1.sz + prnt_s3d->field_14;
+        s3d->field_18 = prnt_s3d->field_58.m20 * s3d->grp_1.sx + prnt_s3d->field_58.m21 * s3d->grp_1.sy + prnt_s3d->field_58.m22 * s3d->grp_1.sz + prnt_s3d->field_18;
         s3d->field_58.m00 = prnt_s3d->field_58.m00 * s3d->scale_rotation.m00 + prnt_s3d->field_58.m01 * s3d->scale_rotation.m10 + prnt_s3d->field_58.m02 * s3d->scale_rotation.m20;
         s3d->field_58.m01 = prnt_s3d->field_58.m00 * s3d->scale_rotation.m01 + prnt_s3d->field_58.m01 * s3d->scale_rotation.m11 + prnt_s3d->field_58.m02 * s3d->scale_rotation.m21;
         s3d->field_58.m02 = prnt_s3d->field_58.m00 * s3d->scale_rotation.m02 + prnt_s3d->field_58.m01 * s3d->scale_rotation.m12 + prnt_s3d->field_58.m02 * s3d->scale_rotation.m22;
@@ -1118,9 +1118,9 @@ void sub_430A38(base_1c_struct *s3d)
     }
     else
     {
-        s3d->field_10 = s3d->grp1_p1;
-        s3d->field_14 = s3d->grp1_p2;
-        s3d->field_18 = s3d->grp1_p3;
+        s3d->field_10 = s3d->grp_1.sx;
+        s3d->field_14 = s3d->grp_1.sy;
+        s3d->field_18 = s3d->grp_1.sz;
 
         memcpy(&s3d->field_58, &s3d->scale_rotation, sizeof(mat3x3));
     }
@@ -1315,20 +1315,20 @@ size_t base_func68(NC_STACK_base *obj, class_stru *, flag_xyz *arg)
     if ( arg->flag & 0x10 )
     {
         if ( flg & 1 )
-            s3d->grp1_p1 += arg->x;
+            s3d->grp_1.sx += arg->x;
         if ( flg & 2 )
-            s3d->grp1_p2 += arg->y;
+            s3d->grp_1.sy += arg->y;
         if ( flg & 4 )
-            s3d->grp1_p3 += arg->z;
+            s3d->grp_1.sz += arg->z;
     }
     else
     {
         if ( flg & 1 )
-            s3d->grp1_p1 = arg->x;
+            s3d->grp_1.sx = arg->x;
         if ( flg & 2 )
-            s3d->grp1_p2 = arg->y;
+            s3d->grp_1.sy = arg->y;
         if ( flg & 4 )
-            s3d->grp1_p3 = arg->z;
+            s3d->grp_1.sz = arg->z;
     }
     return 1;
 }
@@ -1491,9 +1491,9 @@ size_t base_func73(NC_STACK_base *obj, class_stru *, base73arg *arg)
 
             if ( base->field_4 & 1 )
             {
-                base->params3D.grp1_p1 += base->params3D.grp3_p1 * arg->field_4;
-                base->params3D.grp1_p2 += base->params3D.grp3_p2 * arg->field_4;
-                base->params3D.grp1_p3 += base->params3D.grp3_p3 * arg->field_4;
+                base->params3D.grp_1.sx += base->params3D.grp3_p1 * arg->field_4;
+                base->params3D.grp_1.sy += base->params3D.grp3_p2 * arg->field_4;
+                base->params3D.grp_1.sz += base->params3D.grp3_p3 * arg->field_4;
             }
 
             if ( base->field_4 & 2 )

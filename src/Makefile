@@ -58,6 +58,7 @@ OBJS =  \
 	yw_brif.cpp\
 	yw_funcs.cpp\
 	yw_func2.cpp\
+	yw_game.cpp\
 	yw_protos.cpp\
 	yw_save.cpp\
 	ypabact.cpp\

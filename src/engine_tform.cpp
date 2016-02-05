@@ -127,3 +127,39 @@ void tformEngine__getter(unsigned int a1, ...)
     if ( tmp )
         *tmp = ((int)tform_frontplane) << 16;
 }
+
+
+void mat_mult(mat3x3 *mat1, mat3x3 *mat2, mat3x3 *dst)
+{
+    dst->m00 = mat1->m01 * mat2->m10 + mat1->m00 * mat2->m00 + mat1->m02 * mat2->m20;
+    dst->m01 = mat1->m01 * mat2->m11 + mat1->m00 * mat2->m01 + mat1->m02 * mat2->m21;
+    dst->m02 = mat1->m01 * mat2->m12 + mat1->m00 * mat2->m02 + mat1->m02 * mat2->m22;
+    dst->m10 = mat1->m11 * mat2->m10 + mat1->m10 * mat2->m00 + mat1->m12 * mat2->m20;
+    dst->m11 = mat1->m10 * mat2->m01 + mat1->m11 * mat2->m11 + mat1->m12 * mat2->m21;
+    dst->m12 = mat1->m10 * mat2->m02 + mat1->m11 * mat2->m12 + mat1->m12 * mat2->m22;
+    dst->m20 = mat1->m21 * mat2->m10 + mat1->m20 * mat2->m00 + mat1->m22 * mat2->m20;
+    dst->m21 = mat1->m20 * mat2->m01 + mat1->m21 * mat2->m11 + mat1->m22 * mat2->m21;
+    dst->m22 = mat1->m20 * mat2->m02 + mat1->m21 * mat2->m12 + mat1->m22 * mat2->m22;
+}
+
+void mat_rotate_y(mat3x3 *mat, float a2)
+{
+    mat3x3 tmp;
+    tmp.m00 = cos(a2);
+    tmp.m01 = 0;
+    tmp.m02 = sin(a2);
+
+    tmp.m10 = 0;
+    tmp.m11 = 1.0;
+    tmp.m12 = 0;
+
+    tmp.m20 = -sin(a2);
+    tmp.m21 = 0;
+    tmp.m22 = cos(a2);
+
+    mat3x3 dst;
+
+    mat_mult(&tmp, mat, &dst);
+
+    *mat = dst;
+}

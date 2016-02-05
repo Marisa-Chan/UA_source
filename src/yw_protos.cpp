@@ -57,7 +57,7 @@ int ParseExtSampleDef(vhclSndFX *sndfx, char *p2)
         sndfx->extCount++;
 
         sndExt *sndEx = &sndfx->sndExts[curid];
-        sndEx->field_0 = 0;
+        sndEx->sample = NULL;
         sndEx->field_4 = strtol(pp1, NULL, 0);
         sndEx->field_6 = strtol(pp2, NULL, 0);
         sndEx->field_8 = strtol(pp3, NULL, 0);
@@ -140,13 +140,13 @@ int ParseVhclPal(VhclProto *vhcl, const char *p1, const char *p2)
 
     char *tp = strtok(0, "_");
     if ( !strcasecmp(tp, "slot") )
-        sndfx->slot = strtol(p2, NULL, 0);
+        sndfx->sndPrm.slot = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "mag0") )
-        sndfx->mag0 = strtof(p2, 0);
+        sndfx->sndPrm.mag0 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "mag1") )
-        sndfx->mag1 = strtof(p2, 0);
+        sndfx->sndPrm.mag1 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "time") )
-        sndfx->time = strtol(p2, NULL, 0);
+        sndfx->sndPrm.time = strtol(p2, NULL, 0);
     else
         return 3;
 
@@ -173,13 +173,13 @@ int ParseVhclShk(VhclProto *vhcl, const char *p1, const char *p2)
 
     char *tp = strtok(0, "_");
     if ( !strcasecmp(tp, "slot") )
-        sndfx->shk_slot = strtol(p2, NULL, 0);
+        sndfx->sndPrm_shk.slot = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "mag0") )
-        sndfx->shk_mag0 = strtof(p2, 0);
+        sndfx->sndPrm_shk.mag0 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "mag1") )
-        sndfx->shk_mag1 = strtof(p2, 0);
+        sndfx->sndPrm_shk.mag1 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "time") )
-        sndfx->shk_time = strtol(p2, NULL, 0);
+        sndfx->sndPrm_shk.time = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "mute") )
         sndfx->mute = strtof(p2, 0);
     else if ( !strcasecmp(tp, "x") )
@@ -286,15 +286,15 @@ int VhclProtoParser(scrCallBack *arg)
             for (int i = 0; i < 12; i++)
             {
                 vhclSndFX *v9 = &vhcl->sndFX[i];
-                v9->mag0 = 1.0;
-                v9->shk_mag0 = 1.0;
+                v9->sndPrm.mag0 = 1.0;
+                v9->sndPrm_shk.mag0 = 1.0;
                 v9->mute = 0.02;
                 v9->x = 0.2;
                 v9->y = 0.2;
                 v9->z = 0.2;
                 v9->volume = 120;
-                v9->time = 1000;
-                v9->shk_time = 1000;
+                v9->sndPrm.time = 1000;
+                v9->sndPrm_shk.time = 1000;
             }
             vhcl->stack_pointer__position = vhcl->stak;
             vhcl->stak[0].id = 0;
@@ -872,14 +872,16 @@ int VhclProtoParser(scrCallBack *arg)
                 vhcl->scale_fx_p1 = strtof(pp1, 0);
                 vhcl->scale_fx_p2 = strtof(pp2, 0);
                 vhcl->scale_fx_p3 = strtol(pp3, NULL, 0);
-                int16_t * tmp = &vhcl->scale_fx_pXX;
+
+                int tmp = 0;
+
                 while ( 1 )
                 {
                     char *v65 = strtok(0, "_");
                     if ( !v65 )
                         break;
 
-                    *tmp = strtol(v65, NULL, 0);
+                    vhcl->scale_fx_pXX[tmp] = strtol(v65, NULL, 0);
                     tmp++;
                 }
             }
@@ -1108,13 +1110,13 @@ int ParseWeaponPal(WeapProto *wpn, const char *p1, const char *p2)
 
     char *tp = strtok(0, "_");
     if ( !strcasecmp(tp, "slot") )
-        sndfx->slot = strtol(p2, NULL, 0);
+        sndfx->sndPrm.slot = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "mag0") )
-        sndfx->mag0 = strtof(p2, 0);
+        sndfx->sndPrm.mag0 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "mag1") )
-        sndfx->mag1 = strtof(p2, 0);
+        sndfx->sndPrm.mag1 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "time") )
-        sndfx->time = strtol(p2, NULL, 0);
+        sndfx->sndPrm.time = strtol(p2, NULL, 0);
     else
         return 3;
 
@@ -1142,13 +1144,13 @@ int ParseWeaponShk(WeapProto *wpn, const char *p1, const char *p2)
     char *tp = strtok(0, "_");
 
     if ( !strcasecmp(tp, "slot") )
-        sndfx->shk_slot = strtol(p2, NULL, 0);
+        sndfx->sndPrm_shk.slot = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "mag0") )
-        sndfx->shk_mag0 = strtof(p2, 0);
+        sndfx->sndPrm_shk.mag0 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "mag1") )
-        sndfx->shk_mag1 = strtof(p2, 0);
+        sndfx->sndPrm_shk.mag1 = strtof(p2, 0);
     else if ( !strcasecmp(tp, "time") )
-        sndfx->shk_time = strtol(p2, NULL, 0);
+        sndfx->sndPrm_shk.time = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "mute") )
         sndfx->mute = strtof(p2, 0);
     else if ( !strcasecmp(tp, "x") )
@@ -1225,15 +1227,15 @@ int WeaponProtoParser(scrCallBack *arg)
             for (int i = 0; i < 3; i++)
             {
                 vhclSndFX *v9 = &wpn->sndFXes[i];
-                v9->mag0 = 1.0;
-                v9->shk_mag0 = 1.0;
+                v9->sndPrm.mag0 = 1.0;
+                v9->sndPrm_shk.mag0 = 1.0;
                 v9->mute = 0.02;
                 v9->x = 0.2;
                 v9->y = 0.2;
                 v9->z = 0.2;
                 v9->volume = 120;
-                v9->time = 1000;
-                v9->shk_time = 1000;
+                v9->sndPrm.time = 1000;
+                v9->sndPrm_shk.time = 1000;
             }
 
             wpn->pointer = wpn->stack;

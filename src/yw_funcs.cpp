@@ -1213,34 +1213,34 @@ int yw_parse_subSect(_NC_STACK_ypaworld *yw, FILE *fil)
         {
             subSec *ssec = &yw->subSectors[id];
 
-            ssec->field_4 = strtol(pp, NULL, 0);
+            ssec->health_models[0] = strtol(pp, NULL, 0);
 
             pp = strtok(0, " \t");
             if ( !pp )
                 return 0;
 
-            ssec->field_5 = strtol(pp, NULL, 0);
+            ssec->health_models[1] = strtol(pp, NULL, 0);
 
             pp = strtok(0, " \t");
             if ( !pp )
                 return 0;
 
-            ssec->field_6 = strtol(pp, NULL, 0);
+            ssec->health_models[2] = strtol(pp, NULL, 0);
 
             pp = strtok(0, " \t");
             if ( !pp )
                 return 0;
 
-            ssec->field_7 = strtol(pp, NULL, 0);
+            ssec->health_models[3] = strtol(pp, NULL, 0);
 
             pp = strtok(0, " \t");
             if ( !pp )
                 return 0;
 
             if ( *pp > '0' && *pp == '1' )
-                ssec->field_0 = 255;
+                ssec->build_health = 255;
             else
-                ssec->field_0 = 0;
+                ssec->build_health = 0;
 
             pp = strtok(0, " \t");
             if ( pp )
@@ -1297,7 +1297,7 @@ int yw_parse_sektor(_NC_STACK_ypaworld *yw, FILE *fil)
 
             sektp->field_3 = strtol(pp, NULL, 0);
 
-            memset(sektp->field_4, 0, sizeof(sektp->field_4));
+            memset(sektp->buildings, 0, sizeof(sektp->buildings));
 
             if ( sektp->field_0 == 1 )
             {
@@ -1307,7 +1307,7 @@ int yw_parse_sektor(_NC_STACK_ypaworld *yw, FILE *fil)
                     ypa_log_out("Error reading '%s', line '%s'.\n", "set.sdf", line_buf);
                     return 0;
                 }
-                sektp->field_4[0][0] = &yw->subSectors[ strtol(pp, NULL, 0) ];
+                sektp->buildings[0][0] = &yw->subSectors[ strtol(pp, NULL, 0) ];
             }
             else
             {
@@ -1322,7 +1322,7 @@ int yw_parse_sektor(_NC_STACK_ypaworld *yw, FILE *fil)
                             return 0;
                         }
 
-                        sektp->field_4[i][2 - j] = &yw->subSectors[ strtol(pp, NULL, 0) ];
+                        sektp->buildings[i][2 - j] = &yw->subSectors[ strtol(pp, NULL, 0) ];
                     }
                 }
             }

@@ -26,9 +26,7 @@ struct clss_node: public nnode
 struct base_1c_struct
 {
     base_1c_struct *parent_1c;
-    float grp1_p1;
-    float grp1_p2;
-    float grp1_p3;
+    xyz grp_1;
     float field_10;
     float field_14;
     float field_18;
@@ -109,9 +107,7 @@ struct NC_STACK_base : public NC_STACK_nucleus
 struct __attribute__((packed)) STRC_base
 {
     __int16 p1;
-    float grp1_p1;
-    float grp1_p2;
-    float grp1_p3;
+    xyz grp_1;
     float grp3_p1;
     float grp3_p2;
     float grp3_p3;
@@ -199,5 +195,11 @@ struct base73arg
 void sub_430A20(base_1c_struct *s3d);
 base_1c_struct *sub_430A28();
 void sub_430A38(base_1c_struct *s3d);
+
+struct vhclBases
+{
+    NC_STACK_base *base;
+    base_1c_struct *trigo;
+};
 
 #endif // BASE_H_INCLUDED

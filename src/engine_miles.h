@@ -8,11 +8,19 @@ extern class_stored miles_engine_off;
 
 struct samples_collection1;
 
+struct sndFXprm
+{
+    int time;
+    int slot;
+    float mag0;
+    float mag1;
+};
+
 struct userdata_sample_info
 {
     int field_0;
-    float *field_4;
-    float *field_8;
+    sndFXprm *field_4;
+    sndFXprm *field_8;
     int *field_C;
     int16_t volume;
     char field_12;
@@ -31,9 +39,7 @@ struct userdata_sample_info
 
 struct samples_collection1
 {
-    float field_0;
-    float field_4;
-    float field_8;
+    xyz field_0;
     int field_C;
     float field_10;
     float field_14;
@@ -57,6 +63,7 @@ void sub_423DD8(samples_collection1 *smpls);
 void sub_424CC8();
 
 void milesEngine__setter(unsigned int, ...);
+void milesEngine__getter(unsigned int, ...);
 
 void sb_0x4242e0(samples_collection1 *smpls);
 void sb_0x424c74();

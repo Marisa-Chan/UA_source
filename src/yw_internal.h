@@ -32,6 +32,31 @@ struct video_mode_node : public nnode
     int16_t height;
 };
 
+struct struct_44dbf8
+{
+    skeleton_64_stru *sklt;
+    float pos_x;
+    float pos_y;
+    float pos_z;
+    int sec_x;
+    int sec_y;
+    cellArea *p_cell;
+    int16_t field_1C;
+    int16_t field_1E;
+};
+
+// For rendering
+struct stru_a3
+{
+    cellArea *p_cell;
+    int dword4;
+    int dword8;
+    float x;
+    float y;
+    float z;
+    float smooth_height;
+};
+
 
 int VhclProtoParser(scrCallBack *);
 int WeaponProtoParser(scrCallBack *);
@@ -110,6 +135,7 @@ void sub_4F0FFC(_NC_STACK_ypaworld *yw);
 
 int sub_4DA41C(_NC_STACK_ypaworld *yw, mapProto *mapp, const char *fname);
 
+int sub_4D7BFC(const void *a1, const void *a2);
 
 void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
 
@@ -150,5 +176,34 @@ int yw_write_item_modifers(_NC_STACK_ypaworld *yw, FILE *fil);
 
 void sb_0x44ac24(_NC_STACK_ypaworld *yw);
 void sub_4EAC80(_NC_STACK_ypaworld *yw);
+
+
+int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapProto, int levelID, int a5);
+int cells_mark_type(_NC_STACK_ypaworld *yw, const char *a2);
+int cells_mark_owner(_NC_STACK_ypaworld *yw, const char *a2);
+int cells_mark_hight(_NC_STACK_ypaworld *yw, const char *a2);
+int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_count, mapRobo *robo);
+int sub_44B9B8(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, const char *a3);
+void ypaworld_func161__sub1(_NC_STACK_ypaworld *yw, unsigned int a2, squadProto *a3);
+void sub_471CA0(_NC_STACK_ypaworld *yw);
+void sub_44C248(NC_STACK_ypaworld *yw, _NC_STACK_ypaworld *a2);
+void sub_472130(_NC_STACK_ypaworld *yw);
+void sub_4D1084(_NC_STACK_ypaworld *yw);
+void sub_44F748(_NC_STACK_ypaworld *yw);
+int sb_0x451034(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw);
+void sb_0x44fc60(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int a5, int a6);
+void splashScreen_OutText(_NC_STACK_ypaworld *yw, NC_STACK_win3d *w3d, const char *txt, int x, int y);
+void sub_44DBF8(_NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, struct_44dbf8 *a6, int flags);
+void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg);
+void sub_44D8B8(ypaworld_arg136 *arg, struct_44dbf8 *loc);
+
+void ypaworld_func2__sub0__sub0(_NC_STACK_ypaworld *yw);
+void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact1, __NC_STACK_ypabact *bact2);
+
+NC_STACK_ypabact *yw_createUnit(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int model_id);
+void sub_44BF34(vhclSndFX *sndfx);
+
+
+void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs64, int a2);
 
 #endif

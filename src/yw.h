@@ -18,6 +18,8 @@
 
 #include "lstvw.h"
 
+#include "input.h"
+
 #include "glob_funcs.h"
 
 extern class_stored ypaworld_class_off;
@@ -313,15 +315,13 @@ struct cellArea
     int field_24;
     int field_28;
     char owner;
-    char sec_type;
+    uint8_t sec_type;
     char field_2E;
     char field_2F;
-    int field_30;
-    int field_34;
-    char field_38;
+    uint8_t buildings_health[3][3];
     char field_39;
     char field_3A;
-    char field_3B;
+    uint8_t field_3B;
     nlist field_3C;
     float sector_height_meters;
     float smooth_height;
@@ -683,6 +683,32 @@ struct save_status
     int pX[8];
 };
 
+struct yw_81cb
+{
+    int field_0;
+    int field_4;
+    char field_8[128];
+};
+
+struct yw_samples
+{
+    int field_0;
+    samples_collection1 field_4;
+    int field_35C;
+    int field_360;
+};
+
+struct yw_f80
+{
+    int field_0;
+    int field_4;
+    int field_8;
+    int x;
+    int y;
+    char ownerID2;
+    uint8_t blg_ID;
+};
+
 struct _NC_STACK_ypaworld
 {
     NC_STACK_ypaworld *self_full;
@@ -699,8 +725,8 @@ struct _NC_STACK_ypaworld
 
     int set_number;
     NC_STACK_base *additionalSet;
-    nlist field_48;
-    nlist field_54;
+    nlist bact_list;
+    nlist dead_cache;
     vhclBases *vhcls_models;
     cityBases *legos;
     subSec *subSectors;
@@ -709,9 +735,10 @@ struct _NC_STACK_ypaworld
     WeapProto *WeaponProtos;
     BuildProto *BuildProtos;
     roboProto *RoboProtos;
-
-    int16_t field_130[256];
+    yw_f80 field_80[8];
+    int16_t build_hp_ref[256];
     BYTE sqrt_table[64][64];
+    __NC_STACK_ypabact *current_bact;
 
     NC_STACK_base *sky_loaded_base;
     int field_1368;
@@ -737,13 +764,24 @@ struct _NC_STACK_ypaworld
     int field_15f8;
     int field_15fc;
 
+    int audio_volume;
+
+    int field_160c;
+    int field_1610;
+    int field_1614;
+
+    int field_161c;
     char *buildDate;
     int field_1624;
-
+    int16_t field_1628;
+    int16_t field_162A;
+    int field_162c;
     tiles_stru *tiles[92];
     nlist field_17a0;
     int16_t screen_width;
     int16_t screen_height;
+    int field_17b0;
+    int field_17b4;
 
     int field_17bc;
     int field_17c0;
@@ -751,7 +789,14 @@ struct _NC_STACK_ypaworld
     int field_17c8;
     const char **tooltips;
     rgbiColor iniColors[70];
+    int field_1a00;
+    int field_1a04;
+    int field_1a08;
+    int field_1a0c;
+    int field_1a10;
 
+    int field_1a1c;
+    int field_1a20;
     int font_default_h;
     int font_default_w__a;
     int font_yscrl_bkg_w;
@@ -766,11 +811,34 @@ struct _NC_STACK_ypaworld
     int icon_energy__h;
     int icon0___h;
 
+    int field_1a60;
+
+    int field_1a98;
+
+    int field_1aa0;
+    int field_1aa4;
+    int field_1aa8;
+    int field_1aac;
+    int field_1ab0;
+
     NC_STACK_ilbm *pointers[11];
     bitmap_intern *pointers__bitm[11];
     int field_1b1c;
 
+    ypabact_arg65 field_1b24;
+
+    int16_t field_1B6A;
+    int16_t field_1b6c;
+
+    NC_STACK_ypabact *field_1b78;
+    NC_STACK_ypabact *field_1b7c;
     __NC_STACK_ypabact *field_1b80;
+    __NC_STACK_ypabact *field_1b84;
+    nlist *field_1b88;
+    int sectors_count_by_owner[8];
+    int field_1bac[8];
+
+    int field_241c;
 
     int field_2424;
 
@@ -816,6 +884,21 @@ struct _NC_STACK_ypaworld
     save_status vhcl_finder_status;
     int fxnumber;
 
+    int field_753A;
+
+    int field_7542;
+
+    int field_754A;
+
+    int field_7552;
+
+    int field_755A;
+    NC_STACK_input *input_class;
+    int field_7562;
+    int field_7566;
+    int field_756A;
+    int field_756E;
+
     NC_STACK_windp *windp;
 
     int field_757E;
@@ -831,10 +914,19 @@ struct _NC_STACK_ypaworld
 
     int netgame_exclusivegem;
 
+    int p_1_grp_cnt;
+    int p_1_grp_p1[8];
+    int p_1_grp_p2[8];
+    int p_1_grp_p3[8];
+    int p_1_grp_p4[8];
     player_status playerstatus[8];
-
+    player_status field_7796[8];
     int maxroboenergy;
     int maxreloadconst;
+    yw_samples *samples;
+    int field_7882;
+    int field_7886;
+    int field_788A;
 
     yw_movies movies;
     int field_81AB;
@@ -845,7 +937,7 @@ struct _NC_STACK_ypaworld
     int game_default_res;
 
     float max_impulse;
-
+    yw_81cb field_81CB;
     float vehicle_sector_ratio_1;
     int unit_limit;
     int unit_limit_arg;
@@ -867,12 +959,6 @@ struct NC_STACK_ypaworld : public NC_STACK_base
     _NC_STACK_ypaworld stack__ypaworld;
 };
 
-
-struct vhclBases
-{
-    NC_STACK_base *base;
-    base_1c_struct *trigo;
-};
 
 struct lego_xyz
 {
@@ -898,35 +984,24 @@ struct cityBases
 
 struct subSec
 {
-    int field_0;
-    BYTE field_4;
-    char field_5;
-    char field_6;
-    char field_7;
+    int build_health;
+    uint8_t health_models[4]; //Building health models 0 - 100%hp, 3 - 0%hp
     int field_8;
 };
 
 struct secType
 {
     char field_0;
-    char field_1;
+    uint8_t field_1;
     char field_2;
     char field_3;
-    subSec *field_4[3][3];
+    subSec *buildings[3][3];
 };
 
-struct destFX
-{
-    char type_flag;
-    char p1;
-    float p2;
-    float p3;
-    float p4;
-};
 
 struct sndExt
 {
-    int field_0;
+    sampl *sample;
     int16_t field_4;
     int16_t field_6;
     int field_8;
@@ -940,25 +1015,12 @@ struct vhclSndFX
 {
     char sample_name[32];
     char extSampleNames[8][32];
-    int field_120;
-    int field_124;
-    int field_128;
-    int field_12C;
-    int field_130;
-    int field_134;
-    int field_138;
-    int field_13C;
-    int field_140;
+    NC_STACK_wav *single_sample;
+    NC_STACK_wav *wavs[8];
     int16_t volume;
     int16_t pitch;
-    int16_t time;
-    int16_t slot;
-    float mag0;
-    float mag1;
-    int16_t shk_time;
-    int16_t shk_slot;
-    float shk_mag0;
-    float shk_mag1;
+    sndFXprm sndPrm;
+    sndFXprm sndPrm_shk;
     float mute;
     float x;
     float y;
@@ -971,7 +1033,7 @@ struct __attribute__((packed)) VhclProto
 {
     char model_id;
     char disable_enable_bitmask;
-    char weapon;
+    uint8_t weapon;
     char field_3;
     int field_4;
     char mgun;
@@ -1021,7 +1083,7 @@ struct __attribute__((packed)) VhclProto
     float scale_fx_p1;
     float scale_fx_p2;
     int scale_fx_p3;
-    int16_t scale_fx_pXX;
+    int16_t scale_fx_pXX[33];
     int16_t field_1DE7;
     int16_t field_1DE9;
     int16_t field_1DEB;
@@ -1251,6 +1313,63 @@ struct yw_arg169
 {
     UserData *usr;
     const char *saveFile;
+};
+
+struct ypaworld_arg146
+{
+    int vehicle_id;
+    xyz pos;
+};
+
+struct yw_130arg
+{
+    float pos_x;
+    float pos_z;
+    int sec_x;
+    int sec_z;
+    cellArea *pcell;
+    float pos_x_cntr;
+    float pos_y_cntr;
+};
+
+struct ypaworld_arg136
+{
+    int field_0;
+    float pos_x;
+    float pos_y;
+    float pos_z;
+    int field_10;
+    float field_14;
+    float field_18;
+    float field_1C;
+    int field_20;
+    float field_24;
+    int field_28;
+    float field_2C;
+    float field_30;
+    float field_34;
+    int field_38;
+    skeleton_64_stru *field_3C;
+    int field_40;
+};
+
+struct yw_arg180
+{
+    int effects_type;
+    float field_4;
+    float field_8;
+    float field_C;
+};
+
+struct ypaworld_arg148
+{
+    int ownerID;
+    int ownerID2;
+    int blg_ID;
+    int field_C;
+    int x;
+    int y;
+    int field_18;
 };
 
 #endif

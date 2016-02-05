@@ -2,6 +2,7 @@
 #define SKELETON_H_INCLUDED
 
 #include "rsrc.h"
+#include "engine_gfx.h"
 
 extern class_stored skeleton_class_off;
 
@@ -13,10 +14,10 @@ struct skeleton_type1
 
 struct __attribute__((packed)) pol_indixes
 {
-    __int16 num_vertices;
-    __int16 v1;
-    __int16 v2;
-    __int16 v3;
+    int16_t num_vertices;
+    int16_t v1;
+    int16_t v2;
+    int16_t v3;
     ////may contain more than 3 or less
 };
 

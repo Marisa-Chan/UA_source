@@ -90,6 +90,12 @@ struct windd__window_params
     int height;
 };
 
+struct tUtV
+{
+    float tu;
+    float tv;
+};
+
 void gfx_set_tileset(tiles_stru *a1, int id);
 int win3d__load_palette_from_ilbm(const char *palette);
 

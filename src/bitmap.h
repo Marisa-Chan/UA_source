@@ -20,12 +20,6 @@ struct bitmap__opl
     __int16 field_E;
 };
 
-struct tUtV
-{
-    float tu;
-    float tv;
-};
-
 union bitmap_uniopl
 {
     bitmap__opl *opl1;

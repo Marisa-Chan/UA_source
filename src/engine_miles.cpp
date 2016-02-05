@@ -84,13 +84,13 @@ userdata_sample_info *sub_423F74(samples_collection1 *a1, int a2)
     {
         result->field_12 |= 0x10;
         result->field_12 &= 0xDF;
-        result->field_24 = result->field_4[1];
+        result->field_24 = result->field_4->mag0;
     }
     if ( result->field_12 & 0x40 )
     {
         result->field_12 |= 0x80;
         result->field_13 &= 0xFE;
-        result->field_28 = result->field_8[1];
+        result->field_28 = result->field_8->mag0;
     }
     return result;
 }
