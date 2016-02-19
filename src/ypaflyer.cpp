@@ -30,6 +30,8 @@ NC_STACK_ypaflyer * ypaflyer_func0(class_stru *clss, class_stru *zis, stack_vals
 {
     NC_STACK_ypaflyer *obj = (NC_STACK_ypaflyer *)call_parent(zis, clss, 0, stak);
 
+    //field_24 = 6;
+
     return obj;
 }
 

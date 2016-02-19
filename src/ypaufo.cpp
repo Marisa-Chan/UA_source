@@ -30,6 +30,8 @@ NC_STACK_ypaufo * ypaufo_func0(class_stru *clss, class_stru *zis, stack_vals *st
 {
     NC_STACK_ypaufo *obj = (NC_STACK_ypaufo *)call_parent(zis, clss, 0, stak);
 
+    //field_24 = 7;
+
     return obj;
 }
 

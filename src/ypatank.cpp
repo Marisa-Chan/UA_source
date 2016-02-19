@@ -30,6 +30,8 @@ NC_STACK_ypatank * ypatank_func0(class_stru *clss, class_stru *zis, stack_vals *
 {
     NC_STACK_ypatank *obj = (NC_STACK_ypatank *)call_parent(zis, clss, 0, stak);
 
+    //field_24 = 2;
+
     return obj;
 }
 

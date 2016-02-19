@@ -899,27 +899,27 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "robo_gun_pos_x") )
         {
-            robo->guns[v76].robo_gun_pos_x = strtof(_p2, 0);
+            robo->guns[v76].pos.sx = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_gun_pos_y") )
         {
-            robo->guns[v76].robo_gun_pos_y = strtof(_p2, 0);
+            robo->guns[v76].pos.sy = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_gun_pos_z") )
         {
-            robo->guns[v76].robo_gun_pos_z = strtof(_p2, 0);
+            robo->guns[v76].pos.sz = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_gun_dir_x") )
         {
-            robo->guns[v76].robo_gun_dir_x = strtof(_p2, 0);
+            robo->guns[v76].dir.sx = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_gun_dir_y") )
         {
-            robo->guns[v76].robo_gun_dir_y = strtof(_p2, 0);
+            robo->guns[v76].dir.sy = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_gun_dir_z") )
         {
-            robo->guns[v76].robo_gun_dir_z = strtof(_p2, 0);
+            robo->guns[v76].dir.sz = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_gun_type") )
         {
@@ -931,23 +931,23 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "robo_dock_x") )
         {
-            robo->robo_dock_x = strtof(_p2, 0);
+            robo->dock.sx = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_dock_y") )
         {
-            robo->robo_dock_y = strtof(_p2, 0);
+            robo->dock.sy = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_dock_z") )
         {
-            robo->robo_dock_z = strtof(_p2, 0);
+            robo->dock.sz = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_coll_num") )
         {
-            robo->robo_coll_num = strtol(_p2, NULL, 0);
+            robo->coll.robo_coll_num = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "robo_coll_radius") )
         {
-            robo->roboColls[v77].robo_coll_radius = strtof(_p2, 0);
+            robo->coll.roboColls[v77].robo_coll_radius = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_coll_act") )
         {
@@ -955,28 +955,27 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "robo_coll_x") )
         {
-            robo->roboColls[v77].robo_coll_x = strtof(_p2, 0);
+            robo->coll.roboColls[v77].robo_coll_x = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_coll_y") )
         {
-            robo->roboColls[v77].robo_coll_y = strtof(_p2, 0);
+            robo->coll.roboColls[v77].robo_coll_y = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_coll_z") )
         {
-            robo->roboColls[v77].robo_coll_z = strtof(_p2, 0);
+            robo->coll.roboColls[v77].robo_coll_z = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_viewer_x") )
         {
-            robo->robo_viewer_x = strtof(_p2, 0);
+            robo->viewer.sx = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_viewer_y") )
         {
-            robo->robo_viewer_y = strtof(_p2, 0);
-
+            robo->viewer.sy = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_viewer_z") )
         {
-            robo->robo_viewer_z = strtof(_p2, 0);
+            robo->viewer.sz = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_viewer_max_up") )
         {

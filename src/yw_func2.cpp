@@ -1767,8 +1767,8 @@ void sub_46DC1C(UserData *usr)
     yw_arg181_a v11;
     yw_arg181 v5;
 
-    v5.field_0 = &v11;
-    v5.field_4 = 20;
+    v5.value = &v11;
+    v5.val_size = 20;
     v5.field_10 = 0;
     v5.field_14 = 2;
     v5.field_18 = 1;
@@ -4504,6 +4504,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                         usr->field_19DA = 0;
                 }
                 break;
+
             case 1:
                 if ( sub_449678(usr->p_ypaworld, usr->field_3A, 'M') )
                 {
@@ -4516,6 +4517,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                         usr->field_19DA = 0;
                 }
                 break;
+
             case 2:
                 if ( sub_449678(usr->p_ypaworld, usr->field_3A, 'O') )
                 {
@@ -4528,6 +4530,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                         usr->field_19DA = 0;
                 }
                 break;
+
             case 3:
                 if ( sub_449678(usr->p_ypaworld, usr->field_3A, 'K') )
                 {
@@ -4603,10 +4606,10 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         if ( v6_l == 1204 || v6_l == 1205 || v6_l == 1206 || v6_l == 1207 )
         {
             v378.fld_3 = 0;
-            v346.field_4 = 20;
+            v346.val_size = 20;
             v346.field_10 = 0;
             v346.field_18 = 1;
-            v346.field_0 = &v378;
+            v346.value = &v378;
             v378.fld_0 = 1021;
             v346.field_14 = 2;
         }
@@ -4795,9 +4798,9 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v375.fld_3 = 0;
                 v375.fld_4_1 = 1;
 
-                v353.field_4 = 20;
+                v353.val_size = 20;
                 v353.field_14 = 2;
-                v353.field_0 = &v375;
+                v353.value = &v375;
                 v353.field_10 = 0;
                 v353.field_18 = 1;
 
@@ -4831,8 +4834,8 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
                 v353.field_14 = 2;
                 v353.field_10 = 0;
-                v353.field_0 = &v375;
-                v353.field_4 = 20;
+                v353.value = &v375;
+                v353.val_size = 20;
                 v353.field_18 = 1;
 
                 call_method(usr->p_ypaworld->self_full, 181, &v353);
@@ -4879,8 +4882,8 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     strcpy(v312.fld_4, usr->field_1C42);
 
                     v346.field_C = 1;
-                    v346.field_0 = (yw_arg181_a *)&v312;
-                    v346.field_4 = 80;
+                    v346.value = (yw_arg181_a *)&v312;
+                    v346.val_size = 80;
                     v346.field_14 = 2;
                     v346.field_10 = 0;
                     v346.field_8 = usr->callSIGN;
@@ -5087,8 +5090,8 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                         yw_arg181 v325;
 
                         v325.field_18 = 1;
-                        v325.field_0 = (yw_arg181_a *)&v309;
-                        v325.field_4 = 80;
+                        v325.value = (yw_arg181_a *)&v309;
+                        v325.val_size = 80;
                         v325.field_14 = 2;
                         v325.field_10 = 0;
 

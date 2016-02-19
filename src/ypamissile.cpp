@@ -30,6 +30,8 @@ NC_STACK_ypamissile * ypamissile_func0(class_stru *clss, class_stru *zis, stack_
 {
     NC_STACK_ypamissile *obj = (NC_STACK_ypamissile *)call_parent(zis, clss, 0, stak);
 
+    //field_24 = 4;
+
     return obj;
 }
 

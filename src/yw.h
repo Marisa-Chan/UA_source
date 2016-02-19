@@ -15,6 +15,7 @@
 #include "wav.h"
 #include "windp.h"
 #include "ypabact.h"
+#include "ypagun.h"
 
 #include "lstvw.h"
 
@@ -314,7 +315,7 @@ struct cellArea
     int field_20;
     int field_24;
     int field_28;
-    char owner;
+    uint8_t owner;
     uint8_t sec_type;
     char field_2E;
     char field_2F;
@@ -336,7 +337,7 @@ struct keysec
 
 struct gateProto
 {
-    int field_0;
+    cellArea *pcell;
     int sec_x;
     int sec_y;
     int closed_bp;
@@ -458,7 +459,7 @@ struct supetItemProto
     int type;
     int field_4;
     int countdown;
-    int field_C;
+    cellArea *pcell;
     int sec_x;
     int sec_y;
     int inactive_bp;
@@ -709,6 +710,21 @@ struct yw_f80
     uint8_t blg_ID;
 };
 
+struct yw_field34
+{
+    int16_t x;
+    int16_t y;
+    cellArea *p_cell;
+    int power;
+    int power_2;
+};
+
+struct yw_f30
+{
+    char owner;
+    char field_1;
+};
+
 struct _NC_STACK_ypaworld
 {
     NC_STACK_ypaworld *self_full;
@@ -722,7 +738,10 @@ struct _NC_STACK_ypaworld
 
     float map_Width_meters;
     float map_Height_meters;
-
+    yw_f30 *field_30;
+    yw_field34 *field_34;
+    int field_38;
+    int field_3c;
     int set_number;
     NC_STACK_base *additionalSet;
     nlist bact_list;
@@ -837,6 +856,8 @@ struct _NC_STACK_ypaworld
     nlist *field_1b88;
     int sectors_count_by_owner[8];
     int field_1bac[8];
+    float field_1bcc[8];
+    float field_1bec[8];
 
     int field_241c;
 
@@ -845,7 +866,8 @@ struct _NC_STACK_ypaworld
     recorder *sceneRecorder;
 
     gemProto gems[8];
-
+    int field_2b78;
+    int field_2b7c;
     int last_modify_vhcl;
     int last_modify_weapon;
     int last_modify_build;
@@ -1211,13 +1233,9 @@ struct BuildProto
 
 struct roboGun
 {
-    float robo_gun_pos_x;
-    float robo_gun_pos_y;
-    float robo_gun_pos_z;
-    float robo_gun_dir_x;
-    float robo_gun_dir_y;
-    float robo_gun_dir_z;
-    int field_18;
+    xyz pos;
+    xyz dir;
+    NC_STACK_ypagun *gun_obj;
     char robo_gun_name[32];
     char robo_gun_type;
 };
@@ -1228,16 +1246,19 @@ struct roboColl
     float robo_coll_x;
     float robo_coll_y;
     float robo_coll_z;
-    int field_10;
-    int field_14;
-    int field_18;
+    xyz field_10;
+};
+
+struct rbcolls
+{
+    int field_0;
+    char robo_coll_num;
+    roboColl roboColls[16];
 };
 
 struct roboProto
 {
-    float robo_viewer_x;
-    float robo_viewer_y;
-    float robo_viewer_z;
+    xyz viewer;
     mat3x3 matrix;
     int field_30;
     int field_34;
@@ -1246,12 +1267,8 @@ struct roboProto
     float robo_viewer_max_side;
     roboGun guns[8];
     char robo_num_guns;
-    float robo_dock_x;
-    float robo_dock_y;
-    float robo_dock_z;
-    int field_239;
-    char robo_coll_num;
-    roboColl roboColls[16];
+    xyz dock;
+    rbcolls coll;
 };
 
 int load_fonts_and_icons(_NC_STACK_ypaworld *yw);
@@ -1288,8 +1305,8 @@ struct yw_arg181_b
 
 struct yw_arg181
 {
-    yw_arg181_a *field_0;
-    int field_4;
+    void *value;
+    int val_size;
     char *field_8;
     int field_C;
     int field_10;
@@ -1353,6 +1370,27 @@ struct ypaworld_arg136
     int field_40;
 };
 
+struct yw_137col
+{
+    int field_0;
+    xyz pos1;
+    xyz pos2;
+    int field_1C;
+};
+
+struct ypaworld_arg137
+{
+    int field_0;
+    xyz pos;
+    int field_10;
+    xyz pos2;
+    float radius;
+    yw_137col *collisions;
+    int coll_max;
+    int coll_count;
+    int field_30;
+};
+
 struct yw_arg180
 {
     int effects_type;
@@ -1371,5 +1409,64 @@ struct ypaworld_arg148
     int y;
     int field_18;
 };
+
+struct yw_arg129
+{
+    int field_0;
+    xyz pos;
+    int field_10;
+    int field_14;
+    __NC_STACK_ypabact *unit;
+};
+
+struct yw_arg184_type
+{
+    char type;
+};
+
+struct yw_arg184 : public yw_arg184_type
+{
+    char secX;
+    char secY;
+    char owner;
+    char field_4;
+    char field_5;
+    int16_t last_vhcl;
+    int16_t last_weapon;
+    int16_t last_build;
+};
+
+struct yw_arg184_t4 : public yw_arg184_type
+{
+    char field_1;
+    __int16 field_2;
+    char field_4;
+    char field_5;
+};
+
+struct yw_arg159
+{
+    __NC_STACK_ypabact *unit;
+    int field_4;
+    const char *txt;
+    int field_C;
+};
+
+struct yw_arg176
+{
+    int owner;
+    float field_4;
+    float field_8;
+};
+
+struct yw_arg170
+{
+    UserData *usr;
+    char *pbuf;
+};
+
+
+
+__NC_STACK_ypabact *__fastcall sub_48C244(NC_STACK_ypaworld *ywo, int a2, char owner);
 
 #endif

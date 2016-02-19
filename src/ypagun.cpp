@@ -30,6 +30,8 @@ NC_STACK_ypagun * ypagun_func0(class_stru *clss, class_stru *zis, stack_vals *st
 {
     NC_STACK_ypagun *obj = (NC_STACK_ypagun *)call_parent(zis, clss, 0, stak);
 
+    //field_24 = 9;
+
     return obj;
 }
 

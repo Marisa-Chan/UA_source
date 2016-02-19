@@ -65,7 +65,7 @@ void sub_423DB0(samples_collection1 *smpls)
 
 int sub_4444D4(CDAUDIO_t *arg)
 {
-    printf("MAKE ME %s\n", "sub_4444D4");
+    printf("STUB %s\n", "sub_4444D4");
     return 0;
 }
 
@@ -108,7 +108,7 @@ int sub_4448C0(int *a1)
 
 void sub_423DD8(samples_collection1 *smpls)
 {
-    printf("STUB %s\n", "sub_423DD8");
+    printf("STUB %s (silent sounds for this collection)\n", "sub_423DD8");
 }
 
 void sb_0x4242e0(samples_collection1 *smpls)

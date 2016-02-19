@@ -43,10 +43,10 @@ struct __NC_STACK_ypabact : public nnode
     int16_t field_22;
     int field_24;
     int ypabact__id;
-    char id;
-
+    uint8_t id;
+    char field_2D;
     int field_2E;
-    int field_32;
+    NC_STACK_ypabact *field_32; // parent robo?
     NC_STACK_ypabact *parent_bacto;
     __NC_STACK_ypabact *parent_bact;
     nlist list2;
@@ -63,7 +63,7 @@ struct __NC_STACK_ypabact : public nnode
     char shield;
     char field_3D1;
     char radar;
-    char owner;
+    uint8_t owner;
     char field_3D4;
     char field_3D5;
     int field_3D6;
@@ -71,37 +71,43 @@ struct __NC_STACK_ypabact : public nnode
     char field_3DE;
     char field_3DF;
     int field_3e0;
+    int field_3e4;
+    __NC_STACK_ypabact *field_3e8;
+    xyz field_3ec;
+    __NC_STACK_ypabact *field_3f8;
+    xyz field_3fc;
 
     float adist_sector;
     float adist_bact;
     float sdist_sector;
     float sdist_bact;
-
+    xyz field_418[32];
+    int16_t field_598;
+    int16_t field_59A;
     int field_59c;
-
+    uint8_t field_5a0;
+    int field_5A1;
     int field_5A5;
     float mass;
     float force;
     float airconst;
     float airconst2;
     float maxrot;
-    float field_5BD;
-    float field_5C1;
-    float field_5C5;
+    xyz viewer;
     mat3x3 field_5C9;
     float field_5ED;
-
-    float field_605;
-    float field_609;
-    float field_60D;
+    float field_5F1;
+    float viewer_max_up;
+    float viewer_max_down;
+    float viewer_max_side;
+    float field_601;
+    xyz field_605;
     float field_611;
 
     xyz field_621;
     xyz field_62D;
-    float field_639;
-    float field_63D;
-    float field_641;
-
+    xyz field_639;
+    xyz field_645;
     mat3x3 field_651;
     float height;
     float field_679;
@@ -137,7 +143,7 @@ struct __NC_STACK_ypabact : public nnode
     int field_931;
     int field_935;
     int field_939;
-
+    int field_93D;
     int field_941;
     int field_945;
 
@@ -146,9 +152,7 @@ struct __NC_STACK_ypabact : public nnode
 
     int field_959;
     int field_95D;
-    int field_961;
-    int field_965;
-    int field_969;
+    xyz field_961;
     char weapon;
     char field_96E;
     char mgun;
@@ -220,6 +224,94 @@ struct ypabact_arg65
     int field_4;
     struC5 *inpt;
     int numid;
+    int field_10;
+    int field_14;
+    int field_18;
+    __NC_STACK_ypabact *field_1C;
+    int field_20;
+    int field_24;
+    int field_28;
+    int field_2C;
+    xyz field_30;
+    __NC_STACK_ypabact *field_3C;
+    int field_40;
 };
+
+struct bact_arg67
+{
+    int field_0;
+    int field_4;
+    __NC_STACK_ypabact *field_8;
+    xyz targ;
+};
+
+struct bact_arg124
+{
+    float field_0;
+    float field_4;
+    float field_8;
+    float field_C;
+    int16_t field_10;
+    int16_t field_12;
+    xyz field_14[32];
+};
+
+struct bact_arg84
+{
+    int energy;
+    __NC_STACK_ypabact *unit;
+};
+
+struct bact_arg88
+{
+    xyz pos1;
+    xyz pos2;
+};
+
+struct bact_arg94
+{
+    int field_0;
+    xyz pos1;
+    xyz pos2;
+};
+
+struct bact_arg74
+{
+    float field_0;
+    xyz vec;
+    int flag;
+};
+
+struct bact_arg81
+{
+    int enrg_type;
+    int enrg_sum;
+};
+
+struct bact_arg90
+{
+    __NC_STACK_ypabact *unit;
+    __NC_STACK_ypabact *ret_unit;
+    int field_8;
+    float pos_x;
+    float pos_z;
+};
+
+struct bact_arg109
+{
+    int field_0;
+    int field_4;
+};
+
+struct bact_arg92
+{
+    xyz pos;
+    int energ1;
+    int energ2;
+    int field_14;
+};
+
+
+void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_ypaworld *ywo);
 
 #endif // YBACT_H_INCLUDED

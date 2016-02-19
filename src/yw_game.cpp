@@ -7,6 +7,8 @@
 #include "yw.h"
 #include "input.h"
 
+#include "yparobo.h"
+
 extern int bact_id;
 
 
@@ -149,26 +151,91 @@ void sb_0x44ca90__sub4(_NC_STACK_ypaworld *yw)
 
 int sb_0x44ca90__sub6(_NC_STACK_ypaworld *yw)
 {
+    //Map events
     printf("MAKE ME %s\n", "sb_0x44ca90__sub6");
     return 1;
 }
 
 int sb_0x44ca90__sub7(_NC_STACK_ypaworld *yw, int evnt)
 {
+    //Map events
     printf("MAKE ME %s\n", "sb_0x44ca90__sub7");
     return 1;
 }
 
+void  sub_44F500(_NC_STACK_ypaworld *yw, int id)
+{
+    yw_field34 *fld34 = &yw->field_34[id];
+
+    if ( fld34->p_cell )
+    {
+        fld34->p_cell = 0;
+
+        if ( id == yw->field_38 - 1 )
+            yw->field_38--;
+
+        fld34->p_cell->field_3B = 0;
+        fld34->p_cell->field_3A = 0;
+
+        if ( yw->blg_map )
+        {
+            bitmap_intern *bitm;
+            call_vtbl(yw->blg_map, 3, 0x80002000, &bitm, 0);
+
+            uint8_t *tmp = (uint8_t *)bitm->buffer + fld34->x + fld34->y * bitm->width;
+            *tmp = 0;
+        }
+    }
+}
+
 int sb_0x44ca90__sub3(_NC_STACK_ypaworld *yw)
 {
-    printf("MAKE ME %s\n", "sb_0x44ca90__sub3");
+    yw->field_30 = (yw_f30 *)AllocVec(sizeof(yw_f30) * 64 * 64, 65537);
+
+    if ( yw->field_30 )
+    {
+        yw->field_34 = (yw_field34 *)AllocVec(sizeof(yw_field34) * 256, 65537);
+
+        if ( yw->field_34 )
+        {
+            for (int i = 0; i < 256; i++)
+                sub_44F500(yw, i);
+
+            yw->field_3c = 0;
+            yw->field_38 = 0;
+        }
+        else
+        {
+            if ( yw->field_30 )
+            {
+                nc_FreeMem(yw->field_30);
+                yw->field_30 = NULL;
+            }
+            return 0;
+        }
+    }
+    else
+    {
+        if ( yw->field_34 )
+        {
+            nc_FreeMem(yw->field_34);
+            yw->field_34 = NULL;
+            yw->field_38 = 0;
+        }
+
+        if ( yw->field_30 )
+        {
+            nc_FreeMem(yw->field_30);
+            yw->field_30 = NULL;
+        }
+        return 0;
+    }
     return 1;
 }
 
-int sb_0x44ca90__sub5(_NC_STACK_ypaworld *yw)
+void sb_0x44ca90__sub5(_NC_STACK_ypaworld *yw)
 {
-    printf("MAKE ME %s\n", "sb_0x44ca90__sub5");
-    return 1;
+    memset(yw->field_80, 0, sizeof(yw_f80) * 8);
 }
 
 void sb_0x44ca90__sub2(_NC_STACK_ypaworld *yw, mapProto *mapp)
@@ -676,34 +743,296 @@ int sub_44B9B8(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, const char *mapp)
     return 1;
 }
 
-void ypaworld_func161__sub1(_NC_STACK_ypaworld *yw, unsigned int a2, squadProto *a3)
+void yw_InitSquads(_NC_STACK_ypaworld *yw, int squad_cnt, squadProto *squads)
 {
-    printf("MAKE ME %s\n", "ypaworld_func161__sub1");
+    if ( yw->field_2d90->field_48 != 1 )
+    {
+        for (int i = 0; i < squad_cnt; i++)
+        {
+            squadProto *squad = squads + i;
+
+            if (squad->field_0)
+            {
+                NC_STACK_yparobo *robo;
+
+                bact_node *nod = (bact_node *)yw->bact_list.head;
+                while ( nod->next )
+                {
+                    if ( nod->bact->field_24 == 3 && nod->bact->owner == squad->owner)
+                    {
+                        robo = (NC_STACK_yparobo *)nod->bacto;
+                        break;
+                    }
+
+                    nod = (bact_node *)nod->next;
+                }
+
+                if ( !robo )
+                {
+                    ypa_log_out("WARNING: yw_InitSquads(): no host robo for squad[%d], owner %d!\n", i, squad->owner);
+                }
+                else
+                {
+                    robo_arg133 arg133;
+                    arg133.type = squad->vehicle;
+                    arg133.num = squad->num;
+                    arg133.hetero_vehicles = 0;
+                    arg133.field_14 = (squad->useable == 0) + 2;
+
+                    ypaworld_arg136 arg136;
+                    arg136.pos_x = squad->pos_x;
+                    arg136.pos_y = -50000.0;
+                    arg136.pos_z = squad->pos_z;
+                    arg136.field_14 = 0;
+                    arg136.field_1C = 0;
+                    arg136.field_40 = 0;
+                    arg136.field_18 = 100000.0;
+                    call_method(yw->self_full, 136, &arg136);
+
+                    if ( arg136.field_20 )
+                    {
+                        arg133.pos.sx = arg136.field_2C;
+                        arg133.pos.sz = arg136.field_34;
+                        arg133.pos.sy = arg136.field_30 + -50.0;
+                    }
+                    else
+                    {
+                        yw_130arg sect_info;
+                        sect_info.pos_x = squad->pos_x;
+                        sect_info.pos_z = squad->pos_z;
+
+                        if ( !call_method(yw->self_full, 130, &sect_info) )
+                        {
+                            ypa_log_out("yw_InitSquads(): no valid position for squad[%d]!\n", i);
+                            return;
+                        }
+
+                        arg133.pos.sx = squad->pos_x;
+                        arg133.pos.sy = sect_info.pcell->sector_height_meters;
+                        arg133.pos.sz = squad->pos_z;
+                    }
+                    // Create squad by robo method
+                    call_method(robo, 133, &arg133); // yparobo_func133
+                }
+
+            }
+        }
+    }
 }
 
-void sub_471CA0(_NC_STACK_ypaworld *yw)
+void yw_InitBuddies(_NC_STACK_ypaworld *yw)
 {
-    printf("MAKE ME %s\n", "sub_471CA0");
+
+    int vhcl_ids[128];
+
+    if ( yw->field_2d90->buddies_count )
+    {
+        int squad_sn = 0;
+
+        while ( 1 )
+        {
+            robo_arg133 bact_add;
+            memset(&bact_add, 0, sizeof(robo_arg133));
+
+            bact_add.field_14 = 2;
+
+            int v3 = -1;
+
+            bact_add.hetero_vehicles = vhcl_ids;
+
+            for (int i = 0; i < yw->field_2d90->buddies_count; i++)
+            {
+                yw_buddy *buddy = &yw->field_2d90->buddies[i];
+
+                if (!buddy->field_6)
+                {
+                    if (v3 == -1)
+                    {
+                        v3 = buddy->commandid;
+                        bact_add.type = buddy->type;
+                        bact_add.hetero_vehicles[ bact_add.num ] = buddy->type;
+                        bact_add.num++;
+                        buddy->field_6 = 1;
+
+                    }
+                    else if ( v3 == buddy->commandid )
+                    {
+                        bact_add.hetero_vehicles[ bact_add.num ] = buddy->type;
+                        bact_add.num++;
+                        buddy->field_6 = 1;
+                    }
+                }
+            }
+
+            if ( v3 != -1 )
+            {
+                bact_add.pos.sx = yw->field_1b80->field_621.sx + sin(squad_sn * 1.745) * 500.0;
+                bact_add.pos.sy = yw->field_1b80->field_621.sy;
+                bact_add.pos.sz = yw->field_1b80->field_621.sz + cos(squad_sn * 1.745) * 500.0;
+
+                ypaworld_arg136 arg136;
+                arg136.pos_x = bact_add.pos.sx + 0.5;
+                arg136.pos_y = -50000.0;
+                arg136.pos_z = bact_add.pos.sz + 0.75;
+                arg136.field_14 = 0;
+                arg136.field_18 = 100000.0;
+                arg136.field_1C = 0;
+                arg136.field_40 = 0;
+
+                call_method(yw->self_full, 136, &arg136);
+
+                if ( arg136.field_20 )
+                    bact_add.pos.sy = arg136.field_30 + -100.0;
+
+                call_method(yw->field_1b78, 133, &bact_add); //robo 133 method
+
+                squad_sn++;
+            }
+            else
+            {
+                for (int i = 0; i < yw->field_2d90->buddies_count; i++)
+                    yw->field_2d90->buddies[i].field_6 = 0;
+
+                break;
+            }
+        }
+    }
 }
 
-void sub_44C248(NC_STACK_ypaworld *yw, _NC_STACK_ypaworld *a2)
+void yw_InitTechUpgradeBuildings(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw)
 {
-    printf("MAKE ME %s\n", "sub_44C248");
+    yw->field_2b7c = 0;
+    yw->last_modify_build = 0;
+    yw->last_modify_vhcl = 0;
+    yw->last_modify_weapon = 0;
+    yw->field_2b78 = -1;
+
+    for (int i = 0; i < 8; i++)
+    {
+        if ( yw->gems[0].field_0 )
+        {
+            int xx = yw->gems[i].sec_x;
+            int yy = yw->gems[i].sec_y;
+
+            cellArea *cell = &yw->cells[xx + yy * yw->sectors_maxX2];
+
+            if (yw->gems[i].building)
+            {
+                if ( cell->field_3A != 3 || yw->gems[i].building != cell->field_3B )
+                {
+                    ypaworld_arg148 arg148;
+                    arg148.ownerID = cell->owner;
+                    arg148.ownerID2 = cell->owner;
+                    arg148.blg_ID = yw->gems[i].building;
+                    arg148.x = xx;
+                    arg148.y = yy;
+                    arg148.field_C = 1;
+                    arg148.field_18 = 0;
+
+                    call_method(ywo, 148, &arg148);
+                }
+            }
+
+            cell->field_3A = 4;
+            cell->field_3B = i;
+        }
+    }
 }
 
-void sub_472130(_NC_STACK_ypaworld *yw)
+void yw_InitGates(_NC_STACK_ypaworld *yw)
 {
-    printf("MAKE ME %s\n", "sub_472130");
+    for (int i = 0; i < yw->field_2d90->gate_count; i++)
+    {
+        gateProto *gate = &yw->field_2d90->gates[i];
+
+        cellArea *cell = &yw->cells[gate->sec_x + yw->sectors_maxX2 * gate->sec_y];
+
+        gate->pcell = cell;
+
+        ypaworld_arg148 arg148;
+        arg148.ownerID = cell->owner;
+        arg148.ownerID2 = gate->pcell->owner;
+        arg148.blg_ID = gate->closed_bp;
+        arg148.field_C = 1;
+        arg148.x = gate->sec_x;
+        arg148.y = gate->sec_y;
+        arg148.field_18 = 0;
+
+        call_method(yw->self_full, 148, &arg148);
+
+        gate->pcell->field_3A = 5;
+        gate->pcell->field_3B = i;
+
+        for (int j = 0; j < gate->keySectors_count; j++)
+        {
+            int xx = gate->keySectors[j].x;
+            int yy = gate->keySectors[j].y;
+
+            if ( xx && xx < yw->sectors_maxX2 - 1 && yy && yy < yw->sectors_maxY2 - 1 )
+            {
+                gate->keySectors[j].cell = &yw->cells[xx + yw->sectors_maxX2 * yy];
+            }
+        }
+    }
 }
 
-void sub_4D1084(_NC_STACK_ypaworld *yw)
+void yw_InitSuperItems(_NC_STACK_ypaworld *yw)
 {
-    printf("MAKE ME %s\n", "sub_4D1084");
+    for (int i = 0; i < yw->field_2d90->supetItems_count; i++)
+    {
+        supetItemProto *stoudson = &yw->field_2d90->supetItems[i];
+        cellArea *cell = &yw->cells[stoudson->sec_x + yw->sectors_maxX2 * stoudson->sec_y];
+
+        stoudson->pcell = cell;
+
+        ypaworld_arg148 arg148;
+        arg148.ownerID = cell->owner;
+        arg148.ownerID2 = stoudson->pcell->owner;
+        arg148.blg_ID = stoudson->inactive_bp;
+        arg148.field_C = 1;
+        arg148.x = stoudson->sec_x;
+        arg148.y = stoudson->sec_y;
+        arg148.field_18 = 0;
+
+        call_method(yw->self_full, 148, &arg148);
+
+        stoudson->pcell->field_3A = 8;
+        stoudson->pcell->field_3B = i;
+
+        for (int j = 0; j < stoudson->keySectors_count; j++)
+        {
+            int xx = stoudson->keySectors[j].x;
+            int yy = stoudson->keySectors[j].y;
+
+            if ( xx && xx < yw->sectors_maxX2 - 1 && yy && yy < yw->sectors_maxY2 - 1 )
+            {
+                stoudson->keySectors[j].cell = &yw->cells[xx + yw->sectors_maxX2 * yy];
+            }
+        }
+
+        stoudson->field_EC = 0;
+        stoudson->field_F0 = 0;
+        stoudson->field_F4 = 0;
+        stoudson->field_4 = 0;
+    }
 }
 
 void sub_44F748(_NC_STACK_ypaworld *yw)
 {
-    printf("MAKE ME %s\n", "sub_44F748");
+    for (int y = 0; y < yw->sectors_maxY2; y++)
+    {
+        for (int x = 0; x < yw->sectors_maxX2; x++)
+        {
+            cellArea *cell = yw->cells + x + y * yw->sectors_maxX2;
+            yw_f30 *tt = &yw->field_30[ x + y * 64 ];
+
+            tt->owner = cell->owner;
+            cell->field_2F = tt->field_1;
+            tt->field_1 = 0;
+        }
+    }
+
+    yw->field_3c = 0;
 }
 
 
@@ -788,11 +1117,174 @@ int sb_0x451034(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
     return 1;
 }
 
-
-
-void sb_0x44fc60(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int a5, int a6)
+void sub_44F958(_NC_STACK_ypaworld *yw, cellArea *cell, char secX, char secY, uint8_t owner)
 {
+    if ( cell->owner != owner )
+    {
+        yw_arg184 arg184;
+        arg184.secX = secX;
+        arg184.secY = secY;
+        arg184.owner = owner;
+        arg184.type = 2;
 
+        call_method(yw->self_full, 184, &arg184);
+
+        if ( cell->field_3A == 2 )
+        {
+            arg184.type = 6;
+
+            call_method(yw->self_full, 184, &arg184);
+        }
+
+        yw->sectors_count_by_owner[cell->owner]--;
+        yw->sectors_count_by_owner[owner]++;
+
+        cell->owner = owner;
+    }
+}
+
+void sb_0x44fc60__sub0(_NC_STACK_ypaworld *yw, int secX, int secY, cellArea *cell, yw_arg129 *a5, int a6)
+{
+    int energon[8];
+
+    if ( a6 == 255 )
+    {
+        a6 = cell->owner;
+
+        memset(energon, 0, sizeof(energon));
+
+        __NC_STACK_ypabact *nod = (__NC_STACK_ypabact *)cell->field_3C.head;
+
+        while ( nod->next )
+        {
+            energon[nod->owner] += nod->energy;
+
+            nod = (__NC_STACK_ypabact *)nod->next;
+        }
+
+        energon[0] = 0;
+
+        for (int i = 0; i < 8; i++)
+        {
+            if ( energon[i] > energon[a6] )
+                a6 = i;
+        }
+    }
+
+    if ( cell->owner != a6 )
+    {
+        if ( cell->field_3A == 2 )
+        {
+            if ( yw->field_1b80->owner == a6 )
+            {
+                if ( a5 && a5->unit )
+                {
+                    yw_arg159 v21;
+                    v21.unit = a5->unit;
+                    v21.field_4 = 78;
+                    v21.txt = NULL;
+                    v21.field_C = 45;
+
+                    call_method(yw->self_full, 159, &v21);
+                }
+            }
+            else if ( cell->owner == yw->field_1b80->owner )
+            {
+                yw_arg159 v24;
+                v24.unit = NULL;
+                v24.field_4 = 78;
+                v24.txt = NULL;
+                v24.field_C = 67;
+
+                call_method(yw->self_full, 159, &v24);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < yw->field_2d90->gate_count; i++)
+            {
+                gateProto *gate = yw->field_2d90->gates + i;
+
+                for (int j = 0; j < gate->keySectors_count; j++)
+                {
+                    if ( cell == gate->keySectors[j].cell )
+                    {
+                        if ( yw->field_1b80->owner == a6 )
+                        {
+                            yw_arg159 v23;
+                            v23.unit = NULL;
+                            v23.field_4 = 80;
+                            v23.txt = NULL;
+                            v23.field_C = 82;
+
+                            call_method(yw->self_full, 159, &v23);
+                        }
+                        else if ( yw->field_1b80->owner == cell->owner )
+                        {
+                            yw_arg159 v22;
+                            v22.unit = NULL;
+                            v22.field_4 = 80;
+                            v22.txt = NULL;
+                            v22.field_C = 81;
+
+                            call_method(yw->self_full, 159, &v22);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    sub_44F958(yw, cell, secX, secY, a6);
+}
+
+void sb_0x44fc60(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int a5, yw_arg129 *a6)
+{
+    if ( secX && secY && yw->sectors_maxX2 - 1 != secX && yw->sectors_maxY2 - 1 != secY )
+    {
+        int helth = 0;
+
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                helth += cell->buildings_health[i][j];
+            }
+        }
+
+        if ( cell->field_3A == 2 )
+        {
+            if ( helth )
+            {
+                int v13 = (helth * yw->field_34[ cell->field_3B ].power) / 256 ;
+
+                if ( v13 < 0 )
+                    v13 = 0;
+                else if ( v13 > 255 )
+                    v13 = 255;
+
+                yw->field_34[cell->field_3B].power_2 = v13;
+            }
+            else
+            {
+                sub_44F500(yw, cell->field_3B);
+            }
+        }
+
+        if ( cell->field_2E == 1 )
+        {
+            if ( helth < 224 )
+                sb_0x44fc60__sub0(yw, secX, secY, cell, a6, a5);
+        }
+        else if ( helth < 1728 )
+        {
+            sb_0x44fc60__sub0(yw, secX, secY, cell, a6, a5);
+        }
+    }
+    else
+    {
+        sub_44F958(yw, cell, secX, secY, 0);
+    }
 }
 
 
@@ -951,7 +1443,7 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
         cellArea *cur = arg->p_cell;
         cellArea *left = arg->p_cell - 1;
 
-        if ( !(arg->field_1E & 1) || abs(cur->sector_height_meters - left->sector_height_meters) < 500.0 )
+        if ( !(arg->field_1E & 1) || fabs( (int)(cur->sector_height_meters - left->sector_height_meters)) < 500.0 )
         {
 
             arg->sklt->POO[0].pos3f.sy = left->sector_height_meters;
@@ -976,7 +1468,7 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
         cellArea *cur = arg->p_cell;
         cellArea *up = arg->p_cell - yw->sectors_maxX2;
 
-        if ( !(arg->field_1E & 1) || abs(cur->sector_height_meters - up->sector_height_meters) < 500.0 )
+        if ( !(arg->field_1E & 1) || fabs( (int)(cur->sector_height_meters - up->sector_height_meters)) < 500.0 )
         {
             arg->sklt->POO[0].pos3f.sy = up->sector_height_meters;
             arg->sklt->POO[1].pos3f.sy = up->sector_height_meters;
@@ -1040,7 +1532,7 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
             if ( v17 > v18 )
                 v18 = v17;
 
-            if ( abs( (int)(v18 - v16) ) > 300.0 )
+            if ( fabs( (int)(v18 - v16) ) > 300.0 )
             {
                 arg->sklt = yw->colsub_sklt_intrn;
                 arg->pos_y = v18;
@@ -1069,9 +1561,9 @@ int sub_44D36C(float dx, float dy, float dz, int id, skeleton_64_stru *sklt)
 
     int v7 = 0;
 
-    float v24 = abs(triangle->field_0);
-    float v23 = abs(triangle->field_4);
-    float v27 = abs(triangle->field_8);
+    float v24 = fabs(triangle->field_0);
+    float v23 = fabs(triangle->field_4);
+    float v27 = fabs(triangle->field_8);
 
     float v9 = (v24 <= v23 ? v23 : v24 );
     v9 = (v9 <= v27 ? v27 : v9);
@@ -1149,11 +1641,9 @@ void sub_44D8B8(ypaworld_arg136 *arg, struct_44dbf8 *loc)
         pol_entries2 *triangle = &loc->sklt->triangles[i];
 
         float v11 = triangle->field_4 * arg->field_18 + triangle->field_0 * arg->field_14 + triangle->field_8 * arg->field_1C;
-
         if ( v11 > 0.0 )
         {
             float v19 = -(triangle->field_4 * arg->pos_y + triangle->field_0 * arg->pos_x + triangle->field_8 * arg->pos_z + triangle->field_C) / v11;
-
             if ( v19 > 0.0 && v19 <= 1.0 && v19 < arg->field_24 )
             {
                 float pz = arg->field_1C * v19 + arg->pos_z;
@@ -1812,4 +2302,465 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
             call_method(yw->win3d, 216, 0);
         }
     }
+}
+
+
+void sb_0x456384__sub0__sub0(_NC_STACK_ypaworld *yw)
+{
+    for( int y = 0; y < yw->sectors_maxY2; y++ )
+    {
+        for( int x = 0; x < yw->sectors_maxX2; x++ )
+        {
+            yw_f30 *f30 = &yw->field_30[y * 64 + x];
+            cellArea *cell = &yw->cells[x + y * yw->sectors_maxX2];
+
+            f30->field_1 = 0;
+            f30->owner = cell->owner;
+
+        }
+    }
+
+    yw->field_3c = 0;
+}
+
+int sb_0x456384__sub0(_NC_STACK_ypaworld *yw, int x, int y, int power)
+{
+    int v13 = 0;
+    cellArea *cell = &yw->cells[x + y * yw->sectors_maxX2];
+
+    int v7;
+    for (v7 = 0; v7 < yw->field_38; v7++)
+    {
+        if ( !yw->field_34[v7].p_cell )
+        {
+            v13 = 1;
+            break;
+        }
+    }
+
+    if ( v7 >= 256 )
+        return -1;
+
+    if ( !v13 )
+        yw->field_38 = v7 + 1;
+
+    yw_field34 *v9 = &yw->field_34[v7];
+    v9->x = x;
+    v9->y = y;
+    v9->power = power;
+    v9->power_2 = power;
+    v9->p_cell = cell;
+
+    cell->field_3A = 2;
+    cell->field_3B = v7;
+
+    sb_0x456384__sub0__sub0(yw);
+
+    return v7;
+}
+
+
+void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, int ownerid2, int blg_id, int a7)
+{
+    char v30[272];
+    memset(v30, 0, 272);
+
+    cellArea *cell = &yw->cells[ yw->sectors_maxX2 * y + x ];
+    BuildProto *bld = &yw->BuildProtos[ blg_id ];
+    secType *sectp = &yw->secTypes[ bld->sec_type ];
+
+    int v43 = 1;
+
+    NC_STACK_ypabact *robo = NULL;
+
+    if ( x && y && yw->sectors_maxX2 - 1 != x && yw->sectors_maxY2 - 1 != y )
+    {
+        bitmap_intern *bitm_blg;
+        call_vtbl(yw->blg_map, 3, 0x80002000, &bitm_blg, 0);
+
+        uint8_t *tmp = (uint8_t *)bitm_blg->buffer + x + y * bitm_blg->width;
+        *tmp = blg_id;
+
+        bitmap_intern *bitm_typ;
+        call_vtbl(yw->typ_map, 3, 0x80002000, &bitm_typ, 0);
+
+        tmp = (uint8_t *)bitm_typ->buffer + x + y * bitm_typ->width;
+        *tmp = bld->sec_type;
+
+        cell->field_2F = 0;
+        cell->field_3A = 3;
+        cell->field_2E = sectp->field_0;
+        cell->field_3B = blg_id;
+
+        int v49;
+
+        if ( sectp->field_0 == 1 )
+        {
+            memset(cell->buildings_health, 0, sizeof(cell->buildings_health));
+            v49 = 1;
+        }
+        else
+        {
+            v49 = 3;
+        }
+
+        for (int i = 0; i < v49; i++)
+        {
+            for (int j = 0; j < v49; j++)
+            {
+                cell->buildings_health[i][j] = sectp->buildings[i][j]->build_health;
+            }
+        }
+
+        if ( bld->model_id == 1 )
+            sb_0x456384__sub0(yw, x, y, bld->power);
+
+        sub_44F958(yw, cell, x, y, ownerid2);
+
+        bact_node *node = (bact_node *)yw->bact_list.head;
+
+        while(node->next)
+        {
+            if (node->bact->field_24 == 3 && node->bact->owner == ownerid2)
+            {
+                robo = node->bacto;
+                break;
+            }
+
+            node = (bact_node *)node->next;
+        }
+
+        if ( yw->field_757E )
+        {
+            if ( robo != yw->field_1b78 )
+                v43 = 0;
+        }
+
+        if ( !a7 )
+        {
+            if ( robo && v43 )
+            {
+                NC_STACK_ypagun *commander = NULL;
+
+                int v39;
+                call_vtbl(robo, 3, 0x80002007, &v39, 0);
+                call_vtbl(robo, 2, 0x80002007, ++v39, a7);
+
+                int v52 = 0;
+
+                for (int i = 0; i < 8; i++)
+                {
+                    if ( !bld->sbacts[i].sbact_vehicle )
+                        break;
+
+                    ypaworld_arg146 v33;
+                    v33.vehicle_id = bld->sbacts[i].sbact_vehicle;
+                    v33.pos.sx = bld->sbacts[i].sbact_pos_x + x * 1200.0 + 600.0;
+                    v33.pos.sy = bld->sbacts[i].sbact_pos_y;
+                    v33.pos.sz = bld->sbacts[i].sbact_pos_z - (y * 1200.0 + 600.0);
+
+                    NC_STACK_ypagun *gunn = (NC_STACK_ypagun *)call_method(ywo, 146, &v33);
+
+                    if ( gunn )
+                    {
+                        __NC_STACK_ypabact *gbct;
+                        call_vtbl(gunn, 3, 0x80001003, &gbct, 0);
+
+                        gbct->owner = ownerid2;
+
+                        gun_arg128 v32;
+                        v32.field_0 = 0;
+                        v32.dir.sx = bld->sbacts[i].sbact_dir_x;
+                        v32.dir.sy = bld->sbacts[i].sbact_dir_y;
+                        v32.dir.sz = bld->sbacts[i].sbact_dir_z;
+
+                        call_method(gunn, 128, &v32);
+
+                        bact_arg119 v34;
+                        v34.field_0 = 4;
+                        v34.field_8 = 0;
+                        v34.field_4 = 0;
+
+                        call_method(gunn, 119, &v34);
+
+                        gbct->field_931 = 500;
+                        gbct->field_67D = 1.0;
+                        gbct->field_681 = 1.0;
+                        gbct->field_685 = 1.0;
+
+                        gbct->field_32 = robo;
+                        gbct->field_2E = v39;
+
+                        if ( yw->field_757E )
+                        {
+                            gbct->ypabact__id |= ownerid2 << 24;
+                            /**(_DWORD *)&v30[v52 + 16] = gbct->ypabact__id;
+                            *(float *)&v30[v52 + 20] = bld->sbacts[i].sbact_dir_x;
+                            *(float *)&v30[v52 + 24] = bld->sbacts[i].sbact_dir_y;
+                            *(float *)&v30[v52 + 28] = bld->sbacts[i].sbact_dir_z;
+                            *(float *)&v30[v52 + 32] = gbct->field_621.sx;
+                            *(float *)&v30[v52 + 36] = gbct->field_621.sy;
+                            *(float *)&v30[v52 + 40] = gbct->field_621.sz;
+                            *(_WORD *)&v30[v52 + 44] = bld->sbacts[i].sbact_vehicle;*/
+                        }
+
+                        if ( commander )
+                        {
+                            call_method(commander, 72, gunn);
+                        }
+                        else
+                        {
+                            commander = gunn;
+
+                            call_method(robo, 72, gunn);
+                        }
+                    }
+
+                    v52 += 32;
+                }
+            }
+
+            if ( yw->field_757E && v43 && robo )
+            {
+                /**(_DWORD *)v30 = 1013;
+                *(_DWORD *)&v30[4] = yw->field_1614;
+                v30[12] = ownerid2;*/
+
+                yw_arg181 v31;
+                v31.field_14 = 2;
+                v31.field_10 = 0;
+                v31.field_8 = yw->GameShell->callSIGN;
+                v31.field_C = 1;
+                v31.value = v30;
+                v31.val_size = 272;
+                v31.field_18 = 1;
+
+                call_method(yw->self_full, 181, &v31);
+            }
+        }
+    }
+}
+
+void ypaworld_func148__sub0(_NC_STACK_ypaworld *yw, int x, int y)
+{
+    __NC_STACK_ypabact *node = (__NC_STACK_ypabact *) yw->cells[yw->sectors_maxX2 * y + x].field_3C.head;
+
+    while ( node->next )
+    {
+        int v5 = 0;
+
+        if ( yw->field_757E )
+        {
+            if ( node->owner == yw->field_1b84->owner )
+            {
+                if ( node->field_3D5 != 2 && node->field_3D5 != 5 && node->field_3D5 != 4 )
+                {
+                    if ( node->field_24 == 9 )
+                    {
+                        int a4;
+                        call_vtbl(node->self, 3, 0x80002006, &a4, 0);
+
+                        if (!a4)
+                            v5 = 1;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if ( node->field_3D5 != 2 && node->field_3D5 != 5 && node->field_3D5 != 4 )
+            {
+                if ( node->field_24 == 9 )
+                {
+                    int a4;
+                    call_vtbl(node->self, 3, 0x80002006, &a4, 0);
+
+                    if (!a4)
+                        v5 = 1;
+                }
+            }
+        }
+
+        if ( v5 )
+        {
+            bact_arg84 v8;
+            v8.energy = -22000000;
+            v8.unit = NULL;
+
+            call_method(node->self, 84, &v8);
+        }
+
+        node = (__NC_STACK_ypabact *)node->next;
+    }
+}
+
+int ypaworld_func148__sub1(_NC_STACK_ypaworld *yw, int id, int a4, int x, int y, int ownerID2, char blg_ID)
+{
+    if ( id < 8 && !yw->field_80[id].field_0 && x && y && x != yw->sectors_maxX2 - 1 && y != yw->sectors_maxY2 - 1 )
+    {
+        yw->field_80[id].field_4 = 0;
+        yw->field_80[id].field_0 = 1;
+        yw->field_80[id].field_8 = a4;
+        yw->field_80[id].x = x;
+        yw->field_80[id].y = y;
+        yw->field_80[id].ownerID2 = ownerID2;
+        yw->field_80[id].blg_ID = blg_ID;
+
+        cellArea *cell = &yw->cells[yw->sectors_maxX2 * y + x];
+        cell->field_3A = 1;
+        cell->field_3B = id;
+
+        bact_node *node = (bact_node *)yw->bact_list.head;
+
+        while (node->next)
+        {
+            if ( node->bact->field_24 == 3 && ownerID2 == node->bact->owner )
+            {
+                sub_423F74(&node->bact->field_5A, 11);
+                break;
+            }
+
+            node = (bact_node *)node->next;
+        }
+
+        return 1;
+    }
+
+    return 0;
+}
+
+int ypaworld_func137__sub0__sub0(skeleton_64_stru *skl, int id, float x, float y, float z, float r, yw_137loc *out)
+{
+    int num = skl->pol_entries[id]->num_vertices;
+    int16_t *v7 = &skl->pol_entries[id]->v1;
+
+    xyz tmp;
+    tmp.sx = 0.0;
+    tmp.sy = 0.0;
+    tmp.sz = 0.0;
+
+    for (int i = 0; i < num; i++)
+    {
+        int16_t idd = v7[i];
+        tmp.sx += skl->POO[ idd ].pos3f.sx;
+        tmp.sy += skl->POO[ idd ].pos3f.sy;
+        tmp.sz += skl->POO[ idd ].pos3f.sz;
+    }
+
+    float v19 = 1.0 / (float)num;
+
+    float xx = tmp.sx * v19 - x;
+    float yy = tmp.sy * v19 - y;
+    float zz = tmp.sz * v19 - z;
+
+
+    float v26 = sqrt(xx * xx + yy * yy + zz * zz);
+
+    if ( v26 <= r )
+        return 0;
+
+    float v28 = 1.0 / v26;
+
+    out->pos.sx = xx * v28 * r + x;
+    out->pos.sy = yy * v28 * r + y;
+    out->pos.sz = zz * v28 * r + z;
+
+    return 1;
+}
+
+void ypaworld_func137__sub0(ypaworld_arg137 *arg, struct_44dbf8 *a2)
+{
+    float xx = arg->pos.sx;
+    float yy = arg->pos.sy;
+    float zz = arg->pos.sz;
+
+    for (int i = 0; i < a2->sklt->pol_count; i++)
+    {
+        pol_entries2 *tria = &a2->sklt->triangles[i];
+
+        float t0 = tria->field_0;
+        float t1 = tria->field_4;
+        float t2 = tria->field_8;
+
+        float v9 = t0 * arg->pos2.sx + t1 * arg->pos2.sy + t2 * arg->pos2.sz;
+
+        if ( v9 > 0.0 )
+        {
+            float v26 = -(t0 * xx + t1 * yy + t2 * zz + tria->field_C) / ((t0 * t0 + t1 * t1 + t2 * t2) * arg->radius);
+
+            if ( v26 > 0.0 && v26 <= 1.0 )
+            {
+                float rd = arg->radius * v26;
+
+
+                float tx = t0 * rd + xx;
+                float ty = t1 * rd + yy;
+                float tz = t2 * rd + zz;
+
+                int v27 = 0;
+
+                yw_137loc v18;
+
+                if ( !ypaworld_func137__sub0__sub0(a2->sklt, i, tx, ty, tz, arg->radius, &v18) || sub_44D36C(v18.pos.sx, v18.pos.sy, v18.pos.sz, i, a2->sklt) )
+                    v27 = 1;
+
+                if ( v27 )
+                {
+                    if ( arg->coll_count < arg->coll_max )
+                    {
+                        int pos = arg->coll_count;
+
+                        arg->collisions[pos].pos1.sx = a2->pos_x + tx;
+                        arg->collisions[pos].pos1.sy = a2->pos_y + ty;
+                        arg->collisions[pos].pos1.sz = a2->pos_z + tz;
+                        arg->collisions[pos].pos2.sx = tria->field_0;
+                        arg->collisions[pos].pos2.sy = tria->field_4;
+                        arg->collisions[pos].pos2.sz = tria->field_8;
+                        arg->collisions[pos].field_1C = tria->field_C;
+
+                        arg->coll_count++;
+                    }
+                }
+            }
+        }
+    }
+}
+
+__NC_STACK_ypabact * sub_48C244(NC_STACK_ypaworld *ywo, int a2, char owner)
+{
+    bact_node *robos = (bact_node *)ywo->stack__ypaworld.bact_list.head;
+    while (robos->next)
+    {
+        if ( robos->bact->field_24 == 3 && robos->bact->owner == owner)
+        {
+            if ( robos->bact->field_2E == a2 )
+            {
+                if ( robos->bact->field_3D5 == 2 )
+                    return NULL;
+                else
+                    return robos->bact;
+            }
+            else
+            {
+                bact_node *units = (bact_node *)robos->bact->list2.head;
+                while (units->next)
+                {
+
+                    if ( units->bact->field_2E == a2 )
+                    {
+                        if ( units->bact->field_3D5 == 2 )
+                            return NULL;
+                        else
+                            return units->bact;
+                    }
+
+                    units = (bact_node *)units->next;
+                }
+            }
+        }
+
+        robos = (bact_node *)robos->next;
+    }
+
+    return NULL;
 }

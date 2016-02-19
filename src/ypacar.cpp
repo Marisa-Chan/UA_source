@@ -32,6 +32,8 @@ NC_STACK_ypacar * ypacar_func0(class_stru *clss, class_stru *zis, stack_vals *st
 {
     NC_STACK_ypacar *obj = (NC_STACK_ypacar *)call_parent(zis, clss, 0, stak);
 
+    //field_24 = 8;
+
     return obj;
 }
 
