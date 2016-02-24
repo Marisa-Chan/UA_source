@@ -48,53 +48,51 @@ struct __NC_STACK_yparobo
     int field_221;
     cellArea *field_225;  //For AI
     int field_229;  //For AI
-
     int field_22D;
-
+    int field_231;
     int field_235; //??
     int field_239;
     cellArea *field_23D;  //For AI
     int field_241;  //For AI
     int field_245;
-
+    int field_249;
     int field_24D; //??
     int field_251;
     cellArea *field_255;  //For AI
     int field_259;  //For AI
     int field_25D;
-
+    int field_261;
     int field_265; //??
     int field_269;
     cellArea *field_26D;  //For AI
-
     int field_271;  //For AI
     int field_275;  //For AI
-
+    int field_279;
+    int field_27D;
     int field_281; //??
     int field_285;
     cellArea *field_289;  //For AI
     int field_28D;  //For AI
-
     int field_291;
-
+    int field_295;
     int field_299; //??
     int field_29D;
     cellArea *field_2A1;  //For AI
     int field_2A5;  //For AI
     int field_2A9;  //For AI
-
+    int field_2AD;
     int field_2B1; //??
     int field_2B5;
     cellArea *field_2B9;  //For AI
     int field_2BD;  //For AI
     int field_2C1;  //For AI
-
+    int field_2C5;
     int field_2C9; //??
     int field_2CD;
     cellArea *field_2D1;  //For AI
     int field_2D5;  //For AI
     int field_2D9;  //For AI
-
+    int field_2DD;
     int field_2E1; //??
     int field_2E5;  //For AI
     cellArea *field_2E9;  //For AI
@@ -131,6 +129,21 @@ struct __NC_STACK_yparobo
 struct NC_STACK_yparobo : public NC_STACK_ypabact
 {
     __NC_STACK_yparobo stack__yparobo;
+};
+
+struct robo_arg128
+{
+    int field_0;
+    __NC_STACK_ypabact *field_4;
+    int field_8;
+    float field_C;
+    int field_10;
+    float field_14;
+    int field_18;
+    int field_1C;
+    float field_20;
+    __NC_STACK_ypabact *bact;
+    NC_STACK_ypabact *bacto;
 };
 
 struct robo_arg133

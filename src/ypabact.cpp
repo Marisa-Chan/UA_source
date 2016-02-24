@@ -2742,7 +2742,7 @@ void ypabact_func96(NC_STACK_ypabact *obj, class_stru *zis, void *)
 
     bact->field_2E = 0;
     bact->field_3D1 = 1;
-    bact->field_9B1 = 0;
+    bact->field_9B1 = NULL;
     bact->field_935 = 0;
     bact->field_939 = 0;
     bact->field_961.sx = 0;

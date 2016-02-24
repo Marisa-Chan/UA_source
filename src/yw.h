@@ -1465,6 +1465,12 @@ struct yw_arg170
     char *pbuf;
 };
 
+struct yw_arg177
+{
+    __NC_STACK_ypabact *bact;
+    int field_4;
+};
+
 
 
 __NC_STACK_ypabact *__fastcall sub_48C244(NC_STACK_ypaworld *ywo, int a2, char owner);

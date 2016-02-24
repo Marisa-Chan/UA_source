@@ -171,7 +171,8 @@ struct __NC_STACK_ypabact : public nnode
     int field_9A5;
     int kill_after_shot;
     float field_9AD;
-    int field_9B1;
+    __NC_STACK_ypabact *field_9B1;
+    int16_t field_9B5;
 
     float field_a14;
     float field_a18;

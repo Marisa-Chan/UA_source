@@ -51,6 +51,8 @@
 #define TAG_DATA   MKTAG('D','A','T','A')
 #define TAG_PTCL   MKTAG('P','T','C','L')
 
+#define POW2(x)  ( (x) * (x) )
+
 void va_to_arr(stack_vals *out, int sz, va_list in);
 void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list in);
 
