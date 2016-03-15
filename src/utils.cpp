@@ -190,6 +190,17 @@ int strnicmp (const char *s1, const char *s2, size_t n)
     return (int) (toupper(*s1) - toupper(*s2));
 }
 
+int dround(float val)
+{
+    return val + 0.5;
+}
+
+int dround(double val)
+{
+    return val + 0.5;
+}
+
+
 int DO = 0; //Shutup "MAKE ME" screams
 
 void dprintf(const char *fmt, ...)

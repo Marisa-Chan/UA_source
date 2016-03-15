@@ -183,6 +183,8 @@ int yw_write_item_modifers(_NC_STACK_ypaworld *yw, FILE *fil);
 void sb_0x44ac24(_NC_STACK_ypaworld *yw);
 void sub_4EAC80(_NC_STACK_ypaworld *yw);
 
+void sub_4811E8(_NC_STACK_ypaworld *yw, int id);
+
 
 int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapProto, int levelID, int a5);
 int cells_mark_type(_NC_STACK_ypaworld *yw, const char *a2);
@@ -219,5 +221,192 @@ void ypaworld_func148__sub0(_NC_STACK_ypaworld *yw, int x, int y);
 int ypaworld_func148__sub1(_NC_STACK_ypaworld *yw, int id, int a4, int x, int y, int ownerID2, char blg_ID);
 
 void ypaworld_func137__sub0(ypaworld_arg137 *arg, struct_44dbf8 *a2);
+
+
+void create_squad_man(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw);
+void sb_0x4d7c08__sub0(_NC_STACK_ypaworld *yw);
+
+void draw_tooltip(_NC_STACK_ypaworld *yw);
+
+void sub_4C40AC(_NC_STACK_ypaworld *yw);
+__NC_STACK_ypabact *sub_449518(_NC_STACK_ypaworld *yw);
+
+
+struct squadMan
+{
+    listview lstvw;
+    __NC_STACK_ypabact *squads[24];
+    int field_2A8;
+    int field_2AC;
+    int field_2B0;
+    int field_2B4;
+    int field_2B8;
+    __NC_STACK_ypabact *field_2BC;
+    int16_t field_2C0;
+    int16_t field_2C2;
+    int16_t field_2C4;
+    int16_t field_2C6;
+    int16_t field_2C8;
+    int16_t field_2CA;
+    int field_2CC;
+    int field_2D0;
+    int field_2D4;
+    int field_2D8;
+    int field_2DC;
+};
+
+struct energPanel : public listbase
+{
+    int field_1CC;
+    int field_1D0;
+    int field_1D4;
+    int field_1D8;
+    int field_1DC;
+    int field_1E0;
+    int field_1E4;
+};
+
+struct bzd_t1
+{
+    char i;
+    char d;
+};
+
+struct bzd : public listbase
+{
+    int field_1CC;
+    int field_1D0;
+    int field_1D4;
+    int field_1D8;
+    uint8_t field_1DC[256];
+    uint8_t field_2DC[256];
+    uint8_t field_3DC[256];
+    bzd_t1 field_4DC[512];
+    int field_8DC;
+    int field_8E0;
+    int field_8E4;
+    int field_8E8;
+    int field_8EC;
+    int field_8F0;
+    int field_8F4;
+    int field_8F8;
+    int field_8FC;
+    int field_900;
+    int field_904;
+    int field_908;
+    int field_90C;
+    int field_910;
+    int field_914;
+    int field_918;
+    int field_91C;
+    int field_920;
+};
+
+struct inflog_msg
+{
+    int id;
+    int field_4;
+    int field_8;
+    char txt[128];
+};
+
+struct yw_infolog
+{
+    listview window;
+    int field_248;
+    int field_24C;
+    int field_250;
+    int field_254;
+    int msg_count;
+    inflog_msg msgs[64];
+    int field_255C;
+    int field_2560;
+    int field_2564;
+    int field_2568;
+    int field_256C;
+};
+
+struct tehMap : listbase
+{
+    int16_t field_1CC;
+    int16_t field_1CE;
+    int16_t field_1D0;
+    int16_t field_1D2;
+    int16_t field_1D4;
+    int16_t field_1D6;
+    float field_1D8;
+    float field_1DC;
+    float field_1E0;
+    float field_1E4;
+    int field_1E8;
+    char field_1EC;
+    char field_1ED;
+    char field_1EE;
+    char field_1EF;
+    int field_1F0;
+    int field_1F4;
+    int field_1F8;
+    int field_1FC;
+    int field_200;
+    int field_204;
+    int16_t field_208;
+    int16_t field_20A;
+    int16_t field_20C;
+    int16_t field_20E;
+    int16_t field_210;
+    int16_t field_212;
+    int16_t field_214;
+    int16_t field_216;
+    int16_t field_218;
+    int16_t field_21A;
+    int16_t field_21C;
+    int16_t field_21E;
+    float field_220;
+    float field_224;
+    int field_228;
+    int field_22C;
+    int field_230;
+    int field_234;
+    int field_238;
+    int field_23C;
+    int field_240;
+    int field_244;
+    int field_248;
+    int field_24C;
+    int field_250;
+    float field_254;
+    float field_258;
+    float field_25C;
+    float field_260;
+    float field_264;
+};
+
+void ypaworld_func64__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt);
+void ypaworld_func64__sub8(NC_STACK_ypaworld *, _NC_STACK_ypaworld *yw);
+void ypaworld_func64__sub14(_NC_STACK_ypaworld *yw);
+
+void ypaworld_func64__sub15(_NC_STACK_ypaworld *yw);
+void ypaworld_func64__sub16(_NC_STACK_ypaworld *yw);
+void ypaworld_func64__sub17(_NC_STACK_ypaworld *yw);
+
+int sub_47B388(int a1, const char *a2);
+
+void ypaworld_func159__real(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg159 *arg);
+void sb_0x4d7c08__sub0__sub0(_NC_STACK_ypaworld *yw);
+
+
+typedef void ( *wis_color_func)(_NC_STACK_ypaworld *, float, float, float, float, uint32_t *, uint32_t *);
+
+int sb_0x4d7c08__sub0__sub0__sub0(_NC_STACK_ypaworld *yw);
+void sb_0x4d7c08__sub0__sub4(_NC_STACK_ypaworld *yw);
+void sb_0x4d7c08__sub0__sub4__sub1__sub1(_NC_STACK_ypaworld *yw, sklt_wis *wis);
+
+void sub_4E3570(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact);
+
+char * sb_0x4d7c08__sub0__sub4__sub0(_NC_STACK_ypaworld *yw, char *cur);
+char *sub_4E2B5C(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabact *bact);
+
+void sb_0x4d7c08__sub0__sub4__sub2(_NC_STACK_ypaworld *yw);
+void sb_0x4d7c08__sub0__sub2(_NC_STACK_ypaworld *yw);
 
 #endif

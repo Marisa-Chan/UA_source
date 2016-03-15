@@ -10,6 +10,7 @@ struct NC_STACK_ypagun;
 
 struct __NC_STACK_ypagun
 {
+    char field_39;
 };
 
 struct NC_STACK_ypagun : public NC_STACK_ypabact

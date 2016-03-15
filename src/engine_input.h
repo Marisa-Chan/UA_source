@@ -39,7 +39,7 @@ struct struC5
     int period;
     char downed_key_2;
     char downed_key;
-    char dword8;
+    uint8_t dword8;
     char chr;
     char field_8;
     int16_t field_9;

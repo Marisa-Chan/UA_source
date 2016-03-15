@@ -379,8 +379,7 @@ int yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
     fntcmd_set_end(&v4);
 
     w3d_a209 v21;
-    v21.cmdbuf = usr->input_listview.draw_cmd;
-    v21.includ = usr->input_listview.field_1C4;
+    v21 = usr->input_listview.cmdstrm;
 
     return sub_423288(&v21);
 }

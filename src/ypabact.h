@@ -301,7 +301,7 @@ struct bact_arg90
 struct bact_arg109
 {
     int field_0;
-    int field_4;
+    __NC_STACK_ypabact *field_4;
 };
 
 struct bact_arg92
@@ -310,6 +310,17 @@ struct bact_arg92
     int energ1;
     int energ2;
     int field_14;
+};
+
+struct bact_hudi
+{
+    int field_0;
+    int field_4;
+    float field_8;
+    float field_C;
+    float field_10;
+    float field_14;
+    __NC_STACK_ypabact *field_18;
 };
 
 

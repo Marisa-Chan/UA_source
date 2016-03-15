@@ -267,6 +267,8 @@ struct UserData
     usr_str map_descriptions[256];
     int map_descriptions_count;
 
+    int field_283F;
+
     int field_2888;
     int field_288C;
 
@@ -320,7 +322,7 @@ struct cellArea
     char field_2E;
     char field_2F;
     uint8_t buildings_health[3][3];
-    char field_39;
+    char field_39; // Who can view this sector (mask)
     char field_3A;
     uint8_t field_3B;
     nlist field_3C;
@@ -673,6 +675,32 @@ struct slurp2
     skeleton_64_stru *skeleton_internal;
 };
 
+struct sklt_wis
+{
+    int field_0;
+    NC_STACK_sklt *sklts[14];
+    skeleton_64_stru *sklts_intern[14];
+    int field_72;
+    int field_76;
+    int field_7A;
+    __NC_STACK_ypabact *field_7E;
+    int field_82;
+    float field_86;
+    float field_8A;
+    float field_8E;
+    float field_92;
+    int field_96;
+    int field_9A;
+    int field_9E;
+    float cl1_r;
+    float cl1_g;
+    float cl1_b;
+    float cl2_r;
+    float cl2_g;
+    float cl2_b;
+};
+
+
 struct save_status
 {
     int p1;
@@ -758,7 +786,8 @@ struct _NC_STACK_ypaworld
     int16_t build_hp_ref[256];
     BYTE sqrt_table[64][64];
     __NC_STACK_ypabact *current_bact;
-
+    xyz field_1334;
+    mat3x3 field_1340;
     NC_STACK_base *sky_loaded_base;
     int field_1368;
     NC_STACK_base *additionalBeeBox;
@@ -784,11 +813,12 @@ struct _NC_STACK_ypaworld
     int field_15fc;
 
     int audio_volume;
-
+    int field_1604;
+    int field_1608;
     int field_160c;
     int field_1610;
     int field_1614;
-
+    int field_1618;
     int field_161c;
     char *buildDate;
     int field_1624;
@@ -800,8 +830,8 @@ struct _NC_STACK_ypaworld
     int16_t screen_width;
     int16_t screen_height;
     int field_17b0;
-    int field_17b4;
-
+    listbase *field_17b4;
+    shortPoint field_17b8;
     int field_17bc;
     int field_17c0;
     int field_17c4;
@@ -829,10 +859,15 @@ struct _NC_STACK_ypaworld
     int icon_help__h;
     int icon_energy__h;
     int icon0___h;
+    int field_1a58;
+    int field_1a5c;
+    cellArea *field_1a60;
 
-    int field_1a60;
+    xyz field_1a6c;
 
-    int field_1a98;
+    xyz field_1a7c;
+
+    __NC_STACK_ypabact *field_1a98;
 
     int field_1aa0;
     int field_1aa4;
@@ -845,9 +880,11 @@ struct _NC_STACK_ypaworld
     int field_1b1c;
 
     ypabact_arg65 field_1b24;
-
+    int16_t field_1b68;
     int16_t field_1B6A;
     int16_t field_1b6c;
+
+    int field_1b70;
 
     NC_STACK_ypabact *field_1b78;
     NC_STACK_ypabact *field_1b7c;
@@ -858,13 +895,17 @@ struct _NC_STACK_ypaworld
     int field_1bac[8];
     float field_1bcc[8];
     float field_1bec[8];
-
+    __NC_STACK_ypabact *field_1c0c[512];
+    int field_240c;
+    int field_2410;
+    int field_2414;
+    int field_2418;
     int field_241c;
-
+    __NC_STACK_ypabact *field_2420;
     int field_2424;
 
     recorder *sceneRecorder;
-
+    bact_hudi hudi;
     gemProto gems[8];
     int field_2b78;
     int field_2b7c;
@@ -894,7 +935,7 @@ struct _NC_STACK_ypaworld
 
     NC_STACK_bitmap *copyof_typemap;
     NC_STACK_bitmap *copyof_ownermap;
-
+    sklt_wis wis_skeletons;
     int field_739A;
 
     char field_73CE;
@@ -953,7 +994,7 @@ struct _NC_STACK_ypaworld
     yw_movies movies;
     int field_81AB;
     const char *field_81AF;
-
+    const char *field_81B3;
     int one_game_res;
     int shell_default_res;
     int game_default_res;
@@ -1055,8 +1096,8 @@ struct __attribute__((packed)) VhclProto
 {
     char model_id;
     char disable_enable_bitmask;
-    uint8_t weapon;
-    char field_3;
+    int8_t weapon;
+    uint8_t field_3;
     int field_4;
     char mgun;
     char type_icon;

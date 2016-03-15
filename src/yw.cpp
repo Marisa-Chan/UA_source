@@ -691,6 +691,30 @@ void ypaworld_func3(NC_STACK_ypaworld *obj, class_stru *zis, stack_vals *stak)
 }
 
 
+void sub_445230(_NC_STACK_ypaworld *yw)
+{
+    int a4;
+    call_vtbl(yw->current_bact->self, 3, 0x80001010, &a4, 0);
+
+    if ( a4 )
+    {
+        __NC_STACK_ypabact *v4 = yw->current_bact;
+
+        yw->field_1334.sx = v4->field_651.m00 * v4->viewer.sx + v4->field_621.sx + v4->field_651.m10 * v4->viewer.sy + v4->field_651.m20 * v4->viewer.sz;
+        yw->field_1334.sy = v4->field_651.m01 * v4->viewer.sx + v4->field_621.sy + v4->field_651.m11 * v4->viewer.sy + v4->field_651.m21 * v4->viewer.sz;
+        yw->field_1334.sz = v4->field_651.m02 * v4->viewer.sx + v4->field_621.sz + v4->field_651.m12 * v4->viewer.sy + v4->field_651.m22 * v4->viewer.sz;
+
+        yw->field_1340 = yw->current_bact->field_5C9;
+    }
+    else
+    {
+        yw->field_1334 = yw->current_bact->field_621;
+
+        yw->field_1340 = yw->current_bact->field_651;
+    }
+}
+
+
 void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
 {
     dprintf("MAKE ME %s\n","ypaworld_func64");
@@ -698,12 +722,58 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
     _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
 
     yw->field_1614 += arg->field_4;
+    yw->field_1618 = arg->field_4;
 
     yw->field_161c++;
     yw->field_1b24.field_0 = yw->field_1614;
     yw->field_1b24.field_4 = arg->field_4;
     yw->field_1b24.numid = 0;
     yw->field_1b24.inpt = arg->field_8;
+
+    //printf("%d \n", arg->field_8->winp131arg.selected_btnID);
+
+    for (int i = 0; i < yw->sectors_maxY2 * yw->sectors_maxX2; i++)
+    {
+        cellArea *tmp = yw->cells + i;
+
+        tmp->field_39 = 1 << tmp->owner;
+    }
+
+    bact_node *v32 = (bact_node *)yw->bact_list.head;
+    while (v32->next)
+    {
+        call_method(v32->bacto, 102, 0);
+
+        v32 = (bact_node *)v32->next;
+    }
+
+
+
+
+    // View all =)
+//    for (int i = 0; i < yw->sectors_maxY2 * yw->sectors_maxX2; i++)
+//    {
+//        cellArea *tmp = yw->cells + i;
+//
+//        tmp->field_39 |= 1 << 1;
+//    }
+
+
+
+    ypaworld_func64__sub15(yw);
+    ypaworld_func64__sub16(yw);
+    ypaworld_func64__sub17(yw);
+    sub_4C40AC(yw);
+
+    if ( !yw->field_138c )
+    {
+        ypaworld_func64__sub8(obj, yw);
+        ypaworld_func64__sub7(yw, arg->field_8);
+
+        sub_445230(yw);
+
+        ypaworld_func64__sub14(yw);
+    }
 
     bact_node *nnode = (bact_node *)yw->bact_list.head;
     while ( nnode->next )
@@ -963,15 +1033,45 @@ void ypaworld_func138(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
-void ypaworld_func139(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func139(NC_STACK_ypaworld *obj, class_stru *zis, listbase *lstvw)
 {
-    printf("MAKE ME %s\n","ypaworld_func139");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    if ( !(lstvw->cmd_flag & 4) )
+        lstvw->cmd_flag &= 0xFFFFFFFE;
+
+    if ( lstvw->cmd_flag & 2 )
+        call_method(obj, 140, lstvw);
+
+    AddHead(&yw->field_17a0, lstvw);
+
+    lstvw->cmd_flag |= 2;
+
+    if ( lstvw->cmd_flag & 4 )
+        lstvw->frm_2.pobject = lstvw;
+
+    lstvw->frm_1.pobject = lstvw;
+
+    if ( lstvw->cmd_flag & 1 )
+        sub_412D48(&lstvw->frm_2, 0);
+    else if ( !(lstvw->cmd_flag & 0x20) )
+        sub_412D48(&lstvw->frm_1, 0);
 }
 
 
-void ypaworld_func140(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func140(NC_STACK_ypaworld *obj, class_stru *zis, listbase *lstvw)
 {
-    printf("MAKE ME %s\n","ypaworld_func140");
+    if ( lstvw->cmd_flag & 2 )
+    {
+        Remove(lstvw);
+
+        lstvw->cmd_flag &= 0xFFFFFFFD;
+
+        if ( lstvw->cmd_flag & 1 )
+            sub_412D9C(&lstvw->frm_2);
+        else if ( !(lstvw->cmd_flag & 0x20) )
+            sub_412D9C(&lstvw->frm_1);
+    }
 }
 
 
@@ -5167,9 +5267,9 @@ void ypaworld_func158(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 }
 
 
-void ypaworld_func159(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func159(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg159 *arg)
 {
-    printf("MAKE ME %s\n","ypaworld_func159");
+    ypaworld_func159__real(obj, zis, arg);
 }
 
 
@@ -5410,7 +5510,7 @@ size_t ypaworld_func166(NC_STACK_ypaworld *obj, class_stru *zis,const char **lan
         NC_STACK_win3d *win3d = NULL;
         gfxEngine__getter(0x8000300D, &win3d, 0);
 
-        if ( !strcasecmp( get_lang_string(yw->string_pointers_p2, 17, "FALSE") , "FALSE") )
+        if ( !strcasecmp( get_lang_string(yw->string_pointers_p2, 17, "FALSE"), "FALSE") )
         {
             if ( win3d )
                 call_vtbl(win3d, 2, 0x80005002, 0, 0);

@@ -309,7 +309,7 @@ int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
     yw->field_2d90->field_60 = 0;
 
     yw->field_1a60 = 0;
-    yw->field_1a98 = 0;
+    yw->field_1a98 = NULL;
     yw->field_1aac = 0;
     yw->current_bact = NULL;
     yw->field_1b78 = NULL;
@@ -1035,87 +1035,6 @@ void sub_44F748(_NC_STACK_ypaworld *yw)
     yw->field_3c = 0;
 }
 
-
-void sb_0x451034__sub1(_NC_STACK_ypaworld *yw)
-{
-    inputEngine__getter(0x80001009, &yw->input_class, 0);
-
-    yw->field_7562 = 0;
-    yw->field_7566 = -1;
-    yw->field_756A = 0;
-    yw->field_756E = 0;
-}
-
-int sb_0x451034(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
-{
-    if ( yw->field_162c )
-        return yw->field_162c;
-
-    yw->field_17b0 = 0;
-    yw->field_17b4 = 0;
-    yw->field_17bc = 0;
-    yw->field_1b1c = 0;
-    yw->field_1aa0 = 0;
-    yw->field_1aa4 = 0;
-    yw->field_1aa8 = 0;
-    yw->field_1aac = 0;
-
-    sb_0x451034__sub1(yw);
-
-    printf("COMPLETE ME %s\n", "sb_0x451034");
-
-    /*sb_0x451034__sub9(yw);
-    sb_0x451034__sub8(yw);
-    sb_0x451034__sub2(obj, yw);
-    create_squad_man(obj, yw);
-    create_info_log(obj, yw);
-    create_exit_menu(yw);
-    sb_0x451034__sub5(yw);
-    sb_0x451034__sub6(yw);
-
-    call_method(obj, 139, &robo_map);
-    call_method(obj, 139, &squadron_manager);
-    call_method(obj, 139, &info_log);
-    call_method(obj, 139, &exit_menu);
-    call_method(obj, 139, &lstvw);
-    call_method(obj, 139, &node);
-
-    if ( !sb_0x451034__sub3(obj, yw) )
-        {
-    call_method(obj, 140, &lstvw);
-    call_method(obj, 140, &exit_menu);
-    call_method(obj, 140, &info_log);
-    call_method(obj, 140, &squadron_manager);
-    call_method(obj, 140, &robo_map);
-    call_method(obj, 140, &node);
-
-      sub_4DA874(yw);
-      sub_46E16C(obj, yw);
-      sub_4C706C(obj, yw);
-      return 0;
-    }*/
-
-    //call_vtbl(yw->tracyrmp_ilbm, 3, 0x80002000, &a4, 0);
-    //call_vtbl(yw->shadermp_ilbm, 3, 0x80002000, &v8, 0);
-    yw->field_162c = 1;
-
-    if ( yw->snd__cdsound & 1 )
-    {
-        CDAUDIO_t v6;
-
-        v6.command = 7;
-        v6.track_id = yw->field_2d90->amb_track_p0;
-        v6.field_8 = yw->field_2d90->amb_track_p1;
-        v6.field_C = yw->field_2d90->amb_track_p2;
-
-        sub_4444D4(&v6);
-
-        v6.command = 2;
-        sub_4444D4(&v6);
-    }
-
-    return 1;
-}
 
 void sub_44F958(_NC_STACK_ypaworld *yw, cellArea *cell, char secX, char secY, uint8_t owner)
 {
@@ -2088,12 +2007,6 @@ void yw_renderSky(_NC_STACK_ypaworld *yw, base77Func *rndr_params)
 void sb_0x4d7c08__sub1(_NC_STACK_ypaworld *yw, base77Func *arg)
 {
     //Render superItems
-    printf("MAKE ME %s\n", "sb_0x4d7c08__sub1");
-}
-
-void sb_0x4d7c08__sub0(_NC_STACK_ypaworld *yw)
-{
-    //Draw UI
     dprintf("MAKE ME %s\n", "sb_0x4d7c08__sub1");
 }
 

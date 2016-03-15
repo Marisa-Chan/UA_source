@@ -202,10 +202,14 @@ void raster_func210(NC_STACK_raster *obj, class_stru *zis, ua_fRect *arg)
     rstr->field_24.y2 = (arg->y2 + 1.0) * (rstr->field_558 + -1.0);
 }
 
-size_t raster_func211(void *, class_stru *, stack_vals *)
+void raster_func211(NC_STACK_raster *obj, class_stru *zis, ua_dRect *arg)
 {
-    printf("MAKE ME %s\n","raster_func211");
-    return 0;
+    __NC_STACK_raster *rstr = &obj->stack__raster;
+
+    rstr->field_24.x1 = rstr->field_54c + arg->x1;
+    rstr->field_24.y1 = rstr->field_550 + arg->y1;
+    rstr->field_24.x2 = rstr->field_54c + arg->x2;
+    rstr->field_24.y2 = rstr->field_550 + arg->y2;
 }
 
 size_t raster_func212(void *, class_stru *, stack_vals *)
@@ -254,10 +258,14 @@ size_t raster_func220(void *, class_stru *, stack_vals *)
     return 0;
 }
 
-size_t raster_func221(void *, class_stru *, stack_vals *)
+void raster_func221(NC_STACK_raster *obj, class_stru *zis, ua_dRect *arg)
 {
-    printf("MAKE ME %s\n","raster_func221");
-    return 0;
+    __NC_STACK_raster *rstr = &obj->stack__raster;
+
+    rstr->field_38.x1 = rstr->field_54c + arg->x1;
+    rstr->field_38.y1 = rstr->field_550 + arg->y1;
+    rstr->field_38.x2 = rstr->field_54c + arg->x2;
+    rstr->field_38.y2 = rstr->field_550 + arg->y2;
 }
 
 

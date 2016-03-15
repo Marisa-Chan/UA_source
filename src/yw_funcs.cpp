@@ -583,7 +583,7 @@ void yw_setIniColor(_NC_STACK_ypaworld *yw, int color_id, int r, int g, int b, i
     yw->iniColors[color_id].g = g;
     yw->iniColors[color_id].b = b;
     yw->iniColors[color_id].i = i;
-    yw->iniColors[color_id].color = ((r << 16) & 0xFF0000) | ((g << 8) & 0xFF0000) | (b & 0xFF) ;
+    yw->iniColors[color_id].color = ((r << 16) & 0xFF0000) | ((g << 8) & 0xFF00) | (b & 0xFF) ;
 }
 
 int yw_parse_color(_NC_STACK_ypaworld *yw, int color_number, char *color_string)
@@ -2797,8 +2797,7 @@ void ypaworld_func158__video_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     fntcmd_set_end(&v3);
 
     w3d_a209 v16;
-    v16.cmdbuf = usr->video_listvw.draw_cmd;
-    v16.includ = usr->video_listvw.field_1C4;
+    v16 = usr->video_listvw.cmdstrm;
 
     sub_423288(&v16);
 }
@@ -2855,8 +2854,7 @@ void ypaworld_func158__d3d_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     fntcmd_set_end(&v3);
 
     w3d_a209 v16;
-    v16.cmdbuf = usr->d3d_listvw.draw_cmd;
-    v16.includ = usr->d3d_listvw.field_1C4;
+    v16 = usr->d3d_listvw.cmdstrm;
 
     sub_423288(&v16);
 }
@@ -2918,8 +2916,7 @@ void ypaworld_func158__locale_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     fntcmd_set_end(&v3);
 
     w3d_a209 v13;
-    v13.cmdbuf = usr->local_listvw.draw_cmd;
-    v13.includ = usr->local_listvw.field_1C4;
+    v13 = usr->local_listvw.cmdstrm;
 
     sub_423288(&v13);
 }
@@ -3030,9 +3027,8 @@ void ypaworld_func158__saveload_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     fntcmd_set_end(&v4);
 
     w3d_a209 arg;
+    arg = usr->disk_listvw.cmdstrm;
 
-    arg.cmdbuf = usr->disk_listvw.draw_cmd;
-    arg.includ = usr->disk_listvw.field_1C4;
     sub_423288(&arg);
 }
 

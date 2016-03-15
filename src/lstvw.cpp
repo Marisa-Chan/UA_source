@@ -73,7 +73,7 @@ int sb_0x4e947c__sub0__sub0(_NC_STACK_ypaworld *yw, listview *lstvw)
     int xpos = lstvw->frm_1.btn_xpos - (yw->screen_width / 2);
     int ypos = lstvw->frm_1.btn_ypos - (yw->screen_height / 2);
 
-    lstvw->draw_cmd = draw_cmd;
+    lstvw->cmdstrm.cmdbuf = draw_cmd;
 
     char *v7 = draw_cmd;
 
@@ -135,7 +135,7 @@ int sb_0x4e947c__sub0(_NC_STACK_ypaworld *yw, listview *lstvw, stack_vals *stak)
     if ( !z )
         return 0;
 
-    lstvw->field_1C4 = z;
+    lstvw->cmdstrm.includ = z;
 
     z[0] = lstvw->slider_cmdbuf; // Slider
     z[1] = lstvw->data_cmdbuf; // Data
@@ -237,40 +237,39 @@ void lstvw_update_main(_NC_STACK_ypaworld *yw, listview *lstvw)
 {
     if ( lstvw->field_1D0 & 2 )
     {
-        char *v5 = lstvw->draw_cmd;
+        char *v5 = lstvw->cmdstrm.cmdbuf;
 
         int v6 = (lstvw->frm_1.btn_xpos) - (yw->screen_width / 2);
-        int v8 = (lstvw->frm_1.btn_ypos) - (yw->screen_height / 2);
+        int v9 = (lstvw->frm_1.btn_ypos) - (yw->screen_height / 2);
 
+        int v17, v16;
         if ( lstvw->cmd_flag & 0x10 )
-            v8 = yw->font_default_w__a;
+            v17 = yw->font_default_w__a;
         else
-            v8 = 0;
-
-        int v17 = v8;
+            v17 = 0;
 
         if ( lstvw->cmd_flag & 0x100 )
-            v8 = yw->font_default_w__a;
+            v16 = yw->font_default_w__a;
         else
-            v8 = 0;
+            v16 = 0;
 
         if ( lstvw->field_1D0 & 2 )
         {
-            v5 = lstvw_make_title(yw, v6, v8, lstvw->frm_1.btn_width, lstvw->wnd_title, v5, 0, lstvw->cmd_flag);
+            v5 = lstvw_make_title(yw, v6, v9, lstvw->frm_1.btn_width, lstvw->wnd_title, v5, 0, lstvw->cmd_flag);
             fntcmd_next_line(&v5);
         }
         else
         {
             fntcmd_select_tileset(&v5, 0);
             fntcmd_set_center_xpos(&v5, v6);
-            fntcmd_set_center_ypos(&v5, v8);
+            fntcmd_set_center_ypos(&v5, v9);
         }
 
         fntcmd_include(&v5, 1); // Data
         fntcmd_include(&v5, 0); // Slider
         fntcmd_set_end(&v5);
 
-        int v14 = lstvw->frm_1.btn_width - v17 - v8;
+        int v14 = lstvw->frm_1.btn_width - v17 - v16;
 
         lstvw->frm_1.field_18[1]->xpos = 0;
         lstvw->frm_1.field_18[1]->ypos = 0;
@@ -1282,10 +1281,10 @@ void sub_4DDFA4(listview *lstvw, int a2)
 
 void sub_4E866C(listview *lstvw)
 {
-    if ( lstvw->field_1C4 )
+    if ( lstvw->cmdstrm.includ )
     {
-        nc_FreeMem(lstvw->field_1C4);
-        lstvw->field_1C4 = NULL;
+        nc_FreeMem(lstvw->cmdstrm.includ);
+        lstvw->cmdstrm.includ = NULL;
     }
 
     if ( lstvw->data_cmdbuf )
@@ -1300,10 +1299,10 @@ void sub_4E866C(listview *lstvw)
         lstvw->slider_cmdbuf = NULL;
     }
 
-    if ( lstvw->draw_cmd )
+    if ( lstvw->cmdstrm.cmdbuf )
     {
-        nc_FreeMem(lstvw->draw_cmd);
-        lstvw->draw_cmd = NULL;
+        nc_FreeMem(lstvw->cmdstrm.cmdbuf);
+        lstvw->cmdstrm.cmdbuf = NULL;
     }
 
     if ( lstvw->field_1BC )

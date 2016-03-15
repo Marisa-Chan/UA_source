@@ -3,6 +3,7 @@
 
 
 #include "nucleas.h"
+#include "lstvw.h"
 
 extern class_stored windp_class_off;
 
@@ -61,5 +62,22 @@ void ypaworld_func158__sub1(UserData *usr);
 void ypaworld_func158__sub2(_NC_STACK_ypaworld *yw);
 int ypaworld_func158__sub0__sub8(UserData *usr, const char**, const char**);
 void sb_0x4deac0(UserData *usr);
+
+
+
+struct netgamelst: public listbase
+{
+    int field_1CC;
+    int field_1D0;
+    int field_1D4;
+    int field_1D8;
+    char field_1DC[64];
+    int field_21C;
+};
+
+extern netgamelst netgame_wnd;
+
+void sb_0x451034__sub6(_NC_STACK_ypaworld *yw);
+void ypaworld_func64__sub7__sub5(_NC_STACK_ypaworld *yw, struC5 *inpt);
 
 #endif // WINDP_H_INCLUDED

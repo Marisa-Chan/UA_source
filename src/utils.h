@@ -84,4 +84,7 @@ int strnicmp (const char *s1, const char *s2, size_t n);
 
 void dprintf(const char *fmt, ...);
 
+int dround(float val);
+int dround(double val);
+
 #endif // UTILS_H_INCLUDED

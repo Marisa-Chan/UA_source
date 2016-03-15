@@ -2065,7 +2065,7 @@ void sb_0x4a45cc(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
 
         if ( !sb_0x4a45cc__sub0(arg->field_1C) )
         {
-            arg109.field_4 = 0;
+            arg109.field_4 = NULL;
             arg109.field_0 = 6;
 
             call_method(arg->field_1C->self, 109, &arg109);

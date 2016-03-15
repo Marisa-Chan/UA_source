@@ -1056,7 +1056,6 @@ int sub_420C74(xyxyNNN *a1, xyxyNNN *inout)
     else if ( inout->x1 < a1->x1 )
         flag1 |= 1;
 
-
     int flag2 = 0;
 
     if ( inout->y2 > a1->y2 )
@@ -1068,8 +1067,6 @@ int sub_420C74(xyxyNNN *a1, xyxyNNN *inout)
         flag2 |= 2;
     else if ( inout->x2 < a1->x1 )
         flag2 |= 1;
-
-
 
     int loop = 1;
     int v18 = 1;

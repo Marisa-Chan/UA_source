@@ -3,16 +3,18 @@
 
 struct _NC_STACK_ypaworld;
 
-
-struct listview : public nnode
+struct listbase : public nnode
 {
     int cmd_flag;
     inp_node frm_1;
     inp_node frm_2;
     char *field_1BC;
-    char *draw_cmd;
-    char **field_1C4;
-    int field_1C8;
+    w3d_a209 cmdstrm;
+    void (*field_1C8)(_NC_STACK_ypaworld *);
+};
+
+struct listview : public listbase
+{
     int field_1CC;
     int field_1D0;
     int field_1D4;
@@ -66,7 +68,7 @@ char *lstvw_txt_line_tiles(_NC_STACK_ypaworld *yw, char *cmdbuf, listview_t1 *ar
 void lstvw_update_input(_NC_STACK_ypaworld *yw, listview *lstvw, struC5 *struc);
 void sub_4C31EC(_NC_STACK_ypaworld *yw, listview *lstview);
 void lstvw_update(_NC_STACK_ypaworld *yw, listview *lstview);
-void  sub_4C31C0(_NC_STACK_ypaworld *yw, listview *lstvw);
+void sub_4C31C0(_NC_STACK_ypaworld *yw, listview *lstvw);
 void sub_4DDFA4(listview *lstvw, int a2);
 
 void sub_4E866C(listview *lstvw);

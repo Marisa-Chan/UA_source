@@ -1222,8 +1222,7 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
         ypaworld_func158__sub4__sub1__sub4__sub0(yw);
 
         w3d_a209 v10;
-        v10.cmdbuf = stru_5C91D0.draw_cmd;
-        v10.includ = stru_5C91D0.field_1C4;
+        v10 = stru_5C91D0.cmdstrm;
 
         call_method(yw->win3d, 209, &v10);
 

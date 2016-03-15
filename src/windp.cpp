@@ -3,7 +3,11 @@
 #include <stddef.h>
 #include <string.h>
 #include "classes.h"
+#include "includes.h"
+#include "engine_input.h"
 #include "windp.h"
+
+
 
 
 stored_functions *classvtbl_get_windp();
@@ -304,4 +308,55 @@ void sb_0x4deac0(UserData *usr)
 void yw_netcleanup(_NC_STACK_ypaworld *yw)
 {
     dprintf("MAKE ME %s (multiplayer)\n", "yw_netcleanup");
+}
+
+
+
+
+
+
+//////////////multiplayer wnd///////////
+netgamelst netgame_wnd;
+char b_stru_5C85C0__cmdbuf[1024];
+button_str1 b_stru_5C85C0__btn0;
+button_str1 b_stru_5C85C0__btn1;
+
+
+void sb_0x451034__sub6(_NC_STACK_ypaworld *yw)
+{
+    netgame_wnd.cmd_flag = 0x138;
+    netgame_wnd.frm_1.btn_xpos = 0;
+    netgame_wnd.frm_1.btn_ypos = 2 * yw->screen_height / 3;
+    netgame_wnd.frm_1.field_18[0] = &b_stru_5C85C0__btn0;
+    netgame_wnd.frm_1.field_18[1] = &b_stru_5C85C0__btn1;
+    netgame_wnd.frm_1.btn_width = yw->screen_width - 1;
+    netgame_wnd.frm_1.btn_height = 2 * yw->font_default_h + 2;
+    netgame_wnd.frm_1.field_10 = 2;
+
+
+    netgame_wnd.field_1CC = yw->tiles[0]->chars[97].width;
+    netgame_wnd.field_1D0 = 2 * yw->font_default_h;
+    netgame_wnd.field_1D4 = yw->screen_width;
+    netgame_wnd.field_1D8 = netgame_wnd.field_1D0;
+    netgame_wnd.field_1DC[0] = 0;
+    netgame_wnd.field_21C = 0;
+
+    netgame_wnd.cmdstrm.includ = NULL;
+    netgame_wnd.cmdstrm.cmdbuf = b_stru_5C85C0__cmdbuf;
+
+    b_stru_5C85C0__btn0.xpos = yw->tiles[0]->chars[97].width;
+    b_stru_5C85C0__btn0.ypos = 0;
+    b_stru_5C85C0__btn0.width = yw->tiles[0]->chars[97].width;
+    b_stru_5C85C0__btn0.fnt_height = yw->font_default_h;
+
+    b_stru_5C85C0__btn1.xpos = 0;
+    b_stru_5C85C0__btn1.ypos = 0;
+    b_stru_5C85C0__btn1.width = yw->tiles[0]->chars[97].width;
+    b_stru_5C85C0__btn1.fnt_height = yw->font_default_h;
+}
+
+//netgui update
+void ypaworld_func64__sub7__sub5(_NC_STACK_ypaworld *yw, struC5 *inpt)
+{
+    dprintf("MAKE ME %s (multiplayer)\n", "ypaworld_func64__sub7__sub5");
 }

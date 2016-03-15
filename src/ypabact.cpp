@@ -2848,8 +2848,81 @@ void ypabact_func101(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 
 void ypabact_func102(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func102");
-    call_parent(zis, obj, 102, arg);
+    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+
+    if ( bact->field_24 != 4 )
+    {
+        if ( bact->field_3D5 != 2 && bact->field_3D5 != 4 )
+        {
+            int v8 = 0;
+
+            if (!bact->parent_bact)
+                v8 = 1;
+            else
+            {
+                if (bact->radar >= bact->parent_bact->radar)
+                    v8 = 1;
+                else if (bact->field_c != bact->parent_bact->field_c)
+                    v8 = 1;
+                else if (bact->field_10 != bact->parent_bact->field_10)
+                    v8 = 1;
+            }
+
+            if ( v8 )
+            {
+                if ( bact->owner < 8 )
+                {
+                    cellArea *v19 = bact->p_cell_area;
+
+                    for (int i = -bact->radar; i <= bact->radar; i++)
+                    {
+                        int yy = bact->field_10 + i;
+
+                        int v20 = bact->field_20 * i;
+
+                        if ( bact->radar == 1 )
+                        {
+                            if ( yy > 0 && yy < bact->field_22 - 1 )
+                            {
+                                if ( bact->field_c - 1 > 0 )
+                                    v19[v20 - 1].field_39 |= 1 << bact->owner;
+
+                                v19[v20].field_39 |= 1 << bact->owner;
+
+                                if ( bact->field_c + 1 < bact->field_20 - 1 )
+                                    v19[v20 + 1].field_39 |= 1 << bact->owner;
+                            }
+                        }
+                        else
+                        {
+                            float vtmp = POW2((float)bact->radar) - POW2((float)i);
+
+                            if (vtmp < 0.0)
+                                vtmp = 0.0;
+
+                            int tmp = dround( sqrt(vtmp) );
+
+                            for (int j = -tmp; j <= tmp; j++)
+                            {
+                                int xx = bact->field_c + j;
+
+                                if ( xx > 0 && xx < bact->field_20 - 1 && yy > 0 && yy < bact->field_22 - 1 )
+                                    v19[v20 + j].field_39 |= 1 << bact->owner;
+                            }
+                        }
+                    }
+                }
+            }
+
+            bact_node *v15 = (bact_node *)bact->list2.head;
+            while( v15->next )
+            {
+                call_method(v15->bacto, 102, 0);
+
+                v15 = (bact_node *)v15->next;
+            }
+        }
+    }
 }
 
 void ypabact_func103(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)

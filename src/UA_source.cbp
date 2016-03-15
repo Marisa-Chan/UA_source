@@ -160,6 +160,7 @@
 		<Unit filename="yw_func2.cpp" />
 		<Unit filename="yw_funcs.cpp" />
 		<Unit filename="yw_game.cpp" />
+		<Unit filename="yw_game_ui.cpp" />
 		<Unit filename="yw_internal.h" />
 		<Unit filename="yw_protos.cpp" />
 		<Unit filename="yw_save.cpp" />
