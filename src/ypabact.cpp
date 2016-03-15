@@ -1609,13 +1609,13 @@ void ypabact_func69(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
 
 void ypabact_func70(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func70");
+    dprintf("MAKE ME %s\n","ypabact_func70");
     call_parent(zis, obj, 70, arg);
 }
 
 void ypabact_func71(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func71");
+    dprintf("MAKE ME %s\n","ypabact_func71");
     call_parent(zis, obj, 71, arg);
 }
 
@@ -1647,25 +1647,25 @@ void ypabact_func73(NC_STACK_ypabact *obj, class_stru *zis, bact_arg73 *arg)
 
 void ypabact_func74(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func74");
+    dprintf("MAKE ME %s\n","ypabact_func74");
     call_parent(zis, obj, 74, arg);
 }
 
 void ypabact_func75(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func75");
+    dprintf("MAKE ME %s\n","ypabact_func75");
     call_parent(zis, obj, 75, arg);
 }
 
 void ypabact_func76(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func76");
+    dprintf("MAKE ME %s\n","ypabact_func76");
     call_parent(zis, obj, 76, arg);
 }
 
 void ypabact_func77(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func77");
+    dprintf("MAKE ME %s\n","ypabact_func77");
     call_parent(zis, obj, 77, arg);
 }
 
@@ -1716,7 +1716,7 @@ void ypabact_func78(NC_STACK_ypabact *obj, class_stru *zis, bact_arg119 *arg)
 
 void ypabact_func79(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func79");
+    dprintf("MAKE ME %s\n","ypabact_func79");
     call_parent(zis, obj, 79, arg);
 }
 
@@ -1843,25 +1843,25 @@ void ypabact_func82(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
 
 void ypabact_func83(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func83");
+    dprintf("MAKE ME %s\n","ypabact_func83");
     call_parent(zis, obj, 83, arg);
 }
 
 void ypabact_func84(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func84");
+    dprintf("MAKE ME %s\n","ypabact_func84");
     call_parent(zis, obj, 84, arg);
 }
 
 void ypabact_func85(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func85");
+    dprintf("MAKE ME %s\n","ypabact_func85");
     call_parent(zis, obj, 85, arg);
 }
 
 void ypabact_func86(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func86");
+    dprintf("MAKE ME %s\n","ypabact_func86");
     call_parent(zis, obj, 86, arg);
 }
 
@@ -2145,13 +2145,13 @@ size_t ypabact_func87(NC_STACK_ypabact *obj, class_stru *zis, int *arg)
 
 void ypabact_func88(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func88");
+    dprintf("MAKE ME %s\n","ypabact_func88");
     call_parent(zis, obj, 88, arg);
 }
 
 void ypabact_func89(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func89");
+    dprintf("MAKE ME %s\n","ypabact_func89");
     call_parent(zis, obj, 89, arg);
 }
 
@@ -2378,7 +2378,7 @@ void ypabact_func90(NC_STACK_ypabact *obj, class_stru *zis, bact_arg90 *arg)
 
 void ypabact_func91(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func91");
+    dprintf("MAKE ME %s\n","ypabact_func91");
     call_parent(zis, obj, 91, arg);
 }
 
@@ -2675,7 +2675,7 @@ void ypabact_func92(NC_STACK_ypabact *obj, class_stru *zis, bact_arg92 *arg)
 
 void ypabact_func93(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func93");
+    dprintf("MAKE ME %s\n","ypabact_func93");
     call_parent(zis, obj, 93, arg);
 }
 
@@ -2713,7 +2713,7 @@ void ypabact_func94(NC_STACK_ypabact *obj, class_stru *zis, bact_arg94 *arg)
 
 void ypabact_func95(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func95");
+    dprintf("MAKE ME %s\n","ypabact_func95");
     call_parent(zis, obj, 95, arg);
 }
 
@@ -2796,13 +2796,13 @@ void ypabact_func96(NC_STACK_ypabact *obj, class_stru *zis, void *)
 
 void ypabact_func97(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func97");
+    dprintf("MAKE ME %s\n","ypabact_func97");
     call_parent(zis, obj, 97, arg);
 }
 
 void ypabact_func98(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func98");
+    dprintf("MAKE ME %s\n","ypabact_func98");
     call_parent(zis, obj, 98, arg);
 }
 
@@ -2829,7 +2829,7 @@ void sub_48A0E0(__NC_STACK_ypabact *bact, float angle)
 
 void ypabact_func99(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func99");
+    dprintf("MAKE ME %s\n","ypabact_func99");
     call_parent(zis, obj, 99, arg);
 }
 
@@ -2842,7 +2842,7 @@ size_t ypabact_func100(NC_STACK_ypabact *obj, class_stru *zis, void *)
 
 void ypabact_func101(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func101");
+    dprintf("MAKE ME %s\n","ypabact_func101");
     call_parent(zis, obj, 101, arg);
 }
 
@@ -2854,7 +2854,7 @@ void ypabact_func102(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 
 void ypabact_func103(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func103");
+    dprintf("MAKE ME %s\n","ypabact_func103");
     call_parent(zis, obj, 103, arg);
 }
 
@@ -2934,19 +2934,19 @@ void ypabact_func104(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
 
 void ypabact_func105(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func105");
+    dprintf("MAKE ME %s\n","ypabact_func105");
     call_parent(zis, obj, 105, arg);
 }
 
 void ypabact_func106(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func106");
+    dprintf("MAKE ME %s\n","ypabact_func106");
     call_parent(zis, obj, 106, arg);
 }
 
 void ypabact_func107(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func107");
+    dprintf("MAKE ME %s\n","ypabact_func107");
     call_parent(zis, obj, 107, arg);
 }
 
@@ -2992,13 +2992,13 @@ size_t ypabact_func108(NC_STACK_ypabact *obj, class_stru *zis, float *arg)
 
 void ypabact_func109(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func109");
+    dprintf("MAKE ME %s\n","ypabact_func109");
     call_parent(zis, obj, 109, arg);
 }
 
 void ypabact_func110(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func110");
+    dprintf("MAKE ME %s\n","ypabact_func110");
     call_parent(zis, obj, 110, arg);
 }
 
@@ -3009,13 +3009,13 @@ size_t ypabact_func111(NC_STACK_ypabact *obj, class_stru *zis, __NC_STACK_ypabac
 
 void ypabact_func112(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func112");
+    dprintf("MAKE ME %s\n","ypabact_func112");
     call_parent(zis, obj, 112, arg);
 }
 
 void ypabact_func113(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func113");
+    dprintf("MAKE ME %s\n","ypabact_func113");
     call_parent(zis, obj, 113, arg);
 }
 
@@ -3188,19 +3188,19 @@ void ypabact_func115(NC_STACK_ypabact *obj, class_stru *zis, void *)
 
 void ypabact_func116(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func116");
+    dprintf("MAKE ME %s\n","ypabact_func116");
     call_parent(zis, obj, 116, arg);
 }
 
 void ypabact_func117(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func117");
+    dprintf("MAKE ME %s\n","ypabact_func117");
     call_parent(zis, obj, 117, arg);
 }
 
 void ypabact_func118(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func118");
+    dprintf("MAKE ME %s\n","ypabact_func118");
     call_parent(zis, obj, 118, arg);
 }
 
@@ -3541,37 +3541,37 @@ size_t ypabact_func119(NC_STACK_ypabact *obj, class_stru *zis, bact_arg119 *arg)
 
 void ypabact_func120(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func120");
+    dprintf("MAKE ME %s\n","ypabact_func120");
     call_parent(zis, obj, 120, arg);
 }
 
 void ypabact_func121(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func121");
+    dprintf("MAKE ME %s\n","ypabact_func121");
     call_parent(zis, obj, 121, arg);
 }
 
 void ypabact_func122(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func122");
+    dprintf("MAKE ME %s\n","ypabact_func122");
     call_parent(zis, obj, 122, arg);
 }
 
 void ypabact_func123(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func123");
+    dprintf("MAKE ME %s\n","ypabact_func123");
     call_parent(zis, obj, 123, arg);
 }
 
 void ypabact_func124(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func124");
+    dprintf("MAKE ME %s\n","ypabact_func124");
     call_parent(zis, obj, 124, arg);
 }
 
 void ypabact_func125(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypabact_func125");
+    dprintf("MAKE ME %s\n","ypabact_func125");
     call_parent(zis, obj, 125, arg);
 }
 

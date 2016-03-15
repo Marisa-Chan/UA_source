@@ -6118,7 +6118,7 @@ void yparobo_func74(NC_STACK_yparobo *obj, class_stru *zis, bact_arg74 *arg)
       v41 = *(_DWORD *)(v38 + 12);
       bact->field_5A.samples_data[0].pitch = (v41 + bact->field_5A.samples_data[0].pitch) * v60;
     }*/
-    printf ("COMPLETE ME %s\n", "yparobo_func74");
+    dprintf ("COMPLETE ME %s\n", "yparobo_func74");
 
 }
 
@@ -6841,19 +6841,19 @@ void yparobo_func128(NC_STACK_yparobo *obj, class_stru *zis, robo_arg128 *arg)
 
 void yparobo_func129(NC_STACK_yparobo *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","yparobo_func129");
+    dprintf("MAKE ME %s\n","yparobo_func129");
     call_parent(zis, obj, 129, arg);
 }
 
 void yparobo_func130(NC_STACK_yparobo *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","yparobo_func130");
+    dprintf("MAKE ME %s\n","yparobo_func130");
     call_parent(zis, obj, 130, arg);
 }
 
 void yparobo_func131(NC_STACK_yparobo *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","yparobo_func131");
+    dprintf("MAKE ME %s\n","yparobo_func131");
     call_parent(zis, obj, 131, arg);
 }
 

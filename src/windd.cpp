@@ -3682,7 +3682,7 @@ void windd_func321(NC_STACK_windd *obj, class_stru *, stack_vals *)
 
 char * windd_func322__sub0(__NC_STACK_windd *wdd, const char *box_title, const char *box_ok, const char *box_cancel, const char *box_startText, UINT timer_time, void (*timer_func)(int, int, int), void *timer_context, int replace, int maxLen)
 {
-    printf("MAKE ME %s\n","windd_func322__sub0");
+    dprintf("MAKE ME %s\n","windd_func322__sub0");
     return NULL;
 }
 

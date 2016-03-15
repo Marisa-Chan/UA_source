@@ -52,31 +52,31 @@ void ypaufo_func3(NC_STACK_ypaufo *obj, class_stru *zis, stack_vals *stak)
 
 void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypaufo_func70");
+    dprintf("MAKE ME %s\n","ypaufo_func70");
     call_parent(zis, obj, 70, arg);
 }
 
 void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypaufo_func71");
+    dprintf("MAKE ME %s\n","ypaufo_func71");
     call_parent(zis, obj, 71, arg);
 }
 
 void ypaufo_func74(NC_STACK_ypaufo *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypaufo_func74");
+    dprintf("MAKE ME %s\n","ypaufo_func74");
     call_parent(zis, obj, 74, arg);
 }
 
 void ypaufo_func80(NC_STACK_ypaufo *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypaufo_func80");
+    dprintf("MAKE ME %s\n","ypaufo_func80");
     call_parent(zis, obj, 80, arg);
 }
 
 void ypaufo_func96(NC_STACK_ypaufo *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypaufo_func96");
+    dprintf("MAKE ME %s\n","ypaufo_func96");
     call_parent(zis, obj, 96, arg);
 }
 

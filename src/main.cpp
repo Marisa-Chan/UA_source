@@ -21,14 +21,14 @@ int sb_0x411324__sub0()
 {
     call_method(ypaworld, 64, &world_update_arg);
 
-    printf("MAKE ME %s\n","sb_0x411324__sub0");
+    dprintf("MAKE ME %s\n","sb_0x411324__sub0");
 
     return 1;
 }
 
 int sb_0x411324__sub2()
 {
-    printf("MAKE ME %s\n","sb_0x411324__sub0");
+    dprintf("MAKE ME %s\n","sb_0x411324__sub0");
     return 0;
 }
 

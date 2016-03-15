@@ -82,4 +82,6 @@ int read_reg_key(const CHAR *keyname, char *outBuf, int bufsize);
 const char *get_lang_string(char **array, int id, const char *def);
 int strnicmp (const char *s1, const char *s2, size_t n);
 
+void dprintf(const char *fmt, ...);
+
 #endif // UTILS_H_INCLUDED

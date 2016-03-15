@@ -189,3 +189,18 @@ int strnicmp (const char *s1, const char *s2, size_t n)
         return 0;
     return (int) (toupper(*s1) - toupper(*s2));
 }
+
+int DO = 0; //Shutup "MAKE ME" screams
+
+void dprintf(const char *fmt, ...)
+{
+    if (DO)
+    {
+        va_list args;
+        va_start (args, fmt);
+
+        vprintf(fmt, args);
+
+        va_end(args);
+    }
+}

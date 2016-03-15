@@ -146,20 +146,20 @@ void deleteSplashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen)
 
 void sb_0x44ca90__sub4(_NC_STACK_ypaworld *yw)
 {
-    printf("MAKE ME %s\n", "sb_0x44ca90__sub4");
+    dprintf("MAKE ME %s\n", "sb_0x44ca90__sub4");
 }
 
 int sb_0x44ca90__sub6(_NC_STACK_ypaworld *yw)
 {
     //Map events
-    printf("MAKE ME %s\n", "sb_0x44ca90__sub6");
+    dprintf("MAKE ME %s\n", "sb_0x44ca90__sub6");
     return 1;
 }
 
 int sb_0x44ca90__sub7(_NC_STACK_ypaworld *yw, int evnt)
 {
     //Map events
-    printf("MAKE ME %s\n", "sb_0x44ca90__sub7");
+    dprintf("MAKE ME %s\n", "sb_0x44ca90__sub7");
     return 1;
 }
 
@@ -1827,7 +1827,7 @@ void ypaworld_func2__sub0__sub0(_NC_STACK_ypaworld *yw)
 
 void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact1, __NC_STACK_ypabact *bact2)
 {
-    printf("MAKE ME %s\n", "ypaworld_func2__sub0__sub1");
+    dprintf("MAKE ME %s\n", "ypaworld_func2__sub0__sub1");
 }
 
 
@@ -2094,7 +2094,7 @@ void sb_0x4d7c08__sub1(_NC_STACK_ypaworld *yw, base77Func *arg)
 void sb_0x4d7c08__sub0(_NC_STACK_ypaworld *yw)
 {
     //Draw UI
-    printf("MAKE ME %s\n", "sb_0x4d7c08__sub0");
+    dprintf("MAKE ME %s\n", "sb_0x4d7c08__sub1");
 }
 
 

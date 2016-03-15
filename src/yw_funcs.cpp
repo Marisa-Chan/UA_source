@@ -2545,7 +2545,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
 
 void sub_4F0FFC(_NC_STACK_ypaworld *yw)
 {
-    printf("MAKE ME %s \n","sub_4F0FFC");
+    dprintf("MAKE ME %s \n","sub_4F0FFC");
 }
 
 void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)

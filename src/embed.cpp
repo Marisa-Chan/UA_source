@@ -53,7 +53,7 @@ int sub_41C418(nlist *list, NC_STACK_class *obj)
 // Create embed resource node and fill rsrc field data
 NC_STACK_embed * embed_func0(class_stru *, class_stru *, stack_vals *)
 {
-    printf("MAKE ME %s\n","embed_func0");
+    dprintf("MAKE ME %s\n","embed_func0");
     return NULL;
 }
 

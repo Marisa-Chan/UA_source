@@ -52,73 +52,73 @@ void ypamissile_func3(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *sta
 
 void ypamissile_func68(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypamissile_func68");
+    dprintf("MAKE ME %s\n","ypamissile_func68");
     call_parent(zis, obj, 68, arg);
 }
 
 void ypamissile_func69(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypamissile_func69");
+    dprintf("MAKE ME %s\n","ypamissile_func69");
     call_parent(zis, obj, 69, arg);
 }
 
 void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypamissile_func70");
+    dprintf("MAKE ME %s\n","ypamissile_func70");
     call_parent(zis, obj, 70, arg);
 }
 
 void ypamissile_func71(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypamissile_func71");
+    dprintf("MAKE ME %s\n","ypamissile_func71");
     call_parent(zis, obj, 71, arg);
 }
 
 void ypamissile_func74(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypamissile_func74");
+    dprintf("MAKE ME %s\n","ypamissile_func74");
     call_parent(zis, obj, 74, arg);
 }
 
 void ypamissile_func78(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypamissile_func78");
+    dprintf("MAKE ME %s\n","ypamissile_func78");
     call_parent(zis, obj, 78, arg);
 }
 
 void ypamissile_func96(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypamissile_func96");
+    dprintf("MAKE ME %s\n","ypamissile_func96");
     call_parent(zis, obj, 96, arg);
 }
 
 void ypamissile_func119(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypamissile_func119");
+    dprintf("MAKE ME %s\n","ypamissile_func119");
     call_parent(zis, obj, 119, arg);
 }
 
 void ypamissile_func128(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypamissile_func128");
+    dprintf("MAKE ME %s\n","ypamissile_func128");
     call_parent(zis, obj, 128, arg);
 }
 
 void ypamissile_func129(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypamissile_func129");
+    dprintf("MAKE ME %s\n","ypamissile_func129");
     call_parent(zis, obj, 129, arg);
 }
 
 void ypamissile_func130(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypamissile_func130");
+    dprintf("MAKE ME %s\n","ypamissile_func130");
     call_parent(zis, obj, 130, arg);
 }
 
 void ypamissile_func131(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypamissile_func131");
+    dprintf("MAKE ME %s\n","ypamissile_func131");
     call_parent(zis, obj, 131, arg);
 }
 

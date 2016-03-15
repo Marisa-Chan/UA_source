@@ -54,19 +54,19 @@ void ypacar_func3(NC_STACK_ypacar *obj, class_stru *zis, stack_vals *stak)
 
 void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypacar_func71");
+    dprintf("MAKE ME %s\n","ypacar_func71");
     call_parent(zis, obj, 71, arg);
 }
 
 void ypacar_func128(NC_STACK_ypacar *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypacar_func128");
+    dprintf("MAKE ME %s\n","ypacar_func128");
     call_parent(zis, obj, 128, arg);
 }
 
 void ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypacar_func129");
+    dprintf("MAKE ME %s\n","ypacar_func129");
     call_parent(zis, obj, 129, arg);
 }
 

@@ -52,61 +52,61 @@ void ypagun_func3(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *stak)
 
 void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypagun_func70");
+    dprintf("MAKE ME %s\n","ypagun_func70");
     call_parent(zis, obj, 70, arg);
 }
 
 void ypagun_func71(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypagun_func71");
+    dprintf("MAKE ME %s\n","ypagun_func71");
     call_parent(zis, obj, 71, arg);
 }
 
 void ypagun_func75(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypagun_func75");
+    dprintf("MAKE ME %s\n","ypagun_func75");
     call_parent(zis, obj, 75, arg);
 }
 
 void ypagun_func77(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypagun_func77");
+    dprintf("MAKE ME %s\n","ypagun_func77");
     call_parent(zis, obj, 77, arg);
 }
 
 void ypagun_func80(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypagun_func80");
+    dprintf("MAKE ME %s\n","ypagun_func80");
     call_parent(zis, obj, 80, arg);
 }
 
 void ypagun_func82(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypagun_func82");
+    dprintf("MAKE ME %s\n","ypagun_func82");
     call_parent(zis, obj, 82, arg);
 }
 
 void ypagun_func96(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypagun_func96");
+    dprintf("MAKE ME %s\n","ypagun_func96");
     call_parent(zis, obj, 96, arg);
 }
 
 void ypagun_func111(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypagun_func111");
+    dprintf("MAKE ME %s\n","ypagun_func111");
     call_parent(zis, obj, 111, arg);
 }
 
 void ypagun_func128(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypagun_func128");
+    dprintf("MAKE ME %s\n","ypagun_func128");
     call_parent(zis, obj, 128, arg);
 }
 
 void ypagun_func129(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypagun_func129");
+    dprintf("MAKE ME %s\n","ypagun_func129");
     call_parent(zis, obj, 129, arg);
 }
 

@@ -192,7 +192,7 @@ UA_PALENTRY *display_func273(NC_STACK_display *obj, class_stru *, rstr_261_arg *
 
 size_t display_func274(void *, class_stru *, stack_vals *)
 {
-    printf("MAKE ME %s(Save pcx screenshot)\n","display_func274");
+    dprintf("MAKE ME %s(Save pcx screenshot)\n","display_func274");
     return 0;
 }
 

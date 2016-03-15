@@ -52,79 +52,79 @@ void ypatank_func3(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *stak)
 
 void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypatank_func70");
+    dprintf("MAKE ME %s\n","ypatank_func70");
     call_parent(zis, obj, 70, arg);
 }
 
 void ypatank_func71(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypatank_func71");
+    dprintf("MAKE ME %s\n","ypatank_func71");
     call_parent(zis, obj, 71, arg);
 }
 
 void ypatank_func74(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypatank_func74");
+    dprintf("MAKE ME %s\n","ypatank_func74");
     call_parent(zis, obj, 74, arg);
 }
 
 void ypatank_func80(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypatank_func80");
+    dprintf("MAKE ME %s\n","ypatank_func80");
     call_parent(zis, obj, 80, arg);
 }
 
 void ypatank_func83(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypatank_func83");
+    dprintf("MAKE ME %s\n","ypatank_func83");
     call_parent(zis, obj, 83, arg);
 }
 
 void ypatank_func87(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypatank_func87");
+    dprintf("MAKE ME %s\n","ypatank_func87");
     call_parent(zis, obj, 87, arg);
 }
 
 void ypatank_func88(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypatank_func88");
+    dprintf("MAKE ME %s\n","ypatank_func88");
     call_parent(zis, obj, 88, arg);
 }
 
 void ypatank_func96(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypatank_func96");
+    dprintf("MAKE ME %s\n","ypatank_func96");
     call_parent(zis, obj, 96, arg);
 }
 
 void ypatank_func101(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypatank_func101");
+    dprintf("MAKE ME %s\n","ypatank_func101");
     call_parent(zis, obj, 101, arg);
 }
 
 void ypatank_func111(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypatank_func111");
+    dprintf("MAKE ME %s\n","ypatank_func111");
     call_parent(zis, obj, 111, arg);
 }
 
 void ypatank_func114(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypatank_func114");
+    dprintf("MAKE ME %s\n","ypatank_func114");
     call_parent(zis, obj, 114, arg);
 }
 
 void ypatank_func128(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypatank_func128");
+    dprintf("MAKE ME %s\n","ypatank_func128");
     call_parent(zis, obj, 128, arg);
 }
 
 void ypatank_func129(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypatank_func129");
+    dprintf("MAKE ME %s\n","ypatank_func129");
     call_parent(zis, obj, 129, arg);
 }
 

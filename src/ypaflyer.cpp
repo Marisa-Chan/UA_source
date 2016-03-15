@@ -52,37 +52,37 @@ void ypaflyer_func3(NC_STACK_ypaflyer *obj, class_stru *zis, stack_vals *stak)
 
 void ypaflyer_func70(NC_STACK_ypaflyer *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypaflyer_func70");
+    dprintf("MAKE ME %s\n","ypaflyer_func70");
     call_parent(zis, obj, 70, arg);
 }
 
 void ypaflyer_func71(NC_STACK_ypaflyer *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypaflyer_func71");
+    dprintf("MAKE ME %s\n","ypaflyer_func71");
     call_parent(zis, obj, 71, arg);
 }
 
 void ypaflyer_func74(NC_STACK_ypaflyer *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypaflyer_func74");
+    dprintf("MAKE ME %s\n","ypaflyer_func74");
     call_parent(zis, obj, 74, arg);
 }
 
 void ypaflyer_func80(NC_STACK_ypaflyer *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypaflyer_func80");
+    dprintf("MAKE ME %s\n","ypaflyer_func80");
     call_parent(zis, obj, 80, arg);
 }
 
 void ypaflyer_func96(NC_STACK_ypaflyer *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypaflyer_func96");
+    dprintf("MAKE ME %s\n","ypaflyer_func96");
     call_parent(zis, obj, 96, arg);
 }
 
 void ypaflyer_func97(NC_STACK_ypaflyer *obj, class_stru *zis, stack_vals *arg)
 {
-    printf("MAKE ME %s\n","ypaflyer_func97");
+    dprintf("MAKE ME %s\n","ypaflyer_func97");
     call_parent(zis, obj, 97, arg);
 }
 
