@@ -2004,10 +2004,134 @@ void yw_renderSky(_NC_STACK_ypaworld *yw, base77Func *rndr_params)
     }
 }
 
-void sb_0x4d7c08__sub1(_NC_STACK_ypaworld *yw, base77Func *arg)
+
+int sb_0x4d7c08__sub1__sub0__sub0(_NC_STACK_ypaworld *yw, float xx, float yy)
 {
-    //Render superItems
-    dprintf("MAKE ME %s\n", "sb_0x4d7c08__sub1");
+    int v7 = ((xx + 150) / 300) / 4;
+    int v8 = ((-yy + 150) / 300) / 4;
+
+    if ( v7 <= 0 || v7 >= yw->sectors_maxX2 || v8 <= 0 || v8 >= yw->sectors_maxY2 || !yw->current_bact )
+        return 0;
+
+    int v11 = abs(yw->current_bact->field_c - v7);
+    int v12 = abs(yw->current_bact->field_10 - v8);
+
+    if ( v11 + v12 <= (yw->field_1368 - 1) / 2 )
+        return 1;
+
+    return 0;
+}
+
+void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float posx, float posy, base77Func *arg)
+{
+    if ( yw->superbomb_wall_vproto )
+    {
+        if ( xx > 0.0 && yy < 0.0 && xx < yw->map_Width_meters && -yw->map_Height_meters < yy )
+        {
+            if ( sb_0x4d7c08__sub1__sub0__sub0(yw, xx, yy) )
+            {
+                int v10 = yw->VhclProtos[yw->superbomb_wall_vproto].vp_normal;
+
+                NC_STACK_base *wall_base = yw->vhcls_models[v10].base;
+                base_1c_struct *wall_trigo = yw->vhcls_models[v10].trigo;
+
+                if ( wall_base && wall_trigo )
+                {
+                    float v28 = 0.0;
+
+                    int v23 = (xx + 150) / 300;
+                    int v26 = (-yy + 150) / 300;
+
+                    if ( (v23 & 3) && (v26 & 3) )
+                    {
+                        v28 = yw->cells[ (v26 / 4) * yw->sectors_maxX2 + (v23 / 4) ].sector_height_meters;
+                    }
+                    else
+                    {
+                        ypaworld_arg136 v22;
+                        v22.field_14 = 0;
+                        v22.field_18 = 50000.0;
+                        v22.field_1C = 0;
+                        v22.pos_x = xx;
+                        v22.pos_y = -25000.0;
+                        v22.pos_z = yy;
+                        v22.field_40 = 0;
+
+                        call_method(yw->self_full, 136, &v22);
+
+                        if ( v22.field_20 )
+                        {
+                            v28 = v22.field_30;
+                        }
+                    }
+
+
+                    wall_trigo->grp_1.sx = xx;
+                    wall_trigo->grp_1.sy = v28;
+                    wall_trigo->grp_1.sz = yy;
+
+                    float v29 = xx - posx;
+                    float v30 = yy - posy;
+
+                    float v27 = sqrt( POW2(v29) + POW2(v30) );
+                    if ( v27 > 0.0 )
+                    {
+                        float v19 = 1.0 / v27;
+                        v29 *= v19;
+                        v30 *= v19;
+                    }
+
+                    wall_trigo->scale_rotation.m00 = v30;
+                    wall_trigo->scale_rotation.m01 = 0;
+                    wall_trigo->scale_rotation.m02 = -v29;
+                    wall_trigo->scale_rotation.m10 = 0;
+                    wall_trigo->scale_rotation.m11 = 1.0;
+                    wall_trigo->scale_rotation.m12 = 0;
+                    wall_trigo->scale_rotation.m20 = v29;
+                    wall_trigo->scale_rotation.m21 = 0.0;
+                    wall_trigo->scale_rotation.m22 = v30;
+
+                    call_method(wall_base, 77, arg);
+                }
+            }
+        }
+    }
+}
+
+void sb_0x4d7c08__sub1(_NC_STACK_ypaworld *yw, base77Func *arg)
+{   // Render super items
+    for (int i = 0; i < yw->field_2d90->supetItems_count; i++)
+    {
+        supetItemProto *supr = &yw->field_2d90->supetItems[i];
+
+        if ( supr->field_4 == 3 )
+        {
+            float a4 = supr->sec_x * 1200.0 + 600.0;
+            float a5 = -(supr->sec_y * 1200.0 + 600.0);
+
+
+            float v14 = sqrt( POW2(yw->map_Width_meters) + POW2(yw->map_Height_meters) );
+
+            if ( supr->field_104 > 300 && supr->field_104 < v14 )
+            {
+                float v17 = (2 * supr->field_104) * 3.1415 / 300.0;
+
+                if ( v17 > 2.0 )
+                {
+                    float v9 = 6.283 / v17;
+
+                    for (float j = 0.0; j < 6.283; j = j + v9 )
+                    {
+                        float v10 = supr->field_104;
+                        float a3 = v10 * sin(j) + a5;
+                        float a2 = v10 * cos(j) + a4;
+
+                        sb_0x4d7c08__sub1__sub0(yw, a2, a3, a4, a5, arg);
+                    }
+                }
+            }
+        }
+    }
 }
 
 
