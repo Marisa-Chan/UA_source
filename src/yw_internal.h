@@ -409,4 +409,5 @@ char *sub_4E2B5C(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabact *bact);
 void sb_0x4d7c08__sub0__sub4__sub2(_NC_STACK_ypaworld *yw);
 void sb_0x4d7c08__sub0__sub2(_NC_STACK_ypaworld *yw);
 
+void ypaworld_func64__sub5(_NC_STACK_ypaworld *yw);
 #endif

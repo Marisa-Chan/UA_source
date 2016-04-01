@@ -775,6 +775,11 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
         ypaworld_func64__sub14(yw);
     }
 
+
+    if ( yw->field_15fc )
+        ypaworld_func64__sub5(yw);
+
+
     bact_node *nnode = (bact_node *)yw->bact_list.head;
     while ( nnode->next )
     {

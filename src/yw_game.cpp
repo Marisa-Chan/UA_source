@@ -2800,3 +2800,83 @@ __NC_STACK_ypabact * sub_48C244(NC_STACK_ypaworld *ywo, int a2, char owner)
 
     return NULL;
 }
+
+
+void ypaworld_func64__sub5__sub0(_NC_STACK_ypaworld *yw, int a2)
+{
+    yw_field34 *v3 = &yw->field_34[a2];
+
+    int v7 = v3->power_2;
+    int v10 = 0;
+
+    while (v7 > 0)
+    {
+        v7 >>= 1;
+        v10++;
+    }
+
+    int v9 = v3->power_2;
+
+    int v11 = -v10;
+    int v12 = v10 + 1;
+
+    int v13 = -v10;
+    int v21 = v10 + 1;
+
+    if ( v3->x + v11 < 1 )
+        v11 = 1 - v3->x;
+
+    if ( v3->y + v13 < 1 )
+        v13 = 1 - v3->y;
+
+    if ( v3->x + v12 >= yw->sectors_maxX2 )
+        v12 = yw->sectors_maxX2 - v3->x - 1;
+
+    if ( v3->y + v21 >= yw->sectors_maxY2 )
+        v21 = yw->sectors_maxY2 - v3->y - 1;
+
+    for (int i = v13; i < v21; i++)
+    {
+        for (int j = v11; j < v12; j++)
+        {
+            int v17 = v9  >>  yw->sqrt_table[abs(j)][abs(i)];
+
+            yw_f30 *v14 = &yw->field_30[j + v3->x + ((i + v3->y) * 64) ];
+
+            if ( v14->owner == v3->p_cell->owner )
+            {
+                int v18 = v17 + v14->field_1; // Add power to this cell
+
+                if ( v18 > 255 )
+                    v18 = 255;
+
+                v14->field_1 = v18;
+            }
+
+        }
+    }
+}
+
+void ypaworld_func64__sub5(_NC_STACK_ypaworld *yw)
+{
+    // Recompute power on sectors
+    if ( yw->field_38 ) // If we have powerstations
+    {
+        int v2 = yw->field_3c; // current power station
+
+        while ( !yw->field_34[v2].p_cell && v2 < yw->field_38 ) //If current power station is null - go to first not null or to end
+            v2++;
+
+        if ( v2 < yw->field_38 ) // if we found any power station
+        {
+            if ( yw->field_34[v2].power_2 ) // if this power station has power
+                ypaworld_func64__sub5__sub0(yw, v2); // Add power to power matrix
+
+            yw->field_3c = v2 + 1; // go to next station in next update loop
+        }
+        else // If we reach end of power stations list, apply power to sectors
+        {
+            sub_44F748(yw); // Apply power to sectors and clean power matrix for next compute iteration.
+        }
+    }
+}
