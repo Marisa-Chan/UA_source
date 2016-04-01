@@ -9949,14 +9949,12 @@ char * sub_4E2B5C(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabact *bact)
             int v43 = v13 * yw->tiles[50]->chars->width;
 
             int v42 = (yw->screen_width / 2) * (v45 + 1.0);
-            int v16 = (yw->screen_height / 2) * (v47 + 1.0);
+            int v41 = (yw->screen_height / 2) * (v47 + 1.0);
 
-            if ( !v30 || v42 <= v11 || v42 >= v33 || v16 <= v36 || v16 >= v34 )
+            if ( !v30 || v42 <= v11 || v42 >= v33 || v41 <= v36 || v41 >= v34 )
             {
                 v42 -= v43 / 2;
-
-                //int v40 = (yw->screen_height - ( (yw->screen_height >> 31 << 4) + 16 * (yw->screen_height >> 31)) ) >> 4; // Oh my.. optimizations %)
-                int v41 = v16 - (yw->screen_height / 2) - (yw->screen_height / 16);
+                v41 -= (yw->tiles[50]->font_height / 2) + (yw->screen_height / 16);
 
                 if ( v42 >= 0 )
                 {
