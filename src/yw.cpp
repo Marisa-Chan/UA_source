@@ -6654,9 +6654,110 @@ void ypaworld_func176(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg176 *arg)
 }
 
 
-void ypaworld_func177(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func177(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg177 *arg)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func177");
+    //Reown sectors for new owner
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    if ( !arg->field_4 ) //New owner
+        return;
+
+    if ( arg->bact == yw->field_1b80 )
+        yw->field_1624 = 1;
+
+    if ( yw->field_1b80 )
+    {
+        if ( yw->field_1b80->owner == arg->field_4 )
+            yw->beamenergy += yw->beam_energy_add;
+    }
+
+    bact_node *v6 = (bact_node *)yw->bact_list.head;
+
+    while ( v6->next )
+    {
+        if ( v6->bact->field_24 == 3 && v6->bact != arg->bact && arg->bact->owner == v6->bact->owner )
+            return;
+
+        v6 = (bact_node *)v6->next;
+    }
+
+    for (int i = 0; i < yw->sectors_maxY2; i++)
+    {
+        for (int j = 0; j < yw->sectors_maxX2; j++)
+        {
+            cellArea *v9 = yw->cells + yw->sectors_maxX2 * i + j;
+
+            if ( v9->owner == arg->bact->owner )
+                sub_44F958(yw, v9, j, i, arg->field_4);
+        }
+    }
+
+    if ( !yw->field_1b80 )
+        return;
+
+    if ( yw->field_1b80->owner != arg->field_4 )
+        return;
+
+    for (int i = 0; i < yw->sectors_maxY2; i++)
+    {
+        for (int j = 0; j < yw->sectors_maxX2; j++)
+        {
+            cellArea *v15 = yw->cells + yw->sectors_maxX2 * i + j;
+
+            if ( v15->field_3A == 4 && v15->owner == yw->field_1b80->owner )
+            {
+
+                if ( yw->field_757E )
+                    sub_47C29C(yw, v15, v15->field_3B);
+                else
+                    yw_ActivateWunderstein(yw, v15, v15->field_3B);
+
+                yw_arg184 arg184;
+                arg184.secX = j;
+                arg184.type = 7;
+                arg184.secY = i;
+                arg184.owner = v15->owner;
+                arg184.last_vhcl = yw->last_modify_vhcl;
+                arg184.last_weapon = yw->last_modify_weapon;
+                arg184.last_build = yw->last_modify_build;
+
+
+                switch(yw->gems[ yw->field_2b78 ].type)
+                {
+                case 25:
+                    arg184.field_4 = 1;
+                    break;
+
+                case 26:
+                    arg184.field_4 = 2;
+                    break;
+
+                case 27:
+                    arg184.field_4 = 3;
+                    break;
+
+                case 28:
+                    arg184.field_4 = 4;
+                    break;
+
+                case 78:
+                    arg184.field_4 = 5;
+                    break;
+
+                case 79:
+                    arg184.field_4 = 6;
+                    break;
+
+                default:
+                    arg184.field_4 = 7;
+                    break;
+
+                }
+                call_method(obj, 184, &arg184);
+            }
+
+        }
+    }
 }
 
 
