@@ -53,7 +53,7 @@ void ypaufo_func3(NC_STACK_ypaufo *obj, class_stru *zis, stack_vals *stak)
 void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, stack_vals *arg)
 {
     dprintf("MAKE ME %s\n","ypaufo_func70");
-    call_parent(zis, obj, 70, arg);
+    //call_parent(zis, obj, 70, arg);
 }
 
 void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, stack_vals *arg)

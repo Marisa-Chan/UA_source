@@ -30,7 +30,10 @@ NC_STACK_ypagun * ypagun_func0(class_stru *clss, class_stru *zis, stack_vals *st
 {
     NC_STACK_ypagun *obj = (NC_STACK_ypagun *)call_parent(zis, clss, 0, stak);
 
-    //field_24 = 9;
+    if (obj)
+    {
+        obj->stack__ypabact.field_24 = 9;
+    }
 
     return obj;
 }
@@ -53,7 +56,7 @@ void ypagun_func3(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *stak)
 void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *arg)
 {
     dprintf("MAKE ME %s\n","ypagun_func70");
-    call_parent(zis, obj, 70, arg);
+    //call_parent(zis, obj, 70, arg);
 }
 
 void ypagun_func71(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *arg)

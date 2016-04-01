@@ -53,7 +53,7 @@ void ypatank_func3(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *stak)
 void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *arg)
 {
     dprintf("MAKE ME %s\n","ypatank_func70");
-    call_parent(zis, obj, 70, arg);
+    //call_parent(zis, obj, 70, arg);
 }
 
 void ypatank_func71(NC_STACK_ypatank *obj, class_stru *zis, stack_vals *arg)
