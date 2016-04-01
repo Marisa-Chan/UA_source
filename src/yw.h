@@ -320,7 +320,7 @@ struct cellArea
     uint8_t owner;
     uint8_t sec_type;
     char field_2E;
-    char field_2F;
+    uint8_t field_2F; // Cell electric power
     uint8_t buildings_health[3][3];
     char field_39; // Who can view this sector (mask)
     char field_3A;
@@ -750,7 +750,7 @@ struct yw_field34
 struct yw_f30
 {
     char owner;
-    char field_1;
+    uint8_t field_1;
 };
 
 struct _NC_STACK_ypaworld
@@ -1263,9 +1263,9 @@ struct BuildProto
 {
     uint8_t sec_type;
     char enable_mask;
-    char model_id;
-    char power;
-    char type_icon;
+    uint8_t model_id;
+    uint8_t power;
+    uint8_t type_icon;
     char name[127];
     int energy;
     vhclSndFX sndfx;
