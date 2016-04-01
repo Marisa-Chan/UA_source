@@ -785,6 +785,10 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
     bact_node *nnode = (bact_node *)yw->bact_list.head;
     while ( nnode->next )
     {
+        bact_node *next_node = (bact_node *)nnode->next;
+
+        //printf("update cl %d tm %d %d\n", nnode->bact->field_24, nnode->bact->owner, nnode->bact->field_3D5);
+
         if (yw->field_757E && nnode->bacto != yw->field_1b78 && nnode->bact->field_24 == 3)
             call_method(nnode->bacto, 116, &yw->field_1b24);
         else
@@ -792,7 +796,7 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
 
         yw->field_1b24.numid++;
 
-        nnode = (bact_node *)nnode->next;
+        nnode = next_node;
     }
 
     call_method(yw->win3d, 257, 0);
