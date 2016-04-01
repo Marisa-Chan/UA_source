@@ -900,6 +900,7 @@ NC_STACK_particle *particle_func5(class_stru *clss, class_stru *zis, MFILE **fil
             call_method(obj, 1);
             return NULL;
         }
+
         if ( !sub_41A954(prtcl) )
         {
             call_method(obj, 1);
@@ -975,9 +976,8 @@ size_t particle_func6(NC_STACK_particle *obj, class_stru *zis, MFILE **file)
 
 void particle_func65__sub0__sub0(__NC_STACK_particle *prtcl, prtcl_tp *tp1, xyz *pos1, xyz *pos2, float a4)
 {
-    prtcl_tp2 *v7 = tp1->field_C;
-    v7++;
-    tp1->field_C = v7;
+    tp1->field_C++;
+
     if (tp1->field_C >= tp1->tp2_end)
         tp1->field_C = tp1->tp2;
 
@@ -995,6 +995,8 @@ void particle_func65__sub0__sub0(__NC_STACK_particle *prtcl, prtcl_tp *tp1, xyz 
     float v13 = sub_4BFE50() + pos1->sy;
     float v14 = sub_4BFE50() + pos1->sz;
     float v16 = 1.0 / sqrt(v12 * v12 + v13 * v13 + v14 * v14);
+
+    prtcl_tp2 *v7 = tp1->field_C;
 
     v7->field_C  = v12 * v16 * prtcl->field_9c;
     v7->field_10 = v13 * v16 * prtcl->field_9c;
@@ -1171,6 +1173,7 @@ void particle_func65__sub0(__NC_STACK_particle *prtcl, prtcl_tp *tp1, area_arg_6
             if ( tp1->field_8 != tp1->field_C )
             {
                 tp1->field_8++;
+
                 if ( tp1->field_8 >= tp1->tp2_end )
                     tp1->field_8 = tp1->tp2;
             }
