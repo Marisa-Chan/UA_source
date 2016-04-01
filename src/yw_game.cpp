@@ -1744,11 +1744,6 @@ void ypaworld_func2__sub0__sub0(_NC_STACK_ypaworld *yw)
 }
 
 
-void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact1, __NC_STACK_ypabact *bact2)
-{
-    dprintf("MAKE ME %s\n", "ypaworld_func2__sub0__sub1");
-}
-
 
 
 NC_STACK_ypabact *yw_createUnit(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int model_id)

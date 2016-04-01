@@ -10385,3 +10385,221 @@ void sb_0x4d7c08__sub0__sub2(_NC_STACK_ypaworld *yw)
 
     call_method(yw->win3d, 209, &a209);
 }
+
+
+
+
+void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact1, __NC_STACK_ypabact *bact2)
+{
+    if ( bact2->field_24 == 3 )
+    {
+        if ( yw->robo_map_status.p1 )
+        {
+            if ( yw->robo_map_status.p2 )
+            {
+                if ( robo_map.cmd_flag & 0x20 )
+                {
+                    robo_map.cmd_flag &= 0xFFFFFFDF;
+                    sub_412D48(&robo_map.frm_1, 0);
+                    yw->field_17bc = 0;
+                }
+
+                if ( !(robo_map.cmd_flag & 0x20) )
+                {
+                    Remove(&robo_map);
+                    AddHead(&yw->field_17a0, &robo_map);
+
+                    sub_412D9C(&robo_map.frm_1);
+                    sub_412D48(&robo_map.frm_1, 0);
+                }
+            }
+            else if ( !(robo_map.cmd_flag & 0x20) )
+            {
+                robo_map.cmd_flag |= 0x20;
+                sub_412D9C(&robo_map.frm_1);
+                yw->field_17bc = 0;
+            }
+
+            robo_map.frm_1.btn_xpos = yw->robo_map_status.p3;
+            robo_map.frm_1.btn_ypos = yw->robo_map_status.p4;
+            robo_map.frm_1.btn_width = yw->robo_map_status.p5;
+            robo_map.frm_1.btn_height = yw->robo_map_status.p6;
+            robo_map.field_1EC = yw->robo_map_status.pX[0];
+            robo_map.field_1ED = yw->robo_map_status.pX[1];
+            robo_map.field_1EE = yw->robo_map_status.pX[2];
+            robo_map.field_208 = yw->robo_map_status.pX[3];
+            robo_map.field_20A = yw->robo_map_status.pX[4];
+            robo_map.field_20C = yw->robo_map_status.pX[5];
+            robo_map.field_20E = yw->robo_map_status.pX[6];
+
+            sub_4C1970(yw, 0);
+        }
+
+        if ( yw->robo_finder_status.p1 )
+        {
+            if ( yw->robo_finder_status.p2 )
+            {
+                if ( squadron_manager.lstvw.cmd_flag & 0x20 )
+                {
+                    squadron_manager.lstvw.cmd_flag &= 0xFFFFFFDF;
+                    sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+
+                    yw->field_17bc = 0;
+                }
+
+                if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
+                {
+                    Remove(&squadron_manager.lstvw);
+                    AddHead(&yw->field_17a0, &squadron_manager.lstvw);
+
+                    sub_412D9C(&squadron_manager.lstvw.frm_1);
+                    sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                }
+            }
+            else if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
+            {
+                squadron_manager.lstvw.cmd_flag |= 0x20;
+                sub_412D9C(&squadron_manager.lstvw.frm_1);
+                yw->field_17bc = 0;
+            }
+
+            squadron_manager.lstvw.frm_1.btn_xpos = yw->robo_finder_status.p3;
+            squadron_manager.lstvw.frm_1.btn_ypos = yw->robo_finder_status.p4;
+            squadron_manager.lstvw.frm_1.btn_width = yw->robo_finder_status.p5;
+            squadron_manager.lstvw.frm_1.btn_height = yw->robo_finder_status.p6;
+
+            lstvw_updlimits(yw, &squadron_manager.lstvw, -2, -2);
+        }
+    }
+    else if ( bact1->field_24 == 3 )
+    {
+        if ( yw->vhcl_map_status.p1 )
+        {
+            if ( yw->vhcl_map_status.p2 )
+            {
+                if ( robo_map.cmd_flag & 0x20 )
+                {
+                    robo_map.cmd_flag &= 0xFFFFFFDF;
+                    sub_412D48(&robo_map.frm_1, 0);
+                    yw->field_17bc = 0;
+                }
+
+                if ( !(robo_map.cmd_flag & 0x20) )
+                {
+                    Remove(&robo_map);
+                    AddHead(&yw->field_17a0, &robo_map);
+
+                    sub_412D9C(&robo_map.frm_1);
+                    sub_412D48(&robo_map.frm_1, 0);
+                }
+            }
+            else if ( !(robo_map.cmd_flag & 0x20) )
+            {
+                robo_map.cmd_flag |= 0x20;
+                sub_412D9C(&robo_map.frm_1);
+                yw->field_17bc = 0;
+            }
+
+            robo_map.frm_1.btn_xpos = yw->vhcl_map_status.p3;
+            robo_map.frm_1.btn_ypos = yw->vhcl_map_status.p4;
+            robo_map.frm_1.btn_width = yw->vhcl_map_status.p5;
+            robo_map.frm_1.btn_height = yw->vhcl_map_status.p6;
+            robo_map.field_1EC = yw->vhcl_map_status.pX[0];
+            robo_map.field_1ED = yw->vhcl_map_status.pX[1];
+            robo_map.field_1EE = yw->vhcl_map_status.pX[2];
+            robo_map.field_208 = yw->vhcl_map_status.pX[3];
+            robo_map.field_20A = yw->vhcl_map_status.pX[4];
+            robo_map.field_20C = yw->vhcl_map_status.pX[5];
+            robo_map.field_20E = yw->vhcl_map_status.pX[6];
+
+            sub_4C1970(yw, 0);
+        }
+
+        if ( yw->vhcl_finder_status.p1 )
+        {
+            if ( yw->vhcl_finder_status.p2 )
+            {
+                if ( squadron_manager.lstvw.cmd_flag & 0x20 )
+                {
+                    squadron_manager.lstvw.cmd_flag &= 0xFFFFFFDF;
+                    sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                    yw->field_17bc = 0;
+                }
+
+                if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
+                {
+                    Remove(&squadron_manager.lstvw);
+                    AddHead(&yw->field_17a0, &squadron_manager.lstvw);
+
+                    sub_412D9C(&squadron_manager.lstvw.frm_1);
+                    sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                }
+            }
+            else if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
+            {
+                squadron_manager.lstvw.cmd_flag |= 0x20;
+                sub_412D9C(&squadron_manager.lstvw.frm_1);
+                yw->field_17bc = 0;
+            }
+
+            squadron_manager.lstvw.frm_1.btn_xpos = yw->vhcl_finder_status.p3;
+            squadron_manager.lstvw.frm_1.btn_ypos = yw->vhcl_finder_status.p4;
+            squadron_manager.lstvw.frm_1.btn_width = yw->vhcl_finder_status.p5;
+            squadron_manager.lstvw.frm_1.btn_height = yw->vhcl_finder_status.p6;
+
+            lstvw_updlimits(yw, &squadron_manager.lstvw, -2, -2);
+        }
+    }
+    else if ( bact1->field_3D5 == 2 )
+    {
+        if ( yw->vhcl_map_status.p1 )
+        {
+            if ( yw->vhcl_map_status.p2 )
+            {
+                if ( robo_map.cmd_flag & 0x20 )
+                {
+                    robo_map.cmd_flag &= 0xFFFFFFDF;
+                    sub_412D48(&robo_map.frm_1, 0);
+                    yw->field_17bc = 0;
+                }
+
+                if ( !(robo_map.cmd_flag & 0x20) )
+                {
+                    Remove(&robo_map);
+                    AddHead(&yw->field_17a0, &robo_map);
+
+                    sub_412D9C(&robo_map.frm_1);
+                    sub_412D48(&robo_map.frm_1, 0);
+                }
+            }
+        }
+
+        if ( yw->vhcl_finder_status.p1 )
+        {
+            if ( yw->vhcl_finder_status.p2 )
+            {
+                if ( squadron_manager.lstvw.cmd_flag & 0x20 )
+                {
+                    squadron_manager.lstvw.cmd_flag &= 0xFFFFFFDF;
+                    sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                    yw->field_17bc = 0;
+                }
+
+                if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
+                {
+                    Remove(&squadron_manager.lstvw);
+                    AddHead(&yw->field_17a0, &squadron_manager.lstvw);
+
+                    sub_412D9C(&squadron_manager.lstvw.frm_1);
+                    sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                }
+            }
+        }
+
+        if ( bact2->field_24 != 3 )
+            yw->field_1a20 = 1;
+    }
+
+    if ( bact2->field_24 != 3 )
+        robo_map.field_1ED = 1;
+}
