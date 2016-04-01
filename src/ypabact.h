@@ -5,6 +5,10 @@
 #include "engine_tform.h"
 #include "base.h"
 
+
+// !!!! if period is small, then this never happen
+#define BACT_MIN_ANGLE 0.0002
+
 extern class_stored ypabact_class_off;
 
 struct NC_STACK_ypabact;
@@ -111,9 +115,7 @@ struct __NC_STACK_ypabact : public nnode
     mat3x3 field_651;
     float height;
     float field_679;
-    float field_67D;
-    float field_681;
-    float field_685;
+    xyz field_67D;
     vhclBases vp_normal;
     vhclBases vp_fire;
     vhclBases vp_wait;
@@ -149,13 +151,13 @@ struct __NC_STACK_ypabact : public nnode
 
     int field_94D;
     int field_951;
-
+    int field_955;
     int field_959;
     int field_95D;
     xyz field_961;
-    char weapon;
+    int weapon;
     char field_96E;
-    char mgun;
+    int mgun;
     char num_weapons;
     nlist list3;
     int field_97D;
@@ -164,7 +166,7 @@ struct __NC_STACK_ypabact : public nnode
     float fire_z;
     float gun_angle;
     float gun_angle2;
-    int field_995;
+    float field_995;
     float gun_radius;
     float gun_power;
     int field_9A1;
@@ -173,6 +175,8 @@ struct __NC_STACK_ypabact : public nnode
     float field_9AD;
     __NC_STACK_ypabact *field_9B1;
     int16_t field_9B5;
+    int16_t field_9B6;
+    int field_9b8;
 
     float field_a14;
     float field_a18;
@@ -321,6 +325,69 @@ struct bact_hudi
     float field_10;
     float field_14;
     __NC_STACK_ypabact *field_18;
+};
+
+struct bact_arg105
+{
+    xyz field_0;
+    float field_C;
+    int field_10;
+};
+
+struct bact_arg106
+{
+    int field_0;
+    xyz field_4;
+    __NC_STACK_ypabact *ret_bact;
+};
+
+struct bact_arg79
+{
+    xyz field_0;
+    xyz fire_point;
+    int field_18;
+    __NC_STACK_ypabact *field_1C;
+    xyz field_20;
+    int field_2C;
+    int field_30;
+    int field_34;
+};
+
+struct bact_arg75
+{
+    xyz field_0;
+    __NC_STACK_ypabact *bct;
+    int field_x;
+    float field_14;
+    int field_18;
+};
+
+struct bact_arg110
+{
+    int field_one;
+    int field_two;
+};
+
+struct bact_arg86
+{
+    int field_one;
+    int field_two;
+};
+
+struct bact_arg101
+{
+    xyz pos;
+    int unkn;
+    float radius;
+};
+
+struct bact_arg83
+{
+    int energ;
+    xyz pos;
+    xyz pos2;
+    float force;
+    float mass;
 };
 
 
