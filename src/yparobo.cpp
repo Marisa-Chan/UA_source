@@ -6152,7 +6152,7 @@ void yparobo_func77(NC_STACK_yparobo *obj, class_stru *zis, void *)
                 arg177.field_4 = bact->field_9B5;
                 arg177.bact = bact;
 
-                call_method(robo->wrld, 177, &arg177);
+                call_method(robo->wrld, 177, &arg177); //Reown sectors for new owner
             }
         }
 
@@ -6165,6 +6165,7 @@ void yparobo_func77(NC_STACK_yparobo *obj, class_stru *zis, void *)
             while(subnode->next)
             {
                 bact_node *next2 = (bact_node *)subnode->next;
+
                 subnode->bact->field_9B1 = bact->field_9B1;
 
                 if ( bact->field_3D6 & 0x2000000 )
@@ -6481,7 +6482,7 @@ void yparobo_func82(NC_STACK_yparobo *obj, class_stru *zis, ypabact_arg65 *arg)
         }
         else
         {
-            robo->field_505 = (int)v65 * v64 / 7000.0;
+            robo->field_505 = v65 * v64 / 7000.0;
             float v71 = v70 / 7000.0;
             if ( bact->owner == bact->p_cell_area->owner )
             {
@@ -7031,6 +7032,7 @@ int yparobo_func133(NC_STACK_yparobo *obj, class_stru *zis, robo_arg133 *arg)
         call_method(next_bact, 67, &arg67); //Set target
 
         call_vtbl(next_bact, 3, 0x80001003, &bact_intern, 0);
+
         call_vtbl(next_bact, 2, 0x80001007, v32, 0);
 
         if ( arg->field_14 & 1 )

@@ -1174,22 +1174,30 @@ int WeaponProtoParser(scrCallBack *arg)
     if ( !arg->field_18 )
     {
         arg->dataForStore = NULL;
+
         WeapProto *wpn;
+
         if ( !strcasecmp(_p1, "new_weapon") )
         {
             int wpn_id = strtol(_p2, NULL, 0);
+
             if ( wpn_id >= 128 )
                 return 4;
+
             wpn = &yw->WeaponProtos[wpn_id];
+
             if ( wpn->wireframe )
             {
                 delete_class_obj(wpn->wireframe);
                 wpn->wireframe = NULL;
             }
+
             memset(wpn, 0, sizeof(WeapProto));
+
             wpn->field_0 = 4;
 
             memset(wpn->name, 0, sizeof(wpn->name));
+
             wpn->energy = 10000;
             wpn->mass = 50.0;
             wpn->force = 5000.0;
