@@ -2223,9 +2223,11 @@ void ypaworld_func151(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
-void ypaworld_func153(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func153(NC_STACK_ypaworld *obj, class_stru *zis, bact_hudi *arg)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func153");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    yw->hudi = *arg;
 }
 
 void sub_46D2B4(NC_STACK_ypaworld *obj, UserData *usr)
