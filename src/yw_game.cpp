@@ -1021,6 +1021,8 @@ void yw_InitSuperItems(_NC_STACK_ypaworld *yw)
 
 void sub_44F748(_NC_STACK_ypaworld *yw)
 {
+    // Apply power to sectors and clean power matrix for next compute iteration.
+
     for (int y = 0; y < yw->sectors_maxY2; y++)
     {
         for (int x = 0; x < yw->sectors_maxX2; x++)
@@ -1029,12 +1031,12 @@ void sub_44F748(_NC_STACK_ypaworld *yw)
             yw_f30 *tt = &yw->field_30[ x + y * 64 ];
 
             tt->owner = cell->owner;
-            cell->field_2F = tt->field_1;
-            tt->field_1 = 0;
+            cell->field_2F = tt->field_1; // Apply power to cell
+            tt->field_1 = 0; // Clean matrix's power
         }
     }
 
-    yw->field_3c = 0;
+    yw->field_3c = 0; // Next power station for recompute power is first
 }
 
 
