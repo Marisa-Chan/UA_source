@@ -493,8 +493,10 @@ void ypaworld_func2__sub0(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stack_
 
                 if ( tmp != yw->field_1b7c )
                 {
-                    if ( yw->field_1b84 )
-                        yw->field_241c = yw->field_1b84->ypabact__id;
+                    __NC_STACK_ypabact *v8 = yw->field_1b84;
+
+                    if ( v8 )
+                        yw->field_241c = v8->ypabact__id;
 
                     yw->field_1b7c = tmp;
                     call_vtbl(tmp, 3, 0x80001003, &yw->field_1b84, 0);
@@ -510,8 +512,8 @@ void ypaworld_func2__sub0(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stack_
                     }
                     ypaworld_func2__sub0__sub0(yw);
 
-                    if ( yw->field_1b84 )
-                        ypaworld_func2__sub0__sub1(yw, yw->field_1b84, yw->field_1b84);
+                    if ( v8 )
+                        ypaworld_func2__sub0__sub1(yw, v8, yw->field_1b84);
                 }
             }
             break;
