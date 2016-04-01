@@ -26,4 +26,6 @@ struct scrCallBack
 
 int def_parseFile(const char *filename, int num, scrCallBack *callbacks, int flag);
 
+int sb_0x4d9f1c(FILE *fil, const char *filename, int callbacks_num, scrCallBack *callbacks, int *line_number, int flag);
+
 #endif //DEFPARSER_H_INCLUDED
