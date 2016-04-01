@@ -783,6 +783,8 @@ void sub_481F94(__NC_STACK_ypabact *bact)
 
     while (node->next)
     {
+        bact_node * next_node = (bact_node *)node->next; // Save next node before remove
+
         int a4;
         call_vtbl(node->bacto, 3, 0x8000100B, &a4, 0);
 
@@ -801,7 +803,7 @@ void sub_481F94(__NC_STACK_ypabact *bact)
             call_method(bact->self, 118, node->bacto);
         }
 
-        node = (bact_node *)node->next;
+        node = next_node;
     }
 }
 
@@ -878,8 +880,9 @@ void ypabact_func65(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
     bact_node *vnod = (bact_node *)bact->list3.head;
     while(vnod->next)
     {
+        bact_node *next_vnod = (bact_node *)vnod->next;
         call_method(vnod->bacto, 65, arg);
-        vnod = (bact_node *)vnod->next;
+        vnod = next_vnod;
     }
 
     sub_481F94(bact);
@@ -940,11 +943,13 @@ void ypabact_func65(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
 
     while (bnod->next)
     {
+        bact_node *next_node = (bact_node *)bnod->next;
+
         call_method(bnod->bacto, 65, arg);
 
         arg->numid++;
 
-        bnod = (bact_node *)bnod->next;
+        bnod = next_node;
     }
 
     arg->numid = numbid;

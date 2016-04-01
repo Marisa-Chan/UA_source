@@ -6164,6 +6164,7 @@ void yparobo_func77(NC_STACK_yparobo *obj, class_stru *zis, void *)
 
             while(subnode->next)
             {
+                bact_node *next2 = (bact_node *)subnode->next;
                 subnode->bact->field_9B1 = bact->field_9B1;
 
                 if ( bact->field_3D6 & 0x2000000 )
@@ -6189,10 +6190,12 @@ void yparobo_func77(NC_STACK_yparobo *obj, class_stru *zis, void *)
 
                 call_vtbl(subnode->bacto, 2, 0x8000100B, a4, 0);
 
-                subnode = (bact_node *)subnode->next;
+                subnode = next2;
             }
 
-            node = (bact_node *)node->next;
+
+            bact_node *next1 = (bact_node *)node->next;
+            node = next1;
         }
 
         NC_STACK_ypabact *v20;
