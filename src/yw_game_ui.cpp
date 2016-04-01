@@ -5951,8 +5951,7 @@ char * ypaworld_func64__sub7__sub3__sub0__sub3(_NC_STACK_ypaworld *yw, char *cur
 
     fntcmd_next_line(&pcur);
 
-    fntcmd_store_u8(&pcur, 16);
-    fntcmd_store_u8(&pcur, 28);
+    fntcmd_reset_tileset(&pcur, 28);
 
     fntcmd_set_yoff(&pcur, yw->tiles[28]->font_height - yw->field_1a38);
 
