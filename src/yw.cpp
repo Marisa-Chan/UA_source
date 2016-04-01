@@ -6829,6 +6829,7 @@ void ypaworld_func180(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg180 *arg)
             {
                 arg66.field_0 = 1;
                 arg66.field_4 = 0;
+                arg66.funcID = 71;
                 arg66.vals = &arg71;
 
                 call_method(yw->input_class, 66, &arg66);
