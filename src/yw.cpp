@@ -751,14 +751,15 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
     }
 
 
-
-
     // View all =)
-//    for (int i = 0; i < yw->sectors_maxY2 * yw->sectors_maxX2; i++)
+//    for (int i = 0; i < yw->sectors_maxY2 - 1; i++)
 //    {
-//        cellArea *tmp = yw->cells + i;
+//        for (int j = 0; j <  yw->sectors_maxX2 - 1; j++)
+//        {
+//            cellArea *tmp = yw->cells + j + i * yw->sectors_maxX2;
 //
-//        tmp->field_39 |= 1 << 1;
+//            tmp->field_39 |= 1 << 1;
+//        }
 //    }
 
 
