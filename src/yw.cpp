@@ -1854,9 +1854,177 @@ NC_STACK_ypabact *ypaworld_func146(NC_STACK_ypaworld *obj, class_stru *zis, ypaw
 }
 
 
-void ypaworld_func147(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+NC_STACK_ypabact *ypaworld_func147(NC_STACK_ypaworld *obj, class_stru *zis, ypaworld_arg146 *arg)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func147");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    if ( arg->vehicle_id > 128 )
+        return NULL;
+
+    WeapProto *wproto = &yw->WeaponProtos[arg->vehicle_id];
+
+    if ( !(wproto->model_id & 1) )
+        return NULL;
+
+    NC_STACK_ypabact *wobj = (NC_STACK_ypabact *)yw_createUnit(obj, yw, wproto->field_0);
+
+    if ( !wobj )
+        return NULL;
+
+    __NC_STACK_ypabact *wbact = &wobj->stack__ypabact;
+    //call_vtbl(wobj, 3, 0x80001003, &wbact, 0);
+
+    wbact->energy = wproto->energy;
+    wbact->energy_2 = wproto->energy;
+    wbact->shield = 0;
+    wbact->mass = wproto->mass;
+    wbact->force = wproto->force;
+    wbact->maxrot = wproto->maxrot;
+    wbact->height = wproto->field_8D8;
+    wbact->radius = wproto->radius;
+    wbact->vwr_radius = wproto->vwr_radius;
+    wbact->overeof = wproto->overeof;
+    wbact->vwr_overeof = wproto->vwr_overeof;
+    wbact->airconst = wproto->airconst;
+    wbact->airconst2 = wproto->airconst;
+    wbact->adist_sector = wproto->field_890;
+    wbact->adist_bact = wproto->field_894;
+    wbact->id = arg->vehicle_id;
+    wbact->weapon = 0;
+
+    wbact->vp_normal =   yw->vhcls_models[wproto->vp_normal];
+    wbact->vp_fire =     yw->vhcls_models[wproto->vp_fire];
+    wbact->vp_dead =     yw->vhcls_models[wproto->vp_dead];
+    wbact->vp_wait =     yw->vhcls_models[wproto->vp_wait];
+    wbact->vp_megadeth = yw->vhcls_models[wproto->vp_megadeth];
+    wbact->vp_genesis =  yw->vhcls_models[wproto->vp_genesis];
+
+    for (int i = 0; i < 16; i++)
+        wbact->dest_fx[i] = wproto->dfx[i];
+
+    int v11;
+
+    switch(wproto->model_id)
+    {
+    case 1:
+        v11 = 1;
+        break;
+
+    case 7:
+        v11 = 3;
+        break;
+
+    case 11:
+        v11 = 5;
+        break;
+
+    case 17:
+        v11 = 4;
+        break;
+
+    default:
+        v11 = 2;
+        break;
+    }
+
+    call_vtbl(
+        wobj,
+        2,
+        0x80002004,
+        wproto->life_time,
+        0x80002005,
+        wproto->delay_time,
+        0x80002006,
+        wproto->drive_time,
+        0x80002002,
+        v11,
+        0x80002008,
+        (int)(wproto->energy_heli * 1000.0),
+        0x80002009,
+        (int)(wproto->energy_tank * 1000.0),
+        0x8000200A,
+        (int)(wproto->energy_flyer * 1000.0),
+        0x8000200B,
+        (int)(wproto->energy_robo * 1000.0),
+        0x8000200C,
+        (int)wproto->radius_heli,
+        0x8000200D,
+        (int)wproto->radius_tank,
+        0x8000200E,
+        (int)wproto->radius_flyer,
+        0x8000200F,
+        (int)wproto->radius_robo,
+        0);
+
+    sub_423DB0(&wbact->field_5A);
+
+    for (int i = 0; i < 3; i++)
+        sub_44BF34(&wproto->sndFXes[i]);
+
+    for (int i = 0; i < 3; i++)
+    {
+        userdata_sample_info *v25 = &wbact->field_5A.samples_data[i];
+
+        v25->volume = wproto->sndFXes[i].volume;
+        v25->pitch = wproto->sndFXes[i].pitch;
+
+        if ( i == 0 )
+            v25->field_12 |= 1;
+
+        if ( wproto->sndFXes[i].single_sample )
+            call_vtbl(wproto->sndFXes[i].single_sample, 3, 0x80002000, v25, 0);
+        else
+            v25->field_0 = 0;
+
+        if ( wproto->sndFXes[i].sndPrm.slot )
+        {
+            v25->field_12 |= 8;
+            v25->field_4 = &wproto->sndFXes[i].sndPrm;
+        }
+        else
+        {
+            v25->field_12 &= 0xF7;
+        }
+
+        if ( wproto->sndFXes[i].sndPrm_shk.slot )
+        {
+            v25->field_12 |= 0x40;
+            v25->field_8 = &wproto->sndFXes[i].sndPrm_shk;
+        }
+        else
+        {
+            v25->field_12 &= 0xBF;
+        }
+
+        if ( wproto->sndFXes[i].extCount )
+        {
+            v25->field_13 |= 2;
+            v25->field_C = &wproto->sndFXes[i].extCount;
+        }
+        else
+        {
+            v25->field_13 &= 0xFD;
+        }
+    }
+
+    call_method(wobj, 2, wproto->stack);
+
+    bact_arg80 arg80;
+
+    arg80.pos = arg->pos;
+    arg80.field_C = 1;
+
+    call_method(wobj, 80,  &arg80);
+
+    bact_arg119 arg119;
+
+    arg119.field_4 = 0;
+    arg119.field_8 = 0;
+    arg119.field_0 = 1;
+
+    call_method(wobj, 119,  &arg119);
+
+    return wobj;
 }
 
 
