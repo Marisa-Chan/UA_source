@@ -167,15 +167,17 @@ void  sub_44F500(_NC_STACK_ypaworld *yw, int id)
 {
     yw_field34 *fld34 = &yw->field_34[id];
 
-    if ( fld34->p_cell )
+    cellArea *cell = fld34->p_cell;
+
+    if ( cell )
     {
-        fld34->p_cell = 0;
+        fld34->p_cell = NULL;
 
         if ( id == yw->field_38 - 1 )
             yw->field_38--;
 
-        fld34->p_cell->field_3B = 0;
-        fld34->p_cell->field_3A = 0;
+        cell->field_3B = 0;
+        cell->field_3A = 0;
 
         if ( yw->blg_map )
         {
