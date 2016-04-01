@@ -808,10 +808,509 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
     //exit(1);
 }
 
-
-void ypaworld_func129(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void sub_47C1EC(_NC_STACK_ypaworld *yw, gemProto *gemProt, int *a3, int *a4)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func129");
+    switch ( yw->GameShell->field_0x1cd4 )
+    {
+    case 1:
+        *a3 = gemProt->nw_vproto_num_1;
+        *a4 = gemProt->nw_bproto_num_1;
+        break;
+
+    case 6:
+        *a3 = gemProt->nw_vproto_num_2;
+        *a4 = gemProt->nw_bproto_num_2;
+        break;
+
+    case 3:
+        *a3 = gemProt->nw_vproto_num_3;
+        *a4 = gemProt->nw_bproto_num_3;
+        break;
+
+    case 4:
+        *a3 = gemProt->nw_vproto_num_4;
+        *a4 = gemProt->nw_bproto_num_4;
+        break;
+
+    default:
+        *a3 = 0;
+        *a4 = 0;
+        break;
+    }
+}
+
+void sub_47C29C(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
+{
+    gemProto *v17 = &yw->gems[a3];
+
+    int a3a, a4;
+    sub_47C1EC(yw, v17, &a3a, &a4);
+
+    yw->field_2b78 = a3;
+    yw->field_2b7c = yw->field_1614;
+    yw->last_modify_vhcl = a3a;
+    yw->last_modify_weapon = 0;
+    yw->last_modify_build = a4;
+
+    if ( a3a )
+    {
+        yw->VhclProtos[a3a].disable_enable_bitmask = 0;
+        yw->VhclProtos[a3a].disable_enable_bitmask |= 1 << yw->GameShell->field_0x1cd4;
+    }
+
+    if ( a4 )
+    {
+        yw->BuildProtos[a4].enable_mask = 0;
+        yw->BuildProtos[a4].enable_mask |= 1 << yw->GameShell->field_0x1cd4;
+    }
+
+    char v11[128];
+
+    strcpy(v11, get_lang_string(yw->string_pointers_p2, 221, "TECHNOLOGY UPGRADE!\n"));
+
+    yw_arg159 v14;
+    v14.txt = v11;
+    v14.unit = 0;
+    v14.field_4 = 48;
+
+    if ( v17->type )
+        v14.field_C = v17->type;
+    else
+        v14.field_C = 0;
+
+    call_method(yw->self_full, 159, &v14);
+
+    if ( yw->field_757E )
+    {
+        if ( yw->netgame_exclusivegem )
+        {
+            char v13[20];
+//      *(_DWORD *)v13 = 1020;
+//      v13[12] = yw->GameShell->field_0x1cd4;
+//      *(_WORD *)&v13[18] = 1;
+//      *(_WORD *)&v13[16] = v16;
+
+            yw_arg181 arg181;
+            arg181.field_10 = 0;
+            arg181.val_size = 20;
+            arg181.field_18 = 1;
+            arg181.field_14 = 2;
+            arg181.value = v13;
+
+            call_method(yw->self_full, 181, &arg181);
+        }
+    }
+
+    cell->field_3A = 7;
+}
+
+void ypaworld_func129__sub1(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
+{
+    gemProto *v18 = &yw->gems[a3];
+
+    int a3a;
+    int a4;
+
+    sub_47C1EC(yw, v18, &a3a, &a4);
+
+    if ( a3a )
+        yw->VhclProtos[a3a].disable_enable_bitmask = 0;
+
+    if ( a4 )
+        yw->BuildProtos[a4].enable_mask = 0;
+
+    char v13[128];
+
+    strcpy(v13, get_lang_string(yw->string_pointers_p2, 229, "TECH-UPGRADE LOST!  "));
+    strcat(v13, v18->msg_default);
+
+    yw_arg159 arg159;
+    arg159.unit = 0;
+    arg159.field_4 = 80;
+    arg159.txt = v13;
+    arg159.field_C = 29;
+
+    call_method(yw->self_full, 159, &arg159);
+
+    if ( yw->field_757E )
+    {
+        char v15[20];
+//    *(_DWORD *)v15 = 1020;
+//    v15[12] = yw->GameShell->field_0x1cd4;
+//    *(_WORD *)&v15[18] = 0;
+//    *(_WORD *)&v15[16] = a3;
+
+        yw_arg181 arg181;
+        arg181.field_14 = 2;
+        arg181.val_size = 20;
+        arg181.field_10 = 0;
+        arg181.field_18 = 1;
+        arg181.value = v15;
+
+        call_method(yw->self_full, 181, &arg181);
+    }
+
+    cell->field_3B = 0;
+    cell->field_3A = 0;
+}
+
+void sb_0x44f820__sub0(_NC_STACK_ypaworld *yw, int a2, int a3)
+{
+    if ( a2 != a3 )
+    {
+        char *a2a = yw->LevelNet->mapInfos[ yw->field_2d90->levelID ].mapPath;
+
+        FILE *fil = FOpen(a2a, "r");
+
+        if ( fil )
+        {
+            char v12[256];
+
+            int lnid = 1;
+
+            while ( a2 >= lnid )
+            {
+                fgets(v12, 255, fil);
+                lnid++;
+            }
+
+            char v11[256];
+            strcpy(v11, get_prefix_replacement("rsrc"));
+
+            set_prefix_replacement("rsrc", "data:");
+
+            scrCallBack a1[3];
+
+            memset(a1, 0, sizeof(a1));
+
+            a1[0].world = yw;
+            a1[1].func = WeaponProtoParser;
+            a1[1].world = yw;
+            a1[2].func = BuildProtoParser;
+            a1[2].world2 = yw;
+            a1[0].func = VhclProtoParser;
+
+            int v10 = 2;
+
+            while ( v10 == 2 && lnid < a3 )
+                v10 = sb_0x4d9f1c(fil, a2a, 3, a1, &lnid, 1);
+
+
+            if ( v10 == 3 )
+                ypa_log_out("GEM PARSE ERROR: Unknown Keyword, Script <%s> Line #%d\n", a2a, lnid);
+            else if ( v10 == 4 )
+                ypa_log_out("GEM PARSE ERROR: Bogus Data, Script <%s> Line #%d\n", a2a, lnid);
+            else if ( v10 == 5 )
+                ypa_log_out("GEM PARSE ERROR: Unexpected EOF, Script <%s> Line #%d\n", a2a, lnid);
+
+            set_prefix_replacement("rsrc", v11);
+
+            FClose(fil);
+        }
+    }
+}
+
+void yw_ActivateWunderstein(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
+{
+    yw->last_modify_vhcl = 0;
+    yw->last_modify_build = 0;
+    yw->last_modify_weapon = 0;
+
+    yw->field_2b78 = a3;
+    yw->field_2b7c = yw->field_1614;
+
+    gemProto *v4 = &yw->gems[a3];
+
+    if ( v4->script[0] )
+    {
+        if ( !sub_4DA354(yw, v4->script) )
+            ypa_log_out("yw_ActivateWunderstein: ERROR parsing script %s.\n", v4->script);
+    }
+    else
+    {
+        sb_0x44f820__sub0(yw, v4->begin_action__line, v4->end_action__line);
+    }
+
+    char v9[256];
+
+    strcpy(v9, get_lang_string(yw->string_pointers_p2, 221, "TECHNOLOGY UPGRADE!\n"));
+
+    yw_arg159 arg159;
+    arg159.unit = NULL;
+    arg159.field_4 = 48;
+    arg159.txt = v9;
+
+    if ( v4->type )
+        arg159.field_C = v4->type;
+    else
+        arg159.field_C = 0;
+
+    call_method(yw->self_full, 159, &arg159);
+
+    cell->field_3A = 7;
+}
+
+void sub_44FD6C(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int a5, int a6, int a7)
+{
+    __NC_STACK_ypabact *cbact = yw->current_bact;
+
+    int v8 = abs(cbact->field_c - secX);
+    int v9 = abs(cbact->field_10 - secY);
+
+    if ( v8 + v9 <= (yw->field_1368 - 1) / 2 )
+    {
+        cityBases *v10 = &yw->legos[  yw->secTypes[cell->sec_type].buildings[a5][a6]->health_models[a7]  ];
+
+        float v32 = secX * 1200.0 + 600.0;
+        float v27 = -(secY * 1200.0 + 600.0);
+
+        if ( cell->field_2E != 1 )
+        {
+            v32 += (a5 - 1) * 300.0;
+            v27 += (a6 - 1) * 300.0;
+        }
+
+        for (int i = 0; i < yw->fxnumber; i++)
+        {
+            if ( !v10->field_14[i] )
+                break;
+
+            ypaworld_arg146 arg146;
+            arg146.vehicle_id = v10->field_14[i];
+            arg146.pos.sx = v32 + v10->field_24[i].pos_x;
+            arg146.pos.sy = cell->sector_height_meters + v10->field_24[i].pos_y;
+            arg146.pos.sz = v27 + v10->field_24[i].pos_z;
+
+            NC_STACK_ypabact *boom = (NC_STACK_ypabact *)call_method(yw->self_full, 146, &arg146);
+
+            if ( boom )
+            {
+                __NC_STACK_ypabact *a4 = &boom->stack__ypabact;
+                //call_vtbl(boom, 3, 0x80001003, &a4, 0);
+                a4->owner = 0;
+
+                bact_arg119 arg78;
+                arg78.field_0 = 2;
+                arg78.field_4 = 1024;
+                arg78.field_8 = 0;
+                call_method(boom, 78, &arg78);
+
+                call_method(yw->self_full, 134, boom);
+
+                bact_arg83 arg83;
+                arg83.pos.sx = arg146.pos.sx;
+                arg83.pos.sy = arg146.pos.sy;
+                arg83.energ = 40000;
+                arg83.pos.sz = arg146.pos.sz;
+                arg83.pos2.sx = v10->field_24[i].pos_x;
+                arg83.pos2.sy = -150.0;
+                arg83.pos2.sz = v10->field_24[i].pos_z;
+
+                float tmp = sqrt(POW2(arg83.pos2.sx) + POW2(arg83.pos2.sy) + POW2(arg83.pos2.sz));
+
+                if ( tmp > 0.1 )
+                {
+                    float v15 = 1.0 / tmp;
+                    arg83.pos2.sx *= v15;
+                    arg83.pos2.sy *= v15;
+                    arg83.pos2.sz *= v15;
+                }
+
+                arg83.force = 30.0;
+                arg83.mass = 50.0;
+
+                call_method(boom, 83, &arg83);
+            }
+        }
+    }
+}
+
+void ypaworld_func129__sub0(_NC_STACK_ypaworld *yw, cellArea *cell, yw_arg129 *arg)
+{
+    if ( cell->field_3A == 2 )
+    {
+        if ( cell->owner == yw->field_1b80->owner )
+        {
+            if ( arg->unit )
+            {
+                if ( yw->field_1b80->owner != arg->unit->owner && yw->field_1614 - yw->field_1a1c > 5000 )
+                {
+                    yw->field_1a1c = yw->field_1614;
+
+                    yw_arg159 arg159;
+                    arg159.unit = NULL;
+                    arg159.field_4 = 77;
+                    arg159.txt = NULL;
+                    arg159.field_C = 33;
+
+                    call_method(yw->self_full, 159, &arg159);
+                }
+            }
+        }
+    }
+}
+
+
+
+void ypaworld_func129(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg129 *arg)
+{
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    int secX = arg->pos.sx / 1200.0;
+    int secY = -arg->pos.sz / 1200.0;
+
+    if ( secX > 0 && yw->sectors_maxX2 - 1 > secX && secY > 0 && yw->sectors_maxY2 - 1 > secY )
+    {
+        cellArea *cell = &yw->cells[secX + yw->sectors_maxX2 * secY];
+
+        int v8 = (int)(arg->pos.sx / 150.0) % 8;
+
+        int v10;
+
+        if ( v8 < 3 )
+            v10 = 1;
+        else if ( v8 < 5)
+            v10 = 2;
+        else
+            v10 = 3;
+
+        v8 = (int)(-arg->pos.sz / 150.0) % 8;
+
+        int v14;
+
+        if ( v8 < 3 )
+            v14 = 1;
+        else if ( v8 < 5)
+            v14 = 2;
+        else
+            v14 = 3;
+
+        if ( v10 && v14 && cell->field_3A != 1 )
+        {
+            int v38;
+            int a5;
+
+            if ( cell->field_2E == 1 )
+            {
+                v38 = 0;
+                a5 = 0;
+            }
+            else
+            {
+                a5 = v10 - 1;
+                v38 = 2 - (v14 - 1);
+            }
+
+            int v16 = cell->buildings_health[a5][v38];
+
+            int v34 = v16 - arg->field_10 * (100 - yw->legos[  yw->secTypes[cell->sec_type].buildings[a5][v38]->health_models[  yw->build_hp_ref[v16]  ]  ].field_10 ) / 100 / 400;
+
+            if ( v34 < 0 )
+                v34 = 0;
+            else if ( v34 > 255 )
+                v34 = 255;
+
+            int v18 = yw->build_hp_ref[v16];
+            int v36 = yw->build_hp_ref[v34];
+
+            if ( v18 > v36 )
+            {
+                while ( v18 > v36 )
+                {
+                    sub_44FD6C(yw, cell, secX, secY, a5, v38, v18);
+
+                    v18--;
+                }
+            }
+            else if ( v18 < v36 )
+            {
+                while ( v18 < v36 )
+                {
+                    sub_44FD6C(yw, cell, secX, secY, a5, v38, v18);
+
+                    v18++;
+                }
+            }
+
+            cell->buildings_health[a5][v38] = v34;
+
+            ypaworld_func129__sub0(yw, cell, arg);
+
+            sb_0x44fc60(yw, cell, secX, secY, arg->field_14, arg);
+
+            if ( cell->field_3A == 4 )
+            {
+                if ( yw->field_1b80 && yw->field_1b80->owner == cell->owner )
+                {
+                    if ( yw->field_757E )
+                        sub_47C29C(yw, cell, cell->field_3B);
+                    else
+                        yw_ActivateWunderstein(yw, cell, cell->field_3B);
+
+                    yw_arg184 arg184;
+                    arg184.secX = secX;
+                    arg184.type = 7;
+                    arg184.secY = secY;
+                    arg184.owner = cell->owner;
+                    arg184.last_vhcl = yw->last_modify_vhcl;
+                    arg184.last_weapon = yw->last_modify_weapon;
+                    arg184.last_build = yw->last_modify_build;
+
+                    switch(yw->gems[ yw->field_2b78 ].type)
+                    {
+                    case 25:
+                        arg184.field_4 = 1;
+                        break;
+
+                    case 26:
+                        arg184.field_4 = 2;
+                        break;
+
+                    case 27:
+                        arg184.field_4 = 3;
+                        break;
+
+                    case 28:
+                        arg184.field_4 = 4;
+                        break;
+
+                    case 78:
+                        arg184.field_4 = 5;
+                        break;
+
+                    case 79:
+                        arg184.field_4 = 6;
+                        break;
+
+                    default:
+                        arg184.field_4 = 7;
+                        break;
+
+                    }
+
+                    call_method(obj, 184, &arg184);
+                }
+            }
+            else if ( cell->field_3A == 7 )
+            {
+                if ( yw->field_757E )
+                {
+                    int v27 = 0;
+
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            v27 += cell->buildings_health[i][j];
+                        }
+                    }
+
+                    if ( !v27 )
+                        ypaworld_func129__sub1(yw, cell, cell->field_3B);
+                }
+            }
+        }
+    }
 }
 
 
