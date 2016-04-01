@@ -4477,7 +4477,7 @@ NC_STACK_ypabact * sb_0x4c63d0__sub1(_NC_STACK_ypaworld *yw, int a2)
             if ( i + 1 < yw->field_2414 )
                 return yw->field_1c0c[ i + 1 ]->self;
 
-            return yw->field_1c0c[ i ]->self;
+            return yw->field_1c0c[ 0 ]->self;
         }
     }
 
@@ -4637,9 +4637,9 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub4(_NC_STACK_ypaworld *yw)
     bact_node *v4;
 
     if ( yw->field_1b84->parent_bacto == yw->field_1b84->field_32 )
-        v4 = (bact_node *)&yw->field_1b84->list2.head;
+        v4 = (bact_node *)yw->field_1b84->list2.head;
     else
-        v4 = (bact_node *)&yw->field_1b84->list_node.next;
+        v4 = (bact_node *)yw->field_1b84->list_node.next;
 
     while (v4->next)
     {
