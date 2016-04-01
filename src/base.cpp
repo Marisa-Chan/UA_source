@@ -259,8 +259,10 @@ int base_func0__sub0(__NC_STACK_base *base, stack_vals *stak)
 
             case 0x80001001:
                 if (stk->value)
-                    call_vtbl((NC_STACK_class *)stk->value, 64, &base->ADES);
-
+                {
+                    nlist *tmp = &base->ADES;
+                    call_method((NC_STACK_class *)stk->value, 64, &tmp);
+                }
                 break;
 
             case 0x80001002:
