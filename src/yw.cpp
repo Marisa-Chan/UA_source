@@ -2091,9 +2091,123 @@ size_t ypaworld_func148(NC_STACK_ypaworld *obj, class_stru *zis, ypaworld_arg148
 }
 
 
-void ypaworld_func149(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func149(NC_STACK_ypaworld *obj, class_stru *zis, ypaworld_arg136 *arg)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func149");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    arg->field_24 = 2.0;
+    arg->field_20 = 0;
+
+    int v33 = (arg->pos_x + 150.0) / 75.0 * 16384.0;
+    int v34 = (arg->pos_z - 150.0) / 75.0 * 16384.0;
+
+    float v36 = fabs(arg->field_14);
+    float v39 = fabs(arg->field_1C);
+
+    int v31;
+    int v32;
+    float v37;
+
+    if ( v36 != 0.0 || v39 != 0.0 )
+    {
+        if ( v36 <= v39 )
+        {
+            v32 = (v36 / v39 * 16384.0);
+
+            if ( arg->field_14 < 0.0 )
+                v32 = -v32;
+
+            if ( arg->field_1C >= 0.0 )
+                v31 = 16384;
+            else
+                v31 = -16384;
+
+            v37 = v39;
+        }
+        else
+        {
+            if ( arg->field_14 >= 0.0 )
+                v32 = 16384;
+            else
+                v32 = -16384;
+
+            v31 = (v39 / v36 * 16384.0);
+
+            if ( arg->field_1C < 0.0 )
+                v31 = -v31;
+
+            v37 = v36;
+        }
+    }
+    else
+    {
+        v31 = 0;
+        v37 = 0.0;
+        v32 = 0;
+    }
+
+    int a2a = v33 >> 16;
+    int a3a = -v34 >> 16;
+
+    struct_44dbf8 a6;
+    int v10, v11;
+
+    do // Don't like this :E
+    {
+        a6.field_1C = 0;
+
+        v10 = v33 >> 16;
+        v11 = -v34 >> 16;
+
+        sub_44DBF8(yw, a2a, a3a, v10, v11, &a6, arg->field_40);
+
+        if ( a6.field_1C )
+        {
+            if ( a6.field_1C != 1 )
+                sub_44E07C(yw, &a6);
+
+            arg->pos_x -= a6.pos_x;
+            arg->pos_y -= a6.pos_y;
+            arg->pos_z -= a6.pos_z;
+
+            sub_44D8B8(arg, &a6);
+
+            if ( arg->field_20 )
+                return;
+        }
+
+        do // Don't like this :E
+        {
+            v37 -= 75.0;
+            v33 += v32;
+            v34 += v31;
+        }
+        while ( v33 >> 16 == v10 && -v34 >> 16 == v11 && v37 > 0.0 );
+
+    }
+    while( v37 > 0.0 );
+
+    int v24 = ((int)((arg->field_14 + arg->pos_x + 150.0) / 75.0 * 16384.0)) >> 16;
+    int v27 = ((int)((arg->field_1C + arg->pos_z - 150.0) / 75.0 * 16384.0)) >> 16;
+
+    if ( v24 != v10 || -v27 != v11 )
+    {
+        a6.field_1C = 0;
+
+        sub_44DBF8(yw, a2a, a3a, v24, -v27, &a6, arg->field_40);
+
+        if ( a6.field_1C )
+        {
+            if ( a6.field_1C != 1 )
+                sub_44E07C(yw, &a6);
+
+            arg->pos_x = arg->pos_x - a6.pos_x;
+            arg->pos_y = arg->pos_y - a6.pos_y;
+            arg->pos_z = arg->pos_z - a6.pos_z;
+
+            sub_44D8B8(arg, &a6);
+        }
+    }
 }
 
 
