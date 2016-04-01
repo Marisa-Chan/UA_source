@@ -1625,9 +1625,72 @@ void ypaworld_func144(NC_STACK_ypaworld *obj, class_stru *zis, NC_STACK_ypabact 
 }
 
 
-void ypaworld_func145(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+size_t ypaworld_func145(NC_STACK_ypaworld *obj, class_stru *zis, __NC_STACK_ypabact *bact)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func145");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    if ( yw->current_bact )
+    {
+        int v6 = abs(yw->current_bact->field_c - bact->field_c);
+        int v7 = abs(yw->current_bact->field_10 - bact->field_10);
+
+        if ( v6 + v7 <= (yw->field_1368 - 1) / 2 )
+            return 1;
+    }
+
+    bact_node *v21 = (bact_node *)yw->bact_list.head;
+
+    while (v21->next) //Robos
+    {
+        if ( v21->bact->field_3D6 & 0x800000 )
+        {
+            int v10 = abs(v21->bact->field_c - bact->field_c);
+            int v11 = abs(v21->bact->field_10 - bact->field_10);
+
+            if ( v10 + v11 <= (yw->field_1368 - 1) / 2 )
+                return 1;
+        }
+
+
+
+        bact_node *v22 = (bact_node *)v21->bact->list2.head;
+
+        while (v22->next) // Squad comms
+        {
+            if ( v22->bact->field_3D6 & 0x800000 )
+            {
+                int v10 = abs(v22->bact->field_c - bact->field_c);
+                int v11 = abs(v22->bact->field_10 - bact->field_10);
+
+                if ( v10 + v11 <= (yw->field_1368 - 1) / 2 )
+                    return 1;
+            }
+
+
+
+            bact_node *v23 = (bact_node *)v22->bact->list2.head;
+
+            while (v23->next) // Squad units
+            {
+                if ( v23->bact->field_3D6 & 0x800000 )
+                {
+                    int v10 = abs(v23->bact->field_c - bact->field_c);
+                    int v11 = abs(v23->bact->field_10 - bact->field_10);
+
+                    if ( v10 + v11 <= (yw->field_1368 - 1) / 2 )
+                        return 1;
+                }
+
+                v23 = (bact_node *)v23->next;
+            }
+
+            v22 = (bact_node *)v22->next;
+        }
+
+        v21 = (bact_node *)v21->next;
+    }
+
+    return 0;
 }
 
 
