@@ -2480,7 +2480,10 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
 
                 int v39;
                 call_vtbl(robo, 3, 0x80002007, &v39, 0);
-                call_vtbl(robo, 2, 0x80002007, ++v39, a7);
+
+                v39++;
+
+                call_vtbl(robo, 2, 0x80002007, v39, 0);
 
                 int v52 = 0;
 
@@ -2520,9 +2523,9 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                         call_method(gunn, 119, &v34);
 
                         gbct->field_931 = 500;
-                        gbct->field_67D = 1.0;
-                        gbct->field_681 = 1.0;
-                        gbct->field_685 = 1.0;
+                        gbct->field_67D.sx = 1.0;
+                        gbct->field_67D.sy = 1.0;
+                        gbct->field_67D.sz = 1.0;
 
                         gbct->field_32 = robo;
                         gbct->field_2E = v39;
@@ -2799,6 +2802,178 @@ __NC_STACK_ypabact * sub_48C244(NC_STACK_ypaworld *ywo, int a2, char owner)
     }
 
     return NULL;
+}
+
+
+void ypaworld_func64__sub20(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int dtime)
+{
+    for(int i = 0; i < 8; i++)
+    {
+        if ( yw->field_80[i].field_0 )
+        {
+            yw->field_80[i].field_4 += dtime;
+
+            if ( yw->field_80[i].field_4 >= yw->field_80[i].field_8 )
+            {
+                yw->field_80[i].field_0 = 0;
+
+                int v8 = yw->field_80[i].y;
+                int v10 = yw->field_80[i].x;
+
+                cellArea * v11 = &yw->cells[v10 + v8 * yw->sectors_maxX2];
+
+                int a6 = yw->field_80[i].blg_ID;
+
+                v11->field_3A = 0;
+                v11->field_3B = 0;
+
+                sb_0x456384(ywo, yw, v10, v8, yw->field_80[i].ownerID2, a6, 0);
+
+                if ( yw->field_80[i].ownerID2 == yw->field_1b80->owner )
+                {
+                    if ( yw->BuildProtos[a6].model_id )
+                    {
+                        yw_arg159 arg159;
+
+                        arg159.unit = yw->field_1b80;
+                        arg159.txt = 0;
+                        arg159.field_4 = 65;
+
+                        if ( yw->BuildProtos[a6].model_id == 1 )
+                            arg159.field_C = 36;
+                        else if ( yw->BuildProtos[a6].model_id == 2 )
+                            arg159.field_C = 38;
+                        else if ( yw->BuildProtos[a6].model_id == 3 )
+                            arg159.field_C = 37;
+                        else
+                            arg159.field_C = 0;
+
+                        call_method(ywo, 159, &arg159);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void ypaworld_func64__sub6__sub0(_NC_STACK_ypaworld *yw)
+{
+    for(int i = 0; i < 8; i++)
+        yw->field_1bac[i] = 0;
+
+    bact_node *robo_node = (bact_node *)yw->bact_list.head;
+
+    while (robo_node->next)
+    {
+        if ( robo_node->bact->field_24 == 3 )
+        {
+            if ( robo_node->bact->field_3D5 != 2 &&  robo_node->bact->field_3D5 != 5 )
+            {
+                bact_node *comnd_node = (bact_node *)robo_node->bact->list2.head;
+
+                while(comnd_node->next)
+                {
+                    if ( comnd_node->bact->field_3D5 != 2 && comnd_node->bact->field_3D5 != 5 )
+                    {
+                        int a4 = 0;
+
+                        if ( comnd_node->bact->field_24 == 9 )
+                            call_vtbl(comnd_node->bact->self, 3, 0x80002006, &a4, 0);
+
+                        if ( a4 == 0 )
+                        {
+                            yw->field_1bac[ comnd_node->bact->owner ]++;
+
+
+                            bact_node *unit_node = (bact_node *)comnd_node->bact->list2.head;
+
+                            while( unit_node->next )
+                            {
+                                if ( unit_node->bact->field_3D5 != 2 && unit_node->bact->field_3D5 != 5 )
+                                    yw->field_1bac[ unit_node->bact->owner ]++;
+
+                                unit_node = (bact_node *)unit_node->next;
+                            }
+                        }
+                    }
+
+                    comnd_node = (bact_node *)comnd_node->next;
+                }
+
+            }
+        }
+
+        robo_node = (bact_node *)robo_node->next;
+    }
+}
+
+
+void ypaworld_func64__sub6(_NC_STACK_ypaworld *yw)
+{
+    int v13[8];
+
+    for (int i = 0; i < 8; i++)
+        v13[i] = 0;
+
+    for (int i = 0; i < yw->field_38; i++)
+    {
+        yw_field34 *v4 = &yw->field_34[i];
+
+        if (v4->p_cell)
+            v13[ v4->p_cell->owner ] += v4->power_2;
+    }
+
+    ypaworld_func64__sub6__sub0(yw);
+
+    for (int i = 0; i < 8; i++)
+    {
+        v13[i] /= 2;
+
+        if ( v13[i] <= 0 )
+        {
+            yw->field_1bec[i] = 0;
+            yw->field_1bcc[i] = 0;
+        }
+        else
+        {
+            int v15 = yw->sectors_count_by_owner[i];
+
+            if ( v15 < 0 )
+                v15 = 0;
+
+            yw->field_1bcc[i] = (float)v15 / (float)v13[i];
+            yw->field_1bec[i] = (float)v15 / (float)v13[i];
+
+            if ( yw->field_757E )
+            {
+                if ( yw->unit_limit_type_1 == 1 )
+                {
+                    int v16 = yw->field_1bac[yw->field_1b80->owner] - yw->unit_limit_1;
+
+                    if ( v16 > 0 )
+                    {
+                        int v10 = (float)yw->unit_limit_arg_1 * 0.01 * (float)v16;
+
+                        yw->field_1bcc[i] -= v10;
+                        yw->field_1bec[i] -= v10;
+                    }
+                }
+            }
+
+            if ( yw->field_1bcc[i] >= 0.0 )
+            {
+                if ( yw->field_1bcc[i] > 1.0 )
+                    yw->field_1bcc[i] = 1.0;
+            }
+            else
+            {
+                yw->field_1bcc[i] = 0;
+            }
+
+            if ( yw->field_1bec[i] < 0.0 )
+                yw->field_1bec[i] = 0;
+        }
+    }
 }
 
 

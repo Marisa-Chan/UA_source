@@ -249,6 +249,7 @@ struct UserData
 
     char callSIGN[64];
 
+    char field_0x1cd4;
     char field_1CD5;
     char field_1CD6;
     char field_1CD7;
@@ -1480,7 +1481,7 @@ struct yw_arg184 : public yw_arg184_type
 struct yw_arg184_t4 : public yw_arg184_type
 {
     char field_1;
-    __int16 field_2;
+    int16_t field_2;
     char field_4;
     char field_5;
 };
@@ -1514,6 +1515,7 @@ struct yw_arg177
 
 
 
-__NC_STACK_ypabact *__fastcall sub_48C244(NC_STACK_ypaworld *ywo, int a2, char owner);
+
+__NC_STACK_ypabact * sub_48C244(NC_STACK_ypaworld *ywo, int a2, char owner);
 
 #endif

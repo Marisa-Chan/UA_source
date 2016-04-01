@@ -716,12 +716,13 @@ void sub_445230(_NC_STACK_ypaworld *yw)
     }
 }
 
-
 void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
 {
     dprintf("MAKE ME %s\n","ypaworld_func64");
 
     _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    ypaworld_func64__sub6(yw);
 
     yw->field_1614 += arg->field_4;
     yw->field_1618 = arg->field_4;
@@ -766,6 +767,8 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
     ypaworld_func64__sub16(yw);
     ypaworld_func64__sub17(yw);
     sub_4C40AC(yw);
+
+    ypaworld_func64__sub20(obj, yw, arg->field_4);
 
     if ( !yw->field_138c )
     {
@@ -6543,9 +6546,10 @@ void ypaworld_func168(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
-void ypaworld_func169(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+size_t ypaworld_func169(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
     dprintf("MAKE ME %s\n","ypaworld_func169");
+    return 0;
 }
 
 

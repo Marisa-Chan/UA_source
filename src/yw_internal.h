@@ -409,5 +409,10 @@ char *sub_4E2B5C(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabact *bact);
 void sb_0x4d7c08__sub0__sub4__sub2(_NC_STACK_ypaworld *yw);
 void sb_0x4d7c08__sub0__sub2(_NC_STACK_ypaworld *yw);
 
+void ypaworld_func64__sub20(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int dtime);
+void ypaworld_func64__sub6(_NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub5(_NC_STACK_ypaworld *yw);
+
+void sub_44F958(_NC_STACK_ypaworld *yw, cellArea *cell, char secX, char secY, uint8_t owner);
+
 #endif
