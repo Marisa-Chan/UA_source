@@ -8668,7 +8668,7 @@ char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos, 
 
     for (int i = 1; i <= wis->field_9E; i++)
     {
-        int v35 = i * (maxval / wis->field_9E) - (maxval / (wis->field_9E / 2));
+        int v35 = i * (maxval / wis->field_9E) - (maxval / wis->field_9E) / 2;
 
         if ( !wnd_vis || v29 <= wnd_xpos || v29 >= wnd_xpos2 || v30 <= wnd_ypos || v30 >= wnd_ypos2 )
         {
