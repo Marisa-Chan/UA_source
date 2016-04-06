@@ -10603,3 +10603,1458 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
     if ( bact2->field_24 != 3 )
         robo_map.field_1ED = 1;
 }
+
+
+
+
+
+
+
+
+
+
+int sb_0x4d3d44__sub0(_NC_STACK_ypaworld *yw, winp_131arg *winp)
+{
+    VhclProto *vhcl = &yw->VhclProtos[bzda.field_2DC[bzda.field_8EC]];
+
+    float v47 = (float)(winp->move[0].x - (yw->screen_width / 2)) / (float)(yw->screen_width / 2);
+    float v49 = (float)(winp->move[0].y - (yw->screen_height / 2)) / (float)(yw->screen_height / 2);
+    float v50 = 1.0;
+
+    float v46 = sqrt( POW2(v47) + POW2(v49) + 1.0 );
+
+    if ( v46 > 0.0 )
+    {
+        float v6 = 1.0 / v46;
+        v47 *= v6;
+        v49 *= v6;
+        v50 *= v6;
+    }
+
+    float v63 = vhcl->radius * 4.0 + 200.0;
+
+    float v62 = 0.0;
+
+    if ( v63 > 0.0 )
+    {
+        float v51 = v47 * v63;
+        float v53 = v49 * v63;
+        float v52 = v50 * v63;
+
+        while ( v62 < v63 )
+        {
+            float v60 = 0.0;
+            float v40 = 0.0;
+
+            while ( v60 < 6.283 )
+            {
+                float v56 = v62 * sin(v60) + 0.0 * cos(v60) + v40 + v53;
+                float v55 = 0.0 * -sin(v60) + v62 * cos(v60) + v40 + v51;
+                float v57 = 0.0 * v62 + v52;
+
+                float v37 = v55 * yw->field_1340.m00 + v56 * yw->field_1340.m10 + v57 * yw->field_1340.m20;
+                float v38 = v55 * yw->field_1340.m01 + v56 * yw->field_1340.m11 + v57 * yw->field_1340.m21;
+                float v39 = v55 * yw->field_1340.m02 + v56 * yw->field_1340.m12 + v57 * yw->field_1340.m22;
+
+                ypaworld_arg136 arg149;
+                arg149.pos_x = yw->field_1334.sx;
+                arg149.pos_y = yw->field_1334.sy;
+                arg149.pos_z = yw->field_1334.sz;
+                arg149.field_14 = v37;
+                arg149.field_18 = v38;
+                arg149.field_1C = v39;
+                arg149.field_40 = 0;
+
+                call_method(yw->self_full, 149, &arg149);
+
+                if ( !arg149.field_20 )
+                {
+                    float v48 = sqrt(POW2(v37) + POW2(v38) + POW2(v39));
+
+                    if ( v48 > 0.0 )
+                    {
+                        float v20 = 1.0 / v48;
+                        v37 *= v20;
+                        v38 *= v20;
+                        v39 *= v20;
+                    }
+
+                    yw->field_1a8c.sx = v37;
+                    yw->field_1a8c.sy = v38;
+                    yw->field_1a8c.sz = v39;
+
+                    yw->field_1a9c = v48;
+
+                    return 1;
+                }
+
+                v60 += 0.349;
+            }
+
+            v62 += v63 * 0.1;
+        }
+    }
+
+    return 0;
+}
+
+int sb_0x4d3d44(_NC_STACK_ypaworld *yw, winp_131arg *winp)
+{
+    if ( yw->field_1a58 & 8 || bzda.field_8EC == -1 )
+        return 4;
+
+    int a4;
+    call_vtbl(yw->field_1b78, 3, 0x80002008, &a4, 0);
+
+    if ( yw->field_1b24.field_40 > a4 )
+        return 2;
+
+
+    if ( !sb_0x4d3d44__sub0(yw, winp) )
+        return 1;
+
+    if ( yw->field_757E && !yw->unit_limit_type_1 && yw->unit_limit_1 <= yw->field_1bac[yw->field_1b80->owner] )
+        return 3;
+
+    return 0;
+}
+
+int ypaworld_func64__sub21__sub2(_NC_STACK_ypaworld *yw)
+{
+    if ( !(yw->field_1a58 & 0x10) || bzda.field_8F4 == -1 )
+        return 1;
+
+    cellArea *v2 = yw->field_1a60;
+
+    int a4;
+    call_vtbl(yw->field_1b78, 3, 0x80002008, &a4, 0);
+
+    if ( yw->field_1b24.field_40 > a4 )
+        return 6;
+
+    if ( v2->owner && v2->owner != yw->field_1b80->owner )
+        return 2;
+
+    int v6 = abs(yw->field_1a64 - yw->field_1b80->field_c);
+    int v10 = abs(yw->field_1A66 - yw->field_1b80->field_10);
+
+    if ( !v6 && !v10 )
+        return 3;
+
+    if ( v6 > 1 || v10 > 1 )
+        return 4;
+
+    if ( v2->field_3A == 1 )
+        return 5;
+
+    if ( v2->field_3A == 4 || v2->field_3A == 5 || v2->field_3A == 6 || v2->field_3A == 8 || (v2->field_3A == 7 && yw->field_757E) )
+        return 1;
+
+    return 0;
+}
+
+
+int ypaworld_func64__sub21__sub3(_NC_STACK_ypaworld *yw)
+{
+    if ( !(yw->field_1a58 & 0x10) )
+        return 6;
+
+    if ( !((1 << yw->field_1b80->owner) & yw->field_1a60->field_39) )
+        return 3;
+
+    if ( yw->field_1a60->field_3A == 1 )
+        return 6;
+
+    float v5 = yw->field_1a6c.sx - yw->field_1b80->field_621.sx;
+    float v6 = yw->field_1a6c.sy - yw->field_1b80->field_621.sy;
+    float v8 = yw->field_1a6c.sz - yw->field_1b80->field_621.sz;
+
+    float v15 = sqrt(POW2(v5) + POW2(v6) + POW2(v8));
+
+    if ( v15 < 100.0 )
+        return 4;
+
+    int v9 = yw->field_1a60->field_3A;
+
+    int v18 = 0;
+
+    if ( v9 != 6 && (v9 != 2 || yw->field_1a60->owner != yw->field_1b80->owner) )
+    {
+        v18 = (POW2(v15) / 240.0);
+    }
+
+    int a4;
+    call_vtbl(yw->field_1b78, 3, 0x8000200A, &a4, 0);
+
+    yw->field_1b24.field_40 = v18;
+
+    if ( v18 > a4 )
+        return 1;
+
+    __NC_STACK_ypabact *v11 = (__NC_STACK_ypabact *)yw->field_1a60->field_3C.head;
+
+    while ( v11->next )
+    {
+
+        if ( v11->field_24 == 3 && v11->field_3D5 != 2 && v11->owner != yw->field_1b80->owner )
+            return 5;
+
+        v11 = (__NC_STACK_ypabact *)v11->next;
+    }
+
+    float v20 = 100000.0;
+    float v19 = -100000.0;
+
+    ypaworld_arg136 arg136;
+    arg136.field_14 = 0;
+    arg136.field_18 = 50000.0;
+    arg136.field_1C = 0;
+    arg136.field_40 = 0;
+
+    for (int j = -3; j <= 3; j++)
+    {
+        for (int i = -3; i <= 3; i++)
+        {
+            arg136.pos_y = -25000.0;
+            arg136.pos_x = yw->field_1a6c.sx - j * 57.14285714285715;
+            arg136.pos_z = yw->field_1a6c.sz - i * 57.14285714285715;
+
+            call_method(yw->self_full, 136, &arg136);
+
+            if ( arg136.field_20 )
+            {
+                if ( arg136.field_30 < v20 )
+                    v20 = arg136.field_30;
+
+                if ( arg136.field_30 > v19 )
+                    v19 = arg136.field_30;
+            }
+        }
+    }
+
+    if ( abs(v19 - v20) > 800 )
+        return 2;
+
+    if ( yw->field_1a6c.sx < 1500.0 || yw->field_1a6c.sz > -1500.0 || yw->field_1a6c.sx > yw->map_Width_meters - 1500.0 || yw->field_1a6c.sz < 1500.0 - yw->map_Height_meters )
+        return 2;
+
+    yw->field_1a6c.sy = v20 - yw->field_1b80->height;
+    return 0;
+}
+
+int ypaworld_func64__sub21__sub4(_NC_STACK_ypaworld *yw, struC5 *arg, int a3)
+{
+    if ( !yw->field_1ab0 && arg->but_flags & 0x10 )
+    {
+        yw->field_1ab0 = 1;
+        yw->field_1ab4 = 0;
+        return a3;
+    }
+
+    if ( yw->field_1ab0 && !(arg->but_flags & 0x10) )
+    {
+        yw->field_1ab0 = 0;
+        return a3;
+    }
+
+    if ( yw->field_1ab0   &&   a3 == 2 &&   arg->winp131arg.flag & 2 )
+    {
+        if ( yw->field_1ab4 )
+        {
+            float v8 = yw->field_1ab8.sx - yw->field_1a6c.sx;
+            float v9 = yw->field_1ab8.sz - yw->field_1a6c.sz;
+
+            if ( sqrt( POW2(v8) + POW2(v9) ) < 100.0 )
+            {
+                yw->field_1ab4++;
+                return 13;
+            }
+
+            yw->field_1ab4++;
+
+            return 12;
+        }
+        else
+        {
+            yw->field_1ab8 = yw->field_1a6c;
+
+            yw->field_1ab4++;
+
+            return 11;
+        }
+    }
+
+    return a3;
+}
+
+int ypaworld_func64__sub21__sub6(_NC_STACK_ypaworld *yw, winp_131arg *winp)
+{
+    if ( winp->flag & 0x2000
+            && yw->field_1aac
+            && abs(winp->move[0].x - yw->field_1aa4) < 4
+            && abs(winp->move[0].y - yw->field_1aa8) < 4 )
+    {
+        yw->field_1aa0 = 0;
+        yw->field_1aa4 = 0;
+        yw->field_1aa8 = 0;
+
+        yw->field_1a98 = yw->field_1aac;
+        yw->field_1aac = NULL;
+
+        yw->field_1a58 |= 0x20;
+
+        return 1;
+    }
+    else
+    {
+        if ( winp->flag & 2   &&   yw->field_1a58 & 0x20   &&   yw->field_1b80->owner == yw->field_1a98->owner )
+        {
+            yw->field_1aa0 = yw->field_1614;
+            yw->field_1aac = yw->field_1a98;
+            yw->field_1aa4 = winp->move[0].x;
+            yw->field_1aa8 = winp->move[0].y;
+        }
+        else if ( winp->flag & 2 )
+        {
+            if ( !(yw->field_1a58 & 0x20) )
+            {
+                yw->field_1aac = NULL;
+                yw->field_1aa4 = 0;
+                yw->field_1aa8 = 0;
+                yw->field_1aa0 = 0;
+            }
+        }
+        return 0;
+    }
+    return 0;
+}
+
+
+void ypaworld_func64__sub21__sub1__sub0(_NC_STACK_ypaworld *yw, struC5 *arg)
+{
+    yw->field_1a58 = 0;
+
+    winp_131arg *winp = &arg->winp131arg;
+
+    if ( arg->winp131arg.flag & 1 )
+    {
+        if ( winp->selected_btn )
+        {
+            yw->field_1a58 |= 4;
+
+            if ( winp->selected_btn == &robo_map.frm_1 )
+            {
+                if ( winp->selected_btnID == 17 )
+                    yw->field_1a58 |= 8;
+            }
+            else if ( winp->selected_btn == &squadron_manager.lstvw.frm_1 )
+            {
+                if ( winp->selected_btnID >= 8 && (squadron_manager.lstvw.scroll_pos + winp->selected_btnID - 8) < squadron_manager.lstvw.elements_for_scroll_size )
+                    yw->field_1a58 |= 0x40;
+            }
+        }
+
+        if ( bzda.field_1D0 == 8 )
+            yw->field_1a58 |= 2;
+        else if ( bzda.field_1D0 == 1 || bzda.field_1D0 == 2 || bzda.field_1D0 == 4 || bzda.field_1D0 == 16 || bzda.field_1D0 == 32 )
+            yw->field_1a58 |= 0x83;
+    }
+}
+
+void ypaworld_func64__sub21__sub1__sub1(_NC_STACK_ypaworld *yw, winp_131arg *winp)
+{
+    int v23 = winp->move[2].x + robo_map.field_1D8 / robo_map.field_1E0 - (robo_map.field_1F8 / 2);
+    int v24 = winp->move[2].y - (robo_map.field_1DC / robo_map.field_1E4) - (robo_map.field_1FC / 2);
+
+    int v9 = robo_map.field_1EE + 2;
+
+    int v10 = v23 >> v9;
+    int v11 = v24 >> v9;
+
+    if ( v10 >= 1  &&  v11 >= 1  &&  yw->sectors_maxX2 - 1 > v10  &&  yw->sectors_maxY2 - 1 > v11 )
+    {
+        cellArea *v12 = &yw->cells[yw->sectors_maxX2 * v11 + v10];
+
+        if ( yw->field_1a58 & 1 )
+        {
+            yw->field_1a60 = v12;
+            yw->field_1a58 |= 0x10;
+            yw->field_1a64 = v10;
+            yw->field_1A66 = v11;
+            yw->field_1a6c.sx = (float)v23 * robo_map.field_1E0 + 0.5;
+            yw->field_1a6c.sy = v12->sector_height_meters;
+            yw->field_1a6c.sz = -((float)v24 * robo_map.field_1E4 + 0.75);
+
+            yw->field_1a7c.sx = (float)v10 * 1200.0 + 600.0;
+            yw->field_1a7c.sy = v12->sector_height_meters;
+            yw->field_1a7c.sz = -((float)v11 * 1200.0 + 600.0);
+        }
+
+        if ( yw->field_1a58 & 2 && !(bzda.field_1D0 & 0x30) && ((1 << yw->field_1b80->owner) & v12->field_39 ) )
+        {
+
+            int v16 = 0;
+
+            while ( v16 < 2 )
+            {
+                __NC_STACK_ypabact *v17 = (__NC_STACK_ypabact *)v12->field_3C.head;
+
+                while( v17->next )
+                {
+                    if ( (v16 != 1 || v17->owner != yw->field_1b80->owner) && (v16 || v17->owner == yw->field_1b80->owner) )
+                    {
+                        if ( v17->field_3D5 != 4 && v17->field_3D5 != 2 && v17->field_3D5 != 5 && v17->field_24 != 4 )
+                        {
+                            int v19 = v17->field_621.sx / robo_map.field_1E0;
+                            int v20 = v17->field_621.sz / robo_map.field_1E4;
+
+                            if ( abs(v19 - v23) <= 8 && abs(-v20 - v24) <= 8 )
+                            {
+                                yw->field_1a58 |= 0x20;
+
+                                yw->field_1a98 = v17;
+                                yw->field_1a58 &= 0xFFFFFFEF;
+
+                                v16 = 2;
+                                break;
+                            }
+                        }
+                    }
+
+                    v17 = (__NC_STACK_ypabact *)v17->next;
+                }
+
+                v16++;
+            }
+        }
+    }
+}
+
+void ypaworld_func64__sub21__sub1__sub2(_NC_STACK_ypaworld *yw, winp_131arg *winp)
+{
+    if ( yw->field_1a58 & 2 )
+    {
+        int v3 = winp->selected_btnID - 8;
+
+        __NC_STACK_ypabact *v4 = sub_4C7B0C(yw, v3, winp->move[2].x);
+
+        if ( v4 )
+        {
+            if ( v4->field_3D5 != 4 && v4->field_3D5 != 2 && v4->field_3D5 != 5 )
+            {
+                yw->field_1a98 = v4;
+                yw->field_1a58 |= 0x20;
+            }
+        }
+        else
+        {
+            v4 = squadron_manager.squads[v3];
+
+            if ( v4 )
+            {
+                if ( v4->field_3D5 == 4 || v4->field_3D5 == 5 || v4->field_3D5 == 2 )
+                    v4 = NULL;
+
+                if ( v4 )
+                {
+                    yw->field_1a98 = v4;
+                    yw->field_1a58 |= 0x20;
+                }
+            }
+        }
+    }
+}
+
+void ypaworld_func64__sub21__sub1__sub3__sub0(_NC_STACK_ypaworld *yw, winp_131arg *winp)
+{
+    float v3 = (float)(winp->move[0].x - (yw->screen_width / 2)) / (float)(yw->screen_width / 2);
+    float v4 = (float)(winp->move[0].y - (yw->screen_height / 2)) / (float)(yw->screen_height / 2);
+
+    float v16 = yw->field_1340.m00 * v3 + yw->field_1340.m10 * v4 + yw->field_1340.m20;
+    float v17 = yw->field_1340.m01 * v3 + yw->field_1340.m11 * v4 + yw->field_1340.m21;
+    float v18 = yw->field_1340.m02 * v3 + yw->field_1340.m12 * v4 + yw->field_1340.m22;
+
+    float v14 = 1.0 / sqrt(POW2(v16) + POW2(v17) + POW2(v18));
+
+    yw->field_1a8c.sx = v16 * v14;
+    yw->field_1a8c.sy = v17 * v14;
+    yw->field_1a8c.sz = v18 * v14;
+}
+
+void ypaworld_func64__sub21__sub1__sub3(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, winp_131arg *winp)
+{
+    ypaworld_func64__sub21__sub1__sub3__sub0(yw, winp);
+
+    yw_arg150 arg150;
+    arg150.field_24 = NULL;
+    arg150.pos = yw->field_1334;
+    arg150.field_18.sx = yw->field_1a8c.sx * yw->field_15e4;
+    arg150.field_18.sy = yw->field_1a8c.sy * yw->field_15e4;
+    arg150.field_18.sz = yw->field_1a8c.sz * yw->field_15e4;
+    arg150.unit = yw->current_bact;
+
+    ypaworld_arg136 arg149;
+    arg149.pos_x = arg150.pos.sx;
+    arg149.pos_y = arg150.pos.sy;
+    arg149.pos_z = arg150.pos.sz;
+    arg149.field_14 = arg150.field_18.sx;
+    arg149.field_18 = arg150.field_18.sy;
+    arg149.field_1C = arg150.field_18.sz;
+    arg149.field_40 = 0;
+
+    call_method(ywo, 149, &arg149);
+
+    call_method(ywo, 150,  &arg150);
+
+    float v27, v28;
+
+    if ( arg149.field_20 )
+    {
+        yw->field_1a58 |= 0x10;
+
+        float v5 = arg149.field_2C - yw->field_1334.sx;
+        float v6 = arg149.field_30 - yw->field_1334.sy;
+        float v8 = arg149.field_34 - yw->field_1334.sz;
+
+        yw->field_1a9c = sqrt(POW2(v5) + POW2(v6) + POW2(v8));
+
+        v27 = yw->field_1a9c;
+    }
+
+    if ( arg150.field_24 )
+    {
+        yw->field_1a58 |= 0x20;
+
+        yw->field_1a9c = arg150.field_28;
+
+        v28 = yw->field_1a9c;
+    }
+
+    if ( (yw->field_1a58 & 0x30) == 0x30 )
+    {
+        if ( v27 >= v28 )
+        {
+            yw->field_1a9c = v28;
+            yw->field_1a58 &= 0xFFFFFFEF;
+        }
+        else
+        {
+            yw->field_1a9c = v27;
+            yw->field_1a58 &= 0xFFFFFFDF;
+        }
+    }
+
+    if ( yw->field_1a58 & 0x10 )
+    {
+        int v12 = -arg149.field_34 / 1200.0;
+        int v25 = arg149.field_2C / 1200.0;
+
+        yw->field_1a60 = &yw->cells[v12 * yw->sectors_maxX2 + v25];
+        yw->field_1a64 = v25;
+        yw->field_1A66 = v12;
+        yw->field_1a6c.sx = arg149.field_2C;
+        yw->field_1a6c.sy = arg149.field_30;
+        yw->field_1a6c.sz = arg149.field_34;
+        yw->field_1a7c.sx = v25 * 1200.0 + 600.0;
+        yw->field_1a7c.sy = yw->field_1a60->sector_height_meters;
+        yw->field_1a7c.sz = -(v12 * 1200.0 + 600.0);
+    }
+
+    if ( yw->field_1a58 & 0x20 )
+    {
+        int v20 = 0;
+
+        if ( arg150.field_24->field_3D5 == 4 || arg150.field_24->field_3D5 == 2 || arg150.field_24->field_3D5 == 5 || arg150.field_24->field_24 == 4 )
+            v20 = 1;
+
+        if ( v20 )
+            yw->field_1a58 &= 0xFFFFFFDF;
+        else
+            yw->field_1a98 = arg150.field_24;
+    }
+}
+
+
+void ypaworld_func64__sub21__sub1(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, struC5 *arg)
+{
+    ypaworld_func64__sub21__sub1__sub0(yw, arg);
+
+    if ( yw->field_1a58 & 4 )
+    {
+        if ( yw->field_1a58 & 8 )
+        {
+            ypaworld_func64__sub21__sub1__sub1(yw, &arg->winp131arg);
+        }
+        else if ( yw->field_1a58 & 0x40 )
+        {
+            ypaworld_func64__sub21__sub1__sub2(yw, &arg->winp131arg);
+        }
+    }
+    else
+    {
+        ypaworld_func64__sub21__sub1__sub3(obj, yw, &arg->winp131arg);
+    }
+}
+
+void ypaworld_func64__sub21__sub7(_NC_STACK_ypaworld *yw)
+{
+    yw->field_1b24.field_40 = 0;
+
+    if ( bzda.field_1D0 == 2 || bzda.field_1D0 == 4 )
+    {
+        if ( bzda.field_8EC != -1 )
+        {
+            yw->field_1b24.field_40 = dround(sub_4498F4(yw) * (2 * yw->VhclProtos[bzda.field_2DC[bzda.field_8EC]].energy));
+        }
+    }
+    else if ( bzda.field_1D0 == 16 && bzda.field_8F4 != -1 )
+    {
+        yw->field_1b24.field_40 = dround(sub_4498F4(yw) * yw->BuildProtos[bzda.field_3DC[bzda.field_8F4]].energy);
+    }
+}
+
+int sub_4D3C80(_NC_STACK_ypaworld *yw)
+{
+    if ( !yw->field_1a98 )
+        return 0;
+
+    if ( yw->field_1a98 == yw->field_1b80 )
+        return 0;
+
+    __NC_STACK_ypabact *a4 = yw->field_1a98;
+
+    if ( !yw->field_1a98 || (size_t)yw->field_1a98->parent_bacto <= 2 )
+        a4 = NULL;
+    else
+    {
+        if ( yw->field_1a98->parent_bacto != yw->field_1a98->field_32 )
+            call_vtbl(yw->field_1a98->parent_bacto, 3, 0x80001003, &a4, 0);
+    }
+
+    if ( a4 )
+    {
+        yw->field_1a98 = a4;
+        return 1;
+    }
+
+    return 0;
+}
+
+void ypaworld_func64__sub21__sub5(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, int arg)
+{
+    switch ( arg )
+    {
+    case 8:
+        if ( yw->field_1a98->field_24 != 9 && yw->field_1a98 != yw->field_1b80 )
+        {
+            if ( sub_4D3C80(yw) )
+            {
+                yw->field_240c = yw->field_1a98->field_2E;
+                sub_4C40AC(yw);
+            }
+        }
+
+        if ( yw->field_1b80 != yw->field_1a98 )
+            bzda.field_1D0 = bzda.field_1CC & 1;
+        else
+            bzda.field_1D0 = bzda.field_1CC & 0x20;
+        break;
+
+    case 2:
+        yw->field_1b24.field_14 = 2;
+        yw->field_1b24.field_1C = yw->field_1c0c[yw->field_2410];
+
+        if ( yw->field_1a58 & 0x10 )
+        {
+            yw->field_1b24.field_20 = yw->field_1a60;
+            yw->field_1b24.field_24 = yw->field_1a64;
+            yw->field_1b24.field_28 = yw->field_1A66;
+            yw->field_1b24.field_2C = yw->field_1a68;
+            yw->field_1b24.field_30 = yw->field_1a6c;
+            yw->field_1b24.field_3C = NULL;
+        }
+        else
+        {
+            yw->field_1b24.field_20 = 0;
+            yw->field_1b24.field_3C = yw->field_1a98;
+        }
+
+        bzda.field_1D0 = bzda.field_1CC & 1;
+        break;
+
+    case 11:
+    case 12:
+    case 13:
+        yw->field_1b24.field_14 = arg;
+        yw->field_1b24.field_1C = yw->field_1c0c[yw->field_2410];
+
+        if ( yw->field_1a58 & 0x30 )
+        {
+            yw->field_1b24.field_20 = yw->field_1a60;
+            yw->field_1b24.field_24 = yw->field_1a64;
+            yw->field_1b24.field_28 = yw->field_1A66;
+            yw->field_1b24.field_2C = yw->field_1a68;
+            yw->field_1b24.field_30 = yw->field_1a6c;
+            yw->field_1b24.field_3C = NULL;
+        }
+        break;
+
+    case 3:
+        yw->field_1b24.field_14 = 3;
+        yw->field_1b24.field_18 = bzda.field_2DC[bzda.field_8EC];
+        yw->field_1b24.field_30.sx = yw->field_1a8c.sx * yw->field_1a9c + yw->field_1334.sx;
+        yw->field_1b24.field_30.sy = yw->field_1a8c.sy * yw->field_1a9c + yw->field_1334.sy;
+        yw->field_1b24.field_30.sz = yw->field_1a8c.sz * yw->field_1a9c + yw->field_1334.sz;
+
+        bzda.field_1D0 = 4;
+
+        yw->field_2410 = -1;
+        yw->field_240c = 0;
+        break;
+
+    case 4:
+        yw->field_1b24.field_14 = 4;
+        yw->field_1b24.field_1C = yw->field_1c0c[yw->field_2410];
+        yw->field_1b24.field_18 = bzda.field_2DC[bzda.field_8EC];
+        yw->field_1b24.field_30.sx = yw->field_1a8c.sx * yw->field_1a9c + yw->field_1334.sx;
+        yw->field_1b24.field_30.sy = yw->field_1a8c.sy * yw->field_1a9c + yw->field_1334.sy;
+        yw->field_1b24.field_30.sz = yw->field_1a8c.sz * yw->field_1a9c + yw->field_1334.sz;
+        break;
+
+    case 5:
+        sb_0x4c66f8(yw, yw->field_1a98->self, yw->current_bact->self);
+
+        if ( yw->field_1a98->field_24 != 9 && yw->field_1a98 != yw->field_1b80 )
+        {
+            if ( sub_4D3C80(yw) )
+            {
+                yw->field_240c = yw->field_1a98->field_2E;
+                sub_4C40AC(yw);
+            }
+        }
+        break;
+
+    case 6:
+        yw->field_1b24.field_14 = 6;
+        yw->field_1b24.field_18 = bzda.field_3DC[bzda.field_8F4];
+        yw->field_1b24.field_20 = yw->field_1a60;
+        yw->field_1b24.field_24 = yw->field_1a64;
+        yw->field_1b24.field_28 = yw->field_1A66;
+        yw->field_1b24.field_2C = yw->field_1a68;
+        yw->field_1b24.field_30 = yw->field_1a6c;
+        yw->field_1b24.field_3C = NULL;
+        bzda.field_1D0 = bzda.field_1CC & 1;
+        break;
+
+    case 10:
+        yw->field_1b24.field_14 = 10;
+        yw->field_1b24.field_20 = yw->field_1a60;
+        yw->field_1b24.field_24 = yw->field_1a64;
+        yw->field_1b24.field_28 = yw->field_1A66;
+        yw->field_1b24.field_2C = yw->field_1a68;
+        yw->field_1b24.field_30 = yw->field_1a6c;
+        yw->field_1b24.field_3C = NULL;
+        bzda.field_1D0 = 1;
+        break;
+
+    case 19:
+        call_vtbl(yw->current_bact->self, 2, 0x80001004, 0, 0);
+        call_vtbl(yw->current_bact->self, 2, 0x80001005, 0, 0);
+        call_vtbl(yw->field_1a98->self, 2, 0x80001004, 1, 0);
+        break;
+
+    default:
+        return;
+    }
+}
+
+
+void ypaworld_func64__sub21(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, struC5 *arg)
+{
+    if ( yw->field_1b80 && arg->winp131arg.flag & 1 && yw->current_bact )
+    {
+        ypaworld_func64__sub21__sub1(obj, yw, arg);
+        ypaworld_func64__sub21__sub7(yw);
+
+        int v5 = 0;
+        int v6 = 0;
+        int v8 = 0;
+
+        if ( yw->field_17c0 )
+        {
+            v6 = -1;
+        }
+        else if ( yw->field_17bc || ((yw->field_1a58 & 4) && !(yw->field_1a58 & 0x48)) )
+        {
+            v6 = 0;
+        }
+        else if ( robo_map.field_1E8 & 0x200 )
+        {
+            v6 = 2;
+        }
+        else
+        {
+
+            v6 = 1;
+            v8 = 0;
+
+            if ( bzda.field_1D0 == 1 )
+            {
+                if ( !(yw->field_1a58 & 0x10) )
+                {
+                    if ( (yw->field_1a58 & 0x20) )
+                    {
+                        if ( yw->field_1b80->owner == yw->field_1a98->owner )
+                        {
+                            v8 = 8;
+                            v6 = 2;
+                            v5 = 64;
+                        }
+                        else if ( yw->field_2410 != -1 )
+                        {
+                            v8 = 2;
+                            v6 = 3;
+                            v5 = 67;
+                        }
+                    }
+                }
+                else if ( yw->field_2410 != -1 )
+                {
+                    if ( yw->field_1b80->owner == yw->field_1a60->owner && (1 << yw->field_1b80->owner) & yw->field_1a60->field_39 )
+                    {
+                        v8 = 2;
+                        v6 = 4;
+                        v5 = 65;
+                    }
+                    else
+                    {
+                        v8 = 2;
+                        v5 = 66;
+                        v6 = 3;
+                    }
+                }
+            }
+            else if ( bzda.field_1D0 == 2 )
+            {
+                if ( !(yw->field_1a58 & 8) )
+                {
+                    if ( (yw->field_1a58 & 0x20) && yw->field_1b80->owner == yw->field_1a98->owner )
+                    {
+                        v8 = 8;
+                        v6 = 2;
+                        v5 = 64;
+                    }
+                    else
+                    {
+                        switch ( sb_0x4d3d44(yw, &arg->winp131arg) )
+                        {
+                        case 0:
+                            v8 = 3;
+                            v6 = 6;
+                            v5 = 68;
+                            break;
+
+                        case 1:
+                            v5 = 97;
+                            break;
+
+                        case 2:
+                            v5 = 98;
+                            break;
+
+                        case 3:
+                            v5 = 81;
+                            break;
+
+                        default:
+                            break;
+                        }
+                    }
+                }
+                else if ( yw->field_2410 != -1 )
+                {
+                    if ( !(yw->field_1a58 & 0x10) )
+                    {
+                        if ( yw->field_1a58 & 0x20 )
+                        {
+                            if ( yw->field_1b80->owner == yw->field_1a98->owner )
+                            {
+                                v8 = 8;
+                                v6 = 2;
+                                v5 = 64;
+                            }
+                            else
+                            {
+                                v8 = 2;
+                                v6 = 3;
+                                v5 = 67;
+                            }
+                        }
+                    }
+                    else if ( yw->field_1b80->owner == yw->field_1a60->owner && (1 << yw->field_1b80->owner) & yw->field_1a60->field_39 )
+                    {
+                        v8 = 2;
+                        v6 = 4;
+                        v5 = 65;
+                    }
+                    else
+                    {
+                        v8 = 2;
+                        v6 = 3;
+                        v5 = 66;
+                    }
+                }
+            }
+            else if ( bzda.field_1D0 == 4 )
+            {
+                if ( !(yw->field_1a58 & 8) )
+                {
+                    if ( (yw->field_1a58 & 0x20) && yw->field_1b80->owner == yw->field_1a98->owner )
+                    {
+                        v8 = 8;
+                        v6 = 2;
+                        v5 = 64;
+                    }
+                    else if ( yw->field_2410 != -1 )
+                    {
+                        switch ( sb_0x4d3d44(yw, &arg->winp131arg) )
+                        {
+                        case 0:
+                            v8 = 4;
+                            v6 = 7;
+                            v5 = 69;
+                            break;
+
+                        case 1:
+                            v5 = 97;
+                            break;
+
+                        case 2:
+                            v5 = 98;
+                            break;
+
+                        case 3:
+                            v5 = 81;
+                            break;
+
+                        default:
+                            break;
+                        }
+                    }
+                }
+                else if ( yw->field_2410 != -1 )
+                {
+
+                    if ( !(yw->field_1a58 & 0x10) )
+                    {
+                        if ( yw->field_1a58 & 0x20 )
+                        {
+                            if ( yw->field_1b80->owner == yw->field_1a98->owner )
+                            {
+                                v8 = 8;
+                                v6 = 2;
+                                v5 = 64;
+                            }
+                            else
+                            {
+                                v8 = 2;
+                                v6 = 3;
+                                v5 = 67;
+                            }
+                        }
+                    }
+                    else if ( yw->field_1b80->owner == yw->field_1a60->owner && (1 << yw->field_1b80->owner) & yw->field_1a60->field_39 )
+                    {
+                        v8 = 2;
+                        v6 = 4;
+                        v5 = 65;
+                    }
+                    else
+                    {
+                        v8 = 2;
+                        v6 = 3;
+                        v5 = 66;
+                    }
+                }
+            }
+            else if (bzda.field_1D0 == 8 )
+            {
+                if ( yw->field_1a58 & 0x20 )
+                {
+                    if ( arg->downed_key_2 == VK_F7 && arg->winp131arg.flag & 0x100 )
+                    {
+                        v8 = 19;
+                        v6 = 8;
+                    }
+                    else if ( yw->field_1b80->owner == yw->field_1a98->owner )
+                    {
+                        v8 = 5;
+                        v6 = 8;
+                        v5 = 70;
+                    }
+                }
+            }
+            else if ( bzda.field_1D0 == 16 )
+            {
+                if ( yw->field_1a58 & 0x20 )
+                {
+                    if ( yw->field_1b80->owner == yw->field_1a98->owner )
+                    {
+                        v8 = 8;
+                        v6 = 2;
+                        v5 = 64;
+                    }
+                    else
+                    {
+                        v8 = 2;
+                        v6 = 3;
+                        v5 = 67;
+                    }
+                }
+                else
+                {
+                    switch ( ypaworld_func64__sub21__sub2(yw) )
+                    {
+                    case 0:
+                        v8 = 6;
+                        v6 = 10;
+                        v5 = 71;
+                        break;
+
+                    case 6:
+                        v5 = 98;
+                        break;
+
+                    case 2:
+                        v5 = 99;
+                        break;
+
+                    case 3:
+                        v5 = 101;
+                        break;
+
+                    case 4:
+                        v5 = 100;
+                        break;
+
+                    case 5:
+                        v5 = 102;
+                        break;
+
+                    default:
+                        break;
+                    }
+                }
+            }
+            else if ( bzda.field_1D0 == 32 )
+            {
+                if ( yw->field_1a58 & 0x20 )
+                {
+                    if ( yw->field_1b80->owner == yw->field_1a98->owner )
+                    {
+                        v8 = 8;
+                        v6 = 2;
+                        v5 = 64;
+                    }
+                    else
+                    {
+                        v8 = 2;
+                        v6 = 3;
+                        v5 = 67;
+                    }
+                }
+                else
+                {
+                    switch ( ypaworld_func64__sub21__sub3(yw) )
+                    {
+                    case 0:
+                        v8 = 10;
+                        v6 = 9;
+                        v5 = 72;
+                        break;
+
+                    case 5:
+                        v5 = 103;
+                        break;
+
+                    case 1:
+                        v5 = 98;
+                        break;
+
+                    case 2:
+                        v5 = 104;
+                        break;
+
+                    case 3:
+                        v5 = 105;
+                        break;
+
+                    default:
+                        break;
+                    }
+                }
+            }
+
+            int v18 = ypaworld_func64__sub21__sub4(yw, arg, v8);
+            yw->field_1a5c = v18;
+
+            if ( ypaworld_func64__sub21__sub6(yw, &arg->winp131arg) )
+            {
+                v18 = 5;
+                v6 = 8;
+                arg->winp131arg.flag |= 2;
+            }
+
+            if ( arg->winp131arg.flag & 2 )
+                ypaworld_func64__sub21__sub5(obj, yw, v18);
+
+            if ( arg->winp131arg.flag & 4 && v18 )
+                v6 = 0;
+        }
+
+        if ( yw->field_1b1c )
+            v6 = -1;
+
+        displ_arg263 v19;
+
+        if ( v6 == -1 )
+            v19.bitm = NULL;
+        else
+            v19.bitm = yw->pointers__bitm[v6];
+
+        switch ( v6 )
+        {
+        case 0:
+            v19.pointer_id = 1;
+            break;
+
+        case 1:
+            v19.pointer_id = 2;
+            break;
+
+        case 2:
+            v19.pointer_id = 3;
+            break;
+
+        case 3:
+            v19.pointer_id = 4;
+            break;
+
+        case 4:
+            v19.pointer_id = 5;
+            break;
+
+        case 5:
+            v19.pointer_id = 6;
+            break;
+
+        case 6:
+            v19.pointer_id = 7;
+            break;
+
+        case 7:
+            v19.pointer_id = 8;
+            break;
+
+        case 8:
+            v19.pointer_id = 9;
+            break;
+
+        case 9:
+            v19.pointer_id = 10;
+            break;
+
+        case 10:
+            v19.pointer_id = 11;
+            break;
+
+        default:
+            v19.pointer_id = 0;
+            break;
+        }
+
+        if ( squadron_manager.field_2A8 & 1 )
+            v19.pointer_id = 1;
+
+        call_method(yw->win3d, 263, &v19);
+
+        if ( v5 )
+            sub_4811E8(yw, v5);
+    }
+}
+
+
+
+void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
+{
+    //Precompute input
+    winp_131arg *winp = &inpt->winp131arg;
+
+    inpt->but_flags &= 0x7FFFFFFF;
+
+    int v38 = 0;
+
+    if ( yw->field_1614 - yw->field_1a0c < 500 )
+        inpt->but_flags &= 0xFFFFFFFE;
+
+    if ( yw->field_1614 - yw->field_1a0c > 5000 )
+        yw->field_1a20 = 0;
+
+    if ( yw->field_739A )
+    {
+        if ( yw->field_73CE & 4 )
+            v38 = 1;
+    }
+
+    yw->field_162A = 0;
+
+    if ( inpt->but_flags & 1 )
+    {
+        if ( !yw->field_1628 )
+            yw->field_162A = 1;
+
+        yw->field_1628 = 1;
+    }
+    else
+    {
+        yw->field_1628 = 0;
+    }
+
+    if ( yw->field_1b84->field_3D5 == 2 )
+    {
+        yw->field_17c0 = 0;
+    }
+    else if ( winp->flag & 0x80 )
+    {
+        if ( yw->field_17c0
+                || winp->selected_btn == &robo_map.frm_1
+                || winp->selected_btn == &bzda.frm_1
+                || winp->selected_btn == &squadron_manager.lstvw.frm_1
+                || (!(bzda.field_1D0 & 1) && yw->field_2410 != -1) )
+        {
+            if ( yw->field_17c0 )
+            {
+                yw->field_17c0 = 0;
+            }
+            else
+            {
+                if ( winp->selected_btn != &robo_map.frm_1 && winp->selected_btn != &bzda.frm_1 && !(bzda.field_1D0 & 1) )
+                    bzda.field_1D0 = bzda.field_1CC & 1;
+            }
+        }
+        else
+        {
+            yw->field_17c0 = 1;
+
+            NC_STACK_input *input;
+            inputEngine__getter(0x80001009, &input, 0);
+
+            int v37 = 1;
+
+            input__func66__params v31;
+            v31.field_0 = 5;
+            v31.vals = &v37;
+            v31.field_4 = 10;
+            v31.funcID = 69;
+
+            call_method(input, 66,  &v31);
+
+            v31.field_4 = 11;
+            call_method(input, 66,  &v31);
+        }
+    }
+
+    if ( !(gui_lstvw.cmd_flag & 0x20) )
+        inpt->sliders_vars[1] = 0;
+
+    if ( yw->field_17c0 ) // If grabbed mouse
+    {
+        // Piu-piu mazafaka
+        winp->selected_btnID = -1;
+        winp->flag &= 0xFFFFFF8F;
+
+        inpt->sliders_vars[0] += inpt->sliders_vars[10];
+        inpt->sliders_vars[1] += inpt->sliders_vars[11];
+        inpt->sliders_vars[3] += inpt->sliders_vars[10];
+        inpt->sliders_vars[5] -= inpt->sliders_vars[11] * 1.5;
+
+        if ( winp->flag & 4 )
+            inpt->but_flags |= 1;
+
+        if ( winp->flag & 0x800 )
+            inpt->but_flags |= 8;
+
+        sub_4811E8(yw, 0x50);
+    }
+
+    if ( !v38 )
+    {
+        int v13 = yw->field_1b84->field_24 == 2 || yw->field_1b84->field_24 == 8;
+        int v34 = yw->field_1b84->field_24 == 3;
+
+        if ( !yw->field_161c )
+        {
+            yw->field_788E = inpt->sliders_vars[12];
+            yw->field_7892 = inpt->sliders_vars[13];
+            yw->field_7896 = inpt->sliders_vars[14];
+            yw->field_789A = inpt->sliders_vars[15];
+            yw->field_789E = inpt->sliders_vars[16];
+        }
+
+        int v45 = fabs(yw->field_788E - inpt->sliders_vars[12]) >= 0.05;
+        int v44 = fabs(yw->field_7892 - inpt->sliders_vars[13]) >= 0.05;
+        int v46 = fabs(yw->field_7896 - inpt->sliders_vars[14]) >= 0.05;
+        int v43 = fabs(yw->field_789A - inpt->sliders_vars[15]) >= 0.05;
+        int v47 = fabs(yw->field_789E - inpt->sliders_vars[16]) >= 0.05;
+
+        if ( v45 || v44 || v46 || v43 || v47)
+        {
+            yw->field_788E = inpt->sliders_vars[12];
+            yw->field_7892 = inpt->sliders_vars[13];
+            yw->field_7896 = inpt->sliders_vars[14];
+            yw->field_789A = inpt->sliders_vars[15];
+            yw->field_789E = inpt->sliders_vars[16];
+        }
+
+        if ( yw->field_7882 )
+        {
+            if ( v45 )
+                yw->field_7882 = 0;
+        }
+        else
+        {
+            if ( ( v13 && inpt->sliders_vars[3] != 0.0 ) || inpt->sliders_vars[0] != 0.0 )
+                yw->field_7882 = 1;
+        }
+
+        if ( yw->field_7886 )
+        {
+            if ( v44 || v43 || v47 )
+                yw->field_7886 = 0;
+        }
+        else
+        {
+            if ( v13 )
+            {
+                if ( (yw->snd__cdsound & 2 ) && inpt->sliders_vars[5] != 0.0 )
+                    yw->field_7886 = 1;
+                else if ( inpt->sliders_vars[4] != 0.0 )
+                    yw->field_7886 = 1;
+            }
+            else if ( inpt->sliders_vars[1] != 0.0 )
+                yw->field_7886 = 1;
+        }
+
+        if ( yw->field_788A )
+        {
+            if ( v46 || v43 || v47 )
+                yw->field_788A = 0;
+        }
+        else
+        {
+            if ( v13 )
+            {
+                if ( (yw->snd__cdsound & 2) && inpt->sliders_vars[4] != 0.0 )
+                    yw->field_788A = 1;
+            }
+            else if ( !v34 && inpt->sliders_vars[2] != 0.0 )
+                yw->field_788A = 1;
+        }
+
+        if ( inpt->winp131arg.flag & 0x10 )
+        {
+            if ( !(v43 || v44 || v45 || v46 || v47) )
+            {
+                yw->field_7886 = 1;
+                yw->field_7882 = 1;
+            }
+        }
+
+        if ( yw->field_7882 )
+            inpt->sliders_vars[12] = 0;
+
+        if ( yw->field_7886 )
+            inpt->sliders_vars[13] = 0;
+
+        if ( yw->field_788A )
+            inpt->sliders_vars[14] = 0;
+
+        if ( !yw->field_7882 )
+        {
+            if ( v13 )
+                inpt->sliders_vars[3] += inpt->sliders_vars[12];
+            else
+                inpt->sliders_vars[0] += inpt->sliders_vars[12];
+        }
+
+        if ( !yw->field_7886 )
+        {
+            if ( v13 )
+            {
+                if ( yw->snd__cdsound & 2 )
+                {
+                    if ( inpt->sliders_vars[16] != 0.0 )
+                        inpt->sliders_vars[5] += inpt->sliders_vars[16];
+                    else
+                        inpt->sliders_vars[5] += inpt->sliders_vars[13] * 2.0;
+                }
+                else
+                {
+
+                    if ( fabs(inpt->sliders_vars[13]) < 0.3 )
+                        inpt->but_flags |= 8;
+                    else
+                        inpt->sliders_vars[4] += -inpt->sliders_vars[13];
+
+                    inpt->but_flags |= 0x80000000;
+                }
+            }
+            else
+            {
+                inpt->sliders_vars[1] += inpt->sliders_vars[13];
+            }
+        }
+
+        if ( !yw->field_788A )
+        {
+            if ( v13 )
+            {
+                if ( yw->snd__cdsound & 2 )
+                {
+                    if ( inpt->sliders_vars[4] != 0.0 )
+                    {
+                    }
+                    else if ( fabs(inpt->sliders_vars[14]) < 0.3 )
+                    {
+                        inpt->but_flags |= 8;
+                    }
+                    else
+                        inpt->sliders_vars[4] += inpt->sliders_vars[14];
+
+                    inpt->but_flags |= 0x80000000;
+                }
+                else
+                {
+                    if ( inpt->sliders_vars[5] == 0.0 )
+                        inpt->sliders_vars[5] += inpt->sliders_vars[16];
+                }
+            }
+            else
+            {
+                if ( inpt->sliders_vars[2] == 0.0 )
+                    inpt->sliders_vars[2] += inpt->sliders_vars[14];
+            }
+        }
+        if ( inpt->but_flags & 0x10000 )
+            inpt->but_flags |= 1;
+
+        if ( inpt->but_flags & 0x20000 )
+            inpt->but_flags |= 4;
+
+        if ( inpt->but_flags & 0x40000 )
+            inpt->but_flags |= 2;
+
+        if ( inpt->but_flags & 0x80000 )
+            inpt->but_flags |= 8;
+    }
+}

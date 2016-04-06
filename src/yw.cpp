@@ -723,17 +723,45 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
     _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
 
     ypaworld_func64__sub6(yw);
+    //ypaworld_func64__sub2(yw);
+
+    if ( !yw->field_138c )
+    {
+        ypaworld_func64__sub1(yw, arg->field_8); //Precompute input (add mouse turn)
+
+        winp_131arg *winp = &arg->field_8->winp131arg;
+
+        if ( yw->field_1b1c )
+        {
+            if ( winp->move[0].x != yw->field_1b20 || winp->move[0].y != yw->field_1b22 )
+                yw->field_1b1c = 0;
+        }
+        else
+        {
+            if ( arg->field_8->downed_key )
+            {
+                if ( arg->field_8->downed_key != 0x81 && arg->field_8->downed_key != 0x83 && arg->field_8->downed_key != 0x82 && !(arg->field_8->but_flags & 0x10) )
+                {
+                    yw->field_1b1c = 1;
+                    yw->field_1b20 = winp->move[0].x;
+                    yw->field_1b22 = winp->move[0].y;
+                }
+            }
+        }
+    }
 
     yw->field_1614 += arg->field_4;
     yw->field_1618 = arg->field_4;
 
+    yw->field_1b24.field_14 = 0;
     yw->field_161c++;
     yw->field_1b24.field_0 = yw->field_1614;
     yw->field_1b24.field_4 = arg->field_4;
     yw->field_1b24.numid = 0;
     yw->field_1b24.inpt = arg->field_8;
+    //yw->field_1B6E = 1024 / arg->field_4;
 
-    //printf("%d \n", arg->field_8->winp131arg.selected_btnID);
+    //printf("flag %x \n", arg->field_8->winp131arg.flag);
 
     for (int i = 0; i < yw->sectors_maxY2 * yw->sectors_maxX2; i++)
     {
@@ -779,6 +807,7 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
         sub_445230(yw);
 
         ypaworld_func64__sub14(yw);
+        ypaworld_func64__sub21(obj, yw, arg->field_8);
     }
 
 
@@ -2219,9 +2248,124 @@ void ypaworld_func149(NC_STACK_ypaworld *obj, class_stru *zis, ypaworld_arg136 *
 }
 
 
-void ypaworld_func150(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func150(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg150 *arg)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func150");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    float v40 = arg->field_18.sx;
+    float v31 = arg->field_18.sy;
+    float v42 = arg->field_18.sz;
+
+    arg->field_24 = NULL;
+
+    int v6 = arg->pos.sx / 300.0 * 16384.0;
+    int v7 = arg->pos.sz / 300.0 * 16384.0;
+
+    float v47 = fabs(v40);
+    float v46 = fabs(v42);
+
+    arg->field_28 = sqrt(POW2(v40) + POW2(v31) + POW2(v42));
+
+    int v27, v28, v35;
+
+    if ( v47 != 0.0 || v46 != 0.0 )
+    {
+        if ( v47 <= v46 )
+        {
+            v27 = (v47 * 16384.0 / v46);
+
+            if ( v40 < 0.0 )
+                v27 = -v27;
+
+            if ( v42 >= 0.0 )
+                v28 = 16384;
+            else
+                v28 = -16384;
+
+            v35 = v46;
+        }
+        else
+        {
+            if ( v40 >= 0.0 )
+                v27 = 16384;
+            else
+                v27 = -16384;
+
+            v28 = (v46 * 16384.0 / v47);
+
+            if ( v42 < 0.0 )
+                v28 = -v28;
+
+            v35 = v47;
+        }
+    }
+    else
+    {
+        v28 = 0;
+        v35 = 0;
+        v27 = 0;
+    }
+
+    float v11 = 1.0 / arg->field_28;
+
+    float v41 = v40 * v11;
+    float v32 = v31 * v11;
+    float v43 = v42 * v11;
+
+    while ( v35 >= 0 )
+    {
+        int v12 = -v7 >> 16;
+        int v29 = v6 >> 16;
+
+        if ( v29 >= 0 && v29 < yw->sectors_maxX2 && v12 >= 0 && v12 < yw->sectors_maxY2 )
+        {
+            __NC_STACK_ypabact *sect_bacts = (__NC_STACK_ypabact *)&yw->cells[v29 + v12 * yw->sectors_maxX2].field_3C.head;
+
+            while (sect_bacts->next)
+            {
+                if ( sect_bacts != arg->unit && sect_bacts->field_3D5 != 2 )
+                {
+                    if ( !(arg->unit == yw->field_1b84 && yw->field_1b70) || sect_bacts != yw->field_1b80 )
+                    {
+                        float v36 = sect_bacts->field_621.sx - arg->pos.sx;
+                        float v37 = sect_bacts->field_621.sy - arg->pos.sy;
+                        float v38 = sect_bacts->field_621.sz - arg->pos.sz;
+
+                        float v16 = v32 * v38 - v43 * v37;
+                        float v17 = v43 * v36 - v41 * v38;
+                        float v18 = v41 * v37 - v32 * v36;
+
+                        if ( sqrt( POW2(v18) + POW2(v16) + POW2(v17) ) < sect_bacts->radius )
+                        {
+                            float v30 = sqrt(POW2(v36) + POW2(v37) + POW2(v38));
+
+                            if ( (v41 * v36 + v32 * v37 + v43 * v38) / v30 > 0.0 )
+                            {
+                                if ( arg->field_28 > v30 - sect_bacts->radius )
+                                {
+                                    arg->field_24 = sect_bacts;
+                                    arg->field_28 = v30 - sect_bacts->radius;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                sect_bacts = (__NC_STACK_ypabact *)sect_bacts->next;
+            }
+        }
+
+        if ( arg->field_24 )
+            break;
+
+        do
+        {
+            v6 += v27;
+            v7 += v28;
+            v35 -= 300;
+        }
+        while ( (v6 >> 16) == v29 && (-v7 >> 16) == v12 && v35 >= 0 );
+    }
 }
 
 

@@ -233,7 +233,7 @@ struct ypabact_arg65
     int field_14;
     int field_18;
     __NC_STACK_ypabact *field_1C;
-    int field_20;
+    cellArea *field_20;
     int field_24;
     int field_28;
     int field_2C;

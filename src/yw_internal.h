@@ -415,4 +415,8 @@ void ypaworld_func64__sub5(_NC_STACK_ypaworld *yw);
 
 void sub_44F958(_NC_STACK_ypaworld *yw, cellArea *cell, char secX, char secY, uint8_t owner);
 
+void ypaworld_func64__sub21(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, struC5 *arg);
+
+void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt);
+
 #endif

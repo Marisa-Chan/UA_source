@@ -834,7 +834,7 @@ struct _NC_STACK_ypaworld
     listbase *field_17b4;
     shortPoint field_17b8;
     int field_17bc;
-    int field_17c0;
+    int field_17c0; // Grab mouse for unit steer-turn
     int field_17c4;
     int field_17c8;
     const char **tooltips;
@@ -863,23 +863,29 @@ struct _NC_STACK_ypaworld
     int field_1a58;
     int field_1a5c;
     cellArea *field_1a60;
-
+    int field_1a64;
+    int field_1A66;
+    int field_1a68; //Network?
     xyz field_1a6c;
 
     xyz field_1a7c;
 
+    xyz field_1a8c;
     __NC_STACK_ypabact *field_1a98;
-
+    float field_1a9c;
     int field_1aa0;
     int field_1aa4;
     int field_1aa8;
-    int field_1aac;
+    __NC_STACK_ypabact *field_1aac;
     int field_1ab0;
+    int field_1ab4;
+    xyz field_1ab8;
 
     NC_STACK_ilbm *pointers[11];
     bitmap_intern *pointers__bitm[11];
     int field_1b1c;
-
+    int field_1b20; // saved mouse x
+    int field_1b22; // saved mouse y
     ypabact_arg65 field_1b24;
     int16_t field_1b68;
     int16_t field_1B6A;
@@ -991,7 +997,11 @@ struct _NC_STACK_ypaworld
     int field_7882;
     int field_7886;
     int field_788A;
-
+    float field_788E; //input sliders
+    float field_7892; //input sliders
+    float field_7896; //input sliders
+    float field_789A; //input sliders
+    float field_789E; //input sliders
     yw_movies movies;
     int field_81AB;
     const char *field_81AF;
@@ -1513,7 +1523,16 @@ struct yw_arg177
     int field_4;
 };
 
-
+struct yw_arg150
+{
+    __NC_STACK_ypabact *unit;
+    int field_4;
+    xyz pos;
+    int field_14;
+    xyz field_18;
+    __NC_STACK_ypabact *field_24;
+    float field_28;
+};
 
 
 __NC_STACK_ypabact * sub_48C244(NC_STACK_ypaworld *ywo, int a2, char owner);
