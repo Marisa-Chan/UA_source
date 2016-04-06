@@ -484,11 +484,11 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                                             if ( v82 )
                                             {
                                                 rbcolls *v8 = &v82[j];
-                                                radius = v8->roboColls[0].robo_coll_radius;
+                                                radius = v8->roboColls->robo_coll_radius;
 
-                                                ttmp.sx = bct->field_651.m00 * v8->roboColls[0].robo_coll_x + bct->field_651.m10 * v8->roboColls[0].robo_coll_y + bct->field_651.m20 * v8->roboColls[0].robo_coll_z + bct->field_621.sx;
-                                                ttmp.sy = bct->field_651.m01 * v8->roboColls[0].robo_coll_x + bct->field_651.m11 * v8->roboColls[0].robo_coll_y + bct->field_651.m21 * v8->roboColls[0].robo_coll_z + bct->field_621.sy;
-                                                ttmp.sz = bct->field_651.m02 * v8->roboColls[0].robo_coll_x + bct->field_651.m12 * v8->roboColls[0].robo_coll_y + bct->field_651.m22 * v8->roboColls[0].robo_coll_z + bct->field_621.sz;
+                                                ttmp.sx = bct->field_651.m00 * v8->roboColls->robo_coll_x + bct->field_651.m10 * v8->roboColls->robo_coll_y + bct->field_651.m20 * v8->roboColls->robo_coll_z + bct->field_621.sx;
+                                                ttmp.sy = bct->field_651.m01 * v8->roboColls->robo_coll_x + bct->field_651.m11 * v8->roboColls->robo_coll_y + bct->field_651.m21 * v8->roboColls->robo_coll_z + bct->field_621.sy;
+                                                ttmp.sz = bct->field_651.m02 * v8->roboColls->robo_coll_x + bct->field_651.m12 * v8->roboColls->robo_coll_y + bct->field_651.m22 * v8->roboColls->robo_coll_z + bct->field_621.sz;
                                             }
                                             else
                                             {
