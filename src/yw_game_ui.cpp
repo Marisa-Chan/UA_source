@@ -7912,7 +7912,7 @@ void ypaworld_func64__sub8(NC_STACK_ypaworld *, _NC_STACK_ypaworld *yw)
                 sub_4C1814(yw, robo_map.field_1CC - robo_map.field_244, robo_map.field_1D2);
             }
         }
-        robo_map.field_1E8 &= 0x1F;
+        robo_map.field_1E8 &= 0xFFFFFF1F;
     }
 }
 
