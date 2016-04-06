@@ -1585,7 +1585,7 @@ void winp_func69(NC_STACK_winp *obj, class_stru *zis, int *arg)
 
 void winp_func70(NC_STACK_winp *obj, class_stru *zis, int *arg)
 {
-    printf("CHECK ARG TYPE %s\n","winp_func70");
+    //printf("CHECK ARG TYPE %s\n","winp_func70");
 
     __NC_STACK_winp *winp = &obj->stack__winp;
 
