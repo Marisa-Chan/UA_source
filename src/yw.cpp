@@ -2102,6 +2102,10 @@ void ypaworld_func149(NC_STACK_ypaworld *obj, class_stru *zis, ypaworld_arg136 *
     arg->field_24 = 2.0;
     arg->field_20 = 0;
 
+    float arg_posx = arg->pos_x;
+    float arg_posy = arg->pos_y;
+    float arg_posz = arg->pos_z;
+
     int v33 = (arg->pos_x + 150.0) / 75.0 * 16384.0;
     int v34 = (arg->pos_z - 150.0) / 75.0 * 16384.0;
 
@@ -2170,9 +2174,9 @@ void ypaworld_func149(NC_STACK_ypaworld *obj, class_stru *zis, ypaworld_arg136 *
             if ( a6.field_1C != 1 )
                 sub_44E07C(yw, &a6);
 
-            arg->pos_x -= a6.pos_x;
-            arg->pos_y -= a6.pos_y;
-            arg->pos_z -= a6.pos_z;
+            arg->pos_x = arg_posx - a6.pos_x;
+            arg->pos_y = arg_posy - a6.pos_y;
+            arg->pos_z = arg_posz - a6.pos_z;
 
             sub_44D8B8(arg, &a6);
 
@@ -2205,9 +2209,9 @@ void ypaworld_func149(NC_STACK_ypaworld *obj, class_stru *zis, ypaworld_arg136 *
             if ( a6.field_1C != 1 )
                 sub_44E07C(yw, &a6);
 
-            arg->pos_x = arg->pos_x - a6.pos_x;
-            arg->pos_y = arg->pos_y - a6.pos_y;
-            arg->pos_z = arg->pos_z - a6.pos_z;
+            arg->pos_x = arg_posx - a6.pos_x;
+            arg->pos_y = arg_posy - a6.pos_y;
+            arg->pos_z = arg_posz - a6.pos_z;
 
             sub_44D8B8(arg, &a6);
         }
