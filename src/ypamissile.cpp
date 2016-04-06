@@ -607,8 +607,8 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                                                                 break;
                                                             }
 
-                                                            int v46;
-                                                            int v47;
+                                                            float v46;
+                                                            float v47;
 
                                                             if ( v83 || bct->field_3D6 & 0x800000 )
                                                             {
@@ -618,10 +618,10 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                                                             else
                                                             {
                                                                 v46 = v92 * (100 - bct->shield);
-                                                                v47 = 100;
+                                                                v47 = 100.0;
                                                             }
 
-                                                            v92 = v46 / v47;
+                                                            v92 = ceil(v46 / v47); //Misslie damage (ceil for less damage)
                                                             if ( v92 )
                                                             {
                                                                 bact_arg84 arg84;
