@@ -1557,8 +1557,8 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
                 {
                     if ( v47->field_3e8->id != yw->field_1b80->owner )
                     {
-                        int v101 = (v47->field_3ec.sx / 1200) * 1200.0 + 600.0;
-                        int v100 = -(( -v47->field_3ec.sz / 1200) * 1200.0 + 600.0);
+                        int v101 = ( (int)v47->field_3ec.sx / 1200) * 1200.0 + 600.0;
+                        int v100 = -(( (int)-v47->field_3ec.sz / 1200) * 1200.0 + 600.0);
 
                         fntcmd_select_tileset(&pcur, v110);
 
