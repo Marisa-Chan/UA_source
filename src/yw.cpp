@@ -1359,6 +1359,7 @@ size_t ypaworld_func130(NC_STACK_ypaworld *obj, class_stru *zis, yw_130arg *arg)
 
     if ( arg->sec_x < 0 || arg->sec_z < 0 || arg->sec_x >= yw->sectors_maxX2 || arg->sec_z >= yw->sectors_maxY2 )
     {
+        ypa_log_out("YWM_GETSECTORINFO %d %d max: %d %d\n", arg->sec_x, arg->sec_z, yw->sectors_maxX2, yw->sectors_maxY2);
         ypa_log_out("YWM_GETSECTORINFO ausserhalb!!!\n");
 
         arg->pcell = NULL;

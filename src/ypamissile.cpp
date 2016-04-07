@@ -6,6 +6,8 @@
 #include "yw.h"
 #include "ypamissile.h"
 
+#include "log.h"
+
 #include <math.h>
 
 
@@ -439,6 +441,9 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
     {
         if ( i == 0 || v68[i] != v68[i - 1] )
         {
+            if (v68[i] == NULL)
+                ypa_log_out("ypamissile_func70__sub0 NULL sector i = %d, 621: %f %f 62D: %f %f \n", i, bact->field_621.sx, bact->field_621.sz, bact->field_62D.sx, bact->field_62D.sz);
+
             __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v68[ i ]->field_3C.head;
             while (bct->next)
             {
