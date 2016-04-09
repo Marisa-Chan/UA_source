@@ -108,8 +108,8 @@ struct __NC_STACK_ypabact : public nnode
     xyz field_605;
     float field_611;
 
-    xyz field_621;
-    xyz field_62D;
+    xyz field_621; //Current pos ?
+    xyz field_62D; //Prev pos ?
     xyz field_639;
     xyz field_645;
     mat3x3 field_651;
