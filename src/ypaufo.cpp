@@ -940,7 +940,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
             {
                 bact->field_601 = 0;
 
-                if ( arg->inpt->sliders_vars[2] == -0.0 )
+                if ( arg->inpt->sliders_vars[2] == 0.0 )
                     bact->field_611 *= 0.6;
 
                 if ( bact->field_611 < 0.1 )
