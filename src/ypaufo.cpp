@@ -942,6 +942,9 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
 
                 if ( arg->inpt->sliders_vars[2] == -0.0 )
                     bact->field_611 *= 0.6;
+
+                if ( bact->field_611 < 0.1 )
+                    bact->field_611 = 0;
             }
         }
         else
@@ -950,6 +953,9 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
 
             if ( fabs(bact->field_605.sx * bact->field_611) > 0.1 || fabs(bact->field_605.sz * bact->field_611) > 0.1 )
                 bact->field_611 *= 0.6;
+
+            if ( bact->field_611 < 0.1 )
+                bact->field_611 = 0;
         }
 
         if ( bact->mgun != -1 )
