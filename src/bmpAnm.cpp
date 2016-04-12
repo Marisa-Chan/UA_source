@@ -213,7 +213,7 @@ int bmpanim_func6(NC_STACK_bmpanim *obj, class_stru *, MFILE **file)
     int16_t tmp[3];
     tmp[0] = SWAP16(1);
     tmp[1] = SWAP16(6); //sizeof tmp
-    tmp[1] = SWAP16(bmpAnm->field_10);
+    tmp[2] = SWAP16(bmpAnm->field_10);
 
     sub_413564(mfile, 6, &tmp);
     sub_413564(mfile, strlen(a3) + 1, a3);
