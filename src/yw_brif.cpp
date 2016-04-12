@@ -692,8 +692,10 @@ void ypaworld_func158__sub4__sub1__sub4__sub21(_NC_STACK_ypaworld *yw, struC5 *i
             if ( v20 != brf->field_2F8C && brf->field_2F8C != -1 )
             {
                 brf_obj *br_obj = &brf->brf_objs;
-                br_obj[ brf->field_2F90 ].field_0 = 0;
-                br_obj[ brf->field_2F90 ].object_id = 0;
+//                br_obj[ brf->field_2F90 ].field_0 = 0;
+//                br_obj[ brf->field_2F90 ].object_id = 0;
+                br_obj->field_0 = 0;      //Only one brf_obj!
+                br_obj->object_id = 0;
 
                 brf->field_2F8C = -1;
                 brf->field_2F90 = -1;
@@ -931,7 +933,8 @@ void ypaworld_func158__sub4__sub1__sub4__sub0(_NC_STACK_ypaworld *yw)
 
 void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *inpt, int obj_id, char a4)
 {
-    brf_obj *br_obj = &brf->brf_objs + obj_id;
+    //brf_obj *br_obj = &brf->brf_objs + obj_id; //By first design it had more than 1 brf_obj
+    brf_obj *br_obj = &brf->brf_objs;
 
     if ( br_obj->field_0 )
     {
