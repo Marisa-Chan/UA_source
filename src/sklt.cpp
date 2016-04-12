@@ -221,6 +221,7 @@ int skeleton_read_poly(NC_STACK_sklt *obj, MFILE *mfile, skeleton_64_stru *sklt)
         }
         else
         {
+            nc_FreeMem(polys);
             return 0;
         }
     }
@@ -583,7 +584,7 @@ size_t sklt_func66(NC_STACK_sklt *obj, class_stru *, rsrc_func66_arg *arg)
     {
         sub_412FC0(mfile, 0, TAG_SEN2, 3 * 4 * sklt->sen_count);
 
-        for (int i = 0; i < sklt->POO_NUM; i++)
+        for (int i = 0; i < sklt->sen_count; i++)
         {
             uint32_t tmp[3];
             tmp[0] = *(uint32_t *)&sklt->sen_entries[i].pos3f.sx;
