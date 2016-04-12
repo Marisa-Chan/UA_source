@@ -998,7 +998,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
             }
         }
 
-        if ( v8 > 50 && br_obj->title )
+        if ( v8 > 50 && br_obj->title[0] )
         {
             if ( a4 & 2 )
             {
