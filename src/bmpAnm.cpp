@@ -777,7 +777,7 @@ bmpAnim_t1 * bmpanim_func64__sub0(const char *className, char **a2, bitmap__opl 
     if ( !bmpanim_func64__sub0__sub0(t1, a2, className) )
     {
         sub_431608(t1);
-
+        return NULL;
     }
 
     if ( !bmpanim_func64__sub0__sub1(t1, a3) )
