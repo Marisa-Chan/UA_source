@@ -2513,7 +2513,7 @@ int yparobo_func70__sub4__sub0__sub0(__NC_STACK_yparobo *robo, BuildProto *proto
                     if ( protoPow > power )
                     {
                         power = protoPow;
-                        id = id;
+                        id = i;
                     }
                 }
             }
@@ -2730,7 +2730,7 @@ int yparobo_func70__sub4__sub2__sub0(__NC_STACK_yparobo *robo, BuildProto *proto
                     if ( protoPow > power )
                     {
                         power = protoPow;
-                        id = id;
+                        id = i;
                     }
                 }
             }
@@ -2918,7 +2918,7 @@ int yparobo_func70__sub4__sub1__sub0(__NC_STACK_yparobo *robo, BuildProto *proto
                     if ( protoPow > power )
                     {
                         power = protoPow;
-                        id = id;
+                        id = i;
                     }
                 }
             }
