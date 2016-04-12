@@ -3208,11 +3208,11 @@ bact_node *sub_4AA640(__NC_STACK_yparobo *robo, robo_loct1 *arg)
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
     int v72 = 0;
-    float v73;
+    float v73 = 0.0;
 
-    int v85;
-    int v86;
-    int v87;
+    int v85 = -1;
+    int v86 = -1;
+    int v87 = -1;
 
     int v75 = 10000000;
     int v2 = 0;
@@ -4866,7 +4866,7 @@ int yparobo_func70__sub6__sub3(__NC_STACK_yparobo *robo, cellArea *cell)
 
         if ( cll->owner == bact->owner )
         {
-            int v11;
+            int v11 = 0;
 
             if ( cll->field_2E == 1 )
             {
@@ -5171,7 +5171,7 @@ int yparobo_func70__sub6__sub5(__NC_STACK_yparobo *robo, int *a2, int *px, int *
 
     float v32 = -0.5;
 
-    int v29;
+    int v29 = 0;
 
     while (node->next)
     {
@@ -5243,7 +5243,7 @@ int yparobo_func70__sub6__sub6(__NC_STACK_yparobo *robo, int *a2, int *px, int *
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
     float v32 = -0.5;
-    int v21;
+    int v21 = 0;
 
     bact_node *node = &bact->list_node;
 
