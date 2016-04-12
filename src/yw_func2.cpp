@@ -3806,7 +3806,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
             usr->field_3A->winp131arg.flag &= 0xFFFFFFFD;
         }
-        else if ( v6_l == 1134 )
+        else if ( v6_l == 1135 )
         {
             sub_4C31C0(usr->p_ypaworld, &usr->d3d_listvw);
         }
