@@ -7313,6 +7313,9 @@ size_t ypabact_func108(NC_STACK_ypabact *obj, class_stru *zis, float *arg)
 
         call_method(obj, 81, &arg81);
 
+        if (arg81.enrg_sum == 0) // Possible devision by zero
+            arg81.enrg_sum = 1;
+
         v11 = v11 / (float)arg81.enrg_sum;
 
         if ( arg )
