@@ -266,6 +266,8 @@ int yw_initGameWithSettings()
 
         if ( user_txt )
         {
+            FClose(user_txt);
+
             strcpy(userdata.user_name, v11);
             sprintf(a1, "%s/user.txt", v11);
         }

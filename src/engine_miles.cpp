@@ -15,7 +15,7 @@ stored_functions_engine miles_engine_vtbl = {milesEngine__init, milesEngine__dei
 
 class_stored miles_engine_off (NULL, NULL, "MC2engines:miles.engine", classvtbl_get_milesEngine);
 
-userdata_sample_info *soundSources[8];
+userdata_sample_info *soundSources[16];
 int ShakeFXs[4];
 int palFXs[8];
 
@@ -135,7 +135,7 @@ void sub_423EFC(int a1, xyz *a2, xyz *a3, mat3x3 *a4)
 
     memcpy(&stru_547030, a4, sizeof(mat3x3));
 
-    memset(soundSources, 0, sizeof(stored_functions) * 8);
+    memset(soundSources, 0, sizeof(userdata_sample_info *) * 16);
     memset(palFXs, 0, sizeof(int) * 8);
     memset(ShakeFXs, 0, sizeof(int) * 4);
 

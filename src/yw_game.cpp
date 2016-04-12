@@ -755,7 +755,7 @@ void yw_InitSquads(_NC_STACK_ypaworld *yw, int squad_cnt, squadProto *squads)
 
             if (squad->field_0)
             {
-                NC_STACK_yparobo *robo;
+                NC_STACK_yparobo *robo = NULL;
 
                 bact_node *nod = (bact_node *)yw->bact_list.head;
                 while ( nod->next )

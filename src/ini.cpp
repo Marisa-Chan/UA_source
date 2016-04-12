@@ -19,11 +19,11 @@ int get_keyvalue_from_ini(const char *ini_filename, key_value_stru *key, unsigne
         {
             char * readed = fgets(buf, 256, fil);
 
-            if ( !readed && param_line >= engines.some_params_count )
-                break;
-
             if ( !readed )
             {
+                if ( param_line >= engines.some_params_count )
+                    break;
+
                 strcpy(buf, engines.some_params_pointers[param_line]);
                 param_line++;
             }

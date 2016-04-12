@@ -302,7 +302,7 @@ ncDir *_r_nc_opendir(const char *path, DWORD flags)
                 v7++;
                 path++;
                 if ( v7 >= 260 )
-                    break;
+                    return dir;
             }
             else
                 return dir;

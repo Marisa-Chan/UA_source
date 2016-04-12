@@ -319,7 +319,7 @@ rsrc * READ_ILBM(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak, MFILE *m
     BMHD_type bmhd;
     VBMP_type vbmp;
     stack_vals stk[3];
-    rsrc *res;
+    rsrc *res = NULL;
 
     bitmap_intern *bitm = NULL;
 

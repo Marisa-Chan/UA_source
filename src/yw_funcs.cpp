@@ -69,6 +69,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
                     nc_FreeMem(tileset->chars);
                 nc_FreeMem(tileset);
             }
+            FClose(fil);
             return NULL;
         }
 
@@ -97,6 +98,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
                 nc_FreeMem(tileset);
             }
             ypa_log_out("yw_LoadFont(): font %s, font definition file corrupt.\n", fontname);
+            FClose(fil);
             return NULL;
         }
 
@@ -107,6 +109,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
                 nc_FreeMem(tileset->chars);
             nc_FreeMem(tileset);
             ypa_log_out("yw_LoadFont(): font %s, couldn't load fontpage %s.\n", fontname, bitmap_name);
+            FClose(fil);
             return NULL;
         }
 
@@ -125,6 +128,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
                     nc_FreeMem(tileset->chars);
                 nc_FreeMem(tileset);
             }
+            FClose(fil);
             return NULL;
         }
 

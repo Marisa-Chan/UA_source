@@ -36,7 +36,7 @@ int def_parseFile(const char *filename, int num, scrCallBack *callbacks, int fla
 
 
 
-char *sb_0x4d9f1c__sub0(FILE *fil, char *p1, char *p2, char **p3, char **p4, int *line_number)
+int sb_0x4d9f1c__sub0(FILE *fil, char *p1, char *p2, char **p3, char **p4, int *line_number)
 {
     int lopp = 1;
     *p1 = 0;
@@ -102,7 +102,7 @@ char *sb_0x4d9f1c__sub0(FILE *fil, char *p1, char *p2, char **p3, char **p4, int
     if ( *p2 )
         *p4 = p2;
 
-    return v7;
+    return v7 != NULL;
 }
 
 

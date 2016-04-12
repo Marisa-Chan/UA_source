@@ -313,6 +313,8 @@ void *sub_4BFB60(void *mfl, const char *mode)
                 del_MFILE(v9);
             }
         }
+        else if (v7)
+            FClose(v7);
     }
     return NULL;
 }
@@ -440,7 +442,7 @@ int bmpanim_func64__sub1__sub1(void *fil, bmpAnim_t1 *arg)
 
     arg->field_1C = cnt;
 
-    arg->field_4 = (tUtV *)AllocVec(sizeof(tUtV) * cnt, 1);
+    arg->field_4 = (tUtV *)AllocVec(sizeof(tUtV) * (int)cnt, 1);
     if ( !arg->field_4 )
         return 0;
 
@@ -487,7 +489,7 @@ int bmpanim_func64__sub1__sub0(void *fil, bmpAnim_t1 *arg)
         return 0;
     cnt = SWAP16(cnt);
 
-    bmpAnim_t2 *t2 = (bmpAnim_t2 *)AllocVec(sizeof(bmpAnim_t2) * cnt, 1);
+    bmpAnim_t2 *t2 = (bmpAnim_t2 *)AllocVec(sizeof(bmpAnim_t2) * (int)cnt, 1);
 
     if ( !t2 )
         return 0;

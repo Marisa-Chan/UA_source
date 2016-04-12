@@ -177,10 +177,16 @@ void bitmap_func3(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
                     *(void **)stk->value = 0;
                 break;
             case 0x80002006:
-                *(int *)stk->value = internal->bitm_intern->pallete != NULL;
+                if ( internal->bitm_intern )
+                    *(int *)stk->value = internal->bitm_intern->pallete != NULL;
+                else
+                    *(int *)stk->value = 0;
                 break;
             case 0x80002007:
-                *(BYTE **)stk->value = internal->bitm_intern->pallete;
+                if ( internal->bitm_intern )
+                    *(BYTE **)stk->value = internal->bitm_intern->pallete;
+                else
+                    *(BYTE **)stk->value = NULL;
                 break;
             }
             stk++;
