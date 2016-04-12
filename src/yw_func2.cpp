@@ -2125,6 +2125,7 @@ void sub_4DE248(UserData *usr, int id)
         default:
             break;
         }
+        break;
 
     case 1206:
         sub_4811E8(usr->p_ypaworld, 0x70);
