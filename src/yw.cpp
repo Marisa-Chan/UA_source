@@ -4089,6 +4089,8 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
     usr->d3d_listvw.frm_1.btn_xpos = v99;
     usr->d3d_listvw.frm_1.btn_ypos = 7 * word_5A50C2 + 7 * yw->font_default_h + v273;
 
+    v70 = 0;
+
     btn_64arg.tileset_down = 16;
     btn_64arg.tileset_up = 16;
     btn_64arg.field_3A = 16;
