@@ -3628,6 +3628,8 @@ void yparobo_func70__sub4__sub4(__NC_STACK_yparobo *robo)
         loct.field_10.sz = arg92.pos.sz;
         loct.field_10.sy = 0;
 
+        loct.field_1C = NULL;
+
         if ( v20 <= 20000 )
             loct.field_0 = 20000;
         else
@@ -3912,6 +3914,7 @@ void yparobo_func70__sub4__sub7(__NC_STACK_yparobo *robo)
         loct.field_C = 1;
         loct.field_30 = 32;
         loct.field_4 = sqrt(v5 * v5 + v6 * v6);
+        loct.field_1C = NULL;
 
         bact_node *nod = sub_4AA640(robo, &loct);
 
