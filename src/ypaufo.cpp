@@ -280,9 +280,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
 
                             if ( fabs(ufo->field_18) >= v17 )
                             {
-                                if ( ufo->field_18 >= 0.0 )
-                                    v17 = v17;
-                                else
+                                if ( ufo->field_18 < 0.0 )
                                     v17 = -v17;
 
                                 ufo->field_18 = ufo->field_18 - v17;
