@@ -6929,18 +6929,21 @@ size_t yparobo_func132(NC_STACK_yparobo *obj, class_stru *zis, bact_arg67 *arg)
 
         while (subnode->next)
         {
-            if ( subnode->bact->field_3D5 != 2 )
+            if (arg->field_4 == subnode->bact->field_2E)
             {
-                arg->field_4 = 0;
-                arg->field_0 = 2;
-                arg->field_8 = subnode->bact;
-                return 1;
-            }
-            else
-            {
-                arg->field_4 = 0;
-                arg->field_0 = 0;
-                return 0;
+                if ( subnode->bact->field_3D5 != 2 )
+                {
+                    arg->field_4 = 0;
+                    arg->field_0 = 2;
+                    arg->field_8 = subnode->bact;
+                    return 1;
+                }
+                else
+                {
+                    arg->field_4 = 0;
+                    arg->field_0 = 0;
+                    return 0;
+                }
             }
 
             subnode = (bact_node *)subnode->next;
