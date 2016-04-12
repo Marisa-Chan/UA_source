@@ -7613,7 +7613,7 @@ size_t ypabact_func110(NC_STACK_ypabact *obj, class_stru *zis, bact_arg110 *arg)
         if ( !v52 )
             return 3;
 
-        int v32;
+        int v32 = 0;
 
         if ( v52->field_2E == 1 )
         {
