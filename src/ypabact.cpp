@@ -2684,9 +2684,9 @@ void ypabact_func71(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
         }
         else
         {
-            float v81;
-            float v83;
-            float v82;
+            float v81 = 0.0;
+            float v83 = 0.0;
+            float v82 = 0.0;
 
             yw_137col v43[10];
 
