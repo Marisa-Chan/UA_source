@@ -2246,7 +2246,6 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
 
             if ( mproto->mbmaps_count )
             {
-                yw->field_2d90 = yw->field_2d90;
                 if ( !yw->field_2d90->movie[0] || brf->field_2E68 )
                 {
                     for (int i = 0; i < mproto->mapRobos_count; i++)
