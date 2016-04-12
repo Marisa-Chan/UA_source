@@ -321,7 +321,7 @@ struct cellArea
     uint8_t owner;
     uint8_t sec_type;
     char field_2E;
-    uint8_t field_2F; // Cell electric power
+    int field_2F; // Cell electric power
     uint8_t buildings_health[3][3];
     char field_39; // Who can view this sector (mask)
     char field_3A;
