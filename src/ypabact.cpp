@@ -7433,7 +7433,7 @@ size_t ypabact_func110(NC_STACK_ypabact *obj, class_stru *zis, bact_arg110 *arg)
         if ( sqrt( POW2(v10) + POW2(v11) ) < 1800.0 )
             v9 = 1;
 
-        if ( bact->owner == bact->field_3e8->id )
+        if ( bact->owner == ((cellArea *)bact->field_3e8)->owner )
             v6 = 1;
     }
 
