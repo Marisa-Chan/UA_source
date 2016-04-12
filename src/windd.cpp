@@ -3404,7 +3404,7 @@ void windd_func258__sub0(NC_STACK_windd *obj, __NC_STACK_display *dspl, __NC_STA
 
             if ( yy + dspl->pointer_bitm->height > h)
             {
-                v21 = h - yy;
+                v20 = h - yy;
                 if (h == yy)
                     return;
             }
@@ -3420,7 +3420,7 @@ void windd_func258__sub0(NC_STACK_windd *obj, __NC_STACK_display *dspl, __NC_STA
                 fntcmd_set_xwidth(&cmdPoint, v21);
 
             if (v20)
-                fntcmd_set_yheight(&cmdPoint, 20);
+                fntcmd_set_yheight(&cmdPoint, v20);
 
             fntcmd_store_u8(&cmdPoint, 1);
 
