@@ -28,7 +28,8 @@ extern int dword_5A50B6_h;
 
 void sb_0x4eb94c__sub0(_NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, xyz *pos, base77Func *arg)
 {
-    brf_obj *brobj = &yw->brief.brf_objs + obj_id;
+    //brf_obj *brobj = &yw->brief.brf_objs + obj_id; // Only one object
+    brf_obj *brobj = &yw->brief.brf_objs;
 
     NC_STACK_base *model_base = yw->vhcls_models[ yw->VhclProtos[ brobj->object_id ].vp_normal ].base;
     call_vtbl(model_base, 2, 0x80001004, 16000, 0);
@@ -68,7 +69,8 @@ void sb_0x4eb94c__sub0(_NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, xyz 
 
 void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz *pos, base77Func *arg)
 {
-    brf_obj *brobj = &yw->brief.brf_objs + obj_id;
+    //brf_obj *brobj = &yw->brief.brf_objs + obj_id; // Only one object
+    brf_obj *brobj = &yw->brief.brf_objs;
 
     secType *scType = &yw->secTypes[brobj->object_id];
 
@@ -144,7 +146,8 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz
 
 void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int object_id, int a5)
 {
-    brf_obj *brobj = &brf->brf_objs + object_id;
+    //brf_obj *brobj = &brf->brf_objs + object_id; // Only one object
+    brf_obj *brobj = &brf->brf_objs;
 
     brf->field_4174.field_0 = struc->period;
     brf->field_4174.field_4 = brf->field_2E7C;
