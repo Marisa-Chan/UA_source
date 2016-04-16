@@ -318,7 +318,7 @@ int skeleton_read_senX(NC_STACK_sklt *obj, MFILE *mfile, skeleton_64_stru *sklt,
                 tmp[1] = SWAP32(tmp[1]);
                 tmp[2] = SWAP32(tmp[2]);
 
-                sklt->POO[i].field_0 = 0;
+                sklt->sen_entries[i].field_0 = 0;
                 sklt->sen_entries[i].pos3f.sx = *(float *)&tmp[0];
                 sklt->sen_entries[i].pos3f.sy = *(float *)&tmp[1];
                 sklt->sen_entries[i].pos3f.sz = *(float *)&tmp[2];
