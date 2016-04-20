@@ -6114,15 +6114,10 @@ void yparobo_func74(NC_STACK_yparobo *obj, class_stru *zis, bact_arg74 *arg)
     robo->bact_internal->field_5A.samples_data[0].pitch = robo->bact_internal->field_3BA;
     robo->bact_internal->field_5A.samples_data[0].volume = robo->bact_internal->field_3B6;
 
-    /*int v38 = bact->field_5A.samples_data[0].field_0;
-    v60 = fabs(bact->field_611) / (bact->force / bact->airconst2) * 1.4;
-    if ( v38 )
-    {
-      v41 = *(_DWORD *)(v38 + 12);
-      bact->field_5A.samples_data[0].pitch = (v41 + bact->field_5A.samples_data[0].pitch) * v60;
-    }*/
-    dprintf ("COMPLETE ME %s\n", "yparobo_func74");
+    float v60 = fabs(bact->field_611) / (bact->force / bact->airconst2) * 1.4;
 
+    if ( bact->field_5A.samples_data[0].psampl )
+        bact->field_5A.samples_data[0].pitch = (bact->field_5A.samples_data[0].psampl->SampleRate + bact->field_5A.samples_data[0].pitch) * v60;
 }
 
 void yparobo_func77(NC_STACK_yparobo *obj, class_stru *zis, void *)

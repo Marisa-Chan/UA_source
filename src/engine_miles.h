@@ -2,6 +2,7 @@
 #define ENGINE_MILES_H_INCLUDED
 
 #include "engine_tform.h"
+#include "sample.h"
 
 extern class_stored miles_engine_off;
 
@@ -16,12 +17,36 @@ struct sndFXprm
     float mag1;
 };
 
+struct __attribute__((packed)) sndFXprm2 : sndFXprm
+{
+    float mute;
+    xyz pos;
+};
+
+struct sndExt
+{
+    sampl *sample;
+    int16_t field_4;
+    int16_t field_6;
+    int field_8;
+    int field_C;
+    int field_10;
+    int field_14;
+    int field_18;
+};
+
+struct sndExtends
+{
+    int cnt;
+    sndExt sndExts[8];
+};
+
 struct userdata_sample_info
 {
-    int field_0;
+    sampl *psampl;
     sndFXprm *field_4;
-    sndFXprm *field_8;
-    int *field_C;
+    sndFXprm2 *field_8;
+    sndExtends *field_C;
     int16_t volume;
     char field_12;
     char field_13;
@@ -56,7 +81,7 @@ struct CDAUDIO_t
 
 void sub_423DB0(samples_collection1 *smpls);
 int sub_4444D4(CDAUDIO_t *arg);
-userdata_sample_info *sub_423F74(samples_collection1 *a1, int a2);
+void sub_423F74(samples_collection1 *a1, int a2);
 void sub_424000(samples_collection1 *smpls, int a2);
 int sub_4448C0(int *a1);
 void sub_423DD8(samples_collection1 *smpls);
@@ -66,7 +91,7 @@ void milesEngine__setter(unsigned int, ...);
 void milesEngine__getter(unsigned int, ...);
 
 void sb_0x4242e0(samples_collection1 *smpls);
-void sb_0x424c74();
+mat3x3 *sb_0x424c74(); //Update sounds and return shake matrix
 
 void sub_423EFC(int a1, xyz *a2, xyz *a3, mat3x3 *a4);
 

@@ -1258,11 +1258,9 @@ void ypaufo_func74(NC_STACK_ypaufo *obj, class_stru *zis, bact_arg74 *arg)
     if ( v58 > v53 )
         v58 = v53;
 
-//  if ( bact->field_5A.samples_data[0].field_0 )
-//  {
-//    v38 = ((long double)*(_DWORD *)(bact->field_5A.samples_data[0].field_0 + 12) + (long double)bact->field_5A.samples_data[0].pitch) * v58;
-//    bact->field_5A.samples_data[0].pitch = (signed int)v38;
-//  }
+    if ( bact->field_5A.samples_data[0].psampl )
+        bact->field_5A.samples_data[0].pitch = (bact->field_5A.samples_data[0].psampl->SampleRate + bact->field_5A.samples_data[0].pitch) * v58;
+
 }
 
 size_t ypaufo_func80(NC_STACK_ypaufo *obj, class_stru *zis, stack_vals *arg)

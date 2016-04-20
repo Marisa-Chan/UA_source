@@ -1528,28 +1528,24 @@ void ypaflyer_func74(NC_STACK_ypaflyer *obj, class_stru *zis, bact_arg74 *arg)
 
     call_method(obj, 115, 0);
 
-//  bact->field_5A.samples_data[0].pitch = bact->field_3BA;
-//  bact->field_5A.samples_data[0].volume = bact->field_3B6;
-//
-//  float v48 = fabs(bact->field_611) / (bact->force / bact->airconst2);
-//  float v44;
-//
-//  if ( bact->max_pitch <= -0.8 )
-//    v44 = 1.2;
-//  else
-//    v44 = bact->max_pitch;
-//
-//  v49 = v48 * v44;
-//
-//  if ( v49 > v44 )
-//    v49 = v44;
-//
-//  if ( bact->field_5A.samples_data[0].field_0 )
-//  {
-//    v31 = ((long double)*(_DWORD *)(v30 + 12) + (long double)bact->field_5A.samples_data[0].pitch) * v49;
-//    bact->field_5A.samples_data[0].pitch += v31;
-//  }
-    dprintf ("COMPLETE ME %s\n", "ypabact_func74");
+    bact->field_5A.samples_data[0].pitch = bact->field_3BA;
+    bact->field_5A.samples_data[0].volume = bact->field_3B6;
+
+    float v48 = fabs(bact->field_611) / (bact->force / bact->airconst2);
+    float v44;
+
+    if ( bact->max_pitch <= -0.8 )
+        v44 = 1.2;
+    else
+        v44 = bact->max_pitch;
+
+    float v49 = v48 * v44;
+
+    if ( v49 > v44 )
+        v49 = v44;
+
+    if ( bact->field_5A.samples_data[0].psampl )
+        bact->field_5A.samples_data[0].pitch += (bact->field_5A.samples_data[0].psampl->SampleRate + bact->field_5A.samples_data[0].pitch) * v49;
 }
 
 size_t ypaflyer_func80(NC_STACK_ypaflyer *obj, class_stru *zis, bact_arg80 *arg)

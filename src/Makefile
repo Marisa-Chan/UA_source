@@ -3,11 +3,11 @@ CXX = g++
 MINGW = /usr/i686-w64-mingw32
 CC_WIN = i686-w64-mingw32-gcc
 CXX_WIN = i686-w64-mingw32-g++
-LIBS_WIN = -L$(MINGW)/lib/ -lmingw32  -mwindows -lole32 -lgdi32 -ldxguid -ldinput -lddraw -limm32
+LIBS_WIN = -L$(MINGW)/lib/ -lmingw32  -mwindows -lole32 -lgdi32 -ldxguid -ldinput -lddraw -limm32 -lOpenAL32 -lSDL2
 
 CLANG_WIN = i686-w64-mingw32-clang++
 
-LIBS_WINE = -lole32 -lgdi32 -ldxguid -ldinput -lddraw -limm32 -lmsvcrt
+LIBS_WINE = -lole32 -lgdi32 -ldxguid -ldinput -lddraw -limm32 -lmsvcrt -l openal -lSDL2
 CXX_WINE = wineg++
 
 TARGET = UA_source
@@ -56,6 +56,7 @@ OBJS =  \
 	windp.cpp\
 	winp.cpp\
 	wintimer.cpp\
+	wrapal.cpp\
 	yw.cpp\
 	yw_brif.cpp\
 	yw_funcs.cpp\

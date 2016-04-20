@@ -1073,19 +1073,7 @@ struct secType
 };
 
 
-struct sndExt
-{
-    sampl *sample;
-    int16_t field_4;
-    int16_t field_6;
-    int field_8;
-    int field_C;
-    int field_10;
-    int field_14;
-    int field_18;
-};
-
-struct vhclSndFX
+struct __attribute__((packed)) vhclSndFX
 {
     char sample_name[32];
     char extSampleNames[8][32];
@@ -1094,13 +1082,8 @@ struct vhclSndFX
     int16_t volume;
     int16_t pitch;
     sndFXprm sndPrm;
-    sndFXprm sndPrm_shk;
-    float mute;
-    float x;
-    float y;
-    float z;
-    int extCount;
-    sndExt sndExts[8];
+    sndFXprm2 sndPrm_shk;
+    sndExtends extS;
 };
 
 struct __attribute__((packed)) VhclProto

@@ -1826,9 +1826,9 @@ void sub_44BF34(vhclSndFX *sndfx)
 
         set_prefix_replacement("rsrc", "data:");
 
-        if ( sndfx->extCount )
+        if ( sndfx->extS.cnt )
         {
-            for (int i = 0; i < sndfx->extCount; i++)
+            for (int i = 0; i < sndfx->extS.cnt; i++)
             {
                 sndfx->wavs[i] = (NC_STACK_wav *)init_get_class("wav.class", 0x80001000, sndfx->extSampleNames[i], 0);
 
@@ -1837,18 +1837,18 @@ void sub_44BF34(vhclSndFX *sndfx)
                     sampl *sample;
                     call_vtbl(sndfx->wavs[i], 3, 0x80002000, &sample, 0);
 
-                    sndfx->sndExts[i].sample = sample;
-                    sndfx->sndExts[i].field_14 = sample->SampleRate * sndfx->sndExts[i].field_C / 11000;
-                    sndfx->sndExts[i].field_18 = sample->SampleRate * sndfx->sndExts[i].field_10 / 11000;
+                    sndfx->extS.sndExts[i].sample = sample;
+                    sndfx->extS.sndExts[i].field_14 = sample->SampleRate * sndfx->extS.sndExts[i].field_C / 11000;
+                    sndfx->extS.sndExts[i].field_18 = sample->SampleRate * sndfx->extS.sndExts[i].field_10 / 11000;
 
-                    if ( sndfx->sndExts[i].field_14 > sample->bufsz )
-                        sndfx->sndExts[i].field_14 = sample->bufsz;
+                    if ( sndfx->extS.sndExts[i].field_14 > sample->bufsz )
+                        sndfx->extS.sndExts[i].field_14 = sample->bufsz;
 
-                    if ( !sndfx->sndExts[i].field_18 )
-                        sndfx->sndExts[i].field_18 = sample->bufsz;
+                    if ( !sndfx->extS.sndExts[i].field_18 )
+                        sndfx->extS.sndExts[i].field_18 = sample->bufsz;
 
-                    if ( sndfx->sndExts[i].field_18 + sndfx->sndExts[i].field_14 > sample->bufsz )
-                        sndfx->sndExts[i].field_18 = sample->bufsz - sndfx->sndExts[i].field_14;
+                    if ( sndfx->extS.sndExts[i].field_18 + sndfx->extS.sndExts[i].field_14 > sample->bufsz )
+                        sndfx->extS.sndExts[i].field_18 = sample->bufsz - sndfx->extS.sndExts[i].field_14;
                 }
                 else
                 {

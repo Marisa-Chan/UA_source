@@ -12,6 +12,8 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="wine_gnu_gcc_compiler" />
+				<Option host_application="wine" />
+				<Option run_host_application_in_terminal="0" />
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-O0" />
@@ -35,9 +37,10 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="-fexceptions" />
 			<Add option="-m32" />
+			<Add option="-fexceptions" />
 			<Add option="-Wno-invalid-offsetof" />
+			<Add option="-mno-ms-bitfields" />
 		</Compiler>
 		<Linker>
 			<Add option="-m32" />
@@ -48,11 +51,14 @@
 			<Add library="imm32" />
 			<Add library="msvcrt" />
 			<Add library="dinput" />
+			<Add library="openal" />
+			<Add library="SDL2" />
 		</Linker>
 		<Unit filename="MC.cpp" />
 		<Unit filename="MC.h" />
 		<Unit filename="MFILE.cpp" />
 		<Unit filename="MFILE.h" />
+		<Unit filename="SFML/src/SFML/Audio/CMakeLists.txt" />
 		<Unit filename="ade.cpp" />
 		<Unit filename="ade.h" />
 		<Unit filename="amesh.cpp" />
@@ -138,6 +144,8 @@
 		<Unit filename="winp.h" />
 		<Unit filename="wintimer.cpp" />
 		<Unit filename="wintimer.h" />
+		<Unit filename="wrapal.cpp" />
+		<Unit filename="wrapal.h" />
 		<Unit filename="ypabact.cpp" />
 		<Unit filename="ypabact.h" />
 		<Unit filename="ypacar.cpp" />

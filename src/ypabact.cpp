@@ -2959,26 +2959,22 @@ void ypabact_func74(NC_STACK_ypabact *obj, class_stru *zis, bact_arg74 *arg)
     bact->field_5A.samples_data[0].pitch = bact->field_3BA;
     bact->field_5A.samples_data[0].volume = bact->field_3B6;
 
-//  float v50;
-//  if ( bact->max_pitch <= -0.8 )
-//    v50 = 1.2;
-//  else
-//    v50 = bact->max_pitch;
-//
-//  float v30 = fabs(bact->field_611) * v50;
-//  float v31 = bact->force * bact->force - bact->mass * 100.0 * bact->mass;
-//
-//  float v43 = v30 / (sqrt(v31) / bact->airconst2);
-//
-//  if ( v43 > v50 )
-//    v43 = v50;
-//
-//  if ( bact->field_5A.samples_data[0].field_0 )
-//  {
-//    v34 = ((long double)*(_DWORD *)(bact->field_5A.samples_data[0].field_0 + 12) + (long double)bact->field_5A.samples_data[0].pitch) * v43;
-//    bact->field_5A.samples_data[0].pitch += v34;
-//  }
-    dprintf ("COMPLETE ME %s\n", "ypabact_func74");
+    float v50;
+    if ( bact->max_pitch <= -0.8 )
+        v50 = 1.2;
+    else
+        v50 = bact->max_pitch;
+
+    float v30 = fabs(bact->field_611) * v50;
+    float v31 = bact->force * bact->force - bact->mass * 100.0 * bact->mass;
+
+    float v43 = v30 / (sqrt(v31) / bact->airconst2);
+
+    if ( v43 > v50 )
+        v43 = v50;
+
+    if ( bact->field_5A.samples_data[0].psampl )
+        bact->field_5A.samples_data[0].pitch += (bact->field_5A.samples_data[0].psampl->SampleRate + bact->field_5A.samples_data[0].pitch) * v43;
 }
 
 void ypabact_func75(NC_STACK_ypabact *obj, class_stru *zis, bact_arg75 *arg)

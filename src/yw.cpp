@@ -722,6 +722,23 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
 
     _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
 
+    if ( yw->field_1b84 )
+    {
+        if ( yw->field_161c == 1 )
+        {
+            yw->field_1334 = yw->field_1b84->field_621;
+            yw->field_1340 = yw->field_1b84->field_651;
+        }
+
+        xyz a3;
+        a3.sx = yw->field_1b84->field_605.sx * yw->field_1b84->field_611;
+        a3.sy = yw->field_1b84->field_605.sy * yw->field_1b84->field_611;
+        a3.sz = yw->field_1b84->field_605.sz * yw->field_1b84->field_611;
+
+        sub_423EFC(arg->field_4, &yw->field_1334, &a3, &yw->field_1340);
+    }
+
+
     ypaworld_func64__sub6(yw);
     //ypaworld_func64__sub2(yw);
 
@@ -834,9 +851,36 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
 
     call_method(yw->win3d, 257, 0);
 
-    sb_0x4d7c08(obj, yw, arg, 1);
 
-    call_method(yw->win3d, 258, 0);
+    mat3x3 *v57 = sb_0x424c74();
+    base_1c_struct *v58 = sub_430A28();
+
+    mat3x3 dst;
+    mat_mult(v57, &v58->scale_rotation, &dst);
+
+    v58->scale_rotation = dst;
+
+//      if ( yw->sceneRecorder->field_3C )
+//        ypaworld_func64__sub13(yw);
+//
+//      ypaworld_func64__sub3(yw);
+
+    if ( !yw->field_138c )
+    {
+//        v62 = sub_4C0AA4();
+
+        if ( yw->field_1b84->field_c || yw->field_1b84->field_10 )
+        {
+            sb_0x4d7c08(obj, yw, arg, 1);
+
+//          if ( yw->field_757E )
+//            ypaworld_func64__sub10(yw);
+        }
+
+        call_method(yw->win3d, 258, 0);
+
+//        yw->p_1_grp_p1[5] = sub_4C0AE8(v62);
+    }
 
     //exit(1);
 }
@@ -1830,9 +1874,9 @@ NC_STACK_ypabact *ypaworld_func146(NC_STACK_ypaworld *obj, class_stru *zis, ypaw
                 smpl_inf->field_12 |= 1;
 
             if ( vhcl->sndFX[i].single_sample )
-                call_vtbl(vhcl->sndFX[i].single_sample, 3, 0x80002000, &smpl_inf->field_0, 0);
+                call_vtbl(vhcl->sndFX[i].single_sample, 3, 0x80002000, &smpl_inf->psampl, 0);
             else
-                smpl_inf->field_0 = 0;
+                smpl_inf->psampl = 0;
 
             if ( vhcl->sndFX[i].sndPrm.slot )
             {
@@ -1854,9 +1898,9 @@ NC_STACK_ypabact *ypaworld_func146(NC_STACK_ypaworld *obj, class_stru *zis, ypaw
                 smpl_inf->field_12 &= 0xBF;
             }
 
-            if ( vhcl->sndFX[i].extCount )
+            if ( vhcl->sndFX[i].extS.cnt )
             {
-                smpl_inf->field_C = &vhcl->sndFX[i].extCount; //CHECK IT
+                smpl_inf->field_C = &vhcl->sndFX[i].extS; //CHECK IT
                 smpl_inf->field_13 |= 2;
             }
             else
@@ -2006,9 +2050,9 @@ NC_STACK_ypabact *ypaworld_func147(NC_STACK_ypaworld *obj, class_stru *zis, ypaw
             v25->field_12 |= 1;
 
         if ( wproto->sndFXes[i].single_sample )
-            call_vtbl(wproto->sndFXes[i].single_sample, 3, 0x80002000, v25, 0);
+            call_vtbl(wproto->sndFXes[i].single_sample, 3, 0x80002000, &v25->psampl, 0);
         else
-            v25->field_0 = 0;
+            v25->psampl = 0;
 
         if ( wproto->sndFXes[i].sndPrm.slot )
         {
@@ -2030,10 +2074,10 @@ NC_STACK_ypabact *ypaworld_func147(NC_STACK_ypaworld *obj, class_stru *zis, ypaw
             v25->field_12 &= 0xBF;
         }
 
-        if ( wproto->sndFXes[i].extCount )
+        if ( wproto->sndFXes[i].extS.cnt )
         {
             v25->field_13 |= 2;
-            v25->field_C = &wproto->sndFXes[i].extCount;
+            v25->field_C = &wproto->sndFXes[i].extS;
         }
         else
         {
@@ -3466,7 +3510,6 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
     if ( usr->lang_dlls_count <= 1 )
     {
-
         v228.butID = 1008;
         call_method( usr->titel_button, 67, &v228);
     }
@@ -6238,6 +6281,8 @@ void ypaworld_func158(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
     sb_0x4242e0(&usr->samples1_info);
     sb_0x4242e0(&usr->samples2_info);
     sb_0x4242e0(&usr->field_782);
+
+    sb_0x424c74();
 
 //  if ( usr->field_0x4 )
 //    nullsub_7();

@@ -51,12 +51,12 @@ int ParseExtSampleDef(vhclSndFX *sndfx, char *p2)
     if ( !pp1 || !pp2 || !pp3 || !pp4 || !pp5 || !pname )
         return 0;
 
-    if ( sndfx->extCount < 8 )
+    if ( sndfx->extS.cnt < 8 )
     {
-        int curid = sndfx->extCount;
-        sndfx->extCount++;
+        int curid = sndfx->extS.cnt;
+        sndfx->extS.cnt++;
 
-        sndExt *sndEx = &sndfx->sndExts[curid];
+        sndExt *sndEx = &sndfx->extS.sndExts[curid];
         sndEx->sample = NULL;
         sndEx->field_4 = strtol(pp1, NULL, 0);
         sndEx->field_6 = strtol(pp2, NULL, 0);
@@ -181,13 +181,13 @@ int ParseVhclShk(VhclProto *vhcl, const char *p1, const char *p2)
     else if ( !strcasecmp(tp, "time") )
         sndfx->sndPrm_shk.time = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "mute") )
-        sndfx->mute = strtof(p2, 0);
+        sndfx->sndPrm_shk.mute = strtof(p2, 0);
     else if ( !strcasecmp(tp, "x") )
-        sndfx->x = strtof(p2, 0);
+        sndfx->sndPrm_shk.pos.sx = strtof(p2, 0);
     else if ( !strcasecmp(tp, "y") )
-        sndfx->y = strtof(p2, 0);
+        sndfx->sndPrm_shk.pos.sy = strtof(p2, 0);
     else if ( !strcasecmp(tp, "z") )
-        sndfx->z = strtof(p2, 0);
+        sndfx->sndPrm_shk.pos.sz = strtof(p2, 0);
     else
         return 3;
 
@@ -288,10 +288,10 @@ int VhclProtoParser(scrCallBack *arg)
                 vhclSndFX *v9 = &vhcl->sndFX[i];
                 v9->sndPrm.mag0 = 1.0;
                 v9->sndPrm_shk.mag0 = 1.0;
-                v9->mute = 0.02;
-                v9->x = 0.2;
-                v9->y = 0.2;
-                v9->z = 0.2;
+                v9->sndPrm_shk.mute = 0.02;
+                v9->sndPrm_shk.pos.sx = 0.2;
+                v9->sndPrm_shk.pos.sy = 0.2;
+                v9->sndPrm_shk.pos.sz = 0.2;
                 v9->volume = 120;
                 v9->sndPrm.time = 1000;
                 v9->sndPrm_shk.time = 1000;
@@ -1151,13 +1151,13 @@ int ParseWeaponShk(WeapProto *wpn, const char *p1, const char *p2)
     else if ( !strcasecmp(tp, "time") )
         sndfx->sndPrm_shk.time = strtol(p2, NULL, 0);
     else if ( !strcasecmp(tp, "mute") )
-        sndfx->mute = strtof(p2, 0);
+        sndfx->sndPrm_shk.mute = strtof(p2, 0);
     else if ( !strcasecmp(tp, "x") )
-        sndfx->x = strtof(p2, 0);
+        sndfx->sndPrm_shk.pos.sx = strtof(p2, 0);
     else if ( !strcasecmp(tp, "y") )
-        sndfx->y = strtof(p2, 0);
+        sndfx->sndPrm_shk.pos.sy = strtof(p2, 0);
     else if ( !strcasecmp(tp, "z") )
-        sndfx->z = strtof(p2, 0);
+        sndfx->sndPrm_shk.pos.sz = strtof(p2, 0);
     else
         return 3;
 
@@ -1236,10 +1236,10 @@ int WeaponProtoParser(scrCallBack *arg)
                 vhclSndFX *v9 = &wpn->sndFXes[i];
                 v9->sndPrm.mag0 = 1.0;
                 v9->sndPrm_shk.mag0 = 1.0;
-                v9->mute = 0.02;
-                v9->x = 0.2;
-                v9->y = 0.2;
-                v9->z = 0.2;
+                v9->sndPrm_shk.mute = 0.02;
+                v9->sndPrm_shk.pos.sx = 0.2;
+                v9->sndPrm_shk.pos.sy = 0.2;
+                v9->sndPrm_shk.pos.sz = 0.2;
                 v9->volume = 120;
                 v9->sndPrm.time = 1000;
                 v9->sndPrm_shk.time = 1000;
@@ -3021,7 +3021,7 @@ int ShellSoundsParse_sample(UserData *usr, scrCallBack *arg)
     if ( !v3[v4] )
         return 4;
 
-    call_vtbl(v3[v4], 3, 0x80002000, &v13->samples_data[v4], 0);
+    call_vtbl(v3[v4], 3, 0x80002000, &v13->samples_data[v4].psampl, 0);
 
     if ( v3 == usr->samples1 && (v4 == 0 || v4 == 5 || v4 == 10 || v4 == 15 ) )
         v13->samples_data[v4].field_12 |= 1;
