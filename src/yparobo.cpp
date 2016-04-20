@@ -5385,6 +5385,8 @@ void yparobo_func70__sub6(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
             v6 = 0;
     }
 
+    robo_arg128 arg128;
+
     if ( robo->field_1E7 && v6 )
     {
         int v89 = (bact->field_22 + bact->field_20) / 20 + 1;
@@ -5408,7 +5410,6 @@ void yparobo_func70__sub6(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
                 int v12 = yparobo_func70__sub6__sub4(robo, pcell);
                 if ( v12 > robo->field_285 )
                 {
-                    robo_arg128 arg128;
                     arg128.field_0 = 2;
                     arg128.field_8 = 1;
                     arg128.field_C = (xx + 0.5) * 1200.0;
@@ -5455,7 +5456,6 @@ void yparobo_func70__sub6(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
         int v17 = yparobo_func70__sub6__sub5(robo, &v91, &xx, &yy);
         if ( v17 > robo->field_269 )
         {
-            robo_arg128 arg128;
             arg128.field_0 = 2;
             arg128.field_8 = 2;
             arg128.field_18 = v91;

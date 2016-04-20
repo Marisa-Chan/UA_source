@@ -3510,6 +3510,7 @@ size_t ypaworld_func156(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 
     if ( usr->lang_dlls_count <= 1 )
     {
+        v228.field_4 = 0;
         v228.butID = 1008;
         call_method( usr->titel_button, 67, &v228);
     }
