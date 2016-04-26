@@ -384,7 +384,7 @@ void sub_4F68FC(NC_STACK_win3d *win3d, float a3, float a4, float a5, float a6, D
     rstr_arg217 v10;
     v10.dword0 = a7;
     v10.dword4 = a7;
-    v10.dword8 = -1;
+    v10.dword8 = 0xFFFFFFFF;
 
     call_method(win3d, 217, &v10);
     call_method(win3d, 201, &a3a);
@@ -743,7 +743,7 @@ void sb_0x4f8f64__sub1(_NC_STACK_ypaworld *yw)
 
             v27.dword0 = yw_GetColor(yw, 12);
             v27.dword4 = yw_GetColor(yw, 12);
-            v27.dword8 = -1;
+            v27.dword8 = 0xFFFFFFFF;
 
             call_method(yw->win3d, 217, &v27);
             call_method(yw->win3d, 201, &v24);
@@ -982,7 +982,7 @@ char * sb_0x4f8f64__sub2(_NC_STACK_ypaworld *yw, char *cur)
                         {
                             float v25 = v16->sec_x * 1200.0 + 600.0;
                             float v26 = -(v16->sec_y * 1200.0 + 600.0);
-                            pcur = sub_4F6980(pcur, v25, v26, -108, a4, a4);
+                            pcur = sub_4F6980(pcur, v25, v26, 0x94, a4, a4);
                         }
                     }
                 }
