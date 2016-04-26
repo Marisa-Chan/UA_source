@@ -1377,7 +1377,7 @@ void ypabact_func68(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
                 {
                     if ( bact->field_B34 & 1 )
                     {
-                        tmp = bact->field_639.sx * bact->field_639.sx + bact->field_639.sy * bact->field_639.sy + bact->field_639.sz * bact->field_639.sz;
+                        tmp = sqrt(bact->field_639.sx * bact->field_639.sx + bact->field_639.sy * bact->field_639.sy + bact->field_639.sz * bact->field_639.sz);
 
                         bact_node *node = (bact_node *)bact->list2.head;
 
@@ -1387,7 +1387,7 @@ void ypabact_func68(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
                         {
                             if ( node->bact->field_3D5 != 2 )
                             {
-                                if ( sqrt(tmp) < 800.0 )
+                                if ( tmp < 800.0 )
                                 {
                                     v36.field_0 = bact->field_3DE;
                                     v36.field_4 = 0;
@@ -3059,10 +3059,7 @@ void ypabact_func75(NC_STACK_ypabact *obj, class_stru *zis, bact_arg75 *arg)
         }
         else
         {
-            float v22 = fui->sx - bact->field_621.sx;
-            float v21 = fui->sz - bact->field_621.sz;
-
-            if ( sqrt( POW2(v21) + POW2(v22) ) >= bact->sdist_bact )
+            if ( bact->sdist_bact <= v48 )
             {
                 if ( bact->adist_sector <= v48 )
                     bact->field_3D6 &= 0xBFFFFFFF;
