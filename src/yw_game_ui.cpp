@@ -2459,7 +2459,7 @@ int sub_4F5CEC(_NC_STACK_ypaworld *yw, int x, int y)
             if ( v17->sector_height_meters <= v16->sector_height_meters )
                 v13 = 0xFF;
             else
-                v13 = 0xFC;
+                v13 = 0xFE;
         }
 
         int v22 = (v13 - 16) & 0xFF;
