@@ -681,9 +681,9 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
                         arg136_1.field_14 = tank->field_11.sz * 150.0 * v84;
                         arg136_1.field_18 = 0;
                         arg136_1.field_1C = -tank->field_11.sx * 150.0 * v84;
-                        arg136_1.pos_x = arg136_3.pos_x;
-                        arg136_1.pos_y = arg136_3.pos_y;
-                        arg136_1.pos_z = arg136_3.pos_z;
+                        arg136_1.pos_x = bact->field_62D.sx;
+                        arg136_1.pos_y = bact->field_62D.sy;
+                        arg136_1.pos_z = bact->field_62D.sz;
                         arg136_1.field_40 = 1;
 
                         arg136_3.field_14 = -tank->field_11.sz * 150.0 * v84;
