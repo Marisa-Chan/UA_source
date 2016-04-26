@@ -1664,7 +1664,7 @@ size_t yparobo_func70__sub1(__NC_STACK_yparobo *robo, float a2)
     else
     {
         bact->field_645.sy = 1.0;
-        bact->field_3D6 &= 0x7F;
+        bact->field_3D6 &= 0xFFFFFF7F;
     }
 
     robo->coll.field_0 = 0;
