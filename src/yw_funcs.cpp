@@ -697,8 +697,7 @@ int sb_0x4e1a88__sub0(_NC_STACK_ypaworld *yw, int multiplayer, const char *fname
         minf->field_8 = minf->field_10;
         minf->field_4 = minf->field_10;
 
-        printf("FIX ME (memset(minf->field_14, 0, 8)) %s #%d\n", __FILE__, __LINE__);
-        memset(minf->field_14, 0, 8);
+        memset(minf->field_14, 0, sizeof(minf->field_14));
 
         strcpy(minf->mapPath, buf);
 

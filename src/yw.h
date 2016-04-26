@@ -600,7 +600,7 @@ struct mapINFO
     float field_8;
     float field_C;
     float field_10;
-    int field_14[2];
+    int field_14[2]; //Was ist das?
     char mapPath[64];
     char map_name[64];
     ua_fRect field_9C;
