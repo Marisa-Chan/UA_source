@@ -110,8 +110,8 @@ struct __NC_STACK_ypabact : public nnode
 
     xyz field_621; //Current pos ?
     xyz field_62D; //Prev pos ?
-    xyz field_639;
-    xyz field_645;
+    xyz field_639; //Vector to target
+    xyz field_645; //Target 1-vector direction
     mat3x3 field_651;
     float height;
     float field_679;
@@ -148,7 +148,7 @@ struct __NC_STACK_ypabact : public nnode
     int field_93D;
     int field_941;
     int field_945;
-
+    int field_949; //Used in tank
     int field_94D;
     int field_951;
     int field_955;

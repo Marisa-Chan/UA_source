@@ -8618,7 +8618,7 @@ class_return * class_set_ypabact(int, ...)
     ypabact_funcs[98] = (CLASSFUNC)ypabact_func98;
     ypabact_funcs[99] = (CLASSFUNC)ypabact_func99;
     ypabact_funcs[100] = (CLASSFUNC)ypabact_func100;
-    ypabact_funcs[101] = (CLASSFUNC)ypabact_func101;
+    ypabact_funcs[101] = (CLASSFUNC)ypabact_func101; //Is targeted for shot?
     ypabact_funcs[102] = (CLASSFUNC)ypabact_func102;
     ypabact_funcs[103] = (CLASSFUNC)ypabact_func103;
     ypabact_funcs[104] = (CLASSFUNC)ypabact_func104;

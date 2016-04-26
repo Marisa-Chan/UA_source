@@ -2045,7 +2045,7 @@ void sb_0x4a45cc(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
 
     switch ( arg->field_14 )
     {
-    case 2:
+    case 2: //Move squad
         arg->field_1C->field_3D6 &= 0xF3FFFFFF;
 
         if ( arg->field_20 )
