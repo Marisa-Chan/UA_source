@@ -1355,7 +1355,7 @@ void sub_44DF60(skeleton_64_stru *arg, int id)
 
     triangle->field_0 = triangle->field_0 * v25;
     triangle->field_4 = triangle->field_4 * v25;
-    triangle->field_8 = triangle->field_4 * v25 * triangle->field_8;
+    triangle->field_8 = triangle->field_8 * v25;
     triangle->field_C = -(triangle->field_4 * arg->POO[vtx1].pos3f.sy + triangle->field_0 * arg->POO[vtx1].pos3f.sx + triangle->field_8 * arg->POO[vtx1].pos3f.sz);
 }
 
