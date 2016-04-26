@@ -525,16 +525,16 @@ void sub_4F72E8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
                 uint32_t clr = yw_GetColor(yw, 9);
 
                 for (int i = 1; i < bact->field_59A; i++)
-                    sub_4F68FC(yw->win3d, bact->field_418[i].sx, bact->field_418[i].sy, bact->field_418[i - 1].sx, bact->field_418[i - 1].sy, clr);
+                    sub_4F68FC(yw->win3d, bact->field_418[i].sx, bact->field_418[i].sz, bact->field_418[i - 1].sx, bact->field_418[i - 1].sz, clr);
 
-                sub_4F68FC(yw->win3d, bact->field_418[bact->field_59A - 1].sx, bact->field_418[bact->field_59A - 1].sy, bact->field_418[0].sx, bact->field_418[0].sy, clr);
+                sub_4F68FC(yw->win3d, bact->field_418[bact->field_59A - 1].sz, bact->field_418[bact->field_59A - 1].sy, bact->field_418[0].sx, bact->field_418[0].sz, clr);
             }
             else if ( bact->field_59A > 0 )
             {
                 uint32_t clr = yw_GetColor(yw, 9);
 
                 for (int i = bact->field_598; i < bact->field_59A - 1; i++)
-                    sub_4F68FC(yw->win3d, bact->field_418[i].sx, bact->field_418[i].sy, bact->field_418[i + 1].sx, bact->field_418[i + 1].sy, clr);
+                    sub_4F68FC(yw->win3d, bact->field_418[i].sx, bact->field_418[i].sz, bact->field_418[i + 1].sx, bact->field_418[i + 1].sz, clr);
             }
         }
     }
