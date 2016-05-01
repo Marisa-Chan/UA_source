@@ -4169,7 +4169,7 @@ void yparobo_func70__sub3(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
 
         while( node->next )
         {
-            if (robo->field_1E7 == node->bact->field_2E)
+            if (robo->field_1F7 == node->bact->field_2E)
             {
                 v4 = 1;
                 break;
