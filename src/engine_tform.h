@@ -34,7 +34,7 @@ struct mat3x3
 struct destFX
 {
     char type_flag;
-    char p1;
+    int p1; // Model id. >= 0
     float p2;
     float p3;
     float p4;
