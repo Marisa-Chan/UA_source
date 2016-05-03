@@ -2423,6 +2423,7 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
         tmp = (uint8_t *)bitm_typ->buffer + x + y * bitm_typ->width;
         *tmp = bld->sec_type;
 
+        cell->sec_type = bld->sec_type;
         cell->field_2F = 0;
         cell->field_3A = 3;
         cell->field_2E = sectp->field_0;
