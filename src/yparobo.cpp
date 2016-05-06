@@ -4586,8 +4586,8 @@ void sb_0x4a7010(__NC_STACK_yparobo *robo)
 
                                 if ( v33 )
                                 {
-                                    if ( v33->field_24 == 4 )
-                                        call_vtbl(v33->self, 3, 0x80002000, &v33, 0);
+                                    if ( v33->field_24 == 4 ) //If missile
+                                        call_vtbl(v33->self, 3, 0x80002000, &v33, 0); //Get emitter bact
 
                                     if ( v33->field_32 != v33->parent_bacto )
                                         v33 = v33->parent_bact;
