@@ -10,6 +10,11 @@ struct NC_STACK_ypacar;
 
 struct __NC_STACK_ypacar
 {
+    NC_STACK_ypaworld *ywo;
+    _NC_STACK_ypaworld *yw;
+    __NC_STACK_ypabact *bact_internal;
+    int field_c;
+    int field_10;
 };
 
 struct NC_STACK_ypacar : public NC_STACK_ypatank
