@@ -514,12 +514,33 @@ void walsmpl::update()
 
             if (state == AL_STOPPED)
             {
-                if (eosfunc)
-                    eosfunc(this);
+                if (endStreamed)
+                {
+                    if (eosfunc)
+                        eosfunc(this);
 
-                clearQueue();
+                    clearQueue();
 
-                status = WRAP_STOPPED;
+                    status = WRAP_STOPPED;
+                }
+                else
+                {
+                    clearQueue();
+
+                    for (int i = 0; i < WRAP_AL_BUFFS; i++)
+                    {
+                        if ( used[i] == false )
+                        {
+                            if ( fill_n_queue(i) > 0 )
+                            {
+                                endStreamed = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    alCheck(alSourcePlay(source));
+                }
             }
             else if ( state == AL_PLAYING )
             {
