@@ -4835,6 +4835,7 @@ int parseSaveVideo(scrCallBack *arg)
                 ypa_log_out("Warning: This machine doesn't support mode %d\n", v5);
 
                 v7 = 0;
+                nod = (video_mode_node *)usr->video_mode_list.head;
 
                 while (nod->next)
                 {
