@@ -213,7 +213,7 @@ void sub_41F490(unsigned int width, unsigned int height, int bits, int a4)
         node->sort_id = height | (width << 12);
 
         if (bits == 32) //HACK
-            node->sort_id |= 0x2000;
+            node->sort_id |= 0x20000000;
 
         if ( a4 & 1 )
             node->sort_id |= 0x8000;
