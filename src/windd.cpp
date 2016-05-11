@@ -842,7 +842,7 @@ int windd_func0__sub1(int export_window_mode)
 
             if ( dd_params.selected_device.dev_descr.dwDeviceRenderBitDepth & dwRGB )
             {
-                if ( devs->bits == 16 )
+                if ( devs->bits == 16 || devs->bits == 32)
                 {
                     devs->unk = 1;
 
@@ -1464,7 +1464,7 @@ int wdd_Create3DWinEnv(__NC_STACK_windd *obj, int width, int height)
     surfDesc.dwWidth = width;
     surfDesc.dwHeight = height;
     surfDesc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
-    surfDesc.ddsCaps.dwCaps = 0x6040;
+    surfDesc.ddsCaps.dwCaps = DDSCAPS_VIDEOMEMORY | DDSCAPS_3DDEVICE | DDSCAPS_OFFSCREENPLAIN;
 
     res = ddraw->CreateSurface(&surfDesc, &obj->back_surf, NULL);
 
