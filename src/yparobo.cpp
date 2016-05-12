@@ -7,7 +7,7 @@
 #include "yw.h"
 #include "yparobo.h"
 
-#include "math.h"
+#include <math.h>
 
 
 stored_functions *classvtbl_get_yparobo();
@@ -787,26 +787,26 @@ void sub_4A9F24(__NC_STACK_yparobo *robo, bact_node *node)
         if ( node->bact->field_3D5 != 2 )
         {
             bact_arg124 arg124;
-            arg124.field_0 = node->bact->field_621.sx;
-            arg124.field_4 = node->bact->field_621.sz;
+            arg124.from_x = node->bact->field_621.sx;
+            arg124.from_z = node->bact->field_621.sz;
 
             if ( arg67.field_0 == 2 )
             {
-                arg124.field_8 = arg67.field_8->field_621.sx;
-                arg124.field_C = arg67.field_8->field_621.sz;
+                arg124.to_x = arg67.field_8->field_621.sx;
+                arg124.to_z = arg67.field_8->field_621.sz;
             }
             else
             {
-                arg124.field_8 = arg67.targ.sx;
-                arg124.field_C = arg67.targ.sz;
+                arg124.to_x = arg67.targ.sx;
+                arg124.to_z = arg67.targ.sz;
             }
 
             arg124.field_12 = 1;
-            arg124.field_10 = 32;
+            arg124.steps_cnt = 32;
 
             if ( sub_4A587C(node->bact) && call_method(node->bacto, 124, &arg124) )
             {
-                arg124.field_10 = 32;
+                arg124.steps_cnt = 32;
 
                 call_method(node->bacto, 125, &arg124);
 
@@ -985,12 +985,12 @@ int sub_4A5A08(__NC_STACK_ypabact *bact, float a2, float a3)
     if ( v5 )
     {
         bact_arg124 arg125;
-        arg125.field_10 = 32;
-        arg125.field_0 = bact->field_621.sx;
-        arg125.field_4 = bact->field_621.sz;
-        arg125.field_8 = a2;
+        arg125.steps_cnt = 32;
+        arg125.from_x = bact->field_621.sx;
+        arg125.from_z = bact->field_621.sz;
+        arg125.to_x = a2;
         arg125.field_12 = 1;
-        arg125.field_C = a3;
+        arg125.to_z = a3;
         if ( !call_method(bact->self, 125, &arg125) )
             return 0;
     }
@@ -1031,19 +1031,19 @@ int sub_4A58C0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2)
     if ( v5 )
     {
         bact_arg124 arg124;
-        arg124.field_10 = 32;
-        arg124.field_0 = bact->field_621.sx;
-        arg124.field_4 = bact->field_621.sz;
-        arg124.field_8 = bact2->field_621.sx;
-        arg124.field_C = bact2->field_621.sz;
+        arg124.steps_cnt = 32;
+        arg124.from_x = bact->field_621.sx;
+        arg124.from_z = bact->field_621.sz;
+        arg124.to_x = bact2->field_621.sx;
+        arg124.to_z = bact2->field_621.sz;
         arg124.field_12 = 1;
 
         if ( !call_method(bact->self, 124, &arg124) )
             return 0;
 
-        if ( arg124.field_10 > 1 )
+        if ( arg124.steps_cnt > 1 )
         {
-            arg124.field_10 = 32;
+            arg124.steps_cnt = 32;
             call_method(bact->self, 125, &arg124);
 
             bact->field_59c = bact2->field_2E;
@@ -2354,23 +2354,23 @@ void sb_0x4a45cc(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
 
         if ( v11 )
         {
-            arg124.field_0 = arg->field_1C->field_621.sx;
-            arg124.field_4 = arg->field_1C->field_621.sz;
-            arg124.field_8 = arg->field_30.sx;
-            arg124.field_C = arg->field_30.sz;
-            arg124.field_10 = 32;
+            arg124.from_x = arg->field_1C->field_621.sx;
+            arg124.from_z = arg->field_1C->field_621.sz;
+            arg124.to_x = arg->field_30.sx;
+            arg124.to_z = arg->field_30.sz;
+            arg124.steps_cnt = 32;
             arg124.field_12 = 1;
 
             int v14 = call_method(bact->self, 124, &arg124);
 
-            if ( v14 && arg124.field_10 > 0)
+            if ( v14 && arg124.steps_cnt > 0)
             {
-                for (int i = 0; i < arg124.field_10; i++)
+                for (int i = 0; i < arg124.steps_cnt; i++)
                 {
-                    arg->field_1C->field_418[i].sx = arg124.field_14[i].sx;
-                    arg->field_1C->field_418[i].sz = arg124.field_14[i].sz;
+                    arg->field_1C->field_418[i].sx = arg124.waypoints[i].sx;
+                    arg->field_1C->field_418[i].sz = arg124.waypoints[i].sz;
                 }
-                arg->field_1C->field_59A = arg124.field_10;
+                arg->field_1C->field_59A = arg124.steps_cnt;
             }
             else
             {
@@ -2428,21 +2428,21 @@ void sb_0x4a45cc(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
 
             if ( v20 )
             {
-                arg124.field_0 = arg->field_1C->field_418[v72 - 1].sx;
-                arg124.field_4 = arg->field_1C->field_418[v72 - 1].sz;
-                arg124.field_8 = arg->field_30.sx;
-                arg124.field_C = arg->field_30.sz;
-                arg124.field_10 = 32 - v72;
+                arg124.from_x = arg->field_1C->field_418[v72 - 1].sx;
+                arg124.from_z = arg->field_1C->field_418[v72 - 1].sz;
+                arg124.to_x = arg->field_30.sx;
+                arg124.to_z = arg->field_30.sz;
+                arg124.steps_cnt = 32 - v72;
                 arg124.field_12 = 1;
 
-                if ( call_method(bact->self, 124, &arg124) && arg124.field_10 > 0 )
+                if ( call_method(bact->self, 124, &arg124) && arg124.steps_cnt > 0 )
                 {
-                    for (int i = 0; i < arg124.field_10; i++)
+                    for (int i = 0; i < arg124.steps_cnt; i++)
                     {
-                        arg->field_1C->field_418[i + v72].sx = arg124.field_14[i].sx;
-                        arg->field_1C->field_418[i + v72].sz = arg124.field_14[i].sz;
+                        arg->field_1C->field_418[i + v72].sx = arg124.waypoints[i].sx;
+                        arg->field_1C->field_418[i + v72].sz = arg124.waypoints[i].sz;
                     }
-                    arg->field_1C->field_59A += arg124.field_10;
+                    arg->field_1C->field_59A += arg124.steps_cnt;
 
                 }
                 else
@@ -4488,19 +4488,19 @@ void sb_0x4a7010(__NC_STACK_yparobo *robo)
                             if ( sub_4A587C(unit_bact) )
                             {
                                 bact_arg124 arg124;
-                                arg124.field_10 = 32;
-                                arg124.field_0 = unit_bact->field_621.sx;
-                                arg124.field_4 = unit_bact->field_621.sz;
-                                arg124.field_8 = bact->field_621.sx;
-                                arg124.field_C = bact->field_621.sz;
+                                arg124.steps_cnt = 32;
+                                arg124.from_x = unit_bact->field_621.sx;
+                                arg124.from_z = unit_bact->field_621.sz;
+                                arg124.to_x = bact->field_621.sx;
+                                arg124.to_z = bact->field_621.sz;
                                 arg124.field_12 = 1;
 
                                 if ( ! call_method(units->bacto, 124, &arg124) )
                                     break;
 
-                                if ( arg124.field_10 > 1 )
+                                if ( arg124.steps_cnt > 1 )
                                 {
-                                    arg124.field_10 = 32;
+                                    arg124.steps_cnt = 32;
                                     call_method(units->bacto, 125, &arg124);
 
                                     unit_bact->field_59c = bact->field_2E;

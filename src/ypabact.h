@@ -252,13 +252,13 @@ struct bact_arg67
 
 struct bact_arg124
 {
-    float field_0;
-    float field_4;
-    float field_8;
-    float field_C;
-    int16_t field_10;
+    float from_x;
+    float from_z;
+    float to_x;
+    float to_z;
+    int16_t steps_cnt;
     int16_t field_12;
-    xyz field_14[32];
+    xyz waypoints[32];
 };
 
 struct bact_arg84

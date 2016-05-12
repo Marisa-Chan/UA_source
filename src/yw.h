@@ -305,19 +305,17 @@ struct recorder
     int field_0;
 };
 
-struct cellArea
+struct cellArea : public nnode
 {
-    int field_0;
-    int field_4;
     int field_8;
-    int field_C;
-    int field_10;
-    int field_14;
-    int field_18;
-    int field_1C;
-    int field_20;
-    int field_24;
-    int field_28;
+    int field_9;
+    char field_A;
+    char field_B;
+    float field_C;
+    float field_10;
+    nlist field_14;
+    nnode field_20;
+    cellArea *pathcell;
     uint8_t owner;
     uint8_t sec_type;
     char field_2E;

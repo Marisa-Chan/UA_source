@@ -427,18 +427,18 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
 
         if ( v8 == 2 )
         {
-            arg125.field_8 = v6->field_621.sx;
-            arg125.field_C = v6->field_621.sz;
+            arg125.to_x = v6->field_621.sx;
+            arg125.to_z = v6->field_621.sz;
         }
         else
         {
-            arg125.field_8 = v17;
-            arg125.field_C = v18;
+            arg125.to_x = v17;
+            arg125.to_z = v18;
         }
 
-        arg125.field_10 = 32;
-        arg125.field_0 = bact->field_621.sx;
-        arg125.field_4 = bact->field_621.sz;
+        arg125.steps_cnt = 32;
+        arg125.from_x = bact->field_621.sx;
+        arg125.from_z = bact->field_621.sz;
         arg125.field_12 = 1;
 
         call_method(bact->self, 125, &arg125);
@@ -8556,16 +8556,408 @@ void ypabact_func123(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
     call_parent(zis, obj, 123, arg);
 }
 
-void ypabact_func124(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
-{
-    dprintf("MAKE ME %s\n","ypabact_func124");
-    call_parent(zis, obj, 124, arg);
+size_t ypabact_func124(NC_STACK_ypabact *obj, class_stru *zis, bact_arg124 *arg)
+{   //path find for ground units (tank & car)
+    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+    _NC_STACK_ypaworld *yw = bact->field_B3C;
+
+    int maxsteps = arg->steps_cnt;
+
+    for (int xx = 0; xx < yw->sectors_maxX2; xx++)
+    {
+        for (int yy = 0; yy < yw->sectors_maxY2; yy++)
+        {
+            cellArea *cll = &yw->cells[xx + yy * yw->sectors_maxX2];
+
+            cll->field_B = 0;
+            cll->field_C = 0;
+            cll->field_10 = 0;
+            cll->field_20.next = NULL;
+            cll->field_20.prev = NULL;
+            cll->pathcell= NULL;
+        }
+    }
+
+    int from_sec_x = arg->from_x / 1200.0;
+    int from_sec_z = -arg->from_z / 1200.0;
+    int to_sec_x = arg->to_x / 1200.0;
+    int to_sec_z = -arg->to_z / 1200.0;
+
+    cellArea *target_pcell = NULL;
+
+    if ( to_sec_x >= 0 && to_sec_z >= 0 && to_sec_x < yw->sectors_maxX2 && to_sec_z < yw->sectors_maxY2 )
+    {
+        target_pcell = &yw->cells[to_sec_x + to_sec_z * yw->sectors_maxX2];
+        target_pcell->field_8 = to_sec_x;
+        target_pcell->field_9 = to_sec_z;
+    }
+
+    if ( to_sec_x != from_sec_x || from_sec_z != to_sec_z )
+    {
+        nlist list1;
+        init_list(&list1);
+
+        cellArea *start_pcell = NULL;
+
+        if ( from_sec_x >= 0 && from_sec_z >= 0 && from_sec_x < yw->sectors_maxX2 && from_sec_z < yw->sectors_maxY2 )
+        {
+            start_pcell = &yw->cells[from_sec_x + from_sec_z * yw->sectors_maxX2];
+            start_pcell->field_8 = from_sec_x;
+            start_pcell->field_9 = from_sec_z;
+        }
+
+        start_pcell->field_B |= 1;
+
+        int current_sec_x = from_sec_x;
+        int current_sec_z = from_sec_z;
+
+        cellArea *current_pcell = start_pcell;
+
+        //v21 = v110;
+
+        init_list(&start_pcell->field_14);
+        start_pcell->field_C = 0;
+
+        int v23 = abs(to_sec_x - from_sec_x);
+        int v24 = abs(to_sec_z - from_sec_z);
+
+        float sq2 = sqrt(2.0);
+
+        start_pcell->field_10 = min(v23, v24) * sq2 + abs(v23 - v24);
+
+        while ( 1 )
+        {
+
+            for(int dx = -1; dx < 2; dx++)
+            {
+                for(int dz = -1; dz < 2; dz++)
+                {
+                    if ( dx || dz )
+                    {
+                        int t_x = current_sec_x + dx;
+                        int t_z = current_sec_z + dz;
+
+                        if ( t_x > 0 && t_x < bact->field_20 - 1 && t_z > 0 && t_z < bact->field_22 - 1 )
+                        {
+                            cellArea *cell_tzx = NULL;
+                            if ( t_x >= 0 && t_z >= 0 && t_x < yw->sectors_maxX2 && t_z < yw->sectors_maxY2 )
+                            {
+                                cell_tzx = &yw->cells[yw->sectors_maxX2 * t_z + t_x];
+                                cell_tzx->field_8 = t_x;
+                                cell_tzx->field_9 = t_z;
+                            }
+
+                            if ( !(cell_tzx->field_B & 1) && cell_tzx->field_A < 100 && fabs(current_pcell->sector_height_meters - cell_tzx->sector_height_meters) < 500.0 )
+                            {
+                                int hlth = 0;
+
+                                if (cell_tzx->field_2E == 1 && cell_tzx != target_pcell)
+                                {
+                                    subSec *v33 = yw->secTypes[ cell_tzx->sec_type ].buildings[0][0];
+                                    hlth = v33->health_models[yw->build_hp_ref[cell_tzx->buildings_health[0][0]]];
+                                }
+
+                                if ( cell_tzx->field_2E != 1
+                                        || cell_tzx == target_pcell
+                                        || !hlth
+                                        || yw->legos[hlth].selected_sklt_intern == yw->legos[hlth].sklt_obj_intern )
+                                {
+
+                                    int doo = false;
+
+                                    if ( dx == 0 && dz == 0)
+                                    {
+                                        cellArea *cell_tz = NULL;
+
+                                        if (current_sec_x >= 0 && t_z >= 0 && current_sec_x < yw->sectors_maxX2 && t_z < yw->sectors_maxY2)
+                                        {
+                                            cell_tz = &yw->cells[current_sec_x + yw->sectors_maxX2 * t_z];
+                                            cell_tz->field_8 = current_sec_x;
+                                            cell_tz->field_9 = t_z;
+                                        }
+
+                                        if (cell_tz)
+                                        {
+                                            cellArea *cell_tx = NULL;
+
+                                            if (t_x >= 0 && current_sec_z >= 0 && t_x < yw->sectors_maxX2 && current_sec_z < yw->sectors_maxY2)
+                                            {
+                                                cell_tx = &yw->cells[current_sec_z * yw->sectors_maxX2 + t_x];
+                                                cell_tx->field_8 = t_x;
+                                                cell_tx->field_9 = current_sec_z;
+                                            }
+
+                                            if (cell_tx)
+                                            {
+                                                if ( fabs(current_pcell->sector_height_meters - cell_tzx->sector_height_meters) <= 300.0
+                                                        && fabs(current_pcell->sector_height_meters - cell_tz->sector_height_meters) <= 300.0
+                                                        && fabs(current_pcell->sector_height_meters - cell_tx->sector_height_meters) <= 300.0
+                                                        && fabs(cell_tz->sector_height_meters - cell_tx->sector_height_meters) <= 300.0
+                                                        && fabs(cell_tzx->sector_height_meters - cell_tz->sector_height_meters) <= 300.0
+                                                        && fabs(cell_tzx->sector_height_meters - cell_tx->sector_height_meters) <= 300.0)
+                                                {
+                                                    doo = true;
+                                                }
+
+                                            }
+                                        }
+                                    }
+
+                                    if ( !dx || !dz || doo )
+                                    {
+                                        float v95 = sqrt(POW2(dx) + POW2(dz)) + cell_tzx->field_A + current_pcell->field_C;
+
+                                        int v40 = abs(to_sec_x - t_x);
+                                        int v41 = abs(to_sec_z - t_z);
+
+                                        float v94 = min(v40, v41) * sq2 + abs(v40 - v41);
+
+                                        if ( !(cell_tzx->field_B & 2) || v95 + v94 <= cell_tzx->field_C + cell_tzx->field_10 )
+                                        {
+                                            cell_tzx->field_C = v95;
+                                            cell_tzx->field_10 = v94;
+
+                                            if ( !(cell_tzx->field_B & 2) )
+                                                AddTail(&list1, cell_tzx);
+
+                                            if ( cell_tzx->field_B & 2 )
+                                                Remove(&cell_tzx->field_20);
+
+                                            AddTail(&current_pcell->field_14, &cell_tzx->field_20);
+
+                                            cell_tzx->pathcell = current_pcell;
+                                            cell_tzx->field_B |= 2;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+
+
+
+            if ( !list1.head->next )
+            {
+                arg->steps_cnt = 0;
+                return 0;
+            }
+
+            cellArea *selected_cell = (cellArea *)list1.head;
+            float selected_value = selected_cell->field_C + selected_cell->field_10;
+
+            cellArea *tmp_cell = (cellArea *)list1.head;
+            while (tmp_cell->next)
+            {
+                float v49 = tmp_cell->field_C + tmp_cell->field_10;
+
+                if ( v49 < selected_value )
+                {
+                    selected_cell = tmp_cell;
+                    selected_value = v49;
+                }
+
+                tmp_cell = (cellArea *)tmp_cell->next;
+            }
+
+            current_sec_x = selected_cell->field_8;
+            current_sec_z = selected_cell->field_9;
+            current_pcell = selected_cell;
+
+            init_list(&selected_cell->field_14);
+
+            Remove(selected_cell);
+
+            selected_cell->field_B &= 0xFC;
+            selected_cell->field_B |= 1;
+
+            if ( current_sec_x == to_sec_x && current_sec_z == to_sec_z )
+                break;
+        }
+
+        nlist list2;
+        init_list(&list2);
+
+        cellArea *iter_cell = NULL;
+
+        if ( to_sec_x >= 0 && to_sec_z >= 0 && to_sec_x < yw->sectors_maxX2 && to_sec_z < yw->sectors_maxY2 )
+        {
+            iter_cell = &yw->cells[to_sec_x + yw->sectors_maxX2 * to_sec_z];
+            iter_cell->field_8 = to_sec_x;
+            iter_cell->field_9 = to_sec_z;
+        }
+
+        while(iter_cell)
+        {
+            AddHead(&list2, iter_cell);
+            iter_cell = iter_cell->pathcell;
+        }
+
+        cellArea *curcell = (cellArea *)list2.head;
+        cellArea *nextcell = (cellArea *)list2.head->next;
+
+        int v61 = nextcell->field_8 - curcell->field_8;
+        int v62 = nextcell->field_9 - curcell->field_9;
+
+        int step_id = 0;
+
+        while ( nextcell->next )
+        {
+            if ( maxsteps <= 1 || nextcell == target_pcell)
+            {
+                arg->waypoints[ step_id ].sx = arg->to_x;
+                arg->waypoints[ step_id ].sz = arg->to_z;
+                break;
+            }
+
+            cellArea *curcell = nextcell;
+            nextcell = (cellArea *)nextcell->next;
+
+            if ( nextcell->field_8 - curcell->field_8 != v61 || nextcell->field_9 - curcell->field_9 != v62 )
+            {
+                float tx, tz;
+
+                if ( abs(v61) < abs(v62) )
+                {
+                    if ( v61 > 0 )
+                    {
+                        tz = 0.0;
+                        tx = -200.0;
+                    }
+                    else
+                    {
+                        tz = 0.0;
+                        tx = 200.0;
+                    }
+                }
+                else
+                {
+                    if ( v62 > 0 )
+                    {
+                        tz = 200.0;
+                        tx = 0.0;
+                    }
+                    else
+                    {
+                        tz = -200.0;
+                        tx = 0.0;
+                    }
+                }
+
+                v61 = nextcell->field_8 - curcell->field_8;
+                v62 = nextcell->field_9 - curcell->field_9;
+
+                arg->waypoints[ step_id ].sx = (curcell->field_8 + 0.5) * 1200.0 + tx;
+                arg->waypoints[ step_id ].sz = -(curcell->field_9 + 0.5) * 1200.0 + tz;
+                maxsteps--;
+                step_id++;
+            }
+        }
+
+        while ( list2.head->next )
+            Remove(list2.head);
+
+        while ( list1.head->next )
+            Remove(list1.head);
+
+        arg->steps_cnt = step_id + 1;
+        return 1;
+    }
+
+    arg->steps_cnt = 1;
+    arg->waypoints[0].sx = arg->to_x;
+    arg->waypoints[0].sz = arg->to_z;
+    return 1;
 }
 
-void ypabact_func125(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
+void ypabact_func125__sub0(__NC_STACK_ypabact *bact, int a2)
 {
-    dprintf("MAKE ME %s\n","ypabact_func125");
-    call_parent(zis, obj, 125, arg);
+    bact_node *kidunit = (bact_node *)bact->list2.head;
+
+    while ( kidunit->next )
+    {
+        kidunit->bact->field_59A = bact->field_59A;
+        kidunit->bact->field_598 = a2;
+
+        kidunit->bact->field_3D6 |= 0x4000000;
+
+        if ( bact->field_3D6 & 0x8000000 )
+            kidunit->bact->field_3D6 |= 0x8000000;
+        else
+            kidunit->bact->field_3D6 &= 0xF7FFFFFF;
+
+        for (int i = 0; i < 32; i++)
+        {
+            kidunit->bact->field_418[i] = bact->field_418[i];
+        }
+
+        kidunit = (bact_node *)kidunit->next;
+    }
+}
+
+size_t ypabact_func125(NC_STACK_ypabact *obj, class_stru *zis, bact_arg124 *arg)
+{   // path find caller for ground squads
+    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+
+    int maxsteps = arg->steps_cnt;
+
+    if ( arg->field_12 >= 2 || arg->field_12 != 1 )
+        return 0; //may be 1   CHECK IT
+
+    if ( !call_method(obj, 124, arg) )
+        return 0;
+
+    bact_arg67 arg67;
+    if ( arg->steps_cnt <= 1 )
+    {
+        arg67.targ.sx = arg->to_x;
+        arg67.targ.sz = arg->to_z;
+    }
+    else
+    {
+        for (int i = 0; i < arg->steps_cnt; i++)
+        {
+            bact->field_418[i] = arg->waypoints[i];
+        }
+
+        bact->field_3D6 |= 0x4000000;
+
+        bact->field_598 = 0;
+        bact->field_59A = arg->steps_cnt;
+
+        ypabact_func125__sub0(bact, 0);
+
+        arg67.targ.sx = arg->waypoints[0].sx;
+        arg67.targ.sz = arg->waypoints[0].sz;
+    }
+
+    arg67.field_0 = 1;
+    arg67.field_4 = 0;
+    call_method(obj, 67, &arg67);
+
+    bact_node * kidunit = (bact_node *)bact->list2.head;
+
+    while ( kidunit->next )
+    {
+        if ( (kidunit->bact->field_24 == 8 || kidunit->bact->field_24 == 2) && bact->p_cell_area != kidunit->bact->p_cell_area )
+        {
+            bact_arg124 arg125;
+            arg125.steps_cnt = maxsteps;
+            arg125.from_x = kidunit->bact->field_621.sx;
+            arg125.from_z = kidunit->bact->field_621.sz;
+            arg125.to_x = arg->to_x;
+            arg125.to_z = arg->to_z;
+            arg125.field_12 = arg->field_12;
+
+            call_method(kidunit->bacto, 125, &arg125);
+        }
+
+        kidunit = (bact_node *)kidunit->next;
+    }
+
+    return 1;
 }
 
 
