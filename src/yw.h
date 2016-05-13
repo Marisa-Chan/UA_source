@@ -885,7 +885,7 @@ struct _NC_STACK_ypaworld
     int field_1b20; // saved mouse x
     int field_1b22; // saved mouse y
     ypabact_arg65 field_1b24;
-    int16_t field_1b68;
+    int16_t field_1b68; // debug info draw
     int16_t field_1B6A;
     int16_t field_1b6c;
 
