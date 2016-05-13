@@ -7388,10 +7388,294 @@ size_t ypabact_func108(NC_STACK_ypabact *obj, class_stru *zis, float *arg)
     return 0;
 }
 
-void ypabact_func109(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
+__NC_STACK_ypabact *sb_0x493984__sub1(__NC_STACK_ypabact *bact)
 {
-    dprintf("MAKE ME %s\n","ypabact_func109");
-    call_parent(zis, obj, 109, arg);
+    xyz v12;
+
+    if ( bact->field_3DE == 1 )
+        v12 = bact->field_3ec;
+    else if ( bact->field_3DE == 2 )
+        v12 = bact->field_3e8->field_621;
+    else
+        return NULL;
+
+    float v14 = 215040.0;
+
+    __NC_STACK_ypabact *new_leader = NULL;
+
+    bact_node *kid_unit = (bact_node *)bact->list2.head;
+    while ( kid_unit->next )
+    {
+        if ( kid_unit->bact->field_3D5 != 2 )
+        {
+            int a4;
+            call_vtbl(kid_unit->bacto, 3, 0x80001005, &a4, 0);
+
+            if ( !a4 )
+            {
+
+                float v17 = sqrt(POW2(v12.sz - kid_unit->bact->field_621.sz) + POW2(v12.sx - kid_unit->bact->field_621.sx));
+
+                if ( !new_leader || (kid_unit->bact->field_24 != 7 && v14 > v17) || (new_leader->field_24 == 7 && (kid_unit->bact->field_24 != 7 || v14 > v17 )) )
+                {
+                    new_leader = kid_unit->bact;
+                    v14 = v17;
+                }
+            }
+        }
+
+        kid_unit = (bact_node *)kid_unit->next;
+    }
+    return new_leader;
+}
+
+__NC_STACK_ypabact *sb_0x493984__sub0(__NC_STACK_ypabact *bact)
+{
+    float tmp = 0.0;
+    __NC_STACK_ypabact *new_leader = NULL;
+
+    bact_node *kid_unit = (bact_node *)bact->list2.head;
+    while ( kid_unit->next )
+    {
+        __NC_STACK_ypabact *v4 = kid_unit->bact;
+
+        if ( v4->field_3D5 != 2 )
+        {
+            float v10;
+            if ( v4->field_24 == 7 )
+            {
+                v10 = 0.0;
+            }
+            else
+            {
+                float v8 = 1.0 - (sqrt(POW2(bact->field_621.sx - v4->field_621.sx) + POW2(bact->field_621.sz - v4->field_621.sz)) / 110400.0);
+                v10 = (float)kid_unit->bact->energy / (float)kid_unit->bact->energy_2 + v8;
+            }
+
+            if ( !new_leader || tmp < v10 )
+            {
+                new_leader = kid_unit->bact;
+                tmp = v10;
+            }
+        }
+        kid_unit = (bact_node *)kid_unit->next;
+    }
+
+    return new_leader;
+}
+
+__NC_STACK_ypabact *sb_0x493984(__NC_STACK_ypabact *bact, int a2)
+{
+    if ( bact->list2.head->next )
+    {
+        NC_STACK_ypaworld *ywo;
+        call_vtbl(bact->self, 3, 0x80001001, &ywo, 0);
+
+        __NC_STACK_ypabact *new_leader = NULL;
+
+        if (a2)
+            new_leader = sb_0x493984__sub1(bact);
+        else
+            new_leader = sb_0x493984__sub0(bact);
+
+        if (!new_leader)
+            return NULL;
+
+        if (new_leader->field_24 != 7 || bact->field_24 == 7)
+        {
+            call_method(bact->field_32, 72, new_leader->self);
+
+            sub_493DB0(new_leader, bact, ywo);
+
+            bact_node *kid_unit = (bact_node *)bact->list2.head;
+
+            while ( kid_unit->next )
+            {
+                bact_node *next1 = (bact_node *)kid_unit->next;
+
+                call_method(new_leader->self, 72, kid_unit->bacto);
+
+                sub_493DB0(kid_unit->bact, new_leader, ywo);
+
+                kid_unit = next1;
+            }
+            new_leader->field_2E = bact->field_2E;
+            return new_leader;
+        }
+
+    }
+    return NULL;
+}
+
+void sub_493480(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, int a3)
+{
+    dprintf("MAKE ME %s (multiplayer)\n", "sub_493480");
+}
+
+void ypabact_func109(NC_STACK_ypabact *obj, class_stru *zis, bact_arg109 *arg)
+{
+    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+
+    printf("ddd >%d\n", arg->field_0);
+
+    switch ( arg->field_0 )
+    {
+    case 1:
+        if ( arg->field_4 )
+        {
+            if ( arg->field_4->field_3D5 == 2 )
+            {
+                ypa_log_out("ORG_NEWCHIEF: Dead master\n");
+            }
+            else if ( arg->field_4->self != bact->parent_bacto && bact != arg->field_4 )
+            {
+                bact->field_2E = arg->field_4->field_2E;
+                bact->field_3D4 = arg->field_4->field_3D4;
+
+                call_method(arg->field_4->self, 72, obj);
+
+                while ( 1 )
+                {
+                    bact_node *v6 = (bact_node *)bact->list2.head;
+                    if ( !v6->next )
+                        break;
+
+                    v6->bact->field_3D4 = arg->field_4->field_3D4;
+                    v6->bact->field_2E = arg->field_4->field_2E;
+
+                    sub_493DB0(v6->bact, arg->field_4, bact->wrld);
+
+                    call_method(arg->field_4->self, 72, v6->bacto);
+                }
+
+                sub_493DB0(bact, arg->field_4, bact->wrld);
+                sub_493480(bact, arg->field_4, 1);
+            }
+        }
+        break;
+
+    case 2:
+        if ( bact->field_32 != bact->parent_bacto || bact != arg->field_4 )
+        {
+            if ( bact->field_3D5 == 2 )
+            {
+                ypa_log_out("ORG_BECOMECHIEF dead vehicle\n");
+            }
+            else
+            {
+                if ( bact->field_32 != bact->parent_bacto )
+                    call_method(bact->field_32, 72, obj);
+
+                if ( arg->field_4 )
+                {
+                    sub_493DB0(bact, arg->field_4, bact->wrld);
+
+                    bact->field_3D4 = arg->field_4->field_3D4;
+                    bact->field_2E = arg->field_4->field_2E;
+
+                    call_method(obj, 72, arg->field_4->self);
+
+                    while ( 1 )
+                    {
+                        bact_node *v10 = (bact_node *)arg->field_4->list2.head;;
+                        if ( !v10->next )
+                            break;
+
+                        call_method(obj, 72, v10->bacto);
+                        v10->bact->field_3D4 = arg->field_4->field_3D4;
+
+                        sub_493DB0(v10->bact, bact, bact->wrld);
+                    }
+
+                    bact->field_2E = arg->field_4->field_2E;
+                    sub_493480(bact, bact, 2);
+                }
+                else
+                {
+                    if ( bact->field_32 != bact->parent_bacto )
+                    {
+                        int a4;
+                        call_vtbl(bact->field_32, 3, 0x80002007, &a4, 0);
+
+                        bact->field_2E = a4;
+
+                        call_vtbl(bact->field_32, 2, 0x80002007, a4 + 1, 0);
+                    }
+                    sub_493480(bact, bact, 2);
+                }
+            }
+        }
+        break;
+
+    case 3:
+        if ( bact->field_3D5 == 2 )
+        {
+            ypa_log_out("ORG_NEWCOMMAND: dead vehicle\n");
+        }
+        else
+        {
+
+            if ( bact->field_32 == bact->parent_bacto )
+            {
+                __NC_STACK_ypabact *v14 = sb_0x493984(bact, 0);
+
+                if ( v14 )
+                    sub_493480(bact, v14, 13);
+            }
+            else
+            {
+                call_method(bact->field_32, 72, bact->self);
+            }
+
+            int a4;
+            call_vtbl(bact->field_32, 3, 0x80002007, &a4, 0);
+            bact->field_2E = a4;
+            bact->field_2E |= bact->owner << 24;
+            call_vtbl(bact->field_32, 2, 0x80002007, a4 + 1, 0);
+            sub_493480(bact, bact, 3);
+        }
+        break;
+
+    case 4:
+        if ( arg->field_4->parent_bacto == arg->field_4->field_32 )
+        {
+            __NC_STACK_ypabact *v19 = sb_0x493984(arg->field_4, 0);
+
+            if ( v19 )
+                sub_493480(bact, v19, 14);
+        }
+
+        call_method(obj, 72, arg->field_4->self);
+
+        arg->field_4->field_2E = bact->field_2E;
+
+        sub_493DB0(arg->field_4, bact, bact->wrld);
+        sub_493480(bact, bact, 4);
+        break;
+
+    case 6:
+    {
+        int a4;
+        call_vtbl(obj, 3, 0x80001005, &a4, 0);
+
+        if ( !a4 )
+        {
+            __NC_STACK_ypabact *v21 = sb_0x493984(bact, 1);
+
+            if ( v21 )
+            {
+                call_method(v21->self, 72, obj);
+                v21->field_2E = bact->field_2E;
+
+                sub_493480(bact, v21, 6);
+            }
+        }
+    }
+    break;
+
+    default:
+        break;
+    }
 }
 
 int ypabact_func110__sub0(__NC_STACK_ypabact *bact)
