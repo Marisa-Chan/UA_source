@@ -7278,10 +7278,71 @@ size_t ypabact_func106(NC_STACK_ypabact *obj, class_stru *zis, bact_arg106 *arg)
     return 0;
 }
 
-void ypabact_func107(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
+void ypabact_func107(NC_STACK_ypabact *obj, class_stru *zis, int *arg)
 {
-    dprintf("MAKE ME %s\n","ypabact_func107");
-    call_parent(zis, obj, 107, arg);
+    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+
+    NC_STACK_base *vps[7];
+    vps[0] = bact->vp_normal.base;
+    vps[1] = bact->vp_dead.base;
+    vps[2] = bact->vp_fire.base;
+    vps[3] = bact->vp_genesis.base;
+    vps[4] = bact->vp_wait.base;
+    vps[5] = bact->vp_megadeth.base;
+    vps[6] = 0;
+
+    int v13 = 0;
+
+    while ( vps[v13] )
+    {
+        nlist *kids_list;
+        call_vtbl(vps[v13], 3, 0x8000101A, &kids_list, 0);
+
+        base_node *kid = (base_node *)kids_list->head;
+        while (kid->next)
+        {
+            if ( *arg == 1 )
+            {
+                call_vtbl(kid->self_full, 2, 0x80001002, 1, 0);
+
+                float v11, v10, v9;
+                call_vtbl(kid->self_full, 3, 0x80001009, &v11, 0);
+                call_vtbl(kid->self_full, 3, 0x8000100A, &v10, 0);
+                call_vtbl(kid->self_full, 3, 0x8000100B, &v9, 0);
+
+                flag_xyz arg68;
+
+                arg68.flag = 7;
+                arg68.x = v11 - bact->field_621.sx;
+                arg68.y = v10 - bact->field_621.sy;
+                arg68.z = v9 - bact->field_621.sz;
+
+                call_method(kid->self_full, 68, &arg68);
+            }
+            else if ( *arg == 2 )
+            {
+                call_vtbl(kid->self_full, 2, 0x80001002, 1, 0);
+
+                float v11, v10, v9;
+                call_vtbl(kid->self_full, 3, 0x80001009, &v11, 0);
+                call_vtbl(kid->self_full, 3, 0x8000100A, &v10, 0);
+                call_vtbl(kid->self_full, 3, 0x8000100B, &v9, 0);
+
+                flag_xyz arg68;
+
+                arg68.flag = 7;
+                arg68.x = v11 + bact->field_621.sx;
+                arg68.y = v10 + bact->field_621.sy;
+                arg68.z = v9 + bact->field_621.sz;
+
+                call_method(kid->self_full, 68, &arg68);
+            }
+
+            kid = (base_node *)kid->next;
+        }
+
+        v13++;
+    }
 }
 
 size_t ypabact_func108(NC_STACK_ypabact *obj, class_stru *zis, float *arg)
