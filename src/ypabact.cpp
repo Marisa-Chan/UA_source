@@ -8968,7 +8968,7 @@ size_t ypabact_func124(NC_STACK_ypabact *obj, class_stru *zis, bact_arg124 *arg)
 
         float sq2 = sqrt(2.0);
 
-        start_pcell->field_10 = min(v23, v24) * sq2 + abs(v23 - v24);
+        start_pcell->field_10 = MMIN(v23, v24) * sq2 + abs(v23 - v24);
 
         while ( 1 )
         {
@@ -9055,7 +9055,7 @@ size_t ypabact_func124(NC_STACK_ypabact *obj, class_stru *zis, bact_arg124 *arg)
                                         int v40 = abs(to_sec_x - t_x);
                                         int v41 = abs(to_sec_z - t_z);
 
-                                        float v94 = min(v40, v41) * sq2 + abs(v40 - v41);
+                                        float v94 = MMIN(v40, v41) * sq2 + abs(v40 - v41);
 
                                         if ( !(cell_tzx->field_B & 2) || v95 + v94 <= cell_tzx->field_C + cell_tzx->field_10 )
                                         {
