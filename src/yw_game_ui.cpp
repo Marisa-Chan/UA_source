@@ -6077,7 +6077,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
 {
     if ( winpt->selected_btn != &squadron_manager.lstvw.frm_1
             || winpt->selected_btnID < 8
-            || squadron_manager.lstvw.field_1DE <= winpt->selected_btnID - 8 + squadron_manager.lstvw.scroll_pos
+            || squadron_manager.lstvw.elements_for_scroll_size <= winpt->selected_btnID - 8 + squadron_manager.lstvw.scroll_pos
             || squadron_manager.squads[ winpt->selected_btnID - 8 ] == 0
             || squadron_manager.squads[ winpt->selected_btnID - 8 ] == yw->field_1b80 )
     {
@@ -6091,6 +6091,8 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
                 while(v13->next)
                 {
                     bact_arg109 arg109;
+
+                    bact_node *next1 = (bact_node *)v13->next;
 
                     if ( v3 )
                     {
@@ -6106,7 +6108,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
                     }
                     call_method(v3, 109, &arg109);
 
-                    v13 = (bact_node *)v13->next;
+                    v13 = next1;
                 }
             }
         }
@@ -6140,12 +6142,14 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
                     bact_node *v9 = &squadron_manager.field_2BC->list_node;
                     while (v9->next)
                     {
+                        bact_node *next1 = (bact_node *)v9->next;
+
                         bact_arg109 arg109;
                         arg109.field_0 = 1;
                         arg109.field_4 = v6;
                         call_method(v9->bacto, 109, &arg109);
 
-                        v9 = (bact_node *)v9->next;
+                        v9 = next1;
                     }
                 }
                 else
@@ -6306,7 +6310,7 @@ void ypaworld_func64__sub7__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         if ( squadron_manager.field_2A8 & 1 )
         {
-            if ( ypaworld_func64__sub7__sub3__sub2(yw) && (winpt->flag & 0x104) != 260 )
+            if ( ypaworld_func64__sub7__sub3__sub2(yw) && (winpt->flag & 0x104) != 0x104 )
             {
                 if ( winpt->flag & 0x104 )
                 {
