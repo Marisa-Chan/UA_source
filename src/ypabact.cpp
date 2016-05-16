@@ -7516,8 +7516,6 @@ void ypabact_func109(NC_STACK_ypabact *obj, class_stru *zis, bact_arg109 *arg)
 {
     __NC_STACK_ypabact *bact = &obj->stack__ypabact;
 
-    printf("ddd >%d\n", arg->field_0);
-
     switch ( arg->field_0 )
     {
     case 1:
