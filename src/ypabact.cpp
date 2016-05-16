@@ -1520,6 +1520,7 @@ void ypabact_func69(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
                 bact_arg90 arg90;
                 arg90.field_8 = 1;
                 arg90.unit = bact;
+                arg90.ret_unit = NULL;
 
                 call_method(obj, 90, &arg90);
 

@@ -4553,6 +4553,7 @@ void sb_0x4a7010(__NC_STACK_yparobo *robo)
                                     bact_arg90 arg90;
                                     arg90.unit = unit_bact;
                                     arg90.field_8 = 1;
+                                    arg90.ret_unit = NULL;
                                     call_method(bact->self, 90, &arg90);
 
                                     if ( arg90.ret_unit )
