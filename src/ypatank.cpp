@@ -284,7 +284,11 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
         if ( v220 == 0.0 )
             break;
 
-        if ( bact->field_949 <= 0 )
+        if ( bact->field_949 > 0 )
+        {
+            bact->field_949 -= arg->field_4;
+        }
+        else
         {
 
             float v206 = bact->field_651.m20 * bact->field_645.sx + bact->field_651.m22 * bact->field_645.sz;
@@ -981,8 +985,6 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
                 }
             }
         }
-
-        bact->field_949 -= arg->field_4;
 
         bact_arg75 arg75;
         arg75.field_14 = v244;
