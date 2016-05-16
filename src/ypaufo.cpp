@@ -5,6 +5,7 @@
 #include "classes.h"
 #include "yw.h"
 #include "ypaufo.h"
+#include "log.h"
 
 #include <math.h>
 
@@ -437,8 +438,18 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                         ufo->field_1c |= 9;
 
                         float v104 = bact->field_651.m22 * arg136_2.field_3C->triangles[arg136_2.field_38].field_8 + bact->field_651.m20 * arg136_2.field_3C->triangles[arg136_2.field_38].field_0;
-                        v104 /= sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m22) );
-                        v104 /= sqrt( POW2(arg136_2.field_3C->triangles[arg136_2.field_38].field_8) + POW2(arg136_2.field_3C->triangles[arg136_2.field_38].field_0) );
+
+                        float tmpsq = sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m22) );
+
+                        NDIV_CARRY(tmpsq);
+
+                        v104 /= tmpsq;
+
+                        tmpsq = sqrt( POW2(arg136_2.field_3C->triangles[arg136_2.field_38].field_8) + POW2(arg136_2.field_3C->triangles[arg136_2.field_38].field_0) );
+
+                        NDIV_CARRY(tmpsq);
+
+                        v104 /= tmpsq;
 
                         if ( v104 > 1.0 )
                             v104 = 1.0;
@@ -454,8 +465,18 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                     if ( arg136.field_20 )
                     {
                         float v104 = bact->field_651.m20 * bact->field_645.sx + bact->field_651.m22 * bact->field_645.sz;
-                        v104 /= sqrt(POW2(bact->field_651.m20) + POW2(bact->field_651.m22));
-                        v104 /= sqrt(POW2(bact->field_645.sx) + POW2(bact->field_645.sz));
+
+                        float tmpsq = sqrt(POW2(bact->field_651.m20) + POW2(bact->field_651.m22));
+
+                        NDIV_CARRY(tmpsq);
+
+                        v104 /= tmpsq;
+
+                        tmpsq = sqrt(POW2(bact->field_645.sx) + POW2(bact->field_645.sz));
+
+                        NDIV_CARRY(tmpsq);
+
+                        v104 /= tmpsq;
 
                         if ( v104 > 1.0 )
                             v104 = 1.0;

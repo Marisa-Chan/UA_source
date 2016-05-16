@@ -7,7 +7,7 @@
 #include "yw.h"
 #include "ypatank.h"
 #include "yparobo.h"
-
+#include "log.h"
 
 stored_functions *classvtbl_get_ypatank();
 class_return * class_set_ypatank(int, ...);
@@ -288,8 +288,18 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
         {
 
             float v206 = bact->field_651.m20 * bact->field_645.sx + bact->field_651.m22 * bact->field_645.sz;
-            v206 /= sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m22) );
-            v206 /= sqrt( POW2(bact->field_645.sx) + POW2(bact->field_645.sz) );
+
+            float tmpsq = sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m22) );
+
+            NDIV_CARRY(tmpsq);
+
+            v206 /= tmpsq;
+
+            tmpsq = sqrt( POW2(bact->field_645.sx) + POW2(bact->field_645.sz) );
+
+            NDIV_CARRY(tmpsq);
+
+            v206 /= tmpsq;
 
             if ( v206 > 1.0 )
                 v206 = 1.0;
@@ -673,7 +683,11 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
                             tank->field_11.sz = -tank->field_11.sz;
                         }
 
-                        float v84 = 1.0 / sqrt( POW2(tank->field_11.sx) + POW2(tank->field_11.sz) );
+                        float tmpsq = sqrt( POW2(tank->field_11.sx) + POW2(tank->field_11.sz) );
+
+                        NDIV_CARRY(tmpsq);
+
+                        float v84 = 1.0 / tmpsq;
 
                         ypaworld_arg136 arg136_1;
                         ypaworld_arg136 arg136_3;
@@ -707,7 +721,12 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
                             if ( v87 )
                             {
                                 float v206 = bact->field_651.m20 * arg136_1.field_14 + bact->field_651.m22 * arg136_1.field_1C;
-                                v206 = v206 / sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m22) ) / 150.0;
+
+                                tmpsq = sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m22) );
+
+                                NDIV_CARRY(tmpsq);
+
+                                v206 = v206 / tmpsq / 150.0;
 
                                 if ( v206 > 1.0 )
                                     v206 = 1.0;
@@ -721,7 +740,12 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
                             else
                             {
                                 float v206 = bact->field_651.m20 * arg136_3.field_14 + bact->field_651.m22 * arg136_3.field_1C;
-                                v206 = v206 / sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m22) ) / 150.0;
+
+                                tmpsq = sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m22) );
+
+                                NDIV_CARRY(tmpsq);
+
+                                v206 = v206 / tmpsq / 150.0;
 
                                 if ( v206 > 1.0 )
                                     v206 = 1.0;
@@ -736,8 +760,18 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
                         else
                         {
                             float v206 = bact->field_651.m20 * tank->field_11.sx + bact->field_651.m22 * tank->field_11.sz;
-                            v206 = v206 / sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m22) );
-                            v206 = v206 / sqrt( POW2(tank->field_11.sx) + POW2(tank->field_11.sz) );
+
+                            tmpsq = sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m22) );
+
+                            NDIV_CARRY(tmpsq);
+
+                            v206 = v206 / tmpsq;
+
+                            tmpsq = sqrt( POW2(tank->field_11.sx) + POW2(tank->field_11.sz) );
+
+                            NDIV_CARRY(tmpsq);
+
+                            v206 = v206 / tmpsq;
 
                             if ( v206 > 1.0 )
                                 v206 = 1.0;
@@ -889,8 +923,18 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
                     }
 
                     float v206 = bact->field_651.m20 * tank->field_11.sx + bact->field_651.m22 * tank->field_11.sz;
-                    v206 = v206 / sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m22) );
-                    v206 = v206 / sqrt( POW2(tank->field_11.sx) + POW2(tank->field_11.sz) );
+
+                    float tmpsq = sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m22) );
+
+                    NDIV_CARRY(tmpsq);
+
+                    v206 = v206 / tmpsq;
+
+                    tmpsq = sqrt( POW2(tank->field_11.sx) + POW2(tank->field_11.sz) );
+
+                    NDIV_CARRY(tmpsq);
+
+                    v206 = v206 / tmpsq;
 
                     if ( v206 > 1.0 )
                         v206 = 1.0;
@@ -2261,8 +2305,18 @@ size_t ypatank_func101(NC_STACK_ypatank *obj, class_stru *zis, bact_arg101 *arg)
     if ( v34.sx != 0.0 || v34.sz != 0.0 )
     {
         v38 = v34.sz * bact->field_651.m22 + v34.sx * bact->field_651.m20;
-        v38 = v38 / sqrt( POW2(v34.sz) + POW2(v34.sx) );
-        v38 = v38 / sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m22) );
+
+        float tmpsq = sqrt( POW2(v34.sz) + POW2(v34.sx) );
+
+        NDIV_CARRY(tmpsq);
+
+        v38 = v38 / tmpsq;
+
+        tmpsq = sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m22) );
+
+        NDIV_CARRY(tmpsq);
+
+        v38 = v38 / tmpsq;
     }
     else
     {

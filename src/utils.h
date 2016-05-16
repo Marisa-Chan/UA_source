@@ -55,6 +55,34 @@
 #define MMAX(a, b) ((a) > (b) ? (a) : (b))
 #define MMIN(a, b) ((a) < (b) ? (a) : (b))
 
+#define NANCARRY_LOG
+#define NDIV_CARRY_LOG
+
+#ifndef NANCARRY_LOG
+
+#define NANCARRY(x) { if (isnan(x)) x = 0.0; }
+
+#else
+
+#define NANCARRY(x) { if (isnan(x)) { \
+                        x = 0.0;\
+                        ypa_log_out("Nan occur %s:%d\n", __FILE__, __LINE__);} }
+
+#endif
+
+#ifndef NDIV_CARRY_LOG
+
+#define NDIV_CARRY(x) { if (x == 0.0) x = 1.0; }
+
+#else
+
+#define NDIV_CARRY(x) { if (x == 0.0) { \
+                        x = 1.0;\
+                        ypa_log_out("Null on div occur %s:%d\n", __FILE__, __LINE__);} }
+
+#endif
+
+
 void va_to_arr(stack_vals *out, int sz, va_list in);
 void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list in);
 

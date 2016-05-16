@@ -9,6 +9,8 @@
 #include "yw.h"
 #include "ypacar.h"
 
+#include "log.h"
+
 
 
 stored_functions *classvtbl_get_ypacar();
@@ -385,20 +387,32 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
 
     bact->field_651.m21 = 1.9;
 
-    float v33 = 1.0 / sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m21) + POW2(bact->field_651.m22) );
+    float tmpsq = sqrt( POW2(bact->field_651.m20) + POW2(bact->field_651.m21) + POW2(bact->field_651.m22) );
+
+    NDIV_CARRY(tmpsq);
+
+    float v33 = 1.0 / tmpsq;
     bact->field_651.m20 *= v33;
     bact->field_651.m21 *= v33;
     bact->field_651.m22 *= v33;
 
     if ( fabs(bact->field_651.m22) <= 0.1 )
     {
-        bact->field_651.m02 = sqrt( 1.0 / (POW2(bact->field_651.m22) / (POW2(bact->field_651.m20)) + 1.0) );
-        bact->field_651.m00 = -bact->field_651.m22 * bact->field_651.m02 / bact->field_651.m20;
+        float m20 = bact->field_651.m20;
+
+        NDIV_CARRY(m20);
+
+        bact->field_651.m02 = sqrt( 1.0 / (POW2(bact->field_651.m22) / (POW2(m20)) + 1.0) );
+        bact->field_651.m00 = -bact->field_651.m22 * bact->field_651.m02 / m20;
     }
     else
     {
-        bact->field_651.m00 = sqrt( 1.0 / (POW2(bact->field_651.m20) / (POW2(bact->field_651.m22)) + 1.0) );
-        bact->field_651.m02 = -bact->field_651.m20 * bact->field_651.m00 / bact->field_651.m22;
+        float m22 = bact->field_651.m22;
+
+        NDIV_CARRY(m22);
+
+        bact->field_651.m00 = sqrt( 1.0 / (POW2(bact->field_651.m20) / (POW2(m22)) + 1.0) );
+        bact->field_651.m02 = -bact->field_651.m20 * bact->field_651.m00 / m22;
     }
 
     bact->field_651.m01 = 0;
@@ -851,6 +865,8 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, xyz *darg)
     if ( fabs(v78) > 0.1 )
     {
         float v8 = v73 * v78 / bact->force;
+        NANCARRY(v8);
+
         float sn = sin(-v8);
         float cs = cos(v8);
         float ics = 1.0 - cs;
@@ -868,8 +884,16 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, xyz *darg)
     }
 
     float v76 = v65 * arg->field_4.sx + v66 * arg->field_4.sz;
-    v76 = v76 / sqrt( POW2(v65) + POW2(v66) );
-    v76 = v76 / sqrt( POW2(arg->field_4.sx) + POW2(arg->field_4.sz) );
+
+    float tmpsq = sqrt( POW2(v65) + POW2(v66) );
+
+    NDIV_CARRY(tmpsq);
+
+    v76 = v76 / tmpsq;
+
+    tmpsq = sqrt( POW2(arg->field_4.sx) + POW2(arg->field_4.sz) );
+
+    v76 = v76 / tmpsq;
 
     if ( v76 > 1.0 )
         v76 = 1.0;
@@ -877,27 +901,30 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, xyz *darg)
     if ( v76 < -1.0 )
         v76 = -1.0;
 
-    float v77 = acos(v76) * (fabs(bact->field_611) * 0.002 / arg->field_0);
-
-    if ( v77 > 0.001 )
+    if (arg->field_0 != 0.0)
     {
-        if ( v65 * arg->field_4.sz - v66 * arg->field_4.sx < 0.0 )
-            v77 = -v77;
+        float v77 = acos(v76) * (fabs(bact->field_611) * 0.002 / arg->field_0);
 
-        float v42 = bact->field_651.m20;
-        float v43 = bact->field_651.m21;
-        float v44 = bact->field_651.m22;
+        if ( v77 > 0.001 )
+        {
+            if ( v65 * arg->field_4.sz - v66 * arg->field_4.sx < 0.0 )
+                v77 = -v77;
 
-        float sn = sin(-v77);
-        float cs = cos(v77);
-        float ics = 1.0 - cs;
+            float v42 = bact->field_651.m20;
+            float v43 = bact->field_651.m21;
+            float v44 = bact->field_651.m22;
 
-        xyz tmp;
-        tmp.sx = (ics * v42 * v43 - sn * v44) * darg->sy + (ics * v42 * v42 + cs) * darg->sx       + (ics * v44 * v42 + sn * v43) * darg->sz;
-        tmp.sy = (ics * v43 * v43 + cs) * darg->sy       + (ics * v42 * v43 + sn * v44) * darg->sx + (ics * v43 * v44 - sn * v42) * darg->sz;
-        tmp.sz = (ics * v43 * v44 + sn * v42) * darg->sy + (ics * v44 * v42 - sn * v43) * darg->sx + (ics * v44 * v44 + cs) * darg->sz;
+            float sn = sin(-v77);
+            float cs = cos(v77);
+            float ics = 1.0 - cs;
 
-        *darg = tmp;
+            xyz tmp;
+            tmp.sx = (ics * v42 * v43 - sn * v44) * darg->sy + (ics * v42 * v42 + cs) * darg->sx       + (ics * v44 * v42 + sn * v43) * darg->sz;
+            tmp.sy = (ics * v43 * v43 + cs) * darg->sy       + (ics * v42 * v43 + sn * v44) * darg->sx + (ics * v43 * v44 - sn * v42) * darg->sz;
+            tmp.sz = (ics * v43 * v44 + sn * v42) * darg->sy + (ics * v44 * v42 - sn * v43) * darg->sx + (ics * v44 * v44 + cs) * darg->sz;
+
+            *darg = tmp;
+        }
     }
 }
 

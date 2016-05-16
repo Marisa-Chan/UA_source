@@ -5,7 +5,7 @@
 #include "classes.h"
 #include "yw.h"
 #include "ypaflyer.h"
-
+#include "log.h"
 #include <math.h>
 
 
@@ -352,7 +352,14 @@ void sb_0x4b255c(__NC_STACK_ypaflyer *fly, float a2, xyz *a3, int a4)
                 if ( bact->field_611 < 0.1 )
                     v58 = 0.0;
                 else
-                    v58 = fabs(bact->field_611) * bact->airconst / bact->force * (v57 * 1.45 / (a2 * bact->maxrot));
+                {
+                    float aa2 = a2;
+
+                    NDIV_CARRY(aa2);
+
+                    v58 = fabs(bact->field_611) * bact->airconst / bact->force * (v57 * 1.45 / (aa2 * bact->maxrot));
+                }
+
 
                 float v44;
                 if ( a4 )
@@ -482,8 +489,18 @@ void ypaflyer_func70__sub0(__NC_STACK_ypaflyer *fly, float angl)
     {
 
         float v6 = (bact->field_645.sx * bact->field_651.m20 + bact->field_645.sz * bact->field_651.m22);
-        v6 /= sqrt( POW2(bact->field_645.sx) + POW2(bact->field_645.sz) );
-        v6 /= sqrt(POW2(bact->field_651.m20) + POW2(bact->field_651.m22));
+
+        float tmpsq = sqrt( POW2(bact->field_645.sx) + POW2(bact->field_645.sz) );
+
+        NDIV_CARRY(tmpsq);
+
+        v6 /= tmpsq;
+
+        tmpsq = sqrt(POW2(bact->field_651.m20) + POW2(bact->field_651.m22));
+
+        NDIV_CARRY(tmpsq);
+
+        v6 /= tmpsq;
 
         if ( v6 > 1.0 )
             v6 = 1.0;
@@ -851,6 +868,8 @@ void ypaflyer_func70(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
         }
 
         float v92 = POW2(arg136.field_14) + POW2(arg136.field_1C);
+
+        NDIV_CARRY(v92);
 
         if ( bact->field_3D6 & 0x10 )
         {

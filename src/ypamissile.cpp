@@ -515,6 +515,9 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                                                 if ( v72 * bact->field_651.m20 + v73 * bact->field_651.m21 + v74 * bact->field_651.m22 >= 0.3 )
                                                 {
                                                     float v95 = sqrt( POW2(v70) + POW2(v69) + POW2(v71) );
+
+                                                    NDIV_CARRY(v95);
+
                                                     float v22 = 1.0 / v95;
 
                                                     float v65 = v69 * v22;

@@ -2615,7 +2615,11 @@ void yparobo_func70__sub4__sub0(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
                     float v30 = -(yy + 0.5) * 1200.0 - bact->field_621.sz;
                     float v29 = (xx + 0.5) * 1200.0 - bact->field_621.sx;
 
-                    float v16 = 1.0 / sqrt(v30 * v30 + v29 * v29);
+                    float tmpsq = sqrt(v30 * v30 + v29 * v29);
+
+                    NDIV_CARRY(tmpsq);
+
+                    float v16 = 1.0 / tmpsq;
 
                     v29 *= v16;
                     v30 *= v16;
@@ -2801,7 +2805,11 @@ void yparobo_func70__sub4__sub2(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
                         float v31 = -(yy + 0.5) * 1200.0 - bact->field_621.sz;
                         float v30 = (xx + 0.5) * 1200.0 - bact->field_621.sx;
 
-                        float v17 = 1.0 / sqrt(v31 * v31 + v30 * v30);
+                        float tmpsq =  sqrt(v31 * v31 + v30 * v30);
+
+                        NDIV_CARRY(tmpsq);
+
+                        float v17 = 1.0 / tmpsq;
 
                         v30 *= v17;
                         v31 *= v17;
@@ -2989,7 +2997,11 @@ void yparobo_func70__sub4__sub1(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
                     float v30 = -(yy + 0.5) * 1200.0 - bact->field_621.sz;
                     float v29 = (xx + 0.5) * 1200.0 - bact->field_621.sx;
 
-                    float v16 = 1.0 / sqrt(v30 * v30 + v29 * v29);
+                    float tmpsq = sqrt(v30 * v30 + v29 * v29);
+
+                    NDIV_CARRY(tmpsq);
+
+                    float v16 = 1.0 / tmpsq;
 
                     v29 *= v16;
                     v30 *= v16;
