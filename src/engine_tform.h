@@ -11,6 +11,9 @@ struct SinCos
 
 extern SinCos *SinCos_table;
 
+#define MAT_FLAG_INV_SIN   1
+#define MAT_FLAG_INV_COS   2
+
 struct xyz
 {
     float sx;
@@ -42,5 +45,7 @@ struct destFX
 
 void mat_mult(mat3x3 *mat1, mat3x3 *mat2, mat3x3 *dst);
 void mat_rotate_y(mat3x3 *mat, float a2);
+
+void mat_gen_axis_rotate(xyz *u, float angle, mat3x3 *out, int flags = 0);
 
 #endif // ENGINE_TFORM_H_INCLUDED

@@ -1214,11 +1214,12 @@ void ypamissile_func130(NC_STACK_ypamissile *obj, class_stru *zis, miss_arg130 *
 
     if ( bact->field_605.sx != 0.0 || bact->field_605.sy != 0.0 || bact->field_605.sz != 0.0 )
     {
-        float v46 = bact->field_651.m21 * bact->field_605.sz - bact->field_605.sy * bact->field_651.m22;
-        float v47 = bact->field_651.m22 * bact->field_605.sx - bact->field_605.sz * bact->field_651.m20;
-        float v45 = bact->field_651.m20 * bact->field_605.sy - bact->field_651.m21 * bact->field_605.sx;
+        xyz u;
+        u.sx = bact->field_651.m21 * bact->field_605.sz - bact->field_605.sy * bact->field_651.m22;
+        u.sy = bact->field_651.m22 * bact->field_605.sx - bact->field_605.sz * bact->field_651.m20;
+        u.sz = bact->field_651.m20 * bact->field_605.sy - bact->field_651.m21 * bact->field_605.sx;
 
-        float v37 = sqrt(POW2(v46) + POW2(v47) + POW2(v45));
+        float v37 = sqrt(POW2(u.sx) + POW2(u.sy) + POW2(u.sz));
 
         if ( v37 > 0.0 )
         {
@@ -1226,9 +1227,9 @@ void ypamissile_func130(NC_STACK_ypamissile *obj, class_stru *zis, miss_arg130 *
 
             float v51 = bact->field_651.m20 * bact->field_605.sx + bact->field_651.m21 * bact->field_605.sy + bact->field_651.m22 * bact->field_605.sz;
 
-            v46 *= v8;
-            v47 *= v8;
-            v45 *= v8;
+            u.sx *= v8;
+            u.sy *= v8;
+            u.sz *= v8;
 
             if ( v51 > 1.0 )
                 v51 = 1.0;
@@ -1254,20 +1255,9 @@ void ypamissile_func130(NC_STACK_ypamissile *obj, class_stru *zis, miss_arg130 *
 
             if ( v52 > 0.01 || v52 < -0.01 )
             {
-                float v9 = sin(-v52);
-                float v27 = cos(v52);
-
                 mat3x3 mat2;
 
-                mat2.m00 = (1.0 - v27) * v46 * v46 + v27;
-                mat2.m01 = (1.0 - v27) * v46 * v47 - v9 * v45;
-                mat2.m02 = (1.0 - v27) * v45 * v46 + v9 * v47;
-                mat2.m10 = (1.0 - v27) * v46 * v47 + v9 * v45;
-                mat2.m11 = (1.0 - v27) * v47 * v47 + v27;
-                mat2.m12 = (1.0 - v27) * v47 * v45 - v9 * v46;
-                mat2.m20 = (1.0 - v27) * v45 * v46 - v9 * v47;
-                mat2.m21 = (1.0 - v27) * v47 * v45 + v9 * v46;
-                mat2.m22 = (1.0 - v27) * v45 + v27;
+                mat_gen_axis_rotate(&u, v52, &mat2, MAT_FLAG_INV_SIN);
 
                 mat3x3 dst;
 
@@ -1332,11 +1322,12 @@ void ypamissile_func131(NC_STACK_ypamissile *obj, class_stru *zis, miss_arg130 *
     float v34 = arg->pos.sy;
     float v6 = arg->pos.sz;
 
-    float v37 = v5 * v6 - v36 * v34;
-    float v38 = v35 * v36 - v33 * v6;
-    float v39 = v33 * v34 - v5 * v35;
+    xyz vaxis;
+    vaxis.sx = v5 * v6 - v36 * v34;
+    vaxis.sy = v35 * v36 - v33 * v6;
+    vaxis.sz = v33 * v34 - v5 * v35;
 
-    float v30 = sqrt( POW2(v37) + POW2(v38) + POW2(v39) );
+    float v30 = sqrt( POW2(vaxis.sx) + POW2(vaxis.sy) + POW2(vaxis.sz) );
 
     if ( v30 != 0.0 )
     {
@@ -1344,9 +1335,9 @@ void ypamissile_func131(NC_STACK_ypamissile *obj, class_stru *zis, miss_arg130 *
 
         float v43 = v33 * v35 + v5 * v34 + v36 * v6;
 
-        v37 *= v11;
-        v38 *= v11;
-        v39 *= v11;
+        vaxis.sx *= v11;
+        vaxis.sy *= v11;
+        vaxis.sz *= v11;
 
         if ( v43 > 1.0 )
             v43 = 1.0;
@@ -1358,20 +1349,9 @@ void ypamissile_func131(NC_STACK_ypamissile *obj, class_stru *zis, miss_arg130 *
 
         if ( fabs(v12) > BACT_MIN_ANGLE )
         {
-            float v13 = sin(-v12);
-            float v23 = cos(v12);
-
             mat3x3 mat2;
 
-            mat2.m00 = (1.0 - v23) * v37 * v37 + v23;
-            mat2.m01 = (1.0 - v23) * v37 * v38 - v13 * v39;
-            mat2.m02 = (1.0 - v23) * v39 * v37 + v13 * v38;
-            mat2.m10 = (1.0 - v23) * v37 * v38 + v13 * v39;
-            mat2.m11 = (1.0 - v23) * v38 * v38 + v23;
-            mat2.m12 = (1.0 - v23) * v38 * v39 - v13 * v37;
-            mat2.m20 = (1.0 - v23) * v39 * v37 - v13 * v38;
-            mat2.m21 = (1.0 - v23) * v38 * v39 + v13 * v37;
-            mat2.m22 = (1.0 - v23) * v39 * v39 + v23;
+            mat_gen_axis_rotate(&vaxis, v12, &mat2, MAT_FLAG_INV_SIN);
 
             mat3x3 v21;
 

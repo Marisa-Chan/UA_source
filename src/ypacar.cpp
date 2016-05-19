@@ -788,12 +788,12 @@ size_t ypacar_func128(NC_STACK_ypacar *obj, class_stru *zis, tank_arg128 *arg)
 
 // call_vtbl(obj, 3, 0x80002000, &v36, 0);
 
-    xyz tmp2;
-    tmp2.sx = bact->field_651.m10 * tmp.sy - bact->field_651.m11 * tmp.sx;
-    tmp2.sy = bact->field_651.m11 * tmp.sz - bact->field_651.m12 * tmp.sy;
-    tmp2.sz = bact->field_651.m12 * tmp.sx - bact->field_651.m10 * tmp.sz;
+    xyz vaxis;
+    vaxis.sx = bact->field_651.m11 * tmp.sz - bact->field_651.m12 * tmp.sy;
+    vaxis.sy = bact->field_651.m12 * tmp.sx - bact->field_651.m10 * tmp.sz;
+    vaxis.sz = bact->field_651.m10 * tmp.sy - bact->field_651.m11 * tmp.sx;
 
-    float v44 = sqrt( POW2(tmp2.sx) + POW2(tmp2.sy) + POW2(tmp2.sz) );
+    float v44 = sqrt( POW2(vaxis.sx) + POW2(vaxis.sy) + POW2(vaxis.sz) );
     if ( v44 > 0.0 )
     {
         float v54 = tmp.sx * bact->field_651.m10 + tmp.sy * bact->field_651.m11 + tmp.sz * bact->field_651.m12;
@@ -813,21 +813,14 @@ size_t ypacar_func128(NC_STACK_ypacar *obj, class_stru *zis, tank_arg128 *arg)
         if ( fabs(v56) < 0.01 )
             v56 = 0.0;
 
-        float sn = sin(-v56);
-        float cs = cos(v56);
-        float ics = 1.0 - cs;
         float v16 = 1.0 / v44;
+        vaxis.sx *= v16;
+        vaxis.sy *= v16;
+        vaxis.sz *= v16;
 
         mat3x3 mat2;
-        mat2.m00 = ics * tmp2.sy * v16 * tmp2.sy * v16 + cs;
-        mat2.m01 = ics * tmp2.sy * v16 * tmp2.sz * v16 - sn * tmp2.sx * v16;
-        mat2.m02 = ics * tmp2.sx * v16 * tmp2.sy * v16 + sn * tmp2.sz * v16;
-        mat2.m10 = ics * tmp2.sy * v16 * tmp2.sz * v16 + sn * tmp2.sx * v16;
-        mat2.m11 = ics * tmp2.sz * v16 * tmp2.sz * v16 + cs;
-        mat2.m12 = ics * tmp2.sz * v16 * tmp2.sx * v16 - sn * tmp2.sy * v16;
-        mat2.m20 = ics * tmp2.sx * v16 * tmp2.sy * v16 - sn * tmp2.sz * v16;
-        mat2.m21 = ics * tmp2.sz * v16 * tmp2.sx * v16 + sn * tmp2.sy * v16;
-        mat2.m22 = ics * tmp2.sx * v16 * tmp2.sx * v16 + cs;
+
+        mat_gen_axis_rotate(&vaxis, v56, &mat2, MAT_FLAG_INV_SIN);
 
         mat3x3 dst;
         mat_mult(&bact->field_651, &mat2, &dst);
@@ -1285,9 +1278,10 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
 
         float v72 = fabs(bact->field_611);
 
-        float v144 = bact->field_651.m10 * v175 - bact->field_651.m11 * v180;
-        float v143 = bact->field_651.m12 * v180 - bact->field_651.m10 * v181;
-        float v142 = bact->field_651.m11 * v181 - bact->field_651.m12 * v175;
+        xyz vaxis;
+        vaxis.sx = bact->field_651.m11 * v181 - bact->field_651.m12 * v175;
+        vaxis.sy = bact->field_651.m12 * v180 - bact->field_651.m10 * v181;
+        vaxis.sz = bact->field_651.m10 * v175 - bact->field_651.m11 * v180;
 
         float v173;
 
@@ -1296,15 +1290,15 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
         else
             v173 = 0.01;
 
-        float v156 = sqrt( POW2(v143) + POW2(v142) + POW2(v144) );
+        float v156 = sqrt( POW2(vaxis.sx) + POW2(vaxis.sy) + POW2(vaxis.sz) );
 
         if ( v156 > 0.0 )
         {
             float v75 = 1.0 / v156;
 
-            v142 *= v75;
-            v143 *= v75;
-            v144 *= v75;
+            vaxis.sx *= v75;
+            vaxis.sy *= v75;
+            vaxis.sz *= v75;
 
             float v177 = v180 * bact->field_651.m10 + v175 * bact->field_651.m11 + v181 * bact->field_651.m12;
 
@@ -1322,20 +1316,9 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
 
             if ( fabs(v174) > v173 )
             {
-                float sn = sin(-v174);
-                float cs = cos(v174);
-                float ics = 1.0 - cs;
-
                 mat3x3 mat2;
-                mat2.m00 = ics * v142 * v142 + cs;
-                mat2.m01 = ics * v142 * v143 - sn * v144;
-                mat2.m02 = ics * v144 * v142 + sn * v143;
-                mat2.m10 = ics * v142 * v143 + sn * v144;
-                mat2.m11 = ics * v143 * v143 + cs;
-                mat2.m12 = ics * v143 * v144 - sn * v142;
-                mat2.m20 = ics * v144 * v142 - sn * v143;
-                mat2.m21 = ics * v143 * v144 + sn * v142;
-                mat2.m22 = ics * v144 * v144 + cs;
+
+                mat_gen_axis_rotate(&vaxis, v174, &mat2, MAT_FLAG_INV_SIN);
 
                 mat3x3 dst;
                 mat_mult(&bact->field_651, &mat2, &dst);

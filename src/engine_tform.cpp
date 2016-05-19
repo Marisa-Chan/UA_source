@@ -163,3 +163,27 @@ void mat_rotate_y(mat3x3 *mat, float a2)
 
     *mat = dst;
 }
+
+void mat_gen_axis_rotate(xyz *u, float angle, mat3x3 *out, int flags)
+{
+    float cs = cos(angle);
+    float sn = sin(angle);
+
+    if (flags & MAT_FLAG_INV_COS)
+        cs = -cs;
+
+    if (flags & MAT_FLAG_INV_SIN)
+        sn = -sn;
+
+    float ics = 1.0 - cs;
+
+    out->m00 = ics * u->sx * u->sx + cs;
+    out->m01 = ics * u->sx * u->sy - sn * u->sz;
+    out->m02 = ics * u->sz * u->sx + sn * u->sy;
+    out->m10 = ics * u->sx * u->sy + sn * u->sz;
+    out->m11 = ics * u->sy * u->sy + cs;
+    out->m12 = ics * u->sy * u->sz - sn * u->sx;
+    out->m20 = ics * u->sz * u->sx - sn * u->sy;
+    out->m21 = ics * u->sy * u->sz + sn * u->sx;
+    out->m22 = ics * u->sz * u->sz + cs;
+}

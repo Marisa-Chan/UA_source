@@ -304,24 +304,11 @@ void sub_4BC680(NC_STACK_ypagun *obj, float a5)
     __NC_STACK_ypagun *gun = &obj->stack__ypagun;
     __NC_STACK_ypabact *bact = &obj->stack__ypabact;
 
-    float v21 = gun->field_24.sx;
-    float v20 = gun->field_24.sy;
-    float v19 = gun->field_24.sz;
-
-    float sn = sin(-a5);
-    float cs = cos(a5);
-    float ics = 1.0 - cs;
+    xyz vaxis = gun->field_24;
 
     mat3x3 v17;
-    v17.m00 = ics * v21 * v21 + cs;
-    v17.m01 = ics * v21 * v20 - sn * v19;
-    v17.m02 = ics * v19 * v21 + sn * v20;
-    v17.m10 = ics * v21 * v20 + sn * v19;
-    v17.m11 = ics * v20 * v20 + cs;
-    v17.m12 = ics * v20 * v19 - sn * v21;
-    v17.m20 = ics * v19 * v21 - sn * v20;
-    v17.m21 = ics * v20 * v19 + sn * v21;
-    v17.m22 = ics * v19 * v19 + cs;
+
+    mat_gen_axis_rotate(&vaxis, a5, &v17, MAT_FLAG_INV_SIN);
 
     mat3x3 dst;
     mat_mult(&bact->field_651, &v17, &dst);
@@ -1186,20 +1173,9 @@ void ypagun_func129__sub0(xyz *vec, xyz *dir, float a4)
 
 void ypagun_func129__sub1(xyz *vec, mat3x3 *mat, float angle)
 {
-    float sn = sin(-angle);
-    float cs = cos(angle);
-    float ics = 1.0 - cs;
-
     mat3x3 mat2;
-    mat2.m00 = ics * vec->sx * vec->sx + cs;
-    mat2.m01 = ics * vec->sx * vec->sy - sn * vec->sz;
-    mat2.m02 = ics * vec->sz * vec->sx + sn * vec->sy;
-    mat2.m10 = ics * vec->sx * vec->sy + sn * vec->sz;
-    mat2.m11 = ics * vec->sy * vec->sy + cs;
-    mat2.m12 = ics * vec->sy * vec->sz - sn * vec->sx;
-    mat2.m20 = ics * vec->sz * vec->sx - sn * vec->sy;
-    mat2.m21 = ics * vec->sy * vec->sz + sn * vec->sx;
-    mat2.m22 = ics * vec->sz * vec->sz + cs;
+
+    mat_gen_axis_rotate(vec, angle, &mat2, MAT_FLAG_INV_SIN);
 
     mat3x3 v18;
     mat_mult(mat, &mat2, &v18);

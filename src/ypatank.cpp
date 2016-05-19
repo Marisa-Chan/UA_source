@@ -2542,11 +2542,12 @@ size_t ypatank_func128(NC_STACK_ypatank *obj, class_stru *zis, tank_arg128 *arg)
                 v48 = a6.sz;
             }
 
-            float v54 = bact->field_651.m10 * v49 - v50 * bact->field_651.m11;
-            float v53 = bact->field_651.m11 * v48 - v49 * bact->field_651.m12;
-            float v52 = bact->field_651.m12 * v50 - v48 * bact->field_651.m10;
+            xyz vaxis;
+            vaxis.sx = bact->field_651.m11 * v48 - v49 * bact->field_651.m12;
+            vaxis.sy = bact->field_651.m12 * v50 - v48 * bact->field_651.m10;
+            vaxis.sz = bact->field_651.m10 * v49 - v50 * bact->field_651.m11;
 
-            float v46 = sqrt( POW2(v53) + POW2(v52) + POW2(v54) );
+            float v46 = sqrt( POW2(vaxis.sx) + POW2(vaxis.sy) + POW2(vaxis.sz) );
 
             if ( v46 > 0.0 )
             {
@@ -2570,22 +2571,13 @@ size_t ypatank_func128(NC_STACK_ypatank *obj, class_stru *zis, tank_arg128 *arg)
 
                 float v19 = 1.0 / v46;
 
-                v52 *= v19;
-                v53 *= v19;
-                v54 *= v19;
-
-                float v26 = 1.0 - cos(v57);
+                vaxis.sx *= v19;
+                vaxis.sy *= v19;
+                vaxis.sz *= v19;
 
                 mat3x3 mat2;
-                mat2.m00 = v26 * v53 * v53 + cos(v57);
-                mat2.m01 = v26 * v53 * v52 - sin(-v57) * v54;
-                mat2.m02 = v26 * v54 * v53 + sin(-v57) * v52;
-                mat2.m10 = v26 * v53 * v52 + sin(-v57) * v54;
-                mat2.m11 = v26 * v52 * v52 + cos(v57);
-                mat2.m12 = v26 * v52 * v54 - sin(-v57) * v53;
-                mat2.m20 = v26 * v54 * v53 - sin(-v57) * v52;
-                mat2.m21 = v26 * v52 * v54 + sin(-v57) * v53;
-                mat2.m22 = v26 * v54 * v54 + cos(v57);
+
+                mat_gen_axis_rotate(&vaxis, v57, &mat2, MAT_FLAG_INV_SIN);
 
                 mat3x3 dst;
                 mat_mult(&bact->field_651, &mat2, &dst);
@@ -2964,9 +2956,11 @@ size_t ypatank_func129(NC_STACK_ypatank *obj, class_stru *zis, tank_arg129 *arg)
 
         float v74 = fabs(bact->field_611);
 
-        float v137 = bact->field_651.m10 * v168 - v170 * bact->field_651.m11;
-        float v136 = bact->field_651.m12 * v170 - v165 * bact->field_651.m10;
-        float v135 = bact->field_651.m11 * v165 - v168 * bact->field_651.m12;
+        xyz vaxis;
+
+        vaxis.sx = bact->field_651.m11 * v165 - v168 * bact->field_651.m12;
+        vaxis.sy = bact->field_651.m12 * v170 - v165 * bact->field_651.m10;
+        vaxis.sz = bact->field_651.m10 * v168 - v170 * bact->field_651.m11;
 
         float v163;
         if ( v74 >= 5.0 )
@@ -2974,7 +2968,7 @@ size_t ypatank_func129(NC_STACK_ypatank *obj, class_stru *zis, tank_arg129 *arg)
         else
             v163 = 0.01;
 
-        float v147 = sqrt( POW2(v136) + POW2(v135) + POW2(v137) );
+        float v147 = sqrt( POW2(vaxis.sx) + POW2(vaxis.sy) + POW2(vaxis.sz) );
         if ( v147 > 0.0 )
         {
             float v162 = v170 * bact->field_651.m10 + v168 * bact->field_651.m11 + v165 * bact->field_651.m12;
@@ -2985,9 +2979,9 @@ size_t ypatank_func129(NC_STACK_ypatank *obj, class_stru *zis, tank_arg129 *arg)
                 v162 = -1.0;
 
             float v77 = 1.0 / v147;
-            v135 *= v77;
-            v136 *= v77;
-            v137 *= v77;
+            vaxis.sx *= v77;
+            vaxis.sy *= v77;
+            vaxis.sz *= v77;
 
             float v166 = acos(v162);
 
@@ -2996,20 +2990,8 @@ size_t ypatank_func129(NC_STACK_ypatank *obj, class_stru *zis, tank_arg129 *arg)
 
             if ( v163 < fabs(v166) )
             {
-                float sn = sin(-v166);
-                float cs = cos(v166);
-                float ncs = 1.0 - cs;
-
                 mat3x3 mat2;
-                mat2.m00 = ncs * v135 * v135 + cs;
-                mat2.m01 = ncs * v135 * v136 - sn * v137;
-                mat2.m02 = ncs * v137 * v135 + sn * v136;
-                mat2.m10 = sn * v137 + ncs * v135 * v136;
-                mat2.m11 = ncs * v136 * v136 + cs;
-                mat2.m12 = ncs * v136 * v137 - sn * v135;
-                mat2.m20 = ncs * v137 * v135 - sn * v136;
-                mat2.m21 = sn * v135 + ncs * v136 * v137;
-                mat2.m22 = ncs * v137 * v137 + cs;
+                mat_gen_axis_rotate(&vaxis, v166, &mat2, MAT_FLAG_INV_SIN);
 
                 mat3x3 dst;
                 mat_mult(&bact->field_651, &mat2, &dst);

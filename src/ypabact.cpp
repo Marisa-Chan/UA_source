@@ -1725,20 +1725,21 @@ void ypabact_func70__sub1(__NC_STACK_ypabact *bact, ypabact_arg65 *arg)
         v48 = 0.0;
     }
 
-    float v51 = -bact->field_651.m11 * v47 - v49 * -bact->field_651.m12;
-    float v52 = -bact->field_651.m12 * v48 - v47 * -bact->field_651.m10;
-    float v50 = -bact->field_651.m10 * v49 - v48 * -bact->field_651.m11;
+    xyz vaxis;
+    vaxis.sx = -bact->field_651.m11 * v47 - v49 * -bact->field_651.m12;
+    vaxis.sy = -bact->field_651.m12 * v48 - v47 * -bact->field_651.m10;
+    vaxis.sz = -bact->field_651.m10 * v49 - v48 * -bact->field_651.m11;
 
-    float v43 = sqrt( POW2(v51) + POW2(v52) + POW2(v50) );
+    float v43 = sqrt( POW2(vaxis.sx) + POW2(vaxis.sy) + POW2(vaxis.sz) );
 
     if ( v43 != 0.0 )
     {
         float v16 = 1.0 / v43;
         float v59 = -bact->field_651.m10 * v48 + -bact->field_651.m11 * v49 + -bact->field_651.m12 * v47;
 
-        v50 *= v16;
-        v51 *= v16;
-        v52 *= v16;
+        vaxis.sx *= v16;
+        vaxis.sy *= v16;
+        vaxis.sz *= v16;
 
         if ( v59 > 1.0 )
             v59 = 1.0;
@@ -1755,23 +1756,9 @@ void ypabact_func70__sub1(__NC_STACK_ypabact *bact, ypabact_arg65 *arg)
 
         if ( fabs(v56) > BACT_MIN_ANGLE )
         {
-            float v18 = sin(-v56);
-            float v31 = cos(v56);
-
-
             mat3x3 mat2;
 
-            mat2.m00 = (1.0 - v31) * v51 * v51 + v31;
-            mat2.m01 = (1.0 - v31) * v51 * v52 - v18 * v50;
-            mat2.m02 = (1.0 - v31) * v50 * v51 + v18 * v52;
-
-            mat2.m10 = (1.0 - v31) * v51 * v52 + v18 * v50;
-            mat2.m11 = (1.0 - v31) * v52 * v52 + v31;
-            mat2.m12 = (1.0 - v31) * v52 * v50 - v18 * v51;
-
-            mat2.m20 = (1.0 - v31) * v50 * v51 - v18 * v52;
-            mat2.m21 = (1.0 - v31) * v52 * v50 + v18 * v51;
-            mat2.m22 = (1.0 - v31) * v50 * v50 + v31;
+            mat_gen_axis_rotate(&vaxis, v56, &mat2, MAT_FLAG_INV_SIN);
 
             mat3x3 v26;
 
@@ -4736,11 +4723,12 @@ void ypabact_func86__sub1(__NC_STACK_ypabact *bact)
 
 void sub_48AB14(__NC_STACK_ypabact *bact, xyz *a2)
 {
-    float v36 = bact->field_651.m11 * a2->sz - bact->field_651.m12 * a2->sy;
-    float v38 = bact->field_651.m12 * a2->sx - bact->field_651.m10 * a2->sz;
-    float v37 = bact->field_651.m10 * a2->sy - bact->field_651.m11 * a2->sx;
+    xyz vaxis;
+    vaxis.sx = bact->field_651.m11 * a2->sz - bact->field_651.m12 * a2->sy;
+    vaxis.sy = bact->field_651.m12 * a2->sx - bact->field_651.m10 * a2->sz;
+    vaxis.sz = bact->field_651.m10 * a2->sy - bact->field_651.m11 * a2->sx;
 
-    float v29 = sqrt(POW2(v36) + POW2(v38) + POW2(v37));
+    float v29 = sqrt(POW2(vaxis.sx) + POW2(vaxis.sy) + POW2(vaxis.sz));
 
     if ( v29 != 0.0 )
     {
@@ -4748,9 +4736,9 @@ void sub_48AB14(__NC_STACK_ypabact *bact, xyz *a2)
 
         float v42 = bact->field_651.m10 * a2->sx + bact->field_651.m11 * a2->sy + bact->field_651.m12 * a2->sz;
 
-        v36 *= v10;
-        v38 *= v10;
-        v37 *= v10;
+        vaxis.sx *= v10;
+        vaxis.sy *= v10;
+        vaxis.sz *= v10;
 
         if ( v42 > 1.0 )
             v42 = 1.0;
@@ -4762,21 +4750,9 @@ void sub_48AB14(__NC_STACK_ypabact *bact, xyz *a2)
 
         if ( v11 > 0.001 )
         {
-            float v12 = sin(-v11);
-            float v22 = cos(v11);
-
             mat3x3 mat2;
-            mat2.m00 = (1.0 - v22) * v36 * v36 + v22;
-            mat2.m01 = (1.0 - v22) * v38 - v12 * v37;
-            mat2.m02 = (1.0 - v22) * v37 * v36 + v12 * v38;
 
-            mat2.m10 = (1.0 - v22) * v38 + v12 * v37;
-            mat2.m11 = (1.0 - v22) * v38 * v38 + v22;
-            mat2.m12 = (1.0 - v22) * v38 * v37 - v12 * v36;
-
-            mat2.m20 = (1.0 - v22) * v37 * v36 - v12 * v38;
-            mat2.m21 = (1.0 - v22) * v38 * v37 + v12 * v36;
-            mat2.m22 = (1.0 - v22) * v37 * v37 + v22;
+            mat_gen_axis_rotate(&vaxis, v11, &mat2, MAT_FLAG_INV_SIN);
 
             mat3x3 v20;
 
@@ -4881,12 +4857,14 @@ size_t ypabact_func86(NC_STACK_ypabact *obj, class_stru *zis, bact_arg86 *arg)
         if ( bact->field_24 == 3 )
             v90 = 60.0;
 
-        float v83 = bact->field_651.m10;
-        float v82 = -bact->field_651.m12;
+        xyz vaxis;
+        vaxis.sx = -bact->field_651.m12;
+        vaxis.sy = 0.0;
+        vaxis.sz = bact->field_651.m10;
 
         float v94 = arg->field_two / 1000.0;
 
-        float v105 = sqrt( POW2(v82) + POW2(v83) );
+        float v105 = sqrt( POW2(vaxis.sx) + POW2(vaxis.sz) );
 
         if ( v105 > 0.001 && !(arg->field_one & 1) )
         {
@@ -4894,8 +4872,8 @@ size_t ypabact_func86(NC_STACK_ypabact *obj, class_stru *zis, bact_arg86 *arg)
 
             float v101 = bact->field_651.m11;
 
-            v82 *= v6;
-            v83 *= v6;
+            vaxis.sx *= v6;
+            vaxis.sz *= v6;
 
             if ( v101 > 1.0 )
                 v101 = 1.0;
@@ -4911,24 +4889,9 @@ size_t ypabact_func86(NC_STACK_ypabact *obj, class_stru *zis, bact_arg86 *arg)
 
             if ( fabs(v108) > BACT_MIN_ANGLE )
             {
-                float v7 = sin(-v108);
-                float v74 = cos(v108);
-
-                float v79 = 0.0;
-
                 mat3x3 mat2;
 
-                mat2.m00 = (1.0 - v74) * v82 * v82 + v74;
-                mat2.m01 = (1.0 - v74) * v82 * v79 - v7 * v83;
-                mat2.m02 = (1.0 - v74) * v83 * v82 + v7 * v79;
-
-                mat2.m10 = (1.0 - v74) * v82 * v79 + v7 * v83;
-                mat2.m11 = (1.0 - v74) * v79 * v79 + v74;
-                mat2.m12 = (1.0 - v74) * v79 * v83 - v7 * v82;
-
-                mat2.m20 = (1.0 - v74) * v83 * v82 - v7 * v79;
-                mat2.m21 = (1.0 - v74) * v79 * v83 + v7 * v82;
-                mat2.m22 = (1.0 - v74) * v83 + v74;
+                mat_gen_axis_rotate(&vaxis, v108, &mat2, MAT_FLAG_INV_SIN);
 
                 mat3x3 dst;
                 mat_mult(&bact->field_651, &mat2, &dst);
@@ -6238,11 +6201,12 @@ void ypabact_func97(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
 
     float v53 = arg->field_4 * 0.001;
 
-    float v55 = 0.0 * bact->field_651.m11 - bact->field_651.m12;
-    float v57 = 0.0 * bact->field_651.m12 - 0.0 * bact->field_651.m10;
-    float v56 = bact->field_651.m10 - 0.0 * bact->field_651.m11;
+    xyz vaxis;
+    vaxis.sx = 0.0 * bact->field_651.m11 - bact->field_651.m12;
+    vaxis.sy = 0.0 * bact->field_651.m12 - 0.0 * bact->field_651.m10;
+    vaxis.sz = bact->field_651.m10 - 0.0 * bact->field_651.m11;
 
-    float v63 = sqrt( POW2(v55) + POW2(v56) + POW2(v57) );
+    float v63 = sqrt( POW2(vaxis.sx) + POW2(vaxis.sy) + POW2(vaxis.sz) );
 
     if ( v63 > 0.001 )
     {
@@ -6250,9 +6214,9 @@ void ypabact_func97(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
 
         float v65 = bact->field_651.m10 * 0.0 + bact->field_651.m11 * 1.0 + bact->field_651.m12 * 0.0;
 
-        v55 *= v10;
-        v57 *= v10;
-        v56 *= v10;
+        vaxis.sx *= v10;
+        vaxis.sy *= v10;
+        vaxis.sz *= v10;
 
         if ( v65 > 1.0 )
             v65 = 1.0;
@@ -6303,22 +6267,9 @@ void ypabact_func97(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
         }
         else
         {
-            float v12 = sin(-v62);
-            float v44 = cos(v62);
-
             mat3x3 mat2;
 
-            mat2.m00 = (1.0 - v44) * v55 * v55 + v44;
-            mat2.m01 = (1.0 - v44) * v55 * v57 - v12 * v56;
-            mat2.m02 = (1.0 - v44) * v56 * v55 + v12 * v57;
-
-            mat2.m10 = (1.0 - v44) * v55 * v57 + v12 * v56;
-            mat2.m11 = (1.0 - v44) * v57 * v57 + v44;
-            mat2.m12 = (1.0 - v44) * v57 * v56 - v12 * v55;
-
-            mat2.m20 = (1.0 - v44) * v56 * v55 - v12 * v57;
-            mat2.m21 = (1.0 - v44) * v57 * v56 + v12 * v55;
-            mat2.m22 = (1.0 - v44) * v56 + v44;
+            mat_gen_axis_rotate(&vaxis, v62, &mat2, MAT_FLAG_INV_SIN);
 
             mat3x3 v41;
             mat_mult(&bact->field_651, &mat2, &v41);

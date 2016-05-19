@@ -195,24 +195,16 @@ void sb_0x4b255c__sub0(__NC_STACK_ypabact *bact, float a2)
 
     if ( v27 >= 0.001 )
     {
-        float v4 = sin(-a2);
-        float v18 = cos(a2);
-
         float v5 = 1.0 / v27;
+
+        xyz vaxis;
+        vaxis.sx = bact->field_651.m00 * v5;
+        vaxis.sy = 0.0;
+        vaxis.sz = bact->field_651.m02 * v5;
 
         mat3x3 mat2;
 
-        mat2.m00 = (1.0 - v18) * bact->field_651.m00 * v5 + v18;
-        mat2.m01 = 0.0 * (1.0 - v18) * bact->field_651.m00 * v5 - v4 * v5 * bact->field_651.m02;
-        mat2.m02 = (1.0 - v18) * v5 * bact->field_651.m02 * bact->field_651.m00 * v5 + 0.0 * v4;
-
-        mat2.m10 = 0.0 * (1.0 - v18) * bact->field_651.m00 * v5 + v4 * v5 * bact->field_651.m02;
-        mat2.m11 = 0.0 * 0.0 * (1.0 - v18) + v18;
-        mat2.m12 = 0.0 * (1.0 - v18) * v5 * bact->field_651.m02 - bact->field_651.m00 * v5 * v4;
-
-        mat2.m20 = (1.0 - v18) * v5 * bact->field_651.m02 * bact->field_651.m00 * v5 - 0.0 * v4;
-        mat2.m21 = bact->field_651.m00 * v5 * v4 + 0.0 * (1.0 - v18) * v5 * bact->field_651.m02;
-        mat2.m22 = (1.0 - v18) * v5 * bact->field_651.m02 * v5 * bact->field_651.m02 + v18;
+        mat_gen_axis_rotate(&vaxis, a2, &mat2, MAT_FLAG_INV_SIN);
 
         mat3x3 v16;
         mat_mult(&bact->field_651, &mat2, &v16);
