@@ -740,7 +740,8 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
 
     if ( bact->field_3D5 == 1 )
     {
-        miss->delay_time -= arg->field_4;
+        if ( miss->field_2D & 2)
+            miss->delay_time -= arg->field_4;
 
         if ( miss->field_2D & 2  &&  miss->delay_time <= 0 )
         {
@@ -779,6 +780,7 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
             case 1:
                 arg74.field_0 = v38;
                 arg74.flag = 1;
+                call_method(obj, 74, &arg74);
                 break;
 
             case 2:
@@ -786,6 +788,7 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
                 arg74.flag = 0;
 
                 ypamissile_func70__sub1(miss, &arg74);
+                call_method(obj, 74, &arg74);
                 break;
 
             case 3:
@@ -793,19 +796,20 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
                 arg74.flag = 0;
 
                 ypamissile_func70__sub1(miss, &arg74);
+                call_method(obj, 74, &arg74);
                 break;
 
             case 4:
                 arg74.field_0 = v38;
                 arg74.vec = bact->field_605;
                 arg74.flag = 0;
+
+                call_method(obj, 74, &arg74);
                 break;
 
             default:
                 break;
             }
-
-            call_method(obj, 74, &arg74);
 
             if ( ypamissile_func70__sub0(miss) )
             {
@@ -1243,7 +1247,7 @@ void ypamissile_func130(NC_STACK_ypamissile *obj, class_stru *zis, miss_arg130 *
             {
                 if ( arg )
                 {
-                    float mxrot = -bact->maxrot * arg->period;
+                    float mxrot = bact->maxrot * arg->period;
 
                     if ( v52 < -mxrot )
                         v52 = -mxrot;
