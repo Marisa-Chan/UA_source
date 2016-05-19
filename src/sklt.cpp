@@ -357,7 +357,7 @@ void sklt_func64__sub0__sub0(skeleton_64_stru *sklt, int id)
             float dzy = 0.0;
             float dxy = 0.0;
 
-            if ( !isnan(sqwr) )
+            if ( sqwr != 0.0 )
             {
                 float param = 1.0 / sqwr;
                 dzy = zy * param;

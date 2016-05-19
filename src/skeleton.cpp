@@ -305,7 +305,7 @@ size_t skeleton_func131(NC_STACK_skeleton *obj, class_stru *, int *arg)
             float dzy = 0.0;
             float dxy = 0.0;
 
-            if ( !isnan(sqwr) )
+            if ( sqwr != 0.0 )
             {
                 float param = 1.0 / sqwr;
                 dzy = zy * param;
