@@ -857,21 +857,21 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, xyz *darg)
 
     if ( fabs(v78) > 0.1 )
     {
+        xyz vaxis;
+        vaxis.sx = bact->field_651.m00;
+        vaxis.sy = bact->field_651.m01;
+        vaxis.sz = bact->field_651.m02;
+
         float v8 = v73 * v78 / bact->force;
-        NANCARRY(v8);
 
-        float sn = sin(-v8);
-        float cs = cos(v8);
-        float ics = 1.0 - cs;
+        mat3x3 mat2;
 
-        float v9 = bact->field_651.m00;
-        float v10 = bact->field_651.m01;
-        float v11 = bact->field_651.m02;
+        mat_gen_axis_rotate(&vaxis, v8, &mat2, MAT_FLAG_INV_SIN);
 
         xyz tmp;
-        tmp.sx = (ics * v9 * v10 - sn * v11) * darg->sy + (ics * v9 * v9 + cs) * darg->sx        + (ics * v11 * v9 + sn * v10) * darg->sz;
-        tmp.sy = (ics * v10 * v10 + cs) * darg->sy      + (ics * v9 * v10 + sn * v11) * darg->sx + (ics * v10 * v11 - sn * v9) * darg->sz;
-        tmp.sz = (ics * v10 * v11 + sn * v9) * darg->sy + (ics * v11 * v9 - sn * v10) * darg->sx + (ics * v11 * v11 + cs) * darg->sz;
+        tmp.sx = mat2.m00 * darg->sx + mat2.m01 * darg->sy + mat2.m02 * darg->sz;
+        tmp.sy = mat2.m10 * darg->sx + mat2.m11 * darg->sy + mat2.m12 * darg->sz;
+        tmp.sz = mat2.m20 * darg->sx + mat2.m21 * darg->sy + mat2.m22 * darg->sz;
 
         *darg = tmp;
     }

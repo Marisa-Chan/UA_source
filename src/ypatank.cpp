@@ -2461,21 +2461,20 @@ void sub_49DA3C(__NC_STACK_ypatank *tank, xyz *a6)
 
     if ( fabs(v41) > 3.0 )
     {
-        float v9 = bact->field_651.m00;
-        float v10 = bact->field_651.m01;
-        float v12 = bact->field_651.m02;
-
+        xyz vaxis;
+        vaxis.sx = bact->field_651.m00;
+        vaxis.sy = bact->field_651.m01;
+        vaxis.sz = bact->field_651.m02;
 
         float v11 = v41 / bact->force * (-0.2);
 
-        float cs = cos(v11);
-        float sn = sin(-v11);
+        mat3x3 mat2;
 
-        float inv_cs = 1.0 - cs;
+        mat_gen_axis_rotate(&vaxis, v11, &mat2, MAT_FLAG_INV_SIN);
 
-        float v29 = (inv_cs * v9 * v10 - sn * v12) * a6->sy + (inv_cs * v9 * v9 + cs) * a6->sx        + (inv_cs * v12 * v9 + sn * v10) * a6->sz;
-        float v28 = (inv_cs * v10 * v10 + cs) * a6->sy      + (inv_cs * v9 * v10 + sn * v12) * a6->sx + (inv_cs * v10 * v12 - sn * v9) * a6->sz;
-        float v30 = (inv_cs * v10 * v12 + sn * v9) * a6->sy + (inv_cs * v12 * v9 - sn * v10) * a6->sx + (inv_cs * v12 * v12 + cs) * a6->sz;
+        float v29 = mat2.m00 * a6->sx + mat2.m01 * a6->sy + mat2.m02 * a6->sz;
+        float v28 = mat2.m10 * a6->sx + mat2.m11 * a6->sy + mat2.m12 * a6->sz;
+        float v30 = mat2.m20 * a6->sx + mat2.m21 * a6->sy + mat2.m22 * a6->sz;
 
         a6->sx = v29;
         a6->sy = v28;
