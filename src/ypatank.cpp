@@ -1117,7 +1117,7 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
 
                 if ( tank->field_c & 2 )
                 {
-                    int v158 = ((int)obj + bact->field_915) % 7; //WAT!?
+                    int v158 = ((size_t)obj + bact->field_915) % 7; //WAT!?
 
                     if ( v158 )
                     {
