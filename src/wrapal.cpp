@@ -84,7 +84,7 @@ waldev::waldev()
 
     if (dev)
     {
-        cont = alcCreateContext(dev, NULL);
+        cont = alcCreateContext(dev, NULL); // In some configurations fpu was not in nearest mode
 
         if (cont)
         {
