@@ -359,10 +359,9 @@ void sklt_func64__sub0__sub0(skeleton_64_stru *sklt, int id)
 
             if ( sqwr != 0.0 )
             {
-                float param = 1.0 / sqwr;
-                dzy = zy * param;
-                dzx = zx * param;
-                dxy = xy * param;
+                dzy = zy / sqwr;
+                dzx = zx / sqwr;
+                dxy = xy / sqwr;
             }
 
             sklt->triangles[id].field_0 = dzy;

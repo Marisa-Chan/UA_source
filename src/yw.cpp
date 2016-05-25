@@ -1187,10 +1187,9 @@ void sub_44FD6C(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int 
 
                 if ( tmp > 0.1 )
                 {
-                    float v15 = 1.0 / tmp;
-                    arg83.pos2.sx *= v15;
-                    arg83.pos2.sy *= v15;
-                    arg83.pos2.sz *= v15;
+                    arg83.pos2.sx /= tmp;
+                    arg83.pos2.sy /= tmp;
+                    arg83.pos2.sz /= tmp;
                 }
 
                 arg83.force = 30.0;
@@ -2351,11 +2350,9 @@ void ypaworld_func150(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg150 *arg)
         v27 = 0;
     }
 
-    float v11 = 1.0 / arg->field_28;
-
-    float v41 = v40 * v11;
-    float v32 = v31 * v11;
-    float v43 = v42 * v11;
+    float v41 = v40 / arg->field_28;
+    float v32 = v31 / arg->field_28;
+    float v43 = v42 / arg->field_28;
 
     while ( v35 >= 0 )
     {

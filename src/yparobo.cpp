@@ -1439,11 +1439,9 @@ size_t yparobo_func70__sub1(__NC_STACK_yparobo *robo, float a2)
             }
             else
             {
-                float v17 = 1.0 / v82;
-
-                arg136.field_14 = (tx - tmp.sx) * 300.0 * v17;
+                arg136.field_14 = (tx - tmp.sx) * 300.0 / v82;
                 arg136.field_18 = 0;
-                arg136.field_1C = (tz - tmp.sz) * 300.0 * v17;
+                arg136.field_1C = (tz - tmp.sz) * 300.0 / v82;
             }
 
             call_method(robo->wrld, 136, &arg136);
@@ -1599,10 +1597,9 @@ size_t yparobo_func70__sub1(__NC_STACK_yparobo *robo, float a2)
 
                 if ( v84 != 0.0 && !isnan(v84) )
                 {
-                    float v49 = 1.0 / v84;
-                    arg88_2.pos1.sx += ttmp.sx * v49;
-                    arg88_2.pos1.sy += ttmp.sy * v49;
-                    arg88_2.pos1.sz += ttmp.sz * v49;
+                    arg88_2.pos1.sx += ttmp.sx / v84;
+                    arg88_2.pos1.sy += ttmp.sy / v84;
+                    arg88_2.pos1.sz += ttmp.sz / v84;
                 }
                 else
                 {
@@ -1614,10 +1611,10 @@ size_t yparobo_func70__sub1(__NC_STACK_yparobo *robo, float a2)
 
             if ( v86 )
             {
-                float v50 = 1.0 / (float)v86;
-                arg88_2.pos1.sx = arg88_2.pos1.sx * v50;
-                arg88_2.pos1.sy = arg88_2.pos1.sy * v50;
-                arg88_2.pos1.sz = arg88_2.pos1.sz * v50;
+                float v50 = (float)v86;
+                arg88_2.pos1.sx = arg88_2.pos1.sx / v50;
+                arg88_2.pos1.sy = arg88_2.pos1.sy / v50;
+                arg88_2.pos1.sz = arg88_2.pos1.sz / v50;
 
                 bact->field_621 = bact->field_62D;
 
@@ -1850,13 +1847,11 @@ void yparobo_func70__sub2(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
             }
         }
 
-        float v31 = 1.0 / v39;
-
         arg74.field_0 = v49;
         arg74.flag = 0;
-        arg74.vec.sx = bact->field_639.sx * v31;
+        arg74.vec.sx = bact->field_639.sx / v39;
         arg74.vec.sy = 0;
-        arg74.vec.sz = bact->field_639.sz * v31;
+        arg74.vec.sz = bact->field_639.sz / v39;
     }
     else
     {
@@ -2619,10 +2614,8 @@ void yparobo_func70__sub4__sub0(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
 
                     NDIV_CARRY(tmpsq);
 
-                    float v16 = 1.0 / tmpsq;
-
-                    v29 *= v16;
-                    v30 *= v16;
+                    v29 /= tmpsq;
+                    v30 /= tmpsq;
 
                     float v41 = v29 * bact->field_651.m20 + v30 * bact->field_651.m22;
 
@@ -2809,10 +2802,8 @@ void yparobo_func70__sub4__sub2(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
 
                         NDIV_CARRY(tmpsq);
 
-                        float v17 = 1.0 / tmpsq;
-
-                        v30 *= v17;
-                        v31 *= v17;
+                        v30 /= tmpsq;
+                        v31 /= tmpsq;
 
                         float v44 = v30 * bact->field_651.m20 + v31 * bact->field_651.m22;
 
@@ -3001,10 +2992,8 @@ void yparobo_func70__sub4__sub1(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
 
                     NDIV_CARRY(tmpsq);
 
-                    float v16 = 1.0 / tmpsq;
-
-                    v29 *= v16;
-                    v30 *= v16;
+                    v29 /= tmpsq;
+                    v30 /= tmpsq;
 
                     float v41 = v29 * bact->field_651.m20 + v30 * bact->field_651.m22;
 
@@ -5815,10 +5804,9 @@ void yparobo_func70(NC_STACK_yparobo *obj, class_stru *zis, ypabact_arg65 *arg)
     }
     else
     {
-        float v7 = 1.0 / tmp;
-        bact->field_645.sx = bact->field_639.sx * v7;
-        bact->field_645.sy = bact->field_639.sy * v7;
-        bact->field_645.sz = bact->field_639.sz * v7;
+        bact->field_645.sx = bact->field_639.sx / tmp;
+        bact->field_645.sy = bact->field_639.sy / tmp;
+        bact->field_645.sz = bact->field_639.sz / tmp;
     }
 
     if ( bact->field_3D5 == 1 )
@@ -5942,10 +5930,9 @@ void yparobo_func71(NC_STACK_yparobo *obj, class_stru *zis, ypabact_arg65 *arg)
     }
     else
     {
-        float v9 = 1.0 / v36;
-        bact->field_645.sx = bact->field_639.sx * v9;
-        bact->field_645.sy = bact->field_639.sy * v9;
-        bact->field_645.sz = bact->field_639.sz * v9;
+        bact->field_645.sx = bact->field_639.sx / v36;
+        bact->field_645.sy = bact->field_639.sy / v36;
+        bact->field_645.sz = bact->field_639.sz / v36;
     }
 
     if ( bact->field_3D5 == 1 )
@@ -6079,20 +6066,18 @@ void yparobo_func74(NC_STACK_yparobo *obj, class_stru *zis, bact_arg74 *arg)
     if ( v62 > 0.0 )
     {
         float v43 = v62 / bact->mass * arg->field_0;
-        float v42 = 1.0 / v62;
 
-        float v66 = bact->field_605.sy * bact->field_611 + v58 * v42 * v43;
-        float v67 = bact->field_605.sx * bact->field_611 + v57 * v42 * v43;
-        float v68 = bact->field_605.sz * bact->field_611 + v44 * v42 * v43;
+        float v66 = bact->field_605.sy * bact->field_611 + v58 * v43 / v62;
+        float v67 = bact->field_605.sx * bact->field_611 + v57 * v43 / v62;
+        float v68 = bact->field_605.sz * bact->field_611 + v44 * v43 / v62;
 
         float v59 = sqrt(v66 * v66 + v67 * v67 + v68 * v68);
 
         if ( v59 > 0.0 )
         {
-            float v26 = 1.0 / v59;
-            v67 *= v26;
-            v66 *= v26;
-            v68 *= v26;
+            v67 /= v59;
+            v66 /= v59;
+            v68 /= v59;
         }
 
         robo->bact_internal->field_605.sx = v67;

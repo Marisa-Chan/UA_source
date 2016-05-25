@@ -1346,16 +1346,14 @@ void sub_44DF60(skeleton_64_stru *arg, int id)
     triangle->field_0 = sy1 * sz2 - sy2 * sz1;
     triangle->field_8 = sx1 * sy2 - sx2 * sy1;
 
-    float v28 = (triangle->field_4 * triangle->field_4) + (triangle->field_0 * triangle->field_0) + (triangle->field_8 * triangle->field_8);
+    float v28 = sqrt((triangle->field_4 * triangle->field_4) + (triangle->field_0 * triangle->field_0) + (triangle->field_8 * triangle->field_8));
 
-    if ( v28 < 0.0 )
-        v28 = 0.0;
-
-    float v25 = 1.0 / sqrt(v28);
-
-    triangle->field_0 = triangle->field_0 * v25;
-    triangle->field_4 = triangle->field_4 * v25;
-    triangle->field_8 = triangle->field_8 * v25;
+    if (v28 != 0.0)
+    {
+        triangle->field_0 = triangle->field_0 / v28;
+        triangle->field_4 = triangle->field_4 / v28;
+        triangle->field_8 = triangle->field_8 / v28;
+    }
     triangle->field_C = -(triangle->field_4 * arg->POO[vtx1].pos3f.sy + triangle->field_0 * arg->POO[vtx1].pos3f.sx + triangle->field_8 * arg->POO[vtx1].pos3f.sz);
 }
 
@@ -2075,9 +2073,8 @@ void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float p
                     float v27 = sqrt( POW2(v29) + POW2(v30) );
                     if ( v27 > 0.0 )
                     {
-                        float v19 = 1.0 / v27;
-                        v29 *= v19;
-                        v30 *= v19;
+                        v29 /= v27;
+                        v30 /= v27;
                     }
 
                     wall_trigo->scale_rotation.m00 = v30;
@@ -2687,11 +2684,11 @@ int ypaworld_func137__sub0__sub0(skeleton_64_stru *skl, int id, float x, float y
         tmp.sz += skl->POO[ idd ].pos3f.sz;
     }
 
-    float v19 = 1.0 / (float)num;
+    float v19 = (float)num;
 
-    float xx = tmp.sx * v19 - x;
-    float yy = tmp.sy * v19 - y;
-    float zz = tmp.sz * v19 - z;
+    float xx = tmp.sx / v19 - x;
+    float yy = tmp.sy / v19 - y;
+    float zz = tmp.sz / v19 - z;
 
 
     float v26 = sqrt(xx * xx + yy * yy + zz * zz);
@@ -2699,11 +2696,9 @@ int ypaworld_func137__sub0__sub0(skeleton_64_stru *skl, int id, float x, float y
     if ( v26 <= r )
         return 0;
 
-    float v28 = 1.0 / v26;
-
-    out->pos.sx = xx * v28 * r + x;
-    out->pos.sy = yy * v28 * r + y;
-    out->pos.sz = zz * v28 * r + z;
+    out->pos.sx = xx / v26 * r + x;
+    out->pos.sy = yy / v26 * r + y;
+    out->pos.sz = zz / v26 * r + z;
 
     return 1;
 }

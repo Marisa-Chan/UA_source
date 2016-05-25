@@ -518,11 +518,9 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
 
                                                     NDIV_CARRY(v95);
 
-                                                    float v22 = 1.0 / v95;
-
-                                                    float v65 = v69 * v22;
-                                                    float v66 = v70 * v22;
-                                                    float v67 = v71 * v22;
+                                                    float v65 = v69 / v95;
+                                                    float v66 = v70 / v95;
+                                                    float v67 = v71 / v95;
 
                                                     float v64 = v65 * v73 - v72 * v66;
                                                     float v62 = v66 * v74 - v73 * v67;
@@ -660,11 +658,11 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
 
     if ( v90 )
     {
-        float v48 = 1.0 / (float)v81;
+        float v48 = (float)v81;
 
-        bact->field_621.sx = v78.sx * v48;
-        bact->field_621.sy = v78.sy * v48;
-        bact->field_621.sz = v78.sz * v48;
+        bact->field_621.sx = v78.sx / v48;
+        bact->field_621.sy = v78.sy / v48;
+        bact->field_621.sz = v78.sz / v48;
 
         v91 *= v48;
 
@@ -680,10 +678,9 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
             if ( v100 < 1.0 )
                 v100 = 1.0;
 
-            float v59 = 1.0 / v100;
-            bact->field_621.sx -= (bact->field_621.sx - bact->field_62D.sx) * v91 * v59;
-            bact->field_621.sy -= (bact->field_621.sy - bact->field_62D.sy) * v91 * v59;
-            bact->field_621.sz -= (bact->field_621.sz - bact->field_62D.sz) * v91 * v59;
+            bact->field_621.sx -= (bact->field_621.sx - bact->field_62D.sx) * v91 / v100;
+            bact->field_621.sy -= (bact->field_621.sy - bact->field_62D.sy) * v91 / v100;
+            bact->field_621.sz -= (bact->field_621.sz - bact->field_62D.sz) * v91 / v100;
         }
     }
 
@@ -704,10 +701,9 @@ void ypamissile_func70__sub1(__NC_STACK_ypamissile *miss, bact_arg74 *arg74)
 
     if ( v13 > 0.0 )
     {
-        float v9 = 1.0 / v13;
-        arg74->vec.sx *= v9;
-        arg74->vec.sy *= v9;
-        arg74->vec.sz *= v9;
+        arg74->vec.sx /= v13;
+        arg74->vec.sy /= v13;
+        arg74->vec.sz /= v13;
     }
 }
 
@@ -724,11 +720,9 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
     {
         if ( bact->field_3DE != 4 )
         {
-            float v8 = 1.0 / v40;
-
-            bact->field_645.sx = bact->field_639.sx * v8;
-            bact->field_645.sy = bact->field_639.sy * v8;
-            bact->field_645.sz = bact->field_639.sz * v8;
+            bact->field_645.sx = bact->field_639.sx / v40;
+            bact->field_645.sy = bact->field_639.sy / v40;
+            bact->field_645.sz = bact->field_639.sz / v40;
         }
     }
 
@@ -999,22 +993,20 @@ void ypamissile_func74(NC_STACK_ypamissile *obj, class_stru *zis, bact_arg74 *ar
 
     if ( v33 > 0.0 )
     {
-        float v19 = 1.0 / v33;
         float v20 = v33 / bact->mass * arg->field_0;
 
         xyz v36;
-        v36.sx = bact->field_605.sx * bact->field_611 + v29 * v19 * v20;
-        v36.sy = bact->field_605.sy * bact->field_611 + v30 * v19 * v20;
-        v36.sz = bact->field_605.sz * bact->field_611 + v31 * v19 * v20;
+        v36.sx = bact->field_605.sx * bact->field_611 + v29 * v20 / v33;
+        v36.sy = bact->field_605.sy * bact->field_611 + v30 * v20 / v33;
+        v36.sz = bact->field_605.sz * bact->field_611 + v31 * v20 / v33;
 
         float v32 = sqrt(POW2(v36.sx) + POW2(v36.sy) + POW2(v36.sz));
 
         if ( v32 > 0.0 )
         {
-            float v25 = 1.0 / v32;
-            v36.sx *= v25;
-            v36.sy *= v25;
-            v36.sz *= v25;
+            v36.sx /= v32;
+            v36.sy /= v32;
+            v36.sz /= v32;
         }
 
         bact->field_605 = v36;
@@ -1227,13 +1219,11 @@ void ypamissile_func130(NC_STACK_ypamissile *obj, class_stru *zis, miss_arg130 *
 
         if ( v37 > 0.0 )
         {
-            float v8 = 1.0 / v37;
-
             float v51 = bact->field_651.m20 * bact->field_605.sx + bact->field_651.m21 * bact->field_605.sy + bact->field_651.m22 * bact->field_605.sz;
 
-            u.sx *= v8;
-            u.sy *= v8;
-            u.sz *= v8;
+            u.sx /= v37;
+            u.sy /= v37;
+            u.sz /= v37;
 
             if ( v51 > 1.0 )
                 v51 = 1.0;
@@ -1335,13 +1325,11 @@ void ypamissile_func131(NC_STACK_ypamissile *obj, class_stru *zis, miss_arg130 *
 
     if ( v30 != 0.0 )
     {
-        float v11 = 1.0 / v30;
-
         float v43 = v33 * v35 + v5 * v34 + v36 * v6;
 
-        vaxis.sx *= v11;
-        vaxis.sy *= v11;
-        vaxis.sz *= v11;
+        vaxis.sx /= v30;
+        vaxis.sy /= v30;
+        vaxis.sz /= v30;
 
         if ( v43 > 1.0 )
             v43 = 1.0;

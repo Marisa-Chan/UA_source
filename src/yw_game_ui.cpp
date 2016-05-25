@@ -1223,9 +1223,8 @@ char * sub_4F6DFC(_NC_STACK_ypaworld *yw, char *cur, int height, int width, __NC
             }
             else
             {
-                float v12 = 1.0 / v30;
-                v34 = v33 * v12;
-                v36 = v35 * v12;
+                v34 = v33 / v30;
+                v36 = v35 / v30;
             }
 
             float v14 = -v34;
@@ -1868,11 +1867,11 @@ void sub_4C157C(_NC_STACK_ypaworld *yw)
     float v1 = (robo_map.frm_1.btn_height - robo_map.field_250) * robo_map.field_1E4;
     float v3 = (robo_map.frm_1.btn_width - robo_map.field_24C) * robo_map.field_1E0;
 
-    float v6 = 1.0 / (yw->sectors_maxX2 * 1200.0);
+    float v6 = (yw->sectors_maxX2 * 1200.0);
     int v20 = robo_map.frm_1.btn_width - robo_map.field_248;
 
-    int v17 = v6 * ((robo_map.field_1D8 - v3 * 0.5) * v20);
-    int v19 = v20 * v3 * v6;
+    int v17 = ((robo_map.field_1D8 - v3 * 0.5) * v20) / v6;
+    int v19 = v20 * v3 / v6;
 
 
 
@@ -1901,12 +1900,12 @@ void sub_4C157C(_NC_STACK_ypaworld *yw)
 
 
     float v15 = -(robo_map.field_1DC + v1 * 0.5);
-    float v14 = 1.0 / (yw->sectors_maxY2 * 1200.0);
+    float v14 = (yw->sectors_maxY2 * 1200.0);
 
     v20 = robo_map.frm_1.btn_height - robo_map.field_250;
-    v19 = (v20 * v1 * v14);
+    v19 = (v20 * v1 / v14);
 
-    int v18 = (v14 * (v20 * v15));
+    int v18 = ((v20 * v15) / v14);
 
 
     if ( v19 >= robo_map.field_228 )
@@ -5379,15 +5378,15 @@ char * ypaworld_func64__sub7__sub7__sub0__sub2(_NC_STACK_ypaworld *yw, char *cur
         v18 = 72;
     }
 
-    float v15 = 1.0 / (float)a7;
+    float v15 = (float)a7;
     int v9 = 57;
     float a7a = 0.0;
-    float a6a = (float)a6 * v15;
+    float a6a = (float)a6 / v15;
 
     if ( bzda.field_1D0 & 0x16 )
     {
         if ( bzda.field_8F8 != -1 )
-            a7a = yw->field_1b24.field_40 * v15;
+            a7a = yw->field_1b24.field_40 / v15;
     }
 
     if ( a7a <= a6a )
@@ -5433,13 +5432,13 @@ char * ypaworld_func64__sub7__sub7__sub0__sub3(_NC_STACK_ypaworld *yw, char *cur
         v18 = 80;
     }
 
-    float v15 = 1.0 / (float)a7;
+    float v15 = (float)a7;
     int v9 = 57;
     float a7a = 0.0;
-    float a6a = (float)a6 * v15;
+    float a6a = (float)a6 / v15;
 
     if ( bzda.field_1D0 & 0x20 )
-        a7a = yw->field_1b24.field_40 * v15;
+        a7a = yw->field_1b24.field_40 / v15;
 
     if ( a7a <= a6a )
     {
@@ -9105,17 +9104,15 @@ void wis_color2(_NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, 
     float v23 = sqrt(POW2(x1) + POW2(y1));
     if ( v23 > 0.0 )
     {
-        float v9 = 1.0 / v23;
-        x1 *= v9;
-        y1 *= v9;
+        x1 /= v23;
+        y1 /= v23;
     }
 
     float v21 = sqrt(POW2(x2) + POW2(y2));
     if ( v21 > 0.0 )
     {
-        float v11 = 1.0 / v21;
-        x2 *= v11;
-        y2 *= v11;
+        x2 /= v21;
+        y2 /= v21;
     }
 
     float v12 = (v24 * x1 + v22 * y1 + 1.0) * 0.5;
@@ -9152,9 +9149,8 @@ void sb_0x4d7c08__sub0__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, sklt_wis *wis)
 
     if ( v70 > 0.0 )
     {
-        float v8 = 1.0 / v70;
-        xx *= v8;
-        yy *= v8;
+        xx /= v70;
+        yy /= v70;
     }
 
     uint32_t v9 = yw_GetColor(yw, 21);
@@ -9749,12 +9745,11 @@ void sub_4E3570(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
     {
         if ( a3 > -v30 && v33 < v30 && v33 > -v30 )
         {
-            float v10 = 1.0 / v30;
             uint32_t v11 = yw_GetColor(yw, bact->owner);
             skeleton_64_stru *v12 = yw->wis_skeletons.sklts_intern[13];
 
-            float a3a = a3 * v10;
-            float v34 = v33 * v10;
+            float a3a = a3 / v30;
+            float v34 = v33 / v30;
 
             if ( v12 )
             {
@@ -9798,10 +9793,9 @@ char *sb_0x4d7c08__sub0__sub4__sub0__sub0(_NC_STACK_ypaworld *yw, char *cur, __N
                     if ( v32 > -v26 && v31 < v26 && v31 > -v26 )
                     {
                         int v30 = yw->tiles[15]->font_height;
-                        float v13 = 1.0 / v26;
 
-                        int v27_4 = ((yw->screen_width / 2) * (v32 * v13 + 1.0));
-                        int v15 = (yw->screen_height / 2) * (v31 * v13 + 1.0);
+                        int v27_4 = ((yw->screen_width / 2) * (v32 / v26 + 1.0));
+                        int v15 = (yw->screen_height / 2) * (v31 / v26 + 1.0);
 
                         int v28 = 96;
 
@@ -10146,9 +10140,8 @@ void sb_0x4d7c08__sub0__sub4__sub2(_NC_STACK_ypaworld *yw)
     }
     else
     {
-        float v11 = 1.0 / v16;
-        v20 = v19 * v11;
-        v18 = v17 * v11;
+        v20 = v19 / v16;
+        v18 = v17 / v16;
     }
     robo_map.field_264 = v18;
 
@@ -10629,10 +10622,9 @@ int sb_0x4d3d44__sub0(_NC_STACK_ypaworld *yw, winp_131arg *winp)
 
     if ( v46 > 0.0 )
     {
-        float v6 = 1.0 / v46;
-        v47 *= v6;
-        v49 *= v6;
-        v50 *= v6;
+        v47 /= v46;
+        v49 /= v46;
+        v50 /= v46;
     }
 
     float v63 = vhcl->radius * 4.0 + 200.0;
@@ -10677,10 +10669,9 @@ int sb_0x4d3d44__sub0(_NC_STACK_ypaworld *yw, winp_131arg *winp)
 
                     if ( v48 > 0.0 )
                     {
-                        float v20 = 1.0 / v48;
-                        v37 *= v20;
-                        v38 *= v20;
-                        v39 *= v20;
+                        v37 /= v48;
+                        v38 /= v48;
+                        v39 /= v48;
                     }
 
                     yw->field_1a8c.sx = v37;
@@ -11078,11 +11069,11 @@ void ypaworld_func64__sub21__sub1__sub3__sub0(_NC_STACK_ypaworld *yw, winp_131ar
     float v17 = yw->field_1340.m01 * v3 + yw->field_1340.m11 * v4 + yw->field_1340.m21;
     float v18 = yw->field_1340.m02 * v3 + yw->field_1340.m12 * v4 + yw->field_1340.m22;
 
-    float v14 = 1.0 / sqrt(POW2(v16) + POW2(v17) + POW2(v18));
+    float v14 = sqrt(POW2(v16) + POW2(v17) + POW2(v18));
 
-    yw->field_1a8c.sx = v16 * v14;
-    yw->field_1a8c.sy = v17 * v14;
-    yw->field_1a8c.sz = v18 * v14;
+    yw->field_1a8c.sx = v16 / v14;
+    yw->field_1a8c.sy = v17 / v14;
+    yw->field_1a8c.sz = v18 / v14;
 }
 
 void ypaworld_func64__sub21__sub1__sub3(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, winp_131arg *winp)

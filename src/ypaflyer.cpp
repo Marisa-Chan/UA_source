@@ -195,12 +195,10 @@ void sb_0x4b255c__sub0(__NC_STACK_ypabact *bact, float a2)
 
     if ( v27 >= 0.001 )
     {
-        float v5 = 1.0 / v27;
-
         xyz vaxis;
-        vaxis.sx = bact->field_651.m00 * v5;
+        vaxis.sx = bact->field_651.m00 / v27;
         vaxis.sy = 0.0;
-        vaxis.sz = bact->field_651.m02 * v5;
+        vaxis.sz = bact->field_651.m02 / v27;
 
         mat3x3 mat2;
 
@@ -565,10 +563,9 @@ void ypaflyer_func70(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
 
     if ( v88 > 0.0 )
     {
-        float v5 = 1.0 / v88;
-        bact->field_645.sx = bact->field_639.sx * v5;
-        bact->field_645.sy = bact->field_639.sy * v5;
-        bact->field_645.sz = bact->field_639.sz * v5;
+        bact->field_645.sx = bact->field_639.sx / v88;
+        bact->field_645.sy = bact->field_639.sy / v88;
+        bact->field_645.sz = bact->field_639.sz / v88;
     }
 
     int a4, v82, v79;
@@ -732,14 +729,14 @@ void ypaflyer_func70(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
 
         if ( v18 )
         {
-            float v19 = 1.0 / (float)v18;
+            float v19 = (float)v18;
 
             arg88.pos2.sx = 0.7;
             arg88.pos2.sy = 2.0;
             arg88.pos2.sz = a2a;
-            arg88.pos1.sx *= v19;
-            arg88.pos1.sy *= v19;
-            arg88.pos1.sz *= v19;
+            arg88.pos1.sx /= v19;
+            arg88.pos1.sy /= v19;
+            arg88.pos1.sz /= v19;
 
             call_method(obj, 88, &arg88);
         }
@@ -852,30 +849,26 @@ void ypaflyer_func70(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
 
         if ( bact->field_645.sy != 0.0 )
         {
-            float v39 = 1.0 / sqrt( POW2(bact->field_645.sy) + POW2(bact->field_645.sx) + POW2(bact->field_645.sz) );
+            float v39 = sqrt( POW2(bact->field_645.sy) + POW2(bact->field_645.sx) + POW2(bact->field_645.sz) );
 
-            bact->field_645.sx *= v39;
-            bact->field_645.sy *= v39;
-            bact->field_645.sz *= v39;
+            bact->field_645.sx /= v39;
+            bact->field_645.sy /= v39;
+            bact->field_645.sz /= v39;
         }
 
-        float v92 = POW2(arg136.field_14) + POW2(arg136.field_1C);
+        float v92 = sqrt(POW2(arg136.field_14) + POW2(arg136.field_1C));
 
         NDIV_CARRY(v92);
 
         if ( bact->field_3D6 & 0x10 )
         {
-            float v44 = 1.0 / sqrt(v92);
-
-            bact->field_645.sx = -arg136.field_1C * v44;
-            bact->field_645.sz  = arg136.field_14 * v44;
+            bact->field_645.sx = -arg136.field_1C / v92;
+            bact->field_645.sz  = arg136.field_14 / v92;
         }
         else if ( bact->field_3D6 & 0x20 )
         {
-            float v46 = 1.0 / sqrt(v92);
-
-            bact->field_645.sx = arg136.field_1C * v46;
-            bact->field_645.sz  = -arg136.field_14 * v46;
+            bact->field_645.sx = arg136.field_1C  / v92;
+            bact->field_645.sz  = -arg136.field_14  / v92;
         }
 
         ypaflyer_func70__sub0(fly, a2a);
@@ -1372,10 +1365,9 @@ void ypaflyer_func71(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
 
                     if ( v65 != 0.0 )
                     {
-                        float v38 = 1.0 / v65;
-                        v52.sx = v69 * v38;
-                        v52.sy = v68 * v38;
-                        v52.sz = v70 * v38;
+                        v52.sx = v69 / v65;
+                        v52.sy = v68 / v65;
+                        v52.sz = v70 / v65;
                     }
                     else
                     {
@@ -1513,12 +1505,11 @@ void ypaflyer_func74(NC_STACK_ypaflyer *obj, class_stru *zis, bact_arg74 *arg)
 
     if ( v33 > 0.0 )
     {
-        float v19 = 1.0 / v33;
         float v20 = v33 / bact->mass * arg->field_0;
 
-        float v41 = bact->field_605.sy * bact->field_611 + v39 * v19 * v20;
-        float v40 = bact->field_605.sx * bact->field_611 + v38 * v19 * v20;
-        float v43 = bact->field_605.sz * bact->field_611 + v42 * v19 * v20;
+        float v41 = bact->field_605.sy * bact->field_611 + v39 * v20 / v33;
+        float v40 = bact->field_605.sx * bact->field_611 + v38 * v20 / v33;
+        float v43 = bact->field_605.sz * bact->field_611 + v42 * v20 / v33;
 
         bact->field_611 = sqrt( POW2(v41) + POW2(v40) + POW2(v43) );
 

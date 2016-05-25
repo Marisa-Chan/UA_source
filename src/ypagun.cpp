@@ -395,10 +395,9 @@ void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
         float v22 = gun->dir.sz * gun->field_24.sx;
         float v21 = gun->dir.sz * gun->field_24.sy;
 
-        float v83 = 1.0 / v19;
-        v57 *= v83;
-        v58 *= v83;
-        v59 *= v83;
+        v57 /= v19;
+        v58 /= v19;
+        v59 /= v19;
 
         float v54 = v20 - v21;
         float v55 = v22 - v23;
@@ -814,10 +813,9 @@ void ypagun_func75(NC_STACK_ypagun *obj, class_stru *zis, bact_arg75 *arg)
 
     if ( v24 >= 0.001 )
     {
-        float v12 = 1.0 / v24;
-        v18.sx *= v12;
-        v18.sy *= v12;
-        v18.sz *= v12;
+        v18.sx /= v24;
+        v18.sy /= v24;
+        v18.sz /= v24;
 
         if ( v24 <= 2400.0 && v18.sy * bact->field_651.m21 + v18.sx * bact->field_651.m20 + v18.sz * bact->field_651.m22 >= 0.95 )
         {
@@ -1017,10 +1015,9 @@ size_t ypagun_func111(NC_STACK_ypagun *obj, class_stru *zis, __NC_STACK_ypabact 
     if ( v35 > 2400.0 )
         return 0;
 
-    float v11 = 1.0 / v35;
-    tmp.sx *= v11;
-    tmp.sy *= v11;
-    tmp.sz *= v11;
+    tmp.sx /= v35;
+    tmp.sy /= v35;
+    tmp.sz /= v35;
 
     float v38 = -gun->field_24.sx * tmp.sx - gun->field_24.sy * tmp.sy - gun->field_24.sz * tmp.sz;
 
@@ -1078,11 +1075,9 @@ void ypagun_func128(NC_STACK_ypagun *obj, class_stru *zis, gun_arg128 *arg)
 
     if ( v5 > 0.001 )
     {
-        float v7 = 1.0 / v5;
-
-        arg->dir.sx *= v7;
-        arg->dir.sy *= v7;
-        arg->dir.sz *= v7;
+        arg->dir.sx /= v5;
+        arg->dir.sy /= v5;
+        arg->dir.sz /= v5;
     }
 
     gun->dir = arg->dir;

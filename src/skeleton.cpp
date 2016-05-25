@@ -307,10 +307,9 @@ size_t skeleton_func131(NC_STACK_skeleton *obj, class_stru *, int *arg)
 
             if ( sqwr != 0.0 )
             {
-                float param = 1.0 / sqwr;
-                dzy = zy * param;
-                dzx = zx * param;
-                dxy = xy * param;
+                dzy = zy / sqwr;
+                dzx = zx / sqwr;
+                dxy = xy / sqwr;
             }
 
             sklt->triangles[vtxid].field_0 = dzy;

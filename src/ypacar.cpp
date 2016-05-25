@@ -391,10 +391,9 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
 
     NDIV_CARRY(tmpsq);
 
-    float v33 = 1.0 / tmpsq;
-    bact->field_651.m20 *= v33;
-    bact->field_651.m21 *= v33;
-    bact->field_651.m22 *= v33;
+    bact->field_651.m20 /= tmpsq;
+    bact->field_651.m21 /= tmpsq;
+    bact->field_651.m22 /= tmpsq;
 
     if ( fabs(bact->field_651.m22) <= 0.1 )
     {
@@ -813,10 +812,9 @@ size_t ypacar_func128(NC_STACK_ypacar *obj, class_stru *zis, tank_arg128 *arg)
         if ( fabs(v56) < 0.01 )
             v56 = 0.0;
 
-        float v16 = 1.0 / v44;
-        vaxis.sx *= v16;
-        vaxis.sy *= v16;
-        vaxis.sz *= v16;
+        vaxis.sx /= v44;
+        vaxis.sy /= v44;
+        vaxis.sz /= v44;
 
         mat3x3 mat2;
 
@@ -1240,10 +1238,9 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
         float v157 = sqrt( POW2(v180) + POW2(v175) + POW2(v181) ) * v167;
         if ( v157 != 0.0 )
         {
-            float v71 = 1.0 / v157;
-            v180 *= v71;
-            v175 *= v71;
-            v181 *= v71;
+            v180 /= v157;
+            v175 /= v157;
+            v181 /= v157;
         }
         else
         {
@@ -1294,11 +1291,9 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
 
         if ( v156 > 0.0 )
         {
-            float v75 = 1.0 / v156;
-
-            vaxis.sx *= v75;
-            vaxis.sy *= v75;
-            vaxis.sz *= v75;
+            vaxis.sx /= v156;
+            vaxis.sy /= v156;
+            vaxis.sz /= v156;
 
             float v177 = v180 * bact->field_651.m10 + v175 * bact->field_651.m11 + v181 * bact->field_651.m12;
 

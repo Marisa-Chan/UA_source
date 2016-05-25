@@ -244,15 +244,15 @@ float sub_4BFE50()
 
 void particle_recalc(__NC_STACK_particle *prtcl)
 {
-    float v15 = 1.0 / prtcl->field_a8;
+    float v15 = prtcl->field_a8;
 
-    prtcl->field_54 = (prtcl->field_3c.flC  - prtcl->field_3c.fl0) * v15;
-    prtcl->field_58 = (prtcl->field_3c.fl10 - prtcl->field_3c.fl4) * v15;
-    prtcl->field_5c = (prtcl->field_3c.fl14 - prtcl->field_3c.fl8) * v15;
+    prtcl->field_54 = (prtcl->field_3c.flC  - prtcl->field_3c.fl0) / v15;
+    prtcl->field_58 = (prtcl->field_3c.fl10 - prtcl->field_3c.fl4) / v15;
+    prtcl->field_5c = (prtcl->field_3c.fl14 - prtcl->field_3c.fl8) / v15;
 
-    prtcl->field_78 = (prtcl->field_60.flC  - prtcl->field_60.fl0) * v15;
-    prtcl->field_7c = (prtcl->field_60.fl10 - prtcl->field_60.fl4) * v15;
-    prtcl->field_80 = (prtcl->field_60.fl14 - prtcl->field_60.fl8) * v15;
+    prtcl->field_78 = (prtcl->field_60.flC  - prtcl->field_60.fl0) / v15;
+    prtcl->field_7c = (prtcl->field_60.fl10 - prtcl->field_60.fl4) / v15;
+    prtcl->field_80 = (prtcl->field_60.fl14 - prtcl->field_60.fl8) / v15;
 }
 
 
@@ -994,13 +994,13 @@ void particle_func65__sub0__sub0(__NC_STACK_particle *prtcl, prtcl_tp *tp1, xyz 
     float v12 = sub_4BFE50() + pos1->sx;
     float v13 = sub_4BFE50() + pos1->sy;
     float v14 = sub_4BFE50() + pos1->sz;
-    float v16 = 1.0 / sqrt(v12 * v12 + v13 * v13 + v14 * v14);
+    float v16 = sqrt(v12 * v12 + v13 * v13 + v14 * v14);
 
     prtcl_tp2 *v7 = tp1->field_C;
 
-    v7->field_C  = v12 * v16 * prtcl->field_9c;
-    v7->field_10 = v13 * v16 * prtcl->field_9c;
-    v7->field_14 = v16 * v14 * prtcl->field_9c;
+    v7->field_C  = v12 / v16 * prtcl->field_9c;
+    v7->field_10 = v13 / v16 * prtcl->field_9c;
+    v7->field_14 = v14 / v16 * prtcl->field_9c;
 
     v7->field_0 = v7->field_C * a4 + pos2->sx;
     v7->field_4 = v7->field_10 * a4 + pos2->sy;

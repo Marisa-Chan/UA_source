@@ -234,11 +234,9 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
 
     if ( v108 != 0.0 )
     {
-        float v7 = 1.0 / v108;
-
-        bact->field_645.sx = bact->field_639.sx * v7;
-        bact->field_645.sy = bact->field_639.sy * v7;
-        bact->field_645.sz = bact->field_639.sz * v7;
+        bact->field_645.sx = bact->field_639.sx / v108;
+        bact->field_645.sy = bact->field_639.sy / v108;
+        bact->field_645.sz = bact->field_639.sz / v108;
     }
 
     int v8 = !bact->field_3DF && v108 < 1200.0;
@@ -351,11 +349,9 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
 
                 if ( v29 >= 0.01 )
                 {
-                    float v31 = 1.0 / v29;
-
-                    arg136_2.field_14 = (bact->field_621.sx - bact->field_62D.sx) * 300.0 * v31;
+                    arg136_2.field_14 = (bact->field_621.sx - bact->field_62D.sx) * 300.0 / v29;
                     arg136_2.field_18 = 0;
-                    arg136_2.field_1C = (bact->field_621.sz - bact->field_62D.sz) * 300.0 * v31;
+                    arg136_2.field_1C = (bact->field_621.sz - bact->field_62D.sz) * 300.0 / v29;
                 }
                 else
                 {
@@ -1071,11 +1067,9 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
 
                     if ( v89 != 0.0 )
                     {
-                        float v57 = 1.0 / v89;
-
-                        arg88.pos1.sx = v93 * v57;
-                        arg88.pos1.sy = v92 * v57;
-                        arg88.pos1.sz = v94 * v57;
+                        arg88.pos1.sx = v93 / v89;
+                        arg88.pos1.sy = v92 / v89;
+                        arg88.pos1.sz = v94 / v89;
                     }
                     else
                         arg88.pos1 = bact->field_605;
@@ -1190,10 +1184,8 @@ void ypaufo_func74(NC_STACK_ypaufo *obj, class_stru *zis, bact_arg74 *arg)
         }
         else
         {
-            float v12 = 1.0 / v9;
-
-            v47 = bact->field_651.m20 * v12;
-            v48 = bact->field_651.m22 * v12;
+            v47 = bact->field_651.m20 / v9;
+            v48 = bact->field_651.m22 / v9;
 
             v59 = bact->field_601;
         }
@@ -1222,21 +1214,19 @@ void ypaufo_func74(NC_STACK_ypaufo *obj, class_stru *zis, bact_arg74 *arg)
 
     if ( v52 > 0.0 )
     {
-        float v25 = 1.0 / v52;
         float v26 = v52 / bact->mass * arg->field_0;
 
-        float v56 = bact->field_605.sy * bact->field_611 + v46 * v25 * v26;
-        float v42 = bact->field_605.sx * bact->field_611 + v45 * v25 * v26;
-        float v43 = bact->field_605.sz * bact->field_611 + v49 * v25 * v26;
+        float v56 = bact->field_605.sy * bact->field_611 + v46 * v26 / v52;
+        float v42 = bact->field_605.sx * bact->field_611 + v45 * v26 / v52;
+        float v43 = bact->field_605.sz * bact->field_611 + v49 * v26 / v52;
 
         float v51 = sqrt( POW2(v56) + POW2(v42) + POW2(v43) );
 
         if ( v51 > 0.0 )
         {
-            float v31 = 1.0 / v51;
-            v42 *= v31;
-            v56 *= v31;
-            v43 *= v31;
+            v42 /= v51;
+            v56 /= v51;
+            v43 /= v51;
         }
 
         bact->field_605.sx = v42;

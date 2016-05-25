@@ -2697,10 +2697,10 @@ void win3d__tex_apply_palette_hw(__NC_STACK_windd *, __NC_STACK_win3d *w3d, BYTE
                     }
                     else
                     {
-                        float prm = 1.0 / mx;
-                        r = 255.0 * (r * prm);
-                        g = 255.0 * (g * prm);
-                        b = 255.0 * (b * prm);
+                        float prm = mx;
+                        r = 255.0 * (r / prm);
+                        g = 255.0 * (g / prm);
+                        b = 255.0 * (b / prm);
                         a = mx;
                     }
                 }
@@ -2778,10 +2778,10 @@ void win3d__tex_apply_palette_hw(__NC_STACK_windd *, __NC_STACK_win3d *w3d, BYTE
                     }
                     else
                     {
-                        float prm = 1.0 / mx;
-                        r = 255.0 * (r * prm);
-                        g = 255.0 * (g * prm);
-                        b = 255.0 * (b * prm);
+                        float prm = mx;
+                        r = 255.0 * (r / prm);
+                        g = 255.0 * (g / prm);
+                        b = 255.0 * (b / prm);
                         a = mx;
                     }
                 }

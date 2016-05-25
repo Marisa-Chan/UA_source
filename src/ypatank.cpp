@@ -243,10 +243,9 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
 
     if ( v220 > 0.0 )
     {
-        float v10 = 1.0 / v220;
-        bact->field_645.sx = bact->field_639.sx * v10;
-        bact->field_645.sy = bact->field_639.sy * v10;
-        bact->field_645.sz = bact->field_639.sz * v10;
+        bact->field_645.sx = bact->field_639.sx / v220;
+        bact->field_645.sy = bact->field_639.sy / v220;
+        bact->field_645.sz = bact->field_639.sz / v220;
     }
 
     bool v215 = !bact->field_3DF && v220 < 1200.0;
@@ -691,22 +690,20 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
 
                         NDIV_CARRY(tmpsq);
 
-                        float v84 = 1.0 / tmpsq;
-
                         ypaworld_arg136 arg136_1;
                         ypaworld_arg136 arg136_3;
 
-                        arg136_1.field_14 = tank->field_11.sz * 150.0 * v84;
+                        arg136_1.field_14 = tank->field_11.sz * 150.0 / tmpsq;
                         arg136_1.field_18 = 0;
-                        arg136_1.field_1C = -tank->field_11.sx * 150.0 * v84;
+                        arg136_1.field_1C = -tank->field_11.sx * 150.0 / tmpsq;
                         arg136_1.pos_x = bact->field_62D.sx;
                         arg136_1.pos_y = bact->field_62D.sy;
                         arg136_1.pos_z = bact->field_62D.sz;
                         arg136_1.field_40 = 1;
 
-                        arg136_3.field_14 = -tank->field_11.sz * 150.0 * v84;
+                        arg136_3.field_14 = -tank->field_11.sz * 150.0 / tmpsq;
                         arg136_3.field_18 = 0;
-                        arg136_3.field_1C = tank->field_11.sx * 150.0 * v84;
+                        arg136_3.field_1C = tank->field_11.sx * 150.0 / tmpsq;
                         arg136_3.pos_x = bact->field_62D.sx;
                         arg136_3.pos_y = bact->field_62D.sy;
                         arg136_3.pos_z = bact->field_62D.sz;
@@ -1321,10 +1318,9 @@ void ypatank_func71(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
 
         if ( v89 > 0.0001 )
         {
-            float v38 = 1.0 / v89;
-            v67.sx *= v38;
-            v67.sy *= v38;
-            v67.sz *= v38;
+            v67.sx /= v89;
+            v67.sy /= v89;
+            v67.sz /= v89;
         }
 
         bact_arg79 arg79;
@@ -1519,21 +1515,19 @@ void ypatank_func74(NC_STACK_ypatank *obj, class_stru *zis, bact_arg74 *arg)
 
     if ( v45 > 0.0 )
     {
-        float v19 = 1.0 / v45;
         float v20 = v45 / bact->mass * arg->field_0;
 
-        float v37 = bact->field_605.sx * bact->field_611 + v40 * v19 * v20;
-        float v36 = bact->field_605.sy * bact->field_611 + v44 * v19 * v20;
-        float v51 = bact->field_605.sz * bact->field_611 + v41 * v19 * v20;
+        float v37 = bact->field_605.sx * bact->field_611 + v40 / v45 * v20;
+        float v36 = bact->field_605.sy * bact->field_611 + v44 / v45 * v20;
+        float v51 = bact->field_605.sz * bact->field_611 + v41 / v45 * v20;
 
         float v42 = sqrt( POW2(v36) + POW2(v37) + POW2(v51) );
 
         if ( v42 > 0.0 )
         {
-            float v25 = 1.0 / v42;
-            v37 *= v25;
-            v36 *= v25;
-            v51 *= v25;
+            v37 /= v42;
+            v36 /= v42;
+            v51 /= v42;
         }
 
         if ( bact->field_3D6 & 0x200 )
@@ -1641,10 +1635,9 @@ void ypatank_func83(NC_STACK_ypatank *obj, class_stru *zis, bact_arg83 *arg)
     }
     else
     {
-        float v12 = 1.0 / v32;
-        v27 *= v12;
-        v28 *= v12;
-        v29 *= v12;
+        v27 /= v32;
+        v28 /= v32;
+        v29 /= v32;
     }
 
     float v14 = v31 * 10.0 * v30 / v32;
@@ -1932,11 +1925,9 @@ size_t ypatank_func87(NC_STACK_ypatank *obj, class_stru *zis, int *arg)
                                             }
                                             else
                                             {
-                                                float v32 = 1.0 / v126;
-
-                                                v78[v113].sx = v93.sx * v32;
-                                                v78[v113].sy = v93.sy * v32;
-                                                v78[v113].sz = v93.sz * v32;
+                                                v78[v113].sx = v93.sx / v126;
+                                                v78[v113].sy = v93.sy / v126;
+                                                v78[v113].sz = v93.sz / v126;
                                             }
                                             v113++;
                                         }
@@ -2019,11 +2010,9 @@ size_t ypatank_func87(NC_STACK_ypatank *obj, class_stru *zis, int *arg)
                     }
                 }
 
-                float v56 = 1.0 / (float)v113;
-
-                v88.sx *= v56;
-                v88.sy *= v56;
-                v88.sz *= v56;
+                v88.sx /= (float)v113;
+                v88.sy /= (float)v113;
+                v88.sz /= (float)v113;
 
                 float v90 = bact->field_651.m20;
                 float v91 = bact->field_651.m21;
@@ -2197,10 +2186,9 @@ size_t ypatank_func101(NC_STACK_ypatank *obj, class_stru *zis, bact_arg101 *arg)
     if ( v37 == 0.0 )
         return 0;
 
-    float v10 = 1.0 / v37;
-    v34.sx *= v10;
-    v34.sy *= v10;
-    v34.sz *= v10;
+    v34.sx /= v37;
+    v34.sy /= v37;
+    v34.sz /= v37;
 
     WeapProto *a4;
     call_vtbl(tank->ywo, 3, 0x80002012, &a4, 0);
@@ -2568,11 +2556,9 @@ size_t ypatank_func128(NC_STACK_ypatank *obj, class_stru *zis, tank_arg128 *arg)
                 if ( fabs(v57) < 0.01 )
                     v57 = 0.0;
 
-                float v19 = 1.0 / v46;
-
-                vaxis.sx *= v19;
-                vaxis.sy *= v19;
-                vaxis.sz *= v19;
+                vaxis.sx /= v46;
+                vaxis.sy /= v46;
+                vaxis.sz /= v46;
 
                 mat3x3 mat2;
 
@@ -2926,17 +2912,16 @@ size_t ypatank_func129(NC_STACK_ypatank *obj, class_stru *zis, tank_arg129 *arg)
         }
         else
         {
-            float v73 = 1.0 / v171;
-            v170 *= v73;
-            v168 *= v73;
-            v165 *= v73;
+            v170 /= v171;
+            v168 /= v171;
+            v165 /= v171;
         }
 
         if ( v168 < -0.1 )
         {
-            v168 *= -1.0;
-            v170 *= -1.0;
-            v165 *= -1.0;
+            v168 = -v168;
+            v170 = -v170;
+            v165 = -v165;
         }
 
         if ( tank->field_c & 1 )
@@ -2977,10 +2962,9 @@ size_t ypatank_func129(NC_STACK_ypatank *obj, class_stru *zis, tank_arg129 *arg)
             if ( v162 < -1.0 )
                 v162 = -1.0;
 
-            float v77 = 1.0 / v147;
-            vaxis.sx *= v77;
-            vaxis.sy *= v77;
-            vaxis.sz *= v77;
+            vaxis.sx /= v147;
+            vaxis.sy /= v147;
+            vaxis.sz /= v147;
 
             float v166 = acos(v162);
 
