@@ -752,6 +752,23 @@ struct yw_f30
     uint8_t field_1;
 };
 
+struct yw_f726c
+{
+    nlist lst;
+    int field_C;
+    int field_10;
+    int numNodes;
+    uint8_t *last_bufStart;
+    uint8_t *field_1C;
+    uint8_t *last_bufEnd;
+};
+
+struct yw_f726c_nod : public nnode
+{
+    uint8_t *bufStart;
+    uint8_t *bufEnd;
+};
+
 struct _NC_STACK_ypaworld
 {
     NC_STACK_ypaworld *self_full;
@@ -921,7 +938,7 @@ struct _NC_STACK_ypaworld
     stru_LevelNet *LevelNet;
     stru_2d90 *field_2d90;
     big_ypa_Brf brief;
-
+    yw_f726c *history;
     int superbomb_wall_vproto;
     int superbomb_center_vproto;
     int field_7278;

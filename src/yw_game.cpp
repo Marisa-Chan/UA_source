@@ -146,7 +146,30 @@ void deleteSplashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen)
 
 void sb_0x44ca90__sub4(_NC_STACK_ypaworld *yw)
 {
-    dprintf("MAKE ME %s\n", "sb_0x44ca90__sub4");
+    if ( yw->history )
+    {
+        while ( 1 )
+        {
+            yw_f726c_nod *hnode = (yw_f726c_nod *)RemHead(&yw->history->lst);
+
+            if (!hnode)
+                break;
+
+            nc_FreeMem(hnode->bufStart);
+            nc_FreeMem(hnode);
+        }
+
+        nc_FreeMem(yw->history);
+        yw->history = NULL;
+    }
+
+    yw->history = (yw_f726c *)AllocVec(sizeof(yw_f726c), 65537);
+
+    if ( yw->history )
+    {
+        memset(yw->history, 0, sizeof(yw_f726c));
+        init_list(&yw->history->lst);
+    }
 }
 
 int sb_0x44ca90__sub6(_NC_STACK_ypaworld *yw)
@@ -3049,5 +3072,290 @@ void ypaworld_func64__sub5(_NC_STACK_ypaworld *yw)
         {
             sub_44F748(yw); // Apply power to sectors and clean power matrix for next compute iteration.
         }
+    }
+}
+
+int sub_47EDDC(yw_f726c *hist, int bufsize)
+{
+    yw_f726c_nod *node = (yw_f726c_nod *)AllocVec(16, 65537);
+
+    if ( node )
+    {
+        node->bufStart = (uint8_t *)AllocVec(bufsize, 65537);
+        if ( node->bufStart )
+        {
+            node->bufEnd = &node->bufStart[bufsize];
+
+            AddTail(&hist->lst, node);
+
+            hist->last_bufStart = node->bufStart;
+            hist->last_bufEnd = node->bufEnd;
+            hist->numNodes++;
+            return 1;
+        }
+        else
+        {
+            nc_FreeMem(node);
+        }
+    }
+
+    return 0;
+}
+
+
+void sub_4D12D8(_NC_STACK_ypaworld *yw, int id, int a3)
+{
+    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+
+    sitem->field_4 = 1;
+    sitem->field_F0 = 0;
+    sitem->field_F4 = sitem->pcell->owner;
+
+    if ( !a3 )
+    {
+        sitem->field_EC = yw->field_1614;
+        sitem->field_FC = 0;
+        sitem->field_100 = 0;
+        sitem->field_F8 = sitem->countdown;
+    }
+
+    ypaworld_arg148 arg148;
+    arg148.ownerID = sitem->pcell->owner;
+    arg148.ownerID2 = sitem->pcell->owner;
+    arg148.blg_ID = sitem->active_bp;
+    arg148.field_C = 1;
+    arg148.x = sitem->sec_x;
+    arg148.y = sitem->sec_y;
+    arg148.field_18 = 0;
+
+    call_method(yw->self_full, 148, &arg148);
+
+    sitem->pcell->field_3A = 8;
+    sitem->pcell->field_3B = id;
+
+    yw_arg159 arg159;
+    arg159.unit = 0;
+    arg159.field_4 = 94;
+
+    if ( sitem->type == 1 )
+    {
+        arg159.txt = get_lang_string(yw->string_pointers_p2, 250, "Superbomb activated.");
+        arg159.field_C = 70;
+    }
+    else if ( sitem->type == 2 )
+    {
+        arg159.txt = get_lang_string(yw->string_pointers_p2, 254, "Superwave activated.");
+        arg159.field_C = 74;
+    }
+    else
+    {
+        arg159.field_C = 0;
+        arg159.txt = "Cant happen.";
+    }
+
+    call_method(yw->self_full, 159, &arg159);
+}
+
+void sub_4D1594(_NC_STACK_ypaworld *yw, int id)
+{
+    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+
+    sitem->field_4 = 2;
+
+    ypaworld_arg148 arg148;
+    arg148.ownerID = sitem->pcell->owner;
+    arg148.ownerID2 = sitem->pcell->owner;
+    arg148.blg_ID = sitem->inactive_bp;
+    arg148.field_C = 1;
+    arg148.x = sitem->sec_x;
+    arg148.y = sitem->sec_y;
+    arg148.field_18 = 0;
+
+    call_method(yw->self_full, 148, &arg148);
+
+    sitem->pcell->field_3A = 8;
+    sitem->pcell->field_3B = id;
+
+    yw_arg159 arg159;
+    arg159.unit = 0;
+    arg159.field_4 = 93;
+
+    if ( sitem->type == 1 )
+    {
+        arg159.txt = get_lang_string(yw->string_pointers_p2, 252, "Superbomb frozen.");
+        arg159.field_C = 72;
+    }
+    else if ( sitem->type == 2 )
+    {
+        arg159.txt = get_lang_string(yw->string_pointers_p2, 256, "Superwave frozen.");
+        arg159.field_C = 76;
+    }
+    else
+    {
+        arg159.field_C = 0;
+        arg159.txt = "Cant happen.";
+    }
+
+    call_method(yw->self_full, 159, &arg159);
+}
+
+void sub_4D1444(_NC_STACK_ypaworld *yw, int id)
+{
+    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+    sitem->field_4 = 3;
+    sitem->field_F0 = yw->field_1614;
+
+    ypaworld_arg148 arg148;
+    arg148.ownerID = sitem->pcell->owner;
+    arg148.ownerID2 = sitem->pcell->owner;
+    arg148.blg_ID = sitem->trigger_bp;
+    arg148.field_C = 1;
+    arg148.x = sitem->sec_x;
+    arg148.y = sitem->sec_y;
+    arg148.field_18 = 0;
+
+    call_method(yw->self_full, 148, &arg148);
+
+    sitem->pcell->field_3A = 8;
+    sitem->pcell->field_3B = id;
+
+    yw->field_2d90->supetItems[id].field_108 = 0;
+
+    yw_arg159 arg159;
+    arg159.field_4 = 95;
+    arg159.unit = 0;
+
+    if ( sitem->type == 1 )
+    {
+        arg159.txt = get_lang_string(yw->string_pointers_p2, 251, "Superbomb triggered.");
+        arg159.field_C = 71;
+    }
+    else if ( sitem->type == 2 )
+    {
+        arg159.txt = get_lang_string(yw->string_pointers_p2, 255, "Superwave triggered.");
+        arg159.field_C = 75;
+    }
+    else
+    {
+        arg159.field_C = 0;
+        arg159.txt = "Cant happen.";
+    }
+
+    call_method(yw->self_full, 159, &arg159);
+}
+
+
+__NC_STACK_ypabact * sb_0x47b028__sub0(int bactid, _NC_STACK_ypaworld *yw)
+{
+    bact_node *station = (bact_node *)yw->bact_list.head;
+
+    while ( station->next )
+    {
+        if ( bactid == station->bact->ypabact__id )
+            return station->bact;
+
+        bact_node *commander = (bact_node *)station->bact->list2.head;
+
+        while ( commander->next )
+        {
+            if ( bactid == commander->bact->ypabact__id )
+                return station->bact;
+
+            bact_node *slave = (bact_node *)commander->bact->list2.head;
+
+            while ( slave->next )
+            {
+                if ( bactid == slave->bact->ypabact__id )
+                    return station->bact;
+
+                slave = (bact_node *)slave->next;
+            }
+
+            commander = (bact_node *)commander->next;
+        }
+
+        station = (bact_node *)station->next;
+    }
+
+    return NULL;
+}
+
+void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a3)
+{
+    bact_arg80 arg80;
+    arg80.pos = bct1->bact->field_621;
+
+    if ( bct1->bact->field_24 == 9 )
+        arg80.field_C = 4;
+    else
+        arg80.field_C = 0;
+
+    call_method(bct1->bacto, 80, &arg80);
+
+    if ( bct1->bact->field_24 == 9 )
+    {
+        NC_STACK_ypagun *guno = (NC_STACK_ypagun *)bct1->bacto;
+
+        gun_arg128 arg128;
+        arg128.dir = guno->stack__ypagun.dir;
+        arg128.field_0 = 0;
+
+        call_method(bct1->bacto, 128, &arg128);
+    }
+
+    bact_arg119 arg78;
+    arg78.field_0 = bct1->bact->field_3D5;
+    arg78.field_4 = 0;
+    arg78.field_8 = 0;
+    call_method(bct1->bacto, 78, &arg78);
+
+    if ( bct1->bact->field_3D6 & 0x800 )
+    {
+        arg78.field_0 = 0;
+        arg78.field_8 = 0;
+        arg78.field_4 = 2048;
+        call_method(bct1->bacto, 78, &arg78);
+    }
+
+    if ( bct1->bact->field_3D6 & 0x100 )
+    {
+        arg78.field_0 = 0;
+        arg78.field_8 = 0;
+        arg78.field_4 = 256;
+        call_method(bct1->bacto, 78, &arg78);
+    }
+
+    if ( a3 )
+    {
+        if ( bct1->bact->owner == 1 )
+            call_vtbl(yw->self_full, 2, 0x80002010, bct1->bacto, 0);
+    }
+    else
+    {
+        bct1->bact->field_32 = bct2->bacto;
+        bct1->bact->owner = bct2->bact->owner;
+    }
+
+    if ( bct1->bact->field_3DE == 2 )
+    {
+        bct1->bact->field_3DE = 0;
+
+        bact_arg67 arg67;
+        arg67.field_8 = sb_0x47b028__sub0((int)bct1->bact->field_3e8, yw);
+        arg67.field_0 = 6;
+        arg67.field_4 = 0;
+        call_method(bct1->bacto, 67, &arg67);
+    }
+
+    if ( bct1->bact->field_3DE == 1 )
+    {
+        bct1->bact->field_3DE = 0;
+
+        bact_arg67 arg67_1;
+        arg67_1.field_0 = 5;
+        arg67_1.targ = bct1->bact->field_3ec;
+        arg67_1.field_4 = 0;
+
+        call_method(bct1->bacto, 67, &arg67_1);
     }
 }

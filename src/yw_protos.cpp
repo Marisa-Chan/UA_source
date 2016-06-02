@@ -6,7 +6,22 @@
 #include "yw.h"
 #include "input.h"
 
+#include "yparobo.h"
+
 extern Key_stru keySS[256];
+
+NC_STACK_yparobo *current_robo;
+NC_STACK_ypabact *current_bact;
+NC_STACK_ypabact *current_commander;
+__NC_STACK_ypabact *dword_5A7A88;
+extern NC_STACK_yparobo *dword_5A7A84;
+extern int dword_5A7A80;
+extern int bact_id;
+extern int dword_5A7A8C;
+extern int dword_5A7A78;
+
+int dword_5A7A70; // for super items
+
 
 int get_snd_type(const char *snd_typ_name)
 {
@@ -5264,6 +5279,1214 @@ int parseSaveShell(scrCallBack *arg)
         }
         else
             return 3;
+        return 0;
+    }
+}
+
+
+
+int sb_0x479f4c__sub0(scrCallBack *scr)
+{
+    __NC_STACK_yparobo *robo = &current_robo->stack__yparobo;
+    _NC_STACK_ypaworld *yw = &robo->wrld->stack__ypaworld;
+
+    if ( !strcasecmp(scr->p1, "owner") )
+    {
+        dword_5A7A88->owner = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "robostate") )
+    {
+        robo->field_1DB = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "dockenergy") )
+    {
+        robo->field_1EF = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "dockcount") )
+    {
+        robo->field_1F3 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "dockuser") )
+    {
+        robo->field_1F7 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "docktime") )
+    {
+        robo->field_1FB = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "docktargettype") )
+    {
+        robo->field_20F = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "dockaggr") )
+    {
+        robo->field_210 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "docktargetpos") )
+    {
+        char *v5 = strtok(scr->p2, " \t_\n");
+        if ( v5 )
+        {
+            robo->field_1FF.sx = strtod(v5, 0);
+            v5 = strtok(0, " \t_\n");
+
+            if ( v5 )
+            {
+                robo->field_1FF.sz = strtod(v5, 0);
+            }
+        }
+    }
+    else if ( !strcasecmp(scr->p1, "docktargetID") )
+    {
+        robo->field_211 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "fillmodus") )
+    {
+        robo->field_501 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "battbuilding") )
+    {
+    }
+    else if ( !strcasecmp(scr->p1, "battvehicle") )
+    {
+        robo->field_4F5 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "buildspare") )
+    {
+        robo->field_509 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "battbeam") )
+    {
+        robo->field_4FD = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "vhoriz") )
+    {
+        robo->bact_internal->field_5ED = strtod(scr->p2, 0);
+    }
+    else if ( !strcasecmp(scr->p1, "vvert") )
+    {
+        robo->bact_internal->field_5F1 = strtod(scr->p2, 0);
+    }
+    else if ( !strcasecmp(scr->p1, "maximum") )
+    {
+        robo->bact_internal->energy_2 = atoi(scr->p2);
+
+        if ( robo->bact_internal->owner == 1 )
+        {
+            if ( robo->bact_internal->energy_2 < yw->maxroboenergy )
+            {
+                robo->bact_internal->energy_2 = yw->maxroboenergy;
+                robo->bact_internal->reload_const_or_energy2 = yw->maxreloadconst;
+            }
+        }
+    }
+    else if ( !strcasecmp(scr->p1, "con_budget") )
+    {
+        robo->field_1E7 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "def_budget") )
+    {
+        robo->field_1EA = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "rec_budget") )
+    {
+        robo->field_1ec = atoi(scr->p2);
+    }
+    else  if ( !strcasecmp(scr->p1, "rob_budget") )
+    {
+        robo->field_1EE = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "rad_budget") )
+    {
+        robo->field_1e8 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "pow_budget") )
+    {
+        robo->field_1E9 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "saf_budget") )
+    {
+        robo->field_1EB = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "cpl_budget") )
+    {
+        robo->field_1ED = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "saf_delay") )
+    {
+        robo->field_24D = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "pow_delay") )
+    {
+        robo->field_265 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "rad_delay") )
+    {
+        robo->field_235 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "cpl_delay") )
+    {
+        robo->field_2B1 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "def_delay") )
+    {
+        robo->field_281 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "con_delay") )
+    {
+        robo->field_299 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "rec_delay") )
+    {
+        robo->field_2C9 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "rob_delay") )
+    {
+        robo->field_2E1 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "reload_const") )
+    {
+        if ( !robo->bact_internal->reload_const_or_energy2 )
+            robo->bact_internal->reload_const_or_energy2 = atoi(scr->p2);
+
+    }
+    else
+        return 0;
+
+    return 1;
+}
+
+int sub_47A0C0(scrCallBack *scr)
+{
+    if ( !strcasecmp(scr->p1, "viewer") )
+    {
+        if ( !strcasecmp(scr->p2, "yes") )
+            call_vtbl(current_bact, 2, 0x80001004, 1, 0);
+    }
+    else if ( !strcasecmp(scr->p1, "user") )
+    {
+        if ( !strcasecmp(scr->p2, "yes") )
+        {
+            call_vtbl(current_bact, 2, 0x80001005, 1, 0);
+        }
+    }
+    else if ( !strcasecmp(scr->p1, "collision") )
+    {
+        if ( !strcasecmp(scr->p2, "yes") )
+        {
+            call_vtbl(current_bact, 2, 0x80001007, 1, 0);
+        }
+    }
+    else if ( !strcasecmp(scr->p1, "commandid") )
+    {
+        dword_5A7A88->field_2E = atoi(scr->p2);
+
+        if ( dword_5A7A80 < dword_5A7A88->field_2E )
+        {
+            dword_5A7A80 = dword_5A7A88->field_2E;
+        }
+    }
+    else if ( !strcasecmp(scr->p1, "aggression") )
+    {
+        dword_5A7A88->field_3D4 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "mainstate") )
+    {
+        dword_5A7A88->field_3D5 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "extrastate") )
+    {
+        dword_5A7A88->field_3D6 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "killerowner") )
+    {
+        dword_5A7A88->field_9B5 = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "ident") )
+    {
+        dword_5A7A88->ypabact__id = atoi(scr->p2);
+
+        if ( bact_id < dword_5A7A88->ypabact__id )
+        {
+            bact_id = dword_5A7A88->ypabact__id;
+        }
+    }
+    else if ( !strcasecmp(scr->p1, "primary") )
+    {
+        char *v7 = strtok(scr->p2, " \t_\n");
+        if ( v7 )
+        {
+            dword_5A7A88->field_3DE = atoi(v7);
+
+            char *v9 = strtok(0, " \t_\n");
+            if ( v9 )
+            {
+                dword_5A7A88->field_3e8 = (__NC_STACK_ypabact *)atoi(v9);
+
+                v9 = strtok(0, " \t_\n");
+                if ( v9 )
+                {
+                    dword_5A7A88->field_3ec.sx = strtod(v9, 0);
+
+                    v9 = strtok(0, " \t_\n");
+                    if ( v9 )
+                    {
+                        dword_5A7A88->field_3ec.sz = strtod(v9, 0);
+
+                        v9 = strtok(0, " \t_\n");
+                        if ( v9 )
+                        {
+                            dword_5A7A88->field_3e0 = atoi(v9);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    else if ( !strcasecmp(scr->p1, "speed") )
+    {
+        if ( strtok(scr->p2, " \t_\n") )
+        {
+            dword_5A7A88->field_605.sx = strtod(scr->p2, 0);
+            if ( strtok(0, " \t_\n") )
+            {
+                dword_5A7A88->field_605.sy = strtod(scr->p2, 0);
+                if ( strtok(0, " \t_\n") )
+                {
+                    dword_5A7A88->field_605.sz = strtod(scr->p2, 0);
+                    if ( strtok(0, " \t_\n") )
+                    {
+                        dword_5A7A88->field_611 = strtod(scr->p2, 0);
+                    }
+                }
+            }
+        }
+    }
+    else if ( !strcasecmp(scr->p1, "energy") )
+    {
+        dword_5A7A88->energy = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "matrix") )
+    {
+        char *v13 = strtok(scr->p2, " \t_\n");
+
+        if ( v13 )
+        {
+            dword_5A7A88->field_651.m00 = strtod(v13, 0);
+
+            v13 = strtok(0, " \t_\n");
+            if ( v13 )
+            {
+                dword_5A7A88->field_651.m01 = strtod(v13, 0);
+
+                v13 = strtok(0, " \t_\n");
+                if ( v13 )
+                {
+                    dword_5A7A88->field_651.m02 = strtod(v13, 0);
+
+                    v13 = strtok(0, " \t_\n");
+                    if ( v13 )
+                    {
+                        dword_5A7A88->field_651.m10 = strtod(v13, 0);
+
+                        v13 = strtok(0, " \t_\n");
+                        if ( v13 )
+                        {
+                            dword_5A7A88->field_651.m11 = strtod(v13, 0);
+
+                            v13 = strtok(0, " \t_\n");
+                            if ( v13 )
+                            {
+                                dword_5A7A88->field_651.m12 = strtod(v13, 0);
+
+                                v13 = strtok(0, " \t_\n");
+                                if ( v13 )
+                                {
+                                    dword_5A7A88->field_651.m20 = strtod(v13, 0);
+
+                                    v13 = strtok(0, " \t_\n");
+                                    if ( v13 )
+                                    {
+                                        dword_5A7A88->field_651.m21 = strtod(v13, 0);
+
+                                        v13 = strtok(0, " \t_\n");
+                                        if ( v13 )
+                                        {
+                                            dword_5A7A88->field_651.m22 = strtod(v13, 0);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    else if ( !strcasecmp(scr->p1, "pos") )
+    {
+        char *v22 = strtok(scr->p2, " \t_\n");
+        if ( v22 )
+        {
+            dword_5A7A88->field_621.sx = strtod(v22, 0);
+
+            v22 = strtok(0, " \t_\n");
+            if ( v22 )
+            {
+
+                dword_5A7A88->field_621.sy = strtod(v22, 0);
+
+                v22 = strtok(0, " \t_\n");
+                if ( v22 )
+                {
+                    dword_5A7A88->field_621.sz = strtod(v22, 0);
+                }
+            }
+        }
+    }
+    else if ( !strcasecmp(scr->p1, "force") )
+    {
+        dword_5A7A88->field_601 = strtod(scr->p2, 0);
+    }
+    else if ( !strcasecmp(scr->p1, "gunangle") )
+    {
+        dword_5A7A88->gun_angle2 = strtod(scr->p2, 0);
+    }
+    else if ( !strcasecmp(scr->p1, "gunbasis") )
+    {
+        NC_STACK_ypagun *guno = (NC_STACK_ypagun *)current_bact;
+        __NC_STACK_ypagun *gun = &guno->stack__ypagun;
+
+        char *v26 = strtok(scr->p2, " \t_\n");
+        if ( v26 )
+        {
+            gun->dir.sx = strtod(v26, 0);
+
+            v26 = strtok(0, " \t_\n");
+            if ( v26 )
+            {
+                gun->dir.sy = strtod(v26, 0);
+
+                v26 = strtok(0, " \t_\n");
+                if ( v26 )
+                {
+                    gun->dir.sz = strtod(v26, 0);
+                }
+            }
+        }
+    }
+    else if ( !strcasecmp(scr->p1, "waypoint") )
+    {
+        char *v29 = strtok(scr->p2, " \t_\n");
+        if ( v29 )
+        {
+            int v32 = atoi(v29);
+
+            v29 = strtok(0, " \t_\n");
+            if ( v29 )
+            {
+                dword_5A7A88->field_418[v32].sx = strtod(v29, 0);
+
+                v29 = strtok(0, " \t_\n");
+                if ( v29 )
+                {
+                    dword_5A7A88->field_418[v32].sz = strtod(v29, 0);
+                }
+            }
+        }
+    }
+    else if ( !strcasecmp(scr->p1, "num_wp") )
+    {
+        dword_5A7A88->field_59A = atoi(scr->p2);
+    }
+    else if ( !strcasecmp(scr->p1, "count_wp") )
+    {
+        dword_5A7A88->field_598 = atoi(scr->p2);
+    }
+    else
+        return 0;
+
+    return 1;
+}
+
+int sb_0x479f4c(scrCallBack *scr)
+{
+    _NC_STACK_ypaworld *yw = NULL;
+
+    if ( scr->dataForStore )
+        yw = (_NC_STACK_ypaworld *)scr->dataForStore;
+
+    if ( !scr->field_18 )
+    {
+        if ( !strcasecmp(scr->p1, "begin_robo") )
+        {
+            scr->field_18 = 1;
+
+            ypaworld_arg146 v5;
+            v5.pos.sx = 600;
+            v5.pos.sz = -600.0;
+            v5.pos.sy = 0;
+            v5.vehicle_id = atoi(scr->p2);
+
+            current_bact = (NC_STACK_ypabact *)call_method(yw->self_full, 146,&v5);
+
+            if ( current_bact )
+            {
+                current_robo = (NC_STACK_yparobo *)current_bact;
+
+                //call_vtbl(v3, 3, 0x80001003, &dword_5A7A88, 0);
+
+                dword_5A7A88 = &current_robo->stack__ypabact;
+
+                call_method(yw->self_full, 134, current_bact);
+                return 1;
+            }
+
+            return 4;
+        }
+        return 3;
+    }
+    else
+    {
+        if ( !strcasecmp(scr->p1, "end") )
+        {
+            if ( dword_5A7A88->owner == 1 )
+            {
+                dword_5A7A84 = (NC_STACK_yparobo *)current_bact;
+                call_vtbl(yw->self_full, 2, 0x80002010, current_bact, 0);
+            }
+
+            if ( !dword_5A7A88->reload_const_or_energy2 )
+                dword_5A7A88->reload_const_or_energy2 = dword_5A7A88->energy_2;
+
+            scr->field_18 = 0;
+            return 2;
+        }
+        else
+        {
+            if ( !scr->dataForStore || sub_47A0C0(scr) || sb_0x479f4c__sub0(scr) )
+                return 0;
+            return 3;
+        }
+
+    }
+}
+
+
+int sub_479E30(scrCallBack *scr)
+{
+    _NC_STACK_ypaworld *yw = NULL;
+
+    if ( scr->dataForStore )
+        yw = (_NC_STACK_ypaworld *)scr->dataForStore;
+
+    if ( scr->field_18 )
+    {
+        if ( !strcasecmp(scr->p1, "end") )
+        {
+            scr->field_18 = 0;
+            return 2;
+        }
+
+        if ( !scr->dataForStore || sub_47A0C0(scr) )
+            return 0;
+
+        return 3;
+    }
+    else
+    {
+        if ( !strcasecmp(scr->p1, "begin_commander") )
+        {
+            scr->field_18 = 1;
+
+            ypaworld_arg146 v5;
+            v5.pos.sx = 600.0;
+            v5.pos.sz = -600.0;
+            v5.pos.sy = 0;
+            v5.vehicle_id = atoi(scr->p2);
+
+            current_bact = (NC_STACK_ypabact *)call_method(yw->self_full, 146, &v5);
+
+            if ( current_bact )
+            {
+                dword_5A7A88 = &current_bact->stack__ypabact;
+
+                current_commander = current_bact;
+
+                call_method(current_robo, 72, current_bact);
+
+                return 1;
+            }
+            else
+                return 4;
+        }
+        else
+            return 3;
+    }
+}
+
+int sub_479D20(scrCallBack *scr)
+{
+    _NC_STACK_ypaworld *yw = NULL;
+
+    if ( scr->dataForStore )
+        yw = (_NC_STACK_ypaworld *)scr->dataForStore;
+
+    if ( scr->field_18 )
+    {
+        if ( !strcasecmp(scr->p1, "end") )
+        {
+            scr->field_18 = 0;
+            return 2;
+        }
+
+        if ( !scr->dataForStore || sub_47A0C0(scr) )
+            return 0;
+
+        return 3;
+    }
+    else
+    {
+        if ( !strcasecmp(scr->p1, "begin_slave") )
+        {
+            scr->field_18 = 1;
+
+            ypaworld_arg146 v5;
+            v5.pos.sx = 600.0;
+            v5.pos.sz = -600.0;
+            v5.pos.sy = 0;
+            v5.vehicle_id = atoi(scr->p2);
+
+            current_bact = (NC_STACK_ypabact *)call_method(yw->self_full, 146, &v5);
+
+            if ( current_bact )
+            {
+                dword_5A7A88 = &current_bact->stack__ypabact;
+
+                call_method(current_commander, 72, current_bact);
+
+                return 1;
+            }
+            else
+                return 4;
+        }
+        else
+            return 3;
+    }
+}
+
+int sub_479C40(scrCallBack *scr)
+{
+    _NC_STACK_ypaworld *yw = NULL;
+
+    if ( scr->dataForStore )
+        yw = (_NC_STACK_ypaworld *)scr->dataForStore;
+
+    if ( scr->field_18 )
+    {
+        if ( !strcasecmp(scr->p1, "end") )
+        {
+            scr->field_18 = 0;
+            return 2;
+        }
+
+        if ( yw )
+        {
+            if ( strcasecmp(scr->p1, "disablegem") )
+                return 3;
+
+            int v5 = atoi(scr->p2);
+
+            if ( v5 >= 0 && v5 < 8 )
+                yw->cells[yw->sectors_maxX2 * yw->gems[v5].sec_y + yw->gems[v5].sec_x].field_3A = 0;
+        }
+        return 0;
+    }
+    else
+    {
+        if ( !strcasecmp(scr->p1, "begin_wunderinfo") )
+        {
+            yw_InitTechUpgradeBuildings(yw->self_full, yw);
+            scr->field_18 = 1;
+            return 1;
+        }
+        else
+            return 3;
+    }
+}
+
+int sub_479B98(scrCallBack *scr)
+{
+    if ( !scr->field_18 )
+    {
+        if ( !strcasecmp(scr->p1, "begin_extraviewer") )
+        {
+            scr->field_18 = 1;
+            return 1;
+        }
+
+        return 3;
+    }
+    else
+    {
+        if ( !strcasecmp(scr->p1, "end") )
+        {
+            scr->field_18 = 0;
+            return 2;
+        }
+
+        if ( !strcasecmp(scr->p1, "kind") )
+        {
+            if ( !strcasecmp(scr->p2, "robogun") )
+            {
+                dword_5A7A8C = 1;
+                return 0;
+            }
+        }
+        else
+        {
+            if ( strcasecmp(scr->p1, "number") )
+                return 3;
+            dword_5A7A78 = atoi(scr->p2);
+        }
+        return 0;
+    }
+}
+
+int sub_479AB0(scrCallBack *scr)
+{
+    _NC_STACK_ypaworld *yw = NULL;
+
+    if ( scr->dataForStore )
+        yw = (_NC_STACK_ypaworld *)scr->dataForStore;
+
+    if ( !scr->field_18 )
+    {
+        if ( !strcasecmp(scr->p1, "begin_kwfactor") )
+        {
+            scr->field_18 = 1;
+            return 1;
+        }
+        return 3;
+    }
+    else
+    {
+        if ( !strcasecmp(scr->p1, "end") )
+        {
+            scr->field_18 = 0;
+            return 2;
+        }
+        else
+        {
+            if ( !strcasecmp(scr->p1, "kw") )
+            {
+                char *v4 = strtok(scr->p2, "_ \n");
+                if ( v4 )
+                {
+                    int v5 = atoi(v4);
+
+                    v4 = strtok(0, "_ \n");
+                    if ( v4 )
+                    {
+                        int v7 = atoi(v4);
+
+                        v4 = strtok(0, "_ \n");
+                        if ( v4 )
+                        {
+                            int v9 = atoi(v4);
+
+                            for (int i = 0; i < 256; i++)
+                            {
+                                yw_field34 *v11 = &yw->field_34[i];
+
+                                if ( v11->p_cell )
+                                {
+                                    if ( v5 == v11->x && v7 == v11->y )
+                                        v11->power_2 = v9;
+                                }
+                            }
+                        }
+                    }
+                }
+                return 0;
+            }
+            else
+                return 3;
+        }
+    }
+}
+
+int sub_479A30(scrCallBack *scr)
+{
+    _NC_STACK_ypaworld *yw = NULL;
+
+    if ( scr->dataForStore )
+        yw = (_NC_STACK_ypaworld *)scr->dataForStore;
+
+    if ( !scr->field_18 )
+    {
+        if ( !strcasecmp(scr->p1, "begin_globals") )
+        {
+            scr->field_18 = 1;
+            return 1;
+        }
+        return 3;
+    }
+    else
+    {
+
+        if ( !strcasecmp(scr->p1, "end") )
+        {
+            scr->field_18 = 0;
+            return 2;
+        }
+        else
+        {
+            if ( !strcasecmp(scr->p1, "time") )
+            {
+                yw->field_1614 = atoi(scr->p2);
+                return 0;
+            }
+            else
+                return 3;
+        }
+    }
+}
+
+int sub_47965C(scrCallBack *scr)
+{
+    _NC_STACK_ypaworld *yw;
+
+    if ( scr->dataForStore )
+        yw = (_NC_STACK_ypaworld *)scr->dataForStore;
+
+    if ( scr->field_18 )
+    {
+        if ( !strcasecmp(scr->p1, "end") )
+        {
+            scr->field_18 = 0;
+            return 2;
+        }
+
+        return 3;
+    }
+    else
+    {
+        if ( !strcasecmp(scr->p1, "begin_ownermap") )
+        {
+            scr->field_18 = 1;
+
+            for (int i = 0; i < 8; i++)
+                yw->sectors_count_by_owner[i] = 0;
+
+            if ( yw->own_map )
+                delete_class_obj(yw->own_map);
+
+            yw->own_map = readMapDumpAsILBM(yw, "ownmap", scr->file);
+
+            if ( yw->own_map )
+            {
+                bitmap_intern *bitm;
+                call_vtbl(yw->own_map, 3, 0x80002000, &bitm, 0);
+
+                int smax = yw->sectors_maxY2 * yw->sectors_maxX2;
+                uint8_t *pbuf = (uint8_t *)bitm->buffer;
+                cellArea *v6 = yw->cells;
+
+                for (int i = 0; i < smax; i++)
+                {
+                    int v8 = *pbuf;
+                    v6->owner = v8;
+                    yw->sectors_count_by_owner[v8]++;
+
+                    v6++;
+                    pbuf++;
+                }
+                return 1;
+            }
+            else
+            {
+                return 4;
+            }
+        }
+        else
+            return 3;
+    }
+}
+
+int sub_479770(scrCallBack *scr)
+{
+    _NC_STACK_ypaworld *yw;
+
+    if ( scr->dataForStore )
+        yw = (_NC_STACK_ypaworld *)scr->dataForStore;
+
+    if ( scr->field_18 )
+    {
+        if ( !strcasecmp(scr->p1, "end") )
+        {
+            scr->field_18 = 0;
+            return 2;
+        }
+        return 3;
+    }
+    else
+    {
+        if ( !strcasecmp(scr->p1, "begin_buildingmap") )
+        {
+            scr->field_18 = 1;
+
+            if ( yw->blg_map )
+                delete_class_obj(yw->blg_map);
+
+            yw->blg_map = readMapDumpAsILBM(yw, "blgmap", scr->file);
+            if ( yw->blg_map )
+            {
+                bitmap_intern *bitm;
+                call_vtbl(yw->blg_map, 3, 0x80002000, &bitm, 0);
+
+                int smax = yw->sectors_maxY2 * yw->sectors_maxX2;
+                uint8_t *pbuf = (uint8_t *)bitm->buffer;
+                cellArea *v6 = yw->cells;
+
+                for (int i = 0; i < smax; i++)
+                {
+                    int v8 = *pbuf;
+
+                    if ( v8 )
+                    {
+                        if ( v6->owner )
+                        {
+                            ypaworld_arg148 arg148;
+                            arg148.field_18 = 1;
+                            arg148.ownerID = v6->owner;
+                            arg148.ownerID2 = v6->owner;
+                            arg148.blg_ID = v8;
+                            arg148.field_C = 1;
+                            arg148.x = i % yw->sectors_maxX2;
+                            arg148.y = i / yw->sectors_maxX2;
+
+                            call_method(yw->self_full, 148, &arg148);
+                        }
+                    }
+
+                    v6++;
+                    pbuf++;
+                }
+
+                return 1;
+            }
+            else
+            {
+                return 4;
+            }
+        }
+        else
+            return 3;
+    }
+}
+
+int sub_4798D0(scrCallBack *scr)
+{
+    _NC_STACK_ypaworld *yw;
+
+    if ( scr->dataForStore )
+        yw = (_NC_STACK_ypaworld *)scr->dataForStore;
+
+    if ( scr->field_18 )
+    {
+        if ( !strcasecmp(scr->p1, "end") )
+        {
+            scr->field_18 = 0;
+            return 2;
+        }
+        return 3;
+    }
+    else
+    {
+        if ( !strcasecmp(scr->p1, "begin_energymap") )
+        {
+            scr->field_18 = 1;
+
+            NC_STACK_ilbm *v4 = readMapDumpAsILBM(yw, "nrgmap", scr->file);
+
+            if ( v4 )
+            {
+                bitmap_intern *bitm;
+                call_vtbl(v4, 3, 0x80002000, &bitm, 0);
+
+                int smax = yw->sectors_maxY2 * yw->sectors_maxX2;
+                cellArea *v6 = yw->cells;
+                uint8_t *pbuf = (uint8_t *)bitm->buffer;
+
+                for (int i = 0; i < smax; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        for (int k = 0; k < 3; k++)
+                        {
+                            v6->buildings_health[j][k] = *pbuf;
+                            pbuf++;
+                        }
+                    }
+
+                    v6++;
+
+                }
+
+                delete_class_obj(v4);
+                return 1;
+            }
+            else
+            {
+                ypa_log_out("Error while reading energy map!\n");
+                return 4;
+            }
+        }
+        else
+            return 3;
+    }
+}
+
+
+int sub_47925C(scrCallBack *scr)
+{
+    if ( scr->field_18 )
+    {
+        if ( !strcasecmp(scr->p1, "end") )
+        {
+            scr->field_18 = 0;
+            return 2;
+        }
+
+        if ( !strcasecmp(scr->p1, "levelnum") )
+        {
+            *(int *)scr->dataForStore = atoi(scr->p2);
+            return 0;
+        }
+    }
+    else if ( !strcasecmp(scr->p1, "begin_levelnum") )
+    {
+        scr->field_18 = 1;
+        return 1;
+    }
+
+    return 3;
+}
+
+
+
+int sb_0x47f2d8__sub0(yw_f726c *hist_list, FILE *fil)
+{
+    char v18[1024];
+    fgets(v18, 1024, fil);
+
+    char *v2 = strtok(v18, " \n");
+    int v3 = strtol(v2, 0, 0);
+
+    v2 = strtok(0, " \n");
+    int v7 = strtol(v2, 0, 0);
+
+    if ( sub_47EDDC(hist_list, v7 * v3) )
+    {
+        uint8_t *cur = hist_list->last_bufStart;
+        for (int i = 0; i < v7; i++)
+        {
+            fgets(v18, 1024, fil);
+
+            char *ln = v18;
+            for (int j = 0; j < v3; j++)
+            {
+                char *vl = strtok(ln, " \n");
+                if (ln)
+                    ln = NULL;
+
+                *cur = strtol(vl, 0, 16);
+                cur++;
+            }
+        }
+
+        cur = hist_list->last_bufStart;
+        while(*cur)
+        {
+            int wdth = 0;
+
+            switch (*cur)
+            {
+            case 1:
+                wdth = 5;
+                break;
+
+            case 2:
+            case 6:
+                wdth = 4;
+                break;
+
+            case 7:
+                wdth = 12;
+                break;
+
+            case 3:
+            case 4:
+                wdth = 6;
+                break;
+
+            case 5:
+                wdth = 0;
+                *cur = 0;
+                break;
+            }
+
+            cur += wdth;
+        }
+
+        hist_list->field_1C = NULL;
+        hist_list->last_bufStart = cur;
+
+        return 1;
+    }
+    return 0;
+}
+
+int sb_0x47f2d8(scrCallBack *scr)
+{
+    _NC_STACK_ypaworld *yw = (_NC_STACK_ypaworld *)scr->dataForStore;
+
+    if ( !scr->field_18 )
+    {
+        if ( !strcasecmp(scr->p1, "begin_history") )
+        {
+            scr->field_18 = 1;
+            return 1;
+        }
+        return 3;
+    }
+    else
+    {
+        if ( !strcasecmp(scr->p1, "end") )
+        {
+            scr->field_18 = 0;
+            return 2;
+        }
+        else
+        {
+            if ( !strcasecmp(scr->p1, "history_buffer") )
+            {
+                if ( yw->history )
+                    sb_0x47f2d8__sub0(yw->history, scr->file);
+                return 0;
+            }
+            else
+                return 3;
+        }
+    }
+}
+
+int sub_4795B0(scrCallBack *scr)
+{
+    _NC_STACK_ypaworld *yw = (_NC_STACK_ypaworld *)scr->dataForStore;
+
+    if ( scr->field_18 )
+    {
+        if ( !strcasecmp(scr->p1, "end") )
+        {
+            scr->field_18 = 0;
+            return 2;
+        }
+
+        if ( !strcasecmp(scr->p1, "ownermask") )
+        {
+            yw->field_2d90->ownerMap__has_vehicles = atoi(scr->p2);
+            return 0;
+        }
+
+        if ( !strcasecmp(scr->p1, "usermask") )
+        {
+            yw->field_2d90->field_60 = atoi(scr->p2);
+            return 0;
+        }
+    }
+    else if ( !strcasecmp(scr->p1, "begin_masks") )
+    {
+        scr->field_18 = 1;
+        return 1;
+    }
+
+    return 3;
+}
+
+
+int sub_4792D0(scrCallBack *scr)
+{
+    _NC_STACK_ypaworld *yw = (_NC_STACK_ypaworld *)scr->dataForStore;
+
+    if ( !scr->field_18 )
+    {
+        if ( !strcasecmp(scr->p1, "begin_superbomb") )
+        {
+            scr->field_18 = 1;
+            return 1;
+        }
+        return 3;
+    }
+    else
+    {
+        if ( !strcasecmp(scr->p1, "end") )
+        {
+            scr->field_18 = 0;
+            return 2;
+        }
+        else if ( !strcasecmp(scr->p1, "status") )
+        {
+            int v4 = atoi(scr->p2);
+
+            if ( v4 == 1 )
+                sub_4D12D8(yw, dword_5A7A70, 0);
+            else if ( v4 == 2 )
+                sub_4D1594(yw, dword_5A7A70);
+            else if ( v4 == 3 )
+                sub_4D1444(yw, dword_5A7A70);
+
+        }
+        else if ( !strcasecmp(scr->p1, "num") )
+        {
+            dword_5A7A70 = atoi(scr->p2);
+        }
+        else if ( !strcasecmp(scr->p1, "activated_by") )
+        {
+            yw->field_2d90->supetItems[dword_5A7A70].field_F4 = atoi(scr->p2);
+        }
+        else if ( !strcasecmp(scr->p1, "active_timestamp") )
+        {
+            yw->field_2d90->supetItems[dword_5A7A70].field_EC = atoi(scr->p2);
+        }
+        else if ( !strcasecmp(scr->p1, "trigger_timestamp") )
+        {
+            yw->field_2d90->supetItems[dword_5A7A70].field_F0 = atoi(scr->p2);
+        }
+        else if ( !strcasecmp(scr->p1, "countdown") )
+        {
+            yw->field_2d90->supetItems[dword_5A7A70].field_F8 = atoi(scr->p2);
+        }
+        else if ( !strcasecmp(scr->p1, "last_ten_sec") )
+        {
+            yw->field_2d90->supetItems[dword_5A7A70].field_FC = atoi(scr->p2);
+        }
+        else if ( !strcasecmp(scr->p1, "last_sec") )
+        {
+            yw->field_2d90->supetItems[dword_5A7A70].field_100 = atoi(scr->p2);
+        }
+        else if ( !strcasecmp(scr->p1, "radius") )
+        {
+            yw->field_2d90->supetItems[dword_5A7A70].field_104 = atoi(scr->p2);
+        }
+        else if ( !strcasecmp(scr->p1, "last_radius") )
+        {
+            yw->field_2d90->supetItems[dword_5A7A70].field_108 = atoi(scr->p2);
+        }
+        else
+            return 3;
+
         return 0;
     }
 }

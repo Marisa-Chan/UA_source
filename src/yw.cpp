@@ -10,7 +10,7 @@
 
 #include "button.h"
 #include "font.h"
-
+#include "yparobo.h"
 
 
 stored_functions *classvtbl_get_ypaworld();
@@ -61,6 +61,12 @@ char **ypaworld__string_pointers;
 listview stru_5C91D0;
 
 int bact_id;
+
+// method 169
+int dword_5A7A78;
+int dword_5A7A8C;
+int dword_5A7A80;
+NC_STACK_yparobo *dword_5A7A84; //player robo
 
 
 int sub_4493B0(scrCallBack *arg)
@@ -6741,10 +6747,276 @@ void ypaworld_func168(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 }
 
 
-size_t ypaworld_func169(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+
+int ypaworld_func169__sub3(const char *a)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func169");
+    FILE *fil = FOpen(a, "r");
+
+    if ( !fil )
+        return 0;
+
+    FClose(fil);
+    return 1;
+}
+
+int get_lvlnum_from_save(const char *filename, int *lvlnum_out)
+{
+    FILE *fil = FOpen(filename, "r");
+
+    if ( !fil )
+        return 0;
+
+    char v7[256];
+    while ( fgets(v7, 255, fil) )
+    {
+        if ( !strnicmp(v7, "begin_levelnum", 14) )
+        {
+            while ( fgets(v7, 255, fil) )
+            {
+                if ( !strnicmp(v7, "end", 3) )
+                    return 0; //Not found
+
+                char *v5 = strtok(v7, " \t");
+
+                if ( v5 )
+                {
+                    if ( !strnicmp(v5, "levelnum", 8) )
+                    {
+                        v5 = strtok(0, " \t=");
+
+                        if ( v5 )
+                        {
+                            *lvlnum_out = atoi(v5);
+                            FClose(fil);
+                            return 1;
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+    FClose(fil);
     return 0;
+}
+
+int ypaworld_func169__sub1(_NC_STACK_ypaworld *yw, const char *filename)
+{
+    int v6;
+
+    scrCallBack parsers[19];
+    memset(parsers, 0, sizeof(parsers));
+
+    parsers[0].func = parseSaveUser;
+    parsers[0].world = (_NC_STACK_ypaworld *)yw->self_full;
+    parsers[0].world2 = yw;
+
+    parsers[1].func = sb_0x479f4c;
+    parsers[1].dataForStore = yw;
+
+    parsers[2].func = sub_479E30;
+    parsers[2].dataForStore = yw;
+
+    parsers[3].func = sub_479D20;
+    parsers[3].dataForStore = yw;
+
+    parsers[4].func = sub_479C40;
+    parsers[4].dataForStore = yw;
+
+    parsers[5].func = VhclProtoParser;
+    parsers[5].world = yw;
+
+    parsers[6].func = WeaponProtoParser;
+    parsers[6].world = yw;
+
+    parsers[7].func = BuildProtoParser;
+    parsers[7].world2 = yw;
+
+    parsers[8].func = sub_479B98;
+
+    parsers[9].dataForStore = yw;
+    parsers[9].func = sub_479AB0;
+
+    parsers[10].dataForStore = yw;
+    parsers[10].func = sub_479A30;
+
+    parsers[11].dataForStore = yw;
+    parsers[11].func = sub_47965C;
+
+    parsers[12].dataForStore = yw;
+    parsers[12].func = sub_479770;
+
+    parsers[13].dataForStore = yw;
+    parsers[13].func = sub_4798D0;
+
+    parsers[14].dataForStore = &v6;
+    parsers[14].func = sub_47925C;
+
+    parsers[15].dataForStore = yw;
+    parsers[15].func = parseSaveLevelStatus;
+
+    parsers[16].func = sb_0x47f2d8;
+    parsers[16].dataForStore = yw;
+
+    parsers[17].dataForStore = yw;
+    parsers[17].func = sub_4795B0;
+
+    parsers[18].dataForStore = yw;
+    parsers[18].func = sub_4792D0;
+
+    return def_parseFile(filename, 19, parsers, 1);
+}
+
+void ypaworld_func169__sub2(_NC_STACK_ypaworld *yw)
+{
+    bact_node *station = (bact_node *)yw->bact_list.head;
+
+    NC_STACK_yparobo *player_station = NULL;
+
+    while(station->next)
+    {
+        sb_0x47b028(yw, station, station, 1);
+
+        if ( station->bact->owner == 1 && station->bact->field_24 == 3 )
+            player_station = (NC_STACK_yparobo *)station->bacto;
+
+        bact_node *commander = (bact_node *)station->bact->list2.head;
+
+        while (commander->next)
+        {
+            sb_0x47b028(yw, commander, station, 0);
+
+            bact_node *slave = (bact_node *)commander->bact->list2.head;
+            while (slave->next)
+            {
+                sb_0x47b028(yw, slave, station, 0);
+
+                slave = (bact_node *)slave->next;
+            }
+
+            commander = (bact_node *)commander->next;
+        }
+
+        station = (bact_node *)station->next;
+    }
+
+    if ( dword_5A7A8C == 1 )
+    {
+        __NC_STACK_yparobo *robo = &player_station->stack__yparobo;
+
+        if ( robo->guns[dword_5A7A78].gun_obj )
+        {
+            call_vtbl(robo->guns[dword_5A7A78].gun_obj, 2, 0x80001004, dword_5A7A8C, 0);
+            call_vtbl(robo->guns[dword_5A7A78].gun_obj, 2, 0x80001005, dword_5A7A8C, 0);
+        }
+    }
+}
+
+size_t ypaworld_func169(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg169 *arg)
+{
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    int v5 = 0;
+
+    if ( !ypaworld_func169__sub3(arg->saveFile) )
+        return 1;
+
+    if ( strstr(arg->saveFile, ".SGM") || strstr(arg->saveFile, ".sgm") )
+    {
+        yw->maxreloadconst = 0;
+        yw->maxroboenergy = 0;
+    }
+
+    char save_filename[300];
+    sprintf(save_filename, "%s", arg->saveFile);
+
+    int lvlnum;
+    get_lvlnum_from_save(save_filename, &lvlnum);
+
+    dword_5A7A78 = -1;
+    dword_5A7A8C = 0;
+
+    mapProto mapp;
+
+    if ( sb_0x44ca90(yw, &mapp, lvlnum, 0) )
+    {
+        if ( cells_mark_type(yw, mapp.typ) )
+        {
+            if ( cells_mark_owner(yw, mapp.own) )
+            {
+                if ( cells_mark_hight(yw, mapp.hgt) )
+                {
+                    if ( sub_44B9B8(obj, yw, mapp.blg) )
+                        v5 = 1;
+                }
+            }
+        }
+    }
+
+    if ( !v5 )
+    {
+        call_method(obj, 151, 0);
+        return 0;
+    }
+
+    yw->field_2d90->ownerMap__has_vehicles = 0;
+    yw->field_2d90->field_60 = 0;
+
+    bact_id = 0x10000;
+    dword_5A7A80 = 0;
+    dword_5A7A84 = NULL;
+
+    yw_InitSuperItems(yw);
+
+    if ( yw->copyof_typemap )
+    {
+        delete_class_obj(yw->copyof_typemap);
+        yw->copyof_typemap = NULL;
+    }
+
+    if ( yw->copyof_ownermap )
+    {
+        delete_class_obj(yw->copyof_ownermap);
+        yw->copyof_ownermap = NULL;
+    }
+
+    if ( yw->typ_map )
+        yw->copyof_typemap = sub_44816C(yw->typ_map, "copyof_typemap");
+
+    if ( yw->own_map )
+        yw->copyof_ownermap = sub_44816C(yw->own_map, "copyof_ownermap");
+
+    if ( !ypaworld_func169__sub1(yw, save_filename) )
+        return 0;
+
+    dword_5A7A80++;
+    bact_id++;
+
+    if ( dword_5A7A84 )
+        call_vtbl(dword_5A7A84, 2, 0x80002007, dword_5A7A80, 0);
+
+    ypaworld_func169__sub2(yw);
+
+    if ( strstr(arg->saveFile, ".fin") || strstr(arg->saveFile, ".FIN") )
+        yw_InitBuddies(yw);
+
+    for(int y = 0; y < yw->sectors_maxY2; y++)
+    {
+        for(int x = 0; x < yw->sectors_maxX2; x++)
+        {
+            cellArea *cell = &yw->cells[x + y * yw->sectors_maxX2];
+            sb_0x44fc60(yw, cell, x, y, 255, 0);
+        }
+    }
+
+    yw_InitGates(yw);
+    sub_44F748(yw);
+
+    if ( !sb_0x451034(obj, yw) )
+        return 0;
+
+    return 1;
 }
 
 

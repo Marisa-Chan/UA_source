@@ -419,4 +419,27 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stru
 
 void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt);
 
+int sub_47EDDC(yw_f726c *hist, int bufsize);
+
+void sub_4D12D8(_NC_STACK_ypaworld *yw, int id, int a3);
+void sub_4D1594(_NC_STACK_ypaworld *yw, int id);
+void sub_4D1444(_NC_STACK_ypaworld *yw, int id);
+void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a3);
+
+//Saves protos
+int sb_0x479f4c(scrCallBack *scr);
+int sub_479E30(scrCallBack *scr);
+int sub_479D20(scrCallBack *scr);
+int sub_479C40(scrCallBack *scr);
+int sub_479B98(scrCallBack *scr);
+int sub_479AB0(scrCallBack *scr);
+int sub_479A30(scrCallBack *scr);
+int sub_47965C(scrCallBack *scr);
+int sub_479770(scrCallBack *scr);
+int sub_4798D0(scrCallBack *scr);
+int sub_47925C(scrCallBack *scr);
+int sb_0x47f2d8(scrCallBack *scr);
+int sub_4795B0(scrCallBack *scr);
+int sub_4792D0(scrCallBack *scr);
+
 #endif

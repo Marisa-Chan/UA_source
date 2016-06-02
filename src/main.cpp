@@ -70,7 +70,33 @@ int sb_0x411324__sub1()
     }
     else if ( userdata.field_0x2fbc == 3 )
     {
+        dword_520400 = 0;
 
+        stru_2d90 *a4;
+        call_vtbl(ypaworld, 3, 0x8000201A, &a4, 0);
+
+        //sub_410628();
+        call_method(ypaworld, 157, &userdata);
+
+        /*	if ( !sub_4107FC(&userdata) )
+            		return 0;*/
+
+        char a1[200];
+        yw_arg169 arg169;
+        arg169.saveFile = a1;
+        arg169.usr = &userdata;
+
+        sprintf(a1, "save:%s/%d.sgm", userdata.user_name, 0);
+
+        if ( !call_method(ypaworld, 169, &arg169) )
+        {
+            ypa_log_out("Error while loading level (level %d, User %s\n", a4->levelID, userdata.user_name);
+
+            call_method(ypaworld, 155, &userdata);
+            result = 0;
+        }
+        dword_520400 = 2;
+        sub_412D28(&input_states);
     }
     else if ( userdata.field_0x2fbc == 4 )
     {
