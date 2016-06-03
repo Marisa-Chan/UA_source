@@ -4512,9 +4512,9 @@ int LevelSuperItemsParser(scrCallBack *arg)
     {
         if ( !strcasecmp(arg->p1, "begin_item") )
         {
-            memset(sitem, 0, 268);
+            memset(sitem, 0, sizeof(supetItemProto));
             sitem->type = 0;
-            sitem->countdown = 60000;
+            sitem->countdown = 60000; //1hour
             sitem->field_4 = 0;
             sitem->mb_status = 0;
             arg->field_18 = 1;
