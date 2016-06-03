@@ -310,7 +310,15 @@ void yw_netcleanup(_NC_STACK_ypaworld *yw)
     dprintf("MAKE ME %s (multiplayer)\n", "yw_netcleanup");
 }
 
+void ypaworld_func64__sub18(_NC_STACK_ypaworld *yw)
+{
+    dprintf("MAKE ME %s (multiplayer)\n", "ypaworld_func64__sub18");
+}
 
+void ypaworld_func64__sub10(_NC_STACK_ypaworld *yw)
+{
+    dprintf("MAKE ME %s (multiplayer)\n", "ypaworld_func64__sub10");
+}
 
 
 

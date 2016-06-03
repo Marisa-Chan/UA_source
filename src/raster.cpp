@@ -56,6 +56,60 @@ size_t raster_func1(NC_STACK_raster *obj, class_stru *zis, stack_vals *stak)
 void raster_func2(NC_STACK_raster *obj, class_stru *zis, stack_vals *stak)
 {
     dprintf("MAKE ME %s\n","raster_func2");
+
+    __NC_STACK_raster *rstr = &obj->stack__raster;
+
+    stack_vals *stk = stak;
+
+    while ( 1 )
+    {
+        if (stk->id == 0)
+            break;
+        else if (stk->id == 2)
+        {
+            stk = (stack_vals *)stk->value;
+        }
+        else if ( stk->id == 3 )
+        {
+            stk += stk->value;
+            ////a2++; ////BUGFIX?
+        }
+        else
+        {
+            switch(stk->id)
+            {
+            case 0x80003000:
+                break;
+                rstr->field_4 = (DWORD)stk->value;
+                break;
+
+            case 0x80003001:
+                rstr->field_c = (DWORD)stk->value;
+                break;
+
+            case 0x80003002:
+//            rstr->field_10 = (int)a2;
+//            if ( a2 )
+//              rstr->field_14 = a2->id;
+                break;
+
+            case 0x80003003:
+//            rstr->field_18 = (int)a2;
+//            if ( a2 )
+//              rstr->field_1c = a2->id;
+                break;
+
+            case 0x80003004:
+                rstr->field_8 = (DWORD)stk->value;
+                break;
+
+            default:
+                break;
+            }
+            stk++;
+        }
+    }
+
     call_parent(zis, obj, 2, stak);
 }
 
@@ -88,9 +142,12 @@ void raster_func3(NC_STACK_raster *obj, class_stru *zis, stack_vals *stak)
 }
 
 
-size_t raster_func192(void *, class_stru *, stack_vals *)
+size_t raster_func192(NC_STACK_raster *obj, class_stru *, stack_vals *)
 {
-    dprintf("MAKE ME %s\n","raster_func192");
+    __NC_STACK_raster *rstr = &obj->stack__raster;
+    bitmap_intern *bitm = rstr->bitm_intern;
+
+    memset(bitm->buffer, rstr->field_c, bitm->width * bitm->height);
     return 0;
 }
 

@@ -442,4 +442,18 @@ int sb_0x47f2d8(scrCallBack *scr);
 int sub_4795B0(scrCallBack *scr);
 int sub_4792D0(scrCallBack *scr);
 
+int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg);
+void ypaworld_func64__sub2(_NC_STACK_ypaworld *yw);
+void ypaworld_func64__sub19(_NC_STACK_ypaworld *yw);
+void ypaworld_func64__sub9(_NC_STACK_ypaworld *yw);
+void ypaworld_func64__sub23(_NC_STACK_ypaworld *yw);
+void ypaworld_func64__sub3(_NC_STACK_ypaworld *yw);
+void sub_44A094(_NC_STACK_ypaworld *yw);
+
+void ypaworld_func64__sub11(_NC_STACK_ypaworld *yw);
+void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt);
+void ypaworld_func64__sub12(_NC_STACK_ypaworld *yw, int dtime);
+void ypaworld_func64__sub13(_NC_STACK_ypaworld *yw);
+void ypaworld_func64__sub22(_NC_STACK_ypaworld *yw);
+
 #endif

@@ -1,6 +1,7 @@
 #include "includes.h"
 #include "utils.h"
 #include "inttypes.h"
+#include <SDL2/SDL_timer.h>
 
 
 void va_to_arr(stack_vals *out, int sz, va_list in)
@@ -214,4 +215,26 @@ void dprintf(const char *fmt, ...)
 
         va_end(args);
     }
+}
+
+DWORD profiler_begin()
+{
+    Uint64 freq = SDL_GetPerformanceFrequency();
+
+    if ( !freq )
+        return 0;
+
+    Uint64 cnt = SDL_GetPerformanceCounter();
+    return cnt / (freq / 10000);
+}
+
+DWORD profiler_end(DWORD prev)
+{
+    Uint64 freq = SDL_GetPerformanceFrequency();
+
+    if ( freq )
+        return 0 - prev;
+
+    Uint64 cnt = SDL_GetPerformanceCounter();
+    return cnt / (freq / 10000) - prev;
 }

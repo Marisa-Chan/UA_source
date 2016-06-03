@@ -79,5 +79,7 @@ extern netgamelst netgame_wnd;
 
 void sb_0x451034__sub6(_NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub7__sub5(_NC_STACK_ypaworld *yw, struC5 *inpt);
+void ypaworld_func64__sub18(_NC_STACK_ypaworld *yw);
+void ypaworld_func64__sub10(_NC_STACK_ypaworld *yw);
 
 #endif // WINDP_H_INCLUDED

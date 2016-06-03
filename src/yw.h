@@ -303,6 +303,8 @@ struct UserData
 struct recorder
 {
     int field_0;
+
+    int field_3C;
 };
 
 struct cellArea : public nnode
@@ -722,8 +724,8 @@ struct yw_samples
 {
     int field_0;
     samples_collection1 field_4;
-    int field_35C;
-    int field_360;
+    NC_STACK_wav *field_35C;
+    __NC_STACK_ypabact *field_360;
 };
 
 struct yw_f80
@@ -773,7 +775,7 @@ struct _NC_STACK_ypaworld
 {
     NC_STACK_ypaworld *self_full;
     UserData *GameShell;
-
+    base_64arg *b64_parms;
     int sectors_maxX;
     int sectors_maxY;
     int sectors_maxX2;
@@ -905,9 +907,9 @@ struct _NC_STACK_ypaworld
     int16_t field_1b68; // debug info draw
     int16_t field_1B6A;
     int16_t field_1b6c;
-
+    uint16_t field_1B6E;
     int field_1b70;
-
+    int field_1b74;
     NC_STACK_ypabact *field_1b78;
     NC_STACK_ypabact *field_1b7c;
     __NC_STACK_ypabact *field_1b80;
@@ -925,6 +927,7 @@ struct _NC_STACK_ypaworld
     int field_241c;
     __NC_STACK_ypabact *field_2420;
     int field_2424;
+    int field_2428;
 
     recorder *sceneRecorder;
     bact_hudi hudi;
@@ -998,12 +1001,10 @@ struct _NC_STACK_ypaworld
 
 
     int netgame_exclusivegem;
+    int field_7626;
 
     int p_1_grp_cnt;
-    int p_1_grp_p1[8];
-    int p_1_grp_p2[8];
-    int p_1_grp_p3[8];
-    int p_1_grp_p4[8];
+    int p_1_grp[4][8];
     player_status playerstatus[8];
     player_status field_7796[8];
     int maxroboenergy;
@@ -1492,6 +1493,11 @@ struct yw_arg184_t4 : public yw_arg184_type
     int16_t field_2;
     char field_4;
     char field_5;
+};
+
+struct yw_arg184_t1 : public yw_arg184_type
+{
+    int field_1;
 };
 
 struct yw_arg159

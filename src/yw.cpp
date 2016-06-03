@@ -724,171 +724,349 @@ void sub_445230(_NC_STACK_ypaworld *yw)
 
 void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func64");
-
     _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
 
-    if ( yw->field_1b84 )
+    extern listview gui_lstvw; //In yw_game_ui.cpp
+    extern listview lstvw2; //In yw_game_ui.cpp
+
+    if ( (gui_lstvw.cmd_flag & 0x20 && lstvw2.cmd_flag & 0x20)
+            || (arg->field_8->downed_key != VK_RETURN && arg->field_8->downed_key != VK_ESCAPE) )
     {
-        if ( yw->field_161c == 1 )
-        {
-            yw->field_1334 = yw->field_1b84->field_621;
-            yw->field_1340 = yw->field_1b84->field_651;
-        }
-
-        xyz a3;
-        a3.sx = yw->field_1b84->field_605.sx * yw->field_1b84->field_611;
-        a3.sy = yw->field_1b84->field_605.sy * yw->field_1b84->field_611;
-        a3.sz = yw->field_1b84->field_605.sz * yw->field_1b84->field_611;
-
-        sub_423EFC(arg->field_4, &yw->field_1334, &a3, &yw->field_1340);
+        yw->field_826F = 0;
+    }
+    else
+    {
+        yw->field_826F = arg->field_8->downed_key;
+        arg->field_8->downed_key = 0;
+        arg->field_8->downed_key_2 = 0;
+        arg->field_8->dword8 = 0;
     }
 
-
-    ypaworld_func64__sub6(yw);
-    //ypaworld_func64__sub2(yw);
-
-    if ( !yw->field_138c )
+    if ( !ypaworld_func64__sub4(yw, arg) )
     {
-        ypaworld_func64__sub1(yw, arg->field_8); //Precompute input (add mouse turn)
+        DWORD v92 = profiler_begin();
 
-        winp_131arg *winp = &arg->field_8->winp131arg;
+        gfxEngine__getter(0x8000300D, &yw->win3d, 0);
 
-        if ( yw->field_1b1c )
+        yw->field_7626 = 0;
+        yw->b64_parms = arg;
+
+        if ( yw->field_2428 )
         {
-            if ( winp->move[0].x != yw->field_1b20 || winp->move[0].y != yw->field_1b22 )
-                yw->field_1b1c = 0;
+            arg->field_0 -= arg->field_4;
+            arg->field_8->period = 40;
+            arg->field_4 = 40;
+            arg->field_0 += arg->field_4;
         }
-        else
+
+        if ( yw->field_1b84 )
         {
-            if ( arg->field_8->downed_key )
+            if ( yw->field_161c == 1 )
             {
-                if ( arg->field_8->downed_key != 0x81 && arg->field_8->downed_key != 0x83 && arg->field_8->downed_key != 0x82 && !(arg->field_8->but_flags & 0x10) )
+                yw->field_1334 = yw->field_1b84->field_621;
+                yw->field_1340 = yw->field_1b84->field_651;
+            }
+
+            xyz a3;
+            a3.sx = yw->field_1b84->field_605.sx * yw->field_1b84->field_611;
+            a3.sy = yw->field_1b84->field_605.sy * yw->field_1b84->field_611;
+            a3.sz = yw->field_1b84->field_605.sz * yw->field_1b84->field_611;
+
+            sub_423EFC(arg->field_4, &yw->field_1334, &a3, &yw->field_1340);
+        }
+
+        if ( yw->field_161c == 1 )
+        {
+            yw_arg159 arg159;
+            arg159.unit = yw->field_1b80;
+            arg159.field_4 = 128;
+            arg159.txt = NULL;
+            arg159.field_C = 41;
+
+            call_method(obj, 159, &arg159);
+        }
+
+        ypaworld_func64__sub6(yw);
+        ypaworld_func64__sub2(yw);
+
+        if ( !yw->field_138c )
+        {
+            ypaworld_func64__sub1(yw, arg->field_8); //Precompute input (add mouse turn)
+
+            winp_131arg *winp = &arg->field_8->winp131arg;
+
+            if ( yw->field_1b1c )
+            {
+                if ( winp->move[0].x != yw->field_1b20 || winp->move[0].y != yw->field_1b22 )
+                    yw->field_1b1c = 0;
+            }
+            else
+            {
+                if ( arg->field_8->downed_key )
                 {
-                    yw->field_1b1c = 1;
-                    yw->field_1b20 = winp->move[0].x;
-                    yw->field_1b22 = winp->move[0].y;
+                    if ( arg->field_8->downed_key != 0x81 && arg->field_8->downed_key != 0x83 && arg->field_8->downed_key != 0x82 && !(arg->field_8->but_flags & 0x10) )
+                    {
+                        yw->field_1b1c = 1;
+                        yw->field_1b20 = winp->move[0].x;
+                        yw->field_1b22 = winp->move[0].y;
+                    }
                 }
             }
         }
-    }
 
-    yw->field_1614 += arg->field_4;
-    yw->field_1618 = arg->field_4;
+        yw->field_1614 += arg->field_4;
+        yw->field_1618 = arg->field_4;
+        yw->field_161c++;
 
-    yw->field_1b24.field_14 = 0;
-    yw->field_161c++;
-    yw->field_1b24.field_0 = yw->field_1614;
-    yw->field_1b24.field_4 = arg->field_4;
-    yw->field_1b24.numid = 0;
-    yw->field_1b24.inpt = arg->field_8;
-    //yw->field_1B6E = 1024 / arg->field_4;
+        yw->field_1b24.field_14 = 0;
+        yw->field_1b24.field_0 = yw->field_1614;
+        yw->field_1b24.field_4 = arg->field_4;
+        yw->field_1b24.numid = 0;
+        yw->field_1b24.inpt = arg->field_8;
+        yw->field_1B6E = 1024 / arg->field_4;
+        yw->p_1_grp[0][0] = yw->field_1B6E;
 
-    //printf("flag %x \n", arg->field_8->winp131arg.flag);
+        yw_arg184_t1 arg184;
+        arg184.type = 1;
+        arg184.field_1 = yw->field_1614;
+        call_method(yw->self_full, 184, &arg184);
 
-    for (int i = 0; i < yw->sectors_maxY2 * yw->sectors_maxX2; i++)
-    {
-        cellArea *tmp = yw->cells + i;
+        DWORD v22 = profiler_begin();
 
-        tmp->field_39 = 1 << tmp->owner;
-    }
+        if ( yw->field_757E )
+            ypaworld_func64__sub18(yw);
 
-    bact_node *v32 = (bact_node *)yw->bact_list.head;
-    while (v32->next)
-    {
-        call_method(v32->bacto, 102, 0);
-
-        v32 = (bact_node *)v32->next;
-    }
-
-
-    // View all =)
-//    for (int i = 0; i < yw->sectors_maxY2 - 1; i++)
-//    {
-//        for (int j = 0; j <  yw->sectors_maxX2 - 1; j++)
-//        {
-//            cellArea *tmp = yw->cells + j + i * yw->sectors_maxX2;
-//
-//            tmp->field_39 |= 1 << 1;
-//        }
-//    }
-
-
-
-    ypaworld_func64__sub15(yw);
-    ypaworld_func64__sub16(yw);
-    ypaworld_func64__sub17(yw);
-    sub_4C40AC(yw);
-
-    ypaworld_func64__sub20(obj, yw, arg->field_4);
-
-    if ( !yw->field_138c )
-    {
-        ypaworld_func64__sub8(obj, yw);
-        ypaworld_func64__sub7(yw, arg->field_8);
-
-        sub_445230(yw);
-
-        ypaworld_func64__sub14(yw);
-        ypaworld_func64__sub21(obj, yw, arg->field_8);
-    }
-
-
-    if ( yw->field_15fc )
-        ypaworld_func64__sub5(yw);
-
-
-    bact_node *nnode = (bact_node *)yw->bact_list.head;
-    while ( nnode->next )
-    {
-        bact_node *next_node = (bact_node *)nnode->next;
-
-        //printf("update cl %d tm %d %d\n", nnode->bact->field_24, nnode->bact->owner, nnode->bact->field_3D5);
-
-        if (yw->field_757E && nnode->bacto != yw->field_1b78 && nnode->bact->field_24 == 3)
-            call_method(nnode->bacto, 116, &yw->field_1b24);
-        else
-            call_method(nnode->bacto, 65, &yw->field_1b24);
-
-        yw->field_1b24.numid++;
-
-        nnode = next_node;
-    }
-
-    call_method(yw->win3d, 257, 0);
-
-
-    mat3x3 *v57 = sb_0x424c74();
-    base_1c_struct *v58 = sub_430A28();
-
-    mat3x3 dst;
-    mat_mult(v57, &v58->scale_rotation, &dst);
-
-    v58->scale_rotation = dst;
-
-//      if ( yw->sceneRecorder->field_3C )
-//        ypaworld_func64__sub13(yw);
-//
-//      ypaworld_func64__sub3(yw);
-
-    if ( !yw->field_138c )
-    {
-//        v62 = sub_4C0AA4();
-
-        if ( yw->field_1b84->field_c || yw->field_1b84->field_10 )
+        if ( !yw->field_757E || yw->field_2d90->field_40 != 2 )
         {
-            sb_0x4d7c08(obj, yw, arg, 1);
+            yw->p_1_grp[0][6] = profiler_end(v22);
 
-//          if ( yw->field_757E )
-//            ypaworld_func64__sub10(yw);
+            DWORD v23 = profiler_begin();
+
+            for (int i = 0; i < yw->sectors_maxY2 * yw->sectors_maxX2; i++)
+            {
+                cellArea *tmp = yw->cells + i;
+
+                tmp->field_39 = 1 << tmp->owner;
+            }
+
+            bact_node *v32 = (bact_node *)yw->bact_list.head;
+            while (v32->next)
+            {
+                call_method(v32->bacto, 102, 0);
+
+                v32 = (bact_node *)v32->next;
+            }
+
+            yw->p_1_grp[0][2] = profiler_end(v23);
+
+            if ( !yw->field_138c )
+            {
+                call_method(yw->win3d, 257, 0);
+                call_vtbl(yw->win3d, 2, 0x80003001, 0, 0);
+                call_method(yw->win3d, 192, 0);
+            }
+
+            ypaworld_func64__sub15(yw);
+            ypaworld_func64__sub16(yw);
+            ypaworld_func64__sub17(yw);
+            sub_4C40AC(yw);
+            ypaworld_func64__sub9(yw);
+            ypaworld_func64__sub19(yw);
+            ypaworld_func64__sub20(obj, yw, arg->field_4);
+
+            if ( !yw->field_138c )
+            {
+                DWORD v33 = profiler_begin();
+
+                ypaworld_func64__sub8(obj, yw);
+                ypaworld_func64__sub7(yw, arg->field_8);
+
+                sub_445230(yw);
+
+                ypaworld_func64__sub14(yw);
+                ypaworld_func64__sub21(obj, yw, arg->field_8);
+
+                yw->p_1_grp[0][3] = profiler_end(v33);
+            }
+
+            if ( yw->field_15fc )
+                ypaworld_func64__sub5(yw);
+
+            if ( yw->sceneRecorder->field_3C )
+                ypaworld_func64__sub12(yw, arg->field_4);
+
+            yw->hudi.field_0 = 0;
+            yw->hudi.field_4 = 0;
+
+            yw->field_1b74 = yw->field_1b84->p_cell_area->owner;
+
+            DWORD v37 = profiler_begin();
+
+            bact_node *nnode = (bact_node *)yw->bact_list.head;
+            while ( nnode->next )
+            {
+                bact_node *next_node = (bact_node *)nnode->next;
+
+                if (yw->field_757E && nnode->bacto != yw->field_1b78 && nnode->bact->field_24 == 3)
+                    call_method(nnode->bacto, 116, &yw->field_1b24);
+                else
+                    call_method(nnode->bacto, 65, &yw->field_1b24);
+
+                yw->field_1b24.numid++;
+
+                nnode = next_node;
+            }
+
+            yw->p_1_grp[0][4] = profiler_end(v37);
+
+            sub_445230(yw);
+
+            DWORD v41 = profiler_begin();
+
+            if ( yw->field_757E )
+            {
+                dprintf("MAKE ME %s (multiplayer part)\n", "ypaworld_func64");
+//        if ( arg->field_4 == 1 )
+//          yw->field_7586 -= 20;
+//        else
+//          yw->field_7586 -= arg->field_4;
+//
+//        if ( yw->field_7586 <= 0 )
+//        {
+//            windp_arg82 arg82;
+//            arg82.field_0 = yw->GameShell->callSIGN;
+//          arg82.field_4 = 1;
+//          arg82.field_C = 2;
+//          arg82.field_8 = 0;
+//          arg82.field_10 = 0;
+//
+//          int v44 = call_method(yw->windp, 82, &arg82);
+//
+//          yw->GameShell->field_545F += v44;
+//
+//          if ( !yw->GameShell->field_5493 || v44 < yw->GameShell->field_5493 )
+//            yw->GameShell->field_5493 = v44;
+//
+//          if ( v44 > yw->GameShell->field_5497 )
+//            yw->GameShell->field_5497 = v44;
+//
+//          if ( v44 )
+//            yw->GameShell->field_549B++;
+//
+//          if ( dword_5174E0 )
+//            yw->field_7586 = 1500;
+//          else
+//            yw->field_7586 = yw->GameShell->field_288C;
+//        }
+            }
+            yw->p_1_grp[0][6] += profiler_end(v41);
+
+            if ( yw->field_1b84 )
+            {
+                if ( yw->GameShell )
+                {
+                    yw->GameShell->samples1_info.field_0 = yw->field_1b84->field_621;
+                    yw->GameShell->samples2_info.field_0 = yw->field_1b84->field_621;
+
+                    sb_0x4242e0(&yw->GameShell->samples1_info);
+                    sb_0x4242e0(&yw->GameShell->samples2_info);
+                }
+            }
+
+            ypaworld_func64__sub22(yw); // scene events
+            ypaworld_func64__sub23(yw); // update sound messages
+
+            if ( yw->field_757E ) // update additional sounds of netplay
+            {
+                if ( yw->field_1b84 )
+                    yw->GameShell->field_782.field_0 = yw->field_1b84->field_621;
+
+                sb_0x4242e0(&yw->GameShell->field_782);
+            }
+
+            mat3x3 *v57 = sb_0x424c74();
+            base_1c_struct *v58 = sub_430A28();
+
+            mat3x3 dst;
+            mat_mult(v57, &v58->scale_rotation, &dst);
+
+            v58->scale_rotation = dst;
+
+            if ( yw->sceneRecorder->field_3C )
+                ypaworld_func64__sub13(yw);
+
+            ypaworld_func64__sub3(yw);
+
+            if ( !yw->field_138c )
+            {
+                DWORD v62 = profiler_begin();
+
+                if ( yw->field_1b84->field_c || yw->field_1b84->field_10 )
+                {
+                    sb_0x4d7c08(obj, yw, arg, 1);
+
+                    if ( yw->field_757E )
+                        ypaworld_func64__sub10(yw);
+                }
+
+                call_method(yw->win3d, 258, 0);
+
+                yw->p_1_grp[0][5] = profiler_end(v62);
+            }
+
+            ypaworld_func64__sub11(yw); // Do vibrate joystick
+
+            sb_0x447720(yw, arg->field_8); // Snaps/ start/stop recording
+
+            yw->p_1_grp[0][1] = profiler_end(v92);
+            yw->p_1_grp[0][7] = yw->field_1b6c;
+
+            sub_44A094(yw);
+
+            if ( !yw->field_138c )
+            {
+                if ( yw->field_7626 )
+                {
+                    yw->field_138c = 1;
+
+                    dprintf("MAKE ME %s (multiplayer part Messaging)\n", "ypaworld_func64");
+
+//          v66 = get_lang_string(ypaworld__string_pointers, 650, "MESSAGE TO");
+//
+//          sprintf(&v68, "%s %s", v66, yw->field_762E);
+//
+//          memset(&dlgBox, 0, 40);
+//
+//          dlgBox.title = &v68;
+//          dlgBox.ok = get_lang_string(ypaworld__string_pointers, 2, "OK");
+//          dlgBox.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
+//          dlgBox.result = 0;
+//          dlgBox.timer_context = yw;
+//          dlgBox.maxLen = 64;
+//          dlgBox.time = 250;
+//          dlgBox.startText = "";
+//          dlgBox.timer_func = sub_44674C;
+//
+//          call_method(yw->win3d, 322, &dlgBox);
+//
+                    yw->field_138c = 0;
+//
+//          if ( dlgBox.result )
+//            sub_4D9418(yw, dlgBox.result, yw->field_762E, yw->field_762A);
+                }
+            }
+
+            if ( yw->field_81AF )
+            {
+                const char *help_link = yw->field_81AF;
+                yw->field_81AF = 0;
+
+                call_method(obj, 185, &help_link); //launch online help
+            }
+
+            //exit(1);
         }
-
-        call_method(yw->win3d, 258, 0);
-
-//        yw->p_1_grp_p1[5] = sub_4C0AE8(v62);
     }
-
-    //exit(1);
 }
 
 void sub_47C1EC(_NC_STACK_ypaworld *yw, gemProto *gemProt, int *a3, int *a4)

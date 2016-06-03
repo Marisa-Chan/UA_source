@@ -8,6 +8,7 @@
 #include "input.h"
 
 #include "yparobo.h"
+#include "font.h"
 
 extern int bact_id;
 
@@ -437,10 +438,10 @@ int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
     yw->p_1_grp_cnt = 0;
     for (int i = 0; i < 8; i++)
     {
-        yw->p_1_grp_p1[i] = 0;
-        yw->p_1_grp_p2[i] = 0;
-        yw->p_1_grp_p3[i] = 100000;
-        yw->p_1_grp_p4[i] = 0;
+        yw->p_1_grp[0][i] = 0;
+        yw->p_1_grp[0][i] = 0;
+        yw->p_1_grp[0][i] = 100000;
+        yw->p_1_grp[0][i] = 0;
     }
 
     sb_0x44ca90__sub4(yw);
@@ -3358,4 +3359,699 @@ void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a
 
         call_method(bct1->bacto, 67, &arg67_1);
     }
+}
+
+
+int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
+{
+    if ( yw->field_757E )
+        return 0;
+
+    if ( !yw->field_160c )
+    {
+        if ( arg->field_8->dword8 == 0xA0 || arg->field_8->downed_key == VK_PAUSE )
+        {
+            yw->field_160c = 1;
+            yw->field_1610 = arg->field_0;
+        }
+        return 0;
+    }
+
+    if ( arg->field_8->downed_key )
+    {
+        yw->field_160c = 0;
+        arg->field_0 = yw->field_1610;
+    }
+    else
+    {
+        call_method(yw->win3d, 257, 0);
+
+        call_vtbl(yw->win3d, 2, 0x80003001, 0, 0);
+
+        call_method(yw->win3d, 192, 0);
+
+        xyz a2a;
+        a2a.sx = yw->field_1334.sx;
+        a2a.sy = yw->field_1334.sy + 50000.0;
+        a2a.sz = yw->field_1334.sz;
+
+        xyz a3;
+        a3.sx = 0;
+        a3.sy = 0;
+        a3.sz = 0;
+
+        mat3x3 a4;
+        a4.m00 = 1.0;
+        a4.m01 = 0;
+        a4.m02 = 0;
+        a4.m10 = 0;
+        a4.m11 = 1.0;
+        a4.m12 = 0;
+        a4.m20 = 0;
+        a4.m22 = 1.0;
+        a4.m21 = 0;
+
+        sub_423EFC(1, &a2a, &a3, &a4);
+
+        if ( arg->field_0 / 500 & 1 )
+        {
+            const char *v6 = get_lang_string(yw->string_pointers_p2, 14, "*** GAME PAUSED, HIT KEY TO CONTINUE ***");
+
+            char v10[256];
+            char *pcur = v10;
+
+            fntcmd_select_tileset(&pcur, 15);
+
+            fntcmd_set_xpos(&pcur, 0);
+            fntcmd_set_center_ypos(&pcur, -yw->font_default_h / 2);
+
+            pcur = sub_45148C(yw->tiles[15], pcur, v6, yw->screen_width);
+
+            fntcmd_set_end(&pcur);
+
+            w3d_a209 arg209;
+            arg209.includ = 0;
+            arg209.cmdbuf = v10;
+
+            call_method(yw->win3d, 215, 0);
+            call_method(yw->win3d, 209, &arg209);
+            call_method(yw->win3d, 216, 0);
+        }
+
+        sb_0x424c74();
+
+        call_method(yw->win3d, 258, 0);
+    }
+    return 1;
+}
+
+
+void ypaworld_func64__sub2(_NC_STACK_ypaworld *yw)
+{
+    yw->field_1b70 = 0;
+
+    if ( yw->field_1b78 != yw->field_1b7c )
+    {
+        roboGun *guns = NULL;
+        call_vtbl(yw->field_1b78, 3, 0x8000200E, &guns, 0);
+
+        if ( guns )
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                if ( yw->field_1b7c == guns[i].gun_obj )
+                    yw->field_1b70 = 1;
+            }
+        }
+    }
+}
+
+
+void ypaworld_func64__sub9(_NC_STACK_ypaworld *yw)
+{
+    for (int i = 0; i < yw->field_2d90->gate_count ; i++ )
+    {
+        gateProto *gate = &yw->field_2d90->gates[i];
+
+        int v21 = 6;
+
+        if ( gate->pcell->owner == yw->field_1b80->owner )
+        {
+            for(int j = 0; j < gate->keySectors_count; j++)
+            {
+                if (gate->keySectors[j].cell)
+                {
+                    if (gate->keySectors[j].cell->owner != yw->field_1b80->owner)
+                    {
+                        v21 = 5;
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            v21 = 5;
+        }
+
+        if ( gate->pcell->field_3A != v21 )
+        {
+            ypaworld_arg148 arg148;
+            arg148.ownerID = gate->pcell->owner;
+            arg148.ownerID2 = gate->pcell->owner;
+            arg148.field_C = 1;
+            arg148.x = gate->sec_x;
+            arg148.y = gate->sec_y;
+            arg148.field_18 = 0;
+
+            if ( v21 == 6 )
+            {
+                arg148.blg_ID = gate->opened_bp;
+            }
+            else
+            {
+                arg148.blg_ID = gate->closed_bp;
+
+                yw_arg159 arg159;
+                arg159.unit = 0;
+                arg159.field_4 = 65;
+                arg159.txt = get_lang_string(yw->string_pointers_p2, 224, "TRANSPORTER GATE CLOSED!");
+                arg159.field_C = 24;
+
+                call_method(yw->self_full, 159, &arg159);
+            }
+
+            call_method(yw->self_full, 148, &arg148);
+
+            gate->pcell->field_3A = v21;
+            gate->pcell->field_3B = i;
+        }
+
+        if ( v21 == 6 )
+        {
+            int energ = 0;
+
+            __NC_STACK_ypabact *v8 = (__NC_STACK_ypabact *)gate->pcell->field_3C.head;
+            while (v8->next)
+            {
+                if ( v8->field_3D5 != 2 && v8->field_3D5 != 5 )
+                {
+                    if ( v8->field_24 != 3 && v8->field_24 != 4 && v8->field_24 != 9 )
+                        energ += (v8->energy_2 + 99) / 100;
+                }
+                v8 = (__NC_STACK_ypabact *)v8->next;
+            }
+
+            if ( energ <= yw->beamenergy )
+            {
+                if ( yw->field_1614 - yw->field_1a00 > 60000 )
+                {
+                    yw_arg159 arg159_1;
+                    arg159_1.unit = 0;
+                    arg159_1.field_4 = 49;
+                    arg159_1.txt = get_lang_string(yw->string_pointers_p2, 223, "TRANSPORTER GATE OPENED!");
+                    arg159_1.field_C = 23;
+
+                    call_method(yw->self_full, 159, &arg159_1);
+                    yw->field_1a00 = yw->field_1614;
+                }
+            }
+            else
+            {
+                if ( yw->field_1614 - yw->field_1a00 > 40000 )
+                {
+                    yw_arg159 arg159_2;
+                    arg159_2.unit = 0;
+                    arg159_2.field_4 = 10;
+                    arg159_2.txt = get_lang_string(yw->string_pointers_p2, 258, "WARNING: BEAM GATE FULL!");
+                    arg159_2.field_C = 46;
+
+                    call_method(yw->self_full, 159, &arg159_2);
+                    yw->field_1a00 = yw->field_1614;
+                }
+            }
+        }
+    }
+}
+
+
+int sub_4D11C0(_NC_STACK_ypaworld *yw, int id, int owner)
+{
+    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+
+    if ( sitem->pcell->owner != owner )
+        return 0;
+
+    if ( !sitem->keySectors_count )
+        return 1;
+
+    for (int i = 0; i < sitem->keySectors_count; i++)
+    {
+        if ( sitem->keySectors[i].cell->owner != owner )
+            return 0;
+    }
+    return 1;
+}
+
+int sub_4D12A0(_NC_STACK_ypaworld *yw, int owner)
+{
+    bact_node *bct = (bact_node *)yw->bact_list.head;
+
+    while ( bct->next )
+    {
+        if ( bct->bact->field_24 == 3 && owner == bct->bact->owner )
+            return 1;
+
+        bct = (bact_node *)bct->next;
+    }
+
+    return 0;
+}
+
+void sub_4D16C4(_NC_STACK_ypaworld *yw, int id)
+{
+    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+
+    sitem->field_4 = 0;
+    sitem->field_EC = 0;
+    sitem->field_F0 = 0;
+    sitem->field_F4 = 0;
+    sitem->field_F8 = 0;
+
+    ypaworld_arg148 arg148;
+    arg148.ownerID = sitem->pcell->owner;
+    arg148.ownerID2 = sitem->pcell->owner;
+    arg148.blg_ID = sitem->inactive_bp;
+    arg148.field_C = 1;
+    arg148.x = sitem->sec_x;
+    arg148.y = sitem->sec_y;
+    arg148.field_18 = 0;
+
+    call_method(yw->self_full, 148, &arg148);
+
+    sitem->pcell->field_3A = 8;
+    sitem->pcell->field_3B = id;
+
+    yw_arg159 arg159;
+    arg159.unit = NULL;
+    arg159.field_4 = 92;
+
+    if ( sitem->type == 1 )
+    {
+        arg159.txt = get_lang_string(yw->string_pointers_p2, 253, "Superbomb deactivated.");
+        arg159.field_C = 73;
+    }
+    else if ( sitem->type == 2 )
+    {
+        arg159.txt = get_lang_string(yw->string_pointers_p2, 257, "Superwave deactivated.");
+        arg159.field_C = 77;
+    }
+    else
+    {
+        arg159.field_C = 0;
+        arg159.txt = "Cant happen.";
+    }
+
+    call_method(yw->self_full, 159, &arg159);
+}
+
+void ypaworld_func64__sub19__sub0(_NC_STACK_ypaworld *yw, int id)
+{
+    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+
+    int v7 = 0;
+
+    bact_node *v5 = (bact_node *)yw->bact_list.head;
+    while(v5->next)
+    {
+        if ( v5->bact->field_24 == 3 && sitem->field_F4 == v5->bact->owner )
+        {
+            v7 = 1;
+            break;
+        }
+
+        v5 = (bact_node *)v5->next;
+    }
+
+    if ( v7 )
+    {
+        if ( sub_4D11C0(yw, id, sitem->field_F4) )
+        {
+            if ( sitem->field_F8 > 0 )
+                sitem->field_F8 = sitem->field_F8 - yw->field_1618;
+            else
+                sub_4D1444(yw, id);
+        }
+        else if ( sitem->keySectors_count )
+        {
+            sub_4D1594(yw, id);
+        }
+        else
+        {
+            sub_4D12D8(yw, id, 0);
+        }
+    }
+    else
+    {
+        sub_4D16C4(yw, id);
+    }
+}
+
+
+void ypaworld_func64__sub19__sub3(_NC_STACK_ypaworld *yw, int id)
+{
+    if ( yw->GameShell )
+    {
+        supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+
+        int v4 = sitem->field_F8 / 1024;
+
+        if ( v4 < 10 && v4 != sitem->field_100 )
+        {
+            sub_423F74(&yw->GameShell->samples1_info, 3);
+            sitem->field_100 = v4;
+        }
+
+        int v5 = v4 / 10;
+        if ( v5 != sitem->field_FC )
+        {
+            sub_423F74(&yw->GameShell->samples1_info, 3);
+            sitem->field_FC = v5;
+        }
+    }
+}
+
+int sub_4D1230(_NC_STACK_ypaworld *yw, int id, int a3)
+{
+    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+
+    if ( sitem->pcell->owner == a3 )
+        return 0;
+
+    if ( !sitem->keySectors_count )
+        return 1;
+
+    for (int i = 0; i < sitem->keySectors_count; i++)
+    {
+        if (sitem->keySectors[i].cell->owner == a3)
+            return 0;
+    }
+
+    return 1;
+}
+
+void ypaworld_func64__sub19__sub1(_NC_STACK_ypaworld *yw, int id)
+{
+    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+
+    int v7 = 0;
+
+    bact_node *bct = (bact_node *)yw->bact_list.head;
+    while ( bct->next )
+    {
+        if ( bct->bact->field_24 == 3 && sitem->field_F4 == bct->bact->owner )
+        {
+            v7 = 1;
+            break;
+        }
+
+        bct = (bact_node *)bct->next;
+    }
+
+    if ( !v7 )
+        sub_4D16C4(yw, id);
+    else
+    {
+        if ( sub_4D11C0(yw, id, sitem->field_F4) )
+            sub_4D12D8(yw, id, 1);
+        else if ( sub_4D1230(yw, id, sitem->field_F4) )
+            sub_4D16C4(yw, id);
+    }
+}
+
+void ypaworld_func64__sub19__sub2__sub0__sub0(_NC_STACK_ypaworld *yw, supetItemProto *sitem, float a5, float a6, float a7)
+{
+    int lastt = yw->sectors_maxY2 * yw->sectors_maxX2;
+
+    for(int i = 0; i < lastt; i++)
+    {
+        cellArea *cell = &yw->cells[i];
+
+        __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cell->field_3C.head;
+
+        while(bct->next)
+        {
+            int v9 = 1;
+
+            if ( yw->field_757E )
+            {
+                if ( bct->owner != yw->field_1b84->owner || bct->owner == sitem->field_F4 || bct->field_3D5 == 2 )
+                    v9 = 0;
+            }
+            else if ( bct->owner == sitem->field_F4 || bct->field_3D5 == 2 )
+            {
+                v9 = 0;
+            }
+
+            if ( v9 )
+            {
+                float v10 = a5 - bct->field_621.sx;
+                float v11 = a6 - bct->field_621.sz;
+
+                if ( sqrt(POW2(v10) + POW2(v11)) < a7 )
+                {
+                    bact_arg84 arg84;
+                    arg84.energy = -22000000;
+                    arg84.unit = 0;
+
+                    call_method(bct->self, 84, &arg84);
+                }
+            }
+
+            bct = (__NC_STACK_ypabact *)bct->next;
+        }
+
+    }
+}
+
+void ypaworld_func64__sub19__sub2__sub0(_NC_STACK_ypaworld *yw, int id)
+{
+    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+
+    sitem->field_104 = (yw->field_1614 - sitem->field_F0) * 1200.0 / 2400.0;
+
+    float a5 = sitem->sec_x * 1200.0 + 600.0;
+    float a6 = -(sitem->sec_y * 1200.0 + 600.0);
+
+    float v19 = sqrt(POW2(yw->map_Width_meters) + POW2(yw->map_Height_meters));
+
+    if ( sitem->field_104 > 300 && sitem->field_104 - sitem->field_108 > 200 && sitem->field_104 < v19 )
+    {
+        float v9 = (2 * sitem->field_104) * 3.1415 / 150.0;
+
+        sitem->field_108 = sitem->field_104;
+
+        if ( v9 > 2.0 )
+        {
+            for (float v25 = 0.0; v25 < 6.283 ; v25 += 6.283 / v9 )
+            {
+                float v10 = sitem->field_104;
+                float v26 = cos(v25) * v10 + a5;
+                float v21 = sin(v25) * v10 + a6;
+
+                if ( v26 > 600.0 && v21 < -600.0 && v26 < yw->map_Width_meters - 600.0 && v21 > -(yw->map_Height_meters - 600.0) )
+                {
+                    int v12 = yw->fxnumber;
+
+                    yw->fxnumber = 2;
+
+                    yw_arg129 arg129;
+                    arg129.pos.sx = v26;
+                    arg129.pos.sy = sitem->pcell->sector_height_meters;
+                    arg129.pos.sz = v21;
+                    arg129.field_10 = 200000;
+                    arg129.field_14 = sitem->field_F4;
+                    arg129.unit = 0;
+
+                    call_method(yw->self_full, 129, &arg129);
+
+                    yw->fxnumber = v12;
+                }
+            }
+        }
+    }
+
+    ypaworld_func64__sub19__sub2__sub0__sub0(yw, sitem, a5, a6, sitem->field_104);
+}
+
+void ypaworld_func64__sub19__sub2(_NC_STACK_ypaworld *yw, int id)
+{
+    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+
+    if ( !sub_4D1230(yw, id, sitem->field_F4) && sub_4D12A0(yw, sitem->field_F4) )
+    {
+        if ( sitem->type == 1 )
+            ypaworld_func64__sub19__sub2__sub0(yw, id);
+    }
+    else
+    {
+        sub_4D16C4(yw, id);
+    }
+}
+
+void ypaworld_func64__sub19(_NC_STACK_ypaworld *yw)
+{
+    for (int i = 0; i < yw->field_2d90->supetItems_count; i++)
+    {
+        supetItemProto *sitem = &yw->field_2d90->supetItems[i];
+
+        if ( sitem->type )
+        {
+            switch ( sitem->field_4 )
+            {
+            case 0:
+                if ( sub_4D11C0(yw, i, sitem->pcell->owner) )
+                {
+                    if ( sub_4D12A0(yw, sitem->pcell->owner) )
+                        sub_4D12D8(yw, i, 0);
+                }
+                break;
+
+            case 1:
+                ypaworld_func64__sub19__sub0(yw, i);
+                ypaworld_func64__sub19__sub3(yw, i);
+                break;
+
+            case 2:
+                ypaworld_func64__sub19__sub1(yw, i);
+                break;
+
+            case 3:
+                ypaworld_func64__sub19__sub2(yw, i);
+                break;
+
+            default:
+                break;
+            }
+        }
+    }
+}
+
+void sub_4D6958(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, samples_collection1 *collection)
+{
+    if ( unit == yw->field_1b80 )
+    {
+        collection->field_0 = yw->field_1b84->field_621;
+    }
+    else
+    {
+        xyz tmp;
+        tmp.sx = unit->field_621.sx - yw->field_1b84->field_621.sx;
+        tmp.sy = unit->field_621.sy - yw->field_1b84->field_621.sy;
+        tmp.sz = unit->field_621.sz - yw->field_1b84->field_621.sz;
+
+        float v11 = sqrt(POW2(tmp.sx) + POW2(tmp.sy) + POW2(tmp.sz));
+
+        if ( v11 > 0.0 )
+        {
+            tmp.sx *= 100.0 / v11;
+            tmp.sy *= 100.0 / v11;
+            tmp.sz *= 100.0 / v11;
+        }
+
+        collection->field_0.sx = yw->field_1b84->field_621.sx + tmp.sx;
+        collection->field_0.sy = yw->field_1b84->field_621.sy + tmp.sy;
+        collection->field_0.sz = yw->field_1b84->field_621.sz + tmp.sz;
+    }
+}
+
+void ypaworld_func64__sub23(_NC_STACK_ypaworld *yw)
+{
+    yw_samples *smpls = yw->samples;
+
+    if ( smpls->field_0 >= 0 )
+    {
+        __NC_STACK_ypabact *unit = smpls->field_360;
+
+        if ( unit->field_3D5 != 2 )
+        {
+            sub_4D6958(yw, unit, &smpls->field_4);
+
+            smpls->field_4.field_C = yw->field_1b84->field_605.sx * yw->field_1b84->field_611;
+            smpls->field_4.field_10 = yw->field_1b84->field_605.sy * yw->field_1b84->field_611;
+            smpls->field_4.field_14 = yw->field_1b84->field_605.sz * yw->field_1b84->field_611;
+        }
+
+        if ( smpls->field_4.samples_data[0].field_12 & 2 )
+        {
+            sb_0x4242e0(&smpls->field_4);
+        }
+        else
+        {
+            sub_423DD8(&smpls->field_4);
+
+            if ( smpls->field_35C )
+                delete_class_obj(smpls->field_35C);
+
+            memset(smpls, 0, sizeof(yw_samples));
+            smpls->field_0 = -1;
+        }
+    }
+}
+
+void ypaworld_func64__sub3(_NC_STACK_ypaworld *yw)
+{
+    if ( yw->field_1b84->p_cell_area->owner != yw->field_1b80->owner )
+    {
+        if ( yw->field_1b84->p_cell_area->owner )
+        {
+            if ( yw->field_1b74 == yw->field_1b80->owner || !yw->field_1b74 )
+            {
+                if ( yw->field_1614 - yw->field_1a08 > 10000 )
+                {
+                    yw_arg159 arg159;
+                    arg159.unit = yw->field_1b84;
+                    arg159.field_4 = 24;
+                    arg159.txt = get_lang_string(yw->string_pointers_p2, 222, "ENEMY SECTOR ENTERED");
+                    arg159.field_C = 22;
+
+                    call_method(yw->self_full, 159, &arg159);
+                }
+
+                yw->field_1a08 = yw->field_1614;
+            }
+        }
+    }
+}
+
+void sub_44A094(_NC_STACK_ypaworld *yw)
+{
+    yw->p_1_grp_cnt++;
+
+    if ( yw->p_1_grp_cnt >= 5 )
+    {
+        if ( yw->p_1_grp[0][0] > 200 )
+            yw->p_1_grp[0][0] = 0;
+
+        for (int i = 0; i < 8; i++)
+        {
+            if ( yw->p_1_grp[0][i] )
+            {
+                if ( yw->p_1_grp[0][i] < yw->p_1_grp[2][i] )
+                    yw->p_1_grp[2][i] = yw->p_1_grp[0][i];
+
+                if ( yw->p_1_grp[0][i] > yw->p_1_grp[1][i] )
+                    yw->p_1_grp[1][i] = yw->p_1_grp[0][i];
+
+                yw->p_1_grp[3][i] += yw->p_1_grp[0][i];
+            }
+        }
+    }
+}
+
+void ypaworld_func64__sub11(_NC_STACK_ypaworld *yw)
+{
+    dprintf("MAKE ME %s (joy vibrate)\n", "ypaworld_func64__sub11");
+}
+
+void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
+{
+    dprintf("MAKE ME %s (snaps and record)\n", "sb_0x447720");
+}
+
+void ypaworld_func64__sub12(_NC_STACK_ypaworld *yw, int dtime)
+{
+//  yw->sceneRecorder->field_C += dtime;
+//  yw->sceneRecorder->field_40 -= dtime;
+    dprintf("MAKE ME %s (scene recorder)\n", "ypaworld_func64__sub12");
+}
+
+void ypaworld_func64__sub13(_NC_STACK_ypaworld *yw)
+{
+    dprintf("MAKE ME %s (scene recorder)\n", "ypaworld_func64__sub13");
+}
+
+void ypaworld_func64__sub22(_NC_STACK_ypaworld *yw)
+{
+    dprintf("MAKE ME %s (scene events)\n", "ypaworld_func64__sub22");
 }

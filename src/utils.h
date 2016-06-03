@@ -117,4 +117,6 @@ void dprintf(const char *fmt, ...);
 int dround(float val);
 int dround(double val);
 
+DWORD profiler_begin();
+DWORD profiler_end(DWORD prev);
 #endif // UTILS_H_INCLUDED
