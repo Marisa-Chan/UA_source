@@ -10832,7 +10832,7 @@ int ypaworld_func64__sub21__sub3(_NC_STACK_ypaworld *yw)
 
     if ( v9 != 6 && (v9 != 2 || yw->field_1a60->owner != yw->field_1b80->owner) )
     {
-        v18 = (POW2(v15) / 240.0);
+        v18 = (POW2(v15) / 230.4);
     }
 
     int a4;
