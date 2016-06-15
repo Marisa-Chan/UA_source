@@ -1857,7 +1857,7 @@ void sub_4EE04C(_NC_STACK_ypaworld *yw)
 
 void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
 {
-    printf("%s \n","ypaworld_func158__sub4__sub1__sub6");
+    dprintf("%s \n","ypaworld_func158__sub4__sub1__sub6");
 }
 
 
