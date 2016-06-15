@@ -6142,7 +6142,7 @@ void yparobo_func77(NC_STACK_yparobo *obj, class_stru *zis, void *)
 
         if ( bact->field_9B5 )
         {
-            if ( !(bact->field_3D6 & 0x20000) )
+            if ( !(bact->field_3D6 & 0x2000000) )
             {
                 yw_arg177 arg177;
                 arg177.field_4 = bact->field_9B5;
@@ -7319,7 +7319,7 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
 
             if ( !i )
             {
-                NC_STACK_yparobo *robj = (NC_STACK_yparobo *)&bact->self;
+                NC_STACK_yparobo *robj = (NC_STACK_yparobo *)bact->self;
                 __NC_STACK_yparobo *robo = &robj->stack__yparobo;
 
                 __NC_STACK_ypabact *tmp = bact;
