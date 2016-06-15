@@ -2780,7 +2780,7 @@ int parseSaveUser(scrCallBack *arg)
         if ( !strcasecmp(arg->p1, "username") )
         {
         }
-        else if ( strcasecmp(arg->p1, "netname") )
+        else if ( !strcasecmp(arg->p1, "netname") )
         {
         }
         else if ( !strcasecmp(arg->p1, "maxroboenergy") )
