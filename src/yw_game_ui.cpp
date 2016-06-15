@@ -1383,8 +1383,6 @@ char * sb_0x4f8f64__sub3__sub1(_NC_STACK_ypaworld *yw, const char *labl, int til
             fntcmd_store_s8(&pcur, *vvv);
             vvv++;
         }
-
-        fntcmd_store_s8(&pcur, *vvv);
     }
 
     return pcur;
