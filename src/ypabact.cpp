@@ -4076,7 +4076,7 @@ size_t ypabact_func79(NC_STACK_ypabact *obj, class_stru *zis, bact_arg79 *arg)
     WeapProto *wprotos;
     call_vtbl(bact->wrld, 3, 0x80002012, &wprotos, 0);
 
-    if ( arg->field_2C == 255 )
+    if ( arg->field_2C == -1 )
         return 0;
 
     if ( bact->field_97D )
