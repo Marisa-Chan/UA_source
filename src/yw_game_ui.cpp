@@ -7305,6 +7305,8 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
             default:
                 break;
             }
+
+            dword_5BAF9C = 0;
         }
         else if ( v7 == 2 )
         {
