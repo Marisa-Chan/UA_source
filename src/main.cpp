@@ -16,12 +16,164 @@
 #include "engine_gfx.h"
 #include "engine_input.h"
 
+int dword_513638 = 0;
+
+int sub_4107FC(UserData *usr)
+{
+    yw_arg172 arg171;
+
+    arg171.usr = usr;
+    arg171.usertxt = "settings.tmp";
+    arg171.field_4 = usr->user_name;
+    arg171.field_8 = 193;
+    arg171.field_10 = 0;
+
+    return call_method(ypaworld, 171, &arg171);
+}
+
+void sub_410628()
+{
+    char buf[300];
+    sprintf(buf, "%s/user.txt", userdata.user_name);
+
+    yw_arg172 arg171;
+    arg171.usertxt = buf;
+    arg171.field_4 = userdata.user_name;
+    arg171.usr = &userdata;
+    arg171.field_8 = 255;
+    arg171.field_10 = 0;
+
+    call_method(ypaworld, 171, &arg171);
+
+    FILE *fil = FOpen("env:user.def", "w");
+    if ( fil )
+    {
+        strcpy(buf, userdata.user_name);
+        fwrite(buf, strlen(buf), 1, fil);
+        FClose(fil);
+    }
+}
 
 int sb_0x411324__sub0()
 {
     call_method(ypaworld, 64, &world_update_arg);
 
-    dprintf("MAKE ME %s\n","sb_0x411324__sub0");
+    stru_2d90 *var_2d90;
+    call_vtbl(ypaworld, 3, 0x8000201A, &var_2d90, 0);
+
+    char buf[200];
+
+    switch( var_2d90->field_40 )
+    {
+    case 1:
+    case 2:
+    {
+        call_method(ypaworld, 151, 0);
+
+        if ( dword_513638 || var_2d90->field_40 == 2 )
+        {
+            yw_arg172 arg172;
+            arg172.usr = &userdata;
+            arg172.usertxt = "settings.tmp";
+            arg172.field_10 = 0;
+            arg172.field_4 = userdata.user_name;
+            arg172.field_8 = 0xC1;
+
+            if ( !call_method(ypaworld, 172, &arg172) )
+                return 0;
+
+            dword_513638 = 0;
+        }
+
+        int v0 = 1;
+
+        if ( userdata.field_1CEA )
+            v0 = 0;
+
+        if ( userdata.field_46 == 6 )
+        {
+            userdata.field_4E = 1;
+            userdata.field_46 = 5;
+        }
+        else
+        {
+            userdata.field_4E = 0;
+        }
+
+        dword_520400 = 0;
+        world_update_arg.field_0 = 0;
+
+        userdata.field_5457 = 0;
+        userdata.field_0xc = 1;
+
+        if ( call_method(ypaworld, 156, &userdata) )
+        {
+            dword_520400 = 1;
+            sub_412D28(&input_states);
+
+            if (!v0)
+                return 0;
+        }
+        else
+        {
+            ypa_log_out("GameShell-Error!!!\n");
+            call_method(ypaworld, 155, &userdata);
+            return 0;
+        }
+    }
+    break;
+
+    case 4:
+    {
+        call_method(ypaworld, 151, 0);
+
+        sprintf(buf, "save:%s/%d.rst", userdata.user_name, var_2d90->levelID);
+
+        yw_arg169 arg169;
+        arg169.saveFile = buf;
+        arg169.usr = &userdata;
+
+        if ( !call_method(ypaworld, 169, &arg169) )
+            ypa_log_out("Warning, load error\n");
+
+        sub_412D28(&input_states);
+    }
+    break;
+
+    case 6:
+    {
+        yw_arg169 arg169;
+        arg169.usr = &userdata;
+        arg169.saveFile = buf;
+
+        sprintf(buf, "save:%s/%d.sgm", userdata.user_name, 0);
+
+        if ( !call_method(ypaworld, 170, &arg169) )
+            ypa_log_out("Warning, Save error\n");
+
+        sub_412D28(&input_states);
+    }
+    break;
+
+    case 7:
+    {
+        call_method(ypaworld, 151, 0);
+
+        yw_arg169 arg169;
+        arg169.usr = &userdata;
+        arg169.saveFile = buf;
+        sprintf(buf, "save:%s/%d.sgm", userdata.user_name, 0);
+
+        if ( !call_method(ypaworld, 169, &arg169) )
+            ypa_log_out("Warning, load error\n");
+
+        sub_412D28(&input_states);
+    }
+    break;
+
+    default:
+        break;
+    }
 
     return 1;
 }
@@ -46,13 +198,13 @@ int sb_0x411324__sub1()
         return 0;
     else if ( userdata.field_0x2fbc == 2 )
     {
-        //	sub_410628();
+        sub_410628();
         call_method(ypaworld, 157, &userdata);
 
         dword_520400 = 0;
 
-        /*	if ( !sub_4107FC(&userdata) )
-        		return 0;*/
+        if ( !sub_4107FC(&userdata) )
+            return 0;
 
         yw_arg161 v22;
         v22.lvlID = userdata.field_0x2fc0;
@@ -75,11 +227,11 @@ int sb_0x411324__sub1()
         stru_2d90 *a4;
         call_vtbl(ypaworld, 3, 0x8000201A, &a4, 0);
 
-        //sub_410628();
+        sub_410628();
         call_method(ypaworld, 157, &userdata);
 
-        /*	if ( !sub_4107FC(&userdata) )
-            		return 0;*/
+        if ( !sub_4107FC(&userdata) )
+            return 0;
 
         char a1[200];
         yw_arg169 arg169;

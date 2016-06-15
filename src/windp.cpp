@@ -320,6 +320,28 @@ void ypaworld_func64__sub10(_NC_STACK_ypaworld *yw)
     dprintf("MAKE ME %s (multiplayer)\n", "ypaworld_func64__sub10");
 }
 
+void ypaworld_func151__sub7(UserData *usr)
+{
+    //call_method(usr->p_ypaworld->windp, 91 ,v2);
+    log_netlog("---------------- YPA Network Statistics -------------------\n\n");
+    log_netlog("Sending:\n");
+//  log_netlog("   bytes per second: %d\n", usr->field_5487);
+//  log_netlog("   bps minimum:      %d\n", usr->field_547F);
+//  log_netlog("   bps maximum:      %d\n", usr->field_5483);
+//  log_netlog("   packet size:      %d\n", usr->field_549F);
+//  log_netlog("   packet minimum:   %d\n", usr->field_5493);
+//  log_netlog("   packet maximum:   %d\n", usr->field_5497);
+    log_netlog("receiving:\n");
+//  log_netlog("   bytes per second: %d\n", usr->field_547B);
+//  log_netlog("   bps minimum:      %d\n", usr->field_5473);
+//  log_netlog("   bps maximum:      %d\n", usr->field_5477);
+    log_netlog("statistical sr-thread info\n");
+//  log_netlog("   max. in send list %d\n", v2[3]);
+//  log_netlog("   max. in recv list %d\n", v2[2]);
+    log_netlog("\nthe session ended at timeindex %d\n", usr->p_ypaworld->field_1614 / 1000);
+    log_netlog("-----------------------------------------------------------\n");
+}
+
 
 
 

@@ -60,6 +60,20 @@ void init_dinputlog()
 }
 
 
+void log_netlog(const char *format, ...)
+{
+    va_list va;
+    va_start(va, format);
+    FILE *f = fopen("env/ypa_log.txt", "a");
+    if ( f )
+    {
+        fprintf(f, "netlog: ");
+        vfprintf(f, format, va);
+        fclose(f);
+    }
+    va_end(va);
+}
+
 
 void sub_412038(const char *msg)
 {

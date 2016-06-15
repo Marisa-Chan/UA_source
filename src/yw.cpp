@@ -2595,9 +2595,212 @@ void ypaworld_func150(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg150 *arg)
 }
 
 
-void ypaworld_func151(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func151(NC_STACK_ypaworld *obj, class_stru *zis, stack_vals *arg)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func151");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    sub_471AB8(yw);
+
+    if ( yw->field_2d90->field_40 == 1 )
+    {
+        yw->field_7278 = 1;
+
+        if ( yw->field_81AB )
+            yw->field_2d90->jodiefoster[ yw->field_81AB ] = 1;
+    }
+    else
+    {
+        yw->field_7278 = 0;
+    }
+
+    if ( yw->field_2d90->field_40 == 1 )
+    {
+        if ( yw->GameShell )
+        {
+            char buf[300];
+            sprintf(buf, "save:%s/sgisold.txt", yw->GameShell->user_name);
+
+            FILE *fil = FOpen(buf, "w");
+
+            if ( fil )
+                FClose(fil);
+
+            sprintf(buf, "%s/user.txt", yw->GameShell->user_name);
+
+            yw_arg172 arg171;
+            arg171.usertxt = buf;
+            arg171.field_4 = yw->GameShell->user_name;
+            arg171.usr = yw->GameShell;
+            arg171.field_10 = 0;
+            arg171.field_8 = 255;
+
+            call_method(obj, 171, &arg171);
+
+            fil = FOpen("env:user.def", "w");
+
+            if ( fil )
+            {
+                strcpy(buf, yw->GameShell->user_name);
+                fwrite(buf, strlen(buf), 1, fil);
+                FClose(fil);
+            }
+        }
+    }
+
+    if ( yw->field_757E )
+    {
+        if ( !yw->GameShell->field_283F )
+            sub_47DB04(yw, 0);
+
+        ypaworld_func151__sub7(yw->GameShell);
+        yw_netcleanup(yw);
+
+        yw->field_7278 = 1;
+        yw->field_727c = 1;
+
+        if ( yw->field_1b84 )
+            yw->field_7280 = yw->field_1b84->owner;
+    }
+    else
+    {
+        yw->field_7280 = 0;
+        yw->field_727c = 0;
+    }
+
+    if ( yw->sceneRecorder->field_3C )
+        sub_480868(yw);
+
+    yw->field_2428 = 0;
+    yw->sceneRecorder->field_3C = 0;
+
+    NC_STACK_ilbm *disk = loadDisk_screen(yw);
+
+    if ( disk )
+    {
+        draw_splashScreen(yw, disk);
+        deleteSplashScreen(yw, disk);
+    }
+
+    ypaworld_func151__sub5(yw);
+    ypaworld_func151__sub6(yw);
+
+    milesEngine__setter(0x80004003, yw->audio_volume, 0);
+
+    ypaworld_func151__sub2(obj, yw);
+
+    if ( yw->sky_loaded_base )
+    {
+        delete_class_obj(yw->sky_loaded_base);
+        yw->sky_loaded_base = NULL;
+    }
+
+    int plowner;
+    if ( yw->field_1b80 )
+        plowner = yw->field_1b80->owner;
+    else
+        plowner = 0;
+
+    while ( 1 )
+    {
+        bact_node *bct = (bact_node *)yw->dead_cache.head;
+
+        if ( !bct->next )
+            break;
+
+        NC_STACK_ypabact *bacto = bct->bacto;
+
+        if ( yw->field_727c )
+        {
+            if ( plowner != bct->bact->owner && bct->bact->field_24 == 3 )
+                sub_4C8EB4(yw, bct);
+        }
+
+        delete_class_obj(bacto);
+    }
+
+    while ( 1 )
+    {
+        bact_node *bct = (bact_node *)yw->bact_list.head;
+
+        if ( !bct->next )
+            break;
+
+        NC_STACK_ypabact *bacto = bct->bacto;
+
+        if ( yw->field_727c )
+        {
+            if ( plowner != bct->bact->owner && bct->bact->field_24 == 3 )
+                sub_4C8EB4(yw, bct);
+        }
+
+        delete_class_obj(bacto);
+    }
+
+    while ( 1 )
+    {
+        bact_node *bct = (bact_node *)yw->dead_cache.head;
+
+        if ( !bct->next )
+            break;
+
+        delete_class_obj(bct->bacto);
+    }
+
+    ypaworld_func151__sub0(yw);
+
+    sb_0x44ac24(yw);
+
+    ypaworld_func151__sub1(yw);
+
+    if ( yw->typ_map )
+    {
+        delete_class_obj(yw->typ_map);
+        yw->typ_map = NULL;
+    }
+
+    if ( yw->own_map )
+    {
+        delete_class_obj(yw->own_map);
+        yw->own_map = NULL;
+    }
+
+    if ( yw->blg_map )
+    {
+        delete_class_obj(yw->blg_map);
+        yw->blg_map = NULL;
+    }
+
+    if ( yw->hgt_map )
+    {
+        delete_class_obj(yw->hgt_map);
+        yw->hgt_map = NULL;
+    }
+
+    if ( yw->GameShell )
+    {
+        yw->GameShell->samples1_info.field_0.sx = 0;
+        yw->GameShell->samples1_info.field_0.sy = 0;
+        yw->GameShell->samples1_info.field_0.sz = 0;
+
+        yw->GameShell->samples2_info.field_0.sx = 0;
+        yw->GameShell->samples2_info.field_0.sy = 0;
+        yw->GameShell->samples2_info.field_0.sz = 0;
+    }
+
+    if ( yw->field_727c )
+    {
+        if ( yw->VhclProtos )
+        {
+            if ( yw->WeaponProtos )
+            {
+                if ( yw->BuildProtos )
+                {
+                    if ( yw->RoboProtos )
+                        sub_4DA354(yw, "data:scripts/startup.scr");
+                }
+            }
+        }
+    }
 }
 
 
@@ -6919,9 +7122,49 @@ void ypaworld_func167(NC_STACK_ypaworld *obj, class_stru *zis, UserData *usr)
 }
 
 
-void ypaworld_func168(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+size_t ypaworld_func168(NC_STACK_ypaworld *obj, class_stru *zis, __NC_STACK_ypabact **pbact)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func168");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+    __NC_STACK_ypabact *bact = *pbact;
+
+    if ( bact->field_24 == 9 || bact->field_24 == 4 )
+        return 1;
+
+    if ( bact->owner == yw->field_1b80->owner )
+    {
+        cellArea *cell = bact->p_cell_area;
+
+        if ( cell->field_3A == 6 )
+        {
+            if ( yw->field_1b80 == bact )
+            {
+                yw->field_2d90->field_40 = 1;
+                yw->field_2d90->field_4C = cell->field_3B;
+                yw->field_2d90->field_64 = bact->energy;
+
+                call_vtbl(bact->self, 3, 0x80002008, &yw->field_2d90->field_70, 0);
+                call_vtbl(bact->self, 3, 0x8000200A, &yw->field_2d90->field_70, 0);
+            }
+            else
+            {
+                yw->field_8283 += (bact->energy_2 + 99) / 100;
+
+                if ( yw->field_2d90->buddies_count < 128 && yw->field_8283 < yw->beamenergy )
+                {
+                    int v15 = yw->field_2d90->buddies_count;
+
+                    yw->field_2d90->buddies[v15].commandid = bact->field_2E;
+                    yw->field_2d90->buddies[v15].type = bact->id;
+                    yw->field_2d90->buddies[v15].energy = bact->energy;
+
+                    yw->field_2d90->buddies_count++;
+                }
+                else
+                    return 0;
+            }
+        }
+    }
+    return 1;
 }
 
 
@@ -7198,9 +7441,114 @@ size_t ypaworld_func169(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg169 *arg)
 }
 
 
-void ypaworld_func170(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+size_t ypaworld_func170(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg169 *arg)
 {
-    dprintf("MAKE ME %s (Save current status fore restart, before start level)\n","ypaworld_func170");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    int write_ok = 1;
+
+    if ( strstr(arg->saveFile, ".sgm") || strstr(arg->saveFile, ".SGM") )
+    {
+        char flname[300];
+        sprintf(flname, "save:%s/sgisold.txt", yw->GameShell->user_name);
+        delete_file(flname);
+    }
+
+    int write_modifers;
+    int write_user;
+    int write_level_statuses;
+
+    bool isfin_save = strstr(arg->saveFile, ".fin") || strstr(arg->saveFile, ".FIN");
+
+    if ( isfin_save )
+    {
+        yw->maxroboenergy = yw->field_1b80->energy_2;
+        write_modifers = 0;
+        write_user = 0;
+        write_level_statuses = 0;
+        yw->maxreloadconst = yw->field_1b80->reload_const_or_energy2;
+    }
+    else
+    {
+        write_level_statuses = 1;
+        write_modifers = 1;
+        write_user = 1;
+    }
+
+    char filename[300];
+    sprintf(filename, "%s", arg->saveFile);
+
+    FILE *fil = FOpen(filename, "w");
+
+    if ( !fil )
+    {
+        ypa_log_out("Unable to open savegame file\n");
+        return 0;
+    }
+
+    if ( write_modifers )
+    {
+        if ( !yw_write_item_modifers(yw, fil) )
+            write_ok = 0;
+    }
+
+    if ( write_user )
+    {
+        if ( !yw_write_user(fil, yw->GameShell) )
+            write_ok = 0;
+    }
+
+    if ( write_ok )
+    {
+        if ( yw_write_levelnum(yw, fil) )
+        {
+            yw_write_ownermap(yw, fil);
+            yw_write_buildmap(yw, fil);
+            yw_write_energymap(yw, fil);
+
+            if ( yw_write_units(yw, fil) )
+            {
+                if ( yw_write_wunderinfo(yw, fil) )
+                {
+                    if ( yw_write_kwfactor(yw, fil) )
+                    {
+                        if ( yw_write_globals(yw, fil) )
+                        {
+                            if ( yw_write_superbomb(yw, fil) )
+                                write_ok = 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if ( write_ok && write_level_statuses )
+    {
+        for (int i = 0; i < 256; i++)
+        {
+            if ( yw->LevelNet->mapInfos[i].field_0 )
+            {
+                if ( !yw_write_level_status(fil, yw, i) )
+                {
+                    write_ok = 0;
+                    break;
+                }
+            }
+        }
+    }
+
+    if ( write_ok )
+    {
+        if ( !isfin_save )
+        {
+            yw_write_history(yw, fil);
+            yw_write_masks(yw, fil);
+        }
+    }
+
+    FClose(fil);
+    return write_ok;
 }
 
 

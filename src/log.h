@@ -17,4 +17,6 @@ void log_d3d_fail(const char *title, const char *msg, unsigned int errID);
 void log_dinputlog(const char *format, ...);
 void log_dinput_error(const char *title, const char *msg, int msgid);
 
+void log_netlog(const char *format, ...);
+
 #endif // LOG_H_INCLUDED

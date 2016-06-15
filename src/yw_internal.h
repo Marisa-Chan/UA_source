@@ -175,6 +175,7 @@ int yw_write_user(FILE *fil, UserData *usr);
 int yw_write_input(FILE *fil, UserData *usr);
 int yw_write_sound(FILE *fil, UserData *usr);
 int yw_write_video(FILE *fil, UserData *usr);
+int yw_write_level_status(FILE *fil, _NC_STACK_ypaworld *yw, int lvlid);
 int yw_write_levels_statuses(FILE *fil, _NC_STACK_ypaworld *yw);
 int yw_write_buddies(FILE *fil, _NC_STACK_ypaworld *yw);
 int yw_write_shell(FILE *fil, UserData *usr);
@@ -455,5 +456,32 @@ void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt);
 void ypaworld_func64__sub12(_NC_STACK_ypaworld *yw, int dtime);
 void ypaworld_func64__sub13(_NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub22(_NC_STACK_ypaworld *yw);
+void sub_480868(_NC_STACK_ypaworld *yw);
+void ypaworld_func151__sub5(_NC_STACK_ypaworld *yw);
+
+int yw_write_levelnum(_NC_STACK_ypaworld *yw, FILE *fil);
+void yw_write_ownermap(_NC_STACK_ypaworld *yw, FILE *fil);
+void yw_write_buildmap(_NC_STACK_ypaworld *yw, FILE *fil);
+void yw_write_energymap(_NC_STACK_ypaworld *yw, FILE *fil);
+int yw_write_units(_NC_STACK_ypaworld *yw, FILE *fil);
+int yw_write_wunderinfo(_NC_STACK_ypaworld *yw, FILE *fil);
+int yw_write_kwfactor(_NC_STACK_ypaworld *yw, FILE *fil);
+int yw_write_globals(_NC_STACK_ypaworld *yw, FILE *fil);
+int yw_write_superbomb(_NC_STACK_ypaworld *yw, FILE *fil);
+int yw_write_history(_NC_STACK_ypaworld *yw, FILE *fil);
+int yw_write_masks(_NC_STACK_ypaworld *yw, FILE *fil);
+
+void sub_471AB8(_NC_STACK_ypaworld *yw);
+void sub_47DB04(_NC_STACK_ypaworld *yw, char a2);
+
+void ypaworld_func151__sub6(_NC_STACK_ypaworld *yw);
+void ypaworld_func151__sub2(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw);
+void sub_4C8EB4(_NC_STACK_ypaworld *yw, bact_node *bct);
+void ypaworld_func151__sub0(_NC_STACK_ypaworld *yw);
+void ypaworld_func151__sub1(_NC_STACK_ypaworld *yw);
+
+NC_STACK_ilbm * loadDisk_screen(_NC_STACK_ypaworld *yw);
+void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen);
+void deleteSplashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen);
 
 #endif

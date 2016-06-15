@@ -4029,6 +4029,293 @@ void sub_44A094(_NC_STACK_ypaworld *yw)
     }
 }
 
+int yw_RestoreVehicleData(_NC_STACK_ypaworld *yw)
+{
+    char buf[256];
+
+    if ( yw->GameShell )
+    {
+        scrCallBack funcs[3];
+        memset(funcs, 0, sizeof(funcs));
+
+        sprintf(buf, "save:%s/%d.rst", yw->GameShell->user_name, yw->field_2d90->levelID);
+
+        funcs[0].func = VhclProtoParser;
+        funcs[0].world = yw;
+
+        funcs[1].func = WeaponProtoParser;
+        funcs[1].world = yw;
+
+        funcs[2].world2 = yw;
+        funcs[2].func = BuildProtoParser;
+
+        return def_parseFile(buf, 3, funcs, 2);
+    }
+
+    return 1;
+}
+
+void sub_471AB8(_NC_STACK_ypaworld *yw)
+{
+    if ( yw->field_2d90->field_40 == 1 )
+    {
+        gateProto *gate = &yw->field_2d90->gates[ yw->field_2d90->field_4C ];
+
+        yw->LevelNet->mapInfos[ yw->field_2d90->levelID ].field_0 = 3;
+
+        for (int i = 0; i < gate->target_level_count; i++)
+        {
+            if ( yw->LevelNet->mapInfos[ gate->target_levels[i] ].field_0 == 1 )
+                yw->LevelNet->mapInfos[ gate->target_levels[i] ].field_0 = 2;
+        }
+    }
+    else if ( yw->field_2d90->field_40 == 2 && !yw_RestoreVehicleData(yw) )
+    {
+        ypa_log_out("yw_RestoreVehicleData() failed.\n");
+    }
+}
+
+void ypaworld_func151__sub6(_NC_STACK_ypaworld *yw)
+{
+    if ( yw->samples )
+    {
+        sub_423DD8(&yw->samples->field_4);
+
+        if ( yw->samples->field_35C )
+            delete_class_obj(yw->samples->field_35C);
+
+        memset(yw->samples, 0, sizeof(yw_samples));
+
+        yw->samples->field_0 = -1;
+
+        nc_FreeMem(yw->samples);
+        yw->samples = NULL;
+    }
+}
+
+void sub_4F1A60(__NC_STACK_ypabact *bact)
+{
+    nlist *a4;
+    call_vtbl(bact->self, 3, 0x80001008, &a4, 0);
+
+    while ( 1 )
+    {
+        bact_node *bct = (bact_node *)RemHead(a4);
+
+        if ( !bct )
+            break;
+
+        bact_node *v5;
+        bact_node *v6;
+        call_vtbl(bct->bacto, 3, 0x80001011, &v5, 0);
+        call_vtbl(bct->bacto, 3, 0x80001012, &v6, 0);
+
+        if ( bct == v5 )
+        {
+            v5->bact->field_3e8 = NULL;
+            v5->bact->field_3DE = 0;
+            v5->bact->field_945 = 0;
+        }
+        else if ( bct == v6 )
+        {
+            v6->bact->field_3f8 = NULL;
+            v6->bact->field_3DF = 0;
+            v6->bact->field_945 = 0;
+        }
+        else
+        {
+            log_netlog("Hein BlЎd\n");
+        }
+    }
+}
+
+void sub_4F1B34(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
+{
+    while ( 1 )
+    {
+        bact_node *v4 = (bact_node *)bact->list3.head;
+
+        if (!v4->next)
+            break;
+
+        if ( v4->bact->field_3DE == 2 )
+        {
+            bact_node *nd;
+            call_vtbl(v4->bacto, 3, 0x80001011, &nd, 0);
+
+            Remove(nd);
+
+            v4->bact->field_3DE = 0;
+        }
+
+        sub_4F1A60(v4->bact);
+
+        bact_node *weap_selfie;
+
+        call_vtbl(v4->bacto, 3, 0x80002003, &weap_selfie, 0);
+        Remove(weap_selfie);
+
+        v4->bact->parent_bacto = NULL;
+
+        call_method(yw->self_full, 144, v4->bacto);
+
+        v4->bact->field_3D6 |= 0x400;
+    }
+}
+
+void sub_4F1BE8(_NC_STACK_ypaworld *yw, bact_node *bct)
+{
+    if ( bct->bact->field_24 == 9 )
+    {
+        int a4;
+        call_vtbl(bct->bacto, 3, 0x80002006, &a4, 0);
+
+        if ( a4 )
+        {
+            roboGun *v4;
+            call_vtbl(bct->bact->field_32, 3, 0x8000200E, &v4, 0);
+
+            for (int i = 0; i < 8; i++)
+            {
+                if ( bct->bacto == v4[i].gun_obj )
+                    v4[i].gun_obj = NULL;
+            }
+        }
+    }
+}
+
+void sub_4C8EB4(_NC_STACK_ypaworld *yw, bact_node *bct)
+{
+    while ( 1 )
+    {
+        bact_node *cmnder = (bact_node *)bct->bact->list2.head;
+
+        if ( !cmnder->next )
+            break;
+
+        while ( 1 )
+        {
+            bact_node *slave = (bact_node *)cmnder->bact->list2.head;
+
+            if ( !slave->next )
+                break;
+
+            sub_4F1B34(yw, slave->bact);
+            sub_4F1A60(slave->bact);
+            sub_4F1BE8(yw, slave);
+
+            slave->bact->field_3D6 |= 0x400;
+            slave->bact->field_3D5 = 2;
+
+            call_method(yw->self_full, 144, slave->bacto);
+        }
+
+        sub_4F1B34(yw, cmnder->bact);
+        sub_4F1A60(cmnder->bact);
+        sub_4F1BE8(yw, cmnder);
+
+        cmnder->bact->field_3D6 |= 0x400;
+        cmnder->bact->field_3D5 = 2;
+
+        call_method(yw->self_full, 144, cmnder->bacto);
+    }
+
+    if ( bct->bact->field_24 == 3 )
+    {
+        roboGun *a4;
+        call_vtbl(bct->bacto, 3, 0x8000200E, &a4, 0);
+
+        for (int i = 0; i < 8; i++)
+            a4[i].gun_obj = NULL;
+    }
+
+    sub_4F1A60(bct->bact);
+    sub_4F1B34(yw, bct->bact);
+
+    bct->bact->field_3D5 = 2;
+
+    call_method(yw->self_full, 144, bct->bacto);
+
+    bct->bact->field_3D6 |= 0x400;
+}
+
+void sub_44C144(vhclSndFX *sndfx)
+{
+    for (int i = 0; i < sndfx->extS.cnt; i++)
+    {
+        if ( sndfx->wavs[i] )
+        {
+            delete_class_obj(sndfx->wavs[i]);
+            sndfx->wavs[i] = NULL;
+        }
+    }
+
+    if ( sndfx->single_sample )
+    {
+        delete_class_obj(sndfx->single_sample);
+        sndfx->single_sample = NULL;
+    }
+}
+
+void ypaworld_func151__sub0(_NC_STACK_ypaworld *yw)
+{
+    sub_424CC8();
+
+    for (int i = 0; i < 256; i++)
+    {
+        VhclProto *vhcl = &yw->VhclProtos[i];
+        for (int j = 0; j < 12; j++)
+        {
+            sub_44C144(&vhcl->sndFX[j]);
+        }
+    }
+
+    for (int i = 0; i < 128; i++)
+    {
+        WeapProto *weap = &yw->WeaponProtos[i];
+        for (int j = 0; j < 3; j++)
+        {
+            sub_44C144(&weap->sndFXes[j]);
+        }
+    }
+
+    for (int i = 0; i < 128; i++)
+    {
+        sub_44C144(&yw->BuildProtos[i].sndfx);
+    }
+}
+
+void ypaworld_func151__sub1(_NC_STACK_ypaworld *yw)
+{
+    if ( yw->field_34 )
+    {
+        nc_FreeMem(yw->field_34);
+        yw->field_34 = NULL;
+        yw->field_38 = 0;
+    }
+
+    if ( yw->field_30 )
+    {
+        nc_FreeMem(yw->field_30);
+        yw->field_30 = NULL;
+    }
+}
+
+void sub_480868(_NC_STACK_ypaworld *yw)
+{
+    dprintf("MAKE ME %s (scene events)\n", "sub_480868");
+}
+
+void ypaworld_func151__sub5(_NC_STACK_ypaworld *yw)
+{
+    dprintf("MAKE ME %s (scene events)\n", "ypaworld_func151__sub5");
+    /*if ( yw->map_events )
+    {
+      nc_FreeMem(yw->map_events);
+      yw->map_events = NULL;
+    }*/
+}
+
 void ypaworld_func64__sub11(_NC_STACK_ypaworld *yw)
 {
     dprintf("MAKE ME %s (joy vibrate)\n", "ypaworld_func64__sub11");

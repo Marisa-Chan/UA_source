@@ -3228,6 +3228,69 @@ void sub_4C706C(_NC_STACK_ypaworld *yw)
     sub_4E866C(&squadron_manager.lstvw);
 }
 
+void sub_4C39A4(_NC_STACK_ypaworld *yw)
+{
+    if ( !(gui_lstvw.cmd_flag & 0x20) )
+    {
+        gui_lstvw.cmd_flag |= 0x20;
+        sub_412D9C(&gui_lstvw.frm_1);
+        yw->field_17bc = 0;
+    }
+
+    if ( bzda.field_1D8 & 1 )
+    {
+        bzda.field_1D8 &= 0xFFFFFFFE;
+        sub_412D9C(&bzda.frm_1);
+    }
+
+    sub_4E866C(&gui_lstvw);
+}
+
+void sub_4E1D24()
+{
+    sub_412D9C(&up_panel.frm_1);
+}
+
+void sub_4E2B24(_NC_STACK_ypaworld *yw)
+{
+    for (int i = 0; i < 14; i++)
+    {
+        if (yw->wis_skeletons.sklts[i])
+        {
+            delete_class_obj(yw->wis_skeletons.sklts[i]);
+            yw->wis_skeletons.sklts[i] = NULL;
+            yw->wis_skeletons.sklts_intern[i] = NULL;
+        }
+    }
+}
+
+void sub_4C8524(_NC_STACK_ypaworld *yw)
+{
+    sub_4E866C(&lstvw2);
+}
+
+void sub_47E400(_NC_STACK_ypaworld *yw)
+{
+    if ( yw->input_class )
+    {
+        winp_71arg winp71;
+        winp71.state = 1;
+        winp71.p4 = 0;
+        winp71.p3 = 0;
+        winp71.p2 = 0;
+        winp71.p1 = 0;
+        winp71.effID = 0;
+
+        input__func66__params arg66;
+        arg66.field_0 = 1;
+        arg66.field_4 = 0;
+        arg66.funcID = 71;
+        arg66.vals = &winp71;
+
+        call_method(yw->input_class, 66, &arg66);
+    }
+}
+
 int sb_0x451034(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
 {
     if ( yw->field_162c )
@@ -12051,5 +12114,31 @@ void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         if ( inpt->but_flags & 0x80000 )
             inpt->but_flags |= 8;
+    }
+}
+
+
+void ypaworld_func151__sub2(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
+{
+    if ( yw->field_162c )
+    {
+        call_method(obj, 140, &lstvw2);
+        call_method(obj, 140, &exit_menu);
+        call_method(obj, 140, &info_log);
+        call_method(obj, 140, &squadron_manager);
+        call_method(obj, 140, &robo_map);
+        call_method(obj, 140, &netgame_wnd);
+
+        sub_4DA874(yw);
+        sub_46E16C(yw);
+        sub_4C706C(yw);
+        sub_4C39A4(yw);
+        sub_4E1D24();
+        sub_4E2B24(yw);
+        sub_4C8524(yw);
+        sub_47E400(yw);
+
+        yw->field_1b1c = 0;
+        yw->field_162c = 0;
     }
 }

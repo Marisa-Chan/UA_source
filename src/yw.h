@@ -945,8 +945,8 @@ struct _NC_STACK_ypaworld
     int superbomb_wall_vproto;
     int superbomb_center_vproto;
     int field_7278;
-
-
+    int field_727c;
+    int field_7280;
     char lang_name[32];
     char *lang_strings;
     char *very_big_array__p_begin;
@@ -1328,7 +1328,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID);
 
 struct yw_arg172
 {
-    char *usertxt;
+    const char *usertxt;
     char *field_4;
     int field_8;
     UserData *usr;

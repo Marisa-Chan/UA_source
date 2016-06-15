@@ -5,6 +5,7 @@
 #include "yw_internal.h"
 #include "yw.h"
 #include "input.h"
+#include "yparobo.h"
 
 extern Key_stru keySS[256];
 
@@ -536,5 +537,665 @@ int yw_write_item_modifers(_NC_STACK_ypaworld *yw, FILE *fil)
         }
     }
 
+    return 1;
+}
+
+int yw_write_levelnum(_NC_STACK_ypaworld *yw, FILE *fil)
+{
+    fprintf(fil, "\nbegin_levelnum\n");
+    fprintf(fil, "    levelnum = %d\n", yw->field_2d90->levelID);
+    fprintf(fil, "end\n");
+
+    return 1;
+}
+
+void yw_write_map(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *bitmap, const char *padding, FILE *fil)
+{
+    bitmap_intern *bitm;
+
+    call_vtbl(bitmap, 3, 0x80002000, &bitm, 0);
+
+    if ( padding )
+        fprintf(fil, padding);
+
+    fprintf(fil, "%d %d\n", bitm->width, bitm->height);
+
+    uint8_t *v6 = (uint8_t *)bitm->buffer;
+
+    for (int y = 0; y < bitm->height; y++)
+    {
+        if ( padding )
+            fprintf(fil, padding);
+
+        for (int x = 0; x < bitm->width; x++ )
+        {
+            fprintf(fil, "%02x ", *v6);
+            v6++;
+        }
+
+        fprintf(fil, "\n");
+    }
+}
+
+void yw_write_ownermap(_NC_STACK_ypaworld *yw, FILE *fil)
+{
+    NC_STACK_bitmap *bitmap = (NC_STACK_bitmap *)init_get_class("bitmap.class", 0x80001000, "temp_owner_map", 0x80002002, yw->sectors_maxX2, 0x80002003, yw->sectors_maxY2, 0);
+
+    if ( bitmap )
+    {
+        bitmap_intern *bitm;
+        call_vtbl(bitmap, 3, 0x80002000, &bitm, 0);
+
+        int sz = yw->sectors_maxY2 * yw->sectors_maxX2;
+        uint8_t *outbf = (uint8_t *)bitm->buffer;
+
+        for (int i = 0; i < sz; i++)
+            outbf[i] = yw->cells[i].owner;
+
+        fprintf(fil, "\nbegin_ownermap\n");
+        yw_write_map(yw, bitmap, "        ", fil);
+        fprintf(fil, "end\n");
+
+        delete_class_obj(bitmap);
+    }
+}
+
+void yw_write_buildmap(_NC_STACK_ypaworld *yw, FILE *fil)
+{
+    fprintf(fil, "\nbegin_buildingmap\n");
+    yw_write_map(yw, yw->blg_map, "        ", fil);
+    fprintf(fil, "end\n");
+}
+
+void yw_write_energymap(_NC_STACK_ypaworld *yw, FILE *fil)
+{
+    NC_STACK_bitmap *bitmap = (NC_STACK_bitmap *)init_get_class("bitmap.class", 0x80001000, "ActualEnergyMap", 0x80002002, 3 * yw->sectors_maxX2, 0x80002003, 3 * yw->sectors_maxY2, 0);
+
+    if ( bitmap )
+    {
+        bitmap_intern *bitm;
+        call_vtbl(bitmap, 3, 0x80002000, &bitm, 0);
+
+        int sz = yw->sectors_maxY2 * yw->sectors_maxX2;
+        uint8_t *outbf = (uint8_t *)bitm->buffer;
+
+        for (int i = 0; i < sz; i++)
+        {
+            cellArea *cell = &yw->cells[i];
+
+            for (int j = 0; j < 3; j++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    *outbf = cell->buildings_health[j][k];
+                    outbf++;
+                }
+            }
+        }
+
+        fprintf(fil, "\nbegin_energymap\n");
+        yw_write_map(yw, bitmap, "        ", fil);
+        fprintf(fil, "end\n");
+    }
+    else
+    {
+        ypa_log_out("game save error: Unable to create bmo for saving owner\n");
+    }
+
+    if ( bitmap )
+        delete_class_obj(bitmap);
+}
+
+int yw_write_bact(bact_node *bct, FILE *fil)
+{
+    char buf[300];
+
+    int a4;
+    call_vtbl(bct->bacto, 3, 0x80001004, &a4, 0);
+
+    if ( a4 )
+        sprintf(buf, "    viewer         = yes\n");
+    else
+        sprintf(buf, "    viewer         = no\n");
+
+    fwrite(buf, strlen(buf), 1, fil);
+
+    call_vtbl(bct->bacto, 3, 0x80001005, &a4, 0);
+
+    if ( a4 )
+        sprintf(buf, "    user           = yes\n");
+    else
+        sprintf(buf, "    user           = no\n");
+
+    fwrite(buf, strlen(buf), 1, fil);
+
+    call_vtbl(bct->bacto, 3, 0x80001007, &a4, 0);
+
+    if ( a4 )
+        sprintf(buf, "    collision      = yes\n");
+    else
+        sprintf(buf, "    collision      = no\n");
+
+    fwrite(buf, strlen(buf), 1, fil);
+    sprintf(buf, "    energy         = %d\n", bct->bact->energy);
+
+    fwrite(buf, strlen(buf), 1, fil);
+    sprintf(buf, "    speed          = %6.5f_%6.5f_%6.5f_%6.5f\n", bct->bact->field_605.sx, bct->bact->field_605.sy, bct->bact->field_605.sz, bct->bact->field_611);
+
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(
+        buf,
+        "    matrix         = %6.5f_%6.5f_%6.5f_%6.5f_%6.5f_%6.5f_%6.5f_%6.5f_%6.5f\n",
+        bct->bact->field_651.m00,
+        bct->bact->field_651.m01,
+        bct->bact->field_651.m02,
+        bct->bact->field_651.m10,
+        bct->bact->field_651.m11,
+        bct->bact->field_651.m12,
+        bct->bact->field_651.m20,
+        bct->bact->field_651.m21,
+        bct->bact->field_651.m22);
+
+    fwrite(buf, strlen(buf), 1, fil);
+
+    if ( bct->bact->field_24 == 3 )
+    {
+        NC_STACK_yparobo *roboo = (NC_STACK_yparobo *)bct->bacto;
+        sprintf(
+            buf,
+            "    pos            = %2.2f_%2.2f_%2.2f\n",
+            bct->bact->field_621.sx,
+            roboo->stack__yparobo.field_1D5,
+            bct->bact->field_621.sz);
+    }
+    else
+        sprintf(
+            buf,
+            "    pos            = %2.2f_%2.2f_%2.2f\n",
+            bct->bact->field_621.sx,
+            bct->bact->field_621.sy,
+            bct->bact->field_621.sz);
+
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    force          = %2.2f\n", bct->bact->field_601);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    gunangle       = %5.4f\n", bct->bact->gun_angle2);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    commandID      = %d\n", bct->bact->field_2E);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    aggression     = %d\n", bct->bact->field_3D4);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    mainstate      = %d\n", bct->bact->field_3D5);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    extrastate     = %d\n", bct->bact->field_3D6);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    ident          = %d\n", bct->bact->ypabact__id);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    killerowner    = %d\n", bct->bact->field_9B5);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    if ( bct->bact->field_3DE == 2 )
+        sprintf(buf, "    primary        = %d_%d_%2.2f_%2.2f_%d\n", bct->bact->field_3DE, bct->bact->field_3e8->ypabact__id, bct->bact->field_3ec.sx, bct->bact->field_3ec.sz, bct->bact->field_3e0);
+    else
+        sprintf(buf, "    primary        = %d_0_%2.2f_%2.2f_%d\n", bct->bact->field_3DE, bct->bact->field_3ec.sx, bct->bact->field_3ec.sz, bct->bact->field_3e0);
+
+    fwrite(buf, strlen(buf), 1, fil);
+
+    for (int i = 0; i < bct->bact->field_59A; i++)
+    {
+        sprintf(buf, "    waypoint       = %d_%2.2f_%2.2f\n", i, bct->bact->field_418[i].sx, bct->bact->field_418[i].sz);
+        fwrite(buf, strlen(buf), 1, fil);
+    }
+
+    sprintf(buf, "    num_wp         = %d\n", bct->bact->field_59A);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    count_wp       = %d\n", bct->bact->field_598);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    return 1;
+}
+
+int yw_write_robo(bact_node *bct, FILE *fil)
+{
+    char buf[300];
+
+    sprintf(buf, "\nbegin_robo %d\n", bct->bact->id);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    if ( !yw_write_bact(bct, fil) )
+        return 0;
+
+    sprintf(buf, "    owner          = %d\n", bct->bact->owner);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    NC_STACK_yparobo *roboo = (NC_STACK_yparobo *)bct->bacto;
+    __NC_STACK_yparobo *robo = &roboo->stack__yparobo;
+
+    sprintf(buf, "    robostate      = %d\n", robo->field_1DB & 0xC00F );
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    dockenergy     = %d\n", robo->field_1EF);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    dockcount      = %d\n", robo->field_1F3);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    dockuser       = %d\n", robo->field_1F7);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    docktime       = %d\n", robo->field_1FB);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    docktargetpos  = %2.2f_%2.2f\n", robo->field_1FF.sx, robo->field_1FF.sz);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    docktargetID   = %d\n", robo->field_211);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    docktargettype = %d\n", robo->field_20F);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    dockaggr       = %d\n", robo->field_210);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    battvehicle    = %d\n", robo->field_4F5);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    battbeam       = %d\n", robo->field_4FD);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    fillmodus      = %d\n", robo->field_501);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    maximum        = %d\n", robo->bact_internal->energy_2);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    buildspare     = %d\n", robo->field_509);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    vhoriz         = %7.5f\n", robo->bact_internal->field_5ED);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    vvert          = %7.5f\n", robo->bact_internal->field_5F1);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    con_budget     = %d\n", robo->field_1E7);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    def_budget     = %d\n", robo->field_1EA);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    rec_budget     = %d\n", robo->field_1ec);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    rob_budget     = %d\n", robo->field_1EE);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    rad_budget     = %d\n", robo->field_1e8);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    pow_budget     = %d\n", robo->field_1E9);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    saf_budget     = %d\n", robo->field_1EB);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    cpl_budget     = %d\n", robo->field_1ED);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    saf_delay     = %d\n", robo->field_24D);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    pow_delay     = %d\n", robo->field_265);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    rad_delay     = %d\n", robo->field_235);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    cpl_delay     = %d\n", robo->field_2B1);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    def_delay     = %d\n", robo->field_281);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    con_delay     = %d\n", robo->field_299);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    rec_delay     = %d\n", robo->field_2C9);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    rob_delay     = %d\n", robo->field_2E1);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    reload_const  = %d\n", robo->bact_internal->reload_const_or_energy2);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "end\n\n");
+    fwrite(buf, strlen(buf), 1, fil);
+
+    return 1;
+}
+
+int yw_write_gun(bact_node *bct, FILE *fil)
+{
+    char buf[300];
+
+    if ( bct->bact->field_24 == 9 )
+    {
+        NC_STACK_ypagun *guno = (NC_STACK_ypagun *)bct->bacto;
+
+        sprintf(
+            buf,
+            "    gunbasis = %7.6f_%7.6f_%7.6f\n",
+            guno->stack__ypagun.dir.sx,
+            guno->stack__ypagun.dir.sy,
+            guno->stack__ypagun.dir.sz);
+
+        fwrite(buf, strlen(buf), 1, fil);
+    }
+    return 1;
+}
+
+int yw_write_commander(bact_node *bct, FILE *fil)
+{
+    char buf[300];
+
+    sprintf(buf, "\nbegin_commander %d\n", bct->bact->id);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    if ( !yw_write_bact(bct, fil) )
+        return 0;
+
+    if ( !yw_write_gun(bct, fil) )
+        return 0;
+
+    sprintf(buf, "end\n\n");
+    fwrite(buf, strlen(buf), 1, fil);
+
+    return 1;
+}
+
+int yw_write_slave(bact_node *bct, FILE *fil)
+{
+    char buf[300];
+
+    sprintf(buf, "\nbegin_slave %d\n", bct->bact->id);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    if ( !yw_write_bact(bct, fil) )
+        return 0;
+
+    if ( !yw_write_gun(bct, fil) )
+        return 0;
+
+    sprintf(buf, "end\n\n");
+    fwrite(buf, strlen(buf), 1, fil);
+
+    return 1;
+}
+
+int yw_write_extraviewer(bact_node *bct, FILE *fil)
+{
+    char buf[300];
+
+    if ( bct->bact->field_24 == 9 )
+    {
+        int v7 = -1;
+
+        sprintf(buf, "\nbegin_extraviewer\n");
+        fwrite(buf, strlen(buf), 1, fil);
+
+        NC_STACK_yparobo *roboo = (NC_STACK_yparobo *)bct->bact->field_32;
+
+        for (int i = 0; i < 8; i++)
+        {
+            if ( roboo->stack__yparobo.guns[i].gun_obj == bct->bacto )
+            {
+                v7 = i;
+                break;
+            }
+        }
+
+        if ( v7 >= 0 )
+        {
+            sprintf(buf, "    kind = robogun\n");
+            fwrite(buf, strlen(buf), 1, fil);
+
+            sprintf(buf, "    number = %d\n", v7);
+            fwrite(buf, strlen(buf), 1, fil);
+
+            sprintf(buf, "end\n\n");
+            fwrite(buf, strlen(buf), 1, fil);
+            return 1;
+        }
+
+        ypa_log_out("Error: Gun not found in yrd!\n");
+    }
+    return 0;
+}
+
+int yw_write_units(_NC_STACK_ypaworld *yw, FILE *fil)
+{
+    bact_node *station = (bact_node *)yw->bact_list.tailpred;
+    while (station->prev)
+    {
+        if ( station->bact->field_3D5 != 2 )
+        {
+            if ( !yw_write_robo(station, fil) )
+                return 0;
+
+            bact_node *commander = (bact_node *)station->bact->list2.tailpred;
+
+            while ( commander->prev )
+            {
+                int a4 = 0;
+
+                if ( commander->bact->field_24 == 9 )
+                    call_vtbl(commander->bacto, 3, 0x80002006, &a4, 0);
+
+                if ( !a4 )
+                {
+                    if ( !yw_write_commander(commander, fil) )
+                        return 0;
+                }
+                else
+                {
+                    int v8;
+                    call_vtbl(commander->bacto, 3, 0x80001004, &v8, 0);
+
+                    if ( v8 )
+                    {
+                        if ( !yw_write_extraviewer(commander, fil) )
+                            return 0;
+                    }
+                }
+
+                bact_node *slave = (bact_node *)commander->bact->list2.tailpred;
+
+                while ( slave->prev )
+                {
+                    int v9 = 0;
+                    if ( slave->bact->field_24 == 9 )
+                        call_vtbl(slave->bacto, 3, 0x80002006, &v9, 0);
+
+                    if ( !v9 )
+                    {
+                        if ( !yw_write_slave(slave, fil) )
+                            return 0;
+                    }
+                    else
+                    {
+                        int v10;
+                        call_vtbl(slave->bacto, 3, 0x80001004, &v10, 0);
+
+                        if ( v10 )
+                        {
+                            if ( !yw_write_extraviewer(slave, fil) )
+                                return 0;
+                        }
+                    }
+
+                    slave = (bact_node *)slave->prev;
+                }
+
+                commander = (bact_node *)commander->prev;
+            }
+        }
+
+        station = (bact_node *)station->prev;
+    }
+
+    return 1;
+}
+
+int yw_write_wunderinfo(_NC_STACK_ypaworld *yw, FILE *fil)
+{
+    char buf[300];
+
+    sprintf(buf, "\nbegin_wunderinfo\n");
+    fwrite(buf, strlen(buf), 1, fil);
+
+    for (int i = 0; i < 8; i++)
+    {
+        gemProto *gem = &yw->gems[i];
+
+        if ( gem->field_0 )
+        {
+            if ( yw->cells[gem->sec_x + gem->sec_y * yw->sectors_maxX2].field_3A != 4 )
+            {
+                sprintf(buf, "    disablegem %d\n", i);
+                fwrite(buf, strlen(buf), 1, fil);
+            }
+        }
+    }
+
+    sprintf(buf, "end\n\n");
+    fwrite(buf, strlen(buf), 1, fil);
+    return 1;
+}
+
+int yw_write_kwfactor(_NC_STACK_ypaworld *yw, FILE *fil)
+{
+    char buf[300];
+
+    sprintf(buf, "\nbegin_kwfactor\n");
+    fwrite(buf, strlen(buf), 1, fil);
+
+    for (int i = 0; i < 256; i++)
+    {
+        yw_field34 *kw = &yw->field_34[i];
+        if ( kw->p_cell )
+        {
+            sprintf(buf, "    kw = %d_%d_%d\n", kw->x, kw->y, kw->power_2);
+            fwrite(buf, strlen(buf), 1, fil);
+        }
+    }
+
+    sprintf(buf, "end\n\n");
+    fwrite(buf, strlen(buf), 1, fil);
+    return 1;
+}
+
+int yw_write_globals(_NC_STACK_ypaworld *yw, FILE *fil)
+{
+    char buf[300];
+
+    sprintf(buf, "\nbegin_globals\n");
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "    time = %d\n", yw->field_1614);
+    fwrite(buf, strlen(buf), 1, fil);
+
+    sprintf(buf, "end\n\n");
+    fwrite(buf, strlen(buf), 1, fil);
+    return 1;
+}
+
+int yw_write_superbomb(_NC_STACK_ypaworld *yw, FILE *fil)
+{
+    for (int i = 0; i < yw->field_2d90->supetItems_count; i++)
+    {
+        fprintf(fil, "\nbegin_superbomb\n");
+        fprintf(fil, "    num               = %d\n", i);
+        fprintf(fil, "    status            = %d\n", yw->field_2d90->supetItems[i].field_4);
+        fprintf(fil, "    active_timestamp  = %d\n", yw->field_2d90->supetItems[i].field_EC);
+        fprintf(fil, "    trigger_timestamp = %d\n", yw->field_2d90->supetItems[i].field_F0);
+        fprintf(fil, "    activated_by      = %d\n", yw->field_2d90->supetItems[i].field_F4);
+        fprintf(fil, "    countdown         = %d\n", yw->field_2d90->supetItems[i].field_F8);
+        fprintf(fil, "    last_ten_sec      = %d\n", yw->field_2d90->supetItems[i].field_FC);
+        fprintf(fil, "    last_sec          = %d\n", yw->field_2d90->supetItems[i].field_100);
+        fprintf(fil, "    radius            = %d\n", yw->field_2d90->supetItems[i].field_104);
+        fprintf(fil, "    last_radius       = %d\n", yw->field_2d90->supetItems[i].field_108);
+        fprintf(fil, "end\n");
+    }
+
+    return 1;
+}
+
+int yw_write_histbuffer(yw_f726c_nod *hist_node, FILE *fil)
+{
+    uint8_t *bufpos = hist_node->bufStart;
+    int lines = (hist_node->bufEnd - hist_node->bufStart) / 64;
+
+    fprintf(fil, "    history_buffer = \n");
+    fprintf(fil, "    %d %d\n", 64, lines);
+
+    for (int i = 0; i < lines; i++)
+    {
+        fprintf(fil, "    ");
+
+        for (int j = 0; j < 64; j++)
+        {
+            fprintf(fil, "%02x ", *bufpos);
+            bufpos++;
+        }
+
+        fprintf(fil, "\n");
+    }
+
+    fprintf(fil, "\n");
+    return 1;
+}
+
+int yw_write_history(_NC_STACK_ypaworld *yw, FILE *fil)
+{
+    if ( yw->history )
+    {
+        fprintf(fil, ";------------------------------------------------------------\n");
+        fprintf(fil, "; History Buffers\n");
+        fprintf(fil, ";------------------------------------------------------------\n");
+        fprintf(fil, "begin_history\n");
+
+        yw_f726c_nod *histnode = (yw_f726c_nod *)yw->history->lst.head;
+
+        while ( histnode->next )
+        {
+            yw_write_histbuffer(histnode, fil);
+
+            histnode = (yw_f726c_nod *)histnode->next;
+        }
+
+        fprintf(fil, "end");
+    }
+
+    return 1;
+}
+
+int yw_write_masks(_NC_STACK_ypaworld *yw, FILE *fil)
+{
+    fprintf(fil, "\nbegin_masks\n");
+    fprintf(fil, "    ownermask = %d\n", yw->field_2d90->ownerMap__has_vehicles);
+    fprintf(fil, "    usermask  = %d\n", yw->field_2d90->field_60);
+    fprintf(fil, "end\n");
     return 1;
 }
