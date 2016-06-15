@@ -7107,12 +7107,6 @@ void sub_47DB04(_NC_STACK_ypaworld *yw, char a2)
     yw->GameShell->field_283F = 0;
 }
 
-void ypaworld_func64__sub7__sub6__sub2(_NC_STACK_ypaworld *, int a2)
-{
-    dword_5BAF9C = a2;
-}
-
-
 char * sub_451714(tiles_stru *, char *cur, const char *a3, int a2, uint8_t a4)
 {
     char *pcur = cur;
@@ -7314,7 +7308,7 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
         }
         else if ( v7 == 2 )
         {
-            ypaworld_func64__sub7__sub6__sub2(yw, 0);
+            dword_5BAF9C = 0;
         }
     }
 
