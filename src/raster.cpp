@@ -79,7 +79,6 @@ void raster_func2(NC_STACK_raster *obj, class_stru *zis, stack_vals *stak)
             switch(stk->id)
             {
             case 0x80003000:
-                break;
                 rstr->field_4 = (DWORD)stk->value;
                 break;
 

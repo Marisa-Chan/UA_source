@@ -302,7 +302,6 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
 
         for (int j = 0; j <= v59; j++ )
         {
-            bact = bact;
             int v16 = i + bact->field_c;
             int v18 = j + bact->field_10;
 

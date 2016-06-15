@@ -7195,7 +7195,7 @@ int get_lvlnum_from_save(const char *filename, int *lvlnum_out)
             while ( fgets(v7, 255, fil) )
             {
                 if ( !strnicmp(v7, "end", 3) )
-                    return 0; //Not found
+                    break; //Not found
 
                 char *v5 = strtok(v7, " \t");
 

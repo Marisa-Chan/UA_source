@@ -8959,7 +8959,7 @@ size_t ypabact_func124(NC_STACK_ypabact *obj, class_stru *zis, bact_arg124 *arg)
 
                                     int doo = false;
 
-                                    if ( dx == 0 && dz == 0)
+                                    if ( dx != 0 && dz != 0)
                                     {
                                         cellArea *cell_tz = NULL;
 

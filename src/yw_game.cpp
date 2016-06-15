@@ -439,9 +439,9 @@ int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
     for (int i = 0; i < 8; i++)
     {
         yw->p_1_grp[0][i] = 0;
-        yw->p_1_grp[0][i] = 0;
-        yw->p_1_grp[0][i] = 100000;
-        yw->p_1_grp[0][i] = 0;
+        yw->p_1_grp[1][i] = 0;
+        yw->p_1_grp[2][i] = 100000;
+        yw->p_1_grp[3][i] = 0;
     }
 
     sb_0x44ca90__sub4(yw);

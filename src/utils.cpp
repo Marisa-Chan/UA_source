@@ -232,7 +232,7 @@ DWORD profiler_end(DWORD prev)
 {
     Uint64 freq = SDL_GetPerformanceFrequency();
 
-    if ( freq )
+    if ( !freq )
         return 0 - prev;
 
     Uint64 cnt = SDL_GetPerformanceCounter();
