@@ -4667,7 +4667,7 @@ void sub_4A0260(__NC_STACK_yparobo *robo)
             if ( v5 > 0 && v5 < bact->field_20 - 2 && v4 > 0 && v4 < bact->field_22 - 2 )
             {
 
-                __NC_STACK_ypabact *v7 = (__NC_STACK_ypabact *)&bact->p_cell_area[i + j * bact->field_20].field_3C.head;
+                __NC_STACK_ypabact *v7 = (__NC_STACK_ypabact *)bact->p_cell_area[i + j * bact->field_20].field_3C.head;
 
                 while (v7->next)
                 {

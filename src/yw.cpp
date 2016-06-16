@@ -2545,7 +2545,7 @@ void ypaworld_func150(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg150 *arg)
 
         if ( v29 >= 0 && v29 < yw->sectors_maxX2 && v12 >= 0 && v12 < yw->sectors_maxY2 )
         {
-            __NC_STACK_ypabact *sect_bacts = (__NC_STACK_ypabact *)&yw->cells[v29 + v12 * yw->sectors_maxX2].field_3C.head;
+            __NC_STACK_ypabact *sect_bacts = (__NC_STACK_ypabact *)yw->cells[v29 + v12 * yw->sectors_maxX2].field_3C.head;
 
             while (sect_bacts->next)
             {
