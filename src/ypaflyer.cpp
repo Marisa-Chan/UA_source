@@ -1571,10 +1571,9 @@ void ypaflyer_func96(NC_STACK_ypaflyer *obj, class_stru *zis, void *)
     fly->field_c = 0;
 }
 
-void ypaflyer_func97(NC_STACK_ypaflyer *obj, class_stru *zis, void *)
+void ypaflyer_func97(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg)
 {
-    //call_parent(zis, obj, 97, arg); //Arg?
-    call_parent(zis, obj, 97, 0);
+    call_parent(zis, obj, 97, (stack_vals *)arg);
 
     __NC_STACK_ypaflyer *fly = &obj->stack__ypaflyer;
 
