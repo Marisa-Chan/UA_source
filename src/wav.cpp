@@ -110,8 +110,13 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, class_stru *zis, stack_vals *stak, co
                 }
                 else if (sbchunk.SubchunkID == TAG_fmt)
                 {
-                    if (sbchunk.SubchunkSize == sizeof(PCM_fmt))
+                    if (sbchunk.SubchunkSize >= sizeof(PCM_fmt))
+                    {
                         fread(&fmt, sizeof(PCM_fmt), 1, fil);
+
+                        if ( sbchunk.SubchunkSize > sizeof(PCM_fmt) )
+                            fseek(fil, sbchunk.SubchunkSize - sizeof(PCM_fmt), SEEK_CUR); // For some files this section bigger, so skip extra bytes
+                    }
                     else
                         fseek(fil, sbchunk.SubchunkSize, SEEK_CUR);
                 }
