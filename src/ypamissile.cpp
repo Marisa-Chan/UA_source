@@ -232,7 +232,7 @@ void ypamissile_func2__sub0(NC_STACK_ypamissile *obj, __NC_STACK_ypamissile *mis
                 break;
 
             case 0x80002010:
-                miss->posy = stk->value;
+                miss->posy = (int)stk->value;
                 break;
 
             }
