@@ -1247,7 +1247,7 @@ void ypamissile_func130(NC_STACK_ypamissile *obj, class_stru *zis, miss_arg130 *
                 }
             }
 
-            if ( v52 > 0.01 || v52 < -0.01 )
+            if ( v52 > MISSILE_BOMB_MIN_ANGLE || v52 < -MISSILE_BOMB_MIN_ANGLE )
             {
                 mat3x3 mat2;
 

@@ -4,6 +4,10 @@
 #include "nucleas.h"
 #include "ypabact.h"
 
+// Bomb rotation speed
+#define MISSILE_BOMB_MIN_ANGLE 0.001
+
+
 extern class_stored ypamissile_class_off;
 
 struct NC_STACK_ypamissile;
