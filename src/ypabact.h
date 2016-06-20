@@ -85,7 +85,7 @@ struct __NC_STACK_ypabact : public nnode
     float adist_bact;
     float sdist_sector;
     float sdist_bact;
-    xyz field_418[32];
+    xyz field_418[32]; //waypoints
     int16_t field_598;
     int16_t field_59A;
     int field_59c;

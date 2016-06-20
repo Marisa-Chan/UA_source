@@ -2119,7 +2119,8 @@ void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float p
 }
 
 void sb_0x4d7c08__sub1(_NC_STACK_ypaworld *yw, base77Func *arg)
-{   // Render super items
+{
+    // Render super items
     for (int i = 0; i < yw->field_2d90->supetItems_count; i++)
     {
         supetItemProto *supr = &yw->field_2d90->supetItems[i];

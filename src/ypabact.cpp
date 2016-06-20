@@ -7405,12 +7405,12 @@ __NC_STACK_ypabact *sb_0x493984__sub0(__NC_STACK_ypabact *bact)
             else
             {
                 float v8 = 1.0 - (sqrt(POW2(bact->field_621.sx - v4->field_621.sx) + POW2(bact->field_621.sz - v4->field_621.sz)) / 110400.0);
-                v10 = (float)kid_unit->bact->energy / (float)kid_unit->bact->energy_2 + v8;
+                v10 = (float)v4->energy / (float)v4->energy_2 + v8;
             }
 
             if ( !new_leader || tmp < v10 )
             {
-                new_leader = kid_unit->bact;
+                new_leader = v4;
                 tmp = v10;
             }
         }
@@ -8854,7 +8854,8 @@ void ypabact_func123(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
 }
 
 size_t ypabact_func124(NC_STACK_ypabact *obj, class_stru *zis, bact_arg124 *arg)
-{   //path find for ground units (tank & car)
+{
+    //path find for ground units (tank & car)
     __NC_STACK_ypabact *bact = &obj->stack__ypabact;
     _NC_STACK_ypaworld *yw = bact->field_B3C;
 
@@ -9195,7 +9196,8 @@ void ypabact_func125__sub0(__NC_STACK_ypabact *bact, int a2)
 }
 
 size_t ypabact_func125(NC_STACK_ypabact *obj, class_stru *zis, bact_arg124 *arg)
-{   // path find caller for ground squads
+{
+    // path find caller for ground squads
     __NC_STACK_ypabact *bact = &obj->stack__ypabact;
 
     int maxsteps = arg->steps_cnt;

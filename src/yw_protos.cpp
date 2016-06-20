@@ -2757,7 +2757,7 @@ int parseSaveUser(scrCallBack *arg)
             {
                 if ( !sb_0x4739e8__sub0(yw, "callsign.def", yw->GameShell->callSIGN, 64) )
                 {
-                    strcpy(yw->GameShell->callSIGN , get_lang_string(yw->string_pointers_p2, 366, "UNNAMED") );
+                    strcpy(yw->GameShell->callSIGN, get_lang_string(yw->string_pointers_p2, 366, "UNNAMED") );
                 }
             }
             arg->field_18 = 1;
@@ -5728,7 +5728,7 @@ int sb_0x479f4c(scrCallBack *scr)
             v5.pos.sy = 0;
             v5.vehicle_id = atoi(scr->p2);
 
-            current_bact = (NC_STACK_ypabact *)call_method(yw->self_full, 146,&v5);
+            current_bact = (NC_STACK_ypabact *)call_method(yw->self_full, 146, &v5);
 
             if ( current_bact )
             {

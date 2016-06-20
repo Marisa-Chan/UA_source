@@ -563,7 +563,7 @@ int WinMain__sub0()
     return 0;
 }
 
-int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE , LPSTR lpCmdLine, int nCmdShow)
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int nCmdShow)
 {
     struct tagMSG Msg;
 
