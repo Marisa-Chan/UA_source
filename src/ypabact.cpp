@@ -373,12 +373,15 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
 
             v8 = 1;
         }
-        else if ( sub_48C244(ywo, bact2->field_59c, bact2->field_5a0) )
-        {
-            v8 = 2;
-        }
         else
-            v8 = 0;
+        {
+            v6 = sub_48C244(ywo, bact2->field_59c, bact2->field_5a0);
+
+            if ( v6 )
+                v8 = 2;
+            else
+                v8 = 0;
+        }
     }
     else
     {
