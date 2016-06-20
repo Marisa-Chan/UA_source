@@ -269,8 +269,8 @@ struct energPanel : public listbase
 
 struct bzd_t1
 {
-    char i;
-    char d;
+    int i;
+    int d;
 };
 
 struct bzd : public listbase
