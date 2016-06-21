@@ -296,8 +296,7 @@ ncDir *_r_nc_opendir(const char *path, DWORD flags)
             if ( !v8 )
                 break;
 
-            char v10 = *path;
-            if ( v10 != '*' && v10 != '?' )
+            if ( v8 != '*' && v8 != '?' )
             {
                 v7++;
                 path++;
@@ -316,7 +315,7 @@ ncDir *_r_nc_opendir(const char *path, DWORD flags)
                 buf[v7 - 1] = '\\';
             }
         }
-        strcat(buf, "*.*");
+        strcpy(buf + v7, "*.*");
 
         if ( dir->hndl )
             FindClose(dir->hndl);

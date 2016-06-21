@@ -1174,14 +1174,14 @@ void sb_0x46ca74(UserData *usr)
 {
     const char *usernamedir = usr->usernamedir;
 
-    char list[300];
+    char oldsave[300];
 
     if ( usr->field_1612 )
     {
         if ( strcasecmp(usr->usernamedir, usr->user_name) )
         {
-            sprintf(list, "save:%s", usernamedir);
-            sub_46D0F8(list);
+            sprintf(oldsave, "save:%s", usernamedir);
+            sub_46D0F8(oldsave);
         }
     }
     else
@@ -1212,10 +1212,10 @@ void sb_0x46ca74(UserData *usr)
         usr->field_1612 = usr->disk_listvw.elements_for_scroll_size;
     }
 
-    sprintf(list, "%s/user.txt", usr->usernamedir);
+    sprintf(oldsave, "%s/user.txt", usr->usernamedir);
 
     yw_arg172 v15;
-    v15.usertxt = list;
+    v15.usertxt = oldsave;
     v15.field_4 = usr->usernamedir;
     v15.usr = usr;
     v15.field_8 = 255;
@@ -1224,11 +1224,11 @@ void sb_0x46ca74(UserData *usr)
     if ( ! call_method(usr->p_ypaworld->self_full, 171, &v15) )
         ypa_log_out("Warning! Error while saving user data for %s\n", usr->usernamedir);
 
-    sprintf(list, "save:%s", usr->user_name);
+    sprintf(oldsave, "save:%s", usr->user_name);
 
     if ( strcasecmp(usr->usernamedir, usr->user_name) )
     {
-        ncDir *v8 = OpenDir(list);
+        ncDir *v8 = OpenDir(oldsave);
         dirEntry a2a;
 
         if ( v8 )
@@ -1248,7 +1248,7 @@ void sb_0x46ca74(UserData *usr)
                     char v11[300];
                     char v12[300];
 
-                    sprintf(v11, "%s/%s", list, a2a.e_name);
+                    sprintf(v11, "%s/%s", oldsave, a2a.e_name);
                     sprintf(v12, "save:%s/%s", usr->usernamedir, a2a.e_name);
                     sb_0x46ca74__sub0(v11, v12);
                 }
