@@ -512,6 +512,28 @@ void ReadSnapsDir()
     }
 }
 
+void sub_4113E8()
+{
+    if ( ypaworld )
+    {
+        if ( dword_520400 == 2 )
+        {
+            call_method(ypaworld, 151, 0);
+            call_method(ypaworld, 155, &userdata);
+        }
+        else if ( dword_520400 == 1 )
+        {
+            sub_410628();
+            call_method(ypaworld, 157, &userdata);
+            call_method(ypaworld, 155, &userdata);
+        }
+
+        delete_class_obj(ypaworld);
+    }
+
+    deinit_globl_engines();
+}
+
 int WinMain__sub0__sub1()
 {
     char buildDate[256];
@@ -601,7 +623,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int nCmdSh
             {
                 if ( !GetMessage(&Msg, 0, 0, 0) )
                 {
-////					sub_4113E8();
+                    sub_4113E8();
+
                     CoUninitialize();
                     return Msg.wParam;
                 }
@@ -617,7 +640,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int nCmdSh
 
     if ( ghWnd )
         DestroyWindow(ghWnd);
-////	sub_4113E8();
+
+    sub_4113E8();
 
     CoUninitialize();
     return Msg.wParam;
