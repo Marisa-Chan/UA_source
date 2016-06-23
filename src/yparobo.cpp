@@ -719,12 +719,12 @@ void yparobo_func68(NC_STACK_yparobo *obj, class_stru *zis, ypabact_arg65 *arg)
 
 void sub_4A6720(NC_STACK_ypaworld *ywo, __NC_STACK_ypabact *bact)
 {
-    yw_arg184_t4 arg184;
+    yw_arg184 arg184;
     arg184.type = 4;
-    arg184.field_1 = bact->owner;
-    arg184.field_2 = bact->id;
-    arg184.field_4 = bact->field_621.sx * 256.0 / bact->field_18;
-    arg184.field_5 = bact->field_621.sz * 256.0 / bact->field_1c;
+    arg184.t34.field_1 = bact->owner;
+    arg184.t34.field_2 = bact->id;
+    arg184.t34.field_4 = bact->field_621.sx * 256.0 / bact->field_18;
+    arg184.t34.field_5 = bact->field_621.sz * 256.0 / bact->field_1c;
 
     call_method(ywo, 184, &arg184);
 }

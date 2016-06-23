@@ -3995,28 +3995,28 @@ void ypabact_func77(NC_STACK_ypabact *obj, class_stru *zis, void *)
             {
                 if ( bact->field_9B1 )
                 {
-                    yw_arg184_t4 arg184;
+                    yw_arg184 arg184;
                     arg184.type = 3;
-                    arg184.field_1 = 8 * bact->field_9B1->owner | bact->owner;
+                    arg184.t34.field_1 = 8 * bact->field_9B1->owner | bact->owner;
 
                     int v70;
                     call_vtbl(bact->field_9B1->self, 3, 0x80001004, &v70, 0);
 
                     if ( v70 || bact->field_9B1->field_3D6 & 0x800000 )
-                        arg184.field_1 |= 0x80;
+                        arg184.t34.field_1 |= 0x80;
 
                     call_vtbl(bact->self, 3, 0x80001004, &v70, 0);
 
                     if ( v70 || bact->field_3D6 & 0x800000 )
-                        arg184.field_1 |= 0x40;
+                        arg184.t34.field_1 |= 0x40;
 
-                    arg184.field_2 = bact->id;
+                    arg184.t34.field_2 = bact->id;
 
                     if ( bact->field_24 == 3 )
-                        arg184.field_2 |= 0x8000;
+                        arg184.t34.field_2 |= 0x8000;
 
-                    arg184.field_4 = bact->field_621.sx * 256.0 / bact->field_18;
-                    arg184.field_5 = bact->field_621.sz * 256.0 / bact->field_1c;
+                    arg184.t34.field_4 = bact->field_621.sx * 256.0 / bact->field_18;
+                    arg184.t34.field_5 = bact->field_621.sz * 256.0 / bact->field_1c;
 
                     call_method(bact->wrld, 184, &arg184);
                 }

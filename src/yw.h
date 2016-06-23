@@ -539,6 +539,14 @@ struct brf_t2
     char title[128];
 };
 
+struct brf_t1
+{
+    int16_t field_0;
+    int16_t last_vhcl;
+    int16_t last_weapon;
+    int16_t last_build;
+};
+
 struct big_ypa_Brf
 {
     NC_STACK_ilbm *mbmap_img;
@@ -558,14 +566,8 @@ struct big_ypa_Brf
     const char *LEVEL_BRIEF_INFO;
     brf_obj brf_objs;
     rstr_arg204 field_2F40;
-    float field_2F64;
-    float field_2F68;
-    float field_2F6C;
-    float field_2F70;
-    float field_2F74;
-    float field_2F78;
-    float field_2F7C;
-    float field_2F80;
+    ua_fRect field_2F64;
+    ua_fRect field_2F74;
     int field_2F84;
     int tp2_count;
     int field_2F8C;
@@ -581,8 +583,12 @@ struct big_ypa_Brf
     bitmap_intern *copy2_of_ownmap_bitm;
     bitmap_intern *copy2_of_typmap_bitm;
     int field_41D4;
-
+    int field_41D8;
+    player_status copy_of_playerstatus[8];
+    player_status field_42BC[8];
     char movie[256];
+    int tp1_count;
+    brf_t1 tp1[7];
 };
 
 
@@ -1470,34 +1476,44 @@ struct yw_arg129
     __NC_STACK_ypabact *unit;
 };
 
-struct yw_arg184_type
+struct yw_arg184
 {
     char type;
-};
 
-struct yw_arg184 : public yw_arg184_type
-{
-    char secX;
-    char secY;
-    char owner;
-    char field_4;
-    char field_5;
-    int16_t last_vhcl;
-    int16_t last_weapon;
-    int16_t last_build;
-};
+    union
+    {
+        struct
+        {
+            int field_1;
+        } t15;
 
-struct yw_arg184_t4 : public yw_arg184_type
-{
-    char field_1;
-    int16_t field_2;
-    char field_4;
-    char field_5;
-};
+        struct
+        {
+            int secX;
+            int secY;
+            uint8_t owner;
+        } t26;
 
-struct yw_arg184_t1 : public yw_arg184_type
-{
-    int field_1;
+        struct
+        {
+            uint8_t field_1;
+            int16_t field_2;
+            uint8_t field_4;
+            uint8_t field_5;
+        } t34;
+
+        struct
+        {
+            int secX;
+            int secY;
+            uint8_t owner;
+            int field_4;
+            int field_5;
+            int16_t last_vhcl;
+            int16_t last_weapon;
+            int16_t last_build;
+        } t7;
+    };
 };
 
 struct yw_arg159

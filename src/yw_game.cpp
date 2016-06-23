@@ -1069,9 +1069,9 @@ void sub_44F958(_NC_STACK_ypaworld *yw, cellArea *cell, char secX, char secY, ui
     if ( cell->owner != owner )
     {
         yw_arg184 arg184;
-        arg184.secX = secX;
-        arg184.secY = secY;
-        arg184.owner = owner;
+        arg184.t26.secX = secX;
+        arg184.t26.secY = secY;
+        arg184.t26.owner = owner;
         arg184.type = 2;
 
         call_method(yw->self_full, 184, &arg184);
@@ -4299,6 +4299,308 @@ void ypaworld_func151__sub1(_NC_STACK_ypaworld *yw)
     {
         nc_FreeMem(yw->field_30);
         yw->field_30 = NULL;
+    }
+}
+
+void sub_4EE710(_NC_STACK_ypaworld *yw, yw_arg184 *arg, player_status *pl_status)
+{
+    switch ( arg->type )
+    {
+    case 2:
+        pl_status[arg->t26.owner].p4++;
+        pl_status[arg->t26.owner].p5++;
+        break;
+
+    case 3:
+    {
+        int owner = (arg->t34.field_1 >> 3) & 7;
+        int v8 = arg->t34.field_1 & 0xC0;
+
+        pl_status[owner].p1++;
+
+        if ( v8 == 0x80 )
+        {
+            pl_status[owner].p2++;
+            pl_status[owner].p5 += 20;
+        }
+        else if ( v8 == 0xC0 )
+        {
+            pl_status[owner].p2++;
+            pl_status[owner].p5 += 200;
+        }
+        else
+        {
+            pl_status[owner].p5 += 10;
+        }
+
+        if ( arg->t34.field_2 & 0x8000 )
+            pl_status[owner].p5 += 1000;
+    }
+    break;
+
+    case 6:
+        pl_status[arg->t26.owner].p5 += 100;
+        pl_status[arg->t26.owner].p6++;
+        break;
+
+    case 7:
+        pl_status[arg->t7.owner].p5 += 500;
+        pl_status[arg->t7.owner].p7++;
+        break;
+
+    default:
+        break;
+    }
+}
+
+uint8_t *yw_histbf_write_evnt(uint8_t *st, yw_arg184 *arg)
+{
+    uint8_t *cr = st;
+
+    switch ( arg->type )
+    {
+    case 1:
+        *cr = arg->type;
+        cr++;
+
+        *(int32_t *)cr = arg->t15.field_1;
+        cr += 4;
+        break;
+
+    case 2:
+    case 6:
+        *cr = arg->type;
+        cr++;
+
+        *cr = arg->t26.secX;
+        cr++;
+
+        *cr = arg->t26.secY;
+        cr++;
+
+        *cr = arg->t26.owner;
+        cr++;
+        break;
+
+    case 3:
+    case 4:
+        *cr = arg->type;
+        cr++;
+
+        *cr = arg->t34.field_1;
+        cr++;
+
+        *(int16_t *)cr = arg->t34.field_2;
+        cr += 2;
+
+        *cr = arg->t34.field_4;
+        cr++;
+
+        *cr = arg->t34.field_5;
+        cr++;
+        break;
+
+    case 5:
+        *cr = arg->type;
+        cr++;
+
+        *(int32_t *)cr = 0;
+        cr += 4;
+
+        printf("MAKE ME histbuff type 5!\n");
+        break;
+
+    case 7:
+        *cr = arg->type;
+        cr++;
+
+        *cr = arg->t7.secX;
+        cr++;
+
+        *cr = arg->t7.secY;
+        cr++;
+
+        *cr = arg->t7.owner;
+        cr++;
+
+        *cr = arg->t7.field_4;
+        cr++;
+
+        *cr = arg->t7.field_5;
+        cr++;
+
+        *(int16_t *)cr = arg->t7.last_vhcl;
+        cr += 2;
+
+        *(int16_t *)cr = arg->t7.last_weapon;
+        cr += 2;
+
+        *(int16_t *)cr = arg->t7.last_build;
+        cr += 2;
+        break;
+
+    default:
+        break;
+    }
+
+    return cr;
+}
+
+uint8_t *yw_histbf_read_evnt(uint8_t *st, yw_arg184 *arg)
+{
+    uint8_t *cr = st;
+
+    switch ( *cr )
+    {
+    case 1:
+        arg->type = *cr;
+        cr++;
+
+        arg->t15.field_1 = *(int32_t *)cr;
+        cr += 4;
+        break;
+
+    case 2:
+    case 6:
+        arg->type = *cr;
+        cr++;
+
+        arg->t26.secX = *cr;
+        cr++;
+
+        arg->t26.secY = *cr;
+        cr++;
+
+        arg->t26.owner = *cr;
+        cr++;
+        break;
+
+    case 3:
+    case 4:
+        arg->type = *cr;
+        cr++;
+
+        arg->t34.field_1 = *cr;
+        cr++;
+
+        arg->t34.field_2 = *(int16_t *)cr;
+        cr += 2;
+
+        arg->t34.field_4 = *cr;
+        cr++;
+
+        arg->t34.field_5 = *cr;
+        cr++;
+        break;
+
+    case 5:
+        arg->type = *cr;
+        cr++;
+
+        arg->t15.field_1 = 0;
+        cr += 4;
+
+        printf("MAKE ME histbuff type 5!\n");
+        break;
+
+    case 7:
+        arg->type = *cr;
+        cr++;
+
+        arg->t7.secX = *cr;
+        cr++;
+
+        arg->t7.secY = *cr;
+        cr++;
+
+        arg->t7.owner = *cr;
+        cr++;
+
+        arg->t7.field_4 = *cr;
+        cr++;
+
+        arg->t7.field_5 = *cr;
+        cr++;
+
+        arg->t7.last_vhcl = *(int16_t *)cr;
+        cr += 2;
+
+        arg->t7.last_weapon = *(int16_t *)cr;
+        cr += 2;
+
+        arg->t7.last_build = *(int16_t *)cr;
+        cr += 2;
+        break;
+
+    default:
+        break;
+    }
+
+    return cr;
+}
+
+void ypaworld_func184__sub0(_NC_STACK_ypaworld *yw, yw_f726c *hist_list, yw_arg184 *arg)
+{
+    if ( hist_list->last_bufStart || sub_47EDDC(hist_list, 4096) )
+    {
+        int tlen = 0;
+
+        switch ( arg->type )
+        {
+        case 1:
+            tlen = 5;
+
+            hist_list->field_C++;
+            hist_list->field_10 = yw->field_1614;
+
+            if ( hist_list->field_1C )
+            {
+                if ( *hist_list->field_1C == 1 )
+                    hist_list->last_bufStart = hist_list->field_1C;
+            }
+
+            break;
+
+        case 2:
+        case 6:
+            tlen = 4;
+            break;
+
+        case 3:
+        case 4:
+            tlen = 6;
+            break;
+
+        case 5:
+            tlen = 5;
+            break;
+
+        case 7:
+            tlen = 12;
+            break;
+
+        default:
+            break;
+        }
+
+        if ( tlen )
+        {
+            hist_list->field_1C = hist_list->last_bufStart;
+
+            if ( hist_list->last_bufStart + tlen + 1 < hist_list->last_bufEnd || sub_47EDDC(hist_list, 4096) )
+            {
+                hist_list->last_bufStart = yw_histbf_write_evnt(hist_list->last_bufStart, arg);
+            }
+            else
+                return;
+        }
+
+
+        if ( yw->GameShell )
+        {
+            if ( yw->GameShell->field_0x1cd8 )
+                sub_4EE710(yw, arg, yw->field_7796);
+        }
     }
 }
 

@@ -826,9 +826,9 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
         yw->field_1B6E = 1024 / arg->field_4;
         yw->p_1_grp[0][0] = yw->field_1B6E;
 
-        yw_arg184_t1 arg184;
+        yw_arg184 arg184;
         arg184.type = 1;
-        arg184.field_1 = yw->field_1614;
+        arg184.t15.field_1 = yw->field_1614;
         call_method(yw->self_full, 184, &arg184);
 
         DWORD v22 = profiler_begin();
@@ -1508,42 +1508,42 @@ void ypaworld_func129(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg129 *arg)
                         yw_ActivateWunderstein(yw, cell, cell->field_3B);
 
                     yw_arg184 arg184;
-                    arg184.secX = secX;
+                    arg184.t7.secX = secX;
                     arg184.type = 7;
-                    arg184.secY = secY;
-                    arg184.owner = cell->owner;
-                    arg184.last_vhcl = yw->last_modify_vhcl;
-                    arg184.last_weapon = yw->last_modify_weapon;
-                    arg184.last_build = yw->last_modify_build;
+                    arg184.t7.secY = secY;
+                    arg184.t7.owner = cell->owner;
+                    arg184.t7.last_vhcl = yw->last_modify_vhcl;
+                    arg184.t7.last_weapon = yw->last_modify_weapon;
+                    arg184.t7.last_build = yw->last_modify_build;
 
                     switch(yw->gems[ yw->field_2b78 ].type)
                     {
                     case 25:
-                        arg184.field_4 = 1;
+                        arg184.t7.field_4 = 1;
                         break;
 
                     case 26:
-                        arg184.field_4 = 2;
+                        arg184.t7.field_4 = 2;
                         break;
 
                     case 27:
-                        arg184.field_4 = 3;
+                        arg184.t7.field_4 = 3;
                         break;
 
                     case 28:
-                        arg184.field_4 = 4;
+                        arg184.t7.field_4 = 4;
                         break;
 
                     case 78:
-                        arg184.field_4 = 5;
+                        arg184.t7.field_4 = 5;
                         break;
 
                     case 79:
-                        arg184.field_4 = 6;
+                        arg184.t7.field_4 = 6;
                         break;
 
                     default:
-                        arg184.field_4 = 7;
+                        arg184.t7.field_4 = 7;
                         break;
 
                     }
@@ -8057,43 +8057,43 @@ void ypaworld_func177(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg177 *arg)
                     yw_ActivateWunderstein(yw, v15, v15->field_3B);
 
                 yw_arg184 arg184;
-                arg184.secX = j;
+                arg184.t7.secX = j;
                 arg184.type = 7;
-                arg184.secY = i;
-                arg184.owner = v15->owner;
-                arg184.last_vhcl = yw->last_modify_vhcl;
-                arg184.last_weapon = yw->last_modify_weapon;
-                arg184.last_build = yw->last_modify_build;
+                arg184.t7.secY = i;
+                arg184.t7.owner = v15->owner;
+                arg184.t7.last_vhcl = yw->last_modify_vhcl;
+                arg184.t7.last_weapon = yw->last_modify_weapon;
+                arg184.t7.last_build = yw->last_modify_build;
 
 
                 switch(yw->gems[ yw->field_2b78 ].type)
                 {
                 case 25:
-                    arg184.field_4 = 1;
+                    arg184.t7.field_4 = 1;
                     break;
 
                 case 26:
-                    arg184.field_4 = 2;
+                    arg184.t7.field_4 = 2;
                     break;
 
                 case 27:
-                    arg184.field_4 = 3;
+                    arg184.t7.field_4 = 3;
                     break;
 
                 case 28:
-                    arg184.field_4 = 4;
+                    arg184.t7.field_4 = 4;
                     break;
 
                 case 78:
-                    arg184.field_4 = 5;
+                    arg184.t7.field_4 = 5;
                     break;
 
                 case 79:
-                    arg184.field_4 = 6;
+                    arg184.t7.field_4 = 6;
                     break;
 
                 default:
-                    arg184.field_4 = 7;
+                    arg184.t7.field_4 = 7;
                     break;
 
                 }
@@ -8343,9 +8343,12 @@ size_t ypaworld_func183(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg161 *arg)
 }
 
 
-void ypaworld_func184(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func184(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg184 *arg)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func184");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    if ( yw->history )
+        ypaworld_func184__sub0(yw, yw->history, arg);
 }
 
 

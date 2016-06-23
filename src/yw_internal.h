@@ -382,6 +382,12 @@ struct tehMap : listbase
     float field_264;
 };
 
+struct debrif_t1
+{
+    int owner;
+    int status;
+};
+
 void ypaworld_func64__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt);
 void ypaworld_func64__sub8(NC_STACK_ypaworld *, _NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub14(_NC_STACK_ypaworld *yw);
@@ -483,5 +489,13 @@ void ypaworld_func151__sub1(_NC_STACK_ypaworld *yw);
 NC_STACK_ilbm * loadDisk_screen(_NC_STACK_ypaworld *yw);
 void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen);
 void deleteSplashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen);
+
+void ypaworld_func184__sub0(_NC_STACK_ypaworld *yw, yw_f726c *hist_list, yw_arg184 *arg);
+void sub_4EE710(_NC_STACK_ypaworld *yw, yw_arg184 *arg, player_status *pl_status);
+uint8_t *yw_histbf_read_evnt(uint8_t *st, yw_arg184 *arg);
+
+void sub_4E332C(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2);
+DWORD yw_GetColor(_NC_STACK_ypaworld *yw, int color_id);
+void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
 
 #endif

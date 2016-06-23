@@ -1855,12 +1855,6 @@ void sub_4EE04C(_NC_STACK_ypaworld *yw)
     yw->field_2d90->field_40 = 8;
 }
 
-void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
-{
-    dprintf("%s \n","ypaworld_func158__sub4__sub1__sub6");
-}
-
-
 // Select map
 void ypaworld_func158__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
 {
