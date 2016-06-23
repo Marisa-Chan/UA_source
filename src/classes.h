@@ -24,7 +24,7 @@ struct class_return
 {
     const char *parent;
     CLASSFUNC *vtbl;
-    __int16 varSize;
+    int32_t varSize;
     int field_A;
 };
 
@@ -84,8 +84,8 @@ struct unk_class
 struct class_stru : public class_named_nnode
 {
     class_stru *parent_class;
-    __int16 stack_offset;
-    __int16 class_stack_size;
+    int32_t stack_offset;
+    int32_t class_stack_size;
     __int16 field_16;
     __int16 field_18;
     int ref_count;
