@@ -8451,7 +8451,11 @@ void sb_0x4d7c08__sub0__sub0(_NC_STACK_ypaworld *yw)
     fntcmd_set_ypos(&pcur, up_panel.field_1CC + yw->font_default_h / 2);
 
 
-    int v11 = info_log.msg_count - v10;
+    int v11 = (info_log.msg_count - v10) % 64;
+
+    if ( v11 < 0 )
+        v11 += 64;
+
     int v28 = 0;
     int v27 = 0;
 
