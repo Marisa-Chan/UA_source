@@ -5,6 +5,7 @@
 #include <objbase.h>
 #include <stdio.h>
 #include <stddef.h>
+#include <inttypes.h>
 
 #include "classes.h"
 #include "MFILE.h"
