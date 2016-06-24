@@ -4533,6 +4533,7 @@ uint8_t *yw_histbf_read_evnt(uint8_t *st, yw_arg184 *arg)
         break;
 
     default:
+        memset(arg, 0, sizeof(yw_arg184));
         break;
     }
 
