@@ -2237,7 +2237,7 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub5__sub0(_NC_STACK_ypaworld *
 
         cur = lstvw_txt_line(yw, cur, 3, elm);
 
-        fntcmd_set_end(&cur);
+        fntcmd_next_line(&cur);
     }
 
     return cur;
