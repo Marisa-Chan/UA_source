@@ -497,5 +497,6 @@ uint8_t *yw_histbf_read_evnt(uint8_t *st, yw_arg184 *arg);
 void sub_4E332C(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2);
 DWORD yw_GetColor(_NC_STACK_ypaworld *yw, int color_id);
 void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
+void sub_4D6958(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, samples_collection1 *collection);
 
 #endif

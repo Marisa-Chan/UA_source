@@ -8256,14 +8256,763 @@ void ypaworld_func64__sub15(_NC_STACK_ypaworld *yw)
     }
 }
 
+void ypaworld_func159__sub0__sub0(_NC_STACK_ypaworld *yw, yw_samples *smpls, const char *flname, __NC_STACK_ypabact *unit, int a5)
+{
+    sub_423DD8(&smpls->field_4);
 
+    if ( smpls->field_35C )
+        delete_class_obj(smpls->field_35C);
+
+    memset(smpls, 0, sizeof(yw_samples));
+
+    smpls->field_0 = -1;
+
+    char filename[256];
+    strcpy(filename, "sounds/speech/");
+
+    if ( yw->lang_name[0] )
+    {
+        strcat(filename, yw->lang_name);
+        strcat(filename, "/");
+    }
+    else
+    {
+        strcat(filename, "language/");
+    }
+
+    strcat(filename, flname);
+
+    char rsr[256];
+    strcpy(rsr, get_prefix_replacement("rsrc"));
+
+    set_prefix_replacement("rsrc", "data:");
+
+    NC_STACK_wav *v23 = (NC_STACK_wav *)init_get_class("wav.class", 0x80001000, filename, 0);
+
+    set_prefix_replacement("rsrc", rsr);
+
+    if ( v23 )
+    {
+        sub_423DB0(&smpls->field_4);
+        smpls->field_4.samples_data[0].pitch = 0;
+        smpls->field_4.samples_data[0].volume = a5 + 500;
+
+        if ( v23 )
+            call_vtbl(v23, 3, 0x80002000, &smpls->field_4.samples_data[0].psampl, 0);
+        else
+            smpls->field_4.samples_data[0].psampl = NULL;
+
+        smpls->field_0 = a5;
+        smpls->field_35C = v23;
+        smpls->field_360 = unit;
+
+        sub_4D6958(yw, unit, &smpls->field_4);
+
+        smpls->field_4.field_C = yw->field_1b84->field_605.sx * yw->field_1b84->field_611;
+        smpls->field_4.field_10 = yw->field_1b84->field_605.sy * yw->field_1b84->field_611;
+        smpls->field_4.field_14 = yw->field_1b84->field_605.sz * yw->field_1b84->field_611;
+
+        sub_423F74(&smpls->field_4, 0);
+    }
+}
+
+void ypaworld_func159__sub0(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, int a4, int a3)
+{
+    if ( yw->samples )
+    {
+        int v5 = -1;
+
+        for (int i = 0; i < 1; i++)
+        {
+            if ( yw->samples[i].field_0 < 0 || yw->samples[i].field_0 < a4 )
+            {
+                v5 = i;
+                break;
+            }
+        }
+
+
+        if ( v5 != -1 )
+        {
+            int vo_type = 0;
+            int v10 = 0;
+            int v11 = 0;
+            int v13 = 0;
+            int v14 = 0;
+
+            switch ( a3 )
+            {
+            case 14:
+                v14 = 1;
+                v11 = 2;
+                v13 = 1;
+                v10 = 1;
+                break;
+            case 1:
+                v14 = 1;
+                v10 = 2;
+                v13 = 1;
+                v11 = 2;
+                break;
+            case 15:
+                v14 = 1;
+                v10 = 3;
+                v11 = 2;
+                v13 = 1;
+                break;
+            case 16:
+                v14 = 1;
+                v10 = 4;
+                v11 = 2;
+                v13 = 1;
+                break;
+            case 17:
+                v14 = 1;
+                v10 = 5;
+                v13 = 1;
+                v11 = 1;
+                break;
+            case 22:
+                v14 = 1;
+                v10 = 6;
+                v13 = 1;
+                v11 = 1;
+                break;
+            case 10:
+                v14 = 1;
+                v13 = 2;
+                v10 = 1;
+                v11 = 1;
+                break;
+            case 7:
+                v13 = 2;
+                v14 = 1;
+                v10 = 2;
+                v11 = 2;
+                break;
+            case 6:
+                v14 = 1;
+                v13 = 2;
+                v10 = 3;
+                v11 = 1;
+                break;
+            case 18:
+                v14 = 1;
+                v13 = 2;
+                v10 = 4;
+                v11 = 1;
+                break;
+            case 9:
+                v14 = 1;
+                v13 = 2;
+                v10 = 5;
+                v11 = 1;
+                break;
+            case 8:
+                v13 = 2;
+                v10 = 6;
+                v14 = 1;
+                v11 = 2;
+                break;
+            case 19:
+                v14 = 1;
+                v13 = 3;
+                v10 = 1;
+                v11 = 1;
+                break;
+            case 5:
+                v13 = 3;
+                v10 = 2;
+                v14 = 1;
+                v11 = 2;
+                break;
+            case 11:
+                v13 = 3;
+                v14 = 1;
+                v10 = 3;
+                v11 = 1;
+                break;
+            case 45:
+                v14 = 1;
+                v13 = 3;
+                v10 = 4;
+                v11 = 1;
+                if ( !unit )
+                    return;
+                break;
+            case 23:
+                vo_type = 1;
+                v14 = 2;
+                v13 = 1;
+                v10 = 1;
+                v11 = 1;
+                break;
+            case 24:
+                vo_type = 1;
+                v14 = 2;
+                v13 = 1;
+                v10 = 2;
+                v11 = 1;
+                break;
+            case 25:
+                vo_type = 1;
+                v10 = 3;
+                v14 = 2;
+                v13 = 1;
+                v11 = 1;
+                break;
+            case 26:
+                vo_type = 1;
+                v10 = 4;
+                v14 = 2;
+                v13 = 1;
+                v11 = 1;
+                break;
+            case 27:
+                vo_type = 1;
+                v10 = 5;
+                v14 = 2;
+                v13 = 1;
+                v11 = 1;
+                break;
+            case 28:
+                vo_type = 1;
+                v10 = 6;
+                v14 = 2;
+                v13 = 1;
+                v11 = 1;
+                break;
+            case 78:
+                vo_type = 1;
+                v10 = 12;
+                v14 = 2;
+                v13 = 1;
+                v11 = 1;
+                break;
+            case 79:
+                v14 = 2;
+                vo_type = 4;
+                v13 = 1;
+                v10 = 2;
+                v11 = 1;
+                break;
+            case 80:
+                vo_type = 1;
+                v10 = 13;
+                v14 = 2;
+                v13 = 1;
+                v11 = 1;
+                break;
+            case 29:
+                vo_type = 1;
+                v10 = 7;
+                v14 = 2;
+                v13 = 1;
+                v11 = 1;
+                break;
+            case 30:
+                vo_type = 1;
+                v10 = 8;
+                v14 = 2;
+                v13 = 1;
+                v11 = 1;
+                break;
+            case 31:
+            case 68:
+                v14 = 2;
+                v13 = 1;
+                v10 = 8;
+                vo_type = 2;
+                v11 = 1;
+                break;
+            case 32:
+            case 69:
+                vo_type = 3;
+                v13 = 1;
+                v10 = 8;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 33:
+                vo_type = 1;
+                v10 = 9;
+                v14 = 2;
+                v13 = 1;
+                v11 = 1;
+                break;
+            case 34:
+                v14 = 2;
+                v13 = 1;
+                v10 = 9;
+                vo_type = 2;
+                v11 = 1;
+                break;
+            case 35:
+                vo_type = 3;
+                v13 = 1;
+                v10 = 9;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 36:
+                vo_type = 1;
+                v10 = 10;
+                v14 = 2;
+                v13 = 1;
+                v11 = 1;
+                break;
+            case 37:
+                v14 = 2;
+                v13 = 1;
+                v10 = 10;
+                vo_type = 2;
+                v11 = 1;
+                break;
+            case 38:
+                vo_type = 3;
+                v13 = 1;
+                v10 = 10;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 13:
+                v14 = 2;
+                vo_type = 1;
+                v13 = 2;
+                v10 = 1;
+                v11 = 1;
+                break;
+            case 39:
+                v13 = 1;
+                v10 = 7;
+                v14 = 3;
+                v11 = 1;
+                break;
+            case 40:
+                v14 = 2;
+                vo_type = 1;
+                v10 = 3;
+                v13 = 2;
+                v11 = 1;
+                break;
+            case 41:
+                v14 = 2;
+                vo_type = 1;
+                v10 = 4;
+                v13 = 2;
+                v11 = 2;
+                break;
+            case 42:
+                v14 = 2;
+                vo_type = 1;
+                v10 = 5;
+                v13 = 2;
+                v11 = 2;
+                break;
+            case 12:
+                v14 = 2;
+                vo_type = 1;
+                v10 = 6;
+                v13 = 2;
+                v11 = 2;
+                break;
+            case 43:
+                v14 = 2;
+                vo_type = 1;
+                v10 = 7;
+                v11 = 3;
+                v13 = 2;
+                break;
+            case 44:
+                v14 = 2;
+                vo_type = 1;
+                v10 = 8;
+                v13 = 2;
+                v11 = 2;
+                break;
+            case 67:
+                vo_type = 1;
+                v10 = 11;
+                v14 = 2;
+                v13 = 1;
+                v11 = 1;
+                break;
+            case 47:
+                v10 = 1;
+                v14 = 3;
+                v11 = 1;
+                a4++;
+                break;
+            case 48:
+                v10 = 2;
+                v14 = 3;
+                v11 = 2;
+                a4 += 2;
+                break;
+            case 49:
+                v14 = 3;
+                v10 = 3;
+                v11 = 3;
+                a4 += 3;
+                break;
+            case 60:
+                v10 = 4;
+                v11 = 1;
+                v14 = 3;
+                a4 += 4;
+                break;
+            case 50:
+                v11 = 1;
+                v10 = 5;
+                v14 = 3;
+                a4++;
+                break;
+            case 64:
+                v10 = 6;
+                v11 = 1;
+                v14 = 3;
+                a4 += 2;
+                break;
+            case 51:
+                v14 = 3;
+                v10 = 7;
+                v11 = 1;
+                a4 += 3;
+                break;
+            case 52:
+                v10 = 8;
+                v11 = 1;
+                v14 = 3;
+                a4 += 4;
+                break;
+            case 53:
+                v10 = 9;
+                v11 = 1;
+                v14 = 3;
+                a4 += 5;
+                break;
+            case 61:
+                v13 = 1;
+                v14 = 3;
+                v11 = 1;
+                a4 += 6;
+                break;
+            case 54:
+                v13 = 1;
+                v14 = 3;
+                v10 = 1;
+                v11 = 1;
+                a4++;
+                break;
+            case 55:
+                v13 = 1;
+                v10 = 2;
+                v14 = 3;
+                v11 = 1;
+                a4 += 2;
+                break;
+            case 56:
+                v14 = 3;
+                v13 = 1;
+                v10 = 3;
+                v11 = 1;
+                a4 += 3;
+                break;
+            case 65:
+                v13 = 1;
+                v10 = 4;
+                v14 = 3;
+                v11 = 1;
+                a4 += 4;
+                break;
+            case 66:
+                v13 = 1;
+                v10 = 6;
+                v14 = 3;
+                v11 = 1;
+                a4 += 5;
+                break;
+            case 70:
+                vo_type = 4;
+                v13 = 1;
+                v10 = 5;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 71:
+                vo_type = 4;
+                v13 = 1;
+                v10 = 8;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 72:
+                vo_type = 4;
+                v13 = 1;
+                v10 = 6;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 73:
+                vo_type = 4;
+                v13 = 1;
+                v10 = 7;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 74:
+                vo_type = 4;
+                v13 = 1;
+                v10 = 9;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 75:
+                vo_type = 4;
+                v13 = 1;
+                v10 = 12;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 76:
+                vo_type = 4;
+                v13 = 1;
+                v10 = 10;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 77:
+                vo_type = 4;
+                v13 = 1;
+                v10 = 11;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 46:
+                vo_type = 4;
+                v13 = 1;
+                v14 = 2;
+                v10 = 1;
+                v11 = 1;
+                break;
+            case 82:
+                vo_type = 4;
+                v13 = 1;
+                v14 = 2;
+                v10 = 4;
+                v11 = 1;
+                break;
+            case 81:
+                vo_type = 4;
+                v13 = 1;
+                v10 = 3;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 83:
+                v14 = 2;
+                vo_type = 5;
+                v13 = 1;
+                v10 = 2;
+                v11 = 1;
+                break;
+            case 84:
+                vo_type = 5;
+                v13 = 1;
+                v14 = 2;
+                v10 = 1;
+                v11 = 1;
+                break;
+            case 85:
+                vo_type = 5;
+                v13 = 1;
+                v10 = 3;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 86:
+                vo_type = 5;
+                v13 = 1;
+                v10 = 4;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 87:
+                vo_type = 5;
+                v13 = 1;
+                v10 = 7;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 88:
+                vo_type = 5;
+                v13 = 1;
+                v10 = 6;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 89:
+                vo_type = 5;
+                v13 = 1;
+                v10 = 8;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 90:
+                vo_type = 5;
+                v13 = 1;
+                v10 = 9;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 91:
+                vo_type = 5;
+                v13 = 1;
+                v14 = 2;
+                v10 = 5;
+                v11 = 1;
+                break;
+            case 92:
+                vo_type = 5;
+                v13 = 1;
+                v10 = 10;
+                v14 = 2;
+                v11 = 1;
+                break;
+            case 93:
+                vo_type = 1;
+                v14 = 4;
+                v13 = 1;
+                v10 = 1;
+                v11 = 1;
+                break;
+            case 59:
+                v13 = 1;
+                v10 = 8;
+                v14 = 3;
+                v11 = 1;
+                a4++;
+                break;
+            case 94:
+                v13 = 1;
+                v10 = 9;
+                v14 = 3;
+                v11 = 1;
+                a4 += 2;
+                break;
+            case 95:
+                v14 = 3;
+                v13 = 2;
+                v11 = 1;
+                a4 += 3;
+                break;
+            case 96:
+                v13 = 2;
+                v10 = 1;
+                v14 = 3;
+                v11 = 1;
+                a4 += 4;
+                break;
+            case 97:
+                v13 = 2;
+                v11 = 1;
+                v14 = 3;
+                v10 = 2;
+                a4 += 5;
+                break;
+            case 98:
+                v14 = 3;
+                v13 = 2;
+                v11 = 1;
+                v10 = 3;
+                a4 += 6;
+                break;
+            case 99:
+                v13 = 2;
+                v10 = 4;
+                v11 = 1;
+                v14 = 3;
+                a4 += 7;
+                break;
+            case 100:
+                v13 = 2;
+                v10 = 5;
+                v11 = 1;
+                v14 = 3;
+                a4 += 8;
+                break;
+            case 101:
+                v13 = 2;
+                v10 = 6;
+                v11 = 1;
+                v14 = 3;
+                a4 += 9;
+                break;
+            case 102:
+                v13 = 2;
+                v10 = 7;
+                v11 = 1;
+                v14 = 3;
+                a4 += 10;
+                break;
+            case 103:
+                v13 = 2;
+                v10 = 8;
+                v11 = 1;
+                v14 = 3;
+                a4 += 11;
+                break;
+            case 104:
+                v13 = 2;
+                v10 = 9;
+                v11 = 1;
+                v14 = 3;
+                a4 += 12;
+                break;
+            case 63:
+                v14 = 3;
+                v11 = 1;
+                v13 = 3;
+                a4 += 13;
+                break;
+            default:
+                break;
+            }
+
+            if ( v14 )
+            {
+                if ( !unit )
+                    unit = yw->field_1b80;
+
+                if ( v14 == 1 )
+                {
+                    vo_type = yw->VhclProtos[unit->id].vo_type;
+
+                    if ( !vo_type )
+                        vo_type = 11;
+                }
+
+                int v16;
+                if ( v11 <= 1 )
+                    v16 = 1;
+                else
+                    v16 = rand() % v11 + 1;
+
+                char a1[48];
+                sprintf(a1, "%x%x%x%x%x.wav", v14, vo_type, v13, v10, v16);
+
+                ypaworld_func159__sub0__sub0(yw, &yw->samples[v5], a1, unit, a4);
+            }
+        }
+    }
+}
 
 void ypaworld_func159__real(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg159 *arg)
 {
     _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
 
-    //if ( arg->field_C )
-    //  ypaworld_func159__sub0(yw, arg->unit, arg->field_4, arg->field_C);
+    if ( arg->field_C )
+        ypaworld_func159__sub0(yw, arg->unit, arg->field_4, arg->field_C);
 
     if ( arg->unit )
         info_log.field_255C = arg->unit->ypabact__id;
