@@ -2541,7 +2541,68 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
 
 void sub_4F0FFC(_NC_STACK_ypaworld *yw)
 {
-    dprintf("MAKE ME %s \n","sub_4F0FFC");
+    if ( !yw->field_727c )
+    {
+        int last_time = 0;
+
+        yw_f726c_nod *hnode = (yw_f726c_nod *)yw->history->lst.head;
+        while (hnode->next)
+        {
+            int v14 = 1;
+            int tlen = 0;
+            uint8_t *bf = hnode->bufStart;
+
+            while (v14)
+            {
+                yw_arg184 arg184;
+
+                yw_histbf_read_evnt(bf, &arg184);
+
+                switch(arg184.type)
+                {
+                case 0:
+                    tlen = 0;
+                    v14 = 0;
+                    break;
+
+                case 1:
+                    tlen = 5;
+                    last_time = arg184.t15.field_1;
+                    break;
+
+                case 2:
+                case 6:
+                    tlen = 4;
+                    sub_4EE710(yw, &arg184, yw->playerstatus);
+                    break;
+
+                case 3:
+                case 4:
+                    tlen = 6;
+                    sub_4EE710(yw, &arg184, yw->playerstatus);
+                    break;
+
+                case 7:
+                    tlen = 12;
+                    sub_4EE710(yw, &arg184, yw->playerstatus);
+                    break;
+
+                case 5:
+                default:
+                    break;
+                }
+
+                bf += tlen;
+
+            }
+
+            hnode = (yw_f726c_nod *)hnode->next;
+        }
+
+        for (int i = 0; i < 8; i++)
+            yw->playerstatus[i].p3 += last_time;
+
+    }
 }
 
 void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
