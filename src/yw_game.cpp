@@ -175,15 +175,372 @@ void sb_0x44ca90__sub4(_NC_STACK_ypaworld *yw)
 
 int sb_0x44ca90__sub6(_NC_STACK_ypaworld *yw)
 {
-    //Map events
-    dprintf("MAKE ME %s\n", "sb_0x44ca90__sub6");
-    return 1;
+    yw->map_events = (map_event *)AllocVec(sizeof(map_event), 65537);
+
+    return yw->map_events != NULL;
 }
 
-int sb_0x44ca90__sub7(_NC_STACK_ypaworld *yw, int evnt)
+int sb_0x44ca90__sub7(_NC_STACK_ypaworld *yw, int event_loop_id)
 {
-    //Map events
-    dprintf("MAKE ME %s\n", "sb_0x44ca90__sub7");
+    //Event funcs
+    int sub_4D51A4(_NC_STACK_ypaworld *yw);
+    int sub_4D5218(_NC_STACK_ypaworld *yw);
+    int sub_4D5160(_NC_STACK_ypaworld *yw);
+    int sub_4D528C(_NC_STACK_ypaworld *yw);
+    int sub_4D5300(_NC_STACK_ypaworld *yw);
+    int sub_4D5348(_NC_STACK_ypaworld *yw);
+    int sub_4D5360(_NC_STACK_ypaworld *yw);
+
+    map_event *mevnts = yw->map_events;
+    mevnts->field_8 = -1;
+    mevnts->field_C = 0;
+    mevnts->field_4 = 0;
+    mevnts->event_count = 0;
+    mevnts->event_loop_id = event_loop_id;
+
+    if (event_loop_id == 1)
+    {
+        evnt *ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 5;
+        ev->field_10 = 5000;
+        ev->field_4 = NULL;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 0;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 3;
+        ev->field_10 = 20000;
+        ev->field_4 = sub_4D51A4;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 47;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 3;
+        ev->field_10 = 20000;
+        ev->field_4 = sub_4D5218;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 48;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 3;
+        ev->field_10 = 20000;
+        ev->field_4 = sub_4D5160;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 49;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 6;
+        ev->field_10 = 15000;
+        ev->field_4 = NULL;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 60;
+        ev->field_18++;
+    }
+    else if ( event_loop_id == 2 )
+    {
+        evnt *ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 5;
+        ev->field_10 = 5000;
+        ev->field_4 = NULL;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 0;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 3;
+        ev->field_10 = 20000;
+        ev->field_4 = sub_4D51A4;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 47;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 3;
+        ev->field_10 = 20000;
+        ev->field_4 = sub_4D528C;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 50;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 2;
+        ev->field_10 = 20000;
+        ev->field_4 = sub_4D5160;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 64;
+        ev->field_18++;
+        ev->field_1C[ ev->field_18 ] = 51;
+        ev->field_18++;
+        ev->field_1C[ ev->field_18 ] = 52;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 3;
+        ev->field_10 = 20000;
+        ev->field_4 = sub_4D5160;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 53;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 6;
+        ev->field_10 = 15000;
+        ev->field_4 = NULL;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 61;
+        ev->field_18++;
+    }
+    else if ( event_loop_id == 3 )
+    {
+        evnt *ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 5;
+        ev->field_10 = 3000;
+        ev->field_4 = NULL;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 0;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 5;
+        ev->field_10 = 8000;
+        ev->field_4 = NULL;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 59;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 3;
+        ev->field_10 = 60000;
+        ev->field_4 = sub_4D5300;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 54;
+        ev->field_18++;
+        ev->field_1C[ ev->field_18 ] = 94;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 5;
+        ev->field_10 = 3000;
+        ev->field_4 = NULL;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 95;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 3;
+        ev->field_10 = 60000;
+        ev->field_4 = sub_4D5348;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 97;
+        ev->field_18++;
+        ev->field_1C[ ev->field_18 ] = 96;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 5;
+        ev->field_10 = 3000;
+        ev->field_4 = NULL;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 98;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 5;
+        ev->field_10 = 9000;
+        ev->field_4 = NULL;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 99;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 5;
+        ev->field_10 = 5000;
+        ev->field_4 = NULL;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 0;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 3;
+        ev->field_10 = 60000;
+        ev->field_4 = sub_4D5160;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 101;
+        ev->field_18++;
+        ev->field_1C[ ev->field_18 ] = 100;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 5;
+        ev->field_10 = 4000;
+        ev->field_4 = NULL;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 102;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 3;
+        ev->field_10 = 60000;
+        ev->field_4 = sub_4D5360;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 55;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 5;
+        ev->field_10 = 3000;
+        ev->field_4 = NULL;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 103;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 5;
+        ev->field_10 = 45000;
+        ev->field_4 = NULL;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 0;
+        ev->field_18++;
+
+
+        ev = &mevnts->evnts[ mevnts->event_count ];
+        mevnts->event_count++;
+
+        memset(ev, 0, sizeof(evnt));
+
+        ev->field_0 = 4;
+        ev->field_10 = 60000;
+        ev->field_4 = NULL;
+        ev->field_14 = 0;
+        ev->field_1C[ ev->field_18 ] = 104;
+        ev->field_18++;
+        ev->field_1C[ ev->field_18 ] = 56;
+        ev->field_18++;
+        ev->field_1C[ ev->field_18 ] = 65;
+        ev->field_18++;
+    }
+
     return 1;
 }
 
@@ -4612,12 +4969,11 @@ void sub_480868(_NC_STACK_ypaworld *yw)
 
 void ypaworld_func151__sub5(_NC_STACK_ypaworld *yw)
 {
-    dprintf("MAKE ME %s (scene events)\n", "ypaworld_func151__sub5");
-    /*if ( yw->map_events )
+    if ( yw->map_events )
     {
-      nc_FreeMem(yw->map_events);
-      yw->map_events = NULL;
-    }*/
+        nc_FreeMem(yw->map_events);
+        yw->map_events = NULL;
+    }
 }
 
 void ypaworld_func64__sub11(_NC_STACK_ypaworld *yw)
@@ -4642,7 +4998,288 @@ void ypaworld_func64__sub13(_NC_STACK_ypaworld *yw)
     dprintf("MAKE ME %s (scene recorder)\n", "ypaworld_func64__sub13");
 }
 
+
+int ypaworld_func64__sub22__sub0(_NC_STACK_ypaworld *yw, int event_id)
+{
+    evnt *ev = &yw->map_events->evnts[event_id];
+
+    if ( !ev->field_8 )
+        ev->field_8 = yw->field_1614;
+
+    if ( ev->field_0 == 1 )
+    {
+        if ( ev->field_C )
+            return 3;
+        else
+        {
+            ev->field_C = 1;
+
+            if ( ev->field_4 )
+            {
+                if ( ev->field_4(yw) )
+                    return 3;
+            }
+        }
+
+        return 1;
+    }
+    else if ( ev->field_0 == 5 )
+    {
+        if ( (yw->field_1614 - ev->field_8) > ev->field_10 )
+        {
+            if ( ev->field_C )
+                return 3;
+
+            ev->field_C = 1;
+
+            if ( ev->field_4 )
+            {
+                if ( ev->field_4(yw) )
+                    return 3;
+            }
+
+            return 1;
+        }
+        return 2;
+    }
+    else if ( ev->field_0 == 2 )
+    {
+        if ( (yw->field_1614 - ev->field_8) <= ev->field_10 )
+            return 3;
+
+        ev->field_8 = yw->field_1614;
+
+        if ( ev->field_4 )
+        {
+            if ( ev->field_4(yw) )
+                return 3;
+        }
+        return 1;
+    }
+    else if ( ev->field_0 == 4 )
+    {
+        if ( !ev->field_C )
+        {
+            ev->field_C = 1;
+
+            if ( ev->field_4 )
+            {
+                if ( ev->field_4(yw) )
+                    return 3;
+            }
+            return 1;
+        }
+
+        if ( (yw->field_1614 - ev->field_8) <= ev->field_10 )
+            return 3;
+
+        ev->field_8 = yw->field_1614;
+
+        if ( ev->field_4 )
+        {
+            if ( ev->field_4(yw) )
+                return 3;
+        }
+
+        return 1;
+    }
+    else if ( ev->field_0 == 3 )
+    {
+        if ( ev->field_4 )
+        {
+            if ( ev->field_4(yw) )
+                return 3;
+
+            return 1;
+        }
+        return 3;
+    }
+    else if ( ev->field_0 == 6 )
+    {
+        if ( (yw->field_1614 - ev->field_8) <= ev->field_10 )
+            return 2;
+
+        if ( ev->field_C )
+            return 3;
+
+        ev->field_C = 1;
+
+        if ( ev->field_4 )
+            ev->field_4(yw);
+
+        if ( sub_4C885C() != 3 )
+        {
+            extern int dword_5C8B78;
+            extern listview exit_menu;
+
+            dword_5C8B78 = 8;
+            const char *v14 = get_lang_string(yw->string_pointers_p2, 2470, "2470 == EXIT TUTORIAL MISSION ?");
+            sb_0x4c87fc(yw, v14, &exit_menu);
+        }
+        return 6;
+    }
+
+    return 1;
+}
+
+void ypaworld_func64__sub22__sub1(_NC_STACK_ypaworld *yw, int evnt_id)
+{
+    map_event *mevent = yw->map_events;
+    mevent->field_8 = evnt_id;
+
+    evnt *ev = &mevent->evnts[evnt_id];
+
+    mevent->field_C = yw->field_1614;
+
+    yw_arg159 arg159;
+    arg159.field_4 = 100;
+    arg159.unit = NULL;
+    arg159.field_C = ev->field_1C[ ev->field_14 ];
+
+    ev->field_14++;
+
+    if ( ev->field_14 >= ev->field_18 )
+        ev->field_14 = 0;
+
+    arg159.txt = NULL;
+
+    call_method(yw->self_full, 159, &arg159);
+}
+
 void ypaworld_func64__sub22(_NC_STACK_ypaworld *yw)
 {
-    dprintf("MAKE ME %s (scene events)\n", "ypaworld_func64__sub22");
+    map_event *mevent = yw->map_events;
+    if ( mevent->event_loop_id )
+    {
+        int v3 = 3;
+        int i;
+
+        for (i = 0; i < mevent->event_count; i++ )
+        {
+            v3 = ypaworld_func64__sub22__sub0(yw, i);
+
+            if ( v3 != 3 )
+                break;
+        }
+
+        if ( v3 == 1 && i < mevent->event_count )
+        {
+            if ( i == mevent->field_8 )
+            {
+                if ( (yw->field_1614 - mevent->field_C) > mevent->evnts[ mevent->field_8 ].field_10 )
+                    ypaworld_func64__sub22__sub1(yw, mevent->field_8);
+            }
+            else
+            {
+                ypaworld_func64__sub22__sub1(yw, i);
+            }
+
+        }
+    }
+}
+
+
+
+
+//Scene events funcs
+
+int sub_4D51A4(_NC_STACK_ypaworld *yw)
+{
+    bact_node *bct = (bact_node *)yw->bact_list.head;
+
+    while ( bct->next )
+    {
+
+        if ( bct->bact != yw->field_1b80 && bct->bact->field_24 == 3 && bct->bact->field_3D5 != 2 )
+            return (yw->field_1b80 != yw->field_1b84 && !yw->field_1b70) || yw->field_2414;
+
+        bct = (bact_node *)bct->next;
+    }
+
+    return 1;
+}
+
+int sub_4D5218(_NC_STACK_ypaworld *yw)
+{
+    bact_node *bct = (bact_node *)yw->bact_list.head;
+
+    while ( bct->next )
+    {
+
+        if ( bct->bact != yw->field_1b80 && bct->bact->field_24 == 3 && bct->bact->field_3D5 != 2 )
+            return (yw->field_1b80 != yw->field_1b84 && !yw->field_1b70) || yw->field_2414 <= 0;
+
+        bct = (bact_node *)bct->next;
+    }
+
+    return 1;
+}
+
+int sub_4D5160(_NC_STACK_ypaworld *yw)
+{
+    bact_node *bct = (bact_node *)yw->bact_list.head;
+
+    while ( bct->next )
+    {
+
+        if ( bct->bact != yw->field_1b80 && bct->bact->field_24 == 3 && bct->bact->field_3D5 != 2 )
+            return 0;
+
+        bct = (bact_node *)bct->next;
+    }
+
+    return 1;
+}
+
+int sub_4D528C(_NC_STACK_ypaworld *yw)
+{
+    extern tehMap robo_map;
+
+    bact_node *bct = (bact_node *)yw->bact_list.head;
+
+    while ( bct->next )
+    {
+
+        if ( bct->bact != yw->field_1b80 && bct->bact->field_24 == 3 && bct->bact->field_3D5 != 2 )
+            return (yw->field_1b80 != yw->field_1b84 && !yw->field_1b70) || !(robo_map.cmd_flag & 0x20);
+
+        bct = (bact_node *)bct->next;
+    }
+
+    return 1;
+}
+
+int sub_4D5300(_NC_STACK_ypaworld *yw)
+{
+    if ( !yw->field_38 )
+        return 0;
+
+    for (int i = 0; i < yw->field_38; i++)
+    {
+        if ( yw->field_34[i].p_cell )
+        {
+            if ( yw->field_34[i].p_cell->owner == yw->field_1b80->owner )
+            {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+int sub_4D5348(_NC_STACK_ypaworld *yw)
+{
+    return yw->field_1b80->p_cell_area->field_3A == 2;
+}
+
+int sub_4D5360(_NC_STACK_ypaworld *yw)
+{
+    for (int i = 0; i < yw->field_2d90->gate_count; i++)
+    {
+        if ( yw->field_2d90->gates[i].pcell->field_3A == 6 )
+            return 1;
+    }
+
+    return 0;
 }

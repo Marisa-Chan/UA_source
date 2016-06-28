@@ -37,6 +37,7 @@ struct VhclProto;
 struct WeapProto;
 struct BuildProto;
 struct roboProto;
+struct map_event;
 
 struct usr_str
 {
@@ -1031,7 +1032,7 @@ struct _NC_STACK_ypaworld
     int one_game_res;
     int shell_default_res;
     int game_default_res;
-
+    map_event *map_events;
     float max_impulse;
     yw_81cb field_81CB;
     float vehicle_sector_ratio_1;

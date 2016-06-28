@@ -8297,9 +8297,8 @@ size_t ypaworld_func183(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg161 *arg)
 
         yw->field_1b80->energy = yw->field_1b80->energy_2;
 
-        dprintf("MAKE ME %s\n", "if ( yw->map_events ) yw->map_events->field_0 = 0;");
-        /*if ( yw->map_events )
-            yw->map_events->field_0 = 0;*/ //MAKE ME
+        if ( yw->map_events )
+            yw->map_events->event_loop_id = 0;
     }
     else
     {

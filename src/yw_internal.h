@@ -388,6 +388,28 @@ struct debrif_t1
     int status;
 };
 
+struct evnt
+{
+    int field_0;
+    int (* field_4)(_NC_STACK_ypaworld *);
+    int field_8;
+    int field_C;
+    int field_10;
+    int field_14;
+    int field_18;
+    int field_1C[8];
+};
+
+struct map_event
+{
+    int event_loop_id;
+    int field_4;
+    int field_8;
+    int field_C;
+    int event_count;
+    evnt evnts[16];
+};
+
 void ypaworld_func64__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt);
 void ypaworld_func64__sub8(NC_STACK_ypaworld *, _NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub14(_NC_STACK_ypaworld *yw);
@@ -499,4 +521,6 @@ DWORD yw_GetColor(_NC_STACK_ypaworld *yw, int color_id);
 void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
 void sub_4D6958(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, samples_collection1 *collection);
 
+int sub_4C885C();
+void sb_0x4c87fc(_NC_STACK_ypaworld *yw, const char *a2, listbase *lstvw);
 #endif
