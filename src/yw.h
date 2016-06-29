@@ -301,11 +301,48 @@ struct UserData
     int field_545B;
 };
 
+struct trec_bct
+{
+    int bact_id;
+    xyz pos;
+    int8_t rot_x;
+    int8_t rot_y;
+    int8_t rot_z;
+    int vp_id;
+    int bact_type;
+    int vhcl_id;
+};
+
 struct recorder
 {
-    int field_0;
+    MFILE *mfile;
+    uint16_t seqn;
+    uint16_t level_id;
+    int frame_id;
+    int time;
+    int ctrl_bact_id;
 
-    int field_3C;
+    __NC_STACK_ypabact **bacts;
+    trec_bct *oinf;
+    uint16_t *sound_status;
+    void *field_20;
+    uint8_t *ainf;
+
+    int max_bacts;
+    int field_2C;
+    int bacts_count;
+    int field_34;
+    int ainf_size;
+    int do_record;
+    int field_40;
+    xyz field_44;
+    mat3x3 rotation_matrix;
+    int field_74;
+    int field_78;
+    int field_7C;
+    int field_80;
+    int field_84;
+    char filename[64];
 };
 
 struct cellArea : public nnode
@@ -934,9 +971,11 @@ struct _NC_STACK_ypaworld
     int field_241c;
     __NC_STACK_ypabact *field_2420;
     int field_2424;
-    int field_2428;
-
-    recorder *sceneRecorder;
+    int do_screenshooting;
+    int screenshot_seq_id; //Screenshoting sequence id
+    int screenshot_seq_frame_id; //Screenshoting frame id
+    recorder *replayer; // For play replay
+    recorder *sceneRecorder; // For record replay
     bact_hudi hudi;
     gemProto gems[8];
     int field_2b78;

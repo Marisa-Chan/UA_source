@@ -4981,21 +4981,438 @@ void ypaworld_func64__sub11(_NC_STACK_ypaworld *yw)
     dprintf("MAKE ME %s (joy vibrate)\n", "ypaworld_func64__sub11");
 }
 
+int recorder_startrec(_NC_STACK_ypaworld *yw)
+{
+    recorder *rcrd = yw->sceneRecorder;
+
+    rcrd->do_record = 0;
+    rcrd->field_40 = 0;
+    rcrd->seqn++;
+    rcrd->level_id = yw->field_2d90->levelID;
+    rcrd->frame_id = 0;
+    rcrd->time = 0;
+    rcrd->bacts_count = 0;
+    rcrd->field_34 = 0;
+    rcrd->ainf_size = 0;
+
+    char a1[256];
+    sprintf(a1, "env/snaps/m%02d%04d.raw", yw->field_2d90->levelID, rcrd->seqn);
+
+    rcrd->mfile = new_MFILE();
+
+    if ( !rcrd->mfile )
+        return 0;
+
+    rcrd->mfile->file_handle = FOpen(a1, "wb");
+    if ( !rcrd->mfile->file_handle )
+    {
+        del_MFILE(rcrd->mfile);
+        rcrd->mfile = 0;
+        return 0;
+    }
+
+    if ( sub_412F98(rcrd->mfile, 1) )
+    {
+        FClose(rcrd->mfile->file_handle);
+        del_MFILE(rcrd->mfile);
+        rcrd->mfile = 0;
+        return 0;
+    }
+
+    sub_412FC0(rcrd->mfile, TAG_SEQN, TAG_FORM, -1);
+    sub_412FC0(rcrd->mfile, 0, TAG_SINF, 4);
+
+    sub_413564(rcrd->mfile, 2, &rcrd->seqn);
+    sub_413564(rcrd->mfile, 2, &rcrd->level_id);
+
+    sub_413290(rcrd->mfile);
+
+    rcrd->do_record = 1;
+    return 1;
+}
+
+void recorder_stoprec(_NC_STACK_ypaworld *yw)
+{
+    recorder *rcrd = yw->sceneRecorder;
+    rcrd->do_record = 0;
+
+    if ( rcrd->mfile )
+    {
+        sub_413290(rcrd->mfile);
+
+        FClose(rcrd->mfile->file_handle);
+
+        del_MFILE(rcrd->mfile);
+
+        rcrd->mfile = NULL;
+    }
+}
+
 void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
 {
-    dprintf("MAKE ME %s (snaps and record)\n", "sb_0x447720");
+    if ( inpt->downed_key == VK_MULTIPLY && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
+    {
+        sub_4476AC(yw);
+
+        yw_arg159 info_msg;
+        info_msg.txt = "Screenshot saved.";
+        info_msg.unit = NULL;
+        info_msg.field_4 = 100;
+        info_msg.field_C = 0;
+
+        call_method(yw->self_full, 159, &info_msg);
+    }
+
+
+    if ( yw->do_screenshooting )
+    {
+        if ( inpt->downed_key == VK_DIVIDE && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
+        {
+            yw->do_screenshooting = 0;
+
+            yw_arg159 info_msg;
+            info_msg.txt = "Screenshotting: stopped.";
+            info_msg.unit = NULL;
+            info_msg.field_4 = 100;
+            info_msg.field_C = 0;
+
+            call_method(yw->self_full, 159, &info_msg);
+        }
+
+
+        char a1[256];
+        sprintf(a1, "env/snaps/s%d_%04d", yw->screenshot_seq_id, yw->screenshot_seq_frame_id);
+
+        yw->screenshot_seq_frame_id++;
+
+        NC_STACK_win3d *win3d;
+        gfxEngine__getter(0x8000300D, &win3d, 0);
+
+        char *v13 = a1;
+
+        call_method(win3d, 274, &v13);
+    }
+    else if ( inpt->downed_key == VK_DIVIDE && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
+    {
+        yw->screenshot_seq_frame_id = 0;
+        yw->do_screenshooting = 1;
+        yw->screenshot_seq_id++;
+
+        yw_arg159 info_msg;
+        info_msg.txt = "Screenshotting: started.";
+        info_msg.unit = NULL;
+        info_msg.field_4 = 100;
+        info_msg.field_C = 0;
+
+        call_method(yw->self_full, 159, &info_msg);
+    }
+
+    if ( yw->sceneRecorder->do_record )
+    {
+        if ( inpt->downed_key == VK_SUBTRACT && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
+        {
+            recorder_stoprec(yw);
+
+            yw_arg159 info_msg;
+            info_msg.txt = "Replay recordering: stopped.";
+            info_msg.unit = NULL;
+            info_msg.field_4 = 100;
+            info_msg.field_C = 0;
+
+            call_method(yw->self_full, 159, &info_msg);
+        }
+
+    }
+    else
+    {
+        if ( inpt->downed_key == VK_SUBTRACT && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
+        {
+            recorder_startrec(yw);
+
+            yw_arg159 info_msg;
+            info_msg.txt = "Replay recordering: started.";
+            info_msg.unit = NULL;
+            info_msg.field_4 = 100;
+            info_msg.field_C = 0;
+
+            call_method(yw->self_full, 159, &info_msg);
+        }
+    }
 }
 
-void ypaworld_func64__sub12(_NC_STACK_ypaworld *yw, int dtime)
+void recorder_update_time(_NC_STACK_ypaworld *yw, int dtime)
 {
-//  yw->sceneRecorder->field_C += dtime;
-//  yw->sceneRecorder->field_40 -= dtime;
-    dprintf("MAKE ME %s (scene recorder)\n", "ypaworld_func64__sub12");
+    yw->sceneRecorder->time += dtime;
+    yw->sceneRecorder->field_40 -= dtime;
 }
 
-void ypaworld_func64__sub13(_NC_STACK_ypaworld *yw)
+void recorder_store_bact(_NC_STACK_ypaworld *yw, recorder *rcrd, nlist *bct_lst)
 {
-    dprintf("MAKE ME %s (scene recorder)\n", "ypaworld_func64__sub13");
+    bact_node *bct = (bact_node *)bct_lst->head;
+    while (bct->next)
+    {
+        if ( bct->bact->ypabact__id >= 0xFFFF || bct->bact == yw->field_1b80 )
+        {
+            if ( rcrd->bacts_count < rcrd->max_bacts )
+            {
+                rcrd->bacts[ rcrd->bacts_count ] = bct->bact;
+                rcrd->bacts_count++;
+            }
+
+            recorder_store_bact(yw, rcrd, &bct->bact->list3);
+            recorder_store_bact(yw, rcrd, &bct->bact->list2);
+        }
+
+        bct = (bact_node *)bct->next;
+    }
+}
+
+void rotmat_to_euler(mat3x3 *mat, xyz *out)
+{
+    float sy = sqrt(POW2(mat->m00) + POW2(mat->m10));
+
+    bool singular = sy < 1e-6;
+
+    if ( !singular )
+    {
+        out->sx = atan2(mat->m21, mat->m22);
+        out->sy = atan2(-mat->m20, sy);
+        out->sz = atan2(mat->m10, mat->m00);
+    }
+    else
+    {
+        out->sx = atan2(-mat->m12, mat->m11);
+        out->sy = atan2(-mat->m20, sy);
+        out->sz = 0.0;
+    }
+}
+
+int recorder_sort_bact(const void *a1, const void *a2)
+{
+    return (*(__NC_STACK_ypabact **)a1)->ypabact__id - (*(__NC_STACK_ypabact **)a2)->ypabact__id;
+}
+
+void recorder_world_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd)
+{
+    rcrd->bacts_count = 0;
+    recorder_store_bact(yw, rcrd, &yw->bact_list);
+
+    qsort(rcrd->bacts, rcrd->bacts_count, 4, recorder_sort_bact);
+
+    for (int i = 0; i < rcrd->bacts_count; i++)
+    {
+        __NC_STACK_ypabact *bact = rcrd->bacts[i];
+
+        trec_bct *oinf = &rcrd->oinf[i];
+
+        oinf->bact_id = bact->ypabact__id;
+        oinf->pos = bact->field_621;
+
+        xyz euler;
+        rotmat_to_euler(&bact->field_651, &euler);
+
+        const float pi2 = 6.283185307;
+
+        oinf->rot_x = dround(euler.sx * 127.0 / pi2);
+        oinf->rot_y = dround(euler.sy * 127.0 / pi2);
+        oinf->rot_z = dround(euler.sz * 127.0 / pi2);
+
+        NC_STACK_base *a4;
+        call_vtbl(bact->self, 3, 0x8000100C, &a4, 0);
+
+        if ( a4 == bact->vp_normal.base )
+        {
+            oinf->vp_id = 1;
+        }
+        else if ( a4 == bact->vp_fire.base )
+        {
+            oinf->vp_id = 2;
+        }
+        else if ( a4 == bact->vp_wait.base )
+        {
+            oinf->vp_id = 3;
+        }
+        else if ( a4 == bact->vp_dead.base )
+        {
+            oinf->vp_id = 4;
+        }
+        else if ( a4 == bact->vp_megadeth.base )
+        {
+            oinf->vp_id = 5;
+        }
+        else if ( a4 == bact->vp_genesis.base )
+        {
+            oinf->vp_id = 6;
+        }
+        else
+        {
+            oinf->vp_id = 0;
+        }
+
+        oinf->bact_type = (bact->field_24 != 4) + 1;
+        oinf->vhcl_id = bact->id;
+
+        uint16_t *ssnd = &rcrd->sound_status[i * 2];
+        ssnd[0] = 0;
+
+        for (int j = 0; j < 16; j++)
+        {
+            if (bact->field_5A.samples_data[j].field_12 & 0x92)
+                ssnd[0] |= 1 << j;
+        }
+
+        ssnd[1] = bact->field_5A.samples_data[0].pitch;
+    }
+}
+
+void recorder_pack_soundstates(recorder *rcrd)
+{
+    uint8_t *in = (uint8_t *)rcrd->sound_status;
+    int in_pos = 0;
+
+    uint8_t *output = (uint8_t *)rcrd->ainf;
+    int out_pos = 0;
+
+    int max_bytes_count = 4 * rcrd->bacts_count;
+
+    while ( in_pos < max_bytes_count )
+    {
+        if ( in_pos >= max_bytes_count - 1 || in[in_pos] != in[in_pos + 1] )
+        {
+            int ctrl_byte_pos = out_pos;
+            int cnt_bytes = 0;
+
+            while (cnt_bytes < 0x80)
+            {
+                if ( in_pos >= max_bytes_count )
+                    break;
+                else if ( in_pos < max_bytes_count - 2 && in[in_pos] == in[in_pos + 1] && in[in_pos] == in[in_pos + 2] )
+                    break;
+
+                output[out_pos] = in[in_pos];
+                in_pos++;
+                out_pos++;
+
+                cnt_bytes++;
+            }
+
+            output[ctrl_byte_pos] = cnt_bytes - 1;
+        }
+        else
+        {
+            int cnt_bytes = 0;
+
+            uint8_t smplbyte = in[in_pos];
+            while ( in_pos < max_bytes_count )
+            {
+                if ( in[in_pos] != smplbyte )
+                    break;
+
+                if ( cnt_bytes >= 0x80 )
+                    break;
+
+                in_pos++;
+                cnt_bytes++;
+            }
+            output[out_pos] = 0x101 - cnt_bytes;
+            output[out_pos + 1] = smplbyte;
+            out_pos += 2;
+        }
+    }
+
+    rcrd->ainf_size = out_pos;
+}
+
+void recorder_write_frame(_NC_STACK_ypaworld *yw)
+{
+    recorder *rcrd = yw->sceneRecorder;
+
+    if ( rcrd->field_40 < 0 )
+    {
+        recorder_world_to_frame(yw, yw->sceneRecorder);
+        rcrd->ctrl_bact_id = yw->field_1b84->ypabact__id;
+        recorder_pack_soundstates(rcrd);
+
+
+        int frame_size = 24;
+        int oinf_size = 22 * rcrd->bacts_count;
+        int v5 = 16 * rcrd->field_34;
+
+        if ( oinf_size )
+        {
+            frame_size = oinf_size + 32;
+
+            if ( frame_size & 1 )
+                frame_size++;
+        }
+
+        if ( rcrd->ainf_size )
+        {
+            frame_size += rcrd->ainf_size + 8;
+
+            if ( frame_size & 1 )
+                frame_size++;
+        }
+
+        if ( v5 )
+        {
+            frame_size += v5 + 8;
+
+            if ( frame_size & 1 )
+                frame_size++;
+        }
+        sub_412FC0(rcrd->mfile, TAG_FRAM, TAG_FORM, frame_size);
+        sub_412FC0(rcrd->mfile, 0, TAG_FINF, 12);
+
+        sub_413564(rcrd->mfile, 4, &rcrd->frame_id);
+        sub_413564(rcrd->mfile, 4, &rcrd->time);
+        sub_413564(rcrd->mfile, 4, &rcrd->ctrl_bact_id);
+
+        sub_413290(rcrd->mfile);
+
+        if ( oinf_size )
+        {
+            sub_412FC0(rcrd->mfile, 0, TAG_OINF, oinf_size);
+
+            for (int i = 0; i < rcrd->bacts_count; i++)
+            {
+                trec_bct *oinf = &rcrd->oinf[i];
+
+                sub_413564(rcrd->mfile, 4, &oinf->bact_id);
+                sub_413564(rcrd->mfile, 4, &oinf->pos.sx);
+                sub_413564(rcrd->mfile, 4, &oinf->pos.sy);
+                sub_413564(rcrd->mfile, 4, &oinf->pos.sz);
+                sub_413564(rcrd->mfile, 1, &oinf->rot_x);
+                sub_413564(rcrd->mfile, 1, &oinf->rot_y);
+                sub_413564(rcrd->mfile, 1, &oinf->rot_z);
+                sub_413564(rcrd->mfile, 1, &oinf->vp_id);
+                sub_413564(rcrd->mfile, 1, &oinf->bact_type);
+                sub_413564(rcrd->mfile, 1, &oinf->vhcl_id);
+            }
+
+            sub_413290(rcrd->mfile);
+        }
+
+        if ( rcrd->ainf_size )
+        {
+            sub_412FC0(rcrd->mfile, 0, TAG_AINF, rcrd->ainf_size);
+            sub_413564(rcrd->mfile, rcrd->ainf_size, rcrd->ainf);
+            sub_413290(rcrd->mfile);
+        }
+
+        if ( v5 )
+        {
+            sub_412FC0(rcrd->mfile, 0, TAG_MODE, v5);
+            sub_413564(rcrd->mfile, v5, rcrd->field_20);
+            sub_413290(rcrd->mfile);
+        }
+
+        sub_413290(rcrd->mfile);
+
+        rcrd->field_34 = 0;
+        rcrd->field_40 += 250;
+        rcrd->frame_id += 1;
+    }
 }
 
 

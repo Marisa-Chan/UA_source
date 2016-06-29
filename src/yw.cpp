@@ -265,15 +265,49 @@ int yw_initAttrs(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stack_vals *sta
 }
 
 
-recorder *sub_48025C()
+recorder *recorder_allocate()
 {
-    dprintf("MAKE ME %s\n","sub_48025C");
-    return (recorder *)AllocVec(sizeof(recorder), 65537);
+    recorder *rcrd = (recorder *)AllocVec(sizeof(recorder), 65537);
+
+    if ( !rcrd )
+        return NULL;
+
+    rcrd->bacts = (__NC_STACK_ypabact **)AllocVec(sizeof(__NC_STACK_ypabact *) * 1024, 1);
+    rcrd->oinf = (trec_bct *)AllocVec(sizeof(trec_bct) * 1024, 1);
+    rcrd->sound_status = (uint16_t *)AllocVec(sizeof(uint16_t) * 2 * 1024, 1);
+    rcrd->field_20 = AllocVec(0x4000, 1);
+    rcrd->ainf = (uint8_t *)AllocVec(0x2000, 1);
+
+    if ( !rcrd->bacts || !rcrd->oinf || !rcrd->sound_status || !rcrd->field_20 || !rcrd->ainf )
+    {
+        if ( rcrd->bacts )
+            nc_FreeMem(rcrd->bacts);
+
+        if ( rcrd->oinf )
+            nc_FreeMem(rcrd->oinf);
+
+        if ( rcrd->sound_status )
+            nc_FreeMem(rcrd->sound_status);
+
+        if ( rcrd->field_20 )
+            nc_FreeMem(rcrd->field_20);
+
+        if ( rcrd->ainf )
+            nc_FreeMem(rcrd->ainf);
+
+        nc_FreeMem(rcrd);
+
+        return NULL;
+    }
+
+    rcrd->field_2C = 1024;
+    rcrd->max_bacts = 1024;
+    return rcrd;
 }
 
 int yw_InitSceneRecorder(_NC_STACK_ypaworld *yw)
 {
-    yw->sceneRecorder = sub_48025C();
+    yw->sceneRecorder = recorder_allocate();
     return yw->sceneRecorder != 0;
 }
 
@@ -751,7 +785,7 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
         yw->field_7626 = 0;
         yw->b64_parms = arg;
 
-        if ( yw->field_2428 )
+        if ( yw->do_screenshooting )
         {
             arg->field_0 -= arg->field_4;
             arg->field_8->period = 40;
@@ -892,8 +926,8 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
             if ( yw->field_15fc )
                 ypaworld_func64__sub5(yw);
 
-            if ( yw->sceneRecorder->field_3C )
-                ypaworld_func64__sub12(yw, arg->field_4);
+            if ( yw->sceneRecorder->do_record )
+                recorder_update_time(yw, arg->field_4);
 
             yw->hudi.field_0 = 0;
             yw->hudi.field_4 = 0;
@@ -992,8 +1026,8 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
 
             v58->scale_rotation = dst;
 
-            if ( yw->sceneRecorder->field_3C )
-                ypaworld_func64__sub13(yw);
+            if ( yw->sceneRecorder->do_record )
+                recorder_write_frame(yw);
 
             ypaworld_func64__sub3(yw);
 
@@ -2667,11 +2701,11 @@ void ypaworld_func151(NC_STACK_ypaworld *obj, class_stru *zis, stack_vals *arg)
         yw->field_727c = 0;
     }
 
-    if ( yw->sceneRecorder->field_3C )
+    if ( yw->sceneRecorder->do_record )
         sub_480868(yw);
 
-    yw->field_2428 = 0;
-    yw->sceneRecorder->field_3C = 0;
+    yw->do_screenshooting = 0;
+    yw->sceneRecorder->do_record = 0;
 
     NC_STACK_ilbm *disk = loadDisk_screen(yw);
 

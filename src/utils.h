@@ -50,6 +50,13 @@
 #define TAG_VANM   MKTAG('V','A','N','M')
 #define TAG_DATA   MKTAG('D','A','T','A')
 #define TAG_PTCL   MKTAG('P','T','C','L')
+#define TAG_FRAM   MKTAG('F','R','A','M')
+#define TAG_FINF   MKTAG('F','I','N','F')
+#define TAG_OINF   MKTAG('O','I','N','F')
+#define TAG_AINF   MKTAG('A','I','N','F')
+#define TAG_MODE   MKTAG('M','O','D','E')
+#define TAG_SEQN   MKTAG('S','E','Q','N')
+#define TAG_SINF   MKTAG('S','I','N','F')
 
 #define POW2(x)  ( (x) * (x) )
 #define MMAX(a, b) ((a) > (b) ? (a) : (b))

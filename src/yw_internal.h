@@ -481,8 +481,8 @@ void sub_44A094(_NC_STACK_ypaworld *yw);
 
 void ypaworld_func64__sub11(_NC_STACK_ypaworld *yw);
 void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt);
-void ypaworld_func64__sub12(_NC_STACK_ypaworld *yw, int dtime);
-void ypaworld_func64__sub13(_NC_STACK_ypaworld *yw);
+void recorder_update_time(_NC_STACK_ypaworld *yw, int dtime);
+void recorder_write_frame(_NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub22(_NC_STACK_ypaworld *yw);
 void sub_480868(_NC_STACK_ypaworld *yw);
 void ypaworld_func151__sub5(_NC_STACK_ypaworld *yw);
@@ -523,4 +523,5 @@ void sub_4D6958(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, samples_collec
 
 int sub_4C885C();
 void sb_0x4c87fc(_NC_STACK_ypaworld *yw, const char *a2, listbase *lstvw);
+void sub_4476AC(_NC_STACK_ypaworld *yw);
 #endif
