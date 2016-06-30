@@ -65,7 +65,7 @@ struct userdata_sample_info
 struct samples_collection1
 {
     xyz field_0;
-    int field_C;
+    float field_C;
     float field_10;
     float field_14;
     userdata_sample_info samples_data[16];
