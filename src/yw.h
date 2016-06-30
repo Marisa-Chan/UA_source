@@ -1594,6 +1594,12 @@ struct yw_arg150
     float field_28;
 };
 
+struct yw_arg165
+{
+    int field_0;
+    int frame;
+};
+
 
 __NC_STACK_ypabact * sub_48C244(NC_STACK_ypaworld *ywo, int a2, char owner);
 

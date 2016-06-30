@@ -17,6 +17,8 @@
 #include "engine_input.h"
 
 int dword_513638 = 0;
+int dword_51362C = 0;
+int dword_513630 = 0;
 
 int sub_4107FC(UserData *usr)
 {
@@ -178,10 +180,141 @@ int sb_0x411324__sub0()
     return 1;
 }
 
+char * sub_4107A0(int a1)
+{
+    if ( !userdata.snap_count )
+        return NULL;
+
+    int v2 = a1 % userdata.snap_count;
+
+    if ( dword_51362C == v2 )
+    {
+        if ( v2 )
+        {
+            v2 = v2 - 1;
+        }
+        else if ( (userdata.snap_count - 1) > 0 )
+        {
+            v2 = 1;
+        }
+    }
+
+    dword_51362C = v2;
+    return userdata.snaps[v2];
+}
+
+int sb_0x411324__sub2__sub0(base_64arg *arg)
+{
+    if ( (userdata.p_ypaworld->replayer->field_74 - 3) <= userdata.p_ypaworld->replayer->frame_id  &&  dword_513630 )
+    {
+        char *gin_and_tonic = sub_4107A0(arg->field_0);
+
+        call_method(ypaworld, 164, 0);
+
+        if ( !call_method(ypaworld, 162, gin_and_tonic) )
+        {
+            dword_520400 = 1;
+
+            sub_412D28(&input_states);
+
+            return 0;
+        }
+
+        dword_513630 = 1;
+        dword_520400 = 3;
+    }
+
+    call_method(ypaworld, 163, arg);
+
+    yw_arg165 arg165;
+    arg165.field_0 = 0;
+    arg165.frame = 0;
+
+    int cont_play = 1;
+
+    if ( arg->field_8->downed_key == 'N' )
+    {
+        arg165.field_0 = 4;
+    }
+    else if ( arg->field_8->downed_key == 'P' )
+    {
+        arg165.field_0 = 2;
+    }
+    else if ( arg->field_8->downed_key == 'R' )
+    {
+        arg165.field_0 = 3;
+    }
+    else if ( arg->field_8->downed_key == 'S' )
+    {
+        arg165.field_0 = 1;
+    }
+    else if ( arg->field_8->downed_key == 'V' )
+    {
+        arg165.frame = -10;
+        arg165.field_0 = 7;
+    }
+    else if ( arg->field_8->downed_key == 'B' )
+    {
+        arg165.field_0 = 5;
+    }
+    else if ( arg->field_8->downed_key == 'M' )
+    {
+        arg165.frame = 10;
+        arg165.field_0 = 7;
+    }
+    else if ( arg->field_8->downed_key == VK_SPACE || arg->field_8->downed_key == VK_ESCAPE )
+    {
+        cont_play = 0;
+    }
+
+    if ( arg165.field_0 )
+        call_method(ypaworld, 165, &arg165);
+
+    return cont_play;
+}
+
 int sb_0x411324__sub2()
 {
-    dprintf("MAKE ME %s\n","sb_0x411324__sub0");
-    return 0;
+    if ( !sb_0x411324__sub2__sub0(&world_update_arg) )
+    {
+        call_method(ypaworld, 164, 0);
+
+        if ( dword_513638 )
+        {
+            yw_arg172 arg172;
+            arg172.usr = &userdata;
+            arg172.usertxt = "settings.tmp";
+            arg172.field_10 = 0;
+            arg172.field_4 = userdata.user_name;
+            arg172.field_8 = 193;
+
+            if ( !call_method(ypaworld, 172, &arg172) )
+                return 0;
+
+            dword_513638 = 0;
+        }
+
+        dword_520400 = 0;
+        world_update_arg.field_0 = 0;
+        userdata.field_5457 = 0;
+
+        if ( !call_method(ypaworld, 156, &userdata) )
+        {
+            ypa_log_out("GameShell-Error!!!\n");
+            call_method(ypaworld, 155, &userdata);
+
+            return 0;
+        }
+
+        userdata.p_ypaworld->field_2d90->field_40 = 8;
+
+        dword_520400 = 1;
+
+        memset(&input_states, 0, sizeof(struC5));
+
+        sub_412D28(&input_states);
+    }
+    return 1;
 }
 
 int sb_0x411324__sub1()
@@ -191,8 +324,6 @@ int sb_0x411324__sub1()
     userdata.field_3A = &input_states;
 
     call_method(ypaworld, 158, &userdata);
-
-    int result = 1;
 
     if ( userdata.field_0x2fbc == 1 )
         return 0;
@@ -215,7 +346,7 @@ int sb_0x411324__sub1()
             ypa_log_out("Sorry, unable to init this level!\n");
 
             call_method(ypaworld, 155, &userdata);
-            result = 0;
+            return 0;
         }
         dword_520400 = 2;
         sub_412D28(&input_states);
@@ -245,21 +376,82 @@ int sb_0x411324__sub1()
             ypa_log_out("Error while loading level (level %d, User %s\n", a4->levelID, userdata.user_name);
 
             call_method(ypaworld, 155, &userdata);
-            result = 0;
+            return 0;
         }
         dword_520400 = 2;
         sub_412D28(&input_states);
     }
     else if ( userdata.field_0x2fbc == 4 )
     {
+        sub_410628();
 
+        if ( !sub_4107FC(&userdata) )
+            return 0;
+
+        dword_513638 = 1;
+
+        call_method(ypaworld, 157, &userdata);
+
+        yw_arg161 v22;
+        v22.lvlID = userdata.field_0x2fc0;
+        v22.field_4 = 0;
+
+        dword_520400 = 0;
+
+        if ( !call_method(ypaworld, 179, &v22) )
+        {
+            ypa_log_out("Sorry, unable to init this level for network!\n");
+            call_method(ypaworld, 155, &userdata);
+
+            return 0;
+        }
+
+        dword_520400 = 2;
+        sub_412D28(&input_states);
     }
     else if ( userdata.field_0x2fbc == 5 )
     {
+        char *repname = sub_4107A0(world_update_arg.field_0);
+        if ( !repname )
+        {
+            userdata.field_5457 = world_update_arg.field_0;
+            return 1;
+        }
 
+        if ( !sub_4107FC(&userdata) )
+            return 0;
+
+        dword_513638 = 1;
+
+        call_method(ypaworld, 157, &userdata);
+
+        dword_520400 = 0;
+
+        if ( call_method(ypaworld, 162, repname) )
+        {
+            dword_513630 = 1;
+            dword_520400 = 3;
+        }
+        else
+        {
+            ypa_log_out("Sorry, unable to init player!\n");
+            world_update_arg.field_0 = 0;
+            userdata.field_5457 = 0;
+
+            if ( !call_method(ypaworld, 156, &userdata) )
+            {
+                ypa_log_out("GameShell-Error!!!\n");
+                call_method(ypaworld, 155, &userdata);
+                return 0;
+            }
+
+            dword_520400 = 1;
+        }
+
+        sub_412D28(&input_states);
     }
 
-    return result;
+    return 1;
 }
 
 

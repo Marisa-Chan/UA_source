@@ -57,6 +57,7 @@
 #define TAG_MODE   MKTAG('M','O','D','E')
 #define TAG_SEQN   MKTAG('S','E','Q','N')
 #define TAG_SINF   MKTAG('S','I','N','F')
+#define TAG_FLSH   MKTAG('F','L','S','H')
 
 #define POW2(x)  ( (x) * (x) )
 #define MMAX(a, b) ((a) > (b) ? (a) : (b))

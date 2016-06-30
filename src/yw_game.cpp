@@ -5187,6 +5187,26 @@ void rotmat_to_euler(mat3x3 *mat, xyz *out)
     }
 }
 
+void euler_to_rotmat(xyz *euler, mat3x3 *out)
+{
+    float _cx = cos(euler->sx);
+    float _sx = sin(euler->sx);
+    float _cy = cos(euler->sy);
+    float _sy = sin(euler->sy);
+    float _cz = cos(euler->sz);
+    float _sz = sin(euler->sz);
+
+    out->m00 = _cy * _cz;
+    out->m01 = _sy * _sx * _cz - _cx * _sz;
+    out->m02 = _sy * _cx * _cz + _sx * _sz;
+    out->m10 = _cy * _sz;
+    out->m11 = _sy * _sx * _sz + _cx * _cz;
+    out->m12 = _sy * _cx * _sz - _sx * _cz;
+    out->m20 = -_sy;
+    out->m21 = _cy * _sx;
+    out->m22 = _cy * _cx;
+}
+
 int recorder_sort_bact(const void *a1, const void *a2)
 {
     return (*(__NC_STACK_ypabact **)a1)->ypabact__id - (*(__NC_STACK_ypabact **)a2)->ypabact__id;
@@ -5321,6 +5341,39 @@ void recorder_pack_soundstates(recorder *rcrd)
     }
 
     rcrd->ainf_size = out_pos;
+}
+
+void recorder_unpack_soundstates(recorder *rcrd)
+{
+    uint8_t *out = (uint8_t *)rcrd->sound_status;
+    uint8_t *in = (uint8_t *)rcrd->ainf;
+    uint8_t *in_end = ((uint8_t *)rcrd->ainf) + rcrd->ainf_size;
+
+    while ( in < in_end )
+    {
+        uint8_t bt = *in;
+        in++;
+
+        if ( bt > 0x80 )
+        {
+            for (int i = 0; i < 0x101 - bt; i++)
+            {
+                *out = *in;
+                out++;
+            }
+
+            in++;
+        }
+        else if ( bt < 0x80 )
+        {
+            bt += 1;
+
+            memcpy(out, in, bt);
+
+            out += bt;
+            in += bt;
+        }
+    }
 }
 
 void recorder_write_frame(_NC_STACK_ypaworld *yw)
@@ -5594,6 +5647,820 @@ void ypaworld_func64__sub22(_NC_STACK_ypaworld *yw)
         }
     }
 }
+
+int recorder_open_replay(recorder *rcrd)
+{
+    rcrd->mfile = new_MFILE();
+
+    if ( !rcrd->mfile )
+        return 0;
+
+    rcrd->mfile->file_handle = FOpen(rcrd->filename, "rb");
+
+    if ( !rcrd->mfile->file_handle )
+    {
+        del_MFILE(rcrd->mfile);
+
+        rcrd->mfile = NULL;
+        return 0;
+    }
+
+    if ( sub_412F98(rcrd->mfile, 0) )
+    {
+        FClose(rcrd->mfile->file_handle);
+        del_MFILE(rcrd->mfile);
+
+        rcrd->mfile = NULL;
+        return 0;
+    }
+
+    if ( read_next_IFF(rcrd->mfile, 2) )
+    {
+        FClose(rcrd->mfile->file_handle);
+        del_MFILE(rcrd->mfile);
+
+        rcrd->mfile = NULL;
+        return 0;
+    }
+
+    MFILE_S1 *v3 = GET_FORM_INFO_OR_NULL(rcrd->mfile);
+
+    if ( v3->TAG == TAG_FORM && v3->TAG_EXTENSION == TAG_SEQN )
+        return 1;
+
+    return 0;
+}
+
+
+int recorder_create_camera(_NC_STACK_ypaworld *yw)
+{
+    NC_STACK_ypabact *bacto = (NC_STACK_ypabact *)init_get_class("ypabact.class", 0x80001001, yw->self_full, 0);
+
+    if ( !bacto )
+        return 0;
+
+    __NC_STACK_ypabact *bact = &bacto->stack__ypabact;
+
+    call_method(bacto, 96, 0);
+
+    bact->ypabact__id = 0;
+    bact->owner = 1;
+
+    bact->field_651.m00 = 1.0;
+    bact->field_651.m01 = 0;
+    bact->field_651.m02 = 0;
+    bact->field_651.m10 = 0;
+    bact->field_651.m11 = 1.0;
+    bact->field_651.m12 = 0;
+    bact->field_651.m20 = 0;
+    bact->field_651.m21 = 0;
+    bact->field_651.m22 = 1.0;
+
+    sub_423DB0(&bact->field_5A);
+
+    call_method(yw->self_full, 134, bacto);
+
+    call_vtbl(bacto, 2, 0x80001004, 1, 0);
+    call_vtbl(bacto, 2, 0x80001005, 1, 0);
+
+    yw->field_1b78 = bacto;
+    yw->field_1b80 = bact;
+    yw->field_1b88 = &bact->list2;
+
+    sub_430A20(&bact->field_87D);
+
+    return 1;
+}
+
+
+
+void recorder_read_framedata(recorder *rcrd)
+{
+    while ( read_next_IFF(rcrd->mfile, 2) != -2 )
+    {
+        MFILE_S1 *v3 = GET_FORM_INFO_OR_NULL(rcrd->mfile);
+
+        switch ( v3->TAG )
+        {
+        case TAG_FLSH:
+            rcrd->field_78 |= 1;
+            read_next_IFF(rcrd->mfile, 2);
+            break;
+
+        case TAG_FINF:
+            mfread(rcrd->mfile, &rcrd->frame_id, 4);
+            mfread(rcrd->mfile, &rcrd->time, 4);
+            mfread(rcrd->mfile, &rcrd->ctrl_bact_id, 4);
+            read_next_IFF(rcrd->mfile, 2);
+            break;
+
+        case TAG_OINF:
+        {
+            rcrd->bacts_count = v3->TAG_SIZE / 22;
+
+            for (int i = 0; i < rcrd->bacts_count; i++)
+            {
+                for (int i = 0; i < rcrd->bacts_count; i++)
+                {
+                    trec_bct *oinf = &rcrd->oinf[i];
+
+                    mfread(rcrd->mfile, &oinf->bact_id, 4);
+                    mfread(rcrd->mfile, &oinf->pos.sx, 4);
+                    mfread(rcrd->mfile, &oinf->pos.sy, 4);
+                    mfread(rcrd->mfile, &oinf->pos.sz, 4);
+                    mfread(rcrd->mfile, &oinf->rot_x, 1);
+                    mfread(rcrd->mfile, &oinf->rot_y, 1);
+                    mfread(rcrd->mfile, &oinf->rot_z, 1);
+                    mfread(rcrd->mfile, &oinf->vp_id, 1);
+                    mfread(rcrd->mfile, &oinf->bact_type, 1);
+                    mfread(rcrd->mfile, &oinf->vhcl_id, 1);
+                }
+
+            }
+
+            read_next_IFF(rcrd->mfile, 2);
+        }
+        break;
+
+        case TAG_AINF:
+            mfread(rcrd->mfile, rcrd->ainf, v3->TAG_SIZE);
+            rcrd->ainf_size = v3->TAG_SIZE;
+
+            recorder_unpack_soundstates(rcrd);
+
+            read_next_IFF(rcrd->mfile, 2);
+            break;
+
+        case TAG_MODE:
+            mfread(rcrd->mfile, rcrd->field_20, v3->TAG_SIZE);
+            rcrd->field_34 = v3->TAG_SIZE / 16;
+
+            read_next_IFF(rcrd->mfile, 2);
+            break;
+
+        default:
+            read_default(rcrd->mfile);
+            break;
+        }
+    }
+}
+
+__NC_STACK_ypabact *sub_46F3AC(_NC_STACK_ypaworld *yw, trec_bct *oinf)
+{
+    NC_STACK_ypabact *bacto = NULL;
+    __NC_STACK_ypabact *bact = NULL;
+
+    if ( oinf->bact_type == 2 )
+    {
+        if ( oinf->vhcl_id )
+        {
+            ypaworld_arg146 arg146;
+            arg146.vehicle_id = oinf->vhcl_id;
+            arg146.pos.sx = 0;
+            arg146.pos.sy = 0;
+            arg146.pos.sz = 0;
+
+            VhclProto *prot = &yw->VhclProtos[ oinf->vhcl_id ];
+
+            int v6 = prot->model_id;
+
+            prot->model_id = 1;
+
+            bacto = (NC_STACK_ypabact *)call_method(yw->self_full, 146, &arg146);
+
+            yw->VhclProtos[oinf->vhcl_id].model_id = v6;
+        }
+        else
+        {
+            bacto = (NC_STACK_ypabact *)init_get_class("ypabact.class", 0x80001001, yw->self_full, 0);
+            if ( bacto )
+            {
+                bact = &bacto->stack__ypabact;
+
+                call_method(bacto, 96, 0);
+
+                bact->ypabact__id = 0;
+                bact->owner = 1;
+
+                bact->field_651.m00 = 1.0;
+                bact->field_651.m01 = 0;
+                bact->field_651.m02 = 0;
+                bact->field_651.m10 = 0;
+                bact->field_651.m11 = 1.0;
+                bact->field_651.m12 = 0;
+                bact->field_651.m20 = 0;
+                bact->field_651.m21 = 0;
+                bact->field_651.m22 = 1.0;
+            }
+        }
+    }
+    else
+    {
+        ypaworld_arg146 arg147;
+        arg147.vehicle_id = oinf->vhcl_id;
+        arg147.pos.sx = 0;
+        arg147.pos.sy = 0;
+        arg147.pos.sz = 0;
+
+        bacto = (NC_STACK_ypabact *)call_method(yw->self_full, 147, &arg147);
+    }
+
+    if ( bacto )
+    {
+        bact = &bacto->stack__ypabact;
+
+        if ( bact->parent_bacto )
+            Remove(&bact->list_node);
+
+        bact->ypabact__id = oinf->bact_id;
+        bact->field_32 = yw->field_1b7c;
+        bact->parent_bacto = yw->field_1b7c;
+        bact->parent_bact = yw->field_1b84;
+    }
+
+    return bact;
+}
+
+void recorder_set_bact_pos(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, xyz *pos)
+{
+    yw_130arg arg130;
+    arg130.pos_x = pos->sx;
+    arg130.pos_z = pos->sz;
+
+    if ( call_method(yw->self_full, 130, &arg130) )
+    {
+        if ( bact->p_cell_area )
+            Remove(bact);
+
+        AddTail(&arg130.pcell->field_3C, bact);
+
+        bact->p_cell_area = arg130.pcell;
+        bact->field_62D = bact->field_621;
+        bact->field_621 = *pos;
+        bact->field_c = arg130.sec_x;
+        bact->field_10 = arg130.sec_z;
+    }
+}
+
+void sub_46F5C8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, trec_bct *oinf, uint16_t *ssnd, float a5, float a6)
+{
+    xyz bct_pos;
+    bct_pos.sx = (oinf->pos.sx - bact->field_621.sx) * a5 + bact->field_621.sx;
+    bct_pos.sy = (oinf->pos.sy - bact->field_621.sy) * a5 + bact->field_621.sy;
+    bct_pos.sz = (oinf->pos.sz - bact->field_621.sz) * a5 + bact->field_621.sz;
+
+    recorder_set_bact_pos(yw, bact, &bct_pos);
+
+    bact->field_605.sx = bact->field_621.sx - bact->field_62D.sx;
+    bact->field_605.sy = bact->field_621.sy - bact->field_62D.sy;
+    bact->field_605.sz = bact->field_621.sz - bact->field_62D.sz;
+
+    float v82 = sqrt( POW2(bact->field_605.sx) + POW2(bact->field_605.sy) + POW2(bact->field_605.sz) );
+    if ( v82 > 0.0 )
+    {
+        bact->field_605.sx /= v82;
+        bact->field_605.sy /= v82;
+        bact->field_605.sz /= v82;
+
+        if ( a6 <= 0.0 )
+            bact->field_611 = 0;
+        else
+            bact->field_611 = (v82 / a6) / 6.0;
+    }
+    else
+    {
+        bact->field_605.sx = 1.0;
+        bact->field_605.sy = 0;
+        bact->field_605.sz = 0;
+
+        bact->field_611 = 0;
+    }
+
+    const float pi2 = 3.141592653589793 * 2.0;
+
+    xyz euler;
+    euler.sx = oinf->rot_x / 127.0 * pi2;
+    euler.sy = oinf->rot_y / 127.0 * pi2;
+    euler.sz = oinf->rot_z / 127.0 * pi2;
+
+    mat3x3 tmp;
+    euler_to_rotmat(&euler, &tmp);
+
+    mat3x3 tmp2;
+
+    tmp2.m00 = (tmp.m00 - bact->field_651.m00) * a5 + bact->field_651.m00;
+    tmp2.m01 = (tmp.m01 - bact->field_651.m01) * a5 + bact->field_651.m01;
+    tmp2.m02 = (tmp.m02 - bact->field_651.m02) * a5 + bact->field_651.m02;
+
+    float v80 = sqrt( POW2(tmp2.m00) + POW2(tmp2.m01) + POW2(tmp2.m02) );
+    if ( v80 > 0.0 )
+    {
+        tmp2.m00 /= v80;
+        tmp2.m01 /= v80;
+        tmp2.m02 /= v80;
+    }
+    else
+    {
+        tmp2.m00 = 1.0;
+        tmp2.m01 = 0.0;
+        tmp2.m02 = 0.0;
+    }
+
+
+    tmp2.m10 = (tmp.m10 - bact->field_651.m10) * a5 + bact->field_651.m10;
+    tmp2.m11 = (tmp.m11 - bact->field_651.m11) * a5 + bact->field_651.m11;
+    tmp2.m12 = (tmp.m12 - bact->field_651.m12) * a5 + bact->field_651.m12;
+
+    v80 = sqrt( POW2(tmp2.m10) + POW2(tmp2.m11) + POW2(tmp2.m12) );
+    if ( v80 > 0.0 )
+    {
+        tmp2.m10 /= v80;
+        tmp2.m11 /= v80;
+        tmp2.m12 /= v80;
+    }
+    else
+    {
+        tmp2.m10 = 0.0;
+        tmp2.m11 = 1.0;
+        tmp2.m12 = 0.0;
+    }
+
+
+    tmp2.m20 = (tmp.m20 - bact->field_651.m20) * a5 + bact->field_651.m20;
+    tmp2.m21 = (tmp.m21 - bact->field_651.m21) * a5 + bact->field_651.m21;
+    tmp2.m22 = (tmp.m22 - bact->field_651.m22) * a5 + bact->field_651.m22;
+
+    v80 = sqrt( POW2(tmp2.m20) + POW2(tmp2.m21) + POW2(tmp2.m22) );
+    if ( v80 > 0.0 )
+    {
+        tmp2.m20 /= v80;
+        tmp2.m21 /= v80;
+        tmp2.m22 /= v80;
+    }
+    else
+    {
+        tmp2.m20 = 0.0;
+        tmp2.m21 = 0.0;
+        tmp2.m22 = 1.0;
+    }
+
+    bact->field_651 = tmp2;
+
+    base_1c_struct *v43 = NULL;
+    NC_STACK_base *v44 = NULL;
+
+    switch ( oinf->vp_id )
+    {
+    case 1:
+        v43 = bact->vp_normal.trigo;
+        v44 = bact->vp_normal.base;
+        break;
+
+    case 2:
+        v43 = bact->vp_fire.trigo;
+        v44 = bact->vp_fire.base;
+        break;
+
+    case 3:
+        v43 = bact->vp_wait.trigo;
+        v44 = bact->vp_wait.base;
+        break;
+
+    case 4:
+        v43 = bact->vp_dead.trigo;
+        v44 = bact->vp_dead.base;
+        break;
+
+    case 5:
+        v43 = bact->vp_megadeth.trigo;
+        v44 = bact->vp_megadeth.base;
+        break;
+
+    case 6:
+        v43 = bact->vp_genesis.trigo;
+        v44 = bact->vp_genesis.base;
+        break;
+
+    default:
+        break;
+    }
+
+    if ( v44 && v43 )
+        call_vtbl(bact->self, 2, 0x8000100C, v44, 0x8000100F, v43, 0);
+
+    bact->field_5A.samples_data[0].pitch = ssnd[1];
+
+    for(int i = 0; i < 16; i++)
+    {
+        int v48 = 1 << i;
+        if ( v48 & ssnd[0] )
+        {
+            if ( !(bact->field_3B2 & v48) )
+            {
+                bact->field_3B2 |= v48;
+                sub_423F74(&bact->field_5A, i);
+            }
+        }
+        else
+        {
+            if ( bact->field_3B2 & v48 )
+            {
+                bact->field_3B2 &= ~v48;
+
+                if ( bact->field_5A.samples_data[i].field_12 & 1 )
+                    sub_424000(&bact->field_5A, i);
+            }
+        }
+    }
+}
+
+
+void sub_46FDA0(_NC_STACK_ypaworld *yw, recorder *rcrd, float a5, int period)
+{
+    float fperiod = period / 1000.0;
+    bact_node *v6 = (bact_node *)yw->field_1b84->list2.head;
+
+    int i = 0;
+
+    while ( i < rcrd->bacts_count )
+    {
+        trec_bct *oinf = &rcrd->oinf[i];
+        uint16_t *ssnd = &rcrd->sound_status[2 * i];
+
+        if ( v6->next )
+        {
+            if ( oinf->bact_id > v6->bact->ypabact__id )
+            {
+                bact_node *next = (bact_node *)v6->next;
+
+                call_method(yw->self_full, 144, v6->bacto);
+
+                v6 = next;
+            }
+            else if ( oinf->bact_id < v6->bact->ypabact__id )
+            {
+                __NC_STACK_ypabact *v10 = sub_46F3AC(yw, oinf);
+
+                if ( v10 )
+                {
+                    sub_46F5C8(yw, v10, oinf, ssnd, 1.0, fperiod);
+
+                    v10->list_node.prev = v6->prev;
+                    v10->list_node.next = v6;
+
+                    v6->prev->next = &v10->list_node;
+                    v6->prev = &v10->list_node;
+
+                    i++;
+                }
+            }
+            else // ==
+            {
+                sub_46F5C8(yw, v6->bact, oinf, ssnd, a5, fperiod);
+                v6 = (bact_node *)v6->next;
+
+                i++;
+            }
+        }
+        else
+        {
+            __NC_STACK_ypabact *v13 = sub_46F3AC(yw, oinf);
+
+            if ( v13 )
+            {
+                sub_46F5C8(yw, v13, oinf, ssnd, 1.0, fperiod);
+
+                AddTail(&yw->field_1b84->list2, &v13->list_node);
+
+                v6 = (bact_node *)v13->list_node.next;
+
+                i++;
+            }
+        }
+    }
+
+    while ( v6->next )
+    {
+        bact_node *next = (bact_node *)v6->next;
+
+        call_method(yw->self_full, 144, v6->bacto);
+
+        v6 = next;
+    }
+}
+
+int recorder_go_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd, int wanted_frame_id)
+{
+    int frame_id = wanted_frame_id;
+    int cur_frame_id = 0;
+
+    if ( frame_id >= 0 )
+    {
+        if ( frame_id >= rcrd->field_74 )
+            frame_id = rcrd->field_74 - 1;
+    }
+    else
+    {
+        frame_id = 0;
+    }
+
+    if ( rcrd->mfile )
+    {
+        FClose(rcrd->mfile->file_handle);
+        del_MFILE(rcrd->mfile);
+        rcrd->mfile = NULL;
+    }
+
+    if ( recorder_open_replay(rcrd) )
+    {
+        while ( read_next_IFF(rcrd->mfile, 2) != -2 )
+        {
+            MFILE_S1 *v7 = GET_FORM_INFO_OR_NULL(rcrd->mfile);
+
+            if ( v7->TAG != TAG_FORM || v7->TAG_EXTENSION != TAG_FRAM )
+            {
+                read_default(rcrd->mfile);
+            }
+            else
+            {
+                if ( cur_frame_id == frame_id )
+                {
+                    recorder_read_framedata(rcrd);
+
+                    yw->field_1614 = rcrd->time;
+
+                    sub_46FDA0(yw, rcrd, 1.0, 0);
+                    return 1;
+                }
+
+                cur_frame_id++;
+                read_default(rcrd->mfile);
+            }
+        }
+    }
+    return 0;
+}
+
+
+void ypaworld_func163__sub1(_NC_STACK_ypaworld *yw, recorder *rcrd, int a3)
+{
+    if ( a3 )
+    {
+        rcrd->field_78 &= 0xFFFFFFFE;
+
+        while ( rcrd->field_74 - 1 != rcrd->frame_id  &&  (a3 + yw->field_1614) > rcrd->time )
+        {
+            if ( read_next_IFF(rcrd->mfile, 2) != -1 )
+            {
+                MFILE_S1 *v5 = GET_FORM_INFO_OR_NULL(rcrd->mfile);
+
+                if ( v5->TAG == TAG_FORM && v5->TAG_EXTENSION == TAG_FRAM )
+                    recorder_read_framedata(rcrd);
+            }
+        }
+
+
+        if ( rcrd->field_74 - 1 == rcrd->frame_id )
+        {
+            recorder_go_to_frame(yw, rcrd, 0);
+        }
+        else
+        {
+            if ( rcrd->field_78 & 1 )
+            {
+                yw->field_1614 = rcrd->time;
+                sub_46FDA0(yw, rcrd, 1.0, a3);
+            }
+            else
+            {
+                float v9 = (float)a3 / (float)(rcrd->time - yw->field_1614);
+
+                yw->field_1614 += a3;
+
+                sub_46FDA0(yw, rcrd, v9, a3);
+            }
+        }
+    }
+}
+
+void ypaworld_func163__sub2__sub1(_NC_STACK_ypaworld *yw, float fperiod, struC5 *inpt)
+{
+    recorder *rcrd = yw->replayer;
+
+    float v20 = rcrd->rotation_matrix.m20;
+    float v18 = rcrd->rotation_matrix.m22;
+
+    float v13 = inpt->sliders_vars[0] * 250.0 * fperiod;
+    float v14 = -inpt->sliders_vars[2] * 250.0 * fperiod;
+    float v15 = -inpt->sliders_vars[1] * 150.0 * fperiod;
+
+    float v17 = sqrt( POW2(v20) + POW2(v18) );
+    if ( v17 > 0.0 )
+    {
+        v20 /= v17;
+        v18 /= v17;
+    }
+
+    rcrd->field_44.sz += v15 * v18;
+    rcrd->field_44.sx += v15 * v20;
+
+    float v21 = rcrd->rotation_matrix.m00;
+    float v19 = rcrd->rotation_matrix.m02;
+
+    float v16 = sqrt( POW2(v21) + POW2(v19) );
+    if ( v16 > 0.0 )
+    {
+        v21 /= v16;
+        v19 /= v16;
+    }
+
+    rcrd->field_44.sy += v14;
+    rcrd->field_44.sz += v19 * v13;
+    rcrd->field_44.sx += v21 * v13;
+}
+
+void ypaworld_func163__sub2__sub0(_NC_STACK_ypaworld *yw, float fperiod, struC5 *inpt)
+{
+    float v3 = inpt->sliders_vars[10] * 2.5 * fperiod;
+
+    if ( fabs(v3) > 0.001 )
+    {
+        float cs = cos(v3);
+        float sn = sin(-v3);
+
+        mat3x3 a2;
+        a2.m00 = cs;
+        a2.m01 = 0;
+        a2.m02 = sn;
+        a2.m10 = 0;
+        a2.m11 = 1.0;
+        a2.m12 = 0;
+        a2.m20 = -sn;
+        a2.m21 = 0;
+        a2.m22 = cs;
+
+        mat3x3 v7;
+        mat_mult(&yw->replayer->rotation_matrix, &a2, &v7);
+        yw->replayer->rotation_matrix = v7;
+    }
+
+    float v5 = inpt->sliders_vars[11] * 2.5 * fperiod;
+
+    if ( fabs(v5) > 0.001 )
+    {
+        float cs = cos(v5);
+        float sn = sin(v5);
+
+        mat3x3 a2;
+        a2.m00 = 1.0;
+        a2.m01 = 0;
+        a2.m02 = 0;
+        a2.m10 = 0;
+        a2.m11 = cs;
+        a2.m12 = sn;
+        a2.m20 = 0;
+        a2.m21 = -sn;
+        a2.m22 = cs;
+
+        mat3x3 a3;
+        mat_mult(&a2, &yw->replayer->rotation_matrix, &a3);
+        yw->replayer->rotation_matrix = a3;
+    }
+}
+
+void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_ypabact *bact, struC5 *inpt)
+{
+    extern tehMap robo_map;
+    extern squadMan squadron_manager;
+
+    float fperiod = inpt->period / 1000.0;
+
+    if ( yw->field_17c0 || !(inpt->winp131arg.flag & 0x80) )
+    {
+        if ( yw->field_17c0 )
+        {
+            if ( inpt->winp131arg.flag & 0x80 )
+                yw->field_17c0 = 0;
+        }
+    }
+    else
+    {
+        if ( inpt->winp131arg.selected_btn != &robo_map.frm_1  &&  inpt->winp131arg.selected_btn != &squadron_manager.lstvw.frm_1 )
+            yw->field_17c0 = 1;
+    }
+
+    if ( inpt->but_flags & 1 )
+    {
+        rcrd->rotation_matrix.m00 = 1.0;
+        rcrd->rotation_matrix.m01 = 0;
+        rcrd->rotation_matrix.m02 = 0;
+        rcrd->rotation_matrix.m10 = 0;
+        rcrd->rotation_matrix.m11 = 1.0;
+        rcrd->rotation_matrix.m12 = 0;
+        rcrd->rotation_matrix.m20 = 0;
+        rcrd->rotation_matrix.m21 = 0;
+        rcrd->rotation_matrix.m22 = 1.0;
+    }
+
+    ypaworld_func163__sub2__sub1(yw, fperiod, inpt);
+
+    if ( yw->field_17c0 )
+        ypaworld_func163__sub2__sub0(yw, fperiod, inpt);
+
+    if ( rcrd->field_80 == 16 )
+    {
+        recorder_set_bact_pos(yw, bact, &rcrd->field_44);
+        bact->field_651 = rcrd->rotation_matrix;
+    }
+    else if ( rcrd->field_80 == 18 )
+    {
+
+        bact_node *v11 = (bact_node *)yw->field_1b88->head;
+        __NC_STACK_ypabact *v12 = NULL;
+
+        while (v11->next)
+        {
+            if ( rcrd->field_84 == v11->bact->ypabact__id )
+            {
+                v12 = v11->bact;
+                break;
+            }
+
+            v11 = (bact_node *)v11->next;
+        }
+
+        if ( v12 )
+        {
+            xyz v35;
+            v35.sx = v12->field_651.m10 * rcrd->field_44.sy + v12->field_651.m00 * rcrd->field_44.sx + v12->field_651.m20 * rcrd->field_44.sz + v12->field_621.sx;
+            v35.sy = v12->field_651.m11 * rcrd->field_44.sy + v12->field_651.m01 * rcrd->field_44.sx + v12->field_651.m21 * rcrd->field_44.sz + v12->field_621.sy;
+            v35.sz = v12->field_651.m12 * rcrd->field_44.sy + v12->field_651.m02 * rcrd->field_44.sx + v12->field_651.m22 * rcrd->field_44.sz + v12->field_621.sz;
+
+            recorder_set_bact_pos(yw, bact, &v35);
+            mat_mult(&rcrd->rotation_matrix, &v12->field_651, &bact->field_651);
+        }
+    }
+    else if ( rcrd->field_80 == 20 )
+    {
+        bact_node *v17 = (bact_node *)yw->field_1b88->head;
+        __NC_STACK_ypabact *v18 = NULL;
+
+        while (v17->next)
+        {
+            if ( rcrd->ctrl_bact_id == v17->bact->ypabact__id )
+            {
+                v18 = v17->bact;
+                break;
+            }
+
+            v17 = (bact_node *)v17->next;
+        }
+
+        if ( v18 )
+        {
+            xyz a3a;
+            a3a.sx = v18->field_651.m10 * rcrd->field_44.sy + v18->field_651.m00 * rcrd->field_44.sx + v18->field_651.m20 * rcrd->field_44.sz + v18->field_621.sx;
+            a3a.sy = v18->field_651.m11 * rcrd->field_44.sy + v18->field_651.m01 * rcrd->field_44.sx + v18->field_651.m21 * rcrd->field_44.sz + v18->field_621.sy;
+            a3a.sz = v18->field_651.m12 * rcrd->field_44.sy + v18->field_651.m02 * rcrd->field_44.sx + v18->field_651.m22 * rcrd->field_44.sz + v18->field_621.sz;
+            recorder_set_bact_pos(yw, bact, &a3a);
+
+            mat_mult(&rcrd->rotation_matrix, &v18->field_651, &bact->field_651);
+        }
+    }
+
+    bact->field_605.sx = bact->field_62D.sx - bact->field_621.sx;
+    bact->field_605.sy = bact->field_62D.sy - bact->field_621.sy;
+    bact->field_605.sz = bact->field_62D.sz - bact->field_621.sz;
+
+    float v39 = sqrt( POW2(bact->field_605.sx) + POW2(bact->field_605.sy) + POW2(bact->field_605.sz) );
+    if ( v39 <= 0.0 )
+    {
+        bact->field_605.sx = 1.0;
+        bact->field_605.sy = 0;
+        bact->field_605.sz = 0;
+        bact->field_611 = 0;
+    }
+    else
+    {
+        bact->field_605.sx /= v39;
+        bact->field_605.sy /= v39;
+        bact->field_605.sz /= v39;
+
+        if ( fperiod <= 0.0 )
+            bact->field_611 = 0;
+        else
+            bact->field_611 = v39 / fperiod / 6.0;
+    }
+
+    bact->field_87D.grp_1 = bact->field_621;
+    bact->field_87D.scale_rotation = bact->field_651;
+}
+
+void ypaworld_func163__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
+{
+
+}
+
 
 
 

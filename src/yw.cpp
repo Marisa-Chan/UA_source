@@ -6813,27 +6813,292 @@ size_t ypaworld_func161(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg161 *arg)
 }
 
 
-void ypaworld_func162(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+size_t ypaworld_func162(NC_STACK_ypaworld *obj, class_stru *zis, const char *fname)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func162");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    yw->replayer = recorder_allocate();
+
+    if ( !yw->replayer )
+        return 0;
+
+    recorder *repl = yw->replayer;
+
+    strcpy(repl->filename, fname);
+    yw->field_1614 = 0;
+
+    if ( !recorder_open_replay(repl) )
+        return 0;
+
+    while ( read_next_IFF(repl->mfile, 2) != -2 )
+    {
+        MFILE_S1 *v13 = GET_FORM_INFO_OR_NULL(repl->mfile);
+
+        if ( v13->TAG == TAG_SINF )
+        {
+            mfread(repl->mfile, &repl->seqn, 2);
+            mfread(repl->mfile, &repl->level_id, 2);
+            read_next_IFF(repl->mfile, 2);
+        }
+        else if ( v13->TAG != TAG_FORM || v13->TAG_EXTENSION != TAG_FRAM )
+        {
+            read_default(repl->mfile);
+        }
+        else
+        {
+            repl->field_74++;
+            read_default(repl->mfile);
+        }
+    }
+
+    if ( repl->mfile )
+    {
+        FClose(repl->mfile->file_handle);
+        del_MFILE(repl->mfile);
+        repl->mfile = NULL;
+    }
+
+    yw_arg161 arg161;
+    arg161.field_4 = 1;
+    arg161.lvlID = repl->level_id;
+
+    if ( !call_method(obj, 161, &arg161) )
+        return 0;
+
+    if ( !recorder_create_camera(yw) )
+    {
+        ypa_log_out("PLAYER ERROR: could not create virtual camera!\n");
+        call_method(obj, 164, 0);
+
+        return 0;
+    }
+
+    repl->field_44.sx = 0;
+    repl->field_44.sy = 0;
+    repl->field_44.sz = 0;
+    repl->rotation_matrix.m00 = 1.0;
+    repl->rotation_matrix.m01 = 0;
+    repl->rotation_matrix.m02 = 0;
+    repl->rotation_matrix.m10 = 0;
+    repl->rotation_matrix.m11 = 1.0;
+    repl->rotation_matrix.m12 = 0;
+    repl->rotation_matrix.m20 = 0;
+    repl->rotation_matrix.m21 = 0;
+    repl->rotation_matrix.m22 = 1.0;
+
+    if ( !recorder_go_to_frame(yw, repl, 0) )
+    {
+        ypa_log_out("PLAYER ERROR: could not position on 1st frame!\n");
+        call_method(obj, 164, 0);
+        return 0;
+    }
+
+    yw_arg165 arg165;
+
+    arg165.field_0 = 2;
+    arg165.frame = 0;
+    call_method(obj, 165, &arg165);
+
+    arg165.field_0 = 20;
+    arg165.frame = 0;
+    call_method(obj, 165, &arg165);
+
+    return 1;
 }
 
 
-void ypaworld_func163(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func163(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func163");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    recorder *repl = yw->replayer;
+    DWORD v33 = profiler_begin();
+
+    gfxEngine__getter(0x8000300D, &yw->win3d, 0);
+
+    yw->b64_parms = arg;
+    yw->field_161c++;
+    yw->field_1b24.field_14 = 0;
+    yw->field_1b24.field_0 = arg->field_0;
+    yw->field_1b24.field_4 = arg->field_4;
+    yw->field_1b24.numid = 0;
+    yw->field_1b24.inpt = arg->field_8;
+    yw->field_1B6E = 1024 / arg->field_4;
+
+    yw->p_1_grp[0][0] = yw->field_1B6E;
+
+    call_method(yw->win3d, 257, 0);
+
+    call_vtbl(yw->win3d, 2, 0x80003001, 0, 0);
+
+    call_method(yw->win3d, 192, 0);
+
+    sub_4C40AC(yw);
+
+    yw->hudi.field_0 = 0;
+    yw->hudi.field_4 = 0;
+
+    if ( repl->field_7C != 1 )
+        ypaworld_func163__sub1(yw, repl, arg->field_4);
+
+    ypaworld_func163__sub2(yw, repl, yw->field_1b84, arg->field_8);
+
+    xyz a3a;
+    a3a.sx = yw->field_1b84->field_605.sx * yw->field_1b84->field_611;
+    a3a.sy = yw->field_1b84->field_605.sy * yw->field_1b84->field_611;
+    a3a.sz = yw->field_1b84->field_605.sz * yw->field_1b84->field_611;
+
+    sub_423EFC(arg->field_4, &yw->field_1b84->field_621, &a3a, &yw->field_1b84->field_651);
+
+    bact_node *bct = (bact_node *)yw->field_1b84->list2.head;
+
+    while ( bct->next )
+    {
+        bct->bact->field_87D.grp_1 = bct->bact->field_621;
+
+        bct->bact->field_87D.scale_rotation.m00 = bct->bact->field_651.m00;
+        bct->bact->field_87D.scale_rotation.m01 = bct->bact->field_651.m10;
+        bct->bact->field_87D.scale_rotation.m02 = bct->bact->field_651.m20;
+        bct->bact->field_87D.scale_rotation.m10 = bct->bact->field_651.m01;
+        bct->bact->field_87D.scale_rotation.m11 = bct->bact->field_651.m11;
+        bct->bact->field_87D.scale_rotation.m12 = bct->bact->field_651.m21;
+        bct->bact->field_87D.scale_rotation.m20 = bct->bact->field_651.m02;
+        bct->bact->field_87D.scale_rotation.m21 = bct->bact->field_651.m12;
+        bct->bact->field_87D.scale_rotation.m22 = bct->bact->field_651.m22;
+
+        bct->bact->field_5A.field_0 = bct->bact->field_621;
+
+        bct->bact->field_5A.field_C = bct->bact->field_605.sx * bct->bact->field_611;
+        bct->bact->field_5A.field_10 = bct->bact->field_605.sy * bct->bact->field_611;
+        bct->bact->field_5A.field_14 = bct->bact->field_605.sz * bct->bact->field_611;
+
+        sb_0x4242e0(&bct->bact->field_5A);
+
+        bct = (bact_node *)bct->next;
+    }
+
+    mat3x3 *v25 = sb_0x424c74();
+    base_1c_struct *v26 = sub_430A28();
+
+    mat3x3 v31;
+    mat_mult(v25, &v26->scale_rotation, &v31);
+
+    v26->scale_rotation = v31;
+
+    DWORD v28 = profiler_begin();
+
+    sb_0x4d7c08(obj, yw, arg, 0);
+
+    ypaworld_func163__sub0(yw, arg->field_8);
+
+    call_method(yw->win3d, 258, 0);
+
+    yw->p_1_grp[0][5] = profiler_end(v28);
+
+    sb_0x447720(yw, arg->field_8);
+
+    yw->p_1_grp[0][1] = profiler_end(v33);
+    yw->p_1_grp[0][7] = yw->field_1b6c;
+
+    sub_44A094(yw);
 }
+
 
 
 void ypaworld_func164(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func164");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    if ( yw->replayer )
+    {
+        if ( yw->replayer->mfile )
+        {
+            FClose(yw->replayer->mfile->file_handle);
+            del_MFILE(yw->replayer->mfile);
+
+            yw->replayer->mfile = NULL;
+        }
+
+        call_method(obj, 151, 0);
+
+        if ( yw->replayer->oinf )
+            nc_FreeMem(yw->replayer->oinf);
+
+        if ( yw->replayer->sound_status )
+            nc_FreeMem(yw->replayer->sound_status);
+
+        if ( yw->replayer->field_20 )
+            nc_FreeMem(yw->replayer->field_20);
+
+        if ( yw->replayer->ainf )
+            nc_FreeMem(yw->replayer->ainf);
+
+        nc_FreeMem(yw->replayer);
+
+        yw->replayer = NULL;
+    }
 }
 
 
-void ypaworld_func165(NC_STACK_ypaworld *obj, class_stru *zis, void *arg)
+void ypaworld_func165(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg165 *arg)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func165");
+    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+
+    recorder *repl = yw->replayer;
+
+    if ( (repl->field_80 == 18 || repl->field_80 == 19 || repl->field_80 == 20) && (arg->field_0 == 16 || arg->field_0 == 17) )
+    {
+        repl->field_44 = yw->field_1b84->field_621;
+        repl->rotation_matrix = yw->field_1b84->field_651;
+    }
+
+    if ( arg->field_0 == 1 || arg->field_0 == 2 )
+    {
+        repl->field_7C = arg->field_0;
+    }
+    else if ( arg->field_0 == 3 )
+    {
+        recorder_go_to_frame(yw, repl, arg->frame);
+    }
+    else if ( arg->field_0 == 4 )
+    {
+        recorder_go_to_frame(yw, repl, repl->frame_id + 1);
+    }
+    else if ( arg->field_0 == 5 )
+    {
+        recorder_go_to_frame(yw, repl, repl->frame_id - 1);
+    }
+    else if ( arg->field_0 == 7 )
+    {
+        recorder_go_to_frame(yw, repl, repl->frame_id + arg->frame);
+    }
+    else if ( arg->field_0 == 16 || arg->field_0 == 17 )
+    {
+        repl->field_84 = 0;
+        repl->field_80 = arg->field_0;
+    }
+    else if ( arg->field_0 == 18 || arg->field_0 == 19 || arg->field_0 == 20 )
+    {
+        repl->field_80 = arg->field_0;
+        repl->field_84 = arg->frame;
+
+        repl->field_44.sx = 0;
+        repl->field_44.sy = 0;
+        repl->field_44.sz = 0;
+        repl->rotation_matrix.m00 = 1.0;
+        repl->rotation_matrix.m01 = 0;
+        repl->rotation_matrix.m02 = 0;
+        repl->rotation_matrix.m10 = 0;
+        repl->rotation_matrix.m11 = 1.0;
+        repl->rotation_matrix.m12 = 0;
+        repl->rotation_matrix.m20 = 0;
+        repl->rotation_matrix.m21 = 0;
+        repl->rotation_matrix.m22 = 1.0;
+    }
+    else
+    {
+        repl->field_7C = 1;
+    }
 }
 
 
