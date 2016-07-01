@@ -2075,7 +2075,7 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub5__sub0(_NC_STACK_ypaworld *
 
     int last_weapon = tp1->last_weapon;
     int last_vhcl   = tp1->last_vhcl;
-    int last_build  = tp1->last_weapon;
+    int last_build  = tp1->last_build;
 
     if ( !last_vhcl && last_weapon )
     {
@@ -2087,10 +2087,10 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub5__sub0(_NC_STACK_ypaworld *
                 break;
             }
         }
-    }
 
-    if ( !last_vhcl )
-        return cur;
+        if ( !last_vhcl )
+            return cur;
+    }
 
     if ( !last_weapon && last_vhcl )
     {
