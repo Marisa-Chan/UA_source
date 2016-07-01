@@ -6989,7 +6989,7 @@ void ypaworld_func163(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
 
     sb_0x4d7c08(obj, yw, arg, 0);
 
-    ypaworld_func163__sub0(yw, arg->field_8);
+    debug_info_draw(yw, arg->field_8);
 
     call_method(yw->win3d, 258, 0);
 

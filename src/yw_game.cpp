@@ -721,11 +721,11 @@ int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
     memset(&yw->field_81CB, 0, sizeof(yw_81cb));
     memset(yw->field_1bac, 0, sizeof(int) * 8);
 
-    yw->field_753A = 0;
-    yw->field_7542 = 0;
-    yw->field_754A = 0;
-    yw->field_755A = 0;
-    yw->field_7552 = 0;
+    yw->dbg_num_sqd_max = 0;
+    yw->dbg_num_vhcl_max = 0;
+    yw->dbg_num_flk_max = 0;
+    yw->dbg_num_wpn_max = 0;
+    yw->dbg_num_robo_max = 0;
 
     if ( !yw->one_game_res )
     {
@@ -6456,9 +6456,599 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
     bact->field_87D.scale_rotation = bact->field_651;
 }
 
-void ypaworld_func163__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
+char *sub_445654(_NC_STACK_ypaworld *yw, char *in, char *buf, const char *fmt, ...)
 {
+    char *cur = in;
 
+    fntcmd_copy_position(&cur);
+
+    va_list va;
+    va_start(va, fmt);
+
+    vsprintf(buf, fmt, va);
+
+    va_end(va);
+
+    fntcmd_add_txt(&cur, yw->screen_width, 1, buf);
+
+    return cur;
+}
+
+void debug_count_units(_NC_STACK_ypaworld *yw)
+{
+    for (int i = 0; i < 8; i++)
+    {
+        yw->dbg_num_sqd_counter[i] = 0;
+        yw->dbg_num_vhcl_counter[i] = 0;
+        yw->dbg_num_flk_counter[i] = 0;
+        yw->dbg_num_robo_counter[i] = 0;
+        yw->dbg_num_wpn_counter[i] = 0;
+    }
+
+    yw->dbg_num_sqd = 0;
+    yw->dbg_num_vhcl = 0;
+    yw->dbg_num_flk = 0;
+    yw->dbg_num_wpn = 0;
+    yw->dbg_num_robo = 0;
+
+    bact_node *robos = (bact_node *)yw->bact_list.head;
+
+    while ( robos->next )
+    {
+        yw->dbg_num_robo_counter[ robos->bact->owner ]++;
+
+        if ( robos->bact->owner )
+        {
+            bact_node *commanders = (bact_node *)robos->bact->list2.head;
+
+            while ( commanders->next )
+            {
+                int v5 = 0;
+
+                if ( commanders->bact->field_24 == 9 )
+                {
+                    v5 = 1;
+                    yw->dbg_num_flk_counter[ commanders->bact->owner ]++;
+                }
+                else
+                {
+                    yw->dbg_num_sqd_counter[ commanders->bact->owner ]++;
+                    yw->dbg_num_vhcl_counter[ commanders->bact->owner ]++;
+                }
+
+                bact_node *com_piu = (bact_node *)commanders->bact->list3.head;
+                while ( com_piu->next )
+                {
+                    yw->dbg_num_wpn_counter[ commanders->bact->owner ]++;
+
+                    com_piu = (bact_node *)com_piu->next;
+                }
+
+                bact_node *slaves = (bact_node *)commanders->bact->list2.head;
+                while (  slaves->next )
+                {
+                    if ( v5 )
+                        yw->dbg_num_flk_counter[ slaves->bact->owner ]++;
+                    else
+                        yw->dbg_num_vhcl_counter[ commanders->bact->owner ]++;
+
+
+                    bact_node *slv_piu = (bact_node *)slaves->bact->list3.head;
+                    while (  slv_piu->next )
+                    {
+                        yw->dbg_num_wpn_counter[ commanders->bact->owner ]++;
+
+                        slv_piu = (bact_node *)slv_piu->next;
+                    }
+
+                    slaves = (bact_node *)slaves->next;
+                }
+
+                commanders = (bact_node *)commanders->next;
+            }
+        }
+
+        robos = (bact_node *)robos->next;
+    }
+
+    for (int i = 0; i < 8; i++)
+    {
+        yw->dbg_num_sqd  += yw->dbg_num_sqd_counter[i];
+        yw->dbg_num_vhcl += yw->dbg_num_vhcl_counter[i];
+        yw->dbg_num_flk  += yw->dbg_num_flk_counter[i];
+        yw->dbg_num_wpn  += yw->dbg_num_wpn_counter[i];
+        yw->dbg_num_robo += yw->dbg_num_robo_counter[i];
+    }
+
+    if ( yw->dbg_num_sqd > yw->dbg_num_sqd_max )
+        yw->dbg_num_sqd_max = yw->dbg_num_sqd;
+
+    if ( yw->dbg_num_vhcl > yw->dbg_num_vhcl_max )
+        yw->dbg_num_vhcl_max = yw->dbg_num_vhcl;
+
+    if ( yw->dbg_num_flk > yw->dbg_num_flk_max )
+        yw->dbg_num_flk_max = yw->dbg_num_flk;
+
+    if ( yw->dbg_num_wpn > yw->dbg_num_wpn_max )
+        yw->dbg_num_wpn_max = yw->dbg_num_wpn;
+
+    if ( yw->dbg_num_robo > yw->dbg_num_robo_max )
+        yw->dbg_num_robo_max = yw->dbg_num_robo;
+}
+
+void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
+{
+    if ( yw->field_1b68 == 0)
+    {
+        if ( sub_449678(yw, inpt, VK_F9) )
+            yw->field_1b68++;
+    }
+    else
+    {
+
+        char dbg_txt[4096];
+        char buf_sprintf[2048];
+
+        char *cmd = dbg_txt;
+
+        fntcmd_select_tileset(&cmd, 15);
+        fntcmd_set_xpos(&cmd, 8);
+        fntcmd_set_ypos(&cmd, 16);
+
+        int v104 = 0;
+
+        if ( yw->field_1b68 == 1 )
+        {
+            debug_count_units(yw);
+
+            if ( yw->buildDate )
+            {
+                cmd = sub_445654(yw, cmd, buf_sprintf, "build id: %s", yw->buildDate);
+
+                fntcmd_next_line(&cmd);
+            }
+
+            int this_time = yw->field_1614 / 1024;
+            int all_time;
+
+            if ( yw->field_757E )
+                all_time = 0;
+            else
+                all_time = (yw->field_1614 + yw->playerstatus[1].p3) / 1024;
+
+            cmd = sub_445654(
+                      yw,
+                      cmd,
+                      buf_sprintf,
+                      "time: (this: %02d:%02d:%02d) (all: %02d:%02d:%02d)",
+                      this_time / 60 / 60,
+                      this_time / 60 % 60,
+                      this_time % 60,
+                      all_time / 60 / 60,
+                      all_time / 60 % 60,
+                      all_time % 60 );
+
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, "prof all: %d", yw->p_1_grp[0][1]);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, "prof fprint: %d", yw->p_1_grp[0][2]);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, "prof gui: %d", yw->p_1_grp[0][3]);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, "prof ai: %d", yw->p_1_grp[0][4]);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, "prof rend: %d", yw->p_1_grp[0][5]);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, "prof net: %d", yw->p_1_grp[0][6]);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, "sec type/wtype: %d/%d", yw->field_1b84->p_cell_area->sec_type, yw->field_1b84->p_cell_area->field_3A);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, "beam energy: %d", yw->beamenergy);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, "num sqd: %d,%d", yw->dbg_num_sqd, yw->dbg_num_sqd_max);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, "num vhcl: %d,%d", yw->dbg_num_vhcl, yw->dbg_num_vhcl_max);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, "num flk: %d,%d", yw->dbg_num_flk, yw->dbg_num_flk_max);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, "num robo: %d,%d", yw->dbg_num_robo, yw->dbg_num_robo_max);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, "num wpn: %d,%d", yw->dbg_num_wpn, yw->dbg_num_wpn_max);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, "reload const: %d", yw->field_1b80->reload_const_or_energy2);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(
+                      yw,
+                      cmd,
+                      buf_sprintf,
+                      "num all vhcl: %d,%d,%d,%d,%d,%d,%d,%d",
+                      yw->field_1bac[0],
+                      yw->field_1bac[1],
+                      yw->field_1bac[2],
+                      yw->field_1bac[3],
+                      yw->field_1bac[4],
+                      yw->field_1bac[5],
+                      yw->field_1bac[6],
+                      yw->field_1bac[7]);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(
+                      yw,
+                      cmd,
+                      buf_sprintf,
+                      "rld ratio: %8.2f,%8.2f,%8.2f,%8.2f,%8.2f,%8.2f,%8.2f,%8.2f",
+                      yw->field_1bec[0],
+                      yw->field_1bec[1],
+                      yw->field_1bec[2],
+                      yw->field_1bec[3],
+                      yw->field_1bec[4],
+                      yw->field_1bec[5],
+                      yw->field_1bec[6],
+                      yw->field_1bec[7]);
+            fntcmd_next_line(&cmd);
+
+            if ( yw->field_1a20 )
+                cmd = sub_445654(yw, cmd, buf_sprintf, "invulnerable: %s", "YES");
+            else
+                cmd = sub_445654(yw, cmd, buf_sprintf, "invulnerable: %s", "NO");
+            fntcmd_next_line(&cmd);
+        }
+        else if ( yw->field_1b68 == 2 )
+        {
+            if ( yw->GameShell && yw->field_757E )
+            {
+                fntcmd_next_line(&cmd);
+                fntcmd_next_line(&cmd);
+
+                for (int i = 0; i < 8; i++)
+                {
+                    if ( yw->GameShell->netTP2[i].field_83 )
+                    {
+                        const char *v35;
+                        const char *v36;
+
+                        switch ( i )
+                        {
+                        case 1:
+                            v35 = "Resistance";
+                            break;
+
+                        case 3:
+                            v35 = "Mykonier  ";
+                            break;
+
+                        case 4:
+                            v35 = "Taerkasten";
+                            break;
+
+                        case 6:
+                            v35 = "Ghorkov   ";
+                            break;
+
+                        default:
+                            v35 = "Hae?!     ";
+                            break;
+                        }
+
+                        switch ( yw->GameShell->netTP2[i].field_83 )
+                        {
+                        case 1:
+                            v36 = "OK";
+                            break;
+
+                        case 2:
+                            v36 = "makes trouble";
+                            break;
+
+                        case 3:
+                            v36 = "left the game";
+                            break;
+
+                        case 4:
+                            v36 = "Removed";
+                            break;
+
+                        default:
+                            v36 = "Hae?!     ";
+                            break;
+                        }
+
+                        cmd = sub_445654(yw, cmd, buf_sprintf, "%s status: %s latency: %d", v35, v36, yw->GameShell->netTP2[i].latency);
+
+                        fntcmd_next_line(&cmd);
+                    }
+                }
+
+                fntcmd_next_line(&cmd);
+
+                cmd = sub_445654(yw, cmd, buf_sprintf, "net send: %d bytes/sec", yw->GameShell->netsend_speed);
+                fntcmd_next_line(&cmd);
+
+                cmd = sub_445654(yw, cmd, buf_sprintf, "net rcv: %d bytes/sec", yw->GameShell->netrecv_speed);
+                fntcmd_next_line(&cmd);
+
+                cmd = sub_445654(yw, cmd, buf_sprintf, "packet: %d bytes", yw->GameShell->net_packet_size);
+                fntcmd_next_line(&cmd);
+
+                if ( yw->field_7592 )
+                    cmd = sub_445654(yw, cmd, buf_sprintf, "WARNING: INFO OVERKILL");
+
+                fntcmd_next_line(&cmd);
+
+                if ( yw->windp )
+                {
+                    int v100[7];
+                    call_method(yw->windp, 91, v100);
+
+                    fntcmd_next_line(&cmd);
+
+                    cmd = sub_445654(yw, cmd, buf_sprintf, "thread send list now: %d", v100[0]);
+                    fntcmd_next_line(&cmd);
+
+                    cmd = sub_445654(yw, cmd, buf_sprintf, "thread recv list now: %d", v100[1]);
+                    fntcmd_next_line(&cmd);
+
+                    cmd = sub_445654(yw, cmd, buf_sprintf, "thread send list max: %d", v100[3]);
+                    fntcmd_next_line(&cmd);
+
+                    cmd = sub_445654(yw, cmd, buf_sprintf, "thread recv list max: %d", v100[2]);
+                    fntcmd_next_line(&cmd);
+
+                    cmd = sub_445654(yw, cmd, buf_sprintf, "send call now: %d", v100[4]);
+                    fntcmd_next_line(&cmd);
+
+                    cmd = sub_445654(yw, cmd, buf_sprintf, "send call max: %d", v100[5]);
+                    fntcmd_next_line(&cmd);
+
+                    cmd = sub_445654(yw, cmd, buf_sprintf, "send bugs: %d", v100[6]);
+                    fntcmd_next_line(&cmd);
+                }
+            }
+            else
+            {
+                cmd = sub_445654(yw, cmd, buf_sprintf, "not a network game");
+                fntcmd_next_line(&cmd);
+            }
+        }
+        else if ( yw->field_1b68 == 3 )
+        {
+            for (int i = 0; i < 17; i++)
+            {
+                cmd = sub_445654(yw, cmd, buf_sprintf, "slider[%d] = %f", i, inpt->sliders_vars[i]);
+                fntcmd_next_line(&cmd);
+            }
+
+            char v99[64];
+            memset(v99, 0, sizeof(v99));
+
+            for (int i = 0; i < 32; i++)
+            {
+                if ( inpt->but_flags & (1 << i) )
+                    v99[i] = 'O';
+                else
+                    v99[i] = '_';
+            }
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, v99);
+            fntcmd_next_line(&cmd);
+
+            cmd = sub_445654(yw, cmd, buf_sprintf, "keycode = %d", inpt->downed_key_2);
+            fntcmd_next_line(&cmd);
+        }
+        else
+        {
+            bact_node *v61 = (bact_node *)yw->bact_list.head;
+            int v109 = 0;
+            int v110 = 0;
+
+            while (v61->next)
+            {
+                if (v109)
+                    break;
+
+                if ( v61->bact->field_24 == 3 && v61->bact->owner != 1 )
+                {
+                    v110++;
+
+                    if ( yw->field_1b68 - 3 <= v110 )
+                    {
+                        NC_STACK_yparobo *roboo = (NC_STACK_yparobo *)v61->bacto;
+                        __NC_STACK_yparobo *robo = &roboo->stack__yparobo;
+                        __NC_STACK_ypabact *rbact = &roboo->stack__ypabact;
+
+                        v109 = 1;
+
+                        cmd = sub_445654(yw, cmd, buf_sprintf, "robo owner %d with energy %d / %d / %d / %d", rbact->owner, rbact->energy, robo->field_509, robo->field_50D, rbact->energy_2);
+                        fntcmd_next_line(&cmd);
+
+                        const char *v71;
+                        const char *v73;
+
+                        switch (robo->field_2FD)
+                        {
+                        case 0x10:
+                            v71 = "radar";
+                            break;
+
+                        case 0x20:
+                            v71 = "powerstation";
+                            break;
+
+                        case 0x100:
+                            v71 = "flak";
+                            break;
+
+                        case 0x20000:
+                            v71 = "location";
+                            break;
+
+                        default:
+                            v71 = "nothing";
+                            break;
+                        }
+
+                        switch (robo->field_2ED)
+                        {
+                        case 0:
+                            v73 = "nothing";
+                            break;
+
+                        case 0x40:
+                            v73 = "conquer";
+                            break;
+
+                        case 0x80:
+                            v73 = "defense";
+                            break;
+
+                        case 0x80000:
+                            v73 = "recon";
+                            break;
+
+                        case 0x200000:
+                            v73 = "robo";
+                            break;
+
+                        default:
+                            v73 = "powerstation";
+                            break;
+                        }
+
+                        cmd = sub_445654(yw, cmd, buf_sprintf, "    do build job   >%s<   and vhcl job   >%s<", v71, v73);
+                        fntcmd_next_line(&cmd);
+
+                        cmd = sub_445654(yw, cmd, buf_sprintf, "    wait power %d, radar %d, flak %d, location %d",
+                                         robo->field_265 / 1000,
+                                         robo->field_235 / 1000,
+                                         robo->field_24D / 1000,
+                                         robo->field_2B1 / 1000);
+
+                        fntcmd_next_line(&cmd);
+
+                        cmd = sub_445654(yw, cmd, buf_sprintf, "    wait conquer %d, defense %d, recon %d, robo %d",
+                                         robo->field_299 / 1000,
+                                         robo->field_281 / 1000,
+                                         robo->field_2C9 / 1000,
+                                         robo->field_2E1 / 1000);
+                        fntcmd_next_line(&cmd);
+
+                        cmd = sub_445654(yw, cmd, buf_sprintf, "    values  ");
+                        fntcmd_next_line(&cmd);
+
+                        if ( robo->field_265 > 0 )
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "power -1, ");
+                        else
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "power %d, ", robo->field_251);
+
+                        fntcmd_next_line(&cmd);
+
+                        if ( robo->field_235 > 0 )
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "radar -1, ");
+                        else
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "radar %d, ", robo->field_221);
+
+                        fntcmd_next_line(&cmd);
+
+                        if ( robo->field_24D > 0 )
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "flak -1, ");
+                        else
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "flak %d, ", robo->field_239);
+
+                        fntcmd_next_line(&cmd);
+
+                        if ( robo->field_2B1 > 0 )
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "power -1, ");
+                        else
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "power %d, ", robo->field_29D);
+
+                        fntcmd_next_line(&cmd);
+
+                        if ( robo->field_281 > 0 )
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "defense -1, ");
+                        else
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "defense %d, ", robo->field_269);
+
+                        fntcmd_next_line(&cmd);
+
+                        if ( robo->field_299 > 0 )
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "conquer -1, ");
+                        else
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "conquer %d, ", robo->field_285);
+
+                        fntcmd_next_line(&cmd);
+
+                        if ( robo->field_2C9 > 0 )
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "recon -1, ");
+                        else
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "recon %d, ", robo->field_2B5);
+
+                        fntcmd_next_line(&cmd);
+
+                        if ( robo->field_2E1 > 0 )
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "robo -1, ");
+                        else
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "robo %d, ", robo->field_2CD);
+
+                        fntcmd_next_line(&cmd);
+
+                        if ( robo->field_1DB & 4 )
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "dock energy %d time %d", robo->field_1EF, robo->field_1FB);
+                    }
+                }
+
+                v61 = (bact_node *)v61->next;
+            }
+
+            if ( !v109 )
+                v104 = 1;
+        }
+
+
+        fntcmd_next_line(&cmd);
+
+        cmd = sub_445654(yw, cmd, buf_sprintf, "fps: %d", yw->field_1B6E);
+        fntcmd_next_line(&cmd);
+
+        cmd = sub_445654(yw, cmd, buf_sprintf, "polys: %d,%d", yw->field_1B6A, yw->field_1b6c);
+        fntcmd_next_line(&cmd);
+
+        fntcmd_set_end(&cmd);
+
+        call_method(yw->win3d, 215, 0);
+
+        w3d_a209 arg209;
+        arg209.cmdbuf = dbg_txt;
+        arg209.includ = 0;
+
+        call_method(yw->win3d, 209, &arg209);
+
+        call_method(yw->win3d, 216, 0);
+
+        if ( v104 )
+        {
+            yw->field_1b68 = 0;
+        }
+        else
+        {
+            if ( sub_449678(yw, inpt, VK_F9) )
+                yw->field_1b68++;
+        }
+    }
 }
 
 

@@ -130,7 +130,7 @@ struct netType2
     int field_89;
     int field_8D;
     int field_91;
-    int field_95;
+    int latency;
 };
 
 struct UserData
@@ -299,6 +299,11 @@ struct UserData
 
     int field_5457;
     int field_545B;
+
+    int netsend_speed;
+    int netrecv_speed;
+
+    int net_packet_size;
 };
 
 struct trec_bct
@@ -1017,16 +1022,21 @@ struct _NC_STACK_ypaworld
     save_status vhcl_map_status;
     save_status vhcl_finder_status;
     int fxnumber;
-
-    int field_753A;
-
-    int field_7542;
-
-    int field_754A;
-
-    int field_7552;
-
-    int field_755A;
+    int dbg_num_sqd_counter[8];
+    int dbg_num_vhcl_counter[8];
+    int dbg_num_flk_counter[8];
+    int dbg_num_robo_counter[8];
+    int dbg_num_wpn_counter[8];
+    int dbg_num_sqd;
+    int dbg_num_sqd_max;
+    int dbg_num_vhcl;
+    int dbg_num_vhcl_max;
+    int dbg_num_flk;
+    int dbg_num_flk_max;
+    int dbg_num_robo;
+    int dbg_num_robo_max;
+    int dbg_num_wpn;
+    int dbg_num_wpn_max;
     NC_STACK_input *input_class;
     int field_7562;
     int field_7566;
@@ -1038,6 +1048,8 @@ struct _NC_STACK_ypaworld
     int field_757E;
 
     int field_7586;
+
+    int field_7592;
 
     int field_759A;
     int field_759E;
