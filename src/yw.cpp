@@ -7115,11 +7115,6 @@ char * sb_0x471428__sub0(char *a1, const char *a2)
                 *a1 = '\n';
                 tmp++;
             }
-            else if (tmp[1] == 's')
-            {
-                *a1 = ' ';
-                tmp++;
-            }
         }
         else
             *a1 = *tmp;
@@ -7132,73 +7127,106 @@ char * sb_0x471428__sub0(char *a1, const char *a2)
     return a1;
 }
 
-int locale_parser(scrCallBack *arg)
+int simple_lang_parser(_NC_STACK_ypaworld *yw, const char *filename)
 {
-    _NC_STACK_ypaworld *yw = (_NC_STACK_ypaworld *)arg->dataForStore;
+    FILE *fil = FOpen(filename, "r");
+    if ( !fil )
+        return 0;
 
-    if ( arg->field_18 )
+    char buf[4096];
+
+    bool multiline = false;
+    int strid = -1;
+
+    while (fgets(buf, 4096, fil))
     {
-        if ( !strcasecmp(arg->p1, "end") )
-        {
-            arg->field_18 = 0;
-            return 2;
-        }
+        char *line_end = strpbrk(buf, "\n");
+        if ( line_end )
+            *line_end = 0;
 
-        int id = strtol(arg->p1, NULL, 0);
-        int err = 0;
+        int line_sz = strlen(buf);
 
-        if ( id < 2600 )
+        if (multiline && strid != -1)
         {
-            if ( yw->very_big_array__p_begin < yw->lang_strings__end )
+            multiline = false;
+
+            if ( buf[line_sz - 1] == '\\' )
             {
-                if ( !yw->string_pointers[id] )
-                {
-                    yw->string_pointers[id] = yw->very_big_array__p_begin;
-                    yw->very_big_array__p_begin = sb_0x471428__sub0(yw->very_big_array__p_begin, arg->p2);
-                    err = 0;
-                }
-                else
-                {
-                    printf("%s %s\n",arg->p1, arg->p2);
-                    err = 3;
-                }
+                buf[line_sz - 1] = '\n';
+                multiline = true;
+            }
+
+            if (yw->very_big_array__p_begin + line_sz < yw->lang_strings__end)
+            {
+                yw->very_big_array__p_begin = sb_0x471428__sub0(yw->very_big_array__p_begin - 1, buf);
             }
             else
             {
-                err = 2;
+                ypa_log_out("Locale parser: buffer overflow at id [%d].\n", strid);
             }
         }
         else
         {
-            err = 1;
-        }
+            strid = -1;
+            multiline = false;
 
-        if ( err == 1 )
-        {
-            ypa_log_out("Locale parser: id [%d]аtoo big.\n", id);
-            return 4;
-        }
-        else if ( err == 2 )
-        {
-            ypa_log_out("Locale parser: buffer overflow at id [%d].\n", id);
-            return 4;
-        }
-        else if ( err == 3 )
-        {
-            ypa_log_out("Locale parser: id [%d] already defined.\n", id);
-            return 4;
-        }
+            char *token = strtok(buf, "= \t");
 
-        return 0;
+            if (token)
+            {
+                strid = strtol(token, NULL, 0);
+
+                if (strid >= 0 && strid < 2600 )
+                {
+                    if ( !yw->string_pointers[strid] )
+                    {
+                        char *after_token = token + strlen(token);
+
+                        while (after_token < buf + line_sz)
+                        {
+                            if (*after_token != 0 && *after_token != '\t' && *after_token != ' ' && *after_token != '=')
+                                break;
+
+                            after_token++;
+                        }
+
+                        if ( after_token < buf + line_sz )
+                        {
+                            if (yw->very_big_array__p_begin + ((buf + line_sz) - after_token) < yw->lang_strings__end)
+                            {
+                                if ( buf[line_sz - 1] == '\\' )
+                                {
+                                    buf[line_sz - 1] = '\n';
+                                    multiline = true;
+                                }
+
+                                yw->string_pointers[strid] = yw->very_big_array__p_begin;
+                                yw->very_big_array__p_begin = sb_0x471428__sub0(yw->very_big_array__p_begin, after_token);
+                            }
+                            else
+                            {
+                                strid = -1;
+                                ypa_log_out("Locale parser: buffer overflow at id [%d].\n", strid);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        strid = -1;
+                        ypa_log_out("Locale parser: id [%d] already defined.\n", strid);
+                    }
+                }
+                else
+                {
+                    strid = -1;
+                    ypa_log_out("Locale parser: id [%d] too big or negative.\n", strid);
+                }
+            }
+        }
     }
-    else if ( !strcasecmp(arg->p1, "begin_locale") )
-    {
-        arg->field_18 = 1;
-        return 1;
 
-    }
-
-    return 3;
+    FClose(fil);
+    return 1;
 }
 
 int load_lang_lng(_NC_STACK_ypaworld *yw, const char *lang)
@@ -7206,13 +7234,7 @@ int load_lang_lng(_NC_STACK_ypaworld *yw, const char *lang)
     char buf[128];
     sprintf(buf, "locale/%s.lng", lang);
 
-    scrCallBack pars;
-    memset(&pars, 0, sizeof(scrCallBack));
-
-    pars.dataForStore = yw;
-    pars.func = locale_parser;
-
-    if ( !def_parseFile(buf, 1, &pars, 1) )
+    if ( !simple_lang_parser(yw, buf) )
     {
         ypa_log_out("ERROR: Could not load language file '%s'!!!\n", buf);
         return 0;
