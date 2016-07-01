@@ -19,6 +19,7 @@
 int dword_513638 = 0;
 int dword_51362C = 0;
 int dword_513630 = 0;
+char buildDate[256];
 
 int sub_4107FC(UserData *usr)
 {
@@ -728,7 +729,6 @@ void sub_4113E8()
 
 int WinMain__sub0__sub1()
 {
-    char buildDate[256];
     strcpy(buildDate, "Jul 09 1998  23:52:47");
 //    strcpy(buildDate, __DATE__);
 //    strcat(buildDate, " ");
