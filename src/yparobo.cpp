@@ -2099,14 +2099,21 @@ void sb_0x4a45cc(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
                 {
                     arg134.field_4 = 15;
                 }
-            }
-            else if ( v8->field_3e8->owner == bact->owner )
-            {
-                arg134.field_4 = 15;
+                else
+                {
+                    arg134.field_4 = 16;
+                }
             }
             else
             {
-                arg134.field_4 = 16;
+                if ( v8->field_3e8->owner == bact->owner )
+                {
+                    arg134.field_4 = 15;
+                }
+                else
+                {
+                    arg134.field_4 = 16;
+                }
             }
 
             arg134.field_14 = 38;
@@ -7116,7 +7123,7 @@ const char * yparobo_func134__sub0(char **strings, int a2)
 
 int yparobo_func134__sub1(__NC_STACK_yparobo *robo, robo_arg134 *arg)
 {
-    int v2 = 0;
+    int v2 = 1;
 
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
