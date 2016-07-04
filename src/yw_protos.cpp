@@ -5898,7 +5898,7 @@ int sub_479C40(scrCallBack *scr)
             int v5 = atoi(scr->p2);
 
             if ( v5 >= 0 && v5 < 8 )
-                yw->cells[yw->sectors_maxX2 * yw->gems[v5].sec_y + yw->gems[v5].sec_x].field_3A = 0;
+                yw->cells[yw->sectors_maxX2 * yw->gems[v5].sec_y + yw->gems[v5].sec_x].w_type = 0;
         }
         return 0;
     }

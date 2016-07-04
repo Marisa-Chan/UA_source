@@ -792,7 +792,7 @@ void sub_481F14(__NC_STACK_ypabact *bact)
     if ( arg136.field_20 )
         bact->field_621.sy = arg136.field_30 - 50.0;
     else
-        bact->field_621.sy = bact->p_cell_area->sector_height_meters  - 50.0;
+        bact->field_621.sy = bact->p_cell_area->height  - 50.0;
 }
 
 
@@ -887,16 +887,16 @@ void ypabact_func65(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
     if ( oldcell != sect_info.pcell ) // If cell changed
     {
         Remove(bact);  //Remove unit from old cell
-        AddTail(&bact->p_cell_area->field_3C, bact);  // Add unit to new cell
+        AddTail(&bact->p_cell_area->units_list, bact);  // Add unit to new cell
     }
 
-    if ( bact->p_cell_area->sector_height_meters + 1000.0 < bact->field_621.sy )
+    if ( bact->p_cell_area->height + 1000.0 < bact->field_621.sy )
         sub_481F14(bact);
 
     NC_STACK_ypabact *retbact;
     call_vtbl(bact->wrld, 3, 0x80002010, &retbact, 0);
 
-    if ( bact->p_cell_area->field_3A == 6 && bact->field_24 == 3 && retbact == bact->self ) // if bact class == robo
+    if ( bact->p_cell_area->w_type == 6 && bact->field_24 == 3 && retbact == bact->self ) // if bact class == robo
         ypabact_func65__sub0(bact);
 
     if ( !(bact->field_3D6 & 0x400) && bact->energy <= 0 && bact->field_24 != 4 )
@@ -1118,7 +1118,7 @@ void ypabact_func67(NC_STACK_ypabact *obj, class_stru *zis, bact_arg67 *arg)
                 bact->field_3f8 = (__NC_STACK_ypabact *)arg130.pcell;
                 bact->field_3fc.sx = arg130.pos_x;
                 bact->field_3fc.sz = arg130.pos_z;
-                bact->field_3fc.sy = arg130.pcell->sector_height_meters;
+                bact->field_3fc.sy = arg130.pcell->height;
             }
             else
             {
@@ -1206,7 +1206,7 @@ void ypabact_func67(NC_STACK_ypabact *obj, class_stru *zis, bact_arg67 *arg)
                 bact->field_3e8 = (__NC_STACK_ypabact *)arg130.pcell;
                 bact->field_3ec.sx = arg130.pos_x;
                 bact->field_3ec.sz = arg130.pos_z;
-                bact->field_3ec.sy = arg130.pcell->sector_height_meters;
+                bact->field_3ec.sy = arg130.pcell->height;
             }
             else
             {
@@ -1451,7 +1451,7 @@ void ypabact_func68(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
                 {
                     if ( bact->field_3e8 )
                     {
-                        if ( !((1 << bact->owner) & bact->field_3e8->p_cell_area->field_39) )
+                        if ( !((1 << bact->owner) & bact->field_3e8->p_cell_area->view_mask) )
                         {
                             v36.field_0 = 0;
                             v36.field_4 = 0;
@@ -1639,7 +1639,7 @@ void ypabact_func69(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
                     float v26 = bact->field_621.sz - bact->field_3f8->field_621.sz;
                     float v33 = sqrt(v25 * v25 + v26 * v26);
 
-                    if ( !((1 << bact->owner) & bact->field_3f8->p_cell_area->field_39) || v33 > 2160.0 )
+                    if ( !((1 << bact->owner) & bact->field_3f8->p_cell_area->view_mask) || v33 > 2160.0 )
                     {
                         bact_arg67 arg67;
                         arg67.field_4 = 1;
@@ -2582,7 +2582,7 @@ void ypabact_func71(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
 
         float v99 = bact->field_601;
 
-        float v47 = bact->p_cell_area->sector_height_meters - bact->field_621.sy;
+        float v47 = bact->p_cell_area->height - bact->field_621.sy;
         float v94 = bact->field_679 * 0.8;
 
         if ( v47 > v94 )
@@ -4338,7 +4338,7 @@ size_t ypabact_func80(NC_STACK_ypabact *obj, class_stru *zis, bact_arg80 *arg)
     if ( bct->p_cell_area )
         Remove(bct);
 
-    AddTail(&sect_info.pcell->field_3C, bct);
+    AddTail(&sect_info.pcell->units_list, bct);
 
     bct->p_cell_area = sect_info.pcell;
     bct->field_62D.sx = arg->pos.sx;
@@ -4429,7 +4429,7 @@ void ypabact_func82(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
 
             float v14 = v16 / 1000.0;
 
-            float denerg = bact->energy_2 * v14 * cell->field_2F * arg176.field_4 / 7000.0;
+            float denerg = bact->energy_2 * v14 * cell->energy_power * arg176.field_4 / 7000.0;
 
             if ( bact->owner == cell->owner )
                 bact->energy += denerg;
@@ -5285,7 +5285,7 @@ size_t ypabact_func87(NC_STACK_ypabact *obj, class_stru *zis, int *arg)
 
     rbcolls *v55;
 
-    __NC_STACK_ypabact *bnode = (__NC_STACK_ypabact *)cell->field_3C.head;
+    __NC_STACK_ypabact *bnode = (__NC_STACK_ypabact *)cell->units_list.head;
 
     while ( bnode->next )
     {
@@ -5521,7 +5521,7 @@ __NC_STACK_ypabact * ypabact_func90__sub0(cellArea *cell, __NC_STACK_ypabact *un
 
     __NC_STACK_ypabact *v40 = NULL;
 
-    __NC_STACK_ypabact *cel_unit = (__NC_STACK_ypabact *)cell->field_3C.head;
+    __NC_STACK_ypabact *cel_unit = (__NC_STACK_ypabact *)cell->units_list.head;
 
     VhclProto *proto = &vhcl_protos[unit->id];
 
@@ -5734,7 +5734,7 @@ void ypabact_func91(NC_STACK_ypabact *obj, class_stru *zis, xyz *arg)
     arg->sx = v15;
     arg->sz = v13;
 
-    if ( arg130.pcell->field_2E != 1 )
+    if ( arg130.pcell->comp_type != 1 )
     {
         int v7 = 0;
 
@@ -5786,9 +5786,9 @@ void ypabact_func92(NC_STACK_ypabact *obj, class_stru *zis, bact_arg92 *arg)
             // left-up
             cellArea *tcell = &cell[-v4 - 1];
 
-            if ( (1 << bact->owner) & tcell->field_39 )
+            if ( (1 << bact->owner) & tcell->view_mask )
             {
-                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->field_3C.head;
+                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->units_list.head;
 
                 while (cl_unit->next)
                 {
@@ -5812,9 +5812,9 @@ void ypabact_func92(NC_STACK_ypabact *obj, class_stru *zis, bact_arg92 *arg)
             // up
             cellArea *tcell = &cell[-v4];
 
-            if ( (1 << bact->owner) & tcell->field_39 )
+            if ( (1 << bact->owner) & tcell->view_mask )
             {
-                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->field_3C.head;
+                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->units_list.head;
 
                 while (cl_unit->next)
                 {
@@ -5838,9 +5838,9 @@ void ypabact_func92(NC_STACK_ypabact *obj, class_stru *zis, bact_arg92 *arg)
             // right-up
             cellArea *tcell = &cell[-v4 + 1];
 
-            if ( (1 << bact->owner) & tcell->field_39 )
+            if ( (1 << bact->owner) & tcell->view_mask )
             {
-                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->field_3C.head;
+                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->units_list.head;
 
                 while (cl_unit->next)
                 {
@@ -5864,9 +5864,9 @@ void ypabact_func92(NC_STACK_ypabact *obj, class_stru *zis, bact_arg92 *arg)
             // left
             cellArea *tcell = &cell[-1];
 
-            if ( (1 << bact->owner) & tcell->field_39 )
+            if ( (1 << bact->owner) & tcell->view_mask )
             {
-                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->field_3C.head;
+                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->units_list.head;
 
                 while (cl_unit->next)
                 {
@@ -5886,9 +5886,9 @@ void ypabact_func92(NC_STACK_ypabact *obj, class_stru *zis, bact_arg92 *arg)
         }
 
         // center
-        if ( (1 << bact->owner) & cell->field_39 )
+        if ( (1 << bact->owner) & cell->view_mask )
         {
-            __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)cell->field_3C.head;
+            __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)cell->units_list.head;
 
             while (cl_unit->next)
             {
@@ -5911,9 +5911,9 @@ void ypabact_func92(NC_STACK_ypabact *obj, class_stru *zis, bact_arg92 *arg)
             // right
             cellArea *tcell = &cell[1];
 
-            if ( (1 << bact->owner) & tcell->field_39 )
+            if ( (1 << bact->owner) & tcell->view_mask )
             {
-                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->field_3C.head;
+                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->units_list.head;
 
                 while (cl_unit->next)
                 {
@@ -5937,9 +5937,9 @@ void ypabact_func92(NC_STACK_ypabact *obj, class_stru *zis, bact_arg92 *arg)
             // left-down
             cellArea *tcell = &cell[ v4 - 1 ];
 
-            if ( (1 << bact->owner) & tcell->field_39 )
+            if ( (1 << bact->owner) & tcell->view_mask )
             {
-                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->field_3C.head;
+                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->units_list.head;
 
                 while (cl_unit->next)
                 {
@@ -5963,9 +5963,9 @@ void ypabact_func92(NC_STACK_ypabact *obj, class_stru *zis, bact_arg92 *arg)
             // down
             cellArea *tcell = &cell[ v4 ];
 
-            if ( (1 << bact->owner) & tcell->field_39 )
+            if ( (1 << bact->owner) & tcell->view_mask )
             {
-                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->field_3C.head;
+                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->units_list.head;
 
                 while (cl_unit->next)
                 {
@@ -5989,9 +5989,9 @@ void ypabact_func92(NC_STACK_ypabact *obj, class_stru *zis, bact_arg92 *arg)
             // down-right
             cellArea *tcell = &cell[ v4 + 1 ];
 
-            if ( (1 << bact->owner) & tcell->field_39 )
+            if ( (1 << bact->owner) & tcell->view_mask )
             {
-                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->field_3C.head;
+                __NC_STACK_ypabact *cl_unit = (__NC_STACK_ypabact *)tcell->units_list.head;
 
                 while (cl_unit->next)
                 {
@@ -6014,7 +6014,7 @@ void ypabact_func92(NC_STACK_ypabact *obj, class_stru *zis, bact_arg92 *arg)
         {
             int v33 = 0;
 
-            if ( cell->field_2E == 1 )
+            if ( cell->comp_type == 1 )
             {
                 v33 = cell->buildings_health[0][0];
             }
@@ -6552,12 +6552,12 @@ void ypabact_func102(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
                             if ( yy > 0 && yy < bact->field_22 - 1 )
                             {
                                 if ( bact->field_c - 1 > 0 )
-                                    v19[v20 - 1].field_39 |= 1 << bact->owner;
+                                    v19[v20 - 1].view_mask |= 1 << bact->owner;
 
-                                v19[v20].field_39 |= 1 << bact->owner;
+                                v19[v20].view_mask |= 1 << bact->owner;
 
                                 if ( bact->field_c + 1 < bact->field_20 - 1 )
-                                    v19[v20 + 1].field_39 |= 1 << bact->owner;
+                                    v19[v20 + 1].view_mask |= 1 << bact->owner;
                             }
                         }
                         else
@@ -6574,7 +6574,7 @@ void ypabact_func102(NC_STACK_ypabact *obj, class_stru *zis, stack_vals *arg)
                                 int xx = bact->field_c + j;
 
                                 if ( xx > 0 && xx < bact->field_20 - 1 && yy > 0 && yy < bact->field_22 - 1 )
-                                    v19[v20 + j].field_39 |= 1 << bact->owner;
+                                    v19[v20 + j].view_mask |= 1 << bact->owner;
                             }
                         }
                     }
@@ -6740,7 +6740,7 @@ size_t ypabact_func105(NC_STACK_ypabact *obj, class_stru *zis, bact_arg105 *arg)
     {
         if ( i <= 0 || v70[ i ] != v70[ i - 1 ] )
         {
-            __NC_STACK_ypabact *v21 = (__NC_STACK_ypabact *)v70[ i ]->field_3C.head;
+            __NC_STACK_ypabact *v21 = (__NC_STACK_ypabact *)v70[ i ]->units_list.head;
 
             while ( v21->next )
             {
@@ -7154,7 +7154,7 @@ size_t ypabact_func106(NC_STACK_ypabact *obj, class_stru *zis, bact_arg106 *arg)
             {
                 if ( v41[i] )
                 {
-                    __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v41[i]->field_3C.head;
+                    __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v41[i]->units_list.head;
 
                     while (bct->next)
                     {
@@ -7665,7 +7665,7 @@ int ypabact_func110__sub0(__NC_STACK_ypabact *bact)
 
                 if ( v9 )
                 {
-                    if ( (1 << bact->owner) & v9->p_cell_area->field_39 )
+                    if ( (1 << bact->owner) & v9->p_cell_area->view_mask )
                     {
                         arg67.field_8 = v9;
                         arg67.field_0 = 2;
@@ -7769,7 +7769,7 @@ size_t ypabact_func110(NC_STACK_ypabact *obj, class_stru *zis, bact_arg110 *arg)
 
             float v50 = sqrt( POW2(v17) + POW2(v18) );
 
-            if ( !( (1 << bact->owner) & v16->p_cell_area->field_39) )
+            if ( !( (1 << bact->owner) & v16->p_cell_area->view_mask) )
                 return 0;
 
             if ( bact->field_3D4 >= 100 )
@@ -7907,7 +7907,7 @@ size_t ypabact_func110(NC_STACK_ypabact *obj, class_stru *zis, bact_arg110 *arg)
 
         int v32 = 0;
 
-        if ( v52->field_2E == 1 )
+        if ( v52->comp_type == 1 )
         {
             v32 = v52->buildings_health[0][0];
         }
@@ -8867,12 +8867,12 @@ size_t ypabact_func124(NC_STACK_ypabact *obj, class_stru *zis, bact_arg124 *arg)
         {
             cellArea *cll = &yw->cells[xx + yy * yw->sectors_maxX2];
 
-            cll->field_B = 0;
-            cll->field_C = 0;
-            cll->field_10 = 0;
-            cll->field_20.next = NULL;
-            cll->field_20.prev = NULL;
-            cll->pathcell= NULL;
+            cll->pf_flags = 0;
+            cll->cost_to_this = 0;
+            cll->cost_to_target = 0;
+            cll->pf_treenode.next = NULL;
+            cll->pf_treenode.prev = NULL;
+            cll->pf_treeup= NULL;
         }
     }
 
@@ -8886,287 +8886,271 @@ size_t ypabact_func124(NC_STACK_ypabact *obj, class_stru *zis, bact_arg124 *arg)
     if ( to_sec_x >= 0 && to_sec_z >= 0 && to_sec_x < yw->sectors_maxX2 && to_sec_z < yw->sectors_maxY2 )
     {
         target_pcell = &yw->cells[to_sec_x + to_sec_z * yw->sectors_maxX2];
-        target_pcell->field_8 = to_sec_x;
-        target_pcell->field_9 = to_sec_z;
+        target_pcell->pos_x = to_sec_x;
+        target_pcell->pos_y = to_sec_z;
     }
 
-    if ( to_sec_x != from_sec_x || from_sec_z != to_sec_z )
+    if ( to_sec_x == from_sec_x && from_sec_z == to_sec_z )
     {
-        nlist list1;
-        init_list(&list1);
-
-        cellArea *start_pcell = NULL;
-
-        if ( from_sec_x >= 0 && from_sec_z >= 0 && from_sec_x < yw->sectors_maxX2 && from_sec_z < yw->sectors_maxY2 )
-        {
-            start_pcell = &yw->cells[from_sec_x + from_sec_z * yw->sectors_maxX2];
-            start_pcell->field_8 = from_sec_x;
-            start_pcell->field_9 = from_sec_z;
-        }
-
-        start_pcell->field_B |= 1;
-
-        int current_sec_x = from_sec_x;
-        int current_sec_z = from_sec_z;
-
-        cellArea *current_pcell = start_pcell;
-
-        //v21 = v110;
-
-        init_list(&start_pcell->field_14);
-        start_pcell->field_C = 0;
-
-        int v23 = abs(to_sec_x - from_sec_x);
-        int v24 = abs(to_sec_z - from_sec_z);
-
-        float sq2 = sqrt(2.0);
-
-        start_pcell->field_10 = MMIN(v23, v24) * sq2 + abs(v23 - v24);
-
-        while ( 1 )
-        {
-
-            for(int dx = -1; dx < 2; dx++)
-            {
-                for(int dz = -1; dz < 2; dz++)
-                {
-                    if ( dx || dz )
-                    {
-                        int t_x = current_sec_x + dx;
-                        int t_z = current_sec_z + dz;
-
-                        if ( t_x > 0 && t_x < bact->field_20 - 1 && t_z > 0 && t_z < bact->field_22 - 1 )
-                        {
-                            cellArea *cell_tzx = NULL;
-                            if ( t_x >= 0 && t_z >= 0 && t_x < yw->sectors_maxX2 && t_z < yw->sectors_maxY2 )
-                            {
-                                cell_tzx = &yw->cells[yw->sectors_maxX2 * t_z + t_x];
-                                cell_tzx->field_8 = t_x;
-                                cell_tzx->field_9 = t_z;
-                            }
-
-                            if ( !(cell_tzx->field_B & 1) && cell_tzx->field_A < 100 && fabs(current_pcell->sector_height_meters - cell_tzx->sector_height_meters) < 500.0 )
-                            {
-                                int hlth = 0;
-
-                                if (cell_tzx->field_2E == 1 && cell_tzx != target_pcell)
-                                {
-                                    subSec *v33 = yw->secTypes[ cell_tzx->sec_type ].buildings[0][0];
-                                    hlth = v33->health_models[yw->build_hp_ref[cell_tzx->buildings_health[0][0]]];
-                                }
-
-                                if ( cell_tzx->field_2E != 1
-                                        || cell_tzx == target_pcell
-                                        || !hlth
-                                        || yw->legos[hlth].selected_sklt_intern == yw->legos[hlth].sklt_obj_intern )
-                                {
-
-                                    int doo = false;
-
-                                    if ( dx != 0 && dz != 0)
-                                    {
-                                        cellArea *cell_tz = NULL;
-
-                                        if (current_sec_x >= 0 && t_z >= 0 && current_sec_x < yw->sectors_maxX2 && t_z < yw->sectors_maxY2)
-                                        {
-                                            cell_tz = &yw->cells[current_sec_x + yw->sectors_maxX2 * t_z];
-                                            cell_tz->field_8 = current_sec_x;
-                                            cell_tz->field_9 = t_z;
-                                        }
-
-                                        if (cell_tz)
-                                        {
-                                            cellArea *cell_tx = NULL;
-
-                                            if (t_x >= 0 && current_sec_z >= 0 && t_x < yw->sectors_maxX2 && current_sec_z < yw->sectors_maxY2)
-                                            {
-                                                cell_tx = &yw->cells[current_sec_z * yw->sectors_maxX2 + t_x];
-                                                cell_tx->field_8 = t_x;
-                                                cell_tx->field_9 = current_sec_z;
-                                            }
-
-                                            if (cell_tx)
-                                            {
-                                                if ( fabs(current_pcell->sector_height_meters - cell_tzx->sector_height_meters) <= 300.0
-                                                        && fabs(current_pcell->sector_height_meters - cell_tz->sector_height_meters) <= 300.0
-                                                        && fabs(current_pcell->sector_height_meters - cell_tx->sector_height_meters) <= 300.0
-                                                        && fabs(cell_tz->sector_height_meters - cell_tx->sector_height_meters) <= 300.0
-                                                        && fabs(cell_tzx->sector_height_meters - cell_tz->sector_height_meters) <= 300.0
-                                                        && fabs(cell_tzx->sector_height_meters - cell_tx->sector_height_meters) <= 300.0)
-                                                {
-                                                    doo = true;
-                                                }
-
-                                            }
-                                        }
-                                    }
-
-                                    if ( !dx || !dz || doo )
-                                    {
-                                        float v95 = sqrt(POW2(dx) + POW2(dz)) + cell_tzx->field_A + current_pcell->field_C;
-
-                                        int v40 = abs(to_sec_x - t_x);
-                                        int v41 = abs(to_sec_z - t_z);
-
-                                        float v94 = MMIN(v40, v41) * sq2 + abs(v40 - v41);
-
-                                        if ( !(cell_tzx->field_B & 2) || v95 + v94 <= cell_tzx->field_C + cell_tzx->field_10 )
-                                        {
-                                            cell_tzx->field_C = v95;
-                                            cell_tzx->field_10 = v94;
-
-                                            if ( !(cell_tzx->field_B & 2) )
-                                                AddTail(&list1, cell_tzx);
-
-                                            if ( cell_tzx->field_B & 2 )
-                                                Remove(&cell_tzx->field_20);
-
-                                            AddTail(&current_pcell->field_14, &cell_tzx->field_20);
-
-                                            cell_tzx->pathcell = current_pcell;
-                                            cell_tzx->field_B |= 2;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
-
-
-
-            if ( !list1.head->next )
-            {
-                arg->steps_cnt = 0;
-                return 0;
-            }
-
-            cellArea *selected_cell = (cellArea *)list1.head;
-            float selected_value = selected_cell->field_C + selected_cell->field_10;
-
-            cellArea *tmp_cell = (cellArea *)list1.head;
-            while (tmp_cell->next)
-            {
-                float v49 = tmp_cell->field_C + tmp_cell->field_10;
-
-                if ( v49 < selected_value )
-                {
-                    selected_cell = tmp_cell;
-                    selected_value = v49;
-                }
-
-                tmp_cell = (cellArea *)tmp_cell->next;
-            }
-
-            current_sec_x = selected_cell->field_8;
-            current_sec_z = selected_cell->field_9;
-            current_pcell = selected_cell;
-
-            init_list(&selected_cell->field_14);
-
-            Remove(selected_cell);
-
-            selected_cell->field_B &= 0xFC;
-            selected_cell->field_B |= 1;
-
-            if ( current_sec_x == to_sec_x && current_sec_z == to_sec_z )
-                break;
-        }
-
-        nlist list2;
-        init_list(&list2);
-
-        cellArea *iter_cell = NULL;
-
-        if ( to_sec_x >= 0 && to_sec_z >= 0 && to_sec_x < yw->sectors_maxX2 && to_sec_z < yw->sectors_maxY2 )
-        {
-            iter_cell = &yw->cells[to_sec_x + yw->sectors_maxX2 * to_sec_z];
-            iter_cell->field_8 = to_sec_x;
-            iter_cell->field_9 = to_sec_z;
-        }
-
-        while(iter_cell)
-        {
-            AddHead(&list2, iter_cell);
-            iter_cell = iter_cell->pathcell;
-        }
-
-        cellArea *curcell = (cellArea *)list2.head;
-        cellArea *nextcell = (cellArea *)list2.head->next;
-
-        int v61 = nextcell->field_8 - curcell->field_8;
-        int v62 = nextcell->field_9 - curcell->field_9;
-
-        int step_id = 0;
-
-        while ( nextcell->next )
-        {
-            if ( maxsteps <= 1 || nextcell == target_pcell)
-            {
-                arg->waypoints[ step_id ].sx = arg->to_x;
-                arg->waypoints[ step_id ].sz = arg->to_z;
-                break;
-            }
-
-            cellArea *curcell = nextcell;
-            nextcell = (cellArea *)nextcell->next;
-
-            if ( nextcell->field_8 - curcell->field_8 != v61 || nextcell->field_9 - curcell->field_9 != v62 )
-            {
-                float tx, tz;
-
-                if ( abs(v61) < abs(v62) )
-                {
-                    if ( v61 > 0 )
-                    {
-                        tz = 0.0;
-                        tx = -200.0;
-                    }
-                    else
-                    {
-                        tz = 0.0;
-                        tx = 200.0;
-                    }
-                }
-                else
-                {
-                    if ( v62 > 0 )
-                    {
-                        tz = 200.0;
-                        tx = 0.0;
-                    }
-                    else
-                    {
-                        tz = -200.0;
-                        tx = 0.0;
-                    }
-                }
-
-                v61 = nextcell->field_8 - curcell->field_8;
-                v62 = nextcell->field_9 - curcell->field_9;
-
-                arg->waypoints[ step_id ].sx = (curcell->field_8 + 0.5) * 1200.0 + tx;
-                arg->waypoints[ step_id ].sz = -(curcell->field_9 + 0.5) * 1200.0 + tz;
-                maxsteps--;
-                step_id++;
-            }
-        }
-
-        while ( list2.head->next )
-            Remove(list2.head);
-
-        while ( list1.head->next )
-            Remove(list1.head);
-
-        arg->steps_cnt = step_id + 1;
+        arg->steps_cnt = 1;
+        arg->waypoints[0].sx = arg->to_x;
+        arg->waypoints[0].sz = arg->to_z;
         return 1;
     }
 
-    arg->steps_cnt = 1;
-    arg->waypoints[0].sx = arg->to_x;
-    arg->waypoints[0].sz = arg->to_z;
+    nlist open_list;
+    init_list(&open_list);
+
+    cellArea *start_pcell = NULL;
+
+    if ( from_sec_x >= 0 && from_sec_z >= 0 && from_sec_x < yw->sectors_maxX2 && from_sec_z < yw->sectors_maxY2 )
+    {
+        start_pcell = &yw->cells[from_sec_x + from_sec_z * yw->sectors_maxX2];
+        start_pcell->pos_x = from_sec_x;
+        start_pcell->pos_y = from_sec_z;
+    }
+
+    start_pcell->pf_flags |= CELL_PFLAGS_IN_CLST;
+
+    int current_sec_x = from_sec_x;
+    int current_sec_z = from_sec_z;
+
+    cellArea *current_pcell = start_pcell;
+
+    init_list(&start_pcell->pf_treelist);
+    start_pcell->cost_to_this = 0;
+
+    int v23 = abs(to_sec_x - from_sec_x);
+    int v24 = abs(to_sec_z - from_sec_z);
+
+    float sq2 = sqrt(2.0);
+
+    start_pcell->cost_to_target = MMIN(v23, v24) * sq2 + abs(v23 - v24);
+
+    while ( 1 )
+    {
+
+        for(int dx = -1; dx < 2; dx++)
+        {
+            for(int dz = -1; dz < 2; dz++)
+            {
+                if ( dx == 0.0 && dz == 0.0 )
+                    continue;
+
+                int t_x = current_sec_x + dx;
+                int t_z = current_sec_z + dz;
+
+                if ( t_x > 0 && t_x < bact->field_20 - 1 && t_z > 0 && t_z < bact->field_22 - 1 )
+                {
+                    cellArea *cell_tzx = NULL;
+                    if ( t_x >= 0 && t_z >= 0 && t_x < yw->sectors_maxX2 && t_z < yw->sectors_maxY2 )
+                    {
+                        cell_tzx = &yw->cells[yw->sectors_maxX2 * t_z + t_x];
+                        cell_tzx->pos_x = t_x;
+                        cell_tzx->pos_y = t_z;
+                    }
+
+                    if ( cell_tzx->pf_flags & CELL_PFLAGS_IN_CLST )
+                        continue;
+
+                    if ( cell_tzx->addit_cost >= 100 )
+                        continue;
+
+                    if (fabs(current_pcell->height - cell_tzx->height) >= 500.0 )
+                        continue;
+
+                    if (cell_tzx->comp_type == 1 && cell_tzx != target_pcell)
+                    {
+                        subSec *v33 = yw->secTypes[ cell_tzx->type_id ].buildings[0][0];
+                        int hlth = v33->health_models[ yw->build_hp_ref[ cell_tzx->buildings_health[0][0] ] ];
+
+                        if (yw->legos[hlth].selected_sklt_intern != yw->legos[hlth].sklt_obj_intern)
+                            continue;
+                    }
+
+                    if ( dx != 0 && dz != 0)
+                    {
+                        cellArea *cell_tz = NULL;
+
+                        if (current_sec_x >= 0 && t_z >= 0 && current_sec_x < yw->sectors_maxX2 && t_z < yw->sectors_maxY2)
+                        {
+                            cell_tz = &yw->cells[current_sec_x + yw->sectors_maxX2 * t_z];
+                            cell_tz->pos_x = current_sec_x;
+                            cell_tz->pos_y = t_z;
+                        }
+
+                        cellArea *cell_tx = NULL;
+
+                        if (t_x >= 0 && current_sec_z >= 0 && t_x < yw->sectors_maxX2 && current_sec_z < yw->sectors_maxY2)
+                        {
+                            cell_tx = &yw->cells[current_sec_z * yw->sectors_maxX2 + t_x];
+                            cell_tx->pos_x = t_x;
+                            cell_tx->pos_y = current_sec_z;
+                        }
+
+                        if ( fabs(current_pcell->height - cell_tzx->height) > 300.0
+                                || fabs(current_pcell->height - cell_tz->height) > 300.0
+                                || fabs(current_pcell->height - cell_tx->height) > 300.0
+                                || fabs(cell_tz->height - cell_tx->height) > 300.0
+                                || fabs(cell_tzx->height - cell_tz->height) > 300.0
+                                || fabs(cell_tzx->height - cell_tx->height) > 300.0)
+                            continue;
+                    }
+
+                    float new_cost_to_this = sqrt(POW2(dx) + POW2(dz)) + cell_tzx->addit_cost + current_pcell->cost_to_this;
+
+                    int v40 = abs(to_sec_x - t_x);
+                    int v41 = abs(to_sec_z - t_z);
+
+                    float new_cost_to_target = MMIN(v40, v41) * sq2 + abs(v40 - v41);
+
+                    if ( (cell_tzx->pf_flags & CELL_PFLAGS_IN_OLST)
+                            && new_cost_to_this + new_cost_to_target > cell_tzx->cost_to_this + cell_tzx->cost_to_target )
+                        continue;
+
+                    cell_tzx->cost_to_this = new_cost_to_this;
+                    cell_tzx->cost_to_target = new_cost_to_target;
+
+                    if ( !(cell_tzx->pf_flags & CELL_PFLAGS_IN_OLST) )
+                        AddTail(&open_list, cell_tzx);
+
+                    if ( cell_tzx->pf_flags & CELL_PFLAGS_IN_OLST )
+                        Remove(&cell_tzx->pf_treenode);
+
+                    AddTail(&current_pcell->pf_treelist, &cell_tzx->pf_treenode);
+
+                    cell_tzx->pf_treeup = current_pcell;
+                    cell_tzx->pf_flags |= CELL_PFLAGS_IN_OLST;
+                }
+            }
+        }
+
+
+
+        if ( !open_list.head->next )
+        {
+            arg->steps_cnt = 0;
+            return 0;
+        }
+
+        cellArea *selected_cell = (cellArea *)open_list.head;
+        float selected_value = selected_cell->cost_to_this + selected_cell->cost_to_target;
+
+        cellArea *tmp_cell = (cellArea *)open_list.head;
+        while (tmp_cell->next)
+        {
+            float v49 = tmp_cell->cost_to_this + tmp_cell->cost_to_target;
+
+            if ( v49 < selected_value )
+            {
+                selected_cell = tmp_cell;
+                selected_value = v49;
+            }
+
+            tmp_cell = (cellArea *)tmp_cell->next;
+        }
+
+        current_sec_x = selected_cell->pos_x;
+        current_sec_z = selected_cell->pos_y;
+        current_pcell = selected_cell;
+
+        init_list(&selected_cell->pf_treelist);
+
+        Remove(selected_cell);
+
+        selected_cell->pf_flags &= ~CELL_PFLAGS_IN_OLST;
+        selected_cell->pf_flags |= CELL_PFLAGS_IN_CLST;
+
+        if ( current_sec_x == to_sec_x && current_sec_z == to_sec_z )
+            break;
+    }
+
+    nlist way_list;
+    init_list(&way_list);
+
+    cellArea *iter_cell = NULL;
+
+    if ( to_sec_x >= 0 && to_sec_z >= 0 && to_sec_x < yw->sectors_maxX2 && to_sec_z < yw->sectors_maxY2 )
+    {
+        iter_cell = &yw->cells[to_sec_x + yw->sectors_maxX2 * to_sec_z];
+        iter_cell->pos_x = to_sec_x;
+        iter_cell->pos_y = to_sec_z;
+    }
+
+    while(iter_cell)
+    {
+        AddHead(&way_list, iter_cell);
+        iter_cell = iter_cell->pf_treeup;
+    }
+
+    cellArea *curcell = (cellArea *)way_list.head;
+    cellArea *nextcell = (cellArea *)way_list.head->next;
+
+    int v61 = nextcell->pos_x - curcell->pos_x;
+    int v62 = nextcell->pos_y - curcell->pos_y;
+
+    int step_id = 0;
+
+    while ( nextcell->next )
+    {
+        if ( maxsteps <= 1 || nextcell == target_pcell)
+        {
+            arg->waypoints[ step_id ].sx = arg->to_x;
+            arg->waypoints[ step_id ].sz = arg->to_z;
+            break;
+        }
+
+        cellArea *curcell = nextcell;
+        nextcell = (cellArea *)nextcell->next;
+
+        if ( nextcell->pos_x - curcell->pos_x != v61 || nextcell->pos_y - curcell->pos_y != v62 )
+        {
+            float tx, tz;
+
+            if ( abs(v61) < abs(v62) )
+            {
+                if ( v61 > 0 )
+                {
+                    tz = 0.0;
+                    tx = -200.0;
+                }
+                else
+                {
+                    tz = 0.0;
+                    tx = 200.0;
+                }
+            }
+            else
+            {
+                if ( v62 > 0 )
+                {
+                    tz = 200.0;
+                    tx = 0.0;
+                }
+                else
+                {
+                    tz = -200.0;
+                    tx = 0.0;
+                }
+            }
+
+            v61 = nextcell->pos_x - curcell->pos_x;
+            v62 = nextcell->pos_y - curcell->pos_y;
+
+            arg->waypoints[ step_id ].sx = (curcell->pos_x + 0.5) * 1200.0 + tx;
+            arg->waypoints[ step_id ].sz = -(curcell->pos_y + 0.5) * 1200.0 + tz;
+            maxsteps--;
+            step_id++;
+        }
+    }
+
+    while ( way_list.head->next )
+        Remove(way_list.head);
+
+    while ( open_list.head->next )
+        Remove(open_list.head);
+
+    arg->steps_cnt = step_id + 1;
     return 1;
 }
 

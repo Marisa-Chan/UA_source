@@ -1764,7 +1764,7 @@ size_t ypatank_func87(NC_STACK_ypatank *obj, class_stru *zis, int *arg)
         if ( !call_method(tank->ywo, 130, &arg130) )
             return 0;
 
-        __NC_STACK_ypabact *v12 = (__NC_STACK_ypabact *)arg130.pcell->field_3C.head;
+        __NC_STACK_ypabact *v12 = (__NC_STACK_ypabact *)arg130.pcell->units_list.head;
 
         float v109 = 1200.0;
 
@@ -2247,7 +2247,7 @@ size_t ypatank_func101(NC_STACK_ypatank *obj, class_stru *zis, bact_arg101 *arg)
                     }
                     else
                     {
-                        if ( arg130.pcell->field_2E != 1 )
+                        if ( arg130.pcell->comp_type != 1 )
                         {
                             int v17 = (arg130.pos_x + -150.0) / 300.0;
                             int v18 = (arg130.pos_z + 150.0) / 300.0;
@@ -2372,7 +2372,7 @@ size_t ypatank_func111(NC_STACK_ypatank *obj, class_stru *zis, __NC_STACK_ypabac
 
     if ( cel_unit->field_c == bact->field_c || cel_unit->field_10 == bact->field_10 )
     {
-        if ( fabs(bactPcell->sector_height_meters - cunitPcell->sector_height_meters) >= 500.0 )
+        if ( fabs(bactPcell->height - cunitPcell->height) >= 500.0 )
             return 0;
     }
     else
@@ -2389,13 +2389,13 @@ size_t ypatank_func111(NC_STACK_ypatank *obj, class_stru *zis, __NC_STACK_ypabac
 
         call_method(tank->ywo, 130, &arg130);
 
-        if ( fabs(bactPcell->sector_height_meters    - arg130_Pcell->sector_height_meters) >= 500.0 && fabs(arg130.pcell->sector_height_meters -   cunitPcell->sector_height_meters) >= 500.0 )
+        if ( fabs(bactPcell->height    - arg130_Pcell->height) >= 500.0 && fabs(arg130.pcell->height -   cunitPcell->height) >= 500.0 )
             return 0;
-        if ( fabs(bactPcell->sector_height_meters    - arg130.pcell->sector_height_meters) >= 500.0 && fabs(arg130_Pcell->sector_height_meters -   cunitPcell->sector_height_meters) >= 500.0 )
+        if ( fabs(bactPcell->height    - arg130.pcell->height) >= 500.0 && fabs(arg130_Pcell->height -   cunitPcell->height) >= 500.0 )
             return 0;
-        if ( fabs(bactPcell->sector_height_meters    - arg130_Pcell->sector_height_meters) >= 500.0 && fabs(bactPcell->sector_height_meters    - arg130.pcell->sector_height_meters) >= 500.0 )
+        if ( fabs(bactPcell->height    - arg130_Pcell->height) >= 500.0 && fabs(bactPcell->height    - arg130.pcell->height) >= 500.0 )
             return 0;
-        if ( fabs(arg130_Pcell->sector_height_meters -   cunitPcell->sector_height_meters) >= 500.0 && fabs(arg130.pcell->sector_height_meters -   cunitPcell->sector_height_meters) >= 500.0 )
+        if ( fabs(arg130_Pcell->height -   cunitPcell->height) >= 500.0 && fabs(arg130.pcell->height -   cunitPcell->height) >= 500.0 )
             return 0;
     }
     return 1;

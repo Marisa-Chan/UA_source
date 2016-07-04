@@ -444,7 +444,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
             if (v68[i] == NULL)
                 ypa_log_out("ypamissile_func70__sub0 NULL sector i = %d, 621: %f %f 62D: %f %f \n", i, bact->field_621.sx, bact->field_621.sz, bact->field_62D.sx, bact->field_62D.sz);
 
-            __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v68[ i ]->field_3C.head;
+            __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v68[ i ]->units_list.head;
             while (bct->next)
             {
                 if ( bct != bact && bct != miss->ejaculator_bact )
@@ -750,7 +750,7 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
 
             call_method(obj, 78,  &arg78);
 
-            if ( !(miss->field_2D & 4) || !miss->selfie->p_cell_area->field_3A )
+            if ( !(miss->field_2D & 4) || !miss->selfie->p_cell_area->w_type )
             {
                 if ( miss->yw->field_1b80->owner == miss->selfie->owner || !miss->yw->field_757E )
                 {
@@ -863,7 +863,7 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
 
                         call_method(obj, 78, &arg78);
 
-                        if ( !(miss->field_2D & 4) || !miss->selfie->p_cell_area->field_3A )
+                        if ( !(miss->field_2D & 4) || !miss->selfie->p_cell_area->w_type )
                         {
                             if ( miss->yw->field_1b80->owner == miss->selfie->owner || !miss->yw->field_757E )
                             {
@@ -1150,7 +1150,7 @@ void ypamissile_func129(NC_STACK_ypamissile *obj, class_stru *zis, void *)
         arg83.mass *= v7;
     }
 
-    __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)bact->p_cell_area->field_3C.head;
+    __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)bact->p_cell_area->units_list.head;
 
     while(bct->next)
     {

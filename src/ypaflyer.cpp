@@ -1214,7 +1214,7 @@ void ypaflyer_func71(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
 
         fly->field_c = (fabs(fly->bact_internal->field_611) / 111.0 + 1.0) * (arg->inpt->sliders_vars[1] * 20000.0) * 0.5 + fly->bact_internal->mass * 9.80665;
 
-        float v22 = fly->bact_internal->p_cell_area->sector_height_meters - fly->bact_internal->field_621.sy;
+        float v22 = fly->bact_internal->p_cell_area->height - fly->bact_internal->field_621.sy;
 
         float v63 = 1.0 / fly->bact_internal->field_679;
 

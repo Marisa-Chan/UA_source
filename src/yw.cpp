@@ -880,7 +880,7 @@ void ypaworld_func64(NC_STACK_ypaworld *obj, class_stru *zis, base_64arg *arg)
             {
                 cellArea *tmp = yw->cells + i;
 
-                tmp->field_39 = 1 << tmp->owner;
+                tmp->view_mask = 1 << tmp->owner;
             }
 
             bact_node *v32 = (bact_node *)yw->bact_list.head;
@@ -1196,7 +1196,7 @@ void sub_47C29C(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
         }
     }
 
-    cell->field_3A = 7;
+    cell->w_type = 7;
 }
 
 void ypaworld_func129__sub1(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
@@ -1245,8 +1245,8 @@ void ypaworld_func129__sub1(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
         call_method(yw->self_full, 181, &arg181);
     }
 
-    cell->field_3B = 0;
-    cell->field_3A = 0;
+    cell->w_id = 0;
+    cell->w_type = 0;
 }
 
 void sb_0x44f820__sub0(_NC_STACK_ypaworld *yw, int a2, int a3)
@@ -1342,7 +1342,7 @@ void yw_ActivateWunderstein(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
 
     call_method(yw->self_full, 159, &arg159);
 
-    cell->field_3A = 7;
+    cell->w_type = 7;
 }
 
 void sub_44FD6C(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int a5, int a6, int a7)
@@ -1354,12 +1354,12 @@ void sub_44FD6C(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int 
 
     if ( v8 + v9 <= (yw->field_1368 - 1) / 2 )
     {
-        cityBases *v10 = &yw->legos[  yw->secTypes[cell->sec_type].buildings[a5][a6]->health_models[a7]  ];
+        cityBases *v10 = &yw->legos[  yw->secTypes[cell->type_id].buildings[a5][a6]->health_models[a7]  ];
 
         float v32 = secX * 1200.0 + 600.0;
         float v27 = -(secY * 1200.0 + 600.0);
 
-        if ( cell->field_2E != 1 )
+        if ( cell->comp_type != 1 )
         {
             v32 += (a5 - 1) * 300.0;
             v27 += (a6 - 1) * 300.0;
@@ -1373,7 +1373,7 @@ void sub_44FD6C(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int 
             ypaworld_arg146 arg146;
             arg146.vehicle_id = v10->field_14[i];
             arg146.pos.sx = v32 + v10->field_24[i].pos_x;
-            arg146.pos.sy = cell->sector_height_meters + v10->field_24[i].pos_y;
+            arg146.pos.sy = cell->height + v10->field_24[i].pos_y;
             arg146.pos.sz = v27 + v10->field_24[i].pos_z;
 
             NC_STACK_ypabact *boom = (NC_STACK_ypabact *)call_method(yw->self_full, 146, &arg146);
@@ -1421,7 +1421,7 @@ void sub_44FD6C(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int 
 
 void ypaworld_func129__sub0(_NC_STACK_ypaworld *yw, cellArea *cell, yw_arg129 *arg)
 {
-    if ( cell->field_3A == 2 )
+    if ( cell->w_type == 2 )
     {
         if ( cell->owner == yw->field_1b80->owner )
         {
@@ -1479,12 +1479,12 @@ void ypaworld_func129(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg129 *arg)
         else
             v14 = 3;
 
-        if ( v10 && v14 && cell->field_3A != 1 )
+        if ( v10 && v14 && cell->w_type != 1 )
         {
             int v38;
             int a5;
 
-            if ( cell->field_2E == 1 )
+            if ( cell->comp_type == 1 )
             {
                 v38 = 0;
                 a5 = 0;
@@ -1497,7 +1497,7 @@ void ypaworld_func129(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg129 *arg)
 
             int v16 = cell->buildings_health[a5][v38];
 
-            int v34 = v16 - arg->field_10 * (100 - yw->legos[  yw->secTypes[cell->sec_type].buildings[a5][v38]->health_models[  yw->build_hp_ref[v16]  ]  ].field_10 ) / 100 / 400;
+            int v34 = v16 - arg->field_10 * (100 - yw->legos[  yw->secTypes[cell->type_id].buildings[a5][v38]->health_models[  yw->build_hp_ref[v16]  ]  ].field_10 ) / 100 / 400;
 
             if ( v34 < 0 )
                 v34 = 0;
@@ -1532,14 +1532,14 @@ void ypaworld_func129(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg129 *arg)
 
             sb_0x44fc60(yw, cell, secX, secY, arg->field_14, arg);
 
-            if ( cell->field_3A == 4 )
+            if ( cell->w_type == 4 )
             {
                 if ( yw->field_1b80 && yw->field_1b80->owner == cell->owner )
                 {
                     if ( yw->field_757E )
-                        sub_47C29C(yw, cell, cell->field_3B);
+                        sub_47C29C(yw, cell, cell->w_id);
                     else
-                        yw_ActivateWunderstein(yw, cell, cell->field_3B);
+                        yw_ActivateWunderstein(yw, cell, cell->w_id);
 
                     yw_arg184 arg184;
                     arg184.t7.secX = secX;
@@ -1585,7 +1585,7 @@ void ypaworld_func129(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg129 *arg)
                     call_method(obj, 184, &arg184);
                 }
             }
-            else if ( cell->field_3A == 7 )
+            else if ( cell->w_type == 7 )
             {
                 if ( yw->field_757E )
                 {
@@ -1600,7 +1600,7 @@ void ypaworld_func129(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg129 *arg)
                     }
 
                     if ( !v27 )
-                        ypaworld_func129__sub1(yw, cell, cell->field_3B);
+                        ypaworld_func129__sub1(yw, cell, cell->w_id);
                 }
             }
         }
@@ -2334,7 +2334,7 @@ size_t ypaworld_func148(NC_STACK_ypaworld *obj, class_stru *zis, ypaworld_arg148
 
     int v13 = 0;
 
-    __NC_STACK_ypabact *node = (__NC_STACK_ypabact *)cell->field_3C.head;
+    __NC_STACK_ypabact *node = (__NC_STACK_ypabact *)cell->units_list.head;
 
     while ( node->next )
     {
@@ -2350,20 +2350,20 @@ size_t ypaworld_func148(NC_STACK_ypaworld *obj, class_stru *zis, ypaworld_arg148
     if ( yw->field_1b84  &&  cell == yw->field_1b84->p_cell_area )
         v13 = 1;
 
-    if ( cell->field_3A == 1 )
+    if ( cell->w_type == 1 )
         return 0;
 
     if ( !v13 || arg->field_C != 0 )
     {
-        if ( cell->field_3A == 2 )
+        if ( cell->w_type == 2 )
         {
-            sub_44F500(yw, cell->field_3B);
+            sub_44F500(yw, cell->w_id);
         }
-        else if ( (cell->field_3A == 4 || cell->field_3A == 5 || cell->field_3A == 6) && !arg->field_C )
+        else if ( (cell->w_type == 4 || cell->w_type == 5 || cell->w_type == 6) && !arg->field_C )
         {
             return 0;
         }
-        else if ( cell->field_3A == 7 && yw->field_757E )
+        else if ( cell->w_type == 7 && yw->field_757E )
         {
             return 0;
         }
@@ -2579,7 +2579,7 @@ void ypaworld_func150(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg150 *arg)
 
         if ( v29 >= 0 && v29 < yw->sectors_maxX2 && v12 >= 0 && v12 < yw->sectors_maxY2 )
         {
-            __NC_STACK_ypabact *sect_bacts = (__NC_STACK_ypabact *)yw->cells[v29 + v12 * yw->sectors_maxX2].field_3C.head;
+            __NC_STACK_ypabact *sect_bacts = (__NC_STACK_ypabact *)yw->cells[v29 + v12 * yw->sectors_maxX2].units_list.head;
 
             while (sect_bacts->next)
             {
@@ -7455,12 +7455,12 @@ size_t ypaworld_func168(NC_STACK_ypaworld *obj, class_stru *zis, __NC_STACK_ypab
     {
         cellArea *cell = bact->p_cell_area;
 
-        if ( cell->field_3A == 6 )
+        if ( cell->w_type == 6 )
         {
             if ( yw->field_1b80 == bact )
             {
                 yw->field_2d90->field_40 = 1;
-                yw->field_2d90->field_4C = cell->field_3B;
+                yw->field_2d90->field_4C = cell->w_id;
                 yw->field_2d90->field_64 = bact->energy;
 
                 call_vtbl(bact->self, 3, 0x80002008, &yw->field_2d90->field_70, 0);
@@ -8369,13 +8369,13 @@ void ypaworld_func177(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg177 *arg)
         {
             cellArea *v15 = yw->cells + yw->sectors_maxX2 * i + j;
 
-            if ( v15->field_3A == 4 && v15->owner == yw->field_1b80->owner )
+            if ( v15->w_type == 4 && v15->owner == yw->field_1b80->owner )
             {
 
                 if ( yw->field_757E )
-                    sub_47C29C(yw, v15, v15->field_3B);
+                    sub_47C29C(yw, v15, v15->w_id);
                 else
-                    yw_ActivateWunderstein(yw, v15, v15->field_3B);
+                    yw_ActivateWunderstein(yw, v15, v15->w_id);
 
                 yw_arg184 arg184;
                 arg184.t7.secX = j;

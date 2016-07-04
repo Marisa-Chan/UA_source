@@ -880,7 +880,7 @@ char * sb_0x4f8f64__sub2(_NC_STACK_ypaworld *yw, char *cur)
 
                 if ( v7->p_cell )
                 {
-                    if ( (1 << yw->field_1b80->owner) & v7->p_cell->field_39 )
+                    if ( (1 << yw->field_1b80->owner) & v7->p_cell->view_mask )
                     {
                         if ( v7->power_2 > 0 )
                         {
@@ -919,11 +919,11 @@ char * sb_0x4f8f64__sub2(_NC_STACK_ypaworld *yw, char *cur)
                 cellArea *v12 = &yw->cells[v11->sec_y * yw->sectors_maxX2 + v11->sec_x];
                 if ( v11->field_0 )
                 {
-                    if ( v12->field_39 & (1 << yw->field_1b80->owner) )
+                    if ( v12->view_mask & (1 << yw->field_1b80->owner) )
                     {
                         int v13 = 1;
 
-                        if ( v12->field_3A == 4 )
+                        if ( v12->w_type == 4 )
                         {
                             if ( yw->field_1614 / 300 & 1 )
                                 v13 = 0;
@@ -943,9 +943,9 @@ char * sb_0x4f8f64__sub2(_NC_STACK_ypaworld *yw, char *cur)
             {
                 gateProto *v16 = &yw->field_2d90->gates[i];
 
-                if ( v16->pcell->field_3A == 5 )
+                if ( v16->pcell->w_type == 5 )
                 {
-                    if ( (1 << yw->field_1b80->owner) & v16->pcell->field_39 )
+                    if ( (1 << yw->field_1b80->owner) & v16->pcell->view_mask )
                     {
                         float v19 = v16->sec_x * 1200.0 + 600.0;
                         float v20 = -(v16->sec_y * 1200.0 + 600.0);
@@ -959,7 +959,7 @@ char * sb_0x4f8f64__sub2(_NC_STACK_ypaworld *yw, char *cur)
 
                         if ( v22 )
                         {
-                            if ( (1 << yw->field_1b80->owner) & v22->field_39 )
+                            if ( (1 << yw->field_1b80->owner) & v22->view_mask )
                             {
                                 if ( v22->owner == yw->field_1b80->owner || yw->field_1614 / 300 & 1 )
                                     v52 = 1;
@@ -974,9 +974,9 @@ char * sb_0x4f8f64__sub2(_NC_STACK_ypaworld *yw, char *cur)
                         }
                     }
                 }
-                else if ( v16->pcell->field_3A == 6 )
+                else if ( v16->pcell->w_type == 6 )
                 {
-                    if ( (1 << yw->field_1b80->owner) & v16->pcell->field_39 )
+                    if ( (1 << yw->field_1b80->owner) & v16->pcell->view_mask )
                     {
                         if ( yw->field_1614 / 300 & 1 )
                         {
@@ -1022,7 +1022,7 @@ char * sb_0x4f8f64__sub2(_NC_STACK_ypaworld *yw, char *cur)
                 {
                     int v34 = 0;
 
-                    if ( v28->pcell->field_39 & (1 << yw->field_1b80->owner) )
+                    if ( v28->pcell->view_mask & (1 << yw->field_1b80->owner) )
                     {
                         if ( v28->pcell->owner == yw->field_1b80->owner || yw->field_1614 / 300 & 1 )
                             v34 = 1;
@@ -1045,7 +1045,7 @@ char * sb_0x4f8f64__sub2(_NC_STACK_ypaworld *yw, char *cur)
 
                             if ( v38 )
                             {
-                                if ( (1 << yw->field_1b80->owner) & v38->field_39 )
+                                if ( (1 << yw->field_1b80->owner) & v38->view_mask )
                                 {
                                     if ( v38->owner == yw->field_1b80->owner || yw->field_1614 / 500 & 1 )
                                         v60 = 1;
@@ -1323,7 +1323,7 @@ int sb_0x4f8f64__sub3__sub0(_NC_STACK_ypaworld *yw, cellArea *cell)
 {
     int enrg = 0;
 
-    __NC_STACK_ypabact *v2 = (__NC_STACK_ypabact *)cell->field_3C.head;
+    __NC_STACK_ypabact *v2 = (__NC_STACK_ypabact *)cell->units_list.head;
 
     while(v2->next)
     {
@@ -1467,7 +1467,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
             }
             else if ( yw->field_1a58 & 0x10 )
             {
-                if ( yw->field_1a60->owner == yw->field_1b80->owner && ( (1 << yw->field_1b80->owner) & yw->field_1a60->field_39 ) )
+                if ( yw->field_1a60->owner == yw->field_1b80->owner && ( (1 << yw->field_1b80->owner) & yw->field_1a60->view_mask ) )
                 {
                     fntcmd_select_tileset(&pcur, v114);
 
@@ -1626,7 +1626,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
     {
         gateProto *v80 = &yw->field_2d90->gates[i];
 
-        if ( v80->pcell->field_3A == 6 )
+        if ( v80->pcell->w_type == 6 )
         {
             int v81 = sb_0x4f8f64__sub3__sub0(yw, v80->pcell);
 
@@ -1775,9 +1775,9 @@ void sb_0x4f8f64(_NC_STACK_ypaworld *yw)
             {
                 cellArea *v17 = &yw->cells[j + yw->sectors_maxX2 * v42];
 
-                if ( robo_map.field_1EF & v17->field_39 )
+                if ( robo_map.field_1EF & v17->view_mask )
                 {
-                    __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v17->field_3C.head;
+                    __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v17->units_list.head;
                     while ( bct->next )
                     {
                         if ( bct->field_24 == 3 )
@@ -1825,9 +1825,9 @@ void sb_0x4f8f64(_NC_STACK_ypaworld *yw)
                 {
                     cellArea *v25 = &yw->cells[m + l * yw->sectors_maxX2];
 
-                    if ( robo_map.field_1EF & v25->field_39 )
+                    if ( robo_map.field_1EF & v25->view_mask )
                     {
-                        __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v25->field_3C.head;
+                        __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v25->units_list.head;
                         while ( bct->next )
                         {
                             if ( bct->owner == yw->field_1b80->owner
@@ -2332,7 +2332,7 @@ int sub_4F60A4(_NC_STACK_ypaworld *yw, int x, int y)
     {
         cellArea *v5 = &yw->cells[yw->sectors_maxX2 * y + x];
 
-        if ( (robo_map.field_1EC & 3) && (robo_map.field_1EF & v5->field_39) )
+        if ( (robo_map.field_1EC & 3) && (robo_map.field_1EF & v5->view_mask) )
             return 0;
         else
             return 9;
@@ -2347,7 +2347,7 @@ int sub_4F6048(_NC_STACK_ypaworld *yw, int x, int y)
     {
         cellArea *v4 = &yw->cells[yw->sectors_maxX2 * y + x];
 
-        if ( robo_map.field_1EF & v4->field_39 )
+        if ( robo_map.field_1EF & v4->view_mask )
         {
             if ( !v4->owner )
                 return 8;
@@ -2365,8 +2365,8 @@ int sub_4F5FE0(_NC_STACK_ypaworld *yw, int x, int y)
     {
         cellArea *v6 = &yw->cells[yw->sectors_maxX2 * y + x];
 
-        if ( robo_map.field_1EF & v6->field_39 )
-            return yw->secTypes[v6->sec_type].field_3;
+        if ( robo_map.field_1EF & v6->view_mask )
+            return yw->secTypes[v6->type_id].field_3;
     }
 
     return 0;
@@ -2384,20 +2384,20 @@ int sub_4F5CEC(_NC_STACK_ypaworld *yw, int x, int y)
 
     cellArea *v12 = &yw->cells[v9 + v7 * yw->sectors_maxX2];
 
-    if ( !(robo_map.field_1EF & v12->field_39) )
+    if ( !(robo_map.field_1EF & v12->view_mask) )
         return 0;
 
     if ( v8 && v27 )
     {
-        if ( v12->field_2E == 1 )
+        if ( v12->comp_type == 1 )
         {
-            cityBases *v26 = yw->legos + yw->secTypes[ v12->sec_type ].buildings[0][0]->health_models[  yw->build_hp_ref[  v12->buildings_health[0][0]  ]  ];
+            cityBases *v26 = yw->legos + yw->secTypes[ v12->type_id ].buildings[0][0]->health_models[  yw->build_hp_ref[  v12->buildings_health[0][0]  ]  ];
             int v25 = (16 * (v27 - 1) + v8 - 1 + v26->field_12) & 0xFF;
             return (v26->field_11 << 8) | v25;
         }
         else
         {
-            cityBases *v26 = yw->legos + yw->secTypes[ v12->sec_type ].buildings[v8 - 1][2 - (v27 - 1)]->health_models[  yw->build_hp_ref[  v12->buildings_health[v8 - 1][2 - (v27 - 1)]  ]  ];
+            cityBases *v26 = yw->legos + yw->secTypes[ v12->type_id ].buildings[v8 - 1][2 - (v27 - 1)]->health_models[  yw->build_hp_ref[  v12->buildings_health[v8 - 1][2 - (v27 - 1)]  ]  ];
             return (v26->field_11 << 8) | v26->field_12;
         }
     }
@@ -2432,28 +2432,28 @@ int sub_4F5CEC(_NC_STACK_ypaworld *yw, int x, int y)
         }
 
 
-        if ( fabs(v17->sector_height_meters - v16->sector_height_meters) >= 500.0 )
+        if ( fabs(v17->height - v16->height) >= 500.0 )
             v13 = 1;
 
-        if ( fabs(v15->sector_height_meters - v12->sector_height_meters) >= 500.0 )
+        if ( fabs(v15->height - v12->height) >= 500.0 )
             v13 |= 2;
 
-        if ( fabs(v17->sector_height_meters - v15->sector_height_meters) >= 500.0 )
+        if ( fabs(v17->height - v15->height) >= 500.0 )
             v13 |= 4;
 
-        if ( fabs(v16->sector_height_meters - v12->sector_height_meters) >= 500.0 )
+        if ( fabs(v16->height - v12->height) >= 500.0 )
             v13 |= 8;
 
         if ( v13 == 12 )
         {
-            if ( v17->sector_height_meters <= v15->sector_height_meters )
+            if ( v17->height <= v15->height )
                 v13 = 0xFD;
             else
                 v13 = 0xFC;
         }
         else if ( v13 == 3 )
         {
-            if ( v17->sector_height_meters <= v16->sector_height_meters )
+            if ( v17->height <= v16->height )
                 v13 = 0xFF;
             else
                 v13 = 0xFE;
@@ -5540,8 +5540,8 @@ char * ypaworld_func64__sub7__sub7__sub0(_NC_STACK_ypaworld *yw)
 
         call_method(yw->self_full, 176, &arg176);
 
-        int v32 = yw->field_1b80->p_cell_area->field_2F;
-        int v33 = yw->field_1b80->p_cell_area->field_2F * arg176.field_4;
+        int v32 = yw->field_1b80->p_cell_area->energy_power;
+        int v33 = yw->field_1b80->p_cell_area->energy_power * arg176.field_4;
 
         int idx;
         call_vtbl(yw->field_1b78, 3, 0x8000201E, &idx, 0);
@@ -6541,9 +6541,9 @@ void ypaworld_func64__sub7__sub1__sub0(_NC_STACK_ypaworld *yw)
         {
             cellArea *cll = &yw->cells[j + yw->sectors_maxX2 * i];
 
-            if ( robo_map.field_1EF & cll->field_39 )
+            if ( robo_map.field_1EF & cll->view_mask )
             {
-                __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cll->field_3C.head;
+                __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cll->units_list.head;
 
                 while (bct->next)
                 {
@@ -10665,9 +10665,9 @@ char * sb_0x4d7c08__sub0__sub4__sub0(_NC_STACK_ypaworld *yw, char *cur)
             {
                 cellArea *v8 = &yw->cells[j + yw->sectors_maxX2 * i];
 
-                if ( robo_map.field_1EF & v8->field_39 )
+                if ( robo_map.field_1EF & v8->view_mask )
                 {
-                    __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v8->field_3C.head;
+                    __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v8->units_list.head;
 
                     while (bct->next)
                     {
@@ -10854,9 +10854,9 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(_NC_STACK_ypaworld *yw)
             {
                 cellArea *v17 = &yw->cells[j + yw->sectors_maxX2 * i];
 
-                if ( robo_map.field_1EF & v17->field_39 )
+                if ( robo_map.field_1EF & v17->view_mask )
                 {
-                    __NC_STACK_ypabact *bact = (__NC_STACK_ypabact *)v17->field_3C.head;
+                    __NC_STACK_ypabact *bact = (__NC_STACK_ypabact *)v17->units_list.head;
 
                     while(bact->next)
                     {
@@ -11549,10 +11549,10 @@ int ypaworld_func64__sub21__sub2(_NC_STACK_ypaworld *yw)
     if ( v6 > 1 || v10 > 1 )
         return 4;
 
-    if ( v2->field_3A == 1 )
+    if ( v2->w_type == 1 )
         return 5;
 
-    if ( v2->field_3A == 4 || v2->field_3A == 5 || v2->field_3A == 6 || v2->field_3A == 8 || (v2->field_3A == 7 && yw->field_757E) )
+    if ( v2->w_type == 4 || v2->w_type == 5 || v2->w_type == 6 || v2->w_type == 8 || (v2->w_type == 7 && yw->field_757E) )
         return 1;
 
     return 0;
@@ -11564,10 +11564,10 @@ int ypaworld_func64__sub21__sub3(_NC_STACK_ypaworld *yw)
     if ( !(yw->field_1a58 & 0x10) )
         return 6;
 
-    if ( !((1 << yw->field_1b80->owner) & yw->field_1a60->field_39) )
+    if ( !((1 << yw->field_1b80->owner) & yw->field_1a60->view_mask) )
         return 3;
 
-    if ( yw->field_1a60->field_3A == 1 )
+    if ( yw->field_1a60->w_type == 1 )
         return 6;
 
     float v5 = yw->field_1a6c.sx - yw->field_1b80->field_621.sx;
@@ -11579,7 +11579,7 @@ int ypaworld_func64__sub21__sub3(_NC_STACK_ypaworld *yw)
     if ( v15 < 100.0 )
         return 4;
 
-    int v9 = yw->field_1a60->field_3A;
+    int v9 = yw->field_1a60->w_type;
 
     int v18 = 0;
 
@@ -11596,7 +11596,7 @@ int ypaworld_func64__sub21__sub3(_NC_STACK_ypaworld *yw)
     if ( v18 > a4 )
         return 1;
 
-    __NC_STACK_ypabact *v11 = (__NC_STACK_ypabact *)yw->field_1a60->field_3C.head;
+    __NC_STACK_ypabact *v11 = (__NC_STACK_ypabact *)yw->field_1a60->units_list.head;
 
     while ( v11->next )
     {
@@ -11787,22 +11787,22 @@ void ypaworld_func64__sub21__sub1__sub1(_NC_STACK_ypaworld *yw, winp_131arg *win
             yw->field_1a64 = v10;
             yw->field_1A66 = v11;
             yw->field_1a6c.sx = (float)v23 * robo_map.field_1E0 + 0.5;
-            yw->field_1a6c.sy = v12->sector_height_meters;
+            yw->field_1a6c.sy = v12->height;
             yw->field_1a6c.sz = -((float)v24 * robo_map.field_1E4 + 0.75);
 
             yw->field_1a7c.sx = (float)v10 * 1200.0 + 600.0;
-            yw->field_1a7c.sy = v12->sector_height_meters;
+            yw->field_1a7c.sy = v12->height;
             yw->field_1a7c.sz = -((float)v11 * 1200.0 + 600.0);
         }
 
-        if ( yw->field_1a58 & 2 && !(bzda.field_1D0 & 0x30) && ((1 << yw->field_1b80->owner) & v12->field_39 ) )
+        if ( yw->field_1a58 & 2 && !(bzda.field_1D0 & 0x30) && ((1 << yw->field_1b80->owner) & v12->view_mask ) )
         {
 
             int v16 = 0;
 
             while ( v16 < 2 )
             {
-                __NC_STACK_ypabact *v17 = (__NC_STACK_ypabact *)v12->field_3C.head;
+                __NC_STACK_ypabact *v17 = (__NC_STACK_ypabact *)v12->units_list.head;
 
                 while( v17->next )
                 {
@@ -11961,7 +11961,7 @@ void ypaworld_func64__sub21__sub1__sub3(NC_STACK_ypaworld *ywo, _NC_STACK_ypawor
         yw->field_1a6c.sy = arg149.field_30;
         yw->field_1a6c.sz = arg149.field_34;
         yw->field_1a7c.sx = v25 * 1200.0 + 600.0;
-        yw->field_1a7c.sy = yw->field_1a60->sector_height_meters;
+        yw->field_1a7c.sy = yw->field_1a60->height;
         yw->field_1a7c.sz = -(v12 * 1200.0 + 600.0);
     }
 
@@ -12225,7 +12225,7 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stru
                 }
                 else if ( yw->field_2410 != -1 )
                 {
-                    if ( yw->field_1b80->owner == yw->field_1a60->owner && (1 << yw->field_1b80->owner) & yw->field_1a60->field_39 )
+                    if ( yw->field_1b80->owner == yw->field_1a60->owner && (1 << yw->field_1b80->owner) & yw->field_1a60->view_mask )
                     {
                         v8 = 2;
                         v6 = 4;
@@ -12296,7 +12296,7 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stru
                             }
                         }
                     }
-                    else if ( yw->field_1b80->owner == yw->field_1a60->owner && (1 << yw->field_1b80->owner) & yw->field_1a60->field_39 )
+                    else if ( yw->field_1b80->owner == yw->field_1a60->owner && (1 << yw->field_1b80->owner) & yw->field_1a60->view_mask )
                     {
                         v8 = 2;
                         v6 = 4;
@@ -12368,7 +12368,7 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stru
                             }
                         }
                     }
-                    else if ( yw->field_1b80->owner == yw->field_1a60->owner && (1 << yw->field_1b80->owner) & yw->field_1a60->field_39 )
+                    else if ( yw->field_1b80->owner == yw->field_1a60->owner && (1 << yw->field_1b80->owner) & yw->field_1a60->view_mask )
                     {
                         v8 = 2;
                         v6 = 4;

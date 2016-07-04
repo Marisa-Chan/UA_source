@@ -1071,7 +1071,7 @@ int yw_write_wunderinfo(_NC_STACK_ypaworld *yw, FILE *fil)
 
         if ( gem->field_0 )
         {
-            if ( yw->cells[gem->sec_x + gem->sec_y * yw->sectors_maxX2].field_3A != 4 )
+            if ( yw->cells[gem->sec_x + gem->sec_y * yw->sectors_maxX2].w_type != 4 )
             {
                 sprintf(buf, "    disablegem %d\n", i);
                 fwrite(buf, strlen(buf), 1, fil);

@@ -861,7 +861,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
         {
             ufo->field_14 = (arg->inpt->sliders_vars[2] * 4.0 + 1.0) * bact->mass * 9.80665;
 
-            float v85 = bact->p_cell_area->sector_height_meters - bact->field_621.sy;
+            float v85 = bact->p_cell_area->height - bact->field_621.sy;
             float v96 = bact->field_679 - v85;
             float v101 = 1.0 / bact->field_679;
 

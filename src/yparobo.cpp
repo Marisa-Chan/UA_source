@@ -766,7 +766,7 @@ void sub_4A9F24(__NC_STACK_yparobo *robo, bact_node *node)
 
             if ( call_method(bact->self, 132, &arg67) )
             {
-                if ( !((1 << robo->bact_internal->owner) & arg67.field_8->p_cell_area->field_39) )
+                if ( !((1 << robo->bact_internal->owner) & arg67.field_8->p_cell_area->view_mask) )
                 {
                     arg67.field_0 = 1;
                     arg67.targ.sx = robo->field_1FF.sx;
@@ -1078,7 +1078,7 @@ void sb_0x4a7010__sub1__sub0(bact_node *nod1, bact_node *nod2)
                 {
                     cellArea *pcell = &bact1->p_cell_area[i + j * bact1->field_20];
 
-                    if ( pcell->owner == bact1->owner && pcell->field_3A == 2 )
+                    if ( pcell->owner == bact1->owner && pcell->w_type == 2 )
                     {
                         float yy = (v21 + 0.5) * -1200.0;
                         float xx = (v20 + 0.5) * 1200.0;
@@ -1088,9 +1088,9 @@ void sb_0x4a7010__sub1__sub0(bact_node *nod1, bact_node *nod2)
                         return;
                     }
 
-                    if ( (1 << nod2->bact->owner) & pcell->field_39 )
+                    if ( (1 << nod2->bact->owner) & pcell->view_mask )
                     {
-                        __NC_STACK_ypabact *v10 = (__NC_STACK_ypabact *)pcell->field_3C.head;
+                        __NC_STACK_ypabact *v10 = (__NC_STACK_ypabact *)pcell->units_list.head;
 
                         while( v10->next )
                         {
@@ -1118,7 +1118,7 @@ void sb_0x4a7010__sub1__sub0(bact_node *nod1, bact_node *nod2)
         }
     }
 
-    if ( (1 << nod2->bact->owner) & nod1->bact->p_cell_area->field_39 )
+    if ( (1 << nod2->bact->owner) & nod1->bact->p_cell_area->view_mask )
     {
         sub_4A58C0(nod2->bact, nod1->bact);
 
@@ -1481,7 +1481,7 @@ size_t yparobo_func70__sub1(__NC_STACK_yparobo *robo, float a2)
 
                     call_method(robo->wrld, 130, &arg130);
 
-                    if ( v81 || !arg130.pcell->field_3A )
+                    if ( v81 || !arg130.pcell->w_type )
                     {
                         yw_arg129 v60;
                         v60.pos.sx = arg136.field_2C;
@@ -1579,7 +1579,7 @@ size_t yparobo_func70__sub1(__NC_STACK_yparobo *robo, float a2)
 
                     call_method(robo->wrld, 130, &arg130);
 
-                    if ( v81 || !arg130.pcell->field_3A )
+                    if ( v81 || !arg130.pcell->w_type )
                     {
                         yw_arg129 v60;
                         v60.pos.sx = clzn->pos1.sx;
@@ -2567,7 +2567,7 @@ void yparobo_func70__sub4__sub0(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
 
     float v35 = arg->field_4 * 0.001;
 
-    if ( robo->pcell[ robo->field_2F5 ].field_3A )
+    if ( robo->pcell[ robo->field_2F5 ].w_type )
     {
         bact_arg67 arg67;
         arg67.field_0 = 0;
@@ -2753,7 +2753,7 @@ void yparobo_func70__sub4__sub2(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
 
     float v38 = arg->field_4 * 0.001;
 
-    if ( robo->pcell[ robo->field_2F5 ].field_3A )
+    if ( robo->pcell[ robo->field_2F5 ].w_type )
     {
         bact_arg67 arg67;
         arg67.field_0 = 0;
@@ -2768,7 +2768,7 @@ void yparobo_func70__sub4__sub2(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
         arg176.owner = bact->owner;
         call_method(robo->wrld, 176, &arg176);
 
-        if ( robo->pcell[ robo->field_2F5 ].field_2F != -1 && ( arg176.field_4 >= 0.9 || arg176.field_4 <= 0.001) )
+        if ( robo->pcell[ robo->field_2F5 ].energy_power != -1 && ( arg176.field_4 >= 0.9 || arg176.field_4 <= 0.001) )
         {
             BuildProto *buildprotos;
             call_vtbl(robo->wrld, 3, 0x80002013, &buildprotos, 0);
@@ -2945,7 +2945,7 @@ void yparobo_func70__sub4__sub1(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
 
     float v35 = arg->field_4 * 0.001;
 
-    if ( robo->pcell[ robo->field_2F5 ].field_3A )
+    if ( robo->pcell[ robo->field_2F5 ].w_type )
     {
         bact_arg67 arg67;
         arg67.field_0 = 0;
@@ -3563,7 +3563,7 @@ void yparobo_func70__sub4__sub4(__NC_STACK_yparobo *robo)
 
     int enrg = 0;
 
-    __NC_STACK_ypabact *cell_unit = (__NC_STACK_ypabact *)arg130.pcell->field_3C.head;
+    __NC_STACK_ypabact *cell_unit = (__NC_STACK_ypabact *)arg130.pcell->units_list.head;
 
     while (cell_unit->next)
     {
@@ -3614,7 +3614,7 @@ void yparobo_func70__sub4__sub4(__NC_STACK_yparobo *robo)
 
     call_method(robo->wrld, 136, &arg136);
 
-    if ( bact->p_cell_area->sector_height_meters - arg136.field_30 >= 50.0 )
+    if ( bact->p_cell_area->height - arg136.field_30 >= 50.0 )
     {
         bact_arg67 arg67;
         arg67.targ.sx = bact->field_621.sx + 200.0;
@@ -3645,7 +3645,7 @@ void yparobo_func70__sub4__sub4(__NC_STACK_yparobo *robo)
 
         loct.field_C = 1;
 
-        if ( robo->field_2E9->field_3A == 2 )
+        if ( robo->field_2E9->w_type == 2 )
             loct.field_8 = 49;
         else
             loct.field_8 = 60;
@@ -3721,7 +3721,7 @@ void yparobo_func70__sub4__sub5(__NC_STACK_yparobo *robo)
 
         call_method(robo->wrld, 136, &arg136);
 
-        if ( bact->p_cell_area->sector_height_meters - arg136.field_30 >= 50.0 )
+        if ( bact->p_cell_area->height - arg136.field_30 >= 50.0 )
         {
             arg132.targ.sx = bact->field_621.sx + 200.0;
             arg132.targ.sz = bact->field_621.sz + 300.0;
@@ -3817,7 +3817,7 @@ void yparobo_func70__sub4__sub6(__NC_STACK_yparobo *robo)
 
         call_method(robo->wrld, 136, &arg136);
 
-        if ( bact->p_cell_area->sector_height_meters - arg136.field_30 >= 50.0 )
+        if ( bact->p_cell_area->height - arg136.field_30 >= 50.0 )
         {
             arg132.targ.sx = bact->field_621.sx + 200.0;
             arg132.targ.sz = bact->field_621.sz + 300.0;
@@ -3893,7 +3893,7 @@ void yparobo_func70__sub4__sub7(__NC_STACK_yparobo *robo)
 
     call_method(robo->wrld, 136, &arg136);
 
-    if ( bact->p_cell_area->sector_height_meters - arg136.field_30 >= 50.0 )
+    if ( bact->p_cell_area->height - arg136.field_30 >= 50.0 )
     {
         bact_arg67 arg67;
         arg67.targ.sx = bact->field_621.sx + 200.0;
@@ -4322,7 +4322,7 @@ void sub_4A42B8(__NC_STACK_yparobo *robo)
         {
             if ( unit != bact && unit->field_24 == 3 )
             {
-                if ( (1 << bact->owner) & unit->p_cell_area->field_39 )
+                if ( (1 << bact->owner) & unit->p_cell_area->view_mask )
                 {
                     bact_node *kids = (bact_node *)robo->bact_internal->list2.head;
 
@@ -4615,7 +4615,7 @@ void sb_0x4a7010(__NC_STACK_yparobo *robo)
                     }
                     else if ( call_method(units->bacto, 108, &v31) )
                     {
-                        if ( unit_bact->owner == unit_bact->p_cell_area->owner && unit_bact->p_cell_area->field_2F )
+                        if ( unit_bact->owner == unit_bact->p_cell_area->owner && unit_bact->p_cell_area->energy_power )
                         {
                             bact_arg67 arg67;
                             arg67.field_0 = 1;
@@ -4674,7 +4674,7 @@ void sub_4A0260(__NC_STACK_yparobo *robo)
             if ( v5 > 0 && v5 < bact->field_20 - 2 && v4 > 0 && v4 < bact->field_22 - 2 )
             {
 
-                __NC_STACK_ypabact *v7 = (__NC_STACK_ypabact *)bact->p_cell_area[i + j * bact->field_20].field_3C.head;
+                __NC_STACK_ypabact *v7 = (__NC_STACK_ypabact *)bact->p_cell_area[i + j * bact->field_20].units_list.head;
 
                 while (v7->next)
                 {
@@ -4722,7 +4722,7 @@ int yparobo_func70__sub6__sub0(__NC_STACK_yparobo *robo, cellArea *cell)
     int xx = robo->field_22D % bact->field_20;
     int yy = robo->field_22D / bact->field_20;
 
-    if ( !(cell->field_39 & (1 << bact->owner)) )
+    if ( !(cell->view_mask & (1 << bact->owner)) )
         return -1;
 
 //  if ( cell->field_2E != 1 )
@@ -4739,7 +4739,7 @@ int yparobo_func70__sub6__sub0(__NC_STACK_yparobo *robo, cellArea *cell)
     if ( cell->owner != robo->bact_internal->owner )
         return -1;
 
-    if ( cell->field_3A )
+    if ( cell->w_type )
         return -1;
 
     float v8 = sqrt( POW2(bact->field_10 - yy) + POW2(bact->field_c - xx) );
@@ -4750,7 +4750,7 @@ int yparobo_func70__sub6__sub0(__NC_STACK_yparobo *robo, cellArea *cell)
 
     for (int i = 0; i < 8; i++)
     {
-        if ( !((1 << bact->owner) & cell[ word_5182AE[i].x + word_5182AE[i].y * bact->field_20 ].field_39 ) )
+        if ( !((1 << bact->owner) & cell[ word_5182AE[i].x + word_5182AE[i].y * bact->field_20 ].view_mask ) )
         {
             v9 = 1;
             v14 += 10.0;
@@ -4770,7 +4770,7 @@ int yparobo_func70__sub6__sub1(__NC_STACK_yparobo *robo, cellArea *cell)
     int xx = robo->field_2C1 % bact->field_20;
     int yy = robo->field_2C1 / bact->field_20;
 
-    if ( cell->field_39 & (1 << bact->owner) )
+    if ( cell->view_mask & (1 << bact->owner) )
         return -1;
 
     float v13 = sqrt(POW2(bact->field_10 - yy) + POW2(bact->field_c - xx));
@@ -4780,7 +4780,7 @@ int yparobo_func70__sub6__sub1(__NC_STACK_yparobo *robo, cellArea *cell)
 
     for (int i = 0; i < 8; i++)
     {
-        if ( !((1 << bact->owner) & cell[ word_5182AE[i].x + word_5182AE[i].y * bact->field_20 ].field_39 ) )
+        if ( !((1 << bact->owner) & cell[ word_5182AE[i].x + word_5182AE[i].y * bact->field_20 ].view_mask ) )
         {
             v13 += 5.0;
         }
@@ -4796,7 +4796,7 @@ int yparobo_func70__sub6__sub2(__NC_STACK_yparobo *robo, cellArea *cell)
     int xx = robo->field_245 % bact->field_20;
     int yy = robo->field_245 / bact->field_20;
 
-    if ( !(cell->field_39 & (1 << bact->owner)) )
+    if ( !(cell->view_mask & (1 << bact->owner)) )
         return -1;
 
 //  if ( cell->field_2E != 1 )
@@ -4810,7 +4810,7 @@ int yparobo_func70__sub6__sub2(__NC_STACK_yparobo *robo, cellArea *cell)
 //      }
 //  }
 
-    if ( cell->owner != robo->bact_internal->owner || cell->field_3A )
+    if ( cell->owner != robo->bact_internal->owner || cell->w_type )
         return -1;
 
     float v9 = sqrt( POW2(bact->field_10 - yy) + POW2(bact->field_c - xx) );
@@ -4826,7 +4826,7 @@ int yparobo_func70__sub6__sub2(__NC_STACK_yparobo *robo, cellArea *cell)
     {
         cellArea *cll = &cell[ word_5182AE[i].x + word_5182AE[i].y * bact->field_20 ];
 
-        if ( cll->field_3A && bact->owner == cll->owner)
+        if ( cll->w_type && bact->owner == cll->owner)
             v14 += 5.0;
 
     }
@@ -4841,13 +4841,13 @@ int yparobo_func70__sub6__sub3(__NC_STACK_yparobo *robo, cellArea *cell)
     int xx = robo->field_25D % bact->field_20;
     int yy = robo->field_25D / bact->field_20;
 
-    if ( !(cell->field_39 & (1 << bact->owner)) )
+    if ( !(cell->view_mask & (1 << bact->owner)) )
         return -1;
 
-    if ( cell->field_2F >= 255 )
+    if ( cell->energy_power >= 255 )
         return -1;
 
-    if ( cell->field_3A )
+    if ( cell->w_type )
         return -1;
 
 //  if ( cell->field_2E != 1 )
@@ -4870,7 +4870,7 @@ int yparobo_func70__sub6__sub3(__NC_STACK_yparobo *robo, cellArea *cell)
     if ( v9 > 8.0 )
         return -1;
 
-    float v27 = v26 + (255 - cell->field_2F) / 3.0;
+    float v27 = v26 + (255 - cell->energy_power) / 3.0;
 
     for (int i = 0; i < 8; i++)
     {
@@ -4880,7 +4880,7 @@ int yparobo_func70__sub6__sub3(__NC_STACK_yparobo *robo, cellArea *cell)
         {
             int v11 = 0;
 
-            if ( cll->field_2E == 1 )
+            if ( cll->comp_type == 1 )
             {
                 v11 = cll->buildings_health[0][0];
             }
@@ -4897,11 +4897,11 @@ int yparobo_func70__sub6__sub3(__NC_STACK_yparobo *robo, cellArea *cell)
             v27 += (255 - v11) * 0.05 + 10.0;
         }
 
-        if ( cll->field_3A == 2 )
+        if ( cll->w_type == 2 )
             v27 *= 0.7;
     }
 
-    __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cell->field_3C.head;
+    __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cell->units_list.head;
 
     while ( bct->next )
     {
@@ -4930,13 +4930,13 @@ int yparobo_func70__sub6__sub4(__NC_STACK_yparobo *robo, cellArea *cell)
     else
         v25 = 1000.0 / v7;
 
-    if ( (1 << bact->owner) & cell->field_39 )
+    if ( (1 << bact->owner) & cell->view_mask )
     {
-        if ( cell->field_3A )
+        if ( cell->w_type )
             v25 = v25 + 20.0;
-        if ( cell->field_3A == 6 )
+        if ( cell->w_type == 6 )
             v25 = v25 + 40.0;
-        if ( cell->field_3A == 2 )
+        if ( cell->w_type == 2 )
             v25 = v25 + 50.0;
     }
 
@@ -4952,9 +4952,9 @@ int yparobo_func70__sub6__sub4(__NC_STACK_yparobo *robo, cellArea *cell)
         }
     }
 
-    if ( (1 << bact->owner) & cell->field_39 )
+    if ( (1 << bact->owner) & cell->view_mask )
     {
-        __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cell->field_3C.head;
+        __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cell->units_list.head;
 
         while ( bct->next )
         {
@@ -4988,9 +4988,9 @@ int yparobo_func70__sub6__sub8(__NC_STACK_yparobo *robo)
     {
         cellArea *cll = &robo->pcell[i];
 
-        if ( cll->field_3A == 3 )
+        if ( cll->w_type == 3 )
         {
-            __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cll->field_3C.head;
+            __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cll->units_list.head;
             while (bct->next)
             {
                 if ( bct->field_24 == 9 && bct->field_3D5 != 2 && bact->owner == bct->owner )
@@ -5025,9 +5025,9 @@ int yparobo_func70__sub6__sub9(__NC_STACK_yparobo *robo)
     {
         cellArea *cll = &robo->pcell[i];
 
-        if ( cll->field_3A == 3 )
+        if ( cll->w_type == 3 )
         {
-            __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cll->field_3C.head;
+            __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cll->units_list.head;
             while (bct->next)
             {
                 if ( bct->field_24 == 9 && bct->field_3D5 != 2 && bact->owner == bct->owner )
@@ -5077,7 +5077,7 @@ int yparobo_func70__sub6__sub11(__NC_STACK_yparobo *robo)
 
     for (int i = 0; i < num; i++)
     {
-        if ( !((1 << bact->owner) & robo->pcell[i].field_39) )
+        if ( !((1 << bact->owner) & robo->pcell[i].view_mask) )
             v4++;
     }
 
@@ -5128,7 +5128,7 @@ int yparobo_func70__sub6__sub13(__NC_STACK_yparobo *robo)
 
             if ( xx > 0 && xx < bact->field_20 - 1 && yy > 0 && yy < bact->field_22 - 1 )
             {
-                __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *) bact->p_cell_area[ i + j * bact->field_20 ].field_3C.head;
+                __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *) bact->p_cell_area[ i + j * bact->field_20 ].units_list.head;
 
                 while ( bct->next )
                 {
@@ -5212,7 +5212,7 @@ int yparobo_func70__sub6__sub5(__NC_STACK_yparobo *robo, int *a2, int *px, int *
                     if ( ndbct->bact->field_24 == 9 )
                         call_vtbl(ndbct->bacto, 3, 0x80002006, &v26, 0);
 
-                    if ( (1 << bact->owner) & ndbct->bact->p_cell_area->field_39 )
+                    if ( (1 << bact->owner) & ndbct->bact->p_cell_area->view_mask )
                     {
                         if ( ndbct->bact->field_3D5 != 2 && !v26 )
                         {
@@ -5268,7 +5268,7 @@ int yparobo_func70__sub6__sub6(__NC_STACK_yparobo *robo, int *a2, int *px, int *
     {
         if ( node->bact->owner != robo->bact_internal->owner && node->bact->owner && node->bact->field_3D5 != 2 )
         {
-            if ( (1 << bact->owner) & node->bact->p_cell_area->field_39 )
+            if ( (1 << bact->owner) & node->bact->p_cell_area->view_mask )
             {
                 float v13 = sub_4F4C6C(node, robo, bact->field_c, bact->field_10);
                 if ( v13 > v32 )
@@ -5319,11 +5319,11 @@ int sub_4F4E48(__NC_STACK_yparobo *robo, int x, int y)
                 v15 = 3.0;
 
             if ( bact->owner == cll->owner )
-                v14 += cll->field_2F * arg176.field_4 + v15;
+                v14 += cll->energy_power * arg176.field_4 + v15;
             else
-                v14 -= cll->field_2F * arg176.field_4 + v15;
+                v14 -= cll->energy_power * arg176.field_4 + v15;
 
-            __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cll->field_3C.head;
+            __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cll->units_list.head;
 
             while ( bct->next )
             {
@@ -6341,7 +6341,7 @@ void yparobo_func82(NC_STACK_yparobo *obj, class_stru *zis, ypabact_arg65 *arg)
 
         call_method(robo->wrld, 176, &arg176);
 
-        float v64 = bact->p_cell_area->field_2F;
+        float v64 = bact->p_cell_area->energy_power;
 
         float v70 = v65 * v63 * v64 * arg176.field_4;
 
@@ -7311,7 +7311,7 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
         {
             int i = 0;
 
-            __NC_STACK_ypabact *v1 = (__NC_STACK_ypabact *)bact->p_cell_area->field_3C.head;
+            __NC_STACK_ypabact *v1 = (__NC_STACK_ypabact *)bact->p_cell_area->units_list.head;
 
             while ( v1->next )
             {
@@ -7388,7 +7388,7 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
             unit = (bact_node *)unit->next;
         }
 
-        __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)bact->p_cell_area->field_3C.head;
+        __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)bact->p_cell_area->units_list.head;
 
 
         yw->field_2d90->buddies_count = 0;

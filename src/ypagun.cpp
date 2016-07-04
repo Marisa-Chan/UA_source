@@ -951,7 +951,7 @@ size_t ypagun_func80(NC_STACK_ypagun *obj, class_stru *zis, bact_arg80 *arg)
     }
     else if ( !(arg->field_C & 4) )
     {
-        bact->field_621.sy = arg->pos.sy + bact->p_cell_area->sector_height_meters;
+        bact->field_621.sy = arg->pos.sy + bact->p_cell_area->height;
     }
 
     bact->field_62D = bact->field_621;
@@ -970,7 +970,7 @@ void ypagun_func82(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
     if ( bact->field_3D5 != 2 )
     {
         if ( bact->p_cell_area->owner == bact->owner )
-            bact->energy += bact->energy_2 * (arg->field_4 / 1000.0) * bact->p_cell_area->field_2F / 40000.0;
+            bact->energy += bact->energy_2 * (arg->field_4 / 1000.0) * bact->p_cell_area->energy_power / 40000.0;
 
         if ( bact->energy > bact->energy_2 )
             bact->energy = bact->energy_2;

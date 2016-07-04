@@ -350,28 +350,36 @@ struct recorder
     char filename[64];
 };
 
+enum CELL_PFLAGS
+{
+    CELL_PFLAGS_IN_CLST = 1, // Sector in close list
+    CELL_PFLAGS_IN_OLST = 2  // Sector in open list
+};
+
 struct cellArea : public nnode
 {
-    int field_8;
-    int field_9;
-    char field_A;
-    char field_B;
-    float field_C;
-    float field_10;
-    nlist field_14;
-    nnode field_20;
-    cellArea *pathcell;
+    int pos_x;
+    int pos_y;
+
+    char addit_cost; // Additional cost for ground units
+    char pf_flags; // Pathfind flags
+    float cost_to_this;
+    float cost_to_target;
+    nlist pf_treelist;
+    nnode pf_treenode;
+    cellArea *pf_treeup;
+
     uint8_t owner;
-    uint8_t sec_type;
-    char field_2E;
-    int field_2F; // Cell electric power
+    uint8_t type_id; // Index in array
+    char comp_type; // Complex (3x3) or simple
+    int energy_power; // Cell electric power
     uint8_t buildings_health[3][3];
-    char field_39; // Who can view this sector (mask)
-    char field_3A;
-    uint8_t field_3B;
-    nlist field_3C;
-    float sector_height_meters;
-    float smooth_height;
+    uint8_t view_mask; // Who can view this sector (mask)
+    char w_type;
+    uint8_t w_id;
+    nlist units_list; // Units in this sector
+    float height;
+    float averg_height;
 };
 
 struct keysec

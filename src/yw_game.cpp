@@ -557,8 +557,8 @@ void  sub_44F500(_NC_STACK_ypaworld *yw, int id)
         if ( id == yw->field_38 - 1 )
             yw->field_38--;
 
-        cell->field_3B = 0;
-        cell->field_3A = 0;
+        cell->w_id = 0;
+        cell->w_type = 0;
 
         if ( yw->blg_map )
         {
@@ -861,11 +861,11 @@ int cells_mark_type(_NC_STACK_ypaworld *yw, const char *a2)
         cellArea *cell = &yw->cells[i];
         secType *sectp = &yw->secTypes[ typMap[i] ];
 
-        init_list(&cell->field_3C);
+        init_list(&cell->units_list);
 
-        cell->sec_type = typMap[i];
-        cell->field_2E = sectp->field_0;
-        cell->field_2F = 0;
+        cell->type_id = typMap[i];
+        cell->comp_type = sectp->field_0;
+        cell->energy_power = 0;
 
         if ( sectp->field_0 == 1)
         {
@@ -943,7 +943,7 @@ int cells_mark_hight(_NC_STACK_ypaworld *yw, const char *a2)
 
     for (int i = 0; i < sectors_cnt; i++)
     {
-        yw->cells[i].sector_height_meters = hgtMap[i] * -100.0;
+        yw->cells[i].height = hgtMap[i] * -100.0;
     }
 
     for (int y = 1; y < yw->sectors_maxY2; y++)
@@ -958,10 +958,10 @@ int cells_mark_hight(_NC_STACK_ypaworld *yw, const char *a2)
             int left_up_sector = xx + yy * yw->sectors_maxX2;
             int up_sector = x + yy * yw->sectors_maxX2;
 
-            yw->cells[cur_sector_id].smooth_height = (yw->cells[cur_sector_id].sector_height_meters +
-                    yw->cells[left_sector].sector_height_meters +
-                    yw->cells[left_up_sector].sector_height_meters +
-                    yw->cells[up_sector].sector_height_meters ) / 4.0;
+            yw->cells[cur_sector_id].averg_height = (yw->cells[cur_sector_id].height +
+                                                    yw->cells[left_sector].height +
+                                                    yw->cells[left_up_sector].height +
+                                                    yw->cells[up_sector].height ) / 4.0;
         }
     }
 
@@ -1191,7 +1191,7 @@ void yw_InitSquads(_NC_STACK_ypaworld *yw, int squad_cnt, squadProto *squads)
                         }
 
                         arg133.pos.sx = squad->pos_x;
-                        arg133.pos.sy = sect_info.pcell->sector_height_meters;
+                        arg133.pos.sy = sect_info.pcell->height;
                         arg133.pos.sz = squad->pos_z;
                     }
                     // Create squad by robo method
@@ -1301,7 +1301,7 @@ void yw_InitTechUpgradeBuildings(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw)
 
             if (yw->gems[i].building)
             {
-                if ( cell->field_3A != 3 || yw->gems[i].building != cell->field_3B )
+                if ( cell->w_type != 3 || yw->gems[i].building != cell->w_id )
                 {
                     ypaworld_arg148 arg148;
                     arg148.ownerID = cell->owner;
@@ -1316,8 +1316,8 @@ void yw_InitTechUpgradeBuildings(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw)
                 }
             }
 
-            cell->field_3A = 4;
-            cell->field_3B = i;
+            cell->w_type = 4;
+            cell->w_id = i;
         }
     }
 }
@@ -1343,8 +1343,8 @@ void yw_InitGates(_NC_STACK_ypaworld *yw)
 
         call_method(yw->self_full, 148, &arg148);
 
-        gate->pcell->field_3A = 5;
-        gate->pcell->field_3B = i;
+        gate->pcell->w_type = 5;
+        gate->pcell->w_id = i;
 
         for (int j = 0; j < gate->keySectors_count; j++)
         {
@@ -1379,8 +1379,8 @@ void yw_InitSuperItems(_NC_STACK_ypaworld *yw)
 
         call_method(yw->self_full, 148, &arg148);
 
-        stoudson->pcell->field_3A = 8;
-        stoudson->pcell->field_3B = i;
+        stoudson->pcell->w_type = 8;
+        stoudson->pcell->w_id = i;
 
         for (int j = 0; j < stoudson->keySectors_count; j++)
         {
@@ -1412,7 +1412,7 @@ void sub_44F748(_NC_STACK_ypaworld *yw)
             yw_f30 *tt = &yw->field_30[ x + y * 64 ];
 
             tt->owner = cell->owner;
-            cell->field_2F = tt->field_1; // Apply power to cell
+            cell->energy_power = tt->field_1; // Apply power to cell
             tt->field_1 = 0; // Clean matrix's power
         }
     }
@@ -1433,7 +1433,7 @@ void sub_44F958(_NC_STACK_ypaworld *yw, cellArea *cell, char secX, char secY, ui
 
         call_method(yw->self_full, 184, &arg184);
 
-        if ( cell->field_3A == 2 )
+        if ( cell->w_type == 2 )
         {
             arg184.type = 6;
 
@@ -1457,7 +1457,7 @@ void sb_0x44fc60__sub0(_NC_STACK_ypaworld *yw, int secX, int secY, cellArea *cel
 
         memset(energon, 0, sizeof(energon));
 
-        __NC_STACK_ypabact *nod = (__NC_STACK_ypabact *)cell->field_3C.head;
+        __NC_STACK_ypabact *nod = (__NC_STACK_ypabact *)cell->units_list.head;
 
         while ( nod->next )
         {
@@ -1477,7 +1477,7 @@ void sb_0x44fc60__sub0(_NC_STACK_ypaworld *yw, int secX, int secY, cellArea *cel
 
     if ( cell->owner != a6 )
     {
-        if ( cell->field_3A == 2 )
+        if ( cell->w_type == 2 )
         {
             if ( yw->field_1b80->owner == a6 )
             {
@@ -1556,26 +1556,26 @@ void sb_0x44fc60(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int
             }
         }
 
-        if ( cell->field_3A == 2 )
+        if ( cell->w_type == 2 )
         {
             if ( helth )
             {
-                int v13 = (helth * yw->field_34[ cell->field_3B ].power) / 256 ;
+                int v13 = (helth * yw->field_34[ cell->w_id ].power) / 256 ;
 
                 if ( v13 < 0 )
                     v13 = 0;
                 else if ( v13 > 255 )
                     v13 = 255;
 
-                yw->field_34[cell->field_3B].power_2 = v13;
+                yw->field_34[cell->w_id].power_2 = v13;
             }
             else
             {
-                sub_44F500(yw, cell->field_3B);
+                sub_44F500(yw, cell->w_id);
             }
         }
 
-        if ( cell->field_2E == 1 )
+        if ( cell->comp_type == 1 )
         {
             if ( helth < 224 )
                 sb_0x44fc60__sub0(yw, secX, secY, cell, a6, a5);
@@ -1614,7 +1614,7 @@ void sub_44DBF8(_NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, st
 
             int v14, v16;
 
-            if ( a6->p_cell->field_2E == 1 )
+            if ( a6->p_cell->comp_type == 1 )
             {
                 v14 = 0;
                 v16 = 0;
@@ -1623,7 +1623,7 @@ void sub_44DBF8(_NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, st
                     v8 = flags & 0xFFFE;
 
                 a6->pos_x =   1200.0 * a6->sec_x + 600.0;
-                a6->pos_y = a6->p_cell->sector_height_meters;
+                a6->pos_y = a6->p_cell->height;
                 a6->pos_z = -(1200.0 * a6->sec_y + 600.0);
             }
             else
@@ -1636,12 +1636,12 @@ void sub_44DBF8(_NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, st
 
                 a6->pos_z = -(_dzz * 300.0);
                 a6->pos_x = _dxx * 300.0;
-                a6->pos_y = a6->p_cell->sector_height_meters;
+                a6->pos_y = a6->p_cell->height;
             }
 
             a6->field_1E = v8;
 
-            int model_id = yw->secTypes[a6->p_cell->sec_type].buildings[v16][v14]->health_models [   yw->build_hp_ref[    a6->p_cell->buildings_health[v16][v14]    ]    ];
+            int model_id = yw->secTypes[a6->p_cell->type_id].buildings[v16][v14]->health_models [   yw->build_hp_ref[    a6->p_cell->buildings_health[v16][v14]    ]    ];
 
             if ( v8 & 1 )
                 a6->sklt = yw->legos[model_id].selected_sklt_intern;
@@ -1745,13 +1745,13 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
         cellArea *cur = arg->p_cell;
         cellArea *left = arg->p_cell - 1;
 
-        if ( !(arg->field_1E & 1) || fabs( (int)(cur->sector_height_meters - left->sector_height_meters)) < 500.0 )
+        if ( !(arg->field_1E & 1) || fabs( (int)(cur->height - left->height)) < 500.0 )
         {
 
-            arg->sklt->POO[0].pos3f.sy = left->sector_height_meters;
-            arg->sklt->POO[1].pos3f.sy = cur->sector_height_meters;
-            arg->sklt->POO[2].pos3f.sy = cur->sector_height_meters;
-            arg->sklt->POO[3].pos3f.sy = left->sector_height_meters;
+            arg->sklt->POO[0].pos3f.sy = left->height;
+            arg->sklt->POO[1].pos3f.sy = cur->height;
+            arg->sklt->POO[2].pos3f.sy = cur->height;
+            arg->sklt->POO[3].pos3f.sy = left->height;
 
             sub_44DF60(arg->sklt, 0);
         }
@@ -1759,10 +1759,10 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
         {
             arg->sklt = yw->colsub_sklt_intrn;
 
-            if ( cur->sector_height_meters > left->sector_height_meters )
-                arg->pos_y = cur->sector_height_meters;
+            if ( cur->height > left->height )
+                arg->pos_y = cur->height;
             else
-                arg->pos_y = left->sector_height_meters;
+                arg->pos_y = left->height;
         }
     }
     else if ( arg->field_1C == 3 )
@@ -1770,12 +1770,12 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
         cellArea *cur = arg->p_cell;
         cellArea *up = arg->p_cell - yw->sectors_maxX2;
 
-        if ( !(arg->field_1E & 1) || fabs( (int)(cur->sector_height_meters - up->sector_height_meters)) < 500.0 )
+        if ( !(arg->field_1E & 1) || fabs( (int)(cur->height - up->height)) < 500.0 )
         {
-            arg->sklt->POO[0].pos3f.sy = up->sector_height_meters;
-            arg->sklt->POO[1].pos3f.sy = up->sector_height_meters;
-            arg->sklt->POO[2].pos3f.sy = cur->sector_height_meters;
-            arg->sklt->POO[3].pos3f.sy = cur->sector_height_meters;
+            arg->sklt->POO[0].pos3f.sy = up->height;
+            arg->sklt->POO[1].pos3f.sy = up->height;
+            arg->sklt->POO[2].pos3f.sy = cur->height;
+            arg->sklt->POO[3].pos3f.sy = cur->height;
 
             sub_44DF60(arg->sklt, 0);
         }
@@ -1783,10 +1783,10 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
         {
             arg->sklt = yw->colsub_sklt_intrn;
 
-            if ( cur->sector_height_meters > up->sector_height_meters )
-                arg->pos_y = cur->sector_height_meters;
+            if ( cur->height > up->height )
+                arg->pos_y = cur->height;
             else
-                arg->pos_y = up->sector_height_meters;
+                arg->pos_y = up->height;
         }
     }
     else if ( arg->field_1C == 4 )
@@ -1801,10 +1801,10 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
 
         if ( arg->field_1E & 1 )
         {
-            float cs = cur->sector_height_meters;
-            float ls = left->sector_height_meters;
-            float us = up->sector_height_meters;
-            float lus = leftup->sector_height_meters;
+            float cs = cur->height;
+            float ls = left->height;
+            float us = up->height;
+            float lus = leftup->height;
 
             float v15, v16, v17, v18;
 
@@ -1843,11 +1843,11 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
         }
         if ( !kk )
         {
-            arg->sklt->POO[0].pos3f.sy = leftup->sector_height_meters;
-            arg->sklt->POO[1].pos3f.sy = up->sector_height_meters;
-            arg->sklt->POO[2].pos3f.sy = cur->sector_height_meters;
-            arg->sklt->POO[3].pos3f.sy = left->sector_height_meters;
-            arg->sklt->POO[4].pos3f.sy = cur->smooth_height;
+            arg->sklt->POO[0].pos3f.sy = leftup->height;
+            arg->sklt->POO[1].pos3f.sy = up->height;
+            arg->sklt->POO[2].pos3f.sy = cur->height;
+            arg->sklt->POO[3].pos3f.sy = left->height;
+            arg->sklt->POO[4].pos3f.sy = cur->averg_height;
 
             sub_44DF60(arg->sklt, 0);
             sub_44DF60(arg->sklt, 1);
@@ -2257,13 +2257,13 @@ void sub_4D7F60(_NC_STACK_ypaworld *yw, int x, int y, stru_a3 *sct, base77Func *
     {
         sct->dword4 = 1;
         sct->p_cell = yw->cells + x + yw->sectors_maxX2 * y;
-        sct->smooth_height = sct->p_cell->smooth_height;
+        sct->smooth_height = sct->p_cell->averg_height;
 
         flag_xyz grp_1;
         grp_1.flag = 7;
         grp_1.x = x * 1200.0 + 600.0;
         grp_1.z = -(y * 1200.0 + 600.0);
-        grp_1.y = sct->p_cell->sector_height_meters;
+        grp_1.y = sct->p_cell->height;
 
         sct->x = grp_1.x;
         sct->y = grp_1.y;
@@ -2294,22 +2294,22 @@ void sub_4D806C(_NC_STACK_ypaworld *yw, stru_a3 *sct, base77Func *bs77)
 
         flag_xyz scel;
 
-        if ( pcell->field_3A == 1 )
+        if ( pcell->w_type == 1 )
         {
-            yw_f80 *v5 = &yw->field_80[ pcell->field_3B ];
+            yw_f80 *v5 = &yw->field_80[ pcell->w_id ];
 
             scel.flag = 2;
             scel.y = (float)v5->field_4 / (float)v5->field_8;
 
-            pcell->sec_type = yw->BuildProtos[ v5->blg_ID ].sec_type;
-            pcell->field_2E = yw->secTypes[ pcell->sec_type ].field_0;
+            pcell->type_id = yw->BuildProtos[ v5->blg_ID ].sec_type;
+            pcell->comp_type = yw->secTypes[ pcell->type_id ].field_0;
 
             v22 = 1;
         }
 
         int v17, v20;
 
-        if ( pcell->field_2E == 1 )
+        if ( pcell->comp_type == 1 )
         {
             v17 = 0;
             v20 = 1;
@@ -2329,7 +2329,7 @@ void sub_4D806C(_NC_STACK_ypaworld *yw, stru_a3 *sct, base77Func *bs77)
 
                 if ( v22 )
                 {
-                    NC_STACK_base *bld = yw->legos[ yw->secTypes[ pcell->sec_type ].buildings[xx][zz]->health_models[0] ].base;
+                    NC_STACK_base *bld = yw->legos[ yw->secTypes[ pcell->type_id ].buildings[xx][zz]->health_models[0] ].base;
 
                     call_vtbl(bld, 2, 0x80001024, 0, 0);
 
@@ -2341,7 +2341,7 @@ void sub_4D806C(_NC_STACK_ypaworld *yw, stru_a3 *sct, base77Func *bs77)
                 }
                 else
                 {
-                    NC_STACK_base *bld = yw->legos[ yw->secTypes[ pcell->sec_type ].buildings[xx][zz]->health_models[ yw->build_hp_ref[ pcell->buildings_health[xx][zz] ] ] ].base;
+                    NC_STACK_base *bld = yw->legos[ yw->secTypes[ pcell->type_id ].buildings[xx][zz]->health_models[ yw->build_hp_ref[ pcell->buildings_health[xx][zz] ] ] ].base;
 
                     call_method(bld, 68, &grp_1);
                     call_method(bld, 77, bs77);
@@ -2350,7 +2350,7 @@ void sub_4D806C(_NC_STACK_ypaworld *yw, stru_a3 *sct, base77Func *bs77)
         }
     }
 
-    __NC_STACK_ypabact *bact = (__NC_STACK_ypabact *)sct->p_cell->field_3C.head;
+    __NC_STACK_ypabact *bact = (__NC_STACK_ypabact *)sct->p_cell->units_list.head;
 
     while ( bact->next )
     {
@@ -2422,7 +2422,7 @@ void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float p
 
                     if ( (v23 & 3) && (v26 & 3) )
                     {
-                        v28 = yw->cells[ (v26 / 4) * yw->sectors_maxX2 + (v23 / 4) ].sector_height_meters;
+                        v28 = yw->cells[ (v26 / 4) * yw->sectors_maxX2 + (v23 / 4) ].height;
                     }
                     else
                     {
@@ -2518,8 +2518,8 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub0(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
     if ( sct->dword4 != 1 || sct2->dword4 != 1 || (sct->dword8 != 1 && sct2->dword8 != 1) )
         return 0;
 
-    int i = yw->secTypes[ sct->p_cell->sec_type ].field_1;
-    int j = yw->secTypes[ sct2->p_cell->sec_type ].field_1;
+    int i = yw->secTypes[ sct->p_cell->type_id ].field_1;
+    int j = yw->secTypes[ sct2->p_cell->type_id ].field_1;
 
     NC_STACK_base *bs = yw->slurps2[i][j].skeletons_bas;
     skeleton_64_stru *skel = yw->slurps2[i][j].skeleton_internal;
@@ -2548,8 +2548,8 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub1(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
     if ( sct->dword4 != 1 || sct2->dword4 != 1 || (sct->dword8 != 1 && sct2->dword8 != 1) )
         return NULL;
 
-    int i = yw->secTypes[ sct->p_cell->sec_type ].field_1;
-    int j = yw->secTypes[ sct2->p_cell->sec_type ].field_1;
+    int i = yw->secTypes[ sct->p_cell->type_id ].field_1;
+    int j = yw->secTypes[ sct2->p_cell->type_id ].field_1;
 
     NC_STACK_base *bs = yw->slurps1[i][j].skeletons_bas;
     skeleton_64_stru *skel = yw->slurps1[i][j].skeleton_internal;
@@ -2766,8 +2766,8 @@ int sb_0x456384__sub0(_NC_STACK_ypaworld *yw, int x, int y, int power)
     v9->power_2 = power;
     v9->p_cell = cell;
 
-    cell->field_3A = 2;
-    cell->field_3B = v7;
+    cell->w_type = 2;
+    cell->w_id = v7;
 
     sb_0x456384__sub0__sub0(yw);
 
@@ -2802,11 +2802,11 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
         tmp = (uint8_t *)bitm_typ->buffer + x + y * bitm_typ->width;
         *tmp = bld->sec_type;
 
-        cell->sec_type = bld->sec_type;
-        cell->field_2F = 0;
-        cell->field_3A = 3;
-        cell->field_2E = sectp->field_0;
-        cell->field_3B = blg_id;
+        cell->type_id = bld->sec_type;
+        cell->energy_power = 0;
+        cell->w_type = 3;
+        cell->comp_type = sectp->field_0;
+        cell->w_id = blg_id;
 
         int v49;
 
@@ -2962,7 +2962,7 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
 
 void ypaworld_func148__sub0(_NC_STACK_ypaworld *yw, int x, int y)
 {
-    __NC_STACK_ypabact *node = (__NC_STACK_ypabact *) yw->cells[yw->sectors_maxX2 * y + x].field_3C.head;
+    __NC_STACK_ypabact *node = (__NC_STACK_ypabact *) yw->cells[yw->sectors_maxX2 * y + x].units_list.head;
 
     while ( node->next )
     {
@@ -3026,8 +3026,8 @@ int ypaworld_func148__sub1(_NC_STACK_ypaworld *yw, int id, int a4, int x, int y,
         yw->field_80[id].blg_ID = blg_ID;
 
         cellArea *cell = &yw->cells[yw->sectors_maxX2 * y + x];
-        cell->field_3A = 1;
-        cell->field_3B = id;
+        cell->w_type = 1;
+        cell->w_id = id;
 
         bact_node *node = (bact_node *)yw->bact_list.head;
 
@@ -3202,8 +3202,8 @@ void ypaworld_func64__sub20(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int 
 
                 int a6 = yw->field_80[i].blg_ID;
 
-                v11->field_3A = 0;
-                v11->field_3B = 0;
+                v11->w_type = 0;
+                v11->w_id = 0;
 
                 sb_0x456384(ywo, yw, v10, v8, yw->field_80[i].ownerID2, a6, 0);
 
@@ -3489,8 +3489,8 @@ void sub_4D12D8(_NC_STACK_ypaworld *yw, int id, int a3)
 
     call_method(yw->self_full, 148, &arg148);
 
-    sitem->pcell->field_3A = 8;
-    sitem->pcell->field_3B = id;
+    sitem->pcell->w_type = 8;
+    sitem->pcell->w_id = id;
 
     yw_arg159 arg159;
     arg159.unit = 0;
@@ -3532,8 +3532,8 @@ void sub_4D1594(_NC_STACK_ypaworld *yw, int id)
 
     call_method(yw->self_full, 148, &arg148);
 
-    sitem->pcell->field_3A = 8;
-    sitem->pcell->field_3B = id;
+    sitem->pcell->w_type = 8;
+    sitem->pcell->w_id = id;
 
     yw_arg159 arg159;
     arg159.unit = 0;
@@ -3575,8 +3575,8 @@ void sub_4D1444(_NC_STACK_ypaworld *yw, int id)
 
     call_method(yw->self_full, 148, &arg148);
 
-    sitem->pcell->field_3A = 8;
-    sitem->pcell->field_3B = id;
+    sitem->pcell->w_type = 8;
+    sitem->pcell->w_id = id;
 
     yw->field_2d90->supetItems[id].field_108 = 0;
 
@@ -3852,7 +3852,7 @@ void ypaworld_func64__sub9(_NC_STACK_ypaworld *yw)
             v21 = 5;
         }
 
-        if ( gate->pcell->field_3A != v21 )
+        if ( gate->pcell->w_type != v21 )
         {
             ypaworld_arg148 arg148;
             arg148.ownerID = gate->pcell->owner;
@@ -3881,15 +3881,15 @@ void ypaworld_func64__sub9(_NC_STACK_ypaworld *yw)
 
             call_method(yw->self_full, 148, &arg148);
 
-            gate->pcell->field_3A = v21;
-            gate->pcell->field_3B = i;
+            gate->pcell->w_type = v21;
+            gate->pcell->w_id = i;
         }
 
         if ( v21 == 6 )
         {
             int energ = 0;
 
-            __NC_STACK_ypabact *v8 = (__NC_STACK_ypabact *)gate->pcell->field_3C.head;
+            __NC_STACK_ypabact *v8 = (__NC_STACK_ypabact *)gate->pcell->units_list.head;
             while (v8->next)
             {
                 if ( v8->field_3D5 != 2 && v8->field_3D5 != 5 )
@@ -3987,8 +3987,8 @@ void sub_4D16C4(_NC_STACK_ypaworld *yw, int id)
 
     call_method(yw->self_full, 148, &arg148);
 
-    sitem->pcell->field_3A = 8;
-    sitem->pcell->field_3B = id;
+    sitem->pcell->w_type = 8;
+    sitem->pcell->w_id = id;
 
     yw_arg159 arg159;
     arg159.unit = NULL;
@@ -4135,7 +4135,7 @@ void ypaworld_func64__sub19__sub2__sub0__sub0(_NC_STACK_ypaworld *yw, supetItemP
     {
         cellArea *cell = &yw->cells[i];
 
-        __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cell->field_3C.head;
+        __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cell->units_list.head;
 
         while(bct->next)
         {
@@ -4205,7 +4205,7 @@ void ypaworld_func64__sub19__sub2__sub0(_NC_STACK_ypaworld *yw, int id)
 
                     yw_arg129 arg129;
                     arg129.pos.sx = v26;
-                    arg129.pos.sy = sitem->pcell->sector_height_meters;
+                    arg129.pos.sy = sitem->pcell->height;
                     arg129.pos.sz = v21;
                     arg129.field_10 = 200000;
                     arg129.field_14 = sitem->field_F4;
@@ -5892,7 +5892,7 @@ void recorder_set_bact_pos(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, xyz
         if ( bact->p_cell_area )
             Remove(bact);
 
-        AddTail(&arg130.pcell->field_3C, bact);
+        AddTail(&arg130.pcell->units_list, bact);
 
         bact->p_cell_area = arg130.pcell;
         bact->field_62D = bact->field_621;
@@ -6648,7 +6648,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
             cmd = sub_445654(yw, cmd, buf_sprintf, "prof net: %d", yw->p_1_grp[0][6]);
             fntcmd_next_line(&cmd);
 
-            cmd = sub_445654(yw, cmd, buf_sprintf, "sec type/wtype: %d/%d", yw->field_1b84->p_cell_area->sec_type, yw->field_1b84->p_cell_area->field_3A);
+            cmd = sub_445654(yw, cmd, buf_sprintf, "sec type/wtype: %d/%d", yw->field_1b84->p_cell_area->type_id, yw->field_1b84->p_cell_area->w_type);
             fntcmd_next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "beam energy: %d", yw->beamenergy);
@@ -7144,14 +7144,14 @@ int sub_4D5300(_NC_STACK_ypaworld *yw)
 
 int sub_4D5348(_NC_STACK_ypaworld *yw)
 {
-    return yw->field_1b80->p_cell_area->field_3A == 2;
+    return yw->field_1b80->p_cell_area->w_type == 2;
 }
 
 int sub_4D5360(_NC_STACK_ypaworld *yw)
 {
     for (int i = 0; i < yw->field_2d90->gate_count; i++)
     {
-        if ( yw->field_2d90->gates[i].pcell->field_3A == 6 )
+        if ( yw->field_2d90->gates[i].pcell->w_type == 6 )
             return 1;
     }
 

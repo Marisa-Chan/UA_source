@@ -307,7 +307,7 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
 
             if ( v16 > 0 && v16 < bact->field_20 - 1  &&  v18 > 0 && v18 < bact->field_22 - 1 )
             {
-                __NC_STACK_ypabact *v19 = (__NC_STACK_ypabact *)bact->p_cell_area[i + j * bact->field_20].field_3C.head;
+                __NC_STACK_ypabact *v19 = (__NC_STACK_ypabact *)bact->p_cell_area[i + j * bact->field_20].units_list.head;
 
                 while ( v19->next )
                 {
