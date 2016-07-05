@@ -377,7 +377,7 @@ void  yparobo_func2__sub0(NC_STACK_yparobo *obj, __NC_STACK_yparobo *robo, stack
                     }
                 }
 
-                robo->dock = roboproto->dock;
+                robo->dock_pos = roboproto->dock;
                 bact->viewer = roboproto->viewer;
                 bact->viewer_max_up = roboproto->robo_viewer_max_up;
                 bact->viewer_max_down = roboproto->robo_viewer_max_down;
@@ -860,9 +860,9 @@ void sb_0x4a7010__sub0(__NC_STACK_yparobo *robo, bact_node *unit)
             {
                 ypaworld_arg146 arg146;
                 arg146.vehicle_id = unit->bact->id;
-                arg146.pos.sx = bact->field_621.sx + robo->dock.sx;
-                arg146.pos.sy = bact->field_621.sy + robo->dock.sy;
-                arg146.pos.sz = bact->field_621.sz + robo->dock.sz;
+                arg146.pos.sx = bact->field_621.sx + robo->dock_pos.sx;
+                arg146.pos.sy = bact->field_621.sy + robo->dock_pos.sy;
+                arg146.pos.sz = bact->field_621.sz + robo->dock_pos.sz;
 
                 unt = (NC_STACK_ypabact *)call_method(robo->wrld, 146, &arg146);
             }
@@ -3395,9 +3395,9 @@ bact_node *sub_4AA640(__NC_STACK_yparobo *robo, robo_loct1 *arg)
 
         ypaworld_arg146 arg146;
         arg146.vehicle_id = v33;
-        arg146.pos.sx = robo->bact_internal->field_621.sx + robo->dock.sx;
-        arg146.pos.sy = robo->bact_internal->field_621.sy + robo->dock.sy;
-        arg146.pos.sz = robo->bact_internal->field_621.sz + robo->dock.sz;
+        arg146.pos.sx = robo->bact_internal->field_621.sx + robo->dock_pos.sx;
+        arg146.pos.sy = robo->bact_internal->field_621.sy + robo->dock_pos.sy;
+        arg146.pos.sz = robo->bact_internal->field_621.sz + robo->dock_pos.sz;
 
         NC_STACK_ypabact *new_unit = (NC_STACK_ypabact *)call_method(robo->wrld, 146, &arg146);
 
@@ -3604,9 +3604,9 @@ void yparobo_func70__sub4__sub4(__NC_STACK_yparobo *robo)
         v20 = enrg;
 
     ypaworld_arg136 arg136;
-    arg136.pos_x = bact->field_621.sx + robo->dock.sx;
-    arg136.pos_y = bact->field_621.sy + robo->dock.sy - 100.0;
-    arg136.pos_z = bact->field_621.sz + robo->dock.sz;
+    arg136.pos_x = bact->field_621.sx + robo->dock_pos.sx;
+    arg136.pos_y = bact->field_621.sy + robo->dock_pos.sy - 100.0;
+    arg136.pos_z = bact->field_621.sz + robo->dock_pos.sz;
     arg136.field_1C = 0;
     arg136.field_14 = 0;
     arg136.field_18 = 20000.0;
@@ -3711,9 +3711,9 @@ void yparobo_func70__sub4__sub5(__NC_STACK_yparobo *robo)
         }
 
         ypaworld_arg136 arg136;
-        arg136.pos_x = bact->field_621.sx + robo->dock.sx;
-        arg136.pos_y = bact->field_621.sy + robo->dock.sy - 100.0;
-        arg136.pos_z = bact->field_621.sz + robo->dock.sz;
+        arg136.pos_x = bact->field_621.sx + robo->dock_pos.sx;
+        arg136.pos_y = bact->field_621.sy + robo->dock_pos.sy - 100.0;
+        arg136.pos_z = bact->field_621.sz + robo->dock_pos.sz;
         arg136.field_1C = 0;
         arg136.field_14 = 0;
         arg136.field_18 = 20000.0;
@@ -3807,9 +3807,9 @@ void yparobo_func70__sub4__sub6(__NC_STACK_yparobo *robo)
     if ( call_method(bact->self, 132, &arg132) )
     {
         ypaworld_arg136 arg136;
-        arg136.pos_x = bact->field_621.sx + robo->dock.sx;
-        arg136.pos_y = bact->field_621.sy + robo->dock.sy - 100.0;
-        arg136.pos_z = bact->field_621.sz + robo->dock.sz;
+        arg136.pos_x = bact->field_621.sx + robo->dock_pos.sx;
+        arg136.pos_y = bact->field_621.sy + robo->dock_pos.sy - 100.0;
+        arg136.pos_z = bact->field_621.sz + robo->dock_pos.sz;
         arg136.field_1C = 0;
         arg136.field_14 = 0;
         arg136.field_18 = 20000.0;
@@ -3883,9 +3883,9 @@ void yparobo_func70__sub4__sub7(__NC_STACK_yparobo *robo)
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
     ypaworld_arg136 arg136;
-    arg136.pos_x = bact->field_621.sx + robo->dock.sx;
-    arg136.pos_y = bact->field_621.sy + robo->dock.sy + -100.0;
-    arg136.pos_z = bact->field_621.sz + robo->dock.sz;
+    arg136.pos_x = bact->field_621.sx + robo->dock_pos.sx;
+    arg136.pos_y = bact->field_621.sy + robo->dock_pos.sy + -100.0;
+    arg136.pos_z = bact->field_621.sz + robo->dock_pos.sz;
     arg136.field_1C = 0;
     arg136.field_14 = 0;
     arg136.field_18 = 20000.0;

@@ -44,7 +44,7 @@ struct __NC_STACK_yparobo
     char dock_tgType;
     char dock_aggr;
     int dock_tgt_comm_id;
-    xyz dock;
+    xyz dock_pos;
     int field_221;
     cellArea *field_225;  //For AI
     int field_229;  //For AI
