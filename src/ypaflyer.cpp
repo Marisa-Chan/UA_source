@@ -594,7 +594,7 @@ void ypaflyer_func70(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
 
         if ( v79 )
         {
-            if ( v90 || (!bact->field_3DF && v88 < 1200.0) )
+            if ( v90 || (!bact->secndTtype && v88 < 1200.0) )
             {
                 int arg87 = arg->field_4;
 
@@ -602,7 +602,7 @@ void ypaflyer_func70(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
             }
         }
 
-        if ( !bact->field_3DE && !bact->field_3DF )
+        if ( !bact->primTtype && !bact->secndTtype )
         {
             bact->field_3D5 = 3;
 
@@ -818,8 +818,8 @@ void ypaflyer_func70(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
             NC_STACK_ypabact *v81;
             call_vtbl(fly->ywo, 3, 0x80002011, &v81, 0);
 
-            if ( ( (bact->field_3DF != 2 || (bact->field_3f8.pbact->field_24 != 3 && v81 != bact->field_3f8.pbact->self))
-                    && (bact->field_3DE != 2 || (bact->field_3e8.pbact->field_24 != 3 && v81 != bact->field_3e8.pbact->self)) )
+            if ( ( (bact->secndTtype != BACT_TGT_TYPE_UNIT || (bact->secndT.pbact->field_24 != 3 && v81 != bact->secndT.pbact->self))
+                    && (bact->primTtype != BACT_TGT_TYPE_UNIT || (bact->primT.pbact->field_24 != 3 && v81 != bact->primT.pbact->self)) )
                     || bact->field_645.sy >= -0.01 )
             {
                 if ( bact->field_645.sy < 0.15 )
@@ -888,32 +888,32 @@ void ypaflyer_func70(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
 
         //printf("%d %d \n", bact->field_3DF, bact->field_3DE);
 
-        if ( bact->field_3DF == 2 )
+        if ( bact->secndTtype == BACT_TGT_TYPE_UNIT )
         {
-            arg75.bct.pbact = bact->field_3f8.pbact;
+            arg75.bct.pbact = bact->secndT.pbact;
             arg75.field_x = 1;
 
             call_method(obj, 75, &arg75);
         }
-        else if ( bact->field_3DF == 1 )
+        else if ( bact->secndTtype == BACT_TGT_TYPE_CELL )
         {
-            arg75.field_0 = bact->field_3fc;
-            arg75.bct.pcell = bact->field_3f8.pcell;
+            arg75.field_0 = bact->sencdTpos;
+            arg75.bct.pcell = bact->secndT.pcell;
             arg75.field_x = 1;
 
             call_method(obj, 76, &arg75);
         }
-        else if ( bact->field_3DE == 2 )
+        else if ( bact->primTtype == BACT_TGT_TYPE_UNIT )
         {
             arg75.field_x = 0;
-            arg75.bct.pbact = bact->field_3e8.pbact;
+            arg75.bct.pbact = bact->primT.pbact;
 
             call_method(obj, 75, &arg75);
         }
-        else if ( bact->field_3DE == 1 )
+        else if ( bact->primTtype == BACT_TGT_TYPE_CELL )
         {
-            arg75.field_0 = bact->field_3ec;
-            arg75.bct.pcell = bact->field_3e8.pcell;
+            arg75.field_0 = bact->primTpos;
+            arg75.bct.pcell = bact->primT.pcell;
             arg75.field_x = 0;
 
             call_method(obj, 76, &arg75);
@@ -946,11 +946,11 @@ void ypaflyer_func70(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
         if ( bact->field_915 - bact->field_941 > 500 )
         {
             bact_arg110 arg110;
-            arg110.field_one = bact->field_3DF;
+            arg110.field_one = bact->secndTtype;
             arg110.field_two = 1;
 
             bact_arg110 arg110_1;
-            arg110_1.field_one = bact->field_3DE;
+            arg110_1.field_one = bact->primTtype;
             arg110_1.field_two = 0;
 
             int v52 = call_method(obj, 110, &arg110);
@@ -963,8 +963,8 @@ void ypaflyer_func70(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
                 if ( !v52 )
                 {
                     bact_arg67 arg67;
-                    arg67.field_0 = 0;
-                    arg67.field_4 = 1;
+                    arg67.tgt_type = BACT_TGT_TYPE_NONE;
+                    arg67.priority = 1;
 
                     call_method(obj, 67, &arg67);
                 }
@@ -972,15 +972,15 @@ void ypaflyer_func70(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
                 if ( !v55 )
                 {
                     bact_arg67 arg67;
-                    arg67.field_0 = 1;
-                    arg67.targ.sx = bact->field_621.sx;
-                    arg67.targ.sz = bact->field_621.sz;
-                    arg67.field_4 = 0;
+                    arg67.tgt_type = BACT_TGT_TYPE_CELL;
+                    arg67.tgt_pos.sx = bact->field_621.sx;
+                    arg67.tgt_pos.sz = bact->field_621.sz;
+                    arg67.priority = 0;
 
                     call_method(obj, 67, &arg67);
                 }
 
-                if ( bact->field_3DE || bact->field_3DF )
+                if ( bact->primTtype || bact->secndTtype )
                 {
                     bact_arg119 arg78;
                     arg78.field_8 = 512;
@@ -1157,15 +1157,15 @@ void ypaflyer_func71(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
 
             float tmp;
 
-            if ( fly->bact_internal->field_3DE == 1)
+            if ( fly->bact_internal->primTtype == BACT_TGT_TYPE_CELL)
             {
-                float v13 = fly->bact_internal->field_3ec.sx - fly->bact_internal->field_621.sx;
-                float v14 = fly->bact_internal->field_3ec.sz - fly->bact_internal->field_621.sz;
+                float v13 = fly->bact_internal->primTpos.sx - fly->bact_internal->field_621.sx;
+                float v14 = fly->bact_internal->primTpos.sz - fly->bact_internal->field_621.sz;
 
                 tmp = sqrt(POW2(v13) + POW2(v14));
             }
 
-            if ( fly->bact_internal->field_3DE != 1 || tmp <= 800.0 )
+            if ( fly->bact_internal->primTtype != BACT_TGT_TYPE_CELL || tmp <= 800.0 )
             {
                 if ( fly->bact_internal->field_3D6 & 0x200 )
                 {

@@ -482,7 +482,7 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
         }
         else
         {
-            if ( bact->field_3DE != 1 || sqrt( POW2(bact->field_3ec.sx - bact->field_621.sx) + POW2(bact->field_3ec.sz - bact->field_621.sz) ) <= 800.0 )
+            if ( bact->primTtype != BACT_TGT_TYPE_CELL || sqrt( POW2(bact->primTpos.sx - bact->field_621.sx) + POW2(bact->primTpos.sz - bact->field_621.sz) ) <= 800.0 )
             {
                 if ( !(bact->field_3D6 & 0x100) )
                 {

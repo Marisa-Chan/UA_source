@@ -239,7 +239,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
         bact->field_645.sz = bact->field_639.sz / v108;
     }
 
-    int v8 = !bact->field_3DF && v108 < 1200.0;
+    int v8 = !bact->secndTtype && v108 < 1200.0;
 
     if ( v108 > ufo->field_c )
         v108 = ufo->field_c;
@@ -256,7 +256,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                 || (!v5 && !v8)
                 || !call_method(obj, 87, &v100) )
         {
-            if ( bact->field_3DE || bact->field_3DF )
+            if ( bact->primTtype || bact->secndTtype )
             {
                 ufo->field_14 = bact->mass * 9.80665;
                 bact->field_601 = bact->force;
@@ -496,7 +496,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                         NC_STACK_ypabact *v102;
                         call_vtbl(ufo->ywo, 3, 0x80002011, &v102, 0);
 
-                        if ( ( (bact->field_3DF != 2 || v102 != bact->field_3f8.pbact->self) && ( bact->field_3DE != 2 || v102 != bact->field_3e8.pbact->self) ) || bact->field_645.sy >= 0.0 )
+                        if ( ( (bact->secndTtype != BACT_TGT_TYPE_UNIT || v102 != bact->secndT.pbact->self) && ( bact->primTtype != BACT_TGT_TYPE_UNIT || v102 != bact->primT.pbact->self) ) || bact->field_645.sy >= 0.0 )
                         {
                             ufo->field_1c |= 5;
                         }
@@ -507,32 +507,32 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                 arg75.field_14 = v110;
                 arg75.field_18 = bact->field_915;
 
-                if ( bact->field_3DF == 2 )
+                if ( bact->secndTtype == BACT_TGT_TYPE_UNIT )
                 {
-                    arg75.bct.pbact = bact->field_3f8.pbact;
+                    arg75.bct.pbact = bact->secndT.pbact;
                     arg75.field_x = 1;
 
                     call_method(obj, 75, &arg75);
                 }
-                else if ( bact->field_3DF == 1 )
+                else if ( bact->secndTtype == BACT_TGT_TYPE_CELL )
                 {
-                    arg75.field_0 = bact->field_3fc;
-                    arg75.bct.pcell = bact->field_3f8.pcell;
+                    arg75.field_0 = bact->sencdTpos;
+                    arg75.bct.pcell = bact->secndT.pcell;
                     arg75.field_x = 1;
 
                     call_method(obj, 76, &arg75);
                 }
-                else if ( bact->field_3DE == 2 )
+                else if ( bact->primTtype == BACT_TGT_TYPE_UNIT )
                 {
-                    arg75.bct.pbact = bact->field_3e8.pbact;
+                    arg75.bct.pbact = bact->primT.pbact;
                     arg75.field_x = 0;
 
                     call_method(obj, 75, &arg75);
                 }
-                else if ( bact->field_3DE == 1 )
+                else if ( bact->primTtype == BACT_TGT_TYPE_CELL )
                 {
-                    arg75.field_0 = bact->field_3ec;
-                    arg75.bct.pcell = bact->field_3e8.pcell;
+                    arg75.field_0 = bact->primTpos;
+                    arg75.bct.pcell = bact->primT.pcell;
                     arg75.field_x = 0;
 
                     call_method(obj, 76, &arg75);
@@ -584,10 +584,10 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
             bact_arg110 arg110;
             bact_arg110 arg110_1;
 
-            arg110.field_one = bact->field_3DF;
+            arg110.field_one = bact->secndTtype;
             arg110.field_two = 1;
 
-            arg110_1.field_one = bact->field_3DE;
+            arg110_1.field_one = bact->primTtype;
             arg110_1.field_two = 0;
 
             int v63 = call_method(obj, 110, &arg110);
@@ -599,8 +599,8 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                 if ( !v63 )
                 {
                     bact_arg67 arg67;
-                    arg67.field_0 = 0;
-                    arg67.field_4 = 1;
+                    arg67.tgt_type = BACT_TGT_TYPE_NONE;
+                    arg67.priority = 1;
 
                     call_method(obj, 67, &arg67);
                 }
@@ -608,15 +608,15 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                 if ( !v66 )
                 {
                     bact_arg67 arg67;
-                    arg67.field_0 = 1;
-                    arg67.targ.sx = ufo->bact_internal->field_621.sx;
-                    arg67.targ.sz = ufo->bact_internal->field_621.sz;
-                    arg67.field_4 = 0;
+                    arg67.tgt_type = BACT_TGT_TYPE_CELL;
+                    arg67.tgt_pos.sx = ufo->bact_internal->field_621.sx;
+                    arg67.tgt_pos.sz = ufo->bact_internal->field_621.sz;
+                    arg67.priority = 0;
 
                     call_method(obj, 67, &arg67);
                 }
 
-                if ( bact->field_3DE || bact->field_3DF )
+                if ( bact->primTtype || bact->secndTtype )
                 {
                     bact_arg119 arg78;
                     arg78.field_8 = 512;
@@ -776,8 +776,8 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
 
 
 
-            if ( bact->field_3DE != 1
-                    || sqrt( POW2(bact->field_3ec.sx - bact->field_621.sx) + POW2(bact->field_3ec.sz - bact->field_621.sz) ) <= 800.0 )
+            if ( bact->primTtype != BACT_TGT_TYPE_CELL
+                    || sqrt( POW2(bact->primTpos.sx - bact->field_621.sx) + POW2(bact->primTpos.sz - bact->field_621.sz) ) <= 800.0 )
             {
                 if ( bact->field_3D6 & 0x200 )
                 {

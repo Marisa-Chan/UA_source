@@ -477,10 +477,10 @@ void sub_4F72E8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
         uint32_t clr;
         __NC_STACK_ypabact *bct;
 
-        if ( bact->field_3DF == 2 )
+        if ( bact->secndTtype == BACT_TGT_TYPE_UNIT )
         {
             clr = yw_GetColor(yw, 10);
-            bct = bact->field_3f8.pbact;
+            bct = bact->secndT.pbact;
         }
         else
         {
@@ -495,27 +495,27 @@ void sub_4F72E8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
         return;
     }
 
-    if ( bact->field_3DF == 2 )
+    if ( bact->secndTtype == BACT_TGT_TYPE_UNIT )
     {
-        __NC_STACK_ypabact *bct = bact->field_3f8.pbact;
+        __NC_STACK_ypabact *bct = bact->secndT.pbact;
 
         sub_4F68FC(yw->win3d, bact->field_621.sx, bact->field_621.sz, bct->field_621.sx, bct->field_621.sz,  yw_GetColor(yw, 10));
         return;
     }
 
-    if ( bact->field_3DF == 1 )
+    if ( bact->secndTtype == BACT_TGT_TYPE_CELL )
     {
-        sub_4F68FC(yw->win3d, bact->field_621.sx, bact->field_621.sz, bact->field_3fc.sx, bact->field_3fc.sz, yw_GetColor(yw, 10));
+        sub_4F68FC(yw->win3d, bact->field_621.sx, bact->field_621.sz, bact->sencdTpos.sx, bact->sencdTpos.sz, yw_GetColor(yw, 10));
     }
     else
     {
-        if ( bact->field_3DE == 1 )
+        if ( bact->primTtype == BACT_TGT_TYPE_CELL )
         {
-            sub_4F68FC(yw->win3d, bact->field_621.sx, bact->field_621.sz, bact->field_3ec.sx, bact->field_3ec.sz, yw_GetColor(yw, 9));
+            sub_4F68FC(yw->win3d, bact->field_621.sx, bact->field_621.sz, bact->primTpos.sx, bact->primTpos.sz, yw_GetColor(yw, 9));
         }
-        else if ( bact->field_3DE == 2 )
+        else if ( bact->primTtype == BACT_TGT_TYPE_UNIT )
         {
-            sub_4F68FC(yw->win3d, bact->field_621.sx, bact->field_621.sz, bact->field_3e8.pbact->field_621.sx, bact->field_3e8.pbact->field_621.sz, yw_GetColor(yw, 9));
+            sub_4F68FC(yw->win3d, bact->field_621.sx, bact->field_621.sz, bact->primT.pbact->field_621.sx, bact->primT.pbact->field_621.sz, yw_GetColor(yw, 9));
         }
 
         if ( bact->field_3D6 & 0x4000000 )
@@ -651,16 +651,16 @@ void sb_0x4f8f64__sub1(_NC_STACK_ypaworld *yw)
                 int v7 = 0;
                 float a5, a6;
 
-                if ( yw->field_1b84->field_3DE == 1 )
+                if ( yw->field_1b84->primTtype == BACT_TGT_TYPE_CELL )
                 {
-                    a5 = yw->field_1b84->field_3ec.sx;
-                    a6 = yw->field_1b84->field_3ec.sz;
+                    a5 = yw->field_1b84->primTpos.sx;
+                    a6 = yw->field_1b84->primTpos.sz;
                     v7 = 1;
                 }
-                else if ( yw->field_1b84->field_3DE == 2 )
+                else if ( yw->field_1b84->primTtype == BACT_TGT_TYPE_UNIT )
                 {
-                    a5 = yw->field_1b84->field_3e8.pbact->field_621.sx;
-                    a6 = yw->field_1b84->field_3e8.pbact->field_621.sz;
+                    a5 = yw->field_1b84->primT.pbact->field_621.sx;
+                    a6 = yw->field_1b84->primT.pbact->field_621.sz;
                     v7 = 1;
                 }
 
@@ -1550,12 +1550,12 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
             {
                 pcur = sub_4F7BE8(yw, pcur, v47, v114, 0x84, a4, a5);
 
-                if ( v47->field_3DE == 1 )
+                if ( v47->primTtype == BACT_TGT_TYPE_CELL )
                 {
-                    if ( v47->field_3e8.pcell->owner != yw->field_1b80->owner )
+                    if ( v47->primT.pcell->owner != yw->field_1b80->owner )
                     {
-                        int v101 = ( (int)v47->field_3ec.sx / 1200) * 1200.0 + 600.0;
-                        int v100 = -(( (int)-v47->field_3ec.sz / 1200) * 1200.0 + 600.0);
+                        int v101 = ( (int)v47->primTpos.sx / 1200) * 1200.0 + 600.0;
+                        int v100 = -(( (int)-v47->primTpos.sz / 1200) * 1200.0 + 600.0);
 
                         fntcmd_select_tileset(&pcur, v110);
 
@@ -1563,20 +1563,20 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
 
                         fntcmd_select_tileset(&pcur, v114);
 
-                        pcur = sub_4F6980(pcur, v47->field_3ec.sx, v47->field_3ec.sz, 0x88, a4, a5);
+                        pcur = sub_4F6980(pcur, v47->primTpos.sx, v47->primTpos.sz, 0x88, a4, a5);
                     }
                     else
                     {
                         fntcmd_select_tileset(&pcur, v114);
 
-                        pcur = sub_4F6980(pcur, v47->field_3ec.sx, v47->field_3ec.sz, 0x88, a4, a5);
+                        pcur = sub_4F6980(pcur, v47->primTpos.sx, v47->primTpos.sz, 0x88, a4, a5);
                     }
                 }
-                else if ( v47->field_3DE == 2 )
+                else if ( v47->primTtype == BACT_TGT_TYPE_UNIT )
                 {
                     fntcmd_select_tileset(&pcur, v114);
 
-                    pcur = sub_4F6980(pcur, v47->field_3e8.pbact->field_621.sx, v47->field_3e8.pbact->field_621.sz, 0x86, a4, a5);
+                    pcur = sub_4F6980(pcur, v47->primT.pbact->field_621.sx, v47->primT.pbact->field_621.sz, 0x86, a4, a5);
                 }
 
                 if ( v47->field_3D6 & 0x4000000 )
@@ -5820,11 +5820,11 @@ uint8_t ypaworld_func64__sub7__sub3__sub0__sub0__sub0(__NC_STACK_ypabact *bact)
         {
             return 102;
         }
-        else if ( bact->field_3DF )
+        else if ( bact->secndTtype )
         {
             return 99;
         }
-        else if ( bact->field_3DE )
+        else if ( bact->primTtype )
         {
             return 98;
         }
@@ -6240,9 +6240,9 @@ void ypaworld_func64__sub7__sub3__sub4(_NC_STACK_ypaworld *yw, __NC_STACK_ypabac
     {
         if ( bact->field_3D6 & 0x4000 )
             sub_4811E8(yw, 34);
-        else if ( bact->field_3DF )
+        else if ( bact->secndTtype )
             sub_4811E8(yw, 32);
-        else if ( bact->field_3DE )
+        else if ( bact->primTtype )
             sub_4811E8(yw, 33);
     }
     else if (bact->field_3D5 == 3)
@@ -9993,17 +9993,17 @@ void sb_0x4d7c08__sub0__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, sklt_wis *wis)
     {
         int v27 = 0;
 
-        if ( yw->field_1b84->field_3DE == 1 )
+        if ( yw->field_1b84->primTtype == BACT_TGT_TYPE_CELL )
         {
             v27 = 1;
-            ty = yw->field_1b84->field_3ec.sz - yw->field_1b84->field_621.sz;
-            tx = yw->field_1b84->field_3ec.sx - yw->field_1b84->field_621.sx;
+            ty = yw->field_1b84->primTpos.sz - yw->field_1b84->field_621.sz;
+            tx = yw->field_1b84->primTpos.sx - yw->field_1b84->field_621.sx;
         }
-        else if ( yw->field_1b84->field_3DE == 2 )
+        else if ( yw->field_1b84->primTtype == BACT_TGT_TYPE_UNIT )
         {
             v27 = 1;
-            tx = yw->field_1b84->field_3e8.pbact->field_621.sx - yw->field_1b84->field_621.sx;
-            ty = yw->field_1b84->field_3e8.pbact->field_621.sz - yw->field_1b84->field_621.sz;
+            tx = yw->field_1b84->primT.pbact->field_621.sx - yw->field_1b84->field_621.sx;
+            ty = yw->field_1b84->primT.pbact->field_621.sz - yw->field_1b84->field_621.sz;
         }
 
         if ( v27 )

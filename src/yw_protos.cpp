@@ -5300,45 +5300,45 @@ int sb_0x479f4c__sub0(scrCallBack *scr)
     }
     else if ( !strcasecmp(scr->p1, "dockenergy") )
     {
-        robo->field_1EF = atoi(scr->p2);
+        robo->dock_energ = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "dockcount") )
     {
-        robo->field_1F3 = atoi(scr->p2);
+        robo->dock_cnt = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "dockuser") )
     {
-        robo->field_1F7 = atoi(scr->p2);
+        robo->dock_user = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "docktime") )
     {
-        robo->field_1FB = atoi(scr->p2);
+        robo->dock_time = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "docktargettype") )
     {
-        robo->field_20F = atoi(scr->p2);
+        robo->dock_tgType = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "dockaggr") )
     {
-        robo->field_210 = atoi(scr->p2);
+        robo->dock_aggr = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "docktargetpos") )
     {
         char *v5 = strtok(scr->p2, " \t_\n");
         if ( v5 )
         {
-            robo->field_1FF.sx = strtod(v5, 0);
+            robo->dock_tgt_pos.sx = strtod(v5, 0);
             v5 = strtok(0, " \t_\n");
 
             if ( v5 )
             {
-                robo->field_1FF.sz = strtod(v5, 0);
+                robo->dock_tgt_pos.sz = strtod(v5, 0);
             }
         }
     }
     else if ( !strcasecmp(scr->p1, "docktargetID") )
     {
-        robo->field_211 = atoi(scr->p2);
+        robo->dock_tgt_comm_id = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "fillmodus") )
     {
@@ -5516,27 +5516,27 @@ int sub_47A0C0(scrCallBack *scr)
         char *v7 = strtok(scr->p2, " \t_\n");
         if ( v7 )
         {
-            dword_5A7A88->field_3DE = atoi(v7);
+            dword_5A7A88->primTtype = atoi(v7);
 
             char *v9 = strtok(0, " \t_\n");
             if ( v9 )
             {
-                dword_5A7A88->field_3e8.pbact = (__NC_STACK_ypabact *)atoi(v9);
+                dword_5A7A88->primT.pbact = (__NC_STACK_ypabact *)atoi(v9);
 
                 v9 = strtok(0, " \t_\n");
                 if ( v9 )
                 {
-                    dword_5A7A88->field_3ec.sx = strtod(v9, 0);
+                    dword_5A7A88->primTpos.sx = strtod(v9, 0);
 
                     v9 = strtok(0, " \t_\n");
                     if ( v9 )
                     {
-                        dword_5A7A88->field_3ec.sz = strtod(v9, 0);
+                        dword_5A7A88->primTpos.sz = strtod(v9, 0);
 
                         v9 = strtok(0, " \t_\n");
                         if ( v9 )
                         {
-                            dword_5A7A88->field_3e0 = atoi(v9);
+                            dword_5A7A88->primT_cmd_id = atoi(v9);
                         }
                     }
                 }

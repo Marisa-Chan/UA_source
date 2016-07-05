@@ -359,9 +359,9 @@ void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
             }
         }
 
-        if ( bact->field_3DF != 2 )
+        if ( bact->secndTtype != BACT_TGT_TYPE_UNIT )
         {
-            if ( !bact->field_3DF && gun->field_30 == 2 )
+            if ( !bact->secndTtype && gun->field_30 == 2 )
             {
                 if ( bact->field_3D6 & 0x100 )
                 {
@@ -377,9 +377,9 @@ void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
         }
 
 
-        float v57 = bact->field_3f8.pbact->field_621.sx - bact->field_621.sx;
-        float v58 = bact->field_3f8.pbact->field_621.sy - bact->field_621.sy;
-        float v59 = bact->field_3f8.pbact->field_621.sz - bact->field_621.sz;
+        float v57 = bact->secndT.pbact->field_621.sx - bact->field_621.sx;
+        float v58 = bact->secndT.pbact->field_621.sy - bact->field_621.sy;
+        float v59 = bact->secndT.pbact->field_621.sz - bact->field_621.sz;
 
         float v19 = sqrt(POW2(v57) + POW2(v58) + POW2(v59));
 
@@ -554,15 +554,15 @@ void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
         bact_arg75 arg75;
         arg75.field_14 = v80;
         arg75.field_18 = bact->field_915;
-        arg75.bct.pbact = bact->field_3f8.pbact;
+        arg75.bct.pbact = bact->secndT.pbact;
 
         call_method(obj, 75,&arg75);
 
-        if ( !call_method(obj, 111, bact->field_3f8.pbact) )
+        if ( !call_method(obj, 111, bact->secndT.pbact) )
         {
             bact_arg67 arg67;
-            arg67.field_0 = 0;
-            arg67.field_4 = 1;
+            arg67.tgt_type = BACT_TGT_TYPE_NONE;
+            arg67.priority = 1;
 
             call_method(obj, 67, &arg67);
 

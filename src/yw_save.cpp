@@ -743,10 +743,10 @@ int yw_write_bact(bact_node *bct, FILE *fil)
     sprintf(buf, "    killerowner    = %d\n", bct->bact->field_9B5);
     fwrite(buf, strlen(buf), 1, fil);
 
-    if ( bct->bact->field_3DE == 2 )
-        sprintf(buf, "    primary        = %d_%d_%2.2f_%2.2f_%d\n", bct->bact->field_3DE, bct->bact->field_3e8.pbact->ypabact__id, bct->bact->field_3ec.sx, bct->bact->field_3ec.sz, bct->bact->field_3e0);
+    if ( bct->bact->primTtype == BACT_TGT_TYPE_UNIT )
+        sprintf(buf, "    primary        = %d_%d_%2.2f_%2.2f_%d\n", bct->bact->primTtype, bct->bact->primT.pbact->ypabact__id, bct->bact->primTpos.sx, bct->bact->primTpos.sz, bct->bact->primT_cmd_id);
     else
-        sprintf(buf, "    primary        = %d_0_%2.2f_%2.2f_%d\n", bct->bact->field_3DE, bct->bact->field_3ec.sx, bct->bact->field_3ec.sz, bct->bact->field_3e0);
+        sprintf(buf, "    primary        = %d_0_%2.2f_%2.2f_%d\n", bct->bact->primTtype, bct->bact->primTpos.sx, bct->bact->primTpos.sz, bct->bact->primT_cmd_id);
 
     fwrite(buf, strlen(buf), 1, fil);
 
@@ -784,28 +784,28 @@ int yw_write_robo(bact_node *bct, FILE *fil)
     sprintf(buf, "    robostate      = %d\n", robo->field_1DB & 0xC00F );
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    dockenergy     = %d\n", robo->field_1EF);
+    sprintf(buf, "    dockenergy     = %d\n", robo->dock_energ);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    dockcount      = %d\n", robo->field_1F3);
+    sprintf(buf, "    dockcount      = %d\n", robo->dock_cnt);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    dockuser       = %d\n", robo->field_1F7);
+    sprintf(buf, "    dockuser       = %d\n", robo->dock_user);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    docktime       = %d\n", robo->field_1FB);
+    sprintf(buf, "    docktime       = %d\n", robo->dock_time);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    docktargetpos  = %2.2f_%2.2f\n", robo->field_1FF.sx, robo->field_1FF.sz);
+    sprintf(buf, "    docktargetpos  = %2.2f_%2.2f\n", robo->dock_tgt_pos.sx, robo->dock_tgt_pos.sz);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    docktargetID   = %d\n", robo->field_211);
+    sprintf(buf, "    docktargetID   = %d\n", robo->dock_tgt_comm_id);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    docktargettype = %d\n", robo->field_20F);
+    sprintf(buf, "    docktargettype = %d\n", robo->dock_tgType);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    dockaggr       = %d\n", robo->field_210);
+    sprintf(buf, "    dockaggr       = %d\n", robo->dock_aggr);
     fwrite(buf, strlen(buf), 1, fil);
 
     sprintf(buf, "    battvehicle    = %d\n", robo->field_4F5);

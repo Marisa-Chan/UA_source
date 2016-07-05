@@ -35,15 +35,15 @@ struct __NC_STACK_yparobo
     char field_1ec;
     char field_1ED;
     char field_1EE;
-    int field_1EF;
-    int field_1F3;
-    int field_1F7;
-    int field_1FB;
-    xyz field_1FF;
-    __NC_STACK_ypabact *field_20B;
-    char field_20F;
-    char field_210;
-    int field_211;
+    int dock_energ;
+    int dock_cnt;
+    int dock_user;
+    int dock_time;
+    xyz dock_tgt_pos;
+    __NC_STACK_ypabact *dock_tgt_bact;
+    char dock_tgType;
+    char dock_aggr;
+    int dock_tgt_comm_id;
     xyz dock;
     int field_221;
     cellArea *field_225;  //For AI
@@ -133,17 +133,15 @@ struct NC_STACK_yparobo : public NC_STACK_ypabact
 
 struct robo_arg128
 {
-    int field_0;
-    BactTarget field_4;
-    int field_8;
-    float field_C;
-    int field_10;
-    float field_14;
-    int field_18;
-    int field_1C;
-    float field_20;
-    __NC_STACK_ypabact *bact;
-    NC_STACK_ypabact *bacto;
+    int flags;
+    BactTarget tgt;
+    char tgType;
+    xyz tgt_pos;
+    int prim_comm_id;
+    int comm_id;
+    float distance;
+    __NC_STACK_ypabact *comm_bact;
+    NC_STACK_ypabact *comm_bacto;
 };
 
 struct robo_arg133
@@ -178,18 +176,18 @@ struct robo_t2
 
 struct robo_loct1
 {
-    int field_0;
-    float field_4;
-    int field_8;
-    int field_C;
-    xyz field_10;
-    __NC_STACK_ypabact *field_1C;
-    int field_20;
-    int field_24;
-    int field_28;
-    int field_2C;
-    int field_30;
-    int field_34;
+    int energ;
+    float distance;
+    int aggr;
+    char tgType;
+    xyz tgt_pos;
+    __NC_STACK_ypabact *tgt_bact;
+    int command_id;
+    int forbidden;
+    int want;
+    int good;
+    int bad;
+    int job;
 };
 
 void ypabact_func65__sub0(__NC_STACK_ypabact *bact);

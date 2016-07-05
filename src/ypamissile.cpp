@@ -365,19 +365,19 @@ void ypamissile_func68(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
         call_vtbl(obj, 2, 0x8000100B, a4, 0);
     }
 
-    if ( bact->field_3DE )
+    if ( bact->primTtype )
     {
-        if ( bact->field_3DE == 2 )
+        if ( bact->primTtype == BACT_TGT_TYPE_UNIT )
         {
-            bact->field_639.sx = bact->field_3e8.pbact->field_621.sx - bact->field_621.sx;
-            bact->field_639.sy = bact->field_3e8.pbact->field_621.sy - bact->field_621.sy;
-            bact->field_639.sz = bact->field_3e8.pbact->field_621.sz - bact->field_621.sz;
+            bact->field_639.sx = bact->primT.pbact->field_621.sx - bact->field_621.sx;
+            bact->field_639.sy = bact->primT.pbact->field_621.sy - bact->field_621.sy;
+            bact->field_639.sz = bact->primT.pbact->field_621.sz - bact->field_621.sz;
         }
         else
         {
-            bact->field_639.sx = bact->field_3ec.sx - bact->field_621.sx;
-            bact->field_639.sy = bact->field_3ec.sy - bact->field_621.sy;
-            bact->field_639.sz = bact->field_3ec.sz - bact->field_621.sz;
+            bact->field_639.sx = bact->primTpos.sx - bact->field_621.sx;
+            bact->field_639.sy = bact->primTpos.sy - bact->field_621.sy;
+            bact->field_639.sz = bact->primTpos.sz - bact->field_621.sz;
         }
     }
 
@@ -718,7 +718,7 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
 
     if ( v40 > 0.1 )
     {
-        if ( bact->field_3DE != 4 )
+        if ( bact->primTtype != BACT_TGT_TYPE_DRCT )
         {
             bact->field_645.sx = bact->field_639.sx / v40;
             bact->field_645.sy = bact->field_639.sy / v40;
@@ -889,9 +889,9 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
                             if ( miss->ejaculator_bact->field_32 )
                             {
                                 bact_arg67 arg67;
-                                arg67.field_0 = 1;
-                                arg67.targ = bact->field_621;
-                                arg67.field_4 = 0;
+                                arg67.tgt_type = BACT_TGT_TYPE_CELL;
+                                arg67.tgt_pos = bact->field_621;
+                                arg67.priority = 0;
 
                                 call_method(miss->ejaculator_bact->self, 67, &arg67);
                             }

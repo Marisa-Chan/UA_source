@@ -3695,25 +3695,25 @@ void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a
         bct1->bact->owner = bct2->bact->owner;
     }
 
-    if ( bct1->bact->field_3DE == 2 )
+    if ( bct1->bact->primTtype == BACT_TGT_TYPE_UNIT )
     {
-        bct1->bact->field_3DE = 0;
+        bct1->bact->primTtype = BACT_TGT_TYPE_NONE;
 
         bact_arg67 arg67;
-        arg67.field_8.pbact = sb_0x47b028__sub0((int)bct1->bact->field_3e8.pbact, yw);
-        arg67.field_0 = 6;
-        arg67.field_4 = 0;
+        arg67.tgt.pbact = sb_0x47b028__sub0((int)bct1->bact->primT.pbact, yw);
+        arg67.tgt_type = BACT_TGT_TYPE_UNIT_IND;
+        arg67.priority = 0;
         call_method(bct1->bacto, 67, &arg67);
     }
 
-    if ( bct1->bact->field_3DE == 1 )
+    if ( bct1->bact->primTtype == BACT_TGT_TYPE_CELL )
     {
-        bct1->bact->field_3DE = 0;
+        bct1->bact->primTtype = BACT_TGT_TYPE_NONE;
 
         bact_arg67 arg67_1;
-        arg67_1.field_0 = 5;
-        arg67_1.targ = bct1->bact->field_3ec;
-        arg67_1.field_4 = 0;
+        arg67_1.tgt_type = BACT_TGT_TYPE_CELL_IND;
+        arg67_1.tgt_pos = bct1->bact->primTpos;
+        arg67_1.priority = 0;
 
         call_method(bct1->bacto, 67, &arg67_1);
     }
@@ -4470,14 +4470,14 @@ void sub_4F1A60(__NC_STACK_ypabact *bact)
 
         if ( bct == v5 )
         {
-            v5->bact->field_3e8.pbact = NULL;
-            v5->bact->field_3DE = 0;
+            v5->bact->primT.pbact = NULL;
+            v5->bact->primTtype = BACT_TGT_TYPE_NONE;
             v5->bact->field_945 = 0;
         }
         else if ( bct == v6 )
         {
-            v6->bact->field_3f8.pbact = NULL;
-            v6->bact->field_3DF = 0;
+            v6->bact->secndT.pbact = NULL;
+            v6->bact->secndTtype = BACT_TGT_TYPE_NONE;
             v6->bact->field_945 = 0;
         }
         else
@@ -4496,14 +4496,14 @@ void sub_4F1B34(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
         if (!v4->next)
             break;
 
-        if ( v4->bact->field_3DE == 2 )
+        if ( v4->bact->primTtype == BACT_TGT_TYPE_UNIT )
         {
             bact_node *nd;
             call_vtbl(v4->bacto, 3, 0x80001011, &nd, 0);
 
             Remove(nd);
 
-            v4->bact->field_3DE = 0;
+            v4->bact->primTtype = BACT_TGT_TYPE_NONE;
         }
 
         sub_4F1A60(v4->bact);
@@ -7002,7 +7002,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                         fntcmd_next_line(&cmd);
 
                         if ( robo->field_1DB & 4 )
-                            cmd = sub_445654(yw, cmd, buf_sprintf, "dock energy %d time %d", robo->field_1EF, robo->field_1FB);
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "dock energy %d time %d", robo->dock_energ, robo->dock_time);
                     }
                 }
 

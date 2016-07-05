@@ -1895,7 +1895,7 @@ void ypaworld_func144(NC_STACK_ypaworld *obj, class_stru *zis, NC_STACK_ypabact 
 
     if ( bact->field_24 == 4 )
     {
-        if ( bact->field_3DE )
+        if ( bact->primTtype )
             ypa_log_out("OH NO! The DEATH CACHE BUG is back!\n");
     }
 

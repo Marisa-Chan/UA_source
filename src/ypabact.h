@@ -35,6 +35,17 @@ struct bact_6bd
     vhclBases vp;
 };
 
+enum BACT_TGT_TYPE
+{
+    BACT_TGT_TYPE_NONE = 0,
+    BACT_TGT_TYPE_CELL = 1,
+    BACT_TGT_TYPE_UNIT = 2,
+    BACT_TGT_TYPE_FRMT = 3,
+    BACT_TGT_TYPE_DRCT = 4,
+    BACT_TGT_TYPE_CELL_IND = 5,
+    BACT_TGT_TYPE_UNIT_IND = 6
+};
+
 union BactTarget
 {
     __NC_STACK_ypabact *pbact;
@@ -78,14 +89,14 @@ struct __NC_STACK_ypabact : public nnode
     char field_3D5;
     int field_3D6;
     int field_3DA;
-    char field_3DE;
-    char field_3DF;
-    int field_3e0;
-    int field_3e4;
-    BactTarget field_3e8;
-    xyz field_3ec;
-    BactTarget field_3f8;
-    xyz field_3fc;
+    char primTtype;
+    char secndTtype;
+    int primT_cmd_id;
+    int secndT_cmd_id;
+    BactTarget primT;
+    xyz primTpos;
+    BactTarget secndT;
+    xyz sencdTpos;
 
     float adist_sector;
     float adist_bact;
@@ -250,10 +261,10 @@ struct ypabact_arg65
 
 struct bact_arg67
 {
-    int field_0;
-    int field_4;
-    BactTarget field_8;
-    xyz targ;
+    char tgt_type;
+    int priority;
+    BactTarget tgt;
+    xyz tgt_pos;
 };
 
 struct bact_arg124
