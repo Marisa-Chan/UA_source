@@ -37,10 +37,10 @@ struct winp_131arg
 struct struC5
 {
     int period;
-    char downed_key_2;
-    char downed_key;
+    uint8_t downed_key_2;
+    uint8_t downed_key;
     uint8_t dword8;
-    char chr;
+    uint8_t chr;
     char field_8;
     int16_t field_9;
     int16_t field_B;
