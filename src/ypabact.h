@@ -381,8 +381,8 @@ struct bact_arg75
 
 struct bact_arg110
 {
-    int field_one;
-    int field_two;
+    int tgType;
+    int priority;
 };
 
 struct bact_arg86

@@ -1040,11 +1040,11 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
             bact_arg110 arg110;
             bact_arg110 arg110_1;
 
-            arg110.field_one = bact->secndTtype;
-            arg110.field_two = 1;
+            arg110.tgType = bact->secndTtype;
+            arg110.priority = 1;
 
-            arg110_1.field_one = bact->primTtype;
-            arg110_1.field_two = 0;
+            arg110_1.tgType = bact->primTtype;
+            arg110_1.priority = 0;
 
             int v150 = call_method(obj, 110, &arg110);
             int v153 = call_method(obj, 110, &arg110_1);

@@ -946,12 +946,12 @@ void ypaflyer_func70(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
         if ( bact->field_915 - bact->field_941 > 500 )
         {
             bact_arg110 arg110;
-            arg110.field_one = bact->secndTtype;
-            arg110.field_two = 1;
+            arg110.tgType = bact->secndTtype;
+            arg110.priority = 1;
 
             bact_arg110 arg110_1;
-            arg110_1.field_one = bact->primTtype;
-            arg110_1.field_two = 0;
+            arg110_1.tgType = bact->primTtype;
+            arg110_1.priority = 0;
 
             int v52 = call_method(obj, 110, &arg110);
 

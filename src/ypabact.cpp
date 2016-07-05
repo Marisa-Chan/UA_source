@@ -2215,13 +2215,13 @@ void ypabact_func70(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
             bact->field_941 = bact->field_915;
 
             bact_arg110 arg110;
-            arg110.field_one = bact->secndTtype;
-            arg110.field_two = 1;
+            arg110.tgType = bact->secndTtype;
+            arg110.priority = 1;
 
             int v46 = call_method(obj, 110, &arg110);
 
-            arg110.field_two = 0;
-            arg110.field_one = bact->primTtype;
+            arg110.priority = 0;
+            arg110.tgType = bact->primTtype;
             int v48 = call_method(obj, 110, &arg110);
 
             if ( v46 != 3 || v48 != 3 )
@@ -3010,13 +3010,13 @@ void ypabact_func75(NC_STACK_ypabact *obj, class_stru *zis, bact_arg75 *arg)
     if ( bact->secndT.pbact == arg->bct.pbact )
     {
         fui = &bact->secndT.pbact->field_621;
-        arg110.field_two = 1;
+        arg110.priority = 1;
         v54 = 1;
     }
     else
     {
         fui = &bact->primT.pbact->field_621;
-        arg110.field_two = 0;
+        arg110.priority = 0;
         v51 = 1;
     }
 
@@ -3034,7 +3034,7 @@ void ypabact_func75(NC_STACK_ypabact *obj, class_stru *zis, bact_arg75 *arg)
     {
         bact->field_945 = bact->field_915;
 
-        arg110.field_one = 2;
+        arg110.tgType = BACT_TGT_TYPE_UNIT;
         v16 = call_method(obj, 110, &arg110);
 
         bact->field_9b8 = v16;
@@ -3304,14 +3304,14 @@ void ypabact_func76(NC_STACK_ypabact *obj, class_stru *zis, bact_arg75 *arg)
         fui = &bact->sencdTpos;
         v64 = 1;
 
-        arg110.field_two = 1;
+        arg110.priority = 1;
     }
     else
     {
         fui = &bact->primTpos;
         v68 = 1;
 
-        arg110.field_two = 0;
+        arg110.priority = 0;
     }
 
     NC_STACK_ypabact *a4;
@@ -3334,7 +3334,7 @@ void ypabact_func76(NC_STACK_ypabact *obj, class_stru *zis, bact_arg75 *arg)
     {
         bact->field_945 = bact->field_915;
 
-        arg110.field_one = 1;
+        arg110.tgType = BACT_TGT_TYPE_CELL;
         v15 = call_method(obj, 110, &arg110);
 
         bact->field_9b8 = v15;
@@ -7712,10 +7712,10 @@ size_t ypabact_func110(NC_STACK_ypabact *obj, class_stru *zis, bact_arg110 *arg)
     int v6 = 0;
     int v9 = 0;
 
-    if ( arg->field_one == BACT_TGT_TYPE_FRMT && (bact->primTtype == BACT_TGT_TYPE_FRMT || bact->secndTtype == BACT_TGT_TYPE_FRMT) )
+    if ( arg->tgType == BACT_TGT_TYPE_FRMT && (bact->primTtype == BACT_TGT_TYPE_FRMT || bact->secndTtype == BACT_TGT_TYPE_FRMT) )
         return 1;
 
-    if ( !arg->field_one )
+    if ( !arg->tgType )
         return 3;
 
 
@@ -7743,18 +7743,18 @@ size_t ypabact_func110(NC_STACK_ypabact *obj, class_stru *zis, bact_arg110 *arg)
             v6 = 1;
     }
 
-    if ( arg->field_one == 2 )
+    if ( arg->tgType == BACT_TGT_TYPE_UNIT )
     {
         __NC_STACK_ypabact *v16 = NULL;
         int v51, v54;
 
-        if ( arg->field_two == 1 )
+        if ( arg->priority == 1 )
         {
             v16 = bact->secndT.pbact;
             v51 = 1;
             v54 = 50;
         }
-        else if ( arg->field_two == 0)
+        else if ( arg->priority == 0)
         {
             v16 = bact->primT.pbact;
             v51 = 0;
@@ -7867,7 +7867,7 @@ size_t ypabact_func110(NC_STACK_ypabact *obj, class_stru *zis, bact_arg110 *arg)
             return 2;
         }
     }
-    else if ( arg->field_one == 1 )
+    else if ( arg->tgType == BACT_TGT_TYPE_CELL )
     {
 
         cellArea *v52 = NULL;
