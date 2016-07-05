@@ -2702,7 +2702,7 @@ void ypaworld_func151(NC_STACK_ypaworld *obj, class_stru *zis, stack_vals *arg)
     }
 
     if ( yw->sceneRecorder->do_record )
-        sub_480868(yw);
+        recorder_stoprec(yw);
 
     yw->do_screenshooting = 0;
     yw->sceneRecorder->do_record = 0;

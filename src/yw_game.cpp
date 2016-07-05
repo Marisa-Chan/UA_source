@@ -4962,11 +4962,6 @@ void ypaworld_func184__sub0(_NC_STACK_ypaworld *yw, yw_f726c *hist_list, yw_arg1
     }
 }
 
-void sub_480868(_NC_STACK_ypaworld *yw)
-{
-    dprintf("MAKE ME %s (scene events)\n", "sub_480868");
-}
-
 void ypaworld_func151__sub5(_NC_STACK_ypaworld *yw)
 {
     if ( yw->map_events )

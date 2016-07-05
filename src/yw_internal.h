@@ -484,7 +484,6 @@ void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt);
 void recorder_update_time(_NC_STACK_ypaworld *yw, int dtime);
 void recorder_write_frame(_NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub22(_NC_STACK_ypaworld *yw);
-void sub_480868(_NC_STACK_ypaworld *yw);
 void ypaworld_func151__sub5(_NC_STACK_ypaworld *yw);
 
 int yw_write_levelnum(_NC_STACK_ypaworld *yw, FILE *fil);
@@ -528,6 +527,7 @@ void sub_4476AC(_NC_STACK_ypaworld *yw);
 int recorder_create_camera(_NC_STACK_ypaworld *yw);
 int recorder_go_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd, int wanted_frame_id);
 int recorder_open_replay(recorder *rcrd);
+void recorder_stoprec(_NC_STACK_ypaworld *yw);
 
 void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt);
 void ypaworld_func163__sub1(_NC_STACK_ypaworld *yw, recorder *rcrd, int a3);
