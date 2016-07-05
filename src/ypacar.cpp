@@ -572,10 +572,10 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
             bact->gun_angle2 = 0.8;
 
         bact_arg79 arg79;
-        arg79.field_18 = 4;
-        arg79.field_20.sx = bact->field_651.m20;
-        arg79.field_20.sy = bact->field_651.m21;
-        arg79.field_20.sz = bact->field_651.m22;
+        arg79.tgType = BACT_TGT_TYPE_DRCT;
+        arg79.tgt_pos.sx = bact->field_651.m20;
+        arg79.tgt_pos.sy = bact->field_651.m21;
+        arg79.tgt_pos.sz = bact->field_651.m22;
 
         bact_arg106 arg106;
         arg106.field_0 = 5;
@@ -585,8 +585,8 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
 
         if ( call_method(obj, 106, &arg106) )
         {
-            arg79.field_18 = 2;
-            arg79.field_1C.pbact = arg106.ret_bact;
+            arg79.tgType = BACT_TGT_TYPE_UNIT;
+            arg79.target.pbact = arg106.ret_bact;
         }
 
         if ( arg->inpt->but_flags & 1 || arg->inpt->but_flags & 2 )
@@ -597,21 +597,21 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
             }
             else
             {
-                arg79.field_2C = bact->weapon;
-                arg79.field_0.sx = bact->field_651.m20 - bact->field_651.m10 * bact->gun_angle2;
-                arg79.field_0.sy = bact->field_651.m21 - bact->field_651.m11 * bact->gun_angle2;
-                arg79.field_0.sz = bact->field_651.m22 - bact->field_651.m12 * bact->gun_angle2;
-                arg79.field_30 = bact->field_915;
+                arg79.weapon = bact->weapon;
+                arg79.direction.sx = bact->field_651.m20 - bact->field_651.m10 * bact->gun_angle2;
+                arg79.direction.sy = bact->field_651.m21 - bact->field_651.m11 * bact->gun_angle2;
+                arg79.direction.sz = bact->field_651.m22 - bact->field_651.m12 * bact->gun_angle2;
+                arg79.g_time = bact->field_915;
 
                 if ( bact->field_915 % 2 )
-                    arg79.fire_point.sx = -bact->fire_x;
+                    arg79.start_point.sx = -bact->fire_x;
                 else
-                    arg79.fire_point.sx = bact->fire_x;
+                    arg79.start_point.sx = bact->fire_x;
 
-                arg79.fire_point.sy = bact->fire_y;
-                arg79.fire_point.sz = bact->fire_z;
+                arg79.start_point.sy = bact->fire_y;
+                arg79.start_point.sz = bact->fire_z;
 
-                arg79.field_34 = ((arg->inpt->but_flags & 2) != 0) | 2;
+                arg79.flags = ((arg->inpt->but_flags & 2) != 0) | 2;
 
                 call_method(obj, 79, &arg79);
             }

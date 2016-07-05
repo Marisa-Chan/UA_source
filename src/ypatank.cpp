@@ -984,36 +984,36 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
         }
 
         bact_arg75 arg75;
-        arg75.field_14 = v244;
-        arg75.field_18 = bact->field_915;
+        arg75.fperiod = v244;
+        arg75.g_time = bact->field_915;
 
         if ( bact->secndTtype == BACT_TGT_TYPE_UNIT )
         {
-            arg75.field_x = 1;
-            arg75.bct.pbact = bact->secndT.pbact;
+            arg75.prio = 1;
+            arg75.target.pbact = bact->secndT.pbact;
 
             call_method(obj, 75, &arg75);
         }
         else if ( bact->secndTtype == BACT_TGT_TYPE_CELL )
         {
-            arg75.field_0 = bact->sencdTpos;
-            arg75.bct.pcell = bact->secndT.pcell;
-            arg75.field_x = 1;
+            arg75.pos = bact->sencdTpos;
+            arg75.target.pcell = bact->secndT.pcell;
+            arg75.prio = 1;
 
             call_method(obj, 76, &arg75);
         }
         else if ( bact->primTtype == BACT_TGT_TYPE_UNIT )
         {
-            arg75.bct.pbact = bact->primT.pbact;
-            arg75.field_x = 0;
+            arg75.target.pbact = bact->primT.pbact;
+            arg75.prio = 0;
 
             call_method(obj, 75, &arg75);
         }
         else if ( bact->primTtype == BACT_TGT_TYPE_CELL )
         {
-            arg75.field_0 = bact->primTpos;
-            arg75.bct.pcell = bact->primT.pcell;
-            arg75.field_x = 0;
+            arg75.pos = bact->primTpos;
+            arg75.target.pcell = bact->primT.pcell;
+            arg75.prio = 0;
 
             call_method(obj, 76, &arg75);
         }
@@ -1326,33 +1326,33 @@ void ypatank_func71(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
         bact_arg79 arg79;
         bact_arg106 arg106;
 
-        arg79.field_20 = v67;
-        arg79.field_18 = 4;
+        arg79.tgt_pos = v67;
+        arg79.tgType = BACT_TGT_TYPE_DRCT;
 
         arg106.field_4 = v67;
         arg106.field_0 = 5;
 
         if ( call_method(obj, 106, &arg106) )
         {
-            arg79.field_1C.pbact = arg106.ret_bact;
-            arg79.field_18 = 2;
+            arg79.target.pbact = arg106.ret_bact;
+            arg79.tgType = BACT_TGT_TYPE_UNIT;
         }
 
         if ( arg->inpt->but_flags & 1 || arg->inpt->but_flags & 2 )
         {
-            arg79.field_0 = v67;
-            arg79.field_2C = bact->weapon;
-            arg79.field_30 = bact->field_915;
+            arg79.direction = v67;
+            arg79.weapon = bact->weapon;
+            arg79.g_time = bact->field_915;
 
             if ( bact->field_915 % 2 )
-                arg79.fire_point.sx = -bact->fire_x;
+                arg79.start_point.sx = -bact->fire_x;
             else
-                arg79.fire_point.sx = bact->fire_x;
+                arg79.start_point.sx = bact->fire_x;
 
-            arg79.fire_point.sy = bact->fire_y;
-            arg79.fire_point.sz = bact->fire_z;
-            arg79.field_34 = (arg->inpt->but_flags & 2) != 0;
-            arg79.field_34 |= 2;
+            arg79.start_point.sy = bact->fire_y;
+            arg79.start_point.sz = bact->fire_z;
+            arg79.flags = (arg->inpt->but_flags & 2) != 0;
+            arg79.flags |= 2;
 
             call_method(obj, 79, &arg79);
         }

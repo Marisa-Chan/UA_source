@@ -360,23 +360,23 @@ struct bact_arg106
 
 struct bact_arg79
 {
-    xyz field_0;
-    xyz fire_point;
-    int field_18;
-    BactTarget field_1C;
-    xyz field_20;
-    int field_2C;
-    int field_30;
-    int field_34;
+    xyz direction;
+    xyz start_point;
+    int tgType;
+    BactTarget target;
+    xyz tgt_pos;
+    int weapon;
+    int g_time;
+    int flags;
 };
 
 struct bact_arg75
 {
-    xyz field_0;
-    BactTarget bct;
-    int field_x;
-    float field_14;
-    int field_18;
+    xyz pos;
+    BactTarget target;
+    int prio;
+    float fperiod;
+    int g_time;
 };
 
 struct bact_arg110

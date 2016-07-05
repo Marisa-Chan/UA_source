@@ -883,38 +883,38 @@ void ypaflyer_func70(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
 
 
         bact_arg75 arg75;
-        arg75.field_14 = a2a;
-        arg75.field_18 = bact->field_915;
+        arg75.fperiod = a2a;
+        arg75.g_time = bact->field_915;
 
         //printf("%d %d \n", bact->field_3DF, bact->field_3DE);
 
         if ( bact->secndTtype == BACT_TGT_TYPE_UNIT )
         {
-            arg75.bct.pbact = bact->secndT.pbact;
-            arg75.field_x = 1;
+            arg75.target.pbact = bact->secndT.pbact;
+            arg75.prio = 1;
 
             call_method(obj, 75, &arg75);
         }
         else if ( bact->secndTtype == BACT_TGT_TYPE_CELL )
         {
-            arg75.field_0 = bact->sencdTpos;
-            arg75.bct.pcell = bact->secndT.pcell;
-            arg75.field_x = 1;
+            arg75.pos = bact->sencdTpos;
+            arg75.target.pcell = bact->secndT.pcell;
+            arg75.prio = 1;
 
             call_method(obj, 76, &arg75);
         }
         else if ( bact->primTtype == BACT_TGT_TYPE_UNIT )
         {
-            arg75.field_x = 0;
-            arg75.bct.pbact = bact->primT.pbact;
+            arg75.prio = 0;
+            arg75.target.pbact = bact->primT.pbact;
 
             call_method(obj, 75, &arg75);
         }
         else if ( bact->primTtype == BACT_TGT_TYPE_CELL )
         {
-            arg75.field_0 = bact->primTpos;
-            arg75.bct.pcell = bact->primT.pcell;
-            arg75.field_x = 0;
+            arg75.pos = bact->primTpos;
+            arg75.target.pcell = bact->primT.pcell;
+            arg75.prio = 0;
 
             call_method(obj, 76, &arg75);
         }
@@ -1224,10 +1224,10 @@ void ypaflyer_func71(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
             fly->field_c = v72;
 
         bact_arg79 arg79;
-        arg79.field_18 = 4;
-        arg79.field_20.sx = fly->bact_internal->field_651.m20;
-        arg79.field_20.sy = fly->bact_internal->field_651.m21;
-        arg79.field_20.sz = fly->bact_internal->field_651.m22;
+        arg79.tgType = BACT_TGT_TYPE_DRCT;
+        arg79.tgt_pos.sx = fly->bact_internal->field_651.m20;
+        arg79.tgt_pos.sy = fly->bact_internal->field_651.m21;
+        arg79.tgt_pos.sz = fly->bact_internal->field_651.m22;
 
         bact_arg106 arg106;
         arg106.field_0 = 5;
@@ -1237,26 +1237,26 @@ void ypaflyer_func71(NC_STACK_ypaflyer *obj, class_stru *zis, ypabact_arg65 *arg
 
         if ( call_method(obj, 106, &arg106) )
         {
-            arg79.field_18 = 2;
-            arg79.field_1C.pbact = arg106.ret_bact;
+            arg79.tgType = BACT_TGT_TYPE_UNIT;
+            arg79.target.pbact = arg106.ret_bact;
         }
 
         if ( arg->inpt->but_flags & 1 || arg->inpt->but_flags & 2 )
         {
-            arg79.field_0.sy = 0;
-            arg79.field_0.sx = 0;
-            arg79.field_0.sz = 0;
-            arg79.field_2C = fly->bact_internal->weapon;
-            arg79.field_30 = fly->bact_internal->field_915;
+            arg79.direction.sy = 0;
+            arg79.direction.sx = 0;
+            arg79.direction.sz = 0;
+            arg79.weapon = fly->bact_internal->weapon;
+            arg79.g_time = fly->bact_internal->field_915;
 
             if ( fly->bact_internal->field_915 % 2 )
-                arg79.fire_point.sx = fly->bact_internal->fire_x;
+                arg79.start_point.sx = fly->bact_internal->fire_x;
             else
-                arg79.fire_point.sx = -fly->bact_internal->fire_x;
+                arg79.start_point.sx = -fly->bact_internal->fire_x;
 
-            arg79.fire_point.sy = fly->bact_internal->fire_y;
-            arg79.fire_point.sz = fly->bact_internal->fire_z;
-            arg79.field_34 = ((arg->inpt->but_flags & 2) != 0) | 2;
+            arg79.start_point.sy = fly->bact_internal->fire_y;
+            arg79.start_point.sz = fly->bact_internal->fire_z;
+            arg79.flags = ((arg->inpt->but_flags & 2) != 0) | 2;
 
             call_method(obj, 79, &arg79);
         }
