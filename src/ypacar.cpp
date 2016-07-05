@@ -586,7 +586,7 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
         if ( call_method(obj, 106, &arg106) )
         {
             arg79.field_18 = 2;
-            arg79.field_1C = arg106.ret_bact;
+            arg79.field_1C.pbact = arg106.ret_bact;
         }
 
         if ( arg->inpt->but_flags & 1 || arg->inpt->but_flags & 2 )

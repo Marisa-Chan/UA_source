@@ -744,7 +744,7 @@ int yw_write_bact(bact_node *bct, FILE *fil)
     fwrite(buf, strlen(buf), 1, fil);
 
     if ( bct->bact->field_3DE == 2 )
-        sprintf(buf, "    primary        = %d_%d_%2.2f_%2.2f_%d\n", bct->bact->field_3DE, bct->bact->field_3e8->ypabact__id, bct->bact->field_3ec.sx, bct->bact->field_3ec.sz, bct->bact->field_3e0);
+        sprintf(buf, "    primary        = %d_%d_%2.2f_%2.2f_%d\n", bct->bact->field_3DE, bct->bact->field_3e8.pbact->ypabact__id, bct->bact->field_3ec.sx, bct->bact->field_3ec.sz, bct->bact->field_3e0);
     else
         sprintf(buf, "    primary        = %d_0_%2.2f_%2.2f_%d\n", bct->bact->field_3DE, bct->bact->field_3ec.sx, bct->bact->field_3ec.sz, bct->bact->field_3e0);
 

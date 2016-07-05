@@ -3700,7 +3700,7 @@ void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a
         bct1->bact->field_3DE = 0;
 
         bact_arg67 arg67;
-        arg67.field_8 = sb_0x47b028__sub0((int)bct1->bact->field_3e8, yw);
+        arg67.field_8.pbact = sb_0x47b028__sub0((int)bct1->bact->field_3e8.pbact, yw);
         arg67.field_0 = 6;
         arg67.field_4 = 0;
         call_method(bct1->bacto, 67, &arg67);
@@ -4470,13 +4470,13 @@ void sub_4F1A60(__NC_STACK_ypabact *bact)
 
         if ( bct == v5 )
         {
-            v5->bact->field_3e8 = NULL;
+            v5->bact->field_3e8.pbact = NULL;
             v5->bact->field_3DE = 0;
             v5->bact->field_945 = 0;
         }
         else if ( bct == v6 )
         {
-            v6->bact->field_3f8 = NULL;
+            v6->bact->field_3f8.pbact = NULL;
             v6->bact->field_3DF = 0;
             v6->bact->field_945 = 0;
         }

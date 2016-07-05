@@ -387,7 +387,7 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
     {
         if ( bact2->field_3DE == 2 )
         {
-            v6 = bact2->field_3e8;
+            v6 = bact2->field_3e8.pbact;
             v8 = 2;
         }
         else if ( bact2->field_3DE == 1 )
@@ -414,7 +414,7 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
 
         if ( v8 == 2 )
         {
-            arg67.field_8 = v6;
+            arg67.field_8.pbact = v6;
         }
         else
         {
@@ -1115,7 +1115,7 @@ void ypabact_func67(NC_STACK_ypabact *obj, class_stru *zis, bact_arg67 *arg)
 
             if ( call_method(bact->wrld, 130, &arg130) )
             {
-                bact->field_3f8 = (__NC_STACK_ypabact *)arg130.pcell;
+                bact->field_3f8.pcell = arg130.pcell;
                 bact->field_3fc.sx = arg130.pos_x;
                 bact->field_3fc.sz = arg130.pos_z;
                 bact->field_3fc.sy = arg130.pcell->height;
@@ -1123,28 +1123,28 @@ void ypabact_func67(NC_STACK_ypabact *obj, class_stru *zis, bact_arg67 *arg)
             else
             {
                 bact->field_3DF = 0;
-                bact->field_3f8 = 0;
+                bact->field_3f8.pcell = NULL;
             }
             break;
 
         case 2:
         case 6:
-            bact->field_3f8 = arg->field_8;
+            bact->field_3f8.pbact = arg->field_8.pbact;
             bact->field_3DF = 2;
 
-            if ( bact->field_3f8 )
+            if ( bact->field_3f8.pbact )
             {
-                if ( bact->field_3f8->field_3D6 & 0x400 )
+                if ( bact->field_3f8.pbact->field_3D6 & 0x400 )
                 {
-                    ypa_log_out("totes vehicle als nebenziel, owner %d, class %d\n", arg->field_8->owner, arg->field_8->field_24);
+                    ypa_log_out("totes vehicle als nebenziel, owner %d, class %d\n", arg->field_8.pbact->owner, arg->field_8.pbact->field_24);
                     bact->field_3DF = 0;
                 }
                 else
                 {
-                    bact->field_3fc = bact->field_3f8->field_621;
+                    bact->field_3fc = bact->field_3f8.pbact->field_621;
 
                     nlist *lst;
-                    call_vtbl(bact->field_3f8->self, 3, 0x80001008, &lst, 0);
+                    call_vtbl(bact->field_3f8.pbact->self, 3, 0x80001008, &lst, 0);
 
                     if ( lst )
                         AddTail(lst, &bact->field_B64);
@@ -1165,7 +1165,7 @@ void ypabact_func67(NC_STACK_ypabact *obj, class_stru *zis, bact_arg67 *arg)
             break;
 
         case 0:
-            bact->field_3f8 = NULL;
+            bact->field_3f8.pbact = NULL;
             bact->field_3DF = 0;
             break;
 
@@ -1203,7 +1203,7 @@ void ypabact_func67(NC_STACK_ypabact *obj, class_stru *zis, bact_arg67 *arg)
 
             if ( call_method(bact->wrld, 130, &arg130) )
             {
-                bact->field_3e8 = (__NC_STACK_ypabact *)arg130.pcell;
+                bact->field_3e8.pcell = arg130.pcell;
                 bact->field_3ec.sx = arg130.pos_x;
                 bact->field_3ec.sz = arg130.pos_z;
                 bact->field_3ec.sy = arg130.pcell->height;
@@ -1211,33 +1211,33 @@ void ypabact_func67(NC_STACK_ypabact *obj, class_stru *zis, bact_arg67 *arg)
             else
             {
                 bact->field_3DE = 0;
-                bact->field_3e8 = 0;
+                bact->field_3e8.pcell = NULL;
             }
             break;
 
         case 2:
         case 6:
-            bact->field_3e8 = arg->field_8;
+            bact->field_3e8.pbact = arg->field_8.pbact;
             bact->field_3DE = 2;
 
-            if ( bact->field_3e8 )
+            if ( bact->field_3e8.pbact )
             {
-                if ( bact->field_3e8->field_3D6 & 0x400 )
+                if ( bact->field_3e8.pbact->field_3D6 & 0x400 )
                 {
-                    ypa_log_out("totes vehicle als hauptziel, owner %d, class %d - ich bin class %d\n", arg->field_8->owner, arg->field_8->field_24, bact->field_24);
+                    ypa_log_out("totes vehicle als hauptziel, owner %d, class %d - ich bin class %d\n", arg->field_8.pbact->owner, arg->field_8.pbact->field_24, bact->field_24);
                     bact->field_3DE = 0;
                     return;
                 }
 
-                bact->field_3ec = bact->field_3e8->field_621;
+                bact->field_3ec = bact->field_3e8.pbact->field_621;
 
                 nlist *lst;
-                call_vtbl(bact->field_3e8->self, 3, 0x80001008, &lst, 0);
+                call_vtbl(bact->field_3e8.pbact->self, 3, 0x80001008, &lst, 0);
 
                 if ( lst )
                     AddTail(lst, &bact->field_B54);
 
-                bact->field_3e0 = arg->field_8->field_2E;
+                bact->field_3e0 = arg->field_8.pbact->field_2E;
             }
             else
             {
@@ -1253,7 +1253,7 @@ void ypabact_func67(NC_STACK_ypabact *obj, class_stru *zis, bact_arg67 *arg)
             break;
 
         case 0:
-            bact->field_3e8 = 0;
+            bact->field_3e8.pbact = NULL;
             bact->field_59A = 0;
             bact->field_3DE = 0;
             bact->field_3D6 &= 0xFBFFFFFF;
@@ -1262,7 +1262,7 @@ void ypabact_func67(NC_STACK_ypabact *obj, class_stru *zis, bact_arg67 *arg)
         case 4:
             bact->field_645 = arg->targ;
             bact->field_3DE = 4;
-            bact->field_3e8 = 0;
+            bact->field_3e8.pbact = NULL;
             bact->field_3e0 = 0;
             break;
 
@@ -1355,13 +1355,13 @@ void ypabact_func68(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
             {
                 if ( bact->field_3DE == 2 )
                 {
-                    bact->field_639.sx = bact->field_3e8->field_621.sx - bact->field_621.sx;
-                    bact->field_639.sy = bact->field_3e8->field_621.sy - bact->field_621.sy;
-                    bact->field_639.sz = bact->field_3e8->field_621.sz - bact->field_621.sz;
+                    bact->field_639.sx = bact->field_3e8.pbact->field_621.sx - bact->field_621.sx;
+                    bact->field_639.sy = bact->field_3e8.pbact->field_621.sy - bact->field_621.sy;
+                    bact->field_639.sz = bact->field_3e8.pbact->field_621.sz - bact->field_621.sz;
 
-                    if ( bact->field_3e8->field_3D5 != 2)
+                    if ( bact->field_3e8.pbact->field_3D5 != 2)
                     {
-                        bact->field_3ec = bact->field_3e8->field_621;
+                        bact->field_3ec = bact->field_3e8.pbact->field_621;
                     }
                 }
                 else
@@ -1394,7 +1394,7 @@ void ypabact_func68(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
                                 {
                                     v36.field_0 = bact->field_3DE;
                                     v36.field_4 = 0;
-                                    v36.field_8 = bact->field_3e8;
+                                    v36.field_8.pbact = bact->field_3e8.pbact;
                                     v36.targ.sx = bact->field_3ec.sx;
                                     v36.targ.sy = bact->field_3ec.sy;
                                     v36.targ.sz = bact->field_3ec.sz;
@@ -1449,9 +1449,9 @@ void ypabact_func68(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
             {
                 if ( bact->field_3DE == 2 )
                 {
-                    if ( bact->field_3e8 )
+                    if ( bact->field_3e8.pbact )
                     {
-                        if ( !((1 << bact->owner) & bact->field_3e8->p_cell_area->view_mask) )
+                        if ( !((1 << bact->owner) & bact->field_3e8.pbact->p_cell_area->view_mask) )
                         {
                             v36.field_0 = 0;
                             v36.field_4 = 0;
@@ -1562,7 +1562,7 @@ void ypabact_func69(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
                         bact_arg67 arg67;
                         arg67.field_0 = 2;
                         arg67.field_4 = 1;
-                        arg67.field_8 = arg90.ret_unit;
+                        arg67.field_8.pbact = arg90.ret_unit;
                         call_method(obj, 67, &arg67);
                     }
 
@@ -1613,9 +1613,9 @@ void ypabact_func69(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
 
             if ( bact->field_3DF == 2 )
             {
-                bact->field_639.sx = bact->field_3f8->field_621.sx - bact->field_621.sx;
-                bact->field_639.sy = bact->field_3f8->field_621.sy - bact->field_621.sy;
-                bact->field_639.sz = bact->field_3f8->field_621.sz - bact->field_621.sz;
+                bact->field_639.sx = bact->field_3f8.pbact->field_621.sx - bact->field_621.sx;
+                bact->field_639.sy = bact->field_3f8.pbact->field_621.sy - bact->field_621.sy;
+                bact->field_639.sz = bact->field_3f8.pbact->field_621.sz - bact->field_621.sz;
             }
             else if ( bact->field_3DF == 1)
             {
@@ -1633,13 +1633,13 @@ void ypabact_func69(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
         {
             if ( bact->field_3DF == 2 )
             {
-                if ( bact->field_3f8 )
+                if ( bact->field_3f8.pbact )
                 {
-                    float v25 = bact->field_621.sx - bact->field_3f8->field_621.sx;
-                    float v26 = bact->field_621.sz - bact->field_3f8->field_621.sz;
+                    float v25 = bact->field_621.sx - bact->field_3f8.pbact->field_621.sx;
+                    float v26 = bact->field_621.sz - bact->field_3f8.pbact->field_621.sz;
                     float v33 = sqrt(v25 * v25 + v26 * v26);
 
-                    if ( !((1 << bact->owner) & bact->field_3f8->p_cell_area->view_mask) || v33 > 2160.0 )
+                    if ( !((1 << bact->owner) & bact->field_3f8.pbact->p_cell_area->view_mask) || v33 > 2160.0 )
                     {
                         bact_arg67 arg67;
                         arg67.field_4 = 1;
@@ -2073,8 +2073,8 @@ void ypabact_func70(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
             NC_STACK_ypabact *a4;
             call_vtbl(bact->wrld, 3, 0x80002011, &a4, 0);
 
-            if ( ((bact->field_3DF != 2 || (a4 != bact->field_3f8->self && bact->field_3f8->field_24 != 3)) &&
-                    (bact->field_3DE != 2 || (a4 != bact->field_3e8->self && bact->field_3e8->field_24 != 3)))
+            if ( ((bact->field_3DF != 2 || (a4 != bact->field_3f8.pbact->self && bact->field_3f8.pbact->field_24 != 3)) &&
+                    (bact->field_3DE != 2 || (a4 != bact->field_3e8.pbact->self && bact->field_3e8.pbact->field_24 != 3)))
                     || bact->field_645.sy >= -0.01 )
             {
                 if ( bact->field_645.sy < 0.15 )
@@ -2159,8 +2159,7 @@ void ypabact_func70(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
 
         if ( bact->field_3DF == 2 )
         {
-
-            arg75.bct = bact->field_3f8;
+            arg75.bct.pbact = bact->field_3f8.pbact;
             arg75.field_x = 1;
 
             call_method(obj, 75, &arg75);
@@ -2168,14 +2167,14 @@ void ypabact_func70(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
         else if ( bact->field_3DF == 1 )
         {
             arg75.field_0 = bact->field_3fc;
-            arg75.bct = bact->field_3f8;
+            arg75.bct.pcell = bact->field_3f8.pcell;
             arg75.field_x = 1;
 
             call_method(obj, 76, &arg75);
         }
         else if ( bact->field_3DE == 2 )
         {
-            arg75.bct = bact->field_3e8;
+            arg75.bct.pbact = bact->field_3e8.pbact;
             arg75.field_x = 0;
 
             call_method(obj, 75, &arg75);
@@ -2183,7 +2182,7 @@ void ypabact_func70(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
         else if ( bact->field_3DE == 1 )
         {
             arg75.field_0 = bact->field_3ec;
-            arg75.bct = bact->field_3e8;
+            arg75.bct.pcell = bact->field_3e8.pcell;
             arg75.field_x = 0;
 
             call_method(obj, 76, &arg75);
@@ -2613,7 +2612,7 @@ void ypabact_func71(NC_STACK_ypabact *obj, class_stru *zis, ypabact_arg65 *arg)
 
         if ( call_method(obj, 106, &v64) )
         {
-            v61.field_1C = v64.ret_bact;
+            v61.field_1C.pbact = v64.ret_bact;
             v61.field_18 = 2;
         }
 
@@ -2986,13 +2985,13 @@ void ypabact_func75(NC_STACK_ypabact *obj, class_stru *zis, bact_arg75 *arg)
 {
     __NC_STACK_ypabact *bact = &obj->stack__ypabact;
 
-    arg->field_0 = arg->bct->field_621;
+    arg->field_0 = arg->bct.pbact->field_621;
 
     xyz v40;
 
-    v40.sx = arg->bct->field_621.sx - bact->field_621.sx;
-    v40.sy = arg->bct->field_621.sy - bact->field_621.sy;
-    v40.sz = arg->bct->field_621.sz - bact->field_621.sz;
+    v40.sx = arg->bct.pbact->field_621.sx - bact->field_621.sx;
+    v40.sy = arg->bct.pbact->field_621.sy - bact->field_621.sy;
+    v40.sz = arg->bct.pbact->field_621.sz - bact->field_621.sz;
 
     float v45 = sqrt( POW2(v40.sx) + POW2(v40.sy) + POW2(v40.sz) );
 
@@ -3008,15 +3007,15 @@ void ypabact_func75(NC_STACK_ypabact *obj, class_stru *zis, bact_arg75 *arg)
     int v54 = 0;
     int v51 = 0;
 
-    if ( bact->field_3f8 == arg->bct )
+    if ( bact->field_3f8.pbact == arg->bct.pbact )
     {
-        fui = &bact->field_3f8->field_621;
+        fui = &bact->field_3f8.pbact->field_621;
         arg110.field_two = 1;
         v54 = 1;
     }
     else
     {
-        fui = &bact->field_3e8->field_621;
+        fui = &bact->field_3e8.pbact->field_621;
         arg110.field_two = 0;
         v51 = 1;
     }
@@ -3113,7 +3112,7 @@ void ypabact_func75(NC_STACK_ypabact *obj, class_stru *zis, bact_arg75 *arg)
                 call_method(obj, 78, &arg78);
             }
 
-            if ( bact->field_3f8 == arg->bct )
+            if ( bact->field_3f8.pbact == arg->bct.pbact )
             {
                 bact->field_3D6 &= 0xFFFFFFFD;
 
@@ -3169,9 +3168,9 @@ void ypabact_func75(NC_STACK_ypabact *obj, class_stru *zis, bact_arg75 *arg)
         if ( v16 == 2 )
         {
             bact_arg101 arg101;
-            arg101.pos = arg->bct->field_621;
+            arg101.pos = arg->bct.pbact->field_621;
             arg101.unkn = 2;
-            arg101.radius = arg->bct->radius;
+            arg101.radius = arg->bct.pbact->radius;
 
             if ( call_method(obj, 101, &arg101) )
             {
@@ -3191,7 +3190,7 @@ void ypabact_func75(NC_STACK_ypabact *obj, class_stru *zis, bact_arg75 *arg)
 
                 arg79.field_0.sz = bact->field_651.m22;
                 arg79.field_18 = 2;
-                arg79.field_1C = arg->bct;
+                arg79.field_1C.pbact = arg->bct.pbact;
                 arg79.field_20 = arg->field_0;
                 arg79.field_2C = bact->weapon;
                 arg79.field_30 = bact->field_915;
@@ -3300,7 +3299,7 @@ void ypabact_func76(NC_STACK_ypabact *obj, class_stru *zis, bact_arg75 *arg)
 
     bact_arg110 arg110;
 
-    if ( bact->field_3f8 == arg->bct )
+    if ( bact->field_3f8.pcell == arg->bct.pcell )
     {
         fui = &bact->field_3fc;
         v64 = 1;
@@ -3417,7 +3416,7 @@ void ypabact_func76(NC_STACK_ypabact *obj, class_stru *zis, bact_arg75 *arg)
             {
                 bact->field_3D6 &= 0xFFFFFFFD;
 
-                if ( v65 && bact->field_3f8 != bact->field_3e8 )
+                if ( v65 && bact->field_3f8.pcell != bact->field_3e8.pcell )
                 {
                     robo_arg134 arg134;
 
@@ -3467,7 +3466,7 @@ void ypabact_func76(NC_STACK_ypabact *obj, class_stru *zis, bact_arg75 *arg)
             {
                 if ( v62 < 1200.0 )
                 {
-                    if ( !(bact->field_3D6 & 1) && v65 && bact->field_3f8 != bact->field_3e8 )
+                    if ( !(bact->field_3D6 & 1) && v65 && bact->field_3f8.pcell != bact->field_3e8.pcell )
                     {
                         robo_arg134 arg134;
 
@@ -3543,7 +3542,7 @@ void ypabact_func76(NC_STACK_ypabact *obj, class_stru *zis, bact_arg75 *arg)
                 arg79.field_0.sy = -(bact->field_621.sy + bact->fire_y - arg->field_0.sy) / v60;
                 arg79.field_0.sz = -(bact->field_621.sz + bact->fire_z - arg->field_0.sz) / v60;
                 arg79.field_18 = 1;
-                arg79.field_1C = arg->bct;
+                arg79.field_1C.pbact = arg->bct.pbact;
                 arg79.field_20 = arg->field_0;
                 arg79.field_2C = bact->weapon;
                 arg79.field_30 = bact->field_915;
@@ -3737,7 +3736,7 @@ void ypabact_func77(NC_STACK_ypabact *obj, class_stru *zis, void *)
 
                 bact_arg67 arg67;
                 arg67.targ = bact->field_3ec;
-                arg67.field_8 = bact->field_3e8;
+                arg67.field_8.pbact = bact->field_3e8.pbact;
                 arg67.field_0 = bact->field_3DE;
                 arg67.field_4 = 0;
 
@@ -3858,13 +3857,13 @@ void ypabact_func77(NC_STACK_ypabact *obj, class_stru *zis, void *)
 
             if ( v30 == v68 )
             {
-                v30->bact->field_3e8 = NULL;
+                v30->bact->field_3e8.pbact = NULL;
                 v30->bact->field_3DE = 0;
                 v30->bact->field_945 = 0;
             }
             else if ( v30 == v69 )
             {
-                v30->bact->field_3f8 = NULL;
+                v30->bact->field_3f8.pbact = NULL;
                 v30->bact->field_3DF = 0;
                 v30->bact->field_945 = 0;
             }
@@ -5595,7 +5594,7 @@ __NC_STACK_ypabact * ypabact_func90__sub0(cellArea *cell, __NC_STACK_ypabact *un
                                 }
                                 else if ( unit->field_3DE == 2 )
                                 {
-                                    tmp = unit->field_3e8->field_621;
+                                    tmp = unit->field_3e8.pbact->field_621;
                                 }
                                 else
                                 {
@@ -5615,7 +5614,7 @@ __NC_STACK_ypabact * ypabact_func90__sub0(cellArea *cell, __NC_STACK_ypabact *un
                                 }
                                 else if ( prnt_bct->field_3DE == 2 )
                                 {
-                                    tmp = prnt_bct->field_3e8->field_621;
+                                    tmp = prnt_bct->field_3e8.pbact->field_621;
                                 }
                                 else
                                 {
@@ -7220,7 +7219,7 @@ size_t ypabact_func106(NC_STACK_ypabact *obj, class_stru *zis, bact_arg106 *arg)
         bact_arg67 arg67;
         arg67.field_0 = 2;
         arg67.field_4 = 1;
-        arg67.field_8 = targeto;
+        arg67.field_8.pbact = targeto;
 
         call_method(obj, 67, &arg67);
 
@@ -7351,7 +7350,7 @@ __NC_STACK_ypabact *sb_0x493984__sub1(__NC_STACK_ypabact *bact)
     if ( bact->field_3DE == 1 )
         v12 = bact->field_3ec;
     else if ( bact->field_3DE == 2 )
-        v12 = bact->field_3e8->field_621;
+        v12 = bact->field_3e8.pbact->field_621;
     else
         return NULL;
 
@@ -7667,7 +7666,7 @@ int ypabact_func110__sub0(__NC_STACK_ypabact *bact)
                 {
                     if ( (1 << bact->owner) & v9->p_cell_area->view_mask )
                     {
-                        arg67.field_8 = v9;
+                        arg67.field_8.pbact = v9;
                         arg67.field_0 = 2;
                         arg67.field_4 = 0;
 
@@ -7728,19 +7727,19 @@ size_t ypabact_func110(NC_STACK_ypabact *obj, class_stru *zis, bact_arg110 *arg)
         if ( sqrt( POW2(v10) + POW2(v11) ) < 1800.0 )
             v9 = 1;
 
-        if ( bact->owner == ((cellArea *)bact->field_3e8)->owner )
+        if ( bact->owner == bact->field_3e8.pcell->owner )
             v6 = 1;
     }
 
     if ( bact->field_3DE == 2 )
     {
-        float v13 = bact->field_621.sx - bact->field_3e8->field_621.sx;
-        float v14 = bact->field_621.sz - bact->field_3e8->field_621.sz;
+        float v13 = bact->field_621.sx - bact->field_3e8.pbact->field_621.sx;
+        float v14 = bact->field_621.sz - bact->field_3e8.pbact->field_621.sz;
 
         if ( sqrt( POW2(v13) + POW2(v14) ) < 1800.0 )
             v9 = 1;
 
-        if ( bact->owner == bact->field_3e8->owner )
+        if ( bact->owner == bact->field_3e8.pbact->owner )
             v6 = 1;
     }
 
@@ -7751,13 +7750,13 @@ size_t ypabact_func110(NC_STACK_ypabact *obj, class_stru *zis, bact_arg110 *arg)
 
         if ( arg->field_two == 1 )
         {
-            v16 = bact->field_3f8;
+            v16 = bact->field_3f8.pbact;
             v51 = 1;
             v54 = 50;
         }
         else if ( arg->field_two == 0)
         {
-            v16 = bact->field_3e8;
+            v16 = bact->field_3e8.pbact;
             v51 = 0;
             v54 = 25;
         }
@@ -7812,7 +7811,7 @@ size_t ypabact_func110(NC_STACK_ypabact *obj, class_stru *zis, bact_arg110 *arg)
                     if ( bact->field_3DE == 1 )
                         v21 = &bact->field_3ec;
                     else if ( bact->field_3DE == 2 )
-                        v21 = &bact->field_3e8->field_621;
+                        v21 = &bact->field_3e8.pbact->field_621;
                     else
                         v21 = &bact->field_621;
                 }
@@ -7824,7 +7823,7 @@ size_t ypabact_func110(NC_STACK_ypabact *obj, class_stru *zis, bact_arg110 *arg)
                     if ( a4->field_3DE == 1 )
                         v21 = &a4->field_3ec;
                     else if ( a4->field_3DE == 2 )
-                        v21 = &a4->field_3e8->field_621;
+                        v21 = &a4->field_3e8.pbact->field_621;
                     else
                         v21 = &bact->field_621;
                 }
@@ -7835,7 +7834,7 @@ size_t ypabact_func110(NC_STACK_ypabact *obj, class_stru *zis, bact_arg110 *arg)
                 if ( sqrt(POW2(v26) + POW2(v27)) > 3600.0 )
                 {
                     nlist *lst;
-                    call_vtbl(bact->field_3f8->self, 3, 0x80001008, &lst, 0);
+                    call_vtbl(bact->field_3f8.pbact->self, 3, 0x80001008, &lst, 0);
 
                     bact_node *v43 = (bact_node *)lst->head;
 
@@ -7880,7 +7879,7 @@ size_t ypabact_func110(NC_STACK_ypabact *obj, class_stru *zis, bact_arg110 *arg)
 
         if ( bact->field_3DF == 1 )
         {
-            v52 = (cellArea *)bact->field_3f8;
+            v52 = bact->field_3f8.pcell;
 
             v48 = bact->field_3fc.sx;
             v47 = bact->field_3fc.sz;
@@ -7890,7 +7889,7 @@ size_t ypabact_func110(NC_STACK_ypabact *obj, class_stru *zis, bact_arg110 *arg)
         }
         else if ( bact->field_3DE == 1 )
         {
-            v52 = (cellArea *)bact->field_3e8;
+            v52 = bact->field_3e8.pcell;
 
             v48 = bact->field_3ec.sx;
             v47 = bact->field_3ec.sz;

@@ -369,9 +369,9 @@ void ypamissile_func68(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
     {
         if ( bact->field_3DE == 2 )
         {
-            bact->field_639.sx = bact->field_3e8->field_621.sx - bact->field_621.sx;
-            bact->field_639.sy = bact->field_3e8->field_621.sy - bact->field_621.sy;
-            bact->field_639.sz = bact->field_3e8->field_621.sz - bact->field_621.sz;
+            bact->field_639.sx = bact->field_3e8.pbact->field_621.sx - bact->field_621.sx;
+            bact->field_639.sy = bact->field_3e8.pbact->field_621.sy - bact->field_621.sy;
+            bact->field_639.sz = bact->field_3e8.pbact->field_621.sz - bact->field_621.sz;
         }
         else
         {

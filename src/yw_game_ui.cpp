@@ -480,7 +480,7 @@ void sub_4F72E8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
         if ( bact->field_3DF == 2 )
         {
             clr = yw_GetColor(yw, 10);
-            bct = bact->field_3f8;
+            bct = bact->field_3f8.pbact;
         }
         else
         {
@@ -497,7 +497,7 @@ void sub_4F72E8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
 
     if ( bact->field_3DF == 2 )
     {
-        __NC_STACK_ypabact *bct = bact->field_3f8;
+        __NC_STACK_ypabact *bct = bact->field_3f8.pbact;
 
         sub_4F68FC(yw->win3d, bact->field_621.sx, bact->field_621.sz, bct->field_621.sx, bct->field_621.sz,  yw_GetColor(yw, 10));
         return;
@@ -515,7 +515,7 @@ void sub_4F72E8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
         }
         else if ( bact->field_3DE == 2 )
         {
-            sub_4F68FC(yw->win3d, bact->field_621.sx, bact->field_621.sz, bact->field_3e8->field_621.sx, bact->field_3e8->field_621.sz, yw_GetColor(yw, 9));
+            sub_4F68FC(yw->win3d, bact->field_621.sx, bact->field_621.sz, bact->field_3e8.pbact->field_621.sx, bact->field_3e8.pbact->field_621.sz, yw_GetColor(yw, 9));
         }
 
         if ( bact->field_3D6 & 0x4000000 )
@@ -659,8 +659,8 @@ void sb_0x4f8f64__sub1(_NC_STACK_ypaworld *yw)
                 }
                 else if ( yw->field_1b84->field_3DE == 2 )
                 {
-                    a5 = yw->field_1b84->field_3e8->field_621.sx;
-                    a6 = yw->field_1b84->field_3e8->field_621.sz;
+                    a5 = yw->field_1b84->field_3e8.pbact->field_621.sx;
+                    a6 = yw->field_1b84->field_3e8.pbact->field_621.sz;
                     v7 = 1;
                 }
 
@@ -1552,7 +1552,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
 
                 if ( v47->field_3DE == 1 )
                 {
-                    if ( ((cellArea *)v47->field_3e8)->owner != yw->field_1b80->owner )
+                    if ( v47->field_3e8.pcell->owner != yw->field_1b80->owner )
                     {
                         int v101 = ( (int)v47->field_3ec.sx / 1200) * 1200.0 + 600.0;
                         int v100 = -(( (int)-v47->field_3ec.sz / 1200) * 1200.0 + 600.0);
@@ -1576,7 +1576,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
                 {
                     fntcmd_select_tileset(&pcur, v114);
 
-                    pcur = sub_4F6980(pcur, v47->field_3e8->field_621.sx, v47->field_3e8->field_621.sz, 0x86, a4, a5);
+                    pcur = sub_4F6980(pcur, v47->field_3e8.pbact->field_621.sx, v47->field_3e8.pbact->field_621.sz, 0x86, a4, a5);
                 }
 
                 if ( v47->field_3D6 & 0x4000000 )
@@ -10002,8 +10002,8 @@ void sb_0x4d7c08__sub0__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, sklt_wis *wis)
         else if ( yw->field_1b84->field_3DE == 2 )
         {
             v27 = 1;
-            tx = yw->field_1b84->field_3e8->field_621.sx - yw->field_1b84->field_621.sx;
-            ty = yw->field_1b84->field_3e8->field_621.sz - yw->field_1b84->field_621.sz;
+            tx = yw->field_1b84->field_3e8.pbact->field_621.sx - yw->field_1b84->field_621.sx;
+            ty = yw->field_1b84->field_3e8.pbact->field_621.sz - yw->field_1b84->field_621.sz;
         }
 
         if ( v27 )

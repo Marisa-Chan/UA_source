@@ -5521,7 +5521,7 @@ int sub_47A0C0(scrCallBack *scr)
             char *v9 = strtok(0, " \t_\n");
             if ( v9 )
             {
-                dword_5A7A88->field_3e8 = (__NC_STACK_ypabact *)atoi(v9);
+                dword_5A7A88->field_3e8.pbact = (__NC_STACK_ypabact *)atoi(v9);
 
                 v9 = strtok(0, " \t_\n");
                 if ( v9 )

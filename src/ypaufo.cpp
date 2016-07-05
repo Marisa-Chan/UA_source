@@ -496,7 +496,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                         NC_STACK_ypabact *v102;
                         call_vtbl(ufo->ywo, 3, 0x80002011, &v102, 0);
 
-                        if ( ( (bact->field_3DF != 2 || v102 != bact->field_3f8->self) && ( bact->field_3DE != 2 || v102 != bact->field_3e8->self) ) || bact->field_645.sy >= 0.0 )
+                        if ( ( (bact->field_3DF != 2 || v102 != bact->field_3f8.pbact->self) && ( bact->field_3DE != 2 || v102 != bact->field_3e8.pbact->self) ) || bact->field_645.sy >= 0.0 )
                         {
                             ufo->field_1c |= 5;
                         }
@@ -509,7 +509,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
 
                 if ( bact->field_3DF == 2 )
                 {
-                    arg75.bct = bact->field_3f8;
+                    arg75.bct.pbact = bact->field_3f8.pbact;
                     arg75.field_x = 1;
 
                     call_method(obj, 75, &arg75);
@@ -517,14 +517,14 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                 else if ( bact->field_3DF == 1 )
                 {
                     arg75.field_0 = bact->field_3fc;
-                    arg75.bct = bact->field_3f8;
+                    arg75.bct.pcell = bact->field_3f8.pcell;
                     arg75.field_x = 1;
 
                     call_method(obj, 76, &arg75);
                 }
                 else if ( bact->field_3DE == 2 )
                 {
-                    arg75.bct = bact->field_3e8;
+                    arg75.bct.pbact = bact->field_3e8.pbact;
                     arg75.field_x = 0;
 
                     call_method(obj, 75, &arg75);
@@ -532,7 +532,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                 else if ( bact->field_3DE == 1 )
                 {
                     arg75.field_0 = bact->field_3ec;
-                    arg75.bct = bact->field_3e8;
+                    arg75.bct.pcell = bact->field_3e8.pcell;
                     arg75.field_x = 0;
 
                     call_method(obj, 76, &arg75);
@@ -913,7 +913,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
 
         if ( call_method(obj, 106, &arg106) )
         {
-            arg79.field_1C = arg106.ret_bact;
+            arg79.field_1C.pbact = arg106.ret_bact;
             arg79.field_18 = 2;
         }
 

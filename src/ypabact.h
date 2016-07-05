@@ -35,6 +35,12 @@ struct bact_6bd
     vhclBases vp;
 };
 
+union BactTarget
+{
+    __NC_STACK_ypabact *pbact;
+    cellArea *pcell;
+};
+
 struct __NC_STACK_ypabact : public nnode
 {
     NC_STACK_ypabact *self;
@@ -76,9 +82,9 @@ struct __NC_STACK_ypabact : public nnode
     char field_3DF;
     int field_3e0;
     int field_3e4;
-    __NC_STACK_ypabact *field_3e8;
+    BactTarget field_3e8;
     xyz field_3ec;
-    __NC_STACK_ypabact *field_3f8;
+    BactTarget field_3f8;
     xyz field_3fc;
 
     float adist_sector;
@@ -246,7 +252,7 @@ struct bact_arg67
 {
     int field_0;
     int field_4;
-    __NC_STACK_ypabact *field_8;
+    BactTarget field_8;
     xyz targ;
 };
 
@@ -346,7 +352,7 @@ struct bact_arg79
     xyz field_0;
     xyz fire_point;
     int field_18;
-    __NC_STACK_ypabact *field_1C;
+    BactTarget field_1C;
     xyz field_20;
     int field_2C;
     int field_30;
@@ -356,7 +362,7 @@ struct bact_arg79
 struct bact_arg75
 {
     xyz field_0;
-    __NC_STACK_ypabact *bct;
+    BactTarget bct;
     int field_x;
     float field_14;
     int field_18;

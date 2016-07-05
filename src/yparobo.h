@@ -134,7 +134,7 @@ struct NC_STACK_yparobo : public NC_STACK_ypabact
 struct robo_arg128
 {
     int field_0;
-    __NC_STACK_ypabact *field_4;
+    BactTarget field_4;
     int field_8;
     float field_C;
     int field_10;

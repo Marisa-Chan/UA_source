@@ -377,9 +377,9 @@ void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
         }
 
 
-        float v57 = bact->field_3f8->field_621.sx - bact->field_621.sx;
-        float v58 = bact->field_3f8->field_621.sy - bact->field_621.sy;
-        float v59 = bact->field_3f8->field_621.sz - bact->field_621.sz;
+        float v57 = bact->field_3f8.pbact->field_621.sx - bact->field_621.sx;
+        float v58 = bact->field_3f8.pbact->field_621.sy - bact->field_621.sy;
+        float v59 = bact->field_3f8.pbact->field_621.sz - bact->field_621.sz;
 
         float v19 = sqrt(POW2(v57) + POW2(v58) + POW2(v59));
 
@@ -554,11 +554,11 @@ void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
         bact_arg75 arg75;
         arg75.field_14 = v80;
         arg75.field_18 = bact->field_915;
-        arg75.bct = bact->field_3f8;
+        arg75.bct.pbact = bact->field_3f8.pbact;
 
         call_method(obj, 75,&arg75);
 
-        if ( !call_method(obj, 111, bact->field_3f8) )
+        if ( !call_method(obj, 111, bact->field_3f8.pbact) )
         {
             bact_arg67 arg67;
             arg67.field_0 = 0;
@@ -655,7 +655,7 @@ void ypagun_func71(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
 
             if ( call_method(obj, 106, &arg106) )
             {
-                arg79.field_1C = arg106.ret_bact;
+                arg79.field_1C.pbact = arg106.ret_bact;
                 arg79.field_18 = 2;
             }
 
@@ -805,9 +805,9 @@ void ypagun_func75(NC_STACK_ypagun *obj, class_stru *zis, bact_arg75 *arg)
 
     xyz v18;
 
-    v18.sx = arg->bct->field_621.sx - bact->field_621.sx;
-    v18.sy = arg->bct->field_621.sy - bact->field_621.sy;
-    v18.sz = arg->bct->field_621.sz - bact->field_621.sz;
+    v18.sx = arg->bct.pbact->field_621.sx - bact->field_621.sx;
+    v18.sy = arg->bct.pbact->field_621.sy - bact->field_621.sy;
+    v18.sz = arg->bct.pbact->field_621.sz - bact->field_621.sz;
 
     float v24 = sqrt(POW2(v18.sx) + POW2(v18.sy) + POW2(v18.sz));
 
@@ -827,7 +827,7 @@ void ypagun_func75(NC_STACK_ypagun *obj, class_stru *zis, bact_arg75 *arg)
                 arg79.fire_point.sy = bact->fire_y;
                 arg79.fire_point.sz = bact->fire_z;
                 arg79.field_18 = 2;
-                arg79.field_1C = arg->bct;
+                arg79.field_1C.pbact = arg->bct.pbact;
                 arg79.field_2C = bact->weapon;
                 arg79.field_30 = arg->field_18;
                 arg79.field_34 = 0;

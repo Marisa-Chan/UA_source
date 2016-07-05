@@ -990,21 +990,21 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
         if ( bact->field_3DF == 2 )
         {
             arg75.field_x = 1;
-            arg75.bct = bact->field_3f8;
+            arg75.bct.pbact = bact->field_3f8.pbact;
 
             call_method(obj, 75, &arg75);
         }
         else if ( bact->field_3DF == 1 )
         {
             arg75.field_0 = bact->field_3fc;
-            arg75.bct = bact->field_3f8;
+            arg75.bct.pcell = bact->field_3f8.pcell;
             arg75.field_x = 1;
 
             call_method(obj, 76, &arg75);
         }
         else if ( bact->field_3DE == 2 )
         {
-            arg75.bct = bact->field_3e8;
+            arg75.bct.pbact = bact->field_3e8.pbact;
             arg75.field_x = 0;
 
             call_method(obj, 75, &arg75);
@@ -1012,7 +1012,7 @@ void ypatank_func70(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
         else if ( bact->field_3DE == 1 )
         {
             arg75.field_0 = bact->field_3ec;
-            arg75.bct = bact->field_3e8;
+            arg75.bct.pcell = bact->field_3e8.pcell;
             arg75.field_x = 0;
 
             call_method(obj, 76, &arg75);
@@ -1334,7 +1334,7 @@ void ypatank_func71(NC_STACK_ypatank *obj, class_stru *zis, ypabact_arg65 *arg)
 
         if ( call_method(obj, 106, &arg106) )
         {
-            arg79.field_1C = arg106.ret_bact;
+            arg79.field_1C.pbact = arg106.ret_bact;
             arg79.field_18 = 2;
         }
 
@@ -2214,9 +2214,9 @@ size_t ypatank_func101(NC_STACK_ypatank *obj, class_stru *zis, bact_arg101 *arg)
             __NC_STACK_ypabact *v15;
 
             if ( bact->field_3DF == 2 )
-                v15 = bact->field_3f8;
+                v15 = bact->field_3f8.pbact;
             else
-                v15 = bact->field_3e8;
+                v15 = bact->field_3e8.pbact;
 
             if ( v15 )
             {
