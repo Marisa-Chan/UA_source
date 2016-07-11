@@ -701,7 +701,7 @@ int yw_write_bact(bact_node *bct, FILE *fil)
 
     if ( bct->bact->field_24 == 3 )
     {
-        NC_STACK_yparobo *roboo = (NC_STACK_yparobo *)bct->bacto;
+        NC_STACK_yparobo *roboo = dynamic_cast<NC_STACK_yparobo *>(bct->bacto);
         sprintf(
             buf,
             "    pos            = %2.2f_%2.2f_%2.2f\n",
@@ -778,7 +778,7 @@ int yw_write_robo(bact_node *bct, FILE *fil)
     sprintf(buf, "    owner          = %d\n", bct->bact->owner);
     fwrite(buf, strlen(buf), 1, fil);
 
-    NC_STACK_yparobo *roboo = (NC_STACK_yparobo *)bct->bacto;
+    NC_STACK_yparobo *roboo = dynamic_cast<NC_STACK_yparobo *>(bct->bacto);
     __NC_STACK_yparobo *robo = &roboo->stack__yparobo;
 
     sprintf(buf, "    robostate      = %d\n", robo->field_1DB & 0xC00F );
@@ -955,7 +955,7 @@ int yw_write_extraviewer(bact_node *bct, FILE *fil)
         sprintf(buf, "\nbegin_extraviewer\n");
         fwrite(buf, strlen(buf), 1, fil);
 
-        NC_STACK_yparobo *roboo = (NC_STACK_yparobo *)bct->bact->field_32;
+        NC_STACK_yparobo *roboo = bct->bact->host_station;
 
         for (int i = 0; i < 8; i++)
         {

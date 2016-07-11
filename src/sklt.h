@@ -3,16 +3,36 @@
 
 #include "skeleton.h"
 
-extern class_stored sklt_class_off;
-
-
 struct __NC_STACK_sklt
 {
 
 };
 
-struct NC_STACK_sklt : public NC_STACK_skeleton
+class NC_STACK_sklt: public NC_STACK_skeleton
 {
+public:
+    virtual size_t func5(MFILE **file);
+    virtual size_t func6(MFILE **file);
+    virtual rsrc * rsrc_func64(stack_vals *stak);
+    virtual size_t rsrc_func66(rsrc_func66_arg *arg);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_sklt() {
+        memset(&stack__sklt, 0, sizeof(stack__sklt));
+    };
+    virtual ~NC_STACK_sklt() {};
+
+    virtual const char * getClassName() {
+        return "sklt.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_sklt();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
     __NC_STACK_sklt stack__sklt;
 };
 

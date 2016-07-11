@@ -2,9 +2,7 @@
 #include "engine_gfx.h"
 #include "utils.h"
 
-stored_functions *classvtbl_get_gfxEngine();
-
-int gfxEngine__init(unsigned int, ...);
+int gfxEngine__init();
 void gfxEngine__deinit();
 void gfxEngine__setter(unsigned int, ...);
 void gfxEngine__getter(unsigned int, ...);
@@ -12,14 +10,6 @@ void gfxEngine__getter(unsigned int, ...);
 
 stored_functions_engine gfx_engine_vtbl = {gfxEngine__init, gfxEngine__deinit, gfxEngine__setter, gfxEngine__getter};
 
-
-
-class_stored gfx_engine_off (NULL, NULL, "MC2engines:gfx.engine", classvtbl_get_gfxEngine);
-
-stored_functions *classvtbl_get_gfxEngine()
-{
-    return (stored_functions *)&gfx_engine_vtbl;
-}
 
 char gfx_palette[128];
 char gfx_display[128];
@@ -34,11 +24,11 @@ key_value_stru gfx_keys[6] = {{"gfx.mode", KEY_TYPE_DIGIT, 0},
 };
 
 
-NC_STACK_class *win3d_class_pointer;
+NC_STACK_display *win3d_class_pointer;
 
 void sub_4231FC(void *dat)
 {
-    call_method(win3d_class_pointer, 206, dat);
+    win3d_class_pointer->raster_func206((polysDatSub *)dat);
 }
 
 
@@ -48,20 +38,18 @@ int sub_422CE8(const char *display, const char *display2, int gfxmode)
 
     if ( *display )
     {
-        strcpy(buf, "drivers/gfx/");
-        strcat(buf, display);
+        strcpy(buf, display);
 
 ////		win3d_class_pointer = (NC_STACK_win3d *)init_get_class(buf,  0x80001000, "display",  0x80001001,  2,  0x80004000,  gfxmode,  0);
-        win3d_class_pointer = init_get_class(buf,  0x80001000, "display",  0x80001001,  2,  0x80004000,  gfxmode,  0);
+        win3d_class_pointer = dynamic_cast<NC_STACK_display *>( init_get_class(buf,  0x80001000, "display",  0x80001001,  2,  0x80004000,  gfxmode,  0) );
 
         if ( !win3d_class_pointer )
         {
             if ( *display2 )
             {
-                strcpy(buf, "drivers/gfx/");
-                strcat(buf, display2);
+                strcpy(buf, display2);
 ////		win3d_class_pointer = (NC_STACK_win3d *)init_get_class(buf,  0x80001000, "display",  0x80001001,  2,  0x80004000,  gfxmode,  0);
-                win3d_class_pointer = init_get_class(buf,  0x80001000, "display",  0x80001001,  2,  0x80004000,  gfxmode,  0);
+                win3d_class_pointer = dynamic_cast<NC_STACK_display *>( init_get_class(buf,  0x80001000, "display",  0x80001001,  2,  0x80004000,  gfxmode,  0) );
             }
         }
         if ( !win3d_class_pointer )
@@ -76,7 +64,7 @@ int sub_422CE8(const char *display, const char *display2, int gfxmode)
 
 int win3d__load_palette_from_ilbm(const char *palette)
 {
-    NC_STACK_class *ilbm = init_get_class("ilbm.class", 0x80001000, palette, 0x80002006, 1, 0);
+    NC_STACK_nucleus *ilbm = init_get_class("ilbm.class", 0x80001000, palette, 0x80002006, 1, 0);
 
     if (!ilbm)
         return 0;
@@ -91,7 +79,7 @@ int win3d__load_palette_from_ilbm(const char *palette)
 }
 
 
-int gfxEngine__init(unsigned int, ...)
+int gfxEngine__init()
 {
     memset(gfx_palette, 0, 128);
     memset(gfx_display, 0, 128);
@@ -130,10 +118,10 @@ void gfxEngine__setter(unsigned int a1, ...)
     }
 
     if ( find_id_in_stack2(0x80003005, vals) )
-        call_method(win3d_class_pointer, 259);
+        win3d_class_pointer->display_func259(NULL);
 
     if ( find_id_in_stack2(0x80003006, vals) )
-        call_method(win3d_class_pointer, 260);
+        win3d_class_pointer->display_func260(NULL);
 
     size_t tmp = find_id_in_stack_def_val(0x80003009, 0, vals);
     if ( tmp )
@@ -153,13 +141,13 @@ void gfxEngine__setter(unsigned int a1, ...)
         if ( screen_palette )
             memcpy(palette_copy, screen_palette, 256 * 3); // Copy palette
 
-        call_method(win3d_class_pointer, 258);
+        win3d_class_pointer->display_func258(NULL);
 
         delete_class_obj(win3d_class_pointer);
 
         if ( sub_422CE8(gfx_display, gfx_display2, v4->value) )
         {
-            call_method(win3d_class_pointer, 257);
+            win3d_class_pointer->display_func257(NULL);
 
             ////call_vtbl(win3d_class_pointer, 2,  0x80002007,	screen_palette,	0); //// BUG?
             call_vtbl(win3d_class_pointer, 2,  0x80002007,	palette_copy,	0); //// FIX?
@@ -193,7 +181,7 @@ void gfxEngine__getter(unsigned int a1, ...)
 
     tmp = (void *)find_id_in_stack_def_val(0x8000300D, 0, vals); // get win3d pointer
     if ( tmp )
-        *(NC_STACK_class **)tmp = win3d_class_pointer;
+        *(NC_STACK_nucleus **)tmp = win3d_class_pointer;
 
     tmp = (void *)find_id_in_stack_def_val(0x8000300B, 0, vals); // get display stack internal or palette?
     if ( tmp )
@@ -216,15 +204,15 @@ tiles_stru * win3d_select_tileset(int id)
     arg207.tiles = 0;
     arg207.id = id;
 
-    call_method(win3d_class_pointer, 208, &arg207);
+    win3d_class_pointer->raster_func208(&arg207);
     return arg207.tiles;
 }
 
-size_t sub_423288(w3d_a209 *arg)
+void sub_423288(w3d_a209 *arg)
 {
     w3d_a209 arg209;
     arg209 = *arg;
-    return call_method(win3d_class_pointer, 209, &arg209);
+    win3d_class_pointer->raster_func209(&arg209);
 }
 
 void gfx_set_tileset(tiles_stru *a1, int id)
@@ -234,5 +222,5 @@ void gfx_set_tileset(tiles_stru *a1, int id)
     arg.tiles = a1;
     arg.id = id;
 
-    call_method(win3d_class_pointer, 207, &arg);
+    win3d_class_pointer->raster_func207(&arg);
 }

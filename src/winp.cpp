@@ -1028,24 +1028,7 @@ int class_set_winp__sub0()
 
 
 
-stored_functions *classvtbl_get_winp();
-class_return * class_set_winp(int, ...);
-
-stored_functions winp_class_vtbl(class_set_winp);
-
-
-class_stored winp_class_off (NULL, NULL, "MC2classes:drivers/input/winp.class", classvtbl_get_winp);
-
-
-stored_functions *classvtbl_get_winp()
-{
-    return &winp_class_vtbl;
-}
-
-CLASSFUNC winp_funcs[1024];
-
-
-
+const NewClassDescr NC_STACK_winp::description("winp.class", &newinstance);
 
 void winp_keyDown(int vk)
 {
@@ -1207,40 +1190,38 @@ void sub_43E5CB(HWND a1)
     }
 }
 
-NC_STACK_winp * winp_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_winp::func0(stack_vals *stak)
 {
-    NC_STACK_winp *obj = (NC_STACK_winp *)call_parent(zis, clss, 0, stak);
+    if ( !NC_STACK_iwimp::func0(stak) )
+        return 0;
 
-    if (obj)
+    __NC_STACK_winp *winp = &this->stack__winp;
+    winp->field_4 = -1;
+    windd__window_params *v8 = (windd__window_params *)find_id_in_stack_def_val(0x80002000, 0, stak);
+    if ( v8 )
     {
-        __NC_STACK_winp *winp = &obj->stack__winp;
-        winp->field_4 = -1;
-        windd__window_params *v8 = (windd__window_params *)find_id_in_stack_def_val(0x80002000, 0, stak);
-        if ( v8 )
-        {
-            winp->hWND = v8->hwnd;
-            winp_max_y = v8->height;
-            winp_max_x = v8->width;
-            sub_43E59A(winp->hWND);
-        }
+        winp->hWND = v8->hwnd;
+        winp_max_y = v8->height;
+        winp_max_x = v8->width;
+        sub_43E59A(winp->hWND);
     }
 
-    return obj;
+    return 1;
 }
 
-size_t winp_func1(NC_STACK_winp *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_winp::func1(stack_vals *stak)
 {
-    __NC_STACK_winp *winp = &obj->stack__winp;
+    __NC_STACK_winp *winp = &this->stack__winp;
 
     if ( winp->hWND )
         sub_43E5CB(winp->hWND);
 
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_iwimp::func1(stak);
 }
 
-void winp_func2(NC_STACK_winp *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_winp::func2(stack_vals *stak)
 {
-    __NC_STACK_winp *winp = &obj->stack__winp;
+    __NC_STACK_winp *winp = &this->stack__winp;
 
     windd__window_params *v7 = (windd__window_params *)find_id_in_stack_def_val(0x80002000, 0, stak);
     if ( v7 )
@@ -1253,24 +1234,24 @@ void winp_func2(NC_STACK_winp *obj, class_stru *zis, stack_vals *stak)
 
         sub_43E59A(winp->hWND);
     }
-    call_parent(zis, obj, 2, stak);
+    return NC_STACK_iwimp::func2(stak);
 }
 
-void winp_func3(NC_STACK_winp *obj, class_stru *zis, stack_vals *stk)
+size_t NC_STACK_winp::func3(stack_vals *stk)
 {
-    __NC_STACK_winp *winp = &obj->stack__winp;
+    __NC_STACK_winp *winp = &this->stack__winp;
 
     stack_vals *v6 = find_id_in_stack2(0x80002000, stk);
 
     if ( v6 )
         *(HWND *)v6->value = winp->hWND;
 
-    call_parent(zis, obj, 3, stk);
+    return NC_STACK_iwimp::func3(stk);
 }
 
-void winp_func64(NC_STACK_winp *obj, class_stru *zis, win_64arg *arg)
+void NC_STACK_winp::idev_func64(win_64arg *arg)
 {
-    __NC_STACK_winp *winp = &obj->stack__winp;
+    __NC_STACK_winp *winp = &this->stack__winp;
 
     if ( winp->field_4 < 0 )
     {
@@ -1310,9 +1291,9 @@ void winp_func64(NC_STACK_winp *obj, class_stru *zis, win_64arg *arg)
     }
 }
 
-void winp_func65(NC_STACK_winp *obj, class_stru *zis, win_64arg *arg)
+void NC_STACK_winp::idev_func65(win_64arg *arg)
 {
-    __NC_STACK_winp *winp = &obj->stack__winp;
+    __NC_STACK_winp *winp = &this->stack__winp;
 
     if ( winp->field_4 < 0 )
     {
@@ -1506,10 +1487,10 @@ void winp_func65(NC_STACK_winp *obj, class_stru *zis, win_64arg *arg)
     arg->field_8 = winp->field_c / 300.0;
 }
 
-void winp_func66(NC_STACK_winp *obj, class_stru *zis, winp_66arg *arg)
+void NC_STACK_winp::idev_func66(winp_66arg *arg)
 {
     int cnt = wmcharBuf_cnt;
-    __NC_STACK_winp *winp = &obj->stack__winp;
+    __NC_STACK_winp *winp = &this->stack__winp;
 
     arg->dword8 = 0;
     arg->downed_key_2 = downed_key_2;
@@ -1540,9 +1521,9 @@ void winp_func66(NC_STACK_winp *obj, class_stru *zis, winp_66arg *arg)
     wmcharBuf_cnt = cnt;
 }
 
-int winp_func67(NC_STACK_winp *obj, class_stru *zis, const char **arg)
+int NC_STACK_winp::idev_func67(const char **arg)
 {
-    __NC_STACK_winp *winp = &obj->stack__winp;
+    __NC_STACK_winp *winp = &this->stack__winp;
 
     for(int i = 0; i < 128; i++)
     {
@@ -1555,9 +1536,9 @@ int winp_func67(NC_STACK_winp *obj, class_stru *zis, const char **arg)
     return 0;
 }
 
-int winp_func68(NC_STACK_winp *obj, class_stru *zis, winp_68arg *arg)
+int NC_STACK_winp::idev_func68(winp_68arg *arg)
 {
-    __NC_STACK_winp *winp = &obj->stack__winp;
+    __NC_STACK_winp *winp = &this->stack__winp;
 
     if ( arg->id < 0x30 )
     {
@@ -1573,21 +1554,21 @@ int winp_func68(NC_STACK_winp *obj, class_stru *zis, winp_68arg *arg)
     return 0;
 }
 
-void winp_func69(NC_STACK_winp *obj, class_stru *zis, int *arg)
+void NC_STACK_winp::idev_func69(int *arg)
 {
     printf("CHECK ARG TYPE %s\n","winp_func69");
 
-    __NC_STACK_winp *winp = &obj->stack__winp;
+    __NC_STACK_winp *winp = &this->stack__winp;
 
     if ( *arg == 1 )
         winp->field_c = 0;
 }
 
-void winp_func70(NC_STACK_winp *obj, class_stru *zis, int *arg)
+void NC_STACK_winp::idev_func70(int *arg)
 {
     //printf("CHECK ARG TYPE %s\n","winp_func70");
 
-    __NC_STACK_winp *winp = &obj->stack__winp;
+    __NC_STACK_winp *winp = &this->stack__winp;
 
     if ( *arg )
     {
@@ -2127,7 +2108,7 @@ void winp_func71__sub10()
 }
 
 
-void winp_func71(NC_STACK_winp *obj, class_stru *zis, winp_71arg *arg)
+void NC_STACK_winp::idev_func71(winp_71arg *arg)
 {
     switch ( arg->effID )
     {
@@ -2169,7 +2150,7 @@ void winp_func71(NC_STACK_winp *obj, class_stru *zis, winp_71arg *arg)
     }
 }
 
-size_t winp_func128(NC_STACK_winp *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_winp::iwimp_func128(stack_vals *stak)
 {
     return 1;
 }
@@ -2278,9 +2259,9 @@ void winp_getmouse_state()
     }
 }
 
-void winp_func131(NC_STACK_winp *obj, class_stru *zis, winp_131arg *arg)
+void NC_STACK_winp::iwimp_func131(winp_131arg *arg)
 {
-    __NC_STACK_winp *winp = &obj->stack__winp;
+    __NC_STACK_winp *winp = &this->stack__winp;
     arg->flag = 0;
     if ( winp->hWND )
     {
@@ -2365,17 +2346,14 @@ void winp_func131(NC_STACK_winp *obj, class_stru *zis, winp_131arg *arg)
         else if ( arg->lup_pos[0].y < 0 )
             arg->lup_pos[0].y = 0;
 
-        call_parent(zis, obj, 131, (stack_vals *)arg);
+        NC_STACK_iwimp::iwimp_func131(arg);
     }
 }
 
-
-class_return winp_class_descr;
-
-class_return * class_set_winp(int a1, ...)
+void NC_STACK_winp::initfirst()
 {
     if ( !class_set_winp__sub0() )
-        return NULL;
+        return;
 
     memset(vk_map, 0xFF, 256);
     for (int i = 0; i < 256; i++)
@@ -2419,31 +2397,51 @@ class_return * class_set_winp(int a1, ...)
     memset(&winp_lup_pos, 0, sizeof(shortPoint));
     memset(&winp_rup_pos, 0, sizeof(shortPoint));
     memset(&winp_mup_pos, 0, sizeof(shortPoint));
+}
 
-
-    memset(winp_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    winp_funcs[0] = (CLASSFUNC)winp_func0;
-    winp_funcs[1] = (CLASSFUNC)winp_func1;
-    winp_funcs[2] = (CLASSFUNC)winp_func2;
-    winp_funcs[3] = (CLASSFUNC)winp_func3;
-    winp_funcs[64] = (CLASSFUNC)winp_func64;
-    winp_funcs[65] = (CLASSFUNC)winp_func65;
-    winp_funcs[66] = (CLASSFUNC)winp_func66;
-    winp_funcs[67] = (CLASSFUNC)winp_func67;
-    winp_funcs[68] = (CLASSFUNC)winp_func68;
-    winp_funcs[69] = (CLASSFUNC)winp_func69;
-    winp_funcs[70] = (CLASSFUNC)winp_func70;
-    winp_funcs[71] = (CLASSFUNC)winp_func71;
-    winp_funcs[128] = (CLASSFUNC)winp_func128;
-    winp_funcs[131] = (CLASSFUNC)winp_func131;
-
-
-    winp_class_descr.parent = "iwimp.class";
-
-    winp_class_descr.vtbl = winp_funcs;
-    ////winp_class_descr.varSize = sizeof(__NC_STACK_winp);
-    winp_class_descr.varSize = sizeof(NC_STACK_winp) - offsetof(NC_STACK_winp, stack__winp); //// HACK
-    winp_class_descr.field_A = 0;
-    return &winp_class_descr;
+size_t NC_STACK_winp::compatcall(int method_id, void *data)
+{
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        func2( (stack_vals *)data );
+        return 1;
+    case 3:
+        func3( (stack_vals *)data );
+        return 1;
+    case 64:
+        idev_func64( (win_64arg *)data );
+        return 1;
+    case 65:
+        idev_func65( (win_64arg *)data );
+        return 1;
+    case 66:
+        idev_func66( (winp_66arg *)data );
+        return 1;
+    case 67:
+        return (size_t)idev_func67( (const char **)data );
+    case 68:
+        return (size_t)idev_func68( (winp_68arg *)data );
+    case 69:
+        idev_func69( (int *)data );
+        return 1;
+    case 70:
+        idev_func70( (int *)data );
+        return 1;
+    case 71:
+        idev_func71( (winp_71arg *)data );
+        return 1;
+    case 128:
+        return (size_t)iwimp_func128( (stack_vals *)data );
+    case 131:
+        iwimp_func131( (winp_131arg *)data );
+        return 1;
+    default:
+        break;
+    }
+    return NC_STACK_iwimp::compatcall(method_id, data);
 }

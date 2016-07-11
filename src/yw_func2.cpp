@@ -41,7 +41,7 @@ void sb_0x4eb94c__sub0(_NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, xyz 
     tmp.y = pos->sy;
     tmp.z = pos->sz;
 
-    call_method(model_base, 68, &tmp);
+    model_base->base_func68(&tmp);
 
     if ( obj_id >= 3 )
     {
@@ -62,9 +62,9 @@ void sb_0x4eb94c__sub0(_NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, xyz 
     rot.y = brobj->field_8;
     rot.z = 0;
 
-    call_method(model_base, 70, &rot);
+    model_base->base_func70(&rot);
     //printf("Try DRAW %d\n", (int)model_base);
-    call_method(model_base, 77, arg); //Draw vehicle
+    model_base->base_func77(arg); //Draw vehicle
 }
 
 void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz *pos, base77Func *arg)
@@ -95,7 +95,7 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz
     v17.y = brobj->field_8;
     v17.z = 0;
 
-    call_method(v7, 70, &v17);
+    v7->base_func70(&v17);
 
     base_1c_struct *p3d;
     call_vtbl(v7, 3, 0x80001019, &p3d, 0);
@@ -134,9 +134,9 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz
             call_vtbl(lego, 2, 0x80001004, 16000, 0);
             call_vtbl(lego, 2, 0x80001023, 100, 0);
 
-            call_method(lego, 70, &v17);
-            call_method(lego, 68, &v16);
-            call_method(lego, 77, arg);
+            lego->base_func70(&v17);
+            lego->base_func68(&v16);
+            lego->base_func77(arg);
 
             v30++;
         }
@@ -230,7 +230,7 @@ int sub_4D7BFC(const void *a1, const void *a2)
 
 void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc)
 {
-    call_method(yw->win3d, 213, 0);
+    yw->win3d->raster_func213(NULL);
 
     brf->field_4174.field_0 = 1;
     brf->field_4174.field_4 = 1;
@@ -261,12 +261,12 @@ void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, str
         pol->render_func(&pol->datSub);
     }
 
-    call_method(yw->win3d, 214, 0);
+    yw->win3d->raster_func214(NULL);
 }
 
 
 
-int yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
+void yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
 {
     lstvw_updlimits(yw, &usr->input_listview, -2, -2);
     win3d_select_tileset(0);
@@ -384,7 +384,7 @@ int yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 v21;
     v21 = usr->input_listview.cmdstrm;
 
-    return sub_423288(&v21);
+    sub_423288(&v21);
 }
 
 
@@ -893,7 +893,7 @@ void fill_videmodes_list(UserData *usr)
 
     while( id )
     {
-        id = call_method(usr->p_ypaworld->win3d, 256, &warg_256);
+        id = usr->p_ypaworld->win3d->display_func256(&warg_256);
 
         video_mode_node *vnode = (video_mode_node *)AllocVec(sizeof(video_mode_node), 65536);
 
@@ -1059,7 +1059,7 @@ void listLocaleDir(UserData *usr, const char *dirname)
 void sub_46A7F8(UserData *usr)
 {
     int v4 = 2;
-    call_method( usr->disk_button, 68, &v4 );
+    usr->disk_button->button_func68( &v4 );
 
     sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
 
@@ -1077,12 +1077,12 @@ void sub_46A7F8(UserData *usr)
         v2 = usr->titel_button;
     }
 
-    call_method(v2, 68, &v4);
+    v2->button_func68(&v4);
 
     button_66arg v3;
     v3.field_4 = 2;
     v3.butID = 1156;
-    call_method(usr->video_button, 73, &v3);
+    usr->video_button->button_func73(&v3);
 
     usr->field_0x1744 = 0;
 }
@@ -1098,9 +1098,10 @@ void ypaworld_func154__sub0(_NC_STACK_ypaworld *yw)
         char buf[256];
 
         sub_412810(yw->movies.game_intro, buf, 256);
-        char *v5 = buf;
+        const char *v5 = buf;
 
-        call_method(yw->win3d, 323, &v5);
+        NC_STACK_windd *windd = dynamic_cast<NC_STACK_windd *>(yw->win3d);
+        windd->windd_func323(&v5);
 
         sub_412D28(&input_states);
         input_states.downed_key = 0;
@@ -1136,10 +1137,10 @@ void ypaworld_func156__sub1(UserData *usr)
 void sub_46C524(UserData *usr)
 {
     int v4 = 2;
-    call_method(usr->titel_button, 68, &v4);
+    usr->titel_button->button_func68(&v4);
 
     v4 = 1;
-    call_method(usr->network_button, 68, &v4);
+    usr->network_button->button_func68(&v4);
 
     usr->field_46 = 6;
 
@@ -1221,7 +1222,7 @@ void sb_0x46ca74(UserData *usr)
     v15.field_8 = 255;
     v15.field_10 = 0;
 
-    if ( ! call_method(usr->p_ypaworld->self_full, 171, &v15) )
+    if ( ! usr->p_ypaworld->self_full->ypaworld_func171(&v15) )
         ypa_log_out("Warning! Error while saving user data for %s\n", usr->usernamedir);
 
     sprintf(oldsave, "save:%s", usr->user_name);
@@ -1261,7 +1262,7 @@ void sb_0x46ca74(UserData *usr)
     strncpy(usr->user_name, usr->usernamedir, 32);
 
     int v16 = 2;
-    call_method(usr->disk_button, 68, &v16);
+    usr->disk_button->button_func68(&v16);
 
     sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
 
@@ -1270,14 +1271,14 @@ void sb_0x46ca74(UserData *usr)
         usr->field_46 = 5;
 
         int v16 = 1;
-        call_method(usr->sub_bar_button, 68, &v16);
+        usr->sub_bar_button->button_func68(&v16);
     }
     else
     {
         usr->field_46 = 1;
 
         int v16 = 1;
-        call_method(usr->titel_button, 68, &v16);
+        usr->titel_button->button_func68(&v16);
     }
 }
 
@@ -1376,7 +1377,7 @@ void sb_0x46cdf8(UserData *usr)
     v12.field_8 = 255;
     v12.field_10 = 0;
 
-    if ( ! call_method(usr->p_ypaworld->self_full, 171, &v12) )
+    if ( ! usr->p_ypaworld->self_full->ypaworld_func171(&v12) )
         ypa_log_out("Warning! Error while saving user data for %s\n", usr->user_name);
 
     if ( usr->field_1612 )
@@ -1444,14 +1445,14 @@ void sb_0x46cdf8(UserData *usr)
         usr->field_3426 = 0;
 
         int v13 = 2;
-        call_method(usr->disk_button, 68, &v13);
+        usr->disk_button->button_func68(&v13);
 
         sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
 
         usr->field_46 = 5;
 
         v13 = 1;
-        call_method(usr->sub_bar_button, 68, &v13);
+        usr->sub_bar_button->button_func68(&v13);
     }
     else
     {
@@ -1461,14 +1462,15 @@ void sb_0x46cdf8(UserData *usr)
 
 void sub_46D960(UserData *usr)
 {
-    int v4 = 1300;
-    call_method(usr->confirm_button, 67, &v4);
+    button_66arg v4;
+    v4.butID = 1300;
+    usr->confirm_button->button_func67(&v4);
 
-    v4 = 1301;
-    call_method(usr->confirm_button, 67, &v4);
+    v4.butID = 1301;
+    usr->confirm_button->button_func67(&v4);
 
     int v5 = 2;
-    call_method(usr->confirm_button, 68, &v5);
+    usr->confirm_button->button_func68(&v5);
 
     usr->field_0x2fb4 = 0;
 }
@@ -1653,13 +1655,14 @@ void sb_0x46aa8c(UserData *usr)
 
                 strcpy(usr->win3d_guid, usr->field_139A);
 
+                NC_STACK_windd *windd = dynamic_cast<NC_STACK_windd *>(yw->win3d);
                 wdd_func324arg v37;
 
                 v37.name = usr->win3d_name;
                 v37.guid = usr->win3d_guid;
                 v37.currr = 0;
 
-                call_method(yw->win3d, 325, &v37); //Save to file new resolution
+                windd->windd_func325(&v37); //Save to file new resolution
 
                 yw->game_default_res = 0x2801E0; //640 x 480
                 resolution = 0x2801E0; //640 x 480
@@ -1713,7 +1716,7 @@ void sb_0x46aa8c(UserData *usr)
         else
             v40.resolution = resolution;
 
-        call_method(yw->self_full, 174, &v40);
+        yw->self_full->ypaworld_func174(&v40);
 
         video_mode_node *nod = (video_mode_node *)usr->video_mode_list.head;
         int v24 = 0;
@@ -1728,7 +1731,7 @@ void sb_0x46aa8c(UserData *usr)
                 v36.field_4 = nod->name;
                 v36.butID = 1156;
                 v36.field_8 = 0;
-                call_method(usr->video_button, 71, &v36);
+                usr->video_button->button_func71(&v36);
 
                 break;
             }
@@ -1742,7 +1745,7 @@ void sb_0x46aa8c(UserData *usr)
     usr->field_46 = 1;
 
     int v42 = 2;
-    call_method(usr->video_button, 68, &v42);
+    usr->video_button->button_func68(&v42);
 
     if ( !(usr->video_listvw.cmd_flag & 0x20) )
         sub_4C31C0(usr->p_ypaworld, &usr->video_listvw);
@@ -1754,13 +1757,13 @@ void sb_0x46aa8c(UserData *usr)
     v38.field_4 = 2;
     v38.butID = 1156;
 
-    call_method(usr->video_button, 73, &v38);
+    usr->video_button->button_func73(&v38);
 
     v38.butID = 1172;
-    call_method(usr->video_button, 73, &v38);
+    usr->video_button->button_func73(&v38);
 
     v42 = 1;
-    call_method(usr->titel_button, 68, &v42);
+    usr->titel_button->button_func68(&v42);
 }
 
 
@@ -1780,7 +1783,7 @@ void sub_46DC1C(UserData *usr)
     v11.fld_4_1 = usr->field_1C86;
     v11.fld_4_2 = 0; // HACK
 
-    call_method(usr->p_ypaworld->self_full, 181, &v5);
+    usr->p_ypaworld->self_full->ypaworld_func181(&v5);
 
     windp_arg82 v6;
     v6.field_0 = usr->callSIGN;
@@ -1789,7 +1792,7 @@ void sub_46DC1C(UserData *usr)
     v6.field_C = 2;
     v6.field_10 = 1;
 
-    call_method(usr->p_ypaworld->windp, 82, &v6);
+    usr->p_ypaworld->windp->windp_func82(&v6);
 
     usr->field_0x2fbc = 4;
     usr->field_0x2fc0 = usr->field_1C86;
@@ -1797,7 +1800,7 @@ void sub_46DC1C(UserData *usr)
     usr->field_0x2fc4 = usr->field_1C86;
 
     int v12 = 1;
-    call_method(usr->p_ypaworld->windp, 84, &v12);
+    usr->p_ypaworld->windp->windp_func84(&v12);
 
     sb_0x4deac0(usr);
 }
@@ -2172,10 +2175,10 @@ void sub_4DE248(UserData *usr, int id)
 void ypaworld_func158__sub0__sub2(UserData *usr)
 {
     int v5 = 2;
-    call_method(usr->titel_button, 68, &v5);
+    usr->titel_button->button_func68(&v5);
 
     v5 = 1;
-    call_method(usr->video_button, 68, &v5);
+    usr->video_button->button_func68(&v5);
 
     usr->field_46 = 3;
 
@@ -2191,10 +2194,10 @@ void ypaworld_func158__sub0__sub2(UserData *usr)
 void sub_46C3E4(UserData *usr)
 {
     int v5 = 2;
-    call_method(usr->titel_button, 68, &v5);
+    usr->titel_button->button_func68(&v5);
 
     v5 = 1;
-    call_method(usr->disk_button, 68, &v5);
+    usr->disk_button->button_func68(&v5);
 
     usr->field_46 = 9;
 
@@ -2215,10 +2218,10 @@ void sub_46C3E4(UserData *usr)
 void ypaworld_func158__sub0__sub1(UserData *usr)
 {
     int v5 = 2;
-    call_method(usr->titel_button, 68, &v5);
+    usr->titel_button->button_func68(&v5);
 
     v5 = 1;
-    call_method(usr->button_input_button, 68, &v5);
+    usr->button_input_button->button_func68(&v5);
 
     usr->field_46 = 2;
     sub_4C31C0(usr->p_ypaworld, &usr->input_listview);
@@ -2337,10 +2340,10 @@ void sub_46D1E8(UserData *usr)
     sub_4EE04C(usr->p_ypaworld);
 
     int v4 = 2;
-    call_method(usr->sub_bar_button, 68, &v4);
+    usr->sub_bar_button->button_func68(&v4);
 
     v4 = 1;
-    call_method(usr->titel_button, 68, &v4);
+    usr->titel_button->button_func68(&v4);
 
     usr->field_46 = 1;
     usr->field_4E = 0;
@@ -2349,10 +2352,10 @@ void sub_46D1E8(UserData *usr)
 void ypaworld_func158__sub0__sub3(UserData *usr)
 {
     int v7 = 2;
-    call_method(usr->titel_button, 68, &v7);
+    usr->titel_button->button_func68(&v7);
 
     v7 = 1;
-    call_method(usr->locale_button, 68, &v7);
+    usr->locale_button->button_func68(&v7);
 
     usr->field_46 = 7;
     sub_4C31C0(usr->p_ypaworld, &usr->local_listvw);
@@ -2381,7 +2384,7 @@ void sub_46D9E0(UserData *usr, int a2, const char *txt1, const char *txt2, int a
 
     button_66arg v12;
     v12.butID = 1300;
-    call_method(usr->confirm_button, 66, &v12);
+    usr->confirm_button->button_func66(&v12);
 
 
     button_arg76 v10;
@@ -2393,23 +2396,23 @@ void sub_46D9E0(UserData *usr, int a2, const char *txt1, const char *txt2, int a
         v10.ypos = -1;
         v10.width = -1;
         //v11 = -1;
-        call_method(usr->confirm_button, 76, &v10);
+        usr->confirm_button->button_func76(&v10);
     }
     else
     {
         v12.butID = 1301;
-        call_method(usr->confirm_button, 66, &v12);
+        usr->confirm_button->button_func66(&v12);
 
         v10.butID = 1300;
         v10.xpos = usr->p_ypaworld->screen_width * 0.25;
         v10.ypos = -1;
         v10.width = -1;
         //v11 = -1;
-        call_method(usr->confirm_button, 76, &v10);
+        usr->confirm_button->button_func76(&v10);
 
         v10.butID = 1301;
         v10.xpos = usr->p_ypaworld->screen_width * 0.625;
-        call_method(usr->confirm_button, 76, &v10);
+        usr->confirm_button->button_func76(&v10);
     }
 
     button_71arg v9;
@@ -2417,7 +2420,7 @@ void sub_46D9E0(UserData *usr, int a2, const char *txt1, const char *txt2, int a
     v9.field_4 = txt1;
     v9.field_8 = 0;
     v9.butID = 1302;
-    call_method(usr->confirm_button, 71, &v9);
+    usr->confirm_button->button_func71(&v9);
 
     if ( txt2 )
         v9.field_4 = txt2;
@@ -2426,10 +2429,10 @@ void sub_46D9E0(UserData *usr, int a2, const char *txt1, const char *txt2, int a
 
     v9.field_8 = 0;
     v9.butID = 1303;
-    call_method(usr->confirm_button, 71, &v9);
+    usr->confirm_button->button_func71(&v9);
 
     int v13 = 1;
-    call_method(usr->confirm_button, 68, &v13);
+    usr->confirm_button->button_func68(&v13);
 }
 
 void ypaworld_func158__sub0__sub9(_NC_STACK_ypaworld *yw)
@@ -2470,29 +2473,29 @@ void sb_0x46a8c0(UserData *usr)
     button_66arg v6;
     v6.butID = 1003;
     v6.field_4 = 2;
-    call_method( usr->sub_bar_button, 73, &v6);
+    usr->sub_bar_button->button_func73(&v6);
 
     usr->field_D5E = 0;
 
     v6.butID = 1050;
     v6.field_4 = (usr->inp_joystick == 0) + 1;
-    call_method( usr->button_input_button, 73, &v6);
+    usr->button_input_button->button_func73(&v6);
 
     v6.field_4 = (usr->inp_altjoystick == 0) + 1;
     v6.butID = 1061;
-    call_method( usr->button_input_button, 73, &v6);
+    usr->button_input_button->button_func73(&v6);
 
     v6.butID = 1055;
     v6.field_4 = ((usr->p_ypaworld->field_73CE & 8) != 0) + 1;
-    call_method( usr->button_input_button, 73, &v6);
+    usr->button_input_button->button_func73(&v6);
 
     int v7 = 2;
-    call_method( usr->button_input_button, 68, &v7);
+    usr->button_input_button->button_func68(&v7);
 
     sub_4C31C0(usr->p_ypaworld, &usr->input_listview);
 
     v7 = 1;
-    call_method( usr->titel_button, 68, &v7);
+    usr->titel_button->button_func68(&v7);
 }
 
 void sub_457BC0(UserData *usr)
@@ -2555,7 +2558,7 @@ void sub_46C5F0(UserData *usr, int a2)
         v7.field_4 = v6->name;
         v7.field_8 = 0;
 
-        call_method(usr->video_button, 71, &v7);
+        usr->video_button->button_func71(&v7);
     }
 }
 
@@ -2583,12 +2586,12 @@ void sub_46A3C0(UserData *usr)
     v9.field_8 = 0;
     v9.butID = 1156;
 
-    call_method(usr->video_button, 71, &v9);
+    usr->video_button->button_func71(&v9);
 
     v9.butID = 1172;
     v9.field_8 = 0;
     v9.field_4 = usr->win3d_name;
-    call_method(usr->video_button, 71, &v9);
+    usr->video_button->button_func71(&v9);
 
     usr->field_139A = usr->win3d_guid;
     usr->field_139E = usr->win3d_name;
@@ -2596,59 +2599,59 @@ void sub_46A3C0(UserData *usr)
     button_66arg v10;
     v10.butID = 1151;
     v10.field_4 = ((usr->snd__flags2 & 1) == 0) + 1;
-    call_method(usr->video_button, 73, &v10);
+    usr->video_button->button_func73(&v10);
 
     v10.field_4 = ((usr->snd__flags2 & 0x10) == 0) + 1;
     v10.butID = 1164;
-    call_method(usr->video_button, 73, &v10);
+    usr->video_button->button_func73(&v10);
 
     v10.butID = 1157;
     v10.field_4 = ((usr->GFX_flags & 1) == 0) + 1;
-    call_method(usr->video_button, 73, &v10);
+    usr->video_button->button_func73(&v10);
 
     v10.field_4 = ((usr->GFX_flags & 2) == 0) + 1;
     v10.butID = 1160;
-    call_method(usr->video_button, 73, &v10);
+    usr->video_button->button_func73(&v10);
 
     v10.butID = 1150;
     v10.field_4 = ((usr->GFX_flags & 0x10) == 0) + 1;
-    call_method(usr->video_button, 73, &v10);
+    usr->video_button->button_func73(&v10);
 
     v10.butID = 1166;
     v10.field_4 = ((usr->GFX_flags & 8) == 0) + 1;
-    call_method(usr->video_button, 73, &v10);
+    usr->video_button->button_func73(&v10);
 
     v10.butID = 1165;
     v10.field_4 = ((usr->GFX_flags & 4) == 0) + 1;
-    call_method(usr->video_button, 73, &v10);
+    usr->video_button->button_func73(&v10);
 
     v10.field_4 = (usr->enemyindicator == 0) + 1;
     v10.butID = 1163;
-    call_method(usr->video_button, 73, &v10);
+    usr->video_button->button_func73(&v10);
 
     int v12 = 1159;
 
-    button_str2_t2 *tmp = (button_str2_t2 *)call_method(usr->video_button, 74, &v12);
+    button_str2_t2 *tmp = (button_str2_t2 *)usr->video_button->button_func74(&v12);
     tmp->field_0 = usr->fxnumber;
 
-    call_method(usr->video_button, 75, &v12);
+    usr->video_button->button_func75(&v12);
 
     v12 = 1152;
 
-    tmp = (button_str2_t2 *)call_method(usr->video_button, 74, &v12);
+    tmp = (button_str2_t2 *)usr->video_button->button_func74(&v12);
     tmp->field_0 = usr->snd__volume;
 
-    call_method(usr->video_button, 75, &v12);
+    usr->video_button->button_func75(&v12);
 
     v12 = 1154;
 
-    tmp = (button_str2_t2 *)call_method(usr->video_button, 74, &v12);
+    tmp = (button_str2_t2 *)usr->video_button->button_func74(&v12);
     tmp->field_0 = usr->snd__cdvolume;
 
-    call_method(usr->video_button, 75, &v12);
+    usr->video_button->button_func75(&v12);
 
     int v11 = 2;
-    call_method(usr->video_button, 68, &v11);
+    usr->video_button->button_func68(&v11);
 
     if ( !(usr->video_listvw.cmd_flag & 0x20) )
         sub_4C31C0(usr->p_ypaworld, &usr->video_listvw);
@@ -2657,14 +2660,14 @@ void sub_46A3C0(UserData *usr)
         sub_4C31C0(usr->p_ypaworld, &usr->d3d_listvw);
 
     v11 = 1;
-    call_method(usr->titel_button, 68, &v11);
+    usr->titel_button->button_func68(&v11);
 
     v10.field_4 = 2;
     v10.butID = 1156;
-    call_method(usr->video_button, 73, &v10);
+    usr->video_button->button_func73(&v10);
 
     v10.butID = 1172;
-    call_method(usr->video_button, 73, &v10);
+    usr->video_button->button_func73(&v10);
 }
 
 void  ypaworld_func158__sub0__sub5(UserData *usr, int a2)
@@ -2679,9 +2682,11 @@ void  ypaworld_func158__sub0__sub5(UserData *usr, int a2)
     const char *v2;
     const char *v12;
 
+    NC_STACK_windd *windd = dynamic_cast<NC_STACK_windd *>(usr->p_ypaworld->win3d);
+
     while ( a1.name )
     {
-        call_method(usr->p_ypaworld->win3d, 324, &a1);
+        windd->windd_func324(&a1);
         if ( a1.name )
         {
             if ( v4 == usr->d3d_listvw.field_1DE )
@@ -2707,7 +2712,7 @@ void  ypaworld_func158__sub0__sub5(UserData *usr, int a2)
         v7.field_4 = v2;
         v7.field_8 = 0;
 
-        call_method(usr->video_button, 71, &v7);
+        usr->video_button->button_func71(&v7);
     }
 }
 
@@ -2733,7 +2738,7 @@ void sub_46C914(UserData *usr)
         arg172.usr = usr;
         arg172.field_10 = 1;
 
-        call_method( usr->p_ypaworld->self_full, 172, &arg172);
+        usr->p_ypaworld->self_full->ypaworld_func172(&arg172);
 
         strcpy(usr->user_name, node->profile_subdir);
         strcpy(usr->usernamedir, node->profile_subdir);
@@ -2743,14 +2748,14 @@ void sub_46C914(UserData *usr)
         usr->field_3426 = 0;
 
         int v16 = 2;
-        call_method( usr->disk_button, 68, &v16);
+        usr->disk_button->button_func68(&v16);
 
         sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
 
         usr->field_46 = 5;
 
         v16 = 1;
-        call_method( usr->sub_bar_button, 68, &v16);
+        usr->sub_bar_button->button_func68(&v16);
     }
 }
 
@@ -2834,7 +2839,7 @@ void sub_46C748(UserData *usr)
             usr->field_0x1744 = 0;
 
             int v14 = 2;
-            call_method(usr->disk_button, 68, &v14);
+            usr->disk_button->button_func68(&v14);
 
             sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
 
@@ -2842,13 +2847,13 @@ void sub_46C748(UserData *usr)
             {
                 usr->field_46 = 5;
                 v14 = 1;
-                call_method(usr->sub_bar_button, 68, &v14);
+                usr->sub_bar_button->button_func68(&v14);
             }
             else
             {
                 usr->field_46 = 1;
                 v14 = 1;
-                call_method(usr->titel_button, 68, &v14);
+                usr->titel_button->button_func68(&v14);
             }
         }
     }
@@ -2870,7 +2875,7 @@ void sub_46B0E0(UserData *usr)
         if ( node )
         {
             usr->default_lang_dll = node;
-            call_method( usr->p_ypaworld->self_full, 175, usr );
+            usr->p_ypaworld->self_full->ypaworld_func175( usr );
         }
     }
 
@@ -2880,12 +2885,12 @@ void sub_46B0E0(UserData *usr)
     usr->prev_lang = usr->default_lang_dll;
 
     int v7 = 2;
-    call_method(usr->locale_button, 68, &v7);
+    usr->locale_button->button_func68(&v7);
 
     sub_4C31C0(usr->p_ypaworld, &usr->local_listvw);
 
     v7 = 1;
-    call_method(usr->titel_button, 68, &v7);
+    usr->titel_button->button_func68(&v7);
 }
 
 void sub_46AA0C(UserData *usr)
@@ -2895,12 +2900,12 @@ void sub_46AA0C(UserData *usr)
     usr->prev_lang = usr->default_lang_dll;
 
     int v5 = 2;
-    call_method( usr->locale_button, 68, &v5);
+    usr->locale_button->button_func68(&v5);
 
     sub_4C31C0(usr->p_ypaworld, &usr->local_listvw);
 
     v5 = 1;
-    call_method( usr->titel_button, 68, &v5);
+    usr->titel_button->button_func68(&v5);
 }
 
 
@@ -2912,10 +2917,10 @@ int sub_449678(_NC_STACK_ypaworld *yw, struC5 *struc, int kkode)
 void ypaworld_func158__sub0__sub4(UserData *usr)
 {
     int v4 = 2;
-    call_method(usr->titel_button, 68, &v4);
+    usr->titel_button->button_func68(&v4);
 
     v4 = 1;
-    call_method(usr->about_button, 68, &v4);
+    usr->about_button->button_func68(&v4);
 
     usr->field_46 = 8;
 }
@@ -2946,23 +2951,25 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     if ( usr->field_1C3A )
         sb_0x4c9f14(usr->p_ypaworld);
 
+    NC_STACK_windd *windd = dynamic_cast<NC_STACK_windd *>(usr->p_ypaworld->win3d);
+
     if ( usr->field_1C3A == 1 )
     {
-        if ( call_method(usr->p_ypaworld->windp, 90, 0) == 4 )
+        if ( usr->p_ypaworld->windp->windp_func90(NULL) == 4 )
         {
             if ( usr->field_0x1cdc )
             {
                 if ( usr->field_3A->downed_key == VK_SPACE )
                 {
-                    call_method(usr->p_ypaworld->win3d, 320, 0);
-                    call_method(yw->windp, 68, 0);
-                    call_method(usr->p_ypaworld->win3d, 321, 0);
+                    windd->windd_func320(NULL);
+                    yw->windp->windp_func68(NULL);
+                    windd->windd_func321(NULL);
                 }
             }
         }
-        else if ( call_method(usr->p_ypaworld->windp, 90, 0) != 3 || usr->field_3A->downed_key == VK_SPACE )
+        else if ( yw->windp->windp_func90(NULL) != 3 || usr->field_3A->downed_key == VK_SPACE )
         {
-            call_method(yw->windp, 68, 0);
+            yw->windp->windp_func68(NULL);
         }
     }
 
@@ -2971,34 +2978,34 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
     v410.field_4 = 0;
     v410.butID = 1015;
-    call_method(usr->sub_bar_button, 67, &v410);
+    usr->sub_bar_button->button_func67(&v410);
     v410.butID = 1011;
-    call_method(usr->sub_bar_button, 67, &v410);
+    usr->sub_bar_button->button_func67(&v410);
     v410.butID = 1019;
-    call_method(usr->sub_bar_button, 67, &v410);
+    usr->sub_bar_button->button_func67(&v410);
     v410.butID = 1014;
-    call_method(usr->sub_bar_button, 67, &v410);
+    usr->sub_bar_button->button_func67(&v410);
     v410.butID = 1013;
-    call_method(usr->sub_bar_button, 67, &v410);
+    usr->sub_bar_button->button_func67(&v410);
     v410.butID = 1020;
-    call_method(usr->sub_bar_button, 67, &v410);
+    usr->sub_bar_button->button_func67(&v410);
 
     v410.butID = 1003;
-    call_method(usr->titel_button, 67, &v410);
+    usr->titel_button->button_func67(&v410);
     v410.butID = 1004;
-    call_method(usr->titel_button, 67, &v410);
+    usr->titel_button->button_func67(&v410);
     v410.butID = 1001;
-    call_method(usr->titel_button, 67, &v410);
+    usr->titel_button->button_func67(&v410);
     v410.butID = 1008;
-    call_method(usr->titel_button, 67, &v410);
+    usr->titel_button->button_func67(&v410);
     v410.butID = 1007;
-    call_method(usr->titel_button, 67, &v410);
+    usr->titel_button->button_func67(&v410);
     v410.butID = 1018;
-    call_method(usr->titel_button, 67, &v410);
+    usr->titel_button->button_func67(&v410);
     v410.butID = 1017;
-    call_method(usr->titel_button, 67, &v410);
+    usr->titel_button->button_func67(&v410);
     v410.butID = 1016;
-    call_method(usr->titel_button, 67, &v410);
+    usr->titel_button->button_func67(&v410);
 
     button_arg76 v393;
     v393.ypos = -1;
@@ -3006,67 +3013,67 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     //v394 = -1;
     v393.butID = 1014;
     v393.xpos = 0;
-    call_method(usr->sub_bar_button, 76, &v393);
+    usr->sub_bar_button->button_func76(&v393);
 
     v393.butID = 1019;
     v393.xpos = yw->screen_width - dword_5A50B6_h;
-    call_method(usr->sub_bar_button, 76, &v393);
+    usr->sub_bar_button->button_func76(&v393);
 
     v393.butID = 1011;
     v393.xpos = word_5A50C0 + dword_5A50B6_h;
-    call_method(usr->sub_bar_button, 76, &v393);
+    usr->sub_bar_button->button_func76(&v393);
 
     button_71arg v395;
     v395.butID = 1019;
     v395.field_4 = get_lang_string(ypaworld__string_pointers, 644, "GO BACK");
     v395.field_8 = NULL;
-    call_method(usr->sub_bar_button, 71, &v395);
+    usr->sub_bar_button->button_func71(&v395);
 
     if ( sub_4EDCC4(yw) )
     {
         if ( yw->field_2d90->field_40 != 9 && !usr->field_0xc )
         {
             v410.butID = 1014;
-            call_method(usr->sub_bar_button, 66, &v410);
+            usr->sub_bar_button->button_func66(&v410);
 
             v393.butID = 1014;
             v393.xpos = yw->screen_width - dword_5A50B6_h;
-            call_method(usr->sub_bar_button, 76, &v393);
+            usr->sub_bar_button->button_func76(&v393);
 
             v393.butID = 1019;
             v393.xpos = 0;
-            call_method(usr->sub_bar_button, 76, &v393);
+            usr->sub_bar_button->button_func76(&v393);
 
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 2438, "2438 == BACK");
             v395.butID = 1019;
             v395.field_8 = NULL;
-            call_method(usr->sub_bar_button, 71, &v395);
+            usr->sub_bar_button->button_func71(&v395);
         }
 
         if ( yw->field_2d90->field_40 == 9 )
         {
             v410.butID = 1011;
-            call_method(usr->sub_bar_button, 66, &v410);
+            usr->sub_bar_button->button_func66(&v410);
 
             v393.butID = 1011;
             v393.xpos = 0;
-            call_method(usr->sub_bar_button, 76, &v393);
+            usr->sub_bar_button->button_func76(&v393);
 
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 2420, "CONTINUE");
             v395.butID = 1019;
             v395.field_8 = NULL;
-            call_method(usr->sub_bar_button, 71, &v395);
+            usr->sub_bar_button->button_func71(&v395);
         }
 
         v410.butID = 1019;
-        call_method(usr->sub_bar_button, 66, &v410);
+        usr->sub_bar_button->button_func66(&v410);
 
         int v416 = 2;
-        call_method(usr->button_input_button, 68, &v416);
-        call_method(usr->video_button, 68, &v416);
-        call_method(usr->disk_button, 68, &v416);
-        call_method(usr->locale_button, 68, &v416);
-        call_method(usr->network_button, 68, &v416);
+        usr->button_input_button->button_func68(&v416);
+        usr->video_button->button_func68(&v416);
+        usr->disk_button->button_func68(&v416);
+        usr->locale_button->button_func68(&v416);
+        usr->network_button->button_func68(&v416);
 
         sub_4C31C0(usr->p_ypaworld, &usr->input_listview);
         sub_4C31C0(usr->p_ypaworld, &usr->video_listvw);
@@ -3077,31 +3084,31 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     else if ( usr->field_46 == 1 )
     {
         v410.butID = 1003;
-        call_method(usr->titel_button, 66, &v410);
+        usr->titel_button->button_func66(&v410);
 
         v410.butID = 1004;
-        call_method(usr->titel_button, 66, &v410);
+        usr->titel_button->button_func66(&v410);
 
         v410.butID = 1001;
-        call_method(usr->titel_button, 66, &v410);
+        usr->titel_button->button_func66(&v410);
 
         v410.butID = 1008;
         if ( usr->lang_dlls_count > 1 )
-            call_method(usr->titel_button, 66, &v410);
+            usr->titel_button->button_func66(&v410);
         else
-            call_method(usr->titel_button, 67, &v410);
+            usr->titel_button->button_func67(&v410);
 
         v410.butID = 1007;
-        call_method(usr->titel_button, 66, &v410);
+        usr->titel_button->button_func66(&v410);
 
         v410.butID = 1017;
-        call_method(usr->titel_button, 66, &v410);
+        usr->titel_button->button_func66(&v410);
 
         v410.butID = 1018;
-        call_method(usr->titel_button, 66, &v410);
+        usr->titel_button->button_func66(&v410);
 
         v410.butID = 1016;
-        call_method(usr->titel_button, 66, &v410);
+        usr->titel_button->button_func66(&v410);
     }
     else if ( usr->field_46 == 5 || usr->field_46 == 4 )
     {
@@ -3116,20 +3123,20 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         if ( usr->field_3426 == 1 )
         {
             v410.butID = 1015;
-            call_method(usr->sub_bar_button, 66, &v410);
+            usr->sub_bar_button->button_func66(&v410);
         }
 
         v410.butID = 1019;
-        call_method(usr->sub_bar_button, 66, &v410);
+        usr->sub_bar_button->button_func66(&v410);
 
         v410.butID = 1020;
-        call_method(usr->sub_bar_button, 66, &v410);
+        usr->sub_bar_button->button_func66(&v410);
     }
 
     if ( usr->field_0x2fb4 )
         v3 = 1;
 
-    DWORD v6 = call_method(usr->confirm_button, 69, usr->field_3A);
+    DWORD v6 = usr->confirm_button->button_func69(usr->field_3A);
     int v6_l = v6 & 0xFFFF;
     int v6_h = (v6 >> 16) & 0xFFFF;
 
@@ -3149,7 +3156,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 usr->p_ypaworld->field_757E = 0;
 
                 int v418 = 2;
-                call_method(usr->sub_bar_button, 68, &v418);
+                usr->sub_bar_button->button_func68(&v418);
 
                 usr->field_0x2fbc = 3;
                 usr->field_0x2fc0 = 0;
@@ -3203,7 +3210,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 usr->field_3426 = 0;
                 usr->p_ypaworld->field_757E = 0;
                 int v419 = 2;
-                call_method(usr->sub_bar_button, 68, &v419);
+                usr->sub_bar_button->button_func68(&v419);
                 usr->field_0x2fbc = 3;
                 usr->field_0x2fc0 = 0;
             }
@@ -3242,7 +3249,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     if ( usr->field_46 == 1 && usr->field_3A->dword8 == (0x80 | 0x2B) )
         yw->field_81AF = get_lang_string(ypaworld__string_pointers, 750, "help\\start.html");
 
-    v6 = call_method(usr->titel_button, 69, usr->field_3A);
+    v6 = usr->titel_button->button_func69(usr->field_3A);
     v6_l = v6 & 0xFFFF;
     v6_h = (v6 >> 16) & 0xFFFF;
 
@@ -3271,7 +3278,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         else if ( v6_l == 1013 )
         {
             int v416 = 2;
-            call_method(usr->titel_button, 68, &v416);
+            usr->titel_button->button_func68(&v416);
 
             usr->field_0x2fbc = 1;
             sub_423F74(&usr->samples1_info, 4);
@@ -3283,10 +3290,10 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         else if ( v6_l == 1024 )
         {
             int v416 = 1;
-            call_method(usr->sub_bar_button, 68, &v416);
+            usr->sub_bar_button->button_func68(&v416);
 
             v416 = 2;
-            call_method(usr->titel_button, 68, &v416);
+            usr->titel_button->button_func68(&v416);
 
             usr->field_46 = 5;
         }
@@ -3325,16 +3332,16 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         else
         {
             int v416 = 2;
-            call_method(usr->sub_bar_button, 68, &v416);
+            usr->sub_bar_button->button_func68(&v416);
 
             v416 = 1;
-            call_method(usr->titel_button, 68, &v416);
+            usr->titel_button->button_func68(&v416);
 
             usr->field_46 = 1;
         }
     }
 
-    v6 = call_method(usr->sub_bar_button, 69, usr->field_3A);
+    v6 = usr->sub_bar_button->button_func69(usr->field_3A);
     v6_l = v6 & 0xFFFF;
     v6_h = (v6 >> 16) & 0xFFFF;
 
@@ -3372,10 +3379,10 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             else
             {
                 int v416 = 2;
-                call_method(usr->sub_bar_button, 68, &v416);
+                usr->sub_bar_button->button_func68(&v416);
 
                 v416 = 1;
-                call_method(usr->titel_button, 68, &v416);
+                usr->titel_button->button_func68(&v416);
 
                 usr->field_46 = 1;
             }
@@ -3388,7 +3395,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             yw->field_757E = 0;
 
             int v416 = 2;
-            call_method(usr->sub_bar_button, 68, &v416);
+            usr->sub_bar_button->button_func68(&v416);
 
             ypaworld_func158__sub0__sub9(yw);
         }
@@ -3494,16 +3501,16 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     {
         v410.field_4 = 0;
         v410.butID = 1056;
-        call_method(usr->button_input_button, 67, &v410);
+        usr->button_input_button->button_func67(&v410);
     }
     else
     {
         v410.field_4 = 0;
         v410.butID = 1056;
-        call_method(usr->button_input_button, 66, &v410);
+        usr->button_input_button->button_func66(&v410);
     }
 
-    v6 = call_method(usr->button_input_button, 69, usr->field_3A);
+    v6 = usr->button_input_button->button_func69(usr->field_3A);
     v6_l = v6 & 0xFFFF;
     v6_h = (v6 >> 16) & 0xFFFF;
 
@@ -3555,10 +3562,10 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             sub_457BC0(usr);
 
             int v416 = 2;
-            call_method(usr->button_input_button, 68, &v416);
+            usr->button_input_button->button_func68(&v416);
 
             v416 = 1;
-            call_method(usr->titel_button, 68, &v416);
+            usr->titel_button->button_func68(&v416);
 
             sub_4C31C0(usr->p_ypaworld, &usr->input_listview);
             usr->field_46 = 1;
@@ -3648,7 +3655,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     v408.butID = 1156;
                     v408.field_4 = 2;
 
-                    call_method(usr->video_button, 73, &v408);
+                    usr->video_button->button_func73(&v408);
                 }
 
                 usr->field_13C2 |= 1;
@@ -3666,7 +3673,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     }
 
 
-    v6 = call_method(usr->video_button, 69, usr->field_3A);
+    v6 = usr->video_button->button_func69(usr->field_3A);
     v6_l = v6 & 0xFFFF;
     v6_h = (v6 >> 16) & 0xFFFF;
 
@@ -3835,7 +3842,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             v408.field_4 = 2;
             v408.butID = 1156;
 
-            call_method(usr->video_button, 73, &v408);
+            usr->video_button->button_func73(&v408);
         }
 
         lstvw_update(yw, &usr->video_listvw);
@@ -3861,7 +3868,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             v408.field_4 = 2;
             v408.butID = 1172;
 
-            call_method(usr->video_button, 73, &v408);
+            usr->video_button->button_func73(&v408);
         }
 
         lstvw_update(yw, &usr->d3d_listvw);
@@ -3869,38 +3876,38 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
 
     int v347 = 1159;
-    button_str2_t2 *v67 = (button_str2_t2 *)call_method(usr->video_button, 74, &v347);
+    button_str2_t2 *v67 = (button_str2_t2 *)usr->video_button->button_func74(&v347);
     sprintf(v306, "%d", v67->field_0);
 
     v395.field_4 = v306;
     v395.field_8 = v306;
     v395.butID = 1158;
-    call_method(usr->video_button, 71, &v395);
+    usr->video_button->button_func71(&v395);
 
     usr->field_0x13a4 = v67->field_0;
 
 
     v347 = 1152;
-    v67 = (button_str2_t2 *)call_method(usr->video_button, 74, &v347);
+    v67 = (button_str2_t2 *)usr->video_button->button_func74(&v347);
     sprintf(v306, "%d", v67->field_0);
 
     v395.field_4 = v306;
     v395.field_8 = v306;
     v395.butID = 1153;
-    call_method(usr->video_button, 71, &v395);
+    usr->video_button->button_func71(&v395);
     usr->field_0x13b4 = v67->field_0;
 
     milesEngine__setter(0x80004003, usr->field_0x13b4, 0);
 
 
     v347 = 1154;
-    v67 = (button_str2_t2 *)call_method(usr->video_button, 74, &v347);
+    v67 = (button_str2_t2 *)usr->video_button->button_func74(&v347);
     sprintf(v306, "%d", v67->field_0);
 
     v395.field_4 = v306;
     v395.field_8 = v306;
     v395.butID = 1155;
-    call_method(usr->video_button, 71, &v395);
+    usr->video_button->button_func71(&v395);
     usr->field_0x13b8 = v67->field_0;
 
     int ttmp = usr->field_0x13b8;
@@ -4050,7 +4057,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v107 = (profilesNode *)v107->next;
     }
 
-    v6 = call_method(usr->disk_button, 69, usr->field_3A);
+    v6 = usr->disk_button->button_func69(usr->field_3A);
     v6_l = v6 & 0xFFFF;
     v6_h = (v6 >> 16) & 0xFFFF;
 
@@ -4081,7 +4088,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             v395.field_8 = NULL;
             v395.butID = 1100;
             v395.field_4 = v308;
-            call_method(usr->disk_button, 71, &v395);
+            usr->disk_button->button_func71(&v395);
         }
         else if ( v6_l == 1161 )
         {
@@ -4099,7 +4106,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             v395.field_8 = NULL;
             v395.butID = 1100;
             v395.field_4 = v308;
-            call_method(usr->disk_button, 71, &v395);
+            usr->disk_button->button_func71(&v395);
         }
         else if ( v6_l == 1162 )
         {
@@ -4138,7 +4145,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 a1a.maxLen = 32;
                 a1a.replace = 1;
 
-                call_method(usr->p_ypaworld->win3d, 322, &a1a);
+                windd->windd_func322(&a1a);
 
                 if ( !a1a.result )
                 {
@@ -4160,7 +4167,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v395.field_8 = NULL;
                 v395.butID = 1100;
                 v395.field_4 = v308;
-                call_method(usr->disk_button, 71, &v395);
+                usr->disk_button->button_func71(&v395);
             }
         }
         else if ( v6_l == 1163 )
@@ -4184,7 +4191,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 a1a.maxLen = 32;
                 a1a.replace = 1;
 
-                call_method(usr->p_ypaworld->win3d, 322, &a1a);
+                windd->windd_func322(&a1a);
 
                 if ( !a1a.result )
                 {
@@ -4206,7 +4213,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v395.field_8 = NULL;
                 v395.butID = 1100;
                 v395.field_4 = v308;
-                call_method(usr->disk_button, 71, &v395);
+                usr->disk_button->button_func71(&v395);
             }
         }
         else if ( v6_l == 1164)
@@ -4303,23 +4310,23 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     if ( usr->field_0x1744 )
     {
         v410.butID = 1105;
-        call_method(usr->disk_button, 66, &v410);
+        usr->disk_button->button_func66(&v410);
 
         v410.field_4 = 0;
         v410.butID = 1104;
-        call_method(usr->disk_button, 67, &v410);
+        usr->disk_button->button_func67(&v410);
 
         v410.butID = 1101;
-        call_method(usr->disk_button, 67, &v410);
+        usr->disk_button->button_func67(&v410);
 
         v410.butID = 1102;
-        call_method(usr->disk_button, 67, &v410);
+        usr->disk_button->button_func67(&v410);
 
         v410.butID = 1103;
-        call_method(usr->disk_button, 67, &v410);
+        usr->disk_button->button_func67(&v410);
 
         v410.butID = 1100;
-        call_method(usr->disk_button, 67, &v410);
+        usr->disk_button->button_func67(&v410);
 
         if ( usr->field_0x1744 == 4 )
         {
@@ -4327,22 +4334,22 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             v410.butID = 1105;
 
             if ( !usr->field_1612 || !strcasecmp(usr->usernamedir, usr->user_name) )
-                call_method(usr->disk_button, 67, &v410);
+                usr->disk_button->button_func67(&v410);
             else
-                call_method(usr->disk_button, 66, &v410);
+                usr->disk_button->button_func66(&v410);
         }
 
         if ( usr->field_0x1744 == 2 && !usr->field_1612 )
         {
             v410.field_4 = 0;
             v410.butID = 1105;
-            call_method(usr->disk_button, 67, &v410);
+            usr->disk_button->button_func67(&v410);
         }
 
         if ( usr->field_0x1744 == 1 || usr->field_0x1744 == 3 )
         {
             v410.butID = 1100;
-            call_method(usr->disk_button, 66, &v410);
+            usr->disk_button->button_func66(&v410);
         }
 
         if ( usr->p_ypaworld->str17_NOT_FALSE )
@@ -4365,25 +4372,25 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     {
         v410.field_4 = 0;
         v410.butID = 1105;
-        call_method(usr->disk_button, 67, &v410);
+        usr->disk_button->button_func67(&v410);
 
         v410.butID = 1104;
-        call_method(usr->disk_button, 66, &v410);
+        usr->disk_button->button_func66(&v410);
 
         v410.butID = 1101;
-        call_method(usr->disk_button, 66, &v410);
+        usr->disk_button->button_func66(&v410);
 
         v410.butID = 1103;
-        call_method(usr->disk_button, 66, &v410);
+        usr->disk_button->button_func66(&v410);
 
         v410.butID = 1100;
-        call_method(usr->disk_button, 67, &v410);
+        usr->disk_button->button_func67(&v410);
 
         v410.butID = 1102;
         if ( !strcasecmp(usr->usernamedir, usr->user_name) )
-            call_method(usr->disk_button, 67, &v410);
+            usr->disk_button->button_func67(&v410);
         else
-            call_method(usr->disk_button, 66, &v410);
+            usr->disk_button->button_func66(&v410);
 
         strcpy(v308, usr->usernamedir);
     }
@@ -4391,7 +4398,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     v395.field_8 = NULL;
     v395.field_4 = v308;
     v395.butID = 1100;
-    call_method(usr->disk_button, 71, &v395);
+    usr->disk_button->button_func71(&v395);
 
     if ( usr->field_46 == 7 )
     {
@@ -4410,7 +4417,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     }
 
 
-    v6 = call_method(usr->locale_button, 69, usr->field_3A);
+    v6 = usr->locale_button->button_func69(usr->field_3A);
     v6_l = v6 & 0xFFFF;
     v6_h = (v6 >> 16) & 0xFFFF;
 
@@ -4456,7 +4463,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         lstvw_update(yw, &usr->local_listvw);
     }
 
-    v6 = call_method(usr->about_button, 69, usr->field_3A);
+    v6 = usr->about_button->button_func69(usr->field_3A);
     v6_l = v6 & 0xFFFF;
     v6_h = (v6 >> 16) & 0xFFFF;
 
@@ -4467,7 +4474,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             usr->field_46 = 1;
 
             int v416 = 2;
-            call_method(usr->about_button, 68, &v416);
+            usr->about_button->button_func68(&v416);
         }
     }
 
@@ -4478,10 +4485,10 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             usr->field_46 = 1;
 
             int v416 = 2;
-            call_method(usr->about_button, 68, &v416);
+            usr->about_button->button_func68(&v416);
 
             v416 = 1;
-            call_method(usr->titel_button, 68, &v416);
+            usr->titel_button->button_func68(&v416);
         }
     }
 
@@ -4597,7 +4604,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
     windp_arg79 v368;
 
-    v6 = call_method(usr->network_button, 69, usr->field_3A);
+    v6 = usr->network_button->button_func69(usr->field_3A);
     v6_l = v6 & 0xFFFF;
     v6_h = (v6 >> 16) & 0xFFFF;
 
@@ -4629,7 +4636,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             usr->field_1CD6 = 1;
             usr->field_1CD5 &= 0xFE;
 
-            call_method(usr->p_ypaworld->self_full, 181, &v346);
+            usr->p_ypaworld->self_full->ypaworld_func181(&v346);
         }
         else if ( v6_l == 1205 )
         {
@@ -4639,7 +4646,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             usr->field_1CD5 &= 0xFD;
             usr->field_1CD6 = 2;
 
-            call_method(usr->p_ypaworld->self_full, 181, &v346);
+            usr->p_ypaworld->self_full->ypaworld_func181(&v346);
         }
         else if ( v6_l == 1206 )
         {
@@ -4649,7 +4656,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             usr->field_1CD6 = 4;
             usr->field_1CD5 &= 0xFB;
 
-            call_method(usr->p_ypaworld->self_full, 181, &v346);
+            usr->p_ypaworld->self_full->ypaworld_func181(&v346);
         }
         else if ( v6_l == 1207 )
         {
@@ -4659,7 +4666,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             usr->field_1CD6 = 8;
             usr->field_1CD5 &= 0xF7;
 
-            call_method(usr->p_ypaworld->self_full, 181, &v346);
+            usr->p_ypaworld->self_full->ypaworld_func181(&v346);
         }
 
         switch ( usr->field_1C3A )
@@ -4722,7 +4729,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     v339.timer_func = NULL;
                     v339.startText = usr->field_1C42;
 
-                    call_method(usr->p_ypaworld->win3d, 322, &v339);
+                    windd->windd_func322(&v339);
 
                     if ( v339.result )
                     {
@@ -4756,7 +4763,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     const char *v425;
                     const char *v425_1;
 
-                    if ( call_method(usr->p_ypaworld->windp, 86, 0) <= 1 )
+                    if ( usr->p_ypaworld->windp->windp_func86(NULL) <= 1 )
                     {
                         const char *v217 = get_lang_string(ypaworld__string_pointers, 2442, "2442");
                         const char *v218 = get_lang_string(ypaworld__string_pointers, 2435, "DO YOU REALLY WANT TO START WITHOUT OTHER PLAYERS?");
@@ -4788,7 +4795,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             {
                 v368.field_0 = 0;
                 v368.field_4 = 0;
-                while ( call_method(yw->windp, 79, &v368) && strcasecmp(v368.field_8, usr->callSIGN) )
+                while ( yw->windp->windp_func79(&v368) && strcasecmp(v368.field_8, usr->callSIGN) )
                     v368.field_4++;
 
                 yw_arg181 v353;
@@ -4807,7 +4814,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v353.field_10 = 0;
                 v353.field_18 = 1;
 
-                call_method(usr->p_ypaworld->self_full, 181, &v353);
+                usr->p_ypaworld->self_full->ypaworld_func181(&v353);
 
                 windp_arg82 v387;
                 v387.field_C = 2;
@@ -4816,13 +4823,13 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v387.field_0 = usr->callSIGN;
                 v387.field_10 = 1;
 
-                call_method(usr->p_ypaworld->windp, 82, &v387);
+                usr->p_ypaworld->windp->windp_func82(&v387);
             }
             else if ( v6_l == 1209 )
             {
                 v368.field_0 = 0;
                 v368.field_4 = 0;
-                while ( call_method(yw->windp, 79, &v368) && strcasecmp(v368.field_8, usr->callSIGN) )
+                while ( yw->windp->windp_func79(&v368) && strcasecmp(v368.field_8, usr->callSIGN) )
                     v368.field_4++;
 
 
@@ -4841,7 +4848,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v353.val_size = 20;
                 v353.field_18 = 1;
 
-                call_method(usr->p_ypaworld->self_full, 181, &v353);
+                usr->p_ypaworld->self_full->ypaworld_func181(&v353);
 
                 windp_arg82 v387;
                 v387.field_C = 2;
@@ -4850,7 +4857,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v387.field_0 = usr->callSIGN;
                 v387.field_10 = 1;
 
-                call_method(usr->p_ypaworld->windp, 82, &v387);
+                usr->p_ypaworld->windp->windp_func82(&v387);
             }
             else if ( v6_l == 1210 )
             {
@@ -4866,7 +4873,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     v316.timer_func = NULL;
                     v316.maxLen = 64;
 
-                    call_method(usr->p_ypaworld->win3d, 322, &v316);
+                    windd->windd_func322(&v316);
 
                     if ( v316.result )
                     {
@@ -4892,7 +4899,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     v346.field_8 = usr->callSIGN;
                     v346.field_18 = 1;
 
-                    call_method(usr->p_ypaworld->self_full, 181, &v346);
+                    usr->p_ypaworld->self_full->ypaworld_func181(&v346);
 
                     sub_4D0C24(usr->p_ypaworld, usr->callSIGN, v312.fld_4);
 
@@ -4935,7 +4942,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 break;
             case 3:
             {
-                int v227 = call_method(usr->p_ypaworld->windp, 86, 0);
+                int v227 = usr->p_ypaworld->windp->windp_func86(NULL);
 
                 int v228 = 0;
 
@@ -5098,7 +5105,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                         v325.field_14 = 2;
                         v325.field_10 = 0;
 
-                        call_method(usr->p_ypaworld->self_full, 181, &v325);
+                        usr->p_ypaworld->self_full->ypaworld_func181(&v325);
 
                         sub_4D0C24(usr->p_ypaworld, usr->callSIGN, v309.fld_4);
                         usr->field_1C42[0] = 0;
@@ -5153,12 +5160,12 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     {
         if ( usr->field_1C3A == 4 && usr->field_0x2fbc != 4 )
         {
-            if ( (int)call_method(usr->p_ypaworld->windp, 86, 0)   <   usr->p_ypaworld->LevelNet->mapInfos[ usr->field_1C86 ].robos_count )
+            if ( (int)usr->p_ypaworld->windp->windp_func86(NULL)   <   usr->p_ypaworld->LevelNet->mapInfos[ usr->field_1C86 ].robos_count )
             {
                 if ( usr->field_1CEF )
                 {
                     int v357 = 0;
-                    call_method(usr->p_ypaworld->windp, 84, &v357);
+                    usr->p_ypaworld->windp->windp_func84(&v357);
 
                     usr->field_1CEF = 0;
                 }
@@ -5166,7 +5173,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             else if ( !usr->field_1CEF )
             {
                 int v357 = 1;
-                call_method(usr->p_ypaworld->windp, 84, &v357);
+                usr->p_ypaworld->windp->windp_func84(&v357);
 
                 usr->field_1CEF = 1;
             }
@@ -5174,25 +5181,25 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     }
 
     v410.butID = 1201;
-    call_method(usr->network_button, 66, &v410);
+    usr->network_button->button_func66(&v410);
 
     v410.butID = 1205;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1202;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1203;
-    call_method(usr->network_button, 66, &v410);
+    usr->network_button->button_func66(&v410);
 
     v410.butID = 1225;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1226;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1227;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
 
     button_71arg v336;
@@ -5201,60 +5208,60 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     v336.field_4 = get_lang_string(ypaworld__string_pointers, 2, "OK");
     v336.field_8 = 0;
 
-    call_method(usr->network_button, 71, &v336);
+    usr->network_button->button_func71(&v336);
 
     v410.butID = 1220;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1206;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1207;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1208;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1209;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1219;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1221;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.field_4 = 0;
     v410.butID = 1210;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1211;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1212;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1213;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1214;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1215;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1216;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
     v410.butID = 1217;
-    call_method(usr->network_button, 67, &v410);
+    usr->network_button->button_func67(&v410);
 
-    if ( (usr->field_1C3A != 1 || call_method(usr->p_ypaworld->windp, 90, 0) != 3)
-            && (usr->field_1C3A != 1 || usr->field_0x1cdc != 1 || call_method(usr->p_ypaworld->windp, 90, 0) != 4)
+    if ( (usr->field_1C3A != 1 || usr->p_ypaworld->windp->windp_func90(NULL) != 3)
+            && (usr->field_1C3A != 1 || usr->field_0x1cdc != 1 || usr->p_ypaworld->windp->windp_func90(NULL) != 4)
             && usr->field_1C3A )
     {
         v410.butID = 1228;
-        call_method(usr->network_button, 67, &v410);
+        usr->network_button->button_func67(&v410);
     }
     else
     {
@@ -5282,21 +5289,21 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v395.field_4 = v280;
         v395.field_8 = 0;
         v395.butID = 1228;
-        call_method(usr->network_button, 71, &v395);
+        usr->network_button->button_func71(&v395);
 
         v410.butID = 1228;
-        call_method(usr->network_button, 66, &v410);
+        usr->network_button->button_func66(&v410);
     }
 
     if ( (!usr->field_1C3E || yw->str17_NOT_FALSE) && usr->field_1C3A != 2 )
     {
         v410.butID = 1200;
-        call_method(usr->network_button, 67, &v410);
+        usr->network_button->button_func67(&v410);
     }
     else
     {
         v410.butID = 1200;
-        call_method(usr->network_button, 66, &v410);
+        usr->network_button->button_func66(&v410);
 
         v393.xpos = -1;
         v393.butID = 1200;
@@ -5312,7 +5319,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             v393.ypos = 14 * (word_5A50C2 + yw->font_default_h);
         }
 
-        call_method(usr->network_button, 76, &v393);
+        usr->network_button->button_func76(&v393);
 
 
         if ( yw->str17_NOT_FALSE )
@@ -5330,7 +5337,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v395.butID = 1200;
         v395.field_4 = v308;
         v395.field_8 = 0;
-        call_method(usr->network_button, 71, &v395);
+        usr->network_button->button_func71(&v395);
     }
 
     v393.xpos = -1;
@@ -5346,7 +5353,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v393.ypos = (word_5A50C2 + yw->font_default_h) * 15.2;
     }
 
-    call_method(usr->network_button, 76, &v393);
+    usr->network_button->button_func76(&v393);
 
     switch ( usr->field_1C3A )
     {
@@ -5354,68 +5361,68 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v410.field_4 = 0;
         v410.butID = 1205;
 
-        call_method(usr->network_button, 67, &v410);
+        usr->network_button->button_func67(&v410);
 
         v395.butID = 1204;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 410, "SELECT PROVIDER");
         v395.field_8 = 0;
-        call_method(usr->network_button, 71, &v410);
+        usr->network_button->button_func71(&v395);
 
         v395.butID = 1222;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 425, "2");
-        call_method(usr->network_button, 71, &v395);
+        usr->network_button->button_func71(&v395);
 
         v395.butID = 1223;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 426, "3");
-        call_method(usr->network_button, 71, &v395);
+        usr->network_button->button_func71(&v395);
         break;
 
     case 1:
-        if ( call_method(usr->p_ypaworld->windp, 90, 0) != 4 || !usr->field_0x1cdc )
+        if ( usr->p_ypaworld->windp->windp_func90(NULL) != 4 || !usr->field_0x1cdc )
         {
             v395.butID = 1202;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 402, "NEW");
             v395.field_8 = 0;
-            call_method(usr->network_button, 71, &v395);
+            usr->network_button->button_func71(&v395);
 
             v410.butID = 1202;
-            call_method(usr->network_button, 66, &v410);
+            usr->network_button->button_func66(&v410);
         }
 
         v395.butID = 1204;
         v395.field_8 = 0;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 411, "SELECT SESSION");
-        call_method(usr->network_button, 71, &v395);
+        usr->network_button->button_func71(&v395);
 
         v395.butID = 1222;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 428, "5");
-        call_method(usr->network_button, 71, &v395);
+        usr->network_button->button_func71(&v395);
 
         v395.butID = 1223;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 429, "6");
-        call_method(usr->network_button, 71, &v395);
+        usr->network_button->button_func71(&v395);
 
         int v349[2];
         v349[1] = 0;
 
-        if ( call_method(usr->p_ypaworld->windp, 69, v349) )
+        if ( usr->p_ypaworld->windp->windp_func69(v349) )
         {
             v395.butID = 1201;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 406, "JOIN");
             v395.field_8 = 0;
-            call_method(usr->network_button, 71, &v395);
+            usr->network_button->button_func71(&v395);
         }
-        else if ( call_method(usr->p_ypaworld->windp, 90, 0) != 4 || usr->field_0x1cdc )
+        else if ( usr->p_ypaworld->windp->windp_func90(NULL) != 4 || usr->field_0x1cdc )
         {
             v410.butID = 1201;
-            call_method(usr->network_button, 67, &v410);
+            usr->network_button->button_func67(&v410);
         }
         else
         {
             v395.butID = 1201;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 421, "SEARCH");
             v395.field_8 = 0;
-            call_method(usr->network_button, 71, &v395);
+            usr->network_button->button_func71(&v395);
         }
         break;
 
@@ -5423,25 +5430,25 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v395.butID = 1204;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 413, "ENTER PLAYER");
         v395.field_8 = 0;
-        call_method(usr->network_button, 71, &v395);
+        usr->network_button->button_func71(&v395);
 
         v395.butID = 1222;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 434, "11");
-        call_method(usr->network_button, 71, &v395);
+        usr->network_button->button_func71(&v395);
 
         v395.butID = 1223;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 435, "12");
-        call_method(usr->network_button, 71, &v395);
+        usr->network_button->button_func71(&v395);
 
         if ( yw->str17_NOT_FALSE )
         {
             v410.butID = 1202;
-            call_method(usr->network_button, 66, &v410);
+            usr->network_button->button_func66(&v410);
 
             v395.butID = 1202;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 423, "CHANGE");
             v395.field_8 = 0;
-            call_method(usr->network_button, 71, &v395);
+            usr->network_button->button_func71(&v395);
         }
         break;
 
@@ -5449,37 +5456,37 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         if ( usr->field_1CEA )
         {
             v410.butID = 1205;
-            call_method(usr->network_button, 67, &v410);
+            usr->network_button->button_func67(&v410);
         }
 
         v395.butID = 1204;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 412, "SELECT LEVE");
         v395.field_8 = 0;
-        call_method(usr->network_button, 71, &v395);
+        usr->network_button->button_func71(&v395);
 
         v395.butID = 1222;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 431, "8");
-        call_method(usr->network_button, 71, &v395);
+        usr->network_button->button_func71(&v395);
 
         v395.butID = 1223;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 432, "9");
-        call_method(usr->network_button, 71, &v395);
+        usr->network_button->button_func71(&v395);
         break;
 
     case 4:
         v410.butID = 1225;
-        call_method(usr->network_button, 66, &v410);
+        usr->network_button->button_func66(&v410);
 
         v395.butID = 1225;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 405, "SEND");
         v395.field_8 = 0;
-        call_method(usr->network_button, 71, &v395);
+        usr->network_button->button_func71(&v395);
 
         v410.butID = 1226;
-        call_method(usr->network_button, 66, &v410);
+        usr->network_button->button_func66(&v410);
 
         v410.butID = 1227;
-        call_method(usr->network_button, 66, &v410);
+        usr->network_button->button_func66(&v410);
 
         if ( usr->field_1C86 )
             v395.field_4 = usr->field_0x1c88;
@@ -5489,12 +5496,12 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v395.butID = 1226;
         v395.field_8 = 0;
 
-        call_method(usr->network_button, 71, &v395);
+        usr->network_button->button_func71(&v395);
 
         if ( usr->field_0x1cd8 )
         {
             v410.butID = 1205;
-            call_method(usr->network_button, 66, &v410);
+            usr->network_button->button_func66(&v410);
         }
 
         if ( usr->field_1CE9 )
@@ -5502,12 +5509,12 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             if ( !usr->field_0x1cd8 )
             {
                 v410.butID = 1205;
-                call_method(usr->network_button, 67, &v410);
+                usr->network_button->button_func67(&v410);
             }
         }
 
         v410.butID = 1220;
-        call_method(usr->network_button, 66, &v410);
+        usr->network_button->button_func66(&v410);
 
         if ( usr->field_1C86 > 0 && usr->field_1C86 < 256 )
         {
@@ -5515,33 +5522,33 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             if ( !usr->field_0x1cd8 && usr->field_1CE9 )
             {
                 v410.butID = 1220;
-                call_method(usr->network_button, 67, &v410);
+                usr->network_button->button_func67(&v410);
             }
             else
             {
                 v410.butID = 1206;
                 if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->field_1C86 ].fractions_mask & 2 )
-                    call_method(usr->network_button, 66, &v410);
+                    usr->network_button->button_func66(&v410);
                 else
-                    call_method(usr->network_button, 67, &v410);
+                    usr->network_button->button_func67(&v410);
 
                 v410.butID = 1207;
                 if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->field_1C86 ].fractions_mask & 0x40 )
-                    call_method(usr->network_button, 66, &v410);
+                    usr->network_button->button_func66(&v410);
                 else
-                    call_method(usr->network_button, 67, &v410);
+                    usr->network_button->button_func67(&v410);
 
                 v410.butID = 1208;
                 if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->field_1C86 ].fractions_mask & 8 )
-                    call_method(usr->network_button, 66, &v410);
+                    usr->network_button->button_func66(&v410);
                 else
-                    call_method(usr->network_button, 67, &v410);
+                    usr->network_button->button_func67(&v410);
 
                 v410.butID = 1209;
                 if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->field_1C86 ].fractions_mask & 0x10 )
-                    call_method(usr->network_button, 66, &v410);
+                    usr->network_button->button_func66(&v410);
                 else
-                    call_method(usr->network_button, 67, &v410);
+                    usr->network_button->button_func67(&v410);
             }
 
             v408.butID = 0;
@@ -5570,7 +5577,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             if ( v408.butID )
             {
                 v408.field_4 = 1;
-                call_method(usr->network_button, 73, &v408);
+                usr->network_button->button_func73(&v408);
             }
 
             int v298 = 0;
@@ -5595,7 +5602,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
             int v373, v374, v375, v376;
 
-            while ( call_method(usr->p_ypaworld->windp, 79, &v368) )
+            while ( usr->p_ypaworld->windp->windp_func79(&v368) )
             {
                 int v299;
 
@@ -5659,7 +5666,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v368.field_0 = 0;
         v368.field_4 = 0;
 
-        while ( call_method(usr->p_ypaworld->windp, 79, &v368) )
+        while ( usr->p_ypaworld->windp->windp_func79(&v368) )
         {
             if ( !(v368.field_C & 1) )
             {
@@ -5677,26 +5684,26 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             v395.butID = 1204;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 414, "START GAME OR ENTER MESSAGE TO THE PLAYERS");
             v395.field_8 = 0;
-            call_method(usr->network_button, 71, &v395);
+            usr->network_button->button_func71(&v395);
 
             v395.butID = 1222;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 437, "14");
-            call_method(usr->network_button, 71, &v395);
+            usr->network_button->button_func71(&v395);
 
             v395.butID = 1223;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 438, "15");
-            call_method(usr->network_button, 71, &v395);
+            usr->network_button->button_func71(&v395);
 
             v395.butID = 1201;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 407, "START");
             v395.field_8 = 0;
-            call_method(usr->network_button, 71, &v395);
+            usr->network_button->button_func71(&v395);
 
             if ( !usr->field_1CD7 )
             {
                 v410.field_4 = 0;
                 v410.butID = 1201;
-                call_method(usr->network_button, 67, &v410);
+                usr->network_button->button_func67(&v410);
             }
         }
         else
@@ -5704,51 +5711,51 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             v395.butID = 1204;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 415, "WAIT FOR START OR SEND MESSAGES");
             v395.field_8 = 0;
-            call_method(usr->network_button, 71, &v395);
+            usr->network_button->button_func71(&v395);
 
             v395.butID = 1222;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 440, "17");
-            call_method(usr->network_button, 71, &v395);
+            usr->network_button->button_func71(&v395);
 
             v395.butID = 1223;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 441, "18");
-            call_method(usr->network_button, 71, &v395);
+            usr->network_button->button_func71(&v395);
 
             if ( usr->field_1CE8 )
             {
                 v410.butID = 1219;
-                call_method(usr->network_button, 66, &v410);
+                usr->network_button->button_func66(&v410);
 
                 v410.butID = 1221;
-                call_method(usr->network_button, 66, &v410);
+                usr->network_button->button_func66(&v410);
             }
 
             v410.butID = 1201;
-            call_method(usr->network_button, 67, &v410);
+            usr->network_button->button_func67(&v410);
         }
         v410.butID = 1210;
-        call_method(usr->network_button, 66, &v410);
+        usr->network_button->button_func66(&v410);
 
         v410.butID = 1211;
-        call_method(usr->network_button, 66, &v410);
+        usr->network_button->button_func66(&v410);
 
         v410.butID = 1212;
-        call_method(usr->network_button, 66, &v410);
+        usr->network_button->button_func66(&v410);
 
         v410.butID = 1213;
-        call_method(usr->network_button, 66, &v410);
+        usr->network_button->button_func66(&v410);
 
         v410.butID = 1214;
-        call_method(usr->network_button, 66, &v410);
+        usr->network_button->button_func66(&v410);
 
         v410.butID = 1215;
-        call_method(usr->network_button, 66, &v410);
+        usr->network_button->button_func66(&v410);
 
         v410.butID = 1216;
-        call_method(usr->network_button, 66, &v410);
+        usr->network_button->button_func66(&v410);
 
         v410.butID = 1217;
-        call_method(usr->network_button, 66, &v410);
+        usr->network_button->button_func66(&v410);
 
         v368.field_4 = 0;
         v368.field_0 = 0;
@@ -5759,7 +5766,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             char v339[12];
             int v370;
 
-            int v304 = call_method(usr->network_button, 79, &v368);
+            int v304 = yw->windp->windp_func79(&v368);
 
             switch ( i )
             {
@@ -5804,7 +5811,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             }
 
             v395.field_8 = 0;
-            call_method(usr->network_button, 71, &v395);
+            usr->network_button->button_func71(&v395);
 
             if ( v304 )
             {
@@ -5862,7 +5869,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
             v395.butID = v370;
             v395.field_4 = v339;
-            call_method(usr->network_button, 71, &v395);
+            usr->network_button->button_func71(&v395);
 
             v368.field_4++;
         }

@@ -10,21 +10,7 @@
 #include <math.h>
 
 
-stored_functions *classvtbl_get_ypaufo();
-class_return * class_set_ypaufo(int, ...);
-
-stored_functions ypaufo_class_vtbl(class_set_ypaufo);
-
-
-class_stored ypaufo_class_off (NULL, NULL, "MC2classes:ypaufo.class", classvtbl_get_ypaufo);
-
-
-stored_functions *classvtbl_get_ypaufo()
-{
-    return &ypaufo_class_vtbl;
-}
-
-CLASSFUNC ypaufo_funcs[1024];
+const NewClassDescr NC_STACK_ypaufo::description("ypaufo.class", &newinstance);
 
 
 int ypaufo_func0__sub0(NC_STACK_ypaufo *obj, __NC_STACK_ypaufo *ufo, stack_vals *stak)
@@ -86,34 +72,32 @@ int ypaufo_func0__sub0(NC_STACK_ypaufo *obj, __NC_STACK_ypaufo *ufo, stack_vals 
     return 1;
 }
 
-NC_STACK_ypaufo * ypaufo_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypaufo::func0(stack_vals *stak)
 {
-    NC_STACK_ypaufo *obj = (NC_STACK_ypaufo *)call_parent(zis, clss, 0, stak);
+    if ( !NC_STACK_ypabact::func0(stak) )
+        return 0;
 
-    if ( obj )
+    __NC_STACK_ypaufo *ufo = &this->stack__ypaufo;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+
+//    call_vtbl(this, 3, 0x80001003, &bact, 0);
+
+    ufo->bact_internal = bact;
+
+    bact->field_24 = 7;
+
+    if ( !ypaufo_func0__sub0(this, ufo, stak) )
     {
-        __NC_STACK_ypaufo *ufo = &obj->stack__ypaufo;
-        __NC_STACK_ypabact *bact = &obj->stack__ypabact;
-
-//    call_vtbl(obj, 3, 0x80001003, &bact, 0);
-
-        ufo->bact_internal = bact;
-
-        bact->field_24 = 7;
-
-        if ( !ypaufo_func0__sub0(obj, ufo, stak) )
-        {
-            call_method(obj, 1, 0);
-            return NULL;
-        }
+        func1(NULL);
+        return 0;
     }
 
-    return obj;
+    return 1;
 }
 
-size_t ypaufo_func1(NC_STACK_ypaufo *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypaufo::func1(stack_vals *stak)
 {
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_ypabact::func1(stak);
 }
 
 int ypaufo_func2__sub0(NC_STACK_ypaufo *obj, __NC_STACK_ypaufo *ufo, stack_vals *stak)
@@ -169,10 +153,12 @@ int ypaufo_func2__sub0(NC_STACK_ypaufo *obj, __NC_STACK_ypaufo *ufo, stack_vals 
 }
 
 
-void ypaufo_func2(NC_STACK_ypaufo *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypaufo::func2(stack_vals *stak)
 {
-    call_parent(zis, obj, 2, stak);
-    ypaufo_func2__sub0(obj, &obj->stack__ypaufo, stak);
+    NC_STACK_ypabact::func2(stak);
+    ypaufo_func2__sub0(this, &this->stack__ypaufo, stak);
+
+    return 1;
 }
 
 void ypaufo_func3__sub0(NC_STACK_ypaufo *obj, __NC_STACK_ypaufo *ufo, stack_vals *stak)
@@ -209,26 +195,28 @@ void ypaufo_func3__sub0(NC_STACK_ypaufo *obj, __NC_STACK_ypaufo *ufo, stack_vals
     }
 }
 
-void ypaufo_func3(NC_STACK_ypaufo *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypaufo::func3(stack_vals *stak)
 {
-    call_parent(zis, obj, 3, stak);
-    ypaufo_func3__sub0(obj, &obj->stack__ypaufo, stak);
+    NC_STACK_ypabact::func3(stak);
+    ypaufo_func3__sub0(this, &this->stack__ypaufo, stak);
+
+    return 1;
 }
 
-void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
+void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypaufo *ufo = &obj->stack__ypaufo;
-    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+    __NC_STACK_ypaufo *ufo = &this->stack__ypaufo;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     float v110 = arg->field_4 / 1000.0;
 
-//  call_vtbl(obj, 3, 0x80001006, &a4, 0);
-//  call_vtbl(obj, 3, 0x80001004, &v101, 0);
+//  call_vtbl(this, 3, 0x80001006, &a4, 0);
+//  call_vtbl(this, 3, 0x80001004, &v101, 0);
 
     int v94;
-    call_vtbl(obj, 3, 0x80001007, &v94, 0);
+    call_vtbl(this, 3, 0x80001007, &v94, 0);
 
-    int v5 = call_method(ufo->ywo, 145, bact);
+    int v5 = ufo->ywo->ypaworld_func145(bact);
 
     float v108 = sqrt(  POW2(bact->field_639.sx) + POW2(bact->field_639.sy) + POW2(bact->field_639.sz)  );
 
@@ -254,7 +242,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
 
         if ( !v94
                 || (!v5 && !v8)
-                || !call_method(obj, 87, &v100) )
+                || !ypabact_func87(&v100) )
         {
             if ( bact->primTtype || bact->secndTtype )
             {
@@ -338,7 +326,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                 arg74.flag = 0;
                 arg74.field_0 = v110;
 
-                call_method(obj, 74, &arg74);
+                ypabact_func74(&arg74);
 
                 ypaworld_arg136 arg136_2;
                 arg136_2.pos_x = bact->field_62D.sx;
@@ -371,9 +359,9 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                 arg136_2.field_40 = 0;
                 arg136.field_40 = 0;
 
-                call_method(ufo->ywo, 136, &arg136);
+                ufo->ywo->ypaworld_func136(&arg136);
 
-                call_method(ufo->ywo, 136, &arg136_2);
+                ufo->ywo->ypaworld_func136(&arg136_2);
 
                 if ( (arg136_2.field_20 && arg136_2.field_24 * 300.0 < bact->radius) || (arg136.field_20 && arg136.field_24 * 300.0 < bact->radius) )
                 {
@@ -395,7 +383,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg88.pos2.sy = 2.0;
                     arg88.pos2.sz = v110;
 
-                    call_method(obj, 88, &arg88);
+                    ypabact_func88(&arg88);
                 }
 
                 if ( ufo->field_1c & 1 )
@@ -512,7 +500,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg75.target.pbact = bact->secndT.pbact;
                     arg75.prio = 1;
 
-                    call_method(obj, 75, &arg75);
+                    ypabact_func75(&arg75);
                 }
                 else if ( bact->secndTtype == BACT_TGT_TYPE_CELL )
                 {
@@ -520,14 +508,14 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg75.target.pcell = bact->secndT.pcell;
                     arg75.prio = 1;
 
-                    call_method(obj, 76, &arg75);
+                    ypabact_func76(&arg75);
                 }
                 else if ( bact->primTtype == BACT_TGT_TYPE_UNIT )
                 {
                     arg75.target.pbact = bact->primT.pbact;
                     arg75.prio = 0;
 
-                    call_method(obj, 75, &arg75);
+                    ypabact_func75(&arg75);
                 }
                 else if ( bact->primTtype == BACT_TGT_TYPE_CELL )
                 {
@@ -535,7 +523,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg75.target.pcell = bact->primT.pcell;
                     arg75.prio = 0;
 
-                    call_method(obj, 76, &arg75);
+                    ypabact_func76(&arg75);
                 }
                 else
                 {
@@ -548,7 +536,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                         arg78.field_0 = 0;
                         arg78.field_4 = 0;
 
-                        call_method(obj, 78, &arg78);
+                        ypabact_func78(&arg78);
                     }
                 }
             }
@@ -564,14 +552,14 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg78.field_4 = 0;
                     arg78.field_8 = 256;
 
-                    call_method(obj, 78, &arg78);
+                    ypabact_func78(&arg78);
                 }
 
                 arg78.field_0 = 3;
                 arg78.field_8 = 0;
                 arg78.field_4 = 0;
 
-                call_method(obj, 78, &arg78);
+                ypabact_func78(&arg78);
             }
         }
     }
@@ -590,9 +578,9 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
             arg110_1.tgType = bact->primTtype;
             arg110_1.priority = 0;
 
-            int v63 = call_method(obj, 110, &arg110);
+            int v63 = ypabact_func110(&arg110);
 
-            int v66 = call_method(obj, 110, &arg110_1);
+            int v66 = ypabact_func110(&arg110_1);
 
             if ( v63 != 3 || v66 != 3 )
             {
@@ -602,7 +590,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg67.tgt_type = BACT_TGT_TYPE_NONE;
                     arg67.priority = 1;
 
-                    call_method(obj, 67, &arg67);
+                    ypabact_func67(&arg67);
                 }
 
                 if ( !v66 )
@@ -613,7 +601,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg67.tgt_pos.sz = ufo->bact_internal->field_621.sz;
                     arg67.priority = 0;
 
-                    call_method(obj, 67, &arg67);
+                    ypabact_func67(&arg67);
                 }
 
                 if ( bact->primTtype || bact->secndTtype )
@@ -623,14 +611,14 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg78.field_4 = 0;
                     arg78.field_0 = 1;
 
-                    call_method(obj, 78, &arg78);
+                    ypabact_func78(&arg78);
                     break;
                 }
             }
         }
 
         int v93;
-        call_vtbl(obj, 3, 0x8000100A, &v93, 0);
+        call_vtbl(this, 3, 0x8000100A, &v93, 0);
 
         if ( v93 == 0 )
         {
@@ -667,7 +655,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                 arg78.field_4 = 0;
                 arg78.field_0 = 3;
 
-                call_method(obj, 78, &arg78);
+                ypabact_func78(&arg78);
 
                 ypaworld_arg136 arg136_1;
 
@@ -679,7 +667,7 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                 arg136_1.field_1C = 0;
                 arg136_1.field_40 = 0;
 
-                call_method(ufo->ywo, 136, &arg136_1);
+                ufo->ywo->ypaworld_func136(&arg136_1);
 
                 if ( arg136_1.field_20 )
                     bact->field_621.sy = arg136_1.field_30 - bact->overeof;
@@ -690,41 +678,41 @@ void ypaufo_func70(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                 arg86.field_one = 0;
                 arg86.field_two = arg->field_4;
 
-                call_method(obj, 86, &arg86);
+                ypabact_func86(&arg86);
             }
         }
     }
     break;
 
     case 2:
-        call_method(obj, 121, arg);
+        ypabact_func121(arg);
         break;
 
     case 4:
-        call_method(obj, 99, arg);
+        ypabact_func99(arg);
         break;
 
     case 5:
-        call_method(obj, 112, arg);
+        ypabact_func112(arg);
         break;
     }
 }
 
-void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
+void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypaufo *ufo = &obj->stack__ypaufo;
-    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+    __NC_STACK_ypaufo *ufo = &this->stack__ypaufo;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     float v88 = arg->field_4 / 1000.0;
 
     int a4;
-    call_vtbl(obj, 3, 0x80001007, &a4, 0);
+    call_vtbl(this, 3, 0x80001007, &a4, 0);
 
     bact->field_62D = bact->field_621;
 
     if ( bact->field_3D5 == 2 )
     {
-        call_method(obj, 121, arg);
+        ypabact_func121(arg);
     }
     else if ( bact->field_3D5 == 1 || bact->field_3D5 == 3 )
     {
@@ -738,7 +726,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                 arg78.field_8 = 0;
                 arg78.field_4 = 0;
 
-                call_method(obj, 78, &arg78);
+                ypabact_func78(&arg78);
             }
 
             bact->field_3D6 &= 0xFFFFFDFF;
@@ -759,7 +747,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
 
             arg136.field_40 = 0;
 
-            call_method(ufo->ywo, 136, &arg136);
+            ufo->ywo->ypaworld_func136(&arg136);
 
             if ( !arg136.field_20 || bact->field_601 != 0.0 || ufo->field_14 > bact->mass * 9.80665 )
             {
@@ -788,7 +776,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                         arg78.field_8 = 0;
                         arg78.field_4 = 0;
 
-                        call_method(obj, 78, &arg78);
+                        ypabact_func78(&arg78);
                     }
                 }
 
@@ -807,7 +795,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                         arg78.field_8 = 0;
                         arg78.field_4 = 0;
 
-                        call_method(obj, 78, &arg78);
+                        ypabact_func78(&arg78);
                     }
                 }
             }
@@ -881,7 +869,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
             {
                 int v83 = arg->field_4;
 
-                call_method(obj, 87, &v83);
+                ypabact_func87(&v83);
             }
         }
 
@@ -911,7 +899,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
         arg106.field_4.sz = bact->field_651.m22;
 
 
-        if ( call_method(obj, 106, &arg106) )
+        if ( ypabact_func106(&arg106) )
         {
             arg79.target.pbact = arg106.ret_bact;
             arg79.tgType = BACT_TGT_TYPE_UNIT;
@@ -935,7 +923,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
             arg79.start_point.sz = bact->fire_z;
             arg79.flags = (arg->inpt->but_flags & 2) != 0;
 
-            call_method(obj, 79, &arg79);
+            ypabact_func79(&arg79);
         }
 
         if ( bact->weapon == -1 )
@@ -984,7 +972,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg78.field_0 = 0;
                     arg78.field_8 = 256;
 
-                    call_method(obj, 78, &arg78);
+                    ypabact_func78(&arg78);
                 }
             }
 
@@ -997,7 +985,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg78.field_8 = 0;
                     arg78.field_0 = 0;
 
-                    call_method(obj, 78, &arg78);
+                    ypabact_func78(&arg78);
                 }
 
                 bact_arg105 arg105;
@@ -1008,7 +996,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                 arg105.field_C = v88;
                 arg105.field_10 = bact->field_915;
 
-                call_method(obj, 105, &arg105);
+                ypabact_func105(&arg105);
             }
         }
 
@@ -1018,7 +1006,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
             arg74.flag = 0;
             arg74.field_0 = v88;
 
-            call_method(obj, 74, &arg74);
+            ypabact_func74(&arg74);
         }
         else
         {
@@ -1030,7 +1018,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                 arg74.flag = 0;
                 arg74.field_0 = v88;
 
-                call_method(obj, 74, &arg74);
+                ypabact_func74(&arg74);
 
                 ypaworld_arg137 arg137;
                 arg137.pos = bact->field_621;
@@ -1040,7 +1028,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                 arg137.coll_max = 10;
                 arg137.field_30 = 0;
 
-                call_method(ufo->ywo, 137, &arg137);
+                ufo->ywo->ypaworld_func137(&arg137);
 
                 int v49 = 0;
 
@@ -1080,7 +1068,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg88.pos2.sx = 0.7;
                     arg88.pos2.sy = 2.0;
 
-                    call_method(obj, 88,  &arg88);
+                    ypabact_func88(&arg88);
 
                     v49 = 1;
                 }
@@ -1098,7 +1086,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
 
                     arg136.field_40 = 0;
 
-                    call_method(ufo->ywo, 136, &arg136);
+                    ufo->ywo->ypaworld_func136(&arg136);
 
                     if ( arg136.field_20 )
                     {
@@ -1114,7 +1102,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                         arg88.pos2.sz = v88;
                         arg88.pos2.sy = 2.0;
 
-                        call_method(obj, 88, &arg88);
+                        ypabact_func88(&arg88);
 
                         v49 = 1;
                     }
@@ -1141,7 +1129,7 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
                         arg180.field_8 = v93 * 10.0 + bact->field_621.sx;
                         arg180.field_C = v94 * 10.0 + bact->field_621.sz;
 
-                        call_method(ufo->ywo, 180, &arg180);
+                        ufo->ywo->ypaworld_func180(&arg180);
                     }
                 }
             }
@@ -1149,10 +1137,10 @@ void ypaufo_func71(NC_STACK_ypaufo *obj, class_stru *zis, ypabact_arg65 *arg)
     }
 }
 
-void ypaufo_func74(NC_STACK_ypaufo *obj, class_stru *zis, bact_arg74 *arg)
+void NC_STACK_ypaufo::ypabact_func74(bact_arg74 *arg)
 {
-    __NC_STACK_ypaufo *ufo = &obj->stack__ypaufo;
-    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+    __NC_STACK_ypaufo *ufo = &this->stack__ypaufo;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     bact->field_62D = bact->field_621;
 
@@ -1252,7 +1240,7 @@ void ypaufo_func74(NC_STACK_ypaufo *obj, class_stru *zis, bact_arg74 *arg)
     if ( ufo->field_10 < 0.0 )
         ufo->field_10 = 0;
 
-    call_method(obj, 115, 0);
+    ypabact_func115(NULL);
 
     bact->field_5A.samples_data[0].pitch = bact->field_3BA;
     bact->field_5A.samples_data[0].volume = bact->field_3B6;
@@ -1274,51 +1262,57 @@ void ypaufo_func74(NC_STACK_ypaufo *obj, class_stru *zis, bact_arg74 *arg)
 
 }
 
-size_t ypaufo_func80(NC_STACK_ypaufo *obj, class_stru *zis, stack_vals *arg)
+size_t NC_STACK_ypaufo::ypabact_func80(bact_arg80 *arg)
 {
-    __NC_STACK_ypaufo *ufo = &obj->stack__ypaufo;
+    __NC_STACK_ypaufo *ufo = &this->stack__ypaufo;
 
-    if ( !call_parent(zis, obj, 80, (stack_vals *)arg))
+    if ( !NC_STACK_ypabact::ypabact_func80(arg))
         return 0;
 
     ufo->field_14 = ufo->bact_internal->mass * 9.80665;
     return 1;
 }
 
-void ypaufo_func96(NC_STACK_ypaufo *obj, class_stru *zis, void *)
+void NC_STACK_ypaufo::ypabact_func96(void *)
 {
-    call_parent(zis, obj, 96, 0);
+    NC_STACK_ypabact::ypabact_func96(NULL);
 
-    __NC_STACK_ypaufo *ufo = &obj->stack__ypaufo;
+    __NC_STACK_ypaufo *ufo = &this->stack__ypaufo;
 
     ufo->field_14 = 0;
 
-    call_vtbl(obj, 2, 0x8000100A, 0, 0);
+    call_vtbl(this, 2, 0x8000100A, 0, 0);
 }
 
 
-class_return ypaufo_class_descr;
-
-class_return * class_set_ypaufo(int, ...)
+size_t NC_STACK_ypaufo::compatcall(int method_id, void *data)
 {
-
-    memset(ypaufo_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    ypaufo_class_descr.parent = "ypabact.class";
-
-    ypaufo_funcs[0] = (CLASSFUNC)ypaufo_func0;
-    ypaufo_funcs[1] = (CLASSFUNC)ypaufo_func1;
-    ypaufo_funcs[2] = (CLASSFUNC)ypaufo_func2;
-    ypaufo_funcs[3] = (CLASSFUNC)ypaufo_func3;
-    ypaufo_funcs[70] = (CLASSFUNC)ypaufo_func70;
-    ypaufo_funcs[71] = (CLASSFUNC)ypaufo_func71;
-    ypaufo_funcs[74] = (CLASSFUNC)ypaufo_func74;
-    ypaufo_funcs[80] = (CLASSFUNC)ypaufo_func80;
-    ypaufo_funcs[96] = (CLASSFUNC)ypaufo_func96;
-
-    ypaufo_class_descr.vtbl = ypaufo_funcs;
-    ////ypaufo_class_descr.varSize = sizeof(__NC_STACK_ypaufo);
-    ypaufo_class_descr.varSize = sizeof(NC_STACK_ypaufo) - offsetof(NC_STACK_ypaufo, stack__ypaufo); //// HACK
-    ypaufo_class_descr.field_A = 0;
-    return &ypaufo_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        return func2( (stack_vals *)data );
+    case 3:
+        return func3( (stack_vals *)data );
+    case 70:
+        ypabact_func70( (ypabact_arg65 *)data );
+        return 1;
+    case 71:
+        ypabact_func71( (ypabact_arg65 *)data );
+        return 1;
+    case 74:
+        ypabact_func74( (bact_arg74 *)data );
+        return 1;
+    case 80:
+        return (size_t)ypabact_func80( (bact_arg80 *)data );
+    case 96:
+        ypabact_func96( (void *)data );
+        return 1;
+    default:
+        break;
+    }
+    return NC_STACK_ypabact::compatcall(method_id, data);
 }

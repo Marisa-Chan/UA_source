@@ -3,9 +3,6 @@
 
 #include "raster.h"
 
-extern class_stored display_class_off;
-
-
 struct __attribute__((packed)) UA_PALENTRY
 {
     BYTE r;
@@ -26,10 +23,6 @@ struct __NC_STACK_display
     int field_1b04;
 };
 
-struct NC_STACK_display : public NC_STACK_raster
-{
-    __NC_STACK_display stack__display;
-};
 
 struct rstr_261_arg
 {
@@ -52,5 +45,62 @@ struct displ_arg263
     int pointer_id;
 };
 
+struct windd_arg256
+{
+    int sort_id;
+    int width;
+    int height;
+    char name[32];
+};
+
+class NC_STACK_display: public NC_STACK_raster
+{
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+    virtual size_t display_func256(windd_arg256 *inout) {
+        return 0;
+    };
+    virtual void display_func257(stack_vals *) {};
+    virtual void display_func258(stack_vals *) {};
+    virtual void display_func259(stack_vals *) {};
+    virtual void display_func260(stack_vals *) {};
+    virtual void display_func261(rstr_261_arg *arg);
+    virtual void display_func262(rstr_262_arg *arg);
+    virtual void display_func263(displ_arg263 *arg);
+    virtual void display_func264(void *);
+    virtual void display_func265(void *);
+    virtual size_t display_func266(bitmap_intern **pbitm);
+    virtual void display_func267(bitmap_intern **);
+    virtual void display_func268(bitmap_intern **pbitm);
+    virtual size_t display_func269(bitmap_intern **);
+    virtual void display_func270(bitmap_intern **);
+    virtual void display_func271(stack_vals *stak) {};
+    virtual void display_func272(stack_vals *) {};
+    virtual UA_PALENTRY * display_func273(rstr_261_arg *arg);
+    virtual void display_func274(const char **);
+
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_display() {
+        memset(&stack__display, 0, sizeof(stack__display));
+    };
+    virtual ~NC_STACK_display() {};
+
+    virtual const char * getClassName() {
+        return "display.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_display();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
+    __NC_STACK_display stack__display;
+};
 
 #endif // DISPLAY_H_INCLUDED

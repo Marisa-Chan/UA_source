@@ -6,11 +6,6 @@
 #include "utils.h"
 #include "input.h"
 
-extern class_stored button_class_off;
-
-struct NC_STACK_button;
-
-
 struct button_str2_t2 //slider
 {
     int16_t field_0; // current value
@@ -62,11 +57,6 @@ struct __NC_STACK_button : public inp_node
     int16_t screen_height;
 };
 
-struct NC_STACK_button : public NC_STACK_nucleus
-{
-    __NC_STACK_button stack__button;
-};
-
 struct button_64_arg
 {
     int button_type;
@@ -110,6 +100,48 @@ struct button_arg76
     int16_t xpos;
     int16_t ypos;
     int16_t width;
+};
+
+
+class NC_STACK_button: public NC_STACK_nucleus
+{
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+    virtual size_t button_func64(button_64_arg *arg);
+    virtual size_t button_func65(int *butID);
+    virtual size_t button_func66(button_66arg *arg);
+    virtual size_t button_func67(button_66arg *arg);
+    virtual size_t button_func68(int *arg);
+    virtual size_t button_func69(struC5 *arg);
+    virtual size_t button_func70(void *);
+    virtual size_t button_func71(button_71arg *arg);
+    virtual int button_func72(int *butid);
+    virtual size_t button_func73(button_66arg *arg);
+    virtual button_str2_t2 * button_func74(int *butid);
+    virtual size_t button_func75(int *butid);
+    virtual size_t button_func76(button_arg76 *arg);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_button() {
+        memset(&stack__button, 0, sizeof(stack__button));
+    };
+    virtual ~NC_STACK_button() {};
+
+    virtual const char * getClassName() {
+        return "button.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_button();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
+    __NC_STACK_button stack__button;
 };
 
 #endif // BUTTON_H_INCLUDED

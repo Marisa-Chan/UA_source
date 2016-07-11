@@ -4,22 +4,43 @@
 #include "nucleas.h"
 #include "nlist.h"
 
-extern class_stored embed_class_off;
-
 struct __NC_STACK_embed
 {
     nlist embed_objects;
 };
 
-struct NC_STACK_embed : public NC_STACK_nucleus
-{
-    __NC_STACK_embed stack__embed;
-};
-
 struct embd_node: public nnode
 {
     int num;
-    NC_STACK_class *objects[32];
+    NC_STACK_rsrc *objects[32];
+};
+
+class NC_STACK_embed: public NC_STACK_nucleus
+{
+public:
+    virtual size_t func0(stack_vals *);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func5(MFILE **file);
+    virtual size_t func6(MFILE **file);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_embed() {
+        memset(&stack__embed, 0, sizeof(stack__embed));
+    };
+    virtual ~NC_STACK_embed() {};
+
+    virtual const char * getClassName() {
+        return "embed.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_embed();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
+    __NC_STACK_embed stack__embed;
 };
 
 #endif // EMBED_H_INCLUDED

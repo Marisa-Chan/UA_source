@@ -4,10 +4,6 @@
 #include "iwimp.h"
 #include "utils.h"
 
-extern class_stored winp_class_off;
-
-struct NC_STACK_winp;
-
 struct __NC_STACK_winp
 {
     HWND hWND;
@@ -15,21 +11,6 @@ struct __NC_STACK_winp
     int field_8;
     int field_c;
     BYTE field_10[48];
-};
-
-struct NC_STACK_winp : public NC_STACK_iwimp
-{
-    __NC_STACK_winp stack__winp;
-};
-
-
-
-struct winp_66arg
-{
-    DWORD downed_key_2;
-    DWORD downed_key;
-    DWORD dword8;
-    DWORD chr;
 };
 
 struct winp__func67__internal
@@ -40,27 +21,43 @@ struct winp__func67__internal
     int down;
 };
 
-struct winp_68arg
+class NC_STACK_winp: public NC_STACK_iwimp
 {
-    const char *keyname;
-    DWORD id;
-};
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t func3(stack_vals *stk);
+    virtual void idev_func64(win_64arg *arg);
+    virtual void idev_func65(win_64arg *arg);
+    virtual void idev_func66(winp_66arg *arg);
+    virtual int idev_func67(const char **arg);
+    virtual int idev_func68(winp_68arg *arg);
+    virtual void idev_func69(int *arg);
+    virtual void idev_func70(int *arg);
+    virtual void idev_func71(winp_71arg *arg);
+    virtual size_t iwimp_func128(stack_vals *stak);
+    virtual void iwimp_func131(winp_131arg *arg);
 
-struct win_64arg
-{
-    int field_0;
-    int field_4;
-    float field_8;
-};
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_winp() {
+        memset(&stack__winp, 0, sizeof(stack__winp));
+    };
+    virtual ~NC_STACK_winp() {};
 
-struct winp_71arg
-{
-    DWORD effID;
-    DWORD state;
-    float p1;
-    float p2;
-    float p3;
-    float p4;
+    virtual const char * getClassName() {
+        return "winp.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_winp();
+    };
+    static void initfirst();
+
+    //Data
+    static const NewClassDescr description;
+
+    __NC_STACK_winp stack__winp;
 };
 
 #endif // WINP_H_INCLUDED

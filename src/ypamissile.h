@@ -7,11 +7,6 @@
 // Bomb rotation speed
 #define MISSILE_BOMB_MIN_ANGLE 0.001
 
-
-extern class_stored ypamissile_class_off;
-
-struct NC_STACK_ypamissile;
-
 struct __NC_STACK_ypamissile
 {
     NC_STACK_ypaworld *ywo;
@@ -35,15 +30,50 @@ struct __NC_STACK_ypamissile
     float radius_robo;
 };
 
-struct NC_STACK_ypamissile : public NC_STACK_ypabact
-{
-    __NC_STACK_ypamissile stack__ypamissile;
-};
-
 struct miss_arg130
 {
     xyz pos;
     float period;
+};
+
+class NC_STACK_ypamissile: public NC_STACK_ypabact
+{
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+    virtual void ypabact_func68(ypabact_arg65 *arg);
+    virtual void ypabact_func69(ypabact_arg65 *arg);
+    virtual void ypabact_func70(ypabact_arg65 *arg);
+    virtual void ypabact_func71(ypabact_arg65 *arg);
+    virtual void ypabact_func74(bact_arg74 *arg);
+    virtual void ypabact_func78(bact_arg119 *arg);
+    virtual void ypabact_func96(void *);
+    virtual size_t ypabact_func119(bact_arg119 *arg);
+    virtual void ypamissile_func128(void *);
+    virtual void ypamissile_func129(void *);
+    virtual void ypamissile_func130(miss_arg130 *arg);
+    virtual void ypamissile_func131(miss_arg130 *arg);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_ypamissile() {
+        memset(&stack__ypamissile, 0, sizeof(stack__ypamissile));
+    };
+    virtual ~NC_STACK_ypamissile() {};
+
+    virtual const char * getClassName() {
+        return "ypamissile.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_ypamissile();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
+    __NC_STACK_ypamissile stack__ypamissile;
 };
 
 #endif // YMISSILE_H_INCLUDED

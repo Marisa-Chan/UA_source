@@ -573,8 +573,8 @@ int yw_InitNetwork(_NC_STACK_ypaworld *yw)
     yw->field_75A2 = 0;
     yw->field_75E2[0] = 0;
 
-    char *v6 = yw->buildDate;
-    call_method(yw->windp, 89, &v6);
+    const char *v6 = yw->buildDate;
+    yw->windp->windp_func89(&v6);
 
     return 1;
 }
@@ -982,7 +982,7 @@ NC_STACK_base * sub_44AD8C(const char *fname)
             }
 
             //call_vtbl(obj, 65, kid);
-            call_method(obj, 65, &kid); //Add to kid list
+            obj->base_func65(&kid); //Add to kid list
         }
         FClose(fil);
     }
@@ -1011,7 +1011,7 @@ NC_STACK_base *load_set_base()
                 return NULL;
             }
             //call_vtbl(base, 65, visproto);
-            call_method(base, 65, &visproto);
+            base->base_func65(&visproto);
 
             NC_STACK_base *lego = READ_BAS_FILE("rsrc:objects/lego.base");
             if ( !lego )
@@ -1025,7 +1025,7 @@ NC_STACK_base *load_set_base()
                 return NULL;
             }
             //call_vtbl(base, 65, lego);
-            call_method(base, 65, &lego);
+            base->base_func65(&lego);
 
             NC_STACK_base *slurp = READ_BAS_FILE("rsrc:objects/slurp.base");
             if ( !slurp )
@@ -1039,7 +1039,7 @@ NC_STACK_base *load_set_base()
                 return NULL;
             }
             //call_vtbl(base, 65, slurp);
-            call_method(base, 65, &slurp);
+            base->base_func65(&slurp);
         }
     }
     return base;
@@ -1472,11 +1472,11 @@ int yw_InitMouseStuff(_NC_STACK_ypaworld *yw)
 
     arg_263.bitm = 0;
     arg_263.pointer_id = 0;
-    call_method(yw->win3d, 263, &arg_263);
+    yw->win3d->display_func263(&arg_263);
 
     arg_263.bitm = yw->pointers__bitm[0];
     arg_263.pointer_id = 1;
-    call_method(yw->win3d, 263, &arg_263);
+    yw->win3d->display_func263(&arg_263);
 
     set_prefix_replacement("rsrc", rsr);
     return 1;
@@ -1493,7 +1493,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
     char rsr[256];
     strcpy(rsr,  get_prefix_replacement("rsrc"));
 
-    call_method(yw->win3d, 271);
+    yw->win3d->display_func271(NULL);
 
 
     set_prefix_replacement("rsrc", "data:mc2res");
@@ -1696,7 +1696,7 @@ void ypaworld_func158__sub4__sub0(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *bitm)
 {
     if ( yw )
     {
-        call_method(yw->win3d, 215, 0);
+        yw->win3d->raster_func215(NULL);
 
         rstr_arg204 a4;
         call_vtbl(bitm, 3, 0x80002000, &a4.pbitm, 0);
@@ -1710,9 +1710,9 @@ void ypaworld_func158__sub4__sub0(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *bitm)
         a4.float20 = 1.0;
         a4.float10 = 1.0;
 
-        call_method(yw->win3d, 202, &a4);
+        yw->win3d->raster_func202(&a4);
 
-        call_method(yw->win3d, 216, 0);
+        yw->win3d->raster_func216(NULL);
     }
 }
 
@@ -1721,10 +1721,12 @@ void sub_4491A0(_NC_STACK_ypaworld *yw, const char *movie_fname)
     char v5[256];
     sub_412810(movie_fname, v5, 256);
 
-    char *v6;
+    const char *v6;
     v6 = v5;
 
-    call_method(yw->win3d, 323, &v6);
+    NC_STACK_windd *windd = dynamic_cast<NC_STACK_windd *>(yw->win3d);
+
+    windd->windd_func323(&v6);
 
     sub_412D28(&input_states);
 
@@ -1777,10 +1779,10 @@ void sb_0x4ea37c(_NC_STACK_ypaworld *yw)
         yw->set_number = 0;
     }
 
-    NC_STACK_win3d *win3d;
+    NC_STACK_display *win3d;
     gfxEngine__getter(0x8000300D, &win3d, 0);
 
-    call_method(win3d, 272, 0);
+    win3d->display_func272(NULL);
 }
 
 void sub_4EAC80(_NC_STACK_ypaworld *yw)
@@ -1902,7 +1904,7 @@ void ypaworld_func158__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
 }
 
 
-void splashScreen_OutText(_NC_STACK_ypaworld *yw, NC_STACK_win3d *w3d, const char *txt, int x, int y)
+void splashScreen_OutText(_NC_STACK_ypaworld *yw, NC_STACK_display *w3d, const char *txt, int x, int y)
 {
     char cmdbuf[2048];
     char txtbuf[256];
@@ -1951,7 +1953,7 @@ void splashScreen_OutText(_NC_STACK_ypaworld *yw, NC_STACK_win3d *w3d, const cha
         v15.cmdbuf = cmdbuf;
         v15.includ = NULL;
 
-        call_method(yw->win3d, 209, &v15);
+        yw->win3d->raster_func209(&v15);
     }
 }
 
@@ -1961,7 +1963,7 @@ void ypaworld_func158__sub4__sub1__sub2(_NC_STACK_ypaworld *yw)
 
     if ( lvlnet->ilbm_menu_map && lvlnet->ilbm_mask_map && lvlnet->ilbm_rollover_map )
     {
-        call_method(yw->win3d, 215);
+        yw->win3d->raster_func215(NULL);
 
         rstr_arg204 a4;
         call_vtbl(yw->LevelNet->ilbm_menu_map, 3, 0x80002000, &a4.pbitm, 0);
@@ -1976,7 +1978,7 @@ void ypaworld_func158__sub4__sub1__sub2(_NC_STACK_ypaworld *yw)
         a4.float1C = 1.0;
         a4.float20 = 1.0;
 
-        call_method(yw->win3d, 202, &a4);
+        yw->win3d->raster_func202(&a4);
 
         for (int i = 0; i < 256; i++)
         {
@@ -2010,7 +2012,7 @@ void ypaworld_func158__sub4__sub1__sub2(_NC_STACK_ypaworld *yw)
                     v17.rect2.y2 = v5->field_9C.y2;
                     v17.rect1.y2 = v17.rect2.y2;
 
-                    call_method(yw->win3d, 218, &v17);
+                    yw->win3d->raster_func218(&v17);
                 }
             }
         }
@@ -2041,10 +2043,10 @@ void ypaworld_func158__sub4__sub1__sub2(_NC_STACK_ypaworld *yw)
             v19.cmdbuf = cmdBuff;
             v19.includ = NULL;
 
-            call_method(yw->win3d, 209, &v19);
+            yw->win3d->raster_func209(&v19);
         }
 
-        call_method(yw->win3d, 216);
+        yw->win3d->raster_func216(NULL);
     }
 
 }
@@ -2055,7 +2057,7 @@ void ypaworld_func158__sub4__sub1__sub1(_NC_STACK_ypaworld *yw)
 
     if ( lvlnet->ilbm_menu_map && lvlnet->ilbm_mask_map && lvlnet->ilbm_rollover_map && lvlnet->ilbm_finished_map && lvlnet->ilbm_enabled_map )
     {
-        call_method(yw->win3d, 215);
+        yw->win3d->raster_func215(NULL);
 
         rstr_arg204 a4;
         call_vtbl(yw->LevelNet->ilbm_menu_map, 3, 0x80002000, &a4.pbitm, 0);
@@ -2070,7 +2072,7 @@ void ypaworld_func158__sub4__sub1__sub1(_NC_STACK_ypaworld *yw)
         a4.float1C = 1.0;
         a4.float20 = 1.0;
 
-        call_method(yw->win3d, 202, &a4);
+        yw->win3d->raster_func202(&a4);
         //printf("field_BE38 %d \n",yw->LevelNet->field_BE38);
 
         for (int i = 0; i < 256; i++)
@@ -2113,7 +2115,7 @@ void ypaworld_func158__sub4__sub1__sub1(_NC_STACK_ypaworld *yw)
                     v17.rect2.y2 = v5->field_9C.y2;
                     v17.rect1.y2 = v17.rect2.y2;
 
-                    call_method(yw->win3d, 218, &v17);
+                    yw->win3d->raster_func218(&v17);
                 }
             }
         }
@@ -2144,12 +2146,12 @@ void ypaworld_func158__sub4__sub1__sub1(_NC_STACK_ypaworld *yw)
             v19.cmdbuf = cmdBuff;
             v19.includ = NULL;
 
-            call_method(yw->win3d, 209, &v19);
+            yw->win3d->raster_func209(&v19);
         }
         const char *v13 = get_lang_string(yw->string_pointers_p2, yw->TOD_ID + 2490, " ");
         splashScreen_OutText(yw, yw->win3d, v13, yw->screen_width / 20, yw->screen_width / 20);
 
-        call_method(yw->win3d, 216);
+        yw->win3d->raster_func216(NULL);
     }
 }
 
@@ -2212,10 +2214,10 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
     if ( !ypaworld_func158__sub4__sub1__sub3__sub0(yw) )
         return 0; // May be HACK
 
-    call_method(yw->win3d, 271, 0);
-    call_method(yw->win3d, 215, 0);
-    call_method(yw->win3d, 192, 0);
-    call_method(yw->win3d, 216, 0);
+    yw->win3d->display_func271(NULL);
+    yw->win3d->raster_func215(NULL);
+    yw->win3d->raster_func192(NULL);
+    yw->win3d->raster_func216(NULL);
 
     memcpy(&brf->s2d90, yw->field_2d90, sizeof(brf->s2d90));
 
@@ -2455,7 +2457,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
     v17.x2 = 1.0;
     v17.y2 = 1.0;
 
-    call_method(yw->win3d, 210, &v17);
+    yw->win3d->raster_func210(&v17);
 
     brf->field_2E68 = 0;
     brf->field_2E6C = 0;
@@ -2874,7 +2876,8 @@ void ypaworld_func158__d3d_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     v15.guid = NULL;
     v15.currr = 0;
 
-    call_method(yw->win3d, 324, &v15);
+    NC_STACK_windd *windd = dynamic_cast<NC_STACK_windd *>(yw->win3d);
+    windd->windd_func324(&v15);
 
     while (v15.name)
     {
@@ -2896,7 +2899,7 @@ void ypaworld_func158__d3d_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
             }
             v5++;
         }
-        call_method(yw->win3d, 324, &v15);
+        windd->windd_func324(&v15);
     }
 
 
@@ -3163,7 +3166,7 @@ void ypaworld_func158__confirm_draw(UserData *usr)
 
         sb_0x4dee74__sub0(usr, v8, v7, v6, v4);
 
-        call_method(usr->confirm_button, 70, 0);
+        usr->confirm_button->button_func70(0);
     }
 }
 
@@ -3172,16 +3175,16 @@ void ypaworld_func158__sub3(_NC_STACK_ypaworld *yw, UserData *usr)
     switch ( usr->field_46 )
     {
     case 1:
-        call_method(usr->titel_button, 70, 0);
+        usr->titel_button->button_func70(0);
         break;
 
     case 2:
-        call_method(usr->button_input_button, 70, 0);
+        usr->button_input_button->button_func70(0);
         yw_draw_input_list(yw, usr);
         break;
 
     case 3:
-        call_method(usr->video_button, 70, 0);
+        usr->video_button->button_func70(0);
 
         if ( !(usr->video_listvw.cmd_flag & 0x20) )
             ypaworld_func158__video_list_draw(yw, usr);
@@ -3192,27 +3195,27 @@ void ypaworld_func158__sub3(_NC_STACK_ypaworld *yw, UserData *usr)
 
     case 4:
     case 5:
-        call_method(usr->sub_bar_button, 70, 0);
+        usr->sub_bar_button->button_func70(0);
         break;
 
     case 6:
-        call_method(usr->network_button, 70, 0);
+        usr->network_button->button_func70(0);
 
         if ( usr->field_1C3A != 2 )
             ypaworld_func158__network_list_draw(yw, usr);
         break;
 
     case 7:
-        call_method(usr->locale_button, 70, 0);
+        usr->locale_button->button_func70(0);
         ypaworld_func158__locale_list_draw(yw, usr);
         break;
 
     case 8:
-        call_method(usr->about_button, 70, 0);
+        usr->about_button->button_func70(0);
         break;
 
     case 9:
-        call_method(usr->disk_button, 70, 0);
+        usr->disk_button->button_func70(0);
         ypaworld_func158__saveload_list_draw(yw, usr);
         break;
 
@@ -3251,7 +3254,7 @@ void sb_0x44ac24__sub0(_NC_STACK_ypaworld *yw)
         displ_arg263 v5;
         v5.bitm = 0;
         v5.pointer_id = 0;
-        call_method(yw->win3d, 263, &v5);
+        yw->win3d->display_func263(&v5);
     }
 
     for (int i = 0; i < 11; i++)
@@ -3322,10 +3325,10 @@ void sb_0x44ac24(_NC_STACK_ypaworld *yw)
         yw->set_number = 0;
     }
 
-    NC_STACK_win3d *win3d;
+    NC_STACK_display *win3d;
     gfxEngine__getter(0x8000300D, &win3d, 0);
 
-    call_method(win3d, 272, 0);
+    win3d->display_func272(NULL);
 
     sb_0x44ac24__sub0(yw);
 }

@@ -18,22 +18,12 @@
 #include "engine_gfx.h"
 
 
-stored_functions *classvtbl_get_base();
-class_return * class_set_base(int, ...);
 
-stored_functions base_class_vtbl(class_set_base);
+const NewClassDescr NC_STACK_base::description("base.class", &newinstance);
 
 
-class_stored base_class_off (NULL, NULL, "MC2classes:base.class", classvtbl_get_base);
 
-
-stored_functions *classvtbl_get_base()
-{
-    return &base_class_vtbl;
-}
-
-CLASSFUNC base_funcs[1024];
-int baseIDcounter;
+int baseIDcounter = 1;
 
 char stru_55B200[0x41A00];
 char stru_59CC00[0x41A0];
@@ -261,7 +251,7 @@ int base_func0__sub0(__NC_STACK_base *base, stack_vals *stak)
                 if (stk->value)
                 {
                     nlist *tmp = &base->ADES;
-                    call_method((NC_STACK_class *)stk->value, 64, &tmp);
+                    ((NC_STACK_ade *)stk->value)->ade_func64(&tmp);
                 }
                 break;
 
@@ -329,15 +319,13 @@ int base_func0__sub0(__NC_STACK_base *base, stack_vals *stak)
     return 1;
 }
 
-NC_STACK_base * base_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_base::func0(stack_vals *stak)
 {
-    NC_STACK_base *obj = (NC_STACK_base *)call_parent(zis, clss, 0, stak);
-
-    if ( !obj )
-        return NULL;
+    if ( !NC_STACK_nucleus::func0(stak) )
+        return 0;
 
 
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     base->ID = baseIDcounter;
     baseIDcounter++;
@@ -349,22 +337,22 @@ NC_STACK_base * base_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
     base->params3D.scale_y = 1.0;
     base->params3D.scale_z = 1.0;
 
-    base->kid_node.self_full = obj;
+    base->kid_node.self_full = this;
 
     make_scale_rotation__matrix(&base->params3D);
 
     if ( !base_func0__sub0(base, stak) )
     {
-        call_method(obj, 1);
-        return NULL;
+        func1(NULL);
+        return 0;
     }
 
-    return obj;
+    return 1;
 }
 
-size_t base_func1(NC_STACK_base *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_base::func1(stack_vals *stak)
 {
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     if (base->OBJ_SKELETON)
         delete_class_obj(base->OBJ_SKELETON);
@@ -395,7 +383,7 @@ size_t base_func1(NC_STACK_base *obj, class_stru *zis, stack_vals *stak)
     if ( base->OBJT )
         delete_class_obj(base->OBJT);
 
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_nucleus::func1(stak);
 }
 
 void base_setter(__NC_STACK_base *base, stack_vals *stak)
@@ -437,9 +425,9 @@ void base_setter(__NC_STACK_base *base, stack_vals *stak)
             case 0x80001001:
                 if (stk->value)
                 {
-                    //call_vtbl((NC_STACK_class *)stk->value, 64, &base->ADES);
+                    //call_vtbl((NC_STACK_nucleus *)stk->value, 64, &base->ADES);
                     nlist *tmp = &base->ADES;
-                    call_method((NC_STACK_class *)stk->value, 64, &tmp);
+                    ((NC_STACK_ade *)stk->value)->ade_func64(&tmp);
                 }
                 break;
 
@@ -505,13 +493,13 @@ void base_setter(__NC_STACK_base *base, stack_vals *stak)
     }
 }
 
-size_t base_func2(NC_STACK_base *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_base::func2(stack_vals *stak)
 {
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     base_setter(base, stak);
 
-    return call_parent(zis, obj, 2, stak);
+    return NC_STACK_nucleus::func2(stak);
 }
 
 void base_getter(NC_STACK_base *, __NC_STACK_base *base, stack_vals *stak)
@@ -664,14 +652,14 @@ void base_getter(NC_STACK_base *, __NC_STACK_base *base, stack_vals *stak)
     }
 }
 
-size_t base_func3(NC_STACK_base *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_base::func3(stack_vals *stak)
 {
 
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
-    base_getter(obj, base, stak);
+    base_getter(this, base, stak);
 
-    return call_parent(zis, obj, 3, stak);
+    return NC_STACK_nucleus::func3(stak);
 }
 
 int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
@@ -735,7 +723,7 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
                 NC_STACK_base *zzz[2] = {NULL, NULL};
 
                 if ( dst.p17 & 4 )
-                    call_method(obj, 67, zzz);
+                    obj->base_func67(zzz);
 
                 flag_xyz v38;
 
@@ -744,14 +732,14 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
                 v38.y = dst.grp_1.sy;
                 v38.z = dst.grp_1.sz;
 
-                call_method(obj, 68, &v38);
+                obj->base_func68(&v38);
 
 
                 v38.x = dst.scale_x;
                 v38.y = dst.scale_y;
                 v38.z = dst.scale_z;
 
-                call_method(obj, 72, &v38); // SET_SCALE ?
+                obj->base_func72(&v38); // SET_SCALE ?
 
                 if ( dst.p17 & 1 )
                 {
@@ -764,7 +752,7 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
                     v38.flag = 8;
                 }
 
-                call_method(obj, 69, &v38);
+                obj->base_func69(&v38);
 
                 flag_xyz2 v39;
 
@@ -774,7 +762,7 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
                 v39.y = dst.rot_y;
                 v39.z = dst.rot_z;
 
-                call_method(obj, 70, &v39);
+                obj->base_func70(&v39);
 
                 if ( dst.p17 & 2 )
                 {
@@ -787,11 +775,11 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
                     v39.flag = 8;
                 }
 
-                call_method(obj, 71, &v39);
+                obj->base_func71(&v39);
             }
             v4->id = 0;
 
-            call_method(obj, 2, stk);
+            obj->func2(stk);
             return 1;
         }
         else
@@ -817,7 +805,7 @@ int base_READ_ADES(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
         {
-            NC_STACK_class *objt = READ_OBJT(mfile);
+            NC_STACK_nucleus *objt = READ_OBJT(mfile);
             if ( !objt )
                 return 0;
 
@@ -828,7 +816,7 @@ int base_READ_ADES(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
             v7[1].id = 0;
             v7[1].value = 0;
 
-            call_method(obj, 2, v7);
+            obj->func2(v7);
         }
         else
         {
@@ -857,14 +845,14 @@ int base_READ_KIDS(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
         {
-            NC_STACK_class *objt = READ_OBJT(mfile);
+            NC_STACK_base *objt = dynamic_cast<NC_STACK_base *>( READ_OBJT(mfile) );
             if ( !objt )
             {
                 return 0;
             }
             kidid++;
 
-            call_method(obj, 65, &objt);
+            obj->base_func65(&objt);
         }
         else
         {
@@ -875,10 +863,10 @@ int base_READ_KIDS(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
 }
 
 
-NC_STACK_base *base_func5(class_stru *clss, class_stru *zis, MFILE **file)
+size_t NC_STACK_base::func5(MFILE **file)
 {
     MFILE *mfile = *file;
-    NC_STACK_base *obj = NULL;
+    int obj_ok = 0;
     __NC_STACK_base *base = NULL;
     int STRC_readed = 0;
 
@@ -891,9 +879,9 @@ NC_STACK_base *base_func5(class_stru *clss, class_stru *zis, MFILE **file)
 
         if ( iff_res )
         {
-            if ( obj )
-                call_method(obj, 1);
-            return NULL;
+            if ( obj_ok )
+                func1(NULL);
+            return 0;
         }
 
         MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
@@ -902,12 +890,12 @@ NC_STACK_base *base_func5(class_stru *clss, class_stru *zis, MFILE **file)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ROOT )
         {
-            obj = (NC_STACK_base *)call_parent(zis, clss, 5, (stack_vals *)file);
+            obj_ok = NC_STACK_nucleus::func5(file);
 
-            if ( !obj )
-                return NULL;
+            if ( !obj_ok )
+                return 0;
 
-            base = &obj->stack__base;
+            base = &this->stack__base;
 
             init_list(&base->ADES);
             init_list(&base->KIDS);
@@ -920,7 +908,7 @@ NC_STACK_base *base_func5(class_stru *clss, class_stru *zis, MFILE **file)
 
             baseIDcounter++;
 
-            base->kid_node.self_full = obj;
+            base->kid_node.self_full = this;
 
             make_scale_rotation__matrix(&base->params3D);
 
@@ -932,26 +920,26 @@ NC_STACK_base *base_func5(class_stru *clss, class_stru *zis, MFILE **file)
         {
             STRC_readed = 1;
 
-            if ( !base_READ_STRC(obj, base, mfile) )
+            if ( !base_READ_STRC(this, base, mfile) )
             {
-                call_method(obj, 1);
-                return NULL;
+                func1(NULL);
+                return 0;
             }
             read_next_IFF(mfile, 2);
         }
         else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
         {
-            if ( obj )
+            if ( obj_ok )
             {
                 if ( STRC_readed )
                 {
-                    NC_STACK_class *objt = READ_OBJT(mfile);
+                    NC_STACK_nucleus *objt = READ_OBJT(mfile);
                     if ( !objt )
                     {
-                        call_method(obj, 1);
-                        return NULL;
+                        func1(NULL);
+                        return 0;
                     }
-                    call_vtbl(obj, 2, 0x80001000, objt, 0);
+                    call_vtbl(this, 2, 0x80001000, objt, 0);
                 }
                 else
                 {
@@ -961,18 +949,18 @@ NC_STACK_base *base_func5(class_stru *clss, class_stru *zis, MFILE **file)
         }
         else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ADES )
         {
-            if ( !base_READ_ADES(obj, base, mfile) )
+            if ( !base_READ_ADES(this, base, mfile) )
             {
-                call_method(obj, 1);
-                return NULL;
+                func1(NULL);
+                return 0;
             }
         }
         else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_KIDS )
         {
-            if ( !base_READ_KIDS(obj, base, mfile) )
+            if ( !base_READ_KIDS(this, base, mfile) )
             {
-                call_method(obj, 1);
-                return NULL;
+                func1(NULL);
+                return 0;
             }
         }
         else
@@ -980,23 +968,23 @@ NC_STACK_base *base_func5(class_stru *clss, class_stru *zis, MFILE **file)
             read_default(mfile);
         }
     }
-    return obj;
+    return obj_ok;
 }
 
-size_t base_func6(NC_STACK_base *obj, class_stru *zis, MFILE **file)
+size_t NC_STACK_base::func6(MFILE **file)
 {
     MFILE *mfile = *file;
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     if ( sub_412FC0(*file, TAG_BASE, TAG_FORM, -1) )
         return 0;
 
-    if ( !call_parent(zis, obj, 6, (stack_vals *)file) )
+    if ( !NC_STACK_nucleus::func6(file) )
         return 0;
 
     if ( base->field_4 & 0x80 )
     {
-        NC_STACK_class *embd = init_get_class("embed.class", 0);
+        NC_STACK_nucleus *embd = init_get_class("embed.class", 0);
         if ( embd )
         {
             if ( !sub_4117F8(embd, mfile) )
@@ -1138,16 +1126,16 @@ int sub_430880(const void * a, const void * b)
 }
 
 
-size_t base_func64(NC_STACK_base *obj, class_stru *, base_64arg *arg)
+size_t NC_STACK_base::base_func64(base_64arg *arg)
 {
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     base_1c_struct *glob_1c = sub_430A28();
 
     if ( glob_1c )
         sub_430A38(glob_1c);
 
-    call_method(obj, 73, arg);
+    base_func73(arg);
 
     base77Func base77;
     base77.field_0 = arg->field_4;
@@ -1159,7 +1147,7 @@ size_t base_func64(NC_STACK_base *obj, class_stru *, base_64arg *arg)
     base77.field_18 = 1000;
     base77.field_1C = base->ID;
 
-    call_method(obj, 77, &base77);
+    base_func77(&base77);
 
     arg->field_C = base77.field_14;
 
@@ -1174,10 +1162,10 @@ size_t base_func64(NC_STACK_base *obj, class_stru *, base_64arg *arg)
     gfxEngine__getter(0x8000300D, &win3d, 0);
 
 
-    call_method(win3d, 257, 0);
+    win3d->display_func257(NULL);
     call_vtbl(win3d, 2, 0x80003001, 0, 0);
-    call_method(win3d, 192, 0);
-    call_method(win3d, 213, 0);
+    win3d->raster_func192(NULL);
+    win3d->raster_func213(NULL);
 
     for (int i = 0; i < num; i++)
     {
@@ -1185,20 +1173,20 @@ size_t base_func64(NC_STACK_base *obj, class_stru *, base_64arg *arg)
         pol->data->render_func(pol->data);
     }
 
-    call_method(win3d, 214, 0);
-    call_method(win3d, 258, 0);
+    win3d->raster_func214(NULL);
+    win3d->display_func258(NULL);
 
     return 1;
 }
 
 // Fill parent info struct and push it to kid
-size_t base_func65(NC_STACK_base *obj, class_stru *, NC_STACK_base **kid)
+size_t NC_STACK_base::base_func65(NC_STACK_base **kid)
 {
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     base_66_arg_struct v6; // Parent info
 
-    v6.parent = obj;
+    v6.parent = this;
     v6.KIDS = &base->KIDS;
 
     if ( base->OBJ_SKELETON )
@@ -1206,15 +1194,15 @@ size_t base_func65(NC_STACK_base *obj, class_stru *, NC_STACK_base **kid)
     else
         v6.parent_field_1c = NULL;
 
-    call_method(*kid , 66, &v6);
+    (*kid)->base_func66(&v6);
 
     return 1;
 }
 
 // Add object to parent kids list
-size_t base_func66(NC_STACK_base *obj, class_stru *, base_66_arg_struct *prnt_info)
+size_t NC_STACK_base::base_func66(base_66_arg_struct *prnt_info)
 {
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     if ( base->parent_base )
     {
@@ -1225,7 +1213,7 @@ size_t base_func66(NC_STACK_base *obj, class_stru *, base_66_arg_struct *prnt_in
             NC_STACK_base *v7[2];
             v7[0] = (NC_STACK_base *)-1;
             v7[1] = NULL;
-            call_method(base->parent_base, 67, &v7);
+            base->parent_base->base_func67(v7);
         }
     }
 
@@ -1236,10 +1224,10 @@ size_t base_func66(NC_STACK_base *obj, class_stru *, base_66_arg_struct *prnt_in
         if ( base->field_4 & 4 )
         {
             NC_STACK_base *v7[2];
-            v7[0] = obj;
-            v7[1] = obj;
+            v7[0] = this;
+            v7[1] = this;
 
-            call_method(base->parent_base, 67, &v7);
+            base->parent_base->base_func67(v7);
         }
     }
     base->params3D.parent_1c = prnt_info->parent_field_1c;
@@ -1257,22 +1245,22 @@ base_1c_struct *sub_430A28()
     return dword_546DC0;
 }
 
-size_t base_func67(NC_STACK_base *obj, class_stru *, NC_STACK_base **arg)
+size_t NC_STACK_base::base_func67(NC_STACK_base **arg)
 {
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     if (arg[0] == NULL)
     {
         base->field_b8 = NULL;
         base->field_4 |= 0x44;
-        base->field_bc = obj;
+        base->field_bc = this;
 
         if ( base->parent_base )
         {
-            arg[0] = obj;
-            arg[1] = obj;
+            arg[0] = this;
+            arg[1] = this;
 
-            call_method(base->parent_base, 67, arg);
+            base->parent_base->base_func67(arg);
         }
         sub_430A20(&base->params3D);
     }
@@ -1285,7 +1273,7 @@ size_t base_func67(NC_STACK_base *obj, class_stru *, NC_STACK_base **arg)
         if ( !base->parent_base )
             return 1;
 
-        call_method(base->parent_base, 67, arg);
+        base->parent_base->base_func67(arg);
     }
     else if (arg[0])
     {
@@ -1298,17 +1286,17 @@ size_t base_func67(NC_STACK_base *obj, class_stru *, NC_STACK_base **arg)
         if ( !base->parent_base )
             return 1;
 
-        arg[0] = obj;
+        arg[0] = this;
 
-        call_method(base->parent_base, 67, arg);
+        base->parent_base->base_func67(arg);
     }
 
     return 1;
 }
 
-size_t base_func68(NC_STACK_base *obj, class_stru *, flag_xyz *arg)
+size_t NC_STACK_base::base_func68(flag_xyz *arg)
 {
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     int flg = arg->flag;
 
@@ -1335,9 +1323,9 @@ size_t base_func68(NC_STACK_base *obj, class_stru *, flag_xyz *arg)
     return 1;
 }
 
-size_t base_func69(NC_STACK_base *obj, class_stru *, flag_xyz *arg)
+size_t NC_STACK_base::base_func69(flag_xyz *arg)
 {
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     int flg = arg->flag;
 
@@ -1374,9 +1362,9 @@ size_t base_func69(NC_STACK_base *obj, class_stru *, flag_xyz *arg)
     return 1;
 }
 
-size_t base_func70(NC_STACK_base *obj, class_stru *, flag_xyz2 *arg)
+size_t NC_STACK_base::base_func70(flag_xyz2 *arg)
 {
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     int flg = arg->flag;
 
@@ -1406,9 +1394,9 @@ size_t base_func70(NC_STACK_base *obj, class_stru *, flag_xyz2 *arg)
     return 1;
 }
 
-size_t base_func71(NC_STACK_base *obj, class_stru *, flag_xyz2 *arg)
+size_t NC_STACK_base::base_func71(flag_xyz2 *arg)
 {
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     int flg = arg->flag;
 
@@ -1445,9 +1433,9 @@ size_t base_func71(NC_STACK_base *obj, class_stru *, flag_xyz2 *arg)
     return 1;
 }
 
-size_t base_func72(NC_STACK_base *obj, class_stru *, flag_xyz *arg)
+size_t NC_STACK_base::base_func72(flag_xyz *arg)
 {
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     int flg = arg->flag;
 
@@ -1477,10 +1465,10 @@ size_t base_func72(NC_STACK_base *obj, class_stru *, flag_xyz *arg)
     return 1;
 }
 
-size_t base_func73(NC_STACK_base *obj, class_stru *, base73arg *arg)
+size_t NC_STACK_base::base_func73(base_64arg *arg)
 {
     printf("%s - NOT RECOGINZED ARGUMENT\n","base_func73");
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     if ( arg->field_0 != base->field_8 )
     {
@@ -1489,7 +1477,7 @@ size_t base_func73(NC_STACK_base *obj, class_stru *, base73arg *arg)
         if ( base->OBJ_SKELETON )
         {
             if ( base->field_4 & 0x20 )
-                call_method(obj, 78, arg);
+                base_func78(arg);
 
             if ( base->field_4 & 1 )
             {
@@ -1515,14 +1503,14 @@ size_t base_func73(NC_STACK_base *obj, class_stru *, base73arg *arg)
     }
 
     for ( base_node *kid = (base_node *)base->KIDS.head; kid->next; kid = (base_node *)kid->next )
-        call_method(kid->self_full, 73, arg);
+        kid->self_full->base_func73(arg);
 
     return 1;
 }
 
-size_t base_func77(NC_STACK_base *obj, class_stru *, base77Func *arg)
+size_t NC_STACK_base::base_func77(base77Func *arg)
 {
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     int v12 = 0;
 
@@ -1542,7 +1530,7 @@ size_t base_func77(NC_STACK_base *obj, class_stru *, base77Func *arg)
             skel132.field_C = arg->field_24;
 
 
-            v12 = call_method(base->OBJ_SKELETON, 132, &skel132);
+            v12 = base->OBJ_SKELETON->skeleton_func132(&skel132);
 
             if ( v12 )
             {
@@ -1569,7 +1557,7 @@ size_t base_func77(NC_STACK_base *obj, class_stru *, base77Func *arg)
                     if ( (arg->field_14 + base->field_DC.field_38) >= arg->field_18 )
                         break;
 
-                    call_method(cur_ade->self, 65, &base->field_DC);
+                    cur_ade->self->ade_func65(&base->field_DC);
 
                     cur_ade = (__NC_STACK_ade *)cur_ade->next;
                 }
@@ -1583,48 +1571,48 @@ size_t base_func77(NC_STACK_base *obj, class_stru *, base77Func *arg)
 
     for ( base_node *kid = (base_node *)base->KIDS.head; kid->next; kid = (base_node *)kid->next )
     {
-        if ( call_method(kid->self_full, 77, arg) )
+        if ( kid->self_full->base_func77(arg) )
             v12 = 1;
     }
 
     return v12;
 }
 
-size_t base_func78(NC_STACK_base *obj, class_stru *, base73arg *arg)
+size_t NC_STACK_base::base_func78(base_64arg *arg)
 {
     printf("%s - NOT RECOGINZED ARGUMENT\n","base_func78");
 
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
 
     base->field_4 |= 3;
 
-    if ( arg->dword8->dword91 & 0x80000000 )
+    if ( arg->field_8->but_flags & 0x80000000 )
     {
         base->params3D.rot_y = 0;
         base->params3D.rot_z = 0;
         base->params3D.rot_x = 0;
     }
 
-    base->params3D.grp5_p1 = -arg->dword8->float8D * 16384.0;
-    base->params3D.grp5_p2 = -arg->dword8->float89 * 16384.0;
-    base->params3D.grp5_p3 = -arg->dword8->float85 * 16384.0;
+    base->params3D.grp5_p1 = -arg->field_8->sliders_vars[31] * 16384.0;
+    base->params3D.grp5_p2 = -arg->field_8->sliders_vars[30] * 16384.0;
+    base->params3D.grp5_p3 = -arg->field_8->sliders_vars[29] * 16384.0;
 
-    base->params3D.grp3_p1 = -arg->dword8->float81 * base->params3D.scale_rotation.m20;
+    base->params3D.grp3_p1 = -arg->field_8->sliders_vars[28] * base->params3D.scale_rotation.m20;
     base->params3D.grp3_p2 = 0;
-    base->params3D.grp3_p3 = -arg->dword8->float81 * base->params3D.scale_rotation.m22;
+    base->params3D.grp3_p3 = -arg->field_8->sliders_vars[28] * base->params3D.scale_rotation.m22;
 
-    base->params3D.grp3_p1 += -arg->dword8->float7D * base->params3D.scale_rotation.m20;
-    base->params3D.grp3_p2 += -arg->dword8->float7D * base->params3D.scale_rotation.m21;
-    base->params3D.grp3_p3 += -arg->dword8->float7D * base->params3D.scale_rotation.m22;
+    base->params3D.grp3_p1 += -arg->field_8->sliders_vars[27] * base->params3D.scale_rotation.m20;
+    base->params3D.grp3_p2 += -arg->field_8->sliders_vars[27] * base->params3D.scale_rotation.m21;
+    base->params3D.grp3_p3 += -arg->field_8->sliders_vars[27] * base->params3D.scale_rotation.m22;
 
     return 1;
 }
 
-size_t base_func79(NC_STACK_base *obj, class_stru *, NC_STACK_base **arg)
+size_t NC_STACK_base::base_func79(NC_STACK_base **arg)
 {
     printf("%s - NOT RECOGINZED ARGUMENT\n","base_func79");
 
-    __NC_STACK_base *base = &obj->stack__base;
+    __NC_STACK_base *base = &this->stack__base;
     NC_STACK_base *field_bc = base->field_bc;
 
     if ( field_bc )
@@ -1633,7 +1621,7 @@ size_t base_func79(NC_STACK_base *obj, class_stru *, NC_STACK_base **arg)
         v4[0] = (NC_STACK_base *)-1;
         v4[1] = NULL;
 
-        call_method(field_bc, 67, v4);
+        field_bc->base_func67(v4);
     }
 
     if ( arg[0] )
@@ -1642,46 +1630,56 @@ size_t base_func79(NC_STACK_base *obj, class_stru *, NC_STACK_base **arg)
         v4[0] = NULL;
         v4[1] = NULL;
 
-        call_method(arg[0], 67, v4);
+        (*arg)->base_func67(v4);
     }
 
     return 1;
 }
 
-class_return base_class_descr;
-
-class_return * class_set_base(int , ...)
+size_t NC_STACK_base::compatcall(int method_id, void *data)
 {
-
-    memset(base_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    base_funcs[0] = (CLASSFUNC)base_func0;
-    base_funcs[1] = (CLASSFUNC)base_func1;
-    base_funcs[2] = (CLASSFUNC)base_func2;
-    base_funcs[3] = (CLASSFUNC)base_func3;
-    base_funcs[5] = (CLASSFUNC)base_func5;
-    base_funcs[6] = (CLASSFUNC)base_func6;
-    base_funcs[64] = (CLASSFUNC)base_func64;
-    base_funcs[65] = (CLASSFUNC)base_func65;
-    base_funcs[66] = (CLASSFUNC)base_func66;
-    base_funcs[67] = (CLASSFUNC)base_func67;
-    base_funcs[68] = (CLASSFUNC)base_func68;
-    base_funcs[69] = (CLASSFUNC)base_func69;
-    base_funcs[70] = (CLASSFUNC)base_func70;
-    base_funcs[71] = (CLASSFUNC)base_func71;
-    base_funcs[72] = (CLASSFUNC)base_func72;
-    base_funcs[73] = (CLASSFUNC)base_func73;
-    base_funcs[77] = (CLASSFUNC)base_func77;
-    base_funcs[78] = (CLASSFUNC)base_func78;
-    base_funcs[79] = (CLASSFUNC)base_func79;
-
-    baseIDcounter = 1;
-
-    base_class_descr.parent = "nucleus.class";
-
-    base_class_descr.vtbl = base_funcs;
-    ////base_class_descr.varSize = sizeof(__NC_STACK_base);
-    base_class_descr.varSize = sizeof(NC_STACK_base) - offsetof(NC_STACK_base, stack__base); //// HACK
-    base_class_descr.field_A = 0;
-    return &base_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        return (size_t)func2( (stack_vals *)data );
+    case 3:
+        return (size_t)func3( (stack_vals *)data );
+    case 5:
+        return (size_t)func5( (MFILE **)data );
+    case 6:
+        return (size_t)func6( (MFILE **)data );
+    case 64:
+        return (size_t)base_func64( (base_64arg *)data );
+    case 65:
+        return (size_t)base_func65( (NC_STACK_base **)data );
+    case 66:
+        return (size_t)base_func66( (base_66_arg_struct *)data );
+    case 67:
+        return (size_t)base_func67( (NC_STACK_base **)data );
+    case 68:
+        return (size_t)base_func68( (flag_xyz *)data );
+    case 69:
+        return (size_t)base_func69( (flag_xyz *)data );
+    case 70:
+        return (size_t)base_func70( (flag_xyz2 *)data );
+    case 71:
+        return (size_t)base_func71( (flag_xyz2 *)data );
+    case 72:
+        return (size_t)base_func72( (flag_xyz *)data );
+    case 73:
+        return (size_t)base_func73( (base_64arg *)data );
+    case 77:
+        return (size_t)base_func77( (base77Func *)data );
+    case 78:
+        return (size_t)base_func78( (base_64arg *)data );
+    case 79:
+        return (size_t)base_func79( (NC_STACK_base **)data );
+    default:
+        break;
+    }
+    return NC_STACK_nucleus::compatcall(method_id, data);
 }

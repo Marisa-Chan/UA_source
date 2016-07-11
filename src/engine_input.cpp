@@ -2,9 +2,7 @@
 #include "engine_input.h"
 #include "input.h"
 
-stored_functions *classvtbl_get_inputEngine();
-
-int inputEngine__init(unsigned int, ...);
+int inputEngine__init();
 void inputEngine__deinit();
 void inputEngine__setter(unsigned int, ...);
 void inputEngine__getter(unsigned int, ...);
@@ -12,15 +10,6 @@ void inputEngine__getter(unsigned int, ...);
 
 stored_functions_engine input_engine_vtbl = {inputEngine__init, inputEngine__deinit, inputEngine__setter, inputEngine__getter};
 
-
-
-class_stored input_engine_off (NULL, NULL, "MC2engines:input.engine", classvtbl_get_inputEngine);
-
-
-stored_functions *classvtbl_get_inputEngine()
-{
-    return (stored_functions *)&input_engine_vtbl;
-}
 
 char input_timer[128];
 char input_wimp[128];
@@ -152,8 +141,10 @@ key_value_stru input_keyconfig[116] =
 NC_STACK_input *input_class = NULL;
 
 
-int inputEngine__init(unsigned int, ...)
+int inputEngine__init()
 {
+    NC_STACK_winp::initfirst();
+
     input__func64__params arg64;
 
     memset(input_timer, 0, sizeof(input_timer));
@@ -181,7 +172,7 @@ int inputEngine__init(unsigned int, ...)
         arg64.type_id = 2;
         arg64.value = val;
 
-        if ( ! call_method(input_class, 64, &arg64) )
+        if ( ! input_class->input_func64(&arg64) )
             ypa_log_out("input.engine: WARNING: Timer object creation failed.\n");
     }
     else
@@ -197,7 +188,7 @@ int inputEngine__init(unsigned int, ...)
         arg64.type_id = 1;
         arg64.value = val;
 
-        if ( ! call_method(input_class, 64, &arg64) )
+        if ( ! input_class->input_func64(&arg64) )
             ypa_log_out("input.engine: WARNING: Wimp object creation failed.\n");
     }
     else
@@ -213,7 +204,7 @@ int inputEngine__init(unsigned int, ...)
         arg64.type_id = 3;
         arg64.value = val;
 
-        if ( ! call_method(input_class, 64, &arg64) )
+        if ( ! input_class->input_func64(&arg64) )
             ypa_log_out("input.engine: WARNING: Keyboard object creation failed.\n");
     }
     else
@@ -231,7 +222,7 @@ int inputEngine__init(unsigned int, ...)
             arg64.type_id = 4;
             arg64.value = val;
 
-            if ( ! call_method(input_class, 64, &arg64) )
+            if ( ! input_class->input_func64(&arg64) )
                 ypa_log_out("input.engine: WARNING: Button[%d] object creation failed.\n", i);
         }
     }
@@ -246,7 +237,7 @@ int inputEngine__init(unsigned int, ...)
             arg64.type_id = 5;
             arg64.value = val;
 
-            if ( ! call_method(input_class, 64, &arg64) )
+            if ( ! input_class->input_func64(&arg64) )
                 ypa_log_out("input.engine: WARNING: Slider[%d] object creation failed.\n", i);
         }
     }
@@ -264,7 +255,7 @@ int inputEngine__init(unsigned int, ...)
             arg66.field_0 = 3;
             arg66.funcID = 68;
 
-            if ( ! call_method(input_class, 66, &arg66) )
+            if ( ! input_class->input_func66(&arg66) )
                 ypa_log_out("input.engine: WARNING: Hotkey[%d] (%s) not accepted.\n", i, val);
         }
     }
@@ -309,7 +300,7 @@ void inputEngine__setter(unsigned int a1, ...)
         arg66.funcID = 2;
         arg66.vals = stk;
 
-        call_method(input_class, 66, &arg66);
+        input_class->input_func66(&arg66);
     }
 }
 
@@ -335,7 +326,7 @@ void inputEngine__getter(unsigned int a1, ...)
 
 void sub_412D28(struC5 *a1)
 {
-    call_method(input_class, 65, a1);
+    input_class->input_func65(a1);
 }
 
 void sub_412D48(inp_node *btn, int a2)
@@ -351,7 +342,7 @@ void sub_412D48(inp_node *btn, int a2)
     arg66.field_4 = 0;
     arg66.funcID = 129;
 
-    call_method(input_class, 66, &arg66);
+    input_class->input_func66(&arg66);
 }
 
 void sub_412D9C(inp_node *btn)
@@ -367,6 +358,6 @@ void sub_412D9C(inp_node *btn)
     arg66.field_4 = 0;
     arg66.funcID = 130;
 
-    call_method(input_class, 66, &arg66);
+    input_class->input_func66(&arg66);
 }
 

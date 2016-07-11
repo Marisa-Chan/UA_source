@@ -3,17 +3,36 @@
 
 #include "nucleas.h"
 
-extern class_stored network_class_off;
-
-struct NC_STACK_network;
-
 struct __NC_STACK_network
 {
     int dummy;
 };
 
-struct NC_STACK_network : public NC_STACK_nucleus
+class NC_STACK_network: public NC_STACK_nucleus
 {
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_network() {
+        memset(&stack__network, 0, sizeof(stack__network));
+    };
+    virtual ~NC_STACK_network() {};
+
+    virtual const char * getClassName() {
+        return "network.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_network();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
     __NC_STACK_network stack__network;
 };
 

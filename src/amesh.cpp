@@ -16,22 +16,8 @@
 #include "engine_gfx.h"
 
 
+const NewClassDescr NC_STACK_amesh::description("amesh.class", &newinstance);
 
-stored_functions *classvtbl_get_amesh();
-class_return * class_set_amesh(int, ...);
-
-stored_functions amesh_class_vtbl(class_set_amesh);
-
-
-class_stored amesh_class_off (NULL, NULL, "MC2classes:amesh.class", classvtbl_get_amesh);
-
-
-stored_functions *classvtbl_get_amesh()
-{
-    return &amesh_class_vtbl;
-}
-
-CLASSFUNC amesh_funcs[1024];
 
 int sub_419E6C(__NC_STACK_amesh *amesh, tUtV **olpl)
 {
@@ -153,30 +139,29 @@ int amesh_func0__sub0(__NC_STACK_amesh *amesh, stack_vals *stak)
 }
 
 
-NC_STACK_amesh * amesh_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_amesh::func0(stack_vals *stak)
 {
-    NC_STACK_amesh *obj = (NC_STACK_amesh *)call_parent(zis, clss, 0, stak); // rsrc_func0
-    if (obj)
-    {
-        __NC_STACK_amesh *amesh = &obj->stack__amesh;
+    if ( !NC_STACK_area::func0(stak) )
+        return 0;
 
-        if ( amesh_func0__sub0(amesh, stak) )
-        {
-            call_vtbl(obj, 3, 0x8000200E, &amesh->field_14, 0);
-        }
-        else
-        {
-            call_method(obj, 1);
-            obj = NULL;
-        }
+    __NC_STACK_amesh *amesh = &this->stack__amesh;
+
+    if ( amesh_func0__sub0(amesh, stak) )
+    {
+        call_vtbl(this, 3, 0x8000200E, &amesh->field_14, 0);
+    }
+    else
+    {
+        func1(NULL);
+        return 0;
     }
 
-    return obj;
+    return 1;
 }
 
-size_t amesh_func1(NC_STACK_amesh *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_amesh::func1(stack_vals *stak)
 {
-    __NC_STACK_amesh *amesh = &obj->stack__amesh;
+    __NC_STACK_amesh *amesh = &this->stack__amesh;
 
     if ( amesh->atts )
         nc_FreeMem(amesh->atts);
@@ -184,13 +169,12 @@ size_t amesh_func1(NC_STACK_amesh *obj, class_stru *zis, stack_vals *stak)
     if ( amesh->olpl )
         nc_FreeMem(amesh->olpl);
 
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_area::func1(stak);
 }
 
 
 void amesh_func2__sub0(__NC_STACK_amesh *amesh, stack_vals *stak)
 {
-
     stack_vals *stk = stak;
 
     while ( 1 )
@@ -252,32 +236,31 @@ void amesh_func2__sub0(__NC_STACK_amesh *amesh, stack_vals *stak)
 
 }
 
-void amesh_func2(NC_STACK_amesh *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_amesh::func2(stack_vals *stak)
 {
-    __NC_STACK_amesh *amesh = &obj->stack__amesh;
+    __NC_STACK_amesh *amesh = &this->stack__amesh;
 
     amesh_func2__sub0(amesh, stak);
 
-    call_parent(zis, obj, 2, stak);
+    return NC_STACK_area::func2(stak);
 }
 
-void amesh_func3(NC_STACK_amesh *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_amesh::func3(stack_vals *stak)
 {
-
-    __NC_STACK_amesh *amesh = &obj->stack__amesh;
+    __NC_STACK_amesh *amesh = &this->stack__amesh;
 
     stack_vals *val = find_id_in_stack2(0x80003000, stak);
 
     if ( val )
         *(int *)val->value = amesh->cnt;
 
-    call_parent(zis, obj, 3, stak);
+    return NC_STACK_area::func3(stak);
 }
 
-NC_STACK_amesh *amesh_func5(class_stru *clss, class_stru *zis, MFILE **file)
+size_t NC_STACK_amesh::func5(MFILE **file)
 {
     MFILE *mfile = *file;
-    NC_STACK_amesh *obj = NULL;
+    int obj_ok = 0;
     __NC_STACK_amesh *amesh = NULL;
 
     while ( 1 )
@@ -289,35 +272,35 @@ NC_STACK_amesh *amesh_func5(class_stru *clss, class_stru *zis, MFILE **file)
 
         if ( iff_res )
         {
-            if ( obj )
-                call_method(obj, 1);
-            return NULL;
+            if ( obj_ok )
+                func1(NULL);
+            return 0;
         }
 
         MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_AREA )
         {
-            obj = (NC_STACK_amesh *)call_parent(zis, clss, 5, (stack_vals *)file);
+            obj_ok = NC_STACK_area::func5(file);
 
-            if ( !obj )
-                return NULL;
+            if ( !obj_ok )
+                return 0;
 
-            amesh = &obj->stack__amesh;
-            call_vtbl(obj, 3, 0x8000200E, &amesh->field_14, 0);
+            amesh = &this->stack__amesh;
+            call_vtbl(this, 3, 0x8000200E, &amesh->field_14, 0);
 
         }
         else if ( chunk->TAG == TAG_ATTS )
         {
-            if ( obj )
+            if ( obj_ok )
             {
                 amesh->cnt = chunk->TAG_SIZE / sizeof(ATTS);
                 amesh->atts = (ATTS *)AllocVec(chunk->TAG_SIZE, 1);
 
                 if ( !amesh->atts )
                 {
-                    call_method(obj, 1);
-                    return NULL;
+                    func1(NULL);
+                    return 0;
                 }
 
                 mfread(mfile, amesh->atts, chunk->TAG_SIZE);
@@ -329,13 +312,13 @@ NC_STACK_amesh *amesh_func5(class_stru *clss, class_stru *zis, MFILE **file)
         }
         else if ( chunk->TAG == TAG_OLPL )
         {
-            if ( obj )
+            if ( obj_ok )
             {
                 amesh->olpl = (tUtV **)AllocVec(sizeof(tUtV) * chunk->TAG_SIZE / 2 + sizeof(tUtV *) * amesh->cnt, 1);
                 if ( !amesh->olpl )
                 {
-                    call_method(obj, 1);
-                    return NULL;
+                    func1(NULL);
+                    return 0;
                 }
 
                 tUtV *uv = (tUtV *)&amesh->olpl[amesh->cnt];
@@ -372,18 +355,18 @@ NC_STACK_amesh *amesh_func5(class_stru *clss, class_stru *zis, MFILE **file)
         }
     }
 
-    return obj;
+    return obj_ok;
 }
 
-int amesh_func6(NC_STACK_amesh *obj, class_stru *zis, MFILE **file)
+size_t NC_STACK_amesh::func6(MFILE **file)
 {
     MFILE *mfile = *file;
-    __NC_STACK_amesh *amesh = &obj->stack__amesh;
+    __NC_STACK_amesh *amesh = &this->stack__amesh;
 
     if ( sub_412FC0(mfile, TAG_AMSH, TAG_FORM, -1) )
         return 0;
 
-    if ( !call_parent(zis, obj, 6, (stack_vals *)file) )
+    if ( !NC_STACK_area::func6(file) )
         return 0;
 
     sub_412FC0(mfile, 0, TAG_ATTS, -1);
@@ -436,12 +419,12 @@ int amesh_func6(NC_STACK_amesh *obj, class_stru *zis, MFILE **file)
 }
 
 // Add amesh to list
-void amesh_func65(NC_STACK_amesh *obj, class_stru *, area_arg_65 *arg)
+size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
 {
-    __NC_STACK_amesh *amesh = &obj->stack__amesh;
+    __NC_STACK_amesh *amesh = &this->stack__amesh;
 
     //v5 = *(_WORD *)(amesh->field_14 + 6) & 0xFEF6;
-    int v5 = obj->stack__area.field_16 & 0xFEF6; //HACK
+    int v5 = this->stack__area.field_16 & 0xFEF6; //HACK
 
     if (v5 == 0)
         v5 = 0;
@@ -464,7 +447,7 @@ void amesh_func65(NC_STACK_amesh *obj, class_stru *, area_arg_65 *arg)
     else if (v5 == 0x82)
         v5 = 33;
     else
-        return;
+        return 1;
 
     skeleton_arg133 skel133;
 
@@ -491,7 +474,7 @@ void amesh_func65(NC_STACK_amesh *obj, class_stru *, area_arg_65 *arg)
 
         bitm130.field_0 = arg->field_C;
         bitm130.field_4 = arg->field_10;
-        call_method(amesh->ilbm1, 130, &bitm130);
+        amesh->ilbm1->bitmap_func130(&bitm130);
         v21 = bitm130.pbitm;
     }
     else
@@ -519,7 +502,7 @@ void amesh_func65(NC_STACK_amesh *obj, class_stru *, area_arg_65 *arg)
         else
             skel133.field_C = NULL;
 
-        polysDat *v23 = (polysDat *)call_method(arg->OBJ_SKELETON, 133, &skel133);
+        polysDat *v23 = (polysDat *)arg->OBJ_SKELETON->skeleton_func133(&skel133);
         if (v23)
         {
             arg->field_38++;
@@ -563,28 +546,34 @@ void amesh_func65(NC_STACK_amesh *obj, class_stru *, area_arg_65 *arg)
             arg->polyDat = v23;
         }
     }
+
+    return 1;
 }
 
-class_return amesh_class_descr;
 
-class_return * class_set_amesh(int , ...)
+size_t NC_STACK_amesh::compatcall(int method_id, void *data)
 {
-
-    memset(amesh_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    amesh_funcs[0] = (CLASSFUNC)amesh_func0;
-    amesh_funcs[1] = (CLASSFUNC)amesh_func1;
-    amesh_funcs[2] = (CLASSFUNC)amesh_func2;
-    amesh_funcs[3] = (CLASSFUNC)amesh_func3;
-    amesh_funcs[5] = (CLASSFUNC)amesh_func5;
-    amesh_funcs[6] = (CLASSFUNC)amesh_func6;
-    amesh_funcs[65] = (CLASSFUNC)amesh_func65;
-
-    amesh_class_descr.parent = "area.class";
-
-    amesh_class_descr.vtbl = amesh_funcs;
-    ////amesh_class_descr.varSize = sizeof(__NC_STACK_amesh);
-    amesh_class_descr.varSize = sizeof(NC_STACK_amesh) - offsetof(NC_STACK_amesh, stack__amesh); //// HACK
-    amesh_class_descr.field_A = 0;
-    return &amesh_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        return func2( (stack_vals *)data );
+        return 1;
+    case 3:
+        return func3( (stack_vals *)data );
+        return 1;
+    case 5:
+        return (size_t)func5( (MFILE **)data );
+    case 6:
+        return (size_t)func6( (MFILE **)data );
+    case 65:
+        ade_func65( (area_arg_65 *)data );
+        return 1;
+    default:
+        break;
+    }
+    return NC_STACK_area::compatcall(method_id, data);
 }

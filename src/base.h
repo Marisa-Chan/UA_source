@@ -7,11 +7,9 @@
 #include "engine_tform.h"
 #include "skeleton.h"
 
-extern class_stored base_class_off;
 
-
-struct NC_STACK_base;
-struct NC_STACK_skeleton;
+class NC_STACK_base;
+class NC_STACK_skeleton;
 
 struct base_node: public nnode
 {
@@ -20,7 +18,7 @@ struct base_node: public nnode
 
 struct clss_node: public nnode
 {
-    NC_STACK_class *obj;
+    NC_STACK_nucleus *obj;
 };
 
 struct base_1c_struct
@@ -99,11 +97,6 @@ struct __NC_STACK_base
     NC_STACK_nucleus *OBJT;
 };
 
-struct NC_STACK_base : public NC_STACK_nucleus
-{
-    __NC_STACK_base stack__base;
-};
-
 struct __attribute__((packed)) STRC_base
 {
     __int16 p1;
@@ -173,25 +166,6 @@ struct base_64arg
     int field_10;
 };
 
-struct base73arg_sub
-{
-    BYTE gap0[125];
-    float float7D;
-    float float81;
-    float float85;
-    float float89;
-    float float8D;
-    DWORD dword91;
-};
-
-struct base73arg
-{
-    int field_0;
-    int field_4;
-    base73arg_sub *dword8;
-};
-
-
 void sub_430A20(base_1c_struct *s3d);
 base_1c_struct *sub_430A28();
 void sub_430A38(base_1c_struct *s3d);
@@ -200,6 +174,50 @@ struct vhclBases
 {
     NC_STACK_base *base;
     base_1c_struct *trigo;
+};
+
+
+class NC_STACK_base: public NC_STACK_nucleus
+{
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+    virtual size_t func5(MFILE **file);
+    virtual size_t func6(MFILE **file);
+    virtual size_t base_func64(base_64arg *arg);
+    virtual size_t base_func65(NC_STACK_base **kid);
+    virtual size_t base_func66(base_66_arg_struct *prnt_info);
+    virtual size_t base_func67(NC_STACK_base **arg);
+    virtual size_t base_func68(flag_xyz *arg);
+    virtual size_t base_func69(flag_xyz *arg);
+    virtual size_t base_func70(flag_xyz2 *arg);
+    virtual size_t base_func71(flag_xyz2 *arg);
+    virtual size_t base_func72(flag_xyz *arg);
+    virtual size_t base_func73(base_64arg *arg);
+    virtual size_t base_func77(base77Func *arg);
+    virtual size_t base_func78(base_64arg *arg);
+    virtual size_t base_func79(NC_STACK_base **arg);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_base() {
+        memset(&stack__base, 0, sizeof(stack__base));
+    };
+    virtual ~NC_STACK_base() {};
+
+    virtual const char * getClassName() {
+        return "base.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_base();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
+    __NC_STACK_base stack__base;
 };
 
 #endif // BASE_H_INCLUDED

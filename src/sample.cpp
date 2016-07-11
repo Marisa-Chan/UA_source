@@ -4,37 +4,24 @@
 #include "utils.h"
 
 
-stored_functions *classvtbl_get_sample();
-class_return * class_set_sample(int, ...);
-
-stored_functions sample_class_vtbl(class_set_sample);
+const NewClassDescr NC_STACK_sample::description("sample.class", &newinstance);
 
 
-class_stored sample_class_off (NULL, NULL, "MC2classes:sample.class", classvtbl_get_sample);
-
-
-stored_functions *classvtbl_get_sample()
+size_t NC_STACK_sample::func0(stack_vals *stak)
 {
-    return &sample_class_vtbl;
+    if ( !NC_STACK_rsrc::func0(stak) )
+        return 0;
+
+    __NC_STACK_sample *smpl = &this->stack__sample;
+
+    call_vtbl(this, 3, 0x80001002, &smpl->p_sampl, 0);
+
+    return 1;
 }
 
-CLASSFUNC sample_funcs[1024];
-
-NC_STACK_sample * sample_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_sample::func3(stack_vals *stak)
 {
-    NC_STACK_sample *obj = (NC_STACK_sample *)call_parent(zis, clss, 0, stak);
-    __NC_STACK_sample *smpl = &obj->stack__sample;
-
-    if ( obj )
-        call_vtbl(obj, 3, 0x80001002, &smpl->p_sampl, 0);
-
-    return obj;
-}
-
-void sample_func3(NC_STACK_sample *obj, class_stru *zis, stack_vals *stak)
-{
-
-    __NC_STACK_sample *sample = &obj->stack__sample;
+    __NC_STACK_sample *sample = &this->stack__sample;
 
     stack_vals *stk = stak;
 
@@ -84,13 +71,13 @@ void sample_func3(NC_STACK_sample *obj, class_stru *zis, stack_vals *stak)
         }
     }
 
-    call_parent(zis, obj, 3, stak);
+    return NC_STACK_rsrc::func3(stak);
 }
 
 
-rsrc * sample_func64(NC_STACK_sample *obj, class_stru *zis, stack_vals *stak)
+rsrc * NC_STACK_sample::rsrc_func64(stack_vals *stak)
 {
-    rsrc *res = (rsrc *)call_parent(zis, obj, 64, stak);
+    rsrc *res = NC_STACK_rsrc::rsrc_func64(stak);
 
     if ( !res )
         return NULL;
@@ -133,7 +120,7 @@ rsrc * sample_func64(NC_STACK_sample *obj, class_stru *zis, stack_vals *stak)
     return res;
 }
 
-void sample_func65(NC_STACK_sample *obj, class_stru *zis, rsrc **pres)
+size_t NC_STACK_sample::rsrc_func65(rsrc **pres)
 {
     rsrc *res = *pres;
     sampl *smpl = (sampl *)res->data;
@@ -149,35 +136,33 @@ void sample_func65(NC_STACK_sample *obj, class_stru *zis, rsrc **pres)
         res->data = NULL;
     }
 
-    call_parent(zis, obj, 65, (stack_vals *)pres);
+    return NC_STACK_rsrc::rsrc_func65(pres);
 }
 
-void *sample_func128(NC_STACK_sample *obj, class_stru *, void **arg)
+void * NC_STACK_sample::sample_func128(void **arg)
 {
     printf("%s - NOT RECOGINZED ARGUMENT\n","sample_func128");
-    sampl *smpl = obj->stack__sample.p_sampl;
+    sampl *smpl = this->stack__sample.p_sampl;
     arg[2] = smpl;
     return smpl;
 }
 
-class_return sample_class_descr;
-
-class_return * class_set_sample(int , ...)
+size_t NC_STACK_sample::compatcall(int method_id, void *data)
 {
-
-    memset(sample_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    sample_funcs[0] = (CLASSFUNC)sample_func0;
-    sample_funcs[3] = (CLASSFUNC)sample_func3;
-    sample_funcs[64] = (CLASSFUNC)sample_func64;
-    sample_funcs[65] = (CLASSFUNC)sample_func65;
-    sample_funcs[128] = (CLASSFUNC)sample_func128;
-
-    sample_class_descr.parent = "rsrc.class";
-
-    sample_class_descr.vtbl = sample_funcs;
-    ////sample_class_descr.varSize = sizeof(__NC_STACK_sample);
-    sample_class_descr.varSize = sizeof(NC_STACK_sample) - offsetof(NC_STACK_sample, stack__sample); //// HACK
-    sample_class_descr.field_A = 0;
-    return &sample_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 3:
+        return func3( (stack_vals *)data );
+    case 64:
+        return (size_t)rsrc_func64( (stack_vals *)data );
+    case 65:
+        return rsrc_func65( (rsrc **)data );
+    case 128:
+        return (size_t)sample_func128( (void **)data );
+    default:
+        break;
+    }
+    return NC_STACK_rsrc::compatcall(method_id, data);
 }

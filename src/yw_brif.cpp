@@ -89,7 +89,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub4(_NC_STACK_ypaworld *yw, struC5 *in
         v4.bitm = yw->pointers__bitm[5];
         v4.pointer_id = 6;
 
-        call_method(yw->win3d, 263, &v4);
+        yw->win3d->display_func263(&v4);
     }
     else
     {
@@ -212,7 +212,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub5(_NC_STACK_ypaworld *yw, struC5 *in
         v6.bitm = yw->pointers__bitm[0];
         v6.pointer_id = 1;
 
-        call_method(yw->win3d, 263, &v6);
+        yw->win3d->display_func263(&v6);
     }
     else
     {
@@ -897,7 +897,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub1(_NC_STACK_ypaworld *yw, big_ypa_Br
     v28.cmdbuf = v27;
     v28.includ = NULL;
 
-    call_method(yw->win3d, 209, &v28);
+    yw->win3d->raster_func209(&v28);
 }
 
 void ypaworld_func158__sub4__sub1__sub4__sub0(_NC_STACK_ypaworld *yw)
@@ -927,7 +927,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub0(_NC_STACK_ypaworld *yw)
     v32.cmdbuf = buf;
     v32.includ = NULL;
 
-    call_method(yw->win3d, 209, &v32);
+    yw->win3d->raster_func209(&v32);
 }
 
 void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *inpt, int obj_id, char a4)
@@ -982,8 +982,8 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
                     v22.dword0 = v22.dword4;
                 }
 
-                call_method(yw->win3d, 217, &v22);
-                call_method(yw->win3d, 198, &v20);
+                yw->win3d->raster_func217(&v22);
+                yw->win3d->raster_func198(&v20);
 
                 if ( dword_514EFC )
                 {
@@ -992,8 +992,8 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
                     v22.dword0 = 0x4040;
                 }
 
-                call_method(yw->win3d, 217, &v22);
-                call_method(yw->win3d, 198, &v21);
+                yw->win3d->raster_func217(&v22);
+                yw->win3d->raster_func198(&v21);
             }
         }
 
@@ -1028,7 +1028,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
                 v23.cmdbuf = cmdbuf;
                 v23.includ = NULL;
 
-                call_method(yw->win3d, 209, &v23);
+                yw->win3d->raster_func209(&v23);
             }
         }
     }
@@ -1192,7 +1192,7 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
 
         ypaworld_func158__sub4__sub1__sub4__sub21(yw, inpt, brf);
 
-        call_method(yw->win3d, 215, 0);
+        yw->win3d->raster_func215(NULL);
 
         if ( brf->briefing_map )
         {
@@ -1209,16 +1209,16 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
             a4.float18 = -1.0;
             a4.float20 = 1.0;
 
-            call_method(yw->win3d, 204, &a4);
+            yw->win3d->raster_func204(&a4);
         }
 
-        call_method(yw->win3d, 204, &brf->field_2F40);
+        yw->win3d->raster_func204(&brf->field_2F40);
 
-        call_method(yw->win3d, 216, 0);
+        yw->win3d->raster_func216(NULL);
 
         ypaworld_func158__DrawVehicle(yw, brf, inpt);
 
-        call_method(yw->win3d, 215, 0);
+        yw->win3d->raster_func215(NULL);
 
         ypaworld_func158__sub4__sub1__sub4__sub1(yw, brf);
         ypaworld_func158__sub4__sub1__sub4__sub0(yw);
@@ -1226,11 +1226,11 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
         w3d_a209 v10;
         v10 = stru_5C91D0.cmdstrm;
 
-        call_method(yw->win3d, 209, &v10);
+        yw->win3d->raster_func209(&v10);
 
         ypaworld_func158__sub4__sub1__sub4__sub2(yw, brf, inpt, 0, 2);
 
-        call_method(yw->win3d, 216, 0);
+        yw->win3d->raster_func216(NULL);
     }
 }
 
@@ -1554,7 +1554,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub0(_NC_STACK_ypaworld *yw, big_
 {
     uint8_t *ownmap = (uint8_t *)brf->copy2_of_ownmap_bitm->buffer;
 
-    call_method(yw->win3d, 215, 0);
+    yw->win3d->raster_func215(NULL);
 
     float v3 = (brf->field_2F74.x2 - brf->field_2F74.x1) / (float)yw->sectors_maxX2;
     float v4 = (brf->field_2F74.y2 - brf->field_2F74.y1) / (float)yw->sectors_maxY2;
@@ -1595,9 +1595,9 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub0(_NC_STACK_ypaworld *yw, big_
                     arg217.dword4 = arg217.dword0;
                     arg217.dword8 = -1;
 
-                    call_method(yw->win3d, 217, &arg217);
-                    call_method(yw->win3d, 198, &arg198);
-                    call_method(yw->win3d, 198, &arg198_1);
+                    yw->win3d->raster_func217(&arg217);
+                    yw->win3d->raster_func198(&arg198);
+                    yw->win3d->raster_func198(&arg198_1);
                 }
             }
 
@@ -1608,7 +1608,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub0(_NC_STACK_ypaworld *yw, big_
         v21 += v4;
     }
 
-    call_method(yw->win3d, 216, 0);
+    yw->win3d->raster_func216(NULL);
 }
 
 
@@ -1637,7 +1637,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(_NC_STACK_ypaworld *yw, big_
     arg209.cmdbuf = cmdBuff;
     arg209.includ = 0;
 
-    call_method(yw->win3d, 209, &arg209);
+    yw->win3d->raster_func209(&arg209);
 }
 
 char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub0(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
@@ -2279,8 +2279,8 @@ void ypaworld_func158__sub4__sub1__sub6__sub3(_NC_STACK_ypaworld *yw, struC5 *st
     v24.includ = 0;
     v24.cmdbuf = cmdbuf;
 
-    call_method(yw->win3d, 215, 0);
-    call_method(yw->win3d, 209, &v24);
+    yw->win3d->raster_func215(NULL);
+    yw->win3d->raster_func209(&v24);
 
     int v26 = 0;
 
@@ -2392,7 +2392,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3(_NC_STACK_ypaworld *yw, struC5 *st
 
     ypaworld_func158__sub4__sub1__sub6__sub3__sub6(yw, brf);
 
-    call_method(yw->win3d, 216, 0);
+    yw->win3d->raster_func216(NULL);
 }
 
 void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
@@ -2424,7 +2424,7 @@ void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, s
 
         if ( brf->field_2E68 != 4 )
         {
-            call_method(yw->win3d, 215, 0);
+            yw->win3d->raster_func215(NULL);
 
             if ( brf->briefing_map )
             {
@@ -2440,11 +2440,11 @@ void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, s
                 arg204.float18 = -1.0;
                 arg204.float20 = 1.0;
 
-                call_method(yw->win3d, 204, &arg204);
+                yw->win3d->raster_func204(&arg204);
             }
 
-            call_method(yw->win3d, 204, &brf->field_2F40);
-            call_method(yw->win3d, 216, 0);
+            yw->win3d->raster_func204(&brf->field_2F40);
+            yw->win3d->raster_func216(NULL);
         }
 
         switch ( brf->field_2E68 )

@@ -7,9 +7,7 @@
 
 #define AUDIO_CHANNELS   16
 
-stored_functions *classvtbl_get_milesEngine();
-
-int milesEngine__init(unsigned int, ...);
+int milesEngine__init();
 void milesEngine__deinit();
 void milesEngine__setter(unsigned int, ...);
 void milesEngine__getter(unsigned int, ...);
@@ -17,9 +15,6 @@ void milesEngine__getter(unsigned int, ...);
 
 stored_functions_engine miles_engine_vtbl = {milesEngine__init, milesEngine__deinit, milesEngine__setter, milesEngine__getter};
 
-
-
-class_stored miles_engine_off (NULL, NULL, "MC2engines:miles.engine", classvtbl_get_milesEngine);
 
 struct sample
 {
@@ -54,13 +49,6 @@ soundSys sndSys;
 
 int dword_546DD8;
 
-
-
-
-stored_functions *classvtbl_get_milesEngine()
-{
-    return (stored_functions *)&miles_engine_vtbl;
-}
 
 
 key_value_stru audio_keys[4] = {
@@ -108,7 +96,7 @@ void wrapper_playSound(waldev *driver, walsmpl *hSample, void (*funceos)(walsmpl
 }
 
 
-int milesEngine__init(unsigned int, ...)
+int milesEngine__init()
 {
     memset(&sndSys, 0, sizeof(sndSys));
 
@@ -977,7 +965,7 @@ void sb_0x424c74__sub3()
         v0++;
     }
 
-    NC_STACK_win3d *pwin3d;
+    NC_STACK_display *pwin3d;
     gfxEngine__getter(0x8000300D, &pwin3d, 0);
 
     if ( pwin3d )
@@ -987,7 +975,7 @@ void sb_0x424c74__sub3()
         arg262.dword0 = v0;
         arg262.pdword8 = v12;
 
-        call_method(pwin3d, 262, &arg262);
+        pwin3d->display_func262(&arg262);
     }
 }
 

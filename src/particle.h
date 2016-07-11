@@ -5,9 +5,7 @@
 #include "area.h"
 #include "ade.h"
 
-extern class_stored particle_class_off;
-
-struct NC_STACK_particle;
+class NC_STACK_particle;
 
 struct __attribute__((packed)) particle_t_loc
 {
@@ -94,8 +92,42 @@ struct __NC_STACK_particle
     prtcl_tp *tp1_st;
 };
 
-struct NC_STACK_particle : public NC_STACK_ade
+class NC_STACK_particle: public NC_STACK_ade
 {
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+    virtual size_t func5(MFILE **file);
+    virtual size_t func6(MFILE **file);
+    virtual size_t ade_func65(area_arg_65 *arg);
+    virtual void particle_func128(particle_t_loc *arg);
+    virtual void particle_func129(particle_t_loc *arg);
+    virtual void particle_func130(particle_t_loc *out);
+    virtual void particle_func131(particle_t_loc *out);
+    virtual size_t particle_func132(NC_STACK_area **ade);
+    virtual NC_STACK_ade * particle_func133(int *id);
+    virtual size_t particle_func134(int *iid);
+    virtual size_t particle_func135(int *iid);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_particle() {
+        memset(&stack__particle, 0, sizeof(stack__particle));
+    };
+    virtual ~NC_STACK_particle() {};
+
+    virtual const char * getClassName() {
+        return "particle.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_particle();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
     __NC_STACK_particle stack__particle;
 };
 

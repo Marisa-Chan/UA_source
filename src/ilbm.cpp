@@ -4,41 +4,25 @@
 #include "ilbm.h"
 #include "utils.h"
 
-stored_functions *classvtbl_get_ilbm();
-class_return * class_set_ilbm(int, ...);
 
-stored_functions ilbm_class_vtbl(class_set_ilbm);
+const NewClassDescr NC_STACK_ilbm::description("ilbm.class", &newinstance);
 
-
-class_stored ilbm_class_off (NULL, NULL, "MC2classes:ilbm.class", classvtbl_get_ilbm);
-
-
-stored_functions *classvtbl_get_ilbm()
+size_t NC_STACK_ilbm::func0(stack_vals *stak)
 {
-    return &ilbm_class_vtbl;
+    if ( !NC_STACK_bitmap::func0(stak) )
+        return 0;
+
+    __NC_STACK_ilbm *ilbm = &this->stack__ilbm;
+
+    if ( find_id_in_stack_def_val(0x80003000, 0, stak) )
+        ilbm->field_0 |= 1;
+
+    return 1;
 }
 
-CLASSFUNC ilbm_funcs[1024];
-g_engines *engines___ilbm;
-
-
-NC_STACK_ilbm * ilbm_func0(class_stru *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ilbm::func2(stack_vals *stak)
 {
-    NC_STACK_ilbm *clss = (NC_STACK_ilbm *)call_parent(zis, obj, 0, stak); // bitmap_func0
-    if (clss)
-    {
-        __NC_STACK_ilbm *ilbm = &clss->stack__ilbm;
-
-        if ( find_id_in_stack_def_val(0x80003000, 0, stak) )
-            ilbm->field_0 |= 1;
-    }
-
-    return clss;
-}
-
-void ilbm_func2(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak)
-{
-    __NC_STACK_ilbm *ilbm = &obj->stack__ilbm;
+    __NC_STACK_ilbm *ilbm = &this->stack__ilbm;
 
     stack_vals *v6 = find_id_in_stack2(0x80003000, stak);
 
@@ -50,23 +34,23 @@ void ilbm_func2(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak)
             ilbm->field_0 &= 0xFEu;
     }
 
-    call_parent(zis, obj, 2, stak);
+    return NC_STACK_bitmap::func2(stak);
 }
 
-void ilbm_func3(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ilbm::func3(stack_vals *stak)
 {
 
-    __NC_STACK_ilbm *ilbm = &obj->stack__ilbm;
+    __NC_STACK_ilbm *ilbm = &this->stack__ilbm;
 
     int *val = (int *)find_id_in_stack_def_val(0x80003000, 0, stak);
 
     if ( val )
         *val = (ilbm->field_0 & 1) != 0;
 
-    call_parent(zis, obj, 3, stak);
+    return NC_STACK_bitmap::func3(stak);
 }
 
-NC_STACK_ilbm * ilbm_func5__sub0(class_stru *obj, class_stru *zis, MFILE **pmfile)
+size_t ilbm_func5__sub0(NC_STACK_ilbm *obj, MFILE **pmfile)
 {
     MFILE *mfile = *pmfile;
 
@@ -84,7 +68,7 @@ NC_STACK_ilbm * ilbm_func5__sub0(class_stru *obj, class_stru *zis, MFILE **pmfil
             break;
 
         if ( v6 )
-            return NULL;
+            return 0;
 
         MFILE_S1 *iff_chunk = GET_FORM_INFO_OR_NULL(mfile);
 
@@ -105,13 +89,13 @@ NC_STACK_ilbm * ilbm_func5__sub0(class_stru *obj, class_stru *zis, MFILE **pmfil
 
             for (int i = 0; i < opl_count; i++)
             {
-                memset(&opls[i], 0 , sizeof(bitmap__opl));
+                memset(&opls[i], 0, sizeof(bitmap__opl));
 
                 opls[i].field_0 = dst[2 * i];
                 opls[i].field_2 = dst[1 + 2 * i];
             }
 
-            memset(&opls[opl_count], 0 , sizeof(bitmap__opl));
+            memset(&opls[opl_count], 0, sizeof(bitmap__opl));
             opls[opl_count].field_E = MINSHORT;
 
             read_next_IFF(mfile, 2);
@@ -147,33 +131,33 @@ NC_STACK_ilbm * ilbm_func5__sub0(class_stru *obj, class_stru *zis, MFILE **pmfil
             stk[4].id = 0;
         }
 
-        return (NC_STACK_ilbm *)call_parent(zis, obj, 0, stk);
+        return obj->NC_STACK_bitmap::func0(stk);
     }
-    return NULL;
+    return 0;
 }
 
-NC_STACK_ilbm * ilbm_func5(class_stru *obj, class_stru *zis, MFILE **file)
+size_t NC_STACK_ilbm::func5(MFILE **file)
 {
     DWORD TAG = GET_FORM_INFO_OR_NULL(*file)->TAG_EXTENSION;
 
     if ( TAG == TAG_CIBO )
-        return ilbm_func5__sub0(obj, zis, file);
+        return ilbm_func5__sub0(this, file);
 
-    return NULL;
+    return 0;
 }
 
-int ilbm_func6(NC_STACK_ilbm *obj, class_stru *, MFILE **pmfile)
+size_t NC_STACK_ilbm::func6(MFILE **pmfile)
 {
     MFILE *mfile = *pmfile;
 
     char *name = 0;
-    call_vtbl(obj, 3, 0x80001000, &name, 0);
+    call_vtbl(this, 3, 0x80001000, &name, 0);
 
     bitmap_arg130 bitmap_info;
     bitmap_info.field_0 = 1;
     bitmap_info.field_4 = 1;
 
-    call_method(obj, 130, &bitmap_info);
+    bitmap_func130(&bitmap_info);
 
     tUtV *opl2 = bitmap_info.opl2;
 
@@ -312,7 +296,7 @@ int ILBM_BODY_READ(MFILE *mfile, BMHD_type *bmhd, bitmap_intern *bitm)
     return 0;
 }
 
-rsrc * READ_ILBM(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak, MFILE *mfil, int val5)
+rsrc * READ_ILBM(NC_STACK_ilbm *obj, stack_vals *stak, MFILE *mfil, int val5)
 {
     int ILBM__OR__VBMP;
 
@@ -356,10 +340,10 @@ rsrc * READ_ILBM(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak, MFILE *m
             if ( res )
             {
                 //call_vtbl(obj, 65, res);
-                call_method(obj, 65, &res);
+                obj->rsrc_func65(&res);
             }
 
-            return 0;
+            return NULL;
         }
 
         DWORD tag = GET_FORM_INFO_OR_NULL(mfil)->TAG;
@@ -377,14 +361,14 @@ rsrc * READ_ILBM(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak, MFILE *m
             stk[2].id = 2;
             stk[2].value = (size_t)stak;
 
-            res = (rsrc *)call_parent(zis, obj, 64, stk); // bitmap_func64
+            res = obj->NC_STACK_bitmap::rsrc_func64(stk); // bitmap_func64
             if ( res )
             {
                 bitm = (bitmap_intern *)res->data;
                 if ( !bitm )
                 {
                     //call_vtbl(obj, 65, res);
-                    call_method(obj, 65, &res);
+                    obj->rsrc_func65(&res);
                     return NULL;
                 }
             }
@@ -403,7 +387,7 @@ rsrc * READ_ILBM(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak, MFILE *m
             stk[2].id = 2;
             stk[2].value = (size_t)stak;
 
-            res = (rsrc *)call_parent(zis, obj, 64, stk); // bitmap_func64
+            res = obj->NC_STACK_bitmap::rsrc_func64(stk); // bitmap_func64
             // creation of bitmap internal structure and allocation buffer, creation of surface, texture and palette
             if ( res )
             {
@@ -411,7 +395,7 @@ rsrc * READ_ILBM(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak, MFILE *m
                 if ( !bitm )
                 {
                     //call_vtbl(obj, 65, res);
-                    call_method(obj, 65, &res);
+                    obj->rsrc_func65(&res);
                     return NULL;
                 }
             }
@@ -438,12 +422,12 @@ rsrc * READ_ILBM(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak, MFILE *m
 
             if ( bitm )
             {
-                NC_STACK_class *w3d = engines___ilbm->display___win3d;
+                NC_STACK_display *w3d = engines.display___win3d;
                 int locked = 1;
 
                 if ( w3d && bitm->flags & 2 )
                 {
-                    if ( ! call_method(w3d, 269, &bitm) )
+                    if ( ! w3d->display_func269(&bitm) )
                         locked = 0;
                 }
 
@@ -465,18 +449,18 @@ rsrc * READ_ILBM(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak, MFILE *m
 
                     if ( w3d && bitm->flags & 2 )
                     {
-                        call_method(w3d, 270, &bitm); // win3d_func270
+                        w3d->display_func270(&bitm); // win3d_func270
                         if ( val5 )
                             bitm->flags |= 0x10u;
 
-                        call_method(w3d, 267, &bitm); // win3d_func267
+                        w3d->display_func267(&bitm); // win3d_func267
                     }
                 }
             }
             if ( !success )
             {
                 //call_vtbl(obj, 65, res);
-                call_method(obj, 65, &res);
+                obj->rsrc_func65(&res);
                 return NULL;
             }
             read_next_IFF(mfil, 2);
@@ -491,7 +475,7 @@ rsrc * READ_ILBM(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak, MFILE *m
 
 
 // Create ilbm resource node and fill rsrc field data
-rsrc * ilbm_func64(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak)
+rsrc * NC_STACK_ilbm::rsrc_func64(stack_vals *stak)
 {
     const char *resName = (const char *)find_id_in_stack_def_val(0x80001000, 0, stak);
     const char *reassignName = NULL;
@@ -579,7 +563,7 @@ rsrc * ilbm_func64(NC_STACK_ilbm *obj, class_stru *zis, stack_vals *stak)
         }
     }
 
-    rsrc *res = READ_ILBM(obj, zis, stk, mfile, reassignName != 0);
+    rsrc *res = READ_ILBM(this, stk, mfile, reassignName != 0);
 
     if ( selfOpened )
         close_mfile(mfile);
@@ -696,9 +680,9 @@ int VBMP__WRITE_TO_FILE(MFILE *mfile, bitmap_intern *bitm)
     return sub_413290(mfile) == 0;
 }
 
-size_t ilbm_func66(NC_STACK_ilbm *obj, class_stru *, rsrc_func66_arg *arg)
+size_t NC_STACK_ilbm::rsrc_func66(rsrc_func66_arg *arg)
 {
-    __NC_STACK_ilbm *ilbm = &obj->stack__ilbm;
+    __NC_STACK_ilbm *ilbm = &this->stack__ilbm;
 
     MFILE *mfile;
 
@@ -719,7 +703,7 @@ size_t ilbm_func66(NC_STACK_ilbm *obj, class_stru *, rsrc_func66_arg *arg)
     v6.field_0 = 1;
     v6.field_4 = 1;
 
-    call_method(obj, 130, &v6);
+    bitmap_func130(&v6);
 
     if ( !v6.pbitm || !v6.pbitm->buffer )
         return 0;
@@ -742,40 +726,27 @@ size_t ilbm_func66(NC_STACK_ilbm *obj, class_stru *, rsrc_func66_arg *arg)
     //// CHECK THIS+++
 }
 
-class_return ilbm_class_descr;
 
-class_return * class_set_ilbm(int a1, ...)
+size_t NC_STACK_ilbm::compatcall(int method_id, void *data)
 {
-
-    stack_vals vals[128];
-
-    if (a1 != 0)
+    switch( method_id )
     {
-        va_list va;
-        va_start(va, a1);
-
-        va_to_arr(vals, 128, a1, va);
-
-        va_end(va);
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 2:
+        return func2( (stack_vals *)data );
+    case 3:
+        return func3( (stack_vals *)data );
+    case 5:
+        return (size_t)func5( (MFILE **)data );
+    case 6:
+        return (size_t)func6( (MFILE **)data );
+    case 64:
+        return (size_t)rsrc_func64( (stack_vals *)data );
+    case 66:
+        return (size_t)rsrc_func66( (rsrc_func66_arg *)data );
+    default:
+        break;
     }
-
-    engines___ilbm = (g_engines *)find_id_in_stack_def_val(0x80000002, 0, vals);
-
-    memset(ilbm_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    ilbm_funcs[0] = (CLASSFUNC)ilbm_func0;
-    ilbm_funcs[2] = (CLASSFUNC)ilbm_func2;
-    ilbm_funcs[3] = (CLASSFUNC)ilbm_func3;
-    ilbm_funcs[5] = (CLASSFUNC)ilbm_func5;
-    ilbm_funcs[6] = (CLASSFUNC)ilbm_func6;
-    ilbm_funcs[64] = (CLASSFUNC)ilbm_func64;
-    ilbm_funcs[66] = (CLASSFUNC)ilbm_func66;
-
-    ilbm_class_descr.parent = "bitmap.class";
-
-    ilbm_class_descr.vtbl = ilbm_funcs;
-    ////ilbm_class_descr.varSize = sizeof(__NC_STACK_ilbm);
-    ilbm_class_descr.varSize = sizeof(NC_STACK_ilbm) - offsetof(NC_STACK_ilbm, stack__ilbm); //// HACK
-    ilbm_class_descr.field_A = 0;
-    return &ilbm_class_descr;
+    return NC_STACK_bitmap::compatcall(method_id, data);
 }

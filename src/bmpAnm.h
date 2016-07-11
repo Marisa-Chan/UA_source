@@ -5,8 +5,6 @@
 #include "engine_gfx.h"
 #include "bitmap.h"
 
-extern class_stored bmpanim_class_off;
-
 struct texStru;
 
 struct bmpAnim_t2
@@ -49,11 +47,6 @@ struct __NC_STACK_bmpanim
     int16_t field_12;
 };
 
-struct NC_STACK_bmpanim : public NC_STACK_bitmap
-{
-    __NC_STACK_bmpanim stack__bmpanim;
-};
-
 struct __attribute__((packed)) bmpanm_loc
 {
     int32_t a;
@@ -61,11 +54,38 @@ struct __attribute__((packed)) bmpanm_loc
     int16_t uv_id;
 };
 
-struct bmpanm_sv
+class NC_STACK_bmpanim: public NC_STACK_bitmap
 {
-    const char *resName;
-    MFILE *mfile;
-    int has_filename;
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+    virtual size_t func5(MFILE **file);
+    virtual size_t func6(MFILE **file);
+    virtual rsrc * rsrc_func64(stack_vals *stak);
+    virtual size_t rsrc_func65(rsrc **pres);
+    virtual size_t rsrc_func66(rsrc_func66_arg *sv);
+    virtual void bitmap_func130(bitmap_arg130 *arg);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_bmpanim() {
+        memset(&stack__bmpanim, 0, sizeof(stack__bmpanim));
+    };
+    virtual ~NC_STACK_bmpanim() {};
+
+    virtual const char * getClassName() {
+        return "bmpanim.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_bmpanim();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
+    __NC_STACK_bmpanim stack__bmpanim;
 };
 
 #endif // BITMAP_H_INCLUDED

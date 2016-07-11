@@ -3,92 +3,92 @@
 #include "rsrc.h"
 #include "utils.h"
 
-
-stored_functions *classvtbl_get_rsrc();
-class_return * class_set_rsrc(int, ...);
-
-stored_functions rsrc_class_vtbl(class_set_rsrc);
-
-
-class_stored rsrc_class_off (NULL, NULL, "MC2classes:rsrc.class", classvtbl_get_rsrc);
-
-
-stored_functions *classvtbl_get_rsrc()
-{
-    return &rsrc_class_vtbl;
-}
-
-CLASSFUNC rsrc_funcs[1024];
+const NewClassDescr NC_STACK_rsrc::description("rsrc.class", &newinstance);
 
 nlist g_rsrc_list1;
 nlist g_rsrc_list2;
 
-
-NC_STACK_rsrc * rsrc_func0(class_stru *caller, class_stru *zis, stack_vals *stak)
+rsrc *rsrc_find(nlist *list, const char *name)
 {
-    NC_STACK_rsrc *clss = (NC_STACK_rsrc *)call_parent(zis, caller, 0, stak); // nucleus_func0
-
-    if (clss)
+    rsrc *current = (rsrc *)list->head;
+    if ( current->next )
     {
-        __NC_STACK_rsrc *internal = &clss->stack__rsrc;
-
-        const char *res_name = (const char *)find_id_in_stack_def_val(0x80001000, 0, stak);
-        int reuse_loaded = find_id_in_stack_def_val(0x80001001, 1, stak);
-
-        if ( res_name )
+        while ( strcasecmp(name, current->name) )
         {
-            rsrc *res = 0;
-            if ( reuse_loaded == 1 )
-                res = (rsrc *)FIND(&g_rsrc_list1, res_name);
-
-            if (!res)
-                res = (rsrc *)call_method(clss, 64, stak);
-
-            if ( res )
-            {
-                res->ref_cnt++;
-                internal->p_rsrc = res;
-                internal->p_data = res->data;
-
-                if ( find_id_in_stack_def_val(0x80001003, 0, stak) )
-                    internal->field_8[0] |= 1;
-
-                return clss;
-            }
-            else
-            {
-                call_method(clss, 1);
+            current = (rsrc *)current->next;
+            if ( !current->next )
                 return NULL;
-            }
-        }
-        else
-        {
-            call_method(clss, 1);
-            return NULL;
         }
     }
-    return NULL;
+    else
+        return NULL;
+
+    return current;
 }
 
-size_t rsrc_func1(NC_STACK_rsrc *a1, class_stru *a2, stack_vals *a3)
+size_t NC_STACK_rsrc::func0(stack_vals *stak)
 {
-    __NC_STACK_rsrc *internal = &a1->stack__rsrc;
+    if ( !NC_STACK_nucleus::func0(stak) )
+        return 0;
+
+    __NC_STACK_rsrc *internal = &this->stack__rsrc;
+
+    const char *res_name = (const char *)find_id_in_stack_def_val(0x80001000, 0, stak);
+    int reuse_loaded = find_id_in_stack_def_val(0x80001001, 1, stak);
+
+    if ( !res_name )
+    {
+        func1(NULL);
+        return 0;
+    }
+
+    rsrc *res = NULL;
+
+    if ( reuse_loaded == 1 )
+        res = rsrc_find(&g_rsrc_list1, res_name);
+
+    if (!res)
+        res = rsrc_func64(stak);
+
+    if ( res )
+    {
+        res->ref_cnt++;
+        internal->p_rsrc = res;
+        internal->p_data = res->data;
+
+        if ( find_id_in_stack_def_val(0x80001003, 0, stak) )
+            internal->field_8[0] |= 1;
+
+        return 1;
+    }
+    else
+    {
+        func1(NULL);
+        return 0;
+    }
+}
+
+size_t NC_STACK_rsrc::func1(stack_vals *stak)
+{
+    __NC_STACK_rsrc *internal = &this->stack__rsrc;
 
     if ( internal->p_rsrc )
     {
         rsrc *res = internal->p_rsrc;
+
         res->ref_cnt--;
+
         if ( !res->ref_cnt )
-            call_method(a1, 65, &res);
+            rsrc_func65(&res);
     }
 
-    return call_parent(a2, a1, 1, a3);
+    return NC_STACK_nucleus::func1(stak);
 }
 
-size_t rsrc_func3(NC_STACK_rsrc *caller, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_rsrc::func3(stack_vals *stak)
 {
 
-    __NC_STACK_rsrc *internal = &caller->stack__rsrc;
+    __NC_STACK_rsrc *internal = &this->stack__rsrc;
 
     stack_vals *stk = stak;
 
@@ -151,11 +151,11 @@ size_t rsrc_func3(NC_STACK_rsrc *caller, class_stru *zis, stack_vals *stak)
             stk++;
         }
     }
-    return call_parent(zis, caller, 3, stak);
+    return NC_STACK_nucleus::func3(stak);
 }
 
 // Allocate resource node
-rsrc *rsrc_func64(NC_STACK_rsrc *obj, class_stru *, stack_vals *stak)
+rsrc * NC_STACK_rsrc::rsrc_func64(stack_vals *stak)
 {
     char *title = (char *)find_id_in_stack_def_val(0x80001000, 0, stak);
 
@@ -178,7 +178,7 @@ rsrc *rsrc_func64(NC_STACK_rsrc *obj, class_stru *, stack_vals *stak)
             res->name = res->title;
             res->what_list = what_list;
 
-            call_vtbl(obj, 3, 0x80000002, &res->class_name, 0);
+            call_vtbl(this, 3, 0x80000002, &res->class_name, 0);
 
             nlist *lst;
 
@@ -196,9 +196,10 @@ rsrc *rsrc_func64(NC_STACK_rsrc *obj, class_stru *, stack_vals *stak)
     return res;
 }
 
-size_t rsrc_func65(NC_STACK_rsrc *, class_stru *, rsrc **res)
+size_t NC_STACK_rsrc::rsrc_func65(rsrc **res)
 {
     Remove(*res);
+
     if ( *res )
         nc_FreeMem(*res);
 
@@ -206,25 +207,22 @@ size_t rsrc_func65(NC_STACK_rsrc *, class_stru *, rsrc **res)
 }
 
 
-class_return rsrc_class_descr;
-
-class_return * class_set_rsrc(int, ...)
+size_t NC_STACK_rsrc::compatcall(int method_id, void *data)
 {
-    init_list(&g_rsrc_list1);
-    init_list(&g_rsrc_list2);
-    memset(rsrc_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    rsrc_funcs[0] = (CLASSFUNC)rsrc_func0;
-    rsrc_funcs[1] = (CLASSFUNC)rsrc_func1;
-    rsrc_funcs[3] = (CLASSFUNC)rsrc_func3;
-    rsrc_funcs[64] = (CLASSFUNC)rsrc_func64;
-    rsrc_funcs[65] = (CLASSFUNC)rsrc_func65;
-
-    rsrc_class_descr.parent = "nucleus.class";
-
-    rsrc_class_descr.vtbl = rsrc_funcs;
-    ////rsrc_class_descr.varSize = sizeof(__NC_STACK_rsrc);
-    rsrc_class_descr.varSize = sizeof(NC_STACK_rsrc) - offsetof(NC_STACK_rsrc, stack__rsrc); //// HACK
-    rsrc_class_descr.field_A = 0;
-    return &rsrc_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 3:
+        return func3( (stack_vals *)data );
+    case 64:
+        return (size_t)rsrc_func64( (stack_vals *)data );
+    case 65:
+        return (size_t)rsrc_func65( (rsrc **)data );
+    default:
+        break;
+    }
+    return NC_STACK_nucleus::compatcall(method_id, data);
 }

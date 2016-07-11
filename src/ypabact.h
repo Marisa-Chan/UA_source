@@ -9,13 +9,15 @@
 // !!!! if period is small, then this never happen
 #define BACT_MIN_ANGLE 0.0002
 
-extern class_stored ypabact_class_off;
-
-struct NC_STACK_ypabact;
+class NC_STACK_ypabact;
 struct __NC_STACK_ypabact;
 
-struct NC_STACK_ypaworld;
+class NC_STACK_ypaworld;
 struct _NC_STACK_ypaworld;
+
+class NC_STACK_yparobo;
+
+struct yw_arg129;
 
 struct cellArea;
 
@@ -67,7 +69,7 @@ struct __NC_STACK_ypabact : public nnode
     uint8_t id;
     char field_2D;
     int field_2E;
-    NC_STACK_ypabact *field_32; // parent robo?
+    NC_STACK_yparobo *host_station; // parent robo?
     NC_STACK_ypabact *parent_bacto;
     __NC_STACK_ypabact *parent_bact;
     nlist list2;
@@ -213,11 +215,6 @@ struct __NC_STACK_ypabact : public nnode
     bact_node field_B54;
     bact_node field_B64;
     int field_B74;
-};
-
-struct NC_STACK_ypabact : public NC_STACK_nucleus
-{
-    __NC_STACK_ypabact stack__ypabact;
 };
 
 struct bact_arg73
@@ -405,6 +402,96 @@ struct bact_arg83
     xyz pos2;
     float force;
     float mass;
+};
+
+
+class NC_STACK_ypabact: public NC_STACK_nucleus
+{
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+    virtual void ypabact_func65(ypabact_arg65 *arg);
+    virtual void ypabact_func66(base77Func *arg);
+    virtual void ypabact_func67(bact_arg67 *arg);
+    virtual void ypabact_func68(ypabact_arg65 *arg);
+    virtual void ypabact_func69(ypabact_arg65 *arg);
+    virtual void ypabact_func70(ypabact_arg65 *arg);
+    virtual void ypabact_func71(ypabact_arg65 *arg);
+    virtual void ypabact_func72(NC_STACK_ypabact *kid);
+    virtual void ypabact_func73(bact_arg73 *arg);
+    virtual void ypabact_func74(bact_arg74 *arg);
+    virtual void ypabact_func75(bact_arg75 *arg);
+    virtual void ypabact_func76(bact_arg75 *arg);
+    virtual void ypabact_func77(void *);
+    virtual void ypabact_func78(bact_arg119 *arg);
+    virtual size_t ypabact_func79(bact_arg79 *arg);
+    virtual size_t ypabact_func80(bact_arg80 *arg);
+    virtual void ypabact_func81(bact_arg81 *arg);
+    virtual void ypabact_func82(ypabact_arg65 *arg);
+    virtual void ypabact_func83(bact_arg83 *arg);
+    virtual void ypabact_func84(bact_arg84 *arg);
+    virtual void ypabact_func85(stack_vals *arg);
+    virtual size_t ypabact_func86(bact_arg86 *arg);
+    virtual size_t ypabact_func87(int *arg);
+    virtual void ypabact_func88(bact_arg88 *arg);
+    virtual void ypabact_func89(stack_vals *arg);
+    virtual void ypabact_func90(bact_arg90 *arg);
+    virtual void ypabact_func91(xyz *arg);
+    virtual void ypabact_func92(bact_arg92 *arg);
+    virtual void ypabact_func93(stack_vals *arg);
+    virtual void ypabact_func94(bact_arg94 *arg);
+    virtual void ypabact_func95(stack_vals *arg);
+    virtual void ypabact_func96(void *);
+    virtual void ypabact_func97(ypabact_arg65 *arg);
+    virtual void ypabact_func98(stack_vals *arg);
+    virtual void ypabact_func99(ypabact_arg65 *arg);
+    virtual size_t ypabact_func100(void *);
+    virtual size_t ypabact_func101(bact_arg101 *arg);
+    virtual void ypabact_func102(stack_vals *arg);
+    virtual void ypabact_func103(stack_vals *arg);
+    virtual void ypabact_func104(ypabact_arg65 *arg);
+    virtual size_t ypabact_func105(bact_arg105 *arg);
+    virtual size_t ypabact_func106(bact_arg106 *arg);
+    virtual void ypabact_func107(int *arg);
+    virtual size_t ypabact_func108(float *arg);
+    virtual void ypabact_func109(bact_arg109 *arg);
+    virtual size_t ypabact_func110(bact_arg110 *arg);
+    virtual size_t ypabact_func111(__NC_STACK_ypabact *);
+    virtual void ypabact_func112(ypabact_arg65 *arg);
+    virtual void ypabact_func113(uint8_t *arg);
+    virtual void ypabact_func114(void *);
+    virtual void ypabact_func115(void *);
+    virtual void ypabact_func116(ypabact_arg65 *arg);
+    virtual void ypabact_func117(stack_vals *arg);
+    virtual void ypabact_func118(NC_STACK_ypabact *b_bacto);
+    virtual size_t ypabact_func119(bact_arg119 *arg);
+    virtual void ypabact_func120(yw_arg129 *arg);
+    virtual void ypabact_func121(ypabact_arg65 *arg);
+    virtual void ypabact_func122(stack_vals *arg);
+    virtual void ypabact_func123(stack_vals *arg);
+    virtual size_t ypabact_func124(bact_arg124 *arg);
+    virtual size_t ypabact_func125(bact_arg124 *arg);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_ypabact() {
+        memset(&stack__ypabact, 0, sizeof(stack__ypabact) );
+    };
+    virtual ~NC_STACK_ypabact() {};
+
+    virtual const char * getClassName() {
+        return "ypabact.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_ypabact();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
+    __NC_STACK_ypabact stack__ypabact;
 };
 
 

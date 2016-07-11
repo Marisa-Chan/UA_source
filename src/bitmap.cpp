@@ -5,23 +5,7 @@
 #include "utils.h"
 
 
-stored_functions *classvtbl_get_bitmap();
-class_return * class_set_bitmap(int, ...);
-
-stored_functions bitmap_class_vtbl(class_set_bitmap);
-
-
-class_stored bitmap_class_off (NULL, NULL, "MC2classes:bitmap.class", classvtbl_get_bitmap);
-
-
-stored_functions *classvtbl_get_bitmap()
-{
-    return &bitmap_class_vtbl;
-}
-
-CLASSFUNC bitmap_funcs[1024];
-g_engines *engines___bitmap;
-
+const NewClassDescr NC_STACK_bitmap::description("bitmap.class", &newinstance);
 
 unsigned int sub_416704(NC_STACK_bitmap *a1, __NC_STACK_bitmap *a2, bitmap__opl *a3)
 {
@@ -76,44 +60,46 @@ unsigned int sub_416704(NC_STACK_bitmap *a1, __NC_STACK_bitmap *a2, bitmap__opl 
 }
 
 
-NC_STACK_bitmap * bitmap_func0(class_stru *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_bitmap::func0(stack_vals *stak)
 {
-    NC_STACK_bitmap *clss = (NC_STACK_bitmap *)call_parent(zis, obj, 0, stak); // rsrc_func0
-    if (clss)
-    {
-        __NC_STACK_bitmap *internal = &clss->stack__bitmap;
+    if ( !NC_STACK_rsrc::func0(stak) )
+        return 0;
 
-        void *v9 = (void *)find_id_in_stack_def_val(0x80002001, 0, stak);
-        if ( v9 )
-            sub_416704(clss, internal, (bitmap__opl *)v9);
+    __NC_STACK_bitmap *internal = &this->stack__bitmap;
 
-        call_vtbl(clss, 3, 0x80001002, &internal->bitm_intern, 0); // Copy rsrc->data to bitm_intern
-    }
+    void *v9 = (void *)find_id_in_stack_def_val(0x80002001, 0, stak);
+    if ( v9 )
+        sub_416704(this, internal, (bitmap__opl *)v9);
 
-    return clss;
+    call_vtbl(this, 3, 0x80001002, &internal->bitm_intern, 0); // Copy rsrc->data to bitm_intern
+
+    return 1;
 }
 
-size_t bitmap_func1(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_bitmap::func1(stack_vals *stak)
 {
-    __NC_STACK_bitmap *internal = &obj->stack__bitmap;
+    __NC_STACK_bitmap *internal = &this->stack__bitmap;
+
     if ( internal->field_4.opl2 )
     {
         size_t a4 = 0;
 
-        call_vtbl(obj, 3, 0x80001003, &a4, 0);
+        call_vtbl(this, 3, 0x80001003, &a4, 0);
+
         if ( !a4 )
             nc_FreeMem(internal->field_4.opl2);
     }
-    return call_parent(zis, obj, 1, stak);
+
+    return NC_STACK_rsrc::func1(stak);
 }
 
-void bitmap_func2(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_bitmap::func2(stack_vals *stak)
 {
-    __NC_STACK_bitmap *internal = &obj->stack__bitmap;
+    __NC_STACK_bitmap *internal = &this->stack__bitmap;
 
     stack_vals *v5 = find_id_in_stack2(0x80002001, stak);
     if ( v5 )
-        sub_416704(obj, internal, (bitmap__opl *)v5->value);
+        sub_416704(this, internal, (bitmap__opl *)v5->value);
 
     stack_vals *ppal = find_id_in_stack2(0x80002007, stak);
     if ( ppal )
@@ -122,13 +108,12 @@ void bitmap_func2(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
             memcpy(internal->bitm_intern->pallete, (void *)ppal->value, 256 * 3);
     }
 
-    call_parent(zis, obj, 2, stak);
+    return NC_STACK_rsrc::func2(stak);
 }
 
-void bitmap_func3(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_bitmap::func3(stack_vals *stak)
 {
-
-    __NC_STACK_bitmap *internal = &obj->stack__bitmap;
+    __NC_STACK_bitmap *internal = &this->stack__bitmap;
 
     stack_vals *stk = stak;
 
@@ -192,13 +177,13 @@ void bitmap_func3(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
             stk++;
         }
     }
-    call_parent(zis, obj, 3, stak);
+    return NC_STACK_rsrc::func3(stak);
 }
 
 // Create bitmap resource node and fill rsrc field data
-rsrc * bitmap_func64(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
+rsrc * NC_STACK_bitmap::rsrc_func64(stack_vals *stak)
 {
-    rsrc *res = (rsrc *)call_parent(zis, obj, 64, stak);// rsrc_func64
+    rsrc *res = NC_STACK_rsrc::rsrc_func64(stak);// rsrc_func64
     if ( res )
     {
         int width = find_id_in_stack_def_val(0x80002002, 0, stak);
@@ -226,7 +211,7 @@ rsrc * bitmap_func64(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
                     {
                         intern->width = width;
                         intern->height = height;
-                        if ( v20 && engines___bitmap->display___win3d )
+                        if ( v20 && engines.display___win3d )
                         {
                             intern->width = width;
                             intern->flags = intern->flags | 2;
@@ -236,7 +221,7 @@ rsrc * bitmap_func64(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
                                 intern->flags = intern->flags | BITMAP_FLAG_SOFTWARE;
 
                             // allocate buffer, create palette, surface and texture
-                            if ( ! call_method( engines___bitmap->display___win3d, 266, &intern) )
+                            if ( !engines.display___win3d->display_func266(&intern) )
                             {
                                 nc_FreeMem(intern);
                                 return res;
@@ -274,15 +259,15 @@ rsrc * bitmap_func64(NC_STACK_bitmap *obj, class_stru *zis, stack_vals *stak)
     return res;
 }
 
-void bitmap_func65(NC_STACK_bitmap *obj, class_stru *zis, rsrc **pres)
+size_t NC_STACK_bitmap::rsrc_func65(rsrc **pres)
 {
     bitmap_intern *intern = (bitmap_intern *)(*pres)->data;
     rsrc *res = *pres;
     if ( intern )
     {
-        if ( intern->flags & 2 && engines___bitmap->display___win3d )
+        if ( intern->flags & 2 && engines.display___win3d )
         {
-            call_method(engines___bitmap->display___win3d, 268, &intern);
+            engines.display___win3d->display_func268(&intern);
         }
         else if ( !(intern->flags & 1) )
         {
@@ -296,63 +281,53 @@ void bitmap_func65(NC_STACK_bitmap *obj, class_stru *zis, rsrc **pres)
         nc_FreeMem(intern);
         res->data = NULL;
     }
-    call_parent(zis, obj, 65, (stack_vals *)pres);
+
+    return NC_STACK_rsrc::rsrc_func65(pres);
 }
 
-size_t bitmap_func128(NC_STACK_bitmap *, class_stru *, stack_vals *)
+size_t NC_STACK_bitmap::bitmap_func128(stack_vals *)
 {
     return 0;
 }
 
-size_t bitmap_func129(NC_STACK_bitmap *, class_stru *, stack_vals *)
+size_t NC_STACK_bitmap::bitmap_func129(stack_vals *)
 {
     return 0;
 }
 
-void bitmap_func130(NC_STACK_bitmap *obj, class_stru *, bitmap_arg130 *out)
+void NC_STACK_bitmap::bitmap_func130(bitmap_arg130 *out)
 {
-    __NC_STACK_bitmap *bitm = &obj->stack__bitmap;
+    __NC_STACK_bitmap *bitm = &this->stack__bitmap;
     out->pbitm = bitm->bitm_intern;
     out->opl2 = bitm->field_4.opl2;
 }
 
 
-class_return bitmap_class_descr;
-
-class_return * class_set_bitmap(int a1, ...)
+size_t NC_STACK_bitmap::compatcall(int method_id, void *data)
 {
-
-    stack_vals vals[128];
-
-    if (a1 != 0)
+    switch( method_id )
     {
-        va_list va;
-        va_start(va, a1);
-
-        va_to_arr(vals, 128, a1, va);
-
-        va_end(va);
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        return func2( (stack_vals *)data );
+    case 3:
+        return func3( (stack_vals *)data );
+    case 64:
+        return (size_t)rsrc_func64( (stack_vals *)data );
+    case 65:
+        return rsrc_func65( (rsrc **)data );
+    case 128:
+        return (size_t)bitmap_func128( (stack_vals *)data );
+    case 129:
+        return (size_t)bitmap_func129( (stack_vals *)data );
+    case 130:
+        bitmap_func130( (bitmap_arg130 *)data );
+        return 1;
+    default:
+        break;
     }
-
-    engines___bitmap = (g_engines *)find_id_in_stack_def_val(0x80000002, 0, vals);
-
-    memset(bitmap_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    bitmap_funcs[0] = (CLASSFUNC)bitmap_func0;
-    bitmap_funcs[1] = (CLASSFUNC)bitmap_func1;
-    bitmap_funcs[2] = (CLASSFUNC)bitmap_func2;
-    bitmap_funcs[3] = (CLASSFUNC)bitmap_func3;
-    bitmap_funcs[64] = (CLASSFUNC)bitmap_func64;
-    bitmap_funcs[65] = (CLASSFUNC)bitmap_func65;
-    bitmap_funcs[128] = (CLASSFUNC)bitmap_func128;
-    bitmap_funcs[129] = (CLASSFUNC)bitmap_func129;
-    bitmap_funcs[130] = (CLASSFUNC)bitmap_func130;
-
-    bitmap_class_descr.parent = "rsrc.class";
-
-    bitmap_class_descr.vtbl = bitmap_funcs;
-    ////bitmap_class_descr.varSize = sizeof(__NC_STACK_bitmap);
-    bitmap_class_descr.varSize = sizeof(NC_STACK_bitmap) - offsetof(NC_STACK_bitmap, stack__bitmap); //// HACK
-    bitmap_class_descr.field_A = 0;
-    return &bitmap_class_descr;
+    return NC_STACK_rsrc::compatcall(method_id, data);
 }

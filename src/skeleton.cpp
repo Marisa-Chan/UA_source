@@ -19,39 +19,23 @@
 #include <float.h>
 
 
-stored_functions *classvtbl_get_skeleton();
-class_return * class_set_skeleton(int, ...);
-
-stored_functions skeleton_class_vtbl(class_set_skeleton);
+const NewClassDescr NC_STACK_skeleton::description("skeleton.class", &newinstance);
 
 
-class_stored skeleton_class_off (NULL, NULL, "MC2classes:skeleton.class", classvtbl_get_skeleton);
-
-
-stored_functions *classvtbl_get_skeleton()
+size_t NC_STACK_skeleton::func0(stack_vals *stak)
 {
-    return &skeleton_class_vtbl;
+    if ( !NC_STACK_rsrc::func0(stak) )
+        return 0;
+
+    __NC_STACK_skeleton *skelt = &this->stack__skeleton;
+    call_vtbl(this, 3, 0x80001002, &skelt->data, 0); // Copy rsrc->data to bitm_intern
+
+    return 1;
 }
 
-CLASSFUNC skeleton_funcs[1024];
-
-
-NC_STACK_skeleton * skeleton_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_skeleton::func3(stack_vals *stak)
 {
-    NC_STACK_skeleton *obj = (NC_STACK_skeleton *)call_parent(zis, clss, 0, stak); // rsrc_func0
-
-    if (obj)
-    {
-        __NC_STACK_skeleton *skelt = &obj->stack__skeleton;
-        call_vtbl(obj, 3, 0x80001002, &skelt->data, 0); // Copy rsrc->data to bitm_intern
-    }
-    return obj;
-}
-
-size_t skeleton_func3(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak)
-{
-
-    __NC_STACK_skeleton *skelt = &obj->stack__skeleton;
+    __NC_STACK_skeleton *skelt = &this->stack__skeleton;
 
     stack_vals *stk = stak;
 
@@ -100,13 +84,13 @@ size_t skeleton_func3(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak)
             stk++;
         }
     }
-    return call_parent(zis, obj, 3, stak);
+    return NC_STACK_rsrc::func3(stak);
 }
 
 // Create skeleton resource node and fill rsrc field data
-rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak)
+rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
 {
-    rsrc *res = (rsrc *)call_parent(zis, obj, 64, stak);
+    rsrc *res = NC_STACK_rsrc::rsrc_func64(stak);
 
     if ( !res )
         return NULL;
@@ -116,7 +100,7 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
     if (!elm_num)
     {
         //call_vtbl(obj, 65, res);
-        call_method(obj, 65, &res);
+        rsrc_func65(&res);
         return NULL;
     }
 
@@ -125,7 +109,7 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
     if (!sklt)
     {
         //call_vtbl(obj, 65, res);
-        call_method(obj, 65, &res);
+        rsrc_func65(&res);
         return NULL;
     }
 
@@ -138,7 +122,7 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
     if (!POO)
     {
         //call_vtbl(obj, 65, res);
-        call_method(obj, 65, &res);
+        rsrc_func65(&res);
         return NULL;
     }
 
@@ -149,7 +133,7 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
     if (!POO2)
     {
         //call_vtbl(obj, 65, res);
-        call_method(obj, 65, &res);
+        rsrc_func65(&res);
         return NULL;
     }
 
@@ -164,10 +148,10 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
         arg129.sen_count = sen_count;
 
         ////if ( !call_vtbl(obj, 129, sklt, sen_count) ) //// OPTIMIZATION
-        if ( !call_method(obj, 129, &arg129) )
+        if ( !skeleton_func129(&arg129) )
         {
             //call_vtbl(obj, 65, res);
-            call_method(obj, 65, &res);
+            rsrc_func65(&res);
             return NULL;
         }
     }
@@ -180,7 +164,7 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
         if (num_indexes <= 0)
         {
             //call_vtbl(obj, 65, res);
-            call_method(obj, 65, &res);
+            rsrc_func65(&res);
             return NULL;
         }
 
@@ -190,10 +174,10 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
         arg130.pol_count = pol_count;
 
         ////if ( !call_vtbl(obj, 130, sklt, pol_count, num_indexes) ) //// OPTIMIZATION
-        if ( !call_method(obj, 130, &arg130) )
+        if ( !skeleton_func130(&arg130) )
         {
             //call_vtbl(obj, 65, res);
-            call_method(obj, 65, &res);
+            rsrc_func65(&res);
             return NULL;
         }
     }
@@ -201,7 +185,7 @@ rsrc * skeleton_func64(NC_STACK_skeleton *obj, class_stru *zis, stack_vals *stak
     return res;
 }
 
-size_t skeleton_func65(NC_STACK_skeleton *obj, class_stru *zis, rsrc **pres)
+size_t NC_STACK_skeleton::rsrc_func65(rsrc **pres)
 {
     rsrc *res = *pres;
     skeleton_64_stru *sklt = (skeleton_64_stru *)res->data;
@@ -227,15 +211,15 @@ size_t skeleton_func65(NC_STACK_skeleton *obj, class_stru *zis, rsrc **pres)
 
         res->data = NULL;
     }
-    return call_parent(zis, obj, 65, (stack_vals *)pres);
+    return NC_STACK_rsrc::rsrc_func65(pres);
 }
 
-__NC_STACK_skeleton * skeleton_func128(NC_STACK_skeleton *obj, class_stru *, stack_vals *)
+__NC_STACK_skeleton * NC_STACK_skeleton::skeleton_func128(stack_vals *)
 {
-    return &obj->stack__skeleton;
+    return &this->stack__skeleton;
 }
 
-size_t skeleton_func129(NC_STACK_skeleton *, class_stru *, skeleton_129_arg *arg)
+size_t NC_STACK_skeleton::skeleton_func129(skeleton_129_arg *arg)
 {
     skeleton_64_stru *sklt = arg->skeleton;
 
@@ -248,7 +232,7 @@ size_t skeleton_func129(NC_STACK_skeleton *, class_stru *, skeleton_129_arg *arg
     return 1;
 }
 
-size_t skeleton_func130(NC_STACK_skeleton *, class_stru *, skeleton_130_arg *arg)
+size_t NC_STACK_skeleton::skeleton_func130(skeleton_130_arg *arg)
 {
     skeleton_64_stru *sklt = arg->skeleton;
 
@@ -273,9 +257,9 @@ size_t skeleton_func130(NC_STACK_skeleton *, class_stru *, skeleton_130_arg *arg
     return 1;
 }
 
-size_t skeleton_func131(NC_STACK_skeleton *obj, class_stru *, int *arg)
+size_t NC_STACK_skeleton::skeleton_func131(int *arg)
 {
-    skeleton_64_stru *sklt = obj->stack__skeleton.data;
+    skeleton_64_stru *sklt = this->stack__skeleton.data;
 
     int vtxid = *arg;
 
@@ -404,9 +388,9 @@ int sub_428D5C(skeleton_arg_132 *arg, skeleton_type1 *in, skeleton_type1 *out, i
     return flag == 0;
 }
 
-size_t skeleton_func132(NC_STACK_skeleton *obj, class_stru *, skeleton_arg_132 *arg)
+size_t NC_STACK_skeleton::skeleton_func132(skeleton_arg_132 *arg)
 {
-    skeleton_64_stru *sklt = obj->stack__skeleton.data;
+    skeleton_64_stru *sklt = this->stack__skeleton.data;
     int result = 1;
 
     if ( sklt->sen_count )
@@ -652,10 +636,10 @@ int skeleton_func133__sub0(skeleton_type1 *skt, skeleton_type1 *out, pol_indixes
 }
 
 
-void * skeleton_func133(NC_STACK_skeleton *obj, class_stru *, skeleton_arg133 *arg)
+void * NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
 {
     void *result;
-    skeleton_64_stru *sklt = obj->stack__skeleton.data;
+    skeleton_64_stru *sklt = this->stack__skeleton.data;
 
     skeleton_type1 tmp_sklt[12];
     skeleton_type1 tmp_sklt2[12];
@@ -763,28 +747,32 @@ void * skeleton_func133(NC_STACK_skeleton *obj, class_stru *, skeleton_arg133 *a
 
 
 
-class_return skeleton_class_descr;
-
-class_return * class_set_skeleton(int, ...)
+size_t NC_STACK_skeleton::compatcall(int method_id, void *data)
 {
-    memset(skeleton_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    skeleton_funcs[0] = (CLASSFUNC)skeleton_func0;
-    skeleton_funcs[3] = (CLASSFUNC)skeleton_func3;
-    skeleton_funcs[64] = (CLASSFUNC)skeleton_func64;
-    skeleton_funcs[65] = (CLASSFUNC)skeleton_func65;
-    skeleton_funcs[128] = (CLASSFUNC)skeleton_func128;
-    skeleton_funcs[129] = (CLASSFUNC)skeleton_func129;
-    skeleton_funcs[130] = (CLASSFUNC)skeleton_func130;
-    skeleton_funcs[131] = (CLASSFUNC)skeleton_func131;
-    skeleton_funcs[132] = (CLASSFUNC)skeleton_func132;
-    skeleton_funcs[133] = (CLASSFUNC)skeleton_func133;
-
-    skeleton_class_descr.parent = "rsrc.class";
-
-    skeleton_class_descr.vtbl = skeleton_funcs;
-    ////skeleton_class_descr.varSize = sizeof(__NC_STACK_skeleton);
-    skeleton_class_descr.varSize = sizeof(NC_STACK_skeleton) - offsetof(NC_STACK_skeleton, stack__skeleton); //// HACK
-    skeleton_class_descr.field_A = 0;
-    return &skeleton_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 3:
+        return (size_t)func3( (stack_vals *)data );
+    case 64:
+        return (size_t)rsrc_func64( (stack_vals *)data );
+    case 65:
+        return (size_t)rsrc_func65( (rsrc **)data );
+    case 128:
+        return (size_t)skeleton_func128( (stack_vals *)data );
+    case 129:
+        return (size_t)skeleton_func129( (skeleton_129_arg *)data );
+    case 130:
+        return (size_t)skeleton_func130( (skeleton_130_arg *)data );
+    case 131:
+        return (size_t)skeleton_func131( (int *)data );
+    case 132:
+        return (size_t)skeleton_func132( (skeleton_arg_132 *)data );
+    case 133:
+        return (size_t)skeleton_func133( (skeleton_arg133 *)data );
+    default:
+        break;
+    }
+    return NC_STACK_rsrc::compatcall(method_id, data);
 }

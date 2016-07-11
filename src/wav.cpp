@@ -5,21 +5,7 @@
 #include "utils.h"
 
 
-stored_functions *classvtbl_get_wav();
-class_return * class_set_wav(int, ...);
-
-stored_functions wav_class_vtbl(class_set_wav);
-
-
-class_stored wav_class_off (NULL, NULL, "MC2classes:wav.class", classvtbl_get_wav);
-
-
-stored_functions *classvtbl_get_wav()
-{
-    return &wav_class_vtbl;
-}
-
-CLASSFUNC wav_funcs[1024];
+const NewClassDescr NC_STACK_wav::description("wav.class", &newinstance);
 
 struct __attribute__((packed)) RIFF_HDR
 {
@@ -44,7 +30,7 @@ struct __attribute__((packed)) PCM_fmt
     uint16_t BitsPerSample;
 };
 
-rsrc * wav_func64__sub0(NC_STACK_wav *obj, class_stru *zis, stack_vals *stak, const char *filname)
+rsrc * wav_func64__sub0(NC_STACK_wav *obj, stack_vals *stak, const char *filname)
 {
     char buf[256];
     rsrc *res = NULL;
@@ -89,7 +75,7 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, class_stru *zis, stack_vals *stak, co
                     stk[2].id = 2;
                     stk[2].value = (size_t)stak;
 
-                    res = (rsrc *)call_parent(zis, obj, 64, stk); //Create sampl structure and alloc buff
+                    res = obj->NC_STACK_sample::rsrc_func64(stk); //Create sampl structure and alloc buff
 
                     if ( res )
                     {
@@ -99,7 +85,7 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, class_stru *zis, stack_vals *stak, co
                         if ( !smpl )
                         {
                             //call_vtbl(obj, 65, res);
-                            call_method(obj, 65, &res);
+                            obj->rsrc_func65(&res);
                             FClose(fil);
                             return NULL;
                         }
@@ -138,30 +124,24 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, class_stru *zis, stack_vals *stak, co
     return res;
 }
 
-rsrc *wav_func64(NC_STACK_wav *obj, class_stru *zis, stack_vals *stak)
+rsrc * NC_STACK_wav::rsrc_func64(stack_vals *stak)
 {
     const char *filename = (const char *)find_id_in_stack_def_val(0x80001000, 0, stak);
 
     if ( filename )
-        return wav_func64__sub0(obj, zis, stak, filename);
+        return wav_func64__sub0(this, stak, filename);
 
     return NULL;
 }
 
-class_return wav_class_descr;
-
-class_return * class_set_wav(int , ...)
+size_t NC_STACK_wav::compatcall(int method_id, void *data)
 {
-
-    memset(wav_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    wav_funcs[64] = (CLASSFUNC)wav_func64;
-
-    wav_class_descr.parent = "sample.class";
-
-    wav_class_descr.vtbl = wav_funcs;
-    ////wav_class_descr.varSize = sizeof(__NC_STACK_wav);
-    wav_class_descr.varSize = sizeof(NC_STACK_wav) - offsetof(NC_STACK_wav, stack__wav); //// HACK
-    wav_class_descr.field_A = 0;
-    return &wav_class_descr;
+    switch( method_id )
+    {
+    case 64:
+        return (size_t)rsrc_func64( (stack_vals *)data );
+    default:
+        break;
+    }
+    return NC_STACK_sample::compatcall(method_id, data);
 }

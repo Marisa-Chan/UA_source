@@ -6,44 +6,31 @@
 #include "utils.h"
 
 
-stored_functions *classvtbl_get_iwimp();
-class_return * class_set_iwimp(int, ...);
 
-stored_functions iwimp_class_vtbl(class_set_iwimp);
+const NewClassDescr NC_STACK_iwimp::description("iwimp.class", &newinstance);
 
 
-class_stored iwimp_class_off (NULL, NULL, "MC2classes:iwimp.class", classvtbl_get_iwimp);
 
-
-stored_functions *classvtbl_get_iwimp()
+size_t NC_STACK_iwimp::func0(stack_vals *stak)
 {
-    return &iwimp_class_vtbl;
+    if ( !NC_STACK_idev::func0(stak) )
+        return 0;
+
+    __NC_STACK_iwimp *wimp = &this->stack__iwimp;
+
+    init_list(&wimp->list);
+
+    return 1;
 }
 
-CLASSFUNC iwimp_funcs[1024];
-
-NC_STACK_iwimp * iwimp_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
-{
-    NC_STACK_iwimp *obj = (NC_STACK_iwimp *)call_parent(zis, clss, 0, stak);
-
-    if (obj)
-    {
-        __NC_STACK_iwimp *wimp = &obj->stack__iwimp;
-
-        init_list(&wimp->list);
-    }
-
-    return obj;
-}
-
-size_t iwimp_func128(NC_STACK_iwimp *, class_stru *, stack_vals *)
+size_t NC_STACK_iwimp::iwimp_func128(stack_vals *)
 {
     return 1;
 }
 
-void iwimp_func129(NC_STACK_iwimp *obj, class_stru *, iwimp_arg129 *arg)
+void NC_STACK_iwimp::iwimp_func129(iwimp_arg129 *arg)
 {
-    nlist *lst = &obj->stack__iwimp.list;
+    nlist *lst = &this->stack__iwimp.list;
 
     if ( arg->field_4 & 1 )
         AddHead(lst, arg->node);
@@ -51,7 +38,7 @@ void iwimp_func129(NC_STACK_iwimp *obj, class_stru *, iwimp_arg129 *arg)
         AddTail(lst, arg->node);
 }
 
-void iwimp_func130(NC_STACK_iwimp *, class_stru *, iwimp_arg129 *arg)
+void NC_STACK_iwimp::iwimp_func130(iwimp_arg129 *arg)
 {
     Remove(arg->node);
 }
@@ -98,9 +85,9 @@ void sub_41D538(__NC_STACK_iwimp *wimp, winp_131arg *arg, shortPoint *points)
     }
 }
 
-void iwimp_func131(NC_STACK_iwimp *obj, class_stru *, winp_131arg *arg)
+void NC_STACK_iwimp::iwimp_func131(winp_131arg *arg)
 {
-    __NC_STACK_iwimp *wimp = &obj->stack__iwimp;
+    __NC_STACK_iwimp *wimp = &this->stack__iwimp;
 
     arg->flag |= 1;
     arg->selected_btn = NULL;
@@ -149,24 +136,26 @@ void iwimp_func131(NC_STACK_iwimp *obj, class_stru *, winp_131arg *arg)
 }
 
 
-class_return iwimp_class_descr;
-
-class_return * class_set_iwimp(int , ...)
+size_t NC_STACK_iwimp::compatcall(int method_id, void *data)
 {
-
-    memset(iwimp_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    iwimp_funcs[0] = (CLASSFUNC)iwimp_func0;
-    iwimp_funcs[128] = (CLASSFUNC)iwimp_func128;
-    iwimp_funcs[129] = (CLASSFUNC)iwimp_func129;
-    iwimp_funcs[130] = (CLASSFUNC)iwimp_func130;
-    iwimp_funcs[131] = (CLASSFUNC)iwimp_func131;
-
-    iwimp_class_descr.parent = "idev.class";
-
-    iwimp_class_descr.vtbl = iwimp_funcs;
-    ////iwimp_class_descr.varSize = sizeof(__NC_STACK_iwimp);
-    iwimp_class_descr.varSize = sizeof(NC_STACK_iwimp) - offsetof(NC_STACK_iwimp, stack__iwimp); //// HACK
-    iwimp_class_descr.field_A = 0;
-    return &iwimp_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 128:
+        return (size_t)iwimp_func128( (stack_vals *)data );
+    case 129:
+        iwimp_func129( (iwimp_arg129 *)data );
+        return 1;
+    case 130:
+        iwimp_func130( (iwimp_arg129 *)data );
+        return 1;
+    case 131:
+        iwimp_func131( (winp_131arg *)data );
+        return 1;
+    default:
+        break;
+    }
+    return NC_STACK_idev::compatcall(method_id, data);
 }
+

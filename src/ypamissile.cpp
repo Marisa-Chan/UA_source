@@ -5,28 +5,14 @@
 #include "classes.h"
 #include "yw.h"
 #include "ypamissile.h"
+#include "yparobo.h"
 
 #include "log.h"
 
 #include <math.h>
 
 
-stored_functions *classvtbl_get_ypamissile();
-class_return * class_set_ypamissile(int, ...);
-
-stored_functions ypamissile_class_vtbl(class_set_ypamissile);
-
-
-class_stored ypamissile_class_off (NULL, NULL, "MC2classes:ypamissile.class", classvtbl_get_ypamissile);
-
-
-stored_functions *classvtbl_get_ypamissile()
-{
-    return &ypamissile_class_vtbl;
-}
-
-CLASSFUNC ypamissile_funcs[1024];
-
+const NewClassDescr NC_STACK_ypamissile::description("ypamissile.class", &newinstance);
 
 
 int ypamissile_func0__sub0(NC_STACK_ypamissile *obj, __NC_STACK_ypamissile *miss, stack_vals *stak)
@@ -107,37 +93,35 @@ int ypamissile_func0__sub0(NC_STACK_ypamissile *obj, __NC_STACK_ypamissile *miss
 }
 
 
-NC_STACK_ypamissile * ypamissile_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypamissile::func0(stack_vals *stak)
 {
-    NC_STACK_ypamissile *obj = (NC_STACK_ypamissile *)call_parent(zis, clss, 0, stak);
+    if ( !NC_STACK_ypabact::func0(stak) )
+        return 0;
 
-    if (obj)
+    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
+
+    //call_vtbl(this, 3, 0x80001003, &bact, 0);
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+
+    miss->selfie = bact;
+
+    miss->selfie_node.bact = bact;
+    miss->selfie_node.bacto = this;
+
+    bact->field_24 = 4;
+
+    if ( !ypamissile_func0__sub0(this, miss, stak) )
     {
-        __NC_STACK_ypamissile *miss = &obj->stack__ypamissile;
-
-        //call_vtbl(obj, 3, 0x80001003, &bact, 0);
-        __NC_STACK_ypabact *bact = &obj->stack__ypabact;
-
-        miss->selfie = bact;
-
-        miss->selfie_node.bact = bact;
-        miss->selfie_node.bacto = obj;
-
-        bact->field_24 = 4;
-
-        if ( !ypamissile_func0__sub0(obj, miss, stak) )
-        {
-            call_method(obj, 1);
-            return NULL;
-        }
+        func1(NULL);
+        return 0;
     }
 
-    return obj;
+    return 1;
 }
 
-size_t ypamissile_func1(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypamissile::func1(stack_vals *stak)
 {
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_ypabact::func1(stak);
 }
 
 void ypamissile_func2__sub0(NC_STACK_ypamissile *obj, __NC_STACK_ypamissile *miss, stack_vals *stak)
@@ -241,11 +225,12 @@ void ypamissile_func2__sub0(NC_STACK_ypamissile *obj, __NC_STACK_ypamissile *mis
     }
 }
 
-void ypamissile_func2(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypamissile::func2(stack_vals *stak)
 {
-    call_parent(zis, obj, 2, stak);
+    NC_STACK_ypabact::func2(stak);
 
-    ypamissile_func2__sub0(obj, &obj->stack__ypamissile, stak);
+    ypamissile_func2__sub0(this, &this->stack__ypamissile, stak);
+    return 1;
 }
 
 void ypamissile_func3__sub0(NC_STACK_ypamissile *obj, __NC_STACK_ypamissile *miss, stack_vals *stak)
@@ -342,27 +327,28 @@ void ypamissile_func3__sub0(NC_STACK_ypamissile *obj, __NC_STACK_ypamissile *mis
     }
 }
 
-void ypamissile_func3(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypamissile::func3(stack_vals *stak)
 {
-    call_parent(zis, obj, 3, stak);
+    NC_STACK_ypabact::func3(stak);
 
-    ypamissile_func3__sub0(obj, &obj->stack__ypamissile, stak);
+    ypamissile_func3__sub0(this, &this->stack__ypamissile, stak);
+    return 1;
 }
 
-void ypamissile_func68(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 *arg)
+void NC_STACK_ypamissile::ypabact_func68(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypamissile *miss = &obj->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
     if ( miss->selfie->field_3D5 == 2 )
     {
         int a4;
 
-        call_vtbl(obj, 3, 0x8000100B, &a4, 0);
+        call_vtbl(this, 3, 0x8000100B, &a4, 0);
 
         a4 -= arg->field_4;
 
-        call_vtbl(obj, 2, 0x8000100B, a4, 0);
+        call_vtbl(this, 2, 0x8000100B, a4, 0);
     }
 
     if ( bact->primTtype )
@@ -381,12 +367,12 @@ void ypamissile_func68(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
         }
     }
 
-    call_method(obj, 69, arg);
+    ypabact_func69(arg);
 }
 
-void ypamissile_func69(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 *arg)
+void NC_STACK_ypamissile::ypabact_func69(ypabact_arg65 *arg)
 {
-    call_method(obj, 70, arg);
+    ypabact_func70(arg);
 }
 
 int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
@@ -412,7 +398,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
     yw_130arg arg130;
     arg130.pos_x = bact->field_62D.sx;
     arg130.pos_z = bact->field_62D.sz;
-    call_method(miss->ywo, 130, &arg130);
+    miss->ywo->ypaworld_func130(&arg130);
 
     cellArea *v68[3];
 
@@ -420,7 +406,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
 
     arg130.pos_x = bact->field_621.sx;
     arg130.pos_z = bact->field_621.sz;
-    call_method(miss->ywo, 130, &arg130);
+    miss->ywo->ypaworld_func130(&arg130);
 
     v68[2] = arg130.pcell;
 
@@ -432,7 +418,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
     {
         arg130.pos_x = (bact->field_621.sx - bact->field_62D.sx) * 0.5 + bact->field_62D.sx;
         arg130.pos_z = (bact->field_621.sz - bact->field_62D.sz) * 0.5 + bact->field_62D.sz;
-        call_method(miss->ywo, 130, &arg130);
+        miss->ywo->ypaworld_func130(&arg130);
 
         v68[1] = arg130.pcell;
     }
@@ -635,7 +621,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                                                                 arg84.unit = miss->ejaculator_bact;
 
                                                                 if ( v85->owner == bact->owner || !miss->yw->field_757E )
-                                                                    call_method(bct->self, 84, &arg84);
+                                                                    bct->self->ypabact_func84(&arg84);
                                                             }
                                                         }
                                                     }
@@ -707,12 +693,12 @@ void ypamissile_func70__sub1(__NC_STACK_ypamissile *miss, bact_arg74 *arg74)
     }
 }
 
-void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 *arg)
+void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypamissile *miss = &obj->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
-    call_method(miss->ywo, 145, bact);
+    miss->ywo->ypaworld_func145(bact);
 
     float v40 = sqrt( POW2(bact->field_639.sx) + POW2(bact->field_639.sy) + POW2(bact->field_639.sz) );
 
@@ -739,7 +725,7 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
 
         if ( miss->field_2D & 2  &&  miss->delay_time <= 0 )
         {
-            call_method(obj, 129, 0);
+            ypamissile_func129(NULL);
 
             miss->selfie->field_3D5 = 2;
 
@@ -748,7 +734,7 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
             arg78.field_8 = 0;
             arg78.field_0 = 0;
 
-            call_method(obj, 78,  &arg78);
+            ypabact_func78(&arg78);
 
             if ( !(miss->field_2D & 4) || !miss->selfie->p_cell_area->w_type )
             {
@@ -761,7 +747,7 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
                     v25.field_10 = bact->energy;
                     v25.unit = miss->ejaculator_bact;
 
-                    call_method(obj, 120, &v25);
+                    ypabact_func120(&v25);
                 }
             }
         }
@@ -774,7 +760,7 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
             case 1:
                 arg74.field_0 = v38;
                 arg74.flag = 1;
-                call_method(obj, 74, &arg74);
+                ypabact_func74(&arg74);
                 break;
 
             case 2:
@@ -782,7 +768,7 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
                 arg74.flag = 0;
 
                 ypamissile_func70__sub1(miss, &arg74);
-                call_method(obj, 74, &arg74);
+                ypabact_func74(&arg74);
                 break;
 
             case 3:
@@ -790,7 +776,7 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
                 arg74.flag = 0;
 
                 ypamissile_func70__sub1(miss, &arg74);
-                call_method(obj, 74, &arg74);
+                ypabact_func74(&arg74);
                 break;
 
             case 4:
@@ -798,7 +784,7 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
                 arg74.vec = bact->field_605;
                 arg74.flag = 0;
 
-                call_method(obj, 74, &arg74);
+                ypabact_func74(&arg74);
                 break;
 
             default:
@@ -808,15 +794,15 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
             if ( ypamissile_func70__sub0(miss) )
             {
                 bact_arg119 arg78;
-                call_method(obj, 129, 0);
+                ypamissile_func129(NULL);
 
                 arg78.field_0 = 2;
                 arg78.field_8 = 0;
                 arg78.field_4 = 0;
 
-                call_method(obj, 78, &arg78);
+                ypabact_func78(&arg78);
 
-                call_method(obj, 128, 0);
+                ypamissile_func128(NULL);
             }
             else if ( miss->field_c != 6 )
             {
@@ -829,7 +815,7 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
                 arg136.field_1C = bact->field_621.sz - bact->field_62D.sz;
                 arg136.field_40 = 0;
 
-                call_method(miss->ywo, 136, &arg136);
+                miss->ywo->ypaworld_func136(&arg136);
 
                 if ( arg136.field_20 )
                 {
@@ -838,21 +824,21 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
                     arg131.pos.sy = arg136.field_3C->triangles[ arg136.field_38 ].field_4;
                     arg131.pos.sz = arg136.field_3C->triangles[ arg136.field_38 ].field_8;
 
-                    call_method(obj, 131, &arg131);
+                    ypamissile_func131(&arg131);
 
 
                     bact->field_621.sx = arg136.field_2C;
                     bact->field_621.sy = arg136.field_30;
                     bact->field_621.sz = arg136.field_34;
 
-                    call_method(obj, 128, 0);
+                    ypamissile_func128(NULL);
 
                     miss->field_c = 6;
                     miss->field_2D |= 2;
 
                     if ( !miss->delay_time )
                     {
-                        call_method(obj, 129, 0);
+                        ypamissile_func129(NULL);
 
                         miss->selfie->field_3D5 = 2;
 
@@ -861,7 +847,7 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
                         arg78.field_8 = 0;
                         arg78.field_0 = 0;
 
-                        call_method(obj, 78, &arg78);
+                        ypabact_func78(&arg78);
 
                         if ( !(miss->field_2D & 4) || !miss->selfie->p_cell_area->w_type )
                         {
@@ -874,7 +860,7 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
                                 v25.field_10 = bact->energy;
                                 v25.unit = miss->ejaculator_bact;
 
-                                call_method(obj, 120, &v25);
+                                ypabact_func120(&v25);
                             }
                         }
                     }
@@ -884,16 +870,16 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
 
                     if ( a4 )
                     {
-                        if ( miss->ejaculator_bact->field_32 == miss->ejaculator_bact->parent_bacto )
+                        if ( miss->ejaculator_bact->host_station == miss->ejaculator_bact->parent_bacto )
                         {
-                            if ( miss->ejaculator_bact->field_32 )
+                            if ( miss->ejaculator_bact->host_station )
                             {
                                 bact_arg67 arg67;
                                 arg67.tgt_type = BACT_TGT_TYPE_CELL;
                                 arg67.tgt_pos = bact->field_621;
                                 arg67.priority = 0;
 
-                                call_method(miss->ejaculator_bact->self, 67, &arg67);
+                                miss->ejaculator_bact->self->ypabact_func67(&arg67);
                             }
                         }
                     }
@@ -917,20 +903,20 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
                         miss_arg130 arg130;
                         arg130.period = arg->field_4 * 0.001;
 
-                        call_method(obj, 130, &arg130);
+                        ypamissile_func130(&arg130);
                     }
                     else
                     {
-                        call_method(obj, 129, 0);
+                        ypamissile_func129(NULL);
 
                         bact_arg119 arg78;
                         arg78.field_8 = 0;
                         arg78.field_4 = 0;
                         arg78.field_0 = 2;
 
-                        call_method(obj, 78, &arg78);
+                        ypabact_func78(&arg78);
 
-                        call_method(obj, 128, 0);
+                        ypamissile_func128(NULL);
                     }
                 }
             }
@@ -938,22 +924,22 @@ void ypamissile_func70(NC_STACK_ypamissile *obj, class_stru *zis, ypabact_arg65 
     }
 }
 
-void ypamissile_func71(NC_STACK_ypamissile *obj, class_stru *zis, stack_vals *arg)
+void NC_STACK_ypamissile::ypabact_func71(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypamissile *miss = &obj->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
     bact->field_62D = bact->field_621;
 
     if (bact->field_3D5 == 1)
-        call_method(obj, 68, arg);
+        ypabact_func68(arg);
     else
-        call_method(obj, 128, 0);
+        ypamissile_func128(NULL);
 }
 
-void ypamissile_func74(NC_STACK_ypamissile *obj, class_stru *zis, bact_arg74 *arg)
+void NC_STACK_ypamissile::ypabact_func74(bact_arg74 *arg)
 {
-    __NC_STACK_ypamissile *miss = &obj->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
     bact->field_62D = bact->field_621;
@@ -1018,29 +1004,29 @@ void ypamissile_func74(NC_STACK_ypamissile *obj, class_stru *zis, bact_arg74 *ar
     bact->field_621.sy += bact->field_605.sy * bact->field_611 * arg->field_0 * 6.0;
     bact->field_621.sz += bact->field_605.sz * bact->field_611 * arg->field_0 * 6.0;
 
-    call_method(obj, 115, 0);
+    ypabact_func115(NULL);
 }
 
-void ypamissile_func78(NC_STACK_ypamissile *obj, class_stru *zis, bact_arg119 *arg)
+void NC_STACK_ypamissile::ypabact_func78(bact_arg119 *arg)
 {
-    call_method(obj, 119, arg);
+    ypabact_func119(arg);
 }
 
-void ypamissile_func96(NC_STACK_ypamissile *obj, class_stru *zis, void *)
+void NC_STACK_ypamissile::ypabact_func96(void *)
 {
-    call_parent(zis, obj, 96, 0);
+    NC_STACK_ypabact::ypabact_func96(NULL);
 
-    __NC_STACK_ypamissile *miss = &obj->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
 
     miss->field_2D  = 0;
     miss->delay_time = 0;
 
-    call_vtbl(obj, 2, 0x8000100B, 3000, 0);
+    call_vtbl(this, 2, 0x8000100B, 3000, 0);
 }
 
-size_t ypamissile_func119(NC_STACK_ypamissile *obj, class_stru *zis, bact_arg119 *arg)
+size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
 {
-    __NC_STACK_ypamissile *miss = &obj->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
     sub_424000(&bact->field_5A, 2);
@@ -1058,29 +1044,29 @@ size_t ypamissile_func119(NC_STACK_ypamissile *obj, class_stru *zis, bact_arg119
 
     if ( arg->field_0 == 2 )
     {
-        call_vtbl(obj, 2, 0x8000100C, bact->vp_dead.base, 0);
-        call_vtbl(obj, 2, 0x8000100F, bact->vp_dead.trigo, 0);
+        call_vtbl(this, 2, 0x8000100C, bact->vp_dead.base, 0);
+        call_vtbl(this, 2, 0x8000100F, bact->vp_dead.trigo, 0);
 
         sub_423F74(&bact->field_5A, 2);
 
         uint8_t v8 = 1;
-        call_method(obj, 113, &v8);
+        ypabact_func113(&v8);
 
         bact->field_611 = 0;
     }
 
     if ( arg->field_0 == 1 )
     {
-        call_vtbl(obj, 2, 0x8000100C, bact->vp_normal.base, 0);
-        call_vtbl(obj, 2, 0x8000100F, bact->vp_normal.trigo, 0);
+        call_vtbl(this, 2, 0x8000100C, bact->vp_normal.base, 0);
+        call_vtbl(this, 2, 0x8000100F, bact->vp_normal.trigo, 0);
 
         sub_423F74(&bact->field_5A, 0);
     }
 
     if ( arg->field_8 == 2048 )
     {
-        call_vtbl(obj, 2, 0x8000100C, bact->vp_normal.base, 0);
-        call_vtbl(obj, 2, 0x8000100F, bact->vp_normal.trigo, 0);
+        call_vtbl(this, 2, 0x8000100C, bact->vp_normal.base, 0);
+        call_vtbl(this, 2, 0x8000100F, bact->vp_normal.trigo, 0);
 
         sub_423F74(&bact->field_5A, 0);
     }
@@ -1089,13 +1075,13 @@ size_t ypamissile_func119(NC_STACK_ypamissile *obj, class_stru *zis, bact_arg119
     {
         bact->field_3D5 = 2;
 
-        call_vtbl(obj, 2, 0x8000100C, bact->vp_megadeth.base, 0);
-        call_vtbl(obj, 2, 0x8000100F, bact->vp_megadeth.trigo, 0);
+        call_vtbl(this, 2, 0x8000100C, bact->vp_megadeth.base, 0);
+        call_vtbl(this, 2, 0x8000100F, bact->vp_megadeth.trigo, 0);
 
         sub_423F74(&bact->field_5A, 2);
 
         uint8_t v9 = 2;
-        call_method(obj, 113, &v9);
+        ypabact_func113(&v9);
 
         bact->field_611 = 0;
     }
@@ -1103,17 +1089,17 @@ size_t ypamissile_func119(NC_STACK_ypamissile *obj, class_stru *zis, bact_arg119
     return 1;
 }
 
-void ypamissile_func128(NC_STACK_ypamissile *obj, class_stru *zis, void *)
+void NC_STACK_ypamissile::ypamissile_func128(void *)
 {
-    __NC_STACK_ypamissile *miss = &obj->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
 
     int a4;
-    call_vtbl(obj, 3, 0x80001004, &a4, 0);
+    call_vtbl(this, 3, 0x80001004, &a4, 0);
 
     if ( a4 )
     {
-        call_vtbl(obj, 2, 0x80001004, 0, 0);
-        call_vtbl(obj, 2, 0x80001005, 0, 0);
+        call_vtbl(this, 2, 0x80001004, 0, 0);
+        call_vtbl(this, 2, 0x80001005, 0, 0);
 
         if ( miss->ejaculator_bact->field_3D5 != 2 || (size_t)miss->ejaculator_bact->parent_bacto <= 3 )
         {
@@ -1129,9 +1115,9 @@ void ypamissile_func128(NC_STACK_ypamissile *obj, class_stru *zis, void *)
     }
 }
 
-void ypamissile_func129(NC_STACK_ypamissile *obj, class_stru *zis, void *)
+void NC_STACK_ypamissile::ypamissile_func129(void *)
 {
-    __NC_STACK_ypamissile *miss = &obj->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
     bact_arg83 arg83;
@@ -1165,7 +1151,7 @@ void ypamissile_func129(NC_STACK_ypamissile *obj, class_stru *zis, void *)
             }
 
             if ( v10 )
-                call_method(bct->self, 83, &arg83);
+                bct->self->ypabact_func83(&arg83);
         }
 
         bct = (__NC_STACK_ypabact *)bct->next;
@@ -1199,13 +1185,13 @@ void ypamissile_func129(NC_STACK_ypamissile *obj, class_stru *zis, void *)
         arg181.field_18 = 1;
         arg181.value = v13;
 
-        call_method(miss->ywo, 181, &arg181);
+        miss->ywo->ypaworld_func181(&arg181);
     }
 }
 
-void ypamissile_func130(NC_STACK_ypamissile *obj, class_stru *zis, miss_arg130 *arg)
+void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
 {
-    __NC_STACK_ypamissile *miss = &obj->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
     if ( bact->field_605.sx != 0.0 || bact->field_605.sy != 0.0 || bact->field_605.sz != 0.0 )
@@ -1303,9 +1289,9 @@ void ypamissile_func130(NC_STACK_ypamissile *obj, class_stru *zis, miss_arg130 *
     }
 }
 
-void ypamissile_func131(NC_STACK_ypamissile *obj, class_stru *zis, miss_arg130 *arg)
+void NC_STACK_ypamissile::ypamissile_func131(miss_arg130 *arg)
 {
-    __NC_STACK_ypamissile *miss = &obj->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
     float v33 = bact->field_651.m10;
@@ -1355,35 +1341,55 @@ void ypamissile_func131(NC_STACK_ypamissile *obj, class_stru *zis, miss_arg130 *
 }
 
 
-class_return ypamissile_class_descr;
-
-class_return * class_set_ypamissile(int , ...)
+size_t NC_STACK_ypamissile::compatcall(int method_id, void *data)
 {
-
-    memset(ypamissile_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    ypamissile_class_descr.parent = "ypabact.class";
-
-    ypamissile_funcs[0] = (CLASSFUNC)ypamissile_func0;
-    ypamissile_funcs[1] = (CLASSFUNC)ypamissile_func1;
-    ypamissile_funcs[2] = (CLASSFUNC)ypamissile_func2;
-    ypamissile_funcs[3] = (CLASSFUNC)ypamissile_func3;
-    ypamissile_funcs[68] = (CLASSFUNC)ypamissile_func68;
-    ypamissile_funcs[69] = (CLASSFUNC)ypamissile_func69;
-    ypamissile_funcs[70] = (CLASSFUNC)ypamissile_func70;
-    ypamissile_funcs[71] = (CLASSFUNC)ypamissile_func71;
-    ypamissile_funcs[74] = (CLASSFUNC)ypamissile_func74;
-    ypamissile_funcs[78] = (CLASSFUNC)ypamissile_func78;
-    ypamissile_funcs[96] = (CLASSFUNC)ypamissile_func96;
-    ypamissile_funcs[119] = (CLASSFUNC)ypamissile_func119;
-    ypamissile_funcs[128] = (CLASSFUNC)ypamissile_func128;
-    ypamissile_funcs[129] = (CLASSFUNC)ypamissile_func129;
-    ypamissile_funcs[130] = (CLASSFUNC)ypamissile_func130;
-    ypamissile_funcs[131] = (CLASSFUNC)ypamissile_func131;
-
-    ypamissile_class_descr.vtbl = ypamissile_funcs;
-    ////ypamissile_class_descr.varSize = sizeof(__NC_STACK_ypamissile);
-    ypamissile_class_descr.varSize = sizeof(NC_STACK_ypamissile) - offsetof(NC_STACK_ypamissile, stack__ypamissile); //// HACK
-    ypamissile_class_descr.field_A = 0;
-    return &ypamissile_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        return func2( (stack_vals *)data );
+    case 3:
+        return func3( (stack_vals *)data );
+    case 68:
+        ypabact_func68( (ypabact_arg65 *)data );
+        return 1;
+    case 69:
+        ypabact_func69( (ypabact_arg65 *)data );
+        return 1;
+    case 70:
+        ypabact_func70( (ypabact_arg65 *)data );
+        return 1;
+    case 71:
+        ypabact_func71( (ypabact_arg65 *)data );
+        return 1;
+    case 74:
+        ypabact_func74( (bact_arg74 *)data );
+        return 1;
+    case 78:
+        ypabact_func78( (bact_arg119 *)data );
+        return 1;
+    case 96:
+        ypabact_func96( (void *)data );
+        return 1;
+    case 119:
+        return (size_t)ypabact_func119( (bact_arg119 *)data );
+    case 128:
+        ypamissile_func128( (void *)data );
+        return 1;
+    case 129:
+        ypamissile_func129( (void *)data );
+        return 1;
+    case 130:
+        ypamissile_func130( (miss_arg130 *)data );
+        return 1;
+    case 131:
+        ypamissile_func131( (miss_arg130 *)data );
+        return 1;
+    default:
+        break;
+    }
+    return NC_STACK_ypabact::compatcall(method_id, data);
 }

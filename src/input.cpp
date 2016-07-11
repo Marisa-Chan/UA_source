@@ -6,42 +6,27 @@
 #include "input.h"
 
 
-
-stored_functions *classvtbl_get_input();
-class_return * class_set_input(int, ...);
-
-stored_functions input_class_vtbl(class_set_input);
+const NewClassDescr NC_STACK_input::description("input.class", &newinstance);
 
 
-class_stored input_class_off (NULL, NULL, "MC2classes:input.class", classvtbl_get_input);
-
-
-stored_functions *classvtbl_get_input()
+size_t NC_STACK_input::func0(stack_vals *stak)
 {
-    return &input_class_vtbl;
-}
+    if ( !NC_STACK_nucleus::func0(stak) )
+        return 0;
 
-CLASSFUNC input_funcs[1024];
+    __NC_STACK_input *inp = &this->stack__input;
 
-NC_STACK_input *input_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
-{
-    NC_STACK_input *obj = (NC_STACK_input *)call_parent(zis, clss, 0, stak);
-    if ( obj )
+    for (int i = 0; i < 32; i++)
     {
-        __NC_STACK_input *inp = &obj->stack__input;
-
-        for (int i = 0; i < 32; i++)
-        {
-            init_list(&inp->buttons_lists[i]);
-            init_list(&inp->sliders_lists[i]);
-        }
+        init_list(&inp->buttons_lists[i]);
+        init_list(&inp->sliders_lists[i]);
     }
-    return obj;
+    return 1;
 }
 
-size_t input_func1(NC_STACK_input *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_input::func1(stack_vals *stak)
 {
-    __NC_STACK_input *inp = &obj->stack__input;
+    __NC_STACK_input *inp = &this->stack__input;
 
     if ( inp->timer )
         delete_class_obj(inp->timer);
@@ -80,7 +65,7 @@ size_t input_func1(NC_STACK_input *obj, class_stru *zis, stack_vals *stak)
             nc_FreeMem(nod);
         }
     }
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_nucleus::func1(stak);
 }
 
 const char * input__parse__inputkey_node(const char *a1, nlist *lst)
@@ -186,16 +171,15 @@ int input__set_buttons_and_sliders(__NC_STACK_input *inp, input__func64__params 
             {
                 char classname[256];
 
-                strcpy(classname, "drivers/input/");
-                strcat(classname, node->driver_name);
+                strcpy(classname, node->driver_name);
                 strcat(classname, ".class");
 
-                node->driver_obj = (NC_STACK_winp *)init_get_class(classname, 0);
+                node->driver_obj = dynamic_cast<NC_STACK_idev *>( init_get_class(classname, 0) );
                 if ( node->driver_obj )
                 {
-                    char *v26 = node->keyname;
+                    const char *v26 = node->keyname;
 
-                    node->keyType = call_method(node->driver_obj, 67, &v26);
+                    node->keyType = node->driver_obj->idev_func67(&v26);
 
                     if ( !node->keyType )
                         ypa_log_out("input.class, WARN: Driver '%s' did not accept id '%s'.\n", node->driver_name, node->keyname);
@@ -210,11 +194,11 @@ int input__set_buttons_and_sliders(__NC_STACK_input *inp, input__func64__params 
     return 1;
 }
 
-size_t input_func64(NC_STACK_input *obj, class_stru *, input__func64__params *arg)
+size_t NC_STACK_input::input_func64(input__func64__params *arg)
 {
     char classname[256];
 
-    __NC_STACK_input *inp = &obj->stack__input;
+    __NC_STACK_input *inp = &this->stack__input;
 
     switch ( arg->type_id )
     {
@@ -222,11 +206,10 @@ size_t input_func64(NC_STACK_input *obj, class_stru *, input__func64__params *ar
         if ( inp->wimp )
             delete_class_obj(inp->wimp);
 
-        strcpy(classname, "drivers/input/");
-        strcat(classname, arg->value);
+        strcpy(classname, arg->value);
         strcat(classname, ".class");
 
-        inp->wimp = (NC_STACK_winp *)init_get_class(classname, 0);
+        inp->wimp = dynamic_cast<NC_STACK_iwimp *>( init_get_class(classname, 0) );
         if ( !inp->wimp )
             return 0;
         break;
@@ -235,11 +218,10 @@ size_t input_func64(NC_STACK_input *obj, class_stru *, input__func64__params *ar
         if ( inp->timer )
             delete_class_obj(inp->timer);
 
-        strcpy(classname, "drivers/input/");
-        strcat(classname, arg->value);
+        strcpy(classname, arg->value);
         strcat(classname, ".class");
 
-        inp->timer = (NC_STACK_wintimer *)init_get_class(classname, 0);
+        inp->timer = dynamic_cast<NC_STACK_itimer *>( init_get_class(classname, 0) );
         if ( !inp->timer )
             return 0;
         break;
@@ -248,11 +230,10 @@ size_t input_func64(NC_STACK_input *obj, class_stru *, input__func64__params *ar
         if ( inp->keyboard )
             delete_class_obj(inp->keyboard);
 
-        strcpy(classname, "drivers/input/");
-        strcat(classname, arg->value);
+        strcpy(classname, arg->value);
         strcat(classname, ".class");
 
-        inp->keyboard = (NC_STACK_winp *)init_get_class(classname, 0);
+        inp->keyboard = dynamic_cast<NC_STACK_idev *>( init_get_class(classname, 0) );
         if ( !inp->keyboard )
             return 0;
         break;
@@ -291,7 +272,7 @@ void sub_41CC94(nlist *lst, inp_l65 *loc, int arg)
                 {
                     if (node->field_C & 8)
                     {
-                        call_method(node->driver_obj, 65, &warg64);
+                        node->driver_obj->idev_func65(&warg64);
 
                         if ( node->field_C & 4 )
                             loc->field_4 -= warg64.field_8;
@@ -300,7 +281,7 @@ void sub_41CC94(nlist *lst, inp_l65 *loc, int arg)
                     }
                     else
                     {
-                        call_method(node->driver_obj, 64, &warg64);
+                        node->driver_obj->idev_func64(&warg64);
 
                         int v9 = warg64.field_4;
 
@@ -315,7 +296,7 @@ void sub_41CC94(nlist *lst, inp_l65 *loc, int arg)
                 }
                 else if (node->keyType == 2)
                 {
-                    call_method(node->driver_obj, 65, &warg64);
+                    node->driver_obj->idev_func65(&warg64);
 
                     if ( node->field_C & 4 )
                         loc->field_4 -= warg64.field_8;
@@ -331,27 +312,27 @@ void sub_41CC94(nlist *lst, inp_l65 *loc, int arg)
     }
 }
 
-void input_func65(NC_STACK_input *obj, class_stru *, struC5 *arg)
+void NC_STACK_input::input_func65(struC5 *arg)
 {
-    __NC_STACK_input *inp = &obj->stack__input;
+    __NC_STACK_input *inp = &this->stack__input;
     memset(arg, 0, sizeof(struC5));
 
     if ( inp->timer )
-        arg->period = call_method(inp->timer, 64);
+        arg->period = inp->timer->itimer_func64(NULL);
     else
         arg->period = 20;
 
     inp->field_4 += arg->period;
 
     if ( inp->wimp &&
-            call_method(inp->wimp, 128) )
+            inp->wimp->iwimp_func128(NULL) )
     {
         if ( inp->keyboard )
         {
             winp_66arg v15;
             memset(&v15, 0, sizeof(winp_66arg));
 
-            call_method(inp->keyboard, 66, &v15);
+            inp->keyboard->idev_func66(&v15);
 
             arg->downed_key_2 = v15.downed_key_2;
             arg->downed_key = v15.downed_key;
@@ -359,7 +340,7 @@ void input_func65(NC_STACK_input *obj, class_stru *, struC5 *arg)
             arg->chr = v15.chr;
         }
 
-        call_method(inp->wimp, 131, &arg->winp131arg);
+        inp->wimp->iwimp_func131(&arg->winp131arg);
 
         for (int i = 0; i < 32; i++)
         {
@@ -398,11 +379,11 @@ void input_func65(NC_STACK_input *obj, class_stru *, struC5 *arg)
     }
 }
 
-size_t input_func66(NC_STACK_input *obj, class_stru *, input__func66__params *arg)
+size_t NC_STACK_input::input_func66(input__func66__params *arg)
 {
-    __NC_STACK_input *inpt = &obj->stack__input;
+    __NC_STACK_input *inpt = &this->stack__input;
 
-    NC_STACK_class *v7 = NULL;
+    NC_STACK_nucleus *v7 = NULL;
     if ( arg->field_0 == 1 )
     {
         v7 = inpt->wimp;
@@ -445,24 +426,23 @@ size_t input_func66(NC_STACK_input *obj, class_stru *, input__func66__params *ar
 }
 
 
-class_return input_class_descr;
-
-class_return * class_set_input(int , ...)
+size_t NC_STACK_input::compatcall(int method_id, void *data)
 {
-
-    memset(input_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    input_funcs[0] = (CLASSFUNC)input_func0;
-    input_funcs[1] = (CLASSFUNC)input_func1;
-    input_funcs[64] = (CLASSFUNC)input_func64;
-    input_funcs[65] = (CLASSFUNC)input_func65;
-    input_funcs[66] = (CLASSFUNC)input_func66;
-
-    input_class_descr.parent = "nucleus.class";
-
-    input_class_descr.vtbl = input_funcs;
-    ////input_class_descr.varSize = sizeof(__NC_STACK_input);
-    input_class_descr.varSize = sizeof(NC_STACK_input) - offsetof(NC_STACK_input, stack__input); //// HACK
-    input_class_descr.field_A = 0;
-    return &input_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 64:
+        return (size_t)input_func64( (input__func64__params *)data );
+    case 65:
+        input_func65( (struC5 *)data );
+        return 1;
+    case 66:
+        return (size_t)input_func66( (input__func66__params *)data );
+    default:
+        break;
+    }
+    return NC_STACK_nucleus::compatcall(method_id, data);
 }

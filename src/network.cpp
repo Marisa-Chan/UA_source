@@ -6,67 +6,52 @@
 #include "network.h"
 
 
-stored_functions *classvtbl_get_network();
-class_return * class_set_network(int, ...);
 
-stored_functions network_class_vtbl(class_set_network);
+const NewClassDescr NC_STACK_network::description("network.class", &newinstance);
 
 
-class_stored network_class_off (NULL, NULL, "MC2classes:network.class", classvtbl_get_network);
 
-
-stored_functions *classvtbl_get_network()
+size_t NC_STACK_network::func0(stack_vals *stak)
 {
-    return &network_class_vtbl;
+    if ( !NC_STACK_nucleus::func0(stak) )
+        return 0;
+
+    return 1;
 }
 
-CLASSFUNC network_funcs[1024];
-
-
-
-
-NC_STACK_network * network_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_network::func1(stack_vals *stak)
 {
-    NC_STACK_network *obj = (NC_STACK_network *)call_parent(zis, clss, 0, stak);
-
-    return obj;
+    return NC_STACK_nucleus::func1(stak);
 }
 
-size_t network_func1(NC_STACK_network *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_network::func2(stack_vals *stak)
 {
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_nucleus::func2(stak);
 }
 
-void network_func2(NC_STACK_network *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_network::func3(stack_vals *stak)
 {
-    call_parent(zis, obj, 2, stak);
-}
-
-void network_func3(NC_STACK_network *obj, class_stru *zis, stack_vals *stak)
-{
-    call_parent(zis, obj, 3, stak);
+    return NC_STACK_nucleus::func3(stak);
 }
 
 
 
-
-class_return network_class_descr;
-
-class_return * class_set_network(int , ...)
+size_t NC_STACK_network::compatcall(int method_id, void *data)
 {
-
-    memset(network_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    network_class_descr.parent = "nucleus.class";
-
-    network_funcs[0] = (CLASSFUNC)network_func0;
-    network_funcs[1] = (CLASSFUNC)network_func1;
-    network_funcs[2] = (CLASSFUNC)network_func2;
-    network_funcs[3] = (CLASSFUNC)network_func3;
-
-    network_class_descr.vtbl = network_funcs;
-    ////network_class_descr.varSize = sizeof(__NC_STACK_network);
-    network_class_descr.varSize = sizeof(NC_STACK_network) - offsetof(NC_STACK_network, stack__network); //// HACK
-    network_class_descr.field_A = 0;
-    return &network_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        func2( (stack_vals *)data );
+        return 1;
+    case 3:
+        func3( (stack_vals *)data );
+        return 1;
+    default:
+        break;
+    }
+    return NC_STACK_nucleus::compatcall(method_id, data);
 }

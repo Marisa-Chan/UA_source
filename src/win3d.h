@@ -31,16 +31,6 @@ struct texCache
     texStru *txStru;
 };
 
-struct polysDatSub
-{
-    int renderFlags;
-    int vertexCount;
-    xyz *vertexes;
-    tUtV *tu_tv;
-    float *color;
-    bitmap_intern *pbitm;
-    int field_18;
-};
 
 struct wind3d_sub1
 {
@@ -141,12 +131,54 @@ struct __NC_STACK_win3d
     int colorkey;
 };
 
-struct NC_STACK_win3d : public NC_STACK_windd
+class NC_STACK_win3d: public NC_STACK_windd
 {
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t raster_func198(w3d_func198arg *arg);
+    virtual size_t raster_func199(w3d_func199arg *arg);
+    virtual size_t raster_func200(w3d_func198arg *arg);
+    virtual size_t raster_func201(w3d_func199arg *arg);
+    virtual size_t raster_func202(rstr_arg204 *arg);
+    virtual size_t raster_func204(rstr_arg204 *arg);
+    virtual size_t raster_func206(polysDatSub *arg);
+    virtual void raster_func209(w3d_a209 *arg);
+    virtual void raster_func213(polysDatSub *);
+    virtual size_t raster_func214(void *);
+    virtual void raster_func215(void *);
+    virtual void raster_func216(void *);
+    virtual void raster_func218(rstr_218_arg *arg);
+    virtual void display_func262(rstr_262_arg *arg);
+    virtual size_t display_func266(bitmap_intern **arg);
+    virtual void display_func267(bitmap_intern **arg);
+    virtual void display_func268(bitmap_intern **arg);
+    virtual size_t display_func269(bitmap_intern **arg);
+    virtual void display_func270(bitmap_intern **arg);
+    virtual void display_func271(stack_vals *stak);
+    virtual void display_func272(stack_vals *);
+    virtual void display_func274(const char **name);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_win3d() {
+        memset(&stack__win3d, 0, sizeof(stack__win3d));
+    };
+    virtual ~NC_STACK_win3d() {};
+
+    virtual const char * getClassName() {
+        return "win3d.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_win3d();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
     __NC_STACK_win3d stack__win3d;
 };
-
-extern class_stored win3d_class_off;
 
 
 #endif //WIN3D_H_INCLUDED

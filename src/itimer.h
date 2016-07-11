@@ -3,17 +3,36 @@
 
 #include "nucleas.h"
 
-extern class_stored itimer_class_off;
-
-struct NC_STACK_itimer;
 
 struct __NC_STACK_itimer
 {
 
 };
 
-struct NC_STACK_itimer : public NC_STACK_nucleus
+class NC_STACK_itimer: public NC_STACK_nucleus
 {
+public:
+    virtual int itimer_func64(void *) {
+        return 1;
+    };
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_itimer() {
+        memset(&stack__itimer, 0, sizeof(stack__itimer));
+    };
+    virtual ~NC_STACK_itimer() {};
+
+    virtual const char * getClassName() {
+        return "itimer.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_itimer();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
     __NC_STACK_itimer stack__itimer;
 };
 

@@ -6,21 +6,8 @@
 #include <math.h>
 
 
-stored_functions *classvtbl_get_particle();
-class_return * class_set_particle(int, ...);
+const NewClassDescr NC_STACK_particle::description("particle.class", &newinstance);
 
-stored_functions particle_class_vtbl(class_set_particle);
-
-
-class_stored particle_class_off (NULL, NULL, "MC2classes:particle.class", classvtbl_get_particle);
-
-
-stored_functions *classvtbl_get_particle()
-{
-    return &particle_class_vtbl;
-}
-
-CLASSFUNC particle_funcs[1024];
 
 float flt_515208[1024] =
 {
@@ -473,45 +460,44 @@ int sub_41A954(__NC_STACK_particle *prtcl)
 }
 
 
-NC_STACK_particle * particle_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_particle::func0(stack_vals *stak)
 {
-    NC_STACK_particle *obj = (NC_STACK_particle *)call_parent(zis, clss, 0, stak); // rsrc_func0
-    if (obj)
+    if ( !NC_STACK_ade::func0(stak) )
+        return 0;
+
+    __NC_STACK_particle *prtcl = &this->stack__particle;
+
+    if (!sub_41A8D0(prtcl))
     {
-        __NC_STACK_particle *prtcl = &obj->stack__particle;
-
-        if (!sub_41A8D0(prtcl))
-        {
-            call_method(obj, 1);
-            return NULL;
-        }
-
-        if (!particle_func0__sub0(prtcl, stak))
-        {
-            call_method(obj, 1);
-            return NULL;
-        }
-
-        if (!sub_41A954(prtcl))
-        {
-            call_method(obj, 1);
-            return NULL;
-        }
-
-        particle_recalc(prtcl);
-
-        prtcl->field_8c = 1024 / prtcl->field_88;
-        prtcl->field_98 = (prtcl->field_94 - prtcl->field_90) / prtcl->field_84;
-
-        sub_41AB50(prtcl);
+        func1(NULL);
+        return 0;
     }
 
-    return obj;
+    if (!particle_func0__sub0(prtcl, stak))
+    {
+        func1(NULL);
+        return 0;
+    }
+
+    if (!sub_41A954(prtcl))
+    {
+        func1(NULL);
+        return 0;
+    }
+
+    particle_recalc(prtcl);
+
+    prtcl->field_8c = 1024 / prtcl->field_88;
+    prtcl->field_98 = (prtcl->field_94 - prtcl->field_90) / prtcl->field_84;
+
+    sub_41AB50(prtcl);
+
+    return 1;
 }
 
-size_t particle_func1(NC_STACK_particle *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_particle::func1(stack_vals *stak)
 {
-    __NC_STACK_particle *prtcl = &obj->stack__particle;
+    __NC_STACK_particle *prtcl = &this->stack__particle;
 
 
     if ( prtcl->tp1 )
@@ -534,7 +520,7 @@ size_t particle_func1(NC_STACK_particle *obj, class_stru *zis, stack_vals *stak)
     if ( prtcl->particle_sklt )
         delete_class_obj(prtcl->particle_sklt);
 
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_ade::func1(stak);
 }
 
 
@@ -665,13 +651,13 @@ void particle_func2__sub0(__NC_STACK_particle *prtcl, stack_vals *stak)
     }
 }
 
-size_t particle_func2(NC_STACK_particle *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_particle::func2(stack_vals *stak)
 {
-    __NC_STACK_particle *particle = &obj->stack__particle;
+    __NC_STACK_particle *particle = &this->stack__particle;
 
     particle_func2__sub0(particle, stak);
 
-    return call_parent(zis, obj, 2, stak);
+    return NC_STACK_ade::func2(stak);
 }
 
 
@@ -752,14 +738,14 @@ void particle_func3__sub0(__NC_STACK_particle *prtcl, stack_vals *stak)
     }
 }
 
-size_t particle_func3(NC_STACK_particle *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_particle::func3(stack_vals *stak)
 {
 
-    __NC_STACK_particle *particle = &obj->stack__particle;
+    __NC_STACK_particle *particle = &this->stack__particle;
 
     particle_func3__sub0(particle, stak);
 
-    return call_parent(zis, obj, 3, stak);
+    return NC_STACK_ade::func3(stak);
 }
 
 int particle_func5__sub0(NC_STACK_particle *obj, __NC_STACK_particle *, MFILE *mfile)
@@ -822,22 +808,23 @@ int particle_func5__sub0(NC_STACK_particle *obj, __NC_STACK_particle *, MFILE *m
         }
         stk[10].id = 0;
 
-        call_method(obj, 2, stk);
+        obj->func2(stk);
 
         particle_t_loc v51 = atts.field_2;
-        call_method(obj, 128, &v51);
+        obj->particle_func128(&v51);
+
         v51 = atts.field_1A;
-        call_method(obj, 129, &v51);
+        obj->particle_func129(&v51);
 
     }
     return 1;
 }
 
-NC_STACK_particle *particle_func5(class_stru *clss, class_stru *zis, MFILE **file)
+size_t NC_STACK_particle::func5(MFILE **file)
 {
     MFILE *mfile = *file;
 
-    NC_STACK_particle *obj = NULL;
+    int obj_ok = 0;
     __NC_STACK_particle *prtcl = NULL;
 
     int v6 = 0;
@@ -852,28 +839,28 @@ NC_STACK_particle *particle_func5(class_stru *clss, class_stru *zis, MFILE **fil
 
         if ( iff_res )
         {
-            if ( obj )
-                call_method(obj, 1);
-            return NULL;
+            if ( obj_ok )
+                func1(NULL);
+            return 0;
         }
 
         MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ADE )
         {
-            obj = (NC_STACK_particle *)call_parent(zis, clss, 5, (stack_vals *)file);
+            obj_ok = NC_STACK_ade::func5(file);
 
-            if ( !obj )
+            if ( !obj_ok )
                 break;
 
-            prtcl = &obj->stack__particle;
+            prtcl = &this->stack__particle;
         }
         else if ( chunk->TAG == TAG_ATTS )
         {
-            if ( !particle_func5__sub0(obj, prtcl, mfile) )
+            if ( !particle_func5__sub0(this, prtcl, mfile) )
             {
-                call_method(obj, 1);
-                return NULL;
+                func1(NULL);
+                return 0;
             }
             read_next_IFF(mfile, 2);
         }
@@ -882,8 +869,8 @@ NC_STACK_particle *particle_func5(class_stru *clss, class_stru *zis, MFILE **fil
             v23[v6] = (NC_STACK_area *)READ_OBJT(mfile);
             if (!v23[v6])
             {
-                call_method(obj, 1);
-                return NULL;
+                func1(NULL);
+                return 0;
             }
             v6++;
         }
@@ -893,18 +880,18 @@ NC_STACK_particle *particle_func5(class_stru *clss, class_stru *zis, MFILE **fil
         }
     }
 
-    if ( obj )
+    if ( obj_ok )
     {
         if ( !sub_41A8D0(prtcl) )
         {
-            call_method(obj, 1);
-            return NULL;
+            func1(NULL);
+            return 0;
         }
 
         if ( !sub_41A954(prtcl) )
         {
-            call_method(obj, 1);
-            return NULL;
+            func1(NULL);
+            return 0;
         }
 
         v23[v6] = NULL;
@@ -916,18 +903,18 @@ NC_STACK_particle *particle_func5(class_stru *clss, class_stru *zis, MFILE **fil
 
         sub_41ABBC(prtcl, v23);
     }
-    return obj;
+    return obj_ok;
 }
 
-size_t particle_func6(NC_STACK_particle *obj, class_stru *zis, MFILE **file)
+size_t NC_STACK_particle::func6(MFILE **file)
 {
     MFILE *mfile = *file;
-    __NC_STACK_particle *prtcl = &obj->stack__particle;
+    __NC_STACK_particle *prtcl = &this->stack__particle;
 
     if ( sub_412FC0(mfile, TAG_PTCL, TAG_FORM, -1) != 0)
         return 0;
 
-    if ( !call_parent(zis, obj, 6, (stack_vals *)file) )
+    if ( !NC_STACK_ade::func6(file) )
         return 0;
 
     sub_412FC0(mfile, 0, TAG_ATTS, -1);
@@ -1103,7 +1090,7 @@ void particle_func65__sub0__sub1(__NC_STACK_particle *prtcl, prtcl_tp2 *tp2, are
             {
                 NC_STACK_ade *v25 = prtcl->ADEs[id];
                 if ( v25 )
-                    call_method(v25, 65, arg);
+                    v25->ade_func65(arg);
             }
         }
 
@@ -1213,9 +1200,9 @@ void particle_func65__sub0(__NC_STACK_particle *prtcl, prtcl_tp *tp1, area_arg_6
     }
 }
 
-void particle_func65(NC_STACK_particle *obj, class_stru *, area_arg_65 *arg)
+size_t NC_STACK_particle::ade_func65(area_arg_65 *arg)
 {
-    __NC_STACK_particle *prtcl = &obj->stack__particle;
+    __NC_STACK_particle *prtcl = &this->stack__particle;
 
     prtcl_tp *v5 = prtcl->tp1;
 
@@ -1269,42 +1256,44 @@ void particle_func65(NC_STACK_particle *obj, class_stru *, area_arg_65 *arg)
         }
 
     }
+
+    return 1;
 }
 
-void particle_func128(NC_STACK_particle *obj, class_stru *, particle_t_loc *arg)
+void NC_STACK_particle::particle_func128(particle_t_loc *arg)
 {
-    __NC_STACK_particle *prtcl = &obj->stack__particle;
+    __NC_STACK_particle *prtcl = &this->stack__particle;
 
     prtcl->field_3c = *arg;
 
     particle_recalc(prtcl);
 }
 
-void particle_func129(NC_STACK_particle *obj, class_stru *, particle_t_loc *arg)
+void NC_STACK_particle::particle_func129(particle_t_loc *arg)
 {
-    __NC_STACK_particle *prtcl = &obj->stack__particle;
+    __NC_STACK_particle *prtcl = &this->stack__particle;
 
     prtcl->field_60 = *arg;
 
     particle_recalc(prtcl);
 }
 
-void particle_func130(NC_STACK_particle *obj, class_stru *, particle_t_loc *out)
+void NC_STACK_particle::particle_func130(particle_t_loc *out)
 {
-    __NC_STACK_particle *prtcl = &obj->stack__particle;
+    __NC_STACK_particle *prtcl = &this->stack__particle;
 
     *out = prtcl->field_3c;
 }
 
-void particle_func131(NC_STACK_particle *obj, class_stru *, particle_t_loc *out)
+void NC_STACK_particle::particle_func131(particle_t_loc *out)
 {
-    __NC_STACK_particle *prtcl = &obj->stack__particle;
+    __NC_STACK_particle *prtcl = &this->stack__particle;
 
     *out = prtcl->field_60;
 }
-size_t particle_func132(NC_STACK_particle *obj, class_stru *, NC_STACK_area **ade)
+size_t NC_STACK_particle::particle_func132(NC_STACK_area **ade)
 {
-    __NC_STACK_particle *prtcl = &obj->stack__particle;
+    __NC_STACK_particle *prtcl = &this->stack__particle;
 
     if (prtcl->ADEs_count >= 8)
         return 0;
@@ -1316,9 +1305,9 @@ size_t particle_func132(NC_STACK_particle *obj, class_stru *, NC_STACK_area **ad
     return 1;
 }
 
-NC_STACK_ade *particle_func133(NC_STACK_particle *obj, class_stru *, int *id)
+NC_STACK_ade * NC_STACK_particle::particle_func133(int *id)
 {
-    __NC_STACK_particle *prtcl = &obj->stack__particle;
+    __NC_STACK_particle *prtcl = &this->stack__particle;
 
     NC_STACK_ade *ade = NULL;
 
@@ -1337,9 +1326,9 @@ NC_STACK_ade *particle_func133(NC_STACK_particle *obj, class_stru *, int *id)
     return ade;
 }
 
-size_t particle_func134(NC_STACK_particle *obj, class_stru *, int *iid)
+size_t NC_STACK_particle::particle_func134(int *iid)
 {
-    __NC_STACK_particle *prtcl = &obj->stack__particle;
+    __NC_STACK_particle *prtcl = &this->stack__particle;
 
     int id = *iid;
 
@@ -1353,9 +1342,9 @@ size_t particle_func134(NC_STACK_particle *obj, class_stru *, int *iid)
     return 0;
 }
 
-size_t particle_func135(NC_STACK_particle *obj, class_stru *, int *iid)
+size_t NC_STACK_particle::particle_func135(int *iid)
 {
-    __NC_STACK_particle *prtcl = &obj->stack__particle;
+    __NC_STACK_particle *prtcl = &this->stack__particle;
 
     int id = *iid;
 
@@ -1369,34 +1358,47 @@ size_t particle_func135(NC_STACK_particle *obj, class_stru *, int *iid)
     return 0;
 }
 
-class_return particle_class_descr;
-
-class_return * class_set_particle(int , ...)
+size_t NC_STACK_particle::compatcall(int method_id, void *data)
 {
-
-    memset(particle_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    particle_funcs[0] = (CLASSFUNC)particle_func0;
-    particle_funcs[1] = (CLASSFUNC)particle_func1;
-    particle_funcs[2] = (CLASSFUNC)particle_func2;
-    particle_funcs[3] = (CLASSFUNC)particle_func3;
-    particle_funcs[5] = (CLASSFUNC)particle_func5;
-    particle_funcs[6] = (CLASSFUNC)particle_func6;
-    particle_funcs[65] = (CLASSFUNC)particle_func65;
-    particle_funcs[128] = (CLASSFUNC)particle_func128;
-    particle_funcs[129] = (CLASSFUNC)particle_func129;
-    particle_funcs[130] = (CLASSFUNC)particle_func130;
-    particle_funcs[131] = (CLASSFUNC)particle_func131;
-    particle_funcs[132] = (CLASSFUNC)particle_func132;
-    particle_funcs[133] = (CLASSFUNC)particle_func133;
-    particle_funcs[134] = (CLASSFUNC)particle_func134;
-    particle_funcs[135] = (CLASSFUNC)particle_func135;
-
-    particle_class_descr.parent = "ade.class";
-
-    particle_class_descr.vtbl = particle_funcs;
-    ////particle_class_descr.varSize = sizeof(__NC_STACK_particle);
-    particle_class_descr.varSize = sizeof(NC_STACK_particle) - offsetof(NC_STACK_particle, stack__particle); //// HACK
-    particle_class_descr.field_A = 0;
-    return &particle_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        return (size_t)func2( (stack_vals *)data );
+    case 3:
+        return (size_t)func3( (stack_vals *)data );
+    case 5:
+        return (size_t)func5( (MFILE **)data );
+    case 6:
+        return (size_t)func6( (MFILE **)data );
+    case 65:
+        ade_func65( (area_arg_65 *)data );
+        return 1;
+    case 128:
+        particle_func128( (particle_t_loc *)data );
+        return 1;
+    case 129:
+        particle_func129( (particle_t_loc *)data );
+        return 1;
+    case 130:
+        particle_func130( (particle_t_loc *)data );
+        return 1;
+    case 131:
+        particle_func131( (particle_t_loc *)data );
+        return 1;
+    case 132:
+        return (size_t)particle_func132( (NC_STACK_area **)data );
+    case 133:
+        return (size_t)particle_func133( (int *)data );
+    case 134:
+        return (size_t)particle_func134( (int *)data );
+    case 135:
+        return (size_t)particle_func135( (int *)data );
+    default:
+        break;
+    }
+    return NC_STACK_ade::compatcall(method_id, data);
 }

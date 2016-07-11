@@ -12,19 +12,8 @@
 #include "font.h"
 
 
-stored_functions *classvtbl_get_windd();
-class_return * class_set_windd(int, ...);
+const NewClassDescr NC_STACK_windd::description("windd.class", &newinstance);
 
-stored_functions windd_class_vtbl(class_set_windd);
-
-
-class_stored windd_class_off (NULL, NULL, "MC2classes:drivers/gfx/windd.class", classvtbl_get_windd);
-
-
-stored_functions *classvtbl_get_windd()
-{
-    return &windd_class_vtbl;
-}
 
 key_value_stru windd_keys[7] =
 {
@@ -36,10 +25,6 @@ key_value_stru windd_keys[7] =
     {"gfx.disable_lowres", KEY_TYPE_BOOL, 0},
     {"gfx.export_window_mode", KEY_TYPE_BOOL, 0}
 };
-
-
-
-CLASSFUNC windd_funcs[1024];
 
 
 windd_params dd_params;
@@ -267,7 +252,7 @@ void sub_41F490(unsigned int width, unsigned int height, int bits, int a4)
 
 
 
-HRESULT __stdcall enumdevice_callback(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR lpDeviceName, LPD3DDEVICEDESC hw, LPD3DDEVICEDESC , LPVOID )
+HRESULT __stdcall enumdevice_callback(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR lpDeviceName, LPD3DDEVICEDESC hw, LPD3DDEVICEDESC, LPVOID )
 {
     _devices *device = &dd_params.enum_devices_[dd_params.number_of_devices];
 
@@ -2244,7 +2229,7 @@ int windd_func0__sub2(__NC_STACK_windd *obj, BYTE *palette, int width, unsigned 
         return 0;
 }
 
-NC_STACK_windd * windd_func0(class_stru *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::func0(stack_vals *stak)
 {
     stack_vals tmp[8];
     memset(tmp, 0, sizeof(stack_vals) * 8);
@@ -2259,110 +2244,103 @@ NC_STACK_windd * windd_func0(class_stru *obj, class_stru *zis, stack_vals *stak)
     init_list(&graph_drivers_list);
     int export_window_mode = windd_keys[6].value.val;     // gfx.export_window_mode
 
-    if ( windd_func0__sub1(windd_keys[6].value.val) )
+    if ( !windd_func0__sub1(windd_keys[6].value.val) )
+        return 0;
+
+    int v7 = find_id_in_stack_def_val(0x80004000, 0, stak);
+    BYTE *pal = (BYTE *)find_id_in_stack_def_val(0x80002007, 0, stak);
+
+    mode_node *picked;
+
+    if ( v7 )
     {
-        int v7 = find_id_in_stack_def_val(0x80004000, 0, stak);
-        BYTE *pal = (BYTE *)find_id_in_stack_def_val(0x80002007, 0, stak);
-
-        mode_node *picked;
-
-        if ( v7 )
+        picked = (mode_node *)modes_list.head;
+        if ( modes_list.head->next )
         {
-            picked = (mode_node *)modes_list.head;
-            if ( modes_list.head->next )
+            while ( v7 != picked->sort_id )
             {
-                while ( v7 != picked->sort_id )
+                picked = (mode_node *)picked->next;
+                if ( !picked->next )
                 {
-                    picked = (mode_node *)picked->next;
-                    if ( !picked->next )
-                    {
-                        picked = sub_41F68C();
-                        break;
-                    }
+                    picked = sub_41F68C();
+                    break;
                 }
-            }
-            else
-            {
-                picked = sub_41F68C();
             }
         }
         else
         {
-            picked = windd_func0__sub0("env/vid.def");
-        }
-
-        log_d3dlog("ddraw init: picked mode %s\n", picked->name);
-
-        if ( picked->field_94 & 8 )
-        {
-            tmp[0].id = 0x80002002;
-            tmp[0].value = (unsigned int)picked->width / 2;
-            tmp[1].id = 0x80002003;
-            tmp[1].value = (unsigned int)picked->height / 2;
-        }
-        else
-        {
-            tmp[0].id = 0x80002002;
-            tmp[0].value = (unsigned int)picked->width;
-            tmp[1].id = 0x80002003;
-            tmp[1].value = (unsigned int)picked->height;
-        }
-        tmp[2].id = 0x80002005;
-        tmp[2].value = 1;
-        tmp[3].id = 0x80002006;
-        tmp[3].value = 1;
-        tmp[4].id = 2;
-        tmp[4].value = (size_t)stak;
-
-        NC_STACK_windd *clss = (NC_STACK_windd *)call_parent(zis, obj, 0, tmp);
-
-        if ( clss )
-        {
-            __NC_STACK_windd *windd = &clss->stack__windd;
-
-            windd->field_30 = 0;
-            windd->sort_id = picked->sort_id;
-            windd->movie_player = windd_keys[2].value.val;
-            windd->disable_lowres = windd_keys[5].value.val;
-            windd->txt16bit = txt16bit_def;
-            windd->use_simple_d3d = drawprim_def;
-            windd->export_window_mode = export_window_mode;
-
-            windd->field_50 |= 1; ////HACK
-
-            if ( picked->field_94 & 1 )
-                windd->field_50 |= 1;
-            if ( picked->field_94 & 4 )
-                windd->field_50 |= 4;
-            if ( picked->field_94 & 8 )
-                windd->field_50 |= 8;
-            if ( picked->field_94 & 0x10 )
-                windd->field_50 |= 0x10;
-
-            if ( windd_func0__sub2(windd, pal, picked->width, picked->height, picked->bits) )
-            {
-                FILE *fil = fopen("env/vid.def", "w");
-                if ( fil )
-                {
-                    fprintf(fil, "%s\n", picked->name);
-                    fclose(fil);
-                }
-
-                call_vtbl(clss, 3, 0x80001002, &windd->field_54______rsrc_field4, 0);
-                return clss;
-            }
-            else
-            {
-                log_d3dlog("wdd_InitDDrawStuff() failed.\n");
-
-                call_method(clss, 1);
-                return NULL;
-            }
+            picked = sub_41F68C();
         }
     }
     else
-        return NULL;
-    return NULL;
+    {
+        picked = windd_func0__sub0("env/vid.def");
+    }
+
+    log_d3dlog("ddraw init: picked mode %s\n", picked->name);
+
+    if ( picked->field_94 & 8 )
+    {
+        tmp[0].id = 0x80002002;
+        tmp[0].value = (unsigned int)picked->width / 2;
+        tmp[1].id = 0x80002003;
+        tmp[1].value = (unsigned int)picked->height / 2;
+    }
+    else
+    {
+        tmp[0].id = 0x80002002;
+        tmp[0].value = (unsigned int)picked->width;
+        tmp[1].id = 0x80002003;
+        tmp[1].value = (unsigned int)picked->height;
+    }
+    tmp[2].id = 0x80002005;
+    tmp[2].value = 1;
+    tmp[3].id = 0x80002006;
+    tmp[3].value = 1;
+    tmp[4].id = 2;
+    tmp[4].value = (size_t)stak;
+
+    if ( !NC_STACK_display::func0(tmp) )
+        return 0;
+
+    __NC_STACK_windd *windd = &this->stack__windd;
+
+    windd->field_30 = 0;
+    windd->sort_id = picked->sort_id;
+    windd->movie_player = windd_keys[2].value.val;
+    windd->disable_lowres = windd_keys[5].value.val;
+    windd->txt16bit = txt16bit_def;
+    windd->use_simple_d3d = drawprim_def;
+    windd->export_window_mode = export_window_mode;
+
+    windd->field_50 |= 1; ////HACK
+
+    if ( picked->field_94 & 1 )
+        windd->field_50 |= 1;
+    if ( picked->field_94 & 4 )
+        windd->field_50 |= 4;
+    if ( picked->field_94 & 8 )
+        windd->field_50 |= 8;
+    if ( picked->field_94 & 0x10 )
+        windd->field_50 |= 0x10;
+
+    if ( !windd_func0__sub2(windd, pal, picked->width, picked->height, picked->bits) )
+    {
+        log_d3dlog("wdd_InitDDrawStuff() failed.\n");
+
+        func1(NULL);
+        return 0;
+    }
+
+    FILE *fil = fopen("env/vid.def", "w");
+    if ( fil )
+    {
+        fprintf(fil, "%s\n", picked->name);
+        fclose(fil);
+    }
+
+    call_vtbl(this, 3, 0x80001002, &windd->field_54______rsrc_field4, 0);
+    return 1;
 }
 
 void windd_func1__sub1__sub0()
@@ -2430,9 +2408,9 @@ void windd_func1__sub0()
 }
 
 
-size_t windd_func1(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::func1(stack_vals *stak)
 {
-    wdd_KillDDrawStuff(&obj->stack__windd);
+    wdd_KillDDrawStuff(&this->stack__windd);
     while ( 1 )
     {
         nnode *nod = RemHead((nlist *)&modes_list);
@@ -2452,7 +2430,7 @@ size_t windd_func1(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
         nc_FreeMem(nod);
     }
     windd_func1__sub0();
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_display::func1(stak);
 }
 
 void windd_func2__sub0(__NC_STACK_windd *wdd, int val)
@@ -2488,9 +2466,9 @@ void out_yes_no_status(const char *filename, int val)
     }
 }
 
-void windd_func2(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::func2(stack_vals *stak)
 {
-    __NC_STACK_windd *wdd = &obj->stack__windd;
+    __NC_STACK_windd *wdd = &this->stack__windd;
 
     stack_vals *stk = stak;
 
@@ -2530,7 +2508,7 @@ void windd_func2(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
             stk++;
         }
     }
-    call_parent(zis, obj, 2, stak);
+    return NC_STACK_display::func2(stak);
 }
 
 
@@ -2539,10 +2517,10 @@ void windd_func2(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
 
 windd__window_params window_params__return;
 
-void windd_func3(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::func3(stack_vals *stak)
 {
 
-    __NC_STACK_windd *wdd = &obj->stack__windd;
+    __NC_STACK_windd *wdd = &this->stack__windd;
 
     stack_vals *stk = stak;
 
@@ -2595,91 +2573,116 @@ void windd_func3(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
             stk++;
         }
     }
-    call_parent(zis, obj, 3, stak);
+    return NC_STACK_display::func3(stak);
 }
 
-void windd_func193(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::raster_func192(stack_vals *)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 193, stak);
+    return 1;
 }
 
-void windd_func194(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::raster_func193(bitmap_intern **stak)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 194, stak);
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        return NC_STACK_display::raster_func193(stak);
+
+    return 0;
 }
 
-void windd_func195(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+void NC_STACK_windd::raster_func194(stack_vals *stak)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 195, stak);
+//	if ( this->stack__windd.field_54______rsrc_field4 )
+//		NC_STACK_display::raster_func194(stak);
 }
 
-void windd_func196(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+void NC_STACK_windd::raster_func195(stack_vals *stak)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 196, stak);
+//	if ( this->stack__windd.field_54______rsrc_field4 )
+//		NC_STACK_display::raster_func195(stak);
 }
 
-void windd_func197(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+void NC_STACK_windd::raster_func196(stack_vals *stak)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 197, stak);
+//	if ( this->stack__windd.field_54______rsrc_field4 )
+//		NC_STACK_display::raster_func196(stak);
 }
 
-void windd_func198(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+void NC_STACK_windd::raster_func197(stack_vals *stak)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 198, stak);
+//	if ( this->stack__windd.field_54______rsrc_field4 )
+//		NC_STACK_display::raster_func197(stak);
 }
 
-void windd_func199(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::raster_func198(w3d_func198arg *arg)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 199, stak);
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        return NC_STACK_display::raster_func198(arg);
+
+    return 0;
 }
 
-void windd_func200(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::raster_func199(w3d_func199arg *stak)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 200, stak);
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        return NC_STACK_display::raster_func199(stak);
+
+    return 0;
 }
 
-void windd_func201(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::raster_func200(w3d_func198arg *stak)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 201, stak);
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        return NC_STACK_display::raster_func200(stak);
+
+    return 0;
 }
 
-void windd_func202(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::raster_func201(w3d_func199arg *stak)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 202, stak);
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        return NC_STACK_display::raster_func201(stak);
+
+    return 0;
 }
 
-void windd_func203(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::raster_func202(rstr_arg204 *arg)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 203, stak);
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        return NC_STACK_display::raster_func202(arg);
+
+    return 0;
 }
 
-void windd_func204(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::raster_func203(stack_vals *stak)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 204, stak);
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        return NC_STACK_display::raster_func203(stak);
+
+    return 0;
 }
 
-void windd_func205(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::raster_func204(rstr_arg204 *arg)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 205, stak);
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        return NC_STACK_display::raster_func204(arg);
+
+    return 0;
 }
 
-void windd_func206(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::raster_func205(stack_vals *stak)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 206, stak);
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        return NC_STACK_display::raster_func205(stak);
+
+    return 0;
+}
+
+size_t NC_STACK_windd::raster_func206(polysDatSub *arg)
+{
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        return NC_STACK_display::raster_func206(arg);
+
+    return 0;
 }
 
 int dbcs_StartText()
@@ -3122,50 +3125,54 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
     }
 }
 
-void windd_func209(NC_STACK_windd *obj, class_stru *, w3d_a209 *arg)
+void NC_STACK_windd::raster_func209(w3d_a209 *arg)
 {
-    windd_func209__sub0(&obj->stack__windd, obj->stack__raster.tiles, arg->cmdbuf, arg->includ);
+    windd_func209__sub0(&this->stack__windd, this->stack__raster.tiles, arg->cmdbuf, arg->includ);
 }
 
-void windd_func213(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+void NC_STACK_windd::raster_func213(polysDatSub *stak)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 213, stak);
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        NC_STACK_display::raster_func213(stak);
 }
 
-void windd_func214(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::raster_func214(void *stak)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 214, stak);
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        return NC_STACK_display::raster_func214(stak);
+
+    return 0;
 }
 
-void windd_func215(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+void NC_STACK_windd::raster_func215(void *stak)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 215, stak);
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        NC_STACK_display::raster_func215(stak);
 }
 
-void windd_func216(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+void NC_STACK_windd::raster_func216(void *stak)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 216, stak);
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        NC_STACK_display::raster_func216(stak);
 }
 
-void windd_func218(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+void NC_STACK_windd::raster_func218(rstr_218_arg *arg)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 218, stak);
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        NC_STACK_display::raster_func218(arg);
 }
 
-void windd_func219(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_windd::raster_func219(stack_vals *stak)
 {
-    if ( obj->stack__windd.field_54______rsrc_field4 )
-        call_parent(zis, obj, 219, stak);
+    if ( this->stack__windd.field_54______rsrc_field4 )
+        return NC_STACK_display::raster_func219(stak);
+
+    return 0;
 }
 
-size_t windd_func256(NC_STACK_windd *obj, class_stru *, windd_arg256 *inout)
+size_t NC_STACK_windd::display_func256(windd_arg256 *inout)
 {
-    __NC_STACK_windd *wdd = &obj->stack__windd;
+    __NC_STACK_windd *wdd = &this->stack__windd;
     mode_node *nod;
 
     if ( inout->sort_id )
@@ -3298,9 +3305,9 @@ void clearAndLockBackBufferSurface(__NC_STACK_windd *wdd)
     }
 }
 
-void windd_func257(NC_STACK_windd *obj, class_stru *, stack_vals *)
+void NC_STACK_windd::display_func257(stack_vals *)
 {
-    __NC_STACK_windd *wdd = &obj->stack__windd;
+    __NC_STACK_windd *wdd = &this->stack__windd;
     clearAndLockBackBufferSurface(wdd);
     wdd->field_54______rsrc_field4->buffer = wdd->surface_locked_surfaceData;
     wdd->field_54______rsrc_field4->pitch = wdd->surface_locked_pitch;
@@ -3393,7 +3400,7 @@ void windd_func258__sub0(NC_STACK_windd *obj, __NC_STACK_display *dspl, __NC_STA
             v16.id = 127;
             v16.tiles = &v13;
 
-            call_method(obj, 207, &v16);
+            obj->raster_func207(&v16);
 
             int v21 = 0;
             int v20 = 0;
@@ -3433,15 +3440,15 @@ void windd_func258__sub0(NC_STACK_windd *obj, __NC_STACK_display *dspl, __NC_STA
             a209.cmdbuf = cmdBuff;
             a209.includ = NULL;
 
-            call_method(obj, 209, &a209);
+            obj->raster_func209(&a209);
         }
     }
 }
 
-void windd_func258(NC_STACK_windd *obj, class_stru *, stack_vals *)
+void NC_STACK_windd::display_func258(stack_vals *)
 {
-    __NC_STACK_windd *wdd = &obj->stack__windd;
-    __NC_STACK_display *dspl = &obj->stack__display;
+    __NC_STACK_windd *wdd = &this->stack__windd;
+    __NC_STACK_display *dspl = &this->stack__display;
 
     if ( sub_42AC78(wdd) )
     {
@@ -3450,22 +3457,22 @@ void windd_func258(NC_STACK_windd *obj, class_stru *, stack_vals *)
 
         windd_func258__sub2(wdd, &xx, &yy);
 
-        call_method(obj, 215);
-        windd_func258__sub0(obj, dspl, wdd, xx, yy);
-        call_method(obj, 216);
+        raster_func215(NULL);
+        windd_func258__sub0(this, dspl, wdd, xx, yy);
+        raster_func216(NULL);
     }
     windd_func258__sub1(wdd);
 }
 
-void windd_func259(void *, class_stru *, stack_vals *)
+void NC_STACK_windd::display_func259(stack_vals *)
 {
 }
 
-void windd_func260(void *, class_stru *, stack_vals *)
+void NC_STACK_windd::display_func260(stack_vals *)
 {
 }
 
-void windd_func261(NC_STACK_windd *obj, class_stru *zis, rstr_261_arg *arg)
+void NC_STACK_windd::display_func261(rstr_261_arg *arg)
 {
     if ( !dword_514EFC && !arg->pal_id && !arg->entrie_id )
     {
@@ -3473,7 +3480,7 @@ void windd_func261(NC_STACK_windd *obj, class_stru *zis, rstr_261_arg *arg)
         arg->pal_entries[0].r = arg->pal_entries[0].b;
         arg->pal_entries[0].b = 0;
     }
-    call_parent(zis, obj, 261, (stack_vals *)arg);
+    NC_STACK_display::display_func261(arg);
 }
 
 void sub_42D37C(__NC_STACK_windd *wdd, UA_PALENTRY *pal)
@@ -3496,21 +3503,21 @@ void sub_42D37C(__NC_STACK_windd *wdd, UA_PALENTRY *pal)
     }
 }
 
-void windd_func262(NC_STACK_windd *obj, class_stru *zis, stack_vals *stak)
+void NC_STACK_windd::display_func262(rstr_262_arg *arg)
 {
-    __NC_STACK_windd *wdd = &obj->stack__windd;
-    __NC_STACK_display *dspl  = &obj->stack__display;
+    __NC_STACK_windd *wdd = &this->stack__windd;
+    __NC_STACK_display *dspl  = &this->stack__display;
 
-    call_parent(zis, obj, 262, stak);
+    NC_STACK_display::display_func262(arg);
     sub_42D37C(wdd, dspl->palette);
 }
 
-void windd_func263(NC_STACK_windd *obj, class_stru *zis, displ_arg263 *arg)
+void NC_STACK_windd::display_func263(displ_arg263 *arg)
 {
-    __NC_STACK_windd *wdd = &obj->stack__windd;
+    __NC_STACK_windd *wdd = &this->stack__windd;
 
     sub_42D410(wdd, arg->pointer_id, 0);
-    call_parent(zis, obj, 263, (stack_vals *)arg);
+    NC_STACK_display::display_func263(arg);
 }
 
 
@@ -3616,9 +3623,9 @@ void sb_0x42d530(__NC_STACK_windd *wdd, int a2)
     }
 }
 
-void windd_func320(NC_STACK_windd *obj, class_stru *, stack_vals *)
+void NC_STACK_windd::windd_func320(stack_vals *)
 {
-    sb_0x42d530(&obj->stack__windd, 0);
+    sb_0x42d530(&this->stack__windd, 0);
 }
 
 
@@ -3670,10 +3677,10 @@ void sub_42D724(__NC_STACK_windd *wdd, int a2)
     }
 }
 
-void windd_func321(NC_STACK_windd *obj, class_stru *, stack_vals *)
+void NC_STACK_windd::windd_func321(stack_vals *)
 {
-    __NC_STACK_windd *wdd = &obj->stack__windd;
-    __NC_STACK_display *dspl = &obj->stack__display;
+    __NC_STACK_windd *wdd = &this->stack__windd;
+    __NC_STACK_display *dspl = &this->stack__display;
 
     sub_42D724(wdd, 0);
     sub_42D37C(wdd, dspl->palette);
@@ -3690,11 +3697,11 @@ char * windd_func322__sub0(__NC_STACK_windd *wdd, const char *box_title, const c
 }
 
 //Show DLGBox with edit field and get entered value
-void windd_func322(NC_STACK_windd *obj, class_stru *, windd_dlgBox *dlgBox)
+void NC_STACK_windd::windd_func322(windd_dlgBox *dlgBox)
 {
-    __NC_STACK_windd *wdd = &obj->stack__windd;
+    __NC_STACK_windd *wdd = &this->stack__windd;
 
-    call_method(obj, 320);
+    windd_func320(NULL);
 
     dlgBox->result = windd_func322__sub0(
                          wdd,
@@ -3708,7 +3715,7 @@ void windd_func322(NC_STACK_windd *obj, class_stru *, windd_dlgBox *dlgBox)
                          dlgBox->replace,
                          dlgBox->maxLen);
 
-    call_method(obj, 321);
+    windd_func321(NULL);
 }
 
 
@@ -3735,16 +3742,16 @@ void windd_func323__sub0(__NC_STACK_windd *wdd, const char *filename)
 }
 
 //Play movie file
-void windd_func323(NC_STACK_windd *obj, class_stru *, const char **filename)
+void NC_STACK_windd::windd_func323(const char **filename)
 {
-    __NC_STACK_windd *wdd = &obj->stack__windd;
-    __NC_STACK_display *dspl = &obj->stack__display;
+    __NC_STACK_windd *wdd = &this->stack__windd;
+    __NC_STACK_display *dspl = &this->stack__display;
 
     windd_func323__sub0(wdd, *filename);
     sub_42D37C(wdd, dspl->palette);
 }
 
-void windd_func324(NC_STACK_windd *, class_stru *, wdd_func324arg *inout)
+void NC_STACK_windd::windd_func324(wdd_func324arg *inout)
 {
     wddDevice *findedNode;
     wddDevice *node;
@@ -3786,7 +3793,7 @@ void windd_func324(NC_STACK_windd *, class_stru *, wdd_func324arg *inout)
     }
 }
 
-void windd_func325(void *, class_stru *, wdd_func324arg *arg)
+void NC_STACK_windd::windd_func325(wdd_func324arg *arg)
 {
     const char *v4 = arg->guid;
     const char *v5 = "<error>";
@@ -3808,70 +3815,127 @@ void windd_func325(void *, class_stru *, wdd_func324arg *arg)
     out_guid_to_file("env/guid3d.def", (GUID *)v4, v5);
 }
 
-
-class_return windd_class_descr;
-
-void windd_nullsub(void *, class_stru *, stack_vals *)
+size_t NC_STACK_windd::compatcall(int method_id, void *data)
 {
-    ;
-}
-
-class_return * class_set_windd(int, ...)
-{
-    memset(windd_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    windd_funcs[0] = (CLASSFUNC)windd_func0;
-    windd_funcs[1] = (CLASSFUNC)windd_func1;
-    windd_funcs[2] = (CLASSFUNC)windd_func2;
-    windd_funcs[3] = (CLASSFUNC)windd_func3;
-    windd_funcs[192] = (CLASSFUNC)windd_nullsub;
-    windd_funcs[193] = (CLASSFUNC)windd_func193;
-    windd_funcs[194] = (CLASSFUNC)windd_func194;
-    windd_funcs[195] = (CLASSFUNC)windd_func195;
-    windd_funcs[196] = (CLASSFUNC)windd_func196;
-    windd_funcs[197] = (CLASSFUNC)windd_func197;
-    windd_funcs[198] = (CLASSFUNC)windd_func198;
-    windd_funcs[199] = (CLASSFUNC)windd_func199;
-    windd_funcs[200] = (CLASSFUNC)windd_func200;
-    windd_funcs[201] = (CLASSFUNC)windd_func201;
-    windd_funcs[202] = (CLASSFUNC)windd_func202;
-    windd_funcs[203] = (CLASSFUNC)windd_func203;
-    windd_funcs[204] = (CLASSFUNC)windd_func204;
-    windd_funcs[205] = (CLASSFUNC)windd_func205;
-    windd_funcs[206] = (CLASSFUNC)windd_func206;
-
-    windd_funcs[209] = (CLASSFUNC)windd_func209;
-
-    windd_funcs[213] = (CLASSFUNC)windd_func213;
-    windd_funcs[214] = (CLASSFUNC)windd_func214;
-    windd_funcs[215] = (CLASSFUNC)windd_func215;
-    windd_funcs[216] = (CLASSFUNC)windd_func216;
-
-    windd_funcs[218] = (CLASSFUNC)windd_func218;
-    windd_funcs[219] = (CLASSFUNC)windd_func219;
-
-
-    windd_funcs[256] = (CLASSFUNC)windd_func256;
-    windd_funcs[257] = (CLASSFUNC)windd_func257;
-    windd_funcs[258] = (CLASSFUNC)windd_func258;
-    windd_funcs[259] = (CLASSFUNC)windd_func259;
-    windd_funcs[260] = (CLASSFUNC)windd_func260;
-    windd_funcs[261] = (CLASSFUNC)windd_func261;
-    windd_funcs[262] = (CLASSFUNC)windd_func262;
-    windd_funcs[263] = (CLASSFUNC)windd_func263;
-
-    windd_funcs[320] = (CLASSFUNC)windd_func320;
-    windd_funcs[321] = (CLASSFUNC)windd_func321;
-    windd_funcs[322] = (CLASSFUNC)windd_func322;
-    windd_funcs[323] = (CLASSFUNC)windd_func323;
-    windd_funcs[324] = (CLASSFUNC)windd_func324;
-    windd_funcs[325] = (CLASSFUNC)windd_func325;
-
-    windd_class_descr.parent = "display.class";
-
-    windd_class_descr.vtbl = windd_funcs;
-    ////windd_class_descr.varSize = sizeof(__NC_STACK_windd);
-    windd_class_descr.varSize = sizeof(NC_STACK_windd) - offsetof(NC_STACK_windd, stack__windd); //// HACK
-    windd_class_descr.field_A = 0;
-    return &windd_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        func2( (stack_vals *)data );
+        return 1;
+    case 3:
+        func3( (stack_vals *)data );
+        return 1;
+    case 192:
+        return (size_t)raster_func192( (stack_vals *)data );
+    case 193:
+        return raster_func193( (bitmap_intern **)data );
+    case 194:
+        raster_func194( (stack_vals *)data );
+        return 1;
+    case 195:
+        raster_func195( (stack_vals *)data );
+        return 1;
+    case 196:
+        raster_func196( (stack_vals *)data );
+        return 1;
+    case 197:
+        raster_func197( (stack_vals *)data );
+        return 1;
+    case 198:
+        raster_func198( (w3d_func198arg *)data );
+        return 1;
+    case 199:
+        raster_func199( (w3d_func199arg *)data );
+        return 1;
+    case 200:
+        raster_func200( (w3d_func198arg *)data );
+        return 1;
+    case 201:
+        raster_func201( (w3d_func199arg *)data );
+        return 1;
+    case 202:
+        raster_func202( (rstr_arg204 *)data );
+        return 1;
+    case 203:
+        raster_func203( (stack_vals *)data );
+        return 1;
+    case 204:
+        raster_func204( (rstr_arg204 *)data );
+        return 1;
+    case 205:
+        raster_func205( (stack_vals *)data );
+        return 1;
+    case 206:
+        raster_func206( (polysDatSub *)data );
+        return 1;
+    case 209:
+        raster_func209( (w3d_a209 *)data );
+        return 1;
+    case 213:
+        raster_func213( (polysDatSub *)data );
+        return 1;
+    case 214:
+        raster_func214( (stack_vals *)data );
+        return 1;
+    case 215:
+        raster_func215( (stack_vals *)data );
+        return 1;
+    case 216:
+        raster_func216( (stack_vals *)data );
+        return 1;
+    case 218:
+        raster_func218( (rstr_218_arg *)data );
+        return 1;
+    case 219:
+        raster_func219( (stack_vals *)data );
+        return 1;
+    case 256:
+        return (size_t)display_func256( (windd_arg256 *)data );
+    case 257:
+        display_func257( (stack_vals *)data );
+        return 1;
+    case 258:
+        display_func258( (stack_vals *)data );
+        return 1;
+    case 259:
+        display_func259( (stack_vals *)data );
+        return 1;
+    case 260:
+        display_func260( (stack_vals *)data );
+        return 1;
+    case 261:
+        display_func261( (rstr_261_arg *)data );
+        return 1;
+    case 262:
+        display_func262( (rstr_262_arg *)data );
+        return 1;
+    case 263:
+        display_func263( (displ_arg263 *)data );
+        return 1;
+    case 320:
+        windd_func320( (stack_vals *)data );
+        return 1;
+    case 321:
+        windd_func321( (stack_vals *)data );
+        return 1;
+    case 322:
+        windd_func322( (windd_dlgBox *)data );
+        return 1;
+    case 323:
+        windd_func323( (const char **)data );
+        return 1;
+    case 324:
+        windd_func324( (wdd_func324arg *)data );
+        return 1;
+    case 325:
+        windd_func325( (wdd_func324arg *)data );
+        return 1;
+    default:
+        break;
+    }
+    return NC_STACK_display::compatcall(method_id, data);
 }

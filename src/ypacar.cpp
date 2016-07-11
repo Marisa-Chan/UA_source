@@ -12,22 +12,7 @@
 #include "log.h"
 
 
-
-stored_functions *classvtbl_get_ypacar();
-class_return * class_set_ypacar(int, ...);
-
-stored_functions ypacar_class_vtbl(class_set_ypacar);
-
-
-class_stored ypacar_class_off (NULL, NULL, "MC2classes:ypacar.class", classvtbl_get_ypacar);
-
-
-stored_functions *classvtbl_get_ypacar()
-{
-    return &ypacar_class_vtbl;
-}
-
-CLASSFUNC ypacar_funcs[1024];
+const NewClassDescr NC_STACK_ypacar::description("ypacar.class", &newinstance);
 
 
 int ypacar_func0__sub0(NC_STACK_ypacar *obj, __NC_STACK_ypacar *car, stack_vals *stak)
@@ -78,32 +63,30 @@ int ypacar_func0__sub0(NC_STACK_ypacar *obj, __NC_STACK_ypacar *car, stack_vals 
     return 1;
 }
 
-NC_STACK_ypacar * ypacar_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypacar::func0(stack_vals *stak)
 {
-    NC_STACK_ypacar *obj = (NC_STACK_ypacar *)call_parent(zis, clss, 0, stak);
+    if ( !NC_STACK_ypatank::func0(stak) )
+        return 0;
 
-    if (obj)
+    __NC_STACK_ypacar *car = &this->stack__ypacar;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+
+    car->bact_internal = bact;
+
+    bact->field_24 = 8;
+
+    if ( !ypacar_func0__sub0(this, car, stak) )
     {
-        __NC_STACK_ypacar *car = &obj->stack__ypacar;
-        __NC_STACK_ypabact *bact = &obj->stack__ypabact;
-
-        car->bact_internal = bact;
-
-        bact->field_24 = 8;
-
-        if ( !ypacar_func0__sub0(obj, car, stak) )
-        {
-            call_method(obj, 1);
-            return NULL;
-        }
+        func1(NULL);
+        return 0;
     }
 
-    return obj;
+    return 1;
 }
 
-size_t ypacar_func1(NC_STACK_ypacar *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypacar::func1(stack_vals *stak)
 {
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_ypatank::func1(stak);
 }
 
 void ypacar_func2__sub0(NC_STACK_ypacar *obj, __NC_STACK_ypacar *car, stack_vals *stak)
@@ -147,10 +130,11 @@ void ypacar_func2__sub0(NC_STACK_ypacar *obj, __NC_STACK_ypacar *car, stack_vals
     }
 }
 
-void ypacar_func2(NC_STACK_ypacar *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypacar::func2(stack_vals *stak)
 {
-    call_parent(zis, obj, 2, stak);
-    ypacar_func2__sub0(obj, &obj->stack__ypacar, stak);
+    NC_STACK_ypatank::func2(stak);
+    ypacar_func2__sub0(this, &this->stack__ypacar, stak);
+    return 1;
 }
 
 void ypacar_func3__sub0(NC_STACK_ypacar *obj, __NC_STACK_ypacar *car, stack_vals *stak)
@@ -194,10 +178,11 @@ void ypacar_func3__sub0(NC_STACK_ypacar *obj, __NC_STACK_ypacar *car, stack_vals
     }
 }
 
-void ypacar_func3(NC_STACK_ypacar *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypacar::func3(stack_vals *stak)
 {
-    call_parent(zis, obj, 3, stak);
-    ypacar_func3__sub0(obj, &obj->stack__ypacar, stak);
+    NC_STACK_ypatank::func3(stak);
+    ypacar_func3__sub0(this, &this->stack__ypacar, stak);
+    return 1;
 }
 
 void ypacar_func71__sub1(__NC_STACK_ypabact *bact, float angle)
@@ -251,7 +236,7 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
             arg120.unit = bact;
 
             if ( arg120.pos.sx > 1200.0  &&  arg120.pos.sx < bact->field_18 - 1200.0  &&  arg120.pos.sz < -1200.0  &&  arg120.pos.sz > bact->field_1c + 1200.0 )
-                call_method(bact->self, 120, &arg120);
+                caro->ypabact_func120(&arg120);
 
             if ( i )
             {
@@ -261,7 +246,7 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
                 if ( arg120.pos.sx > 1200.0 )
                 {
                     if ( arg120.pos.sx < bact->field_18 - 1200.0 && arg120.pos.sz < -1200.0 && arg120.pos.sz > bact->field_1c + 1200.0 )
-                        call_method(bact->self, 120, &arg120);
+                        caro->ypabact_func120(&arg120);
                 }
             }
 
@@ -273,7 +258,7 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
                 if ( arg120.pos.sx > 1200.0 )
                 {
                     if ( arg120.pos.sx < bact->field_18 - 1200.0  &&  arg120.pos.sz < -1200.0  &&  arg120.pos.sz > bact->field_1c + 1200.0 )
-                        call_method(bact->self, 120, &arg120);
+                        caro->ypabact_func120(&arg120);
                 }
             }
 
@@ -287,7 +272,7 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
                     if ( arg120.pos.sx > 1200.0 )
                     {
                         if ( arg120.pos.sx < bact->field_18 - 1200.0  &&  arg120.pos.sz < -1200.0  &&  arg120.pos.sz > bact->field_1c + 1200.0 )
-                            call_method(bact->self, 120, &arg120);
+                            caro->ypabact_func120(&arg120);
                     }
                 }
             }
@@ -347,7 +332,7 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
                                 arg181.field_18 = 1;
                                 arg181.value = &v41;
 
-                                call_method(car->ywo, 181, &arg181);
+                                car->ywo->ypaworld_func181(&arg181);
                             }
                         }
 
@@ -359,9 +344,9 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
                             arg78.field_0 = 2;
 
                             if ( v19->field_24 == 4 )
-                                call_method(v19->self, 78, &arg78);
+                                v19->self->ypabact_func78(&arg78);
                             else
-                                call_method(v19->self, 119, &arg78);
+                                v19->self->ypabact_func119(&arg78);
 
                             if ( v19->field_24 == 3 )
                             {
@@ -371,7 +356,7 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
                                     arg177.bact = v19;
                                     arg177.field_4 = bact->owner;
 
-                                    call_method(car->ywo, 177, &arg177);
+                                    car->ywo->ypaworld_func177(&arg177);
                                 }
                             }
                         }
@@ -438,21 +423,21 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
     arg78.field_4 = 0;
     arg78.field_8 = 0;
 
-    call_method(bact->self, 78, &arg78);
+    caro->ypabact_func78(&arg78);
 
     bact->field_24 = 8;
     bact->energy = -10;
 }
 
-void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
+void NC_STACK_ypacar::ypabact_func71(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypacar *car = (__NC_STACK_ypacar *)&obj->stack__ypacar;
-    __NC_STACK_ypabact *bact = (__NC_STACK_ypabact *)&obj->stack__ypabact;
+    __NC_STACK_ypacar *car = &this->stack__ypacar;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     bact->airconst = bact->airconst2;
 
     int a4 = 0;
-    call_vtbl(obj, 3, 0x80001007, &a4, 0);
+    call_vtbl(this, 3, 0x80001007, &a4, 0);
 
     bact->field_62D = bact->field_621;
 
@@ -465,7 +450,7 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
     arg129.field_4.sz = bact->field_651.m22;
 
     if (bact->field_3D5 == 2)
-        call_method(obj, 121, arg);
+        ypabact_func121(arg);
     else if (bact->field_3D5 == 1 || bact->field_3D5 == 3)
     {
         if ( bact->field_611 != 0.0 )
@@ -477,7 +462,7 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
                 arg78.field_8 = 0;
                 arg78.field_4 = 0;
 
-                call_method(obj, 78, &arg78);
+                ypabact_func78(&arg78);
             }
         }
         else
@@ -491,7 +476,7 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg78.field_8 = 0;
                     arg78.field_4 = 0;
 
-                    call_method(obj, 78, &arg78);
+                    ypabact_func78(&arg78);
                 }
 
                 bact->field_3D5 = 1;
@@ -510,7 +495,7 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg78.field_8 = 0;
                     arg78.field_4 = 0;
 
-                    call_method(obj, 78, &arg78);
+                    ypabact_func78(&arg78);
                 }
             }
         }
@@ -583,7 +568,7 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
         arg106.field_4.sy = bact->field_651.m21 - bact->gun_angle2;
         arg106.field_4.sz = bact->field_651.m22;
 
-        if ( call_method(obj, 106, &arg106) )
+        if ( ypabact_func106(&arg106) )
         {
             arg79.tgType = BACT_TGT_TYPE_UNIT;
             arg79.target.pbact = arg106.ret_bact;
@@ -593,7 +578,7 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
         {
             if ( car->field_c )
             {
-                ypacar_func71__sub0(obj);
+                ypacar_func71__sub0(this);
             }
             else
             {
@@ -613,7 +598,7 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
 
                 arg79.flags = ((arg->inpt->but_flags & 2) != 0) | 2;
 
-                call_method(obj, 79, &arg79);
+                ypabact_func79(&arg79);
             }
         }
 
@@ -628,7 +613,7 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg78.field_0 = 0;
                     arg78.field_8 = 256;
 
-                    call_method(obj, 78, &arg78);
+                    ypabact_func78(&arg78);
                 }
             }
 
@@ -641,7 +626,7 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg78.field_8 = 0;
                     arg78.field_0 = 0;
 
-                    call_method(obj, 78, &arg78);
+                    ypabact_func78(&arg78);
                 }
 
                 bact_arg105 arg105;
@@ -651,7 +636,7 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
                 arg105.field_C = v78;
                 arg105.field_10 = bact->field_915;
 
-                call_method(obj, 105, &arg105);
+                ypabact_func105(&arg105);
             }
         }
 
@@ -689,13 +674,13 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
             arg74.field_0 = v78;
 
             if ( bact->field_3D6 & 0x40 )
-                call_method(obj, 74, &arg74);
+                ypabact_func74(&arg74);
 
             int v62 = arg->field_4;
 
-            if ( a4 && call_method(obj, 87, &v62) )
+            if ( a4 && ypabact_func87(&v62) )
             {
-                call_method(obj, 129, &arg129);
+                ypatank_func129(&arg129);
             }
             else
             {
@@ -709,7 +694,7 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
                 arg136.field_1C = bact->field_621.sz - bact->field_62D.sz;
                 arg136.field_40 = 0;
 
-                call_method(car->ywo, 136, &arg136);
+                car->ywo->ypaworld_func136(&arg136);
 
                 if ( arg136.field_20 )
                 {
@@ -721,7 +706,7 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
                 }
                 else
                 {
-                    call_method(obj, 129, &arg129);
+                    ypatank_func129(&arg129);
                 }
             }
         }
@@ -731,20 +716,20 @@ void ypacar_func71(NC_STACK_ypacar *obj, class_stru *zis, ypabact_arg65 *arg)
             arg86.field_one = 1;
             arg86.field_two = arg->field_4;
 
-            call_method(obj, 86, &arg86);
+            ypabact_func86(&arg86);
         }
     }
 }
 
-size_t ypacar_func128(NC_STACK_ypacar *obj, class_stru *zis, tank_arg128 *arg)
+size_t NC_STACK_ypacar::ypatank_func128(tank_arg128 *arg)
 {
-    __NC_STACK_ypacar *car = (__NC_STACK_ypacar *)&obj->stack__ypacar;
-    __NC_STACK_ypabact *bact = (__NC_STACK_ypabact *)&obj->stack__ypabact;
+    __NC_STACK_ypacar *car = &this->stack__ypacar;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     arg->field_10 = 0;
 
     int a4 = 0;
-    call_vtbl(obj, 3, 0x80001004, &a4, 0);
+    call_vtbl(this, 3, 0x80001004, &a4, 0);
 
     float v5;
 
@@ -762,7 +747,7 @@ size_t ypacar_func128(NC_STACK_ypacar *obj, class_stru *zis, tank_arg128 *arg)
     arg136.field_1C = 0;
     arg136.field_40 = 0;
 
-    call_method(car->ywo, 136, &arg136);
+    car->ywo->ypaworld_func136(&arg136);
 
     if ( !arg136.field_20 )
         return 0;
@@ -918,10 +903,10 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, xyz *darg)
     }
 }
 
-size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
+size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 {
-    __NC_STACK_ypacar *car = &obj->stack__ypacar;
-    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+    __NC_STACK_ypacar *car = &this->stack__ypacar;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     float v162 = 1.73;
     float v166 = 1.7;
@@ -930,8 +915,8 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
     int v161 = 0;
 
     int a4, v149;
-    call_vtbl(obj, 3, 0x80001004, &a4, 0);
-    call_vtbl(obj, 3, 0x80001005, &v149, 0);
+    call_vtbl(this, 3, 0x80001004, &a4, 0);
+    call_vtbl(this, 3, 0x80001005, &v149, 0);
 
     float v5;
 
@@ -1014,7 +999,7 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
     arg136_1.field_40 = 0;
     arg136_2.field_40 = 0;
 
-    call_method(car->ywo, 136, &arg136);
+    car->ywo->ypaworld_func136(&arg136);
 
     if ( arg136.field_20 )
     {
@@ -1055,7 +1040,7 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
                         arg180.effects_type = 5;
                         arg180.field_4 = 1.0;
 
-                        call_method(car->ywo, 180, &arg180);
+                        car->ywo->ypaworld_func180(&arg180);
                     }
                 }
             }
@@ -1074,7 +1059,7 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
         v158 = 1;
     }
 
-    call_method(car->ywo, 136, &arg136_1);
+    car->ywo->ypaworld_func136(&arg136_1);
 
     if ( arg136_1.field_20 )
     {
@@ -1114,7 +1099,7 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
                         arg180.field_C = arg136_1.field_34;
                         arg180.effects_type = 5;
 
-                        call_method(car->ywo, 180, &arg180);
+                        car->ywo->ypaworld_func180(&arg180);
                     }
                 }
             }
@@ -1134,7 +1119,7 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
         v160 = 1;
     }
 
-    call_method(car->ywo, 136, &arg136_2);
+    car->ywo->ypaworld_func136(&arg136_2);
 
     if ( arg136_2.field_20 )
     {
@@ -1160,7 +1145,7 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
                     arg180.field_C = arg136_2.field_34;
                     arg180.effects_type = 5;
 
-                    call_method(car->ywo, 180, &arg180);
+                    car->ywo->ypaworld_func180(&arg180);
                 }
             }
             return 3;
@@ -1190,7 +1175,7 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
 
             arg136_3.field_40 = 0;
 
-            call_method(car->ywo, 136, &arg136_3);
+            car->ywo->ypaworld_func136(&arg136_3);
 
             if ( arg136_3.field_20 )
             {
@@ -1208,7 +1193,7 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
                             arg180.field_C = arg136_3.field_34;
                             arg180.effects_type = 5;
 
-                            call_method(car->ywo, 180, &arg180);
+                            car->ywo->ypaworld_func180(&arg180);
                         }
                     }
 
@@ -1256,7 +1241,7 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
         }
 
         int v151;
-        call_vtbl(obj, 3, 0x80002000, &v151, 0);
+        call_vtbl(this, 3, 0x80002000, &v151, 0);
 
         if ( v151 )
         {
@@ -1265,7 +1250,7 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
             v141.sy = v175;
             v141.sz = v181;
 
-            ypacar_func129__sub0(obj, arg, &v141);
+            ypacar_func129__sub0(this, arg, &v141);
 
             v180 = v141.sx;
             v175 = v141.sy;
@@ -1349,7 +1334,7 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
 
     arg136_4.field_40 = 0;
 
-    call_method(car->ywo, 136, &arg136_4);
+    car->ywo->ypaworld_func136(&arg136_4);
 
     if ( arg136_4.field_20 && (!arg136_4.field_20 || arg136_4.field_3C->triangles[ arg136_4.field_38 ].field_4 >= 0.6) )
     {
@@ -1392,27 +1377,27 @@ size_t ypacar_func129(NC_STACK_ypacar *obj, class_stru *zis, tank_arg129 *arg)
 }
 
 
-
-class_return ypacar_class_descr;
-
-class_return * class_set_ypacar(int , ...)
+size_t NC_STACK_ypacar::compatcall(int method_id, void *data)
 {
-
-    memset(ypacar_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    ypacar_class_descr.parent = "ypatank.class";
-
-    ypacar_funcs[0] = (CLASSFUNC)ypacar_func0;
-    ypacar_funcs[1] = (CLASSFUNC)ypacar_func1;
-    ypacar_funcs[2] = (CLASSFUNC)ypacar_func2;
-    ypacar_funcs[3] = (CLASSFUNC)ypacar_func3;
-    ypacar_funcs[71] = (CLASSFUNC)ypacar_func71;
-    ypacar_funcs[128] = (CLASSFUNC)ypacar_func128;
-    ypacar_funcs[129] = (CLASSFUNC)ypacar_func129;
-
-    ypacar_class_descr.vtbl = ypacar_funcs;
-    ////ypacar_class_descr.varSize = sizeof(__NC_STACK_ypacar);
-    ypacar_class_descr.varSize = sizeof(NC_STACK_ypacar) - offsetof(NC_STACK_ypacar, stack__ypacar); //// HACK
-    ypacar_class_descr.field_A = 0;
-    return &ypacar_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        return func2( (stack_vals *)data );
+    case 3:
+        return func3( (stack_vals *)data );
+    case 71:
+        ypabact_func71( (ypabact_arg65 *)data );
+        return 1;
+    case 128:
+        return (size_t)ypatank_func128( (tank_arg128 *)data );
+    case 129:
+        return (size_t)ypatank_func129( (tank_arg129 *)data );
+    default:
+        break;
+    }
+    return NC_STACK_ypatank::compatcall(method_id, data);
 }

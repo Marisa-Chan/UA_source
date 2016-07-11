@@ -375,7 +375,7 @@ void sub_4F681C(float a1, float a2, int *a3, int *a4)
     *a4 = robo_map.field_204 + dround(-a2 / robo_map.field_1E4) - robo_map.field_1F4;
 }
 
-void sub_4F68FC(NC_STACK_win3d *win3d, float a3, float a4, float a5, float a6, DWORD a7)
+void sub_4F68FC(NC_STACK_display *displ, float a3, float a4, float a5, float a6, DWORD a7)
 {
     w3d_func199arg a3a;
     sub_4F681C(a3, a4, &a3a.x1, &a3a.y1);
@@ -386,8 +386,8 @@ void sub_4F68FC(NC_STACK_win3d *win3d, float a3, float a4, float a5, float a6, D
     v10.dword4 = a7;
     v10.dword8 = 0xFFFFFFFF;
 
-    call_method(win3d, 217, &v10);
-    call_method(win3d, 201, &a3a);
+    displ->raster_func217(&v10);
+    displ->raster_func201(&a3a);
 }
 
 
@@ -472,7 +472,7 @@ char * sub_4F6980(char *cur, float a1, float a2, char a3, int a4, int a5)
 
 void sub_4F72E8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
 {
-    if ( bact != yw->field_1b80 && bact->field_32 != bact->parent_bacto )
+    if ( bact != yw->field_1b80 && bact->host_station != bact->parent_bacto )
     {
         uint32_t clr;
         __NC_STACK_ypabact *bct;
@@ -548,7 +548,7 @@ void  sb_0x4f8f64__sub1__sub0(_NC_STACK_ypaworld *yw)
     {
         if ( v2->bact->field_24 == 3 && v2->bact != yw->field_1b80 )
         {
-            NC_STACK_yparobo * obrob = (NC_STACK_yparobo *)v2->bacto;
+            NC_STACK_yparobo * obrob = dynamic_cast<NC_STACK_yparobo *>(v2->bacto);
 
             //call_vtbl(v2->bacto, 3, 0x80000001, &a4, 0);
 
@@ -646,7 +646,7 @@ void sb_0x4f8f64__sub1(_NC_STACK_ypaworld *yw)
         {
             sub_4F68FC(yw->win3d, yw->field_1b84->field_621.sx, yw->field_1b84->field_621.sz, yw->field_1b84->parent_bact->field_621.sx, yw->field_1b84->parent_bact->field_621.sz, yw_GetColor(yw, 11));
 
-            if ( yw->field_1b84->parent_bacto == yw->field_1b84->field_32 )
+            if ( yw->field_1b84->parent_bacto == yw->field_1b84->host_station )
             {
                 int v7 = 0;
                 float a5, a6;
@@ -745,11 +745,11 @@ void sb_0x4f8f64__sub1(_NC_STACK_ypaworld *yw)
             v27.dword4 = yw_GetColor(yw, 12);
             v27.dword8 = 0xFFFFFFFF;
 
-            call_method(yw->win3d, 217, &v27);
-            call_method(yw->win3d, 201, &v24);
-            call_method(yw->win3d, 201, &v26);
-            call_method(yw->win3d, 201, &v23);
-            call_method(yw->win3d, 201, &v25);
+            yw->win3d->raster_func217(&v27);
+            yw->win3d->raster_func201(&v24);
+            yw->win3d->raster_func201(&v26);
+            yw->win3d->raster_func201(&v23);
+            yw->win3d->raster_func201(&v25);
         }
     }
 
@@ -1290,7 +1290,7 @@ __NC_STACK_ypabact * sub_4D3C3C(__NC_STACK_ypabact *bact)
     if (v1 <= 2)
         return NULL;
 
-    if ( bact->parent_bacto != bact->field_32 )
+    if ( bact->parent_bacto != bact->host_station )
         call_vtbl(bact->parent_bacto, 3, 0x80001003, &a4, 0);
 
     return a4;
@@ -1742,7 +1742,7 @@ void sb_0x4f8f64(_NC_STACK_ypaworld *yw)
     robo_map.field_1F0 = robo_map.field_1D8 / robo_map.field_1E0 - (robo_map.frm_1.btn_width - robo_map.field_24C) / 2;
     robo_map.field_1F4 = -(robo_map.field_1DC / robo_map.field_1E4 + (robo_map.frm_1.btn_height - robo_map.field_250) / 2);
 
-    call_method(yw->win3d, 211, &rect);
+    yw->win3d->raster_func211(&rect);
 
     int v33 = robo_map.field_1F0 >> v39;
     int v38 = robo_map.field_1F4 >> v39;
@@ -3285,7 +3285,7 @@ void sub_47E400(_NC_STACK_ypaworld *yw)
         arg66.funcID = 71;
         arg66.vals = &winp71;
 
-        call_method(yw->input_class, 66, &arg66);
+        yw->input_class->input_func66(&arg66);
     }
 }
 
@@ -3313,21 +3313,21 @@ int sb_0x451034(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
     sb_0x451034__sub5(yw);
     sb_0x451034__sub6(yw);
 
-    call_method(obj, 139, &robo_map);
-    call_method(obj, 139, &squadron_manager.lstvw);
-    call_method(obj, 139, &info_log.window);
-    call_method(obj, 139, &exit_menu);
-    call_method(obj, 139, &lstvw2);
-    call_method(obj, 139, &netgame_wnd);
+    obj->ypaworld_func139(&robo_map);
+    obj->ypaworld_func139(&squadron_manager.lstvw);
+    obj->ypaworld_func139(&info_log.window);
+    obj->ypaworld_func139(&exit_menu);
+    obj->ypaworld_func139(&lstvw2);
+    obj->ypaworld_func139(&netgame_wnd);
 
     if ( !sb_0x451034__sub3(obj, yw) )
     {
-        call_method(obj, 140, &lstvw2);
-        call_method(obj, 140, &exit_menu);
-        call_method(obj, 140, &info_log.window);
-        call_method(obj, 140, &squadron_manager.lstvw);
-        call_method(obj, 140, &robo_map);
-        call_method(obj, 140, &netgame_wnd);
+        obj->ypaworld_func140(&lstvw2);
+        obj->ypaworld_func140(&exit_menu);
+        obj->ypaworld_func140(&info_log.window);
+        obj->ypaworld_func140(&squadron_manager.lstvw);
+        obj->ypaworld_func140(&robo_map);
+        obj->ypaworld_func140(&netgame_wnd);
 
         sub_4DA874(yw);
         sub_46E16C(yw);
@@ -3379,7 +3379,7 @@ void sb_0x4d7c08__sub0__sub1()
 void sb_0x4d7c08__sub0__sub3(_NC_STACK_ypaworld *yw)
 {
     w3d_a209 v4 = up_panel.cmdstrm;
-    call_method(yw->win3d, 209, &v4);
+    yw->win3d->raster_func209(&v4);
 }
 
 void sb_0x4d7c08__sub0(_NC_STACK_ypaworld *yw)
@@ -3770,7 +3770,7 @@ char *gui_update_player_panel(_NC_STACK_ypaworld *yw, char *cur)
         if ( bzda.field_8DC > 1 )
             v35 = 0xD0;
     }
-    else if ( yw->field_1b84->field_32 == yw->field_1b84->parent_bacto )
+    else if ( yw->field_1b84->host_station == yw->field_1b84->parent_bacto )
     {
         v35 = 0x10;
 
@@ -4198,7 +4198,7 @@ void ypaworld_func64__sub7__sub2__sub7(_NC_STACK_ypaworld *yw)
             v5.field_0 = 2;
             v5.field_4 = yw->field_1b84->parent_bact;
 
-            call_method(yw->field_1b7c, 109, &v5);
+            yw->field_1b7c->ypabact_func109(&v5);
         }
     }
 }
@@ -4696,7 +4696,7 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub4(_NC_STACK_ypaworld *yw)
 {
     bact_node *v4;
 
-    if ( yw->field_1b84->parent_bacto == yw->field_1b84->field_32 )
+    if ( yw->field_1b84->parent_bacto == yw->field_1b84->host_station )
         v4 = (bact_node *)yw->field_1b84->list2.head;
     else
         v4 = (bact_node *)yw->field_1b84->list_node.next;
@@ -4709,7 +4709,7 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub4(_NC_STACK_ypaworld *yw)
         v4 = (bact_node *)v4->next;
     }
 
-    if ( yw->field_1b84->parent_bacto != yw->field_1b84->field_32 )
+    if ( yw->field_1b84->parent_bacto != yw->field_1b84->host_station )
     {
         if ( ((size_t)yw->field_1b84->parent_bacto) < 0x10 ) // DIRTY!
             return NULL;
@@ -4754,7 +4754,7 @@ void ypaworld_func64__sub7__sub2__sub10(_NC_STACK_ypaworld *yw)
     v38.field_4 = 100;
     v38.field_C = 0;
 
-    call_method(yw->self_full, 159, &v38);
+    yw->self_full->ypaworld_func159(&v38);
 
     dprintf("MAKE ME %s\n", "ypaworld_func64__sub7__sub2__sub10");
 }
@@ -4809,7 +4809,7 @@ void sb_0x4c66f8__sub0(_NC_STACK_ypaworld *yw)
         arg159.txt = NULL;
         arg159.field_C = 39;
 
-        call_method(yw->self_full, 159, &arg159);
+        yw->self_full->ypaworld_func159(&arg159);
     }
 
     yw->field_1a04 = yw->field_1614;
@@ -4862,7 +4862,7 @@ void sb_0x4c66f8(_NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypaba
                 arg159.field_C = 17;
                 arg159.txt = 0;
 
-                call_method(yw->self_full, 159, &arg159);
+                yw->self_full->ypaworld_func159(&arg159);
             }
 
             yw->field_17bc = 0;
@@ -5538,7 +5538,7 @@ char * ypaworld_func64__sub7__sub7__sub0(_NC_STACK_ypaworld *yw)
         yw_arg176 arg176;
         arg176.owner = yw->field_1b80->p_cell_area->owner;
 
-        call_method(yw->self_full, 176, &arg176);
+        yw->self_full->ypaworld_func176(&arg176);
 
         int v32 = yw->field_1b80->p_cell_area->energy_power;
         int v33 = yw->field_1b80->p_cell_area->energy_power * arg176.field_4;
@@ -6047,7 +6047,7 @@ void ypaworld_func64__sub7__sub3__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
             }
             else
             {
-                if ( v8->parent_bacto == v8->field_32 )
+                if ( v8->parent_bacto == v8->host_station )
                     pcur = ypaworld_func64__sub7__sub3__sub0__sub0(yw, v8, pcur);
                 else
                     pcur = ypaworld_func64__sub7__sub3__sub0__sub2(yw, pcur);
@@ -6143,7 +6143,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
     {
         if ( squadron_manager.field_2A8 & 2 )
         {
-            if ( squadron_manager.field_2BC->field_32 != squadron_manager.field_2BC->parent_bacto )
+            if ( squadron_manager.field_2BC->host_station != squadron_manager.field_2BC->parent_bacto )
             {
                 NC_STACK_ypabact *v3 = NULL;
 
@@ -6166,7 +6166,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
 
                         v3 = v13->bacto;
                     }
-                    call_method(v3, 109, &arg109);
+                    v3->ypabact_func109(&arg109);
 
                     v13 = next1;
                 }
@@ -6178,7 +6178,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
             arg109.field_4 = NULL;
             arg109.field_0 = 3;
 
-            call_method(squadron_manager.field_2BC->self, 109, &arg109);
+            squadron_manager.field_2BC->self->ypabact_func109(&arg109);
         }
         yw->field_240c = squadron_manager.field_2BC->field_2E;
         sub_4C707C(yw);
@@ -6188,7 +6188,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
     {
         __NC_STACK_ypabact *v6 = squadron_manager.squads[ winpt->selected_btnID - 8 ];
         int v7;
-        if ( squadron_manager.field_2BC->field_32 == squadron_manager.field_2BC->parent_bacto )
+        if ( squadron_manager.field_2BC->host_station == squadron_manager.field_2BC->parent_bacto )
             v7 = v6 == squadron_manager.field_2BC;
         else
             v7 = v6 == squadron_manager.field_2BC->parent_bact;
@@ -6197,7 +6197,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
         {
             if ( squadron_manager.field_2A8 & 2 )
             {
-                if ( squadron_manager.field_2BC->field_32 != squadron_manager.field_2BC->parent_bacto )
+                if ( squadron_manager.field_2BC->host_station != squadron_manager.field_2BC->parent_bacto )
                 {
                     bact_node *v9 = &squadron_manager.field_2BC->list_node;
                     while (v9->next)
@@ -6207,7 +6207,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
                         bact_arg109 arg109;
                         arg109.field_0 = 1;
                         arg109.field_4 = v6;
-                        call_method(v9->bacto, 109, &arg109);
+                        v9->bacto->ypabact_func109(&arg109);
 
                         v9 = next1;
                     }
@@ -6217,7 +6217,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
                     bact_arg109 arg109;
                     arg109.field_0 = 1;
                     arg109.field_4 = v6;
-                    call_method(squadron_manager.field_2BC->self, 109, &arg109);
+                    squadron_manager.field_2BC->self->ypabact_func109(&arg109);
                 }
             }
             else
@@ -6225,7 +6225,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
                 bact_arg109 arg109;
                 arg109.field_0 = 4;
                 arg109.field_4 = squadron_manager.field_2BC;
-                call_method(v6->self, 109, &arg109);
+                v6->self->ypabact_func109(&arg109);
             }
             yw->field_240c = v6->field_2E;
             sub_4C707C(yw);
@@ -6341,7 +6341,7 @@ int ypaworld_func64__sub7__sub3__sub1(_NC_STACK_ypaworld *yw, winp_131arg *winpt
     squadron_manager.field_2C8 = winpt->move[0].x;
     squadron_manager.field_2BC = v5;
 
-    if ( v5->parent_bacto == v5->field_32 )
+    if ( v5->parent_bacto == v5->host_station )
     {
         squadron_manager.field_2C0 = -(winpt->move[2].x - squadron_manager.field_2D0);
     }
@@ -6564,7 +6564,7 @@ void ypaworld_func64__sub7__sub1__sub0(_NC_STACK_ypaworld *yw)
                                             arg109.field_4 = bct;
                                             arg109.field_0 = 4;
 
-                                            call_method(v13->self, 109, &arg109);
+                                            v13->self->ypabact_func109(&arg109);
 
                                             v8 = 0;
                                         }
@@ -6584,7 +6584,7 @@ void ypaworld_func64__sub7__sub1__sub0(_NC_STACK_ypaworld *yw)
                                             arg109.field_4 = NULL;
                                             arg109.field_0 = 3;
 
-                                            call_method(v13->self, 109, &arg109);
+                                            v13->self->ypabact_func109(&arg109);
 
                                             v8 = 0;
                                         }
@@ -7100,7 +7100,7 @@ void sub_47DB04(_NC_STACK_ypaworld *yw, char a2)
     v3.val_size = 20;
     v3.field_18 = 1;
 
-    call_method(yw->self_full, 181, &v3);
+    yw->self_full->ypaworld_func181(&v3);
 
     yw->GameShell->field_283F = 0;
 }
@@ -7243,7 +7243,7 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 v18.txt = get_lang_string(yw->string_pointers_p2, 259, "GAME SAVED OK.");
                 v18.field_C = 0;
 
-                call_method(yw->self_full, 159, &v18);
+                yw->self_full->ypaworld_func159(&v18);
             }
 
             yw->field_2d90->field_40 = 0;
@@ -9007,7 +9007,7 @@ void ypaworld_func159__sub0(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, in
     }
 }
 
-void ypaworld_func159__real(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg159 *arg)
+void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg)
 {
     _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
 
@@ -9327,7 +9327,7 @@ void sub_4E332C(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float a3, float 
         v30.dword4 = coloooor;
         v30.dword8 = 0xFFFFFFFF;
 
-        call_method(yw->win3d, 217, &v30);
+        yw->win3d->raster_func217(&v30);
 
         for (int i = 0; i < wire->POO_NUM; i++)
         {
@@ -9363,7 +9363,7 @@ void sub_4E332C(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float a3, float 
                     v30.dword4 = v31;
                     v30.dword8 = 0xFFFFFFFF;
 
-                    call_method(yw->win3d, 217, &v30);
+                    yw->win3d->raster_func217(&v30);
                 }
                 else if ( color_func2 )
                 {
@@ -9376,10 +9376,10 @@ void sub_4E332C(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float a3, float 
                     v30.dword4 = v33;
                     v30.dword8 = 0xFFFFFFFF;
 
-                    call_method(yw->win3d, 217, &v30);
+                    yw->win3d->raster_func217(&v30);
                 }
 
-                call_method(yw->win3d, 200, &v29);
+                yw->win3d->raster_func200(&v29);
             }
         }
     }
@@ -9842,7 +9842,7 @@ int sb_0x4d7c08__sub0__sub0__sub0(_NC_STACK_ypaworld *yw)
     v12.y1 = -1.0;
     v12.y2 = 1.0;
 
-    call_method(yw->win3d, 210, &v12);
+    yw->win3d->raster_func210(&v12);
 
     sklt_wis *wis = &yw->wis_skeletons;
 
@@ -9896,7 +9896,7 @@ int sb_0x4d7c08__sub0__sub0__sub0(_NC_STACK_ypaworld *yw)
     v13.cmdbuf = byte_5C8DB0;
     v13.includ = NULL;
 
-    call_method(yw->win3d, 209, &v13);
+    yw->win3d->raster_func209(&v13);
 
     return 1;
 }
@@ -9989,7 +9989,7 @@ void sb_0x4d7c08__sub0__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, sklt_wis *wis)
         sub_4E332C(yw, wis->sklts_intern[3], 0.7, 0.3, v23, -v20, v20, v23, 0.25, 0.3, v9, func, 0);
     }
 
-    if ( yw->field_1b84->field_32 == yw->field_1b84->parent_bacto )
+    if ( yw->field_1b84->host_station == yw->field_1b84->parent_bacto )
     {
         int v27 = 0;
 
@@ -10148,7 +10148,7 @@ char * sb_0x4d7c08__sub0__sub4__sub1(_NC_STACK_ypaworld *yw, char *cur)
     v9.y1 = -1.0;
     v9.y2 = 1.0;
 
-    call_method(yw->win3d, 210, &v9);
+    yw->win3d->raster_func210(&v9);
 
     ua_dRect v7;
     ua_dRect v8;
@@ -10173,17 +10173,17 @@ char * sb_0x4d7c08__sub0__sub4__sub1(_NC_STACK_ypaworld *yw, char *cur)
         v7.y2 = robo_map.frm_1.btn_height + v7.y1;
     }
 
-    call_method(yw->win3d, 221, &v7);
+    yw->win3d->raster_func221(&v7);
 
     sklt_wis *wis = &yw->wis_skeletons;
 
     sb_0x4d7c08__sub0__sub4__sub1__sub0(yw, wis);
 
-    call_method(yw->win3d, 221, &v8);
+    yw->win3d->raster_func221(&v8);
 
     sb_0x4d7c08__sub0__sub4__sub1__sub1(yw, wis);
 
-    call_method(yw->win3d, 221, &v7);
+    yw->win3d->raster_func221(&v7);
 
     pcur = sb_0x4e5a84(yw, wis, pcur, -0.7, 0.3, yw->field_1b84, -1, 0x10);
 
@@ -10194,7 +10194,7 @@ char * sb_0x4d7c08__sub0__sub4__sub1(_NC_STACK_ypaworld *yw, char *cur)
         v8.y1 = 0;
         v8.y2 = 0;
 
-        call_method(yw->win3d, 221, &v8);
+        yw->win3d->raster_func221(&v8);
     }
 
     return pcur;
@@ -10565,7 +10565,7 @@ void sub_4E3570(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
             {
                 float a4 = v34 - 0.08;
 
-                if ( bact->parent_bacto != bact->field_32 || bact->owner != yw->field_1b80->owner )
+                if ( bact->parent_bacto != bact->host_station || bact->owner != yw->field_1b80->owner )
                 {
                     sub_4E332C(yw, yw->wis_skeletons.sklts_intern[13], a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.0075, 0.01, v11, NULL, NULL);
                 }
@@ -10825,7 +10825,7 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(_NC_STACK_ypaworld *yw)
     drect.x2 = robo_map.field_1F8 + robo_map.field_200 - 1;
     drect.y2 = robo_map.field_1FC + robo_map.field_204 - 1;
 
-    call_method(yw->win3d, 211, &drect);
+    yw->win3d->raster_func211(&drect);
 
     int v14 = dround(robo_map.field_1F0 * robo_map.field_1E0) / 1200;
     int v29 = dround(robo_map.field_1F4 * robo_map.field_1E4) / 1200;
@@ -11190,7 +11190,7 @@ void sb_0x4d7c08__sub0__sub2(_NC_STACK_ypaworld *yw)
     a209.cmdbuf = buf;
     a209.includ = NULL;
 
-    call_method(yw->win3d, 209, &a209);
+    yw->win3d->raster_func209(&a209);
 }
 
 
@@ -11471,7 +11471,7 @@ int sb_0x4d3d44__sub0(_NC_STACK_ypaworld *yw, winp_131arg *winp)
                 arg149.field_1C = v39;
                 arg149.field_40 = 0;
 
-                call_method(yw->self_full, 149, &arg149);
+                yw->self_full->ypaworld_func149(&arg149);
 
                 if ( !arg149.field_20 )
                 {
@@ -11624,7 +11624,7 @@ int ypaworld_func64__sub21__sub3(_NC_STACK_ypaworld *yw)
             arg136.pos_x = yw->field_1a6c.sx - j * 57.14285714285715;
             arg136.pos_z = yw->field_1a6c.sz - i * 57.14285714285715;
 
-            call_method(yw->self_full, 136, &arg136);
+            yw->self_full->ypaworld_func136(&arg136);
 
             if ( arg136.field_20 )
             {
@@ -11907,9 +11907,9 @@ void ypaworld_func64__sub21__sub1__sub3(NC_STACK_ypaworld *ywo, _NC_STACK_ypawor
     arg149.field_1C = arg150.field_18.sz;
     arg149.field_40 = 0;
 
-    call_method(ywo, 149, &arg149);
+    ywo->ypaworld_func149(&arg149);
 
-    call_method(ywo, 150,  &arg150);
+    ywo->ypaworld_func150(&arg150);
 
     float v27, v28;
 
@@ -12032,7 +12032,7 @@ int sub_4D3C80(_NC_STACK_ypaworld *yw)
         a4 = NULL;
     else
     {
-        if ( yw->field_1a98->parent_bacto != yw->field_1a98->field_32 )
+        if ( yw->field_1a98->parent_bacto != yw->field_1a98->host_station )
             call_vtbl(yw->field_1a98->parent_bacto, 3, 0x80001003, &a4, 0);
     }
 
@@ -12581,7 +12581,7 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stru
         if ( squadron_manager.field_2A8 & 1 )
             v19.pointer_id = 1;
 
-        call_method(yw->win3d, 263, &v19);
+        yw->win3d->display_func263(&v19);
 
         if ( v5 )
             sub_4811E8(yw, v5);
@@ -12662,10 +12662,10 @@ void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
             v31.field_4 = 10;
             v31.funcID = 69;
 
-            call_method(input, 66,  &v31);
+            input->input_func66(&v31);
 
             v31.field_4 = 11;
-            call_method(input, 66,  &v31);
+            input->input_func66(&v31);
         }
     }
 
@@ -12869,12 +12869,12 @@ void ypaworld_func151__sub2(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
 {
     if ( yw->field_162c )
     {
-        call_method(obj, 140, &lstvw2);
-        call_method(obj, 140, &exit_menu);
-        call_method(obj, 140, &info_log);
-        call_method(obj, 140, &squadron_manager);
-        call_method(obj, 140, &robo_map);
-        call_method(obj, 140, &netgame_wnd);
+        obj->ypaworld_func140(&lstvw2);
+        obj->ypaworld_func140(&exit_menu);
+        obj->ypaworld_func140(&info_log.window);
+        obj->ypaworld_func140(&squadron_manager.lstvw);
+        obj->ypaworld_func140(&robo_map);
+        obj->ypaworld_func140(&netgame_wnd);
 
         sub_4DA874(yw);
         sub_46E16C(yw);

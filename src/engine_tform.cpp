@@ -3,9 +3,7 @@
 #include "math.h"
 #include "utils.h"
 
-stored_functions *classvtbl_get_tformEngine();
-
-int tformEngine__init(unsigned int, ...);
+int tformEngine__init();
 void tformEngine__deinit();
 void tformEngine__setter(unsigned int, ...);
 void tformEngine__getter(unsigned int, ...);
@@ -13,15 +11,6 @@ void tformEngine__getter(unsigned int, ...);
 
 stored_functions_engine tform_engine_vtbl = {tformEngine__init, tformEngine__deinit, tformEngine__setter, tformEngine__getter};
 
-
-
-class_stored tform_engine_off (NULL, NULL, "MC2engines:tform_NG.engine", classvtbl_get_tformEngine);
-
-
-stored_functions *classvtbl_get_tformEngine()
-{
-    return (stored_functions *)&tform_engine_vtbl;
-}
 
 
 SinCos *SinCos_table = NULL;
@@ -37,7 +26,7 @@ float tform_frontplane;
 float tform_zoomx;
 float tform_zoomy;
 
-int tformEngine__init(unsigned int, ...)
+int tformEngine__init()
 {
     get_keyvalue_from_ini(0, tform_keys, 4);
 

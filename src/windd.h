@@ -4,8 +4,6 @@
 #include <ddraw.h>
 #include <d3d.h>
 
-extern class_stored windd_class_off;
-
 struct bitmap_intern;
 
 struct enum_gfx_modes
@@ -138,25 +136,9 @@ struct __attribute__((packed)) LOGPALETTE256
     PALETTEENTRY entrs[255];
 };
 
-struct NC_STACK_windd : public NC_STACK_display
-{
-    __NC_STACK_windd stack__windd;
-};
 
 
 
-
-
-
-
-
-struct windd_arg256
-{
-    int sort_id;
-    int width;
-    int height;
-    char name[32];
-};
 
 struct windd_dlgBox
 {
@@ -194,5 +176,70 @@ int dbcs_EndText(LPDDSURFACEDESC surfDesc);
 void dbcs_AddText(const char *string, int p1, int p2, int p3, int p4, int flag);
 int sb_0x4bf0a0(LPDDSURFACEDESC surf);
 int load_font(const char *fontname);
+
+
+class NC_STACK_windd: public NC_STACK_display
+{
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+    virtual size_t raster_func192(stack_vals *);
+    virtual size_t raster_func193(bitmap_intern **stak);
+    virtual void raster_func194(stack_vals *stak);
+    virtual void raster_func195(stack_vals *stak);
+    virtual void raster_func196(stack_vals *stak);
+    virtual void raster_func197(stack_vals *stak);
+    virtual size_t raster_func198(w3d_func198arg *stak);
+    virtual size_t raster_func199(w3d_func199arg *stak);
+    virtual size_t raster_func200(w3d_func198arg *stak);
+    virtual size_t raster_func201(w3d_func199arg *stak);
+    virtual size_t raster_func202(rstr_arg204 *stak);
+    virtual size_t raster_func203(stack_vals *stak);
+    virtual size_t raster_func204(rstr_arg204 *stak);
+    virtual size_t raster_func205(stack_vals *stak);
+    virtual size_t raster_func206(polysDatSub *stak);
+    virtual void raster_func209(w3d_a209 *arg);
+    virtual void raster_func213(polysDatSub *stak);
+    virtual size_t raster_func214(void *stak);
+    virtual void raster_func215(void *stak);
+    virtual void raster_func216(void *stak);
+    virtual void raster_func218(rstr_218_arg *arg);
+    virtual size_t raster_func219(stack_vals *stak);
+    virtual size_t display_func256(windd_arg256 *inout);
+    virtual void display_func257(stack_vals *);
+    virtual void display_func258(stack_vals *);
+    virtual void display_func259(stack_vals *);
+    virtual void display_func260(stack_vals *);
+    virtual void display_func261(rstr_261_arg *arg);
+    virtual void display_func262(rstr_262_arg *arg);
+    virtual void display_func263(displ_arg263 *arg);
+    virtual void windd_func320(stack_vals *);
+    virtual void windd_func321(stack_vals *);
+    virtual void windd_func322(windd_dlgBox *dlgBox);
+    virtual void windd_func323(const char **filename);
+    virtual void windd_func324(wdd_func324arg *inout);
+    virtual void windd_func325(wdd_func324arg *arg);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_windd() {
+        memset(&stack__windd, 0, sizeof(stack__windd));
+    };
+    virtual ~NC_STACK_windd() {};
+
+    virtual const char * getClassName() {
+        return "windd.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_windd();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
+    __NC_STACK_windd stack__windd;
+};
 
 #endif // RASTER_H_INCLUDED

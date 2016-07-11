@@ -15,22 +15,7 @@
 #include "engine_gfx.h"
 
 
-
-stored_functions *classvtbl_get_area();
-class_return * class_set_area(int, ...);
-
-stored_functions area_class_vtbl(class_set_area);
-
-
-class_stored area_class_off (NULL, NULL, "MC2classes:area.class", classvtbl_get_area);
-
-
-stored_functions *classvtbl_get_area()
-{
-    return &area_class_vtbl;
-}
-
-CLASSFUNC area_funcs[1024];
+const NewClassDescr NC_STACK_area::description("area.class", &newinstance);
 
 
 int area_func0__sub0(__NC_STACK_area *area, stack_vals *stak)
@@ -173,32 +158,31 @@ int area_func0__sub0(__NC_STACK_area *area, stack_vals *stak)
 }
 
 
-NC_STACK_area * area_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_area::func0(stack_vals *stak)
 {
-    NC_STACK_area *obj = (NC_STACK_area *)call_parent(zis, clss, 0, stak); // rsrc_func0
-    if (obj)
-    {
-        __NC_STACK_area *area = &obj->stack__area;
+    if ( !NC_STACK_ade::func0(stak) )
+        return 0;
 
-        if ( !area_func0__sub0(area, stak) )
-        {
-            call_method(obj, 1);
-            obj = NULL;
-        }
+    __NC_STACK_area *area = &this->stack__area;
+
+    if ( !area_func0__sub0(area, stak) )
+    {
+        func1(NULL);
+        return 0;
     }
 
-    return obj;
+    return 1;
 }
 
-size_t area_func1(NC_STACK_area *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_area::func1(stack_vals *stak)
 {
-    __NC_STACK_area *area = &obj->stack__area;
+    __NC_STACK_area *area = &this->stack__area;
 
     if ( area->ilbm1 )
         delete_class_obj(area->ilbm1);
     if ( area->ilbm2 )
         delete_class_obj(area->ilbm2);
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_ade::func1(stak);
 }
 
 
@@ -345,13 +329,13 @@ void area_func2__sub0(__NC_STACK_area *area, stack_vals *stak)
     area->field_16 = v4;
 }
 
-size_t area_func2(NC_STACK_area *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_area::func2(stack_vals *stak)
 {
-    __NC_STACK_area *area = &obj->stack__area;
+    __NC_STACK_area *area = &this->stack__area;
 
     area_func2__sub0(area, stak);
 
-    return call_parent(zis, obj, 2, stak);
+    return NC_STACK_ade::func2(stak);
 }
 
 void area_func3__sub0(__NC_STACK_area *area, stack_vals *stak)
@@ -487,14 +471,14 @@ void area_func3__sub0(__NC_STACK_area *area, stack_vals *stak)
     }
 }
 
-size_t area_func3(NC_STACK_area *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_area::func3(stack_vals *stak)
 {
 
-    __NC_STACK_area *area = &obj->stack__area;
+    __NC_STACK_area *area = &this->stack__area;
 
     area_func3__sub0(area, stak);
 
-    return call_parent(zis, obj, 3, stak);
+    return NC_STACK_ade::func3(stak);
 }
 
 int area_func5__sub0(NC_STACK_area *obj, __NC_STACK_area *, MFILE *mfile)
@@ -519,7 +503,7 @@ int area_func5__sub0(NC_STACK_area *obj, __NC_STACK_area *, MFILE *mfile)
             stk[1].value = tmp.field_6;
             stk[2].id = 0;
         }
-        call_method(obj, 2, stk);
+        obj->func2(stk);
 
         return 1;
     }
@@ -538,7 +522,7 @@ int area_func5__sub1(NC_STACK_area *obj, __NC_STACK_area *area, MFILE *mfile)
         if ( (area->field_16 & 0xC0) == 0xC0 )
             v8 |= 0xC0;
 
-        NC_STACK_class *objt = (NC_STACK_class *)READ_OBJT(mfile);
+        NC_STACK_nucleus *objt = (NC_STACK_nucleus *)READ_OBJT(mfile);
         if ( objt )
         {
             if (v8 == 8 )
@@ -568,10 +552,10 @@ int area_func5__sub1(NC_STACK_area *obj, __NC_STACK_area *area, MFILE *mfile)
 }
 
 
-NC_STACK_area *area_func5(class_stru *clss, class_stru *zis, MFILE **file)
+size_t NC_STACK_area::func5(MFILE **file)
 {
     MFILE *mfile = *file;
-    NC_STACK_area *obj = NULL;
+    int obj_ok = 0;
     __NC_STACK_area *area = NULL;
 
     while ( 1 )
@@ -583,38 +567,38 @@ NC_STACK_area *area_func5(class_stru *clss, class_stru *zis, MFILE **file)
 
         if ( iff_res )
         {
-            if ( obj )
-                call_method(obj, 1);
-            return NULL;
+            if ( obj_ok )
+                func1(NULL);
+            return 0;
         }
 
         MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ADE )
         {
-            obj = (NC_STACK_area *)call_parent(zis, clss, 5, (stack_vals *)file);
+            obj_ok = NC_STACK_ade::func5(file);
 
-            if ( !obj )
-                return NULL;
+            if ( !obj_ok )
+                return 0;
 
-            area = &obj->stack__area;
+            area = &this->stack__area;
 
         }
         else if ( chunk->TAG == TAG_STRC )
         {
-            if ( !area_func5__sub0(obj, area, mfile) )
+            if ( !area_func5__sub0(this, area, mfile) )
             {
-                call_method(obj, 1);
-                return NULL;
+                func1(NULL);
+                return 0;
             }
             read_next_IFF(mfile, 2);
         }
         else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
         {
-            if ( !area_func5__sub1(obj, area, mfile) )
+            if ( !area_func5__sub1(this, area, mfile) )
             {
-                call_method(obj, 1);
-                return NULL;
+                func1(NULL);
+                return 0;
             }
         }
         else
@@ -623,19 +607,19 @@ NC_STACK_area *area_func5(class_stru *clss, class_stru *zis, MFILE **file)
         }
     }
 
-    return obj;
+    return obj_ok;
 }
 
-size_t area_func6(NC_STACK_area *obj, class_stru *zis, MFILE **file)
+size_t NC_STACK_area::func6(MFILE **file)
 {
     MFILE *mfile = *file;
-    __NC_STACK_area *area = &obj->stack__area;
+    __NC_STACK_area *area = &this->stack__area;
 
     if ( sub_412FC0(mfile, TAG_AREA, TAG_FORM, -1) )
         return 0;
 
 
-    if ( !call_parent(zis, obj, 6, (stack_vals *)file) )
+    if ( !NC_STACK_ade::func6(file) )
         return 0;
 
     sub_412FC0(mfile, 0, TAG_STRC, -1);
@@ -670,9 +654,9 @@ size_t area_func6(NC_STACK_area *obj, class_stru *zis, MFILE **file)
 }
 
 // Add area to list
-size_t area_func65(NC_STACK_area *obj, class_stru *, area_arg_65 *arg)
+size_t NC_STACK_area::ade_func65(area_arg_65 *arg)
 {
-    __NC_STACK_area *area = &obj->stack__area;
+    __NC_STACK_area *area = &this->stack__area;
     polysDatSub *datSub = &arg->polyDat->datSub;
 
     int v5 = area->field_16 & 0xFEF6;
@@ -730,7 +714,7 @@ size_t area_func65(NC_STACK_area *obj, class_stru *, area_arg_65 *arg)
         bitm130.field_0 = arg->field_C;
         bitm130.field_4 = arg->field_10;
 
-        call_method(area->ilbm1, 130, &bitm130);
+        area->ilbm1->bitmap_func130(&bitm130);
 
         datSub->pbitm = bitm130.pbitm;
         skel133.field_C = bitm130.opl2;
@@ -741,7 +725,7 @@ size_t area_func65(NC_STACK_area *obj, class_stru *, area_arg_65 *arg)
         skel133.field_C = NULL;
     }
 
-    polysDat *v19 = (polysDat *)call_method(arg->OBJ_SKELETON, 133, &skel133);
+    polysDat *v19 = (polysDat *)arg->OBJ_SKELETON->skeleton_func133(&skel133);
 
     if ( v19 )
     {
@@ -788,26 +772,26 @@ size_t area_func65(NC_STACK_area *obj, class_stru *, area_arg_65 *arg)
     return 1;
 }
 
-class_return area_class_descr;
-
-class_return * class_set_area(int, ...)
+size_t NC_STACK_area::compatcall(int method_id, void *data)
 {
-
-    memset(area_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    area_funcs[0] = (CLASSFUNC)area_func0;
-    area_funcs[1] = (CLASSFUNC)area_func1;
-    area_funcs[2] = (CLASSFUNC)area_func2;
-    area_funcs[3] = (CLASSFUNC)area_func3;
-    area_funcs[5] = (CLASSFUNC)area_func5;
-    area_funcs[6] = (CLASSFUNC)area_func6;
-    area_funcs[65] = (CLASSFUNC)area_func65;
-
-    area_class_descr.parent = "ade.class";
-
-    area_class_descr.vtbl = area_funcs;
-    ////area_class_descr.varSize = sizeof(__NC_STACK_area);
-    area_class_descr.varSize = sizeof(NC_STACK_area) - offsetof(NC_STACK_area, stack__area); //// HACK
-    area_class_descr.field_A = 0;
-    return &area_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        return (size_t)func2( (stack_vals *)data );
+    case 3:
+        return (size_t)func3( (stack_vals *)data );
+    case 5:
+        return (size_t)func5( (MFILE **)data );
+    case 6:
+        return (size_t)func6( (MFILE **)data );
+    case 65:
+        return (size_t)ade_func65( (area_arg_65 *)data );
+    default:
+        break;
+    }
+    return NC_STACK_ade::compatcall(method_id, data);
 }

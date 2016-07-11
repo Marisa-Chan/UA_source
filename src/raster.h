@@ -3,8 +3,6 @@
 
 #include "engine_gfx.h"
 
-extern class_stored raster_class_off;
-
 struct xyxyNNN
 {
     int x1;
@@ -131,12 +129,6 @@ struct __NC_STACK_raster
 //  int field_59c;
 };
 
-struct NC_STACK_raster : public NC_STACK_bitmap
-{
-    __NC_STACK_raster stack__raster;
-};
-
-
 struct w3d_func198arg
 {
     float x1;
@@ -194,6 +186,65 @@ struct rstr_218_arg
     int flg;
     ua_fRect rect1;
     ua_fRect rect2;
+};
+
+
+class NC_STACK_raster: public NC_STACK_bitmap
+{
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+    virtual size_t raster_func192(stack_vals *);
+    virtual size_t raster_func193(bitmap_intern **out);
+    virtual void raster_func194(stack_vals *stak) {};
+    virtual void raster_func195(stack_vals *stak) {};
+    virtual void raster_func196(stack_vals *stak) {};
+    virtual void raster_func197(stack_vals *stak) {};
+    virtual size_t raster_func198(w3d_func198arg *);
+    virtual size_t raster_func199(w3d_func199arg *);
+    virtual size_t raster_func200(w3d_func198arg *);
+    virtual size_t raster_func201(w3d_func199arg *);
+    virtual size_t raster_func202(rstr_arg204 *);
+    virtual size_t raster_func203(stack_vals *);
+    virtual size_t raster_func204(rstr_arg204 *);
+    virtual size_t raster_func205(stack_vals *);
+    virtual size_t raster_func206(polysDatSub *);
+    virtual void raster_func207(rstr_207_arg *arg);
+    virtual void raster_func208(rstr_207_arg *arg);
+    virtual void raster_func209(w3d_a209 *);
+    virtual void raster_func210(ua_fRect *arg);
+    virtual void raster_func211(ua_dRect *arg);
+    virtual size_t raster_func212(stack_vals *);
+    virtual void raster_func213(polysDatSub *);
+    virtual size_t raster_func214(void *);
+    virtual void raster_func215(void *);
+    virtual void raster_func216(void *);
+    virtual size_t raster_func217(rstr_arg217 *arg);
+    virtual void raster_func218(rstr_218_arg *arg);
+    virtual size_t raster_func219(stack_vals *);
+    virtual size_t raster_func220(stack_vals *);
+    virtual void raster_func221(ua_dRect *arg);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_raster() {
+        memset(&stack__raster, 0, sizeof(stack__raster));
+    };
+    virtual ~NC_STACK_raster() {};
+
+    virtual const char * getClassName() {
+        return "raster.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_raster();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
+    __NC_STACK_raster stack__raster;
 };
 
 #endif // RASTER_H_INCLUDED

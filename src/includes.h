@@ -3,6 +3,10 @@
 
 #include <windows.h>
 #include <objbase.h>
+
+#undef max
+#undef min
+
 #include <stdio.h>
 #include <stddef.h>
 #include <inttypes.h>

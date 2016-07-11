@@ -10,23 +10,12 @@
 #include "inttypes.h"
 
 
-stored_functions *classvtbl_get_embed();
-class_return * class_set_embed(int, ...);
 
-stored_functions embed_class_vtbl(class_set_embed);
+const NewClassDescr NC_STACK_embed::description("embed.class", &newinstance);
 
 
-class_stored embed_class_off (NULL, NULL, "MC2classes:embed.class", classvtbl_get_embed);
 
-
-stored_functions *classvtbl_get_embed()
-{
-    return &embed_class_vtbl;
-}
-
-CLASSFUNC embed_funcs[1024];
-
-int sub_41C418(nlist *list, NC_STACK_class *obj)
+int sub_41C418(nlist *list, NC_STACK_rsrc *obj)
 {
     embd_node *v4 = (embd_node *)list->tailpred;
     embd_node *v5 = NULL;
@@ -51,36 +40,36 @@ int sub_41C418(nlist *list, NC_STACK_class *obj)
 }
 
 // Create embed resource node and fill rsrc field data
-NC_STACK_embed * embed_func0(class_stru *, class_stru *, stack_vals *)
+size_t NC_STACK_embed::func0(stack_vals *)
 {
     dprintf("MAKE ME %s\n","embed_func0");
-    return NULL;
+    return 0;
 }
 
-size_t embed_func1(NC_STACK_embed *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_embed::func1(stack_vals *stak)
 {
-    __NC_STACK_embed *embd = &obj->stack__embed;
+    __NC_STACK_embed *embd = &this->stack__embed;
 
     while ( embd->embed_objects.head->next )
     {
         embd_node *nod = (embd_node *)embd->embed_objects.head;
         for(int i = 0; i < nod->num; i++)
         {
-            NC_STACK_class *embd_obj = nod->objects[i];
+            NC_STACK_nucleus *embd_obj = nod->objects[i];
             if (embd_obj)
                 delete_class_obj(embd_obj);
         }
         Remove(nod);
         nc_FreeMem(nod);
     }
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_nucleus::func1(stak);
 }
 
-NC_STACK_embed * embed_func5(class_stru *clss, class_stru *zis, MFILE **file)
+size_t NC_STACK_embed::func5(MFILE **file)
 {
     MFILE *mfile = *file;
     __NC_STACK_embed *embd = NULL;
-    NC_STACK_embed *obj = NULL;
+    int obj_ok = 0;
 
     while ( 1 )
     {
@@ -91,21 +80,21 @@ NC_STACK_embed * embed_func5(class_stru *clss, class_stru *zis, MFILE **file)
 
         if ( v5 )
         {
-            if ( obj )
-                call_method(obj, 1);
-            return NULL;
+            if ( obj_ok )
+                func1(NULL);
+            return 0;
         }
 
         MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ROOT )
         {
-            obj = (NC_STACK_embed *)call_parent(zis, clss, 5, (stack_vals *)file);
+            obj_ok = NC_STACK_nucleus::func5(file);
 
-            if ( !obj )
-                return NULL;
+            if ( !obj_ok )
+                return 0;
 
-            embd = &obj->stack__embed;
+            embd = &this->stack__embed;
             init_list(&embd->embed_objects);
         }
         else if ( chunk->TAG == TAG_EMRS )
@@ -115,17 +104,17 @@ NC_STACK_embed * embed_func5(class_stru *clss, class_stru *zis, MFILE **file)
             mfread(mfile, classname, 255);
             read_next_IFF(mfile, 2);
 
-            NC_STACK_class *embd_class = init_get_class(classname,
-                                         0x80001000, &classname[strlen(classname) + 1],
-                                         0x80001001, 1,
-                                         0x80001005, mfile,
-                                         0);
+            NC_STACK_rsrc *embd_class = dynamic_cast<NC_STACK_rsrc *>( init_get_class(classname,
+                                        0x80001000, &classname[strlen(classname) + 1],
+                                        0x80001001, 1,
+                                        0x80001005, mfile,
+                                        0) );
 
             if ( embd_class && !sub_41C418(&embd->embed_objects, embd_class) )
             {
                 delete_class_obj(embd_class);
-                call_method(obj, 1);
-                return NULL;
+                func1(NULL);
+                return 0;
             }
         }
         else
@@ -134,18 +123,18 @@ NC_STACK_embed * embed_func5(class_stru *clss, class_stru *zis, MFILE **file)
         }
 
     }
-    return obj;
+    return obj_ok;
 }
 
-size_t embed_func6(NC_STACK_embed *obj, class_stru *zis, MFILE **file)
+size_t NC_STACK_embed::func6(MFILE **file)
 {
     MFILE *mfile = *file;
-    __NC_STACK_embed *embd = &obj->stack__embed;
+    __NC_STACK_embed *embd = &this->stack__embed;
 
     if ( sub_412FC0(mfile, TAG_EMBD, TAG_FORM, -1) )
         return 0;
 
-    if ( call_parent(zis, obj, 6, (stack_vals *)file) )
+    if ( NC_STACK_nucleus::func6(file) )
     {
         embd_node *node = (embd_node *)embd->embed_objects.head;
 
@@ -157,7 +146,7 @@ size_t embed_func6(NC_STACK_embed *obj, class_stru *zis, MFILE **file)
                 {
                     for (int i = 0; i < node->num; i++)
                     {
-                        NC_STACK_class *embd_obj = node->objects[i];
+                        NC_STACK_rsrc *embd_obj = node->objects[i];
                         if ( embd_obj )
                         {
                             char v23 = 0;
@@ -176,7 +165,7 @@ size_t embed_func6(NC_STACK_embed *obj, class_stru *zis, MFILE **file)
                             arg66.file = mfile;
                             arg66.OpenedStream = 2;
 
-                            if ( !call_method(embd_obj, 66, &arg66 ) )
+                            if ( !embd_obj->rsrc_func66(&arg66 ) )
                                 return 0;
                         }
                     }
@@ -192,22 +181,20 @@ size_t embed_func6(NC_STACK_embed *obj, class_stru *zis, MFILE **file)
     return 0;
 }
 
-class_return embed_class_descr;
-
-class_return * class_set_embed(int, ...)
+size_t NC_STACK_embed::compatcall(int method_id, void *data)
 {
-    memset(embed_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    embed_funcs[0] = (CLASSFUNC)embed_func0;
-    embed_funcs[1] = (CLASSFUNC)embed_func1;
-    embed_funcs[5] = (CLASSFUNC)embed_func5;
-    embed_funcs[6] = (CLASSFUNC)embed_func6;
-
-    embed_class_descr.parent = "nucleus.class";
-
-    embed_class_descr.vtbl = embed_funcs;
-    ////embed_class_descr.varSize = sizeof(__NC_STACK_embed);
-    embed_class_descr.varSize = sizeof(NC_STACK_embed) - offsetof(NC_STACK_embed, stack__embed); //// HACK
-    embed_class_descr.field_A = 0;
-    return &embed_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 5:
+        return (size_t)func5( (MFILE **)data );
+    case 6:
+        return (size_t)func6( (MFILE **)data );
+    default:
+        break;
+    }
+    return NC_STACK_nucleus::compatcall(method_id, data);
 }

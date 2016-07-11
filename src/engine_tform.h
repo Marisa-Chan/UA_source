@@ -1,7 +1,7 @@
 #ifndef ENGINE_TFORM_H_INCLUDED
 #define ENGINE_TFORM_H_INCLUDED
 
-extern class_stored tform_engine_off;
+extern stored_functions_engine tform_engine_vtbl;
 
 struct SinCos
 {

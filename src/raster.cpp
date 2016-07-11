@@ -6,58 +6,44 @@
 #include "utils.h"
 
 
-stored_functions *classvtbl_get_raster();
-class_return * class_set_raster(int, ...);
-
-stored_functions raster_class_vtbl(class_set_raster);
+const NewClassDescr NC_STACK_raster::description("raster.class", &newinstance);
 
 
-class_stored raster_class_off (NULL, NULL, "MC2classes:raster.class", classvtbl_get_raster);
-
-
-stored_functions *classvtbl_get_raster()
+size_t NC_STACK_raster::func0(stack_vals *stak)
 {
-    return &raster_class_vtbl;
-}
+    if ( !NC_STACK_bitmap::func0(stak) )
+        return 0;
 
-CLASSFUNC raster_funcs[1024];
-
-
-NC_STACK_raster * raster_func0(class_stru *obj, class_stru *zis, stack_vals *stak)
-{
-    NC_STACK_raster *clss = (NC_STACK_raster *)call_parent(zis, obj, 0, stak); // bitmap_func0
     dprintf("MAKE ME %s\n","raster_func0");
-    if (clss)
-    {
-        __NC_STACK_raster *rstr = &clss->stack__raster;
-        call_vtbl(clss, 3, 0x80001002, &rstr->bitm_intern, 0);
 
-        rstr->field_24.x1 = 0;
-        rstr->field_24.y1 = 0;
-        rstr->field_24.x2 = rstr->bitm_intern->width - 1;
-        rstr->field_24.y2 = rstr->bitm_intern->height - 1;
+    __NC_STACK_raster *rstr = &this->stack__raster;
+    call_vtbl(this, 3, 0x80001002, &rstr->bitm_intern, 0);
 
-        rstr->field_54c = rstr->bitm_intern->width / 2;
-        rstr->field_550 = rstr->bitm_intern->height / 2;
+    rstr->field_24.x1 = 0;
+    rstr->field_24.y1 = 0;
+    rstr->field_24.x2 = rstr->bitm_intern->width - 1;
+    rstr->field_24.y2 = rstr->bitm_intern->height - 1;
 
-        rstr->field_554 = (rstr->bitm_intern->width / 2);
-        rstr->field_558 = (rstr->bitm_intern->height / 2);
-    }
+    rstr->field_54c = rstr->bitm_intern->width / 2;
+    rstr->field_550 = rstr->bitm_intern->height / 2;
 
-    return clss;
+    rstr->field_554 = (rstr->bitm_intern->width / 2);
+    rstr->field_558 = (rstr->bitm_intern->height / 2);
+
+    return 1;
 }
 
-size_t raster_func1(NC_STACK_raster *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_raster::func1(stack_vals *stak)
 {
     dprintf("MAKE ME %s\n","raster_func1");
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_bitmap::func1(stak);
 }
 
-void raster_func2(NC_STACK_raster *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_raster::func2(stack_vals *stak)
 {
     dprintf("MAKE ME %s\n","raster_func2");
 
-    __NC_STACK_raster *rstr = &obj->stack__raster;
+    __NC_STACK_raster *rstr = &this->stack__raster;
 
     stack_vals *stk = stak;
 
@@ -109,10 +95,10 @@ void raster_func2(NC_STACK_raster *obj, class_stru *zis, stack_vals *stak)
         }
     }
 
-    call_parent(zis, obj, 2, stak);
+    return NC_STACK_bitmap::func2(stak);
 }
 
-void raster_func3(NC_STACK_raster *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_raster::func3(stack_vals *stak)
 {
     dprintf("MAKE ME %s\n","raster_func3");
     //__NC_STACK_raster *internal = &obj->stack__raster;
@@ -137,91 +123,91 @@ void raster_func3(NC_STACK_raster *obj, class_stru *zis, stack_vals *stak)
             stk++;
         }
     }
-    call_parent(zis, obj, 3, stak);
+    return NC_STACK_bitmap::func3(stak);
 }
 
 
-size_t raster_func192(NC_STACK_raster *obj, class_stru *, stack_vals *)
+size_t NC_STACK_raster::raster_func192(stack_vals *)
 {
-    __NC_STACK_raster *rstr = &obj->stack__raster;
+    __NC_STACK_raster *rstr = &this->stack__raster;
     bitmap_intern *bitm = rstr->bitm_intern;
 
     memset(bitm->buffer, rstr->field_c, bitm->width * bitm->height);
     return 0;
 }
 
-size_t raster_func193(NC_STACK_raster *obj, class_stru *, bitmap_intern **out)
+size_t NC_STACK_raster::raster_func193(bitmap_intern **out)
 {
-    __NC_STACK_raster *rstr = &obj->stack__raster;
+    __NC_STACK_raster *rstr = &this->stack__raster;
     bitmap_intern *bitm = rstr->bitm_intern;
 
     memcpy((*out)->buffer, bitm->buffer, bitm->width * bitm->height);
     return 0;
 }
 
-size_t raster_func198(void *, class_stru *, stack_vals *)
+size_t NC_STACK_raster::raster_func198(w3d_func198arg *)
 {
     dprintf("MAKE ME %s\n","raster_func198");
     return 0;
 }
 
-size_t raster_func199(void *, class_stru *, stack_vals *)
+size_t NC_STACK_raster::raster_func199(w3d_func199arg *)
 {
     dprintf("MAKE ME %s\n","raster_func199");
     return 0;
 }
 
-size_t raster_func200(void *, class_stru *, stack_vals *)
+size_t NC_STACK_raster::raster_func200(w3d_func198arg *)
 {
     dprintf("MAKE ME %s\n","raster_func200");
     return 0;
 }
 
-size_t raster_func201(void *, class_stru *, stack_vals *)
+size_t NC_STACK_raster::raster_func201(w3d_func199arg *)
 {
     dprintf("MAKE ME %s\n","raster_func201");
     return 0;
 }
 
-size_t raster_func202(void *, class_stru *, stack_vals *)
+size_t NC_STACK_raster::raster_func202(rstr_arg204 *)
 {
     dprintf("MAKE ME %s\n","raster_func202");
     return 0;
 }
 
-size_t raster_func203(void *, class_stru *, stack_vals *)
+size_t NC_STACK_raster::raster_func203(stack_vals *)
 {
     dprintf("MAKE ME %s\n","raster_func203");
     return 0;
 }
 
-size_t raster_func204(void *, class_stru *, stack_vals *)
+size_t NC_STACK_raster::raster_func204(rstr_arg204 *)
 {
     dprintf("MAKE ME %s\n","raster_func204");
     return 0;
 }
 
-size_t raster_func205(void *, class_stru *, stack_vals *)
+size_t NC_STACK_raster::raster_func205(stack_vals *)
 {
     dprintf("MAKE ME %s\n","raster_func205");
     return 0;
 }
 
-size_t raster_func206(void *, class_stru *, stack_vals *)
+size_t NC_STACK_raster::raster_func206(polysDatSub *)
 {
     dprintf("MAKE ME %s\n","raster_func206");
     return 0;
 }
 
-void raster_func207(NC_STACK_raster *obj, class_stru *, rstr_207_arg *arg)
+void NC_STACK_raster::raster_func207(rstr_207_arg *arg)
 {
-    __NC_STACK_raster *rstr = &obj->stack__raster;
+    __NC_STACK_raster *rstr = &this->stack__raster;
     rstr->tiles[arg->id] = arg->tiles;
 }
 
-void raster_func208(NC_STACK_raster *obj, class_stru *, rstr_207_arg *arg)
+void NC_STACK_raster::raster_func208(rstr_207_arg *arg)
 {
-    __NC_STACK_raster *rstr = &obj->stack__raster;
+    __NC_STACK_raster *rstr = &this->stack__raster;
 
     if ( arg->tiles )
     {
@@ -242,15 +228,14 @@ void raster_func208(NC_STACK_raster *obj, class_stru *, rstr_207_arg *arg)
     }
 }
 
-size_t raster_func209(void *, class_stru *, stack_vals *)
+void NC_STACK_raster::raster_func209(w3d_a209 *)
 {
     dprintf("MAKE ME %s\n","raster_func209");
-    return 0;
 }
 
-void raster_func210(NC_STACK_raster *obj, class_stru *zis, ua_fRect *arg)
+void NC_STACK_raster::raster_func210(ua_fRect *arg)
 {
-    __NC_STACK_raster *rstr = &obj->stack__raster;
+    __NC_STACK_raster *rstr = &this->stack__raster;
 
     rstr->field_24.x1 = (arg->x1 + 1.0) * (rstr->field_554 + -1.0);
     rstr->field_24.y1 = (arg->y1 + 1.0) * (rstr->field_558 + -1.0);
@@ -258,9 +243,9 @@ void raster_func210(NC_STACK_raster *obj, class_stru *zis, ua_fRect *arg)
     rstr->field_24.y2 = (arg->y2 + 1.0) * (rstr->field_558 + -1.0);
 }
 
-void raster_func211(NC_STACK_raster *obj, class_stru *zis, ua_dRect *arg)
+void NC_STACK_raster::raster_func211(ua_dRect *arg)
 {
-    __NC_STACK_raster *rstr = &obj->stack__raster;
+    __NC_STACK_raster *rstr = &this->stack__raster;
 
     rstr->field_24.x1 = rstr->field_54c + arg->x1;
     rstr->field_24.y1 = rstr->field_550 + arg->y1;
@@ -268,21 +253,33 @@ void raster_func211(NC_STACK_raster *obj, class_stru *zis, ua_dRect *arg)
     rstr->field_24.y2 = rstr->field_550 + arg->y2;
 }
 
-size_t raster_func212(void *, class_stru *, stack_vals *)
+size_t NC_STACK_raster::raster_func212(stack_vals *)
 {
     dprintf("MAKE ME %s\n","raster_func212");
     return 0;
 }
 
-size_t raster_func214(void *, class_stru *, stack_vals *)
+void NC_STACK_raster::raster_func213(polysDatSub *)
+{
+}
+
+size_t NC_STACK_raster::raster_func214(void *)
 {
     dprintf("MAKE ME %s\n","raster_func214");
     return 0;
 }
 
-size_t raster_func217(NC_STACK_raster *obj, class_stru *, rstr_arg217 *arg)
+void NC_STACK_raster::raster_func215(void *)
 {
-    __NC_STACK_raster *rstr = &obj->stack__raster;
+}
+
+void NC_STACK_raster::raster_func216(void *)
+{
+}
+
+size_t NC_STACK_raster::raster_func217(rstr_arg217 *arg)
+{
+    __NC_STACK_raster *rstr = &this->stack__raster;
 
     if ( arg->dword0 != 0xFFFFFFFF )
         rstr->field_4 = arg->dword0;
@@ -296,27 +293,26 @@ size_t raster_func217(NC_STACK_raster *obj, class_stru *, rstr_arg217 *arg)
     return 0;
 }
 
-size_t raster_func218(void *, class_stru *, stack_vals *)
+void NC_STACK_raster::raster_func218(rstr_218_arg *)
 {
     dprintf("MAKE ME %s\n","raster_func218");
-    return 0;
 }
 
-size_t raster_func219(void *, class_stru *, stack_vals *)
+size_t NC_STACK_raster::raster_func219(stack_vals *)
 {
     dprintf("MAKE ME %s\n","raster_func219");
     return 0;
 }
 
-size_t raster_func220(void *, class_stru *, stack_vals *)
+size_t NC_STACK_raster::raster_func220(stack_vals *)
 {
     dprintf("MAKE ME %s\n","raster_func220");
     return 0;
 }
 
-void raster_func221(NC_STACK_raster *obj, class_stru *zis, ua_dRect *arg)
+void NC_STACK_raster::raster_func221(ua_dRect *arg)
 {
-    __NC_STACK_raster *rstr = &obj->stack__raster;
+    __NC_STACK_raster *rstr = &this->stack__raster;
 
     rstr->field_38.x1 = rstr->field_54c + arg->x1;
     rstr->field_38.y1 = rstr->field_550 + arg->y1;
@@ -325,54 +321,82 @@ void raster_func221(NC_STACK_raster *obj, class_stru *zis, ua_dRect *arg)
 }
 
 
-
-class_return raster_class_descr;
-
-void raster_nullsub(void *, class_stru *, stack_vals *)
+size_t NC_STACK_raster::compatcall(int method_id, void *data)
 {
-    ;
-}
-
-class_return * class_set_raster(int, ...)
-{
-    memset(raster_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    raster_funcs[0] = (CLASSFUNC)raster_func0;
-    raster_funcs[1] = (CLASSFUNC)raster_func1;
-    raster_funcs[2] = (CLASSFUNC)raster_func2;
-    raster_funcs[3] = (CLASSFUNC)raster_func3;
-    raster_funcs[192] = (CLASSFUNC)raster_func192;
-    raster_funcs[193] = (CLASSFUNC)raster_func193;
-    raster_funcs[198] = (CLASSFUNC)raster_func198;
-    raster_funcs[199] = (CLASSFUNC)raster_func199;
-    raster_funcs[200] = (CLASSFUNC)raster_func200;
-    raster_funcs[201] = (CLASSFUNC)raster_func201;
-    raster_funcs[202] = (CLASSFUNC)raster_func202;
-    raster_funcs[203] = (CLASSFUNC)raster_func203;
-    raster_funcs[204] = (CLASSFUNC)raster_func204;
-    raster_funcs[205] = (CLASSFUNC)raster_func205;
-    raster_funcs[206] = (CLASSFUNC)raster_func206;
-    raster_funcs[207] = (CLASSFUNC)raster_func207;
-    raster_funcs[208] = (CLASSFUNC)raster_func208;
-    raster_funcs[209] = (CLASSFUNC)raster_func209;
-    raster_funcs[210] = (CLASSFUNC)raster_func210;
-    raster_funcs[211] = (CLASSFUNC)raster_func211;
-    raster_funcs[212] = (CLASSFUNC)raster_func212;
-    raster_funcs[213] = (CLASSFUNC)raster_nullsub;
-    raster_funcs[214] = (CLASSFUNC)raster_func214;
-    raster_funcs[215] = (CLASSFUNC)raster_nullsub;
-    raster_funcs[216] = (CLASSFUNC)raster_nullsub;
-    raster_funcs[217] = (CLASSFUNC)raster_func217;
-    raster_funcs[218] = (CLASSFUNC)raster_func218;
-    raster_funcs[219] = (CLASSFUNC)raster_func219;
-    raster_funcs[220] = (CLASSFUNC)raster_func220;
-    raster_funcs[221] = (CLASSFUNC)raster_func221;
-
-    raster_class_descr.parent = "bitmap.class";
-
-    raster_class_descr.vtbl = raster_funcs;
-    ////raster_class_descr.varSize = sizeof(__NC_STACK_raster);
-    raster_class_descr.varSize = sizeof(NC_STACK_raster) - offsetof(NC_STACK_raster, stack__raster); //// HACK
-    raster_class_descr.field_A = 0;
-    return &raster_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        return func2( (stack_vals *)data );
+    case 3:
+        return func3( (stack_vals *)data );
+    case 192:
+        return (size_t)raster_func192( (stack_vals *)data );
+    case 193:
+        return (size_t)raster_func193( (bitmap_intern **)data );
+    case 198:
+        return (size_t)raster_func198( (w3d_func198arg *)data );
+    case 199:
+        return (size_t)raster_func199( (w3d_func199arg *)data );
+    case 200:
+        return (size_t)raster_func200( (w3d_func198arg *)data );
+    case 201:
+        return (size_t)raster_func201( (w3d_func199arg *)data );
+    case 202:
+        return (size_t)raster_func202( (rstr_arg204 *)data );
+    case 203:
+        return (size_t)raster_func203( (stack_vals *)data );
+    case 204:
+        return (size_t)raster_func204( (rstr_arg204 *)data );
+    case 205:
+        return (size_t)raster_func205( (stack_vals *)data );
+    case 206:
+        return (size_t)raster_func206( (polysDatSub *)data );
+    case 207:
+        raster_func207( (rstr_207_arg *)data );
+        return 1;
+    case 208:
+        raster_func208( (rstr_207_arg *)data );
+        return 1;
+    case 209:
+        raster_func209( (w3d_a209 *)data );
+        return 1;
+    case 210:
+        raster_func210( (ua_fRect *)data );
+        return 1;
+    case 211:
+        raster_func211( (ua_dRect *)data );
+        return 1;
+    case 212:
+        return (size_t)raster_func212( (stack_vals *)data );
+    case 213:
+        raster_func213( (polysDatSub *)data );
+        return 1;
+    case 214:
+        return (size_t)raster_func214( (stack_vals *)data );
+    case 215:
+        raster_func215( (void *)data );
+        return 1;
+    case 216:
+        raster_func216( (void *)data );
+        return 1;
+    case 217:
+        return (size_t)raster_func217( (rstr_arg217 *)data );
+    case 218:
+        raster_func218( (rstr_218_arg *)data );
+        return 1;
+    case 219:
+        return (size_t)raster_func219( (stack_vals *)data );
+    case 220:
+        return (size_t)raster_func220( (stack_vals *)data );
+    case 221:
+        raster_func221( (ua_dRect *)data );
+        return 1;
+    default:
+        break;
+    }
+    return NC_STACK_bitmap::compatcall(method_id, data);
 }

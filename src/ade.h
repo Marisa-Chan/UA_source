@@ -4,10 +4,7 @@
 #include "nucleas.h"
 #include "nlist.h"
 
-extern class_stored ade_class_off;
-
-struct NC_STACK_ade;
-
+class NC_STACK_ade;
 
 struct __attribute__((packed)) ADE_STRC
 {
@@ -29,8 +26,35 @@ struct __NC_STACK_ade : public nnode
     __int16 strc_f6;
 };
 
-struct NC_STACK_ade : public NC_STACK_nucleus
+class NC_STACK_ade: public NC_STACK_nucleus
 {
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+    virtual size_t func5(MFILE **file);
+    virtual size_t func6(MFILE **file);
+    virtual size_t ade_func64(nlist **lst);
+    virtual size_t ade_func65(area_arg_65 *arg);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_ade() {
+        memset(&stack__ade, 0, sizeof(stack__ade));
+    };
+    virtual ~NC_STACK_ade() {};
+
+    virtual const char * getClassName() {
+        return "ade.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_ade();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
     __NC_STACK_ade stack__ade;
 };
 

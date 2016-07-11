@@ -13,6 +13,13 @@ struct nlist
     nnode *head;
     nnode *tail;
     nnode *tailpred;
+
+    nlist()
+    {
+        tail = NULL;
+        tailpred = (nnode *)this;
+        head = (nnode *)&this->tail;
+    }
 };
 
 void init_list(nlist *list);

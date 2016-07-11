@@ -6,29 +6,22 @@
 #include "wintimer.h"
 #include "winp.h"
 
-extern class_stored input_class_off;
-
-struct NC_STACK_input;
+class NC_STACK_input;
 
 struct __NC_STACK_input
 {
     int field_0;
     int field_4;
-    NC_STACK_wintimer *timer;
-    NC_STACK_winp *wimp;
-    NC_STACK_winp *keyboard;
+    NC_STACK_itimer *timer;
+    NC_STACK_iwimp *wimp;
+    NC_STACK_idev *keyboard;
     nlist buttons_lists[32];
     nlist sliders_lists[32];
 };
 
-struct NC_STACK_input : public NC_STACK_nucleus
-{
-    __NC_STACK_input stack__input;
-};
-
 struct inputkey_node : public nnode
 {
-    NC_STACK_winp *driver_obj;
+    NC_STACK_idev *driver_obj;
     int field_C;
     int keyType;
     char driver_name[32];
@@ -54,6 +47,36 @@ struct input__func66__params
     int field_4;
     int funcID;
     void *vals;
+};
+
+
+class NC_STACK_input: public NC_STACK_nucleus
+{
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t input_func64(input__func64__params *arg);
+    virtual void input_func65(struC5 *arg);
+    virtual size_t input_func66(input__func66__params *arg);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_input() {
+        memset(&stack__input, 0, sizeof(stack__input));
+    };
+    virtual ~NC_STACK_input() {};
+
+    virtual const char * getClassName() {
+        return "input.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_input();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
+    __NC_STACK_input stack__input;
 };
 
 #endif // INPUT_H_INCLUDED

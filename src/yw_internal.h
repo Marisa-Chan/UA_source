@@ -107,7 +107,7 @@ void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int ob
 void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc);
 
 void set_keys_vals(_NC_STACK_ypaworld *yw);
-int yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr);
+void yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr);
 
 int yw_loadSky(_NC_STACK_ypaworld *yw, const char *skyname);
 //void yw_renderSky_test(_NC_STACK_ypaworld *yw, base77Func *rndr_params);
@@ -200,7 +200,7 @@ void yw_InitGates(_NC_STACK_ypaworld *yw);
 void yw_InitSuperItems(_NC_STACK_ypaworld *yw);
 void sub_44F748(_NC_STACK_ypaworld *yw);
 int sb_0x451034(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw);
-void splashScreen_OutText(_NC_STACK_ypaworld *yw, NC_STACK_win3d *w3d, const char *txt, int x, int y);
+void splashScreen_OutText(_NC_STACK_ypaworld *yw, NC_STACK_display *w3d, const char *txt, int x, int y);
 void sub_44DBF8(_NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, struct_44dbf8 *a6, int flags);
 void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg);
 void sub_44D8B8(ypaworld_arg136 *arg, struct_44dbf8 *loc);
@@ -420,7 +420,7 @@ void ypaworld_func64__sub17(_NC_STACK_ypaworld *yw);
 
 int sub_47B388(int a1, const char *a2);
 
-void ypaworld_func159__real(NC_STACK_ypaworld *obj, class_stru *zis, yw_arg159 *arg);
+void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg);
 void sb_0x4d7c08__sub0__sub0(_NC_STACK_ypaworld *yw);
 
 

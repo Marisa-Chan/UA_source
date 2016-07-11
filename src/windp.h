@@ -3,20 +3,12 @@
 
 
 #include "nucleas.h"
+#include "network.h"
 #include "lstvw.h"
-
-extern class_stored windp_class_off;
-
-struct NC_STACK_windp;
 
 struct __NC_STACK_windp
 {
     int dummy;
-};
-
-struct NC_STACK_windp : public NC_STACK_nucleus
-{
-    __NC_STACK_windp stack__windp;
 };
 
 
@@ -82,5 +74,63 @@ void ypaworld_func64__sub7__sub5(_NC_STACK_ypaworld *yw, struC5 *inpt);
 void ypaworld_func64__sub18(_NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub10(_NC_STACK_ypaworld *yw);
 void ypaworld_func151__sub7(UserData *usr);
+
+
+
+
+class NC_STACK_windp: public NC_STACK_network
+{
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+    virtual size_t windp_func64(stack_vals *stak);
+    virtual size_t windp_func65(stack_vals *stak);
+    virtual size_t windp_func66(stack_vals *stak);
+    virtual size_t windp_func67(stack_vals *stak);
+    virtual size_t windp_func68(stack_vals *stak);
+    virtual size_t windp_func69(int *);
+    virtual size_t windp_func70(stack_vals *stak);
+    virtual size_t windp_func71(stack_vals *stak);
+    virtual size_t windp_func72(stack_vals *stak);
+    virtual size_t windp_func73(stack_vals *stak);
+    virtual size_t windp_func74(stack_vals *stak);
+    virtual size_t windp_func75(stack_vals *stak);
+    virtual size_t windp_func76(stack_vals *stak);
+    virtual size_t windp_func77(stack_vals *stak);
+    virtual size_t windp_func78(stack_vals *stak);
+    virtual size_t windp_func79(windp_arg79 *stak);
+    virtual size_t windp_func80(stack_vals *stak);
+    virtual size_t windp_func81(stack_vals *stak);
+    virtual size_t windp_func82(windp_arg82 *stak);
+    virtual size_t windp_func83(stack_vals *stak);
+    virtual size_t windp_func84(int *);
+    virtual size_t windp_func85(stack_vals *stak);
+    virtual size_t windp_func86(stack_vals *stak);
+    virtual size_t windp_func87(windp_arg87 *arg);
+    virtual size_t windp_func88(stack_vals *stak);
+    virtual size_t windp_func89(const char **arg);
+    virtual size_t windp_func90(stack_vals *stak);
+    virtual size_t windp_func91(int *);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_windp() {
+        memset(&stack__windp, 0, sizeof(stack__windp));
+    };
+    virtual ~NC_STACK_windp() {};
+
+    virtual const char * getClassName() {
+        return "windp.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_windp();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
+    __NC_STACK_windp stack__windp;
+};
 
 #endif // WINDP_H_INCLUDED

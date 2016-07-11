@@ -6,24 +6,10 @@
 #include "classes.h"
 #include "yw.h"
 #include "ypagun.h"
+#include "yparobo.h"
 
 
-stored_functions *classvtbl_get_ypagun();
-class_return * class_set_ypagun(int, ...);
-
-stored_functions ypagun_class_vtbl(class_set_ypagun);
-
-
-class_stored ypagun_class_off (NULL, NULL, "MC2classes:ypagun.class", classvtbl_get_ypagun);
-
-
-stored_functions *classvtbl_get_ypagun()
-{
-    return &ypagun_class_vtbl;
-}
-
-CLASSFUNC ypagun_funcs[1024];
-
+const NewClassDescr NC_STACK_ypagun::description("ypagun.class", &newinstance);
 
 int ypagun_func0__sub0(NC_STACK_ypagun *obj, __NC_STACK_ypagun *gun, stack_vals *stak)
 {
@@ -100,32 +86,29 @@ int ypagun_func0__sub0(NC_STACK_ypagun *obj, __NC_STACK_ypagun *gun, stack_vals 
     return 1;
 }
 
-NC_STACK_ypagun * ypagun_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypagun::func0(stack_vals *stak)
 {
-    NC_STACK_ypagun *obj = (NC_STACK_ypagun *)call_parent(zis, clss, 0, stak);
+    if ( !NC_STACK_ypabact::func0(stak) )
+        return 0;
 
-    if (obj)
+    __NC_STACK_ypagun *gun = &this->stack__ypagun;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+
+    gun->bact_intern = bact;
+    bact->field_24 = 9;
+
+    if ( !ypagun_func0__sub0(this, gun, stak) )
     {
-        __NC_STACK_ypagun *gun = &obj->stack__ypagun;
-        __NC_STACK_ypabact *bact = &obj->stack__ypabact;
-
-        gun->bact_intern = bact;
-        bact->field_24 = 9;
-
-        if ( !ypagun_func0__sub0(obj, gun, stak) )
-        {
-            call_method(obj, 1);
-            return NULL;
-        }
-
+        func1(NULL);
+        return 0;
     }
 
-    return obj;
+    return 1;
 }
 
-size_t ypagun_func1(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypagun::func1(stack_vals *stak)
 {
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_ypabact::func1(stak);
 }
 
 int ypagun_func2__sub0(NC_STACK_ypagun *obj, __NC_STACK_ypagun *gun, stack_vals *stak)
@@ -195,10 +178,11 @@ int ypagun_func2__sub0(NC_STACK_ypagun *obj, __NC_STACK_ypagun *gun, stack_vals 
     return 1;
 }
 
-void ypagun_func2(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypagun::func2(stack_vals *stak)
 {
-    call_parent(zis, obj, 2, stak);
-    ypagun_func2__sub0(obj, &obj->stack__ypagun, stak);
+    NC_STACK_ypabact::func2(stak);
+    ypagun_func2__sub0(this, &this->stack__ypagun, stak);
+    return 1;
 }
 
 int ypagun_func3__sub0(NC_STACK_ypagun *obj, __NC_STACK_ypagun *gun, stack_vals *stak)
@@ -268,10 +252,11 @@ int ypagun_func3__sub0(NC_STACK_ypagun *obj, __NC_STACK_ypagun *gun, stack_vals 
     return 1;
 }
 
-void ypagun_func3(NC_STACK_ypagun *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ypagun::func3(stack_vals *stak)
 {
-    call_parent(zis, obj, 3, stak);
-    ypagun_func3__sub0(obj, &obj->stack__ypagun, stak);
+    NC_STACK_ypabact::func3(stak);
+    ypagun_func3__sub0(this, &this->stack__ypagun, stak);
+    return 1;
 }
 
 
@@ -294,7 +279,7 @@ int sub_4BC8E4(NC_STACK_ypagun *obj)
     arg136.field_1C = 0;
     arg136.field_40 = 0;
 
-    call_method(gun->ywo, 136, &arg136);
+    gun->ywo->ypaworld_func136(&arg136);
 
     return arg136.field_20;
 }
@@ -316,10 +301,10 @@ void sub_4BC680(NC_STACK_ypagun *obj, float a5)
     bact->field_651 = dst;
 }
 
-void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
+void NC_STACK_ypagun::ypabact_func70(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypagun *gun = &obj->stack__ypagun;
-    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+    __NC_STACK_ypagun *gun = &this->stack__ypagun;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     float v80 = arg->field_4 / 1000.0;
 
@@ -334,7 +319,7 @@ void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
             {
                 gun->field_3A = bact->field_915;
 
-                if ( !sub_4BC8E4(obj) )
+                if ( !sub_4BC8E4(this) )
                 {
                     bact->energy = -10;
                     break;
@@ -355,7 +340,7 @@ void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
                 arg78.field_0 = 0;
                 arg78.field_4 = 0;
 
-                call_method(obj, 78, &arg78);
+                ypabact_func78(&arg78);
             }
         }
 
@@ -370,7 +355,7 @@ void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg78.field_0 = 0;
                     arg78.field_4 = 0;
 
-                    call_method(obj, 78, &arg78);
+                    ypabact_func78(&arg78);
                 }
             }
             break;
@@ -487,7 +472,7 @@ void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
         {
             a5 = -a5;
 
-            sub_4BC680(obj, a5);
+            sub_4BC680(this, a5);
         }
 
         float v90 = -gun->field_24.sx * bact->field_651.m20 + -gun->field_24.sy * bact->field_651.m21 + -gun->field_24.sz * bact->field_651.m22;
@@ -556,15 +541,15 @@ void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
         arg75.g_time = bact->field_915;
         arg75.target.pbact = bact->secndT.pbact;
 
-        call_method(obj, 75,&arg75);
+        ypabact_func75(&arg75);
 
-        if ( !call_method(obj, 111, bact->secndT.pbact) )
+        if ( !ypabact_func111(bact->secndT.pbact) )
         {
             bact_arg67 arg67;
             arg67.tgt_type = BACT_TGT_TYPE_NONE;
             arg67.priority = 1;
 
-            call_method(obj, 67, &arg67);
+            ypabact_func67(&arg67);
 
             if ( gun->field_30 == 2 )
             {
@@ -573,14 +558,14 @@ void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
                 arg78.field_0 = 0;
                 arg78.field_4 = 0;
 
-                call_method(obj, 78, &arg78);
+                ypabact_func78(&arg78);
             }
         }
     }
     break;
 
     case 2:
-        call_method(obj, 121, arg);
+        ypabact_func121(arg);
         break;
 
     case 4:
@@ -593,7 +578,7 @@ void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
             arg78.field_4 = 0;
             arg78.field_8 = 0;
 
-            call_method(obj, 78, &arg78);
+            ypabact_func78(&arg78);
         }
         break;
 
@@ -602,16 +587,16 @@ void ypagun_func70(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
     }
 }
 
-void ypagun_func71(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
+void NC_STACK_ypagun::ypabact_func71(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypagun *gun = &obj->stack__ypagun;
-    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+    __NC_STACK_ypagun *gun = &this->stack__ypagun;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     float v40 = arg->field_4 / 1000.0;
 
     if ( bact->field_3D5 == 1 )
     {
-        if ( gun->field_39 & 2 || sub_4BC8E4(obj) )
+        if ( gun->field_39 & 2 || sub_4BC8E4(this) )
         {
             if ( sqrt( POW2(bact->viewer.sx) + POW2(bact->viewer.sx) + POW2(bact->viewer.sz) ) >= 3.0 )
             {
@@ -637,7 +622,7 @@ void ypagun_func71(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg78.field_0 = 0;
                     arg78.field_8 = 256;
 
-                    call_method(obj, 78, &arg78);
+                    ypabact_func78(&arg78);
                 }
             }
 
@@ -653,7 +638,7 @@ void ypagun_func71(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
             arg106.field_4.sz = bact->field_651.m22;
             arg106.field_0 = 5;
 
-            if ( call_method(obj, 106, &arg106) )
+            if ( ypabact_func106(&arg106) )
             {
                 arg79.target.pbact = arg106.ret_bact;
                 arg79.tgType = BACT_TGT_TYPE_UNIT;
@@ -673,7 +658,7 @@ void ypagun_func71(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg79.start_point.sz = bact->fire_z;
                     arg79.flags = ((arg->inpt->but_flags & 2) != 0) | 2;
 
-                    if ( call_method(obj, 79, &arg79) )
+                    if ( ypabact_func79(&arg79) )
                     {
                         bact->viewer.sy = 0;
                         bact->viewer.sz = -25.0;
@@ -690,7 +675,7 @@ void ypagun_func71(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
                         arg78.field_0 = 0;
                         arg78.field_4 = 256;
 
-                        call_method(obj, 78, &arg78);
+                        ypabact_func78(&arg78);
                     }
 
                     bact_arg105 arg105;
@@ -700,7 +685,7 @@ void ypagun_func71(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
                     arg105.field_C = v40;
                     arg105.field_10 = bact->field_915;
 
-                    call_method(obj, 105, &arg105);
+                    ypabact_func105(&arg105);
 
                     if ( gun->field_39 & 8 )
                     {
@@ -744,7 +729,7 @@ void ypagun_func71(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
                 if ( v42 + a5 > gun->field_14 )
                     a5 = gun->field_14 - v42;
 
-                sub_4BC680(obj, a5);
+                sub_4BC680(this, a5);
             }
 
             float v46 = arg->inpt->sliders_vars[1] * bact->maxrot * v40;
@@ -795,13 +780,13 @@ void ypagun_func71(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
         }
     }
     else if ( bact->field_3D5 == 2 )
-        call_method(obj, 121, arg);
+        ypabact_func121(arg);
 }
 
-void ypagun_func75(NC_STACK_ypagun *obj, class_stru *zis, bact_arg75 *arg)
+void NC_STACK_ypagun::ypabact_func75(bact_arg75 *arg)
 {
-    __NC_STACK_ypagun *gun = &obj->stack__ypagun;
-    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+    __NC_STACK_ypagun *gun = &this->stack__ypagun;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     xyz v18;
 
@@ -832,10 +817,10 @@ void ypagun_func75(NC_STACK_ypagun *obj, class_stru *zis, bact_arg75 *arg)
                 arg79.g_time = arg->g_time;
                 arg79.flags = 0;
 
-                if ( call_method(obj, 79, &arg79) )
+                if ( ypabact_func79(&arg79) )
                 {
                     int a5;
-                    call_vtbl(obj, 3, 0x80001005, &a5, 0);
+                    call_vtbl(this, 3, 0x80001005, &a5, 0);
 
                     if ( !a5 )
                     {
@@ -854,7 +839,7 @@ void ypagun_func75(NC_STACK_ypagun *obj, class_stru *zis, bact_arg75 *arg)
                     arg78.field_0 = 0;
                     arg78.field_4 = 256;
 
-                    call_method(obj, 78, &arg78);
+                    ypabact_func78(&arg78);
                 }
             }
             else if ( gun->field_30 == 2 )
@@ -866,7 +851,7 @@ void ypagun_func75(NC_STACK_ypagun *obj, class_stru *zis, bact_arg75 *arg)
                     arg78.field_0 = 0;
                     arg78.field_4 = 256;
 
-                    call_method(obj, 78, &arg78);
+                    ypabact_func78(&arg78);
                 }
 
                 bact_arg105 arg105;
@@ -876,7 +861,7 @@ void ypagun_func75(NC_STACK_ypagun *obj, class_stru *zis, bact_arg75 *arg)
                 arg105.field_0.sy = bact->field_651.m21;
                 arg105.field_0.sz = bact->field_651.m22;
 
-                call_method(obj, 105, &arg105);
+                ypabact_func105(&arg105);
             }
         }
         else if ( gun->field_30 == 2 )
@@ -886,44 +871,44 @@ void ypagun_func75(NC_STACK_ypagun *obj, class_stru *zis, bact_arg75 *arg)
             arg78.field_0 = 0;
             arg78.field_8 = 256;
 
-            call_method(obj, 78, &arg78);
+            ypabact_func78(&arg78);
         }
     }
 }
 
-void ypagun_func77(NC_STACK_ypagun *obj, class_stru *zis, void *)
+void NC_STACK_ypagun::ypabact_func77(void *)
 {
-    __NC_STACK_ypagun *gun = &obj->stack__ypagun;
-    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+    __NC_STACK_ypagun *gun = &this->stack__ypagun;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     if ( !(bact->field_3D6 & 0x400) )
     {
-        call_parent(zis, obj, 77, 0);
+        NC_STACK_ypabact::ypabact_func77(NULL);
 
         int v6 = 1;
-        call_method(obj, 107, &v6);
+        ypabact_func107(&v6);
 
         if ( gun->field_39 & 2 )
         {
             roboGun *a4;
-            call_vtbl(bact->field_32, 3, 0x8000200E, &a4, 0);
+            call_vtbl(bact->host_station, 3, 0x8000200E, &a4, 0);
 
             for (int i = 0; i < 8; i++)
             {
-                if ( obj == a4[i].gun_obj )
+                if ( this == a4[i].gun_obj )
                     a4[i].gun_obj = NULL;
             }
         }
     }
 }
 
-size_t ypagun_func80(NC_STACK_ypagun *obj, class_stru *zis, bact_arg80 *arg)
+size_t NC_STACK_ypagun::ypabact_func80(bact_arg80 *arg)
 {
-    if ( !call_parent(zis, obj, 80, (stack_vals *)arg) )
+    if ( !NC_STACK_ypabact::ypabact_func80(arg) )
         return 0;
 
-    __NC_STACK_ypagun *gun = &obj->stack__ypagun;
-    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+    __NC_STACK_ypagun *gun = &this->stack__ypagun;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     if ( gun->field_39 & 1 )
     {
@@ -936,7 +921,7 @@ size_t ypagun_func80(NC_STACK_ypagun *obj, class_stru *zis, bact_arg80 *arg)
         arg136.field_1C = 0;
         arg136.field_40 = 0;
 
-        call_method(gun->ywo, 136, &arg136);
+        gun->ywo->ypaworld_func136(&arg136);
 
         if ( arg136.field_20 )
             bact->field_621.sy = arg136.field_30 - bact->overeof;
@@ -947,7 +932,7 @@ size_t ypagun_func80(NC_STACK_ypagun *obj, class_stru *zis, bact_arg80 *arg)
         arg128.dir.sz = 1.0;
         arg128.field_0 = 0;
 
-        call_method(obj, 128, &arg128);
+        ypagun_func128(&arg128);
     }
     else if ( !(arg->field_C & 4) )
     {
@@ -957,15 +942,15 @@ size_t ypagun_func80(NC_STACK_ypagun *obj, class_stru *zis, bact_arg80 *arg)
     bact->field_62D = bact->field_621;
 
     int v12 = 2;
-    call_method(obj, 107, &v12);
+    ypabact_func107(&v12);
 
     return 1;
 }
 
-void ypagun_func82(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
+void NC_STACK_ypagun::ypabact_func82(ypabact_arg65 *arg)
 {
     //__NC_STACK_ypagun *gun = &obj->stack__ypagun;
-    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     if ( bact->field_3D5 != 2 )
     {
@@ -977,17 +962,17 @@ void ypagun_func82(NC_STACK_ypagun *obj, class_stru *zis, ypabact_arg65 *arg)
     }
 }
 
-void ypagun_func96(NC_STACK_ypagun *obj, class_stru *zis, void *)
+void NC_STACK_ypagun::ypabact_func96(void *)
 {
-    __NC_STACK_ypagun *gun = &obj->stack__ypagun;
-    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+    __NC_STACK_ypagun *gun = &this->stack__ypagun;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
-    call_parent(zis, obj, 96, 0);
+    NC_STACK_ypabact::ypabact_func96(NULL);
 
     gun->field_39 = 0;
     gun->field_3A = 0;
 
-    call_vtbl(obj, 2, 0x80001010, 1, 0);
+    call_vtbl(this, 2, 0x80001010, 1, 0);
 
     bact->viewer.sx = 0;
     bact->viewer.sy = 0;
@@ -996,10 +981,10 @@ void ypagun_func96(NC_STACK_ypagun *obj, class_stru *zis, void *)
     bact->field_5C9 = bact->field_651;
 }
 
-size_t ypagun_func111(NC_STACK_ypagun *obj, class_stru *zis, __NC_STACK_ypabact *cel_unit)
+size_t NC_STACK_ypagun::ypabact_func111(__NC_STACK_ypabact *cel_unit)
 {
-    __NC_STACK_ypagun *gun = &obj->stack__ypagun;
-    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+    __NC_STACK_ypagun *gun = &this->stack__ypagun;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     xyz tmp;
 
@@ -1066,10 +1051,10 @@ size_t ypagun_func111(NC_STACK_ypagun *obj, class_stru *zis, __NC_STACK_ypabact 
     return 0;
 }
 
-void ypagun_func128(NC_STACK_ypagun *obj, class_stru *zis, gun_arg128 *arg)
+void NC_STACK_ypagun::ypagun_func128(gun_arg128 *arg)
 {
-    __NC_STACK_ypagun *gun = &obj->stack__ypagun;
-    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+    __NC_STACK_ypagun *gun = &this->stack__ypagun;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     float v5 = sqrt( POW2(arg->dir.sx) + POW2(arg->dir.sy) + POW2(arg->dir.sz) );
 
@@ -1178,10 +1163,10 @@ void ypagun_func129__sub1(xyz *vec, mat3x3 *mat, float angle)
     *mat = v18;
 }
 
-void ypagun_func129(NC_STACK_ypagun *obj, class_stru *zis, gun_arg129 *arg)
+void NC_STACK_ypagun::ypagun_func129(gun_arg129 *arg)
 {
-    __NC_STACK_ypagun *gun = &obj->stack__ypagun;
-    __NC_STACK_ypabact *bact = &obj->stack__ypabact;
+    __NC_STACK_ypagun *gun = &this->stack__ypagun;
+    __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     ypagun_func129__sub0(&arg->vec, &gun->dir, arg->angle);
 
@@ -1191,33 +1176,48 @@ void ypagun_func129(NC_STACK_ypagun *obj, class_stru *zis, gun_arg129 *arg)
 }
 
 
-class_return ypagun_class_descr;
-
-class_return * class_set_ypagun(int , ...)
+size_t NC_STACK_ypagun::compatcall(int method_id, void *data)
 {
-
-    memset(ypagun_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    ypagun_class_descr.parent = "ypabact.class";
-
-    ypagun_funcs[0] = (CLASSFUNC)ypagun_func0;
-    ypagun_funcs[1] = (CLASSFUNC)ypagun_func1;
-    ypagun_funcs[2] = (CLASSFUNC)ypagun_func2;
-    ypagun_funcs[3] = (CLASSFUNC)ypagun_func3;
-    ypagun_funcs[70] = (CLASSFUNC)ypagun_func70;
-    ypagun_funcs[71] = (CLASSFUNC)ypagun_func71;
-    ypagun_funcs[75] = (CLASSFUNC)ypagun_func75;
-    ypagun_funcs[77] = (CLASSFUNC)ypagun_func77;
-    ypagun_funcs[80] = (CLASSFUNC)ypagun_func80;
-    ypagun_funcs[82] = (CLASSFUNC)ypagun_func82;
-    ypagun_funcs[96] = (CLASSFUNC)ypagun_func96;
-    ypagun_funcs[111] = (CLASSFUNC)ypagun_func111;
-    ypagun_funcs[128] = (CLASSFUNC)ypagun_func128;
-    ypagun_funcs[129] = (CLASSFUNC)ypagun_func129;
-
-    ypagun_class_descr.vtbl = ypagun_funcs;
-    ////ypagun_class_descr.varSize = sizeof(__NC_STACK_ypagun);
-    ypagun_class_descr.varSize = sizeof(NC_STACK_ypagun) - offsetof(NC_STACK_ypagun, stack__ypagun); //// HACK
-    ypagun_class_descr.field_A = 0;
-    return &ypagun_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        return func2( (stack_vals *)data );
+    case 3:
+        return func3( (stack_vals *)data );
+    case 70:
+        ypabact_func70( (ypabact_arg65 *)data );
+        return 1;
+    case 71:
+        ypabact_func71( (ypabact_arg65 *)data );
+        return 1;
+    case 75:
+        ypabact_func75( (bact_arg75 *)data );
+        return 1;
+    case 77:
+        ypabact_func77( (void *)data );
+        return 1;
+    case 80:
+        return (size_t)ypabact_func80( (bact_arg80 *)data );
+    case 82:
+        ypabact_func82( (ypabact_arg65 *)data );
+        return 1;
+    case 96:
+        ypabact_func96( (void *)data );
+        return 1;
+    case 111:
+        return (size_t)ypabact_func111( (__NC_STACK_ypabact *)data );
+    case 128:
+        ypagun_func128( (gun_arg128 *)data );
+        return 1;
+    case 129:
+        ypagun_func129( (gun_arg129 *)data );
+        return 1;
+    default:
+        break;
+    }
+    return NC_STACK_ypabact::compatcall(method_id, data);
 }

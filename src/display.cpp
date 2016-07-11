@@ -7,40 +7,26 @@
 #include "utils.h"
 
 
-stored_functions *classvtbl_get_display();
-class_return * class_set_display(int, ...);
-
-stored_functions display_class_vtbl(class_set_display);
+const NewClassDescr NC_STACK_display::description("display.class", &newinstance);
 
 
-class_stored display_class_off (NULL, NULL, "MC2classes:display.class", classvtbl_get_display);
-
-
-stored_functions *classvtbl_get_display()
+size_t NC_STACK_display::func0(stack_vals *stak)
 {
-    return &display_class_vtbl;
+    if ( !NC_STACK_raster::func0(stak) )
+        return 0;
+
+    engines.display___win3d = this;
+
+    return 1;
 }
 
-CLASSFUNC display_funcs[1024];
-g_engines *engines___display;
-
-
-NC_STACK_display * display_func0(class_stru *obj, class_stru *zis, stack_vals *stak)
-{
-    NC_STACK_display *clss = (NC_STACK_display *)call_parent(zis, obj, 0, stak); // raster_func0
-
-    engines.display___win3d = clss;
-
-    return clss;
-}
-
-size_t display_func1(NC_STACK_display *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_display::func1(stack_vals *stak)
 {
     engines.display___win3d = NULL;
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_raster::func1(stak);
 }
 
-void display_func2(NC_STACK_display *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_display::func2(stack_vals *stak)
 {
     stack_vals *val = find_id_in_stack2(0x80002007, stak);
     if ( val )
@@ -55,7 +41,7 @@ void display_func2(NC_STACK_display *obj, class_stru *zis, stack_vals *stak)
             arg_261.entrie_id = 0;
             arg_261.pal_num = 256;
 
-            call_method(obj, 261, &arg_261);
+            display_func261(&arg_261);
 
             int v11 = 0;
             int v12 = 256;
@@ -63,16 +49,16 @@ void display_func2(NC_STACK_display *obj, class_stru *zis, stack_vals *stak)
             arg_262.dword0 = 1;
             arg_262.pdword8 = &v12;
 
-            call_method(obj, 262,  &arg_262);
+            display_func262(&arg_262);
         }
     }
 
-    call_parent(zis, obj, 2, stak);
+    return NC_STACK_raster::func2(stak);
 }
 
-void display_func3(NC_STACK_display *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_display::func3(stack_vals *stak)
 {
-    __NC_STACK_display *displ = &obj->stack__display;
+    __NC_STACK_display *displ = &this->stack__display;
 
     stack_vals *val = find_id_in_stack2(0x80002007, stak);
     if ( val )
@@ -81,20 +67,20 @@ void display_func3(NC_STACK_display *obj, class_stru *zis, stack_vals *stak)
         val->id = 1;
     }
 
-    call_parent(zis, obj, 3, stak);
+    return NC_STACK_raster::func3(stak);
 }
 
 
-void display_func261(NC_STACK_display *obj, class_stru *, rstr_261_arg *arg)
+void NC_STACK_display::display_func261(rstr_261_arg *arg)
 {
-    __NC_STACK_display *displ = &obj->stack__display;
+    __NC_STACK_display *displ = &this->stack__display;
 
     memcpy(&displ->field_300[arg->pal_id].pal_entries[arg->entrie_id], arg->pal_entries, sizeof(UA_PALENTRY) * arg->pal_num);
 }
 
-void display_func262(NC_STACK_display *obj, class_stru *, rstr_262_arg *arg)
+void NC_STACK_display::display_func262(rstr_262_arg *arg)
 {
-    __NC_STACK_display *displ = &obj->stack__display;
+    __NC_STACK_display *displ = &this->stack__display;
 
     for (int i = 0; i < 256; i++)
     {
@@ -127,29 +113,29 @@ void display_func262(NC_STACK_display *obj, class_stru *, rstr_262_arg *arg)
     }
 }
 
-void display_func263(NC_STACK_display *obj, class_stru *, displ_arg263 *arg)
+void NC_STACK_display::display_func263(displ_arg263 *arg)
 {
-    __NC_STACK_display *displ = &obj->stack__display;
+    __NC_STACK_display *displ = &this->stack__display;
 
-    call_method(obj, 265, 0);
+    display_func265(NULL);
     displ->pointer_bitm = arg->bitm;
-    call_method(obj, 264, 0);
+    display_func264(NULL);
 }
 
-void display_func264(NC_STACK_display *obj, class_stru *, void *)
+void NC_STACK_display::display_func264(void *)
 {
-    __NC_STACK_display *displ = &obj->stack__display;
+    __NC_STACK_display *displ = &this->stack__display;
     displ->field_1b04 &= 0xFFFFFFFE;
 }
 
-void display_func265(NC_STACK_display *obj, class_stru *, void *)
+void NC_STACK_display::display_func265(void *)
 {
-    __NC_STACK_display *displ = &obj->stack__display;
+    __NC_STACK_display *displ = &this->stack__display;
     displ->field_1b04 |= 1;
 }
 
 
-size_t display_func266(NC_STACK_display *, class_stru *, bitmap_intern **pbitm)
+size_t NC_STACK_display::display_func266(bitmap_intern **pbitm)
 {
     bitmap_intern *bitm = *pbitm;
 
@@ -159,11 +145,11 @@ size_t display_func266(NC_STACK_display *, class_stru *, bitmap_intern **pbitm)
     return bitm->buffer != NULL;
 }
 
-void display_func267(NC_STACK_display *, class_stru *, void *)
+void NC_STACK_display::display_func267(bitmap_intern **)
 {
 }
 
-void display_func268(NC_STACK_display *, class_stru *, bitmap_intern **pbitm)
+void NC_STACK_display::display_func268(bitmap_intern **pbitm)
 {
     bitmap_intern *bitm = *pbitm;
     if (bitm->buffer)
@@ -173,78 +159,76 @@ void display_func268(NC_STACK_display *, class_stru *, bitmap_intern **pbitm)
     }
 }
 
-size_t display_func269(NC_STACK_display *, class_stru *, void *)
+size_t NC_STACK_display::display_func269(bitmap_intern **)
 {
     return 1;
 }
 
-void display_func270(NC_STACK_display *, class_stru *, void *)
+void NC_STACK_display::display_func270(bitmap_intern **)
 {
 }
 
-UA_PALENTRY *display_func273(NC_STACK_display *obj, class_stru *, rstr_261_arg *arg)
+UA_PALENTRY * NC_STACK_display::display_func273(rstr_261_arg *arg)
 {
-    __NC_STACK_display *displ = &obj->stack__display;
+    __NC_STACK_display *displ = &this->stack__display;
 
     arg->pal_entries = displ->field_300[arg->pal_id].pal_entries;
     return arg->pal_entries;
 }
 
-size_t display_func274(void *, class_stru *, stack_vals *)
+void NC_STACK_display::display_func274(const char **)
 {
     dprintf("MAKE ME %s(Save pcx screenshot)\n","display_func274");
-    return 0;
 }
 
 
-class_return display_class_descr;
-
-void display_nullsub(void *, class_stru *, stack_vals *)
+size_t NC_STACK_display::compatcall(int method_id, void *data)
 {
-    ;
-}
-
-class_return * class_set_display(int a1, ...)
-{
-
-    stack_vals vals[128];
-
-    if (a1 != 0)
+    switch( method_id )
     {
-        va_list va;
-        va_start(va, a1);
-
-        va_to_arr(vals, 128, a1, va);
-
-        va_end(va);
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        return func2( (stack_vals *)data );
+    case 3:
+        return func3( (stack_vals *)data );
+    case 261:
+        display_func261( (rstr_261_arg *)data );
+        return 1;
+    case 262:
+        display_func262( (rstr_262_arg *)data );
+        return 1;
+    case 263:
+        display_func263( (displ_arg263 *)data );
+        return 1;
+    case 264:
+        display_func264( (void *)data );
+        return 1;
+    case 265:
+        display_func265( (void *)data );
+        return 1;
+    case 266:
+        return (size_t)display_func266( (bitmap_intern **)data );
+    case 267:
+        display_func267( (bitmap_intern **)data );
+        return 1;
+    case 268:
+        display_func268( (bitmap_intern **)data );
+        return 1;
+    case 269:
+        return (size_t)display_func269( (bitmap_intern **)data );
+    case 270:
+        display_func270( (bitmap_intern **)data );
+        return 1;
+    case 273:
+        return (size_t)display_func273( (rstr_261_arg *)data );
+    case 274:
+        display_func274( (const char **)data );
+        return 1;
+    default:
+        break;
     }
-
-    engines___display = (g_engines *)find_id_in_stack_def_val(0x80000002, 0, vals);
-
-    memset(display_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    display_funcs[0] = (CLASSFUNC)display_func0;
-    display_funcs[1] = (CLASSFUNC)display_func1;
-    display_funcs[2] = (CLASSFUNC)display_func2;
-    display_funcs[3] = (CLASSFUNC)display_func3;
-    display_funcs[261] = (CLASSFUNC)display_func261;
-    display_funcs[262] = (CLASSFUNC)display_func262;
-    display_funcs[263] = (CLASSFUNC)display_func263;
-    display_funcs[264] = (CLASSFUNC)display_func264;
-    display_funcs[265] = (CLASSFUNC)display_func265;
-    display_funcs[266] = (CLASSFUNC)display_func266;
-    display_funcs[267] = (CLASSFUNC)display_func267;
-    display_funcs[268] = (CLASSFUNC)display_func268;
-    display_funcs[269] = (CLASSFUNC)display_func269;
-    display_funcs[270] = (CLASSFUNC)display_func270;
-    display_funcs[273] = (CLASSFUNC)display_func273;
-    display_funcs[274] = (CLASSFUNC)display_func274;
-
-    display_class_descr.parent = "raster.class";
-
-    display_class_descr.vtbl = display_funcs;
-    ////display_class_descr.varSize = sizeof(__NC_STACK_display);
-    display_class_descr.varSize = sizeof(NC_STACK_display) - offsetof(NC_STACK_display, stack__display); //// HACK
-    display_class_descr.field_A = 0;
-    return &display_class_descr;
+    return NC_STACK_raster::compatcall(method_id, data);
 }

@@ -4,9 +4,8 @@
 #include "nucleas.h"
 #include "ypabact.h"
 
-extern class_stored yparobo_class_off;
 
-struct NC_STACK_yparobo;
+class NC_STACK_yparobo;
 
 struct robo_t1
 {
@@ -19,6 +18,8 @@ struct __NC_STACK_yparobo
     NC_STACK_ypaworld *wrld;
     _NC_STACK_ypaworld *wrld_yw;
     __NC_STACK_ypabact *bact_internal;
+    NC_STACK_yparobo *roboo;
+
     float field_c;
     rbcolls coll;
     float field_1D5;
@@ -126,11 +127,6 @@ struct __NC_STACK_yparobo
     int field_5A9;
 };
 
-struct NC_STACK_yparobo : public NC_STACK_ypabact
-{
-    __NC_STACK_yparobo stack__yparobo;
-};
-
 struct robo_arg128
 {
     int flags;
@@ -188,6 +184,52 @@ struct robo_loct1
     int good;
     int bad;
     int job;
+};
+
+class NC_STACK_yparobo: public NC_STACK_ypabact
+{
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+    virtual void ypabact_func68(ypabact_arg65 *arg);
+    virtual void ypabact_func70(ypabact_arg65 *arg);
+    virtual void ypabact_func71(ypabact_arg65 *arg);
+    virtual void ypabact_func74(bact_arg74 *arg);
+    virtual void ypabact_func77(void *);
+    virtual size_t ypabact_func80(bact_arg80 *arg);
+    virtual void ypabact_func82(ypabact_arg65 *arg);
+    virtual void ypabact_func96(void *);
+    virtual void ypabact_func97(ypabact_arg65 *);
+    virtual void ypabact_func114(void *arg);
+    virtual void ypabact_func121(ypabact_arg65 *arg);
+    virtual void yparobo_func128(robo_arg128 *arg);
+    virtual void yparobo_func129(stack_vals *arg);
+    virtual void yparobo_func130(stack_vals *arg);
+    virtual void yparobo_func131(stack_vals *arg);
+    virtual size_t yparobo_func132(bact_arg67 *arg);
+    virtual int yparobo_func133(robo_arg133 *arg);
+    virtual int yparobo_func134(robo_arg134 *arg);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_yparobo() {
+        memset(&stack__yparobo, 0, sizeof(stack__yparobo));
+    };
+    virtual ~NC_STACK_yparobo() {};
+
+    virtual const char * getClassName() {
+        return "yparobo.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_yparobo();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
+    __NC_STACK_yparobo stack__yparobo;
 };
 
 void ypabact_func65__sub0(__NC_STACK_ypabact *bact);

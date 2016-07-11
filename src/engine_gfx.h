@@ -3,8 +3,9 @@
 
 #include <inttypes.h>
 #include <ddraw.h>
+#include "engine_tform.h"
 
-extern class_stored gfx_engine_off;
+extern stored_functions_engine gfx_engine_vtbl;
 
 struct tile_xy
 {
@@ -31,7 +32,7 @@ struct bitmap_intern
 
 struct tiles_stru
 {
-    NC_STACK_class *font_image; //FFFFFIX ME
+    NC_STACK_nucleus *font_image; //FFFFFIX ME
     bitmap_intern *field_4;
     void  *field_8;
     tile_xy *chars;
@@ -53,13 +54,30 @@ struct w3d_a209
     char **includ;
 };
 
+struct tUtV
+{
+    float tu;
+    float tv;
+};
+
+struct polysDatSub
+{
+    int renderFlags;
+    int vertexCount;
+    xyz *vertexes;
+    tUtV *tu_tv;
+    float *color;
+    bitmap_intern *pbitm;
+    int field_18;
+};
+
 
 void sub_4231FC(void *dat);
 void gfxEngine__getter(unsigned int a1, ...);
 void gfxEngine__setter(unsigned int a1, ...);
 
 tiles_stru * win3d_select_tileset(int id);
-size_t sub_423288(w3d_a209 *arg);
+void sub_423288(w3d_a209 *arg);
 
 struct wdd_font_st1
 {
@@ -88,12 +106,6 @@ struct windd__window_params
     HWND hwnd;
     int width;
     int height;
-};
-
-struct tUtV
-{
-    float tu;
-    float tv;
 };
 
 void gfx_set_tileset(tiles_stru *a1, int id);

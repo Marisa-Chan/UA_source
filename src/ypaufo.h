@@ -4,10 +4,6 @@
 #include "nucleas.h"
 #include "ypabact.h"
 
-extern class_stored ypaufo_class_off;
-
-struct NC_STACK_ypaufo;
-
 struct __NC_STACK_ypaufo
 {
     NC_STACK_ypaworld *ywo;
@@ -20,8 +16,36 @@ struct __NC_STACK_ypaufo
     int field_1c;
 };
 
-struct NC_STACK_ypaufo : public NC_STACK_ypabact
+class NC_STACK_ypaufo: public NC_STACK_ypabact
 {
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *stak);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+    virtual void ypabact_func70(ypabact_arg65 *arg);
+    virtual void ypabact_func71(ypabact_arg65 *arg);
+    virtual void ypabact_func74(bact_arg74 *arg);
+    virtual size_t ypabact_func80(bact_arg80 *arg);
+    virtual void ypabact_func96(void *);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_ypaufo() {
+        memset(&stack__ypaufo, 0, sizeof(stack__ypaufo));
+    };
+    virtual ~NC_STACK_ypaufo() {};
+
+    virtual const char * getClassName() {
+        return "ypaufo.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_ypaufo();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
     __NC_STACK_ypaufo stack__ypaufo;
 };
 

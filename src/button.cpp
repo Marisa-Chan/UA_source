@@ -9,22 +9,7 @@
 #include "font.h"
 
 
-stored_functions *classvtbl_get_button();
-class_return * class_set_button(int, ...);
-
-stored_functions button_class_vtbl(class_set_button);
-
-
-class_stored button_class_off (NULL, NULL, "MC2classes:button.class", classvtbl_get_button);
-
-
-stored_functions *classvtbl_get_button()
-{
-    return &button_class_vtbl;
-}
-
-CLASSFUNC button_funcs[1024];
-
+const NewClassDescr NC_STACK_button::description("button.class", &newinstance);
 
 int button_func0__sub0(NC_STACK_button *, __NC_STACK_button *btn, stack_vals *stak)
 {
@@ -86,42 +71,42 @@ int button_func0__sub0(NC_STACK_button *, __NC_STACK_button *btn, stack_vals *st
     return 1;
 }
 
-NC_STACK_button *button_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_button::func0(stack_vals *stak)
 {
-    NC_STACK_button *obj = (NC_STACK_button *)call_parent(zis, clss, 0, stak);
-    if ( obj )
+    if ( !NC_STACK_nucleus::func0(stak) )
+        return 0;
+
+    __NC_STACK_button *btn = &this->stack__button;
+
+    if ( button_func0__sub0(this, btn, stak) )
     {
-        __NC_STACK_button *btn = &obj->stack__button;
-
-        if ( button_func0__sub0(obj, btn, stak) )
+        if ( btn->btn_width > 0 && btn->btn_height > 0 )
         {
-            if ( btn->btn_width > 0 && btn->btn_height > 0 )
-            {
-                int width, height;
+            int width, height;
 
-                gfxEngine__getter(0x80003003, &width, 0x80003004, &height, 0);
+            gfxEngine__getter(0x80003003, &width, 0x80003004, &height, 0);
 
-                btn->screen_width = width;
-                btn->screen_height = height;
-            }
-            else
-            {
-                call_method(obj, 1);
-                obj = NULL;
-            }
+            btn->screen_width = width;
+            btn->screen_height = height;
         }
         else
         {
-            call_method(obj, 1);
-            obj = NULL;
+            func1(NULL);
+            return 0;
         }
     }
-    return obj;
+    else
+    {
+        func1(NULL);
+        return 0;
+    }
+
+    return 1;
 }
 
-size_t button_func1(NC_STACK_button *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_button::func1(stack_vals *stak)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
+    __NC_STACK_button *btn = &this->stack__button;
 
     for (int i = 0; i < 48; i++)
     {
@@ -136,7 +121,7 @@ size_t button_func1(NC_STACK_button *obj, class_stru *zis, stack_vals *stak)
             nc_FreeMem(btn->field_18[i]);
     }
 
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_nucleus::func1(stak);
 }
 
 int button_func2__sub0(NC_STACK_button *, __NC_STACK_button *btn, stack_vals *stak)
@@ -191,12 +176,14 @@ int button_func2__sub0(NC_STACK_button *, __NC_STACK_button *btn, stack_vals *st
     return 1;
 }
 
-void button_func2(NC_STACK_button *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_button::func2(stack_vals *stak)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
+    __NC_STACK_button *btn = &this->stack__button;
 
-    call_parent(zis, obj, 2, stak);
-    button_func2__sub0(obj, btn, stak);
+    NC_STACK_nucleus::func2(stak);
+    button_func2__sub0(this, btn, stak);
+
+    return 1;
 }
 
 
@@ -247,12 +234,14 @@ int button_func3__sub0(NC_STACK_button *, __NC_STACK_button *btn, stack_vals *st
     return 1;
 }
 
-void button_func3(NC_STACK_button *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_button::func3(stack_vals *stak)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
+    __NC_STACK_button *btn = &this->stack__button;
 
-    call_parent(zis, obj, 3, stak);
-    button_func3__sub0(obj, btn, stak);
+    NC_STACK_nucleus::func3(stak);
+    button_func3__sub0(this, btn, stak);
+
+    return 1;
 }
 
 // Update slider
@@ -328,9 +317,9 @@ void sub_436F58(__NC_STACK_button *btn, button_str2 *sbt)
     fntcmd_set_end(&cpt);
 }
 
-size_t button_func64(NC_STACK_button *obj, class_stru *, button_64_arg *arg)
+size_t NC_STACK_button::button_func64(button_64_arg *arg)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
+    __NC_STACK_button *btn = &this->stack__button;
 
     int idd = btn->idd;
 
@@ -424,11 +413,11 @@ size_t button_func64(NC_STACK_button *obj, class_stru *, button_64_arg *arg)
     return 0;
 }
 
-size_t button_func65(NC_STACK_button *obj, class_stru *, int *butID)
+size_t NC_STACK_button::button_func65(int *butID)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
+    __NC_STACK_button *btn = &this->stack__button;
 
-    int id = call_method(obj, 72, butID);
+    int id = button_func72(butID);
 
     if ( id >= 0 && id < btn->idd )
     {
@@ -452,11 +441,11 @@ size_t button_func65(NC_STACK_button *obj, class_stru *, int *butID)
     return 0;
 }
 
-size_t button_func66(NC_STACK_button *obj, class_stru *, button_66arg *arg)
+size_t NC_STACK_button::button_func66(button_66arg *arg)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
+    __NC_STACK_button *btn = &this->stack__button;
 
-    int id = call_method(obj, 72, &arg->butID);
+    int id = button_func72(&arg->butID);
 
     if ( id >= 0 && id < btn->idd )
     {
@@ -474,11 +463,11 @@ size_t button_func66(NC_STACK_button *obj, class_stru *, button_66arg *arg)
     return 0;
 }
 
-size_t button_func67(NC_STACK_button *obj, class_stru *, button_66arg *arg)
+size_t NC_STACK_button::button_func67(button_66arg *arg)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
+    __NC_STACK_button *btn = &this->stack__button;
 
-    int id = call_method(obj, 72, &arg->butID);
+    int id = button_func72(&arg->butID);
 
     if ( id >= 0 && id < btn->idd )
     {
@@ -495,9 +484,9 @@ size_t button_func67(NC_STACK_button *obj, class_stru *, button_66arg *arg)
     return 0;
 }
 
-void button_func68(NC_STACK_button *obj, class_stru *, int *arg)
+size_t NC_STACK_button::button_func68(int *arg)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
+    __NC_STACK_button *btn = &this->stack__button;
 
     if ( *arg == 1 )
     {
@@ -515,11 +504,13 @@ void button_func68(NC_STACK_button *obj, class_stru *, int *arg)
             sub_412D9C(btn);
         }
     }
+
+    return 1;
 }
 
-size_t button_func69(NC_STACK_button *obj, class_stru *, struC5 *arg)
+size_t NC_STACK_button::button_func69(struC5 *arg)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
+    __NC_STACK_button *btn = &this->stack__button;
 
     int v46 = 0;
 
@@ -955,9 +946,9 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
 
 char button_tmpbuf[5008];
 
-void button_func70(NC_STACK_button *obj, class_stru *, void *)
+size_t NC_STACK_button::button_func70(void *)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
+    __NC_STACK_button *btn = &this->stack__button;
 
     char *pbuf = button_tmpbuf;
 
@@ -984,12 +975,14 @@ void button_func70(NC_STACK_button *obj, class_stru *, void *)
 
         sub_423288(&arg209);
     }
+
+    return 1;
 }
 
-size_t button_func71(NC_STACK_button *obj, class_stru *, button_71arg *arg)
+size_t NC_STACK_button::button_func71(button_71arg *arg)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
-    int v5 = call_method(obj, 72, &arg->butID);
+    __NC_STACK_button *btn = &this->stack__button;
+    int v5 = button_func72(&arg->butID);
 
     if ( v5 >= 0 && v5 < btn->idd &&  arg->field_4 )
     {
@@ -1011,9 +1004,9 @@ size_t button_func71(NC_STACK_button *obj, class_stru *, button_71arg *arg)
     return 0;
 }
 
-int button_func72(NC_STACK_button *obj, class_stru *, int *butid)
+int NC_STACK_button::button_func72(int *butid)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
+    __NC_STACK_button *btn = &this->stack__button;
 
     for (int i = 0; i < 48; i++)
     {
@@ -1026,10 +1019,10 @@ int button_func72(NC_STACK_button *obj, class_stru *, int *butid)
     return -1;
 }
 
-void button_func73(NC_STACK_button *obj, class_stru *, button_66arg *arg)
+size_t NC_STACK_button::button_func73(button_66arg *arg)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
-    int id = call_method(obj, 72, &arg->butID);
+    __NC_STACK_button *btn = &this->stack__button;
+    int id = button_func72(&arg->butID);
 
     if ( id >= 0 && id < btn->idd )
     {
@@ -1038,7 +1031,7 @@ void button_func73(NC_STACK_button *obj, class_stru *, button_66arg *arg)
             if ( btn->field_d8[id]->button_type > 2 )
             {
                 if ( btn->field_d8[id]->button_type != 4 )
-                    return;
+                    return 0;
 
                 for (int i = 0; i < 48; i++)
                 {
@@ -1056,12 +1049,14 @@ void button_func73(NC_STACK_button *obj, class_stru *, button_66arg *arg)
                 btn->field_d8[id]->state &= 0xFFFA;
         }
     }
+
+    return 1;
 }
 
-button_str2_t2 * button_func74(NC_STACK_button *obj, class_stru *, int *butid)
+button_str2_t2 * NC_STACK_button::button_func74(int *butid)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
-    int id = call_method(obj, 72, butid);
+    __NC_STACK_button *btn = &this->stack__button;
+    int id = button_func72(butid);
 
     if ( id != -1 && btn->field_d8[id]->button_type == 5)
     {
@@ -1070,21 +1065,23 @@ button_str2_t2 * button_func74(NC_STACK_button *obj, class_stru *, int *butid)
     return NULL;
 }
 
-void button_func75(NC_STACK_button *obj, class_stru *, int *butid)
+size_t NC_STACK_button::button_func75(int *butid)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
-    int id = call_method(obj, 72, butid);
+    __NC_STACK_button *btn = &this->stack__button;
+    int id = button_func72(butid);
 
     if ( id != -1 && btn->field_d8[id]->button_type == 5)
     {
         sub_436F58(btn, btn->field_d8[id]);
     }
+
+    return 1;
 }
 
-size_t button_func76(NC_STACK_button *obj, class_stru *, button_arg76 *arg)
+size_t NC_STACK_button::button_func76(button_arg76 *arg)
 {
-    __NC_STACK_button *btn = &obj->stack__button;
-    int id = call_method(obj, 72, &arg->butID);
+    __NC_STACK_button *btn = &this->stack__button;
+    int id = button_func72(&arg->butID);
 
     if ( id >= 0 && id < btn->idd )
     {
@@ -1112,36 +1109,46 @@ size_t button_func76(NC_STACK_button *obj, class_stru *, button_arg76 *arg)
 }
 
 
-class_return button_class_descr;
-
-class_return * class_set_button(int , ...)
+size_t NC_STACK_button::compatcall(int method_id, void *data)
 {
-
-    memset(button_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    button_funcs[0] = (CLASSFUNC)button_func0;
-    button_funcs[1] = (CLASSFUNC)button_func1;
-    button_funcs[2] = (CLASSFUNC)button_func2;
-    button_funcs[3] = (CLASSFUNC)button_func3;
-    button_funcs[64] = (CLASSFUNC)button_func64;
-    button_funcs[65] = (CLASSFUNC)button_func65;
-    button_funcs[66] = (CLASSFUNC)button_func66;
-    button_funcs[67] = (CLASSFUNC)button_func67;
-    button_funcs[68] = (CLASSFUNC)button_func68;
-    button_funcs[69] = (CLASSFUNC)button_func69;
-    button_funcs[70] = (CLASSFUNC)button_func70;
-    button_funcs[71] = (CLASSFUNC)button_func71;
-    button_funcs[72] = (CLASSFUNC)button_func72;
-    button_funcs[73] = (CLASSFUNC)button_func73;
-    button_funcs[74] = (CLASSFUNC)button_func74;
-    button_funcs[75] = (CLASSFUNC)button_func75;
-    button_funcs[76] = (CLASSFUNC)button_func76;
-
-    button_class_descr.parent = "nucleus.class";
-
-    button_class_descr.vtbl = button_funcs;
-    ////button_class_descr.varSize = sizeof(__NC_STACK_button);
-    button_class_descr.varSize = sizeof(NC_STACK_button) - offsetof(NC_STACK_button, stack__button); //// HACK
-    button_class_descr.field_A = 0;
-    return &button_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        return (size_t)func2( (stack_vals *)data );
+    case 3:
+        return (size_t)func3( (stack_vals *)data );
+    case 64:
+        return (size_t)button_func64( (button_64_arg *)data );
+    case 65:
+        return (size_t)button_func65( (int *)data );
+    case 66:
+        return (size_t)button_func66( (button_66arg *)data );
+    case 67:
+        return (size_t)button_func67( (button_66arg *)data );
+    case 68:
+        return (size_t)button_func68( (int *)data );
+    case 69:
+        return (size_t)button_func69( (struC5 *)data );
+    case 70:
+        return (size_t)button_func70( (void *)data );
+    case 71:
+        return (size_t)button_func71( (button_71arg *)data );
+    case 72:
+        return (size_t)button_func72( (int *)data );
+    case 73:
+        return (size_t)button_func73( (button_66arg *)data );
+    case 74:
+        return (size_t)button_func74( (int *)data );
+    case 75:
+        return (size_t)button_func75( (int *)data );
+    case 76:
+        return (size_t)button_func76( (button_arg76 *)data );
+    default:
+        break;
+    }
+    return NC_STACK_nucleus::compatcall(method_id, data);
 }

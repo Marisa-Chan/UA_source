@@ -4,21 +4,8 @@
 #include "utils.h"
 
 
-stored_functions *classvtbl_get_ade();
-class_return * class_set_ade(int, ...);
+const NewClassDescr NC_STACK_ade::description("ade.class", &newinstance);
 
-stored_functions ade_class_vtbl(class_set_ade);
-
-
-class_stored ade_class_off (NULL, NULL, "MC2classes:ade.class", classvtbl_get_ade);
-
-
-stored_functions *classvtbl_get_ade()
-{
-    return &ade_class_vtbl;
-}
-
-CLASSFUNC ade_funcs[1024];
 
 void ade_func0__sub0(__NC_STACK_ade *ade, stack_vals *stak)
 {
@@ -69,28 +56,27 @@ void ade_func0__sub0(__NC_STACK_ade *ade, stack_vals *stak)
 }
 
 
-NC_STACK_ade * ade_func0(class_stru *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ade::func0(stack_vals *stak)
 {
-    NC_STACK_ade *clss = (NC_STACK_ade *)call_parent(zis, obj, 0, stak); // rsrc_func0
-    if (clss)
-    {
-        __NC_STACK_ade *ade = &clss->stack__ade;
+    if ( !NC_STACK_nucleus::func0(stak) )
+        return 0;
 
-        ade->self = clss;
-        ade_func0__sub0(ade, stak);
-    }
+    __NC_STACK_ade *ade = &this->stack__ade;
 
-    return clss;
+    ade->self = this;
+    ade_func0__sub0(ade, stak);
+
+    return 1;
 }
 
-size_t ade_func1(NC_STACK_ade *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ade::func1(stack_vals *stak)
 {
-    __NC_STACK_ade *ade = &obj->stack__ade;
+    __NC_STACK_ade *ade = &this->stack__ade;
 
     if ( ade->flags & 1 )
         Remove(ade);
 
-    return call_parent(zis, obj, 1, stak);
+    return NC_STACK_nucleus::func1(stak);
 }
 
 
@@ -143,13 +129,13 @@ void ade_func2__sub0(__NC_STACK_ade *ade, stack_vals *stak)
     }
 }
 
-size_t ade_func2(NC_STACK_ade *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ade::func2(stack_vals *stak)
 {
-    __NC_STACK_ade *ade = &obj->stack__ade;
+    __NC_STACK_ade *ade = &this->stack__ade;
 
     ade_func2__sub0(ade, stak);
 
-    return call_parent(zis, obj, 2, stak);
+    return NC_STACK_nucleus::func2(stak);
 }
 
 void ade_func3__sub0(__NC_STACK_ade *ade, stack_vals *stak)
@@ -203,21 +189,21 @@ void ade_func3__sub0(__NC_STACK_ade *ade, stack_vals *stak)
     }
 }
 
-size_t ade_func3(NC_STACK_ade *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_ade::func3(stack_vals *stak)
 {
 
-    __NC_STACK_ade *ade = &obj->stack__ade;
+    __NC_STACK_ade *ade = &this->stack__ade;
 
     ade_func3__sub0(ade, stak);
 
-    return call_parent(zis, obj, 3, stak);
+    return NC_STACK_nucleus::func3(stak);
 }
 
 
-NC_STACK_ade *ade_func5(class_stru *clss, class_stru *zis, MFILE **file)
+size_t NC_STACK_ade::func5(MFILE **file)
 {
     MFILE *mfile = *file;
-    NC_STACK_ade *obj = NULL;
+    int obj_ok = 0;
     while ( 1 )
     {
         int iff_res = read_next_IFF(mfile, 2);
@@ -227,26 +213,26 @@ NC_STACK_ade *ade_func5(class_stru *clss, class_stru *zis, MFILE **file)
 
         if ( iff_res )
         {
-            if ( obj )
-                call_method(obj, 1);
-            return NULL;
+            if ( obj_ok )
+                func1(NULL);
+            return 0;
         }
 
         MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ROOT )
         {
-            obj = (NC_STACK_ade *)call_parent(zis, clss, 5, (stack_vals *)file);
+            obj_ok = NC_STACK_nucleus::func5(file);
 
-            if ( !obj )
+            if ( !obj_ok )
                 break;
 
-            obj->stack__ade.self = obj;
+            this->stack__ade.self = this;
 
         }
         else if ( chunk->TAG == TAG_STRC )
         {
-            if ( obj )
+            if ( obj_ok )
             {
                 ADE_STRC hdr;
 
@@ -270,7 +256,7 @@ NC_STACK_ade *ade_func5(class_stru *clss, class_stru *zis, MFILE **file)
                     stk[3].value = hdr.field_6;
                     stk[4].id = 0;
 
-                    call_method(obj, 2, stk);
+                    func2(stk);
                 }
             }
             read_next_IFF(mfile, 2);
@@ -281,18 +267,18 @@ NC_STACK_ade *ade_func5(class_stru *clss, class_stru *zis, MFILE **file)
         }
     }
 
-    return obj;
+    return obj_ok;
 }
 
-size_t ade_func6(NC_STACK_ade *obj, class_stru *zis, MFILE **file)
+size_t NC_STACK_ade::func6(MFILE **file)
 {
     MFILE *mfile = *file;
-    __NC_STACK_ade *ade = &obj->stack__ade;
+    __NC_STACK_ade *ade = &this->stack__ade;
 
     if ( sub_412FC0(mfile, TAG_ADE, TAG_FORM, -1) )
         return 0;
 
-    if ( !call_parent(zis, obj, 6, (stack_vals *)file) )
+    if ( !NC_STACK_nucleus::func6(file) )
         return 0;
 
     sub_412FC0(mfile, 0, TAG_STRC, -1);
@@ -311,9 +297,9 @@ size_t ade_func6(NC_STACK_ade *obj, class_stru *zis, MFILE **file)
 }
 
 // Add ade to list
-size_t ade_func64(NC_STACK_ade *obj, class_stru *, nlist **lst)
+size_t NC_STACK_ade::ade_func64(nlist **lst)
 {
-    __NC_STACK_ade *ade = &obj->stack__ade;
+    __NC_STACK_ade *ade = &this->stack__ade;
 
     if ( ade->flags & 1 )
         Remove(ade);
@@ -324,26 +310,31 @@ size_t ade_func64(NC_STACK_ade *obj, class_stru *, nlist **lst)
     return 1;
 }
 
-class_return ade_class_descr;
-
-class_return * class_set_ade(int , ...)
+size_t NC_STACK_ade::ade_func65(area_arg_65 *arg)
 {
+    return 1;
+}
 
-    memset(ade_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    ade_funcs[0] = (CLASSFUNC)ade_func0;
-    ade_funcs[1] = (CLASSFUNC)ade_func1;
-    ade_funcs[2] = (CLASSFUNC)ade_func2;
-    ade_funcs[3] = (CLASSFUNC)ade_func3;
-    ade_funcs[5] = (CLASSFUNC)ade_func5;
-    ade_funcs[6] = (CLASSFUNC)ade_func6;
-    ade_funcs[64] = (CLASSFUNC)ade_func64;
-
-    ade_class_descr.parent = "nucleus.class";
-
-    ade_class_descr.vtbl = ade_funcs;
-    ////ade_class_descr.varSize = sizeof(__NC_STACK_ade);
-    ade_class_descr.varSize = sizeof(NC_STACK_ade) - offsetof(NC_STACK_ade, stack__ade); //// HACK
-    ade_class_descr.field_A = 0;
-    return &ade_class_descr;
+size_t NC_STACK_ade::compatcall(int method_id, void *data)
+{
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        return (size_t)func2( (stack_vals *)data );
+    case 3:
+        return (size_t)func3( (stack_vals *)data );
+    case 5:
+        return (size_t)func5( (MFILE **)data );
+    case 6:
+        return (size_t)func6( (MFILE **)data );
+    case 64:
+        return (size_t)ade_func64( (nlist **)data );
+    default:
+        break;
+    }
+    return NC_STACK_nucleus::compatcall(method_id, data);
 }

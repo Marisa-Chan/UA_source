@@ -19,30 +19,17 @@
 #include "inttypes.h"
 
 
-stored_functions *classvtbl_get_sklt();
-class_return * class_set_sklt(int, ...);
 
-stored_functions sklt_class_vtbl(class_set_sklt);
+const NewClassDescr NC_STACK_sklt::description("sklt.class", &newinstance);
 
 
-class_stored sklt_class_off (NULL, NULL, "MC2classes:sklt.class", classvtbl_get_sklt);
 
-
-stored_functions *classvtbl_get_sklt()
-{
-    return &sklt_class_vtbl;
-}
-
-CLASSFUNC sklt_funcs[1024];
-
-
-NC_STACK_sklt * sklt_func5(class_stru *clss, class_stru *zis, MFILE **file)
+size_t NC_STACK_sklt::func5(MFILE **file)
 {
     char name[256];
     stack_vals stk[3];
 
     MFILE *mfile = *file;
-    NC_STACK_sklt *obj = NULL;
     int getted = 0;
 
     while ( 1 )
@@ -52,7 +39,7 @@ NC_STACK_sklt * sklt_func5(class_stru *clss, class_stru *zis, MFILE **file)
             break;
 
         if ( iff_result )
-            return NULL;
+            return 0;
 
         if ( GET_FORM_INFO_OR_NULL(mfile)->TAG == TAG_NAME )
         {
@@ -66,21 +53,23 @@ NC_STACK_sklt * sklt_func5(class_stru *clss, class_stru *zis, MFILE **file)
         }
     }
 
-    if ( getted )
-    {
-        stk[0].id = 0x80001000;
-        stk[0].value = (size_t)name;
-        stk[1].id = 0x80001001;
-        stk[1].value = 1;
-        stk[2].id = 0;
-        stk[2].value = 0;
+    if ( !getted )
+        return 0;
 
-        obj = (NC_STACK_sklt *)call_parent(zis, clss, 0, stk);
-    }
-    return obj;
+    stk[0].id = 0x80001000;
+    stk[0].value = (size_t)name;
+    stk[1].id = 0x80001001;
+    stk[1].value = 1;
+    stk[2].id = 0;
+    stk[2].value = 0;
+
+    if ( !NC_STACK_skeleton::func0(stk) )
+        return 0;
+
+    return 1;
 }
 
-size_t sklt_func6(NC_STACK_sklt *obj, class_stru *, MFILE **file)
+size_t NC_STACK_sklt::func6(MFILE **file)
 {
     MFILE *mfile = *file;
 
@@ -91,14 +80,14 @@ size_t sklt_func6(NC_STACK_sklt *obj, class_stru *, MFILE **file)
         char name[256];
 
         sub_412FC0(mfile, 0, TAG_NAME, -1);
-        call_vtbl(obj, 3, 0x80001000, name, 0);
+        call_vtbl(this, 3, 0x80001000, name, 0);
         sub_413564(mfile, strlen(name) + 1, name);
         sub_413290(mfile);
         return sub_413290(mfile) == 0;
     }
 }
 
-rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, class_stru *zis, stack_vals *stak, MFILE *mfile, int version)
+rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile, int version)
 {
     MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
 
@@ -125,7 +114,7 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, class_stru *zis, stack_vals *stak,
     stk[1].id = 2;
     stk[1].value = (size_t)stak;
 
-    rsrc *res = (rsrc *)call_parent(zis, obj, 64, stk);
+    rsrc *res = obj->NC_STACK_skeleton::rsrc_func64(stk);
     if ( res )
     {
         skeleton_64_stru *sklt = (skeleton_64_stru *)res->data;
@@ -191,7 +180,7 @@ int skeleton_read_poly(NC_STACK_sklt *obj, MFILE *mfile, skeleton_64_stru *sklt)
         arg130.skeleton = sklt;
         arg130.num_indexes = (chunk->TAG_SIZE / 2) - v9;
 
-        if ( call_method(obj, 130, &arg130) )
+        if ( obj->skeleton_func130(&arg130) )
         {
             int16_t *v14 = polys;
             pol_indixes *v15 = sklt->pol_entries[0];
@@ -242,7 +231,7 @@ int skeleton_read_pol2(NC_STACK_sklt *obj, MFILE *mfile, skeleton_64_stru *sklt)
     arg130.pol_count = pol_count;
     arg130.num_indexes = ((chunk->TAG_SIZE - 4) / 2) - pol_count;
 
-    if ( call_method(obj, 130, &arg130) )
+    if ( obj->skeleton_func130(&arg130) )
     {
         pol_indixes *indixes = sklt->pol_entries[0];
         mfread(mfile, sklt->pol_entries[0], chunk->TAG_SIZE - 4);
@@ -288,7 +277,7 @@ int skeleton_read_senX(NC_STACK_sklt *obj, MFILE *mfile, skeleton_64_stru *sklt,
     arg129.skeleton = sklt;
     arg129.sen_count = sen_count;
 
-    if ( call_method(obj, 129, &arg129) )
+    if ( obj->skeleton_func129(&arg129) )
     {
         if ( version == 1 )
         {
@@ -379,7 +368,7 @@ void sklt_func64__sub0__sub0(skeleton_64_stru *sklt, int id)
     }
 }
 
-rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, class_stru *zis, stack_vals *stak, MFILE *mfile)
+rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile)
 {
     skeleton_64_stru *sklt = NULL;
     rsrc *res = NULL;
@@ -397,7 +386,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, class_stru *zis, stack_vals *stak, 
             if ( res )
             {
                 //call_vtbl(obj, 65, res);
-                call_method(obj, 65, &res);
+                obj->rsrc_func65(&res);
             }
 
             return NULL;
@@ -413,7 +402,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, class_stru *zis, stack_vals *stak, 
                 break;
 
             case TAG_POOL:
-                res = skeleton_read_pooX(obj, zis, stak, mfile, 1);
+                res = skeleton_read_pooX(obj, stak, mfile, 1);
                 if ( res )
                 {
                     sklt = (skeleton_64_stru *)res->data;
@@ -428,7 +417,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, class_stru *zis, stack_vals *stak, 
                 break;
 
             case TAG_POO2:
-                res = skeleton_read_pooX(obj, zis, stak, mfile, 2);
+                res = skeleton_read_pooX(obj, stak, mfile, 2);
                 if ( res )
                 {
                     sklt = (skeleton_64_stru *)res->data;
@@ -490,7 +479,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, class_stru *zis, stack_vals *stak, 
         if ( res )
         {
             //call_vtbl(obj, 65, res);
-            call_method(obj, 65, &res);
+            obj->rsrc_func65(&res);
         }
 
         return NULL;
@@ -503,7 +492,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, class_stru *zis, stack_vals *stak, 
 }
 
 // Create sklt resource node and fill rsrc field data
-rsrc * sklt_func64(NC_STACK_sklt *obj, class_stru *zis, stack_vals *stak)
+rsrc * NC_STACK_sklt::rsrc_func64(stack_vals *stak)
 {
     const char *filename = (const char *)find_id_in_stack_def_val(0x80001000, 0, stak);
     if ( filename )
@@ -522,7 +511,7 @@ rsrc * sklt_func64(NC_STACK_sklt *obj, class_stru *zis, stack_vals *stak)
             selfopened = 1;
         }
 
-        rsrc *res = sklt_func64__sub0(obj, zis, stak, mfile);
+        rsrc *res = sklt_func64__sub0(this, stak, mfile);
 
         if ( selfopened )
             close_mfile(mfile);
@@ -533,11 +522,11 @@ rsrc * sklt_func64(NC_STACK_sklt *obj, class_stru *zis, stack_vals *stak)
         return NULL;
 }
 
-size_t sklt_func66(NC_STACK_sklt *obj, class_stru *, rsrc_func66_arg *arg)
+size_t NC_STACK_sklt::rsrc_func66(rsrc_func66_arg *arg)
 {
     skeleton_64_stru *sklt = NULL;
 
-    call_vtbl(obj, 3, 0x80001002, &sklt, 0);
+    call_vtbl(this, 3, 0x80001002, &sklt, 0);
 
     if ( !sklt )
         return 0;
@@ -631,22 +620,20 @@ size_t sklt_func66(NC_STACK_sklt *obj, class_stru *, rsrc_func66_arg *arg)
 }
 
 
-class_return sklt_class_descr;
-
-class_return * class_set_sklt(int, ...)
+size_t NC_STACK_sklt::compatcall(int method_id, void *data)
 {
-    memset(sklt_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    sklt_funcs[5] = (CLASSFUNC)sklt_func5;
-    sklt_funcs[6] = (CLASSFUNC)sklt_func6;
-    sklt_funcs[64] = (CLASSFUNC)sklt_func64;
-    sklt_funcs[66] = (CLASSFUNC)sklt_func66;
-
-    sklt_class_descr.parent = "skeleton.class";
-
-    sklt_class_descr.vtbl = sklt_funcs;
-    ////sklt_class_descr.varSize = sizeof(__NC_STACK_sklt);
-    sklt_class_descr.varSize = sizeof(NC_STACK_sklt) - offsetof(NC_STACK_sklt, stack__sklt); //// HACK
-    sklt_class_descr.field_A = 0;
-    return &sklt_class_descr;
+    switch( method_id )
+    {
+    case 5:
+        return (size_t)func5( (MFILE **)data );
+    case 6:
+        return (size_t)func6( (MFILE **)data );
+    case 64:
+        return (size_t)rsrc_func64( (stack_vals *)data );
+    case 66:
+        return (size_t)rsrc_func66( (rsrc_func66_arg *)data );
+    default:
+        break;
+    }
+    return NC_STACK_skeleton::compatcall(method_id, data);
 }

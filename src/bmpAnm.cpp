@@ -6,68 +6,54 @@
 #include "utils.h"
 
 
-stored_functions *classvtbl_get_bmpanim();
-class_return * class_set_bmpanim(int, ...);
-
-stored_functions bmpanim_class_vtbl(class_set_bmpanim);
+const NewClassDescr NC_STACK_bmpanim::description("bmpanim.class", &newinstance);
 
 
-class_stored bmpanim_class_off (NULL, NULL, "MC2classes:bmpanim.class", classvtbl_get_bmpanim);
-
-
-stored_functions *classvtbl_get_bmpanim()
-{
-    return &bmpanim_class_vtbl;
-}
-
-CLASSFUNC bmpanim_funcs[1024];
 static int dword_515200 = 0;
 static int dword_515204 = 0;
 static int dword_5B2410;
 static tUtV *dword_5A11A0[256];
 
 
-NC_STACK_bmpanim * bmpanim_func0(class_stru *clss, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_bmpanim::func0(stack_vals *stak)
 {
     stack_vals *val = find_id_in_stack2(0x80003000, stak);
     if ( val )
         val->id = 0x80001000;
 
-    NC_STACK_bmpanim *obj = (NC_STACK_bmpanim *)call_parent(zis, clss, 0, stak); // rsrc_func0
-    if (obj)
-    {
-        __NC_STACK_bmpanim *bmpanm = &obj->stack__bmpanim;
-        call_vtbl(obj, 3, 0x80001002, bmpanm, 0);
+    if ( !NC_STACK_bitmap::func0(stak) )
+        return 0;
 
-        bmpanm->field_12 = 1;
-        bmpanm->field_10 = find_id_in_stack_def_val(0x80003004, 0, stak);
-        bmpanm->field_C = 0;
-        bmpanm->t2_ = bmpanm->bmpanm_intern->t2;
+    __NC_STACK_bmpanim *bmpanm = &this->stack__bmpanim;
+    call_vtbl(this, 3, 0x80001002, bmpanm, 0);
 
-    }
-    return obj;
+    bmpanm->field_12 = 1;
+    bmpanm->field_10 = find_id_in_stack_def_val(0x80003004, 0, stak);
+    bmpanm->field_C = 0;
+    bmpanm->t2_ = bmpanm->bmpanm_intern->t2;
+
+    return 1;
 }
 
-size_t bmpanim_func1(NC_STACK_bmpanim *obj, class_stru *zis, stack_vals *)
+size_t NC_STACK_bmpanim::func1(stack_vals *)
 {
-    return call_parent(zis, obj, 1, 0);
+    return NC_STACK_bitmap::func1(NULL);
 }
 
-void bmpanim_func2(NC_STACK_bmpanim *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_bmpanim::func2(stack_vals *stak)
 {
-    __NC_STACK_bmpanim *bmpAnm = &obj->stack__bmpanim;
+    __NC_STACK_bmpanim *bmpAnm = &this->stack__bmpanim;
 
     stack_vals *val = find_id_in_stack2(0x80003004, stak);
     if ( val )
         bmpAnm->field_10 = val->value;
 
-    call_parent(zis, obj, 2, stak);
+    return NC_STACK_bitmap::func2(stak);
 }
 
-void bmpanim_func3(NC_STACK_bmpanim *obj, class_stru *zis, stack_vals *stak)
+size_t NC_STACK_bmpanim::func3(stack_vals *stak)
 {
-
-    __NC_STACK_bmpanim *bmpAnm = &obj->stack__bmpanim;
+    __NC_STACK_bmpanim *bmpAnm = &this->stack__bmpanim;
 
     stack_vals *stk = stak;
 
@@ -103,7 +89,7 @@ void bmpanim_func3(NC_STACK_bmpanim *obj, class_stru *zis, stack_vals *stak)
                 break;
 
             case 0x80003000:
-                call_vtbl(obj, 3, 0x80001000, stk->value, 0);
+                call_vtbl(this, 3, 0x80001000, stk->value, 0);
                 break;
             case 0x80003001:
                 *(char **)stk->value = bmpAnm->bmpanm_intern->className;
@@ -118,15 +104,15 @@ void bmpanim_func3(NC_STACK_bmpanim *obj, class_stru *zis, stack_vals *stak)
             stk++;
         }
     }
-    call_parent(zis, obj, 3, stak);
+
+    return NC_STACK_bitmap::func3(stak);
 }
 
-NC_STACK_bmpanim *bmpanim_func5(class_stru *, class_stru *zis, MFILE **file)
+size_t NC_STACK_bmpanim::func5(MFILE **file)
 {
     int16_t buf[128];
 
     MFILE *mfile = *file;
-    NC_STACK_bmpanim *obj = 0;
 
     int v7 = 0;
     int v4;
@@ -162,42 +148,43 @@ NC_STACK_bmpanim *bmpanim_func5(class_stru *, class_stru *zis, MFILE **file)
             read_default(mfile);
         }
     }
-    if ( v7 )
-    {
-        stack_vals stk[4];
 
-        stk[0].id = 0x80003000;
-        stk[0].value = (size_t)v3;
-        stk[1].id = 0x80001004;
-        stk[1].value = 1;
-        stk[2].id = 0x80003004;
-        stk[2].value = v4;
-        stk[3].id = 0;
-        obj = bmpanim_func0(zis, zis, stk);
-    }
-    return obj;
+    if ( !v7 )
+        return 0;
+
+    stack_vals stk[4];
+
+    stk[0].id = 0x80003000;
+    stk[0].value = (size_t)v3;
+    stk[1].id = 0x80001004;
+    stk[1].value = 1;
+    stk[2].id = 0x80003004;
+    stk[2].value = v4;
+    stk[3].id = 0;
+
+    return func0(stk);
 }
 
-int bmpanim_func6(NC_STACK_bmpanim *obj, class_stru *, MFILE **file)
+size_t NC_STACK_bmpanim::func6(MFILE **file)
 {
-    __NC_STACK_bmpanim *bmpAnm = &obj->stack__bmpanim;
+    __NC_STACK_bmpanim *bmpAnm = &this->stack__bmpanim;
 
     MFILE *mfile = *file;
 
     const char *a3;
-    call_vtbl(obj, 3, 0x80001000, &a3, 0);
+    call_vtbl(this, 3, 0x80001000, &a3, 0);
 
     if ( !a3 )
     {
         return 0;
     }
 
-    bmpanm_sv sv;
-    sv.has_filename = 1;
-    sv.resName = a3;
-    sv.mfile = NULL;
+    rsrc_func66_arg sv;
+    sv.OpenedStream = 1;
+    sv.filename = a3;
+    sv.file = NULL;
 
-    if ( call_method(obj, 66, &sv) != 1 )
+    if ( rsrc_func66(&sv) != 1 )
     {
         ypa_log_out("bmpanim.class/OM_SAVETOIFF: couldn't save resource.\n");
         return 0;
@@ -668,7 +655,7 @@ int bmpanim_func64__sub0__sub0(bmpAnim_t1 *t1, char **a2, const char *className)
     {
         strcpy(out, *pt);
 
-        t1->frames[i].clsObj = (NC_STACK_bitmap *)init_get_class(className, 0x80001000, out, 0x80001003, 1, 0);
+        t1->frames[i].clsObj = dynamic_cast<NC_STACK_bitmap *>( init_get_class(className, 0x80001000, out, 0x80001003, 1, 0) );
         if ( !t1->frames[i].clsObj )
             return 0;
 
@@ -799,7 +786,7 @@ bmpAnim_t1 * bmpanim_func64__sub0(const char *className, char **a2, bitmap__opl 
 }
 
 // Create bmpanim resource node and fill rsrc field data
-rsrc * bmpanim_func64(NC_STACK_bmpanim *obj, class_stru *zis, stack_vals *stak)
+rsrc * NC_STACK_bmpanim::rsrc_func64(stack_vals *stak)
 {
     stack_vals stk[2];
 
@@ -808,7 +795,7 @@ rsrc * bmpanim_func64(NC_STACK_bmpanim *obj, class_stru *zis, stack_vals *stak)
     stk[1].id = 2;
     stk[1].value = (size_t)stak;
 
-    rsrc *res = (rsrc *)call_parent(zis, obj, 64, stk);// rsrc_func64
+    rsrc *res = NC_STACK_bitmap::rsrc_func64(stk);// rsrc_func64
     if ( res )
     {
 
@@ -834,7 +821,7 @@ rsrc * bmpanim_func64(NC_STACK_bmpanim *obj, class_stru *zis, stack_vals *stak)
         if ( !res->data )
         {
             //call_vtbl(obj, 65, res);
-            call_method(obj, 65, &res);
+            rsrc_func65(&res);
             return NULL;
         }
 
@@ -842,7 +829,7 @@ rsrc * bmpanim_func64(NC_STACK_bmpanim *obj, class_stru *zis, stack_vals *stak)
     return res;
 }
 
-void bmpanim_func65(NC_STACK_bmpanim *obj, class_stru *zis, rsrc **pres)
+size_t NC_STACK_bmpanim::rsrc_func65(rsrc **pres)
 {
     rsrc *res = *pres;
 
@@ -853,7 +840,7 @@ void bmpanim_func65(NC_STACK_bmpanim *obj, class_stru *zis, rsrc **pres)
         sub_431608(v5);
         res->data = NULL;
     }
-    call_parent(zis->parent_class, obj, 65, (stack_vals *)pres);
+    return NC_STACK_bitmap::rsrc_func65(pres);
 }
 
 int bmpanim_func66__sub0__sub3(void *fil, bmpAnim_t1 *t1)
@@ -987,9 +974,9 @@ int bmpanim_func66__sub0(bmpAnim_t1 *t1, const char *resName, MFILE *a3)
     return v22;
 }
 
-size_t bmpanim_func66(NC_STACK_bmpanim *obj, class_stru *, bmpanm_sv *sv)
+size_t NC_STACK_bmpanim::rsrc_func66(rsrc_func66_arg *sv)
 {
-    __NC_STACK_bmpanim *bmpanm = &obj->stack__bmpanim;
+    __NC_STACK_bmpanim *bmpanm = &this->stack__bmpanim;
 
     if ( !bmpanm->bmpanm_intern )
         return 0;
@@ -997,27 +984,27 @@ size_t bmpanim_func66(NC_STACK_bmpanim *obj, class_stru *, bmpanm_sv *sv)
     MFILE *mfile = NULL;
     const char *resName = NULL;
 
-    if ( sv->has_filename == 1 )
+    if ( sv->OpenedStream == 1 )
     {
-        resName = sv->resName;
+        resName = sv->filename;
 
-        if ( !sv->resName )
+        if ( !sv->filename )
             return 0;
     }
     else
     {
-        mfile = sv->mfile;
+        mfile = sv->file;
         if ( !mfile )
             return 0;
     }
     if ( bmpanim_func66__sub0(bmpanm->bmpanm_intern, resName, mfile) )
-        return sv->has_filename;
+        return sv->OpenedStream;
     return 0;
 }
 
-void bmpanim_func130(NC_STACK_bmpanim *obj, class_stru *, bitmap_arg130 *arg)
+void NC_STACK_bmpanim::bitmap_func130(bitmap_arg130 *arg)
 {
-    __NC_STACK_bmpanim *bmpAnm = &obj->stack__bmpanim;
+    __NC_STACK_bmpanim *bmpAnm = &this->stack__bmpanim;
 
     if ( arg->field_4 == -1 )
     {
@@ -1093,29 +1080,33 @@ void bmpanim_func130(NC_STACK_bmpanim *obj, class_stru *, bitmap_arg130 *arg)
 }
 
 
-class_return bmpanim_class_descr;
-
-class_return * class_set_bmpanim(int , ...)
+size_t NC_STACK_bmpanim::compatcall(int method_id, void *data)
 {
-
-    memset(bmpanim_funcs, 0, sizeof(CLASSFUNC) * 1024);
-
-    bmpanim_funcs[0] = (CLASSFUNC)bmpanim_func0;
-    bmpanim_funcs[1] = (CLASSFUNC)bmpanim_func1;
-    bmpanim_funcs[2] = (CLASSFUNC)bmpanim_func2;
-    bmpanim_funcs[3] = (CLASSFUNC)bmpanim_func3;
-    bmpanim_funcs[5] = (CLASSFUNC)bmpanim_func5;
-    bmpanim_funcs[6] = (CLASSFUNC)bmpanim_func6;
-    bmpanim_funcs[64] = (CLASSFUNC)bmpanim_func64;
-    bmpanim_funcs[65] = (CLASSFUNC)bmpanim_func65;
-    bmpanim_funcs[66] = (CLASSFUNC)bmpanim_func66;
-    bmpanim_funcs[130] = (CLASSFUNC)bmpanim_func130;
-
-    bmpanim_class_descr.parent = "bitmap.class";
-
-    bmpanim_class_descr.vtbl = bmpanim_funcs;
-    ////bmpanim_class_descr.varSize = sizeof(__NC_STACK_bmpanim);
-    bmpanim_class_descr.varSize = sizeof(NC_STACK_bmpanim) - offsetof(NC_STACK_bmpanim, stack__bmpanim); //// HACK
-    bmpanim_class_descr.field_A = 0;
-    return &bmpanim_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        return func2( (stack_vals *)data );
+    case 3:
+        return func3( (stack_vals *)data );
+    case 5:
+        return (size_t)func5( (MFILE **)data );
+    case 6:
+        return (size_t)func6( (MFILE **)data );
+    case 64:
+        return (size_t)rsrc_func64( (stack_vals *)data );
+    case 65:
+        return rsrc_func65( (rsrc **)data );
+    case 66:
+        return (size_t)rsrc_func66( (rsrc_func66_arg *)data );
+    case 130:
+        bitmap_func130( (bitmap_arg130 *)data );
+        return 1;
+    default:
+        break;
+    }
+    return NC_STACK_bitmap::compatcall(method_id, data);
 }

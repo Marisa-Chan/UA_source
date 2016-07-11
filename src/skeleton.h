@@ -4,8 +4,6 @@
 #include "rsrc.h"
 #include "engine_gfx.h"
 
-extern class_stored skeleton_class_off;
-
 struct skeleton_type1
 {
     int field_0;
@@ -51,11 +49,6 @@ struct skeleton_64_stru
 struct __NC_STACK_skeleton
 {
     skeleton_64_stru *data;
-};
-
-struct NC_STACK_skeleton : public NC_STACK_rsrc
-{
-    __NC_STACK_skeleton stack__skeleton;
 };
 
 struct skeleton_129_arg
@@ -114,6 +107,40 @@ struct skeleton_arg133
     float field_18;
     float field_1C;
     float field_20;
+};
+
+class NC_STACK_skeleton: public NC_STACK_rsrc
+{
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+    virtual rsrc * rsrc_func64(stack_vals *stak);
+    virtual size_t rsrc_func65(rsrc **pres);
+    virtual __NC_STACK_skeleton * skeleton_func128(stack_vals *);
+    virtual size_t skeleton_func129(skeleton_129_arg *arg);
+    virtual size_t skeleton_func130(skeleton_130_arg *arg);
+    virtual size_t skeleton_func131(int *arg);
+    virtual size_t skeleton_func132(skeleton_arg_132 *arg);
+    virtual void * skeleton_func133(skeleton_arg133 *arg);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_skeleton() {
+        memset(&stack__skeleton, 0, sizeof(stack__skeleton));
+    };
+    virtual ~NC_STACK_skeleton() {};
+
+    virtual const char * getClassName() {
+        return "skeleton.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_skeleton();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
+    __NC_STACK_skeleton stack__skeleton;
 };
 
 #endif // SKELETON_H_INCLUDED

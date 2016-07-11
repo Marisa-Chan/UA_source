@@ -2,29 +2,8 @@
 #include "nucleas.h"
 #include "utils.h"
 
+const NewClassDescr NC_STACK_nucleus::description("nucleus.class", &newinstance);
 
-stored_functions *classvtbl_get_nucleus();
-class_return * class_set_nucleus(int, ...);
-
-stored_functions nucleas_class_vtbl(class_set_nucleus);
-
-
-
-class_stored nucleas_class_off (NULL, NULL, "MC2classes:nucleus.class", classvtbl_get_nucleus);
-
-
-stored_functions *classvtbl_get_nucleus()
-{
-    return &nucleas_class_vtbl;
-}
-
-CLASSFUNC nucleas_funcs[1024];
-
-
-size_t nucleus_func_default(void *, class_stru *, stack_vals *)
-{
-    return 0;
-}
 
 void nucleus_func0__sub0(NC_STACK_nucleus *a1, stack_vals *a2)
 {
@@ -60,33 +39,14 @@ void nucleus_func0__sub0(NC_STACK_nucleus *a1, stack_vals *a2)
 
 
 
-NC_STACK_nucleus * nucleus_func0(class_stru *caller, class_stru *, stack_vals *stack)
+size_t NC_STACK_nucleus::func0(stack_vals *stack)
 {
-    int clsSize;
-
-    if ( caller->parent_class )
-        clsSize = caller->stack_offset + caller->class_stack_size;
-    else
-        clsSize = caller->class_stack_size;
-
-    NC_STACK_nucleus *clss = (NC_STACK_nucleus *)AllocVec(clsSize, 65537);
-    if ( clss )
-    {
-        caller->class_inst_count++;
-
-        clss->class_owner = caller;
-
-        nucleus_func0__sub0(clss, stack);
-    }
-    return clss;
+    nucleus_func0__sub0(this, stack);
+    return 1;
 }
 
-size_t nucleus_func1(NC_STACK_nucleus *a1, class_stru *, stack_vals *)
+size_t NC_STACK_nucleus::func1(stack_vals *)
 {
-    a1->class_owner->class_inst_count--;
-    if ( a1->NAME )
-        nc_FreeMem(a1->NAME);
-    nc_FreeMem(a1);
     return 1;
 }
 
@@ -133,9 +93,9 @@ void nucleus_setter(NC_STACK_nucleus *a1, stack_vals *a2)
     }
 }
 
-size_t nucleus_func2(NC_STACK_nucleus *a1, class_stru *, stack_vals *a3)
+size_t NC_STACK_nucleus::func2(stack_vals *a3)
 {
-    nucleus_setter(a1, a3);
+    nucleus_setter(this, a3);
 
     return 1;
 }
@@ -162,75 +122,71 @@ void nucleus_getter(NC_STACK_nucleus *a1, stack_vals *a2)
             if ( a2->id == 0x80000000 )
                 *(char **)a2->value = a1->NAME;
             else if ( a2->id == 0x80000001 )
-                *(class_stru **)a2->value = a1->class_owner;
+                *(void **)a2->value = NULL;
             else if ( a2->id == 0x80000002 )
-                *(const char **)a2->value = a1->class_owner->name;
+                *(const char **)a2->value = a1->getClassName();
             a2++;
         };
     }
 }
 
 
-size_t nucleus_func3(NC_STACK_nucleus *caller, class_stru *, stack_vals *stk)
+size_t NC_STACK_nucleus::func3(stack_vals *stk)
 {
-    nucleus_getter(caller, stk);
+    nucleus_getter(this, stk);
 
     return 1;
 }
 
-NC_STACK_nucleus *nucleus_func5(class_stru *caller, class_stru *, MFILE **file)
+size_t NC_STACK_nucleus::func5(MFILE **file)
 {
     MFILE *mfile = *file;
-    NC_STACK_nucleus *new_class = (NC_STACK_nucleus *)AllocVec(caller->stack_offset + caller->class_stack_size, 65537);
-    if ( new_class )
+
+    while ( 1 )
     {
-        caller->class_inst_count++;
-        new_class->class_owner = caller;
-        while ( 1 )
+        signed int v6 = read_next_IFF(mfile, 2);
+        if ( v6 == -2 )
+            break;
+        if ( v6 )
         {
-            signed int v6 = read_next_IFF(mfile, 2);
-            if ( v6 == -2 )
-                break;
-            if ( v6 )
+            func1(NULL);
+            return 0;
+        }
+        if ( GET_FORM_INFO_OR_NULL(mfile)->TAG == TAG_NAME )
+        {
+            char a4[33];
+            memset(a4, 0, 33);
+
+            if ( !mfread(mfile, a4, 32) )
             {
-                call_method(new_class, 1, 0);
+                func1(NULL);
                 return 0;
             }
-            if ( GET_FORM_INFO_OR_NULL(mfile)->TAG == TAG_NAME )
-            {
-                char a4[33];
-                memset(a4, 0, 33);
 
-                if ( !mfread(mfile, a4, 32) )
-                {
-                    call_method(new_class, 1, 0);
-                    return 0;
-                }
-
-                call_vtbl(new_class, 2, 0x80000000, a4, 0,0);  // nucleus::SetName(new_name)
-                read_next_IFF(mfile, 2);
-            }
-            else
-            {
-                read_default(mfile);
-            }
+            call_vtbl(this, 2, 0x80000000, a4, 0,0);  // nucleus::SetName(new_name)
+            read_next_IFF(mfile, 2);
+        }
+        else
+        {
+            read_default(mfile);
         }
     }
-    return new_class;
+
+    return 1;
 }
 
 
-size_t nucleus_func6(NC_STACK_nucleus *caller, class_stru *, MFILE **val)
+size_t NC_STACK_nucleus::func6(MFILE **val)
 {
     MFILE *mfile = *val;
     if ( sub_412FC0(mfile, TAG_ROOT, TAG_FORM, -1) )
         return 0;
     else
     {
-        if ( caller->NAME )
+        if ( this->NAME )
         {
             sub_412FC0(mfile, 0, TAG_NAME, -1);
-            sub_413564(mfile, strlen(caller->NAME), caller->NAME);
+            sub_413564(mfile, strlen(this->NAME), this->NAME);
             sub_413290(mfile);
         }
         sub_413290(mfile);
@@ -240,26 +196,25 @@ size_t nucleus_func6(NC_STACK_nucleus *caller, class_stru *, MFILE **val)
 }
 
 
-
-class_return nucleas_class_descr;
-
-
-class_return * class_set_nucleus(int, ...)
+size_t NC_STACK_nucleus::compatcall(int method_id, void *data)
 {
-    for (int i = 0; i < 1024; i++)
-        nucleas_funcs[i] = &nucleus_func_default;
-
-    nucleas_funcs[0] = (CLASSFUNC)nucleus_func0;
-    nucleas_funcs[1] = (CLASSFUNC)nucleus_func1;
-    nucleas_funcs[2] = (CLASSFUNC)nucleus_func2;
-    nucleas_funcs[3] = (CLASSFUNC)nucleus_func3;
-    nucleas_funcs[5] = (CLASSFUNC)nucleus_func5;
-    nucleas_funcs[6] = (CLASSFUNC)nucleus_func6;
-
-
-    nucleas_class_descr.parent = 0;
-    nucleas_class_descr.vtbl = nucleas_funcs;
-    nucleas_class_descr.varSize = sizeof(NC_STACK_nucleus);
-    nucleas_class_descr.field_A = 0;
-    return &nucleas_class_descr;
+    switch( method_id )
+    {
+    case 0:
+        return (size_t)func0( (stack_vals *)data );
+    case 1:
+        return (size_t)func1( (stack_vals *)data );
+    case 2:
+        return (size_t)func2( (stack_vals *)data );
+    case 3:
+        return (size_t)func3( (stack_vals *)data );
+    case 5:
+        return (size_t)func5( (MFILE **)data );
+    case 6:
+        return (size_t)func6( (MFILE **)data );
+    default:
+        break;
+    }
+    return 0;
 }
+

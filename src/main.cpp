@@ -31,7 +31,7 @@ int sub_4107FC(UserData *usr)
     arg171.field_8 = 193;
     arg171.field_10 = 0;
 
-    return call_method(ypaworld, 171, &arg171);
+    return ypaworld->ypaworld_func171(&arg171);
 }
 
 void sub_410628()
@@ -46,7 +46,7 @@ void sub_410628()
     arg171.field_8 = 255;
     arg171.field_10 = 0;
 
-    call_method(ypaworld, 171, &arg171);
+    ypaworld->ypaworld_func171(&arg171);
 
     FILE *fil = FOpen("env:user.def", "w");
     if ( fil )
@@ -59,7 +59,7 @@ void sub_410628()
 
 int sb_0x411324__sub0()
 {
-    call_method(ypaworld, 64, &world_update_arg);
+    ypaworld->base_func64(&world_update_arg);
 
     stru_2d90 *var_2d90;
     call_vtbl(ypaworld, 3, 0x8000201A, &var_2d90, 0);
@@ -71,7 +71,7 @@ int sb_0x411324__sub0()
     case 1:
     case 2:
     {
-        call_method(ypaworld, 151, 0);
+        ypaworld->ypaworld_func151(NULL);
 
         if ( dword_513638 || var_2d90->field_40 == 2 )
         {
@@ -82,7 +82,7 @@ int sb_0x411324__sub0()
             arg172.field_4 = userdata.user_name;
             arg172.field_8 = 0xC1;
 
-            if ( !call_method(ypaworld, 172, &arg172) )
+            if ( !ypaworld->ypaworld_func172(&arg172) )
                 return 0;
 
             dword_513638 = 0;
@@ -109,7 +109,7 @@ int sb_0x411324__sub0()
         userdata.field_5457 = 0;
         userdata.field_0xc = 1;
 
-        if ( call_method(ypaworld, 156, &userdata) )
+        if ( ypaworld->ypaworld_func156(&userdata) )
         {
             dword_520400 = 1;
             sub_412D28(&input_states);
@@ -120,7 +120,7 @@ int sb_0x411324__sub0()
         else
         {
             ypa_log_out("GameShell-Error!!!\n");
-            call_method(ypaworld, 155, &userdata);
+            ypaworld->ypaworld_func155(&userdata);
             return 0;
         }
     }
@@ -128,7 +128,7 @@ int sb_0x411324__sub0()
 
     case 4:
     {
-        call_method(ypaworld, 151, 0);
+        ypaworld->ypaworld_func151(NULL);
 
         sprintf(buf, "save:%s/%d.rst", userdata.user_name, var_2d90->levelID);
 
@@ -136,7 +136,7 @@ int sb_0x411324__sub0()
         arg169.saveFile = buf;
         arg169.usr = &userdata;
 
-        if ( !call_method(ypaworld, 169, &arg169) )
+        if ( !ypaworld->ypaworld_func169(&arg169) )
             ypa_log_out("Warning, load error\n");
 
         sub_412D28(&input_states);
@@ -151,7 +151,7 @@ int sb_0x411324__sub0()
 
         sprintf(buf, "save:%s/%d.sgm", userdata.user_name, 0);
 
-        if ( !call_method(ypaworld, 170, &arg169) )
+        if ( !ypaworld->ypaworld_func169(&arg169) )
             ypa_log_out("Warning, Save error\n");
 
         sub_412D28(&input_states);
@@ -160,14 +160,14 @@ int sb_0x411324__sub0()
 
     case 7:
     {
-        call_method(ypaworld, 151, 0);
+        ypaworld->ypaworld_func151(NULL);
 
         yw_arg169 arg169;
         arg169.usr = &userdata;
         arg169.saveFile = buf;
         sprintf(buf, "save:%s/%d.sgm", userdata.user_name, 0);
 
-        if ( !call_method(ypaworld, 169, &arg169) )
+        if ( !ypaworld->ypaworld_func169(&arg169) )
             ypa_log_out("Warning, load error\n");
 
         sub_412D28(&input_states);
@@ -210,9 +210,9 @@ int sb_0x411324__sub2__sub0(base_64arg *arg)
     {
         char *gin_and_tonic = sub_4107A0(arg->field_0);
 
-        call_method(ypaworld, 164, 0);
+        ypaworld->ypaworld_func164(NULL);
 
-        if ( !call_method(ypaworld, 162, gin_and_tonic) )
+        if ( !ypaworld->ypaworld_func162(gin_and_tonic) )
         {
             dword_520400 = 1;
 
@@ -225,7 +225,7 @@ int sb_0x411324__sub2__sub0(base_64arg *arg)
         dword_520400 = 3;
     }
 
-    call_method(ypaworld, 163, arg);
+    ypaworld->ypaworld_func163(arg);
 
     yw_arg165 arg165;
     arg165.field_0 = 0;
@@ -269,7 +269,7 @@ int sb_0x411324__sub2__sub0(base_64arg *arg)
     }
 
     if ( arg165.field_0 )
-        call_method(ypaworld, 165, &arg165);
+        ypaworld->ypaworld_func165(&arg165);
 
     return cont_play;
 }
@@ -278,7 +278,7 @@ int sb_0x411324__sub2()
 {
     if ( !sb_0x411324__sub2__sub0(&world_update_arg) )
     {
-        call_method(ypaworld, 164, 0);
+        ypaworld->ypaworld_func164(NULL);
 
         if ( dword_513638 )
         {
@@ -289,7 +289,7 @@ int sb_0x411324__sub2()
             arg172.field_4 = userdata.user_name;
             arg172.field_8 = 193;
 
-            if ( !call_method(ypaworld, 172, &arg172) )
+            if ( !ypaworld->ypaworld_func172(&arg172) )
                 return 0;
 
             dword_513638 = 0;
@@ -299,10 +299,10 @@ int sb_0x411324__sub2()
         world_update_arg.field_0 = 0;
         userdata.field_5457 = 0;
 
-        if ( !call_method(ypaworld, 156, &userdata) )
+        if ( !ypaworld->ypaworld_func156(&userdata) )
         {
             ypa_log_out("GameShell-Error!!!\n");
-            call_method(ypaworld, 155, &userdata);
+            ypaworld->ypaworld_func155(&userdata);
 
             return 0;
         }
@@ -324,14 +324,14 @@ int sb_0x411324__sub1()
     userdata.field_3E = world_update_arg.field_4;
     userdata.field_3A = &input_states;
 
-    call_method(ypaworld, 158, &userdata);
+    ypaworld->ypaworld_func158(&userdata);
 
     if ( userdata.field_0x2fbc == 1 )
         return 0;
     else if ( userdata.field_0x2fbc == 2 )
     {
         sub_410628();
-        call_method(ypaworld, 157, &userdata);
+        ypaworld->ypaworld_func157(&userdata);
 
         dword_520400 = 0;
 
@@ -342,11 +342,11 @@ int sb_0x411324__sub1()
         v22.lvlID = userdata.field_0x2fc0;
         v22.field_4 = 0;
 
-        if ( !call_method(ypaworld, 183, &v22) )
+        if ( !ypaworld->ypaworld_func183(&v22) )
         {
             ypa_log_out("Sorry, unable to init this level!\n");
 
-            call_method(ypaworld, 155, &userdata);
+            ypaworld->ypaworld_func155(&userdata);
             return 0;
         }
         dword_520400 = 2;
@@ -360,7 +360,7 @@ int sb_0x411324__sub1()
         call_vtbl(ypaworld, 3, 0x8000201A, &a4, 0);
 
         sub_410628();
-        call_method(ypaworld, 157, &userdata);
+        ypaworld->ypaworld_func157(&userdata);
 
         if ( !sub_4107FC(&userdata) )
             return 0;
@@ -372,11 +372,11 @@ int sb_0x411324__sub1()
 
         sprintf(a1, "save:%s/%d.sgm", userdata.user_name, 0);
 
-        if ( !call_method(ypaworld, 169, &arg169) )
+        if ( !ypaworld->ypaworld_func169(&arg169) )
         {
             ypa_log_out("Error while loading level (level %d, User %s\n", a4->levelID, userdata.user_name);
 
-            call_method(ypaworld, 155, &userdata);
+            ypaworld->ypaworld_func155(&userdata);
             return 0;
         }
         dword_520400 = 2;
@@ -391,7 +391,7 @@ int sb_0x411324__sub1()
 
         dword_513638 = 1;
 
-        call_method(ypaworld, 157, &userdata);
+        ypaworld->ypaworld_func157(&userdata);
 
         yw_arg161 v22;
         v22.lvlID = userdata.field_0x2fc0;
@@ -399,10 +399,10 @@ int sb_0x411324__sub1()
 
         dword_520400 = 0;
 
-        if ( !call_method(ypaworld, 179, &v22) )
+        if ( !ypaworld->ypaworld_func179(&v22) )
         {
             ypa_log_out("Sorry, unable to init this level for network!\n");
-            call_method(ypaworld, 155, &userdata);
+            ypaworld->ypaworld_func155(&userdata);
 
             return 0;
         }
@@ -424,11 +424,11 @@ int sb_0x411324__sub1()
 
         dword_513638 = 1;
 
-        call_method(ypaworld, 157, &userdata);
+        ypaworld->ypaworld_func157(&userdata);
 
         dword_520400 = 0;
 
-        if ( call_method(ypaworld, 162, repname) )
+        if ( ypaworld->ypaworld_func162(repname) )
         {
             dword_513630 = 1;
             dword_520400 = 3;
@@ -439,10 +439,10 @@ int sb_0x411324__sub1()
             world_update_arg.field_0 = 0;
             userdata.field_5457 = 0;
 
-            if ( !call_method(ypaworld, 156, &userdata) )
+            if ( !ypaworld->ypaworld_func156(&userdata) )
             {
                 ypa_log_out("GameShell-Error!!!\n");
-                call_method(ypaworld, 155, &userdata);
+                ypaworld->ypaworld_func155(&userdata);
                 return 0;
             }
 
@@ -488,10 +488,9 @@ int sb_0x411324()
     return 1;
 }
 
-glob_funcs *init_classesLists_and_variables()
+int init_classesLists_and_variables()
 {
     memset(&engines, 0, sizeof(engines));
-    init_list(&engines.allocated_class_list);
     init_list(&engines.stru_525D68);
     init_mc_res_class_engine_strings(MC_TYPE_RES, NULL);
     init_mc_res_class_engine_strings(MC_TYPE_CLASS, NULL);
@@ -499,14 +498,11 @@ glob_funcs *init_classesLists_and_variables()
     ypa_log__ypa_general_log();
     init_d3dlog();
     init_dinputlog();
-    if ( set_classes_list() )
-    {
-        return &off_51363C;
-    }
-    else
-    {
-        return NULL;
-    }
+
+    if ( !set_classes_list() )
+        return 0;
+
+    return 1;
 }
 
 int add_to_params_list(const char *a1)
@@ -531,8 +527,8 @@ void deinit_globl_engines()
         deinit_engine(MC2_AUDIO_ENGINE);
     if ( pgfx_engine )
         deinit_engine(MC2_GFX_ENGINE);
-    if ( point_to_off_51363C )
-        sb_0x411c08();
+
+    sb_0x411c08();
 }
 
 int WinMain__sub0__sub0()
@@ -543,8 +539,7 @@ int WinMain__sub0__sub0()
     memset(&input_states, 0, sizeof(struC5));
     memset(&world_update_arg, 0, sizeof(base_64arg));
 
-    point_to_off_51363C = init_classesLists_and_variables();
-    if ( !point_to_off_51363C )
+    if ( !init_classesLists_and_variables() )
     {
         sub_412038("Couldn't open Nucleus!");
         deinit_globl_engines();
@@ -683,7 +678,7 @@ int yw_initGameWithSettings()
     v13.field_8 = 255;
     v13.field_10 = 1;
 
-    return call_method(ypaworld, 172, &v13) != 0;
+    return ypaworld->ypaworld_func172(&v13) != 0;
 }
 
 void ReadSnapsDir()
@@ -711,14 +706,14 @@ void sub_4113E8()
     {
         if ( dword_520400 == 2 )
         {
-            call_method(ypaworld, 151, 0);
-            call_method(ypaworld, 155, &userdata);
+            ypaworld->ypaworld_func151(NULL);
+            ypaworld->ypaworld_func155(&userdata);
         }
         else if ( dword_520400 == 1 )
         {
             sub_410628();
-            call_method(ypaworld, 157, &userdata);
-            call_method(ypaworld, 155, &userdata);
+            ypaworld->ypaworld_func157(&userdata);
+            ypaworld->ypaworld_func155(&userdata);
         }
 
         delete_class_obj(ypaworld);
@@ -734,14 +729,14 @@ int WinMain__sub0__sub1()
 //    strcat(buildDate, " ");
 //    strcat(buildDate, __TIME__);
 
-    ypaworld = (NC_STACK_ypaworld *)init_get_class("ypaworld.class", 0x8000201D, buildDate, 0);
+    ypaworld = dynamic_cast<NC_STACK_ypaworld *>( init_get_class("ypaworld.class", 0x8000201D, buildDate, 0) );
     if ( !ypaworld )
     {
         ypa_log_out("Unable to init ypaworld.class\n");
         return 0;
     }
 
-    if ( !call_method(ypaworld, 154, &userdata) )
+    if ( !ypaworld->ypaworld_func154(&userdata) )
     {
         ypa_log_out("Unable to init shell structure\n");
         return 0;
@@ -753,7 +748,7 @@ int WinMain__sub0__sub1()
         return 0;
     }
 
-    if ( !userdata.field_0x0 && !call_method(ypaworld, 156, &userdata))
+    if ( !userdata.field_0x0 && !ypaworld->ypaworld_func156(&userdata))
     {
         ypa_log_out("Error: Unable to open Gameshell\n");
         return 0;

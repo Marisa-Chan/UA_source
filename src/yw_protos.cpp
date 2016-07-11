@@ -3747,7 +3747,7 @@ int parseSaveInput(scrCallBack *arg)
                 v44.type_id = 5;
                 v44.item_number = v16;
 
-                if ( call_method(inpt, 64, &v44) )
+                if ( inpt->input_func64(&v44) )
                 {
                     int v19 = sub_476074(2, v16);
                     if ( v19 == -1 )
@@ -3814,7 +3814,7 @@ int parseSaveInput(scrCallBack *arg)
                 v44.type_id = 4;
                 v44.item_number = v16;
 
-                if ( call_method(inpt, 64, &v44) )
+                if ( inpt->input_func64(&v44) )
                 {
                     int v19 = sub_476074(1, v16);
                     if ( v19 == -1 )
@@ -3869,7 +3869,7 @@ int parseSaveInput(scrCallBack *arg)
                 v44.field_0 = 3;
                 v44.vals = &zz;
 
-                if ( call_method(inpt, 66, &v44) )
+                if ( inpt->input_func66(&v44) )
                 {
                     int v19 = sub_476074(3, v16);
                     if ( v19 == -1 )
@@ -5247,7 +5247,7 @@ int parseSaveShell(scrCallBack *arg)
 
             usr->prev_lang = usr->default_lang_dll;
 
-            if ( !call_method(ywo, 175, usr) )
+            if ( !ywo->ypaworld_func175(usr) )
             {
                 ypa_log_out("Unable to set new language\n");
             }
@@ -5728,17 +5728,17 @@ int sb_0x479f4c(scrCallBack *scr)
             v5.pos.sy = 0;
             v5.vehicle_id = atoi(scr->p2);
 
-            current_bact = (NC_STACK_ypabact *)call_method(yw->self_full, 146, &v5);
+            current_bact = yw->self_full->ypaworld_func146(&v5);
 
             if ( current_bact )
             {
-                current_robo = (NC_STACK_yparobo *)current_bact;
+                current_robo = dynamic_cast<NC_STACK_yparobo *>(current_bact);
 
                 //call_vtbl(v3, 3, 0x80001003, &dword_5A7A88, 0);
 
                 dword_5A7A88 = &current_robo->stack__ypabact;
 
-                call_method(yw->self_full, 134, current_bact);
+                yw->self_full->ypaworld_func134(current_bact);
                 return 1;
             }
 
@@ -5752,7 +5752,7 @@ int sb_0x479f4c(scrCallBack *scr)
         {
             if ( dword_5A7A88->owner == 1 )
             {
-                dword_5A7A84 = (NC_STACK_yparobo *)current_bact;
+                dword_5A7A84 = dynamic_cast<NC_STACK_yparobo *>(current_bact);
                 call_vtbl(yw->self_full, 2, 0x80002010, current_bact, 0);
             }
 
@@ -5805,7 +5805,7 @@ int sub_479E30(scrCallBack *scr)
             v5.pos.sy = 0;
             v5.vehicle_id = atoi(scr->p2);
 
-            current_bact = (NC_STACK_ypabact *)call_method(yw->self_full, 146, &v5);
+            current_bact = yw->self_full->ypaworld_func146(&v5);
 
             if ( current_bact )
             {
@@ -5813,7 +5813,7 @@ int sub_479E30(scrCallBack *scr)
 
                 current_commander = current_bact;
 
-                call_method(current_robo, 72, current_bact);
+                current_robo->ypabact_func72(current_bact);
 
                 return 1;
             }
@@ -5857,13 +5857,13 @@ int sub_479D20(scrCallBack *scr)
             v5.pos.sy = 0;
             v5.vehicle_id = atoi(scr->p2);
 
-            current_bact = (NC_STACK_ypabact *)call_method(yw->self_full, 146, &v5);
+            current_bact = yw->self_full->ypaworld_func146(&v5);
 
             if ( current_bact )
             {
                 dword_5A7A88 = &current_bact->stack__ypabact;
 
-                call_method(current_commander, 72, current_bact);
+                current_commander->ypabact_func72(current_bact);
 
                 return 1;
             }
@@ -6166,7 +6166,7 @@ int sub_479770(scrCallBack *scr)
                             arg148.x = i % yw->sectors_maxX2;
                             arg148.y = i / yw->sectors_maxX2;
 
-                            call_method(yw->self_full, 148, &arg148);
+                            yw->self_full->ypaworld_func148(&arg148);
                         }
                     }
 

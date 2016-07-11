@@ -4,7 +4,7 @@
 #include "engine_tform.h"
 #include "sample.h"
 
-extern class_stored miles_engine_off;
+extern stored_functions_engine miles_engine_vtbl;
 
 
 struct samples_collection1;

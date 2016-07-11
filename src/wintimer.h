@@ -3,17 +3,33 @@
 
 #include "itimer.h"
 
-extern class_stored wintimer_class_off;
-
-struct NC_STACK_wintimer;
-
 struct __NC_STACK_wintimer
 {
     DWORD ticks;
 };
 
-struct NC_STACK_wintimer : public NC_STACK_itimer
+class NC_STACK_wintimer: public NC_STACK_itimer
 {
+public:
+    virtual int itimer_func64(void *);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_wintimer() {
+        memset(&stack__wintimer, 0, sizeof(stack__wintimer));
+    };
+    virtual ~NC_STACK_wintimer() {};
+
+    virtual const char * getClassName() {
+        return "wintimer.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_wintimer();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
     __NC_STACK_wintimer stack__wintimer;
 };
 

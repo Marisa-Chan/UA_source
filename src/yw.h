@@ -23,11 +23,9 @@
 
 #include "glob_funcs.h"
 
-extern class_stored ypaworld_class_off;
-
-struct NC_STACK_ypaworld;
+class NC_STACK_ypaworld;
 struct _NC_STACK_ypaworld;
-struct NC_STACK_button;
+class NC_STACK_button;
 
 struct vhclBases;
 struct cityBases;
@@ -872,7 +870,7 @@ struct _NC_STACK_ypaworld
     skeleton_64_stru *colcomp_sklt_intrn;
     NC_STACK_ilbm *tracyrmp_ilbm;
     NC_STACK_ilbm *shadermp_ilbm;
-    NC_STACK_win3d *win3d;
+    NC_STACK_display *win3d;
     int field_138c;
     int str17_NOT_FALSE;
     slurp slurps1[6][6];
@@ -1109,12 +1107,6 @@ struct _NC_STACK_ypaworld
     int field_8283;
     int easy_cheat_keys;
 };
-
-struct NC_STACK_ypaworld : public NC_STACK_base
-{
-    _NC_STACK_ypaworld stack__ypaworld;
-};
-
 
 struct lego_xyz
 {
@@ -1591,12 +1583,6 @@ struct yw_arg176
     float field_8;
 };
 
-struct yw_arg170
-{
-    UserData *usr;
-    char *pbuf;
-};
-
 struct yw_arg177
 {
     __NC_STACK_ypabact *bact;
@@ -1620,6 +1606,88 @@ struct yw_arg165
     int frame;
 };
 
+class NC_STACK_ypaworld: public NC_STACK_base
+{
+public:
+    virtual size_t func0(stack_vals *stak);
+    virtual size_t func1(stack_vals *arg);
+    virtual size_t func2(stack_vals *stak);
+    virtual size_t func3(stack_vals *stak);
+    virtual size_t base_func64(base_64arg *arg);
+    virtual void ypaworld_func129(yw_arg129 *arg);
+    virtual size_t ypaworld_func130(yw_130arg *arg);
+    virtual void ypaworld_func131(__NC_STACK_ypabact *bact);
+    virtual void ypaworld_func132(void *arg);
+    virtual void ypaworld_func133(void *arg);
+    virtual void ypaworld_func134(NC_STACK_ypabact *bact);
+    virtual void ypaworld_func135(void *arg);
+    virtual void ypaworld_func136(ypaworld_arg136 *arg);
+    virtual void ypaworld_func137(ypaworld_arg137 *arg);
+    virtual void ypaworld_func138(void *arg);
+    virtual void ypaworld_func139(listbase *lstvw);
+    virtual void ypaworld_func140(listbase *lstvw);
+    virtual void ypaworld_func143(void *arg);
+    virtual void ypaworld_func144(NC_STACK_ypabact *bacto);
+    virtual size_t ypaworld_func145(__NC_STACK_ypabact *bact);
+    virtual NC_STACK_ypabact * ypaworld_func146(ypaworld_arg146 *vhcl_id);
+    virtual NC_STACK_ypabact * ypaworld_func147(ypaworld_arg146 *arg);
+    virtual size_t ypaworld_func148(ypaworld_arg148 *arg);
+    virtual void ypaworld_func149(ypaworld_arg136 *arg);
+    virtual void ypaworld_func150(yw_arg150 *arg);
+    virtual void ypaworld_func151(stack_vals *arg);
+    virtual void ypaworld_func153(bact_hudi *arg);
+    virtual size_t ypaworld_func154(UserData *usr);
+    virtual void ypaworld_func155(UserData *usr);
+    virtual size_t ypaworld_func156(UserData *usr);
+    virtual void ypaworld_func157(UserData *usr);
+    virtual void ypaworld_func158(UserData *usr);
+    virtual void ypaworld_func159(yw_arg159 *arg);
+    virtual void ypaworld_func160(void *arg);
+    virtual size_t ypaworld_func161(yw_arg161 *arg);
+    virtual size_t ypaworld_func162(const char *fname);
+    virtual void ypaworld_func163(base_64arg *arg);
+    virtual void ypaworld_func164(void *arg);
+    virtual void ypaworld_func165(yw_arg165 *arg);
+    virtual size_t ypaworld_func166(const char **langname);
+    virtual void ypaworld_func167(UserData *usr);
+    virtual size_t ypaworld_func168(__NC_STACK_ypabact **pbact);
+    virtual size_t ypaworld_func169(yw_arg169 *arg);
+    virtual size_t ypaworld_func170(yw_arg169 *arg);
+    virtual size_t ypaworld_func171(yw_arg172 *arg);
+    virtual size_t ypaworld_func172(yw_arg172 *arg);
+    virtual size_t ypaworld_func173(UserData *usr);
+    virtual size_t ypaworld_func174(yw_174arg *arg);
+    virtual size_t ypaworld_func175(UserData *usr);
+    virtual void ypaworld_func176(yw_arg176 *arg);
+    virtual void ypaworld_func177(yw_arg177 *arg);
+    virtual size_t ypaworld_func179(yw_arg161 *arg);
+    virtual void ypaworld_func180(yw_arg180 *arg);
+    virtual void ypaworld_func181(void *arg);
+    virtual void ypaworld_func182(void *arg);
+    virtual size_t ypaworld_func183(yw_arg161 *arg);
+    virtual void ypaworld_func184(yw_arg184 *arg);
+    virtual void ypaworld_func185(void *arg);
+
+    virtual size_t compatcall(int method_id, void *data);
+    NC_STACK_ypaworld() {
+        memset(&stack__ypaworld, 0, sizeof(stack__ypaworld));
+    };
+    virtual ~NC_STACK_ypaworld() {};
+
+    virtual const char * getClassName() {
+        return "ypaworld.class";
+    };
+
+    static NC_STACK_nucleus * newinstance() {
+        return new NC_STACK_ypaworld();
+    };
+
+    //Data
+    static const NewClassDescr description;
+
+    _NC_STACK_ypaworld stack__ypaworld;
+
+};
 
 __NC_STACK_ypabact * sub_48C244(NC_STACK_ypaworld *ywo, int a2, char owner);
 
