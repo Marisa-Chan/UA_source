@@ -102,7 +102,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
             return NULL;
         }
 
-        tileset->font_image = init_get_class("ilbm.class", 0x80001000, bitmap_name, 0x80002008, 1, 0x80002009, 1, 0);
+        tileset->font_image = dynamic_cast<NC_STACK_bitmap *>( init_get_class("ilbm.class", 0x80001000, bitmap_name, 0x80002008, 1, 0x80002009, 1, 0) );
         if ( !tileset->font_image )
         {
             if ( tileset->chars )
@@ -113,7 +113,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
             return NULL;
         }
 
-        call_vtbl(tileset->font_image, 3, 0x80002000, &tileset->field_4, 0);
+        tileset->field_4 = tileset->font_image->getBMD_pBitmap();
         tileset->field_8 = tileset->field_4->buffer;
 
         char *fntHeight = strtok(0, " \t");
@@ -237,10 +237,10 @@ tiles_stru * yw_LoadTileSet(const char *filename, int chr_width, int font_height
 
     if ( tileset )
     {
-        tileset->font_image = init_get_class("ilbm.class", 0x80001000, filename, 0x80002008, 1, 0x80002009, 1, 0);
+        tileset->font_image = dynamic_cast<NC_STACK_bitmap *>( init_get_class("ilbm.class", 0x80001000, filename, 0x80002008, 1, 0x80002009, 1, 0) );
         if ( tileset->font_image )
         {
-            call_vtbl(tileset->font_image, 3, 0x80002000, &tileset->field_4, 0);
+            tileset->field_4 = tileset->font_image->getBMD_pBitmap();
 
             tileset->field_8 = tileset->field_4->buffer;
             tileset->font_height = font_height;
@@ -328,34 +328,34 @@ int load_fonts_and_icons(_NC_STACK_ypaworld *yw)
             return 0;
         }
 
-        gfx_set_tileset(yw->tiles[i], i);
+        GFXe.setTileset(yw->tiles[i], i);
     }
 
 
     yw->tiles[40] = yw_LoadTileSet("lego16.ilbm", 16, 16, 16, 16, 16, 16, 0, 0);
     if ( !yw->tiles[40] )
         return 0;
-    gfx_set_tileset(yw->tiles[40], 40);
+    GFXe.setTileset(yw->tiles[40], 40);
 
     yw->tiles[41] = yw_LoadTileSet("lego8.ilbm", 8, 8, 8, 8, 16, 16, 0, 0);
     if ( !yw->tiles[41] )
         return 0;
-    gfx_set_tileset(yw->tiles[41], 41);
+    GFXe.setTileset(yw->tiles[41], 41);
 
     yw->tiles[42] = yw_LoadTileSet("lego4.ilbm", 4, 4, 4, 4, 16, 16, 0, 0);
     if ( !yw->tiles[42] )
         return 0;
-    gfx_set_tileset(yw->tiles[42], 42);
+    GFXe.setTileset(yw->tiles[42], 42);
 
     yw->tiles[43] = yw_LoadTileSet("sec4.ilbm", 4, 4, 4, 4, 16, 16, 0, 0);
     if ( !yw->tiles[43] )
         return 0;
-    gfx_set_tileset(yw->tiles[43], 43);
+    GFXe.setTileset(yw->tiles[43], 43);
 
     yw->tiles[44] = yw_LoadTileSet("sec8.ilbm", 8, 8, 8, 8, 16, 16, 0, 0);
     if ( !yw->tiles[44] )
         return 0;
-    gfx_set_tileset(yw->tiles[44], 44);
+    GFXe.setTileset(yw->tiles[44], 44);
 
     for (int i = 0; i < 5; i++)
     {
@@ -408,7 +408,7 @@ int load_fonts_and_icons(_NC_STACK_ypaworld *yw)
         v14->chars[8].width = v14->chars[0].width;
 
         yw->tiles[id] = v14;
-        gfx_set_tileset(v14, id);
+        GFXe.setTileset(v14, id);
 
 
     }
@@ -416,22 +416,22 @@ int load_fonts_and_icons(_NC_STACK_ypaworld *yw)
     yw->tiles[59] = yw_LoadFont(yw, "mapvhcl3.font");
     if ( !yw->tiles[59] )
         return 0;
-    gfx_set_tileset(yw->tiles[59], 59);
+    GFXe.setTileset(yw->tiles[59], 59);
 
     yw->tiles[60] = yw_LoadFont(yw, "mapvhcl5.font");
     if ( !yw->tiles[60] )
         return 0;
-    gfx_set_tileset(yw->tiles[60], 60);
+    GFXe.setTileset(yw->tiles[60], 60);
 
     yw->tiles[61] = yw_LoadFont(yw, "mapvhcl7.font");
     if ( !yw->tiles[61] )
         return 0;
-    gfx_set_tileset(yw->tiles[61], 61);
+    GFXe.setTileset(yw->tiles[61], 61);
 
     yw->tiles[62] = yw_LoadFont(yw, "mapvhcl9.font");
     if ( !yw->tiles[62] )
         return 0;
-    gfx_set_tileset(yw->tiles[62], 62);
+    GFXe.setTileset(yw->tiles[62], 62);
 
     yw->font_default_h = yw->tiles[0]->font_height;
     yw->font_default_w__a = yw->tiles[0]->chars[97].width; // a
@@ -1465,7 +1465,7 @@ int yw_InitMouseStuff(_NC_STACK_ypaworld *yw)
             return 0;
         }
 
-        call_vtbl(yw->pointers[i], 3, 0x80002000, &yw->pointers__bitm[i], 0);
+        yw->pointers__bitm[i] = yw->pointers[i]->getBMD_pBitmap();
     }
 
     displ_arg263 arg_263;
@@ -1484,7 +1484,7 @@ int yw_InitMouseStuff(_NC_STACK_ypaworld *yw)
 
 int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
 {
-    gfxEngine__getter(0x8000300D, &yw->win3d, 0);
+    yw->win3d = GFXe.getC3D();
     yw->field_17c0 = 0;
 
     char buf[1024];
@@ -1517,7 +1517,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
 
     set_prefix_replacement("rsrc", buf);
 
-    if ( !win3d__load_palette_from_ilbm("palette/standard.pal") )
+    if ( !GFXe.loadPal("palette/standard.pal") )
         ypa_log_out("WARNING: Could not load set default palette!\n");
 
     if ( setID != yw->set_number && setID != 46 )
@@ -1617,14 +1617,8 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
         return 0;
     }
 
-    bitmap_intern *shadermp;
-    bitmap_intern *tracyrmp;
-
-    call_vtbl(yw->tracyrmp_ilbm, 3, 0x80002000, &tracyrmp, 0);
-
-    call_vtbl(yw->shadermp_ilbm, 3, 0x80002000, &shadermp, 0);
-
-    gfxEngine__setter(0x80003009, tracyrmp, 0x8000300A, shadermp, 0);
+    GFXe.setTracyRmp( yw->tracyrmp_ilbm->getBMD_pBitmap() );
+    GFXe.setShadeRmp( yw->shadermp_ilbm->getBMD_pBitmap() );
 
     yw->additionalBeeBox = READ_BAS_FILE("rsrc:objects/beebox.base");
     if ( !yw->additionalBeeBox )
@@ -1699,7 +1693,7 @@ void ypaworld_func158__sub4__sub0(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *bitm)
         yw->win3d->raster_func215(NULL);
 
         rstr_arg204 a4;
-        call_vtbl(bitm, 3, 0x80002000, &a4.pbitm, 0);
+        a4.pbitm = bitm->getBMD_pBitmap();
 
         a4.float14 = -1.0;
         a4.float4 = -1.0;
@@ -1779,8 +1773,7 @@ void sb_0x4ea37c(_NC_STACK_ypaworld *yw)
         yw->set_number = 0;
     }
 
-    NC_STACK_display *win3d;
-    gfxEngine__getter(0x8000300D, &win3d, 0);
+    NC_STACK_display *win3d = GFXe.getC3D();
 
     win3d->display_func272(NULL);
 }
@@ -1870,8 +1863,7 @@ void ypaworld_func158__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
     {
         if ( inpt->winp131arg.selected_btnID == -1 )
         {
-            bitmap_intern *a4;
-            call_vtbl(yw->LevelNet->ilbm_mask_map, 3, 0x80002000, &a4, 0);
+            bitmap_intern *a4 = yw->LevelNet->ilbm_mask_map->getBMD_pBitmap();
 
             int xpos = a4->width * v3;
             int ypos = a4->height * v4;
@@ -1966,7 +1958,7 @@ void ypaworld_func158__sub4__sub1__sub2(_NC_STACK_ypaworld *yw)
         yw->win3d->raster_func215(NULL);
 
         rstr_arg204 a4;
-        call_vtbl(yw->LevelNet->ilbm_menu_map, 3, 0x80002000, &a4.pbitm, 0);
+        a4.pbitm = yw->LevelNet->ilbm_menu_map->getBMD_pBitmap();
 
         a4.float4 = -1.0;
         a4.float8 = -1.0;
@@ -1992,7 +1984,7 @@ void ypaworld_func158__sub4__sub1__sub2(_NC_STACK_ypaworld *yw)
                 {
                     if ( i == yw->LevelNet->field_BE38 )
                     {
-                        call_vtbl(yw->LevelNet->ilbm_rollover_map, 3, 0x80002000, &v20, 0);
+                        v20 = yw->LevelNet->ilbm_rollover_map->getBMD_pBitmap();
                     }
                 }
 
@@ -2000,7 +1992,7 @@ void ypaworld_func158__sub4__sub1__sub2(_NC_STACK_ypaworld *yw)
                 {
                     rstr_218_arg v17;
                     v17.bitm_intern = v20;
-                    call_vtbl(yw->LevelNet->ilbm_mask_map, 3, 0x80002000, &v17.bitm_intern2, 0);
+                    v17.bitm_intern2 = yw->LevelNet->ilbm_mask_map->getBMD_pBitmap();
 
                     v17.flg = i;
                     v17.rect2.x1 = v5->field_9C.x1;
@@ -2060,7 +2052,7 @@ void ypaworld_func158__sub4__sub1__sub1(_NC_STACK_ypaworld *yw)
         yw->win3d->raster_func215(NULL);
 
         rstr_arg204 a4;
-        call_vtbl(yw->LevelNet->ilbm_menu_map, 3, 0x80002000, &a4.pbitm, 0);
+        a4.pbitm = yw->LevelNet->ilbm_menu_map->getBMD_pBitmap();
 
         a4.float4 = -1.0;
         a4.float8 = -1.0;
@@ -2087,23 +2079,23 @@ void ypaworld_func158__sub4__sub1__sub1(_NC_STACK_ypaworld *yw)
                 {
                     if ( i == yw->LevelNet->field_BE38 )
                     {
-                        call_vtbl(yw->LevelNet->ilbm_rollover_map, 3, 0x80002000, &v20, 0);
+                        v20 = yw->LevelNet->ilbm_rollover_map->getBMD_pBitmap();
                     }
                     else
                     {
-                        call_vtbl(yw->LevelNet->ilbm_enabled_map, 3, 0x80002000, &v20, 0);
+                        v20 = yw->LevelNet->ilbm_enabled_map->getBMD_pBitmap();
                     }
                 }
                 else if ( v5->field_0 == 3 )
                 {
-                    call_vtbl(yw->LevelNet->ilbm_finished_map, 3, 0x80002000, &v20, 0);
+                    v20 = yw->LevelNet->ilbm_finished_map->getBMD_pBitmap();
                 }
 
                 if ( v20 )
                 {
                     rstr_218_arg v17;
                     v17.bitm_intern = v20;
-                    call_vtbl(yw->LevelNet->ilbm_mask_map, 3, 0x80002000, &v17.bitm_intern2, 0);
+                    v17.bitm_intern2 = yw->LevelNet->ilbm_mask_map->getBMD_pBitmap();
 
                     v17.flg = i;
                     v17.rect2.x1 = v5->field_9C.x1;
@@ -2350,7 +2342,7 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
 
                     if ( yw->typ_map )
                     {
-                        call_vtbl(yw->typ_map, 3, 0x80002000, &brf->typ_map_bitm, 0);
+                        brf->typ_map_bitm = yw->typ_map->getBMD_pBitmap();
 
                         yw->sectors_maxX2 = brf->typ_map_bitm->width;
                         yw->sectors_maxY2 = brf->typ_map_bitm->height;
@@ -2420,16 +2412,13 @@ int ypaworld_func158__sub4__sub1__sub5__sub0(_NC_STACK_ypaworld *yw, mapProto *m
 
 NC_STACK_bitmap * sub_44816C(NC_STACK_bitmap *src, const char *name)
 {
-    bitmap_intern *a4;
-    call_vtbl(src, 3, 0x80002000, &a4, 0);
+    bitmap_intern *a4 = src->getBMD_pBitmap();
 
     NC_STACK_bitmap *v3 = (NC_STACK_bitmap *)init_get_class("bitmap.class", 0x80001000, name, 0x80002002, a4->width, 0x80002003, a4->height, 0);
 
     if ( v3 )
     {
-        bitmap_intern *v6;
-
-        call_vtbl(v3, 3, 0x80002000, &v6, 0);
+        bitmap_intern *v6 = v3->getBMD_pBitmap();
 
         memcpy(v6->buffer, a4->buffer, a4->width * a4->height);
     }
@@ -2486,13 +2475,13 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
     if ( yw->copyof_ownermap )
     {
         brf->copy2_of_ownmap = sub_44816C(yw->copyof_ownermap, "copy2_of_ownmap");
-        call_vtbl(brf->copy2_of_ownmap, 3, 0x80002000, &brf->copy2_of_ownmap_bitm, 0);
+        brf->copy2_of_ownmap_bitm = brf->copy2_of_ownmap->getBMD_pBitmap();
     }
 
     if ( yw->copyof_typemap )
     {
         brf->copy2_of_typmap = sub_44816C(yw->copyof_typemap, "copy2_of_typmap");
-        call_vtbl(brf->copy2_of_typmap, 3, 0x80002000, &brf->copy2_of_typmap_bitm, 0);
+        brf->copy2_of_typmap_bitm = brf->copy2_of_typmap->getBMD_pBitmap();
     }
 
     brf->field_419C = 0;
@@ -2528,7 +2517,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
         return 0;
     }
 
-    call_vtbl(yw->copyof_typemap, 3, 0x80002000, &brf->typ_map_bitm, 0);
+    brf->typ_map_bitm = yw->copyof_typemap->getBMD_pBitmap();
 
     yw->sectors_maxX2 = brf->typ_map_bitm->width;
     yw->sectors_maxY2 = brf->typ_map_bitm->height;
@@ -2858,7 +2847,7 @@ void ypaworld_func158__video_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 v16;
     v16 = usr->video_listvw.cmdstrm;
 
-    sub_423288(&v16);
+    GFXe.drawText(&v16);
 }
 
 void ypaworld_func158__d3d_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
@@ -2916,7 +2905,7 @@ void ypaworld_func158__d3d_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 v16;
     v16 = usr->d3d_listvw.cmdstrm;
 
-    sub_423288(&v16);
+    GFXe.drawText(&v16);
 }
 
 char * sub_4DDF78(_NC_STACK_ypaworld *yw, listview *lstvw, char *pos, int a3)
@@ -2978,7 +2967,7 @@ void ypaworld_func158__locale_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 v13;
     v13 = usr->local_listvw.cmdstrm;
 
-    sub_423288(&v13);
+    GFXe.drawText(&v13);
 }
 
 void ypaworld_func158__saveload_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
@@ -3089,7 +3078,7 @@ void ypaworld_func158__saveload_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 arg;
     arg = usr->disk_listvw.cmdstrm;
 
-    sub_423288(&arg);
+    GFXe.drawText(&arg);
 }
 
 void sb_0x4dee74__sub0(UserData *usr, int x1, int y1, int w, int h)
@@ -3107,7 +3096,7 @@ void sb_0x4dee74__sub0(UserData *usr, int x1, int y1, int w, int h)
 
     int v6 = h;
 
-    tiles_stru *v7 = win3d_select_tileset(0);
+    tiles_stru *v7 = GFXe.getTileset(0);
 
     while ( v6 > v7->font_height )
     {
@@ -3150,7 +3139,7 @@ void sb_0x4dee74__sub0(UserData *usr, int x1, int y1, int w, int h)
     a1a.cmdbuf = buf;
     a1a.includ = NULL;
 
-    sub_423288(&a1a);
+    GFXe.drawText(&a1a);
 }
 
 void ypaworld_func158__confirm_draw(UserData *usr)
@@ -3325,8 +3314,7 @@ void sb_0x44ac24(_NC_STACK_ypaworld *yw)
         yw->set_number = 0;
     }
 
-    NC_STACK_display *win3d;
-    gfxEngine__getter(0x8000300D, &win3d, 0);
+    NC_STACK_display *win3d = GFXe.getC3D();
 
     win3d->display_func272(NULL);
 

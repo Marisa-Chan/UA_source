@@ -7,30 +7,30 @@
 
 const NewClassDescr NC_STACK_bitmap::description("bitmap.class", &newinstance);
 
-unsigned int sub_416704(NC_STACK_bitmap *a1, __NC_STACK_bitmap *a2, bitmap__opl *a3)
+int NC_STACK_bitmap::sub_416704(pixel_2d *src)
 {
+    __NC_STACK_bitmap *a2 = &stack__bitmap;
+
     //// WHAT IT THIS !?
-    size_t a4 = 0;
+    int a4 = getRsrc_dontCopy();
 
-    call_vtbl(a1, 3, 0x80001003, &a4, 0);
-
-    if ( a2->field_4.opl2 )
+    if ( a2->outline_coords )
     {
         if ( !a4 )
-            nc_FreeMem(a2->field_4.opl2);
+            nc_FreeMem(a2->outline_coords);
     }
 
     if ( a4 )
     {
-        a2->field_4.opl1 = a3;
+        a2->outline_coords = (tUtV *)src;
         return 1;
     }
 
     int opl_count = 1; //Mandatory end (tu/tv = -1/-1)
 
-    bitmap__opl *opl_cur = a3;
+    pixel_2d *opl_cur = src;
 
-    while (opl_cur->field_E >= 0)
+    while (opl_cur->flags >= 0)
     {
         opl_count++;
         opl_cur++;
@@ -41,18 +41,18 @@ unsigned int sub_416704(NC_STACK_bitmap *a1, __NC_STACK_bitmap *a2, bitmap__opl 
     if ( unk )
     {
         tUtV *tmp = unk;
-        bitmap__opl *opl = a3;
+        pixel_2d *opl = src;
 
         for (int i = 0; i < (opl_count - 1); i++)
         {
-            tmp[i].tu = (float)opl[i].field_0 * (1.0 / 256.0);
-            tmp[i].tv = (float)opl[i].field_2 * (1.0 / 256.0);
+            tmp[i].tu = (float)opl[i].x * (1.0 / 256.0);
+            tmp[i].tv = (float)opl[i].y * (1.0 / 256.0);
         }
 
         tmp[opl_count - 1].tu = -1;
         tmp[opl_count - 1].tv = -1;
 
-        a2->field_4.opl2 = unk;
+        a2->outline_coords = unk;
 
         return 1;
     }
@@ -65,29 +65,27 @@ size_t NC_STACK_bitmap::func0(stack_vals *stak)
     if ( !NC_STACK_rsrc::func0(stak) )
         return 0;
 
-    __NC_STACK_bitmap *internal = &this->stack__bitmap;
+    __NC_STACK_bitmap *internal = &stack__bitmap;
 
-    void *v9 = (void *)find_id_in_stack_def_val(0x80002001, 0, stak);
+    pixel_2d *v9 = (pixel_2d *)find_id_in_stack_def_val(BMD_ATT_OUTLINE, 0, stak);
     if ( v9 )
-        sub_416704(this, internal, (bitmap__opl *)v9);
+        sub_416704(v9);
 
-    call_vtbl(this, 3, 0x80001002, &internal->bitm_intern, 0); // Copy rsrc->data to bitm_intern
+    internal->bitm_intern = (bitmap_intern *)getRsrc_pData();
 
     return 1;
 }
 
 size_t NC_STACK_bitmap::func1(stack_vals *stak)
 {
-    __NC_STACK_bitmap *internal = &this->stack__bitmap;
+    __NC_STACK_bitmap *internal = &stack__bitmap;
 
-    if ( internal->field_4.opl2 )
+    if ( internal->outline_coords )
     {
-        size_t a4 = 0;
-
-        call_vtbl(this, 3, 0x80001003, &a4, 0);
+        size_t a4 = getRsrc_dontCopy();
 
         if ( !a4 )
-            nc_FreeMem(internal->field_4.opl2);
+            nc_FreeMem(internal->outline_coords);
     }
 
     return NC_STACK_rsrc::func1(stak);
@@ -95,17 +93,14 @@ size_t NC_STACK_bitmap::func1(stack_vals *stak)
 
 size_t NC_STACK_bitmap::func2(stack_vals *stak)
 {
-    __NC_STACK_bitmap *internal = &this->stack__bitmap;
-
-    stack_vals *v5 = find_id_in_stack2(0x80002001, stak);
+    stack_vals *v5 = find_id_in_stack2(BMD_ATT_OUTLINE, stak);
     if ( v5 )
-        sub_416704(this, internal, (bitmap__opl *)v5->value);
+        setBMD_outline((pixel_2d *)v5->value);
 
-    stack_vals *ppal = find_id_in_stack2(0x80002007, stak);
+    stack_vals *ppal = find_id_in_stack2(BMD_ATT_PCOLORMAP, stak);
     if ( ppal )
     {
-        if ( internal->bitm_intern->pallete )
-            memcpy(internal->bitm_intern->pallete, (void *)ppal->value, 256 * 3);
+        setBMD_palette((UA_PALETTE *)ppal->value);
     }
 
     return NC_STACK_rsrc::func2(stak);
@@ -113,8 +108,6 @@ size_t NC_STACK_bitmap::func2(stack_vals *stak)
 
 size_t NC_STACK_bitmap::func3(stack_vals *stak)
 {
-    __NC_STACK_bitmap *internal = &this->stack__bitmap;
-
     stack_vals *stk = stak;
 
     while ( 1 )
@@ -137,41 +130,26 @@ size_t NC_STACK_bitmap::func3(stack_vals *stak)
             default:
                 break;
 
-            case 0x80002000:
-                *(bitmap_intern **)stk->value = internal->bitm_intern;
+            case BMD_ATT_PBITMAP:
+                *(bitmap_intern **)stk->value = getBMD_pBitmap();
                 break;
-            case 0x80002001:
-                *(void **)stk->value = 0;
+            case BMD_ATT_OUTLINE:
+                *(void **)stk->value = NULL;
                 break;
-            case 0x80002002:
-                if ( internal->bitm_intern )
-                    *(int *)stk->value = internal->bitm_intern->width;
-                else
-                    *(int *)stk->value = 0;
+            case BMD_ATT_WIDTH:
+                *(int *)stk->value = getBMD_width();
                 break;
-            case 0x80002003:
-                if ( internal->bitm_intern )
-                    *(int *)stk->value = internal->bitm_intern->height;
-                else
-                    *(int *)stk->value = 0;
+            case BMD_ATT_HEIGHT:
+                *(int *)stk->value = getBMD_height();
                 break;
-            case 0x80002005:
-                if ( internal->bitm_intern )
-                    *(void **)stk->value = internal->bitm_intern->buffer;
-                else
-                    *(void **)stk->value = 0;
+            case BMD_ATT_BUFFER:
+                *(void **)stk->value = getBMD_buffer();
                 break;
-            case 0x80002006:
-                if ( internal->bitm_intern )
-                    *(int *)stk->value = internal->bitm_intern->pallete != NULL;
-                else
-                    *(int *)stk->value = 0;
+            case BMD_ATT_HAS_COLORMAP:
+                *(int *)stk->value = getBMD_hasPalette();
                 break;
-            case 0x80002007:
-                if ( internal->bitm_intern )
-                    *(BYTE **)stk->value = internal->bitm_intern->pallete;
-                else
-                    *(BYTE **)stk->value = NULL;
+            case BMD_ATT_PCOLORMAP:
+                *(UA_PALETTE **)stk->value = getBMD_palette();
                 break;
             }
             stk++;
@@ -186,39 +164,39 @@ rsrc * NC_STACK_bitmap::rsrc_func64(stack_vals *stak)
     rsrc *res = NC_STACK_rsrc::rsrc_func64(stak);// rsrc_func64
     if ( res )
     {
-        int width = find_id_in_stack_def_val(0x80002002, 0, stak);
-        int height = find_id_in_stack_def_val(0x80002003, 0, stak);
-        int v22 = find_id_in_stack_def_val(0x80002006, 0, stak);
-        int v20 = find_id_in_stack_def_val(0x80002008, 0, stak);
-        int v21 = find_id_in_stack_def_val(0x80002009, 0, stak);// software surface
+        int width = find_id_in_stack_def_val(BMD_ATT_WIDTH, 0, stak);
+        int height = find_id_in_stack_def_val(BMD_ATT_HEIGHT, 0, stak);
+        int colormap = find_id_in_stack_def_val(BMD_ATT_HAS_COLORMAP, 0, stak);
+        int create_texture = find_id_in_stack_def_val(BMD_ATT_TEXTURE, 0, stak);
+        int sysmem = find_id_in_stack_def_val(BMD_ATT_TEXTURE_SYS, 0, stak);// software surface
 
 
-        if ( (width && height) || v22 )
+        if ( (width && height) || colormap )
         {
             bitmap_intern *intern = (bitmap_intern *)AllocVec(sizeof(bitmap_intern), 65537);
 
             if ( intern )
             {
-                if (v22)
+                if (colormap)
                 {
                     intern->flags |= BITMAP_FLAG_HAS_PALETTE;
-                    intern->pallete = (BYTE *)AllocVec(256 * 3, 65537);
+                    intern->pallete = (UA_PALETTE *)AllocVec(sizeof(UA_PALETTE), 65537);
                 }
 
-                if ( !v22 || intern->pallete != NULL )
+                if ( !colormap || intern->pallete != NULL )
                 {
                     if ( width && height )
                     {
                         intern->width = width;
                         intern->height = height;
-                        if ( v20 && engines.display___win3d )
+                        if ( create_texture && engines.display___win3d )
                         {
                             intern->width = width;
-                            intern->flags = intern->flags | 2;
+                            intern->flags = intern->flags | BITMAP_FLAG_TEXTURE;
                             intern->height = height;
 
-                            if ( v21 )
-                                intern->flags = intern->flags | BITMAP_FLAG_SOFTWARE;
+                            if ( sysmem )
+                                intern->flags = intern->flags | BITMAP_FLAG_SYSMEM;
 
                             // allocate buffer, create palette, surface and texture
                             if ( !engines.display___win3d->display_func266(&intern) )
@@ -229,12 +207,12 @@ rsrc * NC_STACK_bitmap::rsrc_func64(stack_vals *stak)
                         }
                         else
                         {
-                            void *buf = (void *)find_id_in_stack_def_val(0x80002005, 0, stak);
+                            void *buf = (void *)find_id_in_stack_def_val(BMD_ATT_BUFFER, 0, stak);
                             intern->pitch = width;
                             if ( buf )
                             {
                                 intern->buffer = buf;
-                                intern->flags = intern->flags | 1;
+                                intern->flags = intern->flags | BITMAP_FLAG_EXTDATA;
                             }
                             else
                             {
@@ -265,11 +243,11 @@ size_t NC_STACK_bitmap::rsrc_func65(rsrc **pres)
     rsrc *res = *pres;
     if ( intern )
     {
-        if ( intern->flags & 2 && engines.display___win3d )
+        if ( intern->flags & BITMAP_FLAG_TEXTURE  &&  engines.display___win3d )
         {
             engines.display___win3d->display_func268(&intern);
         }
-        else if ( !(intern->flags & 1) )
+        else if ( !(intern->flags & BITMAP_FLAG_EXTDATA) )
         {
             if ( intern->buffer )
                 nc_FreeMem(intern->buffer);
@@ -297,9 +275,69 @@ size_t NC_STACK_bitmap::bitmap_func129(stack_vals *)
 
 void NC_STACK_bitmap::bitmap_func130(bitmap_arg130 *out)
 {
-    __NC_STACK_bitmap *bitm = &this->stack__bitmap;
+    __NC_STACK_bitmap *bitm = &stack__bitmap;
     out->pbitm = bitm->bitm_intern;
-    out->opl2 = bitm->field_4.opl2;
+    out->outline = bitm->outline_coords;
+}
+
+
+
+void NC_STACK_bitmap::setBMD_outline(pixel_2d *otl)
+{
+    sub_416704(otl);
+}
+
+void NC_STACK_bitmap::setBMD_palette(UA_PALETTE *newPal)
+{
+    if ( stack__bitmap.bitm_intern->pallete )
+        memcpy(stack__bitmap.bitm_intern->pallete, newPal, sizeof(UA_PALETTE));
+}
+
+
+
+bitmap_intern * NC_STACK_bitmap::getBMD_pBitmap()
+{
+    return stack__bitmap.bitm_intern;
+}
+
+int NC_STACK_bitmap::getBMD_width()
+{
+    if (stack__bitmap.bitm_intern)
+        return stack__bitmap.bitm_intern->width;
+
+    return 0;
+}
+
+int NC_STACK_bitmap::getBMD_height()
+{
+    if (stack__bitmap.bitm_intern)
+        return stack__bitmap.bitm_intern->height;
+
+    return 0;
+}
+
+void *NC_STACK_bitmap::getBMD_buffer()
+{
+    if (stack__bitmap.bitm_intern)
+        return stack__bitmap.bitm_intern->buffer;
+
+    return NULL;
+}
+
+int NC_STACK_bitmap::getBMD_hasPalette()
+{
+    if (stack__bitmap.bitm_intern)
+        return stack__bitmap.bitm_intern->pallete != NULL;
+
+    return 0;
+}
+
+UA_PALETTE *NC_STACK_bitmap::getBMD_palette()
+{
+    if (stack__bitmap.bitm_intern)
+        return stack__bitmap.bitm_intern->pallete;
+
+    return NULL;
 }
 
 

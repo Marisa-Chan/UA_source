@@ -4648,8 +4648,7 @@ NC_STACK_ilbm * readMapDumpAsILBM(_NC_STACK_ypaworld *yw, const char *mapName, F
     if ( !v7 )
         return NULL;
 
-    bitmap_intern *a4;
-    call_vtbl(v7, 3, 0x80002000, &a4, 0);       // bitmap_func3
+    bitmap_intern *a4 = v7->getBMD_pBitmap();
 
     uint8_t *bf = (uint8_t *)a4->buffer;
 
@@ -4735,8 +4734,8 @@ int LevelMapsParser(scrCallBack *arg)
             if ( !yw->typ_map )
                 return 4;
 
-            call_vtbl(yw->typ_map, 3, 0x80002002, &mapp->secXsize, 0);
-            call_vtbl(yw->typ_map, 3, 0x80002003, &mapp->secYsize, 0);
+            mapp->secXsize = yw->typ_map->getBMD_width();
+            mapp->secYsize = yw->typ_map->getBMD_height();
 
             mapp->flags |= 4;
         }
@@ -4793,16 +4792,12 @@ int parseSaveVideo(scrCallBack *arg)
     {
         if ( !strcasecmp(arg->p1, "end") )
         {
-            NC_STACK_win3d *win3d = NULL;
-            gfxEngine__getter(0x8000300D, &win3d, 0);
+            NC_STACK_win3d *win3d = GFXe.getC3D();
 
             if ( win3d )
             {
-                int txt16bit;
-                int simple_d3d;
-
-                call_vtbl(win3d, 3, 0x80005003, &txt16bit, 0);
-                call_vtbl(win3d, 3, 0x80005004, &simple_d3d, 0);
+                int txt16bit = win3d->getWDD_16bitTex();
+                int simple_d3d = win3d->getWDD_drawPrim();
 
                 if ( simple_d3d )
                     usr->GFX_flags |= 8;
@@ -4914,14 +4909,14 @@ int parseSaveVideo(scrCallBack *arg)
                 usr->GFX_flags |= 4;
                 usr->p_ypaworld->field_73CE |= 0x40;
 
-                call_vtbl(usr->p_ypaworld->win3d, 2, 0x80005000, 1, 0);
+                usr->p_ypaworld->win3d->setWDD_cursor(1);
             }
             else
             {
                 usr->GFX_flags &= 0xFB;
                 usr->p_ypaworld->field_73CE &= 0xBF;
 
-                call_vtbl(usr->p_ypaworld->win3d, 2, 0x80005000, 0, 0);
+                usr->p_ypaworld->win3d->setWDD_cursor(0);
             }
         }
         else if ( !strcasecmp(arg->p1, "palettefx") )
@@ -6086,8 +6081,7 @@ int sub_47965C(scrCallBack *scr)
 
             if ( yw->own_map )
             {
-                bitmap_intern *bitm;
-                call_vtbl(yw->own_map, 3, 0x80002000, &bitm, 0);
+                bitmap_intern *bitm = yw->own_map->getBMD_pBitmap();
 
                 int smax = yw->sectors_maxY2 * yw->sectors_maxX2;
                 uint8_t *pbuf = (uint8_t *)bitm->buffer;
@@ -6142,8 +6136,7 @@ int sub_479770(scrCallBack *scr)
             yw->blg_map = readMapDumpAsILBM(yw, "blgmap", scr->file);
             if ( yw->blg_map )
             {
-                bitmap_intern *bitm;
-                call_vtbl(yw->blg_map, 3, 0x80002000, &bitm, 0);
+                bitmap_intern *bitm = yw->blg_map->getBMD_pBitmap();
 
                 int smax = yw->sectors_maxY2 * yw->sectors_maxX2;
                 uint8_t *pbuf = (uint8_t *)bitm->buffer;
@@ -6212,8 +6205,7 @@ int sub_4798D0(scrCallBack *scr)
 
             if ( v4 )
             {
-                bitmap_intern *bitm;
-                call_vtbl(v4, 3, 0x80002000, &bitm, 0);
+                bitmap_intern *bitm = v4->getBMD_pBitmap();
 
                 int smax = yw->sectors_maxY2 * yw->sectors_maxX2;
                 cellArea *v6 = yw->cells;

@@ -47,7 +47,7 @@ void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen)
     {
         rstr_arg204 a4;
 
-        call_vtbl(splashScreen, 3, 0x80002000, &a4.pbitm, 0); // bitmap_func3
+        a4.pbitm = splashScreen->getBMD_pBitmap();
 
         a4.float4  = -1.0;
         a4.float8  = -1.0;
@@ -58,8 +58,7 @@ void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen)
         a4.float1C =  1.0;
         a4.float20 =  1.0;
 
-        NC_STACK_display *win3d;
-        gfxEngine__getter(0x8000300D, &win3d, 0);
+        NC_STACK_display *win3d = GFXe.getC3D();
 
         if ( win3d )
         {
@@ -94,7 +93,7 @@ void drawSplashScreenWithTOD(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen
     {
         rstr_arg204 a4;
 
-        call_vtbl(splashScreen, 3, 0x80002000, &a4.pbitm, 0); // bitmap_func3
+        a4.pbitm = splashScreen->getBMD_pBitmap();
 
         a4.float4  = -1.0;
         a4.float8  = -1.0;
@@ -105,8 +104,7 @@ void drawSplashScreenWithTOD(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen
         a4.float1C =  1.0;
         a4.float20 =  1.0;
 
-        NC_STACK_win3d *win3d;
-        gfxEngine__getter(0x8000300D, &win3d, 0);
+        NC_STACK_win3d *win3d = GFXe.getC3D();
 
         if ( win3d )
         {
@@ -562,8 +560,7 @@ void  sub_44F500(_NC_STACK_ypaworld *yw, int id)
 
         if ( yw->blg_map )
         {
-            bitmap_intern *bitm;
-            call_vtbl(yw->blg_map, 3, 0x80002000, &bitm, 0);
+            bitmap_intern *bitm = yw->blg_map->getBMD_pBitmap();
 
             uint8_t *tmp = (uint8_t *)bitm->buffer + fld34->x + fld34->y * bitm->width;
             *tmp = 0;
@@ -623,8 +620,7 @@ void sb_0x44ca90__sub5(_NC_STACK_ypaworld *yw)
 
 void sb_0x44ca90__sub2(_NC_STACK_ypaworld *yw, mapProto *mapp)
 {
-    NC_STACK_win3d *win3d;
-    gfxEngine__getter(0x8000300D, &win3d, 0);
+    NC_STACK_win3d *win3d = GFXe.getC3D();
 
     for (int i = 0; i < 8; i++)
     {
@@ -638,13 +634,12 @@ void sb_0x44ca90__sub2(_NC_STACK_ypaworld *yw, mapProto *mapp)
                 v7.pal_num = 256;
                 v7.pal_id = i;
                 v7.entrie_id = 0;
-
-                call_vtbl(ilbm, 3, 0x80002007, &v7.pal_entries, 0);
+                v7.palette = ilbm->getBMD_palette();
 
                 if ( i )
                     win3d->display_func261(&v7);
                 else
-                    call_vtbl(win3d, 2, 0x80002007, v7.pal_entries, 0);
+                    win3d->setBMD_palette(v7.palette);
 
                 delete_class_obj(ilbm);
             }
@@ -732,19 +727,16 @@ int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
         if ( yw->game_default_res != yw->shell_default_res )
         {
             inputEngine__setter(0x80001007, 0, 0);
-            gfxEngine__setter(0x80003007, yw->game_default_res, 0);
+            GFXe.setResolution(yw->game_default_res);
 
-            windd__window_params *a2;
-            gfxEngine__getter(0x80003007, &a2, 0);
+            gfx_window *a2 = GFXe.getWindow();
             inputEngine__setter(0x80001007, a2, 0);
 
-            int width, height;
+            yw->screen_width = GFXe.getScreenW();
+            yw->screen_height = GFXe.getScreenH();
+            yw->win3d = GFXe.getC3D();
 
-            gfxEngine__getter(0x80003003, &width, 0x80003004, &height, 0x8000300D, &yw->win3d, 0);
-            yw->screen_width = width;
-            yw->screen_height = height;
-
-            call_vtbl(yw->win3d, 2, 0x80005000, (yw->field_73CE & 0x40) != 0, 0);
+            yw->win3d->setWDD_cursor( (yw->field_73CE & 0x40) != 0 );
 
             if ( yw->screen_width >= 512 )
             {
@@ -841,8 +833,7 @@ int cells_mark_type(_NC_STACK_ypaworld *yw, const char *a2)
     if ( !yw->typ_map )
         return 0;
 
-    bitmap_intern *bitm;
-    call_vtbl(yw->typ_map, 3, 0x80002000, &bitm, 0);
+    bitmap_intern *bitm = yw->typ_map->getBMD_pBitmap();
 
     uint8_t *typMap = (uint8_t *)bitm->buffer;
 
@@ -888,8 +879,7 @@ int cells_mark_owner(_NC_STACK_ypaworld *yw, const char *a2)
     if ( !yw->own_map )
         return 0;
 
-    bitmap_intern *bitm;
-    call_vtbl(yw->own_map, 3, 0x80002000, &bitm, 0);       // bitmap_func3
+    bitmap_intern *bitm = yw->own_map->getBMD_pBitmap();
 
     uint8_t *ownmap = (uint8_t *)bitm->buffer;
 
@@ -926,8 +916,7 @@ int cells_mark_hight(_NC_STACK_ypaworld *yw, const char *a2)
     if ( !yw->hgt_map )
         return 0;
 
-    bitmap_intern *bitm;
-    call_vtbl(yw->hgt_map, 3, 0x80002000, &bitm, 0);
+    bitmap_intern *bitm = yw->hgt_map->getBMD_pBitmap();
 
     uint8_t *hgtMap = (uint8_t *)bitm->buffer;
 
@@ -1086,8 +1075,7 @@ int sub_44B9B8(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, const char *mapp)
     if ( !yw->blg_map )
         return 0;
 
-    bitmap_intern *bitmp;
-    call_vtbl(yw->blg_map, 3, 0x80002000, &bitmp, 0);
+    bitmap_intern *bitmp = yw->blg_map->getBMD_pBitmap();
 
     uint8_t *blgMap = (uint8_t *)bitmp->buffer;
 
@@ -2792,14 +2780,12 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
 
     if ( x && y && yw->sectors_maxX2 - 1 != x && yw->sectors_maxY2 - 1 != y )
     {
-        bitmap_intern *bitm_blg;
-        call_vtbl(yw->blg_map, 3, 0x80002000, &bitm_blg, 0);
+        bitmap_intern *bitm_blg = yw->blg_map->getBMD_pBitmap();
 
         uint8_t *tmp = (uint8_t *)bitm_blg->buffer + x + y * bitm_blg->width;
         *tmp = blg_id;
 
-        bitmap_intern *bitm_typ;
-        call_vtbl(yw->typ_map, 3, 0x80002000, &bitm_typ, 0);
+        bitmap_intern *bitm_typ = yw->typ_map->getBMD_pBitmap();
 
         tmp = (uint8_t *)bitm_typ->buffer + x + y * bitm_typ->width;
         *tmp = bld->sec_type;
@@ -3746,7 +3732,7 @@ int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
     {
         yw->win3d->display_func257(NULL);
 
-        call_vtbl(yw->win3d, 2, 0x80003001, 0, 0);
+        yw->win3d->setRSTR_BGpen(0);
 
         yw->win3d->raster_func192(NULL);
 
@@ -5082,8 +5068,7 @@ void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         yw->screenshot_seq_frame_id++;
 
-        NC_STACK_win3d *win3d;
-        gfxEngine__getter(0x8000300D, &win3d, 0);
+        NC_STACK_win3d *win3d = GFXe.getC3D();
 
         const char *v13 = a1;
 

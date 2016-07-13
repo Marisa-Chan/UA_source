@@ -28,29 +28,11 @@ size_t NC_STACK_display::func1(stack_vals *stak)
 
 size_t NC_STACK_display::func2(stack_vals *stak)
 {
-    stack_vals *val = find_id_in_stack2(0x80002007, stak);
+    stack_vals *val = find_id_in_stack2(BMD_ATT_PCOLORMAP, stak);
     if ( val )
     {
-        if ( val->value )
-        {
-            rstr_261_arg arg_261;
-            rstr_262_arg arg_262;
-
-            arg_261.pal_entries = (UA_PALENTRY *)val->value;
-            arg_261.pal_id = 0;
-            arg_261.entrie_id = 0;
-            arg_261.pal_num = 256;
-
-            display_func261(&arg_261);
-
-            int v11 = 0;
-            int v12 = 256;
-            arg_262.pdword4 = &v11;
-            arg_262.dword0 = 1;
-            arg_262.pdword8 = &v12;
-
-            display_func262(&arg_262);
-        }
+        setBMD_palette((UA_PALETTE *)val->value);
+        val->id = 1;
     }
 
     return NC_STACK_raster::func2(stak);
@@ -58,12 +40,10 @@ size_t NC_STACK_display::func2(stack_vals *stak)
 
 size_t NC_STACK_display::func3(stack_vals *stak)
 {
-    __NC_STACK_display *displ = &this->stack__display;
-
-    stack_vals *val = find_id_in_stack2(0x80002007, stak);
+    stack_vals *val = find_id_in_stack2(BMD_ATT_PCOLORMAP, stak);
     if ( val )
     {
-        *(UA_PALENTRY **)val->value = displ->palette;
+        *(UA_PALETTE **)val->value = getBMD_palette();
         val->id = 1;
     }
 
@@ -73,14 +53,14 @@ size_t NC_STACK_display::func3(stack_vals *stak)
 
 void NC_STACK_display::display_func261(rstr_261_arg *arg)
 {
-    __NC_STACK_display *displ = &this->stack__display;
+    __NC_STACK_display *displ = &stack__display;
 
-    memcpy(&displ->field_300[arg->pal_id].pal_entries[arg->entrie_id], arg->pal_entries, sizeof(UA_PALENTRY) * arg->pal_num);
+    memcpy(&displ->field_300[arg->pal_id].pal_entries[arg->entrie_id], arg->palette, sizeof(UA_PALENTRY) * arg->pal_num);
 }
 
 void NC_STACK_display::display_func262(rstr_262_arg *arg)
 {
-    __NC_STACK_display *displ = &this->stack__display;
+    __NC_STACK_display *displ = &stack__display;
 
     for (int i = 0; i < 256; i++)
     {
@@ -107,15 +87,15 @@ void NC_STACK_display::display_func262(rstr_262_arg *arg)
         if (tmpb > 255)
             tmpb = 255;
 
-        displ->palette[i].r = tmpr;
-        displ->palette[i].g = tmpg;
-        displ->palette[i].b = tmpb;
+        displ->palette.pal_entries[i].r = tmpr;
+        displ->palette.pal_entries[i].g = tmpg;
+        displ->palette.pal_entries[i].b = tmpb;
     }
 }
 
 void NC_STACK_display::display_func263(displ_arg263 *arg)
 {
-    __NC_STACK_display *displ = &this->stack__display;
+    __NC_STACK_display *displ = &stack__display;
 
     display_func265(NULL);
     displ->pointer_bitm = arg->bitm;
@@ -124,13 +104,13 @@ void NC_STACK_display::display_func263(displ_arg263 *arg)
 
 void NC_STACK_display::display_func264(void *)
 {
-    __NC_STACK_display *displ = &this->stack__display;
+    __NC_STACK_display *displ = &stack__display;
     displ->field_1b04 &= 0xFFFFFFFE;
 }
 
 void NC_STACK_display::display_func265(void *)
 {
-    __NC_STACK_display *displ = &this->stack__display;
+    __NC_STACK_display *displ = &stack__display;
     displ->field_1b04 |= 1;
 }
 
@@ -141,7 +121,7 @@ size_t NC_STACK_display::display_func266(bitmap_intern **pbitm)
 
     bitm->pitch = bitm->width;
     bitm->buffer = AllocVec(bitm->width * bitm->height, 65537);
-    bitm->flags |= 2;
+    bitm->flags |= BITMAP_FLAG_TEXTURE;
     return bitm->buffer != NULL;
 }
 
@@ -168,18 +148,49 @@ void NC_STACK_display::display_func270(bitmap_intern **)
 {
 }
 
-UA_PALENTRY * NC_STACK_display::display_func273(rstr_261_arg *arg)
+UA_PALETTE * NC_STACK_display::display_func273(rstr_261_arg *arg)
 {
-    __NC_STACK_display *displ = &this->stack__display;
+    __NC_STACK_display *displ = &stack__display;
 
-    arg->pal_entries = displ->field_300[arg->pal_id].pal_entries;
-    return arg->pal_entries;
+    arg->palette = &displ->field_300[arg->pal_id];
+    return arg->palette;
 }
 
 void NC_STACK_display::display_func274(const char **)
 {
     dprintf("MAKE ME %s(Save pcx screenshot)\n","display_func274");
 }
+
+
+
+void NC_STACK_display::setBMD_palette(UA_PALETTE *newPal)
+{
+    rstr_261_arg arg_261;
+    rstr_262_arg arg_262;
+
+    arg_261.palette = newPal;
+    arg_261.pal_id = 0;
+    arg_261.entrie_id = 0;
+    arg_261.pal_num = 256;
+
+    display_func261(&arg_261);
+
+    int v11 = 0;
+    int v12 = 256;
+    arg_262.pdword4 = &v11;
+    arg_262.dword0 = 1;
+    arg_262.pdword8 = &v12;
+
+    display_func262(&arg_262);
+
+    NC_STACK_raster::setBMD_palette(newPal);
+};
+
+UA_PALETTE *NC_STACK_display::getBMD_palette()
+{
+    return &stack__display.palette;
+}
+
 
 
 size_t NC_STACK_display::compatcall(int method_id, void *data)

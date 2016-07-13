@@ -7,17 +7,17 @@ struct rsrc : public nnode
 {
     const char *name;
     char title[64];
-    __int16 ref_cnt;
-    __int16 what_list;
+    int32_t ref_cnt;
+    int16_t what_list;
     void *data;
-    char *class_name;
+    const char *class_name;
 };
 
 struct __NC_STACK_rsrc
 {
     rsrc *p_rsrc;
     void *p_data;
-    char field_8[4];
+    uint32_t flags;
 };
 
 struct rsrc_func66_arg
@@ -52,6 +52,28 @@ public:
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_rsrc();
     };
+
+    enum RSRC_ATT
+    {
+        RSRC_ATT_NAME = 0x80001000,
+        RSRC_ATT_TRYSHARED = 0x80001001,
+        RSRC_ATT_PDATA = 0x80001002,
+        RSRC_ATT_DONTCOPY = 0x80001003,
+        RSRC_ATT_PIFFFILE = 0x80001005,
+        RSRC_ATT_SHAREDLIST = 0x80001006,
+        RSRC_ATT_PRIVATELIST = 0x80001007,
+        RSRC_ATT_LISTYPE = 0x80001008
+    };
+
+    //Set
+
+    //Get
+    virtual const char * getRsrc_name();
+    virtual int getRsrc_tryShared();
+    virtual void *getRsrc_pData();
+    virtual int getRsrc_dontCopy();
+    virtual nlist *getRsrc_sharedList();
+    virtual nlist *getRsrc_privateList();
 
     //Data
     static const NewClassDescr description;

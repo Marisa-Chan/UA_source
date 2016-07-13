@@ -2121,7 +2121,7 @@ int windd_func0__sub2__sub4(IDirectDraw *ddraw, IDirectDrawSurface *ddsurf, cons
     return v6;
 }
 
-int windd_func0__sub2(__NC_STACK_windd *obj, BYTE *palette, int width, unsigned int height, int bits)
+int windd_func0__sub2(__NC_STACK_windd *obj, UA_PALETTE *palette, int width, unsigned int height, int bits)
 {
     PALETTEENTRY tmpPal[256];
 
@@ -2136,10 +2136,9 @@ int windd_func0__sub2(__NC_STACK_windd *obj, BYTE *palette, int width, unsigned 
         {
             for (int i = 0; i < 256; i++)
             {
-                BYTE *cur = palette + i * 3;
-                tmpPal[i].peRed = cur[0];
-                tmpPal[i].peGreen = cur[1];
-                tmpPal[i].peBlue = cur[2];
+                tmpPal[i].peRed = palette->pal_entries[i].r;
+                tmpPal[i].peGreen = palette->pal_entries[i].g;
+                tmpPal[i].peBlue = palette->pal_entries[i].b;
                 tmpPal[i].peFlags = 0;
             }
         }
@@ -2247,8 +2246,8 @@ size_t NC_STACK_windd::func0(stack_vals *stak)
     if ( !windd_func0__sub1(windd_keys[6].value.val) )
         return 0;
 
-    int v7 = find_id_in_stack_def_val(0x80004000, 0, stak);
-    BYTE *pal = (BYTE *)find_id_in_stack_def_val(0x80002007, 0, stak);
+    int v7 = find_id_in_stack_def_val(DISP_ATT_DISPLAY_ID, 0, stak);
+    UA_PALETTE *pal = (UA_PALETTE *)find_id_in_stack_def_val(BMD_ATT_PCOLORMAP, 0, stak);
 
     mode_node *picked;
 
@@ -2281,21 +2280,21 @@ size_t NC_STACK_windd::func0(stack_vals *stak)
 
     if ( picked->field_94 & 8 )
     {
-        tmp[0].id = 0x80002002;
+        tmp[0].id = BMD_ATT_WIDTH;
         tmp[0].value = (unsigned int)picked->width / 2;
-        tmp[1].id = 0x80002003;
+        tmp[1].id = BMD_ATT_HEIGHT;
         tmp[1].value = (unsigned int)picked->height / 2;
     }
     else
     {
-        tmp[0].id = 0x80002002;
+        tmp[0].id = BMD_ATT_WIDTH;
         tmp[0].value = (unsigned int)picked->width;
-        tmp[1].id = 0x80002003;
+        tmp[1].id = BMD_ATT_HEIGHT;
         tmp[1].value = (unsigned int)picked->height;
     }
-    tmp[2].id = 0x80002005;
+    tmp[2].id = BMD_ATT_BUFFER;
     tmp[2].value = 1;
-    tmp[3].id = 0x80002006;
+    tmp[3].id = BMD_ATT_HAS_COLORMAP;
     tmp[3].value = 1;
     tmp[4].id = 2;
     tmp[4].value = (size_t)stak;
@@ -2303,7 +2302,7 @@ size_t NC_STACK_windd::func0(stack_vals *stak)
     if ( !NC_STACK_display::func0(tmp) )
         return 0;
 
-    __NC_STACK_windd *windd = &this->stack__windd;
+    __NC_STACK_windd *windd = &stack__windd;
 
     windd->field_30 = 0;
     windd->sort_id = picked->sort_id;
@@ -2339,7 +2338,7 @@ size_t NC_STACK_windd::func0(stack_vals *stak)
         fclose(fil);
     }
 
-    call_vtbl(this, 3, 0x80001002, &windd->field_54______rsrc_field4, 0);
+    windd->field_54______rsrc_field4 = (bitmap_intern *)getRsrc_pData();
     return 1;
 }
 
@@ -2410,7 +2409,7 @@ void windd_func1__sub0()
 
 size_t NC_STACK_windd::func1(stack_vals *stak)
 {
-    wdd_KillDDrawStuff(&this->stack__windd);
+    wdd_KillDDrawStuff(&stack__windd);
     while ( 1 )
     {
         nnode *nod = RemHead((nlist *)&modes_list);
@@ -2433,26 +2432,6 @@ size_t NC_STACK_windd::func1(stack_vals *stak)
     return NC_STACK_display::func1(stak);
 }
 
-void windd_func2__sub0(__NC_STACK_windd *wdd, int val)
-{
-    if ( val || !wdd->field_30 )
-    {
-        if ( val == 1 && !wdd->field_30 )
-        {
-            wdd->field_30 = 1;
-            while ( ShowCursor(0) >= 0 )
-            { }
-        }
-    }
-    else
-    {
-        wdd->field_30 = 0;
-        while ( ShowCursor(1) < 0 )
-        { }
-        sub_42D410(wdd, 1, 1);
-    }
-}
-
 void out_yes_no_status(const char *filename, int val)
 {
     FILE *fil = fopen(filename, "w");
@@ -2468,8 +2447,6 @@ void out_yes_no_status(const char *filename, int val)
 
 size_t NC_STACK_windd::func2(stack_vals *stak)
 {
-    __NC_STACK_windd *wdd = &this->stack__windd;
-
     stack_vals *stk = stak;
 
     while ( 1 )
@@ -2492,17 +2469,17 @@ size_t NC_STACK_windd::func2(stack_vals *stak)
             default:
                 break;
 
-            case 0x80005000:
-                windd_func2__sub0(wdd, stk->value);
+            case WDD_ATT_CURSOR:
+                setWDD_cursor(stk->value);
                 break;
-            case 0x80005002:
-                wdd->disable_lowres = stk->value;
+            case WDD_ATT_DIS_LOWRES:
+                setWDD_disLowRes(stk->value);
                 break;
-            case 0x80005003:
-                out_yes_no_status("env/txt16bit.def", stk->value);
+            case WDD_ATT_16BIT_TEX:
+                setWDD_16bitTex(stk->value);
                 break;
-            case 0x80005004:
-                out_yes_no_status("env/drawprim.def", stk->value);
+            case WDD_ATT_DRAW_PRIM:
+                setWDD_drawPrim(stk->value);
                 break;
             }
             stk++;
@@ -2515,13 +2492,9 @@ size_t NC_STACK_windd::func2(stack_vals *stak)
 
 
 
-windd__window_params window_params__return;
 
 size_t NC_STACK_windd::func3(stack_vals *stak)
 {
-
-    __NC_STACK_windd *wdd = &this->stack__windd;
-
     stack_vals *stk = stak;
 
     while ( 1 )
@@ -2544,30 +2517,17 @@ size_t NC_STACK_windd::func3(stack_vals *stak)
             default:
                 break;
 
-            case 0x80004000:
-                *(int *)stk->value = wdd->sort_id;
+            case DISP_ATT_DISPLAY_ID:
+                *(int *)stk->value = getDISP_displID();
                 break;
-            case 0x80004001:
-            {
-                window_params__return.hwnd = wdd->hwnd;
-                if ( wdd->field_50 & 8 )
-                {
-                    window_params__return.width = wdd->width / 2 ;
-                    window_params__return.height = wdd->height / 2;
-                }
-                else
-                {
-                    window_params__return.width = wdd->width;
-                    window_params__return.height = wdd->height;
-                }
-                *(windd__window_params **)stk->value = &window_params__return;
-            }
-            break;
-            case 0x80005003:
-                *(int *)stk->value = wdd->txt16bit;
+            case DISP_ATT_DISPLAY_INF:
+                *(gfx_window **)stk->value = getDISP_displInf();
                 break;
-            case 0x80005004:
-                *(int *)stk->value = wdd->use_simple_d3d;
+            case WDD_ATT_16BIT_TEX:
+                *(int *)stk->value = getWDD_16bitTex();
+                break;
+            case WDD_ATT_DRAW_PRIM:
+                *(int *)stk->value = getWDD_drawPrim();
                 break;
             }
             stk++;
@@ -3127,7 +3087,7 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
 
 void NC_STACK_windd::raster_func209(w3d_a209 *arg)
 {
-    windd_func209__sub0(&this->stack__windd, this->stack__raster.tiles, arg->cmdbuf, arg->includ);
+    windd_func209__sub0(&stack__windd, this->stack__raster.tiles, arg->cmdbuf, arg->includ);
 }
 
 void NC_STACK_windd::raster_func213(polysDatSub *stak)
@@ -3172,7 +3132,7 @@ size_t NC_STACK_windd::raster_func219(stack_vals *stak)
 
 size_t NC_STACK_windd::display_func256(windd_arg256 *inout)
 {
-    __NC_STACK_windd *wdd = &this->stack__windd;
+    __NC_STACK_windd *wdd = &stack__windd;
     mode_node *nod;
 
     if ( inout->sort_id )
@@ -3307,7 +3267,7 @@ void clearAndLockBackBufferSurface(__NC_STACK_windd *wdd)
 
 void NC_STACK_windd::display_func257(stack_vals *)
 {
-    __NC_STACK_windd *wdd = &this->stack__windd;
+    __NC_STACK_windd *wdd = &stack__windd;
     clearAndLockBackBufferSurface(wdd);
     wdd->field_54______rsrc_field4->buffer = wdd->surface_locked_surfaceData;
     wdd->field_54______rsrc_field4->pitch = wdd->surface_locked_pitch;
@@ -3447,7 +3407,7 @@ void windd_func258__sub0(NC_STACK_windd *obj, __NC_STACK_display *dspl, __NC_STA
 
 void NC_STACK_windd::display_func258(stack_vals *)
 {
-    __NC_STACK_windd *wdd = &this->stack__windd;
+    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_display *dspl = &this->stack__display;
 
     if ( sub_42AC78(wdd) )
@@ -3476,25 +3436,24 @@ void NC_STACK_windd::display_func261(rstr_261_arg *arg)
 {
     if ( !dword_514EFC && !arg->pal_id && !arg->entrie_id )
     {
-        arg->pal_entries[0].g = arg->pal_entries[0].b;
-        arg->pal_entries[0].r = arg->pal_entries[0].b;
-        arg->pal_entries[0].b = 0;
+        arg->palette->pal_entries[0].r = 0;
+        arg->palette->pal_entries[0].g = 0;
+        arg->palette->pal_entries[0].b = 0;
     }
     NC_STACK_display::display_func261(arg);
 }
 
-void sub_42D37C(__NC_STACK_windd *wdd, UA_PALENTRY *pal)
+void sub_42D37C(__NC_STACK_windd *wdd, UA_PALETTE *pal)
 {
     if ( wdd->ddrawPal )
     {
         PALETTEENTRY tmp[256];
-        UA_PALENTRY *lpal = pal;
 
         for(int i = 0; i < 256; i++)
         {
-            tmp[i].peRed = lpal->r;
-            tmp[i].peGreen = lpal->g;
-            tmp[i].peBlue = lpal->b;
+            tmp[i].peRed = pal->pal_entries[i].r;
+            tmp[i].peGreen = pal->pal_entries[i].g;
+            tmp[i].peBlue = pal->pal_entries[i].b;
             tmp[i].peFlags = 0;
         }
 
@@ -3505,16 +3464,16 @@ void sub_42D37C(__NC_STACK_windd *wdd, UA_PALENTRY *pal)
 
 void NC_STACK_windd::display_func262(rstr_262_arg *arg)
 {
-    __NC_STACK_windd *wdd = &this->stack__windd;
+    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_display *dspl  = &this->stack__display;
 
     NC_STACK_display::display_func262(arg);
-    sub_42D37C(wdd, dspl->palette);
+    sub_42D37C(wdd, &dspl->palette);
 }
 
 void NC_STACK_windd::display_func263(displ_arg263 *arg)
 {
-    __NC_STACK_windd *wdd = &this->stack__windd;
+    __NC_STACK_windd *wdd = &stack__windd;
 
     sub_42D410(wdd, arg->pointer_id, 0);
     NC_STACK_display::display_func263(arg);
@@ -3625,7 +3584,7 @@ void sb_0x42d530(__NC_STACK_windd *wdd, int a2)
 
 void NC_STACK_windd::windd_func320(stack_vals *)
 {
-    sb_0x42d530(&this->stack__windd, 0);
+    sb_0x42d530(&stack__windd, 0);
 }
 
 
@@ -3679,11 +3638,11 @@ void sub_42D724(__NC_STACK_windd *wdd, int a2)
 
 void NC_STACK_windd::windd_func321(stack_vals *)
 {
-    __NC_STACK_windd *wdd = &this->stack__windd;
+    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_display *dspl = &this->stack__display;
 
     sub_42D724(wdd, 0);
-    sub_42D37C(wdd, dspl->palette);
+    sub_42D37C(wdd, &dspl->palette);
 }
 
 
@@ -3699,7 +3658,7 @@ char * windd_func322__sub0(__NC_STACK_windd *wdd, const char *box_title, const c
 //Show DLGBox with edit field and get entered value
 void NC_STACK_windd::windd_func322(windd_dlgBox *dlgBox)
 {
-    __NC_STACK_windd *wdd = &this->stack__windd;
+    __NC_STACK_windd *wdd = &stack__windd;
 
     windd_func320(NULL);
 
@@ -3744,11 +3703,11 @@ void windd_func323__sub0(__NC_STACK_windd *wdd, const char *filename)
 //Play movie file
 void NC_STACK_windd::windd_func323(const char **filename)
 {
-    __NC_STACK_windd *wdd = &this->stack__windd;
+    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_display *dspl = &this->stack__display;
 
     windd_func323__sub0(wdd, *filename);
-    sub_42D37C(wdd, dspl->palette);
+    sub_42D37C(wdd, &dspl->palette);
 }
 
 void NC_STACK_windd::windd_func324(wdd_func324arg *inout)
@@ -3814,6 +3773,81 @@ void NC_STACK_windd::windd_func325(wdd_func324arg *arg)
 
     out_guid_to_file("env/guid3d.def", (GUID *)v4, v5);
 }
+
+
+
+void NC_STACK_windd::setWDD_cursor(int arg)
+{
+    if ( arg || !stack__windd.field_30 )
+    {
+        if ( arg == 1 && !stack__windd.field_30 )
+        {
+            stack__windd.field_30 = 1;
+            while ( ShowCursor(0) >= 0 )
+            { }
+        }
+    }
+    else
+    {
+        stack__windd.field_30 = 0;
+        while ( ShowCursor(1) < 0 )
+        { }
+        sub_42D410(&stack__windd, 1, 1);
+    }
+}
+
+void NC_STACK_windd::setWDD_disLowRes(int arg)
+{
+    stack__windd.disable_lowres = arg;
+}
+
+void NC_STACK_windd::setWDD_16bitTex(int arg)
+{
+    out_yes_no_status("env/txt16bit.def", arg);
+}
+
+void NC_STACK_windd::setWDD_drawPrim(int arg)
+{
+    out_yes_no_status("env/drawprim.def", arg);
+}
+
+
+
+int NC_STACK_windd::getDISP_displID()
+{
+    return stack__windd.sort_id;
+}
+
+gfx_window *NC_STACK_windd::getDISP_displInf()
+{
+    static gfx_window window_params__return;
+    window_params__return.hwnd = stack__windd.hwnd;
+    if ( stack__windd.field_50 & 8 )
+    {
+        window_params__return.width = stack__windd.width / 2 ;
+        window_params__return.height = stack__windd.height / 2;
+    }
+    else
+    {
+        window_params__return.width = stack__windd.width;
+        window_params__return.height = stack__windd.height;
+    }
+
+    return &window_params__return;
+}
+
+int NC_STACK_windd::getWDD_16bitTex()
+{
+    return stack__windd.txt16bit;
+}
+
+int NC_STACK_windd::getWDD_drawPrim()
+{
+    return stack__windd.use_simple_d3d;
+}
+
+
+
 
 size_t NC_STACK_windd::compatcall(int method_id, void *data)
 {

@@ -21,6 +21,8 @@ int dword_51362C = 0;
 int dword_513630 = 0;
 char buildDate[256];
 
+int gfx_inited = 0;
+
 int sub_4107FC(UserData *usr)
 {
     yw_arg172 arg171;
@@ -525,8 +527,8 @@ void deinit_globl_engines()
         deinit_engine(MC2_INPUT_ENGINE);
     if ( paudio_engine )
         deinit_engine(MC2_AUDIO_ENGINE);
-    if ( pgfx_engine )
-        deinit_engine(MC2_GFX_ENGINE);
+    if ( gfx_inited )
+        GFXe.deinit();
 
     sb_0x411c08();
 }
@@ -568,7 +570,8 @@ int WinMain__sub0__sub0()
     add_to_params_list("input.button[21] = winp:joyb5");
     add_to_params_list("input.button[22] = winp:joyb6");
     add_to_params_list("input.button[23] = winp:joyb7");
-    pgfx_engine = init_engine(MC2_GFX_ENGINE);
+
+    gfx_inited = GFXe.init();
     paudio_engine = init_engine(MC2_AUDIO_ENGINE);
     pinput_engine = init_engine(MC2_INPUT_ENGINE);
     ptform_engine = init_engine(MC2_TFORM_ENGINE);
@@ -580,7 +583,7 @@ int WinMain__sub0__sub0()
         return 0;
     }
 
-    if ( !pgfx_engine )
+    if ( !gfx_inited )
     {
         sub_412038("Couldn't open gfx engine!");
         deinit_globl_engines();
@@ -599,16 +602,7 @@ int WinMain__sub0__sub0()
         return 0;
     }
 
-////HACK, don't use not used variables
-//	int width, height;
-//    windd__window_params *window_p;
-//    size_t v3;
-//
-//	pgfx_engine->getter(0x80003003, &width, 0x80003004, &height, 0x80003002, &v3, 0x80003007, &window_p, 0);
-//	pinput_engine->setter(0x80001004, width, 0x80001005, height, 0x80001006, v3, 0x80001007, window_p, 0);
-
-    windd__window_params *window_p;
-    pgfx_engine->getter(0x80003007, &window_p, 0);
+    gfx_window *window_p = GFXe.getWindow();
     pinput_engine->setter(0x80001007, window_p, 0);
 
     return 1;

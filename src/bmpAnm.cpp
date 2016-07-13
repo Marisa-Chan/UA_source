@@ -17,20 +17,20 @@ static tUtV *dword_5A11A0[256];
 
 size_t NC_STACK_bmpanim::func0(stack_vals *stak)
 {
-    stack_vals *val = find_id_in_stack2(0x80003000, stak);
+    stack_vals *val = find_id_in_stack2(BANM_ATT_NAME, stak);
     if ( val )
-        val->id = 0x80001000;
+        val->id = RSRC_ATT_NAME;
 
     if ( !NC_STACK_bitmap::func0(stak) )
         return 0;
 
-    __NC_STACK_bmpanim *bmpanm = &this->stack__bmpanim;
-    call_vtbl(this, 3, 0x80001002, bmpanm, 0);
+    __NC_STACK_bmpanim *bmpanm = &stack__bmpanim;
 
-    bmpanm->field_12 = 1;
-    bmpanm->field_10 = find_id_in_stack_def_val(0x80003004, 0, stak);
-    bmpanm->field_C = 0;
-    bmpanm->t2_ = bmpanm->bmpanm_intern->t2;
+    bmpanm->bmpanm_intern = (bmpAnim_t1 *)getRsrc_pData();
+    bmpanm->frm_adds = 1;
+    bmpanm->anim_type = find_id_in_stack_def_val(BANM_ATT_ANIMTYPE, 0, stak);
+    bmpanm->time_ovr = 0;
+    bmpanm->current_frame = bmpanm->bmpanm_intern->start_frame;
 
     return 1;
 }
@@ -42,19 +42,15 @@ size_t NC_STACK_bmpanim::func1(stack_vals *)
 
 size_t NC_STACK_bmpanim::func2(stack_vals *stak)
 {
-    __NC_STACK_bmpanim *bmpAnm = &this->stack__bmpanim;
-
-    stack_vals *val = find_id_in_stack2(0x80003004, stak);
+    stack_vals *val = find_id_in_stack2(BANM_ATT_ANIMTYPE, stak);
     if ( val )
-        bmpAnm->field_10 = val->value;
+        setBANM_animType(val->value);
 
     return NC_STACK_bitmap::func2(stak);
 }
 
 size_t NC_STACK_bmpanim::func3(stack_vals *stak)
 {
-    __NC_STACK_bmpanim *bmpAnm = &this->stack__bmpanim;
-
     stack_vals *stk = stak;
 
     while ( 1 )
@@ -77,28 +73,28 @@ size_t NC_STACK_bmpanim::func3(stack_vals *stak)
             default:
                 break;
 
-            case 0x80002000:
-                *(bitmap_intern **)stk->value = bmpAnm->t2_->bitm;
+            case BMD_ATT_PBITMAP:
+                *(bitmap_intern **)stk->value = getBMD_pBitmap();
                 break;
-            case 0x80002001:
-            case 0x80002002:
-            case 0x80002003:
-            case 0x80002004:
-            case 0x80002005:
+            case BMD_ATT_OUTLINE:
+            case BMD_ATT_BUFFER:
+                *(void **)stk->value = NULL;
+                break;
+            case BMD_ATT_WIDTH:
+            case BMD_ATT_HEIGHT:
                 *(int *)stk->value = 0;
                 break;
-
-            case 0x80003000:
-                call_vtbl(this, 3, 0x80001000, stk->value, 0);
+            case BANM_ATT_NAME:
+                *(const char **)stk->value = getBANM_name();
                 break;
-            case 0x80003001:
-                *(char **)stk->value = bmpAnm->bmpanm_intern->className;
+            case BANM_ATT_CLASSNAME:
+                *(const char **)stk->value = getBANM_classname();
                 break;
-            case 0x80003005:
-                *(int *)stk->value = bmpAnm->bmpanm_intern->t2_cnt;
+            case BANM_ATT_FRAMECNT:
+                *(int *)stk->value = getBANM_framecnt();
                 break;
-            case 0x80003004:
-                *(int *)stk->value = bmpAnm->field_10;
+            case BANM_ATT_ANIMTYPE:
+                *(int *)stk->value = getBANM_animtype();
                 break;
             }
             stk++;
@@ -154,25 +150,22 @@ size_t NC_STACK_bmpanim::func5(MFILE **file)
 
     stack_vals stk[4];
 
-    stk[0].id = 0x80003000;
+    stk[0].id = BANM_ATT_NAME;
     stk[0].value = (size_t)v3;
-    stk[1].id = 0x80001004;
-    stk[1].value = 1;
-    stk[2].id = 0x80003004;
-    stk[2].value = v4;
-    stk[3].id = 0;
+    stk[1].id = BANM_ATT_ANIMTYPE;
+    stk[1].value = v4;
+    stk[2].id = 0;
 
     return func0(stk);
 }
 
 size_t NC_STACK_bmpanim::func6(MFILE **file)
 {
-    __NC_STACK_bmpanim *bmpAnm = &this->stack__bmpanim;
+    __NC_STACK_bmpanim *bmpAnm = &stack__bmpanim;
 
     MFILE *mfile = *file;
 
-    const char *a3;
-    call_vtbl(this, 3, 0x80001000, &a3, 0);
+    const char *a3 = getRsrc_name();
 
     if ( !a3 )
     {
@@ -200,7 +193,7 @@ size_t NC_STACK_bmpanim::func6(MFILE **file)
     int16_t tmp[3];
     tmp[0] = SWAP16(1);
     tmp[1] = SWAP16(6); //sizeof tmp
-    tmp[2] = SWAP16(bmpAnm->field_10);
+    tmp[2] = SWAP16(bmpAnm->anim_type);
 
     sub_413564(mfile, 6, &tmp);
     sub_413564(mfile, strlen(a3) + 1, a3);
@@ -364,7 +357,7 @@ int bmpanim_func64__sub1__sub2(void *fil, bmpAnim_t1 *arg)
     if ( fread_bmp(&sz, 2, 1, fil) == 1 )
     {
         sz = SWAP16(sz);
-        arg->field_1A = sz;
+        arg->titles_size = sz;
 
         char *buf = (char *)AllocVec(sz, 1);
         if ( buf )
@@ -394,21 +387,29 @@ int bmpanim_func64__sub1__sub2(void *fil, bmpAnim_t1 *arg)
                 if (nm_cnt == -1)
                     return 0;
 
-                arg->frame_count = nm_cnt;
+                arg->bitm_buff_cnt = nm_cnt;
 
                 bmpAnim_t1_objs *frames = (bmpAnim_t1_objs *)AllocVec(sizeof(bmpAnim_t1_objs) * nm_cnt, 65537);
                 if ( frames )
                 {
-                    arg->frames = frames;
+                    arg->bitm_buff = frames;
 
                     for (int i = 0; i < nm_cnt; i++)
                     {
-                        frames[i].clsObj = (NC_STACK_bitmap *)init_get_class(arg->className, 0x80001000, pbmpAnm_titles[i], 0x80001003, 1, 0);
+                        stack_vals vals[3];
+                        vals[0].id = NC_STACK_rsrc::RSRC_ATT_NAME;
+                        vals[0].value = (size_t)pbmpAnm_titles[i];
+                        vals[1].id = NC_STACK_rsrc::RSRC_ATT_DONTCOPY;
+                        vals[1].value = 1;
+                        vals[2].id = 0;
+                        vals[2].value = 0;
 
-                        if ( !frames[i].clsObj )
+                        frames[i].bitmObj = dynamic_cast<NC_STACK_bitmap *>( init_get_class(arg->className, vals) );
+
+                        if ( !frames[i].bitmObj )
                             return 0;
 
-                        call_vtbl(frames[i].clsObj, 3, 0x80002000, &frames[i].bitm_intern, 0);
+                        frames[i].bitm_intern = frames[i].bitmObj->getBMD_pBitmap();
                         frames[i].title = pbmpAnm_titles[i];
                     }
                     return 1;
@@ -427,13 +428,13 @@ int bmpanim_func64__sub1__sub1(void *fil, bmpAnim_t1 *arg)
 
     cnt = SWAP16(cnt);
 
-    arg->field_1C = cnt;
+    arg->otl_buff_cnt = cnt;
 
-    arg->field_4 = (tUtV *)AllocVec(sizeof(tUtV) * (int)cnt, 1);
-    if ( !arg->field_4 )
+    arg->otl_buff = (tUtV *)AllocVec(sizeof(tUtV) * (int)cnt, 1);
+    if ( !arg->otl_buff )
         return 0;
 
-    tUtV *v5 = arg->field_4;
+    tUtV *v5 = arg->otl_buff;
 
     int k = 0;
 
@@ -481,9 +482,9 @@ int bmpanim_func64__sub1__sub0(void *fil, bmpAnim_t1 *arg)
     if ( !t2 )
         return 0;
 
-    arg->t2_cnt = cnt;
-    arg->t2 = t2;
-    arg->t2_end = &t2[cnt];
+    arg->frame_cnt = cnt;
+    arg->start_frame = t2;
+    arg->end_frame = &t2[cnt];
 
     for (int i = 0; i < cnt; i++)
     {
@@ -491,15 +492,15 @@ int bmpanim_func64__sub1__sub0(void *fil, bmpAnim_t1 *arg)
         if (fread_bmp(&v14, 8, 1, fil) != 1)
             return 0;
 
-        v14.a = SWAP32(v14.a);
+        v14.frm_time = SWAP32(v14.frm_time);
         v14.frame_id = SWAP16(v14.frame_id);
         v14.uv_id = SWAP16(v14.uv_id);
 
-        t2[i].opls = dword_5A11A0[v14.uv_id];
-        t2[i].bitm = arg->frames[v14.frame_id].bitm_intern;
-        t2[i].field_8 = v14.a;
-        t2[i].field_C = v14.frame_id;
-        t2[i].field_E = v14.uv_id;
+        t2[i].outline = dword_5A11A0[v14.uv_id];
+        t2[i].bitm = arg->bitm_buff[v14.frame_id].bitm_intern;
+        t2[i].frm_time = v14.frm_time;
+        t2[i].bitm_index = v14.frame_id;
+        t2[i].otl_index = v14.uv_id;
     }
     return 1;
 }
@@ -511,23 +512,23 @@ void sub_431608(bmpAnim_t1 *bmpAnm)
         if ( bmpAnm->titles )
             nc_FreeMem(bmpAnm->titles);
 
-        if ( bmpAnm->field_4 )
-            nc_FreeMem(bmpAnm->field_4);
+        if ( bmpAnm->otl_buff )
+            nc_FreeMem(bmpAnm->otl_buff);
 
         if ( bmpAnm->className )
             nc_FreeMem(bmpAnm->className);
 
-        if ( bmpAnm->t2 )
-            nc_FreeMem(bmpAnm->t2);
+        if ( bmpAnm->start_frame )
+            nc_FreeMem(bmpAnm->start_frame);
 
-        if ( bmpAnm->frames )
+        if ( bmpAnm->bitm_buff )
         {
-            for (int i = 0; i < bmpAnm->frame_count; i++)
+            for (int i = 0; i < bmpAnm->bitm_buff_cnt; i++)
             {
-                if (bmpAnm->frames[i].clsObj)
-                    delete_class_obj(bmpAnm->frames[i].clsObj);
+                if (bmpAnm->bitm_buff[i].bitmObj)
+                    delete_class_obj(bmpAnm->bitm_buff[i].bitmObj);
             }
-            nc_FreeMem(bmpAnm->frames);
+            nc_FreeMem(bmpAnm->bitm_buff);
         }
         nc_FreeMem(bmpAnm);
     }
@@ -637,15 +638,15 @@ int bmpanim_func64__sub0__sub0(bmpAnim_t1 *t1, char **a2, const char *className)
         pt++;
     }
 
-    t1->frame_count = sz;
-    t1->field_1A = bfsz + 1;
+    t1->bitm_buff_cnt = sz;
+    t1->titles_size = bfsz + 1;
 
-    t1->titles = (char *)AllocVec(t1->field_1A, 1);
+    t1->titles = (char *)AllocVec(t1->titles_size, 1);
     if ( !t1->titles )
         return 0;
 
-    t1->frames = (bmpAnim_t1_objs *)AllocVec(sizeof(bmpAnim_t1_objs) * sz, 65537);
-    if (!t1->frames)
+    t1->bitm_buff = (bmpAnim_t1_objs *)AllocVec(sizeof(bmpAnim_t1_objs) * sz, 65537);
+    if (!t1->bitm_buff)
         return 0;
 
     pt = a2;
@@ -655,13 +656,21 @@ int bmpanim_func64__sub0__sub0(bmpAnim_t1 *t1, char **a2, const char *className)
     {
         strcpy(out, *pt);
 
-        t1->frames[i].clsObj = dynamic_cast<NC_STACK_bitmap *>( init_get_class(className, 0x80001000, out, 0x80001003, 1, 0) );
-        if ( !t1->frames[i].clsObj )
+        stack_vals vals[3];
+        vals[0].id = NC_STACK_rsrc::RSRC_ATT_NAME;
+        vals[0].value = (size_t)out;
+        vals[1].id = NC_STACK_rsrc::RSRC_ATT_DONTCOPY;
+        vals[1].value = 1;
+        vals[2].id = 0;
+        vals[2].value = 0;
+
+        t1->bitm_buff[i].bitmObj = dynamic_cast<NC_STACK_bitmap *>( init_get_class(className, vals) );
+        if ( !t1->bitm_buff[i].bitmObj )
             return 0;
 
-        call_vtbl(t1->frames[i].clsObj, 3, 0x80002000, &t1->frames[i].bitm_intern, 0);
+        t1->bitm_buff[i].bitm_intern = t1->bitm_buff[i].bitmObj->getBMD_pBitmap();
 
-        t1->frames[i].title = out;
+        t1->bitm_buff[i].title = out;
 
         out += strlen(out) + 1;
         pt++;
@@ -671,17 +680,17 @@ int bmpanim_func64__sub0__sub0(bmpAnim_t1 *t1, char **a2, const char *className)
     return 1;
 }
 
-int bmpanim_func64__sub0__sub1(bmpAnim_t1 *t1, bitmap__opl **opls)
+int bmpanim_func64__sub0__sub1(bmpAnim_t1 *t1, pixel_2d **opls)
 {
-    bitmap__opl **v3 = opls;
+    pixel_2d **v3 = opls;
 
     int nm = 0;
     while (*v3)
     {
         int v5 = 1;
 
-        bitmap__opl *v6 = *v3;
-        while ( v6->field_E >= 0 )
+        pixel_2d *v6 = *v3;
+        while ( v6->flags >= 0 )
         {
             v6++;
             v5++;
@@ -691,23 +700,23 @@ int bmpanim_func64__sub0__sub1(bmpAnim_t1 *t1, bitmap__opl **opls)
         v3++;
     }
 
-    t1->field_1C = nm;
+    t1->otl_buff_cnt = nm;
 
-    t1->field_4 = (tUtV *)AllocVec(sizeof(tUtV) * nm, 1);
+    t1->otl_buff = (tUtV *)AllocVec(sizeof(tUtV) * nm, 1);
 
-    if ( !t1->field_4 )
+    if ( !t1->otl_buff )
         return 0;
 
     v3 = opls;
-    tUtV *out = t1->field_4;
+    tUtV *out = t1->otl_buff;
     int j = 0;
 
     while (*v3)
     {
         int v5 = 1;
 
-        bitmap__opl *v6 = *v3;
-        while ( v6->field_E >= 0 )
+        pixel_2d *v6 = *v3;
+        while ( v6->flags >= 0 )
         {
             v6++;
             v5++;
@@ -717,8 +726,8 @@ int bmpanim_func64__sub0__sub1(bmpAnim_t1 *t1, bitmap__opl **opls)
 
         for(int i = 0; i < (v5 - 1); i++)
         {
-            out->tu = (*v3)[i].field_0 / 256.0;
-            out->tv = (*v3)[i].field_2 / 256.0;
+            out->tu = (*v3)[i].x / 256.0;
+            out->tv = (*v3)[i].y / 256.0;
             out++;
         }
 
@@ -736,27 +745,27 @@ int bmpanim_func64__sub0__sub1(bmpAnim_t1 *t1, bitmap__opl **opls)
 
 int bmpanim_func64__sub0__sub2(bmpAnim_t1 *t1, int num, bmpanm_loc *arg)
 {
-    t1->t2_cnt = num;
+    t1->frame_cnt = num;
 
     bmpAnim_t2 *t2 = (bmpAnim_t2 *)AllocVec(sizeof(bmpAnim_t2) * num, 1);
     if ( !t2 )
         return 0;
 
-    t1->t2 = t2;
+    t1->start_frame = t2;
 
     for (int i = 0; i < num; i++)
     {
-        t2[i].opls = dword_5A11A0[ arg[i].uv_id ];
-        t2[i].bitm = t1->frames[ arg[i].frame_id ].bitm_intern;
-        t2[i].field_8 = arg[i].a;
-        t2[i].field_C = arg[i].frame_id;
-        t2[i].field_E = arg[i].uv_id;
+        t2[i].outline = dword_5A11A0[ arg[i].uv_id ];
+        t2[i].bitm = t1->bitm_buff[ arg[i].frame_id ].bitm_intern;
+        t2[i].frm_time = arg[i].frm_time;
+        t2[i].bitm_index = arg[i].frame_id;
+        t2[i].otl_index = arg[i].uv_id;
     }
-    t1->t2_end = &t2[num];
+    t1->end_frame = &t2[num];
     return 1;
 }
 
-bmpAnim_t1 * bmpanim_func64__sub0(const char *className, char **a2, bitmap__opl **a3, int a4, bmpanm_loc *a5)
+bmpAnim_t1 * bmpanim_func64__sub0(const char *className, char **a2, pixel_2d **a3, int a4, bmpanm_loc *a5)
 {
     bmpAnim_t1 *t1 = (bmpAnim_t1 *)AllocVec(32, 65537);
 
@@ -790,7 +799,7 @@ rsrc * NC_STACK_bmpanim::rsrc_func64(stack_vals *stak)
 {
     stack_vals stk[2];
 
-    stk[0].id = 0x80001008;
+    stk[0].id = RSRC_ATT_LISTYPE;
     stk[0].value = 1;
     stk[1].id = 2;
     stk[1].value = (size_t)stak;
@@ -799,21 +808,21 @@ rsrc * NC_STACK_bmpanim::rsrc_func64(stack_vals *stak)
     if ( res )
     {
 
-        const char *a1 = (const char *)find_id_in_stack_def_val(0x80003001, 0, stak);
+        const char *a1 = (const char *)find_id_in_stack_def_val(BANM_ATT_CLASSNAME, 0, stak);
         if ( a1 )
         {
-            char **titles = (char **)find_id_in_stack_def_val(0x80003002, 0, stak);
-            bitmap__opl **opls = (bitmap__opl **)find_id_in_stack_def_val(0x80003003, 0, stak);
-            int num = find_id_in_stack_def_val(0x80003005, 0, stak);
-            bmpanm_loc *v7 = (bmpanm_loc *)find_id_in_stack_def_val(0x80003006, 0, stak);
+            char **titles = (char **)find_id_in_stack_def_val(BANM_ATT_FILE_TITLES, 0, stak);
+            pixel_2d **opls = (pixel_2d **)find_id_in_stack_def_val(BANM_ATT_OUTLINES, 0, stak);
+            int num = find_id_in_stack_def_val(BANM_ATT_FRAMECNT, 0, stak);
+            bmpanm_loc *v7 = (bmpanm_loc *)find_id_in_stack_def_val(BANM_ATT_SEQDATA, 0, stak);
 
             if ( titles && opls && num && v7 )
                 res->data = bmpanim_func64__sub0(a1, titles, opls, num, v7);
         }
         else
         {
-            char *v9 = (char *)find_id_in_stack_def_val(0x80001000, 0, stak);
-            MFILE *v10 = (MFILE *)find_id_in_stack_def_val(0x80001005, 0, stak);
+            char *v9 = (char *)find_id_in_stack_def_val(RSRC_ATT_NAME, 0, stak);
+            MFILE *v10 = (MFILE *)find_id_in_stack_def_val(RSRC_ATT_PIFFFILE, 0, stak);
             if ( v9 )
                 res->data = bmpanim_func64__sub1(v9, v10);
         }
@@ -860,13 +869,13 @@ int bmpanim_func66__sub0__sub3(void *fil, bmpAnim_t1 *t1)
 
 int bmpanim_func66__sub0__sub2(void *fil, bmpAnim_t1 *t1)
 {
-    int16_t v7 = t1->field_1A;
+    int16_t v7 = t1->titles_size;
     v7 = SWAP16(v7);
 
     if ( fwrite_bmp(&v7, 2, 1, fil) != 1)
         return 0;
 
-    if ( fwrite_bmp(t1->titles, t1->field_1A, 1, fil) != 1 )
+    if ( fwrite_bmp(t1->titles, t1->titles_size, 1, fil) != 1 )
         return 0;
 
     return 1;
@@ -874,14 +883,14 @@ int bmpanim_func66__sub0__sub2(void *fil, bmpAnim_t1 *t1)
 
 int bmpanim_func66__sub0__sub1(void *fil, bmpAnim_t1 *t1)
 {
-    tUtV *uv_end = &t1->field_4[t1->field_1C];
+    tUtV *uv_end = &t1->otl_buff[t1->otl_buff_cnt];
 
-    int16_t v17 = SWAP16(t1->field_1C);
+    int16_t v17 = SWAP16(t1->otl_buff_cnt);
 
     if ( fwrite_bmp(&v17, 2, 1, fil) != 1 )
         return 0;
 
-    tUtV *v6 = t1->field_4;
+    tUtV *v6 = t1->otl_buff;
 
     while( v6 != uv_end )
     {
@@ -913,20 +922,20 @@ int bmpanim_func66__sub0__sub1(void *fil, bmpAnim_t1 *t1)
 
 int bmpanim_func66__sub0__sub0(void *fil, bmpAnim_t1 *t1)
 {
-    int16_t cnt = SWAP16(t1->t2_cnt);
+    int16_t cnt = SWAP16(t1->frame_cnt);
 
     if ( fwrite_bmp(&cnt, 2, 1, fil) != 1 )
         return 0;
 
-    for(int i = 0; i < t1->t2_cnt; i++)
+    for(int i = 0; i < t1->frame_cnt; i++)
     {
         bmpanm_loc lc;
 
-        bmpAnim_t2 *v6 = &t1->t2[i];
+        bmpAnim_t2 *v6 = &t1->start_frame[i];
 
-        lc.a = SWAP32(v6->field_8);
-        lc.frame_id = SWAP16(v6->field_C);
-        lc.uv_id = SWAP16(v6->field_E);
+        lc.frm_time = SWAP32(v6->frm_time);
+        lc.frame_id = SWAP16(v6->bitm_index);
+        lc.uv_id = SWAP16(v6->otl_index);
 
         if ( fwrite_bmp(&lc, 8, 1, fil) != 1 )
             return 0;
@@ -976,7 +985,7 @@ int bmpanim_func66__sub0(bmpAnim_t1 *t1, const char *resName, MFILE *a3)
 
 size_t NC_STACK_bmpanim::rsrc_func66(rsrc_func66_arg *sv)
 {
-    __NC_STACK_bmpanim *bmpanm = &this->stack__bmpanim;
+    __NC_STACK_bmpanim *bmpanm = &stack__bmpanim;
 
     if ( !bmpanm->bmpanm_intern )
         return 0;
@@ -1006,77 +1015,124 @@ void NC_STACK_bmpanim::bitmap_func130(bitmap_arg130 *arg)
 {
     __NC_STACK_bmpanim *bmpAnm = &this->stack__bmpanim;
 
-    if ( arg->field_4 == -1 )
+    if ( arg->frame_time == -1 )
     {
-        bmpAnim_t2 *t2 = &bmpAnm->t2_[ bmpAnm->field_12 ];
+        bmpAnim_t2 *t2 = &bmpAnm->current_frame[ bmpAnm->frm_adds ];
 
-        if ( t2 == bmpAnm->bmpanm_intern->t2_end )
+        if ( t2 == bmpAnm->bmpanm_intern->end_frame )
         {
-            if ( bmpAnm->field_10 )
+            if ( bmpAnm->anim_type )
             {
                 t2--;
-                bmpAnm->field_12 = -1;
+                bmpAnm->frm_adds = -1;
             }
             else
             {
-                t2 = bmpAnm->bmpanm_intern->t2;
+                t2 = bmpAnm->bmpanm_intern->start_frame;
             }
         }
-        else if ( t2 < bmpAnm->bmpanm_intern->t2 )
+        else if ( t2 < bmpAnm->bmpanm_intern->start_frame )
         {
             t2++;
-            bmpAnm->field_12 = 1;
+            bmpAnm->frm_adds = 1;
         }
 
-        bmpAnm->t2_ = t2;
+        bmpAnm->current_frame = t2;
         arg->pbitm = t2->bitm;
-        arg->opl2 = t2->opls;
+        arg->outline = t2->outline;
     }
     else
     {
-        if ( arg->field_0 != bmpAnm->field_8 )
+        if ( arg->time_stmp != bmpAnm->time_stmp )
         {
-            bmpAnm->field_8 = arg->field_0;
+            bmpAnm->time_stmp = arg->time_stmp;
 
-            bmpAnim_t2 *t2 = bmpAnm->t2_;
-            int v8 = arg->field_4 + bmpAnm->field_C;
+            bmpAnim_t2 *t2 = bmpAnm->current_frame;
+            int v8 = arg->frame_time + bmpAnm->time_ovr;
 
-            while ( v8 - t2->field_8 >= 0 )
+            while ( v8 - t2->frm_time >= 0 )
             {
-                v8 = v8 - t2->field_8;
+                v8 = v8 - t2->frm_time;
 
-                t2 += bmpAnm->field_12;
+                t2 += bmpAnm->frm_adds;
 
-                if ( t2 == bmpAnm->bmpanm_intern->t2_end )
+                if ( t2 == bmpAnm->bmpanm_intern->end_frame )
                 {
-                    if ( bmpAnm->field_10 )
+                    if ( bmpAnm->anim_type )
                     {
                         t2--;
-                        bmpAnm->field_12 = -1;
+                        bmpAnm->frm_adds = -1;
                     }
                     else
                     {
-                        t2 = bmpAnm->bmpanm_intern->t2;
+                        t2 = bmpAnm->bmpanm_intern->start_frame;
                     }
                 }
-                else if ( t2 < bmpAnm->bmpanm_intern->t2 )
+                else if ( t2 < bmpAnm->bmpanm_intern->start_frame )
                 {
                     t2++;
-                    bmpAnm->field_12 = 1;
+                    bmpAnm->frm_adds = 1;
                 }
             }
 
-            bmpAnm->field_C = v8;
-            bmpAnm->t2_ = t2;
+            bmpAnm->time_ovr = v8;
+            bmpAnm->current_frame = t2;
             arg->pbitm = t2->bitm;
-            arg->opl2 = t2->opls;
+            arg->outline = t2->outline;
         }
         else
         {
-            arg->pbitm = bmpAnm->t2_->bitm;
-            arg->opl2 = bmpAnm->t2_->opls;
+            arg->pbitm = bmpAnm->current_frame->bitm;
+            arg->outline = bmpAnm->current_frame->outline;
         }
     }
+}
+
+
+
+void NC_STACK_bmpanim::setBANM_animType(int newType)
+{
+    stack__bmpanim.anim_type = newType;
+}
+
+bitmap_intern * NC_STACK_bmpanim::getBMD_pBitmap()
+{
+    return stack__bmpanim.current_frame->bitm;
+}
+
+int NC_STACK_bmpanim::getBMD_width()
+{
+    return 0;
+}
+
+int NC_STACK_bmpanim::getBMD_height()
+{
+    return 0;
+}
+
+void *NC_STACK_bmpanim::getBMD_buffer()
+{
+    return NULL;
+}
+
+const char *NC_STACK_bmpanim::getBANM_name()
+{
+    return getRsrc_name();
+}
+
+const char *NC_STACK_bmpanim::getBANM_classname()
+{
+    return stack__bmpanim.bmpanm_intern->className;
+}
+
+int NC_STACK_bmpanim::getBANM_framecnt()
+{
+    return stack__bmpanim.bmpanm_intern->frame_cnt;
+}
+
+int NC_STACK_bmpanim::getBANM_animtype()
+{
+    return stack__bmpanim.anim_type;
 }
 
 

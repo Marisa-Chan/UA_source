@@ -3,21 +3,9 @@
 
 #include "raster.h"
 
-struct __attribute__((packed)) UA_PALENTRY
-{
-    BYTE r;
-    BYTE g;
-    BYTE b;
-};
-
-struct __attribute__((packed)) UA_PALETTE
-{
-    UA_PALENTRY pal_entries[256];
-};
-
 struct __NC_STACK_display
 {
-    UA_PALENTRY palette[256];
+    UA_PALETTE palette;
     UA_PALETTE field_300[8];
     bitmap_intern *pointer_bitm;
     int field_1b04;
@@ -29,7 +17,7 @@ struct rstr_261_arg
     int pal_id;
     int entrie_id;
     int pal_num;
-    UA_PALENTRY *pal_entries;
+    UA_PALETTE *palette;
 };
 
 struct rstr_262_arg
@@ -79,7 +67,7 @@ public:
     virtual void display_func270(bitmap_intern **);
     virtual void display_func271(stack_vals *stak) {};
     virtual void display_func272(stack_vals *) {};
-    virtual UA_PALENTRY * display_func273(rstr_261_arg *arg);
+    virtual UA_PALETTE * display_func273(rstr_261_arg *arg);
     virtual void display_func274(const char **);
 
 
@@ -96,6 +84,18 @@ public:
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_display();
     };
+
+    enum DISP_ATT
+    {
+        DISP_ATT_DISPLAY_ID = 0x80004000,
+        DISP_ATT_DISPLAY_INF = 0x80004001,
+    };
+
+    //Set
+    virtual void setBMD_palette(UA_PALETTE *);
+
+    //Get
+    virtual UA_PALETTE *getBMD_palette();
 
     //Data
     static const NewClassDescr description;

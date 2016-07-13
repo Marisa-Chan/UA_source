@@ -1857,7 +1857,7 @@ void sb_0x4f8f64(_NC_STACK_ypaworld *yw)
     pcur = sb_0x4f8f64__sub0(yw, pcur);
     fntcmd_set_end(&pcur);
 
-    sub_423288(&arg);
+    GFXe.drawText(&arg);
 }
 
 void sub_4C157C(_NC_STACK_ypaworld *yw)
@@ -3365,13 +3365,13 @@ void sb_0x4d7c08__sub0__sub1()
         w3d_a209 v0;
         v0 = bzda.cmdstrm;
 
-        sub_423288(&v0);
+        GFXe.drawText(&v0);
 
         if ( !(gui_lstvw.cmd_flag & 0x20) )
         {
             v0 = gui_lstvw.cmdstrm;
 
-            sub_423288(&v0);
+            GFXe.drawText(&v0);
         }
     }
 }
@@ -3409,7 +3409,7 @@ void sb_0x4d7c08__sub0(_NC_STACK_ypaworld *yw)
                         v6 = 1;
                 }
 
-                sub_423288(&v8);
+                GFXe.drawText(&v8);
 
                 if ( v6 )
                     lstnode->field_1C8(yw);
@@ -9283,7 +9283,7 @@ void sb_0x4d7c08__sub0__sub0(_NC_STACK_ypaworld *yw)
     arg.cmdbuf = byte_5A7650;
     arg.includ = 0;
 
-    sub_423288(&arg);
+    GFXe.drawText(&arg);
 }
 
 
@@ -10282,7 +10282,7 @@ void sb_0x4d7c08__sub0__sub4(_NC_STACK_ypaworld *yw)
     v20.cmdbuf = byte_5C8DB0;
     v20.includ = 0;
 
-    sub_423288(&v20);
+    GFXe.drawText(&v20);
 
     yw->hudi.field_18 = NULL;
 }
@@ -10915,7 +10915,7 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(_NC_STACK_ypaworld *yw)
 
     fntcmd_set_end(&pcur);
 
-    sub_423288(&post_rndr);
+    GFXe.drawText(&post_rndr);
 }
 
 void sb_0x4d7c08__sub0__sub4__sub2(_NC_STACK_ypaworld *yw)

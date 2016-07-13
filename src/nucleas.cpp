@@ -5,7 +5,7 @@
 const NewClassDescr NC_STACK_nucleus::description("nucleus.class", &newinstance);
 
 
-void nucleus_func0__sub0(NC_STACK_nucleus *a1, stack_vals *a2)
+void NC_STACK_nucleus::nucleus_func0__sub0(stack_vals *a2)
 {
     while ( 1 )
     {
@@ -23,14 +23,10 @@ void nucleus_func0__sub0(NC_STACK_nucleus *a1, stack_vals *a2)
         }
         else
         {
-            if ( a2->id == 0x80000000 )
+            if ( a2->id == NC_ATT_NAME )
             {
                 if ( a2->value )
-                {
-                    a1->NAME = (char *)AllocVec(33, 1);
-                    if ( a1->NAME )
-                        strncpy(a1->NAME, (const char *)a2->value, 32);
-                }
+                    setName((const char *)a2->value);
             }
             a2++;
         }
@@ -41,16 +37,19 @@ void nucleus_func0__sub0(NC_STACK_nucleus *a1, stack_vals *a2)
 
 size_t NC_STACK_nucleus::func0(stack_vals *stack)
 {
-    nucleus_func0__sub0(this, stack);
+    nucleus_func0__sub0(stack);
     return 1;
 }
 
 size_t NC_STACK_nucleus::func1(stack_vals *)
 {
+    if (NAME)
+        free(NAME);
+
     return 1;
 }
 
-void nucleus_setter(NC_STACK_nucleus *a1, stack_vals *a2)
+void NC_STACK_nucleus::nucleus_setter(stack_vals *a2)
 {
     while ( 1 )
     {
@@ -68,26 +67,9 @@ void nucleus_setter(NC_STACK_nucleus *a1, stack_vals *a2)
         }
         else
         {
-            if ( a2->id == 0x80000000 )
-            {
-                if ( a2->value )
-                {
-                    if (a1->NAME == NULL)
-                    {
-                        a1->NAME = (char *)AllocVec(33, 1);
-                        if ( a1->NAME )
-                            strncpy(a1->NAME, (const char *)a2->value, 32);
-                    }
-                    else
-                        strncpy(a1->NAME, (const char *)a2->value, 32);
+            if ( a2->id == NC_ATT_NAME )
+                setName( (const char *)a2->value );
 
-                }
-                else if (a1->NAME != NULL )
-                {
-                    nc_FreeMem(a1->NAME);
-                    a1->NAME = NULL;
-                }
-            }
             a2++;
         }
     }
@@ -95,13 +77,13 @@ void nucleus_setter(NC_STACK_nucleus *a1, stack_vals *a2)
 
 size_t NC_STACK_nucleus::func2(stack_vals *a3)
 {
-    nucleus_setter(this, a3);
+    nucleus_setter(a3);
 
     return 1;
 }
 
 
-void nucleus_getter(NC_STACK_nucleus *a1, stack_vals *a2)
+void NC_STACK_nucleus::nucleus_getter(stack_vals *a2)
 {
     while ( 1 )
     {
@@ -119,12 +101,10 @@ void nucleus_getter(NC_STACK_nucleus *a1, stack_vals *a2)
         }
         else
         {
-            if ( a2->id == 0x80000000 )
-                *(char **)a2->value = a1->NAME;
-            else if ( a2->id == 0x80000001 )
-                *(void **)a2->value = NULL;
-            else if ( a2->id == 0x80000002 )
-                *(const char **)a2->value = a1->getClassName();
+            if ( a2->id == NC_ATT_NAME )
+                *(const char **)a2->value = getName();
+            else if ( a2->id == NC_ATT_CLASSNAME )
+                *(const char **)a2->value = getClassName();
             a2++;
         };
     }
@@ -133,7 +113,7 @@ void nucleus_getter(NC_STACK_nucleus *a1, stack_vals *a2)
 
 size_t NC_STACK_nucleus::func3(stack_vals *stk)
 {
-    nucleus_getter(this, stk);
+    nucleus_getter(stk);
 
     return 1;
 }
@@ -163,7 +143,7 @@ size_t NC_STACK_nucleus::func5(MFILE **file)
                 return 0;
             }
 
-            call_vtbl(this, 2, 0x80000000, a4, 0,0);  // nucleus::SetName(new_name)
+            setName(a4);
             read_next_IFF(mfile, 2);
         }
         else
@@ -193,6 +173,33 @@ size_t NC_STACK_nucleus::func6(MFILE **val)
         return 1;
     }
     return 0;
+}
+
+void NC_STACK_nucleus::setName(const char *newName)
+{
+    if ( newName )
+    {
+        if (NAME == NULL)
+        {
+            NAME = (char *)calloc(1, 33);
+
+            if ( NAME )
+                strncpy(NAME, newName, 32);
+        }
+        else
+            strncpy(NAME, newName, 32);
+
+    }
+    else if (NAME != NULL )
+    {
+        free(NAME);
+        NAME = NULL;
+    }
+}
+
+const char *NC_STACK_nucleus::getName()
+{
+    return NAME;
 }
 
 

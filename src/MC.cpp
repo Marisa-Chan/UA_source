@@ -147,13 +147,7 @@ stored_functions_engine *init_engine(unsigned int engineID)
     engine.value.pval = v11;
     stored_functions_engine *engine_vtbl = NULL;
 
-    if (engineID == MC2_GFX_ENGINE)
-    {
-        engineFuncs = &engines.setted_gfx_engine;
-        engine_vtbl = &gfx_engine_vtbl;
-        engine.key = "gfx.engine";
-    }
-    else if (engineID == MC2_AUDIO_ENGINE)
+    if (engineID == MC2_AUDIO_ENGINE)
     {
         engineFuncs = &engines.setted_audio_engine;
         engine_vtbl = &miles_engine_vtbl;
@@ -198,10 +192,6 @@ void deinit_engine(unsigned int engineID)
 
     switch(engineID)
     {
-    case MC2_GFX_ENGINE:
-////		klass = &engines.gfx_engine__unk_class;
-        engine = engines.setted_gfx_engine;
-        break;
     case MC2_AUDIO_ENGINE:
 ////		klass = &engines.audio_engine__unk_class;
         engine = engines.setted_audio_engine;

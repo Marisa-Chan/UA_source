@@ -5,7 +5,8 @@
 #include <ddraw.h>
 #include "engine_tform.h"
 
-extern stored_functions_engine gfx_engine_vtbl;
+class NC_STACK_win3d;
+class NC_STACK_bitmap;
 
 struct tile_xy
 {
@@ -15,13 +16,25 @@ struct tile_xy
 
 struct texStru;
 
+struct __attribute__((packed)) UA_PALENTRY
+{
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+};
+
+struct __attribute__((packed)) UA_PALETTE
+{
+    UA_PALENTRY pal_entries[256];
+};
+
 struct bitmap_intern
 {
     void *buffer;
     __int16 width;
     __int16 height;
     int pitch;
-    BYTE *pallete;
+    UA_PALETTE *pallete;
     char flags;
     char field_11;
     __int16 field_12;
@@ -32,7 +45,7 @@ struct bitmap_intern
 
 struct tiles_stru
 {
-    NC_STACK_nucleus *font_image; //FFFFFIX ME
+    NC_STACK_bitmap *font_image;
     bitmap_intern *field_4;
     void  *field_8;
     tile_xy *chars;
@@ -72,12 +85,6 @@ struct polysDatSub
 };
 
 
-void sub_4231FC(void *dat);
-void gfxEngine__getter(unsigned int a1, ...);
-void gfxEngine__setter(unsigned int a1, ...);
-
-tiles_stru * win3d_select_tileset(int id);
-void sub_423288(w3d_a209 *arg);
 
 struct wdd_font_st1
 {
@@ -101,14 +108,46 @@ struct wdd_font
     int TextColor;
 };
 
-struct windd__window_params
+struct gfx_window
 {
     HWND hwnd;
     int width;
     int height;
 };
 
-void gfx_set_tileset(tiles_stru *a1, int id);
-int win3d__load_palette_from_ilbm(const char *palette);
+
+class GFXEngine
+{
+public:
+    GFXEngine(): cls3D(NULL) {};
+    int init();
+    void deinit();
+    int getScreenH();
+    int getScreenW();
+    NC_STACK_win3d *getC3D();
+    gfx_window *getWindow();
+
+    void setResolution(int res);
+    void setTracyRmp(bitmap_intern *rmp);
+    void setShadeRmp(bitmap_intern *rmp);
+
+    int loadPal(const char *palette_ilbm);
+
+    void setTileset(tiles_stru *tileset, int id);
+    tiles_stru * getTileset(int id);
+    void drawText(w3d_a209 *arg);
+
+    static void defRenderFunc(void *dat);
+
+private:
+    int sub_422CE8(const char *display, const char *display2, int gfxmode);
+
+//Data
+
+private:
+    NC_STACK_win3d *cls3D;
+};
+
+extern GFXEngine GFXe;
 
 #endif // ENGINE_GFX_H_INCLUDED

@@ -6,43 +6,39 @@
 
 struct texStru;
 
-struct bitmap__opl
+struct pixel_2d
 {
-    __int16 field_0;
-    __int16 field_2;
-    __int16 field_4;
-    __int16 field_6;
-    __int16 field_8;
-    __int16 field_A;
-    __int16 field_C;
-    __int16 field_E;
-};
-
-union bitmap_uniopl
-{
-    bitmap__opl *opl1;
-    tUtV *opl2;
+    int x;
+    int y;
+    int32_t zbuff;
+    uint32_t color;
+    int mapx;
+    int mapy;
+    int16_t flags;
 };
 
 struct __NC_STACK_bitmap
 {
     bitmap_intern *bitm_intern;
-    bitmap_uniopl field_4;
-    int field_8;
+    tUtV * outline_coords;
+    int flags;
 };
 
 enum BITMAP_FLAG
 {
+    BITMAP_FLAG_EXTDATA  = 0x1,
+    BITMAP_FLAG_TEXTURE  = 0x2,
     BITMAP_FLAG_HAS_PALETTE  = 0x4,
-    BITMAP_FLAG_SOFTWARE  = 0x8
+    BITMAP_FLAG_SYSMEM  = 0x8,
+    BITMAP_FLAG_TRANSP  = 0x10
 };
 
 struct bitmap_arg130
 {
-    int field_0;
-    int field_4;
+    int time_stmp;
+    int frame_time;
     bitmap_intern *pbitm;
-    tUtV *opl2;
+    tUtV *outline;
 };
 
 class NC_STACK_bitmap: public NC_STACK_rsrc
@@ -71,6 +67,34 @@ public:
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_bitmap();
     };
+
+    enum BMD_ATT
+    {
+        BMD_ATT_PBITMAP = 0x80002000,
+        BMD_ATT_OUTLINE = 0x80002001,
+        BMD_ATT_WIDTH = 0x80002002,
+        BMD_ATT_HEIGHT = 0x80002003,
+        BMD_ATT_BUFFER = 0x80002005,
+        BMD_ATT_HAS_COLORMAP = 0x80002006,
+        BMD_ATT_PCOLORMAP = 0x80002007,
+        BMD_ATT_TEXTURE = 0x80002008,
+        BMD_ATT_TEXTURE_SYS = 0x80002009 // In system memory
+    };
+
+    //Set
+    virtual void setBMD_outline(pixel_2d *);
+    virtual void setBMD_palette(UA_PALETTE *);
+
+    //Get
+    virtual bitmap_intern * getBMD_pBitmap();
+    virtual int getBMD_width();
+    virtual int getBMD_height();
+    virtual void *getBMD_buffer();
+    virtual int getBMD_hasPalette();
+    virtual UA_PALETTE *getBMD_palette();
+
+
+    int sub_416704(pixel_2d *a3);
 
     //Data
     static const NewClassDescr description;

@@ -27,6 +27,8 @@ size_t call_method(NC_STACK_nucleus *a1, int idx);
 size_t call_vtbl(NC_STACK_nucleus *a1, int idx, ...);
 
 NC_STACK_nucleus * init_get_class(const char *classname, ...);
+NC_STACK_nucleus * init_get_class(const char *classname, stack_vals *stak);
+
 int delete_class_obj(NC_STACK_nucleus *cls);
 stack_vals * find_id_in_stack2(unsigned int id, stack_vals *a2);
 size_t find_id_in_stack_def_val(unsigned int find_id, size_t def_value, stack_vals *a3);

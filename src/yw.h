@@ -870,7 +870,7 @@ struct _NC_STACK_ypaworld
     skeleton_64_stru *colcomp_sklt_intrn;
     NC_STACK_ilbm *tracyrmp_ilbm;
     NC_STACK_ilbm *shadermp_ilbm;
-    NC_STACK_display *win3d;
+    NC_STACK_win3d *win3d;
     int field_138c;
     int str17_NOT_FALSE;
     slurp slurps1[6][6];

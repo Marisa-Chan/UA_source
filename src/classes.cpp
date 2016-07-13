@@ -61,6 +61,32 @@ size_t call_vtbl(NC_STACK_nucleus *a1, int idx, ...)
     return 0;
 }
 
+NC_STACK_nucleus * init_get_class(const char *classname, stack_vals *stak)
+{
+    stack_vals tmp[1];
+    tmp[0].id = 0;
+    tmp[0].value = 0;
+
+    if (stak == NULL)
+        stak = tmp;
+
+    const NewClassDescr *cls_descr = FIND2(&newclasses, classname);
+
+    if (!cls_descr)
+        return NULL;
+
+    NC_STACK_nucleus *class_examplar = cls_descr->newinstance();
+
+    //class object constructor
+    if ( !class_examplar->func0(stak) )
+    {
+        delete class_examplar;
+        return NULL;
+    }
+
+    return class_examplar;
+}
+
 NC_STACK_nucleus * init_get_class(const char *classname, ...)
 {
     stack_vals vals[128];
@@ -71,21 +97,7 @@ NC_STACK_nucleus * init_get_class(const char *classname, ...)
     va_to_arr(vals, 128, va);
     va_end(va);
 
-    const NewClassDescr *cls_descr = FIND2(&newclasses, classname);
-
-    if (!cls_descr)
-        return NULL;
-
-    NC_STACK_nucleus *class_examplar = cls_descr->newinstance();
-
-    //class object constructor
-    if ( !class_examplar->func0(vals) )
-    {
-        delete class_examplar;
-        return NULL;
-    }
-
-    return class_examplar;
+    return init_get_class(classname, vals);
 }
 
 

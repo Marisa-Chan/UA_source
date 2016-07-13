@@ -24,7 +24,6 @@ EXTR char cmdline_copy[512];
 EXTR g_engines engines;
 
 
-EXTR stored_functions_engine* pgfx_engine;
 EXTR stored_functions_engine* paudio_engine;
 EXTR stored_functions_engine* pinput_engine;
 EXTR stored_functions_engine* ptform_engine;

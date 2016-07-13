@@ -241,6 +241,24 @@ public:
         return new NC_STACK_raster();
     };
 
+    enum RSTR_ATT
+    {
+        RSTR_ATT_FGPEN = 0x80003000,
+        RSTR_ATT_BGPEN = 0x80003001,
+        RSTR_ATT_SHADE_RMP = 0x80003002,
+        RSTR_ATT_TRACY_RMP = 0x80003003,
+        RSTR_ATT_FGAPEN = 0x80003004
+    };
+
+    //Set
+    virtual void setRSTR_FGpen(uint32_t pen);
+    virtual void setRSTR_BGpen(uint32_t pen);
+    virtual void setRSTR_shdRmp(bitmap_intern *rmp);
+    virtual void setRSTR_trcRmp(bitmap_intern *rmp);
+    virtual void setRSTR_FGApen(uint32_t pen);
+
+    //Get
+
     //Data
     static const NewClassDescr description;
 

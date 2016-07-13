@@ -12,7 +12,6 @@ struct g_engines
     int __AllocSize;
     int __AllocMax;
     int file_handles;
-    stored_functions_engine *setted_gfx_engine;
     stored_functions_engine *setted_audio_engine;
     stored_functions_engine *setted_input_engine;
     stored_functions_engine *setted_tform_engine;

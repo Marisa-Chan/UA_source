@@ -236,6 +236,25 @@ public:
         return new NC_STACK_windd();
     };
 
+    enum WDD_ATT
+    {
+        WDD_ATT_CURSOR = 0x80005000,
+        WDD_ATT_TEXFILT = 0x80005001,
+        WDD_ATT_DIS_LOWRES = 0x80005002,
+        WDD_ATT_16BIT_TEX = 0x80005003,
+        WDD_ATT_DRAW_PRIM = 0x80005004
+    };
+
+    virtual void setWDD_cursor(int arg);
+    virtual void setWDD_disLowRes(int arg);
+    virtual void setWDD_16bitTex(int arg);
+    virtual void setWDD_drawPrim(int arg);
+
+    virtual int getDISP_displID();
+    virtual gfx_window *getDISP_displInf();
+    virtual int getWDD_16bitTex();
+    virtual int getWDD_drawPrim();
+
     //Data
     static const NewClassDescr description;
 

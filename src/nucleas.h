@@ -43,6 +43,24 @@ public:
         return new NC_STACK_nucleus();
     };
 
+    enum NC_ATT
+    {
+        NC_ATT_NAME = 0x80000000,
+        NC_ATT_CLASSNAME = 0x80000002
+    };
+
+    //Set
+    virtual void setName(const char *);
+
+    //Get
+    virtual const char * getName();
+
+    //Non-virtual methods
+    void nucleus_func0__sub0(stack_vals *a2);
+    void nucleus_setter(stack_vals *a2);
+    void nucleus_getter(stack_vals *a2);
+
+
     //Data
     static const NewClassDescr description;
 

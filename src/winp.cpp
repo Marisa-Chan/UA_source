@@ -1197,7 +1197,7 @@ size_t NC_STACK_winp::func0(stack_vals *stak)
 
     __NC_STACK_winp *winp = &this->stack__winp;
     winp->field_4 = -1;
-    windd__window_params *v8 = (windd__window_params *)find_id_in_stack_def_val(0x80002000, 0, stak);
+    gfx_window *v8 = (gfx_window *)find_id_in_stack_def_val(0x80002000, 0, stak);
     if ( v8 )
     {
         winp->hWND = v8->hwnd;
@@ -1223,7 +1223,7 @@ size_t NC_STACK_winp::func2(stack_vals *stak)
 {
     __NC_STACK_winp *winp = &this->stack__winp;
 
-    windd__window_params *v7 = (windd__window_params *)find_id_in_stack_def_val(0x80002000, 0, stak);
+    gfx_window *v7 = (gfx_window *)find_id_in_stack_def_val(0x80002000, 0, stak);
     if ( v7 )
     {
         if ( winp->hWND )

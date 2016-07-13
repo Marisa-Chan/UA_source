@@ -269,7 +269,7 @@ void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, str
 void yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
 {
     lstvw_updlimits(yw, &usr->input_listview, -2, -2);
-    win3d_select_tileset(0);
+    GFXe.getTileset(0);
 
     char *v4 = lstvw_up_border(yw, &usr->input_listview, usr->input_listview.data_cmdbuf, 0, "uvw");
 
@@ -384,7 +384,7 @@ void yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 v21;
     v21 = usr->input_listview.cmdstrm;
 
-    sub_423288(&v21);
+    GFXe.drawText(&v21);
 }
 
 
@@ -884,7 +884,7 @@ void fill_videmodes_list(UserData *usr)
         nc_FreeMem(nod);
     }
 
-    gfxEngine__getter(0x8000300D, &usr->p_ypaworld->win3d, 0);
+    usr->p_ypaworld->win3d = GFXe.getC3D();
 
     windd_arg256 warg_256;
     warg_256.sort_id = 0;
@@ -1093,15 +1093,13 @@ void ypaworld_func154__sub0(_NC_STACK_ypaworld *yw)
 {
     if ( yw->movies.movies_names_present[0] )
     {
-        gfxEngine__getter(0x8000300D, &yw->win3d, 0);
-
+        yw->win3d = GFXe.getC3D();
         char buf[256];
 
         sub_412810(yw->movies.game_intro, buf, 256);
         const char *v5 = buf;
 
-        NC_STACK_windd *windd = dynamic_cast<NC_STACK_windd *>(yw->win3d);
-        windd->windd_func323(&v5);
+        yw->win3d->windd_func323(&v5);
 
         sub_412D28(&input_states);
         input_states.downed_key = 0;
@@ -1593,13 +1591,13 @@ void sb_0x46aa8c(UserData *usr)
         {
             usr->GFX_flags |= 4;
             yw->field_73CE |= 0x40;
-            call_vtbl(yw->win3d, 2, 0x80005000, 1, 0);
+            yw->win3d->setWDD_cursor(1);
         }
         else
         {
             usr->GFX_flags &= 0xFB;
             yw->field_73CE &= 0xBF;
-            call_vtbl(yw->win3d, 2, 0x80005000, 0, 0);
+            yw->win3d->setWDD_cursor(0);
         }
 
     }
@@ -1677,12 +1675,12 @@ void sb_0x46aa8c(UserData *usr)
         if ( usr->field_0x13a8 & 0x10 )
         {
             usr->GFX_flags |= 0x10;
-            call_vtbl(yw->win3d, 2, 0x80005003, 1, 0);
+            yw->win3d->setWDD_16bitTex(1);
         }
         else
         {
             usr->GFX_flags &= 0xEF;
-            call_vtbl(yw->win3d, 2, 0x80005003, 0, 0);
+            yw->win3d->setWDD_16bitTex(0);
         }
 
         resolution = yw->game_default_res;
@@ -1695,12 +1693,12 @@ void sb_0x46aa8c(UserData *usr)
         if ( usr->field_0x13a8 & 8 )
         {
             usr->GFX_flags |= 8;
-            call_vtbl(yw->win3d, 2, 0x80005004, 1, 0);
+            yw->win3d->setWDD_drawPrim(1);
         }
         else
         {
             usr->GFX_flags &= 0xF7;
-            call_vtbl(yw->win3d, 2, 0x80005004, 0, 0);
+            yw->win3d->setWDD_drawPrim(0);
         }
 
 

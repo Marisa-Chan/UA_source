@@ -9,16 +9,16 @@ struct texStru;
 
 struct bmpAnim_t2
 {
-    tUtV *opls;
+    tUtV *outline;
     bitmap_intern *bitm;
-    int field_8;
-    int16_t field_C;
-    int16_t field_E;
+    int frm_time;
+    int16_t bitm_index;
+    int16_t otl_index;
 };
 
 struct bmpAnim_t1_objs
 {
-    NC_STACK_bitmap *clsObj;
+    NC_STACK_bitmap *bitmObj;
     bitmap_intern *bitm_intern;
     char *title;
 };
@@ -26,30 +26,30 @@ struct bmpAnim_t1_objs
 struct bmpAnim_t1
 {
     char *titles;
-    tUtV *field_4;
-    bmpAnim_t1_objs *frames;
+    tUtV *otl_buff;
+    bmpAnim_t1_objs *bitm_buff;
     char *className;
-    bmpAnim_t2 *t2;
-    bmpAnim_t2 *t2_end;
-    int16_t t2_cnt;
-    int16_t field_1A;
-    int16_t field_1C;
-    int16_t frame_count;
+    bmpAnim_t2 *start_frame;
+    bmpAnim_t2 *end_frame;
+    int16_t frame_cnt;
+    int16_t titles_size;
+    int16_t otl_buff_cnt;
+    int16_t bitm_buff_cnt;
 };
 
 struct __NC_STACK_bmpanim
 {
     bmpAnim_t1 *bmpanm_intern;
-    bmpAnim_t2 *t2_;
-    int field_8;
-    int field_C;
-    int16_t field_10;
-    int16_t field_12;
+    bmpAnim_t2 *current_frame;
+    int time_stmp;
+    int time_ovr;
+    int16_t anim_type;
+    int16_t frm_adds;
 };
 
 struct __attribute__((packed)) bmpanm_loc
 {
-    int32_t a;
+    int32_t frm_time;
     int16_t frame_id;
     int16_t uv_id;
 };
@@ -81,6 +81,30 @@ public:
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_bmpanim();
     };
+
+    enum BANM_ATT
+    {
+        BANM_ATT_NAME = 0x80003000,
+        BANM_ATT_CLASSNAME = 0x80003001,
+        BANM_ATT_FILE_TITLES = 0x80003002,
+        BANM_ATT_OUTLINES = 0x80003003,
+        BANM_ATT_ANIMTYPE = 0x80003004,
+        BANM_ATT_FRAMECNT = 0x80003005,
+        BANM_ATT_SEQDATA = 0x80003006
+    };
+
+    //Set
+    virtual void setBANM_animType(int newType);
+
+    //Get
+    virtual bitmap_intern * getBMD_pBitmap();
+    virtual int getBMD_width();
+    virtual int getBMD_height();
+    virtual void *getBMD_buffer();
+    virtual const char *getBANM_name();
+    virtual const char *getBANM_classname();
+    virtual int getBANM_framecnt();
+    virtual int getBANM_animtype();
 
     //Data
     static const NewClassDescr description;

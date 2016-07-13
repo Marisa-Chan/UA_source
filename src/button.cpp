@@ -82,12 +82,8 @@ size_t NC_STACK_button::func0(stack_vals *stak)
     {
         if ( btn->btn_width > 0 && btn->btn_height > 0 )
         {
-            int width, height;
-
-            gfxEngine__getter(0x80003003, &width, 0x80003004, &height, 0);
-
-            btn->screen_width = width;
-            btn->screen_height = height;
+            btn->screen_width = GFXe.getScreenW();
+            btn->screen_height = GFXe.getScreenH();
         }
         else
         {
@@ -379,7 +375,7 @@ size_t NC_STACK_button::button_func64(button_64_arg *arg)
     if ( sbt->button_type == 3 )
         bt->fnt_height = 0;
     else
-        bt->fnt_height = win3d_select_tileset(arg->tileset_up)->font_height;
+        bt->fnt_height = GFXe.getTileset( arg->tileset_up )->font_height;
 
     btn->field_10++;
 
@@ -452,7 +448,7 @@ size_t NC_STACK_button::button_func66(button_66arg *arg)
         if ( btn->field_d8[id]->button_type != 3 )
         {
             btn->field_18[id]->width = btn->field_d8[id]->width;
-            btn->field_18[id]->fnt_height = win3d_select_tileset(btn->field_d8[id]->tileset_down)->font_height;
+            btn->field_18[id]->fnt_height = GFXe.getTileset( btn->field_d8[id]->tileset_down )->font_height;
         }
 
         btn->field_d8[id]->state &= 0xFFFD;
@@ -735,7 +731,7 @@ void button_func70__sub1(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
         v6 = sbt->tileset_down;
     }
 
-    tiles_stru *v7 = win3d_select_tileset(v6);
+    tiles_stru *v7 = GFXe.getTileset(v6);
 
 
     char *v8 = *pbuf;
@@ -828,7 +824,7 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
         v7 = sbt->tileset_up;
     }
 
-    tiles_stru *v8 = win3d_select_tileset(v7);
+    tiles_stru *v8 = GFXe.getTileset(v7);
 
     int strwdth = 0;
 
@@ -973,7 +969,7 @@ size_t NC_STACK_button::button_func70(void *)
         arg209.cmdbuf = button_tmpbuf;
         arg209.includ = NULL;
 
-        sub_423288(&arg209);
+        GFXe.drawText(&arg209);
     }
 
     return 1;

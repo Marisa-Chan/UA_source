@@ -551,9 +551,7 @@ int yw_write_levelnum(_NC_STACK_ypaworld *yw, FILE *fil)
 
 void yw_write_map(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *bitmap, const char *padding, FILE *fil)
 {
-    bitmap_intern *bitm;
-
-    call_vtbl(bitmap, 3, 0x80002000, &bitm, 0);
+    bitmap_intern *bitm = bitmap->getBMD_pBitmap();
 
     if ( padding )
         fprintf(fil, padding);
@@ -583,8 +581,7 @@ void yw_write_ownermap(_NC_STACK_ypaworld *yw, FILE *fil)
 
     if ( bitmap )
     {
-        bitmap_intern *bitm;
-        call_vtbl(bitmap, 3, 0x80002000, &bitm, 0);
+        bitmap_intern *bitm = bitmap->getBMD_pBitmap();
 
         int sz = yw->sectors_maxY2 * yw->sectors_maxX2;
         uint8_t *outbf = (uint8_t *)bitm->buffer;
@@ -613,8 +610,7 @@ void yw_write_energymap(_NC_STACK_ypaworld *yw, FILE *fil)
 
     if ( bitmap )
     {
-        bitmap_intern *bitm;
-        call_vtbl(bitmap, 3, 0x80002000, &bitm, 0);
+        bitmap_intern *bitm = bitmap->getBMD_pBitmap();
 
         int sz = yw->sectors_maxY2 * yw->sectors_maxX2;
         uint8_t *outbf = (uint8_t *)bitm->buffer;

@@ -174,6 +174,8 @@ public:
         return new NC_STACK_win3d();
     };
 
+    virtual void setW3D_texFilt(int arg);
+
     //Data
     static const NewClassDescr description;
 

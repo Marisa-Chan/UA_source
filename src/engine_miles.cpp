@@ -965,8 +965,7 @@ void sb_0x424c74__sub3()
         v0++;
     }
 
-    NC_STACK_display *pwin3d;
-    gfxEngine__getter(0x8000300D, &pwin3d, 0);
+    NC_STACK_display *pwin3d = GFXe.getC3D();
 
     if ( pwin3d )
     {

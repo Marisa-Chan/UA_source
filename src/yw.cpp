@@ -358,11 +358,8 @@ size_t NC_STACK_ypaworld::func0(stack_vals *stak)
     }
     call_vtbl(this, 3, 0x80001020, &p_outPolys, 0x80001021, &p_polysdata, 0x80001022, &p_polysdata_end, 0);
 
-    int width, height;
-    gfxEngine__getter(0x80003003, &width, 0x80003004, &height, 0);
-
-    yw->screen_width = width;
-    yw->screen_height = height;
+    yw->screen_width = GFXe.getScreenW();
+    yw->screen_height = GFXe.getScreenH();
 
     init_list(&yw->bact_list);
     init_list(&yw->field_17a0);
@@ -762,7 +759,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
     {
         DWORD v92 = profiler_begin();
 
-        gfxEngine__getter(0x8000300D, &yw->win3d, 0);
+        yw->win3d = GFXe.getC3D();
 
         yw->field_7626 = 0;
         yw->b64_parms = arg;
@@ -878,7 +875,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             if ( !yw->field_138c )
             {
                 yw->win3d->display_func257(NULL);
-                call_vtbl(yw->win3d, 2, 0x80003001, 0, 0);
+                yw->win3d->setRSTR_BGpen(0);
                 yw->win3d->raster_func192(NULL);
             }
 
@@ -3469,8 +3466,7 @@ void sb_0x4e75e8__sub0(_NC_STACK_ypaworld *yw)
             regions[i].field_C = -10000;
         }
 
-        bitmap_intern *bitm;
-        call_vtbl(yw->LevelNet->ilbm_mask_map, 3, 0x80002000, &bitm, 0);
+        bitmap_intern *bitm = yw->LevelNet->ilbm_mask_map->getBMD_pBitmap();
 
         for (int y = 0; y < bitm->height; y++ )
         {
@@ -3544,8 +3540,7 @@ void sb_0x4e75e8(_NC_STACK_ypaworld *yw, int a2)
 
 int ypaworld_func156__sub2(_NC_STACK_ypaworld *yw)
 {
-    NC_STACK_display *win3d;
-    gfxEngine__getter(0x8000300D, &win3d, 0);
+    NC_STACK_display *win3d = GFXe.getC3D();
 
     ua_dRect v5;
     v5.x1 = -(yw->screen_width >> 1);
@@ -3603,7 +3598,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         return 0;
     }
 
-    gfxEngine__getter(0x8000300D, &yw->win3d, 0);
+    yw->win3d = GFXe.getC3D();
 
     if ( !yw->win3d )
     {
@@ -3618,8 +3613,6 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     yw->win3d->display_func263(&v233);
 
-    NC_STACK_windd *windd = dynamic_cast<NC_STACK_windd *>(yw->win3d);
-
     fill_videmodes_list(usr);
 
     wdd_func324arg v227;
@@ -3632,7 +3625,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     while ( 1 )
     {
-        windd->windd_func324(&v227);
+        yw->win3d->windd_func324(&v227);
         if ( !v227.name )
             break;
 
@@ -3659,23 +3652,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     if ( usr->GFX_flags & 4 )
     {
-        stack_vals tmp[2];
-        tmp[0].id = 0x80005000;
-        tmp[0].value = 1;
-        tmp[1].id = 0;
-        tmp[1].value = 0;
-
-        usr->p_ypaworld->win3d->func2(tmp);
+        usr->p_ypaworld->win3d->setWDD_cursor(1);
     }
     else
     {
-        stack_vals tmp[2];
-        tmp[0].id = 0x80005000;
-        tmp[0].value = 0;
-        tmp[1].id = 0;
-        tmp[1].value = 0;
-
-        usr->p_ypaworld->win3d->func2(tmp);
+        usr->p_ypaworld->win3d->setWDD_cursor(0);
     }
 
     set_keys_vals(yw);
@@ -5886,7 +5867,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         {
             int v284 = ((dword_5A50B6 - 3 * word_5A50C0) * 0.25 - 3 * word_5A50C0) * 0.25;
 
-            tiles_stru *v198 = win3d_select_tileset(8);
+            tiles_stru *v198 = GFXe.getTileset(8);
 
             btn_64arg.tileset_down = 16;
             btn_64arg.tileset_up = 16;
@@ -6600,8 +6581,7 @@ void sub_4476AC(_NC_STACK_ypaworld *yw)
 
     yw->field_2424++;
 
-    NC_STACK_display *w3d;
-    gfxEngine__getter(0x8000300D, &w3d, 0);
+    NC_STACK_win3d *w3d = GFXe.getC3D();
 
     const char *v7 = a1a;
 
@@ -6645,7 +6625,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 
     sub_423EFC(usr->field_3E, &stru_515034, &stru_515034, &stru_515040);
 
-    gfxEngine__getter(0x8000300D, &yw->win3d, 0);
+    yw->win3d = GFXe.getC3D();
 
     yw->win3d->display_func257(NULL);
 
@@ -6900,7 +6880,7 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
     recorder *repl = yw->replayer;
     DWORD v33 = profiler_begin();
 
-    gfxEngine__getter(0x8000300D, &yw->win3d, 0);
+    yw->win3d = GFXe.getC3D();
 
     yw->b64_parms = arg;
     yw->field_161c++;
@@ -6915,7 +6895,7 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
     yw->win3d->display_func257(NULL);
 
-    call_vtbl(yw->win3d, 2, 0x80003001, 0, 0);
+    yw->win3d->setRSTR_BGpen(0);
 
     yw->win3d->raster_func192(NULL);
 
@@ -7256,19 +7236,18 @@ size_t NC_STACK_ypaworld::ypaworld_func166(const char **langname)
 
         load_font(v11);
 
-        NC_STACK_win3d *win3d = NULL;
-        gfxEngine__getter(0x8000300D, &win3d, 0);
+        NC_STACK_win3d *win3d = GFXe.getC3D();
 
         if ( !strcasecmp( get_lang_string(yw->string_pointers_p2, 17, "FALSE"), "FALSE") )
         {
             if ( win3d )
-                call_vtbl(win3d, 2, 0x80005002, 0, 0);
+                win3d->setWDD_disLowRes(0);
             yw->str17_NOT_FALSE = 0;
         }
         else
         {
             if ( win3d )
-                call_vtbl(win3d, 2, 0x80005002, 1, 0);
+                win3d->setWDD_disLowRes(1);
             yw->str17_NOT_FALSE = 1;
         }
 
@@ -8178,12 +8157,11 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
 
     UserData *usr = yw->GameShell;
 
-    NC_STACK_display *win3d;
-    gfxEngine__getter(0x8000300D, &win3d, 0);
+    NC_STACK_win3d *win3d = GFXe.getC3D();
 
     int current_resolution;
 
-    call_vtbl(win3d, 3, 0x80004000, &current_resolution, 0);
+    current_resolution = win3d->getDISP_displID();
 
     if ( arg->resolution == current_resolution && !arg->make_changes )
         return 1;
@@ -8202,19 +8180,14 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
 
     inputEngine__setter(0x80001007, 0, 0);
 
-    gfxEngine__setter(0x80003007, arg->resolution, 0);
+    GFXe.setResolution( arg->resolution );
 
-    windd__window_params *a2a;
+    gfx_window *a2a = GFXe.getWindow();
 
-    gfxEngine__getter(0x80003007, &a2a, 0);
     inputEngine__setter(0x80001007, a2a, 0);
 
-    int width, height;
-
-    gfxEngine__getter(0x80003003, &width, 0x80003004, &height, 0);
-
-    yw->screen_width = width;
-    yw->screen_height = height;
+    yw->screen_width = GFXe.getScreenW();
+    yw->screen_height = GFXe.getScreenH();
 
     if ( v6 && !ypaworld_func156(usr))
     {
@@ -8222,15 +8195,13 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
 
         inputEngine__setter(0x80001007, 0, 0);
 
-        gfxEngine__setter(0x80003007, usr->p_ypaworld->shell_default_res, 0);
+        GFXe.setResolution( usr->p_ypaworld->shell_default_res );
 
-        gfxEngine__getter(0x80003007, &a2a, 0);
+        a2a = GFXe.getWindow();
         inputEngine__setter(0x80001007, a2a, 0);
 
-        gfxEngine__getter(0x80003003, &width, 0x80003004, &height, 0);
-
-        yw->screen_width = width;
-        yw->screen_height = height;
+        yw->screen_width = GFXe.getScreenW();
+        yw->screen_height = GFXe.getScreenH();
 
         if ( !ypaworld_func156(usr) )
         {
@@ -8238,15 +8209,15 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
         }
     }
 
-    gfxEngine__getter(0x8000300D, &win3d, 0);
+    win3d = GFXe.getC3D();
 
     if ( usr->GFX_flags & 4 )
     {
-        call_vtbl(win3d, 2, 0x80005000, 1, 0);
+        win3d->setWDD_cursor(1);
     }
     else
     {
-        call_vtbl(win3d, 2, 0x80005000, 0, 0);
+        win3d->setWDD_cursor(0);
     }
 
     if ( yw->screen_width >= 512 )

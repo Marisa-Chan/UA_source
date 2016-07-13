@@ -711,13 +711,13 @@ size_t NC_STACK_area::ade_func65(area_arg_65 *arg)
     {
         bitmap_arg130 bitm130;
 
-        bitm130.field_0 = arg->field_C;
-        bitm130.field_4 = arg->field_10;
+        bitm130.time_stmp = arg->field_C;
+        bitm130.frame_time = arg->field_10;
 
         area->ilbm1->bitmap_func130(&bitm130);
 
         datSub->pbitm = bitm130.pbitm;
-        skel133.field_C = bitm130.opl2;
+        skel133.field_C = bitm130.outline;
     }
     else
     {
@@ -766,7 +766,7 @@ size_t NC_STACK_area::ade_func65(area_arg_65 *arg)
         arg->outPolys->data = arg->polyDat;
         arg->outPolys++;
 
-        arg->polyDat->render_func = sub_4231FC;
+        arg->polyDat->render_func = GFXEngine::defRenderFunc;
         arg->polyDat = v19;
     }
     return 1;

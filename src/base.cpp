@@ -1159,11 +1159,11 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
         qsort(stru_59CC00, num, sizeof(polys), sub_430880);
 
     NC_STACK_win3d *win3d;
-    gfxEngine__getter(0x8000300D, &win3d, 0);
+    win3d = GFXe.getC3D();
 
 
     win3d->display_func257(NULL);
-    call_vtbl(win3d, 2, 0x80003001, 0, 0);
+    win3d->setRSTR_BGpen(0);
     win3d->raster_func192(NULL);
     win3d->raster_func213(NULL);
 

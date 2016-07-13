@@ -5,10 +5,7 @@
 
 struct __NC_STACK_ilbm
 {
-    char field_0;
-    char field_1;
-    char field_2;
-    char field_3;
+    uint32_t flags;
 };
 
 
@@ -21,7 +18,7 @@ struct __attribute__((packed)) BMHD_type
     char nPlanes;
     char masking;
     char compression;
-    char pad1;
+    char flags;
     WORD transparentColor;
     char xAspect;
     char yAspect;
@@ -33,7 +30,7 @@ struct __attribute__((packed)) VBMP_type
 {
     WORD width;
     WORD height;
-    WORD pad1;
+    WORD flags;
 };
 
 class NC_STACK_ilbm: public NC_STACK_bitmap
@@ -60,6 +57,18 @@ public:
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_ilbm();
     };
+
+    enum ILBM_ATT
+    {
+        ILBM_ATT_FMT = 0x80003000
+    };
+
+    virtual void setILBM_saveFmt(int);
+
+    virtual int getILBM_saveFmt();
+
+    size_t ilbm_func5__sub0(NC_STACK_ilbm *obj, MFILE **pmfile);
+    rsrc * READ_ILBM(stack_vals *stak, MFILE *mfil, int val5);
 
     //Data
     static const NewClassDescr description;

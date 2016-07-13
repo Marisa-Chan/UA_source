@@ -472,8 +472,8 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
     {
         bitmap_arg130 bitm130;
 
-        bitm130.field_0 = arg->field_C;
-        bitm130.field_4 = arg->field_10;
+        bitm130.time_stmp = arg->field_C;
+        bitm130.frame_time = arg->field_10;
         amesh->ilbm1->bitmap_func130(&bitm130);
         v21 = bitm130.pbitm;
     }
@@ -542,7 +542,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
             arg->outPolys->data = arg->polyDat;
             arg->outPolys++;
 
-            arg->polyDat->render_func = sub_4231FC;
+            arg->polyDat->render_func = GFXEngine::defRenderFunc;
             arg->polyDat = v23;
         }
     }

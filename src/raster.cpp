@@ -16,8 +16,8 @@ size_t NC_STACK_raster::func0(stack_vals *stak)
 
     dprintf("MAKE ME %s\n","raster_func0");
 
-    __NC_STACK_raster *rstr = &this->stack__raster;
-    call_vtbl(this, 3, 0x80001002, &rstr->bitm_intern, 0);
+    __NC_STACK_raster *rstr = &stack__raster;
+    rstr->bitm_intern = (bitmap_intern *)getRsrc_pData();
 
     rstr->field_24.x1 = 0;
     rstr->field_24.y1 = 0;
@@ -43,8 +43,6 @@ size_t NC_STACK_raster::func2(stack_vals *stak)
 {
     dprintf("MAKE ME %s\n","raster_func2");
 
-    __NC_STACK_raster *rstr = &this->stack__raster;
-
     stack_vals *stk = stak;
 
     while ( 1 )
@@ -64,28 +62,24 @@ size_t NC_STACK_raster::func2(stack_vals *stak)
         {
             switch(stk->id)
             {
-            case 0x80003000:
-                rstr->field_4 = (DWORD)stk->value;
+            case RSTR_ATT_FGPEN:
+                setRSTR_FGpen(stk->value);
                 break;
 
-            case 0x80003001:
-                rstr->field_c = (DWORD)stk->value;
+            case RSTR_ATT_BGPEN:
+                setRSTR_BGpen(stk->value);
                 break;
 
-            case 0x80003002:
-//            rstr->field_10 = (int)a2;
-//            if ( a2 )
-//              rstr->field_14 = a2->id;
+            case RSTR_ATT_SHADE_RMP:
+                setRSTR_shdRmp((bitmap_intern *)stk->value);
                 break;
 
-            case 0x80003003:
-//            rstr->field_18 = (int)a2;
-//            if ( a2 )
-//              rstr->field_1c = a2->id;
+            case RSTR_ATT_TRACY_RMP:
+                setRSTR_trcRmp((bitmap_intern *)stk->value);
                 break;
 
-            case 0x80003004:
-                rstr->field_8 = (DWORD)stk->value;
+            case RSTR_ATT_FGAPEN:
+                setRSTR_FGApen(stk->value);
                 break;
 
             default:
@@ -129,7 +123,7 @@ size_t NC_STACK_raster::func3(stack_vals *stak)
 
 size_t NC_STACK_raster::raster_func192(stack_vals *)
 {
-    __NC_STACK_raster *rstr = &this->stack__raster;
+    __NC_STACK_raster *rstr = &stack__raster;
     bitmap_intern *bitm = rstr->bitm_intern;
 
     memset(bitm->buffer, rstr->field_c, bitm->width * bitm->height);
@@ -138,7 +132,7 @@ size_t NC_STACK_raster::raster_func192(stack_vals *)
 
 size_t NC_STACK_raster::raster_func193(bitmap_intern **out)
 {
-    __NC_STACK_raster *rstr = &this->stack__raster;
+    __NC_STACK_raster *rstr = &stack__raster;
     bitmap_intern *bitm = rstr->bitm_intern;
 
     memcpy((*out)->buffer, bitm->buffer, bitm->width * bitm->height);
@@ -201,13 +195,13 @@ size_t NC_STACK_raster::raster_func206(polysDatSub *)
 
 void NC_STACK_raster::raster_func207(rstr_207_arg *arg)
 {
-    __NC_STACK_raster *rstr = &this->stack__raster;
+    __NC_STACK_raster *rstr = &stack__raster;
     rstr->tiles[arg->id] = arg->tiles;
 }
 
 void NC_STACK_raster::raster_func208(rstr_207_arg *arg)
 {
-    __NC_STACK_raster *rstr = &this->stack__raster;
+    __NC_STACK_raster *rstr = &stack__raster;
 
     if ( arg->tiles )
     {
@@ -235,7 +229,7 @@ void NC_STACK_raster::raster_func209(w3d_a209 *)
 
 void NC_STACK_raster::raster_func210(ua_fRect *arg)
 {
-    __NC_STACK_raster *rstr = &this->stack__raster;
+    __NC_STACK_raster *rstr = &stack__raster;
 
     rstr->field_24.x1 = (arg->x1 + 1.0) * (rstr->field_554 + -1.0);
     rstr->field_24.y1 = (arg->y1 + 1.0) * (rstr->field_558 + -1.0);
@@ -245,7 +239,7 @@ void NC_STACK_raster::raster_func210(ua_fRect *arg)
 
 void NC_STACK_raster::raster_func211(ua_dRect *arg)
 {
-    __NC_STACK_raster *rstr = &this->stack__raster;
+    __NC_STACK_raster *rstr = &stack__raster;
 
     rstr->field_24.x1 = rstr->field_54c + arg->x1;
     rstr->field_24.y1 = rstr->field_550 + arg->y1;
@@ -279,7 +273,7 @@ void NC_STACK_raster::raster_func216(void *)
 
 size_t NC_STACK_raster::raster_func217(rstr_arg217 *arg)
 {
-    __NC_STACK_raster *rstr = &this->stack__raster;
+    __NC_STACK_raster *rstr = &stack__raster;
 
     if ( arg->dword0 != 0xFFFFFFFF )
         rstr->field_4 = arg->dword0;
@@ -312,12 +306,43 @@ size_t NC_STACK_raster::raster_func220(stack_vals *)
 
 void NC_STACK_raster::raster_func221(ua_dRect *arg)
 {
-    __NC_STACK_raster *rstr = &this->stack__raster;
+    __NC_STACK_raster *rstr = &stack__raster;
 
     rstr->field_38.x1 = rstr->field_54c + arg->x1;
     rstr->field_38.y1 = rstr->field_550 + arg->y1;
     rstr->field_38.x2 = rstr->field_54c + arg->x2;
     rstr->field_38.y2 = rstr->field_550 + arg->y2;
+}
+
+
+
+void NC_STACK_raster::setRSTR_FGpen(uint32_t pen)
+{
+    stack__raster.field_4 = pen;
+}
+
+void NC_STACK_raster::setRSTR_BGpen(uint32_t pen)
+{
+    stack__raster.field_c = pen;
+}
+
+void NC_STACK_raster::setRSTR_shdRmp(bitmap_intern *rmp)
+{
+//	rstr->field_10 = rmp;
+//	if ( rmp )
+//		rstr->field_14 = rmp->buffer;
+}
+
+void NC_STACK_raster::setRSTR_trcRmp(bitmap_intern *rmp)
+{
+//	rstr->field_18 = rmp;
+//	if ( rmp )
+//		rstr->field_1c = rmp->buffer;
+}
+
+void NC_STACK_raster::setRSTR_FGApen(uint32_t pen)
+{
+    stack__raster.field_8 = pen;
 }
 
 

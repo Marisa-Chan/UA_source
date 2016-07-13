@@ -31,7 +31,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub3(_NC_STACK_ypaworld *yw, struC5 *in
     brf->field_2E78 = brf->field_2E7C;
     brf->field_2E68 = 5;
 
-    call_vtbl(brf->mbmap_img, 3, 0x80002000, &brf->field_2F40.pbitm, 0);
+    brf->field_2F40.pbitm = brf->mbmap_img->getBMD_pBitmap();
 
     brf->field_2F64.x1 = -0.4515625;
     brf->field_2F64.y1 = -0.324999988079;
@@ -1198,7 +1198,7 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
         {
             rstr_arg204 a4;
 
-            call_vtbl(brf->briefing_map, 3, 0x80002000, &a4.pbitm, 0);
+            a4.pbitm = brf->briefing_map->getBMD_pBitmap();
 
             a4.float4 = -1.0;
             a4.floatC = 1.0;
@@ -1268,7 +1268,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(_NC_STACK_ypaworld *yw, struC5 *st
     brf->field_2E78 = brf->field_2E7C;
     brf->field_2E68 = 5;
 
-    call_vtbl(brf->mbmap_img, 3, 0x80002000, &brf->field_2F40.pbitm, 0);
+    brf->field_2F40.pbitm = brf->mbmap_img->getBMD_pBitmap();
 
     float v21, v22;
 
@@ -1369,16 +1369,14 @@ void ypaworld_func158__sub4__sub1__sub6__sub2(_NC_STACK_ypaworld *yw, struC5 *st
     brf->field_2E68 = 8;
     brf->field_41D8 = 0;
 
-    bitmap_intern *v5;
-    bitmap_intern *a4;
-
-    call_vtbl(yw->copyof_ownermap, 3, 0x80002000, &a4, 0);
-    call_vtbl(brf->copy2_of_ownmap, 3, 0x80002000, &v5, 0);
+    bitmap_intern *v5 = brf->copy2_of_ownmap->getBMD_pBitmap();
+    bitmap_intern *a4 = yw->copyof_ownermap->getBMD_pBitmap();
 
     memcpy(v5->buffer, a4->buffer, a4->width * a4->height);
 
-    call_vtbl(yw->copyof_typemap, 3, 0x80002000, &a4, 0);
-    call_vtbl(brf->copy2_of_typmap, 3, 0x80002000, &v5, 0);
+
+    v5 = brf->copy2_of_typmap->getBMD_pBitmap();
+    a4 = yw->copyof_typemap->getBMD_pBitmap();
 
     memcpy(v5->buffer, a4->buffer, a4->width * a4->height);
 
@@ -2429,7 +2427,7 @@ void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, s
             if ( brf->briefing_map )
             {
                 rstr_arg204 arg204;
-                call_vtbl(brf->briefing_map, 3, 0x80002000, &arg204.pbitm, 0);
+                arg204.pbitm = brf->briefing_map->getBMD_pBitmap();
 
                 arg204.float4 = -1.0;
                 arg204.floatC = 1.0;
