@@ -67,7 +67,7 @@ int sub_419E6C(__NC_STACK_amesh *amesh, tUtV **olpl)
 }
 
 
-int amesh_func0__sub0(__NC_STACK_amesh *amesh, stack_vals *stak)
+int NC_STACK_amesh::amesh_func0__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -91,42 +91,28 @@ int amesh_func0__sub0(__NC_STACK_amesh *amesh, stack_vals *stak)
             default:
                 break;
 
-            case 0x80001004:
-                if ( stk->value )
-                    amesh->field_A |= 1;
-                else
-                    amesh->field_A &= 0xFFFE;
+            case ADE_ATT_DPTHFADE:
+                setADE_depthFade ( stk->value );
                 break;
-            case 0x80002000:
-                amesh->ilbm1 = (NC_STACK_bitmap *)stk->value;
+            case AREA_ATT_TEXBITM:
+                setAREA_bitm((NC_STACK_bitmap *)stk->value);
                 break;
 
-            case 0x80002009:
-                amesh->ilbm2 = (NC_STACK_bitmap *)stk->value;
+            case AREA_ATT_TRACYBITM:
+                setAREA_tracybitm((NC_STACK_bitmap *)stk->value);
                 break;
 
-            case 0x80003000:
-                amesh->cnt = stk->value;
+            case AMESH_ATT_NUMPOLY:
+                setAMESH_numpoly(stk->value);
                 break;
 
-            case 0x80003001:
-                if ( amesh->atts )
-                {
-                    nc_FreeMem(amesh->atts);
-                    amesh->atts = NULL;
-                }
-                amesh->atts = (ATTS *)AllocVec(amesh->cnt * sizeof(ATTS), 1);
-
-                if ( amesh->atts )
-                {
-                    memcpy(amesh->atts, (void *)stk->value, amesh->cnt * sizeof(ATTS));
-                }
-                else
+            case AMESH_ATT_ATTPOLYS:
+                if ( !setAMESH_polys( (ATTS *)stk->value ) )
                     return 0;
                 break;
 
-            case 0x80003002:
-                if ( !sub_419E6C(amesh, (tUtV **)stk->value) )
+            case AMESH_ATT_OTLPOOL:
+                if ( !setAMESH_otls((tUtV **)stk->value) )
                     return 0;
                 break;
 
@@ -144,13 +130,7 @@ size_t NC_STACK_amesh::func0(stack_vals *stak)
     if ( !NC_STACK_area::func0(stak) )
         return 0;
 
-    __NC_STACK_amesh *amesh = &this->stack__amesh;
-
-    if ( amesh_func0__sub0(amesh, stak) )
-    {
-        call_vtbl(this, 3, 0x8000200E, &amesh->field_14, 0);
-    }
-    else
+    if ( !amesh_func0__sub0(stak) )
     {
         func1(NULL);
         return 0;
@@ -161,7 +141,7 @@ size_t NC_STACK_amesh::func0(stack_vals *stak)
 
 size_t NC_STACK_amesh::func1(stack_vals *stak)
 {
-    __NC_STACK_amesh *amesh = &this->stack__amesh;
+    __NC_STACK_amesh *amesh = &stack__amesh;
 
     if ( amesh->atts )
         nc_FreeMem(amesh->atts);
@@ -173,7 +153,7 @@ size_t NC_STACK_amesh::func1(stack_vals *stak)
 }
 
 
-void amesh_func2__sub0(__NC_STACK_amesh *amesh, stack_vals *stak)
+void NC_STACK_amesh::amesh_func2__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -197,37 +177,23 @@ void amesh_func2__sub0(__NC_STACK_amesh *amesh, stack_vals *stak)
             default:
                 break;
 
-            case 0x80001004:
-                if ( stk->value )
-                    amesh->field_A |= 1;
-                else
-                    amesh->field_A &= 0xFFFE;
+            case ADE_ATT_DPTHFADE:
+                setADE_depthFade ( stk->value );
                 break;
-            case 0x80002000:
-                amesh->ilbm1 = (NC_STACK_bitmap *)stk->value;
+            case AREA_ATT_TEXBITM:
+                setAREA_bitm((NC_STACK_bitmap *)stk->value);
                 break;
 
-            case 0x80002009:
-                amesh->ilbm2 = (NC_STACK_bitmap *)stk->value;
+            case AREA_ATT_TRACYBITM:
+                setAREA_tracybitm((NC_STACK_bitmap *)stk->value);
                 break;
 
-            case 0x80003001:
-                if ( amesh->atts )
-                {
-                    nc_FreeMem(amesh->atts);
-                    amesh->atts = NULL;
-                }
-                amesh->atts = (ATTS *)AllocVec(amesh->cnt * sizeof(ATTS), 1);
-
-                if ( amesh->atts )
-                {
-                    memcpy(amesh->atts, (void *)stk->value, amesh->cnt * sizeof(ATTS));
-                }
-
+            case AMESH_ATT_ATTPOLYS:
+                setAMESH_polys((ATTS *)stk->value);
                 break;
 
-            case 0x80003002:
-                sub_419E6C(amesh, (tUtV **)stk->value);
+            case AMESH_ATT_OTLPOOL:
+                setAMESH_otls((tUtV **)stk->value);
                 break;
             }
             stk++;
@@ -238,21 +204,17 @@ void amesh_func2__sub0(__NC_STACK_amesh *amesh, stack_vals *stak)
 
 size_t NC_STACK_amesh::func2(stack_vals *stak)
 {
-    __NC_STACK_amesh *amesh = &this->stack__amesh;
-
-    amesh_func2__sub0(amesh, stak);
+    amesh_func2__sub0(stak);
 
     return NC_STACK_area::func2(stak);
 }
 
 size_t NC_STACK_amesh::func3(stack_vals *stak)
 {
-    __NC_STACK_amesh *amesh = &this->stack__amesh;
-
-    stack_vals *val = find_id_in_stack2(0x80003000, stak);
+    stack_vals *val = find_id_in_stack2(AMESH_ATT_NUMPOLY, stak);
 
     if ( val )
-        *(int *)val->value = amesh->cnt;
+        *(int *)val->value = getAMESH_numpoly();
 
     return NC_STACK_area::func3(stak);
 }
@@ -286,9 +248,7 @@ size_t NC_STACK_amesh::func5(MFILE **file)
             if ( !obj_ok )
                 return 0;
 
-            amesh = &this->stack__amesh;
-            call_vtbl(this, 3, 0x8000200E, &amesh->field_14, 0);
-
+            amesh = &stack__amesh;
         }
         else if ( chunk->TAG == TAG_ATTS )
         {
@@ -421,31 +381,39 @@ size_t NC_STACK_amesh::func6(MFILE **file)
 // Add amesh to list
 size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
 {
-    __NC_STACK_amesh *amesh = &this->stack__amesh;
+    __NC_STACK_amesh *amesh = &stack__amesh;
 
     //v5 = *(_WORD *)(amesh->field_14 + 6) & 0xFEF6;
-    int v5 = this->stack__area.field_16 & 0xFEF6; //HACK
+    int v5 = stack__area.polflags & ~(AREA_POL_FLAG_SCANLN | AREA_POL_FLAG_TEXBIT | AREA_POL_FLAG_TRACYBIT3);
 
     if (v5 == 0)
         v5 = 0;
-    else if (v5 == 2)
-        v5 = 1;
-    else if (v5 == 6)
-        v5 = 2;
-    else if (v5 == 0x32)
-        v5 = 9;
-    else if (v5 == 0x36)
-        v5 = 10;
-    else if (v5 == 0x42)
-        v5 = 17;
-    else if (v5 == 0x46)
-        v5 = 18;
-    else if (v5 == 0x72)
-        v5 = 25;
-    else if (v5 == 0x76)
-        v5 = 26;
-    else if (v5 == 0x82)
-        v5 = 33;
+    else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_LINMAP;
+
+    else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_PERSPMAP;
+
+    else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_LINMAP | NC_STACK_raster::RSTR_RFLAGS_GRADSHD;
+
+    else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_PERSPMAP | NC_STACK_raster::RSTR_RFLAGS_GRADSHD;
+
+    else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_LINMAP | NC_STACK_raster::RSTR_RFLAGS_ZEROTRACY;
+
+    else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_PERSPMAP | NC_STACK_raster::RSTR_RFLAGS_ZEROTRACY;
+
+    else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_LINMAP | NC_STACK_raster::RSTR_RFLAGS_GRADSHD | NC_STACK_raster::RSTR_RFLAGS_ZEROTRACY;
+
+    else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_PERSPMAP | NC_STACK_raster::RSTR_RFLAGS_GRADSHD | NC_STACK_raster::RSTR_RFLAGS_ZEROTRACY;
+
+    else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_FLATTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_LINMAP | NC_STACK_raster::RSTR_RFLAGS_LUMTRACY;
     else
         return 1;
 
@@ -453,11 +421,11 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
 
     skel133.field_4 = 0;
 
-    if ( v5 & 3 )
-        skel133.field_4 = 1;
-    if ( v5 & 0xC )
+    if ( v5 & (NC_STACK_raster::RSTR_RFLAGS_LINMAP | NC_STACK_raster::RSTR_RFLAGS_PERSPMAP ) )
+        skel133.field_4 |= 1;
+    if ( v5 & (NC_STACK_raster::RSTR_RFLAGS_FLATSHD | NC_STACK_raster::RSTR_RFLAGS_GRADSHD) )
         skel133.field_4 |= 2;
-    if ( amesh->field_A & 1 )
+    if ( amesh->field_A & AMESH_FLAG_DPTHFADE )
         skel133.field_4 |= 4;
 
     skel133.field_10 = arg->field_24;
@@ -484,16 +452,16 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
 
     for (int i = 0; i < amesh->cnt; i++)
     {
-        polysDatSub *datSub = &arg->polyDat->datSub;
+        polysDatSub *datSub = &arg->argSTK_cur->datSub;
 
         datSub->renderFlags = v5;
 
-        datSub->vertexes = (xyz *)&datSub->field_18;
+        datSub->vertexes = (xyz *)(datSub + 1);
         datSub->pbitm = v21;
 
         skel133.field_0 = amesh->atts[i].field_0;
 
-        skel133.polysubDat = datSub;
+        skel133.rndrArg = datSub;
 
         skel133.field_18 = amesh->atts[i].field_3 / 256.0;
 
@@ -507,7 +475,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
         {
             arg->field_38++;
 
-            if ( datSub->renderFlags & 0xC )
+            if ( datSub->renderFlags & ( NC_STACK_raster::RSTR_RFLAGS_FLATSHD | NC_STACK_raster::RSTR_RFLAGS_GRADSHD ) )
             {
                 int v6 = 0;
                 int v8 = 0;
@@ -523,7 +491,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
 
                 if ( v6 == datSub->vertexCount )
                 {
-                    datSub->renderFlags &= 0xFFFFFFF3;
+                    datSub->renderFlags &= ~( NC_STACK_raster::RSTR_RFLAGS_FLATSHD | NC_STACK_raster::RSTR_RFLAGS_GRADSHD );
                 }
                 else if ( v8 == datSub->vertexCount )
                 {
@@ -538,17 +506,76 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
                     maxz = datSub->vertexes[i].sz;
 
 
-            arg->outPolys->range = maxz;
-            arg->outPolys->data = arg->polyDat;
-            arg->outPolys++;
+            arg->rndrSTK_cur->range = maxz;
+            arg->rndrSTK_cur->data = arg->argSTK_cur;
+            arg->rndrSTK_cur++;
 
-            arg->polyDat->render_func = GFXEngine::defRenderFunc;
-            arg->polyDat = v23;
+            arg->argSTK_cur->render_func = GFXEngine::defRenderFunc;
+            arg->argSTK_cur = v23;
         }
     }
 
     return 1;
 }
+
+
+
+void NC_STACK_amesh::setADE_depthFade(int arg)
+{
+    if ( arg )
+        stack__amesh.field_A |= AMESH_FLAG_DPTHFADE;
+    else
+        stack__amesh.field_A &= ~ADE_FLAG_DPTHFADE;
+
+    NC_STACK_area::setADE_depthFade(arg);
+}
+
+void NC_STACK_amesh::setAREA_bitm(NC_STACK_bitmap *bitm)
+{
+    stack__amesh.ilbm1 = bitm;
+
+    NC_STACK_area::setAREA_bitm(bitm);
+}
+
+void NC_STACK_amesh::setAREA_tracybitm(NC_STACK_bitmap *bitm)
+{
+    stack__amesh.ilbm2 = bitm;
+
+    NC_STACK_area::setAREA_tracybitm(bitm);
+}
+
+void NC_STACK_amesh::setAMESH_numpoly(int num)
+{
+    stack__amesh.cnt = num;
+}
+
+int NC_STACK_amesh::setAMESH_polys(ATTS *atts)
+{
+    if ( stack__amesh.atts )
+    {
+        nc_FreeMem(stack__amesh.atts);
+        stack__amesh.atts = NULL;
+    }
+    stack__amesh.atts = (ATTS *)AllocVec(stack__amesh.cnt * sizeof(ATTS), 1);
+
+    if ( !stack__amesh.atts )
+        return 0;
+
+    memcpy(stack__amesh.atts, atts, stack__amesh.cnt * sizeof(ATTS));
+    return 1;
+}
+
+int NC_STACK_amesh::setAMESH_otls(tUtV **uv)
+{
+    return sub_419E6C(&stack__amesh, uv);
+}
+
+
+int NC_STACK_amesh::getAMESH_numpoly()
+{
+    return stack__amesh.cnt;
+}
+
 
 
 size_t NC_STACK_amesh::compatcall(int method_id, void *data)

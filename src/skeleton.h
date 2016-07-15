@@ -100,7 +100,7 @@ struct skeleton_arg133
 {
     int field_0;
     int field_4;
-    polysDatSub *polysubDat;
+    polysDatSub *rndrArg;
     tUtV *field_C;
     float field_10;
     float field_14;
@@ -136,6 +136,21 @@ public:
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_skeleton();
     };
+
+    enum SKEL_ATT
+    {
+        SKEL_ATT_PSKELET = 0x80002000,
+        SKEL_ATT_POINTSCNT = 0x80002001,
+        SKEL_ATT_SENCNT = 0x80002002,
+        SKEL_ATT_POLYCNT = 0x80002003,
+        SKEL_ATT_POLYPNTCNT = 0x80002004
+    };
+
+    virtual skeleton_64_stru *getSKEL_pSkelet();
+    virtual int getSKEL_pntCount();
+    virtual int getSKEL_senCount();
+    virtual int getSKEL_polyCount();
+
 
     //Data
     static const NewClassDescr description;

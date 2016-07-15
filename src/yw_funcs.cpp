@@ -1112,11 +1112,8 @@ int yw_parse_lego(_NC_STACK_ypaworld *yw, FILE *fil, NC_STACK_base *base)
                 return 0;
             }
 
-            skeleton_64_stru *v26;
-            call_vtbl(skelet, 3, 0x80002000, &v26, 0);
-
             lego->sklt_obj = skelet;
-            lego->sklt_obj_intern = v26;
+            lego->sklt_obj_intern = skelet->getSKEL_pSkelet();
 
             v11 = strtok(0, " \t");
             if ( !v11 )
@@ -1362,9 +1359,7 @@ int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
                 NC_STACK_skeleton *skeleton;
                 call_vtbl(full_kid, 3, 0x80001000, &skeleton, 0);
 
-                skeleton_64_stru *skeleton_internal;
-                call_vtbl(skeleton, 3, 0x80002000, &skeleton_internal, 0);
-
+                skeleton_64_stru *skeleton_internal = skeleton->getSKEL_pSkelet();
                 if (i == 0)
                 {
                     yw->slurps1[j][k].skeletons_bas = full_kid;
@@ -1393,7 +1388,7 @@ int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
     }
 
     yw->ColSide.skeleton = tmp_skel;
-    call_vtbl(yw->ColSide.skeleton, 3, 0x80002000, &yw->ColSide.skeleton_internal, 0);
+    yw->ColSide.skeleton_internal = yw->ColSide.skeleton->getSKEL_pSkelet();
 
     tmp_skel = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, "Skeleton/ColCross.sklt", 0);
     if ( !tmp_skel )
@@ -1403,7 +1398,7 @@ int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
     }
 
     yw->ColCross.skeleton = tmp_skel;
-    call_vtbl(yw->ColCross.skeleton, 3, 0x80002000, &yw->ColCross.skeleton_internal, 0);
+    yw->ColCross.skeleton_internal = yw->ColCross.skeleton->getSKEL_pSkelet();
 
     set_prefix_replacement("rsrc", rsr);
 
@@ -1504,7 +1499,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
         ypa_log_out("Couldn't load <skeleton/colsub.sklt>, set %d.\n", setID);
         return 0;
     }
-    call_vtbl(yw->colsub_sklt, 3, 0x80002000, &yw->colsub_sklt_intrn, 0);
+    yw->colsub_sklt_intrn = yw->colsub_sklt->getSKEL_pSkelet();
 
     yw->colcomp_sklt = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, "skeleton/colcomp.sklt", 0);
     if ( !yw->colcomp_sklt )
@@ -1512,7 +1507,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
         ypa_log_out("Couldn't load <skeleton/colcomp.sklt>, set %d.\n", setID);
         return 0;
     }
-    call_vtbl(yw->colcomp_sklt, 3, 0x80002000, &yw->colcomp_sklt_intrn, 0);
+    yw->colcomp_sklt_intrn = yw->colcomp_sklt->getSKEL_pSkelet();
 
 
     set_prefix_replacement("rsrc", buf);
@@ -2469,7 +2464,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
     {
         brf->wireless_db[i] = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, wireless_db[i], 0);
         if (brf->wireless_db[i])
-            call_vtbl(brf->wireless_db[i], 3, 0x80002000, &brf->wireless_db_skels[i], 0);
+            brf->wireless_db_skels[i] = brf->wireless_db[i]->getSKEL_pSkelet();
     }
 
     if ( yw->copyof_ownermap )

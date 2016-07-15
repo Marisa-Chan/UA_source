@@ -94,7 +94,7 @@ size_t NC_STACK_embed::func5(MFILE **file)
             if ( !obj_ok )
                 return 0;
 
-            embd = &this->stack__embed;
+            embd = &stack__embed;
             init_list(&embd->embed_objects);
         }
         else if ( chunk->TAG == TAG_EMRS )
@@ -129,7 +129,7 @@ size_t NC_STACK_embed::func5(MFILE **file)
 size_t NC_STACK_embed::func6(MFILE **file)
 {
     MFILE *mfile = *file;
-    __NC_STACK_embed *embd = &this->stack__embed;
+    __NC_STACK_embed *embd = &stack__embed;
 
     if ( sub_412FC0(mfile, TAG_EMBD, TAG_FORM, -1) )
         return 0;
@@ -150,9 +150,9 @@ size_t NC_STACK_embed::func6(MFILE **file)
                         if ( embd_obj )
                         {
                             char v23 = 0;
-                            char *classname, *resname;
-                            call_vtbl(embd_obj, 3, 0x80000002, &classname, 0);
-                            call_vtbl(embd_obj, 3, 0x80001000, &resname, 0);
+                            const char *classname, *resname;
+                            classname = embd_obj->getClassName();
+                            resname = embd_obj->getRsrc_name();
 
                             sub_412FC0(mfile, 0, TAG_EMRS, -1);
                             sub_413564(mfile, strlen(classname) + 1, classname);

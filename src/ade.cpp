@@ -7,7 +7,7 @@
 const NewClassDescr NC_STACK_ade::description("ade.class", &newinstance);
 
 
-void ade_func0__sub0(__NC_STACK_ade *ade, stack_vals *stak)
+void NC_STACK_ade::ade_func0__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -31,23 +31,17 @@ void ade_func0__sub0(__NC_STACK_ade *ade, stack_vals *stak)
             default:
                 break;
 
-            case 0x80001003:
-                if ( stk->value )
-                    ade->flags |= 4;
-                else
-                    ade->flags &= 0xFB;
+            case ADE_ATT_BKCHECK:
+                setADE_bkCheck(stk->value);
                 break;
-            case 0x80001004:
-                if ( stk->value )
-                    ade->flags |= 2;
-                else
-                    ade->flags &= 0xFD;
+            case ADE_ATT_DPTHFADE:
+                setADE_depthFade(stk->value);
                 break;
-            case 0x80001007:
-                ade->strc_f4 = stk->value;
+            case ADE_ATT_POINT:
+                setADE_point(stk->value);
                 break;
-            case 0x80001008:
-                ade->strc_f6 = stk->value;
+            case ADE_ATT_POLY:
+                setADE_poly(stk->value);
                 break;
             }
             stk++;
@@ -61,28 +55,27 @@ size_t NC_STACK_ade::func0(stack_vals *stak)
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
 
-    __NC_STACK_ade *ade = &this->stack__ade;
+    __NC_STACK_ade *ade = &stack__ade;
 
     ade->self = this;
-    ade_func0__sub0(ade, stak);
+    ade_func0__sub0(stak);
 
     return 1;
 }
 
 size_t NC_STACK_ade::func1(stack_vals *stak)
 {
-    __NC_STACK_ade *ade = &this->stack__ade;
+    __NC_STACK_ade *ade = &stack__ade;
 
-    if ( ade->flags & 1 )
+    if ( ade->flags & ADE_FLAG_INLIST )
         Remove(ade);
 
     return NC_STACK_nucleus::func1(stak);
 }
 
 
-void ade_func2__sub0(__NC_STACK_ade *ade, stack_vals *stak)
+void NC_STACK_ade::ade_func2__sub0(stack_vals *stak)
 {
-
     stack_vals *stk = stak;
 
     while ( 1 )
@@ -105,23 +98,17 @@ void ade_func2__sub0(__NC_STACK_ade *ade, stack_vals *stak)
             default:
                 break;
 
-            case 0x80001003:
-                if ( stk->value )
-                    ade->flags |= 4;
-                else
-                    ade->flags &= 0xFB;
+            case ADE_ATT_BKCHECK:
+                setADE_bkCheck(stk->value);
                 break;
-            case 0x80001004:
-                if ( stk->value )
-                    ade->flags |= 2;
-                else
-                    ade->flags &= 0xFD;
+            case ADE_ATT_DPTHFADE:
+                setADE_depthFade(stk->value);
                 break;
-            case 0x80001007:
-                ade->strc_f4 = stk->value;
+            case ADE_ATT_POINT:
+                setADE_point(stk->value);
                 break;
-            case 0x80001008:
-                ade->strc_f6 = stk->value;
+            case ADE_ATT_POLY:
+                setADE_poly(stk->value);
                 break;
             }
             stk++;
@@ -131,14 +118,12 @@ void ade_func2__sub0(__NC_STACK_ade *ade, stack_vals *stak)
 
 size_t NC_STACK_ade::func2(stack_vals *stak)
 {
-    __NC_STACK_ade *ade = &this->stack__ade;
-
-    ade_func2__sub0(ade, stak);
+    ade_func2__sub0(stak);
 
     return NC_STACK_nucleus::func2(stak);
 }
 
-void ade_func3__sub0(__NC_STACK_ade *ade, stack_vals *stak)
+void NC_STACK_ade::ade_func3__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -162,26 +147,20 @@ void ade_func3__sub0(__NC_STACK_ade *ade, stack_vals *stak)
             default:
                 break;
 
-            case 0x80001003:
-                if ( !(ade->flags & 4) )
-                    *(int *)stk->value = 0;
-                else
-                    *(int *)stk->value = 1;
+            case ADE_ATT_BKCHECK:
+                *(int *)stk->value = getADE_bkCheck();
                 break;
-            case 0x80001004:
-                if ( ade->flags & 2 )
-                    *(int *)stk->value = 1;
-                else
-                    *(int *)stk->value = 0;
+            case ADE_ATT_DPTHFADE:
+                *(int *)stk->value = getADE_depthFade();
                 break;
-            case 0x80001007:
-                *(int *)stk->value = ade->strc_f4;
+            case ADE_ATT_POINT:
+                *(int *)stk->value = getADE_point();
                 break;
-            case 0x80001008:
-                *(int *)stk->value = ade->strc_f6;
+            case ADE_ATT_POLY:
+                *(int *)stk->value = getADE_poly();
                 break;
-            case 0x8000100B:
-                *(__NC_STACK_ade **)stk->value = ade;
+            case ADE_ATT_PADE:
+                *(__NC_STACK_ade **)stk->value = getADE_pAde();
                 break;
             }
             stk++;
@@ -191,10 +170,7 @@ void ade_func3__sub0(__NC_STACK_ade *ade, stack_vals *stak)
 
 size_t NC_STACK_ade::func3(stack_vals *stak)
 {
-
-    __NC_STACK_ade *ade = &this->stack__ade;
-
-    ade_func3__sub0(ade, stak);
+    ade_func3__sub0(stak);
 
     return NC_STACK_nucleus::func3(stak);
 }
@@ -246,13 +222,13 @@ size_t NC_STACK_ade::func5(MFILE **file)
                 {
                     stack_vals stk[5];
 
-                    stk[0].id = 0x80001004;
-                    stk[0].value = (hdr.field_3 & 2) != 0;
-                    stk[1].id = 0x80001003;
-                    stk[1].value = (hdr.field_3 & 4) != 0;
-                    stk[2].id = 0x80001007;
+                    stk[0].id = ADE_ATT_DPTHFADE;
+                    stk[0].value = (hdr.field_3 & ADE_FLAG_DPTHFADE) != 0;
+                    stk[1].id = ADE_ATT_BKCHECK;
+                    stk[1].value = (hdr.field_3 & ADE_FLAG_BKCHECK) != 0;
+                    stk[2].id = ADE_ATT_POINT;
                     stk[2].value = hdr.field_4;
-                    stk[3].id = 0x80001008;
+                    stk[3].id = ADE_ATT_POLY;
                     stk[3].value = hdr.field_6;
                     stk[4].id = 0;
 
@@ -273,7 +249,7 @@ size_t NC_STACK_ade::func5(MFILE **file)
 size_t NC_STACK_ade::func6(MFILE **file)
 {
     MFILE *mfile = *file;
-    __NC_STACK_ade *ade = &this->stack__ade;
+    __NC_STACK_ade *ade = &stack__ade;
 
     if ( sub_412FC0(mfile, TAG_ADE, TAG_FORM, -1) )
         return 0;
@@ -286,7 +262,7 @@ size_t NC_STACK_ade::func6(MFILE **file)
     ADE_STRC hdr;
     hdr.field_0 = SWAP16(1);
     hdr.field_2 = 0;
-    hdr.field_3 = ade->flags & 6;
+    hdr.field_3 = ade->flags & (ADE_FLAG_BKCHECK | ADE_FLAG_DPTHFADE);
     hdr.field_4 = SWAP16(ade->strc_f4);
     hdr.field_6 = SWAP16(ade->strc_f6);
     hdr.field_8 = 0;
@@ -299,7 +275,7 @@ size_t NC_STACK_ade::func6(MFILE **file)
 // Add ade to list
 size_t NC_STACK_ade::ade_func64(nlist **lst)
 {
-    __NC_STACK_ade *ade = &this->stack__ade;
+    __NC_STACK_ade *ade = &stack__ade;
 
     if ( ade->flags & 1 )
         Remove(ade);
@@ -314,6 +290,66 @@ size_t NC_STACK_ade::ade_func65(area_arg_65 *arg)
 {
     return 1;
 }
+
+
+
+int NC_STACK_ade::getADE_bkCheck()
+{
+    if ( (stack__ade.flags & ADE_FLAG_BKCHECK) )
+        return 1;
+    return 0;
+}
+
+int NC_STACK_ade::getADE_depthFade()
+{
+    if ( (stack__ade.flags & ADE_FLAG_DPTHFADE) )
+        return 1;
+    return 0;
+}
+
+int NC_STACK_ade::getADE_point()
+{
+    return stack__ade.strc_f4;
+}
+
+int NC_STACK_ade::getADE_poly()
+{
+    return stack__ade.strc_f6;
+}
+
+__NC_STACK_ade *NC_STACK_ade::getADE_pAde()
+{
+    return &stack__ade;
+}
+
+
+
+void NC_STACK_ade::setADE_bkCheck(int arg)
+{
+    if ( arg )
+        stack__ade.flags |= ADE_FLAG_BKCHECK;
+    else
+        stack__ade.flags &= ~ADE_FLAG_BKCHECK;
+}
+
+void NC_STACK_ade::setADE_depthFade(int arg)
+{
+    if ( arg )
+        stack__ade.flags |= ADE_FLAG_DPTHFADE;
+    else
+        stack__ade.flags &= ~ADE_FLAG_DPTHFADE;
+}
+
+void NC_STACK_ade::setADE_point(int arg)
+{
+    stack__ade.strc_f4 = arg;
+}
+
+void NC_STACK_ade::setADE_poly(int arg)
+{
+    stack__ade.strc_f6 = arg;
+}
+
 
 size_t NC_STACK_ade::compatcall(int method_id, void *data)
 {

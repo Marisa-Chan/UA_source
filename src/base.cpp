@@ -14,6 +14,7 @@
 #include "engine_tform.h"
 #include "skeleton.h"
 #include "ade.h"
+#include "embed.h"
 
 #include "engine_gfx.h"
 
@@ -23,13 +24,15 @@ const NewClassDescr NC_STACK_base::description("base.class", &newinstance);
 
 
 
-int baseIDcounter = 1;
+static const int __argsize = (sizeof(polysDat) + 12 * (sizeof(xyz) + sizeof(tUtV) + sizeof(float)) ); // Up to 12 vertexes for one render object
 
-char stru_55B200[0x41A00];
-char stru_59CC00[0x41A0];
-void *off_514F30 = &stru_55B200[0x41900];
+polys renderStack[2100];
+uint8_t renderArgStack [2100 * __argsize];
+uint8_t *renderArgStackEND = renderArgStack + sizeof(renderArgStack) - 2 * __argsize;
+
 
 base_1c_struct *dword_546DC0;
+int baseIDcounter = 1;
 
 
 // rot_x == 0   rot_y == 0   rot_z == 0
@@ -202,16 +205,16 @@ void make_scale_rotation__matrix(base_1c_struct *scrot)
     off_5151E0[func_id](scrot);
 }
 
-int base_func0__sub0(__NC_STACK_base *base, stack_vals *stak)
+int NC_STACK_base::base_func0__sub0(stack_vals *stak)
 {
-    base->field_D8 = 4096;
+    stack__base.field_D8 = 4096;
 
-    base->field_DC.field_2C = 3496.0;
-    base->field_DC.field_30 = 600.0;
-    base->field_DC.field_34 = 255;
+    stack__base.field_DC.field_2C = 3496.0;
+    stack__base.field_DC.field_30 = 600.0;
+    stack__base.field_DC.field_34 = 255;
 
-    base->field_4 |= 8;
-    base->params3D.field_94 |= 1;
+    stack__base.flags |= BASE_FLAG_RENDERALL;
+    stack__base.params3D.field_94 |= 1;
 
 
     stack_vals *stk = stak;
@@ -236,80 +239,44 @@ int base_func0__sub0(__NC_STACK_base *base, stack_vals *stak)
             default:
                 break;
 
-            case 0x80001000:
-                if (stk->value)
-                {
-                    if ( base->OBJ_SKELETON )
-                        delete_class_obj(base->OBJ_SKELETON);
-
-                    base->OBJ_SKELETON = (NC_STACK_skeleton *)stk->value;
-                    call_vtbl(base->OBJ_SKELETON, 3, 0x80002000, &base->field_DC.field_20, 0);
-                }
+            case BASE_ATT_SKELET:
+                setBASE_skeleton((NC_STACK_skeleton *)stk->value);
                 break;
 
-            case 0x80001001:
-                if (stk->value)
-                {
-                    nlist *tmp = &base->ADES;
-                    ((NC_STACK_ade *)stk->value)->ade_func64(&tmp);
-                }
+            case BASE_ATT_ADE:
+                setBASE_ADE((NC_STACK_ade *)stk->value);
                 break;
 
-            case 0x80001002:
-                if (stk->value)
-                    base->params3D.field_94 |= 1;
-                else
-                    base->params3D.field_94 &= 0xFFFFFFFE;
-
+            case BASE_ATT_PARENTFOLLOW:
+                setBASE_parentFollow(stk->value);
                 break;
 
-            case 0x80001004:
-                base->field_D8 = stk->value;
-                base->field_DC.field_2C = stk->value - base->field_DC.field_30;
-
+            case BASE_ATT_VISLIMIT:
+                setBASE_visLimit(stk->value);
                 break;
 
-            case 0x80001005:
-                base->field_DC.field_34 = stk->value;
-
+            case BASE_ATT_AMBIENTLIGHT:
+                setBASE_ambientLight(stk->value);
                 break;
 
-            case 0x80001006:
-                if (stk->value)
-                    base->field_4 |= 8;
-                else
-                    base->field_4 &= 0xFFFFFFF7;
-
+            case BASE_ATT_RENDERALL:
+                setBASE_renderAll(stk->value);
                 break;
 
-            case 0x80001008:
-                if (stk->value)
-                    base->field_4 |= 0x20;
-                else
-                    base->field_4 &= 0xFFFFFFDF;
-
+            case BASE_ATT_INPUTHANDLE:
+                setBASE_inputHandle (stk->value);
                 break;
 
-            case 0x80001023:
-                base->field_DC.field_30 = stk->value;
-                base->field_DC.field_2C = base->field_D8 - stk->value;
-
+            case BASE_ATT_FADELEN:
+                setBASE_fadeLength(stk->value);
                 break;
 
-            case 0x80001024:
-                if (stk->value)
-                    base->params3D.field_94 |= 2;
-                else
-                    base->params3D.field_94 &= 0xFFFFFFFD;
-
+            case BASE_ATT_STATIC:
+                setBASE_static (stk->value);
                 break;
 
-            case 0x80001025:
-                if (stk->value)
-                    base->field_4 |= 0x80;
-                else
-                    base->field_4 &= 0xFFFFFF7F;
-
+            case BASE_ATT_EMBDRSRC:
+                setBASE_embdRsrc(stk->value);
                 break;
             }
             stk++;
@@ -341,7 +308,7 @@ size_t NC_STACK_base::func0(stack_vals *stak)
 
     make_scale_rotation__matrix(&base->params3D);
 
-    if ( !base_func0__sub0(base, stak) )
+    if ( !base_func0__sub0(stak) )
     {
         func1(NULL);
         return 0;
@@ -386,7 +353,7 @@ size_t NC_STACK_base::func1(stack_vals *stak)
     return NC_STACK_nucleus::func1(stak);
 }
 
-void base_setter(__NC_STACK_base *base, stack_vals *stak)
+void NC_STACK_base::base_setter(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -410,82 +377,44 @@ void base_setter(__NC_STACK_base *base, stack_vals *stak)
             default:
                 break;
 
-            case 0x80001000:
-                if (stk->value)
-                {
-                    if ( base->OBJ_SKELETON )
-                        delete_class_obj(base->OBJ_SKELETON);
-
-                    base->OBJ_SKELETON = (NC_STACK_skeleton *)stk->value;
-                    base->field_DC.field_20 = NULL;
-                    call_vtbl(base->OBJ_SKELETON, 3, 0x80002000, &base->field_DC.field_20, 0);
-                }
+            case BASE_ATT_SKELET:
+                setBASE_skeleton((NC_STACK_skeleton *)stk->value);
                 break;
 
-            case 0x80001001:
-                if (stk->value)
-                {
-                    //call_vtbl((NC_STACK_nucleus *)stk->value, 64, &base->ADES);
-                    nlist *tmp = &base->ADES;
-                    ((NC_STACK_ade *)stk->value)->ade_func64(&tmp);
-                }
+            case BASE_ATT_ADE:
+                setBASE_ADE((NC_STACK_ade *)stk->value);
                 break;
 
-            case 0x80001002:
-                if (stk->value)
-                    base->params3D.field_94 |= 1;
-                else
-                    base->params3D.field_94 &= 0xFFFFFFFE;
-
+            case BASE_ATT_PARENTFOLLOW:
+                setBASE_parentFollow(stk->value);
                 break;
 
-            case 0x80001004:
-                base->field_D8 = stk->value;
-                base->field_DC.field_2C = stk->value - base->field_DC.field_30;
-
+            case BASE_ATT_VISLIMIT:
+                setBASE_visLimit(stk->value);
                 break;
 
-            case 0x80001005:
-                base->field_DC.field_34 = stk->value;
-
+            case BASE_ATT_AMBIENTLIGHT:
+                setBASE_ambientLight(stk->value);
                 break;
 
-            case 0x80001006:
-                if (stk->value)
-                    base->field_4 |= 8;
-                else
-                    base->field_4 &= 0xFFFFFFF7;
-
+            case BASE_ATT_RENDERALL:
+                setBASE_renderAll(stk->value);
                 break;
 
-            case 0x80001008:
-                if (stk->value)
-                    base->field_4 |= 0x20;
-                else
-                    base->field_4 &= 0xFFFFFFDF;
-
+            case BASE_ATT_INPUTHANDLE:
+                setBASE_inputHandle (stk->value);
                 break;
 
-            case 0x80001023:
-                base->field_DC.field_30 = stk->value;
-                base->field_DC.field_2C = base->field_D8 - stk->value;
-
+            case BASE_ATT_FADELEN:
+                setBASE_fadeLength(stk->value);
                 break;
 
-            case 0x80001024:
-                if (stk->value)
-                    base->params3D.field_94 |= 2;
-                else
-                    base->params3D.field_94 &= 0xFFFFFFFD;
-
+            case BASE_ATT_STATIC:
+                setBASE_static (stk->value);
                 break;
 
-            case 0x80001025:
-                if (stk->value)
-                    base->field_4 |= 0x80;
-                else
-                    base->field_4 &= 0xFFFFFF7F;
-
+            case BASE_ATT_EMBDRSRC:
+                setBASE_embdRsrc(stk->value);
                 break;
             }
             stk++;
@@ -495,14 +424,12 @@ void base_setter(__NC_STACK_base *base, stack_vals *stak)
 
 size_t NC_STACK_base::func2(stack_vals *stak)
 {
-    __NC_STACK_base *base = &this->stack__base;
-
-    base_setter(base, stak);
+    base_setter(stak);
 
     return NC_STACK_nucleus::func2(stak);
 }
 
-void base_getter(NC_STACK_base *, __NC_STACK_base *base, stack_vals *stak)
+void NC_STACK_base::base_getter(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -525,126 +452,111 @@ void base_getter(NC_STACK_base *, __NC_STACK_base *base, stack_vals *stak)
             {
             default:
                 break;
-            case 0x80001000:
-                *(NC_STACK_skeleton **)stk->value = base->OBJ_SKELETON;
+            case BASE_ATT_SKELET:
+                *(NC_STACK_skeleton **)stk->value = getBASE_skeleton();
                 break;
-            case 0x80001002:
-                if ( !(base->params3D.field_94 & 1) )
-                    *(int *)stk->value = 0;
-                else
-                    *(int *)stk->value = 1;
+            case BASE_ATT_PARENTFOLLOW:
+                *(int *)stk->value = getBASE_parentFollow();
                 break;
             case 0x80001003:
             case 0x80001007:
                 *(int *)stk->value = 0;
                 break;
-            case 0x80001004:
-                *(int *)stk->value = base->field_D8;
+            case BASE_ATT_VISLIMIT:
+                *(int *)stk->value = getBASE_visLimit();
                 break;
-            case 0x80001005:
-                *(int *)stk->value = base->field_DC.field_34;
+            case BASE_ATT_AMBIENTLIGHT:
+                *(int *)stk->value = getBASE_ambientLight();
                 break;
-            case 0x80001006:
-                if ( !(base->field_4 & 8) )
-                    *(int *)stk->value = 0;
-                else
-                    *(int *)stk->value = 1;
+            case BASE_ATT_RENDERALL:
+                *(int *)stk->value = getBASE_renderAll();
                 break;
-            case 0x80001008:
-                if ( !(base->field_4 & 0x20) )
-                    *(int *)stk->value = 0;
-                else
-                    *(int *)stk->value = 1;
+            case BASE_ATT_INPUTHANDLE:
+                *(int *)stk->value = getBASE_inputHandle();
                 break;
-            case 0x80001009:
-                *(float *)stk->value = base->params3D.grp_1.sx;
+            case BASE_ATT_X:
+                *(float *)stk->value = getBASE_x();
                 break;
-            case 0x8000100A:
-                *(float *)stk->value = base->params3D.grp_1.sy;
+            case BASE_ATT_Y:
+                *(float *)stk->value = getBASE_y();
                 break;
-            case 0x8000100B:
-                *(float *)stk->value = base->params3D.grp_1.sz;
+            case BASE_ATT_Z:
+                *(float *)stk->value = getBASE_z();
                 break;
-            case 0x8000100C:
-                *(float *)stk->value = base->params3D.grp3_p1;
+            case BASE_ATT_VX:
+                *(float *)stk->value = getBASE_vx();
                 break;
-            case 0x8000100D:
-                *(float *)stk->value = base->params3D.grp3_p2;
+            case BASE_ATT_VY:
+                *(float *)stk->value = getBASE_vy();
                 break;
-            case 0x8000100E:
-                *(float *)stk->value = base->params3D.grp3_p3;
+            case BASE_ATT_VZ:
+                *(float *)stk->value = getBASE_vz();
                 break;
-            case 0x8000100F:
-                *(int *)stk->value = base->params3D.rot_x >> 16;
+            case BASE_ATT_AX:
+                *(int *)stk->value = getBASE_ax();
                 break;
-            case 0x80001010:
-                *(int *)stk->value = base->params3D.rot_y >> 16;
+            case BASE_ATT_AY:
+                *(int *)stk->value = getBASE_ay();
                 break;
-            case 0x80001011:
-                *(int *)stk->value = base->params3D.rot_z >> 16;
+            case BASE_ATT_AZ:
+                *(int *)stk->value = getBASE_az();
                 break;
-            case 0x80001012:
-                *(int *)stk->value = base->params3D.grp5_p1 >> 6;
+            case BASE_ATT_RX:
+                *(int *)stk->value = getBASE_rx();
                 break;
-            case 0x80001013:
-                *(int *)stk->value = base->params3D.grp5_p2 >> 6;
+            case BASE_ATT_RY:
+                *(int *)stk->value = getBASE_ry();
                 break;
-            case 0x80001014:
-                *(int *)stk->value = base->params3D.grp5_p3 >> 6;
+            case BASE_ATT_RZ:
+                *(int *)stk->value = getBASE_rz();
                 break;
-            case 0x80001015:
-                *(float *)stk->value = base->params3D.scale_x;
+            case BASE_ATT_SX:
+                *(float *)stk->value = getBASE_sx();
                 break;
-            case 0x80001016:
-                *(float *)stk->value = base->params3D.scale_y;
+            case BASE_ATT_SY:
+                *(float *)stk->value = getBASE_sy();
                 break;
-            case 0x80001017:
-                *(float *)stk->value = base->params3D.scale_z;
+            case BASE_ATT_SZ:
+                *(float *)stk->value = getBASE_sz();
                 break;
-            case 0x80001018:
-                *(nlist **)stk->value = &base->ADES;
+            case BASE_ATT_ADELIST:
+                *(nlist **)stk->value = getBASE_adeList();
                 break;
-            case 0x80001019:
-                *(base_1c_struct **)stk->value = &base->params3D;
+            case BASE_ATT_PTRANSFORM:
+                *(base_1c_struct **)stk->value = getBASE_pTransform();
                 break;
-            case 0x8000101A:
-                *(nlist **)stk->value = &base->KIDS;
+            case BASE_ATT_KIDSLIST:
+                *(nlist **)stk->value = getBASE_kidList();
                 break;
-            case 0x8000101B:
-                *(base_node **)stk->value = &base->kid_node;
+            case BASE_ATT_KIDNODE:
+                *(base_node **)stk->value = getBASE_kidNode();
                 break;
-            case 0x8000101D:
-                *(area_arg_65 **)stk->value = &base->field_DC;
+            case BASE_ATT_RENDERPARAMS:
+                *(area_arg_65 **)stk->value = getBASE_renderParams();
                 break;
-            case 0x8000101E:
-                *(int *)stk->value = (base->field_4 & 4) != 0;
+            case BASE_ATT_MAINKID:
+                *(int *)stk->value = getBASE_mainKid();
                 break;
-            case 0x8000101F:
-                *(int *)stk->value = (base->field_4 & 0x40) != 0;
+            case BASE_ATT_MAINOBJT:
+                *(int *)stk->value = getBASE_mainObjt();
                 break;
-            case 0x80001020:
-                *(void **)stk->value = stru_59CC00;
+            case BASE_ATT_RENDERSTACK:
+                *(void **)stk->value = getBASE_renderStack();
                 break;
-            case 0x80001021:
-                *(void **)stk->value = stru_55B200;
+            case BASE_ATT_ARGSTACK:
+                *(void **)stk->value = getBASE_argStack();
                 break;
-            case 0x80001022:
-                *(void **)stk->value = off_514F30;
+            case BASE_ATT_ENDARGSTACK:
+                *(void **)stk->value = getBASE_endArgStack();
                 break;
-            case 0x80001023:
-                *(int *)stk->value = base->field_DC.field_30;
+            case BASE_ATT_FADELEN:
+                *(int *)stk->value = getBASE_fadeLength();
                 break;
-            case 0x80001024:
-                if ( !(base->params3D.field_94 & 2) )
-                    *(int *)stk->value = 0;
-                else
-                    *(int *)stk->value = 1;
+            case BASE_ATT_STATIC:
+                *(int *)stk->value = getBASE_static();
                 break;
-            case 0x80001025:
-                if ( base->field_4 & 0x80 )
-                    *(int *)stk->value = 1;
-                else
-                    *(int *)stk->value = 0;
+            case BASE_ATT_EMBDRSRC:
+                *(int *)stk->value = getBASE_embdRsrc();
                 break;
             }
             stk++;
@@ -654,10 +566,7 @@ void base_getter(NC_STACK_base *, __NC_STACK_base *base, stack_vals *stak)
 
 size_t NC_STACK_base::func3(stack_vals *stak)
 {
-
-    __NC_STACK_base *base = &this->stack__base;
-
-    base_getter(this, base, stak);
+    base_getter(stak);
 
     return NC_STACK_nucleus::func3(stak);
 }
@@ -666,8 +575,6 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
 {
     if ( obj )
     {
-        stack_vals stk[10];
-        stack_vals *v4 = stk;
         STRC_base dst;
 
         if ( mfread(mfile, &dst, sizeof(STRC_base)) )
@@ -703,23 +610,6 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
 
             if ( dst.p1 >= 1 )
             {
-                stk[0].id = 0x80001006;
-                stk[0].value = (dst.p17 & 8) != 0;
-                stk[1].id = 0x80001007;
-                stk[1].value = (dst.p17 & 0x10) != 0;
-                stk[2].id = 0x80001008;
-                stk[2].value = (dst.p17 & 0x20) != 0;
-                stk[3].id = 0x80001002;
-                stk[3].value = (dst.p17 & 0x40) != 0;
-                stk[4].id = 0x80001003;
-                stk[4].value = dst.p18;
-                stk[5].id = 0x80001004;
-                stk[5].value = dst.p19;
-                stk[6].id = 0x80001005;
-                stk[6].value = dst.p20;
-
-                v4 = &stk[7];
-
                 NC_STACK_base *zzz[2] = {NULL, NULL};
 
                 if ( dst.p17 & 4 )
@@ -776,10 +666,22 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
                 }
 
                 obj->base_func71(&v39);
-            }
-            v4->id = 0;
 
-            obj->func2(stk);
+                obj->setBASE_renderAll( (dst.p17 & 8) != 0 );
+
+//				stk[1].id = 0x80001007;
+//				stk[1].value = (dst.p17 & 0x10) != 0;
+
+                obj->setBASE_inputHandle( (dst.p17 & 0x20) != 0 );
+                obj->setBASE_parentFollow( (dst.p17 & 0x40) != 0 );
+
+//				stk[4].id = 0x80001003;
+//				stk[4].value = dst.p18;
+
+                obj->setBASE_visLimit( dst.p19 );
+                obj->setBASE_ambientLight( dst.p20 );
+
+            }
             return 1;
         }
         else
@@ -805,18 +707,11 @@ int base_READ_ADES(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
         {
-            NC_STACK_nucleus *objt = READ_OBJT(mfile);
-            if ( !objt )
+            NC_STACK_ade *ade = dynamic_cast<NC_STACK_ade *>(READ_OBJT(mfile));
+            if ( !ade )
                 return 0;
 
-            stack_vals v7[2];
-
-            v7[0].id = 0x80001001;
-            v7[0].value = (size_t)objt;
-            v7[1].id = 0;
-            v7[1].value = 0;
-
-            obj->func2(v7);
+            obj->setBASE_ADE(ade);
         }
         else
         {
@@ -933,13 +828,13 @@ size_t NC_STACK_base::func5(MFILE **file)
             {
                 if ( STRC_readed )
                 {
-                    NC_STACK_nucleus *objt = READ_OBJT(mfile);
-                    if ( !objt )
+                    NC_STACK_skeleton *skel = dynamic_cast<NC_STACK_skeleton *>(READ_OBJT(mfile));
+                    if ( !skel )
                     {
                         func1(NULL);
                         return 0;
                     }
-                    call_vtbl(this, 2, 0x80001000, objt, 0);
+                    setBASE_skeleton(skel);
                 }
                 else
                 {
@@ -982,9 +877,9 @@ size_t NC_STACK_base::func6(MFILE **file)
     if ( !NC_STACK_nucleus::func6(file) )
         return 0;
 
-    if ( base->field_4 & 0x80 )
+    if ( base->flags & 0x80 )
     {
-        NC_STACK_nucleus *embd = init_get_class("embed.class", 0);
+        NC_STACK_embed *embd = dynamic_cast<NC_STACK_embed *>(init_get_class("embed.class", NULL));
         if ( embd )
         {
             if ( !sub_4117F8(embd, mfile) )
@@ -1003,22 +898,22 @@ size_t NC_STACK_base::func6(MFILE **file)
     a1.p17 = 0;
     a1.p1 = SWAP16(1);
 
-    if ( base->field_4 & 1 )
+    if ( base->flags & 1 )
         a1.p17 = 1;
 
-    if ( base->field_4 & 2 )
+    if ( base->flags & 2 )
         a1.p17 |= 2;
 
-    if ( base->field_4 & 0x40 )
+    if ( base->flags & 0x40 )
         a1.p17 |= 4;
 
-    if ( base->field_4 & 8 )
+    if ( base->flags & 8 )
         a1.p17 |= 8;
 
-    if ( base->field_4 & 0x10 )
+    if ( base->flags & 0x10 )
         a1.p17 |= 0x10;
 
-    if ( base->field_4 & 0x20 )
+    if ( base->flags & 0x20 )
         a1.p17 |= 0x20;
 
     if ( base->params3D.field_94 & 1 )
@@ -1140,9 +1035,9 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
     base77Func base77;
     base77.field_0 = arg->field_4;
     base77.field_4 = arg->field_0;
-    base77.curOutPoly = (polys *)stru_59CC00;
-    base77.polysData = (polysDat *)stru_55B200;
-    base77.polysData_end = (polysDat *)off_514F30;
+    base77.rndrSTK_cur = renderStack;
+    base77.argSTK_cur = (polysDat *)renderArgStack;
+    base77.argSTK_end = (polysDat *)renderArgStackEND;
     base77.field_14 = arg->field_C;
     base77.field_18 = 1000;
     base77.field_1C = base->ID;
@@ -1151,12 +1046,12 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
 
     arg->field_C = base77.field_14;
 
-    int num = base77.curOutPoly - (polys *)stru_59CC00;
+    int num = base77.rndrSTK_cur - renderStack;
 
     arg->field_10 += num;
 
     if ( num > 1 )
-        qsort(stru_59CC00, num, sizeof(polys), sub_430880);
+        qsort(renderStack, num, sizeof(polys), sub_430880);
 
     NC_STACK_win3d *win3d;
     win3d = GFXe.getC3D();
@@ -1169,7 +1064,7 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
 
     for (int i = 0; i < num; i++)
     {
-        polys *pol = ((polys *)stru_59CC00) + i;
+        polys *pol = renderStack + i;
         pol->data->render_func(pol->data);
     }
 
@@ -1208,7 +1103,7 @@ size_t NC_STACK_base::base_func66(base_66_arg_struct *prnt_info)
     {
         Remove(&base->kid_node);
 
-        if ( base->field_4 & 4 )
+        if ( base->flags & 4 )
         {
             NC_STACK_base *v7[2];
             v7[0] = (NC_STACK_base *)-1;
@@ -1221,7 +1116,7 @@ size_t NC_STACK_base::base_func66(base_66_arg_struct *prnt_info)
     if ( prnt_info->parent )
     {
         AddTail(prnt_info->KIDS, &base->kid_node);
-        if ( base->field_4 & 4 )
+        if ( base->flags & 4 )
         {
             NC_STACK_base *v7[2];
             v7[0] = this;
@@ -1252,7 +1147,7 @@ size_t NC_STACK_base::base_func67(NC_STACK_base **arg)
     if (arg[0] == NULL)
     {
         base->field_b8 = NULL;
-        base->field_4 |= 0x44;
+        base->flags |= 0x44;
         base->field_bc = this;
 
         if ( base->parent_base )
@@ -1268,7 +1163,7 @@ size_t NC_STACK_base::base_func67(NC_STACK_base **arg)
     {
         base->field_bc = 0;
         base->field_b8 = NULL;
-        base->field_4 &= 0xBB;
+        base->flags &= 0xBB;
 
         if ( !base->parent_base )
             return 1;
@@ -1280,8 +1175,8 @@ size_t NC_STACK_base::base_func67(NC_STACK_base **arg)
         base->field_b8 = arg[0];
         base->field_bc = arg[1];
 
-        base->field_4 |= 4;
-        base->field_4 &= 0xBF;
+        base->flags |= 4;
+        base->flags &= 0xBF;
 
         if ( !base->parent_base )
             return 1;
@@ -1333,11 +1228,11 @@ size_t NC_STACK_base::base_func69(flag_xyz *arg)
 
     if ( arg->flag & 8 )
     {
-        base->field_4 &= 0xFE;
+        base->flags &= 0xFE;
     }
     else
     {
-        base->field_4 |= 1;
+        base->flags |= 1;
 
         if ( flg & 0x10 )
         {
@@ -1404,11 +1299,11 @@ size_t NC_STACK_base::base_func71(flag_xyz2 *arg)
 
     if ( arg->flag & 8 )
     {
-        base->field_4 &= 0xFD;
+        base->flags &= 0xFD;
     }
     else
     {
-        base->field_4 |= 1;
+        base->flags |= 1;
 
         if ( flg & 0x10 )
         {
@@ -1476,17 +1371,17 @@ size_t NC_STACK_base::base_func73(base_64arg *arg)
 
         if ( base->OBJ_SKELETON )
         {
-            if ( base->field_4 & 0x20 )
+            if ( base->flags & 0x20 )
                 base_func78(arg);
 
-            if ( base->field_4 & 1 )
+            if ( base->flags & 1 )
             {
                 base->params3D.grp_1.sx += base->params3D.grp3_p1 * arg->field_4;
                 base->params3D.grp_1.sy += base->params3D.grp3_p2 * arg->field_4;
                 base->params3D.grp_1.sz += base->params3D.grp3_p3 * arg->field_4;
             }
 
-            if ( base->field_4 & 2 )
+            if ( base->flags & 2 )
             {
                 int a,b,c;
                 a = (base->params3D.grp5_p1 * arg->field_4 + base->params3D.rot_x) % (360 << 16);
@@ -1510,13 +1405,13 @@ size_t NC_STACK_base::base_func73(base_64arg *arg)
 
 size_t NC_STACK_base::base_func77(base77Func *arg)
 {
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
 
     int v12 = 0;
 
     if ( base->OBJ_SKELETON )
     {
-        if ( !(base->field_4 & 0x40) )
+        if ( !(base->flags & 0x40) )
         {
             sub_430A38(&base->params3D);
 
@@ -1539,8 +1434,8 @@ size_t NC_STACK_base::base_func77(base77Func *arg)
                 base->field_DC.field_10 = arg->field_0;
                 base->field_DC.field_24 = arg->field_20;
                 base->field_DC.field_28 = arg->field_24;
-                base->field_DC.outPolys = arg->curOutPoly;
-                base->field_DC.polyDat = arg->polysData;
+                base->field_DC.rndrSTK_cur = arg->rndrSTK_cur;
+                base->field_DC.argSTK_cur = arg->argSTK_cur;
                 base->field_DC.glob_1c = skel132.glob_1c;
                 base->field_DC.base_1c = skel132.base_1c;
 
@@ -1551,7 +1446,7 @@ size_t NC_STACK_base::base_func77(base77Func *arg)
 
                 while(cur_ade->next)
                 {
-                    if ( base->field_DC.polyDat >= arg->polysData_end )
+                    if ( base->field_DC.argSTK_cur >= arg->argSTK_end )
                         break;
 
                     if ( (arg->field_14 + base->field_DC.field_38) >= arg->field_18 )
@@ -1563,8 +1458,8 @@ size_t NC_STACK_base::base_func77(base77Func *arg)
                 }
 
                 arg->field_14 += base->field_DC.field_38;
-                arg->curOutPoly = base->field_DC.outPolys;
-                arg->polysData = base->field_DC.polyDat;
+                arg->rndrSTK_cur = base->field_DC.rndrSTK_cur;
+                arg->argSTK_cur = base->field_DC.argSTK_cur;
             }
         }
     }
@@ -1584,7 +1479,7 @@ size_t NC_STACK_base::base_func78(base_64arg *arg)
 
     __NC_STACK_base *base = &this->stack__base;
 
-    base->field_4 |= 3;
+    base->flags |= 3;
 
     if ( arg->field_8->but_flags & 0x80000000 )
     {
@@ -1635,6 +1530,269 @@ size_t NC_STACK_base::base_func79(NC_STACK_base **arg)
 
     return 1;
 }
+
+
+
+void NC_STACK_base::setBASE_skeleton(NC_STACK_skeleton *skel)
+{
+    if (skel)
+    {
+        if ( stack__base.OBJ_SKELETON )
+            delete_class_obj(stack__base.OBJ_SKELETON);
+
+        stack__base.OBJ_SKELETON = skel;
+        stack__base.field_DC.field_20 = skel->getSKEL_pSkelet();
+    }
+}
+
+void NC_STACK_base::setBASE_ADE(NC_STACK_ade *ade)
+{
+    if (ade)
+    {
+        nlist *tmp = &stack__base.ADES;
+        ade->ade_func64(&tmp);
+    }
+}
+
+void NC_STACK_base::setBASE_parentFollow(int follow)
+{
+    if ( follow )
+        stack__base.params3D.field_94 |= 1;
+    else
+        stack__base.params3D.field_94 &= ~1;
+}
+
+void NC_STACK_base::setBASE_visLimit(int val)
+{
+    stack__base.field_D8 = val;
+    stack__base.field_DC.field_2C = val - stack__base.field_DC.field_30;
+}
+
+void NC_STACK_base::setBASE_ambientLight(int val)
+{
+    stack__base.field_DC.field_34 = val;
+}
+
+void NC_STACK_base::setBASE_renderAll(int rndr)
+{
+    if (rndr)
+        stack__base.flags |= BASE_FLAG_RENDERALL;
+    else
+        stack__base.flags &= ~BASE_FLAG_RENDERALL;
+}
+
+void NC_STACK_base::setBASE_inputHandle(int hndl)
+{
+    if (hndl)
+        stack__base.flags |= BASE_FLAG_INPUTHANDLE;
+    else
+        stack__base.flags &= ~BASE_FLAG_INPUTHANDLE;
+}
+
+void NC_STACK_base::setBASE_fadeLength(int len)
+{
+    stack__base.field_DC.field_30 = len;
+    stack__base.field_DC.field_2C = stack__base.field_D8 - len;
+}
+
+void NC_STACK_base::setBASE_static(int stic)
+{
+    if (stic)
+        stack__base.params3D.field_94 |= 2;
+    else
+        stack__base.params3D.field_94 &= ~2;
+}
+
+void NC_STACK_base::setBASE_embdRsrc(int embd)
+{
+    if (embd)
+        stack__base.flags |= BASE_FLAG_EMBDRSRC;
+    else
+        stack__base.flags &= ~BASE_FLAG_EMBDRSRC;
+}
+
+NC_STACK_skeleton *NC_STACK_base::getBASE_skeleton()
+{
+    return stack__base.OBJ_SKELETON;
+}
+
+int NC_STACK_base::getBASE_parentFollow()
+{
+    if ( (stack__base.params3D.field_94 & 1) )
+        return 1;
+    return 0;
+}
+
+int NC_STACK_base::getBASE_visLimit()
+{
+    return stack__base.field_D8;
+}
+
+int NC_STACK_base::getBASE_ambientLight()
+{
+    return stack__base.field_DC.field_34;
+}
+
+int NC_STACK_base::getBASE_renderAll()
+{
+    if ( (stack__base.flags & BASE_FLAG_RENDERALL) )
+        return 1;
+    return 0;
+}
+
+int NC_STACK_base::getBASE_inputHandle()
+{
+    if ( (stack__base.flags & BASE_FLAG_INPUTHANDLE) )
+        return 1;
+    return 0;
+}
+
+float NC_STACK_base::getBASE_x()
+{
+    return stack__base.params3D.grp_1.sx;
+}
+
+float NC_STACK_base::getBASE_y()
+{
+    return stack__base.params3D.grp_1.sy;
+}
+
+float NC_STACK_base::getBASE_z()
+{
+    return stack__base.params3D.grp_1.sz;
+}
+
+float NC_STACK_base::getBASE_vx()
+{
+    return stack__base.params3D.grp3_p1;
+}
+
+float NC_STACK_base::getBASE_vy()
+{
+    return stack__base.params3D.grp3_p2;
+}
+
+float NC_STACK_base::getBASE_vz()
+{
+    return stack__base.params3D.grp3_p3;
+}
+
+int NC_STACK_base::getBASE_ax()
+{
+    return stack__base.params3D.rot_x >> 16;
+}
+
+int NC_STACK_base::getBASE_ay()
+{
+    return stack__base.params3D.rot_y >> 16;
+}
+
+int NC_STACK_base::getBASE_az()
+{
+    return stack__base.params3D.rot_z >> 16;
+}
+
+int NC_STACK_base::getBASE_rx()
+{
+    return stack__base.params3D.grp5_p1 >> 6;
+}
+
+int NC_STACK_base::getBASE_ry()
+{
+    return stack__base.params3D.grp5_p2 >> 6;
+}
+
+int NC_STACK_base::getBASE_rz()
+{
+    return stack__base.params3D.grp5_p3 >> 6;
+}
+
+float NC_STACK_base::getBASE_sx()
+{
+    return stack__base.params3D.scale_x;
+}
+
+float NC_STACK_base::getBASE_sy()
+{
+    return stack__base.params3D.scale_y;
+}
+
+float NC_STACK_base::getBASE_sz()
+{
+    return stack__base.params3D.scale_z;
+}
+
+nlist *NC_STACK_base::getBASE_adeList()
+{
+    return &stack__base.ADES;
+}
+
+base_1c_struct *NC_STACK_base::getBASE_pTransform()
+{
+    return &stack__base.params3D;
+}
+
+nlist *NC_STACK_base::getBASE_kidList()
+{
+    return &stack__base.KIDS;
+}
+
+base_node *NC_STACK_base::getBASE_kidNode()
+{
+    return &stack__base.kid_node;
+}
+
+area_arg_65 *NC_STACK_base::getBASE_renderParams()
+{
+    return &stack__base.field_DC;
+}
+
+int NC_STACK_base::getBASE_mainKid()
+{
+    return (stack__base.flags & BASE_FLAG_MAINKID) != 0;
+}
+
+int NC_STACK_base::getBASE_mainObjt()
+{
+    return (stack__base.flags & BASE_FLAG_MAINOBJT) != 0;
+}
+
+polys *NC_STACK_base::getBASE_renderStack()
+{
+    return renderStack;
+}
+
+void *NC_STACK_base::getBASE_argStack()
+{
+    return renderArgStack;
+}
+
+void *NC_STACK_base::getBASE_endArgStack()
+{
+    return renderArgStackEND;
+}
+
+int NC_STACK_base::getBASE_fadeLength()
+{
+    return stack__base.field_DC.field_30;
+}
+
+int NC_STACK_base::getBASE_static()
+{
+    if ( (stack__base.params3D.field_94 & 2) )
+        return 1;
+    return 0;
+}
+
+int NC_STACK_base::getBASE_embdRsrc()
+{
+    if ( (stack__base.flags & BASE_FLAG_EMBDRSRC) )
+        return 1;
+    return 0;
+}
+
+
+
 
 size_t NC_STACK_base::compatcall(int method_id, void *data)
 {

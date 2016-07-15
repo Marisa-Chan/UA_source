@@ -22,7 +22,7 @@ struct __NC_STACK_amesh
     __int16 field_A;
     ATTS *atts;
     tUtV **olpl;
-    int field_14;
+//    int field_14;
 };
 
 class NC_STACK_amesh: public NC_STACK_area
@@ -49,6 +49,33 @@ public:
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_amesh();
     };
+
+    enum AMESH_FLAG
+    {
+        AMESH_FLAG_DPTHFADE = 1
+    };
+
+    enum AMESH_ATT
+    {
+        AMESH_ATT_NUMPOLY = 0x80003000,
+        AMESH_ATT_ATTPOLYS = 0x80003001,
+        AMESH_ATT_OTLPOOL = 0x80003002
+    };
+
+
+    virtual void setADE_depthFade(int);
+    virtual void setAREA_bitm(NC_STACK_bitmap *);
+    virtual void setAREA_tracybitm(NC_STACK_bitmap *);
+
+    virtual void setAMESH_numpoly(int);
+    virtual int setAMESH_polys(ATTS *);
+    virtual int setAMESH_otls(tUtV **);
+
+    virtual int getAMESH_numpoly();
+
+
+    int amesh_func0__sub0(stack_vals *stak);
+    void amesh_func2__sub0(stack_vals *stak);
 
     //Data
     static const NewClassDescr description;

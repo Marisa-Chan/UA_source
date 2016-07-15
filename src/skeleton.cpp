@@ -27,16 +27,14 @@ size_t NC_STACK_skeleton::func0(stack_vals *stak)
     if ( !NC_STACK_rsrc::func0(stak) )
         return 0;
 
-    __NC_STACK_skeleton *skelt = &this->stack__skeleton;
-    call_vtbl(this, 3, 0x80001002, &skelt->data, 0); // Copy rsrc->data to bitm_intern
+    __NC_STACK_skeleton *skelt = &stack__skeleton;
+    skelt->data = (skeleton_64_stru *)getRsrc_pData();
 
     return 1;
 }
 
 size_t NC_STACK_skeleton::func3(stack_vals *stak)
 {
-    __NC_STACK_skeleton *skelt = &this->stack__skeleton;
-
     stack_vals *stk = stak;
 
     while ( 1 )
@@ -59,26 +57,17 @@ size_t NC_STACK_skeleton::func3(stack_vals *stak)
             default:
                 break;
 
-            case 0x80002000:
-                *(skeleton_64_stru **)stk->value = skelt->data;
+            case SKEL_ATT_PSKELET:
+                *(skeleton_64_stru **)stk->value = getSKEL_pSkelet();
                 break;
-            case 0x80002001:
-                if (skelt->data)
-                    *(int *)stk->value = skelt->data->POO_NUM;
-                else
-                    *(int *)stk->value = 0;
+            case SKEL_ATT_POINTSCNT:
+                *(int *)stk->value = getSKEL_pntCount();
                 break;
-            case 0x80002002:
-                if (skelt->data)
-                    *(int *)stk->value = skelt->data->sen_count;
-                else
-                    *(int *)stk->value = 0;
+            case SKEL_ATT_SENCNT:
+                *(int *)stk->value = getSKEL_senCount();
                 break;
-            case 0x80002003:
-                if (skelt->data)
-                    *(int *)stk->value = skelt->data->pol_count;
-                else
-                    *(int *)stk->value = 0;
+            case SKEL_ATT_POLYCNT:
+                *(int *)stk->value = getSKEL_polyCount();
                 break;
             }
             stk++;
@@ -95,11 +84,10 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
     if ( !res )
         return NULL;
 
-    int elm_num = find_id_in_stack_def_val(0x80002001, 0, stak);
+    int elm_num = find_id_in_stack_def_val(SKEL_ATT_POINTSCNT, 0, stak);
 
     if (!elm_num)
     {
-        //call_vtbl(obj, 65, res);
         rsrc_func65(&res);
         return NULL;
     }
@@ -108,7 +96,6 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
 
     if (!sklt)
     {
-        //call_vtbl(obj, 65, res);
         rsrc_func65(&res);
         return NULL;
     }
@@ -121,7 +108,6 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
 
     if (!POO)
     {
-        //call_vtbl(obj, 65, res);
         rsrc_func65(&res);
         return NULL;
     }
@@ -132,14 +118,13 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
 
     if (!POO2)
     {
-        //call_vtbl(obj, 65, res);
         rsrc_func65(&res);
         return NULL;
     }
 
     sklt->POO_NUM = elm_num;
 
-    int sen_count = find_id_in_stack_def_val(0x80002002, 0, stak);
+    int sen_count = find_id_in_stack_def_val(SKEL_ATT_SENCNT, 0, stak);
 
     if (sen_count > 0)
     {
@@ -147,23 +132,20 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
         arg129.skeleton = sklt;
         arg129.sen_count = sen_count;
 
-        ////if ( !call_vtbl(obj, 129, sklt, sen_count) ) //// OPTIMIZATION
         if ( !skeleton_func129(&arg129) )
         {
-            //call_vtbl(obj, 65, res);
             rsrc_func65(&res);
             return NULL;
         }
     }
 
-    int pol_count = find_id_in_stack_def_val(0x80002003, 0, stak);
-    int num_indexes = find_id_in_stack_def_val(0x80002004, 0, stak);
+    int pol_count = find_id_in_stack_def_val(SKEL_ATT_POLYCNT, 0, stak);
+    int num_indexes = find_id_in_stack_def_val(SKEL_ATT_POLYPNTCNT, 0, stak);
 
     if (pol_count > 0)
     {
         if (num_indexes <= 0)
         {
-            //call_vtbl(obj, 65, res);
             rsrc_func65(&res);
             return NULL;
         }
@@ -173,10 +155,8 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
         arg130.num_indexes = num_indexes;
         arg130.pol_count = pol_count;
 
-        ////if ( !call_vtbl(obj, 130, sklt, pol_count, num_indexes) ) //// OPTIMIZATION
         if ( !skeleton_func130(&arg130) )
         {
-            //call_vtbl(obj, 65, res);
             rsrc_func65(&res);
             return NULL;
         }
@@ -216,7 +196,7 @@ size_t NC_STACK_skeleton::rsrc_func65(rsrc **pres)
 
 __NC_STACK_skeleton * NC_STACK_skeleton::skeleton_func128(stack_vals *)
 {
-    return &this->stack__skeleton;
+    return &stack__skeleton;
 }
 
 size_t NC_STACK_skeleton::skeleton_func129(skeleton_129_arg *arg)
@@ -681,39 +661,39 @@ void * NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
     int i = 0;
     for ( i = 0; tpskt->field_0 >= 0; i++ )
     {
-        arg->polysubDat->vertexes[i].sx = tpskt->pos3f.sx / tpskt->pos3f.sz;
-        arg->polysubDat->vertexes[i].sy = tpskt->pos3f.sy / tpskt->pos3f.sz;
-        arg->polysubDat->vertexes[i].sz = tpskt->pos3f.sz;
+        arg->rndrArg->vertexes[i].sx = tpskt->pos3f.sx / tpskt->pos3f.sz;
+        arg->rndrArg->vertexes[i].sy = tpskt->pos3f.sy / tpskt->pos3f.sz;
+        arg->rndrArg->vertexes[i].sz = tpskt->pos3f.sz;
         tpskt++;
     }
 
-    arg->polysubDat->vertexCount = i;
+    arg->rndrArg->vertexCount = i;
 
-    tUtV *tmpuv = (tUtV *)&arg->polysubDat->vertexes[i];
+    tUtV *tmpuv = (tUtV *)&arg->rndrArg->vertexes[i]; // tex coordinates going after vertex data
 
     result = tmpuv;
 
     if ( arg->field_4 & 1 )
     {
-        arg->polysubDat->tu_tv = tmpuv;
+        arg->rndrArg->tu_tv = tmpuv;
 
         int j = 0;
 
-        for ( j = 0; j < arg->polysubDat->vertexCount; j++)
-            arg->polysubDat->tu_tv[j] = puv[j];
+        for ( j = 0; j < arg->rndrArg->vertexCount; j++)
+            arg->rndrArg->tu_tv[j] = puv[j];
 
-        result = &arg->polysubDat->tu_tv[j];
+        result = &arg->rndrArg->tu_tv[j];
     }
 
     if ( arg->field_4 & 2 )
     {
-        arg->polysubDat->color = (float *)result;
+        arg->rndrArg->color = (float *)result;
         int k = 0;
 
         if ( arg->field_4 & 4 )
         {
             tpskt = pskt;
-            for ( k = 0; k < arg->polysubDat->vertexCount; k++ )
+            for ( k = 0; k < arg->rndrArg->vertexCount; k++ )
             {
                 float sq = tpskt->pos3f.sx * tpskt->pos3f.sx + tpskt->pos3f.sy * tpskt->pos3f.sy + tpskt->pos3f.sz * tpskt->pos3f.sz;
 
@@ -730,19 +710,47 @@ void * NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
                 if ( tsq > 1.0 )
                     tsq = 1.0;
 
-                arg->polysubDat->color[k] = tsq;
+                arg->rndrArg->color[k] = tsq;
                 tpskt++;
             }
         }
         else
         {
-            for ( k = 0; k < arg->polysubDat->vertexCount; k++ )
-                arg->polysubDat->color[k] = arg->field_18;
+            for ( k = 0; k < arg->rndrArg->vertexCount; k++ )
+                arg->rndrArg->color[k] = arg->field_18;
         }
-        result = &arg->polysubDat->color[k];
+        result = &arg->rndrArg->color[k];
     }
 
-    return result;
+    return result; //return pointer to data after vertexes + uv coords + color
+}
+
+
+
+skeleton_64_stru *NC_STACK_skeleton::getSKEL_pSkelet()
+{
+    return stack__skeleton.data;
+}
+
+int NC_STACK_skeleton::getSKEL_pntCount()
+{
+    if (stack__skeleton.data)
+        return stack__skeleton.data->POO_NUM;
+    return 0;
+}
+
+int NC_STACK_skeleton::getSKEL_senCount()
+{
+    if (stack__skeleton.data)
+        return stack__skeleton.data->sen_count;
+    return 0;
+}
+
+int NC_STACK_skeleton::getSKEL_polyCount()
+{
+    if (stack__skeleton.data)
+        return stack__skeleton.data->pol_count;
+    return 0;
 }
 
 

@@ -327,10 +327,7 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
         if ( v10 )
         {
             if ( res )
-            {
-                //call_vtbl(obj, 65, res);
                 rsrc_func65(&res);
-            }
 
             return NULL;
         }
@@ -356,7 +353,6 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
                 bitm = (bitmap_intern *)res->data;
                 if ( !bitm )
                 {
-                    //call_vtbl(obj, 65, res);
                     rsrc_func65(&res);
                     return NULL;
                 }
@@ -383,7 +379,6 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
                 bitm = (bitmap_intern *)res->data;
                 if ( !bitm )
                 {
-                    //call_vtbl(obj, 65, res);
                     rsrc_func65(&res);
                     return NULL;
                 }
@@ -448,7 +443,6 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
             }
             if ( !success )
             {
-                //call_vtbl(obj, 65, res);
                 rsrc_func65(&res);
                 return NULL;
             }

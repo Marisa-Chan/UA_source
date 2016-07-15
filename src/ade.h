@@ -52,6 +52,38 @@ public:
         return new NC_STACK_ade();
     };
 
+    enum ADE_FLAG
+    {
+        ADE_FLAG_INLIST = 1,
+        ADE_FLAG_DPTHFADE = 2,
+        ADE_FLAG_BKCHECK = 4
+    };
+
+    enum ADE_ATT
+    {
+        ADE_ATT_BKCHECK = 0x80001003,
+        ADE_ATT_DPTHFADE = 0x80001004,
+        ADE_ATT_POINT = 0x80001007,
+        ADE_ATT_POLY = 0x80001008,
+        ADE_ATT_PADE = 0x8000100B
+    };
+
+    virtual int getADE_bkCheck();
+    virtual int getADE_depthFade();
+    virtual int getADE_point();
+    virtual int getADE_poly();
+    virtual __NC_STACK_ade *getADE_pAde();
+
+    virtual void setADE_bkCheck(int);
+    virtual void setADE_depthFade(int);
+    virtual void setADE_point(int);
+    virtual void setADE_poly(int);
+
+
+    void ade_func0__sub0(stack_vals *stak);
+    void ade_func2__sub0(stack_vals *stak);
+    void ade_func3__sub0(stack_vals *stak);
+
     //Data
     static const NewClassDescr description;
 

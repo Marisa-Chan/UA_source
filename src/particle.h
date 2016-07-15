@@ -114,6 +114,8 @@ public:
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_particle() {
         memset(&stack__particle, 0, sizeof(stack__particle));
+        updateflags = 0;
+        msetter = false;
     };
     virtual ~NC_STACK_particle() {};
 
@@ -125,10 +127,77 @@ public:
         return new NC_STACK_particle();
     };
 
+    enum PRTCL_FLAG
+    {
+        PRTCL_FLAG_DPTHFADE = 1
+    };
+
+    enum PRTCL_ATT
+    {
+        PRTCL_ATT_STSPEED = 0x80002000,
+        PRTCL_ATT_NUMCONT = 0x80002001,
+        PRTCL_ATT_CONTLFTIME = 0x80002002,
+        PRTCL_ATT_BIRTRATE = 0x80002003,
+        PRTCL_ATT_LFTIME = 0x80002004,
+        PRTCL_ATT_PADE = 0x80002005,
+        PRTCL_ATT_STSIZE = 0x80002006,
+        PRTCL_ATT_ENDSIZE = 0x80002007,
+        PRTCL_ATT_STGEN = 0x80002008,
+        PRTCL_ATT_ENDGEN = 0x80002009,
+        PRTCL_ATT_NOISE = 0x8000200A,
+        PRTCL_ATT_PPADE = 0x8000200B
+    };
+
+    virtual void setADE_depthFade(int);
+    virtual void setADE_point(int);
+
+    virtual void setPRTCL_startSpeed(int);
+    virtual void setPRTCL_numContexts(int);
+    virtual void setPRTCL_contextLifetime(int);
+    virtual void setPRTCL_birthRate(int);
+    virtual void setPRTCL_lifeTime(int);
+    virtual void setPRTCL_pADE(NC_STACK_ade *);
+    virtual void setPRTCL_startSize(int);
+    virtual void setPRTCL_endSize(int);
+    virtual void setPRTCL_startGen(int);
+    virtual void setPRTCL_endGen(int);
+    virtual void setPRTCL_noise(int);
+    virtual void setPRTCL_ppADE(NC_STACK_ade **);
+
+    void startSetter();
+    bool endSetter(bool recalc = true);
+
+    virtual int getPRTCL_startSpeed();
+    virtual int getPRTCL_numContexts();
+    virtual int getPRTCL_contextLifetime();
+    virtual int getPRTCL_birthRate();
+    virtual int getPRTCL_lifeTime();
+    virtual NC_STACK_ade *getPRTCL_pADE();
+    virtual int getPRTCL_startSize();
+    virtual int getPRTCL_endSize();
+    virtual int getPRTCL_startGen();
+    virtual int getPRTCL_endGen();
+    virtual int getPRTCL_noise();
+    virtual NC_STACK_ade **getPRTCL_ppADE();
+
+
+    int particle_func0__sub0(stack_vals *stak);
+    void particle_func2__sub0(stack_vals *stak);
+    void particle_func3__sub0(stack_vals *stak);
+
+private:
+    void refreshParticle();
+
+
     //Data
+public:
     static const NewClassDescr description;
 
     __NC_STACK_particle stack__particle;
+
+private:
+    int updateflags;
+    bool msetter; // Mass setter
 };
 
 #endif // PARTICLE_H_INCLUDED

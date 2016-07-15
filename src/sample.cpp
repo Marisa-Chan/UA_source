@@ -12,17 +12,15 @@ size_t NC_STACK_sample::func0(stack_vals *stak)
     if ( !NC_STACK_rsrc::func0(stak) )
         return 0;
 
-    __NC_STACK_sample *smpl = &this->stack__sample;
+    __NC_STACK_sample *smpl = &stack__sample;
 
-    call_vtbl(this, 3, 0x80001002, &smpl->p_sampl, 0);
+    smpl->p_sampl = (sampl *)getRsrc_pData();
 
     return 1;
 }
 
 size_t NC_STACK_sample::func3(stack_vals *stak)
 {
-    __NC_STACK_sample *sample = &this->stack__sample;
-
     stack_vals *stk = stak;
 
     while ( 1 )
@@ -45,26 +43,17 @@ size_t NC_STACK_sample::func3(stack_vals *stak)
             default:
                 break;
 
-            case 0x80002000:
-                *(sampl **)stk->value = sample->p_sampl;
+            case SMPL_ATT_PSAMPLE:
+                *(sampl **)stk->value = getSMPL_pSample();
                 break;
-            case 0x80002001:
-                if ( sample->p_sampl )
-                    *(int *)stk->value = sample->p_sampl->field_8;
-                else
-                    *(int *)stk->value = 0;
+            case SMPL_ATT_TYPE:
+                *(int *)stk->value = getSMPL_type();
                 break;
-            case 0x80002002:
-                if ( sample->p_sampl )
-                    *(int *)stk->value = sample->p_sampl->bufsz;
-                else
-                    *(int *)stk->value = 0;
+            case SMPL_ATT_LEN:
+                *(int *)stk->value = getSMPL_len();
                 break;
-            case 0x80002003:
-                if ( sample->p_sampl )
-                    *(void **)stk->value = sample->p_sampl->sample_buffer;
-                else
-                    *(void **)stk->value = NULL;
+            case SMPL_ATT_BUFFER:
+                *(void **)stk->value = getSMPL_buffer();
                 break;
             }
             stk++;
@@ -82,8 +71,8 @@ rsrc * NC_STACK_sample::rsrc_func64(stack_vals *stak)
     if ( !res )
         return NULL;
 
-    int bufsz = find_id_in_stack_def_val(0x80002002, 0, stak);
-    int type = find_id_in_stack_def_val(0x80002001, 0xFFFF, stak);
+    int bufsz = find_id_in_stack_def_val(SMPL_ATT_LEN, 0, stak);
+    int type = find_id_in_stack_def_val(SMPL_ATT_TYPE, 0xFFFF, stak);
 
     if ( bufsz == 0 || type == 0xFFFF )
         return res;
@@ -96,7 +85,7 @@ rsrc * NC_STACK_sample::rsrc_func64(stack_vals *stak)
     smpl->bufsz = bufsz;
     smpl->field_8 = type;
 
-    void *buf = (void *)find_id_in_stack_def_val(0x80002003, 0, stak);
+    void *buf = (void *)find_id_in_stack_def_val(SMPL_ATT_BUFFER, 0, stak);
 
     if ( !buf )
     {
@@ -142,10 +131,39 @@ size_t NC_STACK_sample::rsrc_func65(rsrc **pres)
 void * NC_STACK_sample::sample_func128(void **arg)
 {
     printf("%s - NOT RECOGINZED ARGUMENT\n","sample_func128");
-    sampl *smpl = this->stack__sample.p_sampl;
+    sampl *smpl = stack__sample.p_sampl;
     arg[2] = smpl;
     return smpl;
 }
+
+
+
+sampl *NC_STACK_sample::getSMPL_pSample()
+{
+    return stack__sample.p_sampl;
+}
+
+int NC_STACK_sample::getSMPL_type()
+{
+    if (stack__sample.p_sampl)
+        return stack__sample.p_sampl->field_8;
+    return 0;
+}
+
+int NC_STACK_sample::getSMPL_len()
+{
+    if (stack__sample.p_sampl)
+        return stack__sample.p_sampl->bufsz;
+    return 0;
+}
+
+void *NC_STACK_sample::getSMPL_buffer()
+{
+    if (stack__sample.p_sampl)
+        return stack__sample.p_sampl->sample_buffer;
+    return 0;
+}
+
 
 size_t NC_STACK_sample::compatcall(int method_id, void *data)
 {

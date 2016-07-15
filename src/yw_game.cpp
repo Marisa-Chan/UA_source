@@ -2203,8 +2203,7 @@ void sub_44BF34(vhclSndFX *sndfx)
 
                 if ( sndfx->wavs[i] )
                 {
-                    sampl *sample;
-                    call_vtbl(sndfx->wavs[i], 3, 0x80002000, &sample, 0);
+                    sampl *sample = sndfx->wavs[i]->getSMPL_pSample();
 
                     sndfx->extS.sndExts[i].sample = sample;
                     sndfx->extS.sndExts[i].field_14 = sample->SampleRate * sndfx->extS.sndExts[i].field_C / 11000;
@@ -2619,11 +2618,11 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
         rndrs.field_0 = bs64->field_4;
         rndrs.field_4 = bs64->field_0;
         rndrs.field_14 = 0;
-        rndrs.curOutPoly = p_outPolys;
+        rndrs.rndrSTK_cur = p_renderStack;
         rndrs.field_18 = 2000;
-        rndrs.polysData = p_polysdata;
+        rndrs.argSTK_cur = p_renderARGstack;
         rndrs.field_1C = 1;
-        rndrs.polysData_end = p_polysdata_end;
+        rndrs.argSTK_end = p_renderARGstackEND;
 
         rndrs.field_20 = 17.0;
 
@@ -2685,16 +2684,16 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
         bs64->field_C = rndrs.field_14;
 
         yw->field_1B6A = rndrs.field_14;
-        yw->field_1b6c = rndrs.curOutPoly - p_outPolys;
+        yw->field_1b6c = rndrs.rndrSTK_cur - p_renderStack;
 
         if ( yw->field_1b6c > 1 && !dword_514EFC )
-            qsort(p_outPolys, yw->field_1b6c, sizeof(polys), sub_4D7BFC);
+            qsort(p_renderStack, yw->field_1b6c, sizeof(polys), sub_4D7BFC);
 
         yw->win3d->raster_func213(NULL);
 
         for (int i = 0; i < yw->field_1b6c; i++)
         {
-            polysDat *pol = p_outPolys[i].data;
+            polysDat *pol = p_renderStack[i].data;
             pol->render_func(&pol->datSub);
         }
 

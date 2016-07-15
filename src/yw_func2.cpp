@@ -239,9 +239,9 @@ void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, str
     brf->field_4174.field_1C = 1;
     brf->field_4174.field_20 = 17.0;
     brf->field_4174.field_24 = 32000.0;
-    brf->field_4174.curOutPoly = p_outPolys;
-    brf->field_4174.polysData = p_polysdata;
-    brf->field_4174.polysData_end = p_polysdata_end;
+    brf->field_4174.rndrSTK_cur = p_renderStack;
+    brf->field_4174.argSTK_cur = p_renderARGstack;
+    brf->field_4174.argSTK_end = p_renderARGstackEND;
 
     if ( brf->brf_objs.field_0 )
     {
@@ -250,14 +250,14 @@ void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, str
             sb_0x4eb94c(yw, brf, struc, 0, v7 - 50);
     }
 
-    int v8 = brf->field_4174.curOutPoly - p_outPolys;
+    int v8 = brf->field_4174.rndrSTK_cur - p_renderStack;
 
     if ( v8 > 1 )
-        qsort(p_outPolys, brf->field_4174.curOutPoly - p_outPolys, sizeof(polys), sub_4D7BFC);
+        qsort(p_renderStack, brf->field_4174.rndrSTK_cur - p_renderStack, sizeof(polys), sub_4D7BFC);
 
     for (int i = 0; i < v8; i++)
     {
-        polysDat *pol = p_outPolys[i].data;
+        polysDat *pol = p_renderStack[i].data;
         pol->render_func(&pol->datSub);
     }
 
@@ -2266,7 +2266,7 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
         usr->field_782.samples_data[0].volume = 500;
         usr->field_782.samples_data[0].pitch = 0;
 
-        call_vtbl(usr->field_ADA, 3, 0x80002000, usr->field_782.samples_data, 0);
+        usr->field_782.samples_data[0].psampl = usr->field_ADA->getSMPL_pSample();
         sub_423F74(&usr->field_782, 0);
     }
 

@@ -241,6 +241,16 @@ public:
         return new NC_STACK_raster();
     };
 
+    enum RSTR_RFLAGS
+    {
+        RSTR_RFLAGS_LINMAP = 0x1,
+        RSTR_RFLAGS_PERSPMAP = 0x2,
+        RSTR_RFLAGS_FLATSHD = 0x4,
+        RSTR_RFLAGS_GRADSHD = 0x8,
+        RSTR_RFLAGS_ZEROTRACY = 0x10,
+        RSTR_RFLAGS_LUMTRACY = 0x20
+    };
+
     enum RSTR_ATT
     {
         RSTR_ATT_FGPEN = 0x80003000,

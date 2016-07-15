@@ -23,9 +23,9 @@ key_value_stru ypaworld_keys[4] =
     {"game.debug", KEY_TYPE_BOOL, 0}
 };
 
-polys *p_outPolys;
-polysDat *p_polysdata;
-polysDat *p_polysdata_end;
+polys *p_renderStack;
+polysDat *p_renderARGstack;
+polysDat *p_renderARGstackEND;
 Key_stru keySS[256];
 
 int word_5A50C2;
@@ -356,7 +356,10 @@ size_t NC_STACK_ypaworld::func0(stack_vals *stak)
         func1(NULL);
         return 0;
     }
-    call_vtbl(this, 3, 0x80001020, &p_outPolys, 0x80001021, &p_polysdata, 0x80001022, &p_polysdata_end, 0);
+
+    p_renderStack = getBASE_renderStack();
+    p_renderARGstack = (polysDat *)getBASE_argStack();
+    p_renderARGstackEND = (polysDat *)getBASE_endArgStack();
 
     yw->screen_width = GFXe.getScreenW();
     yw->screen_height = GFXe.getScreenH();
@@ -2072,7 +2075,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
                 smpl_inf->field_12 |= 1;
 
             if ( vhcl->sndFX[i].single_sample )
-                call_vtbl(vhcl->sndFX[i].single_sample, 3, 0x80002000, &smpl_inf->psampl, 0);
+                smpl_inf->psampl = vhcl->sndFX[i].single_sample->getSMPL_pSample();
             else
                 smpl_inf->psampl = 0;
 
@@ -2248,7 +2251,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
             v25->field_12 |= 1;
 
         if ( wproto->sndFXes[i].single_sample )
-            call_vtbl(wproto->sndFXes[i].single_sample, 3, 0x80002000, &v25->psampl, 0);
+            v25->psampl = wproto->sndFXes[i].single_sample->getSMPL_pSample();
         else
             v25->psampl = 0;
 

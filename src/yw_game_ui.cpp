@@ -3184,7 +3184,7 @@ void sb_0x451034__sub9(_NC_STACK_ypaworld *yw)
         wis->sklts[i] = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, off_51825C[i], 0);
 
         if ( wis->sklts[i] )
-            call_vtbl(wis->sklts[i], 3, 0x80002000, &wis->sklts_intern[i], 0);
+            wis->sklts_intern[i] = wis->sklts[i]->getSKEL_pSkelet();
     }
 
     if ( yw->screen_width >= 512 )
@@ -8298,7 +8298,7 @@ void ypaworld_func159__sub0__sub0(_NC_STACK_ypaworld *yw, yw_samples *smpls, con
         smpls->field_4.samples_data[0].volume = a5 + 500;
 
         if ( v23 )
-            call_vtbl(v23, 3, 0x80002000, &smpls->field_4.samples_data[0].psampl, 0);
+            smpls->field_4.samples_data[0].psampl = v23->getSMPL_pSample();
         else
             smpls->field_4.samples_data[0].psampl = NULL;
 
@@ -9398,7 +9398,7 @@ void yw_draw_vhcl_wireframe(_NC_STACK_ypaworld *yw, sklt_wis *wis, VhclProto *vh
         func = wis_color;
 
     if ( vhcl->wireframe )
-        call_vtbl(vhcl->wireframe, 3, 0x80002000, &wairufureimu, 0);
+        wairufureimu = vhcl->wireframe->getSKEL_pSkelet();
 
     if ( wairufureimu )
     {
@@ -9644,7 +9644,7 @@ void sb_0x4e5a84__sub1(_NC_STACK_ypaworld *yw, sklt_wis *wis, WeapProto *wpn, fl
     if ( wpn )
     {
         if ( wpn->wireframe )
-            call_vtbl(wpn->wireframe, 3, 0x80002000, &wairufureimu, 0);
+            wairufureimu = wpn->wireframe->getSKEL_pSkelet();
 
         if ( wairufureimu )
         {
@@ -10354,17 +10354,17 @@ void sb_0x4d7c08__sub0__sub4__sub1__sub1(_NC_STACK_ypaworld *yw, sklt_wis *wis)
             vhcl = NULL;
 
         if ( vhcl->hud_wireframe )
-            call_vtbl(vhcl->hud_wireframe, 3, 0x80002000, &hud_wure, 0);
+            hud_wure = vhcl->hud_wireframe->getSKEL_pSkelet();
         else
             hud_wure = NULL;
 
         if ( vhcl->mg_wireframe )
-            call_vtbl(vhcl->mg_wireframe, 3, 0x80002000, &mg_wure, 0);
+            mg_wure = vhcl->mg_wireframe->getSKEL_pSkelet();
         else
             mg_wure = wis->sklts_intern[4];
 
         if ( vhcl->wpn_wireframe_1 )
-            call_vtbl(vhcl->wpn_wireframe_1, 3, 0x80002000, &wpn_wure, 0);
+            wpn_wure = vhcl->wpn_wireframe_1->getSKEL_pSkelet();
         else if ( yw->hudi.field_4 == 2)
             wpn_wure = wis->sklts_intern[5];
         else if ( yw->hudi.field_4 == 3 )
@@ -10373,7 +10373,7 @@ void sb_0x4d7c08__sub0__sub4__sub1__sub1(_NC_STACK_ypaworld *yw, sklt_wis *wis)
             wpn_wure = wis->sklts_intern[7];
 
         if ( vhcl->wpn_wireframe_2 )
-            call_vtbl(vhcl->wpn_wireframe_2, 3, 0x80002000, &wpn_wure2, 0);
+            wpn_wure2 = vhcl->wpn_wireframe_2->getSKEL_pSkelet();
         else if ( yw->hudi.field_4 == 2)
             wpn_wure2 = wis->sklts_intern[9];
         else if ( yw->hudi.field_4 == 3 )

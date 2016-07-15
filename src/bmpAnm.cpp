@@ -829,7 +829,6 @@ rsrc * NC_STACK_bmpanim::rsrc_func64(stack_vals *stak)
 
         if ( !res->data )
         {
-            //call_vtbl(obj, 65, res);
             rsrc_func65(&res);
             return NULL;
         }

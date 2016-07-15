@@ -251,15 +251,16 @@ int sub_41A8D0(__NC_STACK_particle *prtcl)
     if ( !sklt )
         return 0;
 
-    call_vtbl(prtcl->particle_sklt, 3, 0x80002000, &prtcl->particle_sklt_intern, 0);
+    prtcl->particle_sklt_intern = prtcl->particle_sklt->getSKEL_pSkelet();
 
     pol_indixes *v3 = *prtcl->particle_sklt_intern->pol_entries;
 
-    v3[0].num_vertices = 4;
-    v3[0].v1 = 1;
-    v3[0].v2 = 2;
-    v3[0].v3 = 3;
-    v3[1].num_vertices = 4;
+    v3->num_vertices = 4;
+    int16_t *vtx = &v3->v1;
+    vtx[0] = 1;
+    vtx[1] = 2;
+    vtx[2] = 3;
+    vtx[3] = 4;
 
     return 1;
 }
@@ -272,13 +273,17 @@ void sub_41AB50(__NC_STACK_particle *prtcl)
         for(int i = 0; i < prtcl->ADEs_count; i++)
         {
             if (prtcl->ADEs[i])
-                call_vtbl(prtcl->ADEs[i], 2, 0x80001004, v3, 0x80001007, 0, 0x80001008, 0, 0);
+            {
+                prtcl->ADEs[i]->setADE_depthFade(v3);
+                prtcl->ADEs[i]->setADE_point(0);
+                prtcl->ADEs[i]->setADE_poly(0);
+            }
         }
         prtcl->field_14 = prtcl->field_84 / prtcl->ADEs_count;
     }
 }
 
-void sub_41ABBC(__NC_STACK_particle *prtcl, NC_STACK_area **areas)
+void sub_41ABBC(__NC_STACK_particle *prtcl, NC_STACK_ade **areas)
 {
     for (int i = 0; i < prtcl->ADEs_count; i++)
     {
@@ -286,7 +291,7 @@ void sub_41ABBC(__NC_STACK_particle *prtcl, NC_STACK_area **areas)
             delete_class_obj(prtcl->ADEs[i]);
     }
 
-    NC_STACK_area **arr = areas;
+    NC_STACK_ade **arr = areas;
 
     int n = 0;
 
@@ -306,9 +311,11 @@ void sub_41ABBC(__NC_STACK_particle *prtcl, NC_STACK_area **areas)
     sub_41AB50(prtcl);
 }
 
-int particle_func0__sub0(__NC_STACK_particle *prtcl, stack_vals *stak)
+int NC_STACK_particle::particle_func0__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
+    __NC_STACK_particle *prtcl = &stack__particle;
+
 
     prtcl->tp1_cnt = 1;
     prtcl->field_a8 = 1000;
@@ -340,66 +347,60 @@ int particle_func0__sub0(__NC_STACK_particle *prtcl, stack_vals *stak)
             default:
                 break;
 
-            case 0x80001004:
-                if ( stk->value )
-                    prtcl->field_8 |= 1;
-                else
-                    prtcl->field_8 &= 0xFFFFFFFE;
+            case ADE_ATT_DPTHFADE:
+                setADE_bkCheck( stk->value );
                 break;
 
-            case 0x80001007:
-                prtcl->field_c = stk->value;
+            case ADE_ATT_POINT:
+                setADE_point( stk->value );
                 break;
 
-            case 0x80002000:
-                prtcl->field_9c = stk->value;
+            case PRTCL_ATT_STSPEED:
+                setPRTCL_startSpeed( stk->value );
                 break;
 
-            case 0x80002001:
-                prtcl->tp1_cnt = stk->value;
+            case PRTCL_ATT_NUMCONT:
+                setPRTCL_numContexts( stk->value );
                 break;
 
-            case 0x80002002:
-                prtcl->field_a8 = stk->value;
+            case PRTCL_ATT_CONTLFTIME:
+                setPRTCL_contextLifetime( stk->value );
                 break;
 
-            case 0x80002003:
-                prtcl->field_88 = stk->value;
+            case PRTCL_ATT_BIRTRATE:
+                setPRTCL_birthRate( stk->value );
                 break;
 
-            case 0x80002004:
-                prtcl->field_84 = stk->value;
+            case PRTCL_ATT_LFTIME:
+                setPRTCL_lifeTime( stk->value );
                 break;
 
-            case 0x80002005:
-                NC_STACK_area *v7[2];
-                v7[0] = (NC_STACK_area *)stk->value;
-                v7[1] = NULL;
-                sub_41ABBC(prtcl, (NC_STACK_area **)&v7);
+            case PRTCL_ATT_PADE:
+                setPRTCL_pADE( (NC_STACK_area *)stk->value );
                 break;
 
-            case 0x80002006:
-                prtcl->field_90 = stk->value;
+            case PRTCL_ATT_STSIZE:
+                setPRTCL_startSize( stk->value );
                 break;
 
-            case 0x80002007:
-                prtcl->field_94 = stk->value;
+            case PRTCL_ATT_ENDSIZE:
+                setPRTCL_endSize( stk->value );
                 break;
 
-            case 0x80002008:
-                prtcl->field_ac = stk->value;
+            case PRTCL_ATT_STGEN:
+                setPRTCL_startGen( stk->value );
                 break;
 
-            case 0x80002009:
-                prtcl->field_b0 = stk->value;
+            case PRTCL_ATT_ENDGEN:
+                setPRTCL_endGen( stk->value );
                 break;
 
-            case 0x8000200A:
-                prtcl->field_a0 = stk->value * 0.1;
+            case PRTCL_ATT_NOISE:
+                setPRTCL_noise( stk->value );
                 break;
 
-            case 0x8000200B:
-                sub_41ABBC(prtcl, (NC_STACK_area **)stk->value);
+            case PRTCL_ATT_PPADE:
+                setPRTCL_ppADE ((NC_STACK_ade **)stk->value);
                 break;
             }
             stk++;
@@ -420,11 +421,10 @@ int sub_41A954(__NC_STACK_particle *prtcl)
             tmp++;
         }
         nc_FreeMem(prtcl->tp1);
+        prtcl->tp1 = NULL;
     }
 
-    prtcl->tp1 = (prtcl_tp *)AllocVec(sizeof(prtcl_tp) * prtcl->tp1_cnt, 65537);
-    if ( !prtcl->tp1 )
-        return 0;
+
 
     int v5 = prtcl->field_b0 - prtcl->field_ac;
 
@@ -432,6 +432,13 @@ int sub_41A954(__NC_STACK_particle *prtcl)
         v5 = prtcl->field_84;
 
     int v7 = (prtcl->field_88 * v5 / 1024) + 2;
+
+    if ( !prtcl->tp1_cnt || v7 < 2 )
+        return 0;
+
+    prtcl->tp1 = (prtcl_tp *)AllocVec(sizeof(prtcl_tp) * prtcl->tp1_cnt, 65537);
+    if ( !prtcl->tp1 )
+        return 0;
 
     int v17 = 1;
     if ( prtcl->tp1_cnt )
@@ -465,39 +472,31 @@ size_t NC_STACK_particle::func0(stack_vals *stak)
     if ( !NC_STACK_ade::func0(stak) )
         return 0;
 
-    __NC_STACK_particle *prtcl = &this->stack__particle;
-
-    if (!sub_41A8D0(prtcl))
+    if (!sub_41A8D0(&stack__particle))
     {
         func1(NULL);
         return 0;
     }
 
-    if (!particle_func0__sub0(prtcl, stak))
+    startSetter();
+    if (!particle_func0__sub0(stak))
     {
         func1(NULL);
         return 0;
     }
 
-    if (!sub_41A954(prtcl))
+    if (!endSetter())
     {
         func1(NULL);
         return 0;
     }
-
-    particle_recalc(prtcl);
-
-    prtcl->field_8c = 1024 / prtcl->field_88;
-    prtcl->field_98 = (prtcl->field_94 - prtcl->field_90) / prtcl->field_84;
-
-    sub_41AB50(prtcl);
 
     return 1;
 }
 
 size_t NC_STACK_particle::func1(stack_vals *stak)
 {
-    __NC_STACK_particle *prtcl = &this->stack__particle;
+    __NC_STACK_particle *prtcl = &stack__particle;
 
 
     if ( prtcl->tp1 )
@@ -524,15 +523,11 @@ size_t NC_STACK_particle::func1(stack_vals *stak)
 }
 
 
-void particle_func2__sub0(__NC_STACK_particle *prtcl, stack_vals *stak)
+void NC_STACK_particle::particle_func2__sub0(stack_vals *stak)
 {
+    startSetter();
 
     stack_vals *stk = stak;
-
-    int v4 = 0;
-    int v5 = 0;
-    int v20 = 0;
-    int v19 = 0;
 
     while ( 1 )
     {
@@ -554,114 +549,77 @@ void particle_func2__sub0(__NC_STACK_particle *prtcl, stack_vals *stak)
             default:
                 break;
 
-            case 0x80001004:
-                if ( stk->value )
-                    prtcl->field_8 |= 1;
-                else
-                    prtcl->field_8 &= 0xFFFFFFFE;
-
-                v19 = 1;
+            case ADE_ATT_DPTHFADE:
+                setADE_bkCheck( stk->value );
                 break;
 
-            case 0x80001007:
-                prtcl->field_c = stk->value;
+            case ADE_ATT_POINT:
+                setADE_point( stk->value );
                 break;
 
-            case 0x80002000:
-                prtcl->field_9c = stk->value;
+            case PRTCL_ATT_STSPEED:
+                setPRTCL_startSpeed( stk->value );
                 break;
 
-            case 0x80002001:
-                v4 = 1;
-                prtcl->tp1_cnt = stk->value;
+            case PRTCL_ATT_NUMCONT:
+                setPRTCL_numContexts( stk->value );
                 break;
 
-            case 0x80002002:
-                v20 = 1;
-                prtcl->field_a8 = stk->value;
+            case PRTCL_ATT_CONTLFTIME:
+                setPRTCL_contextLifetime( stk->value );
                 break;
 
-            case 0x80002003:
-                v4 = 1;
-                v5 = 1;
-                prtcl->field_88 = stk->value;
+            case PRTCL_ATT_BIRTRATE:
+                setPRTCL_birthRate( stk->value );
                 break;
 
-            case 0x80002004:
-                v4 = 1;
-                v5 = 1;
-                v19 = 1;
-                prtcl->field_84 = stk->value;
+            case PRTCL_ATT_LFTIME:
+                setPRTCL_lifeTime( stk->value );
                 break;
 
-            case 0x80002005:
-                NC_STACK_area *v7[2];
-                v7[0] = (NC_STACK_area *)stk->value;
-                v7[1] = NULL;
-                sub_41ABBC(prtcl, (NC_STACK_area **)&v7);
+            case PRTCL_ATT_PADE:
+                setPRTCL_pADE( (NC_STACK_area *)stk->value );
                 break;
 
-            case 0x80002006:
-                v5 = 1;
-                prtcl->field_90 = stk->value;
+            case PRTCL_ATT_STSIZE:
+                setPRTCL_startSize( stk->value );
                 break;
 
-            case 0x80002007:
-                v5 = 1;
-                prtcl->field_94 = stk->value;
+            case PRTCL_ATT_ENDSIZE:
+                setPRTCL_endSize( stk->value );
                 break;
 
-            case 0x80002008:
-                v4 = 1;
-                prtcl->field_ac = stk->value;
+            case PRTCL_ATT_STGEN:
+                setPRTCL_startGen( stk->value );
                 break;
 
-            case 0x80002009:
-                v4 = 1;
-                prtcl->field_b0 = stk->value;
+            case PRTCL_ATT_ENDGEN:
+                setPRTCL_endGen( stk->value );
                 break;
 
-            case 0x8000200A:
-                prtcl->field_a0 = stk->value * 0.1;
+            case PRTCL_ATT_NOISE:
+                setPRTCL_noise( stk->value );
                 break;
 
-            case 0x8000200B:
-                sub_41ABBC(prtcl, (NC_STACK_area **)stk->value);
+            case PRTCL_ATT_PPADE:
+                setPRTCL_ppADE ((NC_STACK_ade **)stk->value);
                 break;
             }
             stk++;
         }
     }
-
-    if ( !v4 || sub_41A954(prtcl) )
-    {
-        if ( v20 )
-        {
-            particle_recalc(prtcl);
-
-        }
-        if ( v5 )
-        {
-            prtcl->field_8c = 1024 / prtcl->field_88;
-            prtcl->field_98 = (prtcl->field_94 - prtcl->field_90) / prtcl->field_84;
-        }
-        if ( v19 )
-            sub_41AB50(prtcl);
-        //return 1;
-    }
+    endSetter();
 }
 
 size_t NC_STACK_particle::func2(stack_vals *stak)
 {
-    __NC_STACK_particle *particle = &this->stack__particle;
-
-    particle_func2__sub0(particle, stak);
+    particle_func2__sub0(stak);
 
     return NC_STACK_ade::func2(stak);
 }
 
 
-void particle_func3__sub0(__NC_STACK_particle *prtcl, stack_vals *stak)
+void NC_STACK_particle::particle_func3__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -685,52 +643,52 @@ void particle_func3__sub0(__NC_STACK_particle *prtcl, stack_vals *stak)
             default:
                 break;
 
-            case 0x80002000:
-                *(int *)stk->value = prtcl->field_9c;
+            case PRTCL_ATT_STSPEED:
+                *(int *)stk->value = getPRTCL_startSpeed();
                 break;
 
-            case 0x80002001:
-                *(int *)stk->value = prtcl->tp1_cnt;
+            case PRTCL_ATT_NUMCONT:
+                *(int *)stk->value = getPRTCL_numContexts();
                 break;
 
-            case 0x80002002:
-                *(int *)stk->value = prtcl->field_a8;
+            case PRTCL_ATT_CONTLFTIME:
+                *(int *)stk->value = getPRTCL_contextLifetime();
                 break;
 
-            case 0x80002003:
-                *(int *)stk->value = prtcl->field_88;
+            case PRTCL_ATT_BIRTRATE:
+                *(int *)stk->value = getPRTCL_birthRate();
                 break;
 
-            case 0x80002004:
-                *(int *)stk->value = prtcl->field_84;
+            case PRTCL_ATT_LFTIME:
+                *(int *)stk->value = getPRTCL_lifeTime();
                 break;
 
-            case 0x80002005:
-                *(NC_STACK_ade **)stk->value = prtcl->ADEs[0];
+            case PRTCL_ATT_PADE:
+                *(NC_STACK_ade **)stk->value = getPRTCL_pADE();
                 break;
 
-            case 0x80002006:
-                *(int *)stk->value = prtcl->field_90;
+            case PRTCL_ATT_STSIZE:
+                *(int *)stk->value = getPRTCL_startSize();
                 break;
 
-            case 0x80002007:
-                *(int *)stk->value = prtcl->field_94;
+            case PRTCL_ATT_ENDSIZE:
+                *(int *)stk->value = getPRTCL_endSize();
                 break;
 
-            case 0x80002008:
-                *(int *)stk->value = prtcl->field_ac;
+            case PRTCL_ATT_STGEN:
+                *(int *)stk->value = getPRTCL_startGen();
                 break;
 
-            case 0x80002009:
-                *(int *)stk->value = prtcl->field_b0;
+            case PRTCL_ATT_ENDGEN:
+                *(int *)stk->value = getPRTCL_endGen();
                 break;
 
-            case 0x8000200A:
-                *(int *)stk->value = prtcl->field_a0 * 10.0;
+            case PRTCL_ATT_NOISE:
+                *(int *)stk->value = getPRTCL_noise();
                 break;
 
-            case 0x8000200B:
-                *(NC_STACK_ade ***)stk->value = prtcl->ADEs;
+            case PRTCL_ATT_PPADE:
+                *(NC_STACK_ade ***)stk->value = getPRTCL_ppADE();
                 break;
             }
             stk++;
@@ -740,10 +698,7 @@ void particle_func3__sub0(__NC_STACK_particle *prtcl, stack_vals *stak)
 
 size_t NC_STACK_particle::func3(stack_vals *stak)
 {
-
-    __NC_STACK_particle *particle = &this->stack__particle;
-
-    particle_func3__sub0(particle, stak);
+    particle_func3__sub0(stak);
 
     return NC_STACK_ade::func3(stak);
 }
@@ -780,35 +735,21 @@ int particle_func5__sub0(NC_STACK_particle *obj, __NC_STACK_particle *, MFILE *m
         atts.field_56 = SWAP32(atts.field_56);
         atts.field_5A = SWAP32(atts.field_5A);
 
-        stack_vals stk[11];
-        memset(stk, 0, sizeof(stk));
-
         if ( atts.field_0 >= 1 )
         {
-            stk[0].id = 0x80002000;
-            stk[0].value = atts.field_36;
-            stk[1].id = 0x80002001;
-            stk[1].value = atts.field_3A;
-            stk[2].id = 0x80002002;
-            stk[2].value = atts.field_3E;
-            stk[3].id = 0x80002003;
-            stk[3].value = atts.field_4A;
-            stk[4].id = 0x80002004;
-            stk[4].value = atts.field_4E;
-            stk[5].id = 0x80002006;
-            stk[5].value = atts.field_52;
-            stk[6].id = 0x80002007;
-            stk[6].value = atts.field_56;
-            stk[7].id = 0x80002008;
-            stk[7].value = atts.field_42;
-            stk[8].id = 0x80002009;
-            stk[8].value = atts.field_46;
-            stk[9].id = 0x8000200A;
-            stk[9].value = atts.field_5A;
+            obj->startSetter();
+            obj->setPRTCL_startSpeed( atts.field_36 );
+            obj->setPRTCL_numContexts( atts.field_3A );
+            obj->setPRTCL_contextLifetime( atts.field_3E );
+            obj->setPRTCL_birthRate( atts.field_4A );
+            obj->setPRTCL_lifeTime( atts.field_4E );
+            obj->setPRTCL_startSize( atts.field_52 );
+            obj->setPRTCL_endSize( atts.field_56 );
+            obj->setPRTCL_startGen( atts.field_42 );
+            obj->setPRTCL_endGen( atts.field_46 );
+            obj->setPRTCL_noise( atts.field_5A );
+            obj->endSetter();
         }
-        stk[10].id = 0;
-
-        obj->func2(stk);
 
         particle_t_loc v51 = atts.field_2;
         obj->particle_func128(&v51);
@@ -828,7 +769,7 @@ size_t NC_STACK_particle::func5(MFILE **file)
     __NC_STACK_particle *prtcl = NULL;
 
     int v6 = 0;
-    NC_STACK_area *v23[11];
+    NC_STACK_ade *v23[11];
 
     while ( 1 )
     {
@@ -853,7 +794,7 @@ size_t NC_STACK_particle::func5(MFILE **file)
             if ( !obj_ok )
                 break;
 
-            prtcl = &this->stack__particle;
+            prtcl = &stack__particle;
         }
         else if ( chunk->TAG == TAG_ATTS )
         {
@@ -909,7 +850,7 @@ size_t NC_STACK_particle::func5(MFILE **file)
 size_t NC_STACK_particle::func6(MFILE **file)
 {
     MFILE *mfile = *file;
-    __NC_STACK_particle *prtcl = &this->stack__particle;
+    __NC_STACK_particle *prtcl = &stack__particle;
 
     if ( sub_412FC0(mfile, TAG_PTCL, TAG_FORM, -1) != 0)
         return 0;
@@ -1202,7 +1143,7 @@ void particle_func65__sub0(__NC_STACK_particle *prtcl, prtcl_tp *tp1, area_arg_6
 
 size_t NC_STACK_particle::ade_func65(area_arg_65 *arg)
 {
-    __NC_STACK_particle *prtcl = &this->stack__particle;
+    __NC_STACK_particle *prtcl = &stack__particle;
 
     prtcl_tp *v5 = prtcl->tp1;
 
@@ -1262,7 +1203,7 @@ size_t NC_STACK_particle::ade_func65(area_arg_65 *arg)
 
 void NC_STACK_particle::particle_func128(particle_t_loc *arg)
 {
-    __NC_STACK_particle *prtcl = &this->stack__particle;
+    __NC_STACK_particle *prtcl = &stack__particle;
 
     prtcl->field_3c = *arg;
 
@@ -1271,7 +1212,7 @@ void NC_STACK_particle::particle_func128(particle_t_loc *arg)
 
 void NC_STACK_particle::particle_func129(particle_t_loc *arg)
 {
-    __NC_STACK_particle *prtcl = &this->stack__particle;
+    __NC_STACK_particle *prtcl = &stack__particle;
 
     prtcl->field_60 = *arg;
 
@@ -1280,20 +1221,20 @@ void NC_STACK_particle::particle_func129(particle_t_loc *arg)
 
 void NC_STACK_particle::particle_func130(particle_t_loc *out)
 {
-    __NC_STACK_particle *prtcl = &this->stack__particle;
+    __NC_STACK_particle *prtcl = &stack__particle;
 
     *out = prtcl->field_3c;
 }
 
 void NC_STACK_particle::particle_func131(particle_t_loc *out)
 {
-    __NC_STACK_particle *prtcl = &this->stack__particle;
+    __NC_STACK_particle *prtcl = &stack__particle;
 
     *out = prtcl->field_60;
 }
 size_t NC_STACK_particle::particle_func132(NC_STACK_area **ade)
 {
-    __NC_STACK_particle *prtcl = &this->stack__particle;
+    __NC_STACK_particle *prtcl = &stack__particle;
 
     if (prtcl->ADEs_count >= 8)
         return 0;
@@ -1307,7 +1248,7 @@ size_t NC_STACK_particle::particle_func132(NC_STACK_area **ade)
 
 NC_STACK_ade * NC_STACK_particle::particle_func133(int *id)
 {
-    __NC_STACK_particle *prtcl = &this->stack__particle;
+    __NC_STACK_particle *prtcl = &stack__particle;
 
     NC_STACK_ade *ade = NULL;
 
@@ -1328,7 +1269,7 @@ NC_STACK_ade * NC_STACK_particle::particle_func133(int *id)
 
 size_t NC_STACK_particle::particle_func134(int *iid)
 {
-    __NC_STACK_particle *prtcl = &this->stack__particle;
+    __NC_STACK_particle *prtcl = &stack__particle;
 
     int id = *iid;
 
@@ -1344,7 +1285,7 @@ size_t NC_STACK_particle::particle_func134(int *iid)
 
 size_t NC_STACK_particle::particle_func135(int *iid)
 {
-    __NC_STACK_particle *prtcl = &this->stack__particle;
+    __NC_STACK_particle *prtcl = &stack__particle;
 
     int id = *iid;
 
@@ -1357,6 +1298,243 @@ size_t NC_STACK_particle::particle_func135(int *iid)
 
     return 0;
 }
+
+
+void NC_STACK_particle::setADE_depthFade(int mode)
+{
+    if ( mode )
+        stack__particle.field_8 |= PRTCL_FLAG_DPTHFADE;
+    else
+        stack__particle.field_8 &= ~PRTCL_FLAG_DPTHFADE;
+
+    if (msetter)
+        updateflags |= 8;
+    else
+        sub_41AB50(&stack__particle);
+
+    NC_STACK_ade::setADE_depthFade(mode);
+}
+
+void NC_STACK_particle::setADE_point(int num)
+{
+    stack__particle.field_c = num;
+
+    NC_STACK_ade::setADE_point(num);
+}
+
+void NC_STACK_particle::setPRTCL_startSpeed(int spd)
+{
+    stack__particle.field_9c = spd;
+}
+
+void NC_STACK_particle::setPRTCL_numContexts(int num)
+{
+    stack__particle.tp1_cnt = num;
+
+    if (msetter)
+        updateflags |= 1;
+    else
+        sub_41A954(&stack__particle);
+}
+
+void NC_STACK_particle::setPRTCL_contextLifetime(int lftime)
+{
+    stack__particle.field_a8 = lftime;
+
+    if (msetter)
+        updateflags |= 1;
+    else
+        particle_recalc(&stack__particle);
+}
+
+void NC_STACK_particle::setPRTCL_birthRate(int rate)
+{
+    stack__particle.field_88 = rate;
+
+    if (msetter)
+        updateflags |= (1 | 4);
+    else
+    {
+        sub_41A954(&stack__particle);
+        refreshParticle();
+    }
+}
+
+void NC_STACK_particle::setPRTCL_lifeTime(int lftime)
+{
+    stack__particle.field_84 = lftime;
+
+    if (msetter)
+        updateflags |= (1 | 4 | 8);
+    else
+    {
+        sub_41A954(&stack__particle);
+        refreshParticle();
+        sub_41AB50(&stack__particle);
+    }
+}
+
+void NC_STACK_particle::setPRTCL_pADE(NC_STACK_ade *ade)
+{
+    NC_STACK_ade *v7[2];
+    v7[0] = ade;
+    v7[1] = NULL;
+
+    sub_41ABBC(&stack__particle, v7);
+}
+
+void NC_STACK_particle::setPRTCL_startSize(int sz)
+{
+    stack__particle.field_90 = sz;
+
+    if (msetter)
+        updateflags |= 4;
+    else
+        refreshParticle();
+}
+
+void NC_STACK_particle::setPRTCL_endSize(int sz)
+{
+    stack__particle.field_94 = sz;
+
+    if (msetter)
+        updateflags |= 4;
+    else
+        refreshParticle();
+}
+
+void NC_STACK_particle::setPRTCL_startGen(int gn)
+{
+    stack__particle.field_ac = gn;
+
+    if (msetter)
+        updateflags |= 1;
+    else
+        sub_41A954(&stack__particle);
+}
+
+void NC_STACK_particle::setPRTCL_endGen(int gn)
+{
+    stack__particle.field_b0 = gn;
+
+    if (msetter)
+        updateflags |= 1;
+    else
+        sub_41A954(&stack__particle);
+}
+
+void NC_STACK_particle::setPRTCL_noise(int nz)
+{
+    stack__particle.field_a0 = nz * 0.1;
+}
+
+void NC_STACK_particle::setPRTCL_ppADE(NC_STACK_ade **arr)
+{
+    sub_41ABBC(&stack__particle, arr);
+}
+
+
+void NC_STACK_particle::refreshParticle()
+{
+    __NC_STACK_particle *prtcl = &stack__particle;
+
+    prtcl->field_8c = 1024 / prtcl->field_88;
+    prtcl->field_98 = (prtcl->field_94 - prtcl->field_90) / prtcl->field_84;
+}
+
+void NC_STACK_particle::startSetter()
+{
+    msetter = true;
+    updateflags = 0;
+}
+
+bool NC_STACK_particle::endSetter(bool recalc)
+{
+    msetter = false;
+    if ( recalc )
+    {
+        if (updateflags & 1)
+        {
+            if (!sub_41A954(&stack__particle))
+                return 0;
+        }
+
+        if (updateflags & 2)
+            particle_recalc(&stack__particle);
+
+        if (updateflags & 4)
+            refreshParticle();
+
+        if (updateflags & 8)
+            sub_41AB50(&stack__particle);
+    }
+
+    updateflags = 0;
+    return 1;
+}
+
+int NC_STACK_particle::getPRTCL_startSpeed()
+{
+    return stack__particle.field_9c;
+}
+
+int NC_STACK_particle::getPRTCL_numContexts()
+{
+    return stack__particle.tp1_cnt;
+}
+
+int NC_STACK_particle::getPRTCL_contextLifetime()
+{
+    return stack__particle.field_a8;
+}
+
+int NC_STACK_particle::getPRTCL_birthRate()
+{
+    return stack__particle.field_88;
+}
+
+int NC_STACK_particle::getPRTCL_lifeTime()
+{
+    return stack__particle.field_84;
+}
+
+NC_STACK_ade *NC_STACK_particle::getPRTCL_pADE()
+{
+    return stack__particle.ADEs[0];
+}
+
+int NC_STACK_particle::getPRTCL_startSize()
+{
+    return stack__particle.field_90;
+}
+
+int NC_STACK_particle::getPRTCL_endSize()
+{
+    return stack__particle.field_94;
+}
+
+int NC_STACK_particle::getPRTCL_startGen()
+{
+    return stack__particle.field_ac;
+}
+
+int NC_STACK_particle::getPRTCL_endGen()
+{
+    return stack__particle.field_b0;
+}
+
+int NC_STACK_particle::getPRTCL_noise()
+{
+    return stack__particle.field_a0 * 10.0;
+}
+
+NC_STACK_ade **NC_STACK_particle::getPRTCL_ppADE()
+{
+    return stack__particle.ADEs;
+}
+
+
+
 
 size_t NC_STACK_particle::compatcall(int method_id, void *data)
 {

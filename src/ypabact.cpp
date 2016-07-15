@@ -7244,8 +7244,7 @@ void NC_STACK_ypabact::ypabact_func107(int *arg)
 
     while ( vps[v13] )
     {
-        nlist *kids_list;
-        call_vtbl(vps[v13], 3, 0x8000101A, &kids_list, 0);
+        nlist *kids_list = vps[v13]->getBASE_kidList();
 
         base_node *kid = (base_node *)kids_list->head;
         while (kid->next)

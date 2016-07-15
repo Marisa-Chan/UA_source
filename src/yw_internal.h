@@ -1,9 +1,9 @@
 #ifndef  YWINT_H_INCLUDED
 #define YWINT_H_INCLUDED
 
-extern polys *p_outPolys;
-extern polysDat *p_polysdata;
-extern polysDat *p_polysdata_end;
+extern polys *p_renderStack;
+extern polysDat *p_renderARGstack;
+extern polysDat *p_renderARGstackEND;
 
 struct lvlnet_t1
 {

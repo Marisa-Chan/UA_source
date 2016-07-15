@@ -40,6 +40,19 @@ public:
         return new NC_STACK_sample();
     };
 
+    enum SMPL_ATT
+    {
+        SMPL_ATT_PSAMPLE = 0x80002000,
+        SMPL_ATT_TYPE = 0x80002001,
+        SMPL_ATT_LEN = 0x80002002,
+        SMPL_ATT_BUFFER = 0x80002003
+    };
+
+    virtual sampl *getSMPL_pSample();
+    virtual int getSMPL_type();
+    virtual int getSMPL_len();
+    virtual void *getSMPL_buffer();
+
     //Data
     static const NewClassDescr description;
 

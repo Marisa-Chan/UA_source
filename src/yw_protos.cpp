@@ -3036,7 +3036,7 @@ int ShellSoundsParse_sample(UserData *usr, scrCallBack *arg)
     if ( !v3[v4] )
         return 4;
 
-    call_vtbl(v3[v4], 3, 0x80002000, &v13->samples_data[v4].psampl, 0);
+    v13->samples_data[v4].psampl = v3[v4]->getSMPL_pSample();
 
     if ( v3 == usr->samples1 && (v4 == 0 || v4 == 5 || v4 == 10 || v4 == 15 ) )
         v13->samples_data[v4].field_12 |= 1;

@@ -56,9 +56,9 @@ size_t NC_STACK_sklt::func5(MFILE **file)
     if ( !getted )
         return 0;
 
-    stk[0].id = 0x80001000;
+    stk[0].id = RSRC_ATT_NAME;
     stk[0].value = (size_t)name;
-    stk[1].id = 0x80001001;
+    stk[1].id = RSRC_ATT_TRYSHARED;
     stk[1].value = 1;
     stk[2].id = 0;
     stk[2].value = 0;
@@ -77,10 +77,8 @@ size_t NC_STACK_sklt::func6(MFILE **file)
         return 0;
     else
     {
-        char name[256];
-
         sub_412FC0(mfile, 0, TAG_NAME, -1);
-        call_vtbl(this, 3, 0x80001000, name, 0);
+        const char *name = getRsrc_name();
         sub_413564(mfile, strlen(name) + 1, name);
         sub_413290(mfile);
         return sub_413290(mfile) == 0;
@@ -109,7 +107,7 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile, in
 
     stack_vals stk[2];
 
-    stk[0].id = 0x80002001;
+    stk[0].id = NC_STACK_skeleton::SKEL_ATT_POINTSCNT;
     stk[0].value = num;
     stk[1].id = 2;
     stk[1].value = (size_t)stak;
@@ -384,10 +382,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile)
         if ( iff_flag )
         {
             if ( res )
-            {
-                //call_vtbl(obj, 65, res);
                 obj->rsrc_func65(&res);
-            }
 
             return NULL;
         }
@@ -477,10 +472,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile)
     if ( !read_ok || !sklt )
     {
         if ( res )
-        {
-            //call_vtbl(obj, 65, res);
             obj->rsrc_func65(&res);
-        }
 
         return NULL;
     }
@@ -494,10 +486,10 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile)
 // Create sklt resource node and fill rsrc field data
 rsrc * NC_STACK_sklt::rsrc_func64(stack_vals *stak)
 {
-    const char *filename = (const char *)find_id_in_stack_def_val(0x80001000, 0, stak);
+    const char *filename = (const char *)find_id_in_stack_def_val(RSRC_ATT_NAME, 0, stak);
     if ( filename )
     {
-        MFILE *mfile = (MFILE *)find_id_in_stack_def_val(0x80001005, 0, stak);
+        MFILE *mfile = (MFILE *)find_id_in_stack_def_val(RSRC_ATT_PIFFFILE, 0, stak);
 
         int selfopened = 0;
 
@@ -524,9 +516,7 @@ rsrc * NC_STACK_sklt::rsrc_func64(stack_vals *stak)
 
 size_t NC_STACK_sklt::rsrc_func66(rsrc_func66_arg *arg)
 {
-    skeleton_64_stru *sklt = NULL;
-
-    call_vtbl(this, 3, 0x80001002, &sklt, 0);
+    skeleton_64_stru *sklt = (skeleton_64_stru *)getRsrc_pData();
 
     if ( !sklt )
         return 0;

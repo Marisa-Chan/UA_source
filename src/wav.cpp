@@ -68,9 +68,9 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, stack_vals *stak, const char *filname
                 {
                     stack_vals stk[3];
 
-                    stk[0].id = 0x80002002;
+                    stk[0].id = NC_STACK_sample::SMPL_ATT_LEN;
                     stk[0].value = sbchunk.SubchunkSize;
-                    stk[1].id = 0x80002001;
+                    stk[1].id = NC_STACK_sample::SMPL_ATT_TYPE;
                     stk[1].value = 1;
                     stk[2].id = 2;
                     stk[2].value = (size_t)stak;
@@ -84,7 +84,6 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, stack_vals *stak, const char *filname
 
                         if ( !smpl )
                         {
-                            //call_vtbl(obj, 65, res);
                             obj->rsrc_func65(&res);
                             FClose(fil);
                             return NULL;
@@ -126,7 +125,7 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, stack_vals *stak, const char *filname
 
 rsrc * NC_STACK_wav::rsrc_func64(stack_vals *stak)
 {
-    const char *filename = (const char *)find_id_in_stack_def_val(0x80001000, 0, stak);
+    const char *filename = (const char *)find_id_in_stack_def_val(RSRC_ATT_NAME, 0, stak);
 
     if ( filename )
         return wav_func64__sub0(this, stak, filename);

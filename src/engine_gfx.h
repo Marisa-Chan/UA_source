@@ -81,7 +81,6 @@ struct polysDatSub
     tUtV *tu_tv;
     float *color;
     bitmap_intern *pbitm;
-    int field_18;
 };
 
 

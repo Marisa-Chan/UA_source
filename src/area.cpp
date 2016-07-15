@@ -18,15 +18,14 @@
 const NewClassDescr NC_STACK_area::description("area.class", &newinstance);
 
 
-int area_func0__sub0(__NC_STACK_area *area, stack_vals *stak)
+int NC_STACK_area::area_func0__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
-    area->field_c = 1;
-    area->field_D = 0;
-    area->field_E = 0;
-
-    int16_t v4 = 0;
+    stack__area.field_c = 1;
+    stack__area.field_D = 0;
+    stack__area.field_E = 0;
+    stack__area.polflags = 0;
 
     while ( 1 )
     {
@@ -48,111 +47,53 @@ int area_func0__sub0(__NC_STACK_area *area, stack_vals *stak)
             default:
                 break;
 
-            case 0x80001004:
-                if ( stk->value )
-                    area->field_8 |= 1;
-                else
-                    area->field_8 &= 0xFFFE;
+            case ADE_ATT_DPTHFADE:
+                setADE_depthFade ( stk->value );
                 break;
-            case 0x80001008:
-                area->field_14 = stk->value;
+            case ADE_ATT_POLY:
+                setADE_bkCheck( stk->value );
                 break;
-            case 0x80002000:
-                if ( stk->value )
-                {
-                    NC_STACK_bitmap *ilbm = (NC_STACK_bitmap *)stk->value;
-                    if ( area->ilbm1 != NULL )
-                        delete_class_obj(area->ilbm1);
-                    area->ilbm1 = ilbm;
-                }
+            case AREA_ATT_TEXBITM:
+                setAREA_bitm ( (NC_STACK_bitmap *)stk->value );
                 break;
-            case 0x80002001:
-                area->field_c = stk->value;
+            case AREA_ATT_COLORVAL:
+                setAREA_colorVal( stk->value );
                 break;
-            case 0x80002004:
-                v4 &= 0xFFF9;
-
-                if ( stk->value == 1 )
-                {
-                    v4 |= 2;
-                }
-                else if ( stk->value == 2 )
-                {
-                    v4 |= 6;
-                }
+            case AREA_ATT_MAP:
+                setAREA_map( stk->value );
                 break;
 
-            case 0x80002005:
-                v4 &= 0xFFF7;
-
-                if ( stk->value == 1 )
-                    v4 |= 8;
+            case AREA_ATT_TEX:
+                setAREA_tex( stk->value );
                 break;
 
-            case 0x80002006:
-                v4 &= 0xFFCF;
-                switch ( stk->value )
-                {
-                default:
-                    break;
-                case 1:
-                    v4 |= 0x10;
-                    break;
-                case 2:
-                    v4 |= 0x20;
-                    break;
-                case 3:
-                    v4 |= 0x30;
-                    break;
-                }
+            case AREA_ATT_SHADE:
+                setAREA_shade ( stk->value );
                 break;
 
-            case 0x80002007:
-                v4 &= 0xFF3F;
-                switch ( stk->value )
-                {
-                default:
-                    break;
-                case 1:
-                    v4 |= 0x40;
-                    break;
-                case 2:
-                    v4 |= 0x80;
-                    break;
-                case 3:
-                    v4 |= 0xC0;
-                    break;
-                }
+            case AREA_ATT_TRACY:
+                setAREA_tracy ( stk->value );
                 break;
 
-            case 0x80002008:
-                v4 &= 0xFEFF;
-                if ( stk->value == 1 )
-                    v4 |= 0x100;
+            case AREA_ATT_TRACYMODE:
+                setAREA_tracymode( stk->value );
                 break;
 
-            case 0x80002009:
-                if ( stk->value )
-                {
-                    NC_STACK_bitmap *ilbm = (NC_STACK_bitmap *)stk->value;
-                    if ( area->ilbm2 != NULL )
-                        delete_class_obj(area->ilbm2);
-                    area->ilbm2 = ilbm;
-                }
+            case AREA_ATT_TRACYBITM:
+                setAREA_tracybitm ( (NC_STACK_bitmap *)stk->value );
                 break;
 
-            case 0x8000200A:
-                area->field_E = stk->value;
+            case AREA_ATT_SHADEVAL:
+                setAREA_shadeVal ( stk->value );
                 break;
 
-            case 0x8000200B:
-                area->field_D = stk->value;
+            case AREA_ATT_TRACYVAL:
+                setAREA_tracyVal ( stk->value );
                 break;
             }
             stk++;
         }
     }
-    area->field_16 = v4;
 
     return 1;
 }
@@ -163,9 +104,7 @@ size_t NC_STACK_area::func0(stack_vals *stak)
     if ( !NC_STACK_ade::func0(stak) )
         return 0;
 
-    __NC_STACK_area *area = &this->stack__area;
-
-    if ( !area_func0__sub0(area, stak) )
+    if ( !area_func0__sub0(stak) )
     {
         func1(NULL);
         return 0;
@@ -176,7 +115,7 @@ size_t NC_STACK_area::func0(stack_vals *stak)
 
 size_t NC_STACK_area::func1(stack_vals *stak)
 {
-    __NC_STACK_area *area = &this->stack__area;
+    __NC_STACK_area *area = &stack__area;
 
     if ( area->ilbm1 )
         delete_class_obj(area->ilbm1);
@@ -186,12 +125,9 @@ size_t NC_STACK_area::func1(stack_vals *stak)
 }
 
 
-void area_func2__sub0(__NC_STACK_area *area, stack_vals *stak)
+void NC_STACK_area::area_func2__sub0(stack_vals *stak)
 {
-
     stack_vals *stk = stak;
-
-    int16_t v4 = area->field_16;
 
     while ( 1 )
     {
@@ -213,141 +149,71 @@ void area_func2__sub0(__NC_STACK_area *area, stack_vals *stak)
             default:
                 break;
 
-            case 0x80001004:
-                if ( stk->value )
-                    area->field_8 |= 1;
-                else
-                    area->field_8 &= 0xFFFE;
+            case ADE_ATT_DPTHFADE:
+                setADE_depthFade ( stk->value );
                 break;
-            case 0x80001008:
-                area->field_14 = stk->value;
+            case ADE_ATT_POLY:
+                setADE_bkCheck( stk->value );
                 break;
-            case 0x80002000:
-                if ( stk->value )
-                {
-                    NC_STACK_bitmap *ilbm = (NC_STACK_bitmap *)stk->value;
-                    if ( area->ilbm1 != NULL )
-                        delete_class_obj(area->ilbm1);
-                    area->ilbm1 = ilbm;
-                }
+            case AREA_ATT_TEXBITM:
+                setAREA_bitm ( (NC_STACK_bitmap *)stk->value );
                 break;
-            case 0x80002001:
-                area->field_c = stk->value;
+            case AREA_ATT_COLORVAL:
+                stack__area.field_c = stk->value;
                 break;
-            case 0x80002004:
-                v4 &= 0xFFF9;
-
-                if ( stk->value == 1 )
-                {
-                    v4 |= 2;
-                }
-                else if ( stk->value == 2 )
-                {
-                    v4 |= 6;
-                }
+            case AREA_ATT_MAP:
+                setAREA_map( stk->value );
                 break;
 
-            case 0x80002005:
-                v4 &= 0xFFF7;
-
-                if ( stk->value == 1 )
-                    v4 |= 8;
+            case AREA_ATT_TEX:
+                setAREA_tex( stk->value );
                 break;
 
-            case 0x80002006:
-                v4 &= 0xFFCF;
-                switch ( stk->value )
-                {
-                default:
-                    break;
-                case 1:
-                    v4 |= 0x10;
-                    break;
-                case 2:
-                    v4 |= 0x20;
-                    break;
-                case 3:
-                    v4 |= 0x30;
-                    break;
-                }
+            case AREA_ATT_SHADE:
+                setAREA_shade ( stk->value );
                 break;
 
-            case 0x80002007:
-                v4 &= 0xFF3F;
-                switch ( stk->value )
-                {
-                default:
-                    break;
-                case 1:
-                    v4 |= 0x40;
-                    break;
-                case 2:
-                    v4 |= 0x80;
-                    break;
-                case 3:
-                    v4 |= 0xC0;
-                    break;
-                }
+            case AREA_ATT_TRACY:
+                setAREA_tracy ( stk->value );
                 break;
 
-            case 0x80002008:
-                v4 &= 0xFEFF;
-                if ( stk->value == 1 )
-                    v4 |= 0x100;
+            case AREA_ATT_TRACYMODE:
+                setAREA_tracymode( stk->value );
                 break;
 
-            case 0x80002009:
-                if ( stk->value )
-                {
-                    NC_STACK_bitmap *ilbm = (NC_STACK_bitmap *)stk->value;
-                    if ( area->ilbm2 != NULL )
-                        delete_class_obj(area->ilbm2);
-                    area->ilbm2 = ilbm;
-                }
+            case AREA_ATT_TRACYBITM:
+                setAREA_tracybitm ( (NC_STACK_bitmap *)stk->value );
                 break;
 
-            case 0x8000200A:
-                area->field_E = stk->value;
+            case AREA_ATT_SHADEVAL:
+                setAREA_shadeVal ( stk->value );
                 break;
 
-            case 0x8000200B:
-                area->field_D = stk->value;
+            case AREA_ATT_TRACYVAL:
+                setAREA_tracyVal ( stk->value );
                 break;
-            case 0x8000200C:
-                v4 = stk->value & 0xFFFF;
-                area->field_8 = stk->value >> 16;
+            case AREA_ATT_BLOB1:
+                setAREA_blob1( stk->value );
                 break;
-            case 0x8000200D:
-                area->field_E = stk->value & 0xFF;
-                area->field_c = (stk->value >> 16) & 0xFF;
-                area->field_D = (stk->value >> 8) & 0xFF;
+            case AREA_ATT_BLOB2:
+                setAREA_blob2( stk->value );
                 break;
             }
             stk++;
         }
     }
-    area->field_16 = v4;
 }
 
 size_t NC_STACK_area::func2(stack_vals *stak)
 {
-    __NC_STACK_area *area = &this->stack__area;
-
-    area_func2__sub0(area, stak);
+    area_func2__sub0(stak);
 
     return NC_STACK_ade::func2(stak);
 }
 
-void area_func3__sub0(__NC_STACK_area *area, stack_vals *stak)
+void NC_STACK_area::area_func3__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
-
-    int16_t v3 = area->field_16;
-    int16_t v4 = v3 & 0x30;
-    int16_t v9 = v3 & 6;
-    int16_t v5 = v3 & 0xC0;
-    int16_t v6 = v3 & 8;
-    int16_t v10 = v3 & 0x100;
 
     while ( 1 )
     {
@@ -369,101 +235,49 @@ void area_func3__sub0(__NC_STACK_area *area, stack_vals *stak)
             default:
                 break;
 
-            case 0x80002000:
-                *(NC_STACK_bitmap **)stk->value = area->ilbm1;
+            case AREA_ATT_TEXBITM:
+                *(NC_STACK_bitmap **)stk->value = getAREA_bitm();
                 break;
 
-            case 0x80002001:
-                *(int *)stk->value = area->field_c;
+            case AREA_ATT_COLORVAL:
+                *(int *)stk->value = getAREA_colorVal();
                 break;
 
-            case 0x80002004:
-                if ( v9 == 0 )
-                {
-                    *(int *)stk->value = 0;
-                }
-                else if ( v9 <= 2 )
-                {
-                    *(int *)stk->value = 1;
-                }
-                else if ( v9 == 6 )
-                {
-                    *(int *)stk->value = 2;
-                }
+            case AREA_ATT_MAP:
+                *(int *)stk->value = getAREA_map();
                 break;
 
-            case 0x80002005:
-                if ( v6 == 8 )
-                {
-                    *(int *)stk->value = 1;
-                }
-                else
-                {
-                    *(int *)stk->value = 0;
-                }
+            case AREA_ATT_TEX:
+                *(int *)stk->value = getAREA_tex();
                 break;
 
-            case 0x80002006:
-                if ( v4 == 0 )
-                {
-                    *(int *)stk->value = 0;
-                }
-                else if ( v4 == 0x10 )
-                {
-                    *(int *)stk->value = 1;
-                }
-                else if ( v4 == 0x20u )
-                {
-                    *(int *)stk->value = 2;
-                }
-                else if ( v4 == 0x30 )
-                {
-                    *(int *)stk->value = 3;
-                }
+            case AREA_ATT_SHADE:
+                *(int *)stk->value = getAREA_shade();
                 break;
 
-            case 0x80002007:
-
-                if ( v5 == 0 )
-                {
-                    *(int *)stk->value = 0;
-                }
-                else if ( v5 == 0x40 )
-                {
-                    *(int *)stk->value = 1;
-                }
-                else if ( v5 == 0x80u )
-                {
-                    *(int *)stk->value = 2;
-                }
-                else if ( v5 == 0xC0 )
-                {
-                    *(int *)stk->value = 3;
-                }
+            case AREA_ATT_TRACY:
+                *(int *)stk->value = getAREA_tracy();
                 break;
 
-            case 0x80002008:
-                if ( v10 == 0x100 )
-                    *(int *)stk->value = 1;
-                else if ( v10 == 0 )
-                    *(int *)stk->value = 0;
+            case AREA_ATT_TRACYMODE:
+                *(int *)stk->value = getAREA_tracymode();
                 break;
 
-            case 0x80002009:
-                *(NC_STACK_bitmap **)stk->value = area->ilbm2;
+            case AREA_ATT_TRACYBITM:
+                *(NC_STACK_bitmap **)stk->value = getAREA_tracybitm();
                 break;
 
-            case 0x8000200A:
-                *(int *)stk->value = area->field_E;
+            case AREA_ATT_SHADEVAL:
+                *(int *)stk->value = getAREA_shadeVal();
                 break;
 
-            case 0x8000200B:
-                *(int *)stk->value = area->field_D;
+            case AREA_ATT_TRACYVAL:
+                *(int *)stk->value = getAREA_tracyVal();
                 break;
 
-            case 0x8000200E:
-                *(int **)stk->value = &area->field_10;
-                break;
+//            case AREA_ATT_PolInfo:
+//                *(int **)stk->value = &area->field_10;
+//                break;
 
             }
             stk++;
@@ -473,79 +287,60 @@ void area_func3__sub0(__NC_STACK_area *area, stack_vals *stak)
 
 size_t NC_STACK_area::func3(stack_vals *stak)
 {
-
-    __NC_STACK_area *area = &this->stack__area;
-
-    area_func3__sub0(area, stak);
+    area_func3__sub0(stak);
 
     return NC_STACK_ade::func3(stak);
 }
 
-int area_func5__sub0(NC_STACK_area *obj, __NC_STACK_area *, MFILE *mfile)
+int NC_STACK_area::area_func5__sub0(MFILE *mfile)
 {
-    if ( obj )
+    AREA_STRC tmp;
+    mfread(mfile, &tmp, sizeof(AREA_STRC));
+    tmp.field_0 = SWAP16(tmp.field_0);
+    tmp.field_2 = SWAP32(tmp.field_2);
+    tmp.field_6 = SWAP32(tmp.field_6);
+
+    if ( tmp.field_0 >= 1 )
     {
-        AREA_STRC tmp;
-        mfread(mfile, &tmp, sizeof(AREA_STRC));
-        tmp.field_0 = SWAP16(tmp.field_0);
-        tmp.field_2 = SWAP32(tmp.field_2);
-        tmp.field_6 = SWAP32(tmp.field_6);
-
-        stack_vals stk[3];
-
-        stk[0].id = 0;
-
-        if ( tmp.field_0 >= 1 )
-        {
-            stk[0].id = 0x8000200C;
-            stk[0].value = tmp.field_2;
-            stk[1].id = 0x8000200D;
-            stk[1].value = tmp.field_6;
-            stk[2].id = 0;
-        }
-        obj->func2(stk);
-
-        return 1;
+        setAREA_blob1(tmp.field_2);
+        setAREA_blob2(tmp.field_6);
     }
 
-    return 0;
+    return 1;
 }
 
 
 
-int area_func5__sub1(NC_STACK_area *obj, __NC_STACK_area *area, MFILE *mfile)
+int NC_STACK_area::area_func5__sub1(MFILE *mfile)
 {
-    if ( obj )
+    int v8 = stack__area.polflags & AREA_POL_FLAG_TEXUTRED;
+
+    if ( (stack__area.polflags & AREA_POL_FLAG_TRACYMAPPED) == AREA_POL_FLAG_TRACYMAPPED )
+        v8 |= AREA_POL_FLAG_TRACYMAPPED;
+
+    NC_STACK_bitmap *objt = dynamic_cast<NC_STACK_bitmap *>( READ_OBJT(mfile) );
+    if ( objt )
     {
-        int v8 = area->field_16 & 8;
-
-        if ( (area->field_16 & 0xC0) == 0xC0 )
-            v8 |= 0xC0;
-
-        NC_STACK_nucleus *objt = (NC_STACK_nucleus *)READ_OBJT(mfile);
-        if ( objt )
+        if (v8 == AREA_POL_FLAG_TEXUTRED )
         {
-            if (v8 == 8 )
-            {
-                call_vtbl(obj, 2, 0x80002000, objt, 0);
-            }
-            else if ( v8 == 0xC0 )
-            {
-                call_vtbl(obj, 2, 0x80002009, objt, 0);
-            }
-            else if ( v8 == 0xC8)
-            {
-                if ( area->ilbm1 )
-                {
-                    call_vtbl(obj, 2, 0x80002009, objt, 0);
-                }
-                else
-                {
-                    call_vtbl(obj, 2, 0x80002000, objt, 0);
-                }
-            }
-            return 1;
+            setAREA_bitm(objt);
         }
+        else if ( v8 == AREA_POL_FLAG_TRACYMAPPED )
+        {
+            setAREA_tracybitm(objt);
+        }
+        else if ( v8 == (AREA_POL_FLAG_TRACYMAPPED | AREA_POL_FLAG_TEXUTRED) )
+        {
+            if ( stack__area.ilbm1 )
+            {
+                setAREA_tracybitm(objt);
+            }
+            else
+            {
+                setAREA_bitm(objt);
+            }
+        }
+        return 1;
     }
 
     return 0;
@@ -556,7 +351,6 @@ size_t NC_STACK_area::func5(MFILE **file)
 {
     MFILE *mfile = *file;
     int obj_ok = 0;
-    __NC_STACK_area *area = NULL;
 
     while ( 1 )
     {
@@ -580,13 +374,10 @@ size_t NC_STACK_area::func5(MFILE **file)
 
             if ( !obj_ok )
                 return 0;
-
-            area = &this->stack__area;
-
         }
         else if ( chunk->TAG == TAG_STRC )
         {
-            if ( !area_func5__sub0(this, area, mfile) )
+            if ( obj_ok && !area_func5__sub0(mfile) )
             {
                 func1(NULL);
                 return 0;
@@ -595,7 +386,7 @@ size_t NC_STACK_area::func5(MFILE **file)
         }
         else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
         {
-            if ( !area_func5__sub1(this, area, mfile) )
+            if ( obj_ok && !area_func5__sub1(mfile) )
             {
                 func1(NULL);
                 return 0;
@@ -613,7 +404,7 @@ size_t NC_STACK_area::func5(MFILE **file)
 size_t NC_STACK_area::func6(MFILE **file)
 {
     MFILE *mfile = *file;
-    __NC_STACK_area *area = &this->stack__area;
+    __NC_STACK_area *area = &stack__area;
 
     if ( sub_412FC0(mfile, TAG_AREA, TAG_FORM, -1) )
         return 0;
@@ -626,7 +417,7 @@ size_t NC_STACK_area::func6(MFILE **file)
 
     AREA_STRC tmp;
     tmp.field_0 = 1;
-    tmp.field_2 = area->field_16 | (area->field_8 << 16);
+    tmp.field_2 = area->polflags | (area->field_8 << 16);
     tmp.field_6 = area->field_E | (area->field_D << 8) | (area->field_c << 16);
 
     tmp.field_2 = SWAP32(tmp.field_2);
@@ -635,14 +426,14 @@ size_t NC_STACK_area::func6(MFILE **file)
     sub_413564(mfile, sizeof(AREA_STRC), &tmp);
     sub_413290(mfile);
 
-    if ( (area->field_16 & 8) )
+    if ( (area->polflags & AREA_POL_FLAG_TEXUTRED) )
     {
         if ( !area->ilbm1 )
             return 0;
         if ( !sub_4117F8(area->ilbm1, mfile) )
             return 0;
     }
-    if ( (area->field_16 & 0xC0) == 0xC0 )
+    if ( (area->polflags & AREA_POL_FLAG_TRACYMAPPED) == AREA_POL_FLAG_TRACYMAPPED )
     {
         if ( !area->ilbm2 )
             return 0;
@@ -656,54 +447,62 @@ size_t NC_STACK_area::func6(MFILE **file)
 // Add area to list
 size_t NC_STACK_area::ade_func65(area_arg_65 *arg)
 {
-    __NC_STACK_area *area = &this->stack__area;
-    polysDatSub *datSub = &arg->polyDat->datSub;
+    __NC_STACK_area *area = &stack__area;
+    polysDatSub *datSub = &arg->argSTK_cur->datSub;
 
-    int v5 = area->field_16 & 0xFEF6;
+    int v5 = area->polflags & ~(AREA_POL_FLAG_SCANLN | AREA_POL_FLAG_TEXBIT | AREA_POL_FLAG_TRACYBIT3);
 
     if (v5 == 0)
         v5 = 0;
-    else if (v5 == 2)
-        v5 = 1;
-    else if (v5 == 6)
-        v5 = 2;
-    else if (v5 == 0x32)
-        v5 = 9;
-    else if (v5 == 0x36)
-        v5 = 10;
-    else if (v5 == 0x42)
-        v5 = 17;
-    else if (v5 == 0x46)
-        v5 = 18;
-    else if (v5 == 0x72)
-        v5 = 25;
-    else if (v5 == 0x76)
-        v5 = 26;
-    else if (v5 == 0x82)
-        v5 = 33;
+    else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_LINMAP;
+
+    else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_PERSPMAP;
+
+    else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_LINMAP | NC_STACK_raster::RSTR_RFLAGS_GRADSHD;
+
+    else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_PERSPMAP | NC_STACK_raster::RSTR_RFLAGS_GRADSHD;
+
+    else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_LINMAP | NC_STACK_raster::RSTR_RFLAGS_ZEROTRACY;
+
+    else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_PERSPMAP | NC_STACK_raster::RSTR_RFLAGS_ZEROTRACY;
+
+    else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_LINMAP | NC_STACK_raster::RSTR_RFLAGS_GRADSHD | NC_STACK_raster::RSTR_RFLAGS_ZEROTRACY;
+
+    else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_PERSPMAP | NC_STACK_raster::RSTR_RFLAGS_GRADSHD | NC_STACK_raster::RSTR_RFLAGS_ZEROTRACY;
+
+    else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_FLATTRACY) )
+        v5 = NC_STACK_raster::RSTR_RFLAGS_LINMAP | NC_STACK_raster::RSTR_RFLAGS_LUMTRACY;
     else
         return 1;
 
     datSub->renderFlags = v5;
 
-    datSub->vertexes = (xyz *)&datSub->field_18;
+    datSub->vertexes = (xyz *)(datSub + 1); // Vertex data goes after arg data
 
     skeleton_arg133 skel133;
 
-    skel133.field_0 = area->field_14;
+    skel133.field_0 = area->polnum;
     skel133.field_4 = 0;
 
-    if ( datSub->renderFlags & 3 )
-        skel133.field_4 = 1;
-    if ( datSub->renderFlags & 0xC )
+    if ( datSub->renderFlags & (NC_STACK_raster::RSTR_RFLAGS_LINMAP | NC_STACK_raster::RSTR_RFLAGS_PERSPMAP ) )
+        skel133.field_4 |= 1;
+    if ( datSub->renderFlags & (NC_STACK_raster::RSTR_RFLAGS_FLATSHD | NC_STACK_raster::RSTR_RFLAGS_GRADSHD) )
         skel133.field_4 |= 2;
-    if ( area->field_8 & 1 )
+    if ( area->field_8 & AREA_FLAG_DPTHFADE )
         skel133.field_4 |= 4;
 
-    skel133.polysubDat = datSub;
+    skel133.rndrArg = datSub;
     skel133.field_10 = arg->field_24;
     skel133.field_14 = arg->field_28;
-    skel133.field_18 = area->field_E * 0.00390625;
+    skel133.field_18 = area->field_E / 256.0;
     skel133.field_1C = arg->field_2C;
     skel133.field_20 = arg->field_30;
 
@@ -731,7 +530,7 @@ size_t NC_STACK_area::ade_func65(area_arg_65 *arg)
     {
         arg->field_38++;
 
-        if ( datSub->renderFlags & 0xC )
+        if ( datSub->renderFlags & ( NC_STACK_raster::RSTR_RFLAGS_FLATSHD | NC_STACK_raster::RSTR_RFLAGS_GRADSHD ) )
         {
             int v6 = 0;
             int v8 = 0;
@@ -747,7 +546,7 @@ size_t NC_STACK_area::ade_func65(area_arg_65 *arg)
 
             if ( v6 == datSub->vertexCount )
             {
-                datSub->renderFlags &= 0xFFFFFFF3;
+                datSub->renderFlags &= ~( NC_STACK_raster::RSTR_RFLAGS_FLATSHD | NC_STACK_raster::RSTR_RFLAGS_GRADSHD );
             }
             else if ( v8 == datSub->vertexCount )
             {
@@ -762,15 +561,226 @@ size_t NC_STACK_area::ade_func65(area_arg_65 *arg)
                 maxz = datSub->vertexes[i].sz;
 
 
-        arg->outPolys->range = maxz;
-        arg->outPolys->data = arg->polyDat;
-        arg->outPolys++;
+        arg->rndrSTK_cur->range = maxz;
+        arg->rndrSTK_cur->data = arg->argSTK_cur;
+        arg->rndrSTK_cur++;
 
-        arg->polyDat->render_func = GFXEngine::defRenderFunc;
-        arg->polyDat = v19;
+        arg->argSTK_cur->render_func = GFXEngine::defRenderFunc;
+        arg->argSTK_cur = v19;
     }
     return 1;
 }
+
+void NC_STACK_area::setADE_depthFade(int mode)
+{
+    if ( mode )
+        stack__area.field_8 |= AREA_FLAG_DPTHFADE;
+    else
+        stack__area.field_8 &= ~AREA_FLAG_DPTHFADE;
+
+    NC_STACK_ade::setADE_depthFade(mode);
+}
+
+void NC_STACK_area::setADE_poly(int num)
+{
+    stack__area.polnum = num;
+
+    NC_STACK_ade::setADE_poly(num);
+}
+
+void NC_STACK_area::setAREA_bitm(NC_STACK_bitmap *bitm)
+{
+    if ( bitm )
+    {
+        if ( stack__area.ilbm1 != NULL )
+            delete_class_obj(stack__area.ilbm1);
+
+        stack__area.ilbm1 = bitm;
+    }
+}
+
+void NC_STACK_area::setAREA_colorVal(int val)
+{
+    stack__area.field_c = val;
+}
+
+void NC_STACK_area::setAREA_map(int mode)
+{
+    stack__area.polflags &= ~(AREA_POL_FLAG_MAPBIT1 | AREA_POL_FLAG_MAPBIT2);
+
+    if ( mode == 1 )
+        stack__area.polflags |= AREA_POL_FLAG_LINEARMAPPED;
+    else if ( mode == 2 )
+        stack__area.polflags |= AREA_POL_FLAG_DEPTHMAPPED;
+}
+
+void NC_STACK_area::setAREA_tex(int mode)
+{
+    stack__area.polflags &= ~(AREA_POL_FLAG_TEXBIT);
+
+    if ( mode == 1 )
+        stack__area.polflags |= AREA_POL_FLAG_TEXUTRED;
+}
+
+void NC_STACK_area::setAREA_shade(int mode)
+{
+    stack__area.polflags &= ~(AREA_POL_FLAG_SHADEBIT1 | AREA_POL_FLAG_SHADEBIT2);
+
+    if ( mode == 1 )
+        stack__area.polflags |= AREA_POL_FLAG_FLATSHADE;
+    else if ( mode == 2 )
+        stack__area.polflags |= AREA_POL_FLAG_LINESHADE;
+    else if ( mode == 3 )
+        stack__area.polflags |= AREA_POL_FLAG_GRADIENTSHADE;
+}
+
+void NC_STACK_area::setAREA_tracy(int mode)
+{
+    stack__area.polflags &= ~(AREA_POL_FLAG_TRACYBIT1 | AREA_POL_FLAG_TRACYBIT2);
+
+    if ( mode == 1 )
+        stack__area.polflags |= AREA_POL_FLAG_CLEARTRACY;
+    else if ( mode == 2 )
+        stack__area.polflags |= AREA_POL_FLAG_FLATTRACY;
+    else if ( mode == 3 )
+        stack__area.polflags |= AREA_POL_FLAG_TRACYMAPPED;
+}
+
+void NC_STACK_area::setAREA_tracymode(int mode)
+{
+    stack__area.polflags &= ~(AREA_POL_FLAG_TRACYBIT3);
+
+    if ( mode == 1 )
+        stack__area.polflags |= AREA_POL_FLAG_LIGHT;
+}
+
+void NC_STACK_area::setAREA_tracybitm(NC_STACK_bitmap *bitm)
+{
+    if ( bitm )
+    {
+        if ( stack__area.ilbm2 != NULL )
+            delete_class_obj(stack__area.ilbm2);
+
+        stack__area.ilbm2 = bitm;
+    }
+}
+
+void NC_STACK_area::setAREA_shadeVal(int val)
+{
+    stack__area.field_E = val;
+}
+
+void NC_STACK_area::setAREA_tracyVal(int val)
+{
+    stack__area.field_D = val;
+}
+
+void NC_STACK_area::setAREA_blob1(uint32_t val)
+{
+    stack__area.polflags = val & 0xFFFF;
+    stack__area.field_8 = val >> 16;
+}
+
+void NC_STACK_area::setAREA_blob2(uint32_t val)
+{
+    stack__area.field_E = val & 0xFF;
+    stack__area.field_c = (val >> 16) & 0xFF;
+    stack__area.field_D = (val >> 8) & 0xFF;
+}
+
+
+NC_STACK_bitmap *NC_STACK_area::getAREA_bitm()
+{
+    return stack__area.ilbm1;
+}
+
+int NC_STACK_area::getAREA_colorVal()
+{
+    return stack__area.field_c;
+}
+
+int NC_STACK_area::getAREA_map()
+{
+    int v9 = stack__area.polflags & (AREA_POL_FLAG_MAPBIT1 | AREA_POL_FLAG_MAPBIT2);
+
+    if ( v9 == AREA_POL_FLAG_NONMAPPED )
+        return 0;
+    else if ( v9 == AREA_POL_FLAG_LINEARMAPPED )
+        return 1;
+    else if ( v9 == AREA_POL_FLAG_DEPTHMAPPED )
+        return 2;
+
+    return 0;
+}
+
+int NC_STACK_area::getAREA_tex()
+{
+    int v6 = stack__area.polflags & AREA_POL_FLAG_TEXBIT;
+
+    if ( v6 == AREA_POL_FLAG_TEXUTRED )
+        return 1;
+
+    return 0;
+}
+
+int NC_STACK_area::getAREA_shade()
+{
+    int v4 = stack__area.polflags & (AREA_POL_FLAG_SHADEBIT1 | AREA_POL_FLAG_SHADEBIT2);
+
+    if ( v4 == AREA_POL_FLAG_NOSHADE )
+        return 0;
+    else if ( v4 == AREA_POL_FLAG_FLATSHADE )
+        return 1;
+    else if ( v4 == AREA_POL_FLAG_LINESHADE )
+        return 2;
+    else if ( v4 == AREA_POL_FLAG_GRADIENTSHADE )
+        return 3;
+    return 0;
+}
+
+int NC_STACK_area::getAREA_tracy()
+{
+    int v5 = stack__area.polflags & (AREA_POL_FLAG_TRACYBIT1 | AREA_POL_FLAG_TRACYBIT2);
+
+    if ( v5 == AREA_POL_FLAG_NOTRACY )
+        return 0;
+    else if ( v5 == AREA_POL_FLAG_CLEARTRACY )
+        return 1;
+    else if ( v5 == AREA_POL_FLAG_FLATTRACY )
+        return 2;
+    else if ( v5 == AREA_POL_FLAG_TRACYMAPPED )
+        return 3;
+    return 0;
+}
+
+int NC_STACK_area::getAREA_tracymode()
+{
+    int v10 = stack__area.polflags & AREA_POL_FLAG_TRACYBIT3;
+
+    if ( v10 == AREA_POL_FLAG_DARK )
+        return 0;
+    else if ( v10 == AREA_POL_FLAG_LIGHT )
+        return 1;
+
+    return 0;
+}
+
+NC_STACK_bitmap *NC_STACK_area::getAREA_tracybitm()
+{
+    return stack__area.ilbm2;
+}
+
+int NC_STACK_area::getAREA_shadeVal()
+{
+    return stack__area.field_E;
+}
+
+int NC_STACK_area::getAREA_tracyVal()
+{
+    return stack__area.field_D;
+}
+
+
 
 size_t NC_STACK_area::compatcall(int method_id, void *data)
 {
