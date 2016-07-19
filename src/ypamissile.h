@@ -70,6 +70,8 @@ public:
         return new NC_STACK_ypamissile();
     };
 
+    virtual void setBACT_viewer(int);
+
     //Data
     static const NewClassDescr description;
 

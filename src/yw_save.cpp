@@ -646,8 +646,7 @@ int yw_write_bact(bact_node *bct, FILE *fil)
 {
     char buf[300];
 
-    int a4;
-    call_vtbl(bct->bacto, 3, 0x80001004, &a4, 0);
+    int a4 = bct->bacto->getBACT_viewer();
 
     if ( a4 )
         sprintf(buf, "    viewer         = yes\n");
@@ -656,7 +655,7 @@ int yw_write_bact(bact_node *bct, FILE *fil)
 
     fwrite(buf, strlen(buf), 1, fil);
 
-    call_vtbl(bct->bacto, 3, 0x80001005, &a4, 0);
+    a4 = bct->bacto->getBACT_inputting();
 
     if ( a4 )
         sprintf(buf, "    user           = yes\n");
@@ -665,7 +664,7 @@ int yw_write_bact(bact_node *bct, FILE *fil)
 
     fwrite(buf, strlen(buf), 1, fil);
 
-    call_vtbl(bct->bacto, 3, 0x80001007, &a4, 0);
+    a4 = bct->bacto->getBACT_bactCollisions();
 
     if ( a4 )
         sprintf(buf, "    collision      = yes\n");
@@ -1006,8 +1005,7 @@ int yw_write_units(_NC_STACK_ypaworld *yw, FILE *fil)
                 }
                 else
                 {
-                    int v8;
-                    call_vtbl(commander->bacto, 3, 0x80001004, &v8, 0);
+                    int v8 = commander->bacto->getBACT_viewer();
 
                     if ( v8 )
                     {
@@ -1031,8 +1029,7 @@ int yw_write_units(_NC_STACK_ypaworld *yw, FILE *fil)
                     }
                     else
                     {
-                        int v10;
-                        call_vtbl(slave->bacto, 3, 0x80001004, &v10, 0);
+                        int v10 = slave->bacto->getBACT_viewer();
 
                         if ( v10 )
                         {

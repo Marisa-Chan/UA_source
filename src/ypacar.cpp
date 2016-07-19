@@ -436,8 +436,7 @@ void NC_STACK_ypacar::ypabact_func71(ypabact_arg65 *arg)
 
     bact->airconst = bact->airconst2;
 
-    int a4 = 0;
-    call_vtbl(this, 3, 0x80001007, &a4, 0);
+    int a4 = getBACT_bactCollisions();
 
     bact->field_62D = bact->field_621;
 
@@ -728,8 +727,7 @@ size_t NC_STACK_ypacar::ypatank_func128(tank_arg128 *arg)
 
     arg->field_10 = 0;
 
-    int a4 = 0;
-    call_vtbl(this, 3, 0x80001004, &a4, 0);
+    int a4 = getBACT_viewer();
 
     float v5;
 
@@ -826,8 +824,7 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, xyz *darg)
     //v5 = bact->field_651.m21;
     float v66 = bact->field_651.m22;
 
-    int a4;
-    call_vtbl(bact->self, 3, 0x80001004, &a4, 0);
+    int a4 = bact->self->getBACT_viewer();
     float v73;
 
     if ( a4 )
@@ -914,9 +911,8 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
     int v160 = 0;
     int v161 = 0;
 
-    int a4, v149;
-    call_vtbl(this, 3, 0x80001004, &a4, 0);
-    call_vtbl(this, 3, 0x80001005, &v149, 0);
+    int a4 = getBACT_viewer();
+    int v149 = getBACT_inputting();
 
     float v5;
 

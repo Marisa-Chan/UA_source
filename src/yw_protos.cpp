@@ -4927,12 +4927,12 @@ int parseSaveVideo(scrCallBack *arg)
             if ( !strcasecmp(arg->p2, "yes") )
             {
                 usr->GFX_flags |= 2;
-                call_vtbl(ywo, 2, 0x8000200C, 1, 0);
+                ywo->setYW_skyRender(1);
             }
             else
             {
-                usr->GFX_flags &= 0xFD;
-                call_vtbl(ywo, 2, 0x8000200C, 0, 0);
+                usr->GFX_flags &= ~2;
+                ywo->setYW_skyRender(0);
             }
         }
         else if ( !strcasecmp(arg->p1, "fxnumber") )
@@ -5456,20 +5456,20 @@ int sub_47A0C0(scrCallBack *scr)
     if ( !strcasecmp(scr->p1, "viewer") )
     {
         if ( !strcasecmp(scr->p2, "yes") )
-            call_vtbl(current_bact, 2, 0x80001004, 1, 0);
+            current_bact->setBACT_viewer(1);
     }
     else if ( !strcasecmp(scr->p1, "user") )
     {
         if ( !strcasecmp(scr->p2, "yes") )
         {
-            call_vtbl(current_bact, 2, 0x80001005, 1, 0);
+            current_bact->setBACT_inputting(1);
         }
     }
     else if ( !strcasecmp(scr->p1, "collision") )
     {
         if ( !strcasecmp(scr->p2, "yes") )
         {
-            call_vtbl(current_bact, 2, 0x80001007, 1, 0);
+            current_bact->setBACT_bactCollisions(1);
         }
     }
     else if ( !strcasecmp(scr->p1, "commandid") )
@@ -5729,7 +5729,7 @@ int sb_0x479f4c(scrCallBack *scr)
             {
                 current_robo = dynamic_cast<NC_STACK_yparobo *>(current_bact);
 
-                //call_vtbl(v3, 3, 0x80001003, &dword_5A7A88, 0);
+                //dword = v3->getBACT_pBact();
 
                 dword_5A7A88 = &current_robo->stack__ypabact;
 
@@ -5748,7 +5748,7 @@ int sb_0x479f4c(scrCallBack *scr)
             if ( dword_5A7A88->owner == 1 )
             {
                 dword_5A7A84 = dynamic_cast<NC_STACK_yparobo *>(current_bact);
-                call_vtbl(yw->self_full, 2, 0x80002010, current_bact, 0);
+                yw->self_full->setYW_userVehicle(current_bact);
             }
 
             if ( !dword_5A7A88->reload_const_or_energy2 )

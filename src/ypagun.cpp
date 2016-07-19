@@ -819,8 +819,7 @@ void NC_STACK_ypagun::ypabact_func75(bact_arg75 *arg)
 
                 if ( ypabact_func79(&arg79) )
                 {
-                    int a5;
-                    call_vtbl(this, 3, 0x80001005, &a5, 0);
+                    int a5 = getBACT_inputting();
 
                     if ( !a5 )
                     {
@@ -972,7 +971,7 @@ void NC_STACK_ypagun::ypabact_func96(void *)
     gun->field_39 = 0;
     gun->field_3A = 0;
 
-    call_vtbl(this, 2, 0x80001010, 1, 0);
+    setBACT_extraViewer(1);
 
     bact->viewer.sx = 0;
     bact->viewer.sy = 0;

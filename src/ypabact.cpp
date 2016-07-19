@@ -20,8 +20,9 @@ int ypabact_id = 1;
 char **dword_5490B0; // ypaworld strings
 
 
-int ypabact_func0__sub0(NC_STACK_ypabact *obj, __NC_STACK_ypabact *bact, stack_vals *stak)
+int NC_STACK_ypabact::ypabact_func0__sub0(stack_vals *stak)
 {
+    __NC_STACK_ypabact *bact = &stack__ypabact;
     bact->mass = 400.0;
     bact->force = 5000.0;
     bact->airconst = 500.0;
@@ -47,7 +48,7 @@ int ypabact_func0__sub0(NC_STACK_ypabact *obj, __NC_STACK_ypabact *bact, stack_v
     bact->sdist_bact = 100.0;
     bact->field_B34 = 4;
 
-    NC_STACK_ypaworld *ywo = (NC_STACK_ypaworld *)find_id_in_stack_def_val(0x80001001, 0, stak);// get ypaworld
+    NC_STACK_ypaworld *ywo = (NC_STACK_ypaworld *)find_id_in_stack_def_val(BACT_ATT_WORLD, 0, stak);// get ypaworld
     bact->wrld = ywo;
 
     if ( ywo )
@@ -77,7 +78,7 @@ int ypabact_func0__sub0(NC_STACK_ypabact *obj, __NC_STACK_ypabact *bact, stack_v
                 default:
                     break;
 
-                case 0x80001004:
+                case BACT_ATT_VIEWER:
                 {
                     char v14[28];
 
@@ -112,7 +113,7 @@ int ypabact_func0__sub0(NC_STACK_ypabact *obj, __NC_STACK_ypabact *bact, stack_v
                         if ( v14[24] == 4 )
                         {
                             int *a4;
-                            call_vtbl(obj, 3, 0x80002000, &a4, 0);
+                            call_vtbl(this, 3, 0x80002000, &a4, 0);
                             *(int *)&v14[20] = a4[10];
                             printf("UNKNOWN !!! %s\n", "ypabact_func0__sub0");
                         }
@@ -129,83 +130,56 @@ int ypabact_func0__sub0(NC_STACK_ypabact *obj, __NC_STACK_ypabact *bact, stack_v
                 }
                 break;
 
-                case 0x80001005:
+                case BACT_ATT_INPUTTING:
                     if ( stk->value )
                     {
                         bact->field_B34 |= 2;
-                        call_vtbl(ywo, 2, 0x80002011, obj, 0);
+                        ywo->setYW_userVehicle(this);
                     }
                     else
                     {
-                        bact->field_B34 &= 0xFFFFFFFD;
+                        bact->field_B34 &= ~2;
                     }
                     break;
 
-                case 0x80001007:
-                    if ( stk->value )
-                        bact->field_B34 |= 8;
-                    else
-                        bact->field_B34 &= 0xFFFFFFF7;
+                case BACT_ATT_EXACTCOLL:
+                    setBACT_exactCollisions(stk->value);
                     break;
 
-                case 0x80001006:
-                    if ( stk->value )
-                        bact->field_B34 |= 4;
-                    else
-                        bact->field_B34 &= 0xFFFFFFFB;
+                case BACT_ATT_BACTCOLL:
+                    setBACT_bactCollisions ( stk->value );
                     break;
 
-                case 0x80001009:
-                    bact->airconst = stk->value;
-                    bact->airconst2 = stk->value;
+                case BACT_ATT_AIRCONST:
+                    setBACT_airconst(stk->value);
                     break;
 
-                case 0x8000100A:
-                    if ( stk->value )
-                        bact->field_B34 |= 0x10;
-                    else
-                        bact->field_B34 &= 0xFFFFFFEF;
+                case BACT_ATT_LANDINGONWAIT:
+                    setBACT_landingOnWait ( stk->value );
                     break;
 
-                case 0x8000100B:
-                    bact->field_B74 = stk->value;
+                case BACT_ATT_YOURLS:
+                    setBACT_yourLastSeconds(stk->value);
                     break;
 
-                case 0x8000100C:
-                    bact->current_vp.base = (NC_STACK_base *)stk->value;
+                case BACT_ATT_VISPROT:
+                    setBACT_visProto( (NC_STACK_base *)stk->value);
                     break;
 
-                case 0x8000100D:
-                {
-                    bact->field_3D4 = stk->value;
-
-                    bact_node *nod = (bact_node *)bact->list2.head;
-
-                    while ( nod->next )
-                    {
-                        nod->bact->field_3D4 = stk->value;
-
-                        nod = (bact_node *)nod->next;
-                    }
-                }
-                break;
-
-                case 0x8000100F:
-                    bact->current_vp.trigo = (base_1c_struct *)stk->value;
+                case BACT_ATT_AGGRESSION:
+                    setBACT_aggression(stk->value);
                     break;
 
-                case 0x80001010:
-                    if ( stk->value )
-                        bact->field_B34 |= 0x20;
-                    else
-                        bact->field_B34 &= 0xFFFFFFDF;
+                case BACT_ATT_VPTRANSFORM:
+                    setBACT_vpTransform( (base_1c_struct *)stk->value);
                     break;
 
-                case 0x80001013:
-                    if ( stk->value )
-                        bact->field_B34 |= 0x40;
-                    else
-                        bact->field_B34 &= 0xFFFFFFBF;
+                case BACT_ATT_EXTRAVIEWER:
+                    setBACT_extraViewer ( stk->value );
+                    break;
+
+                case BACT_ATT_ALWAYSRENDER:
+                    setBACT_alwaysRender ( stk->value );
                     break;
 
                 }
@@ -266,7 +240,7 @@ size_t NC_STACK_ypabact::func0(stack_vals *stak)
 
     bact_int->self = this;
 
-    if ( !ypabact_func0__sub0(this, bact_int, stak) )
+    if ( !ypabact_func0__sub0(stak) )
     {
         func1(NULL);
         return 0;
@@ -278,17 +252,15 @@ size_t NC_STACK_ypabact::func0(stack_vals *stak)
 
     bact_int->field_3D5 = 1;
 
-    int secMaxX, secMaxY;
-
-    call_vtbl(bact_int->wrld, 3, 0x80002002, &secMaxX, 0);
-    call_vtbl(bact_int->wrld, 3, 0x80002003, &secMaxY, 0);
+    int secMaxX = bact_int->wrld->getYW_mapSizeX();
+    int secMaxY = bact_int->wrld->getYW_mapSizeY();
 
     bact_int->field_18 =  secMaxX * 1200.0;
     bact_int->field_1c = -secMaxY * 1200.0;
     bact_int->field_20 = secMaxX;
     bact_int->field_22 = secMaxY;
 
-    call_vtbl(bact_int->wrld, 3, 0x80002018, &dword_5490B0, 0);
+    dword_5490B0 = bact_int->wrld->getYW_localeStrings();
 
     return 1;
 }
@@ -442,7 +414,7 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
 
 
 
-int ypabact_func2__sub0(NC_STACK_ypabact *obj, __NC_STACK_ypabact *bact, stack_vals *stak)
+int NC_STACK_ypabact::ypabact_func2__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -466,170 +438,52 @@ int ypabact_func2__sub0(NC_STACK_ypabact *obj, __NC_STACK_ypabact *bact, stack_v
             default:
                 break;
 
-            case 0x80001004:
-            {
-                char v14[28];
-
-                if ( stk->value )
-                {
-                    if (bact->field_B3C->current_bact)
-                    {
-                        if ( bact->field_B3C->current_bact->field_24 != 4 )
-                            bact->field_9A5 = 0;
-                    }
-
-                    bact->wrld->ypaworld_func131(bact); //Set current bact
-
-                    bact->field_B34 |= 1;
-
-                    if ( bact->field_B3C->field_757E )
-                        v14[25] = 1;
-
-                    if ( bact->field_24 == 1 && !(bact->field_3D6 & 0x200) && bact->field_3D5 == 1 )
-                        bact->field_601 = bact->force;
-
-                    sub_423F74(&bact->field_5A, 8);
-                }
-                else
-                {
-                    bact->field_B34 &= 0xFFFFFFFE;
-
-                    if ( bact->field_B3C->field_757E )
-                        v14[25] = 0;
-
-                    sub_424000(&bact->field_5A, 8);
-
-                    if ( bact->field_24 != 4 && bact->field_24 != 3 && bact->field_3D5 != 2 )
-                    {
-                        if ( bact->host_station == bact->parent_bacto )
-                        {
-                            if ( !(bact->field_3D6 & 0x4000000) || !(bact->field_3D6 & 0x8000000) )
-                            {
-                                bact_node *node = (bact_node *)bact->list2.head;
-
-                                while(node->next)
-                                {
-                                    sub_493DB0(node->bact, bact, bact->wrld);
-
-                                    node = (bact_node *)node->next;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if ( !(bact->field_3D6 & 0x4000000) || !(bact->field_3D6 & 0x8000000) )
-                                sub_493DB0(bact, bact->parent_bact, bact->wrld);
-                        }
-                    }
-                }
-
-                if ( bact->field_B3C->field_757E ) // Network message send routine?
-                {
-                    *(int *)(&v14[0]) = 1014;
-                    v14[12] = bact->owner;
-                    v14[24] = bact->field_24;
-                    *(int *)(&v14[16]) = bact->ypabact__id;
-
-                    if ( v14[24] == 4 )
-                    {
-                        int *a4;
-                        call_vtbl(obj, 3, 0x80002000, &a4, 0);
-                        *(int *)&v14[20] = a4[10];
-                        printf("UNKNOWN !!! %s\n", "ypabact_func0__sub0");
-                    }
-
-                    yw_arg181 v13;
-                    v13.field_10 = 0;
-                    v13.field_14 = 2;
-                    v13.value = v14;
-                    v13.field_18 = 1;
-                    v13.val_size = 28;
-
-                    bact->wrld->ypaworld_func181(&v13);
-                }
-            }
-            break;
-
-            case 0x80001005:
-                if ( stk->value )
-                {
-                    bact->field_B34 |= 2;
-                    call_vtbl(bact->wrld, 2, 0x80002011, obj, 0);
-
-                    if ( bact->field_24 != 9 )
-                        obj->ypabact_func114(NULL);
-                }
-                else
-                {
-                    bact->field_B34 &= 0xFFFFFFFD;
-                }
+            case BACT_ATT_VIEWER:
+                setBACT_viewer(stk->value);
                 break;
 
-            case 0x80001006:
-                if ( stk->value )
-                    bact->field_B34 |= 4;
-                else
-                    bact->field_B34 &= 0xFFFFFFFB;
+            case BACT_ATT_INPUTTING:
+                setBACT_inputting(stk->value);
                 break;
 
-            case 0x80001007:
-                if ( stk->value )
-                    bact->field_B34 |= 8;
-                else
-                    bact->field_B34 &= 0xFFFFFFF7;
+            case BACT_ATT_EXACTCOLL:
+                setBACT_exactCollisions ( stk->value );
                 break;
 
-            case 0x80001009:
-                bact->airconst = stk->value;
-                bact->airconst2 = stk->value;
+            case BACT_ATT_BACTCOLL:
+                setBACT_bactCollisions ( stk->value );
                 break;
 
-            case 0x8000100A:
-                if ( stk->value )
-                    bact->field_B34 |= 0x10;
-                else
-                    bact->field_B34 &= 0xFFFFFFEF;
+            case BACT_ATT_AIRCONST:
+                setBACT_airconst(stk->value);
                 break;
 
-            case 0x8000100B:
-                bact->field_B74 = stk->value;
+            case BACT_ATT_LANDINGONWAIT:
+                setBACT_landingOnWait ( stk->value );
                 break;
 
-            case 0x8000100C:
-                bact->current_vp.base = (NC_STACK_base *)stk->value;
+            case BACT_ATT_YOURLS:
+                setBACT_yourLastSeconds(stk->value);
                 break;
 
-            case 0x8000100D:
-            {
-                bact->field_3D4 = stk->value;
-
-                bact_node *nod = (bact_node *)bact->list2.head;
-
-                while ( nod->next )
-                {
-                    nod->bact->field_3D4 = stk->value;
-
-                    nod = (bact_node *)nod->next;
-                }
-            }
-            break;
-
-            case 0x8000100F:
-                bact->current_vp.trigo = (base_1c_struct *)stk->value;
+            case BACT_ATT_VISPROT:
+                setBACT_visProto( (NC_STACK_base *)stk->value);
                 break;
 
-            case 0x80001010:
-                if ( stk->value )
-                    bact->field_B34 |= 0x20;
-                else
-                    bact->field_B34 &= 0xFFFFFFDF;
+            case BACT_ATT_AGGRESSION:
+                setBACT_aggression(stk->value);
                 break;
 
-            case 0x80001013:
-                if ( stk->value )
-                    bact->field_B34 |= 0x40;
-                else
-                    bact->field_B34 &= 0xFFFFFFBF;
+            case BACT_ATT_VPTRANSFORM:
+                setBACT_vpTransform((base_1c_struct *)stk->value);
+                break;
+
+            case BACT_ATT_EXTRAVIEWER:
+                setBACT_extraViewer ( stk->value );
+                break;
+
+            case BACT_ATT_ALWAYSRENDER:
+                setBACT_alwaysRender ( stk->value );
                 break;
             }
             stk++;
@@ -643,11 +497,11 @@ size_t NC_STACK_ypabact::func2(stack_vals *stak)
 {
     NC_STACK_nucleus::func2(stak);
 
-    ypabact_func2__sub0(this, &this->stack__ypabact, stak);
+    ypabact_func2__sub0(stak);
     return 1;
 }
 
-void ypabact_func3__sub0(NC_STACK_ypabact *obj, __NC_STACK_ypabact *bact, stack_vals *stak)
+void NC_STACK_ypabact::ypabact_func3__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -671,76 +525,76 @@ void ypabact_func3__sub0(NC_STACK_ypabact *obj, __NC_STACK_ypabact *bact, stack_
             default:
                 break;
 
-            case 0x80001002:
-                *(base_1c_struct **)stk->value = &bact->field_87D;
+            case BACT_ATT_WORLD:
+                *(NC_STACK_ypaworld **)stk->value = getBACT_pWorld();
                 break;
 
-            case 0x80001003:
-                *(__NC_STACK_ypabact **)stk->value = bact;
+            case BACT_ATT_PTRANSFORM:
+                *(base_1c_struct **)stk->value = getBACT_pTransform();
                 break;
 
-            case 0x80001004:
-                *(int *)stk->value = (bact->field_B34 & 1) != 0;
+            case BACT_ATT_PBACT:
+                *(__NC_STACK_ypabact **)stk->value = getBACT_pBact();
                 break;
 
-            case 0x80001005:
-                *(int *)stk->value = (bact->field_B34 & 2) != 0;
+            case BACT_ATT_VIEWER:
+                *(int *)stk->value = getBACT_viewer();
                 break;
 
-            case 0x80001006:
-                *(int *)stk->value = (bact->field_B34 & 4) != 0;
+            case BACT_ATT_INPUTTING:
+                *(int *)stk->value = getBACT_inputting();
                 break;
 
-            case 0x80001007:
-                *(int *)stk->value = (bact->field_B34 & 8) != 0;
+            case BACT_ATT_EXACTCOLL:
+                *(int *)stk->value = getBACT_exactCollisions();
                 break;
 
-            case 0x8000100A:
-                *(int *)stk->value = (bact->field_B34 & 0x10) != 0;
+            case BACT_ATT_BACTCOLL:
+                *(int *)stk->value = getBACT_bactCollisions();
                 break;
 
-            case 0x80001001:
-                *(NC_STACK_ypaworld **)stk->value = bact->wrld;
+            case BACT_ATT_ATTACKLIST:
+                *(nlist **)stk->value = getBACT_attackList();
                 break;
 
-            case 0x80001008:
-                *(nlist **)stk->value = &bact->field_B48;
+            case BACT_ATT_LANDINGONWAIT:
+                *(int *)stk->value = getBACT_landingOnWait();
                 break;
 
-            case 0x8000100B:
-                *(int *)stk->value = bact->field_B74;
+            case BACT_ATT_YOURLS:
+                *(int *)stk->value = getBACT_yourLastSeconds();
                 break;
 
-            case 0x8000100C:
-                *(NC_STACK_base **)stk->value = bact->current_vp.base;
+            case BACT_ATT_VISPROT:
+                *(NC_STACK_base **)stk->value = getBACT_visProto();
                 break;
 
-            case 0x8000100D:
-                *(int *)stk->value = bact->field_3D4;
+            case BACT_ATT_AGGRESSION:
+                *(int *)stk->value = getBACT_aggression();
                 break;
 
-            case 0x8000100E:
-                *(int *)stk->value = 0;
+            case BACT_ATT_COLLNODES:
+                *(rbcolls **)stk->value = getBACT_collNodes();
                 break;
 
-            case 0x8000100F:
-                *(base_1c_struct **)stk->value = bact->current_vp.trigo;
+            case BACT_ATT_VPTRANSFORM:
+                *(base_1c_struct **)stk->value = getBACT_vpTransform();
                 break;
 
-            case 0x80001010:
-                *(int *)stk->value = (bact->field_B34 & 0x20) != 0;
+            case BACT_ATT_EXTRAVIEWER:
+                *(int *)stk->value = getBACT_extraViewer();
                 break;
 
-            case 0x80001011:
-                *(bact_node **)stk->value = &bact->field_B54;
+            case BACT_ATT_P_ATTACKNODE:
+                *(bact_node **)stk->value = getBACT_primAttackNode();
                 break;
 
-            case 0x80001012:
-                *(bact_node **)stk->value = &bact->field_B64;
+            case BACT_ATT_S_ATTACKNODE:
+                *(bact_node **)stk->value = getBACT_secnAttackNode();
                 break;
 
-            case 0x80001013:
-                *(int *)stk->value = (bact->field_B34 & 0x40) != 0;
+            case BACT_ATT_ALWAYSRENDER:
+                *(int *)stk->value = getBACT_alwaysRender();
                 break;
 
             }
@@ -753,9 +607,7 @@ size_t NC_STACK_ypabact::func3(stack_vals *stak)
 {
     NC_STACK_nucleus::func3(stak);
 
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
-
-    ypabact_func3__sub0(this, bact, stak);
+    ypabact_func3__sub0(stak);
     return 1;
 }
 
@@ -786,10 +638,8 @@ void sub_481F14(__NC_STACK_ypabact *bact)
 
 void sub_481E0C(__NC_STACK_ypabact *bact)
 {
-    int maxX, maxY;
-
-    call_vtbl(bact->wrld, 3, 0x80002002, &maxX, 0);
-    call_vtbl(bact->wrld, 3, 0x80002003, &maxY, 0);
+    int maxX = bact->wrld->getYW_mapSizeX();
+    int maxY = bact->wrld->getYW_mapSizeY();
 
     float mx = maxX * 1200.0;
     float my = -(maxY * 1200.0);
@@ -817,8 +667,7 @@ void sub_481F94(__NC_STACK_ypabact *bact)
     {
         bact_node * next_node = (bact_node *)node->next; // Save next node before remove
 
-        int a4;
-        call_vtbl(node->bacto, 3, 0x8000100B, &a4, 0);
+        int a4 = node->bacto->getBACT_yourLastSeconds();
 
         if ( a4 <= 0 )
         {
@@ -881,8 +730,7 @@ void NC_STACK_ypabact::ypabact_func65(ypabact_arg65 *arg)
     if ( bact->p_cell_area->height + 1000.0 < bact->field_621.sy )
         sub_481F14(bact);
 
-    NC_STACK_ypabact *retbact;
-    call_vtbl(bact->wrld, 3, 0x80002010, &retbact, 0);
+    NC_STACK_ypabact *retbact = bact->wrld->getYW_userHostStation();
 
     if ( bact->p_cell_area->w_type == 6 && bact->field_24 == 3 && retbact == bact->self ) // if bact class == robo
         ypabact_func65__sub0(bact);
@@ -1131,8 +979,7 @@ void NC_STACK_ypabact::ypabact_func67(bact_arg67 *arg)
                 {
                     bact->sencdTpos = bact->secndT.pbact->field_621;
 
-                    nlist *lst;
-                    call_vtbl(bact->secndT.pbact->self, 3, 0x80001008, &lst, 0);
+                    nlist *lst = bact->secndT.pbact->self->getBACT_attackList();
 
                     if ( lst )
                         AddTail(lst, &bact->field_B64);
@@ -1219,8 +1066,7 @@ void NC_STACK_ypabact::ypabact_func67(bact_arg67 *arg)
 
                 bact->primTpos = bact->primT.pbact->field_621;
 
-                nlist *lst;
-                call_vtbl(bact->primT.pbact->self, 3, 0x80001008, &lst, 0);
+                nlist *lst = bact->primT.pbact->self->getBACT_attackList();
 
                 if ( lst )
                     AddTail(lst, &bact->field_B54);
@@ -1282,10 +1128,7 @@ void NC_STACK_ypabact::ypabact_func68(ypabact_arg65 *arg)
 {
     bact_arg67 v36;
 
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
-
-    //NC_STACK_ypabact *a4;
-    //call_vtbl(bact->wrld, 3, 0x80002010, &a4, 0);
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( bact->mass == 1.0 )
     {
@@ -1465,7 +1308,7 @@ void NC_STACK_ypabact::ypabact_func68(ypabact_arg65 *arg)
 
 void NC_STACK_ypabact::ypabact_func69(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( (bact->field_915 - bact->field_91D) >= 250 && bact->owner != 0 && bact->secndTtype != BACT_TGT_TYPE_DRCT && bact->field_3D5 != 4 && bact->field_3D5 != 2 && bact->field_3D5 != 5 )
     {
@@ -1499,8 +1342,7 @@ void NC_STACK_ypabact::ypabact_func69(ypabact_arg65 *arg)
             }
         }
 
-        NC_STACK_ypabact *wee;
-        call_vtbl(bact->wrld, 3, 0x80002010, &wee, 0);
+        NC_STACK_ypabact *wee = bact->wrld->getYW_userHostStation();
 
         if ( bact->field_3D5 == 1 || bact->field_3D5 == 3 )
         {
@@ -2060,8 +1902,7 @@ void NC_STACK_ypabact::ypabact_func70(ypabact_arg65 *arg)
         }
         else
         {
-            NC_STACK_ypabact *a4;
-            call_vtbl(bact->wrld, 3, 0x80002011, &a4, 0);
+            NC_STACK_ypabact *a4 = bact->wrld->getYW_userVehicle();
 
             if ( ((bact->secndTtype != BACT_TGT_TYPE_UNIT || (a4 != bact->secndT.pbact->self && bact->secndT.pbact->field_24 != 3)) &&
                     (bact->primTtype != BACT_TGT_TYPE_UNIT || (a4 != bact->primT.pbact->self && bact->primT.pbact->field_24 != 3)))
@@ -3011,9 +2852,7 @@ void NC_STACK_ypabact::ypabact_func75(bact_arg75 *arg)
         v51 = 1;
     }
 
-    NC_STACK_ypabact *a4;
-
-    call_vtbl(bact->wrld, 3, 0x80002010, &a4, 0);
+    NC_STACK_ypabact *a4 = bact->wrld->getYW_userHostStation();
 
     int v16 = 0;
 
@@ -3305,8 +3144,7 @@ void NC_STACK_ypabact::ypabact_func76(bact_arg75 *arg)
         arg110.priority = 0;
     }
 
-    NC_STACK_ypabact *a4;
-    call_vtbl(bact->wrld, 3, 0x80002010, &a4, 0);
+    NC_STACK_ypabact *a4 = bact->wrld->getYW_userHostStation();
 
     int v65 = bact->parent_bacto == bact->host_station && bact->host_station && bact->host_station == a4;
 
@@ -3639,11 +3477,8 @@ void NC_STACK_ypabact::ypabact_func77(void *)
 
     if ( !(bact->field_3D6 & 0x400) )
     {
-        int maxy;
-        int maxx;
-
-        call_vtbl(bact->wrld, 3, 0x80002000, &maxx, 0);
-        call_vtbl(bact->wrld, 3, 0x80002001, &maxy, 0);
+        int maxy = bact->wrld->getYW_mapMaxY();
+        int maxx = bact->wrld->getYW_mapMaxX();
 
 
 //    *(_DWORD *)v51 = 1009;
@@ -3773,8 +3608,7 @@ void NC_STACK_ypabact::ypabact_func77(void *)
             }
         }
 
-        NC_STACK_ypabact *v76;
-        call_vtbl(bact->wrld, 3, 0x80002010, &v76, 0);
+        NC_STACK_ypabact *v76 = bact->wrld->getYW_userHostStation();
 
         if ( !v74 && bact->host_station == bact->parent_bacto && !(bact->field_3D6 & 0x10000000) )
         {
@@ -3841,10 +3675,8 @@ void NC_STACK_ypabact::ypabact_func77(void *)
             if ( !v30 )
                 break;
 
-            bact_node *v68, *v69;
-
-            call_vtbl(v30->bacto, 3, 0x80001011, &v68, 0);
-            call_vtbl(v30->bacto, 3, 0x80001012, &v69, 0);
+            bact_node *v68 = v30->bacto->getBACT_primAttackNode();
+            bact_node *v69 = v30->bacto->getBACT_secnAttackNode();
 
             if ( v30 == v68 )
             {
@@ -3959,7 +3791,7 @@ void NC_STACK_ypabact::ypabact_func77(void *)
             if ( !(bact->field_B34 & 1) )
             {
                 if ( bact->parent_bact )
-                    call_vtbl(this, 2, 0x80001005, 0, 0);
+                    setBACT_inputting(0);
             }
         }
 
@@ -3991,13 +3823,12 @@ void NC_STACK_ypabact::ypabact_func77(void *)
                     arg184.type = 3;
                     arg184.t34.field_1 = 8 * bact->field_9B1->owner | bact->owner;
 
-                    int v70;
-                    call_vtbl(bact->field_9B1->self, 3, 0x80001004, &v70, 0);
+                    int v70 = bact->field_9B1->self->getBACT_viewer();
 
                     if ( v70 || bact->field_9B1->field_3D6 & 0x800000 )
                         arg184.t34.field_1 |= 0x80;
 
-                    call_vtbl(bact->self, 3, 0x80001004, &v70, 0);
+                    v70 = bact->self->getBACT_viewer();
 
                     if ( v70 || bact->field_3D6 & 0x800000 )
                         arg184.t34.field_1 |= 0x40;
@@ -4068,8 +3899,7 @@ size_t NC_STACK_ypabact::ypabact_func79(bact_arg79 *arg)
 
     NC_STACK_ypabact *wobj = NULL;
 
-    WeapProto *wprotos;
-    call_vtbl(bact->wrld, 3, 0x80002012, &wprotos, 0);
+    WeapProto *wprotos = bact->wrld->getYW_weaponProtos();
 
     if ( arg->weapon == -1 )
         return 0;
@@ -4143,7 +3973,7 @@ size_t NC_STACK_ypabact::ypabact_func79(bact_arg79 *arg)
             return 0;
 
         __NC_STACK_ypabact *wbact;
-        call_vtbl(wobj, 3, 0x80001003, &wbact, 0);
+        wbact = wobj->getBACT_pBact();
 
         call_vtbl(wobj, 2, 0x80002000, bact, 0);
 
@@ -4284,8 +4114,8 @@ size_t NC_STACK_ypabact::ypabact_func79(bact_arg79 *arg)
             {
                 if ( bact->field_B34 & 1 )
                 {
-                    call_vtbl(this, 2, 0x80001004, 0, 0);
-                    call_vtbl(wobj, 2, 0x80001004, 1, 0);
+                    setBACT_viewer(1);
+                    wobj->setBACT_viewer(1);
                 }
             }
         }
@@ -4303,8 +4133,8 @@ size_t NC_STACK_ypabact::ypabact_func79(bact_arg79 *arg)
     {
         if ( bact->field_B34 & 2 )
         {
-            call_vtbl(this, 2, 0x80001004, 0, 0);
-            call_vtbl(wobj, 2, 0x80001004, 1, 0);
+            setBACT_viewer(0);
+            wobj->setBACT_viewer(1);
         }
 
         bact_arg84 arg84;
@@ -4590,8 +4420,7 @@ void NC_STACK_ypabact::ypabact_func84(bact_arg84 *arg)
 
     int v6 = 0;
 
-    int a4;
-    call_vtbl(bact->wrld, 3, 0x8000201F, &a4, 0);
+    int a4 = bact->wrld->getYW_invulnerable();
 
     if ( !bact->wrld || !(bact->field_B34 & 1) || !a4 || arg->energy <= -1000000 )
     {
@@ -5248,8 +5077,7 @@ size_t NC_STACK_ypabact::ypabact_func87(int *arg)
 
     _NC_STACK_ypaworld *yw = &bact->wrld->stack__ypaworld;
 
-    int a4;
-    call_vtbl(bact->self, 3, 0x80001004, &a4, 0);
+    int a4 = bact->self->getBACT_viewer();
 
     float trad;
     if ( a4 )
@@ -5260,9 +5088,7 @@ size_t NC_STACK_ypabact::ypabact_func87(int *arg)
 
     int v49 = 0;
 
-    rbcolls *v46 = NULL;
-
-    call_vtbl(this, 3, 0x8000100E, &v46, 0);
+    rbcolls *v46 = getBACT_collNodes();
 
     if ( bact->field_611 == 0.0 )
         return 0;
@@ -5287,7 +5113,7 @@ size_t NC_STACK_ypabact::ypabact_func87(int *arg)
         if ( bnode->self != this && bnode->field_24 != 4 && (!bnode->self->ypabact_func100(NULL) || v53) )
         {
 
-            call_vtbl(bnode->self, 3, 0x8000100E, &v55, 0);
+            v55 = bnode->self->getBACT_collNodes();
 
             int v9;
 
@@ -5506,11 +5332,9 @@ int ypabact_func90__sub0__sub0(__NC_STACK_ypabact *unit)
 
 __NC_STACK_ypabact * ypabact_func90__sub0(cellArea *cell, __NC_STACK_ypabact *unit, float *radius, char *job)
 {
-    NC_STACK_ypaworld *wrld;
-    call_vtbl(unit->self, 3, 0x80001001, &wrld, 0);
+    NC_STACK_ypaworld *wrld = unit->self->getBACT_pWorld();
 
-    VhclProto *vhcl_protos;
-    call_vtbl(wrld, 3, 0x80002014, &vhcl_protos, 0);
+    VhclProto *vhcl_protos = wrld->getYW_vhclProtos();
 
     __NC_STACK_ypabact *v40 = NULL;
 
@@ -5559,8 +5383,7 @@ __NC_STACK_ypabact * ypabact_func90__sub0(cellArea *cell, __NC_STACK_ypabact *un
 
                     float radivs = sqrt(xx * xx + yy * yy + zz * zz);
 
-                    int v33;
-                    call_vtbl(cel_unit->self, 3, 0x80001004, &v33, 0);
+                    int v33 = cel_unit->self->getBACT_viewer();
 
                     if ( *radius >= radivs || v33 )
                     {
@@ -5599,8 +5422,7 @@ __NC_STACK_ypabact * ypabact_func90__sub0(cellArea *cell, __NC_STACK_ypabact *un
                             }
                             else
                             {
-                                __NC_STACK_ypabact *prnt_bct;
-                                call_vtbl(unit->parent_bacto, 3, 0x80001003, &prnt_bct, 0);
+                                __NC_STACK_ypabact *prnt_bct = unit->parent_bacto->getBACT_pBact();
 
                                 if ( prnt_bct->primTtype == BACT_TGT_TYPE_CELL )
                                 {
@@ -5635,14 +5457,12 @@ __NC_STACK_ypabact * ypabact_func90__sub0(cellArea *cell, __NC_STACK_ypabact *un
                             {
                                 int v29 = 0;
 
-                                nlist *lst;
-                                call_vtbl(cel_unit->self, 3, 0x80001008, &lst, 0);
+                                nlist *lst = cel_unit->self->getBACT_attackList();
 
                                 bact_node *bct_nd = (bact_node *)lst->head;
                                 while ( bct_nd->next )
                                 {
-                                    bact_node *int_bct_nd;
-                                    call_vtbl(bct_nd->bacto, 3, 0x80001012, &int_bct_nd, 0);
+                                    bact_node *int_bct_nd = bct_nd->bacto->getBACT_secnAttackNode();
 
                                     if ( bct_nd == int_bct_nd && int_bct_nd->bact->owner == unit->owner )
                                         v29++;
@@ -6098,10 +5918,9 @@ void NC_STACK_ypabact::ypabact_func96(void *)
     bact->secndTtype = BACT_TGT_TYPE_NONE;
     bact->primT_cmd_id = 0;
 
-    int maxX, maxY;
+    int maxX = bact->wrld->getYW_mapSizeX();
+    int maxY = bact->wrld->getYW_mapSizeY();
 
-    call_vtbl(bact->wrld, 3, 0x80002002, &maxX, 0);
-    call_vtbl(bact->wrld, 3, 0x80002003, &maxY, 0);
     bact->field_18 = maxX * 1200.0;
     bact->field_1c = -maxY * 1200.0;
     bact->field_20 = maxX;
@@ -6316,8 +6135,7 @@ void NC_STACK_ypabact::ypabact_func99(ypabact_arg65 *arg)
 
         ypabact_func80(&v24);
 
-        NC_STACK_ypabact *a4;
-        call_vtbl(bact->wrld, 3, 0x80002010, &a4, 0);
+        NC_STACK_ypabact *a4 = bact->wrld->getYW_userHostStation();
 
         if ( bact->host_station == a4 )
         {
@@ -6340,9 +6158,7 @@ void NC_STACK_ypabact::ypabact_func99(ypabact_arg65 *arg)
         {
             if ( bact->field_24 != 9 )
             {
-                __NC_STACK_ypabact *v27;
-
-                call_vtbl(bact->host_station, 3, 0x80001003, &v27, 0);
+                __NC_STACK_ypabact *v27 = bact->host_station->getBACT_pBact();
 
                 bact->field_605.sx = v24.pos.sx - v27->field_621.sx;
                 bact->field_605.sy = v24.pos.sy - v27->field_621.sy;
@@ -6398,8 +6214,7 @@ size_t NC_STACK_ypabact::ypabact_func101(bact_arg101 *arg)
     float v27 = tmp.sy / v33;
     float v29 = tmp.sz / v33;
 
-    WeapProto *a4;
-    call_vtbl(bact->wrld, 3, 0x80002012, &a4, 0);
+    WeapProto *a4 = bact->wrld->getYW_weaponProtos();
 
     WeapProto *v8 = NULL;
 
@@ -6748,8 +6563,7 @@ size_t NC_STACK_ypabact::ypabact_func105(bact_arg105 *arg)
                         if ( (bact->field_B34 & 2 || v21->owner != bact->owner) && (!v107 || v21->self != bact->host_station) )
                         {
 
-                            rbcolls *v93;
-                            call_vtbl(v21->self, 3, 0x8000100E, &v93, 0);
+                            rbcolls *v93 = v21->self->getBACT_collNodes();
 
                             int v109;
                             if ( v93 )
@@ -6816,8 +6630,7 @@ size_t NC_STACK_ypabact::ypabact_func105(bact_arg105 *arg)
                                             {
                                                 if ( !v22 )
                                                 {
-                                                    int v88;
-                                                    call_vtbl(v21->self, 3, 0x80001005, &v88, 0);
+                                                    int v88 = v21->self->getBACT_inputting();
 
                                                     int energ;
 
@@ -6870,13 +6683,11 @@ size_t NC_STACK_ypabact::ypabact_func105(bact_arg105 *arg)
         }
     }
 
-    int v88;
-    call_vtbl(this, 3, 0x80001005, &v88, 0);
+    int v88 = getBACT_inputting();
 
     if ( (v88 || bact->wrld->ypaworld_func145(bact)) && !a5 )
     {
-        WeapProto *v90;
-        call_vtbl(bact->wrld, 3, 0x80002012, &v90, 0);
+        WeapProto *v90 = bact->wrld->getYW_weaponProtos();
 
         int v45;
 
@@ -6965,7 +6776,7 @@ size_t NC_STACK_ypabact::ypabact_func105(bact_arg105 *arg)
                 if ( v57 )
                 {
                     __NC_STACK_ypabact *v103;
-                    call_vtbl(v57, 3, 0x80001003, &v103, 0);
+                    v103 = v57->getBACT_pBact();
 
                     v103->owner = bact->owner;
 
@@ -7087,10 +6898,9 @@ void sub_4843BC(__NC_STACK_ypabact *bact1, __NC_STACK_ypabact *bact2, int a3)
 
 size_t NC_STACK_ypabact::ypabact_func106(bact_arg106 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    WeapProto *weaps;
-    call_vtbl(bact->wrld, 3, 0x80002012, &weaps, 0);
+    WeapProto *weaps = bact->wrld->getYW_weaponProtos();
 
     __NC_STACK_ypabact *targeto = 0;
     float v56;
@@ -7251,12 +7061,11 @@ void NC_STACK_ypabact::ypabact_func107(int *arg)
         {
             if ( *arg == 1 )
             {
-                call_vtbl(kid->self_full, 2, 0x80001002, 1, 0);
+                kid->self_full->setBASE_parentFollow(1);
 
-                float v11, v10, v9;
-                call_vtbl(kid->self_full, 3, 0x80001009, &v11, 0);
-                call_vtbl(kid->self_full, 3, 0x8000100A, &v10, 0);
-                call_vtbl(kid->self_full, 3, 0x8000100B, &v9, 0);
+                float v11 = kid->self_full->getBASE_x();
+                float v10 = kid->self_full->getBASE_y();
+                float v9 = kid->self_full->getBASE_z();
 
                 flag_xyz arg68;
 
@@ -7269,12 +7078,11 @@ void NC_STACK_ypabact::ypabact_func107(int *arg)
             }
             else if ( *arg == 2 )
             {
-                call_vtbl(kid->self_full, 2, 0x80001002, 1, 0);
+                kid->self_full->setBASE_parentFollow(1);
 
-                float v11, v10, v9;
-                call_vtbl(kid->self_full, 3, 0x80001009, &v11, 0);
-                call_vtbl(kid->self_full, 3, 0x8000100A, &v10, 0);
-                call_vtbl(kid->self_full, 3, 0x8000100B, &v9, 0);
+                float v11 = kid->self_full->getBASE_x();
+                float v10 = kid->self_full->getBASE_y();
+                float v9 = kid->self_full->getBASE_z();
 
                 flag_xyz arg68;
 
@@ -7356,8 +7164,7 @@ __NC_STACK_ypabact *sb_0x493984__sub1(__NC_STACK_ypabact *bact)
     {
         if ( kid_unit->bact->field_3D5 != 2 )
         {
-            int a4;
-            call_vtbl(kid_unit->bacto, 3, 0x80001005, &a4, 0);
+            int a4 = kid_unit->bacto->getBACT_inputting();
 
             if ( !a4 )
             {
@@ -7416,8 +7223,7 @@ __NC_STACK_ypabact *sb_0x493984(__NC_STACK_ypabact *bact, int a2)
 {
     if ( bact->list2.head->next )
     {
-        NC_STACK_ypaworld *ywo;
-        call_vtbl(bact->self, 3, 0x80001001, &ywo, 0);
+        NC_STACK_ypaworld *ywo = bact->self->getBACT_pWorld();
 
         __NC_STACK_ypabact *new_leader = NULL;
 
@@ -7601,8 +7407,7 @@ void NC_STACK_ypabact::ypabact_func109(bact_arg109 *arg)
 
     case 6:
     {
-        int a4;
-        call_vtbl(this, 3, 0x80001005, &a4, 0);
+        int a4 = getBACT_inputting();
 
         if ( !a4 )
         {
@@ -7810,8 +7615,7 @@ size_t NC_STACK_ypabact::ypabact_func110(bact_arg110 *arg)
                 }
                 else
                 {
-                    __NC_STACK_ypabact *a4;
-                    call_vtbl(bact->parent_bacto, 3, 0x80001003, &a4, 0);
+                    __NC_STACK_ypabact *a4 = bact->parent_bacto->getBACT_pBact();
 
                     if ( a4->primTtype == BACT_TGT_TYPE_CELL )
                         v21 = &a4->primTpos;
@@ -7826,8 +7630,7 @@ size_t NC_STACK_ypabact::ypabact_func110(bact_arg110 *arg)
 
                 if ( sqrt(POW2(v26) + POW2(v27)) > 3600.0 )
                 {
-                    nlist *lst;
-                    call_vtbl(bact->secndT.pbact->self, 3, 0x80001008, &lst, 0);
+                    nlist *lst = bact->secndT.pbact->self->getBACT_attackList();
 
                     bact_node *v43 = (bact_node *)lst->head;
 
@@ -7835,9 +7638,7 @@ size_t NC_STACK_ypabact::ypabact_func110(bact_arg110 *arg)
 
                     while(v43->next)
                     {
-                        bact_node *v44;
-
-                        call_vtbl(v43->bacto, 3, 0x80001012, &v44, 0);
+                        bact_node *v44 = v43->bacto->getBACT_secnAttackNode();
 
                         if ( v43 == v44 && v44->bact->owner == bact->owner )
                             v28++;
@@ -8070,7 +7871,7 @@ void __fastcall ypabact_func113__sub0(__NC_STACK_ypabact *main, destFX *fx)
         bah->ypabact_func119(&v18);
 
         __NC_STACK_ypabact *a4;
-        call_vtbl(bah, 3, 0x80001003, &a4, 0);
+        a4 = bah->getBACT_pBact();
 
         a4->field_605.sx = main->field_651.m00 * fx->p2 + main->field_651.m01 * fx->p3 + main->field_651.m02 * fx->p4;
         a4->field_605.sy = main->field_651.m10 * fx->p2 + main->field_651.m11 * fx->p3 + main->field_651.m12 * fx->p4;
@@ -8098,12 +7899,11 @@ void __fastcall ypabact_func113__sub0(__NC_STACK_ypabact *main, destFX *fx)
 
 void NC_STACK_ypabact::ypabact_func113(uint8_t *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( bact->wrld->ypaworld_func145(bact) )
     {
-        int a4;
-        call_vtbl(bact->wrld, 3, 0x8000201B, &a4, 0);
+        int a4 = bact->wrld->getYW_destroyFX();
 
         if (a4 > 16)
             a4 = 16;
@@ -8305,8 +8105,7 @@ void NC_STACK_ypabact::ypabact_func118(NC_STACK_ypabact *b_bacto)
 
     _NC_STACK_ypaworld *yw = &bact->wrld->stack__ypaworld;
 
-    __NC_STACK_ypabact *b_bact;
-    call_vtbl(b_bacto, 3, 0x80001003, &b_bact, 0);
+    __NC_STACK_ypabact *b_bact = b_bacto->getBACT_pBact();
 
     if ( b_bact->owner )
     {
@@ -9234,6 +9033,278 @@ size_t NC_STACK_ypabact::ypabact_func125(bact_arg124 *arg)
 
     return 1;
 }
+
+
+
+void NC_STACK_ypabact::setBACT_viewer(int vwr)
+{
+    __NC_STACK_ypabact *bact = &stack__ypabact;
+    char v14[28];
+
+    if ( vwr )
+    {
+        if (bact->field_B3C->current_bact)
+        {
+            if ( bact->field_B3C->current_bact->field_24 != 4 )
+                bact->field_9A5 = 0;
+        }
+
+        bact->wrld->ypaworld_func131(bact); //Set current bact
+
+        bact->field_B34 |= 1;
+
+        if ( bact->field_B3C->field_757E )
+            v14[25] = 1;
+
+        if ( bact->field_24 == 1 && !(bact->field_3D6 & 0x200) && bact->field_3D5 == 1 )
+            bact->field_601 = bact->force;
+
+        sub_423F74(&bact->field_5A, 8);
+    }
+    else
+    {
+        bact->field_B34 &= 0xFFFFFFFE;
+
+        if ( bact->field_B3C->field_757E )
+            v14[25] = 0;
+
+        sub_424000(&bact->field_5A, 8);
+
+        if ( bact->field_24 != 4 && bact->field_24 != 3 && bact->field_3D5 != 2 )
+        {
+            if ( bact->host_station == bact->parent_bacto )
+            {
+                if ( !(bact->field_3D6 & 0x4000000) || !(bact->field_3D6 & 0x8000000) )
+                {
+                    bact_node *node = (bact_node *)bact->list2.head;
+
+                    while(node->next)
+                    {
+                        sub_493DB0(node->bact, bact, bact->wrld);
+
+                        node = (bact_node *)node->next;
+                    }
+                }
+            }
+            else
+            {
+                if ( !(bact->field_3D6 & 0x4000000) || !(bact->field_3D6 & 0x8000000) )
+                    sub_493DB0(bact, bact->parent_bact, bact->wrld);
+            }
+        }
+    }
+
+    if ( bact->field_B3C->field_757E ) // Network message send routine?
+    {
+        *(int *)(&v14[0]) = 1014;
+        v14[12] = bact->owner;
+        v14[24] = bact->field_24;
+        *(int *)(&v14[16]) = bact->ypabact__id;
+
+        if ( v14[24] == 4 )
+        {
+            int *a4;
+            call_vtbl(this, 3, 0x80002000, &a4, 0);
+            *(int *)&v14[20] = a4[10];
+            printf("UNKNOWN !!! %s\n", "ypabact_func0__sub0");
+        }
+
+        yw_arg181 v13;
+        v13.field_10 = 0;
+        v13.field_14 = 2;
+        v13.value = v14;
+        v13.field_18 = 1;
+        v13.val_size = 28;
+
+        bact->wrld->ypaworld_func181(&v13);
+    }
+}
+
+void NC_STACK_ypabact::setBACT_inputting(int inpt)
+{
+    __NC_STACK_ypabact *bact = &stack__ypabact;
+
+    if ( inpt )
+    {
+        bact->field_B34 |= 2;
+        bact->wrld->setYW_userVehicle(this);
+
+        if ( bact->field_24 != 9 )
+            ypabact_func114(NULL);
+    }
+    else
+    {
+        bact->field_B34 &= ~2;
+    }
+}
+
+void NC_STACK_ypabact::setBACT_exactCollisions(int col)
+{
+    if ( col )
+        stack__ypabact.field_B34 |= 4;
+    else
+        stack__ypabact.field_B34 &= ~4;
+}
+
+void NC_STACK_ypabact::setBACT_bactCollisions(int col)
+{
+    if ( col )
+        stack__ypabact.field_B34 |= 8;
+    else
+        stack__ypabact.field_B34 &= ~8;
+}
+
+void NC_STACK_ypabact::setBACT_airconst(int air)
+{
+    stack__ypabact.airconst = air;
+    stack__ypabact.airconst2 = air;
+}
+
+void NC_STACK_ypabact::setBACT_landingOnWait(int lnding)
+{
+    if ( lnding )
+        stack__ypabact.field_B34 |= 0x10;
+    else
+        stack__ypabact.field_B34 &= ~0x10;
+}
+
+void NC_STACK_ypabact::setBACT_yourLastSeconds(int ls)
+{
+    stack__ypabact.field_B74 = ls;
+}
+
+void NC_STACK_ypabact::setBACT_visProto(NC_STACK_base *vp)
+{
+    stack__ypabact.current_vp.base = vp;
+}
+
+void NC_STACK_ypabact::setBACT_aggression(int aggr)
+{
+    stack__ypabact.field_3D4 = aggr;
+
+    bact_node *nod = (bact_node *)stack__ypabact.list2.head;
+
+    while ( nod->next )
+    {
+        nod->bact->field_3D4 = aggr;
+
+        nod = (bact_node *)nod->next;
+    }
+}
+
+void NC_STACK_ypabact::setBACT_vpTransform(base_1c_struct *tr)
+{
+    stack__ypabact.current_vp.trigo = tr;
+}
+
+void NC_STACK_ypabact::setBACT_extraViewer(int vwr)
+{
+    if ( vwr )
+        stack__ypabact.field_B34 |= 0x20;
+    else
+        stack__ypabact.field_B34 &= ~0x20;
+}
+
+void NC_STACK_ypabact::setBACT_alwaysRender(int rndr)
+{
+    if ( rndr )
+        stack__ypabact.field_B34 |= 0x40;
+    else
+        stack__ypabact.field_B34 &= ~0x40;
+}
+
+
+
+NC_STACK_ypaworld *NC_STACK_ypabact::getBACT_pWorld()
+{
+    return stack__ypabact.wrld;
+}
+
+base_1c_struct *NC_STACK_ypabact::getBACT_pTransform()
+{
+    return &stack__ypabact.field_87D;
+}
+
+__NC_STACK_ypabact *NC_STACK_ypabact::getBACT_pBact()
+{
+    return &stack__ypabact;
+}
+
+int NC_STACK_ypabact::getBACT_viewer()
+{
+    return (stack__ypabact.field_B34 & 1) != 0;
+}
+
+int NC_STACK_ypabact::getBACT_inputting()
+{
+    return (stack__ypabact.field_B34 & 2) != 0;
+}
+
+int NC_STACK_ypabact::getBACT_exactCollisions()
+{
+    return (stack__ypabact.field_B34 & 4) != 0;
+}
+
+int NC_STACK_ypabact::getBACT_bactCollisions()
+{
+    return (stack__ypabact.field_B34 & 8) != 0;
+}
+
+nlist *NC_STACK_ypabact::getBACT_attackList()
+{
+    return &stack__ypabact.field_B48;
+}
+
+int NC_STACK_ypabact::getBACT_landingOnWait()
+{
+    return (stack__ypabact.field_B34 & 0x10) != 0;
+}
+
+int NC_STACK_ypabact::getBACT_yourLastSeconds()
+{
+    return stack__ypabact.field_B74;
+}
+
+NC_STACK_base *NC_STACK_ypabact::getBACT_visProto()
+{
+    return stack__ypabact.current_vp.base;
+}
+
+int NC_STACK_ypabact::getBACT_aggression()
+{
+    return stack__ypabact.field_3D4;
+}
+
+rbcolls *NC_STACK_ypabact::getBACT_collNodes()
+{
+    return NULL;
+}
+
+base_1c_struct *NC_STACK_ypabact::getBACT_vpTransform()
+{
+    return stack__ypabact.current_vp.trigo;
+}
+
+int NC_STACK_ypabact::getBACT_extraViewer()
+{
+    return (stack__ypabact.field_B34 & 0x20) != 0;
+}
+
+bact_node *NC_STACK_ypabact::getBACT_primAttackNode()
+{
+    return &stack__ypabact.field_B54;
+}
+
+bact_node *NC_STACK_ypabact::getBACT_secnAttackNode()
+{
+    return &stack__ypabact.field_B64;
+}
+
+int NC_STACK_ypabact::getBACT_alwaysRender()
+{
+    return (stack__ypabact.field_B34 & 0x40) != 0;
+}
+
 
 
 size_t NC_STACK_ypabact::compatcall(int method_id, void *data)

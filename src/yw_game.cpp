@@ -999,8 +999,7 @@ int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_cou
 
                 ywo->ypaworld_func134(bact);
 
-                __NC_STACK_ypabact *bact_int;
-                call_vtbl(bact, 3, 0x80001003, &bact_int, 0); // ypabact_func3
+                __NC_STACK_ypabact *bact_int = bact->getBACT_pBact(); // ypabact_func3
 
                 int v12;
 
@@ -1034,7 +1033,7 @@ int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_cou
 
                 bact_int->reload_const_or_energy2 = v20;
 
-                call_vtbl(bact, 2, 0x80001007, 1, 0);
+                bact->setBACT_bactCollisions(1);
                 call_vtbl(bact, 2, 0x8000200B, 15, 0);
                 call_vtbl(bact, 2, 0x80002008, v12, 0);
                 call_vtbl(bact, 2, 0x8000200A, v12, 0);
@@ -1061,8 +1060,8 @@ int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_cou
 
                 if ( !i )
                 {
-                    call_vtbl(bact, 2, 0x80001004, 1, 0);
-                    call_vtbl(bact, 2, 0x80001005, 1, 0);
+                    bact->setBACT_viewer(1);
+                    bact->setBACT_inputting(1);
                 }
             }
         }
@@ -2161,7 +2160,7 @@ NC_STACK_ypabact *yw_createUnit(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, 
         if ( !bacto )
             return NULL;
 
-        call_vtbl(bacto, 3, 0x80001003, &bact, 0);
+        bact = bacto->getBACT_pBact();
     }
 
     bacto->ypabact_func96(NULL); // Reset bact
@@ -2320,13 +2319,13 @@ void sub_4D806C(_NC_STACK_ypaworld *yw, stru_a3 *sct, base77Func *bs77)
                 {
                     NC_STACK_base *bld = yw->legos[ yw->secTypes[ pcell->type_id ].buildings[xx][zz]->health_models[0] ].base;
 
-                    call_vtbl(bld, 2, 0x80001024, 0, 0);
+                    bld->setBASE_static(0);
 
                     bld->base_func72(&scel);
                     bld->base_func68(&grp_1);
                     bld->base_func77(bs77);
 
-                    call_vtbl(bld, 2, 0x80001024, 1, 0);
+                    bld->setBASE_static(1);
                 }
                 else
                 {
@@ -2565,7 +2564,7 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub1(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
 
 
 
-stru_a3 rendering_sectors[10][10];
+stru_a3 rendering_sectors[YW_RENDER_SECTORS_DEF * 2][ YW_RENDER_SECTORS_DEF * 2];
 
 void sb_0x4d7c08__sub3(_NC_STACK_ypaworld *yw, base77Func *arg)
 {
@@ -2870,7 +2869,7 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                     if ( gunn )
                     {
                         __NC_STACK_ypabact *gbct;
-                        call_vtbl(gunn, 3, 0x80001003, &gbct, 0);
+                        gbct = gunn->getBACT_pBact();
 
                         gbct->owner = ownerid2;
 
@@ -3674,7 +3673,7 @@ void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a
     if ( a3 )
     {
         if ( bct1->bact->owner == 1 )
-            call_vtbl(yw->self_full, 2, 0x80002010, bct1->bacto, 0);
+            yw->self_full->setYW_userHostStation(bct1->bacto);
     }
     else
     {
@@ -4440,8 +4439,7 @@ void ypaworld_func151__sub6(_NC_STACK_ypaworld *yw)
 
 void sub_4F1A60(__NC_STACK_ypabact *bact)
 {
-    nlist *a4;
-    call_vtbl(bact->self, 3, 0x80001008, &a4, 0);
+    nlist *a4 = bact->self->getBACT_attackList();
 
     while ( 1 )
     {
@@ -4450,10 +4448,8 @@ void sub_4F1A60(__NC_STACK_ypabact *bact)
         if ( !bct )
             break;
 
-        bact_node *v5;
-        bact_node *v6;
-        call_vtbl(bct->bacto, 3, 0x80001011, &v5, 0);
-        call_vtbl(bct->bacto, 3, 0x80001012, &v6, 0);
+        bact_node *v5 = bct->bacto->getBACT_primAttackNode();
+        bact_node *v6 = bct->bacto->getBACT_secnAttackNode();
 
         if ( bct == v5 )
         {
@@ -4485,8 +4481,7 @@ void sub_4F1B34(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
 
         if ( v4->bact->primTtype == BACT_TGT_TYPE_UNIT )
         {
-            bact_node *nd;
-            call_vtbl(v4->bacto, 3, 0x80001011, &nd, 0);
+            bact_node *nd = v4->bacto->getBACT_primAttackNode();
 
             Remove(nd);
 
@@ -5218,8 +5213,7 @@ void recorder_world_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd)
         oinf->rot_y = dround(euler.sy * 127.0 / pi2);
         oinf->rot_z = dround(euler.sz * 127.0 / pi2);
 
-        NC_STACK_base *a4;
-        call_vtbl(bact->self, 3, 0x8000100C, &a4, 0);
+        NC_STACK_base *a4 = bact->self->getBACT_visProto();
 
         if ( a4 == bact->vp_normal.base )
         {
@@ -5701,8 +5695,8 @@ int recorder_create_camera(_NC_STACK_ypaworld *yw)
 
     yw->self_full->ypaworld_func134(bacto);
 
-    call_vtbl(bacto, 2, 0x80001004, 1, 0);
-    call_vtbl(bacto, 2, 0x80001005, 1, 0);
+    bacto->setBACT_viewer(1);
+    bacto->setBACT_inputting(1);
 
     yw->field_1b78 = bacto;
     yw->field_1b80 = bact;
@@ -6027,7 +6021,10 @@ void sub_46F5C8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, trec_bct *oinf
     }
 
     if ( v44 && v43 )
-        call_vtbl(bact->self, 2, 0x8000100C, v44, 0x8000100F, v43, 0);
+    {
+        bact->self->setBACT_visProto(v44);
+        bact->self->setBACT_vpTransform(v43);
+    }
 
     bact->field_5A.samples_data[0].pitch = ssnd[1];
 

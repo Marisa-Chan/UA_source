@@ -80,8 +80,6 @@ size_t NC_STACK_ypaufo::func0(stack_vals *stak)
     __NC_STACK_ypaufo *ufo = &this->stack__ypaufo;
     __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
-//    call_vtbl(this, 3, 0x80001003, &bact, 0);
-
     ufo->bact_internal = bact;
 
     bact->field_24 = 7;
@@ -210,11 +208,7 @@ void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
 
     float v110 = arg->field_4 / 1000.0;
 
-//  call_vtbl(this, 3, 0x80001006, &a4, 0);
-//  call_vtbl(this, 3, 0x80001004, &v101, 0);
-
-    int v94;
-    call_vtbl(this, 3, 0x80001007, &v94, 0);
+    int v94 = getBACT_bactCollisions();
 
     int v5 = ufo->ywo->ypaworld_func145(bact);
 
@@ -481,8 +475,7 @@ void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
                     }
                     else
                     {
-                        NC_STACK_ypabact *v102;
-                        call_vtbl(ufo->ywo, 3, 0x80002011, &v102, 0);
+                        NC_STACK_ypabact *v102 = ufo->ywo->getYW_userVehicle();;
 
                         if ( ( (bact->secndTtype != BACT_TGT_TYPE_UNIT || v102 != bact->secndT.pbact->self) && ( bact->primTtype != BACT_TGT_TYPE_UNIT || v102 != bact->primT.pbact->self) ) || bact->field_645.sy >= 0.0 )
                         {
@@ -617,8 +610,7 @@ void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
             }
         }
 
-        int v93;
-        call_vtbl(this, 3, 0x8000100A, &v93, 0);
+        int v93 = getBACT_landingOnWait();
 
         if ( v93 == 0 )
         {
@@ -705,8 +697,7 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
 
     float v88 = arg->field_4 / 1000.0;
 
-    int a4;
-    call_vtbl(this, 3, 0x80001007, &a4, 0);
+    int a4 = getBACT_bactCollisions();
 
     bact->field_62D = bact->field_621;
 
@@ -1281,7 +1272,7 @@ void NC_STACK_ypaufo::ypabact_func96(void *)
 
     ufo->field_14 = 0;
 
-    call_vtbl(this, 2, 0x8000100A, 0, 0);
+    setBACT_landingOnWait(0);
 }
 
 

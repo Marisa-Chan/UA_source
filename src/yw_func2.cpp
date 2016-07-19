@@ -32,8 +32,8 @@ void sb_0x4eb94c__sub0(_NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, xyz 
     brf_obj *brobj = &yw->brief.brf_objs;
 
     NC_STACK_base *model_base = yw->vhcls_models[ yw->VhclProtos[ brobj->object_id ].vp_normal ].base;
-    call_vtbl(model_base, 2, 0x80001004, 16000, 0);
-    call_vtbl(model_base, 2, 0x80001023, 100, 0);
+    model_base->setBASE_visLimit(16000);
+    model_base->setBASE_fadeLength(100);
 
     flag_xyz tmp;
     tmp.flag = 7;
@@ -97,8 +97,7 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz
 
     v7->base_func70(&v17);
 
-    base_1c_struct *p3d;
-    call_vtbl(v7, 3, 0x80001019, &p3d, 0);
+    base_1c_struct *p3d = v7->getBASE_pTransform();
 
     int first;
     int demens;
@@ -130,9 +129,9 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz
             v16.z = p3d->scale_rotation.m20 * v13 + pos->sz + 0.0 * p3d->scale_rotation.m21 + p3d->scale_rotation.m22 * v14;
 
             NC_STACK_base *lego = yw->legos[ scType->buildings[j][i]->health_models[0] ].base;
-            call_vtbl(lego, 2, 0x80001024, 0, 0);
-            call_vtbl(lego, 2, 0x80001004, 16000, 0);
-            call_vtbl(lego, 2, 0x80001023, 100, 0);
+            lego->setBASE_static(0);
+            lego->setBASE_visLimit(16000);
+            lego->setBASE_fadeLength(100);
 
             lego->base_func70(&v17);
             lego->base_func68(&v16);
@@ -868,9 +867,9 @@ int yw_loadSky(_NC_STACK_ypaworld *yw, const char *skyname)
         return 0;
     }
 
-    call_vtbl(sky, 2, 0x80001024, 1, 0);
-    call_vtbl(sky, 2, 0x80001004, yw->field_15ec, 0);
-    call_vtbl(sky, 2, 0x80001023, yw->field_15f0, 0);
+    sky->setBASE_static(1); // Don't rotate sky
+    sky->setBASE_visLimit(yw->field_15ec);
+    sky->setBASE_fadeLength(yw->field_15f0);
     return 1;
 }
 
@@ -1575,12 +1574,12 @@ void sb_0x46aa8c(UserData *usr)
         if ( usr->field_0x13a8 & 2 )
         {
             usr->GFX_flags |= 2;
-            call_vtbl(yw->self_full, 2, 0x8000200C, 1, 0);
+            yw->self_full->setYW_skyRender(1);
         }
         else
         {
-            usr->GFX_flags &= 0xFD;
-            call_vtbl(yw->self_full, 2, 0x8000200C, 0, 0);
+            usr->GFX_flags &= ~2;
+            yw->self_full->setYW_skyRender(0);
         }
 
     }

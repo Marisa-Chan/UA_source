@@ -100,7 +100,7 @@ size_t NC_STACK_ypamissile::func0(stack_vals *stak)
 
     __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
 
-    //call_vtbl(this, 3, 0x80001003, &bact, 0);
+    //bact = this->getBACT_pBact();
     __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
     miss->selfie = bact;
@@ -342,13 +342,11 @@ void NC_STACK_ypamissile::ypabact_func68(ypabact_arg65 *arg)
 
     if ( miss->selfie->field_3D5 == 2 )
     {
-        int a4;
-
-        call_vtbl(this, 3, 0x8000100B, &a4, 0);
+        int a4 = getBACT_yourLastSeconds();
 
         a4 -= arg->field_4;
 
-        call_vtbl(this, 2, 0x8000100B, a4, 0);
+        setBACT_yourLastSeconds(a4);
     }
 
     if ( bact->primTtype )
@@ -389,11 +387,10 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
     int v81 = 0;
     float v91 = 0.0;
 
-    int a5;
-    call_vtbl(miss->ejaculator_bact->self, 3, 0x80001005, &a5, 0);
+    int a5 = miss->ejaculator_bact->self->getBACT_inputting();
 
     if ( !a5 )
-        call_vtbl(bact->self, 3, 0x80001004, &a5, 0);
+        a5 = bact->self->getBACT_viewer();
 
     yw_130arg arg130;
     arg130.pos_x = bact->field_62D.sx;
@@ -458,8 +455,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
 
                                     if ( miss->field_c != 1 || bct->field_621.sy >= miss->posy )
                                     {
-                                        rbcolls *v82;
-                                        call_vtbl(bct->self, 3, 0x8000100E, &v82, 0);
+                                        rbcolls *v82 = bct->self->getBACT_collNodes();
 
                                         int v7;
                                         if ( v82 )
@@ -550,12 +546,10 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                                                     {
                                                         if ( sqrt( POW2(v95) + POW2(v96) ) > fabs(v93 - v29) )
                                                         {
-                                                            NC_STACK_ypabact *a1;
-
-                                                            call_vtbl(miss->ywo, 3, 0x80002010, &a1, 0);
+                                                            NC_STACK_ypabact *a1 = miss->ywo->getYW_userHostStation();
 
                                                             __NC_STACK_ypabact *v85;
-                                                            call_vtbl(a1, 3, 0x80001003, &v85, 0);
+                                                            v85 = a1->getBACT_pBact();
 
                                                             v90 = 1;
 
@@ -568,9 +562,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                                                             v78.sy += bct->field_621.sy;
                                                             v78.sz += bct->field_621.sz;
 
-                                                            int v83;
-
-                                                            call_vtbl(bct->self, 3, 0x80001005, &v83, 0);
+                                                            int v83 = bct->self->getBACT_inputting();
 
                                                             int v92 = 0;
 
@@ -865,8 +857,7 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
                         }
                     }
 
-                    int a4;
-                    call_vtbl(miss->ejaculator_bact->self, 3, 0x80001005, &a4, 0);
+                    int a4 = miss->ejaculator_bact->self->getBACT_inputting();
 
                     if ( a4 )
                     {
@@ -1021,7 +1012,7 @@ void NC_STACK_ypamissile::ypabact_func96(void *)
     miss->field_2D  = 0;
     miss->delay_time = 0;
 
-    call_vtbl(this, 2, 0x8000100B, 3000, 0);
+    setBACT_yourLastSeconds(3000);
 }
 
 size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
@@ -1044,8 +1035,8 @@ size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
 
     if ( arg->field_0 == 2 )
     {
-        call_vtbl(this, 2, 0x8000100C, bact->vp_dead.base, 0);
-        call_vtbl(this, 2, 0x8000100F, bact->vp_dead.trigo, 0);
+        setBACT_visProto(bact->vp_dead.base);
+        setBACT_vpTransform(bact->vp_dead.trigo);
 
         sub_423F74(&bact->field_5A, 2);
 
@@ -1057,16 +1048,16 @@ size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
 
     if ( arg->field_0 == 1 )
     {
-        call_vtbl(this, 2, 0x8000100C, bact->vp_normal.base, 0);
-        call_vtbl(this, 2, 0x8000100F, bact->vp_normal.trigo, 0);
+        setBACT_visProto(bact->vp_normal.base);
+        setBACT_vpTransform(bact->vp_normal.trigo);
 
         sub_423F74(&bact->field_5A, 0);
     }
 
     if ( arg->field_8 == 2048 )
     {
-        call_vtbl(this, 2, 0x8000100C, bact->vp_normal.base, 0);
-        call_vtbl(this, 2, 0x8000100F, bact->vp_normal.trigo, 0);
+        setBACT_visProto(bact->vp_normal.base);
+        setBACT_vpTransform(bact->vp_normal.trigo);
 
         sub_423F74(&bact->field_5A, 0);
     }
@@ -1075,8 +1066,8 @@ size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
     {
         bact->field_3D5 = 2;
 
-        call_vtbl(this, 2, 0x8000100C, bact->vp_megadeth.base, 0);
-        call_vtbl(this, 2, 0x8000100F, bact->vp_megadeth.trigo, 0);
+        setBACT_visProto(bact->vp_megadeth.base);
+        setBACT_vpTransform(bact->vp_megadeth.trigo);
 
         sub_423F74(&bact->field_5A, 2);
 
@@ -1093,23 +1084,22 @@ void NC_STACK_ypamissile::ypamissile_func128(void *)
 {
     __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
 
-    int a4;
-    call_vtbl(this, 3, 0x80001004, &a4, 0);
+    int a4 = getBACT_viewer();
 
     if ( a4 )
     {
-        call_vtbl(this, 2, 0x80001004, 0, 0);
-        call_vtbl(this, 2, 0x80001005, 0, 0);
+        setBACT_viewer(0);
+        setBACT_inputting(0);
 
         if ( miss->ejaculator_bact->field_3D5 != 2 || (size_t)miss->ejaculator_bact->parent_bacto <= 3 )
         {
-            call_vtbl(miss->ejaculator_bact->self, 2, 0x80001004, 1, 0);
-            call_vtbl(miss->ejaculator_bact->self, 2, 0x80001005, 1, 0);
+            miss->ejaculator_bact->self->setBACT_viewer(1);
+            miss->ejaculator_bact->self->setBACT_inputting(1);
         }
         else
         {
-            call_vtbl(miss->ejaculator_bact->parent_bacto, 2, 0x80001004, 1, 0);
-            call_vtbl(miss->ejaculator_bact->parent_bacto, 2, 0x80001005, 1, 0);
+            miss->ejaculator_bact->parent_bacto->setBACT_viewer(1);
+            miss->ejaculator_bact->parent_bacto->setBACT_inputting(1);
         }
 
     }
@@ -1338,6 +1328,18 @@ void NC_STACK_ypamissile::ypamissile_func131(miss_arg130 *arg)
             bact->field_651 = v21;
         }
     }
+}
+
+
+
+void NC_STACK_ypamissile::setBACT_viewer(int vwr)
+{
+    if ( vwr )
+        stack__ypamissile.field_2D |= 1;
+    else
+        stack__ypamissile.field_2D &= ~1;
+
+    NC_STACK_ypabact::setBACT_viewer(vwr);
 }
 
 

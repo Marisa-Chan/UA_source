@@ -142,9 +142,7 @@ int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
             return 0;
         }
 
-        nlist *kid_list;
-
-        call_vtbl(yw->additionalSet, 3, 0x8000101A, &kid_list, 0);// Get KIDS
+        nlist *kid_list = yw->additionalSet->getBASE_kidList();
 
         int kid_id = 0;
 

@@ -23,6 +23,10 @@
 
 #include "glob_funcs.h"
 
+
+#define YW_RENDER_SECTORS_DEF   5
+
+
 class NC_STACK_ypaworld;
 struct _NC_STACK_ypaworld;
 class NC_STACK_button;
@@ -1349,22 +1353,6 @@ struct roboGun
     char robo_gun_type;
 };
 
-struct roboColl
-{
-    float robo_coll_radius;
-    float robo_coll_x;
-    float robo_coll_y;
-    float robo_coll_z;
-    xyz field_10;
-};
-
-struct rbcolls
-{
-    int field_0;
-    char robo_coll_num;
-    roboColl roboColls[16];
-};
-
 struct roboProto
 {
     xyz viewer;
@@ -1681,6 +1669,82 @@ public:
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_ypaworld();
     };
+
+    enum YW_ATT
+    {
+        YW_ATT_MAPMAX_X = 0x80002000,
+        YW_ATT_MAPMAX_Y = 0x80002001,
+        YW_ATT_MAPSIZE_X = 0x80002002,
+        YW_ATT_MAPSIZE_Y = 0x80002003,
+//        YW_ATT_SECTORSIZE_X = 0x80002004,
+//        YW_ATT_SECTORSIZE_Y = 0x80002005,
+        YW_ATT_NORMVISLIMIT = 0x80002007,
+        YW_ATT_FADELENGTH = 0x80002008,
+        YW_ATT_SKYVISLIMIT = 0x80002009,
+        YW_ATT_SKYFADELENGTH = 0x8000200A,
+        YW_ATT_SKYHEIGHT = 0x8000200B,
+        YW_ATT_SKYRENDER = 0x8000200C,
+        YW_ATT_DOENERGYRECALC = 0x8000200D,
+        YW_ATT_VISSECTORS = 0x8000200E,
+        YW_ATT_USERHOST = 0x80002010,
+        YW_ATT_USERVEHICLE = 0x80002011,
+        YW_ATT_WPNPROTOS = 0x80002012,
+        YW_ATT_BUILDPROTOS = 0x80002013,
+        YW_ATT_VHCLPROTOS = 0x80002014,
+        YW_ATT_LVLFINISHED = 0x80002015,
+        YW_ATT_SCREEN_W = 0x80002016,
+        YW_ATT_SCREEN_H = 0x80002017,
+        YW_ATT_LOCALE_STRINGS = 0x80002018,
+        YW_ATT_LVL_INFO = 0x8000201A,
+        YW_ATT_DESTROY_FX = 0x8000201B,
+        YW_ATT_PNET = 0x8000201C,
+        YW_ATT_BUILD_DATE = 0x8000201D,
+        YW_ATT_DONT_RENDER = 0x8000201E,
+        YW_ATT_INVULNERABLE = 0x8000201F
+    };
+
+    virtual void setYW_normVisLimit(int);
+    virtual void setYW_fadeLength(int);
+    virtual void setYW_skyVisLimit(int);
+    virtual void setYW_skyFadeLength(int);
+    virtual void setYW_skyHeight(int);
+    virtual void setYW_skyRender(int);
+    virtual void setYW_doEnergyRecalc(int);
+    virtual void setYW_visSectors(int);
+    virtual void setYW_userHostStation(NC_STACK_ypabact *);
+    virtual void setYW_userVehicle(NC_STACK_ypabact *);
+    virtual void setYW_screenW(int);
+    virtual void setYW_screenH(int);
+    virtual void setYW_dontRender(int);
+
+    virtual int getYW_mapMaxX();
+    virtual int getYW_mapMaxY();
+    virtual int getYW_mapSizeX();
+    virtual int getYW_mapSizeY();
+    virtual int getYW_normVisLimit();
+    virtual int getYW_fadeLength();
+    virtual int getYW_skyHeight();
+    virtual int getYW_skyRender();
+    virtual int getYW_doEnergyRecalc();
+    virtual int getYW_visSectors();
+    virtual NC_STACK_ypabact *getYW_userHostStation();
+    virtual NC_STACK_ypabact *getYW_userVehicle();
+    virtual WeapProto *getYW_weaponProtos();
+    virtual BuildProto *getYW_buildProtos();
+    virtual VhclProto *getYW_vhclProtos();
+    virtual int getYW_lvlFinished();
+    virtual int getYW_screenW();
+    virtual int getYW_screenH();
+    virtual char **getYW_localeStrings();
+    virtual stru_2d90 *getYW_levelInfo();
+    virtual int getYW_destroyFX();
+    virtual NC_STACK_windp *getYW_pNET();
+    virtual int getYW_invulnerable();
+
+
+    int yw_initAttrs(stack_vals *stak);
+    void ypaworld_func2__sub0(stack_vals *stak);
+    void ypaworld_func3__sub0(stack_vals *stak);
 
     //Data
     static const NewClassDescr description;

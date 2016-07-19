@@ -63,8 +63,7 @@ int sb_0x411324__sub0()
 {
     ypaworld->base_func64(&world_update_arg);
 
-    stru_2d90 *var_2d90;
-    call_vtbl(ypaworld, 3, 0x8000201A, &var_2d90, 0);
+    stru_2d90 *var_2d90 = ypaworld->getYW_levelInfo();
 
     char buf[200];
 
@@ -358,8 +357,7 @@ int sb_0x411324__sub1()
     {
         dword_520400 = 0;
 
-        stru_2d90 *a4;
-        call_vtbl(ypaworld, 3, 0x8000201A, &a4, 0);
+        stru_2d90 *a4 = ypaworld->getYW_levelInfo();
 
         sub_410628();
         ypaworld->ypaworld_func157(&userdata);

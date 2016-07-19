@@ -219,23 +219,25 @@ int init_prototypes(_NC_STACK_ypaworld *yw)
     return 0;
 }
 
-int yw_initAttrs(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stack_vals *stak)
+int NC_STACK_ypaworld::yw_initAttrs(stack_vals *stak)
 {
+    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+
     yw->fxnumber = 16;
-    yw->field_1368 = find_id_in_stack_def_val(0x8000200E, 5, stak);
-    yw->field_15e4 = find_id_in_stack_def_val(0x80002007, 1400, stak);
-    yw->field_15e8 = find_id_in_stack_def_val(0x80002008, 600, stak);
-    yw->field_15ec = find_id_in_stack_def_val(0x80002009, 4200, stak);
-    yw->field_15f0 = find_id_in_stack_def_val(0x8000200A, 1100, stak);
-    yw->sectors_maxX = find_id_in_stack_def_val(0x80002000, 64, stak);
-    yw->sectors_maxY = find_id_in_stack_def_val(0x80002001, 64, stak);
+    yw->field_1368 = find_id_in_stack_def_val(YW_ATT_VISSECTORS, YW_RENDER_SECTORS_DEF, stak);
+    yw->field_15e4 = find_id_in_stack_def_val(YW_ATT_NORMVISLIMIT, 1400, stak);
+    yw->field_15e8 = find_id_in_stack_def_val(YW_ATT_FADELENGTH, 600, stak);
+    yw->field_15ec = find_id_in_stack_def_val(YW_ATT_SKYVISLIMIT, 4200, stak);
+    yw->field_15f0 = find_id_in_stack_def_val(YW_ATT_SKYFADELENGTH, 1100, stak);
+    yw->sectors_maxX = find_id_in_stack_def_val(YW_ATT_MAPMAX_X, 64, stak);
+    yw->sectors_maxY = find_id_in_stack_def_val(YW_ATT_MAPMAX_Y, 64, stak);
     yw->sectors_maxX2 = yw->sectors_maxX;
     yw->sectors_maxY2 = yw->sectors_maxY;
-    yw->field_15f4 = find_id_in_stack_def_val(0x8000200B, -550, stak);
-    yw->field_15f8 = find_id_in_stack_def_val(0x8000200C, 1, stak);
-    yw->field_15fc = find_id_in_stack_def_val(0x8000200D, 1, stak);
+    yw->field_15f4 = find_id_in_stack_def_val(YW_ATT_SKYHEIGHT, -550, stak);
+    yw->field_15f8 = find_id_in_stack_def_val(YW_ATT_SKYRENDER, 1, stak);
+    yw->field_15fc = find_id_in_stack_def_val(YW_ATT_DOENERGYRECALC, 1, stak);
 
-    char *v4 = (char *)find_id_in_stack_def_val(0x8000201D, 0, stak);
+    char *v4 = (char *)find_id_in_stack_def_val(YW_ATT_BUILD_DATE, 0, stak);
     yw->buildDate = v4;
     if ( v4 )
     {
@@ -368,7 +370,7 @@ size_t NC_STACK_ypaworld::func0(stack_vals *stak)
     init_list(&yw->field_17a0);
     init_list(&yw->dead_cache);
 
-    if ( !yw_initAttrs(this, yw, stak) )
+    if ( !yw_initAttrs(stak) )
     {
         ypa_log_out("yw_main.c/OM_NEW: yw_initAttrs() failed!\n");
         func1(NULL);
@@ -445,7 +447,7 @@ size_t NC_STACK_ypaworld::func1(stack_vals *arg)
     return 1;
 }
 
-void ypaworld_func2__sub0(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stack_vals *stak)
+void NC_STACK_ypaworld::ypaworld_func2__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -469,87 +471,56 @@ void ypaworld_func2__sub0(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stack_
             default:
                 break;
 
-            case 0x80002007:
-                yw->field_15e4 = stk->value;
+            case YW_ATT_NORMVISLIMIT:
+                setYW_normVisLimit(stk->value);
                 break;
 
-            case 0x80002008:
-                yw->field_15e8 = stk->value;
+            case YW_ATT_FADELENGTH:
+                setYW_fadeLength(stk->value);
                 break;
 
-            case 0x80002009:
-                yw->field_15ec = stk->value;
+            case YW_ATT_SKYVISLIMIT:
+                setYW_skyVisLimit(stk->value);
                 break;
 
-            case 0x8000200A:
-                yw->field_15f0 = stk->value;
+            case YW_ATT_SKYFADELENGTH:
+                setYW_skyFadeLength(stk->value);
                 break;
 
-            case 0x8000200B:
-                yw->field_15f4 = stk->value;
+            case YW_ATT_SKYHEIGHT:
+                setYW_skyHeight(stk->value);
                 break;
 
-            case 0x8000200C:
-                yw->field_15f8 = stk->value;
+            case YW_ATT_SKYRENDER:
+                setYW_skyRender(stk->value);
                 break;
 
-            case 0x8000200D:
-                yw->field_15fc = stk->value;
+            case YW_ATT_DOENERGYRECALC:
+                setYW_doEnergyRecalc(stk->value);
                 break;
 
-            case 0x8000200E:
-                yw->field_1368 = stk->value;
+            case YW_ATT_VISSECTORS:
+                setYW_visSectors(stk->value);
                 break;
 
-            case 0x80002010:
-                yw->field_1b78 = (NC_STACK_ypabact *)stk->value;
-
-                call_vtbl(yw->field_1b78, 3, 0x80001003, &yw->field_1b80, 0);
-
-                yw->field_1b88 = &yw->field_1b80->list2;
+            case YW_ATT_USERHOST:
+                setYW_userHostStation((NC_STACK_ypabact *)stk->value);
                 break;
 
-            case 0x80002011:
-            {
-                NC_STACK_ypabact *tmp = (NC_STACK_ypabact *)stk->value;
-
-                if ( tmp != yw->field_1b7c )
-                {
-                    __NC_STACK_ypabact *v8 = yw->field_1b84;
-
-                    if ( v8 )
-                        yw->field_241c = v8->ypabact__id;
-
-                    yw->field_1b7c = tmp;
-                    call_vtbl(tmp, 3, 0x80001003, &yw->field_1b84, 0);
-
-                    yw->field_1a0c = yw->field_1614;
-                    yw->field_1a10 = yw->field_1b84->field_2E;
-                    yw->field_17bc = 0;
-
-                    if ( yw->field_1b84->field_24 == 3 )
-                    {
-                        yw->field_7886 = 1;
-                        yw->field_7882 = 1;
-                    }
-                    ypaworld_func2__sub0__sub0(yw);
-
-                    if ( v8 )
-                        ypaworld_func2__sub0__sub1(yw, v8, yw->field_1b84);
-                }
-            }
-            break;
-
-            case 0x80002016:
-                yw->screen_width = stk->value;
+            case YW_ATT_USERVEHICLE:
+                setYW_userVehicle((NC_STACK_ypabact *)stk->value);
                 break;
 
-            case 0x80002017:
-                yw->screen_height = stk->value;
+            case YW_ATT_SCREEN_W:
+                setYW_screenW(stk->value);
                 break;
 
-            case 0x8000201E:
-                yw->field_138c = stk->value;
+            case YW_ATT_SCREEN_H:
+                setYW_screenH(stk->value);
+                break;
+
+            case YW_ATT_DONT_RENDER:
+                setYW_dontRender(stk->value);
                 break;
             }
 
@@ -560,15 +531,13 @@ void ypaworld_func2__sub0(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stack_
 
 size_t NC_STACK_ypaworld::func2(stack_vals *stak)
 {
-    _NC_STACK_ypaworld *yw = &this->stack__ypaworld;
-
-    ypaworld_func2__sub0(this, yw, stak);
+    ypaworld_func2__sub0(stak);
 
     return NC_STACK_base::func2(stak);
 }
 
 
-void ypaworld_func3__sub0(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stack_vals *stak)
+void NC_STACK_ypaworld::ypaworld_func3__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -592,111 +561,104 @@ void ypaworld_func3__sub0(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stack_
             default:
                 break;
 
-            case 0x80002000:
-                *(int *)stk->value = yw->sectors_maxX;
+            case YW_ATT_MAPMAX_X:
+                *(int *)stk->value = getYW_mapMaxX();
                 break;
 
-            case 0x80002001:
-                *(int *)stk->value = yw->sectors_maxY;
+            case YW_ATT_MAPMAX_Y:
+                *(int *)stk->value = getYW_mapMaxY();
                 break;
 
-            case 0x80002002:
-                *(int *)stk->value = yw->sectors_maxX2;
+            case YW_ATT_MAPSIZE_X:
+                *(int *)stk->value = getYW_mapSizeX();
                 break;
 
-            case 0x80002003:
-                *(int *)stk->value = yw->sectors_maxY2;
+            case YW_ATT_MAPSIZE_Y:
+                *(int *)stk->value = getYW_mapSizeY();
                 break;
 
-            case 0x80002004:
-                //*(int *)stk->value = yw->field_20;
+//            case YW_ATT_SECTORSIZE_X:
+//                *(int *)stk->value = yw->field_20;
+//                break;
+//
+//            case YW_ATT_SECTORSIZE_Y:
+//                *(int *)stk->value = yw->field_24;
+//                break;
+
+            case YW_ATT_NORMVISLIMIT:
+                *(int *)stk->value = getYW_normVisLimit();
                 break;
 
-            case 0x80002005:
-                //*(int *)stk->value = yw->field_24;
+            case YW_ATT_FADELENGTH:
+                *(int *)stk->value = getYW_fadeLength();
                 break;
 
-            case 0x80002007:
-                *(int *)stk->value = yw->field_15e4;
+            case YW_ATT_SKYHEIGHT:
+                *(int *)stk->value = getYW_skyHeight();
                 break;
 
-            case 0x80002008:
-                *(int *)stk->value = yw->field_15e8;
+            case YW_ATT_SKYRENDER:
+                *(int *)stk->value = getYW_skyRender();
                 break;
 
-            case 0x8000200B:
-                *(int *)stk->value = yw->field_15f4;
+            case YW_ATT_DOENERGYRECALC:
+                *(int *)stk->value = getYW_doEnergyRecalc();
                 break;
 
-            case 0x8000200C:
-                *(int *)stk->value = yw->field_15f8;
+            case YW_ATT_VISSECTORS:
+                *(int *)stk->value = getYW_visSectors();
                 break;
 
-            case 0x8000200D:
-                *(int *)stk->value = yw->field_15fc;
+            case YW_ATT_USERHOST:
+                *(NC_STACK_ypabact **)stk->value = getYW_userHostStation();
                 break;
 
-            case 0x8000200E:
-                *(int *)stk->value = yw->field_1368;
+            case YW_ATT_USERVEHICLE:
+                *(NC_STACK_ypabact **)stk->value = getYW_userVehicle();
                 break;
 
-            case 0x8000200F:
-                *(int *)stk->value = 0;
+            case YW_ATT_WPNPROTOS:
+                *(WeapProto **)stk->value = getYW_weaponProtos();
                 break;
 
-            case 0x80002010:
-                *(NC_STACK_ypabact **)stk->value = yw->field_1b78;
+            case YW_ATT_BUILDPROTOS:
+                *(BuildProto **)stk->value = getYW_buildProtos();
                 break;
 
-            case 0x80002011:
-                *(NC_STACK_ypabact **)stk->value = yw->field_1b7c;
+            case YW_ATT_VHCLPROTOS:
+                *(VhclProto **)stk->value = getYW_vhclProtos();
                 break;
 
-            case 0x80002012:
-                *(WeapProto **)stk->value = yw->WeaponProtos;
+            case YW_ATT_LVLFINISHED:
+                *(int *)stk->value = getYW_lvlFinished();
                 break;
 
-            case 0x80002013:
-                *(BuildProto **)stk->value = yw->BuildProtos;
+            case YW_ATT_SCREEN_W:
+                *(int *)stk->value = getYW_screenW();
                 break;
 
-            case 0x80002014:
-                *(VhclProto **)stk->value = yw->VhclProtos;
+            case YW_ATT_SCREEN_H:
+                *(int *)stk->value = getYW_screenH();
                 break;
 
-            case 0x80002015:
-                if ( yw->field_2d90->field_40 != 1 && yw->field_2d90->field_40 != 2 )
-                    *(int *)stk->value = 0;
-                else
-                    *(int *)stk->value = 1;
+            case YW_ATT_LOCALE_STRINGS:
+                *(char ***)stk->value = getYW_localeStrings();
                 break;
 
-            case 0x80002016:
-                *(int *)stk->value = yw->screen_width;
+            case YW_ATT_LVL_INFO:
+                *(stru_2d90 **)stk->value = getYW_levelInfo();
                 break;
 
-            case 0x80002017:
-                *(int *)stk->value = yw->screen_height;
+            case YW_ATT_DESTROY_FX:
+                *(int *)stk->value = getYW_destroyFX();
                 break;
 
-            case 0x80002018:
-                *(char ***)stk->value = yw->string_pointers;
+            case YW_ATT_PNET:
+                *(NC_STACK_windp **)stk->value = getYW_pNET();
                 break;
 
-            case 0x8000201A:
-                *(stru_2d90 **)stk->value = yw->field_2d90;
-                break;
-
-            case 0x8000201B:
-                *(int *)stk->value = yw->fxnumber;
-                break;
-
-            case 0x8000201C:
-                *(NC_STACK_windp **)stk->value = yw->windp;
-                break;
-
-            case 0x8000201F:
-                *(int *)stk->value = yw->field_1a20;
+            case YW_ATT_INVULNERABLE:
+                *(int *)stk->value = getYW_invulnerable();
                 break;
 
             }
@@ -707,9 +669,7 @@ void ypaworld_func3__sub0(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stack_
 
 size_t NC_STACK_ypaworld::func3(stack_vals *stak)
 {
-    _NC_STACK_ypaworld *yw = &this->stack__ypaworld;
-
-    ypaworld_func3__sub0(this, yw, stak);
+    ypaworld_func3__sub0(stak);
 
     return NC_STACK_base::func3(stak);
 }
@@ -717,8 +677,7 @@ size_t NC_STACK_ypaworld::func3(stack_vals *stak)
 
 void sub_445230(_NC_STACK_ypaworld *yw)
 {
-    int a4;
-    call_vtbl(yw->current_bact->self, 3, 0x80001010, &a4, 0);
+    int a4 = yw->current_bact->self->getBACT_extraViewer();
 
     if ( a4 )
     {
@@ -1365,7 +1324,7 @@ void sub_44FD6C(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int 
             if ( boom )
             {
                 __NC_STACK_ypabact *a4 = &boom->stack__ypabact;
-                //call_vtbl(boom, 3, 0x80001003, &a4, 0);
+                //a4 = boom->getBACT_pBact();
                 a4->owner = 0;
 
                 bact_arg119 arg78;
@@ -1619,11 +1578,9 @@ size_t NC_STACK_ypaworld::ypaworld_func130(yw_130arg *arg)
 
 void NC_STACK_ypaworld::ypaworld_func131(__NC_STACK_ypabact *bact)
 {
-    _NC_STACK_ypaworld *yw = &this->stack__ypaworld;
+    stack__ypaworld.current_bact = bact;
 
-    yw->current_bact = bact;
-
-    call_vtbl(this, 2, 0x80002011, bact->self, 0);
+    setYW_userVehicle(bact->self);
 }
 
 
@@ -1872,10 +1829,9 @@ void NC_STACK_ypaworld::ypaworld_func143(void *arg)
 
 void NC_STACK_ypaworld::ypaworld_func144(NC_STACK_ypabact *bacto)
 {
-    _NC_STACK_ypaworld *yw = &this->stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &stack__ypaworld;
 
-    __NC_STACK_ypabact *bact;
-    call_vtbl(bacto, 3, 0x80001003, &bact, 0);
+    __NC_STACK_ypabact *bact = bacto->getBACT_pBact();
 
     if ( bact->field_24 == 4 )
     {
@@ -1906,7 +1862,7 @@ void NC_STACK_ypaworld::ypaworld_func144(NC_STACK_ypabact *bacto)
 
 size_t NC_STACK_ypaworld::ypaworld_func145(__NC_STACK_ypabact *bact)
 {
-    _NC_STACK_ypaworld *yw = &this->stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &stack__ypaworld;
 
     if ( yw->current_bact )
     {
@@ -1975,7 +1931,7 @@ size_t NC_STACK_ypaworld::ypaworld_func145(__NC_STACK_ypabact *bact)
 
 NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
 {
-    _NC_STACK_ypaworld *yw = &this->stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &stack__ypaworld;
 
     if ( vhcl_id->vehicle_id > 256 )
         return NULL;
@@ -1988,7 +1944,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
     {
         __NC_STACK_ypabact *bact;
 
-        call_vtbl(bacto, 3, 0x80001003, &bact, 0);// bact
+        bact = bacto->getBACT_pBact();// bact
 
         bact->energy = vhcl->energy;
         bact->energy_2 = vhcl->energy;
@@ -2151,7 +2107,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
         return NULL;
 
     __NC_STACK_ypabact *wbact = &wobj->stack__ypabact;
-    //call_vtbl(wobj, 3, 0x80001003, &wbact, 0);
+    //wbact = wobj->getBACT_pBact();
 
     wbact->energy = wproto->energy;
     wbact->energy_2 = wproto->energy;
@@ -7617,8 +7573,8 @@ void ypaworld_func169__sub2(_NC_STACK_ypaworld *yw)
 
         if ( robo->guns[dword_5A7A78].gun_obj )
         {
-            call_vtbl(robo->guns[dword_5A7A78].gun_obj, 2, 0x80001004, dword_5A7A8C, 0);
-            call_vtbl(robo->guns[dword_5A7A78].gun_obj, 2, 0x80001005, dword_5A7A8C, 0);
+            robo->guns[dword_5A7A78].gun_obj->setBACT_viewer(dword_5A7A8C);
+            robo->guns[dword_5A7A78].gun_obj->setBACT_inputting(dword_5A7A8C);
         }
     }
 }
@@ -8637,6 +8593,221 @@ void NC_STACK_ypaworld::ypaworld_func185(void *arg)
 {
     dprintf("MAKE ME %s\n","ypaworld_func185");
 }
+
+
+
+void NC_STACK_ypaworld::setYW_normVisLimit(int limit)
+{
+    stack__ypaworld.field_15e4 = limit;
+}
+
+void NC_STACK_ypaworld::setYW_fadeLength(int len)
+{
+    stack__ypaworld.field_15e8 = len;
+}
+
+void NC_STACK_ypaworld::setYW_skyVisLimit(int limit)
+{
+    stack__ypaworld.field_15ec = limit;
+}
+
+void NC_STACK_ypaworld::setYW_skyFadeLength(int len)
+{
+    stack__ypaworld.field_15f0 = len;
+}
+
+void NC_STACK_ypaworld::setYW_skyHeight(int hght)
+{
+    stack__ypaworld.field_15f4 = hght;
+}
+
+void NC_STACK_ypaworld::setYW_skyRender(int dorender)
+{
+    stack__ypaworld.field_15f8 = dorender;
+}
+
+void NC_STACK_ypaworld::setYW_doEnergyRecalc(int doRecalc)
+{
+    stack__ypaworld.field_15fc = doRecalc;
+}
+
+void NC_STACK_ypaworld::setYW_visSectors(int visSectors)
+{
+    stack__ypaworld.field_1368 = visSectors;
+}
+
+void NC_STACK_ypaworld::setYW_userHostStation(NC_STACK_ypabact *host)
+{
+    stack__ypaworld.field_1b78 = host;
+    stack__ypaworld.field_1b80 = host->getBACT_pBact();
+    stack__ypaworld.field_1b88 = &stack__ypaworld.field_1b80->list2;
+}
+
+void NC_STACK_ypaworld::setYW_userVehicle(NC_STACK_ypabact *bact)
+{
+    if ( bact != stack__ypaworld.field_1b7c )
+    {
+        __NC_STACK_ypabact *oldpBact = stack__ypaworld.field_1b84;
+
+        if ( oldpBact )
+            stack__ypaworld.field_241c = oldpBact->ypabact__id;
+
+        stack__ypaworld.field_1b7c = bact;
+        stack__ypaworld.field_1b84 = bact->getBACT_pBact();
+
+        stack__ypaworld.field_1a0c = stack__ypaworld.field_1614;
+        stack__ypaworld.field_1a10 = stack__ypaworld.field_1b84->field_2E;
+        stack__ypaworld.field_17bc = 0;
+
+        if ( stack__ypaworld.field_1b84->field_24 == 3 )
+        {
+            stack__ypaworld.field_7886 = 1;
+            stack__ypaworld.field_7882 = 1;
+        }
+        ypaworld_func2__sub0__sub0(&stack__ypaworld);
+
+        if ( oldpBact )
+            ypaworld_func2__sub0__sub1(&stack__ypaworld, oldpBact, stack__ypaworld.field_1b84);
+    }
+}
+
+void NC_STACK_ypaworld::setYW_screenW(int w)
+{
+    stack__ypaworld.screen_width = w;
+}
+
+void NC_STACK_ypaworld::setYW_screenH(int h)
+{
+    stack__ypaworld.screen_height = h;
+}
+
+void NC_STACK_ypaworld::setYW_dontRender(int drndr)
+{
+    stack__ypaworld.field_138c = drndr;
+}
+
+
+
+
+int NC_STACK_ypaworld::getYW_mapMaxX()
+{
+    return stack__ypaworld.sectors_maxX;
+}
+
+int NC_STACK_ypaworld::getYW_mapMaxY()
+{
+    return stack__ypaworld.sectors_maxY;
+}
+
+int NC_STACK_ypaworld::getYW_mapSizeX()
+{
+    return stack__ypaworld.sectors_maxX2;
+}
+
+int NC_STACK_ypaworld::getYW_mapSizeY()
+{
+    return stack__ypaworld.sectors_maxY2;
+}
+
+int NC_STACK_ypaworld::getYW_normVisLimit()
+{
+    return stack__ypaworld.field_15e4;
+}
+
+int NC_STACK_ypaworld::getYW_fadeLength()
+{
+    return stack__ypaworld.field_15e8;
+}
+
+int NC_STACK_ypaworld::getYW_skyHeight()
+{
+    return stack__ypaworld.field_15f4;
+}
+
+int NC_STACK_ypaworld::getYW_skyRender()
+{
+    return stack__ypaworld.field_15f8;
+}
+
+int NC_STACK_ypaworld::getYW_doEnergyRecalc()
+{
+    return stack__ypaworld.field_15fc;
+}
+
+int NC_STACK_ypaworld::getYW_visSectors()
+{
+    return stack__ypaworld.field_1368;
+}
+
+NC_STACK_ypabact *NC_STACK_ypaworld::getYW_userHostStation()
+{
+    return stack__ypaworld.field_1b78;
+}
+
+NC_STACK_ypabact *NC_STACK_ypaworld::getYW_userVehicle()
+{
+    return stack__ypaworld.field_1b7c;
+}
+
+WeapProto *NC_STACK_ypaworld::getYW_weaponProtos()
+{
+    return stack__ypaworld.WeaponProtos;
+}
+
+BuildProto *NC_STACK_ypaworld::getYW_buildProtos()
+{
+    return stack__ypaworld.BuildProtos;
+}
+
+VhclProto *NC_STACK_ypaworld::getYW_vhclProtos()
+{
+    return stack__ypaworld.VhclProtos;
+}
+
+int NC_STACK_ypaworld::getYW_lvlFinished()
+{
+    if ( stack__ypaworld.field_2d90->field_40 != 1 && stack__ypaworld.field_2d90->field_40 != 2 )
+        return 0;
+
+    return 1;
+}
+
+int NC_STACK_ypaworld::getYW_screenW()
+{
+    return stack__ypaworld.screen_width;
+}
+
+int NC_STACK_ypaworld::getYW_screenH()
+{
+    return stack__ypaworld.screen_height;
+}
+
+char **NC_STACK_ypaworld::getYW_localeStrings()
+{
+    return stack__ypaworld.string_pointers;
+}
+
+stru_2d90 *NC_STACK_ypaworld::getYW_levelInfo()
+{
+    return stack__ypaworld.field_2d90;
+}
+
+int NC_STACK_ypaworld::getYW_destroyFX()
+{
+    return stack__ypaworld.fxnumber;
+}
+
+NC_STACK_windp *NC_STACK_ypaworld::getYW_pNET()
+{
+    return stack__ypaworld.windp;
+}
+
+int NC_STACK_ypaworld::getYW_invulnerable()
+{
+    return stack__ypaworld.field_1a20;
+}
+
+
 
 
 

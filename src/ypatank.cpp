@@ -66,7 +66,7 @@ size_t NC_STACK_ypatank::func0(stack_vals *stak)
 
     __NC_STACK_ypatank *tank = &this->stack__ypatank;
 
-    //call_vtbl(result, 3, 0x80001003, &bact, 0);
+    //bact = result->getBACT_pBact();
 
     tank->bact_internal = &this->stack__ypabact;
     tank->bact_internal->field_24 = 2;
@@ -207,11 +207,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
 
     float v244 = arg->field_4 / 1000.0;
 
-//  call_vtbl(this, 3, 0x80001006, &a4, 0);
-//  call_vtbl(this, 3, 0x80001004, &v198, 0);
-
-    int v194;
-    call_vtbl(this, 3, 0x80001007, &v194, 0);
+    int v194 = getBACT_bactCollisions();
 
     __NC_STACK_ypabact *bact = tank->bact_internal;
 
@@ -1150,8 +1146,7 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
 
     bact->airconst = bact->airconst2;
 
-    int a4;
-    call_vtbl(this, 3, 0x80001007, &a4, 0);
+    int a4 = getBACT_bactCollisions();
 
     float v90 = arg->field_4 * 0.001;
 
@@ -1582,8 +1577,7 @@ size_t NC_STACK_ypatank::ypabact_func80(bact_arg80 *arg)
             if ( !arg136.field_20 )
                 return 0;
 
-            int a4;
-            call_vtbl(this, 3, 0x80001004, &a4, 0);
+            int a4 = getBACT_viewer();
 
             if ( a4 )
                 bact->field_621.sy = arg136.field_30 - bact->vwr_overeof;
@@ -1723,8 +1717,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
 
     if ( bact->field_3D6 & 0x200 )
     {
-        int a4;
-        call_vtbl(this, 3, 0x80001005, &a4, 0);
+        int a4 = getBACT_inputting();
 
         float v104;
 
@@ -1763,8 +1756,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
                     && v12 != bact )
             {
 
-                rbcolls *v96;
-                call_vtbl(v12->self, 3, 0x8000100E, &v96, 0);
+                rbcolls *v96 = v12->self->getBACT_collNodes();
 
                 int v110;
 
@@ -2176,8 +2168,7 @@ size_t NC_STACK_ypatank::ypabact_func101(bact_arg101 *arg)
     v34.sy /= v37;
     v34.sz /= v37;
 
-    WeapProto *a4;
-    call_vtbl(tank->ywo, 3, 0x80002012, &a4, 0);
+    WeapProto *a4 = tank->ywo->getYW_weaponProtos();
 
     tank->field_26 = 1;
 
@@ -2396,8 +2387,7 @@ void NC_STACK_ypatank::ypabact_func114(void *)
 
     if ( bact->field_3D6 & 0x200 )
     {
-        int a4;
-        call_vtbl(this, 3, 0x80001004, &a4, 0);
+        int a4 = getBACT_viewer();
 
         float v6;
 
@@ -2426,9 +2416,6 @@ void NC_STACK_ypatank::ypabact_func114(void *)
 
 void sub_49DA3C(__NC_STACK_ypatank *tank, xyz *a6)
 {
-    int a4;
-    call_vtbl(tank->bact_internal->self, 3, 0x80001004, &a4, 0);
-
     __NC_STACK_ypabact *bact = tank->bact_internal;
 
     float v41 = bact->field_601 - bact->airconst * bact->field_611;
@@ -2463,8 +2450,7 @@ size_t NC_STACK_ypatank::ypatank_func128(tank_arg128 *arg)
 
     arg->field_10 = 0;
 
-    int a4;
-    call_vtbl(this, 3, 0x80001004, &a4, 0);
+    int a4 = getBACT_viewer();
 
     float v5;
 
@@ -2578,11 +2564,9 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
     int v151 = 0;
     int v148 = 0;
 
-    int a4;
-    call_vtbl(this, 3, 0x80001004, &a4, 0);
+    int a4 = getBACT_viewer();
 
-    int v143;
-    call_vtbl(this, 3, 0x80001005, &v143, 0);
+    int v143 = getBACT_inputting();
 
     float v5;
     if ( a4 )

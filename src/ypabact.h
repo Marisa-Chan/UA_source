@@ -54,6 +54,23 @@ union BactTarget
     cellArea *pcell;
 };
 
+
+struct roboColl
+{
+    float robo_coll_radius;
+    float robo_coll_x;
+    float robo_coll_y;
+    float robo_coll_z;
+    xyz field_10;
+};
+
+struct rbcolls
+{
+    int field_0;
+    char robo_coll_num;
+    roboColl roboColls[16];
+};
+
 struct __NC_STACK_ypabact : public nnode
 {
     NC_STACK_ypabact *self;
@@ -487,6 +504,67 @@ public:
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_ypabact();
     };
+
+    enum BACT_ATT
+    {
+        BACT_ATT_WORLD = 0x80001001,
+        BACT_ATT_PTRANSFORM = 0x80001002,
+        BACT_ATT_PBACT = 0x80001003,
+        BACT_ATT_VIEWER = 0x80001004,
+        BACT_ATT_INPUTTING = 0x80001005,
+        BACT_ATT_EXACTCOLL = 0x80001006,
+        BACT_ATT_BACTCOLL = 0x80001007,
+        BACT_ATT_ATTACKLIST = 0x80001008,
+        BACT_ATT_AIRCONST = 0x80001009,
+        BACT_ATT_LANDINGONWAIT = 0x8000100A,
+        BACT_ATT_YOURLS = 0x8000100B,
+        BACT_ATT_VISPROT = 0x8000100C,
+        BACT_ATT_AGGRESSION = 0x8000100D,
+        BACT_ATT_COLLNODES = 0x8000100E,
+        BACT_ATT_VPTRANSFORM = 0x8000100F,
+        BACT_ATT_EXTRAVIEWER = 0x80001010,
+        BACT_ATT_P_ATTACKNODE = 0x80001011,
+        BACT_ATT_S_ATTACKNODE = 0x80001012,
+        BACT_ATT_ALWAYSRENDER = 0x80001013
+    };
+
+    virtual void setBACT_viewer(int);
+    virtual void setBACT_inputting(int);
+    virtual void setBACT_exactCollisions(int);
+    virtual void setBACT_bactCollisions(int);
+    virtual void setBACT_airconst(int);
+    virtual void setBACT_landingOnWait(int);
+    virtual void setBACT_yourLastSeconds(int);
+    virtual void setBACT_visProto(NC_STACK_base *);
+    virtual void setBACT_aggression(int);
+    virtual void setBACT_vpTransform(base_1c_struct *);
+    virtual void setBACT_extraViewer(int);
+    virtual void setBACT_alwaysRender(int);
+
+
+    virtual NC_STACK_ypaworld *getBACT_pWorld();
+    virtual base_1c_struct *getBACT_pTransform();
+    virtual __NC_STACK_ypabact *getBACT_pBact();
+    virtual int getBACT_viewer();
+    virtual int getBACT_inputting();
+    virtual int getBACT_exactCollisions();
+    virtual int getBACT_bactCollisions();
+    virtual nlist *getBACT_attackList();
+    virtual int getBACT_landingOnWait();
+    virtual int getBACT_yourLastSeconds();
+    virtual NC_STACK_base *getBACT_visProto();
+    virtual int getBACT_aggression();
+    virtual rbcolls *getBACT_collNodes();
+    virtual base_1c_struct *getBACT_vpTransform();
+    virtual int getBACT_extraViewer();
+    virtual bact_node *getBACT_primAttackNode();
+    virtual bact_node *getBACT_secnAttackNode();
+    virtual int getBACT_alwaysRender();
+
+
+    int ypabact_func0__sub0(stack_vals *stak);
+    int ypabact_func2__sub0(stack_vals *stak);
+    void ypabact_func3__sub0(stack_vals *stak);
 
     //Data
     static const NewClassDescr description;

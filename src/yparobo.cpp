@@ -77,7 +77,7 @@ void  yparobo_func0__sub1(NC_STACK_yparobo *obj, __NC_STACK_yparobo *robo, stack
             case 0x80001005:
                 if ( stk->value )
                 {
-                    call_vtbl(robo->wrld, 2, 0x80002010, robo->bact_internal->self, 0);
+                    robo->wrld->setYW_userHostStation(obj);
 
                     robo->field_1DB |= 0x4000;
                 }
@@ -223,9 +223,7 @@ size_t NC_STACK_yparobo::func0(stack_vals *stak)
 
     __NC_STACK_yparobo *robo = &this->stack__yparobo;
 
-    __NC_STACK_ypabact *bact_int;
-
-    call_vtbl(this, 3, 0x80001003, &bact_int, 0);
+    __NC_STACK_ypabact *bact_int = getBACT_pBact();
 
     robo->bact_internal = bact_int;
     robo->roboo = this;
@@ -236,7 +234,7 @@ size_t NC_STACK_yparobo::func0(stack_vals *stak)
 
     robo->pcell = yparobo_func0__sub0(robo);
 
-    call_vtbl(robo->wrld, 3, 0x80002018, &dword_54B0E0, 0);
+    dword_54B0E0 = robo->wrld->getYW_localeStrings();
 
     return 1;
 }
@@ -274,7 +272,7 @@ void  yparobo_func2__sub0(NC_STACK_yparobo *obj, __NC_STACK_yparobo *robo, stack
             case 0x80001005:
                 if ( stk->value )
                 {
-                    call_vtbl(robo->wrld, 2, 0x80002010, robo->bact_internal->self, 0);
+                    robo->wrld->setYW_userHostStation(obj);
 
                     robo->field_1DB |= 0x4000;
                 }
@@ -287,9 +285,7 @@ void  yparobo_func2__sub0(NC_STACK_yparobo *obj, __NC_STACK_yparobo *robo, stack
                 {
                     if ( robo->guns[i].gun_obj )
                     {
-                        __NC_STACK_ypabact *gun_bact;
-
-                        call_vtbl(robo->guns[i].gun_obj, 3, 0x80001003, &gun_bact, 0);
+                        __NC_STACK_ypabact *gun_bact = robo->guns[i].gun_obj->getBACT_pBact();
 
                         if ( !( gun_bact->field_3D6 & 0x400 ) )
                             robo->guns[i].gun_obj->ypabact_func77(NULL);
@@ -338,8 +334,7 @@ void  yparobo_func2__sub0(NC_STACK_yparobo *obj, __NC_STACK_yparobo *robo, stack
 
                         call_vtbl(gun_obj, 2, 0x80002006, 1, 0);
 
-                        __NC_STACK_ypabact *gun_bact;
-                        call_vtbl(gun_obj, 3, 0x80001003, &gun_bact, 0);
+                        __NC_STACK_ypabact *gun_bact = gun_obj->getBACT_pBact();
 
                         gun_bact->owner = bact->owner;
                         gun_bact->field_2E = dword_5B1128;
@@ -369,8 +364,8 @@ void  yparobo_func2__sub0(NC_STACK_yparobo *obj, __NC_STACK_yparobo *robo, stack
                 bact->viewer_max_down = roboproto->robo_viewer_max_down;
                 bact->viewer_max_side = roboproto->robo_viewer_max_side;
 
-                call_vtbl(obj, 2, 0x80001010, 1, 0);
-                call_vtbl(obj, 2, 0x80001013, 1, 0);
+                obj->setBACT_extraViewer(1);
+                obj->setBACT_alwaysRender(1);
 
                 robo->coll = roboproto->coll;
             }
@@ -655,10 +650,9 @@ void NC_STACK_yparobo::ypabact_func68(ypabact_arg65 *arg)
 
     if ( robo->bact_internal->field_3D5 == 2 )
     {
-        int a4;
-        call_vtbl(this, 3, 0x8000100B, &a4, 0);
+        int a4 = getBACT_yourLastSeconds();
         a4 -= arg->field_4;
-        call_vtbl(this, 2, 0x8000100B, a4, 0);
+        setBACT_yourLastSeconds(a4);
     }
 
     robo->bact_internal->airconst = robo->bact_internal->airconst2;
@@ -668,11 +662,9 @@ void NC_STACK_yparobo::ypabact_func68(ypabact_arg65 *arg)
 
     for (int i = 0; i < 8; i++)
     {
-        __NC_STACK_ypabact *gun_bact;
-
         if (robo->guns[i].gun_obj)
         {
-            call_vtbl(robo->guns[i].gun_obj, 3, 0x80001003, &gun_bact, 0);
+            __NC_STACK_ypabact *gun_bact = robo->guns[i].gun_obj->getBACT_pBact();
 
             gun_bact->owner = robo->bact_internal->owner;
         }
@@ -693,8 +685,7 @@ void NC_STACK_yparobo::ypabact_func68(ypabact_arg65 *arg)
         robo->bact_internal->field_639.sz = 0;
     }
 
-    int v9;
-    call_vtbl(this, 3, 0x80001005, &v9, 0);
+    int v9 = getBACT_inputting();
 
     if ( v9 )
         ypabact_func71(arg);
@@ -814,7 +805,7 @@ void sub_4A9F24(__NC_STACK_yparobo *robo, bact_node *node)
         robo->field_1DB &= 0xFFFFFFF7;
     }
 
-    call_vtbl(node->bacto, 2, 0x8000100D, (int)robo->dock_aggr, 0);
+    node->bacto->setBACT_aggression(robo->dock_aggr);
     robo->dock_cnt = 0;
     robo->dock_user = 0;
     robo->dock_time = 2000;
@@ -859,16 +850,15 @@ void sb_0x4a7010__sub0(__NC_STACK_yparobo *robo, bact_node *unit)
             if ( unt )
             {
                 __NC_STACK_ypabact *untbct;
-                call_vtbl(unt, 3, 0x80001003, &untbct, 0);
+                untbct = unt->getBACT_pBact();
 
                 untbct->field_3D5 = 4;
                 untbct->owner = bact->owner;
                 untbct->field_2E = unit->bact->field_2E;
                 untbct->host_station = robo->roboo;
 
-                int v20;
-                call_vtbl(bact->self, 3, 0x80001007, &v20, 0);
-                call_vtbl(unt, 2, 0x80001007, v20, 0);
+                int v20 = bact->self->getBACT_bactCollisions();
+                unt->setBACT_bactCollisions(v20);
 
                 unit->bacto->ypabact_func72(unt);
 
@@ -1073,7 +1063,7 @@ void sb_0x4a7010__sub1__sub0(bact_node *nod1, bact_node *nod2)
                         float xx = (v20 + 0.5) * 1200.0;
                         sub_4A5A08(nod2->bact, xx, yy);
 
-                        call_vtbl(nod2->bacto, 2, 0x8000100D, 25, 0);
+                        nod2->bacto->setBACT_aggression(25);
                         return;
                     }
 
@@ -1095,7 +1085,7 @@ void sb_0x4a7010__sub1__sub0(bact_node *nod1, bact_node *nod2)
 
                                     sub_4A58C0(nod2->bact, v10);
 
-                                    call_vtbl(nod2->bacto, 2, 0x8000100D, 25, 0);
+                                    nod2->bacto->setBACT_aggression(25);
                                     return;
                                 }
                             }
@@ -1111,7 +1101,7 @@ void sb_0x4a7010__sub1__sub0(bact_node *nod1, bact_node *nod2)
     {
         sub_4A58C0(nod2->bact, nod1->bact);
 
-        call_vtbl(nod2->bacto, 2, 0x8000100D, 25, 0);
+        nod2->bacto->setBACT_aggression(25);
     }
     else
     {
@@ -1120,7 +1110,7 @@ void sb_0x4a7010__sub1__sub0(bact_node *nod1, bact_node *nod2)
 
         sub_4A5A08(nod2->bact, xx, yy);
 
-        call_vtbl(nod2->bacto, 2, 0x8000100D, 50, 0);
+        nod2->bacto->setBACT_aggression(50);
     }
 }
 
@@ -1368,11 +1358,9 @@ size_t yparobo_func70__sub1(__NC_STACK_yparobo *robo, float a2)
 {
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    int a4, v81, v79;
-
-    call_vtbl(bact->self, 3, 0x80001004, &a4, 0);
-    call_vtbl(bact->self, 3, 0x80001005, &v81, 0);
-    call_vtbl(bact->self, 3, 0x80001006, &v79, 0);
+    int a4 = bact->self->getBACT_viewer();
+    int v81 = bact->self->getBACT_inputting();
+    int v79 = bact->self->getBACT_exactCollisions();
 
     xyz *v3 = &bact->field_621;
     xyz *v5 = &bact->field_62D;
@@ -1707,8 +1695,7 @@ void yparobo_func70__sub2__sub0(__NC_STACK_yparobo *robo)
 
 int yparobo_func70__sub2__sub1(__NC_STACK_yparobo *robo)
 {
-    NC_STACK_ypabact *yw_1b7c;
-    call_vtbl(robo->wrld, 3, 0x80002011, &yw_1b7c, 0);
+    NC_STACK_ypabact *yw_1b7c = robo->wrld->getYW_userVehicle();
 
     if ( yw_1b7c == robo->bact_internal->self )
         return 0;
@@ -1844,9 +1831,6 @@ void yparobo_func70__sub2(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
     }
     else
     {
-        int a4;
-        call_vtbl(bact->self, 3, 0x80001004, &a4, 0);
-
         bact->field_601 = 0;
 
         if ( fabs(bact->field_605.sx * bact->field_611) <= 0.1 && fabs(bact->field_605.sz * bact->field_611) <= 0.1 )
@@ -2140,7 +2124,7 @@ void sb_0x4a45cc(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
                 newbact->ypabact_func78(&arg78);
 
                 __NC_STACK_ypabact *bct;
-                call_vtbl(newbact, 3, 0x80001003, &bct, 0);
+                bct = newbact->getBACT_pBact();
 
                 bct->field_931 = bct->energy_2 * 0.2;
                 bct->field_2E = dword_5B1128;
@@ -2175,13 +2159,12 @@ void sb_0x4a45cc(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
                 }
 
                 if ( bct->field_24 == 7 )
-                    call_vtbl(newbact, 2, 0x8000100D, 25, 0);
+                    newbact->setBACT_aggression(25);
                 else
-                    call_vtbl(newbact, 2, 0x8000100D, 60, 0);
+                    newbact->setBACT_aggression(60);
 
-                int v67;
-                call_vtbl(bact->self, 3, 0x80001007, &v67, 0);
-                call_vtbl(newbact, 2, 0x80001007, v67, 0);
+                int v67 = bact->self->getBACT_bactCollisions();
+                newbact->setBACT_bactCollisions(v67);
 
                 bct->host_station = robo->roboo;
                 robo->field_4F5 -= arg->field_40;
@@ -2192,7 +2175,6 @@ void sb_0x4a45cc(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
         break;
 
     case 4:
-        //call_vtbl(robo->wrld, 3, 0x80002014, &a4, 0); //vhclproto
         if ( arg->field_40 <= robo->field_4F5 )
         {
             arg146.pos = arg->field_30;
@@ -2207,7 +2189,7 @@ void sb_0x4a45cc(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
                 newbact2->ypabact_func78(&arg78);
 
                 __NC_STACK_ypabact *bct;
-                call_vtbl(newbact2, 3, 0x80001003, &bct, 0);
+                bct = newbact2->getBACT_pBact();
 
                 bct->field_931 = bct->energy_2 * 0.2;
                 bct->owner = bact->owner;
@@ -2241,9 +2223,8 @@ void sb_0x4a45cc(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
                     ywo->ypaworld_func181(&arg181);
                 }
 
-                int v67;
-                call_vtbl(bact->self, 3, 0x80001007, &v67, 0);
-                call_vtbl(newbact2, 2, 0x80001007, v67, 0);
+                int v67 = bact->self->getBACT_bactCollisions();
+                newbact2->setBACT_bactCollisions(v67);
 
                 bct->host_station = robo->roboo;
                 robo->field_4F5 -= arg->field_40;
@@ -2255,8 +2236,6 @@ void sb_0x4a45cc(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
         break;
 
     case 6:
-        //call_vtbl(robo->wrld, 3, 0x80002013, &v70, 0); //buildproto
-
         if ( arg->field_40 <= robo->field_4F5 )
         {
             arg148.ownerID = bact->owner;
@@ -2567,8 +2546,7 @@ void yparobo_func70__sub4__sub0(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
     }
     else
     {
-        BuildProto *buildprotos;
-        call_vtbl(robo->wrld, 3, 0x80002013, &buildprotos, 0);
+        BuildProto *buildprotos = robo->wrld->getYW_buildProtos();
 
         int build_id = yparobo_func70__sub4__sub0__sub0(robo, buildprotos);
 
@@ -2759,8 +2737,7 @@ void yparobo_func70__sub4__sub2(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
 
         if ( robo->pcell[ robo->field_2F5 ].energy_power != -1 && ( arg176.field_4 >= 0.9 || arg176.field_4 <= 0.001) )
         {
-            BuildProto *buildprotos;
-            call_vtbl(robo->wrld, 3, 0x80002013, &buildprotos, 0);
+            BuildProto *buildprotos = robo->wrld->getYW_buildProtos();
 
             int bldid = yparobo_func70__sub4__sub2__sub0(robo, buildprotos);
 
@@ -2945,8 +2922,7 @@ void yparobo_func70__sub4__sub1(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
     }
     else
     {
-        BuildProto *buildprotos;
-        call_vtbl(robo->wrld, 3, 0x80002013, &buildprotos, 0);
+        BuildProto *buildprotos = robo->wrld->getYW_buildProtos();
 
         int build_id = yparobo_func70__sub4__sub1__sub0(robo, buildprotos);
 
@@ -3132,11 +3108,8 @@ void yparobo_func70__sub4__sub3(__NC_STACK_yparobo *robo)
 
 float sub_4AA480(__NC_STACK_yparobo *robo, void *src, int bact_ref, int job)
 {
-    VhclProto *vhcl_protos;
-    WeapProto *weapon_protos;
-
-    call_vtbl(robo->wrld, 3, 0x80002014, &vhcl_protos, 0);
-    call_vtbl(robo->wrld, 3, 0x80002012, &weapon_protos, 0);
+    VhclProto *vhcl_protos = robo->wrld->getYW_vhclProtos();
+    WeapProto *weapon_protos = robo->wrld->getYW_weaponProtos();
 
     VhclProto *proto;
 
@@ -3292,8 +3265,7 @@ bact_node *sub_4AA640(__NC_STACK_yparobo *robo, robo_loct1 *arg)
 
         v73 = arg81_2.enrg_sum * 0.05 + 1.0;
 
-        VhclProto *vhcl_protos;
-        call_vtbl(robo->wrld, 3, 0x80002014, &vhcl_protos, 0);
+        VhclProto *vhcl_protos = robo->wrld->getYW_vhclProtos();
 
         for (int i = 0; i < 256; i++)
         {
@@ -3393,9 +3365,7 @@ bact_node *sub_4AA640(__NC_STACK_yparobo *robo, robo_loct1 *arg)
         if ( !new_unit )
             return NULL;
 
-        __NC_STACK_ypabact *unt_bct;
-
-        call_vtbl(new_unit, 3, 0x80001003, &unt_bct, 0);
+        __NC_STACK_ypabact *unt_bct = new_unit->getBACT_pBact();
 
         unt_bct->field_2E = dword_5B1128;
         dword_5B1128++;
@@ -3403,9 +3373,8 @@ bact_node *sub_4AA640(__NC_STACK_yparobo *robo, robo_loct1 *arg)
         unt_bct->owner = robo->bact_internal->owner;
         unt_bct->host_station = robo->roboo;
 
-        int v69;
-        call_vtbl(bact->self, 3, 0x80001007, &v69, 0);
-        call_vtbl(new_unit, 2, 0x80001007, v69, 0);
+        int v69 = bact->self->getBACT_bactCollisions();
+        new_unit->setBACT_bactCollisions(v69);
 
         bact->self->ypabact_func72(new_unit);
         if ( robo->wrld_yw->field_757E )
@@ -3438,7 +3407,7 @@ bact_node *sub_4AA640(__NC_STACK_yparobo *robo, robo_loct1 *arg)
 
         robo->field_1DB |= 4;
 
-        call_vtbl(new_unit, 2, 0x8000100D, 60, 0);
+        new_unit->setBACT_aggression(60);
 
         robo->dock_user = unt_bct->field_2E;
         robo->dock_energ = arg->energ - unt_bct->energy;
@@ -3520,7 +3489,7 @@ bact_node *sub_4AA640(__NC_STACK_yparobo *robo, robo_loct1 *arg)
 
         v74->bacto->ypabact_func67(&arg67_2);
 
-        call_vtbl(v74->bacto, 2, 0x8000100D, arg->aggr, 0);
+        v74->bacto->setBACT_aggression(arg->aggr);
     }
 
     return v74;
@@ -4236,12 +4205,12 @@ void yparobo_func70__sub0(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
                     {
                         if ( v3 )
                         {
-                            call_vtbl(unit->bacto, 2, 0x8000100D, 99, 0);
+                            unit->bacto->setBACT_aggression(99);
                             unit->bact->field_3D6 &= 0xFFFFBFFF;
                         }
                         else
                         {
-                            call_vtbl(unit->bacto, 2, 0x8000100D, 60, 0);
+                            unit->bacto->setBACT_aggression(60);
                         }
                     }
 
@@ -4385,8 +4354,7 @@ void sb_0x4a7010(__NC_STACK_yparobo *robo)
 
     _NC_STACK_ypaworld *yw = &robo->wrld->stack__ypaworld;
 
-    NC_STACK_ypabact *wee_bact;
-    call_vtbl(robo->wrld, 3, 0x80002010, &wee_bact, 0);
+    NC_STACK_ypabact *wee_bact = robo->wrld->getYW_userHostStation();
 
     int its_me =  (wee_bact == bact->self);
 
@@ -4567,8 +4535,7 @@ void sb_0x4a7010(__NC_STACK_yparobo *robo)
                             {
                                 __NC_STACK_ypabact *v33 = NULL;
 
-                                nlist *v30;
-                                call_vtbl(units->bacto, 3, 0x80001008, &v30, 0);
+                                nlist *v30 = units->bacto->getBACT_attackList();
 
                                 bact_node *v17 = (bact_node *)v30->head;
                                 while (v17->next)
@@ -5787,8 +5754,7 @@ void NC_STACK_yparobo::ypabact_func70(ypabact_arg65 *arg)
     __NC_STACK_yparobo *robo = &this->stack__yparobo;
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    int a4;
-    call_vtbl(this, 3, 0x80001007, &a4, 0);
+    int a4 = getBACT_bactCollisions();
 
     float tmp = sqrt(bact->field_639.sx * bact->field_639.sx + bact->field_639.sy * bact->field_639.sy + bact->field_639.sz * bact->field_639.sz);
 
@@ -5911,8 +5877,7 @@ void NC_STACK_yparobo::ypabact_func71(ypabact_arg65 *arg)
 {
     __NC_STACK_yparobo *robo = &this->stack__yparobo;
 
-    int a4;
-    call_vtbl(this, 3, 0x80001007, &a4, 0);
+    int a4 = getBACT_bactCollisions();
 
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
@@ -6121,8 +6086,7 @@ void NC_STACK_yparobo::ypabact_func77(void *)
 
     _NC_STACK_ypaworld *yw = robo->wrld_yw;
 
-    int a4;
-    call_vtbl(this, 3, 0x8000100B, &a4, 0);
+    int a4 = getBACT_yourLastSeconds();
 
     char v16[24];
 
@@ -6181,7 +6145,7 @@ void NC_STACK_yparobo::ypabact_func77(void *)
                 subnode->bact->field_3B2 &= 0xFFFFFFF7;
                 subnode->bact->field_3B2 |= 0x80;
 
-                call_vtbl(subnode->bacto, 2, 0x8000100B, a4, 0);
+                subnode->bacto->setBACT_yourLastSeconds(a4);
 
                 subnode = next2;
             }
@@ -6212,13 +6176,12 @@ void NC_STACK_yparobo::ypabact_func77(void *)
             node->bact->field_3B2 &= 0xFFFFFFF7;
             node->bact->field_3B2 |= 0x80;
 
-            call_vtbl(node->bacto, 2, 0x8000100B, a4, 0);
+            node->bacto->setBACT_yourLastSeconds(a4);
 
             node = next1;
         }
 
-        NC_STACK_ypabact *v20;
-        call_vtbl(robo->wrld, 3, 0x80002010, &v20, 0);
+        NC_STACK_ypabact *v20 = robo->wrld->getYW_userHostStation();
 
         if ( this == v20 )
         {
@@ -6266,11 +6229,11 @@ void NC_STACK_yparobo::ypabact_func77(void *)
 
                 if ( this == yw->field_1b78 )
                 {
-                    call_vtbl(yw->field_1b7c, 2, 0x80001005, 0, 0);
-                    call_vtbl(yw->field_1b7c, 2, 0x80001004, 0, 0);
+                    yw->field_1b7c->setBACT_inputting(0);
+                    yw->field_1b7c->setBACT_viewer(0);
 
-                    call_vtbl(this, 2, 0x80001005, 1, 0);
-                    call_vtbl(this, 2, 0x80001004, 1, 0);
+                    setBACT_inputting(1);
+                    setBACT_viewer(1);
                 }
             }
         }
@@ -6601,7 +6564,7 @@ void NC_STACK_yparobo::ypabact_func96(void *)
 
     dword_5B1128++;
 
-    call_vtbl(this, 2, 0x8000100B, 3000, 0);
+    setBACT_yourLastSeconds(3000);
 
     get_keyvalue_from_ini(NULL, yparobo_keys, 2);
 
@@ -6628,8 +6591,7 @@ void NC_STACK_yparobo::ypabact_func121(ypabact_arg65 *arg)
     __NC_STACK_ypabact *bact = robo->bact_internal;
     _NC_STACK_ypaworld *yw = robo->wrld_yw;
 
-    int a4;
-    call_vtbl(this, 3, 0x8000100B, &a4, 0);
+    int a4 = getBACT_yourLastSeconds();
 
     if ( !(bact->field_3D6 & 0x800) )
     {
@@ -6647,8 +6609,7 @@ void NC_STACK_yparobo::ypabact_func121(ypabact_arg65 *arg)
         if ( a4 > 0 )
             return;
 
-        int v31;
-        call_vtbl(this, 3, 0x80001005, &v31, 0);
+        int v31 = getBACT_inputting();
 
         if ( v31 )
             bact->field_3D6 |= 0x400000;
@@ -6676,8 +6637,7 @@ void NC_STACK_yparobo::ypabact_func121(ypabact_arg65 *arg)
             if ( a4 > 0 )
                 return;
 
-            int v30;
-            call_vtbl(this, 3, 0x80001005, &v30, 0);
+            int v30 = getBACT_inputting();
 
             if ( v30 )
                 bact->field_3D6 |= 0x400000;
@@ -6976,13 +6936,10 @@ int NC_STACK_yparobo::yparobo_func133(robo_arg133 *arg)
     if ( !squad_commander )
         return 0;
 
-    __NC_STACK_ypabact *bact_intern;
+    __NC_STACK_ypabact *bact_intern = squad_commander->getBACT_pBact();
 
-    call_vtbl(squad_commander, 3, 0x80001003, &bact_intern, 0);
-
-    int v32;
-    call_vtbl(this, 3, 0x80001007, &v32, 0); //getflag
-    call_vtbl(squad_commander, 2, 0x80001007, v32, 0); //setflag
+    int v32 = getBACT_bactCollisions();
+    squad_commander->setBACT_bactCollisions(v32);
 
     if ( arg->field_14 & 1 )
         bact_intern->field_3D6 |= 0x80000;
@@ -7028,9 +6985,9 @@ int NC_STACK_yparobo::yparobo_func133(robo_arg133 *arg)
         arg67.tgt_pos.sz = arg146.pos.sz;
         next_bact->ypabact_func67(&arg67); //Set target
 
-        call_vtbl(next_bact, 3, 0x80001003, &bact_intern, 0);
+        bact_intern = next_bact->getBACT_pBact();
 
-        call_vtbl(next_bact, 2, 0x80001007, v32, 0);
+        next_bact->setBACT_bactCollisions(v32);
 
         if ( arg->field_14 & 1 )
             bact_intern->field_3D6 |= 0x80000;
@@ -7122,10 +7079,8 @@ int yparobo_func134__sub1(__NC_STACK_yparobo *robo, robo_arg134 *arg)
     {
     case 1:
     {
-        NC_STACK_ypabact *bacto;
-        __NC_STACK_ypabact *v11;
-        call_vtbl(robo->wrld, 3, 0x80002011, &bacto, 0);
-        call_vtbl(bacto, 3, 0x80001003, &v11, 0);
+        NC_STACK_ypabact *bacto = robo->wrld->getYW_userVehicle();
+        __NC_STACK_ypabact *v11 = bacto->getBACT_pBact();
 
         if ( v11->field_24 != 4 )
             v2 = 1;
@@ -7216,8 +7171,7 @@ int NC_STACK_yparobo::yparobo_func134(robo_arg134 *arg)
     if ( arg->unit && arg->unit->field_24 == 9 && arg->field_4 != 7 && arg->field_4 != 19 && arg->field_4 != 6 )
         return 0;
 
-    char **strngs;
-    call_vtbl(robo->wrld, 3, 0x80002018, &strngs, 0);
+    char **strngs = robo->wrld->getYW_localeStrings();
 
     if ( !yparobo_func134__sub1(robo, arg) )
         return 0;
@@ -7247,8 +7201,7 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
 
             while ( v1->next )
             {
-                int a4;
-                call_vtbl(v1->self, 3, 0x80001004, &a4, 0);
+                int a4 = v1->self->getBACT_viewer();
 
                 if ( v1->field_3D5 == 5 && v1->owner == bact->owner && !a4 )
                     i = 1;
@@ -7356,6 +7309,24 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
     }
 }
 
+
+
+void NC_STACK_yparobo::setBACT_inputting(int inpt)
+{
+    if ( inpt )
+    {
+        stack__yparobo.wrld->setYW_userHostStation(this);
+
+        stack__yparobo.field_1DB |= 0x4000;
+    }
+
+    NC_STACK_ypabact::setBACT_inputting(inpt);
+}
+
+rbcolls *NC_STACK_yparobo::getBACT_collNodes()
+{
+    return &stack__yparobo.coll;
+}
 
 
 

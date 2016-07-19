@@ -226,6 +226,11 @@ public:
         return new NC_STACK_yparobo();
     };
 
+
+    virtual void setBACT_inputting(int);
+
+    virtual rbcolls *getBACT_collNodes();
+
     //Data
     static const NewClassDescr description;
 

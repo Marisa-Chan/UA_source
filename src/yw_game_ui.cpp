@@ -550,8 +550,6 @@ void  sb_0x4f8f64__sub1__sub0(_NC_STACK_ypaworld *yw)
         {
             NC_STACK_yparobo * obrob = dynamic_cast<NC_STACK_yparobo *>(v2->bacto);
 
-            //call_vtbl(v2->bacto, 3, 0x80000001, &a4, 0);
-
             __NC_STACK_yparobo *robo = &obrob->stack__yparobo;
 
             for (int i = 0; i < 8; i++)
@@ -1291,7 +1289,7 @@ __NC_STACK_ypabact * sub_4D3C3C(__NC_STACK_ypabact *bact)
         return NULL;
 
     if ( bact->parent_bacto != bact->host_station )
-        call_vtbl(bact->parent_bacto, 3, 0x80001003, &a4, 0);
+        a4 = bact->parent_bacto->getBACT_pBact();
 
     return a4;
 }
@@ -3335,8 +3333,6 @@ int sb_0x451034(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
         return 0;
     }
 
-    //call_vtbl(yw->tracyrmp_ilbm, 3, 0x80002000, &a4, 0);
-    //call_vtbl(yw->shadermp_ilbm, 3, 0x80002000, &v8, 0);
     yw->field_162c = 1;
 
     if ( yw->snd__cdsound & 1 )
@@ -4488,7 +4484,7 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 break;
             }
 
-            call_vtbl(yw->field_1c0c[ yw->field_2410 ]->self, 2, 0x8000100D, v16, 0);
+            yw->field_1c0c[ yw->field_2410 ]->self->setBACT_aggression(v16);
 
             if ( yw->GameShell )
                 sub_423F74(&yw->GameShell->samples1_info, 3);
@@ -4819,21 +4815,17 @@ void sb_0x4c66f8(_NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypaba
 {
     if ( bact1 != bact2 )
     {
-        __NC_STACK_ypabact *a4;
-        call_vtbl(bact1, 3, 0x80001003, &a4, 0);
-
-        __NC_STACK_ypabact *v9;
-        call_vtbl(bact2, 3, 0x80001003, &v9, 0);
+        __NC_STACK_ypabact *a4 = bact1->getBACT_pBact();
 
         if ( a4->field_3D5 != 4 && a4->field_3D5 != 2 && a4->field_3D5 != 5 )
         {
             yw->wis_skeletons.field_76 = yw->field_1614;
 
-            call_vtbl(bact2, 2, 0x80001004, 0, 0);
-            call_vtbl(bact2, 2, 0x80001005, 0, 0);
+            bact2->setBACT_viewer(0);
+            bact2->setBACT_inputting(0);
 
-            call_vtbl(bact1, 2, 0x80001004, 1, 0);
-            call_vtbl(bact1, 2, 0x80001005, 1, 0);
+            bact1->setBACT_viewer(1);
+            bact1->setBACT_inputting(1);
 
             if ( !(gui_lstvw.cmd_flag & 0x20) )
             {
@@ -6406,7 +6398,7 @@ void ypaworld_func64__sub7__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 {
                     if ( winpt->flag & 0x10 )
                     {
-                        call_vtbl(yw->field_1c0c[yw->field_2410]->self, 2, 0x8000100D, 25 * v9, 0);
+                        yw->field_1c0c[yw->field_2410]->self->setBACT_aggression(25 * v9);
 
                         if ( yw->GameShell )
                             sub_423F74(&yw->GameShell->samples1_info, 3);
@@ -12033,7 +12025,7 @@ int sub_4D3C80(_NC_STACK_ypaworld *yw)
     else
     {
         if ( yw->field_1a98->parent_bacto != yw->field_1a98->host_station )
-            call_vtbl(yw->field_1a98->parent_bacto, 3, 0x80001003, &a4, 0);
+            a4= yw->field_1a98->parent_bacto->getBACT_pBact();
     }
 
     if ( a4 )
@@ -12163,9 +12155,9 @@ void ypaworld_func64__sub21__sub5(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw
         break;
 
     case 19:
-        call_vtbl(yw->current_bact->self, 2, 0x80001004, 0, 0);
-        call_vtbl(yw->current_bact->self, 2, 0x80001005, 0, 0);
-        call_vtbl(yw->field_1a98->self, 2, 0x80001004, 1, 0);
+        yw->current_bact->self->setBACT_viewer(0);
+        yw->current_bact->self->setBACT_inputting(0);
+        yw->field_1a98->self->setBACT_viewer(1);
         break;
 
     default:

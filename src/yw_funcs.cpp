@@ -981,7 +981,6 @@ NC_STACK_base * sub_44AD8C(const char *fname)
                 return 0;
             }
 
-            //call_vtbl(obj, 65, kid);
             obj->base_func65(&kid); //Add to kid list
         }
         FClose(fil);
@@ -1010,7 +1009,6 @@ NC_STACK_base *load_set_base()
                 delete_class_obj(base);
                 return NULL;
             }
-            //call_vtbl(base, 65, visproto);
             base->base_func65(&visproto);
 
             NC_STACK_base *lego = READ_BAS_FILE("rsrc:objects/lego.base");
@@ -1024,7 +1022,6 @@ NC_STACK_base *load_set_base()
                 delete_class_obj(base);
                 return NULL;
             }
-            //call_vtbl(base, 65, lego);
             base->base_func65(&lego);
 
             NC_STACK_base *slurp = READ_BAS_FILE("rsrc:objects/slurp.base");
@@ -1038,7 +1035,6 @@ NC_STACK_base *load_set_base()
                 delete_class_obj(base);
                 return NULL;
             }
-            //call_vtbl(base, 65, slurp);
             base->base_func65(&slurp);
         }
     }
@@ -1047,9 +1043,7 @@ NC_STACK_base *load_set_base()
 
 int sub_44A12C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
 {
-    nlist *kid_list;
-
-    call_vtbl(base, 3, 0x8000101A, &kid_list, 0); // get kids list
+    nlist *kid_list = base->getBASE_kidList();
 
     int id = 0;
     for ( base_node *bkid = (base_node *)kid_list->head; bkid->next; bkid = (base_node *)bkid->next)
@@ -1057,9 +1051,9 @@ int sub_44A12C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
         NC_STACK_base *kid_obj = bkid->self_full;
 
         yw->vhcls_models[id].base = kid_obj;
-        call_vtbl(kid_obj, 2, 0x80001004, yw->field_15e4, 0);
-        call_vtbl(kid_obj, 2, 0x80001023, yw->field_15e8, 0);
-        call_vtbl(kid_obj, 3, 0x80001019, &yw->vhcls_models[id].trigo, 0);
+        kid_obj->setBASE_visLimit(yw->field_15e4);
+        kid_obj->setBASE_fadeLength(yw->field_15e8);
+        yw->vhcls_models[id].trigo = kid_obj->getBASE_pTransform();
         id++;
     }
     return 1;
@@ -1067,8 +1061,7 @@ int sub_44A12C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
 
 int yw_parse_lego(_NC_STACK_ypaworld *yw, FILE *fil, NC_STACK_base *base)
 {
-    nlist *kid_list;
-    call_vtbl(base, 3, 0x8000101A, &kid_list, 0);
+    nlist *kid_list = base->getBASE_kidList();
 
     int id = 0;
     for ( base_node *bkid = (base_node *)kid_list->head; bkid->next; bkid = (base_node *)bkid->next)
@@ -1076,9 +1069,9 @@ int yw_parse_lego(_NC_STACK_ypaworld *yw, FILE *fil, NC_STACK_base *base)
         NC_STACK_base *kid_obj = bkid->self_full;
 
         yw->legos[id].base = kid_obj;
-        call_vtbl(kid_obj, 2, 0x80001004, yw->field_15e4, 0);
-        call_vtbl(kid_obj, 2, 0x80001023, yw->field_15e8, 0);
-        call_vtbl(kid_obj, 2, 0x80001024, 1, 0);
+        kid_obj->setBASE_visLimit(yw->field_15e4);
+        kid_obj->setBASE_fadeLength(yw->field_15e8);
+        kid_obj->setBASE_static(1);
         id++;
     }
 
@@ -1333,8 +1326,7 @@ int yw_parse_sektor(_NC_STACK_ypaworld *yw, FILE *fil)
 
 int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
 {
-    nlist *kid_list;
-    call_vtbl(base, 3, 0x8000101A, &kid_list, 0);
+    nlist *kid_list = base->getBASE_kidList();
 
     base_node *kid = (base_node *)kid_list->head;
 
@@ -1352,12 +1344,11 @@ int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
 
                 NC_STACK_base *full_kid = kid->self_full;
 
-                call_vtbl(full_kid, 2, 0x80001004, yw->field_15e4, 0);
-                call_vtbl(full_kid, 2, 0x80001023, yw->field_15e8, 0);
-                call_vtbl(full_kid, 2, 0x80001024, 1, 0);
+                full_kid->setBASE_visLimit(yw->field_15e4);
+                full_kid->setBASE_fadeLength(yw->field_15e8);
+                full_kid->setBASE_static(1);
 
-                NC_STACK_skeleton *skeleton;
-                call_vtbl(full_kid, 3, 0x80001000, &skeleton, 0);
+                NC_STACK_skeleton *skeleton = full_kid->getBASE_skeleton();
 
                 skeleton_64_stru *skeleton_internal = skeleton->getSKEL_pSkelet();
                 if (i == 0)
@@ -1547,9 +1538,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
             return 0;
         }
 
-        nlist *kid_list;
-
-        call_vtbl(yw->additionalSet, 3, 0x8000101A, &kid_list, 0);// Get KIDS
+        nlist *kid_list = yw->additionalSet->getBASE_kidList();
 
         int kid_id = 0;
 
@@ -1622,7 +1611,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
         return 0;
     }
 
-    call_vtbl(yw->additionalBeeBox, 2, 0x80001024, 1, 0);
+    yw->additionalBeeBox->setBASE_static(1);
 
     if ( setID == 46 || setID == 42 )
     {

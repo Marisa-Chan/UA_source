@@ -63,7 +63,7 @@ size_t NC_STACK_ypaflyer::func0(stack_vals *stak)
 
     if ( ypaflyer_func0__sub0(this, fly, stak) )
     {
-        //call_vtbl(result, 3, 0x80001003, &bact, 0);
+        //bact = result->getBACT_pBact();
 
         __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
@@ -554,11 +554,9 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
         bact->field_645.sz = bact->field_639.sz / v88;
     }
 
-    int a4, v82, v79;
-
-    call_vtbl(this, 3, 0x80001004, &a4, 0);
-    call_vtbl(this, 3, 0x80001006, &v82, 0);
-    call_vtbl(this, 3, 0x80001007, &v79, 0);
+    int a4 = getBACT_viewer();
+    int v82 = getBACT_exactCollisions();
+    int v79 = getBACT_bactCollisions();
 
     int v90 = fly->ywo->ypaworld_func145(bact);
 
@@ -801,8 +799,7 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
         }
         else
         {
-            NC_STACK_ypabact *v81;
-            call_vtbl(fly->ywo, 3, 0x80002011, &v81, 0);
+            NC_STACK_ypabact *v81 = fly->ywo->getYW_userVehicle();
 
             if ( ( (bact->secndTtype != BACT_TGT_TYPE_UNIT || (bact->secndT.pbact->field_24 != 3 && v81 != bact->secndT.pbact->self))
                     && (bact->primTtype != BACT_TGT_TYPE_UNIT || (bact->primT.pbact->field_24 != 3 && v81 != bact->primT.pbact->self)) )
@@ -979,8 +976,7 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
             }
         }
 
-        int v80;
-        call_vtbl(this, 3, 0x8000100A, &v80, 0);
+        int v80 = getBACT_landingOnWait();
 
         if ( v80 )
         {
@@ -1062,8 +1058,7 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
 
     float a2 = (float)arg->field_4 / 1000.0;
 
-    int a4;
-    call_vtbl(this, 3, 0x80001007, &a4, 0);
+    int a4 = getBACT_bactCollisions();
 
     if ( fly->bact_internal->field_3D5 == 1 || fly->bact_internal->field_3D5 == 3 )
     {
