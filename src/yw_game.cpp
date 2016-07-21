@@ -991,15 +991,15 @@ int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_cou
             if ( v14.field_20 )
                 v15.pos.sy = v14.field_30 + v8->pos_y;
 
-            NC_STACK_ypabact *bact = ywo->ypaworld_func146(&v15);
+            NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>( ywo->ypaworld_func146(&v15) );
 
-            if ( bact )
+            if ( robo )
             {
                 int v20 = 0;
 
-                ywo->ypaworld_func134(bact);
+                ywo->ypaworld_func134(robo);
 
-                __NC_STACK_ypabact *bact_int = bact->getBACT_pBact(); // ypabact_func3
+                __NC_STACK_ypabact *bact_int = robo->getBACT_pBact(); // ypabact_func3
 
                 int v12;
 
@@ -1033,35 +1033,35 @@ int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_cou
 
                 bact_int->reload_const_or_energy2 = v20;
 
-                bact->setBACT_bactCollisions(1);
-                call_vtbl(bact, 2, 0x8000200B, 15, 0);
-                call_vtbl(bact, 2, 0x80002008, v12, 0);
-                call_vtbl(bact, 2, 0x8000200A, v12, 0);
+                robo->setBACT_bactCollisions(1);
+                robo->setROBO_fillMode(15);
+                robo->setROBO_battVehicle(v12);
+                robo->setROBO_battBeam(v12);
 
                 yw->field_2d90->ownerMap__has_vehicles |= 1 << v8->owner;
 
-                call_vtbl(bact, 2, 0x80002002, v8->con_budget, 0);
-                call_vtbl(bact, 2, 0x80002003, v8->def_budget, 0);
-                call_vtbl(bact, 2, 0x80002004, v8->rad_budget, 0);
-                call_vtbl(bact, 2, 0x80002005, v8->pow_budget, 0);
-                call_vtbl(bact, 2, 0x80002006, v8->saf_budget, 0);
-                call_vtbl(bact, 2, 0x8000200F, v8->cpl_budget, 0);
-                call_vtbl(bact, 2, 0x80002011, v8->rob_budget, 0);
-                call_vtbl(bact, 2, 0x80002010, v8->rec_budget, 0);
-                call_vtbl(bact, 2, 0x80002013, v8->viewangle, 0);
-                call_vtbl(bact, 2, 0x80002014, v8->saf_delay, 0);
-                call_vtbl(bact, 2, 0x80002015, v8->pow_delay, 0);
-                call_vtbl(bact, 2, 0x80002017, v8->cpl_delay, 0);
-                call_vtbl(bact, 2, 0x80002016, v8->rad_delay, 0);
-                call_vtbl(bact, 2, 0x80002018, v8->def_delay, 0);
-                call_vtbl(bact, 2, 0x80002019, v8->con_delay, 0);
-                call_vtbl(bact, 2, 0x8000201B, v8->rec_delay, 0);
-                call_vtbl(bact, 2, 0x8000201A, v8->rob_delay, 0);
+                robo->setROBO_epConquer(v8->con_budget);
+                robo->setROBO_epDefense(v8->def_budget);
+                robo->setROBO_epRadar(v8->rad_budget);
+                robo->setROBO_epPower(v8->pow_budget);
+                robo->setROBO_epSafety(v8->saf_budget);
+                robo->setROBO_epChangeplace(v8->cpl_budget);
+                robo->setROBO_epRobo(v8->rob_budget);
+                robo->setROBO_epReconnoitre(v8->rec_budget);
+                robo->setROBO_viewAngle(v8->viewangle);
+                robo->setROBO_safDelay(v8->saf_delay);
+                robo->setROBO_powDelay(v8->pow_delay);
+                robo->setROBO_cplDelay(v8->cpl_delay);
+                robo->setROBO_radDelay(v8->rad_delay);
+                robo->setROBO_defDelay(v8->def_delay);
+                robo->setROBO_conDelay(v8->con_delay);
+                robo->setROBO_recDelay(v8->rec_delay);
+                robo->setROBO_robDelay(v8->rob_delay);
 
                 if ( !i )
                 {
-                    bact->setBACT_viewer(1);
-                    bact->setBACT_inputting(1);
+                    robo->setBACT_viewer(1);
+                    robo->setBACT_inputting(1);
                 }
             }
         }
@@ -2844,12 +2844,11 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
             {
                 NC_STACK_ypagun *commander = NULL;
 
-                int v39;
-                call_vtbl(robo, 3, 0x80002007, &v39, 0);
+                int v39 = robo->getROBO_commCount();
 
                 v39++;
 
-                call_vtbl(robo, 2, 0x80002007, v39, 0);
+                robo->setROBO_commCount(v39);
 
                 int v52 = 0;
 
@@ -3796,8 +3795,9 @@ void ypaworld_func64__sub2(_NC_STACK_ypaworld *yw)
 
     if ( yw->field_1b78 != yw->field_1b7c )
     {
-        roboGun *guns = NULL;
-        call_vtbl(yw->field_1b78, 3, 0x8000200E, &guns, 0);
+        NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
+
+        roboGun *guns = robo->getROBO_guns();
 
         if ( guns )
         {
@@ -4512,8 +4512,7 @@ void sub_4F1BE8(_NC_STACK_ypaworld *yw, bact_node *bct)
 
         if ( a4 )
         {
-            roboGun *v4;
-            call_vtbl(bct->bact->host_station, 3, 0x8000200E, &v4, 0);
+            roboGun *v4 = bct->bact->host_station->getROBO_guns();
 
             for (int i = 0; i < 8; i++)
             {
@@ -4562,8 +4561,9 @@ void sub_4C8EB4(_NC_STACK_ypaworld *yw, bact_node *bct)
 
     if ( bct->bact->field_24 == 3 )
     {
-        roboGun *a4;
-        call_vtbl(bct->bacto, 3, 0x8000200E, &a4, 0);
+        NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(bct->bacto);
+
+        roboGun *a4 = robo->getROBO_guns();
 
         for (int i = 0; i < 8; i++)
             a4[i].gun_obj = NULL;

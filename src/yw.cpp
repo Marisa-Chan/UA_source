@@ -2833,7 +2833,7 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
 
     yw->netgame_exclusivegem = ypaworld_keys[0].value.val;
 
-    call_vtbl(this, 3, 0x80002018, &ypaworld__string_pointers, 0);
+    ypaworld__string_pointers = getYW_localeStrings();
 
     init_list(&usr->files_list);
     init_list(&usr->video_mode_list);
@@ -7385,10 +7385,12 @@ size_t NC_STACK_ypaworld::ypaworld_func168(__NC_STACK_ypabact **pbact)
             {
                 yw->field_2d90->field_40 = 1;
                 yw->field_2d90->field_4C = cell->w_id;
-                yw->field_2d90->field_64 = bact->energy;
+                yw->field_2d90->field_64 = yw->field_1b80->energy;
 
-                call_vtbl(bact->self, 3, 0x80002008, &yw->field_2d90->field_70, 0);
-                call_vtbl(bact->self, 3, 0x8000200A, &yw->field_2d90->field_70, 0);
+                NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
+
+                yw->field_2d90->field_70 = robo->getROBO_battVehicle();
+                yw->field_2d90->field_70 = robo->getROBO_battBeam(); //CHECK IT
             }
             else
             {
@@ -7660,7 +7662,7 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
     bact_id++;
 
     if ( dword_5A7A84 )
-        call_vtbl(dword_5A7A84, 2, 0x80002007, dword_5A7A80, 0);
+        dword_5A7A84->setROBO_commCount(dword_5A7A80);
 
     ypaworld_func169__sub2(yw);
 

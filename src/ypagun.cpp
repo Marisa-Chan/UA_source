@@ -889,8 +889,7 @@ void NC_STACK_ypagun::ypabact_func77(void *)
 
         if ( gun->field_39 & 2 )
         {
-            roboGun *a4;
-            call_vtbl(bact->host_station, 3, 0x8000200E, &a4, 0);
+            roboGun *a4 = bact->host_station->getROBO_guns();
 
             for (int i = 0; i < 8; i++)
             {

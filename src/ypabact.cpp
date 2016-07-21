@@ -7346,12 +7346,11 @@ void NC_STACK_ypabact::ypabact_func109(bact_arg109 *arg)
                 {
                     if ( bact->host_station != bact->parent_bacto )
                     {
-                        int a4;
-                        call_vtbl(bact->host_station, 3, 0x80002007, &a4, 0);
+                        int a4 = bact->host_station->getROBO_commCount();
 
                         bact->field_2E = a4;
 
-                        call_vtbl(bact->host_station, 2, 0x80002007, a4 + 1, 0);
+                        bact->host_station->setROBO_commCount(a4 + 1);
                     }
                     sub_493480(bact, bact, 2);
                 }
@@ -7379,11 +7378,10 @@ void NC_STACK_ypabact::ypabact_func109(bact_arg109 *arg)
                 bact->host_station->ypabact_func72(bact->self);
             }
 
-            int a4;
-            call_vtbl(bact->host_station, 3, 0x80002007, &a4, 0);
+            int a4 = bact->host_station->getROBO_commCount();
             bact->field_2E = a4;
             bact->field_2E |= bact->owner << 24;
-            call_vtbl(bact->host_station, 2, 0x80002007, a4 + 1, 0);
+            bact->host_station->setROBO_commCount(a4 + 1);
             sub_493480(bact, bact, 3);
         }
         break;

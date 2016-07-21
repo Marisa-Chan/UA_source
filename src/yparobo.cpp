@@ -35,8 +35,9 @@ rbo_xy word_5182AE[8] = { {-1, -1}, {0, -1}, {1, -1}, {-1, 0},
 };
 
 
-void  yparobo_func0__sub1(NC_STACK_yparobo *obj, __NC_STACK_yparobo *robo, stack_vals *stak)
+void NC_STACK_yparobo::yparobo_func0__sub1(stack_vals *stak)
 {
+    __NC_STACK_yparobo *robo = &stack__yparobo;
     robo->field_1E7 = 30;
     robo->field_1EA = 90;
     robo->field_1e8 = 30;
@@ -69,132 +70,105 @@ void  yparobo_func0__sub1(NC_STACK_yparobo *obj, __NC_STACK_yparobo *robo, stack
             default:
                 break;
 
-            case 0x80001001:
+            case BACT_ATT_WORLD:
                 robo->wrld = (NC_STACK_ypaworld *)stk->value;
                 robo->wrld_yw = &robo->wrld->stack__ypaworld;
                 break;
 
-            case 0x80001005:
-                if ( stk->value )
-                {
-                    robo->wrld->setYW_userHostStation(obj);
-
-                    robo->field_1DB |= 0x4000;
-                }
+            case BACT_ATT_INPUTTING:
+                setBACT_inputting(stk->value);
                 break;
 
-            case 0x80002002:
-                robo->field_1E7 = stk->value;
+            case ROBO_ATT_EP_CONQUER:
+                setROBO_epConquer(stk->value);
                 break;
 
-            case 0x80002003:
-                robo->field_1EA = stk->value;
+            case ROBO_ATT_EP_DEFENSE:
+                setROBO_epDefense(stk->value);
                 break;
 
-            case 0x80002004:
-                robo->field_1e8 = stk->value;
+            case ROBO_ATT_EP_RADAR:
+                setROBO_epRadar(stk->value);
                 break;
 
-            case 0x80002005:
-                robo->field_1E9 = stk->value;
+            case ROBO_ATT_EP_POWER:
+                setROBO_epPower(stk->value);
                 break;
 
-            case 0x80002006:
-                robo->field_1EB = stk->value;
+            case ROBO_ATT_EP_SAFETY:
+                setROBO_epSafety(stk->value);
                 break;
 
-            case 0x80002008:
-                robo->field_4F5 = stk->value;
+            case ROBO_ATT_BATT_VEHICLE:
+                setROBO_battVehicle(stk->value);
                 break;
 
-            case 0x80002009:
-                robo->field_4F9 = stk->value;
+            case ROBO_ATT_BATT_BUILDING:
+                setROBO_battBuilding(stk->value);
                 break;
 
-            case 0x8000200A:
-                robo->field_4FD = stk->value;
+            case ROBO_ATT_BATT_BEAM:
+                setROBO_battBeam(stk->value);
                 break;
 
-            case 0x8000200B:
-                robo->field_501 = stk->value;
+            case ROBO_ATT_FILL_MODE:
+                setROBO_fillMode(stk->value);
                 break;
 
-            case 0x8000200C:
-                if ( stk->value )
-                    robo->field_1DA |= 1;
-                else
-                    robo->field_1DA &= 0xFE;
+            case ROBO_ATT_WAIT_SWAY:
+                setROBO_waitSway( stk->value );
                 break;
 
-            case 0x8000200D:
-                if ( stk->value )
-                    robo->field_1DA |= 2;
-                else
-                    robo->field_1DA &= 0xFD;
+            case ROBO_ATT_WAIT_ROTATE:
+                setROBO_waitRotate( stk->value );
                 break;
 
-            case 0x8000200F:
-                robo->field_1ED = stk->value;
+            case ROBO_ATT_EP_CHANGEPLACE:
+                setROBO_epChangeplace(stk->value);
                 break;
 
-            case 0x80002010:
-                robo->field_1ec = stk->value;
+            case ROBO_ATT_EP_RECONNOITRE:
+                setROBO_epReconnoitre(stk->value);
                 break;
 
-            case 0x80002011:
-                robo->field_1EE = stk->value;
+            case ROBO_ATT_EP_ROBO:
+                setROBO_epRobo(stk->value);
                 break;
 
-            case 0x80002013:
-            {
-                __NC_STACK_ypabact *bact = robo->bact_internal;
-
-                bact->field_5C9.m00 = 1.0;
-                bact->field_5C9.m01 = 0;
-                bact->field_5C9.m02 = 0;
-                bact->field_5C9.m10 = 0;
-                bact->field_5C9.m11 = 1.0;
-                bact->field_5C9.m12 = 0;
-                bact->field_5C9.m20 = 0;
-                bact->field_5C9.m21 = 0;
-                bact->field_5C9.m22 = 1.0;
-
-                robo->bact_internal->field_5ED = stk->value * 3.141592653589793 / 180.0;
-
-                mat_rotate_y(&robo->bact_internal->field_5C9, robo->bact_internal->field_5ED);
-            }
-            break;
-
-            case 0x80002014:
-                robo->field_24D = stk->value;
+            case ROBO_ATT_VIEWANGLE:
+                setROBO_viewAngle(stk->value);
                 break;
 
-            case 0x80002015:
-                robo->field_265 = stk->value;
+            case ROBO_ATT_SAFDELAY:
+                setROBO_safDelay(stk->value);
                 break;
 
-            case 0x80002016:
-                robo->field_235 = stk->value;
+            case ROBO_ATT_POWDELAY:
+                setROBO_powDelay(stk->value);
                 break;
 
-            case 0x80002017:
-                robo->field_2B1 = stk->value;
+            case ROBO_ATT_RADDELAY:
+                setROBO_radDelay(stk->value);
                 break;
 
-            case 0x80002018:
-                robo->field_281 = stk->value;
+            case ROBO_ATT_CPLDELAY:
+                setROBO_cplDelay(stk->value);
                 break;
 
-            case 0x80002019:
-                robo->field_299 = stk->value;
+            case ROBO_ATT_DEFDELAY:
+                setROBO_defDelay(stk->value);
                 break;
 
-            case 0x8000201A:
-                robo->field_2E1 = stk->value;
+            case ROBO_ATT_CONDELAY:
+                setROBO_conDelay(stk->value);
                 break;
 
-            case 0x8000201B:
-                robo->field_2C9 = stk->value;
+            case ROBO_ATT_ROBDELAY:
+                setROBO_robDelay(stk->value);
+                break;
+
+            case ROBO_ATT_RECDELAY:
+                setROBO_recDelay(stk->value);
                 break;
             }
 
@@ -228,7 +202,7 @@ size_t NC_STACK_yparobo::func0(stack_vals *stak)
     robo->bact_internal = bact_int;
     robo->roboo = this;
 
-    yparobo_func0__sub1(this, robo, stak);
+    yparobo_func0__sub1(stak);
 
     robo->bact_internal->field_24 = 3;
 
@@ -245,7 +219,7 @@ size_t NC_STACK_yparobo::func1(stack_vals *stak)
 }
 
 
-void  yparobo_func2__sub0(NC_STACK_yparobo *obj, __NC_STACK_yparobo *robo, stack_vals *stak)
+void  NC_STACK_yparobo::yparobo_func2__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -269,224 +243,108 @@ void  yparobo_func2__sub0(NC_STACK_yparobo *obj, __NC_STACK_yparobo *robo, stack
             default:
                 break;
 
-            case 0x80001005:
-                if ( stk->value )
-                {
-                    robo->wrld->setYW_userHostStation(obj);
-
-                    robo->field_1DB |= 0x4000;
-                }
+            case BACT_ATT_INPUTTING:
+                setBACT_inputting(stk->value);
                 break;
 
-            case 0x80002001:
-            {
-                roboProto *roboproto = (roboProto *)stk->value;
-                for (int i = 0; i < 8; i++)
-                {
-                    if ( robo->guns[i].gun_obj )
-                    {
-                        __NC_STACK_ypabact *gun_bact = robo->guns[i].gun_obj->getBACT_pBact();
-
-                        if ( !( gun_bact->field_3D6 & 0x400 ) )
-                            robo->guns[i].gun_obj->ypabact_func77(NULL);
-
-                        obj->ypabact_func118(robo->guns[i].gun_obj);
-
-                        robo->guns[i].gun_obj = NULL;
-                    }
-                }
-
-                __NC_STACK_ypabact *bact = robo->bact_internal;
-
-                for (int i = 0; i < roboproto->robo_num_guns; i++)
-                {
-                    robo->guns[i] = roboproto->guns[i];
-
-                    ypaworld_arg146 gun_req;
-
-                    gun_req.pos.sx = bact->field_621.sx
-                                     + bact->field_651.m00 * robo->guns[i].pos.sx
-                                     + bact->field_651.m10 * robo->guns[i].pos.sy
-                                     + bact->field_651.m20 * robo->guns[i].pos.sz;
-
-                    gun_req.pos.sy = bact->field_621.sy
-                                     + bact->field_651.m01 * robo->guns[i].pos.sx
-                                     + bact->field_651.m11 * robo->guns[i].pos.sy
-                                     + bact->field_651.m21 * robo->guns[i].pos.sz;
-
-                    gun_req.pos.sz = bact->field_621.sz
-                                     + bact->field_651.m02 * robo->guns[i].pos.sx
-                                     + bact->field_651.m12 * robo->guns[i].pos.sy
-                                     + bact->field_651.m22 * robo->guns[i].pos.sz;
-
-                    gun_req.vehicle_id = robo->guns[i].robo_gun_type;
-
-                    NC_STACK_ypagun *gun_obj = (NC_STACK_ypagun *)robo->wrld->ypaworld_func146(&gun_req);
-
-                    robo->guns[i].gun_obj = gun_obj;
-
-                    if ( gun_obj )
-                    {
-                        gun_arg128 v34;
-                        v34.dir = robo->guns[i].dir;
-                        v34.field_0 = 0;
-                        gun_obj->ypagun_func128(&v34);
-
-                        call_vtbl(gun_obj, 2, 0x80002006, 1, 0);
-
-                        __NC_STACK_ypabact *gun_bact = gun_obj->getBACT_pBact();
-
-                        gun_bact->owner = bact->owner;
-                        gun_bact->field_2E = dword_5B1128;
-                        gun_bact->host_station = obj;
-
-                        dword_5B1128++;
-
-                        if ( robo->wrld->stack__ypaworld.field_757E )
-                        {
-                            gun_bact->ypabact__id |= gun_bact->owner << 24;
-                            gun_bact->field_2E |= gun_bact->owner << 24;
-                        }
-
-                        gun_bact->field_3D4 = 60;
-
-                        obj->ypabact_func72(gun_obj);
-                    }
-                    else
-                    {
-                        ypa_log_out("Unable to create Robo-Gun\n");
-                    }
-                }
-
-                robo->dock_pos = roboproto->dock;
-                bact->viewer = roboproto->viewer;
-                bact->viewer_max_up = roboproto->robo_viewer_max_up;
-                bact->viewer_max_down = roboproto->robo_viewer_max_down;
-                bact->viewer_max_side = roboproto->robo_viewer_max_side;
-
-                obj->setBACT_extraViewer(1);
-                obj->setBACT_alwaysRender(1);
-
-                robo->coll = roboproto->coll;
-            }
-            break;
-
-            case 0x80002002:
-                robo->field_1E7 = stk->value;
+            case ROBO_ATT_PROTO:
+                setROBO_proto((roboProto *)stk->value);
                 break;
 
-            case 0x80002003:
-                robo->field_1EA = stk->value;
+            case ROBO_ATT_EP_CONQUER:
+                setROBO_epConquer(stk->value);
                 break;
 
-            case 0x80002004:
-                robo->field_1e8 = stk->value;
+            case ROBO_ATT_EP_DEFENSE:
+                setROBO_epDefense(stk->value);
                 break;
 
-            case 0x80002005:
-                robo->field_1E9 = stk->value;
+            case ROBO_ATT_EP_RADAR:
+                setROBO_epRadar(stk->value);
                 break;
 
-            case 0x80002006:
-                robo->field_1EB = stk->value;
+            case ROBO_ATT_EP_POWER:
+                setROBO_epPower(stk->value);
                 break;
 
-            case 0x80002007:
-                dword_5B1128 = stk->value;
+            case ROBO_ATT_EP_SAFETY:
+                setROBO_epSafety(stk->value);
                 break;
 
-            case 0x80002008:
-                robo->field_4F5 = stk->value;
+            case ROBO_ATT_COMM_COUNT:
+                setROBO_commCount(stk->value);
                 break;
 
-            case 0x80002009:
-                robo->field_4F9 = stk->value;
+            case ROBO_ATT_BATT_VEHICLE:
+                setROBO_battVehicle(stk->value);
                 break;
 
-            case 0x8000200A:
-                robo->field_4FD = stk->value;
+            case ROBO_ATT_BATT_BUILDING:
+                setROBO_battBuilding(stk->value);
                 break;
 
-            case 0x8000200B:
-                robo->field_501 = stk->value;
+            case ROBO_ATT_BATT_BEAM:
+                setROBO_battBeam(stk->value);
                 break;
 
-            case 0x8000200C:
-                if ( stk->value )
-                    robo->field_1DA |= 1;
-                else
-                    robo->field_1DA &= 0xFE;
+            case ROBO_ATT_FILL_MODE:
+                setROBO_fillMode(stk->value);
                 break;
 
-            case 0x8000200D:
-                if ( stk->value )
-                    robo->field_1DA |= 2;
-                else
-                    robo->field_1DA &= 0xFD;
+            case ROBO_ATT_WAIT_SWAY:
+                setROBO_waitSway( stk->value );
                 break;
 
-            case 0x8000200F:
-                robo->field_1ED = stk->value;
+            case ROBO_ATT_WAIT_ROTATE:
+                setROBO_waitRotate( stk->value );
                 break;
 
-            case 0x80002010:
-                robo->field_1ec = stk->value;
+            case ROBO_ATT_EP_CHANGEPLACE:
+                setROBO_epChangeplace(stk->value);
                 break;
 
-            case 0x80002011:
-                robo->field_1EE = stk->value;
+            case ROBO_ATT_EP_RECONNOITRE:
+                setROBO_epReconnoitre(stk->value);
                 break;
 
-            case 0x80002013:
-            {
-                __NC_STACK_ypabact *bact = robo->bact_internal;
-
-                bact->field_5C9.m00 = 1.0;
-                bact->field_5C9.m01 = 0;
-                bact->field_5C9.m02 = 0;
-                bact->field_5C9.m10 = 0;
-                bact->field_5C9.m11 = 1.0;
-                bact->field_5C9.m12 = 0;
-                bact->field_5C9.m20 = 0;
-                bact->field_5C9.m21 = 0;
-                bact->field_5C9.m22 = 1.0;
-
-                robo->bact_internal->field_5ED = stk->value * 3.141592653589793 / 180.0;
-
-                mat_rotate_y(&robo->bact_internal->field_5C9, robo->bact_internal->field_5ED);
-            }
-            break;
-
-            case 0x80002014:
-                robo->field_24D = stk->value;
+            case ROBO_ATT_EP_ROBO:
+                setROBO_epRobo(stk->value);
                 break;
 
-            case 0x80002015:
-                robo->field_265 = stk->value;
+            case ROBO_ATT_VIEWANGLE:
+                setROBO_viewAngle(stk->value);
                 break;
 
-            case 0x80002016:
-                robo->field_235 = stk->value;
+            case ROBO_ATT_SAFDELAY:
+                setROBO_safDelay(stk->value);
                 break;
 
-            case 0x80002017:
-                robo->field_2B1 = stk->value;
+            case ROBO_ATT_POWDELAY:
+                setROBO_powDelay(stk->value);
                 break;
 
-            case 0x80002018:
-                robo->field_281 = stk->value;
+            case ROBO_ATT_RADDELAY:
+                setROBO_radDelay(stk->value);
                 break;
 
-            case 0x80002019:
-                robo->field_299 = stk->value;
+            case ROBO_ATT_CPLDELAY:
+                setROBO_cplDelay(stk->value);
                 break;
 
-            case 0x8000201A:
-                robo->field_2E1 = stk->value;
+            case ROBO_ATT_DEFDELAY:
+                setROBO_defDelay(stk->value);
                 break;
 
-            case 0x8000201B:
-                robo->field_2C9 = stk->value;
+            case ROBO_ATT_CONDELAY:
+                setROBO_conDelay(stk->value);
+                break;
+
+            case ROBO_ATT_ROBDELAY:
+                setROBO_robDelay(stk->value);
+                break;
+
+            case ROBO_ATT_RECDELAY:
+                setROBO_recDelay(stk->value);
                 break;
             }
 
@@ -498,11 +356,11 @@ void  yparobo_func2__sub0(NC_STACK_yparobo *obj, __NC_STACK_yparobo *robo, stack
 size_t NC_STACK_yparobo::func2(stack_vals *stak)
 {
     NC_STACK_ypabact::func2(stak);
-    yparobo_func2__sub0(this, &this->stack__yparobo, stak);
+    yparobo_func2__sub0(stak);
     return 1;
 }
 
-void yparobo_func3__sub0(NC_STACK_yparobo *obj, __NC_STACK_yparobo *robo, stack_vals *stak)
+void NC_STACK_yparobo::yparobo_func3__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -523,112 +381,112 @@ void yparobo_func3__sub0(NC_STACK_yparobo *obj, __NC_STACK_yparobo *robo, stack_
         {
             switch ( stk->id )
             {
-            case 0x8000100E:
-                *(rbcolls **)stk->value = &robo->coll;
+            case BACT_ATT_COLLNODES:
+                *(rbcolls **)stk->value = getBACT_collNodes();
                 break;
 
-            case 0x80002002:
-                *(int *)stk->value = robo->field_1E7;
+            case ROBO_ATT_EP_CONQUER:
+                *(int *)stk->value = getROBO_epConquer();
                 break;
 
-            case 0x80002003:
-                *(int *)stk->value = robo->field_1EA;
+            case ROBO_ATT_EP_DEFENSE:
+                *(int *)stk->value = getROBO_epDefense();
                 break;
 
-            case 0x80002004:
-                *(int *)stk->value = robo->field_1e8;
+            case ROBO_ATT_EP_RADAR:
+                *(int *)stk->value = getROBO_epRadar();
                 break;
 
-            case 0x80002005:
-                *(int *)stk->value = robo->field_1E9;
+            case ROBO_ATT_EP_POWER:
+                *(int *)stk->value = getROBO_epPower();
                 break;
 
-            case 0x80002006:
-                *(int *)stk->value = robo->field_1EB;
+            case ROBO_ATT_EP_SAFETY:
+                *(int *)stk->value = getROBO_epSafety();
                 break;
 
-            case 0x80002007:
-                *(int *)stk->value = dword_5B1128;
+            case ROBO_ATT_COMM_COUNT:
+                *(int *)stk->value = getROBO_commCount();
                 break;
 
-            case 0x80002008:
-                *(int *)stk->value = robo->field_4F5;
+            case ROBO_ATT_BATT_VEHICLE:
+                *(int *)stk->value = getROBO_battVehicle();
                 break;
 
-            case 0x80002009:
-                *(int *)stk->value = robo->field_4F9;
+            case ROBO_ATT_BATT_BUILDING:
+                *(int *)stk->value = getROBO_battBuilding();
                 break;
 
-            case 0x8000200A:
-                *(int *)stk->value = robo->field_4FD;
+            case ROBO_ATT_BATT_BEAM:
+                *(int *)stk->value = getROBO_battBeam();
                 break;
 
-            case 0x8000200B:
-                *(int *)stk->value = robo->field_501;
+            case ROBO_ATT_FILL_MODE:
+                *(int *)stk->value = getROBO_fillMode();
                 break;
 
-            case 0x8000200E:
-                *(roboGun **)stk->value = robo->guns;
+            case ROBO_ATT_GUNS:
+                *(roboGun **)stk->value = getROBO_guns();
                 break;
 
-            case 0x8000200F:
-                *(int *)stk->value = robo->field_1ED;
+            case ROBO_ATT_EP_CHANGEPLACE:
+                *(int *)stk->value = getROBO_epChangeplace();
                 break;
 
-            case 0x80002010:
-                *(int *)stk->value = robo->field_1ec;
+            case ROBO_ATT_EP_RECONNOITRE:
+                *(int *)stk->value = getROBO_epReconnoitre();
                 break;
 
-            case 0x80002011:
-                *(int *)stk->value = robo->field_1EE;
+            case ROBO_ATT_EP_ROBO:
+                *(int *)stk->value = getROBO_epRobo();
                 break;
 
-            case 0x80002012:
-                *(int *)stk->value = robo->field_1DB;
+            case ROBO_ATT_ROBOSTATE:
+                *(int *)stk->value = getROBO_roboState();
                 break;
 
-            case 0x80002014:
-                *(int *)stk->value = robo->field_24D;
+            case ROBO_ATT_SAFDELAY:
+                *(int *)stk->value = getROBO_safDelay();
                 break;
 
-            case 0x80002015:
-                *(int *)stk->value = robo->field_265;
+            case ROBO_ATT_POWDELAY:
+                *(int *)stk->value = getROBO_powDelay();
                 break;
 
-            case 0x80002016:
-                *(int *)stk->value = robo->field_235;
+            case ROBO_ATT_RADDELAY:
+                *(int *)stk->value = getROBO_radDelay();
                 break;
 
-            case 0x80002017:
-                *(int *)stk->value = robo->field_2B1;
+            case ROBO_ATT_CPLDELAY:
+                *(int *)stk->value = getROBO_cplDelay();
                 break;
 
-            case 0x80002018:
-                *(int *)stk->value = robo->field_281;
+            case ROBO_ATT_DEFDELAY:
+                *(int *)stk->value = getROBO_defDelay();
                 break;
 
-            case 0x80002019:
-                *(int *)stk->value = robo->field_299;
+            case ROBO_ATT_CONDELAY:
+                *(int *)stk->value = getROBO_conDelay();
                 break;
 
-            case 0x8000201A:
-                *(int *)stk->value = robo->field_2E1;
+            case ROBO_ATT_ROBDELAY:
+                *(int *)stk->value = getROBO_robDelay();
                 break;
 
-            case 0x8000201B:
-                *(int *)stk->value = robo->field_2C9;
+            case ROBO_ATT_RECDELAY:
+                *(int *)stk->value = getROBO_recDelay();
                 break;
 
-            case 0x8000201C:
-                *(int *)stk->value = robo->field_502;
+            case ROBO_ATT_LOADFLAGS:
+                *(int *)stk->value = getROBO_loadFlags();
                 break;
 
-            case 0x8000201D:
-                *(int *)stk->value = robo->field_503;
+            case ROBO_ATT_LOSSFLAGS:
+                *(int *)stk->value = getROBO_lossFlags();
                 break;
 
-            case 0x8000201E:
-                *(int *)stk->value = robo->field_505;
+            case ROBO_ATT_ABSRELOAD:
+                *(int *)stk->value = getROBO_absReload();
                 break;
             }
 
@@ -640,7 +498,7 @@ void yparobo_func3__sub0(NC_STACK_yparobo *obj, __NC_STACK_yparobo *robo, stack_
 size_t NC_STACK_yparobo::func3(stack_vals *stak)
 {
     NC_STACK_ypabact::func3(stak);
-    yparobo_func3__sub0(this, &this->stack__yparobo, stak);
+    yparobo_func3__sub0(stak);
     return 1;
 }
 
@@ -6919,8 +6777,6 @@ int NC_STACK_yparobo::yparobo_func133(robo_arg133 *arg)
     int curid = 0;
     int col = sqrt(arg->num) + 2;
 
-    //call_vtbl(robo->wrld, 3, 0x80002014, &vhclprotos, 0);
-
     ypaworld_arg146 arg146;
     arg146.pos.sy = arg->pos.sy;
     arg146.pos.sx = 100 * (curid % col - col / 2) + arg->pos.sx;
@@ -7313,19 +7169,384 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
 
 void NC_STACK_yparobo::setBACT_inputting(int inpt)
 {
+    NC_STACK_ypabact::setBACT_inputting(inpt);
+
     if ( inpt )
     {
         stack__yparobo.wrld->setYW_userHostStation(this);
 
         stack__yparobo.field_1DB |= 0x4000;
     }
-
-    NC_STACK_ypabact::setBACT_inputting(inpt);
 }
+
+void NC_STACK_yparobo::setROBO_proto(roboProto *proto)
+{
+    __NC_STACK_yparobo *robo = &stack__yparobo;
+
+    for (int i = 0; i < 8; i++)
+    {
+        if ( robo->guns[i].gun_obj )
+        {
+            __NC_STACK_ypabact *gun_bact = robo->guns[i].gun_obj->getBACT_pBact();
+
+            if ( !( gun_bact->field_3D6 & 0x400 ) )
+                robo->guns[i].gun_obj->ypabact_func77(NULL);
+
+            ypabact_func118(robo->guns[i].gun_obj);
+
+            robo->guns[i].gun_obj = NULL;
+        }
+    }
+
+    __NC_STACK_ypabact *bact = robo->bact_internal;
+
+    for (int i = 0; i < proto->robo_num_guns; i++)
+    {
+        robo->guns[i] = proto->guns[i];
+
+        ypaworld_arg146 gun_req;
+
+        gun_req.pos.sx = bact->field_621.sx
+                         + bact->field_651.m00 * robo->guns[i].pos.sx
+                         + bact->field_651.m10 * robo->guns[i].pos.sy
+                         + bact->field_651.m20 * robo->guns[i].pos.sz;
+
+        gun_req.pos.sy = bact->field_621.sy
+                         + bact->field_651.m01 * robo->guns[i].pos.sx
+                         + bact->field_651.m11 * robo->guns[i].pos.sy
+                         + bact->field_651.m21 * robo->guns[i].pos.sz;
+
+        gun_req.pos.sz = bact->field_621.sz
+                         + bact->field_651.m02 * robo->guns[i].pos.sx
+                         + bact->field_651.m12 * robo->guns[i].pos.sy
+                         + bact->field_651.m22 * robo->guns[i].pos.sz;
+
+        gun_req.vehicle_id = robo->guns[i].robo_gun_type;
+
+        NC_STACK_ypagun *gun_obj = (NC_STACK_ypagun *)robo->wrld->ypaworld_func146(&gun_req);
+
+        robo->guns[i].gun_obj = gun_obj;
+
+        if ( gun_obj )
+        {
+            gun_arg128 v34;
+            v34.dir = robo->guns[i].dir;
+            v34.field_0 = 0;
+            gun_obj->ypagun_func128(&v34);
+
+            call_vtbl(gun_obj, 2, 0x80002006, 1, 0);
+
+            __NC_STACK_ypabact *gun_bact = gun_obj->getBACT_pBact();
+
+            gun_bact->owner = bact->owner;
+            gun_bact->field_2E = dword_5B1128;
+            gun_bact->host_station = this;
+
+            dword_5B1128++;
+
+            if ( robo->wrld->stack__ypaworld.field_757E )
+            {
+                gun_bact->ypabact__id |= gun_bact->owner << 24;
+                gun_bact->field_2E |= gun_bact->owner << 24;
+            }
+
+            gun_bact->field_3D4 = 60;
+
+            ypabact_func72(gun_obj);
+        }
+        else
+        {
+            ypa_log_out("Unable to create Robo-Gun\n");
+        }
+    }
+
+    robo->dock_pos = proto->dock;
+    bact->viewer = proto->viewer;
+    bact->viewer_max_up = proto->robo_viewer_max_up;
+    bact->viewer_max_down = proto->robo_viewer_max_down;
+    bact->viewer_max_side = proto->robo_viewer_max_side;
+
+    setBACT_extraViewer(1);
+    setBACT_alwaysRender(1);
+
+    robo->coll = proto->coll;
+}
+
+void NC_STACK_yparobo::setROBO_epConquer(int ep)
+{
+    stack__yparobo.field_1E7 = ep;
+}
+
+void NC_STACK_yparobo::setROBO_epDefense(int ep)
+{
+    stack__yparobo.field_1EA = ep;
+}
+
+void NC_STACK_yparobo::setROBO_epRadar(int ep)
+{
+    stack__yparobo.field_1e8 = ep;
+}
+
+void NC_STACK_yparobo::setROBO_epPower(int ep)
+{
+    stack__yparobo.field_1E9 = ep;
+}
+
+void NC_STACK_yparobo::setROBO_epSafety(int ep)
+{
+    stack__yparobo.field_1EB = ep;
+}
+
+void NC_STACK_yparobo::setROBO_commCount(int comm)
+{
+    dword_5B1128 = comm;
+}
+
+void NC_STACK_yparobo::setROBO_battVehicle(int batt)
+{
+    stack__yparobo.field_4F5 = batt;
+}
+
+void NC_STACK_yparobo::setROBO_battBuilding(int batt)
+{
+    stack__yparobo.field_4F9 = batt;
+}
+
+void NC_STACK_yparobo::setROBO_battBeam(int batt)
+{
+    stack__yparobo.field_4FD = batt;
+}
+
+void NC_STACK_yparobo::setROBO_fillMode(int fil)
+{
+    stack__yparobo.field_501 = fil;
+}
+
+void NC_STACK_yparobo::setROBO_waitSway(int wait)
+{
+    if ( wait )
+        stack__yparobo.field_1DA |= 1;
+    else
+        stack__yparobo.field_1DA &= ~1;
+}
+
+void NC_STACK_yparobo::setROBO_waitRotate(int wait)
+{
+    if ( wait )
+        stack__yparobo.field_1DA |= 2;
+    else
+        stack__yparobo.field_1DA &= ~2;
+}
+
+void NC_STACK_yparobo::setROBO_epChangeplace(int ep)
+{
+    stack__yparobo.field_1ED = ep;
+}
+
+void NC_STACK_yparobo::setROBO_epReconnoitre(int ep)
+{
+    stack__yparobo.field_1ec = ep;
+}
+
+void NC_STACK_yparobo::setROBO_epRobo(int ep)
+{
+    stack__yparobo.field_1EE = ep;
+}
+
+void NC_STACK_yparobo::setROBO_viewAngle(int angl)
+{
+    __NC_STACK_ypabact *bact = &stack__ypabact;
+
+    bact->field_5C9.m00 = 1.0;
+    bact->field_5C9.m01 = 0;
+    bact->field_5C9.m02 = 0;
+    bact->field_5C9.m10 = 0;
+    bact->field_5C9.m11 = 1.0;
+    bact->field_5C9.m12 = 0;
+    bact->field_5C9.m20 = 0;
+    bact->field_5C9.m21 = 0;
+    bact->field_5C9.m22 = 1.0;
+
+    bact->field_5ED = angl * 3.141592653589793 / 180.0;
+
+    mat_rotate_y(&bact->field_5C9, bact->field_5ED);
+}
+
+void NC_STACK_yparobo::setROBO_safDelay(int delay)
+{
+    stack__yparobo.field_24D = delay;
+}
+
+void NC_STACK_yparobo::setROBO_powDelay(int delay)
+{
+    stack__yparobo.field_265 = delay;
+}
+
+void NC_STACK_yparobo::setROBO_radDelay(int delay)
+{
+    stack__yparobo.field_235 = delay;
+}
+
+void NC_STACK_yparobo::setROBO_cplDelay(int delay)
+{
+    stack__yparobo.field_2B1 = delay;
+}
+
+void NC_STACK_yparobo::setROBO_defDelay(int delay)
+{
+    stack__yparobo.field_281 = delay;
+}
+
+void NC_STACK_yparobo::setROBO_conDelay(int delay)
+{
+    stack__yparobo.field_299 = delay;
+}
+
+void NC_STACK_yparobo::setROBO_robDelay(int delay)
+{
+    stack__yparobo.field_2E1 = delay;
+}
+
+void NC_STACK_yparobo::setROBO_recDelay(int delay)
+{
+    stack__yparobo.field_2C9 = delay;
+}
+
+
 
 rbcolls *NC_STACK_yparobo::getBACT_collNodes()
 {
     return &stack__yparobo.coll;
+}
+
+int NC_STACK_yparobo::getROBO_epConquer()
+{
+    return stack__yparobo.field_1E7;
+}
+
+int NC_STACK_yparobo::getROBO_epDefense()
+{
+    return stack__yparobo.field_1EA;
+}
+
+int NC_STACK_yparobo::getROBO_epRadar()
+{
+    return stack__yparobo.field_1e8;
+}
+
+int NC_STACK_yparobo::getROBO_epPower()
+{
+    return stack__yparobo.field_1E9;
+}
+
+int NC_STACK_yparobo::getROBO_epSafety()
+{
+    return stack__yparobo.field_1EB;
+}
+
+int NC_STACK_yparobo::getROBO_commCount()
+{
+    return dword_5B1128;
+}
+
+int NC_STACK_yparobo::getROBO_battVehicle()
+{
+    return stack__yparobo.field_4F5;
+}
+
+int NC_STACK_yparobo::getROBO_battBuilding()
+{
+    return stack__yparobo.field_4F9;
+}
+
+int NC_STACK_yparobo::getROBO_battBeam()
+{
+    return stack__yparobo.field_4FD;
+}
+
+int NC_STACK_yparobo::getROBO_fillMode()
+{
+    return stack__yparobo.field_501;
+}
+
+roboGun *NC_STACK_yparobo::getROBO_guns()
+{
+    return stack__yparobo.guns;
+}
+
+int NC_STACK_yparobo::getROBO_epChangeplace()
+{
+    return stack__yparobo.field_1ED;
+}
+
+int NC_STACK_yparobo::getROBO_epReconnoitre()
+{
+    return stack__yparobo.field_1ec;
+}
+
+int NC_STACK_yparobo::getROBO_epRobo()
+{
+    return stack__yparobo.field_1EE;
+}
+
+int NC_STACK_yparobo::getROBO_roboState()
+{
+    return stack__yparobo.field_1DB;
+}
+
+int NC_STACK_yparobo::getROBO_safDelay()
+{
+    return stack__yparobo.field_24D;
+}
+
+int NC_STACK_yparobo::getROBO_powDelay()
+{
+    return stack__yparobo.field_265;
+}
+
+int NC_STACK_yparobo::getROBO_radDelay()
+{
+    return stack__yparobo.field_235;
+}
+
+int NC_STACK_yparobo::getROBO_cplDelay()
+{
+    return stack__yparobo.field_2B1;
+}
+
+int NC_STACK_yparobo::getROBO_defDelay()
+{
+    return stack__yparobo.field_281;
+}
+
+int NC_STACK_yparobo::getROBO_conDelay()
+{
+    return stack__yparobo.field_299;
+}
+
+int NC_STACK_yparobo::getROBO_robDelay()
+{
+    return stack__yparobo.field_2E1;
+}
+
+int NC_STACK_yparobo::getROBO_recDelay()
+{
+    return stack__yparobo.field_2C9;
+}
+
+int NC_STACK_yparobo::getROBO_loadFlags()
+{
+    return stack__yparobo.field_502;
+}
+
+int NC_STACK_yparobo::getROBO_lossFlags()
+{
+    return stack__yparobo.field_503;
+}
+
+int NC_STACK_yparobo::getROBO_absReload()
+{
+    return stack__yparobo.field_505;
 }
 
 

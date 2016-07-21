@@ -1476,15 +1476,15 @@ void sub_46D370(NC_STACK_ypaworld *obj, int a2)
 {
     if ( a2 )
     {
-        call_vtbl(obj, 2, 0x8000200E, 9, 0);
-        call_vtbl(obj, 2, 0x80002007, 2100, 0);
-        call_vtbl(obj, 2, 0x80002008, 900, 0);
+        obj->setYW_visSectors(9);
+        obj->setYW_normVisLimit(2100);
+        obj->setYW_fadeLength(900);
     }
     else
     {
-        call_vtbl(obj, 2, 0x8000200E, 5, 0);
-        call_vtbl(obj, 2, 0x80002007, 1400, 0);
-        call_vtbl(obj, 2, 0x80002008, 600, 0);
+        obj->setYW_visSectors(5);
+        obj->setYW_normVisLimit(1400);
+        obj->setYW_fadeLength(600);
     }
 }
 

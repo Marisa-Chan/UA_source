@@ -226,10 +226,100 @@ public:
         return new NC_STACK_yparobo();
     };
 
+    enum ROBO_ATT
+    {
+        ROBO_ATT_PROTO = 0x80002001,
+        ROBO_ATT_EP_CONQUER = 0x80002002,
+        ROBO_ATT_EP_DEFENSE = 0x80002003,
+        ROBO_ATT_EP_RADAR = 0x80002004,
+        ROBO_ATT_EP_POWER = 0x80002005,
+        ROBO_ATT_EP_SAFETY = 0x80002006,
+        ROBO_ATT_COMM_COUNT = 0x80002007,
+        ROBO_ATT_BATT_VEHICLE = 0x80002008,
+        ROBO_ATT_BATT_BUILDING = 0x80002009,
+        ROBO_ATT_BATT_BEAM = 0x8000200A,
+        ROBO_ATT_FILL_MODE = 0x8000200B,
+        ROBO_ATT_WAIT_SWAY = 0x8000200C,
+        ROBO_ATT_WAIT_ROTATE = 0x8000200D,
+        ROBO_ATT_GUNS = 0x8000200E,
+        ROBO_ATT_EP_CHANGEPLACE = 0x8000200F,
+        ROBO_ATT_EP_RECONNOITRE = 0x80002010,
+        ROBO_ATT_EP_ROBO = 0x80002011,
+        ROBO_ATT_ROBOSTATE = 0x80002012,
+        ROBO_ATT_VIEWANGLE = 0x80002013,
+        ROBO_ATT_SAFDELAY = 0x80002014,
+        ROBO_ATT_POWDELAY = 0x80002015,
+        ROBO_ATT_RADDELAY = 0x80002016,
+        ROBO_ATT_CPLDELAY = 0x80002017,
+        ROBO_ATT_DEFDELAY = 0x80002018,
+        ROBO_ATT_CONDELAY = 0x80002019,
+        ROBO_ATT_ROBDELAY = 0x8000201A,
+        ROBO_ATT_RECDELAY = 0x8000201B,
+        ROBO_ATT_LOADFLAGS = 0x8000201C,
+        ROBO_ATT_LOSSFLAGS = 0x8000201D,
+        ROBO_ATT_ABSRELOAD = 0x8000201E
+    };
+
 
     virtual void setBACT_inputting(int);
+    virtual void setROBO_proto(roboProto *);
+    virtual void setROBO_epConquer(int);
+    virtual void setROBO_epDefense(int);
+    virtual void setROBO_epRadar(int);
+    virtual void setROBO_epPower(int);
+    virtual void setROBO_epSafety(int);
+    virtual void setROBO_commCount(int);
+    virtual void setROBO_battVehicle(int);
+    virtual void setROBO_battBuilding(int);
+    virtual void setROBO_battBeam(int);
+    virtual void setROBO_fillMode(int);
+    virtual void setROBO_waitSway(int);
+    virtual void setROBO_waitRotate(int);
+    virtual void setROBO_epChangeplace(int);
+    virtual void setROBO_epReconnoitre(int);
+    virtual void setROBO_epRobo(int);
+    virtual void setROBO_viewAngle(int);
+    virtual void setROBO_safDelay(int);
+    virtual void setROBO_powDelay(int);
+    virtual void setROBO_radDelay(int);
+    virtual void setROBO_cplDelay(int);
+    virtual void setROBO_defDelay(int);
+    virtual void setROBO_conDelay(int);
+    virtual void setROBO_robDelay(int);
+    virtual void setROBO_recDelay(int);
 
     virtual rbcolls *getBACT_collNodes();
+    virtual int getROBO_epConquer();
+    virtual int getROBO_epDefense();
+    virtual int getROBO_epRadar();
+    virtual int getROBO_epPower();
+    virtual int getROBO_epSafety();
+    virtual int getROBO_commCount();
+    virtual int getROBO_battVehicle();
+    virtual int getROBO_battBuilding();
+    virtual int getROBO_battBeam();
+    virtual int getROBO_fillMode();
+    virtual roboGun *getROBO_guns();
+    virtual int getROBO_epChangeplace();
+    virtual int getROBO_epReconnoitre();
+    virtual int getROBO_epRobo();
+    virtual int getROBO_roboState();
+    virtual int getROBO_safDelay();
+    virtual int getROBO_powDelay();
+    virtual int getROBO_radDelay();
+    virtual int getROBO_cplDelay();
+    virtual int getROBO_defDelay();
+    virtual int getROBO_conDelay();
+    virtual int getROBO_robDelay();
+    virtual int getROBO_recDelay();
+    virtual int getROBO_loadFlags();
+    virtual int getROBO_lossFlags();
+    virtual int getROBO_absReload();
+
+
+    void yparobo_func0__sub1(stack_vals *stak);
+    void yparobo_func2__sub0(stack_vals *stak);
+    void yparobo_func3__sub0(stack_vals *stak);
 
     //Data
     static const NewClassDescr description;

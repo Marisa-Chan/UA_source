@@ -4666,8 +4666,9 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub5(_NC_STACK_ypaworld *yw)
                 return yw->field_1b78;
             }
 
-            roboGun *a4;
-            call_vtbl(yw->field_1b78, 3, 0x8000200E, &a4, 0);
+            NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
+
+            roboGun *a4 = robo->getROBO_guns();
 
             yw->field_1b70 = 1;
 
@@ -4677,8 +4678,9 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub5(_NC_STACK_ypaworld *yw)
         {
             bzda.field_8F0 = 0;
 
-            roboGun *v5;
-            call_vtbl(yw->field_1b78, 3, 0x8000200E, &v5, 0);
+            NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
+
+            roboGun *v5 = robo->getROBO_guns();
 
             yw->field_1b70 = 1;
 
@@ -5522,8 +5524,13 @@ char * ypaworld_func64__sub7__sub7__sub0(_NC_STACK_ypaworld *yw)
         int y = up_panel.frm_1.btn_ypos - yw->screen_height / 2;
         int v41 = up_panel.field_1D8 + up_panel.field_1D0;
 
-        int a4, v29, v28, v27, v26;
-        call_vtbl(yw->field_1b78, 3, 0x8000200B, &a4, 0x80002008, &v29, 0x8000200A, &v28, 0x8000201C, &v27, 0x8000201D, &v26, 0);
+        NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
+
+        int a4 = robo->getROBO_fillMode();
+        int v29 = robo->getROBO_battVehicle();
+        int v28 = robo->getROBO_battBeam();
+        int v27 = robo->getROBO_loadFlags();
+        int v26 = robo->getROBO_lossFlags();
 
         int v36 = yw->field_1b80->energy_2;
 
@@ -5535,8 +5542,7 @@ char * ypaworld_func64__sub7__sub7__sub0(_NC_STACK_ypaworld *yw)
         int v32 = yw->field_1b80->p_cell_area->energy_power;
         int v33 = yw->field_1b80->p_cell_area->energy_power * arg176.field_4;
 
-        int idx;
-        call_vtbl(yw->field_1b78, 3, 0x8000201E, &idx, 0);
+        int idx = robo->getROBO_absReload();
 
         int v11 = 10 * idx / 100;
         int v38 = 10 * ( idx * arg176.field_4 ) / 100;
@@ -5608,8 +5614,9 @@ void ypaworld_func64__sub7__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         if ( winpt->flag & 0x40 )
         {
-            int a4;
-            call_vtbl(yw->field_1b78, 3, 0x8000200B, &a4, 0);
+            NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
+
+            int a4 = robo->getROBO_fillMode();
 
             if ( winpt->selected_btnID == 1 )
                 a4 ^= 1;
@@ -5618,7 +5625,7 @@ void ypaworld_func64__sub7__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
             else if ( winpt->selected_btnID == 3 )
                 a4 ^= 8;
 
-            call_vtbl(yw->field_1b78, 2, 0x8000200B, a4, 0);
+            robo->setROBO_fillMode(a4);
         }
 
         switch ( winpt->selected_btnID )
@@ -8211,8 +8218,9 @@ void ypaworld_func64__sub17(_NC_STACK_ypaworld *yw)
 
 void ypaworld_func64__sub15(_NC_STACK_ypaworld *yw)
 {
-    roboGun *a4;
-    call_vtbl(yw->field_1b78, 3, 0x8000200E, &a4, 0);
+    NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
+
+    roboGun *a4 = robo->getROBO_guns();
 
     int v4 = 0;
 
@@ -11500,8 +11508,9 @@ int sb_0x4d3d44(_NC_STACK_ypaworld *yw, winp_131arg *winp)
     if ( yw->field_1a58 & 8 || bzda.field_8EC == -1 )
         return 4;
 
-    int a4;
-    call_vtbl(yw->field_1b78, 3, 0x80002008, &a4, 0);
+    NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
+
+    int a4 = robo->getROBO_battVehicle();
 
     if ( yw->field_1b24.field_40 > a4 )
         return 2;
@@ -11523,8 +11532,9 @@ int ypaworld_func64__sub21__sub2(_NC_STACK_ypaworld *yw)
 
     cellArea *v2 = yw->field_1a60;
 
-    int a4;
-    call_vtbl(yw->field_1b78, 3, 0x80002008, &a4, 0);
+    NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
+
+    int a4 = robo->getROBO_battVehicle();
 
     if ( yw->field_1b24.field_40 > a4 )
         return 6;
@@ -11580,8 +11590,9 @@ int ypaworld_func64__sub21__sub3(_NC_STACK_ypaworld *yw)
         v18 = (POW2(v15) / 230.4);
     }
 
-    int a4;
-    call_vtbl(yw->field_1b78, 3, 0x8000200A, &a4, 0);
+    NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
+
+    int a4 = robo->getROBO_battBeam();
 
     yw->field_1b24.field_40 = v18;
 
