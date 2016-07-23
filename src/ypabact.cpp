@@ -112,10 +112,9 @@ int NC_STACK_ypabact::ypabact_func0__sub0(stack_vals *stak)
 
                         if ( v14[24] == 4 )
                         {
-                            int *a4;
-                            call_vtbl(this, 3, 0x80002000, &a4, 0);
-                            *(int *)&v14[20] = a4[10];
-                            printf("UNKNOWN !!! %s\n", "ypabact_func0__sub0");
+                            NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(this);
+                            __NC_STACK_ypabact *a4 = miss->getMISS_launcher();
+                            *(int *)&v14[20] = a4->ypabact__id;
                         }
 
                         yw_arg181 v13;
@@ -3736,7 +3735,9 @@ void NC_STACK_ypabact::ypabact_func77(void *)
 
                 AddTail(&bact->parent_bact->list3, v33);
 
-                call_vtbl(v33->bacto, 2, 0x80002000, bact->parent_bact, 0);
+                NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v33->bacto);
+
+                miss->setMISS_launcher( bact->parent_bact );
             }
         }
 
@@ -3897,7 +3898,7 @@ size_t NC_STACK_ypabact::ypabact_func79(bact_arg79 *arg)
 {
     __NC_STACK_ypabact *bact = &this->stack__ypabact;
 
-    NC_STACK_ypabact *wobj = NULL;
+    NC_STACK_ypamissile *wobj = NULL;
 
     WeapProto *wprotos = bact->wrld->getYW_weaponProtos();
 
@@ -3975,9 +3976,9 @@ size_t NC_STACK_ypabact::ypabact_func79(bact_arg79 *arg)
         __NC_STACK_ypabact *wbact;
         wbact = wobj->getBACT_pBact();
 
-        call_vtbl(wobj, 2, 0x80002000, bact, 0);
+        wobj->setMISS_launcher(bact);
 
-        call_vtbl(wobj, 2, 0x80002010, (int)arg147.pos.sy, 0);
+        wobj->setMISS_startHeight(arg147.pos.sy);
 
         wbact->owner = bact->owner;
 
@@ -4028,13 +4029,11 @@ size_t NC_STACK_ypabact::ypabact_func79(bact_arg79 *arg)
             wbact->parent_bacto = NULL;
         }
 
-        bact_node *a2a = NULL;
+        bact_node *a2a = wobj->getMISS_pNode();
 
-        call_vtbl(wobj, 3, 0x80002003, &a2a, 0);
         AddTail(&bact->list3, a2a);
 
-        int v42 = 0;
-        call_vtbl(wobj, 3, 0x80002002, &v42, 0);
+        int v42 = wobj->getMISS_type();
 
         if ( v42 == 3 )
         {
@@ -4125,7 +4124,7 @@ size_t NC_STACK_ypabact::ypabact_func79(bact_arg79 *arg)
             int life_time_nt = wprotos[ arg->weapon ].life_time_nt;
 
             if ( life_time_nt )
-                call_vtbl(wobj, 2, 0x80002004, life_time_nt, 0);
+                wobj->setMISS_lifeTime(life_time_nt);
         }
     }
 
@@ -6771,7 +6770,7 @@ size_t NC_STACK_ypabact::ypabact_func105(bact_arg105 *arg)
                 arg147.pos.sz = v82;
                 arg147.vehicle_id = bact->mgun;
 
-                NC_STACK_ypamissile *v57 = dynamic_cast<NC_STACK_ypamissile *>( bact->wrld->ypaworld_func147(&arg147) );
+                NC_STACK_ypamissile *v57 = bact->wrld->ypaworld_func147(&arg147);
 
                 if ( v57 )
                 {
@@ -6786,8 +6785,7 @@ size_t NC_STACK_ypabact::ypabact_func105(bact_arg105 *arg)
                         v103->parent_bacto = NULL;
                     }
 
-                    bact_node *a2a;
-                    call_vtbl(v57, 3, 0x80002003, &a2a, 0);
+                    bact_node *a2a = v57->getMISS_pNode();
 
                     AddTail(&bact->list3, a2a);
 
@@ -9101,10 +9099,9 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
 
         if ( v14[24] == 4 )
         {
-            int *a4;
-            call_vtbl(this, 3, 0x80002000, &a4, 0);
-            *(int *)&v14[20] = a4[10];
-            printf("UNKNOWN !!! %s\n", "ypabact_func0__sub0");
+            NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(this);
+            __NC_STACK_ypabact *a4 = miss->getMISS_launcher();
+            *(int *)&v14[20] = a4->ypabact__id;
         }
 
         yw_arg181 v13;

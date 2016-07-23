@@ -15,8 +15,9 @@
 const NewClassDescr NC_STACK_ypamissile::description("ypamissile.class", &newinstance);
 
 
-int ypamissile_func0__sub0(NC_STACK_ypamissile *obj, __NC_STACK_ypamissile *miss, stack_vals *stak)
+int NC_STACK_ypamissile::ypamissile_func0__sub0(stack_vals *stak)
 {
+    __NC_STACK_ypamissile *miss = &stack__ypamissile;
     miss->ejaculator_bact = 0;
     miss->life_time = 5000;
     miss->delay_time = 0;
@@ -44,44 +45,37 @@ int ypamissile_func0__sub0(NC_STACK_ypamissile *obj, __NC_STACK_ypamissile *miss
             default:
                 break;
 
-            case 0x80001001:
+            case BACT_ATT_WORLD:
                 miss->ywo = (NC_STACK_ypaworld *)stk->value;
                 miss->yw = &miss->ywo->stack__ypaworld;
                 break;
 
-            case 0x80001004:
-                if ( stk->value )
-                    miss->field_2D |= 1;
-                else
-                    miss->field_2D &= 0xFFFFFFFE;
-
+            case BACT_ATT_VIEWER:
+                setBACT_viewer(stk->value);
                 break;
 
-            case 0x80002000:
-                miss->ejaculator_bact = (__NC_STACK_ypabact *)stk->value;
+            case MISS_ATT_LAUNCHER:
+                setMISS_launcher((__NC_STACK_ypabact *)stk->value);
                 break;
 
-            case 0x80002002:
-                miss->field_c = stk->value;
+            case MISS_ATT_TYPE:
+                setMISS_type(stk->value);
                 break;
 
-            case 0x80002004:
-                miss->life_time = stk->value;
+            case MISS_ATT_LIFETIME:
+                setMISS_lifeTime(stk->value);
                 break;
 
-            case 0x80002005:
-                miss->delay_time = stk->value;
+            case MISS_ATT_DELAY:
+                setMISS_delay(stk->value);
                 break;
 
-            case 0x80002006:
-                miss->drive_time = stk->value;
+            case MISS_ATT_DRIVETIME:
+                setMISS_driveTime(stk->value);
                 break;
 
-            case 0x80002007:
-                if ( stk->value )
-                    miss->field_2D |= 4;
-                else
-                    miss->field_2D &= 0xFFFFFFFB;
+            case MISS_ATT_IGNOREBUILDS:
+                setMISS_ignoreBuilds ( stk->value );
                 break;
 
             }
@@ -101,7 +95,7 @@ size_t NC_STACK_ypamissile::func0(stack_vals *stak)
     __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
 
     //bact = this->getBACT_pBact();
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     miss->selfie = bact;
 
@@ -110,7 +104,7 @@ size_t NC_STACK_ypamissile::func0(stack_vals *stak)
 
     bact->field_24 = 4;
 
-    if ( !ypamissile_func0__sub0(this, miss, stak) )
+    if ( !ypamissile_func0__sub0(stak) )
     {
         func1(NULL);
         return 0;
@@ -124,7 +118,7 @@ size_t NC_STACK_ypamissile::func1(stack_vals *stak)
     return NC_STACK_ypabact::func1(stak);
 }
 
-void ypamissile_func2__sub0(NC_STACK_ypamissile *obj, __NC_STACK_ypamissile *miss, stack_vals *stak)
+void NC_STACK_ypamissile::ypamissile_func2__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -148,75 +142,68 @@ void ypamissile_func2__sub0(NC_STACK_ypamissile *obj, __NC_STACK_ypamissile *mis
             default:
                 break;
 
-            case 0x80001004:
-                if ( stk->value )
-                    miss->field_2D |= 1;
-                else
-                    miss->field_2D &= 0xFFFFFFFE;
-
+            case BACT_ATT_VIEWER:
+                setBACT_viewer(stk->value);
                 break;
 
-            case 0x80002000:
-                miss->ejaculator_bact = (__NC_STACK_ypabact *)stk->value;
+            case MISS_ATT_LAUNCHER:
+                setMISS_launcher((__NC_STACK_ypabact *)stk->value);
                 break;
 
-            case 0x80002002:
-                miss->field_c = stk->value;
+            case MISS_ATT_TYPE:
+                setMISS_type(stk->value);
                 break;
 
-            case 0x80002004:
-                miss->life_time = stk->value;
+            case MISS_ATT_LIFETIME:
+                setMISS_lifeTime(stk->value);
                 break;
 
-            case 0x80002005:
-                miss->delay_time = stk->value;
+            case MISS_ATT_DELAY:
+                setMISS_delay(stk->value);
                 break;
 
-            case 0x80002006:
-                miss->drive_time = stk->value;
+            case MISS_ATT_DRIVETIME:
+                setMISS_driveTime(stk->value);
                 break;
 
-            case 0x80002007:
-                if ( stk->value )
-                    miss->field_2D |= 4;
-                else
-                    miss->field_2D &= 0xFFFFFFFB;
+            case MISS_ATT_IGNOREBUILDS:
+                setMISS_ignoreBuilds ( stk->value );
                 break;
 
-            case 0x80002008:
-                miss->energy_heli = stk->value * 0.001;
+            case MISS_ATT_POW_HELI:
+                setMISS_powHeli(stk->value);
                 break;
 
-            case 0x80002009:
-                miss->energy_tank = stk->value * 0.001;
+            case MISS_ATT_POW_TANK:
+                setMISS_powTank(stk->value);
                 break;
 
-            case 0x8000200A:
-                miss->energy_flyer = stk->value * 0.001;
+            case MISS_ATT_POW_FLYER:
+                setMISS_powFlyer(stk->value);
                 break;
 
-            case 0x8000200B:
-                miss->energy_robo = stk->value * 0.001;
+            case MISS_ATT_POW_ROBO:
+                setMISS_powRobo(stk->value);
                 break;
 
-            case 0x8000200C:
-                miss->radius_heli = stk->value;
+            case MISS_ATT_RAD_HELI:
+                setMISS_radHeli(stk->value);
                 break;
 
-            case 0x8000200D:
-                miss->radius_tank = stk->value;
+            case MISS_ATT_RAD_TANK:
+                setMISS_radTank(stk->value);
                 break;
 
-            case 0x8000200E:
-                miss->radius_flyer = stk->value;
+            case MISS_ATT_RAD_FLYER:
+                setMISS_radFlyer(stk->value);
                 break;
 
-            case 0x8000200F:
-                miss->radius_robo = stk->value;
+            case MISS_ATT_RAD_ROBO:
+                setMISS_radRobo(stk->value);
                 break;
 
-            case 0x80002010:
-                miss->posy = (int)stk->value;
+            case MISS_ATT_STHEIGHT:
+                setMISS_startHeight(stk->value);
                 break;
 
             }
@@ -229,11 +216,11 @@ size_t NC_STACK_ypamissile::func2(stack_vals *stak)
 {
     NC_STACK_ypabact::func2(stak);
 
-    ypamissile_func2__sub0(this, &this->stack__ypamissile, stak);
+    ypamissile_func2__sub0(stak);
     return 1;
 }
 
-void ypamissile_func3__sub0(NC_STACK_ypamissile *obj, __NC_STACK_ypamissile *miss, stack_vals *stak)
+void NC_STACK_ypamissile::ypamissile_func3__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -257,68 +244,68 @@ void ypamissile_func3__sub0(NC_STACK_ypamissile *obj, __NC_STACK_ypamissile *mis
             default:
                 break;
 
-            case 0x80002000:
-                *(__NC_STACK_ypabact **)stk->value = miss->ejaculator_bact;
+            case MISS_ATT_LAUNCHER:
+                *(__NC_STACK_ypabact **)stk->value = getMISS_launcher();
                 break;
 
-            case 0x80002002:
-                *(int *)stk->value = miss->field_c;
+            case MISS_ATT_TYPE:
+                *(int *)stk->value = getMISS_type();
                 break;
 
-            case 0x80002003:
-                *(bact_node **)stk->value = &miss->selfie_node;
+            case MISS_ATT_PNODE:
+                *(bact_node **)stk->value = getMISS_pNode();
                 break;
 
-            case 0x80002004:
-                *(int *)stk->value = miss->life_time;
+            case MISS_ATT_LIFETIME:
+                *(int *)stk->value = getMISS_lifeTime();
                 break;
 
-            case 0x80002005:
-                *(int *)stk->value = miss->delay_time;
+            case MISS_ATT_DELAY:
+                *(int *)stk->value = getMISS_delay();
                 break;
 
-            case 0x80002006:
-                *(int *)stk->value = miss->drive_time;
+            case MISS_ATT_DRIVETIME:
+                *(int *)stk->value = getMISS_driveTime();
                 break;
 
-            case 0x80002007:
-                *(int *)stk->value = miss->field_2D & 4;
+            case MISS_ATT_IGNOREBUILDS:
+                *(int *)stk->value = getMISS_ignoreBuilds();
                 break;
 
-            case 0x80002008:
-                *(int *)stk->value = miss->energy_heli * 1000.0;
+            case MISS_ATT_POW_HELI:
+                *(int *)stk->value = getMISS_powHeli();
                 break;
 
-            case 0x80002009:
-                *(int *)stk->value = miss->energy_tank * 1000.0;
+            case MISS_ATT_POW_TANK:
+                *(int *)stk->value = getMISS_powTank();
                 break;
 
-            case 0x8000200A:
-                *(int *)stk->value = miss->energy_flyer * 1000.0;
+            case MISS_ATT_POW_FLYER:
+                *(int *)stk->value = getMISS_powFlyer();
                 break;
 
-            case 0x8000200B:
-                *(int *)stk->value = miss->energy_robo * 1000.0;
+            case MISS_ATT_POW_ROBO:
+                *(int *)stk->value = getMISS_powRobo();
                 break;
 
-            case 0x8000200C:
-                *(int *)stk->value = miss->radius_heli;
+            case MISS_ATT_RAD_HELI:
+                *(int *)stk->value = getMISS_radHeli();
                 break;
 
-            case 0x8000200D:
-                *(int *)stk->value = miss->radius_tank;
+            case MISS_ATT_RAD_TANK:
+                *(int *)stk->value = getMISS_radTank();
                 break;
 
-            case 0x8000200E:
-                *(int *)stk->value = miss->radius_flyer;
+            case MISS_ATT_RAD_FLYER:
+                *(int *)stk->value = getMISS_radFlyer();
                 break;
 
-            case 0x8000200F:
-                *(int *)stk->value = miss->radius_robo;
+            case MISS_ATT_RAD_ROBO:
+                *(int *)stk->value = getMISS_radRobo();
                 break;
 
-            case 0x80002010:
-                *(int *)stk->value = miss->posy;
+            case MISS_ATT_STHEIGHT:
+                *(int *)stk->value = getMISS_startHeight();
                 break;
 
             }
@@ -331,7 +318,7 @@ size_t NC_STACK_ypamissile::func3(stack_vals *stak)
 {
     NC_STACK_ypabact::func3(stak);
 
-    ypamissile_func3__sub0(this, &this->stack__ypamissile, stak);
+    ypamissile_func3__sub0(stak);
     return 1;
 }
 
@@ -1334,12 +1321,172 @@ void NC_STACK_ypamissile::ypamissile_func131(miss_arg130 *arg)
 
 void NC_STACK_ypamissile::setBACT_viewer(int vwr)
 {
+    NC_STACK_ypabact::setBACT_viewer(vwr);
+
     if ( vwr )
         stack__ypamissile.field_2D |= 1;
     else
         stack__ypamissile.field_2D &= ~1;
+}
 
-    NC_STACK_ypabact::setBACT_viewer(vwr);
+void NC_STACK_ypamissile::setMISS_launcher(__NC_STACK_ypabact *bact)
+{
+    stack__ypamissile.ejaculator_bact = bact;
+}
+
+void NC_STACK_ypamissile::setMISS_type(int tp)
+{
+    stack__ypamissile.field_c = tp;
+}
+
+void NC_STACK_ypamissile::setMISS_lifeTime(int time)
+{
+    stack__ypamissile.life_time = time;
+}
+
+void NC_STACK_ypamissile::setMISS_delay(int delay)
+{
+    stack__ypamissile.delay_time = delay;
+}
+
+void NC_STACK_ypamissile::setMISS_driveTime(int time)
+{
+    stack__ypamissile.drive_time = time;
+}
+
+void NC_STACK_ypamissile::setMISS_ignoreBuilds(int ign)
+{
+    if ( ign )
+        stack__ypamissile.field_2D |= 4;
+    else
+        stack__ypamissile.field_2D &= ~4;
+}
+
+void NC_STACK_ypamissile::setMISS_powHeli(int po)
+{
+    stack__ypamissile.energy_heli = po * 0.001;
+}
+
+void NC_STACK_ypamissile::setMISS_powTank(int po)
+{
+    stack__ypamissile.energy_tank = po * 0.001;
+}
+
+void NC_STACK_ypamissile::setMISS_powFlyer(int po)
+{
+    stack__ypamissile.energy_flyer = po * 0.001;
+}
+
+void NC_STACK_ypamissile::setMISS_powRobo(int po)
+{
+    stack__ypamissile.energy_robo = po * 0.001;
+}
+
+void NC_STACK_ypamissile::setMISS_radHeli(int rad)
+{
+    stack__ypamissile.radius_heli = rad;
+}
+
+void NC_STACK_ypamissile::setMISS_radTank(int rad)
+{
+    stack__ypamissile.radius_tank = rad;
+}
+
+void NC_STACK_ypamissile::setMISS_radFlyer(int rad)
+{
+    stack__ypamissile.radius_flyer = rad;
+}
+
+void NC_STACK_ypamissile::setMISS_radRobo(int rad)
+{
+    stack__ypamissile.radius_robo = rad;
+}
+
+void NC_STACK_ypamissile::setMISS_startHeight(int posy)
+{
+    stack__ypamissile.posy = posy;
+}
+
+
+
+__NC_STACK_ypabact *NC_STACK_ypamissile::getMISS_launcher()
+{
+    return stack__ypamissile.ejaculator_bact;
+}
+
+int NC_STACK_ypamissile::getMISS_type()
+{
+    return stack__ypamissile.field_c;
+}
+
+bact_node *NC_STACK_ypamissile::getMISS_pNode()
+{
+    return &stack__ypamissile.selfie_node;
+}
+
+int NC_STACK_ypamissile::getMISS_lifeTime()
+{
+    return stack__ypamissile.life_time;
+}
+
+int NC_STACK_ypamissile::getMISS_delay()
+{
+    return stack__ypamissile.delay_time;
+}
+
+int NC_STACK_ypamissile::getMISS_driveTime()
+{
+    return stack__ypamissile.drive_time;
+}
+
+int NC_STACK_ypamissile::getMISS_ignoreBuilds()
+{
+    return stack__ypamissile.field_2D & 4;
+}
+
+int NC_STACK_ypamissile::getMISS_powHeli()
+{
+    return stack__ypamissile.energy_heli * 1000.0;
+}
+
+int NC_STACK_ypamissile::getMISS_powTank()
+{
+    return stack__ypamissile.energy_tank * 1000.0;
+}
+
+int NC_STACK_ypamissile::getMISS_powFlyer()
+{
+    return stack__ypamissile.energy_flyer * 1000.0;
+}
+
+int NC_STACK_ypamissile::getMISS_powRobo()
+{
+    return stack__ypamissile.energy_robo * 1000.0;
+}
+
+int NC_STACK_ypamissile::getMISS_radHeli()
+{
+    return stack__ypamissile.radius_heli;
+}
+
+int NC_STACK_ypamissile::getMISS_radTank()
+{
+    return stack__ypamissile.radius_tank;
+}
+
+int NC_STACK_ypamissile::getMISS_radFlyer()
+{
+    return stack__ypamissile.radius_flyer;
+}
+
+int NC_STACK_ypamissile::getMISS_radRobo()
+{
+    return stack__ypamissile.radius_robo;
+}
+
+int NC_STACK_ypamissile::getMISS_startHeight()
+{
+    return stack__ypamissile.posy;
 }
 
 

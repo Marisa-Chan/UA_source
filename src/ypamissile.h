@@ -70,7 +70,63 @@ public:
         return new NC_STACK_ypamissile();
     };
 
+    enum MISS_ATT
+    {
+        MISS_ATT_LAUNCHER = 0x80002000,
+        MISS_ATT_TYPE = 0x80002002,
+        MISS_ATT_PNODE = 0x80002003,
+        MISS_ATT_LIFETIME = 0x80002004,
+        MISS_ATT_DELAY = 0x80002005,
+        MISS_ATT_DRIVETIME = 0x80002006,
+        MISS_ATT_IGNOREBUILDS = 0x80002007,
+        MISS_ATT_POW_HELI = 0x80002008,
+        MISS_ATT_POW_TANK = 0x80002009,
+        MISS_ATT_POW_FLYER = 0x8000200A,
+        MISS_ATT_POW_ROBO = 0x8000200B,
+        MISS_ATT_RAD_HELI = 0x8000200C,
+        MISS_ATT_RAD_TANK = 0x8000200D,
+        MISS_ATT_RAD_FLYER = 0x8000200E,
+        MISS_ATT_RAD_ROBO = 0x8000200F,
+        MISS_ATT_STHEIGHT = 0x80002010
+    };
+
     virtual void setBACT_viewer(int);
+    virtual void setMISS_launcher(__NC_STACK_ypabact *);
+    virtual void setMISS_type(int);
+    virtual void setMISS_lifeTime(int);
+    virtual void setMISS_delay(int);
+    virtual void setMISS_driveTime(int);
+    virtual void setMISS_ignoreBuilds(int);
+    virtual void setMISS_powHeli(int);
+    virtual void setMISS_powTank(int);
+    virtual void setMISS_powFlyer(int);
+    virtual void setMISS_powRobo(int);
+    virtual void setMISS_radHeli(int);
+    virtual void setMISS_radTank(int);
+    virtual void setMISS_radFlyer(int);
+    virtual void setMISS_radRobo(int);
+    virtual void setMISS_startHeight(int);
+
+    virtual __NC_STACK_ypabact *getMISS_launcher();
+    virtual int getMISS_type();
+    virtual bact_node *getMISS_pNode();
+    virtual int getMISS_lifeTime();
+    virtual int getMISS_delay();
+    virtual int getMISS_driveTime();
+    virtual int getMISS_ignoreBuilds();
+    virtual int getMISS_powHeli();
+    virtual int getMISS_powTank();
+    virtual int getMISS_powFlyer();
+    virtual int getMISS_powRobo();
+    virtual int getMISS_radHeli();
+    virtual int getMISS_radTank();
+    virtual int getMISS_radFlyer();
+    virtual int getMISS_radRobo();
+    virtual int getMISS_startHeight();
+
+    int ypamissile_func0__sub0(stack_vals *stak);
+    void ypamissile_func2__sub0(stack_vals *stak);
+    void ypamissile_func3__sub0(stack_vals *stak);
 
     //Data
     static const NewClassDescr description;

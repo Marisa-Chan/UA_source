@@ -829,7 +829,10 @@ void NC_STACK_ypagun::ypabact_func75(bact_arg75 *arg)
                         //must be like:
                         bact_node *v15 = (bact_node *)bact->list3.tailpred; //Check it,
                         if ( v15 != (bact_node *)&bact->list3 )
-                            call_vtbl(v15->bacto, 2, 0x80002007, 1, 0);
+                        {
+                            NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v15->bacto);
+                            miss->setMISS_ignoreBuilds(1);
+                        }
                     }
                     gun->field_35 = gun->field_31;
 

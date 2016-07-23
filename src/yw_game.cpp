@@ -4490,9 +4490,9 @@ void sub_4F1B34(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
 
         sub_4F1A60(v4->bact);
 
-        bact_node *weap_selfie;
+        NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v4->bacto);
 
-        call_vtbl(v4->bacto, 3, 0x80002003, &weap_selfie, 0);
+        bact_node *weap_selfie = miss->getMISS_pNode();
         Remove(weap_selfie);
 
         v4->bact->parent_bacto = NULL;

@@ -15,6 +15,7 @@
 #include "wav.h"
 #include "windp.h"
 #include "ypabact.h"
+#include "ypamissile.h"
 #include "ypagun.h"
 
 #include "lstvw.h"
@@ -1618,7 +1619,7 @@ public:
     virtual void ypaworld_func144(NC_STACK_ypabact *bacto);
     virtual size_t ypaworld_func145(__NC_STACK_ypabact *bact);
     virtual NC_STACK_ypabact * ypaworld_func146(ypaworld_arg146 *vhcl_id);
-    virtual NC_STACK_ypabact * ypaworld_func147(ypaworld_arg146 *arg);
+    virtual NC_STACK_ypamissile * ypaworld_func147(ypaworld_arg146 *arg);
     virtual size_t ypaworld_func148(ypaworld_arg148 *arg);
     virtual void ypaworld_func149(ypaworld_arg136 *arg);
     virtual void ypaworld_func150(yw_arg150 *arg);

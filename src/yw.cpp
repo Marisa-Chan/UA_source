@@ -2089,7 +2089,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
 }
 
 
-NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
+NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
 {
     _NC_STACK_ypaworld *yw = &this->stack__ypaworld;
 
@@ -2101,7 +2101,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
     if ( !(wproto->model_id & 1) )
         return NULL;
 
-    NC_STACK_ypabact *wobj = (NC_STACK_ypabact *)yw_createUnit(this, yw, wproto->field_0);
+    NC_STACK_ypamissile *wobj = dynamic_cast<NC_STACK_ypamissile *>( yw_createUnit(this, yw, wproto->field_0) );
 
     if ( !wobj )
         return NULL;
@@ -2162,34 +2162,18 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
         break;
     }
 
-    call_vtbl(
-        wobj,
-        2,
-        0x80002004,
-        wproto->life_time,
-        0x80002005,
-        wproto->delay_time,
-        0x80002006,
-        wproto->drive_time,
-        0x80002002,
-        v11,
-        0x80002008,
-        (int)(wproto->energy_heli * 1000.0),
-        0x80002009,
-        (int)(wproto->energy_tank * 1000.0),
-        0x8000200A,
-        (int)(wproto->energy_flyer * 1000.0),
-        0x8000200B,
-        (int)(wproto->energy_robo * 1000.0),
-        0x8000200C,
-        (int)wproto->radius_heli,
-        0x8000200D,
-        (int)wproto->radius_tank,
-        0x8000200E,
-        (int)wproto->radius_flyer,
-        0x8000200F,
-        (int)wproto->radius_robo,
-        0);
+    wobj->setMISS_lifeTime(wproto->life_time);
+    wobj->setMISS_delay(wproto->delay_time);
+    wobj->setMISS_driveTime(wproto->drive_time);
+    wobj->setMISS_type(v11);
+    wobj->setMISS_powHeli(wproto->energy_heli * 1000.0);
+    wobj->setMISS_powTank(wproto->energy_tank * 1000.0);
+    wobj->setMISS_powFlyer(wproto->energy_flyer * 1000.0);
+    wobj->setMISS_powRobo(wproto->energy_robo * 1000.0);
+    wobj->setMISS_radHeli(wproto->radius_heli);
+    wobj->setMISS_radTank(wproto->radius_tank);
+    wobj->setMISS_radFlyer(wproto->radius_flyer);
+    wobj->setMISS_radRobo(wproto->radius_robo);
 
     sub_423DB0(&wbact->field_5A);
 
