@@ -11,10 +11,10 @@
 
 const NewClassDescr NC_STACK_ypagun::description("ypagun.class", &newinstance);
 
-int ypagun_func0__sub0(NC_STACK_ypagun *obj, __NC_STACK_ypagun *gun, stack_vals *stak)
+int NC_STACK_ypagun::ypagun_func0__sub0(stack_vals *stak)
 {
-    gun->field_30 = 1;
-    gun->field_31 = 100;
+    stack__ypagun.field_30 = 1;
+    stack__ypagun.field_31 = 100;
 
     stack_vals *stk = stak;
 
@@ -38,46 +38,38 @@ int ypagun_func0__sub0(NC_STACK_ypagun *obj, __NC_STACK_ypagun *gun, stack_vals 
             default:
                 break;
 
-            case 0x80001001:
-                gun->ywo = (NC_STACK_ypaworld *)stk->value;
-                gun->yw = &gun->ywo->stack__ypaworld;
+            case BACT_ATT_WORLD:
+                stack__ypagun.ywo = (NC_STACK_ypaworld *)stk->value;
+                stack__ypagun.yw = &stack__ypagun.ywo->stack__ypaworld;
                 break;
 
-            case 0x80002000:
-                gun->field_14 = stk->value / 1000.0;
+            case GUN_ATT_SIDEANGLE:
+                setGUN_sideAngle(stk->value);
                 break;
 
-            case 0x80002001:
-                gun->field_c = stk->value / 1000.0;
+            case GUN_ATT_UPANGLE:
+                setGUN_upAngle(stk->value);
                 break;
 
-            case 0x80002002:
-                gun->field_10 = stk->value / 1000.0;
+            case GUN_ATT_DOWNANGLE:
+                setGUN_downAngle(stk->value);
                 break;
 
-            case 0x80002003:
-                gun->field_30 = stk->value;
+            case GUN_ATT_FIRETYPE:
+                setGUN_fireType(stk->value);
                 break;
 
-            case 0x80002004:
-                gun->field_31 = stk->value;
+            case GUN_ATT_FIRETIME:
+                setGUN_fireTime(stk->value);
                 break;
 
-            case 0x80002005:
-                if ( stk->value )
-                    gun->field_39 |= 1;
-                else
-                    gun->field_39 &= 0xFE;
+            case GUN_ATT_SETGROUND:
+                setGUN_setGround ( stk->value );
                 break;
 
-            case 0x80002006:
-                if ( stk->value )
-                    gun->field_39 |= 2;
-                else
-                    gun->field_39 &= 0xFF;
+            case GUN_ATT_ROBOGUN:
+                setGUN_roboGun ( stk->value );
                 break;
-
-
             }
             stk++;
         }
@@ -91,13 +83,13 @@ size_t NC_STACK_ypagun::func0(stack_vals *stak)
     if ( !NC_STACK_ypabact::func0(stak) )
         return 0;
 
-    __NC_STACK_ypagun *gun = &this->stack__ypagun;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypagun *gun = &stack__ypagun;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     gun->bact_intern = bact;
     bact->field_24 = 9;
 
-    if ( !ypagun_func0__sub0(this, gun, stak) )
+    if ( !ypagun_func0__sub0(stak) )
     {
         func1(NULL);
         return 0;
@@ -111,7 +103,7 @@ size_t NC_STACK_ypagun::func1(stack_vals *stak)
     return NC_STACK_ypabact::func1(stak);
 }
 
-int ypagun_func2__sub0(NC_STACK_ypagun *obj, __NC_STACK_ypagun *gun, stack_vals *stak)
+int NC_STACK_ypagun::ypagun_func2__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -135,41 +127,33 @@ int ypagun_func2__sub0(NC_STACK_ypagun *obj, __NC_STACK_ypagun *gun, stack_vals 
             default:
                 break;
 
-            case 0x80002000:
-                gun->field_14 = stk->value / 1000.0;
+            case GUN_ATT_SIDEANGLE:
+                setGUN_sideAngle(stk->value);
                 break;
 
-            case 0x80002001:
-                gun->field_c = stk->value / 1000.0;
+            case GUN_ATT_UPANGLE:
+                setGUN_upAngle(stk->value);
                 break;
 
-            case 0x80002002:
-                gun->field_10 = stk->value / 1000.0;
+            case GUN_ATT_DOWNANGLE:
+                setGUN_downAngle(stk->value);
                 break;
 
-            case 0x80002003:
-                gun->field_30 = stk->value;
+            case GUN_ATT_FIRETYPE:
+                setGUN_fireType(stk->value);
                 break;
 
-            case 0x80002004:
-                gun->field_31 = stk->value;
+            case GUN_ATT_FIRETIME:
+                setGUN_fireTime(stk->value);
                 break;
 
-            case 0x80002005:
-                if ( stk->value )
-                    gun->field_39 |= 1;
-                else
-                    gun->field_39 &= 0xFE;
+            case GUN_ATT_SETGROUND:
+                setGUN_setGround ( stk->value );
                 break;
 
-            case 0x80002006:
-                if ( stk->value )
-                    gun->field_39 |= 2;
-                else
-                    gun->field_39 &= 0xFF;
+            case GUN_ATT_ROBOGUN:
+                setGUN_roboGun ( stk->value );
                 break;
-
-
             }
             stk++;
         }
@@ -181,11 +165,11 @@ int ypagun_func2__sub0(NC_STACK_ypagun *obj, __NC_STACK_ypagun *gun, stack_vals 
 size_t NC_STACK_ypagun::func2(stack_vals *stak)
 {
     NC_STACK_ypabact::func2(stak);
-    ypagun_func2__sub0(this, &this->stack__ypagun, stak);
+    ypagun_func2__sub0(stak);
     return 1;
 }
 
-int ypagun_func3__sub0(NC_STACK_ypagun *obj, __NC_STACK_ypagun *gun, stack_vals *stak)
+int NC_STACK_ypagun::ypagun_func3__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -209,38 +193,32 @@ int ypagun_func3__sub0(NC_STACK_ypagun *obj, __NC_STACK_ypagun *gun, stack_vals 
             default:
                 break;
 
-            case 0x80002000:
-                *(int *)stk->value = gun->field_14 * 1000.0;
+            case GUN_ATT_SIDEANGLE:
+                *(int *)stk->value = getGUN_sideAngle();
                 break;
 
-            case 0x80002001:
-                *(int *)stk->value = gun->field_c * 1000.0;
+            case GUN_ATT_UPANGLE:
+                *(int *)stk->value = getGUN_upAngle();
                 break;
 
-            case 0x80002002:
-                *(int *)stk->value = gun->field_10 * 1000.0;
+            case GUN_ATT_DOWNANGLE:
+                *(int *)stk->value = getGUN_downAngle();
                 break;
 
-            case 0x80002003:
-                *(int *)stk->value = gun->field_30;
+            case GUN_ATT_FIRETYPE:
+                *(int *)stk->value = getGUN_fireType();
                 break;
 
-            case 0x80002004:
-                *(int *)stk->value = gun->field_31;
+            case GUN_ATT_FIRETIME:
+                *(int *)stk->value = getGUN_fireTime();
                 break;
 
-            case 0x80002005:
-                if ( gun->field_39 & 1 )
-                    *(int *)stk->value = 1;
-                else
-                    *(int *)stk->value = 0;
+            case GUN_ATT_SETGROUND:
+                *(int *)stk->value = getGUN_setGround();
                 break;
 
-            case 0x80002006:
-                if ( gun->field_39 & 2 )
-                    *(int *)stk->value = 1;
-                else
-                    *(int *)stk->value = 0;
+            case GUN_ATT_ROBOGUN:
+                *(int *)stk->value = getGUN_roboGun();
                 break;
 
 
@@ -255,7 +233,7 @@ int ypagun_func3__sub0(NC_STACK_ypagun *obj, __NC_STACK_ypagun *gun, stack_vals 
 size_t NC_STACK_ypagun::func3(stack_vals *stak)
 {
     NC_STACK_ypabact::func3(stak);
-    ypagun_func3__sub0(this, &this->stack__ypagun, stak);
+    ypagun_func3__sub0(stak);
     return 1;
 }
 
@@ -303,8 +281,8 @@ void sub_4BC680(NC_STACK_ypagun *obj, float a5)
 
 void NC_STACK_ypagun::ypabact_func70(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypagun *gun = &this->stack__ypagun;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypagun *gun = &stack__ypagun;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     float v80 = arg->field_4 / 1000.0;
 
@@ -589,8 +567,8 @@ void NC_STACK_ypagun::ypabact_func70(ypabact_arg65 *arg)
 
 void NC_STACK_ypagun::ypabact_func71(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypagun *gun = &this->stack__ypagun;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypagun *gun = &stack__ypagun;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     float v40 = arg->field_4 / 1000.0;
 
@@ -785,8 +763,8 @@ void NC_STACK_ypagun::ypabact_func71(ypabact_arg65 *arg)
 
 void NC_STACK_ypagun::ypabact_func75(bact_arg75 *arg)
 {
-    __NC_STACK_ypagun *gun = &this->stack__ypagun;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypagun *gun = &stack__ypagun;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     xyz v18;
 
@@ -880,8 +858,8 @@ void NC_STACK_ypagun::ypabact_func75(bact_arg75 *arg)
 
 void NC_STACK_ypagun::ypabact_func77(void *)
 {
-    __NC_STACK_ypagun *gun = &this->stack__ypagun;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypagun *gun = &stack__ypagun;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( !(bact->field_3D6 & 0x400) )
     {
@@ -908,8 +886,8 @@ size_t NC_STACK_ypagun::ypabact_func80(bact_arg80 *arg)
     if ( !NC_STACK_ypabact::ypabact_func80(arg) )
         return 0;
 
-    __NC_STACK_ypagun *gun = &this->stack__ypagun;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypagun *gun = &stack__ypagun;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( gun->field_39 & 1 )
     {
@@ -951,7 +929,7 @@ size_t NC_STACK_ypagun::ypabact_func80(bact_arg80 *arg)
 void NC_STACK_ypagun::ypabact_func82(ypabact_arg65 *arg)
 {
     //__NC_STACK_ypagun *gun = &obj->stack__ypagun;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( bact->field_3D5 != 2 )
     {
@@ -965,8 +943,8 @@ void NC_STACK_ypagun::ypabact_func82(ypabact_arg65 *arg)
 
 void NC_STACK_ypagun::ypabact_func96(void *)
 {
-    __NC_STACK_ypagun *gun = &this->stack__ypagun;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypagun *gun = &stack__ypagun;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     NC_STACK_ypabact::ypabact_func96(NULL);
 
@@ -984,8 +962,8 @@ void NC_STACK_ypagun::ypabact_func96(void *)
 
 size_t NC_STACK_ypagun::ypabact_func111(__NC_STACK_ypabact *cel_unit)
 {
-    __NC_STACK_ypagun *gun = &this->stack__ypagun;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypagun *gun = &stack__ypagun;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     xyz tmp;
 
@@ -1054,8 +1032,8 @@ size_t NC_STACK_ypagun::ypabact_func111(__NC_STACK_ypabact *cel_unit)
 
 void NC_STACK_ypagun::ypagun_func128(gun_arg128 *arg)
 {
-    __NC_STACK_ypagun *gun = &this->stack__ypagun;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypagun *gun = &stack__ypagun;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     float v5 = sqrt( POW2(arg->dir.sx) + POW2(arg->dir.sy) + POW2(arg->dir.sz) );
 
@@ -1166,14 +1144,99 @@ void ypagun_func129__sub1(xyz *vec, mat3x3 *mat, float angle)
 
 void NC_STACK_ypagun::ypagun_func129(gun_arg129 *arg)
 {
-    __NC_STACK_ypagun *gun = &this->stack__ypagun;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypagun *gun = &stack__ypagun;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     ypagun_func129__sub0(&arg->vec, &gun->dir, arg->angle);
 
     arg->dir = gun->dir;
 
     ypagun_func129__sub1(&arg->vec, &bact->field_651, arg->angle);
+}
+
+
+void NC_STACK_ypagun::setGUN_sideAngle(int angl)
+{
+    stack__ypagun.field_14 = angl / 1000.0;
+}
+
+void NC_STACK_ypagun::setGUN_upAngle(int angl)
+{
+    stack__ypagun.field_c = angl / 1000.0;
+}
+
+void NC_STACK_ypagun::setGUN_downAngle(int angl)
+{
+    stack__ypagun.field_10 = angl / 1000.0;
+}
+
+void NC_STACK_ypagun::setGUN_fireType(int tp)
+{
+    stack__ypagun.field_30 = tp;
+}
+
+void NC_STACK_ypagun::setGUN_fireTime(int time)
+{
+    stack__ypagun.field_31 = time;
+}
+
+void NC_STACK_ypagun::setGUN_setGround(int grnd)
+{
+    if ( grnd )
+        stack__ypagun.field_39 |= 1;
+    else
+        stack__ypagun.field_39 &= ~1;
+}
+
+void NC_STACK_ypagun::setGUN_roboGun(int rbo)
+{
+    if ( rbo )
+        stack__ypagun.field_39 |= 2;
+    else
+        stack__ypagun.field_39 &= ~2;
+}
+
+
+
+int NC_STACK_ypagun::getGUN_sideAngle()
+{
+    return stack__ypagun.field_14 * 1000.0;
+}
+
+int NC_STACK_ypagun::getGUN_upAngle()
+{
+    return stack__ypagun.field_c * 1000.0;
+}
+
+int NC_STACK_ypagun::getGUN_downAngle()
+{
+    return stack__ypagun.field_10 * 1000.0;
+}
+
+int NC_STACK_ypagun::getGUN_fireType()
+{
+    return stack__ypagun.field_30;
+}
+
+int NC_STACK_ypagun::getGUN_fireTime()
+{
+    return stack__ypagun.field_31;
+}
+
+int NC_STACK_ypagun::getGUN_setGround()
+{
+    if ( stack__ypagun.field_39 & 1 )
+        return 1;
+    else
+        return 0;
+}
+
+int NC_STACK_ypagun::getGUN_roboGun()
+{
+    if ( stack__ypagun.field_39 & 2 )
+        return 1;
+    else
+        return 0;
 }
 
 

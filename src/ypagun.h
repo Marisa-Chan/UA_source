@@ -66,6 +66,38 @@ public:
         return new NC_STACK_ypagun();
     };
 
+    enum GUN_ATT
+    {
+        GUN_ATT_SIDEANGLE = 0x80002000,
+        GUN_ATT_UPANGLE = 0x80002001,
+        GUN_ATT_DOWNANGLE = 0x80002002,
+        GUN_ATT_FIRETYPE = 0x80002003,
+        GUN_ATT_FIRETIME = 0x80002004,
+        GUN_ATT_SETGROUND = 0x80002005,
+        GUN_ATT_ROBOGUN = 0x80002006
+    };
+
+    virtual void setGUN_sideAngle(int);
+    virtual void setGUN_upAngle(int);
+    virtual void setGUN_downAngle(int);
+    virtual void setGUN_fireType(int);
+    virtual void setGUN_fireTime(int);
+    virtual void setGUN_setGround(int);
+    virtual void setGUN_roboGun(int);
+
+    virtual int getGUN_sideAngle();
+    virtual int getGUN_upAngle();
+    virtual int getGUN_downAngle();
+    virtual int getGUN_fireType();
+    virtual int getGUN_fireTime();
+    virtual int getGUN_setGround();
+    virtual int getGUN_roboGun();
+
+
+    int ypagun_func0__sub0(stack_vals *stak);
+    int ypagun_func2__sub0(stack_vals *stak);
+    int ypagun_func3__sub0(stack_vals *stak);
+
     //Data
     static const NewClassDescr description;
 

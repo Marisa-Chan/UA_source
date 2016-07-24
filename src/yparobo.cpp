@@ -933,8 +933,8 @@ void sb_0x4a7010__sub1__sub0(bact_node *nod1, bact_node *nod2)
                         {
                             if ( v10->field_24 == 9 && nod1->bact->owner == v10->owner && v10->field_3D5 != 2 )
                             {
-                                int a4;
-                                call_vtbl(v10->self, 3, 0x80002006, &a4, 0);
+                                NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( v10->self );
+                                int a4 = gun->getGUN_roboGun();
 
                                 if ( !a4 )
                                 {
@@ -1091,8 +1091,8 @@ void sub_4A5580(__NC_STACK_yparobo *robo, int a2)
             {
                 if ( node->bact->field_24 == 9 )
                 {
-                    int a4;
-                    call_vtbl(node->bacto, 3, 0x80002006, &a4, 0);
+                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( node->bacto );
+                    int a4 = gun->getGUN_roboGun();
 
                     if ( a4 )
                         node->bact->field_3D6 |= 0x20000000;
@@ -3385,8 +3385,8 @@ void yparobo_func70__sub4__sub4(__NC_STACK_yparobo *robo)
     {
         if ( bact->owner != cell_unit->owner && cell_unit->field_24 == 9 && (cell_unit->weapon != -1 || cell_unit->mgun != -1) )
         {
-            int a4;
-            call_vtbl(cell_unit->self, 3, 0x80002006, &a4, 0);
+            NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( cell_unit->self );
+            int a4 = gun->getGUN_roboGun();
 
             if ( !a4 )
             {
@@ -3503,8 +3503,9 @@ void yparobo_func70__sub4__sub5(__NC_STACK_yparobo *robo)
 
         if ( arg132.tgt.pbact->field_24 == 9 && (arg132.tgt.pbact->weapon != -1 || arg132.tgt.pbact->mgun != -1) )
         {
-            int a4;
-            call_vtbl(arg132.tgt.pbact->self, 3, 0x80002006, &a4, 0);
+            NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( arg132.tgt.pbact->self );
+            int a4 = gun->getGUN_roboGun();
+
             if ( !a4 )
             {
                 bact_node *node = (bact_node *)robo->wrld_yw->bact_list.head;
@@ -4812,8 +4813,8 @@ int yparobo_func70__sub6__sub8(__NC_STACK_yparobo *robo)
             {
                 if ( bct->field_24 == 9 && bct->field_3D5 != 2 && bact->owner == bct->owner )
                 {
-                    int a4;
-                    call_vtbl(bct->self, 3, 0x80002006, &a4, 0);
+                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
+                    int a4 = gun->getGUN_roboGun();
 
                     if ( a4 == 0 && ( bct->weapon != -1 || bct->mgun != -1 ) )
                     {
@@ -4849,8 +4850,8 @@ int yparobo_func70__sub6__sub9(__NC_STACK_yparobo *robo)
             {
                 if ( bct->field_24 == 9 && bct->field_3D5 != 2 && bact->owner == bct->owner )
                 {
-                    int a4;
-                    call_vtbl(bct->self, 3, 0x80002006, &a4, 0);
+                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
+                    int a4 = gun->getGUN_roboGun();
 
                     if ( a4 == 0 && bct->weapon == -1 && bct->mgun == -1 )
                     {
@@ -5027,7 +5028,10 @@ int yparobo_func70__sub6__sub5(__NC_STACK_yparobo *robo, int *a2, int *px, int *
                     int v26 = 0;
 
                     if ( ndbct->bact->field_24 == 9 )
-                        call_vtbl(ndbct->bacto, 3, 0x80002006, &v26, 0);
+                    {
+                        NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( ndbct->bacto );
+                        v26 = gun->getGUN_roboGun();
+                    }
 
                     if ( (1 << bact->owner) & ndbct->bact->p_cell_area->view_mask )
                     {
@@ -5154,10 +5158,9 @@ int sub_4F4E48(__NC_STACK_yparobo *robo, int x, int y)
                 {
                     if ( bct->field_24 == 9 )
                     {
-                        int a4;
-                        call_vtbl(bct->self, 3, 0x80002006, &a4, 0);
+                        NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
 
-                        if ( !a4 )
+                        if ( !gun->getGUN_roboGun() )
                             v16 = 1.0;
                     }
                 }
@@ -6966,10 +6969,9 @@ int yparobo_func134__sub1(__NC_STACK_yparobo *robo, robo_arg134 *arg)
         v2 = 1;
         if ( arg->unit && arg->unit->field_24 == 9 )
         {
-            int a4 = 0;
-            call_vtbl(arg->unit->self, 3, 0x80002006, &a4, 0);
+            NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( arg->unit->self );
 
-            if ( a4 )
+            if ( gun->getGUN_roboGun() )
                 v2 = 0;
         }
 
@@ -7237,7 +7239,7 @@ void NC_STACK_yparobo::setROBO_proto(roboProto *proto)
             v34.field_0 = 0;
             gun_obj->ypagun_func128(&v34);
 
-            call_vtbl(gun_obj, 2, 0x80002006, 1, 0);
+            gun_obj->setGUN_roboGun(1);
 
             __NC_STACK_ypabact *gun_bact = gun_obj->getBACT_pBact();
 

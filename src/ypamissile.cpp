@@ -421,23 +421,29 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                 {
                     if ( bct->field_24 != 4 && bct->field_3D5 != 2 )
                     {
-                        int a4;
-                        call_vtbl(bct->self, 3, 0x80002006, &a4, 0);
+                        int a4 = 0;
+                        if (bct->field_24 == 9)
+                        {
+                            NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
+                            a4 = gun->getGUN_roboGun();
+                        }
 
                         if ( bct->field_24 != 9 || bct->shield > 100 || !a4 )
                         {
                             if ( a5 || bct->owner != miss->ejaculator_bact->owner )
                             {
-                                int v99;
-                                int v99_1;
+                                int v99 = 0;
 
-                                call_vtbl(miss->ejaculator_bact->self, 3, 0x80002006, &v99, 0);
-                                call_vtbl(bct->self, 3, 0x80002006, &v99_1, 0);
+                                if (miss->ejaculator_bact->field_24 == 9)
+                                {
+                                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( miss->ejaculator_bact->self );
+                                    v99 = gun->getGUN_roboGun();
+                                }
 
                                 if ( miss->ejaculator_bact->field_24 != 9
                                         || bct->owner != bact->owner
                                         || !v99
-                                        || (bct->field_24 != 3 && (bct->field_24 != 9 || !v99_1) ) )
+                                        || (bct->field_24 != 3 && (bct->field_24 != 9 || !a4) ) )
                                 {
 
                                     if ( miss->field_c != 1 || bct->field_621.sy >= miss->posy )

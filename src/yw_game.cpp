@@ -2961,10 +2961,9 @@ void ypaworld_func148__sub0(_NC_STACK_ypaworld *yw, int x, int y)
                 {
                     if ( node->field_24 == 9 )
                     {
-                        int a4;
-                        call_vtbl(node->self, 3, 0x80002006, &a4, 0);
+                        NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( node->self );
 
-                        if (!a4)
+                        if (!gun->getGUN_roboGun())
                             v5 = 1;
                     }
                 }
@@ -2976,10 +2975,9 @@ void ypaworld_func148__sub0(_NC_STACK_ypaworld *yw, int x, int y)
             {
                 if ( node->field_24 == 9 )
                 {
-                    int a4;
-                    call_vtbl(node->self, 3, 0x80002006, &a4, 0);
+                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( node->self );
 
-                    if (!a4)
+                    if (!gun->getGUN_roboGun())
                         v5 = 1;
                 }
             }
@@ -3241,7 +3239,10 @@ void ypaworld_func64__sub6__sub0(_NC_STACK_ypaworld *yw)
                         int a4 = 0;
 
                         if ( comnd_node->bact->field_24 == 9 )
-                            call_vtbl(comnd_node->bact->self, 3, 0x80002006, &a4, 0);
+                        {
+                            NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( comnd_node->bact->self );
+                            a4 = gun->getGUN_roboGun();
+                        }
 
                         if ( a4 == 0 )
                         {
@@ -4507,10 +4508,9 @@ void sub_4F1BE8(_NC_STACK_ypaworld *yw, bact_node *bct)
 {
     if ( bct->bact->field_24 == 9 )
     {
-        int a4;
-        call_vtbl(bct->bacto, 3, 0x80002006, &a4, 0);
+        NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->bacto );
 
-        if ( a4 )
+        if ( gun->getGUN_roboGun() )
         {
             roboGun *v4 = bct->bact->host_station->getROBO_guns();
 

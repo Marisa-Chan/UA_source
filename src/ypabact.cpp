@@ -1362,7 +1362,10 @@ void NC_STACK_ypabact::ypabact_func69(ypabact_arg65 *arg)
                     {
                         int v32 = 0;
                         if ( arg90.ret_unit->field_24 == 9 )
-                            call_vtbl(arg90.ret_unit->self, 3, 0x80002006, &v32, 0);
+                        {
+                            NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( arg90.ret_unit->self );
+                            v32 = gun->getGUN_roboGun();
+                        }
 
                         if ( !v32 )
                         {
@@ -6532,8 +6535,8 @@ size_t NC_STACK_ypabact::ypabact_func105(bact_arg105 *arg)
     int v107 = 0;
     if ( bact->field_24 == 9 )
     {
-        int a4;
-        call_vtbl(this, 3, 0x80002006, &a4, 0);
+        NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( this );
+        int a4 = gun->getGUN_roboGun();
 
         if ( a4 )
             v107 = 1;
@@ -6555,7 +6558,10 @@ size_t NC_STACK_ypabact::ypabact_func105(bact_arg105 *arg)
                 {
                     int v89 = 0;
                     if (v21->field_24 == 9)
-                        call_vtbl(v21->self, 3, 0x80002006, &v89, 0);
+                    {
+                        NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( v21->self );
+                        v89 = gun->getGUN_roboGun();
+                    }
 
                     if ( v21->field_24 != 9 || v21->shield > 100 || !v89 )
                     {
@@ -6966,7 +6972,10 @@ size_t NC_STACK_ypabact::ypabact_func106(bact_arg106 *arg)
                             {
                                 int v53 = 0;
                                 if (bct->field_24 == 9)
-                                    call_vtbl(bct->self, 3, 0x80002006, &v53, 0);
+                                {
+                                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
+                                    v53 = gun->getGUN_roboGun();
+                                }
 
                                 if ( !v53 )
                                 {

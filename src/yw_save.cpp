@@ -996,7 +996,10 @@ int yw_write_units(_NC_STACK_ypaworld *yw, FILE *fil)
                 int a4 = 0;
 
                 if ( commander->bact->field_24 == 9 )
-                    call_vtbl(commander->bacto, 3, 0x80002006, &a4, 0);
+                {
+                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( commander->bacto );
+                    a4 = gun->getGUN_roboGun();
+                }
 
                 if ( !a4 )
                 {
@@ -1020,7 +1023,10 @@ int yw_write_units(_NC_STACK_ypaworld *yw, FILE *fil)
                 {
                     int v9 = 0;
                     if ( slave->bact->field_24 == 9 )
-                        call_vtbl(slave->bacto, 3, 0x80002006, &v9, 0);
+                    {
+                        NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( slave->bacto );
+                        v9 = gun->getGUN_roboGun();
+                    }
 
                     if ( !v9 )
                     {
