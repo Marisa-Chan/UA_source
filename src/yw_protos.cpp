@@ -6,7 +6,10 @@
 #include "yw.h"
 #include "input.h"
 
+#include "ypaflyer.h"
+#include "ypacar.h"
 #include "yparobo.h"
+
 
 extern Key_stru keySS[256];
 
@@ -349,14 +352,14 @@ int VhclProtoParser(scrCallBack *arg)
         {
             if ( vhcl->model_id == 3 )
             {
-                stack_vals *val = find_id_in_stack2(0x80002001, vhcl->stak);
+                stack_vals *val = find_id_in_stack2(NC_STACK_yparobo::ROBO_ATT_PROTO, vhcl->stak);
                 if ( val )
                 {
                     val->value = (size_t)robo;
                 }
                 else
                 {
-                    vhcl->stack_pointer__position->id = 0x80002001;
+                    vhcl->stack_pointer__position->id = NC_STACK_yparobo::ROBO_ATT_PROTO;
                     vhcl->stack_pointer__position->value = (size_t)robo;
                     vhcl->stack_pointer__position++;
                     vhcl->stack_pointer__position->id = 0;
@@ -411,7 +414,7 @@ int VhclProtoParser(scrCallBack *arg)
             else if ( !strcasecmp(_p2, "plane") )
             {
                 vhcl->model_id = 6;
-                stack_vals *val = find_id_in_stack2(0x80002000, vhcl->stak);
+                stack_vals *val = find_id_in_stack2(NC_STACK_ypaflyer::FLY_ATT_TYPE, vhcl->stak);
 
                 if ( val )
                 {
@@ -419,7 +422,7 @@ int VhclProtoParser(scrCallBack *arg)
                 }
                 else
                 {
-                    vhcl->stack_pointer__position->id = 0x80002000;
+                    vhcl->stack_pointer__position->id = NC_STACK_ypaflyer::FLY_ATT_TYPE;
                     vhcl->stack_pointer__position->value = 3;
                     vhcl->stack_pointer__position++;
                     vhcl->stack_pointer__position->id = 0;
@@ -428,14 +431,14 @@ int VhclProtoParser(scrCallBack *arg)
             else if ( !strcasecmp(_p2, "glider") )
             {
                 vhcl->model_id = 6;
-                stack_vals *val = find_id_in_stack2(0x80002000, vhcl->stak);
+                stack_vals *val = find_id_in_stack2(NC_STACK_ypaflyer::FLY_ATT_TYPE, vhcl->stak);
                 if ( val )
                 {
                     val->value = 2;
                 }
                 else
                 {
-                    vhcl->stack_pointer__position->id = 0x80002000;
+                    vhcl->stack_pointer__position->id = NC_STACK_ypaflyer::FLY_ATT_TYPE;
                     vhcl->stack_pointer__position->value = 2;
                     vhcl->stack_pointer__position++;
                     vhcl->stack_pointer__position->id = 0;
@@ -444,14 +447,14 @@ int VhclProtoParser(scrCallBack *arg)
             else if ( !strcasecmp(_p2, "zeppelin") )
             {
                 vhcl->model_id = 6;
-                stack_vals *val = find_id_in_stack2(0x80002000, vhcl->stak);
+                stack_vals *val = find_id_in_stack2(NC_STACK_ypaflyer::FLY_ATT_TYPE, vhcl->stak);
                 if ( val )
                 {
                     val->value = 0;
                 }
                 else
                 {
-                    vhcl->stack_pointer__position->id = 0x80002000;
+                    vhcl->stack_pointer__position->id = NC_STACK_ypaflyer::FLY_ATT_TYPE;
                     vhcl->stack_pointer__position->value = 0;
                     vhcl->stack_pointer__position++;
                     vhcl->stack_pointer__position->id = 0;
@@ -704,14 +707,14 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "gun_side_angle") )
         {
-            stack_vals *val = find_id_in_stack2(0x80002000, vhcl->stak);
+            stack_vals *val = find_id_in_stack2(NC_STACK_ypagun::GUN_ATT_SIDEANGLE, vhcl->stak);
             if ( val )
             {
                 val->value = strtol(_p2, NULL, 0);
             }
             else
             {
-                vhcl->stack_pointer__position->id = 0x80002000;
+                vhcl->stack_pointer__position->id = NC_STACK_ypagun::GUN_ATT_SIDEANGLE;
                 vhcl->stack_pointer__position->value = strtol(_p2, NULL, 0);
                 vhcl->stack_pointer__position++;
                 vhcl->stack_pointer__position->id = 0;
@@ -719,14 +722,14 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "gun_up_angle") )
         {
-            stack_vals *val = find_id_in_stack2(0x80002001, vhcl->stak);
+            stack_vals *val = find_id_in_stack2(NC_STACK_ypagun::GUN_ATT_UPANGLE, vhcl->stak);
             if ( val )
             {
                 val->value = strtol(_p2, NULL, 0);
             }
             else
             {
-                vhcl->stack_pointer__position->id = 0x80002001;
+                vhcl->stack_pointer__position->id = NC_STACK_ypagun::GUN_ATT_UPANGLE;
                 vhcl->stack_pointer__position->value = strtol(_p2, NULL, 0);
                 vhcl->stack_pointer__position++;
                 vhcl->stack_pointer__position->id = 0;
@@ -734,14 +737,14 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "gun_down_angle") )
         {
-            stack_vals *val = find_id_in_stack2(0x80002002, vhcl->stak);
+            stack_vals *val = find_id_in_stack2(NC_STACK_ypagun::GUN_ATT_DOWNANGLE, vhcl->stak);
             if ( val )
             {
                 val->value = strtol(_p2, NULL, 0);
             }
             else
             {
-                vhcl->stack_pointer__position->id = 0x80002002;
+                vhcl->stack_pointer__position->id = NC_STACK_ypagun::GUN_ATT_DOWNANGLE;
                 vhcl->stack_pointer__position->value = strtol(_p2, NULL, 0);
                 vhcl->stack_pointer__position++;
                 vhcl->stack_pointer__position->id = 0;
@@ -764,14 +767,14 @@ int VhclProtoParser(scrCallBack *arg)
             }
             if ( gun_type )
             {
-                stack_vals *val = find_id_in_stack2(0x80002003, vhcl->stak);
+                stack_vals *val = find_id_in_stack2(NC_STACK_ypagun::GUN_ATT_FIRETYPE, vhcl->stak);
                 if ( val )
                 {
                     val->value = gun_type;
                 }
                 else
                 {
-                    vhcl->stack_pointer__position->id = 0x80002003;
+                    vhcl->stack_pointer__position->id = NC_STACK_ypagun::GUN_ATT_FIRETYPE;
                     vhcl->stack_pointer__position->value = gun_type;
                     vhcl->stack_pointer__position++;
                     vhcl->stack_pointer__position->id = 0;
@@ -780,27 +783,27 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "kamikaze") )
         {
-            stack_vals *val = find_id_in_stack2(0x80003000, vhcl->stak);
+            stack_vals *val = find_id_in_stack2(NC_STACK_ypacar::CAR_ATT_KAMIKAZE, vhcl->stak);
             if ( val )
             {
                 val->value = 1;
             }
             else
             {
-                vhcl->stack_pointer__position->id = 0x80003000;
+                vhcl->stack_pointer__position->id = NC_STACK_ypacar::CAR_ATT_KAMIKAZE;
                 vhcl->stack_pointer__position->value = 1;
                 vhcl->stack_pointer__position++;
                 vhcl->stack_pointer__position->id = 0;
             }
 
-            val = find_id_in_stack2(0x80003001, vhcl->stak);
+            val = find_id_in_stack2(NC_STACK_ypacar::CAR_ATT_BLAST, vhcl->stak);
             if ( val )
             {
                 val->value = strtol(_p2, NULL, 0);
             }
             else
             {
-                vhcl->stack_pointer__position->id = 0x80003001;
+                vhcl->stack_pointer__position->id = NC_STACK_ypacar::CAR_ATT_BLAST;
                 vhcl->stack_pointer__position->value = strtol(_p2, NULL, 0);
                 vhcl->stack_pointer__position++;
                 vhcl->stack_pointer__position->id = 0;
@@ -1006,14 +1009,14 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "robo_does_twist") )
         {
-            stack_vals *val = find_id_in_stack2(0x8000200D, vhcl->stak);
+            stack_vals *val = find_id_in_stack2(NC_STACK_yparobo::ROBO_ATT_WAIT_ROTATE, vhcl->stak);
             if ( val )
             {
                 val->value = 1;
             }
             else
             {
-                vhcl->stack_pointer__position->id = 0x8000200D;
+                vhcl->stack_pointer__position->id = NC_STACK_yparobo::ROBO_ATT_WAIT_ROTATE;
                 vhcl->stack_pointer__position->value = 1;
                 vhcl->stack_pointer__position++;
                 vhcl->stack_pointer__position->id = 0;
@@ -1021,14 +1024,14 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "robo_does_flux") )
         {
-            stack_vals *val = find_id_in_stack2(0x8000200C, vhcl->stak);
+            stack_vals *val = find_id_in_stack2(NC_STACK_yparobo::ROBO_ATT_WAIT_SWAY, vhcl->stak);
             if ( val )
             {
                 val->value = 1;
             }
             else
             {
-                vhcl->stack_pointer__position->id = 0x8000200C;
+                vhcl->stack_pointer__position->id = NC_STACK_yparobo::ROBO_ATT_WAIT_SWAY;
                 vhcl->stack_pointer__position->value = 1;
                 vhcl->stack_pointer__position++;
                 vhcl->stack_pointer__position->id = 0;
