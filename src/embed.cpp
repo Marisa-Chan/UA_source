@@ -48,7 +48,7 @@ size_t NC_STACK_embed::func0(stack_vals *)
 
 size_t NC_STACK_embed::func1(stack_vals *stak)
 {
-    __NC_STACK_embed *embd = &this->stack__embed;
+    __NC_STACK_embed *embd = &stack__embed;
 
     while ( embd->embed_objects.head->next )
     {

@@ -1195,7 +1195,7 @@ size_t NC_STACK_winp::func0(stack_vals *stak)
     if ( !NC_STACK_iwimp::func0(stak) )
         return 0;
 
-    __NC_STACK_winp *winp = &this->stack__winp;
+    __NC_STACK_winp *winp = &stack__winp;
     winp->field_4 = -1;
     gfx_window *v8 = (gfx_window *)find_id_in_stack_def_val(0x80002000, 0, stak);
     if ( v8 )
@@ -1211,7 +1211,7 @@ size_t NC_STACK_winp::func0(stack_vals *stak)
 
 size_t NC_STACK_winp::func1(stack_vals *stak)
 {
-    __NC_STACK_winp *winp = &this->stack__winp;
+    __NC_STACK_winp *winp = &stack__winp;
 
     if ( winp->hWND )
         sub_43E5CB(winp->hWND);
@@ -1221,7 +1221,7 @@ size_t NC_STACK_winp::func1(stack_vals *stak)
 
 size_t NC_STACK_winp::func2(stack_vals *stak)
 {
-    __NC_STACK_winp *winp = &this->stack__winp;
+    __NC_STACK_winp *winp = &stack__winp;
 
     gfx_window *v7 = (gfx_window *)find_id_in_stack_def_val(0x80002000, 0, stak);
     if ( v7 )
@@ -1239,7 +1239,7 @@ size_t NC_STACK_winp::func2(stack_vals *stak)
 
 size_t NC_STACK_winp::func3(stack_vals *stk)
 {
-    __NC_STACK_winp *winp = &this->stack__winp;
+    __NC_STACK_winp *winp = &stack__winp;
 
     stack_vals *v6 = find_id_in_stack2(0x80002000, stk);
 
@@ -1251,7 +1251,7 @@ size_t NC_STACK_winp::func3(stack_vals *stk)
 
 void NC_STACK_winp::idev_func64(win_64arg *arg)
 {
-    __NC_STACK_winp *winp = &this->stack__winp;
+    __NC_STACK_winp *winp = &stack__winp;
 
     if ( winp->field_4 < 0 )
     {
@@ -1293,7 +1293,7 @@ void NC_STACK_winp::idev_func64(win_64arg *arg)
 
 void NC_STACK_winp::idev_func65(win_64arg *arg)
 {
-    __NC_STACK_winp *winp = &this->stack__winp;
+    __NC_STACK_winp *winp = &stack__winp;
 
     if ( winp->field_4 < 0 )
     {
@@ -1490,7 +1490,7 @@ void NC_STACK_winp::idev_func65(win_64arg *arg)
 void NC_STACK_winp::idev_func66(winp_66arg *arg)
 {
     int cnt = wmcharBuf_cnt;
-    __NC_STACK_winp *winp = &this->stack__winp;
+    __NC_STACK_winp *winp = &stack__winp;
 
     arg->dword8 = 0;
     arg->downed_key_2 = downed_key_2;
@@ -1523,7 +1523,7 @@ void NC_STACK_winp::idev_func66(winp_66arg *arg)
 
 int NC_STACK_winp::idev_func67(const char **arg)
 {
-    __NC_STACK_winp *winp = &this->stack__winp;
+    __NC_STACK_winp *winp = &stack__winp;
 
     for(int i = 0; i < 128; i++)
     {
@@ -1538,7 +1538,7 @@ int NC_STACK_winp::idev_func67(const char **arg)
 
 int NC_STACK_winp::idev_func68(winp_68arg *arg)
 {
-    __NC_STACK_winp *winp = &this->stack__winp;
+    __NC_STACK_winp *winp = &stack__winp;
 
     if ( arg->id < 0x30 )
     {
@@ -1558,7 +1558,7 @@ void NC_STACK_winp::idev_func69(int *arg)
 {
     printf("CHECK ARG TYPE %s\n","winp_func69");
 
-    __NC_STACK_winp *winp = &this->stack__winp;
+    __NC_STACK_winp *winp = &stack__winp;
 
     if ( *arg == 1 )
         winp->field_c = 0;
@@ -1568,7 +1568,7 @@ void NC_STACK_winp::idev_func70(int *arg)
 {
     //printf("CHECK ARG TYPE %s\n","winp_func70");
 
-    __NC_STACK_winp *winp = &this->stack__winp;
+    __NC_STACK_winp *winp = &stack__winp;
 
     if ( *arg )
     {
@@ -2261,7 +2261,7 @@ void winp_getmouse_state()
 
 void NC_STACK_winp::iwimp_func131(winp_131arg *arg)
 {
-    __NC_STACK_winp *winp = &this->stack__winp;
+    __NC_STACK_winp *winp = &stack__winp;
     arg->flag = 0;
     if ( winp->hWND )
     {

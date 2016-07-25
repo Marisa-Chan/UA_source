@@ -1012,7 +1012,7 @@ size_t NC_STACK_bmpanim::rsrc_func66(rsrc_func66_arg *sv)
 
 void NC_STACK_bmpanim::bitmap_func130(bitmap_arg130 *arg)
 {
-    __NC_STACK_bmpanim *bmpAnm = &this->stack__bmpanim;
+    __NC_STACK_bmpanim *bmpAnm = &stack__bmpanim;
 
     if ( arg->frame_time == -1 )
     {

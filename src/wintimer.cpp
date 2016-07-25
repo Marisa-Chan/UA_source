@@ -29,7 +29,7 @@ DWORD wintimer_func64__sub0()
 
 int NC_STACK_wintimer::itimer_func64(void *)
 {
-    __NC_STACK_wintimer *tmr = &this->stack__wintimer;
+    __NC_STACK_wintimer *tmr = &stack__wintimer;
 
     DWORD tik = wintimer_func64__sub0();
 

@@ -14,7 +14,7 @@ size_t NC_STACK_input::func0(stack_vals *stak)
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
 
-    __NC_STACK_input *inp = &this->stack__input;
+    __NC_STACK_input *inp = &stack__input;
 
     for (int i = 0; i < 32; i++)
     {
@@ -26,7 +26,7 @@ size_t NC_STACK_input::func0(stack_vals *stak)
 
 size_t NC_STACK_input::func1(stack_vals *stak)
 {
-    __NC_STACK_input *inp = &this->stack__input;
+    __NC_STACK_input *inp = &stack__input;
 
     if ( inp->timer )
         delete_class_obj(inp->timer);
@@ -198,7 +198,7 @@ size_t NC_STACK_input::input_func64(input__func64__params *arg)
 {
     char classname[256];
 
-    __NC_STACK_input *inp = &this->stack__input;
+    __NC_STACK_input *inp = &stack__input;
 
     switch ( arg->type_id )
     {
@@ -314,7 +314,7 @@ void sub_41CC94(nlist *lst, inp_l65 *loc, int arg)
 
 void NC_STACK_input::input_func65(struC5 *arg)
 {
-    __NC_STACK_input *inp = &this->stack__input;
+    __NC_STACK_input *inp = &stack__input;
     memset(arg, 0, sizeof(struC5));
 
     if ( inp->timer )
@@ -381,7 +381,7 @@ void NC_STACK_input::input_func65(struC5 *arg)
 
 size_t NC_STACK_input::input_func66(input__func66__params *arg)
 {
-    __NC_STACK_input *inpt = &this->stack__input;
+    __NC_STACK_input *inpt = &stack__input;
 
     NC_STACK_nucleus *v7 = NULL;
     if ( arg->field_0 == 1 )

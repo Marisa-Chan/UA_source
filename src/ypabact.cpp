@@ -196,7 +196,7 @@ size_t NC_STACK_ypabact::func0(stack_vals *stak)
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
 
-    __NC_STACK_ypabact *bact_int = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact_int = &stack__ypabact;
 
     init_list(&bact_int->field_B48);
     init_list(&bact_int->list2);
@@ -266,7 +266,7 @@ size_t NC_STACK_ypabact::func0(stack_vals *stak)
 
 size_t NC_STACK_ypabact::func1(stack_vals *stak)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     sub_423DD8(&bact->field_5A);
 
@@ -692,7 +692,7 @@ base_1c_struct bact_cam;
 
 void NC_STACK_ypabact::ypabact_func65(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     sub_430A20(&bact_cam);
 
@@ -851,7 +851,7 @@ void NC_STACK_ypabact::ypabact_func65(ypabact_arg65 *arg)
 
 void NC_STACK_ypabact::ypabact_func66(base77Func *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( bact->current_vp.base )
     {
@@ -913,7 +913,7 @@ void NC_STACK_ypabact::ypabact_func66(base77Func *arg)
 
 void NC_STACK_ypabact::ypabact_func67(bact_arg67 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     bact->field_945 = 0;
     yw_130arg arg130;
@@ -1672,7 +1672,7 @@ void ypabact_func70__sub0(__NC_STACK_ypabact *bact, int a2)
 
 void NC_STACK_ypabact::ypabact_func70(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     float v75 = arg->field_4 / 1000.0;
 
@@ -2201,7 +2201,7 @@ void ypabact_func71__sub2(__NC_STACK_ypabact *bact, float a4)
 
 void NC_STACK_ypabact::ypabact_func71(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     bact->airconst = bact->airconst2;
 
@@ -2661,7 +2661,7 @@ void NC_STACK_ypabact::ypabact_func71(ypabact_arg65 *arg)
 
 void NC_STACK_ypabact::ypabact_func72(NC_STACK_ypabact *kid)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     bact_arg73 arg73;
 
@@ -2674,7 +2674,7 @@ void NC_STACK_ypabact::ypabact_func72(NC_STACK_ypabact *kid)
 
 void NC_STACK_ypabact::ypabact_func73(bact_arg73 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( bact->parent_bacto )
         Remove(&bact->list_node);
@@ -2687,7 +2687,7 @@ void NC_STACK_ypabact::ypabact_func73(bact_arg73 *arg)
 
 void NC_STACK_ypabact::ypabact_func74(bact_arg74 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     bact->field_62D = bact->field_621;
 
@@ -2817,7 +2817,7 @@ void NC_STACK_ypabact::ypabact_func74(bact_arg74 *arg)
 
 void NC_STACK_ypabact::ypabact_func75(bact_arg75 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     arg->pos = arg->target.pbact->field_621;
 
@@ -3122,7 +3122,7 @@ void NC_STACK_ypabact::ypabact_func75(bact_arg75 *arg)
 
 void NC_STACK_ypabact::ypabact_func76(bact_arg75 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     int v64 = 0;
     int v68 = 0;
@@ -3473,7 +3473,7 @@ void ypabact_func77__sub0(__NC_STACK_ypabact *bact1, __NC_STACK_ypabact *bact2)
 
 void NC_STACK_ypabact::ypabact_func77(void *)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     char v51[32];
 
@@ -3854,7 +3854,7 @@ void NC_STACK_ypabact::ypabact_func77(void *)
 
 void NC_STACK_ypabact::ypabact_func78(bact_arg119 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( (bact->field_24 == 2 || bact->field_24 == 8) && arg->field_0 == 2 )
     {
@@ -3899,7 +3899,7 @@ void NC_STACK_ypabact::ypabact_func78(bact_arg119 *arg)
 
 size_t NC_STACK_ypabact::ypabact_func79(bact_arg79 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     NC_STACK_ypamissile *wobj = NULL;
 
@@ -4150,7 +4150,7 @@ size_t NC_STACK_ypabact::ypabact_func79(bact_arg79 *arg)
 
 size_t NC_STACK_ypabact::ypabact_func80(bact_arg80 *arg)
 {
-    __NC_STACK_ypabact *bct = &this->stack__ypabact;
+    __NC_STACK_ypabact *bct = &stack__ypabact;
 
     yw_130arg sect_info;
 
@@ -4182,7 +4182,7 @@ size_t NC_STACK_ypabact::ypabact_func80(bact_arg80 *arg)
 
 void NC_STACK_ypabact::ypabact_func81(bact_arg81 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     bact_node *node = (bact_node *)bact->list2.head;
 
@@ -4234,7 +4234,7 @@ void NC_STACK_ypabact::ypabact_func81(bact_arg81 *arg)
 // Update bact energy
 void NC_STACK_ypabact::ypabact_func82(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     cellArea *cell = bact->p_cell_area;
 
@@ -4271,7 +4271,7 @@ void NC_STACK_ypabact::ypabact_func82(ypabact_arg65 *arg)
 
 void NC_STACK_ypabact::ypabact_func83(bact_arg83 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     float v81 = 50.0 / bact->mass;
     float v79 = arg->energ * 0.0004;
@@ -4418,7 +4418,7 @@ void NC_STACK_ypabact::ypabact_func83(bact_arg83 *arg)
 
 void NC_STACK_ypabact::ypabact_func84(bact_arg84 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     int v6 = 0;
 
@@ -4632,7 +4632,7 @@ void ypabact_func86__sub0(__NC_STACK_ypabact *bact, int a2)
 
 size_t NC_STACK_ypabact::ypabact_func86(bact_arg86 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     yw_137col v58[10];
 
@@ -5075,7 +5075,7 @@ xyz stru_5150F4 = {0, 0, 0};
 
 size_t NC_STACK_ypabact::ypabact_func87(int *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     _NC_STACK_ypaworld *yw = &bact->wrld->stack__ypaworld;
 
@@ -5290,7 +5290,7 @@ size_t NC_STACK_ypabact::ypabact_func87(int *arg)
 
 void NC_STACK_ypabact::ypabact_func88(bact_arg88 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( !(bact->field_3D6 & 0x200) )
     {
@@ -5499,7 +5499,7 @@ __NC_STACK_ypabact * ypabact_func90__sub0(cellArea *cell, __NC_STACK_ypabact *un
 
 void NC_STACK_ypabact::ypabact_func90(bact_arg90 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     yw_130arg arg130;
     if ( arg->field_8 & 1 )
@@ -5535,7 +5535,7 @@ void NC_STACK_ypabact::ypabact_func90(bact_arg90 *arg)
 
 void NC_STACK_ypabact::ypabact_func91(xyz *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     yw_130arg arg130;
     arg130.pos_x = arg->sx;
@@ -5571,7 +5571,7 @@ void NC_STACK_ypabact::ypabact_func91(xyz *arg)
 
 void NC_STACK_ypabact::ypabact_func92(bact_arg92 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     yw_130arg arg130;
 
@@ -5868,7 +5868,7 @@ void NC_STACK_ypabact::ypabact_func93(stack_vals *arg)
 
 void NC_STACK_ypabact::ypabact_func94(bact_arg94 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     float tmp = sqrt(bact->field_651.m20 * bact->field_651.m20 + bact->field_651.m22 * bact->field_651.m22);
 
@@ -5909,7 +5909,7 @@ void NC_STACK_ypabact::ypabact_func95(stack_vals *arg)
 // Reset
 void NC_STACK_ypabact::ypabact_func96(void *)
 {
-    __NC_STACK_ypabact * bact = &this->stack__ypabact;
+    __NC_STACK_ypabact * bact = &stack__ypabact;
 
     bact->field_B34 = 4;
     bact->field_3D6 = 0;
@@ -5984,7 +5984,7 @@ void NC_STACK_ypabact::ypabact_func96(void *)
 
 void NC_STACK_ypabact::ypabact_func97(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypabact * bact = &this->stack__ypabact;
+    __NC_STACK_ypabact * bact = &stack__ypabact;
 
     bact->field_601 = bact->mass * 9.77665;
 
@@ -6093,7 +6093,7 @@ void sub_48A0E0(__NC_STACK_ypabact *bact, float angle)
 
 void NC_STACK_ypabact::ypabact_func99(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     bact->field_931 -= arg->field_4;
 
@@ -6183,14 +6183,14 @@ void NC_STACK_ypabact::ypabact_func99(ypabact_arg65 *arg)
 
 size_t NC_STACK_ypabact::ypabact_func100(void *)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     return (bact->current_vp.base == bact->vp_dead.base || bact->current_vp.base == bact->vp_genesis.base || bact->current_vp.base == bact->vp_megadeth.base) && bact->field_3D5 == 2;
 }
 
 size_t NC_STACK_ypabact::ypabact_func101(bact_arg101 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     xyz tmp;
 
@@ -6325,7 +6325,7 @@ size_t NC_STACK_ypabact::ypabact_func101(bact_arg101 *arg)
 
 void NC_STACK_ypabact::ypabact_func102(stack_vals *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( bact->field_24 != 4 )
     {
@@ -6410,7 +6410,7 @@ void NC_STACK_ypabact::ypabact_func103(stack_vals *arg)
 
 void NC_STACK_ypabact::ypabact_func104(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( bact->field_93D > 0 )
         bact->field_93D -= arg->field_4;
@@ -6484,7 +6484,7 @@ void NC_STACK_ypabact::ypabact_func104(ypabact_arg65 *arg)
 
 size_t NC_STACK_ypabact::ypabact_func105(bact_arg105 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     int a5 = 0;
 
@@ -7046,7 +7046,7 @@ size_t NC_STACK_ypabact::ypabact_func106(bact_arg106 *arg)
 
 void NC_STACK_ypabact::ypabact_func107(int *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     NC_STACK_base *vps[7];
     vps[0] = bact->vp_normal.base;
@@ -7110,7 +7110,7 @@ void NC_STACK_ypabact::ypabact_func107(int *arg)
 
 size_t NC_STACK_ypabact::ypabact_func108(float *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( bact->field_3D4 == 100 )
         return 1;
@@ -7275,7 +7275,7 @@ void sub_493480(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, int a3)
 
 void NC_STACK_ypabact::ypabact_func109(bact_arg109 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     switch ( arg->field_0 )
     {
@@ -7510,7 +7510,7 @@ int ypabact_func110__sub0(__NC_STACK_ypabact *bact)
 
 size_t NC_STACK_ypabact::ypabact_func110(bact_arg110 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     int v6 = 0;
     int v9 = 0;
@@ -7780,7 +7780,7 @@ size_t NC_STACK_ypabact::ypabact_func111(__NC_STACK_ypabact *)
 
 void NC_STACK_ypabact::ypabact_func112(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     float v14 = 0.66;
 
@@ -7928,7 +7928,7 @@ void NC_STACK_ypabact::ypabact_func113(uint8_t *arg)
 
 void NC_STACK_ypabact::ypabact_func114(void *)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     float radius;
     if ( bact->vwr_radius >= 32.0 )
@@ -8038,7 +8038,7 @@ void NC_STACK_ypabact::ypabact_func114(void *)
 
 void NC_STACK_ypabact::ypabact_func115(void *)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     int v4 = 0;
 
@@ -8106,7 +8106,7 @@ void NC_STACK_ypabact::ypabact_func117(stack_vals *arg)
 
 void NC_STACK_ypabact::ypabact_func118(NC_STACK_ypabact *b_bacto)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     _NC_STACK_ypaworld *yw = &bact->wrld->stack__ypaworld;
 
@@ -8142,7 +8142,7 @@ size_t NC_STACK_ypabact::ypabact_func119(bact_arg119 *arg)
 {
     int result = 0;
 
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( arg->field_0 )
         bact->field_3D5 = arg->field_0;
@@ -8475,7 +8475,7 @@ size_t NC_STACK_ypabact::ypabact_func119(bact_arg119 *arg)
 
 void NC_STACK_ypabact::ypabact_func120(yw_arg129 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     arg->field_14 = 255;
 
@@ -8533,7 +8533,7 @@ void sb_0x4874c4(__NC_STACK_ypabact *bact, int a2, int a3, float a4)
 
 void NC_STACK_ypabact::ypabact_func121(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( bact->field_3D6 & 0x200 || (bact->field_915 - bact->field_955 > 5000 && bact->field_3D6 & 0x400 ) )
     {
@@ -8652,7 +8652,7 @@ void NC_STACK_ypabact::ypabact_func123(stack_vals *arg)
 size_t NC_STACK_ypabact::ypabact_func124(bact_arg124 *arg)
 {
     //path find for ground units (tank & car)
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
     _NC_STACK_ypaworld *yw = bact->field_B3C;
 
     int maxsteps = arg->steps_cnt;
@@ -8978,7 +8978,7 @@ void ypabact_func125__sub0(__NC_STACK_ypabact *bact, int a2)
 size_t NC_STACK_ypabact::ypabact_func125(bact_arg124 *arg)
 {
     // path find caller for ground squads
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     int maxsteps = arg->steps_cnt;
 

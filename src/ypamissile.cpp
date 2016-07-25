@@ -92,7 +92,7 @@ size_t NC_STACK_ypamissile::func0(stack_vals *stak)
     if ( !NC_STACK_ypabact::func0(stak) )
         return 0;
 
-    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &stack__ypamissile;
 
     //bact = this->getBACT_pBact();
     __NC_STACK_ypabact *bact = &stack__ypabact;
@@ -324,7 +324,7 @@ size_t NC_STACK_ypamissile::func3(stack_vals *stak)
 
 void NC_STACK_ypamissile::ypabact_func68(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
     if ( miss->selfie->field_3D5 == 2 )
@@ -680,7 +680,7 @@ void ypamissile_func70__sub1(__NC_STACK_ypamissile *miss, bact_arg74 *arg74)
 
 void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
     miss->ywo->ypaworld_func145(bact);
@@ -910,7 +910,7 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
 
 void NC_STACK_ypamissile::ypabact_func71(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
     bact->field_62D = bact->field_621;
@@ -923,7 +923,7 @@ void NC_STACK_ypamissile::ypabact_func71(ypabact_arg65 *arg)
 
 void NC_STACK_ypamissile::ypabact_func74(bact_arg74 *arg)
 {
-    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
     bact->field_62D = bact->field_621;
@@ -1000,7 +1000,7 @@ void NC_STACK_ypamissile::ypabact_func96(void *)
 {
     NC_STACK_ypabact::ypabact_func96(NULL);
 
-    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &stack__ypamissile;
 
     miss->field_2D  = 0;
     miss->delay_time = 0;
@@ -1010,7 +1010,7 @@ void NC_STACK_ypamissile::ypabact_func96(void *)
 
 size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
 {
-    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
     sub_424000(&bact->field_5A, 2);
@@ -1075,7 +1075,7 @@ size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
 
 void NC_STACK_ypamissile::ypamissile_func128(void *)
 {
-    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &stack__ypamissile;
 
     int a4 = getBACT_viewer();
 
@@ -1100,7 +1100,7 @@ void NC_STACK_ypamissile::ypamissile_func128(void *)
 
 void NC_STACK_ypamissile::ypamissile_func129(void *)
 {
-    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
     bact_arg83 arg83;
@@ -1174,7 +1174,7 @@ void NC_STACK_ypamissile::ypamissile_func129(void *)
 
 void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
 {
-    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
     if ( bact->field_605.sx != 0.0 || bact->field_605.sy != 0.0 || bact->field_605.sz != 0.0 )
@@ -1274,7 +1274,7 @@ void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
 
 void NC_STACK_ypamissile::ypamissile_func131(miss_arg130 *arg)
 {
-    __NC_STACK_ypamissile *miss = &this->stack__ypamissile;
+    __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
     float v33 = bact->field_651.m10;

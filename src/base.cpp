@@ -292,7 +292,7 @@ size_t NC_STACK_base::func0(stack_vals *stak)
         return 0;
 
 
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
 
     base->ID = baseIDcounter;
     baseIDcounter++;
@@ -319,7 +319,7 @@ size_t NC_STACK_base::func0(stack_vals *stak)
 
 size_t NC_STACK_base::func1(stack_vals *stak)
 {
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
 
     if (base->OBJ_SKELETON)
         delete_class_obj(base->OBJ_SKELETON);
@@ -790,7 +790,7 @@ size_t NC_STACK_base::func5(MFILE **file)
             if ( !obj_ok )
                 return 0;
 
-            base = &this->stack__base;
+            base = &stack__base;
 
             init_list(&base->ADES);
             init_list(&base->KIDS);
@@ -869,7 +869,7 @@ size_t NC_STACK_base::func5(MFILE **file)
 size_t NC_STACK_base::func6(MFILE **file)
 {
     MFILE *mfile = *file;
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
 
     if ( sub_412FC0(*file, TAG_BASE, TAG_FORM, -1) )
         return 0;
@@ -1023,7 +1023,7 @@ int sub_430880(const void * a, const void * b)
 
 size_t NC_STACK_base::base_func64(base_64arg *arg)
 {
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
 
     base_1c_struct *glob_1c = sub_430A28();
 
@@ -1077,7 +1077,7 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
 // Fill parent info struct and push it to kid
 size_t NC_STACK_base::base_func65(NC_STACK_base **kid)
 {
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
 
     base_66_arg_struct v6; // Parent info
 
@@ -1097,7 +1097,7 @@ size_t NC_STACK_base::base_func65(NC_STACK_base **kid)
 // Add object to parent kids list
 size_t NC_STACK_base::base_func66(base_66_arg_struct *prnt_info)
 {
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
 
     if ( base->parent_base )
     {
@@ -1142,7 +1142,7 @@ base_1c_struct *sub_430A28()
 
 size_t NC_STACK_base::base_func67(NC_STACK_base **arg)
 {
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
 
     if (arg[0] == NULL)
     {
@@ -1191,7 +1191,7 @@ size_t NC_STACK_base::base_func67(NC_STACK_base **arg)
 
 size_t NC_STACK_base::base_func68(flag_xyz *arg)
 {
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
 
     int flg = arg->flag;
 
@@ -1220,7 +1220,7 @@ size_t NC_STACK_base::base_func68(flag_xyz *arg)
 
 size_t NC_STACK_base::base_func69(flag_xyz *arg)
 {
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
 
     int flg = arg->flag;
 
@@ -1259,7 +1259,7 @@ size_t NC_STACK_base::base_func69(flag_xyz *arg)
 
 size_t NC_STACK_base::base_func70(flag_xyz2 *arg)
 {
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
 
     int flg = arg->flag;
 
@@ -1291,7 +1291,7 @@ size_t NC_STACK_base::base_func70(flag_xyz2 *arg)
 
 size_t NC_STACK_base::base_func71(flag_xyz2 *arg)
 {
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
 
     int flg = arg->flag;
 
@@ -1330,7 +1330,7 @@ size_t NC_STACK_base::base_func71(flag_xyz2 *arg)
 
 size_t NC_STACK_base::base_func72(flag_xyz *arg)
 {
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
 
     int flg = arg->flag;
 
@@ -1363,7 +1363,7 @@ size_t NC_STACK_base::base_func72(flag_xyz *arg)
 size_t NC_STACK_base::base_func73(base_64arg *arg)
 {
     printf("%s - NOT RECOGINZED ARGUMENT\n","base_func73");
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
 
     if ( arg->field_0 != base->field_8 )
     {
@@ -1477,7 +1477,7 @@ size_t NC_STACK_base::base_func78(base_64arg *arg)
 {
     printf("%s - NOT RECOGINZED ARGUMENT\n","base_func78");
 
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
 
     base->flags |= 3;
 
@@ -1507,7 +1507,7 @@ size_t NC_STACK_base::base_func79(NC_STACK_base **arg)
 {
     printf("%s - NOT RECOGINZED ARGUMENT\n","base_func79");
 
-    __NC_STACK_base *base = &this->stack__base;
+    __NC_STACK_base *base = &stack__base;
     NC_STACK_base *field_bc = base->field_bc;
 
     if ( field_bc )

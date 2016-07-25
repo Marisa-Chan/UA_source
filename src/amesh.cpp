@@ -321,7 +321,7 @@ size_t NC_STACK_amesh::func5(MFILE **file)
 size_t NC_STACK_amesh::func6(MFILE **file)
 {
     MFILE *mfile = *file;
-    __NC_STACK_amesh *amesh = &this->stack__amesh;
+    __NC_STACK_amesh *amesh = &stack__amesh;
 
     if ( sub_412FC0(mfile, TAG_AMSH, TAG_FORM, -1) )
         return 0;

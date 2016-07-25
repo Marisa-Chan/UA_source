@@ -3408,7 +3408,7 @@ void windd_func258__sub0(NC_STACK_windd *obj, __NC_STACK_display *dspl, __NC_STA
 void NC_STACK_windd::display_func258(stack_vals *)
 {
     __NC_STACK_windd *wdd = &stack__windd;
-    __NC_STACK_display *dspl = &this->stack__display;
+    __NC_STACK_display *dspl = &stack__display;
 
     if ( sub_42AC78(wdd) )
     {
@@ -3465,7 +3465,7 @@ void sub_42D37C(__NC_STACK_windd *wdd, UA_PALETTE *pal)
 void NC_STACK_windd::display_func262(rstr_262_arg *arg)
 {
     __NC_STACK_windd *wdd = &stack__windd;
-    __NC_STACK_display *dspl  = &this->stack__display;
+    __NC_STACK_display *dspl  = &stack__display;
 
     NC_STACK_display::display_func262(arg);
     sub_42D37C(wdd, &dspl->palette);
@@ -3639,7 +3639,7 @@ void sub_42D724(__NC_STACK_windd *wdd, int a2)
 void NC_STACK_windd::windd_func321(stack_vals *)
 {
     __NC_STACK_windd *wdd = &stack__windd;
-    __NC_STACK_display *dspl = &this->stack__display;
+    __NC_STACK_display *dspl = &stack__display;
 
     sub_42D724(wdd, 0);
     sub_42D37C(wdd, &dspl->palette);
@@ -3704,7 +3704,7 @@ void windd_func323__sub0(__NC_STACK_windd *wdd, const char *filename)
 void NC_STACK_windd::windd_func323(const char **filename)
 {
     __NC_STACK_windd *wdd = &stack__windd;
-    __NC_STACK_display *dspl = &this->stack__display;
+    __NC_STACK_display *dspl = &stack__display;
 
     windd_func323__sub0(wdd, *filename);
     sub_42D37C(wdd, &dspl->palette);

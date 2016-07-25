@@ -195,7 +195,7 @@ size_t NC_STACK_yparobo::func0(stack_vals *stak)
     if ( !NC_STACK_ypabact::func0(stak) )
         return 0;
 
-    __NC_STACK_yparobo *robo = &this->stack__yparobo;
+    __NC_STACK_yparobo *robo = &stack__yparobo;
 
     __NC_STACK_ypabact *bact_int = getBACT_pBact();
 
@@ -504,7 +504,7 @@ size_t NC_STACK_yparobo::func3(stack_vals *stak)
 
 void NC_STACK_yparobo::ypabact_func68(ypabact_arg65 *arg)
 {
-    __NC_STACK_yparobo *robo = &this->stack__yparobo;
+    __NC_STACK_yparobo *robo = &stack__yparobo;
 
     if ( robo->bact_internal->field_3D5 == 2 )
     {
@@ -1955,7 +1955,6 @@ void sb_0x4a45cc(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
         break;
 
     case 3:
-        //call_vtbl(robo->wrld, 3, 0x80002014, &a4, 0); //vhclproto
         if ( arg->field_40 <= robo->field_4F5 )
         {
             arg146.pos.sx = arg->field_30.sx;
@@ -5615,7 +5614,7 @@ void yparobo_func70__sub6(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
 
 void NC_STACK_yparobo::ypabact_func70(ypabact_arg65 *arg)
 {
-    __NC_STACK_yparobo *robo = &this->stack__yparobo;
+    __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
     int a4 = getBACT_bactCollisions();
@@ -5739,7 +5738,7 @@ void yparobo_func71__sub0(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
 
 void NC_STACK_yparobo::ypabact_func71(ypabact_arg65 *arg)
 {
-    __NC_STACK_yparobo *robo = &this->stack__yparobo;
+    __NC_STACK_yparobo *robo = &stack__yparobo;
 
     int a4 = getBACT_bactCollisions();
 
@@ -5831,7 +5830,7 @@ void NC_STACK_yparobo::ypabact_func71(ypabact_arg65 *arg)
 
 void NC_STACK_yparobo::ypabact_func74(bact_arg74 *arg)
 {
-    __NC_STACK_yparobo *robo = &this->stack__yparobo;
+    __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
     bact->field_62D = bact->field_621;
@@ -5945,7 +5944,7 @@ void NC_STACK_yparobo::ypabact_func74(bact_arg74 *arg)
 
 void NC_STACK_yparobo::ypabact_func77(void *)
 {
-    __NC_STACK_yparobo *robo = &this->stack__yparobo;
+    __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
     _NC_STACK_ypaworld *yw = robo->wrld_yw;
@@ -6106,7 +6105,7 @@ void NC_STACK_yparobo::ypabact_func77(void *)
 
 size_t NC_STACK_yparobo::ypabact_func80(bact_arg80 *arg)
 {
-    __NC_STACK_yparobo *robo = &this->stack__yparobo;
+    __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
     int v5 = NC_STACK_ypabact::ypabact_func80(arg);
@@ -6139,7 +6138,7 @@ size_t NC_STACK_yparobo::ypabact_func80(bact_arg80 *arg)
 // Update robo energys
 void NC_STACK_yparobo::ypabact_func82(ypabact_arg65 *arg)
 {
-    __NC_STACK_yparobo *robo = &this->stack__yparobo;
+    __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
     float v65 = bact->reload_const_or_energy2;
@@ -6369,7 +6368,7 @@ void NC_STACK_yparobo::ypabact_func82(ypabact_arg65 *arg)
 
 void NC_STACK_yparobo::ypabact_func96(void *)
 {
-    __NC_STACK_yparobo *robo = &this->stack__yparobo;
+    __NC_STACK_yparobo *robo = &stack__yparobo;
 
     NC_STACK_ypabact::ypabact_func96(NULL);
 
@@ -6438,7 +6437,7 @@ void NC_STACK_yparobo::ypabact_func96(void *)
 
 void NC_STACK_yparobo::ypabact_func97(ypabact_arg65 *)
 {
-    __NC_STACK_yparobo *robo = &this->stack__yparobo;
+    __NC_STACK_yparobo *robo = &stack__yparobo;
 
     robo->bact_internal->field_611 *= 0.8;
     robo->bact_internal->field_601 = 0;
@@ -6451,7 +6450,7 @@ void NC_STACK_yparobo::ypabact_func114(void *arg)
 
 void NC_STACK_yparobo::ypabact_func121(ypabact_arg65 *arg)
 {
-    __NC_STACK_yparobo *robo = &this->stack__yparobo;
+    __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = robo->bact_internal;
     _NC_STACK_ypaworld *yw = robo->wrld_yw;
 
@@ -6571,7 +6570,7 @@ void NC_STACK_yparobo::ypabact_func121(ypabact_arg65 *arg)
 
 void NC_STACK_yparobo::yparobo_func128(robo_arg128 *arg)
 {
-    __NC_STACK_yparobo *robo = &this->stack__yparobo;
+    __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
     arg->comm_bacto = NULL;
@@ -6707,7 +6706,7 @@ void NC_STACK_yparobo::yparobo_func131(stack_vals *arg)
 
 size_t NC_STACK_yparobo::yparobo_func132(bact_arg67 *arg)
 {
-    __NC_STACK_yparobo *robo = &this->stack__yparobo;
+    __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
     if ( !arg->priority )
@@ -6778,7 +6777,7 @@ size_t NC_STACK_yparobo::yparobo_func132(bact_arg67 *arg)
 // Create squad for robo
 int NC_STACK_yparobo::yparobo_func133(robo_arg133 *arg)
 {
-    __NC_STACK_yparobo *robo = &this->stack__yparobo;
+    __NC_STACK_yparobo *robo = &stack__yparobo;
 
     int curid = 0;
     int col = sqrt(arg->num) + 2;
@@ -7027,7 +7026,7 @@ int yparobo_func134__sub1(__NC_STACK_yparobo *robo, robo_arg134 *arg)
 
 int NC_STACK_yparobo::yparobo_func134(robo_arg134 *arg)
 {
-    __NC_STACK_yparobo *robo = &this->stack__yparobo;
+    __NC_STACK_yparobo *robo = &stack__yparobo;
 
     if ( arg->unit && arg->unit->field_24 == 9 && arg->field_4 != 7 && arg->field_4 != 19 && arg->field_4 != 6 )
         return 0;

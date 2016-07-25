@@ -12,7 +12,7 @@ size_t NC_STACK_ilbm::func0(stack_vals *stak)
     if ( !NC_STACK_bitmap::func0(stak) )
         return 0;
 
-    __NC_STACK_ilbm *ilbm = &this->stack__ilbm;
+    __NC_STACK_ilbm *ilbm = &stack__ilbm;
 
     if ( find_id_in_stack_def_val(ILBM_ATT_FMT, 0, stak) )
         ilbm->flags |= 1;
@@ -665,7 +665,7 @@ int VBMP__WRITE_TO_FILE(MFILE *mfile, bitmap_intern *bitm)
 
 size_t NC_STACK_ilbm::rsrc_func66(rsrc_func66_arg *arg)
 {
-    __NC_STACK_ilbm *ilbm = &this->stack__ilbm;
+    __NC_STACK_ilbm *ilbm = &stack__ilbm;
 
     MFILE *mfile;
 

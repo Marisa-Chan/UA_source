@@ -16,7 +16,7 @@ size_t NC_STACK_iwimp::func0(stack_vals *stak)
     if ( !NC_STACK_idev::func0(stak) )
         return 0;
 
-    __NC_STACK_iwimp *wimp = &this->stack__iwimp;
+    __NC_STACK_iwimp *wimp = &stack__iwimp;
 
     init_list(&wimp->list);
 
@@ -30,7 +30,7 @@ size_t NC_STACK_iwimp::iwimp_func128(stack_vals *)
 
 void NC_STACK_iwimp::iwimp_func129(iwimp_arg129 *arg)
 {
-    nlist *lst = &this->stack__iwimp.list;
+    nlist *lst = &stack__iwimp.list;
 
     if ( arg->field_4 & 1 )
         AddHead(lst, arg->node);
@@ -87,7 +87,7 @@ void sub_41D538(__NC_STACK_iwimp *wimp, winp_131arg *arg, shortPoint *points)
 
 void NC_STACK_iwimp::iwimp_func131(winp_131arg *arg)
 {
-    __NC_STACK_iwimp *wimp = &this->stack__iwimp;
+    __NC_STACK_iwimp *wimp = &stack__iwimp;
 
     arg->flag |= 1;
     arg->selected_btn = NULL;
