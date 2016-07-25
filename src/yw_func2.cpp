@@ -4920,8 +4920,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
     if ( usr->field_46 == 6 )
     {
-        int a4;
-        call_vtbl(usr->network_button, 3, 0x80001004, &a4, 0);
+        int a4 = usr->network_button->getBTN_h();
 
         usr->network_listvw.frm_1.btn_ypos = usr->field_0x1c30 + a4;
 

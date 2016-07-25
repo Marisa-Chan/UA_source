@@ -138,6 +138,32 @@ public:
         return new NC_STACK_button();
     };
 
+    enum BTN_ATT
+    {
+        BTN_ATT_X = 0x80001003,
+        BTN_ATT_Y = 0x80001004,
+        BTN_ATT_W = 0x80001005,
+        BTN_ATT_H = 0x80001006,
+        BTN_ATT_PBTN = 0x80001007,
+        BTN_ATT_CHARS = 0x80001008
+    };
+
+    virtual void setBTN_x(int);
+    virtual void setBTN_y(int);
+    virtual void setBTN_w(int);
+    virtual void setBTN_h(int);
+    virtual void setBTN_chars(const char *);
+
+    virtual int getBTN_x();
+    virtual int getBTN_y();
+    virtual int getBTN_w();
+    virtual int getBTN_h();
+    virtual __NC_STACK_button *getBTN_pButton();
+
+    int button_func0__sub0(stack_vals *stak);
+    int button_func2__sub0(stack_vals *stak);
+    int button_func3__sub0(stack_vals *stak);
+
     //Data
     static const NewClassDescr description;
 

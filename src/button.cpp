@@ -11,8 +11,9 @@
 
 const NewClassDescr NC_STACK_button::description("button.class", &newinstance);
 
-int button_func0__sub0(NC_STACK_button *, __NC_STACK_button *btn, stack_vals *stak)
+int NC_STACK_button::button_func0__sub0(stack_vals *stak)
 {
+    __NC_STACK_button *btn = &stack__button;
     stack_vals *stk = stak;
 
     btn->field_19F = 97;
@@ -43,26 +44,21 @@ int button_func0__sub0(NC_STACK_button *, __NC_STACK_button *btn, stack_vals *st
             default:
                 break;
 
-            case 0x80001003:
-                btn->btn_xpos = stk->value;
+            case BTN_ATT_X:
+                setBTN_x(stk->value);
                 break;
-            case 0x80001004:
-                btn->btn_ypos = stk->value;
+            case BTN_ATT_Y:
+                setBTN_y(stk->value);
                 break;
-            case 0x80001005:
-                btn->btn_width = stk->value;
+            case BTN_ATT_W:
+                setBTN_w(stk->value);
                 break;
-            case 0x80001006:
-                btn->btn_height = stk->value;
+            case BTN_ATT_H:
+                setBTN_h(stk->value);
                 break;
-            case 0x80001008:
-            {
-                uint8_t *v4 = (uint8_t *)stk->value;
-                btn->field_19c = v4[0];
-                btn->field_19D = v4[1];
-                btn->field_19E = v4[2];
-            }
-            break;
+            case BTN_ATT_CHARS:
+                setBTN_chars((const char *)stk->value);
+                break;
             }
             stk++;
         }
@@ -78,7 +74,7 @@ size_t NC_STACK_button::func0(stack_vals *stak)
 
     __NC_STACK_button *btn = &stack__button;
 
-    if ( button_func0__sub0(this, btn, stak) )
+    if ( button_func0__sub0(stak) )
     {
         if ( btn->btn_width > 0 && btn->btn_height > 0 )
         {
@@ -120,7 +116,7 @@ size_t NC_STACK_button::func1(stack_vals *stak)
     return NC_STACK_nucleus::func1(stak);
 }
 
-int button_func2__sub0(NC_STACK_button *, __NC_STACK_button *btn, stack_vals *stak)
+int NC_STACK_button::button_func2__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -144,26 +140,21 @@ int button_func2__sub0(NC_STACK_button *, __NC_STACK_button *btn, stack_vals *st
             default:
                 break;
 
-            case 0x80001003:
-                btn->btn_xpos = stk->value;
+            case BTN_ATT_X:
+                setBTN_x(stk->value);
                 break;
-            case 0x80001004:
-                btn->btn_ypos = stk->value;
+            case BTN_ATT_Y:
+                setBTN_y(stk->value);
                 break;
-            case 0x80001005:
-                btn->btn_width = stk->value;
+            case BTN_ATT_W:
+                setBTN_w(stk->value);
                 break;
-            case 0x80001006:
-                btn->btn_height = stk->value;
+            case BTN_ATT_H:
+                setBTN_h(stk->value);
                 break;
-            case 0x80001008:
-            {
-                uint8_t *v4 = (uint8_t *)stk->value;
-                btn->field_19c = v4[0];
-                btn->field_19D = v4[1];
-                btn->field_19E = v4[2];
-            }
-            break;
+            case BTN_ATT_CHARS:
+                setBTN_chars((const char *)stk->value);
+                break;
             }
             stk++;
         }
@@ -174,16 +165,14 @@ int button_func2__sub0(NC_STACK_button *, __NC_STACK_button *btn, stack_vals *st
 
 size_t NC_STACK_button::func2(stack_vals *stak)
 {
-    __NC_STACK_button *btn = &stack__button;
-
     NC_STACK_nucleus::func2(stak);
-    button_func2__sub0(this, btn, stak);
+    button_func2__sub0(stak);
 
     return 1;
 }
 
 
-int button_func3__sub0(NC_STACK_button *, __NC_STACK_button *btn, stack_vals *stak)
+int NC_STACK_button::button_func3__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -207,20 +196,20 @@ int button_func3__sub0(NC_STACK_button *, __NC_STACK_button *btn, stack_vals *st
             default:
                 break;
 
-            case 0x80001003:
-                *(int *)stk->value = btn->btn_xpos;
+            case BTN_ATT_X:
+                *(int *)stk->value = getBTN_x();
                 break;
-            case 0x80001004:
-                *(int *)stk->value = btn->btn_ypos;
+            case BTN_ATT_Y:
+                *(int *)stk->value = getBTN_y();
                 break;
-            case 0x80001005:
-                *(int *)stk->value = btn->btn_width;
+            case BTN_ATT_W:
+                *(int *)stk->value = getBTN_w();
                 break;
-            case 0x80001006:
-                *(int *)stk->value = btn->btn_height;
+            case BTN_ATT_H:
+                *(int *)stk->value = getBTN_h();
                 break;
-            case 0x80001007:
-                *(__NC_STACK_button **)stk->value = btn;
+            case BTN_ATT_PBTN:
+                *(__NC_STACK_button **)stk->value = getBTN_pButton();
                 break;
             }
             stk++;
@@ -232,10 +221,8 @@ int button_func3__sub0(NC_STACK_button *, __NC_STACK_button *btn, stack_vals *st
 
 size_t NC_STACK_button::func3(stack_vals *stak)
 {
-    __NC_STACK_button *btn = &stack__button;
-
     NC_STACK_nucleus::func3(stak);
-    button_func3__sub0(this, btn, stak);
+    button_func3__sub0(stak);
 
     return 1;
 }
@@ -1102,6 +1089,62 @@ size_t NC_STACK_button::button_func76(button_arg76 *arg)
     }
 
     return 0;
+}
+
+
+
+void NC_STACK_button::setBTN_x(int x)
+{
+    stack__button.btn_xpos = x;
+}
+
+void NC_STACK_button::setBTN_y(int y)
+{
+    stack__button.btn_ypos = y;
+}
+
+void NC_STACK_button::setBTN_w(int w)
+{
+    stack__button.btn_width = w;
+}
+
+void NC_STACK_button::setBTN_h(int h)
+{
+    stack__button.btn_height = h;
+}
+
+void NC_STACK_button::setBTN_chars(const char *chrs)
+{
+    const uint8_t *v4 = (const uint8_t *)chrs;
+    stack__button.field_19c = v4[0];
+    stack__button.field_19D = v4[1];
+    stack__button.field_19E = v4[2];
+}
+
+
+int NC_STACK_button::getBTN_x()
+{
+    return stack__button.btn_xpos;
+}
+
+int NC_STACK_button::getBTN_y()
+{
+    return stack__button.btn_ypos;
+}
+
+int NC_STACK_button::getBTN_w()
+{
+    return stack__button.btn_width;
+}
+
+int NC_STACK_button::getBTN_h()
+{
+    return stack__button.btn_height;
+}
+
+__NC_STACK_button *NC_STACK_button::getBTN_pButton()
+{
+    return &stack__button;
 }
 
 

@@ -54,6 +54,12 @@ public:
     };
     static void initfirst();
 
+    enum WINP_ATT
+    {
+        WINP_ATT_WND = 0x80002000,
+        WINP_ATT_HWND = 0x80002001
+    };
+
     //Data
     static const NewClassDescr description;
 
