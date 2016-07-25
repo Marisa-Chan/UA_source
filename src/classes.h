@@ -24,7 +24,6 @@ struct stored_functions_engine
 
 size_t call_method(NC_STACK_nucleus *a1, int idx, void *a3);
 size_t call_method(NC_STACK_nucleus *a1, int idx);
-size_t call_vtbl(NC_STACK_nucleus *a1, int idx, ...);
 
 NC_STACK_nucleus * init_get_class(const char *classname, ...);
 NC_STACK_nucleus * init_get_class(const char *classname, stack_vals *stak);

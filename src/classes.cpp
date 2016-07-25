@@ -39,28 +39,6 @@ size_t call_method(NC_STACK_nucleus *a1, int a2)
     return 0;
 }
 
-size_t call_vtbl(NC_STACK_nucleus *a1, int idx, ...)
-{
-    stack_vals vals[128];
-
-    va_list va;
-
-    va_start(va, idx);
-    va_to_arr(vals, 128, va);
-    va_end(va);
-
-    if ( a1 )
-    {
-        return a1->compatcall(idx, vals);
-    }
-    else
-    {
-        ypa_log_out("ERROR: Method invocation on NULL Object!\n");
-        return 0;
-    }
-    return 0;
-}
-
 NC_STACK_nucleus * init_get_class(const char *classname, stack_vals *stak)
 {
     stack_vals tmp[1];
