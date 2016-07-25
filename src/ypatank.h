@@ -67,6 +67,20 @@ public:
         return new NC_STACK_ypatank();
     };
 
+    enum TANK_ATT
+    {
+        TANK_ATT_TIP = 0x80002000
+    };
+
+    virtual void setTANK_tip(int);
+
+    virtual int getTANK_tip();
+
+
+    int ypatank_func0__sub0(stack_vals *stak);
+    void ypatank_func2__sub0(stack_vals *stak);
+    void ypatank_func3__sub0(stack_vals *stak);
+
     //Data
     static const NewClassDescr description;
 

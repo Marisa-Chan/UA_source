@@ -15,7 +15,7 @@
 const NewClassDescr NC_STACK_ypacar::description("ypacar.class", &newinstance);
 
 
-int ypacar_func0__sub0(NC_STACK_ypacar *obj, __NC_STACK_ypacar *car, stack_vals *stak)
+int NC_STACK_ypacar::ypacar_func0__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -39,20 +39,17 @@ int ypacar_func0__sub0(NC_STACK_ypacar *obj, __NC_STACK_ypacar *car, stack_vals 
             default:
                 break;
 
-            case 0x80001001:
-                car->ywo = (NC_STACK_ypaworld *)stk->value;
-                car->yw = &car->ywo->stack__ypaworld;
+            case BACT_ATT_WORLD:
+                stack__ypacar.ywo = (NC_STACK_ypaworld *)stk->value;
+                stack__ypacar.yw = &stack__ypacar.ywo->stack__ypaworld;
                 break;
 
-            case 0x80003000:
-                if (stk->value)
-                    car->field_c = 1;
-                else
-                    car->field_c = 0;
+            case CAR_ATT_KAMIKAZE:
+                setCAR_kamikaze(stk->value);
                 break;
 
-            case 0x80003001:
-                car->field_10 = stk->value;
+            case CAR_ATT_BLAST:
+                setCAR_blast(stk->value);
                 break;
 
             }
@@ -68,14 +65,14 @@ size_t NC_STACK_ypacar::func0(stack_vals *stak)
     if ( !NC_STACK_ypatank::func0(stak) )
         return 0;
 
-    __NC_STACK_ypacar *car = &this->stack__ypacar;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypacar *car = &stack__ypacar;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     car->bact_internal = bact;
 
     bact->field_24 = 8;
 
-    if ( !ypacar_func0__sub0(this, car, stak) )
+    if ( !ypacar_func0__sub0(stak) )
     {
         func1(NULL);
         return 0;
@@ -89,7 +86,7 @@ size_t NC_STACK_ypacar::func1(stack_vals *stak)
     return NC_STACK_ypatank::func1(stak);
 }
 
-void ypacar_func2__sub0(NC_STACK_ypacar *obj, __NC_STACK_ypacar *car, stack_vals *stak)
+void NC_STACK_ypacar::ypacar_func2__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -113,15 +110,12 @@ void ypacar_func2__sub0(NC_STACK_ypacar *obj, __NC_STACK_ypacar *car, stack_vals
             default:
                 break;
 
-            case 0x80003000:
-                if (stk->value)
-                    car->field_c = 1;
-                else
-                    car->field_c = 0;
+            case CAR_ATT_KAMIKAZE:
+                setCAR_kamikaze(stk->value);
                 break;
 
-            case 0x80003001:
-                car->field_10 = stk->value;
+            case CAR_ATT_BLAST:
+                setCAR_blast(stk->value);
                 break;
 
             }
@@ -133,11 +127,11 @@ void ypacar_func2__sub0(NC_STACK_ypacar *obj, __NC_STACK_ypacar *car, stack_vals
 size_t NC_STACK_ypacar::func2(stack_vals *stak)
 {
     NC_STACK_ypatank::func2(stak);
-    ypacar_func2__sub0(this, &this->stack__ypacar, stak);
+    ypacar_func2__sub0(stak);
     return 1;
 }
 
-void ypacar_func3__sub0(NC_STACK_ypacar *obj, __NC_STACK_ypacar *car, stack_vals *stak)
+void NC_STACK_ypacar::ypacar_func3__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -161,15 +155,12 @@ void ypacar_func3__sub0(NC_STACK_ypacar *obj, __NC_STACK_ypacar *car, stack_vals
             default:
                 break;
 
-            case 0x80003000:
-                if (car->field_c)
-                    *(int *)stk->value = 1;
-                else
-                    *(int *)stk->value = 0;
+            case CAR_ATT_KAMIKAZE:
+                *(int *)stk->value = getCAR_kamikaze();
                 break;
 
-            case 0x80003001:
-                *(int *)stk->value = car->field_10;
+            case CAR_ATT_BLAST:
+                *(int *)stk->value = getCAR_blast();
                 break;
 
             }
@@ -181,7 +172,7 @@ void ypacar_func3__sub0(NC_STACK_ypacar *obj, __NC_STACK_ypacar *car, stack_vals
 size_t NC_STACK_ypacar::func3(stack_vals *stak)
 {
     NC_STACK_ypatank::func3(stak);
-    ypacar_func3__sub0(this, &this->stack__ypacar, stak);
+    ypacar_func3__sub0(stak);
     return 1;
 }
 
@@ -431,8 +422,8 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
 
 void NC_STACK_ypacar::ypabact_func71(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypacar *car = &this->stack__ypacar;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypacar *car = &stack__ypacar;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     bact->airconst = bact->airconst2;
 
@@ -722,8 +713,8 @@ void NC_STACK_ypacar::ypabact_func71(ypabact_arg65 *arg)
 
 size_t NC_STACK_ypacar::ypatank_func128(tank_arg128 *arg)
 {
-    __NC_STACK_ypacar *car = &this->stack__ypacar;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypacar *car = &stack__ypacar;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     arg->field_10 = 0;
 
@@ -766,8 +757,6 @@ size_t NC_STACK_ypacar::ypatank_func128(tank_arg128 *arg)
     tmp.sx = v8->field_0;
     tmp.sy = v8->field_4;
     tmp.sz = v8->field_8;
-
-// call_vtbl(obj, 3, 0x80002000, &v36, 0);
 
     xyz vaxis;
     vaxis.sx = bact->field_651.m11 * tmp.sz - bact->field_651.m12 * tmp.sy;
@@ -902,8 +891,8 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, xyz *darg)
 
 size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 {
-    __NC_STACK_ypacar *car = &this->stack__ypacar;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypacar *car = &stack__ypacar;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     float v162 = 1.73;
     float v166 = 1.7;
@@ -1236,8 +1225,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
             v181 *= -v181;
         }
 
-        int v151;
-        call_vtbl(this, 3, 0x80002000, &v151, 0);
+        int v151 = getTANK_tip();
 
         if ( v151 )
         {
@@ -1370,6 +1358,33 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
     bact->field_621.sz += v125 * arg->field_0 * 400.0;
 
     return 0;
+}
+
+
+void NC_STACK_ypacar::setCAR_kamikaze(int kam)
+{
+    if (kam)
+        stack__ypacar.field_c |= 1;
+    else
+        stack__ypacar.field_c &= ~1;
+}
+
+void NC_STACK_ypacar::setCAR_blast(int bla)
+{
+    stack__ypacar.field_10 = bla;
+}
+
+
+int NC_STACK_ypacar::getCAR_kamikaze()
+{
+    if (stack__ypacar.field_c & 1)
+        return 1;
+    return 0;
+}
+
+int NC_STACK_ypacar::getCAR_blast()
+{
+    return stack__ypacar.field_10;
 }
 
 

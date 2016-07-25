@@ -38,6 +38,23 @@ public:
         return new NC_STACK_ypacar();
     };
 
+    enum CAR_ATT
+    {
+        CAR_ATT_KAMIKAZE = 0x80003000,
+        CAR_ATT_BLAST = 0x80003001
+    };
+
+    virtual void setCAR_kamikaze(int);
+    virtual void setCAR_blast(int);
+
+    virtual int getCAR_kamikaze();
+    virtual int getCAR_blast();
+
+
+    int ypacar_func0__sub0(stack_vals *stak);
+    void ypacar_func2__sub0(stack_vals *stak);
+    void ypacar_func3__sub0(stack_vals *stak);
+
     //Data
     static const NewClassDescr description;
 

@@ -13,9 +13,9 @@
 const NewClassDescr NC_STACK_ypaufo::description("ypaufo.class", &newinstance);
 
 
-int ypaufo_func0__sub0(NC_STACK_ypaufo *obj, __NC_STACK_ypaufo *ufo, stack_vals *stak)
+int NC_STACK_ypaufo::ypaufo_func0__sub0(stack_vals *stak)
 {
-    ufo->field_c = 200.0;
+    stack__ypaufo.field_c = 200.0;
 
     stack_vals *stk = stak;
 
@@ -39,29 +39,17 @@ int ypaufo_func0__sub0(NC_STACK_ypaufo *obj, __NC_STACK_ypaufo *ufo, stack_vals 
             default:
                 break;
 
-            case 0x80001001:
-                ufo->ywo = (NC_STACK_ypaworld *)stk->value;
-                ufo->yw = &ufo->ywo->stack__ypaworld;
+            case BACT_ATT_WORLD:
+                stack__ypaufo.ywo = (NC_STACK_ypaworld *)stk->value;
+                stack__ypaufo.yw = &stack__ypaufo.ywo->stack__ypaworld;
                 break;
 
-            case 0x80001005:
-                if ( !stk->value )
-                {
-                    __NC_STACK_ypabact *bact = ufo->bact_internal;
-                    bact->field_651.m00 = 1.0;
-                    bact->field_651.m01 = 0.0;
-                    bact->field_651.m02 = 0.0;
-                    bact->field_651.m10 = 0.0;
-                    bact->field_651.m11 = 1.0;
-                    bact->field_651.m12 = 0.0;
-                    bact->field_651.m20 = 0.0;
-                    bact->field_651.m21 = 0.0;
-                    bact->field_651.m22 = 1.0;
-                }
+            case BACT_ATT_INPUTTING:
+                setBACT_inputting(stk->value);
                 break;
 
-            case 0x80002000:
-                ufo->field_c = stk->value;
+            case UFO_ATT_TOGO:
+                setUFO_togo(stk->value);
                 break;
 
             }
@@ -77,14 +65,14 @@ size_t NC_STACK_ypaufo::func0(stack_vals *stak)
     if ( !NC_STACK_ypabact::func0(stak) )
         return 0;
 
-    __NC_STACK_ypaufo *ufo = &this->stack__ypaufo;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypaufo *ufo = &stack__ypaufo;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     ufo->bact_internal = bact;
 
     bact->field_24 = 7;
 
-    if ( !ypaufo_func0__sub0(this, ufo, stak) )
+    if ( !ypaufo_func0__sub0(stak) )
     {
         func1(NULL);
         return 0;
@@ -98,7 +86,7 @@ size_t NC_STACK_ypaufo::func1(stack_vals *stak)
     return NC_STACK_ypabact::func1(stak);
 }
 
-int ypaufo_func2__sub0(NC_STACK_ypaufo *obj, __NC_STACK_ypaufo *ufo, stack_vals *stak)
+int NC_STACK_ypaufo::ypaufo_func2__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -122,26 +110,13 @@ int ypaufo_func2__sub0(NC_STACK_ypaufo *obj, __NC_STACK_ypaufo *ufo, stack_vals 
             default:
                 break;
 
-            case 0x80001005:
-                if ( !stk->value )
-                {
-                    __NC_STACK_ypabact *bact = ufo->bact_internal;
-                    bact->field_651.m00 = 1.0;
-                    bact->field_651.m01 = 0.0;
-                    bact->field_651.m02 = 0.0;
-                    bact->field_651.m10 = 0.0;
-                    bact->field_651.m11 = 1.0;
-                    bact->field_651.m12 = 0.0;
-                    bact->field_651.m20 = 0.0;
-                    bact->field_651.m21 = 0.0;
-                    bact->field_651.m22 = 1.0;
-                }
+            case BACT_ATT_INPUTTING:
+                setBACT_inputting(stk->value);
                 break;
 
-            case 0x80002000:
-                ufo->field_c = stk->value;
+            case UFO_ATT_TOGO:
+                setUFO_togo(stk->value);
                 break;
-
             }
             stk++;
         }
@@ -154,12 +129,12 @@ int ypaufo_func2__sub0(NC_STACK_ypaufo *obj, __NC_STACK_ypaufo *ufo, stack_vals 
 size_t NC_STACK_ypaufo::func2(stack_vals *stak)
 {
     NC_STACK_ypabact::func2(stak);
-    ypaufo_func2__sub0(this, &this->stack__ypaufo, stak);
+    ypaufo_func2__sub0(stak);
 
     return 1;
 }
 
-void ypaufo_func3__sub0(NC_STACK_ypaufo *obj, __NC_STACK_ypaufo *ufo, stack_vals *stak)
+void NC_STACK_ypaufo::ypaufo_func3__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -183,8 +158,8 @@ void ypaufo_func3__sub0(NC_STACK_ypaufo *obj, __NC_STACK_ypaufo *ufo, stack_vals
             default:
                 break;
 
-            case 0x80002000:
-                *(int *)stk->value = ufo->field_c;
+            case UFO_ATT_TOGO:
+                *(int *)stk->value = getUFO_togo();
                 break;
 
             }
@@ -196,15 +171,15 @@ void ypaufo_func3__sub0(NC_STACK_ypaufo *obj, __NC_STACK_ypaufo *ufo, stack_vals
 size_t NC_STACK_ypaufo::func3(stack_vals *stak)
 {
     NC_STACK_ypabact::func3(stak);
-    ypaufo_func3__sub0(this, &this->stack__ypaufo, stak);
+    ypaufo_func3__sub0(stak);
 
     return 1;
 }
 
 void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypaufo *ufo = &this->stack__ypaufo;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypaufo *ufo = &stack__ypaufo;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     float v110 = arg->field_4 / 1000.0;
 
@@ -692,8 +667,8 @@ void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
 
 void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypaufo *ufo = &this->stack__ypaufo;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypaufo *ufo = &stack__ypaufo;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     float v88 = arg->field_4 / 1000.0;
 
@@ -1130,8 +1105,8 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
 
 void NC_STACK_ypaufo::ypabact_func74(bact_arg74 *arg)
 {
-    __NC_STACK_ypaufo *ufo = &this->stack__ypaufo;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypaufo *ufo = &stack__ypaufo;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     bact->field_62D = bact->field_621;
 
@@ -1255,7 +1230,7 @@ void NC_STACK_ypaufo::ypabact_func74(bact_arg74 *arg)
 
 size_t NC_STACK_ypaufo::ypabact_func80(bact_arg80 *arg)
 {
-    __NC_STACK_ypaufo *ufo = &this->stack__ypaufo;
+    __NC_STACK_ypaufo *ufo = &stack__ypaufo;
 
     if ( !NC_STACK_ypabact::ypabact_func80(arg))
         return 0;
@@ -1268,11 +1243,41 @@ void NC_STACK_ypaufo::ypabact_func96(void *)
 {
     NC_STACK_ypabact::ypabact_func96(NULL);
 
-    __NC_STACK_ypaufo *ufo = &this->stack__ypaufo;
+    __NC_STACK_ypaufo *ufo = &stack__ypaufo;
 
     ufo->field_14 = 0;
 
     setBACT_landingOnWait(0);
+}
+
+
+void NC_STACK_ypaufo::setBACT_inputting(int inpt)
+{
+    NC_STACK_ypabact::setBACT_inputting(inpt);
+
+    if ( !inpt )
+    {
+        __NC_STACK_ypabact *bact = &stack__ypabact;
+        bact->field_651.m00 = 1.0;
+        bact->field_651.m01 = 0.0;
+        bact->field_651.m02 = 0.0;
+        bact->field_651.m10 = 0.0;
+        bact->field_651.m11 = 1.0;
+        bact->field_651.m12 = 0.0;
+        bact->field_651.m20 = 0.0;
+        bact->field_651.m21 = 0.0;
+        bact->field_651.m22 = 1.0;
+    }
+}
+
+void NC_STACK_ypaufo::setUFO_togo(int tog)
+{
+    stack__ypaufo.field_c = tog;
+}
+
+int NC_STACK_ypaufo::getUFO_togo()
+{
+    return stack__ypaufo.field_c;
 }
 
 

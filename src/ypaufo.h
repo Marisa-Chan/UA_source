@@ -43,6 +43,20 @@ public:
         return new NC_STACK_ypaufo();
     };
 
+    enum UFO_ATT
+    {
+        UFO_ATT_TOGO = 0x80002000
+    };
+
+    virtual void setBACT_inputting(int);
+    virtual void setUFO_togo(int);
+
+    virtual int getUFO_togo();
+
+    int ypaufo_func0__sub0(stack_vals *stak);
+    int ypaufo_func2__sub0(stack_vals *stak);
+    void ypaufo_func3__sub0(stack_vals *stak);
+
     //Data
     static const NewClassDescr description;
 

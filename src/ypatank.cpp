@@ -13,9 +13,9 @@
 const NewClassDescr NC_STACK_ypatank::description("ypatank.class", &newinstance);
 
 
-int ypatank_func0__sub0(NC_STACK_ypatank *a1, __NC_STACK_ypatank *tank, stack_vals *stak)
+int NC_STACK_ypatank::ypatank_func0__sub0(stack_vals *stak)
 {
-    tank->field_c = 3;
+    stack__ypatank.field_c = 3;
 
     stack_vals *stk = stak;
 
@@ -39,16 +39,13 @@ int ypatank_func0__sub0(NC_STACK_ypatank *a1, __NC_STACK_ypatank *tank, stack_va
             default:
                 break;
 
-            case 0x80001001:
-                tank->ywo = (NC_STACK_ypaworld *)stk->value;
-                tank->yw = &tank->ywo->stack__ypaworld;
+            case BACT_ATT_WORLD:
+                stack__ypatank.ywo = (NC_STACK_ypaworld *)stk->value;
+                stack__ypatank.yw = &stack__ypatank.ywo->stack__ypaworld;
                 break;
 
-            case 0x80002000:
-                if ( stk->value )
-                    tank->field_c |= 1;
-                else
-                    tank->field_c &= 0xFE;
+            case TANK_ATT_TIP:
+                setTANK_tip( stk->value );
                 break;
 
             }
@@ -64,14 +61,14 @@ size_t NC_STACK_ypatank::func0(stack_vals *stak)
     if ( !NC_STACK_ypabact::func0(stak) )
         return 0;
 
-    __NC_STACK_ypatank *tank = &this->stack__ypatank;
+    __NC_STACK_ypatank *tank = &stack__ypatank;
 
     //bact = result->getBACT_pBact();
 
-    tank->bact_internal = &this->stack__ypabact;
+    tank->bact_internal = &stack__ypabact;
     tank->bact_internal->field_24 = 2;
 
-    if ( !ypatank_func0__sub0(this, tank, stak) )
+    if ( !ypatank_func0__sub0(stak) )
     {
         func1(NULL);
         return 0;
@@ -85,7 +82,7 @@ size_t NC_STACK_ypatank::func1(stack_vals *stak)
     return NC_STACK_ypabact::func1(stak);
 }
 
-void ypatank_func2__sub0(NC_STACK_ypatank *a1, __NC_STACK_ypatank *tank, stack_vals *stak)
+void NC_STACK_ypatank::ypatank_func2__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -109,11 +106,8 @@ void ypatank_func2__sub0(NC_STACK_ypatank *a1, __NC_STACK_ypatank *tank, stack_v
             default:
                 break;
 
-            case 0x80002000:
-                if ( stk->value )
-                    tank->field_c |= 1;
-                else
-                    tank->field_c &= 0xFE;
+            case TANK_ATT_TIP:
+                setTANK_tip( stk->value );
                 break;
 
             }
@@ -125,11 +119,11 @@ void ypatank_func2__sub0(NC_STACK_ypatank *a1, __NC_STACK_ypatank *tank, stack_v
 size_t NC_STACK_ypatank::func2(stack_vals *stak)
 {
     NC_STACK_ypabact::func2(stak);
-    ypatank_func2__sub0(this, &this->stack__ypatank, stak);
+    ypatank_func2__sub0(stak);
     return 1;
 }
 
-void ypatank_func3__sub0(NC_STACK_ypatank *a1, __NC_STACK_ypatank *tank, stack_vals *stak)
+void NC_STACK_ypatank::ypatank_func3__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -153,11 +147,8 @@ void ypatank_func3__sub0(NC_STACK_ypatank *a1, __NC_STACK_ypatank *tank, stack_v
             default:
                 break;
 
-            case 0x80002000:
-                if ( tank->field_c & 1 )
-                    *(int *)stk->value = 1;
-                else
-                    *(int *)stk->value = 0;
+            case TANK_ATT_TIP:
+                *(int *)stk->value = getTANK_tip();
                 break;
 
             }
@@ -169,7 +160,7 @@ void ypatank_func3__sub0(NC_STACK_ypatank *a1, __NC_STACK_ypatank *tank, stack_v
 size_t NC_STACK_ypatank::func3(stack_vals *stak)
 {
     NC_STACK_ypabact::func3(stak);
-    ypatank_func3__sub0(this, &this->stack__ypatank, stak);
+    ypatank_func3__sub0(stak);
     return 1;
 }
 
@@ -203,7 +194,7 @@ void ypatank_func70__sub0(__NC_STACK_ypabact *bact, float a5, uint8_t a6)
 
 void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypatank *tank = &this->stack__ypatank;
+    __NC_STACK_ypatank *tank = &stack__ypatank;
 
     float v244 = arg->field_4 / 1000.0;
 
@@ -1141,8 +1132,8 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
 
 void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypatank *tank = &this->stack__ypatank;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypatank *tank = &stack__ypatank;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     bact->airconst = bact->airconst2;
 
@@ -1452,7 +1443,7 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
 
 void NC_STACK_ypatank::ypabact_func74(bact_arg74 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     bact->field_62D = bact->field_621;
 
@@ -1556,8 +1547,8 @@ void NC_STACK_ypatank::ypabact_func74(bact_arg74 *arg)
 
 size_t NC_STACK_ypatank::ypabact_func80(bact_arg80 *arg)
 {
-    __NC_STACK_ypatank *tank = &this->stack__ypatank;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypatank *tank = &stack__ypatank;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( NC_STACK_ypabact::ypabact_func80(arg) )
     {
@@ -1593,8 +1584,8 @@ size_t NC_STACK_ypatank::ypabact_func80(bact_arg80 *arg)
 
 void NC_STACK_ypatank::ypabact_func83(bact_arg83 *arg)
 {
-    __NC_STACK_ypatank *tank = &this->stack__ypatank;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypatank *tank = &stack__ypatank;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     float v30 = 500.0 / bact->mass;
 
@@ -1703,8 +1694,8 @@ void ypatank_func87__sub0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2)
 
 size_t NC_STACK_ypatank::ypabact_func87(int *arg)
 {
-    __NC_STACK_ypatank *tank = &this->stack__ypatank;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypatank *tank = &stack__ypatank;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     int v105 = 0;
     int v108 = 0;
@@ -2119,7 +2110,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
 
 void NC_STACK_ypatank::ypabact_func88(bact_arg88 *arg)
 {
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     if ( !(bact->field_3D6 & 0x200) )
     {
@@ -2142,7 +2133,7 @@ void NC_STACK_ypatank::ypabact_func88(bact_arg88 *arg)
 
 void NC_STACK_ypatank::ypabact_func96(void *)
 {
-    __NC_STACK_ypatank *tank = &this->stack__ypatank;
+    __NC_STACK_ypatank *tank = &stack__ypatank;
 
     NC_STACK_ypabact::ypabact_func96(NULL);
 
@@ -2151,8 +2142,8 @@ void NC_STACK_ypatank::ypabact_func96(void *)
 
 size_t NC_STACK_ypatank::ypabact_func101(bact_arg101 *arg)
 {
-    __NC_STACK_ypatank *tank = &this->stack__ypatank;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypatank *tank = &stack__ypatank;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     xyz v34;
     v34.sy = arg->pos.sy - bact->field_621.sy;
@@ -2341,8 +2332,8 @@ size_t NC_STACK_ypatank::ypabact_func101(bact_arg101 *arg)
 
 size_t NC_STACK_ypatank::ypabact_func111(__NC_STACK_ypabact *cel_unit)
 {
-    __NC_STACK_ypatank *tank = &this->stack__ypatank;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypatank *tank = &stack__ypatank;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     cellArea *bactPcell = bact->p_cell_area;
     cellArea *cunitPcell = cel_unit->p_cell_area;
@@ -2380,8 +2371,8 @@ size_t NC_STACK_ypatank::ypabact_func111(__NC_STACK_ypabact *cel_unit)
 
 void NC_STACK_ypatank::ypabact_func114(void *)
 {
-    __NC_STACK_ypatank *tank = &this->stack__ypatank;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypatank *tank = &stack__ypatank;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     NC_STACK_ypabact::ypabact_func114(NULL);
 
@@ -2445,8 +2436,8 @@ void sub_49DA3C(__NC_STACK_ypatank *tank, xyz *a6)
 
 size_t NC_STACK_ypatank::ypatank_func128(tank_arg128 *arg)
 {
-    __NC_STACK_ypatank *tank = &this->stack__ypatank;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypatank *tank = &stack__ypatank;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     arg->field_10 = 0;
 
@@ -2555,8 +2546,8 @@ size_t NC_STACK_ypatank::ypatank_func128(tank_arg128 *arg)
 
 size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
 {
-    __NC_STACK_ypatank *tank = &this->stack__ypatank;
-    __NC_STACK_ypabact *bact = &this->stack__ypabact;
+    __NC_STACK_ypatank *tank = &stack__ypatank;
+    __NC_STACK_ypabact *bact = &stack__ypabact;
 
     float v152 = 1.73;
     float v155 = 1.7;
@@ -3018,6 +3009,21 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
     {
         bact->field_3D6 &= 0xFFFFFDFF;
     }
+    return 0;
+}
+
+void NC_STACK_ypatank::setTANK_tip(int tip)
+{
+    if ( tip )
+        stack__ypatank.field_c |= 1;
+    else
+        stack__ypatank.field_c &= ~1;
+}
+
+int NC_STACK_ypatank::getTANK_tip()
+{
+    if (stack__ypatank.field_c & 1)
+        return 1;
     return 0;
 }
 

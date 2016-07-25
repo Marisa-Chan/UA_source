@@ -41,6 +41,20 @@ public:
         return new NC_STACK_ypaflyer();
     };
 
+    enum FLY_ATT
+    {
+        FLY_ATT_TYPE = 0x80002000
+    };
+
+    virtual void setFLY_type(int);
+
+    virtual int getFLY_type();
+
+
+    int ypaflyer_func0__sub0(stack_vals *stak);
+    int ypaflyer_func2__sub0(stack_vals *stak);
+    void ypaflyer_func3__sub0(stack_vals *stak);
+
     //Data
     static const NewClassDescr description;
 

@@ -12,7 +12,7 @@
 const NewClassDescr NC_STACK_ypaflyer::description("ypaflyer.class", &newinstance);
 
 
-int ypaflyer_func0__sub0(NC_STACK_ypaflyer *obj, __NC_STACK_ypaflyer *fly, stack_vals *stak)
+int NC_STACK_ypaflyer::ypaflyer_func0__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -36,13 +36,13 @@ int ypaflyer_func0__sub0(NC_STACK_ypaflyer *obj, __NC_STACK_ypaflyer *fly, stack
             default:
                 break;
 
-            case 0x80001001:
-                fly->ywo = (NC_STACK_ypaworld *)stk->value;
-                fly->yw = &fly->ywo->stack__ypaworld;
+            case BACT_ATT_WORLD:
+                stack__ypaflyer.ywo = (NC_STACK_ypaworld *)stk->value;
+                stack__ypaflyer.yw = &stack__ypaflyer.ywo->stack__ypaworld;
                 break;
 
-            case 0x80002000:
-                fly->field_10 = stk->value;
+            case FLY_ATT_TYPE:
+                setFLY_type(stk->value);
                 break;
 
             }
@@ -59,13 +59,13 @@ size_t NC_STACK_ypaflyer::func0(stack_vals *stak)
     if ( !NC_STACK_ypabact::func0(stak) )
         return 0;
 
-    __NC_STACK_ypaflyer *fly = &this->stack__ypaflyer;
+    __NC_STACK_ypaflyer *fly = &stack__ypaflyer;
 
-    if ( ypaflyer_func0__sub0(this, fly, stak) )
+    if ( ypaflyer_func0__sub0(stak) )
     {
         //bact = result->getBACT_pBact();
 
-        __NC_STACK_ypabact *bact = &this->stack__ypabact;
+        __NC_STACK_ypabact *bact = &stack__ypabact;
 
         fly->bact_internal = bact;
 
@@ -88,7 +88,7 @@ size_t NC_STACK_ypaflyer::func1(stack_vals *stak)
     return NC_STACK_ypabact::func1(stak);
 }
 
-int ypaflyer_func2__sub0(NC_STACK_ypaflyer *obj, __NC_STACK_ypaflyer *fly, stack_vals *stak)
+int NC_STACK_ypaflyer::ypaflyer_func2__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -112,8 +112,8 @@ int ypaflyer_func2__sub0(NC_STACK_ypaflyer *obj, __NC_STACK_ypaflyer *fly, stack
             default:
                 break;
 
-            case 0x80002000:
-                fly->field_10 = stk->value;
+            case FLY_ATT_TYPE:
+                setFLY_type(stk->value);
                 break;
 
             }
@@ -128,11 +128,11 @@ size_t NC_STACK_ypaflyer::func2(stack_vals *stak)
 {
     NC_STACK_ypabact::func2(stak);
 
-    ypaflyer_func2__sub0(this, &this->stack__ypaflyer, stak);
+    ypaflyer_func2__sub0(stak);
     return 1;
 }
 
-void ypaflyer_func3__sub0(NC_STACK_ypaflyer *obj, __NC_STACK_ypaflyer *fly, stack_vals *stak)
+void NC_STACK_ypaflyer::ypaflyer_func3__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
@@ -156,8 +156,8 @@ void ypaflyer_func3__sub0(NC_STACK_ypaflyer *obj, __NC_STACK_ypaflyer *fly, stac
             default:
                 break;
 
-            case 0x80002000:
-                *(int *)stk->value = fly->field_10;
+            case FLY_ATT_TYPE:
+                *(int *)stk->value = getFLY_type();
                 break;
 
             }
@@ -170,7 +170,7 @@ size_t NC_STACK_ypaflyer::func3(stack_vals *stak)
 {
     NC_STACK_ypabact::func3(stak);
 
-    ypaflyer_func3__sub0(this, &this->stack__ypaflyer, stak);
+    ypaflyer_func3__sub0(stak);
     return 1;
 }
 
@@ -540,7 +540,7 @@ void ypaflyer_func70__sub0(__NC_STACK_ypaflyer *fly, float angl)
 
 void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypaflyer *fly = &this->stack__ypaflyer;
+    __NC_STACK_ypaflyer *fly = &stack__ypaflyer;
     __NC_STACK_ypabact *bact = fly->bact_internal;
 
     float a2a = arg->field_4 / 1000.0;
@@ -1052,7 +1052,7 @@ void ypaflyer_func71__sub1(__NC_STACK_ypabact *bact, float a4)
 
 void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
 {
-    __NC_STACK_ypaflyer *fly = &this->stack__ypaflyer;
+    __NC_STACK_ypaflyer *fly = &stack__ypaflyer;
 
     fly->bact_internal->airconst = fly->bact_internal->airconst2;
 
@@ -1434,7 +1434,7 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
 
 void NC_STACK_ypaflyer::ypabact_func74(bact_arg74 *arg)
 {
-    __NC_STACK_ypaflyer *fly = &this->stack__ypaflyer;
+    __NC_STACK_ypaflyer *fly = &stack__ypaflyer;
     __NC_STACK_ypabact *bact = fly->bact_internal;
 
     bact->field_62D = bact->field_621;
@@ -1533,7 +1533,7 @@ void NC_STACK_ypaflyer::ypabact_func74(bact_arg74 *arg)
 
 size_t NC_STACK_ypaflyer::ypabact_func80(bact_arg80 *arg)
 {
-    __NC_STACK_ypaflyer *fly = &this->stack__ypaflyer;
+    __NC_STACK_ypaflyer *fly = &stack__ypaflyer;
 
     if ( !NC_STACK_ypabact::ypabact_func80(arg) )
         return 0;
@@ -1546,7 +1546,7 @@ void NC_STACK_ypaflyer::ypabact_func96(void *)
 {
     NC_STACK_ypabact::ypabact_func96(NULL);
 
-    __NC_STACK_ypaflyer *fly = &this->stack__ypaflyer;
+    __NC_STACK_ypaflyer *fly = &stack__ypaflyer;
 
     fly->field_10 = 0;
     fly->field_c = 0;
@@ -1556,10 +1556,21 @@ void NC_STACK_ypaflyer::ypabact_func97(ypabact_arg65 *arg)
 {
     NC_STACK_ypabact::ypabact_func97(arg);
 
-    __NC_STACK_ypaflyer *fly = &this->stack__ypaflyer;
+    __NC_STACK_ypaflyer *fly = &stack__ypaflyer;
 
     fly->bact_internal->field_601 = 0;
     fly->field_c = fly->bact_internal->mass * 9.80665;
+}
+
+
+void NC_STACK_ypaflyer::setFLY_type(int tp)
+{
+    stack__ypaflyer.field_10 = tp;
+}
+
+int NC_STACK_ypaflyer::getFLY_type()
+{
+    return stack__ypaflyer.field_10;
 }
 
 
