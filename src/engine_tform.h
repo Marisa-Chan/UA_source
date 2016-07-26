@@ -1,15 +1,11 @@
 #ifndef ENGINE_TFORM_H_INCLUDED
 #define ENGINE_TFORM_H_INCLUDED
 
-extern stored_functions_engine tform_engine_vtbl;
-
 struct SinCos
 {
     float sin;
     float cos;
 };
-
-extern SinCos *SinCos_table;
 
 #define MAT_FLAG_INV_SIN   1
 #define MAT_FLAG_INV_COS   2
@@ -42,6 +38,18 @@ struct destFX
     float p3;
     float p4;
 };
+
+class TFEngine
+{
+public:
+    int init();
+    void deinit();
+
+    static SinCos *SinCos_table;
+};
+
+extern TFEngine TFe;
+
 
 void mat_mult(mat3x3 *mat1, mat3x3 *mat2, mat3x3 *dst);
 void mat_rotate_y(mat3x3 *mat, float a2);

@@ -1081,7 +1081,7 @@ void lstvw_update_input(_NC_STACK_ypaworld *yw, listview *lstvw, struC5 *struc)
                     if ( lstvw->field_1D0 & 0x10 )
                     {
                         lstvw->cmd_flag |= 0x20;
-                        sub_412D9C(struc->winp131arg.selected_btn);
+                        INPe.sub_412D9C(struc->winp131arg.selected_btn);
                     }
                 }
             }
@@ -1224,7 +1224,7 @@ void lstvw_update_input(_NC_STACK_ypaworld *yw, listview *lstvw, struC5 *struc)
         if ( v6->flag & 2 )
         {
             lstvw->cmd_flag |= 0x20;
-            sub_412D9C(&lstvw->frm_1);
+            INPe.sub_412D9C(&lstvw->frm_1);
         }
     }
 }
@@ -1234,7 +1234,7 @@ void sub_4C31EC(_NC_STACK_ypaworld *yw, listview *lstview)
     if ( lstview->cmd_flag & 0x20 )
     {
         lstview->cmd_flag &= 0xFFFFFFDF;
-        sub_412D48(&lstview->frm_1, 0);
+        INPe.sub_412D48(&lstview->frm_1, 0);
         yw->field_17bc = 0;
     }
 }
@@ -1252,7 +1252,7 @@ void  sub_4C31C0(_NC_STACK_ypaworld *yw, listview *lstvw)
     if ( !(lstvw->cmd_flag & 0x20) )
     {
         lstvw->cmd_flag |= 0x20;
-        sub_412D9C(&lstvw->frm_1);
+        INPe.sub_412D9C(&lstvw->frm_1);
         yw->field_17bc = 0;
     }
 }

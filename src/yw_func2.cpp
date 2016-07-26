@@ -1100,7 +1100,7 @@ void ypaworld_func154__sub0(_NC_STACK_ypaworld *yw)
 
         yw->win3d->windd_func323(&v5);
 
-        sub_412D28(&input_states);
+        INPe.sub_412D28(&input_states);
         input_states.downed_key = 0;
         input_states.downed_key_2 = 0;
         input_states.dword8 = 0;
@@ -1546,12 +1546,12 @@ void sb_0x46aa8c(UserData *usr)
         if ( usr->field_0x13b0 & 1 )
         {
             usr->snd__flags2 |= 1;
-            milesEngine__setter(0x80004005, 1, 0);
+            SFXe.setReverseStereo(1);
         }
         else
         {
-            usr->snd__flags2 &= 0xFE;
-            milesEngine__setter(0x80004005, 0, 0);
+            usr->snd__flags2 &= ~1;
+            SFXe.setReverseStereo(0);
         }
     }
 
@@ -1628,7 +1628,7 @@ void sb_0x46aa8c(UserData *usr)
     if ( usr->field_13C2 & 0x80 )
     {
         usr->snd__volume = usr->field_0x13b4;
-        milesEngine__setter(0x80004003, usr->snd__volume, 0);
+        SFXe.setMasterVolume(usr->snd__volume);
     }
 
     if ( usr->field_13C2 & 1 )
@@ -3894,7 +3894,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     usr->video_button->button_func71(&v395);
     usr->field_0x13b4 = v67->field_0;
 
-    milesEngine__setter(0x80004003, usr->field_0x13b4, 0);
+    SFXe.setMasterVolume(usr->field_0x13b4);
 
 
     v347 = 1154;

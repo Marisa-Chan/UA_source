@@ -2,14 +2,7 @@
 #include "engine_input.h"
 #include "input.h"
 
-int inputEngine__init();
-void inputEngine__deinit();
-void inputEngine__setter(unsigned int, ...);
-void inputEngine__getter(unsigned int, ...);
-
-
-stored_functions_engine input_engine_vtbl = {inputEngine__init, inputEngine__deinit, inputEngine__setter, inputEngine__getter};
-
+INPEngine INPe;
 
 char input_timer[128];
 char input_wimp[128];
@@ -138,10 +131,8 @@ key_value_stru input_keyconfig[116] =
     {"input.hotkey[47]", KEY_TYPE_STRING1, &input_hotkeys[47]} 		     //115
 };
 
-NC_STACK_input *input_class = NULL;
 
-
-int inputEngine__init()
+int INPEngine::init()
 {
     NC_STACK_winp::initfirst();
 
@@ -263,7 +254,7 @@ int inputEngine__init()
     return 1;
 }
 
-void inputEngine__deinit()
+void INPEngine::deinit()
 {
     if ( input_class )
     {
@@ -272,64 +263,34 @@ void inputEngine__deinit()
     }
 }
 
-void inputEngine__setter(unsigned int a1, ...)
+void INPEngine::setWndMode(gfx_window *wnd)
 {
-    stack_vals vals[128];
+    stack_vals stk[2];
+    stk[0].id = NC_STACK_winp::WINP_ATT_WND;
+    stk[0].value = (size_t)wnd;
+    stk[1].id = 0;
 
-    if (a1 != 0)
-    {
-        va_list va;
-        va_start(va, a1);
+    input__func66__params arg66;
+    arg66.field_0 = 1;
+    arg66.field_4 = 0;
+    arg66.funcID = 2;
+    arg66.vals = stk;
 
-        va_to_arr(vals, 128, a1, va);
-
-        va_end(va);
-    }
-
-    stack_vals *val = find_id_in_stack2(0x80001007, vals);
-    if ( val )
-    {
-        stack_vals stk[2];
-        stk[0].id = 0x80002000;
-        stk[0].value = val->value;
-        stk[1].id = 0;
-
-        input__func66__params arg66;
-        arg66.field_0 = 1;
-        arg66.field_4 = 0;
-        arg66.funcID = 2;
-        arg66.vals = stk;
-
-        input_class->input_func66(&arg66);
-    }
+    input_class->input_func66(&arg66);
 }
 
-void inputEngine__getter(unsigned int a1, ...)
+NC_STACK_input *INPEngine::getPInput()
 {
-    stack_vals vals[128];
-
-    if (a1 != 0)
-    {
-        va_list va;
-        va_start(va, a1);
-
-        va_to_arr(vals, 128, a1, va);
-
-        va_end(va);
-    }
-
-    stack_vals *val = find_id_in_stack2(0x80001009, vals);
-    if ( val )
-        *(NC_STACK_input **)val->value = input_class;
+    return input_class;
 }
 
 
-void sub_412D28(struC5 *a1)
+void INPEngine::sub_412D28(struC5 *a1)
 {
     input_class->input_func65(a1);
 }
 
-void sub_412D48(inp_node *btn, int a2)
+void INPEngine::sub_412D48(inp_node *btn, int a2)
 {
     input__func66__params arg66;
     iwimp_arg129 iwimp129;
@@ -345,7 +306,7 @@ void sub_412D48(inp_node *btn, int a2)
     input_class->input_func66(&arg66);
 }
 
-void sub_412D9C(inp_node *btn)
+void INPEngine::sub_412D9C(inp_node *btn)
 {
     input__func66__params arg66;
     iwimp_arg129 iwimp129;

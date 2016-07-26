@@ -1799,9 +1799,9 @@ void NC_STACK_ypaworld::ypaworld_func139(listbase *lstvw)
     lstvw->frm_1.pobject = lstvw;
 
     if ( lstvw->cmd_flag & 1 )
-        sub_412D48(&lstvw->frm_2, 0);
+        INPe.sub_412D48(&lstvw->frm_2, 0);
     else if ( !(lstvw->cmd_flag & 0x20) )
-        sub_412D48(&lstvw->frm_1, 0);
+        INPe.sub_412D48(&lstvw->frm_1, 0);
 }
 
 
@@ -1814,9 +1814,9 @@ void NC_STACK_ypaworld::ypaworld_func140(listbase *lstvw)
         lstvw->cmd_flag &= 0xFFFFFFFD;
 
         if ( lstvw->cmd_flag & 1 )
-            sub_412D9C(&lstvw->frm_2);
+            INPe.sub_412D9C(&lstvw->frm_2);
         else if ( !(lstvw->cmd_flag & 0x20) )
-            sub_412D9C(&lstvw->frm_1);
+            INPe.sub_412D9C(&lstvw->frm_1);
     }
 }
 
@@ -2642,7 +2642,7 @@ void NC_STACK_ypaworld::ypaworld_func151(stack_vals *arg)
     ypaworld_func151__sub5(yw);
     ypaworld_func151__sub6(yw);
 
-    milesEngine__setter(0x80004003, yw->audio_volume, 0);
+    SFXe.setMasterVolume(yw->audio_volume);
 
     ypaworld_func151__sub2(this, yw);
 
@@ -2771,11 +2771,9 @@ void NC_STACK_ypaworld::ypaworld_func153(bact_hudi *arg)
 
 void sub_46D2B4(NC_STACK_ypaworld *obj, UserData *usr)
 {
-    NC_STACK_input *input_class = NULL;
+    NC_STACK_input *input_class = INPe.getPInput();
 
     int v10 = usr->field_D36;
-
-    inputEngine__getter(0x80001009, &input_class, 0);
 
     for (int i = 0; i <= 48; i++)
     {
@@ -6458,8 +6456,7 @@ void draw_tooltip(_NC_STACK_ypaworld *yw)
         char *v2 = NULL;
         if ( yw->field_17c8 )
         {
-            NC_STACK_input *v13;
-            inputEngine__getter(0x80001009, &v13, 0);
+            NC_STACK_input *v13 = INPe.getPInput();
 
             int v11[2];
             v11[0] = 0;
@@ -8052,9 +8049,7 @@ size_t NC_STACK_ypaworld::ypaworld_func173(UserData *usr)
 
     strcat(v28, keySS[ v5->KeyCode ].short_name);
 
-    NC_STACK_input *v38 = NULL;
-
-    inputEngine__getter(0x80001009, &v38, 0);
+    NC_STACK_input *v38 = INPe.getPInput();
 
     if ( v5->inp_type == 3 )
     {
@@ -8123,13 +8118,11 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
         v6 = 0;
     }
 
-    inputEngine__setter(0x80001007, 0, 0);
+    INPe.setWndMode(NULL);
 
     GFXe.setResolution( arg->resolution );
 
-    gfx_window *a2a = GFXe.getWindow();
-
-    inputEngine__setter(0x80001007, a2a, 0);
+    INPe.setWndMode( GFXe.getWindow() );
 
     yw->screen_width = GFXe.getScreenW();
     yw->screen_height = GFXe.getScreenH();
@@ -8138,12 +8131,11 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
     {
         ypa_log_out("Warning: Unable to open GameShell with mode %d\n", arg->resolution);
 
-        inputEngine__setter(0x80001007, 0, 0);
+        INPe.setWndMode(NULL);
 
         GFXe.setResolution( usr->p_ypaworld->shell_default_res );
 
-        a2a = GFXe.getWindow();
-        inputEngine__setter(0x80001007, a2a, 0);
+        INPe.setWndMode( GFXe.getWindow() );
 
         yw->screen_width = GFXe.getScreenW();
         yw->screen_height = GFXe.getScreenH();

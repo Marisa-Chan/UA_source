@@ -7,14 +7,10 @@
 
 #define AUDIO_CHANNELS   16
 
-int milesEngine__init();
-void milesEngine__deinit();
-void milesEngine__setter(unsigned int, ...);
-void milesEngine__getter(unsigned int, ...);
 
+SFXEngine SFXe;
 
-stored_functions_engine miles_engine_vtbl = {milesEngine__init, milesEngine__deinit, milesEngine__setter, milesEngine__getter};
-
+int dword_546DD8;
 
 struct sample
 {
@@ -46,10 +42,6 @@ struct soundSys
 };
 
 soundSys sndSys;
-
-int dword_546DD8;
-
-
 
 key_value_stru audio_keys[4] = {
     {"audio.channels", KEY_TYPE_DIGIT, 4},
@@ -96,7 +88,7 @@ void wrapper_playSound(waldev *driver, walsmpl *hSample, void (*funceos)(walsmpl
 }
 
 
-int milesEngine__init()
+int SFXEngine::init()
 {
     memset(&sndSys, 0, sizeof(sndSys));
 
@@ -151,7 +143,7 @@ int milesEngine__init()
     return 1;
 }
 
-void milesEngine__deinit()
+void SFXEngine::deinit()
 {
     //deinit_redbook();
 
@@ -162,85 +154,21 @@ void milesEngine__deinit()
     }
 }
 
-void milesEngine__setter(unsigned int a1, ...)
+void SFXEngine::setMasterVolume(int vol)
 {
-    stack_vals vals[128];
-
-    if (a1 != 0)
-    {
-        va_list va;
-        va_start(va, a1);
-
-        va_to_arr(vals, 128, a1, va);
-
-        va_end(va);
-    }
-
-
-    stack_vals *val = find_id_in_stack2(0x80004004, vals);
-
-    if ( val )
-    {
-        sndSys.audio_num_palfx = val->value;
-
-        if ( sndSys.audio_num_palfx > 8 )
-            sndSys.audio_num_palfx = 8;
-    }
-
-    if ( sndSys.digDriver )
-    {
-        int v2 = find_id_in_stack_def_val(0x80004003, 0xFFFF, vals);
-
-        if ( v2 != 0xFFFF )
-        {
-            sndSys.audio_volume = v2;
-            wrapper_setVolume(sndSys.digDriver, v2);
-        }
-
-        val = find_id_in_stack2(0x80004005, vals);
-
-        if ( val )
-            sndSys.audio_rev_stereo = val->value;
-
-        //find_id_in_stack2(0x80004002, vals);
-    }
+    sndSys.audio_volume = vol;
+    wrapper_setVolume(sndSys.digDriver, vol);
 }
 
-void milesEngine__getter(unsigned int a1, ...)
+void SFXEngine::setReverseStereo(int rev)
 {
-    stack_vals vals[128];
-
-    if (a1 != 0)
-    {
-        va_list va;
-        va_start(va, a1);
-
-        va_to_arr(vals, 128, a1, va);
-
-        va_end(va);
-    }
-
-    int *tmp = (int *)find_id_in_stack_def_val(0x80004003, 0, vals);
-
-    if ( tmp )
-        *tmp = sndSys.audio_volume;
-
-    tmp = (int *)find_id_in_stack_def_val(0x80004002, 0, vals);
-
-    if ( tmp )
-        *tmp = sndSys.audio_channels;
-
-    tmp = (int *)find_id_in_stack_def_val(0x80004004, 0, vals);
-
-    if ( tmp )
-        *tmp = sndSys.audio_num_palfx;
-
-    tmp = (int *)find_id_in_stack_def_val(0x80004005, 0, vals);
-
-    if ( tmp )
-        *tmp = sndSys.audio_rev_stereo;
+    sndSys.audio_rev_stereo = rev;
 }
 
+int SFXEngine::getMasterVolume()
+{
+    return sndSys.audio_volume;
+}
 
 void sub_423DB0(samples_collection1 *smpls)
 {

@@ -726,11 +726,10 @@ int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
     {
         if ( yw->game_default_res != yw->shell_default_res )
         {
-            inputEngine__setter(0x80001007, 0, 0);
+            INPe.setWndMode(NULL);
             GFXe.setResolution(yw->game_default_res);
 
-            gfx_window *a2 = GFXe.getWindow();
-            inputEngine__setter(0x80001007, a2, 0);
+            INPe.setWndMode( GFXe.getWindow() );
 
             yw->screen_width = GFXe.getScreenW();
             yw->screen_height = GFXe.getScreenH();
@@ -795,7 +794,7 @@ int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
 
     sb_0x44ca90__sub4(yw);
 
-    milesEngine__getter(0x80004003, &yw->audio_volume, 0);
+    yw->audio_volume = SFXe.getMasterVolume();
 
     sb_0x44ca90__sub8(yw);
     sb_0x44ca90__sub6(yw);

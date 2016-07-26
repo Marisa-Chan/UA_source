@@ -4,9 +4,6 @@
 #include "engine_tform.h"
 #include "sample.h"
 
-extern stored_functions_engine miles_engine_vtbl;
-
-
 struct samples_collection1;
 
 struct sndFXprm
@@ -87,12 +84,25 @@ int sub_4448C0(int *a1);
 void sub_423DD8(samples_collection1 *smpls);
 void sub_424CC8();
 
-void milesEngine__setter(unsigned int, ...);
-void milesEngine__getter(unsigned int, ...);
-
 void sb_0x4242e0(samples_collection1 *smpls);
 mat3x3 *sb_0x424c74(); //Update sounds and return shake matrix
 
 void sub_423EFC(int a1, xyz *a2, xyz *a3, mat3x3 *a4);
+
+class SFXEngine
+{
+public:
+    SFXEngine() {};
+
+    int init();
+    void deinit();
+
+    void setMasterVolume(int);
+    void setReverseStereo(int);
+
+    int getMasterVolume();
+};
+
+extern SFXEngine SFXe;
 
 #endif // ENGINE_MILES_H_INCLUDED

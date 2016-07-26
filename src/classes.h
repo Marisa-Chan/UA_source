@@ -11,14 +11,6 @@ struct stack_vals
     size_t value;
 };
 
-struct stored_functions_engine
-{
-    int (*init)();
-    void (*deinit)();
-    void (*setter)(unsigned int, ...);
-    void (*getter)(unsigned int, ...);
-};
-
 #include "nucleas.h"
 
 

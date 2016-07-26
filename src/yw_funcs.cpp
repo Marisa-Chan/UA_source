@@ -1706,7 +1706,7 @@ void sub_4491A0(_NC_STACK_ypaworld *yw, const char *movie_fname)
 
     windd->windd_func323(&v6);
 
-    sub_412D28(&input_states);
+    INPe.sub_412D28(&input_states);
 
     input_states.downed_key = 0;
     input_states.downed_key_2 = 0;

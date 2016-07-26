@@ -22,6 +22,9 @@ int dword_513630 = 0;
 char buildDate[256];
 
 int gfx_inited = 0;
+int tform_inited = 0;
+int audio_inited = 0;
+int input_inited = 0;
 
 int sub_4107FC(UserData *usr)
 {
@@ -113,7 +116,7 @@ int sb_0x411324__sub0()
         if ( ypaworld->ypaworld_func156(&userdata) )
         {
             dword_520400 = 1;
-            sub_412D28(&input_states);
+            INPe.sub_412D28(&input_states);
 
             if (!v0)
                 return 0;
@@ -140,7 +143,7 @@ int sb_0x411324__sub0()
         if ( !ypaworld->ypaworld_func169(&arg169) )
             ypa_log_out("Warning, load error\n");
 
-        sub_412D28(&input_states);
+        INPe.sub_412D28(&input_states);
     }
     break;
 
@@ -155,7 +158,7 @@ int sb_0x411324__sub0()
         if ( !ypaworld->ypaworld_func169(&arg169) )
             ypa_log_out("Warning, Save error\n");
 
-        sub_412D28(&input_states);
+        INPe.sub_412D28(&input_states);
     }
     break;
 
@@ -171,7 +174,7 @@ int sb_0x411324__sub0()
         if ( !ypaworld->ypaworld_func169(&arg169) )
             ypa_log_out("Warning, load error\n");
 
-        sub_412D28(&input_states);
+        INPe.sub_412D28(&input_states);
     }
     break;
 
@@ -217,7 +220,7 @@ int sb_0x411324__sub2__sub0(base_64arg *arg)
         {
             dword_520400 = 1;
 
-            sub_412D28(&input_states);
+            INPe.sub_412D28(&input_states);
 
             return 0;
         }
@@ -314,7 +317,7 @@ int sb_0x411324__sub2()
 
         memset(&input_states, 0, sizeof(struC5));
 
-        sub_412D28(&input_states);
+        INPe.sub_412D28(&input_states);
     }
     return 1;
 }
@@ -351,7 +354,7 @@ int sb_0x411324__sub1()
             return 0;
         }
         dword_520400 = 2;
-        sub_412D28(&input_states);
+        INPe.sub_412D28(&input_states);
     }
     else if ( userdata.field_0x2fbc == 3 )
     {
@@ -380,7 +383,7 @@ int sb_0x411324__sub1()
             return 0;
         }
         dword_520400 = 2;
-        sub_412D28(&input_states);
+        INPe.sub_412D28(&input_states);
     }
     else if ( userdata.field_0x2fbc == 4 )
     {
@@ -408,7 +411,7 @@ int sb_0x411324__sub1()
         }
 
         dword_520400 = 2;
-        sub_412D28(&input_states);
+        INPe.sub_412D28(&input_states);
     }
     else if ( userdata.field_0x2fbc == 5 )
     {
@@ -449,7 +452,7 @@ int sb_0x411324__sub1()
             dword_520400 = 1;
         }
 
-        sub_412D28(&input_states);
+        INPe.sub_412D28(&input_states);
     }
 
     return 1;
@@ -459,7 +462,7 @@ int sb_0x411324__sub1()
 int sb_0x411324()
 {
     memset(&input_states, 0, sizeof(struC5));
-    sub_412D28(&input_states);
+    INPe.sub_412D28(&input_states);
 
     if ( userdata.field_0x10 )
     {
@@ -519,12 +522,12 @@ int add_to_params_list(const char *a1)
 
 void deinit_globl_engines()
 {
-    if ( ptform_engine )
-        deinit_engine(MC2_TFORM_ENGINE);
-    if ( pinput_engine )
-        deinit_engine(MC2_INPUT_ENGINE);
-    if ( paudio_engine )
-        deinit_engine(MC2_AUDIO_ENGINE);
+    if ( tform_inited )
+        TFe.deinit();
+    if ( input_inited )
+        INPe.deinit();
+    if ( audio_inited )
+        SFXe.deinit();
     if ( gfx_inited )
         GFXe.deinit();
 
@@ -570,11 +573,11 @@ int WinMain__sub0__sub0()
     add_to_params_list("input.button[23] = winp:joyb7");
 
     gfx_inited = GFXe.init();
-    paudio_engine = init_engine(MC2_AUDIO_ENGINE);
-    pinput_engine = init_engine(MC2_INPUT_ENGINE);
-    ptform_engine = init_engine(MC2_TFORM_ENGINE);
+    audio_inited = SFXe.init();
+    input_inited = INPe.init();
+    tform_inited = TFe.init();
 
-    if ( !paudio_engine )
+    if ( !audio_inited )
     {
         sub_412038("Couldn't open audio engine!");
         deinit_globl_engines();
@@ -587,21 +590,20 @@ int WinMain__sub0__sub0()
         deinit_globl_engines();
         return 0;
     }
-    if ( !ptform_engine )
+    if ( !tform_inited )
     {
         sub_412038("Couldn't open tform engine!");
         deinit_globl_engines();
         return 0;
     }
-    if ( !pinput_engine )
+    if ( !input_inited )
     {
         sub_412038("Couldn't open input engine!");
         deinit_globl_engines();
         return 0;
     }
 
-    gfx_window *window_p = GFXe.getWindow();
-    pinput_engine->setter(0x80001007, window_p, 0);
+    INPe.setWndMode( GFXe.getWindow() );
 
     return 1;
 }

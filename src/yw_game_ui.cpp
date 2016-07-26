@@ -175,8 +175,8 @@ void sb_0x4c87fc__sub0(_NC_STACK_ypaworld *yw, listbase *lstvw)
         Remove(lstvw);
         AddHead(&yw->field_17a0, lstvw);
 
-        sub_412D9C(&lstvw->frm_1);
-        sub_412D48(&lstvw->frm_1, 0);
+        INPe.sub_412D9C(&lstvw->frm_1);
+        INPe.sub_412D48(&lstvw->frm_1, 0);
     }
 }
 
@@ -356,7 +356,7 @@ void sb_0x451034__sub8(_NC_STACK_ypaworld *yw)
 
     up_panel.cmdstrm.cmdbuf = byte_51805C;
 
-    sub_412D48(&up_panel.frm_1, 0);
+    INPe.sub_412D48(&up_panel.frm_1, 0);
 }
 
 
@@ -2802,7 +2802,7 @@ int sb_0x451034__sub3(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
         if ( !(bzda.field_1D8 & 1) )
         {
             bzda.field_1D8 |= 1;
-            sub_412D48(&bzda.frm_1, 0);
+            INPe.sub_412D48(&bzda.frm_1, 0);
         }
     }
 
@@ -2876,7 +2876,7 @@ int sb_0x451034__sub3(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
             {
                 robo_map.cmd_flag &= 0xFFFFFFDF;
 
-                sub_412D48(&robo_map.frm_1, 0);
+                INPe.sub_412D48(&robo_map.frm_1, 0);
 
                 yw->field_17bc = 0;
             }
@@ -2886,16 +2886,16 @@ int sb_0x451034__sub3(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
                 Remove(&robo_map);
                 AddHead(&yw->field_17a0, &robo_map);
 
-                sub_412D9C(&robo_map.frm_1);
+                INPe.sub_412D9C(&robo_map.frm_1);
 
-                sub_412D48(&robo_map.frm_1, 0);
+                INPe.sub_412D48(&robo_map.frm_1, 0);
             }
         }
         else if ( !(robo_map.cmd_flag & 0x20) )
         {
             robo_map.cmd_flag |= 0x20;
 
-            sub_412D9C(&robo_map.frm_1);
+            INPe.sub_412D9C(&robo_map.frm_1);
 
             yw->field_17bc = 0;
         }
@@ -2923,21 +2923,21 @@ int sb_0x451034__sub3(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
             if ( squadron_manager.lstvw.cmd_flag & 0x20 )
             {
                 squadron_manager.lstvw.cmd_flag &= 0xFFFFFFDF;
-                sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
                 yw->field_17bc = 0;
             }
             if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
             {
                 Remove(&squadron_manager.lstvw);
                 AddHead(&yw->field_17a0, &squadron_manager.lstvw);
-                sub_412D9C(&squadron_manager.lstvw.frm_1);
-                sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
+                INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
             }
         }
         else if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
         {
             squadron_manager.lstvw.cmd_flag |= 0x20;
-            sub_412D9C(&squadron_manager.lstvw.frm_1);
+            INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
             yw->field_17bc = 0;
         }
 
@@ -2954,7 +2954,7 @@ int sb_0x451034__sub3(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
 
 void sb_0x451034__sub1(_NC_STACK_ypaworld *yw)
 {
-    inputEngine__getter(0x80001009, &yw->input_class, 0);
+    yw->input_class = INPe.getPInput();
 
     yw->field_7562 = 0;
     yw->field_7566 = -1;
@@ -3229,14 +3229,14 @@ void sub_4C39A4(_NC_STACK_ypaworld *yw)
     if ( !(gui_lstvw.cmd_flag & 0x20) )
     {
         gui_lstvw.cmd_flag |= 0x20;
-        sub_412D9C(&gui_lstvw.frm_1);
+        INPe.sub_412D9C(&gui_lstvw.frm_1);
         yw->field_17bc = 0;
     }
 
     if ( bzda.field_1D8 & 1 )
     {
         bzda.field_1D8 &= 0xFFFFFFFE;
-        sub_412D9C(&bzda.frm_1);
+        INPe.sub_412D9C(&bzda.frm_1);
     }
 
     sub_4E866C(&gui_lstvw);
@@ -3244,7 +3244,7 @@ void sub_4C39A4(_NC_STACK_ypaworld *yw)
 
 void sub_4E1D24()
 {
-    sub_412D9C(&up_panel.frm_1);
+    INPe.sub_412D9C(&up_panel.frm_1);
 }
 
 void sub_4E2B24(_NC_STACK_ypaworld *yw)
@@ -3537,8 +3537,8 @@ char * gui_update_create_btn__sub0(_NC_STACK_ypaworld *yw)
 {
     char *pcur = gui_lstvw.data_cmdbuf;
 
-    sub_412D9C(&gui_lstvw.frm_1);
-    sub_412D48(&gui_lstvw.frm_1, 0);
+    INPe.sub_412D9C(&gui_lstvw.frm_1);
+    INPe.sub_412D48(&gui_lstvw.frm_1, 0);
 
     gui_lstvw.elements_for_scroll_size = bzda.field_8E8;
     gui_lstvw.field_1DE = bzda.field_8F8;
@@ -3622,7 +3622,7 @@ char * gui_update_create_btn(_NC_STACK_ypaworld *yw, char *cur)
         if ( !(gui_lstvw.cmd_flag & 0x20) )
         {
             gui_lstvw.cmd_flag |= 0x20;
-            sub_412D9C(&gui_lstvw.frm_1);
+            INPe.sub_412D9C(&gui_lstvw.frm_1);
             yw->field_17bc = 0;
         }
     }
@@ -3687,7 +3687,7 @@ char *gui_update_map_squad_btn(_NC_STACK_ypaworld *yw, char *cur)
         {
             robo_map.cmd_flag |= 0x20;
 
-            sub_412D9C(&robo_map.frm_1);
+            INPe.sub_412D9C(&robo_map.frm_1);
 
             yw->field_17bc = 0;
         }
@@ -3696,7 +3696,7 @@ char *gui_update_map_squad_btn(_NC_STACK_ypaworld *yw, char *cur)
         {
             squadron_manager.lstvw.cmd_flag |= 0x20;
 
-            sub_412D9C(&squadron_manager.lstvw.frm_1);
+            INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
 
             yw->field_17bc = 0;
         }
@@ -3705,7 +3705,7 @@ char *gui_update_map_squad_btn(_NC_STACK_ypaworld *yw, char *cur)
         {
             info_log.window.cmd_flag |= 0x20;
 
-            sub_412D9C(&info_log.window.frm_1);
+            INPe.sub_412D9C(&info_log.window.frm_1);
 
             yw->field_17bc = 0;
         }
@@ -4108,11 +4108,11 @@ void ypaworld_func64__sub7__sub2__sub1(_NC_STACK_ypaworld *yw)
         if ( !(bzda.field_1D8 & 1) )
         {
             bzda.field_1D8 |= 1;
-            sub_412D48(&bzda.frm_1, 0);
+            INPe.sub_412D48(&bzda.frm_1, 0);
         }
 
-        sub_412D9C(&bzda.frm_1);
-        sub_412D48(&bzda.frm_1, 0);
+        INPe.sub_412D9C(&bzda.frm_1);
+        INPe.sub_412D48(&bzda.frm_1, 0);
 
         fntcmd_select_tileset(&pcur, 21);
         fntcmd_set_center_xpos(&pcur, v20);
@@ -4389,7 +4389,7 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
         if ( info_log.window.cmd_flag & 0x20 )
         {
             info_log.window.cmd_flag &= 0xFFFFFFDF;
-            sub_412D48(&info_log.window.frm_1, 0);
+            INPe.sub_412D48(&info_log.window.frm_1, 0);
             yw->field_17bc = 0;
 
             Remove(&info_log.window);
@@ -4398,7 +4398,7 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
         else if ( !(info_log.window.cmd_flag & 0x20) )
         {
             info_log.window.cmd_flag |= 0x20;
-            sub_412D9C(&info_log.window.frm_1);
+            INPe.sub_412D9C(&info_log.window.frm_1);
             yw->field_17bc = 0;
         }
         break;
@@ -4832,7 +4832,7 @@ void sb_0x4c66f8(_NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypaba
             if ( !(gui_lstvw.cmd_flag & 0x20) )
             {
                 gui_lstvw.cmd_flag |= 0x20;
-                sub_412D9C(&gui_lstvw.frm_1);
+                INPe.sub_412D9C(&gui_lstvw.frm_1);
 
                 yw->field_17bc = 0;
             }
@@ -4920,7 +4920,7 @@ void  ypaworld_func64__sub7__sub2(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 if ( !(gui_lstvw.cmd_flag & 0x20) )
                 {
                     gui_lstvw.cmd_flag |= 0x20;
-                    sub_412D9C(&gui_lstvw.frm_1);
+                    INPe.sub_412D9C(&gui_lstvw.frm_1);
 
                     yw->field_17bc = 0;
                 }
@@ -5044,7 +5044,7 @@ void  ypaworld_func64__sub7__sub2(_NC_STACK_ypaworld *yw, struC5 *inpt)
                         {
                             v2->cmd_flag &= 0xFFFFFFDF;
 
-                            sub_412D48(&v2->frm_1, 0);
+                            INPe.sub_412D48(&v2->frm_1, 0);
                             yw->field_17bc = 0;
                         }
 
@@ -5055,7 +5055,7 @@ void  ypaworld_func64__sub7__sub2(_NC_STACK_ypaworld *yw, struC5 *inpt)
                     {
                         v2->cmd_flag |= 0x20;
 
-                        sub_412D9C(&v2->frm_1);
+                        INPe.sub_412D9C(&v2->frm_1);
                         yw->field_17bc = 0;
                     }
                 }
@@ -5173,7 +5173,7 @@ void  ypaworld_func64__sub7__sub2(_NC_STACK_ypaworld *yw, struC5 *inpt)
             if ( !(gui_lstvw.cmd_flag & 0x20) )
             {
                 gui_lstvw.cmd_flag |= 0x20;
-                sub_412D9C(&gui_lstvw.frm_1);
+                INPe.sub_412D9C(&gui_lstvw.frm_1);
                 yw->field_17bc = 0;
             }
         }
@@ -5577,8 +5577,8 @@ char * ypaworld_func64__sub7__sub7__sub0(_NC_STACK_ypaworld *yw)
         else
             v35 = 0;
 
-        sub_412D9C(&up_panel.frm_1);
-        sub_412D48(&up_panel.frm_1, 0);
+        INPe.sub_412D9C(&up_panel.frm_1);
+        INPe.sub_412D48(&up_panel.frm_1, 0);
 
         int x = LOWORD(up_panel.field_1D4) + v3;
 
@@ -7674,8 +7674,8 @@ void ypaworld_func64__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
                         {
                             v9->cmd_flag &= 0xFFFFFFFE;
 
-                            sub_412D9C(&v9->frm_2);
-                            sub_412D48(&v9->frm_1, 0);
+                            INPe.sub_412D9C(&v9->frm_2);
+                            INPe.sub_412D48(&v9->frm_1, 0);
 
                             Remove(v9);
 
@@ -7686,8 +7686,8 @@ void ypaworld_func64__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
                     {
                         if ( winpt->flag & 2 )
                         {
-                            sub_412D9C(&v9->frm_1);
-                            sub_412D48(&v9->frm_1, 0);
+                            INPe.sub_412D9C(&v9->frm_1);
+                            INPe.sub_412D48(&v9->frm_1, 0);
 
                             Remove(v9);
 
@@ -7709,11 +7709,11 @@ void ypaworld_func64__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
                                 if ( winpt->flag & 0x40 )
                                 {
-                                    sub_412D9C(&v9->frm_1);
+                                    INPe.sub_412D9C(&v9->frm_1);
 
                                     if ( v9->cmd_flag & 4 )
                                     {
-                                        sub_412D48(&v9->frm_2, 0);
+                                        INPe.sub_412D48(&v9->frm_2, 0);
 
                                         v9->cmd_flag |= 1;
                                     }
@@ -11207,7 +11207,7 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
                 if ( robo_map.cmd_flag & 0x20 )
                 {
                     robo_map.cmd_flag &= 0xFFFFFFDF;
-                    sub_412D48(&robo_map.frm_1, 0);
+                    INPe.sub_412D48(&robo_map.frm_1, 0);
                     yw->field_17bc = 0;
                 }
 
@@ -11216,14 +11216,14 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
                     Remove(&robo_map);
                     AddHead(&yw->field_17a0, &robo_map);
 
-                    sub_412D9C(&robo_map.frm_1);
-                    sub_412D48(&robo_map.frm_1, 0);
+                    INPe.sub_412D9C(&robo_map.frm_1);
+                    INPe.sub_412D48(&robo_map.frm_1, 0);
                 }
             }
             else if ( !(robo_map.cmd_flag & 0x20) )
             {
                 robo_map.cmd_flag |= 0x20;
-                sub_412D9C(&robo_map.frm_1);
+                INPe.sub_412D9C(&robo_map.frm_1);
                 yw->field_17bc = 0;
             }
 
@@ -11249,7 +11249,7 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
                 if ( squadron_manager.lstvw.cmd_flag & 0x20 )
                 {
                     squadron_manager.lstvw.cmd_flag &= 0xFFFFFFDF;
-                    sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                    INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
 
                     yw->field_17bc = 0;
                 }
@@ -11259,14 +11259,14 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
                     Remove(&squadron_manager.lstvw);
                     AddHead(&yw->field_17a0, &squadron_manager.lstvw);
 
-                    sub_412D9C(&squadron_manager.lstvw.frm_1);
-                    sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                    INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
+                    INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
                 }
             }
             else if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
             {
                 squadron_manager.lstvw.cmd_flag |= 0x20;
-                sub_412D9C(&squadron_manager.lstvw.frm_1);
+                INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
                 yw->field_17bc = 0;
             }
 
@@ -11287,7 +11287,7 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
                 if ( robo_map.cmd_flag & 0x20 )
                 {
                     robo_map.cmd_flag &= 0xFFFFFFDF;
-                    sub_412D48(&robo_map.frm_1, 0);
+                    INPe.sub_412D48(&robo_map.frm_1, 0);
                     yw->field_17bc = 0;
                 }
 
@@ -11296,14 +11296,14 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
                     Remove(&robo_map);
                     AddHead(&yw->field_17a0, &robo_map);
 
-                    sub_412D9C(&robo_map.frm_1);
-                    sub_412D48(&robo_map.frm_1, 0);
+                    INPe.sub_412D9C(&robo_map.frm_1);
+                    INPe.sub_412D48(&robo_map.frm_1, 0);
                 }
             }
             else if ( !(robo_map.cmd_flag & 0x20) )
             {
                 robo_map.cmd_flag |= 0x20;
-                sub_412D9C(&robo_map.frm_1);
+                INPe.sub_412D9C(&robo_map.frm_1);
                 yw->field_17bc = 0;
             }
 
@@ -11329,7 +11329,7 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
                 if ( squadron_manager.lstvw.cmd_flag & 0x20 )
                 {
                     squadron_manager.lstvw.cmd_flag &= 0xFFFFFFDF;
-                    sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                    INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
                     yw->field_17bc = 0;
                 }
 
@@ -11338,14 +11338,14 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
                     Remove(&squadron_manager.lstvw);
                     AddHead(&yw->field_17a0, &squadron_manager.lstvw);
 
-                    sub_412D9C(&squadron_manager.lstvw.frm_1);
-                    sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                    INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
+                    INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
                 }
             }
             else if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
             {
                 squadron_manager.lstvw.cmd_flag |= 0x20;
-                sub_412D9C(&squadron_manager.lstvw.frm_1);
+                INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
                 yw->field_17bc = 0;
             }
 
@@ -11366,7 +11366,7 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
                 if ( robo_map.cmd_flag & 0x20 )
                 {
                     robo_map.cmd_flag &= 0xFFFFFFDF;
-                    sub_412D48(&robo_map.frm_1, 0);
+                    INPe.sub_412D48(&robo_map.frm_1, 0);
                     yw->field_17bc = 0;
                 }
 
@@ -11375,8 +11375,8 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
                     Remove(&robo_map);
                     AddHead(&yw->field_17a0, &robo_map);
 
-                    sub_412D9C(&robo_map.frm_1);
-                    sub_412D48(&robo_map.frm_1, 0);
+                    INPe.sub_412D9C(&robo_map.frm_1);
+                    INPe.sub_412D48(&robo_map.frm_1, 0);
                 }
             }
         }
@@ -11388,7 +11388,7 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
                 if ( squadron_manager.lstvw.cmd_flag & 0x20 )
                 {
                     squadron_manager.lstvw.cmd_flag &= 0xFFFFFFDF;
-                    sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                    INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
                     yw->field_17bc = 0;
                 }
 
@@ -11397,8 +11397,8 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
                     Remove(&squadron_manager.lstvw);
                     AddHead(&yw->field_17a0, &squadron_manager.lstvw);
 
-                    sub_412D9C(&squadron_manager.lstvw.frm_1);
-                    sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                    INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
+                    INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
                 }
             }
         }
@@ -12654,8 +12654,7 @@ void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
         {
             yw->field_17c0 = 1;
 
-            NC_STACK_input *input;
-            inputEngine__getter(0x80001009, &input, 0);
+            NC_STACK_input *input = INPe.getPInput();
 
             int v37 = 1;
 

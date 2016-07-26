@@ -54,7 +54,7 @@ void scale_rot_0(base_1c_struct *scrot)
 // rot_x != 0   rot_y == 0   rot_z == 0
 void scale_rot_1(base_1c_struct *scrot)
 {
-    SinCos *angl = &SinCos_table[scrot->rot_x >> 16];
+    SinCos *angl = &TFEngine::SinCos_table[scrot->rot_x >> 16];
 
     scrot->scale_rotation.m00 = scrot->scale_x;
     scrot->scale_rotation.m01 = 0;
@@ -73,7 +73,7 @@ void scale_rot_1(base_1c_struct *scrot)
 // rot_x == 0   rot_y != 0   rot_z == 0
 void scale_rot_2(base_1c_struct *scrot)
 {
-    SinCos *angl = &SinCos_table[scrot->rot_y >> 16];
+    SinCos *angl = &TFEngine::SinCos_table[scrot->rot_y >> 16];
 
     scrot->scale_rotation.m00 = scrot->scale_x * angl->cos;
     scrot->scale_rotation.m01 = 0;
@@ -91,8 +91,8 @@ void scale_rot_2(base_1c_struct *scrot)
 // rot_x != 0   rot_y != 0   rot_z == 0
 void scale_rot_3(base_1c_struct *scrot)
 {
-    SinCos *angl_x = &SinCos_table[scrot->rot_x >> 16];
-    SinCos *angl_y = &SinCos_table[scrot->rot_y >> 16];
+    SinCos *angl_x = &TFEngine::SinCos_table[scrot->rot_x >> 16];
+    SinCos *angl_y = &TFEngine::SinCos_table[scrot->rot_y >> 16];
 
     scrot->scale_rotation.m00 = scrot->scale_x * angl_y->cos;
     scrot->scale_rotation.m01 = 0;
@@ -110,7 +110,7 @@ void scale_rot_3(base_1c_struct *scrot)
 // rot_x == 0   rot_y == 0   rot_z != 0
 void scale_rot_4(base_1c_struct *scrot)
 {
-    SinCos *angl = &SinCos_table[scrot->rot_z >> 16];
+    SinCos *angl = &TFEngine::SinCos_table[scrot->rot_z >> 16];
 
     scrot->scale_rotation.m00 = scrot->scale_x * angl->cos;
     scrot->scale_rotation.m01 = -angl->sin * scrot->scale_x;
@@ -128,8 +128,8 @@ void scale_rot_4(base_1c_struct *scrot)
 // rot_x != 0   rot_y == 0   rot_z != 0
 void scale_rot_5(base_1c_struct *scrot)
 {
-    SinCos *angl_x = &SinCos_table[scrot->rot_x >> 16];
-    SinCos *angl_z = &SinCos_table[scrot->rot_z >> 16];
+    SinCos *angl_x = &TFEngine::SinCos_table[scrot->rot_x >> 16];
+    SinCos *angl_z = &TFEngine::SinCos_table[scrot->rot_z >> 16];
 
     scrot->scale_rotation.m00 = scrot->scale_x * angl_z->cos;
     scrot->scale_rotation.m01 = -angl_z->sin * angl_x->cos * scrot->scale_x;
@@ -147,8 +147,8 @@ void scale_rot_5(base_1c_struct *scrot)
 // rot_x == 0   rot_y != 0   rot_z != 0
 void scale_rot_6(base_1c_struct *scrot)
 {
-    SinCos *angl_y = &SinCos_table[scrot->rot_y >> 16];
-    SinCos *angl_z = &SinCos_table[scrot->rot_z >> 16];
+    SinCos *angl_y = &TFEngine::SinCos_table[scrot->rot_y >> 16];
+    SinCos *angl_z = &TFEngine::SinCos_table[scrot->rot_z >> 16];
 
     scrot->scale_rotation.m00 = angl_z->cos * angl_y->cos * scrot->scale_x;
     scrot->scale_rotation.m01 = -angl_z->sin * scrot->scale_x;
@@ -167,9 +167,9 @@ void scale_rot_6(base_1c_struct *scrot)
 // rot_x != 0   rot_y != 0   rot_z != 0
 void scale_rot_7(base_1c_struct *scrot)
 {
-    SinCos *angl_x = &SinCos_table[scrot->rot_x >> 16];
-    SinCos *angl_y = &SinCos_table[scrot->rot_y >> 16];
-    SinCos *angl_z = &SinCos_table[scrot->rot_z >> 16];
+    SinCos *angl_x = &TFEngine::SinCos_table[scrot->rot_x >> 16];
+    SinCos *angl_y = &TFEngine::SinCos_table[scrot->rot_y >> 16];
+    SinCos *angl_z = &TFEngine::SinCos_table[scrot->rot_z >> 16];
 
 
     scrot->scale_rotation.m00 = (angl_z->cos * angl_y->cos - angl_z->sin * angl_x->sin * angl_y->sin) * scrot->scale_x;

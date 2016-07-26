@@ -3628,8 +3628,7 @@ int sub_476204(const char *a4)
 
 int parseSaveInput(scrCallBack *arg)
 {
-    NC_STACK_input *inpt;
-    inputEngine__getter(0x80001009, &inpt, 0);
+    NC_STACK_input *inpt = INPe.getPInput();
 
     UserData *usr = (UserData *)arg->dataForStore;
 
@@ -4995,7 +4994,7 @@ int parseSaveSound(scrCallBack *arg)
         else if ( !strcasecmp(arg->p1, "volume") )
         {
             usr->snd__volume = atoi(arg->p2);
-            milesEngine__setter(0x80004003, usr->snd__volume, 0);
+            SFXe.setMasterVolume(usr->snd__volume);
         }
         else if ( !strcasecmp(arg->p1, "cdvolume") )
         {
@@ -5010,12 +5009,12 @@ int parseSaveSound(scrCallBack *arg)
             if ( !strcasecmp(arg->p2, "yes") )
             {
                 usr->snd__flags2 |= 1;
-                milesEngine__setter(0x80004005, 1, 0);
+                SFXe.setReverseStereo(1);
             }
             else
             {
-                usr->snd__flags2 &= 0xFE;
-                milesEngine__setter(0x80004005, 0, 0);
+                usr->snd__flags2 &= ~1;
+                SFXe.setReverseStereo(0);
             }
         }
         else if ( !strcasecmp(arg->p1, "sound") )

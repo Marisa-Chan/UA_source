@@ -1,9 +1,9 @@
 #ifndef ENGINE_INPUT_H_INCLUDED
 #define ENGINE_INPUT_H_INCLUDED
 
-extern stored_functions_engine input_engine_vtbl;
-
 #include "utils.h"
+
+class NC_STACK_input;
 
 struct button_str1
 {
@@ -50,12 +50,25 @@ struct struC5
     winp_131arg winp131arg;
 };
 
-void sub_412D28(struC5 *a1);
-void sub_412D48(inp_node *btn, int a2);
-void sub_412D9C(inp_node *btn);
+class INPEngine
+{
+public:
+    INPEngine(): input_class(NULL) {};
+    int init();
+    void deinit();
 
-void inputEngine__getter(unsigned int, ...);
-void inputEngine__setter(unsigned int a1, ...);
+    void setWndMode(gfx_window *wnd);
+    NC_STACK_input *getPInput();
+
+    void sub_412D28(struC5 *a1);
+    void sub_412D48(inp_node *btn, int a2);
+    void sub_412D9C(inp_node *btn);
+
+private:
+    NC_STACK_input *input_class;
+};
+
+extern INPEngine INPe;
 
 
 #endif // ENGINE_INPUT_H_INCLUDED

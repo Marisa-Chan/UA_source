@@ -476,7 +476,7 @@ size_t NC_STACK_button::button_func68(int *arg)
         if ( !(btn->field_19A & 1) )
         {
             btn->field_19A |= 1;
-            sub_412D48(btn, 0);
+            INPe.sub_412D48(btn, 0);
         }
     }
     else if ( *arg == 2 )
@@ -484,7 +484,7 @@ size_t NC_STACK_button::button_func68(int *arg)
         if ( btn->field_19A & 1 )
         {
             btn->field_19A &= 0xFFFE;
-            sub_412D9C(btn);
+            INPe.sub_412D9C(btn);
         }
     }
 

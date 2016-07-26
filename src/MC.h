@@ -21,8 +21,6 @@ enum MC2
 void init_mc_res_class_engine_strings(MC_TYPE a1, const char *str);
 
 int set_classes_list();
-stored_functions_engine *init_engine(unsigned int engineID);
-void deinit_engine(unsigned int engineID);
 
 void sb_0x411c08();
 const char * get_MC_str(MC_TYPE a1);
