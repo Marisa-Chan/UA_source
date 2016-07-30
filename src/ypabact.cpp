@@ -1380,7 +1380,7 @@ void NC_STACK_ypabact::ypabact_func69(ypabact_arg65 *arg)
                             arg134.unit = bact;
                             arg134.field_14 = 46;
 
-                            bact->host_station->yparobo_func134(&arg134);
+                            bact->host_station->placeMessage(&arg134);
                         }
                     }
                 }
@@ -2970,7 +2970,7 @@ void NC_STACK_ypabact::ypabact_func75(bact_arg75 *arg)
                     arg134.field_8 = 0;
                     arg134.field_14 = 32;
 
-                    bact->host_station->yparobo_func134(&arg134);
+                    bact->host_station->placeMessage(&arg134);
                 }
 
                 bact_arg119 arg78;
@@ -3258,7 +3258,7 @@ void NC_STACK_ypabact::ypabact_func76(bact_arg75 *arg)
                     arg134.field_14 = 22;
                     arg134.unit = bact;
 
-                    bact->host_station->yparobo_func134(&arg134);
+                    bact->host_station->placeMessage(&arg134);
                 }
 
                 bact_arg67 arg67;
@@ -3284,7 +3284,7 @@ void NC_STACK_ypabact::ypabact_func76(bact_arg75 *arg)
                     arg134.field_4 = 1;
                     arg134.field_14 = 32;
 
-                    bact->host_station->yparobo_func134(&arg134);
+                    bact->host_station->placeMessage(&arg134);
                 }
 
                 bact->field_3D5 = 3;
@@ -3308,7 +3308,7 @@ void NC_STACK_ypabact::ypabact_func76(bact_arg75 *arg)
                         arg134.field_10 = 0;
                         arg134.field_14 = 20;
 
-                        bact->host_station->yparobo_func134(&arg134);
+                        bact->host_station->placeMessage(&arg134);
                     }
 
                     bact->field_3D6 |= 1;
@@ -3334,7 +3334,7 @@ void NC_STACK_ypabact::ypabact_func76(bact_arg75 *arg)
                         arg134.field_10 = 0;
                         arg134.field_14 = 20;
 
-                        bact->host_station->yparobo_func134(&arg134);
+                        bact->host_station->placeMessage(&arg134);
                     }
 
                     bact->field_3D6 |= 2;
@@ -3412,7 +3412,7 @@ void NC_STACK_ypabact::ypabact_func76(bact_arg75 *arg)
                 arg134.field_14 = 18;
                 arg134.field_10 = 0;
 
-                bact->host_station->yparobo_func134(&arg134);
+                bact->host_station->placeMessage(&arg134);
             }
 
             bact->field_3D6 &= 0xFFFFFFFE;
@@ -3439,7 +3439,7 @@ void NC_STACK_ypabact::ypabact_func76(bact_arg75 *arg)
                 arg134.field_14 = 18;
                 arg134.field_C = -bact->sencdTpos.sz / 1200.0;
 
-                bact->host_station->yparobo_func134(&arg134);
+                bact->host_station->placeMessage(&arg134);
             }
 
             bact->field_3D6 &= 0xFFFFFFFD;
@@ -3636,7 +3636,7 @@ void NC_STACK_ypabact::ypabact_func77(void *)
                     v53.field_8 = 0;
                     v53.unit = bact;
 
-                    bact->host_station->yparobo_func134(&v53);
+                    bact->host_station->placeMessage(&v53);
                 }
                 else
                 {
@@ -3649,7 +3649,7 @@ void NC_STACK_ypabact::ypabact_func77(void *)
                         v53.field_C = 0;
                         v53.field_4 = 8;
 
-                        bact->host_station->yparobo_func134(&v53);
+                        bact->host_station->placeMessage(&v53);
                     }
                 }
             }
@@ -3664,7 +3664,7 @@ void NC_STACK_ypabact::ypabact_func77(void *)
                     v53.field_C = 0;
                     v53.field_14 = 36;
 
-                    bact->host_station->yparobo_func134(&v53);
+                    bact->host_station->placeMessage(&v53);
                 }
             }
 
@@ -6152,7 +6152,7 @@ void NC_STACK_ypabact::ypabact_func99(ypabact_arg65 *arg)
                 v23.field_10 = 0;
                 v23.field_14 = 26;
 
-                bact->host_station->yparobo_func134(&v23);
+                bact->host_station->placeMessage(&v23);
             }
         }
 

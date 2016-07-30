@@ -776,7 +776,7 @@ int yw_write_robo(bact_node *bct, FILE *fil)
     NC_STACK_yparobo *roboo = dynamic_cast<NC_STACK_yparobo *>(bct->bacto);
     __NC_STACK_yparobo *robo = &roboo->stack__yparobo;
 
-    sprintf(buf, "    robostate      = %d\n", robo->field_1DB & 0xC00F );
+    sprintf(buf, "    robostate      = %d\n", robo->roboState & 0xC00F );
     fwrite(buf, strlen(buf), 1, fil);
 
     sprintf(buf, "    dockenergy     = %d\n", robo->dock_energ);
@@ -824,37 +824,37 @@ int yw_write_robo(bact_node *bct, FILE *fil)
     sprintf(buf, "    vvert          = %7.5f\n", robo->bact_internal->field_5F1);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    con_budget     = %d\n", robo->field_1E7);
+    sprintf(buf, "    con_budget     = %d\n", robo->epConquer);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    def_budget     = %d\n", robo->field_1EA);
+    sprintf(buf, "    def_budget     = %d\n", robo->epDefense);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    rec_budget     = %d\n", robo->field_1ec);
+    sprintf(buf, "    rec_budget     = %d\n", robo->epRecon);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    rob_budget     = %d\n", robo->field_1EE);
+    sprintf(buf, "    rob_budget     = %d\n", robo->epRobo);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    rad_budget     = %d\n", robo->field_1e8);
+    sprintf(buf, "    rad_budget     = %d\n", robo->epRadar);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    pow_budget     = %d\n", robo->field_1E9);
+    sprintf(buf, "    pow_budget     = %d\n", robo->epPower);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    saf_budget     = %d\n", robo->field_1EB);
+    sprintf(buf, "    saf_budget     = %d\n", robo->epSafety);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    cpl_budget     = %d\n", robo->field_1ED);
+    sprintf(buf, "    cpl_budget     = %d\n", robo->epChangePlace);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    saf_delay     = %d\n", robo->field_24D);
+    sprintf(buf, "    saf_delay     = %d\n", robo->safety_delay);
     fwrite(buf, strlen(buf), 1, fil);
 
     sprintf(buf, "    pow_delay     = %d\n", robo->field_265);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    rad_delay     = %d\n", robo->field_235);
+    sprintf(buf, "    rad_delay     = %d\n", robo->radar_delay);
     fwrite(buf, strlen(buf), 1, fil);
 
     sprintf(buf, "    cpl_delay     = %d\n", robo->field_2B1);
@@ -863,7 +863,7 @@ int yw_write_robo(bact_node *bct, FILE *fil)
     sprintf(buf, "    def_delay     = %d\n", robo->field_281);
     fwrite(buf, strlen(buf), 1, fil);
 
-    sprintf(buf, "    con_delay     = %d\n", robo->field_299);
+    sprintf(buf, "    con_delay     = %d\n", robo->conq_delay);
     fwrite(buf, strlen(buf), 1, fil);
 
     sprintf(buf, "    rec_delay     = %d\n", robo->field_2C9);

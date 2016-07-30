@@ -5293,7 +5293,7 @@ int sb_0x479f4c__sub0(scrCallBack *scr)
     }
     else if ( !strcasecmp(scr->p1, "robostate") )
     {
-        robo->field_1DB = atoi(scr->p2);
+        robo->roboState = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "dockenergy") )
     {
@@ -5379,39 +5379,39 @@ int sb_0x479f4c__sub0(scrCallBack *scr)
     }
     else if ( !strcasecmp(scr->p1, "con_budget") )
     {
-        robo->field_1E7 = atoi(scr->p2);
+        robo->epConquer = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "def_budget") )
     {
-        robo->field_1EA = atoi(scr->p2);
+        robo->epDefense = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "rec_budget") )
     {
-        robo->field_1ec = atoi(scr->p2);
+        robo->epRecon = atoi(scr->p2);
     }
     else  if ( !strcasecmp(scr->p1, "rob_budget") )
     {
-        robo->field_1EE = atoi(scr->p2);
+        robo->epRobo = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "rad_budget") )
     {
-        robo->field_1e8 = atoi(scr->p2);
+        robo->epRadar = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "pow_budget") )
     {
-        robo->field_1E9 = atoi(scr->p2);
+        robo->epPower = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "saf_budget") )
     {
-        robo->field_1EB = atoi(scr->p2);
+        robo->epSafety = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "cpl_budget") )
     {
-        robo->field_1ED = atoi(scr->p2);
+        robo->epChangePlace = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "saf_delay") )
     {
-        robo->field_24D = atoi(scr->p2);
+        robo->safety_delay = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "pow_delay") )
     {
@@ -5419,7 +5419,7 @@ int sb_0x479f4c__sub0(scrCallBack *scr)
     }
     else if ( !strcasecmp(scr->p1, "rad_delay") )
     {
-        robo->field_235 = atoi(scr->p2);
+        robo->radar_delay = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "cpl_delay") )
     {
@@ -5431,7 +5431,7 @@ int sb_0x479f4c__sub0(scrCallBack *scr)
     }
     else if ( !strcasecmp(scr->p1, "con_delay") )
     {
-        robo->field_299 = atoi(scr->p2);
+        robo->conq_delay = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "rec_delay") )
     {

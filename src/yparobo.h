@@ -25,17 +25,19 @@ struct __NC_STACK_yparobo
     float field_1D5;
 
     char field_1DA;
-    int field_1DB;
-    int field_1DF;
+    int roboState;
+    int newAI;
     int field_1E3;
-    char field_1E7;
-    char field_1e8;
-    char field_1E9;
-    char field_1EA;
-    char field_1EB;
-    char field_1ec;
-    char field_1ED;
-    char field_1EE;
+
+    char epConquer;
+    char epRadar;
+    char epPower;
+    char epDefense;
+    char epSafety;
+    char epRecon;
+    char epChangePlace;
+    char epRobo;
+
     int dock_energ;
     int dock_cnt;
     int dock_user;
@@ -46,24 +48,30 @@ struct __NC_STACK_yparobo
     char dock_aggr;
     int dock_tgt_comm_id;
     xyz dock_pos;
-    int field_221;
-    cellArea *field_225;  //For AI
-    int field_229;  //For AI
-    int field_22D;
-    int field_231;
-    int field_235; //??
-    int field_239;
-    cellArea *field_23D;  //For AI
-    int field_241;  //For AI
-    int field_245;
-    int field_249;
-    int field_24D; //??
+
+    int radar_value;
+    cellArea *radar_cell;  //For AI
+    int radar_cellID;  //For AI
+    int radar_cellIDpos;
+    int radar_time;
+    int radar_delay; //??
+
+    int safety_value;
+    cellArea *safety_cell;  //For AI
+    int safety_cellID;  //For AI
+    int safety_cellIDpos;
+    int safety_time;
+    int safety_delay; //??
+
+    //Power
     int field_251;
     cellArea *field_255;  //For AI
     int field_259;  //For AI
     int field_25D;
     int field_261;
     int field_265; //??
+
+    //Enemy
     int field_269;
     cellArea *field_26D;  //For AI
     int field_271;  //For AI
@@ -71,12 +79,14 @@ struct __NC_STACK_yparobo
     int field_279;
     int field_27D;
     int field_281; //??
-    int field_285;
-    cellArea *field_289;  //For AI
-    int field_28D;  //For AI
-    int field_291;
-    int field_295;
-    int field_299; //??
+
+    int conq_value;
+    cellArea *conq_cell;  //For AI
+    int conq_cellID;  //For AI
+    int conq_cellIDpos;
+    int conq_time;
+    int conq_delay; //??
+
     int field_29D;
     cellArea *field_2A1;  //For AI
     int field_2A5;  //For AI
@@ -95,10 +105,10 @@ struct __NC_STACK_yparobo
     int field_2D9;  //For AI
     int field_2DD;
     int field_2E1; //??
-    int field_2E5;  //For AI
-    cellArea *field_2E9;  //For AI
+    int vehicle_cellID;  //For AI
+    cellArea *vehicle_cell;  //For AI
 
-    int field_2ED;  //For AI
+    int vehicle_type;  //For AI
     int field_2F1;  //For AI
     int field_2F5;  //For AI
     cellArea *field_2F9;  //For AI
@@ -210,7 +220,7 @@ public:
     virtual void yparobo_func131(stack_vals *arg);
     virtual size_t yparobo_func132(bact_arg67 *arg);
     virtual int yparobo_func133(robo_arg133 *arg);
-    virtual int yparobo_func134(robo_arg134 *arg);
+    virtual int placeMessage(robo_arg134 *arg);
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_yparobo() {
@@ -224,6 +234,39 @@ public:
 
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_yparobo();
+    };
+
+    enum ROBOSTATE
+    {
+        ROBOSTATE_SAFEZONE = 1,
+        ROBOSTATE_ROBOFOUND = 2,
+        ROBOSTATE_DOCKINUSE = 4,
+        ROBOSTATE_SETDOCKTARGET = 8,
+
+        ROBOSTATE_BUILDRADAR = 0x10,
+        ROBOSTATE_BUILDPOWER = 0x20,
+        ROBOSTATE_BUILDCONQUER = 0x40,
+        ROBOSTATE_BUILDDEFENSE = 0x80,
+        ROBOSTATE_BUILDSAFE = 0x100,
+
+        ROBOSTATE_READYDEFENSE = 0x200,
+        ROBOSTATE_READYCONQUER = 0x400,
+        ROBOSTATE_READYRADAR = 0x800,
+        ROBOSTATE_READYPOWER = 0x1000,
+        ROBOSTATE_READYSAFE = 0x2000,
+
+        ROBOSTATE_PLAYERROBO = 0x4000,
+        ROBOSTATE_DANGER = 0x8000,
+
+        ROBOSTATE_FOUNDPLACE = 0x10000,
+        ROBOSTATE_CHANGEPLACE = 0x20000,
+        ROBOSTATE_READYRECON = 0x40000,
+        ROBOSTATE_BUILDRECON = 0x80000,
+        ROBOSTATE_READYROBO = 0x100000,
+        ROBOSTATE_BUILDROBO = 0x200000,
+
+        ROBOSTATE_MOVE = 0x400000,
+        ROBOSTATE_USEVHCLPARTS = 0x800000
     };
 
     enum ROBO_ATT
@@ -320,6 +363,44 @@ public:
     void yparobo_func0__sub1(stack_vals *stak);
     void yparobo_func2__sub0(stack_vals *stak);
     void yparobo_func3__sub0(stack_vals *stak);
+
+protected:
+
+    void checkCommander();
+    void initForce(bact_node *unit);
+    void sub_4A9F24(bact_node *node);
+
+    bact_node *allocForce(robo_loct1 *arg);
+
+    void buildConquer();
+    void buildDefense();
+    void buildRobo();
+    void buildReconnoitre();
+
+    void buildRadar(ypabact_arg65 *arg);
+    void buildPower(ypabact_arg65 *arg);
+    void buildSafe(ypabact_arg65 *arg);
+    void changePlace();
+
+
+    void AI_doWish(ypabact_arg65 *arg);
+    void AI_doMove(ypabact_arg65 *arg);
+    void AI_service(ypabact_arg65 *arg);
+    void AI_clearAttackerSlots();
+    void AI_solveTrouble(ypabact_arg65 *arg);
+    void AI_checkWorld(ypabact_arg65 *arg);
+
+    void doBeamUpdate(int a2);
+    void doUserCommands(ypabact_arg65 *arg);
+    void wallow(ypabact_arg65 *arg);
+    void searchEnemyRobo();
+    void usersRoboEnergyCheck();
+
+    void checkDanger();
+    size_t checkCollisions(float a2);
+
+
+public:
 
     //Data
     static const NewClassDescr description;

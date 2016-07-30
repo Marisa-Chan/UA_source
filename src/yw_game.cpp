@@ -6879,7 +6879,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                             break;
                         }
 
-                        switch (robo->field_2ED)
+                        switch (robo->vehicle_type)
                         {
                         case 0:
                             v73 = "nothing";
@@ -6911,14 +6911,14 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
                         cmd = sub_445654(yw, cmd, buf_sprintf, "    wait power %d, radar %d, flak %d, location %d",
                                          robo->field_265 / 1000,
-                                         robo->field_235 / 1000,
-                                         robo->field_24D / 1000,
+                                         robo->radar_delay / 1000,
+                                         robo->safety_delay / 1000,
                                          robo->field_2B1 / 1000);
 
                         fntcmd_next_line(&cmd);
 
                         cmd = sub_445654(yw, cmd, buf_sprintf, "    wait conquer %d, defense %d, recon %d, robo %d",
-                                         robo->field_299 / 1000,
+                                         robo->conq_delay / 1000,
                                          robo->field_281 / 1000,
                                          robo->field_2C9 / 1000,
                                          robo->field_2E1 / 1000);
@@ -6934,17 +6934,17 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
                         fntcmd_next_line(&cmd);
 
-                        if ( robo->field_235 > 0 )
+                        if ( robo->radar_delay > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "radar -1, ");
                         else
-                            cmd = sub_445654(yw, cmd, buf_sprintf, "radar %d, ", robo->field_221);
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "radar %d, ", robo->radar_value);
 
                         fntcmd_next_line(&cmd);
 
-                        if ( robo->field_24D > 0 )
+                        if ( robo->safety_delay > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "flak -1, ");
                         else
-                            cmd = sub_445654(yw, cmd, buf_sprintf, "flak %d, ", robo->field_239);
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "flak %d, ", robo->safety_value);
 
                         fntcmd_next_line(&cmd);
 
@@ -6962,10 +6962,10 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
                         fntcmd_next_line(&cmd);
 
-                        if ( robo->field_299 > 0 )
+                        if ( robo->conq_delay > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "conquer -1, ");
                         else
-                            cmd = sub_445654(yw, cmd, buf_sprintf, "conquer %d, ", robo->field_285);
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "conquer %d, ", robo->conq_value);
 
                         fntcmd_next_line(&cmd);
 
@@ -6983,7 +6983,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
                         fntcmd_next_line(&cmd);
 
-                        if ( robo->field_1DB & 4 )
+                        if ( robo->roboState & NC_STACK_yparobo::ROBOSTATE_DOCKINUSE )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "dock energy %d time %d", robo->dock_energ, robo->dock_time);
                     }
                 }

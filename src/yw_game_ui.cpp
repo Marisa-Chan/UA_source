@@ -559,13 +559,13 @@ void  sb_0x4f8f64__sub1__sub0(_NC_STACK_ypaworld *yw)
                 switch ( i )
                 {
                 case 0:
-                    if ( robo->field_221 > 0 )
-                        v10 = robo->field_229;
+                    if ( robo->radar_value > 0 )
+                        v10 = robo->radar_cellID;
                     break;
 
                 case 1:
-                    if ( robo->field_239 > 0 )
-                        v10 = robo->field_241;
+                    if ( robo->safety_value > 0 )
+                        v10 = robo->safety_cellID;
                     break;
 
                 case 2:
@@ -579,8 +579,8 @@ void  sb_0x4f8f64__sub1__sub0(_NC_STACK_ypaworld *yw)
                     break;
 
                 case 4:
-                    if ( robo->field_285 > 0 )
-                        v10 = robo->field_28D;
+                    if ( robo->conq_value > 0 )
+                        v10 = robo->conq_cellID;
                     break;
 
                 case 5:
@@ -621,10 +621,10 @@ void  sb_0x4f8f64__sub1__sub0(_NC_STACK_ypaworld *yw)
                     sub_4F68FC(yw->win3d, v2->bact->field_621.sx, v2->bact->field_621.sz, v28, v26, yw_GetColor(yw, 0));
             }
 
-            if ( robo->field_2ED )
+            if ( robo->vehicle_type )
             {
-                float v22 = (robo->field_2E5 % yw->sectors_maxX2) * 1200.0 + 600.0;
-                float v27 = -(robo->field_2E5 / yw->sectors_maxX2 * 1200.0 + 600.0);
+                float v22 = (robo->vehicle_cellID % yw->sectors_maxX2) * 1200.0 + 600.0;
+                float v27 = -(robo->vehicle_cellID / yw->sectors_maxX2 * 1200.0 + 600.0);
 
                 if ( (yw->field_1614 / 300) & 1 )
                 {
