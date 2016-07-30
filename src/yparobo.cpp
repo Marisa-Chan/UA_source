@@ -3069,7 +3069,7 @@ bact_node *NC_STACK_yparobo::allocForce(robo_loct1 *arg)
 
     while ( node->next )
     {
-        if ( node->bact->field_3D5 != 3 && !( node->bact->field_3D6 & 0x1000 ) && !( node->bact->field_3D6 & 0x80000 ) && !( node->bact->field_3D6 & 0x4000 ) &&  node->bact->field_24 != 9 )
+        if ( node->bact->field_3D5 == 3 && !( node->bact->field_3D6 & 0x1000 ) && !( node->bact->field_3D6 & 0x80000 ) && !( node->bact->field_3D6 & 0x4000 ) &&  node->bact->field_24 != 9 )
         {
             v2++;
 
