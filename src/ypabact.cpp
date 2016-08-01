@@ -4116,7 +4116,7 @@ size_t NC_STACK_ypabact::ypabact_func79(bact_arg79 *arg)
             {
                 if ( bact->field_B34 & 1 )
                 {
-                    setBACT_viewer(1);
+                    setBACT_viewer(0);
                     wobj->setBACT_viewer(1);
                 }
             }
