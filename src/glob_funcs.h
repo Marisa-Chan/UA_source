@@ -27,7 +27,7 @@ void *AllocVec(size_t size, int a2);
 struct nnode_str: nnode
 {
     char str[32];
-    char str2[32];
+    char str2[256];
 };
 
 const char * get_prefix_replacement(const char *prefix);
