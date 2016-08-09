@@ -3,7 +3,6 @@
 #include <stddef.h>
 #include <string.h>
 #include <math.h>
-#include "classes.h"
 #include "yw.h"
 #include "ypagun.h"
 #include "yparobo.h"

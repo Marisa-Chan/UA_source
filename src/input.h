@@ -59,6 +59,16 @@ public:
     virtual void input_func65(struC5 *arg);
     virtual size_t input_func66(input__func66__params *arg);
 
+    virtual int keyb_setHotkey(winp_68arg *arg);
+    virtual void keyb_queryHotkey(idev_query_arg *arg);
+
+    virtual void wimp_setWindow(gfx_window *gfx);
+    virtual void wimp_addClickNode(iwimp_arg129 *arg);
+    virtual void wimp_remClickNode(iwimp_arg129 *arg);
+    virtual void wimp_ForceFeedback(winp_71arg *ctrl);
+
+    virtual void slider_reset(int sldr, int rtp);
+
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_input() {
         memset(&stack__input, 0, sizeof(stack__input));

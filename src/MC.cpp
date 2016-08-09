@@ -1,6 +1,5 @@
 #include "includes.h"
 #include "MC.h"
-#include "classes.h"
 #include "nucleas.h"
 
 #include "engine_gfx.h"
@@ -157,3 +156,15 @@ const char * get_MC_str(MC_TYPE a1)
     else
         return NULL;
 }
+
+const NewClassDescr * getClassAllocator(const char *name)
+{
+    for(ClassList_iter it = newclasses.begin(); it != newclasses.end(); it++)
+    {
+        if (!strcasecmp(name, (*it)->classname) )
+            return *it;
+    }
+
+    return NULL;
+}
+

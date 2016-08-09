@@ -1972,17 +1972,8 @@ void ypaworld_func2__sub0__sub0(_NC_STACK_ypaworld *yw)
             winp71.p2 = 0;
             winp71.p1 = 0;
 
-            input__func66__params arg66;
-
             if ( yw->input_class )
-            {
-                arg66.field_0 = 1;
-                arg66.funcID = 71;
-                arg66.field_4 = 0;
-                arg66.vals = &winp71;
-
-                yw->input_class->input_func66(&arg66);
-            }
+                yw->input_class->wimp_ForceFeedback(&winp71);
 
             int v2;
             float v13;
@@ -2085,14 +2076,7 @@ void ypaworld_func2__sub0__sub0(_NC_STACK_ypaworld *yw)
                 winp71.p3 = 0;
 
                 if ( yw->input_class )
-                {
-                    arg66.field_4 = 0;
-                    arg66.field_0 = 1;
-                    arg66.vals = &winp71;
-                    arg66.funcID = 71;
-
-                    yw->input_class->input_func66(&arg66);
-                }
+                    yw->input_class->wimp_ForceFeedback(&winp71);
 
                 winp71.state = 0;
                 winp71.p1 = v20;
@@ -2102,13 +2086,7 @@ void ypaworld_func2__sub0__sub0(_NC_STACK_ypaworld *yw)
                 winp71.effID = 4;
 
                 if ( yw->input_class )
-                {
-                    arg66.field_4 = 0;
-                    arg66.field_0 = 1;
-                    arg66.funcID = 71;
-                    arg66.vals = &winp71;
-                    yw->input_class->input_func66(&arg66);
-                }
+                    yw->input_class->wimp_ForceFeedback(&winp71);
             }
         }
     }

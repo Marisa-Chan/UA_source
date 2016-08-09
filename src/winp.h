@@ -33,8 +33,8 @@ public:
     virtual void idev_func66(winp_66arg *arg);
     virtual int idev_func67(const char **arg);
     virtual int idev_func68(winp_68arg *arg);
-    virtual void idev_func69(int *arg);
-    virtual void idev_func70(int *arg);
+    virtual void idev_func69(int arg);
+    virtual void idev_func70(idev_query_arg *arg);
     virtual void idev_func71(winp_71arg *arg);
     virtual size_t iwimp_func128(stack_vals *stak);
     virtual void iwimp_func131(winp_131arg *arg);
@@ -59,6 +59,9 @@ public:
         WINP_ATT_WND = 0x80002000,
         WINP_ATT_HWND = 0x80002001
     };
+
+
+    virtual void setWIMP_wndInfo(gfx_window *wnd);
 
     //Data
     static const NewClassDescr description;

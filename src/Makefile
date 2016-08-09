@@ -19,7 +19,6 @@ OBJS =  \
 	base.cpp\
 	bmpAnm.cpp\
 	button.cpp\
-	classes.cpp\
 	def_parser.cpp\
 	display.cpp\
 	embed.cpp\

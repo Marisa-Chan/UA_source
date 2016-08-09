@@ -14,7 +14,7 @@ size_t NC_STACK_idev::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 69:
-        idev_func69( (int *)data );
+        idev_func69( (int )data );
         return 1;
     default:
         break;

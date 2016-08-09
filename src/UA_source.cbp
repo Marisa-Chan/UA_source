@@ -72,8 +72,6 @@
 		<Unit filename="bmpAnm.h" />
 		<Unit filename="button.cpp" />
 		<Unit filename="button.h" />
-		<Unit filename="classes.cpp" />
-		<Unit filename="classes.h" />
 		<Unit filename="def_parser.cpp" />
 		<Unit filename="def_parser.h" />
 		<Unit filename="display.cpp" />

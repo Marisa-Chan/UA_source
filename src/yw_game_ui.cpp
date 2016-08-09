@@ -3277,13 +3277,7 @@ void sub_47E400(_NC_STACK_ypaworld *yw)
         winp71.p1 = 0;
         winp71.effID = 0;
 
-        input__func66__params arg66;
-        arg66.field_0 = 1;
-        arg66.field_4 = 0;
-        arg66.funcID = 71;
-        arg66.vals = &winp71;
-
-        yw->input_class->input_func66(&arg66);
+        yw->input_class->wimp_ForceFeedback(&winp71);
     }
 }
 
@@ -12656,18 +12650,8 @@ void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
             NC_STACK_input *input = INPe.getPInput();
 
-            int v37 = 1;
-
-            input__func66__params v31;
-            v31.field_0 = 5;
-            v31.vals = &v37;
-            v31.field_4 = 10;
-            v31.funcID = 69;
-
-            input->input_func66(&v31);
-
-            v31.field_4 = 11;
-            input->input_func66(&v31);
+            input->slider_reset(10, 1);
+            input->slider_reset(11, 1);
         }
     }
 

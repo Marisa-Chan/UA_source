@@ -915,7 +915,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 //          arg82.field_8 = 0;
 //          arg82.field_10 = 0;
 //
-//          int v44 = call_method(yw->windp, 82, &arg82);
+//          int v44 = yw->windp->windp_func82(&arg82);
 //
 //          yw->GameShell->field_545F += v44;
 //
@@ -1022,7 +1022,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 //          dlgBox.startText = "";
 //          dlgBox.timer_func = sub_44674C;
 //
-//          call_method(yw->win3d, 322, &dlgBox);
+//          yw->win3d->windd_func322(&dlgBox);
 //
                     yw->field_138c = 0;
 //
@@ -2778,17 +2778,10 @@ void sub_46D2B4(NC_STACK_ypaworld *obj, UserData *usr)
     for (int i = 0; i <= 48; i++)
     {
         winp_68arg winpArg;
-        input__func66__params v7;
-
         winpArg.id = i;
         winpArg.keyname = "nop";
 
-        v7.field_0 = 3;
-        v7.funcID = 68;
-        v7.field_4 = 0;
-        v7.vals = &winpArg;
-
-        input_class->input_func66(&v7);
+        input_class->keyb_setHotkey(&winpArg);
     }
 
     for (int i = 1; i <= 45; i++)
@@ -6456,24 +6449,17 @@ void draw_tooltip(_NC_STACK_ypaworld *yw)
         char *v2 = NULL;
         if ( yw->field_17c8 )
         {
-            NC_STACK_input *v13 = INPe.getPInput();
+            NC_STACK_input *inpt = INPe.getPInput();
 
-            int v11[2];
-            v11[0] = 0;
-            v11[1] = yw->field_17c8;
+            idev_query_arg v11;
+            v11.keycode = 0;
+            v11.hotkey = yw->field_17c8;
 
-            input__func66__params v9;
+            inpt->keyb_queryHotkey(&v11);
 
-            v9.funcID = 70;
-            v9.vals = &v11;
-            v9.field_0 = 3;
-            v9.field_4 = 0;
-
-            v13->input_func66(&v9);
-
-            if ( v11[0] )
+            if ( v11.keycode )
             {
-                v2 = sb_0x481264__sub0(yw, v11[0]);
+                v2 = sb_0x481264__sub0(yw, v11.keycode);
                 if ( v2 )
                     v15 = -(yw->icon0___h + 2 * yw->font_default_h + yw->font_default_h / 4);
             }
@@ -6598,7 +6584,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 //      v19 = 0;
 //      v21 = 1;
 //
-//      call_method(yw->windp, 82, &v17);
+//      yw->windp->windp_func82(&v17);
             yw->field_7586 = 100;
         }
     }
@@ -8053,18 +8039,11 @@ size_t NC_STACK_ypaworld::ypaworld_func173(UserData *usr)
 
     if ( v5->inp_type == 3 )
     {
-        input__func66__params v29;
         winp_68arg v33;
-
         v33.keyname = v28;
         v33.id = v5->keyID;
 
-        v29.field_0 = 3;
-        v29.vals = &v33;
-        v29.field_4 = 0;
-        v29.funcID = 68;
-
-        if ( !v38->input_func66(&v29) )
+        if ( !v38->keyb_setHotkey(&v33) )
             ypa_log_out("input.engine: WARNING: Hotkey[%d] (%s) not accepted.\n", v5->keyID, v33.keyname);
     }
     else
@@ -8334,7 +8313,6 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
     if ( !yw->field_739A || (!(yw->field_73CE & 4) && !(yw->field_73CE & 8)) )
     {
         winp_71arg arg71;
-        input__func66__params arg66;
 
         switch ( arg->effects_type )
         {
@@ -8347,14 +8325,7 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
             arg71.effID = 6;
 
             if ( yw->input_class )
-            {
-                arg66.field_0 = 1;
-                arg66.funcID = 71;
-                arg66.field_4 = 0;
-                arg66.vals = &arg71;
-
-                yw->input_class->input_func66(&arg66);
-            }
+                yw->input_class->wimp_ForceFeedback(&arg71);
 
             break;
 
@@ -8367,14 +8338,8 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
             arg71.effID = 7;
 
             if ( yw->input_class )
-            {
-                arg66.field_0 = 1;
-                arg66.field_4 = 0;
-                arg66.funcID = 71;
-                arg66.vals = &arg71;
+                yw->input_class->wimp_ForceFeedback(&arg71);
 
-                yw->input_class->input_func66(&arg66);
-            }
             break;
 
         case 2:
@@ -8386,14 +8351,8 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
             arg71.effID = 8;
 
             if ( yw->input_class )
-            {
-                arg66.field_0 = 1;
-                arg66.field_4 = 0;
-                arg66.funcID = 71;
-                arg66.vals = &arg71;
+                yw->input_class->wimp_ForceFeedback(&arg71);
 
-                yw->input_class->input_func66(&arg66);
-            }
             break;
 
         case 3:
@@ -8405,14 +8364,8 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
             arg71.effID = 5;
 
             if ( yw->input_class )
-            {
-                arg66.field_0 = 1;
-                arg66.funcID = 71;
-                arg66.field_4 = 0;
-                arg66.vals = &arg71;
+                yw->input_class->wimp_ForceFeedback(&arg71);
 
-                yw->input_class->input_func66(&arg66);
-            }
             break;
 
         case 4:
@@ -8424,14 +8377,8 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
             arg71.effID = 5;
 
             if ( yw->input_class )
-            {
-                arg66.field_0 = 1;
-                arg66.field_4 = 0;
-                arg66.funcID = 71;
-                arg66.vals = &arg71;
+                yw->input_class->wimp_ForceFeedback(&arg71);
 
-                yw->input_class->input_func66(&arg66);
-            }
             break;
 
         case 5:
@@ -8446,14 +8393,8 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
             arg71.p4 = -((arg->field_8 - bct->field_621.sx) * bct->field_651.m20 + (arg->field_C - bct->field_621.sz) * bct->field_651.m22);
 
             if ( yw->input_class )
-            {
-                arg66.field_4 = 0;
-                arg66.field_0 = 1;
-                arg66.funcID = 71;
-                arg66.vals = &arg71;
+                yw->input_class->wimp_ForceFeedback(&arg71);
 
-                yw->input_class->input_func66(&arg66);
-            }
         }
         break;
 

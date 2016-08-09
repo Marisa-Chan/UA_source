@@ -25,4 +25,6 @@ int set_classes_list();
 void sb_0x411c08();
 const char * get_MC_str(MC_TYPE a1);
 
+const NewClassDescr * getClassAllocator(const char *name);
+
 #endif // MC_H_INCLUDED

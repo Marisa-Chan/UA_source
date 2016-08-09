@@ -2,6 +2,7 @@
 #define ENGINE_INPUT_H_INCLUDED
 
 #include "utils.h"
+#include "nlist.h"
 
 class NC_STACK_input;
 

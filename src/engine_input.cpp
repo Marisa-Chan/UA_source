@@ -239,14 +239,11 @@ int INPEngine::init()
 
         if ( *val )
         {
-            input__func66__params arg66;
+            winp_68arg arg68;
+            arg68.keyname = val;
+            arg68.id = i;
 
-            arg66.field_4 = 0;
-            arg66.vals = &val;
-            arg66.field_0 = 3;
-            arg66.funcID = 68;
-
-            if ( ! input_class->input_func66(&arg66) )
+            if ( ! input_class->keyb_setHotkey(&arg68) )
                 ypa_log_out("input.engine: WARNING: Hotkey[%d] (%s) not accepted.\n", i, val);
         }
     }
@@ -265,18 +262,7 @@ void INPEngine::deinit()
 
 void INPEngine::setWndMode(gfx_window *wnd)
 {
-    stack_vals stk[2];
-    stk[0].id = NC_STACK_winp::WINP_ATT_WND;
-    stk[0].value = (size_t)wnd;
-    stk[1].id = 0;
-
-    input__func66__params arg66;
-    arg66.field_0 = 1;
-    arg66.field_4 = 0;
-    arg66.funcID = 2;
-    arg66.vals = stk;
-
-    input_class->input_func66(&arg66);
+    input_class->wimp_setWindow(wnd);
 }
 
 NC_STACK_input *INPEngine::getPInput()
@@ -292,33 +278,21 @@ void INPEngine::sub_412D28(struC5 *a1)
 
 void INPEngine::sub_412D48(inp_node *btn, int a2)
 {
-    input__func66__params arg66;
     iwimp_arg129 iwimp129;
 
     iwimp129.node = btn;
     iwimp129.field_4 = a2 == 0;
 
-    arg66.field_0 = 1;
-    arg66.vals = &iwimp129;
-    arg66.field_4 = 0;
-    arg66.funcID = 129;
-
-    input_class->input_func66(&arg66);
+    input_class->wimp_addClickNode(&iwimp129);
 }
 
 void INPEngine::sub_412D9C(inp_node *btn)
 {
-    input__func66__params arg66;
     iwimp_arg129 iwimp129;
 
     iwimp129.node = btn;
     iwimp129.field_4 = 0;
 
-    arg66.field_0 = 1;
-    arg66.vals = &iwimp129;
-    arg66.field_4 = 0;
-    arg66.funcID = 130;
-
-    input_class->input_func66(&arg66);
+    input_class->wimp_remClickNode(&iwimp129);
 }
 

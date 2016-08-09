@@ -160,7 +160,7 @@ int input__set_buttons_and_sliders(__NC_STACK_input *inp, input__func64__params 
             nc_FreeMem(node);
         }
 
-        const char *v3 = input__parse__inputkey_node(arg->value, v6);
+        const char *v3 = arg->value;
 
         while (v3)
             v3 = input__parse__inputkey_node(v3, v6);
@@ -399,7 +399,7 @@ size_t NC_STACK_input::input_func66(input__func66__params *arg)
 
     if ( v7 )
     {
-        return call_method(v7, arg->funcID, arg->vals);
+        return v7->compatcall(arg->funcID, arg->vals);
     }
     else if ( arg->field_0 == 4 || arg->field_0 == 5 )
     {
@@ -415,7 +415,7 @@ size_t NC_STACK_input::input_func66(input__func66__params *arg)
         {
             if (node->driver_obj)
             {
-                call_method(node->driver_obj, arg->funcID, arg->vals);
+                node->driver_obj->compatcall(arg->funcID, arg->vals);
             }
 
             node = (inputkey_node *)node->next;
@@ -424,6 +424,58 @@ size_t NC_STACK_input::input_func66(input__func66__params *arg)
     }
     return 0;
 }
+
+
+int NC_STACK_input::keyb_setHotkey(winp_68arg *arg)
+{
+    return stack__input.keyboard->idev_func68(arg);
+}
+
+void NC_STACK_input::keyb_queryHotkey(idev_query_arg *arg)
+{
+    stack__input.keyboard->idev_func70(arg);
+}
+
+
+void NC_STACK_input::wimp_setWindow(gfx_window *gfx)
+{
+    stack__input.wimp->setWIMP_wndInfo(gfx);
+}
+
+
+void NC_STACK_input::wimp_addClickNode(iwimp_arg129 *arg)
+{
+    stack__input.wimp->iwimp_func129(arg);
+}
+
+
+void NC_STACK_input::wimp_remClickNode(iwimp_arg129 *arg)
+{
+    stack__input.wimp->iwimp_func130(arg);
+}
+
+
+void NC_STACK_input::wimp_ForceFeedback(winp_71arg *ctrl)
+{
+    stack__input.wimp->idev_func71(ctrl);
+}
+
+
+void NC_STACK_input::slider_reset(int sldr, int rtp)
+{
+    nlist *lst = &stack__input.sliders_lists[sldr];
+
+    inputkey_node *node = (inputkey_node *)lst->head;
+    while (node->next)
+    {
+        if (node->driver_obj)
+            node->driver_obj->idev_func69(rtp);
+
+        node = (inputkey_node *)node->next;
+    }
+}
+
+
 
 
 size_t NC_STACK_input::compatcall(int method_id, void *data)

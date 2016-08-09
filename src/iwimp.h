@@ -47,6 +47,8 @@ public:
         return new NC_STACK_iwimp();
     };
 
+    virtual void setWIMP_wndInfo(gfx_window *wnd) {};
+
     //Data
     static const NewClassDescr description;
 

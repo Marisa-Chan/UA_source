@@ -31,6 +31,12 @@ struct winp_68arg
     DWORD id;
 };
 
+struct idev_query_arg
+{
+    int keycode;
+    int hotkey;
+};
+
 struct winp_71arg
 {
     DWORD effID;
@@ -54,8 +60,8 @@ public:
     virtual int idev_func68(winp_68arg *arg) {
         return 0;
     };
-    virtual void idev_func69(int *arg) {};
-    virtual void idev_func70(int *arg) {};
+    virtual void idev_func69(int arg) {};
+    virtual void idev_func70(idev_query_arg *arg) {};
     virtual void idev_func71(winp_71arg *arg) {};
 
 

@@ -3,7 +3,6 @@
 
 #include "MFILE.h"
 #include "MC.h"
-#include "classes.h"
 #include "ini.h"
 
 struct g_engines

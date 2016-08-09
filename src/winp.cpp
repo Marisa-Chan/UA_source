@@ -1221,18 +1221,12 @@ size_t NC_STACK_winp::func1(stack_vals *stak)
 
 size_t NC_STACK_winp::func2(stack_vals *stak)
 {
-    __NC_STACK_winp *winp = &stack__winp;
+
 
     gfx_window *v7 = (gfx_window *)find_id_in_stack_def_val(WINP_ATT_WND, 0, stak);
     if ( v7 )
     {
-        if ( winp->hWND )
-            sub_43E5CB(winp->hWND);
-        winp->hWND = v7->hwnd;
-        winp_max_x = v7->width;
-        winp_max_y = v7->height;
-
-        sub_43E59A(winp->hWND);
+        setWIMP_wndInfo(v7);
     }
     return NC_STACK_iwimp::func2(stak);
 }
@@ -1554,38 +1548,36 @@ int NC_STACK_winp::idev_func68(winp_68arg *arg)
     return 0;
 }
 
-void NC_STACK_winp::idev_func69(int *arg)
+void NC_STACK_winp::idev_func69(int arg)
 {
-    printf("CHECK ARG TYPE %s\n","winp_func69");
-
     __NC_STACK_winp *winp = &stack__winp;
 
-    if ( *arg == 1 )
+    if ( arg == 1 )
         winp->field_c = 0;
 }
 
-void NC_STACK_winp::idev_func70(int *arg)
+void NC_STACK_winp::idev_func70(idev_query_arg *arg)
 {
     //printf("CHECK ARG TYPE %s\n","winp_func70");
 
     __NC_STACK_winp *winp = &stack__winp;
 
-    if ( *arg )
+    if ( arg->keycode )
     {
         for ( int i = 0; i < 48; i++ )
         {
-            if ( winp->field_10[i] == *arg )
+            if ( winp->field_10[i] == arg->keycode )
             {
-                arg[1] = i | 0x80;
+                arg->hotkey = i | 0x80;
                 break;
             }
         }
     }
-    else if (arg[1])
+    else if ( arg->hotkey )
     {
-        int tmp = arg[1] & 0x7F;
+        int tmp = arg->hotkey & 0x7F;
         if (tmp < 48)
-            *arg = winp->field_10[tmp];
+            arg->keycode = winp->field_10[tmp];
     }
 }
 
@@ -2399,6 +2391,25 @@ void NC_STACK_winp::initfirst()
     memset(&winp_mup_pos, 0, sizeof(shortPoint));
 }
 
+
+void NC_STACK_winp::setWIMP_wndInfo(gfx_window *wnd)
+{
+    __NC_STACK_winp *winp = &stack__winp;
+
+    if (wnd)
+    {
+        if ( winp->hWND )
+            sub_43E5CB(winp->hWND);
+
+        winp->hWND = wnd->hwnd;
+        winp_max_x = wnd->width;
+        winp_max_y = wnd->height;
+
+        sub_43E59A(winp->hWND);
+    }
+}
+
+
 size_t NC_STACK_winp::compatcall(int method_id, void *data)
 {
     switch( method_id )
@@ -2427,10 +2438,10 @@ size_t NC_STACK_winp::compatcall(int method_id, void *data)
     case 68:
         return (size_t)idev_func68( (winp_68arg *)data );
     case 69:
-        idev_func69( (int *)data );
+        idev_func69( (int)data );
         return 1;
     case 70:
-        idev_func70( (int *)data );
+        idev_func70( (idev_query_arg *)data );
         return 1;
     case 71:
         idev_func71( (winp_71arg *)data );

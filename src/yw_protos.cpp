@@ -3865,13 +3865,7 @@ int parseSaveInput(scrCallBack *arg)
                 zz.keyname = v39;
                 zz.id = v16;
 
-                input__func66__params v44;
-                v44.funcID = 68;
-                v44.field_4 = 0;
-                v44.field_0 = 3;
-                v44.vals = &zz;
-
-                if ( inpt->input_func66(&v44) )
+                if ( inpt->keyb_setHotkey(&zz) )
                 {
                     int v19 = sub_476074(3, v16);
                     if ( v19 == -1 )

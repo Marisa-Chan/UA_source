@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
-#include "classes.h"
 #include "yw.h"
 #include "ypaflyer.h"
 #include "log.h"
