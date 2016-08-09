@@ -220,19 +220,10 @@ size_t NC_STACK_ade::func5(MFILE **file)
 
                 if ( hdr.field_0 >= 1 )
                 {
-                    stack_vals stk[5];
-
-                    stk[0].id = ADE_ATT_DPTHFADE;
-                    stk[0].value = (hdr.field_3 & ADE_FLAG_DPTHFADE) != 0;
-                    stk[1].id = ADE_ATT_BKCHECK;
-                    stk[1].value = (hdr.field_3 & ADE_FLAG_BKCHECK) != 0;
-                    stk[2].id = ADE_ATT_POINT;
-                    stk[2].value = hdr.field_4;
-                    stk[3].id = ADE_ATT_POLY;
-                    stk[3].value = hdr.field_6;
-                    stk[4].id = 0;
-
-                    func2(stk);
+                    setADE_depthFade( (hdr.field_3 & ADE_FLAG_DPTHFADE) != 0 );
+                    setADE_bkCheck( (hdr.field_3 & ADE_FLAG_BKCHECK) != 0 );
+                    setADE_point( hdr.field_4 );
+                    setADE_poly( hdr.field_6 );
                 }
             }
             read_next_IFF(mfile, 2);
