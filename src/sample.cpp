@@ -29,11 +29,11 @@ size_t NC_STACK_sample::func3(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -44,16 +44,16 @@ size_t NC_STACK_sample::func3(stack_vals *stak)
                 break;
 
             case SMPL_ATT_PSAMPLE:
-                *(sampl **)stk->value = getSMPL_pSample();
+                *(sampl **)stk->value.p_data = getSMPL_pSample();
                 break;
             case SMPL_ATT_TYPE:
-                *(int *)stk->value = getSMPL_type();
+                *(int *)stk->value.p_data = getSMPL_type();
                 break;
             case SMPL_ATT_LEN:
-                *(int *)stk->value = getSMPL_len();
+                *(int *)stk->value.p_data = getSMPL_len();
                 break;
             case SMPL_ATT_BUFFER:
-                *(void **)stk->value = getSMPL_buffer();
+                *(void **)stk->value.p_data = getSMPL_buffer();
                 break;
             }
             stk++;

@@ -24,11 +24,11 @@ int NC_STACK_ypacar::ypacar_func0__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -39,16 +39,16 @@ int NC_STACK_ypacar::ypacar_func0__sub0(stack_vals *stak)
                 break;
 
             case BACT_ATT_WORLD:
-                stack__ypacar.ywo = (NC_STACK_ypaworld *)stk->value;
+                stack__ypacar.ywo = (NC_STACK_ypaworld *)stk->value.p_data;
                 stack__ypacar.yw = &stack__ypacar.ywo->stack__ypaworld;
                 break;
 
             case CAR_ATT_KAMIKAZE:
-                setCAR_kamikaze(stk->value);
+                setCAR_kamikaze(stk->value.i_data);
                 break;
 
             case CAR_ATT_BLAST:
-                setCAR_blast(stk->value);
+                setCAR_blast(stk->value.i_data);
                 break;
 
             }
@@ -95,11 +95,11 @@ void NC_STACK_ypacar::ypacar_func2__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -110,11 +110,11 @@ void NC_STACK_ypacar::ypacar_func2__sub0(stack_vals *stak)
                 break;
 
             case CAR_ATT_KAMIKAZE:
-                setCAR_kamikaze(stk->value);
+                setCAR_kamikaze(stk->value.i_data);
                 break;
 
             case CAR_ATT_BLAST:
-                setCAR_blast(stk->value);
+                setCAR_blast(stk->value.i_data);
                 break;
 
             }
@@ -140,11 +140,11 @@ void NC_STACK_ypacar::ypacar_func3__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -155,11 +155,11 @@ void NC_STACK_ypacar::ypacar_func3__sub0(stack_vals *stak)
                 break;
 
             case CAR_ATT_KAMIKAZE:
-                *(int *)stk->value = getCAR_kamikaze();
+                *(int *)stk->value.p_data = getCAR_kamikaze();
                 break;
 
             case CAR_ATT_BLAST:
-                *(int *)stk->value = getCAR_blast();
+                *(int *)stk->value.p_data = getCAR_blast();
                 break;
 
             }

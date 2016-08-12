@@ -55,11 +55,11 @@ void NC_STACK_yparobo::yparobo_func0__sub1(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -70,104 +70,104 @@ void NC_STACK_yparobo::yparobo_func0__sub1(stack_vals *stak)
                 break;
 
             case BACT_ATT_WORLD:
-                robo->wrld = (NC_STACK_ypaworld *)stk->value;
+                robo->wrld = (NC_STACK_ypaworld *)stk->value.p_data;
                 robo->wrld_yw = &robo->wrld->stack__ypaworld;
                 break;
 
             case BACT_ATT_INPUTTING:
-                setBACT_inputting(stk->value);
+                setBACT_inputting(stk->value.i_data);
                 break;
 
             case ROBO_ATT_EP_CONQUER:
-                setROBO_epConquer(stk->value);
+                setROBO_epConquer(stk->value.i_data);
                 break;
 
             case ROBO_ATT_EP_DEFENSE:
-                setROBO_epDefense(stk->value);
+                setROBO_epDefense(stk->value.i_data);
                 break;
 
             case ROBO_ATT_EP_RADAR:
-                setROBO_epRadar(stk->value);
+                setROBO_epRadar(stk->value.i_data);
                 break;
 
             case ROBO_ATT_EP_POWER:
-                setROBO_epPower(stk->value);
+                setROBO_epPower(stk->value.i_data);
                 break;
 
             case ROBO_ATT_EP_SAFETY:
-                setROBO_epSafety(stk->value);
+                setROBO_epSafety(stk->value.i_data);
                 break;
 
             case ROBO_ATT_BATT_VEHICLE:
-                setROBO_battVehicle(stk->value);
+                setROBO_battVehicle(stk->value.i_data);
                 break;
 
             case ROBO_ATT_BATT_BUILDING:
-                setROBO_battBuilding(stk->value);
+                setROBO_battBuilding(stk->value.i_data);
                 break;
 
             case ROBO_ATT_BATT_BEAM:
-                setROBO_battBeam(stk->value);
+                setROBO_battBeam(stk->value.i_data);
                 break;
 
             case ROBO_ATT_FILL_MODE:
-                setROBO_fillMode(stk->value);
+                setROBO_fillMode(stk->value.i_data);
                 break;
 
             case ROBO_ATT_WAIT_SWAY:
-                setROBO_waitSway( stk->value );
+                setROBO_waitSway( stk->value.i_data );
                 break;
 
             case ROBO_ATT_WAIT_ROTATE:
-                setROBO_waitRotate( stk->value );
+                setROBO_waitRotate( stk->value.i_data );
                 break;
 
             case ROBO_ATT_EP_CHANGEPLACE:
-                setROBO_epChangeplace(stk->value);
+                setROBO_epChangeplace(stk->value.i_data);
                 break;
 
             case ROBO_ATT_EP_RECONNOITRE:
-                setROBO_epReconnoitre(stk->value);
+                setROBO_epReconnoitre(stk->value.i_data);
                 break;
 
             case ROBO_ATT_EP_ROBO:
-                setROBO_epRobo(stk->value);
+                setROBO_epRobo(stk->value.i_data);
                 break;
 
             case ROBO_ATT_VIEWANGLE:
-                setROBO_viewAngle(stk->value);
+                setROBO_viewAngle(stk->value.i_data);
                 break;
 
             case ROBO_ATT_SAFDELAY:
-                setROBO_safDelay(stk->value);
+                setROBO_safDelay(stk->value.i_data);
                 break;
 
             case ROBO_ATT_POWDELAY:
-                setROBO_powDelay(stk->value);
+                setROBO_powDelay(stk->value.i_data);
                 break;
 
             case ROBO_ATT_RADDELAY:
-                setROBO_radDelay(stk->value);
+                setROBO_radDelay(stk->value.i_data);
                 break;
 
             case ROBO_ATT_CPLDELAY:
-                setROBO_cplDelay(stk->value);
+                setROBO_cplDelay(stk->value.i_data);
                 break;
 
             case ROBO_ATT_DEFDELAY:
-                setROBO_defDelay(stk->value);
+                setROBO_defDelay(stk->value.i_data);
                 break;
 
             case ROBO_ATT_CONDELAY:
-                setROBO_conDelay(stk->value);
+                setROBO_conDelay(stk->value.i_data);
                 break;
 
             case ROBO_ATT_ROBDELAY:
-                setROBO_robDelay(stk->value);
+                setROBO_robDelay(stk->value.i_data);
                 break;
 
             case ROBO_ATT_RECDELAY:
-                setROBO_recDelay(stk->value);
+                setROBO_recDelay(stk->value.i_data);
                 break;
             }
 
@@ -228,11 +228,11 @@ void  NC_STACK_yparobo::yparobo_func2__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -243,107 +243,107 @@ void  NC_STACK_yparobo::yparobo_func2__sub0(stack_vals *stak)
                 break;
 
             case BACT_ATT_INPUTTING:
-                setBACT_inputting(stk->value);
+                setBACT_inputting(stk->value.i_data);
                 break;
 
             case ROBO_ATT_PROTO:
-                setROBO_proto((roboProto *)stk->value);
+                setROBO_proto((roboProto *)stk->value.p_data);
                 break;
 
             case ROBO_ATT_EP_CONQUER:
-                setROBO_epConquer(stk->value);
+                setROBO_epConquer(stk->value.i_data);
                 break;
 
             case ROBO_ATT_EP_DEFENSE:
-                setROBO_epDefense(stk->value);
+                setROBO_epDefense(stk->value.i_data);
                 break;
 
             case ROBO_ATT_EP_RADAR:
-                setROBO_epRadar(stk->value);
+                setROBO_epRadar(stk->value.i_data);
                 break;
 
             case ROBO_ATT_EP_POWER:
-                setROBO_epPower(stk->value);
+                setROBO_epPower(stk->value.i_data);
                 break;
 
             case ROBO_ATT_EP_SAFETY:
-                setROBO_epSafety(stk->value);
+                setROBO_epSafety(stk->value.i_data);
                 break;
 
             case ROBO_ATT_COMM_COUNT:
-                setROBO_commCount(stk->value);
+                setROBO_commCount(stk->value.i_data);
                 break;
 
             case ROBO_ATT_BATT_VEHICLE:
-                setROBO_battVehicle(stk->value);
+                setROBO_battVehicle(stk->value.i_data);
                 break;
 
             case ROBO_ATT_BATT_BUILDING:
-                setROBO_battBuilding(stk->value);
+                setROBO_battBuilding(stk->value.i_data);
                 break;
 
             case ROBO_ATT_BATT_BEAM:
-                setROBO_battBeam(stk->value);
+                setROBO_battBeam(stk->value.i_data);
                 break;
 
             case ROBO_ATT_FILL_MODE:
-                setROBO_fillMode(stk->value);
+                setROBO_fillMode(stk->value.i_data);
                 break;
 
             case ROBO_ATT_WAIT_SWAY:
-                setROBO_waitSway( stk->value );
+                setROBO_waitSway( stk->value.i_data );
                 break;
 
             case ROBO_ATT_WAIT_ROTATE:
-                setROBO_waitRotate( stk->value );
+                setROBO_waitRotate( stk->value.i_data );
                 break;
 
             case ROBO_ATT_EP_CHANGEPLACE:
-                setROBO_epChangeplace(stk->value);
+                setROBO_epChangeplace(stk->value.i_data);
                 break;
 
             case ROBO_ATT_EP_RECONNOITRE:
-                setROBO_epReconnoitre(stk->value);
+                setROBO_epReconnoitre(stk->value.i_data);
                 break;
 
             case ROBO_ATT_EP_ROBO:
-                setROBO_epRobo(stk->value);
+                setROBO_epRobo(stk->value.i_data);
                 break;
 
             case ROBO_ATT_VIEWANGLE:
-                setROBO_viewAngle(stk->value);
+                setROBO_viewAngle(stk->value.i_data);
                 break;
 
             case ROBO_ATT_SAFDELAY:
-                setROBO_safDelay(stk->value);
+                setROBO_safDelay(stk->value.i_data);
                 break;
 
             case ROBO_ATT_POWDELAY:
-                setROBO_powDelay(stk->value);
+                setROBO_powDelay(stk->value.i_data);
                 break;
 
             case ROBO_ATT_RADDELAY:
-                setROBO_radDelay(stk->value);
+                setROBO_radDelay(stk->value.i_data);
                 break;
 
             case ROBO_ATT_CPLDELAY:
-                setROBO_cplDelay(stk->value);
+                setROBO_cplDelay(stk->value.i_data);
                 break;
 
             case ROBO_ATT_DEFDELAY:
-                setROBO_defDelay(stk->value);
+                setROBO_defDelay(stk->value.i_data);
                 break;
 
             case ROBO_ATT_CONDELAY:
-                setROBO_conDelay(stk->value);
+                setROBO_conDelay(stk->value.i_data);
                 break;
 
             case ROBO_ATT_ROBDELAY:
-                setROBO_robDelay(stk->value);
+                setROBO_robDelay(stk->value.i_data);
                 break;
 
             case ROBO_ATT_RECDELAY:
-                setROBO_recDelay(stk->value);
+                setROBO_recDelay(stk->value.i_data);
                 break;
             }
 
@@ -369,11 +369,11 @@ void NC_STACK_yparobo::yparobo_func3__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -381,111 +381,111 @@ void NC_STACK_yparobo::yparobo_func3__sub0(stack_vals *stak)
             switch ( stk->id )
             {
             case BACT_ATT_COLLNODES:
-                *(rbcolls **)stk->value = getBACT_collNodes();
+                *(rbcolls **)stk->value.p_data = getBACT_collNodes();
                 break;
 
             case ROBO_ATT_EP_CONQUER:
-                *(int *)stk->value = getROBO_epConquer();
+                *(int *)stk->value.p_data = getROBO_epConquer();
                 break;
 
             case ROBO_ATT_EP_DEFENSE:
-                *(int *)stk->value = getROBO_epDefense();
+                *(int *)stk->value.p_data = getROBO_epDefense();
                 break;
 
             case ROBO_ATT_EP_RADAR:
-                *(int *)stk->value = getROBO_epRadar();
+                *(int *)stk->value.p_data = getROBO_epRadar();
                 break;
 
             case ROBO_ATT_EP_POWER:
-                *(int *)stk->value = getROBO_epPower();
+                *(int *)stk->value.p_data = getROBO_epPower();
                 break;
 
             case ROBO_ATT_EP_SAFETY:
-                *(int *)stk->value = getROBO_epSafety();
+                *(int *)stk->value.p_data = getROBO_epSafety();
                 break;
 
             case ROBO_ATT_COMM_COUNT:
-                *(int *)stk->value = getROBO_commCount();
+                *(int *)stk->value.p_data = getROBO_commCount();
                 break;
 
             case ROBO_ATT_BATT_VEHICLE:
-                *(int *)stk->value = getROBO_battVehicle();
+                *(int *)stk->value.p_data = getROBO_battVehicle();
                 break;
 
             case ROBO_ATT_BATT_BUILDING:
-                *(int *)stk->value = getROBO_battBuilding();
+                *(int *)stk->value.p_data = getROBO_battBuilding();
                 break;
 
             case ROBO_ATT_BATT_BEAM:
-                *(int *)stk->value = getROBO_battBeam();
+                *(int *)stk->value.p_data = getROBO_battBeam();
                 break;
 
             case ROBO_ATT_FILL_MODE:
-                *(int *)stk->value = getROBO_fillMode();
+                *(int *)stk->value.p_data = getROBO_fillMode();
                 break;
 
             case ROBO_ATT_GUNS:
-                *(roboGun **)stk->value = getROBO_guns();
+                *(roboGun **)stk->value.p_data = getROBO_guns();
                 break;
 
             case ROBO_ATT_EP_CHANGEPLACE:
-                *(int *)stk->value = getROBO_epChangeplace();
+                *(int *)stk->value.p_data = getROBO_epChangeplace();
                 break;
 
             case ROBO_ATT_EP_RECONNOITRE:
-                *(int *)stk->value = getROBO_epReconnoitre();
+                *(int *)stk->value.p_data = getROBO_epReconnoitre();
                 break;
 
             case ROBO_ATT_EP_ROBO:
-                *(int *)stk->value = getROBO_epRobo();
+                *(int *)stk->value.p_data = getROBO_epRobo();
                 break;
 
             case ROBO_ATT_ROBOSTATE:
-                *(int *)stk->value = getROBO_roboState();
+                *(int *)stk->value.p_data = getROBO_roboState();
                 break;
 
             case ROBO_ATT_SAFDELAY:
-                *(int *)stk->value = getROBO_safDelay();
+                *(int *)stk->value.p_data = getROBO_safDelay();
                 break;
 
             case ROBO_ATT_POWDELAY:
-                *(int *)stk->value = getROBO_powDelay();
+                *(int *)stk->value.p_data = getROBO_powDelay();
                 break;
 
             case ROBO_ATT_RADDELAY:
-                *(int *)stk->value = getROBO_radDelay();
+                *(int *)stk->value.p_data = getROBO_radDelay();
                 break;
 
             case ROBO_ATT_CPLDELAY:
-                *(int *)stk->value = getROBO_cplDelay();
+                *(int *)stk->value.p_data = getROBO_cplDelay();
                 break;
 
             case ROBO_ATT_DEFDELAY:
-                *(int *)stk->value = getROBO_defDelay();
+                *(int *)stk->value.p_data = getROBO_defDelay();
                 break;
 
             case ROBO_ATT_CONDELAY:
-                *(int *)stk->value = getROBO_conDelay();
+                *(int *)stk->value.p_data = getROBO_conDelay();
                 break;
 
             case ROBO_ATT_ROBDELAY:
-                *(int *)stk->value = getROBO_robDelay();
+                *(int *)stk->value.p_data = getROBO_robDelay();
                 break;
 
             case ROBO_ATT_RECDELAY:
-                *(int *)stk->value = getROBO_recDelay();
+                *(int *)stk->value.p_data = getROBO_recDelay();
                 break;
 
             case ROBO_ATT_LOADFLAGS:
-                *(int *)stk->value = getROBO_loadFlags();
+                *(int *)stk->value.p_data = getROBO_loadFlags();
                 break;
 
             case ROBO_ATT_LOSSFLAGS:
-                *(int *)stk->value = getROBO_lossFlags();
+                *(int *)stk->value.p_data = getROBO_lossFlags();
                 break;
 
             case ROBO_ATT_ABSRELOAD:
-                *(int *)stk->value = getROBO_absReload();
+                *(int *)stk->value.p_data = getROBO_absReload();
                 break;
             }
 

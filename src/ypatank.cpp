@@ -24,11 +24,11 @@ int NC_STACK_ypatank::ypatank_func0__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -39,12 +39,12 @@ int NC_STACK_ypatank::ypatank_func0__sub0(stack_vals *stak)
                 break;
 
             case BACT_ATT_WORLD:
-                stack__ypatank.ywo = (NC_STACK_ypaworld *)stk->value;
+                stack__ypatank.ywo = (NC_STACK_ypaworld *)stk->value.p_data;
                 stack__ypatank.yw = &stack__ypatank.ywo->stack__ypaworld;
                 break;
 
             case TANK_ATT_TIP:
-                setTANK_tip( stk->value );
+                setTANK_tip( stk->value.i_data );
                 break;
 
             }
@@ -91,11 +91,11 @@ void NC_STACK_ypatank::ypatank_func2__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -106,7 +106,7 @@ void NC_STACK_ypatank::ypatank_func2__sub0(stack_vals *stak)
                 break;
 
             case TANK_ATT_TIP:
-                setTANK_tip( stk->value );
+                setTANK_tip( stk->value.i_data );
                 break;
 
             }
@@ -132,11 +132,11 @@ void NC_STACK_ypatank::ypatank_func3__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -147,7 +147,7 @@ void NC_STACK_ypatank::ypatank_func3__sub0(stack_vals *stak)
                 break;
 
             case TANK_ATT_TIP:
-                *(int *)stk->value = getTANK_tip();
+                *(int *)stk->value.p_data = getTANK_tip();
                 break;
 
             }

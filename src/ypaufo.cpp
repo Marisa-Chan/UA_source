@@ -24,11 +24,11 @@ int NC_STACK_ypaufo::ypaufo_func0__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -39,16 +39,16 @@ int NC_STACK_ypaufo::ypaufo_func0__sub0(stack_vals *stak)
                 break;
 
             case BACT_ATT_WORLD:
-                stack__ypaufo.ywo = (NC_STACK_ypaworld *)stk->value;
+                stack__ypaufo.ywo = (NC_STACK_ypaworld *)stk->value.p_data;
                 stack__ypaufo.yw = &stack__ypaufo.ywo->stack__ypaworld;
                 break;
 
             case BACT_ATT_INPUTTING:
-                setBACT_inputting(stk->value);
+                setBACT_inputting(stk->value.i_data);
                 break;
 
             case UFO_ATT_TOGO:
-                setUFO_togo(stk->value);
+                setUFO_togo(stk->value.i_data);
                 break;
 
             }
@@ -95,11 +95,11 @@ int NC_STACK_ypaufo::ypaufo_func2__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -110,11 +110,11 @@ int NC_STACK_ypaufo::ypaufo_func2__sub0(stack_vals *stak)
                 break;
 
             case BACT_ATT_INPUTTING:
-                setBACT_inputting(stk->value);
+                setBACT_inputting(stk->value.i_data);
                 break;
 
             case UFO_ATT_TOGO:
-                setUFO_togo(stk->value);
+                setUFO_togo(stk->value.i_data);
                 break;
             }
             stk++;
@@ -143,11 +143,11 @@ void NC_STACK_ypaufo::ypaufo_func3__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -158,7 +158,7 @@ void NC_STACK_ypaufo::ypaufo_func3__sub0(stack_vals *stak)
                 break;
 
             case UFO_ATT_TOGO:
-                *(int *)stk->value = getUFO_togo();
+                *(int *)stk->value.p_data = getUFO_togo();
                 break;
 
             }

@@ -2251,7 +2251,11 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
 
     set_prefix_replacement("rsrc", "data:");
 
-    usr->field_ADA = (NC_STACK_wav *)init_get_class("wav.class", 0x80001000, a1a, 0);
+    stack_vals init_vals[2];
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, a1a);
+    init_vals[1].end();
+
+    usr->field_ADA = (NC_STACK_wav *)init_get_class("wav.class", init_vals);
     if ( usr->field_ADA )
     {
         sub_423DB0(&usr->field_782);

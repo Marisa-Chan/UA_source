@@ -577,7 +577,13 @@ void yw_write_map(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *bitmap, const char *p
 
 void yw_write_ownermap(_NC_STACK_ypaworld *yw, FILE *fil)
 {
-    NC_STACK_bitmap *bitmap = (NC_STACK_bitmap *)init_get_class("bitmap.class", 0x80001000, "temp_owner_map", 0x80002002, yw->sectors_maxX2, 0x80002003, yw->sectors_maxY2, 0);
+    stack_vals init_vals[4];
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "temp_owner_map");
+    init_vals[1].set(NC_STACK_bitmap::BMD_ATT_WIDTH, yw->sectors_maxX2);
+    init_vals[2].set(NC_STACK_bitmap::BMD_ATT_HEIGHT, yw->sectors_maxY2);
+    init_vals[3].end();
+
+    NC_STACK_bitmap *bitmap = (NC_STACK_bitmap *)init_get_class("bitmap.class", init_vals);
 
     if ( bitmap )
     {
@@ -606,7 +612,13 @@ void yw_write_buildmap(_NC_STACK_ypaworld *yw, FILE *fil)
 
 void yw_write_energymap(_NC_STACK_ypaworld *yw, FILE *fil)
 {
-    NC_STACK_bitmap *bitmap = (NC_STACK_bitmap *)init_get_class("bitmap.class", 0x80001000, "ActualEnergyMap", 0x80002002, 3 * yw->sectors_maxX2, 0x80002003, 3 * yw->sectors_maxY2, 0);
+    stack_vals init_vals[4];
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "ActualEnergyMap");
+    init_vals[1].set(NC_STACK_bitmap::BMD_ATT_WIDTH, 3 * yw->sectors_maxX2);
+    init_vals[2].set(NC_STACK_bitmap::BMD_ATT_HEIGHT, 3 * yw->sectors_maxY2);
+    init_vals[3].end();
+
+    NC_STACK_bitmap *bitmap = (NC_STACK_bitmap *)init_get_class("bitmap.class", init_vals);
 
     if ( bitmap )
     {

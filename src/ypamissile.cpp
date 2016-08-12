@@ -30,11 +30,11 @@ int NC_STACK_ypamissile::ypamissile_func0__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -45,36 +45,36 @@ int NC_STACK_ypamissile::ypamissile_func0__sub0(stack_vals *stak)
                 break;
 
             case BACT_ATT_WORLD:
-                miss->ywo = (NC_STACK_ypaworld *)stk->value;
+                miss->ywo = (NC_STACK_ypaworld *)stk->value.p_data;
                 miss->yw = &miss->ywo->stack__ypaworld;
                 break;
 
             case BACT_ATT_VIEWER:
-                setBACT_viewer(stk->value);
+                setBACT_viewer(stk->value.i_data);
                 break;
 
             case MISS_ATT_LAUNCHER:
-                setMISS_launcher((__NC_STACK_ypabact *)stk->value);
+                setMISS_launcher((__NC_STACK_ypabact *)stk->value.p_data);
                 break;
 
             case MISS_ATT_TYPE:
-                setMISS_type(stk->value);
+                setMISS_type(stk->value.i_data);
                 break;
 
             case MISS_ATT_LIFETIME:
-                setMISS_lifeTime(stk->value);
+                setMISS_lifeTime(stk->value.i_data);
                 break;
 
             case MISS_ATT_DELAY:
-                setMISS_delay(stk->value);
+                setMISS_delay(stk->value.i_data);
                 break;
 
             case MISS_ATT_DRIVETIME:
-                setMISS_driveTime(stk->value);
+                setMISS_driveTime(stk->value.i_data);
                 break;
 
             case MISS_ATT_IGNOREBUILDS:
-                setMISS_ignoreBuilds ( stk->value );
+                setMISS_ignoreBuilds ( stk->value.i_data );
                 break;
 
             }
@@ -127,11 +127,11 @@ void NC_STACK_ypamissile::ypamissile_func2__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -142,67 +142,67 @@ void NC_STACK_ypamissile::ypamissile_func2__sub0(stack_vals *stak)
                 break;
 
             case BACT_ATT_VIEWER:
-                setBACT_viewer(stk->value);
+                setBACT_viewer(stk->value.i_data);
                 break;
 
             case MISS_ATT_LAUNCHER:
-                setMISS_launcher((__NC_STACK_ypabact *)stk->value);
+                setMISS_launcher((__NC_STACK_ypabact *)stk->value.p_data);
                 break;
 
             case MISS_ATT_TYPE:
-                setMISS_type(stk->value);
+                setMISS_type(stk->value.i_data);
                 break;
 
             case MISS_ATT_LIFETIME:
-                setMISS_lifeTime(stk->value);
+                setMISS_lifeTime(stk->value.i_data);
                 break;
 
             case MISS_ATT_DELAY:
-                setMISS_delay(stk->value);
+                setMISS_delay(stk->value.i_data);
                 break;
 
             case MISS_ATT_DRIVETIME:
-                setMISS_driveTime(stk->value);
+                setMISS_driveTime(stk->value.i_data);
                 break;
 
             case MISS_ATT_IGNOREBUILDS:
-                setMISS_ignoreBuilds ( stk->value );
+                setMISS_ignoreBuilds ( stk->value.i_data );
                 break;
 
             case MISS_ATT_POW_HELI:
-                setMISS_powHeli(stk->value);
+                setMISS_powHeli(stk->value.i_data);
                 break;
 
             case MISS_ATT_POW_TANK:
-                setMISS_powTank(stk->value);
+                setMISS_powTank(stk->value.i_data);
                 break;
 
             case MISS_ATT_POW_FLYER:
-                setMISS_powFlyer(stk->value);
+                setMISS_powFlyer(stk->value.i_data);
                 break;
 
             case MISS_ATT_POW_ROBO:
-                setMISS_powRobo(stk->value);
+                setMISS_powRobo(stk->value.i_data);
                 break;
 
             case MISS_ATT_RAD_HELI:
-                setMISS_radHeli(stk->value);
+                setMISS_radHeli(stk->value.i_data);
                 break;
 
             case MISS_ATT_RAD_TANK:
-                setMISS_radTank(stk->value);
+                setMISS_radTank(stk->value.i_data);
                 break;
 
             case MISS_ATT_RAD_FLYER:
-                setMISS_radFlyer(stk->value);
+                setMISS_radFlyer(stk->value.i_data);
                 break;
 
             case MISS_ATT_RAD_ROBO:
-                setMISS_radRobo(stk->value);
+                setMISS_radRobo(stk->value.i_data);
                 break;
 
             case MISS_ATT_STHEIGHT:
-                setMISS_startHeight(stk->value);
+                setMISS_startHeight(stk->value.i_data);
                 break;
 
             }
@@ -229,11 +229,11 @@ void NC_STACK_ypamissile::ypamissile_func3__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -244,67 +244,67 @@ void NC_STACK_ypamissile::ypamissile_func3__sub0(stack_vals *stak)
                 break;
 
             case MISS_ATT_LAUNCHER:
-                *(__NC_STACK_ypabact **)stk->value = getMISS_launcher();
+                *(__NC_STACK_ypabact **)stk->value.p_data = getMISS_launcher();
                 break;
 
             case MISS_ATT_TYPE:
-                *(int *)stk->value = getMISS_type();
+                *(int *)stk->value.p_data = getMISS_type();
                 break;
 
             case MISS_ATT_PNODE:
-                *(bact_node **)stk->value = getMISS_pNode();
+                *(bact_node **)stk->value.p_data = getMISS_pNode();
                 break;
 
             case MISS_ATT_LIFETIME:
-                *(int *)stk->value = getMISS_lifeTime();
+                *(int *)stk->value.p_data = getMISS_lifeTime();
                 break;
 
             case MISS_ATT_DELAY:
-                *(int *)stk->value = getMISS_delay();
+                *(int *)stk->value.p_data = getMISS_delay();
                 break;
 
             case MISS_ATT_DRIVETIME:
-                *(int *)stk->value = getMISS_driveTime();
+                *(int *)stk->value.p_data = getMISS_driveTime();
                 break;
 
             case MISS_ATT_IGNOREBUILDS:
-                *(int *)stk->value = getMISS_ignoreBuilds();
+                *(int *)stk->value.p_data = getMISS_ignoreBuilds();
                 break;
 
             case MISS_ATT_POW_HELI:
-                *(int *)stk->value = getMISS_powHeli();
+                *(int *)stk->value.p_data = getMISS_powHeli();
                 break;
 
             case MISS_ATT_POW_TANK:
-                *(int *)stk->value = getMISS_powTank();
+                *(int *)stk->value.p_data = getMISS_powTank();
                 break;
 
             case MISS_ATT_POW_FLYER:
-                *(int *)stk->value = getMISS_powFlyer();
+                *(int *)stk->value.p_data = getMISS_powFlyer();
                 break;
 
             case MISS_ATT_POW_ROBO:
-                *(int *)stk->value = getMISS_powRobo();
+                *(int *)stk->value.p_data = getMISS_powRobo();
                 break;
 
             case MISS_ATT_RAD_HELI:
-                *(int *)stk->value = getMISS_radHeli();
+                *(int *)stk->value.p_data = getMISS_radHeli();
                 break;
 
             case MISS_ATT_RAD_TANK:
-                *(int *)stk->value = getMISS_radTank();
+                *(int *)stk->value.p_data = getMISS_radTank();
                 break;
 
             case MISS_ATT_RAD_FLYER:
-                *(int *)stk->value = getMISS_radFlyer();
+                *(int *)stk->value.p_data = getMISS_radFlyer();
                 break;
 
             case MISS_ATT_RAD_ROBO:
-                *(int *)stk->value = getMISS_radRobo();
+                *(int *)stk->value.p_data = getMISS_radRobo();
                 break;
 
             case MISS_ATT_STHEIGHT:
-                *(int *)stk->value = getMISS_startHeight();
+                *(int *)stk->value.p_data = getMISS_startHeight();
                 break;
 
             }

@@ -104,11 +104,14 @@ size_t NC_STACK_embed::func5(MFILE **file)
             mfread(mfile, classname, 255);
             read_next_IFF(mfile, 2);
 
-            NC_STACK_rsrc *embd_class = dynamic_cast<NC_STACK_rsrc *>( init_get_class(classname,
-                                        0x80001000, &classname[strlen(classname) + 1],
-                                        0x80001001, 1,
-                                        0x80001005, mfile,
-                                        0) );
+            stack_vals init_atts[4];
+            init_atts[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, &classname[strlen(classname) + 1]);
+            init_atts[1].set(NC_STACK_rsrc::RSRC_ATT_TRYSHARED, 1);
+            init_atts[2].set(NC_STACK_rsrc::RSRC_ATT_PIFFFILE, mfile);
+            init_atts[3].end();
+
+
+            NC_STACK_rsrc *embd_class = dynamic_cast<NC_STACK_rsrc *>( init_get_class(classname, init_atts) );
 
             if ( embd_class && !sub_41C418(&embd->embed_objects, embd_class) )
             {

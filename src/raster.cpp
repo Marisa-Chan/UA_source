@@ -51,11 +51,11 @@ size_t NC_STACK_raster::func2(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -63,23 +63,23 @@ size_t NC_STACK_raster::func2(stack_vals *stak)
             switch(stk->id)
             {
             case RSTR_ATT_FGPEN:
-                setRSTR_FGpen(stk->value);
+                setRSTR_FGpen(stk->value.u_data);
                 break;
 
             case RSTR_ATT_BGPEN:
-                setRSTR_BGpen(stk->value);
+                setRSTR_BGpen(stk->value.u_data);
                 break;
 
             case RSTR_ATT_SHADE_RMP:
-                setRSTR_shdRmp((bitmap_intern *)stk->value);
+                setRSTR_shdRmp((bitmap_intern *)stk->value.p_data);
                 break;
 
             case RSTR_ATT_TRACY_RMP:
-                setRSTR_trcRmp((bitmap_intern *)stk->value);
+                setRSTR_trcRmp((bitmap_intern *)stk->value.p_data);
                 break;
 
             case RSTR_ATT_FGAPEN:
-                setRSTR_FGApen(stk->value);
+                setRSTR_FGApen(stk->value.i_data);
                 break;
 
             default:
@@ -105,11 +105,11 @@ size_t NC_STACK_raster::func3(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else

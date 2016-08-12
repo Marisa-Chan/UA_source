@@ -33,11 +33,11 @@ int NC_STACK_area::area_func0__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -48,47 +48,47 @@ int NC_STACK_area::area_func0__sub0(stack_vals *stak)
                 break;
 
             case ADE_ATT_DPTHFADE:
-                setADE_depthFade ( stk->value );
+                setADE_depthFade ( stk->value.i_data );
                 break;
             case ADE_ATT_POLY:
-                setADE_bkCheck( stk->value );
+                setADE_bkCheck( stk->value.i_data );
                 break;
             case AREA_ATT_TEXBITM:
-                setAREA_bitm ( (NC_STACK_bitmap *)stk->value );
+                setAREA_bitm ( (NC_STACK_bitmap *)stk->value.p_data );
                 break;
             case AREA_ATT_COLORVAL:
-                setAREA_colorVal( stk->value );
+                setAREA_colorVal( stk->value.i_data );
                 break;
             case AREA_ATT_MAP:
-                setAREA_map( stk->value );
+                setAREA_map( stk->value.i_data );
                 break;
 
             case AREA_ATT_TEX:
-                setAREA_tex( stk->value );
+                setAREA_tex( stk->value.i_data );
                 break;
 
             case AREA_ATT_SHADE:
-                setAREA_shade ( stk->value );
+                setAREA_shade ( stk->value.i_data );
                 break;
 
             case AREA_ATT_TRACY:
-                setAREA_tracy ( stk->value );
+                setAREA_tracy ( stk->value.i_data );
                 break;
 
             case AREA_ATT_TRACYMODE:
-                setAREA_tracymode( stk->value );
+                setAREA_tracymode( stk->value.i_data );
                 break;
 
             case AREA_ATT_TRACYBITM:
-                setAREA_tracybitm ( (NC_STACK_bitmap *)stk->value );
+                setAREA_tracybitm ( (NC_STACK_bitmap *)stk->value.p_data );
                 break;
 
             case AREA_ATT_SHADEVAL:
-                setAREA_shadeVal ( stk->value );
+                setAREA_shadeVal ( stk->value.i_data );
                 break;
 
             case AREA_ATT_TRACYVAL:
-                setAREA_tracyVal ( stk->value );
+                setAREA_tracyVal ( stk->value.i_data );
                 break;
             }
             stk++;
@@ -135,11 +135,11 @@ void NC_STACK_area::area_func2__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -150,53 +150,53 @@ void NC_STACK_area::area_func2__sub0(stack_vals *stak)
                 break;
 
             case ADE_ATT_DPTHFADE:
-                setADE_depthFade ( stk->value );
+                setADE_depthFade ( stk->value.i_data );
                 break;
             case ADE_ATT_POLY:
-                setADE_bkCheck( stk->value );
+                setADE_bkCheck( stk->value.i_data );
                 break;
             case AREA_ATT_TEXBITM:
-                setAREA_bitm ( (NC_STACK_bitmap *)stk->value );
+                setAREA_bitm ( (NC_STACK_bitmap *)stk->value.p_data );
                 break;
             case AREA_ATT_COLORVAL:
-                stack__area.field_c = stk->value;
+                setAREA_colorVal( stk->value.i_data );
                 break;
             case AREA_ATT_MAP:
-                setAREA_map( stk->value );
+                setAREA_map( stk->value.i_data );
                 break;
 
             case AREA_ATT_TEX:
-                setAREA_tex( stk->value );
+                setAREA_tex( stk->value.i_data );
                 break;
 
             case AREA_ATT_SHADE:
-                setAREA_shade ( stk->value );
+                setAREA_shade ( stk->value.i_data );
                 break;
 
             case AREA_ATT_TRACY:
-                setAREA_tracy ( stk->value );
+                setAREA_tracy ( stk->value.i_data );
                 break;
 
             case AREA_ATT_TRACYMODE:
-                setAREA_tracymode( stk->value );
+                setAREA_tracymode( stk->value.i_data );
                 break;
 
             case AREA_ATT_TRACYBITM:
-                setAREA_tracybitm ( (NC_STACK_bitmap *)stk->value );
+                setAREA_tracybitm ( (NC_STACK_bitmap *)stk->value.p_data );
                 break;
 
             case AREA_ATT_SHADEVAL:
-                setAREA_shadeVal ( stk->value );
+                setAREA_shadeVal ( stk->value.i_data );
                 break;
 
             case AREA_ATT_TRACYVAL:
-                setAREA_tracyVal ( stk->value );
+                setAREA_tracyVal ( stk->value.i_data );
                 break;
             case AREA_ATT_BLOB1:
-                setAREA_blob1( stk->value );
+                setAREA_blob1( stk->value.i_data );
                 break;
             case AREA_ATT_BLOB2:
-                setAREA_blob2( stk->value );
+                setAREA_blob2( stk->value.i_data );
                 break;
             }
             stk++;
@@ -221,11 +221,11 @@ void NC_STACK_area::area_func3__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -236,43 +236,43 @@ void NC_STACK_area::area_func3__sub0(stack_vals *stak)
                 break;
 
             case AREA_ATT_TEXBITM:
-                *(NC_STACK_bitmap **)stk->value = getAREA_bitm();
+                *(NC_STACK_bitmap **)stk->value.p_data = getAREA_bitm();
                 break;
 
             case AREA_ATT_COLORVAL:
-                *(int *)stk->value = getAREA_colorVal();
+                *(int *)stk->value.p_data = getAREA_colorVal();
                 break;
 
             case AREA_ATT_MAP:
-                *(int *)stk->value = getAREA_map();
+                *(int *)stk->value.p_data = getAREA_map();
                 break;
 
             case AREA_ATT_TEX:
-                *(int *)stk->value = getAREA_tex();
+                *(int *)stk->value.p_data = getAREA_tex();
                 break;
 
             case AREA_ATT_SHADE:
-                *(int *)stk->value = getAREA_shade();
+                *(int *)stk->value.p_data = getAREA_shade();
                 break;
 
             case AREA_ATT_TRACY:
-                *(int *)stk->value = getAREA_tracy();
+                *(int *)stk->value.p_data = getAREA_tracy();
                 break;
 
             case AREA_ATT_TRACYMODE:
-                *(int *)stk->value = getAREA_tracymode();
+                *(int *)stk->value.p_data = getAREA_tracymode();
                 break;
 
             case AREA_ATT_TRACYBITM:
-                *(NC_STACK_bitmap **)stk->value = getAREA_tracybitm();
+                *(NC_STACK_bitmap **)stk->value.p_data = getAREA_tracybitm();
                 break;
 
             case AREA_ATT_SHADEVAL:
-                *(int *)stk->value = getAREA_shadeVal();
+                *(int *)stk->value.p_data = getAREA_shadeVal();
                 break;
 
             case AREA_ATT_TRACYVAL:
-                *(int *)stk->value = getAREA_tracyVal();
+                *(int *)stk->value.p_data = getAREA_tracyVal();
                 break;
 
 //            case AREA_ATT_PolInfo:

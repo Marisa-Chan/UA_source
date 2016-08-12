@@ -30,11 +30,11 @@ int NC_STACK_button::button_func0__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -45,19 +45,19 @@ int NC_STACK_button::button_func0__sub0(stack_vals *stak)
                 break;
 
             case BTN_ATT_X:
-                setBTN_x(stk->value);
+                setBTN_x(stk->value.i_data);
                 break;
             case BTN_ATT_Y:
-                setBTN_y(stk->value);
+                setBTN_y(stk->value.i_data);
                 break;
             case BTN_ATT_W:
-                setBTN_w(stk->value);
+                setBTN_w(stk->value.i_data);
                 break;
             case BTN_ATT_H:
-                setBTN_h(stk->value);
+                setBTN_h(stk->value.i_data);
                 break;
             case BTN_ATT_CHARS:
-                setBTN_chars((const char *)stk->value);
+                setBTN_chars((const char *)stk->value.p_data);
                 break;
             }
             stk++;
@@ -126,11 +126,11 @@ int NC_STACK_button::button_func2__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -141,19 +141,19 @@ int NC_STACK_button::button_func2__sub0(stack_vals *stak)
                 break;
 
             case BTN_ATT_X:
-                setBTN_x(stk->value);
+                setBTN_x(stk->value.i_data);
                 break;
             case BTN_ATT_Y:
-                setBTN_y(stk->value);
+                setBTN_y(stk->value.i_data);
                 break;
             case BTN_ATT_W:
-                setBTN_w(stk->value);
+                setBTN_w(stk->value.i_data);
                 break;
             case BTN_ATT_H:
-                setBTN_h(stk->value);
+                setBTN_h(stk->value.i_data);
                 break;
             case BTN_ATT_CHARS:
-                setBTN_chars((const char *)stk->value);
+                setBTN_chars((const char *)stk->value.p_data);
                 break;
             }
             stk++;
@@ -182,11 +182,11 @@ int NC_STACK_button::button_func3__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -197,19 +197,19 @@ int NC_STACK_button::button_func3__sub0(stack_vals *stak)
                 break;
 
             case BTN_ATT_X:
-                *(int *)stk->value = getBTN_x();
+                *(int *)stk->value.p_data = getBTN_x();
                 break;
             case BTN_ATT_Y:
-                *(int *)stk->value = getBTN_y();
+                *(int *)stk->value.p_data = getBTN_y();
                 break;
             case BTN_ATT_W:
-                *(int *)stk->value = getBTN_w();
+                *(int *)stk->value.p_data = getBTN_w();
                 break;
             case BTN_ATT_H:
-                *(int *)stk->value = getBTN_h();
+                *(int *)stk->value.p_data = getBTN_h();
                 break;
             case BTN_ATT_PBTN:
-                *(__NC_STACK_button **)stk->value = getBTN_pButton();
+                *(__NC_STACK_button **)stk->value.p_data = getBTN_pButton();
                 break;
             }
             stk++;

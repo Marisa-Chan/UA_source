@@ -1238,7 +1238,7 @@ size_t NC_STACK_winp::func3(stack_vals *stk)
     stack_vals *v6 = find_id_in_stack2(WINP_ATT_HWND, stk);
 
     if ( v6 )
-        *(HWND *)v6->value = winp->hWND;
+        *(HWND *)v6->value.p_data = winp->hWND;
 
     return NC_STACK_iwimp::func3(stk);
 }

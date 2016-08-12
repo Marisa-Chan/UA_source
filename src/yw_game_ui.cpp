@@ -3179,7 +3179,11 @@ void sb_0x451034__sub9(_NC_STACK_ypaworld *yw)
 
     for (int i = 0; i < 14; i++)
     {
-        wis->sklts[i] = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, off_51825C[i], 0);
+        stack_vals init_vals[2];
+        init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, off_51825C[i]);
+        init_vals[1].end();
+
+        wis->sklts[i] = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
 
         if ( wis->sklts[i] )
             wis->sklts_intern[i] = wis->sklts[i]->getSKEL_pSkelet();
@@ -8281,7 +8285,11 @@ void ypaworld_func159__sub0__sub0(_NC_STACK_ypaworld *yw, yw_samples *smpls, con
 
     set_prefix_replacement("rsrc", "data:");
 
-    NC_STACK_wav *v23 = (NC_STACK_wav *)init_get_class("wav.class", 0x80001000, filename, 0);
+    stack_vals init_vals[2];
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, filename);
+    init_vals[1].end();
+
+    NC_STACK_wav *v23 = (NC_STACK_wav *)init_get_class("wav.class", init_vals);
 
     set_prefix_replacement("rsrc", rsr);
 

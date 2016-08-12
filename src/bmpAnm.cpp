@@ -44,7 +44,7 @@ size_t NC_STACK_bmpanim::func2(stack_vals *stak)
 {
     stack_vals *val = find_id_in_stack2(BANM_ATT_ANIMTYPE, stak);
     if ( val )
-        setBANM_animType(val->value);
+        setBANM_animType(val->value.i_data);
 
     return NC_STACK_bitmap::func2(stak);
 }
@@ -59,11 +59,11 @@ size_t NC_STACK_bmpanim::func3(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -74,27 +74,27 @@ size_t NC_STACK_bmpanim::func3(stack_vals *stak)
                 break;
 
             case BMD_ATT_PBITMAP:
-                *(bitmap_intern **)stk->value = getBMD_pBitmap();
+                *(bitmap_intern **)stk->value.p_data = getBMD_pBitmap();
                 break;
             case BMD_ATT_OUTLINE:
             case BMD_ATT_BUFFER:
-                *(void **)stk->value = NULL;
+                *(void **)stk->value.p_data = NULL;
                 break;
             case BMD_ATT_WIDTH:
             case BMD_ATT_HEIGHT:
-                *(int *)stk->value = 0;
+                *(int *)stk->value.p_data = 0;
                 break;
             case BANM_ATT_NAME:
-                *(const char **)stk->value = getBANM_name();
+                *(const char **)stk->value.p_data = getBANM_name();
                 break;
             case BANM_ATT_CLASSNAME:
-                *(const char **)stk->value = getBANM_classname();
+                *(const char **)stk->value.p_data = getBANM_classname();
                 break;
             case BANM_ATT_FRAMECNT:
-                *(int *)stk->value = getBANM_framecnt();
+                *(int *)stk->value.p_data = getBANM_framecnt();
                 break;
             case BANM_ATT_ANIMTYPE:
-                *(int *)stk->value = getBANM_animtype();
+                *(int *)stk->value.p_data = getBANM_animtype();
                 break;
             }
             stk++;
@@ -150,11 +150,9 @@ size_t NC_STACK_bmpanim::func5(MFILE **file)
 
     stack_vals stk[4];
 
-    stk[0].id = BANM_ATT_NAME;
-    stk[0].value = (size_t)v3;
-    stk[1].id = BANM_ATT_ANIMTYPE;
-    stk[1].value = v4;
-    stk[2].id = 0;
+    stk[0].set(BANM_ATT_NAME, v3);
+    stk[1].set(BANM_ATT_ANIMTYPE, v4);
+    stk[2].end();
 
     return func0(stk);
 }
@@ -397,12 +395,9 @@ int bmpanim_func64__sub1__sub2(void *fil, bmpAnim_t1 *arg)
                     for (int i = 0; i < nm_cnt; i++)
                     {
                         stack_vals vals[3];
-                        vals[0].id = NC_STACK_rsrc::RSRC_ATT_NAME;
-                        vals[0].value = (size_t)pbmpAnm_titles[i];
-                        vals[1].id = NC_STACK_rsrc::RSRC_ATT_DONTCOPY;
-                        vals[1].value = 1;
-                        vals[2].id = 0;
-                        vals[2].value = 0;
+                        vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, pbmpAnm_titles[i]);
+                        vals[1].set(NC_STACK_rsrc::RSRC_ATT_DONTCOPY, 1);
+                        vals[2].end();
 
                         frames[i].bitmObj = dynamic_cast<NC_STACK_bitmap *>( init_get_class(arg->className, vals) );
 
@@ -657,12 +652,9 @@ int bmpanim_func64__sub0__sub0(bmpAnim_t1 *t1, char **a2, const char *className)
         strcpy(out, *pt);
 
         stack_vals vals[3];
-        vals[0].id = NC_STACK_rsrc::RSRC_ATT_NAME;
-        vals[0].value = (size_t)out;
-        vals[1].id = NC_STACK_rsrc::RSRC_ATT_DONTCOPY;
-        vals[1].value = 1;
-        vals[2].id = 0;
-        vals[2].value = 0;
+        vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, out);
+        vals[1].set(NC_STACK_rsrc::RSRC_ATT_DONTCOPY, 1);
+        vals[2].end();
 
         t1->bitm_buff[i].bitmObj = dynamic_cast<NC_STACK_bitmap *>( init_get_class(className, vals) );
         if ( !t1->bitm_buff[i].bitmObj )
@@ -799,10 +791,8 @@ rsrc * NC_STACK_bmpanim::rsrc_func64(stack_vals *stak)
 {
     stack_vals stk[2];
 
-    stk[0].id = RSRC_ATT_LISTYPE;
-    stk[0].value = 1;
-    stk[1].id = 2;
-    stk[1].value = (size_t)stak;
+    stk[0].set(RSRC_ATT_LISTYPE, 1);
+    stk[1].nextStack(stak);
 
     rsrc *res = NC_STACK_bitmap::rsrc_func64(stk);// rsrc_func64
     if ( res )

@@ -47,14 +47,10 @@ int GFXEngine::sub_422CE8(const char *display, const char *display2, int gfxmode
     if ( *display )
     {
         stack_vals vals[4];
-        vals[0].id = NC_STACK_rsrc::RSRC_ATT_NAME;
-        vals[0].value = (size_t)"display";
-        vals[1].id = NC_STACK_rsrc::RSRC_ATT_TRYSHARED;
-        vals[1].value = 2;
-        vals[2].id = NC_STACK_display::DISP_ATT_DISPLAY_ID;
-        vals[2].value = gfxmode;
-        vals[3].id = 0;
-        vals[3].value = 0;
+        vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "display");
+        vals[1].set(NC_STACK_rsrc::RSRC_ATT_TRYSHARED, 2);
+        vals[2].set(NC_STACK_display::DISP_ATT_DISPLAY_ID, gfxmode);
+        vals[3].end();
 
         strcpy(buf, display);
 
@@ -81,12 +77,9 @@ int GFXEngine::sub_422CE8(const char *display, const char *display2, int gfxmode
 int GFXEngine::loadPal(const char *palette_ilbm)
 {
     stack_vals vals[3];
-    vals[0].id = NC_STACK_rsrc::RSRC_ATT_NAME;
-    vals[0].value = (size_t)palette_ilbm;
-    vals[1].id = NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP;
-    vals[1].value = 1;
-    vals[2].id = 0;
-    vals[2].value = 0;
+    vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, palette_ilbm);
+    vals[1].set(NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
+    vals[2].end();
 
     NC_STACK_ilbm *ilbm = dynamic_cast<NC_STACK_ilbm *>(init_get_class("ilbm.class", vals) );
 

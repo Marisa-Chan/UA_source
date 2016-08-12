@@ -25,7 +25,7 @@ size_t NC_STACK_ilbm::func2(stack_vals *stak)
     stack_vals *v6 = find_id_in_stack2(ILBM_ATT_FMT, stak);
 
     if ( v6 )
-        setILBM_saveFmt( v6->value );
+        setILBM_saveFmt( v6->value.i_data );
 
     return NC_STACK_bitmap::func2(stak);
 }
@@ -102,23 +102,15 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, MFILE **pmfile)
     {
         stack_vals stk[6];
 
-        stk[0].id = RSRC_ATT_NAME;
-        stk[0].value = (size_t)name;
-
-        stk[1].id = RSRC_ATT_TRYSHARED;
-        stk[1].value = 1;
-
-        stk[2].id = BMD_ATT_TEXTURE;
-        stk[2].value = 1;
-
-        stk[3].id = 0;
+        stk[0].set(RSRC_ATT_NAME, name);
+        stk[1].set(RSRC_ATT_TRYSHARED, 1);
+        stk[2].set(BMD_ATT_TEXTURE, 1);
+        stk[3].end();
 
         if ( has_opl )
         {
-            stk[3].id = BMD_ATT_OUTLINE;
-            stk[3].value = (size_t)&opls;
-
-            stk[4].id = 0;
+            stk[3].set(BMD_ATT_OUTLINE, &opls);
+            stk[4].end();
         }
 
         return NC_STACK_bitmap::func0(stk);
@@ -340,12 +332,9 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
             bmhd.width = SWAP16(bmhd.width);
             bmhd.height = SWAP16(bmhd.height);
 
-            stk[0].id = BMD_ATT_WIDTH;
-            stk[0].value = bmhd.width;
-            stk[1].id = BMD_ATT_HEIGHT;
-            stk[1].value = bmhd.height;
-            stk[2].id = 2;
-            stk[2].value = (size_t)stak;
+            stk[0].set(BMD_ATT_WIDTH, bmhd.width);
+            stk[1].set(BMD_ATT_HEIGHT, bmhd.height);
+            stk[2].nextStack(stak);
 
             res = NC_STACK_bitmap::rsrc_func64(stk); // bitmap_func64
             if ( res )
@@ -365,12 +354,9 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
             vbmp.width = SWAP16(vbmp.width);
             vbmp.height = SWAP16(vbmp.height);
 
-            stk[0].id = BMD_ATT_WIDTH;
-            stk[0].value = vbmp.width;
-            stk[1].id = BMD_ATT_HEIGHT;
-            stk[1].value = vbmp.height;
-            stk[2].id = 2;
-            stk[2].value = (size_t)stak;
+            stk[0].set(BMD_ATT_WIDTH, vbmp.width);
+            stk[1].set(BMD_ATT_HEIGHT, vbmp.height);
+            stk[2].nextStack(stak);
 
             res = NC_STACK_bitmap::rsrc_func64(stk); // bitmap_func64
             // creation of bitmap internal structure and allocation buffer, creation of surface, texture and palette
@@ -468,8 +454,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(stack_vals *stak)
 
     stack_vals stk[2];
 
-    stk[0].id = 2;
-    stk[0].value = (size_t)stak;
+    stk[0].nextStack(stak);
 
     if ( dword_514EFC )
     {
@@ -511,10 +496,8 @@ rsrc * NC_STACK_ilbm::rsrc_func64(stack_vals *stak)
         if ( mfile )
         {
 
-            stk[0].id = BMD_ATT_TEXTURE;
-            stk[0].value = 1;
-            stk[1].id = 2;
-            stk[1].value = (size_t)stak;
+            stk[0].set(BMD_ATT_TEXTURE, 1);
+            stk[1].nextStack(stak);
 
             read_next_IFF(mfile, 2);
             read_default(mfile);
@@ -531,10 +514,8 @@ rsrc * NC_STACK_ilbm::rsrc_func64(stack_vals *stak)
     {
         if ( mfile )
         {
-            stk[0].id = BMD_ATT_TEXTURE;
-            stk[0].value = 1;
-            stk[1].id = 2;
-            stk[1].value = (size_t)stak;
+            stk[0].set(BMD_ATT_TEXTURE, 1);
+            stk[1].nextStack(stak);
         }
         else
         {

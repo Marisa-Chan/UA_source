@@ -68,12 +68,9 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, stack_vals *stak, const char *filname
                 {
                     stack_vals stk[3];
 
-                    stk[0].id = NC_STACK_sample::SMPL_ATT_LEN;
-                    stk[0].value = sbchunk.SubchunkSize;
-                    stk[1].id = NC_STACK_sample::SMPL_ATT_TYPE;
-                    stk[1].value = 1;
-                    stk[2].id = 2;
-                    stk[2].value = (size_t)stak;
+                    stk[0].set(NC_STACK_sample::SMPL_ATT_LEN, sbchunk.SubchunkSize);
+                    stk[1].set(NC_STACK_sample::SMPL_ATT_TYPE, 1);
+                    stk[2].nextStack(stak);
 
                     res = obj->NC_STACK_sample::rsrc_func64(stk); //Create sampl structure and alloc buff
 

@@ -2280,24 +2280,17 @@ size_t NC_STACK_windd::func0(stack_vals *stak)
 
     if ( picked->field_94 & 8 )
     {
-        tmp[0].id = BMD_ATT_WIDTH;
-        tmp[0].value = (unsigned int)picked->width / 2;
-        tmp[1].id = BMD_ATT_HEIGHT;
-        tmp[1].value = (unsigned int)picked->height / 2;
+        tmp[0].set(BMD_ATT_WIDTH, picked->width / 2);
+        tmp[1].set(BMD_ATT_HEIGHT, picked->height / 2);
     }
     else
     {
-        tmp[0].id = BMD_ATT_WIDTH;
-        tmp[0].value = (unsigned int)picked->width;
-        tmp[1].id = BMD_ATT_HEIGHT;
-        tmp[1].value = (unsigned int)picked->height;
+        tmp[0].set(BMD_ATT_WIDTH, picked->width);
+        tmp[1].set(BMD_ATT_HEIGHT, picked->height);
     }
-    tmp[2].id = BMD_ATT_BUFFER;
-    tmp[2].value = 1;
-    tmp[3].id = BMD_ATT_HAS_COLORMAP;
-    tmp[3].value = 1;
-    tmp[4].id = 2;
-    tmp[4].value = (size_t)stak;
+    tmp[2].set(BMD_ATT_BUFFER, 1);
+    tmp[3].set(BMD_ATT_HAS_COLORMAP, 1);
+    tmp[4].nextStack(stak);
 
     if ( !NC_STACK_display::func0(tmp) )
         return 0;
@@ -2455,11 +2448,11 @@ size_t NC_STACK_windd::func2(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -2470,16 +2463,16 @@ size_t NC_STACK_windd::func2(stack_vals *stak)
                 break;
 
             case WDD_ATT_CURSOR:
-                setWDD_cursor(stk->value);
+                setWDD_cursor(stk->value.i_data);
                 break;
             case WDD_ATT_DIS_LOWRES:
-                setWDD_disLowRes(stk->value);
+                setWDD_disLowRes(stk->value.i_data);
                 break;
             case WDD_ATT_16BIT_TEX:
-                setWDD_16bitTex(stk->value);
+                setWDD_16bitTex(stk->value.i_data);
                 break;
             case WDD_ATT_DRAW_PRIM:
-                setWDD_drawPrim(stk->value);
+                setWDD_drawPrim(stk->value.i_data);
                 break;
             }
             stk++;
@@ -2503,11 +2496,11 @@ size_t NC_STACK_windd::func3(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -2518,16 +2511,16 @@ size_t NC_STACK_windd::func3(stack_vals *stak)
                 break;
 
             case DISP_ATT_DISPLAY_ID:
-                *(int *)stk->value = getDISP_displID();
+                *(int *)stk->value.p_data = getDISP_displID();
                 break;
             case DISP_ATT_DISPLAY_INF:
-                *(gfx_window **)stk->value = getDISP_displInf();
+                *(gfx_window **)stk->value.p_data = getDISP_displInf();
                 break;
             case WDD_ATT_16BIT_TEX:
-                *(int *)stk->value = getWDD_16bitTex();
+                *(int *)stk->value.p_data = getWDD_16bitTex();
                 break;
             case WDD_ATT_DRAW_PRIM:
-                *(int *)stk->value = getWDD_drawPrim();
+                *(int *)stk->value.p_data = getWDD_drawPrim();
                 break;
             }
             stk++;

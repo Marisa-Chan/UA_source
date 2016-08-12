@@ -23,11 +23,11 @@ int NC_STACK_ypagun::ypagun_func0__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -38,36 +38,36 @@ int NC_STACK_ypagun::ypagun_func0__sub0(stack_vals *stak)
                 break;
 
             case BACT_ATT_WORLD:
-                stack__ypagun.ywo = (NC_STACK_ypaworld *)stk->value;
+                stack__ypagun.ywo = (NC_STACK_ypaworld *)stk->value.p_data;
                 stack__ypagun.yw = &stack__ypagun.ywo->stack__ypaworld;
                 break;
 
             case GUN_ATT_SIDEANGLE:
-                setGUN_sideAngle(stk->value);
+                setGUN_sideAngle(stk->value.i_data);
                 break;
 
             case GUN_ATT_UPANGLE:
-                setGUN_upAngle(stk->value);
+                setGUN_upAngle(stk->value.i_data);
                 break;
 
             case GUN_ATT_DOWNANGLE:
-                setGUN_downAngle(stk->value);
+                setGUN_downAngle(stk->value.i_data);
                 break;
 
             case GUN_ATT_FIRETYPE:
-                setGUN_fireType(stk->value);
+                setGUN_fireType(stk->value.i_data);
                 break;
 
             case GUN_ATT_FIRETIME:
-                setGUN_fireTime(stk->value);
+                setGUN_fireTime(stk->value.i_data);
                 break;
 
             case GUN_ATT_SETGROUND:
-                setGUN_setGround ( stk->value );
+                setGUN_setGround ( stk->value.i_data );
                 break;
 
             case GUN_ATT_ROBOGUN:
-                setGUN_roboGun ( stk->value );
+                setGUN_roboGun ( stk->value.i_data );
                 break;
             }
             stk++;
@@ -112,11 +112,11 @@ int NC_STACK_ypagun::ypagun_func2__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -127,31 +127,31 @@ int NC_STACK_ypagun::ypagun_func2__sub0(stack_vals *stak)
                 break;
 
             case GUN_ATT_SIDEANGLE:
-                setGUN_sideAngle(stk->value);
+                setGUN_sideAngle(stk->value.i_data);
                 break;
 
             case GUN_ATT_UPANGLE:
-                setGUN_upAngle(stk->value);
+                setGUN_upAngle(stk->value.i_data);
                 break;
 
             case GUN_ATT_DOWNANGLE:
-                setGUN_downAngle(stk->value);
+                setGUN_downAngle(stk->value.i_data);
                 break;
 
             case GUN_ATT_FIRETYPE:
-                setGUN_fireType(stk->value);
+                setGUN_fireType(stk->value.i_data);
                 break;
 
             case GUN_ATT_FIRETIME:
-                setGUN_fireTime(stk->value);
+                setGUN_fireTime(stk->value.i_data);
                 break;
 
             case GUN_ATT_SETGROUND:
-                setGUN_setGround ( stk->value );
+                setGUN_setGround ( stk->value.i_data );
                 break;
 
             case GUN_ATT_ROBOGUN:
-                setGUN_roboGun ( stk->value );
+                setGUN_roboGun ( stk->value.i_data );
                 break;
             }
             stk++;
@@ -178,11 +178,11 @@ int NC_STACK_ypagun::ypagun_func3__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -193,31 +193,31 @@ int NC_STACK_ypagun::ypagun_func3__sub0(stack_vals *stak)
                 break;
 
             case GUN_ATT_SIDEANGLE:
-                *(int *)stk->value = getGUN_sideAngle();
+                *(int *)stk->value.p_data = getGUN_sideAngle();
                 break;
 
             case GUN_ATT_UPANGLE:
-                *(int *)stk->value = getGUN_upAngle();
+                *(int *)stk->value.p_data = getGUN_upAngle();
                 break;
 
             case GUN_ATT_DOWNANGLE:
-                *(int *)stk->value = getGUN_downAngle();
+                *(int *)stk->value.p_data = getGUN_downAngle();
                 break;
 
             case GUN_ATT_FIRETYPE:
-                *(int *)stk->value = getGUN_fireType();
+                *(int *)stk->value.p_data = getGUN_fireType();
                 break;
 
             case GUN_ATT_FIRETIME:
-                *(int *)stk->value = getGUN_fireTime();
+                *(int *)stk->value.p_data = getGUN_fireTime();
                 break;
 
             case GUN_ATT_SETGROUND:
-                *(int *)stk->value = getGUN_setGround();
+                *(int *)stk->value.p_data = getGUN_setGround();
                 break;
 
             case GUN_ATT_ROBOGUN:
-                *(int *)stk->value = getGUN_roboGun();
+                *(int *)stk->value.p_data = getGUN_roboGun();
                 break;
 
 

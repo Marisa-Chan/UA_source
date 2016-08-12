@@ -43,11 +43,11 @@ size_t NC_STACK_skeleton::func3(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -58,16 +58,16 @@ size_t NC_STACK_skeleton::func3(stack_vals *stak)
                 break;
 
             case SKEL_ATT_PSKELET:
-                *(skeleton_64_stru **)stk->value = getSKEL_pSkelet();
+                *(skeleton_64_stru **)stk->value.p_data = getSKEL_pSkelet();
                 break;
             case SKEL_ATT_POINTSCNT:
-                *(int *)stk->value = getSKEL_pntCount();
+                *(int *)stk->value.p_data = getSKEL_pntCount();
                 break;
             case SKEL_ATT_SENCNT:
-                *(int *)stk->value = getSKEL_senCount();
+                *(int *)stk->value.p_data = getSKEL_senCount();
                 break;
             case SKEL_ATT_POLYCNT:
-                *(int *)stk->value = getSKEL_polyCount();
+                *(int *)stk->value.p_data = getSKEL_polyCount();
                 break;
             }
             stk++;

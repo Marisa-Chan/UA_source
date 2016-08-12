@@ -225,11 +225,11 @@ int NC_STACK_base::base_func0__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -240,43 +240,43 @@ int NC_STACK_base::base_func0__sub0(stack_vals *stak)
                 break;
 
             case BASE_ATT_SKELET:
-                setBASE_skeleton((NC_STACK_skeleton *)stk->value);
+                setBASE_skeleton((NC_STACK_skeleton *)stk->value.p_data);
                 break;
 
             case BASE_ATT_ADE:
-                setBASE_ADE((NC_STACK_ade *)stk->value);
+                setBASE_ADE((NC_STACK_ade *)stk->value.p_data);
                 break;
 
             case BASE_ATT_PARENTFOLLOW:
-                setBASE_parentFollow(stk->value);
+                setBASE_parentFollow(stk->value.i_data);
                 break;
 
             case BASE_ATT_VISLIMIT:
-                setBASE_visLimit(stk->value);
+                setBASE_visLimit(stk->value.i_data);
                 break;
 
             case BASE_ATT_AMBIENTLIGHT:
-                setBASE_ambientLight(stk->value);
+                setBASE_ambientLight(stk->value.i_data);
                 break;
 
             case BASE_ATT_RENDERALL:
-                setBASE_renderAll(stk->value);
+                setBASE_renderAll(stk->value.i_data);
                 break;
 
             case BASE_ATT_INPUTHANDLE:
-                setBASE_inputHandle (stk->value);
+                setBASE_inputHandle (stk->value.i_data);
                 break;
 
             case BASE_ATT_FADELEN:
-                setBASE_fadeLength(stk->value);
+                setBASE_fadeLength(stk->value.i_data);
                 break;
 
             case BASE_ATT_STATIC:
-                setBASE_static (stk->value);
+                setBASE_static (stk->value.i_data);
                 break;
 
             case BASE_ATT_EMBDRSRC:
-                setBASE_embdRsrc(stk->value);
+                setBASE_embdRsrc(stk->value.i_data);
                 break;
             }
             stk++;
@@ -363,11 +363,11 @@ void NC_STACK_base::base_setter(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -378,43 +378,43 @@ void NC_STACK_base::base_setter(stack_vals *stak)
                 break;
 
             case BASE_ATT_SKELET:
-                setBASE_skeleton((NC_STACK_skeleton *)stk->value);
+                setBASE_skeleton((NC_STACK_skeleton *)stk->value.p_data);
                 break;
 
             case BASE_ATT_ADE:
-                setBASE_ADE((NC_STACK_ade *)stk->value);
+                setBASE_ADE((NC_STACK_ade *)stk->value.p_data);
                 break;
 
             case BASE_ATT_PARENTFOLLOW:
-                setBASE_parentFollow(stk->value);
+                setBASE_parentFollow(stk->value.i_data);
                 break;
 
             case BASE_ATT_VISLIMIT:
-                setBASE_visLimit(stk->value);
+                setBASE_visLimit(stk->value.i_data);
                 break;
 
             case BASE_ATT_AMBIENTLIGHT:
-                setBASE_ambientLight(stk->value);
+                setBASE_ambientLight(stk->value.i_data);
                 break;
 
             case BASE_ATT_RENDERALL:
-                setBASE_renderAll(stk->value);
+                setBASE_renderAll(stk->value.i_data);
                 break;
 
             case BASE_ATT_INPUTHANDLE:
-                setBASE_inputHandle (stk->value);
+                setBASE_inputHandle (stk->value.i_data);
                 break;
 
             case BASE_ATT_FADELEN:
-                setBASE_fadeLength(stk->value);
+                setBASE_fadeLength(stk->value.i_data);
                 break;
 
             case BASE_ATT_STATIC:
-                setBASE_static (stk->value);
+                setBASE_static (stk->value.i_data);
                 break;
 
             case BASE_ATT_EMBDRSRC:
-                setBASE_embdRsrc(stk->value);
+                setBASE_embdRsrc(stk->value.i_data);
                 break;
             }
             stk++;
@@ -439,11 +439,11 @@ void NC_STACK_base::base_getter(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -453,110 +453,110 @@ void NC_STACK_base::base_getter(stack_vals *stak)
             default:
                 break;
             case BASE_ATT_SKELET:
-                *(NC_STACK_skeleton **)stk->value = getBASE_skeleton();
+                *(NC_STACK_skeleton **)stk->value.p_data = getBASE_skeleton();
                 break;
             case BASE_ATT_PARENTFOLLOW:
-                *(int *)stk->value = getBASE_parentFollow();
+                *(int *)stk->value.p_data = getBASE_parentFollow();
                 break;
             case 0x80001003:
             case 0x80001007:
-                *(int *)stk->value = 0;
+                *(int *)stk->value.p_data = 0;
                 break;
             case BASE_ATT_VISLIMIT:
-                *(int *)stk->value = getBASE_visLimit();
+                *(int *)stk->value.p_data = getBASE_visLimit();
                 break;
             case BASE_ATT_AMBIENTLIGHT:
-                *(int *)stk->value = getBASE_ambientLight();
+                *(int *)stk->value.p_data = getBASE_ambientLight();
                 break;
             case BASE_ATT_RENDERALL:
-                *(int *)stk->value = getBASE_renderAll();
+                *(int *)stk->value.p_data = getBASE_renderAll();
                 break;
             case BASE_ATT_INPUTHANDLE:
-                *(int *)stk->value = getBASE_inputHandle();
+                *(int *)stk->value.p_data = getBASE_inputHandle();
                 break;
             case BASE_ATT_X:
-                *(float *)stk->value = getBASE_x();
+                *(float *)stk->value.p_data = getBASE_x();
                 break;
             case BASE_ATT_Y:
-                *(float *)stk->value = getBASE_y();
+                *(float *)stk->value.p_data = getBASE_y();
                 break;
             case BASE_ATT_Z:
-                *(float *)stk->value = getBASE_z();
+                *(float *)stk->value.p_data = getBASE_z();
                 break;
             case BASE_ATT_VX:
-                *(float *)stk->value = getBASE_vx();
+                *(float *)stk->value.p_data = getBASE_vx();
                 break;
             case BASE_ATT_VY:
-                *(float *)stk->value = getBASE_vy();
+                *(float *)stk->value.p_data = getBASE_vy();
                 break;
             case BASE_ATT_VZ:
-                *(float *)stk->value = getBASE_vz();
+                *(float *)stk->value.p_data = getBASE_vz();
                 break;
             case BASE_ATT_AX:
-                *(int *)stk->value = getBASE_ax();
+                *(int *)stk->value.p_data = getBASE_ax();
                 break;
             case BASE_ATT_AY:
-                *(int *)stk->value = getBASE_ay();
+                *(int *)stk->value.p_data = getBASE_ay();
                 break;
             case BASE_ATT_AZ:
-                *(int *)stk->value = getBASE_az();
+                *(int *)stk->value.p_data = getBASE_az();
                 break;
             case BASE_ATT_RX:
-                *(int *)stk->value = getBASE_rx();
+                *(int *)stk->value.p_data = getBASE_rx();
                 break;
             case BASE_ATT_RY:
-                *(int *)stk->value = getBASE_ry();
+                *(int *)stk->value.p_data = getBASE_ry();
                 break;
             case BASE_ATT_RZ:
-                *(int *)stk->value = getBASE_rz();
+                *(int *)stk->value.p_data = getBASE_rz();
                 break;
             case BASE_ATT_SX:
-                *(float *)stk->value = getBASE_sx();
+                *(float *)stk->value.p_data = getBASE_sx();
                 break;
             case BASE_ATT_SY:
-                *(float *)stk->value = getBASE_sy();
+                *(float *)stk->value.p_data = getBASE_sy();
                 break;
             case BASE_ATT_SZ:
-                *(float *)stk->value = getBASE_sz();
+                *(float *)stk->value.p_data = getBASE_sz();
                 break;
             case BASE_ATT_ADELIST:
-                *(nlist **)stk->value = getBASE_adeList();
+                *(nlist **)stk->value.p_data = getBASE_adeList();
                 break;
             case BASE_ATT_PTRANSFORM:
-                *(base_1c_struct **)stk->value = getBASE_pTransform();
+                *(base_1c_struct **)stk->value.p_data = getBASE_pTransform();
                 break;
             case BASE_ATT_KIDSLIST:
-                *(nlist **)stk->value = getBASE_kidList();
+                *(nlist **)stk->value.p_data = getBASE_kidList();
                 break;
             case BASE_ATT_KIDNODE:
-                *(base_node **)stk->value = getBASE_kidNode();
+                *(base_node **)stk->value.p_data = getBASE_kidNode();
                 break;
             case BASE_ATT_RENDERPARAMS:
-                *(area_arg_65 **)stk->value = getBASE_renderParams();
+                *(area_arg_65 **)stk->value.p_data = getBASE_renderParams();
                 break;
             case BASE_ATT_MAINKID:
-                *(int *)stk->value = getBASE_mainKid();
+                *(int *)stk->value.p_data = getBASE_mainKid();
                 break;
             case BASE_ATT_MAINOBJT:
-                *(int *)stk->value = getBASE_mainObjt();
+                *(int *)stk->value.p_data = getBASE_mainObjt();
                 break;
             case BASE_ATT_RENDERSTACK:
-                *(void **)stk->value = getBASE_renderStack();
+                *(void **)stk->value.p_data = getBASE_renderStack();
                 break;
             case BASE_ATT_ARGSTACK:
-                *(void **)stk->value = getBASE_argStack();
+                *(void **)stk->value.p_data = getBASE_argStack();
                 break;
             case BASE_ATT_ENDARGSTACK:
-                *(void **)stk->value = getBASE_endArgStack();
+                *(void **)stk->value.p_data = getBASE_endArgStack();
                 break;
             case BASE_ATT_FADELEN:
-                *(int *)stk->value = getBASE_fadeLength();
+                *(int *)stk->value.p_data = getBASE_fadeLength();
                 break;
             case BASE_ATT_STATIC:
-                *(int *)stk->value = getBASE_static();
+                *(int *)stk->value.p_data = getBASE_static();
                 break;
             case BASE_ATT_EMBDRSRC:
-                *(int *)stk->value = getBASE_embdRsrc();
+                *(int *)stk->value.p_data = getBASE_embdRsrc();
                 break;
             }
             stk++;

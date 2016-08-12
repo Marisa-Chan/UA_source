@@ -245,7 +245,15 @@ void particle_recalc(__NC_STACK_particle *prtcl)
 
 int sub_41A8D0(__NC_STACK_particle *prtcl)
 {
-    NC_STACK_skeleton *sklt = (NC_STACK_skeleton *)init_get_class("skeleton.class", 0x80001000, "particle_sklt", 0x80001001, 2, 0x80002001, 5, 0x80002003, 1, 0x80002004, 4, 0);
+    stack_vals init_vals[6];
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "particle_sklt");
+    init_vals[1].set(NC_STACK_rsrc::RSRC_ATT_TRYSHARED, 2);
+    init_vals[2].set(NC_STACK_skeleton::SKEL_ATT_POINTSCNT, 5);
+    init_vals[3].set(NC_STACK_skeleton::SKEL_ATT_POLYCNT, 1);
+    init_vals[4].set(NC_STACK_skeleton::SKEL_ATT_POLYPNTCNT, 4);
+    init_vals[5].end();
+
+    NC_STACK_skeleton *sklt = (NC_STACK_skeleton *)init_get_class("skeleton.class", init_vals);
     prtcl->particle_sklt = sklt;
 
     if ( !sklt )
@@ -333,11 +341,11 @@ int NC_STACK_particle::particle_func0__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -348,59 +356,59 @@ int NC_STACK_particle::particle_func0__sub0(stack_vals *stak)
                 break;
 
             case ADE_ATT_DPTHFADE:
-                setADE_bkCheck( stk->value );
+                setADE_bkCheck( stk->value.i_data );
                 break;
 
             case ADE_ATT_POINT:
-                setADE_point( stk->value );
+                setADE_point( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_STSPEED:
-                setPRTCL_startSpeed( stk->value );
+                setPRTCL_startSpeed( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_NUMCONT:
-                setPRTCL_numContexts( stk->value );
+                setPRTCL_numContexts( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_CONTLFTIME:
-                setPRTCL_contextLifetime( stk->value );
+                setPRTCL_contextLifetime( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_BIRTRATE:
-                setPRTCL_birthRate( stk->value );
+                setPRTCL_birthRate( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_LFTIME:
-                setPRTCL_lifeTime( stk->value );
+                setPRTCL_lifeTime( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_PADE:
-                setPRTCL_pADE( (NC_STACK_area *)stk->value );
+                setPRTCL_pADE( (NC_STACK_area *)stk->value.p_data );
                 break;
 
             case PRTCL_ATT_STSIZE:
-                setPRTCL_startSize( stk->value );
+                setPRTCL_startSize( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_ENDSIZE:
-                setPRTCL_endSize( stk->value );
+                setPRTCL_endSize( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_STGEN:
-                setPRTCL_startGen( stk->value );
+                setPRTCL_startGen( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_ENDGEN:
-                setPRTCL_endGen( stk->value );
+                setPRTCL_endGen( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_NOISE:
-                setPRTCL_noise( stk->value );
+                setPRTCL_noise( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_PPADE:
-                setPRTCL_ppADE ((NC_STACK_ade **)stk->value);
+                setPRTCL_ppADE ((NC_STACK_ade **)stk->value.p_data);
                 break;
             }
             stk++;
@@ -535,11 +543,11 @@ void NC_STACK_particle::particle_func2__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -550,59 +558,59 @@ void NC_STACK_particle::particle_func2__sub0(stack_vals *stak)
                 break;
 
             case ADE_ATT_DPTHFADE:
-                setADE_bkCheck( stk->value );
+                setADE_bkCheck( stk->value.i_data );
                 break;
 
             case ADE_ATT_POINT:
-                setADE_point( stk->value );
+                setADE_point( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_STSPEED:
-                setPRTCL_startSpeed( stk->value );
+                setPRTCL_startSpeed( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_NUMCONT:
-                setPRTCL_numContexts( stk->value );
+                setPRTCL_numContexts( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_CONTLFTIME:
-                setPRTCL_contextLifetime( stk->value );
+                setPRTCL_contextLifetime( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_BIRTRATE:
-                setPRTCL_birthRate( stk->value );
+                setPRTCL_birthRate( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_LFTIME:
-                setPRTCL_lifeTime( stk->value );
+                setPRTCL_lifeTime( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_PADE:
-                setPRTCL_pADE( (NC_STACK_area *)stk->value );
+                setPRTCL_pADE( (NC_STACK_area *)stk->value.p_data );
                 break;
 
             case PRTCL_ATT_STSIZE:
-                setPRTCL_startSize( stk->value );
+                setPRTCL_startSize( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_ENDSIZE:
-                setPRTCL_endSize( stk->value );
+                setPRTCL_endSize( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_STGEN:
-                setPRTCL_startGen( stk->value );
+                setPRTCL_startGen( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_ENDGEN:
-                setPRTCL_endGen( stk->value );
+                setPRTCL_endGen( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_NOISE:
-                setPRTCL_noise( stk->value );
+                setPRTCL_noise( stk->value.i_data );
                 break;
 
             case PRTCL_ATT_PPADE:
-                setPRTCL_ppADE ((NC_STACK_ade **)stk->value);
+                setPRTCL_ppADE ((NC_STACK_ade **)stk->value.p_data);
                 break;
             }
             stk++;
@@ -629,11 +637,11 @@ void NC_STACK_particle::particle_func3__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -644,51 +652,51 @@ void NC_STACK_particle::particle_func3__sub0(stack_vals *stak)
                 break;
 
             case PRTCL_ATT_STSPEED:
-                *(int *)stk->value = getPRTCL_startSpeed();
+                *(int *)stk->value.p_data = getPRTCL_startSpeed();
                 break;
 
             case PRTCL_ATT_NUMCONT:
-                *(int *)stk->value = getPRTCL_numContexts();
+                *(int *)stk->value.p_data = getPRTCL_numContexts();
                 break;
 
             case PRTCL_ATT_CONTLFTIME:
-                *(int *)stk->value = getPRTCL_contextLifetime();
+                *(int *)stk->value.p_data = getPRTCL_contextLifetime();
                 break;
 
             case PRTCL_ATT_BIRTRATE:
-                *(int *)stk->value = getPRTCL_birthRate();
+                *(int *)stk->value.p_data = getPRTCL_birthRate();
                 break;
 
             case PRTCL_ATT_LFTIME:
-                *(int *)stk->value = getPRTCL_lifeTime();
+                *(int *)stk->value.p_data = getPRTCL_lifeTime();
                 break;
 
             case PRTCL_ATT_PADE:
-                *(NC_STACK_ade **)stk->value = getPRTCL_pADE();
+                *(NC_STACK_ade **)stk->value.p_data = getPRTCL_pADE();
                 break;
 
             case PRTCL_ATT_STSIZE:
-                *(int *)stk->value = getPRTCL_startSize();
+                *(int *)stk->value.p_data = getPRTCL_startSize();
                 break;
 
             case PRTCL_ATT_ENDSIZE:
-                *(int *)stk->value = getPRTCL_endSize();
+                *(int *)stk->value.p_data = getPRTCL_endSize();
                 break;
 
             case PRTCL_ATT_STGEN:
-                *(int *)stk->value = getPRTCL_startGen();
+                *(int *)stk->value.p_data = getPRTCL_startGen();
                 break;
 
             case PRTCL_ATT_ENDGEN:
-                *(int *)stk->value = getPRTCL_endGen();
+                *(int *)stk->value.p_data = getPRTCL_endGen();
                 break;
 
             case PRTCL_ATT_NOISE:
-                *(int *)stk->value = getPRTCL_noise();
+                *(int *)stk->value.p_data = getPRTCL_noise();
                 break;
 
             case PRTCL_ATT_PPADE:
-                *(NC_STACK_ade ***)stk->value = getPRTCL_ppADE();
+                *(NC_STACK_ade ***)stk->value.p_data = getPRTCL_ppADE();
                 break;
             }
             stk++;

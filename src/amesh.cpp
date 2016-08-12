@@ -77,11 +77,11 @@ int NC_STACK_amesh::amesh_func0__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.u_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -92,27 +92,27 @@ int NC_STACK_amesh::amesh_func0__sub0(stack_vals *stak)
                 break;
 
             case ADE_ATT_DPTHFADE:
-                setADE_depthFade ( stk->value );
+                setADE_depthFade ( stk->value.i_data );
                 break;
             case AREA_ATT_TEXBITM:
-                setAREA_bitm((NC_STACK_bitmap *)stk->value);
+                setAREA_bitm((NC_STACK_bitmap *)stk->value.p_data);
                 break;
 
             case AREA_ATT_TRACYBITM:
-                setAREA_tracybitm((NC_STACK_bitmap *)stk->value);
+                setAREA_tracybitm((NC_STACK_bitmap *)stk->value.p_data);
                 break;
 
             case AMESH_ATT_NUMPOLY:
-                setAMESH_numpoly(stk->value);
+                setAMESH_numpoly(stk->value.i_data);
                 break;
 
             case AMESH_ATT_ATTPOLYS:
-                if ( !setAMESH_polys( (ATTS *)stk->value ) )
+                if ( !setAMESH_polys( (ATTS *)stk->value.p_data ) )
                     return 0;
                 break;
 
             case AMESH_ATT_OTLPOOL:
-                if ( !setAMESH_otls((tUtV **)stk->value) )
+                if ( !setAMESH_otls((tUtV **)stk->value.p_data) )
                     return 0;
                 break;
 
@@ -163,11 +163,11 @@ void NC_STACK_amesh::amesh_func2__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -178,22 +178,22 @@ void NC_STACK_amesh::amesh_func2__sub0(stack_vals *stak)
                 break;
 
             case ADE_ATT_DPTHFADE:
-                setADE_depthFade ( stk->value );
+                setADE_depthFade ( stk->value.i_data );
                 break;
             case AREA_ATT_TEXBITM:
-                setAREA_bitm((NC_STACK_bitmap *)stk->value);
+                setAREA_bitm((NC_STACK_bitmap *)stk->value.p_data);
                 break;
 
             case AREA_ATT_TRACYBITM:
-                setAREA_tracybitm((NC_STACK_bitmap *)stk->value);
+                setAREA_tracybitm((NC_STACK_bitmap *)stk->value.p_data);
                 break;
 
             case AMESH_ATT_ATTPOLYS:
-                setAMESH_polys((ATTS *)stk->value);
+                setAMESH_polys((ATTS *)stk->value.p_data);
                 break;
 
             case AMESH_ATT_OTLPOOL:
-                setAMESH_otls((tUtV **)stk->value);
+                setAMESH_otls((tUtV **)stk->value.p_data);
                 break;
             }
             stk++;
@@ -214,7 +214,7 @@ size_t NC_STACK_amesh::func3(stack_vals *stak)
     stack_vals *val = find_id_in_stack2(AMESH_ATT_NUMPOLY, stak);
 
     if ( val )
-        *(int *)val->value = getAMESH_numpoly();
+        *(int *)val->value.p_data = getAMESH_numpoly();
 
     return NC_STACK_area::func3(stak);
 }

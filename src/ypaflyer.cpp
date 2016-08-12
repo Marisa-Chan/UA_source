@@ -21,11 +21,11 @@ int NC_STACK_ypaflyer::ypaflyer_func0__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -36,12 +36,12 @@ int NC_STACK_ypaflyer::ypaflyer_func0__sub0(stack_vals *stak)
                 break;
 
             case BACT_ATT_WORLD:
-                stack__ypaflyer.ywo = (NC_STACK_ypaworld *)stk->value;
+                stack__ypaflyer.ywo = (NC_STACK_ypaworld *)stk->value.p_data;
                 stack__ypaflyer.yw = &stack__ypaflyer.ywo->stack__ypaworld;
                 break;
 
             case FLY_ATT_TYPE:
-                setFLY_type(stk->value);
+                setFLY_type(stk->value.i_data);
                 break;
 
             }
@@ -97,11 +97,11 @@ int NC_STACK_ypaflyer::ypaflyer_func2__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -112,7 +112,7 @@ int NC_STACK_ypaflyer::ypaflyer_func2__sub0(stack_vals *stak)
                 break;
 
             case FLY_ATT_TYPE:
-                setFLY_type(stk->value);
+                setFLY_type(stk->value.i_data);
                 break;
 
             }
@@ -141,11 +141,11 @@ void NC_STACK_ypaflyer::ypaflyer_func3__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -156,7 +156,7 @@ void NC_STACK_ypaflyer::ypaflyer_func3__sub0(stack_vals *stak)
                 break;
 
             case FLY_ATT_TYPE:
-                *(int *)stk->value = getFLY_type();
+                *(int *)stk->value.p_data = getFLY_type();
                 break;
 
             }

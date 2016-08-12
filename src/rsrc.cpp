@@ -95,11 +95,11 @@ size_t NC_STACK_rsrc::func3(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -110,27 +110,27 @@ size_t NC_STACK_rsrc::func3(stack_vals *stak)
                 break;
 
             case RSRC_ATT_NAME:
-                *(const char **)stk->value = getRsrc_name();
+                *(const char **)stk->value.p_data = getRsrc_name();
                 break;
 
             case RSRC_ATT_PDATA:
-                *(void **)stk->value = getRsrc_pData();
+                *(void **)stk->value.p_data = getRsrc_pData();
                 break;
 
             case RSRC_ATT_TRYSHARED:
-                *(int *)stk->value = getRsrc_tryShared();
+                *(int *)stk->value.p_data = getRsrc_tryShared();
                 break;
 
             case RSRC_ATT_DONTCOPY:
-                *(int *)stk->value = getRsrc_dontCopy();
+                *(int *)stk->value.p_data = getRsrc_dontCopy();
                 break;
 
             case RSRC_ATT_SHAREDLIST:
-                *(nlist **)stk->value = getRsrc_sharedList();
+                *(nlist **)stk->value.p_data = getRsrc_sharedList();
                 break;
 
             case RSRC_ATT_PRIVATELIST:
-                *(nlist **)stk->value = getRsrc_privateList();
+                *(nlist **)stk->value.p_data = getRsrc_privateList();
                 break;
             }
             stk++;

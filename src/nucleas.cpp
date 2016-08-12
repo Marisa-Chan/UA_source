@@ -14,20 +14,18 @@ void NC_STACK_nucleus::nucleus_func0__sub0(stack_vals *a2)
 
         if ( a2->id == 2 )
         {
-            a2 = (stack_vals *)a2->value;
+            a2 = (stack_vals *)a2->value.p_data;
         }
         else if ( a2->id == 3 )
         {
-            a2 += a2->value;
+            a2 += a2->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
         {
             if ( a2->id == NC_ATT_NAME )
-            {
-                if ( a2->value )
-                    setName((const char *)a2->value);
-            }
+                setName((const char *)a2->value.p_data);
+
             a2++;
         }
     }
@@ -58,17 +56,17 @@ void NC_STACK_nucleus::nucleus_setter(stack_vals *a2)
 
         if ( a2->id == 2 )
         {
-            a2 = (stack_vals *)a2->value;
+            a2 = (stack_vals *)a2->value.p_data;
         }
         else if ( a2->id == 3 )
         {
-            a2 += a2->value;
+            a2 += a2->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
         {
             if ( a2->id == NC_ATT_NAME )
-                setName( (const char *)a2->value );
+                setName( (const char *)a2->value.p_data );
 
             a2++;
         }
@@ -92,19 +90,19 @@ void NC_STACK_nucleus::nucleus_getter(stack_vals *a2)
 
         if ( a2->id == 2 )
         {
-            a2 = (stack_vals *)a2->value;
+            a2 = (stack_vals *)a2->value.p_data;
         }
         else if ( a2->id == 3 )
         {
-            a2 += a2->value;
+            a2 += a2->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
         {
             if ( a2->id == NC_ATT_NAME )
-                *(const char **)a2->value = getName();
+                *(const char **)a2->value.p_data = getName();
             else if ( a2->id == NC_ATT_CLASSNAME )
-                *(const char **)a2->value = getClassName();
+                *(const char **)a2->value.p_data = getClassName();
             a2++;
         };
     }
@@ -233,8 +231,7 @@ size_t NC_STACK_nucleus::compatcall(int method_id, void *data)
 NC_STACK_nucleus * init_get_class(const char *classname, stack_vals *stak)
 {
     stack_vals tmp[1];
-    tmp[0].id = 0;
-    tmp[0].value = 0;
+    tmp[0].end();
 
     if (stak == NULL)
         stak = tmp;
@@ -254,19 +251,6 @@ NC_STACK_nucleus * init_get_class(const char *classname, stack_vals *stak)
     }
 
     return class_examplar;
-}
-
-NC_STACK_nucleus * init_get_class(const char *classname, ...)
-{
-    stack_vals vals[128];
-
-    va_list va;
-
-    va_start(va, classname);
-    va_to_arr(vals, 128, va);
-    va_end(va);
-
-    return init_get_class(classname, vals);
 }
 
 
@@ -290,9 +274,9 @@ stack_vals * find_id_in_stack2(unsigned int id, stack_vals *a2)
             return NULL;
 
         if ( a2->id == 2 )
-            a2 = (stack_vals *)a2->value;
+            a2 = (stack_vals *)a2->value.p_data;
         else if ( a2->id == 3 )
-            a2 += a2->value;
+            a2 += a2->value.i_data;
         else
             a2++;
     }
@@ -306,19 +290,19 @@ size_t find_id_in_stack_def_val(unsigned int find_id, size_t def_value, stack_va
     while ( 1 )
     {
         if ( a3->id == find_id )
-            return a3->value;
+            return a3->value.u_data;
         if ( a3->id == 0 )
             return def_value;
 
         if ( a3->id == 2 )
         {
-            if (a3->value == 0)
+            if (a3->value.p_data == NULL)
                 printf("find_id_in_stack_def_val, stack NULL pointer\n");
             else
-                a3 = (stack_vals *)a3->value;
+                a3 = (stack_vals *)a3->value.p_data;
         }
         else if ( a3->id == 3 )
-            a3 += a3->value;
+            a3 += a3->value.i_data;
         else
             a3++;
     }
@@ -457,23 +441,20 @@ void va_to_arr(stack_vals *out, int sz, va_list in)
     {
         if (previd == 2)
         {
-            out[i].id = 0;
-            out[i].value = 0;
+            out[i].end();
             break;
         }
 
         unsigned int id = va_arg(in, unsigned int);
         if (id == 0 || i == sz - 1)
         {
-            out[i].id = 0;
-            out[i].value = 0;
+            out[i].end();
             break;
         }
 
         size_t value = va_arg(in,size_t);
 
-        out[i].id = id;
-        out[i].value = value;
+        out[i].set(id, value);
 
         previd = id;
     }
@@ -486,30 +467,26 @@ void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list in)
     int previd = -1;
     if (_id != 0)
     {
-        out[0].id = _id;
-        out[0].value = va_arg(in, size_t);
+        out[0].set(_id, va_arg(in, size_t) );
 
         for (int i = 1; i < sz; i++)
         {
             if (previd == 2)
             {
-                out[i].id = 0;
-                out[i].value = 0;
+                out[i].end();
                 break;
             }
 
             unsigned int id = va_arg(in, unsigned int);
             if (id == 0 || i == sz - 1)
             {
-                out[i].id = 0;
-                out[i].value = 0;
+                out[i].end();
                 break;
             }
 
             size_t value = va_arg(in,size_t);
 
-            out[i].id = id;
-            out[i].value = value;
+            out[i].set(id, value);
 
             previd = id;
         }

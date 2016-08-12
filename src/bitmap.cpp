@@ -95,12 +95,12 @@ size_t NC_STACK_bitmap::func2(stack_vals *stak)
 {
     stack_vals *v5 = find_id_in_stack2(BMD_ATT_OUTLINE, stak);
     if ( v5 )
-        setBMD_outline((pixel_2d *)v5->value);
+        setBMD_outline((pixel_2d *)v5->value.p_data);
 
     stack_vals *ppal = find_id_in_stack2(BMD_ATT_PCOLORMAP, stak);
     if ( ppal )
     {
-        setBMD_palette((UA_PALETTE *)ppal->value);
+        setBMD_palette((UA_PALETTE *)ppal->value.p_data);
     }
 
     return NC_STACK_rsrc::func2(stak);
@@ -116,11 +116,11 @@ size_t NC_STACK_bitmap::func3(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -131,25 +131,25 @@ size_t NC_STACK_bitmap::func3(stack_vals *stak)
                 break;
 
             case BMD_ATT_PBITMAP:
-                *(bitmap_intern **)stk->value = getBMD_pBitmap();
+                *(bitmap_intern **)stk->value.p_data = getBMD_pBitmap();
                 break;
             case BMD_ATT_OUTLINE:
-                *(void **)stk->value = NULL;
+                *(void **)stk->value.p_data = NULL;
                 break;
             case BMD_ATT_WIDTH:
-                *(int *)stk->value = getBMD_width();
+                *(int *)stk->value.p_data = getBMD_width();
                 break;
             case BMD_ATT_HEIGHT:
-                *(int *)stk->value = getBMD_height();
+                *(int *)stk->value.p_data = getBMD_height();
                 break;
             case BMD_ATT_BUFFER:
-                *(void **)stk->value = getBMD_buffer();
+                *(void **)stk->value.p_data = getBMD_buffer();
                 break;
             case BMD_ATT_HAS_COLORMAP:
-                *(int *)stk->value = getBMD_hasPalette();
+                *(int *)stk->value.p_data = getBMD_hasPalette();
                 break;
             case BMD_ATT_PCOLORMAP:
-                *(UA_PALETTE **)stk->value = getBMD_palette();
+                *(UA_PALETTE **)stk->value.p_data = getBMD_palette();
                 break;
             }
             stk++;

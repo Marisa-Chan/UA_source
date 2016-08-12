@@ -56,12 +56,9 @@ size_t NC_STACK_sklt::func5(MFILE **file)
     if ( !getted )
         return 0;
 
-    stk[0].id = RSRC_ATT_NAME;
-    stk[0].value = (size_t)name;
-    stk[1].id = RSRC_ATT_TRYSHARED;
-    stk[1].value = 1;
-    stk[2].id = 0;
-    stk[2].value = 0;
+    stk[0].set(RSRC_ATT_NAME, name);
+    stk[1].set(RSRC_ATT_TRYSHARED, 1);
+    stk[2].end();
 
     if ( !NC_STACK_skeleton::func0(stk) )
         return 0;
@@ -107,10 +104,8 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile, in
 
     stack_vals stk[2];
 
-    stk[0].id = NC_STACK_skeleton::SKEL_ATT_POINTSCNT;
-    stk[0].value = num;
-    stk[1].id = 2;
-    stk[1].value = (size_t)stak;
+    stk[0].set(NC_STACK_skeleton::SKEL_ATT_POINTSCNT, num);
+    stk[1].nextStack(stak);
 
     rsrc *res = obj->NC_STACK_skeleton::rsrc_func64(stk);
     if ( res )

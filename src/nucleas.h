@@ -12,7 +12,68 @@ class NC_STACK_nucleus;
 struct stack_vals
 {
     unsigned int id;
-    size_t value;
+    union _value
+    {
+        void *p_data;
+        int i_data;
+        float f_data;
+        size_t u_data;
+    } value;
+
+
+    enum TAG
+    {
+        TAG_END = 0,
+        TAG_SKIP = 1,
+        TAG_PTAGS = 2,
+        TAG_SKIP_N = 3
+    };
+
+
+
+    void set(unsigned int _id, size_t _val)
+    {
+        id = _id;
+        value.u_data = _val;
+    }
+
+    void set(unsigned int _id, int _val)
+    {
+        id = _id;
+        value.i_data = _val;
+    }
+
+    void set(unsigned int _id, float _val)
+    {
+        id = _id;
+        value.f_data = _val;
+    }
+
+    void set(unsigned int _id, void *_val)
+    {
+        id = _id;
+        value.p_data = _val;
+    }
+
+    void set(unsigned int _id, const void *_val)
+    {
+        id = _id;
+        value.p_data = (void *)_val;
+    }
+
+    void end()
+    {
+        id = TAG_END;
+        value.u_data = 0;
+    }
+
+    void nextStack(stack_vals *lst)
+    {
+        id = TAG_PTAGS;
+        value.p_data = lst;
+    }
+
+
 };
 
 struct NewClassDescr
@@ -78,8 +139,6 @@ public:
 };
 
 
-
-NC_STACK_nucleus * init_get_class(const char *classname, ...);
 NC_STACK_nucleus * init_get_class(const char *classname, stack_vals *stak);
 
 void va_to_arr(stack_vals *out, int sz, va_list in);

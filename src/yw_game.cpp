@@ -34,7 +34,13 @@ NC_STACK_ilbm * loadDisk_screen(_NC_STACK_ypaworld *yw)
 
     set_prefix_replacement("rsrc", "data:mc2res");
 
-    NC_STACK_ilbm *disk = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, v3, 0x80002008, 1, 0x80002009, 1, 0);
+    stack_vals init_vals[4];
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, v3);
+    init_vals[1].set(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
+    init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+    init_vals[3].end();
+
+    NC_STACK_ilbm *disk = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
 
     set_prefix_replacement("rsrc", rsrc_def);
 
@@ -626,7 +632,12 @@ void sb_0x44ca90__sub2(_NC_STACK_ypaworld *yw, mapProto *mapp)
     {
         if (mapp->palettes[i][0])
         {
-            NC_STACK_ilbm *ilbm = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, mapp->palettes[i], 0x80002006, 1, 0);
+            stack_vals init_vals[3];
+            init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, mapp->palettes[i]);
+            init_vals[1].set(NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
+            init_vals[2].end();
+
+            NC_STACK_ilbm *ilbm = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
 
             if (ilbm)
             {
@@ -2132,7 +2143,11 @@ NC_STACK_ypabact *yw_createUnit(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, 
 
     if ( !bacto )
     {
-        bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class(unit_classes_names[model_id], 0x80001001, ywo, 0) );
+        stack_vals init_vals[2];
+        init_vals[0].set(NC_STACK_ypabact::BACT_ATT_WORLD, ywo);
+        init_vals[1].end();
+
+        bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class(unit_classes_names[model_id], init_vals) );
 
         if ( !bacto )
             return NULL;
@@ -2175,7 +2190,11 @@ void sub_44BF34(vhclSndFX *sndfx)
         {
             for (int i = 0; i < sndfx->extS.cnt; i++)
             {
-                sndfx->wavs[i] = (NC_STACK_wav *)init_get_class("wav.class", 0x80001000, sndfx->extSampleNames[i], 0);
+                stack_vals init_vals[2];
+                init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->extSampleNames[i]);
+                init_vals[1].end();
+
+                sndfx->wavs[i] = (NC_STACK_wav *)init_get_class("wav.class", init_vals);
 
                 if ( sndfx->wavs[i] )
                 {
@@ -2202,7 +2221,11 @@ void sub_44BF34(vhclSndFX *sndfx)
         }
         else if ( sndfx->sample_name[0] )
         {
-            sndfx->single_sample = (NC_STACK_wav *)init_get_class("wav.class", 0x80001000, sndfx->sample_name, 0);
+            stack_vals init_vals[2];
+            init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->sample_name);
+            init_vals[1].end();
+
+            sndfx->single_sample = (NC_STACK_wav *)init_get_class("wav.class", init_vals);
 
             if ( !sndfx->single_sample )
                 ypa_log_out("Warning: Could not load sample %s.\n", sndfx->sample_name);
@@ -5646,7 +5669,11 @@ int recorder_open_replay(recorder *rcrd)
 
 int recorder_create_camera(_NC_STACK_ypaworld *yw)
 {
-    NC_STACK_ypabact *bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class("ypabact.class", 0x80001001, yw->self_full, 0) );
+    stack_vals init_vals[2];
+    init_vals[0].set(NC_STACK_ypabact::BACT_ATT_WORLD, yw->self_full);
+    init_vals[1].end();
+
+    NC_STACK_ypabact *bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class("ypabact.class", init_vals) );
 
     if ( !bacto )
         return 0;
@@ -5784,7 +5811,11 @@ __NC_STACK_ypabact *sub_46F3AC(_NC_STACK_ypaworld *yw, trec_bct *oinf)
         }
         else
         {
-            bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class("ypabact.class", 0x80001001, yw->self_full, 0) );
+            stack_vals init_vals[2];
+            init_vals[0].set(NC_STACK_ypabact::BACT_ATT_WORLD, yw->self_full);
+            init_vals[1].end();
+
+            bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class("ypabact.class", init_vals) );
             if ( bacto )
             {
                 bact = &bacto->stack__ypabact;

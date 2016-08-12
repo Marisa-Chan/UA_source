@@ -31,7 +31,7 @@ size_t NC_STACK_display::func2(stack_vals *stak)
     stack_vals *val = find_id_in_stack2(BMD_ATT_PCOLORMAP, stak);
     if ( val )
     {
-        setBMD_palette((UA_PALETTE *)val->value);
+        setBMD_palette((UA_PALETTE *)val->value.p_data);
         val->id = 1;
     }
 
@@ -43,7 +43,7 @@ size_t NC_STACK_display::func3(stack_vals *stak)
     stack_vals *val = find_id_in_stack2(BMD_ATT_PCOLORMAP, stak);
     if ( val )
     {
-        *(UA_PALETTE **)val->value = getBMD_palette();
+        *(UA_PALETTE **)val->value.p_data = getBMD_palette();
         val->id = 1;
     }
 

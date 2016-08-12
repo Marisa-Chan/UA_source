@@ -17,11 +17,11 @@ void NC_STACK_ade::ade_func0__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -32,16 +32,16 @@ void NC_STACK_ade::ade_func0__sub0(stack_vals *stak)
                 break;
 
             case ADE_ATT_BKCHECK:
-                setADE_bkCheck(stk->value);
+                setADE_bkCheck(stk->value.i_data);
                 break;
             case ADE_ATT_DPTHFADE:
-                setADE_depthFade(stk->value);
+                setADE_depthFade(stk->value.i_data);
                 break;
             case ADE_ATT_POINT:
-                setADE_point(stk->value);
+                setADE_point(stk->value.i_data);
                 break;
             case ADE_ATT_POLY:
-                setADE_poly(stk->value);
+                setADE_poly(stk->value.i_data);
                 break;
             }
             stk++;
@@ -84,11 +84,11 @@ void NC_STACK_ade::ade_func2__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -99,16 +99,16 @@ void NC_STACK_ade::ade_func2__sub0(stack_vals *stak)
                 break;
 
             case ADE_ATT_BKCHECK:
-                setADE_bkCheck(stk->value);
+                setADE_bkCheck(stk->value.i_data);
                 break;
             case ADE_ATT_DPTHFADE:
-                setADE_depthFade(stk->value);
+                setADE_depthFade(stk->value.i_data);
                 break;
             case ADE_ATT_POINT:
-                setADE_point(stk->value);
+                setADE_point(stk->value.i_data);
                 break;
             case ADE_ATT_POLY:
-                setADE_poly(stk->value);
+                setADE_poly(stk->value.i_data);
                 break;
             }
             stk++;
@@ -133,11 +133,11 @@ void NC_STACK_ade::ade_func3__sub0(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -148,19 +148,19 @@ void NC_STACK_ade::ade_func3__sub0(stack_vals *stak)
                 break;
 
             case ADE_ATT_BKCHECK:
-                *(int *)stk->value = getADE_bkCheck();
+                *(int *)stk->value.p_data = getADE_bkCheck();
                 break;
             case ADE_ATT_DPTHFADE:
-                *(int *)stk->value = getADE_depthFade();
+                *(int *)stk->value.p_data = getADE_depthFade();
                 break;
             case ADE_ATT_POINT:
-                *(int *)stk->value = getADE_point();
+                *(int *)stk->value.p_data = getADE_point();
                 break;
             case ADE_ATT_POLY:
-                *(int *)stk->value = getADE_poly();
+                *(int *)stk->value.p_data = getADE_poly();
                 break;
             case ADE_ATT_PADE:
-                *(__NC_STACK_ade **)stk->value = getADE_pAde();
+                *(__NC_STACK_ade **)stk->value.p_data = getADE_pAde();
                 break;
             }
             stk++;

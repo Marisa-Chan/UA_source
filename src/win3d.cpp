@@ -855,11 +855,11 @@ size_t NC_STACK_win3d::func2(stack_vals *stak)
             break;
         else if (stk->id == 2)
         {
-            stk = (stack_vals *)stk->value;
+            stk = (stack_vals *)stk->value.p_data;
         }
         else if ( stk->id == 3 )
         {
-            stk += stk->value;
+            stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
         }
         else
@@ -870,7 +870,7 @@ size_t NC_STACK_win3d::func2(stack_vals *stak)
                 break;
 
             case WDD_ATT_TEXFILT:
-                setW3D_texFilt(stk->value);
+                setW3D_texFilt(stk->value.i_data);
                 break;
             }
             stk++;

@@ -723,7 +723,11 @@ int WinMain__sub0__sub1()
 //    strcat(buildDate, " ");
 //    strcat(buildDate, __TIME__);
 
-    ypaworld = dynamic_cast<NC_STACK_ypaworld *>( init_get_class("ypaworld.class", 0x8000201D, buildDate, 0) );
+    stack_vals init_vals[2];
+    init_vals[0].set(NC_STACK_ypaworld::YW_ATT_BUILD_DATE, buildDate);
+    init_vals[1].end();
+
+    ypaworld = dynamic_cast<NC_STACK_ypaworld *>( init_get_class("ypaworld.class", init_vals) );
     if ( !ypaworld )
     {
         ypa_log_out("Unable to init ypaworld.class\n");

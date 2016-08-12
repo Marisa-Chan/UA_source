@@ -355,14 +355,13 @@ int VhclProtoParser(scrCallBack *arg)
                 stack_vals *val = find_id_in_stack2(NC_STACK_yparobo::ROBO_ATT_PROTO, vhcl->stak);
                 if ( val )
                 {
-                    val->value = (size_t)robo;
+                    val->value.p_data = robo;
                 }
                 else
                 {
-                    vhcl->stack_pointer__position->id = NC_STACK_yparobo::ROBO_ATT_PROTO;
-                    vhcl->stack_pointer__position->value = (size_t)robo;
+                    vhcl->stack_pointer__position->set(NC_STACK_yparobo::ROBO_ATT_PROTO, robo);
                     vhcl->stack_pointer__position++;
-                    vhcl->stack_pointer__position->id = 0;
+                    vhcl->stack_pointer__position->end();
                 }
             }
 
@@ -418,14 +417,13 @@ int VhclProtoParser(scrCallBack *arg)
 
                 if ( val )
                 {
-                    val->value = 3;
+                    val->value.i_data = 3;
                 }
                 else
                 {
-                    vhcl->stack_pointer__position->id = NC_STACK_ypaflyer::FLY_ATT_TYPE;
-                    vhcl->stack_pointer__position->value = 3;
+                    vhcl->stack_pointer__position->set(NC_STACK_ypaflyer::FLY_ATT_TYPE, 3);
                     vhcl->stack_pointer__position++;
-                    vhcl->stack_pointer__position->id = 0;
+                    vhcl->stack_pointer__position->end();
                 }
             }
             else if ( !strcasecmp(_p2, "glider") )
@@ -434,14 +432,13 @@ int VhclProtoParser(scrCallBack *arg)
                 stack_vals *val = find_id_in_stack2(NC_STACK_ypaflyer::FLY_ATT_TYPE, vhcl->stak);
                 if ( val )
                 {
-                    val->value = 2;
+                    val->value.i_data = 2;
                 }
                 else
                 {
-                    vhcl->stack_pointer__position->id = NC_STACK_ypaflyer::FLY_ATT_TYPE;
-                    vhcl->stack_pointer__position->value = 2;
+                    vhcl->stack_pointer__position->set(NC_STACK_ypaflyer::FLY_ATT_TYPE, 2);
                     vhcl->stack_pointer__position++;
-                    vhcl->stack_pointer__position->id = 0;
+                    vhcl->stack_pointer__position->end();
                 }
             }
             else if ( !strcasecmp(_p2, "zeppelin") )
@@ -450,14 +447,13 @@ int VhclProtoParser(scrCallBack *arg)
                 stack_vals *val = find_id_in_stack2(NC_STACK_ypaflyer::FLY_ATT_TYPE, vhcl->stak);
                 if ( val )
                 {
-                    val->value = 0;
+                    val->value.i_data = 0;
                 }
                 else
                 {
-                    vhcl->stack_pointer__position->id = NC_STACK_ypaflyer::FLY_ATT_TYPE;
-                    vhcl->stack_pointer__position->value = 0;
+                    vhcl->stack_pointer__position->set(NC_STACK_ypaflyer::FLY_ATT_TYPE, 0);
                     vhcl->stack_pointer__position++;
-                    vhcl->stack_pointer__position->id = 0;
+                    vhcl->stack_pointer__position->end();
                 }
             }
             else
@@ -710,14 +706,13 @@ int VhclProtoParser(scrCallBack *arg)
             stack_vals *val = find_id_in_stack2(NC_STACK_ypagun::GUN_ATT_SIDEANGLE, vhcl->stak);
             if ( val )
             {
-                val->value = strtol(_p2, NULL, 0);
+                val->value.i_data = strtol(_p2, NULL, 0);
             }
             else
             {
-                vhcl->stack_pointer__position->id = NC_STACK_ypagun::GUN_ATT_SIDEANGLE;
-                vhcl->stack_pointer__position->value = strtol(_p2, NULL, 0);
+                vhcl->stack_pointer__position->set(NC_STACK_ypagun::GUN_ATT_SIDEANGLE, (int)strtol(_p2, NULL, 0));
                 vhcl->stack_pointer__position++;
-                vhcl->stack_pointer__position->id = 0;
+                vhcl->stack_pointer__position->end();
             }
         }
         else if ( !strcasecmp(_p1, "gun_up_angle") )
@@ -725,14 +720,13 @@ int VhclProtoParser(scrCallBack *arg)
             stack_vals *val = find_id_in_stack2(NC_STACK_ypagun::GUN_ATT_UPANGLE, vhcl->stak);
             if ( val )
             {
-                val->value = strtol(_p2, NULL, 0);
+                val->value.i_data = strtol(_p2, NULL, 0);
             }
             else
             {
-                vhcl->stack_pointer__position->id = NC_STACK_ypagun::GUN_ATT_UPANGLE;
-                vhcl->stack_pointer__position->value = strtol(_p2, NULL, 0);
+                vhcl->stack_pointer__position->set(NC_STACK_ypagun::GUN_ATT_UPANGLE, (int)strtol(_p2, NULL, 0));
                 vhcl->stack_pointer__position++;
-                vhcl->stack_pointer__position->id = 0;
+                vhcl->stack_pointer__position->end();
             }
         }
         else if ( !strcasecmp(_p1, "gun_down_angle") )
@@ -740,14 +734,13 @@ int VhclProtoParser(scrCallBack *arg)
             stack_vals *val = find_id_in_stack2(NC_STACK_ypagun::GUN_ATT_DOWNANGLE, vhcl->stak);
             if ( val )
             {
-                val->value = strtol(_p2, NULL, 0);
+                val->value.i_data = strtol(_p2, NULL, 0);
             }
             else
             {
-                vhcl->stack_pointer__position->id = NC_STACK_ypagun::GUN_ATT_DOWNANGLE;
-                vhcl->stack_pointer__position->value = strtol(_p2, NULL, 0);
+                vhcl->stack_pointer__position->set(NC_STACK_ypagun::GUN_ATT_DOWNANGLE, (int)strtol(_p2, NULL, 0));
                 vhcl->stack_pointer__position++;
-                vhcl->stack_pointer__position->id = 0;
+                vhcl->stack_pointer__position->end();
             }
         }
         else if ( !strcasecmp(_p1, "gun_type") )
@@ -770,14 +763,13 @@ int VhclProtoParser(scrCallBack *arg)
                 stack_vals *val = find_id_in_stack2(NC_STACK_ypagun::GUN_ATT_FIRETYPE, vhcl->stak);
                 if ( val )
                 {
-                    val->value = gun_type;
+                    val->value.i_data = gun_type;
                 }
                 else
                 {
-                    vhcl->stack_pointer__position->id = NC_STACK_ypagun::GUN_ATT_FIRETYPE;
-                    vhcl->stack_pointer__position->value = gun_type;
+                    vhcl->stack_pointer__position->set(NC_STACK_ypagun::GUN_ATT_FIRETYPE, gun_type);
                     vhcl->stack_pointer__position++;
-                    vhcl->stack_pointer__position->id = 0;
+                    vhcl->stack_pointer__position->end();
                 }
             }
         }
@@ -786,27 +778,25 @@ int VhclProtoParser(scrCallBack *arg)
             stack_vals *val = find_id_in_stack2(NC_STACK_ypacar::CAR_ATT_KAMIKAZE, vhcl->stak);
             if ( val )
             {
-                val->value = 1;
+                val->value.i_data = 1;
             }
             else
             {
-                vhcl->stack_pointer__position->id = NC_STACK_ypacar::CAR_ATT_KAMIKAZE;
-                vhcl->stack_pointer__position->value = 1;
+                vhcl->stack_pointer__position->set(NC_STACK_ypacar::CAR_ATT_KAMIKAZE, 1);
                 vhcl->stack_pointer__position++;
-                vhcl->stack_pointer__position->id = 0;
+                vhcl->stack_pointer__position->end();
             }
 
             val = find_id_in_stack2(NC_STACK_ypacar::CAR_ATT_BLAST, vhcl->stak);
             if ( val )
             {
-                val->value = strtol(_p2, NULL, 0);
+                val->value.i_data = strtol(_p2, NULL, 0);
             }
             else
             {
-                vhcl->stack_pointer__position->id = NC_STACK_ypacar::CAR_ATT_BLAST;
-                vhcl->stack_pointer__position->value = strtol(_p2, NULL, 0);
+                vhcl->stack_pointer__position->set(NC_STACK_ypacar::CAR_ATT_BLAST, (int)strtol(_p2, NULL, 0));
                 vhcl->stack_pointer__position++;
-                vhcl->stack_pointer__position->id = 0;
+                vhcl->stack_pointer__position->end();
             }
         }
         else if ( !strcasecmp(_p1, "wireframe") )
@@ -816,7 +806,12 @@ int VhclProtoParser(scrCallBack *arg)
                 delete_class_obj(vhcl->wireframe);
                 vhcl->wireframe = NULL;
             }
-            vhcl->wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, _p2, 0);
+
+            stack_vals init_vals[2];
+            init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
+            init_vals[1].end();
+
+            vhcl->wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
         }
         else if ( !strcasecmp(_p1, "hud_wireframe") )
         {
@@ -825,7 +820,12 @@ int VhclProtoParser(scrCallBack *arg)
                 delete_class_obj(vhcl->hud_wireframe);
                 vhcl->hud_wireframe = NULL;
             }
-            vhcl->hud_wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, _p2, 0);
+
+            stack_vals init_vals[2];
+            init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
+            init_vals[1].end();
+
+            vhcl->hud_wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
         }
         else if ( !strcasecmp(_p1, "mg_wireframe") )
         {
@@ -834,7 +834,12 @@ int VhclProtoParser(scrCallBack *arg)
                 delete_class_obj(vhcl->mg_wireframe);
                 vhcl->mg_wireframe = NULL;
             }
-            vhcl->mg_wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, _p2, 0);
+
+            stack_vals init_vals[2];
+            init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
+            init_vals[1].end();
+
+            vhcl->mg_wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
         }
         else if ( !strcasecmp(_p1, "wpn_wireframe_1") )
         {
@@ -843,7 +848,12 @@ int VhclProtoParser(scrCallBack *arg)
                 delete_class_obj(vhcl->wpn_wireframe_1);
                 vhcl->wpn_wireframe_1 = NULL;
             }
-            vhcl->wpn_wireframe_1 = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, _p2, 0);
+
+            stack_vals init_vals[2];
+            init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
+            init_vals[1].end();
+
+            vhcl->wpn_wireframe_1 = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
         }
         else if ( !strcasecmp(_p1, "wpn_wireframe_2") )
         {
@@ -852,7 +862,12 @@ int VhclProtoParser(scrCallBack *arg)
                 delete_class_obj(vhcl->wpn_wireframe_2);
                 vhcl->wpn_wireframe_2 = NULL;
             }
-            vhcl->wpn_wireframe_2 = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, _p2, 0);
+
+            stack_vals init_vals[2];
+            init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
+            init_vals[1].end();
+
+            vhcl->wpn_wireframe_2 = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
         }
         else if ( !strcasecmp(_p1, "vo_type") )
         {
@@ -1012,14 +1027,13 @@ int VhclProtoParser(scrCallBack *arg)
             stack_vals *val = find_id_in_stack2(NC_STACK_yparobo::ROBO_ATT_WAIT_ROTATE, vhcl->stak);
             if ( val )
             {
-                val->value = 1;
+                val->value.i_data = 1;
             }
             else
             {
-                vhcl->stack_pointer__position->id = NC_STACK_yparobo::ROBO_ATT_WAIT_ROTATE;
-                vhcl->stack_pointer__position->value = 1;
+                vhcl->stack_pointer__position->set(NC_STACK_yparobo::ROBO_ATT_WAIT_ROTATE, 1);
                 vhcl->stack_pointer__position++;
-                vhcl->stack_pointer__position->id = 0;
+                vhcl->stack_pointer__position->end();
             }
         }
         else if ( !strcasecmp(_p1, "robo_does_flux") )
@@ -1027,14 +1041,13 @@ int VhclProtoParser(scrCallBack *arg)
             stack_vals *val = find_id_in_stack2(NC_STACK_yparobo::ROBO_ATT_WAIT_SWAY, vhcl->stak);
             if ( val )
             {
-                val->value = 1;
+                val->value.i_data = 1;
             }
             else
             {
-                vhcl->stack_pointer__position->id = NC_STACK_yparobo::ROBO_ATT_WAIT_SWAY;
-                vhcl->stack_pointer__position->value = 1;
+                vhcl->stack_pointer__position->set(NC_STACK_yparobo::ROBO_ATT_WAIT_SWAY, 1);
                 vhcl->stack_pointer__position++;
-                vhcl->stack_pointer__position->id = 0;
+                vhcl->stack_pointer__position->end();
             }
         }
         else
@@ -1497,7 +1510,12 @@ int WeaponProtoParser(scrCallBack *arg)
                 delete_class_obj(wpn->wireframe);
                 wpn->wireframe = NULL;
             }
-            wpn->wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, _p2, 0);
+
+            stack_vals init_vals[2];
+            init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
+            init_vals[1].end();
+
+            wpn->wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
         }
         else if ( !strcasecmp(_p1, "dest_fx") )
         {
@@ -3035,7 +3053,12 @@ int ShellSoundsParse_sample(UserData *usr, scrCallBack *arg)
 
     set_prefix_replacement("rsrc", "data:");
 
-    v3[v4] = (NC_STACK_wav *)init_get_class("wav.class", 0x80001000, arg->p2, 0);
+
+    stack_vals init_vals[2];
+    init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, arg->p2);
+    init_vals[1].end();
+
+    v3[v4] = (NC_STACK_wav *)init_get_class("wav.class", init_vals);
     if ( !v3[v4] )
         return 4;
 
@@ -4640,7 +4663,15 @@ NC_STACK_ilbm * readMapDumpAsILBM(_NC_STACK_ypaworld *yw, const char *mapName, F
     v3 = strtok(0, " \n");
     int h = strtol(v3, NULL, 0);
 
-    NC_STACK_bitmap *v7 = (NC_STACK_bitmap *)init_get_class("bitmap.class", 0x80001000, mapName, 0x80002002, w, 0x80002003, h, 0x80002006, 1, 0);
+
+    stack_vals init_vals[5];
+    init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, mapName);
+    init_vals[1].set( NC_STACK_bitmap::BMD_ATT_WIDTH, w);
+    init_vals[2].set( NC_STACK_bitmap::BMD_ATT_HEIGHT, h);
+    init_vals[3].set( NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
+    init_vals[4].end();
+
+    NC_STACK_bitmap *v7 = (NC_STACK_bitmap *)init_get_class("bitmap.class", init_vals);
     if ( !v7 )
         return NULL;
 
@@ -4668,7 +4699,12 @@ NC_STACK_ilbm * readMapDumpAsILBM(_NC_STACK_ypaworld *yw, const char *mapName, F
         }
     }
 
-    NC_STACK_ilbm *tmp = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, mapName, 0x80003000, 1, 0);
+
+    init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, mapName);
+    init_vals[1].set( NC_STACK_ilbm::ILBM_ATT_FMT, 1);
+    init_vals[2].end();
+
+    NC_STACK_ilbm *tmp = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
     delete_class_obj(v7);
 
     return tmp;

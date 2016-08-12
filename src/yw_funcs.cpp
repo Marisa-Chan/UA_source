@@ -102,7 +102,13 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
             return NULL;
         }
 
-        tileset->font_image = dynamic_cast<NC_STACK_bitmap *>( init_get_class("ilbm.class", 0x80001000, bitmap_name, 0x80002008, 1, 0x80002009, 1, 0) );
+        stack_vals init_vals[4];
+        init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, bitmap_name);
+        init_vals[1].set(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
+        init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+        init_vals[3].end();
+
+        tileset->font_image = dynamic_cast<NC_STACK_bitmap *>( init_get_class("ilbm.class", init_vals) );
         if ( !tileset->font_image )
         {
             if ( tileset->chars )
@@ -237,7 +243,13 @@ tiles_stru * yw_LoadTileSet(const char *filename, int chr_width, int font_height
 
     if ( tileset )
     {
-        tileset->font_image = dynamic_cast<NC_STACK_bitmap *>( init_get_class("ilbm.class", 0x80001000, filename, 0x80002008, 1, 0x80002009, 1, 0) );
+        stack_vals init_vals[4];
+        init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, filename);
+        init_vals[1].set(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
+        init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+        init_vals[3].end();
+
+        tileset->font_image = dynamic_cast<NC_STACK_bitmap *>( init_get_class("ilbm.class", init_vals) );
         if ( tileset->font_image )
         {
             tileset->field_4 = tileset->font_image->getBMD_pBitmap();
@@ -1098,7 +1110,11 @@ int yw_parse_lego(_NC_STACK_ypaworld *yw, FILE *fil, NC_STACK_base *base)
             if ( !v11 )
                 return 0;
 
-            NC_STACK_sklt *skelet = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, v11, 0);
+            stack_vals init_vals[2];
+            init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, v11);
+            init_vals[1].end();
+
+            NC_STACK_sklt *skelet = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
             if ( !skelet )
             {
                 ypa_log_out("Couldn't load sklt (%s)\n", v11);
@@ -1371,7 +1387,11 @@ int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
 
     set_prefix_replacement("rsrc", "data:mc2res");
 
-    NC_STACK_sklt *tmp_skel = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, "Skeleton/ColSide.sklt", 0);
+    stack_vals init_vals[2];
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "Skeleton/ColSide.sklt");
+    init_vals[1].end();
+
+    NC_STACK_sklt *tmp_skel = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
     if ( !tmp_skel )
     {
         ypa_log_out("Couldn't create side collision sklt.\n");
@@ -1381,7 +1401,11 @@ int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
     yw->ColSide.skeleton = tmp_skel;
     yw->ColSide.skeleton_internal = yw->ColSide.skeleton->getSKEL_pSkelet();
 
-    tmp_skel = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, "Skeleton/ColCross.sklt", 0);
+
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "Skeleton/ColCross.sklt");
+    init_vals[1].end();
+
+    tmp_skel = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
     if ( !tmp_skel )
     {
         ypa_log_out("Couldn't create cross collision sklt.\n");
@@ -1443,7 +1467,13 @@ int yw_InitMouseStuff(_NC_STACK_ypaworld *yw)
             break;
         }
 
-        yw->pointers[i] = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, v5, 0x80002008, 1, 0x80002009, 1, 0);
+        stack_vals init_vals[4];
+        init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, v5);
+        init_vals[1].set(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
+        init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+        init_vals[3].end();
+
+        yw->pointers[i] = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
         if ( !yw->pointers[i] )
         {
             ypa_log_out("yw_select.c/yw_InitMouseStuff()\n");
@@ -1484,7 +1514,11 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
 
     set_prefix_replacement("rsrc", "data:mc2res");
 
-    yw->colsub_sklt = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, "skeleton/colsub.sklt", 0);
+    stack_vals init_vals[2];
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "skeleton/colsub.sklt");
+    init_vals[1].end();
+
+    yw->colsub_sklt = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
     if ( !yw->colsub_sklt )
     {
         ypa_log_out("Couldn't load <skeleton/colsub.sklt>, set %d.\n", setID);
@@ -1492,7 +1526,11 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
     }
     yw->colsub_sklt_intrn = yw->colsub_sklt->getSKEL_pSkelet();
 
-    yw->colcomp_sklt = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, "skeleton/colcomp.sklt", 0);
+
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "skeleton/colcomp.sklt");
+    init_vals[1].end();
+
+    yw->colcomp_sklt = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
     if ( !yw->colcomp_sklt )
     {
         ypa_log_out("Couldn't load <skeleton/colcomp.sklt>, set %d.\n", setID);
@@ -1587,14 +1625,21 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
         FClose(fil);
     }
 
-    yw->tracyrmp_ilbm = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, "remap/tracyrmp.ilbm", 0);
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "remap/tracyrmp.ilbm");
+    init_vals[1].end();
+
+    yw->tracyrmp_ilbm = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
     if ( !yw->tracyrmp_ilbm )
     {
         ypa_log_out("Couldn't load tracy remap table, set %d.\n", setID);
         return 0;
     }
 
-    yw->shadermp_ilbm = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, "remap/shadermp.ilbm", 0);
+
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "remap/shadermp.ilbm");
+    init_vals[1].end();
+
+    yw->shadermp_ilbm = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
     if ( !yw->shadermp_ilbm )
     {
         ypa_log_out("Couldn't load shade remap table, set %d.\n", setID);
@@ -2312,17 +2357,33 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
 
                 set_prefix_replacement("rsrc", "levels:");
 
+                stack_vals init_vals[4];
+                init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, yw->LevelNet->brief_map[0].map_name);
+                init_vals[1].set(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
+                init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+                init_vals[3].end();
+
                 if ( yw->LevelNet->brief_map[0].map_name[0] )
-                    brf->briefing_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, yw->LevelNet->brief_map[0].map_name, 0x80002008, 1, 0x80002009, 1, 0);
+                    brf->briefing_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
 
                 set_prefix_replacement("rsrc", "mbpix:");
 
-                brf->mbmap_img = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, mproto->mbmaps[0].name, 0x80002008, 1, 0x80002009, 1, 0);
+
+                init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, mproto->mbmaps[0].name);
+                init_vals[1].set(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
+                init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+                init_vals[3].end();
+
+                brf->mbmap_img = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
 
                 if ( brf->mbmap_img )
                 {
+
+                    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, mproto->typ);
+                    init_vals[1].end();
+
                     if ( !yw->typ_map )
-                        yw->typ_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, mproto->typ, 0);
+                        yw->typ_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
 
                     if ( yw->typ_map )
                     {
@@ -2398,7 +2459,13 @@ NC_STACK_bitmap * sub_44816C(NC_STACK_bitmap *src, const char *name)
 {
     bitmap_intern *a4 = src->getBMD_pBitmap();
 
-    NC_STACK_bitmap *v3 = (NC_STACK_bitmap *)init_get_class("bitmap.class", 0x80001000, name, 0x80002002, a4->width, 0x80002003, a4->height, 0);
+    stack_vals init_vals[4];
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, name);
+    init_vals[1].set(NC_STACK_bitmap::BMD_ATT_WIDTH, a4->width);
+    init_vals[2].set(NC_STACK_bitmap::BMD_ATT_HEIGHT, a4->height);
+    init_vals[3].end();
+
+    NC_STACK_bitmap *v3 = (NC_STACK_bitmap *)init_get_class("bitmap.class", init_vals);
 
     if ( v3 )
     {
@@ -2451,7 +2518,11 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
 
     for (int i = 0; i < 4; i++)
     {
-        brf->wireless_db[i] = (NC_STACK_sklt *)init_get_class("sklt.class", 0x80001000, wireless_db[i], 0);
+        stack_vals init_vals[2];
+        init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, wireless_db[i]);
+        init_vals[1].end();
+
+        brf->wireless_db[i] = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
         if (brf->wireless_db[i])
             brf->wireless_db_skels[i] = brf->wireless_db[i]->getSKEL_pSkelet();
     }
@@ -2489,12 +2560,25 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
 
     set_prefix_replacement("rsrc", "levels:");
 
+
+    stack_vals init_vals[4];
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, yw->LevelNet->debrief_map[0].map_name);
+    init_vals[1].set(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
+    init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+    init_vals[3].end();
+
     if ( yw->LevelNet->debrief_map[0].map_name[0] )
-        brf->briefing_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, yw->LevelNet->debrief_map[0].map_name, 0x80002008, 1, 0x80002009, 1, 0);
+        brf->briefing_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
 
     set_prefix_replacement("rsrc", "mbpix:");
 
-    brf->mbmap_img = (NC_STACK_ilbm *)init_get_class("ilbm.class", 0x80001000, v8->name, 0x80002008, 1, 0x80002009, 1, 0);;
+
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, v8->name);
+    init_vals[1].set(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
+    init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+    init_vals[3].end();
+
+    brf->mbmap_img = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
     if ( !brf->mbmap_img )
     {
         sub_4EE04C(yw);
