@@ -337,13 +337,13 @@ int NC_STACK_particle::particle_func0__sub0(stack_vals *stak)
 
     while ( 1 )
     {
-        if (stk->id == 0)
+        if (stk->id == stack_vals::TAG_END)
             break;
-        else if (stk->id == 2)
+        else if (stk->id == stack_vals::TAG_PTAGS)
         {
             stk = (stack_vals *)stk->value.p_data;
         }
-        else if ( stk->id == 3 )
+        else if ( stk->id == stack_vals::TAG_SKIP_N )
         {
             stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
@@ -539,13 +539,13 @@ void NC_STACK_particle::particle_func2__sub0(stack_vals *stak)
 
     while ( 1 )
     {
-        if (stk->id == 0)
+        if (stk->id == stack_vals::TAG_END)
             break;
-        else if (stk->id == 2)
+        else if (stk->id == stack_vals::TAG_PTAGS)
         {
             stk = (stack_vals *)stk->value.p_data;
         }
-        else if ( stk->id == 3 )
+        else if ( stk->id == stack_vals::TAG_SKIP_N )
         {
             stk += stk->value.i_data;
             ////a2++; ////BUGFIX?
@@ -633,13 +633,13 @@ void NC_STACK_particle::particle_func3__sub0(stack_vals *stak)
 
     while ( 1 )
     {
-        if (stk->id == 0)
+        if (stk->id == stack_vals::TAG_END)
             break;
-        else if (stk->id == 2)
+        else if (stk->id == stack_vals::TAG_PTAGS)
         {
             stk = (stack_vals *)stk->value.p_data;
         }
-        else if ( stk->id == 3 )
+        else if ( stk->id == stack_vals::TAG_SKIP_N )
         {
             stk += stk->value.i_data;
             ////a2++; ////BUGFIX?

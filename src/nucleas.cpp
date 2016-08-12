@@ -9,14 +9,14 @@ void NC_STACK_nucleus::nucleus_func0__sub0(stack_vals *a2)
 {
     while ( 1 )
     {
-        if ( a2->id == 0)
+        if ( a2->id == stack_vals::TAG_END)
             break;
 
-        if ( a2->id == 2 )
+        if ( a2->id == stack_vals::TAG_PTAGS )
         {
             a2 = (stack_vals *)a2->value.p_data;
         }
-        else if ( a2->id == 3 )
+        else if ( a2->id == stack_vals::TAG_SKIP_N )
         {
             a2 += a2->value.i_data;
             ////a2++; ////BUGFIX?
@@ -51,14 +51,14 @@ void NC_STACK_nucleus::nucleus_setter(stack_vals *a2)
 {
     while ( 1 )
     {
-        if ( a2->id == 0)
+        if ( a2->id == stack_vals::TAG_END)
             break;
 
-        if ( a2->id == 2 )
+        if ( a2->id == stack_vals::TAG_PTAGS )
         {
             a2 = (stack_vals *)a2->value.p_data;
         }
-        else if ( a2->id == 3 )
+        else if ( a2->id == stack_vals::TAG_SKIP_N )
         {
             a2 += a2->value.i_data;
             ////a2++; ////BUGFIX?
@@ -85,14 +85,14 @@ void NC_STACK_nucleus::nucleus_getter(stack_vals *a2)
 {
     while ( 1 )
     {
-        if ( a2->id == 0)
+        if ( a2->id == stack_vals::TAG_END)
             break;
 
-        if ( a2->id == 2 )
+        if ( a2->id == stack_vals::TAG_PTAGS )
         {
             a2 = (stack_vals *)a2->value.p_data;
         }
-        else if ( a2->id == 3 )
+        else if ( a2->id == stack_vals::TAG_SKIP_N )
         {
             a2 += a2->value.i_data;
             ////a2++; ////BUGFIX?
@@ -270,12 +270,12 @@ stack_vals * find_id_in_stack2(unsigned int id, stack_vals *a2)
     {
         if ( a2->id == id )
             return a2;
-        if ( a2->id == 0 )
+        if ( a2->id == stack_vals::TAG_END )
             return NULL;
 
-        if ( a2->id == 2 )
+        if ( a2->id == stack_vals::TAG_PTAGS )
             a2 = (stack_vals *)a2->value.p_data;
-        else if ( a2->id == 3 )
+        else if ( a2->id == stack_vals::TAG_SKIP_N )
             a2 += a2->value.i_data;
         else
             a2++;
@@ -291,17 +291,17 @@ size_t find_id_in_stack_def_val(unsigned int find_id, size_t def_value, stack_va
     {
         if ( a3->id == find_id )
             return a3->value.u_data;
-        if ( a3->id == 0 )
+        if ( a3->id == stack_vals::TAG_END )
             return def_value;
 
-        if ( a3->id == 2 )
+        if ( a3->id == stack_vals::TAG_PTAGS )
         {
             if (a3->value.p_data == NULL)
                 printf("find_id_in_stack_def_val, stack NULL pointer\n");
             else
                 a3 = (stack_vals *)a3->value.p_data;
         }
-        else if ( a3->id == 3 )
+        else if ( a3->id == stack_vals::TAG_SKIP_N )
             a3 += a3->value.i_data;
         else
             a3++;

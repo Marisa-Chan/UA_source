@@ -32,7 +32,7 @@ size_t NC_STACK_display::func2(stack_vals *stak)
     if ( val )
     {
         setBMD_palette((UA_PALETTE *)val->value.p_data);
-        val->id = 1;
+        val->id = stack_vals::TAG_SKIP;
     }
 
     return NC_STACK_raster::func2(stak);
@@ -44,7 +44,7 @@ size_t NC_STACK_display::func3(stack_vals *stak)
     if ( val )
     {
         *(UA_PALETTE **)val->value.p_data = getBMD_palette();
-        val->id = 1;
+        val->id = stack_vals::TAG_SKIP;
     }
 
     return NC_STACK_raster::func3(stak);
