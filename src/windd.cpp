@@ -2851,7 +2851,7 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
 
         while ( 1 )
         {
-            int v13 = fntcmd_get_u8(&curpos);
+            int v13 = FontUA::get_u8(&curpos);
 
             if ( v13 )
             {
@@ -2896,7 +2896,7 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
             }
             else // 0
             {
-                int opcode = fntcmd_get_u8(&curpos);
+                int opcode = FontUA::get_u8(&curpos);
 
                 switch ( opcode )
                 {
@@ -2916,7 +2916,7 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
                     return;
 
                 case 1: // x pos from center
-                    x_out = halfWidth + fntcmd_get_s16(&curpos);
+                    x_out = halfWidth + FontUA::get_s16(&curpos);
                     x_pos_line = x_out;
 
                     y_pos_line = y_out;
@@ -2926,7 +2926,7 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
                     break;
 
                 case 2: // y pos from center
-                    y_out = halfHeight + fntcmd_get_s16(&curpos);
+                    y_out = halfHeight + FontUA::get_s16(&curpos);
                     x_pos_line = x_out;
 
                     y_pos_line = y_out;
@@ -2936,7 +2936,7 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
                     break;
 
                 case 3: //xpos
-                    x_out = fntcmd_get_s16(&curpos);
+                    x_out = FontUA::get_s16(&curpos);
                     if ( x_out < 0 )
                         x_out += pitch;
 
@@ -2948,7 +2948,7 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
                     break;
 
                 case 4: //ypos
-                    y_out = fntcmd_get_s16(&curpos);
+                    y_out = FontUA::get_s16(&curpos);
                     if ( y_out < 0 )
                         y_out += rilHeight;
 
@@ -2960,11 +2960,11 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
                     break;
 
                 case 5: //add to x pos
-                    x_out += fntcmd_get_s16(&curpos);
+                    x_out += FontUA::get_s16(&curpos);
                     break;
 
                 case 6: //add to y pos
-                    y_out += fntcmd_get_s16(&curpos);
+                    y_out += FontUA::get_s16(&curpos);
                     break;
 
                 case 7: //next line
@@ -2977,12 +2977,12 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
                     break;
 
                 case 8: // Select tileset
-                    tile = tiles[fntcmd_get_u8(&curpos)];
+                    tile = tiles[FontUA::get_u8(&curpos)];
                     break;
 
                 case 9: // Include another cmdlist source
                 {
-                    int azaza = fntcmd_get_u8(&curpos);
+                    int azaza = FontUA::get_u8(&curpos);
                     positions[position_idx] = curpos;
                     position_idx++;
                     curpos = arr[azaza];
@@ -2990,7 +2990,7 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
                 break;
 
                 case 10:
-                    line_width = fntcmd_get_u8(&curpos);
+                    line_width = FontUA::get_u8(&curpos);
 
                     v11 = 0;
                     x_off = 0;
@@ -2999,7 +2999,7 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
 
                 case 11:
 
-                    line_width = fntcmd_get_u8(&curpos);
+                    line_width = FontUA::get_u8(&curpos);
 
                     v11 = 0;
                     x_off = 0;
@@ -3008,29 +3008,29 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
                     break;
 
                 case 12: // Set x offset
-                    x_off = fntcmd_get_u8(&curpos);
+                    x_off = FontUA::get_u8(&curpos);
                     break;
 
                 case 13: // Set x width
-                    line_width = fntcmd_get_u8(&curpos);
+                    line_width = FontUA::get_u8(&curpos);
                     break;
 
                 case 14: // Set y offset
-                    y_off = fntcmd_get_u8(&curpos);
+                    y_off = FontUA::get_u8(&curpos);
                     break;
 
                 case 15: // Set y height
-                    line_height = fntcmd_get_u8(&curpos);
+                    line_height = FontUA::get_u8(&curpos);
                     break;
 
                 case 16: // Full reset tileset
-                    tile = tiles[fntcmd_get_u8(&curpos)];
+                    tile = tiles[FontUA::get_u8(&curpos)];
                     line_height = tile->font_height;
                     y_off = 0;
                     break;
 
                 case 17:
-                    line_width = fntcmd_get_s16(&curpos);
+                    line_width = FontUA::get_s16(&curpos);
                     v11 = 0;
                     x_off = 0;
                     line_width -= (x_out - x_pos_line);
@@ -3038,8 +3038,8 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
 
                 case 18: // Add text
                 {
-                    int block_width = fntcmd_get_s16(&curpos);
-                    int flag = txt_flag | fntcmd_get_u16(&curpos);
+                    int block_width = FontUA::get_s16(&curpos);
+                    int flag = txt_flag | FontUA::get_u16(&curpos);
 
                     char *txtpos = (char *)curpos;
 
@@ -3054,20 +3054,20 @@ void windd_func209__sub0(__NC_STACK_windd *wdd, tiles_stru **tiles, char *cmdlin
                     break;
 
                 case 20: // Add txtout flag
-                    txt_flag |= fntcmd_get_u16(&curpos);
+                    txt_flag |= FontUA::get_u16(&curpos);
                     break;
 
                 case 21: // Delete txtout flag
-                    txt_flag &= ~(fntcmd_get_u16(&curpos));
+                    txt_flag &= ~(FontUA::get_u16(&curpos));
                     break;
 
                 case 22: // set color for font
                 {
-                    int r = fntcmd_get_u16(&curpos);
+                    int r = FontUA::get_u16(&curpos);
 
-                    int g = fntcmd_get_u16(&curpos);
+                    int g = FontUA::get_u16(&curpos);
 
-                    int b = fntcmd_get_u16(&curpos);
+                    int b = FontUA::get_u16(&curpos);
 
                     dbcs_AddText(0, r, g, b, 0, 0x20);
                 }
@@ -3375,19 +3375,19 @@ void windd_func258__sub0(NC_STACK_windd *obj, __NC_STACK_display *dspl, __NC_STA
             char cmdBuff[64];
             char *cmdPoint = &cmdBuff[0];
 
-            fntcmd_select_tileset(&cmdPoint, 127);
-            fntcmd_set_center_xpos(&cmdPoint, xx - (w / 2));
-            fntcmd_set_center_ypos(&cmdPoint, yy - (h / 2));
+            FontUA::select_tileset(&cmdPoint, 127);
+            FontUA::set_center_xpos(&cmdPoint, xx - (w / 2));
+            FontUA::set_center_ypos(&cmdPoint, yy - (h / 2));
 
             if (v21)
-                fntcmd_set_xwidth(&cmdPoint, v21);
+                FontUA::set_xwidth(&cmdPoint, v21);
 
             if (v20)
-                fntcmd_set_yheight(&cmdPoint, v20);
+                FontUA::set_yheight(&cmdPoint, v20);
 
-            fntcmd_store_u8(&cmdPoint, 1);
+            FontUA::store_u8(&cmdPoint, 1);
 
-            fntcmd_set_end(&cmdPoint);
+            FontUA::set_end(&cmdPoint);
 
             w3d_a209 a209;
             a209.cmdbuf = cmdBuff;
@@ -3714,7 +3714,7 @@ void NC_STACK_windd::windd_func324(wdd_func324arg *inout)
         node = (wddDevice *)graph_drivers_list.head;
         while (node->next)
         {
-            if ( !strcmp(node->name, inout->name) )
+            if ( node->guid == inout->guid )
             {
                 findedNode = (wddDevice *)node->next;
 

@@ -109,8 +109,8 @@ size_t NC_STACK_button::func1(stack_vals *stak)
             nc_FreeMem(btn->field_d8[i]);
         }
 
-        if (btn->field_18[i])
-            nc_FreeMem(btn->field_18[i]);
+        if (btn->buttons[i])
+            nc_FreeMem(btn->buttons[i]);
     }
 
     return NC_STACK_nucleus::func1(stak);
@@ -259,45 +259,45 @@ void sub_436F58(__NC_STACK_button *btn, button_str2 *sbt)
     {
         if ( sbt->state & 0x10 )
         {
-            fntcmd_store_u8(&cpt, btn->field_19F);
+            FontUA::store_u8(&cpt, btn->field_19F);
 
             if ( sbttt->field_6 > 1 )
             {
-                fntcmd_op17(&cpt, sbttt->field_6);
-                fntcmd_store_u8(&cpt, btn->field_1A0);
+                FontUA::op17(&cpt, sbttt->field_6);
+                FontUA::store_u8(&cpt, btn->field_1A0);
             }
         }
         else
         {
-            fntcmd_op17(&cpt, sbttt->field_6);
-            fntcmd_store_u8(&cpt, btn->field_1A0);
+            FontUA::op17(&cpt, sbttt->field_6);
+            FontUA::store_u8(&cpt, btn->field_1A0);
         }
     }
 
-    fntcmd_store_u8(&cpt, btn->field_19c);
+    FontUA::store_u8(&cpt, btn->field_19c);
 
-    fntcmd_op17(&cpt, sbttt->field_8);
+    FontUA::op17(&cpt, sbttt->field_8);
 
-    fntcmd_store_u8(&cpt, btn->field_19E);
-    fntcmd_store_u8(&cpt, btn->field_19D);
+    FontUA::store_u8(&cpt, btn->field_19E);
+    FontUA::store_u8(&cpt, btn->field_19D);
 
     if ( sbt->state & 0x10 )
     {
         if ( sbttt->field_8 < sbt->width - 1 )
         {
-            fntcmd_op17(&cpt, sbt->width - 1);
+            FontUA::op17(&cpt, sbt->width - 1);
 
-            fntcmd_store_u8(&cpt, btn->field_1A0);
-            fntcmd_store_u8(&cpt, btn->field_1A1);
+            FontUA::store_u8(&cpt, btn->field_1A0);
+            FontUA::store_u8(&cpt, btn->field_1A1);
         }
     }
     else if ( sbttt->field_8 < sbt->width )
     {
-        fntcmd_op17(&cpt, sbt->width - 1);
+        FontUA::op17(&cpt, sbt->width - 1);
 
-        fntcmd_store_u8(&cpt, btn->field_1A0);
+        FontUA::store_u8(&cpt, btn->field_1A0);
     }
-    fntcmd_set_end(&cpt);
+    FontUA::set_end(&cpt);
 }
 
 size_t NC_STACK_button::button_func64(button_64_arg *arg)
@@ -309,9 +309,9 @@ size_t NC_STACK_button::button_func64(button_64_arg *arg)
     if ( btn->idd >= 48 )
         return 0;
 
-    btn->field_18[idd] = (button_str1 *)AllocVec(sizeof(button_str1), 65537);
+    btn->buttons[idd] = (ButtonBox *)AllocVec(sizeof(ButtonBox), 65537);
 
-    if ( !btn->field_18[idd] )
+    if ( !btn->buttons[idd] )
         return 0;
 
     btn->field_d8[idd] = (button_str2 *)AllocVec(sizeof(button_str2), 65537);
@@ -353,16 +353,16 @@ size_t NC_STACK_button::button_func64(button_64_arg *arg)
 
     btn->idd++;
 
-    button_str1 *bt = btn->field_18[idd];
+    ButtonBox *bt = btn->buttons[idd];
 
-    bt->xpos = sbt->xpos;
-    bt->ypos = sbt->ypos;
-    bt->width = sbt->width;
+    bt->x = sbt->xpos;
+    bt->y = sbt->ypos;
+    bt->w = sbt->width;
 
     if ( sbt->button_type == 3 )
-        bt->fnt_height = 0;
+        bt->h = 0;
     else
-        bt->fnt_height = GFXe.getTileset( arg->tileset_up )->font_height;
+        bt->h = GFXe.getTileset( arg->tileset_up )->font_height;
 
     btn->field_10++;
 
@@ -405,16 +405,16 @@ size_t NC_STACK_button::button_func65(int *butID)
     if ( id >= 0 && id < btn->idd )
     {
         nc_FreeMem(btn->field_d8[id]);
-        nc_FreeMem(btn->field_18[id]);
+        nc_FreeMem(btn->buttons[id]);
 
         for (int i = id; i < 47; i++)
         {
-            btn->field_18[i] = btn->field_18[i + 1];
+            btn->buttons[i] = btn->buttons[i + 1];
             btn->field_d8[i] = btn->field_d8[i + 1];
         }
 
         btn->idd--;
-        btn->field_18[47] = NULL;
+        btn->buttons[47] = NULL;
         btn->field_d8[47] = NULL;
         btn->field_10--;
 
@@ -434,8 +434,8 @@ size_t NC_STACK_button::button_func66(button_66arg *arg)
     {
         if ( btn->field_d8[id]->button_type != 3 )
         {
-            btn->field_18[id]->width = btn->field_d8[id]->width;
-            btn->field_18[id]->fnt_height = GFXe.getTileset( btn->field_d8[id]->tileset_down )->font_height;
+            btn->buttons[id]->w = btn->field_d8[id]->width;
+            btn->buttons[id]->h = GFXe.getTileset( btn->field_d8[id]->tileset_down )->font_height;
         }
 
         btn->field_d8[id]->state &= 0xFFFD;
@@ -454,8 +454,8 @@ size_t NC_STACK_button::button_func67(button_66arg *arg)
 
     if ( id >= 0 && id < btn->idd )
     {
-        btn->field_18[id]->width = 0;
-        btn->field_18[id]->fnt_height = 0;
+        btn->buttons[id]->w = 0;
+        btn->buttons[id]->h = 0;
         btn->field_d8[id]->state |= 2;
 
         if ( !arg->field_4 )
@@ -476,7 +476,7 @@ size_t NC_STACK_button::button_func68(int *arg)
         if ( !(btn->field_19A & 1) )
         {
             btn->field_19A |= 1;
-            INPe.sub_412D48(btn, 0);
+            INPe.AddClickBox(btn, 0);
         }
     }
     else if ( *arg == 2 )
@@ -484,7 +484,7 @@ size_t NC_STACK_button::button_func68(int *arg)
         if ( btn->field_19A & 1 )
         {
             btn->field_19A &= 0xFFFE;
-            INPe.sub_412D9C(btn);
+            INPe.RemClickBox(btn);
         }
     }
 
@@ -723,11 +723,11 @@ void button_func70__sub1(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
 
     char *v8 = *pbuf;
 
-    fntcmd_select_tileset(&v8, v6);
+    FontUA::select_tileset(&v8, v6);
 
-    fntcmd_set_center_xpos(&v8, sbt->xpos + btn->btn_xpos - (btn->screen_width / 2));
+    FontUA::set_center_xpos(&v8, sbt->xpos + btn->xpos - (btn->screen_width / 2));
 
-    fntcmd_set_center_ypos(&v8, sbt->ypos + btn->btn_ypos - (btn->screen_height / 2));
+    FontUA::set_center_ypos(&v8, sbt->ypos + btn->ypos - (btn->screen_height / 2));
 
     int tmp = sbt->width;
 
@@ -735,22 +735,22 @@ void button_func70__sub1(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
     {
         if ( sbt->state & 0x10 )
         {
-            fntcmd_store_u8(&v8, btn->field_19c); //Padding gfx
+            FontUA::store_u8(&v8, btn->field_19c); //Padding gfx
             tmp += -v7->chars[btn->field_19c].width - v7->chars[btn->field_19D].width;
         }
     }
 
-    fntcmd_copy_position(&v8);
+    FontUA::copy_position(&v8);
 
-    fntcmd_op17(&v8, tmp);
+    FontUA::op17(&v8, tmp);
 
-    fntcmd_store_u8(&v8, btn->field_19E); //Padding gfx
+    FontUA::store_u8(&v8, btn->field_19E); //Padding gfx
 
     if ( sbt->button_type != 3 )
     {
         if ( sbt->state & 0x10 )
         {
-            fntcmd_store_u8(&v8, btn->field_19D); //Padding gfx
+            FontUA::store_u8(&v8, btn->field_19D); //Padding gfx
         }
     }
 
@@ -785,9 +785,9 @@ void button_func70__sub1(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
         v17 |= 1;
     }
 
-    fntcmd_set_txtColor(&v8, sbt->txt_r, sbt->txt_g, sbt->txt_b);
+    FontUA::set_txtColor(&v8, sbt->txt_r, sbt->txt_g, sbt->txt_b);
 
-    fntcmd_add_txt(&v8, tmp, v17, v18);
+    FontUA::add_txt(&v8, tmp, v17, v18);
 
     *pbuf = v8;
 }
@@ -832,10 +832,10 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
 
     int v47 = (sbt->width - strwdth - v8->chars[btn->field_19c].width) / 2;
 
-    fntcmd_select_tileset(&v5, v7);
+    FontUA::select_tileset(&v5, v7);
 
-    fntcmd_set_center_xpos(&v5, btn->btn_xpos + sbt->xpos - (btn->screen_width / 2));
-    fntcmd_set_center_ypos(&v5, btn->btn_ypos + sbt->ypos - (btn->screen_height / 2));
+    FontUA::set_center_xpos(&v5, btn->xpos + sbt->xpos - (btn->screen_width / 2));
+    FontUA::set_center_ypos(&v5, btn->ypos + sbt->ypos - (btn->screen_height / 2));
 
     if ( sbt->button_type == 5 )
     {
@@ -855,7 +855,7 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
         {
             if ( sbt->state & 0x10 )
             {
-                fntcmd_store_u8(&v5, btn->field_19c);
+                FontUA::store_u8(&v5, btn->field_19c);
                 ttmp += -v8->chars[btn->field_19c].width - v8->chars[btn->field_19D].width;
             }
         }
@@ -864,9 +864,9 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
         {
             if ( sbt->state & 0x20 )
             {
-                fntcmd_op10(&v5, v47);
+                FontUA::op10(&v5, v47);
 
-                fntcmd_store_u8(&v5, btn->field_19E);
+                FontUA::store_u8(&v5, btn->field_19E);
 
                 v6 = v47;
             }
@@ -887,9 +887,9 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
             {
                 if ( (ttmp - v6) > 2 )
                 {
-                    fntcmd_set_xwidth(&v5, ttmp - v6);
+                    FontUA::set_xwidth(&v5, ttmp - v6);
 
-                    fntcmd_store_s8(&v5, capt[v26]);
+                    FontUA::store_s8(&v5, capt[v26]);
 
                     v6 = ttmp;
                 }
@@ -898,7 +898,7 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
 
             v6 += v28->width;
 
-            fntcmd_store_s8(&v5, capt[v26]);
+            FontUA::store_s8(&v5, capt[v26]);
 
             v26++;
         }
@@ -907,20 +907,20 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
         {
             if ( sbt->button_type != 3 && sbt->state & 0x10 )
             {
-                fntcmd_op17(&v5, sbt->width - v8->chars[btn->field_19D].width);
+                FontUA::op17(&v5, sbt->width - v8->chars[btn->field_19D].width);
             }
             else
             {
-                fntcmd_op17(&v5, sbt->width);
+                FontUA::op17(&v5, sbt->width);
             }
-            fntcmd_store_u8(&v5, btn->field_19E);
+            FontUA::store_u8(&v5, btn->field_19E);
         }
 
         if ( sbt->button_type != 3 )
         {
             if ( sbt->state & 0x10 )
             {
-                fntcmd_store_u8(&v5, btn->field_19D);
+                FontUA::store_u8(&v5, btn->field_19D);
             }
         }
     }
@@ -950,7 +950,7 @@ size_t NC_STACK_button::button_func70(void *)
                     button_func70__sub0(btn, btn->field_d8[i], &pbuf);
             }
         }
-        fntcmd_set_end(&pbuf);
+        FontUA::set_end(&pbuf);
 
         w3d_a209 arg209;
         arg209.cmdbuf = button_tmpbuf;
@@ -1071,19 +1071,19 @@ size_t NC_STACK_button::button_func76(button_arg76 *arg)
         if (arg->xpos != -1)
         {
             btn->field_d8[id]->xpos = arg->xpos;
-            btn->field_18[id]->xpos = arg->xpos;
+            btn->buttons[id]->x = arg->xpos;
         }
 
         if (arg->ypos != -1)
         {
             btn->field_d8[id]->ypos = arg->ypos;
-            btn->field_18[id]->ypos = arg->ypos;
+            btn->buttons[id]->y = arg->ypos;
         }
 
         if (arg->width != -1)
         {
             btn->field_d8[id]->width = arg->width;
-            btn->field_18[id]->width = arg->width;
+            btn->buttons[id]->w = arg->width;
         }
         return 1;
     }
@@ -1095,12 +1095,12 @@ size_t NC_STACK_button::button_func76(button_arg76 *arg)
 
 void NC_STACK_button::setBTN_x(int x)
 {
-    stack__button.btn_xpos = x;
+    stack__button.xpos = x;
 }
 
 void NC_STACK_button::setBTN_y(int y)
 {
-    stack__button.btn_ypos = y;
+    stack__button.ypos = y;
 }
 
 void NC_STACK_button::setBTN_w(int w)
@@ -1124,12 +1124,12 @@ void NC_STACK_button::setBTN_chars(const char *chrs)
 
 int NC_STACK_button::getBTN_x()
 {
-    return stack__button.btn_xpos;
+    return stack__button.xpos;
 }
 
 int NC_STACK_button::getBTN_y()
 {
-    return stack__button.btn_ypos;
+    return stack__button.ypos;
 }
 
 int NC_STACK_button::getBTN_w()

@@ -23,7 +23,7 @@ char byte_5FFF80[8192];
 
 
 ////////////////////////////////////////
-listbase *dword_5BAFAC = NULL;
+GuiBase *dword_5BAFAC = NULL;
 const char *dword_5BAF98;
 
 ////////////////////////////////////////
@@ -34,7 +34,7 @@ int dword_5BAF9C;
 
 
 /////////////Asking//////////////////
-listview lstvw2;
+GuiList lstvw2;
 
 int dword_5BAFA0;
 int dword_5BAFA4;
@@ -43,7 +43,7 @@ int dword_5BAFA8;
 
 
 ////////// exit menu/////////
-listview exit_menu;
+GuiList exit_menu;
 
 int dword_5C8B78;
 int dword_5C8B7C;
@@ -92,24 +92,24 @@ char t1_cmdbuf_2[256];
 char t1_cmdbuf_3[32768];
 char *t1_cmdbufs[3] = {t1_cmdbuf_1, t1_cmdbuf_2, t1_cmdbuf_3};
 
-button_str1 stru_5B2560;
-button_str1 stru_5B2550;
-button_str1 stru_5B2568;
-button_str1 stru_5B25E0;
-button_str1 stru_5B2580;
-button_str1 stru_5B2598;
-button_str1 stru_5B25C0;
-button_str1 stru_5B2590;
-button_str1 stru_5B2570;
-button_str1 stru_5B2588;
-button_str1 stru_5B2558;
-button_str1 stru_5B2578;
-button_str1 stru_5B25A8;
-button_str1 stru_5B25D0;
-button_str1 stru_5B25B0;
-button_str1 stru_5B25A0;
-button_str1 stru_5B25C8;
-button_str1 stru_5B25D8;
+ButtonBox stru_5B2560;
+ButtonBox stru_5B2550;
+ButtonBox stru_5B2568;
+ButtonBox stru_5B25E0;
+ButtonBox stru_5B2580;
+ButtonBox stru_5B2598;
+ButtonBox stru_5B25C0;
+ButtonBox stru_5B2590;
+ButtonBox stru_5B2570;
+ButtonBox stru_5B2588;
+ButtonBox stru_5B2558;
+ButtonBox stru_5B2578;
+ButtonBox stru_5B25A8;
+ButtonBox stru_5B25D0;
+ButtonBox stru_5B25B0;
+ButtonBox stru_5B25A0;
+ButtonBox stru_5B25C8;
+ButtonBox stru_5B25D8;
 
 typedef int (*mapFunc)(_NC_STACK_ypaworld *yw, int x, int y);
 
@@ -119,29 +119,29 @@ _NC_STACK_ypaworld *dword_5BAA60; // For sort func
 ///////// up panel ///////////
 energPanel up_panel;
 
-button_str1 stru_5C8BA0;
-button_str1 stru_5C8D90;
-button_str1 stru_5C8D98;
-button_str1 stru_5C8DA0;
+ButtonBox stru_5C8BA0;
+ButtonBox stru_5C8D90;
+ButtonBox stru_5C8D98;
+ButtonBox stru_5C8DA0;
 char byte_51805C[512];
 
 
 
 
 ///////// down panel /////////
-listview gui_lstvw;
+GuiList gui_lstvw;
 
-button_str1 analyzer_btn;
-button_str1 menu_btn;
-button_str1 create_btn;
-button_str1 turrets_btn;
-button_str1 next_squad_btn;
-button_str1 to_host_btn;
-button_str1 help_btn;
-button_str1 map_btn;
-button_str1 to_leader_btn;
-button_str1 squad_btn;
-button_str1 into_vhcl_btn;
+ButtonBox analyzer_btn;
+ButtonBox menu_btn;
+ButtonBox create_btn;
+ButtonBox turrets_btn;
+ButtonBox next_squad_btn;
+ButtonBox to_host_btn;
+ButtonBox help_btn;
+ButtonBox map_btn;
+ButtonBox to_leader_btn;
+ButtonBox squad_btn;
+ButtonBox into_vhcl_btn;
 char byte_516534[1088];
 
 bzd bzda;
@@ -168,21 +168,21 @@ DWORD yw_GetColor(_NC_STACK_ypaworld *yw, int color_id)
 
 }
 
-void sb_0x4c87fc__sub0(_NC_STACK_ypaworld *yw, listbase *lstvw)
+void sb_0x4c87fc__sub0(_NC_STACK_ypaworld *yw, GuiBase *lstvw)
 {
-    if ( !(lstvw->cmd_flag & 0x20) )
+    if ( !(lstvw->flags & GuiBase::FLAG_CLOSED) )
     {
         Remove(lstvw);
         AddHead(&yw->field_17a0, lstvw);
 
-        INPe.sub_412D9C(&lstvw->frm_1);
-        INPe.sub_412D48(&lstvw->frm_1, 0);
+        INPe.RemClickBox(&lstvw->dialogBox);
+        INPe.AddClickBox(&lstvw->dialogBox, 0);
     }
 }
 
-void sb_0x4c87fc(_NC_STACK_ypaworld *yw, const char *a2, listbase *lstvw)
+void sb_0x4c87fc(_NC_STACK_ypaworld *yw, const char *a2, GuiBase *lstvw)
 {
-    sub_4C31EC(yw, &lstvw2);
+    lstvw2.OpenDialog(yw);
 
     sb_0x4c87fc__sub0(yw, &lstvw2);
 
@@ -222,46 +222,26 @@ void create_squad_man(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
     int v8 = f0c32_w + v6 + 5 * fnt24[49].width;
     int v11 = 4 * fnt0[65].width + v8 + fnt28[97].width + f0c32_w + 8;
 
-    const char *v14 = get_lang_string(yw->string_pointers_p2, 51, "FINDER");
+    GuiList::tInit args;
+    args.title = get_lang_string(yw->string_pointers_p2, 51, "FINDER");
+    args.resizeable = true;
+    args.numEntries = 0;
+    args.shownEntries = 12;
+    args.firstShownEntry = 0;
+    args.selectedEntry = 0;
+    args.maxShownEntries = 24;
+    args.minShownEntries = 3;
+    args.withIcon = false;
+    args.entryHeight = yw->font_default_h;
+    args.entryWidth = v11;
+    args.minEntryWidth = v11;
+    args.maxEntryWidth = 32000;
+    args.enabled = true;
+    args.upperVborder = v10;
+    args.lowerVborder = v9;
+    args.closeChar = 73;
 
-    if ( lstvw_init(
-                yw,
-                &squadron_manager.lstvw,
-                0x80000001,
-                v14,
-                0x80000002,
-                1,
-                0x80000003,
-                0,
-                0x80000004,
-                12,
-                0x80000005,
-                0,
-                0x80000006,
-                0,
-                0x80000007,
-                24,
-                0x80000012,
-                3,
-                0x80000008,
-                0,
-                0x8000000B,
-                yw->font_default_h,
-                0x8000000C,
-                v11,
-                0x8000000E,
-                32000,
-                0x8000000D,
-                v11,
-                0x8000000F,
-                1,
-                0x80000015,
-                v10,
-                0x80000016,
-                v9,
-                0x80000014,
-                73,
-                0) )
+    if ( squadron_manager.lstvw.Init(yw, args) )
     {
         squadron_manager.field_2CC = fnt28[65].width;
         squadron_manager.field_2D0 = fnt28[64].width + fnt28[97].width + yw->font_default_w__b;
@@ -324,9 +304,9 @@ void sb_0x451034__sub8(_NC_STACK_ypaworld *yw)
 
     up_panel.field_1CC = f30->font_height;
     up_panel.field_1DC = f30->chars[65].width;
-    up_panel.cmd_flag = 0;
+    up_panel.flags = 0;
     up_panel.field_1D0 = up_panel.field_1DC + f30->chars[84].width;
-    up_panel.frm_1.field_10 = 4;
+    up_panel.dialogBox.field_10 = 4;
 
 
     int v8 = yw->screen_width - 4 * (up_panel.field_1DC + f30->chars[84].width);
@@ -336,27 +316,27 @@ void sb_0x451034__sub8(_NC_STACK_ypaworld *yw)
     up_panel.field_1E0 = 2;
     up_panel.field_1E4 = up_panel.field_1D0 - up_panel.field_1DC - 4;
 
-    up_panel.frm_1.btn_xpos = 0;
-    up_panel.frm_1.btn_ypos = 0;
-    up_panel.frm_1.btn_width = yw->screen_width;
-    up_panel.frm_1.btn_height = up_panel.field_1CC;
+    up_panel.dialogBox.xpos = 0;
+    up_panel.dialogBox.ypos = 0;
+    up_panel.dialogBox.btn_width = yw->screen_width;
+    up_panel.dialogBox.btn_height = up_panel.field_1CC;
 
-    up_panel.frm_1.field_18[0] = &stru_5C8D98;
-    up_panel.frm_1.field_18[1] = &stru_5C8DA0;
-    up_panel.frm_1.field_18[2] = &stru_5C8D90;
-    up_panel.frm_1.field_18[3] = &stru_5C8BA0;
+    up_panel.dialogBox.buttons[0] = &stru_5C8D98;
+    up_panel.dialogBox.buttons[1] = &stru_5C8DA0;
+    up_panel.dialogBox.buttons[2] = &stru_5C8D90;
+    up_panel.dialogBox.buttons[3] = &stru_5C8BA0;
 
     for (int i = 0; i < 4; i++)
     {
-        up_panel.frm_1.field_18[i]->ypos = 0;
-        up_panel.frm_1.field_18[i]->xpos = up_panel.field_1D4 + (up_panel.field_1D0 + up_panel.field_1D8) * i;
-        up_panel.frm_1.field_18[i]->width = up_panel.field_1D0;
-        up_panel.frm_1.field_18[i]->fnt_height = up_panel.field_1CC;
+        up_panel.dialogBox.buttons[i]->y = 0;
+        up_panel.dialogBox.buttons[i]->x = up_panel.field_1D4 + (up_panel.field_1D0 + up_panel.field_1D8) * i;
+        up_panel.dialogBox.buttons[i]->w = up_panel.field_1D0;
+        up_panel.dialogBox.buttons[i]->h = up_panel.field_1CC;
     }
 
     up_panel.cmdstrm.cmdbuf = byte_51805C;
 
-    INPe.sub_412D48(&up_panel.frm_1, 0);
+    INPe.AddClickBox(&up_panel.dialogBox, 0);
 }
 
 
@@ -443,28 +423,28 @@ char * sub_4F6980(char *cur, float a1, float a2, char a3, int a4, int a5)
         else
             v35 = robo_map.field_1FC - v8;
 
-        fntcmd_set_center_xpos(&pcur, robo_map.field_200 + v7);
-        fntcmd_set_center_ypos(&pcur, robo_map.field_204 + v8);
+        FontUA::set_center_xpos(&pcur, robo_map.field_200 + v7);
+        FontUA::set_center_ypos(&pcur, robo_map.field_204 + v8);
 
         if ( v33 )
         {
-            fntcmd_set_yoff(&pcur, v33);
+            FontUA::set_yoff(&pcur, v33);
         }
         else if ( v35 )
         {
-            fntcmd_set_yheight(&pcur, v35);
+            FontUA::set_yheight(&pcur, v35);
         }
 
         if ( v11 )
         {
-            fntcmd_set_xoff(&pcur, v11);
+            FontUA::set_xoff(&pcur, v11);
         }
         else if ( v34 )
         {
-            fntcmd_set_xwidth(&pcur, v34);
+            FontUA::set_xwidth(&pcur, v34);
         }
 
-        fntcmd_store_u8(&pcur, a3);
+        FontUA::store_u8(&pcur, a3);
     }
 
     return pcur;
@@ -804,26 +784,26 @@ char * sb_0x4f8f64__sub2__sub0(char *cur, float a1, float a2, char a3, int a4, i
         else
             v32 = robo_map.field_1FC - v9;
 
-        fntcmd_set_center_xpos(&pcur, robo_map.field_200 + v8);
-        fntcmd_set_center_ypos(&pcur, robo_map.field_204 + v9);
+        FontUA::set_center_xpos(&pcur, robo_map.field_200 + v8);
+        FontUA::set_center_ypos(&pcur, robo_map.field_204 + v9);
 
 
         if ( v12 )
-            fntcmd_set_yoff(&pcur, v12);
+            FontUA::set_yoff(&pcur, v12);
 
         if ( v32 )
-            fntcmd_set_yheight(&pcur, v32);
+            FontUA::set_yheight(&pcur, v32);
 
         if ( v31 )
         {
-            fntcmd_set_xoff(&pcur, v31);
+            FontUA::set_xoff(&pcur, v31);
         }
         else if ( v30 )
         {
-            fntcmd_set_xwidth(&pcur, v30);
+            FontUA::set_xwidth(&pcur, v30);
         }
 
-        fntcmd_store_u8(&pcur, a3);
+        FontUA::store_u8(&pcur, a3);
     }
     return pcur;
 }
@@ -870,7 +850,7 @@ char * sb_0x4f8f64__sub2(_NC_STACK_ypaworld *yw, char *cur)
     {
         if ( robo_map.field_1EC & 1 )
         {
-            fntcmd_select_tileset(&pcur, v4);
+            FontUA::select_tileset(&pcur, v4);
 
             for (int i = 0; i < yw->field_38; i++)
             {
@@ -1300,7 +1280,7 @@ char * sub_4F7BE8(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabact *bact, i
 
     if ( bact )
     {
-        fntcmd_select_tileset(&pcur, a2);
+        FontUA::select_tileset(&pcur, a2);
 
         pcur = sub_4F6980(pcur, bact->field_621.sx, bact->field_621.sz, a4, a5, a6);
 
@@ -1371,14 +1351,14 @@ char * sb_0x4f8f64__sub3__sub1(_NC_STACK_ypaworld *yw, const char *labl, int til
 
     if ( a3a - robo_map.field_200 > 0 && v10 > 0 && a3a - robo_map.field_200 + v8 < robo_map.field_1F8 && a4a - robo_map.field_204 + yw->tiles[tileset_id]->font_height < robo_map.field_1FC )
     {
-        fntcmd_select_tileset(&pcur, tileset_id);
-        fntcmd_set_center_xpos(&pcur, robo_map.field_200 + v9);
-        fntcmd_set_center_ypos(&pcur, robo_map.field_204 + v10);
+        FontUA::select_tileset(&pcur, tileset_id);
+        FontUA::set_center_xpos(&pcur, robo_map.field_200 + v9);
+        FontUA::set_center_ypos(&pcur, robo_map.field_204 + v10);
 
         const char *vvv = labl;
         while (*vvv)
         {
-            fntcmd_store_s8(&pcur, *vvv);
+            FontUA::store_s8(&pcur, *vvv);
             vvv++;
         }
     }
@@ -1459,7 +1439,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
         {
             if ( yw->field_1a58 & 0x20 )
             {
-                fntcmd_select_tileset(&pcur, v114);
+                FontUA::select_tileset(&pcur, v114);
 
                 pcur = sub_4F6980(pcur, yw->field_1a98->field_621.sx, yw->field_1a98->field_621.sz, 0x86, a4, a5);
             }
@@ -1467,13 +1447,13 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
             {
                 if ( yw->field_1a60->owner == yw->field_1b80->owner && ( (1 << yw->field_1b80->owner) & yw->field_1a60->view_mask ) )
                 {
-                    fntcmd_select_tileset(&pcur, v114);
+                    FontUA::select_tileset(&pcur, v114);
 
                     pcur = sub_4F6980(pcur, yw->field_1a6c.sx, yw->field_1a6c.sz, 0x88, a4, a5);
                 }
                 else
                 {
-                    fntcmd_select_tileset(&pcur, v110);
+                    FontUA::select_tileset(&pcur, v110);
 
                     pcur = sub_4F6980(pcur, yw->field_1a7c.sx, yw->field_1a7c.sz, 66, v111, v111);
                 }
@@ -1482,13 +1462,13 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
         break;
 
     case 5:
-        fntcmd_select_tileset(&pcur, v114);
+        FontUA::select_tileset(&pcur, v114);
 
         pcur = sub_4F6980(pcur, yw->field_1a98->field_621.sx, yw->field_1a98->field_621.sz, 0x85, a4, a5);
         break;
 
     case 6:
-        fntcmd_select_tileset(&pcur, v110);
+        FontUA::select_tileset(&pcur, v110);
 
         pcur = sub_4F6980(pcur, yw->field_1a7c.sx, yw->field_1a7c.sz, 65, v111, v111);
         break;
@@ -1502,7 +1482,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
                 {
                     int v22 = yw->tiles[1]->font_height;
 
-                    fntcmd_select_tileset(&pcur, 1);
+                    FontUA::select_tileset(&pcur, 1);
 
                     pcur = sub_4F6980(pcur, yw->field_1a98->field_621.sx, yw->field_1a98->field_621.sz, v7, v22, v22);
                 }
@@ -1521,7 +1501,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
         break;
 
     case 10:
-        fntcmd_select_tileset(&pcur, v114);
+        FontUA::select_tileset(&pcur, v114);
 
         pcur = sub_4F6980(pcur, yw->field_1a6c.sx, yw->field_1a6c.sz, 0x88, a4, a5);
         break;
@@ -1532,7 +1512,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
 
     if ( bzda.field_1D0 & 0x20 )
     {
-        fntcmd_select_tileset(&pcur, 1);
+        FontUA::select_tileset(&pcur, 1);
 
         int v44 = yw->tiles[1]->font_height;
 
@@ -1555,24 +1535,24 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
                         int v101 = ( (int)v47->primTpos.sx / 1200) * 1200.0 + 600.0;
                         int v100 = -(( (int)-v47->primTpos.sz / 1200) * 1200.0 + 600.0);
 
-                        fntcmd_select_tileset(&pcur, v110);
+                        FontUA::select_tileset(&pcur, v110);
 
                         pcur = sub_4F6980(pcur, v101, v100, 66, v111, v111);
 
-                        fntcmd_select_tileset(&pcur, v114);
+                        FontUA::select_tileset(&pcur, v114);
 
                         pcur = sub_4F6980(pcur, v47->primTpos.sx, v47->primTpos.sz, 0x88, a4, a5);
                     }
                     else
                     {
-                        fntcmd_select_tileset(&pcur, v114);
+                        FontUA::select_tileset(&pcur, v114);
 
                         pcur = sub_4F6980(pcur, v47->primTpos.sx, v47->primTpos.sz, 0x88, a4, a5);
                     }
                 }
                 else if ( v47->primTtype == BACT_TGT_TYPE_UNIT )
                 {
-                    fntcmd_select_tileset(&pcur, v114);
+                    FontUA::select_tileset(&pcur, v114);
 
                     pcur = sub_4F6980(pcur, v47->primT.pbact->field_621.sx, v47->primT.pbact->field_621.sz, 0x86, a4, a5);
                 }
@@ -1590,7 +1570,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
 
                         for (int i = v68; i < v47->field_59A; i++)
                         {
-                            fntcmd_select_tileset(&pcur, v114);
+                            FontUA::select_tileset(&pcur, v114);
 
                             pcur = sub_4F6980(pcur, v47->field_418[i].sx, v47->field_418[i].sz, 0x88, a4, a5);
                         }
@@ -1604,7 +1584,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
     {
         if ( yw->field_1614 / 300 & 1 )
         {
-            fntcmd_select_tileset(&pcur, v114);
+            FontUA::select_tileset(&pcur, v114);
 
             pcur = sub_4F6980(pcur, yw->field_1b84->field_621.sx, yw->field_1b84->field_621.sz, 0x89, a4, a5);
         }
@@ -1614,7 +1594,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
     {
         if ( yw->field_1614 / 300 & 1 )
         {
-            fntcmd_select_tileset(&pcur, v114);
+            FontUA::select_tileset(&pcur, v114);
 
             pcur = sub_4F6980(pcur, yw->field_2420->field_621.sx, yw->field_2420->field_621.sz, 0x8A, a4, a5);
         }
@@ -1652,39 +1632,39 @@ char * sb_0x4f8f64__sub0(_NC_STACK_ypaworld *yw, char *cur)
 {
     char *pcur = cur;
 
-    fntcmd_select_tileset(&pcur, 10);
-    fntcmd_set_center_xpos(&pcur, robo_map.frm_1.btn_xpos + robo_map.field_234 + robo_map.field_244 - (yw->screen_width / 2));
-    fntcmd_set_center_ypos(&pcur, robo_map.frm_1.btn_ypos + robo_map.frm_1.btn_height - (robo_map.field_230 + robo_map.field_240) - (yw->screen_height / 2));
+    FontUA::select_tileset(&pcur, 10);
+    FontUA::set_center_xpos(&pcur, robo_map.dialogBox.xpos + robo_map.field_234 + robo_map.field_244 - (yw->screen_width / 2));
+    FontUA::set_center_ypos(&pcur, robo_map.dialogBox.ypos + robo_map.dialogBox.btn_height - (robo_map.field_230 + robo_map.field_240) - (yw->screen_height / 2));
 
     if ( robo_map.field_1EC & 1 )
-        fntcmd_store_u8(&pcur, 97);
+        FontUA::store_u8(&pcur, 97);
     else
-        fntcmd_store_u8(&pcur, 65);
+        FontUA::store_u8(&pcur, 65);
 
     if ( robo_map.field_1EC & 2 )
-        fntcmd_store_u8(&pcur, 98);
+        FontUA::store_u8(&pcur, 98);
     else
-        fntcmd_store_u8(&pcur, 66);
+        FontUA::store_u8(&pcur, 66);
 
     if ( robo_map.field_1EC & 4 )
-        fntcmd_store_u8(&pcur, 100);
+        FontUA::store_u8(&pcur, 100);
     else
-        fntcmd_store_u8(&pcur, 68);
+        FontUA::store_u8(&pcur, 68);
 
     if ( robo_map.field_1ED == 1 )
-        fntcmd_store_u8(&pcur, 102);
+        FontUA::store_u8(&pcur, 102);
     else
-        fntcmd_store_u8(&pcur, 70);
+        FontUA::store_u8(&pcur, 70);
 
     if ( robo_map.field_1E8 & 0x40 )
-        fntcmd_store_u8(&pcur, 106);
+        FontUA::store_u8(&pcur, 106);
     else
-        fntcmd_store_u8(&pcur, 74);
+        FontUA::store_u8(&pcur, 74);
 
     if ( robo_map.field_1E8 & 0x80 )
-        fntcmd_store_u8(&pcur, 107);
+        FontUA::store_u8(&pcur, 107);
     else
-        fntcmd_store_u8(&pcur, 75);
+        FontUA::store_u8(&pcur, 75);
 
     return pcur;
 }
@@ -1725,20 +1705,20 @@ void sb_0x4f8f64(_NC_STACK_ypaworld *yw)
     int height = yw->tiles[setid]->chars[128].width;
     int width = yw->tiles[setid]->font_height;
 
-    robo_map.field_1F8 = robo_map.frm_1.btn_width - robo_map.field_24C;
-    robo_map.field_1FC = robo_map.frm_1.btn_height - robo_map.field_250;
+    robo_map.field_1F8 = robo_map.dialogBox.btn_width - robo_map.field_24C;
+    robo_map.field_1FC = robo_map.dialogBox.btn_height - robo_map.field_250;
 
-    robo_map.field_200 = robo_map.frm_1.btn_xpos + robo_map.field_244 - (yw->screen_width / 2);
-    robo_map.field_204 = robo_map.frm_1.btn_ypos + robo_map.field_23C - (yw->screen_height / 2);
+    robo_map.field_200 = robo_map.dialogBox.xpos + robo_map.field_244 - (yw->screen_width / 2);
+    robo_map.field_204 = robo_map.dialogBox.ypos + robo_map.field_23C - (yw->screen_height / 2);
 
     ua_dRect rect;
     rect.x1 = robo_map.field_200;
-    rect.x2 = robo_map.frm_1.btn_width - robo_map.field_24C + robo_map.field_200 - 1;
-    rect.y1 = robo_map.frm_1.btn_ypos + robo_map.field_23C - (yw->screen_height / 2);
-    rect.y2 = robo_map.frm_1.btn_height - robo_map.field_250 + rect.y1 - 1;
+    rect.x2 = robo_map.dialogBox.btn_width - robo_map.field_24C + robo_map.field_200 - 1;
+    rect.y1 = robo_map.dialogBox.ypos + robo_map.field_23C - (yw->screen_height / 2);
+    rect.y2 = robo_map.dialogBox.btn_height - robo_map.field_250 + rect.y1 - 1;
 
-    robo_map.field_1F0 = robo_map.field_1D8 / robo_map.field_1E0 - (robo_map.frm_1.btn_width - robo_map.field_24C) / 2;
-    robo_map.field_1F4 = -(robo_map.field_1DC / robo_map.field_1E4 + (robo_map.frm_1.btn_height - robo_map.field_250) / 2);
+    robo_map.field_1F0 = robo_map.field_1D8 / robo_map.field_1E0 - (robo_map.dialogBox.btn_width - robo_map.field_24C) / 2;
+    robo_map.field_1F4 = -(robo_map.field_1DC / robo_map.field_1E4 + (robo_map.dialogBox.btn_height - robo_map.field_250) / 2);
 
     yw->win3d->raster_func211(&rect);
 
@@ -1761,7 +1741,7 @@ void sb_0x4f8f64(_NC_STACK_ypaworld *yw)
 
     char *pcur = sb_0x4f8f64__sub2(yw, t1_cmdbuf_3);
 
-    fntcmd_select_tileset(&pcur, setid);
+    FontUA::select_tileset(&pcur, setid);
 
     sb_0x4f8f64__sub1(yw);
 
@@ -1780,11 +1760,11 @@ void sb_0x4f8f64(_NC_STACK_ypaworld *yw)
                     {
                         if ( bct->field_24 == 3 )
                         {
-                            fntcmd_select_tileset(&pcur, 1);
+                            FontUA::select_tileset(&pcur, 1);
 
                             pcur = sub_4F6DFC(yw, pcur, yw->tiles[1]->font_height, yw->tiles[1]->chars[24].width, bct, 0);
 
-                            fntcmd_select_tileset(&pcur, setid);
+                            FontUA::select_tileset(&pcur, setid);
 
                             v41++;
                         }
@@ -1853,18 +1833,18 @@ void sb_0x4f8f64(_NC_STACK_ypaworld *yw)
     }
     pcur = sb_0x4f8f64__sub3(yw, pcur);
     pcur = sb_0x4f8f64__sub0(yw, pcur);
-    fntcmd_set_end(&pcur);
+    FontUA::set_end(&pcur);
 
     GFXe.drawText(&arg);
 }
 
 void sub_4C157C(_NC_STACK_ypaworld *yw)
 {
-    float v1 = (robo_map.frm_1.btn_height - robo_map.field_250) * robo_map.field_1E4;
-    float v3 = (robo_map.frm_1.btn_width - robo_map.field_24C) * robo_map.field_1E0;
+    float v1 = (robo_map.dialogBox.btn_height - robo_map.field_250) * robo_map.field_1E4;
+    float v3 = (robo_map.dialogBox.btn_width - robo_map.field_24C) * robo_map.field_1E0;
 
     float v6 = (yw->sectors_maxX2 * 1200.0);
-    int v20 = robo_map.frm_1.btn_width - robo_map.field_248;
+    int v20 = robo_map.dialogBox.btn_width - robo_map.field_248;
 
     int v17 = ((robo_map.field_1D8 - v3 * 0.5) * v20) / v6;
     int v19 = v20 * v3 / v6;
@@ -1898,7 +1878,7 @@ void sub_4C157C(_NC_STACK_ypaworld *yw)
     float v15 = -(robo_map.field_1DC + v1 * 0.5);
     float v14 = (yw->sectors_maxY2 * 1200.0);
 
-    v20 = robo_map.frm_1.btn_height - robo_map.field_250;
+    v20 = robo_map.dialogBox.btn_height - robo_map.field_250;
     v19 = (v20 * v1 / v14);
 
     int v18 = ((v20 * v15) / v14);
@@ -1928,39 +1908,39 @@ void sub_4C157C(_NC_STACK_ypaworld *yw)
 
 void sub_4C0C00(_NC_STACK_ypaworld *yw)
 {
-    int v20 = robo_map.frm_1.btn_xpos - (yw->screen_width / 2);
-    int v21 = robo_map.frm_1.btn_ypos - (yw->screen_height / 2);
-    int v22 = robo_map.frm_1.btn_width;
-    int v23 = robo_map.frm_1.btn_height;
+    int v20 = robo_map.dialogBox.xpos - (yw->screen_width / 2);
+    int v21 = robo_map.dialogBox.ypos - (yw->screen_height / 2);
+    int v22 = robo_map.dialogBox.btn_width;
+    int v23 = robo_map.dialogBox.btn_height;
 
-    stru_5B2560.xpos = robo_map.frm_1.btn_width - yw->font_default_w__a;
-    stru_5B2560.ypos = 0;
-    stru_5B2560.width = yw->font_default_w__a;
-    stru_5B2560.fnt_height = yw->font_default_h;
+    stru_5B2560.x = robo_map.dialogBox.btn_width - yw->font_default_w__a;
+    stru_5B2560.y = 0;
+    stru_5B2560.w = yw->font_default_w__a;
+    stru_5B2560.h = yw->font_default_h;
 
-    stru_5B2568.xpos = robo_map.frm_1.btn_width - 2 * yw->font_default_w__a;
-    stru_5B2568.ypos = 0;
-    stru_5B2568.width = yw->font_default_w__a;
-    stru_5B2568.fnt_height = yw->font_default_h;
+    stru_5B2568.x = robo_map.dialogBox.btn_width - 2 * yw->font_default_w__a;
+    stru_5B2568.y = 0;
+    stru_5B2568.w = yw->font_default_w__a;
+    stru_5B2568.h = yw->font_default_h;
 
-    stru_5B2550.xpos = 0;
-    stru_5B2550.ypos = 0;
-    stru_5B2550.width = stru_5B2568.xpos - robo_map.field_238;
-    stru_5B2550.fnt_height = yw->font_default_h;
+    stru_5B2550.x = 0;
+    stru_5B2550.y = 0;
+    stru_5B2550.w = stru_5B2568.x - robo_map.field_238;
+    stru_5B2550.h = yw->font_default_h;
 
-    stru_5B2588.ypos = 0;
-    stru_5B2588.xpos = stru_5B2568.xpos - robo_map.field_238;
-    stru_5B2588.width = robo_map.field_238;
-    stru_5B2588.fnt_height = yw->font_default_h;
+    stru_5B2588.y = 0;
+    stru_5B2588.x = stru_5B2568.x - robo_map.field_238;
+    stru_5B2588.w = robo_map.field_238;
+    stru_5B2588.h = yw->font_default_h;
 
     int v5 = robo_map.field_234 + robo_map.field_244;
 
     for (int i = 3; i < 9; i++)
     {
-        robo_map.frm_1.field_18[i]->xpos = v5;
-        robo_map.frm_1.field_18[i]->ypos = v23 - robo_map.field_240 - robo_map.field_230;
-        robo_map.frm_1.field_18[i]->width = robo_map.field_22C;
-        robo_map.frm_1.field_18[i]->fnt_height = robo_map.field_230;
+        robo_map.dialogBox.buttons[i]->x = v5;
+        robo_map.dialogBox.buttons[i]->y = v23 - robo_map.field_240 - robo_map.field_230;
+        robo_map.dialogBox.buttons[i]->w = robo_map.field_22C;
+        robo_map.dialogBox.buttons[i]->h = robo_map.field_230;
 
         v5 += robo_map.field_22C;
     }
@@ -1973,91 +1953,91 @@ void sub_4C0C00(_NC_STACK_ypaworld *yw)
         v7 = 113;
 
     const char *v10 = get_lang_string(yw->string_pointers_p2, 50, "MAP");
-    char *pcur = lstvw_make_title(yw, v20, v21, v22, v10, robo_map.cmdstrm.cmdbuf, v7, robo_map.cmd_flag);
+    char *pcur = GuiBase::FormateTitle(yw, v20, v21, v22, v10, robo_map.cmdstrm.cmdbuf, v7, robo_map.flags);
 
-    fntcmd_next_line(&pcur);
-    fntcmd_reset_tileset(&pcur, 13);
+    FontUA::next_line(&pcur);
+    FontUA::reset_tileset(&pcur, 13);
 
-    fntcmd_store_u8(&pcur, 65);
+    FontUA::store_u8(&pcur, 65);
 
-    fntcmd_next_line(&pcur);
-    fntcmd_reset_tileset(&pcur, 12);
+    FontUA::next_line(&pcur);
+    FontUA::reset_tileset(&pcur, 12);
 
     int v13 = v23 - robo_map.field_250 - 1;
     while (v13 > yw->font_yscrl_h)
     {
-        fntcmd_store_u8(&pcur, 65);
-        fntcmd_next_line(&pcur);
+        FontUA::store_u8(&pcur, 65);
+        FontUA::next_line(&pcur);
 
         v13 -= yw->font_yscrl_h;
     }
 
     if ( v13 > 1 )
     {
-        fntcmd_set_yheight(&pcur, v13 - 1);
-        fntcmd_store_u8(&pcur, 65);
-        fntcmd_next_line(&pcur);
+        FontUA::set_yheight(&pcur, v13 - 1);
+        FontUA::store_u8(&pcur, 65);
+        FontUA::next_line(&pcur);
     }
 
-    fntcmd_reset_tileset(&pcur, 13);
-    fntcmd_store_u8(&pcur, 66);
-    fntcmd_next_line(&pcur);
+    FontUA::reset_tileset(&pcur, 13);
+    FontUA::store_u8(&pcur, 66);
+    FontUA::next_line(&pcur);
 
-    fntcmd_include(&pcur, 0);
-    fntcmd_include(&pcur, 1);
-    fntcmd_include(&pcur, 2);
-    fntcmd_set_end(&pcur);
+    FontUA::include(&pcur, 0);
+    FontUA::include(&pcur, 1);
+    FontUA::include(&pcur, 2);
+    FontUA::set_end(&pcur);
 }
 
 void sub_4C0FEC(_NC_STACK_ypaworld *yw)
 {
-    int v1 = robo_map.frm_1.btn_xpos - (yw->screen_width / 2);
-    int v3 = robo_map.frm_1.btn_ypos + robo_map.frm_1.btn_height - robo_map.field_240 - (yw->screen_height / 2);
+    int v1 = robo_map.dialogBox.xpos - (yw->screen_width / 2);
+    int v3 = robo_map.dialogBox.ypos + robo_map.dialogBox.btn_height - robo_map.field_240 - (yw->screen_height / 2);
 
-    stru_5B25D0.xpos = 0;
-    stru_5B25D0.ypos = robo_map.frm_1.btn_height - robo_map.field_240;
-    stru_5B25D0.width = robo_map.field_1CE;
-    stru_5B25D0.fnt_height = robo_map.field_240;
+    stru_5B25D0.x = 0;
+    stru_5B25D0.y = robo_map.dialogBox.btn_height - robo_map.field_240;
+    stru_5B25D0.w = robo_map.field_1CE;
+    stru_5B25D0.h = robo_map.field_240;
 
-    stru_5B25B0.xpos = robo_map.field_1CE;
-    stru_5B25B0.ypos = robo_map.frm_1.btn_height - robo_map.field_240;
-    stru_5B25B0.width = robo_map.field_1D0;
-    stru_5B25B0.fnt_height = robo_map.field_240;
+    stru_5B25B0.x = robo_map.field_1CE;
+    stru_5B25B0.y = robo_map.dialogBox.btn_height - robo_map.field_240;
+    stru_5B25B0.w = robo_map.field_1D0;
+    stru_5B25B0.h = robo_map.field_240;
 
-    stru_5B25C8.xpos = robo_map.frm_1.btn_width - robo_map.field_248;
-    stru_5B25C8.ypos = robo_map.frm_1.btn_height - robo_map.field_240;
-    stru_5B25C8.width = robo_map.field_248;
-    stru_5B25C8.fnt_height = robo_map.field_240;
+    stru_5B25C8.x = robo_map.dialogBox.btn_width - robo_map.field_248;
+    stru_5B25C8.y = robo_map.dialogBox.btn_height - robo_map.field_240;
+    stru_5B25C8.w = robo_map.field_248;
+    stru_5B25C8.h = robo_map.field_240;
 
-    stru_5B25A0.xpos = robo_map.field_1D0 + robo_map.field_1CE;
-    stru_5B25A0.ypos = robo_map.frm_1.btn_height - robo_map.field_240;
-    stru_5B25A0.width = robo_map.field_1CC - robo_map.field_1CE - robo_map.field_1D0;
-    stru_5B25A0.fnt_height = robo_map.field_240;
+    stru_5B25A0.x = robo_map.field_1D0 + robo_map.field_1CE;
+    stru_5B25A0.y = robo_map.dialogBox.btn_height - robo_map.field_240;
+    stru_5B25A0.w = robo_map.field_1CC - robo_map.field_1CE - robo_map.field_1D0;
+    stru_5B25A0.h = robo_map.field_240;
 
     char *pcur = t1_cmdbuf_2;
 
-    fntcmd_select_tileset(&pcur, 11);
-    fntcmd_set_center_xpos(&pcur, v1);
-    fntcmd_set_center_ypos(&pcur, v3);
+    FontUA::select_tileset(&pcur, 11);
+    FontUA::set_center_xpos(&pcur, v1);
+    FontUA::set_center_ypos(&pcur, v3);
 
     int v4 = robo_map.field_1CE;
 
     if ( v4 > 0 )
     {
-        fntcmd_store_u8(&pcur, 65);
+        FontUA::store_u8(&pcur, 65);
         if ( v4 > 1 )
         {
-            fntcmd_op17(&pcur, v4);
-            fntcmd_store_u8(&pcur, 66);
+            FontUA::op17(&pcur, v4);
+            FontUA::store_u8(&pcur, 66);
         }
     }
 
-    fntcmd_store_u8(&pcur, 68);
+    FontUA::store_u8(&pcur, 68);
 
-    fntcmd_op17(&pcur, robo_map.field_1D0 + v4 - 1);
+    FontUA::op17(&pcur, robo_map.field_1D0 + v4 - 1);
 
-    fntcmd_store_u8(&pcur, 69);
-    fntcmd_store_u8(&pcur, 70);
+    FontUA::store_u8(&pcur, 69);
+    FontUA::store_u8(&pcur, 70);
 
 
     int v11 = v4 + robo_map.field_1D0;
@@ -2065,131 +2045,131 @@ void sub_4C0FEC(_NC_STACK_ypaworld *yw)
     {
         if ( v11 < robo_map.field_1CC - 1 )
         {
-            fntcmd_op17(&pcur, robo_map.field_1CC - 1);
+            FontUA::op17(&pcur, robo_map.field_1CC - 1);
 
-            fntcmd_store_u8(&pcur, 66);
+            FontUA::store_u8(&pcur, 66);
         }
-        fntcmd_store_u8(&pcur, 67);
+        FontUA::store_u8(&pcur, 67);
     }
 
-    fntcmd_store_u8(&pcur, 71);
+    FontUA::store_u8(&pcur, 71);
 
-    fntcmd_set_end(&pcur);
+    FontUA::set_end(&pcur);
 }
 
 void sub_4C1214(_NC_STACK_ypaworld *yw)
 {
-    int v2 = robo_map.frm_1.btn_xpos + robo_map.frm_1.btn_width - robo_map.field_248 - (yw->screen_width / 2);
-    int v3 = robo_map.frm_1.btn_ypos + robo_map.field_23C - (yw->screen_height / 2);
+    int v2 = robo_map.dialogBox.xpos + robo_map.dialogBox.btn_width - robo_map.field_248 - (yw->screen_width / 2);
+    int v3 = robo_map.dialogBox.ypos + robo_map.field_23C - (yw->screen_height / 2);
 
-    stru_5B2558.xpos = robo_map.frm_1.btn_width - robo_map.field_248;
-    stru_5B2558.ypos = robo_map.field_23C;
-    stru_5B2558.width = robo_map.field_248;
-    stru_5B2558.fnt_height = robo_map.field_1D4;
+    stru_5B2558.x = robo_map.dialogBox.btn_width - robo_map.field_248;
+    stru_5B2558.y = robo_map.field_23C;
+    stru_5B2558.w = robo_map.field_248;
+    stru_5B2558.h = robo_map.field_1D4;
 
-    stru_5B2578.xpos = robo_map.frm_1.btn_width - robo_map.field_248;
-    stru_5B2578.ypos = robo_map.field_1D4 + robo_map.field_23C;
-    stru_5B2578.width = robo_map.field_248;
-    stru_5B2578.fnt_height = robo_map.field_1D6;
+    stru_5B2578.x = robo_map.dialogBox.btn_width - robo_map.field_248;
+    stru_5B2578.y = robo_map.field_1D4 + robo_map.field_23C;
+    stru_5B2578.w = robo_map.field_248;
+    stru_5B2578.h = robo_map.field_1D6;
 
-    stru_5B25A8.xpos = robo_map.frm_1.btn_width - robo_map.field_248;
-    stru_5B25A8.ypos = robo_map.field_1D6 + robo_map.field_1D4 + robo_map.field_23C;
-    stru_5B25A8.width = robo_map.field_248;
-    stru_5B25A8.fnt_height = robo_map.field_1D2 - robo_map.field_1D4 - robo_map.field_1D6;
+    stru_5B25A8.x = robo_map.dialogBox.btn_width - robo_map.field_248;
+    stru_5B25A8.y = robo_map.field_1D6 + robo_map.field_1D4 + robo_map.field_23C;
+    stru_5B25A8.w = robo_map.field_248;
+    stru_5B25A8.h = robo_map.field_1D2 - robo_map.field_1D4 - robo_map.field_1D6;
 
     char *pcur = t1_cmdbuf_1;
 
-    fntcmd_set_center_xpos(&pcur, v2);
-    fntcmd_set_center_ypos(&pcur, v3);
+    FontUA::set_center_xpos(&pcur, v2);
+    FontUA::set_center_ypos(&pcur, v3);
 
 
     if ( robo_map.field_1D4 > 0 )
     {
-        fntcmd_reset_tileset(&pcur, 13);
+        FontUA::reset_tileset(&pcur, 13);
 
-        fntcmd_store_u8(&pcur, 67);
-        fntcmd_next_line(&pcur);
+        FontUA::store_u8(&pcur, 67);
+        FontUA::next_line(&pcur);
 
-        fntcmd_reset_tileset(&pcur, 12);
+        FontUA::reset_tileset(&pcur, 12);
 
         int v9 = robo_map.field_1D4 - 1;
 
         while (v9 >= yw->font_yscrl_h )
         {
-            fntcmd_store_u8(&pcur, 66);
-            fntcmd_next_line(&pcur);
+            FontUA::store_u8(&pcur, 66);
+            FontUA::next_line(&pcur);
 
             v9 -= yw->font_yscrl_h;
         }
 
         if ( v9 > 0 )
         {
-            fntcmd_set_yheight(&pcur, v9);
-            fntcmd_store_u8(&pcur, 66);
-            fntcmd_next_line(&pcur);
+            FontUA::set_yheight(&pcur, v9);
+            FontUA::store_u8(&pcur, 66);
+            FontUA::next_line(&pcur);
         }
     }
 
     if ( robo_map.field_1D6 > 0 )
     {
-        fntcmd_reset_tileset(&pcur, 13);
-        fntcmd_store_u8(&pcur, 69);
+        FontUA::reset_tileset(&pcur, 13);
+        FontUA::store_u8(&pcur, 69);
 
-        fntcmd_next_line(&pcur);
+        FontUA::next_line(&pcur);
 
-        fntcmd_reset_tileset(&pcur, 12);
+        FontUA::reset_tileset(&pcur, 12);
 
 
         int v14 = robo_map.field_1D6 - 1;
 
         while ( v14 > yw->font_yscrl_h )
         {
-            fntcmd_store_u8(&pcur, 67);
-            fntcmd_next_line(&pcur);
+            FontUA::store_u8(&pcur, 67);
+            FontUA::next_line(&pcur);
 
             v14 -= yw->font_yscrl_h;
         }
 
         if ( v14 > 1 )
         {
-            fntcmd_set_yheight(&pcur, v14 - 1);
-            fntcmd_store_u8(&pcur, 67);
-            fntcmd_next_line(&pcur);
+            FontUA::set_yheight(&pcur, v14 - 1);
+            FontUA::store_u8(&pcur, 67);
+            FontUA::next_line(&pcur);
         }
 
-        fntcmd_reset_tileset(&pcur, 13);
+        FontUA::reset_tileset(&pcur, 13);
 
-        fntcmd_store_u8(&pcur, 70);
-        fntcmd_next_line(&pcur);
+        FontUA::store_u8(&pcur, 70);
+        FontUA::next_line(&pcur);
     }
 
     int v21 = robo_map.field_1D2 - robo_map.field_1D4 - robo_map.field_1D6;
 
     if ( v21 > 0 )
     {
-        fntcmd_reset_tileset(&pcur, 12);
+        FontUA::reset_tileset(&pcur, 12);
 
         while ( v21 > yw->font_yscrl_h )
         {
-            fntcmd_store_u8(&pcur, 66);
-            fntcmd_next_line(&pcur);
+            FontUA::store_u8(&pcur, 66);
+            FontUA::next_line(&pcur);
 
             v21 -= yw->font_yscrl_h;
         }
 
         if ( v21 > 1 )
         {
-            fntcmd_set_yheight(&pcur, v21 - 1);
+            FontUA::set_yheight(&pcur, v21 - 1);
 
-            fntcmd_store_u8(&pcur, 66);
-            fntcmd_next_line(&pcur);
+            FontUA::store_u8(&pcur, 66);
+            FontUA::next_line(&pcur);
         }
-        fntcmd_reset_tileset(&pcur, 13);
+        FontUA::reset_tileset(&pcur, 13);
 
-        fntcmd_store_u8(&pcur, 68);
-        fntcmd_next_line(&pcur);
+        FontUA::store_u8(&pcur, 68);
+        FontUA::next_line(&pcur);
     }
-    fntcmd_set_end(&pcur);
+    FontUA::set_end(&pcur);
 }
 
 
@@ -2214,16 +2194,16 @@ char * sub_4F6114(_NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, 
     {
         ypa_log_out("yw_maprnd.c/yw_RMapLego(): wrong size\n");
 
-        fntcmd_set_end(&pcur);
+        FontUA::set_end(&pcur);
         return pcur;
     }
 
-    fntcmd_set_center_xpos(&pcur, xpos);
-    fntcmd_set_center_ypos(&pcur, ypos);
+    FontUA::set_center_xpos(&pcur, xpos);
+    FontUA::set_center_ypos(&pcur, ypos);
 
     int msk = a2 - 1;
 
-    fntcmd_reset_tileset(&pcur, a7);
+    FontUA::reset_tileset(&pcur, a7);
 
     int row = a4;
 
@@ -2235,7 +2215,7 @@ char * sub_4F6114(_NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, 
 
         if ( msk & row )
         {
-            fntcmd_set_yoff(&pcur, row & msk);
+            FontUA::set_yoff(&pcur, row & msk);
 
             row += a2 - (msk & row);
         }
@@ -2247,7 +2227,7 @@ char * sub_4F6114(_NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, 
             }
             else
             {
-                fntcmd_set_yheight(&pcur, a6 - row);
+                FontUA::set_yheight(&pcur, a6 - row);
 
                 row = a6;
             }
@@ -2261,8 +2241,8 @@ char * sub_4F6114(_NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, 
 
             if ( v21 )
             {
-                fntcmd_set_xoff(&pcur, v37_4);
-                fntcmd_store_u8(&pcur, v21);
+                FontUA::set_xoff(&pcur, v37_4);
+                FontUA::store_u8(&pcur, v21);
 
                 v37 = 0;
             }
@@ -2270,7 +2250,7 @@ char * sub_4F6114(_NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, 
             {
                 v37 = a2 - v37_4;
 
-                fntcmd_add_xpos(&pcur, v37);
+                FontUA::add_xpos(&pcur, v37);
             }
 
             col += a2 - v37_4;
@@ -2282,7 +2262,7 @@ char * sub_4F6114(_NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, 
 
             if ( v24 )
             {
-                fntcmd_store_u8(&pcur, v24);
+                FontUA::store_u8(&pcur, v24);
 
                 v37 = 0;
             }
@@ -2292,14 +2272,14 @@ char * sub_4F6114(_NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, 
                 {
                     v37 = a2;
 
-                    fntcmd_add_xpos(&pcur, v37);
+                    FontUA::add_xpos(&pcur, v37);
                 }
                 else
                 {
                     v37 += a2;
 
                     pcur -= 2; //HACKY rewrite
-                    fntcmd_store_s16(&pcur, v37);
+                    FontUA::store_s16(&pcur, v37);
                 }
             }
 
@@ -2311,11 +2291,11 @@ char * sub_4F6114(_NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, 
             int v28 = ffunc(yw, col >> v33, v17) & 0xFF;
             if ( v28 )
             {
-                fntcmd_set_xwidth(&pcur, a5 - col);
-                fntcmd_store_u8(&pcur, v28);
+                FontUA::set_xwidth(&pcur, a5 - col);
+                FontUA::store_u8(&pcur, v28);
             }
         }
-        fntcmd_next_line(&pcur);
+        FontUA::next_line(&pcur);
 
     }
 
@@ -2506,8 +2486,8 @@ char * sb_0x4f6650__sub0(_NC_STACK_ypaworld *yw, char *cmdbuf, int xpos, int ypo
 
 char *sb_0x4f6650(_NC_STACK_ypaworld *yw, char *cmdbuf, int x, int y)
 {
-    char *pcur = sb_0x4f6650__sub0(yw, cmdbuf, x, y, robo_map.frm_1.btn_width - robo_map.field_24C, robo_map.frm_1.btn_height - robo_map.field_250);
-    fntcmd_set_end(&pcur);
+    char *pcur = sb_0x4f6650__sub0(yw, cmdbuf, x, y, robo_map.dialogBox.btn_width - robo_map.field_24C, robo_map.dialogBox.btn_height - robo_map.field_250);
+    FontUA::set_end(&pcur);
     return pcur;
 }
 
@@ -2564,7 +2544,7 @@ void  sb_0x451034__sub2(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
     memset(t1_cmdbuf_2, 0, sizeof(t1_cmdbuf_2));
     memset(t1_cmdbuf_3, 0, sizeof(t1_cmdbuf_3));
 
-    robo_map.cmd_flag = 0x138;
+    robo_map.flags = (GuiBase::FLAG_WITH_HELP | GuiBase::FLAG_CLOSED | GuiBase::FLAG_WITH_CLOSE | GuiBase::FLAG_WITH_DRAGBAR);
     robo_map.field_228 = 8;
     robo_map.field_22C = yw->tiles[10]->chars[65].width;
     robo_map.field_230 = yw->tiles[10]->font_height;
@@ -2580,36 +2560,36 @@ void  sb_0x451034__sub2(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
     robo_map.field_212 = robo_map.field_240 + robo_map.field_23C + 96;
     robo_map.field_214 = 32000;
     robo_map.field_216 = 32000;
-    robo_map.frm_1.btn_xpos = 0;
-    robo_map.frm_1.btn_ypos = yw->icon_energy__h;
-    robo_map.frm_1.btn_width = 2 * yw->screen_width / 3;
-    robo_map.frm_1.btn_height = 2 * yw->screen_height / 3;
+    robo_map.dialogBox.xpos = 0;
+    robo_map.dialogBox.ypos = yw->icon_energy__h;
+    robo_map.dialogBox.btn_width = 2 * yw->screen_width / 3;
+    robo_map.dialogBox.btn_height = 2 * yw->screen_height / 3;
     robo_map.field_1EE = 4;
     robo_map.field_1EC = 7;
-    robo_map.frm_1.field_10 = 18;
-    robo_map.frm_1.field_18[0] = &stru_5B2560;
-    robo_map.frm_1.field_18[1] = &stru_5B2550;
-    robo_map.frm_1.field_18[2] = &stru_5B2568;
-    robo_map.frm_1.field_18[3] = &stru_5B25E0;
-    robo_map.frm_1.field_18[4] = &stru_5B2580;
-    robo_map.frm_1.field_18[5] = &stru_5B2598;
-    robo_map.frm_1.field_18[6] = &stru_5B25C0;
-    robo_map.frm_1.field_18[7] = &stru_5B2590;
-    robo_map.frm_1.field_18[8] = &stru_5B2570;
-    robo_map.frm_1.field_18[9] = &stru_5B2588;
-    robo_map.frm_1.field_18[10] = &stru_5B2558;
-    robo_map.frm_1.field_18[11] = &stru_5B2578;
-    robo_map.frm_1.field_18[12] = &stru_5B25A8;
-    robo_map.frm_1.field_18[13] = &stru_5B25D0;
-    robo_map.frm_1.field_18[14] = &stru_5B25B0;
-    robo_map.frm_1.field_18[15] = &stru_5B25A0;
-    robo_map.frm_1.field_18[16] = &stru_5B25C8;
-    robo_map.frm_1.field_18[17] = &stru_5B25D8;
+    robo_map.dialogBox.field_10 = 18;
+    robo_map.dialogBox.buttons[0] = &stru_5B2560;
+    robo_map.dialogBox.buttons[1] = &stru_5B2550;
+    robo_map.dialogBox.buttons[2] = &stru_5B2568;
+    robo_map.dialogBox.buttons[3] = &stru_5B25E0;
+    robo_map.dialogBox.buttons[4] = &stru_5B2580;
+    robo_map.dialogBox.buttons[5] = &stru_5B2598;
+    robo_map.dialogBox.buttons[6] = &stru_5B25C0;
+    robo_map.dialogBox.buttons[7] = &stru_5B2590;
+    robo_map.dialogBox.buttons[8] = &stru_5B2570;
+    robo_map.dialogBox.buttons[9] = &stru_5B2588;
+    robo_map.dialogBox.buttons[10] = &stru_5B2558;
+    robo_map.dialogBox.buttons[11] = &stru_5B2578;
+    robo_map.dialogBox.buttons[12] = &stru_5B25A8;
+    robo_map.dialogBox.buttons[13] = &stru_5B25D0;
+    robo_map.dialogBox.buttons[14] = &stru_5B25B0;
+    robo_map.dialogBox.buttons[15] = &stru_5B25A0;
+    robo_map.dialogBox.buttons[16] = &stru_5B25C8;
+    robo_map.dialogBox.buttons[17] = &stru_5B25D8;
 
     robo_map.cmdstrm.cmdbuf = byte_5BA6E8;
     robo_map.cmdstrm.includ = t1_cmdbufs;
 
-    robo_map.field_1C8 = sb_0x4f8f64;
+    robo_map.postDraw = sb_0x4f8f64;
 
     if ( yw->field_1b80 )
     {
@@ -2669,13 +2649,13 @@ void  sb_0x451034__sub2(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
     sub_4C0FEC(yw);
     sub_4C1214(yw);
 
-    int v15 = robo_map.frm_1.btn_xpos + robo_map.field_244 - (yw->screen_width / 2);
-    int v14 = robo_map.frm_1.btn_ypos + robo_map.field_23C - (yw->screen_height / 2);
+    int v15 = robo_map.dialogBox.xpos + robo_map.field_244 - (yw->screen_width / 2);
+    int v14 = robo_map.dialogBox.ypos + robo_map.field_23C - (yw->screen_height / 2);
 
-    stru_5B25D8.xpos = robo_map.field_244;
-    stru_5B25D8.ypos = robo_map.field_23C;
-    stru_5B25D8.width = robo_map.frm_1.btn_width - robo_map.field_24C;
-    stru_5B25D8.fnt_height = robo_map.frm_1.btn_height - robo_map.field_250;
+    stru_5B25D8.x = robo_map.field_244;
+    stru_5B25D8.y = robo_map.field_23C;
+    stru_5B25D8.w = robo_map.dialogBox.btn_width - robo_map.field_24C;
+    stru_5B25D8.h = robo_map.dialogBox.btn_height - robo_map.field_250;
 
     sb_0x4f6650(yw, t1_cmdbuf_3, v15, v14);
 
@@ -2766,26 +2746,26 @@ int sb_0x451034__sub3(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
     bzda.field_910 = 5 * yw->icon_order__w + bzda.field_90C + bzda.field_8FC;
     bzda.field_914 = 1;
     bzda.field_918 = 0;
-    bzda.cmd_flag = 0;
-    bzda.frm_1.field_10 = 11;
-    bzda.frm_1.field_18[0] = &create_btn;
-    bzda.frm_1.field_18[1] = &into_vhcl_btn;
-    bzda.frm_1.field_18[2] = &map_btn;
-    bzda.frm_1.field_18[3] = &squad_btn;
-    bzda.frm_1.field_18[4] = &to_host_btn;
-    bzda.frm_1.field_18[5] = &to_leader_btn;
-    bzda.frm_1.field_18[6] = &turrets_btn;
-    bzda.frm_1.field_18[7] = &next_squad_btn;
-    bzda.frm_1.field_18[8] = &analyzer_btn;
-    bzda.frm_1.field_18[9] = &help_btn;
-    bzda.frm_1.field_18[10] = &menu_btn;
-    bzda.frm_1.btn_xpos = 0;
-    bzda.frm_1.btn_ypos = yw->screen_height - yw->icon_order__h;
-    bzda.frm_1.btn_width = yw->screen_width;
-    bzda.frm_1.btn_height = yw->icon_order__h;
+    bzda.flags = 0;
+    bzda.dialogBox.field_10 = 11;
+    bzda.dialogBox.buttons[0] = &create_btn;
+    bzda.dialogBox.buttons[1] = &into_vhcl_btn;
+    bzda.dialogBox.buttons[2] = &map_btn;
+    bzda.dialogBox.buttons[3] = &squad_btn;
+    bzda.dialogBox.buttons[4] = &to_host_btn;
+    bzda.dialogBox.buttons[5] = &to_leader_btn;
+    bzda.dialogBox.buttons[6] = &turrets_btn;
+    bzda.dialogBox.buttons[7] = &next_squad_btn;
+    bzda.dialogBox.buttons[8] = &analyzer_btn;
+    bzda.dialogBox.buttons[9] = &help_btn;
+    bzda.dialogBox.buttons[10] = &menu_btn;
+    bzda.dialogBox.xpos = 0;
+    bzda.dialogBox.ypos = yw->screen_height - yw->icon_order__h;
+    bzda.dialogBox.btn_width = yw->screen_width;
+    bzda.dialogBox.btn_height = yw->icon_order__h;
 
     for (int i = 0; i < 11; i++)
-        memset(bzda.frm_1.field_18[i], 0, sizeof(button_str1));
+        memset(bzda.dialogBox.buttons[i], 0, sizeof(ButtonBox));
 
     bzda.cmdstrm.cmdbuf = byte_516534;
     bzda.field_1D8 = 0;
@@ -2802,41 +2782,26 @@ int sb_0x451034__sub3(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
         if ( !(bzda.field_1D8 & 1) )
         {
             bzda.field_1D8 |= 1;
-            INPe.sub_412D48(&bzda.frm_1, 0);
+            INPe.AddClickBox(&bzda.dialogBox, 0);
         }
     }
 
-    if ( !lstvw_init(
-                yw,
-                &gui_lstvw,
-                0x80000002,
-                0,
-                0x80000003,
-                8,
-                0x80000004,
-                8,
-                0x80000005,
-                0,
-                0x80000006,
-                0,
-                0x80000007,
-                16,
-                0x80000008,
-                0,
-                0x8000000B,
-                yw->font_default_h,
-                0x8000000C,
-                bzda.field_900,
-                0x8000000F,
-                1,
-                0x80000010,
-                yw->field_1a38,
-                0x80000011,
-                1,
-                0x80000017,
-                1,
-                0)
-       )
+    GuiList::tInit args;
+    args.resizeable = true;
+    args.numEntries = 8;
+    args.shownEntries = 8;
+    args.firstShownEntry = 0;
+    args.selectedEntry = 0;
+    args.maxShownEntries = 16;
+    args.withIcon = false;
+    args.entryHeight = yw->font_default_h;
+    args.entryWidth = bzda.field_900;
+    args.enabled = true;
+    args.vborder = yw->field_1a38;
+    args.instantInput = true;
+    args.keyboardInput = true;
+
+    if ( !gui_lstvw.Init(yw, args) )
         return 0;
 
 
@@ -2872,38 +2837,38 @@ int sb_0x451034__sub3(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
     {
         if ( yw->robo_map_status.p2 )
         {
-            if ( robo_map.cmd_flag & 0x20 )
+            if ( robo_map.flags & GuiBase::FLAG_CLOSED )
             {
-                robo_map.cmd_flag &= 0xFFFFFFDF;
+                robo_map.flags &= ~GuiBase::FLAG_CLOSED;
 
-                INPe.sub_412D48(&robo_map.frm_1, 0);
+                INPe.AddClickBox(&robo_map.dialogBox, 0);
 
                 yw->field_17bc = 0;
             }
 
-            if ( !(robo_map.cmd_flag & 0x20) )
+            if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
             {
                 Remove(&robo_map);
                 AddHead(&yw->field_17a0, &robo_map);
 
-                INPe.sub_412D9C(&robo_map.frm_1);
+                INPe.RemClickBox(&robo_map.dialogBox);
 
-                INPe.sub_412D48(&robo_map.frm_1, 0);
+                INPe.AddClickBox(&robo_map.dialogBox, 0);
             }
         }
-        else if ( !(robo_map.cmd_flag & 0x20) )
+        else if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
         {
-            robo_map.cmd_flag |= 0x20;
+            robo_map.flags |= GuiBase::FLAG_CLOSED;
 
-            INPe.sub_412D9C(&robo_map.frm_1);
+            INPe.RemClickBox(&robo_map.dialogBox);
 
             yw->field_17bc = 0;
         }
 
-        robo_map.frm_1.btn_xpos = yw->robo_map_status.p3;
-        robo_map.frm_1.btn_ypos = yw->robo_map_status.p4;
-        robo_map.frm_1.btn_width = yw->robo_map_status.p5;
-        robo_map.frm_1.btn_height = yw->robo_map_status.p6;
+        robo_map.dialogBox.xpos = yw->robo_map_status.p3;
+        robo_map.dialogBox.ypos = yw->robo_map_status.p4;
+        robo_map.dialogBox.btn_width = yw->robo_map_status.p5;
+        robo_map.dialogBox.btn_height = yw->robo_map_status.p6;
         robo_map.field_1EC = yw->robo_map_status.pX[0];
         robo_map.field_1ED = yw->robo_map_status.pX[1];
         robo_map.field_1EE = yw->robo_map_status.pX[2];
@@ -2920,33 +2885,33 @@ int sb_0x451034__sub3(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
     {
         if ( yw->robo_finder_status.p2 )
         {
-            if ( squadron_manager.lstvw.cmd_flag & 0x20 )
+            if ( squadron_manager.lstvw.flags & GuiBase::FLAG_CLOSED )
             {
-                squadron_manager.lstvw.cmd_flag &= 0xFFFFFFDF;
-                INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                squadron_manager.lstvw.flags &= ~GuiBase::FLAG_CLOSED;
+                INPe.AddClickBox(&squadron_manager.lstvw.dialogBox, 0);
                 yw->field_17bc = 0;
             }
-            if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
+            if ( !(squadron_manager.lstvw.flags & GuiBase::FLAG_CLOSED) )
             {
                 Remove(&squadron_manager.lstvw);
                 AddHead(&yw->field_17a0, &squadron_manager.lstvw);
-                INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
-                INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                INPe.RemClickBox(&squadron_manager.lstvw.dialogBox);
+                INPe.AddClickBox(&squadron_manager.lstvw.dialogBox, 0);
             }
         }
-        else if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
+        else if ( !(squadron_manager.lstvw.flags & GuiBase::FLAG_CLOSED) )
         {
-            squadron_manager.lstvw.cmd_flag |= 0x20;
-            INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
+            squadron_manager.lstvw.flags |= GuiBase::FLAG_CLOSED;
+            INPe.RemClickBox(&squadron_manager.lstvw.dialogBox);
             yw->field_17bc = 0;
         }
 
-        squadron_manager.lstvw.frm_1.btn_xpos = yw->robo_finder_status.p3;
-        squadron_manager.lstvw.frm_1.btn_ypos = yw->robo_finder_status.p4;
-        squadron_manager.lstvw.frm_1.btn_width = yw->robo_finder_status.p5;
-        squadron_manager.lstvw.frm_1.btn_height = yw->robo_finder_status.p6;
+        squadron_manager.lstvw.dialogBox.xpos = yw->robo_finder_status.p3;
+        squadron_manager.lstvw.dialogBox.ypos = yw->robo_finder_status.p4;
+        squadron_manager.lstvw.dialogBox.btn_width = yw->robo_finder_status.p5;
+        squadron_manager.lstvw.dialogBox.btn_height = yw->robo_finder_status.p6;
 
-        lstvw_updlimits(yw, &squadron_manager.lstvw, -2, -2);
+        squadron_manager.lstvw.SetRect(yw, -2, -2);
     }
 
     return 1;
@@ -2968,42 +2933,25 @@ void create_info_log(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
 {
     memset(&info_log, 0, sizeof(info_log));
 
-    if ( lstvw_init(
-                yw,
-                &info_log.window,
-                0x80000001,
-                get_lang_string(yw->string_pointers_p2, 52, "MESSAGE LOG"),
-                0x80000002,
-                1,
-                0x80000003,
-                1,
-                0x80000004,
-                6,
-                0x80000005,
-                0,
-                0x80000006,
-                0,
-                0x80000007,
-                24,
-                0x80000012,
-                3,
-                0x80000008,
-                0,
-                0x8000000B,
-                yw->font_default_h,
-                0x8000000C,
-                200,
-                0x8000000E,
-                32000,
-                0x8000000D,
-                2 * (5 * yw->tiles[0]->chars[48].width),
-                0x8000000F,
-                1,
-                0x80000010,
-                yw->field_1a38,
-                0x80000014,
-                74,
-                0) )
+    GuiList::tInit args;
+    args.title = get_lang_string(yw->string_pointers_p2, 52, "MESSAGE LOG");
+    args.resizeable = true;
+    args.numEntries = 1;
+    args.shownEntries = 6;
+    args.firstShownEntry = 0;
+    args.selectedEntry = 0;
+    args.maxShownEntries = 24;
+    args.minShownEntries = 3;
+    args.withIcon = false;
+    args.entryHeight = yw->font_default_h;
+    args.entryWidth = 200;
+    args.maxEntryWidth = 32000;
+    args.minEntryWidth = 2 * (5 * yw->tiles[0]->chars[48].width);
+    args.enabled = true;
+    args.vborder = yw->field_1a38;
+    args.closeChar = 74;
+
+    if ( info_log.window.Init(yw, args) )
     {
         if ( yw->field_1614 )
         {
@@ -3033,52 +2981,36 @@ void create_exit_menu(_NC_STACK_ypaworld *yw)
 
     int tmp = sub_4513E0("WWWWWWW", yw->tiles[0]);
 
-    if ( lstvw_init(
-                yw,
-                &exit_menu,
-                0x80000001,
-                get_lang_string(yw->string_pointers_p2, 53, "GAME PAUSED"),
-                0x80000002,
-                0,
-                0x80000003,
-                5,
-                0x80000004,
-                5,
-                0x80000005,
-                0,
-                0x80000006,
-                0,
-                0x80000007,
-                5,
-                0x80000012,
-                5,
-                0x80000008,
-                0,
-                0x8000000B,
-                dword_5C8B7C,
-                0x8000000C,
-                (2 * tmp + 16),
-                0x8000000F,
-                1,
-                0x80000010,
-                yw->field_1a38,
-                0x80000013,
-                1,
-                0x80000014,
-                85,
-                0) )
+    GuiList::tInit args;
+    args.title = get_lang_string(yw->string_pointers_p2, 53, "GAME PAUSED");
+    args.resizeable = false;
+    args.numEntries = 5;
+    args.shownEntries = 5;
+    args.firstShownEntry = 0;
+    args.selectedEntry = 0;
+    args.maxShownEntries = 5;
+    args.minShownEntries = 5;
+    args.withIcon = false;
+    args.entryHeight = dword_5C8B7C;
+    args.entryWidth = (2 * tmp + 16);
+    args.enabled = true;
+    args.vborder = yw->field_1a38;
+    args.staticItems = true;
+    args.closeChar = 85;
+
+    if ( exit_menu.Init(yw, args) )
     {
-        int v5 = yw->font_default_h + exit_menu.field_1E8 + dword_5C8B84;
+        int v5 = yw->font_default_h + exit_menu.upperVborder + dword_5C8B84;
 
         dword_5C8B80 = 2 * yw->tiles[0]->chars[32].width + yw->font_default_w__b;
-        dword_5C8B88 = exit_menu.width - 2 * dword_5C8B80;
+        dword_5C8B88 = exit_menu.entryWidth - 2 * dword_5C8B80;
 
         for (int i = 8; i < 13; i++)
         {
-            exit_menu.frm_1.field_18[i]->xpos = dword_5C8B80;
-            exit_menu.frm_1.field_18[i]->ypos = (i - 8) * dword_5C8B7C + v5;
-            exit_menu.frm_1.field_18[i]->width = dword_5C8B88;
-            exit_menu.frm_1.field_18[i]->fnt_height = yw->font_default_h;
+            exit_menu.dialogBox.buttons[i]->x = dword_5C8B80;
+            exit_menu.dialogBox.buttons[i]->y = (i - 8) * dword_5C8B7C + v5;
+            exit_menu.dialogBox.buttons[i]->w = dword_5C8B88;
+            exit_menu.dialogBox.buttons[i]->h = yw->font_default_h;
         }
     }
 }
@@ -3088,61 +3020,44 @@ void sb_0x451034__sub5(_NC_STACK_ypaworld *yw)
 {
     int v2 = sub_4513E0("WWWWWWW", yw->tiles[0]) * 3.5 + 16;
 
-    if ( lstvw_init(
-                yw,
-                &lstvw2,
-                0x80000001,
-                " ",
-                0x80000002,
-                0,
-                0x80000003,
-                3,
-                0x80000004,
-                3,
-                0x80000005,
-                0,
-                0x80000006,
-                0,
-                0x80000007,
-                3,
-                0x80000012,
-                3,
-                0x80000008,
-                0,
-                0x8000000B,
-                yw->font_default_h,
-                0x8000000C,
-                v2,
-                0x8000000F,
-                1,
-                0x80000010,
-                yw->field_1a38,
-                0x80000013,
-                1,
-                0x80000014,
-                85,
-                0x80000018,
-                0,
-                0) )
+    GuiList::tInit args;
+    args.title = " ";
+    args.resizeable = false;
+    args.numEntries = 3;
+    args.shownEntries = 3;
+    args.firstShownEntry = 0;
+    args.selectedEntry = 0;
+    args.maxShownEntries = 3;
+    args.minShownEntries = 3;
+    args.withIcon = false;
+    args.entryHeight = yw->font_default_h;
+    args.entryWidth = v2;
+    args.enabled = true;
+    args.vborder = yw->field_1a38;
+    args.staticItems = true;
+    args.closeChar = 85;
+    args.withHelp = false;
+
+    if ( lstvw2.Init(yw, args) )
     {
-        int v1 = yw->font_default_h + lstvw2.field_1E8 + 2 * lstvw2.font_h;
+        int v1 = yw->font_default_h + lstvw2.upperVborder + 2 * lstvw2.entryHeight;
 
         dword_5BAFA8 = 2 * yw->tiles[0]->chars[32].width + yw->font_default_w__b;
-        dword_5BAFA0 = (lstvw2.width - 2 * dword_5BAFA8) / 3;
+        dword_5BAFA0 = (lstvw2.entryWidth - 2 * dword_5BAFA8) / 3;
 
-        lstvw2.frm_1.field_10 = 10;
+        lstvw2.dialogBox.field_10 = 10;
 
-        lstvw2.frm_1.field_18[8]->ypos = v1;
-        lstvw2.frm_1.field_18[8]->xpos = dword_5BAFA8;
-        lstvw2.frm_1.field_18[8]->width = dword_5BAFA0;
-        lstvw2.frm_1.field_18[8]->fnt_height = lstvw2.font_h;
+        lstvw2.dialogBox.buttons[8]->y = v1;
+        lstvw2.dialogBox.buttons[8]->x = dword_5BAFA8;
+        lstvw2.dialogBox.buttons[8]->w = dword_5BAFA0;
+        lstvw2.dialogBox.buttons[8]->h = lstvw2.entryHeight;
 
-        lstvw2.frm_1.field_18[9]->ypos = v1;
-        lstvw2.frm_1.field_18[9]->width = dword_5BAFA0;
-        lstvw2.frm_1.field_18[9]->xpos = lstvw2.width - dword_5BAFA8 - dword_5BAFA0;
-        lstvw2.frm_1.field_18[9]->fnt_height = lstvw2.font_h;
+        lstvw2.dialogBox.buttons[9]->y = v1;
+        lstvw2.dialogBox.buttons[9]->w = dword_5BAFA0;
+        lstvw2.dialogBox.buttons[9]->x = lstvw2.entryWidth - dword_5BAFA8 - dword_5BAFA0;
+        lstvw2.dialogBox.buttons[9]->h = lstvw2.entryHeight;
 
-        dword_5BAFA4 = lstvw2.frm_1.field_18[9]->xpos - (dword_5BAFA0 + lstvw2.frm_1.field_18[8]->xpos);
+        dword_5BAFA4 = lstvw2.dialogBox.buttons[9]->x - (dword_5BAFA0 + lstvw2.dialogBox.buttons[8]->x);
 
         dword_5BAF9C = 0;
     }
@@ -3215,40 +3130,40 @@ void sb_0x451034__sub9(_NC_STACK_ypaworld *yw)
 
 void sub_4DA874(_NC_STACK_ypaworld *yw)
 {
-    sub_4E866C(&exit_menu);
+    exit_menu.Free();
 }
 
 void sub_46E16C(_NC_STACK_ypaworld *yw)
 {
-    sub_4E866C(&info_log.window);
+    info_log.window.Free();
 }
 
 void sub_4C706C(_NC_STACK_ypaworld *yw)
 {
-    sub_4E866C(&squadron_manager.lstvw);
+    squadron_manager.lstvw.Free();
 }
 
 void sub_4C39A4(_NC_STACK_ypaworld *yw)
 {
-    if ( !(gui_lstvw.cmd_flag & 0x20) )
+    if ( !(gui_lstvw.flags & GuiBase::FLAG_CLOSED) )
     {
-        gui_lstvw.cmd_flag |= 0x20;
-        INPe.sub_412D9C(&gui_lstvw.frm_1);
+        gui_lstvw.flags |= GuiBase::FLAG_CLOSED;
+        INPe.RemClickBox(&gui_lstvw.dialogBox);
         yw->field_17bc = 0;
     }
 
     if ( bzda.field_1D8 & 1 )
     {
         bzda.field_1D8 &= 0xFFFFFFFE;
-        INPe.sub_412D9C(&bzda.frm_1);
+        INPe.RemClickBox(&bzda.dialogBox);
     }
 
-    sub_4E866C(&gui_lstvw);
+    gui_lstvw.Free();
 }
 
 void sub_4E1D24()
 {
-    INPe.sub_412D9C(&up_panel.frm_1);
+    INPe.RemClickBox(&up_panel.dialogBox);
 }
 
 void sub_4E2B24(_NC_STACK_ypaworld *yw)
@@ -3266,7 +3181,7 @@ void sub_4E2B24(_NC_STACK_ypaworld *yw)
 
 void sub_4C8524(_NC_STACK_ypaworld *yw)
 {
-    sub_4E866C(&lstvw2);
+    lstvw2.Free();
 }
 
 void sub_47E400(_NC_STACK_ypaworld *yw)
@@ -3354,14 +3269,14 @@ int sb_0x451034(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
 
 void sb_0x4d7c08__sub0__sub1()
 {
-    if ( !(bzda.cmd_flag & 0x20) )
+    if ( !(bzda.flags & GuiBase::FLAG_CLOSED) )
     {
         w3d_a209 v0;
         v0 = bzda.cmdstrm;
 
         GFXe.drawText(&v0);
 
-        if ( !(gui_lstvw.cmd_flag & 0x20) )
+        if ( !(gui_lstvw.flags & GuiBase::FLAG_CLOSED) )
         {
             v0 = gui_lstvw.cmdstrm;
 
@@ -3382,35 +3297,35 @@ void sb_0x4d7c08__sub0(_NC_STACK_ypaworld *yw)
     {
         sb_0x4d7c08__sub0__sub4(yw);
 
-        listbase *lstnode = (listbase *)yw->field_17a0.tailpred;
+        GuiBase *lstnode = (GuiBase *)yw->field_17a0.tailpred;
         while (lstnode->prev)
         {
             int v6 = 0;
-            if ( !(lstnode->cmd_flag & 0x20) )
+            if ( !(lstnode->flags & 0x20) )
             {
                 w3d_a209 v8;
 
-                if ( lstnode->cmd_flag & 1 )
+                if ( lstnode->flags & 1 )
                 {
                     v8.includ = NULL;
-                    v8.cmdbuf = lstnode->field_1BC;
+                    v8.cmdbuf = lstnode->iconString;
                 }
                 else
                 {
                     v8 = lstnode->cmdstrm;
 
-                    if ( lstnode->field_1C8 )
+                    if ( lstnode->postDraw )
                         v6 = 1;
                 }
 
                 GFXe.drawText(&v8);
 
                 if ( v6 )
-                    lstnode->field_1C8(yw);
+                    lstnode->postDraw(yw);
 
             }
 
-            lstnode = (listbase *)lstnode->prev;
+            lstnode = (GuiBase *)lstnode->prev;
         }
 
         if ( yw->field_1b84->field_3D5 != 2 )
@@ -3425,11 +3340,11 @@ void sb_0x4d7c08__sub0(_NC_STACK_ypaworld *yw)
 }
 
 
-char * buy_list_update_sub(_NC_STACK_ypaworld *yw, int a2, listview *lstvw, char *cur, char a5, const char *a6, int a7)
+char * buy_list_update_sub(_NC_STACK_ypaworld *yw, int a2, GuiList *lstvw, char *cur, char a5, const char *a6, int a7)
 {
-    int v33 = lstvw->width - 2 * yw->font_default_w__b;
+    int v33 = lstvw->entryWidth - 2 * yw->font_default_w__b;
 
-    listview_t1 v24[3];
+    FontUA::ColumnItem v24[3];
     memset(v24, 0, sizeof(v24));
 
     char *pcur = cur;
@@ -3441,7 +3356,7 @@ char * buy_list_update_sub(_NC_STACK_ypaworld *yw, int a2, listview *lstvw, char
 
     if ( a2 )
     {
-        fntcmd_set_txtColor(&pcur, yw->iniColors[62].r, yw->iniColors[62].g, yw->iniColors[62].b);
+        FontUA::set_txtColor(&pcur, yw->iniColors[62].r, yw->iniColors[62].g, yw->iniColors[62].b);
 
         v14 = 9;
         v15 = 98;
@@ -3450,7 +3365,7 @@ char * buy_list_update_sub(_NC_STACK_ypaworld *yw, int a2, listview *lstvw, char
     }
     else
     {
-        fntcmd_set_txtColor(&pcur, yw->iniColors[61].r, yw->iniColors[61].g, yw->iniColors[61].b);
+        FontUA::set_txtColor(&pcur, yw->iniColors[61].r, yw->iniColors[61].g, yw->iniColors[61].b);
 
         v14 = 0;
         v16 = 102;
@@ -3468,48 +3383,48 @@ char * buy_list_update_sub(_NC_STACK_ypaworld *yw, int a2, listview *lstvw, char
     sprintf(a1a, "%d", a7);
 
     v24[0].txt = v28;
-    v24[0].tileset_id = 28;
-    v24[0].field_width = squadron_manager.field_2CC;
-    v24[0].left_tile = 0;
-    v24[0].right_tile = 0;
-    v24[0].bkg_tile = 64;
+    v24[0].fontID = 28;
+    v24[0].width = squadron_manager.field_2CC;
+    v24[0].prefixChar = 0;
+    v24[0].postfixChar = 0;
+    v24[0].spaceChar = 64;
     v24[0].flags = 4;
 
-    v24[1].tileset_id = v14;
-    v24[1].bkg_tile = v16;
-    v24[1].left_tile = v15;
+    v24[1].fontID = v14;
+    v24[1].spaceChar = v16;
+    v24[1].prefixChar = v15;
     v24[1].txt = a6;
     v24[1].flags = 37;
-    v24[1].field_width = v33 - squadron_manager.field_2CC - 5 * v19;
-    v24[1].right_tile = 0;
+    v24[1].width = v33 - squadron_manager.field_2CC - 5 * v19;
+    v24[1].postfixChar = 0;
 
     v24[2].txt = a1a;
-    v24[2].tileset_id = v14;
-    v24[2].bkg_tile = v16;
-    v24[2].right_tile = v17;
-    v24[2].field_width = 5 * v19;
+    v24[2].fontID = v14;
+    v24[2].spaceChar = v16;
+    v24[2].postfixChar = v17;
+    v24[2].width = 5 * v19;
     v24[2].flags = 42;
-    v24[2].left_tile = 0;
+    v24[2].prefixChar = 0;
 
-    fntcmd_select_tileset(&pcur, 0);
+    FontUA::select_tileset(&pcur, 0);
 
-    fntcmd_store_u8(&pcur, 123);
+    FontUA::store_u8(&pcur, 123);
 
-    fntcmd_select_tileset(&pcur, v14);
+    FontUA::select_tileset(&pcur, v14);
 
-    fntcmd_op10(&pcur, squadron_manager.field_2CC);
+    FontUA::op10(&pcur, squadron_manager.field_2CC);
 
-    fntcmd_store_u8(&pcur, v16);
+    FontUA::store_u8(&pcur, v16);
 
-    fntcmd_add_xpos(&pcur, -squadron_manager.field_2CC);
+    FontUA::add_xpos(&pcur, -squadron_manager.field_2CC);
 
-    pcur = lstvw_txt_line(yw, pcur, 3, v24);
+    pcur = FormateColumnItem(yw, pcur, 3, v24);
 
-    fntcmd_select_tileset(&pcur, 0);
+    FontUA::select_tileset(&pcur, 0);
 
-    fntcmd_store_u8(&pcur, 125);
+    FontUA::store_u8(&pcur, 125);
 
-    fntcmd_next_line(&pcur);
+    FontUA::next_line(&pcur);
 
     return pcur;
 }
@@ -3533,33 +3448,33 @@ float sub_4498F4(_NC_STACK_ypaworld *yw)
 
 char * gui_update_create_btn__sub0(_NC_STACK_ypaworld *yw)
 {
-    char *pcur = gui_lstvw.data_cmdbuf;
+    char *pcur = gui_lstvw.itemBlock;
 
-    INPe.sub_412D9C(&gui_lstvw.frm_1);
-    INPe.sub_412D48(&gui_lstvw.frm_1, 0);
+    INPe.RemClickBox(&gui_lstvw.dialogBox);
+    INPe.AddClickBox(&gui_lstvw.dialogBox, 0);
 
-    gui_lstvw.elements_for_scroll_size = bzda.field_8E8;
-    gui_lstvw.field_1DE = bzda.field_8F8;
+    gui_lstvw.numEntries = bzda.field_8E8;
+    gui_lstvw.selectedEntry = bzda.field_8F8;
 
-    if ( gui_lstvw.element_count_max >= bzda.field_8E8 )
-        gui_lstvw.element_count = bzda.field_8E8;
+    if ( gui_lstvw.maxShownEntries >= bzda.field_8E8 )
+        gui_lstvw.shownEntries = bzda.field_8E8;
     else
-        gui_lstvw.element_count = gui_lstvw.element_count_max;
+        gui_lstvw.shownEntries = gui_lstvw.maxShownEntries;
 
-    if ( gui_lstvw.scroll_pos + gui_lstvw.element_count > gui_lstvw.elements_for_scroll_size )
-        gui_lstvw.scroll_pos = gui_lstvw.elements_for_scroll_size - gui_lstvw.element_count;
+    if ( gui_lstvw.firstShownEntries + gui_lstvw.shownEntries > gui_lstvw.numEntries )
+        gui_lstvw.firstShownEntries = gui_lstvw.numEntries - gui_lstvw.shownEntries;
 
-    lstvw_updlimits(yw, &gui_lstvw, -2, -2);
+    gui_lstvw.SetRect(yw, -2, -2);
 
-    gui_lstvw.frm_1.btn_xpos = bzda.field_904 + bzda.frm_1.btn_xpos;
-    gui_lstvw.frm_1.btn_ypos = bzda.field_918 + bzda.frm_1.btn_ypos - gui_lstvw.frm_1.btn_height;
+    gui_lstvw.dialogBox.xpos = bzda.field_904 + bzda.dialogBox.xpos;
+    gui_lstvw.dialogBox.ypos = bzda.field_918 + bzda.dialogBox.ypos - gui_lstvw.dialogBox.btn_height;
 
-    pcur = lstvw_up_border(yw, &gui_lstvw, pcur, 0, "uvw");
+    pcur = gui_lstvw.ItemsPreLayout(yw, pcur, 0, "uvw");
 
-    for (int i = 0; i < gui_lstvw.element_count; i++ )
+    for (int i = 0; i < gui_lstvw.shownEntries; i++ )
     {
         int v21 = 0;
-        int v3 = i + gui_lstvw.scroll_pos;
+        int v3 = i + gui_lstvw.firstShownEntries;
 
         if ( bzda.field_4DC[ v3 ].i == 1 )
         {
@@ -3571,7 +3486,7 @@ char * gui_update_create_btn__sub0(_NC_STACK_ypaworld *yw)
 
             const char *v8 = get_lang_string(yw->string_pointers_p2, v5 + 1200, v6->name);
 
-            if ( v3 == gui_lstvw.field_1DE )
+            if ( v3 == gui_lstvw.selectedEntry )
                 v21 = 1;
 
             pcur = buy_list_update_sub(yw, v21, &gui_lstvw, pcur, v6->type_icon, v8, v17);
@@ -3591,16 +3506,16 @@ char * gui_update_create_btn__sub0(_NC_STACK_ypaworld *yw)
 
             const char *v13 = get_lang_string(yw->string_pointers_p2, v12, v10->name);
 
-            if ( v3 == gui_lstvw.field_1DE )
+            if ( v3 == gui_lstvw.selectedEntry )
                 v21 = 1;
 
             pcur = buy_list_update_sub(yw, v21, &gui_lstvw, pcur, v10->type_icon, v13, v18);
         }
     }
 
-    pcur = lstvw_down_border(yw, &gui_lstvw, pcur, 0, "xyz");
+    pcur = gui_lstvw.ItemsPostLayout(yw, pcur, 0, "xyz");
 
-    fntcmd_set_end(&pcur);
+    FontUA::set_end(&pcur);
 
     return pcur;
 }
@@ -3614,54 +3529,54 @@ char * gui_update_create_btn(_NC_STACK_ypaworld *yw, char *cur)
     {
         memset(&create_btn, 0, sizeof(create_btn));
 
-        fntcmd_select_tileset(&pcur, 23);
-        fntcmd_store_u8(&pcur, 67);
+        FontUA::select_tileset(&pcur, 23);
+        FontUA::store_u8(&pcur, 67);
 
-        if ( !(gui_lstvw.cmd_flag & 0x20) )
+        if ( !(gui_lstvw.flags & GuiBase::FLAG_CLOSED) )
         {
-            gui_lstvw.cmd_flag |= 0x20;
-            INPe.sub_412D9C(&gui_lstvw.frm_1);
+            gui_lstvw.flags |= GuiBase::FLAG_CLOSED;
+            INPe.RemClickBox(&gui_lstvw.dialogBox);
             yw->field_17bc = 0;
         }
     }
     else
     {
-        bzda.frm_1.field_18[0]->xpos = bzda.field_904;
-        bzda.frm_1.field_18[0]->ypos = bzda.field_918;
-        bzda.frm_1.field_18[0]->width = yw->icon_order__w;
-        bzda.frm_1.field_18[0]->fnt_height = yw->icon_order__h;
+        bzda.dialogBox.buttons[0]->x = bzda.field_904;
+        bzda.dialogBox.buttons[0]->y = bzda.field_918;
+        bzda.dialogBox.buttons[0]->w = yw->icon_order__w;
+        bzda.dialogBox.buttons[0]->h = yw->icon_order__h;
 
         if ( !(bzda.field_1CC & 0x16) )
         {
             memset(&create_btn, 0, sizeof(create_btn));
 
-            fntcmd_select_tileset(&pcur, 23);
-            fntcmd_store_u8(&pcur, 67);
+            FontUA::select_tileset(&pcur, 23);
+            FontUA::store_u8(&pcur, 67);
         }
         else
         {
             if ( bzda.field_1D0 & 0x16 )
             {
-                if ( !(gui_lstvw.cmd_flag & 0x20) )
+                if ( !(gui_lstvw.flags & GuiBase::FLAG_CLOSED) )
                     gui_update_create_btn__sub0(yw);
 
-                fntcmd_select_tileset(&pcur, 22);
+                FontUA::select_tileset(&pcur, 22);
             }
             else
             {
-                fntcmd_select_tileset(&pcur, 21);
+                FontUA::select_tileset(&pcur, 21);
             }
 
             int v9 = bzda.field_1D0 & 0x16;
 
             if (v9 == 0x10)
-                fntcmd_store_u8(&pcur, 70);
+                FontUA::store_u8(&pcur, 70);
             else if (v9 == 4)
-                fntcmd_store_u8(&pcur, 68);
+                FontUA::store_u8(&pcur, 68);
             else if (v9 == 2)
-                fntcmd_store_u8(&pcur, 67);
+                FontUA::store_u8(&pcur, 67);
             else
-                fntcmd_store_u8(&pcur, 67);
+                FontUA::store_u8(&pcur, 67);
         }
     }
     return pcur;
@@ -3673,37 +3588,37 @@ char *gui_update_map_squad_btn(_NC_STACK_ypaworld *yw, char *cur)
 
     if ( yw->field_1b84->field_3D5 == 2 )
     {
-        fntcmd_select_tileset(&pcur, 23);
+        FontUA::select_tileset(&pcur, 23);
 
-        fntcmd_store_u8(&pcur, 72);
-        fntcmd_store_u8(&pcur, 73);
+        FontUA::store_u8(&pcur, 72);
+        FontUA::store_u8(&pcur, 73);
 
         memset(&map_btn, 0, sizeof(map_btn));
         memset(&squad_btn, 0, sizeof(squad_btn));
 
-        if ( !(robo_map.cmd_flag & 0x20) )
+        if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
         {
-            robo_map.cmd_flag |= 0x20;
+            robo_map.flags |= GuiBase::FLAG_CLOSED;
 
-            INPe.sub_412D9C(&robo_map.frm_1);
+            INPe.RemClickBox(&robo_map.dialogBox);
 
             yw->field_17bc = 0;
         }
 
-        if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
+        if ( !(squadron_manager.lstvw.flags & GuiBase::FLAG_CLOSED) )
         {
-            squadron_manager.lstvw.cmd_flag |= 0x20;
+            squadron_manager.lstvw.flags |= GuiBase::FLAG_CLOSED;
 
-            INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
+            INPe.RemClickBox(&squadron_manager.lstvw.dialogBox);
 
             yw->field_17bc = 0;
         }
 
-        if ( !(info_log.window.cmd_flag & 0x20) )
+        if ( !(info_log.window.flags & GuiBase::FLAG_CLOSED) )
         {
-            info_log.window.cmd_flag |= 0x20;
+            info_log.window.flags |= GuiBase::FLAG_CLOSED;
 
-            INPe.sub_412D9C(&info_log.window.frm_1);
+            INPe.RemClickBox(&info_log.window.dialogBox);
 
             yw->field_17bc = 0;
         }
@@ -3714,27 +3629,27 @@ char *gui_update_map_squad_btn(_NC_STACK_ypaworld *yw, char *cur)
 
         for (int i = 2; i < 4; i++)
         {
-            bzda.frm_1.field_18[i]->xpos = v8;
-            bzda.frm_1.field_18[i]->ypos = bzda.field_918;
-            bzda.frm_1.field_18[i]->width = yw->icon_order__w;
-            bzda.frm_1.field_18[i]->fnt_height = yw->icon_order__h;
+            bzda.dialogBox.buttons[i]->x = v8;
+            bzda.dialogBox.buttons[i]->y = bzda.field_918;
+            bzda.dialogBox.buttons[i]->w = yw->icon_order__w;
+            bzda.dialogBox.buttons[i]->h = yw->icon_order__h;
 
             v8 += yw->icon_order__w;
         }
 
-        if ( robo_map.cmd_flag & 0x20 )
-            fntcmd_select_tileset(&pcur, 21);
+        if ( robo_map.flags & GuiBase::FLAG_CLOSED )
+            FontUA::select_tileset(&pcur, 21);
         else
-            fntcmd_select_tileset(&pcur, 22);
+            FontUA::select_tileset(&pcur, 22);
 
-        fntcmd_store_u8(&pcur, 72);
+        FontUA::store_u8(&pcur, 72);
 
-        if ( squadron_manager.lstvw.cmd_flag & 0x20 )
-            fntcmd_select_tileset(&pcur, 21);
+        if ( squadron_manager.lstvw.flags & GuiBase::FLAG_CLOSED )
+            FontUA::select_tileset(&pcur, 21);
         else
-            fntcmd_select_tileset(&pcur, 22);
+            FontUA::select_tileset(&pcur, 22);
 
-        fntcmd_store_u8(&pcur, 73);
+        FontUA::store_u8(&pcur, 73);
     }
     return pcur;
 }
@@ -3797,130 +3712,130 @@ char *gui_update_player_panel(_NC_STACK_ypaworld *yw, char *cur)
 
     if ( bzda.field_1CC & 8 )
     {
-        into_vhcl_btn.xpos = bzda.field_90C;
-        into_vhcl_btn.ypos = bzda.field_918;
-        into_vhcl_btn.width = yw->icon_order__w;
-        into_vhcl_btn.fnt_height = yw->icon_order__h;
+        into_vhcl_btn.x = bzda.field_90C;
+        into_vhcl_btn.y = bzda.field_918;
+        into_vhcl_btn.w = yw->icon_order__w;
+        into_vhcl_btn.h = yw->icon_order__h;
 
         if ( bzda.field_1D0 & 8 )
-            fntcmd_select_tileset(&pcur, 22);
+            FontUA::select_tileset(&pcur, 22);
         else
-            fntcmd_select_tileset(&pcur, 21);
+            FontUA::select_tileset(&pcur, 21);
 
-        fntcmd_store_u8(&pcur, 69);
+        FontUA::store_u8(&pcur, 69);
     }
     else
     {
         memset(&into_vhcl_btn, 0, sizeof(into_vhcl_btn));
 
-        fntcmd_select_tileset(&pcur, 23);
-        fntcmd_store_u8(&pcur, 69);
+        FontUA::select_tileset(&pcur, 23);
+        FontUA::store_u8(&pcur, 69);
     }
 
 
     if ( v35 & 0x10 )
     {
-        to_host_btn.xpos = yw->icon_order__w + bzda.field_90C;
-        to_host_btn.width = yw->icon_order__w;
-        to_host_btn.ypos = bzda.field_918;
-        to_host_btn.fnt_height = yw->icon_order__h;
+        to_host_btn.x = yw->icon_order__w + bzda.field_90C;
+        to_host_btn.w = yw->icon_order__w;
+        to_host_btn.y = bzda.field_918;
+        to_host_btn.h = yw->icon_order__h;
 
         if ( bzda.field_91C & 0x10 )
-            fntcmd_select_tileset(&pcur, 22);
+            FontUA::select_tileset(&pcur, 22);
         else
-            fntcmd_select_tileset(&pcur, 21);
+            FontUA::select_tileset(&pcur, 21);
 
-        fntcmd_store_u8(&pcur, 81);
+        FontUA::store_u8(&pcur, 81);
     }
     else
     {
         memset(&to_host_btn, 0, sizeof(to_host_btn));
 
-        fntcmd_select_tileset(&pcur, 23);
-        fntcmd_store_u8(&pcur, 81);
+        FontUA::select_tileset(&pcur, 23);
+        FontUA::store_u8(&pcur, 81);
     }
 
     if ( v35 & 0x20 )
     {
-        to_leader_btn.xpos = bzda.field_90C + 2 * yw->icon_order__w;
-        to_leader_btn.ypos = bzda.field_918;
-        to_leader_btn.width = yw->icon_order__w;
-        to_leader_btn.fnt_height = yw->icon_order__h;
+        to_leader_btn.x = bzda.field_90C + 2 * yw->icon_order__w;
+        to_leader_btn.y = bzda.field_918;
+        to_leader_btn.w = yw->icon_order__w;
+        to_leader_btn.h = yw->icon_order__h;
 
         if ( bzda.field_91C & 0x20 )
-            fntcmd_select_tileset(&pcur, 22);
+            FontUA::select_tileset(&pcur, 22);
         else
-            fntcmd_select_tileset(&pcur, 21);
+            FontUA::select_tileset(&pcur, 21);
 
-        fntcmd_store_u8(&pcur, 82);
+        FontUA::store_u8(&pcur, 82);
     }
     else
     {
         memset(&to_leader_btn, 0, sizeof(to_leader_btn));
 
-        fntcmd_select_tileset(&pcur, 23);
-        fntcmd_store_u8(&pcur, 82);
+        FontUA::select_tileset(&pcur, 23);
+        FontUA::store_u8(&pcur, 82);
     }
 
     if ( v35 & 0x40 )
     {
         if ( !bzda.field_8DC || (yw->field_1b80 != yw->field_1b84 && !yw->field_1b70) )
         {
-            turrets_btn.xpos = bzda.field_90C + 3 * yw->icon_order__w;
-            turrets_btn.ypos = bzda.field_918;
-            turrets_btn.fnt_height = yw->icon_order__h;
-            turrets_btn.width = yw->icon_order__w;
+            turrets_btn.x = bzda.field_90C + 3 * yw->icon_order__w;
+            turrets_btn.y = bzda.field_918;
+            turrets_btn.h = yw->icon_order__h;
+            turrets_btn.w = yw->icon_order__w;
 
             if ( bzda.field_91C & 0x40 )
-                fntcmd_select_tileset(&pcur, 22);
+                FontUA::select_tileset(&pcur, 22);
             else
-                fntcmd_select_tileset(&pcur, 21);
+                FontUA::select_tileset(&pcur, 21);
 
-            fntcmd_store_u8(&pcur, 83);
+            FontUA::store_u8(&pcur, 83);
         }
         else
         {
-            turrets_btn.width = yw->icon_order__w;
-            turrets_btn.xpos = bzda.field_90C + 3 * turrets_btn.width;
-            turrets_btn.ypos = bzda.field_918;
-            turrets_btn.fnt_height = yw->icon_order__h;
+            turrets_btn.w = yw->icon_order__w;
+            turrets_btn.x = bzda.field_90C + 3 * turrets_btn.w;
+            turrets_btn.y = bzda.field_918;
+            turrets_btn.h = yw->icon_order__h;
 
             if ( bzda.field_91C & 0x40 )
-                fntcmd_select_tileset(&pcur, 22);
+                FontUA::select_tileset(&pcur, 22);
             else
-                fntcmd_select_tileset(&pcur, 21);
+                FontUA::select_tileset(&pcur, 21);
 
-            fntcmd_store_u8(&pcur, 66);
+            FontUA::store_u8(&pcur, 66);
         }
     }
     else
     {
         memset(&turrets_btn, 0, sizeof(turrets_btn));
 
-        fntcmd_select_tileset(&pcur, 23);
-        fntcmd_store_u8(&pcur, 83);
+        FontUA::select_tileset(&pcur, 23);
+        FontUA::store_u8(&pcur, 83);
     }
 
     if ( v35 & 0x80 )
     {
-        next_squad_btn.xpos = 4 * yw->icon_order__w + bzda.field_90C;
-        next_squad_btn.ypos = bzda.field_918;
-        next_squad_btn.width = yw->icon_order__w;
-        next_squad_btn.fnt_height = yw->icon_order__h;
+        next_squad_btn.x = 4 * yw->icon_order__w + bzda.field_90C;
+        next_squad_btn.y = bzda.field_918;
+        next_squad_btn.w = yw->icon_order__w;
+        next_squad_btn.h = yw->icon_order__h;
 
         if ( bzda.field_91C & 0x80 )
-            fntcmd_select_tileset(&pcur, 22);
+            FontUA::select_tileset(&pcur, 22);
         else
-            fntcmd_select_tileset(&pcur, 21);
+            FontUA::select_tileset(&pcur, 21);
 
-        fntcmd_store_u8(&pcur, 84);
+        FontUA::store_u8(&pcur, 84);
     }
     else
     {
         memset(&next_squad_btn, 0, sizeof(next_squad_btn));
 
-        fntcmd_select_tileset(&pcur, 23);
-        fntcmd_store_u8(&pcur, 84);
+        FontUA::select_tileset(&pcur, 23);
+        FontUA::store_u8(&pcur, 84);
     }
     return pcur;
 }
@@ -3933,47 +3848,47 @@ char *gui_update_tools(_NC_STACK_ypaworld *yw, char *cur)
     {
         memset(&analyzer_btn, 0, sizeof(analyzer_btn));
 
-        fntcmd_select_tileset(&pcur, 23);
-        fntcmd_store_u8(&pcur, 63);
+        FontUA::select_tileset(&pcur, 23);
+        FontUA::store_u8(&pcur, 63);
     }
     else
     {
-        analyzer_btn.xpos = bzda.field_910;
-        analyzer_btn.ypos = bzda.field_918;
-        analyzer_btn.width = yw->icon_order__w;
-        analyzer_btn.fnt_height = yw->icon_order__h;
+        analyzer_btn.x = bzda.field_910;
+        analyzer_btn.y = bzda.field_918;
+        analyzer_btn.w = yw->icon_order__w;
+        analyzer_btn.h = yw->icon_order__h;
 
         if ( bzda.field_91C & 0x100 )
-            fntcmd_select_tileset(&pcur, 22);
+            FontUA::select_tileset(&pcur, 22);
         else
-            fntcmd_select_tileset(&pcur, 21);
+            FontUA::select_tileset(&pcur, 21);
 
-        fntcmd_store_u8(&pcur, 63);
+        FontUA::store_u8(&pcur, 63);
     }
 
-    help_btn.xpos = yw->icon_order__w + LOWORD(bzda.field_910);
-    help_btn.ypos = bzda.field_918;
-    help_btn.fnt_height = yw->icon_order__h;
-    help_btn.width = yw->icon_order__w;
+    help_btn.x = yw->icon_order__w + LOWORD(bzda.field_910);
+    help_btn.y = bzda.field_918;
+    help_btn.h = yw->icon_order__h;
+    help_btn.w = yw->icon_order__w;
 
     if ( bzda.field_91C & 0x200 )
-        fntcmd_select_tileset(&pcur, 22);
+        FontUA::select_tileset(&pcur, 22);
     else
-        fntcmd_select_tileset(&pcur, 21);
+        FontUA::select_tileset(&pcur, 21);
 
-    fntcmd_store_u8(&pcur, 76);
+    FontUA::store_u8(&pcur, 76);
 
-    menu_btn.xpos = bzda.field_910 + 2 * LOWORD(yw->icon_order__w);
-    menu_btn.ypos = bzda.field_918;
-    menu_btn.width = yw->icon_order__w;
-    menu_btn.fnt_height = yw->icon_order__h;
+    menu_btn.x = bzda.field_910 + 2 * LOWORD(yw->icon_order__w);
+    menu_btn.y = bzda.field_918;
+    menu_btn.w = yw->icon_order__w;
+    menu_btn.h = yw->icon_order__h;
 
     if ( bzda.field_91C & 0x400 )
-        fntcmd_select_tileset(&pcur, 22);
+        FontUA::select_tileset(&pcur, 22);
     else
-        fntcmd_select_tileset(&pcur, 21);
+        FontUA::select_tileset(&pcur, 21);
 
-    fntcmd_store_u8(&pcur, 85);
+    FontUA::store_u8(&pcur, 85);
 
     return pcur;
 }
@@ -3995,31 +3910,31 @@ char * sub_449970(_NC_STACK_ypaworld *yw, char *cur, int a4, int a3, const char 
         v10 = a4 + a7 - 56 + 8;
     }
 
-    fntcmd_select_tileset(&pcur, 15);
+    FontUA::select_tileset(&pcur, 15);
 
-    fntcmd_set_xpos(&pcur, a4);
-    fntcmd_set_ypos(&pcur, a3);
+    FontUA::set_xpos(&pcur, a4);
+    FontUA::set_ypos(&pcur, a3);
 
     int v14 = yw->font_default_h - yw->tiles[51]->font_height;
 
-    listview_t1 arg;
+    FontUA::ColumnItem arg;
     arg.txt = a5;
-    arg.field_width = v22;
-    arg.tileset_id = 15;
-    arg.left_tile = 0;
-    arg.bkg_tile = 32;
-    arg.right_tile = 0;
+    arg.width = v22;
+    arg.fontID = 15;
+    arg.prefixChar = 0;
+    arg.spaceChar = 32;
+    arg.postfixChar = 0;
     arg.flags = 40;
 
-    pcur = lstvw_txt_line_textual(yw, pcur, &arg);
+    pcur = FormateTextAlignedClippedString(yw, pcur, &arg);
 
-    fntcmd_select_tileset(&pcur, 51);
+    FontUA::select_tileset(&pcur, 51);
 
-    fntcmd_set_xpos(&pcur, v10);
-    fntcmd_set_ypos(&pcur, (v14 / 2) + a3);
+    FontUA::set_xpos(&pcur, v10);
+    FontUA::set_ypos(&pcur, (v14 / 2) + a3);
 
     for (int i = 0; i < a6; i++)
-        fntcmd_store_u8(&pcur, yw->field_1b80->owner);
+        FontUA::store_u8(&pcur, yw->field_1b80->owner);
 
     return pcur;
 }
@@ -4063,7 +3978,7 @@ char *ypaworld_func64__sub7__sub2__sub1__sub0(_NC_STACK_ypaworld *yw, char *cur)
 
             int v30 = -(yw->icon0___h + 7 * yw->font_default_h);
 
-            fntcmd_set_txtColor(&pcur, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
+            FontUA::set_txtColor(&pcur, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
 
             pcur = sub_449970(yw, pcur, v29_4, v30,  get_lang_string(yw->string_pointers_p2, 2474, "2474 == VS ROBO:"), v5, v6);
 
@@ -4100,51 +4015,51 @@ void ypaworld_func64__sub7__sub2__sub1(_NC_STACK_ypaworld *yw)
 
     if ( bzda.field_1D4 & 1 )
     {
-        int v20 = bzda.frm_1.btn_xpos - (yw->screen_width / 2);
-        int v21 = bzda.frm_1.btn_ypos - (yw->screen_height / 2);
+        int v20 = bzda.dialogBox.xpos - (yw->screen_width / 2);
+        int v21 = bzda.dialogBox.ypos - (yw->screen_height / 2);
 
         if ( !(bzda.field_1D8 & 1) )
         {
             bzda.field_1D8 |= 1;
-            INPe.sub_412D48(&bzda.frm_1, 0);
+            INPe.AddClickBox(&bzda.dialogBox, 0);
         }
 
-        INPe.sub_412D9C(&bzda.frm_1);
-        INPe.sub_412D48(&bzda.frm_1, 0);
+        INPe.RemClickBox(&bzda.dialogBox);
+        INPe.AddClickBox(&bzda.dialogBox, 0);
 
-        fntcmd_select_tileset(&pcur, 21);
-        fntcmd_set_center_xpos(&pcur, v20);
-        fntcmd_set_center_ypos(&pcur, v21);
+        FontUA::select_tileset(&pcur, 21);
+        FontUA::set_center_xpos(&pcur, v20);
+        FontUA::set_center_ypos(&pcur, v21);
 
 
         if ( bzda.field_904 > 0 )
-            fntcmd_add_xpos(&pcur, bzda.field_904);
+            FontUA::add_xpos(&pcur, bzda.field_904);
 
         pcur = gui_update_create_btn(yw, pcur);
 
         if ( bzda.field_8FC > 0 )
-            fntcmd_add_xpos(&pcur, bzda.field_8FC);
+            FontUA::add_xpos(&pcur, bzda.field_8FC);
 
         pcur = gui_update_map_squad_btn(yw, pcur);
 
         if ( bzda.field_8FC > 0 )
-            fntcmd_add_xpos(&pcur, bzda.field_8FC);
+            FontUA::add_xpos(&pcur, bzda.field_8FC);
 
         pcur = gui_update_player_panel(yw, pcur);
 
         if ( bzda.field_8FC > 0 )
-            fntcmd_add_xpos(&pcur, bzda.field_8FC);
+            FontUA::add_xpos(&pcur, bzda.field_8FC);
 
         pcur = gui_update_tools(yw, pcur);
 
-        if ( !(gui_lstvw.cmd_flag & 0x20) )
+        if ( !(gui_lstvw.flags & GuiBase::FLAG_CLOSED) )
             pcur = ypaworld_func64__sub7__sub2__sub1__sub0(yw, pcur);
     }
 
-    fntcmd_set_end(&pcur);
+    FontUA::set_end(&pcur);
 
-    if ( !(gui_lstvw.cmd_flag & 0x20) )
-        lstvw_update(yw, &gui_lstvw);
+    if ( !(gui_lstvw.flags & GuiBase::FLAG_CLOSED) )
+        gui_lstvw.Formate(yw);
 }
 
 
@@ -4211,10 +4126,10 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
     case 1:
         if ( yw->field_1b84 == yw->field_1b80 )
         {
-            if ( turrets_btn.width )
+            if ( turrets_btn.w )
             {
                 winpt->selected_btnID = 6;
-                winpt->selected_btn = &bzda.frm_1;
+                winpt->selected_btn = &bzda.dialogBox;
                 winpt->flag |= 0x40;
             }
         }
@@ -4229,14 +4144,14 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
             }
             else
             {
-                if ( !(bzda.field_1D0 & 2) || gui_lstvw.cmd_flag & 0x20 )
+                if ( !(bzda.field_1D0 & 2) || gui_lstvw.flags & GuiBase::FLAG_CLOSED )
                 {
-                    sub_4C31EC(yw, &gui_lstvw);
-                    gui_lstvw.field_1D0 |= 0x280;
+                    gui_lstvw.OpenDialog(yw);
+                    gui_lstvw.listFlags |= (GuiList::GLIST_FLAG_IN_SELECT | GuiList::GLIST_FLAG_NO_SCROLL);
                 }
                 else
                 {
-                    sub_4C31C0(yw, &gui_lstvw);
+                    gui_lstvw.CloseDialog(yw);
                 }
 
                 if ( bzda.field_8E0 <= bzda.field_8F8 )
@@ -4258,14 +4173,14 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
             }
             else
             {
-                if ( !(bzda.field_1D0 & 4) || gui_lstvw.cmd_flag & 0x20 )
+                if ( !(bzda.field_1D0 & 4) || gui_lstvw.flags & GuiBase::FLAG_CLOSED )
                 {
-                    sub_4C31EC(yw, &gui_lstvw);
-                    gui_lstvw.field_1D0 |= 0x280;
+                    gui_lstvw.OpenDialog(yw);
+                    gui_lstvw.listFlags |= (GuiList::GLIST_FLAG_IN_SELECT | GuiList::GLIST_FLAG_NO_SCROLL);
                 }
                 else
                 {
-                    sub_4C31C0(yw, &gui_lstvw);
+                    gui_lstvw.CloseDialog(yw);
                 }
 
                 bzda.field_1D0 = 4;
@@ -4277,7 +4192,7 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
     case 4:
         if ( bzda.field_1CC & 8 )
         {
-            winpt->selected_btn = &bzda.frm_1;
+            winpt->selected_btn = &bzda.dialogBox;
             winpt->selected_btnID = 1;
             winpt->flag |= 0x10;
         }
@@ -4297,7 +4212,7 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
         if ( yw->field_1b84->field_3D5 != 2 )
         {
             winpt->selected_btnID = 2;
-            winpt->selected_btn = &bzda.frm_1;
+            winpt->selected_btn = &bzda.dialogBox;
             winpt->flag |= 0x10;
         }
         break;
@@ -4306,43 +4221,43 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
         if ( yw->field_1b84->field_3D5 != 2 )
         {
             winpt->selected_btnID = 3;
-            winpt->selected_btn = &bzda.frm_1;
+            winpt->selected_btn = &bzda.dialogBox;
             winpt->flag |= 0x10;
         }
         break;
 
     case 20:
-        if ( next_squad_btn.width )
+        if ( next_squad_btn.w )
         {
             winpt->selected_btnID = 7;
-            winpt->selected_btn = &bzda.frm_1;
+            winpt->selected_btn = &bzda.dialogBox;
             winpt->flag |= 0x40;
         }
         break;
 
     case 21:
-        if ( to_host_btn.width )
+        if ( to_host_btn.w )
         {
             winpt->selected_btnID = 4;
-            winpt->selected_btn = &bzda.frm_1;
+            winpt->selected_btn = &bzda.dialogBox;
             winpt->flag |= 0x40;
         }
         break;
 
     case 22:
-        if ( turrets_btn.width )
+        if ( turrets_btn.w )
         {
             winpt->selected_btnID = 6;
-            winpt->selected_btn = &bzda.frm_1;
+            winpt->selected_btn = &bzda.dialogBox;
             winpt->flag |= 0x40;
         }
         break;
 
     case 23:
-        if ( to_leader_btn.width )
+        if ( to_leader_btn.w )
         {
             winpt->selected_btnID = 5;
-            winpt->selected_btn = &bzda.frm_1;
+            winpt->selected_btn = &bzda.dialogBox;
             winpt->flag |= 0x40;
         }
         break;
@@ -4352,17 +4267,17 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
         {
             if ( yw->field_1b78 == yw->field_1b7c || yw->field_1b80->field_3D5 == 2 )
             {
-                if ( menu_btn.width )
+                if ( menu_btn.w )
                 {
                     winpt->selected_btnID = 10;
-                    winpt->selected_btn = &bzda.frm_1;
+                    winpt->selected_btn = &bzda.dialogBox;
                     winpt->flag |= 0x40;
                 }
             }
             else
             {
                 winpt->selected_btnID = 4;
-                winpt->selected_btn = &bzda.frm_1;
+                winpt->selected_btn = &bzda.dialogBox;
                 winpt->flag |= 0x40;
                 inpt->dword8 = 0;
             }
@@ -4384,19 +4299,19 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
         break;
 
     case 27:
-        if ( info_log.window.cmd_flag & 0x20 )
+        if ( info_log.window.flags & GuiBase::FLAG_CLOSED )
         {
-            info_log.window.cmd_flag &= 0xFFFFFFDF;
-            INPe.sub_412D48(&info_log.window.frm_1, 0);
+            info_log.window.flags &= ~GuiBase::FLAG_CLOSED;
+            INPe.AddClickBox(&info_log.window.dialogBox, 0);
             yw->field_17bc = 0;
 
             Remove(&info_log.window);
             AddHead(&yw->field_17a0, &info_log.window);
         }
-        else if ( !(info_log.window.cmd_flag & 0x20) )
+        else if ( !(info_log.window.flags & GuiBase::FLAG_CLOSED) )
         {
-            info_log.window.cmd_flag |= 0x20;
-            INPe.sub_412D9C(&info_log.window.frm_1);
+            info_log.window.flags |= GuiBase::FLAG_CLOSED;
+            INPe.RemClickBox(&info_log.window.dialogBox);
             yw->field_17bc = 0;
         }
         break;
@@ -4497,7 +4412,7 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
         if ( yw->field_1b84->field_3D5 != 2 )
         {
             winpt->selected_btnID = 8;
-            winpt->selected_btn = &bzda.frm_1;
+            winpt->selected_btn = &bzda.dialogBox;
             winpt->flag |= 0x40;
         }
         break;
@@ -4601,11 +4516,11 @@ void ypaworld_func64__sub7__sub2__sub2(_NC_STACK_ypaworld *yw)
         if ( yw->field_1b84 == yw->field_1b80 )
         {
             yw->robo_map_status.p1 = 1;
-            yw->robo_map_status.p2 = (robo_map.cmd_flag & 0x20) == 0;
-            yw->robo_map_status.p3 = robo_map.frm_1.btn_xpos;
-            yw->robo_map_status.p4 = robo_map.frm_1.btn_ypos;
-            yw->robo_map_status.p5 = robo_map.frm_1.btn_width;
-            yw->robo_map_status.p6 = robo_map.frm_1.btn_height;
+            yw->robo_map_status.p2 = (robo_map.flags & GuiBase::FLAG_CLOSED) == 0;
+            yw->robo_map_status.p3 = robo_map.dialogBox.xpos;
+            yw->robo_map_status.p4 = robo_map.dialogBox.ypos;
+            yw->robo_map_status.p5 = robo_map.dialogBox.btn_width;
+            yw->robo_map_status.p6 = robo_map.dialogBox.btn_height;
 
             yw->robo_map_status.pX[0] = robo_map.field_1EC;
             yw->robo_map_status.pX[1] = robo_map.field_1ED;
@@ -4616,20 +4531,20 @@ void ypaworld_func64__sub7__sub2__sub2(_NC_STACK_ypaworld *yw)
             yw->robo_map_status.pX[6] = robo_map.field_20E;
 
             yw->robo_finder_status.p1 = 1;
-            yw->robo_finder_status.p2 = (squadron_manager.lstvw.cmd_flag & 0x20) == 0;
-            yw->robo_finder_status.p3 = squadron_manager.lstvw.frm_1.btn_xpos;
-            yw->robo_finder_status.p4 = squadron_manager.lstvw.frm_1.btn_ypos;
-            yw->robo_finder_status.p5 = squadron_manager.lstvw.frm_1.btn_width;
-            yw->robo_finder_status.p6 = squadron_manager.lstvw.frm_1.btn_height;
+            yw->robo_finder_status.p2 = (squadron_manager.lstvw.flags & GuiBase::FLAG_CLOSED) == 0;
+            yw->robo_finder_status.p3 = squadron_manager.lstvw.dialogBox.xpos;
+            yw->robo_finder_status.p4 = squadron_manager.lstvw.dialogBox.ypos;
+            yw->robo_finder_status.p5 = squadron_manager.lstvw.dialogBox.btn_width;
+            yw->robo_finder_status.p6 = squadron_manager.lstvw.dialogBox.btn_height;
         }
         else
         {
             yw->vhcl_map_status.p1 = 1;
-            yw->vhcl_map_status.p2 = (robo_map.cmd_flag & 0x20) == 0;
-            yw->vhcl_map_status.p3 = robo_map.frm_1.btn_xpos;
-            yw->vhcl_map_status.p4 = robo_map.frm_1.btn_ypos;
-            yw->vhcl_map_status.p5 = robo_map.frm_1.btn_width;
-            yw->vhcl_map_status.p6 = robo_map.frm_1.btn_height;
+            yw->vhcl_map_status.p2 = (robo_map.flags & GuiBase::FLAG_CLOSED) == 0;
+            yw->vhcl_map_status.p3 = robo_map.dialogBox.xpos;
+            yw->vhcl_map_status.p4 = robo_map.dialogBox.ypos;
+            yw->vhcl_map_status.p5 = robo_map.dialogBox.btn_width;
+            yw->vhcl_map_status.p6 = robo_map.dialogBox.btn_height;
 
             yw->vhcl_map_status.pX[0] = robo_map.field_1EC;
             yw->vhcl_map_status.pX[1] = robo_map.field_1ED;
@@ -4640,11 +4555,11 @@ void ypaworld_func64__sub7__sub2__sub2(_NC_STACK_ypaworld *yw)
             yw->vhcl_map_status.pX[6] = robo_map.field_20E;
 
             yw->vhcl_finder_status.p1 = 1;
-            yw->vhcl_finder_status.p2 = (squadron_manager.lstvw.cmd_flag & 0x20) == 0;
-            yw->vhcl_finder_status.p3 = squadron_manager.lstvw.frm_1.btn_xpos;
-            yw->vhcl_finder_status.p4 = squadron_manager.lstvw.frm_1.btn_ypos;
-            yw->vhcl_finder_status.p5 = squadron_manager.lstvw.frm_1.btn_width;
-            yw->vhcl_finder_status.p6 = squadron_manager.lstvw.frm_1.btn_height;
+            yw->vhcl_finder_status.p2 = (squadron_manager.lstvw.flags & GuiBase::FLAG_CLOSED) == 0;
+            yw->vhcl_finder_status.p3 = squadron_manager.lstvw.dialogBox.xpos;
+            yw->vhcl_finder_status.p4 = squadron_manager.lstvw.dialogBox.ypos;
+            yw->vhcl_finder_status.p5 = squadron_manager.lstvw.dialogBox.btn_width;
+            yw->vhcl_finder_status.p6 = squadron_manager.lstvw.dialogBox.btn_height;
         }
     }
 }
@@ -4720,7 +4635,7 @@ int sub_4C885C()
 {
     if ( dword_5BAF9C == 3 )
     {
-        if ( lstvw2.cmd_flag & 0x20 )
+        if ( lstvw2.flags & GuiBase::FLAG_CLOSED )
             dword_5BAF9C = 2;
     }
     return dword_5BAF9C;
@@ -4730,7 +4645,7 @@ void ypaworld_func64__sub7__sub2__sub8(_NC_STACK_ypaworld *yw)
 {
     if ( sub_4C885C() != 3 )
     {
-        sub_4C31EC(yw, &exit_menu);
+        exit_menu.OpenDialog(yw);
         Remove(&exit_menu);
         AddHead(&yw->field_17a0, &exit_menu);
     }
@@ -4739,7 +4654,7 @@ void ypaworld_func64__sub7__sub2__sub8(_NC_STACK_ypaworld *yw)
 void ypaworld_func64__sub7__sub2__sub9(_NC_STACK_ypaworld *yw)
 {
     if ( sub_4C885C() != 3 )
-        sub_4C31C0(yw, &exit_menu);
+        exit_menu.CloseDialog(yw);
 }
 
 void ypaworld_func64__sub7__sub2__sub10(_NC_STACK_ypaworld *yw)
@@ -4827,10 +4742,10 @@ void sb_0x4c66f8(_NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypaba
             bact1->setBACT_viewer(1);
             bact1->setBACT_inputting(1);
 
-            if ( !(gui_lstvw.cmd_flag & 0x20) )
+            if ( !(gui_lstvw.flags & GuiBase::FLAG_CLOSED) )
             {
-                gui_lstvw.cmd_flag |= 0x20;
-                INPe.sub_412D9C(&gui_lstvw.frm_1);
+                gui_lstvw.flags |= GuiBase::FLAG_CLOSED;
+                INPe.RemClickBox(&gui_lstvw.dialogBox);
 
                 yw->field_17bc = 0;
             }
@@ -4911,14 +4826,14 @@ void  ypaworld_func64__sub7__sub2(_NC_STACK_ypaworld *yw, struC5 *inpt)
             }
         }
 
-        if ( !(gui_lstvw.cmd_flag & 0x20) )
+        if ( !(gui_lstvw.flags & GuiBase::FLAG_CLOSED) )
         {
             if ( yw->field_826F == 27 || yw->field_826F == 13 )
             {
-                if ( !(gui_lstvw.cmd_flag & 0x20) )
+                if ( !(gui_lstvw.flags & GuiBase::FLAG_CLOSED) )
                 {
-                    gui_lstvw.cmd_flag |= 0x20;
-                    INPe.sub_412D9C(&gui_lstvw.frm_1);
+                    gui_lstvw.flags |= GuiBase::FLAG_CLOSED;
+                    INPe.RemClickBox(&gui_lstvw.dialogBox);
 
                     yw->field_17bc = 0;
                 }
@@ -4941,7 +4856,7 @@ void  ypaworld_func64__sub7__sub2(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         ypaworld_func64__sub7__sub2__sub2(yw);
 
-        if ( winpt->selected_btn == &bzda.frm_1 )
+        if ( winpt->selected_btn == &bzda.dialogBox )
         {
             if ( winpt->selected_btnID != -1 )
             {
@@ -4967,14 +4882,14 @@ void  ypaworld_func64__sub7__sub2(_NC_STACK_ypaworld *yw, struC5 *inpt)
                         else
                         {
 
-                            if ( !(bzda.field_1D0 & 4) || gui_lstvw.cmd_flag & 0x20 )
+                            if ( !(bzda.field_1D0 & 4) || gui_lstvw.flags & GuiBase::FLAG_CLOSED )
                             {
-                                sub_4C31EC(yw, &gui_lstvw);
-                                gui_lstvw.field_1D0 |= 0x280;
+                                gui_lstvw.OpenDialog(yw);
+                                gui_lstvw.listFlags |= (GuiList::GLIST_FLAG_IN_SELECT | GuiList::GLIST_FLAG_NO_SCROLL);
                             }
                             else
                             {
-                                sub_4C31C0(yw, &gui_lstvw);
+                                gui_lstvw.CloseDialog(yw);
                             }
 
                             a2a = 0;
@@ -4993,14 +4908,14 @@ void  ypaworld_func64__sub7__sub2(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 }
                 else
                 {
-                    if ( !(bzda.field_1D0 & 2) || gui_lstvw.cmd_flag & 0x20 )
+                    if ( !(bzda.field_1D0 & 2) || gui_lstvw.flags & GuiBase::FLAG_CLOSED )
                     {
-                        sub_4C31EC(yw, &gui_lstvw);
-                        gui_lstvw.field_1D0 |= 0x280;
+                        gui_lstvw.OpenDialog(yw);
+                        gui_lstvw.listFlags |= (GuiList::GLIST_FLAG_IN_SELECT | GuiList::GLIST_FLAG_NO_SCROLL);
                     }
                     else
                     {
-                        sub_4C31C0(yw, &gui_lstvw);
+                        gui_lstvw.CloseDialog(yw);
                     }
 
                     if ( bzda.field_8E0 <= bzda.field_8F8 )
@@ -5029,31 +4944,31 @@ void  ypaworld_func64__sub7__sub2(_NC_STACK_ypaworld *yw, struC5 *inpt)
             case 3: //SQUAD
                 if ( winpt->flag & 0x10 )
                 {
-                    listbase *v2;
+                    GuiBase *v2;
 
                     if ( winpt->selected_btnID == 2 )
                         v2 = &robo_map;
                     else if ( winpt->selected_btnID == 3 )
                         v2 = &squadron_manager.lstvw;
 
-                    if ( v2->cmd_flag & 0x20 )
+                    if ( v2->flags & 0x20 )
                     {
-                        if ( v2->cmd_flag & 0x20 )
+                        if ( v2->flags & 0x20 )
                         {
-                            v2->cmd_flag &= 0xFFFFFFDF;
+                            v2->flags &= 0xFFFFFFDF;
 
-                            INPe.sub_412D48(&v2->frm_1, 0);
+                            INPe.AddClickBox(&v2->dialogBox, 0);
                             yw->field_17bc = 0;
                         }
 
                         Remove(v2);
                         AddHead(&yw->field_17a0, v2);
                     }
-                    else if ( !(v2->cmd_flag & 0x20) )
+                    else if ( !(v2->flags & 0x20) )
                     {
-                        v2->cmd_flag |= 0x20;
+                        v2->flags |= 0x20;
 
-                        INPe.sub_412D9C(&v2->frm_1);
+                        INPe.RemClickBox(&v2->dialogBox);
                         yw->field_17bc = 0;
                     }
                 }
@@ -5152,7 +5067,7 @@ void  ypaworld_func64__sub7__sub2(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
                 if ( winpt->flag & 0x40 )
                 {
-                    if ( exit_menu.cmd_flag & 0x20 )
+                    if ( exit_menu.flags & GuiBase::FLAG_CLOSED )
                         ypaworld_func64__sub7__sub2__sub8(yw);
                     else
                         ypaworld_func64__sub7__sub2__sub9(yw);
@@ -5168,33 +5083,33 @@ void  ypaworld_func64__sub7__sub2(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         if ( bzda.field_1D0 & 0x29 )
         {
-            if ( !(gui_lstvw.cmd_flag & 0x20) )
+            if ( !(gui_lstvw.flags & GuiBase::FLAG_CLOSED) )
             {
-                gui_lstvw.cmd_flag |= 0x20;
-                INPe.sub_412D9C(&gui_lstvw.frm_1);
+                gui_lstvw.flags |= GuiBase::FLAG_CLOSED;
+                INPe.RemClickBox(&gui_lstvw.dialogBox);
                 yw->field_17bc = 0;
             }
         }
 
         if ( a2a )
         {
-            lstvw_update_input(yw, &gui_lstvw, inpt);
-            if ( !(gui_lstvw.cmd_flag & 0x20) )
+            gui_lstvw.InputHandle(yw, inpt);
+            if ( !(gui_lstvw.flags & GuiBase::FLAG_CLOSED) )
             {
                 if ( bzda.field_1D0 == 2 || bzda.field_1D0 == 4 || bzda.field_1D0 == 16)
                 {
-                    bzda.field_8F8 = gui_lstvw.field_1DE;
+                    bzda.field_8F8 = gui_lstvw.selectedEntry;
 
-                    if ( gui_lstvw.field_1DE >= bzda.field_8E0 )
+                    if ( gui_lstvw.selectedEntry >= bzda.field_8E0 )
                     {
-                        bzda.field_8F4 = gui_lstvw.field_1DE - bzda.field_8E0;
+                        bzda.field_8F4 = gui_lstvw.selectedEntry - bzda.field_8E0;
                         bzda.field_8EC = -1;
                         bzda.field_1D0 = 16;
                     }
                     else
                     {
                         bzda.field_8F4 = -1;
-                        bzda.field_8EC = gui_lstvw.field_1DE;
+                        bzda.field_8EC = gui_lstvw.selectedEntry;
 
                         if ( !(bzda.field_1D0 & 4) )
                             bzda.field_1D0 = 2;
@@ -5233,43 +5148,43 @@ char * sub_4E1D6C(_NC_STACK_ypaworld *yw, char *cur, int x, int y, uint8_t icon,
     if ( !v25 && a7 > 0.0 )
         v25 = 1;
 
-    fntcmd_select_tileset(&pcur, 30);
-    fntcmd_set_center_xpos(&pcur, x);
-    fntcmd_set_center_ypos(&pcur, y);
+    FontUA::select_tileset(&pcur, 30);
+    FontUA::set_center_xpos(&pcur, x);
+    FontUA::set_center_ypos(&pcur, y);
 
-    fntcmd_store_u8(&pcur, icon);
+    FontUA::store_u8(&pcur, icon);
 
-    fntcmd_store_u8(&pcur, 84);
+    FontUA::store_u8(&pcur, 84);
 
     if ( v26 > 0 || v25 > 0 )
     {
         int v13 = up_panel.field_1E0 + up_panel.field_1DC + x;
 
-        fntcmd_set_center_xpos(&pcur, v13);
+        FontUA::set_center_xpos(&pcur, v13);
 
         if ( v26 > 0 )
         {
             if ( v26 > 1 )
-                fntcmd_op11(&pcur, v26);
+                FontUA::op11(&pcur, v26);
 
-            fntcmd_store_u8(&pcur, icon2);
+            FontUA::store_u8(&pcur, icon2);
         }
 
         if ( v25 > v26 )
         {
             if ( v25 > 1 )
-                fntcmd_op11(&pcur, v25);
+                FontUA::op11(&pcur, v25);
 
-            fntcmd_store_u8(&pcur, icon3);
+            FontUA::store_u8(&pcur, icon3);
         }
     }
 
     if ( a8 )
     {
-        fntcmd_select_tileset(&pcur, 31);
+        FontUA::select_tileset(&pcur, 31);
 
-        fntcmd_set_center_xpos(&pcur, x + up_panel.field_1DC + 4);
-        fntcmd_set_ypos(&pcur, 0);
+        FontUA::set_center_xpos(&pcur, x + up_panel.field_1DC + 4);
+        FontUA::set_ypos(&pcur, 0);
 
         strcpy(pcur, a8);
 
@@ -5518,8 +5433,8 @@ char * ypaworld_func64__sub7__sub7__sub0(_NC_STACK_ypaworld *yw)
 
     if ( yw->field_1b80->field_3D5 != 2 )
     {
-        int v3 = up_panel.frm_1.btn_xpos - yw->screen_width / 2;
-        int y = up_panel.frm_1.btn_ypos - yw->screen_height / 2;
+        int v3 = up_panel.dialogBox.xpos - yw->screen_width / 2;
+        int y = up_panel.dialogBox.ypos - yw->screen_height / 2;
         int v41 = up_panel.field_1D8 + up_panel.field_1D0;
 
         NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
@@ -5575,8 +5490,8 @@ char * ypaworld_func64__sub7__sub7__sub0(_NC_STACK_ypaworld *yw)
         else
             v35 = 0;
 
-        INPe.sub_412D9C(&up_panel.frm_1);
-        INPe.sub_412D48(&up_panel.frm_1, 0);
+        INPe.RemClickBox(&up_panel.dialogBox);
+        INPe.AddClickBox(&up_panel.dialogBox, 0);
 
         int x = LOWORD(up_panel.field_1D4) + v3;
 
@@ -5590,7 +5505,7 @@ char * ypaworld_func64__sub7__sub7__sub0(_NC_STACK_ypaworld *yw)
         pcur = ypaworld_func64__sub7__sub7__sub0__sub3(yw, pcur, v41 + v20, y, a4, v35, v28, v36);
     }
 
-    fntcmd_set_end(&pcur);
+    FontUA::set_end(&pcur);
 
     return pcur;
 }
@@ -5599,7 +5514,7 @@ void ypaworld_func64__sub7__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
 {
     winp_131arg *winpt = &inpt->winp131arg;
 
-    if ( winpt->selected_btn == &up_panel.frm_1 )
+    if ( winpt->selected_btn == &up_panel.dialogBox )
     {
         if ( yw->GameShell )
         {
@@ -5673,12 +5588,12 @@ char * sub_4C7950(_NC_STACK_ypaworld *yw, char *cur, int a4, int a3)
         {
             if ( a3 + yw->font_default_h < yw->screen_height )
             {
-                fntcmd_select_tileset(&pcur, 28);
+                FontUA::select_tileset(&pcur, 28);
 
-                fntcmd_set_center_xpos(&pcur, a4 - (yw->screen_width / 2));
-                fntcmd_set_center_ypos(&pcur, a3 - (yw->screen_height / 2));
+                FontUA::set_center_xpos(&pcur, a4 - (yw->screen_width / 2));
+                FontUA::set_center_ypos(&pcur, a3 - (yw->screen_height / 2));
 
-                fntcmd_store_u8(&pcur, sub_4C7134(yw, squadron_manager.field_2BC));
+                FontUA::store_u8(&pcur, sub_4C7134(yw, squadron_manager.field_2BC));
             }
         }
     }
@@ -5689,16 +5604,16 @@ char * ypaworld_func64__sub7__sub3__sub0__sub2(_NC_STACK_ypaworld *yw, char *cur
 {
     char *pcur = cur;
 
-    fntcmd_select_tileset(&pcur, 0);
+    FontUA::select_tileset(&pcur, 0);
 
-    fntcmd_store_u8(&pcur, 123);
+    FontUA::store_u8(&pcur, 123);
 
-    fntcmd_op17(&pcur, squadron_manager.lstvw.width - yw->font_default_w__b);
+    FontUA::op17(&pcur, squadron_manager.lstvw.entryWidth - yw->font_default_w__b);
 
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 125);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 125);
 
-    fntcmd_next_line(&pcur);
+    FontUA::next_line(&pcur);
 
     return pcur;
 }
@@ -5743,21 +5658,21 @@ char * sub_4514F0(tiles_stru *tyle, char *cur, char *a4, int a3, char a5)
             while( v13 > 0 )
             {
                 if ( v13 <= 255 )
-                    fntcmd_op10(&pcur, v13);
+                    FontUA::op10(&pcur, v13);
                 else
-                    fntcmd_op10(&pcur, 255);
+                    FontUA::op10(&pcur, 255);
 
                 v13 -= 255;
 
-                fntcmd_store_u8(&pcur, a5);
+                FontUA::store_u8(&pcur, a5);
             }
         }
     }
     else
     {
-        fntcmd_set_xwidth(&pcur, neg_wdth);
+        FontUA::set_xwidth(&pcur, neg_wdth);
 
-        fntcmd_store_u8(&pcur, a4[char_num]);
+        FontUA::store_u8(&pcur, a4[char_num]);
     }
 
     return pcur;
@@ -5789,22 +5704,22 @@ char * ypaworld_func64__sub7__sub3__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STAC
     else
         v4 = 0;
 
-    fntcmd_select_tileset(&pcur, 0);
-    fntcmd_store_u8(&pcur, 123);
+    FontUA::select_tileset(&pcur, 0);
+    FontUA::store_u8(&pcur, 123);
 
-    fntcmd_select_tileset(&pcur, v4);
-    fntcmd_op17(&pcur, squadron_manager.lstvw.width - yw->font_default_w__b);
-    fntcmd_store_u8(&pcur, 32);
+    FontUA::select_tileset(&pcur, v4);
+    FontUA::op17(&pcur, squadron_manager.lstvw.entryWidth - yw->font_default_w__b);
+    FontUA::store_u8(&pcur, 32);
 
-    fntcmd_select_tileset(&pcur, 0);
-    fntcmd_store_u8(&pcur, 125);
-    fntcmd_add_xpos(&pcur, -(squadron_manager.lstvw.width - 2 * yw->font_default_w__b + 1));
+    FontUA::select_tileset(&pcur, 0);
+    FontUA::store_u8(&pcur, 125);
+    FontUA::add_xpos(&pcur, -(squadron_manager.lstvw.entryWidth - 2 * yw->font_default_w__b + 1));
 
-    fntcmd_select_tileset(&pcur, 28);
+    FontUA::select_tileset(&pcur, 28);
 
-    pcur = sub_4514F0(yw->tiles[28], pcur, v13, squadron_manager.lstvw.width - 2 * yw->font_default_w__b, 64);
+    pcur = sub_4514F0(yw->tiles[28], pcur, v13, squadron_manager.lstvw.entryWidth - 2 * yw->font_default_w__b, 64);
 
-    fntcmd_next_line(&pcur);
+    FontUA::next_line(&pcur);
 
     return pcur;
 }
@@ -5848,19 +5763,19 @@ char * ypaworld_func64__sub7__sub3__sub0__sub0(_NC_STACK_ypaworld *yw, __NC_STAC
     if ( yw->field_1a58 & 0x20 )
         v44 = yw->field_1a98;
 
-    fntcmd_store_u8(&pv, ypaworld_func64__sub7__sub3__sub0__sub0__sub0(bact));
-    fntcmd_store_u8(&pv, 64);
+    FontUA::store_u8(&pv, ypaworld_func64__sub7__sub3__sub0__sub0__sub0(bact));
+    FontUA::store_u8(&pv, 64);
 
     int ttt = (yw->field_1614 / 300) & 1;
 
     if ( bact == yw->field_1b84 && ttt )
-        fntcmd_store_u8(&pv, 33);
+        FontUA::store_u8(&pv, 33);
     else if ( yw->field_2420 == bact && ttt )
-        fntcmd_store_u8(&pv, 34);
+        FontUA::store_u8(&pv, 34);
     else
-        fntcmd_store_u8(&pv, sub_4C7134(yw, bact));
+        FontUA::store_u8(&pv, sub_4C7134(yw, bact));
 
-    fntcmd_store_u8(&pv, 64);
+    FontUA::store_u8(&pv, 64);
 
     if ( bact == v44 )
         v46 = squadron_manager.field_2D0;
@@ -5873,11 +5788,11 @@ char * ypaworld_func64__sub7__sub3__sub0__sub0(_NC_STACK_ypaworld *yw, __NC_STAC
         if ( nod->bact->field_3D5 != 2 && nod->bact->field_3D5 != 4 && nod->bact->field_3D5 != 5 )
         {
             if ( nod->bact == yw->field_1b84 && ttt )
-                fntcmd_store_u8(&pv, 33);
+                FontUA::store_u8(&pv, 33);
             else if ( nod->bact == yw->field_2420 && ttt )
-                fntcmd_store_u8(&pv, 34);
+                FontUA::store_u8(&pv, 34);
             else
-                fntcmd_store_u8(&pv, sub_4C7134(yw, nod->bact));
+                FontUA::store_u8(&pv, sub_4C7134(yw, nod->bact));
 
             if ( nod->bact == v44 )
                 v46 = v41;
@@ -5891,7 +5806,7 @@ char * ypaworld_func64__sub7__sub3__sub0__sub0(_NC_STACK_ypaworld *yw, __NC_STAC
         nod = (bact_node *)nod->next;
     }
 
-    fntcmd_store_u8(&pv, 0);
+    FontUA::store_u8(&pv, 0);
 
     int v22;
     if ( yw->field_2410 == -1 || bact != yw->field_1c0c[ yw->field_2410 ] || bzda.field_1D0 & 0x20 )
@@ -5899,27 +5814,27 @@ char * ypaworld_func64__sub7__sub3__sub0__sub0(_NC_STACK_ypaworld *yw, __NC_STAC
     else
         v22 = 9;
 
-    fntcmd_select_tileset(&pcur, 0);
-    fntcmd_store_u8(&pcur, 123);
+    FontUA::select_tileset(&pcur, 0);
+    FontUA::store_u8(&pcur, 123);
 
-    fntcmd_select_tileset(&pcur, v22);
-    fntcmd_op17(&pcur, squadron_manager.lstvw.width - yw->font_default_w__b);
-    fntcmd_store_u8(&pcur, 32);
+    FontUA::select_tileset(&pcur, v22);
+    FontUA::op17(&pcur, squadron_manager.lstvw.entryWidth - yw->font_default_w__b);
+    FontUA::store_u8(&pcur, 32);
 
-    fntcmd_select_tileset(&pcur, 0);
-    fntcmd_store_u8(&pcur, 125);
+    FontUA::select_tileset(&pcur, 0);
+    FontUA::store_u8(&pcur, 125);
 
-    fntcmd_add_xpos(&pcur, -(squadron_manager.lstvw.width - 2 * yw->font_default_w__b + 1));
+    FontUA::add_xpos(&pcur, -(squadron_manager.lstvw.entryWidth - 2 * yw->font_default_w__b + 1));
 
-    fntcmd_select_tileset(&pcur, 28);
+    FontUA::select_tileset(&pcur, 28);
 
-    pcur = sub_4514F0(yw->tiles[28], pcur, v39, squadron_manager.lstvw.width - 2 * yw->font_default_w__b, 64);
+    pcur = sub_4514F0(yw->tiles[28], pcur, v39, squadron_manager.lstvw.entryWidth - 2 * yw->font_default_w__b, 64);
     if ( v46 )
     {
-        if ( squadron_manager.lstvw.width - squadron_manager.field_2CC - yw->font_default_w__b > v46 )
+        if ( squadron_manager.lstvw.entryWidth - squadron_manager.field_2CC - yw->font_default_w__b > v46 )
         {
-            fntcmd_add_xpos(&pcur, -(squadron_manager.lstvw.width - 2 * yw->font_default_w__b));
-            fntcmd_add_xpos(&pcur, v46);
+            FontUA::add_xpos(&pcur, -(squadron_manager.lstvw.entryWidth - 2 * yw->font_default_w__b));
+            FontUA::add_xpos(&pcur, v46);
 
             float v40 = (float)v44->energy / (float)v44->energy_2;
 
@@ -5928,96 +5843,96 @@ char * ypaworld_func64__sub7__sub3__sub0__sub0(_NC_STACK_ypaworld *yw, __NC_STAC
                 if ( v40 > 0.5 )
                 {
                     if ( v40 > 0.75 )
-                        fntcmd_store_u8(&pcur, 131);
+                        FontUA::store_u8(&pcur, 131);
                     else
-                        fntcmd_store_u8(&pcur, 130);
+                        FontUA::store_u8(&pcur, 130);
                 }
                 else
                 {
-                    fntcmd_store_u8(&pcur, 129);
+                    FontUA::store_u8(&pcur, 129);
                 }
             }
             else
             {
-                fntcmd_store_u8(&pcur, 128);
+                FontUA::store_u8(&pcur, 128);
             }
         }
     }
 
-    fntcmd_next_line(&pcur);
+    FontUA::next_line(&pcur);
     return pcur;
 }
 
 char * ypaworld_func64__sub7__sub3__sub0__sub3(_NC_STACK_ypaworld *yw, char *cur)
 {
     char *pcur = cur;
-    int v23 = squadron_manager.lstvw.width - yw->font_default_w__b;
+    int v23 = squadron_manager.lstvw.entryWidth - yw->font_default_w__b;
 
     if ( yw->field_2410 == -1 || bzda.field_1D0 & 0x20 )
     {
-        fntcmd_select_tileset(&pcur, 0);
-        fntcmd_store_u8(&pcur, 123);
+        FontUA::select_tileset(&pcur, 0);
+        FontUA::store_u8(&pcur, 123);
     }
     else
     {
         int v5 = yw->field_1c0c[ yw->field_2410 ]->field_3D4;
-        fntcmd_select_tileset(&pcur, 0);
-        fntcmd_store_u8(&pcur, 123);
-        fntcmd_store_u8(&pcur, 32);
+        FontUA::select_tileset(&pcur, 0);
+        FontUA::store_u8(&pcur, 123);
+        FontUA::store_u8(&pcur, 32);
 
-        fntcmd_select_tileset(&pcur, 25);
-        fntcmd_store_u8(&pcur, 49);
+        FontUA::select_tileset(&pcur, 25);
+        FontUA::store_u8(&pcur, 49);
 
         if (v5 < 25)
-            fntcmd_select_tileset(&pcur, 24);
+            FontUA::select_tileset(&pcur, 24);
 
-        fntcmd_store_u8(&pcur, 50);
+        FontUA::store_u8(&pcur, 50);
 
         if (v5 >= 25 && v5 < 50)
-            fntcmd_select_tileset(&pcur, 24);
+            FontUA::select_tileset(&pcur, 24);
 
-        fntcmd_store_u8(&pcur, 51);
+        FontUA::store_u8(&pcur, 51);
 
         if (v5 >= 50 && v5 < 75)
-            fntcmd_select_tileset(&pcur, 24);
+            FontUA::select_tileset(&pcur, 24);
 
-        fntcmd_store_u8(&pcur, 52);
+        FontUA::store_u8(&pcur, 52);
 
         if (v5 >= 75 && v5 < 100)
-            fntcmd_select_tileset(&pcur, 24);
+            FontUA::select_tileset(&pcur, 24);
 
-        fntcmd_store_u8(&pcur, 53);
+        FontUA::store_u8(&pcur, 53);
 
-        fntcmd_select_tileset(&pcur, 0);
+        FontUA::select_tileset(&pcur, 0);
 
         char a1a[32];
         sprintf(a1a, " %d", yw->field_2418 + 1);
 
-        fntcmd_set_txtColor(&pcur, yw->iniColors[60].r, yw->iniColors[60].g, yw->iniColors[60].b);
+        FontUA::set_txtColor(&pcur, yw->iniColors[60].r, yw->iniColors[60].g, yw->iniColors[60].b);
 
-        pcur = txtcmd_txt_w_bkg(yw->tiles[0], pcur, a1a, 4 * yw->tiles[0]->chars[65].width, 32);
+        pcur = FontUA::FormateClippedText(yw->tiles[0], pcur, a1a, 4 * yw->tiles[0]->chars[65].width, 32);
 
-        fntcmd_store_u8(&pcur, 32);
+        FontUA::store_u8(&pcur, 32);
 
-        fntcmd_select_tileset(&pcur, 0);
+        FontUA::select_tileset(&pcur, 0);
     }
 
-    fntcmd_op17(&pcur, v23);
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 125);
+    FontUA::op17(&pcur, v23);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 125);
 
-    fntcmd_next_line(&pcur);
+    FontUA::next_line(&pcur);
 
-    fntcmd_reset_tileset(&pcur, 28);
+    FontUA::reset_tileset(&pcur, 28);
 
-    fntcmd_set_yoff(&pcur, yw->tiles[28]->font_height - yw->field_1a38);
+    FontUA::set_yoff(&pcur, yw->tiles[28]->font_height - yw->field_1a38);
 
-    fntcmd_store_u8(&pcur, 38);
+    FontUA::store_u8(&pcur, 38);
 
-    fntcmd_op17(&pcur, squadron_manager.lstvw.width - yw->font_default_w__b);
+    FontUA::op17(&pcur, squadron_manager.lstvw.entryWidth - yw->font_default_w__b);
 
-    fntcmd_store_u8(&pcur, 47);
-    fntcmd_store_u8(&pcur, 61);
+    FontUA::store_u8(&pcur, 47);
+    FontUA::store_u8(&pcur, 61);
 
     return pcur;
 }
@@ -6028,11 +5943,11 @@ void ypaworld_func64__sub7__sub3__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
 {
     winp_131arg *winpt = &inpt->winp131arg;
 
-    char *pcur = lstvw_up_border(yw, &squadron_manager.lstvw, squadron_manager.lstvw.data_cmdbuf, 0, "{ }");
+    char *pcur = squadron_manager.lstvw.ItemsPreLayout(yw, squadron_manager.lstvw.itemBlock, 0, "{ }");
 
-    fntcmd_select_tileset(&pcur, 28);
+    FontUA::select_tileset(&pcur, 28);
 
-    for (int i = 0; i < squadron_manager.lstvw.element_count; i++)
+    for (int i = 0; i < squadron_manager.lstvw.shownEntries; i++)
     {
         __NC_STACK_ypabact *v8 = squadron_manager.squads[i];
 
@@ -6069,22 +5984,22 @@ void ypaworld_func64__sub7__sub3__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
         }
     }
 
-    fntcmd_set_end(&pcur);
+    FontUA::set_end(&pcur);
 }
 
 void sub_4C707C(_NC_STACK_ypaworld *yw)
 {
     memset(squadron_manager.squads, 0, sizeof(squadron_manager.squads));
 
-    if ( squadron_manager.lstvw.scroll_pos + squadron_manager.lstvw.element_count >= yw->field_2414 + 1 )
+    if ( squadron_manager.lstvw.firstShownEntries + squadron_manager.lstvw.shownEntries >= yw->field_2414 + 1 )
     {
-        squadron_manager.lstvw.scroll_pos = yw->field_2414 + 1 - squadron_manager.lstvw.element_count;
+        squadron_manager.lstvw.firstShownEntries = yw->field_2414 + 1 - squadron_manager.lstvw.shownEntries;
 
-        if ( squadron_manager.lstvw.scroll_pos < 0 )
-            squadron_manager.lstvw.scroll_pos = 0;
+        if ( squadron_manager.lstvw.firstShownEntries < 0 )
+            squadron_manager.lstvw.firstShownEntries = 0;
     }
 
-    int v5 = squadron_manager.lstvw.scroll_pos;
+    int v5 = squadron_manager.lstvw.firstShownEntries;
     for (int i = 0; i < yw->field_2414 + 1; i++ )
     {
         __NC_STACK_ypabact *v6;
@@ -6094,11 +6009,11 @@ void sub_4C707C(_NC_STACK_ypaworld *yw)
         else
             v6 = yw->field_1b80;
 
-        if ( i >= v5 && i - v5 < squadron_manager.lstvw.element_count )
+        if ( i >= v5 && i - v5 < squadron_manager.lstvw.shownEntries )
             squadron_manager.squads[i - v5] = v6;
     }
 
-    squadron_manager.lstvw.elements_for_scroll_size = yw->field_2414 + 1;
+    squadron_manager.lstvw.numEntries = yw->field_2414 + 1;
 }
 
 
@@ -6132,9 +6047,9 @@ int ypaworld_func64__sub7__sub3__sub2(_NC_STACK_ypaworld *yw)
 
 void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winpt)
 {
-    if ( winpt->selected_btn != &squadron_manager.lstvw.frm_1
+    if ( winpt->selected_btn != &squadron_manager.lstvw.dialogBox
             || winpt->selected_btnID < 8
-            || squadron_manager.lstvw.elements_for_scroll_size <= winpt->selected_btnID - 8 + squadron_manager.lstvw.scroll_pos
+            || squadron_manager.lstvw.numEntries <= winpt->selected_btnID - 8 + squadron_manager.lstvw.firstShownEntries
             || squadron_manager.squads[ winpt->selected_btnID - 8 ] == 0
             || squadron_manager.squads[ winpt->selected_btnID - 8 ] == yw->field_1b80 )
     {
@@ -6265,7 +6180,7 @@ __NC_STACK_ypabact * sub_4C7B0C(_NC_STACK_ypaworld *yw, int sqid, int a3)
     }
 
     squadron_manager.field_2B0 = -1;
-    squadron_manager.field_2AC = squadron_manager.lstvw.scroll_pos + sqid - 1;
+    squadron_manager.field_2AC = squadron_manager.lstvw.firstShownEntries + sqid - 1;
 
     if ( a3 > squadron_manager.field_2D0 && a3 < squadron_manager.field_2D0 + squadron_manager.field_2CC )
         return v3;
@@ -6310,7 +6225,7 @@ int ypaworld_func64__sub7__sub3__sub1(_NC_STACK_ypaworld *yw, winp_131arg *winpt
         return 0;
     if ( bzda.field_1D0 & 8 )
         return 0;
-    if ( winpt->selected_btnID - 8 + squadron_manager.lstvw.scroll_pos >= squadron_manager.lstvw.elements_for_scroll_size )
+    if ( winpt->selected_btnID - 8 + squadron_manager.lstvw.firstShownEntries >= squadron_manager.lstvw.numEntries )
         return 0;
 
     __NC_STACK_ypabact *v5 = sub_4C7B0C(yw, winpt->selected_btnID - 8, winpt->move[2].x);
@@ -6318,7 +6233,7 @@ int ypaworld_func64__sub7__sub3__sub1(_NC_STACK_ypaworld *yw, winp_131arg *winpt
     if ( !v5 )
         return 0;
 
-    if ( !(robo_map.cmd_flag & 0x20) )
+    if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
     {
         if ( winpt->flag & 0x80 )
         {
@@ -6355,10 +6270,10 @@ int ypaworld_func64__sub7__sub3__sub1(_NC_STACK_ypaworld *yw, winp_131arg *winpt
 
 void ypaworld_func64__sub7__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
 {
-    if ( squadron_manager.lstvw.cmd_flag & 0x21 )
+    if ( squadron_manager.lstvw.flags & (GuiBase::FLAG_CLOSED | GuiBase::FLAG_ICONIFED) )
     {
         squadron_manager.field_2A8 &= 0xFFFFFFFE;
-        lstvw_update_input(yw, &squadron_manager.lstvw, inpt);
+        squadron_manager.lstvw.InputHandle(yw, inpt);
     }
     else
     {
@@ -6385,7 +6300,7 @@ void ypaworld_func64__sub7__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 squadron_manager.field_2A8 &= 0xFFFFFFFC;
             }
         }
-        else if ( inpt->winp131arg.selected_btn == &squadron_manager.lstvw.frm_1 )
+        else if ( inpt->winp131arg.selected_btn == &squadron_manager.lstvw.dialogBox )
         {
             if ( inpt->winp131arg.selected_btnID == 7 )
             {
@@ -6454,11 +6369,11 @@ void ypaworld_func64__sub7__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
                     squadron_manager.field_2C6 = winpt->move[0].y + squadron_manager.field_2C2;
                 }
             }
-            if ( squadron_manager.lstvw.field_1E4 != -1 )
+            if ( squadron_manager.lstvw.mouseItem != -1 )
             {
-                int v17 = squadron_manager.lstvw.field_1E4 - squadron_manager.lstvw.scroll_pos;
+                int v17 = squadron_manager.lstvw.mouseItem - squadron_manager.lstvw.firstShownEntries;
 
-                if ( v17 >= 0 && v17 < squadron_manager.lstvw.element_count_max )
+                if ( v17 >= 0 && v17 < squadron_manager.lstvw.maxShownEntries )
                 {
                     __NC_STACK_ypabact *v18 = squadron_manager.squads[v17];
                     if ( v18 )
@@ -6470,8 +6385,8 @@ void ypaworld_func64__sub7__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
             }
         }
 
-        lstvw_update_input(yw, &squadron_manager.lstvw, inpt);
-        lstvw_update(yw, &squadron_manager.lstvw);
+        squadron_manager.lstvw.InputHandle(yw, inpt);
+        squadron_manager.lstvw.Formate(yw);
         ypaworld_func64__sub7__sub3__sub0(yw, inpt);
     }
 }
@@ -6479,8 +6394,8 @@ void ypaworld_func64__sub7__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
 void sub_4C1FBC()
 {
-    int v0 = -(stru_5B25D8.xpos + robo_map.frm_1.btn_xpos + (stru_5B25D8.width / 2));
-    int v3 = -(stru_5B25D8.ypos + robo_map.frm_1.btn_ypos + (stru_5B25D8.fnt_height / 2));
+    int v0 = -(stru_5B25D8.x + robo_map.dialogBox.xpos + (stru_5B25D8.w / 2));
+    int v3 = -(stru_5B25D8.y + robo_map.dialogBox.ypos + (stru_5B25D8.h / 2));
     flt_516524 = (float)(v0 + dword_516510) * robo_map.field_1E0 + robo_map.field_1D8;
     flt_51652C = (float)(v0 + dword_516518) * robo_map.field_1E0 + robo_map.field_1D8;
     flt_516528 = robo_map.field_1DC - (float)(v3 + dword_516514) * robo_map.field_1E4;
@@ -6610,7 +6525,7 @@ void ypaworld_func64__sub7__sub1__sub0(_NC_STACK_ypaworld *yw)
 
 void  ypaworld_func64__sub7__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
 {
-    if ( robo_map.cmd_flag & 0x20 )
+    if ( robo_map.flags & GuiBase::FLAG_CLOSED )
     {
         robo_map.field_1E8 &= 0xFFFFFDE8;
     }
@@ -6626,43 +6541,43 @@ void  ypaworld_func64__sub7__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
         switch ( inpt->dword8 )
         {
         case (0x80 | 0x0A):
-            winpt->selected_btn = &robo_map.frm_1;
+            winpt->selected_btn = &robo_map.dialogBox;
             winpt->selected_btnID = 3;
             winpt->flag |= 0x10;
             break;
 
         case (0x80 | 0x0B):
-            winpt->selected_btn = &robo_map.frm_1;
+            winpt->selected_btn = &robo_map.dialogBox;
             winpt->selected_btnID = 4;
             winpt->flag |= 0x10;
             break;
 
         case (0x80 | 0x0C):
-            winpt->selected_btn = &robo_map.frm_1;
+            winpt->selected_btn = &robo_map.dialogBox;
             winpt->selected_btnID = 5;
             winpt->flag |= 0x10;
             break;
 
         case (0x80 | 0x0E):
-            winpt->selected_btn = &robo_map.frm_1;
+            winpt->selected_btn = &robo_map.dialogBox;
             winpt->selected_btnID = 6;
             winpt->flag |= 0x10;
             break;
 
         case (0x80 | 0x10):
-            winpt->selected_btn = &robo_map.frm_1;
+            winpt->selected_btn = &robo_map.dialogBox;
             winpt->selected_btnID = 7;
             winpt->flag |= 0x40;
             break;
 
         case (0x80 | 0x11):
-            winpt->selected_btn = &robo_map.frm_1;
+            winpt->selected_btn = &robo_map.dialogBox;
             winpt->selected_btnID = 8;
             winpt->flag |= 0x40;
             break;
 
         case (0x80 | 0x12):
-            winpt->selected_btn = &robo_map.frm_1;
+            winpt->selected_btn = &robo_map.dialogBox;
             winpt->selected_btnID = 9;
             winpt->flag |= 0x40;
             break;
@@ -6688,14 +6603,14 @@ void  ypaworld_func64__sub7__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 else if ( v16 > robo_map.field_216 )
                     v16 = robo_map.field_216;
 
-                if ( v15 + robo_map.frm_1.btn_xpos >= yw->screen_width )
-                    v15 = yw->screen_width - robo_map.frm_1.btn_xpos;
+                if ( v15 + robo_map.dialogBox.xpos >= yw->screen_width )
+                    v15 = yw->screen_width - robo_map.dialogBox.xpos;
 
-                if ( robo_map.frm_1.btn_ypos + v16 >= yw->screen_height - yw->icon0___h )
-                    v16 = yw->screen_height - yw->icon0___h - robo_map.frm_1.btn_ypos;
+                if ( robo_map.dialogBox.ypos + v16 >= yw->screen_height - yw->icon0___h )
+                    v16 = yw->screen_height - yw->icon0___h - robo_map.dialogBox.ypos;
 
-                robo_map.frm_1.btn_height = v16;
-                robo_map.frm_1.btn_width = v15;
+                robo_map.dialogBox.btn_height = v16;
+                robo_map.dialogBox.btn_width = v15;
             }
             else
             {
@@ -6776,7 +6691,7 @@ void  ypaworld_func64__sub7__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 }
             }
         }
-        else if ( winpt->selected_btn == &robo_map.frm_1 )
+        else if ( winpt->selected_btn == &robo_map.dialogBox )
         {
             if ( winpt->flag & 0x80 )
             {
@@ -6821,8 +6736,8 @@ void  ypaworld_func64__sub7__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 switch ( winpt->selected_btnID )
                 {
                 case 16:
-                    robo_map.field_218 = robo_map.frm_1.btn_width - winpt->ldw_pos[0].x;
-                    robo_map.field_21A = robo_map.frm_1.btn_height - winpt->ldw_pos[0].y;
+                    robo_map.field_218 = robo_map.dialogBox.btn_width - winpt->ldw_pos[0].x;
+                    robo_map.field_21A = robo_map.dialogBox.btn_height - winpt->ldw_pos[0].y;
 
                     robo_map.field_1E8 |= 1;
                     yw->field_17bc = 1;
@@ -6928,25 +6843,25 @@ void  ypaworld_func64__sub7__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
                     tmp3 = robo_map.field_20C;
                     tmp4 = robo_map.field_20E;
 
-                    robo_map.field_208 = robo_map.frm_1.btn_xpos;
-                    robo_map.field_20A = robo_map.frm_1.btn_ypos;
-                    robo_map.field_20C = robo_map.frm_1.btn_width;
-                    robo_map.field_20E = robo_map.frm_1.btn_height;
+                    robo_map.field_208 = robo_map.dialogBox.xpos;
+                    robo_map.field_20A = robo_map.dialogBox.ypos;
+                    robo_map.field_20C = robo_map.dialogBox.btn_width;
+                    robo_map.field_20E = robo_map.dialogBox.btn_height;
 
-                    robo_map.frm_1.btn_xpos = tmp1;
-                    robo_map.frm_1.btn_ypos = tmp2;
-                    robo_map.frm_1.btn_width = tmp3;
-                    robo_map.frm_1.btn_height = tmp4;
+                    robo_map.dialogBox.xpos = tmp1;
+                    robo_map.dialogBox.ypos = tmp2;
+                    robo_map.dialogBox.btn_width = tmp3;
+                    robo_map.dialogBox.btn_height = tmp4;
                 }
                 break;
 
             case 2:
                 if ( winpt->flag & 0x30 )
-                    robo_map.cmd_flag |= 0x80;
+                    robo_map.flags |= GuiBase::FLAG_HELP_DOWN;
 
                 if ( winpt->flag & 0x40 )
                 {
-                    robo_map.cmd_flag &= 0xFFFFFF7F;
+                    robo_map.flags &= ~GuiBase::FLAG_HELP_DOWN;
                     sub_449DE8(yw, get_lang_string(yw->string_pointers_p2, 764, "help\\l14.html")); //MAKE ME
                 }
 
@@ -7014,7 +6929,7 @@ void  ypaworld_func64__sub7__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
 char * ypaworld_func64__sub7__sub0__sub0__sub0(_NC_STACK_ypaworld *yw, char *cur, int id)
 {
-    int v5 = id + info_log.field_254 + info_log.window.scroll_pos;
+    int v5 = id + info_log.field_254 + info_log.window.firstShownEntries;
 
     if ( v5 >= 64 )
         v5 -= 64;
@@ -7023,38 +6938,38 @@ char * ypaworld_func64__sub7__sub0__sub0__sub0(_NC_STACK_ypaworld *yw, char *cur
 
     char *pcur = cur;
 
-    fntcmd_store_u8(&pcur, 123);
+    FontUA::store_u8(&pcur, 123);
 
-    pcur = txtcmd_txt_w_bkg(yw->tiles[0], pcur, info_log.msgs[v5].txt, info_log.window.width - 2 * yw->font_default_w__b, 32);
+    pcur = FontUA::FormateClippedText(yw->tiles[0], pcur, info_log.msgs[v5].txt, info_log.window.entryWidth - 2 * yw->font_default_w__b, 32);
 
-    fntcmd_store_u8(&pcur, 125);
-    fntcmd_next_line(&pcur);
+    FontUA::store_u8(&pcur, 125);
+    FontUA::next_line(&pcur);
 
     return pcur;
 }
 
 void ypaworld_func64__sub7__sub0__sub0(_NC_STACK_ypaworld *yw)
 {
-    char *pcur = lstvw_up_border(yw, &info_log.window, info_log.window.data_cmdbuf, 0, "{ }");
+    char *pcur = info_log.window.ItemsPreLayout(yw, info_log.window.itemBlock, 0, "{ }");
 
-    for (int i = 0; i < info_log.window.element_count; i++ )
+    for (int i = 0; i < info_log.window.shownEntries; i++ )
         pcur = ypaworld_func64__sub7__sub0__sub0__sub0(yw, pcur, i);
 
-    pcur = lstvw_down_border(yw, &info_log.window, pcur, 0, "xyz");
+    pcur = info_log.window.ItemsPostLayout(yw, pcur, 0, "xyz");
 
-    fntcmd_set_end(&pcur);
+    FontUA::set_end(&pcur);
 }
 
 void ypaworld_func64__sub7__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
 {
-    if ( info_log.window.cmd_flag & 0x21 )
+    if ( info_log.window.flags & (GuiBase::FLAG_CLOSED | GuiBase::FLAG_ICONIFED) )
     {
-        lstvw_update_input(yw, &info_log.window, inpt);
+        info_log.window.InputHandle(yw, inpt);
     }
     else
     {
-        lstvw_update_input(yw, &info_log.window, inpt);
-        lstvw_update(yw, &info_log.window);
+        info_log.window.InputHandle(yw, inpt);
+        info_log.window.Formate(yw);
         ypaworld_func64__sub7__sub0__sub0(yw);
     }
 }
@@ -7078,7 +6993,7 @@ int ypaworld_func64__sub7__sub6__sub0(int a1, const char *a2)
     return 1;
 }
 
-listbase * ypaworld_func64__sub7__sub6__sub1()
+GuiBase * ypaworld_func64__sub7__sub6__sub1()
 {
     return dword_5BAFAC;
 }
@@ -7108,22 +7023,22 @@ char * sub_451714(tiles_stru *, char *cur, const char *a3, int a2, uint8_t a4)
 
     if ( a2 > 0 )
     {
-        fntcmd_copy_position(&pcur);
+        FontUA::copy_position(&pcur);
 
         int v6 = a2;
         while (v6 > 0)
         {
             if ( v6 <= 255 )
-                fntcmd_op10(&pcur, v6);
+                FontUA::op10(&pcur, v6);
             else
-                fntcmd_op10(&pcur, 255);
+                FontUA::op10(&pcur, 255);
 
-            fntcmd_store_u8(&pcur, a4);
+            FontUA::store_u8(&pcur, a4);
 
             v6 -= 255;
         }
 
-        fntcmd_add_txt(&pcur, a2, 4, a3);
+        FontUA::add_txt(&pcur, a2, 4, a3);
     }
     return pcur;
 }
@@ -7135,24 +7050,24 @@ char *sub_4DA8DC(_NC_STACK_ypaworld *yw, char *cur, int a4, int a3, const char *
 
     char *pcur = cur;
 
-    fntcmd_set_yheight(&pcur, dword_5C8B84);
+    FontUA::set_yheight(&pcur, dword_5C8B84);
 
-    fntcmd_store_u8(&pcur, 123);
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 123);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 32);
 
-    fntcmd_op17(&pcur, dword_5C8B80 + dword_5C8B88);
-    fntcmd_store_u8(&pcur, 32);
+    FontUA::op17(&pcur, dword_5C8B80 + dword_5C8B88);
+    FontUA::store_u8(&pcur, 32);
 
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 125);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 125);
 
-    fntcmd_next_line(&pcur);
+    FontUA::next_line(&pcur);
 
-    fntcmd_store_u8(&pcur, 123);
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 123);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 32);
 
     int v11;
 
@@ -7163,45 +7078,45 @@ char *sub_4DA8DC(_NC_STACK_ypaworld *yw, char *cur, int a4, int a3, const char *
     else
         v11 = 3;
 
-    fntcmd_select_tileset(&pcur, v11);
-    fntcmd_store_u8(&pcur, 98);
+    FontUA::select_tileset(&pcur, v11);
+    FontUA::store_u8(&pcur, 98);
 
     if ( a4 )
         v5 = " ";
 
     if ( a3 )
     {
-        fntcmd_set_flag(&pcur, 0x10);
+        FontUA::set_flag(&pcur, 0x10);
     }
 
     pcur = sub_451714(yw->tiles[v11], pcur, v5, dword_5C8B88 - 2 * yw->font_default_w__b, 32);
 
-    fntcmd_unset_flag(&pcur, 0x10);
+    FontUA::unset_flag(&pcur, 0x10);
 
-    fntcmd_store_u8(&pcur, 100);
+    FontUA::store_u8(&pcur, 100);
 
-    fntcmd_select_tileset(&pcur, 0);
+    FontUA::select_tileset(&pcur, 0);
 
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 125);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 125);
 
-    fntcmd_next_line(&pcur);
+    FontUA::next_line(&pcur);
 
-    fntcmd_set_yheight(&pcur, dword_5C8B84);
+    FontUA::set_yheight(&pcur, dword_5C8B84);
 
-    fntcmd_store_u8(&pcur, 123);
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 123);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 32);
 
-    fntcmd_op17(&pcur, dword_5C8B80 + dword_5C8B88);
-    fntcmd_store_u8(&pcur, 32);
+    FontUA::op17(&pcur, dword_5C8B80 + dword_5C8B88);
+    FontUA::store_u8(&pcur, 32);
 
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 125);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 125);
 
-    fntcmd_next_line(&pcur);
+    FontUA::next_line(&pcur);
 
     return pcur;
 }
@@ -7210,9 +7125,9 @@ char *sub_4DA8DC(_NC_STACK_ypaworld *yw, char *cur, int a4, int a3, const char *
 
 void ypaworld_func64__sub7__sub6__sub3(_NC_STACK_ypaworld *yw, int a2, int a4)
 {
-    char *pcur = lstvw_up_border(yw, &exit_menu, exit_menu.data_cmdbuf, 0, "{ }");
+    char *pcur = exit_menu.ItemsPreLayout(yw, exit_menu.itemBlock, 0, "{ }");
 
-    fntcmd_set_txtColor(&pcur, yw->iniColors[68].r, yw->iniColors[68].g, yw->iniColors[68].b);
+    FontUA::set_txtColor(&pcur, yw->iniColors[68].r, yw->iniColors[68].g, yw->iniColors[68].b);
 
     pcur = sub_4DA8DC(yw, pcur, a4 & 0x100, a2 & 0x100, get_lang_string(yw->string_pointers_p2, 7, "CANCEL MISSION"));
     pcur = sub_4DA8DC(yw, pcur, a4 & 0x200, a2 & 0x200, get_lang_string(yw->string_pointers_p2, 5, "SAVE"));
@@ -7220,15 +7135,15 @@ void ypaworld_func64__sub7__sub6__sub3(_NC_STACK_ypaworld *yw, int a2, int a4)
     pcur = sub_4DA8DC(yw, pcur, a4 & 0x800, a2 & 0x800, get_lang_string(yw->string_pointers_p2, 8, "RESTART"));
     pcur = sub_4DA8DC(yw, pcur, a4 & 0x1000, a2 & 0x1000, get_lang_string(yw->string_pointers_p2, 9, "RESUME"));
 
-    pcur = lstvw_down_border(yw, &exit_menu, pcur, 0, "xyz");
+    pcur = exit_menu.ItemsPostLayout(yw, pcur, 0, "xyz");
 
-    fntcmd_set_end(&pcur);
+    FontUA::set_end(&pcur);
 }
 
 
 void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
 {
-    if ( exit_menu.cmd_flag & 0x20 )
+    if ( exit_menu.flags & GuiBase::FLAG_CLOSED )
     {
         if ( yw->field_2d90->field_40 )
         {
@@ -7309,9 +7224,9 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
         }
     }
 
-    if ( exit_menu.cmd_flag & 0x20 )
+    if ( exit_menu.flags & GuiBase::FLAG_CLOSED )
     {
-        lstvw_update_input(yw, &exit_menu, inpt);
+        exit_menu.InputHandle(yw, inpt);
     }
     else
     {
@@ -7332,7 +7247,7 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
         if ( yw->field_757E )
             a4 |= 0xE00;
 
-        if ( inpt->winp131arg.selected_btn == &exit_menu.frm_1 )
+        if ( inpt->winp131arg.selected_btn == &exit_menu.dialogBox )
         {
             if ( yw->GameShell )
             {
@@ -7361,7 +7276,7 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
                     dword_5C8B78 = 8;
 
                     if ( sub_4C885C() != 3 )
-                        sub_4C31C0(yw, &exit_menu);
+                        exit_menu.CloseDialog(yw);
 
                     const char *v13 = get_lang_string(yw->string_pointers_p2, 2480, "REALLY EXIT MISSION ?");
                     sb_0x4c87fc(yw, v13, &exit_menu);
@@ -7379,7 +7294,7 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
                         dword_5C8B78 = 9;
 
                         if ( sub_4C885C() != 3 )
-                            sub_4C31C0(yw, &exit_menu);
+                            exit_menu.CloseDialog(yw);
 
                         const char *v14 = get_lang_string(yw->string_pointers_p2, 2481, "REALLY SAVE GAME ?");
                         sb_0x4c87fc(yw, v14, &exit_menu);
@@ -7398,7 +7313,7 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
                         dword_5C8B78 = 10;
 
                         if ( sub_4C885C() != 3 )
-                            sub_4C31C0(yw, &exit_menu);
+                            exit_menu.CloseDialog(yw);
 
                         const char *v15 = get_lang_string(yw->string_pointers_p2, 2482, "REALLY LOAD GAME ?");
                         sb_0x4c87fc(yw, v15, &exit_menu);
@@ -7417,7 +7332,7 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
                         dword_5C8B78 = 11;
 
                         if ( sub_4C885C() != 3 )
-                            sub_4C31C0(yw, &exit_menu);
+                            exit_menu.CloseDialog(yw);
 
                         const char *v16 = get_lang_string(yw->string_pointers_p2, 2483, "REALLY RESTART MISSION ?");
                         sb_0x4c87fc(yw, v16, &exit_menu);
@@ -7430,7 +7345,7 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
                     a2 |= 0x1000;
 
                 if ( winpt->flag & 0x40 )
-                    sub_4C31C0(yw, &exit_menu);
+                    exit_menu.CloseDialog(yw);
 
                 break;
 
@@ -7438,8 +7353,8 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 break;
             }
         }
-        lstvw_update_input(yw, &exit_menu, inpt);
-        lstvw_update(yw, &exit_menu);
+        exit_menu.InputHandle(yw, inpt);
+        exit_menu.Formate(yw);
 
         ypaworld_func64__sub7__sub6__sub3(yw, a2, a4);
     }
@@ -7452,17 +7367,17 @@ char * sub_4C8534(_NC_STACK_ypaworld *yw, char *cur, const char *a2)
 {
     char *pcur = cur;
 
-    fntcmd_store_u8(&pcur, 123);
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 123);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 32);
 
-    pcur = sub_451714(yw->tiles[0], pcur, a2, lstvw2.width - 2 * dword_5BAFA8, 32);
+    pcur = sub_451714(yw->tiles[0], pcur, a2, lstvw2.entryWidth - 2 * dword_5BAFA8, 32);
 
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 125);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 125);
 
-    fntcmd_next_line(&pcur);
+    FontUA::next_line(&pcur);
 
     return pcur;
 }
@@ -7471,9 +7386,9 @@ char * ypaworld_func64__sub7__sub4__sub0__sub0(_NC_STACK_ypaworld *yw, char *cur
 {
     char *pcur = cur;
 
-    fntcmd_store_u8(&pcur, 123);
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 123);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 32);
 
     const char *v5 = get_lang_string(yw->string_pointers_p2, 2, "OK");
 
@@ -7482,7 +7397,7 @@ char * ypaworld_func64__sub7__sub4__sub0__sub0(_NC_STACK_ypaworld *yw, char *cur
 
     if ( a3 & 0x100 )
     {
-        fntcmd_set_flag(&pcur, 0x10);
+        FontUA::set_flag(&pcur, 0x10);
         v8 = 8;
     }
     else
@@ -7490,27 +7405,27 @@ char * ypaworld_func64__sub7__sub4__sub0__sub0(_NC_STACK_ypaworld *yw, char *cur
         v8 = 3;
     }
 
-    fntcmd_select_tileset(&pcur, v8);
+    FontUA::select_tileset(&pcur, v8);
 
-    fntcmd_store_u8(&pcur, 98);
+    FontUA::store_u8(&pcur, 98);
 
     pcur = sub_451714(yw->tiles[v8], pcur, v5, dword_5BAFA0 - 2 * yw->font_default_w__b, 32);
 
-    fntcmd_unset_flag(&pcur, 0x10);
+    FontUA::unset_flag(&pcur, 0x10);
 
-    fntcmd_store_u8(&pcur, 100);
+    FontUA::store_u8(&pcur, 100);
 
-    fntcmd_select_tileset(&pcur, 0);
+    FontUA::select_tileset(&pcur, 0);
 
-    fntcmd_op10(&pcur, dword_5BAFA4);
+    FontUA::op10(&pcur, dword_5BAFA4);
 
-    fntcmd_store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 32);
 
     v5 = get_lang_string(yw->string_pointers_p2, 3, "CANCEL");
 
     if ( a3 & 0x200 )
     {
-        fntcmd_set_flag(&pcur, 0x10);
+        FontUA::set_flag(&pcur, 0x10);
         v8 = 8;
     }
     else
@@ -7518,50 +7433,50 @@ char * ypaworld_func64__sub7__sub4__sub0__sub0(_NC_STACK_ypaworld *yw, char *cur
         v8 = 3;
     }
 
-    fntcmd_select_tileset(&pcur, v8);
+    FontUA::select_tileset(&pcur, v8);
 
-    fntcmd_store_u8(&pcur, 98);
+    FontUA::store_u8(&pcur, 98);
 
     pcur = sub_451714(yw->tiles[v8], pcur, v5, dword_5BAFA0 - 2 * yw->font_default_w__b, 32);
 
-    fntcmd_unset_flag(&pcur, 0x10);
+    FontUA::unset_flag(&pcur, 0x10);
 
-    fntcmd_store_u8(&pcur, 100);
+    FontUA::store_u8(&pcur, 100);
 
-    fntcmd_select_tileset(&pcur, 0);
+    FontUA::select_tileset(&pcur, 0);
 
-    fntcmd_store_u8(&pcur, 32);
-    fntcmd_store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(&pcur, 32);
 
-    fntcmd_store_u8(&pcur, 125);
+    FontUA::store_u8(&pcur, 125);
 
-    fntcmd_next_line(&pcur);
+    FontUA::next_line(&pcur);
 
     return pcur;
 }
 
 void ypaworld_func64__sub7__sub4__sub0(_NC_STACK_ypaworld *yw, int a2)
 {
-    char *pcur = lstvw_up_border(yw, &lstvw2, lstvw2.data_cmdbuf, 0, "{ }");
+    char *pcur = lstvw2.ItemsPreLayout(yw, lstvw2.itemBlock, 0, "{ }");
 
-    fntcmd_set_txtColor(&pcur, yw->iniColors[60].r, yw->iniColors[60].g, yw->iniColors[60].b);
+    FontUA::set_txtColor(&pcur, yw->iniColors[60].r, yw->iniColors[60].g, yw->iniColors[60].b);
 
     pcur = sub_4C8534(yw, pcur, dword_5BAF98);
     pcur = sub_4C8534(yw, pcur, " ");
 
-    fntcmd_set_txtColor(&pcur, yw->iniColors[68].r, yw->iniColors[68].g, yw->iniColors[68].b);
+    FontUA::set_txtColor(&pcur, yw->iniColors[68].r, yw->iniColors[68].g, yw->iniColors[68].b);
 
     pcur = ypaworld_func64__sub7__sub4__sub0__sub0(yw, pcur, a2);
-    pcur = lstvw_down_border(yw, &lstvw2, pcur, 0, "xyz");
+    pcur = lstvw2.ItemsPostLayout(yw, pcur, 0, "xyz");
 
-    fntcmd_set_end(&pcur);
+    FontUA::set_end(&pcur);
 }
 
 void ypaworld_func64__sub7__sub4(_NC_STACK_ypaworld *yw, struC5 *inpt)
 {
-    if ( lstvw2.cmd_flag & 0x20 )
+    if ( lstvw2.flags & GuiBase::FLAG_CLOSED )
     {
-        lstvw_update_input(yw, &lstvw2, inpt);
+        lstvw2.InputHandle(yw, inpt);
     }
     else
     {
@@ -7571,7 +7486,7 @@ void ypaworld_func64__sub7__sub4(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         if ( yw->field_826F == VK_RETURN )
         {
-            sub_4C31C0(yw, &lstvw2);
+            lstvw2.CloseDialog(yw);
 
             dword_5BAF9C = 1;
 
@@ -7581,7 +7496,7 @@ void ypaworld_func64__sub7__sub4(_NC_STACK_ypaworld *yw, struC5 *inpt)
         }
         else if ( yw->field_826F == VK_ESCAPE )
         {
-            sub_4C31C0(yw, &lstvw2);
+            lstvw2.CloseDialog(yw);
 
             dword_5BAF9C = 2;
 
@@ -7589,7 +7504,7 @@ void ypaworld_func64__sub7__sub4(_NC_STACK_ypaworld *yw, struC5 *inpt)
             inpt->downed_key_2 = 0;
             inpt->dword8 = 0;
         }
-        else if ( inpt->winp131arg.selected_btn == &lstvw2.frm_1 )
+        else if ( inpt->winp131arg.selected_btn == &lstvw2.dialogBox )
         {
             if ( yw->GameShell )
             {
@@ -7607,7 +7522,7 @@ void ypaworld_func64__sub7__sub4(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
                 if ( winpt->flag & 0x40 )
                 {
-                    sub_4C31C0(yw, &lstvw2);
+                    lstvw2.CloseDialog(yw);
                     dword_5BAF9C = 1;
                 }
             }
@@ -7618,14 +7533,14 @@ void ypaworld_func64__sub7__sub4(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
                 if ( winpt->flag & 0x40 )
                 {
-                    sub_4C31C0(yw, &lstvw2);
+                    lstvw2.CloseDialog(yw);
                     dword_5BAF9C = 2;
                 }
             }
         }
 
-        lstvw_update_input(yw, &lstvw2, inpt);
-        lstvw_update(yw, &lstvw2);
+        lstvw2.InputHandle(yw, inpt);
+        lstvw2.Formate(yw);
         ypaworld_func64__sub7__sub4__sub0(yw, a1_1);
     }
 }
@@ -7639,41 +7554,41 @@ void ypaworld_func64__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
     {
         if ( winpt->flag & 1 )
         {
-            listbase *llst = (listbase *)yw->field_17a0.head;
+            GuiBase *llst = (GuiBase *)yw->field_17a0.head;
 
             while(llst->next)
             {
-                if ( llst->cmd_flag & 4 )
+                if ( llst->flags & 4 )
                 {
-                    if ( llst->cmd_flag & 1 )
-                        llst->field_1BC[2] = 1;
+                    if ( llst->flags & 1 )
+                        llst->iconString[2] = 1;
                 }
 
-                if ( llst->cmd_flag & 0x10 )
+                if ( llst->flags & 0x10 )
                 {
-                    if ( !(llst->cmd_flag & 0x21) )
-                        llst->cmd_flag &= 0xFFFFFFBF;
+                    if ( !(llst->flags & 0x21) )
+                        llst->flags &= 0xFFFFFFBF;
                 }
 
-                llst = (listbase *)llst->next;
+                llst = (GuiBase *)llst->next;
             }
 
             if ( inpt->winp131arg.selected_btn )
             {
-                listbase *v9 = (listbase *)inpt->winp131arg.selected_btn->pobject;
+                GuiBase *v9 = (GuiBase *)inpt->winp131arg.selected_btn->pobject;
                 if ( v9 )
                 {
-                    if ( v9->cmd_flag & 1 )
+                    if ( v9->flags & 1 )
                     {
                         if ( winpt->flag & 0x30 )
-                            v9->field_1BC[2] = 2;
+                            v9->iconString[2] = 2;
 
                         if ( winpt->flag & 0x40 )
                         {
-                            v9->cmd_flag &= 0xFFFFFFFE;
+                            v9->flags &= 0xFFFFFFFE;
 
-                            INPe.sub_412D9C(&v9->frm_2);
-                            INPe.sub_412D48(&v9->frm_1, 0);
+                            INPe.RemClickBox(&v9->iconBox);
+                            INPe.AddClickBox(&v9->dialogBox, 0);
 
                             Remove(v9);
 
@@ -7684,20 +7599,20 @@ void ypaworld_func64__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
                     {
                         if ( winpt->flag & 2 )
                         {
-                            INPe.sub_412D9C(&v9->frm_1);
-                            INPe.sub_412D48(&v9->frm_1, 0);
+                            INPe.RemClickBox(&v9->dialogBox);
+                            INPe.AddClickBox(&v9->dialogBox, 0);
 
                             Remove(v9);
 
                             AddHead(&yw->field_17a0, v9);
                         }
 
-                        if ( v9->cmd_flag & 0x10 )
+                        if ( v9->flags & 0x10 )
                         {
                             if ( winpt->selected_btnID == 0)
                             {
                                 if ( winpt->flag & 0x30 )
-                                    v9->cmd_flag |= 0x40;
+                                    v9->flags |= 0x40;
 
                                 if ( winpt->flag & 0x10 )
                                 {
@@ -7707,17 +7622,17 @@ void ypaworld_func64__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
                                 if ( winpt->flag & 0x40 )
                                 {
-                                    INPe.sub_412D9C(&v9->frm_1);
+                                    INPe.RemClickBox(&v9->dialogBox);
 
-                                    if ( v9->cmd_flag & 4 )
+                                    if ( v9->flags & 4 )
                                     {
-                                        INPe.sub_412D48(&v9->frm_2, 0);
+                                        INPe.AddClickBox(&v9->iconBox, 0);
 
-                                        v9->cmd_flag |= 1;
+                                        v9->flags |= 1;
                                     }
                                     else
                                     {
-                                        v9->cmd_flag |= 0x20;
+                                        v9->flags |= 0x20;
                                     }
 
                                     Remove(v9);
@@ -7726,7 +7641,7 @@ void ypaworld_func64__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
                             }
                         }
 
-                        if ( v9->cmd_flag & 8 )
+                        if ( v9->flags & 8 )
                         {
                             if ( winpt->flag & 0x10 )
                             {
@@ -7753,8 +7668,8 @@ void ypaworld_func64__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
                     if ( v13 >= 0 )
                     {
-                        if ( yw->field_17b4->frm_1.btn_width + v13 > yw->screen_width )
-                            v13 = yw->screen_width - yw->field_17b4->frm_1.btn_width;
+                        if ( yw->field_17b4->dialogBox.btn_width + v13 > yw->screen_width )
+                            v13 = yw->screen_width - yw->field_17b4->dialogBox.btn_width;
                     }
                     else
                     {
@@ -7763,22 +7678,22 @@ void ypaworld_func64__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
                     if ( v15 >= yw->icon_energy__h )
                     {
-                        if ( yw->field_17b4->frm_1.btn_height + v15 > yw->screen_height - yw->icon0___h )
-                            v15 = yw->screen_height - yw->icon0___h - yw->field_17b4->frm_1.btn_height;
+                        if ( yw->field_17b4->dialogBox.btn_height + v15 > yw->screen_height - yw->icon0___h )
+                            v15 = yw->screen_height - yw->icon0___h - yw->field_17b4->dialogBox.btn_height;
                     }
                     else
                     {
                         v15 = yw->icon_energy__h;
                     }
 
-                    yw->field_17b4->frm_1.btn_ypos = v15;
-                    yw->field_17b4->frm_1.btn_xpos = v13;
+                    yw->field_17b4->dialogBox.ypos = v15;
+                    yw->field_17b4->dialogBox.xpos = v13;
 
                     char *tmp = &yw->field_17b4->cmdstrm.cmdbuf[5];
-                    fntcmd_store_s16(&tmp, v13 - (yw->screen_width / 2)); //HACKY UPDATE!
+                    FontUA::store_s16(&tmp, v13 - (yw->screen_width / 2)); //HACKY UPDATE!
 
                     tmp = &yw->field_17b4->cmdstrm.cmdbuf[9];
-                    fntcmd_store_s16(&tmp, v15 - (yw->screen_height / 2)); //HACKY UPDATE!
+                    FontUA::store_s16(&tmp, v15 - (yw->screen_height / 2)); //HACKY UPDATE!
                 }
             }
 
@@ -7936,7 +7851,7 @@ void sub_4C40AC(_NC_STACK_ypaworld *yw)
 
 void ypaworld_func64__sub14(_NC_STACK_ypaworld *yw)
 {
-    if ( !(robo_map.cmd_flag & 0x20) )
+    if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
     {
         sub_4C157C(yw);
         sub_4C1814(yw, robo_map.field_1CC - robo_map.field_244, robo_map.field_1D2);
@@ -7944,20 +7859,20 @@ void ypaworld_func64__sub14(_NC_STACK_ypaworld *yw)
         sub_4C0FEC(yw);
         sub_4C1214(yw);
 
-        stru_5B25D8.xpos = robo_map.field_244;
-        stru_5B25D8.ypos = robo_map.field_23C;
-        stru_5B25D8.width = robo_map.frm_1.btn_width - robo_map.field_24C;
-        stru_5B25D8.fnt_height = robo_map.frm_1.btn_height - robo_map.field_250;
+        stru_5B25D8.x = robo_map.field_244;
+        stru_5B25D8.y = robo_map.field_23C;
+        stru_5B25D8.w = robo_map.dialogBox.btn_width - robo_map.field_24C;
+        stru_5B25D8.h = robo_map.dialogBox.btn_height - robo_map.field_250;
 
-        int v2 = robo_map.frm_1.btn_xpos + robo_map.field_244 - (yw->screen_width / 2);
+        int v2 = robo_map.dialogBox.xpos + robo_map.field_244 - (yw->screen_width / 2);
 
-        sb_0x4f6650(yw, t1_cmdbuf_3, v2, robo_map.frm_1.btn_ypos + robo_map.field_23C - yw->screen_height / 2 );
+        sb_0x4f6650(yw, t1_cmdbuf_3, v2, robo_map.dialogBox.ypos + robo_map.field_23C - yw->screen_height / 2 );
     }
 }
 
 void ypaworld_func64__sub8(NC_STACK_ypaworld *, _NC_STACK_ypaworld *yw)
 {
-    if ( !(robo_map.cmd_flag & 0x20) )
+    if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
     {
         if ( !(robo_map.field_1E8 & 0x16) && robo_map.field_1ED == 1 )
         {
@@ -9043,10 +8958,10 @@ void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg)
                     info_log.field_254 = 0;
             }
 
-            info_log.window.elements_for_scroll_size++;;
+            info_log.window.numEntries++;;
 
-            if ( info_log.window.elements_for_scroll_size > 64 )
-                info_log.window.elements_for_scroll_size = 64;
+            if ( info_log.window.numEntries > 64 )
+                info_log.window.numEntries = 64;
 
             v6 = &info_log.msgs[info_log.msg_count];
 
@@ -9096,10 +9011,10 @@ void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg)
                         info_log.field_254 = 0;
                 }
 
-                info_log.window.elements_for_scroll_size++;
+                info_log.window.numEntries++;
 
-                if ( info_log.window.elements_for_scroll_size > 64 )
-                    info_log.window.elements_for_scroll_size = 64;
+                if ( info_log.window.numEntries > 64 )
+                    info_log.window.numEntries = 64;
 
                 info_log.field_256C += 5000;
                 info_log.field_2568++;
@@ -9125,10 +9040,10 @@ void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg)
 
         v6->txt[v10] = 0;
 
-        info_log.window.scroll_pos = info_log.window.elements_for_scroll_size - info_log.window.element_count;
+        info_log.window.firstShownEntries = info_log.window.numEntries - info_log.window.shownEntries;
 
-        if ( info_log.window.scroll_pos < 0 )
-            info_log.window.scroll_pos = 0;
+        if ( info_log.window.firstShownEntries < 0 )
+            info_log.window.firstShownEntries = 0;
     }
 }
 
@@ -9169,13 +9084,13 @@ void sb_0x4d7c08__sub0__sub0(_NC_STACK_ypaworld *yw)
             {
                 if ( yw->field_1614 / 300 & 1 )
                 {
-                    fntcmd_select_tileset(&pcur, 15);
-                    fntcmd_set_xpos(&pcur, 0);
-                    fntcmd_set_ypos(&pcur, yw->screen_height / 3);
+                    FontUA::select_tileset(&pcur, 15);
+                    FontUA::set_xpos(&pcur, 0);
+                    FontUA::set_ypos(&pcur, yw->screen_height / 3);
 
-                    fntcmd_set_txtColor(&pcur, 255, 255, 255);
+                    FontUA::set_txtColor(&pcur, 255, 255, 255);
 
-                    pcur = sub_45148C(yw->tiles[15], pcur, a1a, yw->screen_width);
+                    pcur = FontUA::FormateCenteredSkipableItem(yw->tiles[15], pcur, a1a, yw->screen_width);
                 }
             }
             else
@@ -9198,8 +9113,8 @@ void sb_0x4d7c08__sub0__sub0(_NC_STACK_ypaworld *yw)
     if ( v10 > 10 )
         v10 = 10;
 
-    fntcmd_select_tileset(&pcur, 15);
-    fntcmd_set_ypos(&pcur, up_panel.field_1CC + yw->font_default_h / 2);
+    FontUA::select_tileset(&pcur, 15);
+    FontUA::set_ypos(&pcur, up_panel.field_1CC + yw->font_default_h / 2);
 
 
     int v11 = (info_log.msg_count - v10) % 64;
@@ -9263,12 +9178,12 @@ void sb_0x4d7c08__sub0__sub0(_NC_STACK_ypaworld *yw)
 
             if ( v19 > 0 )
             {
-                fntcmd_set_xpos(&pcur, 16);
-                fntcmd_set_txtColor(&pcur, yw->iniColors[64].r, yw->iniColors[64].g, yw->iniColors[64].b);
+                FontUA::set_xpos(&pcur, 16);
+                FontUA::set_txtColor(&pcur, yw->iniColors[64].r, yw->iniColors[64].g, yw->iniColors[64].b);
                 // Output ingame messages. From analyzer and other.
-                pcur = sub_451E64(yw->tiles[15], pcur, v14->txt, v19, 4);
+                pcur = FontUA::TextRelWidthItem(yw->tiles[15], pcur, v14->txt, v19, 4);
 
-                fntcmd_next_line(&pcur);
+                FontUA::next_line(&pcur);
             }
         }
 
@@ -9278,7 +9193,7 @@ void sb_0x4d7c08__sub0__sub0(_NC_STACK_ypaworld *yw)
         v11++;
     }
 
-    fntcmd_set_end(&pcur);
+    FontUA::set_end(&pcur);
 
     w3d_a209 arg;
 
@@ -9433,12 +9348,12 @@ char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos, 
 
     int wnd_vis = 0;
 
-    if ( !(robo_map.cmd_flag & 0x20) )
+    if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
     {
-        wnd_xpos = robo_map.frm_1.btn_xpos - (yw->screen_width / 2);
-        wnd_xpos2 = robo_map.frm_1.btn_width + wnd_xpos;
-        wnd_ypos = robo_map.frm_1.btn_ypos - (yw->screen_height / 2);
-        wnd_ypos2 = robo_map.frm_1.btn_height + wnd_ypos;
+        wnd_xpos = robo_map.dialogBox.xpos - (yw->screen_width / 2);
+        wnd_xpos2 = robo_map.dialogBox.btn_width + wnd_xpos;
+        wnd_ypos = robo_map.dialogBox.ypos - (yw->screen_height / 2);
+        wnd_ypos2 = robo_map.dialogBox.btn_height + wnd_ypos;
 
         wnd_vis = 1;
     }
@@ -9451,7 +9366,7 @@ char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos, 
 
     char *pcur = cur;
 
-    fntcmd_set_txtColor(&pcur, yw->iniColors[65].r, yw->iniColors[65].g, yw->iniColors[65].b);
+    FontUA::set_txtColor(&pcur, yw->iniColors[65].r, yw->iniColors[65].g, yw->iniColors[65].b);
 
     v51 -= (wis->field_9A + wis->field_96 + v49) / 2;
 
@@ -9462,21 +9377,21 @@ char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos, 
 
         if ( !wnd_vis || v19 <= wnd_xpos || v19 >= wnd_xpos2 || v20 <= wnd_ypos || v20 >= wnd_ypos2 )
         {
-            fntcmd_select_tileset(&pcur, 15);
+            FontUA::select_tileset(&pcur, 15);
 
-            fntcmd_set_center_xpos(&pcur, v51);
-            fntcmd_set_center_ypos(&pcur, v50 - (yw->font_default_h / 2));
+            FontUA::set_center_xpos(&pcur, v51);
+            FontUA::set_center_ypos(&pcur, v50 - (yw->font_default_h / 2));
 
-            pcur = sub_451E64(yw->tiles[15], pcur, a10, 100, 4);
+            pcur = FontUA::TextRelWidthItem(yw->tiles[15], pcur, a10, 100, 4);
         }
     }
 
-    fntcmd_select_tileset(&pcur, 51);
+    FontUA::select_tileset(&pcur, 51);
 
     v51 += wis->field_96;
 
-    fntcmd_set_center_xpos(&pcur, v51);
-    fntcmd_set_center_ypos(&pcur, v50 - (yw->tiles[51]->font_height / 2));
+    FontUA::set_center_xpos(&pcur, v51);
+    FontUA::set_center_ypos(&pcur, v50 - (yw->tiles[51]->font_height / 2));
 
     int v29 = v51 + (yw->tiles[51]->chars[1].width / 2);
     int v30 = v50 + (yw->tiles[51]->font_height >> 1);
@@ -9488,9 +9403,9 @@ char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos, 
         if ( !wnd_vis || v29 <= wnd_xpos || v29 >= wnd_xpos2 || v30 <= wnd_ypos || v30 >= wnd_ypos2 )
         {
             if ( v35 > value )
-                fntcmd_store_u8(&pcur, a9);
+                FontUA::store_u8(&pcur, a9);
             else
-                fntcmd_store_u8(&pcur, a8);
+                FontUA::store_u8(&pcur, a8);
         }
 
         v29 += yw->tiles[51]->chars[1].width;
@@ -9505,12 +9420,12 @@ char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos, 
 
         if ( !wnd_vis || v37 <= wnd_xpos || v37 >= wnd_xpos2 || v38 <= wnd_ypos || v38 >= wnd_ypos2 )
         {
-            fntcmd_select_tileset(&pcur, 15);
+            FontUA::select_tileset(&pcur, 15);
 
-            fntcmd_set_center_xpos(&pcur, v51);
-            fntcmd_set_center_ypos(&pcur, v50 - (yw->font_default_h / 2));
+            FontUA::set_center_xpos(&pcur, v51);
+            FontUA::set_center_ypos(&pcur, v50 - (yw->font_default_h / 2));
 
-            pcur = sub_451E64(yw->tiles[15], pcur, a11, 100, 8);
+            pcur = FontUA::TextRelWidthItem(yw->tiles[15], pcur, a11, 100, 8);
         }
     }
 
@@ -9587,12 +9502,12 @@ char * sub_4E5698(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, const char *
 
     int wnd_vis = 0;
 
-    if ( !(robo_map.cmd_flag & 0x20) )
+    if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
     {
-        wnd_xpos = robo_map.frm_1.btn_xpos - (yw->screen_width / 2);
-        wnd_xpos2 = robo_map.frm_1.btn_width + wnd_xpos;
-        wnd_ypos = robo_map.frm_1.btn_ypos - (yw->screen_height / 2);
-        wnd_ypos2 = robo_map.frm_1.btn_height + wnd_ypos;
+        wnd_xpos = robo_map.dialogBox.xpos - (yw->screen_width / 2);
+        wnd_xpos2 = robo_map.dialogBox.btn_width + wnd_xpos;
+        wnd_ypos = robo_map.dialogBox.ypos - (yw->screen_height / 2);
+        wnd_ypos2 = robo_map.dialogBox.btn_height + wnd_ypos;
 
         wnd_vis = 1;
     }
@@ -9602,12 +9517,12 @@ char * sub_4E5698(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, const char *
 
     if ( !wnd_vis || v29 <= wnd_xpos || v29 >= wnd_xpos2 || v33 <= wnd_ypos || v33 >= wnd_ypos2 )
     {
-        fntcmd_select_tileset(&pcur, 15);
+        FontUA::select_tileset(&pcur, 15);
 
-        fntcmd_set_center_xpos(&pcur, v30);
-        fntcmd_set_center_ypos(&pcur, v34);
+        FontUA::set_center_xpos(&pcur, v30);
+        FontUA::set_center_ypos(&pcur, v34);
 
-        fntcmd_set_txtColor(&pcur,  yw->iniColors[65].r,  yw->iniColors[65].g,  yw->iniColors[65].b);
+        FontUA::set_txtColor(&pcur,  yw->iniColors[65].r,  yw->iniColors[65].g,  yw->iniColors[65].b);
 
         pcur = sub_451714(yw->tiles[15], pcur, name, v31, 32);
     }
@@ -9892,7 +9807,7 @@ int sb_0x4d7c08__sub0__sub0__sub0(_NC_STACK_ypaworld *yw)
     else if ( v14 )
         pcur = sb_0x4d7c08__sub0__sub0__sub0__sub0(yw, wis, pcur, 0.0, -0.5, v14, a8);
 
-    fntcmd_set_end(&pcur);
+    FontUA::set_end(&pcur);
 
     w3d_a209 v13;
     v13.cmdbuf = byte_5C8DB0;
@@ -10160,7 +10075,7 @@ char * sb_0x4d7c08__sub0__sub4__sub1(_NC_STACK_ypaworld *yw, char *cur)
     v8.y1 = 0;
     v8.y2 = 0;
 
-    if ( robo_map.cmd_flag & 0x20 )
+    if ( robo_map.flags & GuiBase::FLAG_CLOSED )
     {
         v7.x2 = 0;
         v7.y1 = 0;
@@ -10169,10 +10084,10 @@ char * sb_0x4d7c08__sub0__sub4__sub1(_NC_STACK_ypaworld *yw, char *cur)
     }
     else
     {
-        v7.x1 = robo_map.frm_1.btn_xpos - (yw->screen_width / 2);
-        v7.y1 = robo_map.frm_1.btn_ypos - (yw->screen_height / 2);
-        v7.x2 = robo_map.frm_1.btn_width + v7.x1;
-        v7.y2 = robo_map.frm_1.btn_height + v7.y1;
+        v7.x1 = robo_map.dialogBox.xpos - (yw->screen_width / 2);
+        v7.y1 = robo_map.dialogBox.ypos - (yw->screen_height / 2);
+        v7.x2 = robo_map.dialogBox.btn_width + v7.x1;
+        v7.y2 = robo_map.dialogBox.btn_height + v7.y1;
     }
 
     yw->win3d->raster_func221(&v7);
@@ -10189,7 +10104,7 @@ char * sb_0x4d7c08__sub0__sub4__sub1(_NC_STACK_ypaworld *yw, char *cur)
 
     pcur = sb_0x4e5a84(yw, wis, pcur, -0.7, 0.3, yw->field_1b84, -1, 0x10);
 
-    if ( !(robo_map.cmd_flag & 0x20) )
+    if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
     {
         v8.x1 = 0;
         v8.x2 = 0;
@@ -10234,13 +10149,13 @@ void sb_0x4d7c08__sub0__sub4(_NC_STACK_ypaworld *yw)
 
         if ( msg && yw->field_1614 / 500 & 1 )
         {
-            fntcmd_select_tileset(&pcur, 15);
-            fntcmd_set_xpos(&pcur, 0);
-            fntcmd_set_center_ypos(&pcur, -(yw->font_default_h / 2));
+            FontUA::select_tileset(&pcur, 15);
+            FontUA::set_xpos(&pcur, 0);
+            FontUA::set_center_ypos(&pcur, -(yw->font_default_h / 2));
 
-            fntcmd_set_txtColor(&pcur, 255, 255, 255);
+            FontUA::set_txtColor(&pcur, 255, 255, 255);
 
-            pcur = sub_45148C(yw->tiles[15], pcur, msg, yw->screen_width);
+            pcur = FontUA::FormateCenteredSkipableItem(yw->tiles[15], pcur, msg, yw->screen_width);
         }
     }
     else if ( yw->field_1b7c != yw->field_1b78 && yw->wis_skeletons.field_0 )
@@ -10278,7 +10193,7 @@ void sb_0x4d7c08__sub0__sub4(_NC_STACK_ypaworld *yw)
 
     pcur = sb_0x4d7c08__sub0__sub4__sub0(yw, pcur);
 
-    fntcmd_set_end(&pcur);
+    FontUA::set_end(&pcur);
 
     w3d_a209 v20;
     v20.cmdbuf = byte_5C8DB0;
@@ -10620,13 +10535,13 @@ char *sb_0x4d7c08__sub0__sub4__sub0__sub0(_NC_STACK_ypaworld *yw, char *cur, __N
                             {
                                 if ( v30 + v15 < yw->screen_height )
                                 {
-                                    fntcmd_select_tileset(&pcur, 15);
-                                    fntcmd_set_center_xpos(&pcur, v27_4 - (yw->screen_width / 2) );
-                                    fntcmd_set_center_ypos(&pcur, v15 - (yw->screen_height / 2) );
+                                    FontUA::select_tileset(&pcur, 15);
+                                    FontUA::set_center_xpos(&pcur, v27_4 - (yw->screen_width / 2) );
+                                    FontUA::set_center_ypos(&pcur, v15 - (yw->screen_height / 2) );
 
-                                    fntcmd_set_txtColor(&pcur, yw->iniColors[ bact->owner ].r, yw->iniColors[ bact->owner ].g, yw->iniColors[ bact->owner ].b);
+                                    FontUA::set_txtColor(&pcur, yw->iniColors[ bact->owner ].r, yw->iniColors[ bact->owner ].g, yw->iniColors[ bact->owner ].b);
 
-                                    pcur = txtcmd_txt_w_bkg(yw->tiles[15], pcur,  yw->GameShell->netTP2[bact->owner].field_0, v28, 32);
+                                    pcur = FontUA::FormateClippedText(yw->tiles[15], pcur,  yw->GameShell->netTP2[bact->owner].field_0, v28, 32);
                                 }
                             }
                         }
@@ -10737,13 +10652,13 @@ char * sub_4E2B5C(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabact *bact)
             int v36 = 0;
             int v30 = 0;
 
-            if ( !(robo_map.cmd_flag & 0x20) )
+            if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
             {
                 v30 = 1;
-                v11 = robo_map.frm_1.btn_xpos;
-                v33 = v11 + robo_map.frm_1.btn_width;
-                v36 = robo_map.frm_1.btn_ypos;
-                v34 = v36 + robo_map.frm_1.btn_height;
+                v11 = robo_map.dialogBox.xpos;
+                v33 = v11 + robo_map.dialogBox.btn_width;
+                v36 = robo_map.dialogBox.ypos;
+                v34 = v36 + robo_map.dialogBox.btn_height;
             }
 
             float v45 = v44 * (1.0 / v37);
@@ -10772,10 +10687,10 @@ char * sub_4E2B5C(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabact *bact)
                     {
                         if ( yw->tiles[50]->font_height + v41 < yw->screen_height )
                         {
-                            fntcmd_select_tileset(&pcur, 50);
+                            FontUA::select_tileset(&pcur, 50);
 
-                            fntcmd_set_center_xpos(&pcur, v42 - (yw->screen_width / 2) );
-                            fntcmd_set_center_ypos(&pcur, v41 - (yw->screen_height / 2) );
+                            FontUA::set_center_xpos(&pcur, v42 - (yw->screen_width / 2) );
+                            FontUA::set_center_ypos(&pcur, v41 - (yw->screen_height / 2) );
 
                             int v38 = bact->energy_2 / v13;
 
@@ -10784,9 +10699,9 @@ char * sub_4E2B5C(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabact *bact)
                             for (int i = 1; i <= v13; i++)
                             {
                                 if ( v27 > bact->energy )
-                                    fntcmd_store_u8(&pcur, 6);
+                                    FontUA::store_u8(&pcur, 6);
                                 else
-                                    fntcmd_store_u8(&pcur, 2);
+                                    FontUA::store_u8(&pcur, 2);
 
                                 v27 += v38;
                             }
@@ -10807,7 +10722,7 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(_NC_STACK_ypaworld *yw)
     post_rndr.includ = NULL;
 
     char *pcur = byte_5FFF80;
-    fntcmd_select_tileset(&pcur, 61);
+    FontUA::select_tileset(&pcur, 61);
 
     float v6 = yw->screen_width / 2;
     float v7 = yw->screen_height / 2;
@@ -10863,12 +10778,12 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(_NC_STACK_ypaworld *yw)
                     while(bact->next)
                     {
                         int v19 = 0;
-                        if ( !(robo_map.cmd_flag & 0x20) )
+                        if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
                         {
-                            int v20 = robo_map.frm_1.btn_xpos - (yw->screen_width / 2);
-                            int v34 = v20 + robo_map.frm_1.btn_width;
-                            int v37 = robo_map.frm_1.btn_ypos - (yw->screen_height / 2);
-                            int v35 = v37 + robo_map.frm_1.btn_height;
+                            int v20 = robo_map.dialogBox.xpos - (yw->screen_width / 2);
+                            int v34 = v20 + robo_map.dialogBox.btn_width;
+                            int v37 = robo_map.dialogBox.ypos - (yw->screen_height / 2);
+                            int v35 = v37 + robo_map.dialogBox.btn_height;
 
                             int a3, a4;
                             sub_4F681C(bact->field_621.sx, bact->field_621.sz, &a3, &a4);
@@ -10881,11 +10796,11 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(_NC_STACK_ypaworld *yw)
                         {
                             if ( !v19 )
                             {
-                                fntcmd_select_tileset(&pcur, 1);
+                                FontUA::select_tileset(&pcur, 1);
 
                                 pcur = sub_4F6DFC(yw, pcur, yw->tiles[1]->font_height, yw->tiles[1]->chars[24].width, bact, 0);
 
-                                fntcmd_select_tileset(&pcur, 61);
+                                FontUA::select_tileset(&pcur, 61);
 
                                 v38++;
                             }
@@ -10915,7 +10830,7 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(_NC_STACK_ypaworld *yw)
         }
     }
 
-    fntcmd_set_end(&pcur);
+    FontUA::set_end(&pcur);
 
     GFXe.drawText(&post_rndr);
 }
@@ -11050,35 +10965,35 @@ char *sb_0x4d7c08__sub0__sub2__sub1(_NC_STACK_ypaworld *yw, char *cur, player_st
                 break;
             }
 
-            fntcmd_set_txtColor(&pcur, yw->iniColors[clrid].r, yw->iniColors[clrid].g, yw->iniColors[clrid].b);
+            FontUA::set_txtColor(&pcur, yw->iniColors[clrid].r, yw->iniColors[clrid].g, yw->iniColors[clrid].b);
 
-            listview_t1 a4a[2];
+            FontUA::ColumnItem a4a[2];
 
             a4a[0].txt = v12;
-            a4a[0].bkg_tile = 32;
-            a4a[0].left_tile = 0;
-            a4a[0].right_tile = 0;
-            a4a[0].tileset_id = 15;
+            a4a[0].spaceChar = 32;
+            a4a[0].prefixChar = 0;
+            a4a[0].postfixChar = 0;
+            a4a[0].fontID = 15;
             a4a[0].flags = 36;
-            a4a[0].field_width = a3 * 0.5;
+            a4a[0].width = a3 * 0.5;
 
             char a1a[32];
             sprintf(a1a, "%d", statuses[ v25[i].a ].p5);
 
             a4a[1].txt = a1a;
-            a4a[1].field_width = a3 * 0.5;
-            a4a[1].tileset_id = 15;
-            a4a[1].bkg_tile = 32;
+            a4a[1].width = a3 * 0.5;
+            a4a[1].fontID = 15;
+            a4a[1].spaceChar = 32;
             a4a[1].flags = 36;
-            a4a[1].left_tile = 0;
-            a4a[1].right_tile = 0;
+            a4a[1].prefixChar = 0;
+            a4a[1].postfixChar = 0;
 
-            pcur = lstvw_txt_line(yw, pcur, 2, a4a);
+            pcur = FormateColumnItem(yw, pcur, 2, a4a);
 
-            fntcmd_next_line(&pcur);
+            FontUA::next_line(&pcur);
         }
 
-        fntcmd_next_line(&pcur);
+        FontUA::next_line(&pcur);
     }
     return pcur;
 }
@@ -11091,34 +11006,34 @@ char * sb_0x4d7c08__sub0__sub2__sub0(_NC_STACK_ypaworld *yw, char *cur, int a3)
     if ( yw->field_757E )
     {
         if ( yw->field_1bac[ yw->field_1b80->owner ] <= yw->unit_limit_1 )
-            fntcmd_set_txtColor(&pcur, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
+            FontUA::set_txtColor(&pcur, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
         else
-            fntcmd_set_txtColor(&pcur, yw->iniColors[6].r, yw->iniColors[6].g, yw->iniColors[6].b);
+            FontUA::set_txtColor(&pcur, yw->iniColors[6].r, yw->iniColors[6].g, yw->iniColors[6].b);
 
-        listview_t1 a4[2];
+        FontUA::ColumnItem a4[2];
 
         a4[0].txt = get_lang_string(yw->string_pointers_p2, 2473, "2473 == Units:");
-        a4[0].field_width = a3 * 0.5;
-        a4[0].bkg_tile = 32;
-        a4[0].tileset_id = 15;
-        a4[0].left_tile = 0;
-        a4[0].right_tile = 0;
+        a4[0].width = a3 * 0.5;
+        a4[0].spaceChar = 32;
+        a4[0].fontID = 15;
+        a4[0].prefixChar = 0;
+        a4[0].postfixChar = 0;
         a4[0].flags = 36;
 
         char a1a[64];
         sprintf(a1a, "%d / %d", yw->field_1bac[ yw->field_1b80->owner ], yw->unit_limit_1);
 
         a4[1].txt = a1a;
-        a4[1].field_width = a3 * 0.5;
-        a4[1].tileset_id = 15;
-        a4[1].right_tile = 0;
-        a4[1].bkg_tile = 32;
+        a4[1].width = a3 * 0.5;
+        a4[1].fontID = 15;
+        a4[1].postfixChar = 0;
+        a4[1].spaceChar = 32;
         a4[1].flags = 36;
-        a4[1].left_tile = 0;
+        a4[1].prefixChar = 0;
 
-        pcur = lstvw_txt_line(yw, pcur, 2, a4);
+        pcur = FormateColumnItem(yw, pcur, 2, a4);
 
-        fntcmd_next_line(&pcur);
+        FontUA::next_line(&pcur);
     }
     return pcur;
 }
@@ -11131,9 +11046,9 @@ void sb_0x4d7c08__sub0__sub2(_NC_STACK_ypaworld *yw)
     int v25 = 2 * yw->screen_width / 3;
     int v2 = yw->screen_width - v25;
 
-    fntcmd_select_tileset(&pcur, 15);
-    fntcmd_set_xpos(&pcur, v25);
-    fntcmd_set_ypos(&pcur, up_panel.field_1CC + (yw->font_default_h / 2));
+    FontUA::select_tileset(&pcur, 15);
+    FontUA::set_xpos(&pcur, v25);
+    FontUA::set_ypos(&pcur, up_panel.field_1CC + (yw->font_default_h / 2));
 
     pcur = sb_0x4d7c08__sub0__sub2__sub0(yw, pcur, v2);
     pcur = sb_0x4d7c08__sub0__sub2__sub1(yw, pcur, yw->field_7796, v2);
@@ -11175,18 +11090,18 @@ void sb_0x4d7c08__sub0__sub2(_NC_STACK_ypaworld *yw)
 
             if ( v23 )
             {
-                fntcmd_set_xpos(&pcur, v25);
+                FontUA::set_xpos(&pcur, v25);
 
-                fntcmd_set_txtColor(&pcur, yw->iniColors[item->field_F4].r, yw->iniColors[item->field_F4].g, yw->iniColors[item->field_F4].b);
+                FontUA::set_txtColor(&pcur, yw->iniColors[item->field_F4].r, yw->iniColors[item->field_F4].g, yw->iniColors[item->field_F4].b);
 
-                pcur = txtcmd_txt_w_bkg(yw->tiles[15], pcur, a1, yw->screen_width - v25, 32);
+                pcur = FontUA::FormateClippedText(yw->tiles[15], pcur, a1, yw->screen_width - v25, 32);
 
-                fntcmd_next_line(&pcur);
+                FontUA::next_line(&pcur);
             }
         }
     }
 
-    fntcmd_set_end(&pcur);
+    FontUA::set_end(&pcur);
 
     w3d_a209 a209;
     a209.cmdbuf = buf;
@@ -11206,33 +11121,33 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
         {
             if ( yw->robo_map_status.p2 )
             {
-                if ( robo_map.cmd_flag & 0x20 )
+                if ( robo_map.flags & GuiBase::FLAG_CLOSED )
                 {
-                    robo_map.cmd_flag &= 0xFFFFFFDF;
-                    INPe.sub_412D48(&robo_map.frm_1, 0);
+                    robo_map.flags &= ~GuiBase::FLAG_CLOSED;
+                    INPe.AddClickBox(&robo_map.dialogBox, 0);
                     yw->field_17bc = 0;
                 }
 
-                if ( !(robo_map.cmd_flag & 0x20) )
+                if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
                 {
                     Remove(&robo_map);
                     AddHead(&yw->field_17a0, &robo_map);
 
-                    INPe.sub_412D9C(&robo_map.frm_1);
-                    INPe.sub_412D48(&robo_map.frm_1, 0);
+                    INPe.RemClickBox(&robo_map.dialogBox);
+                    INPe.AddClickBox(&robo_map.dialogBox, 0);
                 }
             }
-            else if ( !(robo_map.cmd_flag & 0x20) )
+            else if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
             {
-                robo_map.cmd_flag |= 0x20;
-                INPe.sub_412D9C(&robo_map.frm_1);
+                robo_map.flags |= GuiBase::FLAG_CLOSED;
+                INPe.RemClickBox(&robo_map.dialogBox);
                 yw->field_17bc = 0;
             }
 
-            robo_map.frm_1.btn_xpos = yw->robo_map_status.p3;
-            robo_map.frm_1.btn_ypos = yw->robo_map_status.p4;
-            robo_map.frm_1.btn_width = yw->robo_map_status.p5;
-            robo_map.frm_1.btn_height = yw->robo_map_status.p6;
+            robo_map.dialogBox.xpos = yw->robo_map_status.p3;
+            robo_map.dialogBox.ypos = yw->robo_map_status.p4;
+            robo_map.dialogBox.btn_width = yw->robo_map_status.p5;
+            robo_map.dialogBox.btn_height = yw->robo_map_status.p6;
             robo_map.field_1EC = yw->robo_map_status.pX[0];
             robo_map.field_1ED = yw->robo_map_status.pX[1];
             robo_map.field_1EE = yw->robo_map_status.pX[2];
@@ -11248,36 +11163,36 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
         {
             if ( yw->robo_finder_status.p2 )
             {
-                if ( squadron_manager.lstvw.cmd_flag & 0x20 )
+                if ( squadron_manager.lstvw.flags & GuiBase::FLAG_CLOSED )
                 {
-                    squadron_manager.lstvw.cmd_flag &= 0xFFFFFFDF;
-                    INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                    squadron_manager.lstvw.flags &= ~GuiBase::FLAG_CLOSED;
+                    INPe.AddClickBox(&squadron_manager.lstvw.dialogBox, 0);
 
                     yw->field_17bc = 0;
                 }
 
-                if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
+                if ( !(squadron_manager.lstvw.flags & GuiBase::FLAG_CLOSED) )
                 {
                     Remove(&squadron_manager.lstvw);
                     AddHead(&yw->field_17a0, &squadron_manager.lstvw);
 
-                    INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
-                    INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                    INPe.RemClickBox(&squadron_manager.lstvw.dialogBox);
+                    INPe.AddClickBox(&squadron_manager.lstvw.dialogBox, 0);
                 }
             }
-            else if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
+            else if ( !(squadron_manager.lstvw.flags & GuiBase::FLAG_CLOSED) )
             {
-                squadron_manager.lstvw.cmd_flag |= 0x20;
-                INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
+                squadron_manager.lstvw.flags |= GuiBase::FLAG_CLOSED;
+                INPe.RemClickBox(&squadron_manager.lstvw.dialogBox);
                 yw->field_17bc = 0;
             }
 
-            squadron_manager.lstvw.frm_1.btn_xpos = yw->robo_finder_status.p3;
-            squadron_manager.lstvw.frm_1.btn_ypos = yw->robo_finder_status.p4;
-            squadron_manager.lstvw.frm_1.btn_width = yw->robo_finder_status.p5;
-            squadron_manager.lstvw.frm_1.btn_height = yw->robo_finder_status.p6;
+            squadron_manager.lstvw.dialogBox.xpos = yw->robo_finder_status.p3;
+            squadron_manager.lstvw.dialogBox.ypos = yw->robo_finder_status.p4;
+            squadron_manager.lstvw.dialogBox.btn_width = yw->robo_finder_status.p5;
+            squadron_manager.lstvw.dialogBox.btn_height = yw->robo_finder_status.p6;
 
-            lstvw_updlimits(yw, &squadron_manager.lstvw, -2, -2);
+            squadron_manager.lstvw.SetRect(yw, -2, -2);
         }
     }
     else if ( bact1->field_24 == 3 )
@@ -11286,33 +11201,33 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
         {
             if ( yw->vhcl_map_status.p2 )
             {
-                if ( robo_map.cmd_flag & 0x20 )
+                if ( robo_map.flags & GuiBase::FLAG_CLOSED )
                 {
-                    robo_map.cmd_flag &= 0xFFFFFFDF;
-                    INPe.sub_412D48(&robo_map.frm_1, 0);
+                    robo_map.flags &= ~GuiBase::FLAG_CLOSED;
+                    INPe.AddClickBox(&robo_map.dialogBox, 0);
                     yw->field_17bc = 0;
                 }
 
-                if ( !(robo_map.cmd_flag & 0x20) )
+                if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
                 {
                     Remove(&robo_map);
                     AddHead(&yw->field_17a0, &robo_map);
 
-                    INPe.sub_412D9C(&robo_map.frm_1);
-                    INPe.sub_412D48(&robo_map.frm_1, 0);
+                    INPe.RemClickBox(&robo_map.dialogBox);
+                    INPe.AddClickBox(&robo_map.dialogBox, 0);
                 }
             }
-            else if ( !(robo_map.cmd_flag & 0x20) )
+            else if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
             {
-                robo_map.cmd_flag |= 0x20;
-                INPe.sub_412D9C(&robo_map.frm_1);
+                robo_map.flags |= GuiBase::FLAG_CLOSED;
+                INPe.RemClickBox(&robo_map.dialogBox);
                 yw->field_17bc = 0;
             }
 
-            robo_map.frm_1.btn_xpos = yw->vhcl_map_status.p3;
-            robo_map.frm_1.btn_ypos = yw->vhcl_map_status.p4;
-            robo_map.frm_1.btn_width = yw->vhcl_map_status.p5;
-            robo_map.frm_1.btn_height = yw->vhcl_map_status.p6;
+            robo_map.dialogBox.xpos = yw->vhcl_map_status.p3;
+            robo_map.dialogBox.ypos = yw->vhcl_map_status.p4;
+            robo_map.dialogBox.btn_width = yw->vhcl_map_status.p5;
+            robo_map.dialogBox.btn_height = yw->vhcl_map_status.p6;
             robo_map.field_1EC = yw->vhcl_map_status.pX[0];
             robo_map.field_1ED = yw->vhcl_map_status.pX[1];
             robo_map.field_1EE = yw->vhcl_map_status.pX[2];
@@ -11328,35 +11243,35 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
         {
             if ( yw->vhcl_finder_status.p2 )
             {
-                if ( squadron_manager.lstvw.cmd_flag & 0x20 )
+                if ( squadron_manager.lstvw.flags & GuiBase::FLAG_CLOSED )
                 {
-                    squadron_manager.lstvw.cmd_flag &= 0xFFFFFFDF;
-                    INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                    squadron_manager.lstvw.flags &= ~GuiBase::FLAG_CLOSED;
+                    INPe.AddClickBox(&squadron_manager.lstvw.dialogBox, 0);
                     yw->field_17bc = 0;
                 }
 
-                if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
+                if ( !(squadron_manager.lstvw.flags & GuiBase::FLAG_CLOSED) )
                 {
                     Remove(&squadron_manager.lstvw);
                     AddHead(&yw->field_17a0, &squadron_manager.lstvw);
 
-                    INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
-                    INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                    INPe.RemClickBox(&squadron_manager.lstvw.dialogBox);
+                    INPe.AddClickBox(&squadron_manager.lstvw.dialogBox, 0);
                 }
             }
-            else if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
+            else if ( !(squadron_manager.lstvw.flags & GuiBase::FLAG_CLOSED) )
             {
-                squadron_manager.lstvw.cmd_flag |= 0x20;
-                INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
+                squadron_manager.lstvw.flags |= GuiBase::FLAG_CLOSED;
+                INPe.RemClickBox(&squadron_manager.lstvw.dialogBox);
                 yw->field_17bc = 0;
             }
 
-            squadron_manager.lstvw.frm_1.btn_xpos = yw->vhcl_finder_status.p3;
-            squadron_manager.lstvw.frm_1.btn_ypos = yw->vhcl_finder_status.p4;
-            squadron_manager.lstvw.frm_1.btn_width = yw->vhcl_finder_status.p5;
-            squadron_manager.lstvw.frm_1.btn_height = yw->vhcl_finder_status.p6;
+            squadron_manager.lstvw.dialogBox.xpos = yw->vhcl_finder_status.p3;
+            squadron_manager.lstvw.dialogBox.ypos = yw->vhcl_finder_status.p4;
+            squadron_manager.lstvw.dialogBox.btn_width = yw->vhcl_finder_status.p5;
+            squadron_manager.lstvw.dialogBox.btn_height = yw->vhcl_finder_status.p6;
 
-            lstvw_updlimits(yw, &squadron_manager.lstvw, -2, -2);
+            squadron_manager.lstvw.SetRect(yw, -2, -2);
         }
     }
     else if ( bact1->field_3D5 == 2 )
@@ -11365,20 +11280,20 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
         {
             if ( yw->vhcl_map_status.p2 )
             {
-                if ( robo_map.cmd_flag & 0x20 )
+                if ( robo_map.flags & GuiBase::FLAG_CLOSED )
                 {
-                    robo_map.cmd_flag &= 0xFFFFFFDF;
-                    INPe.sub_412D48(&robo_map.frm_1, 0);
+                    robo_map.flags &= ~GuiBase::FLAG_CLOSED;
+                    INPe.AddClickBox(&robo_map.dialogBox, 0);
                     yw->field_17bc = 0;
                 }
 
-                if ( !(robo_map.cmd_flag & 0x20) )
+                if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
                 {
                     Remove(&robo_map);
                     AddHead(&yw->field_17a0, &robo_map);
 
-                    INPe.sub_412D9C(&robo_map.frm_1);
-                    INPe.sub_412D48(&robo_map.frm_1, 0);
+                    INPe.RemClickBox(&robo_map.dialogBox);
+                    INPe.AddClickBox(&robo_map.dialogBox, 0);
                 }
             }
         }
@@ -11387,20 +11302,20 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
         {
             if ( yw->vhcl_finder_status.p2 )
             {
-                if ( squadron_manager.lstvw.cmd_flag & 0x20 )
+                if ( squadron_manager.lstvw.flags & GuiBase::FLAG_CLOSED )
                 {
-                    squadron_manager.lstvw.cmd_flag &= 0xFFFFFFDF;
-                    INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                    squadron_manager.lstvw.flags &= ~GuiBase::FLAG_CLOSED;
+                    INPe.AddClickBox(&squadron_manager.lstvw.dialogBox, 0);
                     yw->field_17bc = 0;
                 }
 
-                if ( !(squadron_manager.lstvw.cmd_flag & 0x20) )
+                if ( !(squadron_manager.lstvw.flags & GuiBase::FLAG_CLOSED) )
                 {
                     Remove(&squadron_manager.lstvw);
                     AddHead(&yw->field_17a0, &squadron_manager.lstvw);
 
-                    INPe.sub_412D9C(&squadron_manager.lstvw.frm_1);
-                    INPe.sub_412D48(&squadron_manager.lstvw.frm_1, 0);
+                    INPe.RemClickBox(&squadron_manager.lstvw.dialogBox);
+                    INPe.AddClickBox(&squadron_manager.lstvw.dialogBox, 0);
                 }
             }
         }
@@ -11752,14 +11667,14 @@ void ypaworld_func64__sub21__sub1__sub0(_NC_STACK_ypaworld *yw, struC5 *arg)
         {
             yw->field_1a58 |= 4;
 
-            if ( winp->selected_btn == &robo_map.frm_1 )
+            if ( winp->selected_btn == &robo_map.dialogBox )
             {
                 if ( winp->selected_btnID == 17 )
                     yw->field_1a58 |= 8;
             }
-            else if ( winp->selected_btn == &squadron_manager.lstvw.frm_1 )
+            else if ( winp->selected_btn == &squadron_manager.lstvw.dialogBox )
             {
-                if ( winp->selected_btnID >= 8 && (squadron_manager.lstvw.scroll_pos + winp->selected_btnID - 8) < squadron_manager.lstvw.elements_for_scroll_size )
+                if ( winp->selected_btnID >= 8 && (squadron_manager.lstvw.firstShownEntries + winp->selected_btnID - 8) < squadron_manager.lstvw.numEntries )
                     yw->field_1a58 |= 0x40;
             }
         }
@@ -12637,9 +12552,9 @@ void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
     else if ( winp->flag & 0x80 )
     {
         if ( yw->field_17c0
-                || winp->selected_btn == &robo_map.frm_1
-                || winp->selected_btn == &bzda.frm_1
-                || winp->selected_btn == &squadron_manager.lstvw.frm_1
+                || winp->selected_btn == &robo_map.dialogBox
+                || winp->selected_btn == &bzda.dialogBox
+                || winp->selected_btn == &squadron_manager.lstvw.dialogBox
                 || (!(bzda.field_1D0 & 1) && yw->field_2410 != -1) )
         {
             if ( yw->field_17c0 )
@@ -12648,7 +12563,7 @@ void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
             }
             else
             {
-                if ( winp->selected_btn != &robo_map.frm_1 && winp->selected_btn != &bzda.frm_1 && !(bzda.field_1D0 & 1) )
+                if ( winp->selected_btn != &robo_map.dialogBox && winp->selected_btn != &bzda.dialogBox && !(bzda.field_1D0 & 1) )
                     bzda.field_1D0 = bzda.field_1CC & 1;
             }
         }
@@ -12663,7 +12578,7 @@ void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
         }
     }
 
-    if ( !(gui_lstvw.cmd_flag & 0x20) )
+    if ( !(gui_lstvw.flags & GuiBase::FLAG_CLOSED) )
         inpt->sliders_vars[1] = 0;
 
     if ( yw->field_17c0 ) // If grabbed mouse

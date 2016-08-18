@@ -12,7 +12,7 @@ struct __NC_STACK_iwimp
 {
     int field_0;
     nlist list;
-    inp_node *selected_btn;
+    ClickBox *selected_btn;
     int selected_btnID;
 };
 

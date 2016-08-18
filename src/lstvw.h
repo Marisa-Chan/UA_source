@@ -3,74 +3,163 @@
 
 struct _NC_STACK_ypaworld;
 
-struct listbase : public nnode
+struct GuiBase : public nnode
 {
-    int cmd_flag;
-    inp_node frm_1;
-    inp_node frm_2;
-    char *field_1BC;
+    int flags;
+    ClickBox dialogBox;
+    ClickBox iconBox;
+    char *iconString;
     w3d_a209 cmdstrm;
-    void (*field_1C8)(_NC_STACK_ypaworld *);
+    void (*postDraw)(_NC_STACK_ypaworld *);
+
+    enum FLAG
+    {
+        FLAG_ICONIFED = 1,
+        FLAG_IN_LIST = 2,
+        FLAG_WITH_ICON = 4,
+        FLAG_WITH_DRAGBAR = 8,
+        FLAG_WITH_CLOSE = 0x10,
+        FLAG_CLOSED = 0x20,
+        FLAG_CLOSE_DOWN = 0x40,
+        FLAG_HELP_DOWN = 0x80,
+        FLAG_WITH_HELP = 0x100
+    };
+
+    void OpenDialog(_NC_STACK_ypaworld *yw);
+    void CloseDialog(_NC_STACK_ypaworld *yw);
+
+    static char * FormateTitle(_NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const char *title, char *in, uint8_t postf_char, int flag);
 };
 
-struct listview : public listbase
+struct GuiList : public GuiBase
 {
-    int field_1CC;
-    int field_1D0;
-    int field_1D4;
-    int16_t elements_for_scroll_size;
-    int16_t element_count;
-    int16_t scroll_pos;
-    int16_t field_1DE;
-    int16_t element_count_max;
-    int16_t element_count_min;
-    int16_t field_1E4;
-    int16_t font_h;
-    int16_t field_1E8;
-    int16_t field_1EA;
-    int16_t width;
-    int16_t width_min;
-    int16_t width_max;
-    char wnd_title[64];
-    char *slider_cmdbuf;
-    char *data_cmdbuf;
-    int16_t field_23A;
-    int16_t field_23C;
-    int16_t field_23E;
-    int16_t field_240;
-    int16_t field_242;
-    int16_t field_244;
-    int16_t field_246;
+    int scrollTimer;
+    int listFlags;
+    int closeChar;
+    int16_t numEntries;
+    int16_t shownEntries;
+    int16_t firstShownEntries;
+    int16_t selectedEntry;
+    int16_t maxShownEntries;
+    int16_t minShownEntries;
+    int16_t mouseItem;
+    int16_t entryHeight;
+    int16_t upperVborder;
+    int16_t lowerVborder;
+    int16_t entryWidth;
+    int16_t minEntryWidth;
+    int16_t maxEntryWidth;
+    char title[64];
+    char *scrollbar;
+    char *itemBlock;
+    int16_t rszX;
+    int16_t rszY;
+    int16_t scrlX;
+    int16_t scrlY;
+    int16_t scrlSize;
+    int16_t btnSize;
+    int16_t btnStart;
+
+    enum GLIST_FLAG
+    {
+        GLIST_FLAG_ENABLED = 1,
+        GLIST_FLAG_WITH_TITLEBAR = 2,
+        GLIST_FLAG_RESIZEABLE = 4,
+        GLIST_FLAG_WITH_ICON = 8,
+        GLIST_FLAG_INSTANT_INPUT = 0x10,
+        GLIST_FLAG_IN_RESIZING = 0x20,
+        GLIST_FLAG_IN_SCROLLING = 0x40,
+        GLIST_FLAG_IN_SELECT = 0x80,
+        GLIST_FLAG_STATIC = 0x100,
+        GLIST_FLAG_NO_SCROLL = 0x200,
+        GLIST_FLAG_SEL_DONE = 0x400,
+        GLIST_FLAG_KEYB_INPUT = 0x800
+    };
+
+    struct tInit
+    {
+        const char *title; //1
+        bool resizeable; //2
+        int numEntries; //3
+        int shownEntries; //4
+        int firstShownEntry; //5
+        int selectedEntry; //6
+        int maxShownEntries; //7
+        bool withIcon; //8
+        int iconPos; //9
+        int iconChar; // A
+        int entryHeight; // B
+        int entryWidth; // C
+        int minEntryWidth; // D
+        int maxEntryWidth; //E
+        int enabled;//F
+        int vborder;//10
+        bool instantInput;//11
+        int minShownEntries;//12
+        bool staticItems;//13
+        int closeChar;//14
+        int upperVborder;//15
+        int lowerVborder;//16
+        bool keyboardInput;//17
+        bool withHelp;//18
+
+        tInit()
+        {
+            Init();
+        }
+
+        void Init()
+        {
+            title = NULL;
+            resizeable = false;
+            numEntries = 0;
+            shownEntries = 0;
+            firstShownEntry = 0;
+            selectedEntry = 0;
+            maxShownEntries = 0;
+            withIcon = false;
+            iconPos = 0;
+            iconChar = 0;
+            entryHeight = 16;
+            entryWidth = 80;
+            minEntryWidth = 60;
+            maxEntryWidth = 1024;
+            enabled = false;
+            vborder = 0;
+            instantInput = false;
+            minShownEntries = 0;
+            staticItems = false;
+            closeChar = 65;
+            upperVborder = 0;
+            lowerVborder = 0;
+            keyboardInput = false;
+            withHelp = true;
+        }
+    };
+
+
+    int Init(_NC_STACK_ypaworld *yw, tInit &parameters);
+    int InitBuffers(_NC_STACK_ypaworld *yw);
+    int initDialogStrings(_NC_STACK_ypaworld *yw);
+    int initButtons();
+
+    void Free();
+
+    void SetRect(_NC_STACK_ypaworld *yw, int xpos, int ypos);
+
+    void Formate(_NC_STACK_ypaworld *yw);
+    void FormateTitle(_NC_STACK_ypaworld *yw);
+    void FormateScrollbar(_NC_STACK_ypaworld *yw);
+    void FormateItemBlock(_NC_STACK_ypaworld *yw);
+    void ScrollParamsFromEntries(_NC_STACK_ypaworld *yw);
+
+    void InputHandle(_NC_STACK_ypaworld *yw, struC5 *struc);
+
+    void PosOnSelected(int a2);
+
+    char *ItemsPreLayout(_NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5);
+    char *ItemsPostLayout(_NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5);
 };
 
-struct listview_t1
-{
-    const char *txt;
-    int field_width;
-    uint8_t tileset_id;
-    uint8_t bkg_tile;
-    uint8_t left_tile;
-    uint8_t right_tile;
-    int16_t flags;
-};
-
-
-
-char * lstvw_make_title(_NC_STACK_ypaworld *yw, int xpos, int ypos, int a3, const char *a5, char *a6, uint8_t a7, int flag);
-void lstvw_updlimits(_NC_STACK_ypaworld *yw, listview *lstvw, int a3, int a4);
-void lstvw_update_main(_NC_STACK_ypaworld *yw, listview *lstvw);
-int lstvw_init(_NC_STACK_ypaworld *yw, listview *lstvw, ...);
-char *lstvw_up_border(_NC_STACK_ypaworld *yw, listview *lstvw, char *cmdbuf, int tileset, const char *a5);
-char * lstvw_down_border(_NC_STACK_ypaworld *yw, listview *lstvw, char *a4, int tileset, const char *a5);
-char * lstvw_txt_line(_NC_STACK_ypaworld *yw, char *a2, int a3, listview_t1 *a4);
-char * lstvw_txt_line_textual(_NC_STACK_ypaworld *yw, char *cmdbuf, listview_t1 *arg);
-char *lstvw_txt_line_tiles(_NC_STACK_ypaworld *yw, char *cmdbuf, listview_t1 *arg);
-void lstvw_update_input(_NC_STACK_ypaworld *yw, listview *lstvw, struC5 *struc);
-void sub_4C31EC(_NC_STACK_ypaworld *yw, listview *lstview);
-void lstvw_update(_NC_STACK_ypaworld *yw, listview *lstview);
-void sub_4C31C0(_NC_STACK_ypaworld *yw, listview *lstvw);
-void sub_4DDFA4(listview *lstvw, int a2);
-
-void sub_4E866C(listview *lstvw);
 
 #endif //LSTVW_H_INCLUDED

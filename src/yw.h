@@ -163,7 +163,7 @@ struct UserData
     int field_AE2;
     NC_STACK_button *titel_button;
     NC_STACK_button *button_input_button;
-    listview input_listview;
+    GuiList input_listview;
     int field_D36;
     int field_D3A;
     int inp_joystick;
@@ -178,11 +178,11 @@ struct UserData
 
     int field_D5E;
     NC_STACK_button *video_button;
-    listview video_listvw;
+    GuiList video_listvw;
     int game_default_res;
     nlist video_mode_list;
     int field_FBE;
-    listview d3d_listvw;
+    GuiList d3d_listvw;
     char win3d_guid[100];
     char win3d_name[300];
 
@@ -205,7 +205,7 @@ struct UserData
     int field_13BE;
     int field_13C2;
     NC_STACK_button *disk_button;
-    listview disk_listvw;
+    GuiList disk_listvw;
     int field_1612;
     char usernamedir[300];
     int usernamedir_len;
@@ -221,7 +221,7 @@ struct UserData
     int16_t field_0x1760;
     NC_STACK_button *locale_button;
     nlist lang_dlls;
-    listview local_listvw;
+    GuiList local_listvw;
     langDll_node *default_lang_dll;
     langDll_node *prev_lang;
 
@@ -235,7 +235,7 @@ struct UserData
     int16_t field_19DE;
     int16_t field_0x19e0;
     NC_STACK_button *network_button;
-    listview network_listvw;
+    GuiList network_listvw;
     int16_t field_1C2E;
     int16_t field_0x1c30;
     int16_t field_1C32;
@@ -908,7 +908,7 @@ struct _NC_STACK_ypaworld
     int16_t screen_width;
     int16_t screen_height;
     int field_17b0;
-    listbase *field_17b4;
+    GuiBase *field_17b4;
     shortPoint field_17b8;
     int field_17bc;
     int field_17c0; // Grab mouse for unit steer-turn
@@ -1613,8 +1613,8 @@ public:
     virtual void ypaworld_func136(ypaworld_arg136 *arg);
     virtual void ypaworld_func137(ypaworld_arg137 *arg);
     virtual void ypaworld_func138(void *arg);
-    virtual void ypaworld_func139(listbase *lstvw);
-    virtual void ypaworld_func140(listbase *lstvw);
+    virtual void ypaworld_func139(GuiBase *lstvw);
+    virtual void ypaworld_func140(GuiBase *lstvw);
     virtual void ypaworld_func143(void *arg);
     virtual void ypaworld_func144(NC_STACK_ypabact *bacto);
     virtual size_t ypaworld_func145(__NC_STACK_ypabact *bact);

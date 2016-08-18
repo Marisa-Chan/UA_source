@@ -45,20 +45,20 @@ void NC_STACK_iwimp::iwimp_func130(iwimp_arg129 *arg)
 
 void sub_41D538(__NC_STACK_iwimp *wimp, winp_131arg *arg, shortPoint *points)
 {
-    inp_node *btn = (inp_node *)wimp->list.head;
+    ClickBox *btn = (ClickBox *)wimp->list.head;
 
     if ( btn->next )
     {
         while ( 1 )
         {
-            points[1].x = points[0].x - btn->btn_xpos;
-            points[1].y = points[0].y - btn->btn_ypos;
+            points[1].x = points[0].x - btn->xpos;
+            points[1].y = points[0].y - btn->ypos;
 
             if ( points[1].x >= 0 && points[1].x < btn->btn_width &&
                     points[1].y >= 0 && points[1].y < btn->btn_height )
                 break;
 
-            btn = (inp_node *)btn->next;
+            btn = (ClickBox *)btn->next;
             if ( !btn->next )
                 return;
         }
@@ -69,13 +69,13 @@ void sub_41D538(__NC_STACK_iwimp *wimp, winp_131arg *arg, shortPoint *points)
         {
             for (int i = 0; i < btn->field_10; i++)
             {
-                button_str1 *v11 = btn->field_18[i];
+                ButtonBox *v11 = btn->buttons[i];
 
-                points[2].x = points[1].x - v11->xpos;
-                points[2].y = points[1].y - v11->ypos;
+                points[2].x = points[1].x - v11->x;
+                points[2].y = points[1].y - v11->y;
 
-                if ( points[2].x >= 0 && points[2].x < v11->width &&
-                        points[2].y >= 0 && points[2].y < v11->fnt_height )
+                if ( points[2].x >= 0 && points[2].x < v11->w &&
+                        points[2].y >= 0 && points[2].y < v11->h )
                 {
                     arg->selected_btnID = i;
                     break;

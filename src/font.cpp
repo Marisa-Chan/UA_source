@@ -4,7 +4,7 @@
 
 
 
-void fntcmd_store_u32(char **pos, uint32_t val)
+void FontUA::store_u32(char **pos, uint32_t val)
 {
     uint8_t *ppos = *(uint8_t **)pos;
     ppos[0] = (val >> 24) & 0xFF;
@@ -16,7 +16,7 @@ void fntcmd_store_u32(char **pos, uint32_t val)
 }
 
 
-void fntcmd_store_s32(char **pos, int32_t val)
+void FontUA::store_s32(char **pos, int32_t val)
 {
     int8_t *ppos = *(int8_t **)pos;
     ppos[0] = (val >> 24) & 0xFF;
@@ -27,7 +27,7 @@ void fntcmd_store_s32(char **pos, int32_t val)
     *pos += 4;
 }
 
-void fntcmd_store_u16(char **pos, uint16_t val)
+void FontUA::store_u16(char **pos, uint16_t val)
 {
     uint8_t *ppos = *(uint8_t **)pos;
     ppos[0] = (val >> 8) & 0xFF;
@@ -36,7 +36,7 @@ void fntcmd_store_u16(char **pos, uint16_t val)
     *pos += 2;
 }
 
-void fntcmd_store_s16(char **pos, int16_t val)
+void FontUA::store_s16(char **pos, int16_t val)
 {
     int8_t *ppos = *(int8_t **)pos;
     ppos[0] = (val >> 8) & 0xFF;
@@ -45,7 +45,7 @@ void fntcmd_store_s16(char **pos, int16_t val)
     *pos += 2;
 }
 
-void fntcmd_store_u8(char **pos, uint8_t val)
+void FontUA::store_u8(char **pos, uint8_t val)
 {
     uint8_t *ppos = *(uint8_t **)pos;
     ppos[0] = val;
@@ -53,7 +53,7 @@ void fntcmd_store_u8(char **pos, uint8_t val)
     *pos += 1;
 }
 
-void fntcmd_store_s8(char **pos, int8_t val)
+void FontUA::store_s8(char **pos, int8_t val)
 {
     int8_t *ppos = *(int8_t **)pos;
     ppos[0] = val;
@@ -61,7 +61,7 @@ void fntcmd_store_s8(char **pos, int8_t val)
     *pos += 1;
 }
 
-void fntcmd_store_string(char **pos, const char *string)
+void FontUA::store_string(char **pos, const char *string)
 {
     char *ppos = *pos;
     strcpy(ppos, string);
@@ -69,7 +69,7 @@ void fntcmd_store_string(char **pos, const char *string)
     *pos += strlen(string) + 1;
 }
 
-uint32_t fntcmd_get_u32(char **pos)
+uint32_t FontUA::get_u32(char **pos)
 {
     uint32_t tmp = 0;
 
@@ -85,7 +85,7 @@ uint32_t fntcmd_get_u32(char **pos)
     return tmp;
 }
 
-int32_t fntcmd_get_s32(char **pos)
+int32_t FontUA::get_s32(char **pos)
 {
     int32_t tmp = 0;
 
@@ -101,7 +101,7 @@ int32_t fntcmd_get_s32(char **pos)
     return tmp;
 }
 
-uint16_t fntcmd_get_u16(char **pos)
+uint16_t FontUA::get_u16(char **pos)
 {
     uint16_t tmp = 0;
 
@@ -115,7 +115,7 @@ uint16_t fntcmd_get_u16(char **pos)
     return tmp;
 }
 
-int16_t fntcmd_get_s16(char **pos)
+int16_t FontUA::get_s16(char **pos)
 {
     int16_t tmp = 0;
 
@@ -129,7 +129,7 @@ int16_t fntcmd_get_s16(char **pos)
     return tmp;
 }
 
-uint8_t fntcmd_get_u8(char **pos)
+uint8_t FontUA::get_u8(char **pos)
 {
     uint8_t tmp = 0;
 
@@ -142,7 +142,7 @@ uint8_t fntcmd_get_u8(char **pos)
     return tmp;
 }
 
-int8_t fntcmd_get_s8(char **pos)
+int8_t FontUA::get_s8(char **pos)
 {
     int8_t tmp = 0;
 
@@ -155,7 +155,7 @@ int8_t fntcmd_get_s8(char **pos)
     return tmp;
 }
 
-void fntcmd_get_string(char **pos, char *buf)
+void FontUA::get_string(char **pos, char *buf)
 {
     char *ppos = *pos;
     strcpy(buf, ppos);
@@ -163,143 +163,143 @@ void fntcmd_get_string(char **pos, char *buf)
     *pos += strlen(buf) + 1;
 }
 
-void fntcmd_set_end(char **pos)
+void FontUA::set_end(char **pos)
 {
-    fntcmd_store_u16(pos, 0);
+    FontUA::store_u16(pos, 0);
 }
 
-void fntcmd_set_center_xpos(char **pos, int16_t xpos)
+void FontUA::set_center_xpos(char **pos, int16_t xpos)
 {
-    fntcmd_store_u16(pos, 1);
-    fntcmd_store_s16(pos, xpos);
+    FontUA::store_u16(pos, 1);
+    FontUA::store_s16(pos, xpos);
 }
 
-void fntcmd_set_center_ypos(char **pos, int16_t ypos)
+void FontUA::set_center_ypos(char **pos, int16_t ypos)
 {
-    fntcmd_store_u16(pos, 2);
-    fntcmd_store_s16(pos, ypos);
+    FontUA::store_u16(pos, 2);
+    FontUA::store_s16(pos, ypos);
 }
 
-void fntcmd_set_xpos(char **pos, int16_t xpos)
+void FontUA::set_xpos(char **pos, int16_t xpos)
 {
-    fntcmd_store_u16(pos, 3);
-    fntcmd_store_s16(pos, xpos);
+    FontUA::store_u16(pos, 3);
+    FontUA::store_s16(pos, xpos);
 }
 
-void fntcmd_set_ypos(char **pos, int16_t ypos)
+void FontUA::set_ypos(char **pos, int16_t ypos)
 {
-    fntcmd_store_u16(pos, 4);
-    fntcmd_store_s16(pos, ypos);
+    FontUA::store_u16(pos, 4);
+    FontUA::store_s16(pos, ypos);
 }
 
-void fntcmd_add_xpos(char **pos, int16_t xpos)
+void FontUA::add_xpos(char **pos, int16_t xpos)
 {
-    fntcmd_store_u16(pos, 5);
-    fntcmd_store_s16(pos, xpos);
+    FontUA::store_u16(pos, 5);
+    FontUA::store_s16(pos, xpos);
 }
 
-void fntcmd_add_ypos(char **pos, int16_t ypos)
+void FontUA::add_ypos(char **pos, int16_t ypos)
 {
-    fntcmd_store_u16(pos, 6);
-    fntcmd_store_s16(pos, ypos);
+    FontUA::store_u16(pos, 6);
+    FontUA::store_s16(pos, ypos);
 }
 
-void fntcmd_next_line(char **pos)
+void FontUA::next_line(char **pos)
 {
-    fntcmd_store_u16(pos, 7);
+    FontUA::store_u16(pos, 7);
 }
 
-void fntcmd_select_tileset(char **pos, uint8_t tileset)
+void FontUA::select_tileset(char **pos, uint8_t tileset)
 {
-    fntcmd_store_u16(pos, 8);
-    fntcmd_store_u8(pos, tileset);
+    FontUA::store_u16(pos, 8);
+    FontUA::store_u8(pos, tileset);
 }
 
-void fntcmd_include(char **pos, uint8_t cmdstream_id)
+void FontUA::include(char **pos, uint8_t cmdstream_id)
 {
-    fntcmd_store_u16(pos, 9);
-    fntcmd_store_u8(pos, cmdstream_id);
+    FontUA::store_u16(pos, 9);
+    FontUA::store_u8(pos, cmdstream_id);
 }
 
-void fntcmd_op10(char **pos, uint8_t arg)
+void FontUA::op10(char **pos, uint8_t arg)
 {
-    fntcmd_store_u16(pos, 10);
-    fntcmd_store_u8(pos, arg);
+    FontUA::store_u16(pos, 10);
+    FontUA::store_u8(pos, arg);
 }
 
-void fntcmd_op11(char **pos, uint8_t arg)
+void FontUA::op11(char **pos, uint8_t arg)
 {
-    fntcmd_store_u16(pos, 11);
-    fntcmd_store_u8(pos, arg);
+    FontUA::store_u16(pos, 11);
+    FontUA::store_u8(pos, arg);
 }
 
-void fntcmd_set_xoff(char **pos, uint8_t xoff)
+void FontUA::set_xoff(char **pos, uint8_t xoff)
 {
-    fntcmd_store_u16(pos, 12);
-    fntcmd_store_u8(pos, xoff);
+    FontUA::store_u16(pos, 12);
+    FontUA::store_u8(pos, xoff);
 }
 
-void fntcmd_set_xwidth(char **pos, uint8_t xwidth)
+void FontUA::set_xwidth(char **pos, uint8_t xwidth)
 {
-    fntcmd_store_u16(pos, 13);
-    fntcmd_store_u8(pos, xwidth);
+    FontUA::store_u16(pos, 13);
+    FontUA::store_u8(pos, xwidth);
 }
 
-void fntcmd_set_yoff(char **pos, uint8_t yoff)
+void FontUA::set_yoff(char **pos, uint8_t yoff)
 {
-    fntcmd_store_u16(pos, 14);
-    fntcmd_store_u8(pos, yoff);
+    FontUA::store_u16(pos, 14);
+    FontUA::store_u8(pos, yoff);
 }
 
-void fntcmd_set_yheight(char **pos, uint8_t yheight)
+void FontUA::set_yheight(char **pos, uint8_t yheight)
 {
-    fntcmd_store_u16(pos, 15);
-    fntcmd_store_u8(pos, yheight);
+    FontUA::store_u16(pos, 15);
+    FontUA::store_u8(pos, yheight);
 }
 
-void fntcmd_reset_tileset(char **pos, uint8_t tileset)
+void FontUA::reset_tileset(char **pos, uint8_t tileset)
 {
-    fntcmd_store_u16(pos, 16);
-    fntcmd_store_u8(pos, tileset);
+    FontUA::store_u16(pos, 16);
+    FontUA::store_u8(pos, tileset);
 }
 
-void fntcmd_op17(char **pos, int16_t arg)
+void FontUA::op17(char **pos, int16_t arg)
 {
-    fntcmd_store_u16(pos, 17);
-    fntcmd_store_s16(pos, arg);
+    FontUA::store_u16(pos, 17);
+    FontUA::store_s16(pos, arg);
 }
 
-void fntcmd_add_txt(char **pos, int16_t block_width, uint16_t flag, const char *string)
+void FontUA::add_txt(char **pos, int16_t block_width, uint16_t flag, const char *string)
 {
-    fntcmd_store_u16(pos, 18);
-    fntcmd_store_s16(pos, block_width);
-    fntcmd_store_u16(pos, flag);
-    fntcmd_store_string(pos, string);
+    FontUA::store_u16(pos, 18);
+    FontUA::store_s16(pos, block_width);
+    FontUA::store_u16(pos, flag);
+    FontUA::store_string(pos, string);
 }
 
-void fntcmd_copy_position(char **pos)
+void FontUA::copy_position(char **pos)
 {
-    fntcmd_store_u16(pos, 19);
+    FontUA::store_u16(pos, 19);
 }
 
-void fntcmd_set_flag(char **pos, uint16_t flag)
+void FontUA::set_flag(char **pos, uint16_t flag)
 {
-    fntcmd_store_u16(pos, 20);
-    fntcmd_store_u16(pos, flag);
+    FontUA::store_u16(pos, 20);
+    FontUA::store_u16(pos, flag);
 }
 
-void fntcmd_unset_flag(char **pos, uint16_t flag)
+void FontUA::unset_flag(char **pos, uint16_t flag)
 {
-    fntcmd_store_u16(pos, 21);
-    fntcmd_store_u16(pos, flag);
+    FontUA::store_u16(pos, 21);
+    FontUA::store_u16(pos, flag);
 }
 
-void fntcmd_set_txtColor(char **pos, uint8_t r, uint8_t g, uint8_t b)
+void FontUA::set_txtColor(char **pos, uint8_t r, uint8_t g, uint8_t b)
 {
-    fntcmd_store_u16(pos, 22);
-    fntcmd_store_u16(pos, r);
-    fntcmd_store_u16(pos, g);
-    fntcmd_store_u16(pos, b);
+    FontUA::store_u16(pos, 22);
+    FontUA::store_u16(pos, r);
+    FontUA::store_u16(pos, g);
+    FontUA::store_u16(pos, b);
 }
 
 
@@ -310,13 +310,13 @@ void fntcmd_set_txtColor(char **pos, uint8_t r, uint8_t g, uint8_t b)
 
 // Funcs
 
-char * txtcmd_txt_w_bkg(tiles_stru *, char *curpos, const char *str, int width_space, char chr)
+char * FontUA::FormateClippedText(tiles_stru *, char *curpos, const char *str, int width_space, char space_chr)
 {
     char *tmp = curpos;
 
     if ( width_space > 0 )
     {
-        fntcmd_copy_position(&tmp);
+        FontUA::copy_position(&tmp);
 
         int v6 = width_space;
 
@@ -324,39 +324,39 @@ char * txtcmd_txt_w_bkg(tiles_stru *, char *curpos, const char *str, int width_s
         {
             if ( v6 <= 255 )
             {
-                fntcmd_op10(&tmp, v6);
+                FontUA::op10(&tmp, v6);
             }
             else
             {
-                fntcmd_op10(&tmp, 255);
+                FontUA::op10(&tmp, 255);
             }
 
-            fntcmd_store_s8(&tmp, chr);
+            FontUA::store_s8(&tmp, space_chr);
 
             v6 -= 255;
         }
 
-        fntcmd_add_txt(&tmp, width_space, 1, str);
+        FontUA::add_txt(&tmp, width_space, 1, str);
     }
     return tmp;
 }
 
-char * sub_45148C(tiles_stru *, char *in, const char *str, int width)
+char * FontUA::FormateCenteredSkipableItem(tiles_stru *, char *in, const char *str, int width)
 {
     char *cur = in;
     if ( width > 0 )
     {
-        fntcmd_copy_position(&cur);
-        fntcmd_add_txt(&cur, width, 4, str);
+        FontUA::copy_position(&cur);
+        FontUA::add_txt(&cur, width, 4, str);
     }
     return cur;
 }
 
-char * sub_451E64(tiles_stru *, char *pos, const char *txt, int wdth, int arg)
+char * FontUA::TextRelWidthItem(tiles_stru *, char *pos, const char *txt, int wdth, int arg)
 {
     char *tmp = pos;
 
-    fntcmd_copy_position(&tmp);
+    FontUA::copy_position(&tmp);
 
     int flag;
 
@@ -367,7 +367,229 @@ char * sub_451E64(tiles_stru *, char *pos, const char *txt, int wdth, int arg)
     else
         flag = 12;
 
-    fntcmd_add_txt(&tmp, wdth, flag, txt);
+    FontUA::add_txt(&tmp, wdth, flag, txt);
 
     return tmp;
 }
+
+
+
+char * FontUA::FormateTextAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg)
+{
+    tiles_stru *v3 = yw->tiles[ arg->fontID ];
+
+    int v4 = arg->width;
+
+    if ( arg->flags & 1 )
+        v4 -= v3->chars[arg->prefixChar].width;
+
+    if ( arg->flags & 2 )
+        v4 -= v3->chars[arg->postfixChar].width;
+
+    char *tmp = cmdbuf;
+    FontUA::select_tileset(&tmp, arg->fontID);
+
+
+    if ( arg->flags & 1 )
+        FontUA::store_s8(&tmp, arg->prefixChar);
+
+    if ( v4 > 0 )
+    {
+        FontUA::copy_position(&tmp);
+
+        int v8 = v4;
+
+        while (v8 > 0)
+        {
+            if ( v8 <= 255 )
+            {
+                FontUA::op10(&tmp, v8);
+            }
+            else
+            {
+                FontUA::op10(&tmp, 255);
+            }
+
+            FontUA::store_u8(&tmp, arg->spaceChar);
+            v8 -= 255;
+        }
+
+        int v20 = 0;
+
+        if ( arg->flags & 4 )
+        {
+            v20 = 1;
+        }
+        else if ( arg->flags & 8 )
+        {
+            v20 = 2;
+        }
+        else
+        {
+            v20 = 4;
+        }
+
+        FontUA::add_txt(&tmp, v4, v20, arg->txt);
+    }
+
+    if ( arg->flags & 2 )
+    {
+        FontUA::store_s8(&tmp, arg->postfixChar);
+    }
+    return tmp;
+}
+
+char *FontUA::FormateAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg)
+{
+    tiles_stru *v30 = yw->tiles[ arg->fontID ];
+
+    int v28 = 0;
+    int v29 = 0;
+    int v27 = 0;
+    int v26 = 0;
+
+    int v6 = 0;
+    const char *v8 = arg->txt;
+    while ( *v8 )
+    {
+        v6 += v30->chars[ (uint8_t)*v8 ].width;
+        v8++;
+    }
+
+    int v10 = arg->width - v6;
+    if ( arg->flags & 1 )
+        v10 -= v30->chars[arg->prefixChar].width;
+    if ( arg->flags & 2 )
+        v10 -= v30->chars[arg->postfixChar].width;
+
+    char *tmp = cmdbuf;
+    FontUA::select_tileset(&tmp, arg->fontID);
+
+    if ( v10 <= 0 )
+    {
+        if ( v10 < 0 )
+        {
+            if ( arg->flags & 4 )
+            {
+                v29 = -v10;
+            }
+            else if ( arg->flags & 8 )
+            {
+                v28 = -v10;
+            }
+            else if ( arg->flags & 0x10 )
+            {
+                v28 = (-v10) / 2;
+                v29 = (-v10) - ((-v10) / 2);
+            }
+        }
+    }
+    else
+    {
+        if ( arg->flags & 4 )
+        {
+            v26 = v10;
+        }
+        else if ( arg->flags & 8 )
+        {
+            v27 = v10;
+        }
+        else if ( arg->flags & 0x10 )
+        {
+            v27 = v10 / 2;
+            v26 = v10 - (v10 / 2);
+        }
+    }
+
+    int v16 = v6 - v29 - v28;
+
+    if ( arg->flags & 1 )
+        FontUA::store_u8(&tmp, arg->prefixChar);
+
+    int chr = 0;
+
+    const char *v7 = arg->txt;
+
+    while (v28 > 0)
+    {
+        chr = *v7;
+        v7++;
+        v28 -= v30->chars[(uint8_t)chr].width;
+    }
+
+    if ( v28 < 0 )
+    {
+        FontUA::set_xoff(&tmp, v28 + v30->chars[(uint8_t)chr].width);
+        FontUA::store_u8(&tmp, chr);
+    }
+
+    if ( v27 > 0 )
+    {
+        while ( v27 > 255 )
+        {
+            FontUA::op10(&tmp, 255);
+            FontUA::store_u8(&tmp, arg->spaceChar);
+            v27 -= 255;
+        }
+
+        if ( v27 > 0 )
+        {
+            FontUA::op10(&tmp, v27);
+            FontUA::store_u8(&tmp, arg->spaceChar);
+        }
+    }
+
+    if (v16 > 0)
+    {
+        chr = 0;
+        while ( v16 >= 0 )
+        {
+            chr = *v7;
+            v7++;
+            if ( chr == 0)
+                break;
+
+            v16 -= v30->chars[(uint8_t)chr].width;
+            FontUA::store_u8(&tmp, chr);
+        }
+        if (chr)
+        {
+            FontUA::set_xwidth(&tmp, v16 + v30->chars[(uint8_t)chr].width);
+            FontUA::store_u8(&tmp, chr);
+        }
+    }
+
+    if ( v26 > 0 )
+    {
+        while ( v26 > 255 )
+        {
+            FontUA::op10(&tmp, 255);
+            FontUA::store_u8(&tmp, arg->spaceChar);
+            v26 -= 255;
+        }
+        if ( v26 > 0 )
+        {
+            FontUA::op10(&tmp, v26);
+            FontUA::store_u8(&tmp, arg->spaceChar);
+        }
+    }
+    if ( arg->flags & 2 )
+        FontUA::store_u8(&tmp, arg->postfixChar);
+
+    return tmp;
+}
+
+
+char * FontUA::FormateColumnItem(_NC_STACK_ypaworld *yw, char *cmdbuf, int num, ColumnItem *a4)
+{
+    char *tmp = cmdbuf;
+    for (int i = 0; i < num; i++)
+        if (a4[i].flags & 0x20)
+            tmp = FormateTextAlignedClippedString(yw, tmp, &a4[i]);
+        else
+            tmp = FormateAlignedClippedString(yw, tmp, &a4[i]);
+
+    return tmp;
+}
+
+

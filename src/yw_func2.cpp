@@ -267,17 +267,17 @@ void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, str
 
 void yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
 {
-    lstvw_updlimits(yw, &usr->input_listview, -2, -2);
+    usr->input_listview.SetRect(yw, -2, -2);
     GFXe.getTileset(0);
 
-    char *v4 = lstvw_up_border(yw, &usr->input_listview, usr->input_listview.data_cmdbuf, 0, "uvw");
+    char *v4 = usr->input_listview.ItemsPreLayout(yw, usr->input_listview.itemBlock, 0, "uvw");
 
-    for (int i = 1; i <= usr->input_listview.element_count; i++ )
+    for (int i = 1; i <= usr->input_listview.shownEntries; i++ )
     {
-        int v24 = i + usr->input_listview.scroll_pos;
+        int v24 = i + usr->input_listview.firstShownEntries;
         if ( usr->keyConfig[v24].slider_name )
         {
-            listview_t1 a1a[2];
+            FontUA::ColumnItem a1a[2];
 
             //v5 = v24;
             memset(a1a, 0, sizeof(a1a));
@@ -302,7 +302,7 @@ void yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
                 v33 = 102;
             }
 
-            int v34 = usr->input_listview.width - 2 * usr->p_ypaworld->font_default_w__b + 1;
+            int v34 = usr->input_listview.entryWidth - 2 * usr->p_ypaworld->font_default_w__b + 1;
 
             char v19[200];
 
@@ -343,42 +343,42 @@ void yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
             }
 
             a1a[0].txt = usr->keyConfig[v24].slider_name;
-            a1a[0].field_width = v34 * 0.68;
-            a1a[0].tileset_id = v32;
-            a1a[0].bkg_tile = v33;
-            a1a[0].left_tile = v30;
-            a1a[0].right_tile = 0;
+            a1a[0].width = v34 * 0.68;
+            a1a[0].fontID = v32;
+            a1a[0].spaceChar = v33;
+            a1a[0].prefixChar = v30;
+            a1a[0].postfixChar = 0;
             a1a[0].flags = 37;
 
             a1a[1].txt = v19;
-            a1a[1].field_width = v34 - v34 * 0.68;
-            a1a[1].tileset_id = v32;
-            a1a[1].bkg_tile = v33;
-            a1a[1].left_tile = 0;
-            a1a[1].right_tile = v31;
+            a1a[1].width = v34 - v34 * 0.68;
+            a1a[1].fontID = v32;
+            a1a[1].spaceChar = v33;
+            a1a[1].prefixChar = 0;
+            a1a[1].postfixChar = v31;
             a1a[1].flags = 38;
 
-            fntcmd_select_tileset(&v4, 0);
-            fntcmd_store_s8(&v4, '{'); // Left wnd border
+            FontUA::select_tileset(&v4, 0);
+            FontUA::store_s8(&v4, '{'); // Left wnd border
 
             if ( v24 == usr->field_D36 )
             {
-                fntcmd_set_txtColor(&v4, usr->p_ypaworld->iniColors[62].r, usr->p_ypaworld->iniColors[62].g, usr->p_ypaworld->iniColors[62].b);
+                FontUA::set_txtColor(&v4, usr->p_ypaworld->iniColors[62].r, usr->p_ypaworld->iniColors[62].g, usr->p_ypaworld->iniColors[62].b);
             }
             else
             {
-                fntcmd_set_txtColor(&v4, usr->p_ypaworld->iniColors[61].r, usr->p_ypaworld->iniColors[61].g, usr->p_ypaworld->iniColors[61].b);
+                FontUA::set_txtColor(&v4, usr->p_ypaworld->iniColors[61].r, usr->p_ypaworld->iniColors[61].g, usr->p_ypaworld->iniColors[61].b);
             }
 
-            v4 = lstvw_txt_line(yw, v4, 2, a1a);
+            v4 = FormateColumnItem(yw, v4, 2, a1a);
 
-            fntcmd_select_tileset(&v4, 0);
-            fntcmd_store_s8(&v4, '}'); // Right wnd border
-            fntcmd_next_line(&v4);
+            FontUA::select_tileset(&v4, 0);
+            FontUA::store_s8(&v4, '}'); // Right wnd border
+            FontUA::next_line(&v4);
         }
     }
-    v4 = lstvw_down_border(yw, &usr->input_listview, v4, 0, "xyz");
-    fntcmd_set_end(&v4);
+    v4 = usr->input_listview.ItemsPostLayout(yw, v4, 0, "xyz");
+    FontUA::set_end(&v4);
 
     w3d_a209 v21;
     v21 = usr->input_listview.cmdstrm;
@@ -1060,7 +1060,7 @@ void sub_46A7F8(UserData *usr)
     int v4 = 2;
     usr->disk_button->button_func68( &v4 );
 
-    sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
+    usr->disk_listvw.CloseDialog(usr->p_ypaworld);
 
     NC_STACK_button *v2;
     if ( usr->field_0x1760 )
@@ -1141,8 +1141,8 @@ void sub_46C524(UserData *usr)
 
     usr->field_46 = 6;
 
-    sub_4C31C0(usr->p_ypaworld, &usr->network_listvw);
-    sub_4C31EC(usr->p_ypaworld, &usr->network_listvw);
+    usr->network_listvw.CloseDialog(usr->p_ypaworld);
+    usr->network_listvw.OpenDialog(usr->p_ypaworld);
 }
 
 
@@ -1206,8 +1206,8 @@ void sb_0x46ca74(UserData *usr)
             return;
         }
 
-        usr->disk_listvw.elements_for_scroll_size++;
-        usr->field_1612 = usr->disk_listvw.elements_for_scroll_size;
+        usr->disk_listvw.numEntries++;
+        usr->field_1612 = usr->disk_listvw.numEntries;
     }
 
     sprintf(oldsave, "%s/user.txt", usr->usernamedir);
@@ -1261,7 +1261,7 @@ void sb_0x46ca74(UserData *usr)
     int v16 = 2;
     usr->disk_button->button_func68(&v16);
 
-    sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
+    usr->disk_listvw.CloseDialog(usr->p_ypaworld);
 
     if ( usr->field_0x1760 )
     {
@@ -1406,8 +1406,8 @@ void sb_0x46cdf8(UserData *usr)
         }
 
         strncpy(usr->user_name, usr->usernamedir, 32);
-        usr->disk_listvw.elements_for_scroll_size++;
-        usr->field_1612 = usr->disk_listvw.elements_for_scroll_size;
+        usr->disk_listvw.numEntries++;
+        usr->field_1612 = usr->disk_listvw.numEntries;
     }
 
     usr->p_ypaworld->field_2d90->buddies_count = 0;
@@ -1444,7 +1444,7 @@ void sb_0x46cdf8(UserData *usr)
         int v13 = 2;
         usr->disk_button->button_func68(&v13);
 
-        sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
+        usr->disk_listvw.CloseDialog(usr->p_ypaworld);
 
         usr->field_46 = 5;
 
@@ -1744,11 +1744,11 @@ void sb_0x46aa8c(UserData *usr)
     int v42 = 2;
     usr->video_button->button_func68(&v42);
 
-    if ( !(usr->video_listvw.cmd_flag & 0x20) )
-        sub_4C31C0(usr->p_ypaworld, &usr->video_listvw);
+    if ( !(usr->video_listvw.flags & GuiBase::FLAG_CLOSED) )
+        usr->video_listvw.CloseDialog(usr->p_ypaworld);
 
-    if ( !(usr->d3d_listvw.cmd_flag & 0x20) )
-        sub_4C31C0(usr->p_ypaworld, &usr->d3d_listvw);
+    if ( !(usr->d3d_listvw.flags & GuiBase::FLAG_CLOSED) )
+        usr->d3d_listvw.CloseDialog(usr->p_ypaworld);
 
     button_66arg v38;
     v38.field_4 = 2;
@@ -1793,7 +1793,7 @@ void sub_46DC1C(UserData *usr)
 
     usr->field_0x2fbc = 4;
     usr->field_0x2fc0 = usr->field_1C86;
-    usr->network_listvw.scroll_pos = 0;
+    usr->network_listvw.firstShownEntries = 0;
     usr->field_0x2fc4 = usr->field_1C86;
 
     int v12 = 1;
@@ -2179,13 +2179,13 @@ void ypaworld_func158__sub0__sub2(UserData *usr)
 
     usr->field_46 = 3;
 
-    if ( !(usr->video_listvw.cmd_flag & 0x20) )
+    if ( !(usr->video_listvw.flags & GuiBase::FLAG_CLOSED) )
     {
-        sub_4C31C0(usr->p_ypaworld, &usr->video_listvw);
-        sub_4C31EC(usr->p_ypaworld, &usr->video_listvw);
+        usr->video_listvw.CloseDialog(usr->p_ypaworld);
+        usr->video_listvw.OpenDialog(usr->p_ypaworld);
     }
 
-    usr->video_listvw.field_1DE = usr->field_FBE;
+    usr->video_listvw.selectedEntry = usr->field_FBE;
 }
 
 void sub_46C3E4(UserData *usr)
@@ -2208,8 +2208,8 @@ void sub_46C3E4(UserData *usr)
         }
         v4 = (profilesNode *)v4->next;
     }
-    sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
-    sub_4C31EC(usr->p_ypaworld, &usr->disk_listvw);
+    usr->disk_listvw.CloseDialog(usr->p_ypaworld);
+    usr->disk_listvw.OpenDialog(usr->p_ypaworld);
 }
 
 void ypaworld_func158__sub0__sub1(UserData *usr)
@@ -2221,8 +2221,8 @@ void ypaworld_func158__sub0__sub1(UserData *usr)
     usr->button_input_button->button_func68(&v5);
 
     usr->field_46 = 2;
-    sub_4C31C0(usr->p_ypaworld, &usr->input_listview);
-    sub_4C31EC(usr->p_ypaworld, &usr->input_listview);
+    usr->input_listview.CloseDialog(usr->p_ypaworld);
+    usr->input_listview.OpenDialog(usr->p_ypaworld);
 }
 
 void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
@@ -2318,19 +2318,19 @@ void sub_4D0C24(_NC_STACK_ypaworld *yw, const char *a1, const char *a2)
         if ( v22 < 0 )
             v22 = 0;
 
-        yw->GameShell->network_listvw.scroll_pos = v22;
+        yw->GameShell->network_listvw.firstShownEntries = v22;
 
 
-        yw->GameShell->network_listvw.elements_for_scroll_size = yw->GameShell->field_1CF7;
+        yw->GameShell->network_listvw.numEntries = yw->GameShell->field_1CF7;
 
         int v24;
 
-        if ( usr->network_listvw.elements_for_scroll_size >= 6 )
+        if ( usr->network_listvw.numEntries >= 6 )
             v24 = 6;
         else
-            v24 = usr->network_listvw.elements_for_scroll_size;
+            v24 = usr->network_listvw.numEntries;
 
-        yw->GameShell->network_listvw.element_count = v24;
+        yw->GameShell->network_listvw.shownEntries = v24;
     }
 }
 
@@ -2359,8 +2359,8 @@ void ypaworld_func158__sub0__sub3(UserData *usr)
     usr->locale_button->button_func68(&v7);
 
     usr->field_46 = 7;
-    sub_4C31C0(usr->p_ypaworld, &usr->local_listvw);
-    sub_4C31EC(usr->p_ypaworld, &usr->local_listvw);
+    usr->local_listvw.CloseDialog(usr->p_ypaworld);
+    usr->local_listvw.OpenDialog(usr->p_ypaworld);
 
     langDll_node *v5 = (langDll_node *)usr->lang_dlls.head;
     int i = 0;
@@ -2371,7 +2371,7 @@ void ypaworld_func158__sub0__sub3(UserData *usr)
         v5 = (langDll_node *)v5->next;
     }
 
-    usr->local_listvw.field_1DE = i;
+    usr->local_listvw.selectedEntry = i;
 }
 
 void sub_4EDCD8(_NC_STACK_ypaworld *yw)
@@ -2493,7 +2493,7 @@ void sb_0x46a8c0(UserData *usr)
     int v7 = 2;
     usr->button_input_button->button_func68(&v7);
 
-    sub_4C31C0(usr->p_ypaworld, &usr->input_listview);
+    usr->input_listview.CloseDialog(usr->p_ypaworld);
 
     v7 = 1;
     usr->titel_button->button_func68(&v7);
@@ -2540,14 +2540,14 @@ void ypaworld_func158__sub0__sub0(UserData *usr)
 
 void sub_46C5F0(UserData *usr, int a2)
 {
-    if ( usr->video_listvw.field_1DE != usr->field_FBE && !a2 )
+    if ( usr->video_listvw.selectedEntry != usr->field_FBE && !a2 )
     {
 
-        usr->field_FBE = usr->video_listvw.field_1DE;
+        usr->field_FBE = usr->video_listvw.selectedEntry;
 
         video_mode_node *v6 = (video_mode_node *)usr->video_mode_list.head;
 
-        for (int i = 0; i < usr->video_listvw.field_1DE; i++)
+        for (int i = 0; i < usr->video_listvw.selectedEntry; i++)
         {
             v6 = (video_mode_node *)v6->next;
         }
@@ -2578,7 +2578,7 @@ void sub_46A3C0(UserData *usr)
         v2 = (video_mode_node *)v2->next;
     }
 
-    usr->video_listvw.field_1DE = i;
+    usr->video_listvw.selectedEntry = i;
     usr->field_FBE = i;
     usr->game_default_res = usr->p_ypaworld->game_default_res;
 
@@ -2654,11 +2654,11 @@ void sub_46A3C0(UserData *usr)
     int v11 = 2;
     usr->video_button->button_func68(&v11);
 
-    if ( !(usr->video_listvw.cmd_flag & 0x20) )
-        sub_4C31C0(usr->p_ypaworld, &usr->video_listvw);
+    if ( !(usr->video_listvw.flags & GuiBase::FLAG_CLOSED) )
+        usr->video_listvw.CloseDialog(usr->p_ypaworld);
 
-    if ( !(usr->d3d_listvw.cmd_flag & 0x20) )
-        sub_4C31C0(usr->p_ypaworld, &usr->d3d_listvw);
+    if ( !(usr->d3d_listvw.flags & GuiBase::FLAG_CLOSED) )
+        usr->d3d_listvw.CloseDialog(usr->p_ypaworld);
 
     v11 = 1;
     usr->titel_button->button_func68(&v11);
@@ -2690,7 +2690,7 @@ void  ypaworld_func158__sub0__sub5(UserData *usr, int a2)
         windd->windd_func324(&a1);
         if ( a1.name )
         {
-            if ( v4 == usr->d3d_listvw.field_1DE )
+            if ( v4 == usr->d3d_listvw.selectedEntry )
             {
                 if ( !strcmp(a1.name, "software") )
                     v2 = get_lang_string(usr->p_ypaworld->string_pointers_p2, 2472, "2472 = Software");
@@ -2751,7 +2751,7 @@ void sub_46C914(UserData *usr)
         int v16 = 2;
         usr->disk_button->button_func68(&v16);
 
-        sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
+        usr->disk_listvw.CloseDialog(usr->p_ypaworld);
 
         usr->field_46 = 5;
 
@@ -2816,7 +2816,7 @@ void sub_46C748(UserData *usr)
 
             Remove(node);
 
-            usr->disk_listvw.elements_for_scroll_size--;
+            usr->disk_listvw.numEntries--;
             if ( usr->files_list.tail == usr->files_list.head )
             {
                 usr->field_1612 = 0;
@@ -2833,7 +2833,7 @@ void sub_46C748(UserData *usr)
             usr->usernamedir_len = strlen(usr->usernamedir);
 
             if ( usr->field_1612 )
-                sub_4DDFA4(&usr->disk_listvw, usr->field_1612 - 1);
+                usr->disk_listvw.PosOnSelected(usr->field_1612 - 1);
 
             nc_FreeMem(node);
 
@@ -2842,7 +2842,7 @@ void sub_46C748(UserData *usr)
             int v14 = 2;
             usr->disk_button->button_func68(&v14);
 
-            sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
+            usr->disk_listvw.CloseDialog(usr->p_ypaworld);
 
             if ( usr->field_0x1760 )
             {
@@ -2864,7 +2864,7 @@ void sub_46B0E0(UserData *usr)
 {
     langDll_node *node = (langDll_node *)usr->lang_dlls.head;
 
-    for (int v5 = 0; v5 < usr->local_listvw.field_1DE; v5++)
+    for (int v5 = 0; v5 < usr->local_listvw.selectedEntry; v5++)
     {
         node = (langDll_node *)node->next;
     }
@@ -2888,7 +2888,7 @@ void sub_46B0E0(UserData *usr)
     int v7 = 2;
     usr->locale_button->button_func68(&v7);
 
-    sub_4C31C0(usr->p_ypaworld, &usr->local_listvw);
+    usr->local_listvw.CloseDialog(usr->p_ypaworld);
 
     v7 = 1;
     usr->titel_button->button_func68(&v7);
@@ -2903,7 +2903,7 @@ void sub_46AA0C(UserData *usr)
     int v5 = 2;
     usr->locale_button->button_func68(&v5);
 
-    sub_4C31C0(usr->p_ypaworld, &usr->local_listvw);
+    usr->local_listvw.CloseDialog(usr->p_ypaworld);
 
     v5 = 1;
     usr->titel_button->button_func68(&v5);
@@ -3076,11 +3076,11 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         usr->locale_button->button_func68(&v416);
         usr->network_button->button_func68(&v416);
 
-        sub_4C31C0(usr->p_ypaworld, &usr->input_listview);
-        sub_4C31C0(usr->p_ypaworld, &usr->video_listvw);
-        sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
-        sub_4C31C0(usr->p_ypaworld, &usr->local_listvw);
-        sub_4C31C0(usr->p_ypaworld, &usr->network_listvw);
+        usr->input_listview.CloseDialog(usr->p_ypaworld);
+        usr->video_listvw.CloseDialog(usr->p_ypaworld);
+        usr->disk_listvw.CloseDialog(usr->p_ypaworld);
+        usr->local_listvw.CloseDialog(usr->p_ypaworld);
+        usr->network_listvw.CloseDialog(usr->p_ypaworld);
     }
     else if ( usr->field_46 == 1 )
     {
@@ -3451,7 +3451,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         {
             if ( usr->field_D52 )
             {
-                usr->input_listview.field_1D0 &= 0xFFFFF7FF;
+                usr->input_listview.listFlags &= ~GuiList::GLIST_FLAG_KEYB_INPUT;
 
                 if ( keySS[ (int)usr->field_3A->downed_key ].short_name )
                 {
@@ -3476,7 +3476,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             }
             else
             {
-                usr->input_listview.field_1D0 |= 0x800;
+                usr->input_listview.listFlags |= GuiList::GLIST_FLAG_KEYB_INPUT;
 
                 if ( usr->field_3A->downed_key == VK_BACK  || usr->field_3A->downed_key == VK_DELETE)
                 {
@@ -3568,7 +3568,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             v416 = 1;
             usr->titel_button->button_func68(&v416);
 
-            sub_4C31C0(usr->p_ypaworld, &usr->input_listview);
+            usr->input_listview.CloseDialog(usr->p_ypaworld);
             usr->field_46 = 1;
         }
         else if (v6_l == 1053)
@@ -3612,26 +3612,26 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
     if ( usr->field_46 == 2 )
     {
-        lstvw_update_input(yw, &usr->input_listview, usr->field_3A);
+        usr->input_listview.InputHandle(yw, usr->field_3A);
 
-        usr->field_D36 = usr->input_listview.field_1DE + 1;
+        usr->field_D36 = usr->input_listview.selectedEntry + 1;
 
-        if ( usr->input_listview.field_1D0 & 0x80 )
+        if ( usr->input_listview.listFlags & GuiList::GLIST_FLAG_IN_SELECT )
         {
             usr->keyConfig[ usr->field_D36 ].field_10 = 0;
             usr->field_D3A = 1;
             usr->field_D52 = 0;
         }
-        lstvw_update(yw, &usr->input_listview);
+        usr->input_listview.Formate(yw);
     }
 
     if ( usr->field_46 == 3 )
     {
         if ( usr->field_3A->downed_key == VK_RETURN )
         {
-            if ( usr->video_listvw.cmd_flag & 0x20 )
+            if ( usr->video_listvw.flags & GuiBase::FLAG_CLOSED )
             {
-                if ( usr->d3d_listvw.cmd_flag & 0x20 )
+                if ( usr->d3d_listvw.flags & GuiBase::FLAG_CLOSED )
                 {
                     if ( usr->field_13C2 & 1 && usr->game_default_res != usr->p_ypaworld->game_default_res && usr->game_default_res )
                     {
@@ -3647,11 +3647,11 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 }
             }
 
-            if ( !(usr->video_listvw.cmd_flag & 0x20) )
+            if ( !(usr->video_listvw.flags & GuiBase::FLAG_CLOSED) )
             {
-                sub_4C31C0(usr->p_ypaworld, &usr->video_listvw);
+                usr->video_listvw.CloseDialog(usr->p_ypaworld);
 
-                if ( usr->video_listvw.cmd_flag & 0x20 )
+                if ( usr->video_listvw.flags & GuiBase::FLAG_CLOSED )
                 {
                     v408.butID = 1156;
                     v408.field_4 = 2;
@@ -3685,14 +3685,14 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
         if ( v6_l == 1100 )
         {
-            sub_4C31EC(yw, &usr->video_listvw);
+            usr->video_listvw.OpenDialog(yw);
             sub_423F74(&usr->samples1_info, 7);
 
             usr->field_3A->winp131arg.flag &= 0xFFFFFFFD;
         }
         else if ( v6_l == 1101 )
         {
-            sub_4C31C0(usr->p_ypaworld, &usr->video_listvw);
+            usr->video_listvw.CloseDialog(usr->p_ypaworld);
         }
         else if ( v6_l == 1102 )
         {
@@ -3810,24 +3810,24 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         }
         else if ( v6_l == 1134 )
         {
-            sub_4C31EC(yw, &usr->d3d_listvw);
+            usr->d3d_listvw.OpenDialog(yw);
             sub_423F74(&usr->samples1_info, 7);
 
             usr->field_3A->winp131arg.flag &= 0xFFFFFFFD;
         }
         else if ( v6_l == 1135 )
         {
-            sub_4C31C0(usr->p_ypaworld, &usr->d3d_listvw);
+            usr->d3d_listvw.CloseDialog(usr->p_ypaworld);
         }
         else if ( v6_l == 1250 )
             yw->field_81AF = get_lang_string(ypaworld__string_pointers, 760, "help\\110.html");
     }
 
-    if ( usr->field_46 == 3 && !(usr->video_listvw.cmd_flag & 0x20) )
+    if ( usr->field_46 == 3 && !(usr->video_listvw.flags & GuiBase::FLAG_CLOSED) )
     {
-        lstvw_update_input(yw, &usr->video_listvw, usr->field_3A);
+        usr->video_listvw.InputHandle(yw, usr->field_3A);
 
-        if ( usr->video_listvw.field_1D0 & 0x400 )
+        if ( usr->video_listvw.listFlags & GuiList::GLIST_FLAG_SEL_DONE )
         {
             int v65 = 0;
 
@@ -3838,7 +3838,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             sub_46C5F0(usr, v65);
         }
 
-        if ( usr->video_listvw.cmd_flag & 0x20 )
+        if ( usr->video_listvw.flags & GuiBase::FLAG_CLOSED )
         {
             v408.field_4 = 2;
             v408.butID = 1156;
@@ -3846,14 +3846,14 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             usr->video_button->button_func73(&v408);
         }
 
-        lstvw_update(yw, &usr->video_listvw);
+        usr->video_listvw.Formate(yw);
     }
 
-    if ( usr->field_46 == 3 && !(usr->d3d_listvw.cmd_flag & 0x20) )
+    if ( usr->field_46 == 3 && !(usr->d3d_listvw.flags & GuiBase::FLAG_CLOSED) )
     {
-        lstvw_update_input(yw, &usr->d3d_listvw, usr->field_3A);
+        usr->d3d_listvw.InputHandle(yw, usr->field_3A);
 
-        if ( usr->d3d_listvw.field_1D0 & 0x400 )
+        if ( usr->d3d_listvw.listFlags & GuiList::GLIST_FLAG_SEL_DONE )
         {
             int v66 = 0;
 
@@ -3864,7 +3864,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             ypaworld_func158__sub0__sub5(usr, v66);
         }
 
-        if ( usr->d3d_listvw.cmd_flag & 0x20 )
+        if ( usr->d3d_listvw.flags & GuiBase::FLAG_CLOSED )
         {
             v408.field_4 = 2;
             v408.butID = 1172;
@@ -3872,7 +3872,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             usr->video_button->button_func73(&v408);
         }
 
-        lstvw_update(yw, &usr->d3d_listvw);
+        usr->d3d_listvw.Formate(yw);
     }
 
 
@@ -4037,7 +4037,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             }
 
             if ( usr->field_1612 )
-                sub_4DDFA4(&usr->disk_listvw, usr->field_1612 - 1);
+                usr->disk_listvw.PosOnSelected(usr->field_1612 - 1);
         }
     }
 
@@ -4273,17 +4273,17 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
     if ( usr->field_46 == 9 ) // Multiplayer
     {
-        lstvw_update_input(yw, &usr->disk_listvw, usr->field_3A);
+        usr->disk_listvw.InputHandle(yw, usr->field_3A);
 
-        if ( usr->disk_listvw.field_1D0 & 0x80 || usr->field_3A->downed_key == VK_UP || usr->field_3A->downed_key == VK_DOWN )
+        if ( usr->disk_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT || usr->field_3A->downed_key == VK_UP || usr->field_3A->downed_key == VK_DOWN )
         {
-            usr->field_1612 = usr->disk_listvw.field_1DE + 1;
+            usr->field_1612 = usr->disk_listvw.selectedEntry + 1;
 
             if ( usr->field_1612 < 1 )
                 usr->field_1612 = 1;
 
-            if ( usr->field_1612 > usr->disk_listvw.elements_for_scroll_size  )
-                usr->field_1612 = usr->disk_listvw.elements_for_scroll_size;
+            if ( usr->field_1612 > usr->disk_listvw.numEntries  )
+                usr->field_1612 = usr->disk_listvw.numEntries;
 
 
             profilesNode *node = (profilesNode *)usr->files_list.head;
@@ -4305,7 +4305,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 usr->usernamedir_len = strlen(usr->usernamedir);
             }
         }
-        lstvw_update(yw, &usr->disk_listvw);
+        usr->disk_listvw.Formate(yw);
     }
 
     if ( usr->field_0x1744 )
@@ -4447,21 +4447,21 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
     if ( usr->field_46 == 7 ) //Locale
     {
-        lstvw_update_input(yw, &usr->local_listvw, usr->field_3A);
+        usr->local_listvw.InputHandle(yw, usr->field_3A);
 
-        if ( usr->local_listvw.field_1D0 & 0x80 )
+        if ( usr->local_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT )
         {
             langDll_node *node = (langDll_node *)usr->lang_dlls.head;
 
             usr->field_19CA |= 1;
 
-            for(int i = 0; i < usr->local_listvw.field_1DE; i++)
+            for(int i = 0; i < usr->local_listvw.selectedEntry; i++)
                 node = (langDll_node *)node->next;
 
             usr->prev_lang = node;
         }
 
-        lstvw_update(yw, &usr->local_listvw);
+        usr->local_listvw.Formate(yw);
     }
 
     v6 = usr->about_button->button_func69(usr->field_3A);
@@ -4569,30 +4569,30 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     case 0:
         usr->field_1C3E = 0;
         usr->field_1C36 = 1;
-        usr->network_listvw.element_count_max = 12;
+        usr->network_listvw.maxShownEntries = 12;
         usr->field_0x1c30 = 3 * (yw->font_default_h+ word_5A50C2);
         break;
     case 1:
         usr->field_1C3E = 0;
         usr->field_1C36 = 1;
-        usr->network_listvw.element_count_max = 12;
+        usr->network_listvw.maxShownEntries = 12;
         usr->field_0x1c30 = 3 * (yw->font_default_h + word_5A50C2);
         break;
     case 3:
         usr->field_1C3E = 0;
         usr->field_1C36 = 1;
-        usr->network_listvw.element_count_max = 12;
+        usr->network_listvw.maxShownEntries = 12;
         usr->field_0x1c30 = 3 * (yw->font_default_h + word_5A50C2);
         break;
     case 2:
         usr->field_1C36 = 0;
-        usr->network_listvw.element_count_max = 12;
+        usr->network_listvw.maxShownEntries = 12;
         usr->field_1C3E = 1;
         break;
     case 4:
         usr->field_1C3E = 1;
         usr->field_1C36 = 1;
-        usr->network_listvw.element_count_max = 6;
+        usr->network_listvw.maxShownEntries = 6;
         usr->field_0x1c30 = yw->font_default_h * 9.5 + 2 * word_5A50C2;
         break;
     default:
@@ -4692,7 +4692,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             {
                 usr->field_0x1cd8 = 1;
                 usr->field_0x1c3c = -1;
-                usr->network_listvw.scroll_pos = 0;
+                usr->network_listvw.firstShownEntries = 0;
                 usr->field_1C3A = 3;
             }
             else if ( v6_l == 1250 )
@@ -4710,10 +4710,10 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
                     usr->field_1C3A = 1;
                     usr->field_0x1c3c = -1;
-                    usr->network_listvw.scroll_pos = 0;
+                    usr->network_listvw.firstShownEntries = 0;
                     usr->field_1C42[0] = 0;
 
-                    sub_4C31EC(usr->p_ypaworld, &usr->network_listvw);
+                    usr->network_listvw.OpenDialog(usr->p_ypaworld);
                 }
             }
             else if ( v6_l == 1201 )
@@ -4785,7 +4785,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 if ( usr->field_0x1cd8 )
                 {
                     usr->field_0x1c3c = -1;
-                    usr->network_listvw.scroll_pos = 0;
+                    usr->network_listvw.firstShownEntries = 0;
                     usr->field_1CF7 = 0;
                     usr->field_1CF9[32][0] = 0;
                     usr->field_1C42[0] = 0;
@@ -4926,13 +4926,13 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     {
         int a4 = usr->network_button->getBTN_h();
 
-        usr->network_listvw.frm_1.btn_ypos = usr->field_0x1c30 + a4;
+        usr->network_listvw.dialogBox.ypos = usr->field_0x1c30 + a4;
 
-        lstvw_update_input(yw, &usr->network_listvw, usr->field_3A);
+        usr->network_listvw.InputHandle(yw, usr->field_3A);
 
-        if ( (usr->network_listvw.field_1D0 & 0x80) || usr->field_3A->downed_key == VK_UP || usr->field_3A->downed_key == VK_DOWN )
+        if ( (usr->network_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT) || usr->field_3A->downed_key == VK_UP || usr->field_3A->downed_key == VK_DOWN )
         {
-            usr->field_0x1c3c = usr->network_listvw.field_1DE;
+            usr->field_0x1c3c = usr->network_listvw.selectedEntry;
 
             switch ( usr->field_1C3A )
             {
@@ -4970,7 +4970,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             usr->field_1C84 = strlen(usr->field_1C42);
         }
 
-        lstvw_update(yw, &usr->network_listvw);
+        usr->network_listvw.Formate(yw);
     }
 
     if ( usr->field_46 == 6 )
@@ -5054,7 +5054,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     break;
 
                 case 1:
-                    if ( usr->network_listvw.elements_for_scroll_size )
+                    if ( usr->network_listvw.numEntries )
                     {
                         sb_0x46bb54(usr);
                     }
@@ -5063,7 +5063,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                         usr->field_0x1cd8 = 1;
                         usr->field_0x1c3c = -1;
                         usr->field_1C3A = 3;
-                        usr->network_listvw.scroll_pos = 0;
+                        usr->network_listvw.firstShownEntries = 0;
                     }
                     break;
 
@@ -5074,9 +5074,9 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
                         usr->field_1C3A = 1;
                         usr->field_0x1c3c = -1;
-                        usr->network_listvw.scroll_pos = 0;
+                        usr->network_listvw.firstShownEntries = 0;
                         usr->field_1C42[0] = 0;
-                        sub_4C31EC(usr->p_ypaworld, &usr->network_listvw);
+                        usr->network_listvw.OpenDialog(usr->p_ypaworld);
                     }
                     break;
 
@@ -5150,7 +5150,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             }
 
             if ( usr->field_1C3E != -1 )
-                sub_4DDFA4(&usr->network_listvw, usr->field_1C3E);
+                usr->network_listvw.PosOnSelected(usr->field_1C3E);
 
             usr->field_3A->downed_key = 0;
         }

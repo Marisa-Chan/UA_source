@@ -276,7 +276,7 @@ void INPEngine::sub_412D28(struC5 *a1)
     input_class->input_func65(a1);
 }
 
-void INPEngine::sub_412D48(inp_node *btn, int a2)
+void INPEngine::AddClickBox(ClickBox *btn, int a2)
 {
     iwimp_arg129 iwimp129;
 
@@ -286,7 +286,7 @@ void INPEngine::sub_412D48(inp_node *btn, int a2)
     input_class->wimp_addClickNode(&iwimp129);
 }
 
-void INPEngine::sub_412D9C(inp_node *btn)
+void INPEngine::RemClickBox(ClickBox *btn)
 {
     iwimp_arg129 iwimp129;
 

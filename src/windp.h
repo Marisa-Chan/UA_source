@@ -57,7 +57,7 @@ void sb_0x4deac0(UserData *usr);
 
 
 
-struct netgamelst: public listbase
+struct netgamelst: public GuiBase
 {
     int field_1CC;
     int field_1D0;

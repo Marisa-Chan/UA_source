@@ -355,20 +355,20 @@ void ypaworld_func151__sub7(UserData *usr)
 //////////////multiplayer wnd///////////
 netgamelst netgame_wnd;
 char b_stru_5C85C0__cmdbuf[1024];
-button_str1 b_stru_5C85C0__btn0;
-button_str1 b_stru_5C85C0__btn1;
+ButtonBox b_stru_5C85C0__btn0;
+ButtonBox b_stru_5C85C0__btn1;
 
 
 void sb_0x451034__sub6(_NC_STACK_ypaworld *yw)
 {
-    netgame_wnd.cmd_flag = 0x138;
-    netgame_wnd.frm_1.btn_xpos = 0;
-    netgame_wnd.frm_1.btn_ypos = 2 * yw->screen_height / 3;
-    netgame_wnd.frm_1.field_18[0] = &b_stru_5C85C0__btn0;
-    netgame_wnd.frm_1.field_18[1] = &b_stru_5C85C0__btn1;
-    netgame_wnd.frm_1.btn_width = yw->screen_width - 1;
-    netgame_wnd.frm_1.btn_height = 2 * yw->font_default_h + 2;
-    netgame_wnd.frm_1.field_10 = 2;
+    netgame_wnd.flags = 0x138;
+    netgame_wnd.dialogBox.xpos = 0;
+    netgame_wnd.dialogBox.ypos = 2 * yw->screen_height / 3;
+    netgame_wnd.dialogBox.buttons[0] = &b_stru_5C85C0__btn0;
+    netgame_wnd.dialogBox.buttons[1] = &b_stru_5C85C0__btn1;
+    netgame_wnd.dialogBox.btn_width = yw->screen_width - 1;
+    netgame_wnd.dialogBox.btn_height = 2 * yw->font_default_h + 2;
+    netgame_wnd.dialogBox.field_10 = 2;
 
 
     netgame_wnd.field_1CC = yw->tiles[0]->chars[97].width;
@@ -381,15 +381,15 @@ void sb_0x451034__sub6(_NC_STACK_ypaworld *yw)
     netgame_wnd.cmdstrm.includ = NULL;
     netgame_wnd.cmdstrm.cmdbuf = b_stru_5C85C0__cmdbuf;
 
-    b_stru_5C85C0__btn0.xpos = yw->tiles[0]->chars[97].width;
-    b_stru_5C85C0__btn0.ypos = 0;
-    b_stru_5C85C0__btn0.width = yw->tiles[0]->chars[97].width;
-    b_stru_5C85C0__btn0.fnt_height = yw->font_default_h;
+    b_stru_5C85C0__btn0.x = yw->tiles[0]->chars[97].width;
+    b_stru_5C85C0__btn0.y = 0;
+    b_stru_5C85C0__btn0.w = yw->tiles[0]->chars[97].width;
+    b_stru_5C85C0__btn0.h = yw->font_default_h;
 
-    b_stru_5C85C0__btn1.xpos = 0;
-    b_stru_5C85C0__btn1.ypos = 0;
-    b_stru_5C85C0__btn1.width = yw->tiles[0]->chars[97].width;
-    b_stru_5C85C0__btn1.fnt_height = yw->font_default_h;
+    b_stru_5C85C0__btn1.x = 0;
+    b_stru_5C85C0__btn1.y = 0;
+    b_stru_5C85C0__btn1.w = yw->tiles[0]->chars[97].width;
+    b_stru_5C85C0__btn1.h = yw->font_default_h;
 }
 
 //netgui update

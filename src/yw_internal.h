@@ -235,7 +235,7 @@ __NC_STACK_ypabact *sub_449518(_NC_STACK_ypaworld *yw);
 
 struct squadMan
 {
-    listview lstvw;
+    GuiList lstvw;
     __NC_STACK_ypabact *squads[24];
     int field_2A8;
     int field_2AC;
@@ -256,7 +256,7 @@ struct squadMan
     int field_2DC;
 };
 
-struct energPanel : public listbase
+struct energPanel : public GuiBase
 {
     int field_1CC;
     int field_1D0;
@@ -273,7 +273,7 @@ struct bzd_t1
     int d;
 };
 
-struct bzd : public listbase
+struct bzd : public GuiBase
 {
     int field_1CC;
     int field_1D0;
@@ -313,7 +313,7 @@ struct inflog_msg
 
 struct yw_infolog
 {
-    listview window;
+    GuiList window;
     int field_248;
     int field_24C;
     int field_250;
@@ -327,7 +327,7 @@ struct yw_infolog
     int field_256C;
 };
 
-struct tehMap : listbase
+struct tehMap : GuiBase
 {
     int16_t field_1CC;
     int16_t field_1CE;
@@ -521,7 +521,7 @@ void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, s
 void sub_4D6958(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, samples_collection1 *collection);
 
 int sub_4C885C();
-void sb_0x4c87fc(_NC_STACK_ypaworld *yw, const char *a2, listbase *lstvw);
+void sb_0x4c87fc(_NC_STACK_ypaworld *yw, const char *a2, GuiBase *lstvw);
 void sub_4476AC(_NC_STACK_ypaworld *yw);
 
 int recorder_create_camera(_NC_STACK_ypaworld *yw);

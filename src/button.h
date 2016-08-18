@@ -42,7 +42,7 @@ struct button_str2
     uint8_t field_42E;
 };
 
-struct __NC_STACK_button : public inp_node
+struct __NC_STACK_button : public ClickBox
 {
     button_str2 *field_d8[48];
     int16_t idd;

@@ -141,8 +141,6 @@ public:
 
 NC_STACK_nucleus * init_get_class(const char *classname, stack_vals *stak);
 
-void va_to_arr(stack_vals *out, int sz, va_list in);
-void va_to_arr(stack_vals *out, int sz, unsigned int _id, va_list in);
 int delete_class_obj(NC_STACK_nucleus *cls);
 stack_vals * find_id_in_stack2(unsigned int id, stack_vals *a2);
 size_t find_id_in_stack_def_val(unsigned int find_id, size_t def_value, stack_vals *a3);

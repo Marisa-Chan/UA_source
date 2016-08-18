@@ -8,109 +8,105 @@
 
 
 
-char * lstvw_make_title(_NC_STACK_ypaworld *yw, int xpos, int ypos, int a3, const char *a5, char *a6, uint8_t a7, int flag)
+char *GuiBase::FormateTitle(_NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const char *title, char *in, uint8_t postf_char, int flag)
 {
     int v27 = 0;
-    if ( flag & 0x10 )
+    if ( flag & FLAG_WITH_CLOSE )
         v27 = yw->tiles[24]->chars[65].width; // Help button
 
     int v26 = 0;
-    if ( flag & 0x100 )
+    if ( flag & FLAG_WITH_HELP )
         v26 = yw->tiles[24]->chars[66].width; // Close button
 
     int v29 = 0;
-    if ( a7 )
-        v29 = yw->tiles[0]->chars[a7].width;
+    if ( postf_char )
+        v29 = yw->tiles[0]->chars[postf_char].width;
 
     char buf[128];
     strcpy(buf, " ");
-    strcat(buf, a5);
+    strcat(buf, title);
 
-    char *tmp = a6;
+    char *tmp = in;
 
-    fntcmd_select_tileset(&tmp, 6);
-    fntcmd_set_center_xpos(&tmp, xpos);
-    fntcmd_set_center_ypos(&tmp, ypos);
+    FontUA::select_tileset(&tmp, 6);
+    FontUA::set_center_xpos(&tmp, xpos);
+    FontUA::set_center_ypos(&tmp, ypos);
 
-    fntcmd_store_s8(&tmp, 98);
+    FontUA::store_s8(&tmp, 98);
 
-    fntcmd_set_txtColor(&tmp, yw->iniColors[60].r, yw->iniColors[60].g, yw->iniColors[60].b);
+    FontUA::set_txtColor(&tmp, yw->iniColors[60].r, yw->iniColors[60].g, yw->iniColors[60].b);
 
-    tmp = txtcmd_txt_w_bkg(yw->tiles[6], tmp, buf, a3 - v27 - v26 - v29 - yw->font_default_w__b, 99);
+    tmp = FontUA::FormateClippedText(yw->tiles[6], tmp, buf, w - v27 - v26 - v29 - yw->font_default_w__b, 99);
 
-    if ( a7 )
+    if ( postf_char )
     {
-        fntcmd_select_tileset(&tmp, 0);
-        fntcmd_store_u8(&tmp, a7);
+        FontUA::select_tileset(&tmp, 0);
+        FontUA::store_u8(&tmp, postf_char);
     }
 
-    if ( flag & 0x100 )
+    if ( flag & FLAG_WITH_HELP )
     {
-        int ts = ((flag & 0x80) != 0) + 24;
+        int ts = ((flag & FLAG_HELP_DOWN) != 0) + 24;
 
-        fntcmd_select_tileset(&tmp, ts);
-        fntcmd_store_s8(&tmp, 65);
+        FontUA::select_tileset(&tmp, ts);
+        FontUA::store_s8(&tmp, 65);
     }
 
-    if ( flag & 0x10 )
+    if ( flag & FLAG_WITH_CLOSE )
     {
-        int ts = ((flag & 0x40) != 0) + 24;
+        int ts = ((flag & FLAG_CLOSE_DOWN) != 0) + 24;
 
-        fntcmd_select_tileset(&tmp, ts);
-        fntcmd_store_s8(&tmp, 85);
+        FontUA::select_tileset(&tmp, ts);
+        FontUA::store_s8(&tmp, 85);
     }
     return tmp;
 }
 
 
-int sb_0x4e947c__sub0__sub0(_NC_STACK_ypaworld *yw, listview *lstvw)
+int GuiList::initDialogStrings(_NC_STACK_ypaworld *yw)
 {
     char *draw_cmd = (char *)AllocVec(512, 1);
 
     if ( !draw_cmd )
         return 0;
 
-    int xpos = lstvw->frm_1.btn_xpos - (yw->screen_width / 2);
-    int ypos = lstvw->frm_1.btn_ypos - (yw->screen_height / 2);
+    int xpos = dialogBox.xpos - (yw->screen_width / 2);
+    int ypos = dialogBox.ypos - (yw->screen_height / 2);
 
-    lstvw->cmdstrm.cmdbuf = draw_cmd;
+    cmdstrm.cmdbuf = draw_cmd;
 
     char *v7 = draw_cmd;
 
-    if ( lstvw->field_1D0 & 2 )
+    if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
     {
-        v7 = lstvw_make_title(yw, xpos, ypos, lstvw->frm_1.btn_width, lstvw->wnd_title, draw_cmd, 0, lstvw->cmd_flag);
+        v7 = GuiBase::FormateTitle(yw, xpos, ypos, dialogBox.btn_width, title, draw_cmd, 0, flags);
 
-        fntcmd_next_line(&v7);
+        FontUA::next_line(&v7);
     }
     else
     {
-        fntcmd_select_tileset(&v7, 0);
-        fntcmd_set_center_xpos(&v7, xpos);
-        fntcmd_set_center_ypos(&v7, ypos);
+        FontUA::select_tileset(&v7, 0);
+        FontUA::set_center_xpos(&v7, xpos);
+        FontUA::set_center_ypos(&v7, ypos);
     }
-    fntcmd_include(&v7, 1); // Include data part
-    fntcmd_include(&v7, 0); // Include slider
-    fntcmd_set_end(&v7);
+    FontUA::include(&v7, 1); // Include data part
+    FontUA::include(&v7, 0); // Include slider
+    FontUA::set_end(&v7);
 
     return 1;
 }
 
-int sb_0x4e947c__sub0(_NC_STACK_ypaworld *yw, listview *lstvw, stack_vals *stak)
+int GuiList::InitBuffers(_NC_STACK_ypaworld *yw)
 {
-
-    //find_id_in_stack_def_val(0x80000009, 0, stak);
-    //find_id_in_stack_def_val(0x8000000A, 0, stak);
-
     char *p = (char *)AllocVec(32, 1);
 
     if ( !p )
         return 0;
 
-    lstvw->field_1BC = p;
-    fntcmd_set_end(&p);
+    iconString = p;
+    FontUA::set_end(&p);
 
-    if ( !sb_0x4e947c__sub0__sub0(yw, lstvw) )
+    if ( !initDialogStrings(yw) )
         return 0;
 
 
@@ -119,211 +115,211 @@ int sb_0x4e947c__sub0(_NC_STACK_ypaworld *yw, listview *lstvw, stack_vals *stak)
     if ( !p )
         return 0;
 
-    lstvw->data_cmdbuf = p;
-    fntcmd_set_end(&p);
+    itemBlock = p;
+    FontUA::set_end(&p);
 
     p = (char *)AllocVec(256, 1);
 
     if ( !p )
         return 0;
 
-    lstvw->slider_cmdbuf = p;
-    fntcmd_set_end(&p);
+    scrollbar = p;
+    FontUA::set_end(&p);
 
     char **z = (char **)AllocVec(sizeof(char *) * 2, 1);
 
     if ( !z )
         return 0;
 
-    lstvw->cmdstrm.includ = z;
+    cmdstrm.includ = z;
 
-    z[0] = lstvw->slider_cmdbuf; // Slider
-    z[1] = lstvw->data_cmdbuf; // Data
+    z[0] = scrollbar; // Slider
+    z[1] = itemBlock; // Data
 
     return 1;
 }
 
-void lstvw_updlimits(_NC_STACK_ypaworld *yw, listview *lstvw, int a3, int a4)
+void GuiList::SetRect(_NC_STACK_ypaworld *yw, int xpos, int ypos)
 {
-    if ( lstvw->width < lstvw->width_min)
-        lstvw->width = lstvw->width_min;
+    if ( entryWidth < minEntryWidth)
+        entryWidth = minEntryWidth;
 
-    if ( lstvw->width > lstvw->width_max)
-        lstvw->width = lstvw->width_max;
+    if ( entryWidth > maxEntryWidth)
+        entryWidth = maxEntryWidth;
 
-    if ( lstvw->element_count < lstvw->element_count_min)
-        lstvw->element_count = lstvw->element_count_min;
+    if ( shownEntries < minShownEntries)
+        shownEntries = minShownEntries;
 
-    if ( lstvw->element_count > lstvw->element_count_max)
-        lstvw->element_count = lstvw->element_count_max;
+    if ( shownEntries > maxShownEntries)
+        shownEntries = maxShownEntries;
 
-    int v8 = lstvw->width;
+    int w = entryWidth;
 
-    if ( (lstvw->field_1D0 & 4) || lstvw->elements_for_scroll_size > lstvw->element_count_max )
-        v8 += yw->font_yscrl_bkg_w;
+    if ( (listFlags & GLIST_FLAG_RESIZEABLE) || numEntries > maxShownEntries )
+        w += yw->font_yscrl_bkg_w;
 
-    int v9 = lstvw->field_1E8 + lstvw->field_1EA + lstvw->font_h * lstvw->element_count;
+    int h = upperVborder + lowerVborder + entryHeight * shownEntries;
 
-    if ( lstvw->field_1D0 & 2 )
-        v9 += yw->font_default_h;
+    if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
+        h += yw->font_default_h;
 
-    if ( a3 == -1 )
+    if ( xpos == -1 )
     {
-        a3 = (yw->screen_width / 2) - (v8 / 2);
+        xpos = (yw->screen_width / 2) - (w / 2);
     }
-    else if ( a3 == -2 )
+    else if ( xpos == -2 )
     {
-        a3 = lstvw->frm_1.btn_xpos;
-    }
-
-    if ( a4 == -1 )
-    {
-        a4 = (yw->screen_height / 2) - (v9 / 2);
-    }
-    else if ( a4 == -2 )
-    {
-        a4 = lstvw->frm_1.btn_ypos;
+        xpos = dialogBox.xpos;
     }
 
-    if ( a3 < 0 )
-        a3 = 0;
+    if ( ypos == -1 )
+    {
+        ypos = (yw->screen_height / 2) - (h / 2);
+    }
+    else if ( ypos == -2 )
+    {
+        ypos = dialogBox.ypos;
+    }
 
-    if ( a4 < yw->icon_energy__h )
-        a4 = yw->icon_energy__h;
+    if ( xpos < 0 )
+        xpos = 0;
 
-    if ( v8 + a3 >= yw->screen_width )
-        a3 = yw->screen_width - v8;
+    if ( ypos < yw->icon_energy__h )
+        ypos = yw->icon_energy__h;
 
-    if ( v9 + a4 >= yw->screen_height - yw->icon0___h )
-        a4 = yw->screen_height - yw->icon0___h - v9;
+    if ( w + xpos >= yw->screen_width )
+        xpos = yw->screen_width - w;
 
-    lstvw->frm_1.btn_ypos = a4;
-    lstvw->frm_1.btn_width = v8;
-    lstvw->frm_1.btn_height = v9;
-    lstvw->frm_1.btn_xpos = a3;
+    if ( h + ypos >= yw->screen_height - yw->icon0___h )
+        ypos = yw->screen_height - yw->icon0___h - h;
+
+    dialogBox.ypos = ypos;
+    dialogBox.btn_width = w;
+    dialogBox.btn_height = h;
+    dialogBox.xpos = xpos;
 }
 
-int sb_0x4e947c__sub1(_NC_STACK_ypaworld *, listview *lstvw)
+int GuiList::initButtons()
 {
-    lstvw->frm_1.field_10 = lstvw->element_count + 8;
+    dialogBox.field_10 = shownEntries + 8;
 
-    button_str1* v4 = (button_str1 *)AllocVec(sizeof(button_str1) * 33, 65537);
+    ButtonBox* v4 = (ButtonBox *)AllocVec(sizeof(ButtonBox) * 33, 65537);
 
     if (!v4)
         return 0;
 
     for (int i = 0; i < 32; i++)
-        lstvw->frm_1.field_18[i] = &v4[i];
+        dialogBox.buttons[i] = &v4[i];
 
 
-    if ( lstvw->field_1D0 & 8 )
+    if ( listFlags & GLIST_FLAG_WITH_ICON )
     {
-        lstvw->frm_2.field_10 = 1;
-        lstvw->frm_2.field_18[0] = &v4[32];
-        lstvw->frm_2.field_18[0]->xpos = 0;
-        lstvw->frm_2.field_18[0]->ypos = 0;
-        lstvw->frm_2.field_18[0]->width = 16;
-        lstvw->frm_2.field_18[0]->fnt_height = 16;
+        iconBox.field_10 = 1;
+        iconBox.buttons[0] = &v4[32];
+        iconBox.buttons[0]->x = 0;
+        iconBox.buttons[0]->y = 0;
+        iconBox.buttons[0]->w = 16;
+        iconBox.buttons[0]->h = 16;
     }
     else
     {
-        lstvw->frm_2.field_10 = 0;
+        iconBox.field_10 = 0;
     }
 
     return 1;
 }
 
-void lstvw_update_main(_NC_STACK_ypaworld *yw, listview *lstvw)
+void GuiList::FormateTitle(_NC_STACK_ypaworld *yw)
 {
-    if ( lstvw->field_1D0 & 2 )
+    if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
     {
-        char *v5 = lstvw->cmdstrm.cmdbuf;
+        char *v5 = cmdstrm.cmdbuf;
 
-        int v6 = (lstvw->frm_1.btn_xpos) - (yw->screen_width / 2);
-        int v9 = (lstvw->frm_1.btn_ypos) - (yw->screen_height / 2);
+        int v6 = (dialogBox.xpos) - (yw->screen_width / 2);
+        int v9 = (dialogBox.ypos) - (yw->screen_height / 2);
 
         int v17, v16;
-        if ( lstvw->cmd_flag & 0x10 )
+        if ( flags & FLAG_WITH_CLOSE )
             v17 = yw->font_default_w__a;
         else
             v17 = 0;
 
-        if ( lstvw->cmd_flag & 0x100 )
+        if ( flags & FLAG_WITH_HELP )
             v16 = yw->font_default_w__a;
         else
             v16 = 0;
 
-        if ( lstvw->field_1D0 & 2 )
+        if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
         {
-            v5 = lstvw_make_title(yw, v6, v9, lstvw->frm_1.btn_width, lstvw->wnd_title, v5, 0, lstvw->cmd_flag);
-            fntcmd_next_line(&v5);
+            v5 = GuiBase::FormateTitle(yw, v6, v9, dialogBox.btn_width, title, v5, 0, flags);
+            FontUA::next_line(&v5);
         }
         else
         {
-            fntcmd_select_tileset(&v5, 0);
-            fntcmd_set_center_xpos(&v5, v6);
-            fntcmd_set_center_ypos(&v5, v9);
+            FontUA::select_tileset(&v5, 0);
+            FontUA::set_center_xpos(&v5, v6);
+            FontUA::set_center_ypos(&v5, v9);
         }
 
-        fntcmd_include(&v5, 1); // Data
-        fntcmd_include(&v5, 0); // Slider
-        fntcmd_set_end(&v5);
+        FontUA::include(&v5, 1); // Data
+        FontUA::include(&v5, 0); // Slider
+        FontUA::set_end(&v5);
 
-        int v14 = lstvw->frm_1.btn_width - v17 - v16;
+        int v14 = dialogBox.btn_width - v17 - v16;
 
-        lstvw->frm_1.field_18[1]->xpos = 0;
-        lstvw->frm_1.field_18[1]->ypos = 0;
-        lstvw->frm_1.field_18[1]->width = v14;
-        lstvw->frm_1.field_18[1]->fnt_height = yw->font_default_h;
+        dialogBox.buttons[1]->x = 0;
+        dialogBox.buttons[1]->y = 0;
+        dialogBox.buttons[1]->w = v14;
+        dialogBox.buttons[1]->h = yw->font_default_h;
 
-        if ( lstvw->cmd_flag & 0x100 )
+        if ( flags & FLAG_WITH_HELP )
         {
-            lstvw->frm_1.field_18[7]->xpos = v14;
-            lstvw->frm_1.field_18[7]->ypos = 0;
-            lstvw->frm_1.field_18[7]->width = v17;
-            lstvw->frm_1.field_18[7]->fnt_height = yw->font_default_h;
-        }
-        else
-        {
-            lstvw->frm_1.field_18[7]->xpos = 0;
-            lstvw->frm_1.field_18[7]->ypos = 0;
-            lstvw->frm_1.field_18[7]->width = 0;
-            lstvw->frm_1.field_18[7]->fnt_height = 0;
-        }
-
-        if ( lstvw->cmd_flag & 0x10 )
-        {
-            lstvw->frm_1.field_18[0]->xpos = lstvw->frm_1.btn_width - v17;
-            lstvw->frm_1.field_18[0]->ypos = 0;
-            lstvw->frm_1.field_18[0]->width = v17;
-            lstvw->frm_1.field_18[0]->fnt_height = yw->font_default_h;
+            dialogBox.buttons[7]->x = v14;
+            dialogBox.buttons[7]->y = 0;
+            dialogBox.buttons[7]->w = v17;
+            dialogBox.buttons[7]->h = yw->font_default_h;
         }
         else
         {
-            lstvw->frm_1.field_18[0]->xpos = 0;
-            lstvw->frm_1.field_18[0]->ypos = 0;
-            lstvw->frm_1.field_18[0]->width = 0;
-            lstvw->frm_1.field_18[0]->fnt_height = 0;
+            dialogBox.buttons[7]->x = 0;
+            dialogBox.buttons[7]->y = 0;
+            dialogBox.buttons[7]->w = 0;
+            dialogBox.buttons[7]->h = 0;
+        }
+
+        if ( flags & FLAG_WITH_CLOSE )
+        {
+            dialogBox.buttons[0]->x = dialogBox.btn_width - v17;
+            dialogBox.buttons[0]->y = 0;
+            dialogBox.buttons[0]->w = v17;
+            dialogBox.buttons[0]->h = yw->font_default_h;
+        }
+        else
+        {
+            dialogBox.buttons[0]->x = 0;
+            dialogBox.buttons[0]->y = 0;
+            dialogBox.buttons[0]->w = 0;
+            dialogBox.buttons[0]->h = 0;
         }
     }
 }
 
-void lstvw_update_slider__sub0(_NC_STACK_ypaworld *yw, listview *lstvw)
+void GuiList::ScrollParamsFromEntries(_NC_STACK_ypaworld *yw)
 {
-    int v3 = lstvw->frm_1.btn_height;
+    int v3 = dialogBox.btn_height;
 
-    if ( lstvw->field_1D0 & 2 )
+    if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
         v3 -= yw->font_default_h;
 
-    if ( lstvw->field_1D0 & 4 )
+    if ( listFlags & GLIST_FLAG_RESIZEABLE )
         v3 -= yw->font_xscrl_h;
 
     int v4, v5;
 
-    if ( lstvw->elements_for_scroll_size )
+    if ( numEntries )
     {
-        v4 = v3 * lstvw->element_count / lstvw->elements_for_scroll_size;
-        v5 = v3 * lstvw->scroll_pos / lstvw->elements_for_scroll_size;
+        v4 = v3 * shownEntries / numEntries;
+        v5 = v3 * firstShownEntries / numEntries;
     }
     else
     {
@@ -347,665 +343,426 @@ void lstvw_update_slider__sub0(_NC_STACK_ypaworld *yw, listview *lstvw)
     if ( v5 + v4 > v3 )
         v5 = v3 - v4;
 
-    lstvw->field_244 = v4;
-    lstvw->field_246 = v5;
-    lstvw->field_242 = v3;
+    btnSize = v4;
+    btnStart = v5;
+    scrlSize = v3;
 }
 
-void lstvw_update_slider(_NC_STACK_ypaworld *yw, listview *lstvw)
+void GuiList::FormateScrollbar(_NC_STACK_ypaworld *yw)
 {
-    char *v5 = lstvw->slider_cmdbuf;
+    char *v5 = scrollbar;
 
-    if ( lstvw->field_1D0 & 4 || lstvw->elements_for_scroll_size > lstvw->element_count_max )
+    if ( listFlags & GLIST_FLAG_RESIZEABLE || numEntries > maxShownEntries )
     {
 
-        if ( lstvw->field_1D0 & 0x40 )
+        if ( listFlags & GLIST_FLAG_IN_SCROLLING )
         {
-            lstvw->scroll_pos = lstvw->elements_for_scroll_size * lstvw->field_246  / lstvw->field_242;
+            firstShownEntries = numEntries * btnStart  / scrlSize;
 
-            if ( lstvw->element_count + lstvw->scroll_pos > lstvw->elements_for_scroll_size)
+            if ( shownEntries + firstShownEntries > numEntries)
             {
-                lstvw->scroll_pos = lstvw->elements_for_scroll_size - lstvw->element_count;
+                firstShownEntries = numEntries - shownEntries;
 
-                if ( lstvw->scroll_pos < 0 )
-                    lstvw->scroll_pos = 0;
+                if ( firstShownEntries < 0 )
+                    firstShownEntries = 0;
             }
         }
         else
         {
-            lstvw_update_slider__sub0(yw, lstvw);
+            ScrollParamsFromEntries(yw);
         }
 
-        int v34 = lstvw->frm_1.btn_width - yw->font_yscrl_bkg_w;
+        int v34 = dialogBox.btn_width - yw->font_yscrl_bkg_w;
         int v35 = 0;
 
-        if ( lstvw->field_1D0 & 2 )
+        if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
             v35 = yw->font_default_h;
 
-        lstvw->frm_1.field_18[2]->xpos = v34; // Scroll up part
-        lstvw->frm_1.field_18[2]->ypos = v35;
-        lstvw->frm_1.field_18[2]->width = yw->font_yscrl_bkg_w;
-        lstvw->frm_1.field_18[2]->fnt_height = lstvw->field_246;
-        lstvw->frm_1.field_18[3]->xpos = v34; // Scroll position
-        lstvw->frm_1.field_18[3]->ypos = lstvw->field_246 + v35;
-        lstvw->frm_1.field_18[3]->width = yw->font_yscrl_bkg_w;
-        lstvw->frm_1.field_18[3]->fnt_height = lstvw->field_244;
-        lstvw->frm_1.field_18[4]->xpos = v34; // Scroll down part
-        lstvw->frm_1.field_18[4]->ypos = lstvw->field_244 + lstvw->field_246 + v35;
-        lstvw->frm_1.field_18[4]->width = yw->font_yscrl_bkg_w;
-        lstvw->frm_1.field_18[4]->fnt_height = lstvw->field_242 - (lstvw->field_244 + lstvw->field_246);
-        lstvw->frm_1.field_18[6]->xpos = 0;
-        lstvw->frm_1.field_18[6]->ypos = lstvw->frm_1.btn_height - lstvw->field_1EA;
-        lstvw->frm_1.field_18[6]->width = lstvw->frm_1.btn_width - yw->font_yscrl_bkg_w;
-        lstvw->frm_1.field_18[6]->fnt_height = lstvw->field_1EA;
+        dialogBox.buttons[2]->x = v34; // Scroll up part
+        dialogBox.buttons[2]->y = v35;
+        dialogBox.buttons[2]->w = yw->font_yscrl_bkg_w;
+        dialogBox.buttons[2]->h = btnStart;
+        dialogBox.buttons[3]->x = v34; // Scroll position
+        dialogBox.buttons[3]->y = btnStart + v35;
+        dialogBox.buttons[3]->w = yw->font_yscrl_bkg_w;
+        dialogBox.buttons[3]->h = btnSize;
+        dialogBox.buttons[4]->x = v34; // Scroll down part
+        dialogBox.buttons[4]->y = btnSize + btnStart + v35;
+        dialogBox.buttons[4]->w = yw->font_yscrl_bkg_w;
+        dialogBox.buttons[4]->h = scrlSize - (btnSize + btnStart);
+        dialogBox.buttons[6]->x = 0;
+        dialogBox.buttons[6]->y = dialogBox.btn_height - lowerVborder;
+        dialogBox.buttons[6]->w = dialogBox.btn_width - yw->font_yscrl_bkg_w;
+        dialogBox.buttons[6]->h = lowerVborder;
 
-        if ( lstvw->field_1D0 & 4 )
+        if ( listFlags & GLIST_FLAG_RESIZEABLE )
         {
-            lstvw->frm_1.field_18[5]->xpos = v34; // Resize button
-            lstvw->frm_1.field_18[5]->ypos = lstvw->field_242 + v35;
-            lstvw->frm_1.field_18[5]->width = yw->font_yscrl_bkg_w;
-            lstvw->frm_1.field_18[5]->fnt_height = yw->font_xscrl_h;
+            dialogBox.buttons[5]->x = v34; // Resize button
+            dialogBox.buttons[5]->y = scrlSize + v35;
+            dialogBox.buttons[5]->w = yw->font_yscrl_bkg_w;
+            dialogBox.buttons[5]->h = yw->font_xscrl_h;
         }
         else
         {
-            memset(lstvw->frm_1.field_18[5], 0, sizeof(button_str1));
+            memset(dialogBox.buttons[5], 0, sizeof(ButtonBox));
         }
 
-        int v7 = lstvw->frm_1.btn_xpos + v34 - (yw->screen_width / 2);
-        int v11 = lstvw->frm_1.btn_ypos + v35 - (yw->screen_height / 2);
+        int v7 = dialogBox.xpos + v34 - (yw->screen_width / 2);
+        int v11 = dialogBox.ypos + v35 - (yw->screen_height / 2);
 
-        fntcmd_set_center_xpos(&v5, v7);
-        fntcmd_set_center_ypos(&v5, v11);
+        FontUA::set_center_xpos(&v5, v7);
+        FontUA::set_center_ypos(&v5, v11);
 
-        if ( lstvw->field_246 > 0 )
+        if ( btnStart > 0 )
         {
-            fntcmd_reset_tileset(&v5, 13);
-            fntcmd_store_u8(&v5, 67);
-            fntcmd_next_line(&v5);
-            fntcmd_reset_tileset(&v5, 12);
+            FontUA::reset_tileset(&v5, 13);
+            FontUA::store_u8(&v5, 67);
+            FontUA::next_line(&v5);
+            FontUA::reset_tileset(&v5, 12);
 
-            int v15 = lstvw->field_246 - 1;
+            int v15 = btnStart - 1;
 
             while (v15 >= yw->font_yscrl_h)
             {
-                fntcmd_store_u8(&v5, 66);
-                fntcmd_next_line(&v5);
+                FontUA::store_u8(&v5, 66);
+                FontUA::next_line(&v5);
                 v15 -= yw->font_yscrl_h;
             }
 
             if ( v15 > 0 )
             {
-                fntcmd_set_yheight(&v5, v15);
+                FontUA::set_yheight(&v5, v15);
 
-                fntcmd_store_u8(&v5, 66);
-                fntcmd_next_line(&v5);
+                FontUA::store_u8(&v5, 66);
+                FontUA::next_line(&v5);
             }
         }
 
 
-        if ( lstvw->field_244 > 0 )
+        if ( btnSize > 0 )
         {
-            fntcmd_reset_tileset(&v5, 13);
-            fntcmd_store_u8(&v5, 69);
-            fntcmd_next_line(&v5);
-            fntcmd_reset_tileset(&v5, 12);
+            FontUA::reset_tileset(&v5, 13);
+            FontUA::store_u8(&v5, 69);
+            FontUA::next_line(&v5);
+            FontUA::reset_tileset(&v5, 12);
 
-            int v15 = lstvw->field_244 - 1;
+            int v15 = btnSize - 1;
 
             while (v15 > yw->font_yscrl_h)
             {
-                fntcmd_store_u8(&v5, 67);
-                fntcmd_next_line(&v5);
+                FontUA::store_u8(&v5, 67);
+                FontUA::next_line(&v5);
                 v15 -= yw->font_yscrl_h;
             }
 
             if ( v15 > 1 )
             {
-                fntcmd_set_yheight(&v5, v15 - 1);
+                FontUA::set_yheight(&v5, v15 - 1);
 
-                fntcmd_store_u8(&v5, 67);
-                fntcmd_next_line(&v5);
+                FontUA::store_u8(&v5, 67);
+                FontUA::next_line(&v5);
             }
         }
 
-        fntcmd_reset_tileset(&v5, 13);
-        fntcmd_store_u8(&v5, 70);
-        fntcmd_next_line(&v5);
+        FontUA::reset_tileset(&v5, 13);
+        FontUA::store_u8(&v5, 70);
+        FontUA::next_line(&v5);
 
-        int v26 = lstvw->field_242 - (lstvw->field_246  + lstvw->field_244);
+        int v26 = scrlSize - (btnStart  + btnSize);
 
         if ( v26 > 0 )
         {
-            fntcmd_reset_tileset(&v5, 12);
+            FontUA::reset_tileset(&v5, 12);
 
             while (v26 > yw->font_yscrl_h)
             {
-                fntcmd_store_u8(&v5, 66);
-                fntcmd_next_line(&v5);
+                FontUA::store_u8(&v5, 66);
+                FontUA::next_line(&v5);
                 v26 -= yw->font_yscrl_h;
             }
 
             if ( v26 > 1 )
             {
-                fntcmd_set_yheight(&v5, v26 - 1);
+                FontUA::set_yheight(&v5, v26 - 1);
 
-                fntcmd_store_u8(&v5, 66);
-                fntcmd_next_line(&v5);
+                FontUA::store_u8(&v5, 66);
+                FontUA::next_line(&v5);
             }
 
-            fntcmd_reset_tileset(&v5, 13);
-            fntcmd_store_u8(&v5, 68);
-            fntcmd_next_line(&v5);
+            FontUA::reset_tileset(&v5, 13);
+            FontUA::store_u8(&v5, 68);
+            FontUA::next_line(&v5);
         }
 
-        if ( lstvw->field_1D0 & 4 )
+        if ( listFlags & GLIST_FLAG_RESIZEABLE )
         {
-            fntcmd_reset_tileset(&v5, 11);
-            fntcmd_store_u8(&v5, 71);
+            FontUA::reset_tileset(&v5, 11);
+            FontUA::store_u8(&v5, 71);
         }
     }
     else
     {
-        memset(lstvw->frm_1.field_18[2], 0, sizeof(button_str1));
-        memset(lstvw->frm_1.field_18[3], 0, sizeof(button_str1));
-        memset(lstvw->frm_1.field_18[4], 0, sizeof(button_str1));
-        memset(lstvw->frm_1.field_18[5], 0, sizeof(button_str1));
-        memset(lstvw->frm_1.field_18[6], 0, sizeof(button_str1));
+        memset(dialogBox.buttons[2], 0, sizeof(ButtonBox));
+        memset(dialogBox.buttons[3], 0, sizeof(ButtonBox));
+        memset(dialogBox.buttons[4], 0, sizeof(ButtonBox));
+        memset(dialogBox.buttons[5], 0, sizeof(ButtonBox));
+        memset(dialogBox.buttons[6], 0, sizeof(ButtonBox));
     }
-    fntcmd_set_end(&v5);
+    FontUA::set_end(&v5);
 }
 
-void lstvw_update_elements_areas(_NC_STACK_ypaworld *yw, listview *lstvw)
+void GuiList::FormateItemBlock(_NC_STACK_ypaworld *yw)
 {
-    lstvw->frm_1.field_10 = lstvw->element_count + 8;
+    dialogBox.field_10 = shownEntries + 8;
 
-    int v3 = lstvw->field_1E8;
+    int v3 = upperVborder;
 
-    if ( lstvw->field_1D0 & 2 )
+    if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
         v3 += yw->font_default_h;
 
-    for (int i = 0; i < lstvw->element_count; i++)
+    for (int i = 0; i < shownEntries; i++)
     {
-        lstvw->frm_1.field_18[8 + i]->xpos = 0;
-        lstvw->frm_1.field_18[8 + i]->ypos = v3 + i * lstvw->font_h;
-        lstvw->frm_1.field_18[8 + i]->width = lstvw->width;
-        lstvw->frm_1.field_18[8 + i]->fnt_height = lstvw->font_h;
+        dialogBox.buttons[8 + i]->x = 0;
+        dialogBox.buttons[8 + i]->y = v3 + i * entryHeight;
+        dialogBox.buttons[8 + i]->w = entryWidth;
+        dialogBox.buttons[8 + i]->h = entryHeight;
     }
 }
 
 
-int lstvw_init(_NC_STACK_ypaworld *yw, listview *lstvw, ...)
+int GuiList::Init(_NC_STACK_ypaworld *yw, tInit &in)
 {
-    stack_vals vals[128];
-
-    va_list va;
-    va_start(va, lstvw);
-
-    va_to_arr(vals, 128, va);
-
-    va_end(va);
-
-    const char *v2 = (const char *)find_id_in_stack_def_val(0x80000001, 0, vals);
-    int v9 = find_id_in_stack_def_val(0x80000002, 0, vals);
-    int v13 = find_id_in_stack_def_val(0x80000008, 0, vals);
-    int v15 = find_id_in_stack_def_val(0x80000009, 0, vals);
-    int v8 = find_id_in_stack_def_val(0x8000000F, 0, vals);
-    int v11 = find_id_in_stack_def_val(0x80000011, 0, vals);
-    int v12 = find_id_in_stack_def_val(0x80000013, 0, vals);
-    int v10 = find_id_in_stack_def_val(0x80000017, 0, vals);
-    int v14 = find_id_in_stack_def_val(0x80000018, 1, vals);
-
-    lstvw->field_1D4 = find_id_in_stack_def_val(0x80000014, 65, vals);
-    lstvw->elements_for_scroll_size = find_id_in_stack_def_val(0x80000003, 0, vals);
-    lstvw->element_count = find_id_in_stack_def_val(0x80000004, 0, vals);
-    lstvw->scroll_pos = find_id_in_stack_def_val(0x80000005, 0, vals);
-    lstvw->field_1DE = find_id_in_stack_def_val(0x80000006, 0, vals);
-    lstvw->element_count_max = find_id_in_stack_def_val(0x80000007, 0, vals);
-    lstvw->element_count_min = find_id_in_stack_def_val(0x80000012, 0, vals);
-    lstvw->font_h = find_id_in_stack_def_val(0x8000000B, yw->font_default_h, vals);
-    lstvw->width = find_id_in_stack_def_val(0x8000000C, 80, vals);
-    lstvw->width_min = find_id_in_stack_def_val(0x8000000D, 60, vals);
-    lstvw->width_max = find_id_in_stack_def_val(0x8000000E, 1024, vals);
-    lstvw->field_1E8 = find_id_in_stack_def_val(0x80000015, 0, vals);
-    lstvw->field_1EA = find_id_in_stack_def_val(0x80000016, 0, vals);
+    closeChar = in.closeChar;
+    numEntries = in.numEntries;
+    shownEntries = in.shownEntries;
+    firstShownEntries = in.firstShownEntry;
+    selectedEntry = in.selectedEntry;
+    maxShownEntries = in.maxShownEntries;
+    minShownEntries = in.minShownEntries;
+    entryHeight = in.entryHeight;
+    entryWidth = in.entryWidth;
+    minEntryWidth = in.minEntryWidth;
+    maxEntryWidth = in.maxEntryWidth;
+    upperVborder = in.upperVborder;
+    lowerVborder = in.lowerVborder;
 
 
 
-    if ( !lstvw->field_1E8 && !lstvw->field_1EA )
+    if ( !upperVborder && !lowerVborder )
     {
-        lstvw->field_1E8 = find_id_in_stack_def_val(0x80000010, 0, vals);;
-        lstvw->field_1EA = lstvw->field_1E8;
+        lowerVborder = upperVborder = in.vborder;
     }
 
-    lstvw->field_1D0 = 0;
-    lstvw->field_1E4 = -1;
+    listFlags = 0;
+    mouseItem = -1;
 
-    if ( v8 )
-        lstvw->field_1D0 |= 1;
+    if ( in.enabled )
+        listFlags |= GLIST_FLAG_ENABLED;
 
-    if ( v2 )
+    if ( in.title )
     {
-        lstvw->field_1D0 |= 2;
-        strncpy(lstvw->wnd_title, v2, 64);
+        listFlags |= GLIST_FLAG_WITH_TITLEBAR;
+        strncpy(title, in.title, 64);
     }
 
 
-    if ( v9 )
-        lstvw->field_1D0 |= 4;
+    if ( in.resizeable )
+        listFlags |= GLIST_FLAG_RESIZEABLE;
 
-    if ( v11 )
-        lstvw->field_1D0 |= 0x10;
+    if ( in.instantInput )
+        listFlags |= GLIST_FLAG_INSTANT_INPUT;
 
-    if ( v12 )
-        lstvw->field_1D0 |= 0x100;
+    if ( in.staticItems )
+        listFlags |= GLIST_FLAG_STATIC;
 
-    if ( v10 )
-        lstvw->field_1D0 |= 0x800;
+    if ( in.keyboardInput )
+        listFlags |= GLIST_FLAG_KEYB_INPUT;
 
-    if ( v13 )
+    if ( in.withIcon )
     {
-        if ( lstvw->field_1D0 & 2 )
-            lstvw->field_1D0 |= 8;
+        if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
+            listFlags |= GLIST_FLAG_WITH_ICON;
     }
 
-    lstvw->cmd_flag = 0;
+    flags = 0;
 
-    if ( lstvw->field_1D0 & 8 )
-        lstvw->cmd_flag |= 5;
+    if ( listFlags & GLIST_FLAG_WITH_ICON )
+        flags |= (FLAG_ICONIFED | FLAG_WITH_ICON);
     else
-        lstvw->cmd_flag |= 0x20;
+        flags |= FLAG_CLOSED;
 
-    if ( lstvw->field_1D0 & 2 )
+    if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
     {
-        lstvw->cmd_flag |= 0x18;
+        flags |= (FLAG_WITH_CLOSE | FLAG_WITH_DRAGBAR);
 
-        if ( v14 )
-            lstvw->cmd_flag |= 0x100;
+        if ( in.withHelp )
+            flags |= FLAG_WITH_HELP;
     }
 
 
-    if ( lstvw->field_1D0 & 8 )
+    if ( listFlags & GLIST_FLAG_WITH_ICON )
     {
-        lstvw->frm_2.btn_xpos = 16 * v15;
-        lstvw->frm_2.btn_width = 16;
-        lstvw->frm_2.btn_height = 16;
-        lstvw->frm_2.field_10 = 1;
-        lstvw->frm_2.btn_ypos = yw->screen_height - 32;
+        iconBox.xpos = 16 * in.iconPos;
+        iconBox.btn_width = 16;
+        iconBox.btn_height = 16;
+        iconBox.field_10 = 1;
+        iconBox.ypos = yw->screen_height - 32;
     }
     else
     {
-        lstvw->frm_2.btn_ypos = 0;
-        lstvw->frm_2.btn_width = 0;
-        lstvw->frm_2.btn_height = 0;
-        lstvw->frm_2.field_10 = 0;
-        lstvw->frm_2.btn_xpos = 0;
+        iconBox.ypos = 0;
+        iconBox.btn_width = 0;
+        iconBox.btn_height = 0;
+        iconBox.field_10 = 0;
+        iconBox.xpos = 0;
     }
 
 
-    if ( !sb_0x4e947c__sub0(yw, lstvw, vals) )
+    if ( !InitBuffers(yw) )
     {
         return 0;
     }
 
 
 
-    lstvw_updlimits(yw, lstvw, -1, -1);
+    SetRect(yw, -1, -1);
 
-    if ( !sb_0x4e947c__sub1(yw, lstvw) )
+    if ( !initButtons() )
     {
         return 0;
     }
 
 
-    lstvw_update_main(yw, lstvw);
-    lstvw_update_slider(yw, lstvw);
-    lstvw_update_elements_areas(yw, lstvw);
+    FormateTitle(yw);
+    FormateScrollbar(yw);
+    FormateItemBlock(yw);
 
     return 1;
 }
 
 
-char *lstvw_up_border(_NC_STACK_ypaworld *yw, listview *lstvw, char *cmdbuf, int tileset, const char *a5)
+char *GuiList::ItemsPreLayout(_NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5)
 {
-    int v14 = lstvw->frm_1.btn_xpos - (yw->screen_width / 2);
-    int v12 = lstvw->frm_1.btn_ypos - (yw->screen_height / 2);
+    int v14 = dialogBox.xpos - (yw->screen_width / 2);
+    int v12 = dialogBox.ypos - (yw->screen_height / 2);
 
-    if ( lstvw->field_1D0 & 2 )
+    if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
         v12 += yw->font_default_h;
 
     char *tmp = cmdbuf;
-    fntcmd_reset_tileset(&tmp, tileset);
-    fntcmd_set_center_xpos(&tmp, v14);
-    fntcmd_set_center_ypos(&tmp, v12);
+    FontUA::reset_tileset(&tmp, tileset);
+    FontUA::set_center_xpos(&tmp, v14);
+    FontUA::set_center_ypos(&tmp, v12);
 
-    fntcmd_set_yheight(&tmp, lstvw->field_1E8);
+    FontUA::set_yheight(&tmp, upperVborder);
 
-    fntcmd_store_s8(&tmp, a5[0]);
+    FontUA::store_s8(&tmp, a5[0]);
 
-    fntcmd_op17(&tmp, lstvw->width - yw->font_default_w__b);
+    FontUA::op17(&tmp, entryWidth - yw->font_default_w__b);
 
-    fntcmd_store_s8(&tmp, a5[1]);
-    fntcmd_store_s8(&tmp, a5[2]);
-    fntcmd_next_line(&tmp);
+    FontUA::store_s8(&tmp, a5[1]);
+    FontUA::store_s8(&tmp, a5[2]);
+    FontUA::next_line(&tmp);
 
     return tmp;
 }
 
-char * lstvw_txt_line_textual(_NC_STACK_ypaworld *yw, char *cmdbuf, listview_t1 *arg)
+char *GuiList::ItemsPostLayout(_NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5)
 {
-    tiles_stru *v3 = yw->tiles[ arg->tileset_id ];
-
-    int v4 = arg->field_width;
-
-    if ( arg->flags & 1 )
-        v4 -= v3->chars[arg->left_tile].width;
-
-    if ( arg->flags & 2 )
-        v4 -= v3->chars[arg->right_tile].width;
-
     char *tmp = cmdbuf;
-    fntcmd_select_tileset(&tmp, arg->tileset_id);
-
-
-    if ( arg->flags & 1 )
-        fntcmd_store_s8(&tmp, arg->left_tile);
-
-    if ( v4 > 0 )
-    {
-        fntcmd_copy_position(&tmp);
-
-        int v8 = v4;
-
-        while (v8 > 0)
-        {
-            if ( v8 <= 255 )
-            {
-                fntcmd_op10(&tmp, v8);
-            }
-            else
-            {
-                fntcmd_op10(&tmp, 255);
-            }
-
-            fntcmd_store_u8(&tmp, arg->bkg_tile);
-            v8 -= 255;
-        }
-
-        int v20 = 0;
-
-        if ( arg->flags & 4 )
-        {
-            v20 = 1;
-        }
-        else if ( arg->flags & 8 )
-        {
-            v20 = 2;
-        }
-        else
-        {
-            v20 = 4;
-        }
-
-        fntcmd_add_txt(&tmp, v4, v20, arg->txt);
-    }
-
-    if ( arg->flags & 2 )
-    {
-        fntcmd_store_s8(&tmp, arg->right_tile);
-    }
-    return tmp;
-}
-
-char *lstvw_txt_line_tiles(_NC_STACK_ypaworld *yw, char *cmdbuf, listview_t1 *arg)
-{
-    tiles_stru *v30 = yw->tiles[ arg->tileset_id ];
-
-    int v28 = 0;
-    int v29 = 0;
-    int v27 = 0;
-    int v26 = 0;
-
-    int v6 = 0;
-    const char *v8 = arg->txt;
-    while ( *v8 )
-    {
-        v6 += v30->chars[ (uint8_t)*v8 ].width;
-        v8++;
-    }
-
-    int v10 = arg->field_width - v6;
-    if ( arg->flags & 1 )
-        v10 -= v30->chars[arg->left_tile].width;
-    if ( arg->flags & 2 )
-        v10 -= v30->chars[arg->right_tile].width;
-
-    char *tmp = cmdbuf;
-    fntcmd_select_tileset(&tmp, arg->tileset_id);
-
-    if ( v10 <= 0 )
-    {
-        if ( v10 < 0 )
-        {
-            if ( arg->flags & 4 )
-            {
-                v29 = -v10;
-            }
-            else if ( arg->flags & 8 )
-            {
-                v28 = -v10;
-            }
-            else if ( arg->flags & 0x10 )
-            {
-                v28 = (-v10) / 2;
-                v29 = (-v10) - ((-v10) / 2);
-            }
-        }
-    }
-    else
-    {
-        if ( arg->flags & 4 )
-        {
-            v26 = v10;
-        }
-        else if ( arg->flags & 8 )
-        {
-            v27 = v10;
-        }
-        else if ( arg->flags & 0x10 )
-        {
-            v27 = v10 / 2;
-            v26 = v10 - (v10 / 2);
-        }
-    }
-
-    int v16 = v6 - v29 - v28;
-
-    if ( arg->flags & 1 )
-        fntcmd_store_u8(&tmp, arg->left_tile);
-
-    int chr = 0;
-
-    const char *v7 = arg->txt;
-
-    while (v28 > 0)
-    {
-        chr = *v7;
-        v7++;
-        v28 -= v30->chars[(uint8_t)chr].width;
-    }
-
-    if ( v28 < 0 )
-    {
-        fntcmd_set_xoff(&tmp, v28 + v30->chars[(uint8_t)chr].width);
-        fntcmd_store_u8(&tmp, chr);
-    }
-
-    if ( v27 > 0 )
-    {
-        while ( v27 > 255 )
-        {
-            fntcmd_op10(&tmp, 255);
-            fntcmd_store_u8(&tmp, arg->bkg_tile);
-            v27 -= 255;
-        }
-
-        if ( v27 > 0 )
-        {
-            fntcmd_op10(&tmp, v27);
-            fntcmd_store_u8(&tmp, arg->bkg_tile);
-        }
-    }
-
-    if (v16 > 0)
-    {
-        chr = 0;
-        while ( v16 >= 0 )
-        {
-            chr = *v7;
-            v7++;
-            if ( chr == 0)
-                break;
-
-            v16 -= v30->chars[(uint8_t)chr].width;
-            fntcmd_store_u8(&tmp, chr);
-        }
-        if (chr)
-        {
-            fntcmd_set_xwidth(&tmp, v16 + v30->chars[(uint8_t)chr].width);
-            fntcmd_store_u8(&tmp, chr);
-        }
-    }
-
-    if ( v26 > 0 )
-    {
-        while ( v26 > 255 )
-        {
-            fntcmd_op10(&tmp, 255);
-            fntcmd_store_u8(&tmp, arg->bkg_tile);
-            v26 -= 255;
-        }
-        if ( v26 > 0 )
-        {
-            fntcmd_op10(&tmp, v26);
-            fntcmd_store_u8(&tmp, arg->bkg_tile);
-        }
-    }
-    if ( arg->flags & 2 )
-        fntcmd_store_u8(&tmp, arg->right_tile);
-
+    FontUA::reset_tileset(&tmp, tileset);
+    FontUA::set_yoff(&tmp, yw->tiles[tileset]->font_height - lowerVborder);
+    FontUA::store_s8(&tmp, a5[0]);
+    FontUA::op17(&tmp, entryWidth - yw->font_default_w__b);
+    FontUA::store_s8(&tmp, a5[1]);
+    FontUA::store_s8(&tmp, a5[2]);
     return tmp;
 }
 
 
-char * lstvw_txt_line(_NC_STACK_ypaworld *yw, char *a2, int a3, listview_t1 *a4)
+void GuiList::InputHandle(_NC_STACK_ypaworld *yw, struC5 *struc)
 {
-    char *tmp = a2;
-    for (int i = 0; i < a3; i++)
-        if (a4[i].flags & 0x20)
-            tmp = lstvw_txt_line_textual(yw, tmp, &a4[i]);
-        else
-            tmp = lstvw_txt_line_tiles(yw, tmp, &a4[i]);
-
-    return tmp;
-}
-
-
-char * lstvw_down_border(_NC_STACK_ypaworld *yw, listview *lstvw, char *a4, int tileset, const char *a5)
-{
-    char *tmp = a4;
-    fntcmd_reset_tileset(&tmp, tileset);
-    fntcmd_set_yoff(&tmp, yw->tiles[tileset]->font_height - lstvw->field_1EA);
-    fntcmd_store_s8(&tmp, a5[0]);
-    fntcmd_op17(&tmp, lstvw->width - yw->font_default_w__b);
-    fntcmd_store_s8(&tmp, a5[1]);
-    fntcmd_store_s8(&tmp, a5[2]);
-    return tmp;
-}
-
-
-void lstvw_update_input(_NC_STACK_ypaworld *yw, listview *lstvw, struC5 *struc)
-{
-    if ( lstvw->cmd_flag & 0x21 )
+    if ( flags & (FLAG_CLOSED | FLAG_ICONIFED) )
     {
-        lstvw->field_1D0 &= 0xFFFFFF1F;
+        listFlags &= ~(GLIST_FLAG_IN_RESIZING | GLIST_FLAG_IN_SCROLLING | GLIST_FLAG_IN_SELECT);
         return;
     }
 
     winp_131arg *v6 = &struc->winp131arg;
 
-    int v3 = lstvw->frm_1.btn_width;
-    int v41 = lstvw->frm_1.btn_height;
+    int v3 = dialogBox.btn_width;
+    int v41 = dialogBox.btn_height;
 
-    lstvw->field_1D0 &= 0xFFFFFBFF;
+    listFlags &= ~GLIST_FLAG_SEL_DONE;
 
-    int xpos = lstvw->frm_1.btn_xpos;
+    int xpos = dialogBox.xpos;
 
-    int ypos = lstvw->frm_1.btn_ypos;
+    int ypos = dialogBox.ypos;
 
-    lstvw->field_1E4 = -1;
+    mouseItem = -1;
 
 
 
-    if ( lstvw->field_1D0 & 0x800 )
+    if ( listFlags & GLIST_FLAG_KEYB_INPUT )
     {
         if ( struc->downed_key == VK_UP )
         {
-            lstvw->field_1DE--;
-            if ( lstvw->field_1DE < 0 )
+            selectedEntry--;
+            if ( selectedEntry < 0 )
             {
-                lstvw->field_1DE = lstvw->elements_for_scroll_size - 1;
-                lstvw->scroll_pos = lstvw->elements_for_scroll_size - lstvw->element_count;
+                selectedEntry = numEntries - 1;
+                firstShownEntries = numEntries - shownEntries;
             }
-            if ( lstvw->field_1DE < lstvw->scroll_pos )
+            if ( selectedEntry < firstShownEntries )
             {
-                lstvw->scroll_pos = lstvw->field_1DE;
+                firstShownEntries = selectedEntry;
             }
         }
         else if ( struc->downed_key == VK_DOWN )
         {
-            lstvw->field_1DE++;
-            if ( lstvw->field_1DE >= lstvw->elements_for_scroll_size )
+            selectedEntry++;
+            if ( selectedEntry >= numEntries )
             {
-                lstvw->scroll_pos = 0;
-                lstvw->field_1DE = 0;
+                firstShownEntries = 0;
+                selectedEntry = 0;
             }
-            if ( lstvw->scroll_pos + lstvw->element_count - 1 <= lstvw->field_1DE )
+            if ( firstShownEntries + shownEntries - 1 <= selectedEntry )
             {
-                lstvw->scroll_pos = lstvw->field_1DE - lstvw->element_count + 1;
+                firstShownEntries = selectedEntry - shownEntries + 1;
             }
         }
     }
 
-    yw->field_17bc = (lstvw->field_1D0 & 0xE0) && (v6->flag & 4);
+    yw->field_17bc = (listFlags & (GLIST_FLAG_IN_RESIZING | GLIST_FLAG_IN_SCROLLING | GLIST_FLAG_IN_SELECT)) && (v6->flag & 4);
 
-    //printf("%x %x %d, \n", (int)&lstvw->frm_1 , (int)struc->winp131arg.selected_btn , struc->winp131arg.selected_btnID);
+    //printf("%x %x %d, \n", (int)&dialogBox , (int)struc->winp131arg.selected_btn , struc->winp131arg.selected_btnID);
 
-    if ( &lstvw->frm_1 == struc->winp131arg.selected_btn && struc->winp131arg.selected_btnID >= 8 )
-        lstvw->field_1D0 &= 0xFFFFFDFF;
+    if ( &dialogBox == struc->winp131arg.selected_btn && struc->winp131arg.selected_btnID >= 8 )
+        listFlags &= ~GLIST_FLAG_NO_SCROLL;
 
-    if ( lstvw->field_1D0 & 0x20 )
+    if ( listFlags & GLIST_FLAG_IN_RESIZING )
     {
         if ( v6->flag & 4 )
         {
-            int xps = v6->move[0].x + lstvw->field_23A;
-            int yps = v6->move[0].y + lstvw->field_23C;
+            int xps = v6->move[0].x + rszX;
+            int yps = v6->move[0].y + rszY;
 
-            int v43 = lstvw->field_1EA + lstvw->field_1E8 + lstvw->font_h * lstvw->element_count_max;
-            int v44 = lstvw->field_1EA + lstvw->field_1E8 + lstvw->font_h * lstvw->element_count_min;
+            int v43 = lowerVborder + upperVborder + entryHeight * maxShownEntries;
+            int v44 = lowerVborder + upperVborder + entryHeight * minShownEntries;
 
-            if ( lstvw->field_1D0 & 2 )
+            if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
             {
                 v44 += yw->font_default_h;
                 v43 += yw->font_default_h;
             }
 
-            int v16 = yw->font_yscrl_bkg_w + lstvw->width_max;
+            int v16 = yw->font_yscrl_bkg_w + maxEntryWidth;
 
             if ( xps > v16 )
                 xps = v16;
             else
             {
-                v16 = yw->font_yscrl_bkg_w + lstvw->width_min;
+                v16 = yw->font_yscrl_bkg_w + minEntryWidth;
 
                 if ( xps < v16 )
                     xps = v16;
@@ -1022,177 +779,177 @@ void lstvw_update_input(_NC_STACK_ypaworld *yw, listview *lstvw, struC5 *struc)
             if ( ypos + yps >= yw->screen_height - yw->icon0___h )
                 yps = yw->screen_height - yw->icon0___h - ypos;
 
-            if ( lstvw->field_1D0 & 2 )
-                lstvw->element_count = (yps - lstvw->field_1EA - lstvw->field_1E8 - yw->font_default_h) / lstvw->font_h;
+            if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
+                shownEntries = (yps - lowerVborder - upperVborder - yw->font_default_h) / entryHeight;
             else
-                lstvw->element_count = (yps - lstvw->field_1EA - lstvw->field_1E8 ) / lstvw->font_h;
+                shownEntries = (yps - lowerVborder - upperVborder ) / entryHeight;
 
-            if ( lstvw->scroll_pos + lstvw->element_count > lstvw->elements_for_scroll_size )
+            if ( firstShownEntries + shownEntries > numEntries )
             {
-                lstvw->scroll_pos = lstvw->elements_for_scroll_size - lstvw->element_count;
-                if ( lstvw->scroll_pos < 0 )
-                    lstvw->scroll_pos = 0;
+                firstShownEntries = numEntries - shownEntries;
+                if ( firstShownEntries < 0 )
+                    firstShownEntries = 0;
             }
 
-            lstvw->width = xps - yw->font_yscrl_bkg_w;
+            entryWidth = xps - yw->font_yscrl_bkg_w;
 
-            lstvw_updlimits(yw, lstvw, -2, -2);
+            SetRect(yw, -2, -2);
         }
         else
         {
-            lstvw->field_1D0 &= 0xFFFFFFDF;
+            listFlags &= ~GLIST_FLAG_IN_RESIZING;
         }
     }
-    else if ( lstvw->field_1D0 & 0x40 )
+    else if ( listFlags & GLIST_FLAG_IN_SCROLLING )
     {
         if ( v6->flag & 4 )
         {
-            lstvw->field_246 += struc->winp131arg.move[0].y - lstvw->field_240;
-            lstvw->field_240 = struc->winp131arg.move[0].y;
-            if ( lstvw->field_246 >= 0 )
+            btnStart += struc->winp131arg.move[0].y - scrlY;
+            scrlY = struc->winp131arg.move[0].y;
+            if ( btnStart >= 0 )
             {
-                if ( lstvw->field_246 + lstvw->field_244 > lstvw->field_242 )
-                    lstvw->field_246 = lstvw->field_242 - lstvw->field_244;
+                if ( btnStart + btnSize > scrlSize )
+                    btnStart = scrlSize - btnSize;
             }
             else
             {
-                lstvw->field_246 = 0;
+                btnStart = 0;
             }
         }
         else
         {
-            lstvw->field_1D0 &= 0xFFFFFFBF;
+            listFlags &= ~GLIST_FLAG_IN_SCROLLING;
         }
     }
-    else if ( lstvw->field_1D0 & 0x80 )
+    else if ( listFlags & GLIST_FLAG_IN_SELECT )
     {
-        if ( (&lstvw->frm_1 == struc->winp131arg.selected_btn) && (struc->winp131arg.selected_btnID >= 8) )
+        if ( (&dialogBox == struc->winp131arg.selected_btn) && (struc->winp131arg.selected_btnID >= 8) )
         {
             if ( v6->flag & 0xC )
             {
-                lstvw->field_1DE = lstvw->scroll_pos + struc->winp131arg.selected_btnID - 8;
-                lstvw->field_1E4 = lstvw->field_1DE;
+                selectedEntry = firstShownEntries + struc->winp131arg.selected_btnID - 8;
+                mouseItem = selectedEntry;
 
                 if ( v6->flag & 8 )
                 {
-                    lstvw->field_1D0 &= 0xFFFFFB7Fu;
-                    lstvw->field_1D0 |= 0x400;
+                    listFlags &= ~(GLIST_FLAG_SEL_DONE | GLIST_FLAG_IN_SELECT);
+                    listFlags |= GLIST_FLAG_SEL_DONE;
 
-                    if ( lstvw->field_1D0 & 0x10 )
+                    if ( listFlags & GLIST_FLAG_INSTANT_INPUT )
                     {
-                        lstvw->cmd_flag |= 0x20;
-                        INPe.sub_412D9C(struc->winp131arg.selected_btn);
+                        flags |= FLAG_CLOSED;
+                        INPe.RemClickBox(struc->winp131arg.selected_btn);
                     }
                 }
             }
             else
             {
-                lstvw->field_1D0 &= 0xFFFFFF7F;
+                listFlags &= ~GLIST_FLAG_IN_SELECT;
 
             }
         }
-        else if ( !(v6->flag & 4) || lstvw->field_1D0 & 0x200 )
+        else if ( !(v6->flag & 4) || listFlags & GLIST_FLAG_NO_SCROLL )
         {
             if ( !(v6->flag & 4) )
             {
-                lstvw->field_1D0 &= 0xFFFFFF7F;
+                listFlags &= ~GLIST_FLAG_IN_SELECT;
             }
         }
         else
         {
-            button_str1 *v40 = lstvw->frm_1.field_18[8];
-            button_str1 *v27 = lstvw->frm_1.field_18[lstvw->element_count + 7];
+            ButtonBox *v40 = dialogBox.buttons[8];
+            ButtonBox *v27 = dialogBox.buttons[shownEntries + 7];
 
-            if ( lstvw->field_1CC > 0 )
+            if ( scrollTimer > 0 )
             {
-                lstvw->field_1CC -= struc->period;
+                scrollTimer -= struc->period;
             }
             else
             {
-                lstvw->field_1CC = 70;
+                scrollTimer = 70;
 
-                if ( struc->winp131arg.move[0].y >= ypos + v40->ypos )
+                if ( struc->winp131arg.move[0].y >= ypos + v40->y )
                 {
-                    if ( struc->winp131arg.move[0].y > ypos + v27->ypos + v27->fnt_height )
+                    if ( struc->winp131arg.move[0].y > ypos + v27->y + v27->h )
                     {
-                        lstvw->scroll_pos++;
+                        firstShownEntries++;
 
-                        if ( lstvw->element_count + lstvw->scroll_pos > lstvw->elements_for_scroll_size )
+                        if ( shownEntries + firstShownEntries > numEntries )
                         {
-                            lstvw->scroll_pos = lstvw->elements_for_scroll_size - lstvw->element_count;
-                            if ( lstvw->scroll_pos < 0 )
-                                lstvw->scroll_pos = 0;
+                            firstShownEntries = numEntries - shownEntries;
+                            if ( firstShownEntries < 0 )
+                                firstShownEntries = 0;
                         }
-                        lstvw->field_1DE = lstvw->element_count + lstvw->scroll_pos - 1;
+                        selectedEntry = shownEntries + firstShownEntries - 1;
                     }
                 }
                 else
                 {
-                    lstvw->scroll_pos--;
+                    firstShownEntries--;
 
-                    if ( lstvw->scroll_pos < 0 )
-                        lstvw->scroll_pos = 0;
+                    if ( firstShownEntries < 0 )
+                        firstShownEntries = 0;
 
-                    lstvw->field_1DE = lstvw->scroll_pos;
+                    selectedEntry = firstShownEntries;
                 }
             }
 
-            if ( struc->winp131arg.move[0].y >= ypos + v40->ypos )
+            if ( struc->winp131arg.move[0].y >= ypos + v40->y )
             {
-                if ( struc->winp131arg.move[0].y > ypos + v27->ypos + v27->fnt_height )
-                    lstvw->field_1DE = lstvw->element_count + lstvw->scroll_pos - 1;
+                if ( struc->winp131arg.move[0].y > ypos + v27->y + v27->h )
+                    selectedEntry = shownEntries + firstShownEntries - 1;
             }
             else
             {
-                lstvw->field_1DE = lstvw->scroll_pos;
+                selectedEntry = firstShownEntries;
             }
         }
     }
-    else if ( &lstvw->frm_1 == struc->winp131arg.selected_btn )
+    else if ( &dialogBox == struc->winp131arg.selected_btn )
     {
         if ( struc->winp131arg.selected_btnID >= 8 )
-            lstvw->field_1E4 = struc->winp131arg.selected_btnID + lstvw->scroll_pos - 8;
+            mouseItem = struc->winp131arg.selected_btnID + firstShownEntries - 8;
 
         if ( struc->winp131arg.selected_btnID == 7 )
         {
             if ( v6->flag & 0x30 )
-                lstvw->cmd_flag |= 0x80;
+                flags |= FLAG_HELP_DOWN;
             if ( v6->flag & 0x40 )
-                lstvw->cmd_flag &= 0xFFFFFF7F;
+                flags &= ~FLAG_HELP_DOWN;
         }
 
         if ( v6->flag & 0x20 )
         {
             if ( struc->winp131arg.selected_btnID == 2 )
             {
-                if ( lstvw->field_1CC > 0 )
+                if ( scrollTimer > 0 )
                 {
-                    lstvw->field_1CC -= struc->period;
+                    scrollTimer -= struc->period;
                 }
                 else
                 {
-                    lstvw->field_1CC = 70;
+                    scrollTimer = 70;
 
-                    lstvw->scroll_pos--;
-                    if ( lstvw->scroll_pos < 0 )
-                        lstvw->scroll_pos = 0;
+                    firstShownEntries--;
+                    if ( firstShownEntries < 0 )
+                        firstShownEntries = 0;
                 }
             }
             else if ( struc->winp131arg.selected_btnID == 4 )
             {
-                if ( lstvw->field_1CC > 0 )
+                if ( scrollTimer > 0 )
                 {
-                    lstvw->field_1CC -= struc->period;
+                    scrollTimer -= struc->period;
                 }
                 else
                 {
-                    lstvw->scroll_pos++;
-                    lstvw->field_1CC = 70;
-                    if ( lstvw->element_count + lstvw->scroll_pos > lstvw->elements_for_scroll_size )
+                    firstShownEntries++;
+                    scrollTimer = 70;
+                    if ( shownEntries + firstShownEntries > numEntries )
                     {
-                        lstvw->scroll_pos = lstvw->elements_for_scroll_size - lstvw->element_count;
-                        if ( lstvw->scroll_pos < 0 )
-                            lstvw->scroll_pos = 0;
+                        firstShownEntries = numEntries - shownEntries;
+                        if ( firstShownEntries < 0 )
+                            firstShownEntries = 0;
                     }
                 }
             }
@@ -1202,118 +959,118 @@ void lstvw_update_input(_NC_STACK_ypaworld *yw, listview *lstvw, struC5 *struc)
         {
             if ( v6->selected_btnID == 3 )
             {
-                lstvw->field_1D0 |= 0x40;
-                lstvw->field_240 = v6->ldw_pos[0].y;
+                listFlags |= GLIST_FLAG_IN_SCROLLING;
+                scrlY = v6->ldw_pos[0].y;
             }
             else if ( v6->selected_btnID == 5 )
             {
-                lstvw->field_1D0 |= 0x20;
-                lstvw->field_23A = v3 - v6->ldw_pos[0].x;
-                lstvw->field_23C = v41 - v6->ldw_pos[0].y;
+                listFlags |= GLIST_FLAG_IN_RESIZING;
+                rszX = v3 - v6->ldw_pos[0].x;
+                rszY = v41 - v6->ldw_pos[0].y;
             }
 
             if ( v6->selected_btnID >= 8 )
             {
-                lstvw->field_1D0 |= 0x80;
-                lstvw->field_1DE = lstvw->field_1E4;
+                listFlags |= GLIST_FLAG_IN_SELECT;
+                selectedEntry = mouseItem;
             }
         }
     }
-    else if ( lstvw->field_1D0 & 0x10 )
+    else if ( listFlags & GLIST_FLAG_INSTANT_INPUT )
     {
         if ( v6->flag & 2 )
         {
-            lstvw->cmd_flag |= 0x20;
-            INPe.sub_412D9C(&lstvw->frm_1);
+            flags |= FLAG_CLOSED;
+            INPe.RemClickBox(&dialogBox);
         }
     }
 }
 
-void sub_4C31EC(_NC_STACK_ypaworld *yw, listview *lstview)
+void GuiBase::OpenDialog(_NC_STACK_ypaworld *yw)
 {
-    if ( lstview->cmd_flag & 0x20 )
+    if ( flags & FLAG_CLOSED )
     {
-        lstview->cmd_flag &= 0xFFFFFFDF;
-        INPe.sub_412D48(&lstview->frm_1, 0);
+        flags &= ~FLAG_CLOSED;
+        INPe.AddClickBox(&dialogBox, 0);
         yw->field_17bc = 0;
     }
 }
 
-void lstvw_update(_NC_STACK_ypaworld *yw, listview *lstview)
+void GuiBase::CloseDialog(_NC_STACK_ypaworld *yw)
 {
-    lstvw_update_main(yw, lstview);
-    lstvw_update_slider(yw, lstview);
-    if ( !(lstview->field_1D0 & 0x100) )
-        lstvw_update_elements_areas(yw, lstview);
-}
-
-void  sub_4C31C0(_NC_STACK_ypaworld *yw, listview *lstvw)
-{
-    if ( !(lstvw->cmd_flag & 0x20) )
+    if ( !(flags & FLAG_CLOSED) )
     {
-        lstvw->cmd_flag |= 0x20;
-        INPe.sub_412D9C(&lstvw->frm_1);
+        flags |= FLAG_CLOSED;
+        INPe.RemClickBox(&dialogBox);
         yw->field_17bc = 0;
     }
 }
 
-void sub_4DDFA4(listview *lstvw, int a2)
+void GuiList::Formate(_NC_STACK_ypaworld *yw)
 {
-    int v2 = lstvw->element_count_max + lstvw->scroll_pos;
+    FormateTitle(yw);
+    FormateScrollbar(yw);
+    if ( !(listFlags & GLIST_FLAG_STATIC) )
+        FormateItemBlock(yw);
+}
 
-    if ( a2 >= lstvw->scroll_pos && a2 <= (v2 - 1) )
+void GuiList::PosOnSelected(int a2)
+{
+    int v2 = maxShownEntries + firstShownEntries;
+
+    if ( a2 >= firstShownEntries && a2 <= (v2 - 1) )
     {
-        if ( v2 > lstvw->elements_for_scroll_size )
-            lstvw->scroll_pos = lstvw->elements_for_scroll_size - lstvw->element_count_max;
-        if ( lstvw->scroll_pos < 0 )
-            lstvw->scroll_pos = 0;
+        if ( v2 > numEntries )
+            firstShownEntries = numEntries - maxShownEntries;
+        if ( firstShownEntries < 0 )
+            firstShownEntries = 0;
     }
-    else if ( lstvw->elements_for_scroll_size - a2 <= lstvw->element_count_max )
+    else if ( numEntries - a2 <= maxShownEntries )
     {
-        lstvw->scroll_pos = lstvw->elements_for_scroll_size - lstvw->element_count_max;
+        firstShownEntries = numEntries - maxShownEntries;
     }
     else
     {
-        lstvw->scroll_pos = a2;
+        firstShownEntries = a2;
     }
 }
 
 
-void sub_4E866C(listview *lstvw)
+void GuiList::Free()
 {
-    if ( lstvw->cmdstrm.includ )
+    if ( cmdstrm.includ )
     {
-        nc_FreeMem(lstvw->cmdstrm.includ);
-        lstvw->cmdstrm.includ = NULL;
+        nc_FreeMem(cmdstrm.includ);
+        cmdstrm.includ = NULL;
     }
 
-    if ( lstvw->data_cmdbuf )
+    if ( itemBlock )
     {
-        nc_FreeMem(lstvw->data_cmdbuf);
-        lstvw->data_cmdbuf = NULL;
+        nc_FreeMem(itemBlock);
+        itemBlock = NULL;
     }
 
-    if ( lstvw->slider_cmdbuf )
+    if ( scrollbar )
     {
-        nc_FreeMem(lstvw->slider_cmdbuf);
-        lstvw->slider_cmdbuf = NULL;
+        nc_FreeMem(scrollbar);
+        scrollbar = NULL;
     }
 
-    if ( lstvw->cmdstrm.cmdbuf )
+    if ( cmdstrm.cmdbuf )
     {
-        nc_FreeMem(lstvw->cmdstrm.cmdbuf);
-        lstvw->cmdstrm.cmdbuf = NULL;
+        nc_FreeMem(cmdstrm.cmdbuf);
+        cmdstrm.cmdbuf = NULL;
     }
 
-    if ( lstvw->field_1BC )
+    if ( iconString )
     {
-        nc_FreeMem(lstvw->field_1BC);
-        lstvw->field_1BC = NULL;
+        nc_FreeMem(iconString);
+        iconString = NULL;
     }
 
-    if ( lstvw->frm_1.field_18[0] )
+    if ( dialogBox.buttons[0] )
     {
-        nc_FreeMem(lstvw->frm_1.field_18[0]);
-        lstvw->frm_1.field_18[0] = NULL;
+        nc_FreeMem(dialogBox.buttons[0]);
+        dialogBox.buttons[0] = NULL;
     }
 }

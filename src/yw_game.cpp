@@ -3764,14 +3764,14 @@ int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
             char v10[256];
             char *pcur = v10;
 
-            fntcmd_select_tileset(&pcur, 15);
+            FontUA::select_tileset(&pcur, 15);
 
-            fntcmd_set_xpos(&pcur, 0);
-            fntcmd_set_center_ypos(&pcur, -yw->font_default_h / 2);
+            FontUA::set_xpos(&pcur, 0);
+            FontUA::set_center_ypos(&pcur, -yw->font_default_h / 2);
 
-            pcur = sub_45148C(yw->tiles[15], pcur, v6, yw->screen_width);
+            pcur = FontUA::FormateCenteredSkipableItem(yw->tiles[15], pcur, v6, yw->screen_width);
 
-            fntcmd_set_end(&pcur);
+            FontUA::set_end(&pcur);
 
             w3d_a209 arg209;
             arg209.includ = 0;
@@ -5555,7 +5555,7 @@ int ypaworld_func64__sub22__sub0(_NC_STACK_ypaworld *yw, int event_id)
         if ( sub_4C885C() != 3 )
         {
             extern int dword_5C8B78;
-            extern listview exit_menu;
+            extern GuiList exit_menu;
 
             dword_5C8B78 = 8;
             const char *v14 = get_lang_string(yw->string_pointers_p2, 2470, "2470 == EXIT TUTORIAL MISSION ?");
@@ -6331,7 +6331,7 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
     }
     else
     {
-        if ( inpt->winp131arg.selected_btn != &robo_map.frm_1  &&  inpt->winp131arg.selected_btn != &squadron_manager.lstvw.frm_1 )
+        if ( inpt->winp131arg.selected_btn != &robo_map.dialogBox  &&  inpt->winp131arg.selected_btn != &squadron_manager.lstvw.dialogBox )
             yw->field_17c0 = 1;
     }
 
@@ -6446,7 +6446,7 @@ char *sub_445654(_NC_STACK_ypaworld *yw, char *in, char *buf, const char *fmt, .
 {
     char *cur = in;
 
-    fntcmd_copy_position(&cur);
+    FontUA::copy_position(&cur);
 
     va_list va;
     va_start(va, fmt);
@@ -6455,7 +6455,7 @@ char *sub_445654(_NC_STACK_ypaworld *yw, char *in, char *buf, const char *fmt, .
 
     va_end(va);
 
-    fntcmd_add_txt(&cur, yw->screen_width, 1, buf);
+    FontUA::add_txt(&cur, yw->screen_width, 1, buf);
 
     return cur;
 }
@@ -6577,9 +6577,9 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         char *cmd = dbg_txt;
 
-        fntcmd_select_tileset(&cmd, 15);
-        fntcmd_set_xpos(&cmd, 8);
-        fntcmd_set_ypos(&cmd, 16);
+        FontUA::select_tileset(&cmd, 15);
+        FontUA::set_xpos(&cmd, 8);
+        FontUA::set_ypos(&cmd, 16);
 
         int v104 = 0;
 
@@ -6591,7 +6591,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
             {
                 cmd = sub_445654(yw, cmd, buf_sprintf, "build id: %s", yw->buildDate);
 
-                fntcmd_next_line(&cmd);
+                FontUA::next_line(&cmd);
             }
 
             int this_time = yw->field_1614 / 1024;
@@ -6614,49 +6614,49 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                       all_time / 60 % 60,
                       all_time % 60 );
 
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "prof all: %d", yw->p_1_grp[0][1]);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "prof fprint: %d", yw->p_1_grp[0][2]);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "prof gui: %d", yw->p_1_grp[0][3]);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "prof ai: %d", yw->p_1_grp[0][4]);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "prof rend: %d", yw->p_1_grp[0][5]);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "prof net: %d", yw->p_1_grp[0][6]);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "sec type/wtype: %d/%d", yw->field_1b84->p_cell_area->type_id, yw->field_1b84->p_cell_area->w_type);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "beam energy: %d", yw->beamenergy);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "num sqd: %d,%d", yw->dbg_num_sqd, yw->dbg_num_sqd_max);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "num vhcl: %d,%d", yw->dbg_num_vhcl, yw->dbg_num_vhcl_max);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "num flk: %d,%d", yw->dbg_num_flk, yw->dbg_num_flk_max);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "num robo: %d,%d", yw->dbg_num_robo, yw->dbg_num_robo_max);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "num wpn: %d,%d", yw->dbg_num_wpn, yw->dbg_num_wpn_max);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "reload const: %d", yw->field_1b80->reload_const_or_energy2);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(
                       yw,
@@ -6671,7 +6671,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                       yw->field_1bac[5],
                       yw->field_1bac[6],
                       yw->field_1bac[7]);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(
                       yw,
@@ -6686,20 +6686,20 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                       yw->field_1bec[5],
                       yw->field_1bec[6],
                       yw->field_1bec[7]);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             if ( yw->field_1a20 )
                 cmd = sub_445654(yw, cmd, buf_sprintf, "invulnerable: %s", "YES");
             else
                 cmd = sub_445654(yw, cmd, buf_sprintf, "invulnerable: %s", "NO");
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
         }
         else if ( yw->field_1b68 == 2 )
         {
             if ( yw->GameShell && yw->field_757E )
             {
-                fntcmd_next_line(&cmd);
-                fntcmd_next_line(&cmd);
+                FontUA::next_line(&cmd);
+                FontUA::next_line(&cmd);
 
                 for (int i = 0; i < 8; i++)
                 {
@@ -6756,59 +6756,59 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
                         cmd = sub_445654(yw, cmd, buf_sprintf, "%s status: %s latency: %d", v35, v36, yw->GameShell->netTP2[i].latency);
 
-                        fntcmd_next_line(&cmd);
+                        FontUA::next_line(&cmd);
                     }
                 }
 
-                fntcmd_next_line(&cmd);
+                FontUA::next_line(&cmd);
 
                 cmd = sub_445654(yw, cmd, buf_sprintf, "net send: %d bytes/sec", yw->GameShell->netsend_speed);
-                fntcmd_next_line(&cmd);
+                FontUA::next_line(&cmd);
 
                 cmd = sub_445654(yw, cmd, buf_sprintf, "net rcv: %d bytes/sec", yw->GameShell->netrecv_speed);
-                fntcmd_next_line(&cmd);
+                FontUA::next_line(&cmd);
 
                 cmd = sub_445654(yw, cmd, buf_sprintf, "packet: %d bytes", yw->GameShell->net_packet_size);
-                fntcmd_next_line(&cmd);
+                FontUA::next_line(&cmd);
 
                 if ( yw->field_7592 )
                     cmd = sub_445654(yw, cmd, buf_sprintf, "WARNING: INFO OVERKILL");
 
-                fntcmd_next_line(&cmd);
+                FontUA::next_line(&cmd);
 
                 if ( yw->windp )
                 {
                     int v100[7];
                     yw->windp->windp_func91(v100);
 
-                    fntcmd_next_line(&cmd);
+                    FontUA::next_line(&cmd);
 
                     cmd = sub_445654(yw, cmd, buf_sprintf, "thread send list now: %d", v100[0]);
-                    fntcmd_next_line(&cmd);
+                    FontUA::next_line(&cmd);
 
                     cmd = sub_445654(yw, cmd, buf_sprintf, "thread recv list now: %d", v100[1]);
-                    fntcmd_next_line(&cmd);
+                    FontUA::next_line(&cmd);
 
                     cmd = sub_445654(yw, cmd, buf_sprintf, "thread send list max: %d", v100[3]);
-                    fntcmd_next_line(&cmd);
+                    FontUA::next_line(&cmd);
 
                     cmd = sub_445654(yw, cmd, buf_sprintf, "thread recv list max: %d", v100[2]);
-                    fntcmd_next_line(&cmd);
+                    FontUA::next_line(&cmd);
 
                     cmd = sub_445654(yw, cmd, buf_sprintf, "send call now: %d", v100[4]);
-                    fntcmd_next_line(&cmd);
+                    FontUA::next_line(&cmd);
 
                     cmd = sub_445654(yw, cmd, buf_sprintf, "send call max: %d", v100[5]);
-                    fntcmd_next_line(&cmd);
+                    FontUA::next_line(&cmd);
 
                     cmd = sub_445654(yw, cmd, buf_sprintf, "send bugs: %d", v100[6]);
-                    fntcmd_next_line(&cmd);
+                    FontUA::next_line(&cmd);
                 }
             }
             else
             {
                 cmd = sub_445654(yw, cmd, buf_sprintf, "not a network game");
-                fntcmd_next_line(&cmd);
+                FontUA::next_line(&cmd);
             }
         }
         else if ( yw->field_1b68 == 3 )
@@ -6816,7 +6816,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
             for (int i = 0; i < 17; i++)
             {
                 cmd = sub_445654(yw, cmd, buf_sprintf, "slider[%d] = %f", i, inpt->sliders_vars[i]);
-                fntcmd_next_line(&cmd);
+                FontUA::next_line(&cmd);
             }
 
             char v99[64];
@@ -6831,10 +6831,10 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
             }
 
             cmd = sub_445654(yw, cmd, buf_sprintf, v99);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "keycode = %d", inpt->downed_key_2);
-            fntcmd_next_line(&cmd);
+            FontUA::next_line(&cmd);
         }
         else
         {
@@ -6860,7 +6860,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                         v109 = 1;
 
                         cmd = sub_445654(yw, cmd, buf_sprintf, "robo owner %d with energy %d / %d / %d / %d", rbact->owner, rbact->energy, robo->field_509, robo->field_50D, rbact->energy_2);
-                        fntcmd_next_line(&cmd);
+                        FontUA::next_line(&cmd);
 
                         const char *v71;
                         const char *v73;
@@ -6916,7 +6916,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                         }
 
                         cmd = sub_445654(yw, cmd, buf_sprintf, "    do build job   >%s<   and vhcl job   >%s<", v71, v73);
-                        fntcmd_next_line(&cmd);
+                        FontUA::next_line(&cmd);
 
                         cmd = sub_445654(yw, cmd, buf_sprintf, "    wait power %d, radar %d, flak %d, location %d",
                                          robo->field_265 / 1000,
@@ -6924,73 +6924,73 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                                          robo->safety_delay / 1000,
                                          robo->field_2B1 / 1000);
 
-                        fntcmd_next_line(&cmd);
+                        FontUA::next_line(&cmd);
 
                         cmd = sub_445654(yw, cmd, buf_sprintf, "    wait conquer %d, defense %d, recon %d, robo %d",
                                          robo->conq_delay / 1000,
                                          robo->field_281 / 1000,
                                          robo->field_2C9 / 1000,
                                          robo->field_2E1 / 1000);
-                        fntcmd_next_line(&cmd);
+                        FontUA::next_line(&cmd);
 
                         cmd = sub_445654(yw, cmd, buf_sprintf, "    values  ");
-                        fntcmd_next_line(&cmd);
+                        FontUA::next_line(&cmd);
 
                         if ( robo->field_265 > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "power -1, ");
                         else
                             cmd = sub_445654(yw, cmd, buf_sprintf, "power %d, ", robo->field_251);
 
-                        fntcmd_next_line(&cmd);
+                        FontUA::next_line(&cmd);
 
                         if ( robo->radar_delay > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "radar -1, ");
                         else
                             cmd = sub_445654(yw, cmd, buf_sprintf, "radar %d, ", robo->radar_value);
 
-                        fntcmd_next_line(&cmd);
+                        FontUA::next_line(&cmd);
 
                         if ( robo->safety_delay > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "flak -1, ");
                         else
                             cmd = sub_445654(yw, cmd, buf_sprintf, "flak %d, ", robo->safety_value);
 
-                        fntcmd_next_line(&cmd);
+                        FontUA::next_line(&cmd);
 
                         if ( robo->field_2B1 > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "power -1, ");
                         else
                             cmd = sub_445654(yw, cmd, buf_sprintf, "power %d, ", robo->field_29D);
 
-                        fntcmd_next_line(&cmd);
+                        FontUA::next_line(&cmd);
 
                         if ( robo->field_281 > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "defense -1, ");
                         else
                             cmd = sub_445654(yw, cmd, buf_sprintf, "defense %d, ", robo->field_269);
 
-                        fntcmd_next_line(&cmd);
+                        FontUA::next_line(&cmd);
 
                         if ( robo->conq_delay > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "conquer -1, ");
                         else
                             cmd = sub_445654(yw, cmd, buf_sprintf, "conquer %d, ", robo->conq_value);
 
-                        fntcmd_next_line(&cmd);
+                        FontUA::next_line(&cmd);
 
                         if ( robo->field_2C9 > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "recon -1, ");
                         else
                             cmd = sub_445654(yw, cmd, buf_sprintf, "recon %d, ", robo->field_2B5);
 
-                        fntcmd_next_line(&cmd);
+                        FontUA::next_line(&cmd);
 
                         if ( robo->field_2E1 > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "robo -1, ");
                         else
                             cmd = sub_445654(yw, cmd, buf_sprintf, "robo %d, ", robo->field_2CD);
 
-                        fntcmd_next_line(&cmd);
+                        FontUA::next_line(&cmd);
 
                         if ( robo->roboState & NC_STACK_yparobo::ROBOSTATE_DOCKINUSE )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "dock energy %d time %d", robo->dock_energ, robo->dock_time);
@@ -7005,15 +7005,15 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
         }
 
 
-        fntcmd_next_line(&cmd);
+        FontUA::next_line(&cmd);
 
         cmd = sub_445654(yw, cmd, buf_sprintf, "fps: %d", yw->field_1B6E);
-        fntcmd_next_line(&cmd);
+        FontUA::next_line(&cmd);
 
         cmd = sub_445654(yw, cmd, buf_sprintf, "polys: %d,%d", yw->field_1B6A, yw->field_1b6c);
-        fntcmd_next_line(&cmd);
+        FontUA::next_line(&cmd);
 
-        fntcmd_set_end(&cmd);
+        FontUA::set_end(&cmd);
 
         yw->win3d->raster_func215(NULL);
 
@@ -7101,7 +7101,7 @@ int sub_4D528C(_NC_STACK_ypaworld *yw)
     {
 
         if ( bct->bact != yw->field_1b80 && bct->bact->field_24 == 3 && bct->bact->field_3D5 != 2 )
-            return (yw->field_1b80 != yw->field_1b84 && !yw->field_1b70) || !(robo_map.cmd_flag & 0x20);
+            return (yw->field_1b80 != yw->field_1b84 && !yw->field_1b70) || !(robo_map.flags & GuiBase::FLAG_CLOSED);
 
         bct = (bact_node *)bct->next;
     }

@@ -8,7 +8,7 @@
 #include "lstvw.h"
 #include "font.h"
 
-extern listview stru_5C91D0;
+extern GuiList stru_5C91D0;
 
 void ypaworld_func158__sub4__sub1__sub4__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
@@ -709,7 +709,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub21(_NC_STACK_ypaworld *yw, struC5 *i
 
 void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
 {
-    char *v3 = stru_5C91D0.data_cmdbuf;
+    char *v3 = stru_5C91D0.itemBlock;
 
     if ( brf->field_2E80 > 0 )
     {
@@ -730,9 +730,9 @@ void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
         int v34 = brf->field_2E7C - brf->field_2E80;
         int v33 = 100 * v34;
 
-        stru_5C91D0.elements_for_scroll_size = v5;
+        stru_5C91D0.numEntries = v5;
 
-        v3 = lstvw_up_border(yw, &stru_5C91D0, v3, 16, "   ");
+        v3 = stru_5C91D0.ItemsPreLayout(yw, v3, 16, "   ");
 
         int v37 = 0;
 
@@ -783,20 +783,20 @@ void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
             v33 -= 50000;
             v34 -= 500;
 
-            if ( stru_5C91D0.scroll_pos <= v37 && stru_5C91D0.scroll_pos + stru_5C91D0.element_count > v37	&& v12 > 0 )
+            if ( stru_5C91D0.firstShownEntries <= v37 && stru_5C91D0.firstShownEntries + stru_5C91D0.shownEntries > v37	&& v12 > 0 )
             {
-                fntcmd_set_txtColor(&v3, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
+                FontUA::set_txtColor(&v3, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
 
-                v3 = sub_451E64(yw->tiles[16], v3, a4, v12, 4);
+                v3 = FontUA::TextRelWidthItem(yw->tiles[16], v3, a4, v12, 4);
 
-                fntcmd_next_line(&v3);
+                FontUA::next_line(&v3);
             }
 
             v37++;
 
             if ( en )
             {
-                v3 = lstvw_down_border(yw, &stru_5C91D0, v3, 16, "   ");
+                v3 = stru_5C91D0.ItemsPostLayout(yw, v3, 16, "   ");
                 break;
             }
         }
@@ -823,17 +823,17 @@ void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
 
         if ( v24 > 0 )
         {
-            v3 = lstvw_up_border(yw, &stru_5C91D0, v3, 16, "   ");
+            v3 = stru_5C91D0.ItemsPreLayout(yw, v3, 16, "   ");
 
-            fntcmd_set_txtColor(&v3, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
+            FontUA::set_txtColor(&v3, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
 
-            v3 = sub_451E64(yw->tiles[16], v3, v21, v24, 4);
+            v3 = FontUA::TextRelWidthItem(yw->tiles[16], v3, v21, v24, 4);
 
-            v3 = lstvw_down_border(yw, &stru_5C91D0, v3, 16, "   ");
+            v3 = stru_5C91D0.ItemsPostLayout(yw, v3, 16, "   ");
         }
     }
 
-    fntcmd_set_end(&v3);
+    FontUA::set_end(&v3);
 }
 
 void ypaworld_func158__sub4__sub1__sub4__sub1(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
@@ -873,7 +873,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub1(_NC_STACK_ypaworld *yw, big_ypa_Br
             if ( v39 != v31->field_C)
             {
                 v39 = v31->field_C;
-                fntcmd_select_tileset(&pos, v31->field_C);
+                FontUA::select_tileset(&pos, v31->field_C);
             }
 
             int v38 = yw->tiles[(int)v31->field_C]->font_height / 2;
@@ -881,14 +881,14 @@ void ypaworld_func158__sub4__sub1__sub4__sub1(_NC_STACK_ypaworld *yw, big_ypa_Br
             float v15 = (brf->field_2F74.x2 - brf->field_2F74.x1) * (v31->xpos / yw->map_Width_meters) + brf->field_2F74.x1;
             float v14 = (brf->field_2F74.y2 - brf->field_2F74.y1) * (-v31->ypos / yw->map_Height_meters) + brf->field_2F74.y1;
 
-            fntcmd_set_center_xpos(&pos, (v15 * (yw->screen_width / 2)) - v38);
-            fntcmd_set_center_ypos(&pos, (v14 * (yw->screen_height / 2)) - v38);
+            FontUA::set_center_xpos(&pos, (v15 * (yw->screen_width / 2)) - v38);
+            FontUA::set_center_ypos(&pos, (v14 * (yw->screen_height / 2)) - v38);
 
-            fntcmd_store_u8(&pos, v31->field_D);
+            FontUA::store_u8(&pos, v31->field_D);
         }
     }
 
-    fntcmd_set_end(&pos);
+    FontUA::set_end(&pos);
 
     w3d_a209 v28;
 
@@ -911,15 +911,15 @@ void ypaworld_func158__sub4__sub1__sub4__sub0(_NC_STACK_ypaworld *yw)
 
     char *pos = buf;
 
-    fntcmd_select_tileset(&pos, 16);
-    fntcmd_set_center_xpos(&pos, v35);
-    fntcmd_set_center_ypos(&pos, 4 + v37);
-    fntcmd_set_txtColor(&pos, yw->iniColors[66].r, yw->iniColors[66].g, yw->iniColors[66].b);
+    FontUA::select_tileset(&pos, 16);
+    FontUA::set_center_xpos(&pos, v35);
+    FontUA::set_center_ypos(&pos, 4 + v37);
+    FontUA::set_txtColor(&pos, yw->iniColors[66].r, yw->iniColors[66].g, yw->iniColors[66].b);
 
     const char *v7 = get_lang_string(yw->string_pointers_p2, yw->field_2d90->levelID + 1800, yw->field_2d90->map_name);
 
-    pos = sub_45148C(yw->tiles[16], pos, v7, v34 - v35);
-    fntcmd_set_end(&pos);
+    pos = FontUA::FormateCenteredSkipableItem(yw->tiles[16], pos, v7, v34 - v35);
+    FontUA::set_end(&pos);
 
     w3d_a209 v32;
     v32.cmdbuf = buf;
@@ -1013,14 +1013,14 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
                 char cmdbuf[128];
                 char *pos = cmdbuf;
 
-                fntcmd_select_tileset(&pos, 16);
-                fntcmd_set_center_xpos(&pos, xpos);
-                fntcmd_set_center_ypos(&pos, ypos);
-                fntcmd_set_txtColor(&pos, yw->iniColors[66].r, yw->iniColors[66].g, yw->iniColors[66].b);
+                FontUA::select_tileset(&pos, 16);
+                FontUA::set_center_xpos(&pos, xpos);
+                FontUA::set_center_ypos(&pos, ypos);
+                FontUA::set_txtColor(&pos, yw->iniColors[66].r, yw->iniColors[66].g, yw->iniColors[66].b);
 
-                pos = sub_451E64(yw->tiles[16], pos, br_obj->title, v13, 16);
+                pos = FontUA::TextRelWidthItem(yw->tiles[16], pos, br_obj->title, v13, 16);
 
-                fntcmd_set_end(&pos);
+                FontUA::set_end(&pos);
 
                 w3d_a209 v23;
                 v23.cmdbuf = cmdbuf;
@@ -1183,8 +1183,8 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
             break;
         }
 
-        lstvw_update_input(yw, &stru_5C91D0, inpt);
-        lstvw_update(yw, &stru_5C91D0);
+        stru_5C91D0.InputHandle(yw, inpt);
+        stru_5C91D0.Formate(yw);
 
         sub_4ED434(yw, brf);
 
@@ -1619,15 +1619,15 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(_NC_STACK_ypaworld *yw, big_
     char cmdBuff[264];
     char *cur = cmdBuff;
 
-    fntcmd_select_tileset(&cur, 16);
-    fntcmd_set_center_xpos(&cur, v14);
-    fntcmd_set_center_ypos(&cur, v16);
+    FontUA::select_tileset(&cur, 16);
+    FontUA::set_center_xpos(&cur, v14);
+    FontUA::set_center_ypos(&cur, v16);
 
-    fntcmd_set_txtColor(&cur, yw->iniColors[66].r, yw->iniColors[66].g, yw->iniColors[66].b);
+    FontUA::set_txtColor(&cur, yw->iniColors[66].r, yw->iniColors[66].g, yw->iniColors[66].b);
 
-    cur = sub_45148C(yw->tiles[16], cur, v7, v13 - v14);
+    cur = FontUA::FormateCenteredSkipableItem(yw->tiles[16], cur, v7, v13 - v14);
 
-    fntcmd_set_end(&cur);
+    FontUA::set_end(&cur);
 
     w3d_a209 arg209;
     arg209.cmdbuf = cmdBuff;
@@ -1640,34 +1640,34 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub0(_NC_STACK_ypaworld *
 {
     char *cur = in;
 
-    fntcmd_set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
-    listview_t1 elms[3];
+    FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
+    FontUA::ColumnItem elms[3];
 
     elms[0].txt = get_lang_string(yw->string_pointers_p2, 2450, "KILLS");
-    elms[0].bkg_tile = 32;
-    elms[0].left_tile = 0;
-    elms[0].right_tile = 0;
-    elms[0].field_width = a4 * 0.4;
+    elms[0].spaceChar = 32;
+    elms[0].prefixChar = 0;
+    elms[0].postfixChar = 0;
+    elms[0].width = a4 * 0.4;
     elms[0].flags = 36;
-    elms[0].tileset_id = 15;
+    elms[0].fontID = 15;
 
     elms[1].txt = get_lang_string(yw->string_pointers_p2, 2451, "BY PLAYER");
-    elms[1].tileset_id = 15;
-    elms[1].field_width = a4 * 0.3;
-    elms[1].bkg_tile = 32;
+    elms[1].fontID = 15;
+    elms[1].width = a4 * 0.3;
+    elms[1].spaceChar = 32;
     elms[1].flags = 36;
-    elms[1].left_tile = 0;
-    elms[1].right_tile = 0;
+    elms[1].prefixChar = 0;
+    elms[1].postfixChar = 0;
 
     elms[2].txt = get_lang_string(yw->string_pointers_p2, 2452, "ALL");
-    elms[2].field_width = a4 * 0.3;
-    elms[2].tileset_id = 15;
-    elms[2].bkg_tile = 32;
+    elms[2].width = a4 * 0.3;
+    elms[2].fontID = 15;
+    elms[2].spaceChar = 32;
     elms[2].flags = 36;
-    elms[2].left_tile = 0;
-    elms[2].right_tile = 0;
+    elms[2].prefixChar = 0;
+    elms[2].postfixChar = 0;
 
-    return lstvw_txt_line(yw, cur, 3, elms);
+    return FormateColumnItem(yw, cur, 3, elms);
 }
 
 int sub_4EF2A8(const void *a1, const void *a2)
@@ -1738,16 +1738,16 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub1(_NC_STACK_ypaworld *
             break;
         }
 
-        listview_t1 elms[3];
+        FontUA::ColumnItem elms[3];
 
-        fntcmd_set_txtColor(&cur, yw->iniColors[clr_id].r, yw->iniColors[clr_id].g, yw->iniColors[clr_id].b);
+        FontUA::set_txtColor(&cur, yw->iniColors[clr_id].r, yw->iniColors[clr_id].g, yw->iniColors[clr_id].b);
 
         elms[0].txt = who;
-        elms[0].bkg_tile = 32;
-        elms[0].tileset_id = 15;
-        elms[0].field_width = a4 * 0.4;
-        elms[0].left_tile = 0;
-        elms[0].right_tile = 0;
+        elms[0].spaceChar = 32;
+        elms[0].fontID = 15;
+        elms[0].width = a4 * 0.4;
+        elms[0].prefixChar = 0;
+        elms[0].postfixChar = 0;
         elms[0].flags = 36;
 
         char a1[32];
@@ -1758,27 +1758,27 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub1(_NC_STACK_ypaworld *
             sprintf(a1, "-");
 
         elms[1].txt = a1;
-        elms[1].bkg_tile = 32;
-        elms[1].tileset_id = 15;
-        elms[1].left_tile = 0;
-        elms[1].right_tile = 0;
+        elms[1].spaceChar = 32;
+        elms[1].fontID = 15;
+        elms[1].prefixChar = 0;
+        elms[1].postfixChar = 0;
         elms[1].flags = 36;
-        elms[1].field_width = a4 * 0.3;
+        elms[1].width = a4 * 0.3;
 
         char v30[32];
         sprintf(v30, "%d", brf->field_42BC[ v28[i].owner ].p1);
 
         elms[2].txt = v30;
-        elms[2].field_width = a4 * 0.3;
-        elms[2].tileset_id = 15;
-        elms[2].bkg_tile = 32;
+        elms[2].width = a4 * 0.3;
+        elms[2].fontID = 15;
+        elms[2].spaceChar = 32;
         elms[2].flags = 36;
-        elms[2].left_tile = 0;
-        elms[2].right_tile = 0;
+        elms[2].prefixChar = 0;
+        elms[2].postfixChar = 0;
 
-        cur = lstvw_txt_line(yw, cur, 3, elms);
+        cur = FormateColumnItem(yw, cur, 3, elms);
 
-        fntcmd_next_line(&cur);
+        FontUA::next_line(&cur);
     }
 
     return cur;
@@ -1788,19 +1788,19 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub2__sub0(_NC_STACK_ypaw
 {
     char *cur = in;
 
-    fntcmd_set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
+    FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
 
-    listview_t1 elm;
+    FontUA::ColumnItem elm;
 
     elm.txt = get_lang_string(yw->string_pointers_p2, 2453, "SCORE");
-    elm.field_width = a4;
-    elm.bkg_tile = 32;
-    elm.tileset_id = 15;
-    elm.left_tile = 0;
-    elm.right_tile = 0;
+    elm.width = a4;
+    elm.spaceChar = 32;
+    elm.fontID = 15;
+    elm.prefixChar = 0;
+    elm.postfixChar = 0;
     elm.flags = 36;
 
-    return lstvw_txt_line(yw, cur, 1, &elm);
+    return FormateColumnItem(yw, cur, 1, &elm);
 }
 
 char *ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
@@ -1811,7 +1811,7 @@ char *ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub2(_NC_STACK_ypaworld *y
     {
         cur = ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub2__sub0(yw, cur, a4);
 
-        fntcmd_next_line(&cur);
+        FontUA::next_line(&cur);
 
         debrif_t1 v32[8];
         int a2 = 0;
@@ -1871,84 +1871,84 @@ char *ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub2(_NC_STACK_ypaworld *y
                 break;
             }
 
-            fntcmd_set_txtColor(&cur, yw->iniColors[clr_id].r, yw->iniColors[clr_id].g, yw->iniColors[clr_id].b);
+            FontUA::set_txtColor(&cur, yw->iniColors[clr_id].r, yw->iniColors[clr_id].g, yw->iniColors[clr_id].b);
 
-            listview_t1 a4a[2];
+            FontUA::ColumnItem a4a[2];
 
             a4a[0].txt = who;
-            a4a[0].bkg_tile = 32;
-            a4a[0].tileset_id = 15;
-            a4a[0].left_tile = 0;
-            a4a[0].right_tile = 0;
+            a4a[0].spaceChar = 32;
+            a4a[0].fontID = 15;
+            a4a[0].prefixChar = 0;
+            a4a[0].postfixChar = 0;
             a4a[0].flags = 36;
-            a4a[0].field_width = a4 * 0.5;
+            a4a[0].width = a4 * 0.5;
 
             char a1[32];
             sprintf(a1, "%d", brf->field_42BC[ v32[i].owner ].p5);
 
             a4a[1].txt = a1;
-            a4a[1].field_width = a4 * 0.5;
-            a4a[1].tileset_id = 15;
-            a4a[1].bkg_tile = 32;
+            a4a[1].width = a4 * 0.5;
+            a4a[1].fontID = 15;
+            a4a[1].spaceChar = 32;
             a4a[1].flags = 36;
-            a4a[1].left_tile = 0;
-            a4a[1].right_tile = 0;
+            a4a[1].prefixChar = 0;
+            a4a[1].postfixChar = 0;
 
-            cur = lstvw_txt_line(yw, cur, 2, a4a);
+            cur = FormateColumnItem(yw, cur, 2, a4a);
 
-            fntcmd_next_line(&cur);
+            FontUA::next_line(&cur);
         }
     }
     else
     {
-        fntcmd_set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
+        FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
 
-        listview_t1 v35[2];
+        FontUA::ColumnItem v35[2];
 
         v35[0].txt = get_lang_string(yw->string_pointers_p2, 2457, "SCORE THIS MISSION:");
-        v35[0].bkg_tile = 32;
-        v35[0].left_tile = 0;
-        v35[0].right_tile = 0;
-        v35[0].field_width = a4 * 0.7;
-        v35[0].tileset_id = 15;
+        v35[0].spaceChar = 32;
+        v35[0].prefixChar = 0;
+        v35[0].postfixChar = 0;
+        v35[0].width = a4 * 0.7;
+        v35[0].fontID = 15;
         v35[0].flags = 36;
 
         char v34[32];
         sprintf(v34, "%d", brf->field_42BC[1].p5);
 
         v35[1].txt = v34;
-        v35[1].tileset_id = 15;
-        v35[1].bkg_tile = 32;
-        v35[1].left_tile = 0;
-        v35[1].field_width = a4 * 0.3;
-        v35[1].right_tile = 0;
+        v35[1].fontID = 15;
+        v35[1].spaceChar = 32;
+        v35[1].prefixChar = 0;
+        v35[1].width = a4 * 0.3;
+        v35[1].postfixChar = 0;
         v35[1].flags = 36;
 
-        cur = lstvw_txt_line(yw, cur, 2, v35);
+        cur = FormateColumnItem(yw, cur, 2, v35);
 
-        fntcmd_next_line(&cur);
+        FontUA::next_line(&cur);
 
         v35[0].txt = get_lang_string(yw->string_pointers_p2, 2458, "SCORE OVERALL:");
         v35[0].flags = 36;
-        v35[0].bkg_tile = 32;
-        v35[0].field_width = a4 * 0.7;
-        v35[0].left_tile = 0;
-        v35[0].right_tile = 0;
-        v35[0].tileset_id = 15;
+        v35[0].spaceChar = 32;
+        v35[0].width = a4 * 0.7;
+        v35[0].prefixChar = 0;
+        v35[0].postfixChar = 0;
+        v35[0].fontID = 15;
 
         sprintf(v34, "%d", brf->field_42BC[1].p5 + brf->copy_of_playerstatus[1].p5);
 
         v35[1].txt = v34;
-        v35[1].tileset_id = 15;
-        v35[1].bkg_tile = 32;
-        v35[1].right_tile = 0;
-        v35[1].field_width = a4 * 0.3;
-        v35[1].left_tile = 0;
+        v35[1].fontID = 15;
+        v35[1].spaceChar = 32;
+        v35[1].postfixChar = 0;
+        v35[1].width = a4 * 0.3;
+        v35[1].prefixChar = 0;
         v35[1].flags = 36;
 
-        cur = lstvw_txt_line(yw, cur, 2, v35);
+        cur = FormateColumnItem(yw, cur, 2, v35);
 
-        fntcmd_next_line(&cur);
+        FontUA::next_line(&cur);
     }
     return cur;
 }
@@ -1956,18 +1956,18 @@ char *ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub2(_NC_STACK_ypaworld *y
 char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub3(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
 {
     char *cur = in;
-    fntcmd_set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
+    FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
 
     if ( yw->field_727c )
     {
-        listview_t1 v30[2];
+        FontUA::ColumnItem v30[2];
         v30[0].txt = get_lang_string(yw->string_pointers_p2, 2456, "PLAYING TIME:");
-        v30[0].bkg_tile = 32;
-        v30[0].left_tile = 0;
-        v30[0].right_tile = 0;
-        v30[0].field_width = a4 * 0.7;
+        v30[0].spaceChar = 32;
+        v30[0].prefixChar = 0;
+        v30[0].postfixChar = 0;
+        v30[0].width = a4 * 0.7;
         v30[0].flags = 36;
-        v30[0].tileset_id = 15;
+        v30[0].fontID = 15;
 
         int v12 = brf->field_41D8 / 1024;
 
@@ -1975,26 +1975,26 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub3(_NC_STACK_ypaworld *
         sprintf(a1, "%02d:%02d:%02d", v12 / 60 / 60, v12 / 60 % 60, v12 % 60);
 
         v30[1].txt = a1;
-        v30[1].tileset_id = 15;
-        v30[1].bkg_tile = 32;
-        v30[1].left_tile = 0;
-        v30[1].right_tile = 0;
+        v30[1].fontID = 15;
+        v30[1].spaceChar = 32;
+        v30[1].prefixChar = 0;
+        v30[1].postfixChar = 0;
         v30[1].flags = 36;
-        v30[1].field_width = a4 * 0.3;
+        v30[1].width = a4 * 0.3;
 
-        cur = lstvw_txt_line(yw, cur, 2, v30);
+        cur = FormateColumnItem(yw, cur, 2, v30);
     }
     else
     {
 
-        listview_t1 a4a[2];
+        FontUA::ColumnItem a4a[2];
         a4a[0].txt = get_lang_string(yw->string_pointers_p2, 2454, "PLAYING TIME THIS MISSION:");
-        a4a[0].bkg_tile = 32;
-        a4a[0].left_tile = 0;
-        a4a[0].right_tile = 0;
-        a4a[0].field_width = a4 * 0.7;
+        a4a[0].spaceChar = 32;
+        a4a[0].prefixChar = 0;
+        a4a[0].postfixChar = 0;
+        a4a[0].width = a4 * 0.7;
         a4a[0].flags = 36;
-        a4a[0].tileset_id = 15;
+        a4a[0].fontID = 15;
 
         int v19 = brf->field_41D8 / 1024;
 
@@ -2002,40 +2002,40 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub3(_NC_STACK_ypaworld *
         sprintf(v28, "%02d:%02d:%02d", v19 / 60 / 60, v19 / 60 % 60, v19 % 60);
 
         a4a[1].txt = v28;
-        a4a[1].field_width = a4 * 0.3;
-        a4a[1].tileset_id = 15;
-        a4a[1].bkg_tile = 32;
-        a4a[1].left_tile = 0;
-        a4a[1].right_tile = 0;
+        a4a[1].width = a4 * 0.3;
+        a4a[1].fontID = 15;
+        a4a[1].spaceChar = 32;
+        a4a[1].prefixChar = 0;
+        a4a[1].postfixChar = 0;
         a4a[1].flags = 36;
 
-        cur = lstvw_txt_line(yw, cur, 2, a4a);
+        cur = FormateColumnItem(yw, cur, 2, a4a);
 
-        fntcmd_next_line(&cur);
+        FontUA::next_line(&cur);
 
         a4a[0].txt = get_lang_string(yw->string_pointers_p2, 2455, "PLAYING TIME OVERALL:");
         a4a[0].flags = 36;
-        a4a[0].bkg_tile = 32;
-        a4a[0].field_width = a4 * 0.7;
-        a4a[0].left_tile = 0;
-        a4a[0].right_tile = 0;
-        a4a[0].tileset_id = 15;
+        a4a[0].spaceChar = 32;
+        a4a[0].width = a4 * 0.7;
+        a4a[0].prefixChar = 0;
+        a4a[0].postfixChar = 0;
+        a4a[0].fontID = 15;
 
         v19 = (brf->field_41D8 + brf->copy_of_playerstatus[1].p3) / 1024;
         sprintf(v28, "%02d:%02d:%02d", v19 / 60 / 60, v19 / 60 % 60, v19 % 60);
 
         a4a[1].txt = v28;
-        a4a[1].tileset_id = 15;
-        a4a[1].bkg_tile = 32;
-        a4a[1].field_width = a4 * 0.3;
-        a4a[1].left_tile = 0;
-        a4a[1].right_tile = 0;
+        a4a[1].fontID = 15;
+        a4a[1].spaceChar = 32;
+        a4a[1].width = a4 * 0.3;
+        a4a[1].prefixChar = 0;
+        a4a[1].postfixChar = 0;
         a4a[1].flags = 36;
 
-        cur = lstvw_txt_line(yw, cur, 2, a4a);
+        cur = FormateColumnItem(yw, cur, 2, a4a);
     }
 
-    fntcmd_next_line(&cur);
+    FontUA::next_line(&cur);
 
     return cur;
 }
@@ -2044,23 +2044,23 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4(_NC_STACK_ypaworld *yw, bi
 {
     char *cur = in;
 
-    fntcmd_select_tileset(&cur, 15);
-    fntcmd_set_center_xpos(&cur, ((yw->screen_width / 2) * 0.15) );
-    fntcmd_set_center_ypos(&cur, ((yw->screen_height / 2) * -0.821) );
+    FontUA::select_tileset(&cur, 15);
+    FontUA::set_center_xpos(&cur, ((yw->screen_width / 2) * 0.15) );
+    FontUA::set_center_ypos(&cur, ((yw->screen_height / 2) * -0.821) );
 
     int v14 = (yw->screen_width / 2) * 0.796875;
 
     cur = ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub0(yw, brf, cur, v14);
 
-    fntcmd_next_line(&cur);
+    FontUA::next_line(&cur);
 
     cur = ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub1(yw, brf, cur, v14);
 
-    fntcmd_next_line(&cur);
+    FontUA::next_line(&cur);
 
     cur = ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub2(yw, brf, cur, v14);
 
-    fntcmd_next_line(&cur);
+    FontUA::next_line(&cur);
 
     return ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub3(yw, brf, cur, v14);
 }
@@ -2205,35 +2205,35 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub5__sub0(_NC_STACK_ypaworld *
     if ( v13 && v33 && v14 )
     {
 
-        listview_t1 elm[3];
+        FontUA::ColumnItem elm[3];
 
         elm[0].txt = v13;
-        elm[0].bkg_tile = 32;
+        elm[0].spaceChar = 32;
         elm[0].flags = 36;
-        elm[0].left_tile = 0;
-        elm[0].right_tile = 0;
-        elm[0].field_width = a5 * 0.48;
-        elm[0].tileset_id = 15;
+        elm[0].prefixChar = 0;
+        elm[0].postfixChar = 0;
+        elm[0].width = a5 * 0.48;
+        elm[0].fontID = 15;
 
         elm[1].flags = 36;
-        elm[1].tileset_id = 15;
-        elm[1].bkg_tile = 32;
-        elm[1].left_tile = 0;
-        elm[1].right_tile = 0;
+        elm[1].fontID = 15;
+        elm[1].spaceChar = 32;
+        elm[1].prefixChar = 0;
+        elm[1].postfixChar = 0;
         elm[1].txt = v33;
-        elm[1].field_width = a5 * 0.3;
+        elm[1].width = a5 * 0.3;
 
         elm[2].flags = 36;
-        elm[2].tileset_id = 15;
-        elm[2].bkg_tile = 32;
-        elm[2].left_tile = 0;
-        elm[2].right_tile = 0;
-        elm[2].field_width = a5 * 0.22;
+        elm[2].fontID = 15;
+        elm[2].spaceChar = 32;
+        elm[2].prefixChar = 0;
+        elm[2].postfixChar = 0;
+        elm[2].width = a5 * 0.22;
         elm[2].txt = v14;
 
-        cur = lstvw_txt_line(yw, cur, 3, elm);
+        cur = FontUA::FormateColumnItem(yw, cur, 3, elm);
 
-        fntcmd_next_line(&cur);
+        FontUA::next_line(&cur);
     }
 
     return cur;
@@ -2243,11 +2243,11 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub5(_NC_STACK_ypaworld *yw, bi
 {
     char *cur = in;
 
-    fntcmd_select_tileset(&cur, 15);
-    fntcmd_set_center_xpos(&cur, ((yw->screen_width / 2) * -0.9875) );
-    fntcmd_set_center_ypos(&cur, ((yw->screen_height / 2) * 0.35) );
+    FontUA::select_tileset(&cur, 15);
+    FontUA::set_center_xpos(&cur, ((yw->screen_width / 2) * -0.9875) );
+    FontUA::set_center_ypos(&cur, ((yw->screen_height / 2) * 0.35) );
 
-    fntcmd_set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
+    FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
 
     for (int i = 0; i < brf->tp1_count; i++)
         cur = ypaworld_func158__sub4__sub1__sub6__sub3__sub5__sub0(yw, brf, &brf->tp1[i], cur,  (yw->screen_width / 2) * 0.984375 );
@@ -2267,7 +2267,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3(_NC_STACK_ypaworld *yw, struC5 *st
     cur = ypaworld_func158__sub4__sub1__sub6__sub3__sub4(yw, brf, cur);
     cur = ypaworld_func158__sub4__sub1__sub6__sub3__sub5(yw, brf, cur);
 
-    fntcmd_set_end(&cur);
+    FontUA::set_end(&cur);
 
     int v6 = 0;
 

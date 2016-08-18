@@ -44,7 +44,7 @@ int dword_5A50B6_h;
 
 char **ypaworld__string_pointers;
 
-listview stru_5C91D0;
+GuiList stru_5C91D0;
 
 int bact_id = 0x10000;;
 
@@ -701,10 +701,10 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 {
     _NC_STACK_ypaworld *yw = &stack__ypaworld;
 
-    extern listview gui_lstvw; //In yw_game_ui.cpp
-    extern listview lstvw2; //In yw_game_ui.cpp
+    extern GuiList gui_lstvw; //In yw_game_ui.cpp
+    extern GuiList lstvw2; //In yw_game_ui.cpp
 
-    if ( (gui_lstvw.cmd_flag & 0x20 && lstvw2.cmd_flag & 0x20)
+    if ( (gui_lstvw.flags & GuiBase::FLAG_CLOSED && lstvw2.flags & GuiBase::FLAG_CLOSED)
             || (arg->field_8->downed_key != VK_RETURN && arg->field_8->downed_key != VK_ESCAPE) )
     {
         yw->field_826F = 0;
@@ -1779,44 +1779,44 @@ void NC_STACK_ypaworld::ypaworld_func138(void *arg)
 }
 
 
-void NC_STACK_ypaworld::ypaworld_func139(listbase *lstvw)
+void NC_STACK_ypaworld::ypaworld_func139(GuiBase *lstvw)
 {
     _NC_STACK_ypaworld *yw = &stack__ypaworld;
 
-    if ( !(lstvw->cmd_flag & 4) )
-        lstvw->cmd_flag &= 0xFFFFFFFE;
+    if ( !(lstvw->flags & GuiBase::FLAG_WITH_ICON) )
+        lstvw->flags &= ~GuiBase::FLAG_ICONIFED;
 
-    if ( lstvw->cmd_flag & 2 )
+    if ( lstvw->flags & GuiBase::FLAG_IN_LIST )
         ypaworld_func140(lstvw);
 
     AddHead(&yw->field_17a0, lstvw);
 
-    lstvw->cmd_flag |= 2;
+    lstvw->flags |= GuiBase::FLAG_IN_LIST;
 
-    if ( lstvw->cmd_flag & 4 )
-        lstvw->frm_2.pobject = lstvw;
+    if ( lstvw->flags & GuiBase::FLAG_WITH_ICON )
+        lstvw->iconBox.pobject = lstvw;
 
-    lstvw->frm_1.pobject = lstvw;
+    lstvw->dialogBox.pobject = lstvw;
 
-    if ( lstvw->cmd_flag & 1 )
-        INPe.sub_412D48(&lstvw->frm_2, 0);
-    else if ( !(lstvw->cmd_flag & 0x20) )
-        INPe.sub_412D48(&lstvw->frm_1, 0);
+    if ( lstvw->flags & GuiBase::FLAG_ICONIFED )
+        INPe.AddClickBox(&lstvw->iconBox, 0);
+    else if ( !(lstvw->flags & GuiBase::FLAG_CLOSED) )
+        INPe.AddClickBox(&lstvw->dialogBox, 0);
 }
 
 
-void NC_STACK_ypaworld::ypaworld_func140(listbase *lstvw)
+void NC_STACK_ypaworld::ypaworld_func140(GuiBase *lstvw)
 {
-    if ( lstvw->cmd_flag & 2 )
+    if ( lstvw->flags & GuiBase::FLAG_IN_LIST )
     {
         Remove(lstvw);
 
-        lstvw->cmd_flag &= 0xFFFFFFFD;
+        lstvw->flags &= ~GuiBase::FLAG_IN_LIST;
 
-        if ( lstvw->cmd_flag & 1 )
-            INPe.sub_412D9C(&lstvw->frm_2);
-        else if ( !(lstvw->cmd_flag & 0x20) )
-            INPe.sub_412D9C(&lstvw->frm_1);
+        if ( lstvw->flags & GuiBase::FLAG_ICONIFED )
+            INPe.RemClickBox(&lstvw->iconBox);
+        else if ( !(lstvw->flags & GuiBase::FLAG_CLOSED) )
+            INPe.RemClickBox(&lstvw->dialogBox);
     }
 }
 
@@ -4086,41 +4086,29 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     dword_5A50B2_h = v278_4 - yw->font_yscrl_bkg_w;
 
-    if ( !lstvw_init(yw, &usr->input_listview,
-                     0x80000002,
-                     0,
-                     0x80000003,
-                     45,
-                     0x80000004,
-                     8,
-                     0x80000005,
-                     0,
-                     0x80000006,
-                     0,
-                     0x80000007,
-                     8,
-                     0x80000008,
-                     0,
-                     0x8000000B,
-                     yw->font_default_h,
-                     0x8000000C,
-                     dword_5A50B2_h,
-                     0x8000000F,
-                     1,
-                     0x80000010,
-                     yw->field_1a38,
-                     0x80000011,
-                     0,
-                     0x80000017,
-                     1,
-                     0) )
+    GuiList::tInit args;
+    args.resizeable = false;
+    args.numEntries = 45;
+    args.shownEntries = 8;
+    args.firstShownEntry = 0;
+    args.selectedEntry = 0;
+    args.maxShownEntries = 8;
+    args.withIcon = false;
+    args.entryHeight = yw->font_default_h;
+    args.entryWidth = dword_5A50B2_h;
+    args.enabled = true;
+    args.vborder = yw->field_1a38;
+    args.instantInput = false;
+    args.keyboardInput = true;
+
+    if ( !usr->input_listview.Init(yw, args) )
     {
         ypa_log_out("Unable to create Input-ListView\n");
         return 0;
     }
 
-    usr->input_listview.frm_1.btn_xpos = v278;
-    usr->input_listview.frm_1.btn_ypos = v273 + (word_5A50C2 + yw->font_default_h) * 4;
+    usr->input_listview.dialogBox.xpos = v278;
+    usr->input_listview.dialogBox.ypos = v273 + (word_5A50C2 + yw->font_default_h) * 4;
 
     usr->field_D5A = v278;
     usr->field_0xd5c = v273;
@@ -4400,71 +4388,44 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     int v294 = v278_4 - 3 * word_5A50C0 - yw->font_yscrl_bkg_w;
     int v94 = (v278_4 - 3 * word_5A50C0 - yw->font_yscrl_bkg_w) * 0.6;
 
-    if ( !lstvw_init(
-                yw,
-                &usr->video_listvw,
-                0x80000002,
-                0,
-                0x80000003,
-                cnt,
-                0x80000004,
-                4,
-                0x80000005,
-                0,
-                0x80000006,
-                0,
-                0x80000007,
-                4,
-                0x80000008,
-                0,
-                0x8000000B,
-                yw->font_default_h,
-                0x8000000C,
-                v94,
-                0x8000000F,
-                1,
-                0x80000010,
-                yw->field_1a38,
-                0x80000011,
-                1,
-                0x80000017,
-                1,
-                0) )
+
+    args.Init();
+    args.resizeable = false;
+    args.numEntries = cnt;
+    args.shownEntries = 4;
+    args.firstShownEntry = 0;
+    args.selectedEntry = 0;
+    args.maxShownEntries = 4;
+    args.withIcon = false;
+    args.entryHeight = yw->font_default_h;
+    args.entryWidth = v94;
+    args.enabled = true;
+    args.vborder = yw->field_1a38;
+    args.instantInput = true;
+    args.keyboardInput = true;
+
+    if ( !usr->video_listvw.Init(yw, args) )
     {
         ypa_log_out("Unable to create Game-Video-Menu\n");
         return 0;
     }
 
-    if ( !lstvw_init(
-                yw,
-                &usr->d3d_listvw,
-                0x80000002,
-                0,
-                0x80000003,
-                v261,
-                0x80000004,
-                4,
-                0x80000005,
-                0,
-                0x80000006,
-                v3,
-                0x80000007,
-                4,
-                0x80000008,
-                0,
-                0x8000000B,
-                yw->font_default_h,
-                0x8000000C,
-                v94,
-                0x8000000F,
-                1,
-                0x80000010,
-                yw->field_1a38,
-                0x80000011,
-                1,
-                0x80000017,
-                1,
-                0) )
+    args.Init();
+    args.resizeable = false;
+    args.numEntries = v261;
+    args.shownEntries = 4;
+    args.firstShownEntry = 0;
+    args.selectedEntry = v3;
+    args.maxShownEntries = 4;
+    args.withIcon = false;
+    args.entryHeight = yw->font_default_h;
+    args.entryWidth = v94;
+    args.enabled = true;
+    args.vborder = yw->field_1a38;
+    args.instantInput = true;
+    args.keyboardInput = true;
+
+    if ( !usr->d3d_listvw.Init(yw, args) )
     {
         ypa_log_out("Unable to create D3D-Menu\n");
         return 0;
@@ -4490,11 +4451,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     int v98 = v294 * 0.4;
     int v99 = v278 + word_5A50C0 + v98;
 
-    usr->video_listvw.frm_1.btn_xpos = v99;
-    usr->video_listvw.frm_1.btn_ypos = 6 * word_5A50C2 + 6 * yw->font_default_h + v273;
+    usr->video_listvw.dialogBox.xpos = v99;
+    usr->video_listvw.dialogBox.ypos = 6 * word_5A50C2 + 6 * yw->font_default_h + v273;
 
-    usr->d3d_listvw.frm_1.btn_xpos = v99;
-    usr->d3d_listvw.frm_1.btn_ypos = 7 * word_5A50C2 + 7 * yw->font_default_h + v273;
+    usr->d3d_listvw.dialogBox.xpos = v99;
+    usr->d3d_listvw.dialogBox.ypos = 7 * word_5A50C2 + 7 * yw->font_default_h + v273;
 
     v70 = 0;
 
@@ -5190,36 +5151,22 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     word_5A50B0 = v278_4;
 
-    if ( !lstvw_init(
-                yw,
-                &usr->disk_listvw,
-                0x80000002,
-                0,
-                0x80000003,
-                listCnt(&usr->files_list),
-                0x80000004,
-                10,
-                0x80000005,
-                0,
-                0x80000006,
-                0,
-                0x80000007,
-                10,
-                0x80000008,
-                0,
-                0x8000000B,
-                yw->font_default_h,
-                0x8000000C,
-                v278_4,
-                0x8000000F,
-                1,
-                0x80000010,
-                yw->field_1a38,
-                0x80000011,
-                0,
-                0x80000017,
-                1,
-                0) )
+    args.Init();
+    args.resizeable = false;
+    args.numEntries = listCnt(&usr->files_list);
+    args.shownEntries = 10;
+    args.firstShownEntry = 0;
+    args.selectedEntry = 0;
+    args.maxShownEntries = 10;
+    args.withIcon = false;
+    args.entryHeight = yw->font_default_h;
+    args.entryWidth = v278_4;
+    args.enabled = true;
+    args.vborder = yw->field_1a38;
+    args.instantInput = false;
+    args.keyboardInput = true;
+
+    if ( !usr->disk_listvw.Init(yw, args) )
     {
         ypa_log_out("Unable to create disk-listview\n");
         return 0;
@@ -5246,8 +5193,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     usr->field_0x1758 = v278;
     usr->field_175A = 4 * (word_5A50C2 + yw->font_default_h) + v273;
 
-    usr->disk_listvw.frm_1.btn_xpos = usr->field_0x1758;
-    usr->disk_listvw.frm_1.btn_ypos = usr->field_175A;
+    usr->disk_listvw.dialogBox.xpos = usr->field_0x1758;
+    usr->disk_listvw.dialogBox.ypos = usr->field_175A;
 
     strcpy(usr->usernamedir, usr->user_name);
 
@@ -5428,36 +5375,23 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     v228.butID = 1105;
     usr->disk_button->button_func67(&v228);
 
-    if ( !lstvw_init(
-                yw,
-                &usr->local_listvw,
-                0x80000002,
-                0,
-                0x80000003,
-                10,
-                0x80000004,
-                10,
-                0x80000005,
-                0,
-                0x80000006,
-                0,
-                0x80000007,
-                10,
-                0x80000008,
-                0,
-                0x8000000B,
-                yw->font_default_h,
-                0x8000000C,
-                v278_4 - yw->font_yscrl_bkg_w,
-                0x8000000F,
-                1,
-                0x80000010,
-                yw->field_1a38,
-                0x80000011,
-                0,
-                0x80000017,
-                1,
-                0) )
+    args.Init();
+    args.resizeable = false;
+    args.numEntries = 10;
+    args.shownEntries = 10;
+    args.firstShownEntry = 0;
+    args.selectedEntry = 0;
+    args.maxShownEntries = 10;
+    args.withIcon = false;
+    args.entryHeight = yw->font_default_h;
+    args.entryWidth = v278_4 - yw->font_yscrl_bkg_w;
+    args.enabled = true;
+    args.vborder = yw->field_1a38;
+    args.instantInput = false;
+    args.keyboardInput = true;
+
+
+    if ( !usr->local_listvw.Init(yw, args) )
     {
         ypa_log_out("Unable to create local-listview\n");
         return 0;
@@ -5481,8 +5415,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         return 0;
     }
 
-    usr->local_listvw.frm_1.btn_xpos = v278;
-    usr->local_listvw.frm_1.btn_ypos = 4 * (word_5A50C2 + yw->font_default_h) + v273;
+    usr->local_listvw.dialogBox.xpos = v278;
+    usr->local_listvw.dialogBox.ypos = 4 * (word_5A50C2 + yw->font_default_h) + v273;
 
     v70 = 0;
     btn_64arg.tileset_down = 16;
@@ -5735,36 +5669,22 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     dword_5A50B6 = v278_4 - yw->font_yscrl_bkg_w;
 
-    if ( !lstvw_init(
-                yw,
-                &usr->network_listvw,
-                0x80000002,
-                0,
-                0x80000003,
-                12,
-                0x80000004,
-                12,
-                0x80000005,
-                0,
-                0x80000006,
-                0,
-                0x80000007,
-                12,
-                0x80000008,
-                0,
-                0x8000000B,
-                yw->font_default_h,
-                0x8000000C,
-                dword_5A50B2_h,
-                0x8000000F,
-                1,
-                0x80000010,
-                yw->field_1a38,
-                0x80000011,
-                0,
-                0x80000017,
-                1,
-                0) )
+    args.Init();
+    args.resizeable = false;
+    args.numEntries = 12;
+    args.shownEntries = 12;
+    args.firstShownEntry = 0;
+    args.selectedEntry = 0;
+    args.maxShownEntries = 12;
+    args.withIcon = false;
+    args.entryHeight = yw->font_default_h;
+    args.entryWidth = dword_5A50B2_h;
+    args.enabled = true;
+    args.vborder = yw->field_1a38;
+    args.instantInput = false;
+    args.keyboardInput = true;
+
+    if ( !usr->network_listvw.Init(yw, args) )
     {
         ypa_log_out("Unable to create network-listview\n");
         return 0;
@@ -5790,8 +5710,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     usr->field_1C2E = usr->field_1C32;
     usr->field_0x1c30 = 3 * (word_5A50C2 + yw->font_default_h) + usr->field_0x1c34;
 
-    usr->network_listvw.frm_1.btn_xpos = usr->field_1C2E;
-    usr->network_listvw.frm_1.btn_ypos = usr->field_0x1c30;
+    usr->network_listvw.dialogBox.xpos = usr->field_1C2E;
+    usr->network_listvw.dialogBox.ypos = usr->field_0x1c30;
 
     btn_64arg.tileset_down = 17;
     btn_64arg.tileset_up = 17;
@@ -6355,9 +6275,9 @@ void NC_STACK_ypaworld::ypaworld_func157(UserData *usr)
 
         if ( usr->button_input_button )
         {
-            if ( !(usr->input_listview.cmd_flag & 0x20) )
-                sub_4C31C0(usr->p_ypaworld, &usr->input_listview);
-            sub_4E866C(&usr->input_listview);
+            if ( !(usr->input_listview.flags & GuiBase::FLAG_CLOSED) )
+                usr->input_listview.CloseDialog(usr->p_ypaworld);
+            usr->input_listview.Free();
 
             v9 = 2;
             usr->button_input_button->button_func68(&v9);
@@ -6367,13 +6287,13 @@ void NC_STACK_ypaworld::ypaworld_func157(UserData *usr)
 
         if ( usr->video_button )
         {
-            if ( !(usr->video_listvw.cmd_flag & 0x20) )
-                sub_4C31C0(usr->p_ypaworld, &usr->video_listvw);
-            sub_4E866C(&usr->video_listvw);
+            if ( !(usr->video_listvw.flags & GuiBase::FLAG_CLOSED) )
+                usr->video_listvw.CloseDialog(usr->p_ypaworld);
+            usr->video_listvw.Free();
 
-            if ( !(usr->d3d_listvw.cmd_flag & 0x20) )
-                sub_4C31C0(usr->p_ypaworld, &usr->d3d_listvw);
-            sub_4E866C(&usr->d3d_listvw);
+            if ( !(usr->d3d_listvw.flags & GuiBase::FLAG_CLOSED) )
+                usr->d3d_listvw.CloseDialog(usr->p_ypaworld);
+            usr->d3d_listvw.Free();
 
             v9 = 2;
             usr->video_button->button_func68(&v9);
@@ -6383,9 +6303,9 @@ void NC_STACK_ypaworld::ypaworld_func157(UserData *usr)
 
         if ( usr->disk_button )
         {
-            if ( !(usr->disk_listvw.cmd_flag & 0x20) )
-                sub_4C31C0(usr->p_ypaworld, &usr->disk_listvw);
-            sub_4E866C(&usr->disk_listvw);
+            if ( !(usr->disk_listvw.flags & GuiBase::FLAG_CLOSED) )
+                usr->disk_listvw.CloseDialog(usr->p_ypaworld);
+            usr->disk_listvw.Free();
 
             v9 = 2;
             usr->disk_button->button_func68(&v9);
@@ -6395,9 +6315,9 @@ void NC_STACK_ypaworld::ypaworld_func157(UserData *usr)
 
         if ( usr->locale_button )
         {
-            if ( !(usr->local_listvw.cmd_flag & 0x20) )
-                sub_4C31C0(usr->p_ypaworld, &usr->local_listvw);
-            sub_4E866C(&usr->local_listvw);
+            if ( !(usr->local_listvw.flags & GuiBase::FLAG_CLOSED) )
+                usr->local_listvw.CloseDialog(usr->p_ypaworld);
+            usr->local_listvw.Free();
 
             v9 = 2;
             usr->locale_button->button_func68(&v9);
@@ -6415,9 +6335,9 @@ void NC_STACK_ypaworld::ypaworld_func157(UserData *usr)
 
         if ( usr->network_button )
         {
-            if ( !(usr->network_listvw.cmd_flag & 0x20) )
-                sub_4C31C0(usr->p_ypaworld, &usr->network_listvw);
-            sub_4E866C(&usr->network_listvw);
+            if ( !(usr->network_listvw.flags & GuiBase::FLAG_CLOSED) )
+                usr->network_listvw.CloseDialog(usr->p_ypaworld);
+            usr->network_listvw.Free();
 
             v9 = 2;
             usr->network_button->button_func68(&v9);
@@ -6504,24 +6424,24 @@ void draw_tooltip(_NC_STACK_ypaworld *yw)
 
         char *pos = buf;
 
-        fntcmd_select_tileset(&pos, 15);
-        fntcmd_set_xpos(&pos, 0);
-        fntcmd_set_ypos(&pos, v15);
+        FontUA::select_tileset(&pos, 15);
+        FontUA::set_xpos(&pos, 0);
+        FontUA::set_ypos(&pos, v15);
 
         if ( v2 )
         {
-            fntcmd_set_txtColor(&pos, yw->iniColors[61].r, yw->iniColors[61].g, yw->iniColors[61].b);
+            FontUA::set_txtColor(&pos, yw->iniColors[61].r, yw->iniColors[61].g, yw->iniColors[61].b);
 
-            pos = sub_45148C(yw->tiles[15], pos, v2, yw->screen_width);
+            pos = FontUA::FormateCenteredSkipableItem(yw->tiles[15], pos, v2, yw->screen_width);
 
-            fntcmd_next_line(&pos);
+            FontUA::next_line(&pos);
         }
 
-        fntcmd_set_txtColor(&pos, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
+        FontUA::set_txtColor(&pos, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
 
-        pos = sub_45148C(yw->tiles[15], pos, tooltip, yw->screen_width);
+        pos = FontUA::FormateCenteredSkipableItem(yw->tiles[15], pos, tooltip, yw->screen_width);
 
-        fntcmd_set_end(&pos);
+        FontUA::set_end(&pos);
 
         w3d_a209 v10;
 
@@ -7239,23 +7159,23 @@ void ypaworld_func167__sub0(UserData *usr)
     if ( usr->field_D36 )
     {
         int v7 = usr->field_D36 - 1;
-        int v8 = usr->input_listview.element_count_max + usr->input_listview.scroll_pos;
+        int v8 = usr->input_listview.maxShownEntries + usr->input_listview.firstShownEntries;
 
-        if ( v7 >= usr->input_listview.scroll_pos && v7 < v8 )
+        if ( v7 >= usr->input_listview.firstShownEntries && v7 < v8 )
         {
-            if ( v8 > usr->input_listview.elements_for_scroll_size )
-                usr->input_listview.scroll_pos = usr->input_listview.elements_for_scroll_size - usr->input_listview.element_count_max;
+            if ( v8 > usr->input_listview.numEntries )
+                usr->input_listview.firstShownEntries = usr->input_listview.numEntries - usr->input_listview.maxShownEntries;
 
-            if ( usr->input_listview.scroll_pos < 0 )
-                usr->input_listview.scroll_pos = 0;
+            if ( usr->input_listview.firstShownEntries < 0 )
+                usr->input_listview.firstShownEntries = 0;
         }
-        else if ( usr->input_listview.elements_for_scroll_size - v7 <= usr->input_listview.element_count_max )
+        else if ( usr->input_listview.numEntries - v7 <= usr->input_listview.maxShownEntries )
         {
-            usr->input_listview.scroll_pos = usr->input_listview.elements_for_scroll_size - usr->input_listview.element_count_max;
+            usr->input_listview.firstShownEntries = usr->input_listview.numEntries - usr->input_listview.maxShownEntries;
         }
         else
         {
-            usr->input_listview.scroll_pos = v7;
+            usr->input_listview.firstShownEntries = v7;
         }
     }
 }
@@ -7265,7 +7185,7 @@ void NC_STACK_ypaworld::ypaworld_func167(UserData *usr)
 {
     if ( usr->field_1612 )
     {
-        sub_4DDFA4(&usr->disk_listvw, usr->field_1612 - 1);
+        usr->disk_listvw.PosOnSelected(usr->field_1612 - 1);
 
         button_66arg v18;
         v18.field_4 = 1;
@@ -8813,10 +8733,10 @@ size_t NC_STACK_ypaworld::compatcall(int method_id, void *data)
         ypaworld_func138( (void *)data );
         return 1;
     case 139:
-        ypaworld_func139( (listbase *)data );
+        ypaworld_func139( (GuiBase *)data );
         return 1;
     case 140:
-        ypaworld_func140( (listbase *)data );
+        ypaworld_func140( (GuiBase *)data );
         return 1;
     case 143:
         ypaworld_func143( (void *)data );
