@@ -27,6 +27,7 @@ OBJS =  \
 	engine_miles.cpp\
 	engine_tform.cpp\
 	font.cpp\
+	fsmgr.cpp\
 	glob_funcs.cpp\
 	idev.cpp\
 	ilbm.cpp\
