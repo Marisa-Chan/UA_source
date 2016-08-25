@@ -3,6 +3,9 @@
 
 #define BYTEORDER_LITTLE
 
+#undef min
+#undef max
+
 #include <string>
 #include <list>
 
@@ -14,11 +17,11 @@ class FileHandle;
 
 class iNode
 {
-friend class iDir;
+    friend class iDir;
 
 public:
     iNode(const char *name, const char *path, iDir *parent = NULL);
-    virtual ~iNode(){};
+    virtual ~iNode() {};
 
     int getType();
     const char *getPath();
@@ -49,7 +52,7 @@ public:
 
 class iDir: public iNode
 {
-friend class DirIter;
+    friend class DirIter;
 
 public:
     iDir(const char *name, const char *path, iDir *parent = NULL);
@@ -92,6 +95,7 @@ class DirIter
 public:
     DirIter(iDir *dr);
     iNode *getNext();
+    bool getNext(iNode * &node);
 
 private:
     std::list<iNode *> *lst;
@@ -105,10 +109,14 @@ public:
     virtual ~FileHandle();
 
     size_t read(void *buf, size_t num);
-    size_t write(void *buf, size_t num);
+    size_t write(const void *buf, size_t num);
 
     size_t tell();
     int seek(long int offset, int origin);
+    char *gets(char *str, int num);
+    int puts(const char *str);
+    int printf(const char *format, ...);
+    int vprintf(const char *format,va_list args);
 
     uint8_t readU8();
     int8_t readS8();
@@ -139,7 +147,9 @@ public:
 
     virtual bool OK();
 
-    static void closeFile(FileHandle *fl) {if (fl) delete fl;};
+    static void closeFile(FileHandle *fl) {
+        if (fl) delete fl;
+    };
 
 protected:
     FILE *hndl;
