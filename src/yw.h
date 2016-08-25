@@ -210,7 +210,7 @@ struct UserData
     char usernamedir[300];
     int usernamedir_len;
     int16_t field_0x1744;
-    ncDir *opened_dir;
+    FSMgr::DirIter *opened_dir;
     nlist files_list;
     char field_1756;
     char snd__flags1;

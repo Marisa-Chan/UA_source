@@ -40,13 +40,13 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, stack_vals *stak, const char *filname
     strcpy(buf, restp);
     strcat(buf, filname);
 
-    FILE *fil = FOpen(buf, "rb");
+    FSMgr::FileHandle *fil = uaOpenFile(buf, "rb");
 
     if ( fil )
     {
         RIFF_HDR rff;
 
-        fread(&rff, sizeof(RIFF_HDR), 1, fil);
+        fil->read(&rff, sizeof(RIFF_HDR));
 
         rff.ChunkID = SWAP32(rff.ChunkID);
         rff.Format = SWAP32(rff.Format);
@@ -59,7 +59,7 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, stack_vals *stak, const char *filname
             {
                 RIFF_SUBCHUNK sbchunk;
 
-                if ( fread(&sbchunk, sizeof(RIFF_SUBCHUNK), 1, fil) != 1 )
+                if ( fil->read(&sbchunk, sizeof(RIFF_SUBCHUNK)) != sizeof(RIFF_SUBCHUNK) )
                     break;
 
                 sbchunk.SubchunkID = SWAP32(sbchunk.SubchunkID);
@@ -82,11 +82,11 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, stack_vals *stak, const char *filname
                         if ( !smpl )
                         {
                             obj->rsrc_func65(&res);
-                            FClose(fil);
+                            delete fil;
                             return NULL;
                         }
 
-                        fread(smpl->sample_buffer, sbchunk.SubchunkSize, 1, fil);
+                        fil->read(smpl->sample_buffer, sbchunk.SubchunkSize);
                         smpl->SampleRate = fmt.SampleRate;
                     }
                 }
@@ -94,17 +94,17 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, stack_vals *stak, const char *filname
                 {
                     if (sbchunk.SubchunkSize >= sizeof(PCM_fmt))
                     {
-                        fread(&fmt, sizeof(PCM_fmt), 1, fil);
+                        fil->read(&fmt, sizeof(PCM_fmt));
 
                         if ( sbchunk.SubchunkSize > sizeof(PCM_fmt) )
-                            fseek(fil, sbchunk.SubchunkSize - sizeof(PCM_fmt), SEEK_CUR); // For some files this section bigger, so skip extra bytes
+                            fil->seek(sbchunk.SubchunkSize - sizeof(PCM_fmt), SEEK_CUR); // For some files this section bigger, so skip extra bytes
                     }
                     else
-                        fseek(fil, sbchunk.SubchunkSize, SEEK_CUR);
+                        fil->seek(sbchunk.SubchunkSize, SEEK_CUR);
                 }
                 else
                 {
-                    fseek(fil, sbchunk.SubchunkSize, SEEK_CUR);
+                    fil->seek(sbchunk.SubchunkSize, SEEK_CUR);
                 }
             }
 
@@ -115,7 +115,7 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, stack_vals *stak, const char *filname
             ypa_log_out("wav.class: Not a wav file.\n");
         }
 
-        FClose(fil);
+        delete fil;
     }
     return res;
 }

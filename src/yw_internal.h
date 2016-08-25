@@ -148,9 +148,9 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
 NC_STACK_base *load_set_base();
 
 int sub_44A12C(_NC_STACK_ypaworld *yw, NC_STACK_base *base);
-int yw_parse_lego(_NC_STACK_ypaworld *yw, FILE *fil, NC_STACK_base *base);
-int yw_parse_subSect(_NC_STACK_ypaworld *yw, FILE *fil);
-int yw_parse_sektor(_NC_STACK_ypaworld *yw, FILE *fil);
+int yw_parse_lego(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil, NC_STACK_base *base);
+int yw_parse_subSect(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
+int yw_parse_sektor(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
 int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base);
 
 NC_STACK_bitmap * sub_44816C(NC_STACK_bitmap *src, const char *name);
@@ -171,15 +171,15 @@ int parseSaveBuddy(scrCallBack *arg);
 int parseSaveShell(scrCallBack *arg);
 
 int yw_write_callSign(_NC_STACK_ypaworld *yw, const char *filename, const char *callsign);
-int yw_write_user(FILE *fil, UserData *usr);
-int yw_write_input(FILE *fil, UserData *usr);
-int yw_write_sound(FILE *fil, UserData *usr);
-int yw_write_video(FILE *fil, UserData *usr);
-int yw_write_level_status(FILE *fil, _NC_STACK_ypaworld *yw, int lvlid);
-int yw_write_levels_statuses(FILE *fil, _NC_STACK_ypaworld *yw);
-int yw_write_buddies(FILE *fil, _NC_STACK_ypaworld *yw);
-int yw_write_shell(FILE *fil, UserData *usr);
-int yw_write_item_modifers(_NC_STACK_ypaworld *yw, FILE *fil);
+int yw_write_user(FSMgr::FileHandle *fil, UserData *usr);
+int yw_write_input(FSMgr::FileHandle *fil, UserData *usr);
+int yw_write_sound(FSMgr::FileHandle *fil, UserData *usr);
+int yw_write_video(FSMgr::FileHandle *fil, UserData *usr);
+int yw_write_level_status(FSMgr::FileHandle *fil, _NC_STACK_ypaworld *yw, int lvlid);
+int yw_write_levels_statuses(FSMgr::FileHandle *fil, _NC_STACK_ypaworld *yw);
+int yw_write_buddies(FSMgr::FileHandle *fil, _NC_STACK_ypaworld *yw);
+int yw_write_shell(FSMgr::FileHandle *fil, UserData *usr);
+int yw_write_item_modifers(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
 
 void sb_0x44ac24(_NC_STACK_ypaworld *yw);
 void sub_4EAC80(_NC_STACK_ypaworld *yw);
@@ -486,17 +486,17 @@ void recorder_write_frame(_NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub22(_NC_STACK_ypaworld *yw);
 void ypaworld_func151__sub5(_NC_STACK_ypaworld *yw);
 
-int yw_write_levelnum(_NC_STACK_ypaworld *yw, FILE *fil);
-void yw_write_ownermap(_NC_STACK_ypaworld *yw, FILE *fil);
-void yw_write_buildmap(_NC_STACK_ypaworld *yw, FILE *fil);
-void yw_write_energymap(_NC_STACK_ypaworld *yw, FILE *fil);
-int yw_write_units(_NC_STACK_ypaworld *yw, FILE *fil);
-int yw_write_wunderinfo(_NC_STACK_ypaworld *yw, FILE *fil);
-int yw_write_kwfactor(_NC_STACK_ypaworld *yw, FILE *fil);
-int yw_write_globals(_NC_STACK_ypaworld *yw, FILE *fil);
-int yw_write_superbomb(_NC_STACK_ypaworld *yw, FILE *fil);
-int yw_write_history(_NC_STACK_ypaworld *yw, FILE *fil);
-int yw_write_masks(_NC_STACK_ypaworld *yw, FILE *fil);
+int yw_write_levelnum(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
+void yw_write_ownermap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
+void yw_write_buildmap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
+void yw_write_energymap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
+int yw_write_units(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
+int yw_write_wunderinfo(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
+int yw_write_kwfactor(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
+int yw_write_globals(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
+int yw_write_superbomb(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
+int yw_write_history(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
+int yw_write_masks(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
 
 void sub_471AB8(_NC_STACK_ypaworld *yw);
 void sub_47DB04(_NC_STACK_ypaworld *yw, char a2);

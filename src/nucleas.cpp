@@ -375,7 +375,7 @@ NC_STACK_base *READ_BAS_FILE(const char *fname)
     if ( !mfile )
         return NULL;
 
-    FILE *fil = FOpen(fname, "rb");
+    FSMgr::FileHandle *fil = uaOpenFile(fname, "rb");
     mfile->file_handle = fil;
     if ( !fil )
     {
@@ -385,7 +385,7 @@ NC_STACK_base *READ_BAS_FILE(const char *fname)
 
     if ( sub_412F98(mfile, 0) )
     {
-        FClose(mfile->file_handle);
+        delete mfile->file_handle;
         del_MFILE(mfile);
         return NULL;
     }
@@ -401,7 +401,7 @@ NC_STACK_base *READ_BAS_FILE(const char *fname)
         }
     }
 
-    FClose(fil);
+    delete fil;
     del_MFILE(mfile);
 
     return result;

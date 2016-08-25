@@ -1,15 +1,18 @@
 #include <stdio.h>
 #include <stdarg.h>
+#include <windows.h>
 #include "log.h"
+#include "fsmgr.h"
+#include "utils.h"
 
 void ypa_log__ypa_general_log()
 {
-    FILE *v0 = fopen("env/ypa_log.txt", "w");
+    FSMgr::FileHandle *v0 = uaOpenFile("env/ypa_log.txt", "w");
     if ( v0 )
     {
-        fprintf(v0, "YPA General Log\n");
-        fprintf(v0, "---------------\n");
-        fclose(v0);
+        v0->printf("YPA General Log\n");
+        v0->printf("---------------\n");
+        delete v0;
     }
 }
 
@@ -17,22 +20,22 @@ void ypa_log_out(const char *format, ...)
 {
     va_list va;
     va_start(va, format);
-    FILE *f = fopen("env/ypa_log.txt", "a");
+    FSMgr::FileHandle *f = uaOpenFile("env/ypa_log.txt", "a");
     if ( f )
     {
-        vfprintf(f, format, va);
-        fclose(f);
+        f->vprintf(format, va);
+        delete f;
     }
     va_end(va);
 }
 
 void init_d3dlog()
 {
-    FILE *v0 = fopen("env/d3dlog.txt", "w");
+    FSMgr::FileHandle *v0 = uaOpenFile("env/d3dlog.txt", "w");
     if ( v0 )
     {
-        fprintf(v0, "YPA DD/D3D driver log\n---------------------\n");
-        fclose(v0);
+        v0->printf("YPA DD/D3D driver log\n---------------------\n");
+        delete v0;
     }
 }
 
@@ -40,22 +43,22 @@ void log_d3dlog(const char *format, ...)
 {
     va_list va;
     va_start(va, format);
-    FILE *f = fopen("env/d3dlog.txt", "a");
+    FSMgr::FileHandle *f = uaOpenFile("env/d3dlog.txt", "a");
     if ( f )
     {
-        vfprintf(f, format, va);
-        fclose(f);
+        f->vprintf(format, va);
+        delete f;
     }
     va_end(va);
 }
 
 void init_dinputlog()
 {
-    FILE *v0 = fopen("env/dinplog.txt", "w");
+    FSMgr::FileHandle *v0 = uaOpenFile("env/dinplog.txt", "w");
     if ( v0 )
     {
-        fprintf(v0, "YPA DirectInput log\n---------------------\n");
-        fclose(v0);
+        v0->printf("YPA DirectInput log\n---------------------\n");
+        delete v0;
     }
 }
 
@@ -64,12 +67,12 @@ void log_netlog(const char *format, ...)
 {
     va_list va;
     va_start(va, format);
-    FILE *f = fopen("env/ypa_log.txt", "a");
+    FSMgr::FileHandle *f = uaOpenFile("env/ypa_log.txt", "a");
     if ( f )
     {
-        fprintf(f, "netlog: ");
-        vfprintf(f, format, va);
-        fclose(f);
+        f->printf("netlog: ");
+        f->vprintf(format, va);
+        delete f;
     }
     va_end(va);
 }
@@ -498,11 +501,11 @@ void log_dinputlog(const char *format, ...)
 {
     va_list va;
     va_start(va, format);
-    FILE *f = fopen("env/dinplog.txt", "a");
+    FSMgr::FileHandle *f = uaOpenFile("env/dinplog.txt", "a");
     if ( f )
     {
-        vfprintf(f, format, va);
-        fclose(f);
+        f->vprintf(format, va);
+        delete f;
     }
     va_end(va);
 }

@@ -925,20 +925,20 @@ void listSaveDir(UserData *usr, const char *saveDir)
     int v5 = usr->p_ypaworld->maxroboenergy;
     int v27 = usr->p_ypaworld->maxreloadconst;
 
-    usr->opened_dir = OpenDir(saveDir);
+    usr->opened_dir = uaOpenDir(saveDir);
     if ( usr->opened_dir )
     {
-        dirEntry a2a;
-        while ( ReadDir(usr->opened_dir, &a2a) )
+        FSMgr::iNode *a2a;
+        while ( usr->opened_dir->getNext(a2a) )
         {
-            if ( a2a.field_0 & 1 )
+            if ( a2a->getType() == FSMgr::iNode::NTYPE_DIR )
             {
-                if ( strcmp(a2a.e_name, ".") && strcmp(a2a.e_name, "..") )
+                if ( strcmp(a2a->getName(), ".") && strcmp(a2a->getName(), "..") )
                 {
                     profilesNode *v10 = (profilesNode *)AllocVec(sizeof(profilesNode), 65537);
                     if ( v10 )
                     {
-                        strcpy(v10->profile_subdir, a2a.e_name);
+                        strcpy(v10->profile_subdir, a2a->getName());
 
                         AddTail(&usr->files_list, v10);
 
@@ -950,7 +950,7 @@ void listSaveDir(UserData *usr, const char *saveDir)
 
                         char buf[300];
 
-                        sprintf(buf, "%s/%s/user.txt\n", saveDir, a2a.e_name);
+                        sprintf(buf, "%s/%s/user.txt\n", saveDir, a2a->getName());
 
                         if ( !def_parseFile(buf, 1, &v25, 2) )
                             ypa_log_out("Warning, cannot parse %s for time scanning\n", buf);
@@ -961,7 +961,8 @@ void listSaveDir(UserData *usr, const char *saveDir)
                 }
             }
         }
-        CloseDir(usr->opened_dir);
+
+        delete usr->opened_dir;
     }
     else
     {
@@ -982,36 +983,26 @@ void listLocaleDir(UserData *usr, const char *dirname)
     usr->lang_dlls_count = 0;
 
     langDll_node *deflng = NULL;
-    ncDir *dir = OpenDir(dirname);
+    FSMgr::DirIter *dir = uaOpenDir(dirname);
     if ( dir )
     {
-        dirEntry v18;
+        FSMgr::iNode *v18;
 
-        while ( ReadDir(dir, &v18) )
+        while ( dir->getNext(v18) )
         {
-            char *v3 = strstr(v18.e_name, ".LNG");
-            if ( !v3 )
-                v3 = strstr(v18.e_name, ".lng");
+            std::string tmp = v18->getName();
+            size_t v3 = tmp.rfind(".LNG");
+            if ( v3 == std::string::npos )
+                v3 = tmp.rfind(".lng");;
             /*if ( !v3 )
               v3 = strstr(v18.e_name, ".dll");
             if ( !v3 )
               v3 = strstr(v18.e_name, ".DLL");*/
 
-            if ( !(v18.field_0 & 1) && v3 )
+            if ( v18->getType() == FSMgr::iNode::NTYPE_FILE && v3 != std::string::npos )
             {
-                char v19[256];
-                memset(v19, 0, 256);
-
-                for (int i = 0; i < 31; i++)
-                {
-                    char v5 = v18.e_name[i];
-                    if (v5 <= ' ')
-                        break;
-                    if (v5 == '.')
-                        break;
-
-                    v19[i] = toupper(v5);
-                }
+                for (size_t i = 0; i < tmp.length(); i++)
+                    tmp[i] = std::toupper(tmp[i]);
 
                 langDll_node *v7 = (langDll_node *)usr->lang_dlls.head;
 
@@ -1019,7 +1010,7 @@ void listLocaleDir(UserData *usr, const char *dirname)
 
                 while( v7->next )
                 {
-                    if ( !strcasecmp(v7->langDllName, v19) )
+                    if ( !strcasecmp(v7->langDllName, tmp.c_str()) )
                     {
                         finded = 1;
                         break;
@@ -1034,7 +1025,7 @@ void listLocaleDir(UserData *usr, const char *dirname)
                     langDll_node *v9 = (langDll_node *)AllocVec(sizeof(langDll_node), 65537);
                     if ( v9 )
                     {
-                        strcpy(v9->langDllName, v19);
+                        strcpy(v9->langDllName, tmp.c_str());
                         AddTail(&usr->lang_dlls, v9);
 
                         if ( !strcasecmp(v9->langDllName, "language") )
@@ -1044,7 +1035,7 @@ void listLocaleDir(UserData *usr, const char *dirname)
             }
         }
 
-        CloseDir(dir);
+        delete dir;
     }
     else
     {
@@ -1149,22 +1140,22 @@ void sub_46C524(UserData *usr)
 
 void sb_0x46ca74__sub0(const char *a1, const char *a2)
 {
-    FILE *f1 = FOpen(a1, "r");
+    FSMgr::FileHandle *f1 = uaOpenFile(a1, "r");
     if ( f1 )
     {
-        FILE *f2 = FOpen(a2, "w");
+        FSMgr::FileHandle *f2 = uaOpenFile(a2, "w");
 
         if ( f2 )
         {
             char v9[300];
 
-            while ( fgets(v9, 299, f1) )
-                fputs(v9, f2);
+            while ( f1->gets(v9, 299) )
+                f2->puts(v9);
 
-            FClose(f2);
+            delete f2;
         }
 
-        FClose(f1);
+        delete f1;
     }
 }
 
@@ -1200,7 +1191,7 @@ void sb_0x46ca74(UserData *usr)
 
         sprintf(a1a, "save:%s", usernamedir);
 
-        if ( !createDirectory(a1a) )
+        if ( !uaCreateDir(a1a) )
         {
             ypa_log_out("Unable to create directory %s\n", a1a);
             return;
@@ -1226,32 +1217,33 @@ void sb_0x46ca74(UserData *usr)
 
     if ( strcasecmp(usr->usernamedir, usr->user_name) )
     {
-        ncDir *v8 = OpenDir(oldsave);
-        dirEntry a2a;
+        FSMgr::DirIter *v8 = uaOpenDir(oldsave);
+        FSMgr::iNode *a2a;
 
         if ( v8 )
         {
-            while ( ReadDir(v8, &a2a) )
+            while ( v8->getNext(a2a) )
             {
-                if ( !(a2a.field_0 & 1)
-                        && (strstr(a2a.e_name, ".sgm")
-                            || strstr(a2a.e_name, ".SGM")
-                            || strstr(a2a.e_name, ".rst")
-                            || strstr(a2a.e_name, ".RST")
-                            || strstr(a2a.e_name, ".fin")
-                            || strstr(a2a.e_name, ".FIN")
-                            || strstr(a2a.e_name, ".def")
-                            || strstr(a2a.e_name, ".DEF")) )
+                std::string tmp = a2a->getName();
+                if ( a2a->getType() == FSMgr::iNode::NTYPE_FILE
+                        && (tmp.rfind(".sgm") != std::string::npos
+                            || tmp.rfind(".SGM") != std::string::npos
+                            || tmp.rfind(".rst") != std::string::npos
+                            || tmp.rfind(".RST") != std::string::npos
+                            || tmp.rfind(".fin") != std::string::npos
+                            || tmp.rfind(".FIN") != std::string::npos
+                            || tmp.rfind(".def") != std::string::npos
+                            || tmp.rfind(".DEF") != std::string::npos) )
                 {
                     char v11[300];
                     char v12[300];
 
-                    sprintf(v11, "%s/%s", oldsave, a2a.e_name);
-                    sprintf(v12, "save:%s/%s", usr->usernamedir, a2a.e_name);
+                    sprintf(v11, "%s/%s", oldsave, tmp.c_str());
+                    sprintf(v12, "save:%s/%s", usr->usernamedir, tmp.c_str());
                     sb_0x46ca74__sub0(v11, v12);
                 }
             }
-            CloseDir(v8);
+            delete v8;
         }
     }
 
@@ -1399,7 +1391,7 @@ void sb_0x46cdf8(UserData *usr)
         char v10[300];
         sprintf(v10, "save:%s", usr->usernamedir);
 
-        if ( !createDirectory(v10) )
+        if ( !uaCreateDir(v10) )
         {
             ypa_log_out("Unable to create directory %s\n", v10);
             return;
@@ -1813,11 +1805,11 @@ int sub_47B388(int a1, const char *a2)
 
     sprintf(buf, "save:%s/%d.sgm", a2, a1);
 
-    FILE *fil = FOpen(buf, "r");
+    FSMgr::FileHandle *fil = uaOpenFile(buf, "r");
     if ( !fil )
         return 0;
 
-    FClose(fil);
+    delete fil;
 
     return 1;
 }
@@ -1827,11 +1819,11 @@ int ypaworld_func158__sub0__sub7(UserData *usr)
     char buf[300];
 
     sprintf(buf, "save:%s/sgisold.txt", usr->user_name);
-    FILE *fl = FOpen(buf, "r");
+    FSMgr::FileHandle *fl = uaOpenFile(buf, "r");
     if ( !fl )
         return 0;
 
-    FClose(fl);
+    delete fl;
     return 1;
 }
 
@@ -2764,20 +2756,20 @@ void sub_46D0F8(const char *path)
 {
     char a1a[200];
 
-    ncDir *v4 = OpenDir(path);
+    FSMgr::DirIter *v4 = uaOpenDir(path);
     if ( v4 )
     {
-        dirEntry v5;
+        FSMgr::iNode *v5;
 
-        while ( ReadDir(v4, &v5) )
+        while ( v4->getNext(v5) )
         {
-            if ( !(v5.field_0 & 1) || (strcmp(v5.e_name, ".") && strcmp(v5.e_name, "..")) )
+            if ( v5->getType() == FSMgr::iNode::NTYPE_FILE || (strcmp(v5->getName(), ".") && strcmp(v5->getName(), "..")) )
             {
-                sprintf(a1a, "%s/%s", path, v5.e_name);
-                delete_file(a1a);
+                sprintf(a1a, "%s/%s", path, v5->getName());
+                uaDeleteFile(a1a);
             }
         }
-        CloseDir(v4);
+        delete v4;
     }
 }
 
@@ -2812,7 +2804,7 @@ void sub_46C748(UserData *usr)
 
             sub_46D0F8(a1);
 
-            removeDirectory(a1);
+            uaDeleteDir(a1);
 
             Remove(node);
 

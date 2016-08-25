@@ -25,15 +25,15 @@ int sub_413290(MFILE *a1)
         if ( Offset == -1 )
         {
             Offset = v2->cur_pos;
-            if ( fseek(a1->file_handle, -v2->cur_pos - 4, SEEK_CUR) )
+            if ( a1->file_handle->seek(-v2->cur_pos - 4, SEEK_CUR) )
                 return -7;
 
             __int32 tmp = SWAP32(v2->cur_pos);
 
-            if ( fwrite(&tmp, 4, 1, a1->file_handle) != 1 )
+            if ( a1->file_handle->write(&tmp, 4) != 4 )
                 return -6;
 
-            if ( fseek(a1->file_handle, v2->cur_pos, 1) )
+            if ( a1->file_handle->seek(v2->cur_pos, SEEK_CUR) )
                 return -7;
         }
 
@@ -43,7 +43,7 @@ int sub_413290(MFILE *a1)
         if ( Offset & 1 )
         {
             int tmp = 0;
-            if ( fwrite(&tmp, 1, 1, a1->file_handle) != 1 )
+            if ( a1->file_handle->write(&tmp, 1) != 1 )
                 return -6;
 
             Offset++;
@@ -61,12 +61,12 @@ int sub_413290(MFILE *a1)
     {
         if ( v2->TAG != TAG_FORM )
         {
-            if ( v2->cur_pos < Offset && fseek(a1->file_handle, Offset -  v2->cur_pos, SEEK_CUR) )
+            if ( v2->cur_pos < Offset && a1->file_handle->seek(Offset -  v2->cur_pos, SEEK_CUR) )
                 return -7;
 
             if ( Offset & 1 )
             {
-                if ( fseek(a1->file_handle, 1, SEEK_CUR) )
+                if ( a1->file_handle->seek(1, SEEK_CUR) )
                     return -7;
 
                 Offset++;
@@ -103,19 +103,19 @@ signed int sub_412FC0(MFILE *a1, unsigned int TAG1, unsigned int TAG2, int a4)
 
         __int32 tmp = SWAP32(TAG2);
 
-        if ( fwrite(&tmp, 4, 1, a1->file_handle) != 1 )
+        if ( a1->file_handle->write(&tmp, 4) != 4 )
             return -6;
 
         tmp = SWAP32(a4);
 
-        if ( fwrite(&tmp, 4, 1, a1->file_handle) != 1 )
+        if ( a1->file_handle->write(&tmp, 4) != 4 )
             return -6;
 
         if ( TAG2 == TAG_FORM )
         {
             tmp = SWAP32(TAG_EXTENSION);
 
-            if ( fwrite(&tmp, 4, 1, a1->file_handle) != 1 )
+            if ( a1->file_handle->write(&tmp, 4) != 4 )
                 return -6;
 
             cur_pos = 4;
@@ -158,10 +158,10 @@ signed int sub_412FC0(MFILE *a1, unsigned int TAG1, unsigned int TAG2, int a4)
         __int32 tmp3 = head->TAG_EXTENSION;
 
 
-        if ( fread(&tmp, 4, 1, a1->file_handle) != 1 )
+        if ( a1->file_handle->read(&tmp, 4) != 4 )
             return -5;
 
-        if ( fread(&tmp2, 4, 1, a1->file_handle) != 1 )
+        if ( a1->file_handle->read(&tmp2, 4) != 4 )
             return -5;
 
         tmp = SWAP32(tmp);
@@ -169,7 +169,7 @@ signed int sub_412FC0(MFILE *a1, unsigned int TAG1, unsigned int TAG2, int a4)
 
         if ( tmp == TAG_FORM )
         {
-            if ( fread(&tmp3, 4, 1, a1->file_handle) != 1 )
+            if ( a1->file_handle->read(&tmp3, 4) != 4 )
                 return -5;
 
             tmp3 = SWAP32(tmp3);
@@ -243,7 +243,7 @@ int mfread(MFILE *a1, void *dst, int size)
             {
                 head->cur_pos += sz_to_read;
 
-                size_t readed = fread(dst, 1, sz_to_read, a1->file_handle);
+                size_t readed = a1->file_handle->read(dst, sz_to_read);
 
                 if ( readed != sz_to_read )
                     return -5;
@@ -258,7 +258,7 @@ int mfread(MFILE *a1, void *dst, int size)
                 {
                     head->cur_pos += sz_to_read;
 
-                    size_t readed = fread(dst, 1, sz_to_read, a1->file_handle);
+                    size_t readed = a1->file_handle->read(dst, sz_to_read);
 
                     if ( readed != sz_to_read )
                         return -5;
@@ -333,7 +333,7 @@ int sub_413564(MFILE *a1, int a2, const void *a3)
         else if ( head->TAG_SIZE == -1 || a2 + head->cur_pos <= head->TAG_SIZE)
         {
             head->cur_pos += a2;
-            writed = fwrite(a3, 1, a2, a1->file_handle);
+            writed = a1->file_handle->write(a3, a2);
             if ( writed != a2 )
                 return -6;
         }
@@ -344,7 +344,7 @@ int sub_413564(MFILE *a1, int a2, const void *a3)
             if ( head->TAG_SIZE != head->cur_pos )
             {
                 head->cur_pos += a2;
-                writed = fwrite(a3, 1, a2, a1->file_handle);
+                writed = a1->file_handle->write(a3, a2);
                 if ( writed != a2 )
                     return -6;
             }
@@ -429,7 +429,7 @@ MFILE * open_mfile(const char *filename, int flag)
     else
         mode = "rb";
 
-    FILE *fil = FOpen(tmpBuf, mode);
+    FSMgr::FileHandle *fil = uaOpenFile(tmpBuf, mode);
 
     mfil->file_handle = fil;
     if ( fil )
@@ -437,7 +437,7 @@ MFILE * open_mfile(const char *filename, int flag)
         if ( !sub_412F98(mfil, flag) )
             return mfil;
 
-        fclose(mfil->file_handle);
+        delete mfil->file_handle;
     }
     del_MFILE(mfil);
 
@@ -448,7 +448,7 @@ void close_mfile(MFILE *mfil)
 {
     if ( mfil )
     {
-        FClose(mfil->file_handle);
+        delete mfil->file_handle;
         del_MFILE(mfil);
     }
 }

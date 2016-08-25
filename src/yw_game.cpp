@@ -4980,7 +4980,7 @@ int recorder_startrec(_NC_STACK_ypaworld *yw)
     if ( !rcrd->mfile )
         return 0;
 
-    rcrd->mfile->file_handle = FOpen(a1, "wb");
+    rcrd->mfile->file_handle = uaOpenFile(a1, "wb");
     if ( !rcrd->mfile->file_handle )
     {
         del_MFILE(rcrd->mfile);
@@ -4990,7 +4990,7 @@ int recorder_startrec(_NC_STACK_ypaworld *yw)
 
     if ( sub_412F98(rcrd->mfile, 1) )
     {
-        FClose(rcrd->mfile->file_handle);
+        delete rcrd->mfile->file_handle;
         del_MFILE(rcrd->mfile);
         rcrd->mfile = 0;
         return 0;
@@ -5017,7 +5017,7 @@ void recorder_stoprec(_NC_STACK_ypaworld *yw)
     {
         sub_413290(rcrd->mfile);
 
-        FClose(rcrd->mfile->file_handle);
+        delete rcrd->mfile->file_handle;
 
         del_MFILE(rcrd->mfile);
 
@@ -5630,7 +5630,7 @@ int recorder_open_replay(recorder *rcrd)
     if ( !rcrd->mfile )
         return 0;
 
-    rcrd->mfile->file_handle = FOpen(rcrd->filename, "rb");
+    rcrd->mfile->file_handle = uaOpenFile(rcrd->filename, "rb");
 
     if ( !rcrd->mfile->file_handle )
     {
@@ -5642,7 +5642,7 @@ int recorder_open_replay(recorder *rcrd)
 
     if ( sub_412F98(rcrd->mfile, 0) )
     {
-        FClose(rcrd->mfile->file_handle);
+        delete rcrd->mfile->file_handle;
         del_MFILE(rcrd->mfile);
 
         rcrd->mfile = NULL;
@@ -5651,7 +5651,7 @@ int recorder_open_replay(recorder *rcrd)
 
     if ( read_next_IFF(rcrd->mfile, 2) )
     {
-        FClose(rcrd->mfile->file_handle);
+        delete rcrd->mfile->file_handle;
         del_MFILE(rcrd->mfile);
 
         rcrd->mfile = NULL;
@@ -6152,7 +6152,7 @@ int recorder_go_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd, int wanted_fram
 
     if ( rcrd->mfile )
     {
-        FClose(rcrd->mfile->file_handle);
+        delete rcrd->mfile->file_handle;
         del_MFILE(rcrd->mfile);
         rcrd->mfile = NULL;
     }

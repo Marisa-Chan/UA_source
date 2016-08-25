@@ -135,7 +135,7 @@ int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
 
     if ( setID != 46 )
     {
-        FILE *fil = FOpen("rsrc:scripts/set.sdf", "r");
+        FSMgr::FileHandle *fil = uaOpenFile("rsrc:scripts/set.sdf", "r");
         if ( !fil )
         {
             ypa_log_out("Briefing: no set description file.\n");
@@ -152,7 +152,7 @@ int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
             {
                 if ( !sub_44A12C(yw, bnode->self_full) )
                 {
-                    FClose(fil);
+                    delete fil;
                     return 0;
                 }
             }
@@ -160,19 +160,19 @@ int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
             {
                 if ( !yw_parse_lego(yw, fil, bnode->self_full) )
                 {
-                    FClose(fil);
+                    delete fil;
                     return 0;
                 }
 
                 if ( !yw_parse_subSect(yw, fil) )
                 {
-                    FClose(fil);
+                    delete fil;
                     return 0;
                 }
 
                 if ( !yw_parse_sektor(yw, fil) )
                 {
-                    FClose(fil);
+                    delete fil;
                     return 0;
                 }
             }
@@ -180,7 +180,7 @@ int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
             {
                 if ( !sub_44A97C(yw, bnode->self_full) )
                 {
-                    FClose(fil);
+                    delete fil;
                     return 0;
                 }
             }
@@ -188,7 +188,7 @@ int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
             kid_id++;
         }
 
-        FClose(fil);
+        delete fil;
     }
 
     set_prefix_replacement("rsrc", rsr);
@@ -719,7 +719,7 @@ void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
 
         while( 1 )
         {
-            ln = strpbrk(ln, "\n");
+            ln = strpbrk(ln, "\n\r");
             if (!ln)
                 break;
 
@@ -744,7 +744,7 @@ void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
 
             char a4[512];
 
-            const char *epos = strpbrk(ln, "\n");
+            const char *epos = strpbrk(ln, "\n\r");
 
             if (epos)
             {

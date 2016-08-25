@@ -1,6 +1,8 @@
 #ifndef DEFPARSER_H_INCLUDED
 #define DEFPARSER_H_INCLUDED
 
+#include "fsmgr.h"
+
 struct scrCallBack;
 
 typedef int (*SCRCALLBACKFUNC)(scrCallBack *);
@@ -11,7 +13,7 @@ struct scrCallBack
     void *dataForStore;
     char *p1;
     char *p2;
-    FILE *file;
+    FSMgr::FileHandle *file;
     int line_number;
     int field_18;
     _NC_STACK_ypaworld *world;
@@ -26,6 +28,6 @@ struct scrCallBack
 
 int def_parseFile(const char *filename, int num, scrCallBack *callbacks, int flag);
 
-int sb_0x4d9f1c(FILE *fil, const char *filename, int callbacks_num, scrCallBack *callbacks, int *line_number, int flag);
+int sb_0x4d9f1c(FSMgr::FileHandle *fil, const char *filename, int callbacks_num, scrCallBack *callbacks, int *line_number, int flag);
 
 #endif //DEFPARSER_H_INCLUDED

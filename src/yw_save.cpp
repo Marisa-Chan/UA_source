@@ -22,19 +22,19 @@ int yw_write_callSign(_NC_STACK_ypaworld *yw, const char *filename, const char *
     char buf[260];
     sprintf(buf, "save:%s/%s", usr->user_name, filename);
 
-    FILE *fil = FOpen(buf, "w");
+    FSMgr::FileHandle *fil = uaOpenFile(buf, "w");
 
     if ( !fil )
         return 0;
 
-    fprintf(fil, "%s", callsign);
+    fil->printf("%s", callsign);
 
-    FClose(fil);
+    delete fil;
 
     return 1;
 }
 
-int yw_write_user(FILE *fil, UserData *usr)
+int yw_write_user(FSMgr::FileHandle *fil, UserData *usr)
 {
     _NC_STACK_ypaworld *yw = usr->p_ypaworld;
 
@@ -44,7 +44,7 @@ int yw_write_user(FILE *fil, UserData *usr)
     char buf[300];
 
     sprintf(buf, "new_user\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     for (int i = 0; i < 8; i++)
     {
@@ -58,20 +58,20 @@ int yw_write_user(FILE *fil, UserData *usr)
                 yw->playerstatus[i].p6,
                 yw->playerstatus[i].p7);
 
-        fwrite(buf, strlen(buf), 1, fil);
+        fil->write(buf, strlen(buf));
     }
 
     sprintf(buf, "    maxroboenergy = %d\n", usr->p_ypaworld->maxroboenergy);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    maxreloadconst = %d\n", usr->p_ypaworld->maxreloadconst);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    numbuddies    = %d\n", usr->p_ypaworld->field_2d90->field_74);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    beamenergy    = %d\n", usr->p_ypaworld->beamenergy);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
 
     sprintf(buf, "    jodiefoster   = ");
@@ -90,41 +90,41 @@ int yw_write_user(FILE *fil, UserData *usr)
     }
 
     strcat(buf, "      ; the contact flags\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "end\n\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     return 1;
 }
 
-int yw_write_input(FILE *fil, UserData *usr)
+int yw_write_input(FSMgr::FileHandle *fil, UserData *usr)
 {
     char buf[300];
 
     sprintf(buf, "new_input\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( usr->p_ypaworld->field_73CE & 4 )
         sprintf(buf, "    joystick = no\n");
     else
         sprintf(buf, "    joystick = yes\n");
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( usr->inp_altjoystick )
         sprintf(buf, "    altjoystick = yes\n");
     else
         sprintf(buf, "    altjoystick = no\n");
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( usr->p_ypaworld->field_73CE & 8 )
         sprintf(buf, "    forcefeedback = no\n");
     else
         sprintf(buf, "    forcefeedback = yes\n");
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     for (int i = 1; i < 46; i++)
     {
@@ -197,128 +197,128 @@ int yw_write_input(FILE *fil, UserData *usr)
         strcat(buf, "         ; ");
         strcat(buf, usr->keyConfig[i].slider_name);
         strcat(buf, "\n");
-        fwrite(buf, strlen(buf), 1, fil);
+        fil->write(buf, strlen(buf));
     }
 
     sprintf(buf, "end\n\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     return 1;
 }
 
-int yw_write_sound(FILE *fil, UserData *usr)
+int yw_write_sound(FSMgr::FileHandle *fil, UserData *usr)
 {
     char buf[300];
 
     sprintf(buf, "new_sound\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    volume = %d\n", usr->snd__volume);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    cdvolume = %d\n", usr->snd__cdvolume);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( usr->snd__flags2 & 1 )
         sprintf(buf, "    invertlr = yes\n");
     else
         sprintf(buf, "    invertlr = no\n");
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( usr->snd__flags2 & 0x10 )
         sprintf(buf, "    cdsound = yes\n");
     else
         sprintf(buf, "    cdsound = no\n");
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "end\n\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     return 1;
 }
 
-int yw_write_video(FILE *fil, UserData *usr)
+int yw_write_video(FSMgr::FileHandle *fil, UserData *usr)
 {
     char buf[300];
 
     sprintf(buf, "new_video\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    videomode = %d\n", usr->p_ypaworld->game_default_res);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( usr->GFX_flags & 1 )
         sprintf(buf, "    farview = yes\n");
     else
         sprintf(buf, "    farview = no\n");
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( usr->GFX_flags & 0x10 )
         sprintf(buf, "    16bittexture = yes\n");
     else
         sprintf(buf, "    16bittexture = no\n");
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( usr->GFX_flags & 8 )
         sprintf(buf, "    drawprimitive = yes\n");
     else
         sprintf(buf, "    drawprimitive = no\n");
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( usr->GFX_flags & 2 )
         sprintf(buf, "    heaven = yes\n");
     else
         sprintf(buf, "    heaven = no\n");
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( usr->GFX_flags & 4 )
         sprintf(buf, "    softmouse = yes\n");
     else
         sprintf(buf, "    softmouse = no\n");
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( usr->enemyindicator )
         sprintf(buf, "    enemyindicator = yes\n");
     else
         sprintf(buf, "    enemyindicator = no\n");
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    fxnumber = %d\n", usr->fxnumber);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "end\n\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     return 1;
 }
 
-int yw_write_level_status(FILE *fil, _NC_STACK_ypaworld *yw, int lvlid)
+int yw_write_level_status(FSMgr::FileHandle *fil, _NC_STACK_ypaworld *yw, int lvlid)
 {
     char buf[300];
 
     //sprintf(buf, "\nbegin_levelstatus %ld\n", lvlid);
     sprintf(buf, "\nbegin_levelstatus %d\n", lvlid);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     //sprintf(buf, "    status = %ld\n", yw->LevelNet->mapInfos[lvlid].field_0);
     sprintf(buf, "    status = %d\n", yw->LevelNet->mapInfos[lvlid].field_0);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "end\n\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     return 1;
 }
 
-int yw_write_levels_statuses(FILE *fil, _NC_STACK_ypaworld *yw)
+int yw_write_levels_statuses(FSMgr::FileHandle *fil, _NC_STACK_ypaworld *yw)
 {
     for (int i = 0; i < 256; i++)
     {
@@ -331,31 +331,31 @@ int yw_write_levels_statuses(FILE *fil, _NC_STACK_ypaworld *yw)
     return 1;
 }
 
-int yw_write_buddy(FILE *fil, _NC_STACK_ypaworld *yw, int buddy_id)
+int yw_write_buddy(FSMgr::FileHandle *fil, _NC_STACK_ypaworld *yw, int buddy_id)
 {
     char buf[300];
 
     sprintf(buf, "\nbegin_buddy\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     //sprintf(buf, "    commandid = %ld\n", yw->field_2d90->buddies[buddy_id].commandid);
     sprintf(buf, "    commandid = %d\n", yw->field_2d90->buddies[buddy_id].commandid);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    type      = %d\n", yw->field_2d90->buddies[buddy_id].type);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     //sprintf(buf, "    energy    = %ld\n", yw->field_2d90->buddies[buddy_id].energy);
     sprintf(buf, "    energy    = %d\n", yw->field_2d90->buddies[buddy_id].energy);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "end\n\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     return 1;
 }
 
-int yw_write_buddies(FILE *fil, _NC_STACK_ypaworld *yw)
+int yw_write_buddies(FSMgr::FileHandle *fil, _NC_STACK_ypaworld *yw)
 {
     for (int i = 0; i < yw->field_2d90->buddies_count; i++ )
     {
@@ -366,7 +366,7 @@ int yw_write_buddies(FILE *fil, _NC_STACK_ypaworld *yw)
     return 1;
 }
 
-int yw_write_status(save_status *status, const char *field, FILE *file)
+int yw_write_status(save_status *status, const char *field, FSMgr::FileHandle *file)
 {
     char buf[256];
 
@@ -387,40 +387,40 @@ int yw_write_status(save_status *status, const char *field, FILE *file)
             status->pX[6],
             status->pX[7]);
 
-    return fwrite(buf, strlen(buf), 1, file);
+    return file->write(buf, strlen(buf));
 }
 
-int yw_write_shell(FILE *fil, UserData *usr)
+int yw_write_shell(FSMgr::FileHandle *fil, UserData *usr)
 {
     char buf[300];
 
     _NC_STACK_ypaworld *yw = usr->p_ypaworld;
 
     sprintf(buf, "new_shell\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( usr->default_lang_dll )
     {
         sprintf(buf, "    language = %s\n", usr->default_lang_dll->langDllName);
-        fwrite(buf, strlen(buf), 1, fil);
+        fil->write(buf, strlen(buf));
     }
 
     if ( yw->field_739A )
     {
         sprintf(buf, "    finder = na_0_0_0_0\n");
-        fwrite(buf, strlen(buf), 1, fil);
+        fil->write(buf, strlen(buf));
 
         sprintf(buf, "    log    = na_0_0_0_0\n");
-        fwrite(buf, strlen(buf), 1, fil);
+        fil->write(buf, strlen(buf));
 
         sprintf(buf, "    energy = na_0_0_0_0\n");
-        fwrite(buf, strlen(buf), 1, fil);
+        fil->write(buf, strlen(buf));
 
         sprintf(buf, "    message = na_0_0_0_0\n");
-        fwrite(buf, strlen(buf), 1, fil);
+        fil->write(buf, strlen(buf));
 
         sprintf(buf, "    map    = na_0_0_0_0_0_0\n");
-        fwrite(buf, strlen(buf), 1, fil);
+        fil->write(buf, strlen(buf));
 
         yw_write_status(&yw->robo_map_status, "robo_map_status", fil);
         yw_write_status(&yw->robo_finder_status, "robo_finder_status", fil);
@@ -429,12 +429,12 @@ int yw_write_shell(FILE *fil, UserData *usr)
     }
 
     sprintf(buf, "end\n\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     return 1;
 }
 
-int yw_write_item_modifers(_NC_STACK_ypaworld *yw, FILE *fil)
+int yw_write_item_modifers(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     char buf[300];
 
@@ -443,7 +443,7 @@ int yw_write_item_modifers(_NC_STACK_ypaworld *yw, FILE *fil)
         if ( yw->VhclProtos[i].model_id )
         {
             sprintf(buf, "modify_vehicle %d\n", i);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             for (int j = 1; j < 8; j++)
             {
@@ -452,35 +452,35 @@ int yw_write_item_modifers(_NC_STACK_ypaworld *yw, FILE *fil)
                 else
                     sprintf(buf, "    disable        = %d\n", j);
 
-                fwrite(buf, strlen(buf), 1, fil);
+                fil->write(buf, strlen(buf));
             }
 
             sprintf(buf, "    shield         = %d\n", yw->VhclProtos[i].shield);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             sprintf(buf, "    energy         = %d\n", yw->VhclProtos[i].energy);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             sprintf(buf, "    num_weapons    = %d\n", yw->VhclProtos[i].num_weapons);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             sprintf(buf, "    weapon         = %d\n", yw->VhclProtos[i].weapon);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             sprintf(buf, "    radar          = %d\n", yw->VhclProtos[i].radar);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             sprintf(buf, "    fire_x         = %4.2f\n", yw->VhclProtos[i].fire_x);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             sprintf(buf, "    fire_y         = %4.2f\n", yw->VhclProtos[i].fire_y);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             sprintf(buf, "    fire_z         = %4.2f\n", yw->VhclProtos[i].fire_z);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             sprintf(buf, "end\n\n");
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
         }
     }
 
@@ -489,7 +489,7 @@ int yw_write_item_modifers(_NC_STACK_ypaworld *yw, FILE *fil)
         if ( yw->WeaponProtos[i].field_0 )
         {
             sprintf(buf, "modify_weapon %d\n", i);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             for (int j = 1; j < 8; j++)
             {
@@ -498,20 +498,20 @@ int yw_write_item_modifers(_NC_STACK_ypaworld *yw, FILE *fil)
                 else
                     sprintf(buf, "    disable        = %d\n", j);
 
-                fwrite(buf, strlen(buf), 1, fil);
+                fil->write(buf, strlen(buf));
             }
 
             sprintf(buf, "    shot_time      = %d\n", yw->WeaponProtos[i].shot_time);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             sprintf(buf, "    shot_time_user = %d\n", yw->WeaponProtos[i].shot_time_user);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             sprintf(buf, "    energy         = %d\n", yw->WeaponProtos[i].energy);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             sprintf(buf, "end\n\n");
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
         }
     }
 
@@ -520,7 +520,7 @@ int yw_write_item_modifers(_NC_STACK_ypaworld *yw, FILE *fil)
         if ( yw->BuildProtos[i].type_icon )
         {
             sprintf(buf, "modify_building %d\n", i);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             for (int j = 1; j < 8; j++)
             {
@@ -529,53 +529,53 @@ int yw_write_item_modifers(_NC_STACK_ypaworld *yw, FILE *fil)
                 else
                     sprintf(buf, "    disable        = %d\n", j);
 
-                fwrite(buf, strlen(buf), 1, fil);
+                fil->write(buf, strlen(buf));
             }
 
             sprintf(buf, "end\n\n");
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
         }
     }
 
     return 1;
 }
 
-int yw_write_levelnum(_NC_STACK_ypaworld *yw, FILE *fil)
+int yw_write_levelnum(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    fprintf(fil, "\nbegin_levelnum\n");
-    fprintf(fil, "    levelnum = %d\n", yw->field_2d90->levelID);
-    fprintf(fil, "end\n");
+    fil->printf("\nbegin_levelnum\n");
+    fil->printf("    levelnum = %d\n", yw->field_2d90->levelID);
+    fil->printf("end\n");
 
     return 1;
 }
 
-void yw_write_map(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *bitmap, const char *padding, FILE *fil)
+void yw_write_map(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *bitmap, const char *padding, FSMgr::FileHandle *fil)
 {
     bitmap_intern *bitm = bitmap->getBMD_pBitmap();
 
     if ( padding )
-        fprintf(fil, padding);
+        fil->printf(padding);
 
-    fprintf(fil, "%d %d\n", bitm->width, bitm->height);
+    fil->printf("%d %d\n", bitm->width, bitm->height);
 
     uint8_t *v6 = (uint8_t *)bitm->buffer;
 
     for (int y = 0; y < bitm->height; y++)
     {
         if ( padding )
-            fprintf(fil, padding);
+            fil->printf(padding);
 
         for (int x = 0; x < bitm->width; x++ )
         {
-            fprintf(fil, "%02x ", *v6);
+            fil->printf("%02x ", *v6);
             v6++;
         }
 
-        fprintf(fil, "\n");
+        fil->printf("\n");
     }
 }
 
-void yw_write_ownermap(_NC_STACK_ypaworld *yw, FILE *fil)
+void yw_write_ownermap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     stack_vals init_vals[4];
     init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "temp_owner_map");
@@ -595,22 +595,22 @@ void yw_write_ownermap(_NC_STACK_ypaworld *yw, FILE *fil)
         for (int i = 0; i < sz; i++)
             outbf[i] = yw->cells[i].owner;
 
-        fprintf(fil, "\nbegin_ownermap\n");
+        fil->printf("\nbegin_ownermap\n");
         yw_write_map(yw, bitmap, "        ", fil);
-        fprintf(fil, "end\n");
+        fil->printf("end\n");
 
         delete_class_obj(bitmap);
     }
 }
 
-void yw_write_buildmap(_NC_STACK_ypaworld *yw, FILE *fil)
+void yw_write_buildmap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    fprintf(fil, "\nbegin_buildingmap\n");
+    fil->printf("\nbegin_buildingmap\n");
     yw_write_map(yw, yw->blg_map, "        ", fil);
-    fprintf(fil, "end\n");
+    fil->printf("end\n");
 }
 
-void yw_write_energymap(_NC_STACK_ypaworld *yw, FILE *fil)
+void yw_write_energymap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     stack_vals init_vals[4];
     init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "ActualEnergyMap");
@@ -641,9 +641,9 @@ void yw_write_energymap(_NC_STACK_ypaworld *yw, FILE *fil)
             }
         }
 
-        fprintf(fil, "\nbegin_energymap\n");
+        fil->printf("\nbegin_energymap\n");
         yw_write_map(yw, bitmap, "        ", fil);
-        fprintf(fil, "end\n");
+        fil->printf("end\n");
     }
     else
     {
@@ -654,7 +654,7 @@ void yw_write_energymap(_NC_STACK_ypaworld *yw, FILE *fil)
         delete_class_obj(bitmap);
 }
 
-int yw_write_bact(bact_node *bct, FILE *fil)
+int yw_write_bact(bact_node *bct, FSMgr::FileHandle *fil)
 {
     char buf[300];
 
@@ -665,7 +665,7 @@ int yw_write_bact(bact_node *bct, FILE *fil)
     else
         sprintf(buf, "    viewer         = no\n");
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     a4 = bct->bacto->getBACT_inputting();
 
@@ -674,7 +674,7 @@ int yw_write_bact(bact_node *bct, FILE *fil)
     else
         sprintf(buf, "    user           = no\n");
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     a4 = bct->bacto->getBACT_bactCollisions();
 
@@ -683,13 +683,13 @@ int yw_write_bact(bact_node *bct, FILE *fil)
     else
         sprintf(buf, "    collision      = no\n");
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
     sprintf(buf, "    energy         = %d\n", bct->bact->energy);
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
     sprintf(buf, "    speed          = %6.5f_%6.5f_%6.5f_%6.5f\n", bct->bact->field_605.sx, bct->bact->field_605.sy, bct->bact->field_605.sz, bct->bact->field_611);
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(
         buf,
@@ -704,7 +704,7 @@ int yw_write_bact(bact_node *bct, FILE *fil)
         bct->bact->field_651.m21,
         bct->bact->field_651.m22);
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( bct->bact->field_24 == 3 )
     {
@@ -724,176 +724,176 @@ int yw_write_bact(bact_node *bct, FILE *fil)
             bct->bact->field_621.sy,
             bct->bact->field_621.sz);
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    force          = %2.2f\n", bct->bact->field_601);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    gunangle       = %5.4f\n", bct->bact->gun_angle2);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    commandID      = %d\n", bct->bact->field_2E);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    aggression     = %d\n", bct->bact->field_3D4);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    mainstate      = %d\n", bct->bact->field_3D5);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    extrastate     = %d\n", bct->bact->field_3D6);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    ident          = %d\n", bct->bact->ypabact__id);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    killerowner    = %d\n", bct->bact->field_9B5);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( bct->bact->primTtype == BACT_TGT_TYPE_UNIT )
         sprintf(buf, "    primary        = %d_%d_%2.2f_%2.2f_%d\n", bct->bact->primTtype, bct->bact->primT.pbact->ypabact__id, bct->bact->primTpos.sx, bct->bact->primTpos.sz, bct->bact->primT_cmd_id);
     else
         sprintf(buf, "    primary        = %d_0_%2.2f_%2.2f_%d\n", bct->bact->primTtype, bct->bact->primTpos.sx, bct->bact->primTpos.sz, bct->bact->primT_cmd_id);
 
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     for (int i = 0; i < bct->bact->field_59A; i++)
     {
         sprintf(buf, "    waypoint       = %d_%2.2f_%2.2f\n", i, bct->bact->field_418[i].sx, bct->bact->field_418[i].sz);
-        fwrite(buf, strlen(buf), 1, fil);
+        fil->write(buf, strlen(buf));
     }
 
     sprintf(buf, "    num_wp         = %d\n", bct->bact->field_59A);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    count_wp       = %d\n", bct->bact->field_598);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     return 1;
 }
 
-int yw_write_robo(bact_node *bct, FILE *fil)
+int yw_write_robo(bact_node *bct, FSMgr::FileHandle *fil)
 {
     char buf[300];
 
     sprintf(buf, "\nbegin_robo %d\n", bct->bact->id);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( !yw_write_bact(bct, fil) )
         return 0;
 
     sprintf(buf, "    owner          = %d\n", bct->bact->owner);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     NC_STACK_yparobo *roboo = dynamic_cast<NC_STACK_yparobo *>(bct->bacto);
     __NC_STACK_yparobo *robo = &roboo->stack__yparobo;
 
     sprintf(buf, "    robostate      = %d\n", robo->roboState & 0xC00F );
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    dockenergy     = %d\n", robo->dock_energ);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    dockcount      = %d\n", robo->dock_cnt);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    dockuser       = %d\n", robo->dock_user);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    docktime       = %d\n", robo->dock_time);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    docktargetpos  = %2.2f_%2.2f\n", robo->dock_tgt_pos.sx, robo->dock_tgt_pos.sz);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    docktargetID   = %d\n", robo->dock_tgt_comm_id);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    docktargettype = %d\n", robo->dock_tgType);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    dockaggr       = %d\n", robo->dock_aggr);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    battvehicle    = %d\n", robo->field_4F5);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    battbeam       = %d\n", robo->field_4FD);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    fillmodus      = %d\n", robo->field_501);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    maximum        = %d\n", robo->bact_internal->energy_2);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    buildspare     = %d\n", robo->field_509);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    vhoriz         = %7.5f\n", robo->bact_internal->field_5ED);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    vvert          = %7.5f\n", robo->bact_internal->field_5F1);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    con_budget     = %d\n", robo->epConquer);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    def_budget     = %d\n", robo->epDefense);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    rec_budget     = %d\n", robo->epRecon);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    rob_budget     = %d\n", robo->epRobo);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    rad_budget     = %d\n", robo->epRadar);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    pow_budget     = %d\n", robo->epPower);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    saf_budget     = %d\n", robo->epSafety);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    cpl_budget     = %d\n", robo->epChangePlace);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    saf_delay     = %d\n", robo->safety_delay);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    pow_delay     = %d\n", robo->field_265);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    rad_delay     = %d\n", robo->radar_delay);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    cpl_delay     = %d\n", robo->field_2B1);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    def_delay     = %d\n", robo->field_281);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    con_delay     = %d\n", robo->conq_delay);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    rec_delay     = %d\n", robo->field_2C9);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    rob_delay     = %d\n", robo->field_2E1);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    reload_const  = %d\n", robo->bact_internal->reload_const_or_energy2);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "end\n\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     return 1;
 }
 
-int yw_write_gun(bact_node *bct, FILE *fil)
+int yw_write_gun(bact_node *bct, FSMgr::FileHandle *fil)
 {
     char buf[300];
 
@@ -908,17 +908,17 @@ int yw_write_gun(bact_node *bct, FILE *fil)
             guno->stack__ypagun.dir.sy,
             guno->stack__ypagun.dir.sz);
 
-        fwrite(buf, strlen(buf), 1, fil);
+        fil->write(buf, strlen(buf));
     }
     return 1;
 }
 
-int yw_write_commander(bact_node *bct, FILE *fil)
+int yw_write_commander(bact_node *bct, FSMgr::FileHandle *fil)
 {
     char buf[300];
 
     sprintf(buf, "\nbegin_commander %d\n", bct->bact->id);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( !yw_write_bact(bct, fil) )
         return 0;
@@ -927,17 +927,17 @@ int yw_write_commander(bact_node *bct, FILE *fil)
         return 0;
 
     sprintf(buf, "end\n\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     return 1;
 }
 
-int yw_write_slave(bact_node *bct, FILE *fil)
+int yw_write_slave(bact_node *bct, FSMgr::FileHandle *fil)
 {
     char buf[300];
 
     sprintf(buf, "\nbegin_slave %d\n", bct->bact->id);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     if ( !yw_write_bact(bct, fil) )
         return 0;
@@ -946,12 +946,12 @@ int yw_write_slave(bact_node *bct, FILE *fil)
         return 0;
 
     sprintf(buf, "end\n\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     return 1;
 }
 
-int yw_write_extraviewer(bact_node *bct, FILE *fil)
+int yw_write_extraviewer(bact_node *bct, FSMgr::FileHandle *fil)
 {
     char buf[300];
 
@@ -960,7 +960,7 @@ int yw_write_extraviewer(bact_node *bct, FILE *fil)
         int v7 = -1;
 
         sprintf(buf, "\nbegin_extraviewer\n");
-        fwrite(buf, strlen(buf), 1, fil);
+        fil->write(buf, strlen(buf));
 
         NC_STACK_yparobo *roboo = bct->bact->host_station;
 
@@ -976,13 +976,13 @@ int yw_write_extraviewer(bact_node *bct, FILE *fil)
         if ( v7 >= 0 )
         {
             sprintf(buf, "    kind = robogun\n");
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             sprintf(buf, "    number = %d\n", v7);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
 
             sprintf(buf, "end\n\n");
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
             return 1;
         }
 
@@ -991,7 +991,7 @@ int yw_write_extraviewer(bact_node *bct, FILE *fil)
     return 0;
 }
 
-int yw_write_units(_NC_STACK_ypaworld *yw, FILE *fil)
+int yw_write_units(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     bact_node *station = (bact_node *)yw->bact_list.tailpred;
     while (station->prev)
@@ -1069,12 +1069,12 @@ int yw_write_units(_NC_STACK_ypaworld *yw, FILE *fil)
     return 1;
 }
 
-int yw_write_wunderinfo(_NC_STACK_ypaworld *yw, FILE *fil)
+int yw_write_wunderinfo(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     char buf[300];
 
     sprintf(buf, "\nbegin_wunderinfo\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     for (int i = 0; i < 8; i++)
     {
@@ -1085,22 +1085,22 @@ int yw_write_wunderinfo(_NC_STACK_ypaworld *yw, FILE *fil)
             if ( yw->cells[gem->sec_x + gem->sec_y * yw->sectors_maxX2].w_type != 4 )
             {
                 sprintf(buf, "    disablegem %d\n", i);
-                fwrite(buf, strlen(buf), 1, fil);
+                fil->write(buf, strlen(buf));
             }
         }
     }
 
     sprintf(buf, "end\n\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
     return 1;
 }
 
-int yw_write_kwfactor(_NC_STACK_ypaworld *yw, FILE *fil)
+int yw_write_kwfactor(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     char buf[300];
 
     sprintf(buf, "\nbegin_kwfactor\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     for (int i = 0; i < 256; i++)
     {
@@ -1108,84 +1108,84 @@ int yw_write_kwfactor(_NC_STACK_ypaworld *yw, FILE *fil)
         if ( kw->p_cell )
         {
             sprintf(buf, "    kw = %d_%d_%d\n", kw->x, kw->y, kw->power_2);
-            fwrite(buf, strlen(buf), 1, fil);
+            fil->write(buf, strlen(buf));
         }
     }
 
     sprintf(buf, "end\n\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
     return 1;
 }
 
-int yw_write_globals(_NC_STACK_ypaworld *yw, FILE *fil)
+int yw_write_globals(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     char buf[300];
 
     sprintf(buf, "\nbegin_globals\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "    time = %d\n", yw->field_1614);
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
 
     sprintf(buf, "end\n\n");
-    fwrite(buf, strlen(buf), 1, fil);
+    fil->write(buf, strlen(buf));
     return 1;
 }
 
-int yw_write_superbomb(_NC_STACK_ypaworld *yw, FILE *fil)
+int yw_write_superbomb(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     for (int i = 0; i < yw->field_2d90->supetItems_count; i++)
     {
-        fprintf(fil, "\nbegin_superbomb\n");
-        fprintf(fil, "    num               = %d\n", i);
-        fprintf(fil, "    status            = %d\n", yw->field_2d90->supetItems[i].field_4);
-        fprintf(fil, "    active_timestamp  = %d\n", yw->field_2d90->supetItems[i].field_EC);
-        fprintf(fil, "    trigger_timestamp = %d\n", yw->field_2d90->supetItems[i].field_F0);
-        fprintf(fil, "    activated_by      = %d\n", yw->field_2d90->supetItems[i].field_F4);
-        fprintf(fil, "    countdown         = %d\n", yw->field_2d90->supetItems[i].field_F8);
-        fprintf(fil, "    last_ten_sec      = %d\n", yw->field_2d90->supetItems[i].field_FC);
-        fprintf(fil, "    last_sec          = %d\n", yw->field_2d90->supetItems[i].field_100);
-        fprintf(fil, "    radius            = %d\n", yw->field_2d90->supetItems[i].field_104);
-        fprintf(fil, "    last_radius       = %d\n", yw->field_2d90->supetItems[i].field_108);
-        fprintf(fil, "end\n");
+        fil->printf("\nbegin_superbomb\n");
+        fil->printf("    num               = %d\n", i);
+        fil->printf("    status            = %d\n", yw->field_2d90->supetItems[i].field_4);
+        fil->printf("    active_timestamp  = %d\n", yw->field_2d90->supetItems[i].field_EC);
+        fil->printf("    trigger_timestamp = %d\n", yw->field_2d90->supetItems[i].field_F0);
+        fil->printf("    activated_by      = %d\n", yw->field_2d90->supetItems[i].field_F4);
+        fil->printf("    countdown         = %d\n", yw->field_2d90->supetItems[i].field_F8);
+        fil->printf("    last_ten_sec      = %d\n", yw->field_2d90->supetItems[i].field_FC);
+        fil->printf("    last_sec          = %d\n", yw->field_2d90->supetItems[i].field_100);
+        fil->printf("    radius            = %d\n", yw->field_2d90->supetItems[i].field_104);
+        fil->printf("    last_radius       = %d\n", yw->field_2d90->supetItems[i].field_108);
+        fil->printf("end\n");
     }
 
     return 1;
 }
 
-int yw_write_histbuffer(yw_f726c_nod *hist_node, FILE *fil)
+int yw_write_histbuffer(yw_f726c_nod *hist_node, FSMgr::FileHandle *fil)
 {
     uint8_t *bufpos = hist_node->bufStart;
     int lines = (hist_node->bufEnd - hist_node->bufStart) / 64;
 
-    fprintf(fil, "    history_buffer = \n");
-    fprintf(fil, "    %d %d\n", 64, lines);
+    fil->printf("    history_buffer = \n");
+    fil->printf("    %d %d\n", 64, lines);
 
     for (int i = 0; i < lines; i++)
     {
-        fprintf(fil, "    ");
+        fil->printf("    ");
 
         for (int j = 0; j < 64; j++)
         {
-            fprintf(fil, "%02x ", *bufpos);
+            fil->printf("%02x ", *bufpos);
             bufpos++;
         }
 
-        fprintf(fil, "\n");
+        fil->printf("\n");
     }
 
-    fprintf(fil, "\n");
+    fil->printf("\n");
     return 1;
 }
 
-int yw_write_history(_NC_STACK_ypaworld *yw, FILE *fil)
+int yw_write_history(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     if ( yw->history )
     {
-        fprintf(fil, ";------------------------------------------------------------\n");
-        fprintf(fil, "; History Buffers\n");
-        fprintf(fil, ";------------------------------------------------------------\n");
-        fprintf(fil, "begin_history\n");
+        fil->printf(";------------------------------------------------------------\n");
+        fil->printf("; History Buffers\n");
+        fil->printf(";------------------------------------------------------------\n");
+        fil->printf("begin_history\n");
 
         yw_f726c_nod *histnode = (yw_f726c_nod *)yw->history->lst.head;
 
@@ -1196,17 +1196,17 @@ int yw_write_history(_NC_STACK_ypaworld *yw, FILE *fil)
             histnode = (yw_f726c_nod *)histnode->next;
         }
 
-        fprintf(fil, "end");
+        fil->printf("end");
     }
 
     return 1;
 }
 
-int yw_write_masks(_NC_STACK_ypaworld *yw, FILE *fil)
+int yw_write_masks(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    fprintf(fil, "\nbegin_masks\n");
-    fprintf(fil, "    ownermask = %d\n", yw->field_2d90->ownerMap__has_vehicles);
-    fprintf(fil, "    usermask  = %d\n", yw->field_2d90->field_60);
-    fprintf(fil, "end\n");
+    fil->printf("\nbegin_masks\n");
+    fil->printf("    ownermask = %d\n", yw->field_2d90->ownerMap__has_vehicles);
+    fil->printf("    usermask  = %d\n", yw->field_2d90->field_60);
+    fil->printf("end\n");
     return 1;
 }

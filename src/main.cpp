@@ -1,4 +1,5 @@
 #define GLOBAL
+#include "fsmgr.h"
 #include "includes.h"
 #include "engine_gfx.h"
 #include "bitmap.h"
@@ -53,12 +54,12 @@ void sub_410628()
 
     ypaworld->ypaworld_func171(&arg171);
 
-    FILE *fil = FOpen("env:user.def", "w");
+    FSMgr::FileHandle *fil = uaOpenFile("env:user.def", "w");
     if ( fil )
     {
         strcpy(buf, userdata.user_name);
-        fwrite(buf, strlen(buf), 1, fil);
-        FClose(fil);
+        fil->write(buf, strlen(buf));
+        delete fil;
     }
 }
 
@@ -610,7 +611,7 @@ int WinMain__sub0__sub0()
 
 int yw_initGameWithSettings()
 {
-    FILE *user_def = FOpen("env:user.def", "r");
+    FSMgr::FileHandle *user_def = uaOpenFile("env:user.def", "r");
 
     char a1[300];
 
@@ -618,15 +619,15 @@ int yw_initGameWithSettings()
     {
         char v11[300];
 
-        fgets(v11, 300, user_def);
+        user_def->gets(v11, 300);
 
         sprintf(a1, "save:%s/user.txt", v11);
 
-        FILE *user_txt = FOpen(a1, "r");
+        FSMgr::FileHandle *user_txt = uaOpenFile(a1, "r");
 
         if ( user_txt )
         {
-            FClose(user_txt);
+            delete user_txt;
 
             strcpy(userdata.user_name, v11);
             sprintf(a1, "%s/user.txt", v11);
@@ -638,7 +639,7 @@ int yw_initGameWithSettings()
             strcpy(userdata.user_name, "SDU7");
         }
 
-        FClose(user_def);
+        delete user_def;
     }
     else
     {
@@ -677,20 +678,20 @@ int yw_initGameWithSettings()
 
 void ReadSnapsDir()
 {
-    ncDir *dir = OpenDir("env/snaps/");
+    FSMgr::DirIter *dir = uaOpenDir("env/snaps/");
 
     if ( dir )
     {
-        dirEntry entr;
-        while ( ReadDir(dir, &entr) )
+        FSMgr::iNode *entr;
+        while ( dir->getNext(entr) )
         {
-            if ( !(entr.field_0 & 1) && userdata.snap_count < 32 && !strnicmp(entr.e_name, "demo", 4) )
+            if ( entr->getType() == FSMgr::iNode::NTYPE_FILE && userdata.snap_count < 32 && !strnicmp(entr->getName(), "demo", 4) )
             {
-                sprintf( userdata.snaps[ userdata.snap_count ], "env/snaps/%s", entr.e_name);
+                sprintf( userdata.snaps[ userdata.snap_count ], "env/snaps/%s", entr->getName());
                 userdata.snap_count++;
             }
         }
-        CloseDir(dir);
+        delete dir;
     }
 }
 
@@ -791,6 +792,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int nCmdSh
     CoInitialize(NULL);
 
     strcpy(cmdline_copy, gpcmdline);
+
+    FSMgr::iDir::setBaseDir("");
 
     if ( !WinMain__sub0() )
     {

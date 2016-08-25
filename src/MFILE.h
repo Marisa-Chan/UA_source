@@ -2,6 +2,7 @@
 #define MFILE_H_INCLUDED
 
 #include "nlist.h"
+#include "fsmgr.h"
 
 struct MFILE_flags
 {
@@ -13,7 +14,7 @@ struct MFILE_flags
 
 struct MFILE
 {
-    FILE *file_handle;
+    FSMgr::FileHandle *file_handle;
     MFILE_flags flags;
     int field_8;
     nlist list;

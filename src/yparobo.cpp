@@ -7133,7 +7133,7 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
                     char v18[300];
                     sprintf(v18, "save:%s/%d.rst", yw->GameShell->user_name, yw->field_2d90->levelID);
 
-                    delete_file(v18);
+                    uaDeleteFile(v18);
                 }
                 bact->field_3D6 |= 0x2000000;
 

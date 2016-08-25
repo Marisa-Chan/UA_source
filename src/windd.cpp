@@ -71,12 +71,12 @@ int out_guid_to_file(const char *filename, GUID *guid, const char *name)
 {
     char buf[128];
 
-    FILE *fil = fopen(filename, "w");
+    FSMgr::FileHandle *fil = uaOpenFile(filename, "w");
     if ( fil )
     {
         guid_to_string(buf, guid, name);
-        fputs(buf, fil);
-        fclose(fil);
+        fil->puts(buf);
+        delete fil;
         return 1;
     }
     return 0;
@@ -88,14 +88,14 @@ int windd_func0__sub1__sub0(const char *filename, GUID *out)
 
     memset(out, 0, sizeof(GUID));
 
-    FILE *fil = fopen(filename, "r");
+    FSMgr::FileHandle *fil = uaOpenFile(filename, "r");
 
     if ( fil )
     {
-        fgets(buf, 256, fil);
-        fclose(fil);
+        fil->gets(buf, 256);
+        delete fil;
 
-        char *eol = strpbrk(buf, "\n;");
+        char *eol = strpbrk(buf, "\n\r;");
         if ( eol )
             *eol = 0;
 
@@ -888,15 +888,15 @@ mode_node * windd_func0__sub0(const char *file)
 {
     char buf[128];
 
-    FILE *fil = fopen(file, "r");
+    FSMgr::FileHandle *fil = uaOpenFile(file, "r");
 
     mode_node *node = NULL;
 
     if ( fil )
     {
-        if ( fgets(buf, 128, fil) )
+        if ( fil->gets(buf, 128) )
         {
-            char *eol = strpbrk(buf, "\n");
+            char *eol = strpbrk(buf, "\n\r");
             if ( eol )
                 *eol = 0;
             node = (mode_node *)modes_list.head;
@@ -917,7 +917,7 @@ mode_node * windd_func0__sub0(const char *file)
                 node = NULL;
             }
         }
-        fclose(fil);
+        delete fil;
     }
 
     if ( !node )
@@ -2324,11 +2324,11 @@ size_t NC_STACK_windd::func0(stack_vals *stak)
         return 0;
     }
 
-    FILE *fil = fopen("env/vid.def", "w");
+    FSMgr::FileHandle *fil = uaOpenFile("env/vid.def", "w");
     if ( fil )
     {
-        fprintf(fil, "%s\n", picked->name);
-        fclose(fil);
+        fil->printf("%s\n", picked->name);
+        delete fil;
     }
 
     windd->field_54______rsrc_field4 = (bitmap_intern *)getRsrc_pData();
@@ -2427,14 +2427,14 @@ size_t NC_STACK_windd::func1(stack_vals *stak)
 
 void out_yes_no_status(const char *filename, int val)
 {
-    FILE *fil = fopen(filename, "w");
+    FSMgr::FileHandle *fil = uaOpenFile(filename, "w");
     if ( fil )
     {
         if ( val )
-            fputs("yes", fil);
+            fil->puts("yes");
         else
-            fputs("no", fil);
-        fclose(fil);
+            fil->puts("no");
+        delete fil;
     }
 }
 

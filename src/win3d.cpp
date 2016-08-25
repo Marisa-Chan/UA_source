@@ -3038,7 +3038,7 @@ void NC_STACK_win3d::display_func271(stack_vals *stak)
 }
 
 
-void win3d_func274__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, FILE *fil)
+void win3d_func274__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, FSMgr::FileHandle *fil)
 {
     if ( wdd->surface_locked_surfaceData )
     {
@@ -3051,7 +3051,7 @@ void win3d_func274__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, FILE *fil
         char buf[128];
 
         sprintf(buf, "P6\n#YPA screenshot\n%d %d\n255\n", width, height);
-        fwrite(buf, strlen(buf), 1, fil);
+        fil->write(buf, strlen(buf));
 
         wind3d_pixelformat *fmt = &w3d->bigdata->primary__pixelformat;
         if ( BytesPerColor == 2 )
@@ -3083,9 +3083,9 @@ void win3d_func274__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, FILE *fil
                     else
                         b >>= fmt->dwBShift;
 
-                    fputc(r, fil);
-                    fputc(g, fil);
-                    fputc(b, fil);
+                    fil->writeU8(r);
+                    fil->writeU8(g);
+                    fil->writeU8(b);
                 }
 
                 pos += ril_width;
@@ -3120,9 +3120,9 @@ void win3d_func274__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, FILE *fil
                     else
                         b >>= fmt->dwBShift;
 
-                    fputc(r, fil);
-                    fputc(g, fil);
-                    fputc(b, fil);
+                    fil->writeU8(r);
+                    fil->writeU8(g);
+                    fil->writeU8(b);
                 }
 
                 pos += ril_width;
@@ -3141,13 +3141,13 @@ void NC_STACK_win3d::display_func274(const char **name)
     strcpy(filename, *name);
     strcat(filename, ".ppm");
 
-    FILE *fil = FOpen(filename, "wb");
+    FSMgr::FileHandle *fil = uaOpenFile(filename, "wb");
     if ( fil )
     {
         raster_func215(NULL);
         win3d_func274__sub0(wdd, w3d, fil);
         raster_func216(NULL);
-        FClose(fil);
+        delete fil;
     }
 }
 

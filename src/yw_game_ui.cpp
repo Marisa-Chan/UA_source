@@ -6984,12 +6984,12 @@ int ypaworld_func64__sub7__sub6__sub0(int a1, const char *a2)
 
     sprintf(a1a, "save:%s/%d.rst", a2, a1);
 
-    FILE *fil = FOpen(a1a, "r");
+    FSMgr::FileHandle *fil = uaOpenFile(a1a, "r");
 
     if ( !fil )
         return 0;
 
-    FClose(fil);
+    delete fil;
     return 1;
 }
 

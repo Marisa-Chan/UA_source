@@ -2280,10 +2280,10 @@ int SuperItem_Parse(scrCallBack *arg)
     return 0;
 }
 
-void parse_map_sizes(FILE *fil, int *sec_x, int *sec_y)
+void parse_map_sizes(FSMgr::FileHandle *fil, int *sec_x, int *sec_y)
 {
     char buf[1024];
-    fgets(buf, 1024, fil);
+    fil->gets(buf, 1024);
 
     char *tmp = strtok(buf, " \n");
     int xsz = strtol(tmp, NULL, 0);
@@ -2292,7 +2292,7 @@ void parse_map_sizes(FILE *fil, int *sec_x, int *sec_y)
     int ysz = strtol(tmp, NULL, 0);
 
     for (int i = 0; i < ysz; i++)
-        fgets(buf, 1024, fil);
+        fil->gets(buf, 1024);
 
     if ( sec_x )
         *sec_x = xsz;
@@ -2753,13 +2753,13 @@ int sb_0x4739e8__sub0(_NC_STACK_ypaworld *yw, const char *a2, char *a4, int buf_
         if ( usr->user_name[0] != 0 )
         {
             sprintf(buf, "save:%s/%s", usr->user_name, a2);
-            FILE *v8 = FOpen(buf, "r");
+            FSMgr::FileHandle *v8 = uaOpenFile(buf, "r");
 
             if ( v8 )
             {
-                if ( fgets(a4, buf_size - 1, v8) )
+                if ( v8->gets(a4, buf_size - 1) )
                     v7 = 1;
-                FClose(v8);
+                delete v8;
             }
         }
     }
@@ -4316,11 +4316,11 @@ int LevelGemParser(scrCallBack *arg)
 
             strcpy(v3->script, arg->p2);
 
-            FILE *v20 = FOpen(v3->script, "r");
+            FSMgr::FileHandle *v20 = uaOpenFile(v3->script, "r");
 
             if ( v20 )
             {
-                FClose(v20);
+                delete v20;
             }
             else
             {
@@ -4651,11 +4651,11 @@ int LevelSuperItemsParser(scrCallBack *arg)
 }
 
 
-NC_STACK_ilbm * readMapDumpAsILBM(_NC_STACK_ypaworld *yw, const char *mapName, FILE *scrFile)
+NC_STACK_ilbm * readMapDumpAsILBM(_NC_STACK_ypaworld *yw, const char *mapName, FSMgr::FileHandle *scrFile)
 {
     char v15[1024];
 
-    fgets(v15, 1024, scrFile);
+    scrFile->gets(v15, 1024);
 
     char *v3 = strtok(v15, " \n");
     int w = strtol(v3, NULL, 0);
@@ -4681,7 +4681,7 @@ NC_STACK_ilbm * readMapDumpAsILBM(_NC_STACK_ypaworld *yw, const char *mapName, F
 
     for (int j = 0; j < a4->height; j++)
     {
-        fgets(v15, 1024, scrFile);
+        scrFile->gets(v15, 1024);
 
         uint8_t *ln = bf + j * a4->width;
 
@@ -6300,10 +6300,10 @@ int sub_47925C(scrCallBack *scr)
 
 
 
-int sb_0x47f2d8__sub0(yw_f726c *hist_list, FILE *fil)
+int sb_0x47f2d8__sub0(yw_f726c *hist_list, FSMgr::FileHandle *fil)
 {
     char v18[1024];
-    fgets(v18, 1024, fil);
+    fil->gets(v18, 1024);
 
     char *v2 = strtok(v18, " \n");
     int v3 = strtol(v2, 0, 0);
@@ -6316,7 +6316,7 @@ int sb_0x47f2d8__sub0(yw_f726c *hist_list, FILE *fil)
         uint8_t *cur = hist_list->last_bufStart;
         for (int i = 0; i < v7; i++)
         {
-            fgets(v18, 1024, fil);
+            fil->gets(v18, 1024);
 
             char *ln = v18;
             for (int j = 0; j < v3; j++)

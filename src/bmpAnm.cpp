@@ -236,35 +236,33 @@ void *sub_4BFB60(void *mfl, const char *mode)
         dword_515204 = dword_515200;
         const char* fname = (const char *)mfl;
 
-        FILE *v7;
+        FSMgr::FileHandle *v7;
 
         if ( mode == NULL )
         {
             dword_515200 = 1;
-            v7 = FOpen(fname, mode);
+            v7 = uaOpenFile(fname, mode);
             if ( !v7 )
                 return NULL;
         }
         else
         {
-            v7 = FOpen(fname, mode);
+            v7 = uaOpenFile(fname, mode);
             if ( !v7 )
                 return NULL;
 
-            uint32_t tmp;
-            fread(&tmp, 4, 1, v7);
-            tmp = SWAP32(tmp);
+            uint32_t tmp = v7->readU32B();
 
             if ( tmp != TAG_FORM )
             {
                 dword_515200 = 0;
-                fseek(v7, 0, 0);
+                v7->seek(0, SEEK_SET);
                 return v7;
             }
             else
             {
                 dword_515200 = 1;
-                fseek(v7, 0, 0);
+                v7->seek(0, SEEK_SET);
             }
         }
 
@@ -287,46 +285,44 @@ void *sub_4BFB60(void *mfl, const char *mode)
                             return v9;
                     }
                 }
-                FClose(v7);
+                delete v7;
                 del_MFILE(v9);
             }
         }
         else if (v7)
-            FClose(v7);
+            delete v7;
     }
     return NULL;
 }
 
 int fread_bmp(void *dst, int size, int count, void *file)
 {
+    int v5 = 0;
+
     if ( dword_515200 )
-    {
-        int v5 = mfread((MFILE *)file, dst, size * count);
-        if ( v5 >= 0 )
-            return v5 / size;
-        else
-            return 0;
-    }
+        v5 = mfread((MFILE *)file, dst, size * count);
     else
-    {
-        return fread(dst, size, count, (FILE *)file);
-    }
+        v5 = ((FSMgr::FileHandle *)file)->read(dst, size * count);
+
+    if ( v5 >= 0 )
+        return v5 / size;
+    else
+        return 0;
 }
 
 int fwrite_bmp(void *dst, int size, int count, void *file)
 {
+    int v5 = 0;
+
     if ( dword_515200 )
-    {
-        int v5 = sub_413564((MFILE *)file, size * count, dst);
-        if ( v5 >= 0 )
-            return v5 / size;
-        else
-            return 0;
-    }
+        v5 = sub_413564((MFILE *)file, size * count, dst);
     else
-    {
-        return fwrite(dst, size, count, (FILE *)file);
-    }
+        v5 = ((FSMgr::FileHandle *)file)->write(dst, size * count);
+
+    if ( v5 >= 0 )
+        return v5 / size;
+    else
+        return 0;
 }
 
 int bmpanim_func64__readClassName(void *fil, bmpAnim_t1 *arg)
@@ -548,13 +544,13 @@ int sub_4BFD74(void *fil)
 
             if ( !dword_515204 )
             {
-                FClose(((MFILE *)fil)->file_handle);
+                delete (((MFILE *)fil)->file_handle);
                 del_MFILE((MFILE *)fil);
             }
         }
         else
         {
-            FClose((FILE *)fil);
+            delete ((FSMgr::FileHandle *)fil);
         }
     }
     return 0;

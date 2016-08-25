@@ -1198,7 +1198,7 @@ void sb_0x44f820__sub0(_NC_STACK_ypaworld *yw, int a2, int a3)
     {
         char *a2a = yw->LevelNet->mapInfos[ yw->field_2d90->levelID ].mapPath;
 
-        FILE *fil = FOpen(a2a, "r");
+        FSMgr::FileHandle *fil = uaOpenFile(a2a, "r");
 
         if ( fil )
         {
@@ -1208,7 +1208,7 @@ void sb_0x44f820__sub0(_NC_STACK_ypaworld *yw, int a2, int a3)
 
             while ( a2 >= lnid )
             {
-                fgets(v12, 255, fil);
+                fil->gets(v12, 255);
                 lnid++;
             }
 
@@ -1243,7 +1243,7 @@ void sb_0x44f820__sub0(_NC_STACK_ypaworld *yw, int a2, int a3)
 
             set_prefix_replacement("rsrc", v11);
 
-            FClose(fil);
+            delete fil;
         }
     }
 }
@@ -2578,10 +2578,10 @@ void NC_STACK_ypaworld::ypaworld_func151(stack_vals *arg)
             char buf[300];
             sprintf(buf, "save:%s/sgisold.txt", yw->GameShell->user_name);
 
-            FILE *fil = FOpen(buf, "w");
+            FSMgr::FileHandle *fil = uaOpenFile(buf, "w");
 
             if ( fil )
-                FClose(fil);
+                delete fil;
 
             sprintf(buf, "%s/user.txt", yw->GameShell->user_name);
 
@@ -2594,13 +2594,13 @@ void NC_STACK_ypaworld::ypaworld_func151(stack_vals *arg)
 
             ypaworld_func171(&arg171);
 
-            fil = FOpen("env:user.def", "w");
+            fil = uaOpenFile("env:user.def", "w");
 
             if ( fil )
             {
                 strcpy(buf, yw->GameShell->user_name);
-                fwrite(buf, strlen(buf), 1, fil);
-                FClose(fil);
+                fil->write(buf, strlen(buf));
+                delete fil;
             }
         }
     }
@@ -6700,7 +6700,7 @@ size_t NC_STACK_ypaworld::ypaworld_func162(const char *fname)
 
     if ( repl->mfile )
     {
-        FClose(repl->mfile->file_handle);
+        delete repl->mfile->file_handle;
         del_MFILE(repl->mfile);
         repl->mfile = NULL;
     }
@@ -6860,7 +6860,7 @@ void NC_STACK_ypaworld::ypaworld_func164(void *arg)
     {
         if ( yw->replayer->mfile )
         {
-            FClose(yw->replayer->mfile->file_handle);
+            delete yw->replayer->mfile->file_handle;
             del_MFILE(yw->replayer->mfile);
 
             yw->replayer->mfile = NULL;
@@ -6976,7 +6976,7 @@ char * sb_0x471428__sub0(char *a1, const char *a2)
 
 int simple_lang_parser(_NC_STACK_ypaworld *yw, const char *filename)
 {
-    FILE *fil = FOpen(filename, "r");
+    FSMgr::FileHandle *fil = uaOpenFile(filename, "r");
     if ( !fil )
         return 0;
 
@@ -6985,9 +6985,9 @@ int simple_lang_parser(_NC_STACK_ypaworld *yw, const char *filename)
     bool multiline = false;
     int strid = -1;
 
-    while (fgets(buf, 4096, fil))
+    while (fil->gets(buf, 4096))
     {
-        char *line_end = strpbrk(buf, "\n");
+        char *line_end = strpbrk(buf, "\n\r");
         if ( line_end )
             *line_end = 0;
 
@@ -7072,7 +7072,7 @@ int simple_lang_parser(_NC_STACK_ypaworld *yw, const char *filename)
         }
     }
 
-    FClose(fil);
+    delete fil;
     return 1;
 }
 
@@ -7340,28 +7340,28 @@ size_t NC_STACK_ypaworld::ypaworld_func168(__NC_STACK_ypabact **pbact)
 
 int ypaworld_func169__sub3(const char *a)
 {
-    FILE *fil = FOpen(a, "r");
+    FSMgr::FileHandle *fil = uaOpenFile(a, "r");
 
     if ( !fil )
         return 0;
 
-    FClose(fil);
+    delete fil;
     return 1;
 }
 
 int get_lvlnum_from_save(const char *filename, int *lvlnum_out)
 {
-    FILE *fil = FOpen(filename, "r");
+    FSMgr::FileHandle *fil = uaOpenFile(filename, "r");
 
     if ( !fil )
         return 0;
 
     char v7[256];
-    while ( fgets(v7, 255, fil) )
+    while ( fil->gets(v7, 255) )
     {
         if ( !strnicmp(v7, "begin_levelnum", 14) )
         {
-            while ( fgets(v7, 255, fil) )
+            while ( fil->gets(v7, 255) )
             {
                 if ( !strnicmp(v7, "end", 3) )
                     break; //Not found
@@ -7377,7 +7377,7 @@ int get_lvlnum_from_save(const char *filename, int *lvlnum_out)
                         if ( v5 )
                         {
                             *lvlnum_out = atoi(v5);
-                            FClose(fil);
+                            delete fil;
                             return 1;
                         }
                     }
@@ -7387,7 +7387,7 @@ int get_lvlnum_from_save(const char *filename, int *lvlnum_out)
         }
     }
 
-    FClose(fil);
+    delete fil;
     return 0;
 }
 
@@ -7620,7 +7620,7 @@ size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
     {
         char flname[300];
         sprintf(flname, "save:%s/sgisold.txt", yw->GameShell->user_name);
-        delete_file(flname);
+        uaDeleteFile(flname);
     }
 
     int write_modifers;
@@ -7647,7 +7647,7 @@ size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
     char filename[300];
     sprintf(filename, "%s", arg->saveFile);
 
-    FILE *fil = FOpen(filename, "w");
+    FSMgr::FileHandle *fil = uaOpenFile(filename, "w");
 
     if ( !fil )
     {
@@ -7716,7 +7716,7 @@ size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
         }
     }
 
-    FClose(fil);
+    delete fil;
     return write_ok;
 }
 
@@ -7735,7 +7735,7 @@ size_t NC_STACK_ypaworld::ypaworld_func171(yw_arg172 *arg)
     char a1a[300];
     sprintf(a1a, "save:%s", arg->usertxt);
 
-    FILE *sfil = FOpen(a1a, "w");
+    FSMgr::FileHandle *sfil = uaOpenFile(a1a, "w");
 
     if ( !sfil )
         return 1;
@@ -7743,60 +7743,60 @@ size_t NC_STACK_ypaworld::ypaworld_func171(yw_arg172 *arg)
     if ( arg->field_8 & 1 && !yw_write_user(sfil, usr) )
     {
         ypa_log_out("Unable to write user data to file\n");
-        FClose(sfil);
+        delete sfil;
         return 0;
     }
 
     if ( arg->field_8 & 2 && !yw_write_input(sfil, usr) )
     {
         ypa_log_out("Unable to write input data to file\n");
-        FClose(sfil);
+        delete sfil;
         return 0;
     }
 
     if ( arg->field_8 & 8 && !yw_write_sound(sfil, usr) )
     {
         ypa_log_out("Unable to write sound data to file\n");
-        FClose(sfil);
+        delete sfil;
         return 0;
     }
 
     if ( arg->field_8 & 4 && !yw_write_video(sfil, usr) )
     {
         ypa_log_out("Unable to write video data to file\n");
-        FClose(sfil);
+        delete sfil;
         return 0;
     }
 
     if ( arg->field_8 & 0x10 && !yw_write_levels_statuses(sfil, usr->p_ypaworld) )
     {
         ypa_log_out("Unable to write score data to file\n");
-        FClose(sfil);
+        delete sfil;
         return 0;
     }
 
     if ( arg->field_8 & 0x80 && !yw_write_buddies(sfil, usr->p_ypaworld) )
     {
         ypa_log_out("Unable to write buddies to file\n");
-        FClose(sfil);
+        delete sfil;
         return 0;
     }
 
     if ( arg->field_8 & 0x20 && !yw_write_shell(sfil, usr) )
     {
         ypa_log_out("Unable to write shell data to file\n");
-        FClose(sfil);
+        delete sfil;
         return 0;
     }
 
     if ( arg->field_8 & 0x40 && !yw_write_item_modifers(usr->p_ypaworld, sfil) )
     {
         ypa_log_out("Unable to write build info to file\n");
-        FClose(sfil);
+        delete sfil;
         return 0;
     }
 
-    FClose(sfil);
+    delete sfil;
     return 1;
 }
 
@@ -8377,12 +8377,12 @@ int ypaworld_func183__sub0(int lvlID, const char *userName)
 
     sprintf(buf, "save:%s/%d.fin", userName, lvlID);
 
-    FILE *fil = FOpen(buf, "r");
+    FSMgr::FileHandle *fil = uaOpenFile(buf, "r");
 
     if ( !fil )
         return 0;
 
-    FClose(fil);
+    delete fil;
     return 1;
 }
 

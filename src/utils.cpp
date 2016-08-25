@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "includes.h"
 #include "utils.h"
 #include "inttypes.h"
@@ -8,23 +10,23 @@ int read_yes_no_status(const char *file, int result)
 {
     char buf[128];
 
-    FILE *fil = fopen(file, "r");
+    FSMgr::FileHandle *fil = uaOpenFile(file, "r");
     if ( fil )
     {
-        if ( fgets(buf, 128, fil) )
+        if ( fil->gets(buf, 128) )
         {
-            char *lend = strpbrk(buf, "; \n");
+            char *lend = strpbrk(buf, "; \n\r");
             if ( lend )
                 *lend = 0;
             result = strcasecmp(buf, "yes") == 0;
         }
-        fclose(fil);
+        delete fil;
     }
     return result;
 }
 
 
-void sub_4BF181(DWORD sec)
+void sub_4BF181(uint32_t sec)
 {
     Sleep(sec);
 }
@@ -169,3 +171,78 @@ DWORD profiler_end(DWORD prev)
     Uint64 cnt = SDL_GetPerformanceCounter();
     return cnt / (freq / 10000) - prev;
 }
+
+
+
+void correctSeparatorAndExt(std::string &str)
+{
+    replace(str.begin(), str.end(), '/', '\\');
+
+    size_t pos = str.find_last_of('.');
+    if (pos != std::string::npos && (str.length() - pos - 1) > 3)
+        str.resize(pos + 3 + 1);
+}
+
+
+FSMgr::FileHandle *uaOpenFile(const char *src_path, const char *mode)
+{
+    char path[256];
+    file_path_copy_manipul(src_path, path, 256);
+
+    std::string dst = path;
+    correctSeparatorAndExt(dst);
+
+    FSMgr::FileHandle *v4 = FSMgr::iDir::openFile(dst.c_str(), mode);
+
+    if ( v4 )
+        engines.file_handles++;
+    else
+        ypa_log_out("uaOpenFile('%s','%s') failed!\n", dst.c_str(), mode);
+
+    return v4;
+}
+
+FSMgr::DirIter *uaOpenDir(const char *dir)
+{
+    char src[256];
+    file_path_copy_manipul(dir, src, 256);
+
+    std::string dst = src;
+    correctSeparatorAndExt(dst);
+
+    return FSMgr::iDir::readDir(dst.c_str());
+}
+
+bool uaDeleteFile(const char *path)
+{
+    char src[256];
+    file_path_copy_manipul(path, src, 256);
+
+    std::string dst = src;
+    correctSeparatorAndExt(dst);
+
+    return FSMgr::iDir::deleteFile(dst.c_str());
+}
+
+bool uaDeleteDir(const char *path)
+{
+    char src[256];
+    file_path_copy_manipul(path, src, 256);
+
+    std::string dst = src;
+    correctSeparatorAndExt(dst);
+
+    return FSMgr::iDir::deleteDir(dst.c_str());
+}
+
+bool uaCreateDir(const char *path)
+{
+    char src[256];
+    file_path_copy_manipul(path, src, 256);
+
+    std::string dst = src;
+    correctSeparatorAndExt(dst);
+
+    return FSMgr::iDir::createDir(dst.c_str());
+}
+

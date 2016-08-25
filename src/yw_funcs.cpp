@@ -37,7 +37,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
 
     strcat(filename, fontname);
 
-    FILE *fil = FOpen(filename, "r");
+    FSMgr::FileHandle *fil = uaOpenFile(filename, "r");
     if ( !fil )
         return NULL;
 
@@ -58,7 +58,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
     {
         char buf[128];
 
-        if ( !fgets(buf, 128, fil) )
+        if ( !fil->gets(buf, 128) )
         {
             ypa_log_out("yw_LoadFont(): font %s, font definition file corrupt.\n", fontname);
             if ( tileset )
@@ -69,7 +69,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
                     nc_FreeMem(tileset->chars);
                 nc_FreeMem(tileset);
             }
-            FClose(fil);
+            delete fil;
             return NULL;
         }
 
@@ -98,7 +98,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
                 nc_FreeMem(tileset);
             }
             ypa_log_out("yw_LoadFont(): font %s, font definition file corrupt.\n", fontname);
-            FClose(fil);
+            delete fil;
             return NULL;
         }
 
@@ -115,7 +115,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
                 nc_FreeMem(tileset->chars);
             nc_FreeMem(tileset);
             ypa_log_out("yw_LoadFont(): font %s, couldn't load fontpage %s.\n", fontname, bitmap_name);
-            FClose(fil);
+            delete fil;
             return NULL;
         }
 
@@ -134,13 +134,13 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
                     nc_FreeMem(tileset->chars);
                 nc_FreeMem(tileset);
             }
-            FClose(fil);
+            delete fil;
             return NULL;
         }
 
         tileset->font_height = strtol(fntHeight, NULL, 0);
 
-        while ( fgets(buf, 128, fil) )
+        while ( fil->gets(buf, 128) )
         {
             chrpos = buf;
 
@@ -221,7 +221,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
             }
         }
     }
-    FClose(fil);
+    delete fil;
     return tileset;
 }
 
@@ -742,26 +742,26 @@ int sb_0x4e1a88(_NC_STACK_ypaworld *yw, int multiplayer)
     else
         v4 = "levels:single/";
 
-    ncDir *v6 = OpenDir(v4);
+    FSMgr::DirIter *v6 = uaOpenDir(v4);
     if ( v6 )
     {
-        dirEntry v8;
-        while ( ReadDir(v6, &v8) )
+        FSMgr::iNode *v8;
+        while ( v6->getNext(v8) )
         {
-            if ( strcmp(v8.e_name, ".") && strcmp(v8.e_name, "..") )
+            if ( strcmp(v8->getName(), ".") && strcmp(v8->getName(), "..") )
             {
-                if ( sb_0x4e1a88__sub0(yw, multiplayer, v8.e_name) )
+                if ( sb_0x4e1a88__sub0(yw, multiplayer, v8->getName()) )
                 {
-                    ypa_log_out("Scanning [%s%s] .. ok.\n", v4, v8.e_name);
+                    ypa_log_out("Scanning [%s%s] .. ok.\n", v4, v8->getName());
                 }
                 else
                 {
-                    ypa_log_out("Scanning [%s%s] .. FAILED.\n", v4, v8.e_name);
+                    ypa_log_out("Scanning [%s%s] .. FAILED.\n", v4, v8->getName());
                     v10 = 0;
                 }
             }
         }
-        CloseDir(v6);
+        delete v6;
     }
 
     return v10;
@@ -963,7 +963,7 @@ NC_STACK_base * sub_44AD8C(const char *fname)
     NC_STACK_base *obj = (NC_STACK_base *)init_get_class("base.class", 0);
     if ( obj )
     {
-        FILE *fil = FOpen(fname, "r");
+        FSMgr::FileHandle *fil = uaOpenFile(fname, "r");
         if ( !fil )
         {
             delete_class_obj(obj);
@@ -973,7 +973,7 @@ NC_STACK_base * sub_44AD8C(const char *fname)
         char buf[512];
         char basfl[300];
 
-        while ( fgets(buf, 512, fil) )
+        while ( fil->gets(buf, 512) )
         {
             char *v4 = strtok(buf, " #;\t\n");
 
@@ -988,14 +988,14 @@ NC_STACK_base * sub_44AD8C(const char *fname)
             if ( !kid )
             {
                 ypa_log_out("init: Could not load %s.\n", basfl);
-                FClose(fil);
+                delete fil;
                 delete_class_obj(obj);
-                return 0;
+                return NULL;
             }
 
             obj->base_func65(&kid); //Add to kid list
         }
-        FClose(fil);
+        delete fil;
     }
     return obj;
 }
@@ -1071,7 +1071,7 @@ int sub_44A12C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
     return 1;
 }
 
-int yw_parse_lego(_NC_STACK_ypaworld *yw, FILE *fil, NC_STACK_base *base)
+int yw_parse_lego(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil, NC_STACK_base *base)
 {
     nlist *kid_list = base->getBASE_kidList();
 
@@ -1090,7 +1090,7 @@ int yw_parse_lego(_NC_STACK_ypaworld *yw, FILE *fil, NC_STACK_base *base)
     id = 0;
     char line_buf[1024];
 
-    while ( fgets(line_buf, 1024, fil) && line_buf[0] != '>' )
+    while ( fil->gets(line_buf, 1024) && line_buf[0] != '>' )
     {
         cityBases *lego = &yw->legos[id];
 
@@ -1100,7 +1100,7 @@ int yw_parse_lego(_NC_STACK_ypaworld *yw, FILE *fil, NC_STACK_base *base)
             return 0;
         }
 
-        char *v10 = strpbrk(line_buf, ";#\n");
+        char *v10 = strpbrk(line_buf, ";#\n\r");
         if ( v10 )
             *v10 = 0;
 
@@ -1200,12 +1200,12 @@ int yw_parse_lego(_NC_STACK_ypaworld *yw, FILE *fil, NC_STACK_base *base)
     return 1;
 }
 
-int yw_parse_subSect(_NC_STACK_ypaworld *yw, FILE *fil)
+int yw_parse_subSect(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     char buf[256];
 
     int id = 0;
-    while ( fgets(buf, 255, fil) && buf[0] != '>' )
+    while ( fil->gets(buf, 255) && buf[0] != '>' )
     {
         if ( id >= 256 )
         {
@@ -1213,7 +1213,7 @@ int yw_parse_subSect(_NC_STACK_ypaworld *yw, FILE *fil)
             return 0;
         }
 
-        char *endln = strpbrk(buf, ";#\n");
+        char *endln = strpbrk(buf, ";#\n\r");
         if ( endln )
             *endln = 0;
 
@@ -1261,16 +1261,16 @@ int yw_parse_subSect(_NC_STACK_ypaworld *yw, FILE *fil)
     return 1;
 }
 
-int yw_parse_sektor(_NC_STACK_ypaworld *yw, FILE *fil)
+int yw_parse_sektor(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     char line_buf[512];
     char buf[512];
 
-    while ( fgets(buf, 512, fil) && buf[0] != '>' )
+    while ( fil->gets(buf, 512) && buf[0] != '>' )
     {
         strcpy(line_buf, buf);
 
-        char *lnend = strpbrk(buf, ";#\n");
+        char *lnend = strpbrk(buf, ";#\n\r");
         if ( lnend )
             *lnend = 0;
 
@@ -1569,7 +1569,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
 
     if ( setID != 46 )
     {
-        FILE* fil = FOpen("rsrc:scripts/set.sdf", "r");
+        FSMgr::FileHandle* fil = uaOpenFile("rsrc:scripts/set.sdf", "r");
         if ( !fil )
         {
             ypa_log_out("Couldn't open set description file, set %d!\n", setID);
@@ -1586,7 +1586,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
             {
                 if ( !sub_44A12C(yw, bnode->self_full) )
                 {
-                    FClose(fil);
+                    delete fil;
                     return 0;
                 }
             }
@@ -1594,19 +1594,19 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
             {
                 if ( !yw_parse_lego(yw, fil, bnode->self_full) )
                 {
-                    FClose(fil);
+                    delete fil;
                     return 0;
                 }
 
                 if ( !yw_parse_subSect(yw, fil) )
                 {
-                    FClose(fil);
+                    delete fil;
                     return 0;
                 }
 
                 if ( !yw_parse_sektor(yw, fil) )
                 {
-                    FClose(fil);
+                    delete fil;
                     return 0;
                 }
             }
@@ -1614,7 +1614,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
             {
                 if ( !sub_44A97C(yw, bnode->self_full) )
                 {
-                    FClose(fil);
+                    delete fil;
                     return 0;
                 }
             }
@@ -1622,7 +1622,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
             kid_id++;
         }
 
-        FClose(fil);
+        delete fil;
     }
 
     init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "remap/tracyrmp.ilbm");
@@ -1676,20 +1676,20 @@ int loadTOD(_NC_STACK_ypaworld *yw, const char *fname)
     {
         char buf[256];
         sprintf(buf, "save:%s/%s", yw->GameShell->user_name, fname);
-        FILE *fil = FOpen(buf, "r");
+        FSMgr::FileHandle *fil = uaOpenFile(buf, "r");
 
         if ( fil )
         {
             char lnbuf[128];
-            if ( fgets(lnbuf, 128, fil) )
+            if ( fil->gets(lnbuf, 128) )
             {
-                char *lnbrk = strpbrk(lnbuf, "\n;");
+                char *lnbrk = strpbrk(lnbuf, "\n\r;");
                 if ( lnbrk )
                     *lnbrk = 0;
 
                 tod = strtol(lnbuf, NULL, 0);
             }
-            FClose(fil);
+            delete fil;
         }
     }
     return tod;
@@ -1702,12 +1702,12 @@ int writeTOD(_NC_STACK_ypaworld *yw, const char *fname, int tod)
     {
         char buf[256];
         sprintf(buf, "save:%s/%s", yw->GameShell->user_name, fname);
-        FILE *fil = FOpen(buf, "w");
+        FSMgr::FileHandle *fil = uaOpenFile(buf, "w");
 
         if ( fil )
         {
-            fprintf(fil, "%d", tod);
-            FClose(fil);
+            fil->printf("%d", tod);
+            delete fil;
             v6 = 1;
         }
     }
@@ -1945,7 +1945,7 @@ void splashScreen_OutText(_NC_STACK_ypaworld *yw, NC_STACK_display *w3d, const c
         int lastline = 0;
         while ( !lastline )
         {
-            const char *en = strpbrk(txtpos, "\n");
+            const char *en = strpbrk(txtpos, "\n\r");
 
             if (en)
             {

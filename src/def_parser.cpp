@@ -4,14 +4,14 @@
 #include "def_parser.h"
 
 
-int sb_0x4d9f1c(FILE *fil, const char *filename, int callbacks_num, scrCallBack *callbacks, int *line_number, int flag);
+int sb_0x4d9f1c(FSMgr::FileHandle *fil, const char *filename, int callbacks_num, scrCallBack *callbacks, int *line_number, int flag);
 
 
 int def_parseFile(const char *filename, int num, scrCallBack *callbacks, int flag)
 {
     int v9 = 1;
 
-    FILE *fil = FOpen(filename, "r");
+    FSMgr::FileHandle *fil = uaOpenFile(filename, "r");
     if ( fil )
     {
         int a5 = 0;
@@ -22,7 +22,7 @@ int def_parseFile(const char *filename, int num, scrCallBack *callbacks, int fla
         if ( v6 >= 3 && v6 <= 5 )
             v9 = 0;
 
-        FClose(fil);
+        delete fil; //File will close on delete
     }
     else
     {
@@ -36,7 +36,7 @@ int def_parseFile(const char *filename, int num, scrCallBack *callbacks, int fla
 
 
 
-int sb_0x4d9f1c__sub0(FILE *fil, char *p1, char *p2, char **p3, char **p4, int *line_number)
+int sb_0x4d9f1c__sub0(FSMgr::FileHandle *fil, char *p1, char *p2, char **p3, char **p4, int *line_number)
 {
     int lopp = 1;
     *p1 = 0;
@@ -51,14 +51,14 @@ int sb_0x4d9f1c__sub0(FILE *fil, char *p1, char *p2, char **p3, char **p4, int *
 
     while ( lopp )
     {
-        v7 = fgets(buf, 4096, fil);
+        v7 = fil->gets(buf, 4096);
 
         if ( !v7 )
             break;
 
         (*line_number)++;
 
-        char *line_end = strpbrk(buf, ";\n");
+        char *line_end = strpbrk(buf, ";\n\r");
         if ( line_end )
             *line_end = 0;
 
@@ -106,7 +106,7 @@ int sb_0x4d9f1c__sub0(FILE *fil, char *p1, char *p2, char **p3, char **p4, int *
 }
 
 
-int sb_0x4d9f1c(FILE *fil, const char *filename, int callbacks_num, scrCallBack *callbacks, int *line_number, int flag)
+int sb_0x4d9f1c(FSMgr::FileHandle *fil, const char *filename, int callbacks_num, scrCallBack *callbacks, int *line_number, int flag)
 {
     char p1[64];
     char p2[8192];

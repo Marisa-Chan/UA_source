@@ -1,6 +1,8 @@
 #ifndef UTILS_H_INCLUDED
 #define UTILS_H_INCLUDED
 
+#include "fsmgr.h"
+
 #define SWAP32(A) ( (((A) >> 24) & 0xFF ) | (((A) & 0xFF) << 24) | (((A) & 0xFF0000) >> 8) | (((A) & 0xFF00) << 8) )
 #define SWAP16(A) ( (((A) & 0xFF) << 8) | (((A) >> 8) & 0xFF) )
 
@@ -93,7 +95,7 @@
 
 int read_yes_no_status(const char *file, int result);
 
-void sub_4BF181(DWORD sec);
+void sub_4BF181(uint32_t sec);
 
 float SWAP32F(float f);
 
@@ -124,4 +126,12 @@ int dround(double val);
 
 DWORD profiler_begin();
 DWORD profiler_end(DWORD prev);
+
+FSMgr::FileHandle *uaOpenFile(const char *src_path, const char *mode);
+FSMgr::DirIter *uaOpenDir(const char *dir);
+
+bool uaDeleteFile(const char *path);
+bool uaDeleteDir(const char *path);
+bool uaCreateDir(const char *path);
+
 #endif // UTILS_H_INCLUDED
