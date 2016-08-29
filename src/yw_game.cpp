@@ -3686,7 +3686,7 @@ void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a
         bct1->bact->primTtype = BACT_TGT_TYPE_NONE;
 
         bact_arg67 arg67;
-        arg67.tgt.pbact = sb_0x47b028__sub0((int)bct1->bact->primT.pbact, yw);
+        arg67.tgt.pbact = sb_0x47b028__sub0((int)(size_t)bct1->bact->primT.pbact, yw);
         arg67.tgt_type = BACT_TGT_TYPE_UNIT_IND;
         arg67.priority = 0;
         bct1->bacto->ypabact_func67(&arg67);

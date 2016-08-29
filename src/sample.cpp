@@ -85,7 +85,7 @@ rsrc * NC_STACK_sample::rsrc_func64(stack_vals *stak)
     smpl->bufsz = bufsz;
     smpl->field_8 = type;
 
-    void *buf = (void *)find_id_in_stack_def_val(SMPL_ATT_BUFFER, 0, stak);
+    void *buf = (void *)find_id_pval(SMPL_ATT_BUFFER, stak);
 
     if ( !buf )
     {

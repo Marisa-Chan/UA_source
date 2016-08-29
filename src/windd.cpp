@@ -1207,9 +1207,9 @@ void sub_42BD38(__NC_STACK_windd *obj)
 }
 
 
-long int __stdcall sub_42A978(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+LRESULT WINAPI sub_42A978(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-    __NC_STACK_windd *obj = (__NC_STACK_windd *)GetClassLong(hWnd, 0);
+    __NC_STACK_windd *obj = (__NC_STACK_windd *)GetClassLongPtr(hWnd, 0);
 
     switch(Msg)
     {
@@ -1235,7 +1235,7 @@ long int __stdcall sub_42A978(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         if ( obj )
             sub_42D410(obj, 1, 1);
-        return DefWindowProcA(hWnd, Msg, wParam, lParam);
+        return DefWindowProc(hWnd, Msg, wParam, lParam);
     }
     break;
 
@@ -1271,7 +1271,7 @@ long int __stdcall sub_42A978(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
             }
         }
         EndPaint(hWnd, &ppnt);
-        return DefWindowProcA(hWnd, Msg, wParam, lParam);
+        return DefWindowProc(hWnd, Msg, wParam, lParam);
     }
     break;
 
@@ -1284,13 +1284,13 @@ long int __stdcall sub_42A978(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     case WM_PALETTECHANGED:
     {
         if (Msg == WM_PALETTECHANGED && (HWND)wParam == obj->hwnd)
-            return DefWindowProcA(hWnd, Msg, wParam, lParam);
+            return DefWindowProc(hWnd, Msg, wParam, lParam);
 
         if ( obj )
             if ( obj->ddrawPal )
                 obj->primary_surf->SetPalette(obj->ddrawPal);
 
-        return DefWindowProcA(hWnd, Msg, wParam, lParam);
+        return DefWindowProc(hWnd, Msg, wParam, lParam);
     }
     break;
 
@@ -1300,12 +1300,12 @@ long int __stdcall sub_42A978(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
             return 0;
         if ( wParam == SC_SCREENSAVE )
             return 0;
-        return DefWindowProcA(hWnd, Msg, wParam, lParam);
+        return DefWindowProc(hWnd, Msg, wParam, lParam);
     }
     break;
 
     case WM_QUIT:
-        return DefWindowProcA(hWnd, Msg, wParam, lParam);
+        return DefWindowProc(hWnd, Msg, wParam, lParam);
         break;
 
     case WM_ACTIVATEAPP:
@@ -1333,17 +1333,17 @@ long int __stdcall sub_42A978(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         }
         if ( obj )
             sub_42D410(obj, 1, 1);
-        return DefWindowProcA(hWnd, Msg, wParam, lParam);
+        return DefWindowProc(hWnd, Msg, wParam, lParam);
     }
     break;
 
 
     default:
-        return DefWindowProcA(hWnd, Msg, wParam, lParam);
+        return DefWindowProc(hWnd, Msg, wParam, lParam);
         break;
     }
 
-    return DefWindowProcA(hWnd, Msg, wParam, lParam);
+    return DefWindowProc(hWnd, Msg, wParam, lParam);
 }
 
 int createWindow(__NC_STACK_windd *obj, HINSTANCE hInstance, int cmdShow, int width, int height)
@@ -1358,19 +1358,19 @@ int createWindow(__NC_STACK_windd *obj, HINSTANCE hInstance, int cmdShow, int wi
         int w, h;
         if ( obj->field_50 & 1 )
         {
-            SetWindowLong(ghWnd, GCL_HMODULE, WS_OVERLAPPEDWINDOW);
+            SetWindowLongPtr(ghWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
             h = height;
             w = width;
         }
         else
         {
-            SetWindowLong(ghWnd, GCL_HMODULE, 0x80080000);
-            SetWindowLong(ghWnd, GCL_CBCLSEXTRA, 8);
+            SetWindowLongPtr(ghWnd, GWL_STYLE, WS_POPUP | WS_SYSMENU);
+            SetWindowLongPtr(ghWnd, GWL_EXSTYLE, WS_EX_TOPMOST);
             h = GetSystemMetrics(SM_CYSCREEN);
             w = GetSystemMetrics(SM_CXSCREEN);
         }
         SetWindowPos(ghWnd, 0, 0, 0, w, h, SWP_SHOWWINDOW);
-        SetClassLongA(ghWnd, 0, (LONG)obj);
+        SetClassLongPtr(ghWnd, 0, (LONG_PTR)obj);
         return 1;
     }
     else
@@ -1380,7 +1380,7 @@ int createWindow(__NC_STACK_windd *obj, HINSTANCE hInstance, int cmdShow, int wi
         winClass.hInstance = hInstance;
         winClass.style = CS_DBLCLKS|CS_HREDRAW|CS_VREDRAW;
         winClass.lpfnWndProc = sub_42A978;
-        winClass.cbClsExtra = 4;
+        winClass.cbClsExtra = sizeof(void *);
         winClass.cbWndExtra = 0;
         winClass.hIcon = big256;
         winClass.hCursor = 0;
@@ -1423,7 +1423,7 @@ int createWindow(__NC_STACK_windd *obj, HINSTANCE hInstance, int cmdShow, int wi
             SetCursor(hCursor);
 
             ghWnd = obj->hwnd;
-            SetClassLong(obj->hwnd, 0, (LONG)obj);
+            SetClassLongPtr(obj->hwnd, 0, (LONG_PTR)obj);
             return 1;
         }
     }
@@ -3541,8 +3541,8 @@ void sb_0x42d530(__NC_STACK_windd *wdd, int a2)
                 ddraw->SetDisplayMode(640, 480, 16);
                 ddraw->SetCooperativeLevel(wdd->hwnd, DDSCL_NORMAL);
 
-                SetWindowLong(wdd->hwnd, GCL_HMODULE, 0x80080000);
-                SetWindowLong(wdd->hwnd, GCL_CBCLSEXTRA, 8);
+                SetWindowLongPtr(wdd->hwnd, GWL_STYLE, WS_POPUP | WS_SYSMENU);
+                SetWindowLongPtr(wdd->hwnd, GWL_EXSTYLE, WS_EX_TOPMOST);
 
                 int h = GetSystemMetrics(SM_CYSCREEN);
                 int w = GetSystemMetrics(SM_CXSCREEN);
@@ -3554,8 +3554,8 @@ void sb_0x42d530(__NC_STACK_windd *wdd, int a2)
                     ddraw->SetDisplayMode(dd_params.displ_mode_surface.dwWidth,	dd_params.displ_mode_surface.dwHeight, dd_params.displ_mode_surface.ddpfPixelFormat.dwRGBBitCount);
 
                 ddraw->SetCooperativeLevel(wdd->hwnd, DDSCL_NORMAL);
-                SetWindowLong(wdd->hwnd, GCL_HMODULE, 0x80080000);
-                SetWindowLong(wdd->hwnd, GCL_CBCLSEXTRA, 8);
+                SetWindowLongPtr(wdd->hwnd, GWL_STYLE, WS_POPUP | WS_SYSMENU);
+                SetWindowLongPtr(wdd->hwnd, GWL_EXSTYLE, WS_EX_TOPMOST);
 
                 int h = GetSystemMetrics(SM_CYSCREEN);
                 int w = GetSystemMetrics(SM_CXSCREEN);
@@ -3616,8 +3616,8 @@ void sub_42D724(__NC_STACK_windd *wdd, int a2)
             {
                 ddraw->SetDisplayMode(dd_params.ddSurfDescr__primary.dwWidth, dd_params.ddSurfDescr__primary.dwHeight, dd_params.ddSurfDescr__primary.ddpfPixelFormat.dwRGBBitCount);
 
-                SetWindowLong(wdd->hwnd, GCL_HMODULE, 0x80080000);
-                SetWindowLong(wdd->hwnd, GCL_CBCLSEXTRA, 8);
+                SetWindowLongPtr(wdd->hwnd, GWL_STYLE, WS_POPUP | WS_SYSMENU);
+                SetWindowLongPtr(wdd->hwnd, GWL_EXSTYLE, WS_EX_TOPMOST);
 
                 int h = GetSystemMetrics(SM_CYSCREEN);
                 int w = GetSystemMetrics(SM_CXSCREEN);
@@ -3676,7 +3676,7 @@ void NC_STACK_windd::windd_func322(windd_dlgBox *dlgBox)
 
 void windd_func323__sub0__sub0(const char *filename, HWND hwnd)
 {
-    printf("MAKE MOVIE PLAYER %s, file %s, HWND %d\n","windd_func323__sub0__sub0", filename, (int)hwnd);
+    printf("MAKE MOVIE PLAYER %s, file %s, HWND %d\n","windd_func323__sub0__sub0", filename, (int)(size_t)hwnd);
 }
 
 

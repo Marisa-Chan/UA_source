@@ -344,7 +344,7 @@ int VhclProtoParser(scrCallBack *arg)
     else
     {
         VhclProto * vhcl = (VhclProto *)arg->dataForStore;
-        int v76 = (int)arg->world2;
+        int v76 = (int)(size_t)arg->world2;
         int v77 = arg->field_24;
         roboProto *robo = &yw->RoboProtos[arg->roboID];
 
@@ -1053,7 +1053,7 @@ int VhclProtoParser(scrCallBack *arg)
         else
             return 3;
 
-        arg->world2 = (_NC_STACK_ypaworld *)v76;
+        arg->world2 = (_NC_STACK_ypaworld *)(size_t)v76;
         arg->field_24 = v77;
         return 0;
     }
@@ -1636,7 +1636,7 @@ int BuildProtoParser(scrCallBack *arg)
     else
     {
         BuildProto *bld = (BuildProto *)arg->dataForStore;
-        int v20 = (int)arg->world;
+        int v20 = (int)(size_t)arg->world;
 
         if ( !strcasecmp(_p1, "end") )
         {
@@ -1761,7 +1761,7 @@ int BuildProtoParser(scrCallBack *arg)
             else
                 return 3;
         }
-        arg->world = (_NC_STACK_ypaworld *)v20;
+        arg->world = (_NC_STACK_ypaworld *)(size_t)v20;
         return 0;
     }
 }
@@ -4197,7 +4197,7 @@ int LevelMbMapParser(scrCallBack *arg)
 
 int LevelGemParser(scrCallBack *arg)
 {
-    int v33 = (int)arg->world2;
+    int v33 = (int)(size_t)arg->world2;
 
     _NC_STACK_ypaworld *yw = arg->world;
     gemProto *v3 = &yw->gems[v33];
@@ -4250,7 +4250,7 @@ int LevelGemParser(scrCallBack *arg)
 
             v3->field_0 = 1;
             arg->field_18 = 0;
-            arg->world2 = (_NC_STACK_ypaworld *)(v33 + 1);
+            arg->world2 = (_NC_STACK_ypaworld *)(size_t)(v33 + 1);
             return 2;
         }
 
@@ -4411,7 +4411,7 @@ int LevelEnableParser(scrCallBack *arg)
 {
     if ( arg->field_18 )
     {
-        int v15 = (int)arg->world2;
+        int v15 = (int)(size_t)arg->world2;
 
         if ( !strcasecmp(arg->p1, "end") )
         {
@@ -4462,7 +4462,7 @@ int LevelEnableParser(scrCallBack *arg)
             }
 
             arg->field_18 = 1;
-            arg->world2 = (_NC_STACK_ypaworld *)v5;
+            arg->world2 = (_NC_STACK_ypaworld *)(size_t)v5;
 
             return 1;
         }
@@ -5548,7 +5548,7 @@ int sub_47A0C0(scrCallBack *scr)
             char *v9 = strtok(0, " \t_\n");
             if ( v9 )
             {
-                dword_5A7A88->primT.pbact = (__NC_STACK_ypabact *)atoi(v9);
+                dword_5A7A88->primT.pbact = (__NC_STACK_ypabact *)(size_t)atoi(v9);
 
                 v9 = strtok(0, " \t_\n");
                 if ( v9 )

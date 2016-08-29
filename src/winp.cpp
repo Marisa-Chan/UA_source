@@ -1178,14 +1178,14 @@ LRESULT __stdcall winp_winProc(HWND hWnd, UINT Msg, int wParam, LPARAM lParam)
 
 void sub_43E59A(HWND a1)
 {
-    oldWndProc = (WNDPROC)SetWindowLong(a1, GWL_WNDPROC, (LONG)winp_winProc);
+    oldWndProc = (WNDPROC)SetWindowLongPtr(a1, GWLP_WNDPROC, (LONG_PTR)winp_winProc);
 }
 
 void sub_43E5CB(HWND a1)
 {
     if ( oldWndProc )
     {
-        SetWindowLongA(a1, GWL_WNDPROC, (LONG)oldWndProc);
+        SetWindowLongPtr(a1, GWLP_WNDPROC, (LONG_PTR)oldWndProc);
         oldWndProc = NULL;
     }
 }
@@ -2438,7 +2438,7 @@ size_t NC_STACK_winp::compatcall(int method_id, void *data)
     case 68:
         return (size_t)idev_func68( (winp_68arg *)data );
     case 69:
-        idev_func69( (int)data );
+        idev_func69( (int)(size_t)data );
         return 1;
     case 70:
         idev_func70( (idev_query_arg *)data );

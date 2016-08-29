@@ -308,6 +308,34 @@ size_t find_id_in_stack_def_val(unsigned int find_id, size_t def_value, stack_va
     }
 }
 
+void *find_id_pval(unsigned int find_id, stack_vals *a3)
+{
+    if (!a3)
+        return NULL;
+
+    while ( 1 )
+    {
+        if ( a3->id == find_id )
+            return a3->value.p_data;
+        if ( a3->id == stack_vals::TAG_END )
+            return NULL;
+
+        if ( a3->id == stack_vals::TAG_PTAGS )
+        {
+            if (a3->value.p_data == NULL)
+                printf("find_id_in_stack_def_val, stack NULL pointer\n");
+            else
+                a3 = (stack_vals *)a3->value.p_data;
+        }
+        else if ( a3->id == stack_vals::TAG_SKIP_N )
+            a3 += a3->value.i_data;
+        else
+            a3++;
+    }
+
+    return NULL;
+}
+
 
 NC_STACK_nucleus * READ_OBJT(MFILE *mfile)
 {

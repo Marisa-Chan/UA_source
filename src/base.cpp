@@ -1159,7 +1159,7 @@ size_t NC_STACK_base::base_func67(NC_STACK_base **arg)
         }
         sub_430A20(&base->params3D);
     }
-    else if ((int)arg[0] == -1)
+    else if ((int)(size_t)arg[0] == -1)
     {
         base->field_bc = 0;
         base->field_b8 = NULL;

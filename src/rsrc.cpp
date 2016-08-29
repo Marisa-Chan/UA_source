@@ -142,7 +142,7 @@ size_t NC_STACK_rsrc::func3(stack_vals *stak)
 // Allocate resource node
 rsrc * NC_STACK_rsrc::rsrc_func64(stack_vals *stak)
 {
-    char *title = (char *)find_id_in_stack_def_val(RSRC_ATT_NAME, 0, stak);
+    char *title = (char *)find_id_pval(RSRC_ATT_NAME, stak);
 
     int what_list = find_id_in_stack_def_val(RSRC_ATT_TRYSHARED, 1, stak);
 
