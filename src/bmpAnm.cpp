@@ -755,7 +755,7 @@ int bmpanim_func64__sub0__sub2(bmpAnim_t1 *t1, int num, bmpanm_loc *arg)
 
 bmpAnim_t1 * bmpanim_func64__sub0(const char *className, char **a2, pixel_2d **a3, int a4, bmpanm_loc *a5)
 {
-    bmpAnim_t1 *t1 = (bmpAnim_t1 *)AllocVec(32, 65537);
+    bmpAnim_t1 *t1 = (bmpAnim_t1 *)AllocVec(sizeof(bmpAnim_t1), 65537);
 
     if ( !t1 )
         return NULL;

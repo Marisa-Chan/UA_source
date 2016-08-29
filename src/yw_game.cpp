@@ -3422,7 +3422,7 @@ void ypaworld_func64__sub5(_NC_STACK_ypaworld *yw)
 
 int sub_47EDDC(yw_f726c *hist, int bufsize)
 {
-    yw_f726c_nod *node = (yw_f726c_nod *)AllocVec(16, 65537);
+    yw_f726c_nod *node = (yw_f726c_nod *)AllocVec(sizeof(yw_f726c_nod), 65537);
 
     if ( node )
     {

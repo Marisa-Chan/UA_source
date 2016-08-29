@@ -1376,7 +1376,7 @@ void sb_0x46cdf8(UserData *usr)
     }
     else
     {
-        profilesNode *v4 = (profilesNode *)AllocVec(47, 65537);
+        profilesNode *v4 = (profilesNode *)AllocVec(sizeof(profilesNode), 65537);
 
         if ( !v4 )
         {
