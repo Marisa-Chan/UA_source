@@ -1,3 +1,6 @@
+#ifndef WRAP_AL_H_INCLUDED
+#define WRAP_AL_H_INCLUDED
+
 #include <list>
 #include <deque>
 #include <AL/al.h>
@@ -97,3 +100,5 @@ private:
     SDL_mutex *mutex;
     SDL_Thread *updateThread;
 };
+
+#endif
