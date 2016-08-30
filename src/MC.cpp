@@ -13,7 +13,6 @@
 #include "bmpAnm.h"
 #include "raster.h"
 #include "display.h"
-#include "windd.h"
 #include "win3d.h"
 
 #include "skeleton.h"
@@ -111,7 +110,6 @@ int set_classes_list()
     newclasses.push_back(&NC_STACK_display::description);
     newclasses.push_back(&NC_STACK_button::description);
     newclasses.push_back(&NC_STACK_network::description);
-    newclasses.push_back(&NC_STACK_windd::description);
     newclasses.push_back(&NC_STACK_win3d::description);
     newclasses.push_back(&NC_STACK_winp::description);
     newclasses.push_back(&NC_STACK_wintimer::description);

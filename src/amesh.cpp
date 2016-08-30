@@ -7,7 +7,6 @@
 
 #include "raster.h"
 #include "display.h"
-#include "windd.h"
 #include "win3d.h"
 
 #include "skeleton.h"

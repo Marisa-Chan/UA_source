@@ -198,10 +198,6 @@ public:
     virtual size_t func3(stack_vals *stak);
     virtual size_t raster_func192(stack_vals *);
     virtual size_t raster_func193(bitmap_intern **out);
-    virtual void raster_func194(stack_vals *stak) {};
-    virtual void raster_func195(stack_vals *stak) {};
-    virtual void raster_func196(stack_vals *stak) {};
-    virtual void raster_func197(stack_vals *stak) {};
     virtual size_t raster_func198(w3d_func198arg *);
     virtual size_t raster_func199(w3d_func199arg *);
     virtual size_t raster_func200(w3d_func198arg *);

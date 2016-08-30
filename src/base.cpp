@@ -8,7 +8,6 @@
 #include "bitmap.h"
 #include "raster.h"
 #include "display.h"
-#include "windd.h"
 #include "win3d.h"
 #include "base.h"
 #include "engine_tform.h"

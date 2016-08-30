@@ -1747,7 +1747,7 @@ void sub_4491A0(_NC_STACK_ypaworld *yw, const char *movie_fname)
     const char *v6;
     v6 = v5;
 
-    NC_STACK_windd *windd = dynamic_cast<NC_STACK_windd *>(yw->win3d);
+    NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(yw->win3d);
 
     windd->windd_func323(&v6);
 
@@ -2924,7 +2924,7 @@ void ypaworld_func158__d3d_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     v15.guid = NULL;
     v15.currr = 0;
 
-    NC_STACK_windd *windd = dynamic_cast<NC_STACK_windd *>(yw->win3d);
+    NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(yw->win3d);
     windd->windd_func324(&v15);
 
     while (v15.name)

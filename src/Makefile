@@ -52,7 +52,6 @@ OBJS =  \
 	utils.cpp\
 	wav.cpp\
 	win3d.cpp\
-	windd.cpp\
 	windp.cpp\
 	winp.cpp\
 	wintimer.cpp\

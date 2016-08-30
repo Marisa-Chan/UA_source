@@ -135,8 +135,6 @@
 		<Unit filename="wav.h" />
 		<Unit filename="win3d.cpp" />
 		<Unit filename="win3d.h" />
-		<Unit filename="windd.cpp" />
-		<Unit filename="windd.h" />
 		<Unit filename="windp.cpp" />
 		<Unit filename="windp.h" />
 		<Unit filename="winp.cpp" />

@@ -1644,7 +1644,7 @@ void sb_0x46aa8c(UserData *usr)
 
                 strcpy(usr->win3d_guid, usr->field_139A);
 
-                NC_STACK_windd *windd = dynamic_cast<NC_STACK_windd *>(yw->win3d);
+                NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(yw->win3d);
                 wdd_func324arg v37;
 
                 v37.name = usr->win3d_name;
@@ -2675,7 +2675,7 @@ void  ypaworld_func158__sub0__sub5(UserData *usr, int a2)
     const char *v2;
     const char *v12;
 
-    NC_STACK_windd *windd = dynamic_cast<NC_STACK_windd *>(usr->p_ypaworld->win3d);
+    NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(usr->p_ypaworld->win3d);
 
     while ( a1.name )
     {
@@ -2944,7 +2944,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     if ( usr->field_1C3A )
         sb_0x4c9f14(usr->p_ypaworld);
 
-    NC_STACK_windd *windd = dynamic_cast<NC_STACK_windd *>(usr->p_ypaworld->win3d);
+    NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(usr->p_ypaworld->win3d);
 
     if ( usr->field_1C3A == 1 )
     {
