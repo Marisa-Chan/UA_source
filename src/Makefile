@@ -44,7 +44,6 @@ OBJS =  \
 	nlist.cpp\
 	nucleas.cpp\
 	particle.cpp\
-	raster.cpp\
 	rsrc.cpp\
 	sample.cpp\
 	skeleton.cpp\

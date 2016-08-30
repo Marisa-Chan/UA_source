@@ -11,7 +11,6 @@
 #include "bitmap.h"
 #include "ilbm.h"
 #include "bmpAnm.h"
-#include "raster.h"
 #include "display.h"
 #include "win3d.h"
 
@@ -106,7 +105,6 @@ int set_classes_list()
     newclasses.push_back(&NC_STACK_iwimp::description);
     newclasses.push_back(&NC_STACK_sample::description);
     newclasses.push_back(&NC_STACK_wav::description);
-    newclasses.push_back(&NC_STACK_raster::description);
     newclasses.push_back(&NC_STACK_display::description);
     newclasses.push_back(&NC_STACK_button::description);
     newclasses.push_back(&NC_STACK_network::description);

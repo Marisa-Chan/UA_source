@@ -3,7 +3,6 @@
 #include "nucleas.h"
 #include "rsrc.h"
 #include "bitmap.h"
-#include "raster.h"
 #include "display.h"
 #include "win3d.h"
 #include "utils.h"
@@ -3636,7 +3635,7 @@ size_t NC_STACK_win3d::raster_func192(stack_vals *)
 
 size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
 {
-    __NC_STACK_raster *rstr = &stack__raster;
+    __NC_STACK_display *rstr = &stack__display;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
     float tX = rstr->field_554 - 1.0;
@@ -3661,7 +3660,7 @@ size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
 
 size_t NC_STACK_win3d::raster_func199(w3d_func199arg *arg)
 {
-    __NC_STACK_raster *rstr = &stack__raster;
+    __NC_STACK_display *rstr = &stack__display;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
     sub_43CD40(w3d,
@@ -3803,7 +3802,7 @@ int sub_420C74(xyxyNNN *a1, xyxyNNN *inout)
     return v18;
 }
 
-void sub_420EDC(__NC_STACK_raster *rstr, __NC_STACK_win3d *w3d, int x1, int y1, int x2, int y2, int r, unsigned int g, unsigned int b, unsigned int a11, int a12, int a13)
+void sub_420EDC(__NC_STACK_display *rstr, __NC_STACK_win3d *w3d, int x1, int y1, int x2, int y2, int r, unsigned int g, unsigned int b, unsigned int a11, int a12, int a13)
 {
     xyxyNNN tmp1;
 
@@ -3851,7 +3850,7 @@ void sub_420EDC(__NC_STACK_raster *rstr, __NC_STACK_win3d *w3d, int x1, int y1, 
 
 size_t NC_STACK_win3d::raster_func200(w3d_func198arg *arg)
 {
-    __NC_STACK_raster *rstr = &stack__raster;
+    __NC_STACK_display *rstr = &stack__display;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
     float tX = rstr->field_554 - 1.0;
@@ -3875,7 +3874,7 @@ size_t NC_STACK_win3d::raster_func200(w3d_func198arg *arg)
 
 size_t NC_STACK_win3d::raster_func201(w3d_func199arg *arg)
 {
-    __NC_STACK_raster *rstr = &stack__raster;
+    __NC_STACK_display *rstr = &stack__display;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
     sub_420EDC(rstr, w3d,
@@ -3954,7 +3953,7 @@ void sub_43CEE0(__NC_STACK_win3d *w3d, void *srcBuf, int width, int a1, int a2, 
 
 size_t NC_STACK_win3d::raster_func202(rstr_arg204 *arg)
 {
-    __NC_STACK_raster *rstr = &stack__raster;
+    __NC_STACK_display *rstr = &stack__display;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
     bitmap_intern *pbitm = arg->pbitm;
@@ -3974,7 +3973,7 @@ size_t NC_STACK_win3d::raster_func202(rstr_arg204 *arg)
 }
 
 
-int win3d_func204__sub0(__NC_STACK_raster *rstr, rstr_loc204 *arg)
+int win3d_func204__sub0(__NC_STACK_display *rstr, rstr_loc204 *arg)
 {
     if ( rstr->field_24.x1 > arg->dword20 || rstr->field_24.x2 < arg->dword18 || rstr->field_24.y1 > arg->dword24 || rstr->field_24.y2 < arg->dword1C )
         return 0;
@@ -4030,7 +4029,7 @@ int win3d_func204__sub0(__NC_STACK_raster *rstr, rstr_loc204 *arg)
 size_t NC_STACK_win3d::raster_func204(rstr_arg204 *arg)
 {
 
-    __NC_STACK_raster *rstr = &stack__raster;
+    __NC_STACK_display *rstr = &stack__display;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
     rstr_loc204 loc;
@@ -4800,7 +4799,7 @@ void win3d_func209__sub0(__NC_STACK_win3d *w3d, tiles_stru **tiles, char *cmdlin
 
 void NC_STACK_win3d::raster_func209(w3d_a209 *arg)
 {
-    win3d_func209__sub0(&stack__win3d, stack__raster.tiles, arg->cmdbuf, arg->includ);
+    win3d_func209__sub0(&stack__win3d, stack__display.tiles, arg->cmdbuf, arg->includ);
 }
 
 void win3d_func213__sub0__sub0(__NC_STACK_win3d *w3d)
@@ -5084,7 +5083,7 @@ void win3d_func218__sub0(__NC_STACK_win3d *w3d, void *buf1, int width, BYTE *buf
 void NC_STACK_win3d::raster_func218(rstr_218_arg *arg)
 {
     __NC_STACK_win3d *w3d = &stack__win3d;
-    __NC_STACK_raster *rstr = &stack__raster;
+    __NC_STACK_display *rstr = &stack__display;
 
     ua_dRect rect1, rect2;
 

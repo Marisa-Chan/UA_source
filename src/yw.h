@@ -6,7 +6,6 @@
 #include "engine_miles.h"
 #include "bitmap.h"
 #include "ilbm.h"
-#include "raster.h"
 #include "display.h"
 #include "win3d.h"
 #include "base.h"

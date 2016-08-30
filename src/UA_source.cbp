@@ -119,8 +119,6 @@
 		<Unit filename="nucleas.h" />
 		<Unit filename="particle.cpp" />
 		<Unit filename="particle.h" />
-		<Unit filename="raster.cpp" />
-		<Unit filename="raster.h" />
 		<Unit filename="rsrc.cpp" />
 		<Unit filename="rsrc.h" />
 		<Unit filename="sample.cpp" />

@@ -5,7 +5,6 @@
 #include "utils.h"
 #include "engine_input.h"
 
-#include "raster.h"
 #include "display.h"
 #include "win3d.h"
 
@@ -388,31 +387,31 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
     if (v5 == 0)
         v5 = 0;
     else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
-        v5 = NC_STACK_raster::RSTR_RFLAGS_LINMAP;
+        v5 = NC_STACK_display::RSTR_RFLAGS_LINMAP;
 
     else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
-        v5 = NC_STACK_raster::RSTR_RFLAGS_PERSPMAP;
+        v5 = NC_STACK_display::RSTR_RFLAGS_PERSPMAP;
 
     else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
-        v5 = NC_STACK_raster::RSTR_RFLAGS_LINMAP | NC_STACK_raster::RSTR_RFLAGS_GRADSHD;
+        v5 = NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_GRADSHD;
 
     else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
-        v5 = NC_STACK_raster::RSTR_RFLAGS_PERSPMAP | NC_STACK_raster::RSTR_RFLAGS_GRADSHD;
+        v5 = NC_STACK_display::RSTR_RFLAGS_PERSPMAP | NC_STACK_display::RSTR_RFLAGS_GRADSHD;
 
     else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        v5 = NC_STACK_raster::RSTR_RFLAGS_LINMAP | NC_STACK_raster::RSTR_RFLAGS_ZEROTRACY;
+        v5 = NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_ZEROTRACY;
 
     else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        v5 = NC_STACK_raster::RSTR_RFLAGS_PERSPMAP | NC_STACK_raster::RSTR_RFLAGS_ZEROTRACY;
+        v5 = NC_STACK_display::RSTR_RFLAGS_PERSPMAP | NC_STACK_display::RSTR_RFLAGS_ZEROTRACY;
 
     else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        v5 = NC_STACK_raster::RSTR_RFLAGS_LINMAP | NC_STACK_raster::RSTR_RFLAGS_GRADSHD | NC_STACK_raster::RSTR_RFLAGS_ZEROTRACY;
+        v5 = NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_GRADSHD | NC_STACK_display::RSTR_RFLAGS_ZEROTRACY;
 
     else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        v5 = NC_STACK_raster::RSTR_RFLAGS_PERSPMAP | NC_STACK_raster::RSTR_RFLAGS_GRADSHD | NC_STACK_raster::RSTR_RFLAGS_ZEROTRACY;
+        v5 = NC_STACK_display::RSTR_RFLAGS_PERSPMAP | NC_STACK_display::RSTR_RFLAGS_GRADSHD | NC_STACK_display::RSTR_RFLAGS_ZEROTRACY;
 
     else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_FLATTRACY) )
-        v5 = NC_STACK_raster::RSTR_RFLAGS_LINMAP | NC_STACK_raster::RSTR_RFLAGS_LUMTRACY;
+        v5 = NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_LUMTRACY;
     else
         return 1;
 
@@ -420,9 +419,9 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
 
     skel133.field_4 = 0;
 
-    if ( v5 & (NC_STACK_raster::RSTR_RFLAGS_LINMAP | NC_STACK_raster::RSTR_RFLAGS_PERSPMAP ) )
+    if ( v5 & (NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_PERSPMAP ) )
         skel133.field_4 |= 1;
-    if ( v5 & (NC_STACK_raster::RSTR_RFLAGS_FLATSHD | NC_STACK_raster::RSTR_RFLAGS_GRADSHD) )
+    if ( v5 & (NC_STACK_display::RSTR_RFLAGS_FLATSHD | NC_STACK_display::RSTR_RFLAGS_GRADSHD) )
         skel133.field_4 |= 2;
     if ( amesh->field_A & AMESH_FLAG_DPTHFADE )
         skel133.field_4 |= 4;
@@ -474,7 +473,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
         {
             arg->field_38++;
 
-            if ( datSub->renderFlags & ( NC_STACK_raster::RSTR_RFLAGS_FLATSHD | NC_STACK_raster::RSTR_RFLAGS_GRADSHD ) )
+            if ( datSub->renderFlags & ( NC_STACK_display::RSTR_RFLAGS_FLATSHD | NC_STACK_display::RSTR_RFLAGS_GRADSHD ) )
             {
                 int v6 = 0;
                 int v8 = 0;
@@ -490,7 +489,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
 
                 if ( v6 == datSub->vertexCount )
                 {
-                    datSub->renderFlags &= ~( NC_STACK_raster::RSTR_RFLAGS_FLATSHD | NC_STACK_raster::RSTR_RFLAGS_GRADSHD );
+                    datSub->renderFlags &= ~( NC_STACK_display::RSTR_RFLAGS_FLATSHD | NC_STACK_display::RSTR_RFLAGS_GRADSHD );
                 }
                 else if ( v8 == datSub->vertexCount )
                 {
