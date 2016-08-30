@@ -266,8 +266,8 @@ struct wdd_func324arg
 extern windd_params dd_params;
 
 
-struct __NC_STACK_windd;
-void sub_42A640(__NC_STACK_windd *obj);
+struct __NC_STACK_win3d;
+void sub_42A640(__NC_STACK_win3d *obj);
 
 int dbcs_StartText();
 void dbcs_DrawText(const char *string, int p1, int p2, int p3, int p4, char flag);
@@ -289,7 +289,7 @@ int load_font(const char *fontname);
 
 
 
-struct __NC_STACK_windd
+struct __NC_STACK_win3d
 {
     HWND hwnd;
     HINSTANCE cursor;
@@ -317,16 +317,12 @@ struct __NC_STACK_windd
     char field_53;
     bitmap_intern *field_54______rsrc_field4;
     windd_intern *intern;
-};
 
-
-struct __NC_STACK_win3d
-{
     win3d_bigdata *bigdata;
     int dither;
     int filter;
     int antialias;
-    int field_10;
+    int alpha;
     int zbuf_when_tracy;
     int colorkey;
 };
@@ -376,7 +372,6 @@ public:
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_win3d() {
         memset(&stack__win3d, 0, sizeof(stack__win3d));
-        memset(&stack__windd, 0, sizeof(stack__windd));
     };
     virtual ~NC_STACK_win3d() {};
 
@@ -410,7 +405,7 @@ public:
     // windd methods
     size_t windd_func0(stack_vals *stak);
     size_t windd_func1(stack_vals *stak);
-    static void sub_42D37C(__NC_STACK_windd *wdd, UA_PALETTE *pal);
+    static void sub_42D37C(__NC_STACK_win3d *wdd, UA_PALETTE *pal);
 
 
 
@@ -420,7 +415,6 @@ public:
     static const NewClassDescr description;
 
     __NC_STACK_win3d stack__win3d;
-    __NC_STACK_windd stack__windd;
 };
 
 

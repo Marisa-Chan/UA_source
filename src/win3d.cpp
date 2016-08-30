@@ -789,7 +789,7 @@ DWORD RGBAToColor(unsigned int r, unsigned int g, unsigned int b, unsigned int a
 }
 
 
-int win3dInitialisation(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+int win3dInitialisation(__NC_STACK_win3d *w3d)
 {
     win3d_bigdata *bigdata = (win3d_bigdata *)AllocVec(sizeof(win3d_bigdata), 0);
     w3d->bigdata = bigdata;
@@ -797,8 +797,8 @@ int win3dInitialisation(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
     {
         memset(bigdata, 0, sizeof(win3d_bigdata));
 
-        bigdata->_dx = wdd->width / 2;
-        bigdata->_dy = wdd->height / 2;
+        bigdata->_dx = w3d->width / 2;
+        bigdata->_dy = w3d->height / 2;
 
         for (int i = 0; i < 8; i++)
         {
@@ -842,7 +842,7 @@ int win3dInitialisation(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
     return 0;
 }
 
-int initPixelFormats(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+int initPixelFormats(__NC_STACK_win3d *w3d)
 {
     wind3d_pixelformat *fmt = &w3d->bigdata->primary__pixelformat;
 
@@ -964,7 +964,7 @@ int initPixelFormats(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
     memset(pixfmt, 0, sizeof(wind3d_pixelformat));
 
 
-    windd_formats *dd_fmt = &wdd->intern->formats[wdd->intern->selected_format_id];
+    windd_formats *dd_fmt = &w3d->intern->formats[w3d->intern->selected_format_id];
 
     pixfmt->BytesPerColor = dd_fmt->surf_descr.ddpfPixelFormat.dwRGBBitCount / 8;
 
@@ -1076,7 +1076,7 @@ int initPixelFormats(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
     return 1;
 }
 
-void sub_439E30(__NC_STACK_windd *, __NC_STACK_win3d *w3d)
+void sub_439E30(__NC_STACK_win3d *w3d)
 {
     if ( w3d->bigdata )
     {
@@ -1111,7 +1111,7 @@ void sub_439E30(__NC_STACK_windd *, __NC_STACK_win3d *w3d)
     }
 }
 
-int initTextureCache(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+int initTextureCache(__NC_STACK_win3d *w3d)
 {
     w3d->bigdata->texCh_count = 0;
 
@@ -1128,7 +1128,7 @@ int initTextureCache(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
     while (w3d->bigdata->texCh_count < 32)
     {
         texCache *tex = &w3d->bigdata->texCh[w3d->bigdata->texCh_count];
-        windd_formats *wdd_fmt = &wdd->intern->formats[wdd->intern->selected_format_id];
+        windd_formats *wdd_fmt = &w3d->intern->formats[w3d->intern->selected_format_id];
 
         tex->used = 1;
 
@@ -1150,7 +1150,7 @@ int initTextureCache(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
         if ( res )
         {
             log_d3d_fail("win3d.class/w3d_txtcache.c/InitTxtCache()", "IDirectDraw::CreateSurface()", res);
-            sub_439E30(wdd, w3d);
+            sub_439E30(w3d);
             return 0;
         }
 
@@ -1161,7 +1161,7 @@ int initTextureCache(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
             if ( res )
             {
                 log_d3d_fail("win3d.class/w3d_txtcache.c/InitTxtCache()", "IDirectDraw::CreatePalette()", res);
-                sub_439E30(wdd, w3d);
+                sub_439E30(w3d);
                 return 0;
             }
 
@@ -1169,7 +1169,7 @@ int initTextureCache(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
             if ( res )
             {
                 log_d3d_fail("win3d.class/w3d_txtcache.c", "IDirectDrawSurface::SetPalette()", res);
-                sub_439E30(wdd, w3d);
+                sub_439E30(w3d);
                 return 0;
             }
         }
@@ -1178,7 +1178,7 @@ int initTextureCache(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
         if ( res )
         {
             log_d3d_fail("win3d.class", "QueryInterface(IID_IDirect3DTextur2) failed.", res);
-            sub_439E30(wdd, w3d);
+            sub_439E30(w3d);
             return 0;
         }
 
@@ -1186,7 +1186,7 @@ int initTextureCache(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
         if ( res )
         {
             log_d3d_fail("win3d.class", "QueryInterface(IID_IDIrect3DTexture) failed.", res);
-            sub_439E30(wdd, w3d);
+            sub_439E30(w3d);
             return 0;
         }
 
@@ -1195,7 +1195,7 @@ int initTextureCache(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
     return 1;
 }
 
-void sub_43BE88(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+void sub_43BE88(__NC_STACK_win3d *w3d)
 {
     win3d_bigdata *bigdata = w3d->bigdata;
     if ( w3d->bigdata->sceneBeginned )
@@ -1209,7 +1209,7 @@ void sub_43BE88(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
 
         execBuf *rendStates = &bigdata->rendStates;
 
-        HRESULT res = wdd->intern->executebuffer->Unlock();
+        HRESULT res = w3d->intern->executebuffer->Unlock();
         if ( res )
         {
             log_d3d_fail("win3d.class", "IDirect3DExecuteBuffer::Unlock() failed", res);
@@ -1225,14 +1225,14 @@ void sub_43BE88(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
         execData.dwInstructionOffset = (char *)rendStates->lpInsStart - (char *)rendStates->lpBufStart;
         execData.dwInstructionLength = (char *)rendStates->lpInsPointer - (char *)rendStates->lpInsStart;
 
-        res = wdd->intern->executebuffer->SetExecuteData(&execData);
+        res = w3d->intern->executebuffer->SetExecuteData(&execData);
         if ( res )
         {
             log_d3d_fail("win3d.class", "IDirect3DExecuteBuffer::SetExecuteData() failed", res);
         }
         else
         {
-            res = wdd->intern->d3d1Dev->Execute(wdd->intern->executebuffer, wdd->intern->d3d2Viewport, D3DEXECUTE_UNCLIPPED);
+            res = w3d->intern->d3d1Dev->Execute(w3d->intern->executebuffer, w3d->intern->d3d2Viewport, D3DEXECUTE_UNCLIPPED);
             if ( res )
             {
                 log_d3d_fail("win3d.class", "IDirect3DDevice::Execute() failed", res);
@@ -1251,7 +1251,7 @@ void sub_43BE88(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
     }
 }
 
-void sub_43BD50(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+void sub_43BD50(__NC_STACK_win3d *w3d)
 {
     if ( w3d->bigdata->sceneBeginned )
     {
@@ -1263,9 +1263,9 @@ void sub_43BD50(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
 
         while ( true )
         {
-            HRESULT res = wdd->intern->executebuffer->Lock(&bufDescr);
+            HRESULT res = w3d->intern->executebuffer->Lock(&bufDescr);
             if ( res == D3DERR_EXECUTE_LOCKED ) //0x887602CA
-                wdd->intern->executebuffer->Unlock();
+                w3d->intern->executebuffer->Unlock();
             else if (res == D3D_OK)
                 break;
         }
@@ -1289,11 +1289,11 @@ void sub_43BD50(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
     }
 }
 
-void execBuff_initRenderStates(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+void execBuff_initRenderStates(__NC_STACK_win3d *w3d)
 {
     if ( w3d->bigdata->sceneBeginned )
     {
-        if ( !wdd->use_simple_d3d )
+        if ( !w3d->use_simple_d3d )
         {
             execBuf *execBuff = &w3d->bigdata->rendStates;
 
@@ -1302,8 +1302,8 @@ void execBuff_initRenderStates(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
                 if ( (char *)execBuff->lpInsPointer + 1000 > execBuff->lpBufEnd
                         || (char *)execBuff->lpBufStart3 + 1000 > execBuff->lpInsStart )
                 {
-                    sub_43BE88(wdd, w3d);
-                    sub_43BD50(wdd, w3d);
+                    sub_43BE88(w3d);
+                    sub_43BD50(w3d);
                 }
             }
             execBuff->lpStates = execBuff->lpInsPointer;
@@ -1314,13 +1314,13 @@ void execBuff_initRenderStates(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
     }
 }
 
-void win3d__beginScene(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+void win3d__beginScene(__NC_STACK_win3d *w3d)
 {
     HRESULT res;
 
-    if ( wdd->use_simple_d3d )
+    if ( w3d->use_simple_d3d )
     {
-        res = wdd->intern->d3d2dev->BeginScene();
+        res = w3d->intern->d3d2dev->BeginScene();
         if ( res )
         {
             w3d->bigdata->sceneBeginned = 0;
@@ -1333,7 +1333,7 @@ void win3d__beginScene(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
     }
     else
     {
-        res = wdd->intern->d3d1Dev->BeginScene();
+        res = w3d->intern->d3d1Dev->BeginScene();
         if ( res )
         {
             w3d->bigdata->sceneBeginned = 0;
@@ -1343,18 +1343,18 @@ void win3d__beginScene(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
         {
             w3d->bigdata->sceneBeginned = 1;
         }
-        sub_43BD50(wdd, w3d);
+        sub_43BD50(w3d);
     }
 }
 
-void win3d__SetRenderState(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, D3DRENDERSTATETYPE type, DWORD state)
+void win3d__SetRenderState(__NC_STACK_win3d *w3d, D3DRENDERSTATETYPE type, DWORD state)
 {
     win3d_bigdata *bigdata = w3d->bigdata;
     if ( bigdata->sceneBeginned )
     {
-        if ( wdd->use_simple_d3d )
+        if ( w3d->use_simple_d3d )
         {
-            HRESULT res = wdd->intern->d3d2dev->SetRenderState(type, state);
+            HRESULT res = w3d->intern->d3d2dev->SetRenderState(type, state);
 
             if ( res )
                 log_d3d_fail("win3d.class", "SetRenderState() failed", res);
@@ -1370,12 +1370,12 @@ void win3d__SetRenderState(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, D3DREND
     }
 }
 
-void execBuff_finishRenderStates(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+void execBuff_finishRenderStates( __NC_STACK_win3d *w3d)
 {
     win3d_bigdata *bigdata = w3d->bigdata;
     if ( bigdata->sceneBeginned )
     {
-        if ( !wdd->use_simple_d3d )
+        if ( !w3d->use_simple_d3d )
         {
             execBuf *execBuff = &bigdata->rendStates;
 
@@ -1389,28 +1389,28 @@ void execBuff_finishRenderStates(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
     }
 }
 
-void win3d__endScene(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+void win3d__endScene(__NC_STACK_win3d *w3d)
 {
     if ( w3d->bigdata->sceneBeginned )
     {
-        if ( wdd->use_simple_d3d )
+        if ( w3d->use_simple_d3d )
         {
-            HRESULT res = wdd->intern->d3d2dev->EndScene();
+            HRESULT res = w3d->intern->d3d2dev->EndScene();
             if ( res )
                 log_d3d_fail("win3d.class", "D3DDevice2::EndScene() failed", res);
         }
         else
         {
-            sub_43BE88(wdd, w3d);
+            sub_43BE88(w3d);
 
-            HRESULT res = wdd->intern->d3d1Dev->EndScene();
+            HRESULT res = w3d->intern->d3d1Dev->EndScene();
             if ( res )
                 log_d3d_fail("win3d.class", "D3DDevice::EndScene() failed", res);
         }
     }
 }
 
-int initPolyEngine(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+int initPolyEngine(__NC_STACK_win3d *w3d)
 {
     execBuf *execBuff = &w3d->bigdata->rendStates;
 
@@ -1449,27 +1449,27 @@ int initPolyEngine(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
 
     memcpy(execBuff->rendStates2, execBuff->rendStates, sizeof(rendState) * 11);
 
-    win3d__beginScene(wdd, w3d);
+    win3d__beginScene(w3d);
 
-    execBuff_initRenderStates(wdd, w3d);
+    execBuff_initRenderStates(w3d);
 
-    win3d__SetRenderState(wdd, w3d, D3DRENDERSTATE_TEXTUREADDRESS, D3DTADDRESS_CLAMP);
-    win3d__SetRenderState(wdd, w3d, D3DRENDERSTATE_ZENABLE, 1); /* TRUE to enable z test */
-    win3d__SetRenderState(wdd, w3d, D3DRENDERSTATE_TEXTUREMAG, (w3d->filter != 0) + D3DFILTER_NEAREST); // Or D3DFILTER_LINEAR
-    win3d__SetRenderState(wdd, w3d, D3DRENDERSTATE_TEXTUREMAPBLEND, D3DTBLEND_MODULATE);
-    win3d__SetRenderState(wdd, w3d, D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
-    win3d__SetRenderState(wdd, w3d, D3DRENDERSTATE_ZFUNC, D3DCMP_LESSEQUAL);
-    win3d__SetRenderState(wdd, w3d, D3DRENDERSTATE_DITHERENABLE, w3d->dither);
-    win3d__SetRenderState(wdd, w3d, D3DRENDERSTATE_ALPHABLENDENABLE, 0); /* TRUE to enable alpha blending */
-    win3d__SetRenderState(wdd, w3d, D3DRENDERSTATE_FOGENABLE, 0); /* TRUE to enable fog */
-    win3d__SetRenderState(wdd, w3d, D3DRENDERSTATE_SUBPIXEL, 1); /* TRUE to enable subpixel correction */
-    win3d__SetRenderState(wdd, w3d, D3DRENDERSTATE_STIPPLEDALPHA, dd_params.selected_device.can_stippling); /* TRUE to enable stippled alpha */
-    win3d__SetRenderState(wdd, w3d, D3DRENDERSTATE_STIPPLEENABLE, 0); /* TRUE to enable stippling */
-    win3d__SetRenderState(wdd, w3d, D3DRENDERSTATE_COLORKEYENABLE, 1); /* TRUE to enable source colorkeyed textures */
+    win3d__SetRenderState(w3d, D3DRENDERSTATE_TEXTUREADDRESS, D3DTADDRESS_CLAMP);
+    win3d__SetRenderState(w3d, D3DRENDERSTATE_ZENABLE, 1); /* TRUE to enable z test */
+    win3d__SetRenderState(w3d, D3DRENDERSTATE_TEXTUREMAG, (w3d->filter != 0) + D3DFILTER_NEAREST); // Or D3DFILTER_LINEAR
+    win3d__SetRenderState(w3d, D3DRENDERSTATE_TEXTUREMAPBLEND, D3DTBLEND_MODULATE);
+    win3d__SetRenderState(w3d, D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
+    win3d__SetRenderState(w3d, D3DRENDERSTATE_ZFUNC, D3DCMP_LESSEQUAL);
+    win3d__SetRenderState(w3d, D3DRENDERSTATE_DITHERENABLE, w3d->dither);
+    win3d__SetRenderState(w3d, D3DRENDERSTATE_ALPHABLENDENABLE, 0); /* TRUE to enable alpha blending */
+    win3d__SetRenderState(w3d, D3DRENDERSTATE_FOGENABLE, 0); /* TRUE to enable fog */
+    win3d__SetRenderState(w3d, D3DRENDERSTATE_SUBPIXEL, 1); /* TRUE to enable subpixel correction */
+    win3d__SetRenderState(w3d, D3DRENDERSTATE_STIPPLEDALPHA, dd_params.selected_device.can_stippling); /* TRUE to enable stippled alpha */
+    win3d__SetRenderState(w3d, D3DRENDERSTATE_STIPPLEENABLE, 0); /* TRUE to enable stippling */
+    win3d__SetRenderState(w3d, D3DRENDERSTATE_COLORKEYENABLE, 1); /* TRUE to enable source colorkeyed textures */
 
-    execBuff_finishRenderStates(wdd, w3d);
+    execBuff_finishRenderStates(w3d);
 
-    win3d__endScene(wdd, w3d);
+    win3d__endScene(w3d);
 
     w3d->bigdata->subt1_count = 0;
     memset(w3d->bigdata->subt1, 0, sizeof(wind3d_sub1) * 512);
@@ -1827,12 +1827,12 @@ mode_node * windd_func0__sub0(const char *file)
     return node;
 }
 
-int sub_42AC78(__NC_STACK_windd *a1)
+int sub_42AC78(__NC_STACK_win3d *a1)
 {
     return dd_params.selected_device.unk2_def_0 || a1->field_30;
 }
 
-void sub_42D410(__NC_STACK_windd *obj, int a2, int a3)
+void sub_42D410(__NC_STACK_win3d *obj, int a2, int a3)
 {
     if ( obj->hwnd )
     {
@@ -1923,7 +1923,7 @@ void sub_42D410(__NC_STACK_windd *obj, int a2, int a3)
 }
 
 
-void sub_42A7BC(__NC_STACK_windd *obj)
+void sub_42A7BC(__NC_STACK_win3d *obj)
 {
     if ( obj->hwnd )
     {
@@ -1999,7 +1999,7 @@ void sub_42A7BC(__NC_STACK_windd *obj)
     }
 }
 
-void sub_42A640(__NC_STACK_windd *obj)
+void sub_42A640(__NC_STACK_win3d *obj)
 {
     if ( obj->primary_surf )
         if ( obj->primary_surf->IsLost() )
@@ -2023,7 +2023,7 @@ void sub_42A640(__NC_STACK_windd *obj)
                 obj->intern->z_buf->Restore();
 }
 
-void wdd_Kill3D(__NC_STACK_windd *obj)
+void wdd_Kill3D(__NC_STACK_win3d *obj)
 {
     log_d3dlog("-> Entering wdd_Kill3D()\n");
 
@@ -2071,7 +2071,7 @@ void wdd_Kill3D(__NC_STACK_windd *obj)
     log_d3dlog("-> Leaving wdd_Kill3D()\n");
 }
 
-void sub_42BD38(__NC_STACK_windd *obj)
+void sub_42BD38(__NC_STACK_win3d *obj)
 {
     if ( obj->intern )
         wdd_Kill3D(obj);
@@ -2110,7 +2110,7 @@ void sub_42BD38(__NC_STACK_windd *obj)
 
 LRESULT WINAPI sub_42A978(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-    __NC_STACK_windd *obj = (__NC_STACK_windd *)GetClassLongPtr(hWnd, 0);
+    __NC_STACK_win3d *obj = (__NC_STACK_win3d *)GetClassLongPtr(hWnd, 0);
 
     switch(Msg)
     {
@@ -2247,7 +2247,7 @@ LRESULT WINAPI sub_42A978(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(hWnd, Msg, wParam, lParam);
 }
 
-int createWindow(__NC_STACK_windd *obj, HINSTANCE hInstance, int cmdShow, int width, int height)
+int createWindow(__NC_STACK_win3d *obj, HINSTANCE hInstance, int cmdShow, int width, int height)
 {
     HICON big256 = uaLoadIcon(hInstance, "Big256");
     HCURSOR hCursor = uaLoadCursor(hInstance, "Pointer");
@@ -2331,7 +2331,7 @@ int createWindow(__NC_STACK_windd *obj, HINSTANCE hInstance, int cmdShow, int wi
     return 0;
 }
 
-int wdd_Create3DWinEnv(__NC_STACK_windd *obj, int width, int height)
+int wdd_Create3DWinEnv(__NC_STACK_win3d *obj, int width, int height)
 {
     log_d3dlog("-> Entering wdd_Create3DWinEnv()\n");
 
@@ -2385,7 +2385,7 @@ int wdd_Create3DWinEnv(__NC_STACK_windd *obj, int width, int height)
     return 1;
 }
 
-int wdd_Create3DFullEnv(__NC_STACK_windd *obj, int width, int height, int bits)
+int wdd_Create3DFullEnv(__NC_STACK_win3d *obj, int width, int height, int bits)
 {
     log_d3dlog("-> Entering wdd_Create3DFullEnv()\n");
     ddraw->SetCooperativeLevel(obj->hwnd, DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
@@ -2449,9 +2449,9 @@ int wdd_Create3DFullEnv(__NC_STACK_windd *obj, int width, int height, int bits)
 
 HRESULT __stdcall EnumTextureFormats__CallBack(DDSURFACEDESC *descr, void *lpContext)
 {
-    __NC_STACK_windd *windd = (__NC_STACK_windd *)lpContext;
+    __NC_STACK_win3d *win3d = (__NC_STACK_win3d *)lpContext;
 
-    windd_formats *frmt = &windd->intern->formats[windd->intern->formats_count];
+    windd_formats *frmt = &win3d->intern->formats[win3d->intern->formats_count];
 
     memset(frmt, 0, sizeof(windd_formats));
     memcpy(&frmt->surf_descr, descr, sizeof(DDSURFACEDESC));
@@ -2526,15 +2526,15 @@ HRESULT __stdcall EnumTextureFormats__CallBack(DDSURFACEDESC *descr, void *lpCon
         log_d3dlog("enum texture formats: %d%d%d%d\n", rbits, gbits, bbits, abits);
     }
 
-    windd->intern->formats_count++;
+    win3d->intern->formats_count++;
 
-    if ( windd->intern->formats_count != 32 )
+    if ( win3d->intern->formats_count != 32 )
         return 1;
 
     return 0;
 }
 
-int wdd_Create3D(__NC_STACK_windd *obj, int width, int height)
+int wdd_Create3D(__NC_STACK_win3d *obj, int width, int height)
 {
     log_d3dlog("-> Entering wdd_Create3D()\n");
 
@@ -2795,7 +2795,7 @@ int wdd_Create3D(__NC_STACK_windd *obj, int width, int height)
     return 1;
 }
 
-int wdd_Create2DWinEnv(__NC_STACK_windd *obj, LPPALETTEENTRY pal, int width, int height)
+int wdd_Create2DWinEnv(__NC_STACK_win3d *obj, LPPALETTEENTRY pal, int width, int height)
 {
     log_d3dlog("-> Entering wdd_Create2DWinEnv()\n");
 
@@ -2858,7 +2858,7 @@ int wdd_Create2DWinEnv(__NC_STACK_windd *obj, LPPALETTEENTRY pal, int width, int
     return 1;
 }
 
-int wdd_Create2DFullEnv(__NC_STACK_windd *obj, LPPALETTEENTRY pal, int width, int height)
+int wdd_Create2DFullEnv(__NC_STACK_win3d *obj, LPPALETTEENTRY pal, int width, int height)
 {
     int w = width;
     int h = height;
@@ -3022,7 +3022,7 @@ int windd_func0__sub2__sub4(IDirectDraw *ddraw, IDirectDrawSurface *ddsurf, cons
     return v6;
 }
 
-int windd_func0__sub2(__NC_STACK_windd *obj, UA_PALETTE *palette, int width, unsigned int height, int bits)
+int windd_func0__sub2(__NC_STACK_win3d *obj, UA_PALETTE *palette, int width, unsigned int height, int bits)
 {
     PALETTEENTRY tmpPal[256];
 
@@ -3196,28 +3196,28 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
     if ( !NC_STACK_display::func0(tmp) )
         return 0;
 
-    __NC_STACK_windd *windd = &stack__windd;
+    __NC_STACK_win3d *win3d = &stack__win3d;
 
-    windd->field_30 = 0;
-    windd->sort_id = picked->sort_id;
-    windd->movie_player = windd_keys[2].value.val;
-    windd->disable_lowres = windd_keys[5].value.val;
-    windd->txt16bit = txt16bit_def;
-    windd->use_simple_d3d = drawprim_def;
-    windd->export_window_mode = export_window_mode;
+    win3d->field_30 = 0;
+    win3d->sort_id = picked->sort_id;
+    win3d->movie_player = windd_keys[2].value.val;
+    win3d->disable_lowres = windd_keys[5].value.val;
+    win3d->txt16bit = txt16bit_def;
+    win3d->use_simple_d3d = drawprim_def;
+    win3d->export_window_mode = export_window_mode;
 
-    windd->field_50 |= 1; ////HACK
+    win3d->field_50 |= 1; ////HACK
 
     if ( picked->field_94 & 1 )
-        windd->field_50 |= 1;
+        win3d->field_50 |= 1;
     if ( picked->field_94 & 4 )
-        windd->field_50 |= 4;
+        win3d->field_50 |= 4;
     if ( picked->field_94 & 8 )
-        windd->field_50 |= 8;
+        win3d->field_50 |= 8;
     if ( picked->field_94 & 0x10 )
-        windd->field_50 |= 0x10;
+        win3d->field_50 |= 0x10;
 
-    if ( !windd_func0__sub2(windd, pal, picked->width, picked->height, picked->bits) )
+    if ( !windd_func0__sub2(win3d, pal, picked->width, picked->height, picked->bits) )
     {
         log_d3dlog("wdd_InitDDrawStuff() failed.\n");
 
@@ -3232,7 +3232,7 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
         delete fil;
     }
 
-    windd->field_54______rsrc_field4 = (bitmap_intern *)getRsrc_pData();
+    win3d->field_54______rsrc_field4 = (bitmap_intern *)getRsrc_pData();
     return 1;
 }
 
@@ -3257,7 +3257,6 @@ size_t NC_STACK_win3d::func0(stack_vals *stak)
         return 0;
 
     __NC_STACK_win3d *w3d = &stack__win3d;
-    __NC_STACK_windd *wdd = &stack__windd;
 
     w3d->dither = win3d_keys[0].value.val;
     w3d->filter = win3d_keys[1].value.val;
@@ -3266,32 +3265,32 @@ size_t NC_STACK_win3d::func0(stack_vals *stak)
     w3d->colorkey = win3d_keys[5].value.val;
 
     if ( can_srcblend )
-        w3d->field_10 = 192;
+        w3d->alpha = 192;
     else
-        w3d->field_10 = 128;
+        w3d->alpha = 128;
 
-    if ( !win3dInitialisation(wdd, w3d) )
+    if ( !win3dInitialisation(w3d) )
     {
         ypa_log_out("win3d.class: Initialization failed.\n");
         func1(NULL);
         return 0;
     }
 
-    if ( !initPixelFormats(wdd, w3d) )
+    if ( !initPixelFormats(w3d) )
     {
         ypa_log_out("win3d.class: Pixelformat problems.\n");
         func1(NULL);
         return 0;
     }
 
-    if ( !initTextureCache(wdd, w3d) )
+    if ( !initTextureCache(w3d) )
     {
         ypa_log_out("win3d.class: Failed to initialize texture cache.\n");
         func1(NULL);
         return 0;
     }
 
-    if ( !initPolyEngine(wdd, w3d) )
+    if ( !initPolyEngine(w3d) )
     {
         ypa_log_out("win3d.class: Failed to initialize polygon engine.\n");
         func1(NULL);
@@ -3320,7 +3319,7 @@ void windd_func1__sub1__sub0()
     }
 }
 
-void wdd_KillDDrawStuff(__NC_STACK_windd *windd)
+void wdd_KillDDrawStuff(__NC_STACK_win3d *win3d)
 {
     log_d3dlog("-> Entering wdd_KillDDrawStuff()\n");
 
@@ -3328,29 +3327,29 @@ void wdd_KillDDrawStuff(__NC_STACK_windd *windd)
 
     dd_params.field_AD04 = 0;
 
-    if ( !(windd->field_50 & 1) )
+    if ( !(win3d->field_50 & 1) )
         ddraw->RestoreDisplayMode();
 
-    if ( windd->hwnd )
+    if ( win3d->hwnd )
     {
         DDBLTFX fx;
         fx.dwFillColor = 0;
         fx.dwSize = sizeof(DDBLTFX);
 
-        if ( windd->primary_surf )
-            windd->primary_surf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &fx);
+        if ( win3d->primary_surf )
+            win3d->primary_surf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &fx);
 
-        if ( windd->back_surf )
-            windd->back_surf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &fx);
+        if ( win3d->back_surf )
+            win3d->back_surf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &fx);
 
-        SetClassLong(windd->hwnd, 0, 0);
+        SetClassLong(win3d->hwnd, 0, 0);
 
-        sub_42BD38(windd);
+        sub_42BD38(win3d);
 
-        windd->hwnd = 0;
+        win3d->hwnd = 0;
     }
 
-    windd->cursor = 0;
+    win3d->cursor = 0;
 
     log_d3dlog("-> Leaving wdd_KillDDrawStuff()\n");
 }
@@ -3373,7 +3372,7 @@ void windd_func1__sub0()
 
 size_t NC_STACK_win3d::windd_func1(stack_vals *stak)
 {
-    wdd_KillDDrawStuff(&stack__windd);
+    wdd_KillDDrawStuff(&stack__win3d);
     while ( 1 )
     {
         nnode *nod = RemHead((nlist *)&modes_list);
@@ -3396,7 +3395,7 @@ size_t NC_STACK_win3d::windd_func1(stack_vals *stak)
     return NC_STACK_display::func1(stak);
 }
 
-void win3d_func1__sub1(__NC_STACK_windd *, __NC_STACK_win3d *w3d)
+void win3d_func1__sub1(__NC_STACK_win3d *w3d)
 {
     if ( w3d->bigdata )
     {
@@ -3413,7 +3412,7 @@ void win3d_func1__sub1(__NC_STACK_windd *, __NC_STACK_win3d *w3d)
     }
 }
 
-void win3d_func1__sub0(__NC_STACK_windd *, __NC_STACK_win3d *w3d)
+void win3d_func1__sub0(__NC_STACK_win3d *w3d)
 {
     if ( w3d->bigdata )
     {
@@ -3425,12 +3424,11 @@ void win3d_func1__sub0(__NC_STACK_windd *, __NC_STACK_win3d *w3d)
 size_t NC_STACK_win3d::func1(stack_vals *stak)
 {
     __NC_STACK_win3d *w3d = &stack__win3d;
-    __NC_STACK_windd *wdd = &stack__windd;
 
-    sub_439E30(wdd, w3d);
+    sub_439E30(w3d);
 
-    win3d_func1__sub1(wdd, w3d);
-    win3d_func1__sub0(wdd, w3d);
+    win3d_func1__sub1(w3d);
+    win3d_func1__sub0(w3d);
 
     return windd_func1(stak);
 }
@@ -3530,13 +3528,13 @@ size_t NC_STACK_win3d::func3(stack_vals *stak)
 
 
 // Draw line
-void sub_43CD40(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int x1, int y1, int x2, int y2, unsigned int r, unsigned int g, unsigned int b, int, int, int )
+void sub_43CD40(__NC_STACK_win3d *w3d, int x1, int y1, int x2, int y2, unsigned int r, unsigned int g, unsigned int b, int, int, int )
 {
-    if ( wdd->surface_locked_surfaceData )
+    if ( w3d->surface_locked_surfaceData )
     {
         int BytesPerColor = w3d->bigdata->primary__pixelformat.BytesPerColor;
 
-        int rilWidth = wdd->surface_locked_pitch / (unsigned int)BytesPerColor;
+        int rilWidth = w3d->surface_locked_pitch / (unsigned int)BytesPerColor;
 
         int xCount = abs(x2 - x1);
         int yCount = abs(y2 - y1);
@@ -3592,7 +3590,7 @@ void sub_43CD40(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int x1, int y1, in
 
         if ( BytesPerColor == 2 )
         {
-            WORD *surf = ((WORD *)wdd->surface_locked_surfaceData + rilWidth * y1 + x1);
+            WORD *surf = ((WORD *)w3d->surface_locked_surfaceData + rilWidth * y1 + x1);
 
             for (int i = 0; i <= xCount; i++) // Verify i bound
             {
@@ -3611,7 +3609,7 @@ void sub_43CD40(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int x1, int y1, in
         }
         else if ( BytesPerColor == 4 )
         {
-            DWORD *surf = ((DWORD *)wdd->surface_locked_surfaceData + rilWidth * y1 + x1);
+            DWORD *surf = ((DWORD *)w3d->surface_locked_surfaceData + rilWidth * y1 + x1);
 
             for (int i = 0; i <= xCount; i++) // Verify i bound
             {
@@ -3639,7 +3637,6 @@ size_t NC_STACK_win3d::raster_func192(stack_vals *)
 size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
 {
     __NC_STACK_raster *rstr = &stack__raster;
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
     float tX = rstr->field_554 - 1.0;
@@ -3650,7 +3647,7 @@ size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
     int x1 = (arg->x1 + 1.0) * tX;
     int x2 = (arg->x2 + 1.0) * tX;
 
-    sub_43CD40(wdd, w3d, x1, y1, x2, y2,
+    sub_43CD40(w3d, x1, y1, x2, y2,
                (rstr->field_4 >> 16) & 0xFF,
                (rstr->field_4 >> 8) & 0xFF,
                rstr->field_4 & 0xFF,
@@ -3665,10 +3662,9 @@ size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
 size_t NC_STACK_win3d::raster_func199(w3d_func199arg *arg)
 {
     __NC_STACK_raster *rstr = &stack__raster;
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
-    sub_43CD40(wdd, w3d,
+    sub_43CD40(w3d,
                rstr->field_54c + arg->x1,
                rstr->field_550 + arg->y1,
                rstr->field_54c + arg->x2,
@@ -3807,7 +3803,7 @@ int sub_420C74(xyxyNNN *a1, xyxyNNN *inout)
     return v18;
 }
 
-void sub_420EDC(__NC_STACK_raster *rstr, __NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int x1, int y1, int x2, int y2, int r, unsigned int g, unsigned int b, unsigned int a11, int a12, int a13)
+void sub_420EDC(__NC_STACK_raster *rstr, __NC_STACK_win3d *w3d, int x1, int y1, int x2, int y2, int r, unsigned int g, unsigned int b, unsigned int a11, int a12, int a13)
 {
     xyxyNNN tmp1;
 
@@ -3829,7 +3825,7 @@ void sub_420EDC(__NC_STACK_raster *rstr, __NC_STACK_windd *wdd, __NC_STACK_win3d
 
         if ( v14 == -1 )
         {
-            sub_43CD40(wdd, w3d, tmp2.x1, tmp2.y1, tmp2.x2, tmp2.y2, r, g, b, a11, a12, a13);
+            sub_43CD40(w3d, tmp2.x1, tmp2.y1, tmp2.x2, tmp2.y2, r, g, b, a11, a12, a13);
         }
         else if ( !v14 )
         {
@@ -3837,17 +3833,17 @@ void sub_420EDC(__NC_STACK_raster *rstr, __NC_STACK_windd *wdd, __NC_STACK_win3d
             {
                 if ( tmp2.x1 != tmp1.x1 || tmp2.y1 != tmp1.y1 )
                 {
-                    sub_43CD40(wdd, w3d, tmp1.x1, tmp1.y1, tmp2.x1, tmp2.y1, r, g, b, a11, a12, a13);
-                    sub_43CD40(wdd, w3d, tmp2.x2, tmp2.y2, tmp1.x2, tmp1.y2, r, g, b, a11, a12, a13);
+                    sub_43CD40(w3d, tmp1.x1, tmp1.y1, tmp2.x1, tmp2.y1, r, g, b, a11, a12, a13);
+                    sub_43CD40(w3d, tmp2.x2, tmp2.y2, tmp1.x2, tmp1.y2, r, g, b, a11, a12, a13);
                 }
                 else
                 {
-                    sub_43CD40(wdd, w3d, tmp2.x2, tmp2.y2, tmp1.x2, tmp1.y2, r, g, b, a11, a12, a13);
+                    sub_43CD40(w3d, tmp2.x2, tmp2.y2, tmp1.x2, tmp1.y2, r, g, b, a11, a12, a13);
                 }
             }
             else
             {
-                sub_43CD40(wdd, w3d, tmp1.x1, tmp1.y1, tmp2.x1, tmp2.y1, r, g, b, a11, a12, a13);
+                sub_43CD40(w3d, tmp1.x1, tmp1.y1, tmp2.x1, tmp2.y1, r, g, b, a11, a12, a13);
             }
         }
     }
@@ -3856,7 +3852,6 @@ void sub_420EDC(__NC_STACK_raster *rstr, __NC_STACK_windd *wdd, __NC_STACK_win3d
 size_t NC_STACK_win3d::raster_func200(w3d_func198arg *arg)
 {
     __NC_STACK_raster *rstr = &stack__raster;
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
     float tX = rstr->field_554 - 1.0;
@@ -3867,7 +3862,7 @@ size_t NC_STACK_win3d::raster_func200(w3d_func198arg *arg)
     int x1 = (arg->x1 + 1.0) * tX;
     int x2 = (arg->x2 + 1.0) * tX;
 
-    sub_420EDC(rstr, wdd, w3d, x1, y1, x2, y2,
+    sub_420EDC(rstr, w3d, x1, y1, x2, y2,
                (rstr->field_4 >> 16) & 0xFF,
                (rstr->field_4 >> 8) & 0xFF,
                rstr->field_4 & 0xFF,
@@ -3881,10 +3876,9 @@ size_t NC_STACK_win3d::raster_func200(w3d_func198arg *arg)
 size_t NC_STACK_win3d::raster_func201(w3d_func199arg *arg)
 {
     __NC_STACK_raster *rstr = &stack__raster;
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
-    sub_420EDC(rstr, wdd, w3d,
+    sub_420EDC(rstr, w3d,
                rstr->field_54c + arg->x1,
                rstr->field_550 + arg->y1,
                rstr->field_54c + arg->x2,
@@ -3899,19 +3893,19 @@ size_t NC_STACK_win3d::raster_func201(w3d_func199arg *arg)
     return 1;
 }
 
-void sub_43CEE0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, void *srcBuf, int width, int a1, int a2, int a3, int a4, int x1, int y1, int x2, int y2)
+void sub_43CEE0(__NC_STACK_win3d *w3d, void *srcBuf, int width, int a1, int a2, int a3, int a4, int x1, int y1, int x2, int y2)
 {
-    if ( wdd->surface_locked_surfaceData )
+    if ( w3d->surface_locked_surfaceData )
     {
         if (w3d->bigdata->primary__pixelformat.BytesPerColor == 2)
         {
-            WORD *dstSurf = (WORD *)wdd->surface_locked_surfaceData;
+            WORD *dstSurf = (WORD *)w3d->surface_locked_surfaceData;
             if ( x2 != x1 && y2 != y1 )
             {
                 DWORD v21 = a2 << 16;
                 for (int i = y1; i < y2; i++ )
                 {
-                    WORD *buf = &dstSurf[i * (wdd->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor)];
+                    WORD *buf = &dstSurf[i * (w3d->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor)];
 
                     DWORD v13 = a1 << 16;
                     if ( x1 < x2 )
@@ -3931,13 +3925,13 @@ void sub_43CEE0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, void *srcBuf, int 
         }
         else if (w3d->bigdata->primary__pixelformat.BytesPerColor == 4)
         {
-            DWORD *dstSurf = (DWORD *)wdd->surface_locked_surfaceData;
+            DWORD *dstSurf = (DWORD *)w3d->surface_locked_surfaceData;
             if ( x2 != x1 && y2 != y1 )
             {
                 DWORD v21 = a2 << 16;
                 for (int i = y1; i < y2; i++ )
                 {
-                    DWORD *buf = &dstSurf[i * (wdd->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor)];
+                    DWORD *buf = &dstSurf[i * (w3d->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor)];
 
                     DWORD v13 = a1 << 16;
                     if ( x1 < x2 )
@@ -3961,7 +3955,6 @@ void sub_43CEE0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, void *srcBuf, int 
 size_t NC_STACK_win3d::raster_func202(rstr_arg204 *arg)
 {
     __NC_STACK_raster *rstr = &stack__raster;
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
     bitmap_intern *pbitm = arg->pbitm;
@@ -3976,7 +3969,7 @@ size_t NC_STACK_win3d::raster_func202(rstr_arg204 *arg)
     int a7 = rstr->field_554 * (arg->float1C + 1.0);
     int a8 = rstr->field_558 * (arg->float20 + 1.0);
 
-    sub_43CEE0(wdd, w3d, (WORD *)pbitm->buffer, pbitm->width, a1, a2, a3, a4, a5, a6, a7, a8);
+    sub_43CEE0(w3d, (WORD *)pbitm->buffer, pbitm->width, a1, a2, a3, a4, a5, a6, a7, a8);
     return 1;
 }
 
@@ -4038,7 +4031,6 @@ size_t NC_STACK_win3d::raster_func204(rstr_arg204 *arg)
 {
 
     __NC_STACK_raster *rstr = &stack__raster;
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
     rstr_loc204 loc;
@@ -4055,31 +4047,31 @@ size_t NC_STACK_win3d::raster_func204(rstr_arg204 *arg)
     loc.dword24 = (arg->float20 + 1.0) * rstr->field_558;
 
     if ( win3d_func204__sub0(rstr, &loc) )
-        sub_43CEE0(wdd, w3d, (WORD *)loc.pbitm->buffer, loc.pbitm->width, loc.dword4, loc.dword8, loc.dwordC, loc.dword10, loc.dword18, loc.dword1C, loc.dword20, loc.dword24);
+        sub_43CEE0(w3d, (WORD *)loc.pbitm->buffer, loc.pbitm->width, loc.dword4, loc.dword8, loc.dwordC, loc.dword10, loc.dword18, loc.dword1C, loc.dword20, loc.dword24);
 
     return 1;
 }
 
-void sb_0x43b518__sub0__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+void sb_0x43b518__sub0__sub0( __NC_STACK_win3d *w3d)
 {
     if ( w3d->bigdata->sceneBeginned )
     {
-        if ( wdd->use_simple_d3d )
+        if ( w3d->use_simple_d3d )
         {
-            win3d__SetRenderState(wdd, w3d, D3DRENDERSTATE_FLUSHBATCH, 1);
+            win3d__SetRenderState(w3d, D3DRENDERSTATE_FLUSHBATCH, 1);
         }
         else
         {
-            sub_43BE88(wdd, w3d);
-            sub_43BD50(wdd, w3d);
+            sub_43BE88(w3d);
+            sub_43BD50(w3d);
         }
     }
 }
 
-int loadTextureToCache(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, texStru *tex, int id)
+int loadTextureToCache(__NC_STACK_win3d *w3d, texStru *tex, int id)
 {
     texCache *ptx = &w3d->bigdata->texCh[id];
-    if ( !wdd->use_simple_d3d && ptx->loadedFromTexture.dx1)
+    if ( !w3d->use_simple_d3d && ptx->loadedFromTexture.dx1)
     {
         HRESULT res = ptx->d3dtex->Unload();
         if (res)
@@ -4105,15 +4097,15 @@ int loadTextureToCache(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, texStru *te
     return ptx->d3dtex2->Load(ptx->loadedFromTexture.dx2) == D3D_OK;
 }
 
-D3DTEXTUREHANDLE getTexHandle(__NC_STACK_windd *wdd, __NC_STACK_win3d *, texCache *tex)
+D3DTEXTUREHANDLE getTexHandle(__NC_STACK_win3d *w3d, texCache *tex)
 {
     D3DTEXTUREHANDLE d3dtexHandle;
     HRESULT res;
 
-    if ( wdd->use_simple_d3d )
-        res = tex->d3dtex2->GetHandle(wdd->intern->d3d2dev, &d3dtexHandle);
+    if ( w3d->use_simple_d3d )
+        res = tex->d3dtex2->GetHandle(w3d->intern->d3d2dev, &d3dtexHandle);
     else
-        res = tex->d3dtex->GetHandle(wdd->intern->d3d1Dev, &d3dtexHandle);
+        res = tex->d3dtex->GetHandle(w3d->intern->d3d1Dev, &d3dtexHandle);
     if ( res )
         return 0;
 
@@ -4121,7 +4113,7 @@ D3DTEXTUREHANDLE getTexHandle(__NC_STACK_windd *wdd, __NC_STACK_win3d *, texCach
 }
 
 
-D3DTEXTUREHANDLE sb_0x43b518__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, texStru *tex, int a4)
+D3DTEXTUREHANDLE sb_0x43b518__sub0(__NC_STACK_win3d *w3d, texStru *tex, int a4)
 {
     if ( !w3d->bigdata->sceneBeginned )
         return 0;
@@ -4138,7 +4130,7 @@ D3DTEXTUREHANDLE sb_0x43b518__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d,
         {
             ptx->used = (ptx->used & 0xFFFFFFFC) | 2;
             ptx->field_4++;
-            return getTexHandle(wdd, w3d, ptx);
+            return getTexHandle(w3d, ptx);
         }
 
         if ( ptx->used & 1 )
@@ -4157,19 +4149,19 @@ D3DTEXTUREHANDLE sb_0x43b518__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d,
                     idd = i;
             }
 
-            sb_0x43b518__sub0__sub0(wdd, w3d);
-            if ( loadTextureToCache(wdd, w3d, tex, idd) )
-                return getTexHandle(wdd, w3d, &w3d->bigdata->texCh[idd]);
+            sb_0x43b518__sub0__sub0(w3d);
+            if ( loadTextureToCache(w3d, tex, idd) )
+                return getTexHandle(w3d, &w3d->bigdata->texCh[idd]);
         }
     }
-    else if ( loadTextureToCache(wdd, w3d, tex, id) )
+    else if ( loadTextureToCache(w3d, tex, id) )
     {
-        return getTexHandle(wdd, w3d, &w3d->bigdata->texCh[id]);
+        return getTexHandle(w3d, &w3d->bigdata->texCh[id]);
     }
     return 0;
 }
 
-int SetRenderStates(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int arg)
+int SetRenderStates(__NC_STACK_win3d *w3d, int arg)
 {
     execBuf *execBuff = &w3d->bigdata->rendStates;
 
@@ -4188,17 +4180,17 @@ int SetRenderStates(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int arg)
 
     if ( statesChanged )
     {
-        execBuff_initRenderStates(wdd, w3d);
+        execBuff_initRenderStates(w3d);
 
         for (int i = 0; i < 11; i++)
         {
             if (execBuff->rendStates2[i].value != execBuff->rendStates[i].value)
-                win3d__SetRenderState(wdd, w3d, execBuff->rendStates2[i].d3dRenderState, execBuff->rendStates2[i].value);
+                win3d__SetRenderState(w3d, execBuff->rendStates2[i].d3dRenderState, execBuff->rendStates2[i].value);
 
             execBuff->rendStates[i].value = execBuff->rendStates2[i].value;
         }
 
-        execBuff_finishRenderStates(wdd, w3d);
+        execBuff_finishRenderStates(w3d);
         return 1;
     }
 
@@ -4206,16 +4198,16 @@ int SetRenderStates(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, int arg)
 }
 
 
-void DrawPrimitive(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, D3DTLVERTEX *vtx, int vtxCount)
+void DrawPrimitive(__NC_STACK_win3d *w3d, D3DTLVERTEX *vtx, int vtxCount)
 {
     win3d_bigdata *bigdata = w3d->bigdata;
 
     if ( !w3d->bigdata->sceneBeginned )
         return;
 
-    if ( wdd->use_simple_d3d )
+    if ( w3d->use_simple_d3d )
     {
-        HRESULT res = wdd->intern->d3d2dev->DrawPrimitive(D3DPT_TRIANGLEFAN, D3DVT_TLVERTEX, vtx, vtxCount, D3DDP_DONOTCLIP | D3DDP_DONOTUPDATEEXTENTS );
+        HRESULT res = w3d->intern->d3d2dev->DrawPrimitive(D3DPT_TRIANGLEFAN, D3DVT_TLVERTEX, vtx, vtxCount, D3DDP_DONOTCLIP | D3DDP_DONOTUPDATEEXTENTS );
         if ( res )
             log_d3d_fail("win3d.class", "DrawPrimitive() failed", res);
     }
@@ -4227,8 +4219,8 @@ void DrawPrimitive(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, D3DTLVERTEX *vt
             if ( ((char *)execBuff->lpInsPointer + 1000) > (char *)execBuff->lpBufEnd ||
                     ((char *)execBuff->lpBufStart3 + 1000) > (char *)execBuff->lpInsStart )
             {
-                sub_43BE88(wdd, w3d);
-                sub_43BD50(wdd, w3d);
+                sub_43BE88(w3d);
+                sub_43BD50(w3d);
             }
         }
 
@@ -4275,7 +4267,7 @@ void DrawPrimitive(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, D3DTLVERTEX *vt
     }
 }
 
-void sb_0x43b518(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, polysDatSub *polysDat, texStru *tex, int a5, int a6)
+void sb_0x43b518(__NC_STACK_win3d *w3d, polysDatSub *polysDat, texStru *tex, int a5, int a6)
 {
     D3DTEXTUREHANDLE texHndl = 0;
 
@@ -4301,7 +4293,7 @@ void sb_0x43b518(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, polysDatSub *poly
     //Store for rendering later ( from 214 method )
     if ( polysDat->renderFlags & 3 )
     {
-        texHndl = sb_0x43b518__sub0(wdd, w3d, tex, a5);
+        texHndl = sb_0x43b518__sub0(w3d, tex, a5);
         if ( !texHndl )
         {
             if ( bigdata->subt1_count < 512 )
@@ -4447,7 +4439,7 @@ void sb_0x43b518(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, polysDatSub *poly
         for (int i = 0; i < polysDat->vertexCount; i++)
         {
             vOut[i].color &= 0x00FFFFFF;
-            vOut[i].color |= w3d->field_10 << 24;
+            vOut[i].color |= w3d->alpha << 24;
         }
     }
     else if ( polysDat->renderFlags & 0x10 )
@@ -4467,39 +4459,38 @@ void sb_0x43b518(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, polysDatSub *poly
         execBuff->rendStates2[TEXTUREMAPBLEND].value = D3DTBLEND_MODULATE;
     }
 
-    SetRenderStates(wdd, w3d, 0);
-    DrawPrimitive(wdd, w3d, vOut, polysDat->vertexCount);
+    SetRenderStates(w3d, 0);
+    DrawPrimitive(w3d, vOut, polysDat->vertexCount);
     return;
 }
 
 size_t NC_STACK_win3d::raster_func206(polysDatSub *arg)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
     if ( arg->pbitm )
-        sb_0x43b518(wdd, w3d, arg, arg->pbitm->ddrawSurfTex, 0, 0);
+        sb_0x43b518(w3d, arg, arg->pbitm->ddrawSurfTex, 0, 0);
     else
-        sb_0x43b518(wdd, w3d, arg, NULL, 0, 0);
+        sb_0x43b518(w3d, arg, NULL, 0, 0);
 
     return 1;
 }
 
-void win3d_func209__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, tiles_stru **tiles, char *cmdline, char **arr)
+void win3d_func209__sub0(__NC_STACK_win3d *w3d, tiles_stru **tiles, char *cmdline, char **arr)
 {
     ////printf("CLEAN ME %s\n","win3d_func209__sub0");
 
     int v11;
 
 
-    if ( wdd->surface_locked_surfaceData )
+    if ( w3d->surface_locked_surfaceData )
     {
         win3d_bigdata *bigdata = w3d->bigdata;
         int bytesPerColor = bigdata->primary__pixelformat.BytesPerColor;
         DWORD FFFF0000__color = w3d->bigdata->primary__pixelformat.FFFF0000__color;
 
         char *curpos = cmdline;
-        int w_pixels = wdd->surface_locked_pitch / bytesPerColor;
+        int w_pixels = w3d->surface_locked_pitch / bytesPerColor;
         tiles_stru *tile = NULL;
 
 
@@ -4517,15 +4508,15 @@ void win3d_func209__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, tiles_str
 
         int rilHeight, rilWidth;
 
-        if ( wdd->field_50 & 8 )
+        if ( w3d->field_50 & 8 )
         {
-            rilHeight = wdd->height / 2;
-            rilWidth = wdd->width / 2;
+            rilHeight = w3d->height / 2;
+            rilWidth = w3d->width / 2;
         }
         else
         {
-            rilHeight = wdd->height;
-            rilWidth = wdd->width;
+            rilHeight = w3d->height;
+            rilWidth = w3d->width;
         }
 
         int halfWidth = rilWidth / 2;
@@ -4575,7 +4566,7 @@ void win3d_func209__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, tiles_str
                 {
 
                     WORD *srcpixel = (WORD *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
-                    WORD *dstpixel = (WORD *)wdd->surface_locked_surfaceData + w_pixels * y_out + x_out;
+                    WORD *dstpixel = (WORD *)w3d->surface_locked_surfaceData + w_pixels * y_out + x_out;
 
                     for (int j = cpy_height; j > 0; j--)
                     {
@@ -4596,7 +4587,7 @@ void win3d_func209__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, tiles_str
                 else if (bytesPerColor == 4)
                 {
                     DWORD *srcpixel = (DWORD *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
-                    DWORD *dstpixel = (DWORD *)wdd->surface_locked_surfaceData + w_pixels * y_out + x_out;
+                    DWORD *dstpixel = (DWORD *)w3d->surface_locked_surfaceData + w_pixels * y_out + x_out;
 
                     for (int j = cpy_height; j > 0; j--)
                     {
@@ -4639,8 +4630,8 @@ void win3d_func209__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, tiles_str
                     DDSURFACEDESC a1;
                     if ( sb_0x4bf0a0(&a1) )
                     {
-                        wdd->surface_locked_surfaceData = a1.lpSurface;
-                        wdd->surface_locked_pitch = a1.lPitch;
+                        w3d->surface_locked_surfaceData = a1.lpSurface;
+                        w3d->surface_locked_pitch = a1.lPitch;
                     }
                     return;
 
@@ -4809,10 +4800,10 @@ void win3d_func209__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, tiles_str
 
 void NC_STACK_win3d::raster_func209(w3d_a209 *arg)
 {
-    win3d_func209__sub0(&stack__windd, &stack__win3d, this->stack__raster.tiles, arg->cmdbuf, arg->includ);
+    win3d_func209__sub0(&stack__win3d, stack__raster.tiles, arg->cmdbuf, arg->includ);
 }
 
-void win3d_func213__sub0__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+void win3d_func213__sub0__sub0(__NC_STACK_win3d *w3d)
 {
     for(int texid = 0; texid < w3d->bigdata->texCh_count; texid++)
     {
@@ -4821,27 +4812,26 @@ void win3d_func213__sub0__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
         {
             texCh->ddDrawSurface->Restore();
             if ( texCh->loadedFromTexture.dx1 )
-                loadTextureToCache(wdd, w3d, texCh->txStru, texid);
+                loadTextureToCache(w3d, texCh->txStru, texid);
         }
         texCh->used &= 0xFFFFFFFDu;
     }
 }
 
-void win3d_func213__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+void win3d_func213__sub0(__NC_STACK_win3d *w3d)
 {
-    if ( wdd->hwnd )
+    if ( w3d->hwnd )
     {
-        win3d_func213__sub0__sub0(wdd, w3d);
-        win3d__beginScene(wdd, w3d);
+        win3d_func213__sub0__sub0(w3d);
+        win3d__beginScene(w3d);
     }
 }
 
 void NC_STACK_win3d::raster_func213(polysDatSub *)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
-    win3d_func213__sub0(wdd, w3d);
+    win3d_func213__sub0(w3d);
 }
 
 int sub_43BB6C(const void * a, const void * b)
@@ -4852,7 +4842,7 @@ int sub_43BB6C(const void * a, const void * b)
     return a2->tex->texture.dx1 - a1->tex->texture.dx1;
 }
 
-void win3d_func214__sub1(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+void win3d_func214__sub1(__NC_STACK_win3d *w3d)
 {
     win3d_bigdata *bigdata = w3d->bigdata;
     if ( bigdata->sceneBeginned )
@@ -4862,7 +4852,7 @@ void win3d_func214__sub1(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
             qsort(bigdata->subt1, bigdata->subt1_count, sizeof(wind3d_sub1), sub_43BB6C);
 
             for (int i = 0; i < bigdata->subt1_count; i++)
-                sb_0x43b518(wdd, w3d, bigdata->subt1[i].polyData, bigdata->subt1[i].tex, 1, 0);
+                sb_0x43b518(w3d, bigdata->subt1[i].polyData, bigdata->subt1[i].tex, 1, 0);
 
             bigdata->subt1_count = 0;
 
@@ -4892,7 +4882,7 @@ int sub_43BB80(const void * a, const void * b)
     return 0;
 }
 
-void win3d_func214__sub2(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
+void win3d_func214__sub2(__NC_STACK_win3d *w3d)
 {
     win3d_bigdata *bigdata = w3d->bigdata;
 
@@ -4918,14 +4908,14 @@ void win3d_func214__sub2(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d)
             qsort(bigdata->dat_1C14, bigdata->dat_1C14_count, sizeof(wind3d_sub1), sub_43BB80);
 
             for (int i = 0; i < bigdata->dat_1C14_count; i++)
-                sb_0x43b518(wdd, w3d, bigdata->dat_1C14[i].polyData, bigdata->dat_1C14[i].tex, 1, 1);
+                sb_0x43b518(w3d, bigdata->dat_1C14[i].polyData, bigdata->dat_1C14[i].tex, 1, 1);
 
             bigdata->dat_1C14_count = 0;
         }
     }
 }
 
-void win3d_func214__sub0(__NC_STACK_windd *, __NC_STACK_win3d *w3d)
+void win3d_func214__sub0(__NC_STACK_win3d *w3d)
 {
     win3d_bigdata *bigdata = w3d->bigdata;
 
@@ -4937,92 +4927,89 @@ void win3d_func214__sub0(__NC_STACK_windd *, __NC_STACK_win3d *w3d)
 // Draw transparent
 size_t NC_STACK_win3d::raster_func214(void *)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
-    win3d_func214__sub1(wdd, w3d);
-    win3d_func214__sub2(wdd, w3d);
-    win3d__endScene(wdd, w3d);
-    win3d_func214__sub0(wdd, w3d);
+    win3d_func214__sub1(w3d);
+    win3d_func214__sub2(w3d);
+    win3d__endScene(w3d);
+    win3d_func214__sub0(w3d);
     return 1;
 }
 
 
-int win3d_func215__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *)
+int win3d_func215__sub0(__NC_STACK_win3d *w3d)
 {
-    if ( !wdd->hwnd )
+    if ( !w3d->hwnd )
     {
-        wdd->surface_locked_pitch = 0;
-        wdd->surface_locked_surfaceData = NULL;
+        w3d->surface_locked_pitch = 0;
+        w3d->surface_locked_surfaceData = NULL;
         return 0;
     }
 
-    if ( wdd->surface_locked_surfaceData )
+    if ( w3d->surface_locked_surfaceData )
         return 1;
 
-    sub_42A640(wdd);
+    sub_42A640(w3d);
 
     DDSURFACEDESC surfDesc;
     memset(&surfDesc, 0, sizeof(DDSURFACEDESC));
     surfDesc.dwSize = sizeof(DDSURFACEDESC);
 
-    HRESULT res = wdd->back_surf->Lock(NULL, &surfDesc, DDLOCK_WAIT | DDLOCK_NOSYSLOCK, 0);
+    HRESULT res = w3d->back_surf->Lock(NULL, &surfDesc, DDLOCK_WAIT | DDLOCK_NOSYSLOCK, 0);
 
     if ( res )
     {
         log_d3d_fail("w3d_LockBackBuffer()", "Lock() failed.", res);
-        wdd->surface_locked_pitch = 0;
-        wdd->surface_locked_surfaceData = NULL;
+        w3d->surface_locked_pitch = 0;
+        w3d->surface_locked_surfaceData = NULL;
         return 0;
     }
 
-    wdd->surface_locked_surfaceData = surfDesc.lpSurface;
-    wdd->surface_locked_pitch = surfDesc.lPitch;
+    w3d->surface_locked_surfaceData = surfDesc.lpSurface;
+    w3d->surface_locked_pitch = surfDesc.lPitch;
     return 1;
 }
 
 void NC_STACK_win3d::raster_func215(void *)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
-    win3d_func215__sub0(wdd, w3d);
+    win3d_func215__sub0(w3d);
 }
 
 
-void win3d_func216__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *)
+void win3d_func216__sub0(__NC_STACK_win3d *w3d)
 {
-    if ( wdd->hwnd )
+    if ( w3d->hwnd )
     {
-        if ( wdd->surface_locked_surfaceData )
+        if ( w3d->surface_locked_surfaceData )
         {
-            wdd->back_surf->Unlock(NULL);
-            wdd->surface_locked_surfaceData = NULL;
-            wdd->surface_locked_pitch = 0;
+            w3d->back_surf->Unlock(NULL);
+            w3d->surface_locked_surfaceData = NULL;
+            w3d->surface_locked_pitch = 0;
         }
     }
 }
 
 void NC_STACK_win3d::raster_func216(void *)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
-    win3d_func216__sub0(wdd, w3d);
+    win3d_func216__sub0(w3d);
 }
 
 
 
 
-void win3d_func218__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, void *buf1, int width, BYTE *buf2, int elmnt, ua_dRect rect, ua_dRect rect2)
+void win3d_func218__sub0(__NC_STACK_win3d *w3d, void *buf1, int width, BYTE *buf2, int elmnt, ua_dRect rect, ua_dRect rect2)
 {
-    if ( wdd->surface_locked_surfaceData )
+    if ( w3d->surface_locked_surfaceData )
     {
         if (w3d->bigdata->primary__pixelformat.BytesPerColor == 2)
         {
-            WORD *locked = (WORD *)wdd->surface_locked_surfaceData;
+            WORD *locked = (WORD *)w3d->surface_locked_surfaceData;
 
-            int wdth = wdd->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor;
+            int wdth = w3d->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor;
 
 
             if ( rect2.x2 != rect2.x1 && rect2.y2 != rect2.y1 )
@@ -5056,9 +5043,9 @@ void win3d_func218__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, void *buf
         }
         else if (w3d->bigdata->primary__pixelformat.BytesPerColor == 4)
         {
-            DWORD *locked = (DWORD *)wdd->surface_locked_surfaceData;
+            DWORD *locked = (DWORD *)w3d->surface_locked_surfaceData;
 
-            int wdth = wdd->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor;
+            int wdth = w3d->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor;
 
 
             if ( rect2.x2 != rect2.x1 && rect2.y2 != rect2.y1 )
@@ -5096,7 +5083,6 @@ void win3d_func218__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, void *buf
 
 void NC_STACK_win3d::raster_func218(rstr_218_arg *arg)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
     __NC_STACK_raster *rstr = &stack__raster;
 
@@ -5112,12 +5098,12 @@ void NC_STACK_win3d::raster_func218(rstr_218_arg *arg)
     rect2.x2 = (arg->rect2.x2 + 1.0) * rstr->field_554;
     rect2.y2 = (arg->rect2.y2 + 1.0) * rstr->field_558;
 
-    win3d_func218__sub0(wdd, w3d, (WORD *)arg->bitm_intern->buffer, arg->bitm_intern->width, (BYTE *)arg->bitm_intern2->buffer, arg->flg, rect1, rect2);
+    win3d_func218__sub0(w3d, (WORD *)arg->bitm_intern->buffer, arg->bitm_intern->width, (BYTE *)arg->bitm_intern2->buffer, arg->flg, rect1, rect2);
 }
 
 size_t NC_STACK_win3d::display_func256(windd_arg256 *inout)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
+    __NC_STACK_win3d *w3d = &stack__win3d;
     mode_node *nod;
 
     if ( inout->sort_id )
@@ -5144,7 +5130,7 @@ size_t NC_STACK_win3d::display_func256(windd_arg256 *inout)
 
         nod = tmp;
     }
-    else if ( wdd->disable_lowres )
+    else if ( w3d->disable_lowres )
     {
         mode_node *tmp = (mode_node *)modes_list.head;
 
@@ -5180,7 +5166,7 @@ size_t NC_STACK_win3d::display_func256(windd_arg256 *inout)
 }
 
 
-HRESULT clearViewport(__NC_STACK_windd *wdd)
+HRESULT clearViewport(__NC_STACK_win3d *wdd)
 {
     if ( dword_514EFC )
     {
@@ -5206,7 +5192,7 @@ HRESULT clearViewport(__NC_STACK_windd *wdd)
     }
 }
 
-void clearAndLockBackBufferSurface(__NC_STACK_windd *wdd)
+void clearAndLockBackBufferSurface(__NC_STACK_win3d *wdd)
 {
     POINT Point;
 
@@ -5253,15 +5239,15 @@ void clearAndLockBackBufferSurface(__NC_STACK_windd *wdd)
 
 void NC_STACK_win3d::display_func257(stack_vals *)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
-    clearAndLockBackBufferSurface(wdd);
-    wdd->field_54______rsrc_field4->buffer = wdd->surface_locked_surfaceData;
-    wdd->field_54______rsrc_field4->pitch = wdd->surface_locked_pitch;
+    __NC_STACK_win3d *w3d = &stack__win3d;
+    clearAndLockBackBufferSurface(w3d);
+    w3d->field_54______rsrc_field4->buffer = w3d->surface_locked_surfaceData;
+    w3d->field_54______rsrc_field4->pitch = w3d->surface_locked_pitch;
 }
 
 
 
-void  windd_func258__sub1(__NC_STACK_windd *wdd)
+void  windd_func258__sub1(__NC_STACK_win3d *wdd)
 {
     if ( wdd->hwnd )
     {
@@ -5303,7 +5289,7 @@ void  windd_func258__sub1(__NC_STACK_windd *wdd)
     }
 }
 
-void windd_func258__sub2(__NC_STACK_windd *wdd, int *x, int *y)
+void windd_func258__sub2(__NC_STACK_win3d *wdd, int *x, int *y)
 {
     POINT point;
     GetCursorPos(&point);
@@ -5312,7 +5298,7 @@ void windd_func258__sub2(__NC_STACK_windd *wdd, int *x, int *y)
     *y = (wdd->height * point.y) / GetSystemMetrics(SM_CYSCREEN);
 }
 
-void windd_func258__sub0(NC_STACK_win3d *obj, __NC_STACK_display *dspl, __NC_STACK_windd *wdd, int xx, signed int yy)
+void windd_func258__sub0(NC_STACK_win3d *obj, __NC_STACK_display *dspl, __NC_STACK_win3d *wdd, int xx, signed int yy)
 {
     if ( dspl->pointer_bitm )
     {
@@ -5393,21 +5379,21 @@ void windd_func258__sub0(NC_STACK_win3d *obj, __NC_STACK_display *dspl, __NC_STA
 
 void NC_STACK_win3d::display_func258(stack_vals *)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
+    __NC_STACK_win3d *w3d = &stack__win3d;
     __NC_STACK_display *dspl = &stack__display;
 
-    if ( sub_42AC78(wdd) )
+    if ( sub_42AC78(w3d) )
     {
         int yy;
         int xx;
 
-        windd_func258__sub2(wdd, &xx, &yy);
+        windd_func258__sub2(w3d, &xx, &yy);
 
         raster_func215(NULL);
-        windd_func258__sub0(this, dspl, wdd, xx, yy);
+        windd_func258__sub0(this, dspl, w3d, xx, yy);
         raster_func216(NULL);
     }
-    windd_func258__sub1(wdd);
+    windd_func258__sub1(w3d);
 }
 
 
@@ -5465,7 +5451,7 @@ void win3d_func262__sub0(__NC_STACK_win3d *w3d, int a2, int *a3, int *a4)
     w3d->bigdata->gray_colors__[8][2] = cl3;
 }
 
-void NC_STACK_win3d::sub_42D37C(__NC_STACK_windd *wdd, UA_PALETTE *pal)
+void NC_STACK_win3d::sub_42D37C(__NC_STACK_win3d *wdd, UA_PALETTE *pal)
 {
     if ( wdd->ddrawPal )
     {
@@ -5491,18 +5477,17 @@ void NC_STACK_win3d::display_func262(rstr_262_arg *arg)
     win3d_func262__sub0(w3d, arg->dword0, arg->pdword4, arg->pdword8);
     NC_STACK_display::display_func262(arg);
 
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_display *dspl  = &stack__display;
 
-    sub_42D37C(wdd, &dspl->palette);
+    sub_42D37C(w3d, &dspl->palette);
 }
 
 
 void NC_STACK_win3d::display_func263(displ_arg263 *arg)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
+    __NC_STACK_win3d *w3d = &stack__win3d;
 
-    sub_42D410(wdd, arg->pointer_id, 0);
+    sub_42D410(w3d, arg->pointer_id, 0);
     NC_STACK_display::display_func263(arg);
 }
 
@@ -5510,7 +5495,7 @@ void NC_STACK_win3d::display_func263(displ_arg263 *arg)
 
 
 
-int win3d__allocTexBuffer(__NC_STACK_windd *, __NC_STACK_win3d *w3d, int w, int h, bitmap_intern *arg)
+int win3d__allocTexBuffer(__NC_STACK_win3d *w3d, int w, int h, bitmap_intern *arg)
 {
     arg->buffer = NULL;
 
@@ -5522,7 +5507,7 @@ int win3d__allocTexBuffer(__NC_STACK_windd *, __NC_STACK_win3d *w3d, int w, int 
     return w * w3d->bigdata->primary__pixelformat.BytesPerColor;
 }
 
-signed int win3d__createSurfTexPal(__NC_STACK_windd *wdd, __NC_STACK_win3d *, int w, int h, texStru **_tex)
+signed int win3d__createSurfTexPal(__NC_STACK_win3d *w3d, int w, int h, texStru **_tex)
 {
     *_tex = NULL;
 
@@ -5535,7 +5520,7 @@ signed int win3d__createSurfTexPal(__NC_STACK_windd *wdd, __NC_STACK_win3d *, in
     }
     *_tex = tex;
 
-    windd_formats *format = &wdd->intern->formats[wdd->intern->selected_format_id];
+    windd_formats *format = &w3d->intern->formats[w3d->intern->selected_format_id];
     memset(tex, 0, 12);
 
     DDSURFACEDESC surfDesc;
@@ -5589,23 +5574,22 @@ signed int win3d__createSurfTexPal(__NC_STACK_windd *wdd, __NC_STACK_win3d *, in
 
 size_t NC_STACK_win3d::display_func266(bitmap_intern **arg)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
     bitmap_intern *bitm_intern = *arg;
 
     if ( bitm_intern->flags & 8 )
     {
-        bitm_intern->pitch = win3d__allocTexBuffer(wdd, w3d, bitm_intern->width, bitm_intern->height, bitm_intern);
+        bitm_intern->pitch = win3d__allocTexBuffer(w3d, bitm_intern->width, bitm_intern->height, bitm_intern);
         return bitm_intern->pitch != 0;
     }
     else
     {
-        return win3d__createSurfTexPal(wdd, w3d, bitm_intern->width, bitm_intern->height, &bitm_intern->ddrawSurfTex);
+        return win3d__createSurfTexPal(w3d, bitm_intern->width, bitm_intern->height, &bitm_intern->ddrawSurfTex);
     }
 }
 
-void win3d__tex_apply_palette_hw(__NC_STACK_windd *, __NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_STACK_display *dspl, texStru *tex, int a5)
+void win3d__tex_apply_palette_hw(__NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_STACK_display *dspl, texStru *tex, int a5)
 {
     win3d_bigdata *bigdata = w3d->bigdata;
 
@@ -5813,7 +5797,7 @@ void win3d__tex_apply_palette_hw(__NC_STACK_windd *, __NC_STACK_win3d *w3d, UA_P
     }
 }
 
-void win3d__tex_apply_palette(__NC_STACK_windd *, __NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_STACK_display *dspl, int w, int h, void *buf)
+void win3d__tex_apply_palette(__NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_STACK_display *dspl, int w, int h, void *buf)
 {
     win3d_bigdata *bigdata = w3d->bigdata;
 
@@ -5900,16 +5884,15 @@ void win3d__tex_apply_palette(__NC_STACK_windd *, __NC_STACK_win3d *w3d, UA_PALE
 
 void NC_STACK_win3d::display_func267(bitmap_intern **arg)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
     __NC_STACK_display *dspl = &stack__display;
 
     bitmap_intern *bitm = *arg;
 
     if (bitm->flags & BITMAP_FLAG_SYSMEM)
-        win3d__tex_apply_palette(wdd, w3d, bitm->pallete, dspl, bitm->width, bitm->height, bitm->buffer);
+        win3d__tex_apply_palette(w3d, bitm->pallete, dspl, bitm->width, bitm->height, bitm->buffer);
     else
-        win3d__tex_apply_palette_hw(wdd, w3d, bitm->pallete, dspl, bitm->ddrawSurfTex, bitm->flags & 0x10);
+        win3d__tex_apply_palette_hw(w3d, bitm->pallete, dspl, bitm->ddrawSurfTex, bitm->flags & 0x10);
 }
 
 
@@ -6013,7 +5996,7 @@ void NC_STACK_win3d::display_func272(stack_vals *)
 }
 
 
-void win3d_func271__sub0(__NC_STACK_windd *, __NC_STACK_win3d *w3d)
+void win3d_func271__sub0(__NC_STACK_win3d *w3d)
 {
     for ( int i = 0; i < w3d->bigdata->texCh_count; i++ )
     {
@@ -6027,23 +6010,22 @@ void win3d_func271__sub0(__NC_STACK_windd *, __NC_STACK_win3d *w3d)
 
 void NC_STACK_win3d::display_func271(stack_vals *stak)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
-    win3d_func271__sub0(wdd, w3d);
+    win3d_func271__sub0(w3d);
     display_func272(stak);
 }
 
 
-void win3d_func274__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, FSMgr::FileHandle *fil)
+void win3d_func274__sub0(__NC_STACK_win3d *w3d, FSMgr::FileHandle *fil)
 {
-    if ( wdd->surface_locked_surfaceData )
+    if ( w3d->surface_locked_surfaceData )
     {
         int BytesPerColor = w3d->bigdata->primary__pixelformat.BytesPerColor;
-        int ril_width = wdd->surface_locked_pitch / BytesPerColor;
+        int ril_width = w3d->surface_locked_pitch / BytesPerColor;
 
-        int width = wdd->width;
-        int height = wdd->height;
+        int width = w3d->width;
+        int height = w3d->height;
 
         char buf[128];
 
@@ -6056,7 +6038,7 @@ void win3d_func274__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, FSMgr::Fi
             int pos = 0;
             for (int j = 0; j < height; j++)
             {
-                WORD *line = (WORD *)wdd->surface_locked_surfaceData + pos;
+                WORD *line = (WORD *)w3d->surface_locked_surfaceData + pos;
 
                 for (int i = 0; i < width; i++)
                 {
@@ -6093,7 +6075,7 @@ void win3d_func274__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, FSMgr::Fi
             int pos = 0;
             for (int j = 0; j < height; j++)
             {
-                DWORD *line = (DWORD *)wdd->surface_locked_surfaceData + pos;
+                DWORD *line = (DWORD *)w3d->surface_locked_surfaceData + pos;
 
                 for (int i = 0; i < width; i++)
                 {
@@ -6130,7 +6112,6 @@ void win3d_func274__sub0(__NC_STACK_windd *wdd, __NC_STACK_win3d *w3d, FSMgr::Fi
 
 void NC_STACK_win3d::display_func274(const char **name)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
     __NC_STACK_win3d *w3d = &stack__win3d;
 
     char filename[128];
@@ -6142,7 +6123,7 @@ void NC_STACK_win3d::display_func274(const char **name)
     if ( fil )
     {
         raster_func215(NULL);
-        win3d_func274__sub0(wdd, w3d, fil);
+        win3d_func274__sub0(w3d, fil);
         raster_func216(NULL);
         delete fil;
     }
@@ -6151,7 +6132,7 @@ void NC_STACK_win3d::display_func274(const char **name)
 
 
 
-void sb_0x42d530__sub0(__NC_STACK_windd *wdd)
+void sb_0x42d530__sub0(__NC_STACK_win3d *wdd)
 {
     DDSURFACEDESC surfDesc;
 
@@ -6181,7 +6162,7 @@ void sb_0x42d530__sub0(__NC_STACK_windd *wdd)
     }
 }
 
-void sb_0x42d530(__NC_STACK_windd *wdd, int a2)
+void sb_0x42d530(__NC_STACK_win3d *wdd, int a2)
 {
     if ( wdd->hwnd )
     {
@@ -6255,14 +6236,14 @@ void sb_0x42d530(__NC_STACK_windd *wdd, int a2)
 
 void NC_STACK_win3d::windd_func320(stack_vals *)
 {
-    sb_0x42d530(&stack__windd, 0);
+    sb_0x42d530(&stack__win3d, 0);
 }
 
 
 
 
 
-void sub_42D724(__NC_STACK_windd *wdd, int a2)
+void sub_42D724(__NC_STACK_win3d *wdd, int a2)
 {
     if ( wdd->hwnd )
     {
@@ -6309,18 +6290,18 @@ void sub_42D724(__NC_STACK_windd *wdd, int a2)
 
 void NC_STACK_win3d::windd_func321(stack_vals *)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
+    __NC_STACK_win3d *w3d = &stack__win3d;
     __NC_STACK_display *dspl = &stack__display;
 
-    sub_42D724(wdd, 0);
-    sub_42D37C(wdd, &dspl->palette);
+    sub_42D724(w3d, 0);
+    sub_42D37C(w3d, &dspl->palette);
 }
 
 
 
 
 
-char * windd_func322__sub0(__NC_STACK_windd *wdd, const char *box_title, const char *box_ok, const char *box_cancel, const char *box_startText, UINT timer_time, void (*timer_func)(int, int, int), void *timer_context, int replace, int maxLen)
+char * windd_func322__sub0(__NC_STACK_win3d *wdd, const char *box_title, const char *box_ok, const char *box_cancel, const char *box_startText, UINT timer_time, void (*timer_func)(int, int, int), void *timer_context, int replace, int maxLen)
 {
     dprintf("MAKE ME %s\n","windd_func322__sub0");
     return NULL;
@@ -6329,12 +6310,12 @@ char * windd_func322__sub0(__NC_STACK_windd *wdd, const char *box_title, const c
 //Show DLGBox with edit field and get entered value
 void NC_STACK_win3d::windd_func322(windd_dlgBox *dlgBox)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
+    __NC_STACK_win3d *w3d = &stack__win3d;
 
     windd_func320(NULL);
 
     dlgBox->result = windd_func322__sub0(
-                         wdd,
+                         w3d,
                          dlgBox->title,
                          dlgBox->ok,
                          dlgBox->cancel,
@@ -6358,15 +6339,15 @@ void windd_func323__sub0__sub0(const char *filename, HWND hwnd)
 }
 
 
-void windd_func323__sub0(__NC_STACK_windd *wdd, const char *filename)
+void windd_func323__sub0(__NC_STACK_win3d *w3d, const char *filename)
 {
-    if ( wdd->hwnd )
+    if ( w3d->hwnd )
     {
 ////    unk_514F20 = 1;
-        sb_0x42d530(wdd, 1);
-        if ( wdd->movie_player )
-            windd_func323__sub0__sub0(filename, wdd->hwnd);
-        sub_42D724(wdd, 1);
+        sb_0x42d530(w3d, 1);
+        if ( w3d->movie_player )
+            windd_func323__sub0__sub0(filename, w3d->hwnd);
+        sub_42D724(w3d, 1);
 ////    unk_514F20 = 0;
     }
 }
@@ -6374,11 +6355,11 @@ void windd_func323__sub0(__NC_STACK_windd *wdd, const char *filename)
 //Play movie file
 void NC_STACK_win3d::windd_func323(const char **filename)
 {
-    __NC_STACK_windd *wdd = &stack__windd;
+    __NC_STACK_win3d *w3d = &stack__win3d;
     __NC_STACK_display *dspl = &stack__display;
 
-    windd_func323__sub0(wdd, *filename);
-    sub_42D37C(wdd, &dspl->palette);
+    windd_func323__sub0(w3d, *filename);
+    sub_42D37C(w3d, &dspl->palette);
 }
 
 void NC_STACK_win3d::windd_func324(wdd_func324arg *inout)
@@ -6449,27 +6430,27 @@ void NC_STACK_win3d::windd_func325(wdd_func324arg *arg)
 
 void NC_STACK_win3d::setWDD_cursor(int arg)
 {
-    if ( arg || !stack__windd.field_30 )
+    if ( arg || !stack__win3d.field_30 )
     {
-        if ( arg == 1 && !stack__windd.field_30 )
+        if ( arg == 1 && !stack__win3d.field_30 )
         {
-            stack__windd.field_30 = 1;
+            stack__win3d.field_30 = 1;
             while ( ShowCursor(0) >= 0 )
             { }
         }
     }
     else
     {
-        stack__windd.field_30 = 0;
+        stack__win3d.field_30 = 0;
         while ( ShowCursor(1) < 0 )
         { }
-        sub_42D410(&stack__windd, 1, 1);
+        sub_42D410(&stack__win3d, 1, 1);
     }
 }
 
 void NC_STACK_win3d::setWDD_disLowRes(int arg)
 {
-    stack__windd.disable_lowres = arg;
+    stack__win3d.disable_lowres = arg;
 }
 
 void NC_STACK_win3d::setWDD_16bitTex(int arg)
@@ -6486,22 +6467,22 @@ void NC_STACK_win3d::setWDD_drawPrim(int arg)
 
 int NC_STACK_win3d::getDISP_displID()
 {
-    return stack__windd.sort_id;
+    return stack__win3d.sort_id;
 }
 
 gfx_window *NC_STACK_win3d::getDISP_displInf()
 {
     static gfx_window window_params__return;
-    window_params__return.hwnd = stack__windd.hwnd;
-    if ( stack__windd.field_50 & 8 )
+    window_params__return.hwnd = stack__win3d.hwnd;
+    if ( stack__win3d.field_50 & 8 )
     {
-        window_params__return.width = stack__windd.width / 2 ;
-        window_params__return.height = stack__windd.height / 2;
+        window_params__return.width = stack__win3d.width / 2 ;
+        window_params__return.height = stack__win3d.height / 2;
     }
     else
     {
-        window_params__return.width = stack__windd.width;
-        window_params__return.height = stack__windd.height;
+        window_params__return.width = stack__win3d.width;
+        window_params__return.height = stack__win3d.height;
     }
 
     return &window_params__return;
@@ -6509,12 +6490,12 @@ gfx_window *NC_STACK_win3d::getDISP_displInf()
 
 int NC_STACK_win3d::getWDD_16bitTex()
 {
-    return stack__windd.txt16bit;
+    return stack__win3d.txt16bit;
 }
 
 int NC_STACK_win3d::getWDD_drawPrim()
 {
-    return stack__windd.use_simple_d3d;
+    return stack__win3d.use_simple_d3d;
 }
 
 
