@@ -130,6 +130,7 @@ struct __NC_STACK_win3d
     uint32_t colorKey;
     SDL_DisplayMode mode;
     GLint glPixfmt, glPixtype;
+    bool windowed;
 
     uint32_t rendStates[W3D_STATES_MAX];
     uint32_t rendStates2[W3D_STATES_MAX];

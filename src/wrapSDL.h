@@ -35,6 +35,8 @@ void SDLWRAP_wrapMouse();
 
 void SDLWRAP_mousePosNorm(SDLWRAP_Point &in);
 
+void SDLWRAP_restoreWindow();
+
 enum VKK
 {
     UAVK_BACK = 8,

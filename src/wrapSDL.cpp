@@ -371,3 +371,8 @@ void SDLWRAP_wrapMouse()
     SDL_GetWindowSize(window, &ww, &wh);
     SDL_WarpMouseInWindow(window, ww / 2, wh / 2);
 }
+
+void SDLWRAP_restoreWindow()
+{
+    SDL_RestoreWindow(window);
+}

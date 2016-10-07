@@ -17,7 +17,7 @@ struct gfxMode
     int h;
     int bpp;
     SDL_DisplayMode mode;
-    int windowed;
+    bool windowed;
     int sortid;
     std::string name;
 };
@@ -110,7 +110,7 @@ void NC_STACK_win3d::initfirst()
             mode->h = closest.h;
             mode->mode = closest;
             mode->bpp = SDL_BYTESPERPIXEL(closest.format) * 8;
-            mode->windowed = 0;
+            mode->windowed = false;
             sprintf(buf, "%d x %d", mode->w, mode->h);
             mode->name = buf;
 
@@ -125,7 +125,7 @@ void NC_STACK_win3d::initfirst()
         mode->h = checkmodes[i][1];
         mode->mode = deskMode;
         mode->bpp = SDL_BYTESPERPIXEL(corrected) * 8;
-        mode->windowed = 1;
+        mode->windowed = true;
         sprintf(buf, "Windowed %d x %d", mode->w, mode->h);
         mode->name = buf;
 
@@ -955,7 +955,7 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
     win3d->use_simple_d3d = drawprim_def;
     win3d->export_window_mode = export_window_mode;
 
-    //win3d->flags |= 1; ////HACK
+    win3d->windowed = picked->windowed; ////HACK
 
     if ( picked->windowed )
         win3d->flags |= 1;
@@ -1067,6 +1067,9 @@ size_t NC_STACK_win3d::func1(stack_vals *stak)
         TTF_CloseFont(w3d->font.ttfFont);
         w3d->font.ttfFont = NULL;
     }
+
+    if (w3d->windowed)
+        SDLWRAP_restoreWindow();
 
     return NC_STACK_display::func1(stak);
 }
