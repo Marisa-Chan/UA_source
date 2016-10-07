@@ -1,6 +1,7 @@
 #include <SDL2/SDL_timer.h>
 
 #include <math.h>
+#include <stdio.h>
 
 #include "wrapal.h"
 
