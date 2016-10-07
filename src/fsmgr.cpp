@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdarg.h>
+#include <inttypes.h>
 
 #if defined(WIN32) && !defined(__WINE__)
 

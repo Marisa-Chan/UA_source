@@ -76,10 +76,10 @@ WINOBJ = \
 	win_funct.cpp
 
 win32: $(OBJS)
-	$(CXX_WIN) -mno-ms-bitfields -O0 -g -o $(TARGET).exe $(OBJS) $(LIBS_WIN) -I $(MINGW)/include/
+	$(CXX_WIN) -std=c++11 -DWIN32 -mno-ms-bitfields -O0 -g -o $(TARGET).exe $(OBJS) $(LIBS_WIN) -I $(MINGW)/include/
 
 nix: $(OBJS)
-	$(CXX) -mno-ms-bitfields -O0 -g -o $(TARGET) $(OBJS) $(LIBS_NIX)
+	$(CXX) -std=c++11 -mno-ms-bitfields -O0 -g -o $(TARGET) $(OBJS) $(LIBS_NIX)
 
 wclang: $(OBJS)
 	$(CLANG_WIN) -mno-ms-bitfields -O0 -g -o $(TARGET).exe $(OBJS) $(LIBS_WIN) -m32 -I $(MINGW)/include/
