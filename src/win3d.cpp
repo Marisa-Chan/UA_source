@@ -887,7 +887,7 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
     int drawprim_def = read_yes_no_status("env/drawprim.def", 0);
     txt16bit = txt16bit_def;
 
-    get_keyvalue_from_ini(0, windd_keys, 7);
+    get_keyvalue_from_ini(0, windd_keys, 8);
 
     int export_window_mode = windd_keys[6].value.val;     // gfx.export_window_mode
 
