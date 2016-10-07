@@ -1,5 +1,6 @@
 #define GLOBAL
 #include "fsmgr.h"
+#include "wrapSDL.h"
 #include "includes.h"
 #include "engine_gfx.h"
 #include "bitmap.h"
@@ -266,7 +267,7 @@ int sb_0x411324__sub2__sub0(base_64arg *arg)
         arg165.frame = 10;
         arg165.field_0 = 7;
     }
-    else if ( arg->field_8->downed_key == VK_SPACE || arg->field_8->downed_key == VK_ESCAPE )
+    else if ( arg->field_8->downed_key == UAVK_SPACE || arg->field_8->downed_key == UAVK_ESCAPE )
     {
         cont_play = 0;
     }
@@ -475,6 +476,9 @@ int sb_0x411324()
     world_update_arg.field_0 += input_states.period + 1;
     input_states.period++;
 
+    if (ypaworld->stack__ypaworld.field_17c0)
+        SDLWRAP_wrapMouse();
+
     if ( dword_520400 == 1 )
     {
         return sb_0x411324__sub1();
@@ -601,8 +605,6 @@ int WinMain__sub0__sub0()
         deinit_globl_engines();
         return 0;
     }
-
-    INPe.setWndMode( GFXe.getWindow() );
 
     return 1;
 }
@@ -769,67 +771,32 @@ int WinMain__sub0()
     return 0;
 }
 
-int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int nCmdShow)
+int main(int argc, char *argv[])
 {
-    struct tagMSG Msg;
+//	HANDLE UAMUTEX = CreateMutex(0, 0, "UA Running Test Mutex");
+//
+//	if ( UAMUTEX && GetLastError() == ERROR_ALREADY_EXISTS )
+//	{
+//		CloseHandle(UAMUTEX);
+//		return 0;
+//	}
 
-    ghInstance = hInstance;
-    gCmdShow = nCmdShow;
-    ghWnd = 0;
-    gpcmdline = lpCmdLine;
-
-    HANDLE UAMUTEX = CreateMutex(0, 0, "UA Running Test Mutex");
-
-    if ( UAMUTEX && GetLastError() == ERROR_ALREADY_EXISTS )
-    {
-        CloseHandle(UAMUTEX);
-        return 0;
-    }
-
-
-    CoInitialize(NULL);
-
-    strcpy(cmdline_copy, gpcmdline);
 
     FSMgr::iDir::setBaseDir("");
+    SDLWRAP_INIT();
 
     if ( !WinMain__sub0() )
-    {
-        CoUninitialize();
-        if ( UAMUTEX )
-            CloseHandle(UAMUTEX);
         return 0;
-    }
 
-    do
+    while ( sb_0x411324() )
     {
-        while ( 1 )
-        {
-            while ( PeekMessage(&Msg, 0, 0, 0, 0) )
-            {
-                if ( !GetMessage(&Msg, 0, 0, 0) )
-                {
-                    sub_4113E8();
-
-                    CoUninitialize();
-                    return Msg.wParam;
-                }
-                TranslateMessage(&Msg);
-                DispatchMessage(&Msg);
-            }
-            if ( !IsIconic(ghWnd) )
-                break;
-            WaitMessage();
-        }
+        if ( SDLWRAP_UPDATE() )
+            break;
     }
-    while ( sb_0x411324());
-
-    if ( ghWnd )
-        DestroyWindow(ghWnd);
 
     sub_4113E8();
 
-    CoUninitialize();
-    return Msg.wParam;
+    SDLWRAP_DEINIT();
 
+    return 0;
 }

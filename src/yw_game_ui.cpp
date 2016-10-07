@@ -159,13 +159,9 @@ void sub_481204(_NC_STACK_ypaworld *yw, int a2, int a3)
     }
 }
 
-DWORD yw_GetColor(_NC_STACK_ypaworld *yw, int color_id)
+uint32_t yw_GetColor(_NC_STACK_ypaworld *yw, int color_id)
 {
-    if ( dword_514EFC )
-        return yw->iniColors[color_id].color;
-    else
-        return yw->iniColors[color_id].i;
-
+    return yw->iniColors[color_id].color;
 }
 
 void sb_0x4c87fc__sub0(_NC_STACK_ypaworld *yw, GuiBase *lstvw)
@@ -355,7 +351,7 @@ void sub_4F681C(float a1, float a2, int *a3, int *a4)
     *a4 = robo_map.field_204 + dround(-a2 / robo_map.field_1E4) - robo_map.field_1F4;
 }
 
-void sub_4F68FC(NC_STACK_display *displ, float a3, float a4, float a5, float a6, DWORD a7)
+void sub_4F68FC(NC_STACK_display *displ, float a3, float a4, float a5, float a6, uint32_t a7)
 {
     w3d_func199arg a3a;
     sub_4F681C(a3, a4, &a3a.x1, &a3a.y1);
@@ -1123,7 +1119,7 @@ char * sub_4F6DFC(_NC_STACK_ypaworld *yw, char *cur, int height, int width, __NC
 
         if ( bact->field_24 != 4 && robo_map.field_1EE > 2 )
         {
-            DWORD clr = yw_GetColor(yw, bact->owner);
+            uint32_t clr = yw_GetColor(yw, bact->owner);
 
             int v31 = 0;
             float v33, v35;
@@ -3124,8 +3120,7 @@ void sb_0x451034__sub9(_NC_STACK_ypaworld *yw)
     wis->field_72 = 0;
     wis->field_8A = (float)(yw->tiles[51]->chars[1].width * wis->field_9E + wis->field_9A + wis->field_96) / (float)yw->screen_width;
 
-    if ( dword_514EFC )
-        wis->field_72 = 1;
+    wis->field_72 = 1;
 }
 
 void sub_4DA874(_NC_STACK_ypaworld *yw)
@@ -3866,7 +3861,7 @@ char *gui_update_tools(_NC_STACK_ypaworld *yw, char *cur)
         FontUA::store_u8(&pcur, 63);
     }
 
-    help_btn.x = yw->icon_order__w + LOWORD(bzda.field_910);
+    help_btn.x = yw->icon_order__w + (bzda.field_910 & 0xFFFF);
     help_btn.y = bzda.field_918;
     help_btn.h = yw->icon_order__h;
     help_btn.w = yw->icon_order__w;
@@ -3878,7 +3873,7 @@ char *gui_update_tools(_NC_STACK_ypaworld *yw, char *cur)
 
     FontUA::store_u8(&pcur, 76);
 
-    menu_btn.x = bzda.field_910 + 2 * LOWORD(yw->icon_order__w);
+    menu_btn.x = bzda.field_910 + 2 * (yw->icon_order__w & 0xFFFF);
     menu_btn.y = bzda.field_918;
     menu_btn.w = yw->icon_order__w;
     menu_btn.h = yw->icon_order__h;
@@ -5493,7 +5488,7 @@ char * ypaworld_func64__sub7__sub7__sub0(_NC_STACK_ypaworld *yw)
         INPe.RemClickBox(&up_panel.dialogBox);
         INPe.AddClickBox(&up_panel.dialogBox, 0);
 
-        int x = LOWORD(up_panel.field_1D4) + v3;
+        int x = (up_panel.field_1D4 & 0xFFFF) + v3;
 
         pcur = ypaworld_func64__sub7__sub7__sub0__sub0(yw, pcur, x, y, v13, v32, v38, v11, arg176.field_4);
 
@@ -7003,7 +6998,7 @@ void sub_47DB04(_NC_STACK_ypaworld *yw, char a2)
     yw_arg181 v3;
     char v4[20];
 
-//  *(_DWORD *)v4 = 1035;
+//  *(_uint32_t *)v4 = 1035;
 //  v4[12] = yw->GameShell->field_0x1cd4;
 //  v4[16] = a2;
     v3.field_10 = 0;
@@ -7484,7 +7479,7 @@ void ypaworld_func64__sub7__sub4(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         int a1_1 = 0;
 
-        if ( yw->field_826F == VK_RETURN )
+        if ( yw->field_826F == UAVK_RETURN )
         {
             lstvw2.CloseDialog(yw);
 
@@ -7494,7 +7489,7 @@ void ypaworld_func64__sub7__sub4(_NC_STACK_ypaworld *yw, struC5 *inpt)
             inpt->downed_key_2 = 0;
             inpt->dword8 = 0;
         }
-        else if ( yw->field_826F == VK_ESCAPE )
+        else if ( yw->field_826F == UAVK_ESCAPE )
         {
             lstvw2.CloseDialog(yw);
 
@@ -12306,7 +12301,7 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stru
             {
                 if ( yw->field_1a58 & 0x20 )
                 {
-                    if ( arg->downed_key_2 == VK_F7 && arg->winp131arg.flag & 0x100 )
+                    if ( arg->downed_key_2 == UAVK_F7 && arg->winp131arg.flag & 0x100 )
                     {
                         v8 = 19;
                         v6 = 8;

@@ -2,7 +2,7 @@
 #define ENGINE_GFX_H_INCLUDED
 
 #include <inttypes.h>
-#include <ddraw.h>
+#include "wrapSDL.h"
 #include "engine_tform.h"
 
 class NC_STACK_win3d;
@@ -31,13 +31,14 @@ struct __attribute__((packed)) UA_PALETTE
 struct bitmap_intern
 {
     void *buffer;
-    __int16 width;
-    __int16 height;
+    void *sdlBuffer;
+    int16_t width;
+    int16_t height;
     int pitch;
     UA_PALETTE *pallete;
     char flags;
     char field_11;
-    __int16 field_12;
+    int16_t field_12;
     texStru *ddrawSurfTex;
     int field_18;
     int field_1C;
@@ -84,37 +85,6 @@ struct polysDatSub
 };
 
 
-
-struct wdd_font_st1
-{
-    const char *string;
-    int p1;
-    int p2;
-    int p3;
-    int p4;
-    int flag;
-};
-
-struct wdd_font
-{
-    IDirectDraw *ddraw;
-    IDirectDrawSurface *ddsurf;
-    HFONT hFont;
-    int height;
-    HDC hDC;
-    int strings_count;
-    wdd_font_st1 field_18[64];
-    int TextColor;
-};
-
-struct gfx_window
-{
-    HWND hwnd;
-    int width;
-    int height;
-};
-
-
 class GFXEngine
 {
 public:
@@ -124,7 +94,6 @@ public:
     int getScreenH();
     int getScreenW();
     NC_STACK_win3d *getC3D();
-    gfx_window *getWindow();
 
     void setResolution(int res);
     void setTracyRmp(bitmap_intern *rmp);

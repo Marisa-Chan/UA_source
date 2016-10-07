@@ -199,7 +199,7 @@ rsrc * NC_STACK_bitmap::rsrc_func64(stack_vals *stak)
                                 intern->flags = intern->flags | BITMAP_FLAG_SYSMEM;
 
                             // allocate buffer, create palette, surface and texture
-                            if ( !engines.display___win3d->display_func266(&intern) )
+                            if ( !engines.display___win3d->AllocTexture(intern) )
                             {
                                 nc_FreeMem(intern);
                                 return res;
@@ -245,7 +245,7 @@ size_t NC_STACK_bitmap::rsrc_func65(rsrc **pres)
     {
         if ( intern->flags & BITMAP_FLAG_TEXTURE  &&  engines.display___win3d )
         {
-            engines.display___win3d->display_func268(&intern);
+            engines.display___win3d->FreeTexture(intern);
         }
         else if ( !(intern->flags & BITMAP_FLAG_EXTDATA) )
         {

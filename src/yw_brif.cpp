@@ -967,28 +967,16 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
 
                 rstr_arg217 v22;
 
-                if ( dword_514EFC )
-                {
-                    v22.dword4 = 0x7070;
-                    v22.dword8 = 0xFFFFFFFF;
-                    v22.dword0 = 0xA0A0;
-                }
-                else
-                {
-                    v22.dword4 = br_obj->field_2C;
-                    v22.dword8 = 0xFFFFFFFF;
-                    v22.dword0 = v22.dword4;
-                }
+                v22.dword4 = 0x7070;
+                v22.dword8 = 0xFFFFFFFF;
+                v22.dword0 = 0xA0A0;
 
                 yw->win3d->raster_func217(&v22);
                 yw->win3d->raster_func198(&v20);
 
-                if ( dword_514EFC )
-                {
-                    v22.dword4 = 0x7070;
-                    v22.dword8 = 0xFFFFFFFF;
-                    v22.dword0 = 0x4040;
-                }
+                v22.dword4 = 0x7070;
+                v22.dword8 = 0xFFFFFFFF;
+                v22.dword0 = 0x4040;
 
                 yw->win3d->raster_func217(&v22);
                 yw->win3d->raster_func198(&v21);
@@ -1190,7 +1178,7 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
 
         ypaworld_func158__sub4__sub1__sub4__sub21(yw, inpt, brf);
 
-        yw->win3d->raster_func215(NULL);
+        yw->win3d->LockSurface();
 
         if ( brf->briefing_map )
         {
@@ -1212,11 +1200,13 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
 
         yw->win3d->raster_func204(&brf->field_2F40);
 
-        yw->win3d->raster_func216(NULL);
+        yw->win3d->UnlockSurface();
+
+        yw->win3d->draw2DandFlush();
 
         ypaworld_func158__DrawVehicle(yw, brf, inpt);
 
-        yw->win3d->raster_func215(NULL);
+        yw->win3d->LockSurface();
 
         ypaworld_func158__sub4__sub1__sub4__sub1(yw, brf);
         ypaworld_func158__sub4__sub1__sub4__sub0(yw);
@@ -1228,7 +1218,7 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
 
         ypaworld_func158__sub4__sub1__sub4__sub2(yw, brf, inpt, 0, 2);
 
-        yw->win3d->raster_func216(NULL);
+        yw->win3d->UnlockSurface();
     }
 }
 
@@ -1550,7 +1540,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub0(_NC_STACK_ypaworld *yw, big_
 {
     uint8_t *ownmap = (uint8_t *)brf->copy2_of_ownmap_bitm->buffer;
 
-    yw->win3d->raster_func215(NULL);
+    yw->win3d->LockSurface();
 
     float v3 = (brf->field_2F74.x2 - brf->field_2F74.x1) / (float)yw->sectors_maxX2;
     float v4 = (brf->field_2F74.y2 - brf->field_2F74.y1) / (float)yw->sectors_maxY2;
@@ -1604,7 +1594,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub0(_NC_STACK_ypaworld *yw, big_
         v21 += v4;
     }
 
-    yw->win3d->raster_func216(NULL);
+    yw->win3d->UnlockSurface();
 }
 
 
@@ -2275,7 +2265,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3(_NC_STACK_ypaworld *yw, struC5 *st
     v24.includ = 0;
     v24.cmdbuf = cmdbuf;
 
-    yw->win3d->raster_func215(NULL);
+    yw->win3d->LockSurface();
     yw->win3d->raster_func209(&v24);
 
     int v26 = 0;
@@ -2388,7 +2378,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3(_NC_STACK_ypaworld *yw, struC5 *st
 
     ypaworld_func158__sub4__sub1__sub6__sub3__sub6(yw, brf);
 
-    yw->win3d->raster_func216(NULL);
+    yw->win3d->UnlockSurface();
 }
 
 void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
@@ -2420,7 +2410,7 @@ void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, s
 
         if ( brf->field_2E68 != 4 )
         {
-            yw->win3d->raster_func215(NULL);
+            yw->win3d->LockSurface();
 
             if ( brf->briefing_map )
             {
@@ -2440,7 +2430,7 @@ void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, s
             }
 
             yw->win3d->raster_func204(&brf->field_2F40);
-            yw->win3d->raster_func216(NULL);
+            yw->win3d->UnlockSurface();
         }
 
         switch ( brf->field_2E68 )

@@ -1,5 +1,4 @@
 #include <inttypes.h>
-#include <windows.h>
 #include "includes.h"
 #include "nucleas.h"
 #include "wintimer.h"
@@ -10,28 +9,19 @@
 const NewClassDescr NC_STACK_wintimer::description("wintimer.class", &newinstance);
 
 
-
-DWORD wintimer_func64__sub0()
+uint32_t wintimer_func64__sub0()
 {
-    LARGE_INTEGER v3;
-    LARGE_INTEGER PerformanceCount;
-
-    if ( QueryPerformanceFrequency(&v3) )
-    {
-        QueryPerformanceCounter(&PerformanceCount);
-        return PerformanceCount.QuadPart / (v3.LowPart >> 10);
-    }
-    else
-    {
-        return GetTickCount();
-    }
+    Uint64 freq = SDL_GetPerformanceFrequency();
+    Uint64 cnt = SDL_GetPerformanceCounter();
+    return cnt / (freq / 1024);
+//        return SDL_GetTicks();
 }
 
 int NC_STACK_wintimer::itimer_func64(void *)
 {
     __NC_STACK_wintimer *tmr = &stack__wintimer;
 
-    DWORD tik = wintimer_func64__sub0();
+    uint32_t tik = wintimer_func64__sub0();
 
     int period = tik - tmr->ticks;
 

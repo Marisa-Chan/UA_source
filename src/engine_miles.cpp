@@ -898,9 +898,9 @@ void sb_0x424c74__sub3()
     if ( pwin3d )
     {
         rstr_262_arg arg262;
-        arg262.pdword4 = v10;
-        arg262.dword0 = v0;
-        arg262.pdword8 = v12;
+        arg262.slot = v10;
+        arg262.cnt = v0;
+        arg262.weight = v12;
 
         pwin3d->display_func262(&arg262);
     }

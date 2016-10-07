@@ -71,7 +71,7 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, MFILE **pmfile)
         }
         else if ( iff_chunk->TAG == TAG_OTL2 )
         {
-            BYTE dst[128];
+            uint8_t dst[128];
 
             mfread(mfile, &dst, 128);
 
@@ -86,7 +86,7 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, MFILE **pmfile)
             }
 
             memset(&opls[opl_count], 0, sizeof(pixel_2d));
-            opls[opl_count].flags = MINSHORT;
+            opls[opl_count].flags = 0xFFFF;
 
             read_next_IFF(mfile, 2);
 
@@ -120,7 +120,7 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, MFILE **pmfile)
 
 size_t NC_STACK_ilbm::func5(MFILE **file)
 {
-    DWORD TAG = GET_FORM_INFO_OR_NULL(*file)->TAG_EXTENSION;
+    uint32_t TAG = GET_FORM_INFO_OR_NULL(*file)->TAG_EXTENSION;
 
     if ( TAG == TAG_CIBO )
         return ilbm_func5__sub0(this, file);
@@ -155,7 +155,7 @@ size_t NC_STACK_ilbm::func6(MFILE **pmfile)
 
         if ( opl2 )
         {
-            BYTE buf[128];
+            uint8_t buf[128];
             int opl_count = 0;
 
             tUtV *tmp = opl2;
@@ -177,12 +177,12 @@ size_t NC_STACK_ilbm::func6(MFILE **pmfile)
     return 0;
 }
 
-void ILBM_BODY_READ__sub0(BMHD_type *bmhd, BYTE *ilbm_data, void *_img_buffer)
+void ILBM_BODY_READ__sub0(BMHD_type *bmhd, uint8_t *ilbm_data, void *_img_buffer)
 {
-    BYTE masks[8] = {1, 2, 4, 8, 16, 32, 64, 128};
+    uint8_t masks[8] = {1, 2, 4, 8, 16, 32, 64, 128};
 
-    BYTE *img_buffer = (BYTE *)_img_buffer;
-    BYTE udp[1024];
+    uint8_t *img_buffer = (uint8_t *)_img_buffer;
+    uint8_t udp[1024];
 
     int pln_w = (bmhd->width + 7) / 8;
     pln_w += (pln_w & 1);
@@ -240,7 +240,7 @@ void ILBM_BODY_READ__sub0(BMHD_type *bmhd, BYTE *ilbm_data, void *_img_buffer)
         {
             int v16 = x / 8;
 
-            BYTE bt = 0;
+            uint8_t bt = 0;
 
             for (int plan = 0; plan < bmhd->nPlanes; plan++)
             {
@@ -261,7 +261,7 @@ int ILBM_BODY_READ(MFILE *mfile, BMHD_type *bmhd, bitmap_intern *bitm)
     {
         MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
 
-        BYTE *buffer = (BYTE *)AllocVec(chunk->TAG_SIZE, 1);
+        uint8_t *buffer = (uint8_t *)AllocVec(chunk->TAG_SIZE, 1);
 
         if ( buffer )
         {
@@ -324,7 +324,7 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
             return NULL;
         }
 
-        DWORD tag = GET_FORM_INFO_OR_NULL(mfil)->TAG;
+        uint32_t tag = GET_FORM_INFO_OR_NULL(mfil)->TAG;
 
         if ( tag == TAG_BMHD )
         {
@@ -397,7 +397,7 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
 
                 if ( w3d && bitm->flags & BITMAP_FLAG_TEXTURE )
                 {
-                    if ( ! w3d->display_func269(&bitm) )
+                    if ( ! w3d->LockTexture(bitm) )
                         locked = 0;
                 }
 
@@ -419,11 +419,11 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
 
                     if ( w3d && bitm->flags & BITMAP_FLAG_TEXTURE )
                     {
-                        w3d->display_func270(&bitm); // win3d_func270
+                        w3d->UnlockTexture(bitm); // win3d_func270
                         if ( val5 )
                             bitm->flags |= BITMAP_FLAG_TRANSP;
 
-                        w3d->display_func267(&bitm); // win3d_func267
+                        w3d->TextureApplyPalette(bitm); // win3d_func267
                     }
                 }
             }
@@ -456,35 +456,32 @@ rsrc * NC_STACK_ilbm::rsrc_func64(stack_vals *stak)
 
     stk[0].nextStack(stak);
 
-    if ( dword_514EFC )
+    if ( can_destblend )
     {
-        if ( can_destblend )
-        {
-            if ( !strcasecmp(resName, "fx1.ilbm") )
-                reassignName = "hi/alpha/fx1.ilbm";
-            else if ( !strcasecmp(resName, "fx2.ilbm") )
-                reassignName = "hi/alpha/fx2.ilbm";
-            else if ( !strcasecmp(resName, "fx3.ilbm") )
-                reassignName = "hi/alpha/fx3.ilbm";
-        }
-        else if ( can_stippling )
-        {
-            if ( !strcasecmp(resName, "fx1.ilbm") )
-                reassignName = "hi/beta/fx1.ilbm";
-            else if ( !strcasecmp(resName, "fx2.ilbm") )
-                reassignName = "hi/beta/fx2.ilbm";
-            else if ( !strcasecmp(resName, "fx3.ilbm") )
-                reassignName = "hi/beta/fx3.ilbm";
-        }
-        else if ( can_srcblend )
-        {
-            if ( !strcasecmp(resName, "fx1.ilbm") )
-                reassignName = "hi/gamma/fx1.ilbm";
-            else if ( !strcasecmp(resName, "fx2.ilbm") )
-                reassignName = "hi/gamma/fx2.ilbm";
-            else if ( !strcasecmp(resName, "fx3.ilbm") )
-                reassignName = "hi/gamma/fx3.ilbm";
-        }
+        if ( !strcasecmp(resName, "fx1.ilbm") )
+            reassignName = "hi/alpha/fx1.ilbm";
+        else if ( !strcasecmp(resName, "fx2.ilbm") )
+            reassignName = "hi/alpha/fx2.ilbm";
+        else if ( !strcasecmp(resName, "fx3.ilbm") )
+            reassignName = "hi/alpha/fx3.ilbm";
+    }
+    else if ( can_stippling )
+    {
+        if ( !strcasecmp(resName, "fx1.ilbm") )
+            reassignName = "hi/beta/fx1.ilbm";
+        else if ( !strcasecmp(resName, "fx2.ilbm") )
+            reassignName = "hi/beta/fx2.ilbm";
+        else if ( !strcasecmp(resName, "fx3.ilbm") )
+            reassignName = "hi/beta/fx3.ilbm";
+    }
+    else if ( can_srcblend )
+    {
+        if ( !strcasecmp(resName, "fx1.ilbm") )
+            reassignName = "hi/gamma/fx1.ilbm";
+        else if ( !strcasecmp(resName, "fx2.ilbm") )
+            reassignName = "hi/gamma/fx2.ilbm";
+        else if ( !strcasecmp(resName, "fx3.ilbm") )
+            reassignName = "hi/gamma/fx3.ilbm";
     }
 
     MFILE *mfile = (MFILE *)find_id_in_stack_def_val(RSRC_ATT_PIFFFILE, 0, stak);
@@ -561,14 +558,14 @@ void ILBM__WRITE_TO_FILE_BMHD(MFILE *mfile, bitmap_intern *bitm)
 int ILBM__WRITE_TO_FILE_BODY(MFILE *mfile, bitmap_intern *bitm)
 {
     int planeSz = 2 * ((bitm->width + 15) / 16);
-    BYTE *buf = (BYTE *)AllocVec(planeSz, 1);
+    uint8_t *buf = (uint8_t *)AllocVec(planeSz, 1);
 
     if (!buf)
         return 0;
 
     sub_412FC0(mfile, 0, TAG_BODY, 8 * bitm->height * planeSz);
 
-    BYTE *bfline = (BYTE *)bitm->buffer;
+    uint8_t *bfline = (uint8_t *)bitm->buffer;
 
     for (int i = bitm->height; i > 0; i-- )
     {

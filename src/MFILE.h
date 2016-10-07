@@ -1,7 +1,7 @@
 #ifndef MFILE_H_INCLUDED
 #define MFILE_H_INCLUDED
 
-#include "nlist.h"
+#include <list>
 #include "fsmgr.h"
 
 struct MFILE_flags
@@ -12,21 +12,23 @@ struct MFILE_flags
     char fl2;
 };
 
-struct MFILE
-{
-    FSMgr::FileHandle *file_handle;
-    MFILE_flags flags;
-    int field_8;
-    nlist list;
-};
-
-struct MFILE_S1 : public nnode
+struct MFILE_S1
 {
     int TAG;
     int TAG_EXTENSION;
     int TAG_SIZE;
     int cur_pos;
 };
+
+struct MFILE
+{
+    FSMgr::FileHandle *file_handle;
+    MFILE_flags flags;
+    int field_8;
+    std::list<MFILE_S1 *> list;
+};
+
+
 
 MFILE_S1 * GET_FORM_INFO_OR_NULL(MFILE *a1);
 signed int read_next_IFF(MFILE *a1, int a2);

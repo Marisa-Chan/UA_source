@@ -94,46 +94,6 @@ int ypaworld_func0__sub0(const char *file)
     return def_parseFile(file, 1, &v3, 0);
 }
 
-void ypaworld_func0__sub1()
-{
-    char replace[1024];
-
-    for (int i = 0; i < 6; i++)
-    {
-        const char *prefix;
-        switch (i)
-        {
-        case 0:
-            prefix = "data";
-            break;
-        case 1:
-            prefix = "save";
-            break;
-        case 2:
-            prefix = "help";
-            break;
-        case 3:
-            prefix = "mov";
-            break;
-        case 4:
-            prefix = "levels";
-            break;
-        case 5:
-            prefix = "mbpix";
-            break;
-        default:
-            prefix = "nop";
-            break;
-        }
-
-        if ( read_reg_key(prefix, replace, 1024) )
-        {
-            set_prefix_replacement(prefix, replace);
-            ypa_log_out("parsing registry: set assign %s to %s\n", prefix, replace);
-        }
-    }
-}
-
 void sub_4711E0(_NC_STACK_ypaworld *yw)
 {
     yw->very_big_array__p_begin = yw->lang_strings;
@@ -322,8 +282,6 @@ size_t NC_STACK_ypaworld::func0(stack_vals *stak)
 
     if ( !ypaworld_func0__sub0("env/assign.txt") )
         ypa_log_out("Warning, no env/assign.txt script.\n");
-
-    ypaworld_func0__sub1();
 
     if ( !yw_InitLocale(yw) )
     {
@@ -705,7 +663,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
     extern GuiList lstvw2; //In yw_game_ui.cpp
 
     if ( (gui_lstvw.flags & GuiBase::FLAG_CLOSED && lstvw2.flags & GuiBase::FLAG_CLOSED)
-            || (arg->field_8->downed_key != VK_RETURN && arg->field_8->downed_key != VK_ESCAPE) )
+            || (arg->field_8->downed_key != UAVK_RETURN && arg->field_8->downed_key != UAVK_ESCAPE) )
     {
         yw->field_826F = 0;
     }
@@ -719,7 +677,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
     if ( !ypaworld_func64__sub4(yw, arg) )
     {
-        DWORD v92 = profiler_begin();
+        uint32_t v92 = profiler_begin();
 
         yw->win3d = GFXe.getC3D();
 
@@ -806,7 +764,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
         arg184.t15.field_1 = yw->field_1614;
         yw->self_full->ypaworld_func184(&arg184);
 
-        DWORD v22 = profiler_begin();
+        uint32_t v22 = profiler_begin();
 
         if ( yw->field_757E )
             ypaworld_func64__sub18(yw);
@@ -815,7 +773,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
         {
             yw->p_1_grp[0][6] = profiler_end(v22);
 
-            DWORD v23 = profiler_begin();
+            uint32_t v23 = profiler_begin();
 
             for (int i = 0; i < yw->sectors_maxY2 * yw->sectors_maxX2; i++)
             {
@@ -836,7 +794,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             if ( !yw->field_138c )
             {
-                yw->win3d->display_func257(NULL);
+                yw->win3d->BeginFrame();
                 yw->win3d->setRSTR_BGpen(0);
                 yw->win3d->raster_func192(NULL);
             }
@@ -851,7 +809,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             if ( !yw->field_138c )
             {
-                DWORD v33 = profiler_begin();
+                uint32_t v33 = profiler_begin();
 
                 ypaworld_func64__sub8(this, yw);
                 ypaworld_func64__sub7(yw, arg->field_8);
@@ -875,7 +833,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             yw->field_1b74 = yw->field_1b84->p_cell_area->owner;
 
-            DWORD v37 = profiler_begin();
+            uint32_t v37 = profiler_begin();
 
             bact_node *nnode = (bact_node *)yw->bact_list.head;
             while ( nnode->next )
@@ -896,7 +854,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             sub_445230(yw);
 
-            DWORD v41 = profiler_begin();
+            uint32_t v41 = profiler_begin();
 
             if ( yw->field_757E )
             {
@@ -974,7 +932,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             if ( !yw->field_138c )
             {
-                DWORD v62 = profiler_begin();
+                uint32_t v62 = profiler_begin();
 
                 if ( yw->field_1b84->field_c || yw->field_1b84->field_10 )
                 {
@@ -984,7 +942,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                         ypaworld_func64__sub10(yw);
                 }
 
-                yw->win3d->display_func258(NULL);
+                yw->win3d->EndFrame();
 
                 yw->p_1_grp[0][5] = profiler_end(v62);
             }
@@ -1123,10 +1081,10 @@ void sub_47C29C(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
         if ( yw->netgame_exclusivegem )
         {
             char v13[20];
-//      *(_DWORD *)v13 = 1020;
+//      *(_uint32_t *)v13 = 1020;
 //      v13[12] = yw->GameShell->field_0x1cd4;
-//      *(_WORD *)&v13[18] = 1;
-//      *(_WORD *)&v13[16] = v16;
+//      *(_uint16_t *)&v13[18] = 1;
+//      *(_uint16_t *)&v13[16] = v16;
 
             yw_arg181 arg181;
             arg181.field_10 = 0;
@@ -1173,10 +1131,10 @@ void ypaworld_func129__sub1(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
     if ( yw->field_757E )
     {
         char v15[20];
-//    *(_DWORD *)v15 = 1020;
+//    *(_uint32_t *)v15 = 1020;
 //    v15[12] = yw->GameShell->field_0x1cd4;
-//    *(_WORD *)&v15[18] = 0;
-//    *(_WORD *)&v15[16] = a3;
+//    *(_uint16_t *)&v15[18] = 0;
+//    *(_uint16_t *)&v15[16] = a3;
 
         yw_arg181 arg181;
         arg181.field_14 = 2;
@@ -6508,7 +6466,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 
     yw->win3d = GFXe.getC3D();
 
-    yw->win3d->display_func257(NULL);
+    yw->win3d->BeginFrame();
 
     int v7 = usr->field_46;
     usr->field_4A = 0;
@@ -6520,13 +6478,13 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 
     ypaworld_func158__sub4(yw, usr, usr->field_3A);
 
-    yw->win3d->raster_func215(NULL);
+    yw->win3d->LockSurface();
 
     draw_tooltip(yw);
 
     ypaworld_func158__sub3(yw, usr);
 
-    yw->win3d->raster_func216(NULL);
+    yw->win3d->UnlockSurface();
 
     if ( yw->field_757E )
     {
@@ -6553,7 +6511,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 //  if ( usr->field_0x4 )
 //    nullsub_7();
 
-    yw->win3d->display_func258(0);
+    yw->win3d->EndFrame();
 
     if ( usr->field_0x4 )
     {
@@ -6561,7 +6519,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 //    nullsub_7();
     }
 
-    if ( sub_449678(yw, usr->field_3A, VK_MULTIPLY) )
+    if ( sub_449678(yw, usr->field_3A, UAVK_MULTIPLY) )
         sub_4476AC(yw);
 
     if ( usr->field_1C3A == 4 )
@@ -6759,7 +6717,7 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
     _NC_STACK_ypaworld *yw = &stack__ypaworld;
 
     recorder *repl = yw->replayer;
-    DWORD v33 = profiler_begin();
+    uint32_t v33 = profiler_begin();
 
     yw->win3d = GFXe.getC3D();
 
@@ -6774,7 +6732,7 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
     yw->p_1_grp[0][0] = yw->field_1B6E;
 
-    yw->win3d->display_func257(NULL);
+    yw->win3d->BeginFrame();
 
     yw->win3d->setRSTR_BGpen(0);
 
@@ -6832,13 +6790,13 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
     v26->scale_rotation = v31;
 
-    DWORD v28 = profiler_begin();
+    uint32_t v28 = profiler_begin();
 
     sb_0x4d7c08(this, yw, arg, 0);
 
     debug_info_draw(yw, arg->field_8);
 
-    yw->win3d->display_func258(NULL);
+    yw->win3d->EndFrame();
 
     yw->p_1_grp[0][5] = profiler_end(v28);
 
@@ -7108,6 +7066,8 @@ size_t NC_STACK_ypaworld::ypaworld_func166(const char **langname)
 
     if ( v19 || load_lang_lng(yw, yw->lang_name) )
     {
+        NC_STACK_win3d *win3d = GFXe.getC3D();
+
         const char *v11 = NULL;
 
         if ( yw->screen_width >= 512 )
@@ -7115,9 +7075,7 @@ size_t NC_STACK_ypaworld::ypaworld_func166(const char **langname)
         else
             v11 = get_lang_string(yw->string_pointers_p2, 16, "Arial,8,400,0");
 
-        load_font(v11);
-
-        NC_STACK_win3d *win3d = GFXe.getC3D();
+        win3d->load_font(v11);
 
         if ( !strcasecmp( get_lang_string(yw->string_pointers_p2, 17, "FALSE"), "FALSE") )
         {
@@ -8052,11 +8010,7 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
         v6 = 0;
     }
 
-    INPe.setWndMode(NULL);
-
     GFXe.setResolution( arg->resolution );
-
-    INPe.setWndMode( GFXe.getWindow() );
 
     yw->screen_width = GFXe.getScreenW();
     yw->screen_height = GFXe.getScreenH();
@@ -8065,11 +8019,7 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
     {
         ypa_log_out("Warning: Unable to open GameShell with mode %d\n", arg->resolution);
 
-        INPe.setWndMode(NULL);
-
         GFXe.setResolution( usr->p_ypaworld->shell_default_res );
-
-        INPe.setWndMode( GFXe.getWindow() );
 
         yw->screen_width = GFXe.getScreenW();
         yw->screen_height = GFXe.getScreenH();
@@ -8093,11 +8043,11 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
 
     if ( yw->screen_width >= 512 )
     {
-        load_font( get_lang_string(yw->string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
+        win3d->load_font( get_lang_string(yw->string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
     }
     else
     {
-        load_font( get_lang_string(yw->string_pointers_p2, 16, "Arial,8,400,0") );
+        win3d->load_font( get_lang_string(yw->string_pointers_p2, 16, "Arial,8,400,0") );
     }
 
     return 1;

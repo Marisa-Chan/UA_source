@@ -381,7 +381,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
 {
     __NC_STACK_amesh *amesh = &stack__amesh;
 
-    //v5 = *(_WORD *)(amesh->field_14 + 6) & 0xFEF6;
+    //v5 = *(_uint16_t *)(amesh->field_14 + 6) & 0xFEF6;
     int v5 = stack__area.polflags & ~(AREA_POL_FLAG_SCANLN | AREA_POL_FLAG_TEXBIT | AREA_POL_FLAG_TRACYBIT3);
 
     if (v5 == 0)

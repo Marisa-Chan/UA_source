@@ -30,8 +30,8 @@ struct pol_entries2
 struct skeleton_64_stru
 {
     skeleton_type1 *POO;
-    __int16 POO_NUM;
-    __int16 sen_count;
+    int16_t POO_NUM;
+    int16_t sen_count;
 
 
     // it's one piece of data contain 2 parts

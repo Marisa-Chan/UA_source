@@ -820,14 +820,14 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
         int caplen = strlen(sbt->caption2);
 
         for (int i = 0; i < caplen; i++)
-            strwdth += v8->chars[(BYTE)sbt->caption2[i]].width;
+            strwdth += v8->chars[(uint8_t)sbt->caption2[i]].width;
     }
     else
     {
         int caplen = strlen(sbt->caption);
 
         for (int i = 0; i < caplen; i++)
-            strwdth += v8->chars[(BYTE)sbt->caption[i]].width;
+            strwdth += v8->chars[(uint8_t)sbt->caption[i]].width;
     }
 
     int v47 = (sbt->width - strwdth - v8->chars[btn->field_19c].width) / 2;

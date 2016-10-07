@@ -3482,10 +3482,10 @@ void NC_STACK_ypabact::ypabact_func77(void *)
         int maxx = bact->wrld->getYW_mapMaxX();
 
 
-//    *(_DWORD *)v51 = 1009;
+//    *(_uint32_t *)v51 = 1009;
 //    v51[12] = bact->owner;
-//    *(_DWORD *)&v51[16] = bact->ypabact__id;
-//    *(_DWORD *)&v51[20] = 0;
+//    *(_uint32_t *)&v51[16] = bact->ypabact__id;
+//    *(_uint32_t *)&v51[20] = 0;
 //    v51[28] = 0;
 //    v51[29] = bact->field_24;
 //    int v3;
@@ -3495,7 +3495,7 @@ void NC_STACK_ypabact::ypabact_func77(void *)
 //    else
 //      v3 = 0;
 //
-//    *(_DWORD *)&v51[24] = v3;
+//    *(_uint32_t *)&v51[24] = v3;
 //    v51[30] = bact->field_9B5;
 
         _NC_STACK_ypaworld *yw = &bact->wrld->stack__ypaworld;
@@ -3577,7 +3577,7 @@ void NC_STACK_ypabact::ypabact_func77(void *)
                 if ( yw->field_757E )
                 {
 //          if ( bact->owner )
-//            *(_DWORD *)&v51[20] = v74->bact->ypabact__id;
+//            *(_uint32_t *)&v51[20] = v74->bact->ypabact__id;
                 }
             }
             else
@@ -3875,12 +3875,12 @@ void NC_STACK_ypabact::ypabact_func78(bact_arg119 *arg)
             if ( v6 && bact->owner && bact->field_24 != 4 )
             {
                 char buf[32];
-                /**(_DWORD *)buf = 1005;
+                /**(_uint32_t *)buf = 1005;
                 buf[12] = bact->owner;
-                *(_DWORD *)&buf[16] = bact->ypabact__id;
+                *(_uint32_t *)&buf[16] = bact->ypabact__id;
                 buf[28] = arg->field_0;
-                *(_DWORD *)&buf[20] = arg->field_4;
-                *(_DWORD *)&buf[24] = arg->field_8;
+                *(_uint32_t *)&buf[20] = arg->field_4;
+                *(_uint32_t *)&buf[24] = arg->field_8;
                 buf[29] = bact->field_24;*/
 
                 yw_arg181 v9;
@@ -4079,10 +4079,10 @@ size_t NC_STACK_ypabact::ypabact_func79(bact_arg79 *arg)
         if ( yw->field_757E )
         {
             wbact->ypabact__id |= bact->owner << 24;
-//            *(_DWORD *)v23 = 1004;
+//            *(_uint32_t *)v23 = 1004;
 //            v23[12] = bact->owner;
-//            *(_DWORD *)&v23[28] = wbact->ypabact__id;
-//            *(_DWORD *)&v23[32] = bact->ypabact__id;
+//            *(_uint32_t *)&v23[28] = wbact->ypabact__id;
+//            *(_uint32_t *)&v23[32] = bact->ypabact__id;
 //            v23[53] = arg->field_2C;
 //            *(float *)&v23[16] = arg147.pos.sx;
 //            *(float *)&v23[20] = arg147.pos.sy;
@@ -4095,7 +4095,7 @@ size_t NC_STACK_ypabact::ypabact_func79(bact_arg79 *arg)
 
             if ( wbact->primTtype == BACT_TGT_TYPE_UNIT )
             {
-//              *(_DWORD *)&v23[48] = wbact->field_3e8->ypabact__id;
+//              *(_uint32_t *)&v23[48] = wbact->field_3e8->ypabact__id;
 //              v23[55] = wbact->field_3e8->owner;
             }
 
@@ -4457,19 +4457,19 @@ void NC_STACK_ypabact::ypabact_func84(bact_arg84 *arg)
         else
         {
             char v14[32];
-//      *(_DWORD *)v14 = 1010;
+//      *(_uint32_t *)v14 = 1010;
 //      v14[12] = bact->owner;
-//      *(_DWORD *)&v14[16] = bact->ypabact__id;
-//      *(_DWORD *)&v14[20] = arg->energy;
+//      *(_uint32_t *)&v14[16] = bact->ypabact__id;
+//      *(_uint32_t *)&v14[20] = arg->energy;
 //
 //      if ( arg->unit )
 //      {
-//        *(_DWORD *)&v14[24] = arg->unit->ypabact__id;
+//        *(_uint32_t *)&v14[24] = arg->unit->ypabact__id;
 //        v14[28] = arg->unit->owner;
 //      }
 //      else
 //      {
-//        *(_DWORD *)&v14[24] = 0;
+//        *(_uint32_t *)&v14[24] = 0;
 //        v14[28] = 0;
 //      }
 
@@ -5181,9 +5181,9 @@ size_t NC_STACK_ypabact::ypabact_func87(int *arg)
                         if ( yw->field_757E )
                         {
                             char v39[20];
-//              *(_DWORD *)v39 = 1031;
+//              *(_uint32_t *)v39 = 1031;
 //              v39[12] = bnode->owner;
-//              *(_DWORD *)&v39[16] = bnode->ypabact__id;
+//              *(_uint32_t *)&v39[16] = bnode->ypabact__id;
 
                             yw_arg181 v32;
                             v32.field_14 = 2;
@@ -7838,7 +7838,7 @@ void NC_STACK_ypabact::ypabact_func112(ypabact_arg65 *arg)
     }
 }
 
-void __fastcall ypabact_func113__sub0(__NC_STACK_ypabact *main, destFX *fx)
+void ypabact_func113__sub0(__NC_STACK_ypabact *main, destFX *fx)
 {
     ypaworld_arg146 arg146;
 
@@ -8118,9 +8118,9 @@ void NC_STACK_ypabact::ypabact_func118(NC_STACK_ypabact *b_bacto)
             if ( b_bact->field_24 != 4 )
             {
                 char v7[24];
-//        *(_DWORD *)v7 = 1002;
+//        *(_uint32_t *)v7 = 1002;
 //        v7[12] = b_bact->owner;
-//        *(_DWORD *)&v7[16] = b_bact->ypabact__id;
+//        *(_uint32_t *)&v7[16] = b_bact->ypabact__id;
 //        v7[20] = b_bact->field_24;
                 yw_arg181 v6;
                 v6.field_14 = 2;
@@ -8494,17 +8494,17 @@ void NC_STACK_ypabact::ypabact_func120(yw_arg129 *arg)
     if ( bact->wrld->stack__ypaworld.field_757E )
     {
         char v8[40];
-//    *(_DWORD *)v8 = 1011;
+//    *(_uint32_t *)v8 = 1011;
 //    v8[12] = bact->owner;
 //    *(float *)&v8[16] = arg->pos.sx;
 //    *(float *)&v8[20] = arg->pos.sy;
 //    *(float *)&v8[24] = arg->pos.sz;
-//    *(_DWORD *)&v8[28] = arg->field_10;
+//    *(_uint32_t *)&v8[28] = arg->field_10;
         v8[36] = v5;
 //    v7 = arg->unit;
 //    if ( v7 )
 //      v7 = (__NC_STACK_ypabact *)v7->ypabact__id;
-//    *(_DWORD *)&v8[32] = v7;
+//    *(_uint32_t *)&v8[32] = v7;
 
         yw_arg181 arg181;
         arg181.field_10 = 0;
@@ -8597,11 +8597,11 @@ void NC_STACK_ypabact::ypabact_func121(ypabact_arg65 *arg)
                 if ( bact->wrld->stack__ypaworld.field_757E )
                 {
                     char v9[76];
-//          *(_DWORD *)v9 = 1030;
+//          *(_uint32_t *)v9 = 1030;
 //          v9[12] = bact->owner;
 //          *(float *)&v9[20] = 0.75;
-//          *(_DWORD *)&v9[16] = a2;
-//          *(_DWORD *)&v9[24] = bact->ypabact__id;
+//          *(_uint32_t *)&v9[16] = a2;
+//          *(_uint32_t *)&v9[24] = bact->ypabact__id;
 //          *(float *)&v9[28] = bact->field_621.sx;
 //          *(float *)&v9[32] = bact->field_621.sy;
 //          *(float *)&v9[36] = bact->field_621.sz;

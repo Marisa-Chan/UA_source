@@ -189,7 +189,7 @@ void make_scale_rotation__matrix(base_1c_struct *scrot)
     typedef void (*matrfunc)(base_1c_struct *);
     matrfunc off_5151E0[8] = {scale_rot_0, scale_rot_1, scale_rot_2, scale_rot_3, scale_rot_4, scale_rot_5, scale_rot_6, scale_rot_7};
 
-    BYTE func_id = 0;
+    uint8_t func_id = 0;
 
     if ( scrot->rot_x )
         func_id |= 1;
@@ -1055,10 +1055,10 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
     win3d = GFXe.getC3D();
 
 
-    win3d->display_func257(NULL);
+    win3d->BeginFrame();
     win3d->setRSTR_BGpen(0);
     win3d->raster_func192(NULL);
-    win3d->raster_func213(NULL);
+    win3d->BeginScene();
 
     for (int i = 0; i < num; i++)
     {
@@ -1066,8 +1066,8 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
         pol->data->render_func(pol->data);
     }
 
-    win3d->raster_func214(NULL);
-    win3d->display_func258(NULL);
+    win3d->EndScene();
+    win3d->EndFrame();
 
     return 1;
 }

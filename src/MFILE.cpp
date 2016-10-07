@@ -6,7 +6,7 @@
 
 MFILE_S1 * GET_FORM_INFO_OR_NULL(MFILE *a1)
 {
-    MFILE_S1 *head = (MFILE_S1 *)a1->list.head;
+    MFILE_S1 *head = a1->list.front();
     if ( head->TAG == TAG_FORM && head->TAG_EXTENSION == TAG_NONE )
         return NULL;
     return head;
@@ -14,7 +14,7 @@ MFILE_S1 * GET_FORM_INFO_OR_NULL(MFILE *a1)
 
 int sub_413290(MFILE *a1)
 {
-    MFILE_S1 *v2 = (MFILE_S1 *)a1->list.head;
+    MFILE_S1 *v2 = a1->list.front();
     int Offset = v2->TAG_SIZE;
 
     if ( v2->TAG == TAG_FORM && v2->TAG_EXTENSION == TAG_NONE )
@@ -28,7 +28,7 @@ int sub_413290(MFILE *a1)
             if ( a1->file_handle->seek(-v2->cur_pos - 4, SEEK_CUR) )
                 return -7;
 
-            __int32 tmp = SWAP32(v2->cur_pos);
+            int32_t tmp = SWAP32(v2->cur_pos);
 
             if ( a1->file_handle->write(&tmp, 4) != 4 )
                 return -6;
@@ -48,10 +48,11 @@ int sub_413290(MFILE *a1)
 
             Offset++;
         }
-        RemHead(&a1->list);
-        nc_FreeMem(v2);
 
-        ((MFILE_S1 *)(a1->list.head))->cur_pos += Offset + 8;
+        a1->list.pop_front();
+        delete v2;
+
+        a1->list.front()->cur_pos += Offset + 8;
 
         a1->field_8--;
 
@@ -73,10 +74,10 @@ int sub_413290(MFILE *a1)
             }
         }
 
-        RemHead(&a1->list);
-        nc_FreeMem(v2);
+        a1->list.pop_front();
+        delete v2;
 
-        v2 = (MFILE_S1 *)a1->list.head;
+        v2 = a1->list.front();
         if ( v2->TAG != TAG_FORM || v2->TAG_EXTENSION != TAG_NONE )
         {
             v2->cur_pos += Offset + 8;
@@ -92,16 +93,16 @@ signed int sub_412FC0(MFILE *a1, unsigned int TAG1, unsigned int TAG2, int a4)
 {
     if ( a1->flags.write_stream & 1 )             // WRITING
     {
-        __int32 TAG_EXTENSION = TAG1;
+        int32_t TAG_EXTENSION = TAG1;
 
-        MFILE_S1 *head = (MFILE_S1 *)a1->list.head;
+        MFILE_S1 *head = a1->list.front();
 
         if ( head->TAG != TAG_FORM )
             return -9;
 
         int cur_pos = 0;
 
-        __int32 tmp = SWAP32(TAG2);
+        int32_t tmp = SWAP32(TAG2);
 
         if ( a1->file_handle->write(&tmp, 4) != 4 )
             return -6;
@@ -125,7 +126,7 @@ signed int sub_412FC0(MFILE *a1, unsigned int TAG1, unsigned int TAG2, int a4)
             TAG_EXTENSION = head->TAG_EXTENSION;
         }
 
-        MFILE_S1 *v10 = (MFILE_S1 *)AllocVec(sizeof(MFILE_S1), 65537);
+        MFILE_S1 *v10 = new MFILE_S1();
 
         if ( !v10 )
             return -4;
@@ -135,7 +136,7 @@ signed int sub_412FC0(MFILE *a1, unsigned int TAG1, unsigned int TAG2, int a4)
         v10->TAG_SIZE = a4;
         v10->cur_pos = cur_pos;
 
-        AddHead(&a1->list, v10);
+        a1->list.push_front(v10);
 
         a1->field_8++;
 
@@ -143,7 +144,7 @@ signed int sub_412FC0(MFILE *a1, unsigned int TAG1, unsigned int TAG2, int a4)
     }
     else                                          // READING
     {
-        MFILE_S1 *head = (MFILE_S1 *)a1->list.head;
+        MFILE_S1 *head = a1->list.front();
 
         if ( head->TAG != TAG_FORM )
             return -2;
@@ -153,9 +154,9 @@ signed int sub_412FC0(MFILE *a1, unsigned int TAG1, unsigned int TAG2, int a4)
 
         int cur_pos = 0;
 
-        __int32 tmp;
-        __int32 tmp2;
-        __int32 tmp3 = head->TAG_EXTENSION;
+        int32_t tmp;
+        int32_t tmp2;
+        int32_t tmp3 = head->TAG_EXTENSION;
 
 
         if ( a1->file_handle->read(&tmp, 4) != 4 )
@@ -175,7 +176,7 @@ signed int sub_412FC0(MFILE *a1, unsigned int TAG1, unsigned int TAG2, int a4)
             tmp3 = SWAP32(tmp3);
             cur_pos = 4;
         }
-        MFILE_S1 *v20 = (MFILE_S1 *)AllocVec(sizeof(MFILE_S1), 65537);
+        MFILE_S1 *v20 = new MFILE_S1();
 
         if ( !v20 )
             return -4;
@@ -185,7 +186,7 @@ signed int sub_412FC0(MFILE *a1, unsigned int TAG1, unsigned int TAG2, int a4)
         v20->TAG_SIZE = tmp2;
         v20->cur_pos = cur_pos;
 
-        AddHead(&a1->list, v20);
+        a1->list.push_front(v20);
 
         a1->field_8++;
 
@@ -227,7 +228,7 @@ int mfread(MFILE *a1, void *dst, int size)
 {
     size_t sz_to_read = size;
 
-    MFILE_S1 *head = (MFILE_S1 *)a1->list.head;
+    MFILE_S1 *head = a1->list.front();
 
     if ( head->TAG == TAG_FORM && head->TAG_EXTENSION == TAG_NONE )
         head = NULL;
@@ -321,7 +322,7 @@ int sub_413564(MFILE *a1, int a2, const void *a3)
 {
     int writed = 0; // eax@5
 
-    MFILE_S1 *head = (MFILE_S1 *)a1->list.head;
+    MFILE_S1 *head = a1->list.front();
     if ( head->TAG == TAG_FORM && head->TAG_EXTENSION == TAG_NONE )
         head = 0;
     if ( head )
@@ -361,18 +362,27 @@ int sub_413564(MFILE *a1, int a2, const void *a3)
 
 MFILE *new_MFILE()
 {
-    MFILE *mfile = (MFILE *)AllocVec(sizeof(MFILE), 65537);
+    MFILE *mfile = new MFILE;
 
     if ( !mfile )
         return NULL;
 
-    init_list(&mfile->list);
+    mfile->file_handle = NULL;
+    mfile->flags.fl0 = 0;
+    mfile->flags.fl1 = 0;
+    mfile->flags.fl2 = 0;
+    mfile->flags.write_stream = 0;
+    mfile->field_8 = 0;
 
-    MFILE_S1 *sub = (MFILE_S1 *)AllocVec(sizeof(MFILE_S1), 65537);
+    //new(&mfile->list) std::list<MFILE_S1 *>;
+    //mfile->list.clear();
+    //init_list(&mfile->list);
+
+    MFILE_S1 *sub = new MFILE_S1;
 
     if ( !sub )
     {
-        nc_FreeMem(mfile);
+        delete mfile;
         return NULL;
     }
 
@@ -380,7 +390,7 @@ MFILE *new_MFILE()
     sub->TAG_EXTENSION = TAG_NONE;
     sub->TAG_SIZE = 0x80000000;
 
-    AddHead(&mfile->list, sub);
+    mfile->list.push_front(sub);
     return mfile;
 }
 
@@ -395,18 +405,10 @@ void del_MFILE(MFILE *fil)
 {
     if ( fil )
     {
-        nlist *lst = &fil->list;
+        for (std::list<MFILE_S1 *>::iterator it = fil->list.begin(); it != fil->list.end(); it++)
+            delete *it;
 
-        while ( true )
-        {
-            nnode *tmp = RemHead(lst);
-            if (!tmp)
-                break;
-
-            if (tmp)
-                nc_FreeMem(tmp);
-        }
-        nc_FreeMem(fil);
+        delete fil;
     }
 }
 

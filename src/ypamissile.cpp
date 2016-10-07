@@ -1142,22 +1142,22 @@ void NC_STACK_ypamissile::ypamissile_func129(void *)
     if ( miss->yw->field_757E )
     {
         char v13[56];
-//    *(_DWORD *)v13 = 1026;
+//    *(_uint32_t *)v13 = 1026;
 //    v13[12] = miss->selfie->owner;
-//    *(_DWORD *)&v13[16] = miss->selfie->ypabact__id;
+//    *(_uint32_t *)&v13[16] = miss->selfie->ypabact__id;
 //    v11 = (char *)&miss->selfie->field_621;
-//    *(_DWORD *)&v13[20] = *(_DWORD *)v11;
+//    *(_uint32_t *)&v13[20] = *(_uint32_t *)v11;
 //    v11 += 4;
-//    *(_DWORD *)&v13[24] = *(_DWORD *)v11;
-//    *(_DWORD *)&v13[28] = *((_DWORD *)v11 + 1);
-//    *(_DWORD *)&v13[32] = miss->selfie->energy;
+//    *(_uint32_t *)&v13[24] = *(_uint32_t *)v11;
+//    *(_uint32_t *)&v13[28] = *((_uint32_t *)v11 + 1);
+//    *(_uint32_t *)&v13[32] = miss->selfie->energy;
 //    v12 = (char *)&miss->selfie->field_605;
-//    *(_DWORD *)&v13[40] = *(_DWORD *)v12;
+//    *(_uint32_t *)&v13[40] = *(_uint32_t *)v12;
 //    v12 += 4;
-//    *(_DWORD *)&v13[44] = *(_DWORD *)v12;
+//    *(_uint32_t *)&v13[44] = *(_uint32_t *)v12;
 //    v12 += 4;
-//    *(_DWORD *)&v13[48] = *(_DWORD *)v12;
-//    *(_DWORD *)&v13[52] = *((_DWORD *)v12 + 1);
+//    *(_uint32_t *)&v13[48] = *(_uint32_t *)v12;
+//    *(_uint32_t *)&v13[52] = *((_uint32_t *)v12 + 1);
 //    *(float *)&v13[36] = miss->selfie->mass;
 
         yw_arg181 arg181;

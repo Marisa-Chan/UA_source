@@ -13,22 +13,22 @@ struct __NC_STACK_idev
 struct win_64arg
 {
     int field_0;
-    int field_4;
+    int keyState;
     float field_8;
 };
 
 struct winp_66arg
 {
-    DWORD downed_key_2;
-    DWORD downed_key;
-    DWORD dword8;
-    DWORD chr;
+    uint32_t downed_key_2;
+    uint32_t downed_key;
+    uint32_t dword8;
+    uint32_t chr;
 };
 
 struct winp_68arg
 {
     const char *keyname;
-    DWORD id;
+    uint32_t id;
 };
 
 struct idev_query_arg
@@ -39,8 +39,8 @@ struct idev_query_arg
 
 struct winp_71arg
 {
-    DWORD effID;
-    DWORD state;
+    uint32_t effID;
+    uint32_t state;
     float p1;
     float p2;
     float p3;

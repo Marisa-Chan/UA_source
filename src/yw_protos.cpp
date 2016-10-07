@@ -3071,7 +3071,7 @@ int ShellSoundsParse_sample(UserData *usr, scrCallBack *arg)
     return 0;
 }
 
-signed int __fastcall ShellSoundsParse_volume(UserData *usr, scrCallBack *arg)
+int ShellSoundsParse_volume(UserData *usr, scrCallBack *arg)
 {
     samples_collection1 *v6;
     int v7;
@@ -4881,7 +4881,7 @@ int parseSaveVideo(scrCallBack *arg)
 
                 while (nod->next)
                 {
-                    if (nod->sort_id == 0x2801E0)
+                    if (nod->width == 640 && nod->height == 480)
                     {
                         vdmd = nod;
                         break;
@@ -4891,6 +4891,9 @@ int parseSaveVideo(scrCallBack *arg)
                     nod = (video_mode_node *)nod->next;
                 }
             }
+
+            if ( !vdmd )
+                printf("vdmd is NULL %s:%d\n", __FILE__, __LINE__);
 
             usr->field_FBE = v7;
             usr->p_ypaworld->game_default_res = vdmd->sort_id;
@@ -5114,7 +5117,7 @@ int parseSaveLevelStatus(scrCallBack *arg)
         {
             if ( arg->dataForStore )
             {
-                uint8_t *v5 = (BYTE *)arg->world;
+                uint8_t *v5 = (uint8_t *)arg->world;
 
                 if ( v5 )
                     *v5 |= 0x10;

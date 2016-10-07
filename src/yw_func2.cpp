@@ -229,7 +229,7 @@ int sub_4D7BFC(const void *a1, const void *a2)
 
 void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc)
 {
-    yw->win3d->raster_func213(NULL);
+    yw->win3d->BeginScene();
 
     brf->field_4174.field_0 = 1;
     brf->field_4174.field_4 = 1;
@@ -260,7 +260,7 @@ void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, str
         pol->render_func(&pol->datSub);
     }
 
-    yw->win3d->raster_func214(NULL);
+    yw->win3d->EndScene();
 }
 
 
@@ -907,6 +907,7 @@ void fill_videmodes_list(UserData *usr)
 
             AddTail(&usr->video_mode_list, vnode);
         }
+
         warg_256.sort_id = id;
     }
 }
@@ -1644,14 +1645,13 @@ void sb_0x46aa8c(UserData *usr)
 
                 strcpy(usr->win3d_guid, usr->field_139A);
 
-                NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(yw->win3d);
                 wdd_func324arg v37;
 
                 v37.name = usr->win3d_name;
                 v37.guid = usr->win3d_guid;
                 v37.currr = 0;
 
-                windd->windd_func325(&v37); //Save to file new resolution
+                yw->win3d->windd_func325(&v37); //Save to file new resolution
 
                 yw->game_default_res = 0x2801E0; //640 x 480
                 resolution = 0x2801E0; //640 x 480
@@ -2952,7 +2952,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         {
             if ( usr->field_0x1cdc )
             {
-                if ( usr->field_3A->downed_key == VK_SPACE )
+                if ( usr->field_3A->downed_key == UAVK_SPACE )
                 {
                     windd->windd_func320(NULL);
                     yw->windp->windp_func68(NULL);
@@ -2960,7 +2960,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 }
             }
         }
-        else if ( yw->windp->windp_func90(NULL) != 3 || usr->field_3A->downed_key == VK_SPACE )
+        else if ( yw->windp->windp_func90(NULL) != 3 || usr->field_3A->downed_key == UAVK_SPACE )
         {
             yw->windp->windp_func68(NULL);
         }
@@ -3129,7 +3129,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     if ( usr->field_0x2fb4 )
         v3 = 1;
 
-    DWORD v6 = usr->confirm_button->button_func69(usr->field_3A);
+    uint32_t v6 = usr->confirm_button->button_func69(usr->field_3A);
     int v6_l = v6 & 0xFFFF;
     int v6_h = (v6 >> 16) & 0xFFFF;
 
@@ -3193,7 +3193,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 usr->field_0x1744 = 0;
             sub_46D960(usr);
         }
-        if ( usr->field_3A->downed_key == VK_RETURN )
+        if ( usr->field_3A->downed_key == UAVK_RETURN )
         {
             switch ( usr->field_0x2fb4 )
             {
@@ -3470,19 +3470,19 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             {
                 usr->input_listview.listFlags |= GuiList::GLIST_FLAG_KEYB_INPUT;
 
-                if ( usr->field_3A->downed_key == VK_BACK  || usr->field_3A->downed_key == VK_DELETE)
+                if ( usr->field_3A->downed_key == UAVK_BACK  || usr->field_3A->downed_key == UAVK_DELETE)
                 {
                     if (usr->keyConfig[usr->field_D36].inp_type != 2)
                         usr->keyConfig[usr->field_D36].KeyCode = 0;
                 }
-                else if ( usr->field_3A->downed_key == VK_RETURN )
+                else if ( usr->field_3A->downed_key == UAVK_RETURN )
                 {
                     usr->keyConfig[usr->field_D36].field_10 = 3;
                     usr->field_D52 = 1;
                     if ( usr->keyConfig[usr->field_D36].inp_type == 2 )
                         usr->field_D3A = 0;
                 }
-                else if ( usr->field_3A->downed_key == VK_ESCAPE )
+                else if ( usr->field_3A->downed_key == UAVK_ESCAPE )
                 {
                     sb_0x46a8c0(usr);
                 }
@@ -3619,7 +3619,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
     if ( usr->field_46 == 3 )
     {
-        if ( usr->field_3A->downed_key == VK_RETURN )
+        if ( usr->field_3A->downed_key == UAVK_RETURN )
         {
             if ( usr->video_listvw.flags & GuiBase::FLAG_CLOSED )
             {
@@ -3656,7 +3656,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             }
 
         }
-        else if ( usr->field_3A->downed_key == VK_ESCAPE )
+        else if ( usr->field_3A->downed_key == UAVK_ESCAPE )
         {
             sub_46A3C0(usr);
             usr->field_46 = 1;
@@ -3915,7 +3915,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         {
             if ( usr->field_0x1744 )
             {
-                if ( usr->field_3A->downed_key == VK_BACK )
+                if ( usr->field_3A->downed_key == UAVK_BACK )
                 {
                     if ( usr->usernamedir_len > 0 && usr->p_ypaworld->str17_NOT_FALSE == 0 )
                     {
@@ -3927,7 +3927,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                         usr->usernamedir_len--;
                     }
                 }
-                else if ( usr->field_3A->downed_key == VK_RETURN )
+                else if ( usr->field_3A->downed_key == UAVK_RETURN )
                 {
                     switch ( usr->field_0x1744 )
                     {
@@ -3969,21 +3969,21 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                         break;
                     }
                 }
-                else if ( usr->field_3A->downed_key == VK_ESCAPE )
+                else if ( usr->field_3A->downed_key == UAVK_ESCAPE )
                 {
                     usr->field_0x1744 = 0;
                 }
-                else if ( usr->field_3A->downed_key == VK_LEFT )
+                else if ( usr->field_3A->downed_key == UAVK_LEFT )
                 {
                     if ( usr->usernamedir_len > 0 && usr->p_ypaworld->str17_NOT_FALSE == 0 )
                         usr->usernamedir_len--;
                 }
-                else if ( usr->field_3A->downed_key == VK_RIGHT )
+                else if ( usr->field_3A->downed_key == UAVK_RIGHT )
                 {
                     if ( usr->usernamedir_len < (int)strlen(usr->usernamedir) && usr->p_ypaworld->str17_NOT_FALSE == 0 )
                         usr->usernamedir_len++;
                 }
-                else if ( usr->field_3A->downed_key == VK_DELETE && usr->usernamedir_len < (int)strlen(usr->usernamedir) && usr->p_ypaworld->str17_NOT_FALSE == 0 )
+                else if ( usr->field_3A->downed_key == UAVK_DELETE && usr->usernamedir_len < (int)strlen(usr->usernamedir) && usr->p_ypaworld->str17_NOT_FALSE == 0 )
                 {
                     int ln = strlen(usr->usernamedir);
                     for (int i = usr->usernamedir_len; i < ln - 1; i++)
@@ -4020,7 +4020,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             }
             else
             {
-                if ( usr->field_3A->downed_key == VK_ESCAPE )
+                if ( usr->field_3A->downed_key == UAVK_ESCAPE )
                     sub_46A7F8(usr);
 
                 if ( usr->field_3A->dword8 == (0x80 | 0x2B) )
@@ -4267,7 +4267,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     {
         usr->disk_listvw.InputHandle(yw, usr->field_3A);
 
-        if ( usr->disk_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT || usr->field_3A->downed_key == VK_UP || usr->field_3A->downed_key == VK_DOWN )
+        if ( usr->disk_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT || usr->field_3A->downed_key == UAVK_UP || usr->field_3A->downed_key == UAVK_DOWN )
         {
             usr->field_1612 = usr->disk_listvw.selectedEntry + 1;
 
@@ -4396,11 +4396,11 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     if ( usr->field_46 == 7 )
     {
 
-        if ( usr->field_3A->downed_key == VK_RETURN )
+        if ( usr->field_3A->downed_key == UAVK_RETURN )
         {
             sub_46B0E0(usr);
         }
-        else if ( usr->field_3A->downed_key == VK_ESCAPE )
+        else if ( usr->field_3A->downed_key == UAVK_ESCAPE )
         {
             sub_46AA0C(usr);
         }
@@ -4473,7 +4473,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
     if ( usr->field_46 == 8 )
     {
-        if ( usr->field_3A->downed_key == VK_RETURN || usr->field_3A->downed_key == VK_ESCAPE )
+        if ( usr->field_3A->downed_key == UAVK_RETURN || usr->field_3A->downed_key == UAVK_ESCAPE )
         {
             usr->field_46 = 1;
 
@@ -4922,7 +4922,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
         usr->network_listvw.InputHandle(yw, usr->field_3A);
 
-        if ( (usr->network_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT) || usr->field_3A->downed_key == VK_UP || usr->field_3A->downed_key == VK_DOWN )
+        if ( (usr->network_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT) || usr->field_3A->downed_key == UAVK_UP || usr->field_3A->downed_key == UAVK_DOWN )
         {
             usr->field_0x1c3c = usr->network_listvw.selectedEntry;
 
@@ -5005,7 +5005,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     }
                 }
 
-                if ( usr->field_3A->downed_key == VK_BACK && usr->field_1C84 > 0 && (yw->str17_NOT_FALSE == 0) )
+                if ( usr->field_3A->downed_key == UAVK_BACK && usr->field_1C84 > 0 && (yw->str17_NOT_FALSE == 0) )
                 {
                     int ln = strlen(usr->field_1C42);
 
@@ -5016,17 +5016,17 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
                     usr->field_1C84--;
                 }
-                else if ( usr->field_3A->downed_key == VK_LEFT )
+                else if ( usr->field_3A->downed_key == UAVK_LEFT )
                 {
                     if ( usr->field_1C84 > 0 && (yw->str17_NOT_FALSE == 0) )
                         usr->field_1C84--;
                 }
-                else if ( usr->field_3A->downed_key == VK_RIGHT )
+                else if ( usr->field_3A->downed_key == UAVK_RIGHT )
                 {
                     if ( usr->field_1C84 < (int32_t)strlen(usr->field_1C42) && (yw->str17_NOT_FALSE == 0) )
                         usr->field_1C84++;
                 }
-                else if ( usr->field_3A->downed_key == VK_DELETE && usr->field_1C84 < (int32_t)strlen(usr->field_1C42) && (yw->str17_NOT_FALSE == 0) )
+                else if ( usr->field_3A->downed_key == UAVK_DELETE && usr->field_1C84 < (int32_t)strlen(usr->field_1C42) && (yw->str17_NOT_FALSE == 0) )
                 {
                     int ln = strlen(usr->field_1C42);
 
@@ -5037,7 +5037,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 }
             }
 
-            if ( usr->field_3A->downed_key == VK_RETURN )
+            if ( usr->field_3A->downed_key == UAVK_RETURN )
             {
                 switch ( usr->field_1C3A )
                 {
@@ -5112,7 +5112,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     break;
                 }
             }
-            else if ( usr->field_3A->downed_key == VK_ESCAPE )
+            else if ( usr->field_3A->downed_key == UAVK_ESCAPE )
             {
                 sub_46D698(usr);
             }

@@ -100,7 +100,7 @@ struct __NC_STACK_base
 
 struct __attribute__((packed)) STRC_base
 {
-    __int16 p1;
+    int16_t p1;
     xyz grp_1;
     float grp3_p1;
     float grp3_p2;
@@ -108,14 +108,14 @@ struct __attribute__((packed)) STRC_base
     float scale_x;
     float scale_y;
     float scale_z;
-    __int16 rot_x;
-    __int16 rot_y;
-    __int16 rot_z;
-    __int16 grp5_p1;
-    __int16 grp5_p2;
-    __int16 grp5_p3;
-    __int16 p17;
-    __int16 p18;
+    int16_t rot_x;
+    int16_t rot_y;
+    int16_t rot_z;
+    int16_t grp5_p1;
+    int16_t grp5_p2;
+    int16_t grp5_p3;
+    int16_t p17;
+    int16_t p18;
     int p19;
     int p20;
 };

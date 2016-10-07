@@ -1,9 +1,6 @@
 #ifndef INCLUDES_H_INCLUDED
 #define INCLUDES_H_INCLUDED
 
-#include <windows.h>
-#include <objbase.h>
-
 #undef max
 #undef min
 

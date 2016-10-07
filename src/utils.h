@@ -95,8 +95,6 @@
 
 int read_yes_no_status(const char *file, int result);
 
-void sub_4BF181(uint32_t sec);
-
 float SWAP32F(float f);
 
 struct __attribute__((packed)) shortPoint
@@ -113,9 +111,6 @@ struct __attribute__((packed)) shortPoint
     shortPoint(): x(0), y(0) {}
 };
 
-HCURSOR uaLoadCursor(HINSTANCE, const char *name);
-HICON uaLoadIcon(HINSTANCE, const char *name);
-int read_reg_key(const CHAR *keyname, char *outBuf, int bufsize);
 const char *get_lang_string(char **array, int id, const char *def);
 int strnicmp (const char *s1, const char *s2, size_t n);
 
@@ -124,8 +119,8 @@ void dprintf(const char *fmt, ...);
 int dround(float val);
 int dround(double val);
 
-DWORD profiler_begin();
-DWORD profiler_end(DWORD prev);
+uint32_t profiler_begin();
+uint32_t profiler_end(uint32_t prev);
 
 FSMgr::FileHandle *uaOpenFile(const char *src_path, const char *mode);
 FSMgr::DirIter *uaOpenDir(const char *dir);

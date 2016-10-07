@@ -3,12 +3,11 @@ CXX = g++
 MINGW = /usr/i686-w64-mingw32
 CC_WIN = i686-w64-mingw32-gcc
 CXX_WIN = i686-w64-mingw32-g++
-LIBS_WIN = -L$(MINGW)/lib/ -lmingw32  -mwindows -lole32 -lgdi32 -ldxguid -ldinput -lddraw -limm32 -lOpenAL32 -lSDL2
+LIBS_WIN = -L$(MINGW)/lib/ -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lOpenAL32 -lopengl32
 
 CLANG_WIN = i686-w64-mingw32-clang++
 
-LIBS_WINE = -lole32 -lgdi32 -ldxguid -ldinput -lddraw -limm32 -lmsvcrt -l openal -lSDL2
-CXX_WINE = wineg++
+LIBS_NIX = -lSDL2 -lSDL2_ttf -lGL -lopenal
 
 TARGET = UA_source
 OBJS =  \
@@ -55,6 +54,7 @@ OBJS =  \
 	winp.cpp\
 	wintimer.cpp\
 	wrapal.cpp\
+	wrapSDL.cpp\
 	yw.cpp\
 	yw_brif.cpp\
 	yw_funcs.cpp\
@@ -76,10 +76,10 @@ WINOBJ = \
 	win_funct.cpp
 
 win32: $(OBJS)
-	$(CXX_WIN) -mno-ms-bitfields -O0 -g -o $(TARGET).exe $(OBJS) $(LIBS_WIN) -m32 -I $(MINGW)/include/
+	$(CXX_WIN) -mno-ms-bitfields -O0 -g -o $(TARGET).exe $(OBJS) $(LIBS_WIN) -I $(MINGW)/include/
 
-wine: $(OBJS)
-	$(CXX_WINE) -mno-ms-bitfields -O0 -g -o $(TARGET) $(OBJS) $(LIBS_WINE) -m32
+nix: $(OBJS)
+	$(CXX) -mno-ms-bitfields -O0 -g -o $(TARGET) $(OBJS) $(LIBS_NIX)
 
 wclang: $(OBJS)
 	$(CLANG_WIN) -mno-ms-bitfields -O0 -g -o $(TARGET).exe $(OBJS) $(LIBS_WIN) -m32 -I $(MINGW)/include/

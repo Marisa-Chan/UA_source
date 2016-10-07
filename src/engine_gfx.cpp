@@ -18,6 +18,8 @@ key_value_stru gfx_keys[6] = {{"gfx.mode", KEY_TYPE_DIGIT, 0},
 
 int GFXEngine::init()
 {
+    NC_STACK_win3d::initfirst();
+
     memset(gfx_palette, 0, 128);
     memset(gfx_display, 0, 128);
     memset(gfx_display2, 0, 128);
@@ -113,11 +115,6 @@ NC_STACK_win3d *GFXEngine::getC3D()
     return cls3D;
 }
 
-gfx_window *GFXEngine::getWindow()
-{
-    return cls3D->getDISP_displInf();
-}
-
 void GFXEngine::setResolution(int res)
 {
     UA_PALETTE *screen_palette = cls3D->getBMD_palette();
@@ -128,13 +125,13 @@ void GFXEngine::setResolution(int res)
     if ( screen_palette )
         palette_copy = *screen_palette; // Copy palette
 
-    cls3D->display_func258(NULL);
+    cls3D->EndFrame();
 
     delete_class_obj(cls3D);
 
     if ( sub_422CE8(gfx_display, gfx_display2, res) )
     {
-        cls3D->display_func257(NULL);
+        cls3D->BeginFrame();
 
         cls3D->setBMD_palette(&palette_copy);
     }

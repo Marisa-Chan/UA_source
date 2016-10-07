@@ -32,9 +32,9 @@ struct ua_fRect
 struct __NC_STACK_display
 {
     bitmap_intern *bitm_intern;
-    DWORD field_4; // Color?
-    DWORD field_8; // and Color2 ?
-    DWORD field_c;
+    uint32_t field_4; // Color?
+    uint32_t field_8; // and Color2 ?
+    uint32_t field_c;
 //  int field_10;
 //  int field_14;
 //  int field_18;
@@ -184,9 +184,9 @@ struct rstr_loc204
 
 struct rstr_arg217
 {
-    DWORD dword0;
-    DWORD dword4;
-    DWORD dword8;
+    uint32_t dword0;
+    uint32_t dword4;
+    uint32_t dword8;
 };
 
 struct rstr_218_arg
@@ -208,9 +208,9 @@ struct rstr_261_arg
 
 struct rstr_262_arg
 {
-    int dword0;
-    int *pdword4;
-    int *pdword8;
+    int cnt;
+    int *slot;
+    int *weight;
 };
 
 struct displ_arg263
@@ -251,10 +251,10 @@ public:
     virtual void raster_func210(ua_fRect *arg);
     virtual void raster_func211(ua_dRect *arg);
     virtual size_t raster_func212(stack_vals *);
-    virtual void raster_func213(polysDatSub *);
-    virtual size_t raster_func214(void *);
-    virtual void raster_func215(void *);
-    virtual void raster_func216(void *);
+    virtual void BeginScene();
+    virtual void EndScene();
+    virtual void LockSurface();
+    virtual void UnlockSurface();
     virtual size_t raster_func217(rstr_arg217 *arg);
     virtual void raster_func218(rstr_218_arg *arg);
     virtual size_t raster_func219(stack_vals *);
@@ -263,20 +263,19 @@ public:
     virtual size_t display_func256(windd_arg256 *inout) {
         return 0;
     };
-    virtual void display_func257(stack_vals *) {};
-    virtual void display_func258(stack_vals *) {};
-    virtual void display_func259(stack_vals *) {};
-    virtual void display_func260(stack_vals *) {};
+    virtual void BeginFrame() {};
+    virtual void EndFrame() {};
+
     virtual void display_func261(rstr_261_arg *arg);
     virtual void display_func262(rstr_262_arg *arg);
     virtual void display_func263(displ_arg263 *arg);
     virtual void display_func264(void *);
     virtual void display_func265(void *);
-    virtual size_t display_func266(bitmap_intern **pbitm);
-    virtual void display_func267(bitmap_intern **);
-    virtual void display_func268(bitmap_intern **pbitm);
-    virtual size_t display_func269(bitmap_intern **);
-    virtual void display_func270(bitmap_intern **);
+    virtual size_t AllocTexture(bitmap_intern *pbitm);
+    virtual void TextureApplyPalette(bitmap_intern *pbitm);
+    virtual void FreeTexture(bitmap_intern *pbitm);
+    virtual size_t LockTexture(bitmap_intern *);
+    virtual void UnlockTexture(bitmap_intern *);
     virtual void display_func271(stack_vals *stak) {};
     virtual void display_func272(stack_vals *) {};
     virtual UA_PALETTE * display_func273(rstr_261_arg *arg);

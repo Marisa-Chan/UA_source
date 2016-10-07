@@ -701,11 +701,11 @@ struct stru_LevelNet
 
 struct rgbiColor
 {
-    BYTE r;
-    BYTE g;
-    BYTE b;
-    BYTE i;
-    DWORD color;
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t i;
+    uint32_t color;
 };
 
 struct yw_movies
@@ -860,7 +860,7 @@ struct _NC_STACK_ypaworld
     roboProto *RoboProtos;
     yw_f80 field_80[8];
     int16_t build_hp_ref[256];
-    BYTE sqrt_table[64][64];
+    uint8_t sqrt_table[64][64];
     __NC_STACK_ypabact *current_bact;
     xyz field_1334;
     mat3x3 field_1340;

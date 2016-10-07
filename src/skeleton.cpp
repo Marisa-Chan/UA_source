@@ -297,7 +297,7 @@ int sub_428D5C(skeleton_arg_132 *arg, skeleton_type1 *in, skeleton_type1 *out, i
     base_1c_struct *glob_1c = arg->glob_1c;
     base_1c_struct *base_1c = arg->base_1c;
 
-    DWORD flag = 0xFFFFFFFF;
+    uint32_t flag = 0xFFFFFFFF;
 
     if ( num )
     {
@@ -578,7 +578,7 @@ void skeleton_func133__sub1(skeleton_intern133 *arg)
 
 int skeleton_func133__sub0(skeleton_type1 *skt, skeleton_type1 *out, pol_indixes *pol)
 {
-    WORD v4 = 0xFFFF;
+    uint16_t v4 = 0xFFFF;
     int16_t *p_cur_vertex = &pol->v1;
     int v7 = 0;
 

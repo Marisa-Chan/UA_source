@@ -1,4 +1,6 @@
 #include <inttypes.h>
+#include <list>
+#include "wrapSDL.h"
 #include "includes.h"
 #include "nucleas.h"
 #include "rsrc.h"
@@ -6,26 +8,24 @@
 #include "display.h"
 #include "win3d.h"
 #include "utils.h"
-#include "MS/d3dmacs.h"
 
 #include "font.h"
 
-windd_params dd_params;
+struct gfxMode
+{
+    int w;
+    int h;
+    int bpp;
+    SDL_DisplayMode mode;
+    int windowed;
+    int sortid;
+    std::string name;
+};
 
-IDirectDraw *ddraw;
-IDirect3D2 *d3d2;
-
+std::list<gfxMode *> graphicsModes;
+SDL_Cursor *cursors[11];
 
 int txt16bit = 0;
-
-GUID *driver_guid;
-char *driver_descript;
-char *driver_name;
-
-wdd_font *font;
-
-int dword_514EFC = 0;
-
 
 const NewClassDescr NC_STACK_win3d::description("win3d.class", &newinstance);
 
@@ -40,7 +40,7 @@ key_value_stru win3d_keys[7] =
     {"gfx.force_emul", KEY_TYPE_BOOL, 0}
 };
 
-key_value_stru windd_keys[7] =
+key_value_stru windd_keys[8] =
 {
     {"gfx.force_soft_cursor", KEY_TYPE_BOOL, 0},
     {"gfx.all_modes", KEY_TYPE_BOOL, 0},
@@ -48,212 +48,162 @@ key_value_stru windd_keys[7] =
     {"gfx.force_alpha_textures", KEY_TYPE_BOOL, 0},
     {"gfx.use_draw_primitive", KEY_TYPE_BOOL, 0},
     {"gfx.disable_lowres", KEY_TYPE_BOOL, 0},
-    {"gfx.export_window_mode", KEY_TYPE_BOOL, 0}
+    {"gfx.export_window_mode", KEY_TYPE_BOOL, 0},
+    {"gfx.blending", KEY_TYPE_DIGIT, 0},
 };
 
-void guid_to_string(char *out, GUID *guid, const char *name)
+
+
+
+bool gfxComp(const gfxMode *a, const gfxMode *b)
 {
-    if ( guid )
-    {
-        sprintf(out, "0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x",
-                guid->Data1,
-                guid->Data2,
-                guid->Data3,
-                guid->Data4[0],
-                guid->Data4[1],
-                guid->Data4[2],
-                guid->Data4[3],
-                guid->Data4[4],
-                guid->Data4[5],
-                guid->Data4[6],
-                guid->Data4[7]);
-
-        return;
-    }
-
-    strcpy(out, name);
+    return (a->sortid > b->sortid);
 }
 
-int out_guid_to_file(const char *filename, GUID *guid, const char *name)
+void addGfxMode(gfxMode *md)
 {
-    char buf[128];
+    for (std::list<gfxMode *>::iterator it = graphicsModes.begin(); it != graphicsModes.end(); it++)
+    {
+        if ( (*it)->sortid == md->sortid )
+        {
+            delete md;
+            return;
+        }
+    }
 
+    graphicsModes.push_back(md);
+    log_d3dlog("Add display mode: %s%dx%d\n", (md->windowed ? "Windowed ": ""), md->w, md->h );
+}
+
+
+void NC_STACK_win3d::initfirst()
+{
+    SDL_DisplayMode deskMode;
+    SDL_GetDesktopDisplayMode(0, &deskMode);
+
+    int checkmodes[][2] =
+    {
+        {640, 480}, {800, 600}, {1024, 768}, {1280, 1024}, {1440, 1050}, {1600, 1200},
+        {720, 480}, {852, 480}, {1280, 720}, {1366, 768}, {1600, 900}, {1920, 1080},
+        {-1, -1}
+    };
+
+    uint32_t corrected = SDLWRAP_CorrectFormat(deskMode.format);
+
+    for(int i = 0; checkmodes[i][0] != -1; i++)
+    {
+        SDL_DisplayMode target, closest;
+
+        target.w = checkmodes[i][0];
+        target.h = checkmodes[i][1];
+        target.format = corrected;
+        target.refresh_rate = 0;
+        target.driverdata   = 0;
+
+        gfxMode *mode;
+        char buf[64];
+
+        if (SDL_GetClosestDisplayMode(0, &target, &closest) )
+        {
+            mode = new gfxMode;
+            mode->w = closest.w;
+            mode->h = closest.h;
+            mode->mode = closest;
+            mode->bpp = SDL_BYTESPERPIXEL(closest.format) * 8;
+            mode->windowed = 0;
+            sprintf(buf, "%d x %d", mode->w, mode->h);
+            mode->name = buf;
+
+            mode->sortid = (closest.w & 0x7FFF) << 7 | (closest.h & 0x7FFF);
+
+            addGfxMode(mode);
+        }
+
+        mode = new gfxMode;
+
+        mode->w = checkmodes[i][0];
+        mode->h = checkmodes[i][1];
+        mode->mode = deskMode;
+        mode->bpp = SDL_BYTESPERPIXEL(corrected) * 8;
+        mode->windowed = 1;
+        sprintf(buf, "Windowed %d x %d", mode->w, mode->h);
+        mode->name = buf;
+
+        mode->sortid = 0x40000000 | (checkmodes[i][0] & 0x7FFF) << 7 | (checkmodes[i][1] & 0x7FFF);
+
+        addGfxMode(mode);
+    }
+
+    graphicsModes.sort(gfxComp);
+
+    cursors[0] = wrapLoadCursor("Pointer");
+    cursors[1] = wrapLoadCursor("Cancel");
+    cursors[2] = wrapLoadCursor("Select");
+    cursors[3] = wrapLoadCursor("Attack");
+    cursors[4] = wrapLoadCursor("Goto");
+    cursors[5] = wrapLoadCursor("Disk");
+    cursors[6] = wrapLoadCursor("New");
+    cursors[7] = wrapLoadCursor("Add");
+    cursors[8] = wrapLoadCursor("Control");
+    cursors[9] = wrapLoadCursor("Beam");
+    cursors[10] = wrapLoadCursor("Build");
+}
+
+ScreenFont::ScreenFont()
+{
+    ttfFont = NULL;
+    height = 0;
+    r = 0;
+    g = 0;
+    b = 0;
+}
+
+__NC_STACK_win3d::__NC_STACK_win3d()
+{
+    width = 0;
+    height = 0;
+    surface_locked_surfaceData = NULL;
+    screenSurface = NULL;
+    currentCursor = 0;
+    surface_locked_pitch = 0;
+    forcesoftcursor = 0;
+    movie_player = 0;
+    field_38 = 0;
+    txt16bit = 0;
+    use_simple_d3d = 0;
+    disable_lowres = 0;
+    export_window_mode = 0;
+    sort_id = 0;
+    flags = 0;
+
+    bigdata = NULL;
+    dither = 0;
+    filter = 0;
+    antialias = 0;
+    alpha = 0;
+    zbuf_when_tracy = 0;
+    colorkey = 0;
+
+    pixfmt = NULL;
+    colorKey = 0;
+    glPixfmt = 0;
+    glPixtype = 0;
+
+    sceneBeginned = 0;
+}
+
+
+
+int out_guid_to_file(const char *filename, const char *name)
+{
     FSMgr::FileHandle *fil = uaOpenFile(filename, "w");
     if ( fil )
     {
-        guid_to_string(buf, guid, name);
-        fil->puts(buf);
+        fil->puts(name);
         delete fil;
         return 1;
     }
     return 0;
-}
-
-int windd_func0__sub1__sub0(const char *filename, GUID *out)
-{
-    char buf[256];
-
-    memset(out, 0, sizeof(GUID));
-
-    FSMgr::FileHandle *fil = uaOpenFile(filename, "r");
-
-    if ( fil )
-    {
-        fil->gets(buf, 256);
-        delete fil;
-
-        char *eol = strpbrk(buf, "\n\r;");
-        if ( eol )
-            *eol = 0;
-
-        if ( !strcmp(buf, "<primary>") )
-        {
-            return 2;
-        }
-        else
-        {
-            if ( !strcmp(buf, "<software>") )
-                return 3;
-
-            char *token = strtok(buf, ", \t");
-            if ( token )
-                out->Data1 = strtoul(token, 0, 0);
-
-            token = strtok(0, ", \t");
-            if ( token )
-                out->Data2 = strtoul(token, 0, 0);
-
-            token = strtok(0, ", \t");
-            if ( token )
-                out->Data3 = strtoul(token, 0, 0);
-
-            for (int i = 0; i < 8; i++)
-            {
-                token = strtok(0, ", \t");
-                if ( token )
-                    out->Data4[i] = strtoul(token, 0, 0);
-            }
-            return 1;
-        }
-    }
-    return 0;
-}
-
-void sub_41F610(const char *name, const char *guid, int cur)
-{
-    wddDevice *dev = (wddDevice *)AllocVec(sizeof(wddDevice), 65537);
-    if ( dev )
-    {
-        strcpy(dev->name, name);
-        strcpy(dev->guid, guid);
-        dev->curr = cur != 0;
-        AddTail(&graph_drivers_list, dev);
-
-        const char *v8;
-
-        if ( cur )
-            v8 = "is_current";
-        else
-            v8 = "not_current";
-        log_d3dlog("wdd_AddDevice(%s,%s,%s)\n", name, guid, v8);
-    }
-}
-
-
-void sub_41F490(unsigned int width, unsigned int height, int bits, int a4)
-{
-    int rel_width, rel_height;
-
-    if ( a4 & 8 )
-    {
-        rel_height = height / 2;
-        rel_width = width  / 2;
-    }
-    else
-    {
-        rel_height = height;
-        rel_width = width;
-    }
-
-    int adding = a4 & 1;
-
-    if (adding == 0)
-    {
-        if (!modes_list.head->next)
-            adding = 1;
-        else
-        {
-            mode_node *node = (mode_node *)modes_list.head;
-            while ( node->next )
-            {
-                if ( rel_width == node->rel_width && rel_height == node->rel_height && bits == node->bits)
-                    return;
-
-                node = (mode_node *)node->next;
-            }
-            adding = 1;
-        }
-    }
-
-    if ( adding )
-    {
-        mode_node *node = (mode_node *)AllocVec(sizeof(mode_node), 65537);
-
-        if ( !node )
-            return;
-
-        node->sort_id = height | (width << 12);
-
-        if (bits == 32) //HACK
-            node->sort_id |= 0x20000000;
-
-        if ( a4 & 1 )
-            node->sort_id |= 0x8000;
-
-        if ( a4 & 8 )
-            node->sort_id |= 0x4000;
-
-        node->height = height;
-        node->width = width;
-
-        node->name[0] = 0;
-        node->rel_width = rel_width;
-        node->rel_height = rel_height;
-        node->field_94 = a4;
-        node->bits = bits;
-
-        int v12 = a4 & 0xEF;
-
-        if (v12 == 1 || v12 == 5)
-            sprintf(node->name, "WIN: %d x %d", node->width, node->height);
-        else if (v12 == 8)
-            sprintf(node->name, "%d x %d x %d", node->rel_width, node->rel_height, bits);
-        else
-            sprintf(node->name, "%d x %d x %d", node->width, node->height, bits);
-
-        if ( a4 & 1 )
-        {
-            AddTail(&modes_list, node);
-        }
-        else
-        {
-            mode_node *v13 = (mode_node *)modes_list.tailpred;
-            if ( modes_list.tailpred->prev )
-            {
-                do
-                {
-                    if ( !(v13->field_94 & 1) && rel_width >= v13->rel_width && rel_height >= v13->rel_height )
-                        break;
-                    v13 = (mode_node *)v13->prev;
-                }
-                while ( v13->prev );
-            }
-            v13->next->prev = node;
-            node->prev = v13;
-            node->next = v13->next;
-            v13->next = node;
-        }
-    }
 }
 
 
@@ -272,521 +222,157 @@ void out_yes_no_status(const char *filename, int val)
 }
 
 
-
-
-
-
-
-int dbcs_StartText()
+void NC_STACK_win3d::DrawTextEntry(const ScreenText *txt)
 {
-    if ( !font )
-        return 0;
+    ScreenFont *font = &stack__win3d.font;
 
-    font->ddsurf->Unlock(NULL);
-    if ( font->ddsurf->GetDC(&font->hDC) )
-        return 0;
-
-    SelectObject(font->hDC, font->hFont);
-    SetTextColor(font->hDC, 0xFFFFu);
-    font->TextColor = 0xFFFF;
-    SetBkMode(font->hDC, 1);
-
-    return 1;
-}
-
-void dbcs_DrawText(const char *string, int p1, int p2, int p3, int p4, char flag)
-{
-    int newColor;
-
-    if ( font )
+    if ( font->ttfFont )
     {
-        if ( flag & 0x20 )
+        if ( txt->flag & 0x20 )
         {
-            newColor = (p3 << 16) | p1 | (p2 << 8);
-            if ( newColor != font->TextColor )
-            {
-                SetTextColor(font->hDC, newColor);
-                font->TextColor = newColor;
-            }
+            font->r = txt->p1;
+            font->g = txt->p2;
+            font->b = txt->p3;
         }
         else
         {
-            tagSIZE psizl;
-            psizl.cx = 0;
-            psizl.cy = 0;
+            int cx = 0, cy = 0;
 
-            if ( flag & 0xE )
+            if ( txt->flag & 0xE )
             {
-                GetTextExtentPoint32A(font->hDC, string, strlen(string), &psizl);
+                TTF_SizeUTF8(font->ttfFont, txt->string, &cx, &cy);
             }
 
-            if ( flag & 8 )
-                p3 = psizl.cx * p3 / 100;
+            int p1 = txt->p1;
+            int p2 = txt->p2;
+            int p3 = txt->p3;
+            int p4 = txt->p4;
 
-            RECT rect;
+            if ( txt->flag & 8 )
+                p3 = cx * p3 / 100;
 
-            rect.left = p1;
-            rect.right = p1 + p3 + 4;
-            rect.bottom = p2 + p4 + 1;
-            rect.top = p2;
+            SDL_Rect clipRect;
 
-            if ( flag & 2 )
+            clipRect.x = p1;
+            clipRect.w = p3 + 4;
+            clipRect.h = p4 + 1;
+            clipRect.y = p2;
+
+            if ( txt->flag & 2 )
             {
-                if ( flag & 8 )
+                if ( txt->flag & 8 )
                 {
-                    p1 -= psizl.cx;
-                    rect.left = p1;
-                    rect.right = p1 + p3 + 4;
+                    p1 -= cx;
+                    clipRect.x = p1;
+                    clipRect.w = p3 + 4;
                 }
                 else
                 {
-                    p1 += (p3 - psizl.cx);
+                    p1 += (p3 - cx);
                 }
             }
-            else if ( flag & 4 )
+            else if ( txt->flag & 4 )
             {
-                if ( flag & 8 )
+                if ( txt->flag & 8 )
                 {
-                    p1 -= psizl.cx / 2;
-                    rect.left = p1;
-                    rect.right = p1 + p3 + 4;
+                    p1 -= cx / 2;
+                    clipRect.x = p1;
+                    clipRect.w = p3 + 4;
                 }
                 else
                 {
-                    p1 += (p3 - psizl.cx) / 2;
+                    p1 += (p3 - cx) / 2;
                 }
             }
+
+            SDL_SetClipRect(stack__win3d.screenSurface, &clipRect);
+
 
             int v10 = ((p4 - font->height) / 2) - 1 + p2;
-            if ( flag & 0x10 )
+            if ( txt->flag & 0x10 )
             {
                 v10++;
                 p1++;
             }
 
-            SetTextColor(font->hDC, 0);
-            ExtTextOut(font->hDC, p1 + 2, v10 + 1, 4, &rect, string, strlen(string), 0);
-            SetTextColor(font->hDC, font->TextColor);
-            ExtTextOut(font->hDC, p1 + 1, v10, 4, &rect, string, strlen(string), 0);
+            SDL_Color clr;
+            clr.a = 255;
+            clr.r = 0;
+            clr.g = 0;
+            clr.b = 0;
+
+            SDL_Surface *tmp = TTF_RenderUTF8_Solid(font->ttfFont, txt->string, clr);
+            //SDL_Surface *tmp = NULL;
+            SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_NONE);
+
+
+            SDL_Rect want;
+            want.w = tmp->w;
+            want.h = tmp->h;
+            want.x = p1 + 2;
+            want.y = v10 + 1;
+
+            SDL_BlitSurface(tmp, NULL, stack__win3d.screenSurface, &want);
+
+            clr.a = 255;
+            clr.r = font->r;
+            clr.g = font->g;
+            clr.b = font->b;
+
+            SDL_SetPaletteColors(tmp->format->palette, &clr, 1, 1);
+
+
+            want.w = tmp->w;
+            want.h = tmp->h;
+            want.x = p1 + 1;
+            want.y = v10;
+
+            SDL_BlitSurface(tmp, NULL, stack__win3d.screenSurface, &want);
+            SDL_FreeSurface(tmp);
+
+
+            SDL_SetClipRect(stack__win3d.screenSurface, NULL);
         }
     }
 }
 
-int dbcs_EndText(LPDDSURFACEDESC surfDesc)
+void NC_STACK_win3d::AddScreenText(const char *string, int p1, int p2, int p3, int p4, int flag)
 {
-    if ( !font )
-    {
-        log_d3dlog("dbcs_EndText(): no DBCS pointer (back ptr invalid!)\n");
-        return 0;
-    }
-    if ( !font->hDC )
-    {
-        log_d3dlog("dbcs_EndText(): no device context (back ptr invalid!)\n");
-        return 0;
-    }
+    ScreenText *v8 = new ScreenText;
+    v8->string = string;
+    v8->p1 = p1;
+    v8->p2 = p2;
+    v8->p3 = p3;
+    v8->p4 = p4;
+    v8->flag = flag;
 
-    font->ddsurf->ReleaseDC(font->hDC);
-    font->hDC = NULL;
-
-    memset(surfDesc, 0, sizeof(DDSURFACEDESC));
-    surfDesc->dwSize = sizeof(DDSURFACEDESC);
-
-    HRESULT err = font->ddsurf->Lock( NULL, surfDesc, DDLOCK_NOSYSLOCK | DDLOCK_WAIT, 0);
-    if ( err )
-        log_d3d_fail("dbcs_EndText()", "Lock on backsurface failed.", err);
-
-    return 1;
+    stack__win3d.font.entries.push_back(v8);
 }
 
-void dbcs_AddText(const char *string, int p1, int p2, int p3, int p4, int flag)
+void NC_STACK_win3d::DrawScreenText()
 {
-    int cnt = font->strings_count;
-    if ( cnt < 64 )
-    {
-        wdd_font_st1 *v8 = &font->field_18[cnt];
-        font->strings_count = cnt + 1;
+    int lkd = stack__win3d.screenSurface->locked;
 
-        v8->string = string;
-        v8->p1 = p1;
-        v8->p2 = p2;
-        v8->p3 = p3;
-        v8->p4 = p4;
-        v8->flag = flag;
+    if (lkd)
+        UnlockSurface();
+
+    ScreenFont *font = &stack__win3d.font;
+
+    font->r = 255;
+    font->g = 255;
+    font->b = 0;
+
+    for ( std::list<ScreenText *>::iterator it = font->entries.begin(); it != font->entries.end(); it++ )
+    {
+        DrawTextEntry(*it);
+        delete (*it);
     }
+
+    font->entries.clear();
+
+    if (lkd)
+        LockSurface();
 }
-
-int sb_0x4bf0a0(LPDDSURFACEDESC surf)
-{
-    if ( font->strings_count )
-    {
-        dbcs_StartText();
-        for ( int i = 0; i < font->strings_count; i++ )
-            dbcs_DrawText(font->field_18[i].string, font->field_18[i].p1, font->field_18[i].p2, font->field_18[i].p3, font->field_18[i].p4, font->field_18[i].flag);
-
-        font->strings_count = 0;
-        return dbcs_EndText(surf);
-    }
-    return 0;
-}
-
-
-
-
-HRESULT __stdcall enumdevice_callback(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR lpDeviceName, LPD3DDEVICEDESC hw, LPD3DDEVICEDESC, LPVOID )
-{
-    _devices *device = &dd_params.enum_devices_[dd_params.number_of_devices];
-
-    memset(&dd_params.enum_devices_[dd_params.number_of_devices], 0, sizeof(_devices));
-
-    log_d3dlog("-> enum devices:\n");
-    log_d3dlog("    name = %s\n", lpDeviceName);
-    log_d3dlog("    desc = %s\n", lpDeviceDescription);
-
-    if ( lpGuid )
-    {
-        memcpy(&device->device_guid, lpGuid, sizeof(GUID));
-        device->has_device_guid = 1;
-
-        log_d3dlog(
-            "    guid = 0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,0x%x\n",
-            lpGuid->Data1,
-            lpGuid->Data2,
-            lpGuid->Data3,
-            lpGuid->Data4[0],
-            lpGuid->Data4[1],
-            lpGuid->Data4[2],
-            lpGuid->Data4[3],
-            lpGuid->Data4[4],
-            lpGuid->Data4[5],
-            lpGuid->Data4[6],
-            lpGuid->Data4[7]);
-    }
-    if ( driver_guid )
-    {
-        memcpy(&device->driver_guid, driver_guid, sizeof(GUID));
-        device->has_driver_guid = 1;
-    }
-
-    strncpy(device->device_name, lpDeviceName, 255);
-    strncpy(device->device_descr, lpDeviceDescription, 255);
-    strncpy(device->driver_descript, driver_descript, 255);
-    strncpy(device->driver_name, driver_name, 255);
-
-    if ( !hw->dcmColorModel )
-    {
-        log_d3dlog("enum devices: skip, is not hardware\n");
-
-        memset(device, 0, sizeof(_devices));
-
-        return 1;
-    }
-
-    device->unk0_def_1 = 1;
-
-    memcpy(&device->dev_descr, hw, hw->dwSize);
-
-    log_d3dlog("enum devices: ok, is hardware\n");
-
-    device->unk1_def_0 = 0;
-    device->unk2_def_0 = 0;
-
-    unsigned int dwRGB;
-
-
-    switch(dd_params.displ_mode_surface.ddpfPixelFormat.dwRGBBitCount)
-    {
-    case 1:
-        dwRGB = DDBD_1;
-        break;
-    case 2:
-        dwRGB = DDBD_2;
-        break;
-    case 4:
-        dwRGB = DDBD_4;
-        break;
-    case 8:
-        dwRGB = DDBD_8;
-        break;
-    case 16:
-        dwRGB = DDBD_16;
-        break;
-    case 24:
-        dwRGB = DDBD_24;
-        break;
-    case 32:
-        dwRGB = DDBD_32;
-        break;
-    default:
-        dwRGB = 0x0;
-        break;
-    }
-
-    if ( dwRGB & device->dev_descr.dwDeviceRenderBitDepth )
-    {
-        device->unk1_def_0 = 1;
-        log_d3dlog("enum devices: can render into desktop bit depth\n");
-    }
-
-    if ( device->dev_descr.dpcTriCaps.dwRasterCaps & D3DPRASTERCAPS_ZBUFFERLESSHSR )
-    {
-        device->zbuf_use = 0;
-        log_d3dlog("enum devices: zbufferlesshsr set (no zbuf used)\n");
-    }
-    else
-    {
-        if ( !device->dev_descr.dwDeviceZBufferBitDepth )
-        {
-            log_d3dlog("enum devices: skip, no hidden surface removal...\n");
-            return 1;
-        }
-
-        device->zbuf_use = 1;
-        log_d3dlog("enum devices: use zbuffer\n");
-    }
-
-    if ( device->zbuf_use )
-    {
-        if ( device->dev_descr.dwDeviceZBufferBitDepth & DDBD_16 )
-        {
-            device->zbuf_bit_depth = 16;
-        }
-        else if ( device->dev_descr.dwDeviceZBufferBitDepth & DDBD_8 )
-        {
-            device->zbuf_bit_depth = 8;
-        }
-        else if ( device->dev_descr.dwDeviceZBufferBitDepth & DDBD_24 )
-        {
-            device->zbuf_bit_depth = 24;
-        }
-        else if ( device->dev_descr.dwDeviceZBufferBitDepth & DDBD_32 )
-        {
-            device->zbuf_bit_depth = 32;
-        }
-
-        log_d3dlog("enum devices: zbuf bit depth is %d\n", device->zbuf_bit_depth);
-    }
-
-    device->can_destblend = 0;
-    device->can_stippling = 0;
-    device->can_srcblend = 0;
-
-    if ( (device->dev_descr.dpcTriCaps.dwSrcBlendCaps & D3DPBLENDCAPS_ONE) &&
-            (device->dev_descr.dpcTriCaps.dwDestBlendCaps & D3DPBLENDCAPS_ONE) &&
-            !txt16bit )
-    {
-        device->can_srcblend = 1;
-        device->can_destblend = 1;
-
-        log_d3dlog("enum devices: can do srcblend = srcalpha; destblend = one\n");
-    }
-    else if ( (device->dev_descr.dpcTriCaps.dwShadeCaps & (D3DPSHADECAPS_ALPHAFLATSTIPPLED | D3DPSHADECAPS_ALPHAFLATSTIPPLED)) &&
-              !(device->dev_descr.dpcTriCaps.dwShadeCaps & D3DPSHADECAPS_ALPHAFLATBLEND) )
-    {
-        device->can_stippling = 1;
-
-        log_d3dlog("enum devices: can do alpha stippling\n");
-    }
-    else if ( (device->dev_descr.dpcTriCaps.dwSrcBlendCaps & D3DPBLENDCAPS_SRCALPHA) && (device->dev_descr.dpcTriCaps.dwDestBlendCaps & D3DPBLENDCAPS_INVSRCALPHA) )
-    {
-        device->can_srcblend = 1;
-        device->can_destblend = 0;
-
-        log_d3dlog("enum devices: can do srcblend = srcalpha; destblend = invsrcalpha\n");
-    }
-    else
-    {
-        log_d3dlog("enum devices: skip, no alpha, no stipple...\n");
-        return 1;
-    }
-
-    can_srcblend = device->can_srcblend;
-    can_destblend = device->can_destblend;
-    can_stippling = device->can_stippling;
-
-    if ( device->dev_descr.dwDevCaps & D3DDEVCAPS_TEXTURESYSTEMMEMORY )
-    {
-        device->textures_in_sysmem = 1;
-        log_d3dlog("enum devices: can do sysmem textures\n");
-    }
-    else if ( device->dev_descr.dwDevCaps & D3DDEVCAPS_TEXTUREVIDEOMEMORY )
-    {
-        device->textures_in_sysmem = 0;
-        log_d3dlog("enum devices: textures in vmem\n");
-    }
-    else
-    {
-        log_d3dlog("enum devices: skip, does not support texture mapping\n");
-        return 1;
-    }
-
-
-    if ( device->dev_descr.dpcTriCaps.dwTextureCaps & 8 )
-    {
-        device->can_colorkey = 1;
-        log_d3dlog("enum devices: can do colorkey\n");
-    }
-    else
-    {
-        device->can_colorkey = 0;
-        log_d3dlog("enum devices: no colorkey support\n");
-    }
-
-    dd_params.number_of_devices++;
-
-    log_d3dlog("enum devices: device accepted\n");
-
-    return 1;
-}
-
-signed int __stdcall DDRAW_ENUMERATE_CallBack(GUID *lpGUID, LPSTR DRIVER_NAME, LPSTR DRIVER_DESCR, void *)
-{
-    char buf[144];
-
-    ddraw = NULL;
-    d3d2 = NULL;
-
-    if ( DirectDrawCreate(lpGUID, &ddraw, 0) )
-        return 1;
-
-    dd_params.displ_mode_surface.dwSize = sizeof(DDSURFACEDESC);
-
-    ddraw->GetDisplayMode(&dd_params.displ_mode_surface);
-
-    guid_to_string(buf, lpGUID, "<primary>");
-
-    log_d3dlog("-> enumerate ddraw objects...\n");
-    log_d3dlog("    -> name = %s\n", DRIVER_DESCR);
-    log_d3dlog("    -> desc = %s\n", DRIVER_NAME);
-    log_d3dlog("    -> guid = %s\n", buf);
-
-    DDCAPS driver_caps;
-    memset(&driver_caps, 0, sizeof(DDCAPS));
-    driver_caps.dwSize = sizeof(DDCAPS);
-
-    DDCAPS emul_caps;
-    memset(&emul_caps, 0, sizeof(DDCAPS));
-    emul_caps.dwSize = sizeof(DDCAPS);
-
-    if ( ddraw->GetCaps(&driver_caps, &emul_caps) )
-    {
-        ddraw->Release();
-        ddraw = NULL;
-        return 1;
-    }
-    else
-    {
-        if ( driver_caps.dwCaps & DDCAPS_3D )
-        {
-            if ( !ddraw->QueryInterface(IID_IDirect3D2, (void **)&d3d2) )
-            {
-                driver_descript = DRIVER_DESCR;
-                driver_name = DRIVER_NAME;
-
-                driver_guid = lpGUID;
-
-                d3d2->EnumDevices(enumdevice_callback, 0);
-
-
-                driver_descript = NULL;
-                driver_name = NULL;
-                driver_guid = NULL;
-
-                d3d2->Release();
-                d3d2 = NULL;
-            }
-        }
-
-        ddraw->Release();
-        ddraw = NULL;
-
-        return 1;
-    }
-    return 1;
-}
-
-
-
-HRESULT __stdcall gfx_modes_callback(LPDDSURFACEDESC a1, LPVOID )
-{
-////	if ( a1->dwWidth <= 1024 && a1->dwHeight <= 768 ) ////HACK
-    {
-        dd_params.gfx_modes[dd_params.gfx_modes_count].width = a1->dwWidth;
-        dd_params.gfx_modes[dd_params.gfx_modes_count].height = a1->dwHeight;
-        dd_params.gfx_modes[dd_params.gfx_modes_count].bits = a1->ddpfPixelFormat.dwRGBBitCount;
-        dd_params.gfx_modes[dd_params.gfx_modes_count].unk = 0;
-
-        log_d3dlog(
-            "enum display mode: %dx%dx%d\n",
-            a1->dwWidth,
-            a1->dwHeight,
-            a1->ddpfPixelFormat.dwRGBBitCount);
-
-        dd_params.gfx_modes_count++;
-
-        if ( dd_params.gfx_modes_count == 64 )
-            return 0;
-    }
-    return 1;
-}
-
-
-
-int cmp_gfx_modes (const void * a, const void * b)
-{
-    enum_gfx_modes *a1 = (enum_gfx_modes *)a;
-    enum_gfx_modes *a2 = (enum_gfx_modes *)b;
-
-    if ( a1->bits < a2->bits )
-        return -1;
-
-    if ( a2->bits < a1->bits )
-        return 1;
-
-    if ( a1->width < a2->width )
-        return -1;
-
-    if ( a2->width < a1->width )
-        return 1;
-
-    if (a1->height < a2->height)
-        return -1;
-
-    if (a2->height < a1->height)
-        return 1;
-
-    return 0;
-}
-
-
-
-
-DWORD RGBAToColor(unsigned int r, unsigned int g, unsigned int b, unsigned int a, int rshift, int gshift, int bshift, int ashift, int rmask, int gmask, int bmask, int amask)
-{
-    DWORD rbits;
-    DWORD gbits;
-    DWORD bbits;
-    DWORD abits;
-
-    if ( rshift < 0 )
-        rbits = r >> -rshift;
-    else
-        rbits = r << rshift;
-    if ( gshift < 0 )
-        gbits = g >> -gshift;
-    else
-        gbits = g << gshift;
-    if ( bshift < 0 )
-        bbits = b >> -bshift;
-    else
-        bbits = b << bshift;
-    if ( ashift < 0 )
-        abits = a >> -ashift;
-    else
-        abits = a << ashift;
-
-    return (bmask & bbits) | (gmask & gbits) | (amask & abits) | (rmask & rbits);
-}
-
 
 int win3dInitialisation(__NC_STACK_win3d *w3d)
 {
@@ -796,12 +382,9 @@ int win3dInitialisation(__NC_STACK_win3d *w3d)
     {
         memset(bigdata, 0, sizeof(win3d_bigdata));
 
-        bigdata->_dx = w3d->width / 2;
-        bigdata->_dy = w3d->height / 2;
-
         for (int i = 0; i < 8; i++)
         {
-            DWORD color = 0;
+            uint32_t color = 0;
             switch(i)
             {
             case 0:
@@ -841,956 +424,222 @@ int win3dInitialisation(__NC_STACK_win3d *w3d)
     return 0;
 }
 
-int initPixelFormats(__NC_STACK_win3d *w3d)
+int NC_STACK_win3d::initPixelFormats()
 {
-    wind3d_pixelformat *fmt = &w3d->bigdata->primary__pixelformat;
+    __NC_STACK_win3d *w3d = &stack__win3d;
 
-    memset(fmt, 0, sizeof(wind3d_pixelformat));
+    if (w3d->pixfmt)
+        SDL_FreeFormat(w3d->pixfmt);
 
-    int bytes = dd_params.ddSurfDescr__primary.ddpfPixelFormat.dwRGBBitCount / 8;
-    fmt->BytesPerColor = dd_params.ddSurfDescr__primary.ddpfPixelFormat.dwRGBBitCount / 8;
+    SDL_DisplayMode curr;
+    SDL_GetCurrentDisplayMode(0, &curr);
+    curr.format = SDLWRAP_CorrectFormat(curr.format);
 
-    if ( bytes == 2 )
-        fmt->color_mode = 1;
-    else if ( bytes == 4)
-        fmt->color_mode = 2;
-    else
-        fmt->color_mode = 0;
+    w3d->pixfmt = SDL_AllocFormat( curr.format );
+    w3d->colorKey = SDL_MapRGBA(w3d->pixfmt, 255, 255, 0, 255);
 
-    if ( !(dd_params.ddSurfDescr__primary.ddpfPixelFormat.dwFlags & DDPF_PALETTEINDEXED8) )
-    {
-        fmt->dwRBitMask = dd_params.ddSurfDescr__primary.ddpfPixelFormat.dwRBitMask;
-        fmt->dwGBitMask = dd_params.ddSurfDescr__primary.ddpfPixelFormat.dwGBitMask;
-        fmt->dwBBitMask = dd_params.ddSurfDescr__primary.ddpfPixelFormat.dwBBitMask;
-        fmt->dwAlphaBitMask = dd_params.ddSurfDescr__primary.ddpfPixelFormat.dwRGBAlphaBitMask;
-
-        DWORD bits = dd_params.ddSurfDescr__primary.ddpfPixelFormat.dwRBitMask;
-        int i;
-
-        if ( bits )
-        {
-            for ( i = 0; !(bits & 1); i++ )
-                bits >>= 1;
-
-            fmt->dwRShift = i;
-
-            for ( i = 0; bits & 1; i++ )
-                bits >>= 1;
-
-            fmt->dwRShift -= 8 - i;
-        }
-        else
-            fmt->dwRShift = 0;
-
-        bits = dd_params.ddSurfDescr__primary.ddpfPixelFormat.dwGBitMask;
-        if ( bits )
-        {
-            for ( i = 0; !(bits & 1); i++ )
-                bits >>= 1;
-
-            fmt->dwGShift = i;
-
-            for ( i = 0; bits & 1; i++ )
-                bits >>= 1;
-
-            fmt->dwGShift -= 8 - i;
-        }
-        else
-            fmt->dwGShift = 0;
-
-        bits = dd_params.ddSurfDescr__primary.ddpfPixelFormat.dwBBitMask;
-        if ( bits )
-        {
-            for ( i = 0; !(bits & 1); i++ )
-                bits >>= 1;
-
-            fmt->dwBShift = i;
-
-            for ( i = 0; bits & 1; i++ )
-                bits >>= 1;
-
-            fmt->dwBShift -= 8 - i;
-        }
-        else
-            fmt->dwBShift = 0;
-
-        bits = dd_params.ddSurfDescr__primary.ddpfPixelFormat.dwRGBAlphaBitMask;
-        if ( bits )
-        {
-            for ( i = 0; !(bits & 1); i++ )
-                bits >>= 1;
-
-            fmt->dwAShift = i;
-
-            for ( i = 0; bits & 1; i++ )
-                bits >>= 1;
-
-            fmt->dwAShift -= 8 - i;
-        }
-        else
-            fmt->dwAShift = 0;
-
-        fmt->FFFF0000__color = RGBAToColor(255, 255, 0, 0, fmt->dwRShift, fmt->dwGShift, fmt->dwBShift, fmt->dwAShift, fmt->dwRBitMask, fmt->dwGBitMask, fmt->dwBBitMask, fmt->dwAlphaBitMask);
-
-        fmt->colors = (BYTE *)AllocVec(fmt->BytesPerColor * 256, 0);
-
-        if ( !fmt->colors )
-        {
-            if ( w3d->bigdata )
-            {
-                if ( w3d->bigdata->primary__pixelformat.colors )
-                {
-                    nc_FreeMem(w3d->bigdata->primary__pixelformat.colors);
-                    w3d->bigdata->primary__pixelformat.colors = NULL;
-                }
-                if ( w3d->bigdata->selected__pixelformat.colors )
-                {
-                    nc_FreeMem(w3d->bigdata->selected__pixelformat.colors);
-                    w3d->bigdata->selected__pixelformat.colors = NULL;
-                }
-            }
-            return 0;
-        }
-    }
-
-
-    w3d->bigdata->field_3870 = 0;
-
-    for (int i = 0; i < 255; i++)
-        w3d->bigdata->grey_gradient[i] = RGBAToColor(i, i, i, 255, fmt->dwRShift, fmt->dwGShift, fmt->dwBShift, fmt->dwAShift, fmt->dwRBitMask, fmt->dwGBitMask, fmt->dwBBitMask, fmt->dwAlphaBitMask);
-
-    wind3d_pixelformat *pixfmt = &w3d->bigdata->selected__pixelformat;
-    memset(pixfmt, 0, sizeof(wind3d_pixelformat));
-
-
-    windd_formats *dd_fmt = &w3d->intern->formats[w3d->intern->selected_format_id];
-
-    pixfmt->BytesPerColor = dd_fmt->surf_descr.ddpfPixelFormat.dwRGBBitCount / 8;
-
-    if (pixfmt->BytesPerColor == 2)
-        pixfmt->color_mode = 1;
-    else if (pixfmt->BytesPerColor == 4)
-        pixfmt->color_mode = 2;
-    else
-        pixfmt->color_mode = 0;
-
-    if ( !(dd_fmt->surf_descr.ddpfPixelFormat.dwFlags & DDPF_PALETTEINDEXED8 ))
-    {
-        pixfmt->dwRBitMask = dd_fmt->surf_descr.ddpfPixelFormat.dwRBitMask;
-        pixfmt->dwGBitMask = dd_fmt->surf_descr.ddpfPixelFormat.dwGBitMask;
-        pixfmt->dwBBitMask = dd_fmt->surf_descr.ddpfPixelFormat.dwBBitMask;
-        pixfmt->dwAlphaBitMask = dd_fmt->surf_descr.ddpfPixelFormat.dwRGBAlphaBitMask;
-
-
-        DWORD bits = dd_fmt->surf_descr.ddpfPixelFormat.dwRBitMask;
-        int i;
-
-        if ( bits )
-        {
-            for ( i = 0; !(bits & 1); i++ )
-                bits >>= 1;
-
-            pixfmt->dwRShift = i;
-
-            for ( i = 0; bits & 1; i++ )
-                bits >>= 1;
-
-            pixfmt->dwRShift -= 8 - i;
-        }
-        else
-            pixfmt->dwRShift = 0;
-
-        bits = dd_fmt->surf_descr.ddpfPixelFormat.dwGBitMask;
-        if ( bits )
-        {
-            for ( i = 0; !(bits & 1); i++ )
-                bits >>= 1;
-
-            pixfmt->dwGShift = i;
-
-            for ( i = 0; bits & 1; i++ )
-                bits >>= 1;
-
-            pixfmt->dwGShift -= 8 - i;
-        }
-        else
-            pixfmt->dwGShift = 0;
-
-        bits = dd_fmt->surf_descr.ddpfPixelFormat.dwBBitMask;
-        if ( bits )
-        {
-            for ( i = 0; !(bits & 1); i++ )
-                bits >>= 1;
-
-            pixfmt->dwBShift = i;
-
-            for ( i = 0; bits & 1; i++ )
-                bits >>= 1;
-
-            pixfmt->dwBShift -= 8 - i;
-        }
-        else
-            pixfmt->dwBShift = 0;
-
-        bits = dd_fmt->surf_descr.ddpfPixelFormat.dwRGBAlphaBitMask;
-        if ( bits )
-        {
-            for ( i = 0; !(bits & 1); i++ )
-                bits >>= 1;
-
-            pixfmt->dwAShift = i;
-
-            for ( i = 0; bits & 1; i++ )
-                bits >>= 1;
-
-            pixfmt->dwAShift -= 8 - i;
-        }
-        else
-            pixfmt->dwAShift = 0;
-
-
-        pixfmt->FFFF0000__color = RGBAToColor(255, 255, 0, 0, pixfmt->dwRShift, pixfmt->dwGShift, pixfmt->dwBShift, pixfmt->dwAShift, pixfmt->dwRBitMask, pixfmt->dwGBitMask, pixfmt->dwBBitMask, pixfmt->dwAlphaBitMask);
-
-        pixfmt->colors = (BYTE *)AllocVec(pixfmt->BytesPerColor * 256, 0);
-
-        if ( !pixfmt->colors )
-        {
-            if ( w3d->bigdata )
-            {
-                if ( w3d->bigdata->primary__pixelformat.colors )
-                {
-                    nc_FreeMem(w3d->bigdata->primary__pixelformat.colors);
-                    w3d->bigdata->primary__pixelformat.colors = NULL;
-                }
-                if ( w3d->bigdata->selected__pixelformat.colors )
-                {
-                    nc_FreeMem(w3d->bigdata->selected__pixelformat.colors);
-                    w3d->bigdata->selected__pixelformat.colors = NULL;
-                }
-            }
-            return 0;
-        }
-    }
+    SDLWRAP_GL_mapFormat(curr.format, &w3d->glPixfmt, &w3d->glPixtype);
 
     return 1;
 }
 
-void sub_439E30(__NC_STACK_win3d *w3d)
+void NC_STACK_win3d::win3d__SetRenderState(int type, int state)
 {
-    if ( w3d->bigdata )
+    if ( stack__win3d.sceneBeginned )
     {
-        for (int i = 0; i < 32; i++)
+        switch(type)
         {
-            texCache *tex = &w3d->bigdata->texCh[i];
-
-            if ( tex->ddrawPal )
+        case TEXTUREHANDLE:
+            if (state)
             {
-                tex->ddrawPal->Release();
-                tex->ddrawPal = NULL;
+                glEnable(GL_TEXTURE_2D);
+                glBindTexture(GL_TEXTURE_2D, state);
             }
-
-            if ( tex->d3dtex )
+            else
             {
-                tex->d3dtex->Release();
-                tex->d3dtex = NULL;
+                glDisable(GL_TEXTURE_2D);
+                glBindTexture(GL_TEXTURE_2D, 0);
             }
-
-            if ( tex->d3dtex2 )
-            {
-                tex->d3dtex2->Release();
-                tex->d3dtex2 = NULL;
-            }
-
-            if ( tex->ddDrawSurface )
-            {
-                tex->ddDrawSurface->Release();
-                tex->ddDrawSurface = NULL;
-            }
-        }
-    }
-}
-
-int initTextureCache(__NC_STACK_win3d *w3d)
-{
-    w3d->bigdata->texCh_count = 0;
-
-    memset(w3d->bigdata->texCh, 0, sizeof(texCache) * 32);
-
-    PALETTEENTRY tmpPal[256];
-    for (int i = 0; i < 256; i++)
-    {
-        tmpPal[i].peGreen = i;
-        tmpPal[i].peBlue = i;
-        tmpPal[i].peRed = i;
-    }
-
-    while (w3d->bigdata->texCh_count < 32)
-    {
-        texCache *tex = &w3d->bigdata->texCh[w3d->bigdata->texCh_count];
-        windd_formats *wdd_fmt = &w3d->intern->formats[w3d->intern->selected_format_id];
-
-        tex->used = 1;
-
-        DDSURFACEDESC surfDescr;
-        memset(&surfDescr, 0, sizeof(DDSURFACEDESC));
-        surfDescr.dwSize = sizeof(DDSURFACEDESC);
-        surfDescr.dwFlags = DDSD_PIXELFORMAT | DDSD_WIDTH | DDSD_HEIGHT | DDSD_CAPS;
-        surfDescr.dwWidth = 256;
-        surfDescr.dwHeight = 256;
-
-        memcpy(&surfDescr.ddpfPixelFormat, &wdd_fmt->surf_descr.ddpfPixelFormat, sizeof(surfDescr.ddpfPixelFormat));
-        surfDescr.ddsCaps.dwCaps = DDSCAPS_ALLOCONLOAD | DDSCAPS_VIDEOMEMORY | DDSCAPS_TEXTURE;
-
-        HRESULT res = ddraw->CreateSurface(&surfDescr, &tex->ddDrawSurface, NULL);
-
-        if ( res == DDERR_OUTOFVIDEOMEMORY )
             break;
 
-        if ( res )
+        case SHADEMODE:
+            if ( state )
+                glShadeModel(GL_SMOOTH);
+            else
+                glShadeModel(GL_FLAT);
+            break;
+
+        case STIPPLEENABLE:
+            break;
+
+        case SRCBLEND:
         {
-            log_d3d_fail("win3d.class/w3d_txtcache.c/InitTxtCache()", "IDirectDraw::CreateSurface()", res);
-            sub_439E30(w3d);
-            return 0;
+            GLint dst;
+            glGetIntegerv(GL_BLEND_DST, &dst);
+
+            if (state == 0)
+                glBlendFunc(GL_ZERO, dst);
+            else if (state == 1)
+                glBlendFunc(GL_ONE, dst);
+            else if (state == 2)
+                glBlendFunc(GL_SRC_ALPHA, dst);
+            else if (state == 3)
+                glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, dst);
         }
+        break;
 
-        if ( surfDescr.ddpfPixelFormat.dwFlags & DDPF_PALETTEINDEXED8 )
+        case DESTBLEND:
         {
-            res = ddraw->CreatePalette(DDPCAPS_ALLOW256 | DDPCAPS_8BIT, tmpPal, &tex->ddrawPal, NULL);
+            GLint src;
+            glGetIntegerv(GL_BLEND_SRC, &src);
 
-            if ( res )
+            if (state == 0)
+                glBlendFunc(src, GL_ZERO);
+            else if (state == 1)
+                glBlendFunc(src, GL_ONE);
+            else if (state == 2)
+                glBlendFunc(src, GL_SRC_ALPHA);
+            else if (state == 3)
+                glBlendFunc(src, GL_ONE_MINUS_SRC_ALPHA);
+        }
+        break;
+
+        case TEXTUREMAPBLEND:
+            if (state == 0)
+                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+            else if (state == 1)
             {
-                log_d3d_fail("win3d.class/w3d_txtcache.c/InitTxtCache()", "IDirectDraw::CreatePalette()", res);
-                sub_439E30(w3d);
-                return 0;
+                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+                glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+                glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_REPLACE);
             }
+            else if (state == 2)
+                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+            break;
 
-            res = tex->ddDrawSurface->SetPalette(tex->ddrawPal);
-            if ( res )
-            {
-                log_d3d_fail("win3d.class/w3d_txtcache.c", "IDirectDrawSurface::SetPalette()", res);
-                sub_439E30(w3d);
-                return 0;
-            }
-        }
+        case ALPHABLENDENABLE:
+            if (state)
+                glEnable(GL_BLEND);
+            else
+                glDisable(GL_BLEND);
+            break;
 
-        res = tex->ddDrawSurface->QueryInterface(IID_IDirect3DTexture2, (void **)&tex->d3dtex2);
-        if ( res )
-        {
-            log_d3d_fail("win3d.class", "QueryInterface(IID_IDirect3DTextur2) failed.", res);
-            sub_439E30(w3d);
-            return 0;
-        }
+        case ZWRITEENABLE:
+            if (state)
+                glDepthMask(GL_TRUE);
+            else
+                glDepthMask(GL_FALSE);
+            break;
 
-        res = tex->ddDrawSurface->QueryInterface(IID_IDirect3DTexture, (void **)&tex->d3dtex);
-        if ( res )
-        {
-            log_d3d_fail("win3d.class", "QueryInterface(IID_IDIrect3DTexture) failed.", res);
-            sub_439E30(w3d);
-            return 0;
-        }
+        case TEXTUREMAG:
+            if (state)
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            else
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            break;
 
-        w3d->bigdata->texCh_count++;
-    }
-    return 1;
-}
+        case TEXTUREMIN:
+            if (state)
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            else
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            break;
 
-void sub_43BE88(__NC_STACK_win3d *w3d)
-{
-    win3d_bigdata *bigdata = w3d->bigdata;
-    if ( w3d->bigdata->sceneBeginned )
-    {
-        OP_EXIT(bigdata->rendStates.lpInsPointer);
-
-        void *lpInsStart = bigdata->rendStates.lpInsStart;
-
-        OP_PROCESS_VERTICES(1, lpInsStart);
-        PROCESSVERTICES_DATA( D3DPROCESSVERTICES_COPY, 0, bigdata->rendStates.vertexCount, lpInsStart);
-
-        execBuf *rendStates = &bigdata->rendStates;
-
-        HRESULT res = w3d->intern->executebuffer->Unlock();
-        if ( res )
-        {
-            log_d3d_fail("win3d.class", "IDirect3DExecuteBuffer::Unlock() failed", res);
-            return;
-        }
-
-        D3DEXECUTEDATA execData;
-        memset(&execData, 0, sizeof(D3DEXECUTEDATA));
-
-        execData.dwVertexOffset = 0;
-        execData.dwSize = sizeof(D3DEXECUTEDATA);
-        execData.dwVertexCount = rendStates->vertexCount;
-        execData.dwInstructionOffset = (char *)rendStates->lpInsStart - (char *)rendStates->lpBufStart;
-        execData.dwInstructionLength = (char *)rendStates->lpInsPointer - (char *)rendStates->lpInsStart;
-
-        res = w3d->intern->executebuffer->SetExecuteData(&execData);
-        if ( res )
-        {
-            log_d3d_fail("win3d.class", "IDirect3DExecuteBuffer::SetExecuteData() failed", res);
-        }
-        else
-        {
-            res = w3d->intern->d3d1Dev->Execute(w3d->intern->executebuffer, w3d->intern->d3d2Viewport, D3DEXECUTE_UNCLIPPED);
-            if ( res )
-            {
-                log_d3d_fail("win3d.class", "IDirect3DDevice::Execute() failed", res);
-            }
-        }
-
-        rendStates->lpBufStart = NULL;
-        rendStates->lpInsStart = NULL;
-        rendStates->lpBufStart2 = NULL;
-        rendStates->lpBufEnd = NULL;
-        rendStates->lpInsPointer = NULL;
-        rendStates->lpBufStart3 = NULL;
-        rendStates->field_CC = 0;
-        rendStates->vertexCount = 0;
-        rendStates->field_B0 = 0;
-    }
-}
-
-void sub_43BD50(__NC_STACK_win3d *w3d)
-{
-    if ( w3d->bigdata->sceneBeginned )
-    {
-        D3DEXECUTEBUFFERDESC bufDescr;
-        memset(&bufDescr, 0, sizeof(D3DEXECUTEBUFFERDESC));
-
-        execBuf *execBuff = &w3d->bigdata->rendStates;
-        bufDescr.dwSize = sizeof(D3DEXECUTEBUFFERDESC);
-
-        while ( true )
-        {
-            HRESULT res = w3d->intern->executebuffer->Lock(&bufDescr);
-            if ( res == D3DERR_EXECUTE_LOCKED ) //0x887602CA
-                w3d->intern->executebuffer->Unlock();
-            else if (res == D3D_OK)
-                break;
-        }
-
-        execBuff->field_B0 = 1;
-        execBuff->lpBufStart = bufDescr.lpData;
-        execBuff->lpBufStart2 = execBuff->lpBufStart;
-        execBuff->lpBufStart3 = execBuff->lpBufStart2;
-
-        execBuff->lpBufEnd = (char *)execBuff->lpBufStart + bufDescr.dwBufferSize;
-
-        execBuff->lpInsStart = (char *)execBuff->lpBufStart + (bufDescr.dwBufferSize / 2);
-
-        execBuff->field_CC = 0;
-        execBuff->vertexCount = 0;
-
-        execBuff->lpInsPointer = execBuff->lpInsStart;
-
-        OP_PROCESS_VERTICES(1, execBuff->lpInsPointer);
-        PROCESSVERTICES_DATA( D3DPROCESSVERTICES_COPY, 0, 0, execBuff->lpInsPointer);
-    }
-}
-
-void execBuff_initRenderStates(__NC_STACK_win3d *w3d)
-{
-    if ( w3d->bigdata->sceneBeginned )
-    {
-        if ( !w3d->use_simple_d3d )
-        {
-            execBuf *execBuff = &w3d->bigdata->rendStates;
-
-            if ( w3d->bigdata->sceneBeginned )
-            {
-                if ( (char *)execBuff->lpInsPointer + 1000 > execBuff->lpBufEnd
-                        || (char *)execBuff->lpBufStart3 + 1000 > execBuff->lpInsStart )
-                {
-                    sub_43BE88(w3d);
-                    sub_43BD50(w3d);
-                }
-            }
-            execBuff->lpStates = execBuff->lpInsPointer;
-            execBuff->rendStatesCount = 0;
-
-            OP_STATE_RENDER(execBuff->rendStatesCount, execBuff->lpInsPointer);
+        default:
+            break;
         }
     }
 }
 
-void win3d__beginScene(__NC_STACK_win3d *w3d)
+int NC_STACK_win3d::initPolyEngine()
 {
-    HRESULT res;
+    __NC_STACK_win3d *w3d = &stack__win3d;
 
-    if ( w3d->use_simple_d3d )
-    {
-        res = w3d->intern->d3d2dev->BeginScene();
-        if ( res )
-        {
-            w3d->bigdata->sceneBeginned = 0;
-            log_d3d_fail("win3d.class", "D3DDevice2::BeginScene() failed", res);
-        }
-        else
-        {
-            w3d->bigdata->sceneBeginned = 1;
-        }
-    }
+    w3d->rendStates[TEXTUREHANDLE] = 0;
+    w3d->rendStates[SHADEMODE] = 1; //Smooth
+    w3d->rendStates[STIPPLEENABLE] = 0;
+    w3d->rendStates[SRCBLEND] = 1;//D3DBLEND_ONE;
+    w3d->rendStates[DESTBLEND] = 0;//D3DBLEND_ZERO;
+    w3d->rendStates[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
+    w3d->rendStates[ALPHABLENDENABLE] = 0; /* TRUE to enable alpha blending */
+    w3d->rendStates[ZWRITEENABLE] = 1; /* TRUE to enable z writes */
+    w3d->rendStates[TEXTUREMAG] = (w3d->filter != 0); // D3DFILTER_NEAREST Or D3DFILTER_LINEAR
+    w3d->rendStates[TEXTUREMIN] = (w3d->filter != 0); // D3DFILTER_NEAREST Or D3DFILTER_LINEAR
+
+    for (int i = 0; i < W3D_STATES_MAX; i++)
+        w3d->rendStates2[i] = w3d->rendStates[i];
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+    glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+    glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_REPLACE);
+
+    glDisable(GL_CULL_FACE);
+
+    if (w3d->dither)
+        glEnable(GL_DITHER);
     else
-    {
-        res = w3d->intern->d3d1Dev->BeginScene();
-        if ( res )
-        {
-            w3d->bigdata->sceneBeginned = 0;
-            log_d3d_fail("win3d.class", "D3DDevice::BeginScene() failed", res);
-        }
-        else
-        {
-            w3d->bigdata->sceneBeginned = 1;
-        }
-        sub_43BD50(w3d);
-    }
-}
+        glDisable(GL_DITHER);
 
-void win3d__SetRenderState(__NC_STACK_win3d *w3d, D3DRENDERSTATETYPE type, DWORD state)
-{
-    win3d_bigdata *bigdata = w3d->bigdata;
-    if ( bigdata->sceneBeginned )
-    {
-        if ( w3d->use_simple_d3d )
-        {
-            HRESULT res = w3d->intern->d3d2dev->SetRenderState(type, state);
+    glDisable(GL_BLEND);
+    glDisable(GL_FOG);
 
-            if ( res )
-                log_d3d_fail("win3d.class", "SetRenderState() failed", res);
-        }
-        else
-        {
-            execBuf *execBuff = &bigdata->rendStates;
-            execBuff->field_B0 &= 0xFD;
-            execBuff->rendStatesCount++;
+    //win3d__SetRenderState(w3d, D3DRENDERSTATE_TEXTUREMAG, (w3d->filter != 0) + D3DFILTER_NEAREST); // Or D3DFILTER_LINEAR
 
-            STATE_DATA(type, state, execBuff->lpInsPointer);
-        }
-    }
-}
-
-void execBuff_finishRenderStates( __NC_STACK_win3d *w3d)
-{
-    win3d_bigdata *bigdata = w3d->bigdata;
-    if ( bigdata->sceneBeginned )
-    {
-        if ( !w3d->use_simple_d3d )
-        {
-            execBuf *execBuff = &bigdata->rendStates;
-
-            void *lpStates = bigdata->rendStates.lpStates;
-
-            OP_STATE_RENDER(execBuff->rendStatesCount, lpStates);
-
-            execBuff->lpStates = NULL;
-            execBuff->rendStatesCount = 0;
-        }
-    }
-}
-
-void win3d__endScene(__NC_STACK_win3d *w3d)
-{
-    if ( w3d->bigdata->sceneBeginned )
-    {
-        if ( w3d->use_simple_d3d )
-        {
-            HRESULT res = w3d->intern->d3d2dev->EndScene();
-            if ( res )
-                log_d3d_fail("win3d.class", "D3DDevice2::EndScene() failed", res);
-        }
-        else
-        {
-            sub_43BE88(w3d);
-
-            HRESULT res = w3d->intern->d3d1Dev->EndScene();
-            if ( res )
-                log_d3d_fail("win3d.class", "D3DDevice::EndScene() failed", res);
-        }
-    }
-}
-
-int initPolyEngine(__NC_STACK_win3d *w3d)
-{
-    execBuf *execBuff = &w3d->bigdata->rendStates;
-
-    execBuff->rendStates[TEXTUREHANDLE].d3dRenderState = D3DRENDERSTATE_TEXTUREHANDLE;
-    execBuff->rendStates[TEXTUREHANDLE].value = 0;  /* Texture handle */
-
-    execBuff->rendStates[TEXTUREPERSPECTIVE].d3dRenderState = D3DRENDERSTATE_TEXTUREPERSPECTIVE;
-    execBuff->rendStates[TEXTUREPERSPECTIVE].value = 0;  /* TRUE for perspective correction */
-
-    execBuff->rendStates[SHADEMODE].d3dRenderState = D3DRENDERSTATE_SHADEMODE;
-    execBuff->rendStates[SHADEMODE].value = D3DSHADE_GOURAUD;
-
-    execBuff->rendStates[STIPPLEENABLE].d3dRenderState = D3DRENDERSTATE_STIPPLEENABLE;
-    execBuff->rendStates[STIPPLEENABLE].value = 0; /* TRUE to enable stippling */
-
-    execBuff->rendStates[SRCBLEND].d3dRenderState = D3DRENDERSTATE_SRCBLEND;
-    execBuff->rendStates[SRCBLEND].value = D3DBLEND_ONE;
-
-    execBuff->rendStates[DESTBLEND].d3dRenderState = D3DRENDERSTATE_DESTBLEND;
-    execBuff->rendStates[DESTBLEND].value = D3DBLEND_ZERO;
-
-    execBuff->rendStates[TEXTUREMAPBLEND].d3dRenderState = D3DRENDERSTATE_TEXTUREMAPBLEND;
-    execBuff->rendStates[TEXTUREMAPBLEND].value = D3DTBLEND_MODULATE;
-
-    execBuff->rendStates[ALPHABLENDENABLE].d3dRenderState = D3DRENDERSTATE_ALPHABLENDENABLE;
-    execBuff->rendStates[ALPHABLENDENABLE].value = 0; /* TRUE to enable alpha blending */
-
-    execBuff->rendStates[ZWRITEENABLE].d3dRenderState = D3DRENDERSTATE_ZWRITEENABLE;
-    execBuff->rendStates[ZWRITEENABLE].value = 1; /* TRUE to enable z writes */
-
-    execBuff->rendStates[TEXTUREMAG].d3dRenderState = D3DRENDERSTATE_TEXTUREMAG;
-    execBuff->rendStates[TEXTUREMAG].value = (w3d->filter != 0) + D3DFILTER_NEAREST; // Or D3DFILTER_LINEAR
-
-    execBuff->rendStates[TEXTUREMIN].d3dRenderState = D3DRENDERSTATE_TEXTUREMIN;
-    execBuff->rendStates[TEXTUREMIN].value = (w3d->filter != 0) + D3DFILTER_NEAREST; // Or D3DFILTER_LINEAR
-
-    memcpy(execBuff->rendStates2, execBuff->rendStates, sizeof(rendState) * 11);
-
-    win3d__beginScene(w3d);
-
-    execBuff_initRenderStates(w3d);
-
-    win3d__SetRenderState(w3d, D3DRENDERSTATE_TEXTUREADDRESS, D3DTADDRESS_CLAMP);
-    win3d__SetRenderState(w3d, D3DRENDERSTATE_ZENABLE, 1); /* TRUE to enable z test */
-    win3d__SetRenderState(w3d, D3DRENDERSTATE_TEXTUREMAG, (w3d->filter != 0) + D3DFILTER_NEAREST); // Or D3DFILTER_LINEAR
-    win3d__SetRenderState(w3d, D3DRENDERSTATE_TEXTUREMAPBLEND, D3DTBLEND_MODULATE);
-    win3d__SetRenderState(w3d, D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
-    win3d__SetRenderState(w3d, D3DRENDERSTATE_ZFUNC, D3DCMP_LESSEQUAL);
-    win3d__SetRenderState(w3d, D3DRENDERSTATE_DITHERENABLE, w3d->dither);
-    win3d__SetRenderState(w3d, D3DRENDERSTATE_ALPHABLENDENABLE, 0); /* TRUE to enable alpha blending */
-    win3d__SetRenderState(w3d, D3DRENDERSTATE_FOGENABLE, 0); /* TRUE to enable fog */
-    win3d__SetRenderState(w3d, D3DRENDERSTATE_SUBPIXEL, 1); /* TRUE to enable subpixel correction */
-    win3d__SetRenderState(w3d, D3DRENDERSTATE_STIPPLEDALPHA, dd_params.selected_device.can_stippling); /* TRUE to enable stippled alpha */
-    win3d__SetRenderState(w3d, D3DRENDERSTATE_STIPPLEENABLE, 0); /* TRUE to enable stippling */
-    win3d__SetRenderState(w3d, D3DRENDERSTATE_COLORKEYENABLE, 1); /* TRUE to enable source colorkeyed textures */
-
-    execBuff_finishRenderStates(w3d);
-
-    win3d__endScene(w3d);
-
-    w3d->bigdata->subt1_count = 0;
-    memset(w3d->bigdata->subt1, 0, sizeof(wind3d_sub1) * 512);
+    //win3d__SetRenderState(w3d, D3DRENDERSTATE_SUBPIXEL, 1); /* TRUE to enable subpixel correction */
+    //win3d__SetRenderState(w3d, D3DRENDERSTATE_STIPPLEDALPHA, can_stippling); /* TRUE to enable stippled alpha */
+    //win3d__SetRenderState(w3d, D3DRENDERSTATE_STIPPLEENABLE, 0); /* TRUE to enable stippling */
+    //win3d__SetRenderState(w3d, D3DRENDERSTATE_COLORKEYENABLE, 1); /* TRUE to enable source colorkeyed textures */
 
     w3d->bigdata->dat_1C14_count = 0;
     memset(w3d->bigdata->dat_1C14, 0, 4); //?
 
+    //glAlphaFunc ( GL_GREATER, 0.1 ) ;
+    //glEnable ( GL_ALPHA_TEST );
+
+
+
+//	for(int y = 0; y < 32; y++)
+//    {
+//        for(int x = 0; x < 4; x++)
+//        {
+//            if (y & 1)
+//                stpl[x + y * 4] = 0x55;
+//            else
+//                stpl[x + y * 4] = 0xAA;
+//        }
+//    }
+
+//	if (can_stippling)
+//        glPolygonStipple(stpl);
+
     return 1;
 }
 
 
-
-int windd_func0__sub1(int export_window_mode)
+gfxMode *sub_41F68C()
 {
-    DDCAPS emul_caps;
-    DDCAPS driver_caps;
-
-
-    ddraw = NULL;
-    d3d2 = NULL;
-
-    memset(&dd_params, 0, sizeof(dd_params));
-
-    log_d3dlog("dd/d3d init: entered wdd_DDrawCreate()\n");
-
-    HRESULT v1 = DirectDrawEnumerate(DDRAW_ENUMERATE_CallBack, 0);
-    if ( v1 )
+    for (std::list<gfxMode *>::iterator it = graphicsModes.begin(); it != graphicsModes.end(); it++)
     {
-        log_d3d_fail("DirectDraw", "DirectDrawEnumerate()", v1);
-        log_d3dlog("common init failed: DirectDrawEnumerate()\n");
-        return 0;
+        if ((*it)->w == 640 && (*it)->h == 480)
+            return *it;
     }
 
-    if (dword_514EFC)
-    {
-        GUID guid;
-        char buf[128];
-
-        int guid_ty = windd_func0__sub1__sub0("env/guid3d.def", &guid);
-
-        switch ( guid_ty )
-        {
-        case 0:
-            log_d3dlog("d3d init: guid3d.def invalid\n");
-            break;
-        case 1:
-            guid_to_string(buf, &guid, "<error>");
-            log_d3dlog("d3d init: guid3d.def is %s\n", buf);
-            break;
-        case 2:
-            log_d3dlog("d3d init: guid3d.def is <primary>\n");
-            break;
-        case 3:
-            log_d3dlog("d3d init: guid3d.def is <software>\n");
-            break;
-        default:
-            break;
-        }
-
-        if ( dd_params.number_of_devices )
-        {
-            int guidFound = 0;
-
-            if ( guid_ty == 3 )
-            {
-                log_d3dlog("d3d init: ddraw mode wanted, exit\n");
-                if ( d3d2 )
-                {
-                    d3d2->Release();
-                    d3d2 = NULL;
-                }
-                if ( ddraw )
-                {
-                    ddraw->Release();
-                    ddraw = NULL;
-                }
-
-                return 0;
-            }
-
-            if ( guid_ty == 2 || guid_ty == 1 )
-            {
-                for (int i = 0; i < dd_params.number_of_devices; i++)
-                {
-                    _devices *devs = &dd_params.enum_devices_[i];
-
-                    if ( guid_ty == 2 )
-                    {
-                        if ( !devs->has_driver_guid )
-                        {
-                            log_d3dlog("d3d init: found match for guid3d.def\n");
-
-                            dd_params.device_selected_id = i;
-
-                            guidFound = 1;
-
-                            break;
-                        }
-                    }
-                    else if ( guid_ty == 3 && devs->has_driver_guid && !memcmp(&guid, &devs->driver_guid, sizeof(GUID)) )
-                    {
-                        log_d3dlog("d3d init: found match for guid3d.def\n");
-
-                        dd_params.device_selected_id = i;
-
-                        guidFound = 1;
-
-                        break;
-                    }
-                }
-            }
-
-            if ( !guidFound )
-            {
-                log_d3dlog("d3d init: no guid3d.def match found, using autodetect\n");
-                dd_params.device_selected_id = dd_params.number_of_devices - 1;
-            }
-
-            memcpy(&dd_params.selected_device, &dd_params.enum_devices_[dd_params.device_selected_id], sizeof(_devices));
-
-            GUID *v7;
-
-            if ( dd_params.selected_device.has_driver_guid )
-                v7 = &dd_params.selected_device.driver_guid;
-            else
-                v7 = 0;
-
-            log_d3dlog("picked: %s, %s\n", dd_params.selected_device.device_name, dd_params.selected_device.device_descr);
-
-            out_guid_to_file("env/guid3d.def", v7, "<primary>");
-
-            if ( !DirectDrawCreate(v7, &ddraw, 0) )
-                ddraw->QueryInterface(IID_IDirect3D2, (void**)&d3d2);
-        }
-
-        if ( !d3d2 )
-        {
-            log_d3dlog("d3d init failed: no suitable d3d device found.\n");
-
-            if ( d3d2 )
-            {
-                d3d2->Release();
-                d3d2 = NULL;
-            }
-            if ( ddraw )
-            {
-                ddraw->Release();
-                ddraw = NULL;
-            }
-            return 0;
-        }
-
-        if ( dd_params.selected_device.has_driver_guid )
-        {
-            dd_params.selected_device.unk1_def_0 = 0;
-            dd_params.selected_device.unk2_def_0 = 1;
-            dd_params.field_0 &= (~1);
-            log_d3dlog("d3d init: non-primary device picked, assuming fullscreen card\n");
-        }
-    }
-
-
-    if ( !ddraw )
-    {
-        v1 = DirectDrawCreate(NULL, &ddraw, NULL);
-        if ( v1 )
-        {
-            log_d3d_fail("DirectDraw", "DirectDrawCreate()", v1);
-            log_d3dlog("common init failed: DirectDrawCreate()\n");
-            return 0;
-        }
-    }
-
-    memset(&driver_caps, 0, sizeof(DDCAPS));
-    driver_caps.dwSize = sizeof(DDCAPS);
-
-    memset(&emul_caps, 0, sizeof(DDCAPS));
-    emul_caps.dwSize = sizeof(DDCAPS);
-
-    if ( ddraw->GetCaps(&driver_caps, &emul_caps) )
-        dd_params.video_mem = 0;
-    else
-        dd_params.video_mem = driver_caps.dwVidMemTotal;
-
-    log_d3dlog("common init: vmem total is %d\n", dd_params.video_mem);
-
-    v1 = ddraw->EnumDisplayModes(0, NULL, NULL, gfx_modes_callback);
-    if ( v1 )
-    {
-        log_d3d_fail("DirectDraw", "DirectDraw::EnumDisplayModes()", v1);
-        log_d3dlog("common init failed: EnumDisplayModes()\n");
-        return 0;
-    }
-
-    sub_41F610("software", "<software>", dword_514EFC == 0);
-
-    for (int v12 = 0; v12 < dd_params.number_of_devices; v12++)
-    {
-        _devices *devs = &dd_params.enum_devices_[v12];
-
-        char guid[256];
-        if ( devs->has_driver_guid )
-            guid_to_string(guid, &devs->driver_guid, "<error>");
-        else
-            strcpy(guid, "<primary>");
-
-        sub_41F610(devs->driver_name, guid, v12 == dd_params.device_selected_id && dword_514EFC);
-    }
-
-    qsort(dd_params.gfx_modes, dd_params.gfx_modes_count, sizeof(enum_gfx_modes), cmp_gfx_modes);
-
-    for (unsigned int i = 0; i < dd_params.gfx_modes_count; i++)
-    {
-        enum_gfx_modes *devs = &dd_params.gfx_modes[i];
-
-        if ( !dword_514EFC )
-        {
-            if ( devs->bits == 8 )
-            {
-                if ( devs->width >= 640 )
-                    sub_41F490(devs->width, devs->height, devs->bits, devs->bits);
-
-                sub_41F490(devs->width, devs->height, devs->bits, 0);
-
-                log_d3dlog("dd init: export display mode %dx%dx%d\n", devs->width, devs->height, devs->bits);
-            }
-        }
-        else
-        {
-            unsigned int dwRGB;
-
-            switch(devs->bits)
-            {
-            case 1:
-                dwRGB = DDBD_1;
-                break;
-            case 2:
-                dwRGB = DDBD_2;
-                break;
-            case 4:
-                dwRGB = DDBD_4;
-                break;
-            case 8:
-                dwRGB = DDBD_8;
-                break;
-            case 16:
-                dwRGB = DDBD_16;
-                break;
-            case 24:
-                dwRGB = DDBD_24;
-                break;
-            case 32:
-                dwRGB = DDBD_32;
-                break;
-            default:
-                dwRGB = 0x0;
-                break;
-            }
-
-            if ( dd_params.selected_device.dev_descr.dwDeviceRenderBitDepth & dwRGB )
-            {
-                if ( devs->bits == 16 || devs->bits == 32)
-                {
-                    devs->unk = 1;
-
-                    sub_41F490(devs->width, devs->height, devs->bits, 16);
-
-                    log_d3dlog("d3d init: export display mode %dx%dx%d\n", devs->width, devs->height, devs->bits);
-                }
-            }
-        }
-    }
-
-    if ( export_window_mode )
-    {
-        if ( dword_514EFC )
-        {
-            if ( dd_params.selected_device.unk1_def_0 )
-            {
-                sub_41F490(320, 200, dd_params.displ_mode_surface.ddpfPixelFormat.dwRGBBitCount, 17);
-                log_d3dlog("dd init: export windowed mode %dx%dx%d\n", 320, 200, dd_params.displ_mode_surface.ddpfPixelFormat.dwRGBBitCount);
-            }
-        }
-        else if ( dd_params.displ_mode_surface.ddpfPixelFormat.dwRGBBitCount == 8 )
-        {
-            sub_41F490(320, 200, dd_params.displ_mode_surface.ddpfPixelFormat.dwRGBBitCount, 5);
-            log_d3dlog("dd init: export windowed mode %dx%dx%d\n", 320, 200, dd_params.displ_mode_surface.ddpfPixelFormat.dwRGBBitCount);
-        }
-    }
-
-    log_d3dlog("dd/d3d init: wdd_DDrawCreate() left\n");
-    return 1;
+    return graphicsModes.front();
 }
 
-
-
-mode_node * sub_41F68C()
-{
-    mode_node *result = (mode_node *)modes_list.head;
-    if ( modes_list.head->next )
-    {
-        while ( result->width != 640 || result->height != 480 )
-        {
-            result = (mode_node *)result->next;
-            if ( !result->next )
-                return (mode_node *)modes_list.head;
-        }
-    }
-    else
-    {
-        result = (mode_node *)modes_list.head;
-    }
-    return result;
-}
-
-mode_node * windd_func0__sub0(const char *file)
+gfxMode *windd_func0__sub0(const char *file)
 {
     char buf[128];
-
     FSMgr::FileHandle *fil = uaOpenFile(file, "r");
-
-    mode_node *node = NULL;
 
     if ( fil )
     {
@@ -1799,1333 +648,234 @@ mode_node * windd_func0__sub0(const char *file)
             char *eol = strpbrk(buf, "\n\r");
             if ( eol )
                 *eol = 0;
-            node = (mode_node *)modes_list.head;
-            if ( modes_list.head->next )
+
+            for (std::list<gfxMode *>::iterator it = graphicsModes.begin(); it != graphicsModes.end(); it++)
             {
-                while ( strcasecmp(buf, node->name) )
-                {
-                    node = (mode_node *)node->next;
-                    if ( !node->next )
-                    {
-                        node = NULL;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                node = NULL;
+                if ( strcasecmp((*it)->name.c_str(), buf) == 0 )
+                    return *it;
             }
         }
         delete fil;
     }
 
-    if ( !node )
-        node = sub_41F68C();
-
-    return node;
+    return sub_41F68C();
 }
 
 int sub_42AC78(__NC_STACK_win3d *a1)
 {
-    return dd_params.selected_device.unk2_def_0 || a1->field_30;
+    return a1->forcesoftcursor;
 }
 
-void sub_42D410(__NC_STACK_win3d *obj, int a2, int a3)
+uint32_t cursPix(uint8_t *data, int ofs, int bpp)
 {
-    if ( obj->hwnd )
+    switch (bpp)
     {
-        if ( !sub_42AC78(obj) )
-        {
-            int v5 = 0;
-
-            if ( a3 )
-            {
-                obj->field_28 = a2;
-                while ( ShowCursor(1) < 0 )
-                    ;
-                v5 = 1;
-            }
-            else
-            {
-                if ( a2 != obj->field_28 )
-                {
-                    if ( obj->field_28 )
-                    {
-                        if ( !a2 )
-                        {
-                            while ( ShowCursor(0) >= 0 )
-                                ;
-                        }
-                    }
-                    if ( !obj->field_28 )
-                    {
-                        if ( a2 )
-                        {
-                            while ( ShowCursor(1) < 0 )
-                                ;
-                        }
-                    }
-                    v5 = 1;
-                    obj->field_28 = a2;
-                }
-            }
-
-
-            if ( v5 )
-            {
-                HCURSOR cur = 0;
-                switch ( a2 )
-                {
-                case 1:
-                    cur = uaLoadCursor(obj->cursor, "Pointer");
-                    break;
-                case 2:
-                    cur = uaLoadCursor(obj->cursor, "Cancel");
-                    break;
-                case 3:
-                    cur = uaLoadCursor(obj->cursor, "Select");
-                    break;
-                case 4:
-                    cur = uaLoadCursor(obj->cursor, "Attack");
-                    break;
-                case 5:
-                    cur = uaLoadCursor(obj->cursor, "Goto");
-                    break;
-                case 6:
-                    cur = uaLoadCursor(obj->cursor, "Disk");
-                    break;
-                case 7:
-                    cur = uaLoadCursor(obj->cursor, "New");
-                    break;
-                case 8:
-                    cur = uaLoadCursor(obj->cursor, "Add");
-                    break;
-                case 9:
-                    cur = uaLoadCursor(obj->cursor, "Control");
-                    break;
-                case 10:
-                    cur = uaLoadCursor(obj->cursor, "Beam");
-                    break;
-                case 11:
-                    cur = uaLoadCursor(obj->cursor, "Build");
-                    break;
-                default:
-                    break;
-                }
-
-                if ( cur )
-                    SetCursor(cur);
-            }
-        }
+    case 1:
+        return (data[ofs / 8] >> (7 - ofs % 8)) & 1;
+    case 2:
+        return (data[ofs / 4] >> ((3 - ofs % 4) << 1)) & 3;
+    case 4:
+        return (data[ofs / 2] >> ((1 - ofs % 2) << 2)) & 15;
+    case 8:
+        return data[ofs];
+    case 16:
+        return data[2 * ofs] | data[2 * ofs + 1] << 8;
+    case 24:
+        return data[3 * ofs] | data[3 * ofs + 1] << 8 | data[ 3 * ofs + 2] << 16;
+    case 32:
+        return data[4 * ofs] | data[4 * ofs + 1] << 8 | data[4 * ofs + 2] << 16 | data[4 * ofs + 3] << 24;
     }
-}
-
-
-void sub_42A7BC(__NC_STACK_win3d *obj)
-{
-    if ( obj->hwnd )
-    {
-        if ( obj->field_10 )
-        {
-            HDC dc = GetDC(obj->hwnd);
-            if ( dc )
-            {
-                HDC hdcSrc;
-                if ( !obj->field_10->GetDC(&hdcSrc) )
-                {
-                    HPALETTE hpal = 0;
-
-                    if ( !dword_514EFC )
-                    {
-                        LOGPALETTE256 pal;
-                        memset(&pal, 0, sizeof(LOGPALETTE256));
-
-                        PALETTEENTRY *entr = pal.pal.palPalEntry;
-                        pal.pal.palVersion = 0x300;
-                        pal.pal.palNumEntries = 256;
-
-                        for (int i = 0 ; i < 10; i++)
-                        {
-                            entr[246 + i].peRed = 246 + i;
-                            entr[246 + i].peFlags = 2;
-                            entr[i].peRed = i;
-                            entr[i].peFlags = 2;
-                        }
-
-                        if ( obj->ddrawPal )
-                            obj->ddrawPal->GetEntries(0, 10, 236, entr + 10);
-
-                        hpal = CreatePalette(&pal.pal);
-
-                        if ( hpal )
-                        {
-                            SelectPalette(dc, hpal, 0);
-                            RealizePalette(dc);
-                        }
-                    }
-
-                    RECT Rect;
-
-                    GetClientRect(obj->hwnd, &Rect);
-
-                    int h,w;
-
-                    if ( obj->field_50 & 8 )
-                    {
-                        h = obj->height / 2;
-                        w = obj->width / 2;
-                    }
-                    else
-                    {
-                        h = obj->height;
-                        w = obj->width;
-                    }
-
-                    if ( w != Rect.right || h != Rect.bottom )
-                        StretchBlt(dc, 0, 0, Rect.right, Rect.bottom, hdcSrc, 0, 0, w, h, SRCCOPY);
-                    else
-                        BitBlt(dc, 0, 0, w, h, hdcSrc, 0, 0, SRCCOPY);
-
-                    if ( hpal )
-                        DeleteObject(hpal);
-
-                    obj->field_10->ReleaseDC(hdcSrc);
-                }
-                ReleaseDC(obj->hwnd, dc);
-            }
-        }
-    }
-}
-
-void sub_42A640(__NC_STACK_win3d *obj)
-{
-    if ( obj->primary_surf )
-        if ( obj->primary_surf->IsLost() )
-            obj->primary_surf->Restore();
-
-    if ( obj->back_surf )
-        if ( obj->back_surf->IsLost() )
-        {
-            obj->back_surf->Restore();
-            obj->surface_locked_surfaceData = 0;
-            obj->surface_locked_pitch = 0;
-        }
-
-    if ( obj->field_10 )
-        if ( obj->field_10->IsLost() )
-            obj->field_10->Restore();
-
-    if ( obj->intern )
-        if ( obj->intern->z_buf )
-            if ( obj->intern->z_buf->IsLost() )
-                obj->intern->z_buf->Restore();
-}
-
-void wdd_Kill3D(__NC_STACK_win3d *obj)
-{
-    log_d3dlog("-> Entering wdd_Kill3D()\n");
-
-    if ( obj->intern )
-    {
-        if ( obj->intern->material )
-        {
-            obj->intern->material->Release();
-            obj->intern->material = NULL;
-        }
-
-        if ( obj->intern->executebuffer )
-        {
-            obj->intern->executebuffer->Release();
-            obj->intern->executebuffer = NULL;
-        }
-
-        if ( obj->intern->d3d2Viewport )
-        {
-            obj->intern->d3d2Viewport->Release();
-            obj->intern->d3d2Viewport = NULL;
-        }
-
-        if ( obj->intern->d3d1Dev )
-        {
-            obj->intern->d3d1Dev->Release();
-            obj->intern->d3d1Dev = NULL;
-        }
-
-        if ( obj->intern->d3d2dev )
-        {
-            obj->intern->d3d2dev->Release();
-            obj->intern->d3d2dev = NULL;
-        }
-
-        if ( obj->intern->z_buf )
-        {
-            obj->intern->z_buf->Release();
-            obj->intern->z_buf = NULL;
-        }
-
-        nc_FreeMem(obj->intern);
-        obj->intern = NULL;
-    }
-    log_d3dlog("-> Leaving wdd_Kill3D()\n");
-}
-
-void sub_42BD38(__NC_STACK_win3d *obj)
-{
-    if ( obj->intern )
-        wdd_Kill3D(obj);
-
-    if ( obj->ddrawPal )
-    {
-        obj->ddrawPal->Release();
-        obj->ddrawPal = NULL;
-    }
-
-    if ( obj->clipper )
-    {
-        obj->clipper->Release();
-        obj->clipper = NULL;
-    }
-
-    if ( obj->back_surf )
-    {
-        obj->back_surf->Release();
-        obj->back_surf = NULL;
-    }
-
-    if ( obj->primary_surf )
-    {
-        obj->primary_surf->Release();
-        obj->primary_surf = NULL;
-    }
-
-    if ( obj->field_10 )
-    {
-        obj->field_10->Release();
-        obj->field_10 = NULL;
-    }
-}
-
-
-LRESULT WINAPI sub_42A978(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
-{
-    __NC_STACK_win3d *obj = (__NC_STACK_win3d *)GetClassLongPtr(hWnd, 0);
-
-    switch(Msg)
-    {
-
-    case WM_DESTROY:
-    {
-        if ( obj )
-        {
-            sub_42BD38(obj);
-            obj->hwnd = 0;
-            PostQuitMessage(0);
-        }
-        if ( dword_514F1C )
-        {
-            ImmAssociateContext(hWnd, dword_514F1C);
-            dword_514F1C = 0;
-        }
-        return 0;
-    }
-    break;
-
-    case WM_ACTIVATE:
-    {
-        if ( obj )
-            sub_42D410(obj, 1, 1);
-        return DefWindowProc(hWnd, Msg, wParam, lParam);
-    }
-    break;
-
-    case WM_PAINT:
-    {
-        PAINTSTRUCT ppnt;
-
-        BeginPaint(hWnd, &ppnt);
-        if ( obj && obj->hwnd && obj->primary_surf && obj->back_surf )
-        {
-            if ( dword_514F24 )
-            {
-                sub_42A7BC(obj);
-            }
-            else
-            {
-                sub_42A640(obj);
-                if ( obj->field_50 & 1 )
-                {
-                    RECT rc;
-                    POINT Point;
-                    GetClientRect(obj->hwnd, &rc);
-                    Point.x = 0;
-                    Point.y = 0;
-                    ClientToScreen(obj->hwnd, &Point);
-                    OffsetRect(&rc, Point.x, Point.y);
-                    obj->primary_surf->Blt(&rc, obj->back_surf, NULL, DDBLT_WAIT, NULL);
-                }
-                else if ( !dword_514EFC )
-                {
-                    obj->primary_surf->Blt(NULL, obj->back_surf, NULL, DDBLT_WAIT, NULL);
-                }
-            }
-        }
-        EndPaint(hWnd, &ppnt);
-        return DefWindowProc(hWnd, Msg, wParam, lParam);
-    }
-    break;
-
-    case WM_ERASEBKGND:
-        return 1; //Avoid flickering
-        break;
-
-
-    case WM_QUERYNEWPALETTE:
-    case WM_PALETTECHANGED:
-    {
-        if (Msg == WM_PALETTECHANGED && (HWND)wParam == obj->hwnd)
-            return DefWindowProc(hWnd, Msg, wParam, lParam);
-
-        if ( obj )
-            if ( obj->ddrawPal )
-                obj->primary_surf->SetPalette(obj->ddrawPal);
-
-        return DefWindowProc(hWnd, Msg, wParam, lParam);
-    }
-    break;
-
-    case WM_SYSCOMMAND:
-    {
-        if ( wParam == SC_KEYMENU )
-            return 0;
-        if ( wParam == SC_SCREENSAVE )
-            return 0;
-        return DefWindowProc(hWnd, Msg, wParam, lParam);
-    }
-    break;
-
-    case WM_QUIT:
-        return DefWindowProc(hWnd, Msg, wParam, lParam);
-        break;
-
-    case WM_ACTIVATEAPP:
-    {
-        if ( wParam == 1 )
-        {
-            RECT Rect;
-            GetWindowRect(hWnd, &Rect);
-            ClipCursor(&Rect);
-            if ( obj )
-                sub_42A640(obj);
-        }
-        else
-        {
-            ClipCursor(0);
-            if ( obj )
-            {
-                if ( obj->surface_locked_surfaceData )
-                {
-                    obj->surface_locked_pitch = 0;
-                    obj->surface_locked_surfaceData = 0;
-                    obj->back_surf->Unlock(0);
-                }
-            }
-        }
-        if ( obj )
-            sub_42D410(obj, 1, 1);
-        return DefWindowProc(hWnd, Msg, wParam, lParam);
-    }
-    break;
-
-
-    default:
-        return DefWindowProc(hWnd, Msg, wParam, lParam);
-        break;
-    }
-
-    return DefWindowProc(hWnd, Msg, wParam, lParam);
-}
-
-int createWindow(__NC_STACK_win3d *obj, HINSTANCE hInstance, int cmdShow, int width, int height)
-{
-    HICON big256 = uaLoadIcon(hInstance, "Big256");
-    HCURSOR hCursor = uaLoadCursor(hInstance, "Pointer");
-
-    if ( ghWnd )
-    {
-        obj->hwnd = ghWnd;
-
-        int w, h;
-        if ( obj->field_50 & 1 )
-        {
-            SetWindowLongPtr(ghWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-            h = height;
-            w = width;
-        }
-        else
-        {
-            SetWindowLongPtr(ghWnd, GWL_STYLE, WS_POPUP | WS_SYSMENU);
-            SetWindowLongPtr(ghWnd, GWL_EXSTYLE, WS_EX_TOPMOST);
-            h = GetSystemMetrics(SM_CYSCREEN);
-            w = GetSystemMetrics(SM_CXSCREEN);
-        }
-        SetWindowPos(ghWnd, 0, 0, 0, w, h, SWP_SHOWWINDOW);
-        SetClassLongPtr(ghWnd, 0, (LONG_PTR)obj);
-        return 1;
-    }
-    else
-    {
-        WNDCLASS winClass;
-
-        winClass.hInstance = hInstance;
-        winClass.style = CS_DBLCLKS|CS_HREDRAW|CS_VREDRAW;
-        winClass.lpfnWndProc = sub_42A978;
-        winClass.cbClsExtra = sizeof(void *);
-        winClass.cbWndExtra = 0;
-        winClass.hIcon = big256;
-        winClass.hCursor = 0;
-        winClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-        winClass.lpszMenuName = 0;
-        winClass.lpszClassName = "UA Window Class";
-
-        RegisterClass(&winClass);
-
-        int w, h;
-        DWORD wndstyle;
-        DWORD dwExStyle;
-        const char *lpclassname = "UA Window Class";
-        const char *windname = "Urban Assault";
-
-        if ( obj->field_50 & 1 ) // WINDOWED
-        {
-            h = height;
-            w = width;
-            wndstyle = WS_OVERLAPPEDWINDOW;
-            dwExStyle = 0;
-
-            obj->hwnd = CreateWindowEx(dwExStyle, lpclassname, windname, wndstyle, CW_USEDEFAULT, CW_USEDEFAULT, w, h, 0, 0, hInstance, 0);
-        }
-        else
-        {
-            h = GetSystemMetrics(SM_CYSCREEN);
-            w = GetSystemMetrics(SM_CXSCREEN);
-            wndstyle = WS_POPUP | WS_SYSMENU;
-            dwExStyle = WS_EX_TOPMOST;
-
-            obj->hwnd = CreateWindowEx(dwExStyle, lpclassname, windname, wndstyle, 0, 0, w, h, 0, 0, hInstance, 0);
-        }
-
-        if ( obj->hwnd )
-        {
-            dword_514F1C = ImmAssociateContext(obj->hwnd, 0);
-            ShowWindow(obj->hwnd, cmdShow);
-            UpdateWindow(obj->hwnd);
-            SetCursor(hCursor);
-
-            ghWnd = obj->hwnd;
-            SetClassLongPtr(obj->hwnd, 0, (LONG_PTR)obj);
-            return 1;
-        }
-    }
-    return 0;
-}
-
-int wdd_Create3DWinEnv(__NC_STACK_win3d *obj, int width, int height)
-{
-    log_d3dlog("-> Entering wdd_Create3DWinEnv()\n");
-
-    ddraw->SetCooperativeLevel(obj->hwnd, DDSCL_NORMAL);
-
-    DDSURFACEDESC surfDesc;
-    memset(&surfDesc, 0, sizeof(DDSURFACEDESC));
-    surfDesc.dwFlags = DDSD_CAPS;
-    surfDesc.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
-    surfDesc.dwSize = sizeof(DDSURFACEDESC);
-
-    HRESULT res = ddraw->CreateSurface(&surfDesc, &obj->primary_surf, NULL);
-    if ( res )
-    {
-        log_d3d_fail("windd.class", "DirectDraw::CreateSurface(Primary)", res);
-        return 0;
-    }
-
-    surfDesc.dwWidth = width;
-    surfDesc.dwHeight = height;
-    surfDesc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
-    surfDesc.ddsCaps.dwCaps = DDSCAPS_VIDEOMEMORY | DDSCAPS_3DDEVICE | DDSCAPS_OFFSCREENPLAIN;
-
-    res = ddraw->CreateSurface(&surfDesc, &obj->back_surf, NULL);
-
-    if ( res )
-    {
-        log_d3d_fail("windd.class", "DirectDraw::CreateSurface(Back)", res);
-        return 0;
-    }
-
-    res = ddraw->CreateClipper(0, &obj->clipper, NULL);
-    if ( res )
-    {
-        log_d3d_fail("windd.class", "DirectDraw::CreateClipper()", res);
-        return 0;
-    }
-
-    obj->clipper->SetHWnd(0, obj->hwnd);
-    obj->primary_surf->SetClipper(obj->clipper);
-
-    DDBLTFX fx;
-
-    fx.dwSize = sizeof(DDBLTFX);
-    fx.dwFillColor = 0;
-
-    obj->primary_surf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &fx);
-    obj->back_surf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &fx);
-
-    log_d3dlog("-> Leaving wdd_Create3DWinEnv()\n");
-    return 1;
-}
-
-int wdd_Create3DFullEnv(__NC_STACK_win3d *obj, int width, int height, int bits)
-{
-    log_d3dlog("-> Entering wdd_Create3DFullEnv()\n");
-    ddraw->SetCooperativeLevel(obj->hwnd, DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
-
-    HRESULT res = ddraw->SetDisplayMode(width, height, bits);
-    if ( res )
-    {
-        log_d3d_fail("windd.class", "DirectDraw::SetDisplayMode()", res);
-        return 0;
-    }
-
-    DDSURFACEDESC surfDesc;
-
-    memset(&surfDesc, 0, sizeof(DDSURFACEDESC));
-    surfDesc.dwSize = sizeof(DDSURFACEDESC);
-    surfDesc.dwFlags = DDSD_BACKBUFFERCOUNT | DDSD_CAPS;
-    surfDesc.ddsCaps.dwCaps = DDSCAPS_VIDEOMEMORY | DDSCAPS_3DDEVICE | DDSCAPS_PRIMARYSURFACE | DDSCAPS_FLIP | DDSCAPS_COMPLEX;
-    surfDesc.dwBackBufferCount = 1;
-
-    res = ddraw->CreateSurface(&surfDesc, &obj->primary_surf, 0);
-    if ( res )
-    {
-        log_d3d_fail("windd.class", "DirectDraw::CreateSurface(Primary)", res);
-        return 0;
-    }
-
-    DDSCAPS caps;
-
-    caps.dwCaps = DDSCAPS_BACKBUFFER;
-    res = obj->primary_surf->GetAttachedSurface(&caps, &obj->back_surf);
-    if ( res )
-    {
-        log_d3d_fail("windd.class", "DirectDraw::GetAttachedSurface(Back)", res);
-        return 0;
-    }
-
-    res = ddraw->CreateClipper(0, &obj->clipper, NULL);
-    if ( res )
-    {
-        log_d3d_fail("windd.class", "DirectDraw::CreateClipper()", res);
-        return 0;
-    }
-
-    obj->clipper->SetHWnd(0, obj->hwnd);
-    obj->primary_surf->SetClipper(obj->clipper);
-
-    DDBLTFX fx;
-
-    fx.dwSize = sizeof(DDBLTFX);
-    fx.dwFillColor = 0;
-
-    obj->primary_surf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &fx);
-    obj->back_surf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &fx);
-
-    log_d3dlog("-> Leaving wdd_Create3DFullEnv()\n");
-
-    return 1;
-}
-
-
-
-HRESULT __stdcall EnumTextureFormats__CallBack(DDSURFACEDESC *descr, void *lpContext)
-{
-    __NC_STACK_win3d *win3d = (__NC_STACK_win3d *)lpContext;
-
-    windd_formats *frmt = &win3d->intern->formats[win3d->intern->formats_count];
-
-    memset(frmt, 0, sizeof(windd_formats));
-    memcpy(&frmt->surf_descr, descr, sizeof(DDSURFACEDESC));
-
-    if ( descr->ddpfPixelFormat.dwFlags & (DDPF_PALETTEINDEXED2 | DDPF_PALETTEINDEXED1 | DDPF_PALETTEINDEXEDTO8 | DDPF_PALETTEINDEXED4) )
-        return 1;
-
-    if ( descr->ddpfPixelFormat.dwFlags & DDPF_PALETTEINDEXED8 )
-    {
-        frmt->use_clut = 1;
-        frmt->vosem = 8;
-        log_d3dlog("enum texture formats: 8bpp clut\n");
-    }
-    else
-    {
-        frmt->vosem = 0;
-        frmt->use_clut = 0;
-
-        int rbits = 0;
-        if ( descr->ddpfPixelFormat.dwRBitMask )
-        {
-            DWORD bits = descr->ddpfPixelFormat.dwRBitMask;
-
-            while( !(bits & 1) )
-                bits >>= 1;
-
-            for(rbits = 0; bits & 1; rbits++)
-                bits >>= 1;
-        }
-
-        int gbits = 0;
-        if ( descr->ddpfPixelFormat.dwGBitMask )
-        {
-            DWORD bits = descr->ddpfPixelFormat.dwGBitMask;
-
-            while( !(bits & 1) )
-                bits >>= 1;
-
-            for(gbits = 0; bits & 1; gbits++)
-                bits >>= 1;
-        }
-
-        int bbits = 0;
-        if ( descr->ddpfPixelFormat.dwBBitMask )
-        {
-            DWORD bits = descr->ddpfPixelFormat.dwBBitMask;
-
-            while( !(bits & 1) )
-                bits >>= 1;
-
-            for(bbits = 0; bits & 1; bbits++)
-                bits >>= 1;
-        }
-
-        int abits = 0;
-        if ( descr->ddpfPixelFormat.dwRGBAlphaBitMask )
-        {
-            DWORD bits = descr->ddpfPixelFormat.dwRGBAlphaBitMask;
-
-            while( !(bits & 1) )
-                bits >>= 1;
-
-            for(abits = 0; bits & 1; abits++)
-                bits >>= 1;
-        }
-
-        frmt->rbits = rbits;
-        frmt->gbits = gbits;
-        frmt->bbits = bbits;
-        frmt->abits = abits;
-        frmt->rgbbitcount = descr->ddpfPixelFormat.dwRGBBitCount;
-        log_d3dlog("enum texture formats: %d%d%d%d\n", rbits, gbits, bbits, abits);
-    }
-
-    win3d->intern->formats_count++;
-
-    if ( win3d->intern->formats_count != 32 )
-        return 1;
 
     return 0;
 }
 
-int wdd_Create3D(__NC_STACK_win3d *obj, int width, int height)
+SDL_Cursor *NC_STACK_win3d::wrapLoadCursor(const char *name)
 {
-    log_d3dlog("-> Entering wdd_Create3D()\n");
+    std::string cur = "res/";
+    cur += name;
+    cur += ".cur";
 
-    windd_intern *internal = (windd_intern *)AllocVec(sizeof(windd_intern), 0);
-    obj->intern = internal;
+    FSMgr::FileHandle *fil = uaOpenFile(cur.c_str(), "rb");
 
-    if ( !internal )
+    UA_PALENTRY pal[256];
+
+    if (!fil)
+        return NULL;
+
+    fil->readU16L();
+    if (fil->readU16L() != 2)
     {
-        wdd_Kill3D(obj);
-        return 0;
+        delete fil;
+        return NULL;
     }
 
-    memset(internal, 0, sizeof(windd_intern));
+    fil->readU16L(); //count
 
-    DDSURFACEDESC surfDesc;
-    HRESULT res;
+    //Only first entry
+    fil->readU8(); //w
+    fil->readU8(); //h
+    fil->readU8(); //color count
+    fil->readU8(); //reserved
+    int hotX = fil->readU16L();
+    int hotY = fil->readU16L();
+    fil->readU32L(); //size
+    int off = fil->readU32L();
 
-    if ( dd_params.selected_device.zbuf_use )
+    //seek to cursor
+    fil->seek(off, SEEK_SET);
+
+    //read InfoHeader
+    fil->readU32L(); //header size
+    int bmpw = fil->readS32L();
+    int bmph = fil->readS32L();
+    fil->readU16L(); //planes
+    int bitcount = fil->readU16L();
+    fil->readU32L(); //compression
+    fil->readU32L(); //imagesize
+    fil->readU32L(); //XpixelsPerM
+    fil->readU32L(); //YpixelsPerM
+    int clrused = fil->readU32L(); //ColorsUsed
+    fil->readU32L(); //ColorsImportant
+
+    // read pallete
+    int palcnt = 0;
+    if (clrused == 0 || bitcount < 16)
     {
-        memset(&surfDesc, 0, sizeof(DDSURFACEDESC));
-        surfDesc.dwWidth = width;
-        surfDesc.dwHeight = height;
-        surfDesc.ddsCaps.dwCaps = DDSCAPS_ZBUFFER | DDSCAPS_VIDEOMEMORY;
-        surfDesc.dwSize = sizeof(DDSURFACEDESC);
-        surfDesc.dwFlags = DDSD_ZBUFFERBITDEPTH | DDSD_WIDTH | DDSD_HEIGHT | DDSD_CAPS;
+        palcnt = clrused != 0 ? clrused : 1 << bitcount;
 
-        surfDesc.dwMipMapCount = dd_params.selected_device.zbuf_bit_depth;
-
-        log_d3dlog("d3d init: create zbuf (w=%d,h=%d,bpp=%d)\n", width, height, dd_params.selected_device.zbuf_bit_depth);
-
-        res = ddraw->CreateSurface(&surfDesc, &internal->z_buf, NULL);
-        if ( res )
+        for (int i = 0; i < palcnt; i++)
         {
-            log_d3d_fail("DirectDraw", "Could not create z buffer.", res);
-            log_d3dlog("d3d init: zbuf creation failed\n");
-            wdd_Kill3D(obj);
-            return 0;
-        }
-
-        res = obj->back_surf->AddAttachedSurface(internal->z_buf);
-        if ( res )
-        {
-            log_d3d_fail("DirectDraw", "Could not attach z buffer.", res);
-            log_d3dlog("d3d init: could not attach zbuf\n");
-            wdd_Kill3D(obj);
-            return 0;
+            pal[i].r = fil->readU8();
+            pal[i].g = fil->readU8();
+            pal[i].b = fil->readU8();
+            fil->readU8(); //reserved
         }
     }
 
-    res = d3d2->CreateDevice(dd_params.selected_device.device_guid, obj->back_surf, &internal->d3d2dev);
-    if ( res )
+    int width = bmpw;
+    int height = abs(bmph)/2;
+
+    int imgsz = height * width * bitcount / 8;
+    int mask_size = height * width / 8;
+
+    uint8_t *data = (uint8_t *)malloc(imgsz);
+    uint8_t *mask = (uint8_t *)malloc(mask_size);
+
+    fil->read(data, imgsz);
+    fil->read(mask, mask_size);
+
+    delete fil;
+
+
+    SDL_Surface *cursr = SDL_CreateRGBSurface(0, width, height, 32, 0xFF, 0xFF00, 0xFF0000, 0xFF000000);
+
+    for (int y = 0; y < height; y++)
     {
-        log_d3d_fail("windd.class", "IDirect3D2::CreateDevice() failed.", res);
-        return 0;
-    }
+        int invY = height - 1 - y;
+        uint8_t *row = (uint8_t *)cursr->pixels + y * cursr->pitch;
 
-    res = internal->d3d2dev->QueryInterface(IID_IDirect3DDevice, (void **)&internal->d3d1Dev);
-    if ( res )
-    {
-        log_d3d_fail("windd.class", "IDirect3DDevice2::QueryInterface(IID_IDirect3DDevice) failed", res);
-        return 0;
-    }
-
-    internal->formats_count = 0;
-
-    res = internal->d3d2dev->EnumTextureFormats(EnumTextureFormats__CallBack, obj);
-    if ( res )
-    {
-        log_d3d_fail("DirectDraw", "EnumTextureFormats failed.", res);
-        log_d3dlog("d3d init: EnumTextureFormats() failed\n");
-        wdd_Kill3D(obj);
-        return 0;
-    }
-
-    memset(&surfDesc, 0, sizeof(DDSURFACEDESC));
-    surfDesc.dwSize = sizeof(DDSURFACEDESC);
-
-    res = obj->primary_surf->GetSurfaceDesc(&surfDesc);
-    if ( res )
-    {
-        log_d3d_fail("DirectDraw", "GetSurfaceDesc(Primary)", res);
-        log_d3dlog("d3d init: GetSurfaceDesc() for primary failed\n");
-        wdd_Kill3D(obj);
-        return 0;
-    }
-
-    int selected = -1;
-    int v34 = -1;
-    int a2 = -1;
-    int id = 0;
-
-    internal->selected_format_id = -1;
-
-    while ( 1 )
-    {
-        if ( id >= internal->formats_count )
-            break;
-
-        windd_formats *frmt = &internal->formats[id];
-
-        if ( dd_params.selected_device.can_srcblend
-                && dd_params.selected_device.can_destblend
-                && dd_params.selected_device.can_colorkey
-                && frmt->vosem == 8
-                && selected == -1 )
+        for (int x = 0; x < width; x++)
         {
-            selected = id;
-        }
-        else if ( dd_params.selected_device.can_stippling
-                  && dd_params.selected_device.can_colorkey
-                  && frmt->vosem == 8
-                  && selected == -1 )
-        {
-            selected = id;
-        }
-        else if ( frmt->rbits != 4 || frmt->gbits != 4 || frmt->bbits != 4 || 4 != frmt->abits )
-        {
-            if ( frmt->rbits == 8 && frmt->gbits == 8 && frmt->bbits == 8 && 8 == frmt->abits )
-                a2 = id;
-        }
-        else
-        {
-            v34 = id;
-        }
-        id++;
-    }
-
-    if ( selected == -1 )
-    {
-        if ( v34 != -1 )
-        {
-            internal->selected_format_id = v34;
-            log_d3dlog("d3d init: use 4444 texture format\n");
-        }
-        else
-        {
-            selected = a2;
-            if ( a2 == v34 )
+            if (palcnt > 0)
             {
-                log_d3d_fail("Direct3D", "No suitable texture format.", 0);
-                log_d3dlog("d3d init: no suitable texture format found\n");
-                wdd_Kill3D(obj);
-                return 0;
+                int idx = cursPix(data, invY * width + x, bitcount);
+                int alph = cursPix(mask, invY * width + x, 1);
+                row[x * 4 + 0] = pal[ idx ].r;
+                row[x * 4 + 1] = pal[ idx ].g;
+                row[x * 4 + 2] = pal[ idx ].b;
+                row[x * 4 + 3] = (1 - alph) * 255;
             }
-            internal->selected_format_id = selected;
-            log_d3dlog("d3d init: use 8888 texture format\n");
+            else
+            {
+                uint32_t clr = cursPix(data, invY * width + x, bitcount);
+                int alph = cursPix(mask, invY * width + x, 1);
+                row[x * 4 + 0] = clr & 0xFF;
+                row[x * 4 + 1] = (clr >> 8) & 0xFF;
+                row[x * 4 + 2] = (clr >> 16) & 0xFF;
+                row[x * 4 + 3] = (1 - alph) * 255;
+            }
         }
     }
-    else
-    {
-        internal->selected_format_id = selected;
-        log_d3dlog("d3d init: use 8bpp clut texture format\n");
-    }
 
-    res = d3d2->CreateViewport(&internal->d3d2Viewport, NULL);
-    if ( res )
-    {
-        log_d3d_fail("windd.class", "IDirect3D::CreateViewport()", res);
-        wdd_Kill3D(obj);
-        return 0;
-    }
+    free(data);
+    free(mask);
 
-    res = internal->d3d2dev->AddViewport(internal->d3d2Viewport);
-    if ( res )
-    {
-        log_d3d_fail("windd.class", "IDirect3DDevice::AddViewport()", res);
-        wdd_Kill3D(obj);
-        return 0;
-    }
+    SDL_Cursor* cursor = SDL_CreateColorCursor(cursr, hotX, hotY);
 
-    D3DVIEWPORT data;
-    memset(&data, 0, sizeof(D3DVIEWPORT));
+    SDL_FreeSurface(cursr);
 
-    data.dwX = 0;
-    data.dwY = 0;
-    data.dwWidth = width;
-    data.dwHeight = height;
-
-    data.dvScaleX = width * 0.5;
-    data.dvScaleY = height * 0.5;
-    data.dwSize = sizeof(D3DVIEWPORT);
-    data.dvMaxX = width / (2.0 * data.dvScaleX);
-    data.dvMaxY = height / (2.0 * data.dvScaleY);
-
-    res = internal->d3d2Viewport->SetViewport(&data);
-    if ( res )
-    {
-        log_d3d_fail("windd.class", "IDirect3DViewport::SetViewport()", res);
-        wdd_Kill3D(obj);
-        return 0;
-    }
-
-    res = internal->d3d2dev->SetCurrentViewport(internal->d3d2Viewport);
-    if ( res )
-    {
-        log_d3d_fail("windd.class", "ID3DDevice2::SetCurrentViewport() failed", res);
-        wdd_Kill3D(obj);
-        return 0;
-    }
-
-    res = d3d2->CreateMaterial(&internal->material, NULL);
-    if ( res )
-    {
-        log_d3d_fail("Direct3D", "IDirect3D::CreateMaterial(Background)", res);
-        wdd_Kill3D(obj);
-        return 0;
-    }
-
-    D3DMATERIAL mat;
-
-    memset(&mat, 0, sizeof(D3DMATERIAL));
-    mat.dwSize = sizeof(D3DMATERIAL);
-    mat.diffuse.r = 0;
-    mat.diffuse.g = 0;
-    mat.diffuse.b = 0;
-    mat.diffuse.a = 0;
-    mat.dwRampSize = 1;
-
-    internal->material->SetMaterial(&mat);
-
-    D3DMATERIALHANDLE matHndl;
-
-    internal->material->GetHandle(internal->d3d2dev, &matHndl);
-    internal->d3d2Viewport->SetBackground(matHndl);
-
-    int bufsize = 0x10000;
-    if ( dd_params.selected_device.dev_descr.dwMaxBufferSize )
-    {
-        if ( dd_params.selected_device.dev_descr.dwMaxBufferSize < 0x10000 )
-            bufsize = dd_params.selected_device.dev_descr.dwMaxBufferSize;
-    }
-
-    D3DEXECUTEBUFFERDESC execbuf;
-
-    memset(&execbuf, 0, sizeof(D3DEXECUTEBUFFERDESC));
-    execbuf.dwBufferSize = bufsize;
-    execbuf.dwSize = sizeof(D3DEXECUTEBUFFERDESC);
-    execbuf.dwFlags = D3DDEB_BUFSIZE;
-
-    log_d3dlog("d3d init: create execbuf with size %d\n", bufsize);
-
-    res = internal->d3d1Dev->CreateExecuteBuffer(&execbuf, &internal->executebuffer, NULL);
-    if ( res )
-    {
-        log_d3d_fail("wdd_Create3D", "CreateExecuteBuffer() failed.", res);
-        log_d3dlog("d3d init: CreateExecuteBuffer() failed.\n");
-        wdd_Kill3D(obj);
-        return 0;
-    }
-
-    if ( obj->use_simple_d3d )
-        log_d3dlog("***> using DrawPrimitive <***\n");
-    else
-        log_d3dlog("***> using ExecuteBuffer <***\n");
-
-    log_d3dlog("-> Leaving wdd_Create3D()\n");
-
-    return 1;
+    return cursor;
 }
 
-int wdd_Create2DWinEnv(__NC_STACK_win3d *obj, LPPALETTEENTRY pal, int width, int height)
+void sub_42D410(__NC_STACK_win3d *obj, int curID, int force)
 {
-    log_d3dlog("-> Entering wdd_Create2DWinEnv()\n");
+    int sett = 0;
 
-    obj->field_50 |= 2;
+    if ( force )
+        sett = 1;
+    else if ( curID != obj->currentCursor )
+        sett = 1;
 
-    ddraw->SetCooperativeLevel(obj->hwnd, DDSCL_NORMAL);
-
-    DDSURFACEDESC surfDesc;
-    memset(&surfDesc, 0, sizeof(DDSURFACEDESC));
-
-    surfDesc.dwFlags = DDSD_CAPS;
-    surfDesc.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
-    surfDesc.dwSize = sizeof(DDSURFACEDESC);
-
-    HRESULT res = ddraw->CreateSurface(&surfDesc, &obj->primary_surf, NULL);
-    if ( res )
+    if ( sett )
     {
-        log_d3d_fail("windd.class", "DirectDraw::CreateSurface(Primary)", res);
-        return 0;
+        if ( curID == 0 )
+            SDL_ShowCursor(SDL_DISABLE);
+        else if ( curID <= 11 )
+        {
+            if ( cursors[curID - 1] )
+                SDL_SetCursor( cursors[curID - 1] );
+
+            if (!obj->currentCursor)
+                SDL_ShowCursor(SDL_ENABLE);
+        }
+
     }
 
-    memset(&surfDesc, 0, sizeof(DDSURFACEDESC));
-    surfDesc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
-
-    surfDesc.dwHeight = height;
-    surfDesc.dwWidth = width;
-    surfDesc.ddsCaps.dwCaps = DDSCAPS_SYSTEMMEMORY | DDSCAPS_OFFSCREENPLAIN;
-    surfDesc.dwSize = sizeof(DDSURFACEDESC);
-
-
-    res = ddraw->CreateSurface(&surfDesc, &obj->back_surf, NULL);
-    if ( res )
-    {
-        log_d3d_fail("windd.class", "DirectDraw::CreateSurface(Back)", res);
-        return 0;
-    }
-
-    res = ddraw->CreateClipper(0, &obj->clipper, NULL);
-    if ( res )
-    {
-        log_d3d_fail("windd.class", "DirectDraw::CreateClipper()", res);
-        return 0;
-    }
-
-    obj->clipper->SetHWnd(0, obj->hwnd);
-    obj->primary_surf->SetClipper(obj->clipper);
-
-    res = ddraw->CreatePalette(DDPCAPS_8BIT, pal, &obj->ddrawPal, NULL);
-    if ( res )
-    {
-        log_d3d_fail("windd.class", "DirectDraw::CreatePalette()", res);
-        return 0;
-    }
-
-    obj->primary_surf->SetPalette(obj->ddrawPal);
-    obj->back_surf->SetPalette(obj->ddrawPal);
-
-    log_d3dlog("-> Leaving wdd_Create2DWinEnv()\n");
-
-    return 1;
+    obj->currentCursor = curID;
 }
 
-int wdd_Create2DFullEnv(__NC_STACK_win3d *obj, LPPALETTEENTRY pal, int width, int height)
+
+int NC_STACK_win3d::load_font(const char *fontname)
 {
-    int w = width;
-    int h = height;
-
-    log_d3dlog("-> Entering wdd_Create2DFullEnv()\n");
-
-    obj->field_50 |= 2;
-
-    ddraw->SetCooperativeLevel(obj->hwnd, DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
-    HRESULT v8 = ddraw->SetDisplayMode(w, h, 8);
-
-    if ( v8 )
-    {
-        log_d3d_fail("windd.class", "DirectDraw::SetDisplayMode()", v8);
-        return 0;
-    }
-    DDSURFACEDESC surfDesrc;
-
-    memset(&surfDesrc, 0, sizeof(DDSURFACEDESC));
-
-    surfDesrc.dwFlags = DDSD_CAPS;
-    surfDesrc.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
-    surfDesrc.dwSize = sizeof(DDSURFACEDESC);
-
-    v8 = ddraw->CreateSurface(&surfDesrc, &obj->primary_surf, NULL);
-    if ( v8 )
-    {
-        log_d3d_fail("windd.class", "DirectDraw::CreateSurface(Primary)", v8);
-        return 0;
-    }
-
-    surfDesrc.ddsCaps.dwCaps = DDSCAPS_SYSTEMMEMORY | DDSCAPS_OFFSCREENPLAIN;
-    surfDesrc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
-
-    if ( obj->field_50 & 8 )
-    {
-        w /= 2;
-        h /= 2;
-    }
-
-    surfDesrc.dwWidth = w;
-    surfDesrc.dwHeight = h;
-
-    v8 = ddraw->CreateSurface(&surfDesrc, &obj->back_surf, NULL);
-    if ( v8 )
-    {
-        log_d3d_fail("windd.class", "DirectDraw::CreateSurface(Back)", v8);
-        return 0;
-    }
-
-    v8 = ddraw->CreateClipper(0, &obj->clipper, NULL);
-    if ( v8 )
-    {
-        log_d3d_fail("windd.class", "DirectDraw::CreateClipper()", v8);
-        return 0;
-    }
-
-    obj->clipper->SetHWnd(0, obj->hwnd);
-
-    obj->primary_surf->SetClipper(obj->clipper);
-
-    v8 = ddraw->CreatePalette(DDPCAPS_ALLOW256 | DDPCAPS_8BIT, pal, &obj->ddrawPal, 0);
-    if ( v8 )
-    {
-        log_d3d_fail("windd.class", "CreatePalette()", v8);
-        return 0;
-    }
-
-    obj->primary_surf->SetPalette(obj->ddrawPal);
-
-    obj->back_surf->SetPalette(obj->ddrawPal);
-
-    log_d3dlog("-> Leaving wdd_Create2DFullEnv()\n");
-
-    return 1;
-}
-
-int load_font(const char *fontname)
-{
-    if ( !font )
-        return 0;
-
     char buf[128];
 
     strcpy(buf, fontname);
 
     const char *facename = strtok(buf, ",");
     const char *s_height = strtok(0, ",");
-    const char *s_weight = strtok(0, ",");
-    const char *s_charset = strtok(0, ",");
+    //const char *s_weight = strtok(0, ",");
+    //const char *s_charset = strtok(0, ",");
 
-    int height, weight, charset;
-    if ( facename && s_height && s_weight && s_charset )
+    int height;//, weight, charset;
+    if ( facename && s_height )//&& s_weight && s_charset )
     {
         height = atoi(s_height);
-        weight = atoi(s_weight);
-        charset = atoi(s_charset);
+        //weight = atoi(s_weight);
+        //charset = atoi(s_charset);
     }
     else
     {
         height = 12;
-        charset = 0;
+        //charset = 0;
         facename = "MS Sans Serif";
-        weight = 400;
+        //weight = 400;
     }
 
-    if ( font )
+    if ( stack__win3d.font.ttfFont )
     {
-        if ( font->hFont )
-        {
-            DeleteObject(font->hFont);
-            font->hFont = 0;
-        }
+        TTF_CloseFont(stack__win3d.font.ttfFont);
+        stack__win3d.font.ttfFont = NULL;
     }
 
-    font->height = height;
+    stack__win3d.font.height = height;
 
-    font->hFont = CreateFont(-height, 0, 0, 0, weight, 0, 0, 0, charset, 0, 0, 1, 0, facename);
-    if ( font->hFont )
+    stack__win3d.font.ttfFont = SDLWRAP_loadFont(facename, height);
+    if ( stack__win3d.font.ttfFont )
         return 1;
 
+    printf("Can't load font\n");
+
     return 0;
-}
-
-void windd_func0__sub2__sub4__sub0()
-{
-    if ( font )
-    {
-        if ( font->hFont )
-        {
-            DeleteObject(font->hFont);
-            font->hFont = NULL;
-        }
-    }
-}
-
-int windd_func0__sub2__sub4(IDirectDraw *ddraw, IDirectDrawSurface *ddsurf, const char *fontname)
-{
-    font = (wdd_font *)AllocVec(sizeof(wdd_font), 0);
-
-    int v6 = 0;
-
-    if ( font )
-    {
-        font->ddraw = ddraw;
-        font->ddsurf = ddsurf;
-        if ( load_font(fontname) )
-            v6 = 1;
-    }
-
-    if ( !v6 )
-    {
-        if ( font )
-        {
-            windd_func0__sub2__sub4__sub0();
-            nc_FreeMem(font);
-            font = NULL;
-        }
-    }
-
-    return v6;
-}
-
-int windd_func0__sub2(__NC_STACK_win3d *obj, UA_PALETTE *palette, int width, unsigned int height, int bits)
-{
-    PALETTEENTRY tmpPal[256];
-
-    log_d3dlog("-> Entering wdd_InitDDrawStuff()\n");
-
-    if ( ghInstance )
-    {
-        if ( !gCmdShow )
-            return 0;
-
-        if ( palette )
-        {
-            for (int i = 0; i < 256; i++)
-            {
-                tmpPal[i].peRed = palette->pal_entries[i].r;
-                tmpPal[i].peGreen = palette->pal_entries[i].g;
-                tmpPal[i].peBlue = palette->pal_entries[i].b;
-                tmpPal[i].peFlags = 0;
-            }
-        }
-        else
-        {
-            for (int i = 0; i < 256; i++)
-            {
-                tmpPal[i].peRed = 255 * ((i >> 5) & 7) / 7;
-                tmpPal[i].peGreen = 255 * ((i >> 2) & 7) / 7;
-                tmpPal[i].peBlue = 255 * (i & 3) / 7;
-                tmpPal[i].peFlags = 0;
-            }
-        }
-
-        obj->field_28 = -1;
-        obj->width = width;
-        obj->cursor = ghInstance;
-        obj->height = height;
-
-        if ( createWindow(obj, ghInstance, gCmdShow, width, height) )
-        {
-            log_d3dlog("->     after wdd_ValidateWindow()\n");
-
-            if ( dword_514EFC )
-            {
-                if ( obj->field_50 & 1 )
-                {
-                    if ( !wdd_Create3DWinEnv(obj, width, height) )
-                        return 0;
-                }
-                else if ( !wdd_Create3DFullEnv(obj, width, height, bits) )
-                {
-                    return 0;
-                }
-
-                log_d3dlog("->     after wdd_Create3DFull/WinEnv()\n");
-
-                if ( !wdd_Create3D(obj, width, height) )
-                    return 0;
-
-                log_d3dlog("->     after wdd_Create3D()\n");
-            }
-            else
-            {
-                if ( obj->field_50 & 1 )
-                {
-                    if ( !wdd_Create2DWinEnv(obj, tmpPal, width, height) )
-                        return 0;
-                }
-                else if ( !wdd_Create2DFullEnv(obj, tmpPal, width, height) )
-                {
-                    return 0;
-                }
-
-                log_d3dlog("->     after wdd_Create2DFull/WinEnv()\n");
-            }
-
-            dd_params.field_AD04 = windd_func0__sub2__sub4(ddraw, obj->back_surf, "MS Sans Serif,12,400,0");
-
-            log_d3dlog("->     after dbcs_Init()\n");
-
-            memset(&dd_params.ddSurfDescr__primary, 0, sizeof(DDSURFACEDESC));
-
-            dd_params.ddSurfDescr__primary.dwSize = sizeof(DDSURFACEDESC);
-
-            HRESULT v17 = obj->primary_surf->GetSurfaceDesc(&dd_params.ddSurfDescr__primary);
-            if ( v17 )
-            {
-                log_d3d_fail("windd.class/wdd_winbox.c", "IDirectDrawSurface::GetSurfaceDesc(Primary)", v17);
-                return 0;
-            }
-
-            log_d3dlog("->     after GetSurfaceDesc()\n");
-
-            if ( dd_params.selected_device.unk2_def_0 || obj->field_30 )
-                ShowCursor(0);
-            log_d3dlog("-> Leaving wdd_InitDrawStuff()\n");
-            return 1;
-        }
-        else
-        {
-            log_d3dlog("wdd_ValidateWindow() failed.\n");
-            return 0;
-        }
-    }
-    else
-        return 0;
 }
 
 size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
@@ -3139,55 +889,55 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
 
     get_keyvalue_from_ini(0, windd_keys, 7);
 
-    init_list(&modes_list);
-    init_list(&graph_drivers_list);
     int export_window_mode = windd_keys[6].value.val;     // gfx.export_window_mode
 
-    if ( !windd_func0__sub1(windd_keys[6].value.val) )
-        return 0;
+    if (windd_keys[7].value.val == 0)
+    {
+        can_srcblend = 1;
+        can_destblend = 0;
+        can_stippling = 0;
+    }
+    else if (windd_keys[7].value.val == 1)
+    {
+        can_srcblend = 1;
+        can_destblend = 1;
+        can_stippling = 0;
+    }
+    else if (windd_keys[7].value.val == 2)
+    {
+        can_srcblend = 0;
+        can_destblend = 0;
+        can_stippling = 1;
+    }
+
 
     int v7 = find_id_in_stack_def_val(DISP_ATT_DISPLAY_ID, 0, stak);
-    UA_PALETTE *pal = (UA_PALETTE *)find_id_in_stack_def_val(BMD_ATT_PCOLORMAP, 0, stak);
 
-    mode_node *picked;
-
+    gfxMode *picked = NULL;
     if ( v7 )
     {
-        picked = (mode_node *)modes_list.head;
-        if ( modes_list.head->next )
+        for (std::list<gfxMode *>::iterator it = graphicsModes.begin(); it != graphicsModes.end(); it++)
         {
-            while ( v7 != picked->sort_id )
+            if ( (*it)->sortid == v7 )
             {
-                picked = (mode_node *)picked->next;
-                if ( !picked->next )
-                {
-                    picked = sub_41F68C();
-                    break;
-                }
+                picked = *it;
+                break;
             }
         }
-        else
-        {
+
+        if ( !picked )
             picked = sub_41F68C();
-        }
     }
     else
     {
         picked = windd_func0__sub0("env/vid.def");
     }
 
-    log_d3dlog("ddraw init: picked mode %s\n", picked->name);
+    log_d3dlog(" picked mode %s\n", picked->name.c_str());
 
-    if ( picked->field_94 & 8 )
-    {
-        tmp[0].set(BMD_ATT_WIDTH, picked->width / 2);
-        tmp[1].set(BMD_ATT_HEIGHT, picked->height / 2);
-    }
-    else
-    {
-        tmp[0].set(BMD_ATT_WIDTH, picked->width);
-        tmp[1].set(BMD_ATT_HEIGHT, picked->height);
-    }
+
+    tmp[0].set(BMD_ATT_WIDTH, picked->w);
+    tmp[1].set(BMD_ATT_HEIGHT, picked->h);
     tmp[2].set(BMD_ATT_BUFFER, 1);
     tmp[3].set(BMD_ATT_HAS_COLORMAP, 1);
     tmp[4].nextStack(stak);
@@ -3197,41 +947,43 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
 
     __NC_STACK_win3d *win3d = &stack__win3d;
 
-    win3d->field_30 = 0;
-    win3d->sort_id = picked->sort_id;
+    win3d->forcesoftcursor = 0;
+    win3d->sort_id = picked->sortid;
     win3d->movie_player = windd_keys[2].value.val;
     win3d->disable_lowres = windd_keys[5].value.val;
     win3d->txt16bit = txt16bit_def;
     win3d->use_simple_d3d = drawprim_def;
     win3d->export_window_mode = export_window_mode;
 
-    win3d->field_50 |= 1; ////HACK
+    //win3d->flags |= 1; ////HACK
 
-    if ( picked->field_94 & 1 )
-        win3d->field_50 |= 1;
-    if ( picked->field_94 & 4 )
-        win3d->field_50 |= 4;
-    if ( picked->field_94 & 8 )
-        win3d->field_50 |= 8;
-    if ( picked->field_94 & 0x10 )
-        win3d->field_50 |= 0x10;
+    if ( picked->windowed )
+        win3d->flags |= 1;
 
-    if ( !windd_func0__sub2(win3d, pal, picked->width, picked->height, picked->bits) )
-    {
-        log_d3dlog("wdd_InitDDrawStuff() failed.\n");
 
-        func1(NULL);
-        return 0;
-    }
+    win3d->mode = picked->mode;
+
+    win3d->currentCursor = -1;
+    win3d->width = picked->w;
+    win3d->height = picked->h;
+
+    if (!picked->windowed)
+        SDLWRAP_setFullscreen(SDL_WINDOW_FULLSCREEN_DESKTOP, &picked->mode);
+    else
+        SDLWRAP_setFullscreen(0, NULL);
+
+    SDLWRAP_resizeWindow(picked->w, picked->h);
+
+    load_font("MS Sans Serif,12,400,0");
 
     FSMgr::FileHandle *fil = uaOpenFile("env/vid.def", "w");
     if ( fil )
     {
-        fil->printf("%s\n", picked->name);
+        fil->printf("%s\n", picked->name.c_str());
         delete fil;
     }
 
-    win3d->field_54______rsrc_field4 = (bitmap_intern *)getRsrc_pData();
+    //win3d->field_54______rsrc_field4 = (bitmap_intern *)getRsrc_pData();
     return 1;
 }
 
@@ -3246,11 +998,6 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
 size_t NC_STACK_win3d::func0(stack_vals *stak)
 {
     get_keyvalue_from_ini(0, win3d_keys, 7);
-
-    if ( win3d_keys[6].value.val ) // if force_emul
-        return 0;
-
-    dword_514EFC = 1;
 
     if ( !windd_func0(stak) )
         return 0;
@@ -3275,21 +1022,21 @@ size_t NC_STACK_win3d::func0(stack_vals *stak)
         return 0;
     }
 
-    if ( !initPixelFormats(w3d) )
+    if ( !initPixelFormats() )
     {
         ypa_log_out("win3d.class: Pixelformat problems.\n");
         func1(NULL);
         return 0;
     }
 
-    if ( !initTextureCache(w3d) )
-    {
-        ypa_log_out("win3d.class: Failed to initialize texture cache.\n");
-        func1(NULL);
-        return 0;
-    }
+    /*	if ( !initTextureCache(w3d) )
+    	{
+    		ypa_log_out("win3d.class: Failed to initialize texture cache.\n");
+    		func1(NULL);
+    		return 0;
+    	}*/
 
-    if ( !initPolyEngine(w3d) )
+    if ( !initPolyEngine() )
     {
         ypa_log_out("win3d.class: Failed to initialize polygon engine.\n");
         func1(NULL);
@@ -3299,137 +1046,29 @@ size_t NC_STACK_win3d::func0(stack_vals *stak)
     return 1;
 }
 
-
-
-
-
-
-void windd_func1__sub1__sub0()
+size_t NC_STACK_win3d::func1(stack_vals *stak)
 {
-    if ( font )
-    {
-        if ( font->hFont )
-        {
-            DeleteObject(font->hFont);
-            font->hFont = NULL;
-        }
-        nc_FreeMem(font);
-        font = NULL;
-    }
-}
+    __NC_STACK_win3d *w3d = &stack__win3d;
 
-void wdd_KillDDrawStuff(__NC_STACK_win3d *win3d)
-{
-    log_d3dlog("-> Entering wdd_KillDDrawStuff()\n");
-
-    windd_func1__sub1__sub0();
-
-    dd_params.field_AD04 = 0;
-
-    if ( !(win3d->field_50 & 1) )
-        ddraw->RestoreDisplayMode();
-
-    if ( win3d->hwnd )
-    {
-        DDBLTFX fx;
-        fx.dwFillColor = 0;
-        fx.dwSize = sizeof(DDBLTFX);
-
-        if ( win3d->primary_surf )
-            win3d->primary_surf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &fx);
-
-        if ( win3d->back_surf )
-            win3d->back_surf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &fx);
-
-        SetClassLong(win3d->hwnd, 0, 0);
-
-        sub_42BD38(win3d);
-
-        win3d->hwnd = 0;
-    }
-
-    win3d->cursor = 0;
-
-    log_d3dlog("-> Leaving wdd_KillDDrawStuff()\n");
-}
-
-void windd_func1__sub0()
-{
-    if ( d3d2 )
-    {
-        d3d2->Release();
-        d3d2 = NULL;
-    }
-
-    if ( ddraw )
-    {
-        ddraw->Release();
-        ddraw = NULL;
-    }
-}
-
-
-size_t NC_STACK_win3d::windd_func1(stack_vals *stak)
-{
-    wdd_KillDDrawStuff(&stack__win3d);
-    while ( 1 )
-    {
-        nnode *nod = RemHead((nlist *)&modes_list);
-
-        if ( !nod )
-            break;
-
-        nc_FreeMem(nod);
-    }
-    while ( 1 )
-    {
-        nnode *nod = RemHead(&graph_drivers_list);
-
-        if ( !nod )
-            break;
-
-        nc_FreeMem(nod);
-    }
-    windd_func1__sub0();
-    return NC_STACK_display::func1(stak);
-}
-
-void win3d_func1__sub1(__NC_STACK_win3d *w3d)
-{
-    if ( w3d->bigdata )
-    {
-        if ( w3d->bigdata->primary__pixelformat.colors )
-        {
-            nc_FreeMem(w3d->bigdata->primary__pixelformat.colors);
-            w3d->bigdata->primary__pixelformat.colors = NULL;
-        }
-        if ( w3d->bigdata->selected__pixelformat.colors )
-        {
-            nc_FreeMem(w3d->bigdata->selected__pixelformat.colors);
-            w3d->bigdata->selected__pixelformat.colors = NULL;
-        }
-    }
-}
-
-void win3d_func1__sub0(__NC_STACK_win3d *w3d)
-{
     if ( w3d->bigdata )
     {
         nc_FreeMem(w3d->bigdata);
         w3d->bigdata = NULL;
     }
-}
 
-size_t NC_STACK_win3d::func1(stack_vals *stak)
-{
-    __NC_STACK_win3d *w3d = &stack__win3d;
+    if (w3d->pixfmt)
+    {
+        SDL_FreeFormat(w3d->pixfmt);
+        w3d->pixfmt = NULL;
+    }
 
-    sub_439E30(w3d);
+    if ( w3d->font.ttfFont )
+    {
+        TTF_CloseFont(w3d->font.ttfFont);
+        w3d->font.ttfFont = NULL;
+    }
 
-    win3d_func1__sub1(w3d);
-    win3d_func1__sub0(w3d);
-
-    return windd_func1(stak);
+    return NC_STACK_display::func1(stak);
 }
 
 size_t NC_STACK_win3d::func2(stack_vals *stak)
@@ -3509,9 +1148,6 @@ size_t NC_STACK_win3d::func3(stack_vals *stak)
             case DISP_ATT_DISPLAY_ID:
                 *(int *)stk->value.p_data = getDISP_displID();
                 break;
-            case DISP_ATT_DISPLAY_INF:
-                *(gfx_window **)stk->value.p_data = getDISP_displInf();
-                break;
             case WDD_ATT_16BIT_TEX:
                 *(int *)stk->value.p_data = getWDD_16bitTex();
                 break;
@@ -3531,26 +1167,14 @@ void sub_43CD40(__NC_STACK_win3d *w3d, int x1, int y1, int x2, int y2, unsigned 
 {
     if ( w3d->surface_locked_surfaceData )
     {
-        int BytesPerColor = w3d->bigdata->primary__pixelformat.BytesPerColor;
+        int BytesPerColor = w3d->pixfmt->BytesPerPixel;
 
         int rilWidth = w3d->surface_locked_pitch / (unsigned int)BytesPerColor;
 
         int xCount = abs(x2 - x1);
         int yCount = abs(y2 - y1);
 
-        DWORD color = RGBAToColor(
-                          r,
-                          g,
-                          b,
-                          0,
-                          w3d->bigdata->primary__pixelformat.dwRShift,
-                          w3d->bigdata->primary__pixelformat.dwGShift,
-                          w3d->bigdata->primary__pixelformat.dwBShift,
-                          w3d->bigdata->primary__pixelformat.dwAShift,
-                          w3d->bigdata->primary__pixelformat.dwRBitMask,
-                          w3d->bigdata->primary__pixelformat.dwGBitMask,
-                          w3d->bigdata->primary__pixelformat.dwBBitMask,
-                          w3d->bigdata->primary__pixelformat.dwAlphaBitMask);
+        uint32_t color = SDL_MapRGBA(w3d->pixfmt, r, g, b, 255);
 
         int dy, dx;
 
@@ -3589,7 +1213,7 @@ void sub_43CD40(__NC_STACK_win3d *w3d, int x1, int y1, int x2, int y2, unsigned 
 
         if ( BytesPerColor == 2 )
         {
-            WORD *surf = ((WORD *)w3d->surface_locked_surfaceData + rilWidth * y1 + x1);
+            uint16_t *surf = ((uint16_t *)w3d->surface_locked_surfaceData + rilWidth * y1 + x1);
 
             for (int i = 0; i <= xCount; i++) // Verify i bound
             {
@@ -3608,7 +1232,7 @@ void sub_43CD40(__NC_STACK_win3d *w3d, int x1, int y1, int x2, int y2, unsigned 
         }
         else if ( BytesPerColor == 4 )
         {
-            DWORD *surf = ((DWORD *)w3d->surface_locked_surfaceData + rilWidth * y1 + x1);
+            uint32_t *surf = ((uint32_t *)w3d->surface_locked_surfaceData + rilWidth * y1 + x1);
 
             for (int i = 0; i <= xCount; i++) // Verify i bound
             {
@@ -3896,24 +1520,24 @@ void sub_43CEE0(__NC_STACK_win3d *w3d, void *srcBuf, int width, int a1, int a2, 
 {
     if ( w3d->surface_locked_surfaceData )
     {
-        if (w3d->bigdata->primary__pixelformat.BytesPerColor == 2)
+        if (w3d->pixfmt->BytesPerPixel == 2)
         {
-            WORD *dstSurf = (WORD *)w3d->surface_locked_surfaceData;
+            uint16_t *dstSurf = (uint16_t *)w3d->surface_locked_surfaceData;
             if ( x2 != x1 && y2 != y1 )
             {
-                DWORD v21 = a2 << 16;
+                uint32_t v21 = a2 << 16;
                 for (int i = y1; i < y2; i++ )
                 {
-                    WORD *buf = &dstSurf[i * (w3d->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor)];
+                    uint16_t *buf = &dstSurf[i * (w3d->surface_locked_pitch / w3d->pixfmt->BytesPerPixel)];
 
-                    DWORD v13 = a1 << 16;
+                    uint32_t v13 = a1 << 16;
                     if ( x1 < x2 )
                     {
-                        WORD *cur = buf + x1;
-                        WORD *bend = buf + x2;
+                        uint16_t *cur = buf + x1;
+                        uint16_t *bend = buf + x2;
                         while(cur < bend)
                         {
-                            *cur = ((WORD *)srcBuf)[width * (v21 >> 16) + (v13 >> 16)];
+                            *cur = ((uint16_t *)srcBuf)[width * (v21 >> 16) + (v13 >> 16)];
                             v13 += ((a3 - a1) << 16) / (x2 - x1);
                             cur++;
                         }
@@ -3922,24 +1546,24 @@ void sub_43CEE0(__NC_STACK_win3d *w3d, void *srcBuf, int width, int a1, int a2, 
                 }
             }
         }
-        else if (w3d->bigdata->primary__pixelformat.BytesPerColor == 4)
+        else if (w3d->pixfmt->BytesPerPixel == 4)
         {
-            DWORD *dstSurf = (DWORD *)w3d->surface_locked_surfaceData;
+            uint32_t *dstSurf = (uint32_t *)w3d->surface_locked_surfaceData;
             if ( x2 != x1 && y2 != y1 )
             {
-                DWORD v21 = a2 << 16;
+                uint32_t v21 = a2 << 16;
                 for (int i = y1; i < y2; i++ )
                 {
-                    DWORD *buf = &dstSurf[i * (w3d->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor)];
+                    uint32_t *buf = &dstSurf[i * (w3d->surface_locked_pitch / w3d->pixfmt->BytesPerPixel)];
 
-                    DWORD v13 = a1 << 16;
+                    uint32_t v13 = a1 << 16;
                     if ( x1 < x2 )
                     {
-                        DWORD *cur = buf + x1;
-                        DWORD *bend = buf + x2;
+                        uint32_t *cur = buf + x1;
+                        uint32_t *bend = buf + x2;
                         while(cur < bend)
                         {
-                            *cur =  ((DWORD*)srcBuf)[width * (v21 >> 16) + (v13 >> 16)];
+                            *cur =  ((uint32_t*)srcBuf)[width * (v21 >> 16) + (v13 >> 16)];
                             v13 += ((a3 - a1) << 16) / (x2 - x1);
                             cur++;
                         }
@@ -3968,7 +1592,7 @@ size_t NC_STACK_win3d::raster_func202(rstr_arg204 *arg)
     int a7 = rstr->field_554 * (arg->float1C + 1.0);
     int a8 = rstr->field_558 * (arg->float20 + 1.0);
 
-    sub_43CEE0(w3d, (WORD *)pbitm->buffer, pbitm->width, a1, a2, a3, a4, a5, a6, a7, a8);
+    sub_43CEE0(w3d, (uint16_t *)pbitm->buffer, pbitm->width, a1, a2, a3, a4, a5, a6, a7, a8);
     return 1;
 }
 
@@ -4046,232 +1670,40 @@ size_t NC_STACK_win3d::raster_func204(rstr_arg204 *arg)
     loc.dword24 = (arg->float20 + 1.0) * rstr->field_558;
 
     if ( win3d_func204__sub0(rstr, &loc) )
-        sub_43CEE0(w3d, (WORD *)loc.pbitm->buffer, loc.pbitm->width, loc.dword4, loc.dword8, loc.dwordC, loc.dword10, loc.dword18, loc.dword1C, loc.dword20, loc.dword24);
+        sub_43CEE0(w3d, (uint16_t *)loc.pbitm->buffer, loc.pbitm->width, loc.dword4, loc.dword8, loc.dwordC, loc.dword10, loc.dword18, loc.dword1C, loc.dword20, loc.dword24);
 
     return 1;
 }
 
-void sb_0x43b518__sub0__sub0( __NC_STACK_win3d *w3d)
+int NC_STACK_win3d::SetRenderStates(int setAll)
 {
-    if ( w3d->bigdata->sceneBeginned )
-    {
-        if ( w3d->use_simple_d3d )
-        {
-            win3d__SetRenderState(w3d, D3DRENDERSTATE_FLUSHBATCH, 1);
-        }
-        else
-        {
-            sub_43BE88(w3d);
-            sub_43BD50(w3d);
-        }
-    }
-}
+    __NC_STACK_win3d *w3d = &stack__win3d;
 
-int loadTextureToCache(__NC_STACK_win3d *w3d, texStru *tex, int id)
-{
-    texCache *ptx = &w3d->bigdata->texCh[id];
-    if ( !w3d->use_simple_d3d && ptx->loadedFromTexture.dx1)
+    for (int i = 0; i < W3D_STATES_MAX; i++)
     {
-        HRESULT res = ptx->d3dtex->Unload();
-        if (res)
-        {
-            log_d3d_fail("win3d.class", "IDirect3DTexture::Unload()", res);
-            return 0;
-        }
+        if (setAll || w3d->rendStates2[i] != w3d->rendStates[i])
+            win3d__SetRenderState(i, w3d->rendStates2[i]);
+
+        w3d->rendStates[i] = w3d->rendStates2[i];
     }
 
-    ptx->field_4 = 1;
-    ptx->used = (ptx->used & 0xFFFFFFFC) | 2;
-    ptx->loadedFromTexture.dx2 = tex->texture.dx2;
-    ptx->txStru = tex;
-
-    if ( w3d->bigdata->selected__pixelformat.BytesPerColor == 1 )
-    {
-        DDCOLORKEY ckey;
-        ckey.dwColorSpaceLowValue = 0;
-        ckey.dwColorSpaceHighValue = 0;
-        ptx->ddDrawSurface->SetColorKey(DDCKEY_SRCBLT, &ckey);
-    }
-
-    return ptx->d3dtex2->Load(ptx->loadedFromTexture.dx2) == D3D_OK;
-}
-
-D3DTEXTUREHANDLE getTexHandle(__NC_STACK_win3d *w3d, texCache *tex)
-{
-    D3DTEXTUREHANDLE d3dtexHandle;
-    HRESULT res;
-
-    if ( w3d->use_simple_d3d )
-        res = tex->d3dtex2->GetHandle(w3d->intern->d3d2dev, &d3dtexHandle);
-    else
-        res = tex->d3dtex->GetHandle(w3d->intern->d3d1Dev, &d3dtexHandle);
-    if ( res )
-        return 0;
-
-    return d3dtexHandle;
+    return 1;
 }
 
 
-D3DTEXTUREHANDLE sb_0x43b518__sub0(__NC_STACK_win3d *w3d, texStru *tex, int a4)
+void NC_STACK_win3d::sb_0x43b518(polysDatSub *polysDat, texStru *tex, int a5, int a6)
 {
-    if ( !w3d->bigdata->sceneBeginned )
-        return 0;
+    struct vtxOut
+    {
+        float x, y, z, rhw;
+        float tu, tv;
+        uint8_t r, g, b, a;
+    };
+
+    __NC_STACK_win3d *w3d = &stack__win3d;
 
     win3d_bigdata *bigdata = w3d->bigdata;
-
-
-    int id = -1;
-
-    for (int i = 0; i < bigdata->texCh_count; i++)
-    {
-        texCache *ptx = &bigdata->texCh[i];
-        if ( ptx->loadedFromTexture.dx2 == tex->texture.dx2 )
-        {
-            ptx->used = (ptx->used & 0xFFFFFFFC) | 2;
-            ptx->field_4++;
-            return getTexHandle(w3d, ptx);
-        }
-
-        if ( ptx->used & 1 )
-            id = i;
-    }
-
-    if ( id == -1 )
-    {
-        if ( a4 )
-        {
-            int idd = 0;
-
-            for (int i = 0; i < bigdata->texCh_count; i++)
-            {
-                if ( bigdata->texCh[i].field_4 < bigdata->texCh[idd].field_4 )
-                    idd = i;
-            }
-
-            sb_0x43b518__sub0__sub0(w3d);
-            if ( loadTextureToCache(w3d, tex, idd) )
-                return getTexHandle(w3d, &w3d->bigdata->texCh[idd]);
-        }
-    }
-    else if ( loadTextureToCache(w3d, tex, id) )
-    {
-        return getTexHandle(w3d, &w3d->bigdata->texCh[id]);
-    }
-    return 0;
-}
-
-int SetRenderStates(__NC_STACK_win3d *w3d, int arg)
-{
-    execBuf *execBuff = &w3d->bigdata->rendStates;
-
-    int statesChanged = 0;
-
-    if ( arg )
-    {
-        statesChanged = 11;
-    }
-    else
-    {
-        for (int i = 0; i < 11; i++)
-            if (execBuff->rendStates2[i].value != execBuff->rendStates[i].value)
-                statesChanged++;
-    }
-
-    if ( statesChanged )
-    {
-        execBuff_initRenderStates(w3d);
-
-        for (int i = 0; i < 11; i++)
-        {
-            if (execBuff->rendStates2[i].value != execBuff->rendStates[i].value)
-                win3d__SetRenderState(w3d, execBuff->rendStates2[i].d3dRenderState, execBuff->rendStates2[i].value);
-
-            execBuff->rendStates[i].value = execBuff->rendStates2[i].value;
-        }
-
-        execBuff_finishRenderStates(w3d);
-        return 1;
-    }
-
-    return 0;
-}
-
-
-void DrawPrimitive(__NC_STACK_win3d *w3d, D3DTLVERTEX *vtx, int vtxCount)
-{
-    win3d_bigdata *bigdata = w3d->bigdata;
-
-    if ( !w3d->bigdata->sceneBeginned )
-        return;
-
-    if ( w3d->use_simple_d3d )
-    {
-        HRESULT res = w3d->intern->d3d2dev->DrawPrimitive(D3DPT_TRIANGLEFAN, D3DVT_TLVERTEX, vtx, vtxCount, D3DDP_DONOTCLIP | D3DDP_DONOTUPDATEEXTENTS );
-        if ( res )
-            log_d3d_fail("win3d.class", "DrawPrimitive() failed", res);
-    }
-    else
-    {
-        execBuf *execBuff = &bigdata->rendStates;
-        if ( bigdata->sceneBeginned )
-        {
-            if ( ((char *)execBuff->lpInsPointer + 1000) > (char *)execBuff->lpBufEnd ||
-                    ((char *)execBuff->lpBufStart3 + 1000) > (char *)execBuff->lpInsStart )
-            {
-                sub_43BE88(w3d);
-                sub_43BD50(w3d);
-            }
-        }
-
-        void *lp = execBuff->lpInsPointer;
-
-        if ( execBuff->field_B0 & 2 )
-        {
-            void *pTriang = execBuff->field_DC;
-            execBuff->field_E0 += vtxCount - 2;
-
-            OP_TRIANGLE_LIST(execBuff->field_E0, pTriang);
-        }
-        else
-        {
-            execBuff->field_DC = lp;
-            execBuff->field_E0 = vtxCount - 2;
-
-            OP_TRIANGLE_LIST(execBuff->field_E0, lp);
-        }
-        for(int i = 1; i < vtxCount - 1; i++)
-        {
-            int tmp = execBuff->field_CC;
-
-            ((LPD3DTRIANGLE)lp)->v1 = tmp;
-            ((LPD3DTRIANGLE)lp)->v2 = tmp + i;
-            ((LPD3DTRIANGLE)lp)->v3 = tmp + i + 1;
-
-            if (i == 1)
-                ((LPD3DTRIANGLE)lp)->wFlags = D3DTRIFLAG_STARTFLAT(vtxCount - 3);
-            else
-                ((LPD3DTRIANGLE)lp)->wFlags = D3DTRIFLAG_EVEN;
-
-            lp = (char *)lp + sizeof(D3DTRIANGLE);
-        }
-
-        execBuff->lpInsPointer = lp;
-
-        execBuff->field_CC += vtxCount;
-        execBuff->vertexCount += vtxCount;
-
-        VERTEX_DATA(vtx, vtxCount, execBuff->lpBufStart3);
-
-        execBuff->field_B0 |= 2;
-    }
-}
-
-void sb_0x43b518(__NC_STACK_win3d *w3d, polysDatSub *polysDat, texStru *tex, int a5, int a6)
-{
-    D3DTEXTUREHANDLE texHndl = 0;
-
-    win3d_bigdata *bigdata = w3d->bigdata;
-    if ( !bigdata->sceneBeginned )
+    if ( !w3d->sceneBeginned )
         return;
 
     if ( polysDat->vertexCount < 3 || polysDat->vertexCount > 12 )
@@ -4289,24 +1721,7 @@ void sb_0x43b518(__NC_STACK_win3d *w3d, polysDatSub *polysDat, texStru *tex, int
         return;
     }
 
-    //Store for rendering later ( from 214 method )
-    if ( polysDat->renderFlags & 3 )
-    {
-        texHndl = sb_0x43b518__sub0(w3d, tex, a5);
-        if ( !texHndl )
-        {
-            if ( bigdata->subt1_count < 512 )
-            {
-                bigdata->subt1[bigdata->subt1_count].polyData = polysDat;
-                bigdata->subt1[bigdata->subt1_count].tex = tex;
-                bigdata->subt1_count++;
-            }
-            return;
-        }
-    }
-
-
-    D3DTLVERTEX vOut[24];
+    vtxOut vtx[24];
 
     int x_max_id = 0;
     int x_min_id = 0;
@@ -4315,31 +1730,34 @@ void sb_0x43b518(__NC_STACK_win3d *w3d, polysDatSub *polysDat, texStru *tex, int
 
     for (int i = 0; i < polysDat->vertexCount; i++)
     {
-        vOut[i].sx = (polysDat->vertexes[i].sx + 1.0) * w3d->bigdata->_dx;
-        vOut[i].sy = (polysDat->vertexes[i].sy + 1.0) * w3d->bigdata->_dy;
-        vOut[i].sz = polysDat->vertexes[i].sz / 8192.0;
-        vOut[i].color = 0xFFFFFFFF;
-        vOut[i].specular = 0;
-        vOut[i].tu = 0;
-        vOut[i].tv = 0;
-        vOut[i].rhw = 1.0 / polysDat->vertexes[i].sz;
+        vtx[i].x = polysDat->vertexes[i].sx;
+        vtx[i].y = polysDat->vertexes[i].sy;
+        vtx[i].z = polysDat->vertexes[i].sz / 8192.0;
+        vtx[i].rhw = polysDat->vertexes[i].sz;
+        vtx[i].tu = 0.0;
+        vtx[i].tv = 0.0;
+        vtx[i].r = 255;
+        vtx[i].g = 255;
+        vtx[i].b = 255;
+        vtx[i].a = 255;
 
-        if ( vOut[i].sx > vOut[y_max_id].sx )
+
+        if ( vtx[i].x > vtx[y_max_id].x )
             x_max_id = i;
-        else if ( vOut[i].sx < vOut[y_min_id].sx )
+        else if ( vtx[i].x < vtx[y_min_id].x )
             x_min_id = i;
 
-        if ( vOut[i].sy > vOut[y_max_id].sy )
+        if ( vtx[i].y > vtx[y_max_id].y )
             y_max_id = i;
-        else if ( vOut[i].sy < vOut[y_min_id].sy )
+        else if ( vtx[i].y < vtx[y_min_id].y )
             y_min_id = i;
     }
 
-    float xLen = vOut[x_max_id].sx - vOut[x_min_id].sx;
+    float xLen = vtx[x_max_id].x - vtx[x_min_id].x;
     if ( xLen <= 0.0 )
         return;
 
-    float yLen = vOut[y_max_id].sy - vOut[y_min_id].sy;
+    float yLen = vtx[y_max_id].y - vtx[y_min_id].y;
     if ( yLen <= 0.0 )
         return;
 
@@ -4351,142 +1769,150 @@ void sb_0x43b518(__NC_STACK_win3d *w3d, polysDatSub *polysDat, texStru *tex, int
         }
     }
 
-    execBuf *execBuff = &bigdata->rendStates;
+    w3d->rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
+    w3d->rendStates2[STIPPLEENABLE] = 0;
+    w3d->rendStates2[SRCBLEND] = 1;//D3DBLEND_ONE;
+    w3d->rendStates2[DESTBLEND] = 0;//D3DBLEND_ZERO;
+    w3d->rendStates2[TEXTUREMAPBLEND] = 0;//D3DTBLEND_COPY;
+    w3d->rendStates2[ALPHABLENDENABLE] = 0;
+    w3d->rendStates2[ZWRITEENABLE] = 1;
+    w3d->rendStates2[TEXTUREHANDLE] = 0;
 
-    execBuff->rendStates2[TEXTUREPERSPECTIVE].value = 0;
-    execBuff->rendStates2[SHADEMODE].value = D3DSHADE_FLAT;
-    execBuff->rendStates2[STIPPLEENABLE].value = 0;
-    execBuff->rendStates2[SRCBLEND].value = D3DBLEND_ONE;
-    execBuff->rendStates2[DESTBLEND].value = D3DBLEND_ZERO;
-    execBuff->rendStates2[TEXTUREMAPBLEND].value = D3DTBLEND_COPY;
-    execBuff->rendStates2[ALPHABLENDENABLE].value = 0;
-    execBuff->rendStates2[ZWRITEENABLE].value = 1;
-    execBuff->rendStates2[TEXTUREHANDLE].value = 0;
-
-    execBuff->rendStates2[TEXTUREMAG].value = (w3d->filter != 0) + 1;
-    execBuff->rendStates2[TEXTUREMIN].value = (w3d->filter != 0) + 1;
+    w3d->rendStates2[TEXTUREMAG] = (w3d->filter != 0);
+    w3d->rendStates2[TEXTUREMIN] = (w3d->filter != 0);
 
     if ( polysDat->renderFlags & 1 )
     {
-        execBuff->rendStates2[TEXTUREHANDLE].value = texHndl;
+        w3d->rendStates2[TEXTUREHANDLE] = tex->oTexture;
 
         for (int i = 0; i < polysDat->vertexCount; i++)
         {
-            vOut[i].tu = polysDat->tu_tv[i].tu;
-            vOut[i].tv = polysDat->tu_tv[i].tv;
+            vtx[i].tu = polysDat->tu_tv[i].tu;
+            vtx[i].tv = polysDat->tu_tv[i].tv;
         }
     }
     else if ( polysDat->renderFlags & 2 )
     {
-        execBuff->rendStates2[TEXTUREPERSPECTIVE].value = 1;
-        execBuff->rendStates2[TEXTUREHANDLE].value = texHndl;
+        w3d->rendStates2[TEXTUREHANDLE] = tex->oTexture;
 
         for (int i = 0; i < polysDat->vertexCount; i++)
         {
-            vOut[i].tu = polysDat->tu_tv[i].tu;
-            vOut[i].tv = polysDat->tu_tv[i].tv;
+            vtx[i].tu = polysDat->tu_tv[i].tu;
+            vtx[i].tv = polysDat->tu_tv[i].tv;
         }
     }
     else
     {
         for (int i = 0; i < polysDat->vertexCount; i++)
-            vOut[i].color = 0xFF000000;
+        {
+            vtx[i].r = 0;
+            vtx[i].g = 0;
+            vtx[i].b = 0;
+            vtx[i].a = 255;
+        }
+
     }
 
     if ( polysDat->renderFlags & 0xC )
     {
-        execBuff->rendStates2[TEXTUREMAPBLEND].value = D3DTBLEND_MODULATE;
-        execBuff->rendStates2[SHADEMODE].value = D3DSHADE_GOURAUD;
+        w3d->rendStates2[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
+        w3d->rendStates2[SHADEMODE] = 1;//D3DSHADE_GOURAUD;
 
         for (int i = 0; i < polysDat->vertexCount; i++)
         {
             int comp = (1.0 - polysDat->color[i]) * 255.0;
-            vOut[i].color = 0xFF000000 | (comp << 16) | (comp << 8) | comp;
+            vtx[i].r = comp;
+            vtx[i].g = comp;
+            vtx[i].b = comp;
+            vtx[i].a = 255;
         }
     }
 
     if ( polysDat->renderFlags & 0x20 )
     {
         if ( !w3d->zbuf_when_tracy )
-            execBuff->rendStates2[ZWRITEENABLE].value = 0;
+            w3d->rendStates2[ZWRITEENABLE] = 0;
 
-        if ( dd_params.selected_device.can_destblend )
+        if ( can_destblend )
         {
-            execBuff->rendStates2[ALPHABLENDENABLE].value = 1;
-            execBuff->rendStates2[TEXTUREMAPBLEND].value = D3DTBLEND_MODULATEALPHA;
-            execBuff->rendStates2[SRCBLEND].value = D3DBLEND_ONE;
-            execBuff->rendStates2[DESTBLEND].value = D3DBLEND_ONE;
-            execBuff->rendStates2[SHADEMODE].value = D3DSHADE_FLAT;
+            w3d->rendStates2[ALPHABLENDENABLE] = 1;
+            w3d->rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
+            w3d->rendStates2[SRCBLEND] = 1;//D3DBLEND_ONE;
+            w3d->rendStates2[DESTBLEND] = 1;//D3DBLEND_ONE;
+            w3d->rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
         }
-        else if ( dd_params.selected_device.can_srcblend )
+        else if ( can_srcblend )
         {
-            execBuff->rendStates2[ALPHABLENDENABLE].value = 1;
-            execBuff->rendStates2[TEXTUREMAPBLEND].value = D3DTBLEND_MODULATEALPHA;
-            execBuff->rendStates2[SRCBLEND].value = D3DBLEND_SRCALPHA;
-            execBuff->rendStates2[DESTBLEND].value = D3DBLEND_INVSRCALPHA;
-            execBuff->rendStates2[SHADEMODE].value = D3DSHADE_FLAT;
+            w3d->rendStates2[ALPHABLENDENABLE] = 1;
+            w3d->rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
+            w3d->rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
+            w3d->rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
+            w3d->rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
         }
-        else if ( dd_params.selected_device.can_stippling )
+        else if ( can_stippling )
         {
-            execBuff->rendStates2[ALPHABLENDENABLE].value = 1;
-            execBuff->rendStates2[TEXTUREMAPBLEND].value = D3DTBLEND_MODULATEALPHA;
-            execBuff->rendStates2[SRCBLEND].value = D3DBLEND_SRCALPHA;
-            execBuff->rendStates2[DESTBLEND].value = D3DBLEND_INVSRCALPHA;
-            execBuff->rendStates2[STIPPLEENABLE].value = 1;
-            execBuff->rendStates2[SHADEMODE].value = D3DSHADE_FLAT;
+            w3d->rendStates2[ALPHABLENDENABLE] = 1;
+            w3d->rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
+            w3d->rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
+            w3d->rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
+            w3d->rendStates2[STIPPLEENABLE] = 1;
+            w3d->rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
         }
+
         for (int i = 0; i < polysDat->vertexCount; i++)
-        {
-            vOut[i].color &= 0x00FFFFFF;
-            vOut[i].color |= w3d->alpha << 24;
-        }
+            vtx[i].a = w3d->alpha;
     }
     else if ( polysDat->renderFlags & 0x10 )
     {
         if ( !w3d->zbuf_when_tracy )
-            execBuff->rendStates2[ZWRITEENABLE].value = 0;
+            w3d->rendStates2[ZWRITEENABLE] = 0;
 
-        if ( w3d->bigdata->selected__pixelformat.BytesPerColor != 1 )
+        if ( w3d->pixfmt->BytesPerPixel != 1 )
         {
-            execBuff->rendStates2[DESTBLEND].value = D3DBLEND_INVSRCALPHA;
-            execBuff->rendStates2[SRCBLEND].value = D3DBLEND_SRCALPHA;
+            w3d->rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
+            w3d->rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
         }
 
-        execBuff->rendStates2[ALPHABLENDENABLE].value = 1;
-        execBuff->rendStates2[TEXTUREMAG].value = D3DFILTER_NEAREST;
-        execBuff->rendStates2[TEXTUREMIN].value = D3DFILTER_NEAREST;
-        execBuff->rendStates2[TEXTUREMAPBLEND].value = D3DTBLEND_MODULATE;
+        w3d->rendStates2[ALPHABLENDENABLE] = 1;
+        w3d->rendStates2[TEXTUREMAG] = 0;//D3DFILTER_NEAREST;
+        w3d->rendStates2[TEXTUREMIN] = 0;//D3DFILTER_NEAREST;
+        w3d->rendStates2[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
     }
 
-    SetRenderStates(w3d, 0);
-    DrawPrimitive(w3d, vOut, polysDat->vertexCount);
-    return;
+    SetRenderStates(0);
+
+    glBegin(GL_TRIANGLE_FAN);
+    {
+        for (int i = 0; i < polysDat->vertexCount; i++)
+        {
+            glColor4ub(vtx[i].r, vtx[i].g, vtx[i].b, vtx[i].a);
+            glTexCoord2f(vtx[i].tu, vtx[i].tv);
+            glVertex4d(vtx[i].x * vtx[i].rhw, -vtx[i].y * vtx[i].rhw, vtx[i].z * vtx[i].rhw, vtx[i].rhw);
+        }
+    }
+    glEnd();
 }
 
 size_t NC_STACK_win3d::raster_func206(polysDatSub *arg)
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
     if ( arg->pbitm )
-        sb_0x43b518(w3d, arg, arg->pbitm->ddrawSurfTex, 0, 0);
+        sb_0x43b518(arg, arg->pbitm->ddrawSurfTex, 0, 0);
     else
-        sb_0x43b518(w3d, arg, NULL, 0, 0);
+        sb_0x43b518(arg, NULL, 0, 0);
 
     return 1;
 }
 
-void win3d_func209__sub0(__NC_STACK_win3d *w3d, tiles_stru **tiles, char *cmdline, char **arr)
+void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char **arr)
 {
-    ////printf("CLEAN ME %s\n","win3d_func209__sub0");
+    __NC_STACK_win3d *w3d = &stack__win3d;
 
     int v11;
 
 
     if ( w3d->surface_locked_surfaceData )
     {
-        win3d_bigdata *bigdata = w3d->bigdata;
-        int bytesPerColor = bigdata->primary__pixelformat.BytesPerColor;
-        DWORD FFFF0000__color = w3d->bigdata->primary__pixelformat.FFFF0000__color;
+        int bytesPerColor = w3d->pixfmt->BytesPerPixel;
 
         char *curpos = cmdline;
         int w_pixels = w3d->surface_locked_pitch / bytesPerColor;
@@ -4507,7 +1933,7 @@ void win3d_func209__sub0(__NC_STACK_win3d *w3d, tiles_stru **tiles, char *cmdlin
 
         int rilHeight, rilWidth;
 
-        if ( w3d->field_50 & 8 )
+        if ( w3d->flags & 8 )
         {
             rilHeight = w3d->height / 2;
             rilWidth = w3d->width / 2;
@@ -4564,14 +1990,14 @@ void win3d_func209__sub0(__NC_STACK_win3d *w3d, tiles_stru **tiles, char *cmdlin
                 if (bytesPerColor == 2)
                 {
 
-                    WORD *srcpixel = (WORD *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
-                    WORD *dstpixel = (WORD *)w3d->surface_locked_surfaceData + w_pixels * y_out + x_out;
+                    uint16_t *srcpixel = (uint16_t *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
+                    uint16_t *dstpixel = (uint16_t *)w3d->surface_locked_surfaceData + w_pixels * y_out + x_out;
 
                     for (int j = cpy_height; j > 0; j--)
                     {
                         for (int i = cpy_width; i > 0; i--)
                         {
-                            if (*srcpixel != FFFF0000__color)
+                            if (*srcpixel != w3d->colorKey)
                                 *dstpixel = *srcpixel;
 
                             srcpixel += v11;
@@ -4585,14 +2011,14 @@ void win3d_func209__sub0(__NC_STACK_win3d *w3d, tiles_stru **tiles, char *cmdlin
                 }
                 else if (bytesPerColor == 4)
                 {
-                    DWORD *srcpixel = (DWORD *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
-                    DWORD *dstpixel = (DWORD *)w3d->surface_locked_surfaceData + w_pixels * y_out + x_out;
+                    uint32_t *srcpixel = (uint32_t *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
+                    uint32_t *dstpixel = (uint32_t *)w3d->surface_locked_surfaceData + w_pixels * y_out + x_out;
 
                     for (int j = cpy_height; j > 0; j--)
                     {
                         for (int i = cpy_width; i > 0; i--)
                         {
-                            if (*srcpixel != FFFF0000__color)
+                            if (*srcpixel != w3d->colorKey)
                                 *dstpixel = *srcpixel;
 
                             srcpixel += v11;
@@ -4626,12 +2052,7 @@ void win3d_func209__sub0(__NC_STACK_win3d *w3d, tiles_stru **tiles, char *cmdlin
                     if ( curpos )
                         break;
 
-                    DDSURFACEDESC a1;
-                    if ( sb_0x4bf0a0(&a1) )
-                    {
-                        w3d->surface_locked_surfaceData = a1.lpSurface;
-                        w3d->surface_locked_pitch = a1.lPitch;
-                    }
+                    DrawScreenText();
                     return;
 
                 case 1: // x pos from center
@@ -4763,7 +2184,7 @@ void win3d_func209__sub0(__NC_STACK_win3d *w3d, tiles_stru **tiles, char *cmdlin
                     char *txtpos = (char *)curpos;
 
                     curpos += strlen(txtpos) + 1;
-                    dbcs_AddText(txtpos, x_out_txt, y_out_txt, block_width, tile->font_height, flag);
+                    AddScreenText(txtpos, x_out_txt, y_out_txt, block_width, tile->font_height, flag);
                 }
                 break;
 
@@ -4788,7 +2209,7 @@ void win3d_func209__sub0(__NC_STACK_win3d *w3d, tiles_stru **tiles, char *cmdlin
 
                     int b = FontUA::get_u16(&curpos);
 
-                    dbcs_AddText(0, r, g, b, 0, 0x20);
+                    AddScreenText(0, r, g, b, 0, 0x20);
                 }
                 break;
                 }
@@ -4799,64 +2220,13 @@ void win3d_func209__sub0(__NC_STACK_win3d *w3d, tiles_stru **tiles, char *cmdlin
 
 void NC_STACK_win3d::raster_func209(w3d_a209 *arg)
 {
-    win3d_func209__sub0(&stack__win3d, stack__display.tiles, arg->cmdbuf, arg->includ);
+    win3d_func209__sub0(stack__display.tiles, arg->cmdbuf, arg->includ);
 }
 
-void win3d_func213__sub0__sub0(__NC_STACK_win3d *w3d)
+
+void NC_STACK_win3d::BeginScene()
 {
-    for(int texid = 0; texid < w3d->bigdata->texCh_count; texid++)
-    {
-        texCache *texCh = &w3d->bigdata->texCh[texid];
-        if ( texCh->ddDrawSurface->IsLost() )
-        {
-            texCh->ddDrawSurface->Restore();
-            if ( texCh->loadedFromTexture.dx1 )
-                loadTextureToCache(w3d, texCh->txStru, texid);
-        }
-        texCh->used &= 0xFFFFFFFDu;
-    }
-}
-
-void win3d_func213__sub0(__NC_STACK_win3d *w3d)
-{
-    if ( w3d->hwnd )
-    {
-        win3d_func213__sub0__sub0(w3d);
-        win3d__beginScene(w3d);
-    }
-}
-
-void NC_STACK_win3d::raster_func213(polysDatSub *)
-{
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
-    win3d_func213__sub0(w3d);
-}
-
-int sub_43BB6C(const void * a, const void * b)
-{
-    wind3d_sub1 *a1 = (wind3d_sub1 *)a;
-    wind3d_sub1 *a2 = (wind3d_sub1 *)b;
-
-    return a2->tex->texture.dx1 - a1->tex->texture.dx1;
-}
-
-void win3d_func214__sub1(__NC_STACK_win3d *w3d)
-{
-    win3d_bigdata *bigdata = w3d->bigdata;
-    if ( bigdata->sceneBeginned )
-    {
-        if ( bigdata->subt1_count )
-        {
-            qsort(bigdata->subt1, bigdata->subt1_count, sizeof(wind3d_sub1), sub_43BB6C);
-
-            for (int i = 0; i < bigdata->subt1_count; i++)
-                sb_0x43b518(w3d, bigdata->subt1[i].polyData, bigdata->subt1[i].tex, 1, 0);
-
-            bigdata->subt1_count = 0;
-
-        }
-    }
+    stack__win3d.sceneBeginned = 1;
 }
 
 int sub_43BB80(const void * a, const void * b)
@@ -4864,7 +2234,7 @@ int sub_43BB80(const void * a, const void * b)
     wind3d_sub1 *a1 = (wind3d_sub1 *)a;
     wind3d_sub1 *a2 = (wind3d_sub1 *)b;
 
-    if (a1->tex->texture.dx1 == a2->tex->texture.dx1)
+    if (a1->tex->oTexture == a2->tex->oTexture)
     {
         if (a1->field_8 == a2->field_8)
             return 0;
@@ -4873,19 +2243,19 @@ int sub_43BB80(const void * a, const void * b)
         else if (a1->field_8 > a2->field_8)
             return -1;
     }
-    else if (a1->tex->texture.dx1 < a2->tex->texture.dx1)
+    else if (a1->tex->oTexture < a2->tex->oTexture)
         return -1;
-    else if (a1->tex->texture.dx1 > a2->tex->texture.dx1)
+    else if (a1->tex->oTexture > a2->tex->oTexture)
         return 1;
 
     return 0;
 }
 
-void win3d_func214__sub2(__NC_STACK_win3d *w3d)
+void NC_STACK_win3d::RenderTransparent()
 {
-    win3d_bigdata *bigdata = w3d->bigdata;
+    win3d_bigdata *bigdata = stack__win3d.bigdata;
 
-    if ( bigdata->sceneBeginned )
+    if ( stack__win3d.sceneBeginned )
     {
         if ( bigdata->dat_1C14_count )
         {
@@ -4907,125 +2277,71 @@ void win3d_func214__sub2(__NC_STACK_win3d *w3d)
             qsort(bigdata->dat_1C14, bigdata->dat_1C14_count, sizeof(wind3d_sub1), sub_43BB80);
 
             for (int i = 0; i < bigdata->dat_1C14_count; i++)
-                sb_0x43b518(w3d, bigdata->dat_1C14[i].polyData, bigdata->dat_1C14[i].tex, 1, 1);
+                sb_0x43b518(bigdata->dat_1C14[i].polyData, bigdata->dat_1C14[i].tex, 1, 1);
 
             bigdata->dat_1C14_count = 0;
         }
     }
 }
 
-void win3d_func214__sub0(__NC_STACK_win3d *w3d)
-{
-    win3d_bigdata *bigdata = w3d->bigdata;
-
-    for (int i = 0; i < bigdata->texCh_count; i++)
-        if (bigdata->texCh[i].used & 2)
-            bigdata->texCh[i].used |= 1;
-}
-
 // Draw transparent
-size_t NC_STACK_win3d::raster_func214(void *)
+void NC_STACK_win3d::EndScene()
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
+    RenderTransparent();
 
-    win3d_func214__sub1(w3d);
-    win3d_func214__sub2(w3d);
-    win3d__endScene(w3d);
-    win3d_func214__sub0(w3d);
-    return 1;
+    stack__win3d.sceneBeginned = 0;
 }
 
-
-int win3d_func215__sub0(__NC_STACK_win3d *w3d)
+void NC_STACK_win3d::LockSurface()
 {
-    if ( !w3d->hwnd )
-    {
-        w3d->surface_locked_pitch = 0;
-        w3d->surface_locked_surfaceData = NULL;
-        return 0;
-    }
+    stack__win3d.screenSurface = SDLWRAP_getScreenSurface();
 
-    if ( w3d->surface_locked_surfaceData )
-        return 1;
+    SDL_LockSurface(stack__win3d.screenSurface);
 
-    sub_42A640(w3d);
-
-    DDSURFACEDESC surfDesc;
-    memset(&surfDesc, 0, sizeof(DDSURFACEDESC));
-    surfDesc.dwSize = sizeof(DDSURFACEDESC);
-
-    HRESULT res = w3d->back_surf->Lock(NULL, &surfDesc, DDLOCK_WAIT | DDLOCK_NOSYSLOCK, 0);
-
-    if ( res )
-    {
-        log_d3d_fail("w3d_LockBackBuffer()", "Lock() failed.", res);
-        w3d->surface_locked_pitch = 0;
-        w3d->surface_locked_surfaceData = NULL;
-        return 0;
-    }
-
-    w3d->surface_locked_surfaceData = surfDesc.lpSurface;
-    w3d->surface_locked_pitch = surfDesc.lPitch;
-    return 1;
+    stack__win3d.surface_locked_surfaceData = stack__win3d.screenSurface->pixels;
+    stack__win3d.surface_locked_pitch = stack__win3d.screenSurface->pitch;
 }
 
-void NC_STACK_win3d::raster_func215(void *)
+void NC_STACK_win3d::UnlockSurface()
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
-    win3d_func215__sub0(w3d);
-}
-
-
-void win3d_func216__sub0(__NC_STACK_win3d *w3d)
-{
-    if ( w3d->hwnd )
+    if ( stack__win3d.surface_locked_surfaceData )
     {
-        if ( w3d->surface_locked_surfaceData )
-        {
-            w3d->back_surf->Unlock(NULL);
-            w3d->surface_locked_surfaceData = NULL;
-            w3d->surface_locked_pitch = 0;
-        }
+        SDL_UnlockSurface(stack__win3d.screenSurface);
+
+        stack__win3d.surface_locked_surfaceData = NULL;
+        stack__win3d.surface_locked_pitch = 0;
     }
 }
 
-void NC_STACK_win3d::raster_func216(void *)
-{
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
-    win3d_func216__sub0(w3d);
-}
 
 
 
-
-void win3d_func218__sub0(__NC_STACK_win3d *w3d, void *buf1, int width, BYTE *buf2, int elmnt, ua_dRect rect, ua_dRect rect2)
+void win3d_func218__sub0(__NC_STACK_win3d *w3d, void *buf1, int width, uint8_t *buf2, int elmnt, ua_dRect rect, ua_dRect rect2)
 {
     if ( w3d->surface_locked_surfaceData )
     {
-        if (w3d->bigdata->primary__pixelformat.BytesPerColor == 2)
+        if (w3d->pixfmt->BytesPerPixel == 2)
         {
-            WORD *locked = (WORD *)w3d->surface_locked_surfaceData;
+            uint16_t *locked = (uint16_t *)w3d->surface_locked_surfaceData;
 
-            int wdth = w3d->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor;
+            int wdth = w3d->surface_locked_pitch / w3d->pixfmt->BytesPerPixel;
 
 
             if ( rect2.x2 != rect2.x1 && rect2.y2 != rect2.y1 )
             {
                 int v15 = rect.y1 << 16;
 
-                WORD *lkdLine = &locked[wdth * rect2.y1];
+                uint16_t *lkdLine = &locked[wdth * rect2.y1];
 
                 for (int i = rect2.y1; i < rect2.y2; i++)
                 {
-                    WORD *bf = (WORD *)buf1;
-                    WORD *bf1line = &bf[width * (v15 >> 16)];
-                    BYTE *bf2line = &buf2[width * (v15 >> 16)];
+                    uint16_t *bf = (uint16_t *)buf1;
+                    uint16_t *bf1line = &bf[width * (v15 >> 16)];
+                    uint8_t *bf2line = &buf2[width * (v15 >> 16)];
 
                     int v13 = rect.x1 << 16;
 
-                    WORD *lkdPos = &lkdLine[rect2.x1];
+                    uint16_t *lkdPos = &lkdLine[rect2.x1];
                     for (int j = rect2.x1; j < rect2.x2; j++)
                     {
                         if (bf2line[v13 >> 16] == elmnt)
@@ -5040,28 +2356,28 @@ void win3d_func218__sub0(__NC_STACK_win3d *w3d, void *buf1, int width, BYTE *buf
                 }
             }
         }
-        else if (w3d->bigdata->primary__pixelformat.BytesPerColor == 4)
+        else if (w3d->pixfmt->BytesPerPixel == 4)
         {
-            DWORD *locked = (DWORD *)w3d->surface_locked_surfaceData;
+            uint32_t *locked = (uint32_t *)w3d->surface_locked_surfaceData;
 
-            int wdth = w3d->surface_locked_pitch / w3d->bigdata->primary__pixelformat.BytesPerColor;
+            int wdth = w3d->surface_locked_pitch / w3d->pixfmt->BytesPerPixel;
 
 
             if ( rect2.x2 != rect2.x1 && rect2.y2 != rect2.y1 )
             {
                 int v15 = rect.y1 << 16;
 
-                DWORD *lkdLine = &locked[wdth * rect2.y1];
+                uint32_t *lkdLine = &locked[wdth * rect2.y1];
 
                 for (int i = rect2.y1; i < rect2.y2; i++)
                 {
-                    DWORD *bf = (DWORD *)buf1;
-                    DWORD *bf1line = &bf[width * (v15 >> 16)];
-                    BYTE *bf2line = &buf2[width * (v15 >> 16)];
+                    uint32_t *bf = (uint32_t *)buf1;
+                    uint32_t *bf1line = &bf[width * (v15 >> 16)];
+                    uint8_t *bf2line = &buf2[width * (v15 >> 16)];
 
                     int v13 = rect.x1 << 16;
 
-                    DWORD *lkdPos = &lkdLine[rect2.x1];
+                    uint32_t *lkdPos = &lkdLine[rect2.x1];
                     for (int j = rect2.x1; j < rect2.x2; j++)
                     {
                         if (bf2line[v13 >> 16] == elmnt)
@@ -5097,313 +2413,81 @@ void NC_STACK_win3d::raster_func218(rstr_218_arg *arg)
     rect2.x2 = (arg->rect2.x2 + 1.0) * rstr->field_554;
     rect2.y2 = (arg->rect2.y2 + 1.0) * rstr->field_558;
 
-    win3d_func218__sub0(w3d, (WORD *)arg->bitm_intern->buffer, arg->bitm_intern->width, (BYTE *)arg->bitm_intern2->buffer, arg->flg, rect1, rect2);
+    win3d_func218__sub0(w3d, (uint16_t *)arg->bitm_intern->buffer, arg->bitm_intern->width, (uint8_t *)arg->bitm_intern2->buffer, arg->flg, rect1, rect2);
 }
 
 size_t NC_STACK_win3d::display_func256(windd_arg256 *inout)
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-    mode_node *nod;
+    gfxMode *nod = NULL;
 
     if ( inout->sort_id )
     {
-        mode_node *tmp = (mode_node *)modes_list.head;
-
-        if ( modes_list.head->next )
+        for (std::list<gfxMode *>::iterator it = graphicsModes.begin(); it != graphicsModes.end(); it++)
         {
-            while ( inout->sort_id != tmp->sort_id )
+            if ( (*it)->sortid == inout->sort_id )
             {
-                tmp = (mode_node *)tmp->next;
-
-                if ( !tmp->next )
-                {
-                    tmp = sub_41F68C();
-                    break;
-                }
+                nod = *it;
+                break;
             }
         }
-        else
-        {
-            tmp = sub_41F68C();
-        }
 
-        nod = tmp;
-    }
-    else if ( w3d->disable_lowres )
-    {
-        mode_node *tmp = (mode_node *)modes_list.head;
-
-        while (tmp->next)
-        {
-            nod = tmp;
-            if ( tmp->rel_width >= 512 )
-                break;
-            tmp = (mode_node *)tmp->next;
-        }
-
-        if ( !tmp->next )
-            nod = NULL;
     }
     else
-    {
-        nod = (mode_node *)modes_list.head;
-    }
+        nod = graphicsModes.front();
 
     if ( !nod )
         return 0;
 
-    inout->sort_id = nod->sort_id;
-    inout->width = nod->width;
-    inout->height = nod->height;
+    inout->sort_id = nod->sortid;
+    inout->width = nod->w;
+    inout->height = nod->h;
 
-    strncpy(inout->name, nod->name, 32);
+    strncpy(inout->name, nod->name.c_str(), 32);
 
-    if (nod->next->next)
-        return ((mode_node*)nod->next)->sort_id;
-    else
-        return 0;
-}
-
-
-HRESULT clearViewport(__NC_STACK_win3d *wdd)
-{
-    if ( dword_514EFC )
+    for (std::list<gfxMode *>::iterator it = graphicsModes.begin(); it != graphicsModes.end(); it++)
     {
-        DWORD flags = D3DCLEAR_TARGET;
-        if ( wdd->intern->z_buf )
-            flags = D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER;
-
-        D3DRECT rect;
-        rect.x1 = 0;
-        rect.y1 = 0;
-        rect.x2 = wdd->width;
-        rect.y2 = wdd->height;
-
-        return wdd->intern->d3d2Viewport->Clear(1, &rect, flags);
-    }
-    else
-    {
-        DDBLTFX fx;
-        fx.dwFillColor = dword_514EFC;
-        fx.dwSize = sizeof(DDBLTFX);
-
-        return wdd->back_surf->Blt(NULL, NULL, NULL,  DDBLT_WAIT | DDBLT_COLORFILL, &fx);
-    }
-}
-
-void clearAndLockBackBufferSurface(__NC_STACK_win3d *wdd)
-{
-    POINT Point;
-
-    GetCursorPos(&Point);
-    SetCursorPos(Point.x, Point.y);
-
-    if ( wdd->hwnd )
-    {
-        sub_42A640(wdd);
-        clearViewport(wdd);
-
-        if ( dword_514EFC )
+        if ( *it == nod )
         {
-            wdd->surface_locked_pitch = 0;
-            wdd->surface_locked_surfaceData = NULL;
-        }
-        else if ( !wdd->surface_locked_surfaceData )
-        {
-            DDSURFACEDESC surfDesc;
-            memset(&surfDesc, 0, sizeof(DDSURFACEDESC));
-            surfDesc.dwSize = sizeof(DDSURFACEDESC);
+            it++;
+            if (it != graphicsModes.end())
+                return (*it)->sortid;
 
-            HRESULT res = wdd->back_surf->Lock(NULL, &surfDesc, DDLOCK_NOSYSLOCK | DDLOCK_WAIT, NULL);
-
-            if ( res )
-            {
-                wdd->surface_locked_surfaceData = NULL;
-                wdd->surface_locked_pitch = 0;
-                log_d3d_fail("wdd_winbox.c/wdd_Begin", "Lock on back surface failed", res);
-            }
-            else
-            {
-                wdd->surface_locked_surfaceData = surfDesc.lpSurface;
-                wdd->surface_locked_pitch = surfDesc.lPitch;
-            }
+            break;
         }
     }
-    else
-    {
-        wdd->surface_locked_pitch = 0;
-        wdd->surface_locked_surfaceData = NULL;
-    }
+
+    return 0;
 }
 
-void NC_STACK_win3d::display_func257(stack_vals *)
+
+void NC_STACK_win3d::BeginFrame()
 {
     __NC_STACK_win3d *w3d = &stack__win3d;
-    clearAndLockBackBufferSurface(w3d);
-    w3d->field_54______rsrc_field4->buffer = w3d->surface_locked_surfaceData;
-    w3d->field_54______rsrc_field4->pitch = w3d->surface_locked_pitch;
+
+    w3d->screenSurface = SDLWRAP_getScreenSurface();
+
+    w3d->surface_locked_pitch = 0;
+    w3d->surface_locked_surfaceData = NULL;
+
+    SDL_FillRect(w3d->screenSurface, NULL, SDL_MapRGBA(w3d->screenSurface->format, 0, 0, 0, 0) );
+
+    glPushAttrib(GL_DEPTH_WRITEMASK);
+    glDepthMask(GL_TRUE);
+
+    glClearColor(0,0,0,0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glPopAttrib();
 }
 
-
-
-void  windd_func258__sub1(__NC_STACK_win3d *wdd)
+void NC_STACK_win3d::EndFrame()
 {
-    if ( wdd->hwnd )
-    {
-        if ( !dword_514EFC )
-        {
-            if ( wdd->surface_locked_surfaceData )
-            {
-                wdd->back_surf->Unlock(NULL);
-                wdd->surface_locked_surfaceData = NULL;
-                wdd->surface_locked_pitch = 0;
-            }
-        }
-
-        if ( wdd->field_50 & 1 )
-        {
-            RECT rc;
-            POINT Point;
-
-            GetClientRect(wdd->hwnd, &rc);
-
-            Point.x = 0;
-            Point.y = 0;
-            ClientToScreen(wdd->hwnd, &Point);
-            OffsetRect(&rc, Point.x, Point.y);
-
-            wdd->primary_surf->Blt(&rc, wdd->back_surf, NULL, DDBLT_WAIT, NULL);
-        }
-        else
-        {
-            if ( dword_514EFC )
-            {
-                wdd->primary_surf->Flip(wdd->back_surf, DDFLIP_WAIT);
-            }
-            else
-            {
-                wdd->primary_surf->Blt(NULL, wdd->back_surf, NULL, DDBLT_WAIT, NULL);
-            }
-        }
-    }
-}
-
-void windd_func258__sub2(__NC_STACK_win3d *wdd, int *x, int *y)
-{
-    POINT point;
-    GetCursorPos(&point);
-
-    *x = (wdd->width * point.x) / GetSystemMetrics(SM_CXSCREEN);
-    *y = (wdd->height * point.y) / GetSystemMetrics(SM_CYSCREEN);
-}
-
-void windd_func258__sub0(NC_STACK_win3d *obj, __NC_STACK_display *dspl, __NC_STACK_win3d *wdd, int xx, signed int yy)
-{
-    if ( dspl->pointer_bitm )
-    {
-        int w = wdd->width;
-        int h = wdd->height;
-
-        if ( wdd->field_50 & 8 )
-        {
-            xx *= 2;
-            yy *= 2;
-            w *= 2;
-            h *= 2;
-        }
-
-        if ( xx >= 0 && yy >= 0 && xx < w && yy < h )
-        {
-            tile_xy v15[2];
-
-            v15[1].byteoff = 0;
-            v15[1].width = dspl->pointer_bitm->width;
-
-            tiles_stru v13;
-
-            v13.font_image = NULL;
-            v13.field_4 = dspl->pointer_bitm;
-            v13.field_8 = v13.field_4->buffer;
-            v13.chars = v15;
-            v13.font_height = dspl->pointer_bitm->height;
-
-            rstr_207_arg v16;
-            v16.id = 127;
-            v16.tiles = &v13;
-
-            obj->raster_func207(&v16);
-
-            int v21 = 0;
-            int v20 = 0;
-
-            if ( xx + dspl->pointer_bitm->width > w)
-            {
-                v21 = w - xx;
-                if (w == xx)
-                    return;
-            }
-
-            if ( yy + dspl->pointer_bitm->height > h)
-            {
-                v20 = h - yy;
-                if (h == yy)
-                    return;
-            }
-
-            char cmdBuff[64];
-            char *cmdPoint = &cmdBuff[0];
-
-            FontUA::select_tileset(&cmdPoint, 127);
-            FontUA::set_center_xpos(&cmdPoint, xx - (w / 2));
-            FontUA::set_center_ypos(&cmdPoint, yy - (h / 2));
-
-            if (v21)
-                FontUA::set_xwidth(&cmdPoint, v21);
-
-            if (v20)
-                FontUA::set_yheight(&cmdPoint, v20);
-
-            FontUA::store_u8(&cmdPoint, 1);
-
-            FontUA::set_end(&cmdPoint);
-
-            w3d_a209 a209;
-            a209.cmdbuf = cmdBuff;
-            a209.includ = NULL;
-
-            obj->raster_func209(&a209);
-        }
-    }
-}
-
-void NC_STACK_win3d::display_func258(stack_vals *)
-{
-    __NC_STACK_win3d *w3d = &stack__win3d;
-    __NC_STACK_display *dspl = &stack__display;
-
-    if ( sub_42AC78(w3d) )
-    {
-        int yy;
-        int xx;
-
-        windd_func258__sub2(w3d, &xx, &yy);
-
-        raster_func215(NULL);
-        windd_func258__sub0(this, dspl, w3d, xx, yy);
-        raster_func216(NULL);
-    }
-    windd_func258__sub1(w3d);
+    SDLWRAP_flipWindow();
 }
 
 
 void NC_STACK_win3d::display_func261(rstr_261_arg *arg)
 {
-    if ( !dword_514EFC && !arg->pal_id && !arg->entrie_id )
-    {
-        arg->palette->pal_entries[0].r = 0;
-        arg->palette->pal_entries[0].g = 0;
-        arg->palette->pal_entries[0].b = 0;
-    }
     NC_STACK_display::display_func261(arg);
 }
 
@@ -5450,35 +2534,12 @@ void win3d_func262__sub0(__NC_STACK_win3d *w3d, int a2, int *a3, int *a4)
     w3d->bigdata->gray_colors__[8][2] = cl3;
 }
 
-void NC_STACK_win3d::sub_42D37C(__NC_STACK_win3d *wdd, UA_PALETTE *pal)
-{
-    if ( wdd->ddrawPal )
-    {
-        PALETTEENTRY tmp[256];
-
-        for(int i = 0; i < 256; i++)
-        {
-            tmp[i].peRed = pal->pal_entries[i].r;
-            tmp[i].peGreen = pal->pal_entries[i].g;
-            tmp[i].peBlue = pal->pal_entries[i].b;
-            tmp[i].peFlags = 0;
-        }
-
-        wdd->ddrawPal->SetEntries(0, 0, 256, tmp);
-        wdd->primary_surf->SetPalette(wdd->ddrawPal);
-    }
-}
-
 void NC_STACK_win3d::display_func262(rstr_262_arg *arg)
 {
     __NC_STACK_win3d *w3d = &stack__win3d;
 
-    win3d_func262__sub0(w3d, arg->dword0, arg->pdword4, arg->pdword8);
+    win3d_func262__sub0(w3d, arg->cnt, arg->slot, arg->weight);
     NC_STACK_display::display_func262(arg);
-
-    __NC_STACK_display *dspl  = &stack__display;
-
-    sub_42D37C(w3d, &dspl->palette);
 }
 
 
@@ -5494,147 +2555,103 @@ void NC_STACK_win3d::display_func263(displ_arg263 *arg)
 
 
 
-int win3d__allocTexBuffer(__NC_STACK_win3d *w3d, int w, int h, bitmap_intern *arg)
+int allocTextureInSysMem(__NC_STACK_win3d *w3d, int w, int h, bitmap_intern *arg)
 {
     arg->buffer = NULL;
 
-    void *buf = AllocVec(w * h * w3d->bigdata->primary__pixelformat.BytesPerColor, 0);
+    void *buf = new uint8_t[w * h * w3d->pixfmt->BytesPerPixel];
+
     if (!buf)
         return 0;
 
     arg->buffer = buf;
-    return w * w3d->bigdata->primary__pixelformat.BytesPerColor;
+    return w * w3d->pixfmt->BytesPerPixel;
 }
 
-signed int win3d__createSurfTexPal(__NC_STACK_win3d *w3d, int w, int h, texStru **_tex)
+int allocTextureWithHW(__NC_STACK_win3d *w3d, int w, int h, texStru **_tex)
 {
     *_tex = NULL;
 
-    texStru *tex = (texStru *)AllocVec(sizeof(texStru), 0);
+    texStru *tex = new texStru;
 
     if ( !tex )
     {
         log_d3d_fail("win3d.class/w3d_txtcache.c/ObtainTexture()", "Out Of Mem", 0);
         return 0;
     }
+
+    tex->sdlSurface = SDL_CreateRGBSurface(0, w, h, w3d->pixfmt->BitsPerPixel, w3d->pixfmt->Rmask, w3d->pixfmt->Gmask, w3d->pixfmt->Bmask, w3d->pixfmt->Amask);
+
+
+    glPushAttrib(GL_TEXTURE_2D | GL_TEXTURE_BINDING_2D);
+
+    glGenTextures(1, &tex->oTexture);
+    glBindTexture(GL_TEXTURE_2D, tex->oTexture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, w3d->glPixfmt, w3d->glPixtype, tex->sdlSurface->pixels);
+
+    glPopAttrib();
+
+
+    tex->sdlSurface->userdata = (void *)(size_t)tex->oTexture;
+
     *_tex = tex;
-
-    windd_formats *format = &w3d->intern->formats[w3d->intern->selected_format_id];
-    memset(tex, 0, 12);
-
-    DDSURFACEDESC surfDesc;
-    memset(&surfDesc, 0, sizeof(DDSURFACEDESC));
-
-    surfDesc.dwWidth = w;
-    surfDesc.dwHeight = h;
-    surfDesc.dwSize = sizeof(DDSURFACEDESC);
-    surfDesc.dwFlags = DDSD_PIXELFORMAT | DDSD_WIDTH | DDSD_HEIGHT | DDSD_CAPS;
-    surfDesc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
-
-    memcpy(&surfDesc.ddpfPixelFormat, &format->surf_descr.ddpfPixelFormat, sizeof(DDPIXELFORMAT));
-
-
-    HRESULT res = ddraw->CreateSurface(&surfDesc, &tex->surface, NULL);
-    if ( res )
-    {
-        log_d3d_fail("win3d.class/w3d_txtcache.c/ObtainTexture()", "IDirect3DTexture::CreateSurface(SrcTxt)", res);
-        return 0;
-    }
-
-    if ( (surfDesc.ddpfPixelFormat.dwFlags & 0x20) )
-    {
-        PALETTEENTRY pal[256];
-        memset(pal, 0, 256 * sizeof(PALETTEENTRY));
-
-        res = ddraw->CreatePalette(DDPCAPS_ALLOW256 | DDPCAPS_8BIT, pal, &tex->palette, NULL);
-        if ( res )
-        {
-            log_d3d_fail("win3d.class/w3d_txtcache.c/ObtainTexture()", "IDirectDraw::CreatePalette(SrcTxt)", res);
-            return 0;
-        }
-
-        res = tex->surface->SetPalette(tex->palette);
-        if ( res )
-        {
-            log_d3d_fail("win3d.class/w3d_txtcache.c/ObtainTexture()", "IDirectDrawSurface::SetPalette(SrcTxt)", res);
-            return 0;
-        }
-    }
-
-    res = tex->surface->QueryInterface(IID_IDirect3DTexture2, (void **)&tex->texture.dx2);
-    if ( res )
-    {
-        log_d3d_fail("win3d.class/w3d_txtcache.c/ObtainTexture()", "IDirectDrawSurface::QueryInterface(SrcTxt)", res);
-        return 0;
-    }
-
     return 1;
 }
 
-size_t NC_STACK_win3d::display_func266(bitmap_intern **arg)
+size_t NC_STACK_win3d::AllocTexture(bitmap_intern *bitm)
 {
     __NC_STACK_win3d *w3d = &stack__win3d;
 
-    bitmap_intern *bitm_intern = *arg;
-
-    if ( bitm_intern->flags & 8 )
+    if ( bitm->flags & BITMAP_FLAG_SYSMEM )
     {
-        bitm_intern->pitch = win3d__allocTexBuffer(w3d, bitm_intern->width, bitm_intern->height, bitm_intern);
-        return bitm_intern->pitch != 0;
+        bitm->pitch = allocTextureInSysMem(w3d, bitm->width, bitm->height, bitm);
+        return bitm->pitch != 0;
     }
     else
     {
-        return win3d__createSurfTexPal(w3d, bitm_intern->width, bitm_intern->height, &bitm_intern->ddrawSurfTex);
+        return allocTextureWithHW(w3d, bitm->width, bitm->height, &bitm->ddrawSurfTex);
     }
 }
 
 void win3d__tex_apply_palette_hw(__NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_STACK_display *dspl, texStru *tex, int a5)
 {
-    win3d_bigdata *bigdata = w3d->bigdata;
-
-    DWORD dwRBitMask = bigdata->selected__pixelformat.dwRBitMask;
-    DWORD dwRShift = bigdata->selected__pixelformat.dwRShift;
-
-    DWORD dwGBitMask = bigdata->selected__pixelformat.dwGBitMask;
-    DWORD dwGShift = bigdata->selected__pixelformat.dwGShift;
-
-    DWORD dwBBitMask = bigdata->selected__pixelformat.dwBBitMask;
-    DWORD dwBShift = bigdata->selected__pixelformat.dwBShift;
-
-    DWORD dwAlphaBitMask = bigdata->selected__pixelformat.dwAlphaBitMask;
-    DWORD dwAShift = bigdata->selected__pixelformat.dwAShift;
-
-    int BytesPerColor = bigdata->selected__pixelformat.BytesPerColor;
+    int BytesPerColor = w3d->pixfmt->BytesPerPixel;
 
     if ( BytesPerColor == 1 )
     {
 
-        PALETTEENTRY tmpPal[256];
-        if ( pal )
-        {
-            for (int i = 0; i < 256; i++)
-            {
-                tmpPal[i].peRed = pal->pal_entries[i].r;
-                tmpPal[i].peGreen = pal->pal_entries[i].g;
-                tmpPal[i].peBlue = pal->pal_entries[i].b;
-                tmpPal[i].peFlags = 0;
-            }
-        }
-        else
-        {
-            for (int i = 0; i < 256; i++)
-            {
-                tmpPal[i].peRed = dspl->palette.pal_entries[i].r;
-                tmpPal[i].peGreen = dspl->palette.pal_entries[i].g;
-                tmpPal[i].peBlue = dspl->palette.pal_entries[i].b;
-                tmpPal[i].peFlags = 0;
-            }
-        }
-        tex->palette->SetEntries(0, 0, 256, tmpPal);
+//		PALETTEENTRY tmpPal[256];
+//		if ( pal )
+//		{
+//			for (int i = 0; i < 256; i++)
+//			{
+//				tmpPal[i].peRed = pal->pal_entries[i].r;
+//				tmpPal[i].peGreen = pal->pal_entries[i].g;
+//				tmpPal[i].peBlue = pal->pal_entries[i].b;
+//				tmpPal[i].peFlags = 0;
+//			}
+//		}
+//		else
+//		{
+//			for (int i = 0; i < 256; i++)
+//			{
+//				tmpPal[i].peRed = dspl->palette.pal_entries[i].r;
+//				tmpPal[i].peGreen = dspl->palette.pal_entries[i].g;
+//				tmpPal[i].peBlue = dspl->palette.pal_entries[i].b;
+//				tmpPal[i].peFlags = 0;
+//			}
+//		}
+//		tex->palette->SetEntries(0, 0, 256, tmpPal);
     }
     else if (BytesPerColor == 2)
     {
-        DWORD tmpPal[256];
+        uint32_t glpal[256];
 
         for (int i = 0; i < 256; i++)
         {
@@ -5661,7 +2678,7 @@ void win3d__tex_apply_palette_hw(__NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_ST
             }
             else
             {
-                if (!dd_params.selected_device.can_destblend && dd_params.selected_device.can_srcblend && a5)
+                if (!can_destblend && can_srcblend && a5)
                 {
                     int mx = (r >= g) ? (r > b ? r: b) : (g > b ? g : b);
 
@@ -5687,35 +2704,35 @@ void win3d__tex_apply_palette_hw(__NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_ST
                 }
             }
 
-            tmpPal[i] = RGBAToColor(r, g, b, a,
-                                    dwRShift, dwGShift, dwBShift, dwAShift,
-                                    dwRBitMask, dwGBitMask, dwBBitMask, dwAlphaBitMask);
+            glpal[i] = SDL_MapRGBA(w3d->pixfmt, r, g, b, a);
         }
 
-        DDSURFACEDESC surfDesc;
-
-        memset(&surfDesc, 0, sizeof(DDSURFACEDESC));
-        surfDesc.dwSize = sizeof(DDSURFACEDESC);
-
-        if ( tex->surface->Lock(NULL, &surfDesc, 0, 0) == D3D_OK )
+        if ( SDL_LockSurface(tex->sdlSurface) == 0)
         {
+            uint8_t *indexes = (uint8_t *)tex->sdlSurface->pixels + (tex->sdlSurface->w * tex->sdlSurface->h) - 1;
+            uint32_t *glpix = (uint32_t *)tex->sdlSurface->pixels + (tex->sdlSurface->w * tex->sdlSurface->h) - 1;
 
-            BYTE *indexes = (BYTE *)surfDesc.lpSurface + (surfDesc.dwHeight * surfDesc.dwWidth) - 1;
-            WORD *words = (WORD *)surfDesc.lpSurface + (surfDesc.dwHeight * surfDesc.dwWidth) - 1;
-
-            for (int i = surfDesc.dwHeight * surfDesc.dwWidth; i > 0; i--)
+            for (int i = (tex->sdlSurface->w * tex->sdlSurface->h); i > 0; i--)
             {
-                *words = tmpPal[*indexes];
-                words--;
+                *glpix = glpal[*indexes];
                 indexes--;
+                glpix--;
             }
 
-            tex->surface->Unlock(surfDesc.lpSurface);
+            glPushAttrib(GL_TEXTURE_2D | GL_TEXTURE_BINDING_2D);
+
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, tex->oTexture);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex->sdlSurface->w, tex->sdlSurface->h, w3d->glPixfmt, w3d->glPixtype, tex->sdlSurface->pixels);
+
+            glPopAttrib();
+
+            SDL_UnlockSurface(tex->sdlSurface);
         }
     }
     else if (BytesPerColor == 4)
     {
-        DWORD tmpPal[256];
+        uint32_t tmpPal[256];
 
         for (int i = 0; i < 256; i++)
         {
@@ -5742,7 +2759,7 @@ void win3d__tex_apply_palette_hw(__NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_ST
             }
             else
             {
-                if (!dd_params.selected_device.can_destblend && dd_params.selected_device.can_srcblend && a5)
+                if (!can_destblend && can_srcblend && a5)
                 {
                     int mx = (r >= g) ? (r > b ? r: b) : (g > b ? g : b);
 
@@ -5768,50 +2785,39 @@ void win3d__tex_apply_palette_hw(__NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_ST
                 }
             }
 
-            tmpPal[i] = RGBAToColor(r, g, b, a,
-                                    dwRShift, dwGShift, dwBShift, dwAShift,
-                                    dwRBitMask, dwGBitMask, dwBBitMask, dwAlphaBitMask);
+            tmpPal[i] = SDL_MapRGBA(w3d->pixfmt, r, g, b, a);
         }
 
-        DDSURFACEDESC surfDesc;
-
-        memset(&surfDesc, 0, sizeof(DDSURFACEDESC));
-        surfDesc.dwSize = sizeof(DDSURFACEDESC);
-
-        if ( tex->surface->Lock(NULL, &surfDesc, 0, 0) == D3D_OK )
+        if ( SDL_LockSurface(tex->sdlSurface) == 0)
         {
+            uint8_t *indexes = (uint8_t *)tex->sdlSurface->pixels + (tex->sdlSurface->w * tex->sdlSurface->h) - 1;
+            uint32_t *glpix = (uint32_t *)tex->sdlSurface->pixels + (tex->sdlSurface->w * tex->sdlSurface->h) - 1;
 
-            BYTE *indexes = (BYTE *)surfDesc.lpSurface + (surfDesc.dwHeight * surfDesc.dwWidth) - 1;
-            DWORD *dwords = ((DWORD *)surfDesc.lpSurface) + (surfDesc.dwHeight * surfDesc.dwWidth) - 1;
-
-            for (int i = surfDesc.dwHeight * surfDesc.dwWidth; i > 0; i--)
+            for (int i = (tex->sdlSurface->w * tex->sdlSurface->h); i > 0; i--)
             {
-                *dwords = tmpPal[*indexes];
-                dwords--;
+                *glpix = tmpPal[*indexes];
                 indexes--;
+                glpix--;
             }
 
-            tex->surface->Unlock(surfDesc.lpSurface);
+            glPushAttrib(GL_TEXTURE_2D | GL_TEXTURE_BINDING_2D);
+
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, tex->oTexture);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex->sdlSurface->w, tex->sdlSurface->h, w3d->glPixfmt, w3d->glPixtype, tex->sdlSurface->pixels);
+
+            glPopAttrib();
+
+            SDL_UnlockSurface(tex->sdlSurface);
         }
     }
 }
 
 void win3d__tex_apply_palette(__NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_STACK_display *dspl, int w, int h, void *buf)
 {
-    win3d_bigdata *bigdata = w3d->bigdata;
+    int BytesPerColor = w3d->pixfmt->BytesPerPixel;
 
-    int dwRBitMask = w3d->bigdata->primary__pixelformat.dwRBitMask;
-    int dwRShift = bigdata->primary__pixelformat.dwRShift;
-
-    int dwGBitMask = bigdata->primary__pixelformat.dwGBitMask;
-    int dwGShift = bigdata->primary__pixelformat.dwGShift;
-
-    int dwBBitMask = bigdata->primary__pixelformat.dwBBitMask;
-    int dwBShift = bigdata->primary__pixelformat.dwBShift;
-
-    int BytesPerColor = bigdata->primary__pixelformat.BytesPerColor;
-
-    DWORD tmpPal[256];
+    uint32_t tmpPal[256];
 
     if ( BytesPerColor == 2 )
     {
@@ -5819,23 +2825,19 @@ void win3d__tex_apply_palette(__NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_STACK
         {
             for (int i = 0; i < 256; i++)
             {
-                tmpPal[i] = RGBAToColor(pal->pal_entries[i].r, pal->pal_entries[i].g, pal->pal_entries[i].b, 0,
-                                        dwRShift, dwGShift, dwBShift, 0,
-                                        dwRBitMask, dwGBitMask, dwBBitMask, 0);
+                tmpPal[i] = SDL_MapRGBA(w3d->pixfmt, pal->pal_entries[i].r, pal->pal_entries[i].g, pal->pal_entries[i].b, 255);
             }
         }
         else
         {
             for (int i = 0; i < 256; i++)
             {
-                tmpPal[i] = RGBAToColor(dspl->palette.pal_entries[i].r, dspl->palette.pal_entries[i].g, dspl->palette.pal_entries[i].b, 0,
-                                        dwRShift, dwGShift, dwBShift, 0,
-                                        dwRBitMask, dwGBitMask, dwBBitMask, 0);
+                tmpPal[i] = SDL_MapRGBA(w3d->pixfmt, dspl->palette.pal_entries[i].r, dspl->palette.pal_entries[i].g, dspl->palette.pal_entries[i].b, 255);
             }
         }
 
-        BYTE *indexes = (BYTE *)buf + (h * w) - 1;
-        WORD *words = (WORD *)buf + (h * w) - 1;
+        uint8_t *indexes = (uint8_t *)buf + (h * w) - 1;
+        uint16_t *words = (uint16_t *)buf + (h * w) - 1;
 
         for (int i = h * w; i > 0; i--)
         {
@@ -5850,23 +2852,19 @@ void win3d__tex_apply_palette(__NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_STACK
         {
             for (int i = 0; i < 256; i++)
             {
-                tmpPal[i] = RGBAToColor(pal->pal_entries[i].r, pal->pal_entries[i].g, pal->pal_entries[i].b, 0,
-                                        dwRShift, dwGShift, dwBShift, 0,
-                                        dwRBitMask, dwGBitMask, dwBBitMask, 0);
+                tmpPal[i] = SDL_MapRGBA(w3d->pixfmt, pal->pal_entries[i].r, pal->pal_entries[i].g, pal->pal_entries[i].b, 255);
             }
         }
         else
         {
             for (int i = 0; i < 256; i++)
             {
-                tmpPal[i] = RGBAToColor(dspl->palette.pal_entries[i].r, dspl->palette.pal_entries[i].g, dspl->palette.pal_entries[i].b, 0,
-                                        dwRShift, dwGShift, dwBShift, 0,
-                                        dwRBitMask, dwGBitMask, dwBBitMask, 0);
+                tmpPal[i] = SDL_MapRGBA(w3d->pixfmt, dspl->palette.pal_entries[i].r, dspl->palette.pal_entries[i].g, dspl->palette.pal_entries[i].b, 255);
             }
         }
 
-        BYTE *indexes = (BYTE *)buf + (h * w) - 1;
-        DWORD *dwords = (DWORD *)buf + (h * w) - 1;
+        uint8_t *indexes = (uint8_t *)buf + (h * w) - 1;
+        uint32_t *dwords = (uint32_t *)buf + (h * w) - 1;
 
         for (int i = h * w; i > 0; i--)
         {
@@ -5881,12 +2879,12 @@ void win3d__tex_apply_palette(__NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_STACK
     }
 }
 
-void NC_STACK_win3d::display_func267(bitmap_intern **arg)
+void NC_STACK_win3d::TextureApplyPalette(bitmap_intern *arg)
 {
     __NC_STACK_win3d *w3d = &stack__win3d;
     __NC_STACK_display *dspl = &stack__display;
 
-    bitmap_intern *bitm = *arg;
+    bitmap_intern *bitm = arg;
 
     if (bitm->flags & BITMAP_FLAG_SYSMEM)
         win3d__tex_apply_palette(w3d, bitm->pallete, dspl, bitm->width, bitm->height, bitm->buffer);
@@ -5895,217 +2893,117 @@ void NC_STACK_win3d::display_func267(bitmap_intern **arg)
 }
 
 
-void win3d_func268__sub0(void *bf)
+void NC_STACK_win3d::FreeTexture(bitmap_intern *arg)
 {
-    if ( bf )
-        nc_FreeMem(bf);
-}
-
-void win3d_func268__sub1(texStru *tex)
-{
-    if ( tex->palette )
-    {
-        tex->palette->Release();
-        tex->palette = NULL;
-    }
-
-    if ( tex->texture.dx2 )
-    {
-        tex->texture.dx2->Release();
-        tex->texture.dx2 = NULL;
-    }
-
-    if ( tex->surface )
-    {
-        tex->surface->Release();
-        tex->surface = NULL;
-    }
-
-    nc_FreeMem(tex);
-}
-
-
-void NC_STACK_win3d::display_func268(bitmap_intern **arg)
-{
-    bitmap_intern *bitm = *arg;
+    bitmap_intern *bitm = arg;
 
     if ( bitm->flags & BITMAP_FLAG_SYSMEM )
-        win3d_func268__sub0(bitm->buffer);
-    else
-        win3d_func268__sub1(bitm->ddrawSurfTex);
-}
-
-
-
-int win3d__IDirectDrawSurface__Lock(bitmap_intern *bitm, texStru *tex)
-{
-    DDSURFACEDESC surfDesc;
-
-    bitm->buffer = 0;
-
-    memset(&surfDesc, 0, sizeof(DDSURFACEDESC));
-    surfDesc.dwSize = sizeof(DDSURFACEDESC);
-
-    HRESULT res = tex->surface->Lock(NULL, &surfDesc, 0, 0);
-    if ( res )
     {
-        log_d3d_fail("win3d.class/w3d_txtcache.c/LockTexture()", "IDirectDrawSurface::Lock()", res);
-        return 0;
+        if ( bitm->buffer )
+            delete[] (uint8_t *)bitm->buffer;
     }
     else
     {
-        bitm->buffer = surfDesc.lpSurface;
-        return 1;
+        if ( bitm->ddrawSurfTex->sdlSurface )
+        {
+            SDL_FreeSurface(bitm->ddrawSurfTex->sdlSurface);
+            bitm->ddrawSurfTex->sdlSurface = NULL;
+        }
+
+        if ( bitm->ddrawSurfTex->oTexture )
+            glDeleteTextures(1, &bitm->ddrawSurfTex->oTexture);
+
+        delete bitm->ddrawSurfTex;
     }
 }
 
-size_t NC_STACK_win3d::display_func269(bitmap_intern **arg)
+
+
+size_t NC_STACK_win3d::LockTexture(bitmap_intern *arg)
 {
-    bitmap_intern *bitm = *arg;
-    if ( bitm->flags & BITMAP_FLAG_SYSMEM )
-        return 1;
-    else
-        return win3d__IDirectDrawSurface__Lock(bitm, bitm->ddrawSurfTex);
-}
-
-
-
-int win3d__IDirectDrawSurface__Unlock(bitmap_intern *bitm, texStru *tex)
-{
-    HRESULT res = tex->surface->Unlock(bitm->buffer);
-    if ( res )
-        log_d3d_fail("win3d.class/w3d_txtcache.c/UnlockTexture()", "IDirectDrawSurface::Unlock()", res);
-    return res;
-}
-
-void NC_STACK_win3d::display_func270(bitmap_intern **arg)
-{
-    bitmap_intern *bitm = *arg;
+    bitmap_intern *bitm = arg;
 
     if ( !(bitm->flags & BITMAP_FLAG_SYSMEM) )
     {
-        win3d__IDirectDrawSurface__Unlock(bitm, bitm->ddrawSurfTex);
-        bitm->buffer = 0;
+        texStru *tex = bitm->ddrawSurfTex;
+        bitm->buffer = NULL;
+
+        SDL_LockSurface(tex->sdlSurface);
+        bitm->buffer = tex->sdlSurface->pixels;
     }
-}
 
-void NC_STACK_win3d::display_func272(stack_vals *)
-{
-    return ;
+    return 1;
 }
 
 
-void win3d_func271__sub0(__NC_STACK_win3d *w3d)
+void NC_STACK_win3d::UnlockTexture(bitmap_intern *arg)
 {
-    for ( int i = 0; i < w3d->bigdata->texCh_count; i++ )
+    bitmap_intern *bitm = arg;
+
+    if ( !(bitm->flags & BITMAP_FLAG_SYSMEM) )
     {
-        texCache *tex = &w3d->bigdata->texCh[i];
-        tex->field_4 = 0;
-        tex->loadedFromTexture.dx2 = NULL;
-        tex->txStru = NULL;
-        tex->used = 1;
+        texStru *tex = bitm->ddrawSurfTex;
+
+        glPushAttrib(GL_TEXTURE_2D | GL_TEXTURE_BINDING_2D);
+
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, tex->oTexture);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex->sdlSurface->w, tex->sdlSurface->h, stack__win3d.glPixfmt, stack__win3d.glPixtype, tex->sdlSurface->pixels);
+
+        glPopAttrib();
+
+        SDL_UnlockSurface(tex->sdlSurface);
+
+        bitm->buffer = NULL;
     }
 }
 
 void NC_STACK_win3d::display_func271(stack_vals *stak)
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
 
-    win3d_func271__sub0(w3d);
-    display_func272(stak);
 }
+
+void NC_STACK_win3d::display_func272(stack_vals *)
+{
+}
+
+
 
 
 void win3d_func274__sub0(__NC_STACK_win3d *w3d, FSMgr::FileHandle *fil)
 {
-    if ( w3d->surface_locked_surfaceData )
+    int bf_w = 0, bf_h = 0;
+
+    uint8_t *buf = SDLWRAP_makeScreenCopy(bf_w, bf_h);
+
+    if (buf && bf_w && bf_h)
     {
-        int BytesPerColor = w3d->bigdata->primary__pixelformat.BytesPerColor;
-        int ril_width = w3d->surface_locked_pitch / BytesPerColor;
+        char txtbuf[128];
 
-        int width = w3d->width;
-        int height = w3d->height;
+        sprintf(txtbuf, "P6\n#YPA screenshot\n%d %d\n255\n", bf_w, bf_h);
+        fil->write(txtbuf, strlen(txtbuf));
 
-        char buf[128];
+        int lwidth = 3 * bf_w;
 
-        sprintf(buf, "P6\n#YPA screenshot\n%d %d\n255\n", width, height);
-        fil->write(buf, strlen(buf));
-
-        wind3d_pixelformat *fmt = &w3d->bigdata->primary__pixelformat;
-        if ( BytesPerColor == 2 )
+        for (int j = 0; j < bf_h; j++)
         {
-            int pos = 0;
-            for (int j = 0; j < height; j++)
+            uint8_t *ln = buf + lwidth * (bf_h - 1 - j);
+
+            for (int i = 0; i < bf_w; i++)
             {
-                WORD *line = (WORD *)w3d->surface_locked_surfaceData + pos;
+                uint8_t *px = ln + i * 3;
 
-                for (int i = 0; i < width; i++)
-                {
-                    WORD px = line[i];
+                uint8_t r = px[0];
+                uint8_t g = px[1];
+                uint8_t b = px[2];
 
-                    DWORD r = px & fmt->dwRBitMask;
-                    if (fmt->dwRShift <= 0)
-                        r <<= -fmt->dwRShift;
-                    else
-                        r >>= fmt->dwRShift;
-
-                    DWORD g = px & fmt->dwGBitMask;
-                    if (fmt->dwGShift <= 0)
-                        g <<= -fmt->dwGShift;
-                    else
-                        g >>= fmt->dwGShift;
-
-                    DWORD b = px & fmt->dwBBitMask;
-                    if (fmt->dwBShift <= 0)
-                        b <<= -fmt->dwBShift;
-                    else
-                        b >>= fmt->dwBShift;
-
-                    fil->writeU8(r);
-                    fil->writeU8(g);
-                    fil->writeU8(b);
-                }
-
-                pos += ril_width;
+                fil->writeU8(r);
+                fil->writeU8(g);
+                fil->writeU8(b);
             }
         }
-        else if ( BytesPerColor == 4 )
-        {
-            int pos = 0;
-            for (int j = 0; j < height; j++)
-            {
-                DWORD *line = (DWORD *)w3d->surface_locked_surfaceData + pos;
 
-                for (int i = 0; i < width; i++)
-                {
-                    DWORD px = line[i];
-
-                    DWORD r = px & fmt->dwRBitMask;
-                    if (fmt->dwRShift <= 0)
-                        r <<= -fmt->dwRShift;
-                    else
-                        r >>= fmt->dwRShift;
-
-                    DWORD g = px & fmt->dwGBitMask;
-                    if (fmt->dwGShift <= 0)
-                        g <<= -fmt->dwGShift;
-                    else
-                        g >>= fmt->dwGShift;
-
-                    DWORD b = px & fmt->dwBBitMask;
-                    if (fmt->dwBShift <= 0)
-                        b <<= -fmt->dwBShift;
-                    else
-                        b >>= fmt->dwBShift;
-
-                    fil->writeU8(r);
-                    fil->writeU8(g);
-                    fil->writeU8(b);
-                }
-
-                pos += ril_width;
-            }
-        }
+        free(buf);
     }
 }
 
@@ -6121,186 +3019,27 @@ void NC_STACK_win3d::display_func274(const char **name)
     FSMgr::FileHandle *fil = uaOpenFile(filename, "wb");
     if ( fil )
     {
-        raster_func215(NULL);
+        LockSurface();
         win3d_func274__sub0(w3d, fil);
-        raster_func216(NULL);
+        UnlockSurface();
         delete fil;
     }
 }
 
 
-
-
-void sb_0x42d530__sub0(__NC_STACK_win3d *wdd)
-{
-    DDSURFACEDESC surfDesc;
-
-    sub_42A640(wdd);
-
-    memset(&surfDesc, 0, sizeof(DDSURFACEDESC));
-    surfDesc.dwSize = sizeof(DDSURFACEDESC);
-    if ( !wdd->back_surf->GetSurfaceDesc(&surfDesc) )
-    {
-        int w = surfDesc.dwWidth;
-        int h = surfDesc.dwHeight;
-
-        memset(&surfDesc, 0, sizeof(DDSURFACEDESC));
-        surfDesc.dwFlags = DDSD_WIDTH | DDSD_HEIGHT | DDSD_CAPS;
-        surfDesc.dwHeight = h;
-        surfDesc.dwWidth = w;
-        surfDesc.ddsCaps.dwCaps = DDSCAPS_SYSTEMMEMORY | DDSCAPS_OFFSCREENPLAIN;
-        surfDesc.dwSize = sizeof(DDSURFACEDESC);
-
-        if ( !ddraw->CreateSurface(&surfDesc, &wdd->field_10, NULL) )
-        {
-            if ( wdd->ddrawPal )
-                wdd->field_10->SetPalette(wdd->ddrawPal);
-
-            wdd->field_10->Blt(NULL, wdd->primary_surf, NULL, DDBLT_WAIT, NULL);
-        }
-    }
-}
-
-void sb_0x42d530(__NC_STACK_win3d *wdd, int a2)
-{
-    if ( wdd->hwnd )
-    {
-        dword_514F24 = 1;
-        if ( !dword_514EFC )
-        {
-            if ( wdd->surface_locked_surfaceData )
-            {
-                wdd->back_surf->Unlock(NULL);
-                wdd->surface_locked_surfaceData = NULL;
-                wdd->surface_locked_pitch = 0;
-            }
-        }
-
-        sb_0x42d530__sub0(wdd);
-
-        if ( !(wdd->field_50 & 1) )
-        {
-            if ( dword_514EFC )
-                if ( !(dd_params.field_0 & 1) )
-                {
-                    ddraw->FlipToGDISurface();
-                    sub_4BF181(100);
-                }
-
-            if ( a2 )
-            {
-                DDBLTFX fx;
-                fx.dwSize = sizeof(DDBLTFX);
-                fx.dwFillColor = 0;
-
-                wdd->primary_surf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &fx);
-                wdd->back_surf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &fx);
-
-                ddraw->SetDisplayMode(640, 480, 16);
-                ddraw->SetCooperativeLevel(wdd->hwnd, DDSCL_NORMAL);
-
-                SetWindowLongPtr(wdd->hwnd, GWL_STYLE, WS_POPUP | WS_SYSMENU);
-                SetWindowLongPtr(wdd->hwnd, GWL_EXSTYLE, WS_EX_TOPMOST);
-
-                int h = GetSystemMetrics(SM_CYSCREEN);
-                int w = GetSystemMetrics(SM_CXSCREEN);
-                SetWindowPos(wdd->hwnd, 0, 0, 0, w, h, SWP_SHOWWINDOW);
-            }
-            else
-            {
-                if ( dd_params.ddSurfDescr__primary.dwWidth <= 400 || dd_params.ddSurfDescr__primary.dwHeight <= 300 )
-                    ddraw->SetDisplayMode(dd_params.displ_mode_surface.dwWidth,	dd_params.displ_mode_surface.dwHeight, dd_params.displ_mode_surface.ddpfPixelFormat.dwRGBBitCount);
-
-                ddraw->SetCooperativeLevel(wdd->hwnd, DDSCL_NORMAL);
-                SetWindowLongPtr(wdd->hwnd, GWL_STYLE, WS_POPUP | WS_SYSMENU);
-                SetWindowLongPtr(wdd->hwnd, GWL_EXSTYLE, WS_EX_TOPMOST);
-
-                int h = GetSystemMetrics(SM_CYSCREEN);
-                int w = GetSystemMetrics(SM_CXSCREEN);
-                SetWindowPos(wdd->hwnd, 0, 0, 0, w, h, SWP_SHOWWINDOW);
-
-                sub_42A7BC(wdd);
-            }
-        }
-
-        while ( ShowCursor(1) < 0 )
-        {}
-
-        HCURSOR Pointer = uaLoadCursor(wdd->cursor, "Pointer");
-
-        if ( Pointer )
-            SetCursor(Pointer);
-    }
-}
-
 void NC_STACK_win3d::windd_func320(stack_vals *)
 {
-    sb_0x42d530(&stack__win3d, 0);
-}
-
-
-
-
-
-void sub_42D724(__NC_STACK_win3d *wdd, int a2)
-{
-    if ( wdd->hwnd )
-    {
-        dword_514F24 = 0;
-        if ( wdd->field_10 )
-        {
-            wdd->field_10->Release();
-            wdd->field_10 = NULL;
-        }
-
-        int v5 = wdd->field_30;
-
-        if ( dd_params.selected_device.unk2_def_0 || wdd->field_30 != 0 )
-            v5 = 1;
-
-        if ( v5 )
-            ShowCursor(0);
-
-        if ( !(wdd->field_50 & 1) )
-        {
-            int v6 = 0;
-
-            ddraw->SetCooperativeLevel(wdd->hwnd, DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
-
-            if ( a2 || dd_params.ddSurfDescr__primary.dwWidth <= 400 || dd_params.ddSurfDescr__primary.dwHeight <= 300 )
-                v6 = 1;
-
-            if ( v6 )
-            {
-                ddraw->SetDisplayMode(dd_params.ddSurfDescr__primary.dwWidth, dd_params.ddSurfDescr__primary.dwHeight, dd_params.ddSurfDescr__primary.ddpfPixelFormat.dwRGBBitCount);
-
-                SetWindowLongPtr(wdd->hwnd, GWL_STYLE, WS_POPUP | WS_SYSMENU);
-                SetWindowLongPtr(wdd->hwnd, GWL_EXSTYLE, WS_EX_TOPMOST);
-
-                int h = GetSystemMetrics(SM_CYSCREEN);
-                int w = GetSystemMetrics(SM_CXSCREEN);
-
-                SetWindowPos(wdd->hwnd, 0, 0, 0, w, h, SWP_SHOWWINDOW);
-            }
-        }
-        sub_42D410(wdd, wdd->field_28, 1);
-    }
 }
 
 void NC_STACK_win3d::windd_func321(stack_vals *)
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-    __NC_STACK_display *dspl = &stack__display;
-
-    sub_42D724(w3d, 0);
-    sub_42D37C(w3d, &dspl->palette);
 }
 
 
 
 
 
-char * windd_func322__sub0(__NC_STACK_win3d *wdd, const char *box_title, const char *box_ok, const char *box_cancel, const char *box_startText, UINT timer_time, void (*timer_func)(int, int, int), void *timer_context, int replace, int maxLen)
+char * windd_func322__sub0(__NC_STACK_win3d *wdd, const char *box_title, const char *box_ok, const char *box_cancel, const char *box_startText, uint32_t timer_time, void (*timer_func)(int, int, int), void *timer_context, int replace, int maxLen)
 {
     dprintf("MAKE ME %s\n","windd_func322__sub0");
     return NULL;
@@ -6332,74 +3071,41 @@ void NC_STACK_win3d::windd_func322(windd_dlgBox *dlgBox)
 
 
 
-void windd_func323__sub0__sub0(const char *filename, HWND hwnd)
+void windd_func323__sub0__sub0(const char *filename)
 {
-    printf("MAKE MOVIE PLAYER %s, file %s, HWND %d\n","windd_func323__sub0__sub0", filename, (int)(size_t)hwnd);
+    printf("MAKE MOVIE PLAYER %s, file %s\n","windd_func323__sub0__sub0", filename);
 }
 
 
 void windd_func323__sub0(__NC_STACK_win3d *w3d, const char *filename)
 {
-    if ( w3d->hwnd )
-    {
 ////    unk_514F20 = 1;
-        sb_0x42d530(w3d, 1);
-        if ( w3d->movie_player )
-            windd_func323__sub0__sub0(filename, w3d->hwnd);
-        sub_42D724(w3d, 1);
+    if ( w3d->movie_player )
+        windd_func323__sub0__sub0(filename);
 ////    unk_514F20 = 0;
-    }
 }
 
 //Play movie file
 void NC_STACK_win3d::windd_func323(const char **filename)
 {
     __NC_STACK_win3d *w3d = &stack__win3d;
-    __NC_STACK_display *dspl = &stack__display;
 
     windd_func323__sub0(w3d, *filename);
-    sub_42D37C(w3d, &dspl->palette);
 }
 
 void NC_STACK_win3d::windd_func324(wdd_func324arg *inout)
 {
-    wddDevice *findedNode;
-    wddDevice *node;
-
-    findedNode = NULL;
     if ( inout->guid )
     {
-        node = (wddDevice *)graph_drivers_list.head;
-        while (node->next)
-        {
-            if ( node->guid == inout->guid )
-            {
-                findedNode = (wddDevice *)node->next;
-
-                if ( node->next->next )
-                    break;
-            }
-            node = (wddDevice *)node->next;
-
-            findedNode = NULL;
-        }
-    }
-    else
-    {
-        findedNode = (wddDevice *)graph_drivers_list.head;
-    }
-
-    if ( findedNode )
-    {
-        inout->name = findedNode->name;
-        inout->guid = findedNode->guid;
-        inout->currr = findedNode->curr;
-    }
-    else
-    {
+        inout->name = NULL;
         inout->guid = NULL;
         inout->currr = 0;
-        inout->name = NULL;
+    }
+    else
+    {
+        inout->name = "OpenGL";
+        inout->guid = "<primary>";
+        inout->currr = 1;
     }
 }
 
@@ -6422,34 +3128,17 @@ void NC_STACK_win3d::windd_func325(wdd_func324arg *arg)
         }
     }
 
-    out_guid_to_file("env/guid3d.def", (GUID *)v4, v5);
+    out_guid_to_file("env/guid3d.def", v5);
 }
 
 
 
-void NC_STACK_win3d::setWDD_cursor(int arg)
+void NC_STACK_win3d::setWDD_cursor(int mode)
 {
-    if ( arg || !stack__win3d.field_30 )
-    {
-        if ( arg == 1 && !stack__win3d.field_30 )
-        {
-            stack__win3d.field_30 = 1;
-            while ( ShowCursor(0) >= 0 )
-            { }
-        }
-    }
-    else
-    {
-        stack__win3d.field_30 = 0;
-        while ( ShowCursor(1) < 0 )
-        { }
-        sub_42D410(&stack__win3d, 1, 1);
-    }
 }
 
 void NC_STACK_win3d::setWDD_disLowRes(int arg)
 {
-    stack__win3d.disable_lowres = arg;
 }
 
 void NC_STACK_win3d::setWDD_16bitTex(int arg)
@@ -6469,24 +3158,6 @@ int NC_STACK_win3d::getDISP_displID()
     return stack__win3d.sort_id;
 }
 
-gfx_window *NC_STACK_win3d::getDISP_displInf()
-{
-    static gfx_window window_params__return;
-    window_params__return.hwnd = stack__win3d.hwnd;
-    if ( stack__win3d.field_50 & 8 )
-    {
-        window_params__return.width = stack__win3d.width / 2 ;
-        window_params__return.height = stack__win3d.height / 2;
-    }
-    else
-    {
-        window_params__return.width = stack__win3d.width;
-        window_params__return.height = stack__win3d.height;
-    }
-
-    return &window_params__return;
-}
-
 int NC_STACK_win3d::getWDD_16bitTex()
 {
     return stack__win3d.txt16bit;
@@ -6497,13 +3168,18 @@ int NC_STACK_win3d::getWDD_drawPrim()
     return stack__win3d.use_simple_d3d;
 }
 
-
-
-
-
 void NC_STACK_win3d::setW3D_texFilt(int arg)
 {
     stack__win3d.filter = arg;
+}
+
+
+
+void NC_STACK_win3d::draw2DandFlush()
+{
+    SDLWRAP_drawScreen();
+
+    SDL_FillRect(stack__win3d.screenSurface, NULL, SDL_MapRGBA(stack__win3d.screenSurface->format, 0, 0, 0, 0) );
 }
 
 
@@ -6547,16 +3223,16 @@ size_t NC_STACK_win3d::compatcall(int method_id, void *data)
         raster_func209( (w3d_a209 *)data );
         return 1;
     case 213:
-        raster_func213( (polysDatSub *)data );
+        BeginScene();
         return 1;
     case 214:
-        raster_func214( (void *)data );
+        EndScene();
         return 1;
     case 215:
-        raster_func215( (void *)data );
+        LockSurface();
         return 1;
     case 216:
-        raster_func216( (void *)data );
+        UnlockSurface();
         return 1;
     case 218:
         raster_func218( (rstr_218_arg *)data );
@@ -6564,10 +3240,10 @@ size_t NC_STACK_win3d::compatcall(int method_id, void *data)
     case 256:
         return (size_t)display_func256( (windd_arg256 *)data );
     case 257:
-        display_func257( (stack_vals *)data );
+        BeginFrame();
         return 1;
     case 258:
-        display_func258( (stack_vals *)data );
+        EndFrame();
         return 1;
     case 262:
         display_func262( (rstr_262_arg *)data );
@@ -6576,17 +3252,17 @@ size_t NC_STACK_win3d::compatcall(int method_id, void *data)
         display_func263( (displ_arg263 *)data );
         return 1;
     case 266:
-        return (size_t)display_func266( (bitmap_intern **)data );
+        return (size_t)AllocTexture( (bitmap_intern *)data );
     case 267:
-        display_func267( (bitmap_intern **)data );
+        TextureApplyPalette( (bitmap_intern *)data );
         return 1;
     case 268:
-        display_func268( (bitmap_intern **)data );
+        FreeTexture( (bitmap_intern *)data );
         return 1;
     case 269:
-        return (size_t)display_func269( (bitmap_intern **)data );
+        return (size_t)LockTexture( (bitmap_intern *)data );
     case 270:
-        display_func270( (bitmap_intern **)data );
+        UnlockTexture( (bitmap_intern *)data );
         return 1;
     case 271:
         display_func271( (stack_vals *)data );

@@ -74,21 +74,21 @@ void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen)
 
             win3d->display_func263(&v4);
 
-            win3d->display_func257(NULL);
-            win3d->raster_func215(NULL);
+            win3d->BeginFrame();
+            win3d->LockSurface();
 
             win3d->raster_func202(&a4);
 
-            win3d->raster_func216(NULL);
-            win3d->display_func258(NULL);
+            win3d->UnlockSurface();
+            win3d->EndFrame();
 
-            win3d->display_func257(NULL);
-            win3d->raster_func215(NULL);
+            win3d->BeginFrame();
+            win3d->LockSurface();
 
             win3d->raster_func202(&a4);
 
-            win3d->raster_func216(NULL);
-            win3d->display_func258(NULL);
+            win3d->UnlockSurface();
+            win3d->EndFrame();
         }
     }
 }
@@ -120,25 +120,25 @@ void drawSplashScreenWithTOD(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen
 
             win3d->display_func263(&v4);
 
-            win3d->display_func257(NULL);
-            win3d->raster_func215(NULL);
+            win3d->BeginFrame();
+            win3d->LockSurface();
 
             win3d->raster_func202(&a4);
 
             splashScreen_OutText(yw, win3d, text, yw->screen_width / 7, yw->screen_height / 5);
 
-            win3d->raster_func216(NULL);
-            win3d->display_func258(NULL);
+            win3d->UnlockSurface();
+            win3d->EndFrame();
 
-            win3d->display_func257(NULL);
-            win3d->raster_func215(NULL);
+            win3d->BeginFrame();
+            win3d->LockSurface();
 
             win3d->raster_func202(&a4);
 
             splashScreen_OutText(yw, win3d, text, yw->screen_width / 7, yw->screen_height / 5);
 
-            win3d->raster_func216(NULL);
-            win3d->display_func258(NULL);
+            win3d->UnlockSurface();
+            win3d->EndFrame();
         }
     }
 }
@@ -737,10 +737,7 @@ int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
     {
         if ( yw->game_default_res != yw->shell_default_res )
         {
-            INPe.setWndMode(NULL);
             GFXe.setResolution(yw->game_default_res);
-
-            INPe.setWndMode( GFXe.getWindow() );
 
             yw->screen_width = GFXe.getScreenW();
             yw->screen_height = GFXe.getScreenH();
@@ -750,11 +747,11 @@ int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
 
             if ( yw->screen_width >= 512 )
             {
-                load_font( get_lang_string(yw->string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
+                yw->win3d->load_font( get_lang_string(yw->string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
             }
             else
             {
-                load_font( get_lang_string(yw->string_pointers_p2, 16, "Arial,8,400,0") );
+                yw->win3d->load_font( get_lang_string(yw->string_pointers_p2, 16, "Arial,8,400,0") );
             }
         }
     }
@@ -2625,8 +2622,7 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
 
         rndrs.field_20 = 17.0;
 
-        if ( dword_514EFC )
-            rndrs.field_20 = 1.0;
+        rndrs.field_20 = 1.0;
 
         if ( yw->field_1368 == 5 )
             rndrs.field_24 = 1500.0;
@@ -2685,10 +2681,10 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
         yw->field_1B6A = rndrs.field_14;
         yw->field_1b6c = rndrs.rndrSTK_cur - p_renderStack;
 
-        if ( yw->field_1b6c > 1 && !dword_514EFC )
-            qsort(p_renderStack, yw->field_1b6c, sizeof(polys), sub_4D7BFC);
+        /*if ( yw->field_1b6c > 1 && !dword_514EFC )
+            qsort(p_renderStack, yw->field_1b6c, sizeof(polys), sub_4D7BFC);*/
 
-        yw->win3d->raster_func213(NULL);
+        yw->win3d->BeginScene();
 
         for (int i = 0; i < yw->field_1b6c; i++)
         {
@@ -2696,13 +2692,13 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
             pol->render_func(&pol->datSub);
         }
 
-        yw->win3d->raster_func214(NULL);
+        yw->win3d->EndScene();
 
         if ( a2 )
         {
-            yw->win3d->raster_func215(NULL);
+            yw->win3d->LockSurface();
             sb_0x4d7c08__sub0(yw);
-            yw->win3d->raster_func216(NULL);
+            yw->win3d->UnlockSurface();
         }
     }
 }
@@ -2898,14 +2894,14 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                         if ( yw->field_757E )
                         {
                             gbct->ypabact__id |= ownerid2 << 24;
-                            /**(_DWORD *)&v30[v52 + 16] = gbct->ypabact__id;
+                            /**(_uint32_t *)&v30[v52 + 16] = gbct->ypabact__id;
                             *(float *)&v30[v52 + 20] = bld->sbacts[i].sbact_dir_x;
                             *(float *)&v30[v52 + 24] = bld->sbacts[i].sbact_dir_y;
                             *(float *)&v30[v52 + 28] = bld->sbacts[i].sbact_dir_z;
                             *(float *)&v30[v52 + 32] = gbct->field_621.sx;
                             *(float *)&v30[v52 + 36] = gbct->field_621.sy;
                             *(float *)&v30[v52 + 40] = gbct->field_621.sz;
-                            *(_WORD *)&v30[v52 + 44] = bld->sbacts[i].sbact_vehicle;*/
+                            *(_uint16_t *)&v30[v52 + 44] = bld->sbacts[i].sbact_vehicle;*/
                         }
 
                         if ( commander )
@@ -2926,8 +2922,8 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
 
             if ( yw->field_757E && v43 && robo )
             {
-                /**(_DWORD *)v30 = 1013;
-                *(_DWORD *)&v30[4] = yw->field_1614;
+                /**(_uint32_t *)v30 = 1013;
+                *(_uint32_t *)&v30[4] = yw->field_1614;
                 v30[12] = ownerid2;*/
 
                 yw_arg181 v31;
@@ -3713,7 +3709,7 @@ int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
 
     if ( !yw->field_160c )
     {
-        if ( arg->field_8->dword8 == 0xA0 || arg->field_8->downed_key == VK_PAUSE )
+        if ( arg->field_8->dword8 == 0xA0 || arg->field_8->downed_key == UAVK_PAUSE )
         {
             yw->field_160c = 1;
             yw->field_1610 = arg->field_0;
@@ -3728,7 +3724,7 @@ int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
     }
     else
     {
-        yw->win3d->display_func257(NULL);
+        yw->win3d->BeginFrame();
 
         yw->win3d->setRSTR_BGpen(0);
 
@@ -3777,14 +3773,14 @@ int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
             arg209.includ = 0;
             arg209.cmdbuf = v10;
 
-            yw->win3d->raster_func215(NULL);
+            yw->win3d->LockSurface();
             yw->win3d->raster_func209(&arg209);
-            yw->win3d->raster_func216(NULL);
+            yw->win3d->UnlockSurface();
         }
 
         sb_0x424c74();
 
-        yw->win3d->display_func258(NULL);
+        yw->win3d->EndFrame();
     }
     return 1;
 }
@@ -5027,7 +5023,7 @@ void recorder_stoprec(_NC_STACK_ypaworld *yw)
 
 void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
 {
-    if ( inpt->downed_key == VK_MULTIPLY && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
+    if ( inpt->downed_key == UAVK_MULTIPLY && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
     {
         sub_4476AC(yw);
 
@@ -5043,7 +5039,7 @@ void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
     if ( yw->do_screenshooting )
     {
-        if ( inpt->downed_key == VK_DIVIDE && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
+        if ( inpt->downed_key == UAVK_DIVIDE && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
         {
             yw->do_screenshooting = 0;
 
@@ -5068,7 +5064,7 @@ void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         win3d->display_func274(&v13);
     }
-    else if ( inpt->downed_key == VK_DIVIDE && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
+    else if ( inpt->downed_key == UAVK_DIVIDE && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
     {
         yw->screenshot_seq_frame_id = 0;
         yw->do_screenshooting = 1;
@@ -5085,7 +5081,7 @@ void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
     if ( yw->sceneRecorder->do_record )
     {
-        if ( inpt->downed_key == VK_SUBTRACT && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
+        if ( inpt->downed_key == UAVK_SUBTRACT && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
         {
             recorder_stoprec(yw);
 
@@ -5101,7 +5097,7 @@ void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
     }
     else
     {
-        if ( inpt->downed_key == VK_SUBTRACT && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
+        if ( inpt->downed_key == UAVK_SUBTRACT && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
         {
             recorder_startrec(yw);
 
@@ -6566,7 +6562,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
 {
     if ( yw->field_1b68 == 0)
     {
-        if ( sub_449678(yw, inpt, VK_F9) )
+        if ( sub_449678(yw, inpt, UAVK_F9) )
             yw->field_1b68++;
     }
     else
@@ -7015,7 +7011,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         FontUA::set_end(&cmd);
 
-        yw->win3d->raster_func215(NULL);
+        yw->win3d->LockSurface();
 
         w3d_a209 arg209;
         arg209.cmdbuf = dbg_txt;
@@ -7023,7 +7019,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         yw->win3d->raster_func209(&arg209);
 
-        yw->win3d->raster_func216(NULL);
+        yw->win3d->UnlockSurface();
 
         if ( v104 )
         {
@@ -7031,7 +7027,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
         }
         else
         {
-            if ( sub_449678(yw, inpt, VK_F9) )
+            if ( sub_449678(yw, inpt, UAVK_F9) )
                 yw->field_1b68++;
         }
     }

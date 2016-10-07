@@ -260,11 +260,6 @@ void INPEngine::deinit()
     }
 }
 
-void INPEngine::setWndMode(gfx_window *wnd)
-{
-    input_class->wimp_setWindow(wnd);
-}
-
 NC_STACK_input *INPEngine::getPInput()
 {
     return input_class;

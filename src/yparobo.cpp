@@ -732,16 +732,16 @@ void NC_STACK_yparobo::initForce(bact_node *unit)
                     untbct->ypabact__id |= untbct->owner << 24;
 
                     char v14[44];
-                    /**(_DWORD *)v14 = 1001;
+                    /**(_uint32_t *)v14 = 1001;
                     v14[12] = untbct->owner;
                     *(float *)&v14[16] = untbct->field_621.sx;
                     *(float *)&v14[20] = untbct->field_621.sy;
                     *(float *)&v14[24] = untbct->field_621.sz;
                     v14[41] = untbct->id;
-                    *(_DWORD *)&v14[28] = untbct->parent_bact->ypabact__id;
-                    *(_DWORD *)&v14[32] = untbct->ypabact__id;
+                    *(_uint32_t *)&v14[28] = untbct->parent_bact->ypabact__id;
+                    *(_uint32_t *)&v14[32] = untbct->ypabact__id;
                     v14[40] = 2;
-                    *(_DWORD *)&v14[36] = unit->bact->field_2E;*/
+                    *(_uint32_t *)&v14[36] = unit->bact->field_2E;*/
 
                     yw_arg181 arg181;
                     arg181.field_14 = 2;
@@ -1115,9 +1115,9 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
         if ( yw->field_757E )
         {
             char v17[20];
-//      *(_DWORD *)v17 = 1034;
+//      *(_uint32_t *)v17 = 1034;
 //      v17[12] = robo->bact_internal->owner;
-//      *(_DWORD *)&v17[16] = robo->bact_internal->ypabact__id;
+//      *(_uint32_t *)&v17[16] = robo->bact_internal->ypabact__id;
 
             yw_arg181 v16;
             v16.field_10 = 0;
@@ -2004,16 +2004,16 @@ void NC_STACK_yparobo::doUserCommands(ypabact_arg65 *arg)
                     bct->field_2E |= bct->owner << 24;
 
                     char v56[44];
-                    /* *(_DWORD *)v56 = 1001;
+                    /* *(_uint32_t *)v56 = 1001;
                     v56[12] = bct->owner;
                     *(float *)&v56[16] = bct->field_621.sx;
                     *(float *)&v56[20] = bct->field_621.sy;
                     *(float *)&v56[24] = bct->field_621.sz;
                     v56[41] = bct->id;
-                    *(_DWORD *)&v56[28] = bct->parent_bact->ypabact__id;
-                    *(_DWORD *)&v56[32] = bct->ypabact__id;
+                    *(_uint32_t *)&v56[28] = bct->parent_bact->ypabact__id;
+                    *(_uint32_t *)&v56[32] = bct->ypabact__id;
                     v56[40] = 1;
-                    *(_DWORD *)&v56[36] = bct->field_2E;*/
+                    *(_uint32_t *)&v56[36] = bct->field_2E;*/
 
                     arg181.field_14 = 2;
                     arg181.val_size = 44;
@@ -2069,16 +2069,16 @@ void NC_STACK_yparobo::doUserCommands(ypabact_arg65 *arg)
                     bct->ypabact__id |= bct->owner << 24;
 
                     char v56[44];
-                    /**(_DWORD *)v56 = 1001;
+                    /**(_uint32_t *)v56 = 1001;
                     v56[12] = bct->owner;
                     *(float *)&v56[16] = bct->field_621.sx;
                     *(float *)&v56[20] = bct->field_621.sy;
                     *(float *)&v56[24] = bct->field_621.sz;
                     v56[41] = bct->id;
-                    *(_DWORD *)&v56[28] = bct->parent_bact->ypabact__id;
-                    *(_DWORD *)&v56[32] = bct->ypabact__id;
+                    *(_uint32_t *)&v56[28] = bct->parent_bact->ypabact__id;
+                    *(_uint32_t *)&v56[32] = bct->ypabact__id;
                     v56[40] = 2;
-                    *(_DWORD *)&v56[36] = arg->field_1C->field_2E;*/
+                    *(_uint32_t *)&v56[36] = arg->field_1C->field_2E;*/
                     arg181.field_10 = 0;
                     arg181.field_14 = 2;
                     arg181.value = v56;
@@ -2117,11 +2117,11 @@ void NC_STACK_yparobo::doUserCommands(ypabact_arg65 *arg)
                 if ( yw->field_757E )
                 {
                     char v63[24];
-                    /**(_DWORD *)v63 = 1012;
+                    /**(_uint32_t *)v63 = 1012;
                     v63[12] = bact->owner;
-                    *(_DWORD *)&v63[16] = *(_DWORD *)(v51 + 24);
-                    *(_WORD *)&v63[20] = *(_WORD *)(v51 + 36);
-                    *(_WORD *)&v63[22] = *(_WORD *)(v51 + 40);*/
+                    *(_uint32_t *)&v63[16] = *(_uint32_t *)(v51 + 24);
+                    *(_uint16_t *)&v63[20] = *(_uint16_t *)(v51 + 36);
+                    *(_uint16_t *)&v63[22] = *(_uint16_t *)(v51 + 40);*/
                     arg181.field_10 = 0;
                     arg181.field_14 = 2;
                     arg181.value = v63;
@@ -2146,9 +2146,9 @@ void NC_STACK_yparobo::doUserCommands(ypabact_arg65 *arg)
             if ( yw->field_757E )
             {
                 char v57[32];
-                /**(_DWORD *)v57 = 1033;
+                /**(_uint32_t *)v57 = 1033;
                 v57[12] = bact->owner;
-                *(_DWORD *)&v57[28] = bact->ypabact__id;
+                *(_uint32_t *)&v57[28] = bact->ypabact__id;
                 *(float *)&v57[16] = robo->field_515.sx;
                 *(float *)&v57[20] = robo->field_515.sy;
                 *(float *)&v57[24] = robo->field_515.sz;*/
@@ -3257,16 +3257,16 @@ bact_node *NC_STACK_yparobo::allocForce(robo_loct1 *arg)
 
             char a1a[44];
             /*
-            *(_DWORD *)a1a = 1001;
+            *(_uint32_t *)a1a = 1001;
             a1a[12] = unt_bct->owner;
             *(float *)&a1a[16] = unt_bct->field_621.sx;
             *(float *)&a1a[20] = unt_bct->field_621.sy;
             *(float *)&a1a[24] = unt_bct->field_621.sz;
             a1a[41] = unt_bct->id;
-            *(_DWORD *)&a1a[28] = unt_bct->parent_bact->ypabact__id;
-            *(_DWORD *)&a1a[32] = unt_bct->ypabact__id;
+            *(_uint32_t *)&a1a[28] = unt_bct->parent_bact->ypabact__id;
+            *(_uint32_t *)&a1a[32] = unt_bct->ypabact__id;
             a1a[40] = 1;
-            *(_DWORD *)&a1a[36] = unt_bct->field_2E;*/
+            *(_uint32_t *)&a1a[36] = unt_bct->field_2E;*/
 
             yw_arg181 arg181;
             arg181.field_10 = 0;
@@ -4400,15 +4400,15 @@ void NC_STACK_yparobo::checkCommander()
                                     if ( arg90.ret_unit )
                                     {
                                         char v24[44];
-//										*(_DWORD *)v24 = 1027;
+//										*(_uint32_t *)v24 = 1027;
 //										v24[12] = robo->bact_internal->owner;
-//										*(_DWORD *)&v24[16] = arg90.ret_unit->ypabact__id;
+//										*(_uint32_t *)&v24[16] = arg90.ret_unit->ypabact__id;
 //										v24[20] = arg90.ret_unit->owner;
-//										*(_DWORD *)&v24[32] = 0;
-//										*(_DWORD *)&v24[36] = 0;
-//										*(_DWORD *)&v24[40] = 0;
-//										*(_DWORD *)&v24[24] = 34;
-//										*(_DWORD *)&v24[28] = 19;
+//										*(_uint32_t *)&v24[32] = 0;
+//										*(_uint32_t *)&v24[36] = 0;
+//										*(_uint32_t *)&v24[40] = 0;
+//										*(_uint32_t *)&v24[24] = 34;
+//										*(_uint32_t *)&v24[28] = 19;
                                         yw_arg181 arg181;
                                         arg181.field_10 = 0;
                                         arg181.field_14 = 2;
@@ -5987,12 +5987,12 @@ void NC_STACK_yparobo::ypabact_func77(void *)
 
     if ( !(bact->field_3D6 & 0x400) )
     {
-        /*(_DWORD *)v16 = 1016;
+        /*(_uint32_t *)v16 = 1016;
         v16[12] = bact->owner;
         if ( bact->field_9B1 )
-          *(_DWORD *)&v16[16] = bact->field_9B1->ypabact__id;
+          *(_uint32_t *)&v16[16] = bact->field_9B1->ypabact__id;
         else
-          *(_DWORD *)&v16[16] = 0;
+          *(_uint32_t *)&v16[16] = 0;
         v16[20] = bact->field_9B5;*/
 
         if ( bact->field_9B5 )
@@ -6582,11 +6582,11 @@ void NC_STACK_yparobo::ypabact_func121(ypabact_arg65 *arg)
         {
             char v21[76];
             /*
-            *(_DWORD *)v21 = 1030;
+            *(_uint32_t *)v21 = 1030;
             v21[12] = bact->owner;
             *(float *)&v21[20] = 0.75;
-            *(_DWORD *)&v21[16] = v33;
-            *(_DWORD *)&v21[24] = bact->ypabact__id;
+            *(_uint32_t *)&v21[16] = v33;
+            *(_uint32_t *)&v21[24] = bact->ypabact__id;
             *(xyz *)&v21[28] = bact->field_621;
             v21[40] = bact->field_651; //matrix copy
             */

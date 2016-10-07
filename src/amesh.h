@@ -7,7 +7,7 @@
 
 struct __attribute__((packed)) ATTS
 {
-    __int16 field_0;
+    int16_t field_0;
     uint8_t field_2;
     uint8_t field_3;
     uint8_t field_4;
@@ -18,8 +18,8 @@ struct __NC_STACK_amesh
 {
     NC_STACK_bitmap *ilbm1;
     NC_STACK_bitmap *ilbm2;
-    __int16 cnt;
-    __int16 field_A;
+    int16_t cnt;
+    int16_t field_A;
     ATTS *atts;
     tUtV **olpl;
 //    int field_14;

@@ -245,21 +245,19 @@ size_t NC_STACK_display::raster_func212(stack_vals *)
     return 0;
 }
 
-void NC_STACK_display::raster_func213(polysDatSub *)
+void NC_STACK_display::BeginScene()
 {
 }
 
-size_t NC_STACK_display::raster_func214(void *)
-{
-    dprintf("MAKE ME %s\n","raster_func214");
-    return 0;
-}
-
-void NC_STACK_display::raster_func215(void *)
+void NC_STACK_display::EndScene()
 {
 }
 
-void NC_STACK_display::raster_func216(void *)
+void NC_STACK_display::LockSurface()
+{
+}
+
+void NC_STACK_display::UnlockSurface()
 {
 }
 
@@ -326,12 +324,12 @@ void NC_STACK_display::display_func262(rstr_262_arg *arg)
         int tmpg = 0;
         int tmpb = 0;
 
-        for (int j = 0; j < arg->dword0; j++)
+        for (int j = 0; j < arg->cnt; j++)
         {
-            UA_PALETTE *pal = &displ->field_300[ arg->pdword4[j] ];
-            tmpr += arg->pdword8[j] * pal->pal_entries[i].r;
-            tmpg += arg->pdword8[j] * pal->pal_entries[i].g;
-            tmpb += arg->pdword8[j] * pal->pal_entries[i].b;
+            UA_PALETTE *pal = &displ->field_300[ arg->slot[j] ];
+            tmpr += arg->weight[j] * pal->pal_entries[i].r;
+            tmpg += arg->weight[j] * pal->pal_entries[i].g;
+            tmpb += arg->weight[j] * pal->pal_entries[i].b;
         }
 
         tmpr >>= 8;
@@ -373,9 +371,9 @@ void NC_STACK_display::display_func265(void *)
 }
 
 
-size_t NC_STACK_display::display_func266(bitmap_intern **pbitm)
+size_t NC_STACK_display::AllocTexture(bitmap_intern *pbitm)
 {
-    bitmap_intern *bitm = *pbitm;
+    bitmap_intern *bitm = pbitm;
 
     bitm->pitch = bitm->width;
     bitm->buffer = AllocVec(bitm->width * bitm->height, 65537);
@@ -383,13 +381,13 @@ size_t NC_STACK_display::display_func266(bitmap_intern **pbitm)
     return bitm->buffer != NULL;
 }
 
-void NC_STACK_display::display_func267(bitmap_intern **)
+void NC_STACK_display::TextureApplyPalette(bitmap_intern *)
 {
 }
 
-void NC_STACK_display::display_func268(bitmap_intern **pbitm)
+void NC_STACK_display::FreeTexture(bitmap_intern *pbitm)
 {
-    bitmap_intern *bitm = *pbitm;
+    bitmap_intern *bitm = pbitm;
     if (bitm->buffer)
     {
         nc_FreeMem(bitm->buffer);
@@ -397,12 +395,12 @@ void NC_STACK_display::display_func268(bitmap_intern **pbitm)
     }
 }
 
-size_t NC_STACK_display::display_func269(bitmap_intern **)
+size_t NC_STACK_display::LockTexture(bitmap_intern *)
 {
     return 1;
 }
 
-void NC_STACK_display::display_func270(bitmap_intern **)
+void NC_STACK_display::UnlockTexture(bitmap_intern *)
 {
 }
 
@@ -435,9 +433,9 @@ void NC_STACK_display::setBMD_palette(UA_PALETTE *newPal)
 
     int v11 = 0;
     int v12 = 256;
-    arg_262.pdword4 = &v11;
-    arg_262.dword0 = 1;
-    arg_262.pdword8 = &v12;
+    arg_262.slot = &v11;
+    arg_262.cnt = 1;
+    arg_262.weight = &v12;
 
     display_func262(&arg_262);
 
@@ -534,15 +532,16 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
     case 212:
         return (size_t)raster_func212( (stack_vals *)data );
     case 213:
-        raster_func213( (polysDatSub *)data );
+        BeginScene();
         return 1;
     case 214:
-        return (size_t)raster_func214( (stack_vals *)data );
+        EndScene();
+        return 1;
     case 215:
-        raster_func215( (void *)data );
+        LockSurface();
         return 1;
     case 216:
-        raster_func216( (void *)data );
+        UnlockSurface();
         return 1;
     case 217:
         return (size_t)raster_func217( (rstr_arg217 *)data );
@@ -572,17 +571,17 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
         display_func265( (void *)data );
         return 1;
     case 266:
-        return (size_t)display_func266( (bitmap_intern **)data );
+        return (size_t)AllocTexture( (bitmap_intern *)data );
     case 267:
-        display_func267( (bitmap_intern **)data );
+        TextureApplyPalette( (bitmap_intern *)data );
         return 1;
     case 268:
-        display_func268( (bitmap_intern **)data );
+        FreeTexture( (bitmap_intern *)data );
         return 1;
     case 269:
-        return (size_t)display_func269( (bitmap_intern **)data );
+        return (size_t)LockTexture( (bitmap_intern *)data );
     case 270:
-        display_func270( (bitmap_intern **)data );
+        UnlockTexture( (bitmap_intern *)data );
         return 1;
     case 273:
         return (size_t)display_func273( (rstr_261_arg *)data );

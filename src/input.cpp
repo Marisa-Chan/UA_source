@@ -283,10 +283,10 @@ void sub_41CC94(nlist *lst, inp_l65 *loc, int arg)
                     {
                         node->driver_obj->idev_func64(&warg64);
 
-                        int v9 = warg64.field_4;
+                        int v9 = warg64.keyState;
 
                         if ( node->field_C & 4 )
-                            v9 = warg64.field_4 == 0;
+                            v9 = warg64.keyState == 0;
 
                         if ( node->field_C & 2 )
                             loc->field_0 |= v9;
@@ -435,13 +435,6 @@ void NC_STACK_input::keyb_queryHotkey(idev_query_arg *arg)
 {
     stack__input.keyboard->idev_func70(arg);
 }
-
-
-void NC_STACK_input::wimp_setWindow(gfx_window *gfx)
-{
-    stack__input.wimp->setWIMP_wndInfo(gfx);
-}
-
 
 void NC_STACK_input::wimp_addClickNode(iwimp_arg129 *arg)
 {

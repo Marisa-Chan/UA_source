@@ -58,7 +58,6 @@ public:
     int init();
     void deinit();
 
-    void setWndMode(gfx_window *wnd);
     NC_STACK_input *getPInput();
 
     void sub_412D28(struC5 *a1);

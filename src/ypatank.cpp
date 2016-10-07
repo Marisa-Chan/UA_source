@@ -1804,9 +1804,9 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
                                 {
                                     yw_arg181 arg181;
                                     char v83[20];
-//                *(_DWORD *)v83 = 1031;
+//                *(_uint32_t *)v83 = 1031;
 //                v83[12] = v12->owner;
-//                *(_DWORD *)&v83[16] = v12->ypabact__id;
+//                *(_uint32_t *)&v83[16] = v12->ypabact__id;
                                     arg181.field_10 = 0;
                                     arg181.val_size = 20;
                                     arg181.field_14 = 2;

@@ -11,26 +11,26 @@ struct __NC_STACK_ilbm
 
 struct __attribute__((packed)) BMHD_type
 {
-    WORD width;
-    WORD height;
-    WORD x;
-    WORD y;
+    uint16_t width;
+    uint16_t height;
+    uint16_t x;
+    uint16_t y;
     char nPlanes;
     char masking;
     char compression;
     char flags;
-    WORD transparentColor;
+    uint16_t transparentColor;
     char xAspect;
     char yAspect;
-    WORD pageWidth;
-    WORD pageHeight;
+    uint16_t pageWidth;
+    uint16_t pageHeight;
 };
 
 struct __attribute__((packed)) VBMP_type
 {
-    WORD width;
-    WORD height;
-    WORD flags;
+    uint16_t width;
+    uint16_t height;
+    uint16_t flags;
 };
 
 class NC_STACK_ilbm: public NC_STACK_bitmap

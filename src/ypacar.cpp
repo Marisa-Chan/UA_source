@@ -307,11 +307,11 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
                                 v63 = 1;
 
                                 char v41[32];
-//                      *(_DWORD *)v41 = 1010;
-//                      *(_DWORD *)&v41[4] = car->yw->field_1614;
+//                      *(_uint32_t *)v41 = 1010;
+//                      *(_uint32_t *)&v41[4] = car->yw->field_1614;
 //                      v41[12] = v19->owner;
-//                      *(_DWORD *)&v41[16] = v19->ypabact__id;
-//                      *(_DWORD *)&v41[20] = -v67;
+//                      *(_uint32_t *)&v41[16] = v19->ypabact__id;
+//                      *(_uint32_t *)&v41[20] = -v67;
 
                                 yw_arg181 arg181;
                                 arg181.field_10 = 0;

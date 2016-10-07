@@ -104,10 +104,13 @@ waldev::waldev()
         }
         else
         {
+            printf("OpenAL: context not created!\n");
             alcCloseDevice(dev);
             dev = NULL;
         }
     }
+    else
+        printf("OpenAL: no dev!\n");
 }
 
 waldev::~waldev()

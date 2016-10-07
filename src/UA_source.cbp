@@ -4,27 +4,31 @@
 	<Project>
 		<Option title="UA_source" />
 		<Option pch_mode="2" />
-		<Option compiler="wine_gnu_gcc_compiler" />
+		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/UA_source.exe" prefix_auto="0" extension_auto="0" />
+				<Option output="bin/Debug/UA_source" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="GAME" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
-				<Option compiler="wine_gnu_gcc_compiler" />
-				<Option host_application="wine" />
-				<Option run_host_application_in_terminal="0" />
+				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-O0" />
 				</Compiler>
+				<Linker>
+					<Add library="SDL2" />
+					<Add library="SDL2_ttf" />
+					<Add library="GL" />
+					<Add library="openal" />
+				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/UA_source.exe" prefix_auto="0" extension_auto="0" />
+				<Option output="bin/Release/UA_source" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="GAME" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
-				<Option compiler="wine_gnu_gcc_compiler" />
+				<Option compiler="gcc" />
 				<Option host_application="wine" />
 				<Option run_host_application_in_terminal="0" />
 				<Compiler>
@@ -32,28 +36,18 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="SDL2" />
+					<Add library="SDL2_ttf" />
+					<Add library="GL" />
+					<Add library="openal" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="-m32" />
 			<Add option="-fexceptions" />
-			<Add option="-Wno-invalid-offsetof" />
 			<Add option="-mno-ms-bitfields" />
 		</Compiler>
-		<Linker>
-			<Add option="-m32" />
-			<Add library="ole32" />
-			<Add library="gdi32" />
-			<Add library="dxguid" />
-			<Add library="ddraw" />
-			<Add library="imm32" />
-			<Add library="msvcrt" />
-			<Add library="dinput" />
-			<Add library="openal" />
-			<Add library="SDL2" />
-		</Linker>
 		<Unit filename="MC.cpp" />
 		<Unit filename="MC.h" />
 		<Unit filename="MFILE.cpp" />
@@ -139,6 +133,8 @@
 		<Unit filename="winp.h" />
 		<Unit filename="wintimer.cpp" />
 		<Unit filename="wintimer.h" />
+		<Unit filename="wrapSDL.cpp" />
+		<Unit filename="wrapSDL.h" />
 		<Unit filename="wrapal.cpp" />
 		<Unit filename="wrapal.h" />
 		<Unit filename="ypabact.cpp" />

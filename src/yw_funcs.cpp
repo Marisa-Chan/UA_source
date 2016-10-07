@@ -723,8 +723,8 @@ int sb_0x4e1a88__sub0(_NC_STACK_ypaworld *yw, int multiplayer, const char *fname
         for (int i = 0; i < mapp.mapRobos_count; i++)
             minf->fractions_mask |= 1 << mapp.mapRobos[i].owner;
 
-        minf->secXsize = LOBYTE(mapp.secXsize);
-        minf->secYsize = LOBYTE(mapp.secYsize);
+        minf->secXsize = mapp.secXsize & 0xFF;
+        minf->secYsize = mapp.secYsize & 0xFF;
         minf->slow_connection = mapp.slow_connection;
         return 1;
     }
@@ -1719,7 +1719,7 @@ void ypaworld_func158__sub4__sub0(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *bitm)
 {
     if ( yw )
     {
-        yw->win3d->raster_func215(NULL);
+        yw->win3d->LockSurface();
 
         rstr_arg204 a4;
         a4.pbitm = bitm->getBMD_pBitmap();
@@ -1735,7 +1735,7 @@ void ypaworld_func158__sub4__sub0(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *bitm)
 
         yw->win3d->raster_func202(&a4);
 
-        yw->win3d->raster_func216(NULL);
+        yw->win3d->UnlockSurface();
     }
 }
 
@@ -1984,7 +1984,7 @@ void ypaworld_func158__sub4__sub1__sub2(_NC_STACK_ypaworld *yw)
 
     if ( lvlnet->ilbm_menu_map && lvlnet->ilbm_mask_map && lvlnet->ilbm_rollover_map )
     {
-        yw->win3d->raster_func215(NULL);
+        yw->win3d->LockSurface();
 
         rstr_arg204 a4;
         a4.pbitm = yw->LevelNet->ilbm_menu_map->getBMD_pBitmap();
@@ -2067,7 +2067,7 @@ void ypaworld_func158__sub4__sub1__sub2(_NC_STACK_ypaworld *yw)
             yw->win3d->raster_func209(&v19);
         }
 
-        yw->win3d->raster_func216(NULL);
+        yw->win3d->UnlockSurface();
     }
 
 }
@@ -2078,7 +2078,7 @@ void ypaworld_func158__sub4__sub1__sub1(_NC_STACK_ypaworld *yw)
 
     if ( lvlnet->ilbm_menu_map && lvlnet->ilbm_mask_map && lvlnet->ilbm_rollover_map && lvlnet->ilbm_finished_map && lvlnet->ilbm_enabled_map )
     {
-        yw->win3d->raster_func215(NULL);
+        yw->win3d->LockSurface();
 
         rstr_arg204 a4;
         a4.pbitm = yw->LevelNet->ilbm_menu_map->getBMD_pBitmap();
@@ -2172,7 +2172,7 @@ void ypaworld_func158__sub4__sub1__sub1(_NC_STACK_ypaworld *yw)
         const char *v13 = get_lang_string(yw->string_pointers_p2, yw->TOD_ID + 2490, " ");
         splashScreen_OutText(yw, yw->win3d, v13, yw->screen_width / 20, yw->screen_width / 20);
 
-        yw->win3d->raster_func216(NULL);
+        yw->win3d->UnlockSurface();
     }
 }
 
@@ -2227,9 +2227,9 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
         return 0; // May be HACK
 
     yw->win3d->display_func271(NULL);
-    yw->win3d->raster_func215(NULL);
+    yw->win3d->LockSurface();
     yw->win3d->raster_func192(NULL);
-    yw->win3d->raster_func216(NULL);
+    yw->win3d->UnlockSurface();
 
     memcpy(&brf->s2d90, yw->field_2d90, sizeof(brf->s2d90));
 
@@ -2532,8 +2532,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
 
     brf->field_419C = 0;
 
-    if ( dword_514EFC )
-        brf->field_419C = 1;
+    brf->field_419C = 1;
 
     if ( !ypaworld_func158__sub4__sub1__sub5__sub0(yw, &brf->map_prototype, yw->LevelNet->mapInfos[yw->field_2d90->levelID].mapPath) )
     {
@@ -2663,7 +2662,7 @@ void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 
         {
             if ( yw->field_2d90->field_40 == 5 )
             {
-                if ( inpt->downed_key == VK_RETURN )
+                if ( inpt->downed_key == UAVK_RETURN )
                     yw->brief.field_2E68 = 1;
 
                 if ( yw->brief.field_2E68 == 1 )

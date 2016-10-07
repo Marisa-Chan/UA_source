@@ -705,7 +705,7 @@ void GuiList::InputHandle(_NC_STACK_ypaworld *yw, struC5 *struc)
 
     if ( listFlags & GLIST_FLAG_KEYB_INPUT )
     {
-        if ( struc->downed_key == VK_UP )
+        if ( struc->downed_key == UAVK_UP )
         {
             selectedEntry--;
             if ( selectedEntry < 0 )
@@ -718,7 +718,7 @@ void GuiList::InputHandle(_NC_STACK_ypaworld *yw, struC5 *struc)
                 firstShownEntries = selectedEntry;
             }
         }
-        else if ( struc->downed_key == VK_DOWN )
+        else if ( struc->downed_key == UAVK_DOWN )
         {
             selectedEntry++;
             if ( selectedEntry >= numEntries )

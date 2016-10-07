@@ -441,7 +441,7 @@ int bmpanim_func64__sub1__sub1(void *fil, bmpAnim_t1 *arg)
 
         for (int j = 0; j < ttmp; j++)
         {
-            BYTE uv[2];
+            uint8_t uv[2];
             if (fread_bmp(uv, 2, 1, fil) != 1)
                 return 0;
 
@@ -892,7 +892,7 @@ int bmpanim_func66__sub0__sub1(void *fil, bmpAnim_t1 *t1)
 
         while ( v6->tu >= 0.0)
         {
-            BYTE uv[2];
+            uint8_t uv[2];
             uv[0] = v6->tu * 256.0;
             uv[1] = v6->tv * 256.0;
 

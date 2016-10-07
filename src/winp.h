@@ -6,19 +6,10 @@
 
 struct __NC_STACK_winp
 {
-    HWND hWND;
-    int field_4;
-    int field_8;
-    int field_c;
-    BYTE field_10[48];
-};
-
-struct winp__func67__internal
-{
-    const char *keyname;
-    int keytype;
-    int keycode;
-    int down;
+    int remapIndex;
+    int mousePos;
+    int mouseDelta;
+    uint8_t hotKeys[48];
 };
 
 class NC_STACK_winp: public NC_STACK_iwimp
@@ -59,9 +50,6 @@ public:
         WINP_ATT_WND = 0x80002000,
         WINP_ATT_HWND = 0x80002001
     };
-
-
-    virtual void setWIMP_wndInfo(gfx_window *wnd);
 
     //Data
     static const NewClassDescr description;
