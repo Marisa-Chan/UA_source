@@ -9,10 +9,22 @@ License GPLv2
 </a>
 
 
-Linux depends: wine (winelib for ddraw, d3d, dinput), openal, SDL2
-Windows depends: directx, openal, SDL2
+Dependings: SDL2, SDL2_ttf, OpenGL, OpenAL
 
 
-Make for linux native: make wine
+Make for linux native: make nix
 
-Make for windows cross-compile: make win32 or make wclang
+Make for windows cross-compile: make win32
+
+
+
+Copy "res" and "locale" into Urban Assault directory and create "fonts" directory with:
+
+arial.ttf (Arial)
+
+dungeon.ttf (Dungeon)
+
+mssans.ttf (Sans Serif)
+
+small_font.ttf (Small Font)
+
