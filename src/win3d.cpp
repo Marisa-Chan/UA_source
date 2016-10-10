@@ -972,6 +972,8 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
     else
         SDLWRAP_setFullscreen(0, NULL);
 
+    SDL_Delay(250);
+
     SDLWRAP_resizeWindow(picked->w, picked->h);
 
     load_font("MS Sans Serif,12,400,0");

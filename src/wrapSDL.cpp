@@ -273,7 +273,11 @@ void SDLWRAP_setFullscreen(uint32_t full, SDL_DisplayMode *mode)
         SDL_SetWindowFullscreen(window, full);
 
         if (full != 0 && mode)
+        {
+            SDL_Delay(250);
             SDL_SetWindowDisplayMode(window, mode);
+        }
+
     }
 }
 
@@ -388,4 +392,5 @@ void SDLWRAP_releativeMouse(bool mode)
 void SDLWRAP_restoreWindow()
 {
     SDL_RestoreWindow(window);
+    SDL_Delay(250);
 }
