@@ -31,7 +31,7 @@ uint32_t SDLWRAP_CorrectFormat(uint32_t format);
 void SDLWRAP_drawScreen();
 void SDLWRAP_flipWindow();
 
-void SDLWRAP_wrapMouse();
+void SDLWRAP_releativeMouse(bool mode);
 
 void SDLWRAP_mousePosNorm(SDLWRAP_Point &in);
 

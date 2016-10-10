@@ -476,8 +476,11 @@ int sb_0x411324()
     world_update_arg.field_0 += input_states.period + 1;
     input_states.period++;
 
+    // If mouse captured, enable releative mouse control
     if (ypaworld->stack__ypaworld.field_17c0)
-        SDLWRAP_wrapMouse();
+        SDLWRAP_releativeMouse(true);
+    else
+        SDLWRAP_releativeMouse(false);
 
     if ( dword_520400 == 1 )
     {

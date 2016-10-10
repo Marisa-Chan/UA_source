@@ -9,6 +9,7 @@ static SDL_GLContext cont = NULL;
 static SDL_Surface *screen = NULL;
 static GLuint screenTex = 0;
 static GLint pixfmt, pixtype;
+static bool curRelMouse = false;
 
 
 
@@ -365,11 +366,23 @@ void SDLWRAP_mousePosNorm(SDLWRAP_Point &in)
         in.y = sH - 1;
 }
 
-void SDLWRAP_wrapMouse()
+void SDLWRAP_releativeMouse(bool mode)
 {
-    int ww = 0, wh = 0;
-    SDL_GetWindowSize(window, &ww, &wh);
-    SDL_WarpMouseInWindow(window, ww / 2, wh / 2);
+    if (mode != curRelMouse)
+    {
+        if (mode)
+            SDL_SetRelativeMouseMode(SDL_TRUE);
+        else
+        {
+            SDL_SetRelativeMouseMode(SDL_FALSE);
+
+            int WW = 0, WH = 0;
+            SDL_GetWindowSize(window, &WW, &WH);
+            SDL_WarpMouseInWindow(window, WW / 2, WH / 2);
+        }
+
+        curRelMouse = mode;
+    }
 }
 
 void SDLWRAP_restoreWindow()
