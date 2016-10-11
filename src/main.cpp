@@ -155,7 +155,7 @@ int sb_0x411324__sub0()
 
         sprintf(buf, "save:%s/%d.sgm", userdata.user_name, 0);
 
-        if ( !ypaworld->ypaworld_func169(&arg169) )
+        if ( !ypaworld->ypaworld_func170(&arg169) )
             ypa_log_out("Warning, Save error\n");
 
         INPe.sub_412D28(&input_states);
