@@ -551,10 +551,13 @@ void NC_STACK_ypacar::ypabact_func71(ypabact_arg65 *arg)
         arg79.tgt_pos.sy = bact->field_651.m21;
         arg79.tgt_pos.sz = bact->field_651.m22;
 
+        float corW, corH;
+        GFXe.getC3D()->getAspectCorrection(corW, corH, true);
+
         bact_arg106 arg106;
         arg106.field_0 = 5;
         arg106.field_4.sx = bact->field_651.m20;
-        arg106.field_4.sy = bact->field_651.m21 - bact->gun_angle2;
+        arg106.field_4.sy = bact->field_651.m21 - bact->gun_angle2 * corH;
         arg106.field_4.sz = bact->field_651.m22;
 
         if ( ypabact_func106(&arg106) )
@@ -572,9 +575,9 @@ void NC_STACK_ypacar::ypabact_func71(ypabact_arg65 *arg)
             else
             {
                 arg79.weapon = bact->weapon;
-                arg79.direction.sx = bact->field_651.m20 - bact->field_651.m10 * bact->gun_angle2;
-                arg79.direction.sy = bact->field_651.m21 - bact->field_651.m11 * bact->gun_angle2;
-                arg79.direction.sz = bact->field_651.m22 - bact->field_651.m12 * bact->gun_angle2;
+                arg79.direction.sx = bact->field_651.m20 - bact->field_651.m10 * bact->gun_angle2 * corH;
+                arg79.direction.sy = bact->field_651.m21 - bact->field_651.m11 * bact->gun_angle2 * corH;
+                arg79.direction.sz = bact->field_651.m22 - bact->field_651.m12 * bact->gun_angle2 * corH;
                 arg79.g_time = bact->field_915;
 
                 if ( bact->field_915 % 2 )
@@ -619,9 +622,9 @@ void NC_STACK_ypacar::ypabact_func71(ypabact_arg65 *arg)
                 }
 
                 bact_arg105 arg105;
-                arg105.field_0.sx = bact->field_651.m20 - bact->field_651.m10 * bact->gun_angle2;
-                arg105.field_0.sy = bact->field_651.m21 - bact->field_651.m11 * bact->gun_angle2;
-                arg105.field_0.sz = bact->field_651.m22 - bact->field_651.m12 * bact->gun_angle2;
+                arg105.field_0.sx = bact->field_651.m20 - bact->field_651.m10 * bact->gun_angle2 * corH;
+                arg105.field_0.sy = bact->field_651.m21 - bact->field_651.m11 * bact->gun_angle2 * corH;
+                arg105.field_0.sz = bact->field_651.m22 - bact->field_651.m12 * bact->gun_angle2 * corH;
                 arg105.field_C = v78;
                 arg105.field_10 = bact->field_915;
 

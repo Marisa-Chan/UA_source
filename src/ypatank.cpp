@@ -1276,14 +1276,17 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
         v67.sy = bact->field_651.m21;
         v67.sz = bact->field_651.m22;
 
-        v67.sx -= bact->field_651.m10 * bact->gun_angle2;
-        v67.sx -= bact->field_651.m00 * bact->field_995;
+        float corW, corH;
+        GFXe.getC3D()->getAspectCorrection(corW, corH, true);
 
-        v67.sy -= bact->field_651.m11 * bact->gun_angle2;
-        v67.sy -= bact->field_651.m01 * bact->field_995;
+        v67.sx -= bact->field_651.m10 * bact->gun_angle2 * corH;
+        v67.sx -= bact->field_651.m00 * bact->field_995 * corW;
 
-        v67.sz -= bact->field_651.m12 * bact->gun_angle2;
-        v67.sz -= bact->field_651.m02 * bact->field_995;
+        v67.sy -= bact->field_651.m11 * bact->gun_angle2 * corH;
+        v67.sy -= bact->field_651.m01 * bact->field_995 * corW;
+
+        v67.sz -= bact->field_651.m12 * bact->gun_angle2 * corH;
+        v67.sz -= bact->field_651.m02 * bact->field_995 * corW;
 
         float v89 = sqrt(POW2(v67.sx) + POW2(v67.sy) + POW2(v67.sz));
 

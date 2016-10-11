@@ -784,6 +784,8 @@ void NC_STACK_ypabact::ypabact_func65(ypabact_arg65 *arg)
             bact_cam.scale_rotation = bact->field_5C9;
         else
             bact_cam.scale_rotation = bact->field_651;
+
+        GFXe.getC3D()->matrixAspectCorrection(&bact_cam.scale_rotation, false);
     }
 
     bact->field_87D.grp_1 = bact->field_621;
@@ -6836,9 +6838,12 @@ void sub_4843BC(__NC_STACK_ypabact *bact1, __NC_STACK_ypabact *bact2, int a3)
         float v18 = bact2->field_621.sy - bact1->field_621.sy;
         float v19 = bact2->field_621.sz - bact1->field_621.sz;
 
-        float v20 = bact1->field_651.m00 * v17 + bact1->field_651.m01 * v18 + bact1->field_651.m02 * v19;
-        float v21 = bact1->field_651.m10 * v17 + bact1->field_651.m11 * v18 + bact1->field_651.m12 * v19;
-        float v22 = bact1->field_651.m20 * v17 + bact1->field_651.m21 * v18 + bact1->field_651.m22 * v19;
+        mat3x3 corrected = bact1->field_651;
+        GFXe.getC3D()->matrixAspectCorrection(&corrected, false);
+
+        float v20 = corrected.m00 * v17 + corrected.m01 * v18 + corrected.m02 * v19;
+        float v21 = corrected.m10 * v17 + corrected.m11 * v18 + corrected.m12 * v19;
+        float v22 = corrected.m20 * v17 + corrected.m21 * v18 + corrected.m22 * v19;
 
         if ( v22 != 0.0 )
         {

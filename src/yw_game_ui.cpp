@@ -3100,11 +3100,14 @@ void sb_0x451034__sub9(_NC_STACK_ypaworld *yw)
             wis->sklts_intern[i] = wis->sklts[i]->getSKEL_pSkelet();
     }
 
+    float CW, CH;
+    yw->win3d->getAspectCorrection(CW, CH, false);
+
     if ( yw->screen_width >= 512 )
     {
         wis->field_9E = 8;
         wis->field_96 = 28;
-        wis->field_92 = (float)yw->tiles[0]->font_height / (float)yw->screen_width;
+        wis->field_92 = (float)yw->tiles[0]->font_height / ((float)yw->screen_height * CH);
         wis->field_8E = wis->field_92 * 14.0;
         wis->field_9A = 28;
     }
@@ -3112,13 +3115,13 @@ void sb_0x451034__sub9(_NC_STACK_ypaworld *yw)
     {
         wis->field_9E = 6;
         wis->field_96 = 18;
-        wis->field_92 = (float)yw->tiles[0]->font_height * 1.5 / (float)yw->screen_width;
+        wis->field_92 = (float)yw->tiles[0]->font_height * 1.5 / ((float)yw->screen_height * CH);
         wis->field_8E = wis->field_92 * 18.0;
         wis->field_9A = 18;
     }
 
     wis->field_72 = 0;
-    wis->field_8A = (float)(yw->tiles[51]->chars[1].width * wis->field_9E + wis->field_9A + wis->field_96) / (float)yw->screen_width;
+    wis->field_8A = (float)(yw->tiles[51]->chars[1].width * wis->field_9E + wis->field_9A + wis->field_96) / ((float)yw->screen_width * CW);
 
     wis->field_72 = 1;
 }
@@ -9230,8 +9233,13 @@ void wis_color(_NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, u
 
 
 
-void sub_4E332C(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2)
+void yw_RenderVector2D(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float posX, float posY, float m00, float m01, float m10, float m11, float scaleX, float scaleY, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection)
 {
+    float CW = 1.0, CH = 1.0;
+
+    if (aspectCorrection)
+        GFXe.getC3D()->getAspectCorrection(CW, CH, false);
+
     if ( wire )
     {
         rstr_arg217 v30;
@@ -9246,8 +9254,8 @@ void sub_4E332C(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float a3, float 
             float tmpx = wire->POO[i].pos3f.sx * 0.001;
             float tmpz = -wire->POO[i].pos3f.sz * 0.001;
 
-            wire->type2[i].pos3f.sx = (tmpx * a5 + tmpz * a6) * a9 + a3;
-            wire->type2[i].pos3f.sy = (tmpx * a7 + tmpz * a8) * a10 + a4;
+            wire->type2[i].pos3f.sx = (tmpx * m00 + tmpz * m01) * scaleX * CW + posX;
+            wire->type2[i].pos3f.sy = (tmpx * m10 + tmpz * m11) * scaleY * CH + posY;
         }
 
         for (int i = 0; i < wire->pol_count; i++)
@@ -9269,7 +9277,7 @@ void sub_4E332C(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float a3, float 
                     uint32_t v32 = coloooor;
                     uint32_t v31 = coloooor;
 
-                    color_func(yw,  v29.x1 - a3,   v29.y1 - a4,   v29.x2 - a3,   v29.y2 - a4, &v32, &v31);
+                    color_func(yw,  v29.x1 - posX,   v29.y1 - posY,   v29.x2 - posX,   v29.y2 - posY, &v32, &v31);
 
                     v30.dword0 = v32;
                     v30.dword4 = v31;
@@ -9297,7 +9305,7 @@ void sub_4E332C(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float a3, float 
     }
 }
 
-void yw_draw_vhcl_wireframe(_NC_STACK_ypaworld *yw, sklt_wis *wis, VhclProto *vhcl, float a4, float a5, float a6)
+void yw_RenderInfoVehicleWire(_NC_STACK_ypaworld *yw, sklt_wis *wis, VhclProto *vhcl, float a4, float a5, float a6)
 {
     uint32_t color_25 = yw_GetColor(yw, 25);
     uint32_t color_34 = yw_GetColor(yw, 34);
@@ -9328,7 +9336,7 @@ void yw_draw_vhcl_wireframe(_NC_STACK_ypaworld *yw, sklt_wis *wis, VhclProto *vh
         yw->wis_skeletons.cl2_b = color_25 & 0xFF;
         yw->wis_skeletons.cl2_g = (color_25 >> 8) & 0xFF;
 
-        sub_4E332C(yw, wairufureimu, a4, a5, 1.0, 0.0, 0.0, 1.0, a9, v15, color_34, NULL, func);
+        yw_RenderVector2D(yw, wairufureimu, a4, a5, 1.0, 0.0, 0.0, 1.0, a9, v15, color_34, NULL, func, true);
     }
 }
 
@@ -9427,7 +9435,7 @@ char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos, 
     return pcur;
 }
 
-char * sb_0x4e5a84__sub2(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, __NC_STACK_ypabact *bact, VhclProto *vhcl, float xpos, float ypos)
+char * yw_RenderInfoLifebar(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, __NC_STACK_ypabact *bact, VhclProto *vhcl, float xpos, float ypos)
 {
     int a6a;
     int v10;
@@ -9452,7 +9460,7 @@ char * sb_0x4e5a84__sub2(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, __NC_
 }
 
 
-char * sb_0x4e5a84__sub3(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, __NC_STACK_ypabact *bact, VhclProto *vhcl, float xpos, float ypos)
+char * yw_RenderInfoShieldbar(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, __NC_STACK_ypabact *bact, VhclProto *vhcl, float xpos, float ypos)
 {
     int v10;
 
@@ -9471,7 +9479,7 @@ char * sb_0x4e5a84__sub3(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, __NC_
 
 
 
-char * sub_4E5698(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, const char *name, float xpos, float ypos)
+char * yw_RenderInfoVehicleName(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, const char *name, float xpos, float ypos)
 {
     char *pcur = cur;
 
@@ -9535,14 +9543,14 @@ char * sub_4E5698(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, const char *
 
         float a10 = wis->field_92 * 1.2;
 
-        sub_4E332C(yw, wis->sklts_intern[2], xpos, a4, 1.0, 0.0, 0.0, 1.0, wis->field_8A, a10, a11, NULL, a13);
+        yw_RenderVector2D(yw, wis->sklts_intern[2], xpos, a4, 1.0, 0.0, 0.0, 1.0, wis->field_8A, a10, a11, NULL, a13, true);
     }
 
     return pcur;
 }
 
 
-void sb_0x4e5a84__sub1(_NC_STACK_ypaworld *yw, sklt_wis *wis, WeapProto *wpn, float xpos, float ypos)
+void yw_RenderInfoWeaponWire(_NC_STACK_ypaworld *yw, sklt_wis *wis, WeapProto *wpn, float xpos, float ypos)
 {
     skeleton_64_stru *wairufureimu = NULL;
 
@@ -9570,12 +9578,12 @@ void sb_0x4e5a84__sub1(_NC_STACK_ypaworld *yw, sklt_wis *wis, WeapProto *wpn, fl
             yw->wis_skeletons.cl2_b = v9 & 0xFF;
             yw->wis_skeletons.cl2_g = (v9 >> 8) & 0xFF;
 
-            sub_4E332C(yw, wairufureimu, xpos, ypos, 1.0, 0.0, 0.0, 1.0, 0.0415, 0.05, v10, NULL, func);
+            yw_RenderVector2D(yw, wairufureimu, xpos, ypos, 1.0, 0.0, 0.0, 1.0, 0.0415, 0.05, v10, NULL, func, true);
         }
     }
 }
 
-char * sb_0x4e5a84__sub4(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, __NC_STACK_ypabact *bact, WeapProto *wpn, float xpos, float ypos)
+char * yw_RenderInfoReloadbar(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, __NC_STACK_ypabact *bact, WeapProto *wpn, float xpos, float ypos)
 {
     char *pcur = cur;
 
@@ -9615,7 +9623,7 @@ char * sb_0x4e5a84__sub4(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, __NC_
     return pcur;
 }
 
-char * sb_0x4e5a84__sub5(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, __NC_STACK_ypabact *bact, VhclProto *vhcl, WeapProto *weap, float xpos, float ypos)
+char * yw_RenderInfoWeaponInf(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, __NC_STACK_ypabact *bact, VhclProto *vhcl, WeapProto *weap, float xpos, float ypos)
 {
     char *pcur = cur;
 
@@ -9637,7 +9645,7 @@ char * sb_0x4e5a84__sub5(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, __NC_
 }
 
 
-char * sb_0x4e5a84(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos, float ypos, __NC_STACK_ypabact *bact, int vhclid, int flag)
+char * yw_RenderHUDInfo(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos, float ypos, __NC_STACK_ypabact *bact, int vhclid, int flag)
 {
     char *pcur = cur;
 //  yw_GetColor(yw, 25);
@@ -9687,13 +9695,13 @@ char * sb_0x4e5a84(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos,
         weap = &yw->WeaponProtos[vhcl->weapon];
 
     if ( v25 )
-        yw_draw_vhcl_wireframe(yw, wis, vhcl, xpos, ypos, a6a);
+        yw_RenderInfoVehicleWire(yw, wis, vhcl, xpos, ypos, a6a);
 
     if ( v11 )
-        pcur = sb_0x4e5a84__sub2(yw, wis, pcur, bact, vhcl, xpos,   wis->field_92 * 7.0 + ypos  );
+        pcur = yw_RenderInfoLifebar(yw, wis, pcur, bact, vhcl, xpos,   wis->field_92 * 7.0 + ypos  );
 
     if ( v22 )
-        pcur = sb_0x4e5a84__sub3(yw, wis, pcur, bact, vhcl, xpos,   wis->field_92 * 9.0 + ypos  );
+        pcur = yw_RenderInfoShieldbar(yw, wis, pcur, bact, vhcl, xpos,   wis->field_92 * 9.0 + ypos  );
 
     if ( v25 )
     {
@@ -9702,7 +9710,7 @@ char * sb_0x4e5a84(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos,
             float v15 = wis->field_92 * 12.0 + ypos;
             const char *v16 = get_lang_string(yw->string_pointers_p2, vhclid + 1200, vhcl->name);
 
-            pcur = sub_4E5698(yw, wis, pcur, v16, xpos, v15);
+            pcur = yw_RenderInfoVehicleName(yw, wis, pcur, v16, xpos, v15);
         }
     }
 
@@ -9710,11 +9718,11 @@ char * sb_0x4e5a84(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos,
     {
         if ( v23 )
         {
-            sb_0x4e5a84__sub1(yw, wis, weap, xpos,   ypos - wis->field_92 * 9.0);
+            yw_RenderInfoWeaponWire(yw, wis, weap, xpos,   ypos - wis->field_92 * 9.0);
 
-            pcur = sb_0x4e5a84__sub4(yw, wis, pcur, bact, weap, xpos,  ypos - wis->field_92 * 7.0);
+            pcur = yw_RenderInfoReloadbar(yw, wis, pcur, bact, weap, xpos,  ypos - wis->field_92 * 7.0);
 
-            pcur = sb_0x4e5a84__sub5(yw, wis, pcur, bact, vhcl, weap, xpos,  ypos - wis->field_92 * 9.0);
+            pcur = yw_RenderInfoWeaponInf(yw, wis, pcur, bact, vhcl, weap, xpos,  ypos - wis->field_92 * 9.0);
         }
     }
 
@@ -9739,7 +9747,7 @@ char *sb_0x4d7c08__sub0__sub0__sub0__sub0(_NC_STACK_ypaworld *yw, sklt_wis *wis,
 
             const char *v12 = get_lang_string(yw->string_pointers_p2, v11, yw->BuildProtos[a6].name);
 
-            pcur = sub_4E5698(yw, wis, pcur, v12, a4, a5);
+            pcur = yw_RenderInfoVehicleName(yw, wis, pcur, v12, a4, a5);
         }
     }
     return pcur;
@@ -9798,7 +9806,7 @@ int sb_0x4d7c08__sub0__sub0__sub0(_NC_STACK_ypaworld *yw)
         a8 |= 8;
 
     if ( v6 )
-        pcur = sb_0x4e5a84(yw, wis, pcur, 0.0, -0.5, 0, v6, a8);
+        pcur = yw_RenderHUDInfo(yw, wis, pcur, 0.0, -0.5, 0, v6, a8);
     else if ( v14 )
         pcur = sb_0x4d7c08__sub0__sub0__sub0__sub0(yw, wis, pcur, 0.0, -0.5, v14, a8);
 
@@ -9855,7 +9863,7 @@ void wis_color2(_NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, 
 
 
 
-void sb_0x4d7c08__sub0__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, sklt_wis *wis)
+void yw_RenderHUDCompass(_NC_STACK_ypaworld *yw, sklt_wis *wis)
 {
     float v90 = (yw->field_1614 - wis->field_76) / 180.0;
 
@@ -9898,7 +9906,7 @@ void sb_0x4d7c08__sub0__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, sklt_wis *wis)
         yw->wis_skeletons.cl2_b = v73 & 0xFF;
         yw->wis_skeletons.cl2_g = (v73 >> 8) & 0xFF;
 
-        sub_4E332C(yw, wis->sklts_intern[3], 0.7, 0.3, v23, -v20, v20, v23, 0.25, 0.3, v9, func, 0);
+        yw_RenderVector2D(yw, wis->sklts_intern[3], 0.7, 0.3, v23, -v20, v20, v23, 0.25, 0.3, v9, func, 0);
     }
 
     if ( yw->field_1b84->host_station == yw->field_1b84->parent_bacto )
@@ -9940,7 +9948,7 @@ void sb_0x4d7c08__sub0__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, sklt_wis *wis)
                 yw->wis_skeletons.cl2_b = v74 & 0xFF;
                 yw->wis_skeletons.cl2_g = (v74 >> 8) & 0xFF;
 
-                sub_4E332C(yw, wis->sklts_intern[3], 0.7, 0.3, v42, -v40, v40, v42, 0.25, 0.3, v31, func, 0);
+                yw_RenderVector2D(yw, wis->sklts_intern[3], 0.7, 0.3, v42, -v40, v40, v42, 0.25, 0.3, v31, func, 0, true);
             }
         }
     }
@@ -9971,7 +9979,7 @@ void sb_0x4d7c08__sub0__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, sklt_wis *wis)
             yw->wis_skeletons.cl2_b = v50 & 0xFF;
             yw->wis_skeletons.cl2_g = (v50 >> 8) & 0xFF;
 
-            sub_4E332C(yw, wis->sklts_intern[3], 0.7, 0.3, v58, -v55, v55, v58, 0.25, 0.3, a11, func, 0);
+            yw_RenderVector2D(yw, wis->sklts_intern[3], 0.7, 0.3, v58, -v55, v55, v58, 0.25, 0.3, a11, func, 0, true);
         }
     }
 
@@ -9994,7 +10002,7 @@ void sb_0x4d7c08__sub0__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, sklt_wis *wis)
     yw->wis_skeletons.cl2_b = v75 & 0xFF;
     yw->wis_skeletons.cl2_g = (v75 >> 8) & 0xFF;
 
-    sub_4E332C(yw, wis->sklts_intern[1], 0.7, 0.3, yy, -xx, xx, yy, v72, v71, v60, func, 0);
+    yw_RenderVector2D(yw, wis->sklts_intern[1], 0.7, 0.3, yy, -xx, xx, yy, v72, v71, v60, func, 0, true);
 
     int v64;
 
@@ -10046,11 +10054,11 @@ void sb_0x4d7c08__sub0__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, sklt_wis *wis)
     yw->wis_skeletons.cl2_b = v65 & 0xFF;
     yw->wis_skeletons.cl2_g = (v65 >> 8) & 0xFF;
 
-    sub_4E332C(yw, wis->sklts_intern[2], 0.7, 0.3, yy, -xx, xx, yy, 0.07, 0.08, v65, func, 0);
+    yw_RenderVector2D(yw, wis->sklts_intern[2], 0.7, 0.3, yy, -xx, xx, yy, 0.07, 0.08, v65, func, 0, true);
 }
 
 
-char * sb_0x4d7c08__sub0__sub4__sub1(_NC_STACK_ypaworld *yw, char *cur)
+char * yw_RenderHUDVectorGFX(_NC_STACK_ypaworld *yw, char *cur)
 {
     char *pcur = cur;
 
@@ -10089,15 +10097,15 @@ char * sb_0x4d7c08__sub0__sub4__sub1(_NC_STACK_ypaworld *yw, char *cur)
 
     sklt_wis *wis = &yw->wis_skeletons;
 
-    sb_0x4d7c08__sub0__sub4__sub1__sub0(yw, wis);
+    yw_RenderHUDCompass(yw, wis);
 
     yw->win3d->raster_func221(&v8);
 
-    sb_0x4d7c08__sub0__sub4__sub1__sub1(yw, wis);
+    yw_RenderHUDTarget(yw, wis);
 
     yw->win3d->raster_func221(&v7);
 
-    pcur = sb_0x4e5a84(yw, wis, pcur, -0.7, 0.3, yw->field_1b84, -1, 0x10);
+    pcur = yw_RenderHUDInfo(yw, wis, pcur, -0.7, 0.3, yw->field_1b84, -1, 0x10);
 
     if ( !(robo_map.flags & GuiBase::FLAG_CLOSED) )
     {
@@ -10155,7 +10163,7 @@ void sb_0x4d7c08__sub0__sub4(_NC_STACK_ypaworld *yw)
     }
     else if ( yw->field_1b7c != yw->field_1b78 && yw->wis_skeletons.field_0 )
     {
-        sb_0x4d7c08__sub0__sub4__sub2(yw);
+        yw_RenderHUDRadare(yw);
 
         if ( yw->field_1b84->energy >= yw->field_1b84->energy_2 )
         {
@@ -10174,19 +10182,19 @@ void sb_0x4d7c08__sub0__sub4(_NC_STACK_ypaworld *yw)
         if ( yw->wis_skeletons.field_86 >= 1.0 )
             yw->wis_skeletons.field_86 = 0;
 
-        pcur = sb_0x4d7c08__sub0__sub4__sub1(yw, pcur);
+        pcur = yw_RenderHUDVectorGFX(yw, pcur);
     }
 
     if ( yw->field_1a58 & 0x20 )
     {
-        sub_4E3570(yw, yw->field_1a98);
-        pcur = sub_4E2B5C(yw, pcur, yw->field_1a98);
+        yw_RenderCursorOverUnit(yw, yw->field_1a98);
+        pcur = yw_RenderUnitLifeBar(yw, pcur, yw->field_1a98);
     }
 
     if ( yw->hudi.field_18 )
-        pcur = sub_4E2B5C(yw, pcur, yw->hudi.field_18);
+        pcur = yw_RenderUnitLifeBar(yw, pcur, yw->hudi.field_18);
 
-    pcur = sb_0x4d7c08__sub0__sub4__sub0(yw, pcur);
+    pcur = yw_RenderOverlayCursors(yw, pcur);
 
     FontUA::set_end(&pcur);
 
@@ -10247,7 +10255,7 @@ void sub_4E3D98(_NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, 
     *out2 = ((v13 & 0xFF) << 16) | ((v15 & 0xFF) << 8) | (v16 & 0xFF);
 }
 
-void sb_0x4d7c08__sub0__sub4__sub1__sub1(_NC_STACK_ypaworld *yw, sklt_wis *wis)
+void yw_RenderHUDTarget(_NC_STACK_ypaworld *yw, sklt_wis *wis)
 {
     skeleton_64_stru *mg_wure = NULL;
     skeleton_64_stru *hud_wure = NULL;
@@ -10309,7 +10317,7 @@ void sb_0x4d7c08__sub0__sub4__sub1__sub1(_NC_STACK_ypaworld *yw, sklt_wis *wis)
         if ( hud_wure )
         {
             uint32_t v14 = yw_GetColor(yw, 34);
-            sub_4E332C(yw, hud_wure, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.99, 0.99, v14, NULL, NULL);
+            yw_RenderVector2D(yw, hud_wure, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.99, 0.99, v14, NULL, NULL);
         }
 
         if ( yw->hudi.field_0 )
@@ -10340,7 +10348,7 @@ void sb_0x4d7c08__sub0__sub4__sub1__sub1(_NC_STACK_ypaworld *yw, sklt_wis *wis)
                 v19->cl2_g = (v15 >> 8) & 0xFF;
                 v19->cl2_b = v15 & 0xFF;
 
-                sub_4E332C(yw, mg_wure, yw->hudi.field_8, yw->hudi.field_C, 1.0, 0.0, 0.0, 1.0, a9, 0.4, v16, func, NULL);
+                yw_RenderVector2D(yw, mg_wure, yw->hudi.field_8, yw->hudi.field_C, 1.0, 0.0, 0.0, 1.0, a9, 0.4, v16, func, NULL);
             }
         }
 
@@ -10446,22 +10454,25 @@ void sb_0x4d7c08__sub0__sub4__sub1__sub1(_NC_STACK_ypaworld *yw, sklt_wis *wis)
                     yw->wis_skeletons.cl2_g = v65;
                     yw->wis_skeletons.cl2_b = v64;
 
-                    sub_4E332C(yw, v36, v77, v78, v83, -v35, v35, v83, v74, v80, a11, func, 0);
+                    yw_RenderVector2D(yw, v36, v77, v78, v83, -v35, v35, v83, v74, v80, a11, func, 0);
                 }
             }
         }
     }
 }
 
-void sub_4E3570(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
+void yw_RenderCursorOverUnit(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
 {
     float v6 = bact->field_621.sx - yw->field_1334.sx;
     float v4 = bact->field_621.sy - yw->field_1334.sy;
     float v8 = bact->field_621.sz - yw->field_1334.sz;
 
-    float a3  = yw->field_1340.m00 * v6 + yw->field_1340.m01 * v4 + yw->field_1340.m02 * v8;
-    float v33 = yw->field_1340.m10 * v6 + yw->field_1340.m11 * v4 + yw->field_1340.m12 * v8;
-    float v30 = yw->field_1340.m20 * v6 + yw->field_1340.m21 * v4 + yw->field_1340.m22 * v8;
+    mat3x3 corrected = yw->field_1340;
+    yw->win3d->matrixAspectCorrection(&corrected, false);
+
+    float a3  = corrected.m00 * v6 + corrected.m01 * v4 + corrected.m02 * v8;
+    float v33 = corrected.m10 * v6 + corrected.m11 * v4 + corrected.m12 * v8;
+    float v30 = corrected.m20 * v6 + corrected.m21 * v4 + corrected.m22 * v8;
 
     if ( v30 > 30.0 && a3 < v30 )
     {
@@ -10479,12 +10490,12 @@ void sub_4E3570(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
 
                 if ( bact->parent_bacto != bact->host_station || bact->owner != yw->field_1b80->owner )
                 {
-                    sub_4E332C(yw, yw->wis_skeletons.sklts_intern[13], a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.0075, 0.01, v11, NULL, NULL);
+                    yw_RenderVector2D(yw, yw->wis_skeletons.sklts_intern[13], a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.0075, 0.01, v11, NULL, NULL);
                 }
                 else
                 {
-                    sub_4E332C(yw, v12, a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.015, 0.02, v11, NULL, NULL);
-                    sub_4E332C(yw, v12, a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.005, 0.00666, v11, NULL, NULL);
+                    yw_RenderVector2D(yw, v12, a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.015, 0.02, v11, NULL, NULL);
+                    yw_RenderVector2D(yw, v12, a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.005, 0.00666, v11, NULL, NULL);
                 }
             }
         }
@@ -10506,9 +10517,12 @@ char *sb_0x4d7c08__sub0__sub4__sub0__sub0(_NC_STACK_ypaworld *yw, char *cur, __N
                 float v6 = bact->field_621.sy - yw->field_1334.sy;
                 float v10 = bact->field_621.sz - yw->field_1334.sz;
 
-                float v32 = yw->field_1340.m00 * v5 + yw->field_1340.m01 * v6 + yw->field_1340.m02 * v10;
-                float v31 = yw->field_1340.m10 * v5 + yw->field_1340.m11 * v6 + yw->field_1340.m12 * v10;
-                float v26 = yw->field_1340.m20 * v5 + yw->field_1340.m21 * v6 + yw->field_1340.m22 * v10;
+                mat3x3 corrected = yw->field_1340;
+                yw->win3d->matrixAspectCorrection(&corrected, false);
+
+                float v32 = corrected.m00 * v5 + corrected.m01 * v6 + corrected.m02 * v10;
+                float v31 = corrected.m10 * v5 + corrected.m11 * v6 + corrected.m12 * v10;
+                float v26 = corrected.m20 * v5 + corrected.m21 * v6 + corrected.m22 * v10;
 
                 if ( v26 > 30.0 && v32 < v26 )
                 {
@@ -10548,7 +10562,7 @@ char *sb_0x4d7c08__sub0__sub4__sub0__sub0(_NC_STACK_ypaworld *yw, char *cur, __N
     return pcur;
 }
 
-char * sb_0x4d7c08__sub0__sub4__sub0(_NC_STACK_ypaworld *yw, char *cur)
+char * yw_RenderOverlayCursors(_NC_STACK_ypaworld *yw, char *cur)
 {
     char *pcur = cur;
 
@@ -10590,13 +10604,13 @@ char * sb_0x4d7c08__sub0__sub4__sub0(_NC_STACK_ypaworld *yw, char *cur)
                             if ( bct->field_3D5 != 4 && bct->field_3D5 != 5 && bct->field_3D5 != 2 )
                             {
                                 if ( bct->field_24 != 9 )
-                                    sub_4E3570(yw, bct);
+                                    yw_RenderCursorOverUnit(yw, bct);
                                 else
                                 {
                                     NC_STACK_ypagun *gun = (NC_STACK_ypagun *)bct->self;
 
                                     if ( !(gun->stack__ypagun.field_39 & 2) )
-                                        sub_4E3570(yw, bct);
+                                        yw_RenderCursorOverUnit(yw, bct);
                                 }
 
                                 if ( yw->field_757E )
@@ -10624,7 +10638,7 @@ char * sb_0x4d7c08__sub0__sub4__sub0(_NC_STACK_ypaworld *yw, char *cur)
 }
 
 
-char * sub_4E2B5C(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabact *bact)
+char * yw_RenderUnitLifeBar(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabact *bact)
 {
     // Render fraction triangles above units
     char *pcur = cur;
@@ -10633,9 +10647,12 @@ char * sub_4E2B5C(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabact *bact)
     float v5 = bact->field_621.sy - yw->field_1334.sy;
     float v9 = bact->field_621.sz - yw->field_1334.sz;
 
-    float v44 = yw->field_1340.m00 * v6 + yw->field_1340.m01 * v5 + yw->field_1340.m02 * v9;
-    float v46 = yw->field_1340.m10 * v6 + yw->field_1340.m11 * v5 + yw->field_1340.m12 * v9;
-    float v37 = yw->field_1340.m20 * v6 + yw->field_1340.m21 * v5 + yw->field_1340.m22 * v9;
+    mat3x3 corrected = yw->field_1340;
+    yw->win3d->matrixAspectCorrection(&corrected, false);
+
+    float v44 = corrected.m00 * v6 + corrected.m01 * v5 + corrected.m02 * v9;
+    float v46 = corrected.m10 * v6 + corrected.m11 * v5 + corrected.m12 * v9;
+    float v37 = corrected.m20 * v6 + corrected.m21 * v5 + corrected.m22 * v9;
 
     if ( v37 > 30.0 && v44 < v37 )
     {
@@ -10830,7 +10847,7 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(_NC_STACK_ypaworld *yw)
     GFXe.drawText(&post_rndr);
 }
 
-void sb_0x4d7c08__sub0__sub4__sub2(_NC_STACK_ypaworld *yw)
+void yw_RenderHUDRadare(_NC_STACK_ypaworld *yw)
 {
     float v12 = robo_map.field_1D8;
     float v15 = robo_map.field_1DC;
@@ -11332,7 +11349,7 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
 
 
 
-int sb_0x4d3d44__sub0(_NC_STACK_ypaworld *yw, winp_131arg *winp)
+int yw_MouseFindCreationPoint(_NC_STACK_ypaworld *yw, winp_131arg *winp)
 {
     VhclProto *vhcl = &yw->VhclProtos[bzda.field_2DC[bzda.field_8EC]];
 
@@ -11370,9 +11387,12 @@ int sb_0x4d3d44__sub0(_NC_STACK_ypaworld *yw, winp_131arg *winp)
                 float v55 = 0.0 * -sin(v60) + v62 * cos(v60) + v40 + v51;
                 float v57 = 0.0 * v62 + v52;
 
-                float v37 = v55 * yw->field_1340.m00 + v56 * yw->field_1340.m10 + v57 * yw->field_1340.m20;
-                float v38 = v55 * yw->field_1340.m01 + v56 * yw->field_1340.m11 + v57 * yw->field_1340.m21;
-                float v39 = v55 * yw->field_1340.m02 + v56 * yw->field_1340.m12 + v57 * yw->field_1340.m22;
+                mat3x3 corrected = yw->field_1340;
+                yw->win3d->matrixAspectCorrection(&corrected, true);
+
+                float v37 = v55 * corrected.m00 + v56 * corrected.m10 + v57 * corrected.m20;
+                float v38 = v55 * corrected.m01 + v56 * corrected.m11 + v57 * corrected.m21;
+                float v39 = v55 * corrected.m02 + v56 * corrected.m12 + v57 * corrected.m22;
 
                 ypaworld_arg136 arg149;
                 arg149.pos_x = yw->field_1334.sx;
@@ -11428,7 +11448,7 @@ int sb_0x4d3d44(_NC_STACK_ypaworld *yw, winp_131arg *winp)
         return 2;
 
 
-    if ( !sb_0x4d3d44__sub0(yw, winp) )
+    if ( !yw_MouseFindCreationPoint(yw, winp) )
         return 1;
 
     if ( yw->field_757E && !yw->unit_limit_type_1 && yw->unit_limit_1 <= yw->field_1bac[yw->field_1b80->owner] )
@@ -11681,7 +11701,7 @@ void ypaworld_func64__sub21__sub1__sub0(_NC_STACK_ypaworld *yw, struC5 *arg)
     }
 }
 
-void ypaworld_func64__sub21__sub1__sub1(_NC_STACK_ypaworld *yw, winp_131arg *winp)
+void yw_MAP_MouseSelect(_NC_STACK_ypaworld *yw, winp_131arg *winp)
 {
     int v23 = winp->move[2].x + robo_map.field_1D8 / robo_map.field_1E0 - (robo_map.field_1F8 / 2);
     int v24 = winp->move[2].y - (robo_map.field_1DC / robo_map.field_1E4) - (robo_map.field_1FC / 2);
@@ -11750,7 +11770,7 @@ void ypaworld_func64__sub21__sub1__sub1(_NC_STACK_ypaworld *yw, winp_131arg *win
     }
 }
 
-void ypaworld_func64__sub21__sub1__sub2(_NC_STACK_ypaworld *yw, winp_131arg *winp)
+void yw_SMAN_MouseSelect(_NC_STACK_ypaworld *yw, winp_131arg *winp)
 {
     if ( yw->field_1a58 & 2 )
     {
@@ -11790,9 +11810,12 @@ void ypaworld_func64__sub21__sub1__sub3__sub0(_NC_STACK_ypaworld *yw, winp_131ar
     float v3 = (float)(winp->move[0].x - (yw->screen_width / 2)) / (float)(yw->screen_width / 2);
     float v4 = (float)(winp->move[0].y - (yw->screen_height / 2)) / (float)(yw->screen_height / 2);
 
-    float v16 = yw->field_1340.m00 * v3 + yw->field_1340.m10 * v4 + yw->field_1340.m20;
-    float v17 = yw->field_1340.m01 * v3 + yw->field_1340.m11 * v4 + yw->field_1340.m21;
-    float v18 = yw->field_1340.m02 * v3 + yw->field_1340.m12 * v4 + yw->field_1340.m22;
+    mat3x3 corrected = yw->field_1340;
+    yw->win3d->matrixAspectCorrection(&corrected, true);
+
+    float v16 = corrected.m00 * v3 + corrected.m10 * v4 + corrected.m20;
+    float v17 = corrected.m01 * v3 + corrected.m11 * v4 + corrected.m21;
+    float v18 = corrected.m02 * v3 + corrected.m12 * v4 + corrected.m22;
 
     float v14 = sqrt(POW2(v16) + POW2(v17) + POW2(v18));
 
@@ -11801,7 +11824,7 @@ void ypaworld_func64__sub21__sub1__sub3__sub0(_NC_STACK_ypaworld *yw, winp_131ar
     yw->field_1a8c.sz = v18 / v14;
 }
 
-void ypaworld_func64__sub21__sub1__sub3(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, winp_131arg *winp)
+void yw_3D_MouseSelect(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, winp_131arg *winp)
 {
     ypaworld_func64__sub21__sub1__sub3__sub0(yw, winp);
 
@@ -11895,7 +11918,7 @@ void ypaworld_func64__sub21__sub1__sub3(NC_STACK_ypaworld *ywo, _NC_STACK_ypawor
 }
 
 
-void ypaworld_func64__sub21__sub1(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, struC5 *arg)
+void yw_MouseSelect(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, struC5 *arg)
 {
     ypaworld_func64__sub21__sub1__sub0(yw, arg);
 
@@ -11903,16 +11926,16 @@ void ypaworld_func64__sub21__sub1(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw
     {
         if ( yw->field_1a58 & 8 )
         {
-            ypaworld_func64__sub21__sub1__sub1(yw, &arg->winp131arg);
+            yw_MAP_MouseSelect(yw, &arg->winp131arg);
         }
         else if ( yw->field_1a58 & 0x40 )
         {
-            ypaworld_func64__sub21__sub1__sub2(yw, &arg->winp131arg);
+            yw_SMAN_MouseSelect(yw, &arg->winp131arg);
         }
     }
     else
     {
-        ypaworld_func64__sub21__sub1__sub3(obj, yw, &arg->winp131arg);
+        yw_3D_MouseSelect(obj, yw, &arg->winp131arg);
     }
 }
 
@@ -12093,7 +12116,7 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stru
 {
     if ( yw->field_1b80 && arg->winp131arg.flag & 1 && yw->current_bact )
     {
-        ypaworld_func64__sub21__sub1(obj, yw, arg);
+        yw_MouseSelect(obj, yw, arg);
         ypaworld_func64__sub21__sub7(yw);
 
         int v5 = 0;

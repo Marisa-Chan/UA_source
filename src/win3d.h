@@ -139,6 +139,9 @@ struct __NC_STACK_win3d
 
     ScreenFont font;
 
+    float corrW, corrIW;
+    float corrH, corrIH;
+
     __NC_STACK_win3d();
 };
 
@@ -226,6 +229,8 @@ public:
 
     static void initfirst();
     int load_font(const char *fontname);
+    void matrixAspectCorrection(mat3x3 *inout, bool invert);
+    void getAspectCorrection(float &cW, float &cH, bool invert);
 
 protected:
     int initPolyEngine();

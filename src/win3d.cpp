@@ -193,6 +193,9 @@ __NC_STACK_win3d::__NC_STACK_win3d()
     glPixtype = 0;
 
     sceneBeginned = 0;
+
+    corrIW = corrW = 1.0;
+    corrIH = corrH = 1.0;
 }
 
 
@@ -987,6 +990,21 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
         fil->printf("%s\n", picked->name.c_str());
         delete fil;
     }
+
+    if ( (float)win3d->width / (float)win3d->height >= 1.4 )
+    {
+        int half = (win3d->width + win3d->height) / 2;
+        win3d->corrW = (float)half * 1.1429 / (float)win3d->width;
+        win3d->corrH = (float)half * 0.85715 / (float)win3d->height;
+        win3d->corrIW = 1.0 / win3d->corrW;
+        win3d->corrIH = 1.0 / win3d->corrH;
+    }
+    else //No correction
+    {
+        win3d->corrIW = win3d->corrW = 1.0;
+        win3d->corrIH = win3d->corrH = 1.0;
+    }
+
 
     //win3d->field_54______rsrc_field4 = (bitmap_intern *)getRsrc_pData();
     return 1;
@@ -3188,6 +3206,42 @@ void NC_STACK_win3d::draw2DandFlush()
     SDLWRAP_drawScreen();
 
     SDL_FillRect(stack__win3d.screenSurface, NULL, SDL_MapRGBA(stack__win3d.screenSurface->format, 0, 0, 0, 0) );
+}
+
+void NC_STACK_win3d::matrixAspectCorrection(mat3x3 *inout, bool invert)
+{
+    if (invert)
+    {
+        inout->m00 *= stack__win3d.corrIW;
+        inout->m01 *= stack__win3d.corrIW;
+        inout->m02 *= stack__win3d.corrIW;
+        inout->m10 *= stack__win3d.corrIH;
+        inout->m11 *= stack__win3d.corrIH;
+        inout->m12 *= stack__win3d.corrIH;
+    }
+    else
+    {
+        inout->m00 *= stack__win3d.corrW;
+        inout->m01 *= stack__win3d.corrW;
+        inout->m02 *= stack__win3d.corrW;
+        inout->m10 *= stack__win3d.corrH;
+        inout->m11 *= stack__win3d.corrH;
+        inout->m12 *= stack__win3d.corrH;
+    }
+}
+
+void NC_STACK_win3d::getAspectCorrection(float &cW, float &cH, bool invert)
+{
+    if (invert)
+    {
+        cW = stack__win3d.corrIW;
+        cH = stack__win3d.corrIH;
+    }
+    else
+    {
+        cW = stack__win3d.corrW;
+        cH = stack__win3d.corrH;
+    }
 }
 
 

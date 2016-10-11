@@ -1416,7 +1416,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub1(_NC_STACK_ypaworld *yw, big_
                 float a9 = v20 * v19;
                 float a10 = v21 * v19;
 
-                sub_4E332C(yw, brf->wireless_db_skels[3], a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10,  yw_GetColor(yw, own), NULL, NULL);
+                yw_RenderVector2D(yw, brf->wireless_db_skels[3], a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10,  yw_GetColor(yw, own), NULL, NULL);
             }
         }
     }
@@ -1464,7 +1464,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub2(_NC_STACK_ypaworld *yw, big_
             float a9 = ((v12 / (float)yw->sectors_maxX2) / 2.0) * v25;
             float a10 = ((v13 / (float)yw->sectors_maxY2) / 2.0) * v25;
 
-            sub_4E332C(yw, brf->wireless_db_skels[1], a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10, yw_GetColor(yw, own), NULL, NULL);
+            yw_RenderVector2D(yw, brf->wireless_db_skels[1], a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10, yw_GetColor(yw, own), NULL, NULL);
         }
     }
 }
@@ -1492,7 +1492,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub3(_NC_STACK_ypaworld *yw, big_
             float a9 = ((v13 / (float)yw->sectors_maxX2) / 8.0) * v22;
             float a10 = ((v14 / (float)yw->sectors_maxY2) / 8.0) * v22;
 
-            sub_4E332C(yw, brf->wireless_db_skels[1], a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10, yw_GetColor(yw, arg->t34.field_1), NULL, NULL);
+            yw_RenderVector2D(yw, brf->wireless_db_skels[1], a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10, yw_GetColor(yw, arg->t34.field_1), NULL, NULL);
         }
     }
 }

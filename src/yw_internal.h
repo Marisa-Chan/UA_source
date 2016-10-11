@@ -428,14 +428,14 @@ typedef void ( *wis_color_func)(_NC_STACK_ypaworld *, float, float, float, float
 
 int sb_0x4d7c08__sub0__sub0__sub0(_NC_STACK_ypaworld *yw);
 void sb_0x4d7c08__sub0__sub4(_NC_STACK_ypaworld *yw);
-void sb_0x4d7c08__sub0__sub4__sub1__sub1(_NC_STACK_ypaworld *yw, sklt_wis *wis);
+void yw_RenderHUDTarget(_NC_STACK_ypaworld *yw, sklt_wis *wis);
 
-void sub_4E3570(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact);
+void yw_RenderCursorOverUnit(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact);
 
-char * sb_0x4d7c08__sub0__sub4__sub0(_NC_STACK_ypaworld *yw, char *cur);
-char *sub_4E2B5C(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabact *bact);
+char * yw_RenderOverlayCursors(_NC_STACK_ypaworld *yw, char *cur);
+char *yw_RenderUnitLifeBar(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabact *bact);
 
-void sb_0x4d7c08__sub0__sub4__sub2(_NC_STACK_ypaworld *yw);
+void yw_RenderHUDRadare(_NC_STACK_ypaworld *yw);
 void sb_0x4d7c08__sub0__sub2(_NC_STACK_ypaworld *yw);
 
 void ypaworld_func64__sub20(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int dtime);
@@ -515,7 +515,7 @@ void ypaworld_func184__sub0(_NC_STACK_ypaworld *yw, yw_f726c *hist_list, yw_arg1
 void sub_4EE710(_NC_STACK_ypaworld *yw, yw_arg184 *arg, player_status *pl_status);
 uint8_t *yw_histbf_read_evnt(uint8_t *st, yw_arg184 *arg);
 
-void sub_4E332C(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2);
+void yw_RenderVector2D(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection = false);
 uint32_t yw_GetColor(_NC_STACK_ypaworld *yw, int color_id);
 void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
 void sub_4D6958(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, samples_collection1 *collection);

@@ -635,9 +635,7 @@ size_t NC_STACK_ypaworld::func3(stack_vals *stak)
 
 void sub_445230(_NC_STACK_ypaworld *yw)
 {
-    int a4 = yw->current_bact->self->getBACT_extraViewer();
-
-    if ( a4 )
+    if ( yw->current_bact->self->getBACT_extraViewer() )
     {
         __NC_STACK_ypabact *v4 = yw->current_bact;
 
