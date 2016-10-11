@@ -119,19 +119,22 @@ void NC_STACK_win3d::initfirst()
             addGfxMode(mode);
         }
 
-        mode = new gfxMode;
+        if (checkmodes[i][0] <= deskMode.w && checkmodes[i][1] <= deskMode.h)
+        {
+            mode = new gfxMode;
 
-        mode->w = checkmodes[i][0];
-        mode->h = checkmodes[i][1];
-        mode->mode = deskMode;
-        mode->bpp = SDL_BYTESPERPIXEL(corrected) * 8;
-        mode->windowed = true;
-        sprintf(buf, "Windowed %d x %d", mode->w, mode->h);
-        mode->name = buf;
+            mode->w = checkmodes[i][0];
+            mode->h = checkmodes[i][1];
+            mode->mode = deskMode;
+            mode->bpp = SDL_BYTESPERPIXEL(corrected) * 8;
+            mode->windowed = true;
+            sprintf(buf, "Windowed %d x %d", mode->w, mode->h);
+            mode->name = buf;
 
-        mode->sortid = 0x40000000 | (checkmodes[i][0] & 0x7FFF) << 7 | (checkmodes[i][1] & 0x7FFF);
+            mode->sortid = 0x40000000 | (checkmodes[i][0] & 0x7FFF) << 7 | (checkmodes[i][1] & 0x7FFF);
 
-        addGfxMode(mode);
+            addGfxMode(mode);
+        }
     }
 
     graphicsModes.sort(gfxComp);
