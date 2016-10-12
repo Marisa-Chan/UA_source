@@ -5189,7 +5189,7 @@ void recorder_world_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd)
     rcrd->bacts_count = 0;
     recorder_store_bact(yw, rcrd, &yw->bact_list);
 
-    qsort(rcrd->bacts, rcrd->bacts_count, 4, recorder_sort_bact);
+    qsort(rcrd->bacts, rcrd->bacts_count, sizeof(__NC_STACK_ypabact *), recorder_sort_bact);
 
     for (int i = 0; i < rcrd->bacts_count; i++)
     {
