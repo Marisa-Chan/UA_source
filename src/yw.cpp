@@ -6973,56 +6973,83 @@ int simple_lang_parser(_NC_STACK_ypaworld *yw, const char *filename)
             strid = -1;
             multiline = false;
 
-            char *token = strtok(buf, "= \t");
+            int phase = 0;
 
-            if (token)
+            char *tmp1 = buf;
+            char *tmp2 = NULL;
+
+            while( phase >= 0 && phase < 4  && *tmp1 )
             {
-                strid = strtol(token, NULL, 0);
-
-                if (strid >= 0 && strid < 2600 )
+                switch(phase)
                 {
-                    if ( !yw->string_pointers[strid] )
+                case 0:
+                    if (strchr(" \t", *tmp1) == NULL )
                     {
-                        char *after_token = token + strlen(token);
+                        tmp2 = tmp1;
+                        phase++;
+                    }
+                    break;
 
-                        while (after_token < buf + line_sz)
+                case 1:
+                    if (strchr("= \t", *tmp1) != NULL )
+                    {
+                        *tmp1 = 0;
+                        strid = strtol(tmp2, NULL, 0);
+
+                        tmp2 = NULL;
+
+                        if (strid >= 0 && strid < 2600 )
+                            phase++;
+                        else
+                            phase = -1;
+                    }
+                    break;
+
+                case 2:
+                    if ( *tmp1 == '=' && tmp1[1] != 0 )
+                    {
+                        tmp2 = tmp1 + 1;
+                        phase++;
+                    }
+                    break;
+
+                case 3:
+                    if ( strchr(" \t", *tmp1) == NULL )
+                    {
+                        tmp2 = tmp1;
+                        phase++;
+                    }
+                    break;
+
+                default:
+                    break;
+                }
+
+                tmp1++;
+            }
+
+            if ( phase >= 2 )
+            {
+                if (tmp2)
+                {
+                    if (yw->very_big_array__p_begin + (line_sz - (tmp2 - buf)) + 1 < yw->lang_strings__end)
+                    {
+                        if ( buf[line_sz - 1] == '\\' )
                         {
-                            if (*after_token != 0 && *after_token != '\t' && *after_token != ' ' && *after_token != '=')
-                                break;
-
-                            after_token++;
+                            buf[line_sz - 1] = '\n';
+                            multiline = true;
                         }
 
-                        if ( after_token < buf + line_sz )
-                        {
-                            if (yw->very_big_array__p_begin + ((buf + line_sz) - after_token) < yw->lang_strings__end)
-                            {
-                                if ( buf[line_sz - 1] == '\\' )
-                                {
-                                    buf[line_sz - 1] = '\n';
-                                    multiline = true;
-                                }
-
-                                yw->string_pointers[strid] = yw->very_big_array__p_begin;
-                                yw->very_big_array__p_begin = sb_0x471428__sub0(yw->very_big_array__p_begin, after_token);
-                            }
-                            else
-                            {
-                                strid = -1;
-                                ypa_log_out("Locale parser: buffer overflow at id [%d].\n", strid);
-                            }
-                        }
+                        yw->string_pointers[strid] = yw->very_big_array__p_begin;
+                        yw->very_big_array__p_begin = sb_0x471428__sub0(yw->very_big_array__p_begin, tmp2);
                     }
                     else
-                    {
-                        strid = -1;
-                        ypa_log_out("Locale parser: id [%d] already defined.\n", strid);
-                    }
+                        ypa_log_out("Locale parser: buffer overflow at id [%d].\n", strid);
                 }
                 else
                 {
-                    strid = -1;
-                    ypa_log_out("Locale parser: id [%d] too big or negative.\n", strid);
+                    yw->string_pointers[strid] = yw->very_big_array__p_begin;
+                    yw->very_big_array__p_begin = sb_0x471428__sub0(yw->very_big_array__p_begin, " ");
                 }
             }
         }
