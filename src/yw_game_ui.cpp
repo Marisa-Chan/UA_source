@@ -5629,7 +5629,7 @@ char * sub_4514F0(tiles_stru *tyle, char *cur, char *a4, int a3, char a5)
 
     while ( *v6 && neg_wdth == 0 )
     {
-        int v18 = *v6;
+        int v18 = (uint8_t)*v6;
 
         wdth += tyle->chars[v18].width;
 
