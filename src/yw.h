@@ -1171,7 +1171,7 @@ struct __attribute__((packed)) VhclProto
     uint8_t field_3;
     int field_4;
     char mgun;
-    char type_icon;
+    uint8_t type_icon;
     char name[126];
     char field_88;
     int16_t vp_normal;
