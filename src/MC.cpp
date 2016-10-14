@@ -58,23 +58,23 @@ const char MC2ENGINES[] = "MC2engines:";
 
 ClassList newclasses;
 
-void init_mc_res_class_engine_strings(MC_TYPE a1, const char *str)
+void init_mc_res_class_engine_strings(MC_TYPE id, const char *str)
 {
-    if ( a1 < MC_TYPE_UNKNOWN )
+    if ( id < MC_TYPE_UNKNOWN )
     {
         if ( !str )
         {
-            if (a1 == MC_TYPE_RES)
+            if (id == MC_TYPE_RES)
                 str = MC2RES;
-            else if (a1 == MC_TYPE_CLASS)
+            else if (id == MC_TYPE_CLASS)
                 str = MC2CLASSES;
-            else if (a1 == MC_TYPE_ENGINE)
+            else if (id == MC_TYPE_ENGINE)
                 str = MC2ENGINES;
             else
                 return;
         }
 
-        strcpy(engines.MC_RES_CLASS_ENGINE[a1], str);
+        engines.MC_RES_CLASS_ENGINE[id] = str;
     }
 }
 
@@ -135,20 +135,19 @@ void sb_0x411c08__sub0()
 
 void sb_0x411c08()
 {
-    while ( 1 )
-    {
-        void *tmp = RemHead(&engines.stru_525D68);
-        if ( !tmp )
-            break;
-        nc_FreeMem(tmp);
-    }
+    for(std::list<TKVPair *>::iterator it = engines.kvPairs.begin(); it != engines.kvPairs.end(); it++)
+        delete *it;
+
+    engines.kvPairs.clear();
+
+
     sb_0x411c08__sub0();
 }
 
-const char * get_MC_str(MC_TYPE a1)
+const char * get_MC_str(MC_TYPE id)
 {
-    if ( a1 < MC_TYPE_UNKNOWN )
-        return engines.MC_RES_CLASS_ENGINE[a1];
+    if ( id < MC_TYPE_UNKNOWN )
+        return engines.MC_RES_CLASS_ENGINE[id].c_str();
     else
         return NULL;
 }

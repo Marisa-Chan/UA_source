@@ -46,32 +46,20 @@ char * file_path_copy_manipul(const char *src, char *dst, int size)
 
     *v8 = 0;
 
-    nnode_str *v11 = (nnode_str *)engines.stru_525D68.head;
-
-    if ( v11->next )
+    std::list<TKVPair *>::iterator it;
+    for (it = engines.kvPairs.begin(); it != engines.kvPairs.end(); it++)
     {
-        while ( strcasecmp(v11->str, buf1) )
-        {
-            v11 = (nnode_str *)v11->next;
-            if ( !v11->next )
-            {
-                v11 = NULL;
-                break;
-            }
-        }
-    }
-    else
-    {
-        v11 = NULL;
+        if ( strcasecmp((*it)->name.c_str(), buf1) == 0 )
+            break;
     }
 
     *v8 = '/';
 
-    if ( v11 )
+    if ( it != engines.kvPairs.end() )
     {
         char buf2[512];
 
-        strcpy(buf2, v11->str2);
+        strcpy(buf2, (*it)->value.c_str());
 
         if (buf2[strlen(buf2) - 1] == ':')
             v8++;
@@ -88,58 +76,32 @@ char * file_path_copy_manipul(const char *src, char *dst, int size)
 
 const char * get_prefix_replacement(const char *prefix)
 {
-    nnode_str *cur = (nnode_str *)engines.stru_525D68.head;
-
-    if ( !cur->next )
-        return NULL;
-
-    while ( strcasecmp(cur->str, prefix) )
+    for(std::list<TKVPair *>::iterator it = engines.kvPairs.begin(); it != engines.kvPairs.end(); it++)
     {
-        cur = (nnode_str *)cur->next;
-        if ( !cur->next )
-            return NULL;
+        if ( strcasecmp((*it)->name.c_str(), prefix ) == 0 )
+            return (*it)->value.c_str();
     }
 
-    if ( cur )
-        return cur->str2;
-
-    return NULL;
+    return "";
 }
 
-int set_prefix_replacement(const char *str1, const char *str2)
+void set_prefix_replacement(const char *str1, const char *str2)
 {
-    nnode_str *cur = (nnode_str *)engines.stru_525D68.head;
-
-    if ( cur->next )
+    for (std::list<TKVPair *>::iterator it = engines.kvPairs.begin(); it != engines.kvPairs.end(); it++)
     {
-        while ( strcasecmp(cur->str, str1) )
+        if ( strcasecmp((*it)->name.c_str(), str1) == 0 )
         {
-            cur = (nnode_str *)cur->next;
-            if ( !cur->next )
-            {
-                cur = NULL;
-                break;
-            }
+            (*it)->value = str2;
+            return;
         }
     }
-    else
-        cur = NULL;
 
-    if ( !cur )
-    {
-        cur = (nnode_str *)AllocVec(sizeof(nnode_str), 65537);
+    TKVPair *tmp = new TKVPair;
 
-        if (cur)
-            AddHead(&engines.stru_525D68, cur);
-    }
+    tmp->name = str1;
+    tmp->value = str2;
 
-    if ( cur )
-    {
-        strcpy(cur->str, str1);
-        strcpy(cur->str2, str2);
-    }
-
-    return cur != NULL;
+    engines.kvPairs.push_front(tmp);
 }
 
 

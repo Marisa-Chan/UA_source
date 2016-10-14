@@ -9,12 +9,12 @@ enum MC_TYPE
     MC_TYPE_UNKNOWN = 0x3
 };
 
-void init_mc_res_class_engine_strings(MC_TYPE a1, const char *str);
+void init_mc_res_class_engine_strings(MC_TYPE id, const char *str);
 
 int set_classes_list();
 
 void sb_0x411c08();
-const char * get_MC_str(MC_TYPE a1);
+const char * get_MC_str(MC_TYPE id);
 
 const NewClassDescr * getClassAllocator(const char *name);
 

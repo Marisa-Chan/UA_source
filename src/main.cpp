@@ -499,8 +499,6 @@ int sb_0x411324()
 
 int init_classesLists_and_variables()
 {
-    memset(&engines, 0, sizeof(engines));
-    init_list(&engines.stru_525D68);
     init_mc_res_class_engine_strings(MC_TYPE_RES, NULL);
     init_mc_res_class_engine_strings(MC_TYPE_CLASS, NULL);
     init_mc_res_class_engine_strings(MC_TYPE_ENGINE, NULL);

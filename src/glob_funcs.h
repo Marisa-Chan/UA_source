@@ -1,9 +1,17 @@
 #ifndef GLOB_FUNCS_H_INCLUDED
 #define GLOB_FUNCS_H_INCLUDED
 
+#include <string>
+#include <list>
 #include "MFILE.h"
 #include "MC.h"
 #include "ini.h"
+
+struct TKVPair
+{
+    std::string name;
+    std::string value;
+};
 
 struct g_engines
 {
@@ -11,26 +19,35 @@ struct g_engines
     int __AllocSize;
     int __AllocMax;
     int file_handles;
-    char MC_RES_CLASS_ENGINE[3][256];
+    std::string MC_RES_CLASS_ENGINE[3];
     const char *some_params_pointers[32];
     int some_params_count;
     NC_STACK_display *display___win3d;
-    int field_3D4;
-    nlist stru_525D68;
+    std::list<TKVPair *> kvPairs;
+
+    g_engines()
+    {
+        __AllocCount = 0;
+        __AllocSize = 0;
+        __AllocMax = 0;
+        file_handles = 0;
+
+        for (int i = 0; i < 32; i++)
+            some_params_pointers[i] = NULL;
+
+        some_params_count = 0;
+        display___win3d = NULL;
+    }
 };
 
 
 void nc_FreeMem(void *);
 void *AllocVec(size_t size, int a2);
 
-struct nnode_str: nnode
-{
-    char str[32];
-    char str2[256];
-};
+
 
 const char * get_prefix_replacement(const char *prefix);
-int set_prefix_replacement(const char *str1, const char *str2);
+void set_prefix_replacement(const char *str1, const char *str2);
 
 char * file_path_copy_manipul(const char *src, char *dst, int size);
 
