@@ -376,22 +376,19 @@ int InputWatch(void *, SDL_Event *event)
 
     case SDL_TEXTINPUT:
     {
-        if (event->text.text)
+        const char *chrs = event->text.text;
+
+        while(*chrs)
         {
-            const char *chrs = event->text.text;
-
-            while(*chrs)
+            if ( keybState.charBuffCnt < KEYBCHARBUFF )
             {
-                if ( keybState.charBuffCnt < KEYBCHARBUFF )
-                {
-                    keybState.charBuff[ keybState.charBuffCnt ] = *chrs;
-                    keybState.charBuffCnt++;
-                }
-                else
-                    break;
-
-                chrs++;
+                keybState.charBuff[ keybState.charBuffCnt ] = *chrs;
+                keybState.charBuffCnt++;
             }
+            else
+                break;
+
+            chrs++;
         }
     }
     break;
@@ -1224,14 +1221,13 @@ void NC_STACK_winp::idev_func66(winp_66arg *arg)
 
     if ( keybState.charBuffCnt )
     {
-        /*int tmp = keybState.charBuffCnt - 1;
-        //printf("%d\n", keybState.charBuffCnt);
-        //keybState.charBuffCnt--;
+        int tmp = keybState.charBuffCnt - 1;
+        keybState.charBuffCnt--;
 
         for (int i = 0; i < tmp; i++)
-        	keybState.charBuff[i] = keybState.charBuff[i + 1];
+            keybState.charBuff[i] = keybState.charBuff[i + 1];
 
-        keybState.charBuffCnt = tmp;*/
+        keybState.charBuffCnt = tmp;
     }
 
     keybState.charBuff[keybState.charBuffCnt] = 0;
