@@ -2242,8 +2242,11 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
     yw->field_2d90->field_40 = 5;
     yw->field_2d90->gate_count = 0;
 
+    for (int i = 0; i < 8; i++)
+    {
+        yw->gems[i].init();
+    }
     memset(yw->field_2d90->gates, 0, sizeof(gateProto) * 8);
-    memset(yw->gems, 0, sizeof(gemProto) * 8);
 
     set_prefix_replacement("rsrc", "data:");
 

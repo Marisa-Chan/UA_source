@@ -723,7 +723,10 @@ int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
 
     memset(yw->field_2d90->gates, 0, sizeof(gateProto) * 8);
     memset(yw->field_2d90->supetItems, 0, sizeof(supetItemProto) * 8);
-    memset(yw->gems, 0, sizeof(gemProto) * 8);
+    for (int i = 0; i < 8; i++)
+    {
+        yw->gems[i].init();
+    }
     memset(&yw->field_81CB, 0, sizeof(yw_81cb));
     memset(yw->field_1bac, 0, sizeof(int) * 8);
 

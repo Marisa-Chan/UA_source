@@ -225,6 +225,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
     switch ( bact->field_3D5 )
     {
     case 1:
+    {
         if ( !(bact->field_3D6 & 0x200) )
         {
             bact_arg86 arg86;
@@ -1003,10 +1004,11 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
                 ypabact_func78(&arg78);
             }
         }
-        break;
+    }
+    break;
 
     case 3:
-
+    {
         if ( bact->field_915 - bact->field_941 > 500 )
         {
             bact_arg110 arg110;
@@ -1113,7 +1115,8 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
 
             ypabact_func86(&arg86);
         }
-        break;
+    }
+    break;
 
     case 2:
         ypabact_func121(arg);

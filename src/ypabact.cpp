@@ -5072,7 +5072,7 @@ void ypabact_func87__sub0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *a2)
 }
 
 
-xyz stru_5150F4 = {0, 0, 0};
+xyz stru_5150F4;
 
 size_t NC_STACK_ypabact::ypabact_func87(int *arg)
 {
