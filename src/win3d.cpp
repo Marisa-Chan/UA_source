@@ -242,102 +242,108 @@ void NC_STACK_win3d::DrawTextEntry(const ScreenText *txt)
         }
         else
         {
-            int cx = 0, cy = 0;
+            int len = strlen(txt->string);
 
-            if ( txt->flag & 0xE )
+            if (len)
             {
-                TTF_SizeUTF8(font->ttfFont, txt->string, &cx, &cy);
-            }
 
-            int p1 = txt->p1;
-            int p2 = txt->p2;
-            int p3 = txt->p3;
-            int p4 = txt->p4;
+                int cx = 0, cy = 0;
 
-            if ( txt->flag & 8 )
-                p3 = cx * p3 / 100;
+                if ( txt->flag & 0xE )
+                {
+                    TTF_SizeUTF8(font->ttfFont, txt->string, &cx, &cy);
+                }
 
-            SDL_Rect clipRect;
+                int p1 = txt->p1;
+                int p2 = txt->p2;
+                int p3 = txt->p3;
+                int p4 = txt->p4;
 
-            clipRect.x = p1;
-            clipRect.w = p3 + 4;
-            clipRect.h = p4 + 1;
-            clipRect.y = p2;
-
-            if ( txt->flag & 2 )
-            {
                 if ( txt->flag & 8 )
+                    p3 = cx * p3 / 100;
+
+                SDL_Rect clipRect;
+
+                clipRect.x = p1;
+                clipRect.w = p3 + 4;
+                clipRect.h = p4 + 1;
+                clipRect.y = p2;
+
+                if ( txt->flag & 2 )
                 {
-                    p1 -= cx;
-                    clipRect.x = p1;
-                    clipRect.w = p3 + 4;
+                    if ( txt->flag & 8 )
+                    {
+                        p1 -= cx;
+                        clipRect.x = p1;
+                        clipRect.w = p3 + 4;
+                    }
+                    else
+                    {
+                        p1 += (p3 - cx);
+                    }
                 }
-                else
+                else if ( txt->flag & 4 )
                 {
-                    p1 += (p3 - cx);
+                    if ( txt->flag & 8 )
+                    {
+                        p1 -= cx / 2;
+                        clipRect.x = p1;
+                        clipRect.w = p3 + 4;
+                    }
+                    else
+                    {
+                        p1 += (p3 - cx) / 2;
+                    }
                 }
+
+                SDL_SetClipRect(stack__win3d.screenSurface, &clipRect);
+
+
+                int v10 = ((p4 - font->height) / 2) - 1 + p2;
+                if ( txt->flag & 0x10 )
+                {
+                    v10++;
+                    p1++;
+                }
+
+                SDL_Color clr;
+                clr.a = 255;
+                clr.r = 0;
+                clr.g = 0;
+                clr.b = 0;
+
+                SDL_Surface *tmp = TTF_RenderUTF8_Solid(font->ttfFont, txt->string, clr);
+                //SDL_Surface *tmp = NULL;
+                SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_NONE);
+
+
+                SDL_Rect want;
+                want.w = tmp->w;
+                want.h = tmp->h;
+                want.x = p1 + 2;
+                want.y = v10 + 1;
+
+                SDL_BlitSurface(tmp, NULL, stack__win3d.screenSurface, &want);
+
+                clr.a = 255;
+                clr.r = font->r;
+                clr.g = font->g;
+                clr.b = font->b;
+
+                SDL_SetPaletteColors(tmp->format->palette, &clr, 1, 1);
+
+
+                want.w = tmp->w;
+                want.h = tmp->h;
+                want.x = p1 + 1;
+                want.y = v10;
+
+                SDL_BlitSurface(tmp, NULL, stack__win3d.screenSurface, &want);
+                SDL_FreeSurface(tmp);
+
+
+                SDL_SetClipRect(stack__win3d.screenSurface, NULL);
             }
-            else if ( txt->flag & 4 )
-            {
-                if ( txt->flag & 8 )
-                {
-                    p1 -= cx / 2;
-                    clipRect.x = p1;
-                    clipRect.w = p3 + 4;
-                }
-                else
-                {
-                    p1 += (p3 - cx) / 2;
-                }
-            }
-
-            SDL_SetClipRect(stack__win3d.screenSurface, &clipRect);
-
-
-            int v10 = ((p4 - font->height) / 2) - 1 + p2;
-            if ( txt->flag & 0x10 )
-            {
-                v10++;
-                p1++;
-            }
-
-            SDL_Color clr;
-            clr.a = 255;
-            clr.r = 0;
-            clr.g = 0;
-            clr.b = 0;
-
-            SDL_Surface *tmp = TTF_RenderUTF8_Solid(font->ttfFont, txt->string, clr);
-            //SDL_Surface *tmp = NULL;
-            SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_NONE);
-
-
-            SDL_Rect want;
-            want.w = tmp->w;
-            want.h = tmp->h;
-            want.x = p1 + 2;
-            want.y = v10 + 1;
-
-            SDL_BlitSurface(tmp, NULL, stack__win3d.screenSurface, &want);
-
-            clr.a = 255;
-            clr.r = font->r;
-            clr.g = font->g;
-            clr.b = font->b;
-
-            SDL_SetPaletteColors(tmp->format->palette, &clr, 1, 1);
-
-
-            want.w = tmp->w;
-            want.h = tmp->h;
-            want.x = p1 + 1;
-            want.y = v10;
-
-            SDL_BlitSurface(tmp, NULL, stack__win3d.screenSurface, &want);
-            SDL_FreeSurface(tmp);
-
-
-            SDL_SetClipRect(stack__win3d.screenSurface, NULL);
         }
     }
 }
