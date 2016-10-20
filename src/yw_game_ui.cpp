@@ -9906,7 +9906,7 @@ void yw_RenderHUDCompass(_NC_STACK_ypaworld *yw, sklt_wis *wis)
         yw->wis_skeletons.cl2_b = v73 & 0xFF;
         yw->wis_skeletons.cl2_g = (v73 >> 8) & 0xFF;
 
-        yw_RenderVector2D(yw, wis->sklts_intern[3], 0.7, 0.3, v23, -v20, v20, v23, 0.25, 0.3, v9, func, 0);
+        yw_RenderVector2D(yw, wis->sklts_intern[3], 0.7, 0.3, v23, -v20, v20, v23, 0.25, 0.3, v9, func, 0, true);
     }
 
     if ( yw->field_1b84->host_station == yw->field_1b84->parent_bacto )
@@ -10317,7 +10317,7 @@ void yw_RenderHUDTarget(_NC_STACK_ypaworld *yw, sklt_wis *wis)
         if ( hud_wure )
         {
             uint32_t v14 = yw_GetColor(yw, 34);
-            yw_RenderVector2D(yw, hud_wure, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.99, 0.99, v14, NULL, NULL);
+            yw_RenderVector2D(yw, hud_wure, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.99, 0.99, v14, NULL, NULL, true);
         }
 
         if ( yw->hudi.field_0 )
@@ -10348,7 +10348,7 @@ void yw_RenderHUDTarget(_NC_STACK_ypaworld *yw, sklt_wis *wis)
                 v19->cl2_g = (v15 >> 8) & 0xFF;
                 v19->cl2_b = v15 & 0xFF;
 
-                yw_RenderVector2D(yw, mg_wure, yw->hudi.field_8, yw->hudi.field_C, 1.0, 0.0, 0.0, 1.0, a9, 0.4, v16, func, NULL);
+                yw_RenderVector2D(yw, mg_wure, yw->hudi.field_8, yw->hudi.field_C, 1.0, 0.0, 0.0, 1.0, a9, 0.4, v16, func, NULL, true);
             }
         }
 
@@ -10454,7 +10454,7 @@ void yw_RenderHUDTarget(_NC_STACK_ypaworld *yw, sklt_wis *wis)
                     yw->wis_skeletons.cl2_g = v65;
                     yw->wis_skeletons.cl2_b = v64;
 
-                    yw_RenderVector2D(yw, v36, v77, v78, v83, -v35, v35, v83, v74, v80, a11, func, 0);
+                    yw_RenderVector2D(yw, v36, v77, v78, v83, -v35, v35, v83, v74, v80, a11, func, 0, true);
                 }
             }
         }
@@ -10490,12 +10490,12 @@ void yw_RenderCursorOverUnit(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
 
                 if ( bact->parent_bacto != bact->host_station || bact->owner != yw->field_1b80->owner )
                 {
-                    yw_RenderVector2D(yw, yw->wis_skeletons.sklts_intern[13], a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.0075, 0.01, v11, NULL, NULL);
+                    yw_RenderVector2D(yw, v12, a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.0075, 0.01, v11, NULL, NULL, true);
                 }
                 else
                 {
-                    yw_RenderVector2D(yw, v12, a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.015, 0.02, v11, NULL, NULL);
-                    yw_RenderVector2D(yw, v12, a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.005, 0.00666, v11, NULL, NULL);
+                    yw_RenderVector2D(yw, v12, a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.015, 0.02, v11, NULL, NULL, true);
+                    yw_RenderVector2D(yw, v12, a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.005, 0.00666, v11, NULL, NULL, true);
                 }
             }
         }
