@@ -1005,7 +1005,7 @@ void sub_430A38(base_1c_struct *s3d)
         s3d->field_14 = s3d->grp_1.sy;
         s3d->field_18 = s3d->grp_1.sz;
 
-        memcpy(&s3d->field_58, &s3d->scale_rotation, sizeof(mat3x3));
+        s3d->field_58 = s3d->scale_rotation;
     }
 }
 
