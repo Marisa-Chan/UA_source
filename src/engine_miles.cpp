@@ -849,13 +849,13 @@ void sb_0x424c74__sub2()
 
 void sb_0x424c74__sub3()
 {
-    int v0 = 0;
+    int i = 0;
     int v16 = 256;
 
     int v10[9];
     int v12[9];
 
-    for (int i = 0; i < sndSys.audio_num_palfx; i++)
+    for (i = 0; i < sndSys.audio_num_palfx; i++)
     {
         userdata_sample_info *v3 = sndSys.palFXs[i];
 
@@ -869,11 +869,9 @@ void sb_0x424c74__sub3()
         v12[i] = v3->field_24 * 256.0;
 
         v16 -= v12[i];
-
-        v0 = i;
     }
 
-    if ( v0 )
+    if ( i )
     {
         sndSys.dword_546F0C = 0;
     }
@@ -887,10 +885,10 @@ void sb_0x424c74__sub3()
 
     if ( v16 > 0 )
     {
-        v10[v0] = 0;
-        v12[v0] = v16;
+        v10[i] = 0;
+        v12[i] = v16;
 
-        v0++;
+        i++;
     }
 
     NC_STACK_display *pwin3d = GFXe.getC3D();
@@ -899,7 +897,7 @@ void sb_0x424c74__sub3()
     {
         rstr_262_arg arg262;
         arg262.slot = v10;
-        arg262.cnt = v0;
+        arg262.cnt = i;
         arg262.weight = v12;
 
         pwin3d->display_func262(&arg262);
