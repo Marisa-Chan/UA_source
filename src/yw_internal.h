@@ -136,8 +136,8 @@ void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 
 
 void sub_4491A0(_NC_STACK_ypaworld *yw, const char *movie_fname);
 
-void sub_4EE04C(_NC_STACK_ypaworld *yw);
-void sub_4F0FFC(_NC_STACK_ypaworld *yw);
+void yw_freeDebrief(_NC_STACK_ypaworld *yw);
+void yw_calcPlayerScore(_NC_STACK_ypaworld *yw);
 
 int sub_4DA41C(_NC_STACK_ypaworld *yw, mapProto *mapp, const char *fname);
 
@@ -512,12 +512,12 @@ void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen);
 void deleteSplashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen);
 
 void ypaworld_func184__sub0(_NC_STACK_ypaworld *yw, yw_f726c *hist_list, yw_arg184 *arg);
-void sub_4EE710(_NC_STACK_ypaworld *yw, yw_arg184 *arg, player_status *pl_status);
+void yw_score(_NC_STACK_ypaworld *yw, yw_arg184 *arg, player_status *pl_status);
 uint8_t *yw_histbf_read_evnt(uint8_t *st, yw_arg184 *arg);
 
 void yw_RenderVector2D(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection = false);
 uint32_t yw_GetColor(_NC_STACK_ypaworld *yw, int color_id);
-void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
+void yw_debriefUpdate(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
 void sub_4D6958(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, samples_collection1 *collection);
 
 int sub_4C885C();

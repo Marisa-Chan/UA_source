@@ -6467,7 +6467,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     ypaworld_func167(usr);
 
-    sub_423F74(&usr->samples1_info, 6);
+    startSound(&usr->samples1_info, 6);
 
     usr->field_0x0 = 1;
 
@@ -6520,7 +6520,7 @@ void ypaworld_func157__sub0(_NC_STACK_ypaworld *yw)
         }
         else if ( yw->field_2d90->field_40 == 9 )
         {
-            sub_4EE04C(yw);
+            yw_freeDebrief(yw);
         }
     }
 }

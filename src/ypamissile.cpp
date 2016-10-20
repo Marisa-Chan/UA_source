@@ -1030,7 +1030,7 @@ size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
         setBACT_visProto(bact->vp_dead.base);
         setBACT_vpTransform(bact->vp_dead.trigo);
 
-        sub_423F74(&bact->field_5A, 2);
+        startSound(&bact->field_5A, 2);
 
         uint8_t v8 = 1;
         ypabact_func113(&v8);
@@ -1043,7 +1043,7 @@ size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
         setBACT_visProto(bact->vp_normal.base);
         setBACT_vpTransform(bact->vp_normal.trigo);
 
-        sub_423F74(&bact->field_5A, 0);
+        startSound(&bact->field_5A, 0);
     }
 
     if ( arg->field_8 == 2048 )
@@ -1051,7 +1051,7 @@ size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
         setBACT_visProto(bact->vp_normal.base);
         setBACT_vpTransform(bact->vp_normal.trigo);
 
-        sub_423F74(&bact->field_5A, 0);
+        startSound(&bact->field_5A, 0);
     }
 
     if ( arg->field_4 == 2048 )
@@ -1061,7 +1061,7 @@ size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
         setBACT_visProto(bact->vp_megadeth.base);
         setBACT_vpTransform(bact->vp_megadeth.trigo);
 
-        sub_423F74(&bact->field_5A, 2);
+        startSound(&bact->field_5A, 2);
 
         uint8_t v9 = 2;
         ypabact_func113(&v9);

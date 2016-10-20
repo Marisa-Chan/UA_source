@@ -1836,7 +1836,7 @@ void sub_4EAC80(_NC_STACK_ypaworld *yw)
     stru_5C91D0.Free();
 }
 
-void sub_4EE04C(_NC_STACK_ypaworld *yw)
+void yw_freeDebrief(_NC_STACK_ypaworld *yw)
 {
     big_ypa_Brf *brf = &yw->brief;
 
@@ -1914,7 +1914,7 @@ void ypaworld_func158__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
         if ( v7 != yw->LevelNet->field_BE38 )
         {
             if ( yw->GameShell )
-                sub_423F74(&yw->GameShell->samples1_info, 8);
+                startSound(&yw->GameShell->samples1_info, 8);
         }
         yw->LevelNet->field_BE38 = v7;
     }
@@ -2479,7 +2479,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
 
     if ( !yw->copyof_ownermap || !yw->copyof_typemap )
     {
-        sub_4EE04C(yw);
+        yw_freeDebrief(yw);
         return 0;
     }
 
@@ -2539,7 +2539,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
 
     if ( !ypaworld_func158__sub4__sub1__sub5__sub0(yw, &brf->map_prototype, yw->LevelNet->mapInfos[yw->field_2d90->levelID].mapPath) )
     {
-        sub_4EE04C(yw);
+        yw_freeDebrief(yw);
         return 0;
     }
 
@@ -2547,7 +2547,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
 
     if ( !v8->name[0] )
     {
-        sub_4EE04C(yw);
+        yw_freeDebrief(yw);
         return 0;
     }
 
@@ -2574,7 +2574,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
     brf->mbmap_img = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
     if ( !brf->mbmap_img )
     {
-        sub_4EE04C(yw);
+        yw_freeDebrief(yw);
         return 0;
     }
 
@@ -2591,7 +2591,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
 }
 
 
-void sub_4F0FFC(_NC_STACK_ypaworld *yw)
+void yw_calcPlayerScore(_NC_STACK_ypaworld *yw)
 {
     if ( !yw->field_727c )
     {
@@ -2625,18 +2625,18 @@ void sub_4F0FFC(_NC_STACK_ypaworld *yw)
                 case 2:
                 case 6:
                     tlen = 4;
-                    sub_4EE710(yw, &arg184, yw->playerstatus);
+                    yw_score(yw, &arg184, yw->playerstatus);
                     break;
 
                 case 3:
                 case 4:
                     tlen = 6;
-                    sub_4EE710(yw, &arg184, yw->playerstatus);
+                    yw_score(yw, &arg184, yw->playerstatus);
                     break;
 
                 case 7:
                     tlen = 12;
-                    sub_4EE710(yw, &arg184, yw->playerstatus);
+                    yw_score(yw, &arg184, yw->playerstatus);
                     break;
 
                 case 5:
@@ -2689,12 +2689,12 @@ void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 
             {
                 if ( yw->brief.field_2E68 == 2 )
                 {
-                    sub_4F0FFC(yw);
-                    sub_4EE04C(yw);
+                    yw_calcPlayerScore(yw);
+                    yw_freeDebrief(yw);
                 }
                 else
                 {
-                    ypaworld_func158__sub4__sub1__sub6(yw, usr, inpt);
+                    yw_debriefUpdate(yw, usr, inpt);
                 }
             }
         }

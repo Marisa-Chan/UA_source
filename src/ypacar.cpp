@@ -1016,7 +1016,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
                 if ( bact->field_611 > 2.333333333333334 )
                 {
-                    sub_423F74(&bact->field_5A, 5);
+                    startSound(&bact->field_5A, 5);
 
                     if ( v149 )
                     {
@@ -1076,7 +1076,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
                 if ( bact->field_611 > 2.333333333333334 )
                 {
-                    sub_423F74(&bact->field_5A, 5);
+                    startSound(&bact->field_5A, 5);
 
                     if ( v149 )
                     {
@@ -1122,7 +1122,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
             if ( bact->field_611 < -2.333333333333334 )
             {
-                sub_423F74(&bact->field_5A, 5);
+                startSound(&bact->field_5A, 5);
 
                 if ( v149 )
                 {
@@ -1170,7 +1170,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
                 {
                     if ( bact->field_611 > 2.333333333333334 )
                     {
-                        sub_423F74(&bact->field_5A, 5);
+                        startSound(&bact->field_5A, 5);
 
                         if ( v149 )
                         {

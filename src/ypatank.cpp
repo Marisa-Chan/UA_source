@@ -1804,7 +1804,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
                                 v12->field_931 = -1;
 
                                 if ( tank->yw->GameShell )
-                                    sub_423F74(&tank->yw->GameShell->samples2_info, 4);
+                                    startSound(&tank->yw->GameShell->samples2_info, 4);
 
                                 if ( tank->yw->field_757E )
                                 {
@@ -2040,7 +2040,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
 
                 if ( !(bact->field_3D6 & 0x20000) )
                 {
-                    sub_423F74(&bact->field_5A, 6);
+                    startSound(&bact->field_5A, 6);
                     bact->field_3D6 |= 0x20000;
                 }
 
@@ -2674,7 +2674,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                 {
                     if ( v143 )
                     {
-                        sub_423F74(&bact->field_5A, 5);
+                        startSound(&bact->field_5A, 5);
 
                         yw_arg180 arg180;
                         arg180.field_4 = 1.0;
@@ -2732,7 +2732,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                 {
                     if ( v143 )
                     {
-                        sub_423F74(&bact->field_5A, 5);
+                        startSound(&bact->field_5A, 5);
 
                         yw_arg180 arg180_3;
                         arg180_3.field_8 = arg136_1.field_2C;
@@ -2782,7 +2782,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
             {
                 if ( v143 )
                 {
-                    sub_423F74(&bact->field_5A, 5);
+                    startSound(&bact->field_5A, 5);
 
                     yw_arg180 arg180_1;
                     arg180_1.field_4 = 1.0;
@@ -2833,7 +2833,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                     {
                         if ( v143 )
                         {
-                            sub_423F74(&bact->field_5A, 5);
+                            startSound(&bact->field_5A, 5);
 
                             yw_arg180 arg180_2;
                             arg180_2.effects_type = 5;

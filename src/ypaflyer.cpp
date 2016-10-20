@@ -1408,7 +1408,7 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
                     {
                         fly->bact_internal->field_3D6 |= 0x40000;
 
-                        sub_423F74(&fly->bact_internal->field_5A, 5);
+                        startSound(&fly->bact_internal->field_5A, 5);
 
                         yw_arg180 arg180;
 

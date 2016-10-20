@@ -186,7 +186,7 @@ int sub_4444D4(CDAUDIO_t *arg)
     return 0;
 }
 
-void sub_423F74(samples_collection1 *smpls, int a2)
+void startSound(samples_collection1 *smpls, int a2)
 {
     userdata_sample_info *result = &smpls->samples_data[a2];
 

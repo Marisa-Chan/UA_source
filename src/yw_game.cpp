@@ -3017,7 +3017,7 @@ int ypaworld_func148__sub1(_NC_STACK_ypaworld *yw, int id, int a4, int x, int y,
         {
             if ( node->bact->field_24 == 3 && ownerID2 == node->bact->owner )
             {
-                sub_423F74(&node->bact->field_5A, 11);
+                startSound(&node->bact->field_5A, 11);
                 break;
             }
 
@@ -4052,14 +4052,14 @@ void ypaworld_func64__sub19__sub3(_NC_STACK_ypaworld *yw, int id)
 
         if ( v4 < 10 && v4 != sitem->field_100 )
         {
-            sub_423F74(&yw->GameShell->samples1_info, 3);
+            startSound(&yw->GameShell->samples1_info, 3);
             sitem->field_100 = v4;
         }
 
         int v5 = v4 / 10;
         if ( v5 != sitem->field_FC )
         {
-            sub_423F74(&yw->GameShell->samples1_info, 3);
+            startSound(&yw->GameShell->samples1_info, 3);
             sitem->field_FC = v5;
         }
     }
@@ -4640,7 +4640,7 @@ void ypaworld_func151__sub1(_NC_STACK_ypaworld *yw)
     }
 }
 
-void sub_4EE710(_NC_STACK_ypaworld *yw, yw_arg184 *arg, player_status *pl_status)
+void yw_score(_NC_STACK_ypaworld *yw, yw_arg184 *arg, player_status *pl_status)
 {
     switch ( arg->type )
     {
@@ -4938,7 +4938,7 @@ void ypaworld_func184__sub0(_NC_STACK_ypaworld *yw, yw_f726c *hist_list, yw_arg1
         if ( yw->GameShell )
         {
             if ( yw->GameShell->field_0x1cd8 )
-                sub_4EE710(yw, arg, yw->field_7796);
+                yw_score(yw, arg, yw->field_7796);
         }
     }
 }
@@ -6043,7 +6043,7 @@ void sub_46F5C8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, trec_bct *oinf
             if ( !(bact->field_3B2 & v48) )
             {
                 bact->field_3B2 |= v48;
-                sub_423F74(&bact->field_5A, i);
+                startSound(&bact->field_5A, i);
             }
         }
         else

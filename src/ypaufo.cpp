@@ -1085,7 +1085,7 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
                     {
                         bact->field_3D6 |= 0x40000;
 
-                        sub_423F74(&bact->field_5A, 5);
+                        startSound(&bact->field_5A, 5);
 
                         yw_arg180 arg180;
 

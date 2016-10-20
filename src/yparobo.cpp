@@ -1106,7 +1106,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
         bact->field_62D = tmp;
         bact->field_62D.sy = tmp.sy;
 
-        sub_423F74(&bact->field_5A, 10);
+        startSound(&bact->field_5A, 10);
 
         robo->roboState &= ~ROBOSTATE_MOVE;
         bact->field_6BD[0].field_34 = 0;
@@ -1916,7 +1916,7 @@ void NC_STACK_yparobo::doUserCommands(ypabact_arg65 *arg)
         if ( !v6 )
         {
             if ( yw->GameShell )
-                sub_423F74(&yw->GameShell->samples2_info, 1);
+                startSound(&yw->GameShell->samples2_info, 1);
         }
         else
         {
@@ -2137,7 +2137,7 @@ void NC_STACK_yparobo::doUserCommands(ypabact_arg65 *arg)
     case 10:
         if ( !(robo->roboState & ROBOSTATE_MOVE) )
         {
-            sub_423F74(&bact->field_5A, 9);
+            startSound(&bact->field_5A, 9);
 
             robo->roboState |= ROBOSTATE_MOVE;
             robo->field_4FD -= arg->field_40;
@@ -2214,7 +2214,7 @@ void NC_STACK_yparobo::doUserCommands(ypabact_arg65 *arg)
                 arg->field_1C->field_418[0].sz = arg->field_30.sz;
 
                 if ( yw->GameShell )
-                    sub_423F74(&yw->GameShell->samples2_info, 1);
+                    startSound(&yw->GameShell->samples2_info, 1);
             }
         }
         else
@@ -2287,7 +2287,7 @@ void NC_STACK_yparobo::doUserCommands(ypabact_arg65 *arg)
                     arg->field_1C->field_59A++;
 
                     if ( yw->GameShell )
-                        sub_423F74(&yw->GameShell->samples2_info, 1);
+                        startSound(&yw->GameShell->samples2_info, 1);
                 }
             }
             else
@@ -6035,7 +6035,7 @@ void NC_STACK_yparobo::ypabact_func77(void *)
                 subnode->bact->field_3D5 = 2;
 
                 sub_424000(&subnode->bact->field_5A, 3);
-                sub_423F74(&subnode->bact->field_5A, 7);
+                startSound(&subnode->bact->field_5A, 7);
 
                 subnode->bact->field_3B2 &= 0xFFFFFFF7;
                 subnode->bact->field_3B2 |= 0x80;
@@ -6066,7 +6066,7 @@ void NC_STACK_yparobo::ypabact_func77(void *)
             node->bact->field_3D5 = 2;
 
             sub_424000(&node->bact->field_5A, 3);
-            sub_423F74(&node->bact->field_5A, 7);
+            startSound(&node->bact->field_5A, 7);
 
             node->bact->field_3B2 &= 0xFFFFFFF7;
             node->bact->field_3B2 |= 0x80;

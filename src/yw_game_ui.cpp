@@ -4398,7 +4398,7 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
             yw->field_1c0c[ yw->field_2410 ]->self->setBACT_aggression(v16);
 
             if ( yw->GameShell )
-                sub_423F74(&yw->GameShell->samples1_info, 3);
+                startSound(&yw->GameShell->samples1_info, 3);
         }
         break;
 
@@ -4861,7 +4861,7 @@ void  ypaworld_func64__sub7__sub2(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 if ( yw->GameShell )
                 {
                     if ( winpt->flag & 0x10 )
-                        sub_423F74(&yw->GameShell->samples1_info, 3);
+                        startSound(&yw->GameShell->samples1_info, 3);
                 }
             }
 
@@ -5519,7 +5519,7 @@ void ypaworld_func64__sub7__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
             if ( winpt->selected_btnID != -1 )
             {
                 if ( winpt->flag & 0x10 )
-                    sub_423F74(&yw->GameShell->samples1_info, 3);
+                    startSound(&yw->GameShell->samples1_info, 3);
             }
         }
 
@@ -6319,7 +6319,7 @@ void ypaworld_func64__sub7__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
                         yw->field_1c0c[yw->field_2410]->self->setBACT_aggression(25 * v9);
 
                         if ( yw->GameShell )
-                            sub_423F74(&yw->GameShell->samples1_info, 3);
+                            startSound(&yw->GameShell->samples1_info, 3);
                     }
                 }
 
@@ -6725,7 +6725,7 @@ void  ypaworld_func64__sub7__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 if ( winpt->flag & 0x10 )
                 {
                     if ( yw->GameShell )
-                        sub_423F74(&yw->GameShell->samples1_info, 3);
+                        startSound(&yw->GameShell->samples1_info, 3);
                 }
             }
 
@@ -7252,7 +7252,7 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 if ( inpt->winp131arg.selected_btnID >= 8 )
                 {
                     if ( winpt->flag & 0x10 )
-                        sub_423F74(&yw->GameShell->samples1_info, 3);
+                        startSound(&yw->GameShell->samples1_info, 3);
                 }
             }
 
@@ -7509,7 +7509,7 @@ void ypaworld_func64__sub7__sub4(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 if ( inpt->winp131arg.selected_btnID >= 8 )
                 {
                     if ( winpt->flag & 0x10 )
-                        sub_423F74(&yw->GameShell->samples1_info, 3);
+                        startSound(&yw->GameShell->samples1_info, 3);
                 }
             }
 
@@ -7615,7 +7615,7 @@ void ypaworld_func64__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
                                 if ( winpt->flag & 0x10 )
                                 {
                                     if ( yw->GameShell )
-                                        sub_423F74(&yw->GameShell->samples1_info, 3);
+                                        startSound(&yw->GameShell->samples1_info, 3);
                                 }
 
                                 if ( winpt->flag & 0x40 )
@@ -8227,7 +8227,7 @@ void ypaworld_func159__sub0__sub0(_NC_STACK_ypaworld *yw, yw_samples *smpls, con
         smpls->field_4.field_10 = yw->field_1b84->field_605.sy * yw->field_1b84->field_611;
         smpls->field_4.field_14 = yw->field_1b84->field_605.sz * yw->field_1b84->field_611;
 
-        sub_423F74(&smpls->field_4, 0);
+        startSound(&smpls->field_4, 0);
     }
 }
 

@@ -2326,7 +2326,7 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
         usr->field_782.samples_data[0].pitch = 0;
 
         usr->field_782.samples_data[0].psampl = usr->field_ADA->getSMPL_pSample();
-        sub_423F74(&usr->field_782, 0);
+        startSound(&usr->field_782, 0);
     }
 
     set_prefix_replacement("rsrc", rsr);
@@ -2393,8 +2393,8 @@ void sub_4D0C24(_NC_STACK_ypaworld *yw, const char *a1, const char *a2)
 
 void sub_46D1E8(UserData *usr)
 {
-    sub_4F0FFC(usr->p_ypaworld);
-    sub_4EE04C(usr->p_ypaworld);
+    yw_calcPlayerScore(usr->p_ypaworld);
+    yw_freeDebrief(usr->p_ypaworld);
 
     int v4 = 2;
     usr->sub_bar_button->button_func68(&v4);
@@ -3003,7 +3003,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     char v306[300];
 
     if ( usr->field_3A->winp131arg.flag & 0x10 )
-        sub_423F74(&usr->samples1_info, 3);
+        startSound(&usr->samples1_info, 3);
 
     if ( usr->field_1C3A )
         sb_0x4c9f14(usr->p_ypaworld);
@@ -3338,7 +3338,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             usr->titel_button->button_func68(&v416);
 
             usr->field_0x2fbc = 1;
-            sub_423F74(&usr->samples1_info, 4);
+            startSound(&usr->samples1_info, 4);
         }
         else if ( v6_l == 1022 )
         {
@@ -3742,7 +3742,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         if ( v6_l == 1100 )
         {
             usr->video_listvw.OpenDialog(yw);
-            sub_423F74(&usr->samples1_info, 7);
+            startSound(&usr->samples1_info, 7);
 
             usr->field_3A->winp131arg.flag &= 0xFFFFFFFD;
         }
@@ -3796,7 +3796,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         }
         else if ( v6_l == 1115 )
         {
-            sub_423F74(&usr->samples1_info, 0);
+            startSound(&usr->samples1_info, 0);
             usr->field_13C2 |= 0x80;
         }
         else if ( v6_l == 1117 )
@@ -3867,7 +3867,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         else if ( v6_l == 1134 )
         {
             usr->d3d_listvw.OpenDialog(yw);
-            sub_423F74(&usr->samples1_info, 7);
+            startSound(&usr->samples1_info, 7);
 
             usr->field_3A->winp131arg.flag &= 0xFFFFFFFD;
         }
@@ -4602,7 +4602,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 if ( sub_449678(usr->p_ypaworld, usr->field_3A, 'K') )
                 {
                     ypaworld_func158__sub0__sub4(usr);
-                    sub_423F74(&usr->samples2_info, 3);
+                    startSound(&usr->samples2_info, 3);
                 }
                 else
                 {

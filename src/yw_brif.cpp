@@ -271,7 +271,7 @@ int sub_4EBBA8(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, float xpos, float ypos,
     }
 
     if ( yw->GameShell )
-        sub_423F74(&yw->GameShell->samples1_info, 11);
+        startSound(&yw->GameShell->samples1_info, 11);
 
     return 0;
 }
@@ -1317,7 +1317,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(_NC_STACK_ypaworld *yw, struC5 *st
     brf->field_2F40.float20 = brf->field_2F74.y2;
 
     if ( yw->GameShell )
-        sub_423F74(&yw->GameShell->samples1_info, 11);
+        startSound(&yw->GameShell->samples1_info, 11);
 }
 
 void ypaworld_func158__sub4__sub1__sub6__sub1(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
@@ -1377,24 +1377,24 @@ void ypaworld_func158__sub4__sub1__sub6__sub2(_NC_STACK_ypaworld *yw, struC5 *st
     memset(brf->tp1, 0, sizeof(brf->tp1));
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub3__sub1(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg, int a4, int a5)
+void yw_DebriefConqSector(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg, int time, int stime)
 {
     int sx = arg->t26.secX;
     int sy = arg->t26.secY;
     int own = arg->t26.owner;
-    int v17 = a4 - a5;
+    int dtime = time - stime;
 
     *( (uint8_t *)brf->copy2_of_ownmap_bitm->buffer + sx + sy * brf->copy2_of_ownmap_bitm->width) = own;
 
-    if ( a5 == brf->field_41D8 )
+    if ( stime == brf->field_41D8 )
     {
-        sub_4EE710(yw, arg, brf->field_42BC);
+        yw_score(yw, arg, brf->field_42BC);
 
         if ( yw->GameShell )
-            sub_423F74(&yw->GameShell->samples1_info, 12);
+            startSound(&yw->GameShell->samples1_info, 12);
     }
 
-    if ( v17 < 30000 )
+    if ( dtime < 30000 )
     {
         if ( own )
         {
@@ -1406,7 +1406,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub1(_NC_STACK_ypaworld *yw, big_
                 float a3a = (float)sx * v20 + brf->field_2F74.x1 + v20 * 0.5;
                 float a4a = (float)sy * v21 + brf->field_2F74.y1 + v21 * 0.5;
 
-                float v19 = 1.0 - (float )v17 / 30000.0;
+                float v19 = 1.0 - (float )dtime / 30000.0;
 
                 if ( v19 > 1.0 )
                     v19 = 1.0;
@@ -1422,20 +1422,20 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub1(_NC_STACK_ypaworld *yw, big_
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub3__sub2(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg, int a4, int a5)
+void yw_DebriefVhclKill(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg, int time, int stime)
 {
     int own = arg->t34.field_1 & 7;
-    int v22 = a4 - a5;
+    int dtime = time - stime;
 
-    if ( a5 == brf->field_41D8 )
+    if ( stime == brf->field_41D8 )
     {
-        sub_4EE710(yw, arg, brf->field_42BC);
+        yw_score(yw, arg, brf->field_42BC);
 
         if ( yw->GameShell )
-            sub_423F74(&yw->GameShell->samples1_info, 13);
+            startSound(&yw->GameShell->samples1_info, 13);
     }
 
-    if ( v22 < 120000 )
+    if ( dtime < 120000 )
     {
         if ( brf->wireless_db_skels[1] )
         {
@@ -1447,13 +1447,13 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub2(_NC_STACK_ypaworld *yw, big_
 
             float v25;
 
-            if ( v22 >= 30000 )
+            if ( dtime >= 30000 )
             {
                 v25 = 0.1;
             }
             else
             {
-                v25 = 1.0 - v22 / 30000.0;
+                v25 = 1.0 - dtime / 30000.0;
 
                 if ( v25 < 0.1 )
                     v25 = 0.1;
@@ -1469,10 +1469,10 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub2(_NC_STACK_ypaworld *yw, big_
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub3__sub3(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg, int a4, int a5)
+void yw_DebriefVhclCreate(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg, int time, int stime)
 {
-    int v9 = a4 - a5;
-    if ( v9 < 45000 )
+    int dtime = time - stime;
+    if ( dtime < 45000 )
     {
         if ( brf->wireless_db_skels[1] )
         {
@@ -1482,7 +1482,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub3(_NC_STACK_ypaworld *yw, big_
             float a3a = v13 * (arg->t34.field_4 / 256.0) + brf->field_2F74.x1;
             float a4a = v14 * (arg->t34.field_5 / 256.0) + brf->field_2F74.y1;
 
-            float v22 = v9 / 45000.0;
+            float v22 = dtime / 45000.0;
 
             if ( v22 > 1.0 )
                 v22 = 1.0;
@@ -1497,7 +1497,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub3(_NC_STACK_ypaworld *yw, big_
     }
 }
 
-void sub_4EF010(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg)
+void yw_DebriefAddTechUpgrade(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg)
 {
     int v4 = arg->t7.field_4;
     int last_vhcl = arg->t7.last_vhcl;
@@ -1536,7 +1536,7 @@ void sub_4EF010(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg)
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub3__sub0(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
+void yw_DebriefRenderSectorsOwners(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
 {
     uint8_t *ownmap = (uint8_t *)brf->copy2_of_ownmap_bitm->buffer;
 
@@ -1626,7 +1626,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(_NC_STACK_ypaworld *yw, big_
     yw->win3d->raster_func209(&arg209);
 }
 
-char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub0(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
+char * yw_DebriefKillsTitleLine(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
 {
     char *cur = in;
 
@@ -1665,7 +1665,7 @@ int sub_4EF2A8(const void *a1, const void *a2)
     return ((debrif_t1 *)a2)->status - ((debrif_t1 *)a1)->status;
 }
 
-char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub1(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
+char * yw_DebriefKillsScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
 {
     char *cur = in;
     int a2 = 0;
@@ -1774,7 +1774,7 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub1(_NC_STACK_ypaworld *
     return cur;
 }
 
-char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub2__sub0(_NC_STACK_ypaworld *yw, char *in, int a4)
+char * yw_DebriefMPlayScoreTitle(_NC_STACK_ypaworld *yw, char *in, int a4)
 {
     char *cur = in;
 
@@ -1793,13 +1793,13 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub2__sub0(_NC_STACK_ypaw
     return FormateColumnItem(yw, cur, 1, &elm);
 }
 
-char *ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
+char *yw_DebriefMPlayScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
 {
     char *cur = in;
 
     if ( yw->field_727c )
     {
-        cur = ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub2__sub0(yw, cur, a4);
+        cur = yw_DebriefMPlayScoreTitle(yw, cur, a4);
 
         FontUA::next_line(&cur);
 
@@ -1943,7 +1943,7 @@ char *ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub2(_NC_STACK_ypaworld *y
     return cur;
 }
 
-char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub3(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
+char * yw_DebriefRenderTime(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
 {
     char *cur = in;
     FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
@@ -2030,7 +2030,7 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub3(_NC_STACK_ypaworld *
     return cur;
 }
 
-char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in)
+char * yw_DebriefScoreTable(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in)
 {
     char *cur = in;
 
@@ -2040,22 +2040,22 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub4(_NC_STACK_ypaworld *yw, bi
 
     int v14 = (yw->screen_width / 2) * 0.796875;
 
-    cur = ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub0(yw, brf, cur, v14);
+    cur = yw_DebriefKillsTitleLine(yw, brf, cur, v14);
 
     FontUA::next_line(&cur);
 
-    cur = ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub1(yw, brf, cur, v14);
+    cur = yw_DebriefKillsScore(yw, brf, cur, v14);
 
     FontUA::next_line(&cur);
 
-    cur = ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub2(yw, brf, cur, v14);
+    cur = yw_DebriefMPlayScore(yw, brf, cur, v14);
 
     FontUA::next_line(&cur);
 
-    return ypaworld_func158__sub4__sub1__sub6__sub3__sub4__sub3(yw, brf, cur, v14);
+    return yw_DebriefRenderTime(yw, brf, cur, v14);
 }
 
-char * ypaworld_func158__sub4__sub1__sub6__sub3__sub5__sub0(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, brf_t1 *tp1, char *in, int a5)
+char * yw_DebriefTechUpgradeLine(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, brf_t1 *tp1, char *in, int a5)
 {
     char *cur = in;
 
@@ -2229,7 +2229,7 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub5__sub0(_NC_STACK_ypaworld *
     return cur;
 }
 
-char * ypaworld_func158__sub4__sub1__sub6__sub3__sub5(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in)
+char * yw_DebriefTechUpgradesTable(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in)
 {
     char *cur = in;
 
@@ -2240,22 +2240,22 @@ char * ypaworld_func158__sub4__sub1__sub6__sub3__sub5(_NC_STACK_ypaworld *yw, bi
     FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
 
     for (int i = 0; i < brf->tp1_count; i++)
-        cur = ypaworld_func158__sub4__sub1__sub6__sub3__sub5__sub0(yw, brf, &brf->tp1[i], cur,  (yw->screen_width / 2) * 0.984375 );
+        cur = yw_DebriefTechUpgradeLine(yw, brf, &brf->tp1[i], cur,  (yw->screen_width / 2) * 0.984375 );
 
     return cur;
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub3(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
+void yw_DebriefRunDebrief(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
 {
     char cmdbuf[2048];
     char *cur = cmdbuf;
 
     int a4 = brf->field_2E7C - brf->field_2E78;
 
-    ypaworld_func158__sub4__sub1__sub6__sub3__sub0(yw, brf);
+    yw_DebriefRenderSectorsOwners(yw, brf);
 
-    cur = ypaworld_func158__sub4__sub1__sub6__sub3__sub4(yw, brf, cur);
-    cur = ypaworld_func158__sub4__sub1__sub6__sub3__sub5(yw, brf, cur);
+    cur = yw_DebriefScoreTable(yw, brf, cur);
+    cur = yw_DebriefTechUpgradesTable(yw, brf, cur);
 
     FontUA::set_end(&cur);
 
@@ -2314,27 +2314,27 @@ void ypaworld_func158__sub4__sub1__sub6__sub3(_NC_STACK_ypaworld *yw, struC5 *st
 
                 case 2:
                     tlen = 4;
-                    ypaworld_func158__sub4__sub1__sub6__sub3__sub1(yw, brf, &arg184, a4, v6);
+                    yw_DebriefConqSector(yw, brf, &arg184, a4, v6);
                     break;
 
                 case 3:
                     tlen = 6;
-                    ypaworld_func158__sub4__sub1__sub6__sub3__sub2(yw, brf, &arg184, a4, v6);
+                    yw_DebriefVhclKill(yw, brf, &arg184, a4, v6);
                     break;
 
                 case 4:
                     tlen = 6;
-                    ypaworld_func158__sub4__sub1__sub6__sub3__sub3(yw, brf, &arg184, a4, v6);
+                    yw_DebriefVhclCreate(yw, brf, &arg184, a4, v6);
                     break;
 
                 case 6:
                     tlen = 4;
                     if ( v6 == brf->field_41D8 )
                     {
-                        sub_4EE710(yw, &arg184, brf->field_42BC);
+                        yw_score(yw, &arg184, brf->field_42BC);
 
                         if ( yw->GameShell )
-                            sub_423F74(&yw->GameShell->samples1_info, 14);
+                            startSound(&yw->GameShell->samples1_info, 14);
                     }
                     break;
 
@@ -2342,11 +2342,11 @@ void ypaworld_func158__sub4__sub1__sub6__sub3(_NC_STACK_ypaworld *yw, struC5 *st
                     tlen = 12;
                     if ( v6 == brf->field_41D8 )
                     {
-                        sub_4EE710(yw, &arg184, brf->field_42BC);
-                        sub_4EF010(yw, brf, &arg184);
+                        yw_score(yw, &arg184, brf->field_42BC);
+                        yw_DebriefAddTechUpgrade(yw, brf, &arg184);
 
                         if ( yw->GameShell )
-                            sub_423F74(&yw->GameShell->samples1_info, 14);
+                            startSound(&yw->GameShell->samples1_info, 14);
 
                     }
                     break;
@@ -2381,7 +2381,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3(_NC_STACK_ypaworld *yw, struC5 *st
     yw->win3d->UnlockSurface();
 }
 
-void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
+void yw_debriefUpdate(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
 {
     big_ypa_Brf *brf = &yw->brief;
 
@@ -2453,7 +2453,7 @@ void ypaworld_func158__sub4__sub1__sub6(_NC_STACK_ypaworld *yw, UserData *usr, s
 
         case 8:
         case 9:
-            ypaworld_func158__sub4__sub1__sub6__sub3(yw, inpt, brf);
+            yw_DebriefRunDebrief(yw, inpt, brf);
             break;
 
         default:

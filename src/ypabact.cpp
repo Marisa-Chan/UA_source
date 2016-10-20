@@ -90,7 +90,7 @@ int NC_STACK_ypabact::ypabact_func0__sub0(stack_vals *stak)
                         if ( yw->field_757E )
                             v14[25] = 1;
 
-                        sub_423F74(&bact->field_5A, 8);
+                        startSound(&bact->field_5A, 8);
                     }
                     else
                     {
@@ -2638,7 +2638,7 @@ void NC_STACK_ypabact::ypabact_func71(ypabact_arg65 *arg)
                     {
                         bact->field_3D6 |= 0x40000;
 
-                        sub_423F74(&bact->field_5A, 5);
+                        startSound(&bact->field_5A, 5);
 
                         yw_arg180 arg180;
                         arg180.effects_type = 5;
@@ -4074,7 +4074,7 @@ size_t NC_STACK_ypabact::ypabact_func79(bact_arg79 *arg)
         wbact->host_station = bact->host_station;
         bact->field_97D = arg->g_time;
 
-        sub_423F74(&wbact->field_5A, 1);
+        startSound(&wbact->field_5A, 1);
 
         _NC_STACK_ypaworld *yw = &bact->wrld->stack__ypaworld;
 
@@ -4836,7 +4836,7 @@ size_t NC_STACK_ypabact::ypabact_func86(bact_arg86 *arg)
                             if ( bact->field_B34 & 2 )
                             {
                                 if ( fabs(bact->field_611) > 7.0 )
-                                    sub_423F74(&bact->field_5A, 5);
+                                    startSound(&bact->field_5A, 5);
 
                                 yw_arg180 arg180_1;
 
@@ -4939,7 +4939,7 @@ size_t NC_STACK_ypabact::ypabact_func86(bact_arg86 *arg)
                             if ( bact->field_B34 & 2 )
                             {
                                 if ( fabs(bact->field_611) > 7.0 )
-                                    sub_423F74(&bact->field_5A, 5);
+                                    startSound(&bact->field_5A, 5);
 
                                 yw_arg180 arg180;
 
@@ -5178,7 +5178,7 @@ size_t NC_STACK_ypabact::ypabact_func87(int *arg)
                         bnode->field_931 = -1;
 
                         if ( yw->GameShell )
-                            sub_423F74(&yw->GameShell->samples2_info, 4);
+                            startSound(&yw->GameShell->samples2_info, 4);
 
                         if ( yw->field_757E )
                         {
@@ -5262,7 +5262,7 @@ size_t NC_STACK_ypabact::ypabact_func87(int *arg)
     {
         if ( a4 )
         {
-            sub_423F74(&bact->field_5A, 6);
+            startSound(&bact->field_5A, 6);
 
             bact->field_3D6 |= 0x20000;
 
@@ -8201,7 +8201,7 @@ size_t NC_STACK_ypabact::ypabact_func119(bact_arg119 *arg)
             sub_424000(&bact->field_5A, 2);
         }
 
-        sub_423F74(&bact->field_5A, 7);
+        startSound(&bact->field_5A, 7);
 
         bact->field_3B2 |= 0x80;
 
@@ -8239,7 +8239,7 @@ size_t NC_STACK_ypabact::ypabact_func119(bact_arg119 *arg)
         if ( !(bact->field_3B2 & 1) )
         {
             bact->field_3B2 |= 1;
-            sub_423F74(&bact->field_5A, 0);
+            startSound(&bact->field_5A, 0);
         }
 
         result = 1;
@@ -8272,7 +8272,7 @@ size_t NC_STACK_ypabact::ypabact_func119(bact_arg119 *arg)
         if ( !(bact->field_3B2 & 0x200) )
         {
             bact->field_3B2 |= 0x200;
-            sub_423F74(&bact->field_5A, 9);
+            startSound(&bact->field_5A, 9);
         }
 
         uint8_t v47 = 8;
@@ -8308,7 +8308,7 @@ size_t NC_STACK_ypabact::ypabact_func119(bact_arg119 *arg)
         if ( !(bact->field_3B2 & 4) )
         {
             bact->field_3B2 |= 4;
-            sub_423F74(&bact->field_5A, 2);
+            startSound(&bact->field_5A, 2);
         }
 
         result = 1;
@@ -8355,7 +8355,7 @@ size_t NC_STACK_ypabact::ypabact_func119(bact_arg119 *arg)
         if ( !(bact->field_3B2 & 8) )
         {
             bact->field_3B2 |= 8;
-            sub_423F74(&bact->field_5A, 3);
+            startSound(&bact->field_5A, 3);
         }
 
         uint8_t v47 = 4;
@@ -8409,7 +8409,7 @@ size_t NC_STACK_ypabact::ypabact_func119(bact_arg119 *arg)
             }
 
             bact->field_3B2 |= 2;
-            sub_423F74(&bact->field_5A, 1);
+            startSound(&bact->field_5A, 1);
         }
         result = 1;
     }
@@ -8464,7 +8464,7 @@ size_t NC_STACK_ypabact::ypabact_func119(bact_arg119 *arg)
                 sub_424000(&bact->field_5A, 7);
             }
 
-            sub_423F74(&bact->field_5A, 4);
+            startSound(&bact->field_5A, 4);
 
             uint8_t v47 = 2;
             ypabact_func113(&v47);
@@ -9068,7 +9068,7 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
         if ( bact->field_24 == 1 && !(bact->field_3D6 & 0x200) && bact->field_3D5 == 1 )
             bact->field_601 = bact->force;
 
-        sub_423F74(&bact->field_5A, 8);
+        startSound(&bact->field_5A, 8);
     }
     else
     {
