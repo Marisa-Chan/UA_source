@@ -75,6 +75,17 @@ struct player_status
     int p5;
     int p6;
     int p7;
+
+    player_status()
+    {
+        p1 = 0;
+        p2 = 0;
+        p3 = 0;
+        p4 = 0;
+        p5 = 0;
+        p6 = 0;
+        p7 = 0;
+    }
 };
 
 struct langDll_node : public nnode
@@ -467,6 +478,33 @@ struct gemProto
     int16_t begin_action__line;
     int16_t end_action__line;
     int type;
+
+    void init()
+    {
+        field_0 = 0;
+        building = 0;
+        sec_x = 0;
+        sec_y = 0;
+        mb_status = 0;
+        memset(script, 0, sizeof(script));
+        memset(msg_default, 0, sizeof(msg_default));
+        nw_vproto_num_1 = 0;
+        nw_vproto_num_2 = 0;
+        nw_vproto_num_3 = 0;
+        nw_vproto_num_4 = 0;
+        nw_bproto_num_1 = 0;
+        nw_bproto_num_2 = 0;
+        nw_bproto_num_3 = 0;
+        nw_bproto_num_4 = 0;
+        begin_action__line = 0;
+        end_action__line = 0;
+        type = 0;
+    }
+
+    gemProto()
+    {
+        init();
+    };
 };
 
 struct dbmapProto
@@ -706,6 +744,15 @@ struct rgbiColor
     uint8_t b;
     uint8_t i;
     uint32_t color;
+
+    rgbiColor()
+    {
+        r = 0;
+        g = 0;
+        b = 0;
+        i = 0;
+        color = 0;
+    }
 };
 
 struct yw_movies
@@ -726,12 +773,24 @@ struct slurp
 {
     NC_STACK_base *skeletons_bas;
     skeleton_64_stru *skeleton_internal;
+
+    slurp()
+    {
+        skeletons_bas = NULL;
+        skeleton_internal = NULL;
+    }
 };
 
 struct slurp2
 {
     NC_STACK_sklt *skeleton;
     skeleton_64_stru *skeleton_internal;
+
+    slurp2()
+    {
+        skeleton = NULL;
+        skeleton_internal = NULL;
+    }
 };
 
 struct sklt_wis
@@ -769,6 +828,17 @@ struct save_status
     int16_t p5;
     int16_t p6;
     int pX[8];
+
+    save_status()
+    {
+        p1 = 0;
+        p2 = 0;
+        p3 = 0;
+        p4 = 0;
+        p5 = 0;
+        p6 = 0;
+        memset(pX, 0, sizeof(pX));
+    }
 };
 
 struct yw_81cb
@@ -795,6 +865,17 @@ struct yw_f80
     int y;
     char ownerID2;
     uint8_t blg_ID;
+
+    yw_f80()
+    {
+        field_0 = 0;
+        field_4 = 0;
+        field_8 = 0;
+        x = 0;
+        y = 0;
+        ownerID2 = 0;
+        blg_ID = 0;
+    }
 };
 
 struct yw_field34
@@ -1109,6 +1190,8 @@ struct _NC_STACK_ypaworld
     int beamenergy;
     int field_8283;
     int easy_cheat_keys;
+
+    _NC_STACK_ypaworld();
 };
 
 struct lego_xyz
@@ -1656,16 +1739,18 @@ public:
     virtual void ypaworld_func185(void *arg);
 
     virtual size_t compatcall(int method_id, void *data);
-    NC_STACK_ypaworld() {
-        memset(&stack__ypaworld, 0, sizeof(stack__ypaworld));
+    NC_STACK_ypaworld()
+    {
     };
     virtual ~NC_STACK_ypaworld() {};
 
-    virtual const char * getClassName() {
+    virtual const char * getClassName()
+    {
         return "ypaworld.class";
     };
 
-    static NC_STACK_nucleus * newinstance() {
+    static NC_STACK_nucleus * newinstance()
+    {
         return new NC_STACK_ypaworld();
     };
 

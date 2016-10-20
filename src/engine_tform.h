@@ -10,14 +10,21 @@ struct SinCos
 #define MAT_FLAG_INV_SIN   1
 #define MAT_FLAG_INV_COS   2
 
-struct xyz
+struct __attribute__((packed)) xyz
 {
     float sx;
     float sy;
     float sz;
+
+    xyz()
+    {
+        sx = 0.0;
+        sy = 0.0;
+        sz = 0.0;
+    }
 };
 
-struct mat3x3
+struct __attribute__((packed)) mat3x3
 {
     float m00;
     float m01;
@@ -28,6 +35,19 @@ struct mat3x3
     float m20;
     float m21;
     float m22;
+
+    mat3x3()
+    {
+        m00 = 0.0;
+        m01 = 0.0;
+        m02 = 0.0;
+        m10 = 0.0;
+        m11 = 0.0;
+        m12 = 0.0;
+        m20 = 0.0;
+        m21 = 0.0;
+        m22 = 0.0;
+    }
 };
 
 struct destFX

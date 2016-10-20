@@ -54,6 +54,307 @@ int dword_5A7A8C;
 int dword_5A7A80;
 NC_STACK_yparobo *dword_5A7A84; //player robo
 
+_NC_STACK_ypaworld::_NC_STACK_ypaworld()
+{
+    self_full = NULL;
+    GameShell = NULL;
+    b64_parms = NULL;
+    sectors_maxX = 0;
+    sectors_maxY = 0;
+    sectors_maxX2 = 0;
+    sectors_maxY2 = 0;
+    cells = NULL;
+
+    map_Width_meters = 0.0;
+    map_Height_meters = 0.0;
+    field_30 = NULL;
+    field_34 = NULL;
+    field_38 = 0;
+    field_3c = 0;
+    set_number = 0;
+    additionalSet = NULL;
+//nlist bact_list;
+//nlist dead_cache;
+    vhcls_models = NULL;
+    legos = NULL;
+    subSectors = NULL;
+    secTypes = NULL;
+    VhclProtos = NULL;
+    WeaponProtos = NULL;
+    BuildProtos = NULL;
+    RoboProtos = NULL;
+//yw_f80 field_80[8];
+
+    memset(build_hp_ref, 0, sizeof(build_hp_ref));
+    memset(sqrt_table, 0, sizeof(sqrt_table));
+
+    current_bact = NULL;
+    xyz field_1334;
+    mat3x3 field_1340;
+    sky_loaded_base = NULL;
+    field_1368 = 0;
+    additionalBeeBox = NULL;
+    colsub_sklt = NULL;
+    colcomp_sklt = NULL;
+    colsub_sklt_intrn = NULL;
+    colcomp_sklt_intrn = NULL;
+    tracyrmp_ilbm = NULL;
+    shadermp_ilbm = NULL;
+    win3d = NULL;
+    field_138c = 0;
+    str17_NOT_FALSE = 0;
+
+//slurp slurps1[6][6];
+//slurp slurps2[6][6];
+//slurp2 ColSide;
+//slurp2 ColCross;
+
+    field_15e4 = 0;
+    field_15e8 = 0;
+    field_15ec = 0;
+    field_15f0 = 0;
+    field_15f4 = 0;
+    field_15f8 = 0;
+    field_15fc = 0;
+
+    audio_volume = 0;
+    field_1604 = 0;
+    field_1608 = 0;
+    field_160c = 0;
+    field_1610 = 0;
+    field_1614 = 0;
+    field_1618 = 0;
+    field_161c = 0;
+    buildDate = NULL;
+    field_1624 = 0;
+    field_1628 = 0;
+    field_162A = 0;
+    field_162c = 0;
+
+    memset(tiles, 0, sizeof(tiles));
+
+//nlist field_17a0;
+    screen_width = 0;
+    screen_height = 0;
+    field_17b0 = 0;
+    field_17b4 = NULL;
+//shortPoint field_17b8;
+    field_17bc = 0;
+    field_17c0 = 0; // Grab mouse for unit steer-turn
+    field_17c4 = 0;
+    field_17c8 = 0;
+    tooltips = NULL;
+//rgbiColor iniColors[70];
+    field_1a00 = 0;
+    field_1a04 = 0;
+    field_1a08 = 0;
+    field_1a0c = 0;
+    field_1a10 = 0;
+
+    field_1a1c = 0;
+    field_1a20 = 0;
+    font_default_h = 0;
+    font_default_w__a = 0;
+    font_yscrl_bkg_w = 0;
+    font_xscrl_h = 0;
+    font_default_w__b = 0;
+    field_1a38 = 0;
+    font_yscrl_h = 0;
+    icon_order__w = 0;
+    icon_order__h = 0;
+    icon_help__w = 0;
+    icon_help__h = 0;
+    icon_energy__h = 0;
+    icon0___h = 0;
+    field_1a58 = 0;
+    field_1a5c = 0;
+    field_1a60 = NULL;
+    field_1a64 = 0;
+    field_1A66 = 0;
+    field_1a68 = 0; //Network?
+//xyz field_1a6c;
+
+//xyz field_1a7c;
+
+//xyz field_1a8c;
+    field_1a98 = NULL;
+    field_1a9c = 0.0;
+    field_1aa0 = 0;
+    field_1aa4 = 0;
+    field_1aa8 = 0;
+    field_1aac = NULL;
+    field_1ab0 = 0;
+    field_1ab4 = 0;
+//xyz field_1ab8;
+
+    memset(pointers, 0, sizeof(pointers));
+    memset(pointers__bitm, 0, sizeof(pointers__bitm));
+
+    field_1b1c = 0;
+    field_1b20 = 0; // saved mouse x
+    field_1b22 = 0; // saved mouse y
+//ypabact_arg65 field_1b24;
+    field_1b68 = 0; // debug info draw
+    field_1B6A = 0;
+    field_1b6c = 0;
+    field_1B6E = 0;
+    field_1b70 = 0;
+    field_1b74 = 0;
+    field_1b78 = NULL;
+    field_1b7c = NULL;
+    field_1b80 = NULL;
+    field_1b84 = NULL;
+    field_1b88 = NULL;
+
+    memset(sectors_count_by_owner, 0, sizeof(sectors_count_by_owner));
+
+    for (int i = 0; i < 8; i++)
+    {
+        field_1bac[i] = 0;
+        field_1bcc[i] = 0.0;
+        field_1bec[i] = 0.0;
+    }
+
+    memset(field_1c0c, 0, sizeof(field_1c0c));
+
+    field_240c = 0;
+    field_2410 = 0;
+    field_2414 = 0;
+    field_2418 = 0;
+    field_241c = 0;
+    field_2420 = NULL;
+    field_2424 = 0;
+    do_screenshooting = 0;
+    screenshot_seq_id = 0; //Screenshoting sequence id
+    screenshot_seq_frame_id = 0; //Screenshoting frame id
+    replayer = NULL; // For play replay
+    sceneRecorder = NULL; // For record replay
+
+    field_2b78 = 0;
+    field_2b7c = 0;
+    last_modify_vhcl = 0;
+    last_modify_weapon = 0;
+    last_modify_build = 0;
+
+    LevelNet = NULL;
+    field_2d90 = NULL;
+
+    memset(&brief, 0, sizeof(brief)); //hacky
+
+    history = NULL;
+    superbomb_wall_vproto = 0;
+    superbomb_center_vproto = 0;
+    field_7278 = 0;
+    field_727c = 0;
+    field_7280 = 0;
+    memset(lang_name, 0, sizeof(lang_name));
+    lang_strings = NULL;
+    very_big_array__p_begin = NULL;
+    lang_strings__end = NULL;
+    string_pointers = NULL;
+    string_pointers_p2 = NULL;
+    typ_map = NULL;
+    own_map = NULL;
+    blg_map = NULL;
+    hgt_map = NULL;
+
+    copyof_typemap = NULL;
+    copyof_ownermap = NULL;
+    memset(&wis_skeletons, 0, sizeof(wis_skeletons)); //hacky
+    field_739A = 0;
+
+    field_73CE = 0;
+    snd__cdsound = 0;
+
+//	save_status robo_map_status;
+//	save_status robo_finder_status;
+//	save_status vhcl_map_status;
+//	save_status vhcl_finder_status;
+    fxnumber = 0;
+    dbg_num_sqd_counter[8] = 0;
+    dbg_num_vhcl_counter[8] = 0;
+    dbg_num_flk_counter[8] = 0;
+    dbg_num_robo_counter[8] = 0;
+    dbg_num_wpn_counter[8] = 0;
+    dbg_num_sqd = 0;
+    dbg_num_sqd_max = 0;
+    dbg_num_vhcl = 0;
+    dbg_num_vhcl_max = 0;
+    dbg_num_flk = 0;
+    dbg_num_flk_max = 0;
+    dbg_num_robo = 0;
+    dbg_num_robo_max = 0;
+    dbg_num_wpn = 0;
+    dbg_num_wpn_max = 0;
+    input_class = NULL;
+    field_7562 = 0;
+    field_7566 = 0;
+    field_756A = 0;
+    field_756E = 0;
+
+    windp = NULL;
+
+    field_757E = 0;
+
+    field_7586 = 0;
+
+    field_7592 = 0;
+
+    field_759A = 0;
+    field_759E = 0;
+    field_75A2 = 0; //array 64?
+
+    memset(field_75E2, 0, sizeof(field_75E2)); //array 64?
+
+
+    netgame_exclusivegem = 0;
+    field_7626 = 0;
+
+    p_1_grp_cnt = 0;
+    memset(p_1_grp, 0, sizeof(p_1_grp));
+//	player_status playerstatus[8];
+//	player_status field_7796[8];
+    maxroboenergy = 0;
+    maxreloadconst = 0;
+    samples = NULL;
+    field_7882 = 0;
+    field_7886 = 0;
+    field_788A = 0;
+    field_788E = 0.0; //input sliders
+    field_7892 = 0.0; //input sliders
+    field_7896 = 0.0; //input sliders
+    field_789A = 0.0; //input sliders
+    field_789E = 0.0; //input sliders
+
+    memset(&movies, 0, sizeof(movies));
+
+    field_81AB = 0;
+    field_81AF = NULL;
+    field_81B3 = NULL;
+    one_game_res = 0;
+    shell_default_res = 0;
+    game_default_res = 0;
+    map_events = NULL;
+    max_impulse = 0.0;
+
+    memset(&field_81CB, 0, sizeof(field_81CB));
+
+    vehicle_sector_ratio_1 = 0.0;
+    unit_limit = 0;
+    unit_limit_arg = 0;
+    unit_limit_type = 0;
+    unit_limit_1 = 0;
+    unit_limit_arg_1 = 0;
+    unit_limit_type_1 = 0;
+    field_826F = 0;
+    TOD_ID = 0;
+    beam_energy_start = 0;
+    beam_energy_add = 0;
+    beamenergy = 0;
+    field_8283 = 0;
+    easy_cheat_keys = 0;
+}
+
 
 int sub_4493B0(scrCallBack *arg)
 {

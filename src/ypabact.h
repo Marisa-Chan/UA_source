@@ -271,6 +271,24 @@ struct ypabact_arg65
     xyz field_30;
     __NC_STACK_ypabact *field_3C;
     int field_40;
+
+    ypabact_arg65()
+    {
+        field_0 = 0;
+        field_4 = 0;
+        inpt = NULL;
+        numid = 0;
+        field_10 = 0;
+        field_14 = 0;
+        field_18 = 0;
+        field_1C = NULL;
+        field_20 = NULL;
+        field_24 = 0;
+        field_28 = 0;
+        field_2C = 0;
+        field_3C = NULL;
+        field_40 = 0;
+    }
 };
 
 struct bact_arg67
@@ -356,6 +374,17 @@ struct bact_hudi
     float field_10;
     float field_14;
     __NC_STACK_ypabact *field_18;
+
+    bact_hudi()
+    {
+        field_0 = 0;
+        field_4 = 0;
+        field_8 = 0.0;
+        field_C = 0.0;
+        field_10 = 0.0;
+        field_14 = 0.0;
+        field_18 = NULL;
+    }
 };
 
 struct bact_arg105
@@ -492,16 +521,19 @@ public:
     virtual size_t ypabact_func125(bact_arg124 *arg);
 
     virtual size_t compatcall(int method_id, void *data);
-    NC_STACK_ypabact() {
+    NC_STACK_ypabact()
+    {
         memset(&stack__ypabact, 0, sizeof(stack__ypabact) );
     };
     virtual ~NC_STACK_ypabact() {};
 
-    virtual const char * getClassName() {
+    virtual const char * getClassName()
+    {
         return "ypabact.class";
     };
 
-    static NC_STACK_nucleus * newinstance() {
+    static NC_STACK_nucleus * newinstance()
+    {
         return new NC_STACK_ypabact();
     };
 
