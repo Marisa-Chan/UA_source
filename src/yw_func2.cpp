@@ -1355,6 +1355,72 @@ void sb_0x47f810(_NC_STACK_ypaworld *yw)
     }
 }
 
+void sub_44A1FC(_NC_STACK_ypaworld *yw)
+{
+    int v2 = 0;
+
+    if ( yw->GameShell )
+    {
+        FSMgr::FileHandle *fil = uaOpenFile("env:levels.def", "r");
+
+        if ( fil )
+        {
+            char buf[512];
+
+            if ( fil->gets(buf, 512) )
+            {
+                char *pos = buf;
+                char *val = NULL;
+
+                while( *pos )
+                {
+                    if ( strchr("\t ,", *pos) )
+                    {
+                        if (val)
+                        {
+                            *pos = 0;
+
+                            uint32_t tmp = strtol(val, 0, 10);
+
+                            if (tmp < 256)
+                                yw->LevelNet->mapInfos[tmp].field_0 = 2;
+
+                            val = NULL;
+                        }
+                    }
+                    else
+                    {
+                        if (!val)
+                            val = pos;
+                    }
+                    pos++;
+                }
+
+                if (val)
+                {
+                    uint32_t tmp = strtol(val, 0, 10);
+
+                    if (tmp < 256)
+                        yw->LevelNet->mapInfos[tmp].field_0 = 2;
+
+                    val = NULL;
+                }
+            }
+
+            v2 = 1;
+            delete fil;
+        }
+    }
+
+    if ( !v2 )
+    {
+        yw->LevelNet->mapInfos[1].field_0 = 2;
+        yw->LevelNet->mapInfos[25].field_0 = 2;
+        yw->LevelNet->mapInfos[26].field_0 = 2;
+        yw->LevelNet->mapInfos[27].field_0 = 2;
+    }
+}
+
 void sb_0x46cdf8(UserData *usr)
 {
     char a1a[300];
@@ -1416,10 +1482,8 @@ void sb_0x46cdf8(UserData *usr)
                 mp->field_0 = 1;
         }
 
-        usr->p_ypaworld->LevelNet->mapInfos[1].field_0 = 2;
-        usr->p_ypaworld->LevelNet->mapInfos[25].field_0 = 2;
-        usr->p_ypaworld->LevelNet->mapInfos[26].field_0 = 2;
-        usr->p_ypaworld->LevelNet->mapInfos[27].field_0 = 2;
+        sub_44A1FC(usr->p_ypaworld);
+
         usr->p_ypaworld->maxroboenergy = 0;
         usr->p_ypaworld->maxreloadconst = 0;
 

@@ -679,7 +679,7 @@ int yw_initGameWithSettings()
 
 void ReadSnapsDir()
 {
-    FSMgr::DirIter *dir = uaOpenDir("env/snaps/");
+    FSMgr::DirIter *dir = uaOpenDir("env:snaps/");
 
     if ( dir )
     {
@@ -688,7 +688,7 @@ void ReadSnapsDir()
         {
             if ( entr->getType() == FSMgr::iNode::NTYPE_FILE && userdata.snap_count < 32 && !strnicmp(entr->getName(), "demo", 4) )
             {
-                sprintf( userdata.snaps[ userdata.snap_count ], "env/snaps/%s", entr->getName());
+                sprintf( userdata.snaps[ userdata.snap_count ], "env:snaps/%s", entr->getName());
                 userdata.snap_count++;
             }
         }
@@ -760,10 +760,19 @@ int WinMain__sub0__sub1()
     return 1;
 }
 
-int WinMain__sub0()
+int WinMain__sub0(int argc, const char *argv[])
 {
     if ( WinMain__sub0__sub0() )
     {
+        for (int i = 1; i < argc; i++)
+        {
+            if (strcasecmp(argv[i], "-env") == 0 && i + 1 < argc)
+            {
+                set_prefix_replacement("env", argv[i + 1]);
+            }
+        }
+
+
         if ( WinMain__sub0__sub1() )
             return 1;
         deinit_globl_engines();
@@ -772,7 +781,7 @@ int WinMain__sub0()
     return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
 //	HANDLE UAMUTEX = CreateMutex(0, 0, "UA Running Test Mutex");
 //
@@ -786,7 +795,7 @@ int main(int argc, char *argv[])
     FSMgr::iDir::setBaseDir("");
     SDLWRAP_INIT();
 
-    if ( !WinMain__sub0() )
+    if ( !WinMain__sub0(argc, argv) )
         return 0;
 
     while ( sb_0x411324() )

@@ -1,6 +1,8 @@
 #ifndef YW_H_INCLUDED
 #define YW_H_INCLUDED
 
+#include <string.h>
+
 #include "engine_gfx.h"
 #include "engine_input.h"
 #include "engine_miles.h"
@@ -1190,6 +1192,8 @@ struct _NC_STACK_ypaworld
     int beamenergy;
     int field_8283;
     int easy_cheat_keys;
+
+    std::string initScriptLoc;
 
     _NC_STACK_ypaworld();
 };

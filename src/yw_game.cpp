@@ -4969,7 +4969,7 @@ int recorder_startrec(_NC_STACK_ypaworld *yw)
     rcrd->ainf_size = 0;
 
     char a1[256];
-    sprintf(a1, "env/snaps/m%02d%04d.raw", yw->field_2d90->levelID, rcrd->seqn);
+    sprintf(a1, "env:snaps/m%02d%04d.raw", yw->field_2d90->levelID, rcrd->seqn);
 
     rcrd->mfile = new_MFILE();
 
@@ -5054,7 +5054,7 @@ void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
 
         char a1[256];
-        sprintf(a1, "env/snaps/s%d_%04d", yw->screenshot_seq_id, yw->screenshot_seq_frame_id);
+        sprintf(a1, "env:snaps/s%d_%04d", yw->screenshot_seq_id, yw->screenshot_seq_frame_id);
 
         yw->screenshot_seq_frame_id++;
 

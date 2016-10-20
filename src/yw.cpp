@@ -473,7 +473,7 @@ int init_prototypes(_NC_STACK_ypaworld *yw)
 
     if ( yw->VhclProtos && yw->WeaponProtos && yw->BuildProtos && yw->RoboProtos )
     {
-        if ( sub_4DA354(yw, "data:scripts/startup.scr") )
+        if ( sub_4DA354(yw, yw->initScriptLoc.c_str()) )
             return 1;
     }
 
@@ -560,6 +560,32 @@ int yw_InitSceneRecorder(_NC_STACK_ypaworld *yw)
     return yw->sceneRecorder != 0;
 }
 
+void yw_setInitScriptLoc(_NC_STACK_ypaworld *yw)
+{
+    bool ok = false;
+    FSMgr::FileHandle *fil = uaOpenFile("env:startup.def", "r");
+
+    if (fil)
+    {
+        char buf[512];
+        if ( fil->gets(buf, 512) )
+        {
+            char *en = strpbrk(buf, "\n;");
+            if (en)
+                *en = 0;
+
+            yw->initScriptLoc = buf;
+            ok = true;
+        }
+
+
+        delete fil;
+    }
+
+    if (!ok)
+        yw->initScriptLoc = "data:scripts/startup.scr";
+}
+
 size_t NC_STACK_ypaworld::func0(stack_vals *stak)
 {
     if ( !NC_STACK_base::func0(stak) )
@@ -580,9 +606,13 @@ size_t NC_STACK_ypaworld::func0(stack_vals *stak)
     set_prefix_replacement("mov", "Data:mov");
     set_prefix_replacement("levels", "Levels");
     set_prefix_replacement("mbpix", "levels:mbpix");
+    set_prefix_replacement("locale", "locale");
+    set_prefix_replacement("scripts", "data:scripts");
 
-    if ( !ypaworld_func0__sub0("env/assign.txt") )
-        ypa_log_out("Warning, no env/assign.txt script.\n");
+    if ( !ypaworld_func0__sub0("env:assign.txt") )
+        ypa_log_out("Warning, no env:assign.txt script.\n");
+
+    yw_setInitScriptLoc(yw);
 
     if ( !yw_InitLocale(yw) )
     {
@@ -3011,7 +3041,7 @@ void NC_STACK_ypaworld::ypaworld_func151(stack_vals *arg)
                 if ( yw->BuildProtos )
                 {
                     if ( yw->RoboProtos )
-                        sub_4DA354(yw, "data:scripts/startup.scr");
+                        sub_4DA354(yw, yw->initScriptLoc.c_str());
                 }
             }
         }
@@ -6715,7 +6745,7 @@ void draw_tooltip(_NC_STACK_ypaworld *yw)
 void sub_4476AC(_NC_STACK_ypaworld *yw)
 {
     char a1a[256];
-    sprintf(a1a, "env/snaps/f_%04d", yw->field_2424);
+    sprintf(a1a, "env:snaps/f_%04d", yw->field_2424);
 
     yw->field_2424++;
 
@@ -7363,7 +7393,7 @@ int simple_lang_parser(_NC_STACK_ypaworld *yw, const char *filename)
 int load_lang_lng(_NC_STACK_ypaworld *yw, const char *lang)
 {
     char buf[128];
-    sprintf(buf, "locale/%s.lng", lang);
+    sprintf(buf, "locale:%s.lng", lang);
 
     if ( !simple_lang_parser(yw, buf) )
     {

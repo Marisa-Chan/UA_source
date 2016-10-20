@@ -3469,7 +3469,7 @@ int  ShellSoundsLoad(UserData *usr)
     v4[1].dataForStore = usr;
     v4[1].func = ShellTracksParse;
 
-    return def_parseFile("data:world.ini", 2, v4, 2) != 0;
+    return (def_parseFile("env:world.ini", 2, v4, 2) != 0) || (def_parseFile("data:world.ini", 2, v4, 2) != 0);
 }
 
 
