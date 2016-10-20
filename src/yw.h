@@ -1349,7 +1349,7 @@ struct roboGun
     xyz dir;
     NC_STACK_ypagun *gun_obj;
     char robo_gun_name[32];
-    char robo_gun_type;
+    uint8_t robo_gun_type;
 };
 
 struct roboProto
