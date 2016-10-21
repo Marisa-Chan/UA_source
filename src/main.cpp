@@ -760,7 +760,7 @@ int WinMain__sub0__sub1()
     return 1;
 }
 
-int WinMain__sub0(int argc, const char *argv[])
+int WinMain__sub0(int argc, char *argv[])
 {
     if ( WinMain__sub0__sub0() )
     {
@@ -781,7 +781,7 @@ int WinMain__sub0(int argc, const char *argv[])
     return 0;
 }
 
-int main(int argc, const char *argv[])
+int main(int argc, char *argv[])
 {
 //	HANDLE UAMUTEX = CreateMutex(0, 0, "UA Running Test Mutex");
 //
