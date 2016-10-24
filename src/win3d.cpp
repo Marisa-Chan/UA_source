@@ -29,29 +29,25 @@ int txt16bit = 0;
 
 const NewClassDescr NC_STACK_win3d::description("win3d.class", &newinstance);
 
-key_value_stru win3d_keys[7] =
+key_value_stru win3d_keys[16] =
 {
-    {"gfx.dither", KEY_TYPE_BOOL, 0},
+    {"gfx.dither", KEY_TYPE_BOOL, 0},               //0
     {"gfx.filter", KEY_TYPE_BOOL, 0},
     {"gfx.antialias", KEY_TYPE_BOOL, 0},
     {"gfx.alpha", KEY_TYPE_DIGIT, 0xC0},
     {"gfx.zbuf_when_tracy", KEY_TYPE_BOOL, 0},
-    {"gfx.colorkey", KEY_TYPE_BOOL, 0},
-    {"gfx.force_emul", KEY_TYPE_BOOL, 0}
-};
-
-key_value_stru windd_keys[8] =
-{
+    {"gfx.colorkey", KEY_TYPE_BOOL, 0},             //5
+    {"gfx.force_emul", KEY_TYPE_BOOL, 0},
     {"gfx.force_soft_cursor", KEY_TYPE_BOOL, 0},
     {"gfx.all_modes", KEY_TYPE_BOOL, 0},
     {"gfx.movie_player", KEY_TYPE_BOOL, 1},
-    {"gfx.force_alpha_textures", KEY_TYPE_BOOL, 0},
+    {"gfx.force_alpha_textures", KEY_TYPE_BOOL, 0}, //10
     {"gfx.use_draw_primitive", KEY_TYPE_BOOL, 0},
     {"gfx.disable_lowres", KEY_TYPE_BOOL, 0},
     {"gfx.export_window_mode", KEY_TYPE_BOOL, 0},
     {"gfx.blending", KEY_TYPE_DIGIT, 0},
+    {"gfx.solidfont", KEY_TYPE_BOOL, true}          //15
 };
-
 
 
 
@@ -196,6 +192,8 @@ __NC_STACK_win3d::__NC_STACK_win3d()
 
     corrIW = corrW = 1.0;
     corrIH = corrH = 1.0;
+
+    solidFont = true;
 }
 
 
@@ -312,10 +310,18 @@ void NC_STACK_win3d::DrawTextEntry(const ScreenText *txt)
                 clr.g = 0;
                 clr.b = 0;
 
-                SDL_Surface *tmp = TTF_RenderUTF8_Solid(font->ttfFont, txt->string, clr);
-                //SDL_Surface *tmp = NULL;
-                SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_NONE);
+                SDL_Surface *tmp;
 
+                if (stack__win3d.solidFont)
+                {
+                    tmp = TTF_RenderUTF8_Solid(font->ttfFont, txt->string, clr);
+                    SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_NONE);
+                }
+                else
+                {
+                    tmp = TTF_RenderUTF8_Blended(font->ttfFont, txt->string, clr);
+                    SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_BLEND);
+                }
 
                 SDL_Rect want;
                 want.w = tmp->w;
@@ -330,8 +336,16 @@ void NC_STACK_win3d::DrawTextEntry(const ScreenText *txt)
                 clr.g = font->g;
                 clr.b = font->b;
 
-                SDL_SetPaletteColors(tmp->format->palette, &clr, 1, 1);
-
+                if (stack__win3d.solidFont)
+                {
+                    SDL_SetPaletteColors(tmp->format->palette, &clr, 1, 1);
+                }
+                else
+                {
+                    SDL_FreeSurface(tmp);
+                    tmp = TTF_RenderUTF8_Blended(font->ttfFont, txt->string, clr);
+                    SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_BLEND);
+                }
 
                 want.w = tmp->w;
                 want.h = tmp->h;
@@ -881,9 +895,18 @@ int NC_STACK_win3d::load_font(const char *fontname)
 
     stack__win3d.font.height = height;
 
-    stack__win3d.font.ttfFont = SDLWRAP_loadFont(facename, height);
+    if (stack__win3d.solidFont)
+        stack__win3d.font.ttfFont = SDLWRAP_loadFont(facename, height);
+    else
+        stack__win3d.font.ttfFont = SDLWRAP_loadFont(facename, height + 1);
+
     if ( stack__win3d.font.ttfFont )
+    {
+        if (!stack__win3d.solidFont)
+            TTF_SetFontHinting(stack__win3d.font.ttfFont, TTF_HINTING_LIGHT);
+
         return 1;
+    }
 
     printf("Can't load font\n");
 
@@ -899,23 +922,21 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
     int drawprim_def = read_yes_no_status("env/drawprim.def", 0);
     txt16bit = txt16bit_def;
 
-    get_keyvalue_from_ini(0, windd_keys, 8);
+    int export_window_mode = win3d_keys[13].value.val;     // gfx.export_window_mode
 
-    int export_window_mode = windd_keys[6].value.val;     // gfx.export_window_mode
-
-    if (windd_keys[7].value.val == 0)
+    if (win3d_keys[14].value.val == 0)
     {
         can_srcblend = 1;
         can_destblend = 0;
         can_stippling = 0;
     }
-    else if (windd_keys[7].value.val == 1)
+    else if (win3d_keys[14].value.val == 1)
     {
         can_srcblend = 1;
         can_destblend = 1;
         can_stippling = 0;
     }
-    else if (windd_keys[7].value.val == 2)
+    else if (win3d_keys[14].value.val == 2)
     {
         can_srcblend = 0;
         can_destblend = 0;
@@ -961,11 +982,13 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
 
     win3d->forcesoftcursor = 0;
     win3d->sort_id = picked->sortid;
-    win3d->movie_player = windd_keys[2].value.val;
-    win3d->disable_lowres = windd_keys[5].value.val;
+    win3d->movie_player = win3d_keys[9].value.val;
+    win3d->disable_lowres = win3d_keys[12].value.val;
     win3d->txt16bit = txt16bit_def;
     win3d->use_simple_d3d = drawprim_def;
     win3d->export_window_mode = export_window_mode;
+
+    win3d->solidFont = win3d_keys[15].value.val;
 
     win3d->windowed = picked->windowed; ////HACK
 
@@ -1026,7 +1049,7 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
 
 size_t NC_STACK_win3d::func0(stack_vals *stak)
 {
-    get_keyvalue_from_ini(0, win3d_keys, 7);
+    get_keyvalue_from_ini(0, win3d_keys, 16);
 
     if ( !windd_func0(stak) )
         return 0;

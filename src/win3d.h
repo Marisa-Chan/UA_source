@@ -141,6 +141,7 @@ struct __NC_STACK_win3d
 
     float corrW, corrIW;
     float corrH, corrIH;
+    bool solidFont;
 
     __NC_STACK_win3d();
 };
