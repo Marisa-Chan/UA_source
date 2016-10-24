@@ -161,6 +161,7 @@ void waldev::deleteSample(walsmpl *smpl)
             if (*it == smpl)
             {
                 delete smpl;
+                sample_list.erase(it);
                 break;
             }
         }
