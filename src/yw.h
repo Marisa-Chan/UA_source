@@ -1194,6 +1194,7 @@ struct _NC_STACK_ypaworld
     int easy_cheat_keys;
 
     std::string initScriptLoc;
+    int playerOwner;
 
     _NC_STACK_ypaworld();
 };

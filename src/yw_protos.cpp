@@ -17,7 +17,6 @@ NC_STACK_yparobo *current_robo;
 NC_STACK_ypabact *current_bact;
 NC_STACK_ypabact *current_commander;
 __NC_STACK_ypabact *dword_5A7A88;
-extern NC_STACK_yparobo *dword_5A7A84;
 extern int dword_5A7A80;
 extern int bact_id;
 extern int dword_5A7A8C;
@@ -5324,6 +5323,11 @@ int sb_0x479f4c__sub0(scrCallBack *scr)
     {
         dword_5A7A88->owner = atoi(scr->p2);
     }
+    else if ( !strcasecmp(scr->p1, "is_user_robo") )
+    {
+        if ( !strcasecmp(scr->p2, "yes") )
+            robo->wrld->setYW_userHostStation(current_robo);
+    }
     else if ( !strcasecmp(scr->p1, "robostate") )
     {
         robo->roboState = atoi(scr->p2);
@@ -5401,7 +5405,7 @@ int sb_0x479f4c__sub0(scrCallBack *scr)
     {
         robo->bact_internal->energy_2 = atoi(scr->p2);
 
-        if ( robo->bact_internal->owner == 1 )
+        if ( yw->field_1b78 == current_robo )
         {
             if ( robo->bact_internal->energy_2 < yw->maxroboenergy )
             {
@@ -5780,12 +5784,6 @@ int sb_0x479f4c(scrCallBack *scr)
     {
         if ( !strcasecmp(scr->p1, "end") )
         {
-            if ( dword_5A7A88->owner == 1 )
-            {
-                dword_5A7A84 = dynamic_cast<NC_STACK_yparobo *>(current_bact);
-                yw->self_full->setYW_userVehicle(current_bact);
-            }
-
             if ( !dword_5A7A88->reload_const_or_energy2 )
                 dword_5A7A88->reload_const_or_energy2 = dword_5A7A88->energy_2;
 

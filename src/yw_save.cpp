@@ -772,11 +772,19 @@ int yw_write_bact(bact_node *bct, FSMgr::FileHandle *fil)
     return 1;
 }
 
-int yw_write_robo(bact_node *bct, FSMgr::FileHandle *fil)
+int yw_write_robo(_NC_STACK_ypaworld *yw, bact_node *bct, FSMgr::FileHandle *fil)
 {
     char buf[300];
 
     sprintf(buf, "\nbegin_robo %d\n", bct->bact->id);
+    fil->write(buf, strlen(buf));
+
+    const char *isuser = "no";
+
+    if (bct->bacto == yw->field_1b78)
+        isuser = "yes";
+
+    sprintf(buf, "    is_user_robo   = %s\n", isuser);
     fil->write(buf, strlen(buf));
 
     if ( !yw_write_bact(bct, fil) )
@@ -998,7 +1006,7 @@ int yw_write_units(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
     {
         if ( station->bact->field_3D5 != 2 )
         {
-            if ( !yw_write_robo(station, fil) )
+            if ( !yw_write_robo(yw, station, fil) )
                 return 0;
 
             bact_node *commander = (bact_node *)station->bact->list2.tailpred;

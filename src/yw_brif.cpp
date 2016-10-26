@@ -552,7 +552,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub16(_NC_STACK_ypaworld *yw, struC5 *i
     {
         squadProto *v5 = &brf->map_prototype.squads[i];
 
-        if ( v5->owner == 1 && v5->mb_status != 1)
+        if ( v5->owner == yw->playerOwner && v5->mb_status != 1)
             brf->field_2E74++;
     }
 
@@ -577,7 +577,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub17(_NC_STACK_ypaworld *yw, struC5 *i
         {
             v9 = &brf->map_prototype.squads[i];
 
-            if ( v9->owner == 1 && v9->mb_status != 1)
+            if ( v9->owner == yw->playerOwner && v9->mb_status != 1)
             {
                 if ( v6 == 0 )
                     break;
@@ -1742,7 +1742,7 @@ char * yw_DebriefKillsScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
 
         char a1[32];
 
-        if ( yw->field_727c || v28[i].owner == 1 )
+        if ( yw->field_727c || v28[i].owner == yw->playerOwner )
             sprintf(a1, "%d", brf->field_42BC[ v28[i].owner ].p2);
         else
             sprintf(a1, "-");

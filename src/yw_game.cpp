@@ -3669,12 +3669,7 @@ void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a
         bct1->bacto->ypabact_func78(&arg78);
     }
 
-    if ( a3 )
-    {
-        if ( bct1->bact->owner == 1 )
-            yw->self_full->setYW_userHostStation(bct1->bacto);
-    }
-    else
+    if ( !a3 )
     {
         bct1->bact->host_station = dynamic_cast<NC_STACK_yparobo *>(bct2->bacto);
         bct1->bact->owner = bct2->bact->owner;

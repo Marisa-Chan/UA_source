@@ -52,7 +52,6 @@ int bact_id = 0x10000;;
 int dword_5A7A78;
 int dword_5A7A8C;
 int dword_5A7A80;
-NC_STACK_yparobo *dword_5A7A84; //player robo
 
 _NC_STACK_ypaworld::_NC_STACK_ypaworld()
 {
@@ -353,6 +352,8 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     beamenergy = 0;
     field_8283 = 0;
     easy_cheat_keys = 0;
+
+    playerOwner = 0;
 }
 
 
@@ -2911,6 +2912,11 @@ void NC_STACK_ypaworld::ypaworld_func151(stack_vals *arg)
         yw->field_7280 = 0;
         yw->field_727c = 0;
     }
+
+    if ( yw->field_1b84 )
+        yw->playerOwner = yw->field_1b84->owner;
+    else
+        yw->playerOwner = 0;
 
     if ( yw->sceneRecorder->do_record )
         recorder_stoprec(yw);
@@ -7776,14 +7782,11 @@ void ypaworld_func169__sub2(_NC_STACK_ypaworld *yw)
 {
     bact_node *station = (bact_node *)yw->bact_list.head;
 
-    NC_STACK_yparobo *player_station = NULL;
+
 
     while(station->next)
     {
         sb_0x47b028(yw, station, station, 1);
-
-        if ( station->bact->owner == 1 && station->bact->field_24 == 3 )
-            player_station = dynamic_cast<NC_STACK_yparobo *>(station->bacto);
 
         bact_node *commander = (bact_node *)station->bact->list2.head;
 
@@ -7807,6 +7810,7 @@ void ypaworld_func169__sub2(_NC_STACK_ypaworld *yw)
 
     if ( dword_5A7A8C == 1 )
     {
+        NC_STACK_yparobo *player_station = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
         __NC_STACK_yparobo *robo = &player_station->stack__yparobo;
 
         if ( robo->guns[dword_5A7A78].gun_obj )
@@ -7869,7 +7873,6 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
 
     bact_id = 0x10000;
     dword_5A7A80 = 0;
-    dword_5A7A84 = NULL;
 
     yw_InitSuperItems(yw);
 
@@ -7897,8 +7900,8 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
     dword_5A7A80++;
     bact_id++;
 
-    if ( dword_5A7A84 )
-        dword_5A7A84->setROBO_commCount(dword_5A7A80);
+    if ( yw->field_1b78 )
+        dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78) ->setROBO_commCount(dword_5A7A80);
 
     ypaworld_func169__sub2(yw);
 
