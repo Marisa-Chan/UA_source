@@ -136,6 +136,8 @@ void SDLWRAP_drawScreen()
     glBindTexture(GL_TEXTURE_2D, screenTex);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, screen->w, screen->h, pixfmt, pixtype, screen->pixels);
 
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
     glColor3f(1,1,1);
 
     glBegin(GL_QUADS);
