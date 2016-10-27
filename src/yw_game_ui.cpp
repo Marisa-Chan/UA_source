@@ -12004,41 +12004,47 @@ void ypaworld_func64__sub21__sub5(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw
         break;
 
     case 2:
-        yw->field_1b24.field_14 = 2;
-        yw->field_1b24.field_1C = yw->field_1c0c[yw->field_2410];
-
-        if ( yw->field_1a58 & 0x10 )
+        if (yw->field_2410 >= 0)
         {
-            yw->field_1b24.field_20 = yw->field_1a60;
-            yw->field_1b24.field_24 = yw->field_1a64;
-            yw->field_1b24.field_28 = yw->field_1A66;
-            yw->field_1b24.field_2C = yw->field_1a68;
-            yw->field_1b24.field_30 = yw->field_1a6c;
-            yw->field_1b24.field_3C = NULL;
-        }
-        else
-        {
-            yw->field_1b24.field_20 = 0;
-            yw->field_1b24.field_3C = yw->field_1a98;
-        }
+            yw->field_1b24.field_14 = 2;
+            yw->field_1b24.field_1C = yw->field_1c0c[yw->field_2410];
 
-        bzda.field_1D0 = bzda.field_1CC & 1;
+            if ( yw->field_1a58 & 0x10 )
+            {
+                yw->field_1b24.field_20 = yw->field_1a60;
+                yw->field_1b24.field_24 = yw->field_1a64;
+                yw->field_1b24.field_28 = yw->field_1A66;
+                yw->field_1b24.field_2C = yw->field_1a68;
+                yw->field_1b24.field_30 = yw->field_1a6c;
+                yw->field_1b24.field_3C = NULL;
+            }
+            else
+            {
+                yw->field_1b24.field_20 = 0;
+                yw->field_1b24.field_3C = yw->field_1a98;
+            }
+
+            bzda.field_1D0 = bzda.field_1CC & 1;
+        }
         break;
 
     case 11:
     case 12:
     case 13:
-        yw->field_1b24.field_14 = arg;
-        yw->field_1b24.field_1C = yw->field_1c0c[yw->field_2410];
-
-        if ( yw->field_1a58 & 0x30 )
+        if (yw->field_2410 >= 0)
         {
-            yw->field_1b24.field_20 = yw->field_1a60;
-            yw->field_1b24.field_24 = yw->field_1a64;
-            yw->field_1b24.field_28 = yw->field_1A66;
-            yw->field_1b24.field_2C = yw->field_1a68;
-            yw->field_1b24.field_30 = yw->field_1a6c;
-            yw->field_1b24.field_3C = NULL;
+            yw->field_1b24.field_14 = arg;
+            yw->field_1b24.field_1C = yw->field_1c0c[yw->field_2410];
+
+            if ( yw->field_1a58 & 0x30 )
+            {
+                yw->field_1b24.field_20 = yw->field_1a60;
+                yw->field_1b24.field_24 = yw->field_1a64;
+                yw->field_1b24.field_28 = yw->field_1A66;
+                yw->field_1b24.field_2C = yw->field_1a68;
+                yw->field_1b24.field_30 = yw->field_1a6c;
+                yw->field_1b24.field_3C = NULL;
+            }
         }
         break;
 
@@ -12056,12 +12062,16 @@ void ypaworld_func64__sub21__sub5(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw
         break;
 
     case 4:
-        yw->field_1b24.field_14 = 4;
-        yw->field_1b24.field_1C = yw->field_1c0c[yw->field_2410];
-        yw->field_1b24.field_18 = bzda.field_2DC[bzda.field_8EC];
-        yw->field_1b24.field_30.sx = yw->field_1a8c.sx * yw->field_1a9c + yw->field_1334.sx;
-        yw->field_1b24.field_30.sy = yw->field_1a8c.sy * yw->field_1a9c + yw->field_1334.sy;
-        yw->field_1b24.field_30.sz = yw->field_1a8c.sz * yw->field_1a9c + yw->field_1334.sz;
+        if (yw->field_2410 >= 0)
+        {
+            yw->field_1b24.field_14 = 4;
+            yw->field_1b24.field_1C = yw->field_1c0c[yw->field_2410];
+
+            yw->field_1b24.field_18 = bzda.field_2DC[bzda.field_8EC];
+            yw->field_1b24.field_30.sx = yw->field_1a8c.sx * yw->field_1a9c + yw->field_1334.sx;
+            yw->field_1b24.field_30.sy = yw->field_1a8c.sy * yw->field_1a9c + yw->field_1334.sy;
+            yw->field_1b24.field_30.sz = yw->field_1a8c.sz * yw->field_1a9c + yw->field_1334.sz;
+        }
         break;
 
     case 5:
