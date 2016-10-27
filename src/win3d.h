@@ -18,6 +18,8 @@ struct wind3d_sub1
     float field_8;
 };
 
+#define MSK(X) (1 << (X))
+
 enum W3D_STATES
 {
     TEXTUREHANDLE,
@@ -236,8 +238,7 @@ public:
 protected:
     int initPolyEngine();
     int initPixelFormats();
-    void win3d__SetRenderState(int type, int state);
-    int SetRenderStates(int arg);
+    void SetRenderStates(int arg);
     void sb_0x43b518(polysDatSub *polysDat, texStru *tex, int a5, int a6);
     void RenderTransparent();
     void DrawScreenText();

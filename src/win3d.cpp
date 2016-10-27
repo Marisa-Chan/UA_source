@@ -469,114 +469,6 @@ int NC_STACK_win3d::initPixelFormats()
     return 1;
 }
 
-void NC_STACK_win3d::win3d__SetRenderState(int type, int state)
-{
-    if ( stack__win3d.sceneBeginned )
-    {
-        switch(type)
-        {
-        case TEXTUREHANDLE:
-            if (state)
-            {
-                glEnable(GL_TEXTURE_2D);
-                glBindTexture(GL_TEXTURE_2D, state);
-            }
-            else
-            {
-                glDisable(GL_TEXTURE_2D);
-                glBindTexture(GL_TEXTURE_2D, 0);
-            }
-            break;
-
-        case SHADEMODE:
-            if ( state )
-                glShadeModel(GL_SMOOTH);
-            else
-                glShadeModel(GL_FLAT);
-            break;
-
-        case STIPPLEENABLE:
-            break;
-
-        case SRCBLEND:
-        {
-            GLint dst;
-            glGetIntegerv(GL_BLEND_DST, &dst);
-
-            if (state == 0)
-                glBlendFunc(GL_ZERO, dst);
-            else if (state == 1)
-                glBlendFunc(GL_ONE, dst);
-            else if (state == 2)
-                glBlendFunc(GL_SRC_ALPHA, dst);
-            else if (state == 3)
-                glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, dst);
-        }
-        break;
-
-        case DESTBLEND:
-        {
-            GLint src;
-            glGetIntegerv(GL_BLEND_SRC, &src);
-
-            if (state == 0)
-                glBlendFunc(src, GL_ZERO);
-            else if (state == 1)
-                glBlendFunc(src, GL_ONE);
-            else if (state == 2)
-                glBlendFunc(src, GL_SRC_ALPHA);
-            else if (state == 3)
-                glBlendFunc(src, GL_ONE_MINUS_SRC_ALPHA);
-        }
-        break;
-
-        case TEXTUREMAPBLEND:
-            if (state == 0)
-                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-            else if (state == 1)
-            {
-                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-                glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-                glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_REPLACE);
-            }
-            else if (state == 2)
-                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-            break;
-
-        case ALPHABLENDENABLE:
-            if (state)
-                glEnable(GL_BLEND);
-            else
-                glDisable(GL_BLEND);
-            break;
-
-        case ZWRITEENABLE:
-            if (state)
-                glDepthMask(GL_TRUE);
-            else
-                glDepthMask(GL_FALSE);
-            break;
-
-        case TEXTUREMAG:
-            if (state)
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            else
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            break;
-
-        case TEXTUREMIN:
-            if (state)
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            else
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            break;
-
-        default:
-            break;
-        }
-    }
-}
-
 int NC_STACK_win3d::initPolyEngine()
 {
     __NC_STACK_win3d *w3d = &stack__win3d;
@@ -1726,19 +1618,141 @@ size_t NC_STACK_win3d::raster_func204(rstr_arg204 *arg)
     return 1;
 }
 
-int NC_STACK_win3d::SetRenderStates(int setAll)
+void NC_STACK_win3d::SetRenderStates(int setAll)
 {
     __NC_STACK_win3d *w3d = &stack__win3d;
 
+    uint32_t changeStates = 0;
+
+    if (setAll)
+        changeStates = 0xFFFFFFFF;
+
     for (int i = 0; i < W3D_STATES_MAX; i++)
     {
-        if (setAll || w3d->rendStates2[i] != w3d->rendStates[i])
-            win3d__SetRenderState(i, w3d->rendStates2[i]);
+        if (w3d->rendStates2[i] != w3d->rendStates[i])
+            changeStates |= 1 << i;
 
         w3d->rendStates[i] = w3d->rendStates2[i];
     }
 
-    return 1;
+    if ( changeStates & MSK(TEXTUREHANDLE))
+    {
+        if (w3d->rendStates[TEXTUREHANDLE])
+        {
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, w3d->rendStates[TEXTUREHANDLE]);
+        }
+        else
+        {
+            glDisable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+    }
+
+    if ( changeStates & ( MSK(TEXTUREHANDLE) | MSK(TEXTUREMAG) ) )
+    {
+        if (w3d->rendStates[TEXTUREMAG])
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        else
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
+
+    if ( changeStates & ( MSK(TEXTUREHANDLE) | MSK(TEXTUREMIN) ) )
+    {
+        if (w3d->rendStates[TEXTUREMIN])
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        else
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    }
+
+
+    if ( changeStates & MSK(SHADEMODE) )
+    {
+        if (w3d->rendStates[SHADEMODE])
+            glShadeModel(GL_SMOOTH);
+        else
+            glShadeModel(GL_FLAT);
+    }
+
+    if ( changeStates & MSK(STIPPLEENABLE) )
+    {
+    }
+
+    if ( changeStates & (MSK(SRCBLEND) | MSK(DESTBLEND)) )
+    {
+        GLint src, dst;
+        switch (w3d->rendStates[SRCBLEND])
+        {
+        case 0:
+            src = GL_ZERO;
+            break;
+
+        case 1:
+            src = GL_ONE;
+            break;
+
+        default:
+        case 2:
+            src = GL_SRC_ALPHA;
+            break;
+
+        case 3:
+            src = GL_ONE_MINUS_SRC_ALPHA;
+            break;
+        }
+
+        switch (w3d->rendStates[DESTBLEND])
+        {
+        case 0:
+            dst = GL_ZERO;
+            break;
+
+        case 1:
+            dst = GL_ONE;
+            break;
+
+        case 2:
+            dst = GL_SRC_ALPHA;
+            break;
+
+        default:
+        case 3:
+            dst = GL_ONE_MINUS_SRC_ALPHA;
+            break;
+        }
+
+        glBlendFunc(src, dst);
+    }
+
+    if ( changeStates & MSK(TEXTUREMAPBLEND) )
+    {
+        if (w3d->rendStates[TEXTUREMAPBLEND] == 0)
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+        else if (w3d->rendStates[TEXTUREMAPBLEND] == 1)
+        {
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+            glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+            glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_REPLACE);
+        }
+        else if (w3d->rendStates[TEXTUREMAPBLEND] == 2)
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    }
+
+    if ( changeStates & MSK(ALPHABLENDENABLE) )
+    {
+        if (w3d->rendStates[ALPHABLENDENABLE])
+            glEnable(GL_BLEND);
+        else
+            glDisable(GL_BLEND);
+    }
+
+    if ( changeStates & MSK(ZWRITEENABLE) )
+    {
+        if (w3d->rendStates[ZWRITEENABLE])
+            glDepthMask(GL_TRUE);
+        else
+            glDepthMask(GL_FALSE);
+    }
 }
 
 
