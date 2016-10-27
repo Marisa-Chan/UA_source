@@ -894,11 +894,7 @@ int NC_STACK_win3d::load_font(const char *fontname)
     }
 
     stack__win3d.font.height = height;
-
-    if (stack__win3d.solidFont)
-        stack__win3d.font.ttfFont = SDLWRAP_loadFont(facename, height);
-    else
-        stack__win3d.font.ttfFont = SDLWRAP_loadFont(facename, height + 1);
+    stack__win3d.font.ttfFont = SDLWRAP_loadFont(facename, height);
 
     if ( stack__win3d.font.ttfFont )
     {
