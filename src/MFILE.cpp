@@ -389,6 +389,7 @@ MFILE *new_MFILE()
     sub->TAG = TAG_FORM;
     sub->TAG_EXTENSION = TAG_NONE;
     sub->TAG_SIZE = 0x80000000;
+    sub->cur_pos = 0;
 
     mfile->list.push_front(sub);
     return mfile;
