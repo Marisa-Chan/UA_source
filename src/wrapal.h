@@ -101,7 +101,7 @@ public:
     void play();
 //    void pause();
     void stop();
-//    size_t getLen();
+    size_t getLen();
 //    void update();
 
 protected:
@@ -114,6 +114,8 @@ protected:
     int fill_n_queue(int bufID);
 
     std::deque<int16_t *> smplBuffers;
+
+    size_t len;
 };
 
 

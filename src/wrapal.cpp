@@ -615,10 +615,17 @@ bool walmus::open(const char *fname)
 
         freq = vorbisInfo->rate;
 
+        len = ov_pcm_total(&m_vorbis, -1) * 1000 / freq;
+
         SDL_UnlockMutex(mutex);
         return true;
     }
     return false;
+}
+
+size_t walmus::getLen()
+{
+    return len;
 }
 
 int walmus::fill_n_queue(int bufID)

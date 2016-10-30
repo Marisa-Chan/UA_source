@@ -264,6 +264,7 @@ void SetMusicTrack(int trackID, int minDelay, int maxDelay)
             sndSys.musTrack = trackID;
             sndSys.musMinDelay = minDelay;
             sndSys.musMaxDelay = maxDelay;
+            sndSys.musLength = sndSys.musPlayer->getLen();
         }
         else
             sndSys.musTrack = 0;
@@ -1004,7 +1005,7 @@ void UpdateMusic()
     {
         if (sndSys.musWait)
         {
-            if (sndSys.musWaitSTime + sndSys.musWaitDelay >= sndSys.currentTime)
+            if (sndSys.musWaitSTime + sndSys.musWaitDelay <= sndSys.currentTime)
             {
                 sndSys.musWait = false;
                 sndSys.musPlayer->stop();
@@ -1014,7 +1015,7 @@ void UpdateMusic()
         }
         else
         {
-            if( (sndSys.musSTime + sndSys.musLength) > sndSys.currentTime )
+            if( (sndSys.musSTime + sndSys.musLength) < sndSys.currentTime )
             {
                 if( sndSys.musTrack ) // if audio track was setted - replay it, but do some delay
                 {
