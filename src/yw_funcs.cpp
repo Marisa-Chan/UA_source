@@ -2219,9 +2219,7 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
     brf->field_2F8C = -1;
     brf->field_2F90 = -1;
 
-    CDAUDIO_t v34;
-    v34.command = 1;
-    sub_4444D4(&v34);
+    StopMusicTrack();
 
     if ( !ypaworld_func158__sub4__sub1__sub3__sub0(yw) )
         return 0; // May be HACK

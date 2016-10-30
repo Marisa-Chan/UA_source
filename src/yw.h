@@ -50,8 +50,8 @@ struct usr_str
 
 struct audiotrack_adv
 {
-    int field_0;
-    int field_4;
+    int min_delay;
+    int max_delay;
 };
 
 struct inp_key_setting

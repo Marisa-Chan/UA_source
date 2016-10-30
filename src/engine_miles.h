@@ -68,21 +68,17 @@ struct samples_collection1
     userdata_sample_info samples_data[16];
 };
 
-struct CDAUDIO_t
-{
-    int command;
-    int track_id;
-    int field_8;
-    int field_C;
-};
-
 void sub_423DB0(samples_collection1 *smpls);
-int sub_4444D4(CDAUDIO_t *arg);
 void startSound(samples_collection1 *a1, int a2);
 void sub_424000(samples_collection1 *smpls, int a2);
-int sub_4448C0(int *a1);
 void sub_423DD8(samples_collection1 *smpls);
 void sub_424CC8();
+
+void SetMusicVolume(int vol);
+void SetMusicIgnoreCommandsFlag(bool flag);
+void SetMusicTrack(int trackID, int minDelay, int maxDelay);
+void StopMusicTrack();
+void PlayMusicTrack();
 
 void sb_0x4242e0(samples_collection1 *smpls);
 mat3x3 *sb_0x424c74(); //Update sounds and return shake matrix

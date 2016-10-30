@@ -9,9 +9,52 @@
 #include <SDL2/SDL_thread.h>
 #include <SDL2/SDL_mutex.h>
 
+#define OV_EXCLUDE_STATIC_CALLBACKS
+#include <vorbis/vorbisfile.h>
+
+#include "fsmgr.h"
+
 class waldev;
 
-class walsmpl
+class CTsmpl
+{
+    friend class waldev;
+
+public:
+    virtual void update();
+
+    virtual void volume(int vol);
+    virtual void setMasterVolume(int vol);
+
+    void EOS_callback( void (*func)(void *) );
+
+protected:
+    CTsmpl(waldev *dev);
+    virtual ~CTsmpl();
+    virtual int fill_n_queue(int bufID) = 0;
+
+    void clearQueue();
+
+    waldev *device;
+
+    ALuint source;
+    std::deque<ALuint> buffers;
+    std::deque<bool> used;
+
+    ALenum format;
+    int freq;
+
+    SDL_mutex *mutex;
+    int status;
+    bool endStreamed;
+
+    ALfloat cVolume;
+    ALfloat mVolume;
+
+    void (*eosfunc)(void *);
+};
+
+class walsmpl: public CTsmpl
 {
     friend waldev;
 
@@ -24,52 +67,54 @@ public:
 
     void loop_count(int loops);
 
-    void volume(int vol);
     void pan(int pan);
     void playback_rate(int newfreq);
     void position(size_t pos);
 
-    void EOS_callback( void (*func)(walsmpl *) );
-
-private:
+protected:
     walsmpl(waldev *dev);
-    ~walsmpl();
 
     int fill_n_queue(int bufID);
 
-    void clearQueue();
-
     bool isqueued();
 
-    int status;
-
-
-
-    waldev *device;
-
-    ALuint source;
-    std::deque<ALuint> buffers;
-    std::deque<bool> used;
-    ALint prev_state;
-
     int loops;
-
-    SDL_mutex *mutex;
-
-    void (*eosfunc)(walsmpl *);
 
     void *start;
     size_t len;
     size_t pos;
-
-    bool endStreamed;
-
-    ALenum format;
-    int freq;
 };
 
 
 
+class walmus: public CTsmpl
+{
+    friend waldev;
+
+public:
+    void init();
+
+    bool open(const char *fname);
+    void close();
+
+//    int isPlaying();
+    void play();
+//    void pause();
+    void stop();
+//    size_t getLen();
+//    void update();
+
+protected:
+    walmus(waldev *dev);
+    ~walmus();
+
+    OggVorbis_File m_vorbis;
+    FSMgr::FileHandle *hndl;
+
+    int fill_n_queue(int bufID);
+
+    std::deque<int16_t *> smplBuffers;
+};
 
 
 class waldev
@@ -81,9 +126,11 @@ public:
     bool inited();
 
     walsmpl *newSample();
-    void deleteSample(walsmpl *smpl);
+    void deleteSample(CTsmpl *smpl);
 
     void master_volume(int vol);
+
+    walmus *createMusicPlayer();
 
 private:
     ALCdevice *dev;
@@ -91,7 +138,7 @@ private:
     bool _inited;
     bool ende;
 
-    std::list<walsmpl *> sample_list;
+    std::list<CTsmpl *> sample_list;
 
     bool update();
 

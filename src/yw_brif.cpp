@@ -12,20 +12,11 @@ extern GuiList stru_5C91D0;
 
 void ypaworld_func158__sub4__sub1__sub4__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
-    CDAUDIO_t cd_audio;
-    cd_audio.command = 1;
-    sub_4444D4(&cd_audio);
-
+    StopMusicTrack();
     if ( yw->GameShell->missiontrack )
     {
-        cd_audio.command = 7;
-        cd_audio.track_id = yw->GameShell->missiontrack;
-        cd_audio.field_8 = yw->GameShell->missiontrack__adv.field_0;
-        cd_audio.field_C = yw->GameShell->missiontrack__adv.field_4;
-        sub_4444D4(&cd_audio);
-
-        cd_audio.command = 2;
-        sub_4444D4(&cd_audio);
+        SetMusicTrack(yw->GameShell->missiontrack, yw->GameShell->missiontrack__adv.min_delay, yw->GameShell->missiontrack__adv.max_delay);
+        PlayMusicTrack();
     }
 
     brf->field_2E78 = brf->field_2E7C;

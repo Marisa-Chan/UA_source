@@ -10,7 +10,7 @@
 
 SFXEngine SFXe;
 
-int dword_546DD8;
+
 
 struct sample
 {
@@ -32,39 +32,35 @@ struct soundSys
     userdata_sample_info *ShakeFXs[4];
     int audio_rev_stereo;
     int dword_546F0C;
-    int dword_546F10;
+    size_t currentTime;
     int dword_546F14;
     float flt_546F18[64];
     xyz stru_547018;
     xyz stru_547024;
     mat3x3 stru_547030;
-    mat3x3 stru_547054;
+    mat3x3 shakeMatrix;
+
+    walmus *musPlayer;
+    bool musWait;
+    bool musOn;
+    size_t musWaitSTime;
+    size_t musWaitDelay;
+    size_t musSTime;
+    size_t musLength;
+    int musMinDelay;
+    int musMaxDelay;
+    int musTrack;
 };
 
-soundSys sndSys;
+static soundSys sndSys;
 
-key_value_stru audio_keys[4] = {
+key_value_stru audio_keys[4] =
+{
     {"audio.channels", KEY_TYPE_DIGIT, 4},
     {"audio.volume", KEY_TYPE_DIGIT, 127},
     {"audio.num_palfx", KEY_TYPE_DIGIT, 4},
     {"audio.rev_stereo", KEY_TYPE_BOOL, 0}
 };
-
-void wrapper_setVolume(waldev *driver, int volume)
-{
-    if (driver)
-        driver->master_volume(volume);
-}
-
-void wrapper_openRedBook()
-{
-    printf("MAKE INIT FOR MUSIC STREAM!\n");
-}
-
-void wrapper_endSample(void *, walsmpl *hSample)
-{
-    hSample->stop();
-}
 
 void wrapper_setSampleVRP(void *, walsmpl *hSample, int rate, int volume, int pan)
 {
@@ -73,7 +69,7 @@ void wrapper_setSampleVRP(void *, walsmpl *hSample, int rate, int volume, int pa
     hSample->pan(pan);
 }
 
-void wrapper_playSound(waldev *driver, walsmpl *hSample, void (*funceos)(walsmpl *), void *start, int len, int rate, int vol, int pan, int loop_cnt, int pos)
+void wrapper_playSound(waldev *driver, walsmpl *hSample, void (*funceos)(void *), void *start, int len, int rate, int vol, int pan, int loop_cnt, int pos)
 {
     hSample->init();
     hSample->EOS_callback(funceos);
@@ -124,6 +120,7 @@ int SFXEngine::init()
         for (int i = 0; i < sndSys.audio_channels; i++)
         {
             sndSys.snd_channels[i].hSample = sndSys.digDriver->newSample(); //miles_allocSample(sndSys.digDriver);
+            sndSys.snd_channels[i].hSample->setMasterVolume(sndSys.audio_volume);
 
             if ( !sndSys.snd_channels[i].hSample )
             {
@@ -132,8 +129,7 @@ int SFXEngine::init()
             }
         }
 
-        wrapper_setVolume(sndSys.digDriver, sndSys.audio_volume);
-        wrapper_openRedBook();
+        sndSys.musPlayer = sndSys.digDriver->createMusicPlayer();
     }
     else
     {
@@ -157,7 +153,11 @@ void SFXEngine::deinit()
 void SFXEngine::setMasterVolume(int vol)
 {
     sndSys.audio_volume = vol;
-    wrapper_setVolume(sndSys.digDriver, vol);
+
+    for (int i = 0; i < sndSys.audio_channels; i++)
+        sndSys.snd_channels[i].hSample->setMasterVolume(sndSys.audio_volume);
+
+//    wrapper_setVolume(sndSys.digDriver, vol);
 }
 
 void SFXEngine::setReverseStereo(int rev)
@@ -180,17 +180,11 @@ void sub_423DB0(samples_collection1 *smpls)
     }
 }
 
-int sub_4444D4(CDAUDIO_t *arg)
-{
-    printf("STUB %s\n", "sub_4444D4");
-    return 0;
-}
-
 void startSound(samples_collection1 *smpls, int a2)
 {
     userdata_sample_info *result = &smpls->samples_data[a2];
 
-    result->field_20 = sndSys.dword_546F10;
+    result->field_20 = sndSys.currentTime;
 
     if ( result->field_13 & 2 || result->psampl )
     {
@@ -217,10 +211,63 @@ void sub_424000(samples_collection1 *smpls, int a2)
     smpls->samples_data[a2].field_12 &= 0x6D;
 }
 
-int sub_4448C0(int *a1)
+
+
+
+void SetMusicIgnoreCommandsFlag(bool flag)
 {
-    //printf("STUB %s\n", "sub_4448C0");
-    return 1;//AIL_driver && dword_546DDC && AIL_redbook_set_volume(AIL_driver, *a1) == *a1;
+    if (!flag)
+        sndSys.musTrack = 0;
+
+    sndSys.musOn = flag;
+}
+
+void SetMusicVolume(int vol)
+{
+    if (sndSys.digDriver && sndSys.musPlayer && sndSys.musOn)
+    {
+        sndSys.musPlayer->volume(vol);
+    }
+}
+
+void StopMusicTrack()
+{
+    if (sndSys.digDriver && sndSys.musPlayer && sndSys.musOn)
+    {
+        sndSys.musPlayer->stop();
+        sndSys.musTrack = 0;
+    }
+}
+
+void PlayMusicTrack()
+{
+    if (sndSys.digDriver && sndSys.musPlayer && sndSys.musOn  && sndSys.musTrack > 0)
+    {
+        sndSys.musPlayer->play();
+        sndSys.musSTime = sndSys.currentTime;
+    }
+}
+
+void SetMusicTrack(int trackID, int minDelay, int maxDelay)
+{
+    if (sndSys.digDriver && sndSys.musPlayer && sndSys.musOn && trackID > 0)
+    {
+        char buf[64];
+        sprintf(buf, "%d", trackID);
+
+        std::string str = "music/";
+        str += buf;
+        str += ".ogg";
+
+        if ( sndSys.musPlayer->open(str.c_str()) )
+        {
+            sndSys.musTrack = trackID;
+            sndSys.musMinDelay = minDelay;
+            sndSys.musMaxDelay = maxDelay;
+        }
+        else
+            sndSys.musTrack = 0;
+    }
 }
 
 // Shutoff samples set
@@ -234,7 +281,7 @@ void sub_423DD8(samples_collection1 *smpls)
             {
                 sndSys.snd_channels[i].sndSouce->field_12 &= 0xF9;
 
-                wrapper_endSample(sndSys.digDriver, sndSys.snd_channels[i].hSample);
+                sndSys.snd_channels[i].hSample->stop();
 
                 sndSys.snd_channels[i].sndSouce = NULL;
             }
@@ -358,14 +405,14 @@ void sb_0x4242e0__sub0(samples_collection1 *smpls, float a2)
 
             if ( v2->field_12 & 2 )
             {
-                int v6 = sndSys.dword_546F10 - v2->field_20;
+                int v6 = sndSys.currentTime - v2->field_20;
 
                 if ( v2->field_13 & 2 )
                 {
                     if ( v2->field_12 & 4 )
                         v5 = v2->field_1E;
                     else
-                        v5 = sub_423B3C(v2, sndSys.dword_546F10 - v2->field_20, 0);
+                        v5 = sub_423B3C(v2, sndSys.currentTime - v2->field_20, 0);
                 }
 
                 int ok = 1;
@@ -452,7 +499,7 @@ void sb_0x4242e0__sub1(samples_collection1 *smpls, float a2)
         {
             if ( v2->field_12 & 0x10 )
             {
-                if ( !(v2->field_12 & 1) && v2->field_20 + v2->field_4->time < sndSys.dword_546F10 )
+                if ( !(v2->field_12 & 1) && (size_t)(v2->field_20 + v2->field_4->time) < sndSys.currentTime )
                     v2->field_12 &= 0xEF;
             }
 
@@ -461,7 +508,7 @@ void sb_0x4242e0__sub1(samples_collection1 *smpls, float a2)
                 if ( v2->field_12 & 1 )
                     v2->field_24 = v2->field_4->mag0;
                 else
-                    v2->field_24 = (v2->field_4->mag1 - v2->field_4->mag0) * ((float)(sndSys.dword_546F10 - v2->field_20) / (float)v2->field_4->time) + v2->field_4->mag0;
+                    v2->field_24 = (v2->field_4->mag1 - v2->field_4->mag0) * ((float)(sndSys.currentTime - v2->field_20) / (float)v2->field_4->time) + v2->field_4->mag0;
 
                 if ( v6 >= 1.0 )
                     v2->field_24 /= v6;
@@ -514,7 +561,7 @@ void sb_0x4242e0__sub2(samples_collection1 *smpls, float a2)
         {
             if ( v2->field_12 & 0x80 )
             {
-                if ( !(v2->field_12 & 1) && v2->field_20 + v2->field_8->time < sndSys.dword_546F10 )
+                if ( !(v2->field_12 & 1) && (size_t)(v2->field_20 + v2->field_8->time) < sndSys.currentTime )
                     v2->field_12 &= 0x7F;
             }
 
@@ -523,7 +570,7 @@ void sb_0x4242e0__sub2(samples_collection1 *smpls, float a2)
                 if ( v2->field_12 & 1 )
                     v2->field_28 = v2->field_8->mag0;
                 else
-                    v2->field_28 = (v2->field_8->mag1 - v2->field_8->mag0) * ((float)(sndSys.dword_546F10 - v2->field_20) / (float)v2->field_8->time) + v2->field_8->mag0;
+                    v2->field_28 = (v2->field_8->mag1 - v2->field_8->mag0) * ((float)(sndSys.currentTime - v2->field_20) / (float)v2->field_8->time) + v2->field_8->mag0;
 
                 float v6 = a2 * v2->field_8->mute;
 
@@ -582,7 +629,7 @@ void sb_0x424c74__sub0()
 
                 sndSys.snd_channels[i].sndSouce = NULL;
 
-                wrapper_endSample(sndSys.digDriver, sndSys.snd_channels[i].hSample);
+                sndSys.snd_channels[i].hSample->stop();
             }
         }
     }
@@ -696,8 +743,10 @@ void sb_0x424c74__sub2__sub1(userdata_sample_info *smpl)
     }
 }
 
-void sound_eos_clbk(walsmpl *smpl)
+void sound_eos_clbk(void *_smpl)
 {
+    walsmpl *smpl = static_cast<walsmpl *>(_smpl);
+
     int v2 = 0;
     userdata_sample_info *v3 = NULL;
 
@@ -771,7 +820,7 @@ void sb_0x424c74__sub2__sub0(int id, userdata_sample_info *smpl)
 
     if ( smpl->field_13 & 2 )
     {
-        int v4 = sndSys.dword_546F10 - smpl->field_20;
+        int v4 = sndSys.currentTime - smpl->field_20;
         int v8;
 
         if ( v4 <= 0 )
@@ -817,7 +866,7 @@ void sb_0x424c74__sub2__sub0(int id, userdata_sample_info *smpl)
             smpl->vol,
             smpl->pan,
             (smpl->field_12 & 1) == 0,
-            (int)((smpl->psampl->SampleRate + smpl->pitch) * (sndSys.dword_546F10 - smpl->field_20) >> 10) % smpl->psampl->bufsz);
+            (int)((smpl->psampl->SampleRate + smpl->pitch) * (sndSys.currentTime - smpl->field_20) >> 10) % smpl->psampl->bufsz);
     }
 }
 
@@ -926,32 +975,56 @@ void sb_0x424c74__sub4()
 
     if ( i > 0 )
     {
-        sndSys.stru_547054.m00 = cos(tmp.sz) * cos(tmp.sy) - sin(tmp.sz) * sin(tmp.sx) * sin(tmp.sy);
-        sndSys.stru_547054.m01 = -sin(tmp.sz) * cos(tmp.sx);
-        sndSys.stru_547054.m02 = sin(tmp.sz) * sin(tmp.sx) * cos(tmp.sy) + cos(tmp.sz) * sin(tmp.sy);
+        sndSys.shakeMatrix.m00 = cos(tmp.sz) * cos(tmp.sy) - sin(tmp.sz) * sin(tmp.sx) * sin(tmp.sy);
+        sndSys.shakeMatrix.m01 = -sin(tmp.sz) * cos(tmp.sx);
+        sndSys.shakeMatrix.m02 = sin(tmp.sz) * sin(tmp.sx) * cos(tmp.sy) + cos(tmp.sz) * sin(tmp.sy);
 
-        sndSys.stru_547054.m10 = cos(tmp.sz) * sin(tmp.sx) * sin(tmp.sy) + sin(tmp.sz) * cos(tmp.sy);
-        sndSys.stru_547054.m11 = cos(tmp.sz) * cos(tmp.sx);
-        sndSys.stru_547054.m12 = sin(tmp.sz) * sin(tmp.sy) - cos(tmp.sz) * sin(tmp.sx) * cos(tmp.sy);
+        sndSys.shakeMatrix.m10 = cos(tmp.sz) * sin(tmp.sx) * sin(tmp.sy) + sin(tmp.sz) * cos(tmp.sy);
+        sndSys.shakeMatrix.m11 = cos(tmp.sz) * cos(tmp.sx);
+        sndSys.shakeMatrix.m12 = sin(tmp.sz) * sin(tmp.sy) - cos(tmp.sz) * sin(tmp.sx) * cos(tmp.sy);
 
-        sndSys.stru_547054.m20 = -cos(tmp.sx) * sin(tmp.sy);
-        sndSys.stru_547054.m21 = sin(tmp.sx);
-        sndSys.stru_547054.m22 = cos(tmp.sx) * cos(tmp.sy);
+        sndSys.shakeMatrix.m20 = -cos(tmp.sx) * sin(tmp.sy);
+        sndSys.shakeMatrix.m21 = sin(tmp.sx);
+        sndSys.shakeMatrix.m22 = cos(tmp.sx) * cos(tmp.sy);
     }
     else
     {
-        memset(&sndSys.stru_547054, 0, sizeof(sndSys.stru_547054));
+        memset(&sndSys.shakeMatrix, 0, sizeof(sndSys.shakeMatrix));
 
-        sndSys.stru_547054.m00 = 1.0;
-        sndSys.stru_547054.m11 = 1.0;
-        sndSys.stru_547054.m22 = 1.0;
+        sndSys.shakeMatrix.m00 = 1.0;
+        sndSys.shakeMatrix.m11 = 1.0;
+        sndSys.shakeMatrix.m22 = 1.0;
     }
 
 }
 
-void sb_0x424c74__sub5(int *)
+void UpdateMusic()
 {
-    //printf(" MAKE redbook update\n");
+    if (sndSys.musPlayer && sndSys.musOn)
+    {
+        if (sndSys.musWait)
+        {
+            if (sndSys.musWaitSTime + sndSys.musWaitDelay >= sndSys.currentTime)
+            {
+                sndSys.musWait = false;
+                sndSys.musPlayer->stop();
+                sndSys.musPlayer->play();
+                sndSys.musSTime = sndSys.currentTime;
+            }
+        }
+        else
+        {
+            if( (sndSys.musSTime + sndSys.musLength) > sndSys.currentTime )
+            {
+                if( sndSys.musTrack ) // if audio track was setted - replay it, but do some delay
+                {
+                    sndSys.musWait = true;
+                    sndSys.musWaitSTime = sndSys.currentTime;
+                    sndSys.musWaitDelay = sndSys.musMinDelay + (sndSys.musMaxDelay - sndSys.musMinDelay) * (sndSys.currentTime % 30) / 30;
+                }
+            }
+        }
+    }
 }
 
 
@@ -969,18 +1042,14 @@ mat3x3 *sb_0x424c74()
 
     sb_0x424c74__sub4();
 
-    int v2[2];
-    v2[0] = sndSys.dword_546F10;
-    v2[1] = 1;
+    UpdateMusic();
 
-    sb_0x424c74__sub5(v2);
-
-    return &sndSys.stru_547054;
+    return &sndSys.shakeMatrix;
 }
 
 void sub_423EFC(int a1, xyz *a2, xyz *a3, mat3x3 *a4)
 {
-    sndSys.dword_546F10 += a1;
+    sndSys.currentTime += a1;
 
     sndSys.stru_547018 = *a2;
 
@@ -991,8 +1060,6 @@ void sub_423EFC(int a1, xyz *a2, xyz *a3, mat3x3 *a4)
     memset(sndSys.soundSources, 0, sizeof(sndSys.soundSources));
     memset(sndSys.palFXs, 0, sizeof(sndSys.palFXs));
     memset(sndSys.ShakeFXs, 0, sizeof(sndSys.ShakeFXs));
-
-    dword_546DD8 = sndSys.dword_546F10;
 }
 
 void sub_424CC8()
@@ -1006,7 +1073,7 @@ void sub_424CC8()
             {
                 sndSys.snd_channels[i].sndSouce->field_12 &= 0xF9;
 
-                wrapper_endSample(sndSys.digDriver, sndSys.snd_channels[i].hSample);
+                sndSys.snd_channels[i].hSample->stop();
 
                 sndSys.snd_channels[i].sndSouce = NULL;
             }

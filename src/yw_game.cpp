@@ -15,9 +15,7 @@ extern int bact_id;
 
 NC_STACK_ilbm * loadDisk_screen(_NC_STACK_ypaworld *yw)
 {
-    CDAUDIO_t arg;
-    arg.command = 1;
-    sub_4444D4(&arg);
+    StopMusicTrack();
 
     const char *v3;
 

@@ -3248,17 +3248,8 @@ int sb_0x451034(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
 
     if ( yw->snd__cdsound & 1 )
     {
-        CDAUDIO_t v6;
-
-        v6.command = 7;
-        v6.track_id = yw->field_2d90->amb_track_p0;
-        v6.field_8 = yw->field_2d90->amb_track_p1;
-        v6.field_C = yw->field_2d90->amb_track_p2;
-
-        sub_4444D4(&v6);
-
-        v6.command = 2;
-        sub_4444D4(&v6);
+        SetMusicTrack(yw->field_2d90->amb_track_p0, yw->field_2d90->amb_track_p1, yw->field_2d90->amb_track_p2);
+        PlayMusicTrack();
     }
 
     return 1;

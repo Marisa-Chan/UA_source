@@ -6495,19 +6495,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     if ( usr->p_ypaworld->snd__cdsound & 1 )
     {
-        CDAUDIO_t cdaud;
-
-        cdaud.command = 1;
-        sub_4444D4(&cdaud);
-
-        cdaud.command = 7;
-        cdaud.field_8 = yw->GameShell->shelltrack__adv.field_0;
-        cdaud.field_C = yw->GameShell->shelltrack__adv.field_4;
-        cdaud.track_id = usr->shelltrack;
-        sub_4444D4(&cdaud);
-
-        cdaud.command = 2;
-        sub_4444D4(&cdaud);
+        StopMusicTrack();
+        SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
+        PlayMusicTrack();
     }
 
     return 1;

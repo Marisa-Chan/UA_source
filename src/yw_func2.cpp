@@ -1559,28 +1559,16 @@ void sb_0x46aa8c(UserData *usr)
 
     if ( usr->field_13C2 & 0x200 )
     {
-        CDAUDIO_t v35;
-
         if ( usr->field_0x13b0 & 0x10 )
         {
             usr->snd__flags2 |= 0x10;
             yw->snd__cdsound |= 1;
 
-            v35.track_id = 1;
-            v35.command = 8;
-
-            sub_4444D4(&v35);
-
+            SetMusicIgnoreCommandsFlag(true);
             if ( usr->shelltrack )
             {
-
-                v35.command = 7;
-                v35.track_id = usr->shelltrack;
-                v35.field_8 = usr->shelltrack__adv.field_0;
-                v35.field_C = usr->shelltrack__adv.field_4;
-                sub_4444D4(&v35);
-
-                sub_4444D4(&v35);
+                SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
+                PlayMusicTrack();
             }
         }
         else
@@ -1588,12 +1576,8 @@ void sb_0x46aa8c(UserData *usr)
             usr->snd__flags2 &= 0xEF;
             yw->snd__cdsound &= 0xFE;
 
-            v35.command = 1;
-            sub_4444D4(&v35);
-
-            v35.command = 8;
-            v35.track_id = 0;
-            sub_4444D4(&v35);
+            StopMusicTrack();
+            SetMusicIgnoreCommandsFlag(false);
         }
 
     }
@@ -1677,9 +1661,8 @@ void sb_0x46aa8c(UserData *usr)
     if ( usr->field_13C2 & 0x100 )
     {
         usr->snd__cdvolume = usr->field_0x13b8;
-        int a1a = usr->field_0x13b8;
 
-        sub_4448C0(&a1a);
+        SetMusicVolume(usr->field_0x13b8);
     }
 
     if ( usr->field_13C2 & 0x80 )
@@ -3367,20 +3350,11 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             sub_4EDCD8(yw);
             if ( usr->p_ypaworld->snd__cdsound & 1 )
             {
-                CDAUDIO_t arg;
-                arg.command = 1;
-                sub_4444D4(&arg);
-
+                StopMusicTrack();
                 if ( usr->shelltrack )
                 {
-                    arg.command = 7;
-                    arg.track_id = usr->shelltrack;
-                    arg.field_8 = usr->shelltrack__adv.field_0;
-                    arg.field_C = usr->shelltrack__adv.field_4;
-                    sub_4444D4(&arg);
-
-                    arg.command = 2;
-                    sub_4444D4(&arg);
+                    SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
+                    PlayMusicTrack();
                 }
             }
             if ( usr->field_4E )
@@ -3414,20 +3388,11 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 sub_4EDCD8(yw);
                 if ( usr->p_ypaworld->snd__cdsound & 1 )
                 {
-                    CDAUDIO_t arg;
-                    arg.command = 1;
-                    sub_4444D4(&arg);
-
+                    StopMusicTrack();
                     if ( usr->shelltrack )
                     {
-                        arg.command = 7;
-                        arg.track_id = usr->shelltrack;
-                        arg.field_8 = usr->shelltrack__adv.field_0;
-                        arg.field_C = usr->shelltrack__adv.field_4;
-                        sub_4444D4(&arg);
-
-                        arg.command = 2;
-                        sub_4444D4(&arg);
+                        SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
+                        PlayMusicTrack();
                     }
                 }
                 if ( usr->field_4E )
@@ -3967,8 +3932,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     usr->video_button->button_func71(&v395);
     usr->field_0x13b8 = v67->field_0;
 
-    int ttmp = usr->field_0x13b8;
-    sub_4448C0(&ttmp);
+    SetMusicVolume(usr->field_0x13b8);
 
 
     char v308[300];

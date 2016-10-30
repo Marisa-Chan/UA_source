@@ -3393,62 +3393,62 @@ int ShellTracksParse(scrCallBack *arg)
 
             if ( !strcasecmp(arg->p1, "shelltrack") )
             {
-                usr->shelltrack__adv.field_0 = 0;
-                usr->shelltrack__adv.field_4 = 0;
+                usr->shelltrack__adv.min_delay = 0;
+                usr->shelltrack__adv.max_delay = 0;
                 char *v8 = strtok(buf, " \t_\n");
                 usr->shelltrack = strtol(v8, NULL, 0);
                 v8 = strtok(0, " \t_\n");
                 if ( v8 )
                 {
-                    usr->shelltrack__adv.field_0 = strtol(v8, NULL, 0);
+                    usr->shelltrack__adv.min_delay = strtol(v8, NULL, 0);
                     v8 = strtok(0, " \t_\n");
                     if ( v8 )
-                        usr->shelltrack__adv.field_4 = strtol(v8, NULL, 0);
+                        usr->shelltrack__adv.max_delay = strtol(v8, NULL, 0);
                 }
             }
             else if ( !strcasecmp(arg->p1, "missiontrack") )
             {
-                usr->missiontrack__adv.field_0 = 0;
-                usr->missiontrack__adv.field_4 = 0;
+                usr->missiontrack__adv.min_delay = 0;
+                usr->missiontrack__adv.max_delay = 0;
                 char *v8 = strtok(buf, " \t_\n");
                 usr->missiontrack = strtol(v8, NULL, 0);
                 v8 = strtok(0, " \t_\n");
                 if ( v8 )
                 {
-                    usr->missiontrack__adv.field_0 = strtol(v8, NULL, 0);
+                    usr->missiontrack__adv.min_delay = strtol(v8, NULL, 0);
                     v8 = strtok(0, " \t_\n");
                     if ( v8 )
-                        usr->missiontrack__adv.field_4 = strtol(v8, NULL, 0);
+                        usr->missiontrack__adv.max_delay = strtol(v8, NULL, 0);
                 }
             }
             else if ( !strcasecmp(arg->p1, "debriefingtrack") )
             {
-                usr->debriefingtrack__adv.field_0 = 0;
-                usr->debriefingtrack__adv.field_4 = 0;
+                usr->debriefingtrack__adv.min_delay = 0;
+                usr->debriefingtrack__adv.max_delay = 0;
                 char *v8 = strtok(buf, " \t_\n");
                 usr->debriefingtrack = strtol(v8, NULL, 0);
                 v8 = strtok(0, " \t_\n");
                 if ( v8 )
                 {
-                    usr->debriefingtrack__adv.field_0 = strtol(v8, NULL, 0);
+                    usr->debriefingtrack__adv.min_delay = strtol(v8, NULL, 0);
                     v8 = strtok(0, " \t_\n");
                     if ( v8 )
-                        usr->debriefingtrack__adv.field_4 = strtol(v8, NULL, 0);
+                        usr->debriefingtrack__adv.max_delay = strtol(v8, NULL, 0);
                 }
             }
             else if ( !strcasecmp(arg->p1, "loadingtrack") )
             {
-                usr->loadingtrack__adv.field_0 = 0;
-                usr->loadingtrack__adv.field_4 = 0;
+                usr->loadingtrack__adv.min_delay = 0;
+                usr->loadingtrack__adv.max_delay = 0;
                 char *v8 = strtok(buf, " \t_\n");
                 usr->loadingtrack = strtol(v8, NULL, 0);
                 v8 = strtok(0, " \t_\n");
                 if ( v8 )
                 {
-                    usr->loadingtrack__adv.field_0 = strtol(v8, NULL, 0);
+                    usr->loadingtrack__adv.min_delay = strtol(v8, NULL, 0);
                     v8 = strtok(0, " \t_\n");
                     if ( v8 )
-                        usr->loadingtrack__adv.field_4 = strtol(v8, NULL, 0);
+                        usr->loadingtrack__adv.max_delay = strtol(v8, NULL, 0);
                 }
             }
             else
@@ -5030,11 +5030,9 @@ int parseSaveSound(scrCallBack *arg)
         }
         else if ( !strcasecmp(arg->p1, "cdvolume") )
         {
-            int v4 = atoi(arg->p2);
+            usr->snd__cdvolume = atoi(arg->p2);
 
-            usr->snd__cdvolume = v4;
-
-            sub_4448C0(&v4);
+            SetMusicVolume(usr->snd__cdvolume);
         }
         else if ( !strcasecmp(arg->p1, "invertlr") )
         {
@@ -5059,22 +5057,14 @@ int parseSaveSound(scrCallBack *arg)
                 usr->snd__flags2 |= 0x10;
                 usr->p_ypaworld->snd__cdsound |= 1;
 
-                CDAUDIO_t v10;
-                v10.command = 8;
-                v10.track_id = 1;
-
-                sub_4444D4(&v10);
+                SetMusicIgnoreCommandsFlag(true);
             }
             else
             {
                 usr->snd__flags2 &= 0xEF;
                 usr->p_ypaworld->snd__cdsound &= 0xFE;
 
-                CDAUDIO_t v10;
-                v10.command = 8;
-                v10.track_id = 0;
-
-                sub_4444D4(&v10);
+                SetMusicIgnoreCommandsFlag(false);
             }
         }
         else
