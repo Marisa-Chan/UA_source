@@ -9,7 +9,7 @@ License GPLv2
 </a>
 
 
-Dependings: SDL2, SDL2_ttf, OpenGL, OpenAL
+Dependings: SDL2, SDL2_ttf, OpenGL, OpenAL, vorbisfile(ogg)
 
 
 Make for linux native: make nix

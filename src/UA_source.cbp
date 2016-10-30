@@ -21,6 +21,7 @@
 					<Add library="SDL2_ttf" />
 					<Add library="GL" />
 					<Add library="openal" />
+					<Add library="vorbisfile" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -40,6 +41,7 @@
 					<Add library="SDL2_ttf" />
 					<Add library="GL" />
 					<Add library="openal" />
+					<Add library="vorbisfile" />
 				</Linker>
 			</Target>
 		</Build>

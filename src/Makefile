@@ -3,11 +3,11 @@ CXX = g++
 MINGW = /usr/i686-w64-mingw32
 CC_WIN = i686-w64-mingw32-gcc
 CXX_WIN = i686-w64-mingw32-g++
-LIBS_WIN = -L$(MINGW)/lib/ -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lOpenAL32 -lopengl32
+LIBS_WIN = -L$(MINGW)/lib/ -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lOpenAL32 -lopengl32 -lvorbisfile
 
 CLANG_WIN = i686-w64-mingw32-clang++
 
-LIBS_NIX = -lSDL2 -lSDL2_ttf -lGL -lopenal
+LIBS_NIX = -lSDL2 -lSDL2_ttf -lGL -lopenal -lvorbisfile
 
 TARGET = UA_source
 OBJS =  \
