@@ -8,6 +8,7 @@
 
 #include <string>
 #include <list>
+#include <inttypes.h>
 
 namespace FSMgr
 {
