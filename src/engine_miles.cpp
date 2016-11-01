@@ -71,7 +71,7 @@ void wrapper_setSampleVRP(void *, walsmpl *hSample, int rate, int volume, int pa
 
 void wrapper_playSound(waldev *driver, walsmpl *hSample, void (*funceos)(void *), void *start, int len, int rate, int vol, int pan, int loop_cnt, int pos)
 {
-    hSample->init();
+    hSample->reset();
     hSample->EOS_callback(funceos);
     hSample->address(start, len, rate, AL_FORMAT_MONO8);
     hSample->volume(vol);

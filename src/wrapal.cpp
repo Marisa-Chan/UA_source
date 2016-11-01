@@ -11,10 +11,6 @@ static const float hpi = 3.1415926 / 2.0;
 #define WRAP_AL_BUFFSZ  1024
 #define WRAP_AL_MUSSBUFF (4096 * 2 * 2)
 
-#define WRAP_STOPPED   0
-#define WRAP_PLAYING   1
-#define WRAP_PAUSED    2
-
 #ifdef WRAP_DEBUG
 
 // If in debug mode, perform a test on every call
@@ -235,75 +231,41 @@ int waldev::_updateThread(void *data)
 
 
 walsmpl::walsmpl(waldev *_dev):
-    CTsmpl(_dev)
+    CTsmpl(_dev, WRAP_AL_BUFFSZ)
 {
-    loops = 1;
     pos = 0;
     len = 0;
     start = NULL;
 }
 
-void walsmpl::init()
+size_t walsmpl::_read(void *buf, size_t bufsz)
 {
-    if ( SDL_LockMutex(mutex) == 0)
-    {
-        alCheck(alSourceStop(source));
+    if (pos >= len)
+        return 0;
 
-        clearQueue();
+    if (bufsz > len - pos)
+        bufsz = len - pos;
 
-        alCheck(alSource3f(source, AL_POSITION, 0.0, 0.0, 0.0));
-        alCheck(alSourcef(source, AL_GAIN, 1.0));
-        alCheck(alSourcef(source, AL_PITCH, 1.0));
+    if (bufsz)
+        memcpy(buf, (uint8_t *)start + pos, bufsz);
 
-        status = WRAP_STOPPED;
-        loops = 1;
-        pos = 0;
-        len = 0;
-        start = NULL;
-        eosfunc = NULL;
-        endStreamed = false;
+    pos += bufsz;
 
-        SDL_UnlockMutex(mutex);
-    }
+    return bufsz;
 }
 
-int walsmpl::fill_n_queue(int bufID)
+void walsmpl::_rewind()
 {
-    if ( !start || !len )
-        return 2; //No data
+    pos = 0;
+}
 
-    if ( pos >= len )
-        return 1; //EOS
+void walsmpl::_reset()
+{
+    CTsmpl::_reset();
 
-    unsigned int req_len = WRAP_AL_BUFFSZ;
-
-    if ( len - pos < req_len )
-        req_len = len - pos;
-
-    if (req_len )
-    {
-        ALuint bfid = buffers[bufID];
-
-        alCheck(alBufferData(bfid, format, ((char *)start + pos), req_len, freq));
-        used[bufID] = true;
-
-        alCheck(alSourceQueueBuffers(source, 1, &bfid));
-
-        pos += req_len;
-    }
-
-    if (pos >= len)
-    {
-        if ( loops == 1 )
-            return 1; // EOS
-
-        if ( loops != 0 )  // And > 1
-            loops--;
-
-        pos = 0;
-    }
-
-    return 0; // Has data
+    pos = 0;
+    len = 0;
+    start = NULL;
 }
 
 
@@ -313,7 +275,7 @@ void walsmpl::address(void *_start, size_t _size, int _freq, ALenum _format)
     {
         alCheck(alSourceStop(source));
 
-        clearQueue();
+        _clearQueue();
 
         start = _start;
         len = _size;
@@ -324,61 +286,7 @@ void walsmpl::address(void *_start, size_t _size, int _freq, ALenum _format)
 
         endStreamed = false;
 
-        status = WRAP_STOPPED;
-
-        SDL_UnlockMutex(mutex);
-    }
-}
-
-bool walsmpl::isqueued()
-{
-    ALint queued;
-    alCheck(alGetSourcei(source, AL_BUFFERS_QUEUED, &queued));
-
-    return queued != 0;
-}
-
-void walsmpl::play()
-{
-    if ( SDL_LockMutex(mutex) == 0)
-    {
-        if ( status == WRAP_STOPPED || status == WRAP_PAUSED )
-        {
-            endStreamed = false;
-
-            if ( !isqueued() )
-            {
-                for (int i = 0; i < WRAP_AL_BUFFS; i++)
-                {
-                    if ( fill_n_queue( i ) > 0 )
-                    {
-                        endStreamed = true;
-                        break;
-                    }
-                }
-            }
-
-            alCheck(alSourcePlay(source));
-
-            status = WRAP_PLAYING;
-        }
-
-        SDL_UnlockMutex(mutex);
-    }
-}
-
-void walsmpl::stop()
-{
-    if ( SDL_LockMutex(mutex) == 0)
-    {
-        alCheck(alSourceStop(source));
-
-        status = WRAP_STOPPED;
-
-        clearQueue();
-
-        pos = 0;
-        endStreamed = false;
+        status = SMPL_STATUS_STOPPED;
 
         SDL_UnlockMutex(mutex);
     }
@@ -390,150 +298,27 @@ void walsmpl::position(size_t newpos)
     {
         if (newpos >= 0 && newpos < len)
         {
-            if ( status == WRAP_PLAYING )
+            if ( status == SMPL_STATUS_PLAYING )
                 alCheck(alSourceStop(source));
 
-            clearQueue();
+            _clearQueue();
 
             pos = newpos;
             endStreamed = false;
 
             for (int i = 0; i < WRAP_AL_BUFFS; i++)
             {
-                if ( fill_n_queue( i ) > 0 )
-                {
-                    endStreamed = true;
+                if ( !_fill_n_queue( i ) )
                     break;
-                }
             }
 
-            if ( status == WRAP_PLAYING )
+            if ( status == SMPL_STATUS_PLAYING )
                 alCheck(alSourcePlay(source));
         }
 
         SDL_UnlockMutex(mutex);
     }
 }
-
-void walsmpl::loop_count(int _loops)
-{
-    if ( SDL_LockMutex(mutex) == 0)
-    {
-        loops = _loops;
-
-        SDL_UnlockMutex(mutex);
-    }
-}
-
-void walsmpl::pan(int _pan)
-{
-    if ( SDL_LockMutex(mutex) == 0)
-    {
-        float perc = ((float)_pan - 64.0) / 64.0;
-
-        float angl = hpi + perc * hpi;
-
-        alCheck(alSource3f(source, AL_POSITION, (float)cos(angl), 0.0, (float)sin(angl)));
-
-        SDL_UnlockMutex(mutex);
-    }
-}
-
-void walsmpl::playback_rate(int newfreq)
-{
-    if ( SDL_LockMutex(mutex) == 0)
-    {
-        alCheck(alSourcef(source, AL_PITCH, (float)newfreq / (float)freq));
-
-        SDL_UnlockMutex(mutex);
-    }
-}
-
-void walsmpl::update()
-{
-    if ( SDL_TryLockMutex(mutex) == 0) // we can't wait!
-    {
-        if ( status == WRAP_PLAYING )
-        {
-            ALint state;
-            alCheck(alGetSourcei(source, AL_SOURCE_STATE, &state));
-
-            if (state == AL_STOPPED)
-            {
-                if (endStreamed)
-                {
-                    if (eosfunc)
-                        eosfunc(this);
-
-                    clearQueue();
-
-                    status = WRAP_STOPPED;
-                }
-                else
-                {
-                    clearQueue();
-
-                    for (int i = 0; i < WRAP_AL_BUFFS; i++)
-                    {
-                        if ( used[i] == false )
-                        {
-                            if ( fill_n_queue(i) > 0 )
-                            {
-                                endStreamed = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    alCheck(alSourcePlay(source));
-                }
-            }
-            else if ( state == AL_PLAYING )
-            {
-                ALint processed = 0;
-                alCheck(alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed));
-
-                while (processed--)
-                {
-                    ALuint bufid;
-                    alCheck(alSourceUnqueueBuffers(source, 1, &bufid));
-
-                    for (int i = 0; i < WRAP_AL_BUFFS; i++)
-                    {
-                        if ( buffers[i] == bufid )
-                        {
-                            used[i] = false;
-                            break;
-                        }
-                    }
-                }
-
-                if ( !endStreamed )
-                {
-                    for (int i = 0; i < WRAP_AL_BUFFS; i++)
-                    {
-                        if ( used[i] == false )
-                        {
-                            if ( fill_n_queue(i) > 0 )
-                            {
-                                endStreamed = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-            }
-        }
-
-        SDL_UnlockMutex(mutex);
-    }
-}
-
-
-
-
-
 
 
 
@@ -561,30 +346,25 @@ static ov_callbacks callbacks = {&read, &seek, NULL, &tell};
 
 
 walmus::walmus(waldev *_dev):
-    CTsmpl(_dev)
+    CTsmpl(_dev, WRAP_AL_MUSSBUFF)
 {
-    smplBuffers.resize(WRAP_AL_BUFFS);
-
-    for (int i = 0; i < WRAP_AL_BUFFS; i++)
-        smplBuffers[i] = new int16_t[ WRAP_AL_MUSSBUFF / 2 + (WRAP_AL_MUSSBUFF % 2)];
-
     hndl = NULL;
 }
 
 walmus::~walmus()
 {
-    alCheck(alSourceStop(source));
+    if (hndl)
+        delete hndl;
 
-    for (int i = 0; i < WRAP_AL_BUFFS; i++)
-        delete smplBuffers[i];
+    hndl = NULL;
 }
 
 bool walmus::open(const char *fname)
 {
     if ( SDL_LockMutex(mutex) == 0)
     {
-        clearQueue();
-        status = WRAP_STOPPED;
+        _clearQueue();
+        status = SMPL_STATUS_STOPPED;
         endStreamed = false;
 
         if (hndl)
@@ -628,86 +408,18 @@ size_t walmus::getLen()
     return len;
 }
 
-int walmus::fill_n_queue(int bufID)
+size_t walmus::_read(void *buf, size_t bufsz)
 {
     if ( !hndl )
-        return 2; //No data
+        return 0;
 
-    long totalRead = 0;
-
-    while (totalRead < WRAP_AL_MUSSBUFF)
-    {
-        long maxRead = WRAP_AL_MUSSBUFF - totalRead;
-        long readed = ov_read(&m_vorbis, ((char *)smplBuffers[bufID]) + totalRead, maxRead, 0, 2, 1, NULL);
-
-        if (readed == 0 && totalRead == 0)
-            return 1; //EOS
-
-        totalRead += readed;
-    }
-
-    ALuint bfid = buffers[bufID];
-
-    alCheck(alBufferData(bfid, format, smplBuffers[bufID], totalRead, freq));
-    used[bufID] = true;
-
-    alCheck(alSourceQueueBuffers(source, 1, &bfid));
-
-    return 0; // Has data
+    return ov_read(&m_vorbis, (char *)buf, bufsz, 0, 2, 1, NULL);
 }
 
-
-void walmus::play()
+void walmus::_rewind()
 {
-    if ( SDL_LockMutex(mutex) == 0)
-    {
-        if (hndl)
-        {
-            if ( status == WRAP_STOPPED ) // || status == WRAP_PAUSED )
-            {
-                ov_pcm_seek(&m_vorbis, 0);
-
-                alCheck(alSourceStop(source));
-                clearQueue();
-                endStreamed = false;
-
-                for (int i = 0; i < WRAP_AL_BUFFS; i++)
-                {
-                    if ( fill_n_queue( i ) > 0 )
-                    {
-                        endStreamed = true;
-                        break;
-                    }
-                }
-
-                alCheck(alSourcePlay(source));
-                status = WRAP_PLAYING;
-            }
-            else if ( status == WRAP_PAUSED )
-            {
-                alCheck(alSourcePlay(source));
-                status = WRAP_PLAYING;
-            }
-        }
-
-        SDL_UnlockMutex(mutex);
-    }
-}
-
-void walmus::stop()
-{
-    if ( SDL_LockMutex(mutex) == 0)
-    {
-        alCheck(alSourceStop(source));
-
-        status = WRAP_STOPPED;
-
-        clearQueue();
-
-        endStreamed = false;
-
-        SDL_UnlockMutex(mutex);
-    }
+    if (hndl)
+        ov_pcm_seek(&m_vorbis, 0);
 }
 
 
@@ -715,9 +427,8 @@ void walmus::stop()
 
 
 
-
-
-CTsmpl::CTsmpl(waldev *_dev)
+CTsmpl::CTsmpl(waldev *_dev, size_t bufsz):
+    BufSZ(bufsz)
 {
     device = _dev;
 
@@ -727,6 +438,7 @@ CTsmpl::CTsmpl(waldev *_dev)
 
     buffers.resize(WRAP_AL_BUFFS);
     used.resize(WRAP_AL_BUFFS);
+    smplBuffers.resize(WRAP_AL_BUFFS);
 
     for (int i = 0; i < WRAP_AL_BUFFS; i++)
     {
@@ -734,31 +446,35 @@ CTsmpl::CTsmpl(waldev *_dev)
         alCheck(alGenBuffers(1, &tmp));
         buffers[i] = tmp;
         used[i] = false;
+        smplBuffers[i] = new uint8_t[ bufsz + bufsz % 2 ];
     }
 
     alCheck(alSource3f(source, AL_POSITION, 0.0, 0.0, 0.0));
     alCheck(alSourcef(source, AL_GAIN, 1.0));
     alCheck(alSourcef(source, AL_PITCH, 1.0));
 
-    status = WRAP_STOPPED;
+    status = SMPL_STATUS_STOPPED;
     freq = 44100;
     format = AL_FORMAT_STEREO16;
     endStreamed = false;
     eosfunc = NULL;
     cVolume = 1.0;
     mVolume = 1.0;
+
+    loops = 1;
 }
 
 CTsmpl::~CTsmpl()
 {
     alCheck(alSourceStop(source));
 
-    clearQueue();
+    _clearQueue();
 
     for (int i = 0; i < WRAP_AL_BUFFS; i++)
     {
         ALuint tmp = buffers[i];
         alCheck(alDeleteBuffers(1, &tmp));
+        delete smplBuffers[i];
     }
 
     alCheck(alDeleteSources(1, &source));
@@ -770,33 +486,30 @@ void CTsmpl::update()
 {
     if ( SDL_TryLockMutex(mutex) == 0) // we can't wait!
     {
-        if ( status == WRAP_PLAYING )
+        if ( status == SMPL_STATUS_PLAYING )
         {
             ALint state;
             alCheck(alGetSourcei(source, AL_SOURCE_STATE, &state));
 
             if (state == AL_STOPPED)
             {
-                if (endStreamed)
+                if (endStreamed) // If data was streamed at all
                 {
-                    clearQueue();
+                    if (eosfunc)
+                        eosfunc(this);
 
-                    status = WRAP_STOPPED;
+                    _clearQueue();
+
+                    status = SMPL_STATUS_STOPPED;
                 }
-                else
+                else // If some data avaliable but for some reason buffers are already played -> continue
                 {
-                    clearQueue();
+                    _clearQueue();
 
                     for (int i = 0; i < WRAP_AL_BUFFS; i++)
                     {
-                        if ( used[i] == false )
-                        {
-                            if ( fill_n_queue(i) > 0 )
-                            {
-                                endStreamed = true;
-                                break;
-                            }
-                        }
+                        if ( !_fill_n_queue(i) )
+                            break;
                     }
 
                     alCheck(alSourcePlay(source));
@@ -815,28 +528,9 @@ void CTsmpl::update()
                     for (int i = 0; i < WRAP_AL_BUFFS; i++)
                     {
                         if ( buffers[i] == bufid )
-                        {
-                            used[i] = false;
-                            break;
-                        }
+                            used[i] = _fill_n_queue(i);
                     }
                 }
-
-                if ( !endStreamed )
-                {
-                    for (int i = 0; i < WRAP_AL_BUFFS; i++)
-                    {
-                        if ( used[i] == false )
-                        {
-                            if ( fill_n_queue(i) > 0 )
-                            {
-                                endStreamed = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
             }
         }
 
@@ -845,7 +539,7 @@ void CTsmpl::update()
 }
 
 
-void CTsmpl::clearQueue()
+void CTsmpl::_clearQueue()
 {
     ALint queued;
     alCheck(alGetSourcei(source, AL_BUFFERS_QUEUED, &queued));
@@ -897,3 +591,174 @@ void CTsmpl::setMasterVolume(int _vol)
         SDL_UnlockMutex(mutex);
     }
 }
+
+void CTsmpl::loop_count(int _loops)
+{
+    if ( SDL_LockMutex(mutex) == 0)
+    {
+        loops = _loops;
+
+        SDL_UnlockMutex(mutex);
+    }
+}
+
+bool CTsmpl::_fill_n_queue(int bufID)
+{
+    if (endStreamed)
+        return false;
+
+    size_t totalRead = 0;
+    bool zeroread = false;
+
+    while ( totalRead < BufSZ )
+    {
+        size_t maxRead = BufSZ - totalRead;
+        size_t readed = _read( ((int8_t *)smplBuffers[bufID]) + totalRead, maxRead );
+
+        if (readed == 0)
+        {
+            if (zeroread) //twice in row readed 0 bytes
+            {
+                loops = 1;
+                endStreamed = true;
+                break;
+            }
+
+            if ( loops == 1) //Last loop readed
+            {
+                endStreamed = true;
+                break;
+            }
+            else
+            {
+                if (loops != 0)
+                    loops--;
+
+                _rewind();
+            }
+
+            zeroread = true;
+        }
+        else
+            zeroread = false;
+
+        totalRead += readed;
+    }
+
+    if (totalRead > 0)
+    {
+        ALuint bfid = buffers[bufID];
+
+        alCheck(alBufferData(bfid, format, smplBuffers[bufID], totalRead, freq));
+        used[bufID] = true;
+
+        alCheck(alSourceQueueBuffers(source, 1, &bfid));
+    }
+
+    return totalRead > 0; // Has data
+}
+
+void CTsmpl::_stop()
+{
+    alCheck(alSourceStop(source));
+
+    status = SMPL_STATUS_STOPPED;
+
+    _clearQueue();
+
+    endStreamed = false;
+
+    _rewind();
+}
+
+void CTsmpl::_reset()
+{
+    alCheck(alSourceStop(source));
+
+    _clearQueue();
+
+    alCheck(alSource3f(source, AL_POSITION, 0.0, 0.0, 0.0));
+    alCheck(alSourcef(source, AL_GAIN, 1.0));
+    alCheck(alSourcef(source, AL_PITCH, 1.0));
+
+    status = SMPL_STATUS_STOPPED;
+    loops = 1;
+
+    eosfunc = NULL;
+    endStreamed = false;
+
+    freq = 44100;
+    format = AL_FORMAT_STEREO16;
+
+    cVolume = 1.0;
+    mVolume = 1.0;
+}
+
+void CTsmpl::reset()
+{
+    if ( SDL_LockMutex(mutex) == 0)
+    {
+        _reset();
+
+        SDL_UnlockMutex(mutex);
+    }
+}
+
+void CTsmpl::stop()
+{
+    if ( SDL_LockMutex(mutex) == 0)
+    {
+        _stop();
+
+        SDL_UnlockMutex(mutex);
+    }
+}
+
+void CTsmpl::pan(int _pan)
+{
+    if ( SDL_LockMutex(mutex) == 0)
+    {
+        float perc = ((float)_pan - 64.0) / 64.0;
+
+        float angl = hpi + perc * hpi;
+
+        alCheck(alSource3f(source, AL_POSITION, (float)cos(angl), 0.0, (float)sin(angl)));
+
+        SDL_UnlockMutex(mutex);
+    }
+}
+
+void CTsmpl::playback_rate(int newfreq)
+{
+    if ( SDL_LockMutex(mutex) == 0)
+    {
+        alCheck(alSourcef(source, AL_PITCH, (float)newfreq / (float)freq));
+
+        SDL_UnlockMutex(mutex);
+    }
+}
+
+void CTsmpl::play()
+{
+    if ( SDL_LockMutex(mutex) == 0)
+    {
+        if ( status == SMPL_STATUS_PLAYING )
+            _stop(); //Rewind, clear flags
+
+        for (int i = 0; i < WRAP_AL_BUFFS; i++)
+        {
+            if ( used[i] == false )
+            {
+                if ( !_fill_n_queue(i) ) //No data - don't try
+                    break;
+            }
+        }
+
+        alCheck(alSourcePlay(source));
+
+        status = SMPL_STATUS_PLAYING;
+
+        SDL_UnlockMutex(mutex);
+    }
+}
+

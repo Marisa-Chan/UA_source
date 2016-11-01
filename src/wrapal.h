@@ -23,22 +23,41 @@ class CTsmpl
 public:
     virtual void update();
 
-    virtual void volume(int vol);
-    virtual void setMasterVolume(int vol);
+    void loop_count(int loops);
+    void volume(int vol);
+    void setMasterVolume(int vol);
+    void play();
+    void stop();
+    void reset();
+    void playback_rate(int newfreq);
+    void pan(int pan);
 
     void EOS_callback( void (*func)(void *) );
 
-protected:
-    CTsmpl(waldev *dev);
-    virtual ~CTsmpl();
-    virtual int fill_n_queue(int bufID) = 0;
 
-    void clearQueue();
+    enum SMPL_STATUS
+    {
+        SMPL_STATUS_STOPPED = 0,
+        SMPL_STATUS_PLAYING = 1,
+        SMPL_STATUS_PAUSED  = 2
+    };
+
+protected:
+    CTsmpl(waldev *dev, size_t bufsz);
+    virtual ~CTsmpl();
+    virtual size_t _read(void *buf, size_t bufsz) = 0;
+    virtual void _rewind() = 0;
+    virtual void _stop(); //Non-blocable stop
+    virtual void _reset();
+
+    void _clearQueue();
+    bool _fill_n_queue(int bufID);
 
     waldev *device;
 
     ALuint source;
     std::deque<ALuint> buffers;
+    std::deque<uint8_t *> smplBuffers;
     std::deque<bool> used;
 
     ALenum format;
@@ -46,10 +65,14 @@ protected:
 
     SDL_mutex *mutex;
     int status;
+    size_t loops;
+
     bool endStreamed;
 
     ALfloat cVolume;
     ALfloat mVolume;
+
+    const size_t BufSZ;
 
     void (*eosfunc)(void *);
 };
@@ -59,26 +82,15 @@ class walsmpl: public CTsmpl
     friend waldev;
 
 public:
-    void init();
     void address(void *start, size_t size, int freq, ALenum format);
-    void play();
-    void stop();
-    void update();
-
-    void loop_count(int loops);
-
-    void pan(int pan);
-    void playback_rate(int newfreq);
     void position(size_t pos);
 
 protected:
     walsmpl(waldev *dev);
 
-    int fill_n_queue(int bufID);
-
-    bool isqueued();
-
-    int loops;
+    virtual size_t _read(void *buf, size_t bufsz);
+    virtual void _rewind();
+    virtual void _reset();
 
     void *start;
     size_t len;
@@ -95,25 +107,17 @@ public:
     void init();
 
     bool open(const char *fname);
-    void close();
-
-//    int isPlaying();
-    void play();
-//    void pause();
-    void stop();
     size_t getLen();
-//    void update();
 
 protected:
     walmus(waldev *dev);
     ~walmus();
 
+    virtual size_t _read(void *buf, size_t bufsz);
+    virtual void _rewind();
+
     OggVorbis_File m_vorbis;
     FSMgr::FileHandle *hndl;
-
-    int fill_n_queue(int bufID);
-
-    std::deque<int16_t *> smplBuffers;
 
     size_t len;
 };
@@ -128,11 +132,10 @@ public:
     bool inited();
 
     walsmpl *newSample();
+    walmus *createMusicPlayer();
     void deleteSample(CTsmpl *smpl);
 
     void master_volume(int vol);
-
-    walmus *createMusicPlayer();
 
 private:
     ALCdevice *dev;
