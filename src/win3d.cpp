@@ -29,7 +29,7 @@ int txt16bit = 0;
 
 const NewClassDescr NC_STACK_win3d::description("win3d.class", &newinstance);
 
-key_value_stru win3d_keys[16] =
+key_value_stru win3d_keys[18] =
 {
     {"gfx.dither", KEY_TYPE_BOOL, 0},               //0
     {"gfx.filter", KEY_TYPE_BOOL, 0},
@@ -46,7 +46,9 @@ key_value_stru win3d_keys[16] =
     {"gfx.disable_lowres", KEY_TYPE_BOOL, 0},
     {"gfx.export_window_mode", KEY_TYPE_BOOL, 0},
     {"gfx.blending", KEY_TYPE_DIGIT, 0},
-    {"gfx.solidfont", KEY_TYPE_BOOL, true}          //15
+    {"gfx.solidfont", KEY_TYPE_BOOL, true},          //15
+    {"gfx.vsync", KEY_TYPE_DIGIT, 1},
+    {"gfx.maxfps", KEY_TYPE_DIGIT, 60}
 };
 
 
@@ -899,6 +901,22 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
 
     SDLWRAP_resizeWindow(picked->w, picked->h);
 
+    if (win3d_keys[16].value.val == 0)
+    {
+        SDL_GL_SetSwapInterval(0);
+    }
+    else if (win3d_keys[16].value.val == 1)
+    {
+        SDL_GL_SetSwapInterval(1);
+    }
+    else if (win3d_keys[16].value.val == 2)
+    {
+        if ( SDL_GL_SetSwapInterval(-1) == -1)
+            SDL_GL_SetSwapInterval(1);
+    }
+
+    fpsLimitter(win3d_keys[17].value.val);
+
     load_font("MS Sans Serif,12,400,0");
 
     FSMgr::FileHandle *fil = uaOpenFile("env/vid.def", "w");
@@ -937,7 +955,7 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
 
 size_t NC_STACK_win3d::func0(stack_vals *stak)
 {
-    get_keyvalue_from_ini(0, win3d_keys, 16);
+    get_keyvalue_from_ini(0, win3d_keys, 18);
 
     if ( !windd_func0(stak) )
         return 0;

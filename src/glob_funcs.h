@@ -54,5 +54,7 @@ char * file_path_copy_manipul(const char *src, char *dst, int size);
 
 void sub_412810(const char *a1, char *a2, int num);
 
+void fpsLimitter(int value);
+
 
 #endif // GLOB_FUNCS_H_INCLUDED

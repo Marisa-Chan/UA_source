@@ -781,6 +781,18 @@ int WinMain__sub0(int argc, char *argv[])
     return 0;
 }
 
+uint32_t maxTicks = 1000/60; // init on 60FPS
+
+void fpsLimitter(int value)
+{
+    if (value > 1000)
+        maxTicks = 0;
+    else if (value <= 0)
+        maxTicks = 0;
+    else
+        maxTicks = 1000/value;
+}
+
 int main(int argc, char *argv[])
 {
 //	HANDLE UAMUTEX = CreateMutex(0, 0, "UA Running Test Mutex");
@@ -798,10 +810,57 @@ int main(int argc, char *argv[])
     if ( !WinMain__sub0(argc, argv) )
         return 0;
 
-    while ( sb_0x411324() )
+    uint32_t ticks = 0;
+
+//    int fps = 0;
+//    uint32_t fpstick = SDL_GetTicks() + 1000;
+
+    while ( true )
     {
-        if ( SDLWRAP_UPDATE() )
-            break;
+
+        if (maxTicks == 0)
+        {
+            if ( !sb_0x411324() )
+                break;
+
+            if ( SDLWRAP_UPDATE() )
+                break;
+        }
+        else
+        {
+            uint32_t curTick = SDL_GetTicks();
+
+            if (curTick >= ticks)
+            {
+                if ( !sb_0x411324() )
+                    break;
+
+                if ( SDLWRAP_UPDATE() )
+                    break;
+
+                ticks = curTick;
+
+                uint32_t diffTick = SDL_GetTicks() - curTick;
+
+                if (diffTick < maxTicks)
+                {
+                    uint16_t delay = maxTicks - diffTick;
+                    ticks += delay;
+                    SDL_Delay(delay);
+                }
+            }
+            else
+                SDL_Delay(1);
+        }
+
+//        fps++;
+//        if (SDL_GetTicks() > fpstick)
+//        {
+//            printf("fps %d\n", fps);
+//            fpstick = SDL_GetTicks() + 1000;
+//            fps = 0;
+//        }
+
     }
 
     sub_4113E8();
