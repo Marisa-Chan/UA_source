@@ -1885,6 +1885,16 @@ void ypaworld_func158__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
     float v3 = (float)inpt->winp131arg.move[0].x / (float)yw->screen_width;
     float v4 = (float)inpt->winp131arg.move[0].y / (float)yw->screen_height;
 
+    if (v3 < 0.0)
+        v3 = 0.0;
+    if (v3 > 1.0)
+        v3 = 1.0;
+
+    if (v4 < 0.0)
+        v4 = 0.0;
+    if (v4 > 1.0)
+        v4 = 1.0;
+
     int v6 = 0;
     int v7 = 0;
 
