@@ -532,4 +532,6 @@ void recorder_stoprec(_NC_STACK_ypaworld *yw);
 void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt);
 void ypaworld_func163__sub1(_NC_STACK_ypaworld *yw, recorder *rcrd, int a3);
 void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_ypabact *bact, struC5 *inpt);
+
+char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, float y, int value, int maxval, int valCH, int valBG, const char *a10, const char *a11, int flag = 0);
 #endif

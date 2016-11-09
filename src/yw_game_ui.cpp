@@ -9333,7 +9333,7 @@ void yw_RenderInfoVehicleWire(_NC_STACK_ypaworld *yw, sklt_wis *wis, VhclProto *
 
 
 
-char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos, float ypos, int value, int maxval, int a8, int a9, const char *a10, const char *a11)
+char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, float y, int value, int maxval, int valCH, int valBG, const char *a10, const char *a11, int flag)
 {
     int wnd_xpos = 0;
     int wnd_xpos2 = 0;
@@ -9352,10 +9352,10 @@ char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos, 
         wnd_vis = 1;
     }
 
-    int v51 = (yw->screen_width / 2) * xpos;
-    int v50 = (yw->screen_height / 2) * ypos;
+    int v51 = (yw->screen_width / 2) * x;
+    int v50 = (yw->screen_height / 2) * y;
 
-    int v49 = yw->tiles[51]->chars[a8].width * wis->field_9E;
+    int v49 = yw->tiles[51]->chars[valCH].width * wis->field_9E;
 
 
     char *pcur = cur;
@@ -9397,9 +9397,19 @@ char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos, 
         if ( !wnd_vis || v29 <= wnd_xpos || v29 >= wnd_xpos2 || v30 <= wnd_ypos || v30 >= wnd_ypos2 )
         {
             if ( v35 > value )
-                FontUA::store_u8(&pcur, a9);
+            {
+                if ( (flag & 2) == 0 )
+                    FontUA::store_u8(&pcur, valBG);
+                else
+                    FontUA::add_xpos(&pcur, yw->tiles[51]->chars[1].width);
+            }
             else
-                FontUA::store_u8(&pcur, a8);
+            {
+                if ( (flag & 1) == 0 )
+                    FontUA::store_u8(&pcur, valCH);
+                else
+                    FontUA::add_xpos(&pcur, yw->tiles[51]->chars[1].width);
+            }
         }
 
         v29 += yw->tiles[51]->chars[1].width;
@@ -9465,7 +9475,7 @@ char * yw_RenderInfoShieldbar(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, 
 
     const char *v11 = get_lang_string(yw->string_pointers_p2, 36, "AMR");
 
-    return sub_4E4F80(yw, wis, cur, xpos, ypos, v10, 100, 1, 5, v11, a1a);
+    return sub_4E4F80(yw, wis, cur, xpos, ypos, v10, 100, 1, 5, v11, a1a, 2);
 }
 
 
@@ -9629,7 +9639,7 @@ char * yw_RenderInfoWeaponInf(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, 
 
         const char *v12 = get_lang_string(yw->string_pointers_p2, 32, "DMG");
 
-        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, weap->energy, 100, 7, 7, v12, buf);
+        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, weap->energy, 100, 7, 7, v12, buf, 1 | 2);
     }
 
     return pcur;
