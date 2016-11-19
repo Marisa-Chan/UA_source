@@ -8166,7 +8166,7 @@ size_t NC_STACK_ypabact::ypabact_func119(bact_arg119 *arg)
 
         bact->field_6B9 = 2;
 
-        if ( bact->field_3B2 & 0x200 )
+        if ( bact->field_3B2 & 2 )
         {
             if ( bact->field_B34 & 2 )
             {
