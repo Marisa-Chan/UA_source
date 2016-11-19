@@ -987,15 +987,15 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "robo_coll_x") )
         {
-            robo->coll.roboColls[v77].robo_coll_x = strtof(_p2, 0);
+            robo->coll.roboColls[v77].coll_pos.sx = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_coll_y") )
         {
-            robo->coll.roboColls[v77].robo_coll_y = strtof(_p2, 0);
+            robo->coll.roboColls[v77].coll_pos.sy = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_coll_z") )
         {
-            robo->coll.roboColls[v77].robo_coll_z = strtof(_p2, 0);
+            robo->coll.roboColls[v77].coll_pos.sz = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_viewer_x") )
         {

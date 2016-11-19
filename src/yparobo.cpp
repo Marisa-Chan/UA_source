@@ -1247,19 +1247,19 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
 
             float tx = bact->field_621.sx +
-                       bact->field_651.m00 * robo->coll.roboColls[i].robo_coll_x +
-                       bact->field_651.m01 * robo->coll.roboColls[i].robo_coll_y +
-                       bact->field_651.m02 * robo->coll.roboColls[i].robo_coll_z;
+                       bact->field_651.m00 * robo->coll.roboColls[i].coll_pos.sx +
+                       bact->field_651.m01 * robo->coll.roboColls[i].coll_pos.sy +
+                       bact->field_651.m02 * robo->coll.roboColls[i].coll_pos.sz;
 
 //            float ty = bact->field_621.sy +
-//			      bact->field_651.m10 * robo->coll.roboColls[i].robo_coll_x +
-//			      bact->field_651.m11 * robo->coll.roboColls[i].robo_coll_y +
-//			      bact->field_651.m12 * robo->coll.roboColls[i].robo_coll_z;
+//			      bact->field_651.m10 * robo->coll.roboColls[i].coll_pos.sx +
+//			      bact->field_651.m11 * robo->coll.roboColls[i].coll_pos.sy +
+//			      bact->field_651.m12 * robo->coll.roboColls[i].coll_pos.sz;
 
             float tz = bact->field_621.sz +
-                       bact->field_651.m20 * robo->coll.roboColls[i].robo_coll_x +
-                       bact->field_651.m21 * robo->coll.roboColls[i].robo_coll_y +
-                       bact->field_651.m22 * robo->coll.roboColls[i].robo_coll_z;
+                       bact->field_651.m20 * robo->coll.roboColls[i].coll_pos.sx +
+                       bact->field_651.m21 * robo->coll.roboColls[i].coll_pos.sy +
+                       bact->field_651.m22 * robo->coll.roboColls[i].coll_pos.sz;
 
 
             arg136.pos_x = tmp.sx;
@@ -1350,19 +1350,19 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
 
             float tx = bact->field_621.sx +
-                       bact->field_651.m00 * robo->coll.roboColls[i].robo_coll_x +
-                       bact->field_651.m01 * robo->coll.roboColls[i].robo_coll_y +
-                       bact->field_651.m02 * robo->coll.roboColls[i].robo_coll_z;
+                       bact->field_651.m00 * robo->coll.roboColls[i].coll_pos.sx +
+                       bact->field_651.m01 * robo->coll.roboColls[i].coll_pos.sy +
+                       bact->field_651.m02 * robo->coll.roboColls[i].coll_pos.sz;
 
 //            float ty = bact->field_621.sy +
-//			      bact->field_651.m10 * robo->coll.roboColls[i].robo_coll_x +
-//			      bact->field_651.m11 * robo->coll.roboColls[i].robo_coll_y +
-//			      bact->field_651.m12 * robo->coll.roboColls[i].robo_coll_z;
+//			      bact->field_651.m10 * robo->coll.roboColls[i].coll_pos.sx +
+//			      bact->field_651.m11 * robo->coll.roboColls[i].coll_pos.sy +
+//			      bact->field_651.m12 * robo->coll.roboColls[i].coll_pos.sz;
 
             float tz = bact->field_621.sz +
-                       bact->field_651.m20 * robo->coll.roboColls[i].robo_coll_x +
-                       bact->field_651.m21 * robo->coll.roboColls[i].robo_coll_y +
-                       bact->field_651.m22 * robo->coll.roboColls[i].robo_coll_z;
+                       bact->field_651.m20 * robo->coll.roboColls[i].coll_pos.sx +
+                       bact->field_651.m21 * robo->coll.roboColls[i].coll_pos.sy +
+                       bact->field_651.m22 * robo->coll.roboColls[i].coll_pos.sz;
 
             ypaworld_arg137 arg137;
 
@@ -1539,19 +1539,19 @@ void yparobo_func70__sub2__sub0(__NC_STACK_yparobo *robo)
     for (int i = 0; i < robo->coll.robo_coll_num; i++)
     {
         robo->coll.roboColls[i].field_10.sx = bact->field_621.sx
-                                              + bact->field_651.m00 * robo->coll.roboColls[i].robo_coll_x
-                                              + bact->field_651.m01 * robo->coll.roboColls[i].robo_coll_y
-                                              + bact->field_651.m02 * robo->coll.roboColls[i].robo_coll_z;
+                                              + bact->field_651.m00 * robo->coll.roboColls[i].coll_pos.sx
+                                              + bact->field_651.m01 * robo->coll.roboColls[i].coll_pos.sy
+                                              + bact->field_651.m02 * robo->coll.roboColls[i].coll_pos.sz;
 
         robo->coll.roboColls[i].field_10.sy = bact->field_621.sy
-                                              + bact->field_651.m10 * robo->coll.roboColls[i].robo_coll_x
-                                              + bact->field_651.m11 * robo->coll.roboColls[i].robo_coll_y
-                                              + bact->field_651.m12 * robo->coll.roboColls[i].robo_coll_z;
+                                              + bact->field_651.m10 * robo->coll.roboColls[i].coll_pos.sx
+                                              + bact->field_651.m11 * robo->coll.roboColls[i].coll_pos.sy
+                                              + bact->field_651.m12 * robo->coll.roboColls[i].coll_pos.sz;
 
         robo->coll.roboColls[i].field_10.sz = bact->field_621.sz
-                                              + bact->field_651.m20 * robo->coll.roboColls[i].robo_coll_x
-                                              + bact->field_651.m21 * robo->coll.roboColls[i].robo_coll_y
-                                              + bact->field_651.m22 * robo->coll.roboColls[i].robo_coll_z;
+                                              + bact->field_651.m20 * robo->coll.roboColls[i].coll_pos.sx
+                                              + bact->field_651.m21 * robo->coll.roboColls[i].coll_pos.sy
+                                              + bact->field_651.m22 * robo->coll.roboColls[i].coll_pos.sz;
     }
 }
 

@@ -58,9 +58,7 @@ union BactTarget
 struct roboColl
 {
     float robo_coll_radius;
-    float robo_coll_x;
-    float robo_coll_y;
-    float robo_coll_z;
+    xyz coll_pos;
     xyz field_10;
 };
 

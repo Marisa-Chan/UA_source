@@ -1,6 +1,8 @@
 #ifndef ENGINE_TFORM_H_INCLUDED
 #define ENGINE_TFORM_H_INCLUDED
 
+#include <math.h>
+
 struct SinCos
 {
     float sin;
@@ -12,15 +14,210 @@ struct SinCos
 
 struct __attribute__((packed)) xyz
 {
-    float sx;
-    float sy;
-    float sz;
+    typedef float xyzFLT;
+    xyzFLT sx;
+    xyzFLT sy;
+    xyzFLT sz;
 
     xyz()
     {
         sx = 0.0;
         sy = 0.0;
         sz = 0.0;
+    }
+
+    xyz(xyzFLT _x, xyzFLT _y, xyzFLT _z)
+    {
+        sx = _x;
+        sy = _y;
+        sz = _z;
+    }
+
+    xyz(xyzFLT _b)
+    {
+        sx = _b;
+        sy = _b;
+        sz = _b;
+    }
+
+    xyzFLT length()
+    {
+        return sqrt( sx * sx + sy * sy + sz * sz );
+    }
+
+    xyzFLT normolize()
+    {
+        xyzFLT ln = length();
+
+        if (ln == 0.0)
+            return 0.0;
+
+        *this /= ln;
+
+        return ln;
+    }
+
+    const xyz normolize(float *pln) const
+    {
+        xyz tmp = *this;
+
+        xyzFLT ln = tmp.length();
+
+        tmp /= ln;
+
+        if (pln)
+            *pln = ln;
+
+        return tmp;
+    }
+
+    // xyz = another xyz
+    xyz &operator=(const xyz &b)
+    {
+        sx = b.sx;
+        sy = b.sy;
+        sz = b.sz;
+
+        return *this;
+    }
+
+    // xyz = float
+    xyz &operator=(xyzFLT b)
+    {
+        sx = b;
+        sy = b;
+        sz = b;
+
+        return *this;
+    }
+
+    xyz &operator+=(const xyz &b)
+    {
+        sx += b.sx;
+        sy += b.sy;
+        sz += b.sz;
+        return *this;
+    }
+
+    xyz &operator-=(const xyz &b)
+    {
+        sx -= b.sx;
+        sy -= b.sy;
+        sz -= b.sz;
+        return *this;
+    }
+
+    xyz &operator*=(const xyz &b)
+    {
+        xyz tmp = *this;
+        sx = tmp.sy * b.sz - tmp.sz * b.sy;
+        sy = tmp.sz * b.sx - tmp.sx * b.sz;
+        sz = tmp.sx * b.sy - tmp.sy * b.sx;
+        return *this;
+    }
+
+    xyz &operator+=(xyzFLT b)
+    {
+        sx += b;
+        sy += b;
+        sz += b;
+        return *this;
+    }
+
+    xyz &operator-=(xyzFLT b)
+    {
+        sx -= b;
+        sy -= b;
+        sz -= b;
+        return *this;
+    }
+
+    xyz &operator*=(xyzFLT b)
+    {
+        sx *= b;
+        sy *= b;
+        sz *= b;
+        return *this;
+    }
+
+    xyz &operator/=(xyzFLT b)
+    {
+        if (b != 0.0)
+        {
+            double tmp = 1.d / b;
+            *this *= tmp;
+        }
+
+        return *this;
+    }
+
+    const xyz operator-() const
+    {
+        return xyz(-sx, -sy, -sz);
+    }
+
+    const xyz operator+(const xyz &b) const
+    {
+        xyz tmp = *this;
+        tmp += b;
+        return tmp;
+    }
+
+    const xyz operator-(const xyz &b) const
+    {
+        xyz tmp = *this;
+        tmp -= b;
+        return tmp;
+    }
+
+    const xyz operator*(const xyz &b) const
+    {
+        xyz tmp = *this;
+        tmp *= b;
+        return tmp;
+    }
+
+    const xyz operator+(xyzFLT b) const
+    {
+        xyz tmp = *this;
+        tmp += b;
+        return tmp;
+    }
+
+    const xyz operator-(xyzFLT b) const
+    {
+        xyz tmp = *this;
+        tmp -= b;
+        return tmp;
+    }
+
+    const xyz operator*(xyzFLT b) const
+    {
+        xyz tmp = *this;
+        tmp *= b;
+        return tmp;
+    }
+
+    const xyz operator/(xyzFLT b) const
+    {
+        xyz tmp = *this;
+        tmp /= b;
+        return tmp;
+    }
+
+    bool operator==(const xyz &b) const
+    {
+        return sx == b.sx && sy == b.sy && sz == b.sz;
+    }
+
+    bool operator!=(const xyz &b) const
+    {
+        return sx != b.sx || sy != b.sy || sz != b.sz;
+    }
+
+    xyzFLT dot(const xyz &b)
+    {
+        return sx * b.sx + sy * b.sy + sz * b.sz;
     }
 };
 
@@ -47,6 +244,31 @@ struct __attribute__((packed)) mat3x3
         m20 = 0.0;
         m21 = 0.0;
         m22 = 0.0;
+    }
+
+    const xyz getVect(int id) const
+    {
+        switch (id)
+        {
+        default:
+        case 0:
+            return xyz(m00, m01, m02);
+
+        case 1:
+            return xyz(m10, m11, m12);
+
+        case 2:
+            return xyz(m20, m21, m22);
+
+        case 10:
+            return xyz(m00, m10, m20);
+
+        case 11:
+            return xyz(m01, m11, m21);
+
+        case 12:
+            return xyz(m02, m12, m22);
+        }
     }
 };
 

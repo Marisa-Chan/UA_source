@@ -1777,9 +1777,9 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
 
                         v89 = v12->field_621;
 
-                        v89.sx += v12->field_651.m00 * v15->robo_coll_x + v12->field_651.m10 * v15->robo_coll_y + v12->field_651.m20 * v15->robo_coll_z;
-                        v89.sy += v12->field_651.m01 * v15->robo_coll_x + v12->field_651.m11 * v15->robo_coll_y + v12->field_651.m21 * v15->robo_coll_z;
-                        v89.sz += v12->field_651.m02 * v15->robo_coll_x + v12->field_651.m12 * v15->robo_coll_y + v12->field_651.m22 * v15->robo_coll_z;
+                        v89.sx += v12->field_651.m00 * v15->coll_pos.sx + v12->field_651.m10 * v15->coll_pos.sy + v12->field_651.m20 * v15->coll_pos.sz;
+                        v89.sy += v12->field_651.m01 * v15->coll_pos.sx + v12->field_651.m11 * v15->coll_pos.sy + v12->field_651.m21 * v15->coll_pos.sz;
+                        v89.sz += v12->field_651.m02 * v15->coll_pos.sx + v12->field_651.m12 * v15->coll_pos.sy + v12->field_651.m22 * v15->coll_pos.sz;
 
                         v19 = v15->robo_coll_radius;
                     }

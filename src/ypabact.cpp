@@ -5147,9 +5147,9 @@ size_t NC_STACK_ypabact::ypabact_func87(int *arg)
                     roboColl *v10 = &v55->roboColls[i];
                     ttrad = v10->robo_coll_radius;
 
-                    v41 = bnode->field_621.sx + bnode->field_651.m00 * v10->robo_coll_x + bnode->field_651.m10 * v10->robo_coll_y + bnode->field_651.m20 * v10->robo_coll_z;
-                    v42 = bnode->field_621.sy + bnode->field_651.m01 * v10->robo_coll_x + bnode->field_651.m11 * v10->robo_coll_y + bnode->field_651.m21 * v10->robo_coll_z;
-                    v43 = bnode->field_621.sz + bnode->field_651.m02 * v10->robo_coll_x + bnode->field_651.m12 * v10->robo_coll_y + bnode->field_651.m22 * v10->robo_coll_z;
+                    v41 = bnode->field_621.sx + bnode->field_651.m00 * v10->coll_pos.sx + bnode->field_651.m10 * v10->coll_pos.sy + bnode->field_651.m20 * v10->coll_pos.sz;
+                    v42 = bnode->field_621.sy + bnode->field_651.m01 * v10->coll_pos.sx + bnode->field_651.m11 * v10->coll_pos.sy + bnode->field_651.m21 * v10->coll_pos.sz;
+                    v43 = bnode->field_621.sz + bnode->field_651.m02 * v10->coll_pos.sx + bnode->field_651.m12 * v10->coll_pos.sy + bnode->field_651.m22 * v10->coll_pos.sz;
 
                     if ( ttrad < 0.01 )
                         continue;
@@ -6586,19 +6586,19 @@ size_t NC_STACK_ypabact::ypabact_func105(bact_arg105 *arg)
                                 if ( v93 )
                                 {
                                     v77 = v21->field_621.sx +
-                                          v21->field_651.m00 * v93->roboColls[j].robo_coll_x +
-                                          v21->field_651.m10 * v93->roboColls[j].robo_coll_y +
-                                          v21->field_651.m20 * v93->roboColls[j].robo_coll_z;
+                                          v21->field_651.m00 * v93->roboColls[j].coll_pos.sx +
+                                          v21->field_651.m10 * v93->roboColls[j].coll_pos.sy +
+                                          v21->field_651.m20 * v93->roboColls[j].coll_pos.sz;
 
                                     v78 = v21->field_621.sy +
-                                          v21->field_651.m01 * v93->roboColls[j].robo_coll_x +
-                                          v21->field_651.m11 * v93->roboColls[j].robo_coll_y +
-                                          v21->field_651.m21 * v93->roboColls[j].robo_coll_z;
+                                          v21->field_651.m01 * v93->roboColls[j].coll_pos.sx +
+                                          v21->field_651.m11 * v93->roboColls[j].coll_pos.sy +
+                                          v21->field_651.m21 * v93->roboColls[j].coll_pos.sz;
 
                                     v79 = v21->field_621.sz +
-                                          v21->field_651.m02 * v93->roboColls[j].robo_coll_x +
-                                          v21->field_651.m12 * v93->roboColls[j].robo_coll_y +
-                                          v21->field_651.m22 * v93->roboColls[j].robo_coll_z;
+                                          v21->field_651.m02 * v93->roboColls[j].coll_pos.sx +
+                                          v21->field_651.m12 * v93->roboColls[j].coll_pos.sy +
+                                          v21->field_651.m22 * v93->roboColls[j].coll_pos.sz;
 
                                     v27 = v93->roboColls[j].robo_coll_radius;
                                 }

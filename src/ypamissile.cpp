@@ -365,10 +365,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
 
     int v90 = 0;
 
-    xyz v78;
-    v78.sx = 0;
-    v78.sy = 0;
-    v78.sz = 0;
+    xyz v78(0.0, 0.0, 0.0);
 
     int v81 = 0;
     float v91 = 0.0;
@@ -414,214 +411,203 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                 ypa_log_out("ypamissile_func70__sub0 NULL sector i = %d, 621: %f %f 62D: %f %f \n", i, bact->field_621.sx, bact->field_621.sz, bact->field_62D.sx, bact->field_62D.sz);
 
             __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v68[ i ]->units_list.head;
-            while (bct->next)
+            for (; bct->next ; bct = (__NC_STACK_ypabact *)bct->next)
             {
-                if ( bct != bact && bct != miss->ejaculator_bact )
+                if ( bct == bact || bct == miss->ejaculator_bact || bct->field_24 == 4 || bct->field_3D5 == 2 )
+                    continue;
+
+                if (bct->field_24 == 9 && bct->shield >= 100)
                 {
-                    if ( bct->field_24 != 4 && bct->field_3D5 != 2 )
+                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
+
+                    if ( gun->getGUN_roboGun() )
+                        continue;
+                }
+
+                if ( !a5 && bct->owner == miss->ejaculator_bact->owner )
+                {
+                    continue;
+                }
+
+                if (miss->ejaculator_bact->field_24 == 9)
+                {
+                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( miss->ejaculator_bact->self );
+
+                    if (bct->owner == bact->owner)
                     {
-                        int a4 = 0;
-                        if (bct->field_24 == 9)
+                        if (gun->getGUN_roboGun())
                         {
-                            NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
-                            a4 = gun->getGUN_roboGun();
-                        }
+                            if (bct->field_24 == 3)
+                                continue;
 
-                        if ( bct->field_24 != 9 || bct->shield > 100 || !a4 )
-                        {
-                            if ( a5 || bct->owner != miss->ejaculator_bact->owner )
+                            if (bct->field_24 == 9 )
                             {
-                                int v99 = 0;
+                                NC_STACK_ypagun *bgun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
 
-                                if (miss->ejaculator_bact->field_24 == 9)
+                                if (bgun->getGUN_roboGun())
+                                    continue;
+                            }
+                        }
+                    }
+                }
+
+                if ( miss->field_c == 1 && bct->field_621.sy < miss->posy )
+                    continue;
+
+                rbcolls *v82 = bct->self->getBACT_collNodes();
+
+                int v7;
+                if ( v82 )
+                    v7 = v82->robo_coll_num;
+                else
+                    v7 = 1;
+
+                for (int j = v7 - 1; j >= 0; j--)
+                {
+                    float radius;
+                    xyz ttmp;
+
+                    if ( v82 )
+                    {
+                        roboColl *v8 = &v82->roboColls[j];
+                        radius = v8->robo_coll_radius;
+
+                        ttmp.sx = bct->field_651.m00 * v8->coll_pos.sx + bct->field_651.m10 * v8->coll_pos.sy + bct->field_651.m20 * v8->coll_pos.sz + bct->field_621.sx;
+                        ttmp.sy = bct->field_651.m01 * v8->coll_pos.sx + bct->field_651.m11 * v8->coll_pos.sy + bct->field_651.m21 * v8->coll_pos.sz + bct->field_621.sy;
+                        ttmp.sz = bct->field_651.m02 * v8->coll_pos.sx + bct->field_651.m12 * v8->coll_pos.sy + bct->field_651.m22 * v8->coll_pos.sz + bct->field_621.sz;
+                    }
+                    else
+                    {
+                        ttmp = bct->field_621;
+                        radius = bct->radius;
+                    }
+
+                    if ( !v82 || radius >= 0.01 )
+                    {
+                        xyz to_enemy = ttmp - bact->field_62D;
+                        xyz dist_vect = bact->field_621 - bact->field_62D;
+
+                        if ( to_enemy.dot( bact->field_651.getVect(2) ) >= 0.3 )
+                        {
+                            float dist_vect_len;
+                            xyz dir_vect = dist_vect.normolize(&dist_vect_len);
+
+                            xyz vp = dir_vect * to_enemy;
+
+                            float wpn_radius = 0.0;
+
+                            switch ( bct->field_24 )
+                            {
+                            case 1:
+                                wpn_radius = miss->radius_heli;
+                                break;
+
+                            case 2:
+                            case 8:
+                                wpn_radius = miss->radius_tank;
+                                break;
+
+                            case 6:
+                            case 7:
+                                wpn_radius = miss->radius_flyer;
+                                break;
+
+                            case 3:
+                                wpn_radius = miss->radius_robo;
+                                break;
+
+                            default:
+                                wpn_radius = bact->radius;
+                                break;
+                            }
+
+                            if ( wpn_radius == 0.0)
+                                wpn_radius = bact->radius;
+
+                            float vp_len = vp.length();
+                            float to_enemy_len = to_enemy.length();
+
+                            if ( radius + wpn_radius > vp_len )
+                            {
+                                /*  Tube collision test, not cylinder!
+                                    Will hit only when distance ~ wpn_radius */
+                                if ( sqrt( POW2(dist_vect_len) + POW2(vp_len) ) > fabs(to_enemy_len - wpn_radius) )
                                 {
-                                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( miss->ejaculator_bact->self );
-                                    v99 = gun->getGUN_roboGun();
-                                }
+                                    NC_STACK_ypabact *a1 = miss->ywo->getYW_userHostStation();
 
-                                if ( miss->ejaculator_bact->field_24 != 9
-                                        || bct->owner != bact->owner
-                                        || !v99
-                                        || (bct->field_24 != 3 && (bct->field_24 != 9 || !a4) ) )
-                                {
+                                    __NC_STACK_ypabact *v85;
+                                    v85 = a1->getBACT_pBact();
 
-                                    if ( miss->field_c != 1 || bct->field_621.sy >= miss->posy )
+                                    v90 = 1;
+
+                                    v91 += radius;
+                                    v81++;
+
+                                    bct->field_3D6 &= ~0x200;
+
+                                    v78 += bct->field_621;
+
+                                    int v83 = bct->self->getBACT_inputting();
+
+                                    int v92 = 0;
+
+                                    switch ( bct->field_24 )
                                     {
-                                        rbcolls *v82 = bct->self->getBACT_collNodes();
+                                    case 1:
+                                        v92 = bact->energy * miss->energy_heli;
+                                        break;
 
-                                        int v7;
-                                        if ( v82 )
-                                            v7 = v82->robo_coll_num;
-                                        else
-                                            v7 = 1;
+                                    case 2:
+                                    case 8:
+                                        v92 = bact->energy * miss->energy_tank;
+                                        break;
 
-                                        for (int j = v7 - 1; j >= 0; j--)
-                                        {
-                                            float radius;
-                                            xyz ttmp;
+                                    case 6:
+                                    case 7:
+                                        v92 = bact->energy * miss->energy_flyer;
+                                        break;
 
-                                            if ( v82 )
-                                            {
-                                                roboColl *v8 = &v82->roboColls[j];
-                                                radius = v8->robo_coll_radius;
+                                    case 3:
+                                        v92 = bact->energy * miss->energy_robo;
+                                        break;
 
-                                                ttmp.sx = bct->field_651.m00 * v8->robo_coll_x + bct->field_651.m10 * v8->robo_coll_y + bct->field_651.m20 * v8->robo_coll_z + bct->field_621.sx;
-                                                ttmp.sy = bct->field_651.m01 * v8->robo_coll_x + bct->field_651.m11 * v8->robo_coll_y + bct->field_651.m21 * v8->robo_coll_z + bct->field_621.sy;
-                                                ttmp.sz = bct->field_651.m02 * v8->robo_coll_x + bct->field_651.m12 * v8->robo_coll_y + bct->field_651.m22 * v8->robo_coll_z + bct->field_621.sz;
-                                            }
-                                            else
-                                            {
-                                                ttmp = bct->field_621;
-                                                radius = bct->radius;
-                                            }
-
-                                            if ( !v82 || radius >= 0.01 )
-                                            {
-                                                float v72 = ttmp.sx - bact->field_62D.sx;
-                                                float v73 = ttmp.sy - bact->field_62D.sy;
-                                                float v74 = ttmp.sz - bact->field_62D.sz;
-
-                                                float v69 = bact->field_621.sx - bact->field_62D.sx;
-                                                float v70 = bact->field_621.sy - bact->field_62D.sy;
-                                                float v71 = bact->field_621.sz - bact->field_62D.sz;
-
-
-                                                if ( v72 * bact->field_651.m20 + v73 * bact->field_651.m21 + v74 * bact->field_651.m22 >= 0.3 )
-                                                {
-                                                    float v95 = sqrt( POW2(v70) + POW2(v69) + POW2(v71) );
-
-                                                    NDIV_CARRY(v95);
-
-                                                    float v65 = v69 / v95;
-                                                    float v66 = v70 / v95;
-                                                    float v67 = v71 / v95;
-
-                                                    float v64 = v65 * v73 - v72 * v66;
-                                                    float v62 = v66 * v74 - v73 * v67;
-                                                    float v63 = v67 * v72 - v74 * v65;
-
-                                                    float v93 = sqrt( POW2(v73) + POW2(v72) + POW2(v74) );
-
-                                                    float v29 = 0.0;
-
-                                                    switch ( bct->field_24 )
-                                                    {
-                                                    case 1:
-                                                        v29 = miss->radius_heli;
-                                                        break;
-
-                                                    case 2:
-                                                    case 8:
-                                                        v29 = miss->radius_tank;
-                                                        break;
-
-                                                    case 6:
-                                                    case 7:
-                                                        v29 = miss->radius_flyer;
-                                                        break;
-
-                                                    case 3:
-                                                        v29 = miss->radius_robo;
-                                                        break;
-
-                                                    default:
-                                                        v29 = bact->radius;
-                                                        break;
-                                                    }
-
-                                                    if ( v29 == 0.0)
-                                                        v29 = bact->radius;
-
-                                                    float v96 = sqrt( POW2(v63) + POW2(v62) + POW2(v64) );
-
-                                                    if ( radius + v29 > v96 )
-                                                    {
-                                                        if ( sqrt( POW2(v95) + POW2(v96) ) > fabs(v93 - v29) )
-                                                        {
-                                                            NC_STACK_ypabact *a1 = miss->ywo->getYW_userHostStation();
-
-                                                            __NC_STACK_ypabact *v85;
-                                                            v85 = a1->getBACT_pBact();
-
-                                                            v90 = 1;
-
-                                                            v91 += radius;
-                                                            v81++;
-
-                                                            bct->field_3D6 &= 0xFFFFFDFF;
-
-                                                            v78.sx += bct->field_621.sx;
-                                                            v78.sy += bct->field_621.sy;
-                                                            v78.sz += bct->field_621.sz;
-
-                                                            int v83 = bct->self->getBACT_inputting();
-
-                                                            int v92 = 0;
-
-                                                            switch ( bct->field_24 )
-                                                            {
-                                                            case 1:
-                                                                v92 = bact->energy * miss->energy_heli;
-                                                                break;
-
-                                                            case 2:
-                                                            case 8:
-                                                                v92 = bact->energy * miss->energy_tank;
-                                                                break;
-
-                                                            case 6:
-                                                            case 7:
-                                                                v92 = bact->energy * miss->energy_flyer;
-                                                                break;
-
-                                                            case 3:
-                                                                v92 = bact->energy * miss->energy_robo;
-                                                                break;
-
-                                                            default:
-                                                                v92 = bact->energy;
-                                                                break;
-                                                            }
-
-                                                            float v46;
-                                                            float v47;
-
-                                                            if ( v83 || bct->field_3D6 & 0x800000 )
-                                                            {
-                                                                v46 = v92 * (100 - bct->shield);
-                                                                v47 = 250;
-                                                            }
-                                                            else
-                                                            {
-                                                                v46 = v92 * (100 - bct->shield);
-                                                                v47 = 100.0;
-                                                            }
-
-                                                            v92 = ceil(v46 / v47); //Misslie damage (ceil for less damage)
-                                                            if ( v92 )
-                                                            {
-                                                                bact_arg84 arg84;
-                                                                arg84.energy = -v92;
-                                                                arg84.unit = miss->ejaculator_bact;
-
-                                                                if ( v85->owner == bact->owner || !miss->yw->field_757E )
-                                                                    bct->self->ypabact_func84(&arg84);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-
+                                    default:
+                                        v92 = bact->energy;
+                                        break;
                                     }
 
+                                    float v46;
+                                    float v47;
+
+                                    if ( v83 || bct->field_3D6 & 0x800000 )
+                                    {
+                                        v46 = v92 * (100 - bct->shield);
+                                        v47 = 250;
+                                    }
+                                    else
+                                    {
+                                        v46 = v92 * (100 - bct->shield);
+                                        v47 = 100.0;
+                                    }
+
+                                    v92 = ceil(v46 / v47); //Missile damage (ceil for less damage)
+                                    if ( v92 )
+                                    {
+                                        bact_arg84 arg84;
+                                        arg84.energy = -v92;
+                                        arg84.unit = miss->ejaculator_bact;
+
+                                        if ( v85->owner == bact->owner || !miss->yw->field_757E )
+                                            bct->self->ypabact_func84(&arg84);
+                                    }
+
+                                    break;
                                 }
                             }
                         }
                     }
                 }
 
-                bct = (__NC_STACK_ypabact *)bct->next;
             }
         }
     }
@@ -630,27 +616,20 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
     {
         float v48 = (float)v81;
 
-        bact->field_621.sx = v78.sx / v48;
-        bact->field_621.sy = v78.sy / v48;
-        bact->field_621.sz = v78.sz / v48;
+        bact->field_621 = v78 / v48;
 
         v91 *= v48;
 
         if ( v91 >= 50.0 )
         {
-            float v54 = bact->field_621.sx - bact->field_62D.sx;
-            float v55 = bact->field_621.sy - bact->field_62D.sy;
-            float v57 = bact->field_621.sz - bact->field_62D.sz;
+            xyz v54 = bact->field_621 - bact->field_62D;
 
-
-            float v100 = sqrt( POW2(v54) + POW2(v55) + POW2(v57) );
+            float v100 = v54.length();
 
             if ( v100 < 1.0 )
                 v100 = 1.0;
 
-            bact->field_621.sx -= (bact->field_621.sx - bact->field_62D.sx) * v91 / v100;
-            bact->field_621.sy -= (bact->field_621.sy - bact->field_62D.sy) * v91 / v100;
-            bact->field_621.sz -= (bact->field_621.sz - bact->field_62D.sz) * v91 / v100;
+            bact->field_621 -= v54 * v91 / v100;
         }
     }
 
@@ -663,18 +642,9 @@ void ypamissile_func70__sub1(__NC_STACK_ypamissile *miss, bact_arg74 *arg74)
 
     bact->field_601 = bact->force;
 
-    arg74->vec.sx = bact->field_605.sx * bact->field_611 * bact->airconst + bact->field_601 * bact->field_645.sx;
-    arg74->vec.sy = bact->field_605.sy * bact->field_611 * bact->airconst + bact->field_601 * bact->field_645.sy - bact->mass * 9.80665;
-    arg74->vec.sz = bact->field_605.sz * bact->field_611 * bact->airconst + bact->field_601 * bact->field_645.sz;
+    arg74->vec = bact->field_605 * bact->field_611 * bact->airconst + bact->field_645 * bact->field_601 - xyz(0.0, bact->mass * 9.80665, 0.0);
 
-    float v13 = sqrt( POW2(arg74->vec.sx) + POW2(arg74->vec.sy) + POW2(arg74->vec.sz) );
-
-    if ( v13 > 0.0 )
-    {
-        arg74->vec.sx /= v13;
-        arg74->vec.sy /= v13;
-        arg74->vec.sz /= v13;
-    }
+    arg74->vec.normolize();
 }
 
 void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
@@ -684,16 +654,12 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
 
     miss->ywo->ypaworld_func145(bact);
 
-    float v40 = sqrt( POW2(bact->field_639.sx) + POW2(bact->field_639.sy) + POW2(bact->field_639.sz) );
+    float v40 = bact->field_639.length();
 
     if ( v40 > 0.1 )
     {
         if ( bact->primTtype != BACT_TGT_TYPE_DRCT )
-        {
-            bact->field_645.sx = bact->field_639.sx / v40;
-            bact->field_645.sy = bact->field_639.sy / v40;
-            bact->field_645.sz = bact->field_639.sz / v40;
-        }
+            bact->field_645 = bact->field_639 / v40;
     }
 
     bact->field_919 = 0;
@@ -952,40 +918,25 @@ void NC_STACK_ypamissile::ypabact_func74(bact_arg74 *arg)
         v35 = bact->field_601;
     }
 
-    float v12 = bact->field_611 * bact->airconst;
+    xyz vec1 = xyz(0.0, v8, 0.0) + v26 * v35 - bact->field_605 * (bact->field_611 * bact->airconst);
 
-    float v29 = 0.0 * v8 + v26.sx * v35 + -bact->field_605.sx * v12;
-    float v30 = 1.0 * v8 + v26.sy * v35 + -bact->field_605.sy * v12;
-    float v31 = 0.0 * v8 + v26.sz * v35 + -bact->field_605.sz * v12;
-
-    float v33 = sqrt( POW2(v30) + POW2(v29) + POW2(v31) );
+    float v33 = vec1.normolize();
 
     if ( v33 > 0.0 )
     {
-        float v20 = v33 / bact->mass * arg->field_0;
+        xyz v36 = bact->field_605 * bact->field_611 + vec1 * (v33 / bact->mass * arg->field_0);
 
-        xyz v36;
-        v36.sx = bact->field_605.sx * bact->field_611 + v29 * v20 / v33;
-        v36.sy = bact->field_605.sy * bact->field_611 + v30 * v20 / v33;
-        v36.sz = bact->field_605.sz * bact->field_611 + v31 * v20 / v33;
-
-        float v32 = sqrt(POW2(v36.sx) + POW2(v36.sy) + POW2(v36.sz));
+        float v32 = v36.length();
 
         if ( v32 > 0.0 )
-        {
-            v36.sx /= v32;
-            v36.sy /= v32;
-            v36.sz /= v32;
-        }
+            v36 /= v32;
 
         bact->field_605 = v36;
 
         bact->field_611 = v32;
     }
 
-    bact->field_621.sx += bact->field_605.sx * bact->field_611 * arg->field_0 * 6.0;
-    bact->field_621.sy += bact->field_605.sy * bact->field_611 * arg->field_0 * 6.0;
-    bact->field_621.sz += bact->field_605.sz * bact->field_611 * arg->field_0 * 6.0;
+    bact->field_621 += bact->field_605 * (bact->field_611 * arg->field_0 * 6.0);
 
     ypabact_func115(NULL);
 }
@@ -1176,22 +1127,16 @@ void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
-    if ( bact->field_605.sx != 0.0 || bact->field_605.sy != 0.0 || bact->field_605.sz != 0.0 )
+    if ( bact->field_605 != xyz(0.0, 0.0, 0.0) )
     {
-        xyz u;
-        u.sx = bact->field_651.m21 * bact->field_605.sz - bact->field_605.sy * bact->field_651.m22;
-        u.sy = bact->field_651.m22 * bact->field_605.sx - bact->field_605.sz * bact->field_651.m20;
-        u.sz = bact->field_651.m20 * bact->field_605.sy - bact->field_651.m21 * bact->field_605.sx;
+        xyz dir = bact->field_651.getVect(2); // Get Z-axis, as dir
+        xyz u = dir * bact->field_605; // vector cross product
 
-        float v37 = sqrt(POW2(u.sx) + POW2(u.sy) + POW2(u.sz));
+        float v37 = u.normolize(); // Normolize and get length
 
         if ( v37 > 0.0 )
         {
-            float v51 = bact->field_651.m20 * bact->field_605.sx + bact->field_651.m21 * bact->field_605.sy + bact->field_651.m22 * bact->field_605.sz;
-
-            u.sx /= v37;
-            u.sy /= v37;
-            u.sz /= v37;
+            float v51 = dir.dot(bact->field_605); //scalar cross product
 
             if ( v51 > 1.0 )
                 v51 = 1.0;
@@ -1242,7 +1187,7 @@ void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
             float v44 = acos(v53);
 
             if ( miss->selfie->field_651.m11 < 0.0 )
-                v44 = 3.1415926 - v44;
+                v44 = 3.14159265358979323846 - v44;
 
             if ( miss->selfie->field_651.m01 < 0.0 )
                 v44 = -v44;
@@ -1276,28 +1221,16 @@ void NC_STACK_ypamissile::ypamissile_func131(miss_arg130 *arg)
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
-    float v33 = bact->field_651.m10;
-    float v5 = bact->field_651.m11;
-    float v36 = bact->field_651.m12;
+    xyz vec1 = bact->field_651.getVect(1);
+    xyz vec2 = arg->pos;
 
-    float v35 = arg->pos.sx;
-    float v34 = arg->pos.sy;
-    float v6 = arg->pos.sz;
+    xyz vaxis = vec1 * vec2;
 
-    xyz vaxis;
-    vaxis.sx = v5 * v6 - v36 * v34;
-    vaxis.sy = v35 * v36 - v33 * v6;
-    vaxis.sz = v33 * v34 - v5 * v35;
-
-    float v30 = sqrt( POW2(vaxis.sx) + POW2(vaxis.sy) + POW2(vaxis.sz) );
+    float v30 = vaxis.normolize();
 
     if ( v30 != 0.0 )
     {
-        float v43 = v33 * v35 + v5 * v34 + v36 * v6;
-
-        vaxis.sx /= v30;
-        vaxis.sy /= v30;
-        vaxis.sz /= v30;
+        float v43 = vec1.dot(vec2);
 
         if ( v43 > 1.0 )
             v43 = 1.0;
