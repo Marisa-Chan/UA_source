@@ -2458,10 +2458,21 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
     wobj->setMISS_powTank(wproto->energy_tank * 1000.0);
     wobj->setMISS_powFlyer(wproto->energy_flyer * 1000.0);
     wobj->setMISS_powRobo(wproto->energy_robo * 1000.0);
-    wobj->setMISS_radHeli(wproto->radius_heli);
-    wobj->setMISS_radTank(wproto->radius_tank);
-    wobj->setMISS_radFlyer(wproto->radius_flyer);
-    wobj->setMISS_radRobo(wproto->radius_robo);
+
+    if (tuneGetWeaponRadiusFix())
+    {
+        wobj->setMISS_radHeli(wproto->radius_heli);
+        wobj->setMISS_radTank(wproto->radius_tank);
+        wobj->setMISS_radFlyer(wproto->radius_flyer);
+        wobj->setMISS_radRobo(wproto->radius_robo);
+    }
+    else
+    {
+        wobj->setMISS_radHeli(0.0);
+        wobj->setMISS_radTank(0.0);
+        wobj->setMISS_radFlyer(0.0);
+        wobj->setMISS_radRobo(0.0);
+    }
 
     sub_423DB0(&wbact->field_5A);
 

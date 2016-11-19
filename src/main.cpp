@@ -26,6 +26,14 @@ int tform_inited = 0;
 int audio_inited = 0;
 int input_inited = 0;
 
+key_value_stru tuneKeys[1] =
+{
+    {"tune.weapon_radius", KEY_TYPE_BOOL, 0}               //0
+};
+
+static bool fixWeaponRadius = false;
+
+
 int sub_4107FC(UserData *usr)
 {
     yw_arg172 arg171;
@@ -810,6 +818,10 @@ int main(int argc, char *argv[])
     if ( !WinMain__sub0(argc, argv) )
         return 0;
 
+    get_keyvalue_from_ini(NULL, tuneKeys, 1);
+
+    fixWeaponRadius = tuneKeys[0].value.val;
+
     uint32_t ticks = 0;
 
 //    int fps = 0;
@@ -868,4 +880,10 @@ int main(int argc, char *argv[])
     SDLWRAP_DEINIT();
 
     return 0;
+}
+
+
+bool tuneGetWeaponRadiusFix()
+{
+    return fixWeaponRadius;
 }
