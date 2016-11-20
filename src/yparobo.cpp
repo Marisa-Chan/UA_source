@@ -1137,15 +1137,20 @@ void sub_4A1270(__NC_STACK_yparobo *robo, xyz *a2, float angle)
     {
         if ( robo->guns[i].gun_obj )
         {
-            gun_arg129 v5;
-            v5.vec.sx = a2->sx;
-            v5.vec.sy = a2->sy;
-            v5.vec.sz = a2->sz;
-            v5.angle = -angle;
+            NC_STACK_ypagun *gungun = dynamic_cast<NC_STACK_ypagun *>(robo->guns[i].gun_obj);
 
-            robo->guns[i].gun_obj->ypagun_func129(&v5);
+            if (gungun)
+            {
+                gun_arg129 v5;
+                v5.vec.sx = a2->sx;
+                v5.vec.sy = a2->sy;
+                v5.vec.sz = a2->sz;
+                v5.angle = -angle;
 
-            robo->guns[i].dir = v5.dir;
+                gungun->ypagun_func129(&v5);
+
+                robo->guns[i].dir = v5.dir;
+            }
         }
     }
 }
@@ -7260,18 +7265,22 @@ void NC_STACK_yparobo::setROBO_proto(roboProto *proto)
 
         gun_req.vehicle_id = robo->guns[i].robo_gun_type;
 
-        NC_STACK_ypagun *gun_obj = (NC_STACK_ypagun *)robo->wrld->ypaworld_func146(&gun_req);
+        NC_STACK_ypabact *gun_obj = robo->wrld->ypaworld_func146(&gun_req);
+        NC_STACK_ypagun *gungun = dynamic_cast<NC_STACK_ypagun *>(gun_obj);
 
         robo->guns[i].gun_obj = gun_obj;
 
         if ( gun_obj )
         {
-            gun_arg128 v34;
-            v34.dir = robo->guns[i].dir;
-            v34.field_0 = 0;
-            gun_obj->ypagun_func128(&v34);
+            if (gungun)
+            {
+                gun_arg128 v34;
+                v34.dir = robo->guns[i].dir;
+                v34.field_0 = 0;
+                gungun->ypagun_func128(&v34);
 
-            gun_obj->setGUN_roboGun(1);
+                gungun->setGUN_roboGun(1);
+            }
 
             __NC_STACK_ypabact *gun_bact = gun_obj->getBACT_pBact();
 

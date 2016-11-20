@@ -2860,22 +2860,26 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                     v33.pos.sy = bld->sbacts[i].sbact_pos_y;
                     v33.pos.sz = bld->sbacts[i].sbact_pos_z - (y * 1200.0 + 600.0);
 
-                    NC_STACK_ypagun *gunn = dynamic_cast<NC_STACK_ypagun *>( ywo->ypaworld_func146(&v33) );
+                    NC_STACK_ypabact *gun_obj = ywo->ypaworld_func146(&v33);
+                    NC_STACK_ypagun *gunn = dynamic_cast<NC_STACK_ypagun *>(gun_obj);
 
-                    if ( gunn )
+                    if ( gun_obj )
                     {
                         __NC_STACK_ypabact *gbct;
-                        gbct = gunn->getBACT_pBact();
+                        gbct = gun_obj->getBACT_pBact();
 
                         gbct->owner = ownerid2;
 
-                        gun_arg128 v32;
-                        v32.field_0 = 0;
-                        v32.dir.sx = bld->sbacts[i].sbact_dir_x;
-                        v32.dir.sy = bld->sbacts[i].sbact_dir_y;
-                        v32.dir.sz = bld->sbacts[i].sbact_dir_z;
+                        if (gunn)
+                        {
+                            gun_arg128 v32;
+                            v32.field_0 = 0;
+                            v32.dir.sx = bld->sbacts[i].sbact_dir_x;
+                            v32.dir.sy = bld->sbacts[i].sbact_dir_y;
+                            v32.dir.sz = bld->sbacts[i].sbact_dir_z;
 
-                        gunn->ypagun_func128(&v32);
+                            gunn->ypagun_func128(&v32);
+                        }
 
                         bact_arg119 v34;
                         v34.field_0 = 4;

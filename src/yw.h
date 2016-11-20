@@ -1435,7 +1435,7 @@ struct roboGun
 {
     xyz pos;
     xyz dir;
-    NC_STACK_ypagun *gun_obj;
+    NC_STACK_ypabact *gun_obj;
     char robo_gun_name[32];
     uint8_t robo_gun_type;
 };
