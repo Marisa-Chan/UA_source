@@ -8169,28 +8169,33 @@ void ypaworld_func159__sub0__sub0(_NC_STACK_ypaworld *yw, yw_samples *smpls, con
 
     smpls->field_0 = -1;
 
-    char filename[256];
-    strcpy(filename, "sounds/speech/");
-
-    if ( yw->lang_name[0] )
-    {
-        strcat(filename, yw->lang_name);
-        strcat(filename, "/");
-    }
-    else
-    {
-        strcat(filename, "language/");
-    }
-
-    strcat(filename, flname);
-
     char rsr[256];
     strcpy(rsr, get_prefix_replacement("rsrc"));
 
     set_prefix_replacement("rsrc", "data:");
 
+    std::string filename = "sounds/speech/";
+
+    if ( yw->lang_name[0] )
+    {
+        filename += yw->lang_name;
+        filename += "/";
+    }
+    else
+    {
+        filename += "language/";
+    }
+
+    filename += flname;
+
+    if ( !uaFileExist(filename.c_str(), "rsrc:") )
+    {
+        filename = "sounds/speech/language/";
+        filename += flname;
+    }
+
     stack_vals init_vals[2];
-    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, filename);
+    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, filename.c_str());
     init_vals[1].end();
 
     NC_STACK_wav *v23 = (NC_STACK_wav *)init_get_class("wav.class", init_vals);

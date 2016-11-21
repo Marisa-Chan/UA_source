@@ -2272,12 +2272,19 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
 
     UserData *usr = yw->GameShell;
 
+    char rsr[256];
+    strcpy(rsr, get_prefix_replacement("rsrc"));
+
+    set_prefix_replacement("rsrc", "data:");
+
+
     if ( usr->default_lang_dll )
         sprintf(a1a, "sounds/speech/%s/9%d.wav", usr->default_lang_dll->langDllName, arg);
     else
         sprintf(a1a, "sounds/speech/language/9%d.wav", arg);
 
-
+    if ( !uaFileExist(a1a, "rsrc:") )
+        sprintf(a1a, "sounds/speech/language/9%d.wav", arg);
 
     if ( usr->field_ADA )
     {
@@ -2286,11 +2293,6 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
         delete_class_obj(usr->field_ADA);
         usr->field_ADA = 0;
     }
-
-    char rsr[256];
-    strcpy(rsr, get_prefix_replacement("rsrc"));
-
-    set_prefix_replacement("rsrc", "data:");
 
     stack_vals init_vals[2];
     init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, a1a);
