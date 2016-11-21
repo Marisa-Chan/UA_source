@@ -128,5 +128,6 @@ FSMgr::DirIter *uaOpenDir(const char *dir);
 bool uaDeleteFile(const char *path);
 bool uaDeleteDir(const char *path);
 bool uaCreateDir(const char *path);
+bool uaFileExist(const char *src_path, const char *prefix);
 
 #endif // UTILS_H_INCLUDED

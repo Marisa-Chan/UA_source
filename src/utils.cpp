@@ -112,6 +112,25 @@ void correctSeparatorAndExt(std::string &str)
         str.resize(pos + 3 + 1);
 }
 
+bool uaFileExist(const char *src_path, const char *prefix)
+{
+    std::string pre_copy;
+    if (prefix)
+    {
+        pre_copy = prefix;
+        pre_copy += src_path;
+    }
+    else
+        pre_copy = src_path;
+
+    char path[256];
+    file_path_copy_manipul(pre_copy.c_str(), path, 256);
+
+    std::string dst = path;
+    correctSeparatorAndExt(dst);
+
+    return FSMgr::iDir::fileExist(dst.c_str());
+}
 
 FSMgr::FileHandle *uaOpenFile(const char *src_path, const char *mode)
 {
