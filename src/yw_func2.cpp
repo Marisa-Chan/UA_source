@@ -1002,6 +1002,8 @@ void listLocaleDir(UserData *usr, const char *dirname)
 
             if ( v18->getType() == FSMgr::iNode::NTYPE_FILE && v3 != std::string::npos )
             {
+                tmp[v3] = 0;
+
                 for (size_t i = 0; i < tmp.length(); i++)
                     tmp[i] = std::toupper(tmp[i]);
 
