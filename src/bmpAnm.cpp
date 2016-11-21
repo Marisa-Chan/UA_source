@@ -572,7 +572,7 @@ bmpAnim_t1 *bmpanim_func64__sub1(char *name, MFILE *a2)
     }
     else
     {
-        strcpy(buf, get_MC_str(MC_TYPE_RES));
+        strcpy(buf, "rsrc:");
         strcat(buf, "rsrcpool/");
         strcat(buf, name);
 
@@ -942,7 +942,7 @@ int bmpanim_func66__sub0(bmpAnim_t1 *t1, const char *resName, MFILE *a3)
     }
     else
     {
-        strcpy(buf, get_MC_str(MC_TYPE_RES));
+        strcpy(buf, "rsrc:");
         strcat(buf, "rsrcpool/");
         strcat(buf, resName);
         saveto = buf;

@@ -507,9 +507,6 @@ int sb_0x411324()
 
 int init_classesLists_and_variables()
 {
-    init_mc_res_class_engine_strings(MC_TYPE_RES, NULL);
-    init_mc_res_class_engine_strings(MC_TYPE_CLASS, NULL);
-    init_mc_res_class_engine_strings(MC_TYPE_ENGINE, NULL);
     ypa_log__ypa_general_log();
     init_d3dlog();
     init_dinputlog();

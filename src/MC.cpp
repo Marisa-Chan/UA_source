@@ -52,32 +52,7 @@
 #include "yparobo.h"
 #include "ypaufo.h"
 
-const char MC2RES[] = "MC2RES\\";
-const char MC2CLASSES[] = "MC2classes:";
-const char MC2ENGINES[] = "MC2engines:";
-
 ClassList newclasses;
-
-void init_mc_res_class_engine_strings(MC_TYPE id, const char *str)
-{
-    if ( id < MC_TYPE_UNKNOWN )
-    {
-        if ( !str )
-        {
-            if (id == MC_TYPE_RES)
-                str = MC2RES;
-            else if (id == MC_TYPE_CLASS)
-                str = MC2CLASSES;
-            else if (id == MC_TYPE_ENGINE)
-                str = MC2ENGINES;
-            else
-                return;
-        }
-
-        engines.MC_RES_CLASS_ENGINE[id] = str;
-    }
-}
-
 
 int set_classes_list()
 {
@@ -142,14 +117,6 @@ void sb_0x411c08()
 
 
     sb_0x411c08__sub0();
-}
-
-const char * get_MC_str(MC_TYPE id)
-{
-    if ( id < MC_TYPE_UNKNOWN )
-        return engines.MC_RES_CLASS_ENGINE[id].c_str();
-    else
-        return NULL;
 }
 
 const NewClassDescr * getClassAllocator(const char *name)

@@ -599,7 +599,6 @@ size_t NC_STACK_ypaworld::func0(stack_vals *stak)
 
     yw->self_full = this;
 
-    init_mc_res_class_engine_strings(MC_TYPE_RES, "rsrc:");
     set_prefix_replacement("rsrc", "mc2res");
     set_prefix_replacement("data", "Data");
     set_prefix_replacement("save", "Save");

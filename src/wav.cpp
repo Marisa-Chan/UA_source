@@ -35,9 +35,7 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, stack_vals *stak, const char *filname
     char buf[256];
     rsrc *res = NULL;
 
-    const char *restp = get_MC_str(MC_TYPE_RES);
-
-    strcpy(buf, restp);
+    strcpy(buf, "rsrc:");
     strcat(buf, filname);
 
     FSMgr::FileHandle *fil = uaOpenFile(buf, "rb");

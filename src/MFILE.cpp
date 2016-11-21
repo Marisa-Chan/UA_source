@@ -416,9 +416,8 @@ void del_MFILE(MFILE *fil)
 MFILE * open_mfile(const char *filename, int flag)
 {
     char tmpBuf[256];
-    const char *mc_type = get_MC_str(MC_TYPE_RES);
 
-    strcpy(tmpBuf, mc_type);
+    strcpy(tmpBuf, "rsrc:");
     strcat(tmpBuf, filename);
 
     MFILE *mfil = new_MFILE();
