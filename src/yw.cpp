@@ -5791,8 +5791,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                     if ( usr->locale_button->button_func64(&btn_64arg) )
                     {
-                        btn_64arg.xpos = v274 - (usr->field_19C6 - v267);
-                        btn_64arg.ypos = v258 - (usr->field_0x19c8 - v269);
+                        btn_64arg.xpos = v274 - (usr->field_19C6 - v278);
+                        btn_64arg.ypos = v258 - (usr->field_0x19c8 - v273);
                         btn_64arg.width = v262;
                         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 20, "HELP");
                         btn_64arg.button_id = 1252;
@@ -5804,8 +5804,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                         if ( usr->locale_button->button_func64(&btn_64arg) )
                         {
-                            btn_64arg.xpos = v264 - (usr->field_19C6 - v267);
-                            btn_64arg.ypos = v276 - (usr->field_0x19c8 - v269);
+                            btn_64arg.xpos = v264 - (usr->field_19C6 - v278);
+                            btn_64arg.ypos = v276 - (usr->field_0x19c8 - v273);
                             btn_64arg.width = v298;
                             btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
                             btn_64arg.caption2 = 0;
