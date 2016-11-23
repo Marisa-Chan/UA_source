@@ -101,7 +101,7 @@ size_t NC_STACK_ypamissile::func0(stack_vals *stak)
     miss->selfie_node.bact = bact;
     miss->selfie_node.bacto = this;
 
-    bact->field_24 = 4;
+    bact->bact_type = BACT_TYPES_MISSLE;
 
     if ( !ypamissile_func0__sub0(stak) )
     {
@@ -339,15 +339,15 @@ void NC_STACK_ypamissile::ypabact_func68(ypabact_arg65 *arg)
     {
         if ( bact->primTtype == BACT_TGT_TYPE_UNIT )
         {
-            bact->field_639.sx = bact->primT.pbact->field_621.sx - bact->field_621.sx;
-            bact->field_639.sy = bact->primT.pbact->field_621.sy - bact->field_621.sy;
-            bact->field_639.sz = bact->primT.pbact->field_621.sz - bact->field_621.sz;
+            bact->target_vec.sx = bact->primT.pbact->position.sx - bact->position.sx;
+            bact->target_vec.sy = bact->primT.pbact->position.sy - bact->position.sy;
+            bact->target_vec.sz = bact->primT.pbact->position.sz - bact->position.sz;
         }
         else
         {
-            bact->field_639.sx = bact->primTpos.sx - bact->field_621.sx;
-            bact->field_639.sy = bact->primTpos.sy - bact->field_621.sy;
-            bact->field_639.sz = bact->primTpos.sz - bact->field_621.sz;
+            bact->target_vec.sx = bact->primTpos.sx - bact->position.sx;
+            bact->target_vec.sy = bact->primTpos.sy - bact->position.sy;
+            bact->target_vec.sz = bact->primTpos.sz - bact->position.sz;
         }
     }
 
@@ -376,16 +376,16 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
         a5 = bact->self->getBACT_viewer();
 
     yw_130arg arg130;
-    arg130.pos_x = bact->field_62D.sx;
-    arg130.pos_z = bact->field_62D.sz;
+    arg130.pos_x = bact->old_pos.sx;
+    arg130.pos_z = bact->old_pos.sz;
     miss->ywo->ypaworld_func130(&arg130);
 
     cellArea *v68[3];
 
     v68[0] = arg130.pcell;
 
-    arg130.pos_x = bact->field_621.sx;
-    arg130.pos_z = bact->field_621.sz;
+    arg130.pos_x = bact->position.sx;
+    arg130.pos_z = bact->position.sz;
     miss->ywo->ypaworld_func130(&arg130);
 
     v68[2] = arg130.pcell;
@@ -396,8 +396,8 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
     }
     else
     {
-        arg130.pos_x = (bact->field_621.sx - bact->field_62D.sx) * 0.5 + bact->field_62D.sx;
-        arg130.pos_z = (bact->field_621.sz - bact->field_62D.sz) * 0.5 + bact->field_62D.sz;
+        arg130.pos_x = (bact->position.sx - bact->old_pos.sx) * 0.5 + bact->old_pos.sx;
+        arg130.pos_z = (bact->position.sz - bact->old_pos.sz) * 0.5 + bact->old_pos.sz;
         miss->ywo->ypaworld_func130(&arg130);
 
         v68[1] = arg130.pcell;
@@ -408,15 +408,15 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
         if ( i == 0 || v68[i] != v68[i - 1] )
         {
             if (v68[i] == NULL)
-                ypa_log_out("ypamissile_func70__sub0 NULL sector i = %d, 621: %f %f 62D: %f %f \n", i, bact->field_621.sx, bact->field_621.sz, bact->field_62D.sx, bact->field_62D.sz);
+                ypa_log_out("ypamissile_func70__sub0 NULL sector i = %d, 621: %f %f 62D: %f %f \n", i, bact->position.sx, bact->position.sz, bact->old_pos.sx, bact->old_pos.sz);
 
             __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v68[ i ]->units_list.head;
             for (; bct->next ; bct = (__NC_STACK_ypabact *)bct->next)
             {
-                if ( bct == bact || bct == miss->ejaculator_bact || bct->field_24 == 4 || bct->field_3D5 == 2 )
+                if ( bct == bact || bct == miss->ejaculator_bact || bct->bact_type == BACT_TYPES_MISSLE || bct->field_3D5 == 2 )
                     continue;
 
-                if (bct->field_24 == 9 && bct->shield >= 100)
+                if (bct->bact_type == BACT_TYPES_GUN && bct->shield >= 100)
                 {
                     NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
 
@@ -429,7 +429,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                     continue;
                 }
 
-                if (miss->ejaculator_bact->field_24 == 9)
+                if (miss->ejaculator_bact->bact_type == BACT_TYPES_GUN)
                 {
                     NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( miss->ejaculator_bact->self );
 
@@ -437,10 +437,10 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                     {
                         if (gun->getGUN_roboGun())
                         {
-                            if (bct->field_24 == 3)
+                            if (bct->bact_type == BACT_TYPES_ROBO)
                                 continue;
 
-                            if (bct->field_24 == 9 )
+                            if (bct->bact_type == BACT_TYPES_GUN )
                             {
                                 NC_STACK_ypagun *bgun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
 
@@ -451,7 +451,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                     }
                 }
 
-                if ( miss->field_c == 1 && bct->field_621.sy < miss->posy )
+                if ( miss->field_c == 1 && bct->position.sy < miss->posy )
                     continue;
 
                 rbcolls *v82 = bct->self->getBACT_collNodes();
@@ -472,22 +472,22 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                         roboColl *v8 = &v82->roboColls[j];
                         radius = v8->robo_coll_radius;
 
-                        ttmp.sx = bct->field_651.m00 * v8->coll_pos.sx + bct->field_651.m10 * v8->coll_pos.sy + bct->field_651.m20 * v8->coll_pos.sz + bct->field_621.sx;
-                        ttmp.sy = bct->field_651.m01 * v8->coll_pos.sx + bct->field_651.m11 * v8->coll_pos.sy + bct->field_651.m21 * v8->coll_pos.sz + bct->field_621.sy;
-                        ttmp.sz = bct->field_651.m02 * v8->coll_pos.sx + bct->field_651.m12 * v8->coll_pos.sy + bct->field_651.m22 * v8->coll_pos.sz + bct->field_621.sz;
+                        ttmp.sx = bct->rotation.m00 * v8->coll_pos.sx + bct->rotation.m10 * v8->coll_pos.sy + bct->rotation.m20 * v8->coll_pos.sz + bct->position.sx;
+                        ttmp.sy = bct->rotation.m01 * v8->coll_pos.sx + bct->rotation.m11 * v8->coll_pos.sy + bct->rotation.m21 * v8->coll_pos.sz + bct->position.sy;
+                        ttmp.sz = bct->rotation.m02 * v8->coll_pos.sx + bct->rotation.m12 * v8->coll_pos.sy + bct->rotation.m22 * v8->coll_pos.sz + bct->position.sz;
                     }
                     else
                     {
-                        ttmp = bct->field_621;
+                        ttmp = bct->position;
                         radius = bct->radius;
                     }
 
                     if ( !v82 || radius >= 0.01 )
                     {
-                        xyz to_enemy = ttmp - bact->field_62D;
-                        xyz dist_vect = bact->field_621 - bact->field_62D;
+                        xyz to_enemy = ttmp - bact->old_pos;
+                        xyz dist_vect = bact->position - bact->old_pos;
 
-                        if ( to_enemy.dot( bact->field_651.getVect(2) ) >= 0.3 )
+                        if ( to_enemy.dot( bact->rotation.getVect(2) ) >= 0.3 )
                         {
                             float dist_vect_len;
                             xyz dir_vect = dist_vect.normolize(&dist_vect_len);
@@ -496,23 +496,23 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
 
                             float wpn_radius = 0.0;
 
-                            switch ( bct->field_24 )
+                            switch ( bct->bact_type )
                             {
-                            case 1:
+                            case BACT_TYPES_BACT:
                                 wpn_radius = miss->radius_heli;
                                 break;
 
-                            case 2:
-                            case 8:
+                            case BACT_TYPES_TANK:
+                            case BACT_TYPES_CAR:
                                 wpn_radius = miss->radius_tank;
                                 break;
 
-                            case 6:
-                            case 7:
+                            case BACT_TYPES_FLYER:
+                            case BACT_TYPES_UFO:
                                 wpn_radius = miss->radius_flyer;
                                 break;
 
-                            case 3:
+                            case BACT_TYPES_ROBO:
                                 wpn_radius = miss->radius_robo;
                                 break;
 
@@ -545,29 +545,29 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
 
                                     bct->field_3D6 &= ~0x200;
 
-                                    v78 += bct->field_621;
+                                    v78 += bct->position;
 
                                     int v83 = bct->self->getBACT_inputting();
 
                                     int v92 = 0;
 
-                                    switch ( bct->field_24 )
+                                    switch ( bct->bact_type )
                                     {
-                                    case 1:
+                                    case BACT_TYPES_BACT:
                                         v92 = bact->energy * miss->energy_heli;
                                         break;
 
-                                    case 2:
-                                    case 8:
+                                    case BACT_TYPES_TANK:
+                                    case BACT_TYPES_CAR:
                                         v92 = bact->energy * miss->energy_tank;
                                         break;
 
-                                    case 6:
-                                    case 7:
+                                    case BACT_TYPES_FLYER:
+                                    case BACT_TYPES_UFO:
                                         v92 = bact->energy * miss->energy_flyer;
                                         break;
 
-                                    case 3:
+                                    case BACT_TYPES_ROBO:
                                         v92 = bact->energy * miss->energy_robo;
                                         break;
 
@@ -616,20 +616,20 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
     {
         float v48 = (float)v81;
 
-        bact->field_621 = v78 / v48;
+        bact->position = v78 / v48;
 
         v91 *= v48;
 
         if ( v91 >= 50.0 )
         {
-            xyz v54 = bact->field_621 - bact->field_62D;
+            xyz v54 = bact->position - bact->old_pos;
 
             float v100 = v54.length();
 
             if ( v100 < 1.0 )
                 v100 = 1.0;
 
-            bact->field_621 -= v54 * v91 / v100;
+            bact->position -= v54 * v91 / v100;
         }
     }
 
@@ -640,9 +640,9 @@ void ypamissile_func70__sub1(__NC_STACK_ypamissile *miss, bact_arg74 *arg74)
 {
     __NC_STACK_ypabact *bact = miss->selfie;
 
-    bact->field_601 = bact->force;
+    bact->thraction = bact->force;
 
-    arg74->vec = bact->field_605 * bact->field_611 * bact->airconst + bact->field_645 * bact->field_601 - xyz(0.0, bact->mass * 9.80665, 0.0);
+    arg74->vec = bact->fly_dir * bact->fly_dir_length * bact->airconst + bact->target_dir * bact->thraction - xyz(0.0, bact->mass * 9.80665, 0.0);
 
     arg74->vec.normolize();
 }
@@ -654,17 +654,17 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
 
     miss->ywo->ypaworld_func145(bact);
 
-    float v40 = bact->field_639.length();
+    float v40 = bact->target_vec.length();
 
     if ( v40 > 0.1 )
     {
         if ( bact->primTtype != BACT_TGT_TYPE_DRCT )
-            bact->field_645 = bact->field_639 / v40;
+            bact->target_dir = bact->target_vec / v40;
     }
 
     bact->field_919 = 0;
 
-    bact->field_601 = bact->force;
+    bact->thraction = bact->force;
 
     float v38 = arg->field_4 * 0.001;
 
@@ -686,14 +686,14 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
 
             ypabact_func78(&arg78);
 
-            if ( !(miss->field_2D & 4) || !miss->selfie->p_cell_area->w_type )
+            if ( !(miss->field_2D & 4) || !miss->selfie->pSector->w_type )
             {
                 if ( miss->yw->field_1b80->owner == miss->selfie->owner || !miss->yw->field_757E )
                 {
                     yw_arg129 v25;
 
-                    v25.pos.sx = bact->field_605.sx * 5.0 + bact->field_621.sx;
-                    v25.pos.sz = bact->field_605.sz * 5.0 + bact->field_621.sz;
+                    v25.pos.sx = bact->fly_dir.sx * 5.0 + bact->position.sx;
+                    v25.pos.sz = bact->fly_dir.sz * 5.0 + bact->position.sz;
                     v25.field_10 = bact->energy;
                     v25.unit = miss->ejaculator_bact;
 
@@ -731,7 +731,7 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
 
             case 4:
                 arg74.field_0 = v38;
-                arg74.vec = bact->field_605;
+                arg74.vec = bact->fly_dir;
                 arg74.flag = 0;
 
                 ypabact_func74(&arg74);
@@ -757,12 +757,12 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
             else if ( miss->field_c != 6 )
             {
                 ypaworld_arg136 arg136;
-                arg136.pos_x = bact->field_62D.sx;
-                arg136.pos_y = bact->field_62D.sy;
-                arg136.pos_z = bact->field_62D.sz;
-                arg136.field_14 = bact->field_621.sx - bact->field_62D.sx;
-                arg136.field_18 = bact->field_621.sy - bact->field_62D.sy;
-                arg136.field_1C = bact->field_621.sz - bact->field_62D.sz;
+                arg136.pos_x = bact->old_pos.sx;
+                arg136.pos_y = bact->old_pos.sy;
+                arg136.pos_z = bact->old_pos.sz;
+                arg136.field_14 = bact->position.sx - bact->old_pos.sx;
+                arg136.field_18 = bact->position.sy - bact->old_pos.sy;
+                arg136.field_1C = bact->position.sz - bact->old_pos.sz;
                 arg136.field_40 = 0;
 
                 miss->ywo->ypaworld_func136(&arg136);
@@ -777,9 +777,9 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
                     ypamissile_func131(&arg131);
 
 
-                    bact->field_621.sx = arg136.field_2C;
-                    bact->field_621.sy = arg136.field_30;
-                    bact->field_621.sz = arg136.field_34;
+                    bact->position.sx = arg136.field_2C;
+                    bact->position.sy = arg136.field_30;
+                    bact->position.sz = arg136.field_34;
 
                     ypamissile_func128(NULL);
 
@@ -799,14 +799,14 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
 
                         ypabact_func78(&arg78);
 
-                        if ( !(miss->field_2D & 4) || !miss->selfie->p_cell_area->w_type )
+                        if ( !(miss->field_2D & 4) || !miss->selfie->pSector->w_type )
                         {
                             if ( miss->yw->field_1b80->owner == miss->selfie->owner || !miss->yw->field_757E )
                             {
                                 yw_arg129 v25;
 
-                                v25.pos.sx = bact->field_605.sx * 5.0 + bact->field_621.sx;
-                                v25.pos.sz = bact->field_605.sz * 5.0 + bact->field_621.sz;
+                                v25.pos.sx = bact->fly_dir.sx * 5.0 + bact->position.sx;
+                                v25.pos.sz = bact->fly_dir.sz * 5.0 + bact->position.sz;
                                 v25.field_10 = bact->energy;
                                 v25.unit = miss->ejaculator_bact;
 
@@ -825,7 +825,7 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
                             {
                                 bact_arg67 arg67;
                                 arg67.tgt_type = BACT_TGT_TYPE_CELL;
-                                arg67.tgt_pos = bact->field_621;
+                                arg67.tgt_pos = bact->position;
                                 arg67.priority = 0;
 
                                 miss->ejaculator_bact->self->ypabact_func67(&arg67);
@@ -842,7 +842,7 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
                         miss->field_c = 1;
 
                         bact->airconst = 10.0;
-                        bact->airconst2 = 10.0;
+                        bact->airconst_static = 10.0;
                     }
 
                     miss->life_time -= arg->field_4;
@@ -878,7 +878,7 @@ void NC_STACK_ypamissile::ypabact_func71(ypabact_arg65 *arg)
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
-    bact->field_62D = bact->field_621;
+    bact->old_pos = bact->position;
 
     if (bact->field_3D5 == 1)
         ypabact_func68(arg);
@@ -891,7 +891,7 @@ void NC_STACK_ypamissile::ypabact_func74(bact_arg74 *arg)
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
-    bact->field_62D = bact->field_621;
+    bact->old_pos = bact->position;
 
     float v8;
 
@@ -915,28 +915,28 @@ void NC_STACK_ypamissile::ypabact_func74(bact_arg74 *arg)
     {
         v26 = arg->vec;
 
-        v35 = bact->field_601;
+        v35 = bact->thraction;
     }
 
-    xyz vec1 = xyz(0.0, v8, 0.0) + v26 * v35 - bact->field_605 * (bact->field_611 * bact->airconst);
+    xyz vec1 = xyz(0.0, v8, 0.0) + v26 * v35 - bact->fly_dir * (bact->fly_dir_length * bact->airconst);
 
     float v33 = vec1.normolize();
 
     if ( v33 > 0.0 )
     {
-        xyz v36 = bact->field_605 * bact->field_611 + vec1 * (v33 / bact->mass * arg->field_0);
+        xyz v36 = bact->fly_dir * bact->fly_dir_length + vec1 * (v33 / bact->mass * arg->field_0);
 
         float v32 = v36.length();
 
         if ( v32 > 0.0 )
             v36 /= v32;
 
-        bact->field_605 = v36;
+        bact->fly_dir = v36;
 
-        bact->field_611 = v32;
+        bact->fly_dir_length = v32;
     }
 
-    bact->field_621 += bact->field_605 * (bact->field_611 * arg->field_0 * 6.0);
+    bact->position += bact->fly_dir * (bact->fly_dir_length * arg->field_0 * 6.0);
 
     ypabact_func115(NULL);
 }
@@ -986,7 +986,7 @@ size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
         uint8_t v8 = 1;
         ypabact_func113(&v8);
 
-        bact->field_611 = 0;
+        bact->fly_dir_length = 0;
     }
 
     if ( arg->field_0 == 1 )
@@ -1017,7 +1017,7 @@ size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
         uint8_t v9 = 2;
         ypabact_func113(&v9);
 
-        bact->field_611 = 0;
+        bact->fly_dir_length = 0;
     }
 
     return 1;
@@ -1055,12 +1055,12 @@ void NC_STACK_ypamissile::ypamissile_func129(void *)
 
     bact_arg83 arg83;
     arg83.energ = bact->energy;
-    arg83.pos = bact->field_621;
-    arg83.pos2 = bact->field_605;
-    arg83.force = bact->field_611;
+    arg83.pos = bact->position;
+    arg83.pos2 = bact->fly_dir;
+    arg83.force = bact->fly_dir_length;
     arg83.mass = bact->mass;
 
-    float v16 = miss->selfie->field_611 * miss->selfie->mass;
+    float v16 = miss->selfie->fly_dir_length * miss->selfie->mass;
 
     if ( v16 > miss->yw->max_impulse && miss->yw->max_impulse > 0.0 )
     {
@@ -1069,11 +1069,11 @@ void NC_STACK_ypamissile::ypamissile_func129(void *)
         arg83.mass *= v7;
     }
 
-    __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)bact->p_cell_area->units_list.head;
+    __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)bact->pSector->units_list.head;
 
     while(bct->next)
     {
-        if ( bct->field_24 != 4 && bct->field_24 != 3 && bct->field_24 != 2 && bct->field_24 != 8 && bct->field_24 != 9 && bct->field_24 != 10 && !(bct->field_3D6 & 0x800) )
+        if ( bct->bact_type != BACT_TYPES_MISSLE && bct->bact_type != BACT_TYPES_ROBO && bct->bact_type != BACT_TYPES_TANK && bct->bact_type != BACT_TYPES_CAR && bct->bact_type != BACT_TYPES_GUN && bct->bact_type != BACT_TYPES_HOVER && !(bct->field_3D6 & 0x800) )
         {
             int v10 = 1;
 
@@ -1127,16 +1127,16 @@ void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
-    if ( bact->field_605 != xyz(0.0, 0.0, 0.0) )
+    if ( bact->fly_dir != xyz(0.0, 0.0, 0.0) )
     {
-        xyz dir = bact->field_651.getVect(2); // Get Z-axis, as dir
-        xyz u = dir * bact->field_605; // vector cross product
+        xyz dir = bact->rotation.getVect(2); // Get Z-axis, as dir
+        xyz u = dir * bact->fly_dir; // vector cross product
 
         float v37 = u.normolize(); // Normolize and get length
 
         if ( v37 > 0.0 )
         {
-            float v51 = dir.dot(bact->field_605); //scalar cross product
+            float v51 = dir.dot(bact->fly_dir); //scalar cross product
 
             if ( v51 > 1.0 )
                 v51 = 1.0;
@@ -1168,15 +1168,15 @@ void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
 
                 mat3x3 dst;
 
-                mat_mult(&bact->field_651, &mat2, &dst);
+                mat_mult(&bact->rotation, &mat2, &dst);
 
-                bact->field_651 = dst;
+                bact->rotation = dst;
             }
         }
 
         if ( miss->field_2D & 1 )
         {
-            float v53 = sqrt( POW2(bact->field_651.m00) + POW2(bact->field_651.m02) );
+            float v53 = sqrt( POW2(bact->rotation.m00) + POW2(bact->rotation.m02) );
 
             if ( v53 > 1.0 )
                 v53 = 1.0;
@@ -1186,10 +1186,10 @@ void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
 
             float v44 = acos(v53);
 
-            if ( miss->selfie->field_651.m11 < 0.0 )
+            if ( miss->selfie->rotation.m11 < 0.0 )
                 v44 = 3.14159265358979323846 - v44;
 
-            if ( miss->selfie->field_651.m01 < 0.0 )
+            if ( miss->selfie->rotation.m01 < 0.0 )
                 v44 = -v44;
 
             float v32 = cos(-v44);
@@ -1209,9 +1209,9 @@ void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
 
             mat3x3 v23;
 
-            mat_mult(&mat1, &bact->field_651, &v23);
+            mat_mult(&mat1, &bact->rotation, &v23);
 
-            bact->field_651 = v23;
+            bact->rotation = v23;
         }
     }
 }
@@ -1221,7 +1221,7 @@ void NC_STACK_ypamissile::ypamissile_func131(miss_arg130 *arg)
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
-    xyz vec1 = bact->field_651.getVect(1);
+    xyz vec1 = bact->rotation.getVect(1);
     xyz vec2 = arg->pos;
 
     xyz vaxis = vec1 * vec2;
@@ -1248,9 +1248,9 @@ void NC_STACK_ypamissile::ypamissile_func131(miss_arg130 *arg)
 
             mat3x3 v21;
 
-            mat_mult(&bact->field_651, &mat2, &v21);
+            mat_mult(&bact->rotation, &mat2, &v21);
 
-            bact->field_651 = v21;
+            bact->rotation = v21;
         }
     }
 }

@@ -5385,11 +5385,11 @@ int sb_0x479f4c__sub0(scrCallBack *scr)
     }
     else if ( !strcasecmp(scr->p1, "vhoriz") )
     {
-        robo->bact_internal->field_5ED = strtod(scr->p2, 0);
+        robo->bact_internal->viewer_horiz_angle = strtod(scr->p2, 0);
     }
     else if ( !strcasecmp(scr->p1, "vvert") )
     {
-        robo->bact_internal->field_5F1 = strtod(scr->p2, 0);
+        robo->bact_internal->viewer_vert_angle = strtod(scr->p2, 0);
     }
     else if ( !strcasecmp(scr->p1, "maximum") )
     {
@@ -5571,16 +5571,16 @@ int sub_47A0C0(scrCallBack *scr)
     {
         if ( strtok(scr->p2, " \t_\n") )
         {
-            dword_5A7A88->field_605.sx = strtod(scr->p2, 0);
+            dword_5A7A88->fly_dir.sx = strtod(scr->p2, 0);
             if ( strtok(0, " \t_\n") )
             {
-                dword_5A7A88->field_605.sy = strtod(scr->p2, 0);
+                dword_5A7A88->fly_dir.sy = strtod(scr->p2, 0);
                 if ( strtok(0, " \t_\n") )
                 {
-                    dword_5A7A88->field_605.sz = strtod(scr->p2, 0);
+                    dword_5A7A88->fly_dir.sz = strtod(scr->p2, 0);
                     if ( strtok(0, " \t_\n") )
                     {
-                        dword_5A7A88->field_611 = strtod(scr->p2, 0);
+                        dword_5A7A88->fly_dir_length = strtod(scr->p2, 0);
                     }
                 }
             }
@@ -5596,47 +5596,47 @@ int sub_47A0C0(scrCallBack *scr)
 
         if ( v13 )
         {
-            dword_5A7A88->field_651.m00 = strtod(v13, 0);
+            dword_5A7A88->rotation.m00 = strtod(v13, 0);
 
             v13 = strtok(0, " \t_\n");
             if ( v13 )
             {
-                dword_5A7A88->field_651.m01 = strtod(v13, 0);
+                dword_5A7A88->rotation.m01 = strtod(v13, 0);
 
                 v13 = strtok(0, " \t_\n");
                 if ( v13 )
                 {
-                    dword_5A7A88->field_651.m02 = strtod(v13, 0);
+                    dword_5A7A88->rotation.m02 = strtod(v13, 0);
 
                     v13 = strtok(0, " \t_\n");
                     if ( v13 )
                     {
-                        dword_5A7A88->field_651.m10 = strtod(v13, 0);
+                        dword_5A7A88->rotation.m10 = strtod(v13, 0);
 
                         v13 = strtok(0, " \t_\n");
                         if ( v13 )
                         {
-                            dword_5A7A88->field_651.m11 = strtod(v13, 0);
+                            dword_5A7A88->rotation.m11 = strtod(v13, 0);
 
                             v13 = strtok(0, " \t_\n");
                             if ( v13 )
                             {
-                                dword_5A7A88->field_651.m12 = strtod(v13, 0);
+                                dword_5A7A88->rotation.m12 = strtod(v13, 0);
 
                                 v13 = strtok(0, " \t_\n");
                                 if ( v13 )
                                 {
-                                    dword_5A7A88->field_651.m20 = strtod(v13, 0);
+                                    dword_5A7A88->rotation.m20 = strtod(v13, 0);
 
                                     v13 = strtok(0, " \t_\n");
                                     if ( v13 )
                                     {
-                                        dword_5A7A88->field_651.m21 = strtod(v13, 0);
+                                        dword_5A7A88->rotation.m21 = strtod(v13, 0);
 
                                         v13 = strtok(0, " \t_\n");
                                         if ( v13 )
                                         {
-                                            dword_5A7A88->field_651.m22 = strtod(v13, 0);
+                                            dword_5A7A88->rotation.m22 = strtod(v13, 0);
                                         }
                                     }
                                 }
@@ -5652,25 +5652,25 @@ int sub_47A0C0(scrCallBack *scr)
         char *v22 = strtok(scr->p2, " \t_\n");
         if ( v22 )
         {
-            dword_5A7A88->field_621.sx = strtod(v22, 0);
+            dword_5A7A88->position.sx = strtod(v22, 0);
 
             v22 = strtok(0, " \t_\n");
             if ( v22 )
             {
 
-                dword_5A7A88->field_621.sy = strtod(v22, 0);
+                dword_5A7A88->position.sy = strtod(v22, 0);
 
                 v22 = strtok(0, " \t_\n");
                 if ( v22 )
                 {
-                    dword_5A7A88->field_621.sz = strtod(v22, 0);
+                    dword_5A7A88->position.sz = strtod(v22, 0);
                 }
             }
         }
     }
     else if ( !strcasecmp(scr->p1, "force") )
     {
-        dword_5A7A88->field_601 = strtod(scr->p2, 0);
+        dword_5A7A88->thraction = strtod(scr->p2, 0);
     }
     else if ( !strcasecmp(scr->p1, "gunangle") )
     {

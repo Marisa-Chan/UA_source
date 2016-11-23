@@ -687,46 +687,46 @@ int yw_write_bact(bact_node *bct, FSMgr::FileHandle *fil)
     sprintf(buf, "    energy         = %d\n", bct->bact->energy);
 
     fil->write(buf, strlen(buf));
-    sprintf(buf, "    speed          = %6.5f_%6.5f_%6.5f_%6.5f\n", bct->bact->field_605.sx, bct->bact->field_605.sy, bct->bact->field_605.sz, bct->bact->field_611);
+    sprintf(buf, "    speed          = %6.5f_%6.5f_%6.5f_%6.5f\n", bct->bact->fly_dir.sx, bct->bact->fly_dir.sy, bct->bact->fly_dir.sz, bct->bact->fly_dir_length);
 
     fil->write(buf, strlen(buf));
 
     sprintf(
         buf,
         "    matrix         = %6.5f_%6.5f_%6.5f_%6.5f_%6.5f_%6.5f_%6.5f_%6.5f_%6.5f\n",
-        bct->bact->field_651.m00,
-        bct->bact->field_651.m01,
-        bct->bact->field_651.m02,
-        bct->bact->field_651.m10,
-        bct->bact->field_651.m11,
-        bct->bact->field_651.m12,
-        bct->bact->field_651.m20,
-        bct->bact->field_651.m21,
-        bct->bact->field_651.m22);
+        bct->bact->rotation.m00,
+        bct->bact->rotation.m01,
+        bct->bact->rotation.m02,
+        bct->bact->rotation.m10,
+        bct->bact->rotation.m11,
+        bct->bact->rotation.m12,
+        bct->bact->rotation.m20,
+        bct->bact->rotation.m21,
+        bct->bact->rotation.m22);
 
     fil->write(buf, strlen(buf));
 
-    if ( bct->bact->field_24 == 3 )
+    if ( bct->bact->bact_type == BACT_TYPES_ROBO )
     {
         NC_STACK_yparobo *roboo = dynamic_cast<NC_STACK_yparobo *>(bct->bacto);
         sprintf(
             buf,
             "    pos            = %2.2f_%2.2f_%2.2f\n",
-            bct->bact->field_621.sx,
+            bct->bact->position.sx,
             roboo->stack__yparobo.field_1D5,
-            bct->bact->field_621.sz);
+            bct->bact->position.sz);
     }
     else
         sprintf(
             buf,
             "    pos            = %2.2f_%2.2f_%2.2f\n",
-            bct->bact->field_621.sx,
-            bct->bact->field_621.sy,
-            bct->bact->field_621.sz);
+            bct->bact->position.sx,
+            bct->bact->position.sy,
+            bct->bact->position.sz);
 
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    force          = %2.2f\n", bct->bact->field_601);
+    sprintf(buf, "    force          = %2.2f\n", bct->bact->thraction);
     fil->write(buf, strlen(buf));
 
     sprintf(buf, "    gunangle       = %5.4f\n", bct->bact->gun_angle2);
@@ -838,10 +838,10 @@ int yw_write_robo(_NC_STACK_ypaworld *yw, bact_node *bct, FSMgr::FileHandle *fil
     sprintf(buf, "    buildspare     = %d\n", robo->field_509);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    vhoriz         = %7.5f\n", robo->bact_internal->field_5ED);
+    sprintf(buf, "    vhoriz         = %7.5f\n", robo->bact_internal->viewer_horiz_angle);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    vvert          = %7.5f\n", robo->bact_internal->field_5F1);
+    sprintf(buf, "    vvert          = %7.5f\n", robo->bact_internal->viewer_vert_angle);
     fil->write(buf, strlen(buf));
 
     sprintf(buf, "    con_budget     = %d\n", robo->epConquer);
@@ -905,7 +905,7 @@ int yw_write_gun(bact_node *bct, FSMgr::FileHandle *fil)
 {
     char buf[300];
 
-    if ( bct->bact->field_24 == 9 )
+    if ( bct->bact->bact_type == BACT_TYPES_GUN )
     {
         NC_STACK_ypagun *guno = (NC_STACK_ypagun *)bct->bacto;
 
@@ -963,7 +963,7 @@ int yw_write_extraviewer(bact_node *bct, FSMgr::FileHandle *fil)
 {
     char buf[300];
 
-    if ( bct->bact->field_24 == 9 )
+    if ( bct->bact->bact_type == BACT_TYPES_GUN )
     {
         int v7 = -1;
 
@@ -1015,7 +1015,7 @@ int yw_write_units(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
             {
                 int a4 = 0;
 
-                if ( commander->bact->field_24 == 9 )
+                if ( commander->bact->bact_type == BACT_TYPES_GUN )
                 {
                     NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( commander->bacto );
                     a4 = gun->getGUN_roboGun();
@@ -1042,7 +1042,7 @@ int yw_write_units(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
                 while ( slave->prev )
                 {
                     int v9 = 0;
-                    if ( slave->bact->field_24 == 9 )
+                    if ( slave->bact->bact_type == BACT_TYPES_GUN )
                     {
                         NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( slave->bacto );
                         v9 = gun->getGUN_roboGun();

@@ -69,17 +69,32 @@ struct rbcolls
     roboColl roboColls[16];
 };
 
+enum BACT_TYPES
+{
+    BACT_TYPES_NOPE = 0,
+    BACT_TYPES_BACT = 1,
+    BACT_TYPES_TANK = 2,
+    BACT_TYPES_ROBO = 3,
+    BACT_TYPES_MISSLE = 4,
+    BACT_TYPES_ZEPP = 5,  //No real class
+    BACT_TYPES_FLYER = 6,
+    BACT_TYPES_UFO = 7,
+    BACT_TYPES_CAR = 8,
+    BACT_TYPES_GUN = 9,
+    BACT_TYPES_HOVER = 10 //No real class
+};
+
 struct __NC_STACK_ypabact : public nnode
 {
     NC_STACK_ypabact *self;
-    int field_c;
-    int field_10;
-    cellArea *p_cell_area;
-    float field_18;
-    float field_1c;
-    int16_t field_20;
-    int16_t field_22;
-    int field_24;
+    int sectX;
+    int sectY;
+    cellArea *pSector;
+    float wrldX;
+    float wrldY;
+    int16_t secMaxX;
+    int16_t secMaxY;
+    int bact_type;
     int ypabact__id;
     uint8_t id;
     char field_2D;
@@ -129,27 +144,30 @@ struct __NC_STACK_ypabact : public nnode
     float mass;
     float force;
     float airconst;
-    float airconst2;
+    float airconst_static;
     float maxrot;
-    xyz viewer;
-    mat3x3 field_5C9;
-    float field_5ED;
-    float field_5F1;
+
+    xyz viewer_position;
+    mat3x3 viewer_rotation;
+    float viewer_horiz_angle;
+    float viewer_vert_angle;
     float viewer_max_up;
     float viewer_max_down;
     float viewer_max_side;
-    float field_601;
-    xyz field_605;
-    float field_611;
 
-    xyz field_621; //Current pos ?
-    xyz field_62D; //Prev pos ?
-    xyz field_639; //Vector to target
-    xyz field_645; //Target 1-vector direction
-    mat3x3 field_651;
+    float thraction;
+    xyz fly_dir;
+    float fly_dir_length;
+
+    xyz position; //Current pos
+    xyz old_pos; //Prev pos
+    xyz target_vec; //Vector to target
+    xyz target_dir; //Target 1-vector direction
+    mat3x3 rotation;
+
     float height;
-    float field_679;
-    xyz field_67D;
+    float height_max_user;
+    xyz scale;
     vhclBases vp_normal;
     vhclBases vp_fire;
     vhclBases vp_wait;

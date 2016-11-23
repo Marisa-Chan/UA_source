@@ -970,17 +970,17 @@ void sub_445230(_NC_STACK_ypaworld *yw)
     {
         __NC_STACK_ypabact *v4 = yw->current_bact;
 
-        yw->field_1334.sx = v4->field_651.m00 * v4->viewer.sx + v4->field_621.sx + v4->field_651.m10 * v4->viewer.sy + v4->field_651.m20 * v4->viewer.sz;
-        yw->field_1334.sy = v4->field_651.m01 * v4->viewer.sx + v4->field_621.sy + v4->field_651.m11 * v4->viewer.sy + v4->field_651.m21 * v4->viewer.sz;
-        yw->field_1334.sz = v4->field_651.m02 * v4->viewer.sx + v4->field_621.sz + v4->field_651.m12 * v4->viewer.sy + v4->field_651.m22 * v4->viewer.sz;
+        yw->field_1334.sx = v4->rotation.m00 * v4->viewer_position.sx + v4->position.sx + v4->rotation.m10 * v4->viewer_position.sy + v4->rotation.m20 * v4->viewer_position.sz;
+        yw->field_1334.sy = v4->rotation.m01 * v4->viewer_position.sx + v4->position.sy + v4->rotation.m11 * v4->viewer_position.sy + v4->rotation.m21 * v4->viewer_position.sz;
+        yw->field_1334.sz = v4->rotation.m02 * v4->viewer_position.sx + v4->position.sz + v4->rotation.m12 * v4->viewer_position.sy + v4->rotation.m22 * v4->viewer_position.sz;
 
-        yw->field_1340 = yw->current_bact->field_5C9;
+        yw->field_1340 = yw->current_bact->viewer_rotation;
     }
     else
     {
-        yw->field_1334 = yw->current_bact->field_621;
+        yw->field_1334 = yw->current_bact->position;
 
-        yw->field_1340 = yw->current_bact->field_651;
+        yw->field_1340 = yw->current_bact->rotation;
     }
 }
 
@@ -1025,14 +1025,14 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
         {
             if ( yw->field_161c == 1 )
             {
-                yw->field_1334 = yw->field_1b84->field_621;
-                yw->field_1340 = yw->field_1b84->field_651;
+                yw->field_1334 = yw->field_1b84->position;
+                yw->field_1340 = yw->field_1b84->rotation;
             }
 
             xyz a3;
-            a3.sx = yw->field_1b84->field_605.sx * yw->field_1b84->field_611;
-            a3.sy = yw->field_1b84->field_605.sy * yw->field_1b84->field_611;
-            a3.sz = yw->field_1b84->field_605.sz * yw->field_1b84->field_611;
+            a3.sx = yw->field_1b84->fly_dir.sx * yw->field_1b84->fly_dir_length;
+            a3.sy = yw->field_1b84->fly_dir.sy * yw->field_1b84->fly_dir_length;
+            a3.sz = yw->field_1b84->fly_dir.sz * yw->field_1b84->fly_dir_length;
 
             sub_423EFC(arg->field_4, &yw->field_1334, &a3, &yw->field_1340);
         }
@@ -1160,7 +1160,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             yw->hudi.field_0 = 0;
             yw->hudi.field_4 = 0;
 
-            yw->field_1b74 = yw->field_1b84->p_cell_area->owner;
+            yw->field_1b74 = yw->field_1b84->pSector->owner;
 
             uint32_t v37 = profiler_begin();
 
@@ -1169,7 +1169,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             {
                 bact_node *next_node = (bact_node *)nnode->next;
 
-                if (yw->field_757E && nnode->bacto != yw->field_1b78 && nnode->bact->field_24 == 3)
+                if (yw->field_757E && nnode->bacto != yw->field_1b78 && nnode->bact->bact_type == BACT_TYPES_ROBO)
                     nnode->bacto->ypabact_func116(&yw->field_1b24);
                 else
                     nnode->bacto->ypabact_func65(&yw->field_1b24);
@@ -1227,8 +1227,8 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             {
                 if ( yw->GameShell )
                 {
-                    yw->GameShell->samples1_info.field_0 = yw->field_1b84->field_621;
-                    yw->GameShell->samples2_info.field_0 = yw->field_1b84->field_621;
+                    yw->GameShell->samples1_info.field_0 = yw->field_1b84->position;
+                    yw->GameShell->samples2_info.field_0 = yw->field_1b84->position;
 
                     sb_0x4242e0(&yw->GameShell->samples1_info);
                     sb_0x4242e0(&yw->GameShell->samples2_info);
@@ -1241,7 +1241,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             if ( yw->field_757E ) // update additional sounds of netplay
             {
                 if ( yw->field_1b84 )
-                    yw->GameShell->field_782.field_0 = yw->field_1b84->field_621;
+                    yw->GameShell->field_782.field_0 = yw->field_1b84->position;
 
                 sb_0x4242e0(&yw->GameShell->field_782);
             }
@@ -1263,7 +1263,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             {
                 uint32_t v62 = profiler_begin();
 
-                if ( yw->field_1b84->field_c || yw->field_1b84->field_10 )
+                if ( yw->field_1b84->sectX || yw->field_1b84->sectY )
                 {
                     sb_0x4d7c08(this, yw, arg, 1);
 
@@ -1579,8 +1579,8 @@ void sub_44FD6C(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int 
 {
     __NC_STACK_ypabact *cbact = yw->current_bact;
 
-    int v8 = abs(cbact->field_c - secX);
-    int v9 = abs(cbact->field_10 - secY);
+    int v8 = abs(cbact->sectX - secX);
+    int v9 = abs(cbact->sectY - secY);
 
     if ( v8 + v9 <= (yw->field_1368 - 1) / 2 )
     {
@@ -2120,7 +2120,7 @@ void NC_STACK_ypaworld::ypaworld_func144(NC_STACK_ypabact *bacto)
 
     __NC_STACK_ypabact *bact = bacto->getBACT_pBact();
 
-    if ( bact->field_24 == 4 )
+    if ( bact->bact_type == BACT_TYPES_MISSLE )
     {
         if ( bact->primTtype )
             ypa_log_out("OH NO! The DEATH CACHE BUG is back!\n");
@@ -2153,8 +2153,8 @@ size_t NC_STACK_ypaworld::ypaworld_func145(__NC_STACK_ypabact *bact)
 
     if ( yw->current_bact )
     {
-        int v6 = abs(yw->current_bact->field_c - bact->field_c);
-        int v7 = abs(yw->current_bact->field_10 - bact->field_10);
+        int v6 = abs(yw->current_bact->sectX - bact->sectX);
+        int v7 = abs(yw->current_bact->sectY - bact->sectY);
 
         if ( v6 + v7 <= (yw->field_1368 - 1) / 2 )
             return 1;
@@ -2166,8 +2166,8 @@ size_t NC_STACK_ypaworld::ypaworld_func145(__NC_STACK_ypabact *bact)
     {
         if ( v21->bact->field_3D6 & 0x800000 )
         {
-            int v10 = abs(v21->bact->field_c - bact->field_c);
-            int v11 = abs(v21->bact->field_10 - bact->field_10);
+            int v10 = abs(v21->bact->sectX - bact->sectX);
+            int v11 = abs(v21->bact->sectY - bact->sectY);
 
             if ( v10 + v11 <= (yw->field_1368 - 1) / 2 )
                 return 1;
@@ -2181,8 +2181,8 @@ size_t NC_STACK_ypaworld::ypaworld_func145(__NC_STACK_ypabact *bact)
         {
             if ( v22->bact->field_3D6 & 0x800000 )
             {
-                int v10 = abs(v22->bact->field_c - bact->field_c);
-                int v11 = abs(v22->bact->field_10 - bact->field_10);
+                int v10 = abs(v22->bact->sectX - bact->sectX);
+                int v11 = abs(v22->bact->sectY - bact->sectY);
 
                 if ( v10 + v11 <= (yw->field_1368 - 1) / 2 )
                     return 1;
@@ -2196,8 +2196,8 @@ size_t NC_STACK_ypaworld::ypaworld_func145(__NC_STACK_ypabact *bact)
             {
                 if ( v23->bact->field_3D6 & 0x800000 )
                 {
-                    int v10 = abs(v23->bact->field_c - bact->field_c);
-                    int v11 = abs(v23->bact->field_10 - bact->field_10);
+                    int v10 = abs(v23->bact->sectX - bact->sectX);
+                    int v11 = abs(v23->bact->sectY - bact->sectY);
 
                     if ( v10 + v11 <= (yw->field_1368 - 1) / 2 )
                         return 1;
@@ -2245,7 +2245,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         bact->overeof = vhcl->overeof;
         bact->vwr_overeof = vhcl->vwr_overeof;
         bact->airconst = vhcl->airconst;
-        bact->airconst2 = vhcl->airconst;
+        bact->airconst_static = vhcl->airconst;
         bact->adist_sector = vhcl->adist_sector;
         bact->adist_bact = vhcl->adist_bact;
         bact->sdist_sector = vhcl->sdist_sector;
@@ -2408,7 +2408,7 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
     wbact->overeof = wproto->overeof;
     wbact->vwr_overeof = wproto->vwr_overeof;
     wbact->airconst = wproto->airconst;
-    wbact->airconst2 = wproto->airconst;
+    wbact->airconst_static = wproto->airconst;
     wbact->adist_sector = wproto->field_890;
     wbact->adist_bact = wproto->field_894;
     wbact->id = arg->vehicle_id;
@@ -2560,7 +2560,7 @@ size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
 
     while ( node->next )
     {
-        if ( yw->field_1b84 == node || node->field_24 == 3)
+        if ( yw->field_1b84 == node || node->bact_type == BACT_TYPES_ROBO)
         {
             v13 = 1;
             break;
@@ -2569,7 +2569,7 @@ size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
         node = (__NC_STACK_ypabact *)node->next;
     }
 
-    if ( yw->field_1b84  &&  cell == yw->field_1b84->p_cell_area )
+    if ( yw->field_1b84  &&  cell == yw->field_1b84->pSector )
         v13 = 1;
 
     if ( cell->w_type == 1 )
@@ -2809,9 +2809,9 @@ void NC_STACK_ypaworld::ypaworld_func150(yw_arg150 *arg)
                 {
                     if ( !(arg->unit == yw->field_1b84 && yw->field_1b70) || sect_bacts != yw->field_1b80 )
                     {
-                        float v36 = sect_bacts->field_621.sx - arg->pos.sx;
-                        float v37 = sect_bacts->field_621.sy - arg->pos.sy;
-                        float v38 = sect_bacts->field_621.sz - arg->pos.sz;
+                        float v36 = sect_bacts->position.sx - arg->pos.sx;
+                        float v37 = sect_bacts->position.sy - arg->pos.sy;
+                        float v38 = sect_bacts->position.sz - arg->pos.sz;
 
                         float v16 = v32 * v38 - v43 * v37;
                         float v17 = v43 * v36 - v41 * v38;
@@ -2972,7 +2972,7 @@ void NC_STACK_ypaworld::ypaworld_func151(stack_vals *arg)
 
         if ( yw->field_727c )
         {
-            if ( plowner != bct->bact->owner && bct->bact->field_24 == 3 )
+            if ( plowner != bct->bact->owner && bct->bact->bact_type == BACT_TYPES_ROBO )
                 sub_4C8EB4(yw, bct);
         }
 
@@ -2990,7 +2990,7 @@ void NC_STACK_ypaworld::ypaworld_func151(stack_vals *arg)
 
         if ( yw->field_727c )
         {
-            if ( plowner != bct->bact->owner && bct->bact->field_24 == 3 )
+            if ( plowner != bct->bact->owner && bct->bact->bact_type == BACT_TYPES_ROBO )
                 sub_4C8EB4(yw, bct);
         }
 
@@ -7084,33 +7084,33 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
     ypaworld_func163__sub2(yw, repl, yw->field_1b84, arg->field_8);
 
     xyz a3a;
-    a3a.sx = yw->field_1b84->field_605.sx * yw->field_1b84->field_611;
-    a3a.sy = yw->field_1b84->field_605.sy * yw->field_1b84->field_611;
-    a3a.sz = yw->field_1b84->field_605.sz * yw->field_1b84->field_611;
+    a3a.sx = yw->field_1b84->fly_dir.sx * yw->field_1b84->fly_dir_length;
+    a3a.sy = yw->field_1b84->fly_dir.sy * yw->field_1b84->fly_dir_length;
+    a3a.sz = yw->field_1b84->fly_dir.sz * yw->field_1b84->fly_dir_length;
 
-    sub_423EFC(arg->field_4, &yw->field_1b84->field_621, &a3a, &yw->field_1b84->field_651);
+    sub_423EFC(arg->field_4, &yw->field_1b84->position, &a3a, &yw->field_1b84->rotation);
 
     bact_node *bct = (bact_node *)yw->field_1b84->list2.head;
 
     while ( bct->next )
     {
-        bct->bact->field_87D.grp_1 = bct->bact->field_621;
+        bct->bact->field_87D.grp_1 = bct->bact->position;
 
-        bct->bact->field_87D.scale_rotation.m00 = bct->bact->field_651.m00;
-        bct->bact->field_87D.scale_rotation.m01 = bct->bact->field_651.m10;
-        bct->bact->field_87D.scale_rotation.m02 = bct->bact->field_651.m20;
-        bct->bact->field_87D.scale_rotation.m10 = bct->bact->field_651.m01;
-        bct->bact->field_87D.scale_rotation.m11 = bct->bact->field_651.m11;
-        bct->bact->field_87D.scale_rotation.m12 = bct->bact->field_651.m21;
-        bct->bact->field_87D.scale_rotation.m20 = bct->bact->field_651.m02;
-        bct->bact->field_87D.scale_rotation.m21 = bct->bact->field_651.m12;
-        bct->bact->field_87D.scale_rotation.m22 = bct->bact->field_651.m22;
+        bct->bact->field_87D.scale_rotation.m00 = bct->bact->rotation.m00;
+        bct->bact->field_87D.scale_rotation.m01 = bct->bact->rotation.m10;
+        bct->bact->field_87D.scale_rotation.m02 = bct->bact->rotation.m20;
+        bct->bact->field_87D.scale_rotation.m10 = bct->bact->rotation.m01;
+        bct->bact->field_87D.scale_rotation.m11 = bct->bact->rotation.m11;
+        bct->bact->field_87D.scale_rotation.m12 = bct->bact->rotation.m21;
+        bct->bact->field_87D.scale_rotation.m20 = bct->bact->rotation.m02;
+        bct->bact->field_87D.scale_rotation.m21 = bct->bact->rotation.m12;
+        bct->bact->field_87D.scale_rotation.m22 = bct->bact->rotation.m22;
 
-        bct->bact->field_5A.field_0 = bct->bact->field_621;
+        bct->bact->field_5A.field_0 = bct->bact->position;
 
-        bct->bact->field_5A.field_C = bct->bact->field_605.sx * bct->bact->field_611;
-        bct->bact->field_5A.field_10 = bct->bact->field_605.sy * bct->bact->field_611;
-        bct->bact->field_5A.field_14 = bct->bact->field_605.sz * bct->bact->field_611;
+        bct->bact->field_5A.field_C = bct->bact->fly_dir.sx * bct->bact->fly_dir_length;
+        bct->bact->field_5A.field_10 = bct->bact->fly_dir.sy * bct->bact->fly_dir_length;
+        bct->bact->field_5A.field_14 = bct->bact->fly_dir.sz * bct->bact->fly_dir_length;
 
         sb_0x4242e0(&bct->bact->field_5A);
 
@@ -7188,8 +7188,8 @@ void NC_STACK_ypaworld::ypaworld_func165(yw_arg165 *arg)
 
     if ( (repl->field_80 == 18 || repl->field_80 == 19 || repl->field_80 == 20) && (arg->field_0 == 16 || arg->field_0 == 17) )
     {
-        repl->field_44 = yw->field_1b84->field_621;
-        repl->rotation_matrix = yw->field_1b84->field_651;
+        repl->field_44 = yw->field_1b84->position;
+        repl->rotation_matrix = yw->field_1b84->rotation;
     }
 
     if ( arg->field_0 == 1 || arg->field_0 == 2 )
@@ -7614,12 +7614,12 @@ size_t NC_STACK_ypaworld::ypaworld_func168(__NC_STACK_ypabact **pbact)
     _NC_STACK_ypaworld *yw = &stack__ypaworld;
     __NC_STACK_ypabact *bact = *pbact;
 
-    if ( bact->field_24 == 9 || bact->field_24 == 4 )
+    if ( bact->bact_type == BACT_TYPES_GUN || bact->bact_type == BACT_TYPES_MISSLE )
         return 1;
 
     if ( bact->owner == yw->field_1b80->owner )
     {
-        cellArea *cell = bact->p_cell_area;
+        cellArea *cell = bact->pSector;
 
         if ( cell->w_type == 6 )
         {
@@ -8477,7 +8477,7 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
 
     while ( v6->next )
     {
-        if ( v6->bact->field_24 == 3 && v6->bact != arg->bact && arg->bact->owner == v6->bact->owner )
+        if ( v6->bact->bact_type == BACT_TYPES_ROBO && v6->bact != arg->bact && arg->bact->owner == v6->bact->owner )
             return;
 
         v6 = (bact_node *)v6->next;
@@ -8653,8 +8653,8 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
             arg71.state = 0;
             arg71.p1 = arg->field_4;
             arg71.p2 = 0;
-            arg71.p3 = (arg->field_C - bct->field_621.sz) * bct->field_651.m02 + (arg->field_8 - bct->field_621.sx) * bct->field_651.m00;
-            arg71.p4 = -((arg->field_8 - bct->field_621.sx) * bct->field_651.m20 + (arg->field_C - bct->field_621.sz) * bct->field_651.m22);
+            arg71.p3 = (arg->field_C - bct->position.sz) * bct->rotation.m02 + (arg->field_8 - bct->position.sx) * bct->rotation.m00;
+            arg71.p4 = -((arg->field_8 - bct->position.sx) * bct->rotation.m20 + (arg->field_C - bct->position.sz) * bct->rotation.m22);
 
             if ( yw->input_class )
                 yw->input_class->wimp_ForceFeedback(&arg71);
@@ -8842,7 +8842,7 @@ void NC_STACK_ypaworld::setYW_userVehicle(NC_STACK_ypabact *bact)
         stack__ypaworld.field_1a10 = stack__ypaworld.field_1b84->field_2E;
         stack__ypaworld.field_17bc = 0;
 
-        if ( stack__ypaworld.field_1b84->field_24 == 3 )
+        if ( stack__ypaworld.field_1b84->bact_type == BACT_TYPES_ROBO )
         {
             stack__ypaworld.field_7886 = 1;
             stack__ypaworld.field_7882 = 1;

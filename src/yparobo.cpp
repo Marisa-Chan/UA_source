@@ -203,7 +203,7 @@ size_t NC_STACK_yparobo::func0(stack_vals *stak)
 
     yparobo_func0__sub1(stak);
 
-    robo->bact_internal->field_24 = 3;
+    robo->bact_internal->bact_type = BACT_TYPES_ROBO;
 
     robo->pcell = yparobo_func0__sub0(robo);
 
@@ -512,7 +512,7 @@ void NC_STACK_yparobo::ypabact_func68(ypabact_arg65 *arg)
         setBACT_yourLastSeconds(a4);
     }
 
-    robo->bact_internal->airconst = robo->bact_internal->airconst2;
+    robo->bact_internal->airconst = robo->bact_internal->airconst_static;
 
     robo->bact_internal->field_5A.samples_data[0].pitch = robo->bact_internal->field_3BA;
     robo->bact_internal->field_5A.samples_data[0].volume = robo->bact_internal->field_3B6;
@@ -531,15 +531,15 @@ void NC_STACK_yparobo::ypabact_func68(ypabact_arg65 *arg)
 
     if ( robo->bact_internal->primTtype == BACT_TGT_TYPE_CELL )
     {
-        robo->bact_internal->field_639.sx = robo->bact_internal->primTpos.sx - robo->bact_internal->field_621.sx;
-        robo->bact_internal->field_639.sy = robo->bact_internal->primTpos.sy - robo->bact_internal->field_621.sy;
-        robo->bact_internal->field_639.sz = robo->bact_internal->primTpos.sz - robo->bact_internal->field_621.sz;
+        robo->bact_internal->target_vec.sx = robo->bact_internal->primTpos.sx - robo->bact_internal->position.sx;
+        robo->bact_internal->target_vec.sy = robo->bact_internal->primTpos.sy - robo->bact_internal->position.sy;
+        robo->bact_internal->target_vec.sz = robo->bact_internal->primTpos.sz - robo->bact_internal->position.sz;
     }
     else if ( robo->bact_internal->primTtype != BACT_TGT_TYPE_UNIT )
     {
-        robo->bact_internal->field_639.sx = 0;
-        robo->bact_internal->field_639.sy = 0;
-        robo->bact_internal->field_639.sz = 0;
+        robo->bact_internal->target_vec.sx = 0;
+        robo->bact_internal->target_vec.sy = 0;
+        robo->bact_internal->target_vec.sz = 0;
     }
 
     int v9 = getBACT_inputting();
@@ -559,22 +559,22 @@ void sub_4A6720(NC_STACK_ypaworld *ywo, __NC_STACK_ypabact *bact)
     arg184.type = 4;
     arg184.t34.field_1 = bact->owner;
     arg184.t34.field_2 = bact->id;
-    arg184.t34.field_4 = bact->field_621.sx * 256.0 / bact->field_18;
-    arg184.t34.field_5 = bact->field_621.sz * 256.0 / bact->field_1c;
+    arg184.t34.field_4 = bact->position.sx * 256.0 / bact->wrldX;
+    arg184.t34.field_5 = bact->position.sz * 256.0 / bact->wrldY;
 
     ywo->ypaworld_func184(&arg184);
 }
 
 int groundVehicleInSquad(__NC_STACK_ypabact *bact)
 {
-    if ( bact->field_24 == 2 || bact->field_24 == 8 )
+    if ( bact->bact_type == BACT_TYPES_TANK || bact->bact_type == BACT_TYPES_CAR )
         return 1;
 
     bact_node *node = (bact_node *)bact->list2.head;
 
     while (node->next)
     {
-        if (node->bact->field_24 == 2 || node->bact->field_24 == 8)
+        if (node->bact->bact_type == BACT_TYPES_TANK || node->bact->bact_type == BACT_TYPES_CAR)
             return 1;
 
         node = (bact_node *)node->next;
@@ -603,7 +603,7 @@ void NC_STACK_yparobo::sub_4A9F24(bact_node *node)
 
             if ( yparobo_func132(&arg67) )
             {
-                if ( !((1 << robo->bact_internal->owner) & arg67.tgt.pbact->p_cell_area->view_mask) )
+                if ( !((1 << robo->bact_internal->owner) & arg67.tgt.pbact->pSector->view_mask) )
                 {
                     arg67.tgt_type = BACT_TGT_TYPE_CELL;
                     arg67.tgt_pos.sx = robo->dock_tgt_pos.sx;
@@ -615,8 +615,8 @@ void NC_STACK_yparobo::sub_4A9F24(bact_node *node)
             else
             {
                 arg67.tgt_type = BACT_TGT_TYPE_CELL;
-                arg67.tgt_pos.sx = node->bact->field_621.sx;
-                arg67.tgt_pos.sz = node->bact->field_621.sz;
+                arg67.tgt_pos.sx = node->bact->position.sx;
+                arg67.tgt_pos.sz = node->bact->position.sz;
             }
             arg67.priority = 0;
         }
@@ -624,13 +624,13 @@ void NC_STACK_yparobo::sub_4A9F24(bact_node *node)
         if ( node->bact->field_3D5 != 2 )
         {
             bact_arg124 arg124;
-            arg124.from_x = node->bact->field_621.sx;
-            arg124.from_z = node->bact->field_621.sz;
+            arg124.from_x = node->bact->position.sx;
+            arg124.from_z = node->bact->position.sz;
 
             if ( arg67.tgt_type == 2 )
             {
-                arg124.to_x = arg67.tgt.pbact->field_621.sx;
-                arg124.to_z = arg67.tgt.pbact->field_621.sz;
+                arg124.to_x = arg67.tgt.pbact->position.sx;
+                arg124.to_z = arg67.tgt.pbact->position.sz;
             }
             else
             {
@@ -698,9 +698,9 @@ void NC_STACK_yparobo::initForce(bact_node *unit)
             {
                 ypaworld_arg146 arg146;
                 arg146.vehicle_id = unit->bact->id;
-                arg146.pos.sx = bact->field_621.sx + robo->dock_pos.sx;
-                arg146.pos.sy = bact->field_621.sy + robo->dock_pos.sy;
-                arg146.pos.sz = bact->field_621.sz + robo->dock_pos.sz;
+                arg146.pos.sx = bact->position.sx + robo->dock_pos.sx;
+                arg146.pos.sy = bact->position.sy + robo->dock_pos.sy;
+                arg146.pos.sz = bact->position.sz + robo->dock_pos.sz;
 
                 unt = robo->wrld->ypaworld_func146(&arg146);
             }
@@ -723,8 +723,8 @@ void NC_STACK_yparobo::initForce(bact_node *unit)
                 bact_arg67 arg67;
                 arg67.tgt_type = BACT_TGT_TYPE_CELL;
                 arg67.priority = 0;
-                arg67.tgt_pos.sx = bact->field_621.sx + bact->field_651.m20 * 1200.0 * 0.5;
-                arg67.tgt_pos.sz = bact->field_621.sz + bact->field_651.m22 * 1200.0 * 0.5;
+                arg67.tgt_pos.sx = bact->position.sx + bact->rotation.m20 * 1200.0 * 0.5;
+                arg67.tgt_pos.sz = bact->position.sz + bact->rotation.m22 * 1200.0 * 0.5;
                 unt->ypabact_func67(&arg67);
 
                 if ( robo->wrld->stack__ypaworld.field_757E )
@@ -800,7 +800,7 @@ void NC_STACK_yparobo::initForce(bact_node *unit)
 int sub_4A5A08(__NC_STACK_ypabact *bact, float a2, float a3)
 {
     int v5 = 0;
-    if ( bact->field_24 == 2 || bact->field_24 == 8 )
+    if ( bact->bact_type == BACT_TYPES_TANK || bact->bact_type == BACT_TYPES_CAR )
     {
         v5 = 1;
     }
@@ -809,7 +809,7 @@ int sub_4A5A08(__NC_STACK_ypabact *bact, float a2, float a3)
         bact_node *node = (bact_node *)bact->list2.head;
         while (node->next)
         {
-            if (node->bact->field_24 == 2 || node->bact->field_24 == 8)
+            if (node->bact->bact_type == BACT_TYPES_TANK || node->bact->bact_type == BACT_TYPES_CAR)
             {
                 v5 = 1;
                 break;
@@ -823,8 +823,8 @@ int sub_4A5A08(__NC_STACK_ypabact *bact, float a2, float a3)
     {
         bact_arg124 arg125;
         arg125.steps_cnt = 32;
-        arg125.from_x = bact->field_621.sx;
-        arg125.from_z = bact->field_621.sz;
+        arg125.from_x = bact->position.sx;
+        arg125.from_z = bact->position.sz;
         arg125.to_x = a2;
         arg125.field_12 = 1;
         arg125.to_z = a3;
@@ -846,7 +846,7 @@ int sub_4A5A08(__NC_STACK_ypabact *bact, float a2, float a3)
 int sub_4A58C0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2)
 {
     int v5 = 0;
-    if ( bact->field_24 == 2 || bact->field_24 == 8 )
+    if ( bact->bact_type == BACT_TYPES_TANK || bact->bact_type == BACT_TYPES_CAR )
     {
         v5 = 1;
     }
@@ -855,7 +855,7 @@ int sub_4A58C0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2)
         bact_node *node = (bact_node *)bact->list2.head;
         while (node->next)
         {
-            if (node->bact->field_24 == 2 || node->bact->field_24 == 8)
+            if (node->bact->bact_type == BACT_TYPES_TANK || node->bact->bact_type == BACT_TYPES_CAR)
             {
                 v5 = 1;
                 break;
@@ -869,10 +869,10 @@ int sub_4A58C0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2)
     {
         bact_arg124 arg124;
         arg124.steps_cnt = 32;
-        arg124.from_x = bact->field_621.sx;
-        arg124.from_z = bact->field_621.sz;
-        arg124.to_x = bact2->field_621.sx;
-        arg124.to_z = bact2->field_621.sz;
+        arg124.from_x = bact->position.sx;
+        arg124.from_z = bact->position.sz;
+        arg124.to_x = bact2->position.sx;
+        arg124.to_z = bact2->position.sz;
         arg124.field_12 = 1;
 
         if ( !bact->self->ypabact_func124(&arg124) )
@@ -906,15 +906,15 @@ void sb_0x4a7010__sub1__sub0(NC_STACK_ypabact *unit1, NC_STACK_ypabact *unit2)
     {
         for (int j = -1; j < 2; j++)
         {
-            int v20 = i + bact1->field_c;
+            int v20 = i + bact1->sectX;
 
-            if ( v20 > 0 && v20 < bact1->field_20 - 1 )
+            if ( v20 > 0 && v20 < bact1->secMaxX - 1 )
             {
-                int v21 = j + bact1->field_10;
+                int v21 = j + bact1->sectY;
 
-                if ( v21 > 0 && v21 < bact1->field_22 - 1 )
+                if ( v21 > 0 && v21 < bact1->secMaxY - 1 )
                 {
-                    cellArea *pcell = &bact1->p_cell_area[i + j * bact1->field_20];
+                    cellArea *pcell = &bact1->pSector[i + j * bact1->secMaxX];
 
                     if ( pcell->owner == bact1->owner && pcell->w_type == 2 )
                     {
@@ -932,7 +932,7 @@ void sb_0x4a7010__sub1__sub0(NC_STACK_ypabact *unit1, NC_STACK_ypabact *unit2)
 
                         while( v10->next )
                         {
-                            if ( v10->field_24 == 9 && bact1->owner == v10->owner && v10->field_3D5 != 2 )
+                            if ( v10->bact_type == BACT_TYPES_GUN && bact1->owner == v10->owner && v10->field_3D5 != 2 )
                             {
                                 NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( v10->self );
                                 int a4 = gun->getGUN_roboGun();
@@ -956,7 +956,7 @@ void sb_0x4a7010__sub1__sub0(NC_STACK_ypabact *unit1, NC_STACK_ypabact *unit2)
         }
     }
 
-    if ( (1 << bact2->owner) & bact1->p_cell_area->view_mask )
+    if ( (1 << bact2->owner) & bact1->pSector->view_mask )
     {
         sub_4A58C0(bact2, bact1);
 
@@ -964,8 +964,8 @@ void sb_0x4a7010__sub1__sub0(NC_STACK_ypabact *unit1, NC_STACK_ypabact *unit2)
     }
     else
     {
-        float yy = (bact1->field_10 + 0.5) * -1200.0;
-        float xx = (bact1->field_c + 0.5) * 1200.0;
+        float yy = (bact1->sectY + 0.5) * -1200.0;
+        float xx = (bact1->sectX + 0.5) * 1200.0;
 
         sub_4A5A08(bact2, xx, yy);
 
@@ -1001,14 +1001,14 @@ void sb_0x4a7010__sub1(bact_node *unit, robo_t1 *rbt)
     {
         if ( unit->bact->primTtype == BACT_TGT_TYPE_UNIT )
         {
-            if ( unit->bact->primT.pbact->field_24 == 3 )
+            if ( unit->bact->primT.pbact->bact_type == BACT_TYPES_ROBO )
                 sb_0x4a7010__sub1__sub0(v8->bacto, unit->bacto);
         }
         else if ( unit->bact->primTtype == BACT_TGT_TYPE_CELL )
         {
             cellArea *cell = unit->bact->primT.pcell;
 
-            if (cell->owner == unit->bact->owner || v8->bact->p_cell_area == cell)
+            if (cell->owner == unit->bact->owner || v8->bact->pSector == cell)
                 sb_0x4a7010__sub1__sub0(v8->bacto, unit->bacto);
         }
     }
@@ -1044,8 +1044,8 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
             {
                 robo->field_521 = v23;
 
-                bact->field_6BD[0].field_4 = bact->field_621;
-                bact->field_6BD[0].matrx = bact->field_651;
+                bact->field_6BD[0].field_4 = bact->position;
+                bact->field_6BD[0].matrx = bact->rotation;
                 bact->field_6BD[0].field_34 = 3;
                 bact->field_6BD[0].field_0 = 1.0;
                 bact->field_6BD[0].vp = bact->vp_genesis;
@@ -1061,7 +1061,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
                 robo->field_521 = v23;
 
                 bact->field_6BD[1].field_4 = robo->field_515;
-                bact->field_6BD[1].matrx = bact->field_651;
+                bact->field_6BD[1].matrx = bact->rotation;
                 bact->field_6BD[1].field_34 = 1;
                 bact->field_6BD[1].vp = bact->vp_genesis;
             }
@@ -1073,7 +1073,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
     {
         robo->field_511 = 0;
 
-        xyz tmp = bact->field_621;
+        xyz tmp = bact->position;
 
         tmp.sy = robo->field_1D5;
 
@@ -1091,7 +1091,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
 
             while ( node->next )
             {
-                if ( node->bact->field_24 == 9 )
+                if ( node->bact->bact_type == BACT_TYPES_GUN )
                 {
                     NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( node->bacto );
                     int a4 = gun->getGUN_roboGun();
@@ -1103,8 +1103,8 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
             }
         }
 
-        bact->field_62D = tmp;
-        bact->field_62D.sy = tmp.sy;
+        bact->old_pos = tmp;
+        bact->old_pos.sy = tmp.sy;
 
         startSound(&bact->field_5A, 10);
 
@@ -1173,14 +1173,14 @@ void sub_4A1014(__NC_STACK_yparobo *robo, float angle)
 
     mat3x3 tmp2;
 
-    mat_mult(&tmp1, &bact->field_651, &tmp2);
+    mat_mult(&tmp1, &bact->rotation, &tmp2);
 
-    bact->field_651 = tmp2;
+    bact->rotation = tmp2;
 
     xyz v6;
-    v6.sx = bact->field_651.m10;
-    v6.sy = bact->field_651.m11;
-    v6.sz = bact->field_651.m12;
+    v6.sx = bact->rotation.m10;
+    v6.sy = bact->rotation.m11;
+    v6.sz = bact->rotation.m12;
 
     sub_4A1270(robo, &v6, angle);
 
@@ -1205,9 +1205,9 @@ void sub_4A10E8(__NC_STACK_yparobo *robo, float angle)
 
     mat3x3 tmp2;
 
-    mat_mult(&tmp1, &bact->field_651, &tmp2);
+    mat_mult(&tmp1, &bact->rotation, &tmp2);
 
-    bact->field_651 = tmp2;
+    bact->rotation = tmp2;
 
     xyz v6;
     v6.sx = 0;
@@ -1228,8 +1228,8 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
     int v81 = getBACT_inputting();
     int v79 = getBACT_exactCollisions();
 
-    xyz *v3 = &bact->field_621;
-    xyz *v5 = &bact->field_62D;
+    xyz *v3 = &bact->position;
+    xyz *v5 = &bact->old_pos;
 
     if ( v3->sx == v5->sx && v3->sy == v5->sy && v3->sz == v5->sz )
         return 0;
@@ -1251,20 +1251,20 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
             tmp = robo->coll.roboColls[i].field_10;
 
 
-            float tx = bact->field_621.sx +
-                       bact->field_651.m00 * robo->coll.roboColls[i].coll_pos.sx +
-                       bact->field_651.m01 * robo->coll.roboColls[i].coll_pos.sy +
-                       bact->field_651.m02 * robo->coll.roboColls[i].coll_pos.sz;
+            float tx = bact->position.sx +
+                       bact->rotation.m00 * robo->coll.roboColls[i].coll_pos.sx +
+                       bact->rotation.m01 * robo->coll.roboColls[i].coll_pos.sy +
+                       bact->rotation.m02 * robo->coll.roboColls[i].coll_pos.sz;
 
 //            float ty = bact->field_621.sy +
 //			      bact->field_651.m10 * robo->coll.roboColls[i].coll_pos.sx +
 //			      bact->field_651.m11 * robo->coll.roboColls[i].coll_pos.sy +
 //			      bact->field_651.m12 * robo->coll.roboColls[i].coll_pos.sz;
 
-            float tz = bact->field_621.sz +
-                       bact->field_651.m20 * robo->coll.roboColls[i].coll_pos.sx +
-                       bact->field_651.m21 * robo->coll.roboColls[i].coll_pos.sy +
-                       bact->field_651.m22 * robo->coll.roboColls[i].coll_pos.sz;
+            float tz = bact->position.sz +
+                       bact->rotation.m20 * robo->coll.roboColls[i].coll_pos.sx +
+                       bact->rotation.m21 * robo->coll.roboColls[i].coll_pos.sy +
+                       bact->rotation.m22 * robo->coll.roboColls[i].coll_pos.sz;
 
 
             arg136.pos_x = tmp.sx;
@@ -1276,9 +1276,9 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
             if ( v82 <= 1.0 )
             {
-                arg136.field_14 = bact->field_605.sx * 300.0;
-                arg136.field_18 = bact->field_605.sy * 300.0;
-                arg136.field_1C = bact->field_605.sz * 300.0;
+                arg136.field_14 = bact->fly_dir.sx * 300.0;
+                arg136.field_18 = bact->fly_dir.sy * 300.0;
+                arg136.field_1C = bact->fly_dir.sz * 300.0;
             }
             else
             {
@@ -1337,7 +1337,7 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
                         ypabact_func120(&v60);
                     }
 
-                    bact->field_611 *= 0.4;
+                    bact->fly_dir_length *= 0.4;
                     bact->field_3D6 |= 0x80;
 
                     return 1;
@@ -1354,20 +1354,20 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
             tmp = robo->coll.roboColls[i].field_10;
 
 
-            float tx = bact->field_621.sx +
-                       bact->field_651.m00 * robo->coll.roboColls[i].coll_pos.sx +
-                       bact->field_651.m01 * robo->coll.roboColls[i].coll_pos.sy +
-                       bact->field_651.m02 * robo->coll.roboColls[i].coll_pos.sz;
+            float tx = bact->position.sx +
+                       bact->rotation.m00 * robo->coll.roboColls[i].coll_pos.sx +
+                       bact->rotation.m01 * robo->coll.roboColls[i].coll_pos.sy +
+                       bact->rotation.m02 * robo->coll.roboColls[i].coll_pos.sz;
 
 //            float ty = bact->field_621.sy +
 //			      bact->field_651.m10 * robo->coll.roboColls[i].coll_pos.sx +
 //			      bact->field_651.m11 * robo->coll.roboColls[i].coll_pos.sy +
 //			      bact->field_651.m12 * robo->coll.roboColls[i].coll_pos.sz;
 
-            float tz = bact->field_621.sz +
-                       bact->field_651.m20 * robo->coll.roboColls[i].coll_pos.sx +
-                       bact->field_651.m21 * robo->coll.roboColls[i].coll_pos.sy +
-                       bact->field_651.m22 * robo->coll.roboColls[i].coll_pos.sz;
+            float tz = bact->position.sz +
+                       bact->rotation.m20 * robo->coll.roboColls[i].coll_pos.sx +
+                       bact->rotation.m21 * robo->coll.roboColls[i].coll_pos.sy +
+                       bact->rotation.m22 * robo->coll.roboColls[i].coll_pos.sz;
 
             ypaworld_arg137 arg137;
 
@@ -1377,9 +1377,9 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
             if ( v83 <= 1.0 )
             {
-                arg137.pos2.sx = bact->field_605.sx;
-                arg137.pos2.sy = bact->field_605.sy;
-                arg137.pos2.sz = bact->field_605.sz;
+                arg137.pos2.sx = bact->fly_dir.sx;
+                arg137.pos2.sy = bact->fly_dir.sy;
+                arg137.pos2.sz = bact->fly_dir.sz;
             }
             else
             {
@@ -1446,9 +1446,9 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
                 }
                 else
                 {
-                    arg88_2.pos1.sx += bact->field_605.sx;
-                    arg88_2.pos1.sy += bact->field_605.sy;
-                    arg88_2.pos1.sz += bact->field_605.sz;
+                    arg88_2.pos1.sx += bact->fly_dir.sx;
+                    arg88_2.pos1.sy += bact->fly_dir.sy;
+                    arg88_2.pos1.sz += bact->fly_dir.sz;
                 }
             }
 
@@ -1459,7 +1459,7 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
                 arg88_2.pos1.sy = arg88_2.pos1.sy / v50;
                 arg88_2.pos1.sz = arg88_2.pos1.sz / v50;
 
-                bact->field_621 = bact->field_62D;
+                bact->position = bact->old_pos;
 
                 arg88_2.pos2.sz = a2;
                 arg88_2.pos2.sy = 2.0;
@@ -1473,7 +1473,7 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
                     robo->coll.field_0 = 0;
                 }
 
-                bact->field_611 *= 0.4;
+                bact->fly_dir_length *= 0.4;
                 bact->field_3D6 |= 0x80;
 
                 return 1;
@@ -1483,12 +1483,12 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
     bact->field_3D6 &= 0xFFFBFFFF;
 
-    arg136.pos_x = bact->field_621.sx;
-    arg136.pos_y = bact->field_621.sy;
-    arg136.pos_z = bact->field_621.sz;
-    arg136.field_14 = bact->field_605.sx * 100.0;
+    arg136.pos_x = bact->position.sx;
+    arg136.pos_y = bact->position.sy;
+    arg136.pos_z = bact->position.sz;
+    arg136.field_14 = bact->fly_dir.sx * 100.0;
     arg136.field_18 = bact->height * 1.5;
-    arg136.field_1C = bact->field_605.sz * 100.0;
+    arg136.field_1C = bact->fly_dir.sz * 100.0;
     arg136.field_40 = 0;
 
     robo->wrld->ypaworld_func136(&arg136);
@@ -1497,13 +1497,13 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
     {
         if ( arg136.field_24 < 0.66 )
         {
-            bact->field_645.sy = -1.0;
+            bact->target_dir.sy = -1.0;
             bact->field_3D6 |= 0x80;
         }
     }
     else
     {
-        bact->field_645.sy = 1.0;
+        bact->target_dir.sy = 1.0;
         bact->field_3D6 &= 0xFFFFFF7F;
     }
 
@@ -1517,7 +1517,7 @@ void NC_STACK_yparobo::wallow(ypabact_arg65 *arg)
     __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    bact->field_621.sy = sin(arg->field_0 * 3.141592653589793 / 3000.0) * 25.0 + robo->field_1D5;
+    bact->position.sy = sin(arg->field_0 * 3.141592653589793 / 3000.0) * 25.0 + robo->field_1D5;
 
     for (int i = 0; i < 8; i++)
     {
@@ -1526,9 +1526,9 @@ void NC_STACK_yparobo::wallow(ypabact_arg65 *arg)
         if (gun->gun_obj)
         {
             bact_arg80 v11;
-            v11.pos.sx = bact->field_621.sx + bact->field_651.m00 * gun->pos.sx + bact->field_651.m10 * gun->pos.sy + bact->field_651.m20 * gun->pos.sz;
-            v11.pos.sy = bact->field_621.sy + bact->field_651.m01 * gun->pos.sx + bact->field_651.m11 * gun->pos.sy + bact->field_651.m21 * gun->pos.sz;
-            v11.pos.sz = bact->field_621.sz + bact->field_651.m02 * gun->pos.sx + bact->field_651.m12 * gun->pos.sy + bact->field_651.m22 * gun->pos.sz;
+            v11.pos.sx = bact->position.sx + bact->rotation.m00 * gun->pos.sx + bact->rotation.m10 * gun->pos.sy + bact->rotation.m20 * gun->pos.sz;
+            v11.pos.sy = bact->position.sy + bact->rotation.m01 * gun->pos.sx + bact->rotation.m11 * gun->pos.sy + bact->rotation.m21 * gun->pos.sz;
+            v11.pos.sz = bact->position.sz + bact->rotation.m02 * gun->pos.sx + bact->rotation.m12 * gun->pos.sy + bact->rotation.m22 * gun->pos.sz;
             v11.field_C = 4;
 
             gun->gun_obj->ypabact_func80(&v11);
@@ -1543,20 +1543,20 @@ void yparobo_func70__sub2__sub0(__NC_STACK_yparobo *robo)
 
     for (int i = 0; i < robo->coll.robo_coll_num; i++)
     {
-        robo->coll.roboColls[i].field_10.sx = bact->field_621.sx
-                                              + bact->field_651.m00 * robo->coll.roboColls[i].coll_pos.sx
-                                              + bact->field_651.m01 * robo->coll.roboColls[i].coll_pos.sy
-                                              + bact->field_651.m02 * robo->coll.roboColls[i].coll_pos.sz;
+        robo->coll.roboColls[i].field_10.sx = bact->position.sx
+                                              + bact->rotation.m00 * robo->coll.roboColls[i].coll_pos.sx
+                                              + bact->rotation.m01 * robo->coll.roboColls[i].coll_pos.sy
+                                              + bact->rotation.m02 * robo->coll.roboColls[i].coll_pos.sz;
 
-        robo->coll.roboColls[i].field_10.sy = bact->field_621.sy
-                                              + bact->field_651.m10 * robo->coll.roboColls[i].coll_pos.sx
-                                              + bact->field_651.m11 * robo->coll.roboColls[i].coll_pos.sy
-                                              + bact->field_651.m12 * robo->coll.roboColls[i].coll_pos.sz;
+        robo->coll.roboColls[i].field_10.sy = bact->position.sy
+                                              + bact->rotation.m10 * robo->coll.roboColls[i].coll_pos.sx
+                                              + bact->rotation.m11 * robo->coll.roboColls[i].coll_pos.sy
+                                              + bact->rotation.m12 * robo->coll.roboColls[i].coll_pos.sz;
 
-        robo->coll.roboColls[i].field_10.sz = bact->field_621.sz
-                                              + bact->field_651.m20 * robo->coll.roboColls[i].coll_pos.sx
-                                              + bact->field_651.m21 * robo->coll.roboColls[i].coll_pos.sy
-                                              + bact->field_651.m22 * robo->coll.roboColls[i].coll_pos.sz;
+        robo->coll.roboColls[i].field_10.sz = bact->position.sz
+                                              + bact->rotation.m20 * robo->coll.roboColls[i].coll_pos.sx
+                                              + bact->rotation.m21 * robo->coll.roboColls[i].coll_pos.sy
+                                              + bact->rotation.m22 * robo->coll.roboColls[i].coll_pos.sz;
     }
 }
 
@@ -1583,22 +1583,22 @@ void NC_STACK_yparobo::AI_doMove(ypabact_arg65 *arg)
 
     yparobo_func70__sub2__sub0(robo);
 
-    mat3x3 *v5 = &bact->field_651;
-    xyz *v6 = &bact->field_645;
+    mat3x3 *v5 = &bact->rotation;
+    xyz *v6 = &bact->target_dir;
 
     float v49 = arg->field_4 / 1000.0;
 
     robo->field_c = bact->mass * 9.80665;
 
-    if ( bact->field_645.sy < -0.7 )
+    if ( bact->target_dir.sy < -0.7 )
         robo->field_c = bact->mass * 3.0 * 9.80665;
 
-    if ( bact->field_645.sy > 0.7 )
+    if ( bact->target_dir.sy > 0.7 )
         robo->field_c = bact->mass * 0.91 * 9.80665;
 
     float v39;
     if ( bact->primTtype )
-        v39 = sqrt(bact->field_639.sx * bact->field_639.sx + bact->field_639.sz * bact->field_639.sz);
+        v39 = sqrt(bact->target_vec.sx * bact->target_vec.sx + bact->target_vec.sz * bact->target_vec.sz);
     else
         v39 = 0.0;
 
@@ -1609,21 +1609,21 @@ void NC_STACK_yparobo::AI_doMove(ypabact_arg65 *arg)
             bact->airconst *= 3.0;
 
             robo->field_c = bact->mass * 2.5 * 9.80665;
-            bact->field_601 = 0;
+            bact->thraction = 0;
 
             float v38 = 1.0 - v49 * 4.0;
             if ( v38 < 0.0 )
                 v38 = 0.1;
 
-            bact->field_611 *= v38;
+            bact->fly_dir_length *= v38;
         }
         else if ( bact->primTtype )
         {
-            bact->field_601 = bact->force;
+            bact->thraction = bact->force;
         }
         else
         {
-            bact->field_601 = 0;
+            bact->thraction = 0;
         }
 
         if ( !(bact->field_3D6 & 0x80) )
@@ -1693,15 +1693,15 @@ void NC_STACK_yparobo::AI_doMove(ypabact_arg65 *arg)
 
         arg74.field_0 = v49;
         arg74.flag = 0;
-        arg74.vec.sx = bact->field_639.sx / v39;
+        arg74.vec.sx = bact->target_vec.sx / v39;
         arg74.vec.sy = 0;
-        arg74.vec.sz = bact->field_639.sz / v39;
+        arg74.vec.sz = bact->target_vec.sz / v39;
     }
     else
     {
-        bact->field_601 = 0;
+        bact->thraction = 0;
 
-        if ( fabs(bact->field_605.sx * bact->field_611) <= 0.1 && fabs(bact->field_605.sz * bact->field_611) <= 0.1 )
+        if ( fabs(bact->fly_dir.sx * bact->fly_dir_length) <= 0.1 && fabs(bact->fly_dir.sz * bact->fly_dir_length) <= 0.1 )
         {
             if ( !(robo->roboState & ROBOSTATE_BUILDRADAR) &&
                     !(robo->roboState & ROBOSTATE_BUILDPOWER) &&
@@ -1721,8 +1721,8 @@ void NC_STACK_yparobo::AI_doMove(ypabact_arg65 *arg)
                 }
                 else
                 {
-                    if ( fabs(bact->field_645.sy) < 0.7 )
-                        bact->field_611 *= 0.35;
+                    if ( fabs(bact->target_dir.sy) < 0.7 )
+                        bact->fly_dir_length *= 0.35;
                 }
 
                 if ( v14 && robo->field_1DA & 2 )
@@ -1734,12 +1734,12 @@ void NC_STACK_yparobo::AI_doMove(ypabact_arg65 *arg)
         else
         {
             bact->airconst *= 3.0;
-            bact->field_611 *= 0.8;
+            bact->fly_dir_length *= 0.8;
 
-            if ( fabs(bact->field_605.sx * bact->field_611) < 0.1 && fabs(bact->field_605.sz * bact->field_611) < 0.1 )
+            if ( fabs(bact->fly_dir.sx * bact->fly_dir_length) < 0.1 && fabs(bact->fly_dir.sz * bact->fly_dir_length) < 0.1 )
             {
-                bact->field_605.sz = 0;
-                bact->field_605.sx = bact->field_605.sz;
+                bact->fly_dir.sz = 0;
+                bact->fly_dir.sx = bact->fly_dir.sz;
 
                 bact_arg67 v34;
                 v34.tgt_type = BACT_TGT_TYPE_NONE;
@@ -1826,7 +1826,7 @@ int sb_0x4a45cc__sub0(__NC_STACK_ypabact *bact)
     xyz tmp;
     if ( bact->primTtype == BACT_TGT_TYPE_UNIT )
     {
-        tmp = bact->primT.pbact->field_621;
+        tmp = bact->primT.pbact->position;
     }
     else if ( bact->primTtype == BACT_TGT_TYPE_CELL )
     {
@@ -1836,9 +1836,9 @@ int sb_0x4a45cc__sub0(__NC_STACK_ypabact *bact)
         return 1;
 
     xyz tmp2;
-    tmp2.sy = bact->field_621.sy - tmp.sy;
-    tmp2.sx = bact->field_621.sx - tmp.sx;
-    tmp2.sz = bact->field_621.sz - tmp.sz;
+    tmp2.sy = bact->position.sy - tmp.sy;
+    tmp2.sx = bact->position.sx - tmp.sx;
+    tmp2.sz = bact->position.sz - tmp.sz;
 
     float v19 = sqrt(tmp2.sy * tmp2.sy + tmp2.sx * tmp2.sx + tmp2.sz * tmp2.sz);
 
@@ -1849,9 +1849,9 @@ int sb_0x4a45cc__sub0(__NC_STACK_ypabact *bact)
         __NC_STACK_ypabact *bct = nod->bact;
 
         xyz tmp3;
-        tmp3.sy = bct->field_621.sy - tmp.sy;
-        tmp3.sx = bct->field_621.sx - tmp.sx;
-        tmp3.sz = bct->field_621.sz - tmp.sz;
+        tmp3.sy = bct->position.sy - tmp.sy;
+        tmp3.sx = bct->position.sx - tmp.sx;
+        tmp3.sz = bct->position.sz - tmp.sz;
 
         float v20 = sqrt(tmp3.sy * tmp3.sy + tmp3.sx * tmp3.sx + tmp3.sz * tmp3.sz);
 
@@ -1981,9 +1981,9 @@ void NC_STACK_yparobo::doUserCommands(ypabact_arg65 *arg)
             {
                 arg67.tgt_type = BACT_TGT_TYPE_CELL;
                 arg67.priority = 0;
-                arg67.tgt_pos.sx = (arg146.pos.sx - bact->field_621.sx) * 4.0 + bact->field_621.sx;
+                arg67.tgt_pos.sx = (arg146.pos.sx - bact->position.sx) * 4.0 + bact->position.sx;
                 arg67.tgt_pos.sy = arg146.pos.sy;
-                arg67.tgt_pos.sz = (arg146.pos.sz - bact->field_621.sz) * 4.0 + bact->field_621.sz;
+                arg67.tgt_pos.sz = (arg146.pos.sz - bact->position.sz) * 4.0 + bact->position.sz;
 
                 newbact->ypabact_func67(&arg67);
 
@@ -2028,7 +2028,7 @@ void NC_STACK_yparobo::doUserCommands(ypabact_arg65 *arg)
                     ywo->ypaworld_func181(&arg181);
                 }
 
-                if ( bct->field_24 == 7 )
+                if ( bct->bact_type == BACT_TYPES_UFO )
                     newbact->setBACT_aggression(25);
                 else
                     newbact->setBACT_aggression(60);
@@ -2175,12 +2175,12 @@ void NC_STACK_yparobo::doUserCommands(ypabact_arg65 *arg)
 
         int v11 = 0;
 
-        if ( arg->field_1C->field_24 != 2 && arg->field_1C->field_24 != 8 )
+        if ( arg->field_1C->bact_type != BACT_TYPES_TANK && arg->field_1C->bact_type != BACT_TYPES_CAR )
         {
             bact_node *nod = (bact_node *)arg->field_1C->list2.head;
             while (nod->next)
             {
-                if ( nod->bact->field_24 == 2 || nod->bact->field_24 == 8 )
+                if ( nod->bact->bact_type == BACT_TYPES_TANK || nod->bact->bact_type == BACT_TYPES_CAR )
                 {
                     v11 = 1;
                     break;
@@ -2194,8 +2194,8 @@ void NC_STACK_yparobo::doUserCommands(ypabact_arg65 *arg)
 
         if ( v11 )
         {
-            arg124.from_x = arg->field_1C->field_621.sx;
-            arg124.from_z = arg->field_1C->field_621.sz;
+            arg124.from_x = arg->field_1C->position.sx;
+            arg124.from_z = arg->field_1C->position.sz;
             arg124.to_x = arg->field_30.sx;
             arg124.to_z = arg->field_30.sz;
             arg124.steps_cnt = 32;
@@ -2249,12 +2249,12 @@ void NC_STACK_yparobo::doUserCommands(ypabact_arg65 *arg)
             int v72 = arg->field_1C->field_59A;
             int v20 = 0;
 
-            if ( arg->field_1C->field_24 != 2 && arg->field_1C->field_24 != 8 )
+            if ( arg->field_1C->bact_type != BACT_TYPES_TANK && arg->field_1C->bact_type != BACT_TYPES_CAR )
             {
                 bact_node *nod = (bact_node *)arg->field_1C->list2.head;
                 while (nod->next)
                 {
-                    if ( nod->bact->field_24 == 2 || nod->bact->field_24 == 8 )
+                    if ( nod->bact->bact_type == BACT_TYPES_TANK || nod->bact->bact_type == BACT_TYPES_CAR )
                     {
                         v20 = 1;
                         break;
@@ -2367,10 +2367,10 @@ void sub_4F4FF4(__NC_STACK_yparobo *robo, int a2, bact_arg67 *parg67)
 {
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    int v6 = a2 % bact->field_20;
-    int v5_2 = a2 / bact->field_20;
+    int v6 = a2 % bact->secMaxX;
+    int v5_2 = a2 / bact->secMaxX;
 
-    if ( v6 == bact->field_c && v5_2 == bact->field_10 )
+    if ( v6 == bact->sectX && v5_2 == bact->sectY )
     {
         if ( v6 >= 2 )
             v6--;
@@ -2379,14 +2379,14 @@ void sub_4F4FF4(__NC_STACK_yparobo *robo, int a2, bact_arg67 *parg67)
     }
     else
     {
-        if ( v6 > bact->field_c )
+        if ( v6 > bact->sectX )
             v6--;
-        if ( v6 < bact->field_c )
+        if ( v6 < bact->sectX )
             v6++;
 
-        if ( v5_2 > bact->field_10 )
+        if ( v5_2 > bact->sectY )
             v5_2--;
-        if ( v5_2 < bact->field_10 )
+        if ( v5_2 < bact->sectY )
             v5_2++;
     }
 
@@ -2401,8 +2401,8 @@ void NC_STACK_yparobo::buildRadar(ypabact_arg65 *arg)
     __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    int xx = robo->field_2F5 % bact->field_20;
-    int yy = robo->field_2F5 / bact->field_20;
+    int xx = robo->field_2F5 % bact->secMaxX;
+    int yy = robo->field_2F5 / bact->secMaxX;
 
     float v35 = arg->field_4 * 0.001;
 
@@ -2433,7 +2433,7 @@ void NC_STACK_yparobo::buildRadar(ypabact_arg65 *arg)
         else
         {
 
-            if ( abs(bact->field_c - xx) > 1 || abs(bact->field_10 - yy) > 1 )
+            if ( abs(bact->sectX - xx) > 1 || abs(bact->sectY - yy) > 1 )
             {
                 bact_arg67 arg67;
                 sub_4F4FF4(robo, robo->field_2F5, &arg67);
@@ -2445,15 +2445,15 @@ void NC_STACK_yparobo::buildRadar(ypabact_arg65 *arg)
             else
             {
 
-                if ( bact->field_c != xx || bact->field_10 != yy )
+                if ( bact->sectX != xx || bact->sectY != yy )
                 {
                     bact_arg67 arg67;
                     arg67.tgt_type = BACT_TGT_TYPE_NONE;
                     arg67.priority = 0;
                     ypabact_func67(&arg67);
 
-                    float v30 = -(yy + 0.5) * 1200.0 - bact->field_621.sz;
-                    float v29 = (xx + 0.5) * 1200.0 - bact->field_621.sx;
+                    float v30 = -(yy + 0.5) * 1200.0 - bact->position.sz;
+                    float v29 = (xx + 0.5) * 1200.0 - bact->position.sx;
 
                     float tmpsq = sqrt(v30 * v30 + v29 * v29);
 
@@ -2462,7 +2462,7 @@ void NC_STACK_yparobo::buildRadar(ypabact_arg65 *arg)
                     v29 /= tmpsq;
                     v30 /= tmpsq;
 
-                    float v41 = v29 * bact->field_651.m20 + v30 * bact->field_651.m22;
+                    float v41 = v29 * bact->rotation.m20 + v30 * bact->rotation.m22;
 
                     if ( v41 <= 0.9 )
                     {
@@ -2473,7 +2473,7 @@ void NC_STACK_yparobo::buildRadar(ypabact_arg65 *arg)
 
                         float a2 = acos(v41);
 
-                        if ( v29 * bact->field_651.m22 - v30 * bact->field_651.m20 > 0.0 )
+                        if ( v29 * bact->rotation.m22 - v30 * bact->rotation.m20 > 0.0 )
                             a2 = -a2;
 
                         if ( a2 < -bact->maxrot * v35 )
@@ -2587,8 +2587,8 @@ void NC_STACK_yparobo::buildPower(ypabact_arg65 *arg)
     __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    int xx = robo->field_2F5 % bact->field_20;
-    int yy = robo->field_2F5 / bact->field_20;
+    int xx = robo->field_2F5 % bact->secMaxX;
+    int yy = robo->field_2F5 / bact->secMaxX;
 
     float v38 = arg->field_4 * 0.001;
 
@@ -2623,7 +2623,7 @@ void NC_STACK_yparobo::buildPower(ypabact_arg65 *arg)
             }
             else
             {
-                if ( abs(bact->field_c - xx) > 1 || abs(bact->field_10 - yy) > 1 )
+                if ( abs(bact->sectX - xx) > 1 || abs(bact->sectY - yy) > 1 )
                 {
                     bact_arg67 arg67;
                     sub_4F4FF4(robo, robo->field_2F5, &arg67);
@@ -2633,15 +2633,15 @@ void NC_STACK_yparobo::buildPower(ypabact_arg65 *arg)
                 else
                 {
 
-                    if ( bact->field_c != xx || bact->field_10 != yy )
+                    if ( bact->sectX != xx || bact->sectY != yy )
                     {
                         bact_arg67 arg67;
                         arg67.tgt_type = BACT_TGT_TYPE_NONE;
                         arg67.priority = 0;
                         ypabact_func67(&arg67);
 
-                        float v31 = -(yy + 0.5) * 1200.0 - bact->field_621.sz;
-                        float v30 = (xx + 0.5) * 1200.0 - bact->field_621.sx;
+                        float v31 = -(yy + 0.5) * 1200.0 - bact->position.sz;
+                        float v30 = (xx + 0.5) * 1200.0 - bact->position.sx;
 
                         float tmpsq =  sqrt(v31 * v31 + v30 * v30);
 
@@ -2650,7 +2650,7 @@ void NC_STACK_yparobo::buildPower(ypabact_arg65 *arg)
                         v30 /= tmpsq;
                         v31 /= tmpsq;
 
-                        float v44 = v30 * bact->field_651.m20 + v31 * bact->field_651.m22;
+                        float v44 = v30 * bact->rotation.m20 + v31 * bact->rotation.m22;
 
                         if ( v44 <= 0.9 )
                         {
@@ -2662,7 +2662,7 @@ void NC_STACK_yparobo::buildPower(ypabact_arg65 *arg)
 
                             float a2 = acos(v44);
 
-                            if ( v30 * bact->field_651.m22 - v31 * bact->field_651.m20 > 0.0 )
+                            if ( v30 * bact->rotation.m22 - v31 * bact->rotation.m20 > 0.0 )
                                 a2 = -a2;
 
                             if ( a2 < -bact->maxrot * v38 )
@@ -2779,8 +2779,8 @@ void NC_STACK_yparobo::buildSafe(ypabact_arg65 *arg)
     __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    int xx = robo->field_2F5 % bact->field_20;
-    int yy = robo->field_2F5 / bact->field_20;
+    int xx = robo->field_2F5 % bact->secMaxX;
+    int yy = robo->field_2F5 / bact->secMaxX;
 
     float v35 = arg->field_4 * 0.001;
 
@@ -2811,7 +2811,7 @@ void NC_STACK_yparobo::buildSafe(ypabact_arg65 *arg)
         else
         {
 
-            if ( abs(bact->field_c - xx) > 1 || abs(bact->field_10 - yy) > 1 )
+            if ( abs(bact->sectX - xx) > 1 || abs(bact->sectY - yy) > 1 )
             {
                 bact_arg67 arg67;
                 sub_4F4FF4(robo, robo->field_2F5, &arg67);
@@ -2823,15 +2823,15 @@ void NC_STACK_yparobo::buildSafe(ypabact_arg65 *arg)
             else
             {
 
-                if ( bact->field_c != xx || bact->field_10 != yy )
+                if ( bact->sectX != xx || bact->sectY != yy )
                 {
                     bact_arg67 arg67;
                     arg67.tgt_type = BACT_TGT_TYPE_NONE;
                     arg67.priority = 0;
                     ypabact_func67(&arg67);
 
-                    float v30 = -(yy + 0.5) * 1200.0 - bact->field_621.sz;
-                    float v29 = (xx + 0.5) * 1200.0 - bact->field_621.sx;
+                    float v30 = -(yy + 0.5) * 1200.0 - bact->position.sz;
+                    float v29 = (xx + 0.5) * 1200.0 - bact->position.sx;
 
                     float tmpsq = sqrt(v30 * v30 + v29 * v29);
 
@@ -2840,7 +2840,7 @@ void NC_STACK_yparobo::buildSafe(ypabact_arg65 *arg)
                     v29 /= tmpsq;
                     v30 /= tmpsq;
 
-                    float v41 = v29 * bact->field_651.m20 + v30 * bact->field_651.m22;
+                    float v41 = v29 * bact->rotation.m20 + v30 * bact->rotation.m22;
 
                     if ( v41 <= 0.9 )
                     {
@@ -2851,7 +2851,7 @@ void NC_STACK_yparobo::buildSafe(ypabact_arg65 *arg)
 
                         float a2 = acos(v41);
 
-                        if ( v29 * bact->field_651.m22 - v30 * bact->field_651.m20 > 0.0 )
+                        if ( v29 * bact->rotation.m22 - v30 * bact->rotation.m20 > 0.0 )
                             a2 = -a2;
 
                         if ( a2 < -bact->maxrot * v35 )
@@ -2927,13 +2927,13 @@ void NC_STACK_yparobo::changePlace()
     __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    int xx = robo->field_2F5 % bact->field_20;
-    int yy = robo->field_2F5 / bact->field_20;
+    int xx = robo->field_2F5 % bact->secMaxX;
+    int yy = robo->field_2F5 / bact->secMaxX;
 
-    if ( xx >= 1 && xx <= (bact->field_20 - 2) && yy >= 1 && yy <= (bact->field_22 - 2) )
+    if ( xx >= 1 && xx <= (bact->secMaxX - 2) && yy >= 1 && yy <= (bact->secMaxY - 2) )
     {
-        int tmp1 = bact->field_10 - yy;
-        int tmp2 = bact->field_c - xx;
+        int tmp1 = bact->sectY - yy;
+        int tmp2 = bact->sectX - xx;
 
         float v12 = sqrt(tmp1 * tmp1 + tmp2 * tmp2);
 
@@ -3073,13 +3073,13 @@ bact_node *NC_STACK_yparobo::allocForce(robo_loct1 *arg)
 
     while ( node->next )
     {
-        if ( node->bact->field_3D5 == 3 && !( node->bact->field_3D6 & 0x1000 ) && !( node->bact->field_3D6 & 0x80000 ) && !( node->bact->field_3D6 & 0x4000 ) &&  node->bact->field_24 != 9 )
+        if ( node->bact->field_3D5 == 3 && !( node->bact->field_3D6 & 0x1000 ) && !( node->bact->field_3D6 & 0x80000 ) && !( node->bact->field_3D6 & 0x4000 ) &&  node->bact->bact_type != BACT_TYPES_GUN )
         {
             v2++;
 
             float v8 = TestVehicle(robo->wrld, node->bact, 1, arg->job);
 
-            if ( abs(node->bact->field_c - bact->field_c) < 2 && abs(node->bact->field_10 - bact->field_10) < 2 )
+            if ( abs(node->bact->sectX - bact->sectX) < 2 && abs(node->bact->sectY - bact->sectY) < 2 )
                 v77 = 1;
 
             if ( v8 > -1.0 && v8 >= v82 )
@@ -3100,8 +3100,8 @@ bact_node *NC_STACK_yparobo::allocForce(robo_loct1 *arg)
                 else
                     v16 = 6;
 
-                float v13 = node->bact->field_621.sx - arg->tgt_pos.sx;
-                float v14 = node->bact->field_621.sz - arg->tgt_pos.sz;
+                float v13 = node->bact->position.sx - arg->tgt_pos.sx;
+                float v14 = node->bact->position.sz - arg->tgt_pos.sz;
                 float v78 = v13 * v13 + v14 * v14;
 
                 if ( v16 <= 5 )
@@ -3165,7 +3165,7 @@ bact_node *NC_STACK_yparobo::allocForce(robo_loct1 *arg)
                             float v80 = TestVehicle(robo->wrld, vhclprt, 0, arg->job);
 
                             int v27 = 0;
-                            if ( v2 < (bact->field_20 + bact->field_22) / 5 )
+                            if ( v2 < (bact->secMaxX + bact->secMaxY) / 5 )
                                 v27 = 1;
 
                             if ( bact->energy < ((float)bact->energy_2 * 0.9) )
@@ -3234,9 +3234,9 @@ bact_node *NC_STACK_yparobo::allocForce(robo_loct1 *arg)
 
         ypaworld_arg146 arg146;
         arg146.vehicle_id = v33;
-        arg146.pos.sx = bact->field_621.sx + robo->dock_pos.sx;
-        arg146.pos.sy = bact->field_621.sy + robo->dock_pos.sy;
-        arg146.pos.sz = bact->field_621.sz + robo->dock_pos.sz;
+        arg146.pos.sx = bact->position.sx + robo->dock_pos.sx;
+        arg146.pos.sy = bact->position.sy + robo->dock_pos.sy;
+        arg146.pos.sz = bact->position.sz + robo->dock_pos.sz;
 
         NC_STACK_ypabact *new_unit = robo->wrld->ypaworld_func146(&arg146);
 
@@ -3315,8 +3315,8 @@ bact_node *NC_STACK_yparobo::allocForce(robo_loct1 *arg)
         bact_arg67 arg67;
         arg67.tgt_type = BACT_TGT_TYPE_CELL;
         arg67.priority = 0;
-        arg67.tgt_pos.sx = bact->field_651.m20 * 1200.0 * 0.5 + bact->field_621.sx;
-        arg67.tgt_pos.sz = bact->field_651.m22 * 1200.0 * 0.5 + bact->field_621.sz;
+        arg67.tgt_pos.sx = bact->rotation.m20 * 1200.0 * 0.5 + bact->position.sx;
+        arg67.tgt_pos.sz = bact->rotation.m22 * 1200.0 * 0.5 + bact->position.sz;
 
         new_unit->ypabact_func67(&arg67);
 
@@ -3355,7 +3355,7 @@ bact_node *NC_STACK_yparobo::allocForce(robo_loct1 *arg)
         robo->dock_aggr = arg->aggr;
 
         if ( arg->tgType == BACT_TGT_TYPE_UNIT )
-            robo->dock_tgt_pos = arg->tgt_bact->field_621;
+            robo->dock_tgt_pos = arg->tgt_bact->position;
     }
     else
     {
@@ -3382,8 +3382,8 @@ void NC_STACK_yparobo::buildConquer()
 
     bact_arg92 arg92;
     arg92.field_14 = 2;
-    arg92.pos.sx = ((robo->vehicle_cellID % bact->field_20) + 0.5) * 1200.0;
-    arg92.pos.sz = -( (robo->vehicle_cellID / bact->field_20 ) + 0.5) * 1200.0;
+    arg92.pos.sx = ((robo->vehicle_cellID % bact->secMaxX) + 0.5) * 1200.0;
+    arg92.pos.sz = -( (robo->vehicle_cellID / bact->secMaxX ) + 0.5) * 1200.0;
 
     ypabact_func92(&arg92);
 
@@ -3404,7 +3404,7 @@ void NC_STACK_yparobo::buildConquer()
 
     while (cell_unit->next)
     {
-        if ( bact->owner != cell_unit->owner && cell_unit->field_24 == 9 && (cell_unit->weapon != -1 || cell_unit->mgun != -1) )
+        if ( bact->owner != cell_unit->owner && cell_unit->bact_type == BACT_TYPES_GUN && (cell_unit->weapon != -1 || cell_unit->mgun != -1) )
         {
             NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( cell_unit->self );
             int a4 = gun->getGUN_roboGun();
@@ -3415,7 +3415,7 @@ void NC_STACK_yparobo::buildConquer()
 
                 while (bctt->next)
                 {
-                    if ( bctt->bact->field_24 == 3 && bctt->bact->field_3D5 != 2 && cell_unit->owner == bctt->bact->owner )
+                    if ( bctt->bact->bact_type == BACT_TYPES_ROBO && bctt->bact->field_3D5 != 2 && cell_unit->owner == bctt->bact->owner )
                     {
                         int v6 = bctt->bact->energy_2 / 2;
 
@@ -3441,9 +3441,9 @@ void NC_STACK_yparobo::buildConquer()
         v20 = enrg;
 
     ypaworld_arg136 arg136;
-    arg136.pos_x = bact->field_621.sx + robo->dock_pos.sx;
-    arg136.pos_y = bact->field_621.sy + robo->dock_pos.sy - 100.0;
-    arg136.pos_z = bact->field_621.sz + robo->dock_pos.sz;
+    arg136.pos_x = bact->position.sx + robo->dock_pos.sx;
+    arg136.pos_y = bact->position.sy + robo->dock_pos.sy - 100.0;
+    arg136.pos_z = bact->position.sz + robo->dock_pos.sz;
     arg136.field_1C = 0;
     arg136.field_14 = 0;
     arg136.field_18 = 20000.0;
@@ -3451,11 +3451,11 @@ void NC_STACK_yparobo::buildConquer()
 
     robo->wrld->ypaworld_func136(&arg136);
 
-    if ( bact->p_cell_area->height - arg136.field_30 >= 50.0 )
+    if ( bact->pSector->height - arg136.field_30 >= 50.0 )
     {
         bact_arg67 arg67;
-        arg67.tgt_pos.sx = bact->field_621.sx + 200.0;
-        arg67.tgt_pos.sz = bact->field_621.sz + 300.0;
+        arg67.tgt_pos.sx = bact->position.sx + 200.0;
+        arg67.tgt_pos.sz = bact->position.sz + 300.0;
         arg67.priority = 0;
         arg67.tgt_type = BACT_TGT_TYPE_CELL_IND;
 
@@ -3463,8 +3463,8 @@ void NC_STACK_yparobo::buildConquer()
     }
     else
     {
-        float v9  = arg92.pos.sx - bact->field_621.sx;
-        float v10 = arg92.pos.sz - bact->field_621.sz;
+        float v9  = arg92.pos.sx - bact->position.sx;
+        float v10 = arg92.pos.sz - bact->position.sz;
 
         robo_loct1 loct;
 
@@ -3523,7 +3523,7 @@ void NC_STACK_yparobo::buildDefense()
         if ( v18 < 15000 )
             v18 = 15000;
 
-        if ( arg132.tgt.pbact->field_24 == 9 && (arg132.tgt.pbact->weapon != -1 || arg132.tgt.pbact->mgun != -1) )
+        if ( arg132.tgt.pbact->bact_type == BACT_TYPES_GUN && (arg132.tgt.pbact->weapon != -1 || arg132.tgt.pbact->mgun != -1) )
         {
             NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( arg132.tgt.pbact->self );
             int a4 = gun->getGUN_roboGun();
@@ -3533,7 +3533,7 @@ void NC_STACK_yparobo::buildDefense()
                 bact_node *node = (bact_node *)robo->wrld_yw->bact_list.head;
                 while( node->next )
                 {
-                    if ( node->bact->field_24 == 3 && node->bact->field_3D5 != 2 && arg132.tgt.pbact->owner == node->bact->owner )
+                    if ( node->bact->bact_type == BACT_TYPES_ROBO && node->bact->field_3D5 != 2 && arg132.tgt.pbact->owner == node->bact->owner )
                     {
                         int v4 = node->bact->energy_2 / 2;
 
@@ -3550,9 +3550,9 @@ void NC_STACK_yparobo::buildDefense()
         }
 
         ypaworld_arg136 arg136;
-        arg136.pos_x = bact->field_621.sx + robo->dock_pos.sx;
-        arg136.pos_y = bact->field_621.sy + robo->dock_pos.sy - 100.0;
-        arg136.pos_z = bact->field_621.sz + robo->dock_pos.sz;
+        arg136.pos_x = bact->position.sx + robo->dock_pos.sx;
+        arg136.pos_y = bact->position.sy + robo->dock_pos.sy - 100.0;
+        arg136.pos_z = bact->position.sz + robo->dock_pos.sz;
         arg136.field_1C = 0;
         arg136.field_14 = 0;
         arg136.field_18 = 20000.0;
@@ -3560,10 +3560,10 @@ void NC_STACK_yparobo::buildDefense()
 
         robo->wrld->ypaworld_func136(&arg136);
 
-        if ( bact->p_cell_area->height - arg136.field_30 >= 50.0 )
+        if ( bact->pSector->height - arg136.field_30 >= 50.0 )
         {
-            arg132.tgt_pos.sx = bact->field_621.sx + 200.0;
-            arg132.tgt_pos.sz = bact->field_621.sz + 300.0;
+            arg132.tgt_pos.sx = bact->position.sx + 200.0;
+            arg132.tgt_pos.sz = bact->position.sz + 300.0;
             arg132.priority = 0;
             arg132.tgt_type = BACT_TGT_TYPE_CELL_IND;
 
@@ -3571,14 +3571,14 @@ void NC_STACK_yparobo::buildDefense()
         }
         else
         {
-            float v7 = arg132.tgt.pbact->field_621.sx - bact->field_621.sx;
-            float v8 = arg132.tgt.pbact->field_621.sz - bact->field_621.sz;
+            float v7 = arg132.tgt.pbact->position.sx - bact->position.sx;
+            float v8 = arg132.tgt.pbact->position.sz - bact->position.sz;
 
             robo_loct1 loct;
             loct.distance = sqrt(v7 * v7 + v8 * v8);
-            loct.tgt_pos.sx = arg132.tgt.pbact->field_621.sx;
-            loct.tgt_pos.sy = arg132.tgt.pbact->field_621.sy;
-            loct.tgt_pos.sz = arg132.tgt.pbact->field_621.sz;
+            loct.tgt_pos.sx = arg132.tgt.pbact->position.sx;
+            loct.tgt_pos.sy = arg132.tgt.pbact->position.sy;
+            loct.tgt_pos.sz = arg132.tgt.pbact->position.sz;
 
             int v9 = v18;
             if ( v9 >= 40000 )
@@ -3590,7 +3590,7 @@ void NC_STACK_yparobo::buildDefense()
             loct.command_id = robo->field_2F1;
             loct.aggr = 60;
 
-            if ( arg132.tgt.pbact->field_24 != 2 && arg132.tgt.pbact->field_24 != 8 && arg132.tgt.pbact->field_24 != 10 )
+            if ( arg132.tgt.pbact->bact_type != BACT_TYPES_TANK && arg132.tgt.pbact->bact_type != BACT_TYPES_CAR && arg132.tgt.pbact->bact_type != BACT_TYPES_HOVER )
             {
                 loct.bad = 2;
                 loct.want = 32;
@@ -3605,16 +3605,16 @@ void NC_STACK_yparobo::buildDefense()
                 loct.forbidden = 1;
             }
 
-            switch ( arg132.tgt.pbact->field_24 )
+            switch ( arg132.tgt.pbact->bact_type )
             {
-            case 2:
-            case 8:
-            case 10:
+            case BACT_TYPES_TANK:
+            case BACT_TYPES_CAR:
+            case BACT_TYPES_HOVER:
                 loct.job = 2;
                 break;
 
-            case 6:
-            case 7:
+            case BACT_TYPES_FLYER:
+            case BACT_TYPES_UFO:
                 loct.job = 3;
                 break;
 
@@ -3647,9 +3647,9 @@ void NC_STACK_yparobo::buildRobo()
     if ( yparobo_func132(&arg132) )
     {
         ypaworld_arg136 arg136;
-        arg136.pos_x = bact->field_621.sx + robo->dock_pos.sx;
-        arg136.pos_y = bact->field_621.sy + robo->dock_pos.sy - 100.0;
-        arg136.pos_z = bact->field_621.sz + robo->dock_pos.sz;
+        arg136.pos_x = bact->position.sx + robo->dock_pos.sx;
+        arg136.pos_y = bact->position.sy + robo->dock_pos.sy - 100.0;
+        arg136.pos_z = bact->position.sz + robo->dock_pos.sz;
         arg136.field_1C = 0;
         arg136.field_14 = 0;
         arg136.field_18 = 20000.0;
@@ -3657,24 +3657,24 @@ void NC_STACK_yparobo::buildRobo()
 
         robo->wrld->ypaworld_func136(&arg136);
 
-        if ( bact->p_cell_area->height - arg136.field_30 >= 50.0 )
+        if ( bact->pSector->height - arg136.field_30 >= 50.0 )
         {
-            arg132.tgt_pos.sx = bact->field_621.sx + 200.0;
-            arg132.tgt_pos.sz = bact->field_621.sz + 300.0;
+            arg132.tgt_pos.sx = bact->position.sx + 200.0;
+            arg132.tgt_pos.sz = bact->position.sz + 300.0;
             arg132.tgt_type = BACT_TGT_TYPE_CELL_IND;
             arg132.priority = 0;
             ypabact_func67(&arg132);
         }
         else
         {
-            float v4 = arg132.tgt.pbact->field_621.sx - bact->field_621.sx;
-            float v5 = arg132.tgt.pbact->field_621.sz - bact->field_621.sz;
+            float v4 = arg132.tgt.pbact->position.sx - bact->position.sx;
+            float v5 = arg132.tgt.pbact->position.sz - bact->position.sz;
 
             robo_loct1 loct;
             loct.distance = sqrt(v4 * v4 + v5 * v5);
-            loct.tgt_pos.sx = arg132.tgt.pbact->field_621.sx;
-            loct.tgt_pos.sy = arg132.tgt.pbact->field_621.sy;
-            loct.tgt_pos.sz = arg132.tgt.pbact->field_621.sz;
+            loct.tgt_pos.sx = arg132.tgt.pbact->position.sx;
+            loct.tgt_pos.sy = arg132.tgt.pbact->position.sy;
+            loct.tgt_pos.sz = arg132.tgt.pbact->position.sz;
 
             int v6 = arg132.tgt.pbact->energy_2 / 2;
             if ( v6 < 120000 )
@@ -3724,9 +3724,9 @@ void NC_STACK_yparobo::buildReconnoitre()
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
     ypaworld_arg136 arg136;
-    arg136.pos_x = bact->field_621.sx + robo->dock_pos.sx;
-    arg136.pos_y = bact->field_621.sy + robo->dock_pos.sy + -100.0;
-    arg136.pos_z = bact->field_621.sz + robo->dock_pos.sz;
+    arg136.pos_x = bact->position.sx + robo->dock_pos.sx;
+    arg136.pos_y = bact->position.sy + robo->dock_pos.sy + -100.0;
+    arg136.pos_z = bact->position.sz + robo->dock_pos.sz;
     arg136.field_1C = 0;
     arg136.field_14 = 0;
     arg136.field_18 = 20000.0;
@@ -3734,11 +3734,11 @@ void NC_STACK_yparobo::buildReconnoitre()
 
     robo->wrld->ypaworld_func136(&arg136);
 
-    if ( bact->p_cell_area->height - arg136.field_30 >= 50.0 )
+    if ( bact->pSector->height - arg136.field_30 >= 50.0 )
     {
         bact_arg67 arg67;
-        arg67.tgt_pos.sx = bact->field_621.sx + 200.0;
-        arg67.tgt_pos.sz = bact->field_621.sz + 300.0;
+        arg67.tgt_pos.sx = bact->position.sx + 200.0;
+        arg67.tgt_pos.sz = bact->position.sz + 300.0;
         arg67.tgt_type = BACT_TGT_TYPE_CELL_IND;
         arg67.priority = 0;
 
@@ -3747,12 +3747,12 @@ void NC_STACK_yparobo::buildReconnoitre()
     else
     {
         robo_loct1 loct;
-        loct.tgt_pos.sx = ((robo->vehicle_cellID % bact->field_20) + 0.5) * 1200.0;
+        loct.tgt_pos.sx = ((robo->vehicle_cellID % bact->secMaxX) + 0.5) * 1200.0;
         loct.tgt_pos.sy = 0;
-        loct.tgt_pos.sz = -((robo->vehicle_cellID / bact->field_20) + 0.5) * 1200.0;
+        loct.tgt_pos.sz = -((robo->vehicle_cellID / bact->secMaxX) + 0.5) * 1200.0;
 
-        float v5 = loct.tgt_pos.sx - bact->field_621.sx;
-        float v6 = loct.tgt_pos.sz - bact->field_621.sz;
+        float v5 = loct.tgt_pos.sx - bact->position.sx;
+        float v6 = loct.tgt_pos.sz - bact->position.sz;
 
         loct.energ = 10;
         loct.aggr = 25;
@@ -4072,7 +4072,7 @@ void NC_STACK_yparobo::AI_solveTrouble(ypabact_arg65 *arg)
         {
             if ( unit->bact->field_3D5 == 1 || unit->bact->field_3D5 == 3 )
             {
-                if ( unit->bact->field_24 != 9 )
+                if ( unit->bact->bact_type != BACT_TYPES_GUN )
                 {
                     int v7;
 
@@ -4086,8 +4086,8 @@ void NC_STACK_yparobo::AI_solveTrouble(ypabact_arg65 *arg)
                         v7 = !(unit->bact->field_3D6 & 0x80000) && !unit->bact->secndTtype;
                     }
 
-                    float v10 = unit->bact->field_621.sx - bact->field_621.sx;
-                    float v11 = unit->bact->field_621.sz - bact->field_621.sz;
+                    float v10 = unit->bact->position.sx - bact->position.sx;
+                    float v11 = unit->bact->position.sz - bact->position.sz;
 
                     if ( (v10 * v10 + v11 * v11) < 4320000.0 && unit->bact->primTtype == BACT_TGT_TYPE_UNIT && bact == unit->bact->primT.pbact )
                     {
@@ -4168,9 +4168,9 @@ void NC_STACK_yparobo::searchEnemyRobo()
 
         if ( unit->field_3D5 != 2 )
         {
-            if ( unit != bact && unit->field_24 == 3 )
+            if ( unit != bact && unit->bact_type == BACT_TYPES_ROBO )
             {
-                if ( (1 << bact->owner) & unit->p_cell_area->view_mask )
+                if ( (1 << bact->owner) & unit->pSector->view_mask )
                 {
                     bact_node *kids = (bact_node *)robo->bact_internal->list2.head;
 
@@ -4183,8 +4183,8 @@ void NC_STACK_yparobo::searchEnemyRobo()
 
                         if (kbct->field_3D5 != 2)
                         {
-                            float xx = kbct->field_621.sx - unit->field_621.sx;
-                            float zz = kbct->field_621.sz - unit->field_621.sz;
+                            float xx = kbct->position.sx - unit->position.sx;
+                            float zz = kbct->position.sz - unit->position.sz;
                             float v14 = xx * xx + zz * zz;
 
                             if ( !sel || v14 < selfl )
@@ -4266,7 +4266,7 @@ void NC_STACK_yparobo::checkCommander()
             }
             else
             {
-                if ( commander_bact->field_24 != 9 )
+                if ( commander_bact->bact_type != BACT_TYPES_GUN )
                 {
                     if ( !(commander_bact->field_3D6 & 0x4000) )
                     {
@@ -4347,10 +4347,10 @@ void NC_STACK_yparobo::checkCommander()
                             {
                                 bact_arg124 arg124;
                                 arg124.steps_cnt = 32;
-                                arg124.from_x = commander_bact->field_621.sx;
-                                arg124.from_z = commander_bact->field_621.sz;
-                                arg124.to_x = bact->field_621.sx;
-                                arg124.to_z = bact->field_621.sz;
+                                arg124.from_x = commander_bact->position.sx;
+                                arg124.from_z = commander_bact->position.sz;
+                                arg124.to_x = bact->position.sx;
+                                arg124.to_z = bact->position.sz;
                                 arg124.field_12 = 1;
 
                                 if ( ! commander->bacto->ypabact_func124(&arg124) )
@@ -4444,7 +4444,7 @@ void NC_STACK_yparobo::checkCommander()
 
                                 if ( v33 )
                                 {
-                                    if ( v33->field_24 == 4 ) //If missile
+                                    if ( v33->bact_type == BACT_TYPES_MISSLE ) //If missile
                                     {
                                         NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v33->self);
                                         v33 = miss->getMISS_launcher(); //Get emitter bact
@@ -4467,12 +4467,12 @@ void NC_STACK_yparobo::checkCommander()
                     }
                     else if ( commander->bacto->ypabact_func108(&v31) )
                     {
-                        if ( commander_bact->owner == commander_bact->p_cell_area->owner && commander_bact->p_cell_area->energy_power )
+                        if ( commander_bact->owner == commander_bact->pSector->owner && commander_bact->pSector->energy_power )
                         {
                             bact_arg67 arg67;
                             arg67.tgt_type = BACT_TGT_TYPE_CELL;
                             arg67.priority = 0;
-                            arg67.tgt_pos = commander_bact->field_621;
+                            arg67.tgt_pos = commander_bact->position;
 
                             commander->bacto->ypabact_func67(&arg67);
                         }
@@ -4521,13 +4521,13 @@ void NC_STACK_yparobo::checkDanger()
     {
         for(int j = -1; j < 2; j++)
         {
-            int v4 = bact->field_10 + j;
-            int v5 = bact->field_c + i;
+            int v4 = bact->sectY + j;
+            int v5 = bact->sectX + i;
 
-            if ( v5 > 0 && v5 < bact->field_20 - 2 && v4 > 0 && v4 < bact->field_22 - 2 )
+            if ( v5 > 0 && v5 < bact->secMaxX - 2 && v4 > 0 && v4 < bact->secMaxY - 2 )
             {
 
-                __NC_STACK_ypabact *v7 = (__NC_STACK_ypabact *)bact->p_cell_area[i + j * bact->field_20].units_list.head;
+                __NC_STACK_ypabact *v7 = (__NC_STACK_ypabact *)bact->pSector[i + j * bact->secMaxX].units_list.head;
 
                 while (v7->next)
                 {
@@ -4572,8 +4572,8 @@ int yparobo_func70__sub6__sub0(__NC_STACK_yparobo *robo, cellArea *cell)
 {
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    int xx = robo->radar_cellIDpos % bact->field_20;
-    int yy = robo->radar_cellIDpos / bact->field_20;
+    int xx = robo->radar_cellIDpos % bact->secMaxX;
+    int yy = robo->radar_cellIDpos / bact->secMaxX;
 
     if ( !(cell->view_mask & (1 << bact->owner)) )
         return -1;
@@ -4595,7 +4595,7 @@ int yparobo_func70__sub6__sub0(__NC_STACK_yparobo *robo, cellArea *cell)
     if ( cell->w_type )
         return -1;
 
-    float v8 = sqrt( POW2(bact->field_10 - yy) + POW2(bact->field_c - xx) );
+    float v8 = sqrt( POW2(bact->sectY - yy) + POW2(bact->sectX - xx) );
 
     float v14 = ( v8 <= 0.01 ? 500.0 : 1000.0 / v8 );
 
@@ -4603,14 +4603,14 @@ int yparobo_func70__sub6__sub0(__NC_STACK_yparobo *robo, cellArea *cell)
 
     for (int i = 0; i < 8; i++)
     {
-        if ( !((1 << bact->owner) & cell[ word_5182AE[i].x + word_5182AE[i].y * bact->field_20 ].view_mask ) )
+        if ( !((1 << bact->owner) & cell[ word_5182AE[i].x + word_5182AE[i].y * bact->secMaxX ].view_mask ) )
         {
             v9 = 1;
             v14 += 10.0;
         }
     }
 
-    if ( !v9 || xx <= 1 || xx >= bact->field_20 - 2 || yy <= 1 || yy >= bact->field_22 - 2 )
+    if ( !v9 || xx <= 1 || xx >= bact->secMaxX - 2 || yy <= 1 || yy >= bact->secMaxY - 2 )
         return -1;
 
     return v14;
@@ -4620,20 +4620,20 @@ int yparobo_func70__sub6__sub1(__NC_STACK_yparobo *robo, cellArea *cell)
 {
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    int xx = robo->field_2C1 % bact->field_20;
-    int yy = robo->field_2C1 / bact->field_20;
+    int xx = robo->field_2C1 % bact->secMaxX;
+    int yy = robo->field_2C1 / bact->secMaxX;
 
     if ( cell->view_mask & (1 << bact->owner) )
         return -1;
 
-    float v13 = sqrt(POW2(bact->field_10 - yy) + POW2(bact->field_c - xx));
+    float v13 = sqrt(POW2(bact->sectY - yy) + POW2(bact->sectX - xx));
 
     if ( v13 <= 0.01 )
         v13 = 0.0;
 
     for (int i = 0; i < 8; i++)
     {
-        if ( !((1 << bact->owner) & cell[ word_5182AE[i].x + word_5182AE[i].y * bact->field_20 ].view_mask ) )
+        if ( !((1 << bact->owner) & cell[ word_5182AE[i].x + word_5182AE[i].y * bact->secMaxX ].view_mask ) )
         {
             v13 += 5.0;
         }
@@ -4646,8 +4646,8 @@ int yparobo_func70__sub6__sub2(__NC_STACK_yparobo *robo, cellArea *cell)
 {
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    int xx = robo->safety_cellIDpos % bact->field_20;
-    int yy = robo->safety_cellIDpos / bact->field_20;
+    int xx = robo->safety_cellIDpos % bact->secMaxX;
+    int yy = robo->safety_cellIDpos / bact->secMaxX;
 
     if ( !(cell->view_mask & (1 << bact->owner)) )
         return -1;
@@ -4666,7 +4666,7 @@ int yparobo_func70__sub6__sub2(__NC_STACK_yparobo *robo, cellArea *cell)
     if ( cell->owner != robo->bact_internal->owner || cell->w_type )
         return -1;
 
-    float v9 = sqrt( POW2(bact->field_10 - yy) + POW2(bact->field_c - xx) );
+    float v9 = sqrt( POW2(bact->sectY - yy) + POW2(bact->sectX - xx) );
 
     float v14;
 
@@ -4677,7 +4677,7 @@ int yparobo_func70__sub6__sub2(__NC_STACK_yparobo *robo, cellArea *cell)
 
     for (int i = 0; i < 8; i++)
     {
-        cellArea *cll = &cell[ word_5182AE[i].x + word_5182AE[i].y * bact->field_20 ];
+        cellArea *cll = &cell[ word_5182AE[i].x + word_5182AE[i].y * bact->secMaxX ];
 
         if ( cll->w_type && bact->owner == cll->owner)
             v14 += 5.0;
@@ -4691,8 +4691,8 @@ int yparobo_func70__sub6__sub3(__NC_STACK_yparobo *robo, cellArea *cell)
 {
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    int xx = robo->field_25D % bact->field_20;
-    int yy = robo->field_25D / bact->field_20;
+    int xx = robo->field_25D % bact->secMaxX;
+    int yy = robo->field_25D / bact->secMaxX;
 
     if ( !(cell->view_mask & (1 << bact->owner)) )
         return -1;
@@ -4717,7 +4717,7 @@ int yparobo_func70__sub6__sub3(__NC_STACK_yparobo *robo, cellArea *cell)
     if ( cell->owner != bact->owner )
         return -1;
 
-    float v9 = sqrt( POW2(bact->field_10 - yy) + POW2(bact->field_c - xx) );
+    float v9 = sqrt( POW2(bact->sectY - yy) + POW2(bact->sectX - xx) );
     float v26 = v9 <= 0.01 ? 500.0 : 1000.0 / v9;
 
     if ( v9 > 8.0 )
@@ -4727,7 +4727,7 @@ int yparobo_func70__sub6__sub3(__NC_STACK_yparobo *robo, cellArea *cell)
 
     for (int i = 0; i < 8; i++)
     {
-        cellArea *cll = &cell[ word_5182AE[i].x + word_5182AE[i].y * bact->field_20 ];
+        cellArea *cll = &cell[ word_5182AE[i].x + word_5182AE[i].y * bact->secMaxX ];
 
         if ( cll->owner == bact->owner )
         {
@@ -4769,13 +4769,13 @@ int yparobo_func70__sub6__sub4(__NC_STACK_yparobo *robo, cellArea *cell)
 {
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    int xx = robo->conq_cellIDpos % bact->field_20;
-    int yy = robo->conq_cellIDpos / bact->field_20;
+    int xx = robo->conq_cellIDpos % bact->secMaxX;
+    int yy = robo->conq_cellIDpos / bact->secMaxX;
 
     if ( cell->owner == bact->owner )
         return -1;
 
-    float v7 = sqrt( POW2(bact->field_10 - yy) + POW2(bact->field_c - xx) );
+    float v7 = sqrt( POW2(bact->sectY - yy) + POW2(bact->sectX - xx) );
     float v25;
 
     if ( v7 <= 0.01 )
@@ -4798,9 +4798,9 @@ int yparobo_func70__sub6__sub4(__NC_STACK_yparobo *robo, cellArea *cell)
         int tx = xx + word_5182AE[i].x;
         int ty = yy + word_5182AE[i].y;
 
-        if ( tx >= 1 && ty >= 1 && tx <= bact->field_20 - 2 && ty <= bact->field_22 - 2)
+        if ( tx >= 1 && ty >= 1 && tx <= bact->secMaxX - 2 && ty <= bact->secMaxY - 2)
         {
-            if ( cell[ word_5182AE[i].x + word_5182AE[i].y * bact->field_20 ].owner == bact->owner )
+            if ( cell[ word_5182AE[i].x + word_5182AE[i].y * bact->secMaxX ].owner == bact->owner )
                 v25 = v25 + 3.0;
         }
     }
@@ -4813,9 +4813,9 @@ int yparobo_func70__sub6__sub4(__NC_STACK_yparobo *robo, cellArea *cell)
         {
             if ( bct->owner != bact->owner && bct->owner)
             {
-                if ( bct->field_24 != 4)
+                if ( bct->bact_type != BACT_TYPES_MISSLE)
                 {
-                    if ( bct->field_24 == 3)
+                    if ( bct->bact_type == BACT_TYPES_ROBO)
                         v25 += 100.0;
                     else
                         v25 += 5.0;
@@ -4833,7 +4833,7 @@ int yparobo_func70__sub6__sub8(__NC_STACK_yparobo *robo)
 {
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    int num = bact->field_20 * bact->field_22;
+    int num = bact->secMaxX * bact->secMaxY;
 
     int v4 = 0;
 
@@ -4846,7 +4846,7 @@ int yparobo_func70__sub6__sub8(__NC_STACK_yparobo *robo)
             __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cll->units_list.head;
             while (bct->next)
             {
-                if ( bct->field_24 == 9 && bct->field_3D5 != 2 && bact->owner == bct->owner )
+                if ( bct->bact_type == BACT_TYPES_GUN && bct->field_3D5 != 2 && bact->owner == bct->owner )
                 {
                     NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
                     int a4 = gun->getGUN_roboGun();
@@ -4870,7 +4870,7 @@ int yparobo_func70__sub6__sub9(__NC_STACK_yparobo *robo)
 {
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    int num = bact->field_20 * bact->field_22;
+    int num = bact->secMaxX * bact->secMaxY;
 
     int v4 = 0;
 
@@ -4883,7 +4883,7 @@ int yparobo_func70__sub6__sub9(__NC_STACK_yparobo *robo)
             __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cll->units_list.head;
             while (bct->next)
             {
-                if ( bct->field_24 == 9 && bct->field_3D5 != 2 && bact->owner == bct->owner )
+                if ( bct->bact_type == BACT_TYPES_GUN && bct->field_3D5 != 2 && bact->owner == bct->owner )
                 {
                     NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
                     int a4 = gun->getGUN_roboGun();
@@ -4907,7 +4907,7 @@ int yparobo_func70__sub6__sub10(__NC_STACK_yparobo *robo)
 {
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    int num = bact->field_20 * bact->field_22;
+    int num = bact->secMaxX * bact->secMaxY;
 
     int v4 = 0;
 
@@ -4924,7 +4924,7 @@ int yparobo_func70__sub6__sub11(__NC_STACK_yparobo *robo)
 {
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    int num = bact->field_20 * bact->field_22;
+    int num = bact->secMaxX * bact->secMaxY;
 
     int v4 = 0;
 
@@ -4950,12 +4950,12 @@ int yparobo_func70__sub6__sub12(__NC_STACK_yparobo *robo)
 
     while (node->next)
     {
-        if ( node->bact->field_24 == 3)
+        if ( node->bact->bact_type == BACT_TYPES_ROBO)
         {
             if ( bact->owner != node->bact->owner )
             {
-                int v9 = bact->field_c - node->bact->field_c;
-                int v10 = bact->field_10 - node->bact->field_10;
+                int v9 = bact->sectX - node->bact->sectX;
+                int v10 = bact->sectY - node->bact->sectY;
 
                 if ( abs(v9) < 3 && abs(v10) < 3 )
                     return 1;
@@ -4976,12 +4976,12 @@ int yparobo_func70__sub6__sub13(__NC_STACK_yparobo *robo)
     {
         for (int j = -2; j <= 2; j++)
         {
-            int xx = bact->field_c + i;
-            int yy = bact->field_10 + j;
+            int xx = bact->sectX + i;
+            int yy = bact->sectY + j;
 
-            if ( xx > 0 && xx < bact->field_20 - 1 && yy > 0 && yy < bact->field_22 - 1 )
+            if ( xx > 0 && xx < bact->secMaxX - 1 && yy > 0 && yy < bact->secMaxY - 1 )
             {
-                __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *) bact->p_cell_area[ i + j * bact->field_20 ].units_list.head;
+                __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *) bact->pSector[ i + j * bact->secMaxX ].units_list.head;
 
                 while ( bct->next )
                 {
@@ -4989,7 +4989,7 @@ int yparobo_func70__sub6__sub13(__NC_STACK_yparobo *robo)
                     {
                         if ( bct->owner != bact->owner )
                         {
-                            if ( bct->field_24 != 4 && bct->field_24 != 3 && bct->field_3D5 != 2 )
+                            if ( bct->bact_type != BACT_TYPES_MISSLE && bct->bact_type != BACT_TYPES_ROBO && bct->field_3D5 != 2 )
                                 return 1;
                         }
                     }
@@ -5010,14 +5010,14 @@ float sub_4F4C6C(bact_node *bctnd, __NC_STACK_yparobo *robo, int a4, int a3)
     if ( bct->field_3D6 & 0x400 )
         return -1.0;
 
-    float v8 = sqrt( POW2(a3 - bct->field_10) + POW2(a4 - bct->field_c) );
+    float v8 = sqrt( POW2(a3 - bct->sectY) + POW2(a4 - bct->sectX) );
 
     if (v8 != 0.0)
         v8 = 100.0 / v8;
     else
         v8 = 200.0;
 
-    if ( bct->p_cell_area->owner == robo->bact_internal->owner )
+    if ( bct->pSector->owner == robo->bact_internal->owner )
         v8 += 100.0;
 
     return v8;
@@ -5043,12 +5043,12 @@ int yparobo_func70__sub6__sub5(__NC_STACK_yparobo *robo, int *a2, int *px, int *
 
         if ( node->bact->owner != bact->owner  &&  node->bact->owner  &&  node->bact->field_3D5 != 2 )
         {
-            if ( abs(node->bact->field_c - bact->field_c) <= 2 &&
-                    abs(node->bact->field_10 - bact->field_10) <= 2 )
+            if ( abs(node->bact->sectX - bact->sectX) <= 2 &&
+                    abs(node->bact->sectY - bact->sectY) <= 2 )
             {
                 *a2 = node->bact->field_2E;
-                *px = node->bact->field_c;
-                *py = node->bact->field_10;
+                *px = node->bact->sectX;
+                *py = node->bact->sectY;
 
                 return 500;
             }
@@ -5062,23 +5062,23 @@ int yparobo_func70__sub6__sub5(__NC_STACK_yparobo *robo, int *a2, int *px, int *
                 {
                     int v26 = 0;
 
-                    if ( ndbct->bact->field_24 == 9 )
+                    if ( ndbct->bact->bact_type == BACT_TYPES_GUN )
                     {
                         NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( ndbct->bacto );
                         v26 = gun->getGUN_roboGun();
                     }
 
-                    if ( (1 << bact->owner) & ndbct->bact->p_cell_area->view_mask )
+                    if ( (1 << bact->owner) & ndbct->bact->pSector->view_mask )
                     {
                         if ( ndbct->bact->field_3D5 != 2 && !v26 )
                         {
-                            float tmp = sub_4F4C6C(ndbct, robo, bact->field_c, bact->field_10);
+                            float tmp = sub_4F4C6C(ndbct, robo, bact->sectX, bact->sectY);
                             if ( tmp > v32 )
                             {
                                 v32 = tmp;
                                 v29 = ndbct->bact->field_2E;
-                                *px = ndbct->bact->field_c;
-                                *py = ndbct->bact->field_10;
+                                *px = ndbct->bact->sectX;
+                                *py = ndbct->bact->sectY;
                             }
                         }
                     }
@@ -5124,15 +5124,15 @@ int yparobo_func70__sub6__sub6(__NC_STACK_yparobo *robo, int *a2, int *px, int *
     {
         if ( node->bact->owner != robo->bact_internal->owner && node->bact->owner && node->bact->field_3D5 != 2 )
         {
-            if ( (1 << bact->owner) & node->bact->p_cell_area->view_mask )
+            if ( (1 << bact->owner) & node->bact->pSector->view_mask )
             {
-                float v13 = sub_4F4C6C(node, robo, bact->field_c, bact->field_10);
+                float v13 = sub_4F4C6C(node, robo, bact->sectX, bact->sectY);
                 if ( v13 > v32 )
                 {
                     v21 = node->bact->field_2E;
                     v32 = v13;
-                    *px = node->bact->field_c;
-                    *py = node->bact->field_10;
+                    *px = node->bact->sectX;
+                    *py = node->bact->sectY;
                 }
             }
         }
@@ -5160,7 +5160,7 @@ int sub_4F4E48(__NC_STACK_yparobo *robo, int x, int y)
     {
         for (int j = -1; j <= 1; j++)
         {
-            cellArea *cll = &robo->pcell[(y + j) * bact->field_20 + x + i];
+            cellArea *cll = &robo->pcell[(y + j) * bact->secMaxX + x + i];
 
             yw_arg176 arg176;
             arg176.owner = cll->owner;
@@ -5185,13 +5185,13 @@ int sub_4F4E48(__NC_STACK_yparobo *robo, int x, int y)
             {
                 float v16 = 0;
 
-                if ( bct->field_24 == 3 && bct != bact )
+                if ( bct->bact_type == BACT_TYPES_ROBO && bct != bact )
                 {
                     v16 = 5.0;
                 }
                 else
                 {
-                    if ( bct->field_24 == 9 )
+                    if ( bct->bact_type == BACT_TYPES_GUN )
                     {
                         NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
 
@@ -5220,13 +5220,13 @@ int yparobo_func70__sub6__sub7(__NC_STACK_yparobo *robo)
 {
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    int xx = robo->field_2A9 % bact->field_20;
-    int yy = robo->field_2A9 / bact->field_20;
+    int xx = robo->field_2A9 % bact->secMaxX;
+    int yy = robo->field_2A9 / bact->secMaxX;
 
-    int a1_4 = sub_4F4E48(robo, bact->field_c, bact->field_10);
+    int a1_4 = sub_4F4E48(robo, bact->sectX, bact->sectY);
     int v14 = sub_4F4E48(robo, xx, yy);
 
-    float v12 = sqrt( POW2(bact->field_10 - yy) + POW2(bact->field_c - xx) );
+    float v12 = sqrt( POW2(bact->sectY - yy) + POW2(bact->sectX - xx) );
 
     if ( v12 > 0.0 && a1_4 < v14 )
         v14 = ((float)v14 * (1.0 - v12 * 0.8 / 91.0));
@@ -5254,11 +5254,11 @@ void NC_STACK_yparobo::AI_checkWorld(ypabact_arg65 *arg)
 
     if ( robo->epConquer && v6 )
     {
-        int v89 = (bact->field_22 + bact->field_20) / 20 + 1;
+        int v89 = (bact->secMaxY + bact->secMaxX) / 20 + 1;
 
         for (int i = v89; i > 0; i--)
         {
-            if ( bact->field_20 * bact->field_22 == robo->conq_cellIDpos )
+            if ( bact->secMaxX * bact->secMaxY == robo->conq_cellIDpos )
             {
                 robo->conq_cellIDpos = 0;
                 robo->roboState |= ROBOSTATE_READYCONQUER;
@@ -5267,10 +5267,10 @@ void NC_STACK_yparobo::AI_checkWorld(ypabact_arg65 *arg)
 
             cellArea *pcell = &robo->pcell[ robo->conq_cellIDpos ];
 
-            int xx = robo->conq_cellIDpos % bact->field_20;
-            int yy = robo->conq_cellIDpos / bact->field_20;
+            int xx = robo->conq_cellIDpos % bact->secMaxX;
+            int yy = robo->conq_cellIDpos / bact->secMaxX;
 
-            if ( xx && xx != bact->field_20 - 1 && yy && yy != bact->field_22 - 1 )
+            if ( xx && xx != bact->secMaxX - 1 && yy && yy != bact->secMaxY - 1 )
             {
                 int v12 = yparobo_func70__sub6__sub4(robo, pcell);
                 if ( v12 > robo->conq_value )
@@ -5331,7 +5331,7 @@ void NC_STACK_yparobo::AI_checkWorld(ypabact_arg65 *arg)
                 robo->field_269 = v17;
                 robo->field_275 = v91;
                 robo->field_279 = arg->field_0;
-                robo->field_271 = yy * bact->field_20 + xx;
+                robo->field_271 = yy * bact->secMaxX + xx;
             }
         }
         robo->roboState |= ROBOSTATE_READYDEFENSE;
@@ -5372,7 +5372,7 @@ void NC_STACK_yparobo::AI_checkWorld(ypabact_arg65 *arg)
                 robo->field_2CD = v22;
                 robo->field_2D9 = v91;
                 robo->field_2DD = arg->field_0;
-                robo->field_2D5 = bact->field_20 * yy + xx;
+                robo->field_2D5 = bact->secMaxX * yy + xx;
             }
         }
         robo->roboState |= ROBOSTATE_READYROBO;
@@ -5393,21 +5393,21 @@ void NC_STACK_yparobo::AI_checkWorld(ypabact_arg65 *arg)
 
     if ( robo->epChangePlace && v6 )
     {
-        int v25 = (bact->field_20 + bact->field_22) / 10 + 1;
+        int v25 = (bact->secMaxX + bact->secMaxY) / 10 + 1;
 
         for (int i = v25; i > 0; i--)
         {
-            if ( bact->field_20 * bact->field_22 == robo->field_2A9 )
+            if ( bact->secMaxX * bact->secMaxY == robo->field_2A9 )
             {
                 robo->field_2A9 = 0;
                 robo->roboState |= ROBOSTATE_FOUNDPLACE;
                 return;
             }
 
-            int xx = robo->field_2A9 % bact->field_20;
-            int yy = robo->field_2A9 / bact->field_20;
+            int xx = robo->field_2A9 % bact->secMaxX;
+            int yy = robo->field_2A9 / bact->secMaxX;
 
-            if ( xx && xx != bact->field_20 - 1 && yy && yy != bact->field_22 - 1 )
+            if ( xx && xx != bact->secMaxX - 1 && yy && yy != bact->secMaxY - 1 )
             {
                 int v34 = yparobo_func70__sub6__sub7(robo);
                 if ( v34 > robo->field_29D )
@@ -5453,19 +5453,19 @@ void NC_STACK_yparobo::AI_checkWorld(ypabact_arg65 *arg)
 
     if ( robo->epPower && (v85.field_8 > v93 || v85.field_4 < 0.0001) && v6 )
     {
-        int v99 = (bact->field_20 + bact->field_22) / 20 + 1;
+        int v99 = (bact->secMaxX + bact->secMaxY) / 20 + 1;
         for (int i = v99; i > 0; i--)
         {
-            if ( bact->field_20 * bact->field_22 == robo->field_25D )
+            if ( bact->secMaxX * bact->secMaxY == robo->field_25D )
             {
                 robo->field_25D = 0;
                 robo->roboState |= ROBOSTATE_READYPOWER;
                 return;
             }
-            int xx = robo->field_25D % bact->field_20;
-            int yy = robo->field_25D / bact->field_20;
+            int xx = robo->field_25D % bact->secMaxX;
+            int yy = robo->field_25D / bact->secMaxX;
 
-            if ( xx && xx != bact->field_20 - 1 && yy && yy != bact->field_22 - 1 )
+            if ( xx && xx != bact->secMaxX - 1 && yy && yy != bact->secMaxY - 1 )
             {
                 cellArea *pcell = &robo->pcell[robo->field_25D];
                 int v46 = yparobo_func70__sub6__sub3(robo, pcell);
@@ -5497,21 +5497,21 @@ void NC_STACK_yparobo::AI_checkWorld(ypabact_arg65 *arg)
 
     if ( robo->epRadar && (yparobo_func70__sub6__sub11(robo) / 64 > yparobo_func70__sub6__sub9(robo)) && v6 )
     {
-        int v48 = (bact->field_22 + bact->field_20) / 20 + 1;
+        int v48 = (bact->secMaxY + bact->secMaxX) / 20 + 1;
 
         for(int i = v48; i > 0; i--)
         {
-            if ( bact->field_20 * bact->field_22 == robo->radar_cellIDpos )
+            if ( bact->secMaxX * bact->secMaxY == robo->radar_cellIDpos )
             {
                 robo->radar_cellIDpos = 0;
                 robo->roboState |= ROBOSTATE_READYRADAR;
                 return;
             }
 
-            int xx = robo->radar_cellIDpos % bact->field_20;
-            int yy = robo->radar_cellIDpos / bact->field_20;
+            int xx = robo->radar_cellIDpos % bact->secMaxX;
+            int yy = robo->radar_cellIDpos / bact->secMaxX;
 
-            if ( xx && xx != bact->field_20 - 1 && yy && yy != bact->field_22 - 1 )
+            if ( xx && xx != bact->secMaxX - 1 && yy && yy != bact->secMaxY - 1 )
             {
                 cellArea *pcell = &robo->pcell[robo->radar_cellIDpos];
 
@@ -5552,21 +5552,21 @@ void NC_STACK_yparobo::AI_checkWorld(ypabact_arg65 *arg)
 
     if ( robo->epSafety && (yparobo_func70__sub6__sub10(robo) / v92) >= yparobo_func70__sub6__sub8(robo) && v6 )
     {
-        int v60 = (bact->field_22 + bact->field_20) / 20 + 1;
+        int v60 = (bact->secMaxY + bact->secMaxX) / 20 + 1;
 
         for(int i = v60; i > 0; i--)
         {
-            if ( bact->field_20 * bact->field_22 == robo->safety_cellIDpos )
+            if ( bact->secMaxX * bact->secMaxY == robo->safety_cellIDpos )
             {
                 robo->safety_cellIDpos = 0;
                 robo->roboState |= ROBOSTATE_READYSAFE;
                 return;
             }
 
-            int xx = robo->safety_cellIDpos % bact->field_20;
-            int yy = robo->safety_cellIDpos / bact->field_20;
+            int xx = robo->safety_cellIDpos % bact->secMaxX;
+            int yy = robo->safety_cellIDpos / bact->secMaxX;
 
-            if ( xx && xx != bact->field_20 - 1 && yy && yy != bact->field_22 - 1 )
+            if ( xx && xx != bact->secMaxX - 1 && yy && yy != bact->secMaxY - 1 )
             {
                 cellArea *pcell = &robo->pcell[robo->safety_cellIDpos];
                 int v71 = yparobo_func70__sub6__sub2(robo, pcell);
@@ -5600,21 +5600,21 @@ void NC_STACK_yparobo::AI_checkWorld(ypabact_arg65 *arg)
 
     if ( robo->epRecon && v6 )
     {
-        int v90 = (bact->field_22 + bact->field_20) / 20 + 1;
+        int v90 = (bact->secMaxY + bact->secMaxX) / 20 + 1;
 
         for (int i = v90; i > 0; i-- )
         {
-            if ( bact->field_20 * bact->field_22 == robo->field_2C1 )
+            if ( bact->secMaxX * bact->secMaxY == robo->field_2C1 )
             {
                 robo->field_2C1 = 0;
                 robo->roboState |= ROBOSTATE_READYRECON;
                 return;
             }
 
-            int xx = robo->field_2C1 % bact->field_20;
-            int yy = robo->field_2C1 / bact->field_20;
+            int xx = robo->field_2C1 % bact->secMaxX;
+            int yy = robo->field_2C1 / bact->secMaxX;
 
-            if ( xx > 1 && xx < bact->field_20 - 2 && yy > 1 && yy < bact->field_22 - 2 )
+            if ( xx > 1 && xx < bact->secMaxX - 2 && yy > 1 && yy < bact->secMaxY - 2 )
             {
                 cellArea *pcell = &robo->pcell[robo->field_2C1];
                 int v81 = yparobo_func70__sub6__sub1(robo, pcell);
@@ -5656,19 +5656,19 @@ void NC_STACK_yparobo::ypabact_func70(ypabact_arg65 *arg)
 
     int a4 = getBACT_bactCollisions();
 
-    float tmp = sqrt(bact->field_639.sx * bact->field_639.sx + bact->field_639.sy * bact->field_639.sy + bact->field_639.sz * bact->field_639.sz);
+    float tmp = sqrt(bact->target_vec.sx * bact->target_vec.sx + bact->target_vec.sy * bact->target_vec.sy + bact->target_vec.sz * bact->target_vec.sz);
 
     if ( tmp <= 0.0 )
     {
-        bact->field_645.sy = 0;
-        bact->field_645.sx = 0;
-        bact->field_645.sz = 0;
+        bact->target_dir.sy = 0;
+        bact->target_dir.sx = 0;
+        bact->target_dir.sz = 0;
     }
     else
     {
-        bact->field_645.sx = bact->field_639.sx / tmp;
-        bact->field_645.sy = bact->field_639.sy / tmp;
-        bact->field_645.sz = bact->field_639.sz / tmp;
+        bact->target_dir.sx = bact->target_vec.sx / tmp;
+        bact->target_dir.sy = bact->target_vec.sy / tmp;
+        bact->target_dir.sz = bact->target_vec.sz / tmp;
     }
 
     if ( bact->field_3D5 == 1 )
@@ -5726,49 +5726,49 @@ void yparobo_func71__sub0(__NC_STACK_yparobo *robo, ypabact_arg65 *arg)
 
     if ( inpt->sliders_vars[1] < -0.001 )
     {
-        bact->field_5F1 += inpt->sliders_vars[1] * bact->maxrot * v18 * 2.0;
+        bact->viewer_vert_angle += inpt->sliders_vars[1] * bact->maxrot * v18 * 2.0;
 
-        if ( bact->field_5F1 > bact->viewer_max_up )
-            bact->field_5F1 = bact->viewer_max_up;
+        if ( bact->viewer_vert_angle > bact->viewer_max_up )
+            bact->viewer_vert_angle = bact->viewer_max_up;
 
-        if ( bact->field_5F1 < -bact->viewer_max_down )
-            bact->field_5F1 = -bact->viewer_max_down;
+        if ( bact->viewer_vert_angle < -bact->viewer_max_down )
+            bact->viewer_vert_angle = -bact->viewer_max_down;
     }
     else if (inpt->sliders_vars[1] > 0.001)
     {
-        bact->field_5F1 += inpt->sliders_vars[1] * bact->maxrot * v18 * 2.0;
+        bact->viewer_vert_angle += inpt->sliders_vars[1] * bact->maxrot * v18 * 2.0;
 
-        if ( bact->field_5F1 > bact->viewer_max_up )
-            bact->field_5F1 = bact->viewer_max_up;
+        if ( bact->viewer_vert_angle > bact->viewer_max_up )
+            bact->viewer_vert_angle = bact->viewer_max_up;
 
-        if ( bact->field_5F1 < -bact->viewer_max_down )
-            bact->field_5F1 = -bact->viewer_max_down;
+        if ( bact->viewer_vert_angle < -bact->viewer_max_down )
+            bact->viewer_vert_angle = -bact->viewer_max_down;
     }
 
     if ( inpt->sliders_vars[0] < -0.001 )
     {
-        bact->field_5ED -= inpt->sliders_vars[0] * bact->maxrot * v18 * 2.0;
+        bact->viewer_horiz_angle -= inpt->sliders_vars[0] * bact->maxrot * v18 * 2.0;
 
         if ( bact->viewer_max_side < 3.15 )
         {
-            if ( bact->field_5ED > bact->viewer_max_side )
-                bact->field_5ED = bact->viewer_max_side;
+            if ( bact->viewer_horiz_angle > bact->viewer_max_side )
+                bact->viewer_horiz_angle = bact->viewer_max_side;
 
-            if ( bact->field_5ED < -bact->viewer_max_side )
-                bact->field_5ED = -bact->viewer_max_side;
+            if ( bact->viewer_horiz_angle < -bact->viewer_max_side )
+                bact->viewer_horiz_angle = -bact->viewer_max_side;
         }
     }
     else if (inpt->sliders_vars[0] > 0.001)
     {
-        bact->field_5ED -= inpt->sliders_vars[0] * bact->maxrot * v18 * 2.0;
+        bact->viewer_horiz_angle -= inpt->sliders_vars[0] * bact->maxrot * v18 * 2.0;
 
         if ( bact->viewer_max_side < 3.15 )
         {
-            if ( bact->field_5ED > bact->viewer_max_side )
-                bact->field_5ED = bact->viewer_max_side;
+            if ( bact->viewer_horiz_angle > bact->viewer_max_side )
+                bact->viewer_horiz_angle = bact->viewer_max_side;
 
-            if ( bact->field_5ED < -bact->viewer_max_side )
-                bact->field_5ED = -bact->viewer_max_side;
+            if ( bact->viewer_horiz_angle < -bact->viewer_max_side )
+                bact->viewer_horiz_angle = -bact->viewer_max_side;
         }
     }
 }
@@ -5781,19 +5781,19 @@ void NC_STACK_yparobo::ypabact_func71(ypabact_arg65 *arg)
 
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    float v36 = sqrt(bact->field_639.sx * bact->field_639.sx + bact->field_639.sy * bact->field_639.sy + bact->field_639.sz * bact->field_639.sz);
+    float v36 = sqrt(bact->target_vec.sx * bact->target_vec.sx + bact->target_vec.sy * bact->target_vec.sy + bact->target_vec.sz * bact->target_vec.sz);
 
     if ( v36 <= 0.0 )
     {
-        bact->field_645.sy = 0;
-        bact->field_645.sx = bact->field_645.sy;
-        bact->field_645.sz = 0;
+        bact->target_dir.sy = 0;
+        bact->target_dir.sx = bact->target_dir.sy;
+        bact->target_dir.sz = 0;
     }
     else
     {
-        bact->field_645.sx = bact->field_639.sx / v36;
-        bact->field_645.sy = bact->field_639.sy / v36;
-        bact->field_645.sz = bact->field_639.sz / v36;
+        bact->target_dir.sx = bact->target_vec.sx / v36;
+        bact->target_dir.sy = bact->target_vec.sy / v36;
+        bact->target_dir.sz = bact->target_vec.sz / v36;
     }
 
     if ( bact->field_3D5 == 1 )
@@ -5816,36 +5816,36 @@ void NC_STACK_yparobo::ypabact_func71(ypabact_arg65 *arg)
             yparobo_func71__sub0(robo, arg);
             wallow(arg);
 
-            bact->field_5C9 = bact->field_651;
+            bact->viewer_rotation = bact->rotation;
 
             mat3x3 v21;
-            v21.m00 = cos(bact->field_5ED);
+            v21.m00 = cos(bact->viewer_horiz_angle);
             v21.m01 = 0;
-            v21.m02 = sin(bact->field_5ED);
+            v21.m02 = sin(bact->viewer_horiz_angle);
             v21.m10 = 0;
             v21.m11 = 1.0;
             v21.m12 = 0;
-            v21.m20 = -sin(bact->field_5ED);
+            v21.m20 = -sin(bact->viewer_horiz_angle);
             v21.m21 = 0;
-            v21.m22 = cos(bact->field_5ED);
+            v21.m22 = cos(bact->viewer_horiz_angle);
 
             mat3x3 dst;
-            mat_mult(&v21, &bact->field_5C9, &dst);
-            bact->field_5C9 = dst;
+            mat_mult(&v21, &bact->viewer_rotation, &dst);
+            bact->viewer_rotation = dst;
 
             v21.m00 = 1.0;
             v21.m01 = 0;
             v21.m02 = 0;
             v21.m10 = 0;
-            v21.m11 = cos(bact->field_5F1);
-            v21.m12 = sin(bact->field_5F1);
+            v21.m11 = cos(bact->viewer_vert_angle);
+            v21.m12 = sin(bact->viewer_vert_angle);
             v21.m20 = 0;
-            v21.m21 = -sin(bact->field_5F1);
-            v21.m22 = cos(bact->field_5F1);
+            v21.m21 = -sin(bact->viewer_vert_angle);
+            v21.m22 = cos(bact->viewer_vert_angle);
 
-            mat_mult(&v21, &bact->field_5C9, &dst);
+            mat_mult(&v21, &bact->viewer_rotation, &dst);
 
-            bact->field_5C9 = dst;
+            bact->viewer_rotation = dst;
         }
     }
     else if ( bact->field_3D5 == 2 )
@@ -5870,7 +5870,7 @@ void NC_STACK_yparobo::ypabact_func74(bact_arg74 *arg)
     __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    bact->field_62D = bact->field_621;
+    bact->old_pos = bact->position;
 
     float v46 = 0.0;
     float v48 = 1.0;
@@ -5913,14 +5913,14 @@ void NC_STACK_yparobo::ypabact_func74(bact_arg74 *arg)
         v51 = arg->vec.sx;
         v55 = arg->vec.sy;
         v53 = arg->vec.sz;
-        v64 = bact->field_601;
+        v64 = bact->thraction;
     }
 
-    float v61 = bact->field_611 * bact->airconst;
+    float v61 = bact->fly_dir_length * bact->airconst;
 
-    float v57 = v46 * v63 + v51 * v64 + -bact->field_605.sx * v61 + v52 * v65;
-    float v58 = v48 * v63 + v55 * v64 + -bact->field_605.sy * v61 + v54 * v65;
-    float v44 = v50 * v63 + v53 * v64 + -bact->field_605.sz * v61 + v56 * v65;
+    float v57 = v46 * v63 + v51 * v64 + -bact->fly_dir.sx * v61 + v52 * v65;
+    float v58 = v48 * v63 + v55 * v64 + -bact->fly_dir.sy * v61 + v54 * v65;
+    float v44 = v50 * v63 + v53 * v64 + -bact->fly_dir.sz * v61 + v56 * v65;
 
     float v62 = sqrt(v58 * v58 + v57 * v57 + v44 * v44);
 
@@ -5928,9 +5928,9 @@ void NC_STACK_yparobo::ypabact_func74(bact_arg74 *arg)
     {
         float v43 = v62 / bact->mass * arg->field_0;
 
-        float v66 = bact->field_605.sy * bact->field_611 + v58 * v43 / v62;
-        float v67 = bact->field_605.sx * bact->field_611 + v57 * v43 / v62;
-        float v68 = bact->field_605.sz * bact->field_611 + v44 * v43 / v62;
+        float v66 = bact->fly_dir.sy * bact->fly_dir_length + v58 * v43 / v62;
+        float v67 = bact->fly_dir.sx * bact->fly_dir_length + v57 * v43 / v62;
+        float v68 = bact->fly_dir.sz * bact->fly_dir_length + v44 * v43 / v62;
 
         float v59 = sqrt(v66 * v66 + v67 * v67 + v68 * v68);
 
@@ -5941,17 +5941,17 @@ void NC_STACK_yparobo::ypabact_func74(bact_arg74 *arg)
             v68 /= v59;
         }
 
-        robo->bact_internal->field_605.sx = v67;
-        robo->bact_internal->field_605.sy = v66;
-        robo->bact_internal->field_605.sz = v68;
-        robo->bact_internal->field_611 = v59;
+        robo->bact_internal->fly_dir.sx = v67;
+        robo->bact_internal->fly_dir.sy = v66;
+        robo->bact_internal->fly_dir.sz = v68;
+        robo->bact_internal->fly_dir_length = v59;
     }
 
-    if ( fabs(bact->field_611) > 0.1 )
+    if ( fabs(bact->fly_dir_length) > 0.1 )
     {
-        bact->field_621.sx += bact->field_605.sx * bact->field_611 * arg->field_0 * 6.0;
-        bact->field_621.sy += bact->field_605.sy * bact->field_611 * arg->field_0 * 6.0;
-        bact->field_621.sz += bact->field_605.sz * bact->field_611 * arg->field_0 * 6.0;
+        bact->position.sx += bact->fly_dir.sx * bact->fly_dir_length * arg->field_0 * 6.0;
+        bact->position.sy += bact->fly_dir.sy * bact->fly_dir_length * arg->field_0 * 6.0;
+        bact->position.sz += bact->fly_dir.sz * bact->fly_dir_length * arg->field_0 * 6.0;
     }
 
     ypabact_func115(NULL);
@@ -5961,9 +5961,9 @@ void NC_STACK_yparobo::ypabact_func74(bact_arg74 *arg)
         if (robo->guns[i].gun_obj)
         {
             bact_arg80 arg80;
-            arg80.pos.sx = bact->field_621.sx + bact->field_651.m00 * robo->guns[i].pos.sx + bact->field_651.m10 * robo->guns[i].pos.sy + bact->field_651.m20 * robo->guns[i].pos.sz;
-            arg80.pos.sy = bact->field_621.sy + bact->field_651.m01 * robo->guns[i].pos.sx + bact->field_651.m11 * robo->guns[i].pos.sy + bact->field_651.m21 * robo->guns[i].pos.sz;
-            arg80.pos.sz = bact->field_621.sz + bact->field_651.m02 * robo->guns[i].pos.sx + bact->field_651.m12 * robo->guns[i].pos.sy + bact->field_651.m22 * robo->guns[i].pos.sz;
+            arg80.pos.sx = bact->position.sx + bact->rotation.m00 * robo->guns[i].pos.sx + bact->rotation.m10 * robo->guns[i].pos.sy + bact->rotation.m20 * robo->guns[i].pos.sz;
+            arg80.pos.sy = bact->position.sy + bact->rotation.m01 * robo->guns[i].pos.sx + bact->rotation.m11 * robo->guns[i].pos.sy + bact->rotation.m21 * robo->guns[i].pos.sz;
+            arg80.pos.sz = bact->position.sz + bact->rotation.m02 * robo->guns[i].pos.sx + bact->rotation.m12 * robo->guns[i].pos.sy + bact->rotation.m22 * robo->guns[i].pos.sz;
             arg80.field_C = 4;
 
             robo->guns[i].gun_obj->ypabact_func80(&arg80);
@@ -5973,7 +5973,7 @@ void NC_STACK_yparobo::ypabact_func74(bact_arg74 *arg)
     robo->bact_internal->field_5A.samples_data[0].pitch = robo->bact_internal->field_3BA;
     robo->bact_internal->field_5A.samples_data[0].volume = robo->bact_internal->field_3B6;
 
-    float v60 = fabs(bact->field_611) / (bact->force / bact->airconst2) * 1.4;
+    float v60 = fabs(bact->fly_dir_length) / (bact->force / bact->airconst_static) * 1.4;
 
     if ( bact->field_5A.samples_data[0].psampl )
         bact->field_5A.samples_data[0].pitch = (bact->field_5A.samples_data[0].psampl->SampleRate + bact->field_5A.samples_data[0].pitch) * v60;
@@ -6158,16 +6158,16 @@ size_t NC_STACK_yparobo::ypabact_func80(bact_arg80 *arg)
         if (gun->gun_obj)
         {
             bact_arg80 v11;
-            v11.pos.sx = bact->field_621.sx + bact->field_651.m00 * gun->pos.sx + bact->field_651.m10 * gun->pos.sy + bact->field_651.m20 * gun->pos.sz;
-            v11.pos.sy = bact->field_621.sy + bact->field_651.m01 * gun->pos.sx + bact->field_651.m11 * gun->pos.sy + bact->field_651.m21 * gun->pos.sz;
-            v11.pos.sz = bact->field_621.sz + bact->field_651.m02 * gun->pos.sx + bact->field_651.m12 * gun->pos.sy + bact->field_651.m22 * gun->pos.sz;
+            v11.pos.sx = bact->position.sx + bact->rotation.m00 * gun->pos.sx + bact->rotation.m10 * gun->pos.sy + bact->rotation.m20 * gun->pos.sz;
+            v11.pos.sy = bact->position.sy + bact->rotation.m01 * gun->pos.sx + bact->rotation.m11 * gun->pos.sy + bact->rotation.m21 * gun->pos.sz;
+            v11.pos.sz = bact->position.sz + bact->rotation.m02 * gun->pos.sx + bact->rotation.m12 * gun->pos.sy + bact->rotation.m22 * gun->pos.sz;
             v11.field_C = 4;
 
             gun->gun_obj->ypabact_func80(&v11);
         }
     }
 
-    robo->field_1D5 = bact->field_621.sy;
+    robo->field_1D5 = bact->position.sy;
 
     return 1;
 }
@@ -6191,11 +6191,11 @@ void NC_STACK_yparobo::ypabact_func82(ypabact_arg65 *arg)
         bact->field_95D = bact->field_915;
 
         yw_arg176 arg176;
-        arg176.owner = bact->p_cell_area->owner;
+        arg176.owner = bact->pSector->owner;
 
         robo->wrld->ypaworld_func176(&arg176);
 
-        float v64 = bact->p_cell_area->energy_power;
+        float v64 = bact->pSector->energy_power;
 
         float v70 = v65 * v63 * v64 * arg176.field_4;
 
@@ -6205,9 +6205,9 @@ void NC_STACK_yparobo::ypabact_func82(ypabact_arg65 *arg)
 
             float v68 = v70 / 6000.0;
 
-            if ( bact->p_cell_area->owner )
+            if ( bact->pSector->owner )
             {
-                if ( bact->p_cell_area->owner != bact->owner )
+                if ( bact->pSector->owner != bact->owner )
                     v68 = -v68;
             }
             else
@@ -6341,7 +6341,7 @@ void NC_STACK_yparobo::ypabact_func82(ypabact_arg65 *arg)
         {
             robo->field_505 = v65 * v64 / 7000.0;
             float v71 = v70 / 7000.0;
-            if ( bact->owner == bact->p_cell_area->owner )
+            if ( bact->owner == bact->pSector->owner )
             {
                 robo->field_509 += v71 * 0.15;
                 robo->field_50D += v71 * 0.7;
@@ -6477,8 +6477,8 @@ void NC_STACK_yparobo::ypabact_func97(ypabact_arg65 *)
     __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    bact->field_611 *= 0.8;
-    bact->field_601 = 0;
+    bact->fly_dir_length *= 0.8;
+    bact->thraction = 0;
     robo->field_c = bact->mass * 9.80665;
 }
 
@@ -6578,8 +6578,8 @@ void NC_STACK_yparobo::ypabact_func121(ypabact_arg65 *arg)
     {
         bact->field_931 = v33;
         bact->field_6BD[0].field_0 = 0.75;
-        bact->field_6BD[0].field_4 = bact->field_621;
-        bact->field_6BD[0].matrx = bact->field_651;
+        bact->field_6BD[0].field_4 = bact->position;
+        bact->field_6BD[0].matrx = bact->rotation;
         bact->field_6BD[0].vp = bact->vp_genesis;
         bact->field_6BD[0].field_34 |= 3;
 
@@ -6981,7 +6981,7 @@ int yparobo_func134__sub1(__NC_STACK_yparobo *robo, robo_arg134 *arg)
         NC_STACK_ypabact *bacto = robo->wrld->getYW_userVehicle();
         __NC_STACK_ypabact *v11 = bacto->getBACT_pBact();
 
-        if ( v11->field_24 != 4 )
+        if ( v11->bact_type != BACT_TYPES_MISSLE )
             v2 = 1;
         else
             v2 = 0;
@@ -7004,7 +7004,7 @@ int yparobo_func134__sub1(__NC_STACK_yparobo *robo, robo_arg134 *arg)
 
     case 7:
         v2 = 1;
-        if ( arg->unit && arg->unit->field_24 == 9 )
+        if ( arg->unit && arg->unit->bact_type == BACT_TYPES_GUN )
         {
             NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( arg->unit->self );
 
@@ -7066,7 +7066,7 @@ int NC_STACK_yparobo::placeMessage(robo_arg134 *arg)
 {
     __NC_STACK_yparobo *robo = &stack__yparobo;
 
-    if ( arg->unit && arg->unit->field_24 == 9 && arg->field_4 != 7 && arg->field_4 != 19 && arg->field_4 != 6 )
+    if ( arg->unit && arg->unit->bact_type == BACT_TYPES_GUN && arg->field_4 != 7 && arg->field_4 != 19 && arg->field_4 != 6 )
         return 0;
 
     char **strngs = robo->wrld->getYW_localeStrings();
@@ -7095,7 +7095,7 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
         {
             int i = 0;
 
-            __NC_STACK_ypabact *v1 = (__NC_STACK_ypabact *)bact->p_cell_area->units_list.head;
+            __NC_STACK_ypabact *v1 = (__NC_STACK_ypabact *)bact->pSector->units_list.head;
 
             while ( v1->next )
             {
@@ -7116,10 +7116,10 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
 
                 bact->wrld->ypaworld_func168(&tmp);
 
-                xyz tt = bact->field_621;
+                xyz tt = bact->position;
 
-                bact->field_621 = bact->field_62D;
-                robo->field_1D5 = bact->field_62D.sy;
+                bact->position = bact->old_pos;
+                robo->field_1D5 = bact->old_pos.sy;
 
                 char a1a[200];
                 sprintf(a1a, "save:%s/%d.fin", yw->GameShell->user_name, yw->field_2d90->levelID);
@@ -7131,7 +7131,7 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
                 if ( !bact->wrld->ypaworld_func170(&v23) )
                     ypa_log_out("Warning, final sgm save error\n");
 
-                bact->field_621 = tt;
+                bact->position = tt;
 
                 if ( yw->GameShell )
                 {
@@ -7150,8 +7150,8 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
     else
     {
 
-        bact->field_621.sx = (bact->field_c + 0.5) * 1200.0;
-        bact->field_621.sz = -(bact->field_10 + 0.5) * 1200.0;
+        bact->position.sx = (bact->sectX + 0.5) * 1200.0;
+        bact->position.sz = -(bact->sectY + 0.5) * 1200.0;
 
         bact_node *unit = (bact_node *)bact->list2.head;
 
@@ -7171,7 +7171,7 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
             unit = (bact_node *)unit->next;
         }
 
-        __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)bact->p_cell_area->units_list.head;
+        __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)bact->pSector->units_list.head;
 
 
         yw->field_2d90->buddies_count = 0;
@@ -7183,10 +7183,10 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
         {
             if  ( bct->field_3D5 != 2 )
             {
-                if ( bct->field_24 != 3 && bct->field_24 != 4 && bct->field_24 != 9 && bct->owner == bact->owner )
+                if ( bct->bact_type != BACT_TYPES_ROBO && bct->bact_type != BACT_TYPES_MISSLE && bct->bact_type != BACT_TYPES_GUN && bct->owner == bact->owner )
                 {
-                    float v17 = fabs(bct->field_621.sx - (bact->field_c + 0.5) * 1200.0);
-                    float v29 = fabs(bct->field_621.sz + (bact->field_10 + 0.5) * 1200.0);
+                    float v17 = fabs(bct->position.sx - (bact->sectX + 0.5) * 1200.0);
+                    float v29 = fabs(bct->position.sz + (bact->sectY + 0.5) * 1200.0);
 
                     if ( v17 <= 450.0 || v29 <= 450.0 )
                     {
@@ -7248,20 +7248,20 @@ void NC_STACK_yparobo::setROBO_proto(roboProto *proto)
 
         ypaworld_arg146 gun_req;
 
-        gun_req.pos.sx = bact->field_621.sx
-                         + bact->field_651.m00 * robo->guns[i].pos.sx
-                         + bact->field_651.m10 * robo->guns[i].pos.sy
-                         + bact->field_651.m20 * robo->guns[i].pos.sz;
+        gun_req.pos.sx = bact->position.sx
+                         + bact->rotation.m00 * robo->guns[i].pos.sx
+                         + bact->rotation.m10 * robo->guns[i].pos.sy
+                         + bact->rotation.m20 * robo->guns[i].pos.sz;
 
-        gun_req.pos.sy = bact->field_621.sy
-                         + bact->field_651.m01 * robo->guns[i].pos.sx
-                         + bact->field_651.m11 * robo->guns[i].pos.sy
-                         + bact->field_651.m21 * robo->guns[i].pos.sz;
+        gun_req.pos.sy = bact->position.sy
+                         + bact->rotation.m01 * robo->guns[i].pos.sx
+                         + bact->rotation.m11 * robo->guns[i].pos.sy
+                         + bact->rotation.m21 * robo->guns[i].pos.sz;
 
-        gun_req.pos.sz = bact->field_621.sz
-                         + bact->field_651.m02 * robo->guns[i].pos.sx
-                         + bact->field_651.m12 * robo->guns[i].pos.sy
-                         + bact->field_651.m22 * robo->guns[i].pos.sz;
+        gun_req.pos.sz = bact->position.sz
+                         + bact->rotation.m02 * robo->guns[i].pos.sx
+                         + bact->rotation.m12 * robo->guns[i].pos.sy
+                         + bact->rotation.m22 * robo->guns[i].pos.sz;
 
         gun_req.vehicle_id = robo->guns[i].robo_gun_type;
 
@@ -7307,7 +7307,7 @@ void NC_STACK_yparobo::setROBO_proto(roboProto *proto)
     }
 
     robo->dock_pos = proto->dock;
-    bact->viewer = proto->viewer;
+    bact->viewer_position = proto->viewer;
     bact->viewer_max_up = proto->robo_viewer_max_up;
     bact->viewer_max_down = proto->robo_viewer_max_down;
     bact->viewer_max_side = proto->robo_viewer_max_side;
@@ -7403,19 +7403,19 @@ void NC_STACK_yparobo::setROBO_viewAngle(int angl)
 {
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    bact->field_5C9.m00 = 1.0;
-    bact->field_5C9.m01 = 0;
-    bact->field_5C9.m02 = 0;
-    bact->field_5C9.m10 = 0;
-    bact->field_5C9.m11 = 1.0;
-    bact->field_5C9.m12 = 0;
-    bact->field_5C9.m20 = 0;
-    bact->field_5C9.m21 = 0;
-    bact->field_5C9.m22 = 1.0;
+    bact->viewer_rotation.m00 = 1.0;
+    bact->viewer_rotation.m01 = 0;
+    bact->viewer_rotation.m02 = 0;
+    bact->viewer_rotation.m10 = 0;
+    bact->viewer_rotation.m11 = 1.0;
+    bact->viewer_rotation.m12 = 0;
+    bact->viewer_rotation.m20 = 0;
+    bact->viewer_rotation.m21 = 0;
+    bact->viewer_rotation.m22 = 1.0;
 
-    bact->field_5ED = angl * 3.141592653589793 / 180.0;
+    bact->viewer_horiz_angle = angl * 3.141592653589793 / 180.0;
 
-    mat_rotate_y(&bact->field_5C9, bact->field_5ED);
+    mat_rotate_y(&bact->viewer_rotation, bact->viewer_horiz_angle);
 }
 
 void NC_STACK_yparobo::setROBO_safDelay(int delay)

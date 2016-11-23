@@ -68,7 +68,7 @@ size_t NC_STACK_ypaflyer::func0(stack_vals *stak)
 
         fly->bact_internal = bact;
 
-        bact->field_24 = 6;
+        bact->bact_type = BACT_TYPES_FLYER;
 
         fly->field_c = 0;
         fly->field_10 = 0;
@@ -176,23 +176,23 @@ size_t NC_STACK_ypaflyer::func3(stack_vals *stak)
 
 void sb_0x4b255c__sub0(__NC_STACK_ypabact *bact, float a2)
 {
-    float v27 = sqrt( POW2(bact->field_651.m00) + POW2(bact->field_651.m02) );
+    float v27 = sqrt( POW2(bact->rotation.m00) + POW2(bact->rotation.m02) );
 
     if ( v27 >= 0.001 )
     {
         xyz vaxis;
-        vaxis.sx = bact->field_651.m00 / v27;
+        vaxis.sx = bact->rotation.m00 / v27;
         vaxis.sy = 0.0;
-        vaxis.sz = bact->field_651.m02 / v27;
+        vaxis.sz = bact->rotation.m02 / v27;
 
         mat3x3 mat2;
 
         mat_gen_axis_rotate(&vaxis, a2, &mat2, MAT_FLAG_INV_SIN);
 
         mat3x3 v16;
-        mat_mult(&bact->field_651, &mat2, &v16);
+        mat_mult(&bact->rotation, &mat2, &v16);
 
-        bact->field_651 = v16;
+        bact->rotation = v16;
     }
 }
 
@@ -202,20 +202,20 @@ void sb_0x4b255c(__NC_STACK_ypaflyer *fly, float a2, xyz *a3, int a4)
 
     float v38 = bact->force / bact->airconst;
 
-    if ( bact->field_605.sx != 0.0 || bact->field_605.sy != 0.0 || bact->field_605.sz != 0.0 )
+    if ( bact->fly_dir.sx != 0.0 || bact->fly_dir.sy != 0.0 || bact->fly_dir.sz != 0.0 )
     {
         if ( a3->sx == 0.0 && a3->sy == 0.0 && a3->sz == 0.0 )
         {
-            a3->sx = bact->field_651.m20;
-            a3->sy = bact->field_651.m21;
-            a3->sz = bact->field_651.m22;
+            a3->sx = bact->rotation.m20;
+            a3->sy = bact->rotation.m21;
+            a3->sz = bact->rotation.m22;
         }
 
-        float v30 = bact->field_651.m20;
+        float v30 = bact->rotation.m20;
         //float v31 = bact->field_651.m21;
-        float v32 = bact->field_651.m22;
+        float v32 = bact->rotation.m22;
 
-        float v53 = bact->field_651.m01;
+        float v53 = bact->rotation.m01;
 
         if ( v53 > 1.0 )
             v53 = 1.0;
@@ -225,7 +225,7 @@ void sb_0x4b255c(__NC_STACK_ypaflyer *fly, float a2, xyz *a3, int a4)
 
         float v56 = asin(v53);
 
-        float v54 = bact->field_651.m21;
+        float v54 = bact->rotation.m21;
 
         if ( v54 > 1.0 )
             v54 = 1.0;
@@ -237,9 +237,9 @@ void sb_0x4b255c(__NC_STACK_ypaflyer *fly, float a2, xyz *a3, int a4)
 
         float v49;
 
-        if ( fly->field_10 & 1 && bact->field_611 >= 0.1 )
+        if ( fly->field_10 & 1 && bact->fly_dir_length >= 0.1 )
         {
-            float v55 = bact->field_605.sy;
+            float v55 = bact->fly_dir.sy;
 
             if ( v55 > 1.0 )
                 v55 = 1.0;
@@ -247,7 +247,7 @@ void sb_0x4b255c(__NC_STACK_ypaflyer *fly, float a2, xyz *a3, int a4)
             if ( v55 < -1.0 )
                 v55 = -1.0;
 
-            v49 = asin(v55) * bact->field_611 / v38;
+            v49 = asin(v55) * bact->fly_dir_length / v38;
         }
         else
         {
@@ -324,7 +324,7 @@ void sb_0x4b255c(__NC_STACK_ypaflyer *fly, float a2, xyz *a3, int a4)
 
                 float v58;
 
-                if ( bact->field_611 < 0.1 )
+                if ( bact->fly_dir_length < 0.1 )
                     v58 = 0.0;
                 else
                 {
@@ -332,7 +332,7 @@ void sb_0x4b255c(__NC_STACK_ypaflyer *fly, float a2, xyz *a3, int a4)
 
                     NDIV_CARRY(aa2);
 
-                    v58 = fabs(bact->field_611) * bact->airconst / bact->force * (v57 * 1.45 / (aa2 * bact->maxrot));
+                    v58 = fabs(bact->fly_dir_length) * bact->airconst / bact->force * (v57 * 1.45 / (aa2 * bact->maxrot));
                 }
 
 
@@ -395,9 +395,9 @@ void sb_0x4b255c(__NC_STACK_ypaflyer *fly, float a2, xyz *a3, int a4)
 
                 mat3x3 v26;
 
-                mat_mult(&mat1, &bact->field_651, &v26);
+                mat_mult(&mat1, &bact->rotation, &v26);
 
-                bact->field_651 = v26;
+                bact->rotation = v26;
             }
         }
         else
@@ -448,9 +448,9 @@ void sb_0x4b255c(__NC_STACK_ypaflyer *fly, float a2, xyz *a3, int a4)
 
             mat3x3 v26;
 
-            mat_mult(&mat1, &bact->field_651, &v26);
+            mat_mult(&mat1, &bact->rotation, &v26);
 
-            bact->field_651 = v26;
+            bact->rotation = v26;
         }
     }
 }
@@ -460,18 +460,18 @@ void ypaflyer_func70__sub0(__NC_STACK_ypaflyer *fly, float angl)
 {
     __NC_STACK_ypabact *bact = fly->bact_internal;
 
-    if ( bact->field_645.sx != 0.0 || bact->field_645.sz != 0.0 )
+    if ( bact->target_dir.sx != 0.0 || bact->target_dir.sz != 0.0 )
     {
 
-        float v6 = (bact->field_645.sx * bact->field_651.m20 + bact->field_645.sz * bact->field_651.m22);
+        float v6 = (bact->target_dir.sx * bact->rotation.m20 + bact->target_dir.sz * bact->rotation.m22);
 
-        float tmpsq = sqrt( POW2(bact->field_645.sx) + POW2(bact->field_645.sz) );
+        float tmpsq = sqrt( POW2(bact->target_dir.sx) + POW2(bact->target_dir.sz) );
 
         NDIV_CARRY(tmpsq);
 
         v6 /= tmpsq;
 
-        tmpsq = sqrt(POW2(bact->field_651.m20) + POW2(bact->field_651.m22));
+        tmpsq = sqrt(POW2(bact->rotation.m20) + POW2(bact->rotation.m22));
 
         NDIV_CARRY(tmpsq);
 
@@ -490,7 +490,7 @@ void ypaflyer_func70__sub0(__NC_STACK_ypaflyer *fly, float angl)
         if ( fabs(v21) > v9 )
             v21 = v9;
 
-        if ( bact->field_651.m22 * bact->field_645.sx - bact->field_651.m20 * bact->field_645.sz > 0.0 )
+        if ( bact->rotation.m22 * bact->target_dir.sx - bact->rotation.m20 * bact->target_dir.sz > 0.0 )
             v21 = -v21;
 
         float v19 = cos(v21);
@@ -510,18 +510,18 @@ void ypaflyer_func70__sub0(__NC_STACK_ypaflyer *fly, float angl)
 
         mat3x3 dst;
 
-        mat_mult(&v16, &bact->field_651, &dst);
+        mat_mult(&v16, &bact->rotation, &dst);
 
-        bact->field_651 = dst;
+        bact->rotation = dst;
     }
 
-    bact->field_601 = bact->force;
+    bact->thraction = bact->force;
 
     float v14;
 
-    if ( fabs(bact->field_645.sy) >= 0.1 )
+    if ( fabs(bact->target_dir.sy) >= 0.1 )
     {
-        if ( bact->field_645.sy > -0.1 )
+        if ( bact->target_dir.sy > -0.1 )
             v14 = bact->mass * 0.7;
         else
             v14 = bact->mass * 2.5;
@@ -544,13 +544,13 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
 
     float a2a = arg->field_4 / 1000.0;
 
-    float v88 = sqrt( POW2(bact->field_639.sx) + POW2(bact->field_639.sy) + POW2(bact->field_639.sz) );
+    float v88 = sqrt( POW2(bact->target_vec.sx) + POW2(bact->target_vec.sy) + POW2(bact->target_vec.sz) );
 
     if ( v88 > 0.0 )
     {
-        bact->field_645.sx = bact->field_639.sx / v88;
-        bact->field_645.sy = bact->field_639.sy / v88;
-        bact->field_645.sz = bact->field_639.sz / v88;
+        bact->target_dir.sx = bact->target_vec.sx / v88;
+        bact->target_dir.sy = bact->target_vec.sy / v88;
+        bact->target_dir.sz = bact->target_vec.sz / v88;
     }
 
     int a4 = getBACT_viewer();
@@ -571,9 +571,9 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
     case 1:
     {
         xyz a3;
-        a3.sx = bact->field_651.m20;
-        a3.sy = bact->field_651.m21;
-        a3.sz = bact->field_651.m22;
+        a3.sx = bact->rotation.m20;
+        a3.sy = bact->rotation.m21;
+        a3.sz = bact->rotation.m22;
 
         if ( v79 )
         {
@@ -606,20 +606,20 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
         ypaworld_arg136 arg136;
         arg136.field_20 = 0;
         arg136.field_40 = 0;
-        arg136.pos_x = bact->field_62D.sx;
-        arg136.pos_y = bact->field_62D.sy;
-        arg136.pos_z = bact->field_62D.sz;
-        arg136.field_14 = bact->field_621.sx - bact->field_62D.sx;
+        arg136.pos_x = bact->old_pos.sx;
+        arg136.pos_y = bact->old_pos.sy;
+        arg136.pos_z = bact->old_pos.sz;
+        arg136.field_14 = bact->position.sx - bact->old_pos.sx;
         arg136.field_18 = 0;
-        arg136.field_1C = bact->field_621.sz - bact->field_62D.sz;
+        arg136.field_1C = bact->position.sz - bact->old_pos.sz;
 
         float v89 = sqrt( POW2(arg136.field_14) + POW2(arg136.field_1C) );
 
         if ( v89 <= 0.0 )
         {
-            arg136.field_14 = bact->field_651.m20 * 300.0;
-            arg136.field_18 = bact->field_651.m21 * 300.0;
-            arg136.field_1C = bact->field_651.m22 * 300.0;
+            arg136.field_14 = bact->rotation.m20 * 300.0;
+            arg136.field_18 = bact->rotation.m21 * 300.0;
+            arg136.field_1C = bact->rotation.m22 * 300.0;
         }
         else
         {
@@ -636,9 +636,9 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
 
         if ( a4 || bact->field_3D6 & 0x20 || (v90 && v82) )
         {
-            arg136_1.pos_x = bact->field_62D.sx;
-            arg136_1.pos_y = bact->field_62D.sy;
-            arg136_1.pos_z = bact->field_62D.sz;
+            arg136_1.pos_x = bact->old_pos.sx;
+            arg136_1.pos_y = bact->old_pos.sy;
+            arg136_1.pos_z = bact->old_pos.sz;
 
             arg136_1.field_14 = arg136.field_14 * 0.93969 - arg136.field_1C * 0.34202;
             arg136_1.field_18 = arg136.field_18;
@@ -654,9 +654,9 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
 
         if ( a4 || bact->field_3D6 & 0x10 || (v90 && v82) )
         {
-            arg136_2.pos_x = bact->field_62D.sx;
-            arg136_2.pos_y = bact->field_62D.sy;
-            arg136_2.pos_z = bact->field_62D.sz;
+            arg136_2.pos_x = bact->old_pos.sx;
+            arg136_2.pos_y = bact->old_pos.sy;
+            arg136_2.pos_z = bact->old_pos.sz;
             arg136_2.field_14 = arg136.field_14 * 0.93969 + arg136.field_1C * 0.34202;
             arg136_2.field_18 = arg136.field_18;
             arg136_2.field_1C = arg136.field_1C * 0.93969 - arg136.field_14 * 0.34202;
@@ -756,9 +756,9 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
 
         ypaworld_arg136 arg136_3;
 
-        arg136_3.pos_x = bact->field_62D.sx;
-        arg136_3.pos_y = bact->field_62D.sy;
-        arg136_3.pos_z = bact->field_62D.sz;
+        arg136_3.pos_x = bact->old_pos.sx;
+        arg136_3.pos_y = bact->old_pos.sy;
+        arg136_3.pos_z = bact->old_pos.sz;
 
         float v22 = bact->mass * 9.80665;
 
@@ -770,7 +770,7 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
         if ( v100 < 10.0 )
             v100 = 10.0;
 
-        arg136_3.field_14 = (bact->field_605.sx * 200.0 * bact->field_611) / (v22 / v100);
+        arg136_3.field_14 = (bact->fly_dir.sx * 200.0 * bact->fly_dir_length) / (v22 / v100);
 
         if ( arg136_3.field_14 < -200.0 )
             arg136_3.field_14 = -200.0;
@@ -780,7 +780,7 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
 
         arg136_3.field_18 = bact->height;
 
-        arg136_3.field_1C = (bact->field_605.sz * 200.0 * bact->field_611) / (v22 / v100);
+        arg136_3.field_1C = (bact->fly_dir.sz * 200.0 * bact->fly_dir_length) / (v22 / v100);
 
         if ( arg136_3.field_1C < -200.0 )
             arg136_3.field_1C = -200.0;
@@ -794,25 +794,25 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
 
         if ( arg136_3.field_20 )
         {
-            bact->field_645.sy = -(1.0 - arg136_3.field_24);
+            bact->target_dir.sy = -(1.0 - arg136_3.field_24);
         }
         else
         {
             NC_STACK_ypabact *v81 = fly->ywo->getYW_userVehicle();
 
-            if ( ( (bact->secndTtype != BACT_TGT_TYPE_UNIT || (bact->secndT.pbact->field_24 != 3 && v81 != bact->secndT.pbact->self))
-                    && (bact->primTtype != BACT_TGT_TYPE_UNIT || (bact->primT.pbact->field_24 != 3 && v81 != bact->primT.pbact->self)) )
-                    || bact->field_645.sy >= -0.01 )
+            if ( ( (bact->secndTtype != BACT_TGT_TYPE_UNIT || (bact->secndT.pbact->bact_type != BACT_TYPES_ROBO && v81 != bact->secndT.pbact->self))
+                    && (bact->primTtype != BACT_TGT_TYPE_UNIT || (bact->primT.pbact->bact_type != BACT_TYPES_ROBO && v81 != bact->primT.pbact->self)) )
+                    || bact->target_dir.sy >= -0.01 )
             {
-                if ( bact->field_645.sy < 0.15 )
-                    bact->field_645.sy = 0.15;
+                if ( bact->target_dir.sy < 0.15 )
+                    bact->target_dir.sy = 0.15;
             }
         }
 
         if ( bact->field_3D6 & 0x30 )
-            bact->field_645.sy = -0.2;
+            bact->target_dir.sy = -0.2;
 
-        if ( arg136_3.field_20 && arg136_3.field_24 * bact->height < bact->radius && bact->field_605.sy > 0.0 )
+        if ( arg136_3.field_20 && arg136_3.field_24 * bact->height < bact->radius && bact->fly_dir.sy > 0.0 )
         {
             arg88.pos1.sx = arg136_3.field_3C->triangles[arg136_3.field_38].field_0;
             arg88.pos1.sy = arg136_3.field_3C->triangles[arg136_3.field_38].field_4;
@@ -829,13 +829,13 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
             bact->field_3D6 &= 0xFFFBFFFF;
         }
 
-        if ( bact->field_645.sy != 0.0 )
+        if ( bact->target_dir.sy != 0.0 )
         {
-            float v39 = sqrt( POW2(bact->field_645.sy) + POW2(bact->field_645.sx) + POW2(bact->field_645.sz) );
+            float v39 = sqrt( POW2(bact->target_dir.sy) + POW2(bact->target_dir.sx) + POW2(bact->target_dir.sz) );
 
-            bact->field_645.sx /= v39;
-            bact->field_645.sy /= v39;
-            bact->field_645.sz /= v39;
+            bact->target_dir.sx /= v39;
+            bact->target_dir.sy /= v39;
+            bact->target_dir.sz /= v39;
         }
 
         float v92 = sqrt(POW2(arg136.field_14) + POW2(arg136.field_1C));
@@ -844,13 +844,13 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
 
         if ( bact->field_3D6 & 0x10 )
         {
-            bact->field_645.sx = -arg136.field_1C / v92;
-            bact->field_645.sz  = arg136.field_14 / v92;
+            bact->target_dir.sx = -arg136.field_1C / v92;
+            bact->target_dir.sz  = arg136.field_14 / v92;
         }
         else if ( bact->field_3D6 & 0x20 )
         {
-            bact->field_645.sx = arg136.field_1C  / v92;
-            bact->field_645.sz  = -arg136.field_14  / v92;
+            bact->target_dir.sx = arg136.field_1C  / v92;
+            bact->target_dir.sz  = -arg136.field_14  / v92;
         }
 
         ypaflyer_func70__sub0(fly, a2a);
@@ -955,8 +955,8 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
                 {
                     bact_arg67 arg67;
                     arg67.tgt_type = BACT_TGT_TYPE_CELL;
-                    arg67.tgt_pos.sx = bact->field_621.sx;
-                    arg67.tgt_pos.sz = bact->field_621.sz;
+                    arg67.tgt_pos.sx = bact->position.sx;
+                    arg67.tgt_pos.sz = bact->position.sz;
                     arg67.priority = 0;
 
                     ypabact_func67(&arg67);
@@ -979,7 +979,7 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
 
         if ( v80 )
         {
-            bact->field_601 = 0;
+            bact->thraction = 0;
             fly->field_c = 0;
 
             if ( bact->field_3D6 & 0x200 )
@@ -992,9 +992,9 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
                 ypabact_func78(&arg78);
 
                 ypaworld_arg136 arg136_4;
-                arg136_4.pos_x = bact->field_621.sx;
-                arg136_4.pos_y = bact->field_621.sy;
-                arg136_4.pos_z = bact->field_621.sz;
+                arg136_4.pos_x = bact->position.sx;
+                arg136_4.pos_y = bact->position.sy;
+                arg136_4.pos_z = bact->position.sz;
                 arg136_4.field_14 = 0;
                 arg136_4.field_18 = bact->overeof + 50.0;
                 arg136_4.field_1C = 0;
@@ -1003,7 +1003,7 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
                 fly->ywo->ypaworld_func136(&arg136_4);
 
                 if ( arg136_4.field_20 )
-                    bact->field_621.sy = arg136_4.field_30 - bact->overeof;
+                    bact->position.sy = arg136_4.field_30 - bact->overeof;
             }
             else
             {
@@ -1042,9 +1042,9 @@ void ypaflyer_func71__sub1(__NC_STACK_ypabact *bact, float a4)
 
     mat3x3 v6;
 
-    mat_mult(&bact->field_651, &mat2, &v6);
+    mat_mult(&bact->rotation, &mat2, &v6);
 
-    bact->field_651 = v6;
+    bact->rotation = v6;
 }
 
 
@@ -1053,7 +1053,7 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
 {
     __NC_STACK_ypaflyer *fly = &stack__ypaflyer;
 
-    fly->bact_internal->airconst = fly->bact_internal->airconst2;
+    fly->bact_internal->airconst = fly->bact_internal->airconst_static;
 
     float a2 = (float)arg->field_4 / 1000.0;
 
@@ -1062,9 +1062,9 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
     if ( fly->bact_internal->field_3D5 == 1 || fly->bact_internal->field_3D5 == 3 )
     {
         xyz a3;
-        a3.sx = fly->bact_internal->field_651.m20;
-        a3.sy = fly->bact_internal->field_651.m21;
-        a3.sz = fly->bact_internal->field_651.m22;
+        a3.sx = fly->bact_internal->rotation.m20;
+        a3.sy = fly->bact_internal->rotation.m21;
+        a3.sz = fly->bact_internal->rotation.m22;
 
         float v60 = -arg->inpt->sliders_vars[0] * fly->bact_internal->maxrot * a2;
 
@@ -1085,7 +1085,7 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
         else
             v61 = 1.0;
 
-        if ( fly->bact_internal->field_611 >= v61 )
+        if ( fly->bact_internal->fly_dir_length >= v61 )
         {
             if ( !(fly->bact_internal->field_3D6 & 0x100) )
             {
@@ -1104,9 +1104,9 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
         {
             ypaworld_arg136 arg136;
 
-            arg136.pos_x = fly->bact_internal->field_621.sx;
-            arg136.pos_y = fly->bact_internal->field_621.sy;
-            arg136.pos_z = fly->bact_internal->field_621.sz;
+            arg136.pos_x = fly->bact_internal->position.sx;
+            arg136.pos_y = fly->bact_internal->position.sy;
+            arg136.pos_z = fly->bact_internal->position.sz;
             arg136.field_1C = 0;
             arg136.field_14 = 0;
 
@@ -1122,11 +1122,11 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
 
             fly->ywo->ypaworld_func136(&arg136);
 
-            if ( arg136.field_20 && fly->bact_internal->field_601 < fly->bact_internal->force * 0.001 && fly->field_c <= fly->bact_internal->mass * 9.80665 )
+            if ( arg136.field_20 && fly->bact_internal->thraction < fly->bact_internal->force * 0.001 && fly->field_c <= fly->bact_internal->mass * 9.80665 )
             {
                 fly->bact_internal->field_3D6 |= 0x200;
-                fly->bact_internal->field_611 = 0;
-                fly->bact_internal->field_601 = 0;
+                fly->bact_internal->fly_dir_length = 0;
+                fly->bact_internal->thraction = 0;
 
                 fly->field_c = fly->bact_internal->mass * 9.80665;
             }
@@ -1139,8 +1139,8 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
 
             if ( fly->bact_internal->primTtype == BACT_TGT_TYPE_CELL)
             {
-                float v13 = fly->bact_internal->primTpos.sx - fly->bact_internal->field_621.sx;
-                float v14 = fly->bact_internal->primTpos.sz - fly->bact_internal->field_621.sz;
+                float v13 = fly->bact_internal->primTpos.sx - fly->bact_internal->position.sx;
+                float v14 = fly->bact_internal->primTpos.sz - fly->bact_internal->position.sz;
 
                 tmp = sqrt(POW2(v13) + POW2(v14));
             }
@@ -1183,20 +1183,20 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
 
         ypaflyer_func71__sub1(fly->bact_internal, v60);
 
-        fly->bact_internal->field_601 += fly->bact_internal->force * (a2 * 0.3) * arg->inpt->sliders_vars[2];
+        fly->bact_internal->thraction += fly->bact_internal->force * (a2 * 0.3) * arg->inpt->sliders_vars[2];
 
-        if ( fly->bact_internal->field_601 > fly->bact_internal->force )
-            fly->bact_internal->field_601 = fly->bact_internal->force;
+        if ( fly->bact_internal->thraction > fly->bact_internal->force )
+            fly->bact_internal->thraction = fly->bact_internal->force;
 
-        if ( fly->bact_internal->field_601 < 0.0 )
-            fly->bact_internal->field_601 = 0;
+        if ( fly->bact_internal->thraction < 0.0 )
+            fly->bact_internal->thraction = 0;
 
 
-        fly->field_c = (fabs(fly->bact_internal->field_611) / 111.0 + 1.0) * (arg->inpt->sliders_vars[1] * 20000.0) * 0.5 + fly->bact_internal->mass * 9.80665;
+        fly->field_c = (fabs(fly->bact_internal->fly_dir_length) / 111.0 + 1.0) * (arg->inpt->sliders_vars[1] * 20000.0) * 0.5 + fly->bact_internal->mass * 9.80665;
 
-        float v22 = fly->bact_internal->p_cell_area->height - fly->bact_internal->field_621.sy;
+        float v22 = fly->bact_internal->pSector->height - fly->bact_internal->position.sy;
 
-        float v63 = 1.0 / fly->bact_internal->field_679;
+        float v63 = 1.0 / fly->bact_internal->height_max_user;
 
         float v72 = fly->bact_internal->mass * 7.0 * 9.80665  * ( 1.0 - ( POW2(v22) * POW2(v63) ) );
 
@@ -1205,15 +1205,15 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
 
         bact_arg79 arg79;
         arg79.tgType = BACT_TGT_TYPE_DRCT;
-        arg79.tgt_pos.sx = fly->bact_internal->field_651.m20;
-        arg79.tgt_pos.sy = fly->bact_internal->field_651.m21;
-        arg79.tgt_pos.sz = fly->bact_internal->field_651.m22;
+        arg79.tgt_pos.sx = fly->bact_internal->rotation.m20;
+        arg79.tgt_pos.sy = fly->bact_internal->rotation.m21;
+        arg79.tgt_pos.sz = fly->bact_internal->rotation.m22;
 
         bact_arg106 arg106;
         arg106.field_0 = 5;
-        arg106.field_4.sx = fly->bact_internal->field_651.m20;
-        arg106.field_4.sy = fly->bact_internal->field_651.m21;
-        arg106.field_4.sz = fly->bact_internal->field_651.m22;
+        arg106.field_4.sx = fly->bact_internal->rotation.m20;
+        arg106.field_4.sy = fly->bact_internal->rotation.m21;
+        arg106.field_4.sz = fly->bact_internal->rotation.m22;
 
         if ( ypabact_func106(&arg106) )
         {
@@ -1270,9 +1270,9 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
 
                 bact_arg105 arg105;
 
-                arg105.field_0.sx = fly->bact_internal->field_651.m20;
-                arg105.field_0.sy = fly->bact_internal->field_651.m21;
-                arg105.field_0.sz = fly->bact_internal->field_651.m22;
+                arg105.field_0.sx = fly->bact_internal->rotation.m20;
+                arg105.field_0.sy = fly->bact_internal->rotation.m21;
+                arg105.field_0.sz = fly->bact_internal->rotation.m22;
                 arg105.field_C = a2;
                 arg105.field_10 = fly->bact_internal->field_915;
 
@@ -1311,12 +1311,12 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
 
                 ypaworld_arg137 arg137;
 
-                arg137.pos.sx = fly->bact_internal->field_651.m20 * 0.5 * fly->bact_internal->vwr_radius + fly->bact_internal->field_621.sx;
-                arg137.pos.sy = fly->bact_internal->field_651.m21 * 0.5 * fly->bact_internal->vwr_radius + fly->bact_internal->field_621.sy;
-                arg137.pos.sz = fly->bact_internal->field_651.m22 * 0.5 * fly->bact_internal->vwr_radius + fly->bact_internal->field_621.sz;
-                arg137.pos2.sx = fly->bact_internal->field_605.sx;
-                arg137.pos2.sy = fly->bact_internal->field_605.sy;
-                arg137.pos2.sz = fly->bact_internal->field_605.sz;
+                arg137.pos.sx = fly->bact_internal->rotation.m20 * 0.5 * fly->bact_internal->vwr_radius + fly->bact_internal->position.sx;
+                arg137.pos.sy = fly->bact_internal->rotation.m21 * 0.5 * fly->bact_internal->vwr_radius + fly->bact_internal->position.sy;
+                arg137.pos.sz = fly->bact_internal->rotation.m22 * 0.5 * fly->bact_internal->vwr_radius + fly->bact_internal->position.sz;
+                arg137.pos2.sx = fly->bact_internal->fly_dir.sx;
+                arg137.pos2.sy = fly->bact_internal->fly_dir.sy;
+                arg137.pos2.sz = fly->bact_internal->fly_dir.sz;
                 arg137.radius = fly->bact_internal->vwr_radius;
                 arg137.coll_max = 10;
                 arg137.field_30 = 0;
@@ -1351,7 +1351,7 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
                     }
                     else
                     {
-                        v52 = fly->bact_internal->field_605;
+                        v52 = fly->bact_internal->fly_dir;
                     }
 
                     bact_arg88 arg88;
@@ -1370,12 +1370,12 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
                 if ( !v67 )
                 {
                     ypaworld_arg136 arg136;
-                    arg136.pos_x = fly->bact_internal->field_62D.sx;
-                    arg136.pos_y = fly->bact_internal->field_62D.sy;
-                    arg136.pos_z = fly->bact_internal->field_62D.sz;
-                    arg136.field_14 = fly->bact_internal->field_621.sx - fly->bact_internal->field_62D.sx;
-                    arg136.field_18 = fly->bact_internal->field_621.sy - fly->bact_internal->field_62D.sy;
-                    arg136.field_1C = fly->bact_internal->field_621.sz - fly->bact_internal->field_62D.sz;
+                    arg136.pos_x = fly->bact_internal->old_pos.sx;
+                    arg136.pos_y = fly->bact_internal->old_pos.sy;
+                    arg136.pos_z = fly->bact_internal->old_pos.sz;
+                    arg136.field_14 = fly->bact_internal->position.sx - fly->bact_internal->old_pos.sx;
+                    arg136.field_18 = fly->bact_internal->position.sy - fly->bact_internal->old_pos.sy;
+                    arg136.field_1C = fly->bact_internal->position.sz - fly->bact_internal->old_pos.sz;
                     arg136.field_40 = 0;
 
                     fly->ywo->ypaworld_func149(&arg136);
@@ -1414,14 +1414,14 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
 
                         arg180.effects_type = 5;
                         arg180.field_4 = 1.0;
-                        arg180.field_8 = 10.0 * v69 + fly->bact_internal->field_621.sx;
-                        arg180.field_C = 10.0 * v70 + fly->bact_internal->field_621.sz;
+                        arg180.field_8 = 10.0 * v69 + fly->bact_internal->position.sx;
+                        arg180.field_C = 10.0 * v70 + fly->bact_internal->position.sz;
 
                         fly->ywo->ypaworld_func180(&arg180);
                     }
                 }
 
-                fly->bact_internal->field_605.sy -= 0.2;
+                fly->bact_internal->fly_dir.sy -= 0.2;
             }
 
             sb_0x4b255c(fly, a2, &a3, 1);
@@ -1436,7 +1436,7 @@ void NC_STACK_ypaflyer::ypabact_func74(bact_arg74 *arg)
     __NC_STACK_ypaflyer *fly = &stack__ypaflyer;
     __NC_STACK_ypabact *bact = fly->bact_internal;
 
-    bact->field_62D = bact->field_621;
+    bact->old_pos = bact->position;
 
     float v46;
 
@@ -1457,9 +1457,9 @@ void NC_STACK_ypaflyer::ypabact_func74(bact_arg74 *arg)
     }
     else
     {
-        v34 = bact->field_651.m20;
-        v36 = bact->field_651.m22;
-        v47 = bact->field_601;
+        v34 = bact->rotation.m20;
+        v36 = bact->rotation.m22;
+        v47 = bact->thraction;
     }
 
     float v35, v45;
@@ -1475,11 +1475,11 @@ void NC_STACK_ypaflyer::ypabact_func74(bact_arg74 *arg)
         v45 = fly->field_c;
     }
 
-    float v12 = bact->field_611 * bact->airconst;
+    float v12 = bact->fly_dir_length * bact->airconst;
 
-    float v39 = 1.0 * v46 + 0.0 * v47 + -bact->field_605.sy * v12 + v35 * v45;
-    float v38 = 0.0 * v46 + v34 * v47 + -bact->field_605.sx * v12 + 0.0 * v45;
-    float v42 = 0.0 * v46 + v36 * v47 + -bact->field_605.sz * v12 + 0.0 * v45;
+    float v39 = 1.0 * v46 + 0.0 * v47 + -bact->fly_dir.sy * v12 + v35 * v45;
+    float v38 = 0.0 * v46 + v34 * v47 + -bact->fly_dir.sx * v12 + 0.0 * v45;
+    float v42 = 0.0 * v46 + v36 * v47 + -bact->fly_dir.sz * v12 + 0.0 * v45;
 
     float v33 = sqrt( POW2(v39) + POW2(v38) + POW2(v42) );
 
@@ -1487,25 +1487,25 @@ void NC_STACK_ypaflyer::ypabact_func74(bact_arg74 *arg)
     {
         float v20 = v33 / bact->mass * arg->field_0;
 
-        float v41 = bact->field_605.sy * bact->field_611 + v39 * v20 / v33;
-        float v40 = bact->field_605.sx * bact->field_611 + v38 * v20 / v33;
-        float v43 = bact->field_605.sz * bact->field_611 + v42 * v20 / v33;
+        float v41 = bact->fly_dir.sy * bact->fly_dir_length + v39 * v20 / v33;
+        float v40 = bact->fly_dir.sx * bact->fly_dir_length + v38 * v20 / v33;
+        float v43 = bact->fly_dir.sz * bact->fly_dir_length + v42 * v20 / v33;
 
-        bact->field_611 = sqrt( POW2(v41) + POW2(v40) + POW2(v43) );
+        bact->fly_dir_length = sqrt( POW2(v41) + POW2(v40) + POW2(v43) );
 
-        if ( bact->field_611 > 0.0 )
+        if ( bact->fly_dir_length > 0.0 )
         {
-            bact->field_605.sx = v40 / bact->field_611;
-            bact->field_605.sy = v41 / bact->field_611;
-            bact->field_605.sz = v43 / bact->field_611;
+            bact->fly_dir.sx = v40 / bact->fly_dir_length;
+            bact->fly_dir.sy = v41 / bact->fly_dir_length;
+            bact->fly_dir.sz = v43 / bact->fly_dir_length;
         }
     }
 
-    if ( bact->field_611 > 1.5 )
+    if ( bact->fly_dir_length > 1.5 )
     {
-        bact->field_621.sx += bact->field_605.sx * bact->field_611 * arg->field_0 * 6.0;
-        bact->field_621.sy += bact->field_605.sy * bact->field_611 * arg->field_0 * 6.0;
-        bact->field_621.sz += bact->field_605.sz * bact->field_611 * arg->field_0 * 6.0;
+        bact->position.sx += bact->fly_dir.sx * bact->fly_dir_length * arg->field_0 * 6.0;
+        bact->position.sy += bact->fly_dir.sy * bact->fly_dir_length * arg->field_0 * 6.0;
+        bact->position.sz += bact->fly_dir.sz * bact->fly_dir_length * arg->field_0 * 6.0;
     }
 
     ypabact_func115(NULL);
@@ -1513,7 +1513,7 @@ void NC_STACK_ypaflyer::ypabact_func74(bact_arg74 *arg)
     bact->field_5A.samples_data[0].pitch = bact->field_3BA;
     bact->field_5A.samples_data[0].volume = bact->field_3B6;
 
-    float v48 = fabs(bact->field_611) / (bact->force / bact->airconst2);
+    float v48 = fabs(bact->fly_dir_length) / (bact->force / bact->airconst_static);
     float v44;
 
     if ( bact->max_pitch <= -0.8 )
@@ -1557,7 +1557,7 @@ void NC_STACK_ypaflyer::ypabact_func97(ypabact_arg65 *arg)
 
     __NC_STACK_ypaflyer *fly = &stack__ypaflyer;
 
-    fly->bact_internal->field_601 = 0;
+    fly->bact_internal->thraction = 0;
     fly->field_c = fly->bact_internal->mass * 9.80665;
 }
 
