@@ -1080,10 +1080,10 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
         yw->field_1618 = arg->field_4;
         yw->field_161c++;
 
-        yw->field_1b24.field_14 = 0;
-        yw->field_1b24.field_0 = yw->field_1614;
-        yw->field_1b24.field_4 = arg->field_4;
-        yw->field_1b24.numid = 0;
+        yw->field_1b24.user_action = 0;
+        yw->field_1b24.gTime = yw->field_1614;
+        yw->field_1b24.frameTime = arg->field_4;
+        yw->field_1b24.units_count = 0;
         yw->field_1b24.inpt = arg->field_8;
         yw->field_1B6E = 1024 / arg->field_4;
         yw->p_1_grp[0][0] = yw->field_1B6E;
@@ -1174,7 +1174,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                 else
                     nnode->bacto->ypabact_func65(&yw->field_1b24);
 
-                yw->field_1b24.numid++;
+                yw->field_1b24.units_count++;
 
                 nnode = next_node;
             }
@@ -7058,10 +7058,10 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
     yw->b64_parms = arg;
     yw->field_161c++;
-    yw->field_1b24.field_14 = 0;
-    yw->field_1b24.field_0 = arg->field_0;
-    yw->field_1b24.field_4 = arg->field_4;
-    yw->field_1b24.numid = 0;
+    yw->field_1b24.user_action = 0;
+    yw->field_1b24.gTime = arg->field_0;
+    yw->field_1b24.frameTime = arg->field_4;
+    yw->field_1b24.units_count = 0;
     yw->field_1b24.inpt = arg->field_8;
     yw->field_1B6E = 1024 / arg->field_4;
 

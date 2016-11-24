@@ -321,7 +321,7 @@ size_t NC_STACK_ypamissile::func3(stack_vals *stak)
     return 1;
 }
 
-void NC_STACK_ypamissile::ypabact_func68(ypabact_arg65 *arg)
+void NC_STACK_ypamissile::ypabact_func68(update_msg *arg)
 {
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
@@ -330,7 +330,7 @@ void NC_STACK_ypamissile::ypabact_func68(ypabact_arg65 *arg)
     {
         int a4 = getBACT_yourLastSeconds();
 
-        a4 -= arg->field_4;
+        a4 -= arg->frameTime;
 
         setBACT_yourLastSeconds(a4);
     }
@@ -354,7 +354,7 @@ void NC_STACK_ypamissile::ypabact_func68(ypabact_arg65 *arg)
     ypabact_func69(arg);
 }
 
-void NC_STACK_ypamissile::ypabact_func69(ypabact_arg65 *arg)
+void NC_STACK_ypamissile::ypabact_func69(update_msg *arg)
 {
     ypabact_func70(arg);
 }
@@ -647,7 +647,7 @@ void ypamissile_func70__sub1(__NC_STACK_ypamissile *miss, bact_arg74 *arg74)
     arg74->vec.normolize();
 }
 
-void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
+void NC_STACK_ypamissile::ypabact_func70(update_msg *arg)
 {
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
@@ -666,12 +666,12 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
 
     bact->thraction = bact->force;
 
-    float v38 = arg->field_4 * 0.001;
+    float v38 = arg->frameTime * 0.001;
 
     if ( bact->status == BACT_STATUS_NORMAL )
     {
         if ( miss->field_2D & 2)
-            miss->delay_time -= arg->field_4;
+            miss->delay_time -= arg->frameTime;
 
         if ( miss->field_2D & 2  &&  miss->delay_time <= 0 )
         {
@@ -835,7 +835,7 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
                 }
                 else
                 {
-                    miss->drive_time -= arg->field_4;
+                    miss->drive_time -= arg->frameTime;
 
                     if ( miss->drive_time < 0 )
                     {
@@ -845,12 +845,12 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
                         bact->airconst_static = 10.0;
                     }
 
-                    miss->life_time -= arg->field_4;
+                    miss->life_time -= arg->frameTime;
 
                     if ( miss->life_time >= 0 )
                     {
                         miss_arg130 arg130;
-                        arg130.period = arg->field_4 * 0.001;
+                        arg130.period = arg->frameTime * 0.001;
 
                         ypamissile_func130(&arg130);
                     }
@@ -873,7 +873,7 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
     }
 }
 
-void NC_STACK_ypamissile::ypabact_func71(ypabact_arg65 *arg)
+void NC_STACK_ypamissile::ypabact_func71(update_msg *arg)
 {
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
@@ -1441,16 +1441,16 @@ size_t NC_STACK_ypamissile::compatcall(int method_id, void *data)
     case 3:
         return func3( (stack_vals *)data );
     case 68:
-        ypabact_func68( (ypabact_arg65 *)data );
+        ypabact_func68( (update_msg *)data );
         return 1;
     case 69:
-        ypabact_func69( (ypabact_arg65 *)data );
+        ypabact_func69( (update_msg *)data );
         return 1;
     case 70:
-        ypabact_func70( (ypabact_arg65 *)data );
+        ypabact_func70( (update_msg *)data );
         return 1;
     case 71:
-        ypabact_func71( (ypabact_arg65 *)data );
+        ypabact_func71( (update_msg *)data );
         return 1;
     case 74:
         ypabact_func74( (bact_arg74 *)data );

@@ -419,7 +419,7 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
     bact->energy = -10;
 }
 
-void NC_STACK_ypacar::ypabact_func71(ypabact_arg65 *arg)
+void NC_STACK_ypacar::ypabact_func71(update_msg *arg)
 {
     __NC_STACK_ypacar *car = &stack__ypacar;
     __NC_STACK_ypabact *bact = &stack__ypabact;
@@ -430,7 +430,7 @@ void NC_STACK_ypacar::ypabact_func71(ypabact_arg65 *arg)
 
     bact->old_pos = bact->position;
 
-    float v78 = arg->field_4 / 1000.0;
+    float v78 = arg->frameTime / 1000.0;
 
     tank_arg129 arg129;
     arg129.field_0 = v78;
@@ -668,7 +668,7 @@ void NC_STACK_ypacar::ypabact_func71(ypabact_arg65 *arg)
             if ( bact->status_flg & BACT_STFLAG_MOVE )
                 ypabact_func74(&arg74);
 
-            int v62 = arg->field_4;
+            int v62 = arg->frameTime;
 
             if ( a4 && ypabact_func87(&v62) )
             {
@@ -706,7 +706,7 @@ void NC_STACK_ypacar::ypabact_func71(ypabact_arg65 *arg)
         {
             bact_arg86 arg86;
             arg86.field_one = 1;
-            arg86.field_two = arg->field_4;
+            arg86.field_two = arg->frameTime;
 
             ypabact_func86(&arg86);
         }
@@ -1403,7 +1403,7 @@ size_t NC_STACK_ypacar::compatcall(int method_id, void *data)
     case 3:
         return func3( (stack_vals *)data );
     case 71:
-        ypabact_func71( (ypabact_arg65 *)data );
+        ypabact_func71( (update_msg *)data );
         return 1;
     case 128:
         return (size_t)ypatank_func128( (tank_arg128 *)data );

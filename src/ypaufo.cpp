@@ -175,12 +175,12 @@ size_t NC_STACK_ypaufo::func3(stack_vals *stak)
     return 1;
 }
 
-void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
+void NC_STACK_ypaufo::ypabact_func70(update_msg *arg)
 {
     __NC_STACK_ypaufo *ufo = &stack__ypaufo;
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    float v110 = arg->field_4 / 1000.0;
+    float v110 = arg->frameTime / 1000.0;
 
     int v94 = getBACT_bactCollisions();
 
@@ -206,7 +206,7 @@ void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
     {
         bact->thraction = bact->force;
 
-        int v100 = arg->field_4;
+        int v100 = arg->frameTime;
 
         if ( !v94
                 || (!v5 && !v8)
@@ -642,7 +642,7 @@ void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
             {
                 bact_arg86 arg86;
                 arg86.field_one = 0;
-                arg86.field_two = arg->field_4;
+                arg86.field_two = arg->frameTime;
 
                 ypabact_func86(&arg86);
             }
@@ -664,12 +664,12 @@ void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
     }
 }
 
-void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
+void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
 {
     __NC_STACK_ypaufo *ufo = &stack__ypaufo;
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    float v88 = arg->field_4 / 1000.0;
+    float v88 = arg->frameTime / 1000.0;
 
     int a4 = getBACT_bactCollisions();
 
@@ -832,7 +832,7 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
         {
             if ( !(bact->status_flg & BACT_STFLAG_LAND) )
             {
-                int v83 = arg->field_4;
+                int v83 = arg->frameTime;
 
                 ypabact_func87(&v83);
             }
@@ -897,12 +897,12 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
             {
                 if ( bact->thraction < bact->force )
                 {
-                    bact->thraction += (float)arg->field_4 * bact->force * 0.0099999998;
+                    bact->thraction += (float)arg->frameTime * bact->force * 0.0099999998;
                 }
             }
             else if ( bact->thraction > 0.0 )
             {
-                bact->thraction -= (float)arg->field_4 * bact->force * 0.001;
+                bact->thraction -= (float)arg->frameTime * bact->force * 0.001;
             }
             else
             {
@@ -1293,10 +1293,10 @@ size_t NC_STACK_ypaufo::compatcall(int method_id, void *data)
     case 3:
         return func3( (stack_vals *)data );
     case 70:
-        ypabact_func70( (ypabact_arg65 *)data );
+        ypabact_func70( (update_msg *)data );
         return 1;
     case 71:
-        ypabact_func71( (ypabact_arg65 *)data );
+        ypabact_func71( (update_msg *)data );
         return 1;
     case 74:
         ypabact_func74( (bact_arg74 *)data );

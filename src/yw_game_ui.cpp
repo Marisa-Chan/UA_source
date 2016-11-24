@@ -5343,7 +5343,7 @@ char * ypaworld_func64__sub7__sub7__sub0__sub2(_NC_STACK_ypaworld *yw, char *cur
     if ( bzda.field_1D0 & 0x16 )
     {
         if ( bzda.field_8F8 != -1 )
-            a7a = yw->field_1b24.field_40 / v15;
+            a7a = yw->field_1b24.energy / v15;
     }
 
     if ( a7a <= a6a )
@@ -5395,7 +5395,7 @@ char * ypaworld_func64__sub7__sub7__sub0__sub3(_NC_STACK_ypaworld *yw, char *cur
     float a6a = (float)a6 / v15;
 
     if ( bzda.field_1D0 & 0x20 )
-        a7a = yw->field_1b24.field_40 / v15;
+        a7a = yw->field_1b24.energy / v15;
 
     if ( a7a <= a6a )
     {
@@ -11450,7 +11450,7 @@ int sb_0x4d3d44(_NC_STACK_ypaworld *yw, winp_131arg *winp)
 
     int a4 = robo->getROBO_battVehicle();
 
-    if ( yw->field_1b24.field_40 > a4 )
+    if ( yw->field_1b24.energy > a4 )
         return 2;
 
 
@@ -11474,7 +11474,7 @@ int ypaworld_func64__sub21__sub2(_NC_STACK_ypaworld *yw)
 
     int a4 = robo->getROBO_battVehicle();
 
-    if ( yw->field_1b24.field_40 > a4 )
+    if ( yw->field_1b24.energy > a4 )
         return 6;
 
     if ( v2->owner && v2->owner != yw->field_1b80->owner )
@@ -11532,7 +11532,7 @@ int ypaworld_func64__sub21__sub3(_NC_STACK_ypaworld *yw)
 
     int a4 = robo->getROBO_battBeam();
 
-    yw->field_1b24.field_40 = v18;
+    yw->field_1b24.energy = v18;
 
     if ( v18 > a4 )
         return 1;
@@ -11947,18 +11947,18 @@ void yw_MouseSelect(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, struC5 *arg)
 
 void ypaworld_func64__sub21__sub7(_NC_STACK_ypaworld *yw)
 {
-    yw->field_1b24.field_40 = 0;
+    yw->field_1b24.energy = 0;
 
     if ( bzda.field_1D0 == 2 || bzda.field_1D0 == 4 )
     {
         if ( bzda.field_8EC != -1 )
         {
-            yw->field_1b24.field_40 = dround(sub_4498F4(yw) * (2 * yw->VhclProtos[bzda.field_2DC[bzda.field_8EC]].energy));
+            yw->field_1b24.energy = dround(sub_4498F4(yw) * (2 * yw->VhclProtos[bzda.field_2DC[bzda.field_8EC]].energy));
         }
     }
     else if ( bzda.field_1D0 == 16 && bzda.field_8F4 != -1 )
     {
-        yw->field_1b24.field_40 = dround(sub_4498F4(yw) * yw->BuildProtos[bzda.field_3DC[bzda.field_8F4]].energy);
+        yw->field_1b24.energy = dround(sub_4498F4(yw) * yw->BuildProtos[bzda.field_3DC[bzda.field_8F4]].energy);
     }
 }
 
@@ -12012,22 +12012,22 @@ void ypaworld_func64__sub21__sub5(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw
     case 2:
         if (yw->field_2410 >= 0)
         {
-            yw->field_1b24.field_14 = 2;
-            yw->field_1b24.field_1C = yw->field_1c0c[yw->field_2410];
+            yw->field_1b24.user_action = 2;
+            yw->field_1b24.selectBact = yw->field_1c0c[yw->field_2410];
 
             if ( yw->field_1a58 & 0x10 )
             {
-                yw->field_1b24.field_20 = yw->field_1a60;
-                yw->field_1b24.field_24 = yw->field_1a64;
-                yw->field_1b24.field_28 = yw->field_1A66;
-                yw->field_1b24.field_2C = yw->field_1a68;
-                yw->field_1b24.field_30 = yw->field_1a6c;
-                yw->field_1b24.field_3C = NULL;
+                yw->field_1b24.target_Sect = yw->field_1a60;
+                yw->field_1b24.target_sect_x = yw->field_1a64;
+                yw->field_1b24.target_sect_y = yw->field_1A66;
+                yw->field_1b24.target_point_flags = yw->field_1a68;
+                yw->field_1b24.target_point = yw->field_1a6c;
+                yw->field_1b24.target_Bact = NULL;
             }
             else
             {
-                yw->field_1b24.field_20 = 0;
-                yw->field_1b24.field_3C = yw->field_1a98;
+                yw->field_1b24.target_Sect = 0;
+                yw->field_1b24.target_Bact = yw->field_1a98;
             }
 
             bzda.field_1D0 = bzda.field_1CC & 1;
@@ -12039,27 +12039,27 @@ void ypaworld_func64__sub21__sub5(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw
     case 13:
         if (yw->field_2410 >= 0)
         {
-            yw->field_1b24.field_14 = arg;
-            yw->field_1b24.field_1C = yw->field_1c0c[yw->field_2410];
+            yw->field_1b24.user_action = arg;
+            yw->field_1b24.selectBact = yw->field_1c0c[yw->field_2410];
 
             if ( yw->field_1a58 & 0x30 )
             {
-                yw->field_1b24.field_20 = yw->field_1a60;
-                yw->field_1b24.field_24 = yw->field_1a64;
-                yw->field_1b24.field_28 = yw->field_1A66;
-                yw->field_1b24.field_2C = yw->field_1a68;
-                yw->field_1b24.field_30 = yw->field_1a6c;
-                yw->field_1b24.field_3C = NULL;
+                yw->field_1b24.target_Sect = yw->field_1a60;
+                yw->field_1b24.target_sect_x = yw->field_1a64;
+                yw->field_1b24.target_sect_y = yw->field_1A66;
+                yw->field_1b24.target_point_flags = yw->field_1a68;
+                yw->field_1b24.target_point = yw->field_1a6c;
+                yw->field_1b24.target_Bact = NULL;
             }
         }
         break;
 
     case 3:
-        yw->field_1b24.field_14 = 3;
-        yw->field_1b24.field_18 = bzda.field_2DC[bzda.field_8EC];
-        yw->field_1b24.field_30.sx = yw->field_1a8c.sx * yw->field_1a9c + yw->field_1334.sx;
-        yw->field_1b24.field_30.sy = yw->field_1a8c.sy * yw->field_1a9c + yw->field_1334.sy;
-        yw->field_1b24.field_30.sz = yw->field_1a8c.sz * yw->field_1a9c + yw->field_1334.sz;
+        yw->field_1b24.user_action = 3;
+        yw->field_1b24.protoID = bzda.field_2DC[bzda.field_8EC];
+        yw->field_1b24.target_point.sx = yw->field_1a8c.sx * yw->field_1a9c + yw->field_1334.sx;
+        yw->field_1b24.target_point.sy = yw->field_1a8c.sy * yw->field_1a9c + yw->field_1334.sy;
+        yw->field_1b24.target_point.sz = yw->field_1a8c.sz * yw->field_1a9c + yw->field_1334.sz;
 
         bzda.field_1D0 = 4;
 
@@ -12070,13 +12070,13 @@ void ypaworld_func64__sub21__sub5(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw
     case 4:
         if (yw->field_2410 >= 0)
         {
-            yw->field_1b24.field_14 = 4;
-            yw->field_1b24.field_1C = yw->field_1c0c[yw->field_2410];
+            yw->field_1b24.user_action = 4;
+            yw->field_1b24.selectBact = yw->field_1c0c[yw->field_2410];
 
-            yw->field_1b24.field_18 = bzda.field_2DC[bzda.field_8EC];
-            yw->field_1b24.field_30.sx = yw->field_1a8c.sx * yw->field_1a9c + yw->field_1334.sx;
-            yw->field_1b24.field_30.sy = yw->field_1a8c.sy * yw->field_1a9c + yw->field_1334.sy;
-            yw->field_1b24.field_30.sz = yw->field_1a8c.sz * yw->field_1a9c + yw->field_1334.sz;
+            yw->field_1b24.protoID = bzda.field_2DC[bzda.field_8EC];
+            yw->field_1b24.target_point.sx = yw->field_1a8c.sx * yw->field_1a9c + yw->field_1334.sx;
+            yw->field_1b24.target_point.sy = yw->field_1a8c.sy * yw->field_1a9c + yw->field_1334.sy;
+            yw->field_1b24.target_point.sz = yw->field_1a8c.sz * yw->field_1a9c + yw->field_1334.sz;
         }
         break;
 
@@ -12094,25 +12094,25 @@ void ypaworld_func64__sub21__sub5(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw
         break;
 
     case 6:
-        yw->field_1b24.field_14 = 6;
-        yw->field_1b24.field_18 = bzda.field_3DC[bzda.field_8F4];
-        yw->field_1b24.field_20 = yw->field_1a60;
-        yw->field_1b24.field_24 = yw->field_1a64;
-        yw->field_1b24.field_28 = yw->field_1A66;
-        yw->field_1b24.field_2C = yw->field_1a68;
-        yw->field_1b24.field_30 = yw->field_1a6c;
-        yw->field_1b24.field_3C = NULL;
+        yw->field_1b24.user_action = 6;
+        yw->field_1b24.protoID = bzda.field_3DC[bzda.field_8F4];
+        yw->field_1b24.target_Sect = yw->field_1a60;
+        yw->field_1b24.target_sect_x = yw->field_1a64;
+        yw->field_1b24.target_sect_y = yw->field_1A66;
+        yw->field_1b24.target_point_flags = yw->field_1a68;
+        yw->field_1b24.target_point = yw->field_1a6c;
+        yw->field_1b24.target_Bact = NULL;
         bzda.field_1D0 = bzda.field_1CC & 1;
         break;
 
     case 10:
-        yw->field_1b24.field_14 = 10;
-        yw->field_1b24.field_20 = yw->field_1a60;
-        yw->field_1b24.field_24 = yw->field_1a64;
-        yw->field_1b24.field_28 = yw->field_1A66;
-        yw->field_1b24.field_2C = yw->field_1a68;
-        yw->field_1b24.field_30 = yw->field_1a6c;
-        yw->field_1b24.field_3C = NULL;
+        yw->field_1b24.user_action = 10;
+        yw->field_1b24.target_Sect = yw->field_1a60;
+        yw->field_1b24.target_sect_x = yw->field_1a64;
+        yw->field_1b24.target_sect_y = yw->field_1A66;
+        yw->field_1b24.target_point_flags = yw->field_1a68;
+        yw->field_1b24.target_point = yw->field_1a6c;
+        yw->field_1b24.target_Bact = NULL;
         bzda.field_1D0 = 1;
         break;
 

@@ -43,10 +43,10 @@ public:
     virtual size_t func1(stack_vals *stak);
     virtual size_t func2(stack_vals *stak);
     virtual size_t func3(stack_vals *stak);
-    virtual void ypabact_func68(ypabact_arg65 *arg);
-    virtual void ypabact_func69(ypabact_arg65 *arg);
-    virtual void ypabact_func70(ypabact_arg65 *arg);
-    virtual void ypabact_func71(ypabact_arg65 *arg);
+    virtual void ypabact_func68(update_msg *arg);
+    virtual void ypabact_func69(update_msg *arg);
+    virtual void ypabact_func70(update_msg *arg);
+    virtual void ypabact_func71(update_msg *arg);
     virtual void ypabact_func74(bact_arg74 *arg);
     virtual void ypabact_func78(bact_arg119 *arg);
     virtual void ypabact_func96(void *);

@@ -537,12 +537,12 @@ void ypaflyer_func70__sub0(__NC_STACK_ypaflyer *fly, float angl)
 
 
 
-void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
+void NC_STACK_ypaflyer::ypabact_func70(update_msg *arg)
 {
     __NC_STACK_ypaflyer *fly = &stack__ypaflyer;
     __NC_STACK_ypabact *bact = fly->bact_internal;
 
-    float a2a = arg->field_4 / 1000.0;
+    float a2a = arg->frameTime / 1000.0;
 
     float v88 = sqrt( POW2(bact->target_vec.sx) + POW2(bact->target_vec.sy) + POW2(bact->target_vec.sz) );
 
@@ -579,7 +579,7 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
         {
             if ( v90 || (!bact->secndTtype && v88 < 1200.0) )
             {
-                int arg87 = arg->field_4;
+                int arg87 = arg->frameTime;
 
                 ypabact_func87(&arg87);
             }
@@ -1009,7 +1009,7 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
             {
                 bact_arg86 arg86;
                 arg86.field_one = 0;
-                arg86.field_two = arg->field_4;
+                arg86.field_two = arg->frameTime;
 
                 ypabact_func86(&arg86);
             }
@@ -1049,13 +1049,13 @@ void ypaflyer_func71__sub1(__NC_STACK_ypabact *bact, float a4)
 
 
 
-void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
+void NC_STACK_ypaflyer::ypabact_func71(update_msg *arg)
 {
     __NC_STACK_ypaflyer *fly = &stack__ypaflyer;
 
     fly->bact_internal->airconst = fly->bact_internal->airconst_static;
 
-    float a2 = (float)arg->field_4 / 1000.0;
+    float a2 = (float)arg->frameTime / 1000.0;
 
     int a4 = getBACT_bactCollisions();
 
@@ -1072,7 +1072,7 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
         {
             if ( !(fly->bact_internal->status_flg & BACT_STFLAG_LAND) )
             {
-                int arg87 = arg->field_4;
+                int arg87 = arg->frameTime;
 
                 ypabact_func87(&arg87);
             }
@@ -1551,7 +1551,7 @@ void NC_STACK_ypaflyer::ypabact_func96(void *)
     fly->field_c = 0;
 }
 
-void NC_STACK_ypaflyer::ypabact_func97(ypabact_arg65 *arg)
+void NC_STACK_ypaflyer::ypabact_func97(update_msg *arg)
 {
     NC_STACK_ypabact::ypabact_func97(arg);
 
@@ -1588,10 +1588,10 @@ size_t NC_STACK_ypaflyer::compatcall(int method_id, void *data)
         func3( (stack_vals *)data );
         return 1;
     case 70:
-        ypabact_func70( (ypabact_arg65 *)data );
+        ypabact_func70( (update_msg *)data );
         return 1;
     case 71:
-        ypabact_func71( (ypabact_arg65 *)data );
+        ypabact_func71( (update_msg *)data );
         return 1;
     case 74:
         ypabact_func74( (bact_arg74 *)data );
@@ -1602,7 +1602,7 @@ size_t NC_STACK_ypaflyer::compatcall(int method_id, void *data)
         ypabact_func96( (void *)data );
         return 1;
     case 97:
-        ypabact_func97( (ypabact_arg65 *)data );
+        ypabact_func97( (update_msg *)data );
         return 1;
     default:
         break;

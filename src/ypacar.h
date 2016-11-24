@@ -20,7 +20,7 @@ public:
     virtual size_t func1(stack_vals *stak);
     virtual size_t func2(stack_vals *stak);
     virtual size_t func3(stack_vals *stak);
-    virtual void ypabact_func71(ypabact_arg65 *arg);
+    virtual void ypabact_func71(update_msg *arg);
     virtual size_t ypatank_func128(tank_arg128 *arg);
     virtual size_t ypatank_func129(tank_arg129 *arg);
 

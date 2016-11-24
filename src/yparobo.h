@@ -203,17 +203,17 @@ public:
     virtual size_t func1(stack_vals *stak);
     virtual size_t func2(stack_vals *stak);
     virtual size_t func3(stack_vals *stak);
-    virtual void ypabact_func68(ypabact_arg65 *arg);
-    virtual void ypabact_func70(ypabact_arg65 *arg);
-    virtual void ypabact_func71(ypabact_arg65 *arg);
+    virtual void ypabact_func68(update_msg *arg);
+    virtual void ypabact_func70(update_msg *arg);
+    virtual void ypabact_func71(update_msg *arg);
     virtual void ypabact_func74(bact_arg74 *arg);
     virtual void ypabact_func77(void *);
     virtual size_t ypabact_func80(bact_arg80 *arg);
-    virtual void ypabact_func82(ypabact_arg65 *arg);
+    virtual void ypabact_func82(update_msg *arg);
     virtual void ypabact_func96(void *);
-    virtual void ypabact_func97(ypabact_arg65 *);
+    virtual void ypabact_func97(update_msg *);
     virtual void ypabact_func114(void *arg);
-    virtual void ypabact_func121(ypabact_arg65 *arg);
+    virtual void ypabact_func121(update_msg *arg);
     virtual void yparobo_func128(robo_arg128 *arg);
     virtual void yparobo_func129(stack_vals *arg);
     virtual void yparobo_func130(stack_vals *arg);
@@ -377,22 +377,22 @@ protected:
     void buildRobo();
     void buildReconnoitre();
 
-    void buildRadar(ypabact_arg65 *arg);
-    void buildPower(ypabact_arg65 *arg);
-    void buildSafe(ypabact_arg65 *arg);
+    void buildRadar(update_msg *arg);
+    void buildPower(update_msg *arg);
+    void buildSafe(update_msg *arg);
     void changePlace();
 
 
-    void AI_doWish(ypabact_arg65 *arg);
-    void AI_doMove(ypabact_arg65 *arg);
-    void AI_service(ypabact_arg65 *arg);
+    void AI_doWish(update_msg *arg);
+    void AI_doMove(update_msg *arg);
+    void AI_service(update_msg *arg);
     void AI_clearAttackerSlots();
-    void AI_solveTrouble(ypabact_arg65 *arg);
-    void AI_checkWorld(ypabact_arg65 *arg);
+    void AI_solveTrouble(update_msg *arg);
+    void AI_checkWorld(update_msg *arg);
 
     void doBeamUpdate(int a2);
-    void doUserCommands(ypabact_arg65 *arg);
-    void wallow(ypabact_arg65 *arg);
+    void doUserCommands(update_msg *arg);
+    void wallow(update_msg *arg);
     void searchEnemyRobo();
     void usersRoboEnergyCheck();
 

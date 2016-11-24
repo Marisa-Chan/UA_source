@@ -191,18 +191,18 @@ void ypatank_func70__sub0(__NC_STACK_ypabact *bact, float a5, uint8_t a6)
         ypatank_func70__sub0__sub0(bact,  a5);
 }
 
-void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
+void NC_STACK_ypatank::ypabact_func70(update_msg *arg)
 {
     __NC_STACK_ypatank *tank = &stack__ypatank;
 
-    float v244 = arg->field_4 / 1000.0;
+    float v244 = arg->frameTime / 1000.0;
 
     int v194 = getBACT_bactCollisions();
 
     __NC_STACK_ypabact *bact = tank->bact_internal;
 
     tank_arg128 arg128;
-    arg128.field_0 = arg->field_4 / 1000.0;
+    arg128.field_0 = arg->frameTime / 1000.0;
     arg128.field_4.sx = bact->rotation.m20;
     arg128.field_4.sy = bact->rotation.m21;
     arg128.field_4.sz = bact->rotation.m22;
@@ -230,7 +230,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
         {
             bact_arg86 arg86;
             arg86.field_one = 1;
-            arg86.field_two = arg->field_4;
+            arg86.field_two = arg->frameTime;
 
             ypabact_func86(&arg86);
             break;
@@ -258,7 +258,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
 
         if ( bact->waitCol_time > 0 )
         {
-            bact->waitCol_time -= arg->field_4;
+            bact->waitCol_time -= arg->frameTime;
         }
         else
         {
@@ -566,7 +566,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
                     {
                         if ( !bact->secndTtype )
                         {
-                            float v242 = (bact->fly_dir_length * 0.1) * arg->field_4 / 1000.0;
+                            float v242 = (bact->fly_dir_length * 0.1) * arg->frameTime / 1000.0;
 
                             if ( bact->rotation.m20 * v222 - bact->rotation.m22 * v221 >= 0.0 )
                             {
@@ -948,7 +948,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
             {
                 if ( v212 || v215 )
                 {
-                    int v196 = arg->field_4;
+                    int v196 = arg->frameTime;
 
                     if ( ypabact_func87(&v196) )
                         break;
@@ -1087,7 +1087,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
             else
             {
                 bact->status_flg &= ~(BACT_STFLAG_DODGE_LEFT | BACT_STFLAG_DODGE_RIGHT);
-                tank->field_D = arg->field_4 / 5;
+                tank->field_D = arg->frameTime / 5;
 
                 if ( tank->field_c & 2 )
                 {
@@ -1111,7 +1111,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
         {
             bact_arg86 arg86;
             arg86.field_one = 1;
-            arg86.field_two = arg->field_4;
+            arg86.field_two = arg->frameTime;
 
             ypabact_func86(&arg86);
         }
@@ -1132,7 +1132,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
     }
 }
 
-void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
+void NC_STACK_ypatank::ypabact_func71(update_msg *arg)
 {
     __NC_STACK_ypatank *tank = &stack__ypatank;
     __NC_STACK_ypabact *bact = &stack__ypabact;
@@ -1141,7 +1141,7 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
 
     int a4 = getBACT_bactCollisions();
 
-    float v90 = arg->field_4 * 0.001;
+    float v90 = arg->frameTime * 0.001;
 
     tank_arg129 arg129;
 
@@ -1406,7 +1406,7 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
             if ( bact->status_flg & BACT_STFLAG_MOVE )
                 ypabact_func74(&arg74);
 
-            int v70 = arg->field_4;
+            int v70 = arg->frameTime;
 
             ypaworld_arg136 arg136;
 
@@ -1435,7 +1435,7 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
         {
             bact_arg86 arg86;
             arg86.field_one = 1;
-            arg86.field_two = arg->field_4;
+            arg86.field_two = arg->frameTime;
 
             ypabact_func86(&arg86);
         }
@@ -1745,7 +1745,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
 
         while ( v12->next )
         {
-            int v114 = v12->status == BACT_STATUS_DEAD   &&   v12->vp_extra[0].field_34 & 1   &&   a4 &&   v12->scale_time > 0;
+            int v114 = v12->status == BACT_STATUS_DEAD   &&   v12->vp_extra[0].flags & EVPROTO_FLAG_ACTIVE   &&   a4 &&   v12->scale_time > 0;
 
             if ( v12->bact_type != BACT_TYPES_MISSLE
                     && (!v12->self->ypabact_func100(NULL) || v114)
@@ -1823,7 +1823,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
 
                                     if ( bact->owner != v12->owner )
                                     {
-                                        v12->vp_extra[0].field_34 = 0;
+                                        v12->vp_extra[0].flags = 0;
                                         v12->vp_extra[0].vp.trigo = NULL;
                                         v12->vp_extra[0].vp.base = NULL;
                                     }
@@ -3047,10 +3047,10 @@ size_t NC_STACK_ypatank::compatcall(int method_id, void *data)
     case 3:
         return func3( (stack_vals *)data );
     case 70:
-        ypabact_func70( (ypabact_arg65 *)data );
+        ypabact_func70( (update_msg *)data );
         return 1;
     case 71:
-        ypabact_func71( (ypabact_arg65 *)data );
+        ypabact_func71( (update_msg *)data );
         return 1;
     case 74:
         ypabact_func74( (bact_arg74 *)data );

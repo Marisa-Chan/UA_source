@@ -278,12 +278,12 @@ void sub_4BC680(NC_STACK_ypagun *obj, float a5)
     bact->rotation = dst;
 }
 
-void NC_STACK_ypagun::ypabact_func70(ypabact_arg65 *arg)
+void NC_STACK_ypagun::ypabact_func70(update_msg *arg)
 {
     __NC_STACK_ypagun *gun = &stack__ypagun;
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    float v80 = arg->field_4 / 1000.0;
+    float v80 = arg->frameTime / 1000.0;
 
     switch ( bact->status )
     {
@@ -306,7 +306,7 @@ void NC_STACK_ypagun::ypabact_func70(ypabact_arg65 *arg)
 
         if ( gun->field_30 == 1 && gun->field_35 > 0 )
         {
-            gun->field_35 -= arg->field_4;
+            gun->field_35 -= arg->frameTime;
 
             if ( gun->field_35 <= 0 )
             {
@@ -546,7 +546,7 @@ void NC_STACK_ypagun::ypabact_func70(ypabact_arg65 *arg)
         break;
 
     case BACT_STATUS_CREATE:
-        bact->scale_time -= arg->field_4;
+        bact->scale_time -= arg->frameTime;
 
         if ( bact->scale_time <= 0 )
         {
@@ -564,12 +564,12 @@ void NC_STACK_ypagun::ypabact_func70(ypabact_arg65 *arg)
     }
 }
 
-void NC_STACK_ypagun::ypabact_func71(ypabact_arg65 *arg)
+void NC_STACK_ypagun::ypabact_func71(update_msg *arg)
 {
     __NC_STACK_ypagun *gun = &stack__ypagun;
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    float v40 = arg->field_4 / 1000.0;
+    float v40 = arg->frameTime / 1000.0;
 
     if ( bact->status == BACT_STATUS_NORMAL )
     {
@@ -577,7 +577,7 @@ void NC_STACK_ypagun::ypabact_func71(ypabact_arg65 *arg)
         {
             if ( sqrt( POW2(bact->viewer_position.sx) + POW2(bact->viewer_position.sx) + POW2(bact->viewer_position.sz) ) >= 3.0 )
             {
-                float v33 = arg->field_4 + 50.0;
+                float v33 = arg->frameTime + 50.0;
 
                 bact->viewer_position.sx *= 50.0 / v33;
                 bact->viewer_position.sy *= 50.0 / v33;
@@ -921,7 +921,7 @@ size_t NC_STACK_ypagun::ypabact_func80(bact_arg80 *arg)
     return 1;
 }
 
-void NC_STACK_ypagun::ypabact_func82(ypabact_arg65 *arg)
+void NC_STACK_ypagun::ypabact_func82(update_msg *arg)
 {
     //__NC_STACK_ypagun *gun = &obj->stack__ypagun;
     __NC_STACK_ypabact *bact = &stack__ypabact;
@@ -929,7 +929,7 @@ void NC_STACK_ypagun::ypabact_func82(ypabact_arg65 *arg)
     if ( bact->status != BACT_STATUS_DEAD )
     {
         if ( bact->pSector->owner == bact->owner )
-            bact->energy += bact->energy_max * (arg->field_4 / 1000.0) * bact->pSector->energy_power / 40000.0;
+            bact->energy += bact->energy_max * (arg->frameTime / 1000.0) * bact->pSector->energy_power / 40000.0;
 
         if ( bact->energy > bact->energy_max )
             bact->energy = bact->energy_max;
@@ -1248,10 +1248,10 @@ size_t NC_STACK_ypagun::compatcall(int method_id, void *data)
     case 3:
         return func3( (stack_vals *)data );
     case 70:
-        ypabact_func70( (ypabact_arg65 *)data );
+        ypabact_func70( (update_msg *)data );
         return 1;
     case 71:
-        ypabact_func71( (ypabact_arg65 *)data );
+        ypabact_func71( (update_msg *)data );
         return 1;
     case 75:
         ypabact_func75( (bact_arg75 *)data );
@@ -1262,7 +1262,7 @@ size_t NC_STACK_ypagun::compatcall(int method_id, void *data)
     case 80:
         return (size_t)ypabact_func80( (bact_arg80 *)data );
     case 82:
-        ypabact_func82( (ypabact_arg65 *)data );
+        ypabact_func82( (update_msg *)data );
         return 1;
     case 96:
         ypabact_func96( (void *)data );

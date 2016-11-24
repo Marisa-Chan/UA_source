@@ -41,12 +41,12 @@ public:
     virtual size_t func1(stack_vals *stak);
     virtual size_t func2(stack_vals *stak);
     virtual size_t func3(stack_vals *stak);
-    virtual void ypabact_func70(ypabact_arg65 *arg);
-    virtual void ypabact_func71(ypabact_arg65 *arg);
+    virtual void ypabact_func70(update_msg *arg);
+    virtual void ypabact_func71(update_msg *arg);
     virtual void ypabact_func75(bact_arg75 *arg);
     virtual void ypabact_func77(void *);
     virtual size_t ypabact_func80(bact_arg80 *arg);
-    virtual void ypabact_func82(ypabact_arg65 *arg);
+    virtual void ypabact_func82(update_msg *arg);
     virtual void ypabact_func96(void *);
     virtual size_t ypabact_func111(__NC_STACK_ypabact *cel_unit);
     virtual void ypagun_func128(gun_arg128 *arg);
