@@ -93,6 +93,17 @@ enum BACT_STFLAG
     BACT_STFLAG_ATTACK      = 0x40000000
 };
 
+enum BACT_OFLAG
+{
+    BACT_OFLAG_VIEWER     = 1,
+    BACT_OFLAG_USERINPT   = 2,
+    BACT_OFLAG_EXACTCOLL  = 4,
+    BACT_OFLAG_BACTCOLL   = 8,
+    BACT_OFLAG_LANDONWAIT = 0x10,
+    BACT_OFLAG_EXTRAVIEW  = 0x20,
+    BACT_OFLAG_ALWAYSREND = 0x40
+};
+
 union BactTarget
 {
     __NC_STACK_ypabact *pbact;
