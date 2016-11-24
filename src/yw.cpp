@@ -2241,9 +2241,9 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         bact->maxrot = vhcl->maxrot;
         bact->height = vhcl->height;
         bact->radius = vhcl->radius;
-        bact->vwr_radius = vhcl->vwr_radius;
+        bact->viewer_radius = vhcl->vwr_radius;
         bact->overeof = vhcl->overeof;
-        bact->vwr_overeof = vhcl->vwr_overeof;
+        bact->viewer_overeof = vhcl->vwr_overeof;
         bact->airconst = vhcl->airconst;
         bact->airconst_static = vhcl->airconst;
         bact->adist_sector = vhcl->adist_sector;
@@ -2258,16 +2258,16 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         bact->weapon = vhcl->weapon;
 
         if ( vhcl->weapon == -1 )
-            bact->field_96E = 0;
+            bact->weapon_flags = 0;
         else
-            bact->field_96E = yw->WeaponProtos[ vhcl->weapon ].model_id;
+            bact->weapon_flags = yw->WeaponProtos[ vhcl->weapon ].model_id;
 
         bact->mgun = vhcl->mgun;
-        bact->fire_x = vhcl->fire_x;
-        bact->fire_y = vhcl->fire_y;
-        bact->fire_z = vhcl->fire_z;
+        bact->fire_pos.sx = vhcl->fire_x;
+        bact->fire_pos.sy = vhcl->fire_y;
+        bact->fire_pos.sz = vhcl->fire_z;
         bact->gun_angle = vhcl->gun_angle;
-        bact->gun_angle2 = vhcl->gun_angle;
+        bact->gun_angle_user = vhcl->gun_angle;
         bact->num_weapons = vhcl->num_weapons;
         bact->kill_after_shot = vhcl->kill_after_shot;
         bact->vp_normal.base = yw->vhcls_models[ vhcl->vp_normal ].base;
@@ -2283,21 +2283,21 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         bact->vp_genesis.base = yw->vhcls_models[ vhcl->vp_genesis ].base;
         bact->vp_genesis.trigo = yw->vhcls_models[ vhcl->vp_genesis ].trigo;
 
-        memcpy(bact->dest_fx, vhcl->dest_fx, sizeof(bact->dest_fx));
+        memcpy(bact->destroyFX, vhcl->dest_fx, sizeof(bact->destroyFX));
 
-        memset(bact->models_bases, 0, sizeof(NC_STACK_base *) * 32);
-        memset(bact->models_trigo, 0, sizeof(base_1c_struct *) * 32);
+        memset(bact->vp_fx_models, 0, sizeof(NC_STACK_base *) * 32);
+        memset(bact->vp_fx_tform, 0, sizeof(base_1c_struct *) * 32);
 
-        bact->field_a14 = vhcl->scale_fx_p0;
-        bact->field_a18 = vhcl->scale_fx_p1;
-        bact->field_a1c = vhcl->scale_fx_p2;
-        bact->field_a20 = vhcl->scale_fx_p3;
-        bact->field_a24 = 0;
+        bact->scale_start = vhcl->scale_fx_p0;
+        bact->scale_speed = vhcl->scale_fx_p1;
+        bact->scale_accel = vhcl->scale_fx_p2;
+        bact->scale_duration = vhcl->scale_fx_p3;
+        bact->scale_pos = 0;
 
         for (int i = 0; vhcl->scale_fx_pXX[ i ]; i++ )
         {
-            bact->models_bases[i] = yw->vhcls_models[ vhcl->scale_fx_pXX[ i ] ].base;
-            bact->models_trigo[i] = yw->vhcls_models[ vhcl->scale_fx_pXX[ i ] ].trigo;
+            bact->vp_fx_models[i] = yw->vhcls_models[ vhcl->scale_fx_pXX[ i ] ].base;
+            bact->vp_fx_tform[i] = yw->vhcls_models[ vhcl->scale_fx_pXX[ i ] ].trigo;
 
             bact->status_flg |= BACT_STFLAG_SEFFECT;
         }
@@ -2404,9 +2404,9 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
     wbact->maxrot = wproto->maxrot;
     wbact->height = wproto->field_8D8;
     wbact->radius = wproto->radius;
-    wbact->vwr_radius = wproto->vwr_radius;
+    wbact->viewer_radius = wproto->vwr_radius;
     wbact->overeof = wproto->overeof;
-    wbact->vwr_overeof = wproto->vwr_overeof;
+    wbact->viewer_overeof = wproto->vwr_overeof;
     wbact->airconst = wproto->airconst;
     wbact->airconst_static = wproto->airconst;
     wbact->adist_sector = wproto->field_890;
@@ -2422,7 +2422,7 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
     wbact->vp_genesis =  yw->vhcls_models[wproto->vp_genesis];
 
     for (int i = 0; i < 16; i++)
-        wbact->dest_fx[i] = wproto->dfx[i];
+        wbact->destroyFX[i] = wproto->dfx[i];
 
     int v11;
 
@@ -7094,17 +7094,17 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
     while ( bct->next )
     {
-        bct->bact->field_87D.grp_1 = bct->bact->position;
+        bct->bact->tForm.grp_1 = bct->bact->position;
 
-        bct->bact->field_87D.scale_rotation.m00 = bct->bact->rotation.m00;
-        bct->bact->field_87D.scale_rotation.m01 = bct->bact->rotation.m10;
-        bct->bact->field_87D.scale_rotation.m02 = bct->bact->rotation.m20;
-        bct->bact->field_87D.scale_rotation.m10 = bct->bact->rotation.m01;
-        bct->bact->field_87D.scale_rotation.m11 = bct->bact->rotation.m11;
-        bct->bact->field_87D.scale_rotation.m12 = bct->bact->rotation.m21;
-        bct->bact->field_87D.scale_rotation.m20 = bct->bact->rotation.m02;
-        bct->bact->field_87D.scale_rotation.m21 = bct->bact->rotation.m12;
-        bct->bact->field_87D.scale_rotation.m22 = bct->bact->rotation.m22;
+        bct->bact->tForm.scale_rotation.m00 = bct->bact->rotation.m00;
+        bct->bact->tForm.scale_rotation.m01 = bct->bact->rotation.m10;
+        bct->bact->tForm.scale_rotation.m02 = bct->bact->rotation.m20;
+        bct->bact->tForm.scale_rotation.m10 = bct->bact->rotation.m01;
+        bct->bact->tForm.scale_rotation.m11 = bct->bact->rotation.m11;
+        bct->bact->tForm.scale_rotation.m12 = bct->bact->rotation.m21;
+        bct->bact->tForm.scale_rotation.m20 = bct->bact->rotation.m02;
+        bct->bact->tForm.scale_rotation.m21 = bct->bact->rotation.m12;
+        bct->bact->tForm.scale_rotation.m22 = bct->bact->rotation.m22;
 
         bct->bact->soundcarrier.field_0 = bct->bact->position;
 

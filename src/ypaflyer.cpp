@@ -562,7 +562,7 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
     float v91;
 
     if ( a4 )
-        v91 = bact->vwr_radius;
+        v91 = bact->viewer_radius;
     else
         v91 = bact->radius;
 
@@ -866,7 +866,7 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
 
         bact_arg75 arg75;
         arg75.fperiod = a2a;
-        arg75.g_time = bact->field_915;
+        arg75.g_time = bact->clock;
 
         //printf("%d %d \n", bact->field_3DF, bact->field_3DE);
 
@@ -925,7 +925,7 @@ void NC_STACK_ypaflyer::ypabact_func70(ypabact_arg65 *arg)
     case BACT_STATUS_IDLE:
     {
 
-        if ( bact->field_915 - bact->field_941 > 500 )
+        if ( bact->clock - bact->newtarget_time > 500 )
         {
             bact_arg110 arg110;
             arg110.tgType = bact->secndTtype;
@@ -1112,10 +1112,10 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
 
             float v9;
 
-            if ( fly->bact_internal->vwr_overeof <= fly->bact_internal->vwr_radius )
-                v9 = fly->bact_internal->vwr_radius;
+            if ( fly->bact_internal->viewer_overeof <= fly->bact_internal->viewer_radius )
+                v9 = fly->bact_internal->viewer_radius;
             else
-                v9 = fly->bact_internal->vwr_overeof;
+                v9 = fly->bact_internal->viewer_overeof;
 
             arg136.field_40 = 0;
             arg136.field_18 = v9 * 1.5;
@@ -1227,15 +1227,15 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
             arg79.direction.sx = 0;
             arg79.direction.sz = 0;
             arg79.weapon = fly->bact_internal->weapon;
-            arg79.g_time = fly->bact_internal->field_915;
+            arg79.g_time = fly->bact_internal->clock;
 
-            if ( fly->bact_internal->field_915 % 2 )
-                arg79.start_point.sx = fly->bact_internal->fire_x;
+            if ( fly->bact_internal->clock % 2 )
+                arg79.start_point.sx = fly->bact_internal->fire_pos.sx;
             else
-                arg79.start_point.sx = -fly->bact_internal->fire_x;
+                arg79.start_point.sx = -fly->bact_internal->fire_pos.sx;
 
-            arg79.start_point.sy = fly->bact_internal->fire_y;
-            arg79.start_point.sz = fly->bact_internal->fire_z;
+            arg79.start_point.sy = fly->bact_internal->fire_pos.sy;
+            arg79.start_point.sz = fly->bact_internal->fire_pos.sz;
             arg79.flags = ((arg->inpt->but_flags & 2) != 0) | 2;
 
             ypabact_func79(&arg79);
@@ -1274,7 +1274,7 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
                 arg105.field_0.sy = fly->bact_internal->rotation.m21;
                 arg105.field_0.sz = fly->bact_internal->rotation.m22;
                 arg105.field_C = a2;
-                arg105.field_10 = fly->bact_internal->field_915;
+                arg105.field_10 = fly->bact_internal->clock;
 
                 ypabact_func105(&arg105);
             }
@@ -1311,13 +1311,13 @@ void NC_STACK_ypaflyer::ypabact_func71(ypabact_arg65 *arg)
 
                 ypaworld_arg137 arg137;
 
-                arg137.pos.sx = fly->bact_internal->rotation.m20 * 0.5 * fly->bact_internal->vwr_radius + fly->bact_internal->position.sx;
-                arg137.pos.sy = fly->bact_internal->rotation.m21 * 0.5 * fly->bact_internal->vwr_radius + fly->bact_internal->position.sy;
-                arg137.pos.sz = fly->bact_internal->rotation.m22 * 0.5 * fly->bact_internal->vwr_radius + fly->bact_internal->position.sz;
+                arg137.pos.sx = fly->bact_internal->rotation.m20 * 0.5 * fly->bact_internal->viewer_radius + fly->bact_internal->position.sx;
+                arg137.pos.sy = fly->bact_internal->rotation.m21 * 0.5 * fly->bact_internal->viewer_radius + fly->bact_internal->position.sy;
+                arg137.pos.sz = fly->bact_internal->rotation.m22 * 0.5 * fly->bact_internal->viewer_radius + fly->bact_internal->position.sz;
                 arg137.pos2.sx = fly->bact_internal->fly_dir.sx;
                 arg137.pos2.sy = fly->bact_internal->fly_dir.sy;
                 arg137.pos2.sz = fly->bact_internal->fly_dir.sz;
-                arg137.radius = fly->bact_internal->vwr_radius;
+                arg137.radius = fly->bact_internal->viewer_radius;
                 arg137.coll_max = 10;
                 arg137.field_30 = 0;
                 arg137.collisions = v43;

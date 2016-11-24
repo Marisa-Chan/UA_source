@@ -292,9 +292,9 @@ void NC_STACK_ypagun::ypabact_func70(ypabact_arg65 *arg)
     {
         if ( !(gun->field_39 & 2) )
         {
-            if ( bact->field_915 - gun->field_3A > 800 )
+            if ( bact->clock - gun->field_3A > 800 )
             {
-                gun->field_3A = bact->field_915;
+                gun->field_3A = bact->clock;
 
                 if ( !sub_4BC8E4(this) )
                 {
@@ -515,7 +515,7 @@ void NC_STACK_ypagun::ypabact_func70(ypabact_arg65 *arg)
 
         bact_arg75 arg75;
         arg75.fperiod = v80;
-        arg75.g_time = bact->field_915;
+        arg75.g_time = bact->clock;
         arg75.target.pbact = bact->secndT.pbact;
 
         ypabact_func75(&arg75);
@@ -546,9 +546,9 @@ void NC_STACK_ypagun::ypabact_func70(ypabact_arg65 *arg)
         break;
 
     case BACT_STATUS_CREATE:
-        bact->field_931 -= arg->field_4;
+        bact->scale_time -= arg->field_4;
 
-        if ( bact->field_931 <= 0 )
+        if ( bact->scale_time <= 0 )
         {
             bact_arg119 arg78;
             arg78.field_0 = 1;
@@ -629,10 +629,8 @@ void NC_STACK_ypagun::ypabact_func71(ypabact_arg65 *arg)
                     arg79.direction.sx = bact->rotation.m20;
                     arg79.direction.sy = bact->rotation.m21;
                     arg79.direction.sz = bact->rotation.m22;
-                    arg79.g_time = bact->field_915;
-                    arg79.start_point.sx = bact->fire_x;
-                    arg79.start_point.sy = bact->fire_y;
-                    arg79.start_point.sz = bact->fire_z;
+                    arg79.g_time = bact->clock;
+                    arg79.start_point = bact->fire_pos;
                     arg79.flags = ((arg->inpt->but_flags & 2) != 0) | 2;
 
                     if ( ypabact_func79(&arg79) )
@@ -660,7 +658,7 @@ void NC_STACK_ypagun::ypabact_func71(ypabact_arg65 *arg)
                     arg105.field_0.sy = bact->rotation.m21;
                     arg105.field_0.sz = bact->rotation.m22;
                     arg105.field_C = v40;
-                    arg105.field_10 = bact->field_915;
+                    arg105.field_10 = bact->clock;
 
                     ypabact_func105(&arg105);
 
@@ -785,9 +783,7 @@ void NC_STACK_ypagun::ypabact_func75(bact_arg75 *arg)
             {
                 bact_arg79 arg79;
                 arg79.direction = v18;
-                arg79.start_point.sx = bact->fire_x;
-                arg79.start_point.sy = bact->fire_y;
-                arg79.start_point.sz = bact->fire_z;
+                arg79.start_point = bact->fire_pos;
                 arg79.tgType = BACT_TGT_TYPE_UNIT;
                 arg79.target.pbact = arg->target.pbact;
                 arg79.weapon = bact->weapon;
@@ -804,8 +800,8 @@ void NC_STACK_ypagun::ypabact_func75(bact_arg75 *arg)
                         if ( v15->next ) //on null list it will work too */
 
                         //must be like:
-                        bact_node *v15 = (bact_node *)bact->list3.tailpred; //Check it,
-                        if ( v15 != (bact_node *)&bact->list3 )
+                        bact_node *v15 = (bact_node *)bact->missiles_list.tailpred; //Check it,
+                        if ( v15 != (bact_node *)&bact->missiles_list )
                         {
                             NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v15->bacto);
                             miss->setMISS_ignoreBuilds(1);

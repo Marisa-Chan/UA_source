@@ -142,7 +142,7 @@ struct __NC_STACK_ypabact : public nnode
     int bact_type;
     int gid; // global bact id
     uint8_t vehicleID; // vehicle id, from scr files
-    char field_2D;
+    char bflags;
     int commandID;
     NC_STACK_yparobo *host_station; // parent robo?
     NC_STACK_ypabact *parent_bacto;
@@ -165,11 +165,11 @@ struct __NC_STACK_ypabact : public nnode
     char aggr;
     char status;
     int status_flg; //Additional status flags
-    int field_3DA;
+//    int field_3DA;
     char primTtype;
     char secndTtype;
-    int primT_cmd_id;
-    int secndT_cmd_id;
+    int primT_cmdID;
+    int secndT_cmdID;
     BactTarget primT;
     xyz primTpos;
     BactTarget secndT;
@@ -179,13 +179,13 @@ struct __NC_STACK_ypabact : public nnode
     float adist_bact;
     float sdist_sector;
     float sdist_bact;
-    xyz field_418[32]; //waypoints
-    int16_t field_598;
-    int16_t field_59A;
-    int field_59c;
-    uint8_t field_5a0;
-    int field_5A1;
-    int field_5A5;
+    xyz waypoints[32]; //waypoints
+    int16_t current_waypoint;
+    int16_t waypoints_count;
+    int m_cmdID;
+    uint8_t m_owner;
+    int fe_cmdID; // found enemy group ID
+    int fe_time; //
     float mass;
     float force;
     float airconst;
@@ -219,80 +219,77 @@ struct __NC_STACK_ypabact : public nnode
     vhclBases vp_dead;
     vhclBases vp_megadeth;
     vhclBases vp_genesis;
-    int field_6B9;
-    bact_6bd field_6BD[3];
+    int vp_active;
+    bact_6bd vp_extra[3];
 
-    destFX dest_fx[16];
+    destFX destroyFX[16];
     float radius;
-    float vwr_radius;
+    float viewer_radius;
     float overeof;
-    float vwr_overeof;
-    float pos_x_cntr;
+    float viewer_overeof;
+//    float pos_x_cntr;
+//
+//    float pos_y_cntr;
 
-    float pos_y_cntr;
-
-    base_1c_struct field_87D;
-    int field_915;
-    int field_919;
-    int field_91D;
-    int field_921;
-    int field_925;
-    int field_929;
-    int field_92D;
-    int field_931;
-    int field_935;
-    int field_939;
-    int field_93D;
-    int field_941;
-    int field_945;
-    int field_949; //Used in tank
-    int field_94D;
-    int field_951;
-    int field_955;
-    int field_959;
-    int field_95D;
-    xyz field_961;
+    base_1c_struct tForm;
+    int clock;           // local time
+    int AI_time1;
+    int AI_time2;
+//    int field_921;
+//    int field_925;
+    int search_time1;
+    int search_time2;
+    int scale_time;
+    int brkfr_time;
+    int brkfr_time2;
+//    int field_93D;
+    int newtarget_time;
+    int assess_time;
+    int waitCol_time; //Used in tank
+    int slider_time;
+//    int field_951;
+    int dead_time;
+    int beam_time;
+    int energy_time;
+    xyz mpos;
     int weapon;
-    char field_96E;
+    char weapon_flags;
     int mgun;
     char num_weapons;
-    nlist list3;
-    int field_97D;
-    float fire_x;
-    float fire_y;
-    float fire_z;
+    nlist missiles_list;
+    int weapon_time;
+    xyz fire_pos;
     float gun_angle;
-    float gun_angle2;
-    float field_995;
+    float gun_angle_user;
+    float gun_leftright;
     float gun_radius;
     float gun_power;
-    int field_9A1;
-    int field_9A5;
+    int mgun_time;
+    int salve_counter;
     int kill_after_shot;
-    float field_9AD;
-    __NC_STACK_ypabact *field_9B1;
-    int16_t field_9B5;
-    int16_t field_9B6;
-    int field_9b8;
+    float heading_speed;
+    __NC_STACK_ypabact *killer;
+    int16_t killer_owner;
+    int16_t reb_count;
+    int atk_ret;
 
-    float field_a14;
-    float field_a18;
-    float field_a1c;
-    int field_a20;
-    int field_a24;
-    int field_a28;
-    NC_STACK_base *models_bases[32];
-    base_1c_struct *models_trigo[32];
+    float scale_start;
+    float scale_speed;
+    float scale_accel;
+    int scale_duration;
+    int scale_pos;
+    int scale_delay;
+    NC_STACK_base *vp_fx_models[32];
+    base_1c_struct *vp_fx_tform[32];
 
-    int field_B34;
-    NC_STACK_ypaworld *wrld;
-    _NC_STACK_ypaworld * field_B3C;
+    int oflags;
+    NC_STACK_ypaworld *ywo;
+    _NC_STACK_ypaworld *yw;
     vhclBases current_vp;
-    nlist field_B48;
-
-    bact_node field_B54;
-    bact_node field_B64;
-    int field_B74;
+    nlist attackers_list;
+    bact_node attack_node_prim;
+    bact_node attack_node_scnd;
+    int yls_time;
 };
 
 struct bact_arg73

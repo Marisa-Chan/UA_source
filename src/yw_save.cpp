@@ -729,7 +729,7 @@ int yw_write_bact(bact_node *bct, FSMgr::FileHandle *fil)
     sprintf(buf, "    force          = %2.2f\n", bct->bact->thraction);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    gunangle       = %5.4f\n", bct->bact->gun_angle2);
+    sprintf(buf, "    gunangle       = %5.4f\n", bct->bact->gun_angle_user);
     fil->write(buf, strlen(buf));
 
     sprintf(buf, "    commandID      = %d\n", bct->bact->commandID);
@@ -747,26 +747,26 @@ int yw_write_bact(bact_node *bct, FSMgr::FileHandle *fil)
     sprintf(buf, "    ident          = %d\n", bct->bact->gid);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    killerowner    = %d\n", bct->bact->field_9B5);
+    sprintf(buf, "    killerowner    = %d\n", bct->bact->killer_owner);
     fil->write(buf, strlen(buf));
 
     if ( bct->bact->primTtype == BACT_TGT_TYPE_UNIT )
-        sprintf(buf, "    primary        = %d_%d_%2.2f_%2.2f_%d\n", bct->bact->primTtype, bct->bact->primT.pbact->gid, bct->bact->primTpos.sx, bct->bact->primTpos.sz, bct->bact->primT_cmd_id);
+        sprintf(buf, "    primary        = %d_%d_%2.2f_%2.2f_%d\n", bct->bact->primTtype, bct->bact->primT.pbact->gid, bct->bact->primTpos.sx, bct->bact->primTpos.sz, bct->bact->primT_cmdID);
     else
-        sprintf(buf, "    primary        = %d_0_%2.2f_%2.2f_%d\n", bct->bact->primTtype, bct->bact->primTpos.sx, bct->bact->primTpos.sz, bct->bact->primT_cmd_id);
+        sprintf(buf, "    primary        = %d_0_%2.2f_%2.2f_%d\n", bct->bact->primTtype, bct->bact->primTpos.sx, bct->bact->primTpos.sz, bct->bact->primT_cmdID);
 
     fil->write(buf, strlen(buf));
 
-    for (int i = 0; i < bct->bact->field_59A; i++)
+    for (int i = 0; i < bct->bact->waypoints_count; i++)
     {
-        sprintf(buf, "    waypoint       = %d_%2.2f_%2.2f\n", i, bct->bact->field_418[i].sx, bct->bact->field_418[i].sz);
+        sprintf(buf, "    waypoint       = %d_%2.2f_%2.2f\n", i, bct->bact->waypoints[i].sx, bct->bact->waypoints[i].sz);
         fil->write(buf, strlen(buf));
     }
 
-    sprintf(buf, "    num_wp         = %d\n", bct->bact->field_59A);
+    sprintf(buf, "    num_wp         = %d\n", bct->bact->waypoints_count);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    count_wp       = %d\n", bct->bact->field_598);
+    sprintf(buf, "    count_wp       = %d\n", bct->bact->current_waypoint);
     fil->write(buf, strlen(buf));
 
     return 1;

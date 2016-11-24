@@ -500,17 +500,17 @@ void sub_4F72E8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
             {
                 uint32_t clr = yw_GetColor(yw, 9);
 
-                for (int i = 1; i < bact->field_59A; i++)
-                    sub_4F68FC(yw->win3d, bact->field_418[i].sx, bact->field_418[i].sz, bact->field_418[i - 1].sx, bact->field_418[i - 1].sz, clr);
+                for (int i = 1; i < bact->waypoints_count; i++)
+                    sub_4F68FC(yw->win3d, bact->waypoints[i].sx, bact->waypoints[i].sz, bact->waypoints[i - 1].sx, bact->waypoints[i - 1].sz, clr);
 
-                sub_4F68FC(yw->win3d, bact->field_418[bact->field_59A - 1].sz, bact->field_418[bact->field_59A - 1].sy, bact->field_418[0].sx, bact->field_418[0].sz, clr);
+                sub_4F68FC(yw->win3d, bact->waypoints[bact->waypoints_count - 1].sz, bact->waypoints[bact->waypoints_count - 1].sy, bact->waypoints[0].sx, bact->waypoints[0].sz, clr);
             }
-            else if ( bact->field_59A > 0 )
+            else if ( bact->waypoints_count > 0 )
             {
                 uint32_t clr = yw_GetColor(yw, 9);
 
-                for (int i = bact->field_598; i < bact->field_59A - 1; i++)
-                    sub_4F68FC(yw->win3d, bact->field_418[i].sx, bact->field_418[i].sz, bact->field_418[i + 1].sx, bact->field_418[i + 1].sz, clr);
+                for (int i = bact->current_waypoint; i < bact->waypoints_count - 1; i++)
+                    sub_4F68FC(yw->win3d, bact->waypoints[i].sx, bact->waypoints[i].sz, bact->waypoints[i + 1].sx, bact->waypoints[i + 1].sz, clr);
             }
         }
     }
@@ -1555,20 +1555,20 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
 
                 if ( v47->status_flg & BACT_STFLAG_WAYPOINT )
                 {
-                    if ( v47->field_59A > 0 )
+                    if ( v47->waypoints_count > 0 )
                     {
                         int v68;
 
                         if ( v47->status_flg & BACT_STFLAG_WAYPOINTCCL )
                             v68 = 0;
                         else
-                            v68 = v47->field_598;
+                            v68 = v47->current_waypoint;
 
-                        for (int i = v68; i < v47->field_59A; i++)
+                        for (int i = v68; i < v47->waypoints_count; i++)
                         {
                             FontUA::select_tileset(&pcur, v114);
 
-                            pcur = sub_4F6980(pcur, v47->field_418[i].sx, v47->field_418[i].sz, 0x88, a4, a5);
+                            pcur = sub_4F6980(pcur, v47->waypoints[i].sx, v47->waypoints[i].sz, 0x88, a4, a5);
                         }
                     }
                 }
@@ -9604,11 +9604,11 @@ char * yw_RenderInfoReloadbar(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, 
 
             if ( wpn->salve_shots )
             {
-                if ( bact->field_9A5 >= wpn->salve_shots )
+                if ( bact->salve_counter >= wpn->salve_shots )
                     v10 = wpn->salve_delay;
             }
 
-            v12 = 100 * (bact->field_915 - bact->field_97D) / v10;
+            v12 = 100 * (bact->clock - bact->weapon_time) / v10;
 
             if ( v12 >= 100 )
                 v12 = 100;

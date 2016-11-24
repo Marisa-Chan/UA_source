@@ -256,9 +256,9 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
         if ( v220 == 0.0 )
             break;
 
-        if ( bact->field_949 > 0 )
+        if ( bact->waitCol_time > 0 )
         {
-            bact->field_949 -= arg->field_4;
+            bact->waitCol_time -= arg->field_4;
         }
         else
         {
@@ -958,7 +958,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
 
         bact_arg75 arg75;
         arg75.fperiod = v244;
-        arg75.g_time = bact->field_915;
+        arg75.g_time = bact->clock;
 
         if ( bact->secndTtype == BACT_TGT_TYPE_UNIT )
         {
@@ -1009,7 +1009,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
 
     case BACT_STATUS_IDLE:
     {
-        if ( bact->field_915 - bact->field_941 > 500 )
+        if ( bact->clock - bact->newtarget_time > 500 )
         {
             bact_arg110 arg110;
             bact_arg110 arg110_1;
@@ -1091,7 +1091,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
 
                 if ( tank->field_c & 2 )
                 {
-                    int v158 = ((size_t)this + bact->field_915) % 7; //WAT!?
+                    int v158 = ((size_t)this + bact->clock) % 7; //WAT!?
 
                     if ( v158 )
                     {
@@ -1257,22 +1257,22 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
         if ( fabs(v88) > 0.001 )
             bact->status_flg |= BACT_STFLAG_MOVE;
 
-        bact->gun_angle2 += v90 * arg->inpt->sliders_vars[5];
+        bact->gun_angle_user += v90 * arg->inpt->sliders_vars[5];
 
-        if ( bact->gun_angle2 < -0.3 )
-            bact->gun_angle2 = -0.3;
+        if ( bact->gun_angle_user < -0.3 )
+            bact->gun_angle_user = -0.3;
 
-        if ( bact->gun_angle2 > 0.8 )
-            bact->gun_angle2 = 0.8;
+        if ( bact->gun_angle_user > 0.8 )
+            bact->gun_angle_user = 0.8;
 
 
-        bact->field_995 = bact->field_995 - v90 * arg->inpt->sliders_vars[15];
+        bact->gun_leftright = bact->gun_leftright - v90 * arg->inpt->sliders_vars[15];
 
-        if ( bact->field_995 < -0.8 )
-            bact->field_995 = -0.8;
+        if ( bact->gun_leftright < -0.8 )
+            bact->gun_leftright = -0.8;
 
-        if ( bact->field_995 > 0.8 )
-            bact->field_995 = 0.8;
+        if ( bact->gun_leftright > 0.8 )
+            bact->gun_leftright = 0.8;
 
         xyz v67;
         v67.sx = bact->rotation.m20;
@@ -1282,14 +1282,14 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
         float corW, corH;
         GFXe.getC3D()->getAspectCorrection(corW, corH, true);
 
-        v67.sx -= bact->rotation.m10 * bact->gun_angle2 * corH;
-        v67.sx -= bact->rotation.m00 * bact->field_995 * corW;
+        v67.sx -= bact->rotation.m10 * bact->gun_angle_user * corH;
+        v67.sx -= bact->rotation.m00 * bact->gun_leftright * corW;
 
-        v67.sy -= bact->rotation.m11 * bact->gun_angle2 * corH;
-        v67.sy -= bact->rotation.m01 * bact->field_995 * corW;
+        v67.sy -= bact->rotation.m11 * bact->gun_angle_user * corH;
+        v67.sy -= bact->rotation.m01 * bact->gun_leftright * corW;
 
-        v67.sz -= bact->rotation.m12 * bact->gun_angle2 * corH;
-        v67.sz -= bact->rotation.m02 * bact->field_995 * corW;
+        v67.sz -= bact->rotation.m12 * bact->gun_angle_user * corH;
+        v67.sz -= bact->rotation.m02 * bact->gun_leftright * corW;
 
         float v89 = sqrt(POW2(v67.sx) + POW2(v67.sy) + POW2(v67.sz));
 
@@ -1319,15 +1319,15 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
         {
             arg79.direction = v67;
             arg79.weapon = bact->weapon;
-            arg79.g_time = bact->field_915;
+            arg79.g_time = bact->clock;
 
-            if ( bact->field_915 % 2 )
-                arg79.start_point.sx = -bact->fire_x;
+            if ( bact->clock % 2 )
+                arg79.start_point.sx = -bact->fire_pos.sx;
             else
-                arg79.start_point.sx = bact->fire_x;
+                arg79.start_point.sx = bact->fire_pos.sx;
 
-            arg79.start_point.sy = bact->fire_y;
-            arg79.start_point.sz = bact->fire_z;
+            arg79.start_point.sy = bact->fire_pos.sy;
+            arg79.start_point.sz = bact->fire_pos.sz;
             arg79.flags = (arg->inpt->but_flags & 2) != 0;
             arg79.flags |= 2;
 
@@ -1364,7 +1364,7 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
                 bact_arg105 arg105;
                 arg105.field_0 = v67;
                 arg105.field_C = v90;
-                arg105.field_10 = bact->field_915;
+                arg105.field_10 = bact->clock;
 
                 ypabact_func105(&arg105);
             }
@@ -1576,7 +1576,7 @@ size_t NC_STACK_ypatank::ypabact_func80(bact_arg80 *arg)
             int a4 = getBACT_viewer();
 
             if ( a4 )
-                bact->position.sy = arg136.field_30 - bact->vwr_overeof;
+                bact->position.sy = arg136.field_30 - bact->viewer_overeof;
             else
                 bact->position.sy = arg136.field_30 - bact->overeof;
 
@@ -1651,7 +1651,7 @@ void ypatank_func87__sub0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2)
     if ( v23 > 25000 )
         v23 = 25000;
 
-    float v3 = (float)bact2->field_931 * 0.2 / (float)v23 * (float)bact2->energy_max;
+    float v3 = (float)bact2->scale_time * 0.2 / (float)v23 * (float)bact2->energy_max;
 
     if ( v3 + bact->energy > bact->energy_max )
     {
@@ -1745,7 +1745,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
 
         while ( v12->next )
         {
-            int v114 = v12->status == BACT_STATUS_DEAD   &&   v12->field_6BD[0].field_34 & 1   &&   a4 &&   v12->field_931 > 0;
+            int v114 = v12->status == BACT_STATUS_DEAD   &&   v12->vp_extra[0].field_34 & 1   &&   a4 &&   v12->scale_time > 0;
 
             if ( v12->bact_type != BACT_TYPES_MISSLE
                     && (!v12->self->ypabact_func100(NULL) || v114)
@@ -1801,7 +1801,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
                             {
                                 ypatank_func87__sub0(bact, v12);
 
-                                v12->field_931 = -1;
+                                v12->scale_time = -1;
 
                                 if ( tank->yw->GameShell )
                                     startSound(&tank->yw->GameShell->samples2_info, 4);
@@ -1823,9 +1823,9 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
 
                                     if ( bact->owner != v12->owner )
                                     {
-                                        v12->field_6BD[0].field_34 = 0;
-                                        v12->field_6BD[0].vp.trigo = NULL;
-                                        v12->field_6BD[0].vp.base = NULL;
+                                        v12->vp_extra[0].field_34 = 0;
+                                        v12->vp_extra[0].vp.trigo = NULL;
+                                        v12->vp_extra[0].vp.base = NULL;
                                     }
                                 }
                                 break;
@@ -1881,7 +1881,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
                                         if ( v117->status == BACT_STATUS_IDLE )
                                             v108 = 1;
 
-                                        if ( v117->field_949 <= 0 )
+                                        if ( v117->waitCol_time <= 0 )
                                             v105 = 1;
                                     }
 
@@ -2094,7 +2094,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
                 }
                 else
                 {
-                    bact->field_949 = 1000;
+                    bact->waitCol_time = 1000;
                 }
             }
             else
@@ -2388,7 +2388,7 @@ void NC_STACK_ypatank::ypabact_func114(void *)
         float v6;
 
         if ( a4 )
-            v6 = bact->vwr_overeof;
+            v6 = bact->viewer_overeof;
         else
             v6 = bact->overeof;
 
@@ -2451,7 +2451,7 @@ size_t NC_STACK_ypatank::ypatank_func128(tank_arg128 *arg)
     float v5;
 
     if ( a4 )
-        v5 = bact->vwr_overeof;
+        v5 = bact->viewer_overeof;
     else
         v5 = bact->overeof;
 
@@ -2566,7 +2566,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
 
     float v5;
     if ( a4 )
-        v5 = bact->vwr_overeof;
+        v5 = bact->viewer_overeof;
     else
         v5 = bact->overeof;
 
@@ -2577,40 +2577,40 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
 
     if ( bact->fly_dir_length < 0.0 )
     {
-        v123.sx = bact->position.sx + (-bact->rotation.m20 - bact->rotation.m00) * bact->vwr_radius * 0.7071;
-        v123.sy = bact->position.sy + (-bact->rotation.m21 - bact->rotation.m01) * bact->vwr_radius * 0.7071;
-        v123.sz = bact->position.sz + (-bact->rotation.m22 - bact->rotation.m02) * bact->vwr_radius * 0.7071;
+        v123.sx = bact->position.sx + (-bact->rotation.m20 - bact->rotation.m00) * bact->viewer_radius * 0.7071;
+        v123.sy = bact->position.sy + (-bact->rotation.m21 - bact->rotation.m01) * bact->viewer_radius * 0.7071;
+        v123.sz = bact->position.sz + (-bact->rotation.m22 - bact->rotation.m02) * bact->viewer_radius * 0.7071;
 
-        v133.sx = bact->position.sx + (bact->rotation.m00 - bact->rotation.m20) * bact->vwr_radius * 0.7071;
-        v133.sy = bact->position.sy + (bact->rotation.m01 - bact->rotation.m21) * bact->vwr_radius * 0.7071;
-        v133.sz = bact->position.sz + (bact->rotation.m02 - bact->rotation.m22) * bact->vwr_radius * 0.7071;
+        v133.sx = bact->position.sx + (bact->rotation.m00 - bact->rotation.m20) * bact->viewer_radius * 0.7071;
+        v133.sy = bact->position.sy + (bact->rotation.m01 - bact->rotation.m21) * bact->viewer_radius * 0.7071;
+        v133.sz = bact->position.sz + (bact->rotation.m02 - bact->rotation.m22) * bact->viewer_radius * 0.7071;
 
-        v122.sx = bact->position.sx + bact->rotation.m20 * bact->vwr_radius;
-        v122.sy = bact->position.sy + bact->rotation.m21 * bact->vwr_radius;
-        v122.sz = bact->position.sz + bact->rotation.m22 * bact->vwr_radius;
+        v122.sx = bact->position.sx + bact->rotation.m20 * bact->viewer_radius;
+        v122.sy = bact->position.sy + bact->rotation.m21 * bact->viewer_radius;
+        v122.sz = bact->position.sz + bact->rotation.m22 * bact->viewer_radius;
 
         v156 = -1.0;
     }
     else
     {
-        v123.sx = bact->position.sx + (bact->rotation.m20 - bact->rotation.m00) * bact->vwr_radius * 0.7071;
-        v123.sy = bact->position.sy + (bact->rotation.m21 - bact->rotation.m01) * bact->vwr_radius * 0.7071;
-        v123.sz = bact->position.sz + (bact->rotation.m22 - bact->rotation.m02) * bact->vwr_radius * 0.7071;
+        v123.sx = bact->position.sx + (bact->rotation.m20 - bact->rotation.m00) * bact->viewer_radius * 0.7071;
+        v123.sy = bact->position.sy + (bact->rotation.m21 - bact->rotation.m01) * bact->viewer_radius * 0.7071;
+        v123.sz = bact->position.sz + (bact->rotation.m22 - bact->rotation.m02) * bact->viewer_radius * 0.7071;
 
-        v122.sx = bact->position.sx - bact->rotation.m20 * bact->vwr_radius;
-        v122.sy = bact->position.sy - bact->rotation.m21 * bact->vwr_radius;
-        v122.sz = bact->position.sz - bact->rotation.m22 * bact->vwr_radius;
+        v122.sx = bact->position.sx - bact->rotation.m20 * bact->viewer_radius;
+        v122.sy = bact->position.sy - bact->rotation.m21 * bact->viewer_radius;
+        v122.sz = bact->position.sz - bact->rotation.m22 * bact->viewer_radius;
 
-        v133.sx = bact->position.sx + (bact->rotation.m20 + bact->rotation.m00) * bact->vwr_radius * 0.7071;
-        v133.sy = bact->position.sy + (bact->rotation.m21 + bact->rotation.m01) * bact->vwr_radius * 0.7071;
-        v133.sz = bact->position.sz + (bact->rotation.m22 + bact->rotation.m02) * bact->vwr_radius * 0.7071;
+        v133.sx = bact->position.sx + (bact->rotation.m20 + bact->rotation.m00) * bact->viewer_radius * 0.7071;
+        v133.sy = bact->position.sy + (bact->rotation.m21 + bact->rotation.m01) * bact->viewer_radius * 0.7071;
+        v133.sz = bact->position.sz + (bact->rotation.m22 + bact->rotation.m02) * bact->viewer_radius * 0.7071;
 
         v156 = 1.0;
     }
 
-    v122.sy += bact->vwr_overeof;
-    v123.sy += bact->vwr_overeof;
-    v133.sy += bact->vwr_overeof;
+    v122.sy += bact->viewer_overeof;
+    v123.sy += bact->viewer_overeof;
+    v133.sy += bact->viewer_overeof;
 
     ypaworld_arg136 arg136;
     ypaworld_arg136 arg136_1;
@@ -2620,9 +2620,9 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
     arg136_1.pos_x = bact->position.sx;
     arg136_2.pos_x = bact->position.sx;
 
-    arg136.pos_y = bact->position.sy - v152 * bact->vwr_radius;
-    arg136_1.pos_y = bact->position.sy - v152 * bact->vwr_radius;
-    arg136_2.pos_y = bact->position.sy - v152 * bact->vwr_radius;
+    arg136.pos_y = bact->position.sy - v152 * bact->viewer_radius;
+    arg136_1.pos_y = bact->position.sy - v152 * bact->viewer_radius;
+    arg136_2.pos_y = bact->position.sy - v152 * bact->viewer_radius;
 
     arg136.pos_z = bact->position.sz;
     arg136_1.pos_z = bact->position.sz;
@@ -2706,7 +2706,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
             return 2;
 
         arg136.field_2C = bact->position.sx + arg136.field_14;
-        arg136.field_30 = bact->position.sy + arg136.field_18 - v152 * bact->vwr_radius;
+        arg136.field_30 = bact->position.sy + arg136.field_18 - v152 * bact->viewer_radius;
         arg136.field_34 = bact->position.sz + arg136.field_1C;
 
         v149 = 1;
@@ -2764,7 +2764,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
             return 1;
 
         arg136_1.field_2C = bact->position.sx + arg136_1.field_14;
-        arg136_1.field_30 = bact->position.sy + arg136_1.field_18 - v152 * bact->vwr_radius;
+        arg136_1.field_30 = bact->position.sy + arg136_1.field_18 - v152 * bact->viewer_radius;
         arg136_1.field_34 = bact->position.sz + arg136_1.field_1C;
 
         v151 = 1;
@@ -2804,7 +2804,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
     else
     {
         arg136_2.field_2C = bact->position.sx + arg136_2.field_14;
-        arg136_2.field_30 = bact->position.sy + arg136_2.field_18 - v152 * bact->vwr_radius;
+        arg136_2.field_30 = bact->position.sy + arg136_2.field_18 - v152 * bact->viewer_radius;
         arg136_2.field_34 = bact->position.sz + arg136_2.field_1C;
 
         v148 = 1;
@@ -2818,9 +2818,9 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
             arg136_3.pos_x = bact->position.sx;
             arg136_3.pos_y = bact->position.sy;
             arg136_3.pos_z = bact->position.sz;
-            arg136_3.field_14 = bact->rotation.m20 * bact->vwr_radius;
-            arg136_3.field_18 = bact->rotation.m21 * bact->vwr_radius;
-            arg136_3.field_1C = bact->rotation.m22 * bact->vwr_radius;
+            arg136_3.field_14 = bact->rotation.m20 * bact->viewer_radius;
+            arg136_3.field_18 = bact->rotation.m21 * bact->viewer_radius;
+            arg136_3.field_1C = bact->rotation.m22 * bact->viewer_radius;
             arg136_3.field_40 = 0;
 
             tank->ywo->ypaworld_func136(&arg136_3);
@@ -2954,7 +2954,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
     {
         if ( v149 || v151 || v148 )
         {
-            float v92 = bact->vwr_overeof * v155 * 0.8;
+            float v92 = bact->viewer_overeof * v155 * 0.8;
 
             ypaworld_arg136 arg136_4;
             arg136_4.pos_x = bact->position.sx;

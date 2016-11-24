@@ -662,7 +662,7 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
             bact->target_dir = bact->target_vec / v40;
     }
 
-    bact->field_919 = 0;
+    bact->AI_time1 = 0;
 
     bact->thraction = bact->force;
 

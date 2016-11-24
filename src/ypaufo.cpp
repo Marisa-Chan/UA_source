@@ -460,7 +460,7 @@ void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
 
                 bact_arg75 arg75;
                 arg75.fperiod = v110;
-                arg75.g_time = bact->field_915;
+                arg75.g_time = bact->clock;
 
                 if ( bact->secndTtype == BACT_TGT_TYPE_UNIT )
                 {
@@ -534,7 +534,7 @@ void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
 
     case BACT_STATUS_IDLE:
     {
-        if ( bact->field_915 - bact->field_941 > 500 )
+        if ( bact->clock - bact->newtarget_time > 500 )
         {
             bact_arg110 arg110;
             bact_arg110 arg110_1;
@@ -705,10 +705,10 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
             arg136.field_14 = 0;
             arg136.field_1C = 0;
 
-            if ( bact->vwr_overeof <= bact->vwr_radius )
-                arg136.field_18 = bact->vwr_radius * 1.5;
+            if ( bact->viewer_overeof <= bact->viewer_radius )
+                arg136.field_18 = bact->viewer_radius * 1.5;
             else
-                arg136.field_18 = bact->vwr_overeof * 1.5;
+                arg136.field_18 = bact->viewer_overeof * 1.5;
 
             arg136.field_40 = 0;
 
@@ -877,15 +877,15 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
             arg79.direction.sy = bact->rotation.m21;
             arg79.direction.sz = bact->rotation.m22;
             arg79.tgType = BACT_TGT_TYPE_NONE;
-            arg79.g_time = bact->field_915;
+            arg79.g_time = bact->clock;
 
-            if ( bact->field_915 % 2 )
-                arg79.start_point.sx = -bact->fire_x;
+            if ( bact->clock % 2 )
+                arg79.start_point.sx = -bact->fire_pos.sx;
             else
-                arg79.start_point.sx = bact->fire_x;
+                arg79.start_point.sx = bact->fire_pos.sx;
 
-            arg79.start_point.sy = bact->fire_y;
-            arg79.start_point.sz = bact->fire_z;
+            arg79.start_point.sy = bact->fire_pos.sy;
+            arg79.start_point.sz = bact->fire_pos.sz;
             arg79.flags = (arg->inpt->but_flags & 2) != 0;
 
             ypabact_func79(&arg79);
@@ -959,7 +959,7 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
                 arg105.field_0.sy = bact->rotation.m21;
                 arg105.field_0.sz = bact->rotation.m22;
                 arg105.field_C = v88;
-                arg105.field_10 = bact->field_915;
+                arg105.field_10 = bact->clock;
 
                 ypabact_func105(&arg105);
             }
@@ -988,7 +988,7 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
                 ypaworld_arg137 arg137;
                 arg137.pos = bact->position;
                 arg137.pos2 = bact->fly_dir;
-                arg137.radius = bact->vwr_radius;
+                arg137.radius = bact->viewer_radius;
                 arg137.collisions = v60;
                 arg137.coll_max = 10;
                 arg137.field_30 = 0;

@@ -5524,7 +5524,7 @@ int sub_47A0C0(scrCallBack *scr)
     }
     else if ( !strcasecmp(scr->p1, "killerowner") )
     {
-        dword_5A7A88->field_9B5 = atoi(scr->p2);
+        dword_5A7A88->killer_owner = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "ident") )
     {
@@ -5560,7 +5560,7 @@ int sub_47A0C0(scrCallBack *scr)
                         v9 = strtok(0, " \t_\n");
                         if ( v9 )
                         {
-                            dword_5A7A88->primT_cmd_id = atoi(v9);
+                            dword_5A7A88->primT_cmdID = atoi(v9);
                         }
                     }
                 }
@@ -5674,7 +5674,7 @@ int sub_47A0C0(scrCallBack *scr)
     }
     else if ( !strcasecmp(scr->p1, "gunangle") )
     {
-        dword_5A7A88->gun_angle2 = strtod(scr->p2, 0);
+        dword_5A7A88->gun_angle_user = strtod(scr->p2, 0);
     }
     else if ( !strcasecmp(scr->p1, "gunbasis") )
     {
@@ -5709,23 +5709,23 @@ int sub_47A0C0(scrCallBack *scr)
             v29 = strtok(0, " \t_\n");
             if ( v29 )
             {
-                dword_5A7A88->field_418[v32].sx = strtod(v29, 0);
+                dword_5A7A88->waypoints[v32].sx = strtod(v29, 0);
 
                 v29 = strtok(0, " \t_\n");
                 if ( v29 )
                 {
-                    dword_5A7A88->field_418[v32].sz = strtod(v29, 0);
+                    dword_5A7A88->waypoints[v32].sz = strtod(v29, 0);
                 }
             }
         }
     }
     else if ( !strcasecmp(scr->p1, "num_wp") )
     {
-        dword_5A7A88->field_59A = atoi(scr->p2);
+        dword_5A7A88->waypoints_count = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "count_wp") )
     {
-        dword_5A7A88->field_598 = atoi(scr->p2);
+        dword_5A7A88->current_waypoint = atoi(scr->p2);
     }
     else
         return 0;

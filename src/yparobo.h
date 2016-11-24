@@ -133,7 +133,7 @@ struct __NC_STACK_yparobo
     xyz field_515;
     int field_521;
     robo_t1 field_525[16];
-    int field_5A5;
+    int fe_time;
     int field_5A9;
 };
 

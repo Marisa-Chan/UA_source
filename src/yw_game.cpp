@@ -2888,7 +2888,7 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
 
                         gunn->ypabact_func119(&v34);
 
-                        gbct->field_931 = 500;
+                        gbct->scale_time = 500;
                         gbct->scale.sx = 1.0;
                         gbct->scale.sy = 1.0;
                         gbct->scale.sz = 1.0;
@@ -4452,13 +4452,13 @@ void sub_4F1A60(__NC_STACK_ypabact *bact)
         {
             v5->bact->primT.pbact = NULL;
             v5->bact->primTtype = BACT_TGT_TYPE_NONE;
-            v5->bact->field_945 = 0;
+            v5->bact->assess_time = 0;
         }
         else if ( bct == v6 )
         {
             v6->bact->secndT.pbact = NULL;
             v6->bact->secndTtype = BACT_TGT_TYPE_NONE;
-            v6->bact->field_945 = 0;
+            v6->bact->assess_time = 0;
         }
         else
         {
@@ -4471,7 +4471,7 @@ void sub_4F1B34(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
 {
     while ( 1 )
     {
-        bact_node *v4 = (bact_node *)bact->list3.head;
+        bact_node *v4 = (bact_node *)bact->missiles_list.head;
 
         if (!v4->next)
             break;
@@ -5131,7 +5131,7 @@ void recorder_store_bact(_NC_STACK_ypaworld *yw, recorder *rcrd, nlist *bct_lst)
                 rcrd->bacts_count++;
             }
 
-            recorder_store_bact(yw, rcrd, &bct->bact->list3);
+            recorder_store_bact(yw, rcrd, &bct->bact->missiles_list);
             recorder_store_bact(yw, rcrd, &bct->bact->subjects_list);
         }
 
@@ -5702,7 +5702,7 @@ int recorder_create_camera(_NC_STACK_ypaworld *yw)
     yw->field_1b80 = bact;
     yw->field_1b88 = &bact->subjects_list;
 
-    sub_430A20(&bact->field_87D);
+    sub_430A20(&bact->tForm);
 
     return 1;
 }
@@ -6434,8 +6434,8 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
             bact->fly_dir_length = v39 / fperiod / 6.0;
     }
 
-    bact->field_87D.grp_1 = bact->position;
-    bact->field_87D.scale_rotation = bact->rotation;
+    bact->tForm.grp_1 = bact->position;
+    bact->tForm.scale_rotation = bact->rotation;
 }
 
 char *sub_445654(_NC_STACK_ypaworld *yw, char *in, char *buf, const char *fmt, ...)
@@ -6498,7 +6498,7 @@ void debug_count_units(_NC_STACK_ypaworld *yw)
                     yw->dbg_num_vhcl_counter[ commanders->bact->owner ]++;
                 }
 
-                bact_node *com_piu = (bact_node *)commanders->bact->list3.head;
+                bact_node *com_piu = (bact_node *)commanders->bact->missiles_list.head;
                 while ( com_piu->next )
                 {
                     yw->dbg_num_wpn_counter[ commanders->bact->owner ]++;
@@ -6515,7 +6515,7 @@ void debug_count_units(_NC_STACK_ypaworld *yw)
                         yw->dbg_num_vhcl_counter[ commanders->bact->owner ]++;
 
 
-                    bact_node *slv_piu = (bact_node *)slaves->bact->list3.head;
+                    bact_node *slv_piu = (bact_node *)slaves->bact->missiles_list.head;
                     while (  slv_piu->next )
                     {
                         yw->dbg_num_wpn_counter[ commanders->bact->owner ]++;
