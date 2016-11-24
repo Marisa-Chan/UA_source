@@ -276,7 +276,7 @@ void sub_4C3A54(_NC_STACK_ypaworld *yw)
             bzda.field_1CC = 41;
         }
 
-        if ( yw->field_1b80->field_3D5 == 2 )
+        if ( yw->field_1b80->status == BACT_STATUS_DEAD )
             bzda.field_1CC = 0;
     }
     else
@@ -494,9 +494,9 @@ void sub_4F72E8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
             sub_4F68FC(yw->win3d, bact->position.sx, bact->position.sz, bact->primT.pbact->position.sx, bact->primT.pbact->position.sz, yw_GetColor(yw, 9));
         }
 
-        if ( bact->field_3D6 & 0x4000000 )
+        if ( bact->status_flg & BACT_STFLAG_WAYPOINT )
         {
-            if ( bact->field_3D6 & 0x8000000 )
+            if ( bact->status_flg & BACT_STFLAG_WAYPOINTCCL )
             {
                 uint32_t clr = yw_GetColor(yw, 9);
 
@@ -651,13 +651,13 @@ void sb_0x4f8f64__sub1(_NC_STACK_ypaworld *yw)
             {
                 __NC_STACK_ypabact *tmp = yw->field_1c0c[i];
 
-                if (tmp->field_3D5 != 2)
+                if (tmp->status != BACT_STATUS_DEAD)
                     sub_4F72E8(yw, tmp);
 
-                bact_node *bct = (bact_node *)tmp->list2.head;
+                bact_node *bct = (bact_node *)tmp->subjects_list.head;
                 while(bct->next)
                 {
-                    if ( bct->bact->field_3D5 != 2 )
+                    if ( bct->bact->status != BACT_STATUS_DEAD )
                         sub_4F72E8(yw, bct->bact);
 
                     bct = (bact_node *)bct->next;
@@ -670,7 +670,7 @@ void sb_0x4f8f64__sub1(_NC_STACK_ypaworld *yw)
             {
                 __NC_STACK_ypabact *tmp = yw->field_1c0c[yw->field_2410];
 
-                if ( tmp->field_3D5 != 2 )
+                if ( tmp->status != BACT_STATUS_DEAD )
                     sub_4F72E8(yw, tmp);
             }
         }
@@ -1047,7 +1047,7 @@ char * sub_4F6DFC(_NC_STACK_ypaworld *yw, char *cur, int height, int width, __NC
 {
     char *pcur = cur;
 
-    if ( bact->field_3D5 != 2 && bact->owner != 5 )
+    if ( bact->status != BACT_STATUS_DEAD && bact->owner != 5 )
     {
         int v8;
 
@@ -1056,7 +1056,7 @@ char * sub_4F6DFC(_NC_STACK_ypaworld *yw, char *cur, int height, int width, __NC
             if ( bact->bact_type == BACT_TYPES_MISSLE )
                 v8 = bact->owner + 1;
             else
-                v8 = yw->VhclProtos[bact->id].type_icon;
+                v8 = yw->VhclProtos[bact->vehicleID].type_icon;
         }
         else
         {
@@ -1223,7 +1223,7 @@ char * sub_4F6DFC(_NC_STACK_ypaworld *yw, char *cur, int height, int width, __NC
         {
             if ( robo_map.field_1EC & 4 && robo_map.field_1EE > 2 )
             {
-                float v32 = (float)bact->energy / (float)bact->energy_2;
+                float v32 = (float)bact->energy / (float)bact->energy_max;
                 int v19;
 
                 if ( v32 > 0.25 )
@@ -1280,11 +1280,11 @@ char * sub_4F7BE8(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabact *bact, i
 
         pcur = sub_4F6980(pcur, bact->position.sx, bact->position.sz, a4, a5, a6);
 
-        bact_node *nd = (bact_node *)bact->list2.head;
+        bact_node *nd = (bact_node *)bact->subjects_list.head;
 
         while(nd->next)
         {
-            if ( nd->bact->field_3D5 != 2 )
+            if ( nd->bact->status != BACT_STATUS_DEAD )
                 pcur = sub_4F6980(pcur, nd->bact->position.sx, nd->bact->position.sz, a4, a5, a6);
 
             nd = (bact_node *)nd->next;
@@ -1301,10 +1301,10 @@ int sb_0x4f8f64__sub3__sub0(_NC_STACK_ypaworld *yw, cellArea *cell)
 
     while(v2->next)
     {
-        if ( v2->field_3D5 != 2 && v2->field_3D5 != 5 )
+        if ( v2->status != BACT_STATUS_DEAD && v2->status != BACT_STATUS_BEAM )
         {
             if ( v2->bact_type != BACT_TYPES_ROBO && v2->bact_type != BACT_TYPES_MISSLE && v2->bact_type != BACT_TYPES_GUN )
-                enrg += (v2->energy_2 + 99) / 100;
+                enrg += (v2->energy_max + 99) / 100;
         }
 
         v2 = (__NC_STACK_ypabact *)v2->next;
@@ -1553,13 +1553,13 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
                     pcur = sub_4F6980(pcur, v47->primT.pbact->position.sx, v47->primT.pbact->position.sz, 0x86, a4, a5);
                 }
 
-                if ( v47->field_3D6 & 0x4000000 )
+                if ( v47->status_flg & BACT_STFLAG_WAYPOINT )
                 {
                     if ( v47->field_59A > 0 )
                     {
                         int v68;
 
-                        if ( v47->field_3D6 & 0x8000000 )
+                        if ( v47->status_flg & BACT_STFLAG_WAYPOINTCCL )
                             v68 = 0;
                         else
                             v68 = v47->field_598;
@@ -1812,7 +1812,7 @@ void sb_0x4f8f64(_NC_STACK_ypaworld *yw)
                             {
                                 if ( bct->bact_type != BACT_TYPES_MISSLE && bct->bact_type != BACT_TYPES_ROBO && bct->bact_type != BACT_TYPES_GUN )
                                 {
-                                    if ( bct->field_3D5 != 4 && bct->field_3D5 != 5 && bct->field_3D5 != 2 )
+                                    if ( bct->status != BACT_STATUS_CREATE && bct->status != BACT_STATUS_BEAM && bct->status != BACT_STATUS_DEAD )
                                     {
                                         pcur = sub_4F6980(pcur, bct->position.sx, bct->position.sz, 0x85, height, width);
                                         v41++;
@@ -3317,7 +3317,7 @@ void sb_0x4d7c08__sub0(_NC_STACK_ypaworld *yw)
             lstnode = (GuiBase *)lstnode->prev;
         }
 
-        if ( yw->field_1b84->field_3D5 != 2 )
+        if ( yw->field_1b84->status != BACT_STATUS_DEAD )
         {
             sb_0x4d7c08__sub0__sub0(yw);
             sb_0x4d7c08__sub0__sub2(yw);
@@ -3514,7 +3514,7 @@ char * gui_update_create_btn(_NC_STACK_ypaworld *yw, char *cur)
 {
     char *pcur = cur;
 
-    if ( yw->field_1b84->field_3D5 == 2 )
+    if ( yw->field_1b84->status == BACT_STATUS_DEAD )
     {
         memset(&create_btn, 0, sizeof(create_btn));
 
@@ -3575,7 +3575,7 @@ char *gui_update_map_squad_btn(_NC_STACK_ypaworld *yw, char *cur)
 {
     char *pcur = cur;
 
-    if ( yw->field_1b84->field_3D5 == 2 )
+    if ( yw->field_1b84->status == BACT_STATUS_DEAD )
     {
         FontUA::select_tileset(&pcur, 23);
 
@@ -3657,7 +3657,7 @@ char *gui_update_player_panel(_NC_STACK_ypaworld *yw, char *cur)
         if ( bzda.field_8DC )
             v35 |= 0x40;
     }
-    else if ( yw->field_1b84->field_3D5 == 2 )
+    else if ( yw->field_1b84->status == BACT_STATUS_DEAD )
     {
         v35 = 0x90;
     }
@@ -3680,7 +3680,7 @@ char *gui_update_player_panel(_NC_STACK_ypaworld *yw, char *cur)
         else if ( yw->field_2414 > 1 )
             v35 = 0x90;
 
-        if ( &yw->field_1b84->list2 != (nlist *)yw->field_1b84->list2.tailpred )
+        if ( &yw->field_1b84->subjects_list != (nlist *)yw->field_1b84->subjects_list.tailpred )
             v35 |= 0x40;
     }
     else
@@ -3696,7 +3696,7 @@ char *gui_update_player_panel(_NC_STACK_ypaworld *yw, char *cur)
             v35 = 0xF0;
     }
 
-    if ( yw->field_1b80->field_3D5 == 2 )
+    if ( yw->field_1b80->status == BACT_STATUS_DEAD )
         v35 = 0;
 
     if ( bzda.field_1CC & 8 )
@@ -3833,7 +3833,7 @@ char *gui_update_tools(_NC_STACK_ypaworld *yw, char *cur)
 {
     char *pcur = cur;
 
-    if ( yw->field_1b84->field_3D5 == 2 )
+    if ( yw->field_1b84->status == BACT_STATUS_DEAD )
     {
         memset(&analyzer_btn, 0, sizeof(analyzer_btn));
 
@@ -4057,22 +4057,22 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub6(_NC_STACK_ypaworld *yw)
     if ( !yw->field_241c )
         return NULL;
 
-    if ( yw->field_241c == yw->field_1b80->ypabact__id )
+    if ( yw->field_241c == yw->field_1b80->gid )
         return yw->field_1b80->self;
 
-    bact_node *v4 = (bact_node *)yw->field_1b80->list2.head;
+    bact_node *v4 = (bact_node *)yw->field_1b80->subjects_list.head;
     while( v4->next )
     {
-        if ( v4->bact->field_3D5 != 2 && v4->bact->field_3D5 != 4 && v4->bact->field_3D5 != 5 )
+        if ( v4->bact->status != BACT_STATUS_DEAD && v4->bact->status != BACT_STATUS_CREATE && v4->bact->status != BACT_STATUS_BEAM )
         {
-            if ( yw->field_241c == v4->bact->ypabact__id )
+            if ( yw->field_241c == v4->bact->gid )
                 return v4->bact->self;
 
 
-            bact_node *v7 = (bact_node *)v4->bact->list2.head;
+            bact_node *v7 = (bact_node *)v4->bact->subjects_list.head;
             while( v7->next )
             {
-                if ( v7->bact->field_3D5 != 2 && v7->bact->field_3D5 != 4 && v7->bact->field_3D5 != 5 && yw->field_241c == v7->bact->ypabact__id )
+                if ( v7->bact->status != BACT_STATUS_DEAD && v7->bact->status != BACT_STATUS_CREATE && v7->bact->status != BACT_STATUS_BEAM && yw->field_241c == v7->bact->gid )
                     return v7->bact->self;
 
                 v7 = (bact_node *)v7->next;
@@ -4198,7 +4198,7 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
         break;
 
     case 8:
-        if ( yw->field_1b84->field_3D5 != 2 )
+        if ( yw->field_1b84->status != BACT_STATUS_DEAD )
         {
             winpt->selected_btnID = 2;
             winpt->selected_btn = &bzda.dialogBox;
@@ -4207,7 +4207,7 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
         break;
 
     case 9:
-        if ( yw->field_1b84->field_3D5 != 2 )
+        if ( yw->field_1b84->status != BACT_STATUS_DEAD )
         {
             winpt->selected_btnID = 3;
             winpt->selected_btn = &bzda.dialogBox;
@@ -4252,9 +4252,9 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
         break;
 
     case 24:
-        if ( yw->field_1b80->field_3D5 == 2 || bzda.field_1D0 & 1 )
+        if ( yw->field_1b80->status == BACT_STATUS_DEAD || bzda.field_1D0 & 1 )
         {
-            if ( yw->field_1b78 == yw->field_1b7c || yw->field_1b80->field_3D5 == 2 )
+            if ( yw->field_1b78 == yw->field_1b7c || yw->field_1b80->status == BACT_STATUS_DEAD )
             {
                 if ( menu_btn.w )
                 {
@@ -4398,7 +4398,7 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
         break;
 
     case 46:
-        if ( yw->field_1b84->field_3D5 != 2 )
+        if ( yw->field_1b84->status != BACT_STATUS_DEAD )
         {
             winpt->selected_btnID = 8;
             winpt->selected_btn = &bzda.dialogBox;
@@ -4430,7 +4430,7 @@ NC_STACK_ypabact * sb_0x4c63d0__sub1(_NC_STACK_ypaworld *yw, int a2)
 {
     for (int i = 0; i < yw->field_2414; i++)
     {
-        if ( a2 == yw->field_1c0c[i]->field_2E )
+        if ( a2 == yw->field_1c0c[i]->commandID )
         {
             if ( i + 1 < yw->field_2414 )
                 return yw->field_1c0c[ i + 1 ]->self;
@@ -4466,11 +4466,11 @@ NC_STACK_ypabact * sb_0x4c63d0(_NC_STACK_ypaworld *yw)
     }
     else
     {
-        if ( yw->field_1b84->field_3D5 == 2 )
+        if ( yw->field_1b84->status == BACT_STATUS_DEAD )
         {
             for (int i = 0; i < yw->field_2414; i++)
             {
-                if ( yw->field_1a10 == yw->field_1c0c[i]->field_2E )
+                if ( yw->field_1a10 == yw->field_1c0c[i]->commandID )
                     return yw->field_1c0c[i]->self;
             }
 
@@ -4500,7 +4500,7 @@ NC_STACK_ypabact * sb_0x4c63d0(_NC_STACK_ypaworld *yw)
 
 void ypaworld_func64__sub7__sub2__sub2(_NC_STACK_ypaworld *yw)
 {
-    if ( yw->field_1b84->field_3D5 != 2 )
+    if ( yw->field_1b84->status != BACT_STATUS_DEAD )
     {
         if ( yw->field_1b84 == yw->field_1b80 )
         {
@@ -4597,13 +4597,13 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub4(_NC_STACK_ypaworld *yw)
     bact_node *v4;
 
     if ( yw->field_1b84->parent_bacto == yw->field_1b84->host_station )
-        v4 = (bact_node *)yw->field_1b84->list2.head;
+        v4 = (bact_node *)yw->field_1b84->subjects_list.head;
     else
-        v4 = (bact_node *)yw->field_1b84->list_node.next;
+        v4 = (bact_node *)yw->field_1b84->subject_node.next;
 
     while (v4->next)
     {
-        if ( v4->bact->field_3D5 != 4 && v4->bact->field_3D5 != 2 && v4->bact->field_3D5 != 5 )
+        if ( v4->bact->status != BACT_STATUS_CREATE && v4->bact->status != BACT_STATUS_DEAD && v4->bact->status != BACT_STATUS_BEAM )
             return v4->bact->self;
 
         v4 = (bact_node *)v4->next;
@@ -4721,7 +4721,7 @@ void sb_0x4c66f8(_NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypaba
     {
         __NC_STACK_ypabact *a4 = bact1->getBACT_pBact();
 
-        if ( a4->field_3D5 != 4 && a4->field_3D5 != 2 && a4->field_3D5 != 5 )
+        if ( a4->status != BACT_STATUS_CREATE && a4->status != BACT_STATUS_DEAD && a4->status != BACT_STATUS_BEAM )
         {
             yw->wis_skeletons.field_76 = yw->field_1614;
 
@@ -4806,7 +4806,7 @@ void  ypaworld_func64__sub7__sub2(_NC_STACK_ypaworld *yw, struC5 *inpt)
             break;
         }
 
-        if ( yw->field_1b84->field_3D5 == 2 )
+        if ( yw->field_1b84->status == BACT_STATUS_DEAD )
         {
             if ( yw->field_162A )
             {
@@ -5420,7 +5420,7 @@ char * ypaworld_func64__sub7__sub7__sub0(_NC_STACK_ypaworld *yw)
 {
     char *pcur = byte_51805C;
 
-    if ( yw->field_1b80->field_3D5 != 2 )
+    if ( yw->field_1b80->status != BACT_STATUS_DEAD )
     {
         int v3 = up_panel.dialogBox.xpos - yw->screen_width / 2;
         int y = up_panel.dialogBox.ypos - yw->screen_height / 2;
@@ -5434,7 +5434,7 @@ char * ypaworld_func64__sub7__sub7__sub0(_NC_STACK_ypaworld *yw)
         int v27 = robo->getROBO_loadFlags();
         int v26 = robo->getROBO_lossFlags();
 
-        int v36 = yw->field_1b80->energy_2;
+        int v36 = yw->field_1b80->energy_max;
 
         yw_arg176 arg176;
         arg176.owner = yw->field_1b80->pSector->owner;
@@ -5559,7 +5559,7 @@ void ypaworld_func64__sub7__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
 uint8_t sub_4C7134(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
 {
-    uint8_t icon = yw->VhclProtos[ bact->id ].type_icon;
+    uint8_t icon = yw->VhclProtos[ bact->vehicleID ].type_icon;
 
     if ( !icon )
         icon = 65;
@@ -5676,7 +5676,7 @@ char * ypaworld_func64__sub7__sub3__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STAC
     {
         v13[0] = 33;
     }
-    else if ( info_log.field_255C == bact->ypabact__id && yw->field_1614 - info_log.msgs[info_log.field_24C].field_4 < 10000 && yw->field_1614 / 300 & 1 )
+    else if ( info_log.field_255C == bact->gid && yw->field_1614 - info_log.msgs[info_log.field_24C].field_4 < 10000 && yw->field_1614 / 300 & 1 )
     {
         v13[0] = 34;
     }
@@ -5715,9 +5715,9 @@ char * ypaworld_func64__sub7__sub3__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STAC
 
 uint8_t ypaworld_func64__sub7__sub3__sub0__sub0__sub0(__NC_STACK_ypabact *bact)
 {
-    if ( bact->field_3D5 == 1 )
+    if ( bact->status == BACT_STATUS_NORMAL )
     {
-        if ( bact->field_3D6 & 0x4000 )
+        if ( bact->status_flg & BACT_STFLAG_ESCAPE )
         {
             return 102;
         }
@@ -5730,9 +5730,9 @@ uint8_t ypaworld_func64__sub7__sub3__sub0__sub0__sub0(__NC_STACK_ypabact *bact)
             return 98;
         }
     }
-    else if ( bact->field_3D5 == 3 )
+    else if ( bact->status == BACT_STATUS_IDLE )
     {
-        if ( bact->field_3D6 & 0x4000 )
+        if ( bact->status_flg & BACT_STFLAG_ESCAPE )
             return 102;
     }
 
@@ -5771,10 +5771,10 @@ char * ypaworld_func64__sub7__sub3__sub0__sub0(_NC_STACK_ypaworld *yw, __NC_STAC
 
     int v41 = squadron_manager.field_2D4;
 
-    bact_node *nod = (bact_node *)bact->list2.head;
+    bact_node *nod = (bact_node *)bact->subjects_list.head;
     while (nod->next)
     {
-        if ( nod->bact->field_3D5 != 2 && nod->bact->field_3D5 != 4 && nod->bact->field_3D5 != 5 )
+        if ( nod->bact->status != BACT_STATUS_DEAD && nod->bact->status != BACT_STATUS_CREATE && nod->bact->status != BACT_STATUS_BEAM )
         {
             if ( nod->bact == yw->field_1b84 && ttt )
                 FontUA::store_u8(&pv, 33);
@@ -5825,7 +5825,7 @@ char * ypaworld_func64__sub7__sub3__sub0__sub0(_NC_STACK_ypaworld *yw, __NC_STAC
             FontUA::add_xpos(&pcur, -(squadron_manager.lstvw.entryWidth - 2 * yw->font_default_w__b));
             FontUA::add_xpos(&pcur, v46);
 
-            float v40 = (float)v44->energy / (float)v44->energy_2;
+            float v40 = (float)v44->energy / (float)v44->energy_max;
 
             if ( v40 > 0.25 )
             {
@@ -5864,7 +5864,7 @@ char * ypaworld_func64__sub7__sub3__sub0__sub3(_NC_STACK_ypaworld *yw, char *cur
     }
     else
     {
-        int v5 = yw->field_1c0c[ yw->field_2410 ]->field_3D4;
+        int v5 = yw->field_1c0c[ yw->field_2410 ]->aggr;
         FontUA::select_tileset(&pcur, 0);
         FontUA::store_u8(&pcur, 123);
         FontUA::store_u8(&pcur, 32);
@@ -6014,18 +6014,18 @@ int ypaworld_func64__sub7__sub3__sub2(_NC_STACK_ypaworld *yw)
 
     if ( bct == squadron_manager.field_2BC )
     {
-        if (bct->field_3D5 != 2 && bct->field_3D5 != 4 && bct->field_3D5 != 5 )
+        if (bct->status != BACT_STATUS_DEAD && bct->status != BACT_STATUS_CREATE && bct->status != BACT_STATUS_BEAM )
             return 1;
     }
 
 
-    bact_node *bbct = (bact_node *)bct->list2.head;
+    bact_node *bbct = (bact_node *)bct->subjects_list.head;
     while (bbct->next)
     {
         if ( bbct->bact == squadron_manager.field_2BC )
         {
-            int v5 = bbct->bact->field_3D5;
-            if ( v5 != 2 && v5 != 4 && v5 != 5 )
+            int v5 = bbct->bact->status;
+            if ( v5 != BACT_STATUS_DEAD && v5 != BACT_STATUS_CREATE && v5 != BACT_STATUS_BEAM )
                 return 1;
         }
 
@@ -6048,7 +6048,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
             {
                 NC_STACK_ypabact *v3 = NULL;
 
-                bact_node *v13 = &squadron_manager.field_2BC->list_node;
+                bact_node *v13 = &squadron_manager.field_2BC->subject_node;
                 while(v13->next)
                 {
                     bact_arg109 arg109;
@@ -6081,7 +6081,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
 
             squadron_manager.field_2BC->self->ypabact_func109(&arg109);
         }
-        yw->field_240c = squadron_manager.field_2BC->field_2E;
+        yw->field_240c = squadron_manager.field_2BC->commandID;
         sub_4C707C(yw);
         sub_4C40AC(yw);
     }
@@ -6100,7 +6100,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
             {
                 if ( squadron_manager.field_2BC->host_station != squadron_manager.field_2BC->parent_bacto )
                 {
-                    bact_node *v9 = &squadron_manager.field_2BC->list_node;
+                    bact_node *v9 = &squadron_manager.field_2BC->subject_node;
                     while (v9->next)
                     {
                         bact_node *next1 = (bact_node *)v9->next;
@@ -6128,7 +6128,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
                 arg109.field_4 = squadron_manager.field_2BC;
                 v6->self->ypabact_func109(&arg109);
             }
-            yw->field_240c = v6->field_2E;
+            yw->field_240c = v6->commandID;
             sub_4C707C(yw);
             sub_4C40AC(yw);
         }
@@ -6137,16 +6137,16 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
 
 void ypaworld_func64__sub7__sub3__sub4(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
 {
-    if ( bact->field_3D5 == 1 )
+    if ( bact->status == BACT_STATUS_NORMAL )
     {
-        if ( bact->field_3D6 & 0x4000 )
+        if ( bact->status_flg & BACT_STFLAG_ESCAPE )
             sub_4811E8(yw, 34);
         else if ( bact->secndTtype )
             sub_4811E8(yw, 32);
         else if ( bact->primTtype )
             sub_4811E8(yw, 33);
     }
-    else if (bact->field_3D5 == 3)
+    else if (bact->status == BACT_STATUS_IDLE)
         sub_4811E8(yw, 31);
 }
 
@@ -6186,11 +6186,11 @@ __NC_STACK_ypabact * sub_4C7B0C(_NC_STACK_ypaworld *yw, int sqid, int a3)
 
     int v6 = squadron_manager.field_2B0;
 
-    bact_node *node = (bact_node *)v3->list2.head;
+    bact_node *node = (bact_node *)v3->subjects_list.head;
 
     while(node->next)
     {
-        int v8 = node->bact->field_3D5;
+        int v8 = node->bact->status;
         if (v8 != 2 && v8 != 4 && v8 != 5)
         {
             v6--;
@@ -6454,7 +6454,7 @@ void ypaworld_func64__sub7__sub1__sub0(_NC_STACK_ypaworld *yw)
                         {
                             if ( bct->bact_type != BACT_TYPES_MISSLE && bct->bact_type != BACT_TYPES_GUN )
                             {
-                                if ( bct->field_3D5 != 4 && bct->field_3D5 != 5 && bct->field_3D5 != 2 )
+                                if ( bct->status != BACT_STATUS_CREATE && bct->status != BACT_STATUS_BEAM && bct->status != BACT_STATUS_DEAD )
                                 {
 
                                     if ( v13 )
@@ -6507,7 +6507,7 @@ void ypaworld_func64__sub7__sub1__sub0(_NC_STACK_ypaworld *yw)
         bzda.field_1D0 = bzda.field_1CC & 0x20;
 
     if ( v13 )
-        yw->field_240c = v13->field_2E;
+        yw->field_240c = v13->commandID;
 
     sub_4C40AC(yw);
 }
@@ -7230,7 +7230,7 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
         if ( !yw->field_1608 )
             a4 |= 0x800;
 
-        if ( yw->field_1b84->field_3D5 == 2 )
+        if ( yw->field_1b84->status == BACT_STATUS_DEAD )
             a4 |= 0x200;
 
         if ( yw->field_757E )
@@ -7729,16 +7729,16 @@ __NC_STACK_ypabact * sub_449518(_NC_STACK_ypaworld *yw)
             if ( v2 )
                 break;
 
-            if ( info_log.field_255C == yw->field_1c0c[i]->ypabact__id )
+            if ( info_log.field_255C == yw->field_1c0c[i]->gid )
             {
                 v2 = yw->field_1c0c[i];
             }
             else
             {
-                bact_node *v5 = (bact_node *)yw->field_1c0c[i]->list2.head;
+                bact_node *v5 = (bact_node *)yw->field_1c0c[i]->subjects_list.head;
                 while (v5->next)
                 {
-                    if ( v5->bact->field_3D5 != 2 && v5->bact->field_3D5 != 4 && v5->bact->field_3D5 != 5 && v5->bact->ypabact__id == info_log.field_255C )
+                    if ( v5->bact->status != BACT_STATUS_DEAD && v5->bact->status != BACT_STATUS_CREATE && v5->bact->status != BACT_STATUS_BEAM && v5->bact->gid == info_log.field_255C )
                     {
                         v2 = v5->bact;
                         break;
@@ -7760,7 +7760,7 @@ __NC_STACK_ypabact * sub_449518(_NC_STACK_ypaworld *yw)
 
 int sub_4C3E34(const void *a1, const void *a2)
 {
-    return ((* (__NC_STACK_ypabact **)a1)->field_2E & 0xFFF) - ((* (__NC_STACK_ypabact **)a2)->field_2E & 0xFFF);
+    return ((* (__NC_STACK_ypabact **)a1)->commandID & 0xFFF) - ((* (__NC_STACK_ypabact **)a2)->commandID & 0xFFF);
 }
 
 
@@ -7773,7 +7773,7 @@ void sub_4C40AC(_NC_STACK_ypaworld *yw)
 
         while (v4->prev)
         {
-            if (v4->bact->field_3D5 != 2 && v4->bact->field_3D5 != 5 && v4->bact->bact_type != BACT_TYPES_GUN)
+            if (v4->bact->status != BACT_STATUS_DEAD && v4->bact->status != BACT_STATUS_BEAM && v4->bact->bact_type != BACT_TYPES_GUN)
             {
                 yw->field_1c0c[v3] = v4->bact;
                 v3++;
@@ -7792,7 +7792,7 @@ void sub_4C40AC(_NC_STACK_ypaworld *yw)
         {
             if ( bzda.field_1D0 & 6 )
             {
-                yw->field_240c = yw->field_1c0c[v3 - 1]->field_2E;
+                yw->field_240c = yw->field_1c0c[v3 - 1]->commandID;
                 yw->field_2410 = v3 - 1;
             }
         }
@@ -7802,7 +7802,7 @@ void sub_4C40AC(_NC_STACK_ypaworld *yw)
 
             for (v10 = 0; v10 < v3; v10++)
             {
-                if (yw->field_240c == yw->field_1c0c[v10]->field_2E)
+                if (yw->field_240c == yw->field_1c0c[v10]->commandID)
                 {
                     yw->field_2410 = v10;
                     break;
@@ -7824,7 +7824,7 @@ void sub_4C40AC(_NC_STACK_ypaworld *yw)
     }
     else
     {
-        bact_node *tmpnd = (bact_node *)yw->field_1c0c[ yw->field_2410 ]->list2.tailpred;
+        bact_node *tmpnd = (bact_node *)yw->field_1c0c[ yw->field_2410 ]->subjects_list.tailpred;
         int i = 0;
 
         while (tmpnd->prev)
@@ -8897,7 +8897,7 @@ void ypaworld_func159__sub0(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, in
 
                 if ( v14 == 1 )
                 {
-                    vo_type = yw->VhclProtos[unit->id].vo_type;
+                    vo_type = yw->VhclProtos[unit->vehicleID].vo_type;
 
                     if ( !vo_type )
                         vo_type = 11;
@@ -8926,7 +8926,7 @@ void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg)
         ypaworld_func159__sub0(yw, arg->unit, arg->field_4, arg->field_C);
 
     if ( arg->unit )
-        info_log.field_255C = arg->unit->ypabact__id;
+        info_log.field_255C = arg->unit->gid;
     else
         info_log.field_255C = 0;
 
@@ -8973,7 +8973,7 @@ void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg)
         info_log.field_250 = arg->field_4;
 
         if ( arg->unit )
-            v6->id = arg->unit->ypabact__id;
+            v6->id = arg->unit->gid;
         else
             v6->id = 0;
 
@@ -9016,7 +9016,7 @@ void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg)
                 v6 = &info_log.msgs[ info_log.msg_count ];
 
                 if ( arg->unit )
-                    v6->id = arg->unit->ypabact__id;
+                    v6->id = arg->unit->gid;
                 else
                     v6->id = 0;
 
@@ -9449,7 +9449,7 @@ char * yw_RenderInfoLifebar(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, __
     if ( bact )
     {
         a6a = bact->energy;
-        v10 = bact->energy_2;
+        v10 = bact->energy_max;
     }
     else
     {
@@ -9688,7 +9688,7 @@ char * yw_RenderHUDInfo(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float 
     }
 
     if ( vhclid == -1 )
-        vhclid = bact->id;
+        vhclid = bact->vehicleID;
 
     VhclProto *vhcl = &yw->VhclProtos[vhclid];
 
@@ -10130,11 +10130,11 @@ void sb_0x4d7c08__sub0__sub4(_NC_STACK_ypaworld *yw)
 {
     char *pcur = byte_5C8DB0;
 
-    if ( yw->field_1b84->field_3D5 == 2 )
+    if ( yw->field_1b84->status == BACT_STATUS_DEAD )
     {
         const char *msg;
 
-        if ( yw->field_1b80->field_3D6 & 0x2000000 )
+        if ( yw->field_1b80->status_flg & BACT_STFLAG_CLEAN )
         {
             msg = NULL;
         }
@@ -10143,7 +10143,7 @@ void sb_0x4d7c08__sub0__sub4(_NC_STACK_ypaworld *yw)
             int strid;
             const char *defMsg;
 
-            if ( yw->field_1b80->field_3D5 == 2 )
+            if ( yw->field_1b80->status == BACT_STATUS_DEAD )
             {
                 defMsg = "* * *  H O S T  S T A T I O N  D E S T R O Y E D  * * *";
                 strid = 11;
@@ -10171,13 +10171,13 @@ void sb_0x4d7c08__sub0__sub4(_NC_STACK_ypaworld *yw)
     {
         yw_RenderHUDRadare(yw);
 
-        if ( yw->field_1b84->energy >= yw->field_1b84->energy_2 )
+        if ( yw->field_1b84->energy >= yw->field_1b84->energy_max )
         {
             yw->wis_skeletons.field_82 = 3000;
         }
         else
         {
-            yw->wis_skeletons.field_82 = 3000 * yw->field_1b84->energy / yw->field_1b84->energy_2;
+            yw->wis_skeletons.field_82 = 3000 * yw->field_1b84->energy / yw->field_1b84->energy_max;
 
             if ( yw->wis_skeletons.field_82 < 200 )
                 yw->wis_skeletons.field_82 = 200;
@@ -10275,7 +10275,7 @@ void yw_RenderHUDTarget(_NC_STACK_ypaworld *yw, sklt_wis *wis)
         VhclProto *vhcl;
 
         if ( yw->field_1b84 && yw->VhclProtos != NULL )
-            vhcl = &yw->VhclProtos[ yw->field_1b84->id ];
+            vhcl = &yw->VhclProtos[ yw->field_1b84->vehicleID ];
         else
             vhcl = NULL;
 
@@ -10607,7 +10607,7 @@ char * yw_RenderOverlayCursors(_NC_STACK_ypaworld *yw, char *cur)
                         if ( bct->bact_type != BACT_TYPES_MISSLE && bct->bact_type != BACT_TYPES_ROBO )
                         {
 
-                            if ( bct->field_3D5 != 4 && bct->field_3D5 != 5 && bct->field_3D5 != 2 )
+                            if ( bct->status != BACT_STATUS_CREATE && bct->status != BACT_STATUS_BEAM && bct->status != BACT_STATUS_DEAD )
                             {
                                 if ( bct->bact_type != BACT_TYPES_GUN )
                                     yw_RenderCursorOverUnit(yw, bct);
@@ -10621,7 +10621,7 @@ char * yw_RenderOverlayCursors(_NC_STACK_ypaworld *yw, char *cur)
 
                                 if ( yw->field_757E )
                                 {
-                                    if ( bct->field_3D6 & 0x800000 )
+                                    if ( bct->status_flg & BACT_STFLAG_ISVIEW )
                                     {
                                         if ( yw->GameShell )
                                             pcur = sb_0x4d7c08__sub0__sub4__sub0__sub0(yw, pcur, bct);
@@ -10710,7 +10710,7 @@ char * yw_RenderUnitLifeBar(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabac
                             FontUA::set_center_xpos(&pcur, v42 - (yw->screen_width / 2) );
                             FontUA::set_center_ypos(&pcur, v41 - (yw->screen_height / 2) );
 
-                            int v38 = bact->energy_2 / v13;
+                            int v38 = bact->energy_max / v13;
 
                             int v27 = v38 / 2; //v38 - (v38 / 2);
 
@@ -11292,7 +11292,7 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
             squadron_manager.lstvw.SetRect(yw, -2, -2);
         }
     }
-    else if ( bact1->field_3D5 == 2 )
+    else if ( bact1->status == BACT_STATUS_DEAD )
     {
         if ( yw->vhcl_map_status.p1 )
         {
@@ -11542,7 +11542,7 @@ int ypaworld_func64__sub21__sub3(_NC_STACK_ypaworld *yw)
     while ( v11->next )
     {
 
-        if ( v11->bact_type == BACT_TYPES_ROBO && v11->field_3D5 != 2 && v11->owner != yw->field_1b80->owner )
+        if ( v11->bact_type == BACT_TYPES_ROBO && v11->status != BACT_STATUS_DEAD && v11->owner != yw->field_1b80->owner )
             return 5;
 
         v11 = (__NC_STACK_ypabact *)v11->next;
@@ -11749,7 +11749,7 @@ void yw_MAP_MouseSelect(_NC_STACK_ypaworld *yw, winp_131arg *winp)
                 {
                     if ( (v16 != 1 || v17->owner != yw->field_1b80->owner) && (v16 || v17->owner == yw->field_1b80->owner) )
                     {
-                        if ( v17->field_3D5 != 4 && v17->field_3D5 != 2 && v17->field_3D5 != 5 && v17->bact_type != BACT_TYPES_MISSLE )
+                        if ( v17->status != BACT_STATUS_CREATE && v17->status != BACT_STATUS_DEAD && v17->status != BACT_STATUS_BEAM && v17->bact_type != BACT_TYPES_MISSLE )
                         {
                             int v19 = v17->position.sx / robo_map.field_1E0;
                             int v20 = v17->position.sz / robo_map.field_1E4;
@@ -11786,7 +11786,7 @@ void yw_SMAN_MouseSelect(_NC_STACK_ypaworld *yw, winp_131arg *winp)
 
         if ( v4 )
         {
-            if ( v4->field_3D5 != 4 && v4->field_3D5 != 2 && v4->field_3D5 != 5 )
+            if ( v4->status != BACT_STATUS_CREATE && v4->status != BACT_STATUS_DEAD && v4->status != BACT_STATUS_BEAM )
             {
                 yw->field_1a98 = v4;
                 yw->field_1a58 |= 0x20;
@@ -11798,7 +11798,7 @@ void yw_SMAN_MouseSelect(_NC_STACK_ypaworld *yw, winp_131arg *winp)
 
             if ( v4 )
             {
-                if ( v4->field_3D5 == 4 || v4->field_3D5 == 5 || v4->field_3D5 == 2 )
+                if ( v4->status == BACT_STATUS_CREATE || v4->status == BACT_STATUS_BEAM || v4->status == BACT_STATUS_DEAD )
                     v4 = NULL;
 
                 if ( v4 )
@@ -11913,7 +11913,7 @@ void yw_3D_MouseSelect(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, winp_131a
     {
         int v20 = 0;
 
-        if ( arg150.field_24->field_3D5 == 4 || arg150.field_24->field_3D5 == 2 || arg150.field_24->field_3D5 == 5 || arg150.field_24->bact_type == BACT_TYPES_MISSLE )
+        if ( arg150.field_24->status == BACT_STATUS_CREATE || arg150.field_24->status == BACT_STATUS_DEAD || arg150.field_24->status == BACT_STATUS_BEAM || arg150.field_24->bact_type == BACT_TYPES_MISSLE )
             v20 = 1;
 
         if ( v20 )
@@ -11998,7 +11998,7 @@ void ypaworld_func64__sub21__sub5(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw
         {
             if ( sub_4D3C80(yw) )
             {
-                yw->field_240c = yw->field_1a98->field_2E;
+                yw->field_240c = yw->field_1a98->commandID;
                 sub_4C40AC(yw);
             }
         }
@@ -12087,7 +12087,7 @@ void ypaworld_func64__sub21__sub5(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw
         {
             if ( sub_4D3C80(yw) )
             {
-                yw->field_240c = yw->field_1a98->field_2E;
+                yw->field_240c = yw->field_1a98->commandID;
                 sub_4C40AC(yw);
             }
         }
@@ -12579,7 +12579,7 @@ void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
         yw->field_1628 = 0;
     }
 
-    if ( yw->field_1b84->field_3D5 == 2 )
+    if ( yw->field_1b84->status == BACT_STATUS_DEAD )
     {
         yw->field_17c0 = 0;
     }

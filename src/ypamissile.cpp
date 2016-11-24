@@ -326,7 +326,7 @@ void NC_STACK_ypamissile::ypabact_func68(ypabact_arg65 *arg)
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
-    if ( miss->selfie->field_3D5 == 2 )
+    if ( miss->selfie->status == BACT_STATUS_DEAD )
     {
         int a4 = getBACT_yourLastSeconds();
 
@@ -413,7 +413,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
             __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v68[ i ]->units_list.head;
             for (; bct->next ; bct = (__NC_STACK_ypabact *)bct->next)
             {
-                if ( bct == bact || bct == miss->ejaculator_bact || bct->bact_type == BACT_TYPES_MISSLE || bct->field_3D5 == 2 )
+                if ( bct == bact || bct == miss->ejaculator_bact || bct->bact_type == BACT_TYPES_MISSLE || bct->status == BACT_STATUS_DEAD )
                     continue;
 
                 if (bct->bact_type == BACT_TYPES_GUN && bct->shield >= 100)
@@ -543,7 +543,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                                     v91 += radius;
                                     v81++;
 
-                                    bct->field_3D6 &= ~0x200;
+                                    bct->status_flg &= ~0x200;
 
                                     v78 += bct->position;
 
@@ -579,7 +579,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                                     float v46;
                                     float v47;
 
-                                    if ( v83 || bct->field_3D6 & 0x800000 )
+                                    if ( v83 || bct->status_flg & BACT_STFLAG_ISVIEW )
                                     {
                                         v46 = v92 * (100 - bct->shield);
                                         v47 = 250;
@@ -668,7 +668,7 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
 
     float v38 = arg->field_4 * 0.001;
 
-    if ( bact->field_3D5 == 1 )
+    if ( bact->status == BACT_STATUS_NORMAL )
     {
         if ( miss->field_2D & 2)
             miss->delay_time -= arg->field_4;
@@ -677,7 +677,7 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
         {
             ypamissile_func129(NULL);
 
-            miss->selfie->field_3D5 = 2;
+            miss->selfie->status = BACT_STATUS_DEAD;
 
             bact_arg119 arg78;
             arg78.field_4 = 2048;
@@ -790,7 +790,7 @@ void NC_STACK_ypamissile::ypabact_func70(ypabact_arg65 *arg)
                     {
                         ypamissile_func129(NULL);
 
-                        miss->selfie->field_3D5 = 2;
+                        miss->selfie->status = BACT_STATUS_DEAD;
 
                         bact_arg119 arg78;
                         arg78.field_4 = 2048;
@@ -880,7 +880,7 @@ void NC_STACK_ypamissile::ypabact_func71(ypabact_arg65 *arg)
 
     bact->old_pos = bact->position;
 
-    if (bact->field_3D5 == 1)
+    if (bact->status == BACT_STATUS_NORMAL)
         ypabact_func68(arg);
     else
         ypamissile_func128(NULL);
@@ -895,7 +895,7 @@ void NC_STACK_ypamissile::ypabact_func74(bact_arg74 *arg)
 
     float v8;
 
-    if ( bact->field_3D5 != 2 && miss->field_c != 1 )
+    if ( bact->status != BACT_STATUS_DEAD && miss->field_c != 1 )
         v8 = bact->mass * 9.80665;
     else
         v8 = bact->mass * 39.2266;
@@ -963,25 +963,25 @@ size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
-    sub_424000(&bact->field_5A, 2);
-    sub_424000(&bact->field_5A, 0);
-    sub_424000(&bact->field_5A, 1);
+    sub_424000(&bact->soundcarrier, 2);
+    sub_424000(&bact->soundcarrier, 0);
+    sub_424000(&bact->soundcarrier, 1);
 
     if ( arg->field_0 )
-        bact->field_3D5 = arg->field_0;
+        bact->status = arg->field_0;
 
     if ( arg->field_4 )
-        bact->field_3D6 |= arg->field_4;
+        bact->status_flg |= arg->field_4;
 
     if ( arg->field_8 )
-        bact->field_3D6 &= ~arg->field_8;
+        bact->status_flg &= ~arg->field_8;
 
     if ( arg->field_0 == 2 )
     {
         setBACT_visProto(bact->vp_dead.base);
         setBACT_vpTransform(bact->vp_dead.trigo);
 
-        startSound(&bact->field_5A, 2);
+        startSound(&bact->soundcarrier, 2);
 
         uint8_t v8 = 1;
         ypabact_func113(&v8);
@@ -994,7 +994,7 @@ size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
         setBACT_visProto(bact->vp_normal.base);
         setBACT_vpTransform(bact->vp_normal.trigo);
 
-        startSound(&bact->field_5A, 0);
+        startSound(&bact->soundcarrier, 0);
     }
 
     if ( arg->field_8 == 2048 )
@@ -1002,17 +1002,17 @@ size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
         setBACT_visProto(bact->vp_normal.base);
         setBACT_vpTransform(bact->vp_normal.trigo);
 
-        startSound(&bact->field_5A, 0);
+        startSound(&bact->soundcarrier, 0);
     }
 
     if ( arg->field_4 == 2048 )
     {
-        bact->field_3D5 = 2;
+        bact->status = BACT_STATUS_DEAD;
 
         setBACT_visProto(bact->vp_megadeth.base);
         setBACT_vpTransform(bact->vp_megadeth.trigo);
 
-        startSound(&bact->field_5A, 2);
+        startSound(&bact->soundcarrier, 2);
 
         uint8_t v9 = 2;
         ypabact_func113(&v9);
@@ -1034,7 +1034,7 @@ void NC_STACK_ypamissile::ypamissile_func128(void *)
         setBACT_viewer(0);
         setBACT_inputting(0);
 
-        if ( miss->ejaculator_bact->field_3D5 != 2 || (size_t)miss->ejaculator_bact->parent_bacto <= 3 )
+        if ( miss->ejaculator_bact->status != BACT_STATUS_DEAD || (size_t)miss->ejaculator_bact->parent_bacto <= 3 )
         {
             miss->ejaculator_bact->self->setBACT_viewer(1);
             miss->ejaculator_bact->self->setBACT_inputting(1);
@@ -1073,7 +1073,7 @@ void NC_STACK_ypamissile::ypamissile_func129(void *)
 
     while(bct->next)
     {
-        if ( bct->bact_type != BACT_TYPES_MISSLE && bct->bact_type != BACT_TYPES_ROBO && bct->bact_type != BACT_TYPES_TANK && bct->bact_type != BACT_TYPES_CAR && bct->bact_type != BACT_TYPES_GUN && bct->bact_type != BACT_TYPES_HOVER && !(bct->field_3D6 & 0x800) )
+        if ( bct->bact_type != BACT_TYPES_MISSLE && bct->bact_type != BACT_TYPES_ROBO && bct->bact_type != BACT_TYPES_TANK && bct->bact_type != BACT_TYPES_CAR && bct->bact_type != BACT_TYPES_GUN && bct->bact_type != BACT_TYPES_HOVER && !(bct->status_flg & BACT_STFLAG_DEATH2) )
         {
             int v10 = 1;
 

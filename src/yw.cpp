@@ -2126,7 +2126,7 @@ void NC_STACK_ypaworld::ypaworld_func144(NC_STACK_ypabact *bacto)
             ypa_log_out("OH NO! The DEATH CACHE BUG is back!\n");
     }
 
-    sub_423DD8(&bact->field_5A);
+    sub_423DD8(&bact->soundcarrier);
 
     bact_arg73 cache;
     cache.bacto = (NC_STACK_ypabact *)1;
@@ -2143,7 +2143,7 @@ void NC_STACK_ypaworld::ypaworld_func144(NC_STACK_ypabact *bacto)
 
     bacto->ypabact_func80(&v6);
 
-    bact->field_3D6 |= 0x400000;
+    bact->status_flg |= BACT_STFLAG_NORENDER;
 }
 
 
@@ -2164,7 +2164,7 @@ size_t NC_STACK_ypaworld::ypaworld_func145(__NC_STACK_ypabact *bact)
 
     while (v21->next) //Robos
     {
-        if ( v21->bact->field_3D6 & 0x800000 )
+        if ( v21->bact->status_flg & BACT_STFLAG_ISVIEW )
         {
             int v10 = abs(v21->bact->sectX - bact->sectX);
             int v11 = abs(v21->bact->sectY - bact->sectY);
@@ -2175,11 +2175,11 @@ size_t NC_STACK_ypaworld::ypaworld_func145(__NC_STACK_ypabact *bact)
 
 
 
-        bact_node *v22 = (bact_node *)v21->bact->list2.head;
+        bact_node *v22 = (bact_node *)v21->bact->subjects_list.head;
 
         while (v22->next) // Squad comms
         {
-            if ( v22->bact->field_3D6 & 0x800000 )
+            if ( v22->bact->status_flg & BACT_STFLAG_ISVIEW )
             {
                 int v10 = abs(v22->bact->sectX - bact->sectX);
                 int v11 = abs(v22->bact->sectY - bact->sectY);
@@ -2190,11 +2190,11 @@ size_t NC_STACK_ypaworld::ypaworld_func145(__NC_STACK_ypabact *bact)
 
 
 
-            bact_node *v23 = (bact_node *)v22->bact->list2.head;
+            bact_node *v23 = (bact_node *)v22->bact->subjects_list.head;
 
             while (v23->next) // Squad units
             {
-                if ( v23->bact->field_3D6 & 0x800000 )
+                if ( v23->bact->status_flg & BACT_STFLAG_ISVIEW )
                 {
                     int v10 = abs(v23->bact->sectX - bact->sectX);
                     int v11 = abs(v23->bact->sectY - bact->sectY);
@@ -2234,7 +2234,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         bact = bacto->getBACT_pBact();// bact
 
         bact->energy = vhcl->energy;
-        bact->energy_2 = vhcl->energy;
+        bact->energy_max = vhcl->energy;
         bact->shield = vhcl->shield;
         bact->mass = vhcl->mass;
         bact->force = vhcl->force;
@@ -2253,8 +2253,8 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         bact->radar = vhcl->radar;
         bact->gun_radius = vhcl->gun_radius;
         bact->gun_power = vhcl->gun_power;
-        bact->max_pitch = vhcl->max_pitch;
-        bact->id = vhcl_id->vehicle_id;
+        bact->pitch_max = vhcl->max_pitch;
+        bact->vehicleID = vhcl_id->vehicle_id;
         bact->weapon = vhcl->weapon;
 
         if ( vhcl->weapon == -1 )
@@ -2299,17 +2299,17 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
             bact->models_bases[i] = yw->vhcls_models[ vhcl->scale_fx_pXX[ i ] ].base;
             bact->models_trigo[i] = yw->vhcls_models[ vhcl->scale_fx_pXX[ i ] ].trigo;
 
-            bact->field_3D6 |= 0x1000000;
+            bact->status_flg |= BACT_STFLAG_SEFFECT;
         }
 
-        sub_423DB0(&bact->field_5A);
+        sub_423DB0(&bact->soundcarrier);
 
         for (int i = 0; i < 12; i++)
             sub_44BF34(&vhcl->sndFX[i]);
 
         for (int i = 0; i < 12; i++)
         {
-            userdata_sample_info *smpl_inf = &bact->field_5A.samples_data[ i ];
+            userdata_sample_info *smpl_inf = &bact->soundcarrier.samples_data[ i ];
 
             smpl_inf->volume = vhcl->sndFX[i].volume;
             smpl_inf->pitch = vhcl->sndFX[i].pitch;
@@ -2353,8 +2353,8 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
             }
         }
 
-        bact->field_3BA = bact->field_5A.samples_data[0].pitch;
-        bact->field_3B6 = bact->field_5A.samples_data[0].volume;
+        bact->pitch = bact->soundcarrier.samples_data[0].pitch;
+        bact->volume = bact->soundcarrier.samples_data[0].volume;
 
         bacto->func2(vhcl->stak);
 
@@ -2397,7 +2397,7 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
     //wbact = wobj->getBACT_pBact();
 
     wbact->energy = wproto->energy;
-    wbact->energy_2 = wproto->energy;
+    wbact->energy_max = wproto->energy;
     wbact->shield = 0;
     wbact->mass = wproto->mass;
     wbact->force = wproto->force;
@@ -2411,7 +2411,7 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
     wbact->airconst_static = wproto->airconst;
     wbact->adist_sector = wproto->field_890;
     wbact->adist_bact = wproto->field_894;
-    wbact->id = arg->vehicle_id;
+    wbact->vehicleID = arg->vehicle_id;
     wbact->weapon = 0;
 
     wbact->vp_normal =   yw->vhcls_models[wproto->vp_normal];
@@ -2473,14 +2473,14 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
         wobj->setMISS_radRobo(0.0);
     }
 
-    sub_423DB0(&wbact->field_5A);
+    sub_423DB0(&wbact->soundcarrier);
 
     for (int i = 0; i < 3; i++)
         sub_44BF34(&wproto->sndFXes[i]);
 
     for (int i = 0; i < 3; i++)
     {
-        userdata_sample_info *v25 = &wbact->field_5A.samples_data[i];
+        userdata_sample_info *v25 = &wbact->soundcarrier.samples_data[i];
 
         v25->volume = wproto->sndFXes[i].volume;
         v25->pitch = wproto->sndFXes[i].pitch;
@@ -2805,7 +2805,7 @@ void NC_STACK_ypaworld::ypaworld_func150(yw_arg150 *arg)
 
             while (sect_bacts->next)
             {
-                if ( sect_bacts != arg->unit && sect_bacts->field_3D5 != 2 )
+                if ( sect_bacts != arg->unit && sect_bacts->status != BACT_STATUS_DEAD )
                 {
                     if ( !(arg->unit == yw->field_1b84 && yw->field_1b70) || sect_bacts != yw->field_1b80 )
                     {
@@ -7090,7 +7090,7 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
     sub_423EFC(arg->field_4, &yw->field_1b84->position, &a3a, &yw->field_1b84->rotation);
 
-    bact_node *bct = (bact_node *)yw->field_1b84->list2.head;
+    bact_node *bct = (bact_node *)yw->field_1b84->subjects_list.head;
 
     while ( bct->next )
     {
@@ -7106,13 +7106,13 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
         bct->bact->field_87D.scale_rotation.m21 = bct->bact->rotation.m12;
         bct->bact->field_87D.scale_rotation.m22 = bct->bact->rotation.m22;
 
-        bct->bact->field_5A.field_0 = bct->bact->position;
+        bct->bact->soundcarrier.field_0 = bct->bact->position;
 
-        bct->bact->field_5A.field_C = bct->bact->fly_dir.sx * bct->bact->fly_dir_length;
-        bct->bact->field_5A.field_10 = bct->bact->fly_dir.sy * bct->bact->fly_dir_length;
-        bct->bact->field_5A.field_14 = bct->bact->fly_dir.sz * bct->bact->fly_dir_length;
+        bct->bact->soundcarrier.field_C = bct->bact->fly_dir.sx * bct->bact->fly_dir_length;
+        bct->bact->soundcarrier.field_10 = bct->bact->fly_dir.sy * bct->bact->fly_dir_length;
+        bct->bact->soundcarrier.field_14 = bct->bact->fly_dir.sz * bct->bact->fly_dir_length;
 
-        sb_0x4242e0(&bct->bact->field_5A);
+        sb_0x4242e0(&bct->bact->soundcarrier);
 
         bct = (bact_node *)bct->next;
     }
@@ -7636,14 +7636,14 @@ size_t NC_STACK_ypaworld::ypaworld_func168(__NC_STACK_ypabact **pbact)
             }
             else
             {
-                yw->field_8283 += (bact->energy_2 + 99) / 100;
+                yw->field_8283 += (bact->energy_max + 99) / 100;
 
                 if ( yw->field_2d90->buddies_count < 128 && yw->field_8283 < yw->beamenergy )
                 {
                     int v15 = yw->field_2d90->buddies_count;
 
-                    yw->field_2d90->buddies[v15].commandid = bact->field_2E;
-                    yw->field_2d90->buddies[v15].type = bact->id;
+                    yw->field_2d90->buddies[v15].commandid = bact->commandID;
+                    yw->field_2d90->buddies[v15].type = bact->vehicleID;
                     yw->field_2d90->buddies[v15].energy = bact->energy;
 
                     yw->field_2d90->buddies_count++;
@@ -7788,13 +7788,13 @@ void ypaworld_func169__sub2(_NC_STACK_ypaworld *yw)
     {
         sb_0x47b028(yw, station, station, 1);
 
-        bact_node *commander = (bact_node *)station->bact->list2.head;
+        bact_node *commander = (bact_node *)station->bact->subjects_list.head;
 
         while (commander->next)
         {
             sb_0x47b028(yw, commander, station, 0);
 
-            bact_node *slave = (bact_node *)commander->bact->list2.head;
+            bact_node *slave = (bact_node *)commander->bact->subjects_list.head;
             while (slave->next)
             {
                 sb_0x47b028(yw, slave, station, 0);
@@ -7948,11 +7948,11 @@ size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
 
     if ( isfin_save )
     {
-        yw->maxroboenergy = yw->field_1b80->energy_2;
+        yw->maxroboenergy = yw->field_1b80->energy_max;
         write_modifers = 0;
         write_user = 0;
         write_level_statuses = 0;
-        yw->maxreloadconst = yw->field_1b80->reload_const_or_energy2;
+        yw->maxreloadconst = yw->field_1b80->reload_const;
     }
     else
     {
@@ -8716,7 +8716,7 @@ size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
         if ( !v6 )
             ypa_log_out("Warning: in YWM_ADVANCEDCREATELEVEL: YWM_LOADGAME of %s failed!\n", buf);
 
-        yw->field_1b80->energy = yw->field_1b80->energy_2;
+        yw->field_1b80->energy = yw->field_1b80->energy_max;
 
         if ( yw->map_events )
             yw->map_events->event_loop_id = 0;
@@ -8823,7 +8823,7 @@ void NC_STACK_ypaworld::setYW_userHostStation(NC_STACK_ypabact *host)
 {
     stack__ypaworld.field_1b78 = host;
     stack__ypaworld.field_1b80 = host->getBACT_pBact();
-    stack__ypaworld.field_1b88 = &stack__ypaworld.field_1b80->list2;
+    stack__ypaworld.field_1b88 = &stack__ypaworld.field_1b80->subjects_list;
 }
 
 void NC_STACK_ypaworld::setYW_userVehicle(NC_STACK_ypabact *bact)
@@ -8833,13 +8833,13 @@ void NC_STACK_ypaworld::setYW_userVehicle(NC_STACK_ypabact *bact)
         __NC_STACK_ypabact *oldpBact = stack__ypaworld.field_1b84;
 
         if ( oldpBact )
-            stack__ypaworld.field_241c = oldpBact->ypabact__id;
+            stack__ypaworld.field_241c = oldpBact->gid;
 
         stack__ypaworld.field_1b7c = bact;
         stack__ypaworld.field_1b84 = bact->getBACT_pBact();
 
         stack__ypaworld.field_1a0c = stack__ypaworld.field_1614;
-        stack__ypaworld.field_1a10 = stack__ypaworld.field_1b84->field_2E;
+        stack__ypaworld.field_1a10 = stack__ypaworld.field_1b84->commandID;
         stack__ypaworld.field_17bc = 0;
 
         if ( stack__ypaworld.field_1b84->bact_type == BACT_TYPES_ROBO )

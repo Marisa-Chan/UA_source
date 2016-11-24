@@ -48,6 +48,51 @@ enum BACT_TGT_TYPE
     BACT_TGT_TYPE_UNIT_IND = 6
 };
 
+enum BACT_STATUS
+{
+    BACT_STATUS_NOPE = 0,
+    BACT_STATUS_NORMAL = 1,
+    BACT_STATUS_DEAD = 2,
+    BACT_STATUS_IDLE = 3,
+    BACT_STATUS_CREATE = 4,
+    BACT_STATUS_BEAM = 5
+};
+
+enum BACT_STFLAG
+{
+    BACT_STFLAG_FIGHT_P     = 1, // Primary target fight
+    BACT_STFLAG_FIGHT_S     = 2, // Secondary target fight
+    BACT_STFLAG_FORMATION   = 4,
+    //BACT_STFLAG_DODGE = 8,          //Unused flag
+    BACT_STFLAG_DODGE_LEFT  = 0x10,
+    BACT_STFLAG_DODGE_RIGHT = 0x20,
+    BACT_STFLAG_MOVE        = 0x40,
+    BACT_STFLAG_UPWRD       = 0x80,
+    BACT_STFLAG_FIRE        = 0x100,
+    BACT_STFLAG_LAND        = 0x200,
+    BACT_STFLAG_DEATH1      = 0x400,
+    BACT_STFLAG_DEATH2      = 0x800,
+    //BACT_STFLAG_AKKU        = 0x1000,  //Unused flag
+    BACT_STFLAG_APPROACH    = 0x2000,
+    BACT_STFLAG_ESCAPE      = 0x4000,
+    BACT_STFLAG_XLEFT       = 0x8000,
+    BACT_STFLAG_YUP         = 0x10000,
+    BACT_STFLAG_BCRASH      = 0x20000,
+    BACT_STFLAG_LCRASH      = 0x40000,
+    BACT_STFLAG_UNUSE       = 0x80000,
+    BACT_STFLAG_SCALE       = 0x100000,
+    BACT_STFLAG_SHAKE       = 0x200000,
+    BACT_STFLAG_NORENDER    = 0x400000,
+    BACT_STFLAG_ISVIEW      = 0x800000,
+    BACT_STFLAG_SEFFECT     = 0x1000000,
+    BACT_STFLAG_CLEAN       = 0x2000000,
+    BACT_STFLAG_WAYPOINT    = 0x4000000,
+    BACT_STFLAG_WAYPOINTCCL = 0x8000000,
+    BACT_STFLAG_NOMSG       = 0x10000000,
+    BACT_STFLAG_DSETTED     = 0x20000000,
+    BACT_STFLAG_ATTACK      = 0x40000000
+};
+
 union BactTarget
 {
     __NC_STACK_ypabact *pbact;
@@ -95,31 +140,31 @@ struct __NC_STACK_ypabact : public nnode
     int16_t secMaxX;
     int16_t secMaxY;
     int bact_type;
-    int ypabact__id;
-    uint8_t id;
+    int gid; // global bact id
+    uint8_t vehicleID; // vehicle id, from scr files
     char field_2D;
-    int field_2E;
+    int commandID;
     NC_STACK_yparobo *host_station; // parent robo?
     NC_STACK_ypabact *parent_bacto;
     __NC_STACK_ypabact *parent_bact;
-    nlist list2;
-    bact_node list_node;
-    samples_collection1 field_5A;
-    int field_3B2;
-    int field_3B6;
-    int field_3BA;
-    float max_pitch;
+    nlist subjects_list;
+    bact_node subject_node;
+    samples_collection1 soundcarrier;
+    int soundFlags;
+    int volume;
+    int pitch;
+    float pitch_max;
     int energy;
-    int energy_2;
-    int reload_const_or_energy2;
-    int16_t field_3CE;
+    int energy_max;
+    int reload_const;
+//    int16_t field_3CE;
     char shield;
-    char field_3D1;
-    char radar;
+//    char field_3D1;
+    char radar; // num sectors view
     uint8_t owner;
-    char field_3D4;
-    char field_3D5;
-    int field_3D6;
+    char aggr;
+    char status;
+    int status_flg; //Additional status flags
     int field_3DA;
     char primTtype;
     char secndTtype;

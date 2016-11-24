@@ -200,9 +200,9 @@ void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
     if ( v108 > ufo->field_c )
         v108 = ufo->field_c;
 
-    switch ( bact->field_3D5 )
+    switch ( bact->status )
     {
-    case 1:
+    case BACT_STATUS_NORMAL:
     {
         bact->thraction = bact->force;
 
@@ -494,9 +494,9 @@ void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
                 }
                 else
                 {
-                    bact->field_3D6 &= 0xFFFFFFFC;
+                    bact->status_flg &= ~(BACT_STFLAG_FIGHT_P | BACT_STFLAG_FIGHT_S);
 
-                    if ( bact->field_3D6 & 0x100 )
+                    if ( bact->status_flg & BACT_STFLAG_FIRE )
                     {
                         bact_arg119 arg78;
                         arg78.field_8 = 256;
@@ -509,11 +509,11 @@ void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
             }
             else
             {
-                bact->field_3D6 &= 0xFFFFFFFC;
+                bact->status_flg &= ~(BACT_STFLAG_FIGHT_P | BACT_STFLAG_FIGHT_S);
 
                 bact_arg119 arg78;
 
-                if ( bact->field_3D6 & 0x100 )
+                if ( bact->status_flg & BACT_STFLAG_FIRE )
                 {
                     arg78.field_0 = 0;
                     arg78.field_4 = 0;
@@ -532,7 +532,7 @@ void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
     }
     break;
 
-    case 3:
+    case BACT_STATUS_IDLE:
     {
         if ( bact->field_915 - bact->field_941 > 500 )
         {
@@ -614,7 +614,7 @@ void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
 
             ufo->field_14 = 0;
 
-            if ( bact->field_3D6 & 0x200 )
+            if ( bact->status_flg & BACT_STFLAG_LAND )
             {
                 bact_arg119 arg78;
                 arg78.field_8 = 0;
@@ -650,15 +650,15 @@ void NC_STACK_ypaufo::ypabact_func70(ypabact_arg65 *arg)
     }
     break;
 
-    case 2:
+    case BACT_STATUS_DEAD:
         ypabact_func121(arg);
         break;
 
-    case 4:
+    case BACT_STATUS_CREATE:
         ypabact_func99(arg);
         break;
 
-    case 5:
+    case BACT_STATUS_BEAM:
         ypabact_func112(arg);
         break;
     }
@@ -675,16 +675,16 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
 
     bact->old_pos = bact->position;
 
-    if ( bact->field_3D5 == 2 )
+    if ( bact->status == BACT_STATUS_DEAD )
     {
         ypabact_func121(arg);
     }
-    else if ( bact->field_3D5 == 1 || bact->field_3D5 == 3 )
+    else if ( bact->status == BACT_STATUS_NORMAL || bact->status == BACT_STATUS_IDLE )
     {
 
         if ( bact->fly_dir_length != 0.0 )
         {
-            if ( !(bact->field_3D6 & 0x100) )
+            if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
             {
                 bact_arg119 arg78;
                 arg78.field_0 = 1;
@@ -694,7 +694,7 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
                 ypabact_func78(&arg78);
             }
 
-            bact->field_3D6 &= 0xFFFFFDFF;
+            bact->status_flg &= ~BACT_STFLAG_LAND;
         }
         else
         {
@@ -716,11 +716,11 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
 
             if ( !arg136.field_20 || bact->thraction != 0.0 || ufo->field_14 > bact->mass * 9.80665 )
             {
-                bact->field_3D6 &= 0xFFFFFDFF;
+                bact->status_flg &= ~BACT_STFLAG_LAND;
             }
             else
             {
-                bact->field_3D6 |= 0x200;
+                bact->status_flg |= BACT_STFLAG_LAND;
                 bact->fly_dir_length = 0;
                 bact->thraction = 0;
 
@@ -732,9 +732,9 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
             if ( bact->primTtype != BACT_TGT_TYPE_CELL
                     || sqrt( POW2(bact->primTpos.sx - bact->position.sx) + POW2(bact->primTpos.sz - bact->position.sz) ) <= 800.0 )
             {
-                if ( bact->field_3D6 & 0x200 )
+                if ( bact->status_flg & BACT_STFLAG_LAND )
                 {
-                    if ( !(bact->field_3D6 & 0x100) )
+                    if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                     {
                         bact_arg119 arg78;
                         arg78.field_0 = 3;
@@ -745,15 +745,15 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
                     }
                 }
 
-                bact->field_3D5 = 1;
+                bact->status = BACT_STATUS_NORMAL;
             }
             else
             {
-                bact->field_3D5 = 3;
+                bact->status = BACT_STATUS_IDLE;
 
-                if ( bact->field_3D6 & 0x200 )
+                if ( bact->status_flg & BACT_STFLAG_LAND )
                 {
-                    if ( !(bact->field_3D6 & 0x100) )
+                    if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                     {
                         bact_arg119 arg78;
                         arg78.field_0 = 3;
@@ -830,7 +830,7 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
 
         if ( a4 )
         {
-            if ( !(bact->field_3D6 & 0x200) )
+            if ( !(bact->status_flg & BACT_STFLAG_LAND) )
             {
                 int v83 = arg->field_4;
 
@@ -928,7 +928,7 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
 
         if ( bact->mgun != -1 )
         {
-            if ( bact->field_3D6 & 0x100 )
+            if ( bact->status_flg & BACT_STFLAG_FIRE )
             {
                 if ( arg->inpt->but_flags & 4 )
                 {
@@ -943,7 +943,7 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
 
             if ( arg->inpt->but_flags & 4 )
             {
-                if ( !(bact->field_3D6 & 0x100) )
+                if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
                     bact_arg119 arg78;
                     arg78.field_4 = 256;
@@ -965,7 +965,7 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
             }
         }
 
-        if ( bact->field_3D6 & 0x200 )
+        if ( bact->status_flg & BACT_STFLAG_LAND )
         {
             bact_arg74 arg74;
             arg74.flag = 0;
@@ -1075,17 +1075,17 @@ void NC_STACK_ypaufo::ypabact_func71(ypabact_arg65 *arg)
 
                 if ( v49 == 0 )
                 {
-                    bact->field_3D6 &= 0xFFFBFFFF;
+                    bact->status_flg &= ~BACT_STFLAG_LCRASH;
                     break;
                 }
 
-                if ( !(bact->field_5A.samples_data[5].field_12 & 2) )
+                if ( !(bact->soundcarrier.samples_data[5].field_12 & 2) )
                 {
-                    if ( !(bact->field_3D6 & 0x40000) )
+                    if ( !(bact->status_flg & BACT_STFLAG_LCRASH) )
                     {
-                        bact->field_3D6 |= 0x40000;
+                        bact->status_flg |= BACT_STFLAG_LCRASH;
 
-                        startSound(&bact->field_5A, 5);
+                        startSound(&bact->soundcarrier, 5);
 
                         yw_arg180 arg180;
 
@@ -1111,7 +1111,7 @@ void NC_STACK_ypaufo::ypabact_func74(bact_arg74 *arg)
 
     float v55;
 
-    if ( bact->field_3D5 == 2 )
+    if ( bact->status == BACT_STATUS_DEAD )
         v55 = bact->mass * 39.2266;
     else
         v55 = bact->mass * 9.80665;
@@ -1207,23 +1207,23 @@ void NC_STACK_ypaufo::ypabact_func74(bact_arg74 *arg)
 
     ypabact_func115(NULL);
 
-    bact->field_5A.samples_data[0].pitch = bact->field_3BA;
-    bact->field_5A.samples_data[0].volume = bact->field_3B6;
+    bact->soundcarrier.samples_data[0].pitch = bact->pitch;
+    bact->soundcarrier.samples_data[0].volume = bact->volume;
 
     float v53;
 
-    if ( bact->max_pitch <= -0.8 )
+    if ( bact->pitch_max <= -0.8 )
         v53 = 1.2;
     else
-        v53 = bact->max_pitch;
+        v53 = bact->pitch_max;
 
     float v58 = fabs(bact->fly_dir_length) / (bact->force / bact->airconst_static) * v53;
 
     if ( v58 > v53 )
         v58 = v53;
 
-    if ( bact->field_5A.samples_data[0].psampl )
-        bact->field_5A.samples_data[0].pitch = (bact->field_5A.samples_data[0].psampl->SampleRate + bact->field_5A.samples_data[0].pitch) * v58;
+    if ( bact->soundcarrier.samples_data[0].psampl )
+        bact->soundcarrier.samples_data[0].pitch = (bact->soundcarrier.samples_data[0].psampl->SampleRate + bact->soundcarrier.samples_data[0].pitch) * v58;
 
 }
 

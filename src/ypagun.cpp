@@ -285,10 +285,10 @@ void NC_STACK_ypagun::ypabact_func70(ypabact_arg65 *arg)
 
     float v80 = arg->field_4 / 1000.0;
 
-    switch ( bact->field_3D5 )
+    switch ( bact->status )
     {
-    case 1:
-    case 3:
+    case BACT_STATUS_NORMAL:
+    case BACT_STATUS_IDLE:
     {
         if ( !(gun->field_39 & 2) )
         {
@@ -325,7 +325,7 @@ void NC_STACK_ypagun::ypabact_func70(ypabact_arg65 *arg)
         {
             if ( !bact->secndTtype && gun->field_30 == 2 )
             {
-                if ( bact->field_3D6 & 0x100 )
+                if ( bact->status_flg & BACT_STFLAG_FIRE )
                 {
                     bact_arg119 arg78;
                     arg78.field_8 = 256;
@@ -541,11 +541,11 @@ void NC_STACK_ypagun::ypabact_func70(ypabact_arg65 *arg)
     }
     break;
 
-    case 2:
+    case BACT_STATUS_DEAD:
         ypabact_func121(arg);
         break;
 
-    case 4:
+    case BACT_STATUS_CREATE:
         bact->field_931 -= arg->field_4;
 
         if ( bact->field_931 <= 0 )
@@ -571,7 +571,7 @@ void NC_STACK_ypagun::ypabact_func71(ypabact_arg65 *arg)
 
     float v40 = arg->field_4 / 1000.0;
 
-    if ( bact->field_3D5 == 1 )
+    if ( bact->status == BACT_STATUS_NORMAL )
     {
         if ( gun->field_39 & 2 || sub_4BC8E4(this) )
         {
@@ -590,7 +590,7 @@ void NC_STACK_ypagun::ypabact_func71(ypabact_arg65 *arg)
                 bact->viewer_position.sx = 0;
             }
 
-            if ( bact->field_3D6 & 0x100 )
+            if ( bact->status_flg & BACT_STFLAG_FIRE )
             {
                 if ( !(arg->inpt->but_flags & 1) && !(arg->inpt->but_flags & 2) )
                 {
@@ -645,7 +645,7 @@ void NC_STACK_ypagun::ypabact_func71(ypabact_arg65 *arg)
                 else if ( gun->field_30 == 2 )
                 {
 //            if ( ~(bact->field_3D6 & 0x100) ) CHECK IT
-                    if ( !(bact->field_3D6 & 0x100) )
+                    if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                     {
                         bact_arg119 arg78;
                         arg78.field_8 = 0;
@@ -756,7 +756,7 @@ void NC_STACK_ypagun::ypabact_func71(ypabact_arg65 *arg)
             bact->energy = -10;
         }
     }
-    else if ( bact->field_3D5 == 2 )
+    else if ( bact->status == BACT_STATUS_DEAD )
         ypabact_func121(arg);
 }
 
@@ -823,7 +823,7 @@ void NC_STACK_ypagun::ypabact_func75(bact_arg75 *arg)
             }
             else if ( gun->field_30 == 2 )
             {
-                if ( !(bact->field_3D6 & 0x100) )
+                if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
                     bact_arg119 arg78;
                     arg78.field_8 = 0;
@@ -860,7 +860,7 @@ void NC_STACK_ypagun::ypabact_func77(void *)
     __NC_STACK_ypagun *gun = &stack__ypagun;
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    if ( !(bact->field_3D6 & 0x400) )
+    if ( !(bact->status_flg & BACT_STFLAG_DEATH1) )
     {
         NC_STACK_ypabact::ypabact_func77(NULL);
 
@@ -930,13 +930,13 @@ void NC_STACK_ypagun::ypabact_func82(ypabact_arg65 *arg)
     //__NC_STACK_ypagun *gun = &obj->stack__ypagun;
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    if ( bact->field_3D5 != 2 )
+    if ( bact->status != BACT_STATUS_DEAD )
     {
         if ( bact->pSector->owner == bact->owner )
-            bact->energy += bact->energy_2 * (arg->field_4 / 1000.0) * bact->pSector->energy_power / 40000.0;
+            bact->energy += bact->energy_max * (arg->field_4 / 1000.0) * bact->pSector->energy_power / 40000.0;
 
-        if ( bact->energy > bact->energy_2 )
-            bact->energy = bact->energy_2;
+        if ( bact->energy > bact->energy_max )
+            bact->energy = bact->energy_max;
     }
 }
 

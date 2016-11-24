@@ -5393,14 +5393,14 @@ int sb_0x479f4c__sub0(scrCallBack *scr)
     }
     else if ( !strcasecmp(scr->p1, "maximum") )
     {
-        robo->bact_internal->energy_2 = atoi(scr->p2);
+        robo->bact_internal->energy_max = atoi(scr->p2);
 
         if ( yw->field_1b78 == current_robo )
         {
-            if ( robo->bact_internal->energy_2 < yw->maxroboenergy )
+            if ( robo->bact_internal->energy_max < yw->maxroboenergy )
             {
-                robo->bact_internal->energy_2 = yw->maxroboenergy;
-                robo->bact_internal->reload_const_or_energy2 = yw->maxreloadconst;
+                robo->bact_internal->energy_max = yw->maxroboenergy;
+                robo->bact_internal->reload_const = yw->maxreloadconst;
             }
         }
     }
@@ -5470,8 +5470,8 @@ int sb_0x479f4c__sub0(scrCallBack *scr)
     }
     else if ( !strcasecmp(scr->p1, "reload_const") )
     {
-        if ( !robo->bact_internal->reload_const_or_energy2 )
-            robo->bact_internal->reload_const_or_energy2 = atoi(scr->p2);
+        if ( !robo->bact_internal->reload_const )
+            robo->bact_internal->reload_const = atoi(scr->p2);
 
     }
     else
@@ -5503,24 +5503,24 @@ int sub_47A0C0(scrCallBack *scr)
     }
     else if ( !strcasecmp(scr->p1, "commandid") )
     {
-        dword_5A7A88->field_2E = atoi(scr->p2);
+        dword_5A7A88->commandID = atoi(scr->p2);
 
-        if ( dword_5A7A80 < dword_5A7A88->field_2E )
+        if ( dword_5A7A80 < dword_5A7A88->commandID )
         {
-            dword_5A7A80 = dword_5A7A88->field_2E;
+            dword_5A7A80 = dword_5A7A88->commandID;
         }
     }
     else if ( !strcasecmp(scr->p1, "aggression") )
     {
-        dword_5A7A88->field_3D4 = atoi(scr->p2);
+        dword_5A7A88->aggr = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "mainstate") )
     {
-        dword_5A7A88->field_3D5 = atoi(scr->p2);
+        dword_5A7A88->status = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "extrastate") )
     {
-        dword_5A7A88->field_3D6 = atoi(scr->p2);
+        dword_5A7A88->status_flg = atoi(scr->p2);
     }
     else if ( !strcasecmp(scr->p1, "killerowner") )
     {
@@ -5528,11 +5528,11 @@ int sub_47A0C0(scrCallBack *scr)
     }
     else if ( !strcasecmp(scr->p1, "ident") )
     {
-        dword_5A7A88->ypabact__id = atoi(scr->p2);
+        dword_5A7A88->gid = atoi(scr->p2);
 
-        if ( bact_id < dword_5A7A88->ypabact__id )
+        if ( bact_id < dword_5A7A88->gid )
         {
-            bact_id = dword_5A7A88->ypabact__id;
+            bact_id = dword_5A7A88->gid;
         }
     }
     else if ( !strcasecmp(scr->p1, "primary") )
@@ -5774,8 +5774,8 @@ int sb_0x479f4c(scrCallBack *scr)
     {
         if ( !strcasecmp(scr->p1, "end") )
         {
-            if ( !dword_5A7A88->reload_const_or_energy2 )
-                dword_5A7A88->reload_const_or_energy2 = dword_5A7A88->energy_2;
+            if ( !dword_5A7A88->reload_const )
+                dword_5A7A88->reload_const = dword_5A7A88->energy_max;
 
             scr->field_18 = 0;
             return 2;

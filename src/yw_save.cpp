@@ -732,26 +732,26 @@ int yw_write_bact(bact_node *bct, FSMgr::FileHandle *fil)
     sprintf(buf, "    gunangle       = %5.4f\n", bct->bact->gun_angle2);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    commandID      = %d\n", bct->bact->field_2E);
+    sprintf(buf, "    commandID      = %d\n", bct->bact->commandID);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    aggression     = %d\n", bct->bact->field_3D4);
+    sprintf(buf, "    aggression     = %d\n", bct->bact->aggr);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    mainstate      = %d\n", bct->bact->field_3D5);
+    sprintf(buf, "    mainstate      = %d\n", bct->bact->status);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    extrastate     = %d\n", bct->bact->field_3D6);
+    sprintf(buf, "    extrastate     = %d\n", bct->bact->status_flg);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    ident          = %d\n", bct->bact->ypabact__id);
+    sprintf(buf, "    ident          = %d\n", bct->bact->gid);
     fil->write(buf, strlen(buf));
 
     sprintf(buf, "    killerowner    = %d\n", bct->bact->field_9B5);
     fil->write(buf, strlen(buf));
 
     if ( bct->bact->primTtype == BACT_TGT_TYPE_UNIT )
-        sprintf(buf, "    primary        = %d_%d_%2.2f_%2.2f_%d\n", bct->bact->primTtype, bct->bact->primT.pbact->ypabact__id, bct->bact->primTpos.sx, bct->bact->primTpos.sz, bct->bact->primT_cmd_id);
+        sprintf(buf, "    primary        = %d_%d_%2.2f_%2.2f_%d\n", bct->bact->primTtype, bct->bact->primT.pbact->gid, bct->bact->primTpos.sx, bct->bact->primTpos.sz, bct->bact->primT_cmd_id);
     else
         sprintf(buf, "    primary        = %d_0_%2.2f_%2.2f_%d\n", bct->bact->primTtype, bct->bact->primTpos.sx, bct->bact->primTpos.sz, bct->bact->primT_cmd_id);
 
@@ -776,7 +776,7 @@ int yw_write_robo(_NC_STACK_ypaworld *yw, bact_node *bct, FSMgr::FileHandle *fil
 {
     char buf[300];
 
-    sprintf(buf, "\nbegin_robo %d\n", bct->bact->id);
+    sprintf(buf, "\nbegin_robo %d\n", bct->bact->vehicleID);
     fil->write(buf, strlen(buf));
 
     const char *isuser = "no";
@@ -832,7 +832,7 @@ int yw_write_robo(_NC_STACK_ypaworld *yw, bact_node *bct, FSMgr::FileHandle *fil
     sprintf(buf, "    fillmodus      = %d\n", robo->field_501);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    maximum        = %d\n", robo->bact_internal->energy_2);
+    sprintf(buf, "    maximum        = %d\n", robo->bact_internal->energy_max);
     fil->write(buf, strlen(buf));
 
     sprintf(buf, "    buildspare     = %d\n", robo->field_509);
@@ -892,7 +892,7 @@ int yw_write_robo(_NC_STACK_ypaworld *yw, bact_node *bct, FSMgr::FileHandle *fil
     sprintf(buf, "    rob_delay     = %d\n", robo->field_2E1);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    reload_const  = %d\n", robo->bact_internal->reload_const_or_energy2);
+    sprintf(buf, "    reload_const  = %d\n", robo->bact_internal->reload_const);
     fil->write(buf, strlen(buf));
 
     sprintf(buf, "end\n\n");
@@ -925,7 +925,7 @@ int yw_write_commander(bact_node *bct, FSMgr::FileHandle *fil)
 {
     char buf[300];
 
-    sprintf(buf, "\nbegin_commander %d\n", bct->bact->id);
+    sprintf(buf, "\nbegin_commander %d\n", bct->bact->vehicleID);
     fil->write(buf, strlen(buf));
 
     if ( !yw_write_bact(bct, fil) )
@@ -944,7 +944,7 @@ int yw_write_slave(bact_node *bct, FSMgr::FileHandle *fil)
 {
     char buf[300];
 
-    sprintf(buf, "\nbegin_slave %d\n", bct->bact->id);
+    sprintf(buf, "\nbegin_slave %d\n", bct->bact->vehicleID);
     fil->write(buf, strlen(buf));
 
     if ( !yw_write_bact(bct, fil) )
@@ -1004,12 +1004,12 @@ int yw_write_units(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
     bact_node *station = (bact_node *)yw->bact_list.tailpred;
     while (station->prev)
     {
-        if ( station->bact->field_3D5 != 2 )
+        if ( station->bact->status != BACT_STATUS_DEAD )
         {
             if ( !yw_write_robo(yw, station, fil) )
                 return 0;
 
-            bact_node *commander = (bact_node *)station->bact->list2.tailpred;
+            bact_node *commander = (bact_node *)station->bact->subjects_list.tailpred;
 
             while ( commander->prev )
             {
@@ -1037,7 +1037,7 @@ int yw_write_units(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
                     }
                 }
 
-                bact_node *slave = (bact_node *)commander->bact->list2.tailpred;
+                bact_node *slave = (bact_node *)commander->bact->subjects_list.tailpred;
 
                 while ( slave->prev )
                 {

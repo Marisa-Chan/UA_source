@@ -222,11 +222,11 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
 
     bool v215 = !bact->secndTtype && v220 < 1200.0;
 
-    switch ( bact->field_3D5 )
+    switch ( bact->status )
     {
-    case 1:
+    case BACT_STATUS_NORMAL:
     {
-        if ( !(bact->field_3D6 & 0x200) )
+        if ( !(bact->status_flg & BACT_STFLAG_LAND) )
         {
             bact_arg86 arg86;
             arg86.field_one = 1;
@@ -238,10 +238,10 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
 
         if ( !bact->primTtype && !bact->secndTtype )
         {
-            bact->field_3D5 = 3;
-            bact->field_3D6 &= 0xFFFFFFFC;
+            bact->status = BACT_STATUS_IDLE;
+            bact->status_flg &= ~(BACT_STFLAG_FIGHT_P | BACT_STFLAG_FIGHT_S);
 
-            if ( bact->field_3D6 & 0x100 )
+            if ( bact->status_flg & BACT_STFLAG_FIRE )
             {
                 bact_arg119 arg78;
                 arg78.field_0 = 0;
@@ -424,11 +424,11 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
                 }
 
                 if ( tank->field_1D == 0.0 )
-                    bact->field_3D6 |= 0x40;
+                    bact->status_flg |= BACT_STFLAG_MOVE;
             }
             else
             {
-                bact->field_3D6 |= 0x40;
+                bact->status_flg |= BACT_STFLAG_MOVE;
 
                 if ( v240 > 1.1 && tank->field_21 <= 0.001 )
                     bact->thraction *= 0.1 / (v244 + 0.1);
@@ -485,7 +485,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
                 }
             }
 
-            if ( bact->field_3D6 & 0x40 )
+            if ( bact->status_flg & BACT_STFLAG_MOVE )
             {
                 bact->thraction += bact->force * v244 * 0.8;
 
@@ -498,7 +498,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
                 if ( bact->thraction < 0.0 )
                     bact->thraction = 0;
 
-                if ( !(bact->field_3D6 & 0x40000000) || !tank->field_26 || tank->field_25 )
+                if ( !(bact->status_flg & BACT_STFLAG_ATTACK) || !tank->field_26 || tank->field_25 )
                 {
                     bact_arg74 arg74;
                     arg74.flag = 0;
@@ -534,7 +534,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
 
             float v217 = sqrt(POW2(arg136.field_14) + POW2(arg136.field_18) + POW2(arg136.field_1C));
 
-            if ( v217 > 5.0 && bact->field_3D6 & 0x40 )
+            if ( v217 > 5.0 && bact->status_flg & BACT_STFLAG_MOVE )
             {
                 float v51 = v224 / v217;
 
@@ -610,7 +610,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
 
                     if ( arg136.field_24 * v224 <= (bact->radius + 50.0) )
                     {
-                        bact->field_3D6 &= 0xFFFFFFBF;
+                        bact->status_flg &= ~BACT_STFLAG_MOVE;
                         bact->position = bact->old_pos;
 
                         ypaworld_arg136 arg136_2;
@@ -809,7 +809,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
 
                     if ( !arg136.field_20 || ( arg136.field_20 && arg136.field_24 * v223 * 0.7 > (bact->overeof + 30.0) ) )
                     {
-                        bact->field_3D6 &= 0xFFFFFDFF;
+                        bact->status_flg &= ~BACT_STFLAG_LAND;
                         break;
                     }
                 }
@@ -818,7 +818,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
 
                 if ( (arg136.field_20 && arg136.field_3C->triangles[ arg136.field_38 ].field_4 < 0.6) || arg128.field_10 & 1 )
                 {
-                    bact->field_3D6 &= 0xFFFFFFBF;
+                    bact->status_flg &= ~BACT_STFLAG_MOVE;
                     tank->field_25 &= 0xFC;
 
                     float v208 = 0.0;
@@ -992,9 +992,9 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
         }
         else
         {
-            bact->field_3D6 &= 0xFFFFFFFC;
+            bact->status_flg &= ~(BACT_STFLAG_FIGHT_P | BACT_STFLAG_FIGHT_S);
 
-            if ( bact->field_3D6 & 0x100 )
+            if ( bact->status_flg & BACT_STFLAG_FIRE )
             {
                 bact_arg119 arg78;
                 arg78.field_0 = 0;
@@ -1007,7 +1007,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
     }
     break;
 
-    case 3:
+    case BACT_STATUS_IDLE:
     {
         if ( bact->field_915 - bact->field_941 > 500 )
         {
@@ -1067,17 +1067,17 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
 
         bact->thraction = 0;
 
-        if ( bact->field_3D6 & 0x200 )
+        if ( bact->status_flg & BACT_STFLAG_LAND )
         {
             bact->fly_dir_length = 0;
 
             if ( tank->field_D )
             {
-                if ( bact->field_3D6 & 0x10 )
+                if ( bact->status_flg & BACT_STFLAG_DODGE_LEFT )
                 {
                     ypatank_func70__sub0(bact, v244 * 0.33333334, 0);
                 }
-                else if ( bact->field_3D6 & 0x20 )
+                else if ( bact->status_flg & BACT_STFLAG_DODGE_RIGHT )
                 {
                     ypatank_func70__sub0(bact, v244 * 0.33333334, 1);
                 }
@@ -1086,7 +1086,7 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
             }
             else
             {
-                bact->field_3D6 &= 0xFFFFFFCF;
+                bact->status_flg &= ~(BACT_STFLAG_DODGE_LEFT | BACT_STFLAG_DODGE_RIGHT);
                 tank->field_D = arg->field_4 / 5;
 
                 if ( tank->field_c & 2 )
@@ -1096,16 +1096,16 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
                     if ( v158 )
                     {
                         if ( v158 == 1 )
-                            bact->field_3D6 |= 0x20;
+                            bact->status_flg |= BACT_STFLAG_DODGE_RIGHT;
                     }
                     else
                     {
-                        bact->field_3D6 |= 0x10;
+                        bact->status_flg |= BACT_STFLAG_DODGE_LEFT;
                     }
                 }
             }
             if ( !ypatank_func128(&arg128) )
-                bact->field_3D6 &= 0xFFFFFDFF;
+                bact->status_flg &= ~BACT_STFLAG_LAND;
         }
         else
         {
@@ -1118,15 +1118,15 @@ void NC_STACK_ypatank::ypabact_func70(ypabact_arg65 *arg)
     }
     break;
 
-    case 2:
+    case BACT_STATUS_DEAD:
         ypabact_func121(arg);
         break;
 
-    case 4:
+    case BACT_STATUS_CREATE:
         ypabact_func99(arg);
         break;
 
-    case 5:
+    case BACT_STATUS_BEAM:
         ypabact_func112(arg);
         break;
     }
@@ -1150,11 +1150,11 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
     arg129.field_4.sy = bact->rotation.m21;
     arg129.field_4.sz = bact->rotation.m22;
 
-    if (bact->field_3D5 == 1 || bact->field_3D5 == 3)
+    if (bact->status == BACT_STATUS_NORMAL || bact->status == BACT_STATUS_IDLE)
     {
         if ( bact->fly_dir_length != 0.0 )
         {
-            if ( !(bact->field_3D6 & 0x100) )
+            if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
             {
                 bact_arg119 arg78;
                 arg78.field_0 = 1;
@@ -1169,7 +1169,7 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
 
             if ( bact->primTtype != BACT_TGT_TYPE_CELL || sqrt(POW2(bact->primTpos.sx - bact->position.sx) + POW2(bact->primTpos.sz - bact->position.sz)) <= 800.0 )
             {
-                if ( !(bact->field_3D6 & 0x100) )
+                if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
                     bact_arg119 arg78;
                     arg78.field_0 = 3;
@@ -1179,11 +1179,11 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
                     ypabact_func78(&arg78);
                 }
 
-                bact->field_3D5 = 1;
+                bact->status = BACT_STATUS_NORMAL;
             }
             else
             {
-                if ( !(bact->field_3D6 & 0x100) )
+                if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
                     bact_arg119 arg78;
                     arg78.field_0 = 3;
@@ -1193,7 +1193,7 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
                     ypabact_func78(&arg78);
                 }
                 else
-                    bact->field_3D5 = 3;
+                    bact->status = BACT_STATUS_IDLE;
             }
         }
 
@@ -1255,7 +1255,7 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
             bact->thraction = -v78;
 
         if ( fabs(v88) > 0.001 )
-            bact->field_3D6 |= 0x40;
+            bact->status_flg |= BACT_STFLAG_MOVE;
 
         bact->gun_angle2 += v90 * arg->inpt->sliders_vars[5];
 
@@ -1336,7 +1336,7 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
 
         if ( bact->mgun != -1 )
         {
-            if ( bact->field_3D6 & 0x100 )
+            if ( bact->status_flg & BACT_STFLAG_FIRE )
             {
                 if ( !(arg->inpt->but_flags & 4) )
                 {
@@ -1351,7 +1351,7 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
 
             if ( arg->inpt->but_flags & 4 )
             {
-                if ( !(bact->field_3D6 & 0x100) )
+                if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
                     bact_arg119 arg78;
                     arg78.field_4 = 256;
@@ -1371,7 +1371,7 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
 
         }
 
-        if ( bact->field_3D6 & 0x200 )
+        if ( bact->status_flg & BACT_STFLAG_LAND )
         {
             bact_arg74 arg74;
 
@@ -1390,7 +1390,7 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
                 }
                 else
                 {
-                    bact->field_3D6 &= 0xFFFFFFBF;
+                    bact->status_flg &= ~BACT_STFLAG_MOVE;
                     bact->fly_dir_length = 0;
                 }
 
@@ -1403,7 +1403,7 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
 
             arg74.field_0 = v90;
 
-            if ( bact->field_3D6 & 0x40 )
+            if ( bact->status_flg & BACT_STFLAG_MOVE )
                 ypabact_func74(&arg74);
 
             int v70 = arg->field_4;
@@ -1440,7 +1440,7 @@ void NC_STACK_ypatank::ypabact_func71(ypabact_arg65 *arg)
             ypabact_func86(&arg86);
         }
     }
-    else if (bact->field_3D5 == 2)
+    else if (bact->status == BACT_STATUS_DEAD)
     {
         ypabact_func121(arg);
     }
@@ -1454,13 +1454,13 @@ void NC_STACK_ypatank::ypabact_func74(bact_arg74 *arg)
 
     float v50;
 
-    if ( arg->flag & 2 && bact->field_3D6 & 0x200 )
+    if ( arg->flag & 2 && bact->status_flg & BACT_STFLAG_LAND )
     {
         v50 = 0.0;
     }
     else
     {
-        if ( bact->field_3D5 == 2 )
+        if ( bact->status == BACT_STATUS_DEAD )
             v50 = bact->mass * 39.2266;
         else
             v50 = bact->mass * 9.80665;
@@ -1507,7 +1507,7 @@ void NC_STACK_ypatank::ypabact_func74(bact_arg74 *arg)
             v51 /= v42;
         }
 
-        if ( bact->field_3D6 & 0x200 )
+        if ( bact->status_flg & BACT_STFLAG_LAND )
         {
             bact->fly_dir.sx = bact->rotation.m20;
             bact->fly_dir.sy = bact->rotation.m21;
@@ -1530,24 +1530,24 @@ void NC_STACK_ypatank::ypabact_func74(bact_arg74 *arg)
 
     ypabact_func115(NULL);
 
-    bact->field_5A.samples_data[0].pitch = bact->field_3BA;
-    bact->field_5A.samples_data[0].volume = bact->field_3B6;
+    bact->soundcarrier.samples_data[0].pitch = bact->pitch;
+    bact->soundcarrier.samples_data[0].volume = bact->volume;
 
     float v48 = fabs(bact->fly_dir_length) / (bact->force / bact->airconst_static);
     float v46;
 
-    if ( bact->max_pitch <= -0.8 )
+    if ( bact->pitch_max <= -0.8 )
         v46 = 1.1;
     else
-        v46 = bact->max_pitch;
+        v46 = bact->pitch_max;
 
     float v49 = v46 * v48;
 
     if ( v49 > v46 )
         v49 = v46;
 
-    if ( bact->field_5A.samples_data[0].psampl )
-        bact->field_5A.samples_data[0].pitch += (float)(bact->field_5A.samples_data[0].psampl->SampleRate + bact->field_5A.samples_data[0].pitch) * v49;
+    if ( bact->soundcarrier.samples_data[0].psampl )
+        bact->soundcarrier.samples_data[0].pitch += (float)(bact->soundcarrier.samples_data[0].psampl->SampleRate + bact->soundcarrier.samples_data[0].pitch) * v49;
 }
 
 size_t NC_STACK_ypatank::ypabact_func80(bact_arg80 *arg)
@@ -1580,7 +1580,7 @@ size_t NC_STACK_ypatank::ypabact_func80(bact_arg80 *arg)
             else
                 bact->position.sy = arg136.field_30 - bact->overeof;
 
-            bact->field_3D6 |= 0x200;
+            bact->status_flg |= BACT_STFLAG_LAND;
         }
         return 1;
     }
@@ -1643,7 +1643,7 @@ void NC_STACK_ypatank::ypabact_func83(bact_arg83 *arg)
 
 void ypatank_func87__sub0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2)
 {
-    int v23 = (float)bact2->energy_2 * 0.7;
+    int v23 = (float)bact2->energy_max * 0.7;
 
     if ( v23 < 10000 )
         v23 = 10000;
@@ -1651,35 +1651,35 @@ void ypatank_func87__sub0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2)
     if ( v23 > 25000 )
         v23 = 25000;
 
-    float v3 = (float)bact2->field_931 * 0.2 / (float)v23 * (float)bact2->energy_2;
+    float v3 = (float)bact2->field_931 * 0.2 / (float)v23 * (float)bact2->energy_max;
 
-    if ( v3 + bact->energy > bact->energy_2 )
+    if ( v3 + bact->energy > bact->energy_max )
     {
         __NC_STACK_yparobo *robo = &bact->host_station->stack__yparobo;
         __NC_STACK_ypabact *rbact = &bact->host_station->stack__ypabact;
 
-        bact->energy = bact->energy_2;
+        bact->energy = bact->energy_max;
         rbact = robo->bact_internal;
 
-        int v10 = (int)v3 - (bact->energy_2 - bact->energy);
+        int v10 = (int)v3 - (bact->energy_max - bact->energy);
 
-        if ( v10 + rbact->energy > rbact->energy_2 )
+        if ( v10 + rbact->energy > rbact->energy_max )
         {
             int v13 = rbact->energy;
 
-            rbact->energy = rbact->energy_2;
-            int v14 = v10 - (rbact->energy_2 - v13);
+            rbact->energy = rbact->energy_max;
+            int v14 = v10 - (rbact->energy_max - v13);
             int v16 = v14 + robo->field_4F5;
 
-            if ( v16 >= rbact->energy_2 )
+            if ( v16 >= rbact->energy_max )
             {
                 int v17 = robo->field_4F5;
-                robo->field_4F5 = rbact->energy_2;
+                robo->field_4F5 = rbact->energy_max;
 
-                robo->field_4FD += v14 - (rbact->energy_2 - v17);
+                robo->field_4FD += v14 - (rbact->energy_max - v17);
 
-                if ( robo->field_4FD > rbact->energy_2 )
-                    robo->field_4FD = rbact->energy_2;
+                if ( robo->field_4FD > rbact->energy_max )
+                    robo->field_4FD = rbact->energy_max;
             }
             else
             {
@@ -1711,7 +1711,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
     __NC_STACK_ypabact *v80[10];
     xyz v78[10];
 
-    if ( bact->field_3D6 & 0x200 )
+    if ( bact->status_flg & BACT_STFLAG_LAND )
     {
         int a4 = getBACT_inputting();
 
@@ -1745,7 +1745,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
 
         while ( v12->next )
         {
-            int v114 = v12->field_3D5 == 2   &&   v12->field_6BD[0].field_34 & 1   &&   a4 &&   v12->field_931 > 0;
+            int v114 = v12->status == BACT_STATUS_DEAD   &&   v12->field_6BD[0].field_34 & 1   &&   a4 &&   v12->field_931 > 0;
 
             if ( v12->bact_type != BACT_TYPES_MISSLE
                     && (!v12->self->ypabact_func100(NULL) || v114)
@@ -1878,7 +1878,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
                                                 + bact->rotation.m22 * v117->rotation.m22 < 0.0 )
                                             v108 = 1;
 
-                                        if ( v117->field_3D5 == 3 )
+                                        if ( v117->status == BACT_STATUS_IDLE )
                                             v108 = 1;
 
                                         if ( v117->field_949 <= 0 )
@@ -1924,7 +1924,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
 
         if ( !v117 )
         {
-            bact->field_3D6 &= 0xFFFDFFFF;
+            bact->status_flg &= ~BACT_STFLAG_BCRASH;
             return 0;
         }
 
@@ -1972,7 +1972,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
                                 v80[i]->position.sy = v86;
                                 v80[i]->position.sz = v87;
 
-                                v80[i]->field_3D6 &= 0xFFFFFDFF;
+                                v80[i]->status_flg &= ~BACT_STFLAG_LAND;
 
                                 v80[i]->self->ypabact_func115(NULL);
                             }
@@ -2038,10 +2038,10 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
                     bact->position.sz = v88.sz * v62 + bact->old_pos.sz;
                 }
 
-                if ( !(bact->field_3D6 & 0x20000) )
+                if ( !(bact->status_flg & BACT_STFLAG_BCRASH) )
                 {
-                    startSound(&bact->field_5A, 6);
-                    bact->field_3D6 |= 0x20000;
+                    startSound(&bact->soundcarrier, 6);
+                    bact->status_flg |= BACT_STFLAG_BCRASH;
                 }
 
                 yw_arg180 arg180;
@@ -2055,7 +2055,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
             }
             else
             {
-                bact->field_3D6 &= 0xFFFDFFFF;
+                bact->status_flg &= ~BACT_STFLAG_BCRASH;
             }
         }
         else
@@ -2066,10 +2066,10 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
                 bact->thraction = 0;
 
                 bact->position = bact->old_pos;
-                bact->field_3D6 &= 0xFFFFFFBF;
+                bact->status_flg &= ~BACT_STFLAG_MOVE;
 
-                if ( !(bact->field_3D6 & 0x20000) )
-                    bact->field_3D6 |= 0x20000;
+                if ( !(bact->status_flg & BACT_STFLAG_BCRASH) )
+                    bact->status_flg |= BACT_STFLAG_BCRASH;
 
                 if ( v108 || !v105 )
                 {
@@ -2100,7 +2100,7 @@ size_t NC_STACK_ypatank::ypabact_func87(int *arg)
             else
             {
                 bact->fly_dir_length *= v109 / v99;
-                bact->field_3D6 &= 0xFFFDFFFF;
+                bact->status_flg &= ~BACT_STFLAG_BCRASH;
             }
         }
 
@@ -2117,7 +2117,7 @@ void NC_STACK_ypatank::ypabact_func88(bact_arg88 *arg)
 {
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    if ( !(bact->field_3D6 & 0x200) )
+    if ( !(bact->status_flg & BACT_STFLAG_LAND) )
     {
         NC_STACK_ypabact::ypabact_func88(arg);
 
@@ -2381,7 +2381,7 @@ void NC_STACK_ypatank::ypabact_func114(void *)
 
     NC_STACK_ypabact::ypabact_func114(NULL);
 
-    if ( bact->field_3D6 & 0x200 )
+    if ( bact->status_flg & BACT_STFLAG_LAND )
     {
         int a4 = getBACT_viewer();
 
@@ -2406,7 +2406,7 @@ void NC_STACK_ypatank::ypabact_func114(void *)
         if ( arg136.field_20 )
             bact->position.sy = arg136.field_30 - v6;
         else
-            bact->field_3D6 &= 0xFFFFFDFF;
+            bact->status_flg &= ~BACT_STFLAG_LAND;
     }
 }
 
@@ -2674,7 +2674,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                 {
                     if ( v143 )
                     {
-                        startSound(&bact->field_5A, 5);
+                        startSound(&bact->soundcarrier, 5);
 
                         yw_arg180 arg180;
                         arg180.field_4 = 1.0;
@@ -2732,7 +2732,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                 {
                     if ( v143 )
                     {
-                        startSound(&bact->field_5A, 5);
+                        startSound(&bact->soundcarrier, 5);
 
                         yw_arg180 arg180_3;
                         arg180_3.field_8 = arg136_1.field_2C;
@@ -2782,7 +2782,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
             {
                 if ( v143 )
                 {
-                    startSound(&bact->field_5A, 5);
+                    startSound(&bact->soundcarrier, 5);
 
                     yw_arg180 arg180_1;
                     arg180_1.field_4 = 1.0;
@@ -2833,7 +2833,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                     {
                         if ( v143 )
                         {
-                            startSound(&bact->field_5A, 5);
+                            startSound(&bact->soundcarrier, 5);
 
                             yw_arg180 arg180_2;
                             arg180_2.effects_type = 5;
@@ -2975,7 +2975,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                 float v131 = 0.0;
                 float v132 = 0.0;
 
-                bact->field_3D6 &= 0xFFFFFDFF;
+                bact->status_flg &= ~BACT_STFLAG_LAND;
 
                 if ( v149 )
                 {
@@ -3012,7 +3012,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
     }
     else
     {
-        bact->field_3D6 &= 0xFFFFFDFF;
+        bact->status_flg &= ~BACT_STFLAG_LAND;
     }
     return 0;
 }
