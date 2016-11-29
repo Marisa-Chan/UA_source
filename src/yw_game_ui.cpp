@@ -4096,7 +4096,7 @@ void ypaworld_func64__sub7__sub2__sub7(_NC_STACK_ypaworld *yw)
             v5.field_0 = 2;
             v5.field_4 = yw->field_1b84->parent_bact;
 
-            yw->field_1b7c->ypabact_func109(&v5);
+            yw->field_1b7c->ReorganizeGroup(&v5);
         }
     }
 }
@@ -6067,7 +6067,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
 
                         v3 = v13->bacto;
                     }
-                    v3->ypabact_func109(&arg109);
+                    v3->ReorganizeGroup(&arg109);
 
                     v13 = next1;
                 }
@@ -6079,7 +6079,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
             arg109.field_4 = NULL;
             arg109.field_0 = 3;
 
-            squadron_manager.field_2BC->self->ypabact_func109(&arg109);
+            squadron_manager.field_2BC->self->ReorganizeGroup(&arg109);
         }
         yw->field_240c = squadron_manager.field_2BC->commandID;
         sub_4C707C(yw);
@@ -6108,7 +6108,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
                         bact_arg109 arg109;
                         arg109.field_0 = 1;
                         arg109.field_4 = v6;
-                        v9->bacto->ypabact_func109(&arg109);
+                        v9->bacto->ReorganizeGroup(&arg109);
 
                         v9 = next1;
                     }
@@ -6118,7 +6118,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
                     bact_arg109 arg109;
                     arg109.field_0 = 1;
                     arg109.field_4 = v6;
-                    squadron_manager.field_2BC->self->ypabact_func109(&arg109);
+                    squadron_manager.field_2BC->self->ReorganizeGroup(&arg109);
                 }
             }
             else
@@ -6126,7 +6126,7 @@ void ypaworld_func64__sub7__sub3__sub3(_NC_STACK_ypaworld *yw, winp_131arg *winp
                 bact_arg109 arg109;
                 arg109.field_0 = 4;
                 arg109.field_4 = squadron_manager.field_2BC;
-                v6->self->ypabact_func109(&arg109);
+                v6->self->ReorganizeGroup(&arg109);
             }
             yw->field_240c = v6->commandID;
             sub_4C707C(yw);
@@ -6465,7 +6465,7 @@ void ypaworld_func64__sub7__sub1__sub0(_NC_STACK_ypaworld *yw)
                                             arg109.field_4 = bct;
                                             arg109.field_0 = 4;
 
-                                            v13->self->ypabact_func109(&arg109);
+                                            v13->self->ReorganizeGroup(&arg109);
 
                                             v8 = 0;
                                         }
@@ -6485,7 +6485,7 @@ void ypaworld_func64__sub7__sub1__sub0(_NC_STACK_ypaworld *yw)
                                             arg109.field_4 = NULL;
                                             arg109.field_0 = 3;
 
-                                            v13->self->ypabact_func109(&arg109);
+                                            v13->self->ReorganizeGroup(&arg109);
 
                                             v8 = 0;
                                         }

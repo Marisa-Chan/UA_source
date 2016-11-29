@@ -175,7 +175,7 @@ size_t NC_STACK_ypaufo::func3(stack_vals *stak)
     return 1;
 }
 
-void NC_STACK_ypaufo::ypabact_func70(update_msg *arg)
+void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
 {
     __NC_STACK_ypaufo *ufo = &stack__ypaufo;
     __NC_STACK_ypabact *bact = &stack__ypabact;
@@ -206,11 +206,9 @@ void NC_STACK_ypaufo::ypabact_func70(update_msg *arg)
     {
         bact->thraction = bact->force;
 
-        int v100 = arg->frameTime;
-
         if ( !v94
                 || (!v5 && !v8)
-                || !ypabact_func87(&v100) )
+                || !CollisionWithBact(arg->frameTime) )
         {
             if ( bact->primTtype || bact->secndTtype )
             {
@@ -290,11 +288,11 @@ void NC_STACK_ypaufo::ypabact_func70(update_msg *arg)
                     }
                 }
 
-                bact_arg74 arg74;
+                move_msg arg74;
                 arg74.flag = 0;
                 arg74.field_0 = v110;
 
-                ypabact_func74(&arg74);
+                Move(&arg74);
 
                 ypaworld_arg136 arg136_2;
                 arg136_2.pos_x = bact->old_pos.sx;
@@ -351,7 +349,7 @@ void NC_STACK_ypaufo::ypabact_func70(update_msg *arg)
                     arg88.pos2.sy = 2.0;
                     arg88.pos2.sz = v110;
 
-                    ypabact_func88(&arg88);
+                    Recoil(&arg88);
                 }
 
                 if ( ufo->field_1c & 1 )
@@ -467,7 +465,7 @@ void NC_STACK_ypaufo::ypabact_func70(update_msg *arg)
                     arg75.target.pbact = bact->secndT.pbact;
                     arg75.prio = 1;
 
-                    ypabact_func75(&arg75);
+                    FightWithBact(&arg75);
                 }
                 else if ( bact->secndTtype == BACT_TGT_TYPE_CELL )
                 {
@@ -475,14 +473,14 @@ void NC_STACK_ypaufo::ypabact_func70(update_msg *arg)
                     arg75.target.pcell = bact->secndT.pcell;
                     arg75.prio = 1;
 
-                    ypabact_func76(&arg75);
+                    FightWithSect(&arg75);
                 }
                 else if ( bact->primTtype == BACT_TGT_TYPE_UNIT )
                 {
                     arg75.target.pbact = bact->primT.pbact;
                     arg75.prio = 0;
 
-                    ypabact_func75(&arg75);
+                    FightWithBact(&arg75);
                 }
                 else if ( bact->primTtype == BACT_TGT_TYPE_CELL )
                 {
@@ -490,7 +488,7 @@ void NC_STACK_ypaufo::ypabact_func70(update_msg *arg)
                     arg75.target.pcell = bact->primT.pcell;
                     arg75.prio = 0;
 
-                    ypabact_func76(&arg75);
+                    FightWithSect(&arg75);
                 }
                 else
                 {
@@ -498,12 +496,12 @@ void NC_STACK_ypaufo::ypabact_func70(update_msg *arg)
 
                     if ( bact->status_flg & BACT_STFLAG_FIRE )
                     {
-                        bact_arg119 arg78;
+                        setState_msg arg78;
                         arg78.field_8 = 256;
                         arg78.field_0 = 0;
                         arg78.field_4 = 0;
 
-                        ypabact_func78(&arg78);
+                        SetState(&arg78);
                     }
                 }
             }
@@ -511,7 +509,7 @@ void NC_STACK_ypaufo::ypabact_func70(update_msg *arg)
             {
                 bact->status_flg &= ~(BACT_STFLAG_FIGHT_P | BACT_STFLAG_FIGHT_S);
 
-                bact_arg119 arg78;
+                setState_msg arg78;
 
                 if ( bact->status_flg & BACT_STFLAG_FIRE )
                 {
@@ -519,14 +517,14 @@ void NC_STACK_ypaufo::ypabact_func70(update_msg *arg)
                     arg78.field_4 = 0;
                     arg78.field_8 = 256;
 
-                    ypabact_func78(&arg78);
+                    SetState(&arg78);
                 }
 
                 arg78.field_0 = 3;
                 arg78.field_8 = 0;
                 arg78.field_4 = 0;
 
-                ypabact_func78(&arg78);
+                SetState(&arg78);
             }
         }
     }
@@ -545,40 +543,40 @@ void NC_STACK_ypaufo::ypabact_func70(update_msg *arg)
             arg110_1.tgType = bact->primTtype;
             arg110_1.priority = 0;
 
-            int v63 = ypabact_func110(&arg110);
+            int v63 = TargetAssess(&arg110);
 
-            int v66 = ypabact_func110(&arg110_1);
+            int v66 = TargetAssess(&arg110_1);
 
             if ( v63 != 3 || v66 != 3 )
             {
                 if ( !v63 )
                 {
-                    bact_arg67 arg67;
+                    setTarget_msg arg67;
                     arg67.tgt_type = BACT_TGT_TYPE_NONE;
                     arg67.priority = 1;
 
-                    ypabact_func67(&arg67);
+                    SetTarget(&arg67);
                 }
 
                 if ( !v66 )
                 {
-                    bact_arg67 arg67;
+                    setTarget_msg arg67;
                     arg67.tgt_type = BACT_TGT_TYPE_CELL;
                     arg67.tgt_pos.sx = ufo->bact_internal->position.sx;
                     arg67.tgt_pos.sz = ufo->bact_internal->position.sz;
                     arg67.priority = 0;
 
-                    ypabact_func67(&arg67);
+                    SetTarget(&arg67);
                 }
 
                 if ( bact->primTtype || bact->secndTtype )
                 {
-                    bact_arg119 arg78;
+                    setState_msg arg78;
                     arg78.field_8 = 512;
                     arg78.field_4 = 0;
                     arg78.field_0 = 1;
 
-                    ypabact_func78(&arg78);
+                    SetState(&arg78);
                     break;
                 }
             }
@@ -616,12 +614,12 @@ void NC_STACK_ypaufo::ypabact_func70(update_msg *arg)
 
             if ( bact->status_flg & BACT_STFLAG_LAND )
             {
-                bact_arg119 arg78;
+                setState_msg arg78;
                 arg78.field_8 = 0;
                 arg78.field_4 = 0;
                 arg78.field_0 = 3;
 
-                ypabact_func78(&arg78);
+                SetState(&arg78);
 
                 ypaworld_arg136 arg136_1;
 
@@ -644,27 +642,27 @@ void NC_STACK_ypaufo::ypabact_func70(update_msg *arg)
                 arg86.field_one = 0;
                 arg86.field_two = arg->frameTime;
 
-                ypabact_func86(&arg86);
+                CrashOrLand(&arg86);
             }
         }
     }
     break;
 
     case BACT_STATUS_DEAD:
-        ypabact_func121(arg);
+        DeadTimeUpdate(arg);
         break;
 
     case BACT_STATUS_CREATE:
-        ypabact_func99(arg);
+        CreationTimeUpdate(arg);
         break;
 
     case BACT_STATUS_BEAM:
-        ypabact_func112(arg);
+        BeamingTimeUpdate(arg);
         break;
     }
 }
 
-void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
+void NC_STACK_ypaufo::User_layer(update_msg *arg)
 {
     __NC_STACK_ypaufo *ufo = &stack__ypaufo;
     __NC_STACK_ypabact *bact = &stack__ypabact;
@@ -677,7 +675,7 @@ void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
 
     if ( bact->status == BACT_STATUS_DEAD )
     {
-        ypabact_func121(arg);
+        DeadTimeUpdate(arg);
     }
     else if ( bact->status == BACT_STATUS_NORMAL || bact->status == BACT_STATUS_IDLE )
     {
@@ -686,12 +684,12 @@ void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
         {
             if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
             {
-                bact_arg119 arg78;
+                setState_msg arg78;
                 arg78.field_0 = 1;
                 arg78.field_8 = 0;
                 arg78.field_4 = 0;
 
-                ypabact_func78(&arg78);
+                SetState(&arg78);
             }
 
             bact->status_flg &= ~BACT_STFLAG_LAND;
@@ -736,12 +734,12 @@ void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
                 {
                     if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                     {
-                        bact_arg119 arg78;
+                        setState_msg arg78;
                         arg78.field_0 = 3;
                         arg78.field_8 = 0;
                         arg78.field_4 = 0;
 
-                        ypabact_func78(&arg78);
+                        SetState(&arg78);
                     }
                 }
 
@@ -755,12 +753,12 @@ void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
                 {
                     if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                     {
-                        bact_arg119 arg78;
+                        setState_msg arg78;
                         arg78.field_0 = 3;
                         arg78.field_8 = 0;
                         arg78.field_4 = 0;
 
-                        ypabact_func78(&arg78);
+                        SetState(&arg78);
                     }
                 }
             }
@@ -832,9 +830,7 @@ void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
         {
             if ( !(bact->status_flg & BACT_STFLAG_LAND) )
             {
-                int v83 = arg->frameTime;
-
-                ypabact_func87(&v83);
+                CollisionWithBact(arg->frameTime);
             }
         }
 
@@ -864,7 +860,7 @@ void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
         arg106.field_4.sz = bact->rotation.m22;
 
 
-        if ( ypabact_func106(&arg106) )
+        if ( UserTargeting(&arg106) )
         {
             arg79.target.pbact = arg106.ret_bact;
             arg79.tgType = BACT_TGT_TYPE_UNIT;
@@ -888,7 +884,7 @@ void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
             arg79.start_point.sz = bact->fire_pos.sz;
             arg79.flags = (arg->inpt->but_flags & 2) != 0;
 
-            ypabact_func79(&arg79);
+            LaunchMissile(&arg79);
         }
 
         if ( bact->weapon == -1 )
@@ -932,12 +928,12 @@ void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
             {
                 if ( arg->inpt->but_flags & 4 )
                 {
-                    bact_arg119 arg78;
+                    setState_msg arg78;
                     arg78.field_4 = 0;
                     arg78.field_0 = 0;
                     arg78.field_8 = 256;
 
-                    ypabact_func78(&arg78);
+                    SetState(&arg78);
                 }
             }
 
@@ -945,12 +941,12 @@ void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
             {
                 if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
-                    bact_arg119 arg78;
+                    setState_msg arg78;
                     arg78.field_4 = 256;
                     arg78.field_8 = 0;
                     arg78.field_0 = 0;
 
-                    ypabact_func78(&arg78);
+                    SetState(&arg78);
                 }
 
                 bact_arg105 arg105;
@@ -961,17 +957,17 @@ void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
                 arg105.field_C = v88;
                 arg105.field_10 = bact->clock;
 
-                ypabact_func105(&arg105);
+                FireMinigun(&arg105);
             }
         }
 
         if ( bact->status_flg & BACT_STFLAG_LAND )
         {
-            bact_arg74 arg74;
+            move_msg arg74;
             arg74.flag = 0;
             arg74.field_0 = v88;
 
-            ypabact_func74(&arg74);
+            Move(&arg74);
         }
         else
         {
@@ -979,11 +975,11 @@ void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
 
             for (int i = 3; i >= 0; i--)
             {
-                bact_arg74 arg74;
+                move_msg arg74;
                 arg74.flag = 0;
                 arg74.field_0 = v88;
 
-                ypabact_func74(&arg74);
+                Move(&arg74);
 
                 ypaworld_arg137 arg137;
                 arg137.pos = bact->position;
@@ -1033,7 +1029,7 @@ void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
                     arg88.pos2.sx = 0.7;
                     arg88.pos2.sy = 2.0;
 
-                    ypabact_func88(&arg88);
+                    Recoil(&arg88);
 
                     v49 = 1;
                 }
@@ -1067,7 +1063,7 @@ void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
                         arg88.pos2.sz = v88;
                         arg88.pos2.sy = 2.0;
 
-                        ypabact_func88(&arg88);
+                        Recoil(&arg88);
 
                         v49 = 1;
                     }
@@ -1102,7 +1098,7 @@ void NC_STACK_ypaufo::ypabact_func71(update_msg *arg)
     }
 }
 
-void NC_STACK_ypaufo::ypabact_func74(bact_arg74 *arg)
+void NC_STACK_ypaufo::Move(move_msg *arg)
 {
     __NC_STACK_ypaufo *ufo = &stack__ypaufo;
     __NC_STACK_ypabact *bact = &stack__ypabact;
@@ -1205,7 +1201,7 @@ void NC_STACK_ypaufo::ypabact_func74(bact_arg74 *arg)
     if ( ufo->field_10 < 0.0 )
         ufo->field_10 = 0;
 
-    ypabact_func115(NULL);
+    CorrectPositionInLevelBox(NULL);
 
     bact->soundcarrier.samples_data[0].pitch = bact->pitch;
     bact->soundcarrier.samples_data[0].volume = bact->volume;
@@ -1227,20 +1223,20 @@ void NC_STACK_ypaufo::ypabact_func74(bact_arg74 *arg)
 
 }
 
-size_t NC_STACK_ypaufo::ypabact_func80(bact_arg80 *arg)
+size_t NC_STACK_ypaufo::SetPosition(bact_arg80 *arg)
 {
     __NC_STACK_ypaufo *ufo = &stack__ypaufo;
 
-    if ( !NC_STACK_ypabact::ypabact_func80(arg))
+    if ( !NC_STACK_ypabact::SetPosition(arg))
         return 0;
 
     ufo->field_14 = ufo->bact_internal->mass * 9.80665;
     return 1;
 }
 
-void NC_STACK_ypaufo::ypabact_func96(void *)
+void NC_STACK_ypaufo::Renew()
 {
-    NC_STACK_ypabact::ypabact_func96(NULL);
+    NC_STACK_ypabact::Renew();
 
     __NC_STACK_ypaufo *ufo = &stack__ypaufo;
 
@@ -1293,18 +1289,18 @@ size_t NC_STACK_ypaufo::compatcall(int method_id, void *data)
     case 3:
         return func3( (stack_vals *)data );
     case 70:
-        ypabact_func70( (update_msg *)data );
+        AI_layer3( (update_msg *)data );
         return 1;
     case 71:
-        ypabact_func71( (update_msg *)data );
+        User_layer( (update_msg *)data );
         return 1;
     case 74:
-        ypabact_func74( (bact_arg74 *)data );
+        Move( (move_msg *)data );
         return 1;
     case 80:
-        return (size_t)ypabact_func80( (bact_arg80 *)data );
+        return (size_t)SetPosition( (bact_arg80 *)data );
     case 96:
-        ypabact_func96( (void *)data );
+        Renew();
         return 1;
     default:
         break;

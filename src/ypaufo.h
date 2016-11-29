@@ -23,11 +23,11 @@ public:
     virtual size_t func1(stack_vals *stak);
     virtual size_t func2(stack_vals *stak);
     virtual size_t func3(stack_vals *stak);
-    virtual void ypabact_func70(update_msg *arg);
-    virtual void ypabact_func71(update_msg *arg);
-    virtual void ypabact_func74(bact_arg74 *arg);
-    virtual size_t ypabact_func80(bact_arg80 *arg);
-    virtual void ypabact_func96(void *);
+    virtual void AI_layer3(update_msg *arg);
+    virtual void User_layer(update_msg *arg);
+    virtual void Move(move_msg *arg);
+    virtual size_t SetPosition(bact_arg80 *arg);
+    virtual void Renew();
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ypaufo() {

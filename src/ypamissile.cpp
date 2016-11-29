@@ -321,7 +321,7 @@ size_t NC_STACK_ypamissile::func3(stack_vals *stak)
     return 1;
 }
 
-void NC_STACK_ypamissile::ypabact_func68(update_msg *arg)
+void NC_STACK_ypamissile::AI_layer1(update_msg *arg)
 {
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
@@ -351,12 +351,12 @@ void NC_STACK_ypamissile::ypabact_func68(update_msg *arg)
         }
     }
 
-    ypabact_func69(arg);
+    AI_layer2(arg);
 }
 
-void NC_STACK_ypamissile::ypabact_func69(update_msg *arg)
+void NC_STACK_ypamissile::AI_layer2(update_msg *arg)
 {
-    ypabact_func70(arg);
+    AI_layer3(arg);
 }
 
 int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
@@ -598,7 +598,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                                         arg84.unit = miss->ejaculator_bact;
 
                                         if ( v85->owner == bact->owner || !miss->yw->field_757E )
-                                            bct->self->ypabact_func84(&arg84);
+                                            bct->self->ModifyEnergy(&arg84);
                                     }
 
                                     break;
@@ -636,7 +636,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
     return v90;
 }
 
-void ypamissile_func70__sub1(__NC_STACK_ypamissile *miss, bact_arg74 *arg74)
+void ypamissile_func70__sub1(__NC_STACK_ypamissile *miss, move_msg *arg74)
 {
     __NC_STACK_ypabact *bact = miss->selfie;
 
@@ -647,7 +647,7 @@ void ypamissile_func70__sub1(__NC_STACK_ypamissile *miss, bact_arg74 *arg74)
     arg74->vec.normolize();
 }
 
-void NC_STACK_ypamissile::ypabact_func70(update_msg *arg)
+void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
 {
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
@@ -679,12 +679,12 @@ void NC_STACK_ypamissile::ypabact_func70(update_msg *arg)
 
             miss->selfie->status = BACT_STATUS_DEAD;
 
-            bact_arg119 arg78;
+            setState_msg arg78;
             arg78.field_4 = 2048;
             arg78.field_8 = 0;
             arg78.field_0 = 0;
 
-            ypabact_func78(&arg78);
+            SetState(&arg78);
 
             if ( !(miss->field_2D & 4) || !miss->selfie->pSector->w_type )
             {
@@ -697,20 +697,20 @@ void NC_STACK_ypamissile::ypabact_func70(update_msg *arg)
                     v25.field_10 = bact->energy;
                     v25.unit = miss->ejaculator_bact;
 
-                    ypabact_func120(&v25);
+                    ChangeSectorEnergy(&v25);
                 }
             }
         }
         else
         {
-            bact_arg74 arg74;
+            move_msg arg74;
 
             switch ( miss->field_c )
             {
             case 1:
                 arg74.field_0 = v38;
                 arg74.flag = 1;
-                ypabact_func74(&arg74);
+                Move(&arg74);
                 break;
 
             case 2:
@@ -718,7 +718,7 @@ void NC_STACK_ypamissile::ypabact_func70(update_msg *arg)
                 arg74.flag = 0;
 
                 ypamissile_func70__sub1(miss, &arg74);
-                ypabact_func74(&arg74);
+                Move(&arg74);
                 break;
 
             case 3:
@@ -726,7 +726,7 @@ void NC_STACK_ypamissile::ypabact_func70(update_msg *arg)
                 arg74.flag = 0;
 
                 ypamissile_func70__sub1(miss, &arg74);
-                ypabact_func74(&arg74);
+                Move(&arg74);
                 break;
 
             case 4:
@@ -734,7 +734,7 @@ void NC_STACK_ypamissile::ypabact_func70(update_msg *arg)
                 arg74.vec = bact->fly_dir;
                 arg74.flag = 0;
 
-                ypabact_func74(&arg74);
+                Move(&arg74);
                 break;
 
             default:
@@ -743,14 +743,14 @@ void NC_STACK_ypamissile::ypabact_func70(update_msg *arg)
 
             if ( ypamissile_func70__sub0(miss) )
             {
-                bact_arg119 arg78;
+                setState_msg arg78;
                 ypamissile_func129(NULL);
 
                 arg78.field_0 = 2;
                 arg78.field_8 = 0;
                 arg78.field_4 = 0;
 
-                ypabact_func78(&arg78);
+                SetState(&arg78);
 
                 ypamissile_func128(NULL);
             }
@@ -792,12 +792,12 @@ void NC_STACK_ypamissile::ypabact_func70(update_msg *arg)
 
                         miss->selfie->status = BACT_STATUS_DEAD;
 
-                        bact_arg119 arg78;
+                        setState_msg arg78;
                         arg78.field_4 = 2048;
                         arg78.field_8 = 0;
                         arg78.field_0 = 0;
 
-                        ypabact_func78(&arg78);
+                        SetState(&arg78);
 
                         if ( !(miss->field_2D & 4) || !miss->selfie->pSector->w_type )
                         {
@@ -810,7 +810,7 @@ void NC_STACK_ypamissile::ypabact_func70(update_msg *arg)
                                 v25.field_10 = bact->energy;
                                 v25.unit = miss->ejaculator_bact;
 
-                                ypabact_func120(&v25);
+                                ChangeSectorEnergy(&v25);
                             }
                         }
                     }
@@ -823,12 +823,12 @@ void NC_STACK_ypamissile::ypabact_func70(update_msg *arg)
                         {
                             if ( miss->ejaculator_bact->host_station )
                             {
-                                bact_arg67 arg67;
+                                setTarget_msg arg67;
                                 arg67.tgt_type = BACT_TGT_TYPE_CELL;
                                 arg67.tgt_pos = bact->position;
                                 arg67.priority = 0;
 
-                                miss->ejaculator_bact->self->ypabact_func67(&arg67);
+                                miss->ejaculator_bact->self->SetTarget(&arg67);
                             }
                         }
                     }
@@ -858,12 +858,12 @@ void NC_STACK_ypamissile::ypabact_func70(update_msg *arg)
                     {
                         ypamissile_func129(NULL);
 
-                        bact_arg119 arg78;
+                        setState_msg arg78;
                         arg78.field_8 = 0;
                         arg78.field_4 = 0;
                         arg78.field_0 = 2;
 
-                        ypabact_func78(&arg78);
+                        SetState(&arg78);
 
                         ypamissile_func128(NULL);
                     }
@@ -873,7 +873,7 @@ void NC_STACK_ypamissile::ypabact_func70(update_msg *arg)
     }
 }
 
-void NC_STACK_ypamissile::ypabact_func71(update_msg *arg)
+void NC_STACK_ypamissile::User_layer(update_msg *arg)
 {
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
@@ -881,12 +881,12 @@ void NC_STACK_ypamissile::ypabact_func71(update_msg *arg)
     bact->old_pos = bact->position;
 
     if (bact->status == BACT_STATUS_NORMAL)
-        ypabact_func68(arg);
+        AI_layer1(arg);
     else
         ypamissile_func128(NULL);
 }
 
-void NC_STACK_ypamissile::ypabact_func74(bact_arg74 *arg)
+void NC_STACK_ypamissile::Move(move_msg *arg)
 {
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
@@ -938,17 +938,17 @@ void NC_STACK_ypamissile::ypabact_func74(bact_arg74 *arg)
 
     bact->position += bact->fly_dir * (bact->fly_dir_length * arg->field_0 * 6.0);
 
-    ypabact_func115(NULL);
+    CorrectPositionInLevelBox(NULL);
 }
 
-void NC_STACK_ypamissile::ypabact_func78(bact_arg119 *arg)
+void NC_STACK_ypamissile::SetState(setState_msg *arg)
 {
-    ypabact_func119(arg);
+    SetStateInternal(arg);
 }
 
-void NC_STACK_ypamissile::ypabact_func96(void *)
+void NC_STACK_ypamissile::Renew()
 {
-    NC_STACK_ypabact::ypabact_func96(NULL);
+    NC_STACK_ypabact::Renew();
 
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
 
@@ -958,7 +958,7 @@ void NC_STACK_ypamissile::ypabact_func96(void *)
     setBACT_yourLastSeconds(3000);
 }
 
-size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
+size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
 {
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
@@ -984,7 +984,7 @@ size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
         startSound(&bact->soundcarrier, 2);
 
         uint8_t v8 = 1;
-        ypabact_func113(&v8);
+        StartDestFX(&v8);
 
         bact->fly_dir_length = 0;
     }
@@ -1015,7 +1015,7 @@ size_t NC_STACK_ypamissile::ypabact_func119(bact_arg119 *arg)
         startSound(&bact->soundcarrier, 2);
 
         uint8_t v9 = 2;
-        ypabact_func113(&v9);
+        StartDestFX(&v9);
 
         bact->fly_dir_length = 0;
     }
@@ -1084,7 +1084,7 @@ void NC_STACK_ypamissile::ypamissile_func129(void *)
             }
 
             if ( v10 )
-                bct->self->ypabact_func83(&arg83);
+                bct->self->ApplyImpulse(&arg83);
         }
 
         bct = (__NC_STACK_ypabact *)bct->next;
@@ -1441,28 +1441,28 @@ size_t NC_STACK_ypamissile::compatcall(int method_id, void *data)
     case 3:
         return func3( (stack_vals *)data );
     case 68:
-        ypabact_func68( (update_msg *)data );
+        AI_layer1( (update_msg *)data );
         return 1;
     case 69:
-        ypabact_func69( (update_msg *)data );
+        AI_layer2( (update_msg *)data );
         return 1;
     case 70:
-        ypabact_func70( (update_msg *)data );
+        AI_layer3( (update_msg *)data );
         return 1;
     case 71:
-        ypabact_func71( (update_msg *)data );
+        User_layer( (update_msg *)data );
         return 1;
     case 74:
-        ypabact_func74( (bact_arg74 *)data );
+        Move( (move_msg *)data );
         return 1;
     case 78:
-        ypabact_func78( (bact_arg119 *)data );
+        SetState( (setState_msg *)data );
         return 1;
     case 96:
-        ypabact_func96( (void *)data );
+        Renew();
         return 1;
     case 119:
-        return (size_t)ypabact_func119( (bact_arg119 *)data );
+        return (size_t)SetStateInternal( (setState_msg *)data );
     case 128:
         ypamissile_func128( (void *)data );
         return 1;

@@ -5831,7 +5831,7 @@ int sub_479E30(scrCallBack *scr)
 
                 current_commander = current_bact;
 
-                current_robo->ypabact_func72(current_bact);
+                current_robo->AddSubject(current_bact);
 
                 return 1;
             }
@@ -5881,7 +5881,7 @@ int sub_479D20(scrCallBack *scr)
             {
                 dword_5A7A88 = &current_bact->stack__ypabact;
 
-                current_commander->ypabact_func72(current_bact);
+                current_commander->AddSubject(current_bact);
 
                 return 1;
             }

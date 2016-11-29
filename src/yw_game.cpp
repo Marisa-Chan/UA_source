@@ -2153,7 +2153,7 @@ NC_STACK_ypabact *yw_createUnit(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, 
         bact = bacto->getBACT_pBact();
     }
 
-    bacto->ypabact_func96(NULL); // Reset bact
+    bacto->Renew(); // Reset bact
 
     bact->gid = bact_id;
     bact->owner = 0;
@@ -2234,7 +2234,7 @@ void sub_44BF34(vhclSndFX *sndfx)
 }
 
 
-void sub_4D7F60(_NC_STACK_ypaworld *yw, int x, int y, stru_a3 *sct, base77Func *bs77)
+void sub_4D7F60(_NC_STACK_ypaworld *yw, int x, int y, stru_a3 *sct, baseRender_msg *bs77)
 {
     sct->dword8 = 0;
     sct->dword4 = 0;
@@ -2264,7 +2264,7 @@ void sub_4D7F60(_NC_STACK_ypaworld *yw, int x, int y, stru_a3 *sct, base77Func *
     }
 }
 
-void sub_4D806C(_NC_STACK_ypaworld *yw, stru_a3 *sct, base77Func *bs77)
+void sub_4D806C(_NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
 {
     if ( sct->dword8 )
     {
@@ -2341,13 +2341,13 @@ void sub_4D806C(_NC_STACK_ypaworld *yw, stru_a3 *sct, base77Func *bs77)
     while ( bact->next )
     {
         if ( sct->dword8 || bact->bact_type == BACT_TYPES_ROBO)
-            bact->self->ypabact_func66(bs77);
+            bact->self->Render(bs77);
 
         bact = (__NC_STACK_ypabact *)bact->next;
     }
 }
 
-void yw_renderSky(_NC_STACK_ypaworld *yw, base77Func *rndr_params)
+void yw_renderSky(_NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
 {
     if ( yw->sky_loaded_base )
     {
@@ -2386,7 +2386,7 @@ int sb_0x4d7c08__sub1__sub0__sub0(_NC_STACK_ypaworld *yw, float xx, float yy)
     return 0;
 }
 
-void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float posx, float posy, base77Func *arg)
+void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float posx, float posy, baseRender_msg *arg)
 {
     if ( yw->superbomb_wall_vproto )
     {
@@ -2461,7 +2461,7 @@ void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float p
     }
 }
 
-void sb_0x4d7c08__sub1(_NC_STACK_ypaworld *yw, base77Func *arg)
+void sb_0x4d7c08__sub1(_NC_STACK_ypaworld *yw, baseRender_msg *arg)
 {
     // Render super items
     for (int i = 0; i < yw->field_2d90->supetItems_count; i++)
@@ -2564,7 +2564,7 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub1(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
 
 stru_a3 rendering_sectors[YW_RENDER_SECTORS_DEF * 2][ YW_RENDER_SECTORS_DEF * 2];
 
-void sb_0x4d7c08__sub3(_NC_STACK_ypaworld *yw, base77Func *arg)
+void sb_0x4d7c08__sub3(_NC_STACK_ypaworld *yw, baseRender_msg *arg)
 {
     //Render empty sectors and modify landscape linking parts
     for (int i = 0; i < yw->field_1368; i++)
@@ -2610,7 +2610,7 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
         if ( v5 )
             sub_430A38(v5);
 
-        base77Func rndrs;
+        baseRender_msg rndrs;
 
         rndrs.field_0 = bs64->field_4;
         rndrs.field_4 = bs64->field_0;
@@ -2881,12 +2881,12 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                             gunn->ypagun_func128(&v32);
                         }
 
-                        bact_arg119 v34;
+                        setState_msg v34;
                         v34.field_0 = 4;
                         v34.field_8 = 0;
                         v34.field_4 = 0;
 
-                        gunn->ypabact_func119(&v34);
+                        gunn->SetStateInternal(&v34);
 
                         gbct->scale_time = 500;
                         gbct->scale.sx = 1.0;
@@ -2911,13 +2911,13 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
 
                         if ( commander )
                         {
-                            commander->ypabact_func72(gunn);
+                            commander->AddSubject(gunn);
                         }
                         else
                         {
                             commander = gunn;
 
-                            robo->ypabact_func72(gunn);
+                            robo->AddSubject(gunn);
                         }
                     }
 
@@ -2990,7 +2990,7 @@ void ypaworld_func148__sub0(_NC_STACK_ypaworld *yw, int x, int y)
             v8.energy = -22000000;
             v8.unit = NULL;
 
-            node->self->ypabact_func84(&v8);
+            node->self->ModifyEnergy(&v8);
         }
 
         node = (__NC_STACK_ypabact *)node->next;
@@ -3636,7 +3636,7 @@ void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a
     else
         arg80.field_C = 0;
 
-    bct1->bacto->ypabact_func80(&arg80);
+    bct1->bacto->SetPosition(&arg80);
 
     if ( bct1->bact->bact_type == BACT_TYPES_GUN )
     {
@@ -3649,18 +3649,18 @@ void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a
         guno->ypagun_func128(&arg128);
     }
 
-    bact_arg119 arg78;
+    setState_msg arg78;
     arg78.field_0 = bct1->bact->status;
     arg78.field_4 = 0;
     arg78.field_8 = 0;
-    bct1->bacto->ypabact_func78(&arg78);
+    bct1->bacto->SetState(&arg78);
 
     if ( bct1->bact->status_flg & BACT_STFLAG_DEATH2 )
     {
         arg78.field_0 = 0;
         arg78.field_8 = 0;
         arg78.field_4 = 2048;
-        bct1->bacto->ypabact_func78(&arg78);
+        bct1->bacto->SetState(&arg78);
     }
 
     if ( bct1->bact->status_flg & BACT_STFLAG_FIRE )
@@ -3668,7 +3668,7 @@ void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a
         arg78.field_0 = 0;
         arg78.field_8 = 0;
         arg78.field_4 = 256;
-        bct1->bacto->ypabact_func78(&arg78);
+        bct1->bacto->SetState(&arg78);
     }
 
     if ( !a3 )
@@ -3681,23 +3681,23 @@ void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a
     {
         bct1->bact->primTtype = BACT_TGT_TYPE_NONE;
 
-        bact_arg67 arg67;
+        setTarget_msg arg67;
         arg67.tgt.pbact = sb_0x47b028__sub0((int)(size_t)bct1->bact->primT.pbact, yw);
         arg67.tgt_type = BACT_TGT_TYPE_UNIT_IND;
         arg67.priority = 0;
-        bct1->bacto->ypabact_func67(&arg67);
+        bct1->bacto->SetTarget(&arg67);
     }
 
     if ( bct1->bact->primTtype == BACT_TGT_TYPE_CELL )
     {
         bct1->bact->primTtype = BACT_TGT_TYPE_NONE;
 
-        bact_arg67 arg67_1;
+        setTarget_msg arg67_1;
         arg67_1.tgt_type = BACT_TGT_TYPE_CELL_IND;
         arg67_1.tgt_pos = bct1->bact->primTpos;
         arg67_1.priority = 0;
 
-        bct1->bacto->ypabact_func67(&arg67_1);
+        bct1->bacto->SetTarget(&arg67_1);
     }
 }
 
@@ -4145,7 +4145,7 @@ void ypaworld_func64__sub19__sub2__sub0__sub0(_NC_STACK_ypaworld *yw, supetItemP
                     arg84.energy = -22000000;
                     arg84.unit = 0;
 
-                    bct->self->ypabact_func84(&arg84);
+                    bct->self->ModifyEnergy(&arg84);
                 }
             }
 
@@ -5676,7 +5676,7 @@ int recorder_create_camera(_NC_STACK_ypaworld *yw)
 
     __NC_STACK_ypabact *bact = &bacto->stack__ypabact;
 
-    bacto->ypabact_func96(NULL);
+    bacto->Renew();
 
     bact->gid = 0;
     bact->owner = 1;
@@ -5816,7 +5816,7 @@ __NC_STACK_ypabact *sub_46F3AC(_NC_STACK_ypaworld *yw, trec_bct *oinf)
             {
                 bact = &bacto->stack__ypabact;
 
-                bacto->ypabact_func96(NULL);
+                bacto->Renew();
 
                 bact->gid = 0;
                 bact->owner = 1;

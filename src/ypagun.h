@@ -41,14 +41,14 @@ public:
     virtual size_t func1(stack_vals *stak);
     virtual size_t func2(stack_vals *stak);
     virtual size_t func3(stack_vals *stak);
-    virtual void ypabact_func70(update_msg *arg);
-    virtual void ypabact_func71(update_msg *arg);
-    virtual void ypabact_func75(bact_arg75 *arg);
-    virtual void ypabact_func77(void *);
-    virtual size_t ypabact_func80(bact_arg80 *arg);
-    virtual void ypabact_func82(update_msg *arg);
-    virtual void ypabact_func96(void *);
-    virtual size_t ypabact_func111(__NC_STACK_ypabact *cel_unit);
+    virtual void AI_layer3(update_msg *arg);
+    virtual void User_layer(update_msg *arg);
+    virtual void FightWithBact(bact_arg75 *arg);
+    virtual void Die();
+    virtual size_t SetPosition(bact_arg80 *arg);
+    virtual void EnergyInteract(update_msg *arg);
+    virtual void Renew();
+    virtual size_t TestTargetSector(__NC_STACK_ypabact *cel_unit);
     virtual void ypagun_func128(gun_arg128 *arg);
     virtual void ypagun_func129(gun_arg129 *arg);
 

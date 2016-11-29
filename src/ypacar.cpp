@@ -226,7 +226,7 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
             arg120.unit = bact;
 
             if ( arg120.pos.sx > 1200.0  &&  arg120.pos.sx < bact->wrldX - 1200.0  &&  arg120.pos.sz < -1200.0  &&  arg120.pos.sz > bact->wrldY + 1200.0 )
-                caro->ypabact_func120(&arg120);
+                caro->ChangeSectorEnergy(&arg120);
 
             if ( i )
             {
@@ -236,7 +236,7 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
                 if ( arg120.pos.sx > 1200.0 )
                 {
                     if ( arg120.pos.sx < bact->wrldX - 1200.0 && arg120.pos.sz < -1200.0 && arg120.pos.sz > bact->wrldY + 1200.0 )
-                        caro->ypabact_func120(&arg120);
+                        caro->ChangeSectorEnergy(&arg120);
                 }
             }
 
@@ -248,7 +248,7 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
                 if ( arg120.pos.sx > 1200.0 )
                 {
                     if ( arg120.pos.sx < bact->wrldX - 1200.0  &&  arg120.pos.sz < -1200.0  &&  arg120.pos.sz > bact->wrldY + 1200.0 )
-                        caro->ypabact_func120(&arg120);
+                        caro->ChangeSectorEnergy(&arg120);
                 }
             }
 
@@ -262,7 +262,7 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
                     if ( arg120.pos.sx > 1200.0 )
                     {
                         if ( arg120.pos.sx < bact->wrldX - 1200.0  &&  arg120.pos.sz < -1200.0  &&  arg120.pos.sz > bact->wrldY + 1200.0 )
-                            caro->ypabact_func120(&arg120);
+                            caro->ChangeSectorEnergy(&arg120);
                     }
                 }
             }
@@ -328,15 +328,15 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
 
                         if ( v19->energy <= 0 || v19->bact_type == BACT_TYPES_MISSLE )
                         {
-                            bact_arg119 arg78;
+                            setState_msg arg78;
                             arg78.field_4 = 0;
                             arg78.field_8 = 0;
                             arg78.field_0 = 2;
 
                             if ( v19->bact_type == BACT_TYPES_MISSLE )
-                                v19->self->ypabact_func78(&arg78);
+                                v19->self->SetState(&arg78);
                             else
-                                v19->self->ypabact_func119(&arg78);
+                                v19->self->SetStateInternal(&arg78);
 
                             if ( v19->bact_type == BACT_TYPES_ROBO )
                             {
@@ -408,18 +408,18 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
     bact->status_flg &= ~BACT_STFLAG_LAND;
     bact->bact_type = BACT_TYPES_FLYER;
 
-    bact_arg119 arg78;
+    setState_msg arg78;
     arg78.field_0 = 2;
     arg78.field_4 = 0;
     arg78.field_8 = 0;
 
-    caro->ypabact_func78(&arg78);
+    caro->SetState(&arg78);
 
     bact->bact_type = BACT_TYPES_CAR;
     bact->energy = -10;
 }
 
-void NC_STACK_ypacar::ypabact_func71(update_msg *arg)
+void NC_STACK_ypacar::User_layer(update_msg *arg)
 {
     __NC_STACK_ypacar *car = &stack__ypacar;
     __NC_STACK_ypabact *bact = &stack__ypabact;
@@ -439,19 +439,19 @@ void NC_STACK_ypacar::ypabact_func71(update_msg *arg)
     arg129.field_4.sz = bact->rotation.m22;
 
     if (bact->status == BACT_STATUS_DEAD)
-        ypabact_func121(arg);
+        DeadTimeUpdate(arg);
     else if (bact->status == BACT_STATUS_NORMAL || bact->status == BACT_STATUS_IDLE)
     {
         if ( bact->fly_dir_length != 0.0 )
         {
             if ( ! (bact->status_flg & BACT_STFLAG_FIRE) )
             {
-                bact_arg119 arg78;
+                setState_msg arg78;
                 arg78.field_0 = 1;
                 arg78.field_8 = 0;
                 arg78.field_4 = 0;
 
-                ypabact_func78(&arg78);
+                SetState(&arg78);
             }
         }
         else
@@ -460,12 +460,12 @@ void NC_STACK_ypacar::ypabact_func71(update_msg *arg)
             {
                 if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
-                    bact_arg119 arg78;
+                    setState_msg arg78;
                     arg78.field_0 = 3;
                     arg78.field_8 = 0;
                     arg78.field_4 = 0;
 
-                    ypabact_func78(&arg78);
+                    SetState(&arg78);
                 }
 
                 bact->status = BACT_STATUS_NORMAL;
@@ -479,12 +479,12 @@ void NC_STACK_ypacar::ypabact_func71(update_msg *arg)
                 }
                 else
                 {
-                    bact_arg119 arg78;
+                    setState_msg arg78;
                     arg78.field_0 = 3;
                     arg78.field_8 = 0;
                     arg78.field_4 = 0;
 
-                    ypabact_func78(&arg78);
+                    SetState(&arg78);
                 }
             }
         }
@@ -560,7 +560,7 @@ void NC_STACK_ypacar::ypabact_func71(update_msg *arg)
         arg106.field_4.sy = bact->rotation.m21 - bact->gun_angle_user * corH;
         arg106.field_4.sz = bact->rotation.m22;
 
-        if ( ypabact_func106(&arg106) )
+        if ( UserTargeting(&arg106) )
         {
             arg79.tgType = BACT_TGT_TYPE_UNIT;
             arg79.target.pbact = arg106.ret_bact;
@@ -590,7 +590,7 @@ void NC_STACK_ypacar::ypabact_func71(update_msg *arg)
 
                 arg79.flags = ((arg->inpt->but_flags & 2) != 0) | 2;
 
-                ypabact_func79(&arg79);
+                LaunchMissile(&arg79);
             }
         }
 
@@ -600,12 +600,12 @@ void NC_STACK_ypacar::ypabact_func71(update_msg *arg)
             {
                 if ( !(arg->inpt->but_flags & 4) )
                 {
-                    bact_arg119 arg78;
+                    setState_msg arg78;
                     arg78.field_4 = 0;
                     arg78.field_0 = 0;
                     arg78.field_8 = 256;
 
-                    ypabact_func78(&arg78);
+                    SetState(&arg78);
                 }
             }
 
@@ -613,12 +613,12 @@ void NC_STACK_ypacar::ypabact_func71(update_msg *arg)
             {
                 if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
-                    bact_arg119 arg78;
+                    setState_msg arg78;
                     arg78.field_4 = 256;
                     arg78.field_8 = 0;
                     arg78.field_0 = 0;
 
-                    ypabact_func78(&arg78);
+                    SetState(&arg78);
                 }
 
                 bact_arg105 arg105;
@@ -628,13 +628,13 @@ void NC_STACK_ypacar::ypabact_func71(update_msg *arg)
                 arg105.field_C = v78;
                 arg105.field_10 = bact->clock;
 
-                ypabact_func105(&arg105);
+                FireMinigun(&arg105);
             }
         }
 
         if ( bact->status_flg & BACT_STFLAG_LAND )
         {
-            bact_arg74 arg74;
+            move_msg arg74;
 
             if ( arg->inpt->but_flags & 8 )
             {
@@ -666,11 +666,9 @@ void NC_STACK_ypacar::ypabact_func71(update_msg *arg)
             arg74.field_0 = v78;
 
             if ( bact->status_flg & BACT_STFLAG_MOVE )
-                ypabact_func74(&arg74);
+                Move(&arg74);
 
-            int v62 = arg->frameTime;
-
-            if ( a4 && ypabact_func87(&v62) )
+            if ( a4 && CollisionWithBact(arg->frameTime) )
             {
                 ypatank_func129(&arg129);
             }
@@ -708,7 +706,7 @@ void NC_STACK_ypacar::ypabact_func71(update_msg *arg)
             arg86.field_one = 1;
             arg86.field_two = arg->frameTime;
 
-            ypabact_func86(&arg86);
+            CrashOrLand(&arg86);
         }
     }
 }
@@ -1403,7 +1401,7 @@ size_t NC_STACK_ypacar::compatcall(int method_id, void *data)
     case 3:
         return func3( (stack_vals *)data );
     case 71:
-        ypabact_func71( (update_msg *)data );
+        User_layer( (update_msg *)data );
         return 1;
     case 128:
         return (size_t)ypatank_func128( (tank_arg128 *)data );

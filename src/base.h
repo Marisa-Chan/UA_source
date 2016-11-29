@@ -143,7 +143,7 @@ struct base_66_arg_struct //Parent info struct
     nlist *KIDS;
 };
 
-struct base77Func
+struct baseRender_msg
 {
     int field_0;
     int field_4;
@@ -197,7 +197,7 @@ public:
     virtual size_t base_func71(flag_xyz2 *arg);
     virtual size_t base_func72(flag_xyz *arg);
     virtual size_t base_func73(base_64arg *arg);
-    virtual size_t base_func77(base77Func *arg);
+    virtual size_t base_func77(baseRender_msg *arg);
     virtual size_t base_func78(base_64arg *arg);
     virtual size_t base_func79(NC_STACK_base **arg);
 

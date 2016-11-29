@@ -665,7 +665,7 @@ struct big_ypa_Brf
     int field_2F8C;
     int field_2F90;
     brf_t2 tp2[32];
-    base77Func field_4174;
+    baseRender_msg field_4174;
     int field_419C;
     int field_41A0;
     NC_STACK_sklt *wireless_db[4];

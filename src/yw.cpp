@@ -1114,7 +1114,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             bact_node *v32 = (bact_node *)yw->bact_list.head;
             while (v32->next)
             {
-                v32->bacto->ypabact_func102(NULL);
+                v32->bacto->MarkSectorsForView(NULL);
 
                 v32 = (bact_node *)v32->next;
             }
@@ -1170,9 +1170,9 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                 bact_node *next_node = (bact_node *)nnode->next;
 
                 if (yw->field_757E && nnode->bacto != yw->field_1b78 && nnode->bact->bact_type == BACT_TYPES_ROBO)
-                    nnode->bacto->ypabact_func116(&yw->field_1b24);
+                    nnode->bacto->NetUpdate(&yw->field_1b24);
                 else
-                    nnode->bacto->ypabact_func65(&yw->field_1b24);
+                    nnode->bacto->Update(&yw->field_1b24);
 
                 yw->field_1b24.units_count++;
 
@@ -1614,11 +1614,11 @@ void sub_44FD6C(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int 
                 //a4 = boom->getBACT_pBact();
                 a4->owner = 0;
 
-                bact_arg119 arg78;
+                setState_msg arg78;
                 arg78.field_0 = 2;
                 arg78.field_4 = 1024;
                 arg78.field_8 = 0;
-                boom->ypabact_func78(&arg78);
+                boom->SetState(&arg78);
 
                 yw->self_full->ypaworld_func134(boom);
 
@@ -1643,7 +1643,7 @@ void sub_44FD6C(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int 
                 arg83.force = 30.0;
                 arg83.mass = 50.0;
 
-                boom->ypabact_func83(&arg83);
+                boom->ApplyImpulse(&arg83);
             }
         }
     }
@@ -1887,13 +1887,13 @@ void NC_STACK_ypaworld::ypaworld_func134(NC_STACK_ypabact *bact)
 {
     _NC_STACK_ypaworld *yw = &stack__ypaworld;
 
-    bact_arg73 arg73;
+    newMaster_msg arg73;
 
     arg73.bacto = (NC_STACK_ypabact *)1;
     arg73.bact = NULL;
     arg73.list = &yw->bact_list;
 
-    bact->ypabact_func73(&arg73);
+    bact->SetNewMaster(&arg73);
 }
 
 
@@ -2128,12 +2128,12 @@ void NC_STACK_ypaworld::ypaworld_func144(NC_STACK_ypabact *bacto)
 
     sub_423DD8(&bact->soundcarrier);
 
-    bact_arg73 cache;
+    newMaster_msg cache;
     cache.bacto = (NC_STACK_ypabact *)1;
     cache.bact = 0;
     cache.list = &yw->dead_cache;
 
-    bacto->ypabact_func73(&cache);
+    bacto->SetNewMaster(&cache);
 
     bact_arg80 v6;
     v6.pos.sx = 600.0;
@@ -2141,7 +2141,7 @@ void NC_STACK_ypaworld::ypaworld_func144(NC_STACK_ypabact *bacto)
     v6.pos.sz = -600.0;
     v6.field_C = 2;
 
-    bacto->ypabact_func80(&v6);
+    bacto->SetPosition(&v6);
 
     bact->status_flg |= BACT_STFLAG_NORENDER;
 }
@@ -2363,13 +2363,13 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         arg80.pos.sy = vhcl_id->pos.sy;
         arg80.pos.sz = vhcl_id->pos.sz;
         arg80.field_C = 0;
-        bacto->ypabact_func80(&arg80);
+        bacto->SetPosition(&arg80);
 
-        bact_arg119 arg119;
+        setState_msg arg119;
         arg119.field_0 = 1;
         arg119.field_4 = 0;
         arg119.field_8 = 0;
-        bacto->ypabact_func119(&arg119);
+        bacto->SetStateInternal(&arg119);
     }
 
     return bacto;
@@ -2531,15 +2531,15 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
     arg80.pos = arg->pos;
     arg80.field_C = 1;
 
-    wobj->ypabact_func80(&arg80);
+    wobj->SetPosition(&arg80);
 
-    bact_arg119 arg119;
+    setState_msg arg119;
 
     arg119.field_4 = 0;
     arg119.field_8 = 0;
     arg119.field_0 = 1;
 
-    wobj->ypabact_func119(&arg119);
+    wobj->SetStateInternal(&arg119);
 
     return wobj;
 }

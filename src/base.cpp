@@ -1030,7 +1030,7 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
 
     base_func73(arg);
 
-    base77Func base77;
+    baseRender_msg base77;
     base77.field_0 = arg->field_4;
     base77.field_4 = arg->field_0;
     base77.rndrSTK_cur = renderStack;
@@ -1401,7 +1401,7 @@ size_t NC_STACK_base::base_func73(base_64arg *arg)
     return 1;
 }
 
-size_t NC_STACK_base::base_func77(base77Func *arg)
+size_t NC_STACK_base::base_func77(baseRender_msg *arg)
 {
     __NC_STACK_base *base = &stack__base;
 
@@ -1829,7 +1829,7 @@ size_t NC_STACK_base::compatcall(int method_id, void *data)
     case 73:
         return (size_t)base_func73( (base_64arg *)data );
     case 77:
-        return (size_t)base_func77( (base77Func *)data );
+        return (size_t)base_func77( (baseRender_msg *)data );
     case 78:
         return (size_t)base_func78( (base_64arg *)data );
     case 79:
