@@ -1,7 +1,7 @@
 # UA_source
-Mod for UrbanAssault
+Opensource reimplementation of **UrbanAssault** engine. You needed copy of original game files for play.
 
-License GPLv2
+**License** GPLv2
 
 <a href="https://scan.coverity.com/projects/marisa-chan-ua_source">
   <img alt="Coverity Scan Build Status"
@@ -9,35 +9,25 @@ License GPLv2
 </a>
 
 
-Dependings: SDL2, SDL2_ttf, OpenGL, OpenAL, vorbisfile(ogg)
+**Dependings**: SDL2, SDL2_ttf, OpenGL, OpenAL, vorbisfile(ogg)
 
 
-Make for linux native: make nix
+**Building**:
+- linux native: **make nix**
+- windows cross-compile: **make win32**
 
-Make for windows cross-compile: make win32
-
-
-
-Copy "res", "locale" and "fonts" into Urban Assault directory:
-
-Fonts directory contains:
-
-Liberation Mono, Liberation Sans, Liberation Serif.  Version 2.00.1
-
-Xolonium
-
-Press Start 2P
+[**Wiki page with instruction**](https://github.com/Marisa-Chan/UA_source/wiki)
 
 
-Also you may copy original fonts (dungeon, arial, Microsoft Sans Serif, Small Font) into "fonts" directory and they will be used instead.
+**Fonts** directory contains:
+- Liberation Mono, Liberation Sans, Liberation Serif.  Version 2.00.1
+- Xolonium
+- Press Start 2P
 
 
-Licenses of used fonts:
-
-The Liberation(tm) version 2.00.0 onward are Licensed under the SIL Open Font License, Version 1.1.
-
-Xolonium by Severin Meyer. License: SIL Open Font License (OFL)
-
-Press Start 2P by Cody 'CodeMan38' Boisclair. License: SIL Open Font License (OFL)
+**Licenses of used fonts**:
+- The Liberation(tm) version 2.00.0 onward are Licensed under the SIL Open Font License, Version 1.1.
+- Xolonium by Severin Meyer. License: SIL Open Font License (OFL)
+- Press Start 2P by Cody 'CodeMan38' Boisclair. License: SIL Open Font License (OFL)
 
 
