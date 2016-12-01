@@ -16,7 +16,7 @@ Opensource reimplementation of **UrbanAssault** engine. You needed copy of origi
 - linux native: **make nix**
 - windows cross-compile: **make win32**
 
-[**Wiki page with instruction**](https://github.com/Marisa-Chan/UA_source/wiki)
+[**Wiki page with instructions**](https://github.com/Marisa-Chan/UA_source/wiki)
 
 
 **Fonts** directory contains:
