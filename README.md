@@ -18,13 +18,26 @@ Make for windows cross-compile: make win32
 
 
 
-Copy "res" and "locale" into Urban Assault directory and create "fonts" directory with:
+Copy "res", "locale" and "fonts" into Urban Assault directory:
 
-arial.ttf (Arial)
+Fonts directory contains:
 
-dungeon.ttf (Dungeon)
+Liberation Mono, Liberation Sans, Liberation Serif.  Version 2.00.1
 
-mssans.ttf (Sans Serif)
+Xolonium
 
-small_font.ttf (Small Font)
+Press Start 2P
+
+
+Also you may copy original fonts (dungeon, arial, Microsoft Sans Serif, Small Font) into "fonts" directory and they will be used instead.
+
+
+Licenses of used fonts:
+
+The Liberation(tm) version 2.00.0 onward are Licensed under the SIL Open Font License, Version 1.1.
+
+Xolonium by Severin Meyer. License: SIL Open Font License (OFL)
+
+Press Start 2P by Cody 'CodeMan38' Boisclair. License: SIL Open Font License (OFL)
+
 
