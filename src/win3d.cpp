@@ -2075,6 +2075,7 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
 
                     uint16_t *srcpixel = (uint16_t *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
                     uint16_t *dstpixel = (uint16_t *)w3d->surface_locked_surfaceData + w_pixels * y_out + x_out;
+                    uint16_t *maxdst = (uint16_t *)w3d->surface_locked_surfaceData + w_pixels * rilHeight;
 
                     for (int j = cpy_height; j > 0; j--)
                     {
@@ -2085,10 +2086,16 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
 
                             srcpixel += v11;
                             dstpixel++;
+
+                            if (dstpixel >= maxdst)
+                                break;
                         }
 
                         srcpixel += src_width;
                         dstpixel += (w_pixels - cpy_width);
+
+                        if (dstpixel >= maxdst)
+                            break;
                     }
 
                 }
@@ -2096,6 +2103,7 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
                 {
                     uint32_t *srcpixel = (uint32_t *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
                     uint32_t *dstpixel = (uint32_t *)w3d->surface_locked_surfaceData + w_pixels * y_out + x_out;
+                    uint32_t *maxdst = (uint32_t *)w3d->surface_locked_surfaceData + w_pixels * rilHeight;
 
                     for (int j = cpy_height; j > 0; j--)
                     {
@@ -2106,10 +2114,16 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
 
                             srcpixel += v11;
                             dstpixel++;
+
+                            if (dstpixel >= maxdst)
+                                break;
                         }
 
                         srcpixel += src_width;
                         dstpixel += (w_pixels - cpy_width);
+
+                        if (dstpixel >= maxdst)
+                            break;
                     }
                 }
                 else

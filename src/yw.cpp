@@ -293,8 +293,8 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
 
     windp = NULL;
 
-    field_757E = 0;
-
+    isNetGame = 0;
+    netGameStarted = 0;
     field_7586 = 0;
 
     field_7592 = 0;
@@ -1095,10 +1095,10 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
         uint32_t v22 = profiler_begin();
 
-        if ( yw->field_757E )
+        if ( yw->isNetGame )
             ypaworld_func64__sub18(yw);
 
-        if ( !yw->field_757E || yw->field_2d90->field_40 != 2 )
+        if ( !yw->isNetGame || yw->field_2d90->field_40 != 2 )
         {
             yw->p_1_grp[0][6] = profiler_end(v22);
 
@@ -1169,7 +1169,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             {
                 bact_node *next_node = (bact_node *)nnode->next;
 
-                if (yw->field_757E && nnode->bacto != yw->field_1b78 && nnode->bact->bact_type == BACT_TYPES_ROBO)
+                if (yw->isNetGame && nnode->bacto != yw->field_1b78 && nnode->bact->bact_type == BACT_TYPES_ROBO)
                     nnode->bacto->NetUpdate(&yw->field_1b24);
                 else
                     nnode->bacto->Update(&yw->field_1b24);
@@ -1185,7 +1185,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             uint32_t v41 = profiler_begin();
 
-            if ( yw->field_757E )
+            if ( yw->isNetGame )
             {
                 dprintf("MAKE ME %s (multiplayer part)\n", "ypaworld_func64");
 //        if ( arg->field_4 == 1 )
@@ -1238,7 +1238,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             ypaworld_func64__sub22(yw); // scene events
             ypaworld_func64__sub23(yw); // update sound messages
 
-            if ( yw->field_757E ) // update additional sounds of netplay
+            if ( yw->isNetGame ) // update additional sounds of netplay
             {
                 if ( yw->field_1b84 )
                     yw->GameShell->field_782.field_0 = yw->field_1b84->position;
@@ -1267,7 +1267,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                 {
                     sb_0x4d7c08(this, yw, arg, 1);
 
-                    if ( yw->field_757E )
+                    if ( yw->isNetGame )
                         ypaworld_func64__sub10(yw);
                 }
 
@@ -1335,7 +1335,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
 void sub_47C1EC(_NC_STACK_ypaworld *yw, gemProto *gemProt, int *a3, int *a4)
 {
-    switch ( yw->GameShell->field_0x1cd4 )
+    switch ( yw->GameShell->netPlayerOwner )
     {
     case 1:
         *a3 = gemProt->nw_vproto_num_1;
@@ -1380,13 +1380,13 @@ void sub_47C29C(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
     if ( a3a )
     {
         yw->VhclProtos[a3a].disable_enable_bitmask = 0;
-        yw->VhclProtos[a3a].disable_enable_bitmask |= 1 << yw->GameShell->field_0x1cd4;
+        yw->VhclProtos[a3a].disable_enable_bitmask |= 1 << yw->GameShell->netPlayerOwner;
     }
 
     if ( a4 )
     {
         yw->BuildProtos[a4].enable_mask = 0;
-        yw->BuildProtos[a4].enable_mask |= 1 << yw->GameShell->field_0x1cd4;
+        yw->BuildProtos[a4].enable_mask |= 1 << yw->GameShell->netPlayerOwner;
     }
 
     char v11[128];
@@ -1405,7 +1405,7 @@ void sub_47C29C(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
 
     yw->self_full->ypaworld_func159(&v14);
 
-    if ( yw->field_757E )
+    if ( yw->isNetGame )
     {
         if ( yw->netgame_exclusivegem )
         {
@@ -1457,7 +1457,7 @@ void ypaworld_func129__sub1(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
 
     yw->self_full->ypaworld_func159(&arg159);
 
-    if ( yw->field_757E )
+    if ( yw->isNetGame )
     {
         char v15[20];
 //    *(_uint32_t *)v15 = 1020;
@@ -1766,7 +1766,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
             {
                 if ( yw->field_1b80 && yw->field_1b80->owner == cell->owner )
                 {
-                    if ( yw->field_757E )
+                    if ( yw->isNetGame )
                         sub_47C29C(yw, cell, cell->w_id);
                     else
                         yw_ActivateWunderstein(yw, cell, cell->w_id);
@@ -1817,7 +1817,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
             }
             else if ( cell->w_type == 7 )
             {
-                if ( yw->field_757E )
+                if ( yw->isNetGame )
                 {
                     int v27 = 0;
 
@@ -2585,7 +2585,7 @@ size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
         {
             return 0;
         }
-        else if ( cell->w_type == 7 && yw->field_757E )
+        else if ( cell->w_type == 7 && yw->isNetGame )
         {
             return 0;
         }
@@ -2903,9 +2903,9 @@ void NC_STACK_ypaworld::ypaworld_func151(stack_vals *arg)
         }
     }
 
-    if ( yw->field_757E )
+    if ( yw->isNetGame )
     {
-        if ( !yw->GameShell->field_283F )
+        if ( !yw->GameShell->sentAQ )
             sub_47DB04(yw, 0);
 
         ypaworld_func151__sub7(yw->GameShell);
@@ -3382,53 +3382,53 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
         strcpy(yw->GameShell->callSIGN, v67.callSIGN);
 
         if ( v67.field_40 )
-            yw->GameShell->field_0x1cd8 = 1;
+            yw->GameShell->isHost = 1;
         else
-            yw->GameShell->field_0x1cd8 = 0;
+            yw->GameShell->isHost = 0;
 
-        yw->GameShell->field_1CEA = 1;
+        yw->GameShell->remoteMode = 1;
 
-        usr->field_1C86 = 0;
+        usr->netLevelID = 0;
         usr->field_46 = 6;
 
         windp_arg79 v68;
 
-        if ( usr->field_0x1cd8 )
+        if ( usr->isHost )
         {
-            v68.field_0 = 0;
-            v68.field_4 = 0;
+            v68.mode = 0;
+            v68.ID = 0;
 
-            while ( yw->windp->windp_func79(&v68) && strcasecmp(v68.field_8, usr->callSIGN) )
-                v68.field_4++;
+            while ( yw->windp->windp_func79(&v68) && strcasecmp(v68.name, usr->callSIGN) )
+                v68.ID++;
 
-            usr->netTP1[v68.field_4].field_43 = 1;
-            usr->field_1CE9 = 1;
-            usr->field_1C3A = 3;
+            usr->players2[v68.ID].rdyStart = 1;
+            usr->rdyStart = 1;
+            usr->netSelMode = 3;
         }
         else
         {
-            usr->field_1C3A = 4;
+            usr->netSelMode = 4;
         }
 
-        v68.field_0 = 0;
-        v68.field_4 = 0;
+        v68.mode = 0;
+        v68.ID = 0;
 
         while ( yw->windp->windp_func79(&v68) )
         {
-            strncpy(yw->GameShell->netTP1[v68.field_4].field_50, v68.field_8, 64);
-            v68.field_4++;
+            strncpy(yw->GameShell->players2[v68.ID].name, v68.name, 64);
+            v68.ID++;
         }
-        usr->field_2888 = 400;
-        usr->field_288C = 400;
+        usr->update_time_norm = 400;
+        usr->flush_time_norm = 400;
     }
     else
     {
-        yw->GameShell->field_1CEA = 0;
+        yw->GameShell->remoteMode = 0;
     }
 
     usr->field_545B = 200000;
 
-    if ( !usr->field_1CEA )
+    if ( !usr->remoteMode )
         ypaworld_func154__sub0(yw);
 
     return 1;
@@ -3842,7 +3842,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     usr->p_ypaworld->icon_energy__h = 0;
     usr->field_D52 = 0;
     usr->p_ypaworld->field_81AF = NULL;
-    usr->field_1CEF = 0;
+    usr->blocked = 0;
 
     if ( usr->default_lang_dll )
     {
@@ -6488,20 +6488,20 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     usr->field_0x0 = 1;
 
     usr->field_0x4 = 1;
-    if ( usr->field_1CEA )
+    if ( usr->remoteMode )
     {
         sub_46C524(usr);
-        usr->p_ypaworld->field_757E = 1;
-        usr->field_1CD5 = 14;
-        usr->field_1CD6 = 1;
+        usr->p_ypaworld->isNetGame = 1;
+        usr->FreeFraction = 14;
+        usr->SelectedFraction = 1;
     }
     else
     {
         yw_netcleanup(usr->p_ypaworld);
-        usr->field_1C3A = 0;
+        usr->netSelMode = 0;
     }
 
-    usr->field_0x1c3c = -1;
+    usr->netSel = -1;
 
     if ( usr->p_ypaworld->snd__cdsound & 1 )
     {
@@ -6821,7 +6821,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 
     yw->win3d->UnlockSurface();
 
-    if ( yw->field_757E )
+    if ( yw->isNetGame )
     {
         yw->field_7586 -= usr->field_3E;
         if ( yw->field_7586 <= 0 )
@@ -6857,7 +6857,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
     if ( sub_449678(yw, usr->field_3A, UAVK_MULTIPLY) )
         sub_4476AC(yw);
 
-    if ( usr->field_1C3A == 4 )
+    if ( usr->netSelMode == 4 )
     {
         ypaworld_func158__sub2(yw);
         ypaworld_func158__sub1(usr);
@@ -6866,9 +6866,9 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
     int v15 = sub_46D3EC(usr->field_3A);
 
     if ( v15 )
-        usr->field_5457 = usr->field_42;
+        usr->field_5457 = usr->glblTime;
 
-    if ( (usr->field_42 - usr->field_5457) > usr->field_545B && usr->field_46 == 1 )
+    if ( (usr->glblTime - usr->field_5457) > usr->field_545B && usr->field_46 == 1 )
         usr->field_0x2fbc = 5;
 
     usr->field_0xc = 0;
@@ -8509,7 +8509,7 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
             if ( v15->w_type == 4 && v15->owner == yw->field_1b80->owner )
             {
 
-                if ( yw->field_757E )
+                if ( yw->isNetGame )
                     sub_47C29C(yw, v15, v15->w_id);
                 else
                     yw_ActivateWunderstein(yw, v15, v15->w_id);
@@ -8776,7 +8776,6 @@ void NC_STACK_ypaworld::ypaworld_func185(void *arg)
 {
     dprintf("MAKE ME %s\n","ypaworld_func185");
 }
-
 
 
 void NC_STACK_ypaworld::setYW_normVisLimit(int limit)

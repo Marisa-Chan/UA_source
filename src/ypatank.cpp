@@ -1800,7 +1800,7 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
                                 if ( tank->yw->GameShell )
                                     startSound(&tank->yw->GameShell->samples2_info, 4);
 
-                                if ( tank->yw->field_757E )
+                                if ( tank->yw->isNetGame )
                                 {
                                     yw_arg181 arg181;
                                     char v83[20];
@@ -1933,7 +1933,7 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
 
                 for (int i = 0; i < v113; i++)
                 {
-                    if ( !tank->yw->field_757E || bact->owner == v80[i]->owner )
+                    if ( !tank->yw->isNetGame || bact->owner == v80[i]->owner )
                     {
                         float v40 = bact->mass * 8.0 * fabs(bact->fly_dir_length);
                         float v41 = bact->thraction * v124 * 100.0;
@@ -3049,7 +3049,7 @@ size_t NC_STACK_ypatank::compatcall(int method_id, void *data)
         ApplyImpulse( (bact_arg83 *)data );
         return 1;
     case 87:
-        return (size_t)CollisionWithBact( (int)data );
+        return (size_t)CollisionWithBact( (int)(size_t)data );
     case 88:
         Recoil( (bact_arg88 *)data );
         return 1;

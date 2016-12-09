@@ -114,6 +114,8 @@ struct __attribute__((packed)) shortPoint
 const char *get_lang_string(char **array, int id, const char *def);
 int strnicmp (const char *s1, const char *s2, size_t n);
 
+uint32_t fileCrc32(const char *filename, uint32_t _crc = 0);
+
 void dprintf(const char *fmt, ...);
 
 int dround(float val);

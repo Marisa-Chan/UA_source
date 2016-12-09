@@ -68,6 +68,8 @@
 		<Unit filename="bmpAnm.h" />
 		<Unit filename="button.cpp" />
 		<Unit filename="button.h" />
+		<Unit filename="crc32.cpp" />
+		<Unit filename="crc32.h" />
 		<Unit filename="def_parser.cpp" />
 		<Unit filename="def_parser.h" />
 		<Unit filename="display.cpp" />
@@ -163,6 +165,7 @@
 		<Unit filename="yw_game.cpp" />
 		<Unit filename="yw_game_ui.cpp" />
 		<Unit filename="yw_internal.h" />
+		<Unit filename="yw_net.cpp" />
 		<Unit filename="yw_protos.cpp" />
 		<Unit filename="yw_save.cpp" />
 		<Extensions>

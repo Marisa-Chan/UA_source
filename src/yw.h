@@ -106,44 +106,32 @@ struct profilesNode : public nnode
 
 struct netType1
 {
-    int field_0;
-    int field_4;
-    int field_8;
-    int field_C;
-    int field_10;
-    int field_14;
-    int field_18;
-    int field_1C;
-    int field_20;
-    int field_24;
-    int field_28;
-    int field_2C;
-    int field_30;
-    int field_34;
-    int field_38;
-    int field_3C;
-    char field_40;
-    char field_41;
-    char field_42;
-    char field_43;
-    int field_44;
-    int field_48;
-    int field_4C;
-    char field_50[64];
+    char msg[64];
+    uint8_t Fraction;
+    uint8_t trbl;
+    uint8_t owner;
+    uint8_t rdyStart;
+    uint8_t welcmd;
+    uint8_t cd;
+    uint8_t p[2];
+    int w84upd;
+    int checksum;
+    char name[64];
 };
 
 struct netType2
 {
-    char field_0[128];
-    char field_80;
-    char field_81;
-    char field_82;
-    char field_83;
-    char field_84;
-    int field_85;
-    int field_89;
-    int field_8D;
-    int field_91;
+    char name[64];
+    char msg[64];
+    uint8_t rdyStart;
+    uint8_t fraction;
+    uint8_t isKilled;
+    uint8_t status;
+    uint8_t connProblem;
+    uint32_t lastMsgTime;
+    uint32_t tstamp;
+    uint32_t msgCnt;
+    int problemCnt;
     int latency;
 };
 
@@ -159,7 +147,7 @@ struct UserData
     _NC_STACK_ypaworld *p_ypaworld;
     struC5 *field_3A;
     int field_3E;
-    int field_42;
+    uint32_t glblTime;
     int field_46;
     int field_4A;
     int field_4E;
@@ -253,43 +241,48 @@ struct UserData
     int16_t field_0x1c34;
 
     int field_1C36;
-    int16_t field_1C3A;
-    int16_t field_0x1c3c;
-    int field_1C3E;
-    char field_1C42[64];
+    int16_t netSelMode;
+    int16_t netSel;
+    int nInputMode;
+    char netName[64];
 
-    int16_t field_1C84;
-    int16_t field_1C86;
-    const char *field_0x1c88;
+    int16_t netNameCurPos;
+    int16_t netLevelID;
+    const char *netLevelName;
 
     char callSIGN[64];
-
-    char field_0x1cd4;
-    char field_1CD5;
-    char field_1CD6;
+    uint32_t netCRC;
+    uint32_t takTime;
+    char netPlayerOwner;
+    char FreeFraction;
+    char SelectedFraction;
     char field_1CD7;
-
-    int field_0x1cd8;
-    int field_0x1cdc;
+    int isHost;
+    int modemAskSession;
 
     char field_1CE8;
-    char field_1CE9;
-    char field_1CEA;
-
-    int field_1CEF;
-
-    int16_t field_1CF7;
-    char field_1CF9[33][64];
+    char rdyStart;
+    char remoteMode;
+    uint32_t disconnected;
+    int blocked;
+    uint32_t problemCnt;
+    int16_t msgBuffLine;
+    char msgBuffers[32][64];
+    char lastSender[64];
     usr_str map_descriptions[256];
     int map_descriptions_count;
+    uint32_t noSent;
+    int sentAQ;
 
-    int field_283F;
+    int32_t netProblem;
 
-    int field_2888;
-    int field_288C;
+    int update_time_norm;
+    int flush_time_norm;
 
-    netType2 netTP2[8];
-    netType1 netTP1[4];
+    uint32_t netProblemCount;
+
+    netType2 players[8];
+    netType1 players2[4];
     NC_STACK_button *confirm_button;
     int field_0x2fb4;
 
@@ -310,9 +303,10 @@ struct UserData
     audiotrack_adv debriefingtrack__adv;
     char snaps[32][256];
     int16_t snap_count;
-
-    int field_5457;
-    int field_545B;
+    uint8_t cd;
+    uint32_t last_cdchk;
+    uint32_t field_5457;
+    uint32_t field_545B;
 
     int netsend_speed;
     int netrecv_speed;
@@ -1137,8 +1131,8 @@ struct _NC_STACK_ypaworld
 
     NC_STACK_windp *windp;
 
-    int field_757E;
-
+    int isNetGame;
+    uint32_t netGameStarted;
     int field_7586;
 
     int field_7592;
@@ -1196,7 +1190,11 @@ struct _NC_STACK_ypaworld
     std::string initScriptLoc;
     int playerOwner;
 
+
+
     _NC_STACK_ypaworld();
+
+    void SendCRC(int lvlid);
 };
 
 struct lego_xyz

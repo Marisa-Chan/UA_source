@@ -2989,7 +2989,390 @@ char * sub_4DDF78(_NC_STACK_ypaworld *yw, GuiList *lstvw, char *pos, int a3)
 
 void ypaworld_func158__network_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
 {
+    bool slct = false;
 
+    char *cmd = usr->network_listvw.itemBlock;
+    usr->network_listvw.SetRect(yw, -2, -2);
+
+    cmd = usr->network_listvw.ItemsPreLayout(yw, cmd, 0, "uvw");
+
+    button_71arg setStr;
+    setStr.butID = 1200;
+    setStr.field_8 = usr->netName;
+
+    int cnt = -1;
+
+    std::string str1;
+    std::string str2;
+    std::string str3;
+    std::string str4;
+
+    std::string connTp;
+
+    int i = 0;
+
+    for(;; i++)
+    {
+        bool brk = true;
+        str1 = "";
+        str2 = "";
+        str3 = "";
+        str4 = "";
+
+        switch(usr->netSelMode)
+        {
+        case 0: //provider
+        {
+            windp_getNameMsg msg;
+            msg.id = i;
+            if ( yw->windp->windp_func65(&msg) )
+            {
+                str1 = msg.name;
+                brk = false;
+
+                if (usr->netSel == -1 && i == 0)
+                {
+                    strcpy(usr->netName, msg.name);
+
+                    setStr.field_4 = usr->netName;
+                    usr->network_button->button_func71(&setStr);
+                    usr->netSel = 0;
+                }
+
+            }
+            else
+                str1 = "----";
+        }
+        break;
+
+        case 1: //sessions
+        {
+            windp_getNameMsg msg;
+            msg.id = i;
+            if ( yw->windp->windp_func69(&msg) )
+            {
+                size_t j;
+                for (j = 0; (uint8_t)msg.name[j] >= ' ' && msg.name[j] != '|'; j++ )
+                    str1 += msg.name[j];
+
+                int lvlid = atoi(str1.c_str());
+
+                str1 = get_lang_string( yw->string_pointers_p2, lvlid + 1800, yw->LevelNet->mapInfos[ lvlid ].map_name );
+
+                if (msg.name[j] == 0)
+                    str4 = "";
+                else
+                {
+                    for (j = j + 1; (uint8_t)msg.name[j] >= ' '; j++ )
+                        str4 += msg.name[j];
+                }
+
+                brk = false;
+
+                if (usr->netSel == -1 && i == 0)
+                {
+                    str1 = msg.name;
+
+                    for (j = 0; j < str1.length(); j++)
+                    {
+                        if (str1[j] == '|')
+                        {
+                            str1[j] = 0;
+                            break;
+                        }
+                    }
+
+                    lvlid = atoi(str1.c_str());
+
+                    strcpy(usr->netName, yw->LevelNet->mapInfos[ lvlid ].map_name);
+
+                    setStr.field_4 = usr->netName;
+                    usr->network_button->button_func71(&setStr);
+
+                    usr->netSel = 0;
+                }
+            }
+            else
+                str1 = "----";
+        }
+        break;
+
+        case 3: //level
+            if ( i < usr->map_descriptions_count )
+            {
+                mapINFO *lvl = &yw->LevelNet->mapInfos[ usr->map_descriptions[i].id ];
+
+                if ( lvl->robos_count < (int)yw->windp->windp_func86(NULL) )
+                    continue;
+
+                str1 = usr->map_descriptions[i].pstring;
+
+                brk = false;
+
+                char buf[64];
+                sprintf(buf, "%d X %d", lvl->secXsize, lvl->secYsize);
+                str2 = buf;
+
+                cnt++;
+
+                if ( usr->netSel == cnt )
+                {
+                    slct = true;
+
+                    if ( lvl->fractions_mask & 2 )
+                        str3 = "1";
+
+                    if ( lvl->fractions_mask & 0x40 )
+                        str3 += "2";
+
+                    if ( lvl->fractions_mask & 8 )
+                        str3 += "3";
+
+                    if ( lvl->fractions_mask & 0x10 )
+                        str3 += "4";
+
+                    if ( lvl->slow_connection )
+                        connTp = "Y";
+                    else
+                        connTp = "j";
+                }
+                else
+                {
+                    slct = false;
+
+                    if ( lvl->fractions_mask & 2 )
+                        str3 = "5";
+
+                    if ( lvl->fractions_mask & 0x40 )
+                        str3 += "6";
+
+                    if ( lvl->fractions_mask & 8 )
+                        str3 += "7";
+
+                    if ( lvl->fractions_mask & 0x10 )
+                        str3 += "8";
+
+                    if ( lvl->slow_connection )
+                        connTp = "X";
+                    else
+                        connTp = "k";
+                }
+
+                if ( usr->netSel == -1 && cnt == 0)
+                {
+                    strcpy(usr->netName, usr->map_descriptions[ i ].pstring);
+
+                    setStr.field_4 = usr->netName;
+                    usr->network_button->button_func71(&setStr);
+
+                    usr->netLevelName = usr->map_descriptions[ i ].pstring;
+                    usr->netLevelID = usr->map_descriptions[ i ].id;
+                    usr->netSel = 0;
+                }
+            }
+            break;
+
+        case 2:
+        case 4:
+            if ( i < usr->msgBuffLine )
+            {
+                str1 = usr->msgBuffers[ i ];
+                brk = false;
+            }
+            break;
+
+        default:
+            break;
+        }
+
+        if (brk)
+            break;
+
+        if (usr->netSelMode == 3)
+        {
+            int tmp = i;
+            i = cnt;
+            cnt = tmp;
+        }
+
+        if (usr->network_listvw.firstShownEntries <= i && (usr->network_listvw.firstShownEntries + usr->network_listvw.shownEntries) > i)
+        {
+            FontUA::ColumnItem items[6];
+
+            uint8_t fontID;
+            uint8_t spaceChar;
+            uint8_t prefixChar;
+            uint8_t postfixChar;
+
+            if ( usr->netSel != i || usr->netSelMode == 4 || usr->netSelMode == 2 )
+            {
+                fontID = 0;
+                spaceChar = 102;
+                prefixChar = 102;
+                postfixChar = 102;
+            }
+            else
+            {
+                fontID = 9;
+                prefixChar = 98;
+                spaceChar = 99;
+                postfixChar = 100;
+            }
+
+            int wdth = usr->network_listvw.entryWidth - 2 * yw->font_default_w__b;
+            int itemsCount = 0;
+
+            switch(usr->netSelMode)
+            {
+            case 0:
+                items[0].fontID = fontID;
+                items[0].spaceChar = spaceChar;
+                items[0].prefixChar = prefixChar;
+                items[0].postfixChar = postfixChar;
+                items[0].txt = str1.c_str();
+                items[0].flags = 0x27;
+                items[0].width = wdth;
+                itemsCount = 1;
+                break;
+
+            case 1:
+                items[0].fontID = fontID;
+                items[0].spaceChar = spaceChar;
+                items[0].prefixChar = prefixChar;
+                items[0].postfixChar = postfixChar;
+                items[0].txt = str4.c_str();
+                items[0].width = wdth * 0.5;
+                items[0].flags = 0x25;
+
+                items[1].fontID = fontID;
+                items[1].spaceChar = spaceChar;
+                items[1].prefixChar = prefixChar;
+                items[1].postfixChar = postfixChar;
+                items[1].txt = " ";
+                items[1].width = 10;
+                items[1].flags = 0x24;
+
+                items[2].fontID = fontID;
+                items[2].spaceChar = spaceChar;
+                items[2].prefixChar = prefixChar;
+                items[2].postfixChar = postfixChar;
+                items[2].txt = str1.c_str();
+                items[2].flags = 0x26;
+                items[2].width = wdth - (items[0].width + items[1].width);
+
+                itemsCount = 3;
+                break;
+
+            case 3:
+            {
+                tiles_stru *tiles = GFXe.getTileset(8);
+
+                items[0].txt = connTp.c_str();
+                items[0].width = tiles->chars[80].width;
+                items[0].fontID = 8;
+                items[0].spaceChar = (slct == false) + 106;
+                items[0].prefixChar = prefixChar;
+                items[0].postfixChar = postfixChar;
+                items[0].flags = 4;
+
+                items[1].txt = str1.c_str();
+                items[1].fontID = fontID;
+                items[1].spaceChar = spaceChar;
+                items[1].prefixChar = prefixChar;
+                items[1].postfixChar = postfixChar;
+                items[1].width = floor(0.6 * wdth);
+                items[1].flags = 0x25;
+
+                items[2].fontID = fontID;
+                items[2].spaceChar = spaceChar;
+                items[2].prefixChar = prefixChar;
+                items[2].txt = str2.c_str();
+                items[2].postfixChar = postfixChar;
+                items[2].width = floor(0.15 * wdth);
+                items[2].flags = 0x24;
+
+                items[3].txt = str3.c_str();
+                items[3].width = 4 * tiles->chars[80].width + 6;
+                items[3].fontID = 9;
+
+                if ( slct )
+                    items[3].spaceChar = spaceChar;
+                else
+                    items[3].spaceChar = 57;
+
+                items[3].postfixChar = postfixChar;
+                items[3].flags = 4;
+                items[3].prefixChar = prefixChar;
+
+                items[4].fontID = fontID;
+                items[4].txt = " ";
+                items[4].spaceChar = spaceChar;
+                items[4].prefixChar = prefixChar;
+                items[4].postfixChar = postfixChar;
+                items[4].width = (wdth - items[0].width - items[1].width - items[2].width - items[3].width);
+                items[4].flags = 6;
+
+                itemsCount = 5;
+            }
+            break;
+
+            case 2:
+            case 4:
+                items[0].width = usr->network_listvw.entryWidth - 2 * usr->p_ypaworld->font_default_w__b;
+                items[0].fontID = fontID;
+                items[0].spaceChar = spaceChar;
+                items[0].prefixChar = prefixChar;
+                items[0].postfixChar = postfixChar;
+                items[0].txt = str1.c_str();
+                items[0].flags = 0x27;
+                itemsCount = 1;
+                break;
+
+            default:
+                break;
+            }
+
+            FontUA::select_tileset(&cmd, 0);
+            FontUA::store_u8(&cmd, 123);
+
+            if ( usr->netSel != i || usr->netSelMode == 4 || usr->netSelMode == 2 )
+                FontUA::set_txtColor(&cmd, yw->iniColors[61].r, yw->iniColors[61].g, yw->iniColors[61].b );
+            else
+                FontUA::set_txtColor(&cmd, yw->iniColors[62].r, yw->iniColors[62].g, yw->iniColors[62].b );
+
+            cmd = FontUA::FormateColumnItem(yw, cmd, itemsCount, items);
+
+            FontUA::select_tileset(&cmd, 0);
+            FontUA::store_u8(&cmd, 125);
+            FontUA::next_line(&cmd);
+        }
+
+        if (usr->netSelMode == 3)
+        {
+            int tmp = i;
+            i = cnt;
+            cnt = tmp;
+        }
+    }
+
+    if ( usr->netSelMode == 3)
+        i = cnt + 1;
+
+    if (usr->network_listvw.maxShownEntries < i)
+        usr->network_listvw.shownEntries = usr->network_listvw.maxShownEntries;
+    else
+        usr->network_listvw.shownEntries = i;
+
+    if ( usr->network_listvw.maxShownEntries > usr->network_listvw.shownEntries )
+        cmd = sub_4DDF78(yw, &usr->network_listvw, cmd, usr->network_listvw.maxShownEntries - usr->network_listvw.shownEntries);
+
+    usr->network_listvw.numEntries = i;
+
+    cmd = usr->network_listvw.ItemsPostLayout(yw, cmd, 0, "xyz");
+    FontUA::set_end(&cmd);
+
+    w3d_a209 txt = usr->network_listvw.cmdstrm;
+    GFXe.drawText(&txt);
 }
 
 void ypaworld_func158__locale_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
@@ -3078,7 +3461,7 @@ void ypaworld_func158__saveload_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
             int v37 = usr->disk_listvw.entryWidth - 2 * usr->p_ypaworld->font_default_w__b;
 
             char a1a[20];
-            sprintf(a1a, "%02d:%02d:%02d", (v6->pStatus_3 / 1000) / 3600 , (v6->pStatus_3 / 1000) % 3600 / 60, (v6->pStatus_3 / 1000) % 3600 % 60 );
+            sprintf(a1a, "%02d:%02d:%02d", (v6->pStatus_3 / 1000) / 3600, (v6->pStatus_3 / 1000) % 3600 / 60, (v6->pStatus_3 / 1000) % 3600 % 60 );
 
             v31[0].fontID = v8;
             v31[0].spaceChar = v9;
@@ -3259,7 +3642,7 @@ void ypaworld_func158__sub3(_NC_STACK_ypaworld *yw, UserData *usr)
     case 6:
         usr->network_button->button_func70(0);
 
-        if ( usr->field_1C3A != 2 )
+        if ( usr->netSelMode != 2 )
             ypaworld_func158__network_list_draw(yw, usr);
         break;
 

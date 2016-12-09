@@ -2829,7 +2829,7 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
             node = (bact_node *)node->next;
         }
 
-        if ( yw->field_757E )
+        if ( yw->isNetGame )
         {
             if ( robo != yw->field_1b78 )
                 v43 = 0;
@@ -2896,7 +2896,7 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                         gbct->host_station = robo;
                         gbct->commandID = v39;
 
-                        if ( yw->field_757E )
+                        if ( yw->isNetGame )
                         {
                             gbct->gid |= ownerid2 << 24;
                             /**(_uint32_t *)&v30[v52 + 16] = gbct->ypabact__id;
@@ -2925,7 +2925,7 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                 }
             }
 
-            if ( yw->field_757E && v43 && robo )
+            if ( yw->isNetGame && v43 && robo )
             {
                 /**(_uint32_t *)v30 = 1013;
                 *(_uint32_t *)&v30[4] = yw->field_1614;
@@ -2954,7 +2954,7 @@ void ypaworld_func148__sub0(_NC_STACK_ypaworld *yw, int x, int y)
     {
         int v5 = 0;
 
-        if ( yw->field_757E )
+        if ( yw->isNetGame )
         {
             if ( node->owner == yw->field_1b84->owner )
             {
@@ -3309,7 +3309,7 @@ void ypaworld_func64__sub6(_NC_STACK_ypaworld *yw)
             yw->field_1bcc[i] = (float)v15 / (float)v13[i];
             yw->field_1bec[i] = (float)v15 / (float)v13[i];
 
-            if ( yw->field_757E )
+            if ( yw->isNetGame )
             {
                 if ( yw->unit_limit_type_1 == 1 )
                 {
@@ -3704,7 +3704,7 @@ void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a
 
 int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
 {
-    if ( yw->field_757E )
+    if ( yw->isNetGame )
         return 0;
 
     if ( !yw->field_160c )
@@ -4124,7 +4124,7 @@ void ypaworld_func64__sub19__sub2__sub0__sub0(_NC_STACK_ypaworld *yw, supetItemP
         {
             int v9 = 1;
 
-            if ( yw->field_757E )
+            if ( yw->isNetGame )
             {
                 if ( bct->owner != yw->field_1b84->owner || bct->owner == sitem->field_F4 || bct->status == BACT_STATUS_DEAD )
                     v9 = 0;
@@ -4934,7 +4934,7 @@ void ypaworld_func184__sub0(_NC_STACK_ypaworld *yw, yw_f726c *hist_list, yw_arg1
 
         if ( yw->GameShell )
         {
-            if ( yw->GameShell->field_0x1cd8 )
+            if ( yw->GameShell->isHost )
                 yw_score(yw, arg, yw->field_7796);
         }
     }
@@ -6593,7 +6593,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
             int this_time = yw->field_1614 / 1024;
             int all_time;
 
-            if ( yw->field_757E )
+            if ( yw->isNetGame )
                 all_time = 0;
             else
                 all_time = (yw->field_1614 + yw->playerstatus[1].p3) / 1024;
@@ -6692,14 +6692,14 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
         }
         else if ( yw->field_1b68 == 2 )
         {
-            if ( yw->GameShell && yw->field_757E )
+            if ( yw->GameShell && yw->isNetGame )
             {
                 FontUA::next_line(&cmd);
                 FontUA::next_line(&cmd);
 
                 for (int i = 0; i < 8; i++)
                 {
-                    if ( yw->GameShell->netTP2[i].field_83 )
+                    if ( yw->GameShell->players[i].status )
                     {
                         const char *v35;
                         const char *v36;
@@ -6727,7 +6727,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                             break;
                         }
 
-                        switch ( yw->GameShell->netTP2[i].field_83 )
+                        switch ( yw->GameShell->players[i].status )
                         {
                         case 1:
                             v36 = "OK";
@@ -6750,7 +6750,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                             break;
                         }
 
-                        cmd = sub_445654(yw, cmd, buf_sprintf, "%s status: %s latency: %d", v35, v36, yw->GameShell->netTP2[i].latency);
+                        cmd = sub_445654(yw, cmd, buf_sprintf, "%s status: %s latency: %d", v35, v36, yw->GameShell->players[i].latency);
 
                         FontUA::next_line(&cmd);
                     }

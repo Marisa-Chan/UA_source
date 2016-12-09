@@ -727,7 +727,7 @@ void NC_STACK_yparobo::initForce(bact_node *unit)
                 arg67.tgt_pos.sz = bact->position.sz + bact->rotation.m22 * 1200.0 * 0.5;
                 unt->SetTarget(&arg67);
 
-                if ( robo->wrld->stack__ypaworld.field_757E )
+                if ( robo->wrld->stack__ypaworld.isNetGame )
                 {
                     untbct->gid |= untbct->owner << 24;
 
@@ -1083,7 +1083,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
 
         SetPosition(&v18);
 
-        if ( yw->field_757E )
+        if ( yw->isNetGame )
         {
             bact->status_flg |= BACT_STFLAG_DSETTED;
 
@@ -1112,7 +1112,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
         bact->vp_extra[0].flags = 0;
         bact->vp_extra[1].flags = 0;
 
-        if ( yw->field_757E )
+        if ( yw->isNetGame )
         {
             char v17[20];
 //      *(_uint32_t *)v17 = 1034;
@@ -2003,7 +2003,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                 bct->owner = bact->owner;
                 AddSubject(newbact);
 
-                if ( yw->field_757E )
+                if ( yw->isNetGame )
                 {
                     bct->gid |= bct->owner << 24;
                     bct->commandID |= bct->owner << 24;
@@ -2069,7 +2069,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
 
                 bct->aggr = arg->selectBact->aggr;
 
-                if ( yw->field_757E )
+                if ( yw->isNetGame )
                 {
                     bct->gid |= bct->owner << 24;
 
@@ -2119,7 +2119,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
             {
                 robo->field_4F5 -= arg->energy;
 
-                if ( yw->field_757E )
+                if ( yw->isNetGame )
                 {
                     char v63[24];
                     /**(_uint32_t *)v63 = 1012;
@@ -2148,7 +2148,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
             robo->field_4FD -= arg->energy;
             robo->field_515 = arg->target_point;
             robo->field_511 = 1500;
-            if ( yw->field_757E )
+            if ( yw->isNetGame )
             {
                 char v57[32];
                 /**(_uint32_t *)v57 = 1033;
@@ -3256,7 +3256,7 @@ bact_node *NC_STACK_yparobo::allocForce(robo_loct1 *arg)
         new_unit->setBACT_bactCollisions(v69);
 
         AddSubject(new_unit);
-        if ( robo->wrld_yw->field_757E )
+        if ( robo->wrld_yw->isNetGame )
         {
             unt_bct->gid |= unt_bct->owner << 24;
             unt_bct->commandID |= unt_bct->owner << 24;
@@ -4395,7 +4395,7 @@ void NC_STACK_yparobo::checkCommander()
 
                                 placeMessage(&arg134);
 
-                                if ( robo->wrld->stack__ypaworld.field_757E  )
+                                if ( robo->wrld->stack__ypaworld.isNetGame  )
                                 {
                                     bact_arg90 arg90;
                                     arg90.unit = commander_bact;
@@ -6113,7 +6113,7 @@ void NC_STACK_yparobo::Die()
 
         bact->vp_extra[1].flags = 0;
 
-        if ( yw->field_757E )
+        if ( yw->isNetGame )
         {
             if ( bact->owner )
             {
@@ -6581,7 +6581,7 @@ void NC_STACK_yparobo::DeadTimeUpdate(update_msg *arg)
         bact->vp_extra[0].vp = bact->vp_genesis;
         bact->vp_extra[0].flags |= (EVPROTO_FLAG_ACTIVE | EVPROTO_FLAG_SCALE);
 
-        if ( yw->field_757E )
+        if ( yw->isNetGame )
         {
             char v21[76];
             /*
@@ -7288,7 +7288,7 @@ void NC_STACK_yparobo::setROBO_proto(roboProto *proto)
 
             dword_5B1128++;
 
-            if ( robo->wrld->stack__ypaworld.field_757E )
+            if ( robo->wrld->stack__ypaworld.isNetGame )
             {
                 gun_bact->gid |= gun_bact->owner << 24;
                 gun_bact->commandID |= gun_bact->owner << 24;

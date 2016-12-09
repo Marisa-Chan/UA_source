@@ -102,7 +102,7 @@ int sb_0x411324__sub0()
 
         int v0 = 1;
 
-        if ( userdata.field_1CEA )
+        if ( userdata.remoteMode )
             v0 = 0;
 
         if ( userdata.field_46 == 6 )
@@ -332,7 +332,7 @@ int sb_0x411324__sub2()
 
 int sb_0x411324__sub1()
 {
-    userdata.field_42 = world_update_arg.field_0;
+    userdata.glblTime = world_update_arg.field_0;
     userdata.field_3E = world_update_arg.field_4;
     userdata.field_3A = &input_states;
 

@@ -189,7 +189,7 @@ void sb_0x4c87fc(_NC_STACK_ypaworld *yw, const char *a2, GuiBase *lstvw)
 
 void sub_449DE8(_NC_STACK_ypaworld *yw, const char *a2)
 {
-    if ( !yw->field_757E )
+    if ( !yw->isNetGame )
     {
         const char *v4 = get_lang_string(yw->string_pointers_p2, 2486, "REALLY LAUNCH ONLINE HELP ?");
 
@@ -3422,7 +3422,7 @@ float sub_4498F4(_NC_STACK_ypaworld *yw)
 {
     float v3 = 1.0;
 
-    if ( yw->field_757E )
+    if ( yw->isNetGame )
     {
         if ( yw->unit_limit_type_1 == 2 )
         {
@@ -3488,7 +3488,7 @@ char * gui_update_create_btn__sub0(_NC_STACK_ypaworld *yw)
             int v18 = dround(sub_4498F4(yw) * v10->energy / 100.0);
             int v12;
 
-            if ( yw->field_757E )
+            if ( yw->isNetGame )
                 v12 = v9 + 1700;
             else
                 v12 = v9 + 1500;
@@ -7003,7 +7003,7 @@ void sub_47DB04(_NC_STACK_ypaworld *yw, char a2)
 
     yw->self_full->ypaworld_func181(&v3);
 
-    yw->GameShell->field_283F = 0;
+    yw->GameShell->sentAQ = 0;
 }
 
 char * sub_451714(tiles_stru *, char *cur, const char *a3, int a2, uint8_t a4)
@@ -7179,7 +7179,7 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
             case 8:
                 yw->field_2d90->field_40 = 2;
 
-                if ( yw->field_757E )
+                if ( yw->isNetGame )
                     sub_47DB04(yw, 1);
 
                 break;
@@ -7233,7 +7233,7 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
         if ( yw->field_1b84->status == BACT_STATUS_DEAD )
             a4 |= 0x200;
 
-        if ( yw->field_757E )
+        if ( yw->isNetGame )
             a4 |= 0xE00;
 
         if ( inpt->winp131arg.selected_btn == &exit_menu.dialogBox )
@@ -7695,7 +7695,7 @@ void ypaworld_func64__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 }
             }
 
-            if ( yw->field_757E )
+            if ( yw->isNetGame )
                 ypaworld_func64__sub7__sub5(yw, inpt);
 
             ypaworld_func64__sub7__sub4(yw, inpt);
@@ -9047,7 +9047,7 @@ void sb_0x4d7c08__sub0__sub0(_NC_STACK_ypaworld *yw)
 
     char a1a[512];
 
-    if ( yw->field_757E )
+    if ( yw->isNetGame )
     {
         if ( yw->field_81CB.field_0 )
         {
@@ -9746,7 +9746,7 @@ char *sb_0x4d7c08__sub0__sub0__sub0__sub0(_NC_STACK_ypaworld *yw, sklt_wis *wis,
         if ( yw->field_1614 / 200 & 1 )
         {
             int v11;
-            if ( yw->field_757E )
+            if ( yw->isNetGame )
                 v11 = a6 + 1700;
             else
                 v11 = a6 + 1500;
@@ -10515,9 +10515,9 @@ char *sb_0x4d7c08__sub0__sub4__sub0__sub0(_NC_STACK_ypaworld *yw, char *cur, __N
 
     if ( yw->GameShell )
     {
-        if ( yw->field_757E )
+        if ( yw->isNetGame )
         {
-            if ( *yw->GameShell->netTP2[bact->owner].field_0 )
+            if ( *yw->GameShell->players[bact->owner].name )
             {
                 float v5 = bact->position.sx - yw->field_1334.sx;
                 float v6 = bact->position.sy - yw->field_1334.sy;
@@ -10556,7 +10556,7 @@ char *sb_0x4d7c08__sub0__sub4__sub0__sub0(_NC_STACK_ypaworld *yw, char *cur, __N
 
                                     FontUA::set_txtColor(&pcur, yw->iniColors[ bact->owner ].r, yw->iniColors[ bact->owner ].g, yw->iniColors[ bact->owner ].b);
 
-                                    pcur = FontUA::FormateClippedText(yw->tiles[15], pcur,  yw->GameShell->netTP2[bact->owner].field_0, v28, 32);
+                                    pcur = FontUA::FormateClippedText(yw->tiles[15], pcur,  yw->GameShell->players[bact->owner].name, v28, 32);
                                 }
                             }
                         }
@@ -10619,7 +10619,7 @@ char * yw_RenderOverlayCursors(_NC_STACK_ypaworld *yw, char *cur)
                                         yw_RenderCursorOverUnit(yw, bct);
                                 }
 
-                                if ( yw->field_757E )
+                                if ( yw->isNetGame )
                                 {
                                     if ( bct->status_flg & BACT_STFLAG_ISVIEW )
                                     {
@@ -10922,7 +10922,7 @@ char *sb_0x4d7c08__sub0__sub2__sub1(_NC_STACK_ypaworld *yw, char *cur, player_st
 {
     char *pcur = cur;
 
-    if ( yw->field_757E )
+    if ( yw->isNetGame )
     {
         aab v25[8];
 
@@ -11021,7 +11021,7 @@ char * sb_0x4d7c08__sub0__sub2__sub0(_NC_STACK_ypaworld *yw, char *cur, int a3)
 {
     char *pcur = cur;
 
-    if ( yw->field_757E )
+    if ( yw->isNetGame )
     {
         if ( yw->field_1bac[ yw->field_1b80->owner ] <= yw->unit_limit_1 )
             FontUA::set_txtColor(&pcur, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
@@ -11457,7 +11457,7 @@ int sb_0x4d3d44(_NC_STACK_ypaworld *yw, winp_131arg *winp)
     if ( !yw_MouseFindCreationPoint(yw, winp) )
         return 1;
 
-    if ( yw->field_757E && !yw->unit_limit_type_1 && yw->unit_limit_1 <= yw->field_1bac[yw->field_1b80->owner] )
+    if ( yw->isNetGame && !yw->unit_limit_type_1 && yw->unit_limit_1 <= yw->field_1bac[yw->field_1b80->owner] )
         return 3;
 
     return 0;
@@ -11492,7 +11492,7 @@ int ypaworld_func64__sub21__sub2(_NC_STACK_ypaworld *yw)
     if ( v2->w_type == 1 )
         return 5;
 
-    if ( v2->w_type == 4 || v2->w_type == 5 || v2->w_type == 6 || v2->w_type == 8 || (v2->w_type == 7 && yw->field_757E) )
+    if ( v2->w_type == 4 || v2->w_type == 5 || v2->w_type == 6 || v2->w_type == 8 || (v2->w_type == 7 && yw->isNetGame) )
         return 1;
 
     return 0;

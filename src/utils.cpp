@@ -3,6 +3,7 @@
 #include "includes.h"
 #include "utils.h"
 #include "inttypes.h"
+#include "crc32.h"
 #include <SDL2/SDL_timer.h>
 
 
@@ -63,8 +64,30 @@ int dround(double val)
     return val + 0.5;
 }
 
+uint32_t fileCrc32(const char *filename, uint32_t _crc)
+{
+    uint32_t crc = _crc;
 
-int DO = 0; //Shutup "MAKE ME" screams
+    FSMgr::FileHandle *fil = uaOpenFile(filename, "rb");
+    if (fil)
+    {
+        const size_t BUFSZ = 4 * 1024;
+        void *tmp = malloc(BUFSZ); //4K block
+
+        size_t readed = fil->read(tmp, BUFSZ);
+        while(readed != 0)
+        {
+            crc = crc32(crc, tmp, readed);
+            readed = fil->read(tmp, BUFSZ);
+        }
+        free(tmp);
+        delete fil;
+    }
+    return crc;
+}
+
+
+int DO = 1; //Shutup "MAKE ME" screams
 
 void dprintf(const char *fmt, ...)
 {

@@ -87,7 +87,7 @@ int NC_STACK_ypabact::ypabact_func0__sub0(stack_vals *stak)
 
                         bact->oflags |= BACT_OFLAG_VIEWER;
 
-                        if ( yw->field_757E )
+                        if ( yw->isNetGame )
                             v14[25] = 1;
 
                         startSound(&bact->soundcarrier, 8);
@@ -96,13 +96,13 @@ int NC_STACK_ypabact::ypabact_func0__sub0(stack_vals *stak)
                     {
                         bact->oflags &= ~BACT_OFLAG_VIEWER;
 
-                        if ( yw->field_757E )
+                        if ( yw->isNetGame )
                             v14[25] = 0;
 
                         sub_424000(&bact->soundcarrier, 8);
                     }
 
-                    if ( yw->field_757E ) // Network message send routine?
+                    if ( yw->isNetGame ) // Network message send routine?
                     {
                         *(int *)(&v14[0]) = 1014;
                         v14[12] = bact->owner;
@@ -3570,7 +3570,7 @@ void NC_STACK_ypabact::Die()
                 v74->bact->commandID = bact->commandID;
                 v74->bact->aggr = bact->aggr;
 
-                if ( yw->field_757E )
+                if ( yw->isNetGame )
                 {
 //          if ( bact->owner )
 //            *(_uint32_t *)&v51[20] = v74->bact->ypabact__id;
@@ -3777,7 +3777,7 @@ void NC_STACK_ypabact::Die()
 
                 SetStateInternal(&arg119);
 
-                if ( yw->field_757E )
+                if ( yw->isNetGame )
                 {
 //          if ( bact->owner )
 //            v51[28] = 1;
@@ -3794,7 +3794,7 @@ void NC_STACK_ypabact::Die()
             }
         }
 
-        if ( yw->field_757E )
+        if ( yw->isNetGame )
         {
             if ( bact->owner )
             {
@@ -3866,7 +3866,7 @@ void NC_STACK_ypabact::SetState(setState_msg *arg)
 
         _NC_STACK_ypaworld *yw = &bact->ywo->stack__ypaworld;
 
-        if ( yw->field_757E )
+        if ( yw->isNetGame )
         {
             if ( v6 && bact->owner && bact->bact_type != BACT_TYPES_MISSLE )
             {
@@ -4072,7 +4072,7 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
 
         _NC_STACK_ypaworld *yw = &bact->ywo->stack__ypaworld;
 
-        if ( yw->field_757E )
+        if ( yw->isNetGame )
         {
             wbact->gid |= bact->owner << 24;
 //            *(_uint32_t *)v23 = 1004;
@@ -4423,7 +4423,7 @@ void NC_STACK_ypabact::ModifyEnergy(bact_arg84 *arg)
     {
         _NC_STACK_ypaworld *yw = &bact->ywo->stack__ypaworld;
 
-        if ( yw->field_757E )
+        if ( yw->isNetGame )
             v6 = 1;
 
         if ( !v6 || !arg->unit || bact->owner == arg->unit->owner )
@@ -5174,7 +5174,7 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
                         if ( yw->GameShell )
                             startSound(&yw->GameShell->samples2_info, 4);
 
-                        if ( yw->field_757E )
+                        if ( yw->isNetGame )
                         {
                             char v39[20];
 //              *(_uint32_t *)v39 = 1031;
@@ -6479,7 +6479,7 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
 
     int a5 = 0;
 
-    if ( bact->ywo->stack__ypaworld.field_757E )
+    if ( bact->ywo->stack__ypaworld.isNetGame )
         a5 = 1;
 
     if ( bact->mgun == -1 )
@@ -8108,7 +8108,7 @@ void NC_STACK_ypabact::Release(NC_STACK_ypabact *b_bacto)
 
     if ( b_bact->owner )
     {
-        if ( yw->field_757E )
+        if ( yw->isNetGame )
         {
             if ( b_bact->bact_type != BACT_TYPES_MISSLE )
             {
@@ -8486,7 +8486,7 @@ void NC_STACK_ypabact::ChangeSectorEnergy(yw_arg129 *arg)
     else
         v5 = 0;
 
-    if ( bact->ywo->stack__ypaworld.field_757E )
+    if ( bact->ywo->stack__ypaworld.isNetGame )
     {
         char v8[40];
 //    *(_uint32_t *)v8 = 1011;
@@ -8589,7 +8589,7 @@ void NC_STACK_ypabact::DeadTimeUpdate(update_msg *arg)
                 bact->vp_extra[0].vp = bact->vp_genesis;
                 bact->vp_extra[0].flags |= (EVPROTO_FLAG_ACTIVE | EVPROTO_FLAG_SCALE);
 
-                if ( bact->ywo->stack__ypaworld.field_757E )
+                if ( bact->ywo->stack__ypaworld.isNetGame )
                 {
                     char v9[76];
 //          *(_uint32_t *)v9 = 1030;
@@ -9052,7 +9052,7 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
 
         bact->oflags |= BACT_OFLAG_VIEWER;
 
-        if ( bact->yw->field_757E )
+        if ( bact->yw->isNetGame )
             v14[25] = 1;
 
         if ( bact->bact_type == BACT_TYPES_BACT && !(bact->status_flg & BACT_STFLAG_LAND) && bact->status == BACT_STATUS_NORMAL )
@@ -9064,7 +9064,7 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
     {
         bact->oflags &= ~BACT_OFLAG_VIEWER;
 
-        if ( bact->yw->field_757E )
+        if ( bact->yw->isNetGame )
             v14[25] = 0;
 
         sub_424000(&bact->soundcarrier, 8);
@@ -9093,7 +9093,7 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
         }
     }
 
-    if ( bact->yw->field_757E ) // Network message send routine?
+    if ( bact->yw->isNetGame ) // Network message send routine?
     {
         *(int *)(&v14[0]) = 1014;
         v14[12] = bact->owner;
@@ -9380,7 +9380,7 @@ size_t NC_STACK_ypabact::compatcall(int method_id, void *data)
     case 86:
         return (size_t)CrashOrLand( (bact_arg86 *)data );
     case 87:
-        return (size_t)CollisionWithBact( (int)data );
+        return (size_t)CollisionWithBact( (int)(size_t)data );
     case 88:
         Recoil( (bact_arg88 *)data );
         return 1;

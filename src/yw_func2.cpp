@@ -1818,24 +1818,24 @@ void sub_46DC1C(UserData *usr)
 
     v11.fld_0 = 1000;
     v11.fld_3 = 0;
-    v11.fld_4_1 = usr->field_1C86;
+    v11.fld_4_1 = usr->netLevelID;
     v11.fld_4_2 = 0; // HACK
 
     usr->p_ypaworld->self_full->ypaworld_func181(&v5);
 
     windp_arg82 v6;
-    v6.field_0 = usr->callSIGN;
-    v6.field_4 = 1;
-    v6.field_8 = 0;
-    v6.field_C = 2;
-    v6.field_10 = 1;
+    v6.senderID = usr->callSIGN;
+    v6.senderFlags = 1;
+    v6.receiverID = 0;
+    v6.receiverFlags = 2;
+    v6.guarant = 1;
 
     usr->p_ypaworld->windp->windp_func82(&v6);
 
     usr->field_0x2fbc = 4;
-    usr->field_0x2fc0 = usr->field_1C86;
+    usr->field_0x2fc0 = usr->netLevelID;
     usr->network_listvw.firstShownEntries = 0;
-    usr->field_0x2fc4 = usr->field_1C86;
+    usr->field_0x2fc4 = usr->netLevelID;
 
     int v12 = 1;
     usr->p_ypaworld->windp->windp_func84(&v12);
@@ -2113,7 +2113,7 @@ void sub_4DE248(UserData *usr, int id)
         break;
 
     case 1201:
-        switch ( usr->field_1C3A )
+        switch ( usr->netSelMode )
         {
         case 0:
             sub_4811E8(usr->p_ypaworld, 0x8E);
@@ -2136,11 +2136,11 @@ void sub_4DE248(UserData *usr, int id)
         break;
 
     case 1202:
-        if ( usr->field_1C3A == 1 )
+        if ( usr->netSelMode == 1 )
         {
             sub_4811E8(usr->p_ypaworld, 0x6E);
         }
-        else if ( usr->field_1C3A == 4 )
+        else if ( usr->netSelMode == 4 )
         {
             sub_4811E8(usr->p_ypaworld, 0x6F);
         }
@@ -2151,7 +2151,7 @@ void sub_4DE248(UserData *usr, int id)
         break;
 
     case 1205:
-        switch ( usr->field_1C3A )
+        switch ( usr->netSelMode )
         {
         case 1:
             sub_4811E8(usr->p_ypaworld, 0x94);
@@ -2185,7 +2185,7 @@ void sub_4DE248(UserData *usr, int id)
         break;
 
     case 1219:
-        if ( usr->field_1CE9 )
+        if ( usr->rdyStart )
             sub_4811E8(usr->p_ypaworld, 0x75);
         else
             sub_4811E8(usr->p_ypaworld, 0x74);
@@ -2323,40 +2323,40 @@ void sub_4D0C24(_NC_STACK_ypaworld *yw, const char *a1, const char *a2)
 {
     UserData *usr = yw->GameShell;
 
-    if ( strcasecmp(a1, usr->field_1CF9[32]) )
+    if ( strcasecmp(a1, usr->lastSender) )
     {
-        if ( usr->field_1CF7 >= 31 )
+        if ( usr->msgBuffLine >= 31 )
         {
-            usr->field_1CF7 = 31;
+            usr->msgBuffLine = 31;
 
             for (int i = 0; i < 31; i++ )
-                strcpy(usr->field_1CF9[i], usr->field_1CF9[i + 1]);
+                strcpy(usr->msgBuffers[i], usr->msgBuffers[i + 1]);
         }
 
-        memset(usr->field_1CF9[usr->field_1CF7], 0, 64);
-        sprintf(usr->field_1CF9[usr->field_1CF7], "> %s:", a1);
-        memset(usr->field_1CF9[32], 0, 64);
-        strncpy(usr->field_1CF9[32], a1, 63);
+        memset(usr->msgBuffers[usr->msgBuffLine], 0, 64);
+        sprintf(usr->msgBuffers[usr->msgBuffLine], "> %s:", a1);
+        memset(usr->lastSender, 0, 64);
+        strncpy(usr->lastSender, a1, 63);
 
-        usr->field_1CF7++;
+        usr->msgBuffLine++;
     }
 
-    if ( usr->field_1CF7 >= 31 )
+    if ( usr->msgBuffLine >= 31 )
     {
-        usr->field_1CF7 = 31;
+        usr->msgBuffLine = 31;
 
         for (int i = 0; i < 31; i++ )
-            strcpy(usr->field_1CF9[i], usr->field_1CF9[i + 1]);
+            strcpy(usr->msgBuffers[i], usr->msgBuffers[i + 1]);
     }
 
-    memset(usr->field_1CF9[usr->field_1CF7], 0, 64);
-    strncpy(usr->field_1CF9[usr->field_1CF7], a2, 63);
+    memset(usr->msgBuffers[usr->msgBuffLine], 0, 64);
+    strncpy(usr->msgBuffers[usr->msgBuffLine], a2, 63);
 
-    usr->field_1CF7++;
+    usr->msgBuffLine++;
 
-    if ( usr->field_1C3A == 4 )
+    if ( usr->netSelMode == 4 )
     {
-        int v22 = usr->field_1CF7 - 6;
+        int v22 = usr->msgBuffLine - 6;
 
         if ( v22 < 0 )
             v22 = 0;
@@ -2364,7 +2364,7 @@ void sub_4D0C24(_NC_STACK_ypaworld *yw, const char *a1, const char *a2)
         yw->GameShell->network_listvw.firstShownEntries = v22;
 
 
-        yw->GameShell->network_listvw.numEntries = yw->GameShell->field_1CF7;
+        yw->GameShell->network_listvw.numEntries = yw->GameShell->msgBuffLine;
 
         int v24;
 
@@ -2992,16 +2992,16 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     if ( usr->field_3A->winp131arg.flag & 0x10 )
         startSound(&usr->samples1_info, 3);
 
-    if ( usr->field_1C3A )
-        sb_0x4c9f14(usr->p_ypaworld);
+    if ( usr->netSelMode )
+        yw_HandleNetMsg(usr->p_ypaworld);
 
     NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(usr->p_ypaworld->win3d);
 
-    if ( usr->field_1C3A == 1 )
+    if ( usr->netSelMode == 1 )
     {
         if ( usr->p_ypaworld->windp->windp_func90(NULL) == 4 )
         {
-            if ( usr->field_0x1cdc )
+            if ( usr->modemAskSession )
             {
                 if ( usr->field_3A->downed_key == UAVK_SPACE )
                 {
@@ -3197,7 +3197,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             {
                 usr->field_AE2 = 0;
                 usr->field_3426 = 0;
-                usr->p_ypaworld->field_757E = 0;
+                usr->p_ypaworld->isNetGame = 0;
 
                 int v418 = 2;
                 usr->sub_bar_button->button_func68(&v418);
@@ -3252,7 +3252,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             {
                 usr->field_AE2 = 0;
                 usr->field_3426 = 0;
-                usr->p_ypaworld->field_757E = 0;
+                usr->p_ypaworld->isNetGame = 0;
                 int v419 = 2;
                 usr->sub_bar_button->button_func68(&v419);
                 usr->field_0x2fbc = 3;
@@ -3418,7 +3418,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         {
             usr->field_AE2 = 0;
             usr->field_3426 = 0;
-            yw->field_757E = 0;
+            yw->isNetGame = 0;
 
             int v416 = 2;
             usr->sub_bar_button->button_func68(&v416);
@@ -3856,7 +3856,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         {
             int v65 = 0;
 
-            if ( yw->GameShell->field_1CEA )
+            if ( yw->GameShell->remoteMode )
                 v65 = 1;
 
             usr->field_13C2 |= 1;
@@ -3882,7 +3882,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         {
             int v66 = 0;
 
-            if ( yw->GameShell->field_1CEA )
+            if ( yw->GameShell->remoteMode )
                 v66 = 1;
 
             usr->field_13C2 |= 0x1000;
@@ -4519,7 +4519,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
     if ( usr->field_46 == 1 )
     {
-        if ( usr->field_19DA && usr->field_42 - usr->field_19D6 >= 700 )
+        if ( usr->field_19DA && usr->glblTime - usr->field_19D6 >= 700 )
         {
             usr->field_19DA = 0;
         }
@@ -4530,7 +4530,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             case 0:
                 if ( sub_449678(usr->p_ypaworld, usr->field_3A, 'A') ) // VK_A
                 {
-                    usr->field_19D6 = usr->field_42;
+                    usr->field_19D6 = usr->glblTime;
                     usr->field_19DA++;
                 }
                 else
@@ -4543,7 +4543,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             case 1:
                 if ( sub_449678(usr->p_ypaworld, usr->field_3A, 'M') )
                 {
-                    usr->field_19D6 = usr->field_42;
+                    usr->field_19D6 = usr->glblTime;
                     usr->field_19DA++;
                 }
                 else
@@ -4556,7 +4556,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             case 2:
                 if ( sub_449678(usr->p_ypaworld, usr->field_3A, 'O') )
                 {
-                    usr->field_19D6 = usr->field_42;
+                    usr->field_19D6 = usr->glblTime;
                     usr->field_19DA++;
                 }
                 else
@@ -4588,22 +4588,22 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         usr->field_19DA = 0;
     }
 
-    switch ( usr->field_1C3A )
+    switch ( usr->netSelMode )
     {
     case 0:
-        usr->field_1C3E = 0;
+        usr->nInputMode = 0;
         usr->field_1C36 = 1;
         usr->network_listvw.maxShownEntries = 12;
-        usr->field_0x1c30 = 3 * (yw->font_default_h+ word_5A50C2);
+        usr->field_0x1c30 = 3 * (yw->font_default_h + word_5A50C2);
         break;
     case 1:
-        usr->field_1C3E = 0;
+        usr->nInputMode = 0;
         usr->field_1C36 = 1;
         usr->network_listvw.maxShownEntries = 12;
         usr->field_0x1c30 = 3 * (yw->font_default_h + word_5A50C2);
         break;
     case 3:
-        usr->field_1C3E = 0;
+        usr->nInputMode = 0;
         usr->field_1C36 = 1;
         usr->network_listvw.maxShownEntries = 12;
         usr->field_0x1c30 = 3 * (yw->font_default_h + word_5A50C2);
@@ -4611,10 +4611,10 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     case 2:
         usr->field_1C36 = 0;
         usr->network_listvw.maxShownEntries = 12;
-        usr->field_1C3E = 1;
+        usr->nInputMode = 1;
         break;
     case 4:
-        usr->field_1C3E = 1;
+        usr->nInputMode = 1;
         usr->field_1C36 = 1;
         usr->network_listvw.maxShownEntries = 6;
         usr->field_0x1c30 = yw->font_default_h * 9.5 + 2 * word_5A50C2;
@@ -4655,51 +4655,51 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         }
         else if ( v6_l == 1204 )
         {
-            v378.fld_4_1 = usr->field_1CD6;
-            usr->field_1CD5 |= usr->field_1CD6;
+            v378.fld_4_1 = usr->SelectedFraction;
+            usr->FreeFraction |= usr->SelectedFraction;
             v378.fld_4_2 = 1;
-            usr->field_1CD6 = 1;
-            usr->field_1CD5 &= 0xFE;
+            usr->SelectedFraction = 1;
+            usr->FreeFraction &= 0xFE;
 
             usr->p_ypaworld->self_full->ypaworld_func181(&v346);
         }
         else if ( v6_l == 1205 )
         {
-            v378.fld_4_1 = usr->field_1CD6;
-            usr->field_1CD5 |= usr->field_1CD6;
+            v378.fld_4_1 = usr->SelectedFraction;
+            usr->FreeFraction |= usr->SelectedFraction;
             v378.fld_4_2 = 2;
-            usr->field_1CD5 &= 0xFD;
-            usr->field_1CD6 = 2;
+            usr->FreeFraction &= 0xFD;
+            usr->SelectedFraction = 2;
 
             usr->p_ypaworld->self_full->ypaworld_func181(&v346);
         }
         else if ( v6_l == 1206 )
         {
-            v378.fld_4_1 = usr->field_1CD6;
-            usr->field_1CD5 |= usr->field_1CD6;
+            v378.fld_4_1 = usr->SelectedFraction;
+            usr->FreeFraction |= usr->SelectedFraction;
             v378.fld_4_2 = 4;
-            usr->field_1CD6 = 4;
-            usr->field_1CD5 &= 0xFB;
+            usr->SelectedFraction = 4;
+            usr->FreeFraction &= 0xFB;
 
             usr->p_ypaworld->self_full->ypaworld_func181(&v346);
         }
         else if ( v6_l == 1207 )
         {
-            v378.fld_4_1 = usr->field_1CD6;
-            usr->field_1CD5 |= usr->field_1CD6;
+            v378.fld_4_1 = usr->SelectedFraction;
+            usr->FreeFraction |= usr->SelectedFraction;
             v378.fld_4_2 = 8;
-            usr->field_1CD6 = 8;
-            usr->field_1CD5 &= 0xF7;
+            usr->SelectedFraction = 8;
+            usr->FreeFraction &= 0xF7;
 
             usr->p_ypaworld->self_full->ypaworld_func181(&v346);
         }
 
-        switch ( usr->field_1C3A )
+        switch ( usr->netSelMode )
         {
         case 0:
             if ( v6_l == 1200 )
             {
-                sub_46B1B8(usr);
+                yw_NetOKProvider(usr);
             }
             else if ( v6_l == 1250 )
             {
@@ -4710,14 +4710,14 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         case 1:
             if ( v6_l == 1200 )
             {
-                sb_0x46bb54(usr);
+                yw_JoinNetGame(usr);
             }
             else if ( v6_l == 1201 )
             {
-                usr->field_0x1cd8 = 1;
-                usr->field_0x1c3c = -1;
+                usr->isHost = 1;
+                usr->netSel = -1;
                 usr->network_listvw.firstShownEntries = 0;
-                usr->field_1C3A = 3;
+                usr->netSelMode = 3;
             }
             else if ( v6_l == 1250 )
             {
@@ -4728,14 +4728,14 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         case 2:
             if ( v6_l == 1200 )
             {
-                if ( usr->field_1C42[0] )
+                if ( usr->netName[0] )
                 {
-                    strcpy(usr->callSIGN, usr->field_1C42);
+                    strcpy(usr->callSIGN, usr->netName);
 
-                    usr->field_1C3A = 1;
-                    usr->field_0x1c3c = -1;
+                    usr->netSelMode = 1;
+                    usr->netSel = -1;
                     usr->network_listvw.firstShownEntries = 0;
-                    usr->field_1C42[0] = 0;
+                    usr->netName[0] = 0;
 
                     usr->network_listvw.OpenDialog(usr->p_ypaworld);
                 }
@@ -4752,14 +4752,14 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     v339.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
                     v339.maxLen = 32;
                     v339.timer_func = NULL;
-                    v339.startText = usr->field_1C42;
+                    v339.startText = usr->netName;
 
                     windd->windd_func322(&v339);
 
                     if ( v339.result )
                     {
-                        strncpy(usr->field_1C42, v339.result, 64);
-                        usr->field_1C42[63] = 0;
+                        strncpy(usr->netName, v339.result, 64);
+                        usr->netName[63] = 0;
                     }
                 }
             }
@@ -4783,7 +4783,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         case 4:
             if ( v6_l == 1200 )
             {
-                if ( usr->field_0x1cd8 )
+                if ( usr->isHost )
                 {
                     const char *v425;
                     const char *v425_1;
@@ -4806,28 +4806,28 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             }
             else if ( v6_l == 1203 )
             {
-                if ( usr->field_0x1cd8 )
+                if ( usr->isHost )
                 {
-                    usr->field_0x1c3c = -1;
+                    usr->netSel = -1;
                     usr->network_listvw.firstShownEntries = 0;
-                    usr->field_1CF7 = 0;
-                    usr->field_1CF9[32][0] = 0;
-                    usr->field_1C42[0] = 0;
-                    usr->field_1C3A = 3;
+                    usr->msgBuffLine = 0;
+                    usr->msgBuffers[32][0] = 0;
+                    usr->netName[0] = 0;
+                    usr->netSelMode = 3;
                 }
             }
             else if ( v6_l == 1208 )
             {
-                v368.field_0 = 0;
-                v368.field_4 = 0;
-                while ( yw->windp->windp_func79(&v368) && strcasecmp(v368.field_8, usr->callSIGN) )
-                    v368.field_4++;
+                v368.mode = 0;
+                v368.ID = 0;
+                while ( yw->windp->windp_func79(&v368) && strcasecmp(v368.name, usr->callSIGN) )
+                    v368.ID++;
 
                 yw_arg181 v353;
                 yw_arg181_a v375;
 
-                usr->field_1CE9 = 1;
-                usr->netTP1[v368.field_4].field_43 = 1;
+                usr->rdyStart = 1;
+                usr->players2[v368.ID].rdyStart = 1;
 
                 v375.fld_0 = 1023;
                 v375.fld_3 = 0;
@@ -4842,27 +4842,27 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 usr->p_ypaworld->self_full->ypaworld_func181(&v353);
 
                 windp_arg82 v387;
-                v387.field_C = 2;
-                v387.field_8 = 0;
-                v387.field_4 = 1;
-                v387.field_0 = usr->callSIGN;
-                v387.field_10 = 1;
+                v387.receiverFlags = 2;
+                v387.receiverID = 0;
+                v387.senderFlags = 1;
+                v387.senderID = usr->callSIGN;
+                v387.guarant = 1;
 
                 usr->p_ypaworld->windp->windp_func82(&v387);
             }
             else if ( v6_l == 1209 )
             {
-                v368.field_0 = 0;
-                v368.field_4 = 0;
-                while ( yw->windp->windp_func79(&v368) && strcasecmp(v368.field_8, usr->callSIGN) )
-                    v368.field_4++;
+                v368.mode = 0;
+                v368.ID = 0;
+                while ( yw->windp->windp_func79(&v368) && strcasecmp(v368.name, usr->callSIGN) )
+                    v368.ID++;
 
 
                 yw_arg181 v353;
                 yw_arg181_a v375;
 
-                usr->field_1CE9 = 0;
-                usr->netTP1[v368.field_4].field_43 = 0;
+                usr->rdyStart = 0;
+                usr->players2[v368.ID].rdyStart = 0;
 
                 v375.fld_0 = 1023;
                 v375.fld_3 = 0;
@@ -4876,11 +4876,11 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 usr->p_ypaworld->self_full->ypaworld_func181(&v353);
 
                 windp_arg82 v387;
-                v387.field_C = 2;
-                v387.field_8 = 0;
-                v387.field_4 = 1;
-                v387.field_0 = usr->callSIGN;
-                v387.field_10 = 1;
+                v387.receiverFlags = 2;
+                v387.receiverID = 0;
+                v387.senderFlags = 1;
+                v387.senderID = usr->callSIGN;
+                v387.guarant = 1;
 
                 usr->p_ypaworld->windp->windp_func82(&v387);
             }
@@ -4894,7 +4894,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     v316.title = get_lang_string(ypaworld__string_pointers, 422, "ENTER MESSAGE");
                     v316.ok = get_lang_string(ypaworld__string_pointers, 2, "OK");
                     v316.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
-                    v316.startText = usr->field_1C42;
+                    v316.startText = usr->netName;
                     v316.timer_func = NULL;
                     v316.maxLen = 64;
 
@@ -4902,19 +4902,19 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
                     if ( v316.result )
                     {
-                        strncpy(usr->field_1C42, v316.result, 64);
-                        usr->field_1C42[63] = 0;
+                        strncpy(usr->netName, v316.result, 64);
+                        usr->netName[63] = 0;
                     }
                 }
 
-                if ( usr->field_1C42[0] )
+                if ( usr->netName[0] )
                 {
                     yw_arg181_b v312;
 
                     v312.fld_0 = 1018;
                     v312.fld_3 = 0;
 
-                    strcpy(v312.fld_4, usr->field_1C42);
+                    strcpy(v312.fld_4, usr->netName);
 
                     v346.field_C = 1;
                     v346.value = (yw_arg181_a *)&v312;
@@ -4928,8 +4928,8 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
                     sub_4D0C24(usr->p_ypaworld, usr->callSIGN, v312.fld_4);
 
-                    usr->field_1C42[0] = 0;
-                    usr->field_1C84 = 0;
+                    usr->netName[0] = 0;
+                    usr->netNameCurPos = 0;
 
                     int v223 = strtol(v312.fld_4, NULL, 0);
                     if ( v223 > 0 )
@@ -4948,7 +4948,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
     if ( usr->field_46 == 6 )
     {
-        int a4 = usr->network_button->getBTN_h();
+        int a4 = usr->network_button->getBTN_y();
 
         usr->network_listvw.dialogBox.ypos = usr->field_0x1c30 + a4;
 
@@ -4956,13 +4956,13 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
         if ( (usr->network_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT) || usr->field_3A->downed_key == UAVK_UP || usr->field_3A->downed_key == UAVK_DOWN )
         {
-            usr->field_0x1c3c = usr->network_listvw.selectedEntry;
+            usr->netSel = usr->network_listvw.selectedEntry;
 
-            switch ( usr->field_1C3A )
+            switch ( usr->netSelMode )
             {
             case 0:
             case 1:
-                usr->field_1C3E = 0;
+                usr->nInputMode = 0;
                 break;
             case 3:
             {
@@ -4974,10 +4974,10 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 {
                     if ( v227 <= 1 || v227 <= usr->p_ypaworld->LevelNet->mapInfos[ usr->map_descriptions[i].id ].robos_count)
                     {
-                        if ( v228 == usr->field_0x1c3c )
+                        if ( v228 == usr->netSel )
                         {
-                            usr->field_0x1c88 = usr->map_descriptions[i].pstring;
-                            usr->field_1C86 = usr->map_descriptions[i].id;
+                            usr->netLevelName = usr->map_descriptions[i].pstring;
+                            usr->netLevelID = usr->map_descriptions[i].id;
                             break;
                         }
 
@@ -4991,7 +4991,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 break;
             }
 
-            usr->field_1C84 = strlen(usr->field_1C42);
+            usr->netNameCurPos = strlen(usr->netName);
         }
 
         usr->network_listvw.Formate(yw);
@@ -5001,16 +5001,16 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     {
         if ( usr->field_3A->downed_key || usr->field_3A->chr || usr->field_3A->dword8 )
         {
-            if ( usr->field_1C3E )
+            if ( usr->nInputMode )
             {
                 uint32_t v233;
 
-                if ( usr->field_1C3A == 2 )
+                if ( usr->netSelMode == 2 )
                     v233 = 32;
                 else
                     v233 = 38;
 
-                if ( strlen(usr->field_1C42) < v233 )
+                if ( strlen(usr->netName) < v233 )
                 {
                     if ( usr->field_3A->chr > 0x1F && yw->str17_NOT_FALSE == 0 )
                     {
@@ -5025,81 +5025,81 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                         {
                             char v313[68];
 
-                            strncpy(v313, usr->field_1C42, usr->field_1C84);
-                            strncpy(v313 + usr->field_1C84, v345, 1);
+                            strncpy(v313, usr->netName, usr->netNameCurPos);
+                            strncpy(v313 + usr->netNameCurPos, v345, 1);
 
-                            strcpy(v313 + usr->field_1C84 + 1, usr->field_1C42 + usr->field_1C84 );
+                            strcpy(v313 + usr->netNameCurPos + 1, usr->netName + usr->netNameCurPos );
 
-                            strcpy(usr->field_1C42, v313);
+                            strcpy(usr->netName, v313);
 
-                            usr->field_1C84++;
+                            usr->netNameCurPos++;
                         }
                     }
                 }
 
-                if ( usr->field_3A->downed_key == UAVK_BACK && usr->field_1C84 > 0 && (yw->str17_NOT_FALSE == 0) )
+                if ( usr->field_3A->downed_key == UAVK_BACK && usr->netNameCurPos > 0 && (yw->str17_NOT_FALSE == 0) )
                 {
-                    int ln = strlen(usr->field_1C42);
+                    int ln = strlen(usr->netName);
 
-                    for (int i = usr->field_1C84 - 1; i < ln - 1; i++)
-                        usr->field_1C42[i] = usr->field_1C42[i + 1];
+                    for (int i = usr->netNameCurPos - 1; i < ln - 1; i++)
+                        usr->netName[i] = usr->netName[i + 1];
 
-                    usr->field_1C42[ln - 1] = 0;
+                    usr->netName[ln - 1] = 0;
 
-                    usr->field_1C84--;
+                    usr->netNameCurPos--;
                 }
                 else if ( usr->field_3A->downed_key == UAVK_LEFT )
                 {
-                    if ( usr->field_1C84 > 0 && (yw->str17_NOT_FALSE == 0) )
-                        usr->field_1C84--;
+                    if ( usr->netNameCurPos > 0 && (yw->str17_NOT_FALSE == 0) )
+                        usr->netNameCurPos--;
                 }
                 else if ( usr->field_3A->downed_key == UAVK_RIGHT )
                 {
-                    if ( usr->field_1C84 < (int32_t)strlen(usr->field_1C42) && (yw->str17_NOT_FALSE == 0) )
-                        usr->field_1C84++;
+                    if ( usr->netNameCurPos < (int32_t)strlen(usr->netName) && (yw->str17_NOT_FALSE == 0) )
+                        usr->netNameCurPos++;
                 }
-                else if ( usr->field_3A->downed_key == UAVK_DELETE && usr->field_1C84 < (int32_t)strlen(usr->field_1C42) && (yw->str17_NOT_FALSE == 0) )
+                else if ( usr->field_3A->downed_key == UAVK_DELETE && usr->netNameCurPos < (int32_t)strlen(usr->netName) && (yw->str17_NOT_FALSE == 0) )
                 {
-                    int ln = strlen(usr->field_1C42);
+                    int ln = strlen(usr->netName);
 
-                    for (int i = usr->field_1C84; i < ln - 1; i++)
-                        usr->field_1C42[i] = usr->field_1C42[i + 1];
+                    for (int i = usr->netNameCurPos; i < ln - 1; i++)
+                        usr->netName[i] = usr->netName[i + 1];
 
-                    usr->field_1C42[ln - 1] = 0;
+                    usr->netName[ln - 1] = 0;
                 }
             }
 
             if ( usr->field_3A->downed_key == UAVK_RETURN )
             {
-                switch ( usr->field_1C3A )
+                switch ( usr->netSelMode )
                 {
                 case 0:
-                    sub_46B1B8(usr);
+                    yw_NetOKProvider(usr);
                     break;
 
                 case 1:
                     if ( usr->network_listvw.numEntries )
                     {
-                        sb_0x46bb54(usr);
+                        yw_JoinNetGame(usr);
                     }
                     else
                     {
-                        usr->field_0x1cd8 = 1;
-                        usr->field_0x1c3c = -1;
-                        usr->field_1C3A = 3;
+                        usr->isHost = 1;
+                        usr->netSel = -1;
+                        usr->netSelMode = 3;
                         usr->network_listvw.firstShownEntries = 0;
                     }
                     break;
 
                 case 2:
-                    if ( usr->field_1C42[0] )
+                    if ( usr->netName[0] )
                     {
-                        strcpy(usr->callSIGN, usr->field_1C42);
+                        strcpy(usr->callSIGN, usr->netName);
 
-                        usr->field_1C3A = 1;
-                        usr->field_0x1c3c = -1;
+                        usr->netSelMode = 1;
+                        usr->netSel = -1;
                         usr->network_listvw.firstShownEntries = 0;
-                        usr->field_1C42[0] = 0;
+                        usr->netName[0] = 0;
                         usr->network_listvw.OpenDialog(usr->p_ypaworld);
                     }
                     break;
@@ -5108,18 +5108,18 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     sub_46B328(usr);
                     break;
                 case 4:
-                    if ( usr->field_1C42[0] )
+                    if ( usr->netName[0] )
                     {
                         char v311[64];
 
-                        strcpy(v311, usr->field_1C42);
+                        strcpy(v311, usr->netName);
 
                         yw_arg181_b v309;
 
                         v309.fld_0 = 1018;
                         v309.fld_3 = 0;
 
-                        strcpy(v309.fld_4, usr->field_1C42);
+                        strcpy(v309.fld_4, usr->netName);
 
                         yw_arg181 v325;
 
@@ -5132,8 +5132,8 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                         usr->p_ypaworld->self_full->ypaworld_func181(&v325);
 
                         sub_4D0C24(usr->p_ypaworld, usr->callSIGN, v309.fld_4);
-                        usr->field_1C42[0] = 0;
-                        usr->field_1C84 = 0;
+                        usr->netName[0] = 0;
+                        usr->netNameCurPos = 0;
 
                         int v271 = strtol(v309.fld_4, NULL, 0);
                         if ( v271 > 0 )
@@ -5149,9 +5149,9 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 sub_46D698(usr);
             }
 
-            if ( usr->field_3A->dword8 == (0x80 | 0x2B) && !usr->field_1C3E )
+            if ( usr->field_3A->dword8 == (0x80 | 0x2B) && !usr->nInputMode )
             {
-                switch ( usr->field_1C3A )
+                switch ( usr->netSelMode )
                 {
                 case 0:
                     yw->field_81AF = get_lang_string(ypaworld__string_pointers, 753, "help\\13.html");
@@ -5173,33 +5173,33 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 }
             }
 
-            if ( usr->field_1C3E != -1 )
-                usr->network_listvw.PosOnSelected(usr->field_1C3E);
+            if ( usr->nInputMode != -1 )
+                usr->network_listvw.PosOnSelected(usr->nInputMode);
 
             usr->field_3A->downed_key = 0;
         }
     }
 
-    if ( usr->field_0x1cd8 )
+    if ( usr->isHost )
     {
-        if ( usr->field_1C3A == 4 && usr->field_0x2fbc != 4 )
+        if ( usr->netSelMode == 4 && usr->field_0x2fbc != 4 )
         {
-            if ( (int)usr->p_ypaworld->windp->windp_func86(NULL)   <   usr->p_ypaworld->LevelNet->mapInfos[ usr->field_1C86 ].robos_count )
+            if ( (int)usr->p_ypaworld->windp->windp_func86(NULL)   <   usr->p_ypaworld->LevelNet->mapInfos[ usr->netLevelID ].robos_count )
             {
-                if ( usr->field_1CEF )
+                if ( usr->blocked )
                 {
                     int v357 = 0;
                     usr->p_ypaworld->windp->windp_func84(&v357);
 
-                    usr->field_1CEF = 0;
+                    usr->blocked = 0;
                 }
             }
-            else if ( !usr->field_1CEF )
+            else if ( !usr->blocked )
             {
                 int v357 = 1;
                 usr->p_ypaworld->windp->windp_func84(&v357);
 
-                usr->field_1CEF = 1;
+                usr->blocked = 1;
             }
         }
     }
@@ -5280,9 +5280,9 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     v410.butID = 1217;
     usr->network_button->button_func67(&v410);
 
-    if ( (usr->field_1C3A != 1 || usr->p_ypaworld->windp->windp_func90(NULL) != 3)
-            && (usr->field_1C3A != 1 || usr->field_0x1cdc != 1 || usr->p_ypaworld->windp->windp_func90(NULL) != 4)
-            && usr->field_1C3A )
+    if ( (usr->netSelMode != 1 || usr->p_ypaworld->windp->windp_func90(NULL) != 3)
+            && (usr->netSelMode != 1 || usr->modemAskSession != 1 || usr->p_ypaworld->windp->windp_func90(NULL) != 4)
+            && usr->netSelMode )
     {
         v410.butID = 1228;
         usr->network_button->button_func67(&v410);
@@ -5291,7 +5291,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     {
         const char *v280;
 
-        if ( usr->field_1C3A )
+        if ( usr->netSelMode )
         {
             v280 = get_lang_string(ypaworld__string_pointers, 2402, "PRESS SPACEBAR TO UPDATE SESSION LIST");
         }
@@ -5319,7 +5319,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         usr->network_button->button_func66(&v410);
     }
 
-    if ( (!usr->field_1C3E || yw->str17_NOT_FALSE) && usr->field_1C3A != 2 )
+    if ( (!usr->nInputMode || yw->str17_NOT_FALSE) && usr->netSelMode != 2 )
     {
         v410.butID = 1200;
         usr->network_button->button_func67(&v410);
@@ -5332,7 +5332,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v393.xpos = -1;
         v393.butID = 1200;
 
-        if ( usr->field_1C3A == 2 )
+        if ( usr->netSelMode == 2 )
         {
             v393.width = dword_5A50B6;
             v393.ypos = 3 * (word_5A50C2 + yw->font_default_h);
@@ -5348,14 +5348,14 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
         if ( yw->str17_NOT_FALSE )
         {
-            strcpy(v308, usr->field_1C42);
+            strcpy(v308, usr->netName);
         }
         else
         {
-            strncpy(v308, usr->field_1C42, usr->field_1C84);
-            strncpy(v308 + usr->field_1C84, "_", 1);
+            strncpy(v308, usr->netName, usr->netNameCurPos);
+            strncpy(v308 + usr->netNameCurPos, "_", 1);
 
-            strcpy(v308 + usr->field_1C84 + 1, usr->field_1C42 + usr->field_1C84);
+            strcpy(v308 + usr->netNameCurPos + 1, usr->netName + usr->netNameCurPos);
         }
 
         v395.butID = 1200;
@@ -5368,7 +5368,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     v393.width = -1;
     v393.butID = 1202;
 
-    if ( usr->field_1C3A == 2 )
+    if ( usr->netSelMode == 2 )
     {
         v393.ypos = 4 * (word_5A50C2 + yw->font_default_h);
     }
@@ -5379,7 +5379,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
     usr->network_button->button_func76(&v393);
 
-    switch ( usr->field_1C3A )
+    switch ( usr->netSelMode )
     {
     case 0:
         v410.field_4 = 0;
@@ -5402,7 +5402,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         break;
 
     case 1:
-        if ( usr->p_ypaworld->windp->windp_func90(NULL) != 4 || !usr->field_0x1cdc )
+        if ( usr->p_ypaworld->windp->windp_func90(NULL) != 4 || !usr->modemAskSession )
         {
             v395.butID = 1202;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 402, "NEW");
@@ -5426,17 +5426,17 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 429, "6");
         usr->network_button->button_func71(&v395);
 
-        int v349[2];
-        v349[1] = 0;
+        windp_getNameMsg msg;
+        msg.id = 0;
 
-        if ( usr->p_ypaworld->windp->windp_func69(v349) )
+        if ( usr->p_ypaworld->windp->windp_func69(&msg) )
         {
             v395.butID = 1201;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 406, "JOIN");
             v395.field_8 = 0;
             usr->network_button->button_func71(&v395);
         }
-        else if ( usr->p_ypaworld->windp->windp_func90(NULL) != 4 || usr->field_0x1cdc )
+        else if ( usr->p_ypaworld->windp->windp_func90(NULL) != 4 || usr->modemAskSession )
         {
             v410.butID = 1201;
             usr->network_button->button_func67(&v410);
@@ -5477,7 +5477,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         break;
 
     case 3:
-        if ( usr->field_1CEA )
+        if ( usr->remoteMode )
         {
             v410.butID = 1205;
             usr->network_button->button_func67(&v410);
@@ -5512,8 +5512,8 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v410.butID = 1227;
         usr->network_button->button_func66(&v410);
 
-        if ( usr->field_1C86 )
-            v395.field_4 = usr->field_0x1c88;
+        if ( usr->netLevelID )
+            v395.field_4 = usr->netLevelName;
         else
             v395.field_4 = " ";
 
@@ -5522,15 +5522,15 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
         usr->network_button->button_func71(&v395);
 
-        if ( usr->field_0x1cd8 )
+        if ( usr->isHost )
         {
             v410.butID = 1205;
             usr->network_button->button_func66(&v410);
         }
 
-        if ( usr->field_1CE9 )
+        if ( usr->rdyStart )
         {
-            if ( !usr->field_0x1cd8 )
+            if ( !usr->isHost )
             {
                 v410.butID = 1205;
                 usr->network_button->button_func67(&v410);
@@ -5540,10 +5540,10 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v410.butID = 1220;
         usr->network_button->button_func66(&v410);
 
-        if ( usr->field_1C86 > 0 && usr->field_1C86 < 256 )
+        if ( usr->netLevelID > 0 && usr->netLevelID < 256 )
         {
 
-            if ( !usr->field_0x1cd8 && usr->field_1CE9 )
+            if ( !usr->isHost && usr->rdyStart )
             {
                 v410.butID = 1220;
                 usr->network_button->button_func67(&v410);
@@ -5551,25 +5551,25 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             else
             {
                 v410.butID = 1206;
-                if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->field_1C86 ].fractions_mask & 2 )
+                if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->netLevelID ].fractions_mask & 2 )
                     usr->network_button->button_func66(&v410);
                 else
                     usr->network_button->button_func67(&v410);
 
                 v410.butID = 1207;
-                if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->field_1C86 ].fractions_mask & 0x40 )
+                if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->netLevelID ].fractions_mask & 0x40 )
                     usr->network_button->button_func66(&v410);
                 else
                     usr->network_button->button_func67(&v410);
 
                 v410.butID = 1208;
-                if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->field_1C86 ].fractions_mask & 8 )
+                if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->netLevelID ].fractions_mask & 8 )
                     usr->network_button->button_func66(&v410);
                 else
                     usr->network_button->button_func67(&v410);
 
                 v410.butID = 1209;
-                if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->field_1C86 ].fractions_mask & 0x10 )
+                if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->netLevelID ].fractions_mask & 0x10 )
                     usr->network_button->button_func66(&v410);
                 else
                     usr->network_button->button_func67(&v410);
@@ -5577,7 +5577,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
             v408.butID = 0;
 
-            switch ( usr->field_1CD6 - 1 )
+            switch ( usr->SelectedFraction - 1 )
             {
             case 0:
                 v408.butID = 1206;
@@ -5606,22 +5606,22 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
             int v298 = 0;
 
-            v368.field_0 = 0;
-            v368.field_4 = 0;
+            v368.mode = 0;
+            v368.ID = 0;
 
             usr->field_1CD7 = 1;
             usr->field_1CE8 = 1;
 
-            if ( !(usr->p_ypaworld->LevelNet->mapInfos[usr->field_1C86].fractions_mask & 2) )
+            if ( !(usr->p_ypaworld->LevelNet->mapInfos[usr->netLevelID].fractions_mask & 2) )
                 v298 = 1;
 
-            if ( !(usr->p_ypaworld->LevelNet->mapInfos[usr->field_1C86].fractions_mask & 0x40) )
+            if ( !(usr->p_ypaworld->LevelNet->mapInfos[usr->netLevelID].fractions_mask & 0x40) )
                 v298 |= 2;
 
-            if ( !(usr->p_ypaworld->LevelNet->mapInfos[usr->field_1C86].fractions_mask & 8) )
+            if ( !(usr->p_ypaworld->LevelNet->mapInfos[usr->netLevelID].fractions_mask & 8) )
                 v298 |= 4;
 
-            if ( !(usr->p_ypaworld->LevelNet->mapInfos[usr->field_1C86].fractions_mask & 0x10) )
+            if ( !(usr->p_ypaworld->LevelNet->mapInfos[usr->netLevelID].fractions_mask & 0x10) )
                 v298 |= 8;
 
             int v373, v374, v375, v376;
@@ -5630,29 +5630,29 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             {
                 int v299;
 
-                if ( v368.field_C & 1 )
-                    v299 = usr->field_1CD6;
+                if ( v368.flags & 1 )
+                    v299 = usr->SelectedFraction;
                 else
-                    v299 = usr->netTP1[v368.field_4].field_40;
+                    v299 = usr->players2[v368.ID].Fraction;
 
                 if ( v299 & v298 )
                 {
-                    usr->netTP1[v368.field_4].field_41 = 1;
+                    usr->players2[v368.ID].trbl = 1;
                     usr->field_1CD7 = 0;
 
                     switch ( v299 - 1 )
                     {
                     case 0:
-                        usr->netTP1[v375].field_41 = 1;
+                        usr->players2[v375].trbl = 1;
                         break;
                     case 1:
-                        usr->netTP1[v373].field_41 = 1;
+                        usr->players2[v373].trbl = 1;
                         break;
                     case 3:
-                        usr->netTP1[v376].field_41 = 1;
+                        usr->players2[v376].trbl = 1;
                         break;
                     case 7:
-                        usr->netTP1[v374].field_41 = 1;
+                        usr->players2[v374].trbl = 1;
                         break;
                     default:
                         break;
@@ -5660,21 +5660,21 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 }
                 else
                 {
-                    usr->netTP1[v368.field_4].field_41 = 0;
+                    usr->players2[v368.ID].trbl = 0;
 
                     switch ( v299 - 1 )
                     {
                     case 0:
-                        v375 = v368.field_4;
+                        v375 = v368.ID;
                         break;
                     case 1:
-                        v373 = v368.field_4;
+                        v373 = v368.ID;
                         break;
                     case 3:
-                        v376 = v368.field_4;
+                        v376 = v368.ID;
                         break;
                     case 7:
-                        v374 = v368.field_4;
+                        v374 = v368.ID;
                         break;
                     default:
                         break;
@@ -5683,27 +5683,27 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 }
 
                 v298 |= v299;
-                v368.field_4++;
+                v368.ID++;
             }
         }
 
-        v368.field_0 = 0;
-        v368.field_4 = 0;
+        v368.mode = 0;
+        v368.ID = 0;
 
         while ( usr->p_ypaworld->windp->windp_func79(&v368) )
         {
-            if ( !(v368.field_C & 1) )
+            if ( !(v368.flags & 1) )
             {
-                if ( !usr->netTP1[v368.field_4].field_43 )
+                if ( !usr->players2[v368.ID].rdyStart )
                     usr->field_1CD7 = 0;
 
-                if ( !usr->netTP1[v368.field_4].field_44 )
+                if ( !usr->players2[v368.ID].welcmd )
                     usr->field_1CE8 = 0;
             }
-            v368.field_4++;
+            v368.ID++;
         }
 
-        if ( usr->field_0x1cd8 )
+        if ( usr->isHost )
         {
             v395.butID = 1204;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 414, "START GAME OR ENTER MESSAGE TO THE PLAYERS");
@@ -5781,8 +5781,8 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v410.butID = 1217;
         usr->network_button->button_func66(&v410);
 
-        v368.field_4 = 0;
-        v368.field_0 = 0;
+        v368.ID = 0;
+        v368.mode = 0;
 
 
         for (int i = 0; i < 4; i++)
@@ -5798,7 +5798,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v370 = 1214;
                 v395.butID = 1210;
                 if ( v304 )
-                    v395.field_4 = v368.field_8;
+                    v395.field_4 = v368.name;
                 else
                     v395.field_4 = " ";
                 break;
@@ -5807,7 +5807,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v370 = 1215;
                 v395.butID = 1211;
                 if ( v304 )
-                    v395.field_4 = v368.field_8;
+                    v395.field_4 = v368.name;
                 else
                     v395.field_4 = " ";
                 break;
@@ -5816,7 +5816,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v370 = 1216;
                 v395.butID = 1212;
                 if ( v304 )
-                    v395.field_4 = v368.field_8;
+                    v395.field_4 = v368.name;
                 else
                     v395.field_4 = " ";
                 break;
@@ -5825,7 +5825,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v370 = 1217;
                 v395.butID = 1213;
                 if ( v304 )
-                    v395.field_4 = v368.field_8;
+                    v395.field_4 = v368.name;
                 else
                     v395.field_4 = " ";
                 break;
@@ -5841,13 +5841,13 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             {
                 int v305;
 
-                if ( v368.field_C & 1 )
+                if ( v368.flags & 1 )
                 {
-                    v305 = usr->field_1CD6;
+                    v305 = usr->SelectedFraction;
                 }
                 else
                 {
-                    v305 = usr->netTP1[v368.field_4].field_40;
+                    v305 = usr->players2[v368.ID].Fraction;
                 }
 
                 switch ( v305 - 1 )
@@ -5868,17 +5868,17 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     v339[0] = ' ';
                     break;
                 }
-                if ( usr->netTP1[v368.field_4].field_41 && ((usr->field_42 / 300) & 1) )
+                if ( usr->players2[v368.ID].trbl && ((usr->glblTime / 300) & 1) )
                     v339[1] = 'f';
                 else
                     v339[1] = ' ';
 
-                if ( usr->netTP1[v368.field_4].field_43 )
+                if ( usr->players2[v368.ID].rdyStart )
                     v339[2] = 'h';
                 else
                     v339[2] = ' ';
 
-                if ( usr->netTP1[v368.field_4].field_44 & 0xFF00 )
+                if ( usr->players2[v368.ID].cd )
                     v339[3] = 'i';
                 else
                     v339[3] = ' ';
@@ -5895,7 +5895,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             v395.field_4 = v339;
             usr->network_button->button_func71(&v395);
 
-            v368.field_4++;
+            v368.ID++;
         }
         break;
 

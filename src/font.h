@@ -82,6 +82,17 @@ struct ColumnItem
     uint8_t prefixChar;
     uint8_t postfixChar;
     int16_t flags;
+
+    ColumnItem()
+    {
+        txt = NULL;
+        width = 0;
+        fontID = 0;
+        spaceChar = 0;
+        prefixChar = 0;
+        postfixChar = 0;
+        flags = 0;
+    }
 };
 
 

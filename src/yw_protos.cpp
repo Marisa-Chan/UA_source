@@ -2773,7 +2773,7 @@ int parseSaveUser(scrCallBack *arg)
     {
         if ( !strcasecmp(arg->p1, "new_user") )
         {
-            if ( !yw->GameShell->field_1CEA )
+            if ( !yw->GameShell->remoteMode )
             {
                 if ( !sb_0x4739e8__sub0(yw, "callsign.def", yw->GameShell->callSIGN, 64) )
                 {

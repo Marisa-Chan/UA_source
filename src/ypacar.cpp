@@ -302,7 +302,7 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
 
                             v19->energy -= v67;
 
-                            if ( car->yw->field_757E )
+                            if ( car->yw->isNetGame )
                             {
                                 v63 = 1;
 

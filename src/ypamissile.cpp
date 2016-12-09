@@ -597,7 +597,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                                         arg84.energy = -v92;
                                         arg84.unit = miss->ejaculator_bact;
 
-                                        if ( v85->owner == bact->owner || !miss->yw->field_757E )
+                                        if ( v85->owner == bact->owner || !miss->yw->isNetGame )
                                             bct->self->ModifyEnergy(&arg84);
                                     }
 
@@ -688,7 +688,7 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
 
             if ( !(miss->field_2D & 4) || !miss->selfie->pSector->w_type )
             {
-                if ( miss->yw->field_1b80->owner == miss->selfie->owner || !miss->yw->field_757E )
+                if ( miss->yw->field_1b80->owner == miss->selfie->owner || !miss->yw->isNetGame )
                 {
                     yw_arg129 v25;
 
@@ -801,7 +801,7 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
 
                         if ( !(miss->field_2D & 4) || !miss->selfie->pSector->w_type )
                         {
-                            if ( miss->yw->field_1b80->owner == miss->selfie->owner || !miss->yw->field_757E )
+                            if ( miss->yw->field_1b80->owner == miss->selfie->owner || !miss->yw->isNetGame )
                             {
                                 yw_arg129 v25;
 
@@ -1077,7 +1077,7 @@ void NC_STACK_ypamissile::ypamissile_func129(void *)
         {
             int v10 = 1;
 
-            if ( miss->yw->field_757E )
+            if ( miss->yw->isNetGame )
             {
                 if ( miss->selfie->owner != bct->owner )
                     v10 = 0;
@@ -1090,7 +1090,7 @@ void NC_STACK_ypamissile::ypamissile_func129(void *)
         bct = (__NC_STACK_ypabact *)bct->next;
     }
 
-    if ( miss->yw->field_757E )
+    if ( miss->yw->isNetGame )
     {
         char v13[56];
 //    *(_uint32_t *)v13 = 1026;
