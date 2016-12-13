@@ -9380,7 +9380,7 @@ size_t NC_STACK_ypabact::compatcall(int method_id, void *data)
     case 86:
         return (size_t)CrashOrLand( (bact_arg86 *)data );
     case 87:
-        return (size_t)CollisionWithBact( (int)data );
+        return (size_t)CollisionWithBact( (int)(size_t)data );
     case 88:
         Recoil( (bact_arg88 *)data );
         return 1;

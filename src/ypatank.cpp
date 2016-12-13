@@ -3049,7 +3049,7 @@ size_t NC_STACK_ypatank::compatcall(int method_id, void *data)
         ApplyImpulse( (bact_arg83 *)data );
         return 1;
     case 87:
-        return (size_t)CollisionWithBact( (int)data );
+        return (size_t)CollisionWithBact( (int)(size_t)data );
     case 88:
         Recoil( (bact_arg88 *)data );
         return 1;
