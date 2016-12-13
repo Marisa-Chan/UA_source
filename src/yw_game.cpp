@@ -2882,9 +2882,9 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                         }
 
                         setState_msg v34;
-                        v34.field_0 = 4;
-                        v34.field_8 = 0;
-                        v34.field_4 = 0;
+                        v34.newStatus = BACT_STATUS_CREATE;
+                        v34.unsetFlags = 0;
+                        v34.setFlags = 0;
 
                         gunn->SetStateInternal(&v34);
 
@@ -3650,24 +3650,24 @@ void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a
     }
 
     setState_msg arg78;
-    arg78.field_0 = bct1->bact->status;
-    arg78.field_4 = 0;
-    arg78.field_8 = 0;
+    arg78.newStatus = bct1->bact->status;
+    arg78.setFlags = 0;
+    arg78.unsetFlags = 0;
     bct1->bacto->SetState(&arg78);
 
     if ( bct1->bact->status_flg & BACT_STFLAG_DEATH2 )
     {
-        arg78.field_0 = 0;
-        arg78.field_8 = 0;
-        arg78.field_4 = 2048;
+        arg78.newStatus = BACT_STATUS_NOPE;
+        arg78.unsetFlags = 0;
+        arg78.setFlags = BACT_STFLAG_DEATH2;
         bct1->bacto->SetState(&arg78);
     }
 
     if ( bct1->bact->status_flg & BACT_STFLAG_FIRE )
     {
-        arg78.field_0 = 0;
-        arg78.field_8 = 0;
-        arg78.field_4 = 256;
+        arg78.newStatus = BACT_STATUS_NOPE;
+        arg78.unsetFlags = 0;
+        arg78.setFlags = BACT_STFLAG_FIRE;
         bct1->bacto->SetState(&arg78);
     }
 

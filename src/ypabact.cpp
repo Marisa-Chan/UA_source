@@ -740,9 +740,9 @@ void NC_STACK_ypabact::Update(update_msg *arg)
         if ( !IsDestroyed() )
         {
             setState_msg v38;
-            v38.field_4 = 0;
-            v38.field_8 = 0;
-            v38.field_0 = 3;
+            v38.setFlags = 0;
+            v38.unsetFlags = 0;
+            v38.newStatus = BACT_STATUS_IDLE;
 
             SetState(&v38);
         }
@@ -1142,9 +1142,9 @@ void NC_STACK_ypabact::AI_layer1(update_msg *arg)
         else
         {
             setState_msg v37;
-            v37.field_0 = 0;
-            v37.field_8 = 0;
-            v37.field_4 = 2048;
+            v37.newStatus = BACT_STATUS_NOPE;
+            v37.unsetFlags = 0;
+            v37.setFlags = BACT_STFLAG_DEATH2;
 
             SetState(&v37);
 
@@ -1295,9 +1295,9 @@ void NC_STACK_ypabact::AI_layer1(update_msg *arg)
             else if ( bact->vp_active == 6 && bact->status == BACT_STATUS_NORMAL )
             {
                 setState_msg v38;
-                v38.field_0 = 1;
-                v38.field_4 = 0;
-                v38.field_8 = 0;
+                v38.newStatus = BACT_STATUS_NORMAL;
+                v38.setFlags = 0;
+                v38.unsetFlags = 0;
                 SetState(&v38);
             }
         }
@@ -1717,9 +1717,9 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
             if ( bact->status_flg & BACT_STFLAG_FIRE )
             {
                 setState_msg arg78;
-                arg78.field_0 = 0;
-                arg78.field_4 = 0;
-                arg78.field_8 = 256;
+                arg78.newStatus = BACT_STATUS_NOPE;
+                arg78.setFlags = 0;
+                arg78.unsetFlags = BACT_STFLAG_FIRE;
 
                 SetState(&arg78);
             }
@@ -2026,9 +2026,9 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
             if ( bact->status_flg & BACT_STFLAG_FIRE )
             {
                 setState_msg arg78;
-                arg78.field_8 = 256;
-                arg78.field_0 = 0;
-                arg78.field_4 = 0;
+                arg78.unsetFlags = BACT_STFLAG_FIRE;
+                arg78.newStatus = BACT_STATUS_NOPE;
+                arg78.setFlags = 0;
 
                 SetState(&arg78);
             }
@@ -2081,9 +2081,9 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
                 if ( bact->primTtype || bact->secndTtype )
                 {
                     setState_msg arg78;
-                    arg78.field_8 = 512;
-                    arg78.field_4 = 0;
-                    arg78.field_0 = 1;
+                    arg78.unsetFlags = BACT_STFLAG_LAND;
+                    arg78.setFlags = 0;
+                    arg78.newStatus = BACT_STATUS_NORMAL;
                     SetState(&arg78);
                     break;
                 }
@@ -2097,9 +2097,9 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
             if ( bact->status_flg & BACT_STFLAG_LAND )
             {
                 setState_msg arg78;
-                arg78.field_8 = 0;
-                arg78.field_4 = 0;
-                arg78.field_0 = 3;
+                arg78.unsetFlags = 0;
+                arg78.setFlags = 0;
+                arg78.newStatus = BACT_STATUS_IDLE;
                 SetState(&arg78);
 
                 ypaworld_arg136 v52;
@@ -2233,9 +2233,9 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
         {
             if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
             {
-                arg78.field_0 = 1;
-                arg78.field_8 = 0;
-                arg78.field_4 = 0;
+                arg78.newStatus = BACT_STATUS_NORMAL;
+                arg78.unsetFlags = 0;
+                arg78.setFlags = 0;
                 SetState(&arg78);
             }
 
@@ -2283,9 +2283,9 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
                 {
                     if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                     {
-                        arg78.field_8 = 0;
-                        arg78.field_4 = 0;
-                        arg78.field_0 = 3;
+                        arg78.unsetFlags = 0;
+                        arg78.setFlags = 0;
+                        arg78.newStatus = BACT_STATUS_IDLE;
                         SetState(&arg78);
                     }
                 }
@@ -2300,9 +2300,9 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
                 {
                     if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                     {
-                        arg78.field_0 = 3;
-                        arg78.field_8 = 0;
-                        arg78.field_4 = 0;
+                        arg78.newStatus = BACT_STATUS_IDLE;
+                        arg78.unsetFlags = 0;
+                        arg78.setFlags = 0;
                         SetState(&arg78);
                     }
                 }
@@ -2475,9 +2475,9 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
             {
                 if ( !(arg->inpt->but_flags & 4) )
                 {
-                    arg78.field_4 = 0;
-                    arg78.field_0 = 0;
-                    arg78.field_8 = 256;
+                    arg78.setFlags = 0;
+                    arg78.newStatus = BACT_STATUS_NOPE;
+                    arg78.unsetFlags = BACT_STFLAG_FIRE;
 
                     SetState(&arg78);
                 }
@@ -2487,9 +2487,9 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
             {
                 if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
-                    arg78.field_8 = 0;
-                    arg78.field_0 = 0;
-                    arg78.field_4 = 256;
+                    arg78.unsetFlags = 0;
+                    arg78.newStatus = BACT_STATUS_NOPE;
+                    arg78.setFlags = BACT_STFLAG_FIRE;
 
                     SetState(&arg78);
                 }
@@ -2936,9 +2936,9 @@ void NC_STACK_ypabact::FightWithBact(bact_arg75 *arg)
             if ( bact->status_flg & BACT_STFLAG_FIRE )
             {
                 setState_msg arg78;
-                arg78.field_4 = 0;
-                arg78.field_0 = 0;
-                arg78.field_8 = 256;
+                arg78.setFlags = 0;
+                arg78.newStatus = BACT_STATUS_NOPE;
+                arg78.unsetFlags = BACT_STFLAG_FIRE;
 
                 SetState(&arg78);
             }
@@ -2973,9 +2973,9 @@ void NC_STACK_ypabact::FightWithBact(bact_arg75 *arg)
                 }
 
                 setState_msg arg78;
-                arg78.field_8 = 0;
-                arg78.field_4 = 0;
-                arg78.field_0 = 1;
+                arg78.unsetFlags = 0;
+                arg78.setFlags = 0;
+                arg78.newStatus = BACT_STATUS_NORMAL;
 
                 SetState(&arg78);
 
@@ -2988,9 +2988,9 @@ void NC_STACK_ypabact::FightWithBact(bact_arg75 *arg)
             if ( bact->status_flg & BACT_STFLAG_FIRE )
             {
                 setState_msg arg78;
-                arg78.field_4 = 0;
-                arg78.field_0 = 0;
-                arg78.field_8 = 256;
+                arg78.setFlags = 0;
+                arg78.newStatus = BACT_STATUS_NOPE;
+                arg78.unsetFlags = BACT_STFLAG_FIRE;
 
                 SetState(&arg78);
             }
@@ -3052,9 +3052,9 @@ void NC_STACK_ypabact::FightWithBact(bact_arg75 *arg)
                 if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
                     setState_msg arg78;
-                    arg78.field_8 = 0;
-                    arg78.field_0 = 0;
-                    arg78.field_4 = 256;
+                    arg78.unsetFlags = 0;
+                    arg78.newStatus = BACT_STATUS_NOPE;
+                    arg78.setFlags = BACT_STFLAG_FIRE;
 
                     SetState(&arg78);
                 }
@@ -3072,9 +3072,9 @@ void NC_STACK_ypabact::FightWithBact(bact_arg75 *arg)
             else if ( bact->status_flg & BACT_STFLAG_FIRE )
             {
                 setState_msg arg78;
-                arg78.field_4 = 0;
-                arg78.field_0 = 0;
-                arg78.field_8 = 256;
+                arg78.setFlags = 0;
+                arg78.newStatus = BACT_STATUS_NOPE;
+                arg78.unsetFlags = BACT_STFLAG_FIRE;
 
                 SetState(&arg78);
             }
@@ -3110,9 +3110,9 @@ void NC_STACK_ypabact::FightWithBact(bact_arg75 *arg)
         if ( bact->status_flg & BACT_STFLAG_FIRE )
         {
             setState_msg arg78;
-            arg78.field_4 = 0;
-            arg78.field_0 = 0;
-            arg78.field_8 = 256;
+            arg78.setFlags = 0;
+            arg78.newStatus = BACT_STATUS_NOPE;
+            arg78.unsetFlags = BACT_STFLAG_FIRE;
 
             SetState(&arg78);
         }
@@ -3229,9 +3229,9 @@ void NC_STACK_ypabact::FightWithSect(bact_arg75 *arg)
     if ( bact->status_flg & BACT_STFLAG_FIRE )
     {
         setState_msg arg78;
-        arg78.field_8 = 256;
-        arg78.field_4 = 0;
-        arg78.field_0 = 0;
+        arg78.unsetFlags = BACT_STFLAG_FIRE;
+        arg78.setFlags = 0;
+        arg78.newStatus = BACT_STATUS_NOPE;
 
         SetState(&arg78);
     }
@@ -3707,9 +3707,9 @@ void NC_STACK_ypabact::Die()
                 miss->ypamissile_func128(NULL);
 
                 setState_msg arg119;
-                arg119.field_0 = 2;
-                arg119.field_8 = 0;
-                arg119.field_4 = 0;
+                arg119.newStatus = BACT_STATUS_DEAD;
+                arg119.unsetFlags = 0;
+                arg119.setFlags = 0;
                 miss->SetStateInternal(&arg119);
 
                 setTarget_msg arg67;
@@ -3771,9 +3771,9 @@ void NC_STACK_ypabact::Die()
             if ( bact->vp_active == 1 || bact->vp_active == 6 )
             {
                 setState_msg arg119;
-                arg119.field_8 = 0;
-                arg119.field_0 = 0;
-                arg119.field_4 = 2048;
+                arg119.unsetFlags = 0;
+                arg119.newStatus = BACT_STATUS_NOPE;
+                arg119.setFlags = BACT_STFLAG_DEATH2;
 
                 SetStateInternal(&arg119);
 
@@ -3851,12 +3851,12 @@ void NC_STACK_ypabact::SetState(setState_msg *arg)
 {
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    if ( (bact->bact_type == BACT_TYPES_TANK || bact->bact_type == BACT_TYPES_CAR) && arg->field_0 == 2 )
+    if ( (bact->bact_type == BACT_TYPES_TANK || bact->bact_type == BACT_TYPES_CAR) && arg->newStatus == 2 )
     {
         setState_msg newarg;
-        newarg.field_8 = 0;
-        newarg.field_0 = 0;
-        newarg.field_4 = 2048;
+        newarg.unsetFlags = 0;
+        newarg.newStatus = BACT_STATUS_NOPE;
+        newarg.setFlags = BACT_STFLAG_DEATH2;
 
         SetState(&newarg);
     }
@@ -4441,9 +4441,9 @@ void NC_STACK_ypabact::ModifyEnergy(bact_arg84 *arg)
                 bact->status_flg &= ~BACT_STFLAG_LAND;
 
                 setState_msg v16;
-                v16.field_0 = 2;
-                v16.field_8 = 0;
-                v16.field_4 = 0;
+                v16.newStatus = BACT_STATUS_DEAD;
+                v16.unsetFlags = 0;
+                v16.setFlags = 0;
 
                 SetState(&v16);
 
@@ -4820,9 +4820,9 @@ size_t NC_STACK_ypabact::CrashOrLand(bact_arg86 *arg)
                             if ( bact->energy <= 0 || (bact->current_vp.base == bact->vp_dead.base && bact->status == BACT_STATUS_DEAD) )
                             {
                                 setState_msg arg78;
-                                arg78.field_4 = 2048;
-                                arg78.field_8 = 0;
-                                arg78.field_0 = 0;
+                                arg78.setFlags = BACT_STFLAG_DEATH2;
+                                arg78.unsetFlags = 0;
+                                arg78.newStatus = BACT_STATUS_NOPE;
 
                                 SetState(&arg78);
                             }
@@ -4923,9 +4923,9 @@ size_t NC_STACK_ypabact::CrashOrLand(bact_arg86 *arg)
                             if ( bact->energy <= 0 || (bact->current_vp.base == bact->vp_dead.base && bact->status == BACT_STATUS_DEAD) )
                             {
                                 setState_msg arg78;
-                                arg78.field_4 = 2048;
-                                arg78.field_8 = 0;
-                                arg78.field_0 = 0;
+                                arg78.setFlags = BACT_STFLAG_DEATH2;
+                                arg78.unsetFlags = 0;
+                                arg78.newStatus = BACT_STATUS_NOPE;
 
                                 bact->self->SetState(&arg78);
                             }
@@ -6115,9 +6115,9 @@ void NC_STACK_ypabact::CreationTimeUpdate(update_msg *arg)
     else
     {
         setState_msg v25;
-        v25.field_0 = 1;
-        v25.field_4 = 0;
-        v25.field_8 = 0;
+        v25.newStatus = BACT_STATUS_NORMAL;
+        v25.setFlags = 0;
+        v25.unsetFlags = 0;
 
         SetState(&v25);
 
@@ -6787,17 +6787,17 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
                     AddTail(&bact->missiles_list, a2a);
 
                     setState_msg v69;
-                    v69.field_0 = 2;
-                    v69.field_4 = 0;
-                    v69.field_8 = 0;
+                    v69.newStatus = BACT_STATUS_DEAD;
+                    v69.setFlags = 0;
+                    v69.unsetFlags = 0;
 
                     v57->SetStateInternal(&v69);
 
                     if ( v96 )
                     {
-                        v69.field_4 = 2048;
-                        v69.field_0 = 0;
-                        v69.field_8 = 0;
+                        v69.setFlags = BACT_STFLAG_DEATH2;
+                        v69.newStatus = BACT_STATUS_NOPE;
+                        v69.unsetFlags = 0;
                         v57->SetStateInternal(&v69);
 
                         miss_arg130 v61;
@@ -7811,9 +7811,9 @@ void NC_STACK_ypabact::BeamingTimeUpdate(update_msg *arg)
             if ( bact->vp_genesis.base != bact->current_vp.base )
             {
                 setState_msg arg78;
-                arg78.field_0 = 5;
-                arg78.field_4 = 0;
-                arg78.field_8 = 0;
+                arg78.newStatus = BACT_STATUS_BEAM;
+                arg78.setFlags = 0;
+                arg78.unsetFlags = 0;
 
                 SetState(&arg78);
             }
@@ -7863,9 +7863,9 @@ void StartDestFX__sub0(__NC_STACK_ypabact *main, destFX *fx)
         main->ywo->ypaworld_func134(bah);
 
         setState_msg v18;
-        v18.field_0 = 2;
-        v18.field_4 = 0;
-        v18.field_8 = 0;
+        v18.newStatus = BACT_STATUS_DEAD;
+        v18.setFlags = 0;
+        v18.unsetFlags = 0;
 
         bah->SetStateInternal(&v18);
 
@@ -8138,16 +8138,16 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
 
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    if ( arg->field_0 )
-        bact->status = arg->field_0;
+    if ( arg->newStatus )
+        bact->status = arg->newStatus;
 
-    if ( arg->field_4 )
-        bact->status_flg |= arg->field_4;
+    if ( arg->setFlags )
+        bact->status_flg |= arg->setFlags;
 
-    if ( arg->field_8 )
-        bact->status_flg &= ~arg->field_8;
+    if ( arg->unsetFlags )
+        bact->status_flg &= ~arg->unsetFlags;
 
-    if ( arg->field_0 == 2 && (bact->vp_active != 2 && bact->vp_active != 3) )
+    if ( arg->newStatus == 2 && (bact->vp_active != 2 && bact->vp_active != 3) )
     {
         bact->energy = -10000;
 
@@ -8201,7 +8201,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         result = 1;
     }
 
-    if ( arg->field_0 == 1 && 1 != bact->vp_active )
+    if ( arg->newStatus == 1 && 1 != bact->vp_active )
     {
         bact->current_vp.base = bact->vp_normal.base;
         bact->current_vp.trigo = bact->vp_normal.trigo;
@@ -8235,7 +8235,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         result = 1;
     }
 
-    if ( arg->field_0 == 5 && 5 != bact->vp_active )
+    if ( arg->newStatus == 5 && 5 != bact->vp_active )
     {
         bact->vp_active = 5;
         bact->current_vp.base = bact->vp_genesis.base;
@@ -8271,7 +8271,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         result = 1;
     }
 
-    if ( arg->field_0 == 3 && bact->vp_active != 6 )
+    if ( arg->newStatus == 3 && bact->vp_active != 6 )
     {
         bact->current_vp.base = bact->vp_wait.base;
         bact->current_vp.trigo = bact->vp_wait.trigo;
@@ -8304,9 +8304,9 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         result = 1;
     }
 
-    if ( arg->field_0 == 4 && 4 != bact->vp_active )
+    if ( arg->newStatus == 4 && 4 != bact->vp_active )
     {
-        bact->vp_active = arg->field_0;
+        bact->vp_active = arg->newStatus;
         bact->current_vp.base = bact->vp_genesis.base;
         bact->current_vp.trigo = bact->vp_genesis.trigo;
 
@@ -8354,7 +8354,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         result = 1;
     }
 
-    if ( arg->field_8 == 256 && bact->vp_active == 7 )
+    if ( arg->unsetFlags == 256 && bact->vp_active == 7 )
     {
         if ( bact->oflags & BACT_OFLAG_USERINPT )
         {
@@ -8374,7 +8374,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         result = 1;
     }
 
-    if ( arg->field_8 == 2048 && bact->vp_active == 3 )
+    if ( arg->unsetFlags == 2048 && bact->vp_active == 3 )
     {
         bact->vp_active = 1;
         bact->current_vp.base = bact->vp_normal.base;
@@ -8383,7 +8383,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         result = 1;
     }
 
-    if ( arg->field_4 == 256 && bact->vp_active != 7 )
+    if ( arg->setFlags == 256 && bact->vp_active != 7 )
     {
         bact->vp_active = 7;
         bact->current_vp.base = bact->vp_fire.base;
@@ -8404,7 +8404,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         result = 1;
     }
 
-    if ( arg->field_4 == 2048 )
+    if ( arg->setFlags == 2048 )
     {
         bact->status = BACT_STATUS_DEAD;
 
@@ -8534,9 +8534,9 @@ void NC_STACK_ypabact::DeadTimeUpdate(update_msg *arg)
         if ( !(bact->status_flg & BACT_STFLAG_DEATH2) )
         {
             setState_msg arg78;
-            arg78.field_0 = 0;
-            arg78.field_8 = 0;
-            arg78.field_4 = 2048;
+            arg78.newStatus = BACT_STATUS_NOPE;
+            arg78.unsetFlags = 0;
+            arg78.setFlags = BACT_STFLAG_DEATH2;
 
             SetState(&arg78);
         }
@@ -9380,7 +9380,7 @@ size_t NC_STACK_ypabact::compatcall(int method_id, void *data)
     case 86:
         return (size_t)CrashOrLand( (bact_arg86 *)data );
     case 87:
-        return (size_t)CollisionWithBact( (int)(size_t)data );
+        return (size_t)CollisionWithBact( (int)data );
     case 88:
         Recoil( (bact_arg88 *)data );
         return 1;

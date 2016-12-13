@@ -329,9 +329,9 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
                         if ( v19->energy <= 0 || v19->bact_type == BACT_TYPES_MISSLE )
                         {
                             setState_msg arg78;
-                            arg78.field_4 = 0;
-                            arg78.field_8 = 0;
-                            arg78.field_0 = 2;
+                            arg78.setFlags = 0;
+                            arg78.unsetFlags = 0;
+                            arg78.newStatus = BACT_STATUS_DEAD;
 
                             if ( v19->bact_type == BACT_TYPES_MISSLE )
                                 v19->self->SetState(&arg78);
@@ -409,9 +409,9 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
     bact->bact_type = BACT_TYPES_FLYER;
 
     setState_msg arg78;
-    arg78.field_0 = 2;
-    arg78.field_4 = 0;
-    arg78.field_8 = 0;
+    arg78.newStatus = BACT_STATUS_DEAD;
+    arg78.setFlags = 0;
+    arg78.unsetFlags = 0;
 
     caro->SetState(&arg78);
 
@@ -447,9 +447,9 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
             if ( ! (bact->status_flg & BACT_STFLAG_FIRE) )
             {
                 setState_msg arg78;
-                arg78.field_0 = 1;
-                arg78.field_8 = 0;
-                arg78.field_4 = 0;
+                arg78.newStatus = BACT_STATUS_NORMAL;
+                arg78.unsetFlags = 0;
+                arg78.setFlags = 0;
 
                 SetState(&arg78);
             }
@@ -461,9 +461,9 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
                 if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
                     setState_msg arg78;
-                    arg78.field_0 = 3;
-                    arg78.field_8 = 0;
-                    arg78.field_4 = 0;
+                    arg78.newStatus = BACT_STATUS_IDLE;
+                    arg78.unsetFlags = 0;
+                    arg78.setFlags = 0;
 
                     SetState(&arg78);
                 }
@@ -480,9 +480,9 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
                 else
                 {
                     setState_msg arg78;
-                    arg78.field_0 = 3;
-                    arg78.field_8 = 0;
-                    arg78.field_4 = 0;
+                    arg78.newStatus = BACT_STATUS_IDLE;
+                    arg78.unsetFlags = 0;
+                    arg78.setFlags = 0;
 
                     SetState(&arg78);
                 }
@@ -601,9 +601,9 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
                 if ( !(arg->inpt->but_flags & 4) )
                 {
                     setState_msg arg78;
-                    arg78.field_4 = 0;
-                    arg78.field_0 = 0;
-                    arg78.field_8 = 256;
+                    arg78.setFlags = 0;
+                    arg78.newStatus = BACT_STATUS_NOPE;
+                    arg78.unsetFlags = BACT_STFLAG_FIRE;
 
                     SetState(&arg78);
                 }
@@ -614,9 +614,9 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
                 if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
                     setState_msg arg78;
-                    arg78.field_4 = 256;
-                    arg78.field_8 = 0;
-                    arg78.field_0 = 0;
+                    arg78.setFlags = BACT_STFLAG_FIRE;
+                    arg78.unsetFlags = 0;
+                    arg78.newStatus = BACT_STATUS_NOPE;
 
                     SetState(&arg78);
                 }

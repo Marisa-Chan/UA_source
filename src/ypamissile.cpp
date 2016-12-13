@@ -680,9 +680,9 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
             miss->selfie->status = BACT_STATUS_DEAD;
 
             setState_msg arg78;
-            arg78.field_4 = 2048;
-            arg78.field_8 = 0;
-            arg78.field_0 = 0;
+            arg78.setFlags = BACT_STFLAG_DEATH2;
+            arg78.unsetFlags = 0;
+            arg78.newStatus = BACT_STATUS_NOPE;
 
             SetState(&arg78);
 
@@ -746,9 +746,9 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
                 setState_msg arg78;
                 ypamissile_func129(NULL);
 
-                arg78.field_0 = 2;
-                arg78.field_8 = 0;
-                arg78.field_4 = 0;
+                arg78.newStatus = BACT_STATUS_DEAD;
+                arg78.unsetFlags = 0;
+                arg78.setFlags = 0;
 
                 SetState(&arg78);
 
@@ -793,9 +793,9 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
                         miss->selfie->status = BACT_STATUS_DEAD;
 
                         setState_msg arg78;
-                        arg78.field_4 = 2048;
-                        arg78.field_8 = 0;
-                        arg78.field_0 = 0;
+                        arg78.setFlags = BACT_STFLAG_DEATH2;
+                        arg78.unsetFlags = 0;
+                        arg78.newStatus = BACT_STATUS_NOPE;
 
                         SetState(&arg78);
 
@@ -859,9 +859,9 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
                         ypamissile_func129(NULL);
 
                         setState_msg arg78;
-                        arg78.field_8 = 0;
-                        arg78.field_4 = 0;
-                        arg78.field_0 = 2;
+                        arg78.unsetFlags = 0;
+                        arg78.setFlags = 0;
+                        arg78.newStatus = BACT_STATUS_DEAD;
 
                         SetState(&arg78);
 
@@ -967,16 +967,16 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
     sub_424000(&bact->soundcarrier, 0);
     sub_424000(&bact->soundcarrier, 1);
 
-    if ( arg->field_0 )
-        bact->status = arg->field_0;
+    if ( arg->newStatus )
+        bact->status = arg->newStatus;
 
-    if ( arg->field_4 )
-        bact->status_flg |= arg->field_4;
+    if ( arg->setFlags )
+        bact->status_flg |= arg->setFlags;
 
-    if ( arg->field_8 )
-        bact->status_flg &= ~arg->field_8;
+    if ( arg->unsetFlags )
+        bact->status_flg &= ~arg->unsetFlags;
 
-    if ( arg->field_0 == 2 )
+    if ( arg->newStatus == 2 )
     {
         setBACT_visProto(bact->vp_dead.base);
         setBACT_vpTransform(bact->vp_dead.trigo);
@@ -989,7 +989,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
         bact->fly_dir_length = 0;
     }
 
-    if ( arg->field_0 == 1 )
+    if ( arg->newStatus == 1 )
     {
         setBACT_visProto(bact->vp_normal.base);
         setBACT_vpTransform(bact->vp_normal.trigo);
@@ -997,7 +997,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
         startSound(&bact->soundcarrier, 0);
     }
 
-    if ( arg->field_8 == 2048 )
+    if ( arg->unsetFlags == 2048 )
     {
         setBACT_visProto(bact->vp_normal.base);
         setBACT_vpTransform(bact->vp_normal.trigo);
@@ -1005,7 +1005,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
         startSound(&bact->soundcarrier, 0);
     }
 
-    if ( arg->field_4 == 2048 )
+    if ( arg->setFlags == 2048 )
     {
         bact->status = BACT_STATUS_DEAD;
 

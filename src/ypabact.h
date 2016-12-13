@@ -324,9 +324,9 @@ struct bact_arg80
 
 struct setState_msg
 {
-    int field_0;
-    int field_4;
-    int field_8;
+    int newStatus;
+    int setFlags;
+    int unsetFlags;
 };
 
 struct update_msg

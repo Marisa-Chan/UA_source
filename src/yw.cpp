@@ -1615,9 +1615,9 @@ void sub_44FD6C(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int 
                 a4->owner = 0;
 
                 setState_msg arg78;
-                arg78.field_0 = 2;
-                arg78.field_4 = 1024;
-                arg78.field_8 = 0;
+                arg78.newStatus = BACT_STATUS_DEAD;
+                arg78.setFlags = BACT_STFLAG_DEATH1;
+                arg78.unsetFlags = 0;
                 boom->SetState(&arg78);
 
                 yw->self_full->ypaworld_func134(boom);
@@ -2366,9 +2366,9 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         bacto->SetPosition(&arg80);
 
         setState_msg arg119;
-        arg119.field_0 = 1;
-        arg119.field_4 = 0;
-        arg119.field_8 = 0;
+        arg119.newStatus = BACT_STATUS_NORMAL;
+        arg119.setFlags = 0;
+        arg119.unsetFlags = 0;
         bacto->SetStateInternal(&arg119);
     }
 
@@ -2535,9 +2535,9 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
 
     setState_msg arg119;
 
-    arg119.field_4 = 0;
-    arg119.field_8 = 0;
-    arg119.field_0 = 1;
+    arg119.setFlags = 0;
+    arg119.unsetFlags = 0;
+    arg119.newStatus = BACT_STATUS_NORMAL;
 
     wobj->SetStateInternal(&arg119);
 

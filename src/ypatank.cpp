@@ -244,9 +244,9 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
             if ( bact->status_flg & BACT_STFLAG_FIRE )
             {
                 setState_msg arg78;
-                arg78.field_0 = 0;
-                arg78.field_4 = 0;
-                arg78.field_8 = 256;
+                arg78.newStatus = BACT_STATUS_NOPE;
+                arg78.setFlags = 0;
+                arg78.unsetFlags = BACT_STFLAG_FIRE;
 
                 SetState(&arg78);
             }
@@ -995,9 +995,9 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
             if ( bact->status_flg & BACT_STFLAG_FIRE )
             {
                 setState_msg arg78;
-                arg78.field_0 = 0;
-                arg78.field_4 = 0;
-                arg78.field_8 = 256;
+                arg78.newStatus = BACT_STATUS_NOPE;
+                arg78.setFlags = 0;
+                arg78.unsetFlags = BACT_STFLAG_FIRE;
 
                 SetState(&arg78);
             }
@@ -1046,9 +1046,9 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
                 if ( bact->primTtype || bact->secndTtype )
                 {
                     setState_msg arg78;
-                    arg78.field_8 = 512;
-                    arg78.field_4 = 0;
-                    arg78.field_0 = 1;
+                    arg78.unsetFlags = BACT_STFLAG_LAND;
+                    arg78.setFlags = 0;
+                    arg78.newStatus = BACT_STATUS_NORMAL;
 
                     SetState(&arg78);
                     break;
@@ -1057,9 +1057,9 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
         }
 
         setState_msg arg78;
-        arg78.field_8 = 0;
-        arg78.field_4 = 0;
-        arg78.field_0 = 3;
+        arg78.unsetFlags = 0;
+        arg78.setFlags = 0;
+        arg78.newStatus = BACT_STATUS_IDLE;
 
         SetState(&arg78);
 
@@ -1155,9 +1155,9 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
             if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
             {
                 setState_msg arg78;
-                arg78.field_0 = 1;
-                arg78.field_8 = 0;
-                arg78.field_4 = 0;
+                arg78.newStatus = BACT_STATUS_NORMAL;
+                arg78.unsetFlags = 0;
+                arg78.setFlags = 0;
 
                 SetState(&arg78);
             }
@@ -1170,9 +1170,9 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
                 if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
                     setState_msg arg78;
-                    arg78.field_0 = 3;
-                    arg78.field_8 = 0;
-                    arg78.field_4 = 0;
+                    arg78.newStatus = BACT_STATUS_IDLE;
+                    arg78.unsetFlags = 0;
+                    arg78.setFlags = 0;
 
                     SetState(&arg78);
                 }
@@ -1184,9 +1184,9 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
                 if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
                     setState_msg arg78;
-                    arg78.field_0 = 3;
-                    arg78.field_8 = 0;
-                    arg78.field_4 = 0;
+                    arg78.newStatus = BACT_STATUS_IDLE;
+                    arg78.unsetFlags = 0;
+                    arg78.setFlags = 0;
 
                     SetState(&arg78);
                 }
@@ -1339,9 +1339,9 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
                 if ( !(arg->inpt->but_flags & 4) )
                 {
                     setState_msg arg78;
-                    arg78.field_4 = 0;
-                    arg78.field_0 = 0;
-                    arg78.field_8 = 256;
+                    arg78.setFlags = 0;
+                    arg78.newStatus = BACT_STATUS_NOPE;
+                    arg78.unsetFlags = BACT_STFLAG_FIRE;
 
                     SetState(&arg78);
                 }
@@ -1352,9 +1352,9 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
                 if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
                     setState_msg arg78;
-                    arg78.field_4 = 256;
-                    arg78.field_8 = 0;
-                    arg78.field_0 = 0;
+                    arg78.setFlags = BACT_STFLAG_FIRE;
+                    arg78.unsetFlags = 0;
+                    arg78.newStatus = BACT_STATUS_NOPE;
 
                     SetState(&arg78);
                 }
@@ -3049,7 +3049,7 @@ size_t NC_STACK_ypatank::compatcall(int method_id, void *data)
         ApplyImpulse( (bact_arg83 *)data );
         return 1;
     case 87:
-        return (size_t)CollisionWithBact( (int)(size_t)data );
+        return (size_t)CollisionWithBact( (int)data );
     case 88:
         Recoil( (bact_arg88 *)data );
         return 1;

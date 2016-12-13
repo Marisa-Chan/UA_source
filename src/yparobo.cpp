@@ -773,9 +773,9 @@ void NC_STACK_yparobo::initForce(bact_node *unit)
                 robo->dock_energ -= untbct->energy;
 
                 setState_msg arg78;
-                arg78.field_4 = 0;
-                arg78.field_8 = 0;
-                arg78.field_0 = 4;
+                arg78.setFlags = 0;
+                arg78.unsetFlags = 0;
+                arg78.newStatus = BACT_STATUS_CREATE;
                 unt->SetState(&arg78);
 
                 untbct->scale_time = untbct->energy_max * 0.2;
@@ -1987,9 +1987,9 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
 
                 newbact->SetTarget(&arg67);
 
-                arg78.field_0 = 4;
-                arg78.field_4 = 0;
-                arg78.field_8 = 0;
+                arg78.newStatus = BACT_STATUS_CREATE;
+                arg78.setFlags = 0;
+                arg78.unsetFlags = 0;
 
                 newbact->SetState(&arg78);
 
@@ -2053,9 +2053,9 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
 
             if ( newbact2 )
             {
-                arg78.field_0 = 4;
-                arg78.field_4 = 0;
-                arg78.field_8 = 0;
+                arg78.newStatus = BACT_STATUS_CREATE;
+                arg78.setFlags = 0;
+                arg78.unsetFlags = 0;
                 newbact2->SetState(&arg78);
 
                 __NC_STACK_ypabact *bct;
@@ -3306,9 +3306,9 @@ bact_node *NC_STACK_yparobo::allocForce(robo_loct1 *arg)
         }
 
         setState_msg arg78;
-        arg78.field_0 = 4;
-        arg78.field_4 = 0;
-        arg78.field_8 = 0;
+        arg78.newStatus = BACT_STATUS_CREATE;
+        arg78.setFlags = 0;
+        arg78.unsetFlags = 0;
 
         new_unit->SetState(&arg78);
 
@@ -5853,9 +5853,9 @@ void NC_STACK_yparobo::User_layer(update_msg *arg)
     else if ( bact->status == BACT_STATUS_IDLE )
     {
         setState_msg arg78;
-        arg78.field_0 = 1;
-        arg78.field_4 = 0;
-        arg78.field_8 = 0;
+        arg78.newStatus = BACT_STATUS_NORMAL;
+        arg78.setFlags = 0;
+        arg78.unsetFlags = 0;
 
         SetState(&arg78);
 
@@ -6030,9 +6030,9 @@ void NC_STACK_yparobo::Die()
                 subnode->bact->status_flg &= ~BACT_STFLAG_LAND;
 
                 setState_msg arg119;
-                arg119.field_8 = 0;
-                arg119.field_4 = 0;
-                arg119.field_0 = 4;
+                arg119.unsetFlags = 0;
+                arg119.setFlags = 0;
+                arg119.newStatus = BACT_STATUS_CREATE;
                 subnode->bacto->SetStateInternal(&arg119);
 
                 subnode->bact->status = BACT_STATUS_DEAD;
@@ -6061,9 +6061,9 @@ void NC_STACK_yparobo::Die()
             node->bact->status_flg &= ~BACT_STFLAG_LAND;
 
             setState_msg arg119;
-            arg119.field_8 = 0;
-            arg119.field_4 = 0;
-            arg119.field_0 = 4;
+            arg119.unsetFlags = 0;
+            arg119.setFlags = 0;
+            arg119.newStatus = BACT_STATUS_CREATE;
             node->bacto->SetStateInternal(&arg119);
 
             node->bact->status = BACT_STATUS_DEAD;
@@ -6495,9 +6495,9 @@ void NC_STACK_yparobo::DeadTimeUpdate(update_msg *arg)
     if ( !(bact->status_flg & BACT_STFLAG_DEATH2) )
     {
         setState_msg arg78;
-        arg78.field_0 = 0;
-        arg78.field_8 = 0;
-        arg78.field_4 = 2048;
+        arg78.newStatus = BACT_STATUS_NOPE;
+        arg78.unsetFlags = 0;
+        arg78.setFlags = BACT_STFLAG_DEATH2;
         SetState(&arg78);
     }
 
@@ -6847,9 +6847,9 @@ int NC_STACK_yparobo::yparobo_func133(robo_arg133 *arg)
     bact_intern->aggr = 60;
 
     setState_msg arg78;
-    arg78.field_0 = 1;
-    arg78.field_4 = 0;
-    arg78.field_8 = 0;
+    arg78.newStatus = BACT_STATUS_NORMAL;
+    arg78.setFlags = 0;
+    arg78.unsetFlags = 0;
 
     squad_commander->SetState(&arg78);
 

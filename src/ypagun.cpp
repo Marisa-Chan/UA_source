@@ -313,9 +313,9 @@ void NC_STACK_ypagun::AI_layer3(update_msg *arg)
                 gun->field_35 = 0;
 
                 setState_msg arg78;
-                arg78.field_8 = 256;
-                arg78.field_0 = 0;
-                arg78.field_4 = 0;
+                arg78.unsetFlags = BACT_STFLAG_FIRE;
+                arg78.newStatus = BACT_STATUS_NOPE;
+                arg78.setFlags = 0;
 
                 SetState(&arg78);
             }
@@ -328,9 +328,9 @@ void NC_STACK_ypagun::AI_layer3(update_msg *arg)
                 if ( bact->status_flg & BACT_STFLAG_FIRE )
                 {
                     setState_msg arg78;
-                    arg78.field_8 = 256;
-                    arg78.field_0 = 0;
-                    arg78.field_4 = 0;
+                    arg78.unsetFlags = BACT_STFLAG_FIRE;
+                    arg78.newStatus = BACT_STATUS_NOPE;
+                    arg78.setFlags = 0;
 
                     SetState(&arg78);
                 }
@@ -531,9 +531,9 @@ void NC_STACK_ypagun::AI_layer3(update_msg *arg)
             if ( gun->field_30 == 2 )
             {
                 setState_msg arg78;
-                arg78.field_8 = 256;
-                arg78.field_0 = 0;
-                arg78.field_4 = 0;
+                arg78.unsetFlags = BACT_STFLAG_FIRE;
+                arg78.newStatus = BACT_STATUS_NOPE;
+                arg78.setFlags = 0;
 
                 SetState(&arg78);
             }
@@ -551,9 +551,9 @@ void NC_STACK_ypagun::AI_layer3(update_msg *arg)
         if ( bact->scale_time <= 0 )
         {
             setState_msg arg78;
-            arg78.field_0 = 1;
-            arg78.field_4 = 0;
-            arg78.field_8 = 0;
+            arg78.newStatus = BACT_STATUS_NORMAL;
+            arg78.setFlags = 0;
+            arg78.unsetFlags = 0;
 
             SetState(&arg78);
         }
@@ -595,9 +595,9 @@ void NC_STACK_ypagun::User_layer(update_msg *arg)
                 if ( !(arg->inpt->but_flags & 1) && !(arg->inpt->but_flags & 2) )
                 {
                     setState_msg arg78;
-                    arg78.field_4 = 0;
-                    arg78.field_0 = 0;
-                    arg78.field_8 = 256;
+                    arg78.setFlags = 0;
+                    arg78.newStatus = BACT_STATUS_NOPE;
+                    arg78.unsetFlags = BACT_STFLAG_FIRE;
 
                     SetState(&arg78);
                 }
@@ -646,9 +646,9 @@ void NC_STACK_ypagun::User_layer(update_msg *arg)
                     if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                     {
                         setState_msg arg78;
-                        arg78.field_8 = 0;
-                        arg78.field_0 = 0;
-                        arg78.field_4 = 256;
+                        arg78.unsetFlags = 0;
+                        arg78.newStatus = BACT_STATUS_NOPE;
+                        arg78.setFlags = BACT_STFLAG_FIRE;
 
                         SetState(&arg78);
                     }
@@ -810,9 +810,9 @@ void NC_STACK_ypagun::FightWithBact(bact_arg75 *arg)
                     gun->field_35 = gun->field_31;
 
                     setState_msg arg78;
-                    arg78.field_8 = 0;
-                    arg78.field_0 = 0;
-                    arg78.field_4 = 256;
+                    arg78.unsetFlags = 0;
+                    arg78.newStatus = BACT_STATUS_NOPE;
+                    arg78.setFlags = BACT_STFLAG_FIRE;
 
                     SetState(&arg78);
                 }
@@ -822,9 +822,9 @@ void NC_STACK_ypagun::FightWithBact(bact_arg75 *arg)
                 if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
                     setState_msg arg78;
-                    arg78.field_8 = 0;
-                    arg78.field_0 = 0;
-                    arg78.field_4 = 256;
+                    arg78.unsetFlags = 0;
+                    arg78.newStatus = BACT_STATUS_NOPE;
+                    arg78.setFlags = BACT_STFLAG_FIRE;
 
                     SetState(&arg78);
                 }
@@ -842,9 +842,9 @@ void NC_STACK_ypagun::FightWithBact(bact_arg75 *arg)
         else if ( gun->field_30 == 2 )
         {
             setState_msg arg78;
-            arg78.field_4 = 0;
-            arg78.field_0 = 0;
-            arg78.field_8 = 256;
+            arg78.setFlags = 0;
+            arg78.newStatus = BACT_STATUS_NOPE;
+            arg78.unsetFlags = BACT_STFLAG_FIRE;
 
             SetState(&arg78);
         }
