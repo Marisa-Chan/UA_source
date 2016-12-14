@@ -7896,7 +7896,7 @@ void StartDestFX__sub0(__NC_STACK_ypabact *main, destFX *fx)
     }
 }
 
-void NC_STACK_ypabact::StartDestFX(uint8_t *arg)
+void NC_STACK_ypabact::StartDestFX(uint8_t arg)
 {
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
@@ -7913,7 +7913,7 @@ void NC_STACK_ypabact::StartDestFX(uint8_t *arg)
             {
                 destFX *v8 = &bact->destroyFX[i];
 
-                if ( (v8->type_flag & 2 && *arg == 2) || (v8->type_flag & 1 && *arg == 1) || (v8->type_flag & 4 && *arg == 4) || (v8->type_flag & 8 && *arg == 8) )
+                if ( (v8->type_flag & 2 && arg == 2) || (v8->type_flag & 1 && arg == 1) || (v8->type_flag & 4 && arg == 4) || (v8->type_flag & 8 && arg == 8) )
                     StartDestFX__sub0(bact, v8);
             }
         }
@@ -8147,7 +8147,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
     if ( arg->unsetFlags )
         bact->status_flg &= ~arg->unsetFlags;
 
-    if ( arg->newStatus == 2 && (bact->vp_active != 2 && bact->vp_active != 3) )
+    if ( arg->newStatus == BACT_STATUS_DEAD && (bact->vp_active != 2 && bact->vp_active != 3) )
     {
         bact->energy = -10000;
 
@@ -8167,7 +8167,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
             }
 
             sub_424000(&bact->soundcarrier, 1);
-            bact->soundFlags &= 0xFFFFFFFD;
+            bact->soundFlags &= ~2;
         }
 
         if ( bact->oflags & BACT_OFLAG_USERINPT )
@@ -8175,19 +8175,19 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
 
         if ( bact->soundFlags & 1 )
         {
-            bact->soundFlags &= 0xFFFFFFFE;
+            bact->soundFlags &= ~1;
             sub_424000(&bact->soundcarrier, 0);
         }
 
         if ( bact->soundFlags & 8 )
         {
-            bact->soundFlags &= 0xFFFFFFF7;
+            bact->soundFlags &= ~8;
             sub_424000(&bact->soundcarrier, 3);
         }
 
         if ( bact->soundFlags & 4 )
         {
-            bact->soundFlags &= 0xFFFFFFFB;
+            bact->soundFlags &= ~4;
             sub_424000(&bact->soundcarrier, 2);
         }
 
@@ -8195,13 +8195,12 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
 
         bact->soundFlags |= 0x80;
 
-        uint8_t v47 = 1;
-        StartDestFX(&v47);
+        StartDestFX(1);
 
         result = 1;
     }
 
-    if ( arg->newStatus == 1 && 1 != bact->vp_active )
+    if ( arg->newStatus == BACT_STATUS_NORMAL && 1 != bact->vp_active )
     {
         bact->current_vp.base = bact->vp_normal.base;
         bact->current_vp.trigo = bact->vp_normal.trigo;
@@ -8210,19 +8209,19 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
 
         if ( bact->soundFlags & 8 )
         {
-            bact->soundFlags &= 0xFFFFFFF7;
+            bact->soundFlags &= ~8;
             sub_424000(&bact->soundcarrier, 3);
         }
 
         if ( bact->soundFlags & 4 )
         {
-            bact->soundFlags &= 0xFFFFFFFB;
+            bact->soundFlags &= ~4;
             sub_424000(&bact->soundcarrier, 2);
         }
 
         if ( bact->soundFlags & 0x80 )
         {
-            bact->soundFlags &= 0xFFFFFF7F;
+            bact->soundFlags &= ~0x80;
             sub_424000(&bact->soundcarrier, 7);
         }
 
@@ -8235,7 +8234,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         result = 1;
     }
 
-    if ( arg->newStatus == 5 && 5 != bact->vp_active )
+    if ( arg->newStatus == BACT_STATUS_BEAM && 5 != bact->vp_active )
     {
         bact->vp_active = 5;
         bact->current_vp.base = bact->vp_genesis.base;
@@ -8243,19 +8242,19 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
 
         if ( bact->soundFlags & 8 )
         {
-            bact->soundFlags &= 0xFFFFFFF7;
+            bact->soundFlags &= ~8;
             sub_424000(&bact->soundcarrier, 3);
         }
 
         if ( bact->soundFlags & 4 )
         {
-            bact->soundFlags &= 0xFFFFFFFB;
+            bact->soundFlags &= ~4;
             sub_424000(&bact->soundcarrier, 2);
         }
 
         if ( bact->soundFlags & 0x80 )
         {
-            bact->soundFlags &= 0xFFFFFF7F;
+            bact->soundFlags &= ~0x80;
             sub_424000(&bact->soundcarrier, 7);
         }
 
@@ -8265,13 +8264,12 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
             startSound(&bact->soundcarrier, 9);
         }
 
-        uint8_t v47 = 8;
-        StartDestFX(&v47);
+        StartDestFX(8);
 
         result = 1;
     }
 
-    if ( arg->newStatus == 3 && bact->vp_active != 6 )
+    if ( arg->newStatus == BACT_STATUS_IDLE && bact->vp_active != 6 )
     {
         bact->current_vp.base = bact->vp_wait.base;
         bact->current_vp.trigo = bact->vp_wait.trigo;
@@ -8279,19 +8277,19 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
 
         if ( bact->soundFlags & 1 )
         {
-            bact->soundFlags &= 0xFFFFFFFE;
+            bact->soundFlags &= ~1;
             sub_424000(&bact->soundcarrier, 0);
         }
 
         if ( bact->soundFlags & 8 )
         {
-            bact->soundFlags &= 0xFFFFFFF7;
+            bact->soundFlags &= ~8;
             sub_424000(&bact->soundcarrier, 3);
         }
 
         if ( bact->soundFlags & 0x80 )
         {
-            bact->soundFlags &= 0xFFFFFF7F;
+            bact->soundFlags &= ~0x80;
             sub_424000(&bact->soundcarrier, 7);
         }
 
@@ -8304,7 +8302,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         result = 1;
     }
 
-    if ( arg->newStatus == 4 && 4 != bact->vp_active )
+    if ( arg->newStatus == BACT_STATUS_CREATE && 4 != bact->vp_active )
     {
         bact->vp_active = arg->newStatus;
         bact->current_vp.base = bact->vp_genesis.base;
@@ -8321,24 +8319,24 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
             }
 
             sub_424000(&bact->soundcarrier, 1);
-            bact->soundFlags &= 0xFFFFFFFD;
+            bact->soundFlags &= ~2;
         }
 
         if ( bact->soundFlags & 1 )
         {
-            bact->soundFlags &= 0xFFFFFFFE;
+            bact->soundFlags &= ~1;
             sub_424000(&bact->soundcarrier, 0);
         }
 
         if ( bact->soundFlags & 4 )
         {
-            bact->soundFlags &= 0xFFFFFFFB;
+            bact->soundFlags &= ~4;
             sub_424000(&bact->soundcarrier, 2);
         }
 
         if ( bact->soundFlags & 0x80 )
         {
-            bact->soundFlags &= 0xFFFFFF7F;
+            bact->soundFlags &= ~0x80;
             sub_424000(&bact->soundcarrier, 7);
         }
 
@@ -8348,13 +8346,12 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
             startSound(&bact->soundcarrier, 3);
         }
 
-        uint8_t v47 = 4;
-        StartDestFX(&v47);
+        StartDestFX(4);
 
         result = 1;
     }
 
-    if ( arg->unsetFlags == 256 && bact->vp_active == 7 )
+    if ( arg->unsetFlags == BACT_STFLAG_FIRE && bact->vp_active == 7 )
     {
         if ( bact->oflags & BACT_OFLAG_USERINPT )
         {
@@ -8369,12 +8366,12 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
 
         sub_424000(&bact->soundcarrier, 1);
 
-        bact->soundFlags &= 0xFFFFFFFD;
+        bact->soundFlags &= ~2;
 
         result = 1;
     }
 
-    if ( arg->unsetFlags == 2048 && bact->vp_active == 3 )
+    if ( arg->unsetFlags == BACT_STFLAG_DEATH2 && bact->vp_active == 3 )
     {
         bact->vp_active = 1;
         bact->current_vp.base = bact->vp_normal.base;
@@ -8383,7 +8380,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         result = 1;
     }
 
-    if ( arg->setFlags == 256 && bact->vp_active != 7 )
+    if ( arg->setFlags == BACT_STFLAG_FIRE && bact->vp_active != 7 )
     {
         bact->vp_active = 7;
         bact->current_vp.base = bact->vp_fire.base;
@@ -8404,7 +8401,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         result = 1;
     }
 
-    if ( arg->setFlags == 2048 )
+    if ( arg->setFlags == BACT_STFLAG_DEATH2 )
     {
         bact->status = BACT_STATUS_DEAD;
 
@@ -8424,7 +8421,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
                 }
 
                 sub_424000(&bact->soundcarrier, 1);
-                bact->soundFlags &= 0xFFFFFFFD;
+                bact->soundFlags &= ~2;
             }
 
             if ( bact->oflags & BACT_OFLAG_USERINPT )
@@ -8432,32 +8429,31 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
 
             if ( bact->soundFlags & 1 )
             {
-                bact->soundFlags &= 0xFFFFFFFE;
+                bact->soundFlags &= ~2;
                 sub_424000(&bact->soundcarrier, 0);
             }
 
             if ( bact->soundFlags & 8 )
             {
-                bact->soundFlags &= 0xFFFFFFF7;
+                bact->soundFlags &= ~8;
                 sub_424000(&bact->soundcarrier, 3);
             }
 
             if ( bact->soundFlags & 4 )
             {
-                bact->soundFlags &= 0xFFFFFFFB;
+                bact->soundFlags &= ~4;
                 sub_424000(&bact->soundcarrier, 2);
             }
 
             if ( bact->soundFlags & 0x80 )
             {
-                bact->soundFlags &= 0xFFFFFF7F;
+                bact->soundFlags &= ~0x80;
                 sub_424000(&bact->soundcarrier, 7);
             }
 
             startSound(&bact->soundcarrier, 4);
 
-            uint8_t v47 = 2;
-            StartDestFX(&v47);
+            StartDestFX(2);
 
             bact->fly_dir_length = 0;
 
@@ -9450,7 +9446,7 @@ size_t NC_STACK_ypabact::compatcall(int method_id, void *data)
         BeamingTimeUpdate( (update_msg *)data );
         return 1;
     case 113:
-        StartDestFX( (uint8_t *)data );
+        StartDestFX( (uint8_t)(size_t)data );
         return 1;
     case 114:
         CorrectPositionOnLand( (void *)data );

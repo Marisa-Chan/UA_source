@@ -976,20 +976,19 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
     if ( arg->unsetFlags )
         bact->status_flg &= ~arg->unsetFlags;
 
-    if ( arg->newStatus == 2 )
+    if ( arg->newStatus == BACT_STATUS_DEAD )
     {
         setBACT_visProto(bact->vp_dead.base);
         setBACT_vpTransform(bact->vp_dead.trigo);
 
         startSound(&bact->soundcarrier, 2);
 
-        uint8_t v8 = 1;
-        StartDestFX(&v8);
+        StartDestFX(1);
 
         bact->fly_dir_length = 0;
     }
 
-    if ( arg->newStatus == 1 )
+    if ( arg->newStatus == BACT_STATUS_NORMAL )
     {
         setBACT_visProto(bact->vp_normal.base);
         setBACT_vpTransform(bact->vp_normal.trigo);
@@ -997,7 +996,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
         startSound(&bact->soundcarrier, 0);
     }
 
-    if ( arg->unsetFlags == 2048 )
+    if ( arg->unsetFlags == BACT_STFLAG_DEATH2 )
     {
         setBACT_visProto(bact->vp_normal.base);
         setBACT_vpTransform(bact->vp_normal.trigo);
@@ -1005,7 +1004,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
         startSound(&bact->soundcarrier, 0);
     }
 
-    if ( arg->setFlags == 2048 )
+    if ( arg->setFlags == BACT_STFLAG_DEATH2 )
     {
         bact->status = BACT_STATUS_DEAD;
 
@@ -1014,8 +1013,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
 
         startSound(&bact->soundcarrier, 2);
 
-        uint8_t v9 = 2;
-        StartDestFX(&v9);
+        StartDestFX(2);
 
         bact->fly_dir_length = 0;
     }
