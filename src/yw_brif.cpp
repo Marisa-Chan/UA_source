@@ -1668,7 +1668,7 @@ char * yw_DebriefKillsScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
         if ( (1 << i) & yw->field_2d90->ownerMap__has_vehicles )
         {
             v28[a2].owner = i;
-            v28[a2].status = brf->field_42BC[i].p1;
+            v28[a2].status = brf->field_42BC[i].destroyed;
             a2++;
         }
     }
@@ -1734,7 +1734,7 @@ char * yw_DebriefKillsScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
         char a1[32];
 
         if ( yw->field_727c || v28[i].owner == yw->playerOwner )
-            sprintf(a1, "%d", brf->field_42BC[ v28[i].owner ].p2);
+            sprintf(a1, "%d", brf->field_42BC[ v28[i].owner ].destroyedByUser);
         else
             sprintf(a1, "-");
 
@@ -1747,7 +1747,7 @@ char * yw_DebriefKillsScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
         elms[1].width = a4 * 0.3;
 
         char v30[32];
-        sprintf(v30, "%d", brf->field_42BC[ v28[i].owner ].p1);
+        sprintf(v30, "%d", brf->field_42BC[ v28[i].owner ].destroyed);
 
         elms[2].txt = v30;
         elms[2].width = a4 * 0.3;
@@ -1802,7 +1802,7 @@ char *yw_DebriefMPlayScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, i
             if ( (1 << i) & yw->field_2d90->ownerMap__has_vehicles )
             {
                 v32[a2].owner = i;
-                v32[a2].status = brf->field_42BC[i].p5;
+                v32[a2].status = brf->field_42BC[i].score;
                 a2++;
             }
         }
@@ -1865,7 +1865,7 @@ char *yw_DebriefMPlayScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, i
             a4a[0].width = a4 * 0.5;
 
             char a1[32];
-            sprintf(a1, "%d", brf->field_42BC[ v32[i].owner ].p5);
+            sprintf(a1, "%d", brf->field_42BC[ v32[i].owner ].score);
 
             a4a[1].txt = a1;
             a4a[1].width = a4 * 0.5;
@@ -1895,7 +1895,7 @@ char *yw_DebriefMPlayScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, i
         v35[0].flags = 36;
 
         char v34[32];
-        sprintf(v34, "%d", brf->field_42BC[1].p5);
+        sprintf(v34, "%d", brf->field_42BC[1].score);
 
         v35[1].txt = v34;
         v35[1].fontID = 15;
@@ -1917,7 +1917,7 @@ char *yw_DebriefMPlayScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, i
         v35[0].postfixChar = 0;
         v35[0].fontID = 15;
 
-        sprintf(v34, "%d", brf->field_42BC[1].p5 + brf->copy_of_playerstatus[1].p5);
+        sprintf(v34, "%d", brf->field_42BC[1].score + brf->copy_of_playerstatus[1].score);
 
         v35[1].txt = v34;
         v35[1].fontID = 15;
@@ -2002,7 +2002,7 @@ char * yw_DebriefRenderTime(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
         a4a[0].postfixChar = 0;
         a4a[0].fontID = 15;
 
-        v19 = (brf->field_41D8 + brf->copy_of_playerstatus[1].p3) / 1024;
+        v19 = (brf->field_41D8 + brf->copy_of_playerstatus[1].elapsedTime) / 1024;
         sprintf(v28, "%02d:%02d:%02d", v19 / 60 / 60, v19 / 60 % 60, v19 % 60);
 
         a4a[1].txt = v28;
@@ -2362,7 +2362,7 @@ void yw_DebriefRunDebrief(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *br
             if ( yw->field_727c )
             {
                 for (int i = 0; i < 8; i ++)
-                    brf->field_42BC[i] = yw->field_7796[i];
+                    brf->field_42BC[i] = yw->ingamePlayerStatus[i];
             }
         }
     }

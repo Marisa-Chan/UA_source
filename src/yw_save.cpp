@@ -50,13 +50,13 @@ int yw_write_user(FSMgr::FileHandle *fil, UserData *usr)
     {
         sprintf(buf, "    playerstatus = %d_%d_%d_%d_%d_%d_%d_%d\n",
                 i,
-                yw->playerstatus[i].p1,
-                yw->playerstatus[i].p2,
-                yw->playerstatus[i].p3,
-                yw->playerstatus[i].p4,
-                yw->playerstatus[i].p5,
-                yw->playerstatus[i].p6,
-                yw->playerstatus[i].p7);
+                yw->playerstatus[i].destroyed,
+                yw->playerstatus[i].destroyedByUser,
+                yw->playerstatus[i].elapsedTime,
+                yw->playerstatus[i].sectorsTaked,
+                yw->playerstatus[i].score,
+                yw->playerstatus[i].power,
+                yw->playerstatus[i].upgrades);
 
         fil->write(buf, strlen(buf));
     }
@@ -1132,7 +1132,7 @@ int yw_write_globals(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
     sprintf(buf, "\nbegin_globals\n");
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    time = %d\n", yw->field_1614);
+    sprintf(buf, "    time = %d\n", yw->timeStamp);
     fil->write(buf, strlen(buf));
 
     sprintf(buf, "end\n\n");

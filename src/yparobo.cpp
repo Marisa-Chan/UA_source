@@ -744,11 +744,11 @@ void NC_STACK_yparobo::initForce(bact_node *unit)
                     *(_uint32_t *)&v14[36] = unit->bact->field_2E;*/
 
                     yw_arg181 arg181;
-                    arg181.field_14 = 2;
-                    arg181.val_size = 44;
-                    arg181.field_10 = 0;
-                    arg181.field_18 = 1;
-                    arg181.value = v14;
+                    arg181.recvFlags = 2;
+                    arg181.dataSize = 44;
+                    arg181.recvID = 0;
+                    arg181.garant = 1;
+                    arg181.data = (uamessage_base *)v14;
 
                     robo->wrld->ypaworld_func181(&arg181);
                 }
@@ -1120,11 +1120,11 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
 //      *(_uint32_t *)&v17[16] = robo->bact_internal->ypabact__id;
 
             yw_arg181 v16;
-            v16.field_10 = 0;
-            v16.field_14 = 2;
-            v16.val_size = 20;
-            v16.field_18 = 1;
-            v16.value = v17;
+            v16.recvID = 0;
+            v16.recvFlags = 2;
+            v16.dataSize = 20;
+            v16.garant = 1;
+            v16.data = (uamessage_base *)v17;
 
             yw->self_full->ypaworld_func181(&v16);
         }
@@ -2020,11 +2020,11 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                     v56[40] = 1;
                     *(_uint32_t *)&v56[36] = bct->field_2E;*/
 
-                    arg181.field_14 = 2;
-                    arg181.val_size = 44;
-                    arg181.field_10 = 0;
-                    arg181.field_18 = 1;
-                    arg181.value = v56;
+                    arg181.recvFlags = 2;
+                    arg181.dataSize = 44;
+                    arg181.recvID = 0;
+                    arg181.garant = 1;
+                    arg181.data = (uamessage_base *)v56;
                     ywo->ypaworld_func181(&arg181);
                 }
 
@@ -2084,11 +2084,11 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                     *(_uint32_t *)&v56[32] = bct->ypabact__id;
                     v56[40] = 2;
                     *(_uint32_t *)&v56[36] = arg->field_1C->field_2E;*/
-                    arg181.field_10 = 0;
-                    arg181.field_14 = 2;
-                    arg181.value = v56;
-                    arg181.val_size = 44;
-                    arg181.field_18 = 1;
+                    arg181.recvID = 0;
+                    arg181.recvFlags = 2;
+                    arg181.data = (uamessage_base *)v56;
+                    arg181.dataSize = 44;
+                    arg181.garant = 1;
 
                     ywo->ypaworld_func181(&arg181);
                 }
@@ -2127,11 +2127,11 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                     *(_uint32_t *)&v63[16] = *(_uint32_t *)(v51 + 24);
                     *(_uint16_t *)&v63[20] = *(_uint16_t *)(v51 + 36);
                     *(_uint16_t *)&v63[22] = *(_uint16_t *)(v51 + 40);*/
-                    arg181.field_10 = 0;
-                    arg181.field_14 = 2;
-                    arg181.value = v63;
-                    arg181.field_18 = 1;
-                    arg181.val_size = 24;
+                    arg181.recvID = 0;
+                    arg181.recvFlags = 2;
+                    arg181.data = (uamessage_base *)v63;
+                    arg181.garant = 1;
+                    arg181.dataSize = 24;
 
                     ywo->ypaworld_func181(&arg181);
                 }
@@ -2157,11 +2157,11 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                 *(float *)&v57[16] = robo->field_515.sx;
                 *(float *)&v57[20] = robo->field_515.sy;
                 *(float *)&v57[24] = robo->field_515.sz;*/
-                arg181.field_10 = 0;
-                arg181.field_14 = 2;
-                arg181.value = v57;
-                arg181.val_size = 32;
-                arg181.field_18 = 1;
+                arg181.recvID = 0;
+                arg181.recvFlags = 2;
+                arg181.data = (uamessage_base *)v57;
+                arg181.dataSize = 32;
+                arg181.garant = 1;
 
                 ywo->ypaworld_func181(&arg181);
             }
@@ -3275,11 +3275,11 @@ bact_node *NC_STACK_yparobo::allocForce(robo_loct1 *arg)
             *(_uint32_t *)&a1a[36] = unt_bct->field_2E;*/
 
             yw_arg181 arg181;
-            arg181.field_10 = 0;
-            arg181.field_14 = 2;
-            arg181.value = a1a;
-            arg181.val_size = 44;
-            arg181.field_18 = 1;
+            arg181.recvID = 0;
+            arg181.recvFlags = 2;
+            arg181.data = (uamessage_base *)a1a;
+            arg181.dataSize = 44;
+            arg181.garant = 1;
 
             robo->wrld->ypaworld_func181(&arg181);
         }
@@ -4416,11 +4416,11 @@ void NC_STACK_yparobo::checkCommander()
 //										*(_uint32_t *)&v24[24] = 34;
 //										*(_uint32_t *)&v24[28] = 19;
                                         yw_arg181 arg181;
-                                        arg181.field_10 = 0;
-                                        arg181.field_14 = 2;
-                                        arg181.value = v24;
-                                        arg181.val_size = 44;
-                                        arg181.field_18 = 1;
+                                        arg181.recvID = 0;
+                                        arg181.recvFlags = 2;
+                                        arg181.data = (uamessage_base *)v24;
+                                        arg181.dataSize = 44;
+                                        arg181.garant = 1;
                                         robo->wrld->ypaworld_func181(&arg181);
                                     }
                                 }
@@ -6118,11 +6118,11 @@ void NC_STACK_yparobo::Die()
             if ( bact->owner )
             {
                 yw_arg181 arg181;
-                arg181.value = v16;
-                arg181.val_size = 24;
-                arg181.field_14 = 2;
-                arg181.field_10 = 0;
-                arg181.field_18 = 1;
+                arg181.data = (uamessage_base *)v16;
+                arg181.dataSize = 24;
+                arg181.recvFlags = 2;
+                arg181.recvID = 0;
+                arg181.garant = 1;
                 yw->self_full->ypaworld_func181(&arg181);
 
                 if ( this == yw->field_1b78 )
@@ -6594,11 +6594,11 @@ void NC_STACK_yparobo::DeadTimeUpdate(update_msg *arg)
             v21[40] = bact->field_651; //matrix copy
             */
             yw_arg181 arg181;
-            arg181.value = v21;
-            arg181.field_18 = 1;
-            arg181.field_10 = 0;
-            arg181.field_14 = 2;
-            arg181.val_size = 76;
+            arg181.data = (uamessage_base *)v21;
+            arg181.garant = 1;
+            arg181.recvID = 0;
+            arg181.recvFlags = 2;
+            arg181.dataSize = 76;
             yw->self_full->ypaworld_func181(&arg181);
         }
     }

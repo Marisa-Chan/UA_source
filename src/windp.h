@@ -21,43 +21,6 @@ struct __NC_STACK_windp
 
 
 
-enum UAMSG
-{
-    UAMSG_BASE = 1000,
-    UAMSG_LOBBYINIT = UAMSG_BASE + 29,
-    UAMSG_SETLEVEL = UAMSG_BASE + 36,
-    UAMSG_CRC = UAMSG_BASE + 37,
-};
-
-
-
-struct uamessage_base
-{
-    uint32_t msgID;
-    uint32_t tstamp;
-    uint32_t msgCnt;
-    uint8_t owner;
-    uint8_t p[3];
-};
-
-struct uamessage_setLevel : uamessage_base
-{
-    char hostName[64];
-    uint32_t lvlID;
-    uint8_t fractions[4];
-};
-
-typedef uamessage_setLevel uamessage_lobbyInit;
-
-struct uamessage_crc : uamessage_base
-{
-    uint32_t checksum;
-};
-
-
-
-
-
 struct windp_getNameMsg
 {
     const char *name;
@@ -88,6 +51,17 @@ struct windp_arg79
     uint32_t dat2;
 };
 
+struct windp_recvMsg
+{
+    void *data;
+    uint32_t size;
+    char *recvID;
+    uint32_t recvFlags;
+    char *senderID;
+    uint32_t senderFlags;
+    uint32_t msgType;
+};
+
 struct windp_arg82
 {
     char *senderID;
@@ -115,8 +89,8 @@ void sub_46B328(UserData *usr);
 void yw_NetOKProvider(UserData *usr);
 void yw_JoinNetGame(UserData *usr);
 void sub_46D698(UserData *usr);
-void ypaworld_func158__sub1(UserData *usr);
-void ypaworld_func158__sub2(_NC_STACK_ypaworld *yw);
+void yw_CheckCDs(UserData *usr);
+void yw_CheckCRCs(_NC_STACK_ypaworld *yw);
 int ypaworld_func158__sub0__sub8(UserData *usr, const char**, const char**);
 void sb_0x4deac0(UserData *usr);
 
@@ -154,7 +128,7 @@ public:
     virtual size_t windp_func67(stack_vals *stak);
     virtual size_t windp_func68(stack_vals *stak);
     virtual size_t windp_func69(windp_getNameMsg *arg);
-    virtual size_t windp_func70(stack_vals *stak);
+    virtual size_t windp_func70(const char *stak);
     virtual size_t windp_func71(windp_openSessionMsg *os);
     virtual size_t windp_func72(stack_vals *stak);
     virtual size_t windp_func73(stack_vals *stak);
@@ -165,7 +139,7 @@ public:
     virtual size_t windp_func78(stack_vals *stak);
     virtual size_t windp_func79(windp_arg79 *stak);
     virtual size_t windp_func80(stack_vals *stak);
-    virtual size_t windp_func81(stack_vals *stak);
+    virtual size_t windp_func81(windp_recvMsg *recv);
     virtual size_t windp_func82(windp_arg82 *stak);
     virtual size_t windp_func83(stack_vals *stak);
     virtual size_t windp_func84(int *);

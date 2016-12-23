@@ -593,7 +593,7 @@ void  sb_0x4f8f64__sub1__sub0(_NC_STACK_ypaworld *yw)
                 float v26 = -((robo->field_2F5 / yw->sectors_maxX2) * 1200.0 + 600.0);
                 float v28 = (robo->field_2F5 % yw->sectors_maxX2) * 1200.0 + 600.0;
 
-                if ( (yw->field_1614 / 300) & 1 )
+                if ( (yw->timeStamp / 300) & 1 )
                     sub_4F68FC(yw->win3d, v2->bact->position.sx, v2->bact->position.sz, v28, v26, yw_GetColor(yw, 0));
             }
 
@@ -602,7 +602,7 @@ void  sb_0x4f8f64__sub1__sub0(_NC_STACK_ypaworld *yw)
                 float v22 = (robo->vehicle_cellID % yw->sectors_maxX2) * 1200.0 + 600.0;
                 float v27 = -(robo->vehicle_cellID / yw->sectors_maxX2 * 1200.0 + 600.0);
 
-                if ( (yw->field_1614 / 300) & 1 )
+                if ( (yw->timeStamp / 300) & 1 )
                 {
                     sub_4F68FC(yw->win3d, v2->bact->position.sx, v2->bact->position.sz, v22, v27, yw_GetColor(yw, 7));
                 }
@@ -899,7 +899,7 @@ char * sb_0x4f8f64__sub2(_NC_STACK_ypaworld *yw, char *cur)
 
                         if ( v12->w_type == 4 )
                         {
-                            if ( yw->field_1614 / 300 & 1 )
+                            if ( yw->timeStamp / 300 & 1 )
                                 v13 = 0;
                         }
 
@@ -935,7 +935,7 @@ char * sb_0x4f8f64__sub2(_NC_STACK_ypaworld *yw, char *cur)
                         {
                             if ( (1 << yw->field_1b80->owner) & v22->view_mask )
                             {
-                                if ( v22->owner == yw->field_1b80->owner || yw->field_1614 / 300 & 1 )
+                                if ( v22->owner == yw->field_1b80->owner || yw->timeStamp / 300 & 1 )
                                     v52 = 1;
                             }
                         }
@@ -952,7 +952,7 @@ char * sb_0x4f8f64__sub2(_NC_STACK_ypaworld *yw, char *cur)
                 {
                     if ( (1 << yw->field_1b80->owner) & v16->pcell->view_mask )
                     {
-                        if ( yw->field_1614 / 300 & 1 )
+                        if ( yw->timeStamp / 300 & 1 )
                         {
                             float v25 = v16->sec_x * 1200.0 + 600.0;
                             float v26 = -(v16->sec_y * 1200.0 + 600.0);
@@ -998,7 +998,7 @@ char * sb_0x4f8f64__sub2(_NC_STACK_ypaworld *yw, char *cur)
 
                     if ( v28->pcell->view_mask & (1 << yw->field_1b80->owner) )
                     {
-                        if ( v28->pcell->owner == yw->field_1b80->owner || yw->field_1614 / 300 & 1 )
+                        if ( v28->pcell->owner == yw->field_1b80->owner || yw->timeStamp / 300 & 1 )
                             v34 = 1;
                     }
 
@@ -1021,7 +1021,7 @@ char * sb_0x4f8f64__sub2(_NC_STACK_ypaworld *yw, char *cur)
                             {
                                 if ( (1 << yw->field_1b80->owner) & v38->view_mask )
                                 {
-                                    if ( v38->owner == yw->field_1b80->owner || yw->field_1614 / 500 & 1 )
+                                    if ( v38->owner == yw->field_1b80->owner || yw->timeStamp / 500 & 1 )
                                         v60 = 1;
                                 }
                             }
@@ -1578,7 +1578,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
 
     if ( yw->field_1b84 )
     {
-        if ( yw->field_1614 / 300 & 1 )
+        if ( yw->timeStamp / 300 & 1 )
         {
             FontUA::select_tileset(&pcur, v114);
 
@@ -1588,7 +1588,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
 
     if ( yw->field_2420 )
     {
-        if ( yw->field_1614 / 300 & 1 )
+        if ( yw->timeStamp / 300 & 1 )
         {
             FontUA::select_tileset(&pcur, v114);
 
@@ -1608,7 +1608,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
 
             if ( 2 * yw->beamenergy < 2 * v81 )
             {
-                v85 = (yw->field_1614 / 300) & 1; // FLASHING GATES TITLE
+                v85 = (yw->timeStamp / 300) & 1; // FLASHING GATES TITLE
             }
 
             if ( v85 )
@@ -2949,18 +2949,18 @@ void create_info_log(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
 
     if ( info_log.window.Init(yw, args) )
     {
-        if ( yw->field_1614 )
+        if ( yw->timeStamp )
         {
             char a1a[32];
-            sprintf(a1a, "<%02d:%02d:%02d>", (yw->field_1614 >> 10) / 60 / 60 % 24, (yw->field_1614 >> 10) / 60 % 60, (yw->field_1614 >> 10) % 60);
+            sprintf(a1a, "<%02d:%02d:%02d>", (yw->timeStamp >> 10) / 60 / 60 % 24, (yw->timeStamp >> 10) / 60 % 60, (yw->timeStamp >> 10) % 60);
             sprintf(info_log.msgs[0].txt, get_lang_string(yw->string_pointers_p2, 12, "GAME CONTINUED AT TIME INDEX %s."), a1a);
         }
         else
             strcpy(info_log.msgs[0].txt, get_lang_string(yw->string_pointers_p2, 6, "WELCOME TO YOUR PERSONAL AMOK!"));
 
-        info_log.msgs[0].field_4 = yw->field_1614 + 1;
+        info_log.msgs[0].field_4 = yw->timeStamp + 1;
         info_log.field_255C = 0;
-        info_log.field_2560 = yw->field_1614;
+        info_log.field_2560 = yw->timeStamp;
         info_log.field_2564 = 0;
         info_log.field_250 = 127;
         info_log.field_248 = 6 * yw->tiles[0]->chars[48].width + 2 * yw->tiles[0]->chars[58].width + 12;
@@ -4701,7 +4701,7 @@ void ypaworld_func64__sub7__sub2__sub0()
 
 void sb_0x4c66f8__sub0(_NC_STACK_ypaworld *yw)
 {
-    if ( yw->field_1614 - yw->field_1a04 > 35000 )
+    if ( yw->timeStamp - yw->field_1a04 > 35000 )
     {
         yw_arg159 arg159;
         arg159.unit = yw->field_1b80;
@@ -4712,7 +4712,7 @@ void sb_0x4c66f8__sub0(_NC_STACK_ypaworld *yw)
         yw->self_full->ypaworld_func159(&arg159);
     }
 
-    yw->field_1a04 = yw->field_1614;
+    yw->field_1a04 = yw->timeStamp;
 }
 
 void sb_0x4c66f8(_NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypabact *bact2)
@@ -4723,7 +4723,7 @@ void sb_0x4c66f8(_NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypaba
 
         if ( a4->status != BACT_STATUS_CREATE && a4->status != BACT_STATUS_DEAD && a4->status != BACT_STATUS_BEAM )
         {
-            yw->wis_skeletons.field_76 = yw->field_1614;
+            yw->wis_skeletons.field_76 = yw->timeStamp;
 
             bact2->setBACT_viewer(0);
             bact2->setBACT_inputting(0);
@@ -5300,7 +5300,7 @@ char * ypaworld_func64__sub7__sub7__sub0__sub1(_NC_STACK_ypaworld *yw, char *cur
     {
         v10 = 54;
 
-        if ( yw->field_1614 / 300 & 1 )
+        if ( yw->timeStamp / 300 & 1 )
             v9 = NULL;
     }
 
@@ -5672,11 +5672,11 @@ char * ypaworld_func64__sub7__sub3__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STAC
     char *pcur = cur;
 
     char v13[80];
-    if ( bact == yw->field_1b84 && yw->field_1614 / 300 & 1 )
+    if ( bact == yw->field_1b84 && yw->timeStamp / 300 & 1 )
     {
         v13[0] = 33;
     }
-    else if ( info_log.field_255C == bact->gid && yw->field_1614 - info_log.msgs[info_log.field_24C].field_4 < 10000 && yw->field_1614 / 300 & 1 )
+    else if ( info_log.field_255C == bact->gid && yw->timeStamp - info_log.msgs[info_log.field_24C].field_4 < 10000 && yw->timeStamp / 300 & 1 )
     {
         v13[0] = 34;
     }
@@ -5755,7 +5755,7 @@ char * ypaworld_func64__sub7__sub3__sub0__sub0(_NC_STACK_ypaworld *yw, __NC_STAC
     FontUA::store_u8(&pv, ypaworld_func64__sub7__sub3__sub0__sub0__sub0(bact));
     FontUA::store_u8(&pv, 64);
 
-    int ttt = (yw->field_1614 / 300) & 1;
+    int ttt = (yw->timeStamp / 300) & 1;
 
     if ( bact == yw->field_1b84 && ttt )
         FontUA::store_u8(&pv, 33);
@@ -6995,11 +6995,11 @@ void sub_47DB04(_NC_STACK_ypaworld *yw, char a2)
 //  *(_uint32_t *)v4 = 1035;
 //  v4[12] = yw->GameShell->field_0x1cd4;
 //  v4[16] = a2;
-    v3.field_10 = 0;
-    v3.field_14 = 2;
-    v3.value = v4;
-    v3.val_size = 20;
-    v3.field_18 = 1;
+    v3.recvID = 0;
+    v3.recvFlags = 2;
+    v3.data = (uamessage_base *)v4;
+    v3.dataSize = 20;
+    v3.garant = 1;
 
     yw->self_full->ypaworld_func181(&v3);
 
@@ -7751,7 +7751,7 @@ __NC_STACK_ypabact * sub_449518(_NC_STACK_ypaworld *yw)
 
         if ( v2 )
         {
-            if ( (yw->field_1614 - info_log.field_2560) > 10000 )
+            if ( (yw->timeStamp - info_log.field_2560) > 10000 )
                 v2 = 0;
         }
     }
@@ -8930,7 +8930,7 @@ void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg)
     else
         info_log.field_255C = 0;
 
-    info_log.field_2560 = yw->field_1614;
+    info_log.field_2560 = yw->timeStamp;
     info_log.field_2564 = arg->field_C;
 
     if ( arg->txt )
@@ -8978,7 +8978,7 @@ void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg)
             v6->id = 0;
 
         v6->field_8 = 7000;
-        v6->field_4 = yw->field_1614;
+        v6->field_4 = yw->timeStamp;
 
         const char *v5 = arg->txt;
 
@@ -9074,9 +9074,9 @@ void sb_0x4d7c08__sub0__sub0(_NC_STACK_ypaworld *yw)
                 v5 = NULL;
             }
 
-            if ( v5 && yw->field_1614 - yw->field_81CB.field_4 < v6 )
+            if ( v5 && yw->timeStamp - yw->field_81CB.field_4 < v6 )
             {
-                if ( yw->field_1614 / 300 & 1 )
+                if ( yw->timeStamp / 300 & 1 )
                 {
                     FontUA::select_tileset(&pcur, 15);
                     FontUA::set_xpos(&pcur, 0);
@@ -9152,7 +9152,7 @@ void sb_0x4d7c08__sub0__sub0(_NC_STACK_ypaworld *yw)
             else
                 v28 += 200;
 
-            int v18 = yw->field_1614 - v28;
+            int v18 = yw->timeStamp - v28;
 
             int v19;
 
@@ -9662,22 +9662,22 @@ char * yw_RenderHUDInfo(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float 
     int v25 = 1;
 
     if ( flag & 1 )
-        v23 = ((yw->field_1614 / 200) & 1) != 0;
+        v23 = ((yw->timeStamp / 200) & 1) != 0;
 
     if ( flag & 2 )
-        v11 = ((yw->field_1614 / 200) & 1) != 0;
+        v11 = ((yw->timeStamp / 200) & 1) != 0;
 
     if ( flag & 4 )
-        v22 = ((yw->field_1614 / 200) & 1) != 0;
+        v22 = ((yw->timeStamp / 200) & 1) != 0;
 
     if ( flag & 8 )
-        v25 = ((yw->field_1614 / 200) & 1) != 0;
+        v25 = ((yw->timeStamp / 200) & 1) != 0;
 
     float a6a;
 
     if ( flag & 0x10 )
     {
-        a6a = (yw->field_1614 - wis->field_76 - 200) / 180.0;
+        a6a = (yw->timeStamp - wis->field_76 - 200) / 180.0;
 
         if ( a6a <= 0.0 )
             return pcur;
@@ -9741,9 +9741,9 @@ char *sb_0x4d7c08__sub0__sub0__sub0__sub0(_NC_STACK_ypaworld *yw, sklt_wis *wis,
     //yw_GetColor(yw, 25);
     //yw_GetColor(yw, 34);
 
-    if ( !(a7 & 0x10) || (yw->field_1614 - wis->field_76 - 200) / 180.0 > 0.0 )
+    if ( !(a7 & 0x10) || (yw->timeStamp - wis->field_76 - 200) / 180.0 > 0.0 )
     {
-        if ( yw->field_1614 / 200 & 1 )
+        if ( yw->timeStamp / 200 & 1 )
         {
             int v11;
             if ( yw->isNetGame )
@@ -9774,7 +9774,7 @@ int sb_0x4d7c08__sub0__sub0__sub0(_NC_STACK_ypaworld *yw)
 
     char *pcur = byte_5C8DB0;
 
-    if ( yw->field_2b78 == -1 || yw->field_1614 - yw->field_2b7c >= 10000 || (!yw->last_modify_vhcl && !yw->last_modify_weapon && !yw->last_modify_build) )
+    if ( yw->field_2b78 == -1 || yw->timeStamp - yw->field_2b7c >= 10000 || (!yw->last_modify_vhcl && !yw->last_modify_weapon && !yw->last_modify_build) )
         return 0;
 
     int a8 = 0;
@@ -9871,7 +9871,7 @@ void wis_color2(_NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, 
 
 void yw_RenderHUDCompass(_NC_STACK_ypaworld *yw, sklt_wis *wis)
 {
-    float v90 = (yw->field_1614 - wis->field_76) / 180.0;
+    float v90 = (yw->timeStamp - wis->field_76) / 180.0;
 
     wis_color_func func = NULL;
 
@@ -10156,7 +10156,7 @@ void sb_0x4d7c08__sub0__sub4(_NC_STACK_ypaworld *yw)
             msg = get_lang_string(yw->string_pointers_p2, strid, defMsg);
         }
 
-        if ( msg && yw->field_1614 / 500 & 1 )
+        if ( msg && yw->timeStamp / 500 & 1 )
         {
             FontUA::select_tileset(&pcur, 15);
             FontUA::set_xpos(&pcur, 0);
@@ -10245,7 +10245,7 @@ void sub_4E3B80(_NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, 
 
 void sub_4E3D98(_NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, uint32_t *out1, uint32_t *out2)
 {
-    int v7 = yw->field_1614 % 300;
+    int v7 = yw->timeStamp % 300;
     float v9 = v7 / 30000.0;
 
     sklt_wis *v8 = &yw->wis_skeletons;
@@ -10268,7 +10268,7 @@ void yw_RenderHUDTarget(_NC_STACK_ypaworld *yw, sklt_wis *wis)
     skeleton_64_stru *wpn_wure = NULL;
     skeleton_64_stru *wpn_wure2 = NULL;
 
-    float v86 = (yw->field_1614 - wis->field_76 - 350) / 200.0;
+    float v86 = (yw->timeStamp - wis->field_76 - 350) / 200.0;
 
     if ( v86 > 0.0 )
     {
@@ -10312,7 +10312,7 @@ void yw_RenderHUDTarget(_NC_STACK_ypaworld *yw, sklt_wis *wis)
             if ( yw->hudi.field_18 != wis->field_7E )
             {
                 wis->field_7E = yw->hudi.field_18;
-                wis->field_7A = yw->field_1614;
+                wis->field_7A = yw->timeStamp;
             }
         }
         else
@@ -10370,7 +10370,7 @@ void yw_RenderHUDTarget(_NC_STACK_ypaworld *yw, sklt_wis *wis)
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    v51[i] = (yw->field_1614 - wis->field_7A) / 200.0;
+                    v51[i] = (yw->timeStamp - wis->field_7A) / 200.0;
 
                     if ( v51[i] > 1.0 )
                         v51[i] = 1.0;
@@ -10434,7 +10434,7 @@ void yw_RenderHUDTarget(_NC_STACK_ypaworld *yw, sklt_wis *wis)
                 }
                 else if ( v51[i] >= 1.0 )
                 {
-                    v85 = (yw->field_1614 - wis->field_7A) * 0.001 * 6.282;
+                    v85 = (yw->timeStamp - wis->field_7A) * 0.001 * 6.282;
                 }
                 else
                 {
@@ -10933,7 +10933,7 @@ char *sb_0x4d7c08__sub0__sub2__sub1(_NC_STACK_ypaworld *yw, char *cur, player_st
             if ( (1 << i) & yw->field_2d90->ownerMap__has_vehicles )
             {
                 v25[nums].a = i;
-                v25[nums].b = statuses[i].p5;
+                v25[nums].b = statuses[i].score;
                 nums++;
             }
         }
@@ -10996,7 +10996,7 @@ char *sb_0x4d7c08__sub0__sub2__sub1(_NC_STACK_ypaworld *yw, char *cur, player_st
             a4a[0].width = a3 * 0.5;
 
             char a1a[32];
-            sprintf(a1a, "%d", statuses[ v25[i].a ].p5);
+            sprintf(a1a, "%d", statuses[ v25[i].a ].score);
 
             a4a[1].txt = a1a;
             a4a[1].width = a3 * 0.5;
@@ -11069,7 +11069,7 @@ void sb_0x4d7c08__sub0__sub2(_NC_STACK_ypaworld *yw)
     FontUA::set_ypos(&pcur, up_panel.field_1CC + (yw->font_default_h / 2));
 
     pcur = sb_0x4d7c08__sub0__sub2__sub0(yw, pcur, v2);
-    pcur = sb_0x4d7c08__sub0__sub2__sub1(yw, pcur, yw->field_7796, v2);
+    pcur = sb_0x4d7c08__sub0__sub2__sub1(yw, pcur, yw->ingamePlayerStatus, v2);
 
     for (int i = 0; i < yw->field_2d90->supetItems_count; i++)
     {
@@ -11655,7 +11655,7 @@ int ypaworld_func64__sub21__sub6(_NC_STACK_ypaworld *yw, winp_131arg *winp)
     {
         if ( winp->flag & 2   &&   yw->field_1a58 & 0x20   &&   yw->field_1b80->owner == yw->field_1a98->owner )
         {
-            yw->field_1aa0 = yw->field_1614;
+            yw->field_1aa0 = yw->timeStamp;
             yw->field_1aac = yw->field_1a98;
             yw->field_1aa4 = winp->move[0].x;
             yw->field_1aa8 = winp->move[0].y;
@@ -12553,10 +12553,10 @@ void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
     int v38 = 0;
 
-    if ( yw->field_1614 - yw->field_1a0c < 500 )
+    if ( yw->timeStamp - yw->field_1a0c < 500 )
         inpt->but_flags &= 0xFFFFFFFE;
 
-    if ( yw->field_1614 - yw->field_1a0c > 5000 )
+    if ( yw->timeStamp - yw->field_1a0c > 5000 )
         yw->field_1a20 = 0;
 
     if ( yw->field_739A )

@@ -1110,11 +1110,11 @@ void NC_STACK_ypamissile::ypamissile_func129(void *)
 //    *(float *)&v13[36] = miss->selfie->mass;
 
         yw_arg181 arg181;
-        arg181.field_10 = 0;
-        arg181.val_size = 56;
-        arg181.field_14 = 2;
-        arg181.field_18 = 1;
-        arg181.value = v13;
+        arg181.recvID = 0;
+        arg181.dataSize = 56;
+        arg181.recvFlags = 2;
+        arg181.garant = 1;
+        arg181.data = (uamessage_base *)v13;
 
         miss->ywo->ypaworld_func181(&arg181);
     }

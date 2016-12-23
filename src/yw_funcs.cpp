@@ -578,7 +578,7 @@ int yw_InitNetwork(_NC_STACK_ypaworld *yw)
         return 0;
     }
 
-    yw->field_759A = 1;
+    yw->netInterpolate = 1;
 
     memset(&yw->field_759E, 0, 4);
 
@@ -2660,7 +2660,7 @@ void yw_calcPlayerScore(_NC_STACK_ypaworld *yw)
         }
 
         for (int i = 0; i < 8; i++)
-            yw->playerstatus[i].p3 += last_time;
+            yw->playerstatus[i].elapsedTime += last_time;
 
     }
 }

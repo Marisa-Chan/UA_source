@@ -6,6 +6,7 @@
 #include "engine_input.h"
 #include "windp.h"
 #include "button.h"
+#include "yw_net.h"
 
 
 const NewClassDescr NC_STACK_windp::description("windp.class", &newinstance);
@@ -73,7 +74,7 @@ size_t NC_STACK_windp::windp_func69(windp_getNameMsg *sessName)
     return 0;
 }
 
-size_t NC_STACK_windp::windp_func70(stack_vals *stak)
+size_t NC_STACK_windp::windp_func70(const char *sessName)
 {
     return 0;
 }
@@ -118,8 +119,15 @@ size_t NC_STACK_windp::windp_func78(stack_vals *stak)
     return 0;
 }
 
-size_t NC_STACK_windp::windp_func79(windp_arg79 *stak)
+size_t NC_STACK_windp::windp_func79(windp_arg79 *arg)
 {
+    if (arg->ID == 0)
+    {
+        arg->name = (char *)"Test User NAME";
+        arg->flags = 1;
+        return 1;
+    }
+
     return 0;
 }
 
@@ -128,7 +136,7 @@ size_t NC_STACK_windp::windp_func80(stack_vals *stak)
     return 0;
 }
 
-size_t NC_STACK_windp::windp_func81(stack_vals *stak)
+size_t NC_STACK_windp::windp_func81(windp_recvMsg *recv)
 {
     return 0;
 }
@@ -216,7 +224,7 @@ size_t NC_STACK_windp::compatcall(int method_id, void *data)
     case 69:
         return (size_t)windp_func69( (windp_getNameMsg *)data );
     case 70:
-        return (size_t)windp_func70( (stack_vals *)data );
+        return (size_t)windp_func70( (const char *)data );
     case 71:
         return (size_t)windp_func71( (windp_openSessionMsg *)data );
     case 72:
@@ -238,7 +246,7 @@ size_t NC_STACK_windp::compatcall(int method_id, void *data)
     case 80:
         return (size_t)windp_func80( (stack_vals *)data );
     case 81:
-        return (size_t)windp_func81( (stack_vals *)data );
+        return (size_t)windp_func81( (windp_recvMsg *)data );
     case 82:
         return (size_t)windp_func82( (windp_arg82 *)data );
     case 83:
@@ -282,11 +290,6 @@ size_t NC_STACK_windp::compatcall(int method_id, void *data)
 
 
 
-
-void yw_HandleNetMsg(_NC_STACK_ypaworld *yw)
-{
-    dprintf("MAKE ME %s (multiplayer)\n", "yw_HandleNetMsg");
-}
 
 void yw_FractionInit(UserData *usr)
 {
@@ -435,11 +438,11 @@ void sub_46B328(UserData *usr)
         msg_slvl.owner = 0;
 
         yw_arg181 ywmsg;
-        ywmsg.value = &msg_slvl;
-        ywmsg.val_size = sizeof(msg_slvl);
-        ywmsg.field_14 = 2;
-        ywmsg.field_10 = 0;
-        ywmsg.field_18 = 1;
+        ywmsg.data = &msg_slvl;
+        ywmsg.dataSize = sizeof(msg_slvl);
+        ywmsg.recvFlags = 2;
+        ywmsg.recvID = 0;
+        ywmsg.garant = 1;
         yw->self_full->ypaworld_func181(&ywmsg);
 
         yw->SendCRC(usr->netLevelID);
@@ -554,11 +557,11 @@ void sub_46B328(UserData *usr)
         limsg.owner = 0;
 
         yw_arg181 ywmsg;
-        ywmsg.value = &limsg;
-        ywmsg.val_size = sizeof(limsg);
-        ywmsg.field_14 = 2;
-        ywmsg.field_10 = 0;
-        ywmsg.field_18 = 1;
+        ywmsg.data = &limsg;
+        ywmsg.dataSize = sizeof(limsg);
+        ywmsg.recvFlags = 2;
+        ywmsg.recvID = 0;
+        ywmsg.garant = 1;
         yw->self_full->ypaworld_func181(&ywmsg);
 
         windp_arg82 flushmsg;
@@ -667,7 +670,145 @@ void yw_NetOKProvider(UserData *usr)
 
 void yw_JoinNetGame(UserData *usr)
 {
-    dprintf("MAKE ME %s (multiplayer)\n", "sb_0x46bb54");
+    _NC_STACK_ypaworld *yw = usr->p_ypaworld;
+
+    if ( yw->windp->windp_func90(NULL) != 4 || usr->modemAskSession )
+    {
+        windp_getNameMsg gName;
+        gName.id = usr->netSel;
+
+        if ( yw->windp->windp_func69(&gName) )
+        {
+            if ( yw->windp->windp_func90(NULL) == 4 )
+                yw->win3d->windd_func320(NULL);
+
+            if ( yw->windp->windp_func70(gName.name) )
+            {
+                if ( yw->windp->windp_func90(NULL) == 4 )
+                    yw->win3d->windd_func321(NULL);
+
+                usr->netName[0] = 0;
+                usr->netNameCurPos = 0;
+                usr->netLevelID = 0;
+
+                std::string buf = gName.name;
+
+                for (size_t i = 0; i < buf.length(); i++)
+                {
+                    if (buf[i] == '"')
+                    {
+                        buf.resize(i);
+
+                        usr->netLevelID = atoi(buf.c_str());
+                        break;
+                    }
+                }
+                usr->network_listvw.firstShownEntries = 0;
+                usr->netLevelName = get_lang_string(yw->string_pointers_p2, 1800 + usr->netLevelID, yw->LevelNet->mapInfos[ usr->netLevelID ].map_name);
+
+                windp_arg79 plData;
+                plData.ID = 0;
+                plData.mode = 0;
+                while ( yw->windp->windp_func79(&plData) )
+                {
+                    buf = plData.name;
+
+                    if ( !strcasecmp(plData.name, usr->callSIGN) )
+                    {
+                        buf += "X";
+                    }
+
+                    strncpy(yw->GameShell->players2[plData.ID].name, buf.c_str(), sizeof(yw->GameShell->players2[plData.ID].name));
+
+
+                    plData.ID++;
+                }
+
+                windp_createPlayerMsg crPlayerMsg;
+                crPlayerMsg.name = usr->callSIGN;
+                crPlayerMsg.flags = 1;
+
+                if ( yw->windp->windp_func76(&crPlayerMsg) )
+                {
+                    yw->isNetGame = 1;
+                    usr->netSel = -1;
+                    usr->netSelMode = 4;
+                    usr->netName[0] = 0;
+                    usr->netNameCurPos = 0;
+                    usr->network_listvw.firstShownEntries = 0;
+                    usr->network_listvw.selectedEntry = 0;
+                    usr->isHost = 0;
+
+                    int plid = yw->windp->getNumPlayers();
+
+                    strncpy(usr->players2[plid - 1].name, usr->callSIGN, sizeof(usr->players2[plid - 1].name));
+
+                    yw_FractionInit(usr);
+
+                    usr->players2[plid - 1].cd = 1;
+                    usr->cd = 1;
+                    usr->last_cdchk = usr->glblTime;
+
+                    uamessage_cd cdMsg;
+                    cdMsg.cd = usr->cd;
+                    cdMsg.msgID = UAMSG_CD;
+                    cdMsg.rdy = -1;
+                    cdMsg.owner = 0;
+
+                    yw_arg181 ywMsg;
+                    ywMsg.dataSize = sizeof(cdMsg);
+                    ywMsg.recvFlags = 2;
+                    ywMsg.recvID = 0;
+                    ywMsg.data = &cdMsg;
+                    ywMsg.garant = 1;
+
+                    yw->self_full->ypaworld_func181(&ywMsg);
+                }
+
+                plData.mode = 0;
+                plData.ID = 0;
+
+                while ( yw->windp->windp_func79(&plData) && strcasecmp(plData.name, usr->callSIGN) )
+                    plData.ID++;
+
+                usr->rdyStart = 0;
+                usr->players2[plData.ID].rdyStart = 0;
+
+                yw->SendCRC(usr->netLevelID);
+            }
+            else
+            {
+                if ( yw->windp->windp_func90(NULL) == 4 )
+                    yw->win3d->windd_func320(NULL);
+
+                //sb_0x46bb54__sub0(usr->p_ypaworld, get_lang_string(yw->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(yw->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
+                printf("%s: %s\n", get_lang_string(yw->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(yw->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
+
+                if ( yw->windp->windp_func90(NULL) == 4 )
+                {
+                    usr->netSel = -1;
+                    sub_46D698(usr);
+                }
+                else
+                {
+                    yw->windp->windp_func68(NULL);
+                }
+            }
+        }
+    }
+    else
+    {
+        if ( yw->windp->windp_func90(NULL) == 4 )
+            yw->win3d->windd_func320(NULL);
+
+        if ( yw->windp->windp_func68(NULL) )
+        {
+            usr->modemAskSession = 1;
+        }
+
+        if ( yw->windp->windp_func90(NULL) == 4 )
+            yw->win3d->windd_func321(NULL);
+    }
 }
 
 int yw_DestroyPlayer(_NC_STACK_ypaworld *yw, const char *playerName)
@@ -791,15 +932,7 @@ void sub_46D698(UserData *usr)
     yw_netcleanup(usr->p_ypaworld);
 }
 
-void ypaworld_func158__sub1(UserData *usr)
-{
-    dprintf("MAKE ME %s (multiplayer)\n", "ypaworld_func158__sub1");
-}
 
-void ypaworld_func158__sub2(_NC_STACK_ypaworld *yw)
-{
-    dprintf("MAKE ME %s (multiplayer)\n", "ypaworld_func158__sub2");
-}
 
 int ypaworld_func158__sub0__sub8(UserData *usr, const char**, const char**)
 {
@@ -840,7 +973,7 @@ void ypaworld_func151__sub7(UserData *usr)
     log_netlog("statistical sr-thread info\n");
 //  log_netlog("   max. in send list %d\n", v2[3]);
 //  log_netlog("   max. in recv list %d\n", v2[2]);
-    log_netlog("\nthe session ended at timeindex %d\n", usr->p_ypaworld->field_1614 / 1000);
+    log_netlog("\nthe session ended at timeindex %d\n", usr->p_ypaworld->timeStamp / 1000);
     log_netlog("-----------------------------------------------------------\n");
 }
 

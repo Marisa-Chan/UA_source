@@ -1807,11 +1807,11 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
 //                *(_uint32_t *)v83 = 1031;
 //                v83[12] = v12->owner;
 //                *(_uint32_t *)&v83[16] = v12->ypabact__id;
-                                    arg181.field_10 = 0;
-                                    arg181.val_size = 20;
-                                    arg181.field_14 = 2;
-                                    arg181.field_18 = 1;
-                                    arg181.value = v83;
+                                    arg181.recvID = 0;
+                                    arg181.dataSize = 20;
+                                    arg181.recvFlags = 2;
+                                    arg181.garant = 1;
+                                    arg181.data = (uamessage_base *)v83;
 
                                     tank->ywo->ypaworld_func181(&arg181);
 

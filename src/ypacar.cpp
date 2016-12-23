@@ -314,13 +314,13 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
 //                      *(_uint32_t *)&v41[20] = -v67;
 
                                 yw_arg181 arg181;
-                                arg181.field_10 = 0;
-                                arg181.field_14 = 2;
-                                arg181.field_C = 1;
-                                arg181.val_size = 32;
-                                arg181.field_8 = car->yw->GameShell->callSIGN;
-                                arg181.field_18 = 1;
-                                arg181.value = &v41;
+                                arg181.recvID = 0;
+                                arg181.recvFlags = 2;
+                                arg181.senderFlags = 1;
+                                arg181.dataSize = 32;
+                                arg181.senderID = car->yw->GameShell->callSIGN;
+                                arg181.garant = 1;
+                                arg181.data = (uamessage_base *)&v41;
 
                                 car->ywo->ypaworld_func181(&arg181);
                             }

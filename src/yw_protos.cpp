@@ -2827,31 +2827,31 @@ int parseSaveUser(scrCallBack *arg)
                 v10 = strtok(0, "_ \t");
                 if ( v10 )
                 {
-                    yw->playerstatus[plid].p1 = strtol(v10, NULL, 0);
+                    yw->playerstatus[plid].destroyed = strtol(v10, NULL, 0);
                     v10 = strtok(0, "_ \t");
                     if ( v10 )
                     {
-                        yw->playerstatus[plid].p2 = strtol(v10, NULL, 0);
+                        yw->playerstatus[plid].destroyedByUser = strtol(v10, NULL, 0);
                         v10 = strtok(0, "_ \t");
                         if ( v10 )
                         {
-                            yw->playerstatus[plid].p3 = strtol(v10, NULL, 0);
+                            yw->playerstatus[plid].elapsedTime = strtol(v10, NULL, 0);
                             v10 = strtok(0, "_ \t");
                             if ( v10 )
                             {
-                                yw->playerstatus[plid].p4 = strtol(v10, NULL, 0);
+                                yw->playerstatus[plid].sectorsTaked = strtol(v10, NULL, 0);
                                 v10 = strtok(0, "_ \t");
                                 if ( v10 )
                                 {
-                                    yw->playerstatus[plid].p5 = strtol(v10, NULL, 0);
+                                    yw->playerstatus[plid].score = strtol(v10, NULL, 0);
                                     v10 = strtok(0, "_ \t");
                                     if ( v10 )
                                     {
-                                        yw->playerstatus[plid].p6 = strtol(v10, NULL, 0);
+                                        yw->playerstatus[plid].power = strtol(v10, NULL, 0);
                                         v10 = strtok(0, "_ \t");
                                         if ( v10 )
                                         {
-                                            yw->playerstatus[plid].p7 = strtol(v10, NULL, 0);
+                                            yw->playerstatus[plid].upgrades = strtol(v10, NULL, 0);
                                         }
                                     }
                                 }
@@ -6062,7 +6062,7 @@ int sub_479A30(scrCallBack *scr)
         {
             if ( !strcasecmp(scr->p1, "time") )
             {
-                yw->field_1614 = atoi(scr->p2);
+                yw->timeStamp = atoi(scr->p2);
                 return 0;
             }
             else

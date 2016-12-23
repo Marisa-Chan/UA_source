@@ -678,9 +678,9 @@ int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
 
     memset(mapp, 0, sizeof(mapProto));
 
-    memset(yw->field_7796, 0, sizeof(player_status) * 8);
+    memset(yw->ingamePlayerStatus, 0, sizeof(player_status) * 8);
 
-    yw->field_1614 = 0;
+    yw->timeStamp = 0;
     yw->field_1a04 = 0;
     yw->field_1a08 = 0;
     yw->field_1a00 = 0;
@@ -1971,7 +1971,7 @@ void ypaworld_func2__sub0__sub0(_NC_STACK_ypaworld *yw)
     {
         if ( yw->field_1b84 )
         {
-            yw->field_7562 = yw->field_1614;
+            yw->field_7562 = yw->timeStamp;
 
             winp_71arg winp71;
             winp71.effID = 0;
@@ -2932,13 +2932,13 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                 v30[12] = ownerid2;*/
 
                 yw_arg181 v31;
-                v31.field_14 = 2;
-                v31.field_10 = 0;
-                v31.field_8 = yw->GameShell->callSIGN;
-                v31.field_C = 1;
-                v31.value = v30;
-                v31.val_size = 272;
-                v31.field_18 = 1;
+                v31.recvFlags = 2;
+                v31.recvID = 0;
+                v31.senderID = yw->GameShell->callSIGN;
+                v31.senderFlags = 1;
+                v31.data = (uamessage_base *)v30;
+                v31.dataSize = 272;
+                v31.garant = 1;
 
                 yw->self_full->ypaworld_func181(&v31);
             }
@@ -3459,7 +3459,7 @@ void sub_4D12D8(_NC_STACK_ypaworld *yw, int id, int a3)
 
     if ( !a3 )
     {
-        sitem->field_EC = yw->field_1614;
+        sitem->field_EC = yw->timeStamp;
         sitem->field_FC = 0;
         sitem->field_100 = 0;
         sitem->field_F8 = sitem->countdown;
@@ -3549,7 +3549,7 @@ void sub_4D1444(_NC_STACK_ypaworld *yw, int id)
 {
     supetItemProto *sitem = &yw->field_2d90->supetItems[id];
     sitem->field_4 = 3;
-    sitem->field_F0 = yw->field_1614;
+    sitem->field_F0 = yw->timeStamp;
 
     ypaworld_arg148 arg148;
     arg148.ownerID = sitem->pcell->owner;
@@ -3885,7 +3885,7 @@ void ypaworld_func64__sub9(_NC_STACK_ypaworld *yw)
 
             if ( energ <= yw->beamenergy )
             {
-                if ( yw->field_1614 - yw->field_1a00 > 60000 )
+                if ( yw->timeStamp - yw->field_1a00 > 60000 )
                 {
                     yw_arg159 arg159_1;
                     arg159_1.unit = 0;
@@ -3894,12 +3894,12 @@ void ypaworld_func64__sub9(_NC_STACK_ypaworld *yw)
                     arg159_1.field_C = 23;
 
                     yw->self_full->ypaworld_func159(&arg159_1);
-                    yw->field_1a00 = yw->field_1614;
+                    yw->field_1a00 = yw->timeStamp;
                 }
             }
             else
             {
-                if ( yw->field_1614 - yw->field_1a00 > 40000 )
+                if ( yw->timeStamp - yw->field_1a00 > 40000 )
                 {
                     yw_arg159 arg159_2;
                     arg159_2.unit = 0;
@@ -3908,7 +3908,7 @@ void ypaworld_func64__sub9(_NC_STACK_ypaworld *yw)
                     arg159_2.field_C = 46;
 
                     yw->self_full->ypaworld_func159(&arg159_2);
-                    yw->field_1a00 = yw->field_1614;
+                    yw->field_1a00 = yw->timeStamp;
                 }
             }
         }
@@ -4159,7 +4159,7 @@ void ypaworld_func64__sub19__sub2__sub0(_NC_STACK_ypaworld *yw, int id)
 {
     supetItemProto *sitem = &yw->field_2d90->supetItems[id];
 
-    sitem->field_104 = (yw->field_1614 - sitem->field_F0) * 1200.0 / 2400.0;
+    sitem->field_104 = (yw->timeStamp - sitem->field_F0) * 1200.0 / 2400.0;
 
     float a5 = sitem->sec_x * 1200.0 + 600.0;
     float a6 = -(sitem->sec_y * 1200.0 + 600.0);
@@ -4328,7 +4328,7 @@ void ypaworld_func64__sub3(_NC_STACK_ypaworld *yw)
         {
             if ( yw->field_1b74 == yw->field_1b80->owner || !yw->field_1b74 )
             {
-                if ( yw->field_1614 - yw->field_1a08 > 10000 )
+                if ( yw->timeStamp - yw->field_1a08 > 10000 )
                 {
                     yw_arg159 arg159;
                     arg159.unit = yw->field_1b84;
@@ -4339,7 +4339,7 @@ void ypaworld_func64__sub3(_NC_STACK_ypaworld *yw)
                     yw->self_full->ypaworld_func159(&arg159);
                 }
 
-                yw->field_1a08 = yw->field_1614;
+                yw->field_1a08 = yw->timeStamp;
             }
         }
     }
@@ -4642,8 +4642,8 @@ void yw_score(_NC_STACK_ypaworld *yw, yw_arg184 *arg, player_status *pl_status)
     switch ( arg->type )
     {
     case 2:
-        pl_status[arg->t26.owner].p4++;
-        pl_status[arg->t26.owner].p5++;
+        pl_status[arg->t26.owner].sectorsTaked++;
+        pl_status[arg->t26.owner].score++;
         break;
 
     case 3:
@@ -4651,36 +4651,36 @@ void yw_score(_NC_STACK_ypaworld *yw, yw_arg184 *arg, player_status *pl_status)
         int owner = (arg->t34.field_1 >> 3) & 7;
         int v8 = arg->t34.field_1 & 0xC0;
 
-        pl_status[owner].p1++;
+        pl_status[owner].destroyed++;
 
         if ( v8 == 0x80 )
         {
-            pl_status[owner].p2++;
-            pl_status[owner].p5 += 20;
+            pl_status[owner].destroyedByUser++;
+            pl_status[owner].score += 20;
         }
         else if ( v8 == 0xC0 )
         {
-            pl_status[owner].p2++;
-            pl_status[owner].p5 += 200;
+            pl_status[owner].destroyedByUser++;
+            pl_status[owner].score += 200;
         }
         else
         {
-            pl_status[owner].p5 += 10;
+            pl_status[owner].score += 10;
         }
 
         if ( arg->t34.field_2 & 0x8000 )
-            pl_status[owner].p5 += 1000;
+            pl_status[owner].score += 1000;
     }
     break;
 
     case 6:
-        pl_status[arg->t26.owner].p5 += 100;
-        pl_status[arg->t26.owner].p6++;
+        pl_status[arg->t26.owner].score += 100;
+        pl_status[arg->t26.owner].power++;
         break;
 
     case 7:
-        pl_status[arg->t7.owner].p5 += 500;
-        pl_status[arg->t7.owner].p7++;
+        pl_status[arg->t7.owner].score += 500;
+        pl_status[arg->t7.owner].upgrades++;
         break;
 
     default:
@@ -4887,7 +4887,7 @@ void ypaworld_func184__sub0(_NC_STACK_ypaworld *yw, yw_f726c *hist_list, yw_arg1
             tlen = 5;
 
             hist_list->field_C++;
-            hist_list->field_10 = yw->field_1614;
+            hist_list->field_10 = yw->timeStamp;
 
             if ( hist_list->field_1C )
             {
@@ -4935,7 +4935,7 @@ void ypaworld_func184__sub0(_NC_STACK_ypaworld *yw, yw_f726c *hist_list, yw_arg1
         if ( yw->GameShell )
         {
             if ( yw->GameShell->isHost )
-                yw_score(yw, arg, yw->field_7796);
+                yw_score(yw, arg, yw->ingamePlayerStatus);
         }
     }
 }
@@ -5445,7 +5445,7 @@ int ypaworld_func64__sub22__sub0(_NC_STACK_ypaworld *yw, int event_id)
     evnt *ev = &yw->map_events->evnts[event_id];
 
     if ( !ev->field_8 )
-        ev->field_8 = yw->field_1614;
+        ev->field_8 = yw->timeStamp;
 
     if ( ev->field_0 == 1 )
     {
@@ -5466,7 +5466,7 @@ int ypaworld_func64__sub22__sub0(_NC_STACK_ypaworld *yw, int event_id)
     }
     else if ( ev->field_0 == 5 )
     {
-        if ( (yw->field_1614 - ev->field_8) > ev->field_10 )
+        if ( (yw->timeStamp - ev->field_8) > ev->field_10 )
         {
             if ( ev->field_C )
                 return 3;
@@ -5485,10 +5485,10 @@ int ypaworld_func64__sub22__sub0(_NC_STACK_ypaworld *yw, int event_id)
     }
     else if ( ev->field_0 == 2 )
     {
-        if ( (yw->field_1614 - ev->field_8) <= ev->field_10 )
+        if ( (yw->timeStamp - ev->field_8) <= ev->field_10 )
             return 3;
 
-        ev->field_8 = yw->field_1614;
+        ev->field_8 = yw->timeStamp;
 
         if ( ev->field_4 )
         {
@@ -5511,10 +5511,10 @@ int ypaworld_func64__sub22__sub0(_NC_STACK_ypaworld *yw, int event_id)
             return 1;
         }
 
-        if ( (yw->field_1614 - ev->field_8) <= ev->field_10 )
+        if ( (yw->timeStamp - ev->field_8) <= ev->field_10 )
             return 3;
 
-        ev->field_8 = yw->field_1614;
+        ev->field_8 = yw->timeStamp;
 
         if ( ev->field_4 )
         {
@@ -5537,7 +5537,7 @@ int ypaworld_func64__sub22__sub0(_NC_STACK_ypaworld *yw, int event_id)
     }
     else if ( ev->field_0 == 6 )
     {
-        if ( (yw->field_1614 - ev->field_8) <= ev->field_10 )
+        if ( (yw->timeStamp - ev->field_8) <= ev->field_10 )
             return 2;
 
         if ( ev->field_C )
@@ -5570,7 +5570,7 @@ void ypaworld_func64__sub22__sub1(_NC_STACK_ypaworld *yw, int evnt_id)
 
     evnt *ev = &mevent->evnts[evnt_id];
 
-    mevent->field_C = yw->field_1614;
+    mevent->field_C = yw->timeStamp;
 
     yw_arg159 arg159;
     arg159.field_4 = 100;
@@ -5607,7 +5607,7 @@ void ypaworld_func64__sub22(_NC_STACK_ypaworld *yw)
         {
             if ( i == mevent->field_8 )
             {
-                if ( (yw->field_1614 - mevent->field_C) > mevent->evnts[ mevent->field_8 ].field_10 )
+                if ( (yw->timeStamp - mevent->field_C) > mevent->evnts[ mevent->field_8 ].field_10 )
                     ypaworld_func64__sub22__sub1(yw, mevent->field_8);
             }
             else
@@ -6169,7 +6169,7 @@ int recorder_go_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd, int wanted_fram
                 {
                     recorder_read_framedata(rcrd);
 
-                    yw->field_1614 = rcrd->time;
+                    yw->timeStamp = rcrd->time;
 
                     sub_46FDA0(yw, rcrd, 1.0, 0);
                     return 1;
@@ -6190,7 +6190,7 @@ void ypaworld_func163__sub1(_NC_STACK_ypaworld *yw, recorder *rcrd, int a3)
     {
         rcrd->field_78 &= 0xFFFFFFFE;
 
-        while ( rcrd->field_74 - 1 != rcrd->frame_id  &&  (a3 + yw->field_1614) > rcrd->time )
+        while ( rcrd->field_74 - 1 != rcrd->frame_id  &&  (a3 + yw->timeStamp) > rcrd->time )
         {
             if ( read_next_IFF(rcrd->mfile, 2) != -1 )
             {
@@ -6210,14 +6210,14 @@ void ypaworld_func163__sub1(_NC_STACK_ypaworld *yw, recorder *rcrd, int a3)
         {
             if ( rcrd->field_78 & 1 )
             {
-                yw->field_1614 = rcrd->time;
+                yw->timeStamp = rcrd->time;
                 sub_46FDA0(yw, rcrd, 1.0, a3);
             }
             else
             {
-                float v9 = (float)a3 / (float)(rcrd->time - yw->field_1614);
+                float v9 = (float)a3 / (float)(rcrd->time - yw->timeStamp);
 
-                yw->field_1614 += a3;
+                yw->timeStamp += a3;
 
                 sub_46FDA0(yw, rcrd, v9, a3);
             }
@@ -6590,13 +6590,13 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 FontUA::next_line(&cmd);
             }
 
-            int this_time = yw->field_1614 / 1024;
+            int this_time = yw->timeStamp / 1024;
             int all_time;
 
             if ( yw->isNetGame )
                 all_time = 0;
             else
-                all_time = (yw->field_1614 + yw->playerstatus[1].p3) / 1024;
+                all_time = (yw->timeStamp + yw->playerstatus[1].elapsedTime) / 1024;
 
             cmd = sub_445654(
                       yw,
@@ -6767,7 +6767,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 cmd = sub_445654(yw, cmd, buf_sprintf, "packet: %d bytes", yw->GameShell->net_packet_size);
                 FontUA::next_line(&cmd);
 
-                if ( yw->field_7592 )
+                if ( yw->netInfoOverkill )
                     cmd = sub_445654(yw, cmd, buf_sprintf, "WARNING: INFO OVERKILL");
 
                 FontUA::next_line(&cmd);

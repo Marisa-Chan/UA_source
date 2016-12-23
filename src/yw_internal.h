@@ -1,18 +1,11 @@
 #ifndef  YWINT_H_INCLUDED
 #define YWINT_H_INCLUDED
 
+#include "def_parser.h"
+
 extern polys *p_renderStack;
 extern polysDat *p_renderARGstack;
 extern polysDat *p_renderARGstackEND;
-
-struct lvlnet_t1
-{
-    int field_0;
-    int field_4;
-    int field_8;
-    int field_C;
-    int field_10;
-};
 
 struct Key_stru
 {
@@ -534,4 +527,5 @@ void ypaworld_func163__sub1(_NC_STACK_ypaworld *yw, recorder *rcrd, int a3);
 void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_ypabact *bact, struC5 *inpt);
 
 char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, float y, int value, int maxval, int valCH, int valBG, const char *a10, const char *a11, int flag = 0);
+void sub_4D0C24(_NC_STACK_ypaworld *yw, const char *a1, const char *a2);
 #endif

@@ -41,6 +41,7 @@ struct WeapProto;
 struct BuildProto;
 struct roboProto;
 struct map_event;
+struct uamessage_base;
 
 struct usr_str
 {
@@ -70,23 +71,23 @@ struct inp_key_setting
 
 struct player_status
 {
-    int p1;
-    int p2;
-    int p3;
-    int p4;
-    int p5;
-    int p6;
-    int p7;
+    int destroyed;
+    int destroyedByUser;
+    int elapsedTime;
+    int sectorsTaked;
+    int score;
+    int power;
+    int upgrades;
 
     player_status()
     {
-        p1 = 0;
-        p2 = 0;
-        p3 = 0;
-        p4 = 0;
-        p5 = 0;
-        p6 = 0;
-        p7 = 0;
+        destroyed = 0;
+        destroyedByUser = 0;
+        elapsedTime = 0;
+        sectorsTaked = 0;
+        score = 0;
+        power = 0;
+        upgrades = 0;
     }
 };
 
@@ -115,7 +116,7 @@ struct netType1
     uint8_t cd;
     uint8_t p[2];
     int w84upd;
-    int checksum;
+    uint32_t checksum;
     char name[64];
 };
 
@@ -146,7 +147,7 @@ struct UserData
 
     _NC_STACK_ypaworld *p_ypaworld;
     struC5 *field_3A;
-    int field_3E;
+    int frameTime;
     uint32_t glblTime;
     int field_46;
     int field_4A;
@@ -252,14 +253,15 @@ struct UserData
 
     char callSIGN[64];
     uint32_t netCRC;
-    uint32_t takTime;
-    char netPlayerOwner;
+    int32_t takTime;
+    uint8_t netPlayerOwner;
     char FreeFraction;
     char SelectedFraction;
     char field_1CD7;
     int isHost;
     int modemAskSession;
 
+    uint32_t msgcount;
     char field_1CE8;
     char rdyStart;
     char remoteMode;
@@ -278,9 +280,12 @@ struct UserData
 
     int update_time_norm;
     int flush_time_norm;
+    int kickTime;
 
     uint32_t netProblemCount;
 
+    uint32_t deadCheck;
+    uint32_t sendScore;
     netType2 players[8];
     netType1 players2[4];
     NC_STACK_button *confirm_button;
@@ -307,11 +312,23 @@ struct UserData
     uint32_t last_cdchk;
     uint32_t field_5457;
     uint32_t field_545B;
-
-    int netsend_speed;
-    int netrecv_speed;
-
-    int net_packet_size;
+    uint32_t netsend_count;
+    uint32_t netrecv_count;
+    uint32_t netrecv_time;
+    uint32_t netsend_speed;
+    uint32_t netrecv_speed;
+    uint32_t netrecv_bpsMin;
+    uint32_t netrecv_bpsMax;
+    uint32_t netrecv_bpsAvr;
+    uint32_t netsend_bpsMin;
+    uint32_t netsend_bpsMax;
+    uint32_t netsend_bpsAvr;
+    uint32_t net_gcnt;
+    uint32_t net_packet_size;
+    uint32_t net_packet_min;
+    uint32_t net_packet_max;
+    uint32_t net_packet_cnt;
+    uint32_t net_packet_avr;
 };
 
 struct trec_bct
@@ -970,7 +987,7 @@ struct _NC_STACK_ypaworld
     int field_1608;
     int field_160c;
     int field_1610;
-    int field_1614;
+    int timeStamp;
     int field_1618;
     int field_161c;
     char *buildDate;
@@ -1130,14 +1147,15 @@ struct _NC_STACK_ypaworld
     int field_756E;
 
     NC_STACK_windp *windp;
-
+    uint32_t netUpdateTime;
     int isNetGame;
     uint32_t netGameStarted;
     int field_7586;
 
-    int field_7592;
+    int netInfoOverkill;
 
-    int field_759A;
+    int netStartTime;
+    int netInterpolate;
     int field_759E;
     char field_75A2; //array 64?
 
@@ -1150,7 +1168,7 @@ struct _NC_STACK_ypaworld
     int p_1_grp_cnt;
     int p_1_grp[4][8];
     player_status playerstatus[8];
-    player_status field_7796[8];
+    player_status ingamePlayerStatus[8];
     int maxroboenergy;
     int maxreloadconst;
     yw_samples *samples;
@@ -1487,13 +1505,13 @@ struct yw_arg181_b
 
 struct yw_arg181
 {
-    void *value;
-    int val_size;
-    char *field_8;
-    int field_C;
-    int field_10;
-    int field_14;
-    int field_18;
+    uamessage_base *data;
+    int dataSize;
+    char *senderID;
+    int senderFlags;
+    char *recvID;
+    int recvFlags;
+    int garant;
 };
 
 struct yw_arg161

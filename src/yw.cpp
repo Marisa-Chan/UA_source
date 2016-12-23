@@ -46,7 +46,7 @@ char **ypaworld__string_pointers;
 
 GuiList stru_5C91D0;
 
-int bact_id = 0x10000;;
+int bact_id = 0x10000;
 
 // method 169
 int dword_5A7A78;
@@ -121,7 +121,7 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     field_1608 = 0;
     field_160c = 0;
     field_1610 = 0;
-    field_1614 = 0;
+    timeStamp = 0;
     field_1618 = 0;
     field_161c = 0;
     buildDate = NULL;
@@ -292,14 +292,14 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     field_756E = 0;
 
     windp = NULL;
-
+    netUpdateTime = 0;
     isNetGame = 0;
     netGameStarted = 0;
     field_7586 = 0;
 
-    field_7592 = 0;
+    netInfoOverkill = 0;
 
-    field_759A = 0;
+    netInterpolate = 0;
     field_759E = 0;
     field_75A2 = 0; //array 64?
 
@@ -1076,12 +1076,12 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             }
         }
 
-        yw->field_1614 += arg->field_4;
+        yw->timeStamp += arg->field_4;
         yw->field_1618 = arg->field_4;
         yw->field_161c++;
 
         yw->field_1b24.user_action = 0;
-        yw->field_1b24.gTime = yw->field_1614;
+        yw->field_1b24.gTime = yw->timeStamp;
         yw->field_1b24.frameTime = arg->field_4;
         yw->field_1b24.units_count = 0;
         yw->field_1b24.inpt = arg->field_8;
@@ -1090,7 +1090,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
         yw_arg184 arg184;
         arg184.type = 1;
-        arg184.t15.field_1 = yw->field_1614;
+        arg184.t15.field_1 = yw->timeStamp;
         yw->self_full->ypaworld_func184(&arg184);
 
         uint32_t v22 = profiler_begin();
@@ -1215,7 +1215,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 //          if ( v44 )
 //            yw->GameShell->field_549B++;
 //
-//          if ( dword_5174E0 )
+//          if ( SPEED_DOWN_NET )
 //            yw->field_7586 = 1500;
 //          else
 //            yw->field_7586 = yw->GameShell->field_288C;
@@ -1372,7 +1372,7 @@ void sub_47C29C(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
     sub_47C1EC(yw, v17, &a3a, &a4);
 
     yw->field_2b78 = a3;
-    yw->field_2b7c = yw->field_1614;
+    yw->field_2b7c = yw->timeStamp;
     yw->last_modify_vhcl = a3a;
     yw->last_modify_weapon = 0;
     yw->last_modify_build = a4;
@@ -1416,11 +1416,11 @@ void sub_47C29C(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
 //      *(_uint16_t *)&v13[16] = v16;
 
             yw_arg181 arg181;
-            arg181.field_10 = 0;
-            arg181.val_size = 20;
-            arg181.field_18 = 1;
-            arg181.field_14 = 2;
-            arg181.value = v13;
+            arg181.recvID = 0;
+            arg181.dataSize = 20;
+            arg181.garant = 1;
+            arg181.recvFlags = 2;
+            arg181.data = (uamessage_base *)v13;
 
             yw->self_full->ypaworld_func181(&arg181);
         }
@@ -1466,11 +1466,11 @@ void ypaworld_func129__sub1(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
 //    *(_uint16_t *)&v15[16] = a3;
 
         yw_arg181 arg181;
-        arg181.field_14 = 2;
-        arg181.val_size = 20;
-        arg181.field_10 = 0;
-        arg181.field_18 = 1;
-        arg181.value = v15;
+        arg181.recvFlags = 2;
+        arg181.dataSize = 20;
+        arg181.recvID = 0;
+        arg181.garant = 1;
+        arg181.data = (uamessage_base *)v15;
 
         yw->self_full->ypaworld_func181(&arg181);
     }
@@ -1542,7 +1542,7 @@ void yw_ActivateWunderstein(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
     yw->last_modify_weapon = 0;
 
     yw->field_2b78 = a3;
-    yw->field_2b7c = yw->field_1614;
+    yw->field_2b7c = yw->timeStamp;
 
     gemProto *v4 = &yw->gems[a3];
 
@@ -1657,9 +1657,9 @@ void ypaworld_func129__sub0(_NC_STACK_ypaworld *yw, cellArea *cell, yw_arg129 *a
         {
             if ( arg->unit )
             {
-                if ( yw->field_1b80->owner != arg->unit->owner && yw->field_1614 - yw->field_1a1c > 5000 )
+                if ( yw->field_1b80->owner != arg->unit->owner && yw->timeStamp - yw->field_1a1c > 5000 )
                 {
-                    yw->field_1a1c = yw->field_1614;
+                    yw->field_1a1c = yw->timeStamp;
 
                     yw_arg159 arg159;
                     arg159.unit = NULL;
@@ -3719,16 +3719,16 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int a2)
 
 void sb_0x4e75e8__sub0(_NC_STACK_ypaworld *yw)
 {
-    lvlnet_t1 regions[256];
+    ua_dRect regions[256];
 
     if ( yw->LevelNet->ilbm_mask_map )
     {
         for (int i = 0; i < 256; i++)
         {
-            regions[i].field_0 = 10000;
-            regions[i].field_4 = 10000;
-            regions[i].field_8 = -10000;
-            regions[i].field_C = -10000;
+            regions[i].x1 = 10000;
+            regions[i].y1 = 10000;
+            regions[i].x2 = -10000;
+            regions[i].y2 = -10000;
         }
 
         bitmap_intern *bitm = yw->LevelNet->ilbm_mask_map->getBMD_pBitmap();
@@ -3743,19 +3743,19 @@ void sb_0x4e75e8__sub0(_NC_STACK_ypaworld *yw)
                 int v7 = ln[x];
                 if ( v7 < 256 )
                 {
-                    lvlnet_t1 *v8 = &regions[v7];
+                    ua_dRect *v8 = &regions[v7];
 
-                    if ( x < v8->field_0 )
-                        v8->field_0 = x;
+                    if ( x < v8->x1 )
+                        v8->x1 = x;
 
-                    if ( x > v8->field_8 )
-                        v8->field_8 = x;
+                    if ( x > v8->x2 )
+                        v8->x2 = x;
 
-                    if ( y < v8->field_4 )
-                        v8->field_4 = y;
+                    if ( y < v8->y1 )
+                        v8->y1 = y;
 
-                    if ( y > v8->field_C )
-                        v8->field_C = y;
+                    if ( y > v8->y2 )
+                        v8->y2 = y;
                 }
             }
         }
@@ -3764,12 +3764,12 @@ void sb_0x4e75e8__sub0(_NC_STACK_ypaworld *yw)
         {
             mapINFO *minf = &yw->LevelNet->mapInfos[i];
 
-            if ( minf->field_0 && minf->field_0 != 4 && regions[i].field_0 != 10000 )
+            if ( minf->field_0 && minf->field_0 != 4 && regions[i].x1 != 10000 )
             {
-                minf->field_9C.x1 = 2.0 * ((float)(regions[i].field_0) / (float)bitm->width) + -1.0;
-                minf->field_9C.x2 = 2.0 * ((float)(regions[i].field_8) / (float)bitm->width) + -1.0;
-                minf->field_9C.y1 = 2.0 * ((float)(regions[i].field_4) / (float)bitm->height) + -1.0;
-                minf->field_9C.y2 = 2.0 * ((float)(regions[i].field_C) / (float)bitm->height) + -1.0;
+                minf->field_9C.x1 = 2.0 * ((float)(regions[i].x1) / (float)bitm->width) + -1.0;
+                minf->field_9C.x2 = 2.0 * ((float)(regions[i].x2) / (float)bitm->width) + -1.0;
+                minf->field_9C.y1 = 2.0 * ((float)(regions[i].y1) / (float)bitm->height) + -1.0;
+                minf->field_9C.y2 = 2.0 * ((float)(regions[i].y2) / (float)bitm->height) + -1.0;
             }
             else
             {
@@ -6797,7 +6797,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
     stru_515040.m21 = 0.0;
     stru_515040.m22 = 1.0;
 
-    sub_423EFC(usr->field_3E, &stru_515034, &stru_515034, &stru_515040);
+    sub_423EFC(usr->frameTime, &stru_515034, &stru_515034, &stru_515040);
 
     yw->win3d = GFXe.getC3D();
 
@@ -6823,7 +6823,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 
     if ( yw->isNetGame )
     {
-        yw->field_7586 -= usr->field_3E;
+        yw->field_7586 -= usr->frameTime;
         if ( yw->field_7586 <= 0 )
         {
 //      v18 = 1;
@@ -6859,13 +6859,11 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 
     if ( usr->netSelMode == 4 )
     {
-        ypaworld_func158__sub2(yw);
-        ypaworld_func158__sub1(usr);
+        yw_CheckCRCs(yw);
+        yw_CheckCDs(usr);
     }
 
-    int v15 = sub_46D3EC(usr->field_3A);
-
-    if ( v15 )
+    if ( sub_46D3EC(usr->field_3A) )
         usr->field_5457 = usr->glblTime;
 
     if ( (usr->glblTime - usr->field_5457) > usr->field_545B && usr->field_46 == 1 )
@@ -6965,7 +6963,7 @@ size_t NC_STACK_ypaworld::ypaworld_func162(const char *fname)
     recorder *repl = yw->replayer;
 
     strcpy(repl->filename, fname);
-    yw->field_1614 = 0;
+    yw->timeStamp = 0;
 
     if ( !recorder_open_replay(repl) )
         return 0;
@@ -8562,12 +8560,7 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
     }
 }
 
-
-size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
-{
-    dprintf("MAKE ME %s\n","ypaworld_func179");
-    return 0;
-}
+//179 method in yw_net
 
 
 void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
@@ -8837,7 +8830,7 @@ void NC_STACK_ypaworld::setYW_userVehicle(NC_STACK_ypabact *bact)
         stack__ypaworld.field_1b7c = bact;
         stack__ypaworld.field_1b84 = bact->getBACT_pBact();
 
-        stack__ypaworld.field_1a0c = stack__ypaworld.field_1614;
+        stack__ypaworld.field_1a0c = stack__ypaworld.timeStamp;
         stack__ypaworld.field_1a10 = stack__ypaworld.field_1b84->commandID;
         stack__ypaworld.field_17bc = 0;
 

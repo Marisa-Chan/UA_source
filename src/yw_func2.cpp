@@ -957,7 +957,7 @@ void listSaveDir(UserData *usr, const char *saveDir)
                             ypa_log_out("Warning, cannot parse %s for time scanning\n", buf);
 
                         v10->field_C = 1;
-                        v10->pStatus_3 = usr->p_ypaworld->playerstatus[1].p3;
+                        v10->pStatus_3 = usr->p_ypaworld->playerstatus[1].elapsedTime;
                     }
                 }
             }
@@ -1810,11 +1810,11 @@ void sub_46DC1C(UserData *usr)
     yw_arg181_a v11;
     yw_arg181 v5;
 
-    v5.value = &v11;
-    v5.val_size = 20;
-    v5.field_10 = 0;
-    v5.field_14 = 2;
-    v5.field_18 = 1;
+    v5.data = (uamessage_base *)&v11;
+    v5.dataSize = 20;
+    v5.recvID = 0;
+    v5.recvFlags = 2;
+    v5.garant = 1;
 
     v11.fld_0 = 1000;
     v11.fld_3 = 0;
@@ -2244,7 +2244,7 @@ void sub_46C3E4(UserData *usr)
     {
         if ( !strcasecmp(v4->profile_subdir, usr->user_name))
         {
-            v4->pStatus_3 = usr->p_ypaworld->playerstatus[1].p3;
+            v4->pStatus_3 = usr->p_ypaworld->playerstatus[1].elapsedTime;
             break;
         }
         v4 = (profilesNode *)v4->next;
@@ -4641,12 +4641,12 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         if ( v6_l == 1204 || v6_l == 1205 || v6_l == 1206 || v6_l == 1207 )
         {
             v378.fld_3 = 0;
-            v346.val_size = 20;
-            v346.field_10 = 0;
-            v346.field_18 = 1;
-            v346.value = &v378;
+            v346.dataSize = 20;
+            v346.recvID = 0;
+            v346.garant = 1;
+            v346.data = (uamessage_base *)&v378;
             v378.fld_0 = 1021;
-            v346.field_14 = 2;
+            v346.recvFlags = 2;
         }
 
         if ( v6_l == 103 || v6_l == 1202 )
@@ -4811,7 +4811,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     usr->netSel = -1;
                     usr->network_listvw.firstShownEntries = 0;
                     usr->msgBuffLine = 0;
-                    usr->msgBuffers[32][0] = 0;
+                    usr->lastSender[0] = 0;
                     usr->netName[0] = 0;
                     usr->netSelMode = 3;
                 }
@@ -4833,11 +4833,11 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v375.fld_3 = 0;
                 v375.fld_4_1 = 1;
 
-                v353.val_size = 20;
-                v353.field_14 = 2;
-                v353.value = &v375;
-                v353.field_10 = 0;
-                v353.field_18 = 1;
+                v353.dataSize = 20;
+                v353.recvFlags = 2;
+                v353.data = (uamessage_base *)&v375;
+                v353.recvID = 0;
+                v353.garant = 1;
 
                 usr->p_ypaworld->self_full->ypaworld_func181(&v353);
 
@@ -4867,11 +4867,11 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v375.fld_0 = 1023;
                 v375.fld_3 = 0;
 
-                v353.field_14 = 2;
-                v353.field_10 = 0;
-                v353.value = &v375;
-                v353.val_size = 20;
-                v353.field_18 = 1;
+                v353.recvFlags = 2;
+                v353.recvID = 0;
+                v353.data = (uamessage_base *)&v375;
+                v353.dataSize = 20;
+                v353.garant = 1;
 
                 usr->p_ypaworld->self_full->ypaworld_func181(&v353);
 
@@ -4916,13 +4916,13 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
                     strcpy(v312.fld_4, usr->netName);
 
-                    v346.field_C = 1;
-                    v346.value = (yw_arg181_a *)&v312;
-                    v346.val_size = 80;
-                    v346.field_14 = 2;
-                    v346.field_10 = 0;
-                    v346.field_8 = usr->callSIGN;
-                    v346.field_18 = 1;
+                    v346.senderFlags = 1;
+                    v346.data = (uamessage_base *)&v312;
+                    v346.dataSize = 80;
+                    v346.recvFlags = 2;
+                    v346.recvID = 0;
+                    v346.senderID = usr->callSIGN;
+                    v346.garant = 1;
 
                     usr->p_ypaworld->self_full->ypaworld_func181(&v346);
 
@@ -5123,11 +5123,11 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
                         yw_arg181 v325;
 
-                        v325.field_18 = 1;
-                        v325.value = (yw_arg181_a *)&v309;
-                        v325.val_size = 80;
-                        v325.field_14 = 2;
-                        v325.field_10 = 0;
+                        v325.garant = 1;
+                        v325.data = (uamessage_base *)&v309;
+                        v325.dataSize = 80;
+                        v325.recvFlags = 2;
+                        v325.recvID = 0;
 
                         usr->p_ypaworld->self_full->ypaworld_func181(&v325);
 
@@ -5173,8 +5173,8 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 }
             }
 
-            if ( usr->nInputMode != -1 )
-                usr->network_listvw.PosOnSelected(usr->nInputMode);
+            if ( usr->netSel != -1 )
+                usr->network_listvw.PosOnSelected(usr->netSel);
 
             usr->field_3A->downed_key = 0;
         }

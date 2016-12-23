@@ -117,11 +117,11 @@ int NC_STACK_ypabact::ypabact_func0__sub0(stack_vals *stak)
                         }
 
                         yw_arg181 v13;
-                        v13.field_10 = 0;
-                        v13.field_14 = 2;
-                        v13.value = v14;
-                        v13.field_18 = 1;
-                        v13.val_size = 28;
+                        v13.recvID = 0;
+                        v13.recvFlags = 2;
+                        v13.data = (uamessage_base *)v14;
+                        v13.garant = 1;
+                        v13.dataSize = 28;
 
                         ywo->ypaworld_func181(&v13);
                     }
@@ -3801,11 +3801,11 @@ void NC_STACK_ypabact::Die()
                 if ( bact->bact_type != BACT_TYPES_ROBO )
                 {
                     yw_arg181 arg181;
-                    arg181.value = v51;
-                    arg181.field_14 = 2;
-                    arg181.val_size = 32;
-                    arg181.field_10 = 0;
-                    arg181.field_18 = 1;
+                    arg181.data = (uamessage_base *)v51;
+                    arg181.recvFlags = 2;
+                    arg181.dataSize = 32;
+                    arg181.recvID = 0;
+                    arg181.garant = 1;
 
                     yw->self_full->ypaworld_func181(&arg181);
                 }
@@ -3880,11 +3880,11 @@ void NC_STACK_ypabact::SetState(setState_msg *arg)
                 buf[29] = bact->field_24;*/
 
                 yw_arg181 v9;
-                v9.field_14 = 2;
-                v9.val_size = 32;
-                v9.field_18 = 1;
-                v9.field_10 = 0;
-                v9.value = buf;
+                v9.recvFlags = 2;
+                v9.dataSize = 32;
+                v9.garant = 1;
+                v9.recvID = 0;
+                v9.data = (uamessage_base *)buf;
 
                 bact->ywo->ypaworld_func181(&v9);
             }
@@ -4096,11 +4096,11 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
             }
 
             yw_arg181 arg181;
-            arg181.value = v23;
-            arg181.val_size = 68;
-            arg181.field_14 = 2;
-            arg181.field_10 = 0;
-            arg181.field_18 = 1;
+            arg181.data = (uamessage_base *)v23;
+            arg181.dataSize = 68;
+            arg181.recvFlags = 2;
+            arg181.recvID = 0;
+            arg181.garant = 1;
 
             yw->self_full->ypaworld_func181(&arg181);
         }
@@ -4471,11 +4471,11 @@ void NC_STACK_ypabact::ModifyEnergy(bact_arg84 *arg)
 
             yw_arg181 arg181;
 
-            arg181.field_10 = 0;
-            arg181.field_14 = 2;
-            arg181.value = v14;
-            arg181.val_size = 32;
-            arg181.field_18 = 1;
+            arg181.recvID = 0;
+            arg181.recvFlags = 2;
+            arg181.data = (uamessage_base *)v14;
+            arg181.dataSize = 32;
+            arg181.garant = 1;
 
             yw->self_full->ypaworld_func181(&arg181);
         }
@@ -5182,11 +5182,11 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
 //              *(_uint32_t *)&v39[16] = bnode->ypabact__id;
 
                             yw_arg181 v32;
-                            v32.field_14 = 2;
-                            v32.val_size = 20;
-                            v32.field_10 = 0;
-                            v32.field_18 = 1;
-                            v32.value = v39;
+                            v32.recvFlags = 2;
+                            v32.dataSize = 20;
+                            v32.recvID = 0;
+                            v32.garant = 1;
+                            v32.data = (uamessage_base *)v39;
 
                             yw->self_full->ypaworld_func181(&v32);
 
@@ -8118,11 +8118,11 @@ void NC_STACK_ypabact::Release(NC_STACK_ypabact *b_bacto)
 //        *(_uint32_t *)&v7[16] = b_bact->ypabact__id;
 //        v7[20] = b_bact->field_24;
                 yw_arg181 v6;
-                v6.field_14 = 2;
-                v6.field_10 = 0;
-                v6.value = v7;
-                v6.field_18 = 1;
-                v6.val_size = 24;
+                v6.recvFlags = 2;
+                v6.recvID = 0;
+                v6.data = (uamessage_base *)v7;
+                v6.garant = 1;
+                v6.dataSize = 24;
 
                 yw->self_full->ypaworld_func181(&v6);
             }
@@ -8498,11 +8498,11 @@ void NC_STACK_ypabact::ChangeSectorEnergy(yw_arg129 *arg)
 //    *(_uint32_t *)&v8[32] = v7;
 
         yw_arg181 arg181;
-        arg181.field_10 = 0;
-        arg181.field_14 = 2;
-        arg181.value = v8;
-        arg181.val_size = 40;
-        arg181.field_18 = 1;
+        arg181.recvID = 0;
+        arg181.recvFlags = 2;
+        arg181.data = (uamessage_base *)v8;
+        arg181.dataSize = 40;
+        arg181.garant = 1;
 
         bact->ywo->ypaworld_func181(&arg181);
     }
@@ -8599,11 +8599,11 @@ void NC_STACK_ypabact::DeadTimeUpdate(update_msg *arg)
 //          memcpy(&v9[40], &bact->field_651, 0x24);
 
                     yw_arg181 arg181;
-                    arg181.value = v9;
-                    arg181.val_size = 76;
-                    arg181.field_10 = 0;
-                    arg181.field_14 = 2;
-                    arg181.field_18 = 1;
+                    arg181.data = (uamessage_base *)v9;
+                    arg181.dataSize = 76;
+                    arg181.recvID = 0;
+                    arg181.recvFlags = 2;
+                    arg181.garant = 1;
 
                     bact->ywo->ypaworld_func181(&arg181);
                 }
@@ -9104,11 +9104,11 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
         }
 
         yw_arg181 v13;
-        v13.field_10 = 0;
-        v13.field_14 = 2;
-        v13.value = v14;
-        v13.field_18 = 1;
-        v13.val_size = 28;
+        v13.recvID = 0;
+        v13.recvFlags = 2;
+        v13.data = (uamessage_base *)v14;
+        v13.garant = 1;
+        v13.dataSize = 28;
 
         bact->ywo->ypaworld_func181(&v13);
     }
