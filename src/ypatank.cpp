@@ -8,6 +8,8 @@
 #include "yparobo.h"
 #include "log.h"
 
+#include "yw_net.h"
+
 
 const NewClassDescr NC_STACK_ypatank::description("ypatank.class", &newinstance);
 
@@ -1802,16 +1804,17 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
 
                                 if ( tank->yw->isNetGame )
                                 {
+                                    uamessage_endPlasma eplMsg;
+                                    eplMsg.msgID = UAMSG_ENDPLASMA;
+                                    eplMsg.owner = v12->owner;
+                                    eplMsg.id = v12->gid;
+
                                     yw_arg181 arg181;
-                                    char v83[20];
-//                *(_uint32_t *)v83 = 1031;
-//                v83[12] = v12->owner;
-//                *(_uint32_t *)&v83[16] = v12->ypabact__id;
                                     arg181.recvID = 0;
-                                    arg181.dataSize = 20;
+                                    arg181.dataSize = sizeof(eplMsg);
                                     arg181.recvFlags = 2;
                                     arg181.garant = 1;
-                                    arg181.data = (uamessage_base *)v83;
+                                    arg181.data = &eplMsg;
 
                                     tank->ywo->ypaworld_func181(&arg181);
 

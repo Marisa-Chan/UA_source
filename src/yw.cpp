@@ -11,6 +11,7 @@
 #include "button.h"
 #include "font.h"
 #include "yparobo.h"
+#include "yw_net.h"
 
 
 const NewClassDescr NC_STACK_ypaworld::description("ypaworld.class", &newinstance);
@@ -1409,18 +1410,18 @@ void sub_47C29C(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
     {
         if ( yw->netgame_exclusivegem )
         {
-            char v13[20];
-//      *(_uint32_t *)v13 = 1020;
-//      v13[12] = yw->GameShell->field_0x1cd4;
-//      *(_uint16_t *)&v13[18] = 1;
-//      *(_uint16_t *)&v13[16] = v16;
+            uamessage_upgrade upMsg;
+            upMsg.msgID = UAMSG_UPGRADE;
+            upMsg.owner = yw->GameShell->netPlayerOwner;
+            upMsg.enable = 1;
+            upMsg.upgradeID = a3;
 
             yw_arg181 arg181;
             arg181.recvID = 0;
-            arg181.dataSize = 20;
+            arg181.dataSize = sizeof(upMsg);
             arg181.garant = 1;
             arg181.recvFlags = 2;
-            arg181.data = (uamessage_base *)v13;
+            arg181.data = &upMsg;
 
             yw->self_full->ypaworld_func181(&arg181);
         }
@@ -1459,18 +1460,18 @@ void ypaworld_func129__sub1(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
 
     if ( yw->isNetGame )
     {
-        char v15[20];
-//    *(_uint32_t *)v15 = 1020;
-//    v15[12] = yw->GameShell->field_0x1cd4;
-//    *(_uint16_t *)&v15[18] = 0;
-//    *(_uint16_t *)&v15[16] = a3;
+        uamessage_upgrade upMsg;
+        upMsg.msgID = UAMSG_UPGRADE;
+        upMsg.owner = yw->GameShell->netPlayerOwner;
+        upMsg.enable = 0;
+        upMsg.upgradeID = a3;
 
         yw_arg181 arg181;
         arg181.recvFlags = 2;
-        arg181.dataSize = 20;
+        arg181.dataSize = sizeof(upMsg);
         arg181.recvID = 0;
         arg181.garant = 1;
-        arg181.data = (uamessage_base *)v15;
+        arg181.data = &upMsg;
 
         yw->self_full->ypaworld_func181(&arg181);
     }

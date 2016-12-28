@@ -7,6 +7,7 @@
 
 #include "yw.h"
 #include "ypacar.h"
+#include "yw_net.h"
 
 #include "log.h"
 
@@ -306,21 +307,21 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
                             {
                                 v63 = 1;
 
-                                char v41[32];
-//                      *(_uint32_t *)v41 = 1010;
-//                      *(_uint32_t *)&v41[4] = car->yw->field_1614;
-//                      v41[12] = v19->owner;
-//                      *(_uint32_t *)&v41[16] = v19->ypabact__id;
-//                      *(_uint32_t *)&v41[20] = -v67;
+                                uamessage_vhclEnergy veMsg;
+                                veMsg.msgID = UAMSG_VHCLENERGY;
+                                veMsg.tstamp = car->yw->timeStamp;
+                                veMsg.owner = v19->owner;
+                                veMsg.id = v19->gid;
+                                veMsg.energy = -v67;
 
                                 yw_arg181 arg181;
                                 arg181.recvID = 0;
                                 arg181.recvFlags = 2;
                                 arg181.senderFlags = 1;
-                                arg181.dataSize = 32;
+                                arg181.dataSize = sizeof(veMsg);
                                 arg181.senderID = car->yw->GameShell->callSIGN;
                                 arg181.garant = 1;
-                                arg181.data = (uamessage_base *)&v41;
+                                arg181.data = &veMsg;
 
                                 car->ywo->ypaworld_func181(&arg181);
                             }

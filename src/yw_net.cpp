@@ -724,33 +724,6 @@ bool yw_NetSetHostStations(_NC_STACK_ypaworld *yw, mapRobo *mapHosts, int hosts_
 
 size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
 {
-//  _NC_STACK_ypaworld *yw; // edi@1
-//  int v4; // ecx@1
-//  int v5; // ebx@1
-//  unsigned int v6; // ebp@7
-//  unsigned int v7; // esi@8
-//  int v8; // ebx@9
-//  cellArea *v9; // edx@9
-//  int result; // eax@14
-//  int v11; // eax@23
-//  int v12; // eax@25
-//  bact_node *i; // eax@27
-//  bact_node *v14; // esi@29
-//  UserData *v15; // edx@33
-//  bact_node *v16; // edx@34
-//  unsigned int v17; // ebp@34
-//  int v18; // ebx@35
-//  UserData *v19; // eax@42
-//  int v20; // ecx@42
-//  int v21; // ecx@42
-//   // [sp+0h] [bp-14DCh]@1
-//  uamessage_syncgame syncMsg; // [sp+1458h] [bp-84h]@34
-//  yw_arg181 ywMsg; // [sp+148Ch] [bp-50h]@42
-//  windp_arg82 windp82; // [sp+14A8h] [bp-34h]@42
-//  int a4; // [sp+14BCh] [bp-20h]@37
-//  int v27; // [sp+14C0h] [bp-1Ch]@1
-//  int v28; // [sp+14C4h] [bp-18h]@1
-
     _NC_STACK_ypaworld *yw = &stack__ypaworld;
     bact_id = 0x10000;
 

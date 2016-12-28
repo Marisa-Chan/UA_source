@@ -5,6 +5,7 @@
 #include "def_parser.h"
 #include "yw_internal.h"
 #include "yw.h"
+#include "yw_net.h"
 #include "input.h"
 
 #include "font.h"
@@ -6990,15 +6991,16 @@ GuiBase * ypaworld_func64__sub7__sub6__sub1()
 void sub_47DB04(_NC_STACK_ypaworld *yw, char a2)
 {
     yw_arg181 v3;
-    char v4[20];
 
-//  *(_uint32_t *)v4 = 1035;
-//  v4[12] = yw->GameShell->field_0x1cd4;
-//  v4[16] = a2;
+    uamessage_exit exMsg;
+    exMsg.msgID = UAMSG_EXIT;
+    exMsg.owner = yw->GameShell->netPlayerOwner;
+    exMsg.norm = a2;
+
     v3.recvID = 0;
     v3.recvFlags = 2;
-    v3.data = (uamessage_base *)v4;
-    v3.dataSize = 20;
+    v3.data = &exMsg;
+    v3.dataSize = sizeof(exMsg);
     v3.garant = 1;
 
     yw->self_full->ypaworld_func181(&v3);

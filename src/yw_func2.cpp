@@ -8,6 +8,8 @@
 #include "font.h"
 #include "button.h"
 
+#include "yw_net.h"
+
 #include <math.h>
 
 extern Key_stru keySS[256];
@@ -1807,19 +1809,17 @@ void sb_0x46aa8c(UserData *usr)
 
 void sub_46DC1C(UserData *usr)
 {
-    yw_arg181_a v11;
-    yw_arg181 v5;
+    uamessage_load lvlMsg;
+    lvlMsg.msgID = UAMSG_LOAD;
+    lvlMsg.owner = 0;
+    lvlMsg.level = usr->netLevelID;
 
-    v5.data = (uamessage_base *)&v11;
-    v5.dataSize = 20;
+    yw_arg181 v5;
+    v5.data = &lvlMsg;
+    v5.dataSize = sizeof(lvlMsg);
     v5.recvID = 0;
     v5.recvFlags = 2;
     v5.garant = 1;
-
-    v11.fld_0 = 1000;
-    v11.fld_3 = 0;
-    v11.fld_4_1 = usr->netLevelID;
-    v11.fld_4_2 = 0; // HACK
 
     usr->p_ypaworld->self_full->ypaworld_func181(&v5);
 
@@ -4625,7 +4625,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
 
     yw_arg181 v346;
-    yw_arg181_a v378;
+    uamessage_fraction fracMsg;
 
     windp_arg79 v368;
 
@@ -4640,12 +4640,13 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
         if ( v6_l == 1204 || v6_l == 1205 || v6_l == 1206 || v6_l == 1207 )
         {
-            v378.fld_3 = 0;
-            v346.dataSize = 20;
+            fracMsg.msgID = UAMSG_FRACTION;
+            fracMsg.owner = 0;
+
             v346.recvID = 0;
             v346.garant = 1;
-            v346.data = (uamessage_base *)&v378;
-            v378.fld_0 = 1021;
+            v346.data = &fracMsg;
+            v346.dataSize = sizeof(fracMsg);
             v346.recvFlags = 2;
         }
 
@@ -4655,9 +4656,9 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         }
         else if ( v6_l == 1204 )
         {
-            v378.fld_4_1 = usr->SelectedFraction;
+            fracMsg.freefrac = usr->SelectedFraction;
             usr->FreeFraction |= usr->SelectedFraction;
-            v378.fld_4_2 = 1;
+            fracMsg.newfrac = 1;
             usr->SelectedFraction = 1;
             usr->FreeFraction &= 0xFE;
 
@@ -4665,9 +4666,9 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         }
         else if ( v6_l == 1205 )
         {
-            v378.fld_4_1 = usr->SelectedFraction;
+            fracMsg.freefrac = usr->SelectedFraction;
             usr->FreeFraction |= usr->SelectedFraction;
-            v378.fld_4_2 = 2;
+            fracMsg.newfrac = 2;
             usr->FreeFraction &= 0xFD;
             usr->SelectedFraction = 2;
 
@@ -4675,9 +4676,9 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         }
         else if ( v6_l == 1206 )
         {
-            v378.fld_4_1 = usr->SelectedFraction;
+            fracMsg.freefrac = usr->SelectedFraction;
             usr->FreeFraction |= usr->SelectedFraction;
-            v378.fld_4_2 = 4;
+            fracMsg.newfrac = 4;
             usr->SelectedFraction = 4;
             usr->FreeFraction &= 0xFB;
 
@@ -4685,9 +4686,9 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         }
         else if ( v6_l == 1207 )
         {
-            v378.fld_4_1 = usr->SelectedFraction;
+            fracMsg.freefrac = usr->SelectedFraction;
             usr->FreeFraction |= usr->SelectedFraction;
-            v378.fld_4_2 = 8;
+            fracMsg.newfrac = 8;
             usr->SelectedFraction = 8;
             usr->FreeFraction &= 0xF7;
 
@@ -4824,18 +4825,18 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     v368.ID++;
 
                 yw_arg181 v353;
-                yw_arg181_a v375;
+                uamessage_ready rdyMsg;
 
                 usr->rdyStart = 1;
                 usr->players2[v368.ID].rdyStart = 1;
 
-                v375.fld_0 = 1023;
-                v375.fld_3 = 0;
-                v375.fld_4_1 = 1;
+                rdyMsg.msgID = UAMSG_READY;
+                rdyMsg.owner = 0;
+                rdyMsg.rdy = 1;
 
-                v353.dataSize = 20;
+                v353.dataSize = sizeof(rdyMsg);
                 v353.recvFlags = 2;
-                v353.data = (uamessage_base *)&v375;
+                v353.data = &rdyMsg;
                 v353.recvID = 0;
                 v353.garant = 1;
 
@@ -4859,18 +4860,19 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
 
                 yw_arg181 v353;
-                yw_arg181_a v375;
+                uamessage_ready rdyMsg;
 
                 usr->rdyStart = 0;
                 usr->players2[v368.ID].rdyStart = 0;
 
-                v375.fld_0 = 1023;
-                v375.fld_3 = 0;
+                rdyMsg.msgID = UAMSG_READY;
+                rdyMsg.owner = 0;
+                rdyMsg.rdy = 0;
 
                 v353.recvFlags = 2;
                 v353.recvID = 0;
-                v353.data = (uamessage_base *)&v375;
-                v353.dataSize = 20;
+                v353.data = &rdyMsg;
+                v353.dataSize = sizeof(rdyMsg);
                 v353.garant = 1;
 
                 usr->p_ypaworld->self_full->ypaworld_func181(&v353);
@@ -4909,16 +4911,15 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
                 if ( usr->netName[0] )
                 {
-                    yw_arg181_b v312;
+                    uamessage_message msgMsg;
+                    msgMsg.msgID = UAMSG_MESSAGE;
+                    msgMsg.owner = 0;
 
-                    v312.fld_0 = 1018;
-                    v312.fld_3 = 0;
-
-                    strcpy(v312.fld_4, usr->netName);
+                    strncpy(msgMsg.message, usr->netName, 64);
 
                     v346.senderFlags = 1;
-                    v346.data = (uamessage_base *)&v312;
-                    v346.dataSize = 80;
+                    v346.data = &msgMsg;
+                    v346.dataSize = sizeof(msgMsg);
                     v346.recvFlags = 2;
                     v346.recvID = 0;
                     v346.senderID = usr->callSIGN;
@@ -4926,12 +4927,12 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
                     usr->p_ypaworld->self_full->ypaworld_func181(&v346);
 
-                    sub_4D0C24(usr->p_ypaworld, usr->callSIGN, v312.fld_4);
+                    sub_4D0C24(usr->p_ypaworld, usr->callSIGN, msgMsg.message);
 
                     usr->netName[0] = 0;
                     usr->netNameCurPos = 0;
 
-                    int v223 = strtol(v312.fld_4, NULL, 0);
+                    int v223 = strtol(msgMsg.message, NULL, 0);
                     if ( v223 > 0 )
                         sub_4D9550(yw, v223);
                 }
@@ -5110,32 +5111,27 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 case 4:
                     if ( usr->netName[0] )
                     {
-                        char v311[64];
+                        uamessage_message msgMsg;
+                        msgMsg.msgID = UAMSG_MESSAGE;
+                        msgMsg.owner = 0;
 
-                        strcpy(v311, usr->netName);
-
-                        yw_arg181_b v309;
-
-                        v309.fld_0 = 1018;
-                        v309.fld_3 = 0;
-
-                        strcpy(v309.fld_4, usr->netName);
+                        strncpy(msgMsg.message, usr->netName, 64);
 
                         yw_arg181 v325;
 
                         v325.garant = 1;
-                        v325.data = (uamessage_base *)&v309;
-                        v325.dataSize = 80;
+                        v325.data = &msgMsg;
+                        v325.dataSize = sizeof(msgMsg);
                         v325.recvFlags = 2;
                         v325.recvID = 0;
 
                         usr->p_ypaworld->self_full->ypaworld_func181(&v325);
 
-                        sub_4D0C24(usr->p_ypaworld, usr->callSIGN, v309.fld_4);
+                        sub_4D0C24(usr->p_ypaworld, usr->callSIGN, msgMsg.message);
                         usr->netName[0] = 0;
                         usr->netNameCurPos = 0;
 
-                        int v271 = strtol(v309.fld_4, NULL, 0);
+                        int v271 = strtol(msgMsg.message, NULL, 0);
                         if ( v271 > 0 )
                             sub_4D9550(yw, v271);
                     }

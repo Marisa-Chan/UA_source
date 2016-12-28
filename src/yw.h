@@ -1484,25 +1484,6 @@ struct yw_arg172
     int field_10;
 };
 
-struct yw_arg181_a
-{
-    int fld_0;
-    int fld_1;
-    int fld_2;
-    int fld_3;
-    int16_t fld_4_1;
-    int16_t fld_4_2;
-};
-
-struct yw_arg181_b
-{
-    int fld_0;
-    int fld_1;
-    int fld_2;
-    int fld_3;
-    char fld_4[64];
-};
-
 struct yw_arg181
 {
     uamessage_base *data;

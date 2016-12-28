@@ -5,6 +5,7 @@
 #include "def_parser.h"
 #include "yw_internal.h"
 #include "yw.h"
+#include "yw_net.h"
 #include "input.h"
 
 #include "yparobo.h"
@@ -2762,8 +2763,8 @@ int sb_0x456384__sub0(_NC_STACK_ypaworld *yw, int x, int y, int power)
 
 void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, int ownerid2, int blg_id, int a7)
 {
-    char v30[272];
-    memset(v30, 0, 272);
+    uamessage_bldVhcl bvMsg;
+    memset(&bvMsg, 0, sizeof(bvMsg));
 
     cellArea *cell = &yw->cells[ yw->sectors_maxX2 * y + x ];
     BuildProto *bld = &yw->BuildProtos[ blg_id ];
@@ -2847,8 +2848,6 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
 
                 robo->setROBO_commCount(v39);
 
-                int v52 = 0;
-
                 for (int i = 0; i < 8; i++)
                 {
                     if ( !bld->sbacts[i].sbact_vehicle )
@@ -2899,14 +2898,13 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                         if ( yw->isNetGame )
                         {
                             gbct->gid |= ownerid2 << 24;
-                            /**(_uint32_t *)&v30[v52 + 16] = gbct->ypabact__id;
-                            *(float *)&v30[v52 + 20] = bld->sbacts[i].sbact_dir_x;
-                            *(float *)&v30[v52 + 24] = bld->sbacts[i].sbact_dir_y;
-                            *(float *)&v30[v52 + 28] = bld->sbacts[i].sbact_dir_z;
-                            *(float *)&v30[v52 + 32] = gbct->field_621.sx;
-                            *(float *)&v30[v52 + 36] = gbct->field_621.sy;
-                            *(float *)&v30[v52 + 40] = gbct->field_621.sz;
-                            *(_uint16_t *)&v30[v52 + 44] = bld->sbacts[i].sbact_vehicle;*/
+
+                            bvMsg.vhcl[i].id = gbct->gid;
+                            bvMsg.vhcl[i].base.sx = bld->sbacts[i].sbact_dir_x;
+                            bvMsg.vhcl[i].base.sy = bld->sbacts[i].sbact_dir_y;
+                            bvMsg.vhcl[i].base.sz = bld->sbacts[i].sbact_dir_z;
+                            bvMsg.vhcl[i].pos = gbct->position;
+                            bvMsg.vhcl[i].protoID = bld->sbacts[i].sbact_vehicle;
                         }
 
                         if ( commander )
@@ -2920,24 +2918,22 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                             robo->AddSubject(gunn);
                         }
                     }
-
-                    v52 += 32;
                 }
             }
 
             if ( yw->isNetGame && v43 && robo )
             {
-                /**(_uint32_t *)v30 = 1013;
-                *(_uint32_t *)&v30[4] = yw->field_1614;
-                v30[12] = ownerid2;*/
+                bvMsg.msgID = UAMSG_BUILDINGVHCL;
+                bvMsg.tstamp = yw->timeStamp;
+                bvMsg.owner = ownerid2;
 
                 yw_arg181 v31;
                 v31.recvFlags = 2;
                 v31.recvID = 0;
                 v31.senderID = yw->GameShell->callSIGN;
                 v31.senderFlags = 1;
-                v31.data = (uamessage_base *)v30;
-                v31.dataSize = 272;
+                v31.data = &bvMsg;
+                v31.dataSize = sizeof(bvMsg);
                 v31.garant = 1;
 
                 yw->self_full->ypaworld_func181(&v31);

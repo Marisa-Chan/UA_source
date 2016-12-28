@@ -7,6 +7,7 @@
 #include "ypabact.h"
 #include "yparobo.h"
 #include "ypamissile.h"
+#include "yw_net.h"
 
 #include "log.h"
 
@@ -79,7 +80,7 @@ int NC_STACK_ypabact::ypabact_func0__sub0(stack_vals *stak)
 
                 case BACT_ATT_VIEWER:
                 {
-                    char v14[28];
+                    uamessage_viewer viewMsg;
 
                     if ( stk->value.i_data )
                     {
@@ -88,7 +89,7 @@ int NC_STACK_ypabact::ypabact_func0__sub0(stack_vals *stak)
                         bact->oflags |= BACT_OFLAG_VIEWER;
 
                         if ( yw->isNetGame )
-                            v14[25] = 1;
+                            viewMsg.view = 1;
 
                         startSound(&bact->soundcarrier, 8);
                     }
@@ -97,33 +98,33 @@ int NC_STACK_ypabact::ypabact_func0__sub0(stack_vals *stak)
                         bact->oflags &= ~BACT_OFLAG_VIEWER;
 
                         if ( yw->isNetGame )
-                            v14[25] = 0;
+                            viewMsg.view = 0;
 
                         sub_424000(&bact->soundcarrier, 8);
                     }
 
                     if ( yw->isNetGame ) // Network message send routine?
                     {
-                        *(int *)(&v14[0]) = 1014;
-                        v14[12] = bact->owner;
-                        v14[24] = bact->bact_type;
-                        *(int *)(&v14[16]) = bact->gid;
+                        viewMsg.msgID = UAMSG_VIEWER;
+                        viewMsg.owner = bact->owner;
+                        viewMsg.classID = bact->bact_type;
+                        viewMsg.id = bact->gid;
 
-                        if ( v14[24] == 4 )
+                        if ( viewMsg.classID == 4 )
                         {
                             NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(this);
                             __NC_STACK_ypabact *a4 = miss->getMISS_launcher();
-                            *(int *)&v14[20] = a4->gid;
+                            viewMsg.launcher = a4->gid;
                         }
 
-                        yw_arg181 v13;
-                        v13.recvID = 0;
-                        v13.recvFlags = 2;
-                        v13.data = (uamessage_base *)v14;
-                        v13.garant = 1;
-                        v13.dataSize = 28;
+                        yw_arg181 ywMsg;
+                        ywMsg.recvID = 0;
+                        ywMsg.recvFlags = 2;
+                        ywMsg.data = &viewMsg;
+                        ywMsg.garant = 1;
+                        ywMsg.dataSize = sizeof(viewMsg);
 
-                        ywo->ypaworld_func181(&v13);
+                        ywo->ypaworld_func181(&ywMsg);
                     }
                 }
                 break;
@@ -3470,29 +3471,25 @@ void NC_STACK_ypabact::Die()
 {
     __NC_STACK_ypabact *bact = &stack__ypabact;
 
-    char v51[32];
-
     if ( !(bact->status_flg & BACT_STFLAG_DEATH1) )
     {
         int maxy = bact->ywo->getYW_mapMaxY();
         int maxx = bact->ywo->getYW_mapMaxX();
 
+        uamessage_dead deadMsg;
+        deadMsg.msgID = UAMSG_DEAD;
+        deadMsg.owner = bact->owner;
+        deadMsg.id = bact->gid;
+        deadMsg.newParent = 0;
+        deadMsg.landed = 0;
+        deadMsg.classID = bact->bact_type;
 
-//    *(_uint32_t *)v51 = 1009;
-//    v51[12] = bact->owner;
-//    *(_uint32_t *)&v51[16] = bact->ypabact__id;
-//    *(_uint32_t *)&v51[20] = 0;
-//    v51[28] = 0;
-//    v51[29] = bact->field_24;
-//    int v3;
-//
-//    if ( bact->field_9B1 )
-//      v3 = bact->field_9B1->ypabact__id;
-//    else
-//      v3 = 0;
-//
-//    *(_uint32_t *)&v51[24] = v3;
-//    v51[30] = bact->field_9B5;
+        if ( bact->killer )
+            deadMsg.killer = bact->killer->gid;
+        else
+            deadMsg.killer = 0;
+
+        deadMsg.killerOwner = bact->killer_owner;
 
         _NC_STACK_ypaworld *yw = &bact->ywo->stack__ypaworld;
 
@@ -3572,8 +3569,8 @@ void NC_STACK_ypabact::Die()
 
                 if ( yw->isNetGame )
                 {
-//          if ( bact->owner )
-//            *(_uint32_t *)&v51[20] = v74->bact->ypabact__id;
+                    if (bact->owner)
+                        deadMsg.newParent = v74->bact->gid;
                 }
             }
             else
@@ -3779,8 +3776,8 @@ void NC_STACK_ypabact::Die()
 
                 if ( yw->isNetGame )
                 {
-//          if ( bact->owner )
-//            v51[28] = 1;
+                    if (bact->owner)
+                        deadMsg.landed = 1;
                 }
             }
         }
@@ -3801,9 +3798,9 @@ void NC_STACK_ypabact::Die()
                 if ( bact->bact_type != BACT_TYPES_ROBO )
                 {
                     yw_arg181 arg181;
-                    arg181.data = (uamessage_base *)v51;
+                    arg181.data = &deadMsg;
                     arg181.recvFlags = 2;
-                    arg181.dataSize = 32;
+                    arg181.dataSize = sizeof(deadMsg);
                     arg181.recvID = 0;
                     arg181.garant = 1;
 
@@ -3870,21 +3867,21 @@ void NC_STACK_ypabact::SetState(setState_msg *arg)
         {
             if ( v6 && bact->owner && bact->bact_type != BACT_TYPES_MISSLE )
             {
-                char buf[32];
-                /**(_uint32_t *)buf = 1005;
-                buf[12] = bact->owner;
-                *(_uint32_t *)&buf[16] = bact->ypabact__id;
-                buf[28] = arg->field_0;
-                *(_uint32_t *)&buf[20] = arg->field_4;
-                *(_uint32_t *)&buf[24] = arg->field_8;
-                buf[29] = bact->field_24;*/
+                uamessage_setState ssMsg;
+                ssMsg.msgID = UAMSG_SETSTATE;
+                ssMsg.owner = bact->owner;
+                ssMsg.id = bact->gid;
+                ssMsg.newStatus = arg->newStatus;
+                ssMsg.setFlags = arg->setFlags;
+                ssMsg.unsetFlags = arg->unsetFlags;
+                ssMsg.classID = bact->bact_type;
 
                 yw_arg181 v9;
                 v9.recvFlags = 2;
-                v9.dataSize = 32;
+                v9.dataSize = sizeof(ssMsg);
                 v9.garant = 1;
                 v9.recvID = 0;
-                v9.data = (uamessage_base *)buf;
+                v9.data = &ssMsg;
 
                 bact->ywo->ypaworld_func181(&v9);
             }
@@ -4051,18 +4048,13 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
             }
         }
 
-        char v23[68];
-
-//          *(float *)&v23[56] = arg->field_20.sx;
-//          *(float *)&v23[60] = arg->field_20.sy;
-//          *(float *)&v23[64] = arg->field_20.sz;
+        uamessage_newWeapon wpnMsg;
+        wpnMsg.targetPos = arg->tgt_pos;
 
         if ( v42 == 2 )
         {
             wbact->primTtype = BACT_TGT_TYPE_DRCT;
-            wbact->target_dir.sx = wbact->fly_dir.sx;
-            wbact->target_dir.sy = wbact->fly_dir.sy;
-            wbact->target_dir.sz = wbact->fly_dir.sz;
+            wbact->target_dir = wbact->fly_dir;
         }
 
         wbact->host_station = bact->host_station;
@@ -4075,29 +4067,26 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
         if ( yw->isNetGame )
         {
             wbact->gid |= bact->owner << 24;
-//            *(_uint32_t *)v23 = 1004;
-//            v23[12] = bact->owner;
-//            *(_uint32_t *)&v23[28] = wbact->ypabact__id;
-//            *(_uint32_t *)&v23[32] = bact->ypabact__id;
-//            v23[53] = arg->field_2C;
-//            *(float *)&v23[16] = arg147.pos.sx;
-//            *(float *)&v23[20] = arg147.pos.sy;
-//            *(float *)&v23[24] = arg147.pos.sz;
-//            v23[52] = 0;
-//            *(float *)&v23[36] = wbact->field_605.sx * wbact->field_611;
-//            *(float *)&v23[40] = wbact->field_605.sy * wbact->field_611;
-//            *(float *)&v23[44] = wbact->field_605.sz * wbact->field_611;
-//            v23[54] = wbact->field_3DE;
+
+            wpnMsg.msgID = UAMSG_NEWWEAPON;
+            wpnMsg.owner = bact->owner;
+            wpnMsg.id = wbact->gid;
+            wpnMsg.launcher = bact->gid;
+            wpnMsg.type = arg->weapon;
+            wpnMsg.pos = arg147.pos;
+            wpnMsg.flags = 0;
+            wpnMsg.dir = wbact->fly_dir * wbact->fly_dir_length;
+            wpnMsg.targetType = wbact->primTtype;
 
             if ( wbact->primTtype == BACT_TGT_TYPE_UNIT )
             {
-//              *(_uint32_t *)&v23[48] = wbact->field_3e8->ypabact__id;
-//              v23[55] = wbact->field_3e8->owner;
+                wpnMsg.target = wbact->primT.pbact->gid;
+                wpnMsg.targetOwner = wbact->primT.pbact->owner;
             }
 
             yw_arg181 arg181;
-            arg181.data = (uamessage_base *)v23;
-            arg181.dataSize = 68;
+            arg181.data = &wpnMsg;
+            arg181.dataSize = sizeof(wpnMsg);
             arg181.recvFlags = 2;
             arg181.recvID = 0;
             arg181.garant = 1;
@@ -4452,29 +4441,29 @@ void NC_STACK_ypabact::ModifyEnergy(bact_arg84 *arg)
         }
         else
         {
-            char v14[32];
-//      *(_uint32_t *)v14 = 1010;
-//      v14[12] = bact->owner;
-//      *(_uint32_t *)&v14[16] = bact->ypabact__id;
-//      *(_uint32_t *)&v14[20] = arg->energy;
-//
-//      if ( arg->unit )
-//      {
-//        *(_uint32_t *)&v14[24] = arg->unit->ypabact__id;
-//        v14[28] = arg->unit->owner;
-//      }
-//      else
-//      {
-//        *(_uint32_t *)&v14[24] = 0;
-//        v14[28] = 0;
-//      }
+            uamessage_vhclEnergy vhclEnrgy;
+            vhclEnrgy.msgID = UAMSG_VHCLENERGY;
+            vhclEnrgy.owner = bact->owner;
+            vhclEnrgy.id = bact->gid;
+            vhclEnrgy.energy = arg->energy;
+
+            if ( arg->unit )
+            {
+                vhclEnrgy.killer = arg->unit->gid;
+                vhclEnrgy.killerOwner = arg->unit->owner;
+            }
+            else
+            {
+                vhclEnrgy.killer = 0;
+                vhclEnrgy.killerOwner = 0;
+            }
 
             yw_arg181 arg181;
 
             arg181.recvID = 0;
             arg181.recvFlags = 2;
-            arg181.data = (uamessage_base *)v14;
-            arg181.dataSize = 32;
+            arg181.data = &vhclEnrgy;
+            arg181.dataSize = sizeof(vhclEnrgy);
             arg181.garant = 1;
 
             yw->self_full->ypaworld_func181(&arg181);
@@ -5176,17 +5165,17 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
 
                         if ( yw->isNetGame )
                         {
-                            char v39[20];
-//              *(_uint32_t *)v39 = 1031;
-//              v39[12] = bnode->owner;
-//              *(_uint32_t *)&v39[16] = bnode->ypabact__id;
+                            uamessage_endPlasma epMsg;
+                            epMsg.msgID = UAMSG_ENDPLASMA;
+                            epMsg.owner = bnode->owner;
+                            epMsg.id = bnode->gid;
 
                             yw_arg181 v32;
                             v32.recvFlags = 2;
-                            v32.dataSize = 20;
+                            v32.dataSize = sizeof(epMsg);
                             v32.recvID = 0;
                             v32.garant = 1;
-                            v32.data = (uamessage_base *)v39;
+                            v32.data = &epMsg;
 
                             yw->self_full->ypaworld_func181(&v32);
 
@@ -8112,17 +8101,19 @@ void NC_STACK_ypabact::Release(NC_STACK_ypabact *b_bacto)
         {
             if ( b_bact->bact_type != BACT_TYPES_MISSLE )
             {
-                char v7[24];
-//        *(_uint32_t *)v7 = 1002;
-//        v7[12] = b_bact->owner;
-//        *(_uint32_t *)&v7[16] = b_bact->ypabact__id;
-//        v7[20] = b_bact->field_24;
+                uamessage_destroyVhcl destrMsg;
+
+                destrMsg.msgID = UAMSG_DESTROYVHCL;
+                destrMsg.owner = b_bact->owner;
+                destrMsg.id = b_bact->gid;
+                destrMsg.type = b_bact->bact_type;
+
                 yw_arg181 v6;
                 v6.recvFlags = 2;
                 v6.recvID = 0;
-                v6.data = (uamessage_base *)v7;
+                v6.data = &destrMsg;
                 v6.garant = 1;
-                v6.dataSize = 24;
+                v6.dataSize = sizeof(destrMsg);
 
                 yw->self_full->ypaworld_func181(&v6);
             }
@@ -8484,24 +8475,25 @@ void NC_STACK_ypabact::ChangeSectorEnergy(yw_arg129 *arg)
 
     if ( bact->ywo->stack__ypaworld.isNetGame )
     {
-        char v8[40];
-//    *(_uint32_t *)v8 = 1011;
-//    v8[12] = bact->owner;
-//    *(float *)&v8[16] = arg->pos.sx;
-//    *(float *)&v8[20] = arg->pos.sy;
-//    *(float *)&v8[24] = arg->pos.sz;
-//    *(_uint32_t *)&v8[28] = arg->field_10;
-        v8[36] = v5;
-//    v7 = arg->unit;
-//    if ( v7 )
-//      v7 = (__NC_STACK_ypabact *)v7->ypabact__id;
-//    *(_uint32_t *)&v8[32] = v7;
+        uamessage_sectorEnergy seMsg;
+        seMsg.msgID = UAMSG_SECTORENERGY;
+        seMsg.owner = bact->owner;
+        seMsg.pos.sx = arg->pos.sx;
+        seMsg.pos.sy = arg->pos.sy;
+        seMsg.pos.sz = arg->pos.sz;
+        seMsg.energy = arg->field_10;
+        seMsg.sectOwner = v5;
+
+        if ( arg->unit )
+            seMsg.whoHit = arg->unit->gid;
+        else
+            seMsg.whoHit = 0;
 
         yw_arg181 arg181;
         arg181.recvID = 0;
         arg181.recvFlags = 2;
-        arg181.data = (uamessage_base *)v8;
-        arg181.dataSize = 40;
+        arg181.data = &seMsg;
+        arg181.dataSize = sizeof(seMsg);
         arg181.garant = 1;
 
         bact->ywo->ypaworld_func181(&arg181);
@@ -8587,20 +8579,18 @@ void NC_STACK_ypabact::DeadTimeUpdate(update_msg *arg)
 
                 if ( bact->ywo->stack__ypaworld.isNetGame )
                 {
-                    char v9[76];
-//          *(_uint32_t *)v9 = 1030;
-//          v9[12] = bact->owner;
-//          *(float *)&v9[20] = 0.75;
-//          *(_uint32_t *)&v9[16] = a2;
-//          *(_uint32_t *)&v9[24] = bact->ypabact__id;
-//          *(float *)&v9[28] = bact->field_621.sx;
-//          *(float *)&v9[32] = bact->field_621.sy;
-//          *(float *)&v9[36] = bact->field_621.sz;
-//          memcpy(&v9[40], &bact->field_651, 0x24);
+                    uamessage_startPlasma splMsg;
+                    splMsg.msgID = UAMSG_STARTPLASMA;
+                    splMsg.owner = bact->owner;
+                    splMsg.scale = 0.75;
+                    splMsg.time = a2;
+                    splMsg.id = bact->gid;
+                    splMsg.pos = bact->position;
+                    splMsg.dir = bact->rotation;
 
                     yw_arg181 arg181;
-                    arg181.data = (uamessage_base *)v9;
-                    arg181.dataSize = 76;
+                    arg181.data = &splMsg;
+                    arg181.dataSize = sizeof(splMsg);
                     arg181.recvID = 0;
                     arg181.recvFlags = 2;
                     arg181.garant = 1;
@@ -9034,7 +9024,7 @@ size_t NC_STACK_ypabact::SetPath(bact_arg124 *arg)
 void NC_STACK_ypabact::setBACT_viewer(int vwr)
 {
     __NC_STACK_ypabact *bact = &stack__ypabact;
-    char v14[28];
+    uamessage_viewer viewMsg;
 
     if ( vwr )
     {
@@ -9049,7 +9039,7 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
         bact->oflags |= BACT_OFLAG_VIEWER;
 
         if ( bact->yw->isNetGame )
-            v14[25] = 1;
+            viewMsg.view = 1;
 
         if ( bact->bact_type == BACT_TYPES_BACT && !(bact->status_flg & BACT_STFLAG_LAND) && bact->status == BACT_STATUS_NORMAL )
             bact->thraction = bact->force;
@@ -9061,7 +9051,7 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
         bact->oflags &= ~BACT_OFLAG_VIEWER;
 
         if ( bact->yw->isNetGame )
-            v14[25] = 0;
+            viewMsg.view = 0;
 
         sub_424000(&bact->soundcarrier, 8);
 
@@ -9091,24 +9081,24 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
 
     if ( bact->yw->isNetGame ) // Network message send routine?
     {
-        *(int *)(&v14[0]) = 1014;
-        v14[12] = bact->owner;
-        v14[24] = bact->bact_type;
-        *(int *)(&v14[16]) = bact->gid;
+        viewMsg.msgID = UAMSG_VIEWER;
+        viewMsg.owner = bact->owner;
+        viewMsg.classID = bact->bact_type;
+        viewMsg.id = bact->gid;
 
-        if ( v14[24] == 4 )
+        if ( viewMsg.classID == BACT_TYPES_MISSLE )
         {
             NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(this);
             __NC_STACK_ypabact *a4 = miss->getMISS_launcher();
-            *(int *)&v14[20] = a4->gid;
+            viewMsg.launcher = a4->gid;
         }
 
         yw_arg181 v13;
         v13.recvID = 0;
         v13.recvFlags = 2;
-        v13.data = (uamessage_base *)v14;
+        v13.data = &viewMsg;
         v13.garant = 1;
-        v13.dataSize = 28;
+        v13.dataSize = sizeof(viewMsg);
 
         bact->ywo->ypaworld_func181(&v13);
     }

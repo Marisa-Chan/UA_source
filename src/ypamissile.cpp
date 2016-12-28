@@ -5,6 +5,7 @@
 #include "yw.h"
 #include "ypamissile.h"
 #include "yparobo.h"
+#include "yw_net.h"
 
 #include "log.h"
 
@@ -1058,7 +1059,7 @@ void NC_STACK_ypamissile::ypamissile_func129(void *)
     arg83.force = bact->fly_dir_length;
     arg83.mass = bact->mass;
 
-    float v16 = miss->selfie->fly_dir_length * miss->selfie->mass;
+    float v16 = bact->fly_dir_length * bact->mass;
 
     if ( v16 > miss->yw->max_impulse && miss->yw->max_impulse > 0.0 )
     {
@@ -1077,7 +1078,7 @@ void NC_STACK_ypamissile::ypamissile_func129(void *)
 
             if ( miss->yw->isNetGame )
             {
-                if ( miss->selfie->owner != bct->owner )
+                if ( bact->owner != bct->owner )
                     v10 = 0;
             }
 
@@ -1090,31 +1091,22 @@ void NC_STACK_ypamissile::ypamissile_func129(void *)
 
     if ( miss->yw->isNetGame )
     {
-        char v13[56];
-//    *(_uint32_t *)v13 = 1026;
-//    v13[12] = miss->selfie->owner;
-//    *(_uint32_t *)&v13[16] = miss->selfie->ypabact__id;
-//    v11 = (char *)&miss->selfie->field_621;
-//    *(_uint32_t *)&v13[20] = *(_uint32_t *)v11;
-//    v11 += 4;
-//    *(_uint32_t *)&v13[24] = *(_uint32_t *)v11;
-//    *(_uint32_t *)&v13[28] = *((_uint32_t *)v11 + 1);
-//    *(_uint32_t *)&v13[32] = miss->selfie->energy;
-//    v12 = (char *)&miss->selfie->field_605;
-//    *(_uint32_t *)&v13[40] = *(_uint32_t *)v12;
-//    v12 += 4;
-//    *(_uint32_t *)&v13[44] = *(_uint32_t *)v12;
-//    v12 += 4;
-//    *(_uint32_t *)&v13[48] = *(_uint32_t *)v12;
-//    *(_uint32_t *)&v13[52] = *((_uint32_t *)v12 + 1);
-//    *(float *)&v13[36] = miss->selfie->mass;
+        uamessage_impulse impMsg;
+        impMsg.msgID = UAMSG_IMPULSE;
+        impMsg.owner = bact->owner;
+        impMsg.id = bact->gid;
+        impMsg.pos = bact->position;
+        impMsg.impulse = bact->energy;
+        impMsg.dir = bact->fly_dir;
+        impMsg.dir_len = bact->fly_dir_length;
+        impMsg.mass = bact->mass;
 
         yw_arg181 arg181;
         arg181.recvID = 0;
-        arg181.dataSize = 56;
+        arg181.dataSize = sizeof(impMsg);
         arg181.recvFlags = 2;
         arg181.garant = 1;
-        arg181.data = (uamessage_base *)v13;
+        arg181.data = &impMsg;
 
         miss->ywo->ypaworld_func181(&arg181);
     }

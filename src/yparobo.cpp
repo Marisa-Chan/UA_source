@@ -6,6 +6,8 @@
 #include "yw.h"
 #include "yparobo.h"
 
+#include "yw_net.h"
+
 #include <math.h>
 
 const NewClassDescr NC_STACK_yparobo::description("yparobo.class", &newinstance);
@@ -731,24 +733,22 @@ void NC_STACK_yparobo::initForce(bact_node *unit)
                 {
                     untbct->gid |= untbct->owner << 24;
 
-                    char v14[44];
-                    /**(_uint32_t *)v14 = 1001;
-                    v14[12] = untbct->owner;
-                    *(float *)&v14[16] = untbct->field_621.sx;
-                    *(float *)&v14[20] = untbct->field_621.sy;
-                    *(float *)&v14[24] = untbct->field_621.sz;
-                    v14[41] = untbct->id;
-                    *(_uint32_t *)&v14[28] = untbct->parent_bact->ypabact__id;
-                    *(_uint32_t *)&v14[32] = untbct->ypabact__id;
-                    v14[40] = 2;
-                    *(_uint32_t *)&v14[36] = unit->bact->field_2E;*/
+                    uamessage_newVhcl nvMsg;
+                    nvMsg.msgID = UAMSG_NEWVHCL;
+                    nvMsg.owner = untbct->owner;
+                    nvMsg.pos = untbct->position;
+                    nvMsg.type = untbct->vehicleID;
+                    nvMsg.parent = untbct->parent_bact->gid;
+                    nvMsg.id = untbct->gid;
+                    nvMsg.kind = 2;
+                    nvMsg.commandID = unit->bact->commandID;
 
                     yw_arg181 arg181;
                     arg181.recvFlags = 2;
-                    arg181.dataSize = 44;
+                    arg181.dataSize = sizeof(nvMsg);
                     arg181.recvID = 0;
                     arg181.garant = 1;
-                    arg181.data = (uamessage_base *)v14;
+                    arg181.data = &nvMsg;
 
                     robo->wrld->ypaworld_func181(&arg181);
                 }
@@ -1114,17 +1114,17 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
 
         if ( yw->isNetGame )
         {
-            char v17[20];
-//      *(_uint32_t *)v17 = 1034;
-//      v17[12] = robo->bact_internal->owner;
-//      *(_uint32_t *)&v17[16] = robo->bact_internal->ypabact__id;
+            uamessage_startBeam ebMsg;
+            ebMsg.msgID = UAMSG_ENDBEAM;
+            ebMsg.owner = bact->owner;
+            ebMsg.id = bact->gid;
 
             yw_arg181 v16;
             v16.recvID = 0;
             v16.recvFlags = 2;
-            v16.dataSize = 20;
+            v16.dataSize = sizeof(ebMsg);
             v16.garant = 1;
-            v16.data = (uamessage_base *)v17;
+            v16.data = &ebMsg;
 
             yw->self_full->ypaworld_func181(&v16);
         }
@@ -2008,23 +2008,21 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                     bct->gid |= bct->owner << 24;
                     bct->commandID |= bct->owner << 24;
 
-                    char v56[44];
-                    /* *(_uint32_t *)v56 = 1001;
-                    v56[12] = bct->owner;
-                    *(float *)&v56[16] = bct->field_621.sx;
-                    *(float *)&v56[20] = bct->field_621.sy;
-                    *(float *)&v56[24] = bct->field_621.sz;
-                    v56[41] = bct->id;
-                    *(_uint32_t *)&v56[28] = bct->parent_bact->ypabact__id;
-                    *(_uint32_t *)&v56[32] = bct->ypabact__id;
-                    v56[40] = 1;
-                    *(_uint32_t *)&v56[36] = bct->field_2E;*/
+                    uamessage_newVhcl nvMsg;
+                    nvMsg.msgID = UAMSG_NEWVHCL;
+                    nvMsg.owner = bct->owner;
+                    nvMsg.pos = bct->position;
+                    nvMsg.type = bct->vehicleID;
+                    nvMsg.parent = bct->parent_bact->gid;
+                    nvMsg.id = bct->gid;
+                    nvMsg.kind = 1;
+                    nvMsg.commandID = bct->commandID;
 
                     arg181.recvFlags = 2;
-                    arg181.dataSize = 44;
+                    arg181.dataSize = sizeof(nvMsg);
                     arg181.recvID = 0;
                     arg181.garant = 1;
-                    arg181.data = (uamessage_base *)v56;
+                    arg181.data = &nvMsg;
                     ywo->ypaworld_func181(&arg181);
                 }
 
@@ -2073,21 +2071,20 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                 {
                     bct->gid |= bct->owner << 24;
 
-                    char v56[44];
-                    /**(_uint32_t *)v56 = 1001;
-                    v56[12] = bct->owner;
-                    *(float *)&v56[16] = bct->field_621.sx;
-                    *(float *)&v56[20] = bct->field_621.sy;
-                    *(float *)&v56[24] = bct->field_621.sz;
-                    v56[41] = bct->id;
-                    *(_uint32_t *)&v56[28] = bct->parent_bact->ypabact__id;
-                    *(_uint32_t *)&v56[32] = bct->ypabact__id;
-                    v56[40] = 2;
-                    *(_uint32_t *)&v56[36] = arg->field_1C->field_2E;*/
+                    uamessage_newVhcl nvMsg;
+                    nvMsg.msgID = UAMSG_NEWVHCL;
+                    nvMsg.owner = bct->owner;
+                    nvMsg.pos = bct->position;
+                    nvMsg.type = bct->vehicleID;
+                    nvMsg.parent = bct->parent_bact->gid;
+                    nvMsg.id = bct->gid;
+                    nvMsg.kind = 2;
+                    nvMsg.commandID = bct->commandID;
+
                     arg181.recvID = 0;
                     arg181.recvFlags = 2;
-                    arg181.data = (uamessage_base *)v56;
-                    arg181.dataSize = 44;
+                    arg181.data = &nvMsg;
+                    arg181.dataSize = sizeof(nvMsg);
                     arg181.garant = 1;
 
                     ywo->ypaworld_func181(&arg181);
@@ -2121,17 +2118,18 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
 
                 if ( yw->isNetGame )
                 {
-                    char v63[24];
-                    /**(_uint32_t *)v63 = 1012;
-                    v63[12] = bact->owner;
-                    *(_uint32_t *)&v63[16] = *(_uint32_t *)(v51 + 24);
-                    *(_uint16_t *)&v63[20] = *(_uint16_t *)(v51 + 36);
-                    *(_uint16_t *)&v63[22] = *(_uint16_t *)(v51 + 40);*/
+                    uamessage_startBuild sbMsg;
+                    sbMsg.msgID = UAMSG_STARTBUILD;
+                    sbMsg.owner = bact->owner;
+                    sbMsg.bproto = arg->protoID;
+                    sbMsg.sec_x = arg->target_sect_x;
+                    sbMsg.sec_y = arg->target_sect_y;
+
                     arg181.recvID = 0;
                     arg181.recvFlags = 2;
-                    arg181.data = (uamessage_base *)v63;
+                    arg181.data = &sbMsg;
                     arg181.garant = 1;
-                    arg181.dataSize = 24;
+                    arg181.dataSize = sizeof(sbMsg);
 
                     ywo->ypaworld_func181(&arg181);
                 }
@@ -2150,17 +2148,16 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
             robo->field_511 = 1500;
             if ( yw->isNetGame )
             {
-                char v57[32];
-                /**(_uint32_t *)v57 = 1033;
-                v57[12] = bact->owner;
-                *(_uint32_t *)&v57[28] = bact->ypabact__id;
-                *(float *)&v57[16] = robo->field_515.sx;
-                *(float *)&v57[20] = robo->field_515.sy;
-                *(float *)&v57[24] = robo->field_515.sz;*/
+                uamessage_startBeam stbMsg;
+                stbMsg.msgID = UAMSG_STARTBEAM;
+                stbMsg.owner = bact->owner;
+                stbMsg.id = bact->gid;
+                stbMsg.pos = robo->field_515;
+
                 arg181.recvID = 0;
                 arg181.recvFlags = 2;
-                arg181.data = (uamessage_base *)v57;
-                arg181.dataSize = 32;
+                arg181.data = &stbMsg;
+                arg181.dataSize = sizeof(stbMsg);
                 arg181.garant = 1;
 
                 ywo->ypaworld_func181(&arg181);
@@ -3261,24 +3258,22 @@ bact_node *NC_STACK_yparobo::allocForce(robo_loct1 *arg)
             unt_bct->gid |= unt_bct->owner << 24;
             unt_bct->commandID |= unt_bct->owner << 24;
 
-            char a1a[44];
-            /*
-            *(_uint32_t *)a1a = 1001;
-            a1a[12] = unt_bct->owner;
-            *(float *)&a1a[16] = unt_bct->field_621.sx;
-            *(float *)&a1a[20] = unt_bct->field_621.sy;
-            *(float *)&a1a[24] = unt_bct->field_621.sz;
-            a1a[41] = unt_bct->id;
-            *(_uint32_t *)&a1a[28] = unt_bct->parent_bact->ypabact__id;
-            *(_uint32_t *)&a1a[32] = unt_bct->ypabact__id;
-            a1a[40] = 1;
-            *(_uint32_t *)&a1a[36] = unt_bct->field_2E;*/
+            uamessage_newVhcl nvMsg;
+
+            nvMsg.msgID = UAMSG_NEWVHCL;
+            nvMsg.owner = unt_bct->owner;
+            nvMsg.pos = unt_bct->position;
+            nvMsg.type = unt_bct->vehicleID;
+            nvMsg.parent = unt_bct->parent_bact->gid;
+            nvMsg.id = unt_bct->gid;
+            nvMsg.kind = 1;
+            nvMsg.commandID = unt_bct->commandID;
 
             yw_arg181 arg181;
             arg181.recvID = 0;
             arg181.recvFlags = 2;
-            arg181.data = (uamessage_base *)a1a;
-            arg181.dataSize = 44;
+            arg181.data = &nvMsg;
+            arg181.dataSize = sizeof(nvMsg);
             arg181.garant = 1;
 
             robo->wrld->ypaworld_func181(&arg181);
@@ -4405,21 +4400,22 @@ void NC_STACK_yparobo::checkCommander()
 
                                     if ( arg90.ret_unit )
                                     {
-                                        char v24[44];
-//										*(_uint32_t *)v24 = 1027;
-//										v24[12] = robo->bact_internal->owner;
-//										*(_uint32_t *)&v24[16] = arg90.ret_unit->ypabact__id;
-//										v24[20] = arg90.ret_unit->owner;
-//										*(_uint32_t *)&v24[32] = 0;
-//										*(_uint32_t *)&v24[36] = 0;
-//										*(_uint32_t *)&v24[40] = 0;
-//										*(_uint32_t *)&v24[24] = 34;
-//										*(_uint32_t *)&v24[28] = 19;
+                                        uamessage_logmsg logMsg;
+                                        logMsg.msgID = UAMSG_LOGMSG;
+                                        logMsg.owner = bact->owner;
+                                        logMsg.sender = arg90.ret_unit->gid;
+                                        logMsg.senderOwner = arg90.ret_unit->owner;
+                                        logMsg.pr1 = 0;
+                                        logMsg.pr2 = 0;
+                                        logMsg.pr3 = 0;
+                                        logMsg.pri = 34;
+                                        logMsg.id = 19;
+
                                         yw_arg181 arg181;
                                         arg181.recvID = 0;
                                         arg181.recvFlags = 2;
-                                        arg181.data = (uamessage_base *)v24;
-                                        arg181.dataSize = 44;
+                                        arg181.data = &logMsg;
+                                        arg181.dataSize = sizeof(logMsg);
                                         arg181.garant = 1;
                                         robo->wrld->ypaworld_func181(&arg181);
                                     }
@@ -5986,17 +5982,19 @@ void NC_STACK_yparobo::Die()
 
     int a4 = getBACT_yourLastSeconds();
 
-    char v16[24];
+    uamessage_hostDie hdMsg;
 
     if ( !(bact->status_flg & BACT_STFLAG_DEATH1) )
     {
-        /*(_uint32_t *)v16 = 1016;
-        v16[12] = bact->owner;
-        if ( bact->field_9B1 )
-          *(_uint32_t *)&v16[16] = bact->field_9B1->ypabact__id;
+        hdMsg.msgID = UAMSG_HOSTDIE;
+        hdMsg.owner = bact->owner;
+
+        if (bact->killer)
+            hdMsg.killer = bact->killer->gid;
         else
-          *(_uint32_t *)&v16[16] = 0;
-        v16[20] = bact->field_9B5;*/
+            hdMsg.killer = 0;
+
+        hdMsg.killerOwner = bact->killer_owner;
 
         if ( bact->killer_owner )
         {
@@ -6118,8 +6116,8 @@ void NC_STACK_yparobo::Die()
             if ( bact->owner )
             {
                 yw_arg181 arg181;
-                arg181.data = (uamessage_base *)v16;
-                arg181.dataSize = 24;
+                arg181.data = &hdMsg;
+                arg181.dataSize = sizeof(hdMsg);
                 arg181.recvFlags = 2;
                 arg181.recvID = 0;
                 arg181.garant = 1;
@@ -6583,22 +6581,21 @@ void NC_STACK_yparobo::DeadTimeUpdate(update_msg *arg)
 
         if ( yw->isNetGame )
         {
-            char v21[76];
-            /*
-            *(_uint32_t *)v21 = 1030;
-            v21[12] = bact->owner;
-            *(float *)&v21[20] = 0.75;
-            *(_uint32_t *)&v21[16] = v33;
-            *(_uint32_t *)&v21[24] = bact->ypabact__id;
-            *(xyz *)&v21[28] = bact->field_621;
-            v21[40] = bact->field_651; //matrix copy
-            */
+            uamessage_startPlasma sbMsg;
+            sbMsg.msgID = UAMSG_STARTPLASMA;
+            sbMsg.owner = bact->owner;
+            sbMsg.scale = 0.75;
+            sbMsg.time = v33;
+            sbMsg.id = bact->gid;
+            sbMsg.pos = bact->position;
+            sbMsg.dir = bact->rotation;
+
             yw_arg181 arg181;
-            arg181.data = (uamessage_base *)v21;
+            arg181.data = &sbMsg;
             arg181.garant = 1;
             arg181.recvID = 0;
             arg181.recvFlags = 2;
-            arg181.dataSize = 76;
+            arg181.dataSize = sizeof(sbMsg);
             yw->self_full->ypaworld_func181(&arg181);
         }
     }
