@@ -34,28 +34,31 @@ enum UAMSG
     UAMSG_VIEWER = UAMSG_BASE + 14,
     UAMSG_SYNCGM = UAMSG_BASE + 15,
     UAMSG_HOSTDIE = UAMSG_BASE + 16,
-
+    // +17 DEBUG
     UAMSG_MESSAGE = UAMSG_BASE + 18,
-
+    UAMSG_KICK = UAMSG_BASE + 19,
     UAMSG_UPGRADE = UAMSG_BASE + 20,
     UAMSG_FRACTION = UAMSG_BASE + 21,
     UAMSG_WELCOME = UAMSG_BASE + 22,
     UAMSG_READY = UAMSG_BASE + 23,
     UAMSG_REQUPDATE = UAMSG_BASE + 24,
-
+    UAMSG_UPDATE = UAMSG_BASE + 25,
     UAMSG_IMPULSE = UAMSG_BASE + 26,
     UAMSG_LOGMSG = UAMSG_BASE + 27,
-
+    UAMSG_REORDER = UAMSG_BASE + 28,
     UAMSG_LOBBYINIT = UAMSG_BASE + 29,
     UAMSG_STARTPLASMA = UAMSG_BASE + 30,
     UAMSG_ENDPLASMA = UAMSG_BASE + 31,
-
+    // +32 SET VP
     UAMSG_STARTBEAM = UAMSG_BASE + 33,
     UAMSG_ENDBEAM = UAMSG_BASE + 34,
     UAMSG_EXIT = UAMSG_BASE + 35,
     UAMSG_SETLEVEL = UAMSG_BASE + 36,
     UAMSG_CRC = UAMSG_BASE + 37,
-
+    UAMSG_REQPING = UAMSG_BASE + 38,
+    UAMSG_PONG = UAMSG_BASE + 39,
+    UAMSG_STARTPROBLEM = UAMSG_BASE + 40,
+    UAMSG_ENDPROBLEM = UAMSG_BASE + 41,
     UAMSG_CD = UAMSG_BASE + 42,
     UAMSG_SCORE = UAMSG_BASE + 43
 };
@@ -242,6 +245,11 @@ struct uamessage_message : uamessage_base
     char message[64];
 };
 
+struct uamessage_kick : uamessage_base
+{
+    char text[64];
+};
+
 struct uamessage_upgrade : uamessage_base
 {
     int16_t upgradeID;
@@ -268,6 +276,60 @@ struct uamessage_ready : uamessage_base
 };
 
 typedef uamessage_base uamessage_requpdate;
+
+struct vhclUpdData
+{
+    uint8_t type;
+    uint8_t status;
+    uint8_t vhclID;
+    int8_t rot_x;
+    int8_t rot_y;
+    int8_t rot_z;
+    uint8_t pp[2];
+    uint32_t status_flg;
+    uint32_t gid;
+    int32_t engy;
+    xyz pos;
+};
+
+struct uamessage_update : uamessage_base
+{
+    uint32_t sz;
+    uint32_t num;
+    vhclUpdData data[1024];
+};
+
+struct uamessage_impulse : uamessage_base
+{
+    uint32_t id;
+    xyz pos;
+    int32_t impulse;
+    float mass;
+    xyz dir;
+    float dir_len;
+};
+
+struct uamessage_logmsg : uamessage_base
+{
+    uint32_t sender;
+    uint8_t senderOwner;
+    uint8_t lgp[3];
+    int32_t pri;
+    int32_t id;
+    int32_t pr1;
+    int32_t pr2;
+    int32_t pr3;
+};
+
+struct uamessage_reorder : uamessage_base
+{
+    uint32_t mode;
+    uint32_t comm;
+    uint32_t commID;
+    uint32_t num;
+    uint32_t sz;
+    uint32_t units[500];
+};
 
 struct uamessage_startPlasma : uamessage_base
 {
@@ -307,33 +369,26 @@ struct uamessage_setLevel : uamessage_base
     uint8_t fractions[4];
 };
 
-struct uamessage_impulse : uamessage_base
-{
-    uint32_t id;
-    xyz pos;
-    int32_t impulse;
-    float mass;
-    xyz dir;
-    float dir_len;
-};
-
-struct uamessage_logmsg : uamessage_base
-{
-    uint32_t sender;
-    uint8_t senderOwner;
-    uint8_t lgp[3];
-    int32_t pri;
-    int32_t id;
-    int32_t pr1;
-    int32_t pr2;
-    int32_t pr3;
-};
-
 typedef uamessage_setLevel uamessage_lobbyInit;
 
 struct uamessage_crc : uamessage_base
 {
     uint32_t checksum;
+};
+
+struct uamessage_ping: uamessage_base
+{
+    uint32_t timestamp;
+};
+
+struct uamessage_startproblem: uamessage_base
+{
+    uint32_t problem;
+};
+
+struct uamessage_endproblem: uamessage_base
+{
+    uint32_t solved;
 };
 
 struct uamessage_cd : uamessage_base

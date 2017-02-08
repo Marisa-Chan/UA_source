@@ -93,6 +93,7 @@ void yw_CheckCDs(UserData *usr);
 void yw_CheckCRCs(_NC_STACK_ypaworld *yw);
 int ypaworld_func158__sub0__sub8(UserData *usr, const char**, const char**);
 void sb_0x4deac0(UserData *usr);
+int yw_DestroyPlayer(_NC_STACK_ypaworld *yw, const char *playerName);
 
 
 

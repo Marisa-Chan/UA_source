@@ -18,7 +18,7 @@ NC_STACK_ypabact *current_bact;
 NC_STACK_ypabact *current_commander;
 __NC_STACK_ypabact *dword_5A7A88;
 extern int dword_5A7A80;
-extern int bact_id;
+extern uint32_t bact_id;
 extern int dword_5A7A8C;
 extern int dword_5A7A78;
 

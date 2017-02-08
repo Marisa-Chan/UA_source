@@ -47,7 +47,7 @@ char **ypaworld__string_pointers;
 
 GuiList stru_5C91D0;
 
-int bact_id = 0x10000;
+uint32_t bact_id = 0x10000;
 
 // method 169
 int dword_5A7A78;
@@ -8667,9 +8667,10 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
 }
 
 
-void NC_STACK_ypaworld::ypaworld_func181(void *arg)
+bool NC_STACK_ypaworld::ypaworld_func181(void *arg)
 {
     dprintf("MAKE ME %s\n","ypaworld_func181");
+    return true;
 }
 
 

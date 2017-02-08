@@ -313,7 +313,7 @@ struct yw_infolog
     int field_254;
     int msg_count;
     inflog_msg msgs[64];
-    int field_255C;
+    uint32_t field_255C;
     int field_2560;
     int field_2564;
     int field_2568;
@@ -528,4 +528,12 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
 
 char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, float y, int value, int maxval, int valCH, int valBG, const char *a10, const char *a11, int flag = 0);
 void sub_4D0C24(_NC_STACK_ypaworld *yw, const char *a1, const char *a2);
+
+void sub_4F1B34(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact);
+void sub_4F1A60(__NC_STACK_ypabact *bact);
+void sub_4D9550(_NC_STACK_ypaworld *yw, int arg);
+void sub_47C1EC(_NC_STACK_ypaworld *yw, gemProto *gemProt, int *a3, int *a4);
+
+void rotmat_to_euler(mat3x3 *mat, xyz *out);
+void euler_to_rotmat(xyz *euler, mat3x3 *out);
 #endif

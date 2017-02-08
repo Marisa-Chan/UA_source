@@ -77,7 +77,7 @@ struct __NC_STACK_yparobo
     int field_271;  //For AI
     int field_275;  //For AI
     int field_279;
-    int field_27D;
+    uint32_t field_27D;
     int field_281; //??
 
     int conq_value;

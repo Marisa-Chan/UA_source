@@ -157,7 +157,7 @@ struct __NC_STACK_ypabact : public nnode
     int16_t secMaxX;
     int16_t secMaxY;
     int bact_type;
-    int gid; // global bact id
+    uint32_t gid; // global bact id
     uint8_t vehicleID; // vehicle id, from scr files
     char bflags;
     int commandID;
@@ -238,7 +238,7 @@ struct __NC_STACK_ypabact : public nnode
     vhclBases vp_genesis;
     int vp_active;
     extra_vproto vp_extra[3];
-
+    int vp_extra_mode;
     destFX destroyFX[16];
     float radius;
     float viewer_radius;
@@ -289,6 +289,7 @@ struct __NC_STACK_ypabact : public nnode
     int16_t killer_owner;
     int16_t reb_count;
     int atk_ret;
+    uint32_t lastFrmStamp;
 
     float scale_start;
     float scale_speed;

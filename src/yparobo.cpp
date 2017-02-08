@@ -507,7 +507,7 @@ void NC_STACK_yparobo::AI_layer1(update_msg *arg)
 {
     __NC_STACK_yparobo *robo = &stack__yparobo;
 
-    if ( robo->bact_internal->status == 2 )
+    if ( robo->bact_internal->status == BACT_STATUS_DEAD )
     {
         int a4 = getBACT_yourLastSeconds();
         a4 -= arg->frameTime;

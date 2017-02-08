@@ -7251,9 +7251,39 @@ __NC_STACK_ypabact *sb_0x493984(__NC_STACK_ypabact *bact, int a2)
     return NULL;
 }
 
-void sub_493480(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, int a3)
+void sub_493480(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, int mode)
 {
-    dprintf("MAKE ME %s (multiplayer)\n", "sub_493480");
+    if ( bact->ywo->stack__ypaworld.isNetGame )
+    {
+        static uamessage_reorder ordMsg;
+
+        ordMsg.comm = bact2->gid;
+        ordMsg.num = 0;
+        ordMsg.commID = bact2->commandID;
+
+        for ( bact_node *bct = (bact_node *)bact2->subjects_list.head; bct->next; bct = (bact_node *)bct->next )
+        {
+            if ( ordMsg.num < 500 )
+            {
+                ordMsg.units[ordMsg.num] = bct->bact->gid;
+                ordMsg.num++;
+            }
+        }
+
+        ordMsg.owner = bact->owner;
+        ordMsg.sz = (char *)&ordMsg.units[ordMsg.num] - (char *)&ordMsg;
+        ordMsg.mode = mode;
+        ordMsg.msgID = UAMSG_REORDER;
+
+        yw_arg181 arg181;
+        arg181.dataSize = ordMsg.sz;
+        arg181.recvID = 0;
+        arg181.garant = 1;
+        arg181.data = &ordMsg;
+        arg181.recvFlags = 2;
+
+        bact->ywo->ypaworld_func181(&arg181);
+    }
 }
 
 void NC_STACK_ypabact::ReorganizeGroup(bact_arg109 *arg)

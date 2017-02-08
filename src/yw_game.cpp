@@ -11,7 +11,7 @@
 #include "yparobo.h"
 #include "font.h"
 
-extern int bact_id;
+extern uint32_t bact_id;
 
 
 NC_STACK_ilbm * loadDisk_screen(_NC_STACK_ypaworld *yw)
@@ -3587,7 +3587,7 @@ void sub_4D1444(_NC_STACK_ypaworld *yw, int id)
 }
 
 
-__NC_STACK_ypabact * sb_0x47b028__sub0(int bactid, _NC_STACK_ypaworld *yw)
+__NC_STACK_ypabact * sb_0x47b028__sub0(uint32_t bactid, _NC_STACK_ypaworld *yw)
 {
     bact_node *station = (bact_node *)yw->bact_list.head;
 

@@ -275,15 +275,16 @@ struct UserData
     int map_descriptions_count;
     uint32_t noSent;
     int sentAQ;
-
+    uint8_t netProblemOwner;
+    char netProblemName[64];
     int32_t netProblem;
-
+    uint32_t netAllOk;
     int update_time_norm;
     int flush_time_norm;
     int kickTime;
-
+    uint32_t latencyCheck;
     uint32_t netProblemCount;
-
+    uint32_t netAllOkCount;
     uint32_t deadCheck;
     uint32_t sendScore;
     netType2 players[8];
@@ -333,7 +334,7 @@ struct UserData
 
 struct trec_bct
 {
-    int bact_id;
+    uint32_t bact_id;
     xyz pos;
     int8_t rot_x;
     int8_t rot_y;
@@ -350,7 +351,7 @@ struct recorder
     uint16_t level_id;
     int frame_id;
     int time;
-    int ctrl_bact_id;
+    uint32_t ctrl_bact_id;
 
     __NC_STACK_ypabact **bacts;
     trec_bct *oinf;
@@ -371,7 +372,7 @@ struct recorder
     int field_78;
     int field_7C;
     int field_80;
-    int field_84;
+    uint32_t field_84;
     char filename[64];
 };
 
@@ -859,6 +860,7 @@ struct yw_81cb
     int field_0;
     int field_4;
     char field_8[128];
+    char field_C[128];
 };
 
 struct yw_samples
@@ -1076,7 +1078,7 @@ struct _NC_STACK_ypaworld
     int field_2410;
     int field_2414;
     int field_2418;
-    int field_241c;
+    uint32_t field_241c;
     __NC_STACK_ypabact *field_2420;
     int field_2424;
     int do_screenshooting;
@@ -1734,7 +1736,7 @@ public:
     virtual void ypaworld_func177(yw_arg177 *arg);
     virtual size_t ypaworld_func179(yw_arg161 *arg);
     virtual void ypaworld_func180(yw_arg180 *arg);
-    virtual void ypaworld_func181(void *arg);
+    virtual bool ypaworld_func181(void *arg);
     virtual void ypaworld_func182(void *arg);
     virtual size_t ypaworld_func183(yw_arg161 *arg);
     virtual void ypaworld_func184(yw_arg184 *arg);

@@ -13,7 +13,7 @@
 #include "yparobo.h"
 #include "ypagun.h"
 
-extern int bact_id;
+extern uint32_t bact_id;
 
 
 ////////////// Draw wireframe
