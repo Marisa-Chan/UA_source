@@ -271,11 +271,15 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
 //	save_status vhcl_map_status;
 //	save_status vhcl_finder_status;
     fxnumber = 0;
-    dbg_num_sqd_counter[8] = 0;
-    dbg_num_vhcl_counter[8] = 0;
-    dbg_num_flk_counter[8] = 0;
-    dbg_num_robo_counter[8] = 0;
-    dbg_num_wpn_counter[8] = 0;
+    for (int i = 0; i < 8; i++)
+    {
+        dbg_num_sqd_counter[i] = 0;
+        dbg_num_vhcl_counter[i] = 0;
+        dbg_num_flk_counter[i] = 0;
+        dbg_num_robo_counter[i] = 0;
+        dbg_num_wpn_counter[i] = 0;
+    }
+
     dbg_num_sqd = 0;
     dbg_num_sqd_max = 0;
     dbg_num_vhcl = 0;
