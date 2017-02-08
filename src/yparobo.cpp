@@ -1054,7 +1054,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
             if ( robo->bact_internal->vp_extra[1].flags & EVPROTO_FLAG_ACTIVE )
             {
                 robo->field_521 = v10;
-                bact->vp_extra[1].flags &= !EVPROTO_FLAG_ACTIVE;
+                bact->vp_extra[1].flags &= ~EVPROTO_FLAG_ACTIVE;
             }
             else
             {
