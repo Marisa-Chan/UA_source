@@ -300,7 +300,7 @@ void yw_HandleNetMsg(_NC_STACK_ypaworld *yw)
 
                 yw_arg181 ywMsg;
                 ywMsg.data = &wlcmMsg;
-                ywMsg.dataSize = sizeof(&wlcmMsg);
+                ywMsg.dataSize = sizeof(wlcmMsg);
                 ywMsg.recvFlags = 1;
                 ywMsg.garant = 1;
                 ywMsg.recvID = (char *)recvMsg.data;
