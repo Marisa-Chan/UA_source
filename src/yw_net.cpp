@@ -17,6 +17,8 @@ static uamessage_vhclDataI vhcldata_interpolate;
 static uamessage_vhclDataE vhcldata_exact;
 uint32_t HNDL_MSG[108];
 
+float maxSpeed = 0.0;
+
 extern uint32_t bact_id;
 extern key_value_stru ypaworld_keys[4];
 
@@ -206,22 +208,6 @@ void yw_CheckCDs(UserData *usr)
     }
 }
 
-bool yw_prepareVHCLData(_NC_STACK_ypaworld *yw, uamessage_vhclData *dat)
-{
-    printf("Make me %s\n", "yw_prepareVHCLData");
-    return true;
-}
-
-void yw_cleanPlayer(_NC_STACK_ypaworld *yw, const char *name, char owner, char mode)
-{
-    printf("Make me %s\n", "yw_cleanPlayer");
-}
-
-void yw_processVhclDataMsgs(_NC_STACK_ypaworld *yw, uamessage_vhclData *msg, bact_node *host_node)
-{
-    printf("Make me %s\n", "yw_processVhclDataMsgs");
-}
-
 bact_node * yw_getHostByOwner(_NC_STACK_ypaworld *yw, uint8_t owner)
 {
     bact_node *bct = (bact_node *)yw->bact_list.head;
@@ -234,27 +220,6 @@ bact_node * yw_getHostByOwner(_NC_STACK_ypaworld *yw, uint8_t owner)
     }
 
     return NULL;
-}
-
-int yw_netGetUnitsCount(__NC_STACK_ypabact *host)
-{
-    int count = 1;
-    bact_node *comm = (bact_node *)host->subjects_list.head;
-    while (comm->next)
-    {
-        count++;
-
-        bact_node *unt = (bact_node *)comm->bact->subjects_list.head;
-
-        while (unt->next)
-        {
-            count++;
-            unt = (bact_node *)unt->next;
-        }
-
-        comm = (bact_node *)comm->next;
-    }
-    return count;
 }
 
 __NC_STACK_ypabact * yw_netGetBactByID(__NC_STACK_ypabact *host, uint32_t id)
@@ -284,6 +249,475 @@ __NC_STACK_ypabact * yw_netGetBactByID(__NC_STACK_ypabact *host, uint32_t id)
 
     return NULL;
 }
+
+void yw_netBakeVhcl(__NC_STACK_ypabact *bact, uamessage_vhclData *dat, int id, int interpolate)
+{
+    vhcldata *common = NULL;
+    vhcldataE *extended = NULL;
+
+    if ( id >= 1024 )
+    {
+        log_netlog("Vehicle Buffer overflow!!! more than 500 vehicles\n");
+        return;
+    }
+
+    if ( interpolate )
+    {
+        uamessage_vhclDataI *datI = static_cast<uamessage_vhclDataI *>(dat);
+        if (datI)
+        {
+            common = &datI->data[id];
+        }
+    }
+    else
+    {
+        uamessage_vhclDataE *datE = static_cast<uamessage_vhclDataE *>(dat);
+        if (datE)
+        {
+            common = &datE->data[id];
+            extended = &datE->data[id];
+        }
+    }
+
+    if (!common)
+    {
+        log_netlog("yw_netBakeVhcl ERROR #1\n");
+        return;
+    }
+
+    common->pos_x = (int32_t)bact->position.sx / 2;
+    common->pos_y = (int32_t)bact->position.sy / 2;
+    common->pos_z = (int32_t)bact->position.sz / 2;
+
+    if ( !interpolate && extended)
+    {
+        extended->speed = bact->fly_dir * bact->fly_dir_length;
+    }
+
+    if ( bact->self->getBACT_viewer() && (bact->status_flg & BACT_STFLAG_LAND) )
+    {
+        float len = bact->viewer_overeof - bact->overeof;
+        common->pos_y += (int32_t)len / 2;
+    }
+
+    if ( bact->bact_type == BACT_TYPES_GUN )
+    {
+        common->pos_x = (int32_t)bact->old_pos.sx / 2;
+        common->pos_y = (int32_t)bact->old_pos.sy / 2;
+        common->pos_z = (int32_t)bact->old_pos.sz / 2;
+
+        common->specialinfo |= vhcldata::SI_YPAGUN;
+    }
+    else
+    {
+        common->specialinfo &= ~vhcldata::SI_YPAGUN;
+    }
+
+    xyz out;
+    rotmat_to_euler(&bact->rotation, &out);
+
+    common->roll = out.sx * 0.1591549430918953 * 127.0;
+    common->pitch = out.sy * 0.1591549430918953 * 127.0;
+    common->yaw = out.sz * 0.1591549430918953 * 127.0;
+
+    common->specialinfo &= ~vhcldata::SI_UNK;
+    common->ident = bact->gid;
+
+    if ( bact->status_flg & BACT_STFLAG_NORENDER )
+        common->specialinfo |= vhcldata::SI_NORENDER;
+    else
+        common->specialinfo &= ~vhcldata::SI_NORENDER;
+
+    if ( bact->status_flg & BACT_STFLAG_LAND )
+        common->specialinfo |= vhcldata::SI_LAND;
+    else
+        common->specialinfo &= ~vhcldata::SI_LAND;
+
+    if ( bact->bact_type == BACT_TYPES_ROBO )
+        common->specialinfo |= vhcldata::SI_ROBO;
+    else
+        common->specialinfo &= ~vhcldata::SI_ROBO;
+
+    if ( bact->status_flg & BACT_STFLAG_DSETTED )
+        common->specialinfo |= vhcldata::SI_DSETTED;
+    else
+        common->specialinfo &= ~vhcldata::SI_DSETTED;
+
+    bact->status_flg &= BACT_STFLAG_DSETTED;
+
+    common->energy = bact->energy;
+    common->vp = 0;
+}
+
+bool yw_prepareVHCLData(_NC_STACK_ypaworld *yw, uamessage_vhclData *dat)
+{
+    bact_node *hosts = (bact_node *)yw->bact_list.head;
+    bool found = false;
+
+    while(hosts)
+    {
+        if ( yw->field_1b78 == hosts->bacto )
+        {
+            found = true;
+            break;
+        }
+
+        hosts = (bact_node *)hosts->next;
+    }
+
+    if ( !found )
+    {
+        log_netlog("CollectVehicleData: My Robo doesn't exist!\n");
+        return false;
+    }
+
+    yw_netBakeVhcl(hosts->bact, dat, 0, yw->netInterpolate);
+    dat->owner = hosts->bact->owner;
+
+    int num = 1;
+
+    bact_node *comms = (bact_node *)hosts->bact->subjects_list.head;
+    while(comms->next)
+    {
+        if (num >= 1023)
+            break;
+
+        yw_netBakeVhcl(comms->bact, dat, num, yw->netInterpolate);
+        num++;
+
+        bact_node *unit = (bact_node *)comms->bact->subjects_list.head;
+        while(unit->next)
+        {
+            if ( num >= 1023 )
+                break;
+            yw_netBakeVhcl(unit->bact, dat, num, yw->netInterpolate);
+
+            num++;
+
+            unit = (bact_node *)unit->next;
+        }
+
+        comms = (bact_node *)comms->next;
+    }
+
+    dat->hdr.number = num;
+
+    if (yw->netInterpolate )
+    {
+        uamessage_vhclDataI *datI = static_cast<uamessage_vhclDataI *>(dat);
+        for(int i = 0; i < datI->hdr.number; i++)
+        {
+            if ( datI->data[i].ident < 0xFFFF )
+                log_netlog("\n+++ CVD: i send nonsens! (ident %d)\n", datI->data[i].ident);
+        }
+    }
+    else
+        log_netlog("\n+++ CVD: Extrapolating ????\n");
+
+    return true;
+}
+
+void yw_cleanPlayer(_NC_STACK_ypaworld *yw, const char *name, uint8_t owner, uint8_t mode)
+{
+    uint8_t own;
+    if ( mode )
+    {
+        own = owner;
+    }
+    else
+    {
+        own = 0;
+
+        while (true)
+        {
+            if (own >= 8)
+            {
+                log_netlog("destroy player: robo of player %s not found!\n", name);
+                log_netlog("In cases of trouble with other players this is no problem\n");
+                return;
+            }
+
+            if ( !strcasecmp(yw->GameShell->players[own].name, name) && yw->GameShell->players[own].isKilled == 0 )
+                break;
+
+            own++;
+        }
+    }
+
+    bact_node *bhost = yw_getHostByOwner(yw, own);
+    if ( bhost )
+    {
+        sub_4C8EB4(yw, bhost);
+        yw->GameShell->players[own].isKilled = 3;
+    }
+}
+
+void yw_netApplyVhclDataI(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uamessage_vhclDataI *dat, int id, uint32_t timestamp)
+{
+    if ( id < dat->hdr.number )
+    {
+        xyz v49;
+        v49.sx = 2 * dat->data[id].pos_x;
+        v49.sy = 2 * dat->data[id].pos_y;
+        v49.sz = 2 * dat->data[id].pos_z;
+
+        if ( v49.sx < 0.0 || v49.sx > bact->wrldX || v49.sz > 0.0 || v49.sz < bact->wrldY )
+            log_netlog(
+                "\n+++ EVD: impossible position x %7.2f(%d) z %7.2f(%d) of object %d\n",
+                v49.sx,
+                dat->data[id].pos_x,
+                v49.sz,
+                dat->data[id].pos_z,
+                bact->gid);
+
+        float dtime = dat->hdr.diffTime * 0.001;
+
+        xyz tmp = (v49 - bact->old_pos) / (dtime * 6.0);
+
+        bact->fly_dir_length = tmp.normolize();
+
+        if ( bact->fly_dir_length > 0.0001 )
+            bact->fly_dir = tmp;
+
+        bact->position = bact->old_pos;
+        bact->old_pos = v49;
+
+        if ( dat->data[id].specialinfo & vhcldata::SI_DSETTED )
+        {
+            bact->position = bact->old_pos;
+            bact->fly_dir_length = 0;
+        }
+
+        xyz v47;
+        v47.sx = dat->data[id].roll * 0.007874015748031496 * 2.0 * 3.141592653589793;
+        v47.sy = dat->data[id].pitch * 0.007874015748031496 * 2.0 * 3.141592653589793;
+        v47.sz = dat->data[id].yaw * 0.007874015748031496 * 2.0 * 3.141592653589793;
+
+        mat3x3 out;
+        euler_to_rotmat(&v47, &out);
+
+        bact->netDRot.m00 = (out.m00 - bact->netRotation.m00) / dtime;
+        bact->netDRot.m01 = (out.m01 - bact->netRotation.m01) / dtime;
+        bact->netDRot.m02 = (out.m02 - bact->netRotation.m02) / dtime;
+        bact->netDRot.m10 = (out.m10 - bact->netRotation.m10) / dtime;
+        bact->netDRot.m11 = (out.m11 - bact->netRotation.m11) / dtime;
+        bact->netDRot.m12 = (out.m12 - bact->netRotation.m12) / dtime;
+        bact->netDRot.m20 = (out.m20 - bact->netRotation.m20) / dtime;
+        bact->netDRot.m21 = (out.m21 - bact->netRotation.m21) / dtime;
+        bact->netDRot.m22 = (out.m22 - bact->netRotation.m22) / dtime;
+
+        bact->rotation = bact->netRotation;
+        bact->netRotation = out;
+
+        if ( dat->data[id].specialinfo & vhcldata::SI_NORENDER )
+            bact->status_flg |= BACT_STFLAG_NORENDER;
+
+        if ( dat->data[id].specialinfo & vhcldata::SI_LAND )
+            bact->status_flg |= BACT_STFLAG_LAND;
+        else
+            bact->status_flg &= ~BACT_STFLAG_LAND;
+
+        bact->lastFrmStamp = timestamp;
+        bact->energy = dat->data[id].energy;
+    }
+}
+
+void yw_netApplyVhclDataE(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uamessage_vhclDataE *dat, int id, uint32_t timestamp)
+{
+    if ( dat->hdr.number > id )
+    {
+        int32_t tmstmp = timestamp - bact->lastFrmStamp;
+        if ( tmstmp > 2 )
+        {
+            bact->old_pos = bact->position;
+
+            bact->position.sx = 2 * dat->data[id].pos_x;
+            bact->position.sy = 2 * dat->data[id].pos_y;
+            bact->position.sz = 2 * dat->data[id].pos_z;
+
+            xyz v73 = dat->data[id].speed;
+
+            float dtime = tmstmp * 0.001;
+
+            bact->netDSpeed.sx = (v73.sx - bact->fly_dir.sx * bact->fly_dir_length) / dtime;
+            bact->netDSpeed.sy = (v73.sy - bact->fly_dir.sy * bact->fly_dir_length) / dtime;
+            bact->netDSpeed.sz = (v73.sz - bact->fly_dir.sz * bact->fly_dir_length) / dtime;
+
+            float spd = bact->netDSpeed.length();
+
+            if ( spd > maxSpeed )
+            {
+                if ( bact->bact_type != BACT_TYPES_MISSLE )
+                {
+                    log_netlog("d_speed max: %10.5f / class %d dof.v old %10.5f with net_time %4.3f\n", spd, bact->bact_type, bact->fly_dir_length, dtime);
+                    maxSpeed = spd;
+                }
+            }
+
+            if ( spd > 400.0 )
+            {
+                bact->netDSpeed *= 4.0 / spd;
+            }
+
+            if ( bact->bact_type != BACT_TYPES_GUN && bact->bact_type != BACT_TYPES_ROBO )
+            {
+                bact->fly_dir_length = v73.length();
+
+                if ( bact->fly_dir_length > 0.001 )
+                {
+                    bact->fly_dir = v73 / bact->fly_dir_length;
+                }
+            }
+            else
+            {
+                bact->fly_dir.sx = (bact->position.sx - bact->old_pos.sx) / (dtime * 6.0);
+                bact->fly_dir.sy = (bact->position.sy - bact->old_pos.sy) / (dtime * 6.0);
+                bact->fly_dir.sz = (bact->position.sz - bact->old_pos.sz) / (dtime * 6.0);
+
+                bact->fly_dir_length = bact->fly_dir.length();
+                if ( bact->fly_dir_length > 0.001 )
+                {
+                    bact->fly_dir = bact->fly_dir / bact->fly_dir_length;
+                }
+
+                if ( bact->bact_type == BACT_TYPES_ROBO )
+                {
+                    bact->fly_dir.sz = 0;
+                    bact->fly_dir.sx = 0;
+                }
+
+                bact->netDSpeed.sx = 0;
+                bact->netDSpeed.sy = 0;
+                bact->netDSpeed.sz = 0;
+            }
+
+            if ( dat->data[id].specialinfo & vhcldata::SI_DSETTED )
+            {
+                bact->old_pos = bact->position;
+                bact->fly_dir_length = 0;
+            }
+
+            xyz rot;
+            rot.sx = dat->data[id].roll * 0.007874015748031496 * 3.141592653589793 * 2.0;
+            rot.sy = dat->data[id].pitch * 0.007874015748031496 * 3.141592653589793 * 2.0;
+            rot.sz = dat->data[id].yaw * 0.007874015748031496 * 3.141592653589793 * 2.0;
+
+            mat3x3 out;
+            euler_to_rotmat(&rot, &out);
+
+            bact->netDRot.m00 = (out.m00 - bact->netRotation.m00) / dtime;
+            bact->netDRot.m01 = (out.m01 - bact->netRotation.m01) / dtime;
+            bact->netDRot.m02 = (out.m02 - bact->netRotation.m02) / dtime;
+            bact->netDRot.m10 = (out.m10 - bact->netRotation.m10) / dtime;
+            bact->netDRot.m11 = (out.m11 - bact->netRotation.m11) / dtime;
+            bact->netDRot.m12 = (out.m12 - bact->netRotation.m12) / dtime;
+            bact->netDRot.m20 = (out.m20 - bact->netRotation.m20) / dtime;
+            bact->netDRot.m21 = (out.m21 - bact->netRotation.m21) / dtime;
+            bact->netDRot.m22 = (out.m22 - bact->netRotation.m22) / dtime;
+
+            bact->rotation = out;
+            bact->netRotation = out;
+
+            if ( dat->data[id].specialinfo & vhcldata::SI_NORENDER )
+                bact->status_flg |= BACT_STFLAG_NORENDER;
+
+            if ( dat->data[id].specialinfo & vhcldata::SI_LAND )
+                bact->status_flg |= BACT_STFLAG_LAND;
+            else
+                bact->status_flg &= ~BACT_STFLAG_LAND;
+
+            bact->lastFrmStamp = timestamp;
+
+            if ( bact->status_flg & BACT_STFLAG_LAND )
+            {
+                ypaworld_arg136 v69;
+                v69.pos_x = bact->position.sx;
+                v69.pos_y = bact->position.sy;
+                v69.pos_z = bact->position.sz;
+                v69.field_14 = bact->rotation.m10 * 200.0;
+                v69.field_18 = bact->rotation.m11 * 200.0;
+                v69.field_1C = bact->rotation.m12 * 200.0;
+                v69.field_40 = 0;
+
+                yw->self_full->ypaworld_func136(&v69);
+
+                if ( v69.field_20 )
+                {
+                    bact->position.sx = v69.field_2C - bact->rotation.m10 * bact->overeof;
+                    bact->position.sy = v69.field_30 - bact->rotation.m11 * bact->overeof;
+                    bact->position.sz = v69.field_34 - bact->rotation.m12 * bact->overeof;
+                }
+            }
+
+            bact->energy = dat->data[id].energy;
+        }
+    }
+}
+
+void yw_processVhclDataMsgs(_NC_STACK_ypaworld *yw, uamessage_vhclData *msg, bact_node *host_node)
+{
+    uamessage_vhclDataI *datI = NULL;
+    uamessage_vhclDataE *datE = NULL;
+
+    if (yw->netInterpolate)
+        datI = static_cast<uamessage_vhclDataI *>(msg);
+    else
+        datE = static_cast<uamessage_vhclDataE *>(msg);
+
+    if (!datI && !datE)
+    {
+        log_netlog("yw_processVhclDataMsgs ERROR #1\n");
+        return;
+    }
+
+
+    for(int i = msg->hdr.number - 1; i >= 0; i--)
+    {
+        __NC_STACK_ypabact *bact = NULL;
+
+        uint32_t ident = 0;
+
+        if (datI)
+            ident = datI->data[i].ident;
+        else
+            ident = datE->data[i].ident;
+
+        bact = yw_netGetBactByID(host_node->bact, ident);
+
+        if ( !bact )
+            log_netlog("+++ EVD: Haven't found vehicle ident %d  from owner %d (%dsec)\n", ident, host_node->bact->owner, yw->timeStamp / 1000);
+        else
+        {
+            if ( yw->netInterpolate )
+                yw_netApplyVhclDataI(bact, yw, datI, i, yw->timeStamp);
+            else
+                yw_netApplyVhclDataE(bact, yw, datE, i, yw->timeStamp);
+        }
+    }
+}
+
+int yw_netGetUnitsCount(__NC_STACK_ypabact *host)
+{
+    int count = 1;
+    bact_node *comm = (bact_node *)host->subjects_list.head;
+    while (comm->next)
+    {
+        count++;
+
+        bact_node *unt = (bact_node *)comm->bact->subjects_list.head;
+
+        while (unt->next)
+        {
+            count++;
+            unt = (bact_node *)unt->next;
+        }
+
+        comm = (bact_node *)comm->next;
+    }
+    return count;
+}
+
+
 
 __NC_STACK_ypabact * yw_netGetMissileByID(__NC_STACK_ypabact *host, uint32_t id)
 {
@@ -564,7 +998,7 @@ void yw_netSendUpdate(_NC_STACK_ypaworld *yw, uint8_t owner, char *recvID)
         log_netlog("\n+++ UPD: Send-Error. Hmmmm...\n");
 }
 
-void yw_netRecvUpdate(_NC_STACK_ypaworld *yw, uamessage_update *msg, int owner)
+bool yw_netRecvUpdate(_NC_STACK_ypaworld *yw, uamessage_update *msg, int owner)
 {
     bact_node *bhost = yw_getHostByOwner(yw, owner);
 
@@ -600,7 +1034,7 @@ void yw_netRecvUpdate(_NC_STACK_ypaworld *yw, uamessage_update *msg, int owner)
                 if ( !currHost )
                 {
                     log_netlog("RESTORE: Unable to create robo\n");
-                    return;
+                    return false;
                 }
 
                 lastBct = currHost->getBACT_pBact();
@@ -651,7 +1085,7 @@ void yw_netRecvUpdate(_NC_STACK_ypaworld *yw, uamessage_update *msg, int owner)
                 if ( !currComm )
                 {
                     log_netlog("RESTORE: Unable to create cmdr\n");
-                    return;
+                    return false;
                 }
 
                 lastBct = currComm->getBACT_pBact();
@@ -671,7 +1105,7 @@ void yw_netRecvUpdate(_NC_STACK_ypaworld *yw, uamessage_update *msg, int owner)
                 if ( !tmp )
                 {
                     log_netlog("RESTORE: Unable to create slave\n");
-                    return;
+                    return false;
                 }
 
                 lastBct = tmp->getBACT_pBact();
@@ -691,7 +1125,7 @@ void yw_netRecvUpdate(_NC_STACK_ypaworld *yw, uamessage_update *msg, int owner)
                 if ( !tmp )
                 {
                     log_netlog("RESTORE: Unable to create weapon\n");
-                    return;
+                    return false;
                 }
 
                 __NC_STACK_ypabact *tbact = tmp->getBACT_pBact();
@@ -717,6 +1151,7 @@ void yw_netRecvUpdate(_NC_STACK_ypaworld *yw, uamessage_update *msg, int owner)
             id++;
         }
     }
+    return true;
 }
 
 __NC_STACK_ypabact * yw_netFindReorderUnit(__NC_STACK_ypabact *bact_host, uint32_t ID)
@@ -2001,8 +2436,9 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                         sub_4D0C24(yw, msg->senderID, msgMsg->message);
                     }
                 }
+
+                break;
             }
-            break;
 
             plDat.ID++;
         }
@@ -2427,7 +2863,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             break;
         }
 
-        yw_netGetUnitsCount(bhost->bact);
+        //yw_netGetUnitsCount(bhost->bact); // Not used
 
         __NC_STACK_ypabact *fnd = yw_netFindReorderUnit(bhost->bact, ordMsg->comm);
         if ( !fnd )

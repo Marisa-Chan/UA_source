@@ -290,7 +290,9 @@ struct __NC_STACK_ypabact : public nnode
     int16_t reb_count;
     int atk_ret;
     uint32_t lastFrmStamp;
-
+    mat3x3 netDRot;
+    mat3x3 netRotation;
+    xyz netDSpeed;
     float scale_start;
     float scale_speed;
     float scale_accel;

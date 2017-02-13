@@ -132,12 +132,22 @@ struct vhcldata
     int16_t pos_y;
     int16_t pos_z;
     int16_t vp;
-    uint8_t roll;
-    uint8_t pitch;
-    uint8_t yaw;
+    int8_t roll;
+    int8_t pitch;
+    int8_t yaw;
     uint8_t specialinfo;
     uint32_t ident;
     int32_t energy;
+
+    enum SI_FLAGS
+    {
+        SI_NORENDER = 1,
+        SI_LAND = 2,
+        SI_YPAGUN = 4,
+        SI_UNK = 8,
+        SI_ROBO = 0x10,
+        SI_DSETTED = 0x20
+    };
 };
 
 struct vhcldataE : vhcldata
