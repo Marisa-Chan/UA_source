@@ -13,12 +13,67 @@ const NewClassDescr NC_STACK_windp::description("windp.class", &newinstance);
 
 static const char *PROVNAME = "Enet UDP connection";
 
+key_value_stru windp_keys[3] =
+{
+    {"net.gmode", KEY_TYPE_DIGIT, 0},               //0
+    {"net.versioncheck", KEY_TYPE_BOOL, 1},
+    {"game.debug", KEY_TYPE_BOOL, 0}
+};
+
 size_t NC_STACK_windp::func0(stack_vals *stak)
 {
-    if ( !NC_STACK_nucleus::func0(stak))
+    if ( !NC_STACK_network::func0(stak))
         return 0;
 
+    if (!init())
+    {
+        delete_class_obj(this);
+        return 0;
+    }
+
+    windp_func64();
+    get_keyvalue_from_ini(NULL, windp_keys, 3);
+    wdp_intern.guaranteed_md = windp_keys[0].value.val;
+    wdp_intern.version_check = windp_keys[1].value.val;
+    wdp_intern.debug = windp_keys[2].value.val;
     return 1;
+}
+
+void windp_intern::init()
+{
+    for(int i = 0; i < 64; i++)
+        memset(&connections[i], 0, sizeof(connections[i]));
+
+    version_check = 0;
+
+    norm_block = NULL;
+
+    norm_size = 0;
+
+    guaranteed_md = 0;
+
+    debug = 0;
+}
+
+bool NC_STACK_windp::init()
+{
+    wdp_intern.init();
+
+    wdp_intern.norm_block = (char *)malloc(0x10000);
+    if (!wdp_intern.norm_block)
+    {
+        deinit();
+        return false;
+    }
+
+    wdp_intern.norm_size = 0x10000;
+
+    return true;
+}
+
+void NC_STACK_windp::deinit()
+{
+
 }
 
 size_t NC_STACK_windp::func1(stack_vals *stak)
@@ -31,7 +86,7 @@ size_t NC_STACK_windp::func3(stack_vals *stak)
     return NC_STACK_nucleus::func3(stak);
 }
 
-size_t NC_STACK_windp::windp_func64(stack_vals *stak)
+size_t NC_STACK_windp::windp_func64()
 {
     return 0;
 }
@@ -54,7 +109,7 @@ size_t NC_STACK_windp::windp_func66(const char *provName)
     return 0;
 }
 
-size_t NC_STACK_windp::windp_func67(stack_vals *stak)
+size_t NC_STACK_windp::windp_func67(windp_t1 **pconn)
 {
     return 0;
 }
@@ -212,13 +267,13 @@ size_t NC_STACK_windp::compatcall(int method_id, void *data)
         func3( (stack_vals *)data );
         return 1;
     case 64:
-        return (size_t)windp_func64( (stack_vals *)data );
+        return (size_t)windp_func64();
     case 65:
         return (size_t)windp_func65( (windp_getNameMsg *)data );
     case 66:
         return (size_t)windp_func66( (const char *)data );
     case 67:
-        return (size_t)windp_func67( (stack_vals *)data );
+        return (size_t)windp_func67( (windp_t1 **)data );
     case 68:
         return (size_t)windp_func68( (stack_vals *)data );
     case 69:
@@ -932,28 +987,118 @@ void sub_46D698(UserData *usr)
     yw_netcleanup(usr->p_ypaworld);
 }
 
-
-
-int ypaworld_func158__sub0__sub8(UserData *usr, const char**, const char**)
+bool yw_initNetLogFile()
 {
-    dprintf("MAKE ME %s (multiplayer)\n", "ypaworld_func158__sub0__sub8");
+    dprintf("MAKE ME %s (multiplayer)\n", "yw_initNetLogFile");
+    return true;
+}
+
+void yw_NetPrintStartInfo(UserData *usr)
+{
+    extern char **ypaworld__string_pointers; //declared in yw.cpp
+
+    if ( yw_initNetLogFile() )
+    {
+        log_netlog("-------------- Start YPA network session ------------------\n\n");
+
+        windp_t1 *arg67 = NULL;
+        usr->p_ypaworld->windp->windp_func67(&arg67);
+
+        if ( arg67 )
+            log_netlog("Provider: %s\n", arg67->name);
+        else
+            log_netlog("!!! Unknown provider\n");
+
+        log_netlog("for this povider I send a dplay-msg after %d ms\n", usr->flush_time_norm);
+        log_netlog("Following players startet with the game:\n");
+
+        windp_arg79 arg79;
+        arg79.mode = 0;
+        arg79.ID = 0;
+
+        while ( usr->p_ypaworld->windp->windp_func79(&arg79) )
+        {
+            int id;
+            if ( arg79.flags & 1 )
+            {
+                id = usr->SelectedFraction;
+            }
+            else
+            {
+                id = usr->players2[arg79.ID].Fraction;
+            }
+
+            switch ( id )
+            {
+            case FREE_FRACTION_RESISTANCE:
+                log_netlog("    %s and plays Resistance\n", arg79.name);
+                break;
+
+            case FREE_FRACTION_MIKO:
+                log_netlog("    %s and plays Mykonier\n", arg79.name);
+                break;
+
+            case FREE_FRACTION_TAER:
+                log_netlog("    %s and plays Taerkasten\n", arg79.name);
+                break;
+
+            case FREE_FRACTION_GHORKOV:
+                log_netlog("    %s and plays Ghorkov\n", arg79.name);
+                break;
+
+            default:
+                log_netlog("    %s and plays an unknown race\n", arg79.name);
+                break;
+            }
+
+            arg79.ID++;
+        }
+
+        if ( usr->isHost )
+            log_netlog("\nThe local player is %s and is HOST\n", usr->callSIGN);
+        else
+            log_netlog("\nThe local player is %s and is CLIENT\n", usr->callSIGN);
+
+        const char *tmp = get_lang_string(ypaworld__string_pointers, usr->netLevelID + 1800, usr->p_ypaworld->LevelNet->mapInfos[ usr->netLevelID ].map_name);
+        log_netlog("They play level %d, this is %s\n", usr->netLevelID, tmp);
+        log_netlog("the session started at timeindex %d\n", usr->p_ypaworld->timeStamp / 1000);
+        log_netlog("\n\n--------------------------------------------------------\n");
+    }
+    else
+    {
+        ypa_log_out("Unable to open Network log script\n");
+    }
+}
+
+int ypaworld_func158__sub0__sub8(UserData *usr, const char **a2, const char **a3)
+{
+    extern char **ypaworld__string_pointers; //declared in yw.cpp
+
+    int numPlayers = usr->p_ypaworld->windp->windp_func86(NULL);
+    int hasCD = 0;
+
+    for( int i = 0; i < numPlayers; i++ )
+    {
+        if ( usr->players2[i].cd )
+            hasCD++;
+    }
+
+    if ( numPlayers > 3 && hasCD < 2 )
+    {
+        *a2 = get_lang_string(ypaworld__string_pointers, 2485, "YOU NEED 2 CD TO START 4 PLAYER GAME");
+        *a3 = get_lang_string(ypaworld__string_pointers, 2444, "2444");
+        return 1;
+    }
+    else if ( hasCD < 1 )
+    {
+        *a2 = get_lang_string(ypaworld__string_pointers, 2484, "YOU NEED A CD TO START THIS GAME");
+        *a3 = get_lang_string(ypaworld__string_pointers, 2443, "2443");
+        return 1;
+    }
+
     return 0;
 }
 
-void sb_0x4deac0(UserData *usr)
-{
-    dprintf("MAKE ME %s (multiplayer)\n", "sb_0x4deac0");
-}
-
-void ypaworld_func64__sub18(_NC_STACK_ypaworld *yw)
-{
-    dprintf("MAKE ME %s (multiplayer)\n", "ypaworld_func64__sub18");
-}
-
-void ypaworld_func64__sub10(_NC_STACK_ypaworld *yw)
-{
-    dprintf("MAKE ME %s (multiplayer)\n", "ypaworld_func64__sub10");
-}
 
 void ypaworld_func151__sub7(UserData *usr)
 {
@@ -975,6 +1120,8 @@ void ypaworld_func151__sub7(UserData *usr)
 //  log_netlog("   max. in recv list %d\n", v2[2]);
     log_netlog("\nthe session ended at timeindex %d\n", usr->p_ypaworld->timeStamp / 1000);
     log_netlog("-----------------------------------------------------------\n");
+
+    dprintf("MAKE ME %s (multiplayer)\n", "ypaworld_func151__sub7");
 }
 
 

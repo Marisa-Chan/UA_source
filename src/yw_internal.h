@@ -536,4 +536,7 @@ void sub_47C1EC(_NC_STACK_ypaworld *yw, gemProto *gemProt, int *a3, int *a4);
 
 void rotmat_to_euler(mat3x3 *mat, xyz *out);
 void euler_to_rotmat(xyz *euler, mat3x3 *out);
+
+void yw_NetMsgHndlLoop(_NC_STACK_ypaworld *yw);
+void yw_NetDrawStats(_NC_STACK_ypaworld *yw);
 #endif

@@ -407,7 +407,7 @@ void sub_4711E0(_NC_STACK_ypaworld *yw)
     yw->lang_strings__end = yw->lang_strings + 0x20000;
 
     memset(yw->lang_strings, 0, 0x20000);
-    memset(yw->string_pointers, 0, 0x28A0);
+    memset(yw->string_pointers, 0, sizeof(char *) * 2600);
 
     memset(yw->lang_name, 0, sizeof(yw->lang_name));
     strcpy(yw->lang_name, "default");
@@ -995,6 +995,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
     extern GuiList gui_lstvw; //In yw_game_ui.cpp
     extern GuiList lstvw2; //In yw_game_ui.cpp
+    extern bool SPEED_DOWN_NET; //In yw_net.cpp
 
     if ( (gui_lstvw.flags & GuiBase::FLAG_CLOSED && lstvw2.flags & GuiBase::FLAG_CLOSED)
             || (arg->field_8->downed_key != UAVK_RETURN && arg->field_8->downed_key != UAVK_ESCAPE) )
@@ -1101,7 +1102,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
         uint32_t v22 = profiler_begin();
 
         if ( yw->isNetGame )
-            ypaworld_func64__sub18(yw);
+            yw_NetMsgHndlLoop(yw);
 
         if ( !yw->isNetGame || yw->field_2d90->field_40 != 2 )
         {
@@ -1192,39 +1193,38 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             if ( yw->isNetGame )
             {
-                dprintf("MAKE ME %s (multiplayer part)\n", "ypaworld_func64");
-//        if ( arg->field_4 == 1 )
-//          yw->field_7586 -= 20;
-//        else
-//          yw->field_7586 -= arg->field_4;
-//
-//        if ( yw->field_7586 <= 0 )
-//        {
-//            windp_arg82 arg82;
-//            arg82.field_0 = yw->GameShell->callSIGN;
-//          arg82.field_4 = 1;
-//          arg82.field_C = 2;
-//          arg82.field_8 = 0;
-//          arg82.field_10 = 0;
-//
-//          int v44 = yw->windp->windp_func82(&arg82);
-//
-//          yw->GameShell->field_545F += v44;
-//
-//          if ( !yw->GameShell->field_5493 || v44 < yw->GameShell->field_5493 )
-//            yw->GameShell->field_5493 = v44;
-//
-//          if ( v44 > yw->GameShell->field_5497 )
-//            yw->GameShell->field_5497 = v44;
-//
-//          if ( v44 )
-//            yw->GameShell->field_549B++;
-//
-//          if ( SPEED_DOWN_NET )
-//            yw->field_7586 = 1500;
-//          else
-//            yw->field_7586 = yw->GameShell->field_288C;
-//        }
+                if ( arg->field_4 == 1 )
+                    yw->field_7586 -= 20;
+                else
+                    yw->field_7586 -= arg->field_4;
+
+                if ( yw->field_7586 <= 0 )
+                {
+                    windp_arg82 arg82;
+                    arg82.senderID = yw->GameShell->callSIGN;
+                    arg82.senderFlags = 1;
+                    arg82.receiverFlags = 2;
+                    arg82.receiverID = 0;
+                    arg82.guarant = 0;
+
+                    uint32_t v44 = yw->windp->windp_func82(&arg82);
+
+                    yw->GameShell->netsend_count += v44;
+
+                    if ( !yw->GameShell->net_packet_min || v44 < yw->GameShell->net_packet_min )
+                        yw->GameShell->net_packet_min = v44;
+
+                    if ( v44 > yw->GameShell->net_packet_max )
+                        yw->GameShell->net_packet_max = v44;
+
+                    if ( v44 )
+                        yw->GameShell->net_packet_cnt++;
+
+                    if ( SPEED_DOWN_NET )
+                        yw->field_7586 = 1500;
+                    else
+                        yw->field_7586 = yw->GameShell->flush_time_norm;
+                }
             }
             yw->p_1_grp[0][6] += profiler_end(v41);
 
@@ -1273,7 +1273,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                     sb_0x4d7c08(this, yw, arg, 1);
 
                     if ( yw->isNetGame )
-                        ypaworld_func64__sub10(yw);
+                        yw_NetDrawStats(yw);
                 }
 
                 yw->win3d->EndFrame();
@@ -6831,13 +6831,15 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
         yw->field_7586 -= usr->frameTime;
         if ( yw->field_7586 <= 0 )
         {
-//      v18 = 1;
-//      v17 = usr->callSIGN;
-//      v20 = 2;
-//      v19 = 0;
-//      v21 = 1;
-//
-//      yw->windp->windp_func82(&v17);
+            windp_arg82 arg82;
+            arg82.senderFlags = 1;
+            arg82.senderID = usr->callSIGN;
+            arg82.receiverFlags = 2;
+            arg82.receiverID = 0;
+            arg82.guarant = 1;
+
+            yw->windp->windp_func82(&arg82);
+
             yw->field_7586 = 100;
         }
     }

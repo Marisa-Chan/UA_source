@@ -1840,7 +1840,7 @@ void sub_46DC1C(UserData *usr)
     int v12 = 1;
     usr->p_ypaworld->windp->windp_func84(&v12);
 
-    sb_0x4deac0(usr);
+    yw_NetPrintStartInfo(usr);
 }
 
 int sub_4EDCC4(_NC_STACK_ypaworld *yw)

@@ -586,13 +586,13 @@ public:
     virtual void CorrectPositionOnLand(void *);
     virtual void CorrectPositionInLevelBox(void *);
     virtual void NetUpdate(update_msg *arg);
-    virtual void ypabact_func117(stack_vals *arg);
+    virtual void ypabact_func117(update_msg *arg);
     virtual void Release(NC_STACK_ypabact *b_bacto);
     virtual size_t SetStateInternal(setState_msg *arg);
     virtual void ChangeSectorEnergy(yw_arg129 *arg);
     virtual void DeadTimeUpdate(update_msg *arg);
-    virtual void ypabact_func122(stack_vals *arg);
-    virtual void ypabact_func123(stack_vals *arg);
+    virtual void ypabact_func122(update_msg *arg);
+    virtual void ypabact_func123(update_msg *arg);
     virtual size_t PathFinder(bact_arg124 *arg);
     virtual size_t SetPath(bact_arg124 *arg);
 
@@ -682,5 +682,6 @@ public:
 
 
 void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_ypaworld *ywo);
+void sb_0x4874c4(__NC_STACK_ypabact *bact, int a2, int a3, float a4);
 
 #endif // YBACT_H_INCLUDED

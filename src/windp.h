@@ -14,9 +14,47 @@ enum FREE_FRACTION
     FREE_FRACTION_TAER = 8
 };
 
-struct __NC_STACK_windp
+
+struct windp_t1
 {
-    int dummy;
+    char name[64];
+    //int guid[4];
+    //void *connection;
+};
+
+struct windp_intern
+{
+    void init();
+
+//  int connect_numb;
+    windp_t1 connections[64];
+    /*  _DWORD dword1504;
+      IDirectPlay3 *dplay3;
+      int providerID;
+      int connType;
+      int num_sessions;
+      windp_t2 sessions[64];
+      int act_sess;
+      windp_t2 own_sess;
+      int sess_joined;
+      int sess_created;
+      char version_ident[128];*/
+    int version_check;
+    /*windp_t3 players[4];
+    int num_players;*/
+    char *norm_block;
+    //char *big_block;
+    int norm_size;
+    /*int big_size;
+    int guaranteed;
+    char *sndBuff;
+    int sndBuff_size;
+    int sndBuff_off;*/
+    int guaranteed_md;
+    /*nlist recv_list;
+    nlist send_list;
+    HANDLE mevent;*/
+    int debug;
 };
 
 
@@ -92,7 +130,7 @@ void sub_46D698(UserData *usr);
 void yw_CheckCDs(UserData *usr);
 void yw_CheckCRCs(_NC_STACK_ypaworld *yw);
 int ypaworld_func158__sub0__sub8(UserData *usr, const char**, const char**);
-void sb_0x4deac0(UserData *usr);
+void yw_NetPrintStartInfo(UserData *usr);
 int yw_DestroyPlayer(_NC_STACK_ypaworld *yw, const char *playerName);
 
 
@@ -111,8 +149,6 @@ extern netgamelst netgame_wnd;
 
 void sb_0x451034__sub6(_NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub7__sub5(_NC_STACK_ypaworld *yw, struC5 *inpt);
-void ypaworld_func64__sub18(_NC_STACK_ypaworld *yw);
-void ypaworld_func64__sub10(_NC_STACK_ypaworld *yw);
 void ypaworld_func151__sub7(UserData *usr);
 
 
@@ -123,10 +159,10 @@ public:
     virtual size_t func0(stack_vals *stak);
     virtual size_t func1(stack_vals *stak);
     virtual size_t func3(stack_vals *stak);
-    virtual size_t windp_func64(stack_vals *stak);
+    virtual size_t windp_func64();
     virtual size_t windp_func65(windp_getNameMsg *arg);
     virtual size_t windp_func66(const char *provName);
-    virtual size_t windp_func67(stack_vals *stak);
+    virtual size_t windp_func67(windp_t1 **pconn);
     virtual size_t windp_func68(stack_vals *stak);
     virtual size_t windp_func69(windp_getNameMsg *arg);
     virtual size_t windp_func70(const char *stak);
@@ -154,7 +190,7 @@ public:
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_windp() {
-        memset(&stack__windp, 0, sizeof(stack__windp));
+        memset(&wdp_intern, 0, sizeof(wdp_intern));
     };
     virtual ~NC_STACK_windp() {};
 
@@ -166,12 +202,17 @@ public:
         return new NC_STACK_windp();
     };
 
+
+    bool init();
+    void deinit();
     int getNumPlayers();
+
+
 
     //Data
     static const NewClassDescr description;
 
-    __NC_STACK_windp stack__windp;
+    windp_intern wdp_intern;
 };
 
 #endif // WINDP_H_INCLUDED

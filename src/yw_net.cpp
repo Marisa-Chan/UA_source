@@ -10,6 +10,11 @@
 #include "yparobo.h"
 #include "ypagun.h"
 #include "ypamissile.h"
+#include "font.h"
+
+extern uint32_t bact_id;
+extern key_value_stru ypaworld_keys[4];
+extern char **ypaworld__string_pointers;
 
 
 bool SPEED_DOWN_NET = false;
@@ -18,9 +23,6 @@ static uamessage_vhclDataE vhcldata_exact;
 uint32_t HNDL_MSG[108];
 
 float maxSpeed = 0.0;
-
-extern uint32_t bact_id;
-extern key_value_stru ypaworld_keys[4];
 
 const int netDebug_NUM = 4000;
 int netDebug_CREATE_CNT = 0;
@@ -1288,7 +1290,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         yw->GameShell->field_0x2fc4 = ldMsg->level;
 
         yw->isNetGame = 1;
-        sb_0x4deac0(yw->GameShell);
+        yw_NetPrintStartInfo(yw->GameShell);
     }
     break;
 
@@ -3144,7 +3146,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
 
         bbact->vp_extra[0].vp.base = bbact->vp_genesis.base;
         bbact->vp_extra[0].vp.trigo = bbact->vp_genesis.trigo;
-        bbact->vp_extra[0].flags |= 3;
+        bbact->vp_extra[0].flags |= EVPROTO_FLAG_ACTIVE | EVPROTO_FLAG_SCALE;
 
         bbact->vp_extra_mode = 1;
     }
@@ -3469,14 +3471,69 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         break;
     }
 
-
-    printf("Make me %s\n", "yw_handleNormMsg");
     return szmsg;
 }
 
 const char *yw_corruptionCheck(UserData *usr)
 {
-    printf("Make me %s\n", "yw_corruptionCheck");
+    _NC_STACK_ypaworld *ywo = usr->p_ypaworld;
+    __NC_STACK_ypabact *found = NULL;
+
+    if ( ywo->timeStamp - usr->deadCheck >= 100000 )
+    {
+        usr->deadCheck = ywo->timeStamp;
+
+        bact_node *stations = (bact_node *)ywo->bact_list.head;
+        while ( stations->next )
+        {
+            if ( stations->bact->owner != usr->netPlayerOwner )
+            {
+                bact_node *comm = (bact_node *)stations->bact->subjects_list.head;
+                while ( comm->next )
+                {
+                    bact_node *unit = (bact_node *)comm->bact->subjects_list.head;
+                    while ( unit->next )
+                    {
+                        if ( ywo->timeStamp - unit->bact->lastFrmStamp > 180000 )
+                        {
+                            found = comm->bact;
+                            break;
+                        }
+
+                        unit = (bact_node *)unit->next;
+                    }
+
+                    if ( found )
+                        break;
+
+                    if ( ywo->timeStamp - comm->bact->lastFrmStamp > 180000 )
+                    {
+                        found = comm->bact;
+                        break;
+                    }
+
+                    comm = (bact_node *)comm->next;
+                }
+
+                if ( found )
+                    break;
+
+                if ( ywo->timeStamp - stations->bact->lastFrmStamp > 180000 )
+                {
+                    found = stations->bact;
+                    break;
+                }
+            }
+
+            stations = (bact_node *)stations->next;
+        }
+
+        if ( found )
+        {
+            log_netlog("\n+++ CC: found old vehicle id %d, class %d, owner %d at time %d. Request update\n", found->gid, found->bact_type, found->owner, ywo->timeStamp / 1000);
+            return usr->players[found->owner].name;
+        }
+    }
     return NULL;
 }
 
@@ -4225,4 +4282,589 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
     memset(yw->playerstatus, 0, sizeof(yw->playerstatus));
 
     return 1;
+}
+
+
+void yw_NetHandleProblems(_NC_STACK_ypaworld *yw)
+{
+    UserData *usr = yw->GameShell;
+    switch ( usr->netProblem )
+    {
+    case 1:
+        usr->field_0x10 = 1;
+        usr->netProblemCount--;
+
+        if ( usr->netProblemCount <= 0 )
+        {
+            usr->netProblem = 0;
+            usr->netAllOk = 3;
+            usr->netAllOkCount = 0;
+
+            for (int i = 0; i < 4; i++)
+                usr->players[i].latency = 0;
+
+            if ( usr->isHost )
+            {
+                uamessage_endproblem eProblm;
+                eProblm.owner = usr->netPlayerOwner;
+                eProblm.msgID = UAMSG_ENDPROBLEM;
+                eProblm.solved = 3;
+
+                yw_arg181 arg181;
+                arg181.recvFlags = 2;
+                arg181.recvID = 0;
+                arg181.data = &eProblm;
+                arg181.garant = 1;
+                arg181.dataSize = sizeof(uamessage_endproblem);
+
+                yw->self_full->ypaworld_func181(&arg181);
+            }
+        }
+        break;
+
+    case 3:
+        usr->netProblemCount -= yw->field_1b24.frameTime;
+        if ( usr->netProblemCount < 0 )
+        {
+            yw->field_2d90->field_40 = 2;
+            usr->netProblem = 0;
+        }
+        break;
+
+    case 4:
+        usr->netProblemCount -= yw->field_1b24.frameTime;
+
+        if ( usr->netProblemCount < 0 )
+        {
+            usr->netProblem = 0;
+            for (int i = 0; i < 8; i++)
+                usr->players[i].isKilled &= ~2;
+        }
+        break;
+
+    default:
+        break;
+    }
+}
+
+int yw_NetCheckPlayers(_NC_STACK_ypaworld *yw)
+{
+    int v2 = 0;
+    UserData *usr = yw->GameShell;
+
+    windp_arg79 arg79;
+    arg79.ID = 0;
+    arg79.mode = 0;
+    while ( yw->windp->windp_func79(&arg79) )
+    {
+        if ( arg79.flags & 1 )
+        {
+            arg79.ID++;
+        }
+        else
+        {
+            int owner = 0;
+            netType2 *plr = NULL;
+
+            for ( int i = 0; i < 8; i++ )
+            {
+                if ( strcasecmp(usr->players[i].name, arg79.name) == 0 )
+                {
+                    owner = i;
+                    plr = &usr->players[i];
+                    break;
+                }
+            }
+
+            if ( plr )
+            {
+                if ( plr->problemCnt > 0 )
+                {
+                    plr->problemCnt -= yw->field_1b24.frameTime;
+                    if ( plr->problemCnt <= 0 )
+                        plr->status = 1;
+                }
+
+                int tm = yw->field_1b24.gTime - plr->lastMsgTime;
+
+                if ( yw->netGameStarted && tm > 7000 )
+                {
+                    SPEED_DOWN_NET = 1;
+
+                    if ( tm / 1000 != (tm - yw->field_1b24.frameTime) / 1000 )
+                    {
+                        log_netlog("Waiting for player %s. (time %ds at %ds)\n", arg79.name, tm / 1000, yw->timeStamp / 1000);
+                        log_netlog("    Reduce data transfer rate\n");
+                    }
+
+                    usr->problemCnt = 4000;
+
+                    plr->status = 2;
+                    plr->problemCnt = 5000;
+
+                    if ( (yw->field_1b24.gTime - (int)plr->lastMsgTime) > usr->kickTime )
+                    {
+                        if ( usr->isHost )
+                        {
+                            uamessage_kick msgKk;
+                            msgKk.owner = owner;
+                            msgKk.msgID = UAMSG_KICK;
+                            strcpy(msgKk.text, plr->name);
+
+                            yw_cleanPlayer(yw, plr->name, 0, 0);
+
+                            if ( usr->netProblem != 3 )
+                            {
+                                strcpy(usr->netProblemName, msgKk.text);
+                                usr->netProblem = 4;
+                                usr->netProblemCount = 15000;
+                            }
+
+                            v2 = 1;
+
+                            yw_arg181 yw181;
+                            yw181.data = &msgKk;
+                            yw181.dataSize = sizeof(uamessage_kick);
+                            yw181.recvFlags = 2;
+                            yw181.recvID = 0;
+                            yw181.garant = 1;
+                            yw->self_full->ypaworld_func181(&yw181);
+
+                            yw_DestroyPlayer(yw, msgKk.text);
+
+                            log_netlog(">>> I have kicked off %s because I haven't heard anything for %d sec (at time %d)\n", msgKk.text, usr->kickTime / 1000, yw->timeStamp / 1000);
+                        }
+                    }
+
+                    if ( (yw->field_1b24.gTime - plr->lastMsgTime) > 20000 )
+                    {
+                        if ( !usr->isHost )
+                        {
+                            if ( usr->netProblem != 4 && usr->netProblem != 3 )
+                            {
+                                usr->netProblem = 5;
+                                usr->netProblemCount = 10;
+                                v2 = 1;
+                            }
+                        }
+                    }
+
+                    plr->connProblem = 1;
+                    arg79.ID++;
+                }
+                else
+                {
+                    plr->connProblem = 0;
+                    arg79.ID++;
+                }
+            }
+            else
+            {
+                log_netlog("Warning: No Playerdata for player %s in PlayersOK() (%ds)\n", arg79.name, yw->timeStamp / 1000);
+                arg79.ID++;
+            }
+        }
+    }
+
+    if ( usr->netProblem == 5 && !v2 )
+        usr->netProblem = 0;
+
+    return 1;
+}
+
+int yw_NetCheckPlayersInGame(_NC_STACK_ypaworld *yw)
+{
+    UserData *usr = yw->GameShell;
+
+    int numpl = yw->windp->windp_func86(NULL);
+
+    if ( yw->netGameStarted )
+        return 1;
+
+    int rdypl = 0;
+    netType2 *wting[8];
+
+    for(int i = 0; i < 8; i++)
+    {
+        if (usr->players[i].name[0])
+        {
+            if ( usr->players[i].rdyStart )
+            {
+                rdypl++;
+                wting[i] = NULL;
+            }
+            else
+            {
+                wting[i] = &usr->players[i];
+            }
+        }
+        else
+        {
+            wting[i] = NULL;
+        }
+    }
+
+    if ( rdypl == numpl )
+    {
+        yw->netGameStarted = 1;
+        return 1;
+    }
+
+    SDL_Delay(50);
+
+    struC5 inpt;
+    memset(&inpt, 0, sizeof(struC5));
+    INPe.sub_412D28(&inpt);
+
+    char buf[1024];
+    char *cur = buf;
+
+    FontUA::select_tileset(&cur, 0);
+    FontUA::set_xpos(&cur, 0);
+    FontUA::set_ypos(&cur, 0);
+    FontUA::copy_position(&cur);
+    FontUA::add_txt(&cur, 2 * yw->screen_width / 3 - 1, 1,  get_lang_string(ypaworld__string_pointers, 651, "WAITING FOR PLAYERS: ") );
+    FontUA::next_line(&cur);
+
+    yw->netStartTime -= inpt.period;
+    if ( yw->netStartTime > 0 )
+    {
+        char tmpstr[128];
+        sprintf(tmpstr, "(%d)", yw->netStartTime / 1000);
+
+        FontUA::copy_position(&cur);
+        FontUA::add_txt(&cur, yw->screen_width / 3 - 1, 1, tmpstr);
+        FontUA::next_line(&cur);
+    }
+
+    for(int i = 1; i < 8; i++)
+    {
+        if (wting[i])
+        {
+            if ( yw->netStartTime <= 0 && usr->isHost )
+            {
+                uamessage_kick msgKk;
+                strcpy(msgKk.text, wting[i]->name);
+                msgKk.msgID = UAMSG_KICK;
+                msgKk.owner = i;
+
+                yw_cleanPlayer(yw, wting[i]->name, 0, 0);
+
+                yw_arg181 yw181;
+                yw181.recvFlags = 2;
+                yw181.data = &msgKk;
+                yw181.recvID = 0;
+                yw181.garant = 1;
+                yw181.dataSize = sizeof(uamessage_kick);
+
+                yw->self_full->ypaworld_func181(&yw181);
+
+                yw_DestroyPlayer(yw, msgKk.text);
+
+                if ( usr->netProblem != 3 )
+                {
+                    strcpy(usr->netProblemName, msgKk.text);
+
+                    yw->GameShell->netProblem = 4;
+                    yw->GameShell->netProblemCount = 15000;
+                }
+                log_netlog(">>> I have kicked off %s because I didn't heard anything after loading (time %d)\n", msgKk.text, yw->timeStamp / 1000);
+                log_netlog("    netstarttime was %d\n", yw->netStartTime);
+            }
+            else
+            {
+                char tmpstr[128];
+                strcpy(tmpstr, "     ");
+                strcpy( &tmpstr[3], wting[i]->name);
+
+                FontUA::copy_position(&cur);
+                FontUA::add_txt(&cur, yw->screen_width - 1, 1, tmpstr);
+                FontUA::next_line(&cur);
+            }
+        }
+    }
+
+    if ( yw->netStartTime <= 0 )
+    {
+        if ( yw->GameShell->isHost )
+            return 1;
+
+        FontUA::copy_position(&cur);
+        FontUA::add_txt(&cur, yw->screen_width - 1, 1, "WAITING FOR HOST");
+        FontUA::next_line(&cur);
+    }
+
+    FontUA::set_end(&cur);
+
+    yw->win3d->BeginFrame();
+    yw->win3d->LockSurface();
+
+    w3d_a209 arg209;
+    arg209.cmdbuf = buf;
+    arg209.includ = NULL;
+    yw->win3d->raster_func209(&arg209);
+
+    yw->win3d->UnlockSurface();
+    yw->win3d->EndFrame();
+
+    return 0;
+}
+
+
+void yw_NetCheckPing(_NC_STACK_ypaworld *yw)
+{
+    UserData *usr = yw->GameShell;
+
+    if ( usr->latencyCheck <= 0 && usr->isHost && (usr->netProblem == 0 || usr->netProblem == 1) )
+    {
+        if ( usr->netProblem == 1 )
+            usr->latencyCheck = 5;
+        else
+            usr->latencyCheck = 2000;
+
+        uamessage_ping rPing;
+        rPing.owner = usr->netPlayerOwner;
+        rPing.msgID = UAMSG_REQPING;
+        rPing.timestamp = yw->timeStamp;
+
+        yw_arg181 yw181;
+        yw181.recvFlags = 2;
+        yw181.recvID = 0;
+        yw181.data = &rPing;
+        yw181.garant = 1;
+        yw181.dataSize = sizeof(uamessage_ping);
+
+        yw->self_full->ypaworld_func181(&yw181);
+
+        if ( yw->field_1b24.frameTime < 3 )
+        {
+            windp_arg82 dp82;
+            dp82.senderFlags = 1;
+            dp82.receiverID = 0;
+            dp82.senderID = usr->callSIGN;
+            dp82.guarant = 0;
+            dp82.receiverFlags = 2;
+            yw->windp->windp_func82(&dp82);
+        }
+    }
+    else
+    {
+        usr->latencyCheck -= yw->field_1b24.frameTime;
+    }
+}
+
+
+void yw_NetMsgHndlLoop(_NC_STACK_ypaworld *yw)
+{
+    while ( 1 )
+    {
+        if ( yw->GameShell->netProblem != 0 )
+            yw_NetHandleProblems(yw);
+
+        yw->GameShell->netAllOkCount -= yw->field_1b24.frameTime;
+
+        yw_HandleNetMsg(yw);
+
+        if ( yw->field_2d90->field_40 == 2 )
+            break;
+
+        SPEED_DOWN_NET = 0;
+
+        if ( yw_NetCheckPlayers(yw) && yw_NetCheckPlayersInGame(yw) )
+        {
+            yw_NetCheckPing(yw);
+
+            if ( yw->GameShell->problemCnt > 0 )
+                yw->GameShell->problemCnt -= yw->field_1b24.frameTime;
+            break;
+        }
+    }
+}
+
+
+void yw_NetDrawStats(_NC_STACK_ypaworld *yw)
+{
+    bool toDraw = false;
+
+    char t[16][300];
+
+    UserData *usr = yw->GameShell;
+
+    tiles_stru *font29 = yw->tiles[29];
+    char drawbuf[2000];
+    char *cur = drawbuf;
+
+    FontUA::select_tileset(&cur, 29);
+    FontUA::set_center_xpos(&cur, font29->font_height - (yw->screen_width / 2) );
+    FontUA::set_center_ypos(&cur, font29->font_height - (yw->screen_height / 2) );
+
+    if ( usr->disconnected == 0 && usr->problemCnt > 0 )
+    {
+        if ( (yw->field_1b24.gTime / 300) & 1 )
+        {
+            FontUA::store_u8(&cur, 65);
+        }
+    }
+
+    FontUA::set_end(&cur);
+
+    yw->win3d->LockSurface();
+
+    w3d_a209 v77;
+    v77.cmdbuf = drawbuf;
+    v77.includ = NULL;
+
+    yw->win3d->raster_func209(&v77);
+
+    yw->win3d->UnlockSurface();
+
+    int numelm = 0;
+
+    if ( usr->netProblem )
+    {
+        toDraw = true;
+
+        switch ( usr->netProblem )
+        {
+        case 1:
+            if ( usr->isHost )
+            {
+                strcpy(t[0], get_lang_string(ypaworld__string_pointers, 2405, "HOST: LATENCY PROBLEMS."));
+                sprintf(t[1], "%s %d", get_lang_string(ypaworld__string_pointers, 2423, "PLEASE WAIT"), usr->netProblemCount);
+                numelm = 2;
+            }
+            else
+            {
+                strcpy(t[0], get_lang_string(ypaworld__string_pointers, 2406, "CLIENT: LATENCY PROBLEMS."));
+                sprintf(t[1], "%s %d", get_lang_string(ypaworld__string_pointers, 2424, "PLEASE WAIT"), usr->netProblemCount);
+                numelm = 2;
+            }
+            break;
+
+        case 3:
+            strcpy(t[0], get_lang_string(ypaworld__string_pointers, 2425, "YOU ARE KICKED OFF BECAUSE NETTROUBLE"));
+            sprintf(t[1], "%s %d", get_lang_string(ypaworld__string_pointers, 2426, "LEVEL FINISHES AUTOMATICALLY"), usr->netProblemCount / 1000);
+            numelm = 2;
+            break;
+
+        case 4:
+            strcpy(t[0], get_lang_string(ypaworld__string_pointers, 2427, "FOLLOWING PLAYERES WERE REMOVED"));
+            strcpy(t[1], get_lang_string(ypaworld__string_pointers, 2428, "BECAUSE THEY HAD NETWORK PROBLEMS"));
+            numelm = 2;
+
+            for(int i = 0; i < 8; i++)
+            {
+                if (usr->players[i].isKilled & 2)
+                {
+                    strcpy(t[numelm], usr->players[i].name);
+                    numelm++;
+                }
+            }
+            break;
+
+        case 5:
+            strcpy(t[0], get_lang_string(ypaworld__string_pointers, 2429, "NO CONNECTION TO FOLLOWING PLAYERS"));
+            strcpy(t[1], get_lang_string(ypaworld__string_pointers, 2430, "FINISH IF PROBLEM CANNOT NE SOLVED"));
+            numelm = 2;
+
+            for(int i = 0; i < 8; i++)
+            {
+                if ( (yw->field_1b24.gTime - usr->players[i].lastMsgTime) > 20000 )
+                {
+                    if ( usr->players[i].rdyStart )
+                    {
+                        if ( strcasecmp(usr->players[i].name, usr->callSIGN) )
+                        {
+                            strcpy(t[numelm], usr->players[i].name);
+                            numelm++;
+                        }
+                    }
+                }
+            }
+            break;
+
+        default:
+            break;
+        }
+    }
+    else
+    {
+        if ( usr->netAllOkCount > 0 )
+        {
+            numelm = 1;
+            toDraw = true;
+
+            if ( usr->netAllOk == 1 )
+            {
+                strcpy(t[0], get_lang_string(ypaworld__string_pointers, 2409, "NETWORK IS NOW OK"));
+            }
+            else if ( usr->netAllOk == 2 )
+            {
+                strcpy(t[0], get_lang_string(ypaworld__string_pointers, 2408, "THERE WAS NO CHANCE TO SOLVE THIS PROBLEM"));
+            }
+            else if ( usr->netAllOk == 3 )
+            {
+                strcpy(t[0], "   ");
+                toDraw = false;
+            }
+            else
+            {
+                strcpy(t[0], "???");
+            }
+        }
+    }
+
+    if ( toDraw )
+    {
+        tiles_stru *font0 = yw->tiles[0];
+        cur = drawbuf;
+
+        FontUA::select_tileset(&cur, 0);
+        FontUA::set_center_xpos(&cur, yw->screen_width / 4 - yw->screen_width / 2);
+        FontUA::set_center_ypos(&cur, 12 - yw->screen_height / 2);
+
+        cur = GuiBase::FormateTitle(yw, yw->screen_width / 4 - yw->screen_width / 2,
+                                    12 - yw->screen_height / 2,
+                                    yw->screen_width / 2,
+                                    get_lang_string(ypaworld__string_pointers, 2407, "NETZWERKSTATUS"),
+                                    cur, 0, 0);
+
+        FontUA::next_line(&cur);
+
+        FontUA::select_tileset(&cur, 0);
+
+        for(int i = 0; i < numelm; i++)
+        {
+            FontUA::store_u8(&cur, '{');
+
+            FontUA::copy_position(&cur);
+            FontUA::op17(&cur, yw->screen_width / 2 - font0->chars[(int)'}'].width);
+
+            FontUA::store_u8(&cur, ' ');
+            FontUA::store_u8(&cur, '}');
+
+            FontUA::add_txt(&cur, yw->screen_width / 2 - 2 * font0->chars[(int)'W'].width, 4, t[i] );
+
+            FontUA::next_line(&cur);
+        }
+
+        FontUA::set_yoff(&cur, font0->font_height - 1);
+
+        FontUA::store_u8(&cur, 'x');
+        FontUA::op17(&cur, yw->screen_height / 2 - font0->chars[(int)'z'].width);
+        FontUA::store_u8(&cur, 'y');
+        FontUA::store_u8(&cur, 'z');
+
+        FontUA::set_end(&cur);
+
+        yw->win3d->LockSurface();
+
+        w3d_a209 v77;
+        v77.cmdbuf = drawbuf;
+        v77.includ = NULL;
+
+        yw->win3d->raster_func209(&v77);
+
+        yw->win3d->UnlockSurface();
+    }
 }
