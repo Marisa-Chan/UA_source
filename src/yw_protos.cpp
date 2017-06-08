@@ -2599,6 +2599,9 @@ int parse_map_robos(scrCallBack *arg)
 
     if ( !strcasecmp(_p1, "end") )
     {
+        if (mapp->mapRobos_count == 0) //If it's first host station - save owner for brief
+            mapp->playerOwner = robo->owner;
+
         arg->field_18 = 0;
         mapp->mapRobos_count++;
         mapp->flags |= 0x40;

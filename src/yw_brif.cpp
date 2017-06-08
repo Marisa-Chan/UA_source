@@ -480,7 +480,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub14(_NC_STACK_ypaworld *yw, struC5 *i
 
     for (int i = 0; i < brf->map_prototype.squad_count; i++)
     {
-        if ( brf->map_prototype.squads[i].owner != 1 && brf->map_prototype.squads[i].mb_status != 1)
+        if ( brf->map_prototype.squads[i].owner != brf->map_prototype.playerOwner && brf->map_prototype.squads[i].mb_status != 1)
             brf->field_2E74++;
     }
 
@@ -505,7 +505,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub15(_NC_STACK_ypaworld *yw, struC5 *i
         {
             v9 = &brf->map_prototype.squads[i];
 
-            if ( brf->map_prototype.squads[i].owner != 1 && brf->map_prototype.squads[i].mb_status != 1)
+            if ( brf->map_prototype.squads[i].owner != brf->map_prototype.playerOwner && brf->map_prototype.squads[i].mb_status != 1)
             {
                 if ( v6 == 0 )
                     break;
@@ -543,7 +543,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub16(_NC_STACK_ypaworld *yw, struC5 *i
     {
         squadProto *v5 = &brf->map_prototype.squads[i];
 
-        if ( v5->owner == yw->playerOwner && v5->mb_status != 1)
+        if ( v5->owner == brf->map_prototype.playerOwner && v5->mb_status != 1)
             brf->field_2E74++;
     }
 
@@ -568,7 +568,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub17(_NC_STACK_ypaworld *yw, struC5 *i
         {
             v9 = &brf->map_prototype.squads[i];
 
-            if ( v9->owner == yw->playerOwner && v9->mb_status != 1)
+            if ( v9->owner == brf->map_prototype.playerOwner && v9->mb_status != 1)
             {
                 if ( v6 == 0 )
                     break;

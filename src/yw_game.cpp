@@ -6839,7 +6839,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 if (v109)
                     break;
 
-                if ( v61->bact->bact_type == BACT_TYPES_ROBO && v61->bact->owner != 1 )
+                if ( v61->bact->bact_type == BACT_TYPES_ROBO && v61->bact->owner != 1 ) // FIXME owner
                 {
                     v110++;
 

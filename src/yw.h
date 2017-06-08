@@ -551,6 +551,8 @@ struct mapProto
     dbmapProto mbmaps[4];
     int dbmap_count;
     dbmapProto dbmaps[4];
+
+    int playerOwner; //Firsts host station owner, for correct XP brief
 };
 
 struct yw_buddy
