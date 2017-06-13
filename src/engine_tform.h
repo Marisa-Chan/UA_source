@@ -144,7 +144,7 @@ struct __attribute__((packed)) xyz
     {
         if (b != 0.0)
         {
-            double tmp = 1.d / b;
+            double tmp = 1.0 / b;
             *this *= tmp;
         }
 
