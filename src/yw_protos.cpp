@@ -75,11 +75,11 @@ int ParseExtSampleDef(vhclSndFX *sndfx, char *p2)
 
         sndExt *sndEx = &sndfx->extS.sndExts[curid];
         sndEx->sample = NULL;
-        sndEx->field_4 = strtol(pp1, NULL, 0);
-        sndEx->field_6 = strtol(pp2, NULL, 0);
-        sndEx->field_8 = strtol(pp3, NULL, 0);
-        sndEx->field_C = strtol(pp4, NULL, 0);
-        sndEx->field_10 = strtol(pp5, NULL, 0);
+        sndEx->loop = strtol(pp1, NULL, 0);
+        sndEx->vol = strtol(pp2, NULL, 0);
+        sndEx->smplRate = strtol(pp3, NULL, 0);
+        sndEx->offset = strtol(pp4, NULL, 0);
+        sndEx->smplCnt = strtol(pp5, NULL, 0);
 
         if ( strlen(pname) >= 31 )
         {
@@ -3067,7 +3067,7 @@ int ShellSoundsParse_sample(UserData *usr, scrCallBack *arg)
     v13->samples_data[v4].psampl = v3[v4]->getSMPL_pSample();
 
     if ( v3 == usr->samples1 && (v4 == 0 || v4 == 5 || v4 == 10 || v4 == 15 ) )
-        v13->samples_data[v4].field_12 |= 1;
+        v13->samples_data[v4].flags |= 1;
 
     set_prefix_replacement("rsrc", buf);
     return 0;

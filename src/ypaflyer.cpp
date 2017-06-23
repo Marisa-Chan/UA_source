@@ -1398,7 +1398,7 @@ void NC_STACK_ypaflyer::User_layer(update_msg *arg)
                     break;
                 }
 
-                if ( !(fly->bact_internal->soundcarrier.samples_data[5].field_12 & 2) )
+                if ( !(fly->bact_internal->soundcarrier.samples_data[5].flags & 2) )
                 {
                     if ( !(fly->bact_internal->status_flg & BACT_STFLAG_LCRASH) )
                     {

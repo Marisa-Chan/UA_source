@@ -2320,7 +2320,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
             smpl_inf->pitch = vhcl->sndFX[i].pitch;
 
             if ( i <= 3 || (i >= 7 && i <= 8) )
-                smpl_inf->field_12 |= 1;
+                smpl_inf->flags |= 1;
 
             if ( vhcl->sndFX[i].single_sample )
                 smpl_inf->psampl = vhcl->sndFX[i].single_sample->getSMPL_pSample();
@@ -2329,32 +2329,32 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
 
             if ( vhcl->sndFX[i].sndPrm.slot )
             {
-                smpl_inf->field_4 = &vhcl->sndFX[i].sndPrm;
-                smpl_inf->field_12 |= 8;
+                smpl_inf->paletteFX = &vhcl->sndFX[i].sndPrm;
+                smpl_inf->flags |= 8;
             }
             else
             {
-                smpl_inf->field_12 &= 0xF7;
+                smpl_inf->flags &= ~8;
             }
 
             if ( vhcl->sndFX[i].sndPrm_shk.slot )
             {
-                smpl_inf->field_8 = &vhcl->sndFX[i].sndPrm_shk;
-                smpl_inf->field_12 |= 0x40;
+                smpl_inf->shakeFX = &vhcl->sndFX[i].sndPrm_shk;
+                smpl_inf->flags |= 0x40;
             }
             else
             {
-                smpl_inf->field_12 &= 0xBF;
+                smpl_inf->flags &= ~0x40;
             }
 
             if ( vhcl->sndFX[i].extS.cnt )
             {
-                smpl_inf->field_C = &vhcl->sndFX[i].extS; //CHECK IT
-                smpl_inf->field_13 |= 2;
+                smpl_inf->smplExt = &vhcl->sndFX[i].extS; //CHECK IT
+                smpl_inf->flags |= 0x200;
             }
             else
             {
-                smpl_inf->field_13 &= 0xFD;
+                smpl_inf->flags &= ~0x200;
             }
         }
 
@@ -2491,7 +2491,7 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
         v25->pitch = wproto->sndFXes[i].pitch;
 
         if ( i == 0 )
-            v25->field_12 |= 1;
+            v25->flags |= 1;
 
         if ( wproto->sndFXes[i].single_sample )
             v25->psampl = wproto->sndFXes[i].single_sample->getSMPL_pSample();
@@ -2500,32 +2500,32 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
 
         if ( wproto->sndFXes[i].sndPrm.slot )
         {
-            v25->field_12 |= 8;
-            v25->field_4 = &wproto->sndFXes[i].sndPrm;
+            v25->flags |= 8;
+            v25->paletteFX = &wproto->sndFXes[i].sndPrm;
         }
         else
         {
-            v25->field_12 &= 0xF7;
+            v25->flags &= ~8;
         }
 
         if ( wproto->sndFXes[i].sndPrm_shk.slot )
         {
-            v25->field_12 |= 0x40;
-            v25->field_8 = &wproto->sndFXes[i].sndPrm_shk;
+            v25->flags |= 0x40;
+            v25->shakeFX = &wproto->sndFXes[i].sndPrm_shk;
         }
         else
         {
-            v25->field_12 &= 0xBF;
+            v25->flags &= ~0x40;
         }
 
         if ( wproto->sndFXes[i].extS.cnt )
         {
-            v25->field_13 |= 2;
-            v25->field_C = &wproto->sndFXes[i].extS;
+            v25->flags |= 0x200;
+            v25->smplExt = &wproto->sndFXes[i].extS;
         }
         else
         {
-            v25->field_13 &= 0xFD;
+            v25->flags &= ~0x200;
         }
     }
 

@@ -2200,17 +2200,17 @@ void sub_44BF34(vhclSndFX *sndfx)
                     sampl *sample = sndfx->wavs[i]->getSMPL_pSample();
 
                     sndfx->extS.sndExts[i].sample = sample;
-                    sndfx->extS.sndExts[i].field_14 = sample->SampleRate * sndfx->extS.sndExts[i].field_C / 11000;
-                    sndfx->extS.sndExts[i].field_18 = sample->SampleRate * sndfx->extS.sndExts[i].field_10 / 11000;
+                    sndfx->extS.sndExts[i].rlOffset = sample->SampleRate * sndfx->extS.sndExts[i].offset / 11000;
+                    sndfx->extS.sndExts[i].rlSmplCnt = sample->SampleRate * sndfx->extS.sndExts[i].smplCnt / 11000;
 
-                    if ( sndfx->extS.sndExts[i].field_14 > sample->bufsz )
-                        sndfx->extS.sndExts[i].field_14 = sample->bufsz;
+                    if ( sndfx->extS.sndExts[i].rlOffset > sample->bufsz )
+                        sndfx->extS.sndExts[i].rlOffset = sample->bufsz;
 
-                    if ( !sndfx->extS.sndExts[i].field_18 )
-                        sndfx->extS.sndExts[i].field_18 = sample->bufsz;
+                    if ( !sndfx->extS.sndExts[i].rlSmplCnt )
+                        sndfx->extS.sndExts[i].rlSmplCnt = sample->bufsz;
 
-                    if ( sndfx->extS.sndExts[i].field_18 + sndfx->extS.sndExts[i].field_14 > sample->bufsz )
-                        sndfx->extS.sndExts[i].field_18 = sample->bufsz - sndfx->extS.sndExts[i].field_14;
+                    if ( sndfx->extS.sndExts[i].rlSmplCnt + sndfx->extS.sndExts[i].rlOffset > sample->bufsz )
+                        sndfx->extS.sndExts[i].rlSmplCnt = sample->bufsz - sndfx->extS.sndExts[i].rlOffset;
                 }
                 else
                 {
@@ -4299,7 +4299,7 @@ void ypaworld_func64__sub23(_NC_STACK_ypaworld *yw)
             smpls->field_4.field_14 = yw->field_1b84->fly_dir.sz * yw->field_1b84->fly_dir_length;
         }
 
-        if ( smpls->field_4.samples_data[0].field_12 & 2 )
+        if ( smpls->field_4.samples_data[0].flags & 2 )
         {
             sb_0x4242e0(&smpls->field_4);
         }
@@ -5244,7 +5244,7 @@ void recorder_world_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd)
 
         for (int j = 0; j < 16; j++)
         {
-            if (bact->soundcarrier.samples_data[j].field_12 & 0x92)
+            if (bact->soundcarrier.samples_data[j].flags & 0x92)
                 ssnd[0] |= 1 << j;
         }
 
@@ -6045,7 +6045,7 @@ void sub_46F5C8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, trec_bct *oinf
             {
                 bact->soundFlags &= ~v48;
 
-                if ( bact->soundcarrier.samples_data[i].field_12 & 1 )
+                if ( bact->soundcarrier.samples_data[i].flags & 1 )
                     sub_424000(&bact->soundcarrier, i);
             }
         }

@@ -34,6 +34,9 @@ public:
 
     void EOS_callback( void (*func)(void *) );
 
+    bool isPlaying();
+    bool isStopped();
+
 
     enum SMPL_STATUS
     {

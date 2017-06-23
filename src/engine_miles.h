@@ -23,13 +23,13 @@ struct __attribute__((packed)) sndFXprm2 : sndFXprm
 struct sndExt
 {
     sampl *sample;
-    int16_t field_4;
-    int16_t field_6;
-    int field_8;
-    int field_C;
-    int field_10;
-    int field_14;
-    int field_18;
+    uint8_t loop;
+    int16_t vol;
+    int smplRate;
+    size_t offset;
+    int smplCnt;
+    int rlOffset;
+    int rlSmplCnt;
 };
 
 struct sndExtends
@@ -41,22 +41,21 @@ struct sndExtends
 struct userdata_sample_info
 {
     sampl *psampl;
-    sndFXprm *field_4;
-    sndFXprm2 *field_8;
-    sndExtends *field_C;
+    sndFXprm *paletteFX;
+    sndFXprm2 *shakeFX;
+    sndExtends *smplExt;
     int16_t volume;
-    char field_12;
-    char field_13;
+    uint16_t flags;
     int pitch;
     samples_collection1 *parent_sample_collection;
-    int16_t field_1C;
-    int16_t field_1E;
-    int field_20;
-    float field_24;
-    float field_28;
-    int16_t vol;
-    int16_t pan;
-    int rate;
+    int16_t priority;
+    int16_t fragmentID;
+    size_t startTime;
+    float palMag;
+    float shkMag;
+    int16_t resultVol;
+    int16_t resultPan;
+    int resultRate;
 };
 
 struct samples_collection1

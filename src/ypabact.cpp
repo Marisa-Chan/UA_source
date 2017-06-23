@@ -2631,7 +2631,7 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
                     break;
                 }
 
-                if ( !(bact->soundcarrier.samples_data[5].field_12 & 2) )
+                if ( !(bact->soundcarrier.samples_data[5].flags & 2) )
                 {
                     if ( !(bact->status_flg & BACT_STFLAG_LCRASH) )
                     {

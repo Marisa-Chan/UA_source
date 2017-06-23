@@ -762,3 +762,13 @@ void CTsmpl::play()
     }
 }
 
+
+bool CTsmpl::isPlaying()
+{
+    return status == SMPL_STATUS_PLAYING;
+}
+
+bool CTsmpl::isStopped()
+{
+    return status == SMPL_STATUS_STOPPED;
+}
