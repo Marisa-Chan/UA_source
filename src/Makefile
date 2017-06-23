@@ -9,6 +9,10 @@ CLANG_WIN = i686-w64-mingw32-clang++
 
 LIBS_NIX = -lSDL2 -lSDL2_ttf -lGL -lopenal -lvorbisfile
 
+CC_MAC = clang
+CXX_MAC = clang++
+LIBS_MAC = -lSDL2 -lSDL2_ttf -framework OpenGL -framework OpenAL -lvorbisfile
+
 TARGET = UA_source
 OBJS =  \
 	ade.cpp\
@@ -82,6 +86,9 @@ win32: $(OBJS)
 
 nix: $(OBJS)
 	$(CXX) -std=c++11 -mno-ms-bitfields -O0 -g -o $(TARGET) $(OBJS) $(LIBS_NIX)
+
+mac: $(OBJS)
+	$(CXX_MAC) -std=c++11 -mno-ms-bitfields -O0 -g -o $(TARGET) $(OBJS) $(LIBS_MAC)
 
 wclang: $(OBJS)
 	$(CLANG_WIN) -mno-ms-bitfields -O0 -g -o $(TARGET).exe $(OBJS) $(LIBS_WIN) -m32 -I $(MINGW)/include/

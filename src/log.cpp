@@ -510,7 +510,7 @@ void log_dinputlog(const char *format, ...)
 }
 
 
-void log_dinput_error(const char *title, const char *msg, int msgid)
+void log_dinput_error(const char *title, const char *msg, unsigned int msgid)
 {
     switch ( msgid )
     {
