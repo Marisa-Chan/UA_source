@@ -19,8 +19,8 @@ void ypaworld_func158__sub4__sub1__sub4__sub3(_NC_STACK_ypaworld *yw, struC5 *in
         PlayMusicTrack();
     }
 
-    brf->field_2E78 = brf->field_2E7C;
-    brf->field_2E68 = 5;
+    brf->startTime = brf->currTime;
+    brf->briefStage = 5;
 
     brf->field_2F40.pbitm = brf->mbmap_img->getBMD_pBitmap();
 
@@ -61,12 +61,12 @@ void ypaworld_func158__sub4__sub1__sub4__sub3(_NC_STACK_ypaworld *yw, struC5 *in
     brf->field_2F40.float1C = brf->field_2F64.x2;
     brf->field_2F40.float20 = brf->field_2F64.y2;
     brf->field_2E80 = 0;
-    brf->field_2E84 = brf->field_2E7C;
+    brf->field_2E84 = brf->currTime;
 }
 
 void ypaworld_func158__sub4__sub1__sub4__sub4(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
-    int v5 = brf->field_2E7C - brf->field_2E78;
+    int v5 = brf->currTime - brf->startTime;
 
     if ( v5 >= 600 )
     {
@@ -74,7 +74,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub4(_NC_STACK_ypaworld *yw, struC5 *in
         brf->field_2F40.float18 = brf->field_2F74.y1;
         brf->field_2F40.float1C = brf->field_2F74.x2;
         brf->field_2F40.float20 = brf->field_2F74.y2;
-        brf->field_2E68 = 6;
+        brf->briefStage = 6;
 
         displ_arg263 v4;
         v4.bitm = yw->pointers__bitm[5];
@@ -190,12 +190,12 @@ int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
 void ypaworld_func158__sub4__sub1__sub4__sub5(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     brf->field_2F84 = 1;
-    brf->field_2E80 = brf->field_2E7C;
+    brf->field_2E80 = brf->currTime;
     brf->tp2_count = 0;
 
     if ( yw_MBLoadSet(yw, brf->map_prototype.setNumber) )
     {
-        brf->field_2E68 = 7;
+        brf->briefStage = 7;
 
         displ_arg263 v6;
         v6.bitm = yw->pointers__bitm[0];
@@ -205,7 +205,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub5(_NC_STACK_ypaworld *yw, struC5 *in
     }
     else
     {
-        brf->field_2E68 = 1;
+        brf->briefStage = 1;
     }
 }
 
@@ -215,13 +215,13 @@ void ypaworld_func158__sub4__sub1__sub4__sub6(_NC_STACK_ypaworld *yw, struC5 *in
     brobj->field_0 = 0;
     brobj->object_id = 0;
 
-    brf->field_2E70 = -1;
-    brf->field_2E74 = 1;
+    brf->activeElement = -1;
+    brf->elementsCount = 1;
 
-    brf->field_2E68 = 8;
-    brf->field_2E78 = brf->field_2E7C;
+    brf->briefStage = 8;
+    brf->startTime = brf->currTime;
 
-    brf->field_2F8C = -1;
+    brf->mouseSelectedElement = -1;
     brf->field_2F90 = -1;
     brf->field_2E88 = get_lang_string(yw->string_pointers_p2, 150, "YOU ARE HERE");
 }
@@ -232,7 +232,7 @@ int sub_4EBBA8(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, float xpos, float ypos,
 
     brf_t2 *brtp2 = &brf->tp2[brf->tp2_count];
 
-    brobj->field_C = brf->field_2E7C;
+    brobj->field_C = brf->currTime;
     brobj->xpos = xpos;
     brobj->ypos = ypos;
     brobj->field_2C = a5;
@@ -269,21 +269,21 @@ int sub_4EBBA8(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, float xpos, float ypos,
 
 void ypaworld_func158__sub4__sub1__sub4__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
-    if ( brf->field_2E7C - brf->field_2E78 >= 2500 )
+    if ( brf->currTime - brf->startTime >= 2500 )
     {
-        brf->field_2E68 = 9;
+        brf->briefStage = 9;
     }
-    else if ( brf->field_2E70 )
+    else if ( brf->activeElement )
     {
         mapRobo *robo = brf->map_prototype.mapRobos;
         const char *v6 = get_lang_string(yw->string_pointers_p2, robo[0].vehicle + 1200, yw->VhclProtos[ robo[0].vehicle ].name);
 
-        brf->field_2E70 = 0;
+        brf->activeElement = 0;
         sub_4EBBA8(yw, brf, robo[0].pos_x, robo[0].pos_z, 25, v6, 26, robo[0].owner + 128, 2, robo[0].vehicle, brf->field_2F84);
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub8(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void yw_BriefSetupKeySectors(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     if ( brf->field_2F90 )
     {
@@ -291,53 +291,58 @@ void ypaworld_func158__sub4__sub1__sub4__sub8(_NC_STACK_ypaworld *yw, struC5 *in
         brf->brf_objs.field_0 = 0;
     }
 
-    brf->field_2E70 = -1;
-    brf->field_2E74 = 0;
-    brf->field_2E78 = brf->field_2E7C;
+    brf->activeElement = -1;
+    brf->elementsCount = 0;
+    brf->startTime = brf->currTime;
 
     brf->field_2E88 = get_lang_string(yw->string_pointers_p2, 151, "PRIMARY TARGETS");
 
     for (int i = 0; i < yw->field_2d90->gate_count; i++ )
     {
-        gateProto *v9 = &yw->field_2d90->gates[i];
+        gateProto *gate = &yw->field_2d90->gates[i];
 
-        if ( v9->mb_status != 1 )
-            brf->field_2E74 += v9->keySectors_count;
+        if ( gate->mb_status != 1 )
+            brf->elementsCount += gate->keySectors_count;
     }
 
-    brf->field_2E68 = (brf->field_2E74 == 0) + 11;
+    if ( brf->elementsCount == 0 )
+        brf->briefStage = 12;
+    else
+        brf->briefStage = 11;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub9(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void yw_BriefUpdateKeySectors(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
-    int v5 = (brf->field_2E7C - brf->field_2E78) / 2500;
+    int elmID = (brf->currTime - brf->startTime) / 2500;
 
-    if ( v5 >= brf->field_2E74 )
+    if ( elmID >= brf->elementsCount )
     {
-        brf->field_2E68 = 12;
+        brf->briefStage = 12;
     }
-    else if ( v5 != brf->field_2E70 )
+    else if ( elmID != brf->activeElement )
     {
-        brf->field_2E70 = v5;
+        brf->activeElement = elmID;
+        int ksID = 0; /* Current key sector */
 
         for (int i = 0; i <  yw->field_2d90->gate_count ; i++ )
         {
-
             if ( yw->field_2d90->gates[i].mb_status != 1 )
             {
                 for (int j = 0; j < yw->field_2d90->gates[i].keySectors_count; j++)
                 {
-                    keysec *v8 = &yw->field_2d90->gates[i].keySectors[j];
+                    keysec *ks = &yw->field_2d90->gates[i].keySectors[j];
 
-                    if ( v5 == j)
+                    if ( elmID == ksID)
                     {
-                        float xpos = v8->x * 1200.0 + 600.0;
-                        float ypos = -(v8->y * 1200.0 + 600.0);
-                        uint8_t v12 = *( (uint8_t *)brf->typ_map_bitm->buffer + v8->x + v8->y * brf->typ_map_bitm->width );
+                        float xpos = ks->x * 1200.0 + 600.0;
+                        float ypos = -(ks->y * 1200.0 + 600.0);
+                        uint8_t v12 = *( (uint8_t *)brf->typ_map_bitm->buffer + ks->x + ks->y * brf->typ_map_bitm->width );
                         const char *v13 = get_lang_string(yw->string_pointers_p2, 157, "KEY SECTOR");
 
                         sub_4EBBA8(yw, brf, xpos, ypos, 25, v13, 26, 146, 1, v12, brf->field_2F84);
                     }
+
+                    ksID++;
                 }
             }
         }
@@ -352,9 +357,9 @@ void ypaworld_func158__sub4__sub1__sub4__sub10(_NC_STACK_ypaworld *yw, struC5 *i
         brf->brf_objs.field_0 = 0;
     }
 
-    brf->field_2E70 = -1;
-    brf->field_2E74 = 0;
-    brf->field_2E78 = brf->field_2E7C;
+    brf->activeElement = -1;
+    brf->elementsCount = 0;
+    brf->startTime = brf->currTime;
     brf->field_2E88 = get_lang_string(yw->string_pointers_p2, 152, "TECHNOLOGY UPGRADES");
 
     for (int i = 0; i < 8; i++)
@@ -362,23 +367,23 @@ void ypaworld_func158__sub4__sub1__sub4__sub10(_NC_STACK_ypaworld *yw, struC5 *i
         if (yw->gems[i].field_0)
         {
             if ( yw->gems[i].mb_status != 1 )
-                brf->field_2E74++;
+                brf->elementsCount++;
         }
     }
 
-    brf->field_2E68 = (brf->field_2E74 == 0) + 14;
+    brf->briefStage = (brf->elementsCount == 0) + 14;
 }
 
 void ypaworld_func158__sub4__sub1__sub4__sub11(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
-    int v5 = (brf->field_2E7C - brf->field_2E78) / 2500;
-    if ( v5 >= brf->field_2E74 )
+    int v5 = (brf->currTime - brf->startTime) / 2500;
+    if ( v5 >= brf->elementsCount )
     {
-        brf->field_2E68 = 15;
+        brf->briefStage = 15;
     }
-    else if ( v5 != brf->field_2E70 )
+    else if ( v5 != brf->activeElement )
     {
-        brf->field_2E70 = v5;
+        brf->activeElement = v5;
         int v6 = v5;
 
         gemProto * v9 = yw->gems;
@@ -416,33 +421,33 @@ void ypaworld_func158__sub4__sub1__sub4__sub12(_NC_STACK_ypaworld *yw, struC5 *i
         brf->brf_objs.field_0 = 0;
     }
 
-    brf->field_2E70 = -1;
-    brf->field_2E78 = brf->field_2E7C;
+    brf->activeElement = -1;
+    brf->startTime = brf->currTime;
 
     brf->field_2E88 = get_lang_string(yw->string_pointers_p2, 153, "ENEMY DEFENSE STATIONS");
-    brf->field_2E74 = 0;
+    brf->elementsCount = 0;
 
     for (int i = 1; i < brf->map_prototype.mapRobos_count; i++)
     {
         if (brf->map_prototype.mapRobos[i].mb_status != 1)
-            brf->field_2E74++;
+            brf->elementsCount++;
     }
 
-    brf->field_2E68 = (brf->field_2E74 == 0) + 17;
+    brf->briefStage = (brf->elementsCount == 0) + 17;
 }
 
 void ypaworld_func158__sub4__sub1__sub4__sub13(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
-    int v5 = (brf->field_2E7C - brf->field_2E78) / 2500;
+    int v5 = (brf->currTime - brf->startTime) / 2500;
 
-    if ( v5 >= brf->field_2E74 )
+    if ( v5 >= brf->elementsCount )
     {
-        brf->field_2E68 = 18;
+        brf->briefStage = 18;
     }
-    else if ( v5 != brf->field_2E70 )
+    else if ( v5 != brf->activeElement )
     {
         int v6 = v5;
-        brf->field_2E70 = v5;
+        brf->activeElement = v5;
 
         mapRobo *v9 = &brf->map_prototype.mapRobos[1];
 
@@ -472,31 +477,31 @@ void ypaworld_func158__sub4__sub1__sub4__sub14(_NC_STACK_ypaworld *yw, struC5 *i
         brf->brf_objs.field_0 = 0;
     }
 
-    brf->field_2E70 = -1;
-    brf->field_2E74 = 0;
-    brf->field_2E78 = brf->field_2E7C;
+    brf->activeElement = -1;
+    brf->elementsCount = 0;
+    brf->startTime = brf->currTime;
 
     brf->field_2E88 = get_lang_string(yw->string_pointers_p2, 154, "ENEMY FORCES");
 
     for (int i = 0; i < brf->map_prototype.squad_count; i++)
     {
         if ( brf->map_prototype.squads[i].owner != brf->map_prototype.playerOwner && brf->map_prototype.squads[i].mb_status != 1)
-            brf->field_2E74++;
+            brf->elementsCount++;
     }
 
-    brf->field_2E68 = (brf->field_2E74 == 0) + 20;
+    brf->briefStage = (brf->elementsCount == 0) + 20;
 }
 
 void ypaworld_func158__sub4__sub1__sub4__sub15(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
-    int v5 = (brf->field_2E7C - brf->field_2E78) / 2500;
-    if ( v5 >= brf->field_2E74 )
+    int v5 = (brf->currTime - brf->startTime) / 2500;
+    if ( v5 >= brf->elementsCount )
     {
-        brf->field_2E68 = 21;
+        brf->briefStage = 21;
     }
-    else if ( v5 != brf->field_2E70 )
+    else if ( v5 != brf->activeElement )
     {
-        brf->field_2E70 = v5;
+        brf->activeElement = v5;
         int v6 = v5;
 
         squadProto *v9 = NULL;
@@ -532,35 +537,35 @@ void ypaworld_func158__sub4__sub1__sub4__sub16(_NC_STACK_ypaworld *yw, struC5 *i
         brf->brf_objs.object_id = 0;
         brf->brf_objs.field_0 = 0;
     }
-    brf->field_2E70 = -1;
-    brf->field_2E74 = 0;
-    brf->field_2E68 = 23;
+    brf->activeElement = -1;
+    brf->elementsCount = 0;
+    brf->briefStage = 23;
     brf->field_2E88 = "FRIENDLY SUPPORT FORCES";
 
-    brf->field_2E78 = brf->field_2E7C;
+    brf->startTime = brf->currTime;
 
     for (int i = 0; i < brf->map_prototype.squad_count; i++)
     {
         squadProto *v5 = &brf->map_prototype.squads[i];
 
         if ( v5->owner == brf->map_prototype.playerOwner && v5->mb_status != 1)
-            brf->field_2E74++;
+            brf->elementsCount++;
     }
 
-    brf->field_2E68 = (brf->field_2E74 == 0) + 23;
+    brf->briefStage = (brf->elementsCount == 0) + 23;
 }
 
 void ypaworld_func158__sub4__sub1__sub4__sub17(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
-    int v5 = (brf->field_2E7C - brf->field_2E78) / 2500;
-    if ( v5 >= brf->field_2E74 )
+    int v5 = (brf->currTime - brf->startTime) / 2500;
+    if ( v5 >= brf->elementsCount )
     {
-        brf->field_2E68 = 24;
+        brf->briefStage = 24;
     }
-    else if ( v5 != brf->field_2E70 )
+    else if ( v5 != brf->activeElement )
     {
         int v6 = v5;
-        brf->field_2E70 = v5;
+        brf->activeElement = v5;
 
         squadProto *v9 = NULL;
 
@@ -597,34 +602,34 @@ void ypaworld_func158__sub4__sub1__sub4__sub18(_NC_STACK_ypaworld *yw, struC5 *i
         brf->brf_objs.field_0 = 0;
     }
 
-    brf->field_2E70 = -1;
-    brf->field_2E74 = 0;
+    brf->activeElement = -1;
+    brf->elementsCount = 0;
 
-    brf->field_2E68 = 26;
-    brf->field_2E78 = brf->field_2E7C;
+    brf->briefStage = 26;
+    brf->startTime = brf->currTime;
 
     brf->field_2E88 = get_lang_string(yw->string_pointers_p2, 156, "TRANSPORTER GATES");
 
     for (int i = 0; i < yw->field_2d90->gate_count; i++)
     {
         if (yw->field_2d90->gates[i].mb_status != 1)
-            brf->field_2E74++;
+            brf->elementsCount++;
     }
 
-    brf->field_2E68 = (brf->field_2E74 == 0) + 26;
+    brf->briefStage = (brf->elementsCount == 0) + 26;
 }
 
 void ypaworld_func158__sub4__sub1__sub4__sub19(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
-    int v6 = (brf->field_2E7C - brf->field_2E78) / 2500;
+    int v6 = (brf->currTime - brf->startTime) / 2500;
 
-    if ( v6 >= brf->field_2E74 )
+    if ( v6 >= brf->elementsCount )
     {
-        brf->field_2E68 = 27;
+        brf->briefStage = 27;
     }
-    else if ( v6 != brf->field_2E70 )
+    else if ( v6 != brf->activeElement )
     {
-        brf->field_2E70 = v6;
+        brf->activeElement = v6;
 
         int v66 = v6;
 
@@ -675,9 +680,9 @@ void ypaworld_func158__sub4__sub1__sub4__sub21(_NC_STACK_ypaworld *yw, struC5 *i
                 v20 = i;
         }
 
-        if ( v20 == -1 || v20 == brf->field_2F8C )
+        if ( v20 == -1 || v20 == brf->mouseSelectedElement )
         {
-            if ( v20 != brf->field_2F8C && brf->field_2F8C != -1 )
+            if ( v20 != brf->mouseSelectedElement && brf->mouseSelectedElement != -1 )
             {
                 brf_obj *br_obj = &brf->brf_objs;
 //                br_obj[ brf->field_2F90 ].field_0 = 0;
@@ -685,14 +690,14 @@ void ypaworld_func158__sub4__sub1__sub4__sub21(_NC_STACK_ypaworld *yw, struC5 *i
                 br_obj->field_0 = 0;      //Only one brf_obj!
                 br_obj->object_id = 0;
 
-                brf->field_2F8C = -1;
+                brf->mouseSelectedElement = -1;
                 brf->field_2F90 = -1;
             }
         }
         else
         {
             brf_t2 *v16 = &brf->tp2[v20];
-            brf->field_2F8C = v20;
+            brf->mouseSelectedElement = v20;
             brf->field_2F90 = sub_4EBBA8(yw, brf, v16->xpos, v16->ypos, v16->field_E, v16->title, v16->field_C, v16->field_D, v16->field_8, v16->vehicle_id, 0);
         }
     }
@@ -718,7 +723,7 @@ void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
             v5++;
         }
 
-        int v34 = brf->field_2E7C - brf->field_2E80;
+        int v34 = brf->currTime - brf->field_2E80;
         int v33 = 100 * v34;
 
         stru_5C91D0.numEntries = v5;
@@ -794,7 +799,7 @@ void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
     }
     else
     {
-        int v20 = brf->field_2E7C - brf->field_2E84;
+        int v20 = brf->currTime - brf->field_2E84;
 
         const char *v21 = get_lang_string(yw->string_pointers_p2, 2467, "LOADING MISSION OBJECTIVES...");
 
@@ -849,7 +854,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub1(_NC_STACK_ypaworld *yw, big_ypa_Br
                 {
                     if ( v31->vehicle_id == brobj->object_id && brobj->xpos == v31->xpos && brobj->ypos == v31->ypos )
                     {
-                        if ( (brf->field_2E7C / 200) & 1 )
+                        if ( (brf->currTime / 200) & 1 )
                         {
                             v29 = 0;
                             break;
@@ -926,7 +931,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
 
     if ( br_obj->field_0 )
     {
-        int v8 = brf->field_2E7C - br_obj->field_C;
+        int v8 = brf->currTime - br_obj->field_C;
         float v26 = -br_obj->ypos / yw->map_Height_meters;
         float v27 = br_obj->xpos / yw->map_Width_meters;
 
@@ -1015,10 +1020,10 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
 {
     big_ypa_Brf *brf = &yw->brief;
 
-    if ( yw->brief.field_2E68 == 28 )
+    if ( yw->brief.briefStage == 28 )
     {
         sub_4491A0(yw, yw->brief.movie);
-        brf->field_2E68 = 4;
+        brf->briefStage = 4;
     }
     else
     {
@@ -1026,29 +1031,29 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
         switch ( yw->brief.field_2E6C )
         {
         case 0:
-            yw->brief.field_2E7C += inpt->period;
+            yw->brief.currTime += inpt->period;
             break;
 
         case 1:
             inpt->period = 1;
-            yw->brief.field_2E7C += inpt->period;
+            yw->brief.currTime += inpt->period;
             break;
 
         case 2:
-            yw->brief.field_2E7C += inpt->period;
+            yw->brief.currTime += inpt->period;
 
-            if ( yw->brief.field_2E68 == 30 )
+            if ( yw->brief.briefStage == 30 )
             {
-                yw->brief.field_2E68 = 31;
+                yw->brief.briefStage = 31;
                 yw->brief.field_2E6C = 0;
             }
-            else if ( yw->brief.field_2E70 == -1 )
+            else if ( yw->brief.activeElement == -1 )
             {
                 yw->brief.field_2E6C = 0;
             }
             else
             {
-                switch (yw->brief.field_2E68)
+                switch (yw->brief.briefStage)
                 {
                 case 8:
                 case 11:
@@ -1057,7 +1062,7 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
                 case 20:
                 case 23:
                 case 26:
-                    yw->brief.field_2E7C = 2500 * (yw->brief.field_2E70 + 1) + yw->brief.field_2E78;
+                    yw->brief.currTime = 2500 * (yw->brief.activeElement + 1) + yw->brief.startTime;
                     break;
                 default:
                     break;
@@ -1069,14 +1074,14 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
 
         case 3:
             yw->brief.field_2E6C = 0;
-            yw->brief.field_2E68 = 29;
+            yw->brief.briefStage = 29;
             break;
 
         default:
             break;
         }
 
-        switch ( yw->brief.field_2E68 )
+        switch ( yw->brief.briefStage )
         {
         case 4:
             ypaworld_func158__sub4__sub1__sub4__sub3(yw, inpt, brf);
@@ -1091,72 +1096,72 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
             ypaworld_func158__sub4__sub1__sub4__sub6(yw, inpt, brf);
             break;
         case 8:
-            if ( yw->brief.field_2F8C == -1 )
+            if ( yw->brief.mouseSelectedElement == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub7(yw, inpt, brf);
             break;
         case 9:
-            yw->brief.field_2E68 = 25;
+            yw->brief.briefStage = 25;
             break;
         case 10:
-            ypaworld_func158__sub4__sub1__sub4__sub8(yw, inpt, brf);
+            yw_BriefSetupKeySectors(yw, inpt, brf);
             break;
         case 11:
-            if ( yw->brief.field_2F8C == -1 )
-                ypaworld_func158__sub4__sub1__sub4__sub9(yw, inpt, brf);
+            if ( yw->brief.mouseSelectedElement == -1 )
+                yw_BriefUpdateKeySectors(yw, inpt, brf);
             break;
         case 12:
-            yw->brief.field_2E68 = 13;
+            yw->brief.briefStage = 13;
             break;
         case 13:
             ypaworld_func158__sub4__sub1__sub4__sub10(yw, inpt, brf);
             break;
         case 14:
-            if ( yw->brief.field_2F8C == -1 )
+            if ( yw->brief.mouseSelectedElement == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub11(yw, inpt, brf);
             break;
         case 15:
-            yw->brief.field_2E68 = 16;
+            yw->brief.briefStage = 16;
             break;
         case 16:
             ypaworld_func158__sub4__sub1__sub4__sub12(yw, inpt, brf);
             break;
         case 17:
-            if ( yw->brief.field_2F8C == -1 )
+            if ( yw->brief.mouseSelectedElement == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub13(yw, inpt, brf);
             break;
         case 18:
-            yw->brief.field_2E68 = 19;
+            yw->brief.briefStage = 19;
             break;
         case 19:
             ypaworld_func158__sub4__sub1__sub4__sub14(yw, inpt, brf);
             break;
         case 20:
-            if ( yw->brief.field_2F8C == -1 )
+            if ( yw->brief.mouseSelectedElement == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub15(yw, inpt, brf);
             break;
         case 21:
-            yw->brief.field_2E68 = 22;
+            yw->brief.briefStage = 22;
             break;
         case 22:
             ypaworld_func158__sub4__sub1__sub4__sub16(yw, inpt, brf);
             break;
         case 23:
-            if ( yw->brief.field_2F8C == -1 )
+            if ( yw->brief.mouseSelectedElement == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub17(yw, inpt, brf);
             break;
         case 24:
             yw->brief.field_2F84 = 0;
-            yw->brief.field_2E68 = 7;
+            yw->brief.briefStage = 7;
             break;
         case 25:
             ypaworld_func158__sub4__sub1__sub4__sub18(yw, inpt, brf);
             break;
         case 26:
-            if ( yw->brief.field_2F8C == -1 )
+            if ( yw->brief.mouseSelectedElement == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub19(yw, inpt, brf);
             break;
         case 27:
-            yw->brief.field_2E68 = 10;
+            yw->brief.briefStage = 10;
             break;
         default:
             break;
@@ -1244,8 +1249,8 @@ void sub_449310(ua_fRect *rect)
 
 void ypaworld_func158__sub4__sub1__sub6__sub0(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
 {
-    brf->field_2E78 = brf->field_2E7C;
-    brf->field_2E68 = 5;
+    brf->startTime = brf->currTime;
+    brf->briefStage = 5;
 
     brf->field_2F40.pbitm = brf->mbmap_img->getBMD_pBitmap();
 
@@ -1313,7 +1318,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(_NC_STACK_ypaworld *yw, struC5 *st
 
 void ypaworld_func158__sub4__sub1__sub6__sub1(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
 {
-    int v4 = brf->field_2E7C - brf->field_2E78;
+    int v4 = brf->currTime - brf->startTime;
 
     if ( v4 >= 600 )
     {
@@ -1326,7 +1331,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub1(_NC_STACK_ypaworld *yw, struC5 *st
         brf->field_2F40.float18 = brf->field_2F74.y1;
         brf->field_2F40.float1C = brf->field_2F74.x2;
         brf->field_2F40.float20 = brf->field_2F74.y2;
-        brf->field_2E68 = 6;
+        brf->briefStage = 6;
     }
     else
     {
@@ -1344,8 +1349,8 @@ void ypaworld_func158__sub4__sub1__sub6__sub1(_NC_STACK_ypaworld *yw, struC5 *st
 
 void ypaworld_func158__sub4__sub1__sub6__sub2(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
 {
-    brf->field_2E78 = brf->field_2E7C;
-    brf->field_2E68 = 8;
+    brf->startTime = brf->currTime;
+    brf->briefStage = 8;
     brf->field_41D8 = 0;
 
     bitmap_intern *v5 = brf->copy2_of_ownmap->getBMD_pBitmap();
@@ -2241,7 +2246,7 @@ void yw_DebriefRunDebrief(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *br
     char cmdbuf[2048];
     char *cur = cmdbuf;
 
-    int a4 = brf->field_2E7C - brf->field_2E78;
+    int a4 = brf->currTime - brf->startTime;
 
     yw_DebriefRenderSectorsOwners(yw, brf);
 
@@ -2261,7 +2266,7 @@ void yw_DebriefRunDebrief(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *br
 
     int v26 = 0;
 
-    if ( brf->field_2E68 == 8 )
+    if ( brf->briefStage == 8 )
     {
         yw_f726c_nod *hist_nod = (yw_f726c_nod *)yw->history->lst.head;
 
@@ -2358,7 +2363,7 @@ void yw_DebriefRunDebrief(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *br
 
         if ( !v26 )
         {
-            brf->field_2E68 = 9;
+            brf->briefStage = 9;
             if ( yw->field_727c )
             {
                 for (int i = 0; i < 8; i ++)
@@ -2380,13 +2385,13 @@ void yw_debriefUpdate(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
     {
         if ( yw->brief.field_2E6C == 0 )
         {
-            if ( brf->field_2E68 == 8 )
+            if ( brf->briefStage == 8 )
             {
-                brf->field_2E7C += 60 * inpt->period;
+                brf->currTime += 60 * inpt->period;
             }
-            else if ( brf->field_2E68 != 9 )
+            else if ( brf->briefStage != 9 )
             {
-                brf->field_2E7C += inpt->period;
+                brf->currTime += inpt->period;
             }
         }
         else if ( yw->brief.field_2E6C == 1 )
@@ -2396,10 +2401,10 @@ void yw_debriefUpdate(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
         else if ( yw->brief.field_2E6C == 3 )
         {
             brf->field_2E6C = 0;
-            brf->field_2E68 = 7;
+            brf->briefStage = 7;
         }
 
-        if ( brf->field_2E68 != 4 )
+        if ( brf->briefStage != 4 )
         {
             yw->win3d->LockSurface();
 
@@ -2424,7 +2429,7 @@ void yw_debriefUpdate(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
             yw->win3d->UnlockSurface();
         }
 
-        switch ( brf->field_2E68 )
+        switch ( brf->briefStage )
         {
         case 4:
             ypaworld_func158__sub4__sub1__sub6__sub0(yw, inpt, brf);
@@ -2435,7 +2440,7 @@ void yw_debriefUpdate(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
             break;
 
         case 6:
-            brf->field_2E68 = 7;
+            brf->briefStage = 7;
             break;
 
         case 7:
@@ -2453,6 +2458,6 @@ void yw_debriefUpdate(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
     }
     else
     {
-        yw->brief.field_2E68 = 2;
+        yw->brief.briefStage = 2;
     }
 }

@@ -3793,7 +3793,7 @@ void sb_0x4e75e8(_NC_STACK_ypaworld *yw, int a2)
     if ( a2 >= 4 && a2 <= 5 )
     {
         yw->field_81AB = 0;
-        yw->brief.field_2E68 = 0;
+        yw->brief.briefStage = 0;
         yw->LevelNet->field_BE38 = 0;
 
         sb_0x4e75e8__sub0(yw);

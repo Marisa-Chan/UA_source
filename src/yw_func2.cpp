@@ -151,7 +151,7 @@ void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int ob
     brf_obj *brobj = &brf->brf_objs;
 
     brf->field_4174.field_0 = struc->period;
-    brf->field_4174.field_4 = brf->field_2E7C;
+    brf->field_4174.field_4 = brf->currTime;
     brf->field_4174.field_1C = 1;
 
     base_1c_struct v14;
@@ -246,7 +246,7 @@ void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, str
 
     if ( brf->brf_objs.field_0 )
     {
-        int v7 = brf->field_2E7C - brf->brf_objs.field_C;
+        int v7 = brf->currTime - brf->brf_objs.field_C;
         if ( v7 > 50 )
             sb_0x4eb94c(yw, brf, struc, 0, v7 - 50);
     }
@@ -2419,7 +2419,7 @@ void ypaworld_func158__sub0__sub3(UserData *usr)
 
 void sub_4EDCD8(_NC_STACK_ypaworld *yw)
 {
-    yw->brief.field_2E68 = 2;
+    yw->brief.briefStage = 2;
 }
 
 void sub_46D9E0(UserData *usr, int a2, const char *txt1, const char *txt2, int a5)
@@ -2481,7 +2481,7 @@ void sub_46D9E0(UserData *usr, int a2, const char *txt1, const char *txt2, int a
 
 void ypaworld_func158__sub0__sub9(_NC_STACK_ypaworld *yw)
 {
-    yw->brief.field_2E68 = 1;
+    yw->brief.briefStage = 1;
 }
 
 void ypaworld_func158__sub0__sub10(_NC_STACK_ypaworld *yw)

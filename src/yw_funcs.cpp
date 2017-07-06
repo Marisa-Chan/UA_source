@@ -1831,7 +1831,7 @@ void sub_4EAC80(_NC_STACK_ypaworld *yw)
         brf->briefing_map = NULL;
     }
 
-    brf->field_2E68 = 0;
+    brf->briefStage = 0;
     stru_5C91D0.CloseDialog(yw);
     stru_5C91D0.Free();
 }
@@ -1874,7 +1874,7 @@ void yw_freeDebrief(_NC_STACK_ypaworld *yw)
             brf->wireless_db_skels[i] = NULL;
         }
     }
-    brf->field_2E68 = 0;
+    brf->briefStage = 0;
 
     yw->field_2d90->field_40 = 8;
 }
@@ -2226,7 +2226,7 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
 
     memset(brf, 0, sizeof(big_ypa_Brf));
 
-    brf->field_2F8C = -1;
+    brf->mouseSelectedElement = -1;
     brf->field_2F90 = -1;
 
     StopMusicTrack();
@@ -2241,9 +2241,9 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
 
     memcpy(&brf->s2d90, yw->field_2d90, sizeof(brf->s2d90));
 
-    brf->field_2E68 = 0;
+    brf->briefStage = 0;
     brf->field_2E6C = 0;
-    brf->field_2E7C = 0;
+    brf->currTime = 0;
     brf->field_2E80 = 0;
 
     yw->field_2d90->levelID = lvlid;
@@ -2268,7 +2268,7 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
 
             if ( mproto->mbmaps_count )
             {
-                if ( !yw->field_2d90->movie[0] || brf->field_2E68 )
+                if ( !yw->field_2d90->movie[0] || brf->briefStage )
                 {
                     for (int i = 0; i < mproto->mapRobos_count; i++)
                     {
@@ -2345,7 +2345,7 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
                                 strcpy(brf->movie, from);
 
                                 yw->field_81AB = owner;
-                                brf->field_2E68 = 28;
+                                brf->briefStage = 28;
                                 break;
                             }
                         }
@@ -2354,7 +2354,7 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
                 else
                 {
                     strcpy(brf->movie, yw->field_2d90->movie);
-                    brf->field_2E68 = 28;
+                    brf->briefStage = 28;
                 }
 
                 set_prefix_replacement("rsrc", "levels:");
@@ -2403,8 +2403,8 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
                         brf->brf_objs.field_18 = -0.003125;
                         brf->brf_objs.field_1C = 0.85416669;
 
-                        if ( !brf->field_2E68 )
-                            brf->field_2E68 = 4;
+                        if ( !brf->briefStage )
+                            brf->briefStage = 4;
 
                         sb_0x4ea37c(yw);
                         return 1;
@@ -2501,9 +2501,9 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
 
     yw->win3d->raster_func210(&v17);
 
-    brf->field_2E68 = 0;
+    brf->briefStage = 0;
     brf->field_2E6C = 0;
-    brf->field_2E7C = 0;
+    brf->currTime = 0;
     brf->field_41D4 = 1;
 
     yw->field_2d90->field_40 = 9;
@@ -2593,7 +2593,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
     yw->map_Width_meters = yw->sectors_maxX2 * 1200.0;
     yw->map_Height_meters = yw->sectors_maxY2 * 1200.0;
 
-    brf->field_2E68 = 4;
+    brf->briefStage = 4;
 
     return 1;
 }
@@ -2669,21 +2669,21 @@ void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 
 {
     if ( yw->field_2d90->field_40 != 1 && yw->field_2d90->field_40 != 2 )
     {
-        if ( yw->brief.field_2E68 )
+        if ( yw->brief.briefStage )
         {
             if ( yw->field_2d90->field_40 == 5 )
             {
                 if ( inpt->downed_key == UAVK_RETURN )
-                    yw->brief.field_2E68 = 1;
+                    yw->brief.briefStage = 1;
 
-                if ( yw->brief.field_2E68 == 1 )
+                if ( yw->brief.briefStage == 1 )
                 {
                     usr->field_0x2fbc = 2;
                     usr->field_0x2fc0 = yw->field_2d90->levelID;
                     usr->field_0x2fc4 = yw->field_2d90->levelID;
                     sub_4EAC80(yw);
                 }
-                else if ( yw->brief.field_2E68 == 2 )
+                else if ( yw->brief.briefStage == 2 )
                 {
                     sub_4EAC80(yw);
                     yw->field_2d90->field_40 = 8;
@@ -2695,7 +2695,7 @@ void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 
             }
             else if ( yw->field_2d90->field_40 == 9 )
             {
-                if ( yw->brief.field_2E68 == 2 )
+                if ( yw->brief.briefStage == 2 )
                 {
                     yw_calcPlayerScore(yw);
                     yw_freeDebrief(yw);
@@ -2777,7 +2777,7 @@ void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 
             }
         }
 
-        yw->brief.field_2E68 = 0;
+        yw->brief.briefStage = 0;
         yw->field_2d90->field_40 = 8;
 
         if ( yw->field_7278 )

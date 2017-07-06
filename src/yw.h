@@ -660,12 +660,12 @@ struct big_ypa_Brf
     bitmap_intern *typ_map_bitm;
     stru_2d90 s2d90;
     mapProto map_prototype;
-    int field_2E68;
+    int briefStage;
     int field_2E6C;
-    int field_2E70;
-    int field_2E74;
-    int field_2E78;
-    int field_2E7C;
+    int activeElement;
+    int elementsCount;
+    int startTime;
+    int currTime;
     int field_2E80;
     int field_2E84;
     const char *field_2E88;
@@ -676,7 +676,7 @@ struct big_ypa_Brf
     ua_fRect field_2F74;
     int field_2F84;
     int tp2_count;
-    int field_2F8C;
+    int mouseSelectedElement;
     int field_2F90;
     brf_t2 tp2[32];
     baseRender_msg field_4174;
