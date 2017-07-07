@@ -299,7 +299,7 @@ void NC_STACK_win3d::DrawTextEntry(const ScreenText *txt)
                 SDL_SetClipRect(stack__win3d.screenSurface, &clipRect);
 
 
-                int v10 = ((p4 - font->height) / 2) - 1 + p2;
+                int v10 = ((p4 - font->height) / 2) - 2 + p2;
                 if ( txt->flag & 0x10 )
                 {
                     v10++;
