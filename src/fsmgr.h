@@ -145,6 +145,8 @@ public:
     bool writeFloatL(float val);
     bool writeFloatB(float val);
 
+    bool eof();
+    bool readErr();
 
     virtual bool OK();
 
@@ -154,6 +156,9 @@ public:
 
 protected:
     FILE *hndl;
+
+private:
+    bool _ReadERR;
 };
 
 void dumpDir();

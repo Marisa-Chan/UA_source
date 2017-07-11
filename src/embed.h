@@ -20,8 +20,8 @@ class NC_STACK_embed: public NC_STACK_nucleus
 public:
     virtual size_t func0(stack_vals *);
     virtual size_t func1(stack_vals *stak);
-    virtual size_t func5(MFILE **file);
-    virtual size_t func6(MFILE **file);
+    virtual size_t func5(IFFile **file);
+    virtual size_t func6(IFFile **file);
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_embed() {

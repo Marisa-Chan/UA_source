@@ -4967,34 +4967,29 @@ int recorder_startrec(_NC_STACK_ypaworld *yw)
     char a1[256];
     sprintf(a1, "env:snaps/m%02d%04d.raw", yw->field_2d90->levelID, rcrd->seqn);
 
-    rcrd->mfile = new_MFILE();
+    FSMgr::FileHandle *fil = uaOpenFile(a1, "wb");
+    if ( !fil )
+    {
+        rcrd->mfile = NULL;
+        return 0;
+    }
+
+    rcrd->mfile = new IFFile(fil, true, true);
 
     if ( !rcrd->mfile )
-        return 0;
-
-    rcrd->mfile->file_handle = uaOpenFile(a1, "wb");
-    if ( !rcrd->mfile->file_handle )
     {
-        del_MFILE(rcrd->mfile);
-        rcrd->mfile = 0;
+        delete fil;
+         rcrd->mfile = NULL;
         return 0;
     }
 
-    if ( sub_412F98(rcrd->mfile, 1) )
-    {
-        delete rcrd->mfile->file_handle;
-        del_MFILE(rcrd->mfile);
-        rcrd->mfile = 0;
-        return 0;
-    }
+    rcrd->mfile->pushChunk(TAG_SEQN, TAG_FORM, -1);
+    rcrd->mfile->pushChunk(0, TAG_SINF, 4);
 
-    sub_412FC0(rcrd->mfile, TAG_SEQN, TAG_FORM, -1);
-    sub_412FC0(rcrd->mfile, 0, TAG_SINF, 4);
+    rcrd->mfile->write(&rcrd->seqn, 2);
+    rcrd->mfile->write(&rcrd->level_id, 2);
 
-    sub_413564(rcrd->mfile, 2, &rcrd->seqn);
-    sub_413564(rcrd->mfile, 2, &rcrd->level_id);
-
-    sub_413290(rcrd->mfile);
+    rcrd->mfile->popChunk();
 
     rcrd->do_record = 1;
     return 1;
@@ -5007,11 +5002,9 @@ void recorder_stoprec(_NC_STACK_ypaworld *yw)
 
     if ( rcrd->mfile )
     {
-        sub_413290(rcrd->mfile);
+        rcrd->mfile->popChunk();
 
-        delete rcrd->mfile->file_handle;
-
-        del_MFILE(rcrd->mfile);
+        delete rcrd->mfile;
 
         rcrd->mfile = NULL;
     }
@@ -5381,53 +5374,53 @@ void recorder_write_frame(_NC_STACK_ypaworld *yw)
             if ( frame_size & 1 )
                 frame_size++;
         }
-        sub_412FC0(rcrd->mfile, TAG_FRAM, TAG_FORM, frame_size);
-        sub_412FC0(rcrd->mfile, 0, TAG_FINF, 12);
+        rcrd->mfile->pushChunk(TAG_FRAM, TAG_FORM, frame_size);
+        rcrd->mfile->pushChunk(0, TAG_FINF, 12);
 
-        sub_413564(rcrd->mfile, 4, &rcrd->frame_id);
-        sub_413564(rcrd->mfile, 4, &rcrd->time);
-        sub_413564(rcrd->mfile, 4, &rcrd->ctrl_bact_id);
+        rcrd->mfile->write(&rcrd->frame_id, 4);
+        rcrd->mfile->write(&rcrd->time, 4);
+        rcrd->mfile->write(&rcrd->ctrl_bact_id, 4);
 
-        sub_413290(rcrd->mfile);
+        rcrd->mfile->popChunk();
 
         if ( oinf_size )
         {
-            sub_412FC0(rcrd->mfile, 0, TAG_OINF, oinf_size);
+            rcrd->mfile->pushChunk(0, TAG_OINF, oinf_size);
 
             for (int i = 0; i < rcrd->bacts_count; i++)
             {
                 trec_bct *oinf = &rcrd->oinf[i];
 
-                sub_413564(rcrd->mfile, 4, &oinf->bact_id);
-                sub_413564(rcrd->mfile, 4, &oinf->pos.sx);
-                sub_413564(rcrd->mfile, 4, &oinf->pos.sy);
-                sub_413564(rcrd->mfile, 4, &oinf->pos.sz);
-                sub_413564(rcrd->mfile, 1, &oinf->rot_x);
-                sub_413564(rcrd->mfile, 1, &oinf->rot_y);
-                sub_413564(rcrd->mfile, 1, &oinf->rot_z);
-                sub_413564(rcrd->mfile, 1, &oinf->vp_id);
-                sub_413564(rcrd->mfile, 1, &oinf->bact_type);
-                sub_413564(rcrd->mfile, 1, &oinf->vhcl_id);
+                rcrd->mfile->write(&oinf->bact_id, 4);
+                rcrd->mfile->write(&oinf->pos.sx, 4);
+                rcrd->mfile->write(&oinf->pos.sy, 4);
+                rcrd->mfile->write(&oinf->pos.sz, 4);
+                rcrd->mfile->write(&oinf->rot_x, 1);
+                rcrd->mfile->write(&oinf->rot_y, 1);
+                rcrd->mfile->write(&oinf->rot_z, 1);
+                rcrd->mfile->write(&oinf->vp_id, 1);
+                rcrd->mfile->write(&oinf->bact_type, 1);
+                rcrd->mfile->write(&oinf->vhcl_id, 1);
             }
 
-            sub_413290(rcrd->mfile);
+            rcrd->mfile->popChunk();
         }
 
         if ( rcrd->ainf_size )
         {
-            sub_412FC0(rcrd->mfile, 0, TAG_AINF, rcrd->ainf_size);
-            sub_413564(rcrd->mfile, rcrd->ainf_size, rcrd->ainf);
-            sub_413290(rcrd->mfile);
+            rcrd->mfile->pushChunk(0, TAG_AINF, rcrd->ainf_size);
+            rcrd->mfile->write(rcrd->ainf, rcrd->ainf_size);
+            rcrd->mfile->popChunk();
         }
 
         if ( v5 )
         {
-            sub_412FC0(rcrd->mfile, 0, TAG_MODE, v5);
-            sub_413564(rcrd->mfile, v5, rcrd->field_20);
-            sub_413290(rcrd->mfile);
+            rcrd->mfile->pushChunk(0, TAG_MODE, v5);
+            rcrd->mfile->write(rcrd->field_20, v5);
+            rcrd->mfile->popChunk();
         }
 
-        sub_413290(rcrd->mfile);
+        rcrd->mfile->popChunk();
 
         rcrd->field_34 = 0;
         rcrd->field_40 += 250;
@@ -5617,40 +5610,31 @@ void ypaworld_func64__sub22(_NC_STACK_ypaworld *yw)
 
 int recorder_open_replay(recorder *rcrd)
 {
-    rcrd->mfile = new_MFILE();
+    FSMgr::FileHandle *fil = uaOpenFile(rcrd->filename, "rb");
+
+    if ( !fil )
+    {
+        rcrd->mfile = NULL;
+        return 0;
+    }
+
+    rcrd->mfile = new IFFile(fil, false, true);
 
     if ( !rcrd->mfile )
-        return 0;
-
-    rcrd->mfile->file_handle = uaOpenFile(rcrd->filename, "rb");
-
-    if ( !rcrd->mfile->file_handle )
     {
-        del_MFILE(rcrd->mfile);
+        delete fil;
+        return 0;
+    }
+
+    if ( rcrd->mfile->parse() != IFFile::IFF_ERR_OK )
+    {
+        delete rcrd->mfile;
 
         rcrd->mfile = NULL;
         return 0;
     }
 
-    if ( sub_412F98(rcrd->mfile, 0) )
-    {
-        delete rcrd->mfile->file_handle;
-        del_MFILE(rcrd->mfile);
-
-        rcrd->mfile = NULL;
-        return 0;
-    }
-
-    if ( read_next_IFF(rcrd->mfile, 2) )
-    {
-        delete rcrd->mfile->file_handle;
-        del_MFILE(rcrd->mfile);
-
-        rcrd->mfile = NULL;
-        return 0;
-    }
-
-    MFILE_S1 *v3 = GET_FORM_INFO_OR_NULL(rcrd->mfile);
+    IFFile::Context *v3 = rcrd->mfile->getCurrentChunk();
 
     if ( v3->TAG == TAG_FORM && v3->TAG_EXTENSION == TAG_SEQN )
         return 1;
@@ -5707,22 +5691,22 @@ int recorder_create_camera(_NC_STACK_ypaworld *yw)
 
 void recorder_read_framedata(recorder *rcrd)
 {
-    while ( read_next_IFF(rcrd->mfile, 2) != -2 )
+    while ( rcrd->mfile->parse() != IFFile::IFF_ERR_EOC )
     {
-        MFILE_S1 *v3 = GET_FORM_INFO_OR_NULL(rcrd->mfile);
+        IFFile::Context *v3 = rcrd->mfile->getCurrentChunk();
 
         switch ( v3->TAG )
         {
         case TAG_FLSH:
             rcrd->field_78 |= 1;
-            read_next_IFF(rcrd->mfile, 2);
+            rcrd->mfile->parse();
             break;
 
         case TAG_FINF:
-            mfread(rcrd->mfile, &rcrd->frame_id, 4);
-            mfread(rcrd->mfile, &rcrd->time, 4);
-            mfread(rcrd->mfile, &rcrd->ctrl_bact_id, 4);
-            read_next_IFF(rcrd->mfile, 2);
+            rcrd->mfile->read(&rcrd->frame_id, 4); //mfread
+            rcrd->mfile->read(&rcrd->time, 4); //mfread
+            rcrd->mfile->read(&rcrd->ctrl_bact_id, 4); //mfread
+            rcrd->mfile->parse();
             break;
 
         case TAG_OINF:
@@ -5735,42 +5719,42 @@ void recorder_read_framedata(recorder *rcrd)
                 {
                     trec_bct *oinf = &rcrd->oinf[i];
 
-                    mfread(rcrd->mfile, &oinf->bact_id, 4);
-                    mfread(rcrd->mfile, &oinf->pos.sx, 4);
-                    mfread(rcrd->mfile, &oinf->pos.sy, 4);
-                    mfread(rcrd->mfile, &oinf->pos.sz, 4);
-                    mfread(rcrd->mfile, &oinf->rot_x, 1);
-                    mfread(rcrd->mfile, &oinf->rot_y, 1);
-                    mfread(rcrd->mfile, &oinf->rot_z, 1);
-                    mfread(rcrd->mfile, &oinf->vp_id, 1);
-                    mfread(rcrd->mfile, &oinf->bact_type, 1);
-                    mfread(rcrd->mfile, &oinf->vhcl_id, 1);
+                    rcrd->mfile->read(&oinf->bact_id, 4); //mfread
+                    rcrd->mfile->read(&oinf->pos.sx, 4); //mfread
+                    rcrd->mfile->read(&oinf->pos.sy, 4); //mfread
+                    rcrd->mfile->read(&oinf->pos.sz, 4); //mfread
+                    rcrd->mfile->read(&oinf->rot_x, 1); //mfread
+                    rcrd->mfile->read(&oinf->rot_y, 1); //mfread
+                    rcrd->mfile->read(&oinf->rot_z, 1); //mfread
+                    rcrd->mfile->read(&oinf->vp_id, 1); //mfread
+                    rcrd->mfile->read(&oinf->bact_type, 1); //mfread
+                    rcrd->mfile->read(&oinf->vhcl_id, 1); //mfread
                 }
 
             }
 
-            read_next_IFF(rcrd->mfile, 2);
+            rcrd->mfile->parse();
         }
         break;
 
         case TAG_AINF:
-            mfread(rcrd->mfile, rcrd->ainf, v3->TAG_SIZE);
+            rcrd->mfile->read(rcrd->ainf, v3->TAG_SIZE); //mfread
             rcrd->ainf_size = v3->TAG_SIZE;
 
             recorder_unpack_soundstates(rcrd);
 
-            read_next_IFF(rcrd->mfile, 2);
+            rcrd->mfile->parse();
             break;
 
         case TAG_MODE:
-            mfread(rcrd->mfile, rcrd->field_20, v3->TAG_SIZE);
+            rcrd->mfile->read(rcrd->field_20, v3->TAG_SIZE); //mfread
             rcrd->field_34 = v3->TAG_SIZE / 16;
 
-            read_next_IFF(rcrd->mfile, 2);
+            rcrd->mfile->parse();
             break;
 
         default:
-            read_default(rcrd->mfile);
+            rcrd->mfile->skipChunk();
             break;
         }
     }
@@ -6144,20 +6128,19 @@ int recorder_go_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd, int wanted_fram
 
     if ( rcrd->mfile )
     {
-        delete rcrd->mfile->file_handle;
-        del_MFILE(rcrd->mfile);
+        delete rcrd->mfile;
         rcrd->mfile = NULL;
     }
 
     if ( recorder_open_replay(rcrd) )
     {
-        while ( read_next_IFF(rcrd->mfile, 2) != -2 )
+        while ( rcrd->mfile->parse() != IFFile::IFF_ERR_EOC )
         {
-            MFILE_S1 *v7 = GET_FORM_INFO_OR_NULL(rcrd->mfile);
+            IFFile::Context *v7 = rcrd->mfile->getCurrentChunk();
 
             if ( v7->TAG != TAG_FORM || v7->TAG_EXTENSION != TAG_FRAM )
             {
-                read_default(rcrd->mfile);
+                rcrd->mfile->skipChunk();
             }
             else
             {
@@ -6172,7 +6155,7 @@ int recorder_go_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd, int wanted_fram
                 }
 
                 cur_frame_id++;
-                read_default(rcrd->mfile);
+                rcrd->mfile->skipChunk();
             }
         }
     }
@@ -6188,9 +6171,9 @@ void ypaworld_func163__sub1(_NC_STACK_ypaworld *yw, recorder *rcrd, int a3)
 
         while ( rcrd->field_74 - 1 != rcrd->frame_id  &&  (a3 + yw->timeStamp) > rcrd->time )
         {
-            if ( read_next_IFF(rcrd->mfile, 2) != -1 )
+            if ( rcrd->mfile->parse() != IFFile::IFF_ERR_EOF )
             {
-                MFILE_S1 *v5 = GET_FORM_INFO_OR_NULL(rcrd->mfile);
+                IFFile::Context *v5 = rcrd->mfile->getCurrentChunk();
 
                 if ( v5->TAG == TAG_FORM && v5->TAG_EXTENSION == TAG_FRAM )
                     recorder_read_framedata(rcrd);

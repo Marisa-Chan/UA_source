@@ -22,32 +22,32 @@ const NewClassDescr NC_STACK_sklt::description("sklt.class", &newinstance);
 
 
 
-size_t NC_STACK_sklt::func5(MFILE **file)
+size_t NC_STACK_sklt::func5(IFFile **file)
 {
     char name[256];
     stack_vals stk[3];
 
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
     int getted = 0;
 
     while ( 1 )
     {
-        int iff_result = read_next_IFF(mfile, 2);
+        int iff_result = mfile->parse();
         if ( iff_result == -2 )
             break;
 
         if ( iff_result )
             return 0;
 
-        if ( GET_FORM_INFO_OR_NULL(mfile)->TAG == TAG_NAME )
+        if ( mfile->getCurrentChunk()->TAG == TAG_NAME )
         {
-            mfread(mfile, name, 255);
-            read_next_IFF(mfile, 2);
+            mfile->read(name, 255);
+            mfile->parse();
             getted = 1;
         }
         else
         {
-            read_default(mfile);
+            mfile->skipChunk();
         }
     }
 
@@ -64,25 +64,25 @@ size_t NC_STACK_sklt::func5(MFILE **file)
     return 1;
 }
 
-size_t NC_STACK_sklt::func6(MFILE **file)
+size_t NC_STACK_sklt::func6(IFFile **file)
 {
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
 
-    if ( sub_412FC0(mfile, TAG_SKLC, TAG_FORM, -1) )
+    if ( mfile->pushChunk(TAG_SKLC, TAG_FORM, -1) )
         return 0;
     else
     {
-        sub_412FC0(mfile, 0, TAG_NAME, -1);
+        mfile->pushChunk(0, TAG_NAME, -1);
         const char *name = getRsrc_name();
-        sub_413564(mfile, strlen(name) + 1, name);
-        sub_413290(mfile);
-        return sub_413290(mfile) == 0;
+        mfile->write(name, strlen(name) + 1);
+        mfile->popChunk();
+        return mfile->popChunk() == IFFile::IFF_ERR_OK;
     }
 }
 
-rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile, int version)
+rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile, int version)
 {
-    MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
+    IFFile::Context *chunk = mfile->getCurrentChunk();
 
     if ( version < 1 )
         return NULL;
@@ -116,7 +116,7 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile, in
             {
                 int16_t tmp[3];
 
-                mfread(mfile, tmp, 2 * 3);
+                mfile->read(tmp, 2 * 3); //mfread
                 tmp[0] = SWAP16(tmp[0]);
                 tmp[1] = SWAP16(tmp[1]);
                 tmp[2] = SWAP16(tmp[2]);
@@ -133,7 +133,7 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile, in
             {
                 uint32_t tmp[3];
 
-                mfread(mfile, tmp, 4 * 3);
+                mfile->read(tmp, 4 * 3); //mfread
                 tmp[0] = SWAP32(tmp[0]);
                 tmp[1] = SWAP32(tmp[1]);
                 tmp[2] = SWAP32(tmp[2]);
@@ -148,15 +148,15 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile, in
     return res;
 }
 
-int skeleton_read_poly(NC_STACK_sklt *obj, MFILE *mfile, skeleton_64_stru *sklt)
+int skeleton_read_poly(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt)
 {
-    MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
+    IFFile::Context *chunk = mfile->getCurrentChunk();
     int16_t *polys = (int16_t *)AllocVec(chunk->TAG_SIZE, 1);
 
     if ( polys )
     {
         int v9 = 0;
-        mfread(mfile, polys, chunk->TAG_SIZE);
+        mfile->read(polys, chunk->TAG_SIZE); //mfread
 
         for (int i = 0; i < chunk->TAG_SIZE / 2 ; i++)
         {
@@ -208,14 +208,12 @@ int skeleton_read_poly(NC_STACK_sklt *obj, MFILE *mfile, skeleton_64_stru *sklt)
     return 0;
 }
 
-int skeleton_read_pol2(NC_STACK_sklt *obj, MFILE *mfile, skeleton_64_stru *sklt)
+int skeleton_read_pol2(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt)
 {
-    MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
+    IFFile::Context *chunk = mfile->getCurrentChunk();
     int pol_count = 0;
 
-    mfread(mfile, &pol_count, 4);
-
-    pol_count = SWAP32(pol_count);
+    mfile->readS32B(pol_count);
 
     skeleton_130_arg arg130;
     arg130.skeleton = sklt;
@@ -225,7 +223,7 @@ int skeleton_read_pol2(NC_STACK_sklt *obj, MFILE *mfile, skeleton_64_stru *sklt)
     if ( obj->skeleton_func130(&arg130) )
     {
         pol_indixes *indixes = sklt->pol_entries[0];
-        mfread(mfile, sklt->pol_entries[0], chunk->TAG_SIZE - 4);
+        mfile->read(sklt->pol_entries[0], chunk->TAG_SIZE - 4); //mfread
 
         for (int i = 0; i < pol_count; i++)
         {
@@ -245,9 +243,9 @@ int skeleton_read_pol2(NC_STACK_sklt *obj, MFILE *mfile, skeleton_64_stru *sklt)
     return 0;
 }
 
-int skeleton_read_senX(NC_STACK_sklt *obj, MFILE *mfile, skeleton_64_stru *sklt, int version)
+int skeleton_read_senX(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt, int version)
 {
-    MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
+    IFFile::Context *chunk = mfile->getCurrentChunk();
     int sen_count;
 
     if ( version < 1 )
@@ -276,7 +274,7 @@ int skeleton_read_senX(NC_STACK_sklt *obj, MFILE *mfile, skeleton_64_stru *sklt,
             {
                 int16_t tmp[3];
 
-                mfread(mfile, tmp, 2 * 3);
+                mfile->read(tmp, 2 * 3); //mfread
                 tmp[0] = SWAP16(tmp[0]);
                 tmp[1] = SWAP16(tmp[1]);
                 tmp[2] = SWAP16(tmp[2]);
@@ -293,7 +291,7 @@ int skeleton_read_senX(NC_STACK_sklt *obj, MFILE *mfile, skeleton_64_stru *sklt,
             {
                 uint32_t tmp[3];
 
-                mfread(mfile, tmp, 4 * 3);
+                mfile->read(tmp, 4 * 3); //mfread
                 tmp[0] = SWAP32(tmp[0]);
                 tmp[1] = SWAP32(tmp[1]);
                 tmp[2] = SWAP32(tmp[2]);
@@ -359,7 +357,7 @@ void sklt_func64__sub0__sub0(skeleton_64_stru *sklt, int id)
     }
 }
 
-rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile)
+rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile)
 {
     skeleton_64_stru *sklt = NULL;
     rsrc *res = NULL;
@@ -367,7 +365,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile)
 
     while ( 1 )
     {
-        int iff_flag = read_next_IFF(mfile, 2);
+        int iff_flag = mfile->parse();
 
         if ( iff_flag == -2 )
             break;
@@ -380,13 +378,13 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile)
             return NULL;
         }
 
-        int tag = GET_FORM_INFO_OR_NULL(mfile)->TAG;
+        int tag = mfile->getCurrentChunk()->TAG;
         if ( tag != TAG_FORM )
         {
             switch ( tag )
             {
             case TAG_TYPE:
-                read_next_IFF(mfile, 2);
+                mfile->parse();
                 break;
 
             case TAG_POOL:
@@ -401,7 +399,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile)
                 {
                     read_ok = 0;
                 }
-                read_next_IFF(mfile, 2);
+                mfile->parse();
                 break;
 
             case TAG_POO2:
@@ -416,7 +414,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile)
                 {
                     read_ok = 0;
                 }
-                read_next_IFF(mfile, 2);
+                mfile->parse();
                 break;
 
             case TAG_POLY:
@@ -425,7 +423,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile)
                     if ( !skeleton_read_poly(obj, mfile, sklt) )
                         read_ok = 0;
                 }
-                read_next_IFF(mfile, 2);
+                mfile->parse();
                 break;
 
             case TAG_POL2:
@@ -434,7 +432,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile)
                     if ( !skeleton_read_pol2(obj, mfile, sklt) )
                         read_ok = 0;
                 }
-                read_next_IFF(mfile, 2);
+                mfile->parse();
                 break;
 
             case TAG_SENS:
@@ -443,7 +441,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile)
                     if ( !skeleton_read_senX(obj, mfile, sklt, 1) )
                         read_ok = 0;
                 }
-                read_next_IFF(mfile, 2);
+                mfile->parse();
                 break;
 
             case TAG_SEN2:
@@ -452,11 +450,11 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, MFILE *mfile)
                     if ( !skeleton_read_senX(obj, mfile, sklt, 2) )
                         read_ok = 0;
                 }
-                read_next_IFF(mfile, 2);
+                mfile->parse();
                 break;
 
             default:
-                read_default(mfile);
+                mfile->skipChunk();
                 break;
             }
         }
@@ -482,13 +480,13 @@ rsrc * NC_STACK_sklt::rsrc_func64(stack_vals *stak)
     const char *filename = (const char *)find_id_in_stack_def_val(RSRC_ATT_NAME, 0, stak);
     if ( filename )
     {
-        MFILE *mfile = (MFILE *)find_id_in_stack_def_val(RSRC_ATT_PIFFFILE, 0, stak);
+        IFFile *mfile = (IFFile *)find_id_in_stack_def_val(RSRC_ATT_PIFFFILE, 0, stak);
 
         int selfopened = 0;
 
         if ( !mfile )
         {
-            mfile = open_mfile(filename, 0);
+            mfile = IFFile::openIFFile(filename, false);
 
             if ( !mfile )
                 return NULL;
@@ -499,7 +497,7 @@ rsrc * NC_STACK_sklt::rsrc_func64(stack_vals *stak)
         rsrc *res = sklt_func64__sub0(this, stak, mfile);
 
         if ( selfopened )
-            close_mfile(mfile);
+            delete mfile;
 
         return res;
     }
@@ -514,14 +512,14 @@ size_t NC_STACK_sklt::rsrc_func66(rsrc_func66_arg *arg)
     if ( !sklt )
         return 0;
 
-    MFILE *mfile;
+    IFFile *mfile;
 
     if ( arg->OpenedStream == 1 )
     {
         if ( !arg->filename )
             return 0;
 
-        mfile = open_mfile(arg->filename, 1);
+        mfile = IFFile::openIFFile(arg->filename, true);
     }
     else
         mfile = arg->file;
@@ -529,12 +527,12 @@ size_t NC_STACK_sklt::rsrc_func66(rsrc_func66_arg *arg)
     if ( !mfile )
         return 0;
 
-    if ( sub_412FC0(mfile, TAG_SKLT, TAG_FORM, -1) )
+    if ( mfile->pushChunk(TAG_SKLT, TAG_FORM, -1) )
         return 0;
 
     if ( sklt->POO )
     {
-        sub_412FC0(mfile, 0, TAG_POO2, 3 * 4 * sklt->POO_NUM);
+        mfile->pushChunk(0, TAG_POO2, 3 * 4 * sklt->POO_NUM);
         for (int i = 0; i < sklt->POO_NUM; i++)
         {
             uint32_t tmp[3];
@@ -546,14 +544,14 @@ size_t NC_STACK_sklt::rsrc_func66(rsrc_func66_arg *arg)
             tmp[1] = SWAP32(tmp[1]);
             tmp[2] = SWAP32(tmp[2]);
 
-            sub_413564(mfile, 3 * 4, tmp);
+            mfile->write(tmp, 3 * 4);
         }
-        sub_413290(mfile);
+        mfile->popChunk();
     }
 
     if ( sklt->sen_entries )
     {
-        sub_412FC0(mfile, 0, TAG_SEN2, 3 * 4 * sklt->sen_count);
+        mfile->pushChunk(0, TAG_SEN2, 3 * 4 * sklt->sen_count);
 
         for (int i = 0; i < sklt->sen_count; i++)
         {
@@ -566,17 +564,16 @@ size_t NC_STACK_sklt::rsrc_func66(rsrc_func66_arg *arg)
             tmp[1] = SWAP32(tmp[1]);
             tmp[2] = SWAP32(tmp[2]);
 
-            sub_413564(mfile, 3 * 4, tmp);
+            mfile->write(tmp, 3 * 4);
         }
-        sub_413290(mfile);
+        mfile->popChunk();
     }
 
     if ( sklt->pol_entries )
     {
-        sub_412FC0(mfile, 0, TAG_POL2, -1);
+        mfile->pushChunk(0, TAG_POL2, -1);
 
-        int32_t tmp = SWAP32(sklt->pol_count);
-        sub_413564(mfile, 4, &tmp);
+        mfile->writeS32B(sklt->pol_count);
 
         for (int i = 0; i < sklt->pol_count; i++)
         {
@@ -589,16 +586,16 @@ size_t NC_STACK_sklt::rsrc_func66(rsrc_func66_arg *arg)
             for (int j = 0; j < sklt->pol_entries[i]->num_vertices; j++)
                 vtmp[1 + j] = SWAP16(vtx[j]);
 
-            sub_413564(mfile, 2 * sklt->pol_entries[i]->num_vertices + 2, vtmp);
+            mfile->write(vtmp, 2 * sklt->pol_entries[i]->num_vertices + 2);
         }
-        sub_413290(mfile);
+        mfile->popChunk();
     }
 
-    if ( sub_413290(mfile) )
+    if ( mfile->popChunk() )
         return 0;
 
     if ( arg->OpenedStream == 1 )
-        close_mfile(mfile);
+        delete mfile;
     return arg->OpenedStream;
 }
 
@@ -608,9 +605,9 @@ size_t NC_STACK_sklt::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 5:
-        return (size_t)func5( (MFILE **)data );
+        return (size_t)func5( (IFFile **)data );
     case 6:
-        return (size_t)func6( (MFILE **)data );
+        return (size_t)func6( (IFFile **)data );
     case 64:
         return (size_t)rsrc_func64( (stack_vals *)data );
     case 66:

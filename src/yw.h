@@ -346,7 +346,7 @@ struct trec_bct
 
 struct recorder
 {
-    MFILE *mfile;
+    IFFile *mfile;
     uint16_t seqn;
     uint16_t level_id;
     int frame_id;

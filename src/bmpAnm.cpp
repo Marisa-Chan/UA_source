@@ -104,11 +104,11 @@ size_t NC_STACK_bmpanim::func3(stack_vals *stak)
     return NC_STACK_bitmap::func3(stak);
 }
 
-size_t NC_STACK_bmpanim::func5(MFILE **file)
+size_t NC_STACK_bmpanim::func5(IFFile **file)
 {
     int16_t buf[128];
 
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
 
     int v7 = 0;
     int v4;
@@ -116,16 +116,16 @@ size_t NC_STACK_bmpanim::func5(MFILE **file)
 
     while ( 1 )
     {
-        int v8 = read_next_IFF(mfile, 2);
-        if ( v8 == -2 )
+        int v8 = mfile->parse();
+        if ( v8 == IFFile::IFF_ERR_EOC )
             break;
         if ( v8 )
             return 0;
 
-        if ( GET_FORM_INFO_OR_NULL(mfile)->TAG == TAG_STRC )
+        if ( mfile->getCurrentChunk()->TAG == TAG_STRC )
         {
 
-            mfread(mfile, buf, sizeof(int16_t) * 128);
+            mfile->read(buf, sizeof(int16_t) * 128); //mfread
             buf[0] = SWAP16(buf[0]);
             buf[1] = SWAP16(buf[1]);
             buf[2] = SWAP16(buf[2]);
@@ -137,11 +137,11 @@ size_t NC_STACK_bmpanim::func5(MFILE **file)
                 v4 = buf[2];
                 v3 = (char *)buf + buf[1];
             }
-            read_next_IFF(mfile, 2);
+            mfile->parse();
         }
         else
         {
-            read_default(mfile);
+            mfile->skipChunk();
         }
     }
 
@@ -157,11 +157,11 @@ size_t NC_STACK_bmpanim::func5(MFILE **file)
     return func0(stk);
 }
 
-size_t NC_STACK_bmpanim::func6(MFILE **file)
+size_t NC_STACK_bmpanim::func6(IFFile **file)
 {
     __NC_STACK_bmpanim *bmpAnm = &stack__bmpanim;
 
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
 
     const char *a3 = getRsrc_name();
 
@@ -181,23 +181,22 @@ size_t NC_STACK_bmpanim::func6(MFILE **file)
         return 0;
     }
 
-    if ( sub_412FC0(mfile, TAG_BANI, TAG_FORM, -1) )
+    if ( mfile->pushChunk(TAG_BANI, TAG_FORM, -1) )
     {
         return 0;
     }
 
-    sub_412FC0(mfile, 0, TAG_STRC, -1);
+    mfile->pushChunk(0, TAG_STRC, -1);
 
     int16_t tmp[3];
     tmp[0] = SWAP16(1);
     tmp[1] = SWAP16(6); //sizeof tmp
     tmp[2] = SWAP16(bmpAnm->anim_type);
 
-    sub_413564(mfile, 6, &tmp);
-    sub_413564(mfile, strlen(a3) + 1, a3);
-    sub_413290(mfile);
-
-    return sub_413290(mfile) == 0;
+    mfile->write(&tmp, 6);
+    mfile->write(a3, strlen(a3) + 1);
+    mfile->popChunk();
+    return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
 
 void *sub_4BFB60(void *mfl, const char *mode)
@@ -216,17 +215,17 @@ void *sub_4BFB60(void *mfl, const char *mode)
 
     if ( dword_515200 )
     {
-        MFILE *mfile = (MFILE *)mfl;
+        IFFile *mfile = (IFFile *)mfl;
         dword_515204 = 1;
 
         if ( mode == NULL )
         {
-            if ( (sub_412FC0(mfile, TAG_VANM, TAG_FORM, -1) | sub_412FC0(mfile, 0, TAG_DATA, -1)) == 0 )
+            if ( (mfile->pushChunk(TAG_VANM, TAG_FORM, -1) | mfile->pushChunk(0, TAG_DATA, -1)) == IFFile::IFF_ERR_OK )
                 return mfile;
         }
         else
         {
-            if ( (read_next_IFF(mfile, 2) | read_next_IFF(mfile, 2)) == 0 )
+            if ( (mfile->parse() | mfile->parse()) == IFFile::IFF_ERR_OK )
                 return mfile;
         }
         return NULL;
@@ -236,61 +235,59 @@ void *sub_4BFB60(void *mfl, const char *mode)
         dword_515204 = dword_515200;
         const char* fname = (const char *)mfl;
 
-        FSMgr::FileHandle *v7;
+        FSMgr::FileHandle *fil;
 
         if ( mode == NULL )
         {
             dword_515200 = 1;
-            v7 = uaOpenFile(fname, mode);
-            if ( !v7 )
+            fil = uaOpenFile(fname, mode);
+            if ( !fil )
                 return NULL;
         }
         else
         {
-            v7 = uaOpenFile(fname, mode);
-            if ( !v7 )
+            fil = uaOpenFile(fname, mode);
+            if ( !fil )
                 return NULL;
 
-            uint32_t tmp = v7->readU32B();
+            uint32_t tmp = fil->readU32B();
 
             if ( tmp != TAG_FORM )
             {
                 dword_515200 = 0;
-                v7->seek(0, SEEK_SET);
-                return v7;
+                fil->seek(0, SEEK_SET);
+                return fil;
             }
             else
             {
                 dword_515200 = 1;
-                v7->seek(0, SEEK_SET);
+                fil->seek(0, SEEK_SET);
             }
         }
 
         if ( dword_515200 )
         {
-            MFILE *v9 = new_MFILE();
-            if ( v9 )
+            IFFile *mfile = new IFFile(fil, dword_5B2410, true);
+            if ( mfile )
             {
-                v9->file_handle = v7;
-                if ( !sub_412F98(v9, dword_5B2410) )
-                {
                     if ( dword_5B2410 )
                     {
-                        if ( (sub_412FC0(v9, TAG_VANM, TAG_FORM, -1) | sub_412FC0(v9, 0, TAG_DATA, -1)) == 0 )
-                            return v9;
+                        if ( (mfile->pushChunk(TAG_VANM, TAG_FORM, -1) | mfile->pushChunk(0, TAG_DATA, -1)) == IFFile::IFF_ERR_OK )
+                            return mfile;
                     }
                     else
                     {
-                        if ( (read_next_IFF(v9, 2) | read_next_IFF(v9, 2)) == 0 )
-                            return v9;
+                        if ( (mfile->parse() | mfile->parse()) == IFFile::IFF_ERR_OK )
+                            return mfile;
                     }
-                }
-                delete v7;
-                del_MFILE(v9);
+                delete mfile;
             }
+            else
+                delete fil;
+
         }
-        else if (v7)
-            delete v7;
+        else if (fil)
+            delete fil;
     }
     return NULL;
 }
@@ -300,7 +297,7 @@ int fread_bmp(void *dst, int size, int count, void *file)
     int v5 = 0;
 
     if ( dword_515200 )
-        v5 = mfread((MFILE *)file, dst, size * count);
+        v5 = ((IFFile *)file)->read(dst, size * count);
     else
         v5 = ((FSMgr::FileHandle *)file)->read(dst, size * count);
 
@@ -315,7 +312,7 @@ int fwrite_bmp(void *dst, int size, int count, void *file)
     int v5 = 0;
 
     if ( dword_515200 )
-        v5 = sub_413564((MFILE *)file, size * count, dst);
+        v5 = ((IFFile *)file)->write(dst, size * count);
     else
         v5 = ((FSMgr::FileHandle *)file)->write(dst, size * count);
 
@@ -533,19 +530,18 @@ int sub_4BFD74(void *fil)
         {
             if ( dword_5B2410 )
             {
-                sub_413290((MFILE *)fil);
-                sub_413290((MFILE *)fil);
+                ((IFFile *)fil)->popChunk();
+                ((IFFile *)fil)->popChunk();
             }
             else
             {
-                read_next_IFF((MFILE *)fil, 2);
-                read_next_IFF((MFILE *)fil, 2);
+                ((IFFile *)fil)->parse();
+                ((IFFile *)fil)->parse();
             }
 
             if ( !dword_515204 )
             {
-                delete (((MFILE *)fil)->file_handle);
-                del_MFILE((MFILE *)fil);
+                delete ((IFFile *)fil);
             }
         }
         else
@@ -556,10 +552,9 @@ int sub_4BFD74(void *fil)
     return 0;
 }
 
-bmpAnim_t1 *bmpanim_func64__sub1(char *name, MFILE *a2)
+bmpAnim_t1 *bmpanim_func64__sub1(char *name, IFFile *a2)
 {
     char buf[256];
-    const char *mode;
     void *ldfrom = a2;
 
     bmpAnim_t1 *v19 = NULL;
@@ -567,7 +562,6 @@ bmpAnim_t1 *bmpanim_func64__sub1(char *name, MFILE *a2)
 
     if ( ldfrom )
     {
-        mode = "rb";
         dword_515200 = 1;
     }
     else
@@ -578,10 +572,9 @@ bmpAnim_t1 *bmpanim_func64__sub1(char *name, MFILE *a2)
 
         ldfrom = buf;
         dword_515200 = 0;
-        mode = "rb";
     }
 
-    void *fil = sub_4BFB60(ldfrom, mode);
+    void *fil = sub_4BFB60(ldfrom, "rb");
     if ( fil )
     {
         v19 = (bmpAnim_t1 *)AllocVec(sizeof(bmpAnim_t1), 65537);
@@ -808,7 +801,7 @@ rsrc * NC_STACK_bmpanim::rsrc_func64(stack_vals *stak)
         else
         {
             char *v9 = (char *)find_id_in_stack_def_val(RSRC_ATT_NAME, 0, stak);
-            MFILE *v10 = (MFILE *)find_id_in_stack_def_val(RSRC_ATT_PIFFFILE, 0, stak);
+            IFFile *v10 = (IFFile *)find_id_in_stack_def_val(RSRC_ATT_PIFFFILE, 0, stak);
             if ( v9 )
                 res->data = bmpanim_func64__sub1(v9, v10);
         }
@@ -928,7 +921,7 @@ int bmpanim_func66__sub0__sub0(void *fil, bmpAnim_t1 *t1)
     return 1;
 }
 
-int bmpanim_func66__sub0(bmpAnim_t1 *t1, const char *resName, MFILE *a3)
+int bmpanim_func66__sub0(bmpAnim_t1 *t1, const char *resName, IFFile *a3)
 {
     int v22 = 0;
 
@@ -975,7 +968,7 @@ size_t NC_STACK_bmpanim::rsrc_func66(rsrc_func66_arg *sv)
     if ( !bmpanm->bmpanm_intern )
         return 0;
 
-    MFILE *mfile = NULL;
+    IFFile *mfile = NULL;
     const char *resName = NULL;
 
     if ( sv->OpenedStream == 1 )
@@ -1134,9 +1127,9 @@ size_t NC_STACK_bmpanim::compatcall(int method_id, void *data)
     case 3:
         return func3( (stack_vals *)data );
     case 5:
-        return (size_t)func5( (MFILE **)data );
+        return (size_t)func5( (IFFile **)data );
     case 6:
-        return (size_t)func6( (MFILE **)data );
+        return (size_t)func6( (IFFile **)data );
     case 64:
         return (size_t)rsrc_func64( (stack_vals *)data );
     case 65:

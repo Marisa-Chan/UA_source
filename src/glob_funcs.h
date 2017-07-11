@@ -3,7 +3,7 @@
 
 #include <string>
 #include <list>
-#include "MFILE.h"
+#include "IFFile.h"
 #include "MC.h"
 #include "ini.h"
 

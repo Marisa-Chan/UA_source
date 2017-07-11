@@ -678,6 +678,7 @@ bool DirIter::getNext(iNode * &node)
 FileHandle::FileHandle(const char *diskPath, const char *mode)
 {
     hndl = fopen(diskPath, mode);
+    _ReadERR = false;
 }
 
 FileHandle::~FileHandle()
@@ -694,12 +695,32 @@ bool FileHandle::OK()
         return false;
 }
 
+bool FileHandle::eof()
+{
+    if (!hndl)
+        return true;
+
+    return feof(hndl) != 0;
+}
+
+bool FileHandle::readErr()
+{
+    bool tmp = _ReadERR;
+    _ReadERR = false;
+    return tmp;
+}
+
 size_t FileHandle::read(void *buf, size_t num)
 {
     if (!hndl)
         return 0;
 
-    return fread(buf, 1, num, hndl);
+    size_t sz = fread(buf, 1, num, hndl);
+
+    if (sz != num)
+        _ReadERR = true;
+
+    return sz;
 }
 
 size_t FileHandle::write(const void *buf, size_t num)

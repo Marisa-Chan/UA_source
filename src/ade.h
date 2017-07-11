@@ -9,8 +9,8 @@ class NC_STACK_ade;
 struct __attribute__((packed)) ADE_STRC
 {
     int16_t field_0;
-    char field_2;
-    char field_3;
+    int8_t field_2;
+    int8_t field_3;
     int16_t field_4;
     int16_t field_6;
     int16_t field_8;
@@ -33,8 +33,8 @@ public:
     virtual size_t func1(stack_vals *stak);
     virtual size_t func2(stack_vals *stak);
     virtual size_t func3(stack_vals *stak);
-    virtual size_t func5(MFILE **file);
-    virtual size_t func6(MFILE **file);
+    virtual size_t func5(IFFile **file);
+    virtual size_t func6(IFFile **file);
     virtual size_t ade_func64(nlist **lst);
     virtual size_t ade_func65(area_arg_65 *arg);
 

@@ -116,37 +116,37 @@ size_t NC_STACK_nucleus::func3(stack_vals *stk)
     return 1;
 }
 
-size_t NC_STACK_nucleus::func5(MFILE **file)
+size_t NC_STACK_nucleus::func5(IFFile **file)
 {
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
 
     while ( 1 )
     {
-        signed int v6 = read_next_IFF(mfile, 2);
-        if ( v6 == -2 )
+        signed int v6 = mfile->parse();
+        if ( v6 == IFFile::IFF_ERR_EOC )
             break;
         if ( v6 )
         {
             func1(NULL);
             return 0;
         }
-        if ( GET_FORM_INFO_OR_NULL(mfile)->TAG == TAG_NAME )
+        if ( mfile->getCurrentChunk()->TAG == TAG_NAME )
         {
             char a4[33];
             memset(a4, 0, 33);
 
-            if ( !mfread(mfile, a4, 32) )
+            if ( !mfile->read(a4, 32) )
             {
                 func1(NULL);
                 return 0;
             }
 
             setName(a4);
-            read_next_IFF(mfile, 2);
+            mfile->parse();
         }
         else
         {
-            read_default(mfile);
+            mfile->skipChunk();
         }
     }
 
@@ -154,20 +154,20 @@ size_t NC_STACK_nucleus::func5(MFILE **file)
 }
 
 
-size_t NC_STACK_nucleus::func6(MFILE **val)
+size_t NC_STACK_nucleus::func6(IFFile **val)
 {
-    MFILE *mfile = *val;
-    if ( sub_412FC0(mfile, TAG_ROOT, TAG_FORM, -1) )
+    IFFile *mfile = *val;
+    if ( mfile->pushChunk(TAG_ROOT, TAG_FORM, -1) )
         return 0;
     else
     {
         if ( this->NAME )
         {
-            sub_412FC0(mfile, 0, TAG_NAME, -1);
-            sub_413564(mfile, strlen(this->NAME), this->NAME);
-            sub_413290(mfile);
+            mfile->pushChunk(0, TAG_NAME, -1);
+            mfile->write(this->NAME, strlen(this->NAME));
+            mfile->popChunk();
         }
-        sub_413290(mfile);
+        mfile->popChunk();
         return 1;
     }
     return 0;
@@ -214,9 +214,9 @@ size_t NC_STACK_nucleus::compatcall(int method_id, void *data)
     case 3:
         return (size_t)func3( (stack_vals *)data );
     case 5:
-        return (size_t)func5( (MFILE **)data );
+        return (size_t)func5( (IFFile **)data );
     case 6:
-        return (size_t)func6( (MFILE **)data );
+        return (size_t)func6( (IFFile **)data );
     default:
         break;
     }
@@ -337,28 +337,28 @@ void *find_id_pval(unsigned int find_id, stack_vals *a3)
 }
 
 
-NC_STACK_nucleus * READ_OBJT(MFILE *mfile)
+NC_STACK_nucleus * READ_OBJT(IFFile *mfile)
 {
     const NewClassDescr *clss = NULL;
     NC_STACK_nucleus *obj = NULL;
     while ( 1 )
     {
-        int v4 = read_next_IFF(mfile, 2);
+        int v4 = mfile->parse();
 
-        if ( v4 == -2 )
+        if ( v4 == IFFile::IFF_ERR_EOC )
             break;
 
         if ( v4 )
             return NULL;
 
-        int tag = GET_FORM_INFO_OR_NULL(mfile)->TAG;
+        int tag = mfile->getCurrentChunk()->TAG;
 
         if ( tag == TAG_CLID )
         {
             char classname[300];
             memset(classname, 0 , 300);
 
-            if ( mfread(mfile, classname, 256) < 0 )
+            if ( mfile->read(classname, 256) < 0 )
                 return NULL;
 
             clss = getClassAllocator(classname); // get_class(classname);
@@ -369,11 +369,11 @@ NC_STACK_nucleus * READ_OBJT(MFILE *mfile)
             }
 
 
-            read_next_IFF(mfile, 2);
+            mfile->parse();
         }
         else if ( tag == TAG_FORM )
         {
-            MFILE *v11 = mfile;
+            IFFile *v11 = mfile;
 
             obj = clss->newinstance();
 
@@ -385,7 +385,7 @@ NC_STACK_nucleus * READ_OBJT(MFILE *mfile)
         }
         else
         {
-            if ( !read_default(mfile) )
+            if ( !mfile->skipChunk() )
             {
                 return NULL;
             }
@@ -399,60 +399,52 @@ NC_STACK_base *READ_BAS_FILE(const char *fname)
 {
     NC_STACK_base *result = NULL;
 
-    MFILE *mfile = new_MFILE();
-    if ( !mfile )
-        return NULL;
-
     FSMgr::FileHandle *fil = uaOpenFile(fname, "rb");
-    mfile->file_handle = fil;
     if ( !fil )
+        return NULL;
+
+    IFFile *mfile = new IFFile(fil, false, true);
+    if ( !mfile )
     {
-        del_MFILE(mfile);
+        delete fil;
         return NULL;
     }
 
-    if ( sub_412F98(mfile, 0) )
+    if ( !mfile->parse() )
     {
-        delete mfile->file_handle;
-        del_MFILE(mfile);
-        return NULL;
-    }
-
-    if ( !read_next_IFF(mfile, 2) )
-    {
-        MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
-        if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_MC2 && !read_next_IFF(mfile, 2) )
+        IFFile::Context *chunk = mfile->getCurrentChunk();
+        if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_MC2 && !mfile->parse() )
         {
-            chunk = GET_FORM_INFO_OR_NULL(mfile);
+            chunk = mfile->getCurrentChunk();
             if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
                 result = (NC_STACK_base *)READ_OBJT(mfile);
         }
     }
 
-    delete fil;
-    del_MFILE(mfile);
+    delete mfile;
 
     return result;
 }
 
-int sub_4117F8(NC_STACK_nucleus *obj, MFILE *mfile)
+int sub_4117F8(NC_STACK_nucleus *obj, IFFile *mfile)
 {
-    if ( sub_412FC0(mfile, TAG_OBJT, TAG_FORM, -1) )
+    if ( mfile->pushChunk(TAG_OBJT, TAG_FORM, -1) )
         return 0;
 
     const char *clsname = obj->getClassName();
     int namesz = strlen(clsname) + 1;
 
-    if ( sub_412FC0(mfile, 0, TAG_CLID, namesz) )
+    if ( mfile->pushChunk(0, TAG_CLID, namesz) )
         return 0;
 
-    if ( sub_413564(mfile, namesz, clsname) < 0 )
+    if ( mfile->write(clsname, namesz) < 0 )
         return 0;
 
-    sub_413290(mfile);
-    MFILE *tmp = mfile;
+    mfile->popChunk();
+
+    IFFile *tmp = mfile;
     int res = obj->func6(&tmp);
-    sub_413290(mfile);
+    mfile->popChunk();
 
     return res;
 }

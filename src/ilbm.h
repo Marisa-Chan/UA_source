@@ -39,8 +39,8 @@ public:
     virtual size_t func0(stack_vals *stak);
     virtual size_t func2(stack_vals *stak);
     virtual size_t func3(stack_vals *stak);
-    virtual size_t func5(MFILE **file);
-    virtual size_t func6(MFILE **pmfile);
+    virtual size_t func5(IFFile **file);
+    virtual size_t func6(IFFile **pmfile);
     virtual rsrc * rsrc_func64(stack_vals *stak);
     virtual size_t rsrc_func66(rsrc_func66_arg *arg);
 
@@ -67,8 +67,8 @@ public:
 
     virtual int getILBM_saveFmt();
 
-    size_t ilbm_func5__sub0(NC_STACK_ilbm *obj, MFILE **pmfile);
-    rsrc * READ_ILBM(stack_vals *stak, MFILE *mfil, int val5);
+    size_t ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile);
+    rsrc * READ_ILBM(stack_vals *stak, IFFile *mfil, int val5);
 
     //Data
     static const NewClassDescr description;

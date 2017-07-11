@@ -42,8 +42,8 @@ public:
     virtual size_t func1(stack_vals *stak);
     virtual size_t func2(stack_vals *stak);
     virtual size_t func3(stack_vals *stak);
-    virtual size_t func5(MFILE **file);
-    virtual size_t func6(MFILE **file);
+    virtual size_t func5(IFFile **file);
+    virtual size_t func6(IFFile **file);
     virtual size_t ade_func65(area_arg_65 *arg);
 
     virtual size_t compatcall(int method_id, void *data);
@@ -152,8 +152,8 @@ public:
     int area_func0__sub0(stack_vals *stak);
     void area_func2__sub0(stack_vals *stak);
     void area_func3__sub0(stack_vals *stak);
-    int area_func5__sub0(MFILE *mfile);
-    int area_func5__sub1(MFILE *mfile);
+    int area_func5__sub0(IFFile *mfile);
+    int area_func5__sub1(IFFile *mfile);
 
 
     //Data

@@ -23,7 +23,7 @@ struct __NC_STACK_rsrc
 struct rsrc_func66_arg
 {
     const char *filename;
-    MFILE *file;
+    IFFile *file;
     int OpenedStream;
 };
 

@@ -6975,31 +6975,30 @@ size_t NC_STACK_ypaworld::ypaworld_func162(const char *fname)
     if ( !recorder_open_replay(repl) )
         return 0;
 
-    while ( read_next_IFF(repl->mfile, 2) != -2 )
+    while ( repl->mfile->parse() != IFFile::IFF_ERR_EOC )
     {
-        MFILE_S1 *v13 = GET_FORM_INFO_OR_NULL(repl->mfile);
+        IFFile::Context *v13 = repl->mfile->getCurrentChunk();
 
         if ( v13->TAG == TAG_SINF )
         {
-            mfread(repl->mfile, &repl->seqn, 2);
-            mfread(repl->mfile, &repl->level_id, 2);
-            read_next_IFF(repl->mfile, 2);
+            repl->mfile->read(&repl->seqn, 2); //mfread
+            repl->mfile->read(&repl->level_id, 2); //mfread
+            repl->mfile->parse();
         }
         else if ( v13->TAG != TAG_FORM || v13->TAG_EXTENSION != TAG_FRAM )
         {
-            read_default(repl->mfile);
+            repl->mfile->skipChunk();
         }
         else
         {
             repl->field_74++;
-            read_default(repl->mfile);
+            repl->mfile->skipChunk();
         }
     }
 
     if ( repl->mfile )
     {
-        delete repl->mfile->file_handle;
-        del_MFILE(repl->mfile);
+        delete repl->mfile;
         repl->mfile = NULL;
     }
 
@@ -7158,8 +7157,7 @@ void NC_STACK_ypaworld::ypaworld_func164(void *arg)
     {
         if ( yw->replayer->mfile )
         {
-            delete yw->replayer->mfile->file_handle;
-            del_MFILE(yw->replayer->mfile);
+            delete yw->replayer->mfile;
 
             yw->replayer->mfile = NULL;
         }

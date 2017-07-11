@@ -176,15 +176,15 @@ size_t NC_STACK_ade::func3(stack_vals *stak)
 }
 
 
-size_t NC_STACK_ade::func5(MFILE **file)
+size_t NC_STACK_ade::func5(IFFile **file)
 {
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
     int obj_ok = 0;
     while ( 1 )
     {
-        int iff_res = read_next_IFF(mfile, 2);
+        int iff_res = mfile->parse();
 
-        if ( iff_res == -2 )
+        if ( iff_res == IFFile::IFF_ERR_EOC )
             break;
 
         if ( iff_res )
@@ -194,7 +194,7 @@ size_t NC_STACK_ade::func5(MFILE **file)
             return 0;
         }
 
-        MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
+        IFFile::Context *chunk = mfile->getCurrentChunk();
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ROOT )
         {
@@ -212,7 +212,14 @@ size_t NC_STACK_ade::func5(MFILE **file)
             {
                 ADE_STRC hdr;
 
-                mfread(mfile, &hdr, sizeof(ADE_STRC));
+                /*mfile->readS16B(hdr.field_0);
+                mfile->readS8(hdr.field_2);
+                mfile->readS8(hdr.field_3);
+                mfile->readS16B(hdr.field_4);
+                mfile->readS16B(hdr.field_6);
+                mfile->readS16B(hdr.field_8);*/
+
+                mfile->read(&hdr, sizeof(ADE_STRC)); //mfread
 
                 hdr.field_0 = SWAP16(hdr.field_0);
                 hdr.field_4 = SWAP16(hdr.field_4);
@@ -226,29 +233,29 @@ size_t NC_STACK_ade::func5(MFILE **file)
                     setADE_poly( hdr.field_6 );
                 }
             }
-            read_next_IFF(mfile, 2);
+            mfile->parse();
         }
         else
         {
-            read_default(mfile);
+            mfile->skipChunk();
         }
     }
 
     return obj_ok;
 }
 
-size_t NC_STACK_ade::func6(MFILE **file)
+size_t NC_STACK_ade::func6(IFFile **file)
 {
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
     __NC_STACK_ade *ade = &stack__ade;
 
-    if ( sub_412FC0(mfile, TAG_ADE, TAG_FORM, -1) )
+    if ( mfile->pushChunk(TAG_ADE, TAG_FORM, -1) )
         return 0;
 
     if ( !NC_STACK_nucleus::func6(file) )
         return 0;
 
-    sub_412FC0(mfile, 0, TAG_STRC, -1);
+    mfile->pushChunk(0, TAG_STRC, -1);
 
     ADE_STRC hdr;
     hdr.field_0 = SWAP16(1);
@@ -258,9 +265,9 @@ size_t NC_STACK_ade::func6(MFILE **file)
     hdr.field_6 = SWAP16(ade->strc_f6);
     hdr.field_8 = 0;
 
-    sub_413564(mfile, sizeof(ADE_STRC), &hdr);
-    sub_413290(mfile);
-    return sub_413290(mfile) == 0;
+    mfile->write(&hdr, sizeof(ADE_STRC));
+    mfile->popChunk();
+    return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
 
 // Add ade to list
@@ -355,9 +362,9 @@ size_t NC_STACK_ade::compatcall(int method_id, void *data)
     case 3:
         return (size_t)func3( (stack_vals *)data );
     case 5:
-        return (size_t)func5( (MFILE **)data );
+        return (size_t)func5( (IFFile **)data );
     case 6:
-        return (size_t)func6( (MFILE **)data );
+        return (size_t)func6( (IFFile **)data );
     case 64:
         return (size_t)ade_func64( (nlist **)data );
     default:

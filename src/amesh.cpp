@@ -217,17 +217,17 @@ size_t NC_STACK_amesh::func3(stack_vals *stak)
     return NC_STACK_area::func3(stak);
 }
 
-size_t NC_STACK_amesh::func5(MFILE **file)
+size_t NC_STACK_amesh::func5(IFFile **file)
 {
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
     int obj_ok = 0;
     __NC_STACK_amesh *amesh = NULL;
 
     while ( 1 )
     {
-        int iff_res = read_next_IFF(mfile, 2);
+        int iff_res = mfile->parse();
 
-        if ( iff_res == -2 )
+        if ( iff_res == IFFile::IFF_ERR_EOC )
             break;
 
         if ( iff_res )
@@ -237,7 +237,7 @@ size_t NC_STACK_amesh::func5(MFILE **file)
             return 0;
         }
 
-        MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
+        IFFile::Context *chunk = mfile->getCurrentChunk();
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_AREA )
         {
@@ -261,12 +261,12 @@ size_t NC_STACK_amesh::func5(MFILE **file)
                     return 0;
                 }
 
-                mfread(mfile, amesh->atts, chunk->TAG_SIZE);
+                mfile->read(amesh->atts, chunk->TAG_SIZE); // mfread
 
                 for (int i = 0; i < amesh->cnt; i++)
                     amesh->atts[i].field_0 = SWAP16(amesh->atts[i].field_0);
             }
-            read_next_IFF(mfile, 2);
+            mfile->parse();
         }
         else if ( chunk->TAG == TAG_OLPL )
         {
@@ -286,14 +286,13 @@ size_t NC_STACK_amesh::func5(MFILE **file)
                     amesh->olpl[i] = uv;
 
                     int16_t cnt;
-                    mfread(mfile, &cnt, 2);
-
-                    cnt = SWAP16(cnt);
+                    mfile->readS16B(cnt);
 
                     for (int j = 0; j < cnt; j++)
                     {
                         uint8_t tmp[2];
-                        mfread(mfile, tmp, 2);
+                        mfile->readU8(tmp[0]);
+                        mfile->readU8(tmp[1]);
 
                         uv->tu = tmp[0] / 256.0;
                         uv->tv = tmp[1] / 256.0;
@@ -305,42 +304,42 @@ size_t NC_STACK_amesh::func5(MFILE **file)
                     uv++;
                 }
             }
-            read_next_IFF(mfile, 2);
+            mfile->parse();
         }
         else
         {
-            read_default(mfile);
+            mfile->skipChunk();
         }
     }
 
     return obj_ok;
 }
 
-size_t NC_STACK_amesh::func6(MFILE **file)
+size_t NC_STACK_amesh::func6(IFFile **file)
 {
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
     __NC_STACK_amesh *amesh = &stack__amesh;
 
-    if ( sub_412FC0(mfile, TAG_AMSH, TAG_FORM, -1) )
+    if ( mfile->pushChunk(TAG_AMSH, TAG_FORM, -1) )
         return 0;
 
     if ( !NC_STACK_area::func6(file) )
         return 0;
 
-    sub_412FC0(mfile, 0, TAG_ATTS, -1);
+    mfile->pushChunk(0, TAG_ATTS, -1);
 
     for (int i = 0; i < amesh->cnt; i++)
         amesh->atts[i].field_0 = SWAP16(amesh->atts[i].field_0);
 
-    sub_413564(mfile, (sizeof(ATTS) * amesh->cnt), amesh->atts);
-    sub_413290(mfile);
+    mfile->write(amesh->atts, (sizeof(ATTS) * amesh->cnt));
+    mfile->popChunk();
 
     for (int i = 0; i < amesh->cnt; i++)
         amesh->atts[i].field_0 = SWAP16(amesh->atts[i].field_0);
 
     if ( amesh->olpl )
     {
-        sub_412FC0(mfile, 0, TAG_OLPL, -1);
+        mfile->pushChunk(0, TAG_OLPL, -1);
 
         for (int i = 0; i < amesh->cnt; i++)
         {
@@ -353,11 +352,7 @@ size_t NC_STACK_amesh::func6(MFILE **file)
                 uv++;
             }
 
-            cnt = SWAP16(cnt);
-
-            sub_413564(mfile, 2, &cnt);
-
-            cnt = SWAP16(cnt);
+            mfile->writeS16B(cnt);
 
             uv = amesh->olpl[i];
 
@@ -367,12 +362,13 @@ size_t NC_STACK_amesh::func6(MFILE **file)
                 tmp[0] = uv[j].tu * 256.0;
                 tmp[1] = uv[j].tv * 256.0;
 
-                sub_413564(mfile, 2, tmp);
+                mfile->writeU8(tmp[0]);
+                mfile->writeU8(tmp[1]);
             }
         }
-        sub_413290(mfile);
+        mfile->popChunk();
     }
-    sub_413290(mfile);
+    mfile->popChunk();
     return 1;
 }
 
@@ -591,9 +587,9 @@ size_t NC_STACK_amesh::compatcall(int method_id, void *data)
         return func3( (stack_vals *)data );
         return 1;
     case 5:
-        return (size_t)func5( (MFILE **)data );
+        return (size_t)func5( (IFFile **)data );
     case 6:
-        return (size_t)func6( (MFILE **)data );
+        return (size_t)func6( (IFFile **)data );
     case 65:
         ade_func65( (area_arg_65 *)data );
         return 1;

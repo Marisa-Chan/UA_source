@@ -40,9 +40,9 @@ size_t NC_STACK_ilbm::func3(stack_vals *stak)
     return NC_STACK_bitmap::func3(stak);
 }
 
-size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, MFILE **pmfile)
+size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile)
 {
-    MFILE *mfile = *pmfile;
+    IFFile *mfile = *pmfile;
 
     int has_nam2 = 0;
     int has_opl = 0;
@@ -52,7 +52,7 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, MFILE **pmfile)
 
     while ( 1 )
     {
-        int v6 = read_next_IFF(mfile, 2);
+        int v6 = mfile->parse();
 
         if ( v6 == -2 )
             break;
@@ -60,12 +60,12 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, MFILE **pmfile)
         if ( v6 )
             return 0;
 
-        MFILE_S1 *iff_chunk = GET_FORM_INFO_OR_NULL(mfile);
+        IFFile::Context *iff_chunk = mfile->getCurrentChunk();
 
         if ( iff_chunk->TAG == TAG_NAM2 )
         {
-            mfread(mfile, name, 256);
-            read_next_IFF(mfile, 2);
+            mfile->read(name, 256);
+            mfile->parse();
 
             has_nam2 = 1;
         }
@@ -73,7 +73,7 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, MFILE **pmfile)
         {
             uint8_t dst[128];
 
-            mfread(mfile, &dst, 128);
+            mfile->read(&dst, 128); //mfread
 
             int opl_count = iff_chunk->TAG_SIZE / 2;
 
@@ -88,13 +88,13 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, MFILE **pmfile)
             memset(&opls[opl_count], 0, sizeof(pixel_2d));
             opls[opl_count].flags = 0xFFFF;
 
-            read_next_IFF(mfile, 2);
+            mfile->parse();
 
             has_opl = 1;
         }
         else
         {
-            read_default(mfile);
+            mfile->skipChunk();
         }
     }
 
@@ -118,9 +118,9 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, MFILE **pmfile)
     return 0;
 }
 
-size_t NC_STACK_ilbm::func5(MFILE **file)
+size_t NC_STACK_ilbm::func5(IFFile **file)
 {
-    uint32_t TAG = GET_FORM_INFO_OR_NULL(*file)->TAG_EXTENSION;
+    uint32_t TAG = (*file)->getCurrentChunk()->TAG_EXTENSION;
 
     if ( TAG == TAG_CIBO )
         return ilbm_func5__sub0(this, file);
@@ -128,9 +128,9 @@ size_t NC_STACK_ilbm::func5(MFILE **file)
     return 0;
 }
 
-size_t NC_STACK_ilbm::func6(MFILE **pmfile)
+size_t NC_STACK_ilbm::func6(IFFile **pmfile)
 {
-    MFILE *mfile = *pmfile;
+    IFFile *mfile = *pmfile;
 
     const char *name = getRsrc_name();
 
@@ -142,16 +142,16 @@ size_t NC_STACK_ilbm::func6(MFILE **pmfile)
 
     tUtV *opl2 = bitmap_info.outline;
 
-    if ( sub_412FC0(mfile, TAG_CIBO, TAG_FORM, -1) )
+    if ( mfile->pushChunk(TAG_CIBO, TAG_FORM, -1) )
     {
         return 0;
     }
     else
     {
 
-        sub_412FC0(mfile, 0, TAG_NAM2, -1);
-        sub_413564(mfile, strlen(name) + 1, name);
-        sub_413290(mfile);
+        mfile->pushChunk(0, TAG_NAM2, -1);
+        mfile->write(name, strlen(name) + 1);
+        mfile->popChunk();
 
         if ( opl2 )
         {
@@ -168,11 +168,11 @@ size_t NC_STACK_ilbm::func6(MFILE **pmfile)
                 opl_count++;
             }
 
-            sub_412FC0(mfile, 0, TAG_OTL2, opl_count * 2);
-            sub_413564(mfile, opl_count * 2, buf);
-            sub_413290(mfile);
+            mfile->pushChunk(0, TAG_OTL2, opl_count * 2);
+            mfile->write(buf, opl_count * 2);
+            mfile->popChunk();
         }
-        return sub_413290(mfile) == 0;
+        return mfile->popChunk() == IFFile::IFF_ERR_OK;
     }
     return 0;
 }
@@ -255,17 +255,17 @@ void ILBM_BODY_READ__sub0(BMHD_type *bmhd, uint8_t *ilbm_data, void *_img_buffer
     }
 }
 
-int ILBM_BODY_READ(MFILE *mfile, BMHD_type *bmhd, bitmap_intern *bitm)
+int ILBM_BODY_READ(IFFile *mfile, BMHD_type *bmhd, bitmap_intern *bitm)
 {
     if ( bitm->buffer )
     {
-        MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
+        IFFile::Context *chunk = mfile->getCurrentChunk();
 
         uint8_t *buffer = (uint8_t *)AllocVec(chunk->TAG_SIZE, 1);
 
         if ( buffer )
         {
-            mfread(mfile, buffer, chunk->TAG_SIZE);
+            mfile->read(buffer, chunk->TAG_SIZE); //mfread
 
             ILBM_BODY_READ__sub0(bmhd, buffer, bitm->buffer);
 
@@ -277,7 +277,7 @@ int ILBM_BODY_READ(MFILE *mfile, BMHD_type *bmhd, bitmap_intern *bitm)
     return 0;
 }
 
-rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
+rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, IFFile *mfil, int val5)
 {
     int ILBM__OR__VBMP;
 
@@ -288,13 +288,13 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
 
     bitmap_intern *bitm = NULL;
 
-    if ( read_next_IFF(mfil, 2) )
+    if ( mfil->parse() )
     {
         ypa_log_out("ilbm.class: Not an IFF file!\n");
         return NULL;
     }
 
-    MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfil);
+    IFFile::Context *chunk = mfil->getCurrentChunk();
     if ( chunk->TAG != TAG_FORM )
     {
         ypa_log_out("ilbm.class: Not an IFF FORM chunk!\n");
@@ -313,8 +313,8 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
 
     while ( true )
     {
-        int v10 = read_next_IFF(mfil, 2);
-        if ( v10 == -2 )
+        int v10 = mfil->parse();
+        if ( v10 == IFFile::IFF_ERR_EOC )
             break;
         if ( v10 )
         {
@@ -324,11 +324,11 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
             return NULL;
         }
 
-        uint32_t tag = GET_FORM_INFO_OR_NULL(mfil)->TAG;
+        uint32_t tag = mfil->getCurrentChunk()->TAG;
 
         if ( tag == TAG_BMHD )
         {
-            mfread(mfil, &bmhd, sizeof(BMHD_type));
+            mfil->read(&bmhd, sizeof(BMHD_type)); //mfread
             bmhd.width = SWAP16(bmhd.width);
             bmhd.height = SWAP16(bmhd.height);
 
@@ -346,11 +346,11 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
                     return NULL;
                 }
             }
-            read_next_IFF(mfil, 2);
+            mfil->parse();
         }
         else if ( tag == TAG_HEAD )
         {
-            mfread(mfil, &vbmp, sizeof(VBMP_type));
+            mfil->read(&vbmp, sizeof(VBMP_type)); //mfread
             vbmp.width = SWAP16(vbmp.width);
             vbmp.height = SWAP16(vbmp.height);
 
@@ -369,7 +369,7 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
                     return NULL;
                 }
             }
-            read_next_IFF(mfil, 2);
+            mfil->parse();
         }
         else if ( tag == TAG_CMAP )
         {
@@ -380,11 +380,11 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
 
                 if ( bitm->pallete )
                 {
-                    mfread(mfil, bitm->pallete, sizeof(UA_PALETTE));
+                    mfil->read(bitm->pallete, sizeof(UA_PALETTE)); //mfread
                     bitm->flags |= BITMAP_FLAG_HAS_PALETTE;
                 }
             }
-            read_next_IFF(mfil, 2);
+            mfil->parse();
         }
         else if ( tag == TAG_BODY )
         {
@@ -409,7 +409,7 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
                     }
                     else if ( bitm->buffer )              // VBMP READ
                     {
-                        mfread(mfil, bitm->buffer, bitm->width * bitm->height);
+                        mfil->read(bitm->buffer, bitm->width * bitm->height);
                         success = 1;
                     }
                     else
@@ -432,11 +432,11 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, MFILE *mfil, int val5)
                 rsrc_func65(&res);
                 return NULL;
             }
-            read_next_IFF(mfil, 2);
+            mfil->parse();
         }
         else
         {
-            read_default(mfil);
+            mfil->skipChunk();
         }
     }
     return res;
@@ -484,7 +484,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(stack_vals *stak)
             reassignName = "hi/gamma/fx3.ilbm";
     }
 
-    MFILE *mfile = (MFILE *)find_id_in_stack_def_val(RSRC_ATT_PIFFFILE, 0, stak);
+    IFFile *mfile = (IFFile *)find_id_in_stack_def_val(RSRC_ATT_PIFFFILE, 0, stak);
 
     int selfOpened = 0;
 
@@ -496,11 +496,11 @@ rsrc * NC_STACK_ilbm::rsrc_func64(stack_vals *stak)
             stk[0].set(BMD_ATT_TEXTURE, 1);
             stk[1].nextStack(stak);
 
-            read_next_IFF(mfile, 2);
-            read_default(mfile);
+            mfile->parse();
+            mfile->skipChunk();
         }
 
-        mfile = open_mfile(reassignName, 0);
+        mfile = IFFile::openIFFile(reassignName, 0);
 
         if ( !mfile )
             return NULL;
@@ -516,7 +516,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(stack_vals *stak)
         }
         else
         {
-            mfile = open_mfile(resName, 0);
+            mfile = IFFile::openIFFile(resName, 0);
             if ( !mfile )
                 return NULL;
 
@@ -527,12 +527,12 @@ rsrc * NC_STACK_ilbm::rsrc_func64(stack_vals *stak)
     rsrc *res = READ_ILBM(stk, mfile, reassignName != 0);
 
     if ( selfOpened )
-        close_mfile(mfile);
+        delete mfile;
 
     return res;
 }
 
-void ILBM__WRITE_TO_FILE_BMHD(MFILE *mfile, bitmap_intern *bitm)
+void ILBM__WRITE_TO_FILE_BMHD(IFFile *mfile, bitmap_intern *bitm)
 {
     BMHD_type bmhd;
 
@@ -550,12 +550,12 @@ void ILBM__WRITE_TO_FILE_BMHD(MFILE *mfile, bitmap_intern *bitm)
     bmhd.xAspect = 22;
     bmhd.yAspect = 22;
 
-    sub_412FC0(mfile, 0, TAG_BMHD, sizeof(BMHD_type));
-    sub_413564(mfile, sizeof(BMHD_type), &bmhd);
-    sub_413290(mfile);
+    mfile->pushChunk(0, TAG_BMHD, sizeof(BMHD_type));
+    mfile->write(&bmhd, sizeof(BMHD_type));
+    mfile->popChunk();
 }
 
-int ILBM__WRITE_TO_FILE_BODY(MFILE *mfile, bitmap_intern *bitm)
+int ILBM__WRITE_TO_FILE_BODY(IFFile *mfile, bitmap_intern *bitm)
 {
     int planeSz = 2 * ((bitm->width + 15) / 16);
     uint8_t *buf = (uint8_t *)AllocVec(planeSz, 1);
@@ -563,7 +563,7 @@ int ILBM__WRITE_TO_FILE_BODY(MFILE *mfile, bitmap_intern *bitm)
     if (!buf)
         return 0;
 
-    sub_412FC0(mfile, 0, TAG_BODY, 8 * bitm->height * planeSz);
+    mfile->pushChunk(0, TAG_BODY, 8 * bitm->height * planeSz);
 
     uint8_t *bfline = (uint8_t *)bitm->buffer;
 
@@ -579,20 +579,20 @@ int ILBM__WRITE_TO_FILE_BODY(MFILE *mfile, bitmap_intern *bitm)
                     buf[ x / 8 ] |= ( 1 << ( (x & 7) ^ 7) );
             }
 
-            sub_413564(mfile, planeSz, (const void *)buf);
+            mfile->write((const void *)buf, planeSz);
         }
 
         bfline += bitm->width;
     }
 
-    sub_413290(mfile);
+    mfile->popChunk();
     nc_FreeMem(buf);
     return 1;
 }
 
-int ILBM__WRITE_TO_FILE(MFILE *mfile, bitmap_intern *bitm)
+int ILBM__WRITE_TO_FILE(IFFile *mfile, bitmap_intern *bitm)
 {
-    if ( sub_412FC0(mfile, TAG_ILBM, TAG_FORM, -1) )
+    if ( mfile->pushChunk(TAG_ILBM, TAG_FORM, -1) )
         return 0;
 
 
@@ -600,59 +600,59 @@ int ILBM__WRITE_TO_FILE(MFILE *mfile, bitmap_intern *bitm)
 
     if ( bitm->pallete )
     {
-        sub_412FC0(mfile, 0, TAG_CMAP, 256 * 3);
-        sub_413564(mfile, 256 * 3, bitm->pallete);
-        sub_413290(mfile);
+        mfile->pushChunk(0, TAG_CMAP, 256 * 3);
+        mfile->write(bitm->pallete, 256 * 3);
+        mfile->popChunk();
     }
 
     if ( !ILBM__WRITE_TO_FILE_BODY(mfile, bitm) )
         return 0;
 
-    return sub_413290(mfile) == 0;
+    return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
 
-int VBMP__WRITE_TO_FILE(MFILE *mfile, bitmap_intern *bitm)
+int VBMP__WRITE_TO_FILE(IFFile *mfile, bitmap_intern *bitm)
 {
     int pixelCount = bitm->height * bitm->width;
-    if ( sub_412FC0(mfile, TAG_VBMP, TAG_FORM, -1) )
+    if ( mfile->pushChunk(TAG_VBMP, TAG_FORM, -1) )
         return 0;
 
-    sub_412FC0(mfile, 0, TAG_HEAD, sizeof(VBMP_type));
+    mfile->pushChunk(0, TAG_HEAD, sizeof(VBMP_type));
 
     VBMP_type vbmp;
     vbmp.width = SWAP16(bitm->width);
     vbmp.height = SWAP16(bitm->height);
     vbmp.flags = 0;
 
-    sub_413564(mfile, sizeof(VBMP_type), &vbmp);
-    sub_413290(mfile);
+    mfile->write(&vbmp, sizeof(VBMP_type));
+    mfile->popChunk();
 
     if ( bitm->pallete )
     {
-        sub_412FC0(mfile, 0, TAG_CMAP, 256 * 3);
-        sub_413564(mfile, 256 * 3, bitm->pallete);
-        sub_413290(mfile);
+        mfile->pushChunk(0, TAG_CMAP, 256 * 3);
+        mfile->write(bitm->pallete, 256 * 3);
+        mfile->popChunk();
     }
 
-    sub_412FC0(mfile, 0, TAG_BODY, pixelCount);
-    sub_413564(mfile, pixelCount, bitm->buffer);
-    sub_413290(mfile);
+    mfile->pushChunk(0, TAG_BODY, pixelCount);
+    mfile->write(bitm->buffer, pixelCount);
+    mfile->popChunk();
 
-    return sub_413290(mfile) == 0;
+    return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
 
 size_t NC_STACK_ilbm::rsrc_func66(rsrc_func66_arg *arg)
 {
     __NC_STACK_ilbm *ilbm = &stack__ilbm;
 
-    MFILE *mfile;
+    IFFile *mfile;
 
     if ( arg->OpenedStream == 1 )
     {
         if ( !arg->filename )
             return 0;
 
-        mfile = open_mfile(arg->filename, 1);
+        mfile = IFFile::openIFFile(arg->filename, true);
     }
     else
         mfile = arg->file;
@@ -680,7 +680,7 @@ size_t NC_STACK_ilbm::rsrc_func66(rsrc_func66_arg *arg)
     if ( res )
     {
         if ( arg->OpenedStream == 1 )
-            close_mfile(mfile);
+            delete mfile;
         res = arg->OpenedStream;
     }
     return res;
@@ -711,9 +711,9 @@ size_t NC_STACK_ilbm::compatcall(int method_id, void *data)
     case 3:
         return func3( (stack_vals *)data );
     case 5:
-        return (size_t)func5( (MFILE **)data );
+        return (size_t)func5( (IFFile **)data );
     case 6:
-        return (size_t)func6( (MFILE **)data );
+        return (size_t)func6( (IFFile **)data );
     case 64:
         return (size_t)rsrc_func64( (stack_vals *)data );
     case 66:

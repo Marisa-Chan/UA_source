@@ -290,10 +290,10 @@ size_t NC_STACK_area::func3(stack_vals *stak)
     return NC_STACK_ade::func3(stak);
 }
 
-int NC_STACK_area::area_func5__sub0(MFILE *mfile)
+int NC_STACK_area::area_func5__sub0(IFFile *mfile)
 {
     AREA_STRC tmp;
-    mfread(mfile, &tmp, sizeof(AREA_STRC));
+    mfile->read(&tmp, sizeof(AREA_STRC));//mfread(mfile, &tmp, sizeof(AREA_STRC));
     tmp.field_0 = SWAP16(tmp.field_0);
     tmp.field_2 = SWAP32(tmp.field_2);
     tmp.field_6 = SWAP32(tmp.field_6);
@@ -309,7 +309,7 @@ int NC_STACK_area::area_func5__sub0(MFILE *mfile)
 
 
 
-int NC_STACK_area::area_func5__sub1(MFILE *mfile)
+int NC_STACK_area::area_func5__sub1(IFFile *mfile)
 {
     int v8 = stack__area.polflags & AREA_POL_FLAG_TEXUTRED;
 
@@ -345,14 +345,14 @@ int NC_STACK_area::area_func5__sub1(MFILE *mfile)
 }
 
 
-size_t NC_STACK_area::func5(MFILE **file)
+size_t NC_STACK_area::func5(IFFile **file)
 {
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
     int obj_ok = 0;
 
     while ( 1 )
     {
-        int iff_res = read_next_IFF(mfile, 2);
+        int iff_res = mfile->parse();
 
         if ( iff_res == -2 )
             break;
@@ -364,7 +364,7 @@ size_t NC_STACK_area::func5(MFILE **file)
             return 0;
         }
 
-        MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
+        IFFile::Context *chunk = mfile->getCurrentChunk();
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ADE )
         {
@@ -380,7 +380,7 @@ size_t NC_STACK_area::func5(MFILE **file)
                 func1(NULL);
                 return 0;
             }
-            read_next_IFF(mfile, 2);
+            mfile->parse();
         }
         else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
         {
@@ -392,26 +392,26 @@ size_t NC_STACK_area::func5(MFILE **file)
         }
         else
         {
-            read_default(mfile);
+            mfile->skipChunk();
         }
     }
 
     return obj_ok;
 }
 
-size_t NC_STACK_area::func6(MFILE **file)
+size_t NC_STACK_area::func6(IFFile **file)
 {
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
     __NC_STACK_area *area = &stack__area;
 
-    if ( sub_412FC0(mfile, TAG_AREA, TAG_FORM, -1) )
+    if ( mfile->pushChunk(TAG_AREA, TAG_FORM, -1) )
         return 0;
 
 
     if ( !NC_STACK_ade::func6(file) )
         return 0;
 
-    sub_412FC0(mfile, 0, TAG_STRC, -1);
+    mfile->pushChunk(0, TAG_STRC, -1);
 
     AREA_STRC tmp;
     tmp.field_0 = 1;
@@ -421,8 +421,8 @@ size_t NC_STACK_area::func6(MFILE **file)
     tmp.field_2 = SWAP32(tmp.field_2);
     tmp.field_6 = SWAP32(tmp.field_6);
 
-    sub_413564(mfile, sizeof(AREA_STRC), &tmp);
-    sub_413290(mfile);
+    mfile->write(&tmp, sizeof(AREA_STRC));
+    mfile->popChunk();
 
     if ( (area->polflags & AREA_POL_FLAG_TEXUTRED) )
     {
@@ -439,7 +439,7 @@ size_t NC_STACK_area::func6(MFILE **file)
             return 0;
     }
 
-    return sub_413290(mfile) == 0;
+    return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
 
 // Add area to list
@@ -793,9 +793,9 @@ size_t NC_STACK_area::compatcall(int method_id, void *data)
     case 3:
         return (size_t)func3( (stack_vals *)data );
     case 5:
-        return (size_t)func5( (MFILE **)data );
+        return (size_t)func5( (IFFile **)data );
     case 6:
-        return (size_t)func6( (MFILE **)data );
+        return (size_t)func6( (IFFile **)data );
     case 65:
         return (size_t)ade_func65( (area_arg_65 *)data );
     default:

@@ -569,13 +569,13 @@ size_t NC_STACK_base::func3(stack_vals *stak)
     return NC_STACK_nucleus::func3(stak);
 }
 
-int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
+int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, IFFile *mfile)
 {
     if ( obj )
     {
         STRC_base dst;
 
-        if ( mfread(mfile, &dst, sizeof(STRC_base)) )
+        if ( mfile->read(&dst, sizeof(STRC_base)) ) //mfread
         {
             dst.p1 = SWAP16(dst.p1);
 
@@ -688,20 +688,20 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
     return 0;
 }
 
-int base_READ_ADES(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
+int base_READ_ADES(NC_STACK_base *obj, __NC_STACK_base *, IFFile *mfile)
 {
     if (!obj)
         return 0;
 
     while ( 1 )
     {
-        int v5 = read_next_IFF(mfile, 2);
+        int v5 = mfile->parse();
         if ( v5 == -2 )
             break;
         if ( v5 )
             return 0;
 
-        MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
+        IFFile::Context *chunk = mfile->getCurrentChunk();
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
         {
@@ -713,13 +713,13 @@ int base_READ_ADES(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
         }
         else
         {
-            read_default(mfile);
+            mfile->skipChunk();
         }
     }
     return 1;
 }
 
-int base_READ_KIDS(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
+int base_READ_KIDS(NC_STACK_base *obj, __NC_STACK_base *, IFFile *mfile)
 {
     if (!obj)
         return 0;
@@ -728,13 +728,13 @@ int base_READ_KIDS(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
 
     while ( 1 )
     {
-        int v5 = read_next_IFF(mfile, 2);
+        int v5 = mfile->parse();
         if ( v5 == -2 )
             break;
         if ( v5 )
             return 0;
 
-        MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
+        IFFile::Context *chunk = mfile->getCurrentChunk();
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
         {
@@ -749,25 +749,25 @@ int base_READ_KIDS(NC_STACK_base *obj, __NC_STACK_base *, MFILE *mfile)
         }
         else
         {
-            read_default(mfile);
+            mfile->skipChunk();
         }
     }
     return 1;
 }
 
 
-size_t NC_STACK_base::func5(MFILE **file)
+size_t NC_STACK_base::func5(IFFile **file)
 {
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
     int obj_ok = 0;
     __NC_STACK_base *base = NULL;
     int STRC_readed = 0;
 
     while ( 1 )
     {
-        int iff_res = read_next_IFF(mfile, 2);
+        int iff_res = mfile->parse();
 
-        if ( iff_res == -2 )
+        if ( iff_res == IFFile::IFF_ERR_EOC )
             break;
 
         if ( iff_res )
@@ -777,7 +777,7 @@ size_t NC_STACK_base::func5(MFILE **file)
             return 0;
         }
 
-        MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
+        IFFile::Context *chunk = mfile->getCurrentChunk();
 
 
 
@@ -818,7 +818,7 @@ size_t NC_STACK_base::func5(MFILE **file)
                 func1(NULL);
                 return 0;
             }
-            read_next_IFF(mfile, 2);
+            mfile->parse();
         }
         else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
         {
@@ -858,18 +858,18 @@ size_t NC_STACK_base::func5(MFILE **file)
         }
         else
         {
-            read_default(mfile);
+            mfile->skipChunk();
         }
     }
     return obj_ok;
 }
 
-size_t NC_STACK_base::func6(MFILE **file)
+size_t NC_STACK_base::func6(IFFile **file)
 {
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
     __NC_STACK_base *base = &stack__base;
 
-    if ( sub_412FC0(*file, TAG_BASE, TAG_FORM, -1) )
+    if ( mfile->pushChunk(TAG_BASE, TAG_FORM, -1) )
         return 0;
 
     if ( !NC_STACK_nucleus::func6(file) )
@@ -889,7 +889,7 @@ size_t NC_STACK_base::func6(MFILE **file)
         }
     }
 
-    sub_412FC0(mfile, 0, TAG_STRC, -1);
+    mfile->pushChunk(0, TAG_STRC, -1);
 
     STRC_base a1;
 
@@ -946,8 +946,8 @@ size_t NC_STACK_base::func6(MFILE **file)
 
     a1.p20 = SWAP32(base->field_DC.field_34);
 
-    sub_413564(mfile, sizeof(STRC_base), &a1);
-    sub_413290(mfile);
+    mfile->write(&a1, sizeof(STRC_base));
+    mfile->popChunk();
 
     if ( base->OBJ_SKELETON )
     {
@@ -956,28 +956,28 @@ size_t NC_STACK_base::func6(MFILE **file)
 
         if ( base->ADES.head->next )
         {
-            sub_412FC0(mfile, TAG_ADES, TAG_FORM, -1);
+            mfile->pushChunk(TAG_ADES, TAG_FORM, -1);
             for ( __NC_STACK_ade *cur_ade = (__NC_STACK_ade *)base->ADES.head; cur_ade->next; cur_ade = (__NC_STACK_ade *)cur_ade->next )
             {
                 if ( !sub_4117F8(cur_ade->self, mfile) )
                     return 0;
             }
-            sub_413290(mfile);
+            mfile->popChunk();
         }
     }
 
     if ( base->KIDS.head->next )
     {
-        sub_412FC0(mfile, TAG_KIDS, TAG_FORM, -1);
+        mfile->pushChunk(TAG_KIDS, TAG_FORM, -1);
         for ( base_node *kid = (base_node *)base->KIDS.head; kid->next; kid = (base_node *)kid->next )
         {
             if ( !sub_4117F8(kid->self_full, mfile) )
                 return 0;
         }
-        sub_413290(mfile);
+        mfile->popChunk();
     }
 
-    return sub_413290(mfile) == 0;
+    return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
 
 void sub_430A38(base_1c_struct *s3d)
@@ -1805,9 +1805,9 @@ size_t NC_STACK_base::compatcall(int method_id, void *data)
     case 3:
         return (size_t)func3( (stack_vals *)data );
     case 5:
-        return (size_t)func5( (MFILE **)data );
+        return (size_t)func5( (IFFile **)data );
     case 6:
-        return (size_t)func6( (MFILE **)data );
+        return (size_t)func6( (IFFile **)data );
     case 64:
         return (size_t)base_func64( (base_64arg *)data );
     case 65:

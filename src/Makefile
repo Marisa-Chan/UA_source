@@ -43,7 +43,7 @@ OBJS =  \
 	lstvw.cpp\
 	main.cpp\
 	MC.cpp\
-	MFILE.cpp\
+	IFFile.cpp\
 	network.cpp\
 	nlist.cpp\
 	nucleas.cpp\

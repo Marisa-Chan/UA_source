@@ -52,8 +52,8 @@
 		</Compiler>
 		<Unit filename="MC.cpp" />
 		<Unit filename="MC.h" />
-		<Unit filename="MFILE.cpp" />
-		<Unit filename="MFILE.h" />
+		<Unit filename="IFFile.cpp" />
+		<Unit filename="IFFile.h" />
 		<Unit filename="ade.cpp" />
 		<Unit filename="ade.h" />
 		<Unit filename="amesh.cpp" />

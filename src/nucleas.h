@@ -5,7 +5,7 @@
 #undef min
 
 #include <list>
-#include "MFILE.h"
+#include "IFFile.h"
 
 class NC_STACK_nucleus;
 
@@ -97,8 +97,8 @@ public:
     virtual size_t func1(stack_vals *);
     virtual size_t func2(stack_vals *a3);
     virtual size_t func3(stack_vals *stk);
-    virtual size_t func5(MFILE **file);
-    virtual size_t func6(MFILE **val);
+    virtual size_t func5(IFFile **file);
+    virtual size_t func6(IFFile **file);
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_nucleus() {
@@ -146,8 +146,8 @@ stack_vals * find_id_in_stack2(unsigned int id, stack_vals *a2);
 size_t find_id_in_stack_def_val(unsigned int find_id, size_t def_value, stack_vals *a3);
 void *find_id_pval(unsigned int find_id, stack_vals *a3);
 
-NC_STACK_nucleus * READ_OBJT(MFILE *mfile);
-int sub_4117F8(NC_STACK_nucleus *obj, MFILE *mfile);
+NC_STACK_nucleus * READ_OBJT(IFFile *mfile);
+int sub_4117F8(NC_STACK_nucleus *obj, IFFile *mfile);
 
 struct NC_STACK_base;
 

@@ -185,8 +185,8 @@ public:
     virtual size_t func1(stack_vals *stak);
     virtual size_t func2(stack_vals *stak);
     virtual size_t func3(stack_vals *stak);
-    virtual size_t func5(MFILE **file);
-    virtual size_t func6(MFILE **file);
+    virtual size_t func5(IFFile **file);
+    virtual size_t func6(IFFile **file);
     virtual size_t base_func64(base_64arg *arg);
     virtual size_t base_func65(NC_STACK_base **kid);
     virtual size_t base_func66(base_66_arg_struct *prnt_info);

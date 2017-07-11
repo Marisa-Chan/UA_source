@@ -9,7 +9,7 @@
 const NewClassDescr NC_STACK_particle::description("particle.class", &newinstance);
 
 
-float flt_515208[1024] =
+static float particleRandomTable[1024] =
 {
     -1.0, -0.998028993607, 0.137834995985, 0.534349024296, -0.837260007858,
     0.304504007101, -0.426658987999, -0.646332025528, -0.39246699214, -0.915395021439,
@@ -218,14 +218,14 @@ float flt_515208[1024] =
     0.979997992516, -0.216608002782, -0.895137012005, -0.292237997055
 };
 
-int dword_516208 = 0;
+static int particleRandomIndex = 0;
 
-float sub_4BFE50()
+float particleRand()
 {
-    if (dword_516208 >= 1024)
-        dword_516208 = 0;
-    float tmp = flt_515208[dword_516208];
-    dword_516208++;
+    if (particleRandomIndex >= 1024)
+        particleRandomIndex = 0;
+    float tmp = particleRandomTable[particleRandomIndex];
+    particleRandomIndex++;
     return tmp;
 }
 
@@ -711,12 +711,12 @@ size_t NC_STACK_particle::func3(stack_vals *stak)
     return NC_STACK_ade::func3(stak);
 }
 
-int particle_func5__sub0(NC_STACK_particle *obj, __NC_STACK_particle *, MFILE *mfile)
+int particle_func5__sub0(NC_STACK_particle *obj, __NC_STACK_particle *, IFFile *mfile)
 {
     prtcl_att atts;
     if ( obj )
     {
-        mfread(mfile, &atts, sizeof(prtcl_att));
+        mfile->read(&atts, sizeof(prtcl_att)); //mfread
 
         atts.field_0 = SWAP16(atts.field_0);
         atts.field_2.fl0 = SWAP32F(atts.field_2.fl0);
@@ -769,9 +769,9 @@ int particle_func5__sub0(NC_STACK_particle *obj, __NC_STACK_particle *, MFILE *m
     return 1;
 }
 
-size_t NC_STACK_particle::func5(MFILE **file)
+size_t NC_STACK_particle::func5(IFFile **file)
 {
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
 
     int obj_ok = 0;
     __NC_STACK_particle *prtcl = NULL;
@@ -781,7 +781,7 @@ size_t NC_STACK_particle::func5(MFILE **file)
 
     while ( 1 )
     {
-        int iff_res = read_next_IFF(mfile, 2);
+        int iff_res = mfile->parse();
 
         if ( iff_res == -2 )
             break;
@@ -793,7 +793,7 @@ size_t NC_STACK_particle::func5(MFILE **file)
             return 0;
         }
 
-        MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
+        IFFile::Context *chunk = mfile->getCurrentChunk();
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ADE )
         {
@@ -811,7 +811,7 @@ size_t NC_STACK_particle::func5(MFILE **file)
                 func1(NULL);
                 return 0;
             }
-            read_next_IFF(mfile, 2);
+            mfile->parse();
         }
         else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
         {
@@ -825,7 +825,7 @@ size_t NC_STACK_particle::func5(MFILE **file)
         }
         else
         {
-            read_default(mfile);
+            mfile->skipChunk();
         }
     }
 
@@ -855,18 +855,18 @@ size_t NC_STACK_particle::func5(MFILE **file)
     return obj_ok;
 }
 
-size_t NC_STACK_particle::func6(MFILE **file)
+size_t NC_STACK_particle::func6(IFFile **file)
 {
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
     __NC_STACK_particle *prtcl = &stack__particle;
 
-    if ( sub_412FC0(mfile, TAG_PTCL, TAG_FORM, -1) != 0)
+    if ( mfile->pushChunk(TAG_PTCL, TAG_FORM, -1) != 0)
         return 0;
 
     if ( !NC_STACK_ade::func6(file) )
         return 0;
 
-    sub_412FC0(mfile, 0, TAG_ATTS, -1);
+    mfile->pushChunk(0, TAG_ATTS, -1);
 
     prtcl_att a1;
     a1.field_0 = SWAP16(1);
@@ -897,8 +897,8 @@ size_t NC_STACK_particle::func6(MFILE **file)
     a1.field_5A = prtcl->field_a0 * 10.0;
     a1.field_5A = SWAP32(a1.field_5A);
 
-    sub_413564(mfile, sizeof(prtcl_att), &a1);
-    sub_413290(mfile);
+    mfile->write(&a1, sizeof(prtcl_att));
+    mfile->popChunk();
 
     for (int i = 0; i < prtcl->ADEs_count; i++)
     {
@@ -907,7 +907,7 @@ size_t NC_STACK_particle::func6(MFILE **file)
                 return 0;
     }
 
-    return sub_413290(mfile) == 0;
+    return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
 
 void particle_func65__sub0__sub0(__NC_STACK_particle *prtcl, prtcl_tp *tp1, xyz *pos1, xyz *pos2, float a4)
@@ -927,9 +927,9 @@ void particle_func65__sub0__sub0(__NC_STACK_particle *prtcl, prtcl_tp *tp1, xyz 
             tp1->field_8 = tp1->tp2;
     }
 
-    float v12 = sub_4BFE50() + pos1->sx;
-    float v13 = sub_4BFE50() + pos1->sy;
-    float v14 = sub_4BFE50() + pos1->sz;
+    float v12 = particleRand() + pos1->sx;
+    float v13 = particleRand() + pos1->sy;
+    float v14 = particleRand() + pos1->sz;
     float v16 = sqrt(v12 * v12 + v13 * v13 + v14 * v14);
 
     prtcl_tp2 *v7 = tp1->field_C;
@@ -1134,9 +1134,9 @@ void particle_func65__sub0(__NC_STACK_particle *prtcl, prtcl_tp *tp1, area_arg_6
             v31->field_10 += b;
             v31->field_14 += c;
 
-            v31->field_0 += sub_4BFE50() * prtcl->field_a0 + v31->field_C  * v59;
-            v31->field_4 += sub_4BFE50() * prtcl->field_a0 + v31->field_10 * v59;
-            v31->field_8 += sub_4BFE50() * prtcl->field_a0 + v31->field_14 * v59;
+            v31->field_0 += particleRand() * prtcl->field_a0 + v31->field_C  * v59;
+            v31->field_4 += particleRand() * prtcl->field_a0 + v31->field_10 * v59;
+            v31->field_8 += particleRand() * prtcl->field_a0 + v31->field_14 * v59;
 
             particle_func65__sub0__sub1(prtcl, v31, arg, a3a, v30);
 
@@ -1557,9 +1557,9 @@ size_t NC_STACK_particle::compatcall(int method_id, void *data)
     case 3:
         return (size_t)func3( (stack_vals *)data );
     case 5:
-        return (size_t)func5( (MFILE **)data );
+        return (size_t)func5( (IFFile **)data );
     case 6:
-        return (size_t)func6( (MFILE **)data );
+        return (size_t)func6( (IFFile **)data );
     case 65:
         ade_func65( (area_arg_65 *)data );
         return 1;

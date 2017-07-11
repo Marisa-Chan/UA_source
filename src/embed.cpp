@@ -65,15 +65,15 @@ size_t NC_STACK_embed::func1(stack_vals *stak)
     return NC_STACK_nucleus::func1(stak);
 }
 
-size_t NC_STACK_embed::func5(MFILE **file)
+size_t NC_STACK_embed::func5(IFFile **file)
 {
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
     __NC_STACK_embed *embd = NULL;
     int obj_ok = 0;
 
     while ( 1 )
     {
-        int v5 = read_next_IFF(mfile, 2);
+        int v5 = mfile->parse();
 
         if ( v5 == -2 )
             break;
@@ -85,7 +85,7 @@ size_t NC_STACK_embed::func5(MFILE **file)
             return 0;
         }
 
-        MFILE_S1 *chunk = GET_FORM_INFO_OR_NULL(mfile);
+        IFFile::Context *chunk = mfile->getCurrentChunk();
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ROOT )
         {
@@ -101,8 +101,8 @@ size_t NC_STACK_embed::func5(MFILE **file)
         {
             char classname[256];
 
-            mfread(mfile, classname, 255);
-            read_next_IFF(mfile, 2);
+            mfile->read(classname, 255);
+            mfile->parse();
 
             stack_vals init_atts[4];
             init_atts[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, &classname[strlen(classname) + 1]);
@@ -122,19 +122,19 @@ size_t NC_STACK_embed::func5(MFILE **file)
         }
         else
         {
-            read_default(mfile);
+            mfile->skipChunk();
         }
 
     }
     return obj_ok;
 }
 
-size_t NC_STACK_embed::func6(MFILE **file)
+size_t NC_STACK_embed::func6(IFFile **file)
 {
-    MFILE *mfile = *file;
+    IFFile *mfile = *file;
     __NC_STACK_embed *embd = &stack__embed;
 
-    if ( sub_412FC0(mfile, TAG_EMBD, TAG_FORM, -1) )
+    if ( mfile->pushChunk(TAG_EMBD, TAG_FORM, -1) )
         return 0;
 
     if ( NC_STACK_nucleus::func6(file) )
@@ -152,16 +152,15 @@ size_t NC_STACK_embed::func6(MFILE **file)
                         NC_STACK_rsrc *embd_obj = node->objects[i];
                         if ( embd_obj )
                         {
-                            char v23 = 0;
                             const char *classname, *resname;
                             classname = embd_obj->getClassName();
                             resname = embd_obj->getRsrc_name();
 
-                            sub_412FC0(mfile, 0, TAG_EMRS, -1);
-                            sub_413564(mfile, strlen(classname) + 1, classname);
-                            sub_413564(mfile, strlen(resname) + 1, resname);
-                            sub_413564(mfile, 1, &v23);
-                            sub_413290(mfile);
+                            mfile->pushChunk(0, TAG_EMRS, -1);
+                            mfile->write(classname, strlen(classname) + 1);
+                            mfile->write(resname, strlen(resname) + 1);
+                            mfile->writeU8(0);
+                            mfile->popChunk();
 
                             rsrc_func66_arg arg66;
                             arg66.filename = NULL;
@@ -177,7 +176,7 @@ size_t NC_STACK_embed::func6(MFILE **file)
                 node = (embd_node *)node->next;
             }
         }
-        return sub_413290(mfile) == 0;
+        return mfile->popChunk() == IFFile::IFF_ERR_OK;
     }
     else
         return 0;
@@ -193,9 +192,9 @@ size_t NC_STACK_embed::compatcall(int method_id, void *data)
     case 1:
         return (size_t)func1( (stack_vals *)data );
     case 5:
-        return (size_t)func5( (MFILE **)data );
+        return (size_t)func5( (IFFile **)data );
     case 6:
-        return (size_t)func6( (MFILE **)data );
+        return (size_t)func6( (IFFile **)data );
     default:
         break;
     }
