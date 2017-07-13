@@ -22,28 +22,22 @@ struct clss_node: public nnode
     NC_STACK_nucleus *obj;
 };
 
-struct base_1c_struct
+struct TForm3D
 {
-    base_1c_struct *parent_1c;
-    xyz grp_1;
-    float field_10;
-    float field_14;
-    float field_18;
-    float grp3_p1;
-    float grp3_p2;
-    float grp3_p3;
-    float scale_x;
-    float scale_y;
-    float scale_z;
-    mat3x3 scale_rotation;
-    mat3x3 field_58;
-    int rot_x;
-    int rot_y;
-    int rot_z;
-    int grp5_p1;
-    int grp5_p2;
-    int grp5_p3;
-    int field_94;
+    TForm3D *parent_1c;
+    xyz locPos;
+    xyz globPos;
+    xyz vec;
+    xyz scale;
+    mat3x3 locSclRot;
+    mat3x3 globSclRot;
+    int32_t ax;
+    int32_t ay;
+    int32_t az;
+    int32_t rx;
+    int32_t ry;
+    int32_t rz;
+    uint32_t flags;
 };
 
 struct polysDat
@@ -60,64 +54,57 @@ struct polys
 
 struct area_arg_65
 {
-    int field_0;
+    int ownerID;
     polys *rndrSTK_cur;
     polysDat *argSTK_cur;
-    int field_C;
-    int field_10;
-    base_1c_struct *glob_1c;
-    base_1c_struct *base_1c;
+    int timeStamp;
+    int frameTime;
+    TForm3D *view;
+    TForm3D *owner;
     NC_STACK_skeleton *OBJ_SKELETON;
-    skeleton_64_stru *field_20;
-    float field_24;
-    float field_28;
-    float field_2C;
-    float field_30;
-    int field_34;
-    int field_38;
+    skeleton_64_stru *sklt;
+    float minZ;
+    float maxZ;
+    float fadeStart;
+    float fadeLength;
+    int ambientLight;
+    int adeCount;
 };
 
 struct __NC_STACK_base
 {
     int ID;
-    char flags;
-    char field_5;
-    char field_6;
-    char field_7;
-    int field_8;
+    uint32_t flags;
+    int timeStamp;
     NC_STACK_skeleton *OBJ_SKELETON;
     nlist ADES;
-    base_1c_struct params3D;
-    NC_STACK_base *parent_base;
-    NC_STACK_base *field_b8;
-    NC_STACK_base *field_bc;
+    TForm3D transform;
+    NC_STACK_base *parent;
+    NC_STACK_base *mainChild;
+    NC_STACK_base *mainObject;
     nlist KIDS;
     base_node kid_node;
-    int field_D8;
-    area_arg_65 field_DC;
+    int visLimit;
+    area_arg_65 renderMsg;
     NC_STACK_nucleus *OBJT;
 };
 
-struct __attribute__((packed)) STRC_base
+struct STRC_base
 {
-    int16_t p1;
-    xyz grp_1;
-    float grp3_p1;
-    float grp3_p2;
-    float grp3_p3;
-    float scale_x;
-    float scale_y;
-    float scale_z;
-    int16_t rot_x;
-    int16_t rot_y;
-    int16_t rot_z;
-    int16_t grp5_p1;
-    int16_t grp5_p2;
-    int16_t grp5_p3;
-    int16_t p17;
-    int16_t p18;
-    int p19;
-    int p20;
+    int16_t version;
+    xyz pos;
+    xyz vec;
+    xyz scale;
+    int16_t ax;
+    int16_t ay;
+    int16_t az;
+    int16_t rx;
+    int16_t ry;
+    int16_t rz;
+    int16_t attFlags;
+    int16_t _un1;
+    int32_t visLimit;
+    int32_t ambientLight;
 };
 
 struct flag_xyz
@@ -139,22 +126,22 @@ struct flag_xyz2
 struct base_66_arg_struct //Parent info struct
 {
     NC_STACK_base *parent;
-    base_1c_struct *parent_field_1c;
+    TForm3D *parent_field_1c;
     nlist *KIDS;
 };
 
 struct baseRender_msg
 {
-    int field_0;
-    int field_4;
+    int frameTime;
+    int globTime;
     polys *rndrSTK_cur;
     polysDat *argSTK_cur;
     polysDat *argSTK_end;
-    int field_14;
-    int field_18;
-    int field_1C;
-    float field_20;
-    float field_24;
+    int adeCount;
+    int adeMax;
+    int ownerID;
+    float minZ;
+    float maxZ;
 };
 
 
@@ -167,14 +154,14 @@ struct base_64arg
     int field_10;
 };
 
-void sub_430A20(base_1c_struct *s3d);
-base_1c_struct *sub_430A28();
-void sub_430A38(base_1c_struct *s3d);
+void sub_430A20(TForm3D *s3d);
+TForm3D *sub_430A28();
+void sub_430A38(TForm3D *s3d);
 
 struct vhclBases
 {
     NC_STACK_base *base;
-    base_1c_struct *trigo;
+    TForm3D *trigo;
 };
 
 
@@ -299,7 +286,7 @@ public:
     virtual float getBASE_sy();
     virtual float getBASE_sz();
     virtual nlist *getBASE_adeList();
-    virtual base_1c_struct *getBASE_pTransform();
+    virtual TForm3D *getBASE_pTransform();
     virtual nlist *getBASE_kidList();
     virtual base_node *getBASE_kidNode();
     virtual area_arg_65 *getBASE_renderParams();

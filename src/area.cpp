@@ -20,9 +20,9 @@ int NC_STACK_area::area_func0__sub0(stack_vals *stak)
 {
     stack_vals *stk = stak;
 
-    stack__area.field_c = 1;
-    stack__area.field_D = 0;
-    stack__area.field_E = 0;
+    stack__area.colorVal = 1;
+    stack__area.tracyVal = 0;
+    stack__area.shadeVal = 0;
     stack__area.polflags = 0;
 
     while ( 1 )
@@ -115,10 +115,10 @@ size_t NC_STACK_area::func1(stack_vals *stak)
 {
     __NC_STACK_area *area = &stack__area;
 
-    if ( area->ilbm1 )
-        delete_class_obj(area->ilbm1);
-    if ( area->ilbm2 )
-        delete_class_obj(area->ilbm2);
+    if ( area->texImg )
+        delete_class_obj(area->texImg);
+    if ( area->tracyImg )
+        delete_class_obj(area->tracyImg);
     return NC_STACK_ade::func1(stak);
 }
 
@@ -293,15 +293,22 @@ size_t NC_STACK_area::func3(stack_vals *stak)
 int NC_STACK_area::area_func5__sub0(IFFile *mfile)
 {
     AREA_STRC tmp;
-    mfile->read(&tmp, sizeof(AREA_STRC));//mfread(mfile, &tmp, sizeof(AREA_STRC));
-    tmp.field_0 = SWAP16(tmp.field_0);
-    tmp.field_2 = SWAP32(tmp.field_2);
-    tmp.field_6 = SWAP32(tmp.field_6);
 
-    if ( tmp.field_0 >= 1 )
+    mfile->readS16B(tmp.version);
+    mfile->readU16B(tmp.flags);
+    mfile->readU16B(tmp.polFlags);
+    mfile->readU8(tmp._un1);
+    mfile->readU8(tmp.clrVal);
+    mfile->readU8(tmp.trcVal);
+    mfile->readU8(tmp.shdVal);
+
+    if ( tmp.version >= 1 )
     {
-        setAREA_blob1(tmp.field_2);
-        setAREA_blob2(tmp.field_6);
+        stack__area.polflags = tmp.polFlags;
+        stack__area.flags = tmp.flags;
+        stack__area.colorVal = tmp.clrVal;
+        stack__area.tracyVal = tmp.trcVal;
+        stack__area.shadeVal = tmp.shdVal;
     }
 
     return 1;
@@ -329,7 +336,7 @@ int NC_STACK_area::area_func5__sub1(IFFile *mfile)
         }
         else if ( v8 == (AREA_POL_FLAG_TRACYMAPPED | AREA_POL_FLAG_TEXUTRED) )
         {
-            if ( stack__area.ilbm1 )
+            if ( stack__area.texImg )
             {
                 setAREA_tracybitm(objt);
             }
@@ -413,29 +420,28 @@ size_t NC_STACK_area::func6(IFFile **file)
 
     mfile->pushChunk(0, TAG_STRC, -1);
 
-    AREA_STRC tmp;
-    tmp.field_0 = 1;
-    tmp.field_2 = area->polflags | (area->field_8 << 16);
-    tmp.field_6 = area->field_E | (area->field_D << 8) | (area->field_c << 16);
+    mfile->writeS16B(1); // version
+    mfile->writeU16B(area->flags);
+    mfile->writeU16B(area->polflags);
+    mfile->writeU8(0);
+    mfile->writeU8(area->colorVal);
+    mfile->writeU8(area->tracyVal);
+    mfile->writeU8(area->shadeVal);
 
-    tmp.field_2 = SWAP32(tmp.field_2);
-    tmp.field_6 = SWAP32(tmp.field_6);
-
-    mfile->write(&tmp, sizeof(AREA_STRC));
     mfile->popChunk();
 
     if ( (area->polflags & AREA_POL_FLAG_TEXUTRED) )
     {
-        if ( !area->ilbm1 )
+        if ( !area->texImg )
             return 0;
-        if ( !sub_4117F8(area->ilbm1, mfile) )
+        if ( !sub_4117F8(area->texImg, mfile) )
             return 0;
     }
     if ( (area->polflags & AREA_POL_FLAG_TRACYMAPPED) == AREA_POL_FLAG_TRACYMAPPED )
     {
-        if ( !area->ilbm2 )
+        if ( !area->tracyImg )
             return 0;
-        if ( !sub_4117F8(area->ilbm2, mfile) )
+        if ( !sub_4117F8(area->tracyImg, mfile) )
             return 0;
     }
 
@@ -487,46 +493,46 @@ size_t NC_STACK_area::ade_func65(area_arg_65 *arg)
 
     skeleton_arg133 skel133;
 
-    skel133.field_0 = area->polnum;
+    skel133.polyID = area->polnum;
     skel133.field_4 = 0;
 
     if ( datSub->renderFlags & (NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_PERSPMAP ) )
         skel133.field_4 |= 1;
     if ( datSub->renderFlags & (NC_STACK_display::RSTR_RFLAGS_FLATSHD | NC_STACK_display::RSTR_RFLAGS_GRADSHD) )
         skel133.field_4 |= 2;
-    if ( area->field_8 & AREA_FLAG_DPTHFADE )
+    if ( area->flags & AREA_FLAG_DPTHFADE )
         skel133.field_4 |= 4;
 
     skel133.rndrArg = datSub;
-    skel133.field_10 = arg->field_24;
-    skel133.field_14 = arg->field_28;
-    skel133.field_18 = area->field_E / 256.0;
-    skel133.field_1C = arg->field_2C;
-    skel133.field_20 = arg->field_30;
+    skel133.field_10 = arg->minZ;
+    skel133.field_14 = arg->maxZ;
+    skel133.field_18 = area->shadeVal / 256.0;
+    skel133.field_1C = arg->fadeStart;
+    skel133.field_20 = arg->fadeLength;
 
-    if ( area->ilbm1 )
+    if ( area->texImg )
     {
         bitmap_arg130 bitm130;
 
-        bitm130.time_stmp = arg->field_C;
-        bitm130.frame_time = arg->field_10;
+        bitm130.time_stmp = arg->timeStamp;
+        bitm130.frame_time = arg->frameTime;
 
-        area->ilbm1->bitmap_func130(&bitm130);
+        area->texImg->bitmap_func130(&bitm130);
 
         datSub->pbitm = bitm130.pbitm;
-        skel133.field_C = bitm130.outline;
+        skel133.texCoords = bitm130.outline;
     }
     else
     {
         datSub->pbitm = NULL;
-        skel133.field_C = NULL;
+        skel133.texCoords = NULL;
     }
 
     polysDat *v19 = (polysDat *)arg->OBJ_SKELETON->skeleton_func133(&skel133);
 
     if ( v19 )
     {
-        arg->field_38++;
+        arg->adeCount++;
 
         if ( datSub->renderFlags & ( NC_STACK_display::RSTR_RFLAGS_FLATSHD | NC_STACK_display::RSTR_RFLAGS_GRADSHD ) )
         {
@@ -572,9 +578,9 @@ size_t NC_STACK_area::ade_func65(area_arg_65 *arg)
 void NC_STACK_area::setADE_depthFade(int mode)
 {
     if ( mode )
-        stack__area.field_8 |= AREA_FLAG_DPTHFADE;
+        stack__area.flags |= AREA_FLAG_DPTHFADE;
     else
-        stack__area.field_8 &= ~AREA_FLAG_DPTHFADE;
+        stack__area.flags &= ~AREA_FLAG_DPTHFADE;
 
     NC_STACK_ade::setADE_depthFade(mode);
 }
@@ -590,16 +596,16 @@ void NC_STACK_area::setAREA_bitm(NC_STACK_bitmap *bitm)
 {
     if ( bitm )
     {
-        if ( stack__area.ilbm1 != NULL )
-            delete_class_obj(stack__area.ilbm1);
+        if ( stack__area.texImg != NULL )
+            delete_class_obj(stack__area.texImg);
 
-        stack__area.ilbm1 = bitm;
+        stack__area.texImg = bitm;
     }
 }
 
 void NC_STACK_area::setAREA_colorVal(int val)
 {
-    stack__area.field_c = val;
+    stack__area.colorVal = val;
 }
 
 void NC_STACK_area::setAREA_map(int mode)
@@ -656,45 +662,45 @@ void NC_STACK_area::setAREA_tracybitm(NC_STACK_bitmap *bitm)
 {
     if ( bitm )
     {
-        if ( stack__area.ilbm2 != NULL )
-            delete_class_obj(stack__area.ilbm2);
+        if ( stack__area.tracyImg != NULL )
+            delete_class_obj(stack__area.tracyImg);
 
-        stack__area.ilbm2 = bitm;
+        stack__area.tracyImg = bitm;
     }
 }
 
 void NC_STACK_area::setAREA_shadeVal(int val)
 {
-    stack__area.field_E = val;
+    stack__area.shadeVal = val;
 }
 
 void NC_STACK_area::setAREA_tracyVal(int val)
 {
-    stack__area.field_D = val;
+    stack__area.tracyVal = val;
 }
 
 void NC_STACK_area::setAREA_blob1(uint32_t val)
 {
     stack__area.polflags = val & 0xFFFF;
-    stack__area.field_8 = val >> 16;
+    stack__area.flags = val >> 16;
 }
 
 void NC_STACK_area::setAREA_blob2(uint32_t val)
 {
-    stack__area.field_E = val & 0xFF;
-    stack__area.field_c = (val >> 16) & 0xFF;
-    stack__area.field_D = (val >> 8) & 0xFF;
+    stack__area.shadeVal = val & 0xFF;
+    stack__area.colorVal = (val >> 16) & 0xFF;
+    stack__area.tracyVal = (val >> 8) & 0xFF;
 }
 
 
 NC_STACK_bitmap *NC_STACK_area::getAREA_bitm()
 {
-    return stack__area.ilbm1;
+    return stack__area.texImg;
 }
 
 int NC_STACK_area::getAREA_colorVal()
 {
-    return stack__area.field_c;
+    return stack__area.colorVal;
 }
 
 int NC_STACK_area::getAREA_map()
@@ -765,17 +771,17 @@ int NC_STACK_area::getAREA_tracymode()
 
 NC_STACK_bitmap *NC_STACK_area::getAREA_tracybitm()
 {
-    return stack__area.ilbm2;
+    return stack__area.tracyImg;
 }
 
 int NC_STACK_area::getAREA_shadeVal()
 {
-    return stack__area.field_E;
+    return stack__area.shadeVal;
 }
 
 int NC_STACK_area::getAREA_tracyVal()
 {
-    return stack__area.field_D;
+    return stack__area.tracyVal;
 }
 
 

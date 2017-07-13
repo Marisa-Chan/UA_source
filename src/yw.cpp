@@ -1252,12 +1252,12 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             }
 
             mat3x3 *v57 = sb_0x424c74();
-            base_1c_struct *v58 = sub_430A28();
+            TForm3D *v58 = sub_430A28();
 
             mat3x3 dst;
-            mat_mult(v57, &v58->scale_rotation, &dst);
+            mat_mult(v57, &v58->locSclRot, &dst);
 
-            v58->scale_rotation = dst;
+            v58->locSclRot = dst;
 
             if ( yw->sceneRecorder->do_record )
                 recorder_write_frame(yw);
@@ -2291,7 +2291,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         memcpy(bact->destroyFX, vhcl->dest_fx, sizeof(bact->destroyFX));
 
         memset(bact->vp_fx_models, 0, sizeof(NC_STACK_base *) * 32);
-        memset(bact->vp_fx_tform, 0, sizeof(base_1c_struct *) * 32);
+        memset(bact->vp_fx_tform, 0, sizeof(TForm3D *) * 32);
 
         bact->scale_start = vhcl->scale_fx_p0;
         bact->scale_speed = vhcl->scale_fx_p1;
@@ -6981,8 +6981,8 @@ size_t NC_STACK_ypaworld::ypaworld_func162(const char *fname)
 
         if ( v13->TAG == TAG_SINF )
         {
-            repl->mfile->read(&repl->seqn, 2); //mfread
-            repl->mfile->read(&repl->level_id, 2); //mfread
+            repl->mfile->readU16L(repl->seqn);
+            repl->mfile->readU16L(repl->level_id);
             repl->mfile->parse();
         }
         else if ( v13->TAG != TAG_FORM || v13->TAG_EXTENSION != TAG_FRAM )
@@ -7098,17 +7098,17 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
     while ( bct->next )
     {
-        bct->bact->tForm.grp_1 = bct->bact->position;
+        bct->bact->tForm.locPos = bct->bact->position;
 
-        bct->bact->tForm.scale_rotation.m00 = bct->bact->rotation.m00;
-        bct->bact->tForm.scale_rotation.m01 = bct->bact->rotation.m10;
-        bct->bact->tForm.scale_rotation.m02 = bct->bact->rotation.m20;
-        bct->bact->tForm.scale_rotation.m10 = bct->bact->rotation.m01;
-        bct->bact->tForm.scale_rotation.m11 = bct->bact->rotation.m11;
-        bct->bact->tForm.scale_rotation.m12 = bct->bact->rotation.m21;
-        bct->bact->tForm.scale_rotation.m20 = bct->bact->rotation.m02;
-        bct->bact->tForm.scale_rotation.m21 = bct->bact->rotation.m12;
-        bct->bact->tForm.scale_rotation.m22 = bct->bact->rotation.m22;
+        bct->bact->tForm.locSclRot.m00 = bct->bact->rotation.m00;
+        bct->bact->tForm.locSclRot.m01 = bct->bact->rotation.m10;
+        bct->bact->tForm.locSclRot.m02 = bct->bact->rotation.m20;
+        bct->bact->tForm.locSclRot.m10 = bct->bact->rotation.m01;
+        bct->bact->tForm.locSclRot.m11 = bct->bact->rotation.m11;
+        bct->bact->tForm.locSclRot.m12 = bct->bact->rotation.m21;
+        bct->bact->tForm.locSclRot.m20 = bct->bact->rotation.m02;
+        bct->bact->tForm.locSclRot.m21 = bct->bact->rotation.m12;
+        bct->bact->tForm.locSclRot.m22 = bct->bact->rotation.m22;
 
         bct->bact->soundcarrier.field_0 = bct->bact->position;
 
@@ -7122,12 +7122,12 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
     }
 
     mat3x3 *v25 = sb_0x424c74();
-    base_1c_struct *v26 = sub_430A28();
+    TForm3D *v26 = sub_430A28();
 
     mat3x3 v31;
-    mat_mult(v25, &v26->scale_rotation, &v31);
+    mat_mult(v25, &v26->locSclRot, &v31);
 
-    v26->scale_rotation = v31;
+    v26->locSclRot = v31;
 
     uint32_t v28 = profiler_begin();
 

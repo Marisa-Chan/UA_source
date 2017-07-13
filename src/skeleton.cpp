@@ -174,13 +174,10 @@ size_t NC_STACK_skeleton::rsrc_func65(rsrc **pres)
             nc_FreeMem(sklt->POO);
 
         if ( sklt->pol_entries )
-            nc_FreeMem(sklt->pol_entries);
+            delete sklt->pol_entries;
 
         if ( sklt->sen_entries )
             nc_FreeMem(sklt->sen_entries);
-
-        if ( sklt->triangles )
-            nc_FreeMem(sklt->triangles);
 
         if ( sklt->type2 )
             nc_FreeMem(sklt->type2);
@@ -214,23 +211,12 @@ size_t NC_STACK_skeleton::skeleton_func130(skeleton_130_arg *arg)
 {
     skeleton_64_stru *sklt = arg->skeleton;
 
-    //sizeof(pol_indixes **) * arg->pol_count
-    // it's pointers part for easy access
-    //2 * (arg->pol_count + arg->num_indexes)
-    // it's data part, and it's contain variable sized pol_indixes struct (variable number of indexes)
-    sklt->pol_entries = (pol_indixes **)AllocVec(sizeof(pol_indixes **) * arg->pol_count + 2 * (arg->pol_count + arg->num_indexes), 65537);
+    sklt->pol_entries = new Polygon[arg->pol_count];
 
     if (!sklt->pol_entries)
         return 0;
 
-    sklt->pol_entries[0] = (pol_indixes *)&sklt->pol_entries[arg->pol_count]; //First pointer element was pointed to data part
-
     sklt->pol_count = arg->pol_count;
-
-    sklt->triangles = (pol_entries2 *)AllocVec(sizeof(pol_entries2) * arg->pol_count, 65537);
-
-    if (!sklt->triangles)
-        return 0;
 
     return 1;
 }
@@ -243,19 +229,19 @@ size_t NC_STACK_skeleton::skeleton_func131(int *arg)
 
     if ( sklt )
     {
-        pol_indixes *pol = sklt->pol_entries[vtxid];
+        Polygon *pol = &sklt->pol_entries[vtxid];
         if ( pol->num_vertices >= 3 )
         {
             skeleton_type1 *POO = sklt->POO;
 
-            float dx1 = POO[pol->v2].pos3f.sx - POO[pol->v1].pos3f.sx;
-            float dy1 = POO[pol->v2].pos3f.sy - POO[pol->v1].pos3f.sy;
-            float dz1 = POO[pol->v2].pos3f.sz - POO[pol->v1].pos3f.sz;
+            float dx1 = POO[pol->v[1]].sx - POO[pol->v[0]].sx;
+            float dy1 = POO[pol->v[1]].sy - POO[pol->v[0]].sy;
+            float dz1 = POO[pol->v[1]].sz - POO[pol->v[0]].sz;
 
 
-            float dx2 = POO[pol->v3].pos3f.sx - POO[pol->v2].pos3f.sx;
-            float dy2 = POO[pol->v3].pos3f.sy - POO[pol->v2].pos3f.sy;
-            float dz2 = POO[pol->v3].pos3f.sz - POO[pol->v2].pos3f.sz;
+            float dx2 = POO[pol->v[2]].sx - POO[pol->v[1]].sx;
+            float dy2 = POO[pol->v[2]].sy - POO[pol->v[1]].sy;
+            float dz2 = POO[pol->v[2]].sz - POO[pol->v[1]].sz;
 
             float zx = dz1 * dx2 - dx1 * dz2;
             float zy = dy1 * dz2 - dy2 * dz1;
@@ -274,17 +260,17 @@ size_t NC_STACK_skeleton::skeleton_func131(int *arg)
                 dxy = xy / sqwr;
             }
 
-            sklt->triangles[vtxid].field_0 = dzy;
-            sklt->triangles[vtxid].field_4 = dzx;
-            sklt->triangles[vtxid].field_8 = dxy;
-            sklt->triangles[vtxid].field_C = -(dzy * POO[pol->v1].pos3f.sx + dzx * POO[pol->v1].pos3f.sy + dxy * POO[pol->v1].pos3f.sz);
+            sklt->pol_entries[vtxid].A = dzy;
+            sklt->pol_entries[vtxid].B = dzx;
+            sklt->pol_entries[vtxid].C = dxy;
+            sklt->pol_entries[vtxid].D = -(dzy * POO[pol->v[0]].sx + dzx * POO[pol->v[0]].sy + dxy * POO[pol->v[0]].sz);
         }
         else
         {
-            sklt->triangles[vtxid].field_0 = 0;
-            sklt->triangles[vtxid].field_4 = 0;
-            sklt->triangles[vtxid].field_8 = 0;
-            sklt->triangles[vtxid].field_C = 0;
+            sklt->pol_entries[vtxid].A = 0;
+            sklt->pol_entries[vtxid].B = 0;
+            sklt->pol_entries[vtxid].C = 0;
+            sklt->pol_entries[vtxid].D = 0;
         }
     }
 
@@ -294,8 +280,8 @@ size_t NC_STACK_skeleton::skeleton_func131(int *arg)
 
 int sub_428D5C(skeleton_arg_132 *arg, skeleton_type1 *in, skeleton_type1 *out, int num)
 {
-    base_1c_struct *glob_1c = arg->glob_1c;
-    base_1c_struct *base_1c = arg->base_1c;
+    TForm3D *glob_1c = arg->glob_1c;
+    TForm3D *base_1c = arg->base_1c;
 
     uint32_t flag = 0xFFFFFFFF;
 
@@ -306,13 +292,13 @@ int sub_428D5C(skeleton_arg_132 *arg, skeleton_type1 *in, skeleton_type1 *out, i
 
         for(int i = 0; i < num; i++)
         {
-            float v_x = vtx_in->pos3f.sx;
-            float v_y = vtx_in->pos3f.sy;
-            float v_z = vtx_in->pos3f.sz;
+            float v_x = vtx_in->sx;
+            float v_y = vtx_in->sy;
+            float v_z = vtx_in->sz;
 
             float _v_x, _v_y, _v_z;
 
-            if ( base_1c->field_94 & 2 )
+            if ( base_1c->flags & 2 )
             {
                 _v_y = v_y;
                 _v_x = v_x;
@@ -320,20 +306,20 @@ int sub_428D5C(skeleton_arg_132 *arg, skeleton_type1 *in, skeleton_type1 *out, i
             }
             else
             {
-                _v_x = base_1c->field_58.m00 * v_x + base_1c->field_58.m01 * v_y + base_1c->field_58.m02 * v_z;
-                _v_y = base_1c->field_58.m10 * v_x + base_1c->field_58.m11 * v_y + base_1c->field_58.m12 * v_z;
-                _v_z = base_1c->field_58.m20 * v_x + base_1c->field_58.m21 * v_y + base_1c->field_58.m22 * v_z;
+                _v_x = base_1c->globSclRot.m00 * v_x + base_1c->globSclRot.m01 * v_y + base_1c->globSclRot.m02 * v_z;
+                _v_y = base_1c->globSclRot.m10 * v_x + base_1c->globSclRot.m11 * v_y + base_1c->globSclRot.m12 * v_z;
+                _v_z = base_1c->globSclRot.m20 * v_x + base_1c->globSclRot.m21 * v_y + base_1c->globSclRot.m22 * v_z;
             }
 
-            float tx = _v_x + base_1c->field_10 - glob_1c->field_10;
-            float ty = _v_y + base_1c->field_14 - glob_1c->field_14;
-            float tz = _v_z + base_1c->field_18 - glob_1c->field_18;
+            float tx = _v_x + base_1c->globPos.sx - glob_1c->globPos.sx;
+            float ty = _v_y + base_1c->globPos.sy - glob_1c->globPos.sy;
+            float tz = _v_z + base_1c->globPos.sz - glob_1c->globPos.sz;
 
             int tflag = 0;
 
-            float sx = glob_1c->field_58.m00 * tx + glob_1c->field_58.m01 * ty + glob_1c->field_58.m02 * tz;
-            float sy = glob_1c->field_58.m10 * tx + glob_1c->field_58.m11 * ty + glob_1c->field_58.m12 * tz;
-            float sz = glob_1c->field_58.m20 * tx + glob_1c->field_58.m21 * ty + glob_1c->field_58.m22 * tz;
+            float sx = glob_1c->globSclRot.m00 * tx + glob_1c->globSclRot.m01 * ty + glob_1c->globSclRot.m02 * tz;
+            float sy = glob_1c->globSclRot.m10 * tx + glob_1c->globSclRot.m11 * ty + glob_1c->globSclRot.m12 * tz;
+            float sz = glob_1c->globSclRot.m20 * tx + glob_1c->globSclRot.m21 * ty + glob_1c->globSclRot.m22 * tz;
 
             if ( sz >= arg->field_8 )
             {
@@ -354,10 +340,10 @@ int sub_428D5C(skeleton_arg_132 *arg, skeleton_type1 *in, skeleton_type1 *out, i
 
             flag &= tflag;
 
-            out_vertex->field_0 = tflag;
-            out_vertex->pos3f.sx = sx;
-            out_vertex->pos3f.sy = sy;
-            out_vertex->pos3f.sz = sz;
+            out_vertex->flags = tflag;
+            out_vertex->sx = sx;
+            out_vertex->sy = sy;
+            out_vertex->sz = sz;
 
             vtx_in++;
             out_vertex++;
@@ -391,72 +377,72 @@ int dword_5151C4;
 void sub_4BE1C4(skeleton_intern133 *arg, skeleton_type1 *skt1, skeleton_type1 *skt2, tUtV *uv1, tUtV *uv2, skeleton_type1 *outskt, tUtV *outuv)
 {
     int flag = arg->field_10;
-    float sy = skt2->pos3f.sy - skt1->pos3f.sy;
-    float sz = skt2->pos3f.sz - skt1->pos3f.sz;
-    float sx = skt2->pos3f.sx - skt1->pos3f.sx;
+    float sy = skt2->sy - skt1->sy;
+    float sz = skt2->sz - skt1->sz;
+    float sx = skt2->sx - skt1->sx;
 
     float tmp = 1.0;
 
     if (flag == 1)
     {
-        tmp = (skt1->pos3f.sx + skt1->pos3f.sz) / (-sx - sz);
-        outskt->pos3f.sx = sx * tmp + skt1->pos3f.sx;
-        outskt->pos3f.sy = sy * tmp + skt1->pos3f.sy;
-        outskt->pos3f.sz = -outskt->pos3f.sx;
+        tmp = (skt1->sx + skt1->sz) / (-sx - sz);
+        outskt->sx = sx * tmp + skt1->sx;
+        outskt->sy = sy * tmp + skt1->sy;
+        outskt->sz = -outskt->sx;
     }
     else if (flag == 2)
     {
-        tmp = (skt1->pos3f.sx - skt1->pos3f.sz) / (sz - sx);
-        outskt->pos3f.sx = sx * tmp + skt1->pos3f.sx;
-        outskt->pos3f.sz = sx * tmp + skt1->pos3f.sx;
-        outskt->pos3f.sy = sy * tmp + skt1->pos3f.sy;
+        tmp = (skt1->sx - skt1->sz) / (sz - sx);
+        outskt->sx = sx * tmp + skt1->sx;
+        outskt->sz = sx * tmp + skt1->sx;
+        outskt->sy = sy * tmp + skt1->sy;
     }
     else if (flag == 4)
     {
-        tmp = (skt1->pos3f.sy + skt1->pos3f.sz) / (-sy - sz);
-        outskt->pos3f.sx = tmp * sx + skt1->pos3f.sx;
-        outskt->pos3f.sy = sy * tmp + skt1->pos3f.sy;
-        outskt->pos3f.sz = -(sy * tmp + skt1->pos3f.sy);
+        tmp = (skt1->sy + skt1->sz) / (-sy - sz);
+        outskt->sx = tmp * sx + skt1->sx;
+        outskt->sy = sy * tmp + skt1->sy;
+        outskt->sz = -(sy * tmp + skt1->sy);
     }
     else if (flag == 8)
     {
-        tmp = (skt1->pos3f.sy - skt1->pos3f.sz) / (sz - sy);
-        outskt->pos3f.sx = tmp * sx + skt1->pos3f.sx;
-        outskt->pos3f.sy = sy * tmp + skt1->pos3f.sy;
-        outskt->pos3f.sz = sy * tmp + skt1->pos3f.sy;
+        tmp = (skt1->sy - skt1->sz) / (sz - sy);
+        outskt->sx = tmp * sx + skt1->sx;
+        outskt->sy = sy * tmp + skt1->sy;
+        outskt->sz = sy * tmp + skt1->sy;
     }
     else if (flag == 16)
     {
-        tmp = (arg->field_14 - skt1->pos3f.sz) / sz;
-        outskt->pos3f.sx = tmp * sx + skt1->pos3f.sx;
-        outskt->pos3f.sy = tmp * sy + skt1->pos3f.sy;
-        outskt->pos3f.sz = arg->field_14;
+        tmp = (arg->field_14 - skt1->sz) / sz;
+        outskt->sx = tmp * sx + skt1->sx;
+        outskt->sy = tmp * sy + skt1->sy;
+        outskt->sz = arg->field_14;
     }
     else if (flag == 32)
     {
-        tmp = (arg->field_18 - skt1->pos3f.sz) / sz;
-        outskt->pos3f.sx = tmp * sx + skt1->pos3f.sx;
-        outskt->pos3f.sy = tmp * sy + skt1->pos3f.sy;
-        outskt->pos3f.sz = arg->field_18;
+        tmp = (arg->field_18 - skt1->sz) / sz;
+        outskt->sx = tmp * sx + skt1->sx;
+        outskt->sy = tmp * sy + skt1->sy;
+        outskt->sz = arg->field_18;
     }
 
     int tmpflag = 0;
 
-    if ( outskt->pos3f.sz > arg->field_18 )
+    if ( outskt->sz > arg->field_18 )
         tmpflag = 32;
-    else if ( outskt->pos3f.sz < arg->field_18 )
+    else if ( outskt->sz < arg->field_18 )
         tmpflag = 16;
 
-    if ( outskt->pos3f.sx > outskt->pos3f.sz )
+    if ( outskt->sx > outskt->sz )
         tmpflag |= 2;
-    if ( outskt->pos3f.sx < -outskt->pos3f.sz )
+    if ( outskt->sx < -outskt->sz )
         tmpflag |= 1;
-    if ( outskt->pos3f.sy > outskt->pos3f.sz )
+    if ( outskt->sy > outskt->sz )
         tmpflag |= 8;
-    if ( outskt->pos3f.sy < -outskt->pos3f.sz )
+    if ( outskt->sy < -outskt->sz )
         tmpflag |= 4;
 
-    outskt->field_0 = tmpflag;
+    outskt->flags = tmpflag;
 
     if ( dword_5151C4 )
     {
@@ -477,17 +463,17 @@ void skeleton_func133__sub1__sub0(skeleton_intern133_sb *arg)
 
     while ( 1 )
     {
-        int flg1 = skt1->field_0;
+        int flg1 = skt1->flags;
 
-        if ( skt1->field_0 < 0 )
+        if ( skt1->flags < 0 )
             break;
 
-        int flg2 = skt2->field_0;
-        if ( skt2->field_0 < 0 )
+        int flg2 = skt2->flags;
+        if ( skt2->flags < 0 )
         {
             skt2 = arg->intern133.skt1;
             uv2 = arg->intern133.uv1;
-            flg2 = arg->intern133.skt1->field_0;
+            flg2 = arg->intern133.skt1->flags;
         }
 
         int flg3 = arg->intern133.field_10;
@@ -531,7 +517,7 @@ void skeleton_func133__sub1__sub0(skeleton_intern133_sb *arg)
         skt1++;
         skt2++;
     }
-    skt3->field_0 = 0x80000000;
+    skt3->flags = 0x80000000;
 }
 
 skeleton_type1 stru_5B1210[6][32];
@@ -576,38 +562,38 @@ void skeleton_func133__sub1(skeleton_intern133 *arg)
     }
 }
 
-int skeleton_func133__sub0(skeleton_type1 *skt, skeleton_type1 *out, pol_indixes *pol)
+int skeleton_func133__sub0(skeleton_type1 *skt, skeleton_type1 *out, Polygon *pol)
 {
     uint16_t v4 = 0xFFFF;
-    int16_t *p_cur_vertex = &pol->v1;
+    int16_t *p_cur_vertex = pol->v;
     int v7 = 0;
 
     skeleton_type1 *skt_out = out;
 
     for (int i = 0; i < pol->num_vertices; i++)
     {
-        *skt_out = skt[*p_cur_vertex];
+        *skt_out = skt[ pol->v[i] ];
 
-        v7 |= skt_out->field_0;
-        v4 &= skt_out->field_0;
+        v7 |= skt_out->flags;
+        v4 &= skt_out->flags;
         skt_out++;
         p_cur_vertex++;
     }
 
-    skt_out->field_0 = 0x80000000;
+    skt_out->flags = 0x80000000;
 
     if ( pol->num_vertices > 2 && !v4 )
     {
-        float sy  = out[1].pos3f.sy - out[0].pos3f.sy;
-        float sz2 = out[2].pos3f.sz - out[1].pos3f.sz;
-        float sz  = out[1].pos3f.sz - out[0].pos3f.sz;
-        float sx2 = out[2].pos3f.sx - out[1].pos3f.sx;
-        float sx  = out[1].pos3f.sx - out[0].pos3f.sx;
-        float sy2 = out[2].pos3f.sy - out[1].pos3f.sy;
+        float sy  = out[1].sy - out[0].sy;
+        float sz2 = out[2].sz - out[1].sz;
+        float sz  = out[1].sz - out[0].sz;
+        float sx2 = out[2].sx - out[1].sx;
+        float sx  = out[1].sx - out[0].sx;
+        float sy2 = out[2].sy - out[1].sy;
 
-        if ( (sy * sz2 - sy2 * sz) * out->pos3f.sx +
-                (sz * sx2 - sz2 * sx) * out->pos3f.sy +
-                (sx * sy2 - sx2 * sy) * out->pos3f.sz < 0.0 )
+        if ( (sy * sz2 - sy2 * sz) * out->sx +
+                (sz * sx2 - sz2 * sx) * out->sy +
+                (sx * sy2 - sx2 * sy) * out->sz < 0.0 )
             v4 |= 0x8000;
     }
     return v7 | (v4 << 16);
@@ -623,7 +609,7 @@ void * NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
     skeleton_type1 tmp_sklt2[12];
     tUtV tmp_uv[12];
 
-    int flg = skeleton_func133__sub0(sklt->type2, tmp_sklt, sklt->pol_entries[arg->field_0]);
+    int flg = skeleton_func133__sub0(sklt->type2, tmp_sklt, &sklt->pol_entries[arg->polyID]);
 
     tUtV *puv;
     skeleton_type1 *pskt;
@@ -637,7 +623,7 @@ void * NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
 
         prms.skt1 = tmp_sklt;
         prms.skt2 = tmp_sklt2;
-        prms.uv1 = arg->field_C;
+        prms.uv1 = arg->texCoords;
         prms.field_10 = flg & 0x3F;
         prms.uv2 = tmp_uv;
         prms.field_14 = arg->field_10;
@@ -651,17 +637,17 @@ void * NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
     else
     {
         pskt = tmp_sklt;
-        puv = arg->field_C;
+        puv = arg->texCoords;
     }
 
     skeleton_type1 *tpskt = pskt;
 
     int i = 0;
-    for ( i = 0; tpskt->field_0 >= 0; i++ )
+    for ( i = 0; tpskt->flags >= 0; i++ )
     {
-        arg->rndrArg->vertexes[i].sx = tpskt->pos3f.sx / tpskt->pos3f.sz;
-        arg->rndrArg->vertexes[i].sy = tpskt->pos3f.sy / tpskt->pos3f.sz;
-        arg->rndrArg->vertexes[i].sz = tpskt->pos3f.sz;
+        arg->rndrArg->vertexes[i].sx = tpskt->sx / tpskt->sz;
+        arg->rndrArg->vertexes[i].sy = tpskt->sy / tpskt->sz;
+        arg->rndrArg->vertexes[i].sz = tpskt->sz;
         tpskt++;
     }
 
@@ -693,7 +679,7 @@ void * NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
             tpskt = pskt;
             for ( k = 0; k < arg->rndrArg->vertexCount; k++ )
             {
-                float sq = tpskt->pos3f.sx * tpskt->pos3f.sx + tpskt->pos3f.sy * tpskt->pos3f.sy + tpskt->pos3f.sz * tpskt->pos3f.sz;
+                float sq = tpskt->sx * tpskt->sx + tpskt->sy * tpskt->sy + tpskt->sz * tpskt->sz;
 
                 if ( sq < 0.0 )
                     sq = 0.0;

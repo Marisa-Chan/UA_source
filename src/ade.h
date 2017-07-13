@@ -6,14 +6,14 @@
 
 class NC_STACK_ade;
 
-struct __attribute__((packed)) ADE_STRC
+struct ADE_STRC
 {
-    int16_t field_0;
-    int8_t field_2;
-    int8_t field_3;
-    int16_t field_4;
-    int16_t field_6;
-    int16_t field_8;
+    int16_t version;
+    int8_t _nu1; // Not used
+    int8_t flags;
+    int16_t point;
+    int16_t poly;
+    int16_t _nu2; // Not used
 };
 
 
@@ -21,9 +21,8 @@ struct __NC_STACK_ade : public nnode
 {
     NC_STACK_ade *self;
     char flags;
-    char field_D;
-    int16_t strc_f4;
-    int16_t strc_f6;
+    int16_t point;
+    int16_t poly;
 };
 
 class NC_STACK_ade: public NC_STACK_nucleus

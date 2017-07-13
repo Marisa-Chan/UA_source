@@ -229,21 +229,21 @@ float particleRand()
     return tmp;
 }
 
-void particle_recalc(__NC_STACK_particle *prtcl)
+void particle_recalc(NC_STACK_particle::__NC_STACK_particle *prtcl)
 {
     float v15 = prtcl->field_a8;
 
-    prtcl->field_54 = (prtcl->field_3c.flC  - prtcl->field_3c.fl0) / v15;
-    prtcl->field_58 = (prtcl->field_3c.fl10 - prtcl->field_3c.fl4) / v15;
-    prtcl->field_5c = (prtcl->field_3c.fl14 - prtcl->field_3c.fl8) / v15;
+    prtcl->field_54 = (prtcl->field_3c.end.sx  - prtcl->field_3c.start.sx) / v15;
+    prtcl->field_58 = (prtcl->field_3c.end.sy - prtcl->field_3c.start.sy) / v15;
+    prtcl->field_5c = (prtcl->field_3c.end.sz - prtcl->field_3c.start.sz) / v15;
 
-    prtcl->field_78 = (prtcl->field_60.flC  - prtcl->field_60.fl0) / v15;
-    prtcl->field_7c = (prtcl->field_60.fl10 - prtcl->field_60.fl4) / v15;
-    prtcl->field_80 = (prtcl->field_60.fl14 - prtcl->field_60.fl8) / v15;
+    prtcl->field_78 = (prtcl->field_60.end.sx  - prtcl->field_60.start.sx) / v15;
+    prtcl->field_7c = (prtcl->field_60.end.sy - prtcl->field_60.start.sy) / v15;
+    prtcl->field_80 = (prtcl->field_60.end.sz - prtcl->field_60.start.sz) / v15;
 }
 
 
-int sub_41A8D0(__NC_STACK_particle *prtcl)
+int sub_41A8D0(NC_STACK_particle::__NC_STACK_particle *prtcl)
 {
     stack_vals init_vals[6];
     init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "particle_sklt");
@@ -261,19 +261,18 @@ int sub_41A8D0(__NC_STACK_particle *prtcl)
 
     prtcl->particle_sklt_intern = prtcl->particle_sklt->getSKEL_pSkelet();
 
-    pol_indixes *v3 = *prtcl->particle_sklt_intern->pol_entries;
+    Polygon *v3 = prtcl->particle_sklt_intern->pol_entries;
 
-    v3->num_vertices = 4;
-    int16_t *vtx = &v3->v1;
-    vtx[0] = 1;
-    vtx[1] = 2;
-    vtx[2] = 3;
-    vtx[3] = 4;
+    v3[0].num_vertices = 4;
+    v3[0].v[0] = 1;
+    v3[0].v[1] = 2;
+    v3[0].v[2] = 3;
+    v3[0].v[3] = 4;
 
     return 1;
 }
 
-void sub_41AB50(__NC_STACK_particle *prtcl)
+void sub_41AB50(NC_STACK_particle::__NC_STACK_particle *prtcl)
 {
     int v3 = (prtcl->field_8 & 1) != 0;
     if (prtcl->ADEs_count)
@@ -291,7 +290,7 @@ void sub_41AB50(__NC_STACK_particle *prtcl)
     }
 }
 
-void sub_41ABBC(__NC_STACK_particle *prtcl, NC_STACK_ade **areas)
+void sub_41ABBC(NC_STACK_particle::__NC_STACK_particle *prtcl, NC_STACK_ade **areas)
 {
     for (int i = 0; i < prtcl->ADEs_count; i++)
     {
@@ -417,11 +416,11 @@ int NC_STACK_particle::particle_func0__sub0(stack_vals *stak)
     return 1;
 }
 
-int sub_41A954(__NC_STACK_particle *prtcl)
+int sub_41A954(NC_STACK_particle::__NC_STACK_particle *prtcl)
 {
     if (prtcl->tp1)
     {
-        prtcl_tp *tmp = prtcl->tp1;
+        NC_STACK_particle::Context *tmp = prtcl->tp1;
         while( tmp < prtcl->tp1_end )
         {
             if (tmp->tp2)
@@ -444,7 +443,7 @@ int sub_41A954(__NC_STACK_particle *prtcl)
     if ( !prtcl->tp1_cnt || v7 < 2 )
         return 0;
 
-    prtcl->tp1 = (prtcl_tp *)AllocVec(sizeof(prtcl_tp) * prtcl->tp1_cnt, 65537);
+    prtcl->tp1 = (NC_STACK_particle::Context *)AllocVec(sizeof(NC_STACK_particle::Context) * prtcl->tp1_cnt, 65537);
     if ( !prtcl->tp1 )
         return 0;
 
@@ -453,7 +452,7 @@ int sub_41A954(__NC_STACK_particle *prtcl)
     {
         for (int i = 0; i < prtcl->tp1_cnt; i++)
         {
-            prtcl->tp1[i].tp2 = (prtcl_tp2 *)AllocVec(sizeof(prtcl_tp2) * v7, 65537);
+            prtcl->tp1[i].tp2 = (NC_STACK_particle::Particle *)AllocVec(sizeof(NC_STACK_particle::Particle) * v7, 65537);
             if ( prtcl->tp1[i].tp2 )
             {
                 prtcl->tp1[i].tp2_end = &prtcl->tp1[i].tp2[v7];
@@ -711,58 +710,56 @@ size_t NC_STACK_particle::func3(stack_vals *stak)
     return NC_STACK_ade::func3(stak);
 }
 
-int particle_func5__sub0(NC_STACK_particle *obj, __NC_STACK_particle *, IFFile *mfile)
+int particle_func5__sub0(NC_STACK_particle *obj, NC_STACK_particle::__NC_STACK_particle *, IFFile *mfile)
 {
     prtcl_att atts;
     if ( obj )
     {
-        mfile->read(&atts, sizeof(prtcl_att)); //mfread
+        mfile->readS16B(atts.version);
+        mfile->readFloatB(atts.accel.start.sx);
+        mfile->readFloatB(atts.accel.start.sy);
+        mfile->readFloatB(atts.accel.start.sz);
+        mfile->readFloatB(atts.accel.end.sx);
+        mfile->readFloatB(atts.accel.end.sy);
+        mfile->readFloatB(atts.accel.end.sz);
+        mfile->readFloatB(atts.magnify.start.sx);
+        mfile->readFloatB(atts.magnify.start.sy);
+        mfile->readFloatB(atts.magnify.start.sz);
+        mfile->readFloatB(atts.magnify.end.sx);
+        mfile->readFloatB(atts.magnify.end.sy);
+        mfile->readFloatB(atts.magnify.end.sz);
+        mfile->readS32B(atts.collide);
+        mfile->readS32B(atts.startSpeed);
+        mfile->readS32B(atts.contextNumber);
+        mfile->readS32B(atts.contextLifeTime);
+        mfile->readS32B(atts.contextStartGen);
+        mfile->readS32B(atts.contextStopGen);
+        mfile->readS32B(atts.genRate);
+        mfile->readS32B(atts.lifeTime);
+        mfile->readS32B(atts.startSize);
+        mfile->readS32B(atts.endSize);
+        mfile->readS32B(atts.noise);
 
-        atts.field_0 = SWAP16(atts.field_0);
-        atts.field_2.fl0 = SWAP32F(atts.field_2.fl0);
-        atts.field_2.fl4 = SWAP32F(atts.field_2.fl4);
-        atts.field_2.fl8 = SWAP32F(atts.field_2.fl8);
-        atts.field_2.flC = SWAP32F(atts.field_2.flC);
-        atts.field_2.fl10 = SWAP32F(atts.field_2.fl10);
-        atts.field_2.fl14 = SWAP32F(atts.field_2.fl14);
-        atts.field_1A.fl0 = SWAP32F(atts.field_1A.fl0);
-        atts.field_1A.fl4 = SWAP32F(atts.field_1A.fl4);
-        atts.field_1A.fl8 = SWAP32F(atts.field_1A.fl8);
-        atts.field_1A.flC = SWAP32F(atts.field_1A.flC);
-        atts.field_1A.fl10 = SWAP32F(atts.field_1A.fl10);
-        atts.field_1A.fl14 = SWAP32F(atts.field_1A.fl14);
-        atts.field_32 = SWAP32(atts.field_32);
-        atts.field_36 = SWAP32(atts.field_36);
-        atts.field_3A = SWAP32(atts.field_3A);
-        atts.field_3E = SWAP32(atts.field_3E);
-        atts.field_42 = SWAP32(atts.field_42);
-        atts.field_46 = SWAP32(atts.field_46);
-        atts.field_4A = SWAP32(atts.field_4A);
-        atts.field_4E = SWAP32(atts.field_4E);
-        atts.field_52 = SWAP32(atts.field_52);
-        atts.field_56 = SWAP32(atts.field_56);
-        atts.field_5A = SWAP32(atts.field_5A);
-
-        if ( atts.field_0 >= 1 )
+        if ( atts.version >= 1 )
         {
             obj->startSetter();
-            obj->setPRTCL_startSpeed( atts.field_36 );
-            obj->setPRTCL_numContexts( atts.field_3A );
-            obj->setPRTCL_contextLifetime( atts.field_3E );
-            obj->setPRTCL_birthRate( atts.field_4A );
-            obj->setPRTCL_lifeTime( atts.field_4E );
-            obj->setPRTCL_startSize( atts.field_52 );
-            obj->setPRTCL_endSize( atts.field_56 );
-            obj->setPRTCL_startGen( atts.field_42 );
-            obj->setPRTCL_endGen( atts.field_46 );
-            obj->setPRTCL_noise( atts.field_5A );
+            obj->setPRTCL_startSpeed( atts.startSpeed );
+            obj->setPRTCL_numContexts( atts.contextNumber );
+            obj->setPRTCL_contextLifetime( atts.contextLifeTime );
+            obj->setPRTCL_birthRate( atts.genRate );
+            obj->setPRTCL_lifeTime( atts.lifeTime );
+            obj->setPRTCL_startSize( atts.startSize );
+            obj->setPRTCL_endSize( atts.endSize );
+            obj->setPRTCL_startGen( atts.contextStartGen );
+            obj->setPRTCL_endGen( atts.contextStopGen );
+            obj->setPRTCL_noise( atts.noise );
             obj->endSetter();
         }
 
-        particle_t_loc v51 = atts.field_2;
+        StartEnd v51 = atts.accel;
         obj->particle_func128(&v51);
 
-        v51 = atts.field_1A;
+        v51 = atts.magnify;
         obj->particle_func129(&v51);
 
     }
@@ -869,35 +866,32 @@ size_t NC_STACK_particle::func6(IFFile **file)
     mfile->pushChunk(0, TAG_ATTS, -1);
 
     prtcl_att a1;
-    a1.field_0 = SWAP16(1);
-    a1.field_2.fl0 = SWAP32F(prtcl->field_3c.fl0);
-    a1.field_2.fl4 = SWAP32F(prtcl->field_3c.fl4);
-    a1.field_2.fl8 = SWAP32F(prtcl->field_3c.fl8);
-    a1.field_2.flC = SWAP32F(prtcl->field_3c.flC);
-    a1.field_2.fl10 = SWAP32F(prtcl->field_3c.fl10);
-    a1.field_2.fl14 = SWAP32F(prtcl->field_3c.fl14);
-    a1.field_1A.fl0 = SWAP32F(prtcl->field_60.fl0);
-    a1.field_1A.fl4 = SWAP32F(prtcl->field_60.fl4);
-    a1.field_1A.fl8 = SWAP32F(prtcl->field_60.fl8);
-    a1.field_1A.flC = SWAP32F(prtcl->field_60.flC);
-    a1.field_1A.fl10 = SWAP32F(prtcl->field_60.fl10);
-    a1.field_1A.fl14 = SWAP32F(prtcl->field_60.fl14);
-    a1.field_36 = prtcl->field_9c;
-    a1.field_36 = SWAP32(a1.field_36);
-    a1.field_3A = SWAP32(prtcl->tp1_cnt);
-    a1.field_3E = SWAP32(prtcl->field_a8);
-    a1.field_42 = SWAP32(prtcl->field_ac);
-    a1.field_46 = SWAP32(prtcl->field_b0);
-    a1.field_4A = SWAP32(prtcl->field_88);
-    a1.field_4E = SWAP32(prtcl->field_84);
-    a1.field_52 = prtcl->field_90;
-    a1.field_52 = SWAP32(a1.field_52);
-    a1.field_56 = prtcl->field_94;
-    a1.field_56 = SWAP32(a1.field_56);
-    a1.field_5A = prtcl->field_a0 * 10.0;
-    a1.field_5A = SWAP32(a1.field_5A);
 
-    mfile->write(&a1, sizeof(prtcl_att));
+    mfile->writeS16B(1);
+    mfile->writeFloatB(prtcl->field_3c.start.sx);
+    mfile->writeFloatB(prtcl->field_3c.start.sy);
+    mfile->writeFloatB(prtcl->field_3c.start.sz);
+    mfile->writeFloatB(prtcl->field_3c.end.sx);
+    mfile->writeFloatB(prtcl->field_3c.end.sy);
+    mfile->writeFloatB(prtcl->field_3c.end.sz);
+    mfile->writeFloatB(prtcl->field_60.start.sx);
+    mfile->writeFloatB(prtcl->field_60.start.sy);
+    mfile->writeFloatB(prtcl->field_60.start.sz);
+    mfile->writeFloatB(prtcl->field_60.end.sx);
+    mfile->writeFloatB(prtcl->field_60.end.sy);
+    mfile->writeFloatB(prtcl->field_60.end.sz);
+    mfile->writeS32B(0);
+    mfile->writeS32B(prtcl->field_9c);
+    mfile->writeS32B(prtcl->tp1_cnt);
+    mfile->writeS32B(prtcl->field_a8);
+    mfile->writeS32B(prtcl->field_ac);
+    mfile->writeS32B(prtcl->field_b0);
+    mfile->writeS32B(prtcl->field_88);
+    mfile->writeS32B(prtcl->field_84);
+    mfile->writeS32B(prtcl->field_90);
+    mfile->writeS32B(prtcl->field_94);
+    mfile->writeS32B(prtcl->field_a0 * 10.0);
+
     mfile->popChunk();
 
     for (int i = 0; i < prtcl->ADEs_count; i++)
@@ -910,7 +904,7 @@ size_t NC_STACK_particle::func6(IFFile **file)
     return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
 
-void particle_func65__sub0__sub0(__NC_STACK_particle *prtcl, prtcl_tp *tp1, xyz *pos1, xyz *pos2, float a4)
+void particle_func65__sub0__sub0(NC_STACK_particle::__NC_STACK_particle *prtcl, NC_STACK_particle::Context *tp1, xyz *pos1, xyz *pos2, float a4)
 {
     tp1->field_C++;
 
@@ -932,28 +926,28 @@ void particle_func65__sub0__sub0(__NC_STACK_particle *prtcl, prtcl_tp *tp1, xyz 
     float v14 = particleRand() + pos1->sz;
     float v16 = sqrt(v12 * v12 + v13 * v13 + v14 * v14);
 
-    prtcl_tp2 *v7 = tp1->field_C;
+    NC_STACK_particle::Particle *v7 = tp1->field_C;
 
-    v7->field_C  = v12 / v16 * prtcl->field_9c;
-    v7->field_10 = v13 / v16 * prtcl->field_9c;
-    v7->field_14 = v14 / v16 * prtcl->field_9c;
+    v7->vec.sx  = v12 / v16 * prtcl->field_9c;
+    v7->vec.sy = v13 / v16 * prtcl->field_9c;
+    v7->vec.sz = v14 / v16 * prtcl->field_9c;
 
-    v7->field_0 = v7->field_C * a4 + pos2->sx;
-    v7->field_4 = v7->field_10 * a4 + pos2->sy;
-    v7->field_8 = v7->field_14 * a4 + pos2->sz;
+    v7->pos.sx = v7->vec.sx * a4 + pos2->sx;
+    v7->pos.sy = v7->vec.sy * a4 + pos2->sy;
+    v7->pos.sz = v7->vec.sz * a4 + pos2->sz;
 }
 
-void particle_func65__sub0__sub1(__NC_STACK_particle *prtcl, prtcl_tp2 *tp2, area_arg_65 *arg, float a3, unsigned int a4)
+void particle_func65__sub0__sub1(NC_STACK_particle::__NC_STACK_particle *prtcl, NC_STACK_particle::Particle *tp2, area_arg_65 *arg, float a3, unsigned int a4)
 {
-    base_1c_struct *glob = arg->glob_1c;
-    mat3x3 *pmat = &glob->field_58;
+    TForm3D *glob = arg->view;
+    mat3x3 *pmat = &glob->globSclRot;
     skeleton_type1 *v14 = prtcl->particle_sklt_intern->type2;
 
     int v27 = -1;
 
-    float v31 = tp2->field_0 - ((glob->field_58.m00 + glob->field_58.m10) * a3 * 0.5);
-    float v32 = tp2->field_4 - ((glob->field_58.m01 + glob->field_58.m11) * a3 * 0.5);
-    float v33 = tp2->field_8 - ((glob->field_58.m02 + glob->field_58.m12) * a3 * 0.5);
+    float v31 = tp2->pos.sx - ((glob->globSclRot.m00 + glob->globSclRot.m10) * a3 * 0.5);
+    float v32 = tp2->pos.sy - ((glob->globSclRot.m01 + glob->globSclRot.m11) * a3 * 0.5);
+    float v33 = tp2->pos.sz - ((glob->globSclRot.m02 + glob->globSclRot.m12) * a3 * 0.5);
 
     float v35, v36, v37;
 
@@ -962,9 +956,9 @@ void particle_func65__sub0__sub1(__NC_STACK_particle *prtcl, prtcl_tp2 *tp2, are
         switch ( i )
         {
         case 0:
-            v37 = tp2->field_0;
-            v36 = tp2->field_4;
-            v35 = tp2->field_8;
+            v37 = tp2->pos.sx;
+            v36 = tp2->pos.sy;
+            v35 = tp2->pos.sz;
             break;
         case 1:
             v37 = v31;
@@ -988,9 +982,9 @@ void particle_func65__sub0__sub1(__NC_STACK_particle *prtcl, prtcl_tp2 *tp2, are
             break;
         }
 
-        v36 -= glob->field_14;
-        v37 -= glob->field_10;
-        v35 -= glob->field_18;
+        v36 -= glob->globPos.sy;
+        v37 -= glob->globPos.sx;
+        v35 -= glob->globPos.sz;
 
         int v20 = 0;
 
@@ -998,9 +992,9 @@ void particle_func65__sub0__sub1(__NC_STACK_particle *prtcl, prtcl_tp2 *tp2, are
         float v29 = pmat->m10 * v37 + pmat->m11 * v36 + pmat->m12 * v35;
         float v34 = pmat->m20 * v37 + pmat->m21 * v36 + pmat->m22 * v35;
 
-        if (v34 < arg->field_24)
+        if (v34 < arg->minZ)
             v20 = 16;
-        else if (v34 > arg->field_28)
+        else if (v34 > arg->maxZ)
             v20 = 32;
 
         if ( v30 > v34 )
@@ -1015,10 +1009,10 @@ void particle_func65__sub0__sub1(__NC_STACK_particle *prtcl, prtcl_tp2 *tp2, are
         if ( -v34 > v29 )
             v20 |= 4;
 
-        v14->field_0 = v20;
-        v14->pos3f.sx = v30;
-        v14->pos3f.sy = v29;
-        v14->pos3f.sz = v34;
+        v14->flags = v20;
+        v14->sx = v30;
+        v14->sy = v29;
+        v14->sz = v34;
 
         v27 &= v20;
         v14++;
@@ -1026,10 +1020,10 @@ void particle_func65__sub0__sub1(__NC_STACK_particle *prtcl, prtcl_tp2 *tp2, are
 
     if ( !v27 )
     {
-        skeleton_64_stru *v22 = arg->field_20;
+        skeleton_64_stru *v22 = arg->sklt;
         NC_STACK_skeleton *v23 = arg->OBJ_SKELETON;
 
-        arg->field_20 = prtcl->particle_sklt_intern;
+        arg->sklt = prtcl->particle_sklt_intern;
         arg->OBJ_SKELETON = prtcl->particle_sklt;
 
         if ( prtcl->field_14 )
@@ -1044,18 +1038,18 @@ void particle_func65__sub0__sub1(__NC_STACK_particle *prtcl, prtcl_tp2 *tp2, are
         }
 
         arg->OBJ_SKELETON = v23;
-        arg->field_20 = v22;
+        arg->sklt = v22;
     }
 }
 
-void particle_func65__sub0(__NC_STACK_particle *prtcl, prtcl_tp *tp1, area_arg_65 *arg)
+void particle_func65__sub0(NC_STACK_particle::__NC_STACK_particle *prtcl, NC_STACK_particle::Context *tp1, area_arg_65 *arg)
 {
-    tp1->field_14 += arg->field_10;
-    tp1->field_10 += arg->field_10;
+    tp1->field_14 += arg->frameTime;
+    tp1->field_10 += arg->frameTime;
 
-    float v59 = (float)arg->field_10 * 0.001;
+    float v59 = (float)arg->frameTime * 0.001;
 
-    int v6 = arg->field_C - tp1->field_1C;
+    int v6 = arg->timeStamp - tp1->field_1C;
 
     tp1->field_20 = v6;
 
@@ -1069,23 +1063,23 @@ void particle_func65__sub0(__NC_STACK_particle *prtcl, prtcl_tp *tp1, area_arg_6
     {
         if ( v6 >= prtcl->field_ac && tp1->field_14 >= 0 )
         {
-            base_1c_struct *v11 = arg->base_1c;
+            TForm3D *v11 = arg->owner;
 
-            float a = prtcl->field_78 * v6 + prtcl->field_60.fl0;
-            float b = prtcl->field_7c * v6 + prtcl->field_60.fl4;
-            float c = prtcl->field_80 * v6 + prtcl->field_60.fl8;
+            float a = prtcl->field_78 * v6 + prtcl->field_60.start.sx;
+            float b = prtcl->field_7c * v6 + prtcl->field_60.start.sy;
+            float c = prtcl->field_80 * v6 + prtcl->field_60.start.sz;
 
             xyz v44;
-            v44.sx = v11->field_58.m00 * a + v11->field_58.m01 * b + v11->field_58.m02 * c;
-            v44.sy = v11->field_58.m10 * a + v11->field_58.m11 * b + v11->field_58.m12 * c;
-            v44.sz = v11->field_58.m20 * a + v11->field_58.m21 * b + v11->field_58.m22 * c;
+            v44.sx = v11->globSclRot.m00 * a + v11->globSclRot.m01 * b + v11->globSclRot.m02 * c;
+            v44.sy = v11->globSclRot.m10 * a + v11->globSclRot.m11 * b + v11->globSclRot.m12 * c;
+            v44.sz = v11->globSclRot.m20 * a + v11->globSclRot.m21 * b + v11->globSclRot.m22 * c;
 
-            skeleton_type1 *v19 = &arg->field_20->POO[prtcl->field_c];
+            skeleton_type1 *v19 = &arg->sklt->POO[prtcl->field_c];
 
             xyz v45;
-            v45.sx = v11->field_58.m00 * v19->pos3f.sx + v11->field_58.m01 * v19->pos3f.sy + v11->field_58.m02 * v19->pos3f.sz + arg->base_1c->field_10;
-            v45.sy = v11->field_58.m10 * v19->pos3f.sx + v11->field_58.m11 * v19->pos3f.sy + v11->field_58.m12 * v19->pos3f.sz + arg->base_1c->field_14;
-            v45.sz = v11->field_58.m20 * v19->pos3f.sx + v11->field_58.m21 * v19->pos3f.sy + v11->field_58.m22 * v19->pos3f.sz + arg->base_1c->field_18;
+            v45.sx = v11->globSclRot.m00 * v19->sx + v11->globSclRot.m01 * v19->sy + v11->globSclRot.m02 * v19->sz + arg->owner->globPos.sx;
+            v45.sy = v11->globSclRot.m10 * v19->sx + v11->globSclRot.m11 * v19->sy + v11->globSclRot.m12 * v19->sz + arg->owner->globPos.sy;
+            v45.sz = v11->globSclRot.m20 * v19->sx + v11->globSclRot.m21 * v19->sy + v11->globSclRot.m22 * v19->sz + arg->owner->globPos.sz;
 
             float v61 = 0.0;
             float tmp = prtcl->field_8c * 0.001;
@@ -1120,23 +1114,23 @@ void particle_func65__sub0(__NC_STACK_particle *prtcl, prtcl_tp *tp1, area_arg_6
     {
         int v30 = tp1->field_10;
 
-        float a = prtcl->field_54 * v6 + prtcl->field_3c.fl0;
-        float b = prtcl->field_58 * v6 + prtcl->field_3c.fl4;
-        float c = prtcl->field_5c * v6 + prtcl->field_3c.fl8;
+        float a = prtcl->field_54 * v6 + prtcl->field_3c.start.sx;
+        float b = prtcl->field_58 * v6 + prtcl->field_3c.start.sy;
+        float c = prtcl->field_5c * v6 + prtcl->field_3c.start.sz;
 
-        prtcl_tp2 *v31 = tp1->field_8;
+        NC_STACK_particle::Particle *v31 = tp1->field_8;
 
         while (v31 != tp1->field_C)
         {
             float a3a = v30 * prtcl->field_98 + prtcl->field_90;
 
-            v31->field_C += a;
-            v31->field_10 += b;
-            v31->field_14 += c;
+            v31->vec.sx += a;
+            v31->vec.sy += b;
+            v31->vec.sz += c;
 
-            v31->field_0 += particleRand() * prtcl->field_a0 + v31->field_C  * v59;
-            v31->field_4 += particleRand() * prtcl->field_a0 + v31->field_10 * v59;
-            v31->field_8 += particleRand() * prtcl->field_a0 + v31->field_14 * v59;
+            v31->pos.sx += particleRand() * prtcl->field_a0 + v31->vec.sx  * v59;
+            v31->pos.sy += particleRand() * prtcl->field_a0 + v31->vec.sy * v59;
+            v31->pos.sz += particleRand() * prtcl->field_a0 + v31->vec.sz * v59;
 
             particle_func65__sub0__sub1(prtcl, v31, arg, a3a, v30);
 
@@ -1153,9 +1147,9 @@ size_t NC_STACK_particle::ade_func65(area_arg_65 *arg)
 {
     __NC_STACK_particle *prtcl = &stack__particle;
 
-    prtcl_tp *v5 = prtcl->tp1;
+    NC_STACK_particle::Context *v5 = prtcl->tp1;
 
-    if (arg->field_0 != v5->field_18)
+    if (arg->ownerID != v5->field_18)
     {
         while( 1 )
         {
@@ -1165,7 +1159,7 @@ size_t NC_STACK_particle::ade_func65(area_arg_65 *arg)
                 v5 = NULL;
                 break;
             }
-            else if (arg->field_0 == v5->field_18)
+            else if (arg->ownerID == v5->field_18)
             {
                 break;
             }
@@ -1176,15 +1170,15 @@ size_t NC_STACK_particle::ade_func65(area_arg_65 *arg)
         particle_func65__sub0(prtcl, v5, arg);
     else
     {
-        prtcl_tp *cur = prtcl->tp1_st;
+        NC_STACK_particle::Context *cur = prtcl->tp1_st;
 
-        if ( cur->field_18 && arg->field_C - cur->field_1C < 1000 )
+        if ( cur->field_18 && arg->timeStamp - cur->field_1C < 1000 )
         {
             v5 = NULL;
         }
         else
         {
-            cur->field_18 = arg->field_0;
+            cur->field_18 = arg->ownerID;
             prtcl->tp1_st++;
 
             if ( prtcl->tp1_st == prtcl->tp1_end )
@@ -1200,7 +1194,7 @@ size_t NC_STACK_particle::ade_func65(area_arg_65 *arg)
             v5->field_20 = 0;
             v5->field_8 = v5->tp2;
             v5->field_C = v5->tp2;
-            v5->field_1C = arg->field_C;
+            v5->field_1C = arg->timeStamp;
             particle_func65__sub0(prtcl, v5, arg);
         }
 
@@ -1209,7 +1203,7 @@ size_t NC_STACK_particle::ade_func65(area_arg_65 *arg)
     return 1;
 }
 
-void NC_STACK_particle::particle_func128(particle_t_loc *arg)
+void NC_STACK_particle::particle_func128(StartEnd *arg)
 {
     __NC_STACK_particle *prtcl = &stack__particle;
 
@@ -1218,7 +1212,7 @@ void NC_STACK_particle::particle_func128(particle_t_loc *arg)
     particle_recalc(prtcl);
 }
 
-void NC_STACK_particle::particle_func129(particle_t_loc *arg)
+void NC_STACK_particle::particle_func129(StartEnd *arg)
 {
     __NC_STACK_particle *prtcl = &stack__particle;
 
@@ -1227,14 +1221,14 @@ void NC_STACK_particle::particle_func129(particle_t_loc *arg)
     particle_recalc(prtcl);
 }
 
-void NC_STACK_particle::particle_func130(particle_t_loc *out)
+void NC_STACK_particle::particle_func130(StartEnd *out)
 {
     __NC_STACK_particle *prtcl = &stack__particle;
 
     *out = prtcl->field_3c;
 }
 
-void NC_STACK_particle::particle_func131(particle_t_loc *out)
+void NC_STACK_particle::particle_func131(StartEnd *out)
 {
     __NC_STACK_particle *prtcl = &stack__particle;
 
@@ -1564,16 +1558,16 @@ size_t NC_STACK_particle::compatcall(int method_id, void *data)
         ade_func65( (area_arg_65 *)data );
         return 1;
     case 128:
-        particle_func128( (particle_t_loc *)data );
+        particle_func128( (StartEnd *)data );
         return 1;
     case 129:
-        particle_func129( (particle_t_loc *)data );
+        particle_func129( (StartEnd *)data );
         return 1;
     case 130:
-        particle_func130( (particle_t_loc *)data );
+        particle_func130( (StartEnd *)data );
         return 1;
     case 131:
-        particle_func131( (particle_t_loc *)data );
+        particle_func131( (StartEnd *)data );
         return 1;
     case 132:
         return (size_t)particle_func132( (NC_STACK_area **)data );

@@ -212,25 +212,19 @@ size_t NC_STACK_ade::func5(IFFile **file)
             {
                 ADE_STRC hdr;
 
-                /*mfile->readS16B(hdr.field_0);
-                mfile->readS8(hdr.field_2);
-                mfile->readS8(hdr.field_3);
-                mfile->readS16B(hdr.field_4);
-                mfile->readS16B(hdr.field_6);
-                mfile->readS16B(hdr.field_8);*/
+                mfile->readS16B(hdr.version);
+                mfile->readS8(hdr._nu1);
+                mfile->readS8(hdr.flags);
+                mfile->readS16B(hdr.point);
+                mfile->readS16B(hdr.poly);
+                mfile->readS16B(hdr._nu2);
 
-                mfile->read(&hdr, sizeof(ADE_STRC)); //mfread
-
-                hdr.field_0 = SWAP16(hdr.field_0);
-                hdr.field_4 = SWAP16(hdr.field_4);
-                hdr.field_6 = SWAP16(hdr.field_6);
-
-                if ( hdr.field_0 >= 1 )
+                if ( hdr.version >= 1 )
                 {
-                    setADE_depthFade( (hdr.field_3 & ADE_FLAG_DPTHFADE) != 0 );
-                    setADE_bkCheck( (hdr.field_3 & ADE_FLAG_BKCHECK) != 0 );
-                    setADE_point( hdr.field_4 );
-                    setADE_poly( hdr.field_6 );
+                    setADE_depthFade( (hdr.flags & ADE_FLAG_DPTHFADE) != 0 );
+                    setADE_bkCheck( (hdr.flags & ADE_FLAG_BKCHECK) != 0 );
+                    setADE_point( hdr.point );
+                    setADE_poly( hdr.poly );
                 }
             }
             mfile->parse();
@@ -257,15 +251,13 @@ size_t NC_STACK_ade::func6(IFFile **file)
 
     mfile->pushChunk(0, TAG_STRC, -1);
 
-    ADE_STRC hdr;
-    hdr.field_0 = SWAP16(1);
-    hdr.field_2 = 0;
-    hdr.field_3 = ade->flags & (ADE_FLAG_BKCHECK | ADE_FLAG_DPTHFADE);
-    hdr.field_4 = SWAP16(ade->strc_f4);
-    hdr.field_6 = SWAP16(ade->strc_f6);
-    hdr.field_8 = 0;
+    mfile->writeS16B(1);
+    mfile->writeS8(0);
+    mfile->writeS8( ade->flags & (ADE_FLAG_BKCHECK | ADE_FLAG_DPTHFADE) );
+    mfile->writeS16B(ade->point);
+    mfile->writeS16B(ade->poly);
+    mfile->writeS16B(0);
 
-    mfile->write(&hdr, sizeof(ADE_STRC));
     mfile->popChunk();
     return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
@@ -307,12 +299,12 @@ int NC_STACK_ade::getADE_depthFade()
 
 int NC_STACK_ade::getADE_point()
 {
-    return stack__ade.strc_f4;
+    return stack__ade.point;
 }
 
 int NC_STACK_ade::getADE_poly()
 {
-    return stack__ade.strc_f6;
+    return stack__ade.poly;
 }
 
 __NC_STACK_ade *NC_STACK_ade::getADE_pAde()
@@ -340,12 +332,12 @@ void NC_STACK_ade::setADE_depthFade(int arg)
 
 void NC_STACK_ade::setADE_point(int arg)
 {
-    stack__ade.strc_f4 = arg;
+    stack__ade.point = arg;
 }
 
 void NC_STACK_ade::setADE_poly(int arg)
 {
-    stack__ade.strc_f6 = arg;
+    stack__ade.poly = arg;
 }
 
 

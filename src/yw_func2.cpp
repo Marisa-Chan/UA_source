@@ -47,13 +47,13 @@ void sb_0x4eb94c__sub0(_NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, xyz 
 
     if ( obj_id >= 3 )
     {
-        brobj->field_8 -= (arg->field_0 / 5);
+        brobj->field_8 -= (arg->frameTime / 5);
         if ( brobj->field_8 < 0 )
             brobj->field_8 += 360;
     }
     else
     {
-        brobj->field_8 += (arg->field_0 / 5);
+        brobj->field_8 += (arg->frameTime / 5);
         if ( brobj->field_8 >= 360 )
             brobj->field_8 -= 360;
     }
@@ -80,13 +80,13 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz
 
     if ( obj_id >= 3 )
     {
-        brobj->field_8 -= (arg->field_0 / 5);
+        brobj->field_8 -= (arg->frameTime / 5);
         if ( brobj->field_8 < 0 )
             brobj->field_8 += 360;
     }
     else
     {
-        brobj->field_8 += (arg->field_0 / 5);
+        brobj->field_8 += (arg->frameTime / 5);
         if ( brobj->field_8 >= 360 )
             brobj->field_8 -= 360;
     }
@@ -99,7 +99,7 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz
 
     v7->base_func70(&v17);
 
-    base_1c_struct *p3d = v7->getBASE_pTransform();
+    TForm3D *p3d = v7->getBASE_pTransform();
 
     int first;
     int demens;
@@ -126,9 +126,9 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz
 
             flag_xyz v16;
             v16.flag = 7;
-            v16.x = p3d->scale_rotation.m00 * v13 + pos->sx + 0.0 * p3d->scale_rotation.m01 + p3d->scale_rotation.m02 * v14;
-            v16.y = p3d->scale_rotation.m10 * v13 + pos->sy + 0.0 * p3d->scale_rotation.m11 + p3d->scale_rotation.m12 * v14;
-            v16.z = p3d->scale_rotation.m20 * v13 + pos->sz + 0.0 * p3d->scale_rotation.m21 + p3d->scale_rotation.m22 * v14;
+            v16.x = p3d->locSclRot.m00 * v13 + pos->sx + 0.0 * p3d->locSclRot.m01 + p3d->locSclRot.m02 * v14;
+            v16.y = p3d->locSclRot.m10 * v13 + pos->sy + 0.0 * p3d->locSclRot.m11 + p3d->locSclRot.m12 * v14;
+            v16.z = p3d->locSclRot.m20 * v13 + pos->sz + 0.0 * p3d->locSclRot.m21 + p3d->locSclRot.m22 * v14;
 
             NC_STACK_base *lego = yw->legos[ scType->buildings[j][i]->health_models[0] ].base;
             lego->setBASE_static(0);
@@ -150,24 +150,24 @@ void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int ob
     //brf_obj *brobj = &brf->brf_objs + object_id; // Only one object
     brf_obj *brobj = &brf->brf_objs;
 
-    brf->field_4174.field_0 = struc->period;
-    brf->field_4174.field_4 = brf->currTime;
-    brf->field_4174.field_1C = 1;
+    brf->field_4174.frameTime = struc->period;
+    brf->field_4174.globTime = brf->currTime;
+    brf->field_4174.ownerID = 1;
 
-    base_1c_struct v14;
-    memset(&v14, 0, sizeof(base_1c_struct));
-    v14.scale_x = 1.0;
-    v14.scale_y = 1.0;
-    v14.scale_z = 1.0;
-    v14.scale_rotation.m00 = 1.0;
-    v14.scale_rotation.m01 = 0;
-    v14.scale_rotation.m02 = 0;
-    v14.scale_rotation.m10 = 0;
-    v14.scale_rotation.m11 = 1.0;
-    v14.scale_rotation.m12 = 0;
-    v14.scale_rotation.m20 = 0;
-    v14.scale_rotation.m21 = 0;
-    v14.scale_rotation.m22 = 1.0;
+    TForm3D v14;
+    memset(&v14, 0, sizeof(TForm3D));
+    v14.scale.sx = 1.0;
+    v14.scale.sy = 1.0;
+    v14.scale.sz = 1.0;
+    v14.locSclRot.m00 = 1.0;
+    v14.locSclRot.m01 = 0;
+    v14.locSclRot.m02 = 0;
+    v14.locSclRot.m10 = 0;
+    v14.locSclRot.m11 = 1.0;
+    v14.locSclRot.m12 = 0;
+    v14.locSclRot.m20 = 0;
+    v14.locSclRot.m21 = 0;
+    v14.locSclRot.m22 = 1.0;
 
     sub_430A20(&v14);
     sub_430A38(&v14);
@@ -233,13 +233,13 @@ void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, str
 {
     yw->win3d->BeginScene();
 
-    brf->field_4174.field_0 = 1;
-    brf->field_4174.field_4 = 1;
-    brf->field_4174.field_14 = 0;
-    brf->field_4174.field_18 = 1200;
-    brf->field_4174.field_1C = 1;
-    brf->field_4174.field_20 = 17.0;
-    brf->field_4174.field_24 = 32000.0;
+    brf->field_4174.frameTime = 1;
+    brf->field_4174.globTime = 1;
+    brf->field_4174.adeCount = 0;
+    brf->field_4174.adeMax = 1200;
+    brf->field_4174.ownerID = 1;
+    brf->field_4174.minZ = 17.0;
+    brf->field_4174.maxZ = 32000.0;
     brf->field_4174.rndrSTK_cur = p_renderStack;
     brf->field_4174.argSTK_cur = p_renderARGstack;
     brf->field_4174.argSTK_end = p_renderARGstackEND;

@@ -115,33 +115,24 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile, i
             for (int i = 0; i < num; i++)
             {
                 int16_t tmp[3];
+                mfile->readS16B(tmp[0]);
+                mfile->readS16B(tmp[1]);
+                mfile->readS16B(tmp[2]);
 
-                mfile->read(tmp, 2 * 3); //mfread
-                tmp[0] = SWAP16(tmp[0]);
-                tmp[1] = SWAP16(tmp[1]);
-                tmp[2] = SWAP16(tmp[2]);
-
-                sklt->POO[i].field_0 = 0;
-                sklt->POO[i].pos3f.sx = tmp[0];
-                sklt->POO[i].pos3f.sy = tmp[1];
-                sklt->POO[i].pos3f.sz = tmp[2];
+                sklt->POO[i].flags = 0;
+                sklt->POO[i].sx = tmp[0];
+                sklt->POO[i].sy = tmp[1];
+                sklt->POO[i].sz = tmp[2];
             }
         }
         else if ( version == 2 )                  // POO2
         {
             for (int i = 0; i < num; i++)
             {
-                uint32_t tmp[3];
-
-                mfile->read(tmp, 4 * 3); //mfread
-                tmp[0] = SWAP32(tmp[0]);
-                tmp[1] = SWAP32(tmp[1]);
-                tmp[2] = SWAP32(tmp[2]);
-
-                sklt->POO[i].field_0 = 0;
-                sklt->POO[i].pos3f.sx = *(float *)&tmp[0];
-                sklt->POO[i].pos3f.sy = *(float *)&tmp[1];
-                sklt->POO[i].pos3f.sz = *(float *)&tmp[2];
+                sklt->POO[i].flags = 0;
+                mfile->readFloatB(sklt->POO[i].sx);
+                mfile->readFloatB(sklt->POO[i].sy);
+                mfile->readFloatB(sklt->POO[i].sz);
             }
         }
     }
@@ -151,61 +142,51 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile, i
 int skeleton_read_poly(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt)
 {
     IFFile::Context *chunk = mfile->getCurrentChunk();
-    int16_t *polys = (int16_t *)AllocVec(chunk->TAG_SIZE, 1);
+    int32_t entrycnt = chunk->TAG_SIZE / 2;
+    int16_t *entries = new int16_t[entrycnt];
 
-    if ( polys )
+    if ( !entries )
+        return 0;
+
+    int polyCount = 0;
+
+    for (int i = 0; i < entrycnt ; i++)
     {
-        int v9 = 0;
-        mfile->read(polys, chunk->TAG_SIZE); //mfread
-
-        for (int i = 0; i < chunk->TAG_SIZE / 2 ; i++)
-        {
-            polys[i] = SWAP16(polys[i]);
-            if (polys[i] == -1)
-                v9++;
-        }
-
-        skeleton_130_arg arg130;
-
-        arg130.pol_count = v9;
-        arg130.skeleton = sklt;
-        arg130.num_indexes = (chunk->TAG_SIZE / 2) - v9;
-
-        if ( obj->skeleton_func130(&arg130) )
-        {
-            int16_t *v14 = polys;
-            pol_indixes *v15 = sklt->pol_entries[0];
-
-            for (int i = 0; i < v9; i++)
-            {
-                int vert_count = 0;
-
-                sklt->pol_entries[i] = v15;
-
-                while( *v14 != -1)
-                {
-                    int16_t *vtxs = &v15->v1;
-                    vtxs[vert_count] = *v14;
-
-                    vert_count++;
-                    v14++;
-                }
-                v14++;
-                v15->num_vertices = vert_count;
-
-                int16_t *vtx = &v15->v1;
-                v15 = (pol_indixes *)&vtx[vert_count];
-            }
-            nc_FreeMem(polys);
-            return 1;
-        }
-        else
-        {
-            nc_FreeMem(polys);
-            return 0;
-        }
+        mfile->readS16B(entries[i]);
+        if (entries[i] == -1) // Meet end of vertex indexes for this polygon
+            polyCount++;
     }
-    return 0;
+
+    skeleton_130_arg arg130;
+
+    arg130.pol_count = polyCount;
+    arg130.skeleton = sklt;
+    arg130.num_indexes = entrycnt - polyCount;
+
+    if ( !obj->skeleton_func130(&arg130) )
+    {
+        delete entries;
+        return 0;
+    }
+
+    int16_t *v14 = entries;
+
+    for (int i = 0; i < polyCount; i++)
+    {
+        int vert_count = 0;
+
+        while( *v14 != -1)
+        {
+            sklt->pol_entries[i].v[vert_count] = *v14;
+            vert_count++;
+            v14++;
+        }
+        v14++;
+
+        sklt->pol_entries[i].num_vertices = vert_count;
+    }
+    delete entries;
+    return 1;
 }
 
 int skeleton_read_pol2(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt)
@@ -220,27 +201,23 @@ int skeleton_read_pol2(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt
     arg130.pol_count = pol_count;
     arg130.num_indexes = ((chunk->TAG_SIZE - 4) / 2) - pol_count;
 
-    if ( obj->skeleton_func130(&arg130) )
+    if ( !obj->skeleton_func130(&arg130) )
+        return 0;
+
+    for (int i = 0; i < pol_count; i++)
     {
-        pol_indixes *indixes = sklt->pol_entries[0];
-        mfile->read(sklt->pol_entries[0], chunk->TAG_SIZE - 4); //mfread
+        uint16_t numVertex;
+        mfile->readU16B(numVertex);
 
-        for (int i = 0; i < pol_count; i++)
+        sklt->pol_entries[i].num_vertices = numVertex;
+        for(int j = 0; j < numVertex; j++)
         {
-            sklt->pol_entries[i] = indixes;
-
-            indixes->num_vertices = SWAP16(indixes->num_vertices);
-
-            int16_t *vtx = &indixes->v1;
-
-            for(int j = 0; j < indixes->num_vertices; j++)
-                vtx[j] = SWAP16(vtx[j]);
-
-            indixes = (pol_indixes *)&vtx[indixes->num_vertices];
+            uint16_t v;
+            mfile->readU16B(v);
+            sklt->pol_entries[i].v[j] = v;
         }
-        return 1;
     }
-    return 0;
+    return 1;
 }
 
 int skeleton_read_senX(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt, int version)
@@ -273,33 +250,24 @@ int skeleton_read_senX(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt
             for (int i = 0; i < sen_count; i++)
             {
                 int16_t tmp[3];
+                mfile->readS16B(tmp[0]);
+                mfile->readS16B(tmp[1]);
+                mfile->readS16B(tmp[2]);
 
-                mfile->read(tmp, 2 * 3); //mfread
-                tmp[0] = SWAP16(tmp[0]);
-                tmp[1] = SWAP16(tmp[1]);
-                tmp[2] = SWAP16(tmp[2]);
-
-                sklt->sen_entries[i].field_0 = 0;
-                sklt->sen_entries[i].pos3f.sx = tmp[0];
-                sklt->sen_entries[i].pos3f.sy = tmp[1];
-                sklt->sen_entries[i].pos3f.sz = tmp[2];
+                sklt->sen_entries[i].flags = 0;
+                sklt->sen_entries[i].sx = tmp[0];
+                sklt->sen_entries[i].sy = tmp[1];
+                sklt->sen_entries[i].sz = tmp[2];
             }
         }
         else if ( version == 2 )
         {
             for (int i = 0; i < sen_count; i++)
             {
-                uint32_t tmp[3];
-
-                mfile->read(tmp, 4 * 3); //mfread
-                tmp[0] = SWAP32(tmp[0]);
-                tmp[1] = SWAP32(tmp[1]);
-                tmp[2] = SWAP32(tmp[2]);
-
-                sklt->sen_entries[i].field_0 = 0;
-                sklt->sen_entries[i].pos3f.sx = *(float *)&tmp[0];
-                sklt->sen_entries[i].pos3f.sy = *(float *)&tmp[1];
-                sklt->sen_entries[i].pos3f.sz = *(float *)&tmp[2];
+                sklt->sen_entries[i].flags = 0;
+                mfile->readFloatB(sklt->sen_entries[i].sx);
+                mfile->readFloatB(sklt->sen_entries[i].sy);
+                mfile->readFloatB(sklt->sen_entries[i].sz);
             }
         }
         return 1;
@@ -311,19 +279,19 @@ void sklt_func64__sub0__sub0(skeleton_64_stru *sklt, int id)
 {
     if ( sklt )
     {
-        pol_indixes *pol = sklt->pol_entries[id];
+        Polygon *pol = &sklt->pol_entries[id];
         if ( pol->num_vertices >= 3 )
         {
             skeleton_type1 *POO = sklt->POO;
 
-            float dx1 = POO[pol->v2].pos3f.sx - POO[pol->v1].pos3f.sx;
-            float dy1 = POO[pol->v2].pos3f.sy - POO[pol->v1].pos3f.sy;
-            float dz1 = POO[pol->v2].pos3f.sz - POO[pol->v1].pos3f.sz;
+            float dx1 = POO[pol->v[1]].sx - POO[pol->v[0]].sx;
+            float dy1 = POO[pol->v[1]].sy - POO[pol->v[0]].sy;
+            float dz1 = POO[pol->v[1]].sz - POO[pol->v[0]].sz;
 
 
-            float dx2 = POO[pol->v3].pos3f.sx - POO[pol->v2].pos3f.sx;
-            float dy2 = POO[pol->v3].pos3f.sy - POO[pol->v2].pos3f.sy;
-            float dz2 = POO[pol->v3].pos3f.sz - POO[pol->v2].pos3f.sz;
+            float dx2 = POO[pol->v[2]].sx - POO[pol->v[1]].sx;
+            float dy2 = POO[pol->v[2]].sy - POO[pol->v[1]].sy;
+            float dz2 = POO[pol->v[2]].sz - POO[pol->v[1]].sz;
 
             float zx = dz1 * dx2 - dx1 * dz2;
             float zy = dy1 * dz2 - dy2 * dz1;
@@ -342,17 +310,17 @@ void sklt_func64__sub0__sub0(skeleton_64_stru *sklt, int id)
                 dxy = xy / sqwr;
             }
 
-            sklt->triangles[id].field_0 = dzy;
-            sklt->triangles[id].field_4 = dzx;
-            sklt->triangles[id].field_8 = dxy;
-            sklt->triangles[id].field_C = -(dzy * POO[pol->v1].pos3f.sx + dzx * POO[pol->v1].pos3f.sy + dxy * POO[pol->v1].pos3f.sz);
+            sklt->pol_entries[id].A = dzy;
+            sklt->pol_entries[id].B = dzx;
+            sklt->pol_entries[id].C = dxy;
+            sklt->pol_entries[id].D = -(dzy * POO[pol->v[0]].sx + dzx * POO[pol->v[0]].sy + dxy * POO[pol->v[0]].sz);
         }
         else
         {
-            sklt->triangles[id].field_0 = 0;
-            sklt->triangles[id].field_4 = 0;
-            sklt->triangles[id].field_8 = 0;
-            sklt->triangles[id].field_C = 0;
+            sklt->pol_entries[id].A = 0;
+            sklt->pol_entries[id].B = 0;
+            sklt->pol_entries[id].C = 0;
+            sklt->pol_entries[id].D = 0;
         }
     }
 }
@@ -532,39 +500,25 @@ size_t NC_STACK_sklt::rsrc_func66(rsrc_func66_arg *arg)
 
     if ( sklt->POO )
     {
-        mfile->pushChunk(0, TAG_POO2, 3 * 4 * sklt->POO_NUM);
+        mfile->pushChunk(0, TAG_POO2, 12 * sklt->POO_NUM);
         for (int i = 0; i < sklt->POO_NUM; i++)
         {
-            uint32_t tmp[3];
-            tmp[0] = *(uint32_t *)&sklt->POO[i].pos3f.sx;
-            tmp[1] = *(uint32_t *)&sklt->POO[i].pos3f.sy;
-            tmp[2] = *(uint32_t *)&sklt->POO[i].pos3f.sz;
-
-            tmp[0] = SWAP32(tmp[0]);
-            tmp[1] = SWAP32(tmp[1]);
-            tmp[2] = SWAP32(tmp[2]);
-
-            mfile->write(tmp, 3 * 4);
+            mfile->writeFloatB(sklt->POO[i].sx);
+            mfile->writeFloatB(sklt->POO[i].sy);
+            mfile->writeFloatB(sklt->POO[i].sz);
         }
         mfile->popChunk();
     }
 
     if ( sklt->sen_entries )
     {
-        mfile->pushChunk(0, TAG_SEN2, 3 * 4 * sklt->sen_count);
+        mfile->pushChunk(0, TAG_SEN2, 12 * sklt->sen_count);
 
         for (int i = 0; i < sklt->sen_count; i++)
         {
-            uint32_t tmp[3];
-            tmp[0] = *(uint32_t *)&sklt->sen_entries[i].pos3f.sx;
-            tmp[1] = *(uint32_t *)&sklt->sen_entries[i].pos3f.sy;
-            tmp[2] = *(uint32_t *)&sklt->sen_entries[i].pos3f.sz;
-
-            tmp[0] = SWAP32(tmp[0]);
-            tmp[1] = SWAP32(tmp[1]);
-            tmp[2] = SWAP32(tmp[2]);
-
-            mfile->write(tmp, 3 * 4);
+            mfile->writeFloatB(sklt->sen_entries[i].sx);
+            mfile->writeFloatB(sklt->sen_entries[i].sy);
+            mfile->writeFloatB(sklt->sen_entries[i].sz);
         }
         mfile->popChunk();
     }
@@ -577,16 +531,10 @@ size_t NC_STACK_sklt::rsrc_func66(rsrc_func66_arg *arg)
 
         for (int i = 0; i < sklt->pol_count; i++)
         {
-            int16_t vtmp[64];
+            mfile->writeU16B(sklt->pol_entries[i].num_vertices);
 
-            int16_t *vtx = &sklt->pol_entries[i]->v1;
-
-            vtmp[0] = SWAP16(sklt->pol_entries[i]->num_vertices);
-
-            for (int j = 0; j < sklt->pol_entries[i]->num_vertices; j++)
-                vtmp[1 + j] = SWAP16(vtx[j]);
-
-            mfile->write(vtmp, 2 * sklt->pol_entries[i]->num_vertices + 2);
+            for (int j = 0; j < sklt->pol_entries[i].num_vertices; j++)
+                mfile->writeU16B(sklt->pol_entries[i].v[j]);
         }
         mfile->popChunk();
     }

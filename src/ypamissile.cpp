@@ -771,9 +771,9 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
                 if ( arg136.field_20 )
                 {
                     miss_arg130 arg131;
-                    arg131.pos.sx = arg136.field_3C->triangles[ arg136.field_38 ].field_0;
-                    arg131.pos.sy = arg136.field_3C->triangles[ arg136.field_38 ].field_4;
-                    arg131.pos.sz = arg136.field_3C->triangles[ arg136.field_38 ].field_8;
+                    arg131.pos.sx = arg136.field_3C->pol_entries[ arg136.field_38 ].A;
+                    arg131.pos.sy = arg136.field_3C->pol_entries[ arg136.field_38 ].B;
+                    arg131.pos.sz = arg136.field_3C->pol_entries[ arg136.field_38 ].C;
 
                     ypamissile_func131(&arg131);
 

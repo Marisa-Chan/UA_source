@@ -335,15 +335,15 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
 
                     if ( arg136_2.field_20 && arg136_2.field_24 * 300.0 < bact->radius )
                     {
-                        arg88.pos1.sx = arg136_2.field_3C->triangles[arg136_2.field_38].field_0;
-                        arg88.pos1.sy = arg136_2.field_3C->triangles[arg136_2.field_38].field_4;
-                        arg88.pos1.sz = arg136_2.field_3C->triangles[arg136_2.field_38].field_8;
+                        arg88.pos1.sx = arg136_2.field_3C->pol_entries[arg136_2.field_38].A;
+                        arg88.pos1.sy = arg136_2.field_3C->pol_entries[arg136_2.field_38].B;
+                        arg88.pos1.sz = arg136_2.field_3C->pol_entries[arg136_2.field_38].C;
                     }
                     else
                     {
-                        arg88.pos1.sx = arg136.field_3C->triangles[arg136.field_38].field_0;
-                        arg88.pos1.sy = arg136.field_3C->triangles[arg136.field_38].field_4;
-                        arg88.pos1.sz = arg136.field_3C->triangles[arg136.field_38].field_8;
+                        arg88.pos1.sx = arg136.field_3C->pol_entries[arg136.field_38].A;
+                        arg88.pos1.sy = arg136.field_3C->pol_entries[arg136.field_38].B;
+                        arg88.pos1.sz = arg136.field_3C->pol_entries[arg136.field_38].C;
                     }
 
                     arg88.pos2.sy = 2.0;
@@ -387,7 +387,7 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
                     {
                         ufo->field_1c |= 9;
 
-                        float v104 = bact->rotation.m22 * arg136_2.field_3C->triangles[arg136_2.field_38].field_8 + bact->rotation.m20 * arg136_2.field_3C->triangles[arg136_2.field_38].field_0;
+                        float v104 = bact->rotation.m22 * arg136_2.field_3C->pol_entries[arg136_2.field_38].C + bact->rotation.m20 * arg136_2.field_3C->pol_entries[arg136_2.field_38].A;
 
                         float tmpsq = sqrt( POW2(bact->rotation.m20) + POW2(bact->rotation.m22) );
 
@@ -395,7 +395,7 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
 
                         v104 /= tmpsq;
 
-                        tmpsq = sqrt( POW2(arg136_2.field_3C->triangles[arg136_2.field_38].field_8) + POW2(arg136_2.field_3C->triangles[arg136_2.field_38].field_0) );
+                        tmpsq = sqrt( POW2(arg136_2.field_3C->pol_entries[arg136_2.field_38].C) + POW2(arg136_2.field_3C->pol_entries[arg136_2.field_38].A) );
 
                         NDIV_CARRY(tmpsq);
 
@@ -1055,9 +1055,9 @@ void NC_STACK_ypaufo::User_layer(update_msg *arg)
 
                         bact_arg88 arg88;
 
-                        arg88.pos1.sx = arg136.field_3C->triangles[arg136.field_38].field_0;
-                        arg88.pos1.sy = arg136.field_3C->triangles[arg136.field_38].field_4;
-                        arg88.pos1.sz = arg136.field_3C->triangles[arg136.field_38].field_8;
+                        arg88.pos1.sx = arg136.field_3C->pol_entries[arg136.field_38].A;
+                        arg88.pos1.sy = arg136.field_3C->pol_entries[arg136.field_38].B;
+                        arg88.pos1.sz = arg136.field_3C->pol_entries[arg136.field_38].C;
 
                         arg88.pos2.sx = 0.7;
                         arg88.pos2.sz = v88;

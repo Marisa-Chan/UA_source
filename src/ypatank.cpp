@@ -327,7 +327,7 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                         tank->ywo->ypaworld_func136(&arg136);
 
-                        if ( !arg136.field_20 || arg136.field_3C->triangles[ arg136.field_38 ].field_4 > 0.6 )
+                        if ( !arg136.field_20 || arg136.field_3C->pol_entries[ arg136.field_38 ].B > 0.6 )
                             tank->field_25 &= 0xF3;
 
                         if ( !(tank->field_25 & 0xC) )
@@ -361,7 +361,7 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                         tank->ywo->ypaworld_func136(&arg136);
 
-                        if ( !arg136.field_20 || arg136.field_3C->triangles[ arg136.field_38 ].field_4 > 0.6 )
+                        if ( !arg136.field_20 || arg136.field_3C->pol_entries[ arg136.field_38 ].B > 0.6 )
                             tank->field_25 &= 0xFC;
 
                         if ( !(tank->field_25 & 3) )
@@ -556,13 +556,13 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
             if ( arg136.field_20 )
             {
-                pol_entries2 * v55 = &arg136.field_3C->triangles[ arg136.field_38 ];
+                Polygon * v55 = &arg136.field_3C->pol_entries[ arg136.field_38 ];
 
-                if ( v55->field_4 < 0.6 && tank->field_1D == 0.0)
+                if ( v55->B < 0.6 && tank->field_1D == 0.0)
                 {
-                    float v221 = v55->field_0;
-                    float v216 = v55->field_4;
-                    float v222 = v55->field_8;
+                    float v221 = v55->A;
+                    float v216 = v55->B;
+                    float v222 = v55->C;
 
                     if ( arg136.field_24 * v224 > (bact->radius + 50.0) && fabs(v240) < 1.0 && fabs(0.0) < 0.7 && v220 >= 840.0 )
                     {
@@ -630,11 +630,11 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                         if ( arg136_2.field_20 )
                         {
-                            pol_entries2 *v70 = arg136_2.field_3C->triangles;
+                            Polygon *v70 = arg136_2.field_3C->pol_entries;
 
-                            v189 = v221 * v70[ arg136_2.field_38 ].field_4 - v216 * v70[ arg136_2.field_38 ].field_0;
-                            v187 = v216 * v70[ arg136_2.field_38 ].field_8 - v222 * v70[ arg136_2.field_38 ].field_4;
-                            v188 = v222 * v70[ arg136_2.field_38 ].field_0 - v221 * v70[ arg136_2.field_38 ].field_8;
+                            v189 = v221 * v70[ arg136_2.field_38 ].B - v216 * v70[ arg136_2.field_38 ].A;
+                            v187 = v216 * v70[ arg136_2.field_38 ].C - v222 * v70[ arg136_2.field_38 ].B;
+                            v188 = v222 * v70[ arg136_2.field_38 ].A - v221 * v70[ arg136_2.field_38 ].C;
                         }
                         else
                         {
@@ -687,8 +687,8 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
                         tank->ywo->ypaworld_func136(&arg136_1);
                         tank->ywo->ypaworld_func136(&arg136_3);
 
-                        bool v86 = arg136_1.field_20 && arg136_1.field_3C->triangles[ arg136_1.field_38 ].field_4 < 0.6;
-                        bool v87 = arg136_3.field_20 && arg136_3.field_3C->triangles[ arg136_3.field_38 ].field_4 < 0.6;
+                        bool v86 = arg136_1.field_20 && arg136_1.field_3C->pol_entries[ arg136_1.field_38 ].B < 0.6;
+                        bool v87 = arg136_3.field_20 && arg136_3.field_3C->pol_entries[ arg136_3.field_38 ].B < 0.6;
 
                         int v93;
 
@@ -818,7 +818,7 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                 bact->position = bact->old_pos;
 
-                if ( (arg136.field_20 && arg136.field_3C->triangles[ arg136.field_38 ].field_4 < 0.6) || arg128.field_10 & 1 )
+                if ( (arg136.field_20 && arg136.field_3C->pol_entries[ arg136.field_38 ].B < 0.6) || arg128.field_10 & 1 )
                 {
                     bact->status_flg &= ~BACT_STFLAG_MOVE;
                     tank->field_25 &= 0xFC;
@@ -829,10 +829,10 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                     if ( arg136.field_20 )
                     {
-                        pol_entries2 *v117 = &arg136.field_3C->triangles[ arg136.field_38 ];
-                        v208 = v117->field_0;
-                        v207 = v117->field_4;
-                        v210 = v117->field_8;
+                        Polygon *v117 = &arg136.field_3C->pol_entries[ arg136.field_38 ];
+                        v208 = v117->A;
+                        v207 = v117->B;
+                        v210 = v117->C;
                     }
 
                     ypaworld_arg136 arg136_4;
@@ -872,11 +872,11 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                     if ( arg136_4.field_20 )
                     {
-                        pol_entries2 *v124 = arg136_4.field_3C->triangles;
+                        Polygon *v124 = arg136_4.field_3C->pol_entries;
 
-                        v185 = v182 * v124[arg136_4.field_38].field_0 - v180 * v124[arg136_4.field_38].field_8;
-                        v186 = v180 * v124[arg136_4.field_38].field_4 - v181 * v124[arg136_4.field_38].field_0;
-                        v184 = v181 * v124[arg136_4.field_38].field_8 - v182 * v124[arg136_4.field_38].field_4;
+                        v185 = v182 * v124[arg136_4.field_38].A - v180 * v124[arg136_4.field_38].C;
+                        v186 = v180 * v124[arg136_4.field_38].B - v181 * v124[arg136_4.field_38].A;
+                        v184 = v181 * v124[arg136_4.field_38].C - v182 * v124[arg136_4.field_38].B;
                     }
                     else
                     {
@@ -2459,20 +2459,20 @@ size_t NC_STACK_ypatank::ypatank_func128(tank_arg128 *arg)
 
     if ( arg136.field_20 )
     {
-        pol_entries2 *v10 = &arg136.field_3C->triangles[ arg136.field_38 ];
+        Polygon *v10 = &arg136.field_3C->pol_entries[ arg136.field_38 ];
 
-        if ( v10->field_4 < 0.6 )
+        if ( v10->B < 0.6 )
         {
             arg->field_10 |= 1;
-            arg->field_14.sx = arg136.field_3C->triangles[ arg136.field_38 ].field_0;
-            arg->field_14.sy = arg136.field_3C->triangles[ arg136.field_38 ].field_4;
-            arg->field_14.sz = arg136.field_3C->triangles[ arg136.field_38 ].field_8;
+            arg->field_14.sx = arg136.field_3C->pol_entries[ arg136.field_38 ].A;
+            arg->field_14.sy = arg136.field_3C->pol_entries[ arg136.field_38 ].B;
+            arg->field_14.sz = arg136.field_3C->pol_entries[ arg136.field_38 ].C;
         }
         else
         {
-            float v50 = v10->field_0;
-            float v49 = v10->field_4;
-            float v48 = v10->field_8;
+            float v50 = v10->A;
+            float v49 = v10->B;
+            float v48 = v10->C;
 
             if ( tank->field_c & 1 )
             {
@@ -2648,11 +2648,11 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
 
     if ( arg136.field_20 )
     {
-        pol_entries2 *v48 = &arg136.field_3C->triangles[ arg136.field_38 ];
+        Polygon *v48 = &arg136.field_3C->pol_entries[ arg136.field_38 ];
 
-        if ( fabs(v48->field_4) < 0.6 )
+        if ( fabs(v48->B) < 0.6 )
         {
-            float v164 = (bact->rotation.m20 * v48->field_0 + bact->rotation.m21 * v48->field_4 + bact->rotation.m22 * v48->field_8) * v156;
+            float v164 = (bact->rotation.m20 * v48->A + bact->rotation.m21 * v48->B + bact->rotation.m22 * v48->C) * v156;
 
             if ( v164 <= 0.0 )
             {
@@ -2685,8 +2685,8 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                     return 2;
                 }
 
-                bact->position.sx = bact->old_pos.sx - arg136.field_3C->triangles[arg136.field_38].field_0 * 10.0;
-                bact->position.sz = bact->old_pos.sz - arg136.field_3C->triangles[arg136.field_38].field_8 * 10.0;
+                bact->position.sx = bact->old_pos.sx - arg136.field_3C->pol_entries[arg136.field_38].A * 10.0;
+                bact->position.sz = bact->old_pos.sz - arg136.field_3C->pol_entries[arg136.field_38].C * 10.0;
             }
             return 2;
         }
@@ -2707,11 +2707,11 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
 
     if ( arg136_1.field_20 )
     {
-        pol_entries2 *v54 = &arg136_1.field_3C->triangles[ arg136_1.field_38 ];
+        Polygon *v54 = &arg136_1.field_3C->pol_entries[ arg136_1.field_38 ];
 
-        if ( fabs(v54->field_4) < 0.6 )
+        if ( fabs(v54->B) < 0.6 )
         {
-            float v172 = (bact->rotation.m20 * v54->field_0 + bact->rotation.m21 * v54->field_4 + bact->rotation.m22 * v54->field_8) * v156;
+            float v172 = (bact->rotation.m20 * v54->A + bact->rotation.m21 * v54->B + bact->rotation.m22 * v54->C) * v156;
 
             if ( v172 <= 0.0 )
             {
@@ -2743,8 +2743,8 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                     return 1;
                 }
 
-                bact->position.sx = bact->old_pos.sx - arg136_1.field_3C->triangles[ arg136_1.field_38 ].field_0 * 10.0;
-                bact->position.sz = bact->old_pos.sz - arg136_1.field_3C->triangles[ arg136_1.field_38 ].field_8 * 10.0;
+                bact->position.sx = bact->old_pos.sx - arg136_1.field_3C->pol_entries[ arg136_1.field_38 ].A * 10.0;
+                bact->position.sz = bact->old_pos.sz - arg136_1.field_3C->pol_entries[ arg136_1.field_38 ].C * 10.0;
             }
             return 1;
         }
@@ -2765,7 +2765,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
 
     if ( arg136_2.field_20 )
     {
-        if ( fabs(arg136_2.field_3C->triangles[arg136_2.field_38].field_4) < 0.6 )
+        if ( fabs(arg136_2.field_3C->pol_entries[arg136_2.field_38].B) < 0.6 )
         {
             bact->thraction = 0;
 
@@ -2818,7 +2818,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
 
             if ( arg136_3.field_20 )
             {
-                if ( arg136_3.field_3C->triangles[ arg136_3.field_38 ].field_4 < 0.6 )
+                if ( arg136_3.field_3C->pol_entries[ arg136_3.field_38 ].B < 0.6 )
                 {
                     if ( bact->fly_dir_length > 2.333333333333334 )
                     {
@@ -2960,7 +2960,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
 
             tank->ywo->ypaworld_func136(&arg136_4);
 
-            if ( !arg136_4.field_20 || (arg136_4.field_20 && arg136_4.field_3C->triangles[ arg136_4.field_38 ].field_4 < 0.6) )
+            if ( !arg136_4.field_20 || (arg136_4.field_20 && arg136_4.field_3C->pol_entries[ arg136_4.field_38 ].B < 0.6) )
             {
                 float v130 = 0.0;
                 float v131 = 0.0;

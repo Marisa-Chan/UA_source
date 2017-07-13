@@ -4,27 +4,25 @@
 #include "rsrc.h"
 #include "engine_gfx.h"
 
-struct skeleton_type1
+#define SKELETON_MAX_VERTEX 10
+
+struct skeleton_type1: public xyz
 {
-    int field_0;
-    xyz pos3f;
+    int flags;
 };
 
-struct __attribute__((packed)) pol_indixes
+// Geometry plane Ax + Bx + Cz + D = 0
+// A,B,C plane vector normal n
+
+struct Polygon
 {
     int16_t num_vertices;
-    int16_t v1;
-    int16_t v2;
-    int16_t v3;
-    ////may contain more than 3 or less
-};
+    int16_t v[SKELETON_MAX_VERTEX];
 
-struct pol_entries2
-{
-    float field_0;
-    float field_4;
-    float field_8;
-    float field_C;
+    float A;
+    float B;
+    float C;
+    float D;
 };
 
 struct skeleton_64_stru
@@ -33,16 +31,11 @@ struct skeleton_64_stru
     int16_t POO_NUM;
     int16_t sen_count;
 
-
-    // it's one piece of data contain 2 parts
-    // 1: pointers to pol_indixes
-    // 2: array of pol_indixes (with variable number of verts)
-    pol_indixes **pol_entries;
+    Polygon *pol_entries;
 
     int pol_count;
     skeleton_type1 *sen_entries;
     int field_14;
-    pol_entries2 *triangles;
     skeleton_type1 *type2;
 };
 
@@ -64,12 +57,12 @@ struct skeleton_130_arg
     int num_indexes;
 };
 
-struct base_1c_struct;
+struct TForm3D;
 
 struct skeleton_arg_132
 {
-    base_1c_struct *base_1c;
-    base_1c_struct *glob_1c;
+    TForm3D *base_1c;
+    TForm3D *glob_1c;
     float field_8;
     float field_C;
 };
@@ -98,10 +91,10 @@ struct skeleton_intern133_sb
 
 struct skeleton_arg133
 {
-    int field_0;
+    int polyID;
     int field_4;
     polysDatSub *rndrArg;
-    tUtV *field_C;
+    tUtV *texCoords;
     float field_10;
     float field_14;
     float field_18;

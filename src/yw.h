@@ -340,17 +340,24 @@ struct trec_bct
     int8_t rot_y;
     int8_t rot_z;
     int vp_id;
-    int bact_type;
+    int objType;
     int vhcl_id;
 };
 
 struct recorder
 {
+    enum OBJ_TYPE
+    {
+        OBJ_TYPE_NONE = 0,
+        OBJ_TYPE_MISSILE = 1,
+        OBJ_TYPE_VEHICLE = 2
+    };
+
     IFFile *mfile;
     uint16_t seqn;
     uint16_t level_id;
-    int frame_id;
-    int time;
+    int32_t frame_id;
+    int32_t time;
     uint32_t ctrl_bact_id;
 
     __NC_STACK_ypabact **bacts;
@@ -359,19 +366,19 @@ struct recorder
     void *field_20;
     uint8_t *ainf;
 
-    int max_bacts;
-    int field_2C;
-    int bacts_count;
-    int field_34;
-    int ainf_size;
-    int do_record;
-    int field_40;
+    int32_t max_bacts;
+    int32_t field_2C;
+    int32_t bacts_count;
+    int32_t field_34;
+    int32_t ainf_size;
+    int32_t do_record;
+    int32_t field_40;
     xyz field_44;
     mat3x3 rotation_matrix;
-    int field_74;
-    int field_78;
-    int field_7C;
-    int field_80;
+    int32_t field_74;
+    int32_t field_78;
+    int32_t field_7C;
+    int32_t field_80;
     uint32_t field_84;
     char filename[64];
 };
@@ -1258,7 +1265,7 @@ struct secType
 };
 
 
-struct __attribute__((packed)) vhclSndFX
+struct vhclSndFX
 {
     char sample_name[32];
     char extSampleNames[8][32];
@@ -1271,7 +1278,7 @@ struct __attribute__((packed)) vhclSndFX
     sndExtends extS;
 };
 
-struct __attribute__((packed)) VhclProto
+struct VhclProto
 {
     char model_id;
     char disable_enable_bitmask;

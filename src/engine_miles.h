@@ -14,7 +14,7 @@ struct sndFXprm
     float mag1;
 };
 
-struct __attribute__((packed)) sndFXprm2 : sndFXprm
+struct sndFXprm2 : sndFXprm
 {
     float mute;
     xyz pos;

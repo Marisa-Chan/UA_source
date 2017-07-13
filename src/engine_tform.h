@@ -2,6 +2,7 @@
 #define ENGINE_TFORM_H_INCLUDED
 
 #include <math.h>
+#include "IFFile.h"
 
 struct SinCos
 {
@@ -12,7 +13,7 @@ struct SinCos
 #define MAT_FLAG_INV_SIN   1
 #define MAT_FLAG_INV_COS   2
 
-struct __attribute__((packed)) xyz
+struct xyz
 {
     typedef float xyzFLT;
     xyzFLT sx;
@@ -219,9 +220,45 @@ struct __attribute__((packed)) xyz
     {
         return sx * b.sx + sy * b.sy + sz * b.sz;
     }
+
+    bool readIFF(IFFile *iff, bool BigEndian)
+    {
+        bool res = true;
+        if (BigEndian)
+        {
+            res &= iff->readFloatB(sx);
+            res &= iff->readFloatB(sy);
+            res &= iff->readFloatB(sz);
+        }
+        else
+        {
+            res &= iff->readFloatL(sx);
+            res &= iff->readFloatL(sy);
+            res &= iff->readFloatL(sz);
+        }
+        return res;
+    }
+
+    bool writeIFF(IFFile *iff, bool BigEndian)
+    {
+        bool res = true;
+        if (BigEndian)
+        {
+            res &= iff->writeFloatB(sx);
+            res &= iff->writeFloatB(sy);
+            res &= iff->writeFloatB(sz);
+        }
+        else
+        {
+            res &= iff->writeFloatL(sx);
+            res &= iff->writeFloatL(sy);
+            res &= iff->writeFloatL(sz);
+        }
+        return res;
+    }
 };
 
-struct __attribute__((packed)) mat3x3
+struct mat3x3
 {
     float m00;
     float m01;
@@ -269,6 +306,66 @@ struct __attribute__((packed)) mat3x3
         case 12:
             return xyz(m02, m12, m22);
         }
+    }
+
+    bool readIFF(IFFile *iff, bool BigEndian)
+    {
+        bool res = true;
+        if (BigEndian)
+        {
+            res &= iff->readFloatB(m00);
+            res &= iff->readFloatB(m01);
+            res &= iff->readFloatB(m02);
+            res &= iff->readFloatB(m10);
+            res &= iff->readFloatB(m11);
+            res &= iff->readFloatB(m12);
+            res &= iff->readFloatB(m20);
+            res &= iff->readFloatB(m21);
+            res &= iff->readFloatB(m22);
+        }
+        else
+        {
+            res &= iff->readFloatL(m00);
+            res &= iff->readFloatL(m01);
+            res &= iff->readFloatL(m02);
+            res &= iff->readFloatL(m10);
+            res &= iff->readFloatL(m11);
+            res &= iff->readFloatL(m12);
+            res &= iff->readFloatL(m20);
+            res &= iff->readFloatL(m21);
+            res &= iff->readFloatL(m22);
+        }
+        return res;
+    }
+
+    bool writeIFF(IFFile *iff, bool BigEndian)
+    {
+        bool res = true;
+        if (BigEndian)
+        {
+            res &= iff->writeFloatB(m00);
+            res &= iff->writeFloatB(m01);
+            res &= iff->writeFloatB(m02);
+            res &= iff->writeFloatB(m10);
+            res &= iff->writeFloatB(m11);
+            res &= iff->writeFloatB(m12);
+            res &= iff->writeFloatB(m20);
+            res &= iff->writeFloatB(m21);
+            res &= iff->writeFloatB(m22);
+        }
+        else
+        {
+            res &= iff->writeFloatL(m00);
+            res &= iff->writeFloatL(m01);
+            res &= iff->writeFloatL(m02);
+            res &= iff->writeFloatL(m10);
+            res &= iff->writeFloatL(m11);
+            res &= iff->writeFloatL(m12);
+            res &= iff->writeFloatL(m20);
+            res &= iff->writeFloatL(m21);
+            res &= iff->writeFloatL(m22);
+        }
+        return res;
     }
 };
 

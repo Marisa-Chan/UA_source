@@ -9,24 +9,24 @@ struct __NC_STACK_ilbm
 };
 
 
-struct __attribute__((packed)) BMHD_type
+struct BMHD_type
 {
     uint16_t width;
     uint16_t height;
     uint16_t x;
     uint16_t y;
-    char nPlanes;
-    char masking;
-    char compression;
-    char flags;
+    int8_t nPlanes;
+    int8_t masking;
+    int8_t compression;
+    int8_t flags;
     uint16_t transparentColor;
-    char xAspect;
-    char yAspect;
+    int8_t xAspect;
+    int8_t yAspect;
     uint16_t pageWidth;
     uint16_t pageHeight;
 };
 
-struct __attribute__((packed)) VBMP_type
+struct VBMP_type
 {
     uint16_t width;
     uint16_t height;

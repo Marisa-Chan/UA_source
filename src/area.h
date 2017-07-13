@@ -10,13 +10,13 @@ class NC_STACK_area;
 
 struct __NC_STACK_area
 {
-    NC_STACK_bitmap *ilbm1;
-    NC_STACK_bitmap *ilbm2;
-    int field_8;
-    char field_c;
-    char field_D;
-    char field_E;
-    char field_F;
+    NC_STACK_bitmap *texImg;
+    NC_STACK_bitmap *tracyImg;
+    int flags;
+    char colorVal;
+    char tracyVal;
+    char shadeVal;
+//    char field_F;
 //    int field_10;
     int16_t polnum;
     int16_t polflags;
@@ -27,11 +27,15 @@ struct __NC_STACK_area
 };
 
 
-struct __attribute__((packed)) AREA_STRC
+struct AREA_STRC
 {
-    int16_t field_0;
-    int field_2;
-    int field_6;
+    int16_t version;
+    uint16_t flags;
+    uint16_t polFlags;
+    uint8_t _un1;
+    uint8_t clrVal;
+    uint8_t trcVal;
+    uint8_t shdVal;
 };
 
 

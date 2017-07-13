@@ -73,7 +73,7 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile)
         {
             uint8_t dst[128];
 
-            mfile->read(&dst, 128); //mfread
+            mfile->read(&dst, 128);
 
             int opl_count = iff_chunk->TAG_SIZE / 2;
 
@@ -81,7 +81,7 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile)
             {
                 memset(&opls[i], 0, sizeof(pixel_2d));
 
-                opls[i].x = dst[2 * i];
+                opls[i].x = dst[0 + 2 * i];
                 opls[i].y = dst[1 + 2 * i];
             }
 
@@ -162,7 +162,7 @@ size_t NC_STACK_ilbm::func6(IFFile **pmfile)
 
             while(tmp->tu >= 0.0)
             {
-                buf[opl_count * 2] = tmp->tu * 256.0;
+                buf[0 + opl_count * 2] = tmp->tu * 256.0;
                 buf[1 + opl_count * 2] = tmp->tv * 256.0;
                 tmp++;
                 opl_count++;
@@ -265,7 +265,7 @@ int ILBM_BODY_READ(IFFile *mfile, BMHD_type *bmhd, bitmap_intern *bitm)
 
         if ( buffer )
         {
-            mfile->read(buffer, chunk->TAG_SIZE); //mfread
+            mfile->read(buffer, chunk->TAG_SIZE);
 
             ILBM_BODY_READ__sub0(bmhd, buffer, bitm->buffer);
 
@@ -328,9 +328,19 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, IFFile *mfil, int val5)
 
         if ( tag == TAG_BMHD )
         {
-            mfil->read(&bmhd, sizeof(BMHD_type)); //mfread
-            bmhd.width = SWAP16(bmhd.width);
-            bmhd.height = SWAP16(bmhd.height);
+            mfil->readU16B(bmhd.width);
+            mfil->readU16B(bmhd.height);
+            mfil->readU16B(bmhd.x);
+            mfil->readU16B(bmhd.y);
+            mfil->readS8(bmhd.nPlanes);
+            mfil->readS8(bmhd.masking);
+            mfil->readS8(bmhd.compression);
+            mfil->readS8(bmhd.flags);
+            mfil->readU16B(bmhd.transparentColor);
+            mfil->readS8(bmhd.xAspect);
+            mfil->readS8(bmhd.yAspect);
+            mfil->readU16B(bmhd.pageWidth);
+            mfil->readU16B(bmhd.pageHeight);
 
             stk[0].set(BMD_ATT_WIDTH, bmhd.width);
             stk[1].set(BMD_ATT_HEIGHT, bmhd.height);
@@ -350,9 +360,9 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, IFFile *mfil, int val5)
         }
         else if ( tag == TAG_HEAD )
         {
-            mfil->read(&vbmp, sizeof(VBMP_type)); //mfread
-            vbmp.width = SWAP16(vbmp.width);
-            vbmp.height = SWAP16(vbmp.height);
+            mfil->readU16B(vbmp.width);
+            mfil->readU16B(vbmp.height);
+            mfil->readU16B(vbmp.flags);
 
             stk[0].set(BMD_ATT_WIDTH, vbmp.width);
             stk[1].set(BMD_ATT_HEIGHT, vbmp.height);
@@ -380,7 +390,7 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, IFFile *mfil, int val5)
 
                 if ( bitm->pallete )
                 {
-                    mfil->read(bitm->pallete, sizeof(UA_PALETTE)); //mfread
+                    mfil->read(bitm->pallete, sizeof(UA_PALETTE));
                     bitm->flags |= BITMAP_FLAG_HAS_PALETTE;
                 }
             }
@@ -534,24 +544,22 @@ rsrc * NC_STACK_ilbm::rsrc_func64(stack_vals *stak)
 
 void ILBM__WRITE_TO_FILE_BMHD(IFFile *mfile, bitmap_intern *bitm)
 {
-    BMHD_type bmhd;
+    mfile->pushChunk(0, TAG_BMHD, -1); //20 bytes
 
-    bmhd.width = SWAP16(bitm->width);
-    bmhd.height = SWAP16(bitm->height);
-    bmhd.y = 0;
-    bmhd.x = 0;
-    bmhd.flags = 0x80;
-    bmhd.transparentColor = 0;
-    bmhd.nPlanes = 8;
-    bmhd.masking = 0;
-    bmhd.compression = 0;
-    bmhd.pageWidth = SWAP16(bitm->width);
-    bmhd.pageHeight = SWAP16(bitm->height);
-    bmhd.xAspect = 22;
-    bmhd.yAspect = 22;
+    mfile->writeU16B(bitm->width);
+    mfile->writeU16B(bitm->height);
+    mfile->writeU16B(0); // x
+    mfile->writeU16B(0); // y
+    mfile->writeS8(8); // nPlanes
+    mfile->writeS8(0); // masking
+    mfile->writeS8(0); // compression
+    mfile->writeS8(0x80); //flags
+    mfile->writeU16B(0); // transparentColor
+    mfile->writeS8(22); // xAspect
+    mfile->writeS8(22); // yAspect
+    mfile->writeU16B(bitm->width); // pageWidth
+    mfile->writeU16B(bitm->height); // pageHeight
 
-    mfile->pushChunk(0, TAG_BMHD, sizeof(BMHD_type));
-    mfile->write(&bmhd, sizeof(BMHD_type));
     mfile->popChunk();
 }
 
@@ -617,14 +625,12 @@ int VBMP__WRITE_TO_FILE(IFFile *mfile, bitmap_intern *bitm)
     if ( mfile->pushChunk(TAG_VBMP, TAG_FORM, -1) )
         return 0;
 
-    mfile->pushChunk(0, TAG_HEAD, sizeof(VBMP_type));
+    mfile->pushChunk(0, TAG_HEAD, -1); // 6 bytes
 
-    VBMP_type vbmp;
-    vbmp.width = SWAP16(bitm->width);
-    vbmp.height = SWAP16(bitm->height);
-    vbmp.flags = 0;
+    mfile->writeU16B(bitm->width);
+    mfile->writeU16B(bitm->height);
+    mfile->writeU16B(0); // flags
 
-    mfile->write(&vbmp, sizeof(VBMP_type));
     mfile->popChunk();
 
     if ( bitm->pallete )

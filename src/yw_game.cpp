@@ -1706,34 +1706,32 @@ void sub_44DBF8(_NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, st
 
 void sub_44DF60(skeleton_64_stru *arg, int id)
 {
-    int16_t *vtx = &arg->pol_entries[id]->v1;
+    Polygon *triangle = &arg->pol_entries[id];
 
-    pol_entries2 *triangle = &arg->triangles[id];
+    int vtx1 = arg->pol_entries[id].v[0];
+    int vtx2 = arg->pol_entries[id].v[1];
+    int vtx3 = arg->pol_entries[id].v[2];
 
-    int vtx1 = vtx[0];
-    int vtx2 = vtx[1];
-    int vtx3 = vtx[2];
+    float sy1 = arg->POO[vtx2].sy - arg->POO[vtx1].sy;
+    float sz1 = arg->POO[vtx2].sz - arg->POO[vtx1].sz;
+    float sx1 = arg->POO[vtx2].sx - arg->POO[vtx1].sx;
+    float sz2 = arg->POO[vtx3].sz - arg->POO[vtx2].sz;
+    float sx2 = arg->POO[vtx3].sx - arg->POO[vtx2].sx;
+    float sy2 = arg->POO[vtx3].sy - arg->POO[vtx2].sy;
 
-    float sy1 = arg->POO[vtx2].pos3f.sy - arg->POO[vtx1].pos3f.sy;
-    float sz1 = arg->POO[vtx2].pos3f.sz - arg->POO[vtx1].pos3f.sz;
-    float sx1 = arg->POO[vtx2].pos3f.sx - arg->POO[vtx1].pos3f.sx;
-    float sz2 = arg->POO[vtx3].pos3f.sz - arg->POO[vtx2].pos3f.sz;
-    float sx2 = arg->POO[vtx3].pos3f.sx - arg->POO[vtx2].pos3f.sx;
-    float sy2 = arg->POO[vtx3].pos3f.sy - arg->POO[vtx2].pos3f.sy;
+    triangle->B = sx2 * sz1 - sx1 * sz2;
+    triangle->A = sy1 * sz2 - sy2 * sz1;
+    triangle->C = sx1 * sy2 - sx2 * sy1;
 
-    triangle->field_4 = sx2 * sz1 - sx1 * sz2;
-    triangle->field_0 = sy1 * sz2 - sy2 * sz1;
-    triangle->field_8 = sx1 * sy2 - sx2 * sy1;
-
-    float v28 = sqrt((triangle->field_4 * triangle->field_4) + (triangle->field_0 * triangle->field_0) + (triangle->field_8 * triangle->field_8));
+    float v28 = sqrt((triangle->B * triangle->B) + (triangle->A * triangle->A) + (triangle->C * triangle->C));
 
     if (v28 != 0.0)
     {
-        triangle->field_0 = triangle->field_0 / v28;
-        triangle->field_4 = triangle->field_4 / v28;
-        triangle->field_8 = triangle->field_8 / v28;
+        triangle->A = triangle->A / v28;
+        triangle->B = triangle->B / v28;
+        triangle->C = triangle->C / v28;
     }
-    triangle->field_C = -(triangle->field_4 * arg->POO[vtx1].pos3f.sy + triangle->field_0 * arg->POO[vtx1].pos3f.sx + triangle->field_8 * arg->POO[vtx1].pos3f.sz);
+    triangle->D = -(triangle->B * arg->POO[vtx1].sy + triangle->A * arg->POO[vtx1].sx + triangle->C * arg->POO[vtx1].sz);
 }
 
 void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
@@ -1746,10 +1744,10 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
         if ( !(arg->field_1E & 1) || fabs( (int)(cur->height - left->height)) < 500.0 )
         {
 
-            arg->sklt->POO[0].pos3f.sy = left->height;
-            arg->sklt->POO[1].pos3f.sy = cur->height;
-            arg->sklt->POO[2].pos3f.sy = cur->height;
-            arg->sklt->POO[3].pos3f.sy = left->height;
+            arg->sklt->POO[0].sy = left->height;
+            arg->sklt->POO[1].sy = cur->height;
+            arg->sklt->POO[2].sy = cur->height;
+            arg->sklt->POO[3].sy = left->height;
 
             sub_44DF60(arg->sklt, 0);
         }
@@ -1770,10 +1768,10 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
 
         if ( !(arg->field_1E & 1) || fabs( (int)(cur->height - up->height)) < 500.0 )
         {
-            arg->sklt->POO[0].pos3f.sy = up->height;
-            arg->sklt->POO[1].pos3f.sy = up->height;
-            arg->sklt->POO[2].pos3f.sy = cur->height;
-            arg->sklt->POO[3].pos3f.sy = cur->height;
+            arg->sklt->POO[0].sy = up->height;
+            arg->sklt->POO[1].sy = up->height;
+            arg->sklt->POO[2].sy = cur->height;
+            arg->sklt->POO[3].sy = cur->height;
 
             sub_44DF60(arg->sklt, 0);
         }
@@ -1841,11 +1839,11 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
         }
         if ( !kk )
         {
-            arg->sklt->POO[0].pos3f.sy = leftup->height;
-            arg->sklt->POO[1].pos3f.sy = up->height;
-            arg->sklt->POO[2].pos3f.sy = cur->height;
-            arg->sklt->POO[3].pos3f.sy = left->height;
-            arg->sklt->POO[4].pos3f.sy = cur->averg_height;
+            arg->sklt->POO[0].sy = leftup->height;
+            arg->sklt->POO[1].sy = up->height;
+            arg->sklt->POO[2].sy = cur->height;
+            arg->sklt->POO[3].sy = left->height;
+            arg->sklt->POO[4].sy = cur->averg_height;
 
             sub_44DF60(arg->sklt, 0);
             sub_44DF60(arg->sklt, 1);
@@ -1857,31 +1855,29 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
 
 int sub_44D36C(float dx, float dy, float dz, int id, skeleton_64_stru *sklt)
 {
-    pol_entries2 *triangle = &sklt->triangles[id];
+    Polygon *triangle = &sklt->pol_entries[id];
 
     int v7 = 0;
 
-    float v24 = fabs(triangle->field_0);
-    float v23 = fabs(triangle->field_4);
-    float v27 = fabs(triangle->field_8);
+    float v24 = fabs(triangle->A);
+    float v23 = fabs(triangle->B);
+    float v27 = fabs(triangle->C);
 
     float v9 = (v24 <= v23 ? v23 : v24 );
     v9 = (v9 <= v27 ? v27 : v9);
 
     if ( v9 == v24 )
     {
-        int prev = sklt->pol_entries[id]->num_vertices - 1;
+        int prev = sklt->pol_entries[id].num_vertices - 1;
 
-        for (int i = 0; i < sklt->pol_entries[id]->num_vertices; i++)
+        for (int i = 0; i < sklt->pol_entries[id].num_vertices; i++)
         {
-            int16_t *vtx = &sklt->pol_entries[id]->v1;
+            skeleton_type1 *v12 = &sklt->POO[ sklt->pol_entries[id].v[i] ];
+            skeleton_type1 *v13 = &sklt->POO[ sklt->pol_entries[id].v[prev] ];
 
-            skeleton_type1 *v12 = &sklt->POO[ vtx[i] ];
-            skeleton_type1 *v13 = &sklt->POO[ vtx[prev] ];
-
-            if ( ( (v13->pos3f.sz <= dz && dz < v12->pos3f.sz) ||
-                    (v12->pos3f.sz <= dz && dz < v13->pos3f.sz) ) &&
-                    v13->pos3f.sy + (v12->pos3f.sy - v13->pos3f.sy) * (dz - v13->pos3f.sz) / (v12->pos3f.sz - v13->pos3f.sz) > dy )
+            if ( ( (v13->sz <= dz && dz < v12->sz) ||
+                    (v12->sz <= dz && dz < v13->sz) ) &&
+                    v13->sy + (v12->sy - v13->sy) * (dz - v13->sz) / (v12->sz - v13->sz) > dy )
             {
                 v7 = v7 == 0;
             }
@@ -1891,18 +1887,16 @@ int sub_44D36C(float dx, float dy, float dz, int id, skeleton_64_stru *sklt)
     }
     else if ( v9 == v23 )
     {
-        int prev = sklt->pol_entries[id]->num_vertices - 1;
+        int prev = sklt->pol_entries[id].num_vertices - 1;
 
-        for (int i = 0; i < sklt->pol_entries[id]->num_vertices; i++)
+        for (int i = 0; i < sklt->pol_entries[id].num_vertices; i++)
         {
-            int16_t *vtx = &sklt->pol_entries[id]->v1;
+            skeleton_type1 *v12 = &sklt->POO[ sklt->pol_entries[id].v[i] ];
+            skeleton_type1 *v13 = &sklt->POO[ sklt->pol_entries[id].v[prev] ];
 
-            skeleton_type1 *v12 = &sklt->POO[ vtx[i] ];
-            skeleton_type1 *v13 = &sklt->POO[ vtx[prev] ];
-
-            if ( ( (v13->pos3f.sz <= dz && dz < v12->pos3f.sz) ||
-                    (v12->pos3f.sz <= dz && dz < v13->pos3f.sz) ) &&
-                    v13->pos3f.sx + (v12->pos3f.sx - v13->pos3f.sx) * (dz - v13->pos3f.sz) / (v12->pos3f.sz - v13->pos3f.sz) > dx )
+            if ( ( (v13->sz <= dz && dz < v12->sz) ||
+                    (v12->sz <= dz && dz < v13->sz) ) &&
+                    v13->sx + (v12->sx - v13->sx) * (dz - v13->sz) / (v12->sz - v13->sz) > dx )
             {
                 v7 = v7 == 0;
             }
@@ -1912,18 +1906,16 @@ int sub_44D36C(float dx, float dy, float dz, int id, skeleton_64_stru *sklt)
     }
     else if ( v9 == v27 )
     {
-        int prev = sklt->pol_entries[id]->num_vertices - 1;
+        int prev = sklt->pol_entries[id].num_vertices - 1;
 
-        for (int i = 0; i < sklt->pol_entries[id]->num_vertices; i++)
+        for (int i = 0; i < sklt->pol_entries[id].num_vertices; i++)
         {
-            int16_t *vtx = &sklt->pol_entries[id]->v1;
+            skeleton_type1 *v12 = &sklt->POO[ sklt->pol_entries[id].v[i] ];
+            skeleton_type1 *v13 = &sklt->POO[ sklt->pol_entries[id].v[prev] ];
 
-            skeleton_type1 *v12 = &sklt->POO[ vtx[i] ];
-            skeleton_type1 *v13 = &sklt->POO[ vtx[prev] ];
-
-            if ( ( (v13->pos3f.sy <= dy && dy < v12->pos3f.sy) ||
-                    (v12->pos3f.sy <= dy && dy < v13->pos3f.sy) ) &&
-                    v13->pos3f.sx + (v12->pos3f.sx - v13->pos3f.sx) * (dy - v13->pos3f.sy) / (v12->pos3f.sy - v13->pos3f.sy) > dx )
+            if ( ( (v13->sy <= dy && dy < v12->sy) ||
+                    (v12->sy <= dy && dy < v13->sy) ) &&
+                    v13->sx + (v12->sx - v13->sx) * (dy - v13->sy) / (v12->sy - v13->sy) > dx )
             {
                 v7 = v7 == 0;
             }
@@ -1938,12 +1930,12 @@ void sub_44D8B8(ypaworld_arg136 *arg, struct_44dbf8 *loc)
 {
     for ( int i = 0; i < loc->sklt->pol_count; i++)
     {
-        pol_entries2 *triangle = &loc->sklt->triangles[i];
+        Polygon *triangle = &loc->sklt->pol_entries[i];
 
-        float v11 = triangle->field_4 * arg->field_18 + triangle->field_0 * arg->field_14 + triangle->field_8 * arg->field_1C;
+        float v11 = triangle->B * arg->field_18 + triangle->A * arg->field_14 + triangle->C * arg->field_1C;
         if ( v11 > 0.0 )
         {
-            float v19 = -(triangle->field_4 * arg->pos_y + triangle->field_0 * arg->pos_x + triangle->field_8 * arg->pos_z + triangle->field_C) / v11;
+            float v19 = -(triangle->B * arg->pos_y + triangle->A * arg->pos_x + triangle->C * arg->pos_z + triangle->D) / v11;
             if ( v19 > 0.0 && v19 <= 1.0 && v19 < arg->field_24 )
             {
                 float pz = arg->field_1C * v19 + arg->pos_z;
@@ -2352,7 +2344,7 @@ void yw_renderSky(_NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
 {
     if ( yw->sky_loaded_base )
     {
-        float v6 = rndr_params->field_24;
+        float v6 = rndr_params->maxZ;
         flag_xyz v5;
         v5.x = yw->current_bact->position.sx;
         v5.y = yw->field_15f4 + yw->current_bact->position.sy;
@@ -2361,11 +2353,11 @@ void yw_renderSky(_NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
 
         yw->sky_loaded_base->base_func68(&v5);
 
-        rndr_params->field_24 = 32000.0;
+        rndr_params->maxZ = 32000.0;
 
         yw->sky_loaded_base->base_func77(rndr_params);
 
-        rndr_params->field_24 = v6;
+        rndr_params->maxZ = v6;
     }
 }
 
@@ -2398,7 +2390,7 @@ void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float p
                 int v10 = yw->VhclProtos[yw->superbomb_wall_vproto].vp_normal;
 
                 NC_STACK_base *wall_base = yw->vhcls_models[v10].base;
-                base_1c_struct *wall_trigo = yw->vhcls_models[v10].trigo;
+                TForm3D *wall_trigo = yw->vhcls_models[v10].trigo;
 
                 if ( wall_base && wall_trigo )
                 {
@@ -2431,9 +2423,9 @@ void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float p
                     }
 
 
-                    wall_trigo->grp_1.sx = xx;
-                    wall_trigo->grp_1.sy = v28;
-                    wall_trigo->grp_1.sz = yy;
+                    wall_trigo->locPos.sx = xx;
+                    wall_trigo->locPos.sy = v28;
+                    wall_trigo->locPos.sz = yy;
 
                     float v29 = xx - posx;
                     float v30 = yy - posy;
@@ -2445,15 +2437,15 @@ void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float p
                         v30 /= v27;
                     }
 
-                    wall_trigo->scale_rotation.m00 = v30;
-                    wall_trigo->scale_rotation.m01 = 0;
-                    wall_trigo->scale_rotation.m02 = -v29;
-                    wall_trigo->scale_rotation.m10 = 0;
-                    wall_trigo->scale_rotation.m11 = 1.0;
-                    wall_trigo->scale_rotation.m12 = 0;
-                    wall_trigo->scale_rotation.m20 = v29;
-                    wall_trigo->scale_rotation.m21 = 0.0;
-                    wall_trigo->scale_rotation.m22 = v30;
+                    wall_trigo->locSclRot.m00 = v30;
+                    wall_trigo->locSclRot.m01 = 0;
+                    wall_trigo->locSclRot.m02 = -v29;
+                    wall_trigo->locSclRot.m10 = 0;
+                    wall_trigo->locSclRot.m11 = 1.0;
+                    wall_trigo->locSclRot.m12 = 0;
+                    wall_trigo->locSclRot.m20 = v29;
+                    wall_trigo->locSclRot.m21 = 0.0;
+                    wall_trigo->locSclRot.m22 = v30;
 
                     wall_base->base_func77(arg);
                 }
@@ -2519,13 +2511,13 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub0(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
     bs->base_func68(&grp_1);
 
     for (int i = 0; i < 4; i++)
-        skel->POO[i].pos3f.sy = sct->y;
+        skel->POO[i].sy = sct->y;
 
     for (int i = 4; i < 8; i++)
-        skel->POO[i].pos3f.sy = sct2->y;
+        skel->POO[i].sy = sct2->y;
 
-    skel->POO[8].pos3f.sy = a5;
-    skel->POO[9].pos3f.sy = a4;
+    skel->POO[8].sy = a5;
+    skel->POO[9].sy = a4;
 
     return bs;
 }
@@ -2549,13 +2541,13 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub1(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
     bs->base_func68(&grp_1);
 
     for (int i = 0; i < 4; i++)
-        skel->POO[i].pos3f.sy = sct->y;
+        skel->POO[i].sy = sct->y;
 
     for (int i = 4; i < 8; i++)
-        skel->POO[i].pos3f.sy = sct2->y;
+        skel->POO[i].sy = sct2->y;
 
-    skel->POO[8].pos3f.sy = a5;
-    skel->POO[9].pos3f.sy = a4;
+    skel->POO[8].sy = a5;
+    skel->POO[9].sy = a4;
 
     return bs;
 }
@@ -2606,30 +2598,30 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
 {
     if ( yw->current_bact )
     {
-        base_1c_struct *v5 = sub_430A28();
+        TForm3D *v5 = sub_430A28();
 
         if ( v5 )
             sub_430A38(v5);
 
         baseRender_msg rndrs;
 
-        rndrs.field_0 = bs64->field_4;
-        rndrs.field_4 = bs64->field_0;
-        rndrs.field_14 = 0;
+        rndrs.frameTime = bs64->field_4;
+        rndrs.globTime = bs64->field_0;
+        rndrs.adeCount = 0;
         rndrs.rndrSTK_cur = p_renderStack;
-        rndrs.field_18 = 2000;
+        rndrs.adeMax = 2000;
         rndrs.argSTK_cur = p_renderARGstack;
-        rndrs.field_1C = 1;
+        rndrs.ownerID = 1;
         rndrs.argSTK_end = p_renderARGstackEND;
 
-        rndrs.field_20 = 17.0;
+        rndrs.minZ = 17.0;
 
-        rndrs.field_20 = 1.0;
+        rndrs.minZ = 1.0;
 
         if ( yw->field_1368 == 5 )
-            rndrs.field_24 = 1500.0;
+            rndrs.maxZ = 1500.0;
         else
-            rndrs.field_24 = 3500.0;
+            rndrs.maxZ = 3500.0;
 
         int v6 = yw->field_1368 - 1;
 
@@ -2678,9 +2670,9 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
         if ( yw->field_15f8 )
             yw_renderSky(yw, &rndrs);
 
-        bs64->field_C = rndrs.field_14;
+        bs64->field_C = rndrs.adeCount;
 
-        yw->field_1B6A = rndrs.field_14;
+        yw->field_1B6A = rndrs.adeCount;
         yw->field_1b6c = rndrs.rndrSTK_cur - p_renderStack;
 
         /*if ( yw->field_1b6c > 1 && !dword_514EFC )
@@ -3030,8 +3022,8 @@ int ypaworld_func148__sub1(_NC_STACK_ypaworld *yw, int id, int a4, int x, int y,
 
 int ypaworld_func137__sub0__sub0(skeleton_64_stru *skl, int id, float x, float y, float z, float r, yw_137loc *out)
 {
-    int num = skl->pol_entries[id]->num_vertices;
-    int16_t *v7 = &skl->pol_entries[id]->v1;
+    int num = skl->pol_entries[id].num_vertices;
+    int16_t *vtx = skl->pol_entries[id].v;
 
     xyz tmp;
     tmp.sx = 0.0;
@@ -3040,10 +3032,10 @@ int ypaworld_func137__sub0__sub0(skeleton_64_stru *skl, int id, float x, float y
 
     for (int i = 0; i < num; i++)
     {
-        int16_t idd = v7[i];
-        tmp.sx += skl->POO[ idd ].pos3f.sx;
-        tmp.sy += skl->POO[ idd ].pos3f.sy;
-        tmp.sz += skl->POO[ idd ].pos3f.sz;
+        int16_t idd = vtx[i];
+        tmp.sx += skl->POO[ idd ].sx;
+        tmp.sy += skl->POO[ idd ].sy;
+        tmp.sz += skl->POO[ idd ].sz;
     }
 
     float v19 = (float)num;
@@ -3073,17 +3065,17 @@ void ypaworld_func137__sub0(ypaworld_arg137 *arg, struct_44dbf8 *a2)
 
     for (int i = 0; i < a2->sklt->pol_count; i++)
     {
-        pol_entries2 *tria = &a2->sklt->triangles[i];
+        Polygon *tria = &a2->sklt->pol_entries[i];
 
-        float t0 = tria->field_0;
-        float t1 = tria->field_4;
-        float t2 = tria->field_8;
+        float t0 = tria->A;
+        float t1 = tria->B;
+        float t2 = tria->C;
 
         float v9 = t0 * arg->pos2.sx + t1 * arg->pos2.sy + t2 * arg->pos2.sz;
 
         if ( v9 > 0.0 )
         {
-            float v26 = -(t0 * xx + t1 * yy + t2 * zz + tria->field_C) / ((t0 * t0 + t1 * t1 + t2 * t2) * arg->radius);
+            float v26 = -(t0 * xx + t1 * yy + t2 * zz + tria->D) / ((t0 * t0 + t1 * t1 + t2 * t2) * arg->radius);
 
             if ( v26 > 0.0 && v26 <= 1.0 )
             {
@@ -3110,10 +3102,10 @@ void ypaworld_func137__sub0(ypaworld_arg137 *arg, struct_44dbf8 *a2)
                         arg->collisions[pos].pos1.sx = a2->pos_x + tx;
                         arg->collisions[pos].pos1.sy = a2->pos_y + ty;
                         arg->collisions[pos].pos1.sz = a2->pos_z + tz;
-                        arg->collisions[pos].pos2.sx = tria->field_0;
-                        arg->collisions[pos].pos2.sy = tria->field_4;
-                        arg->collisions[pos].pos2.sz = tria->field_8;
-                        arg->collisions[pos].field_1C = tria->field_C;
+                        arg->collisions[pos].pos2.sx = tria->A;
+                        arg->collisions[pos].pos2.sy = tria->B;
+                        arg->collisions[pos].pos2.sz = tria->C;
+                        arg->collisions[pos].field_1C = tria->D;
 
                         arg->coll_count++;
                     }
@@ -4979,15 +4971,15 @@ int recorder_startrec(_NC_STACK_ypaworld *yw)
     if ( !rcrd->mfile )
     {
         delete fil;
-         rcrd->mfile = NULL;
+        rcrd->mfile = NULL;
         return 0;
     }
 
     rcrd->mfile->pushChunk(TAG_SEQN, TAG_FORM, -1);
     rcrd->mfile->pushChunk(0, TAG_SINF, 4);
 
-    rcrd->mfile->write(&rcrd->seqn, 2);
-    rcrd->mfile->write(&rcrd->level_id, 2);
+    rcrd->mfile->writeU16L(rcrd->seqn);
+    rcrd->mfile->writeU16L(rcrd->level_id);
 
     rcrd->mfile->popChunk();
 
@@ -5229,7 +5221,11 @@ void recorder_world_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd)
             oinf->vp_id = 0;
         }
 
-        oinf->bact_type = (bact->bact_type != BACT_TYPES_MISSLE) + 1;
+        if (bact->bact_type == BACT_TYPES_MISSLE)
+            oinf->objType = recorder::OBJ_TYPE_MISSILE;
+        else
+            oinf->objType = recorder::OBJ_TYPE_VEHICLE;
+
         oinf->vhcl_id = bact->vehicleID;
 
         uint16_t *ssnd = &rcrd->sound_status[i * 2];
@@ -5377,9 +5373,9 @@ void recorder_write_frame(_NC_STACK_ypaworld *yw)
         rcrd->mfile->pushChunk(TAG_FRAM, TAG_FORM, frame_size);
         rcrd->mfile->pushChunk(0, TAG_FINF, 12);
 
-        rcrd->mfile->write(&rcrd->frame_id, 4);
-        rcrd->mfile->write(&rcrd->time, 4);
-        rcrd->mfile->write(&rcrd->ctrl_bact_id, 4);
+        rcrd->mfile->writeS32L(rcrd->frame_id);
+        rcrd->mfile->writeS32L(rcrd->time);
+        rcrd->mfile->writeU32L(rcrd->ctrl_bact_id);
 
         rcrd->mfile->popChunk();
 
@@ -5391,16 +5387,14 @@ void recorder_write_frame(_NC_STACK_ypaworld *yw)
             {
                 trec_bct *oinf = &rcrd->oinf[i];
 
-                rcrd->mfile->write(&oinf->bact_id, 4);
-                rcrd->mfile->write(&oinf->pos.sx, 4);
-                rcrd->mfile->write(&oinf->pos.sy, 4);
-                rcrd->mfile->write(&oinf->pos.sz, 4);
-                rcrd->mfile->write(&oinf->rot_x, 1);
-                rcrd->mfile->write(&oinf->rot_y, 1);
-                rcrd->mfile->write(&oinf->rot_z, 1);
-                rcrd->mfile->write(&oinf->vp_id, 1);
-                rcrd->mfile->write(&oinf->bact_type, 1);
-                rcrd->mfile->write(&oinf->vhcl_id, 1);
+                rcrd->mfile->writeU32L(oinf->bact_id);
+                oinf->pos.writeIFF(rcrd->mfile, false);
+                rcrd->mfile->writeS8(oinf->rot_x);
+                rcrd->mfile->writeS8(oinf->rot_y);
+                rcrd->mfile->writeS8(oinf->rot_z);
+                rcrd->mfile->writeU8(oinf->vp_id);
+                rcrd->mfile->writeU8(oinf->objType);
+                rcrd->mfile->writeU8(oinf->vhcl_id);
             }
 
             rcrd->mfile->popChunk();
@@ -5703,9 +5697,9 @@ void recorder_read_framedata(recorder *rcrd)
             break;
 
         case TAG_FINF:
-            rcrd->mfile->read(&rcrd->frame_id, 4); //mfread
-            rcrd->mfile->read(&rcrd->time, 4); //mfread
-            rcrd->mfile->read(&rcrd->ctrl_bact_id, 4); //mfread
+            rcrd->mfile->readS32L(rcrd->frame_id);
+            rcrd->mfile->readS32L(rcrd->time);
+            rcrd->mfile->readU32L(rcrd->ctrl_bact_id);
             rcrd->mfile->parse();
             break;
 
@@ -5715,22 +5709,21 @@ void recorder_read_framedata(recorder *rcrd)
 
             for (int i = 0; i < rcrd->bacts_count; i++)
             {
-                for (int i = 0; i < rcrd->bacts_count; i++)
-                {
-                    trec_bct *oinf = &rcrd->oinf[i];
+                trec_bct *oinf = &rcrd->oinf[i];
 
-                    rcrd->mfile->read(&oinf->bact_id, 4); //mfread
-                    rcrd->mfile->read(&oinf->pos.sx, 4); //mfread
-                    rcrd->mfile->read(&oinf->pos.sy, 4); //mfread
-                    rcrd->mfile->read(&oinf->pos.sz, 4); //mfread
-                    rcrd->mfile->read(&oinf->rot_x, 1); //mfread
-                    rcrd->mfile->read(&oinf->rot_y, 1); //mfread
-                    rcrd->mfile->read(&oinf->rot_z, 1); //mfread
-                    rcrd->mfile->read(&oinf->vp_id, 1); //mfread
-                    rcrd->mfile->read(&oinf->bact_type, 1); //mfread
-                    rcrd->mfile->read(&oinf->vhcl_id, 1); //mfread
-                }
+                rcrd->mfile->readU32L(oinf->bact_id);
+                oinf->pos.readIFF(rcrd->mfile, false);
+                rcrd->mfile->readS8(oinf->rot_x);
+                rcrd->mfile->readS8(oinf->rot_y);
+                rcrd->mfile->readS8(oinf->rot_z);
 
+                uint8_t tmp;
+                rcrd->mfile->readU8(tmp);
+                oinf->vp_id = tmp;
+                rcrd->mfile->readU8(tmp);
+                oinf->objType = tmp;
+                rcrd->mfile->readU8(tmp);
+                oinf->vhcl_id = tmp;
             }
 
             rcrd->mfile->parse();
@@ -5738,7 +5731,7 @@ void recorder_read_framedata(recorder *rcrd)
         break;
 
         case TAG_AINF:
-            rcrd->mfile->read(rcrd->ainf, v3->TAG_SIZE); //mfread
+            rcrd->mfile->read(rcrd->ainf, v3->TAG_SIZE);
             rcrd->ainf_size = v3->TAG_SIZE;
 
             recorder_unpack_soundstates(rcrd);
@@ -5747,7 +5740,7 @@ void recorder_read_framedata(recorder *rcrd)
             break;
 
         case TAG_MODE:
-            rcrd->mfile->read(rcrd->field_20, v3->TAG_SIZE); //mfread
+            rcrd->mfile->read(rcrd->field_20, v3->TAG_SIZE);
             rcrd->field_34 = v3->TAG_SIZE / 16;
 
             rcrd->mfile->parse();
@@ -5760,12 +5753,12 @@ void recorder_read_framedata(recorder *rcrd)
     }
 }
 
-__NC_STACK_ypabact *sub_46F3AC(_NC_STACK_ypaworld *yw, trec_bct *oinf)
+__NC_STACK_ypabact *recorder_newObject(_NC_STACK_ypaworld *yw, trec_bct *oinf)
 {
     NC_STACK_ypabact *bacto = NULL;
     __NC_STACK_ypabact *bact = NULL;
 
-    if ( oinf->bact_type == BACT_TYPES_TANK )
+    if ( oinf->objType == recorder::OBJ_TYPE_VEHICLE )
     {
         if ( oinf->vhcl_id )
         {
@@ -5781,7 +5774,7 @@ __NC_STACK_ypabact *sub_46F3AC(_NC_STACK_ypaworld *yw, trec_bct *oinf)
 
             prot->model_id = 1;
 
-            bacto = dynamic_cast<NC_STACK_ypabact *>( yw->self_full->ypaworld_func146(&arg146) );
+            bacto = yw->self_full->ypaworld_func146(&arg146);
 
             yw->VhclProtos[oinf->vhcl_id].model_id = v6;
         }
@@ -5821,7 +5814,7 @@ __NC_STACK_ypabact *sub_46F3AC(_NC_STACK_ypaworld *yw, trec_bct *oinf)
         arg147.pos.sy = 0;
         arg147.pos.sz = 0;
 
-        bacto = dynamic_cast<NC_STACK_ypabact *>( yw->self_full->ypaworld_func147(&arg147) );
+        bacto = yw->self_full->ypaworld_func147(&arg147);
     }
 
     if ( bacto )
@@ -5861,7 +5854,7 @@ void recorder_set_bact_pos(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, xyz
     }
 }
 
-void sub_46F5C8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, trec_bct *oinf, uint16_t *ssnd, float a5, float a6)
+void recorder_updateObject(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, trec_bct *oinf, uint16_t *ssnd, float a5, float a6)
 {
     xyz bct_pos;
     bct_pos.sx = (oinf->pos.sx - bact->position.sx) * a5 + bact->position.sx;
@@ -5965,7 +5958,7 @@ void sub_46F5C8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, trec_bct *oinf
 
     bact->rotation = tmp2;
 
-    base_1c_struct *v43 = NULL;
+    TForm3D *v43 = NULL;
     NC_STACK_base *v44 = NULL;
 
     switch ( oinf->vp_id )
@@ -6037,7 +6030,7 @@ void sub_46F5C8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, trec_bct *oinf
 }
 
 
-void sub_46FDA0(_NC_STACK_ypaworld *yw, recorder *rcrd, float a5, int period)
+void recorder_updateObjectList(_NC_STACK_ypaworld *yw, recorder *rcrd, float a5, int period)
 {
     float fperiod = period / 1000.0;
     bact_node *v6 = (bact_node *)yw->field_1b84->subjects_list.head;
@@ -6061,11 +6054,11 @@ void sub_46FDA0(_NC_STACK_ypaworld *yw, recorder *rcrd, float a5, int period)
             }
             else if ( oinf->bact_id < v6->bact->gid )
             {
-                __NC_STACK_ypabact *v10 = sub_46F3AC(yw, oinf);
+                __NC_STACK_ypabact *v10 = recorder_newObject(yw, oinf);
 
                 if ( v10 )
                 {
-                    sub_46F5C8(yw, v10, oinf, ssnd, 1.0, fperiod);
+                    recorder_updateObject(yw, v10, oinf, ssnd, 1.0, fperiod);
 
                     v10->subject_node.prev = v6->prev;
                     v10->subject_node.next = v6;
@@ -6078,7 +6071,7 @@ void sub_46FDA0(_NC_STACK_ypaworld *yw, recorder *rcrd, float a5, int period)
             }
             else // ==
             {
-                sub_46F5C8(yw, v6->bact, oinf, ssnd, a5, fperiod);
+                recorder_updateObject(yw, v6->bact, oinf, ssnd, a5, fperiod);
                 v6 = (bact_node *)v6->next;
 
                 i++;
@@ -6086,11 +6079,11 @@ void sub_46FDA0(_NC_STACK_ypaworld *yw, recorder *rcrd, float a5, int period)
         }
         else
         {
-            __NC_STACK_ypabact *v13 = sub_46F3AC(yw, oinf);
+            __NC_STACK_ypabact *v13 = recorder_newObject(yw, oinf);
 
             if ( v13 )
             {
-                sub_46F5C8(yw, v13, oinf, ssnd, 1.0, fperiod);
+                recorder_updateObject(yw, v13, oinf, ssnd, 1.0, fperiod);
 
                 AddTail(&yw->field_1b84->subjects_list, &v13->subject_node);
 
@@ -6150,7 +6143,7 @@ int recorder_go_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd, int wanted_fram
 
                     yw->timeStamp = rcrd->time;
 
-                    sub_46FDA0(yw, rcrd, 1.0, 0);
+                    recorder_updateObjectList(yw, rcrd, 1.0, 0);
                     return 1;
                 }
 
@@ -6190,7 +6183,7 @@ void ypaworld_func163__sub1(_NC_STACK_ypaworld *yw, recorder *rcrd, int a3)
             if ( rcrd->field_78 & 1 )
             {
                 yw->timeStamp = rcrd->time;
-                sub_46FDA0(yw, rcrd, 1.0, a3);
+                recorder_updateObjectList(yw, rcrd, 1.0, a3);
             }
             else
             {
@@ -6198,7 +6191,7 @@ void ypaworld_func163__sub1(_NC_STACK_ypaworld *yw, recorder *rcrd, int a3)
 
                 yw->timeStamp += a3;
 
-                sub_46FDA0(yw, rcrd, v9, a3);
+                recorder_updateObjectList(yw, rcrd, v9, a3);
             }
         }
     }
@@ -6413,8 +6406,8 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
             bact->fly_dir_length = v39 / fperiod / 6.0;
     }
 
-    bact->tForm.grp_1 = bact->position;
-    bact->tForm.scale_rotation = bact->rotation;
+    bact->tForm.locPos = bact->position;
+    bact->tForm.locSclRot = bact->rotation;
 }
 
 char *sub_445654(_NC_STACK_ypaworld *yw, char *in, char *buf, const char *fmt, ...)

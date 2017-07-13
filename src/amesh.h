@@ -5,23 +5,24 @@
 #include "area.h"
 
 
-struct __attribute__((packed)) ATTS
+struct ATTS
 {
-    int16_t field_0;
-    uint8_t field_2;
-    uint8_t field_3;
-    uint8_t field_4;
-    uint8_t field_5;
+    int16_t polyID;
+    uint8_t colorVal;
+    uint8_t shadeVal;
+    uint8_t tracyVal;
+    uint8_t pad;
 };
 
 struct __NC_STACK_amesh
 {
     NC_STACK_bitmap *ilbm1;
     NC_STACK_bitmap *ilbm2;
-    int16_t cnt;
-    int16_t field_A;
-    ATTS *atts;
-    tUtV **olpl;
+    int16_t polyCnt;
+    int16_t flags;
+    ATTS *atts;       // ATTS heap
+    tUtV **texCoords; // Tex coords for polygons
+    tUtV *texCoordsData; // Tex coords heap
 //    int field_14;
 };
 

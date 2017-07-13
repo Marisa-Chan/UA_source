@@ -170,7 +170,7 @@ int NC_STACK_ypabact::ypabact_func0__sub0(stack_vals *stak)
                     break;
 
                 case BACT_ATT_VPTRANSFORM:
-                    setBACT_vpTransform( (base_1c_struct *)stk->value.p_data);
+                    setBACT_vpTransform( (TForm3D *)stk->value.p_data);
                     break;
 
                 case BACT_ATT_EXTRAVIEWER:
@@ -245,9 +245,9 @@ size_t NC_STACK_ypabact::func0(stack_vals *stak)
         return 0;
     }
 
-    bact_int->tForm.grp_1 = bact_int->position;
+    bact_int->tForm.locPos = bact_int->position;
 
-    bact_int->tForm.scale_rotation = bact_int->rotation;
+    bact_int->tForm.locSclRot = bact_int->rotation;
 
     bact_int->status = BACT_STATUS_NORMAL;
 
@@ -474,7 +474,7 @@ int NC_STACK_ypabact::ypabact_func2__sub0(stack_vals *stak)
                 break;
 
             case BACT_ATT_VPTRANSFORM:
-                setBACT_vpTransform((base_1c_struct *)stk->value.p_data);
+                setBACT_vpTransform((TForm3D *)stk->value.p_data);
                 break;
 
             case BACT_ATT_EXTRAVIEWER:
@@ -529,7 +529,7 @@ void NC_STACK_ypabact::ypabact_func3__sub0(stack_vals *stak)
                 break;
 
             case BACT_ATT_PTRANSFORM:
-                *(base_1c_struct **)stk->value.p_data = getBACT_pTransform();
+                *(TForm3D **)stk->value.p_data = getBACT_pTransform();
                 break;
 
             case BACT_ATT_PBACT:
@@ -577,7 +577,7 @@ void NC_STACK_ypabact::ypabact_func3__sub0(stack_vals *stak)
                 break;
 
             case BACT_ATT_VPTRANSFORM:
-                *(base_1c_struct **)stk->value.p_data = getBACT_vpTransform();
+                *(TForm3D **)stk->value.p_data = getBACT_vpTransform();
                 break;
 
             case BACT_ATT_EXTRAVIEWER:
@@ -688,7 +688,7 @@ void sub_481F94(__NC_STACK_ypabact *bact)
 }
 
 
-base_1c_struct bact_cam;
+TForm3D bact_cam;
 
 void NC_STACK_ypabact::Update(update_msg *arg)
 {
@@ -770,50 +770,50 @@ void NC_STACK_ypabact::Update(update_msg *arg)
     {
         if ( bact->oflags & BACT_OFLAG_EXTRAVIEW )
         {
-            bact_cam.grp_1.sx = bact->position.sx + bact->rotation.m00 * bact->viewer_position.sx + bact->rotation.m10 * bact->viewer_position.sy + bact->rotation.m20 * bact->viewer_position.sz;
-            bact_cam.grp_1.sy = bact->position.sy + bact->rotation.m01 * bact->viewer_position.sx + bact->rotation.m11 * bact->viewer_position.sy + bact->rotation.m21 * bact->viewer_position.sz;
-            bact_cam.grp_1.sz = bact->position.sz + bact->rotation.m02 * bact->viewer_position.sx + bact->rotation.m12 * bact->viewer_position.sy + bact->rotation.m22 * bact->viewer_position.sz;
+            bact_cam.locPos.sx = bact->position.sx + bact->rotation.m00 * bact->viewer_position.sx + bact->rotation.m10 * bact->viewer_position.sy + bact->rotation.m20 * bact->viewer_position.sz;
+            bact_cam.locPos.sy = bact->position.sy + bact->rotation.m01 * bact->viewer_position.sx + bact->rotation.m11 * bact->viewer_position.sy + bact->rotation.m21 * bact->viewer_position.sz;
+            bact_cam.locPos.sz = bact->position.sz + bact->rotation.m02 * bact->viewer_position.sx + bact->rotation.m12 * bact->viewer_position.sy + bact->rotation.m22 * bact->viewer_position.sz;
         }
         else
         {
-            bact_cam.grp_1.sx = bact->position.sx;
-            bact_cam.grp_1.sy = bact->position.sy;
-            bact_cam.grp_1.sz = bact->position.sz;
+            bact_cam.locPos.sx = bact->position.sx;
+            bact_cam.locPos.sy = bact->position.sy;
+            bact_cam.locPos.sz = bact->position.sz;
         }
 
         if ( bact->oflags & BACT_OFLAG_EXTRAVIEW )
-            bact_cam.scale_rotation = bact->viewer_rotation;
+            bact_cam.locSclRot = bact->viewer_rotation;
         else
-            bact_cam.scale_rotation = bact->rotation;
+            bact_cam.locSclRot = bact->rotation;
 
-        GFXe.getC3D()->matrixAspectCorrection(&bact_cam.scale_rotation, false);
+        GFXe.getC3D()->matrixAspectCorrection(&bact_cam.locSclRot, false);
     }
 
-    bact->tForm.grp_1 = bact->position;
+    bact->tForm.locPos = bact->position;
 
     if ( bact->status_flg & BACT_STFLAG_SCALE )
     {
-        bact->tForm.scale_rotation.m00 = bact->rotation.m00 * bact->scale.sx;
-        bact->tForm.scale_rotation.m01 = bact->rotation.m10 * bact->scale.sy;
-        bact->tForm.scale_rotation.m02 = bact->rotation.m20 * bact->scale.sz;
-        bact->tForm.scale_rotation.m10 = bact->rotation.m01 * bact->scale.sx;
-        bact->tForm.scale_rotation.m11 = bact->rotation.m11 * bact->scale.sy;
-        bact->tForm.scale_rotation.m12 = bact->rotation.m21 * bact->scale.sz;
-        bact->tForm.scale_rotation.m20 = bact->rotation.m02 * bact->scale.sx;
-        bact->tForm.scale_rotation.m21 = bact->rotation.m12 * bact->scale.sy;
-        bact->tForm.scale_rotation.m22 = bact->rotation.m22 * bact->scale.sz;
+        bact->tForm.locSclRot.m00 = bact->rotation.m00 * bact->scale.sx;
+        bact->tForm.locSclRot.m01 = bact->rotation.m10 * bact->scale.sy;
+        bact->tForm.locSclRot.m02 = bact->rotation.m20 * bact->scale.sz;
+        bact->tForm.locSclRot.m10 = bact->rotation.m01 * bact->scale.sx;
+        bact->tForm.locSclRot.m11 = bact->rotation.m11 * bact->scale.sy;
+        bact->tForm.locSclRot.m12 = bact->rotation.m21 * bact->scale.sz;
+        bact->tForm.locSclRot.m20 = bact->rotation.m02 * bact->scale.sx;
+        bact->tForm.locSclRot.m21 = bact->rotation.m12 * bact->scale.sy;
+        bact->tForm.locSclRot.m22 = bact->rotation.m22 * bact->scale.sz;
     }
     else
     {
-        bact->tForm.scale_rotation.m00 = bact->rotation.m00;
-        bact->tForm.scale_rotation.m01 = bact->rotation.m10;
-        bact->tForm.scale_rotation.m02 = bact->rotation.m20;
-        bact->tForm.scale_rotation.m10 = bact->rotation.m01;
-        bact->tForm.scale_rotation.m11 = bact->rotation.m11;
-        bact->tForm.scale_rotation.m12 = bact->rotation.m21;
-        bact->tForm.scale_rotation.m20 = bact->rotation.m02;
-        bact->tForm.scale_rotation.m21 = bact->rotation.m12;
-        bact->tForm.scale_rotation.m22 = bact->rotation.m22;
+        bact->tForm.locSclRot.m00 = bact->rotation.m00;
+        bact->tForm.locSclRot.m01 = bact->rotation.m10;
+        bact->tForm.locSclRot.m02 = bact->rotation.m20;
+        bact->tForm.locSclRot.m10 = bact->rotation.m01;
+        bact->tForm.locSclRot.m11 = bact->rotation.m11;
+        bact->tForm.locSclRot.m12 = bact->rotation.m21;
+        bact->tForm.locSclRot.m20 = bact->rotation.m02;
+        bact->tForm.locSclRot.m21 = bact->rotation.m12;
+        bact->tForm.locSclRot.m22 = bact->rotation.m22;
     }
 
     int numbid = arg->units_count;
@@ -861,10 +861,10 @@ void NC_STACK_ypabact::Render(baseRender_msg *arg)
         {
             if ( !(bact->oflags & BACT_OFLAG_VIEWER) || bact->oflags & BACT_OFLAG_ALWAYSREND )
             {
-                bact->current_vp.trigo->grp_1 = bact->tForm.grp_1;
-                bact->current_vp.trigo->scale_rotation = bact->tForm.scale_rotation;
+                bact->current_vp.trigo->locPos = bact->tForm.locPos;
+                bact->current_vp.trigo->locSclRot = bact->tForm.locSclRot;
 
-                arg->field_1C = bact->gid;
+                arg->ownerID = bact->gid;
                 bact->current_vp.base->base_func77(arg);
             }
         }
@@ -878,34 +878,34 @@ void NC_STACK_ypabact::Render(baseRender_msg *arg)
         {
             if ( bd->flags & EVPROTO_FLAG_ACTIVE )
             {
-                bd->vp.trigo->grp_1 = bd->pos;
+                bd->vp.trigo->locPos = bd->pos;
 
                 if ( bd->flags & EVPROTO_FLAG_SCALE )
                 {
-                    bd->vp.trigo->scale_rotation.m00 = bd->dir.m00 * bd->scale;
-                    bd->vp.trigo->scale_rotation.m01 = bd->dir.m10 * bd->scale;
-                    bd->vp.trigo->scale_rotation.m02 = bd->dir.m20 * bd->scale;
-                    bd->vp.trigo->scale_rotation.m10 = bd->dir.m01 * bd->scale;
-                    bd->vp.trigo->scale_rotation.m11 = bd->dir.m11 * bd->scale;
-                    bd->vp.trigo->scale_rotation.m12 = bd->dir.m21 * bd->scale;
-                    bd->vp.trigo->scale_rotation.m20 = bd->dir.m02 * bd->scale;
-                    bd->vp.trigo->scale_rotation.m21 = bd->dir.m12 * bd->scale;
-                    bd->vp.trigo->scale_rotation.m22 = bd->dir.m22 * bd->scale;
+                    bd->vp.trigo->locSclRot.m00 = bd->dir.m00 * bd->scale;
+                    bd->vp.trigo->locSclRot.m01 = bd->dir.m10 * bd->scale;
+                    bd->vp.trigo->locSclRot.m02 = bd->dir.m20 * bd->scale;
+                    bd->vp.trigo->locSclRot.m10 = bd->dir.m01 * bd->scale;
+                    bd->vp.trigo->locSclRot.m11 = bd->dir.m11 * bd->scale;
+                    bd->vp.trigo->locSclRot.m12 = bd->dir.m21 * bd->scale;
+                    bd->vp.trigo->locSclRot.m20 = bd->dir.m02 * bd->scale;
+                    bd->vp.trigo->locSclRot.m21 = bd->dir.m12 * bd->scale;
+                    bd->vp.trigo->locSclRot.m22 = bd->dir.m22 * bd->scale;
                 }
                 else
                 {
-                    bd->vp.trigo->scale_rotation.m00 = bd->dir.m00;
-                    bd->vp.trigo->scale_rotation.m01 = bd->dir.m10;
-                    bd->vp.trigo->scale_rotation.m02 = bd->dir.m20;
-                    bd->vp.trigo->scale_rotation.m10 = bd->dir.m01;
-                    bd->vp.trigo->scale_rotation.m11 = bd->dir.m11;
-                    bd->vp.trigo->scale_rotation.m12 = bd->dir.m21;
-                    bd->vp.trigo->scale_rotation.m20 = bd->dir.m02;
-                    bd->vp.trigo->scale_rotation.m21 = bd->dir.m12;
-                    bd->vp.trigo->scale_rotation.m22 = bd->dir.m22;
+                    bd->vp.trigo->locSclRot.m00 = bd->dir.m00;
+                    bd->vp.trigo->locSclRot.m01 = bd->dir.m10;
+                    bd->vp.trigo->locSclRot.m02 = bd->dir.m20;
+                    bd->vp.trigo->locSclRot.m10 = bd->dir.m01;
+                    bd->vp.trigo->locSclRot.m11 = bd->dir.m11;
+                    bd->vp.trigo->locSclRot.m12 = bd->dir.m21;
+                    bd->vp.trigo->locSclRot.m20 = bd->dir.m02;
+                    bd->vp.trigo->locSclRot.m21 = bd->dir.m12;
+                    bd->vp.trigo->locSclRot.m22 = bd->dir.m22;
                 }
 
-                arg->field_1C = bact->gid;
+                arg->ownerID = bact->gid;
 
                 bd->vp.base->base_func77(arg);
             }
@@ -1803,9 +1803,9 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
         {
             if ( v78 + v79 > arg136.field_24 * 300.0 )
             {
-                arg88.pos1.sx = arg136.field_3C->triangles[arg136.field_38].field_0;
-                arg88.pos1.sy = arg136.field_3C->triangles[arg136.field_38].field_4;
-                arg88.pos1.sz = arg136.field_3C->triangles[arg136.field_38].field_8;
+                arg88.pos1.sx = arg136.field_3C->pol_entries[arg136.field_38].A;
+                arg88.pos1.sy = arg136.field_3C->pol_entries[arg136.field_38].B;
+                arg88.pos1.sz = arg136.field_3C->pol_entries[arg136.field_38].C;
                 v18++;
             }
         }
@@ -1814,9 +1814,9 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
         {
             if ( v78 + v79 > arg136_1.field_24 * 300.0 )
             {
-                arg88.pos1.sx += arg136_1.field_3C->triangles[arg136_1.field_38].field_0;
-                arg88.pos1.sy += arg136_1.field_3C->triangles[arg136_1.field_38].field_4;
-                arg88.pos1.sz += arg136_1.field_3C->triangles[arg136_1.field_38].field_8;
+                arg88.pos1.sx += arg136_1.field_3C->pol_entries[arg136_1.field_38].A;
+                arg88.pos1.sy += arg136_1.field_3C->pol_entries[arg136_1.field_38].B;
+                arg88.pos1.sz += arg136_1.field_3C->pol_entries[arg136_1.field_38].C;
                 v18++;
             }
         }
@@ -1825,9 +1825,9 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
         {
             if ( v78 + v79 > arg136_2.field_24 * 300.0 )
             {
-                arg88.pos1.sx += arg136_2.field_3C->triangles[arg136_2.field_38].field_0;
-                arg88.pos1.sy += arg136_2.field_3C->triangles[arg136_2.field_38].field_4;
-                arg88.pos1.sz += arg136_2.field_3C->triangles[arg136_2.field_38].field_8;
+                arg88.pos1.sx += arg136_2.field_3C->pol_entries[arg136_2.field_38].A;
+                arg88.pos1.sy += arg136_2.field_3C->pol_entries[arg136_2.field_38].B;
+                arg88.pos1.sz += arg136_2.field_3C->pol_entries[arg136_2.field_38].C;
                 v18++;
             }
         }
@@ -1923,9 +1923,9 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
         {
             if ( arg136_3.field_24 * bact->height < bact->radius && bact->fly_dir.sy > 0.0 )
             {
-                arg88.pos1.sx = arg88.pos1.sx + arg136_3.field_3C->triangles[arg136_3.field_38].field_0;
-                arg88.pos1.sy = arg88.pos1.sy + arg136_3.field_3C->triangles[arg136_3.field_38].field_4;
-                arg88.pos1.sz = arg88.pos1.sz + arg136_3.field_3C->triangles[arg136_3.field_38].field_8;
+                arg88.pos1.sx = arg88.pos1.sx + arg136_3.field_3C->pol_entries[arg136_3.field_38].A;
+                arg88.pos1.sy = arg88.pos1.sy + arg136_3.field_3C->pol_entries[arg136_3.field_38].B;
+                arg88.pos1.sz = arg88.pos1.sz + arg136_3.field_3C->pol_entries[arg136_3.field_38].C;
                 v18++;
             }
         }
@@ -2612,9 +2612,9 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
                     if ( arg136.field_20 )
                     {
                         bact_arg88 arg88;
-                        arg88.pos1.sx = arg136.field_3C->triangles[arg136.field_38].field_0;
-                        arg88.pos1.sy = arg136.field_3C->triangles[arg136.field_38].field_4;
-                        arg88.pos1.sz = arg136.field_3C->triangles[arg136.field_38].field_8;
+                        arg88.pos1.sx = arg136.field_3C->pol_entries[arg136.field_38].A;
+                        arg88.pos1.sy = arg136.field_3C->pol_entries[arg136.field_38].B;
+                        arg88.pos1.sz = arg136.field_3C->pol_entries[arg136.field_38].C;
                         arg88.pos2.sx = 0.7;
                         arg88.pos2.sy = 2.0;
                         arg88.pos2.sz = v106;
@@ -4899,9 +4899,9 @@ size_t NC_STACK_ypabact::CrashOrLand(bact_arg86 *arg)
                     {
                         bact_arg88 arg88;
 
-                        arg88.pos1.sx = arg136.field_3C->triangles[arg136.field_38].field_0;
-                        arg88.pos1.sy = arg136.field_3C->triangles[arg136.field_38].field_4;
-                        arg88.pos1.sz = arg136.field_3C->triangles[arg136.field_38].field_8;
+                        arg88.pos1.sx = arg136.field_3C->pol_entries[arg136.field_38].A;
+                        arg88.pos1.sy = arg136.field_3C->pol_entries[arg136.field_38].B;
+                        arg88.pos1.sz = arg136.field_3C->pol_entries[arg136.field_38].C;
 
                         xyz a2a = arg88.pos1;
 
@@ -4934,7 +4934,7 @@ size_t NC_STACK_ypabact::CrashOrLand(bact_arg86 *arg)
                                 bact->ywo->ypaworld_func180(&arg180);
                             }
 
-                            if ( arg136.field_3C->triangles[arg136.field_38].field_4 < 0.6 )
+                            if ( arg136.field_3C->pol_entries[arg136.field_38].B < 0.6 )
                             {
                                 arg88.pos2.sy = 0.7;
                                 arg88.pos2.sx = 0.7;
@@ -4968,7 +4968,7 @@ size_t NC_STACK_ypabact::CrashOrLand(bact_arg86 *arg)
                                 bact->reb_count = 0;
                             }
                         }
-                        else if ( arg136.field_3C->triangles[arg136.field_38].field_4 < 0.6 )
+                        else if ( arg136.field_3C->pol_entries[arg136.field_38].B < 0.6 )
                         {
                             arg88.pos2.sy = 2.0;
                             arg88.pos2.sx = 0.7;
@@ -6790,9 +6790,9 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
                         v57->SetStateInternal(&v69);
 
                         miss_arg130 v61;
-                        v61.pos.sx = v59.field_3C->triangles[ v59.field_38 ].field_0;
-                        v61.pos.sy = v59.field_3C->triangles[ v59.field_38 ].field_4;
-                        v61.pos.sz = v59.field_3C->triangles[ v59.field_38 ].field_8;
+                        v61.pos.sx = v59.field_3C->pol_entries[ v59.field_38 ].A;
+                        v61.pos.sy = v59.field_3C->pol_entries[ v59.field_38 ].B;
+                        v61.pos.sz = v59.field_3C->pol_entries[ v59.field_38 ].C;
 
                         v57->ypamissile_func131(&v61);
                     }
@@ -8235,31 +8235,31 @@ void NC_STACK_ypabact::NetUpdate(update_msg *upd)
 
     sub_481F94(bact);
 
-    bact->tForm.grp_1 = bact->position;
+    bact->tForm.locPos = bact->position;
 
     if ( bact->status_flg & BACT_STFLAG_SCALE )
     {
-        bact->tForm.scale_rotation.m00 = bact->rotation.m00 * bact->scale.sx;
-        bact->tForm.scale_rotation.m01 = bact->rotation.m10 * bact->scale.sy;
-        bact->tForm.scale_rotation.m02 = bact->rotation.m20 * bact->scale.sz;
-        bact->tForm.scale_rotation.m10 = bact->rotation.m01 * bact->scale.sx;
-        bact->tForm.scale_rotation.m11 = bact->rotation.m11 * bact->scale.sy;
-        bact->tForm.scale_rotation.m12 = bact->rotation.m21 * bact->scale.sz;
-        bact->tForm.scale_rotation.m20 = bact->rotation.m02 * bact->scale.sx;
-        bact->tForm.scale_rotation.m21 = bact->rotation.m12 * bact->scale.sy;
-        bact->tForm.scale_rotation.m22 = bact->rotation.m22 * bact->scale.sz;
+        bact->tForm.locSclRot.m00 = bact->rotation.m00 * bact->scale.sx;
+        bact->tForm.locSclRot.m01 = bact->rotation.m10 * bact->scale.sy;
+        bact->tForm.locSclRot.m02 = bact->rotation.m20 * bact->scale.sz;
+        bact->tForm.locSclRot.m10 = bact->rotation.m01 * bact->scale.sx;
+        bact->tForm.locSclRot.m11 = bact->rotation.m11 * bact->scale.sy;
+        bact->tForm.locSclRot.m12 = bact->rotation.m21 * bact->scale.sz;
+        bact->tForm.locSclRot.m20 = bact->rotation.m02 * bact->scale.sx;
+        bact->tForm.locSclRot.m21 = bact->rotation.m12 * bact->scale.sy;
+        bact->tForm.locSclRot.m22 = bact->rotation.m22 * bact->scale.sz;
     }
     else
     {
-        bact->tForm.scale_rotation.m00 = bact->rotation.m00;
-        bact->tForm.scale_rotation.m01 = bact->rotation.m10;
-        bact->tForm.scale_rotation.m02 = bact->rotation.m20;
-        bact->tForm.scale_rotation.m10 = bact->rotation.m01;
-        bact->tForm.scale_rotation.m11 = bact->rotation.m11;
-        bact->tForm.scale_rotation.m12 = bact->rotation.m21;
-        bact->tForm.scale_rotation.m20 = bact->rotation.m02;
-        bact->tForm.scale_rotation.m21 = bact->rotation.m12;
-        bact->tForm.scale_rotation.m22 = bact->rotation.m22;
+        bact->tForm.locSclRot.m00 = bact->rotation.m00;
+        bact->tForm.locSclRot.m01 = bact->rotation.m10;
+        bact->tForm.locSclRot.m02 = bact->rotation.m20;
+        bact->tForm.locSclRot.m10 = bact->rotation.m01;
+        bact->tForm.locSclRot.m11 = bact->rotation.m11;
+        bact->tForm.locSclRot.m12 = bact->rotation.m21;
+        bact->tForm.locSclRot.m20 = bact->rotation.m02;
+        bact->tForm.locSclRot.m21 = bact->rotation.m12;
+        bact->tForm.locSclRot.m22 = bact->rotation.m22;
     }
 
     int units_cnt = upd->units_count;
@@ -9570,7 +9570,7 @@ void NC_STACK_ypabact::setBACT_aggression(int aggr)
     }
 }
 
-void NC_STACK_ypabact::setBACT_vpTransform(base_1c_struct *tr)
+void NC_STACK_ypabact::setBACT_vpTransform(TForm3D *tr)
 {
     stack__ypabact.current_vp.trigo = tr;
 }
@@ -9598,7 +9598,7 @@ NC_STACK_ypaworld *NC_STACK_ypabact::getBACT_pWorld()
     return stack__ypabact.ywo;
 }
 
-base_1c_struct *NC_STACK_ypabact::getBACT_pTransform()
+TForm3D *NC_STACK_ypabact::getBACT_pTransform()
 {
     return &stack__ypabact.tForm;
 }
@@ -9658,7 +9658,7 @@ rbcolls *NC_STACK_ypabact::getBACT_collNodes()
     return NULL;
 }
 
-base_1c_struct *NC_STACK_ypabact::getBACT_vpTransform()
+TForm3D *NC_STACK_ypabact::getBACT_vpTransform()
 {
     return stack__ypabact.current_vp.trigo;
 }

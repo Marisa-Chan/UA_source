@@ -9249,26 +9249,24 @@ void yw_RenderVector2D(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float pos
 
         for (int i = 0; i < wire->POO_NUM; i++)
         {
-            float tmpx = wire->POO[i].pos3f.sx * 0.001;
-            float tmpz = -wire->POO[i].pos3f.sz * 0.001;
+            float tmpx = wire->POO[i].sx * 0.001;
+            float tmpz = -wire->POO[i].sz * 0.001;
 
-            wire->type2[i].pos3f.sx = (tmpx * m00 + tmpz * m01) * scaleX * CW + posX;
-            wire->type2[i].pos3f.sy = (tmpx * m10 + tmpz * m11) * scaleY * CH + posY;
+            wire->type2[i].sx = (tmpx * m00 + tmpz * m01) * scaleX * CW + posX;
+            wire->type2[i].sy = (tmpx * m10 + tmpz * m11) * scaleY * CH + posY;
         }
 
         for (int i = 0; i < wire->pol_count; i++)
         {
-            pol_indixes *v20 = wire->pol_entries[i];
+            Polygon *poly = &wire->pol_entries[i];
 
-            if (v20->num_vertices >= 2)
+            if (poly->num_vertices >= 2)
             {
-                int16_t *idxs = &v20->v1;
-
                 w3d_func198arg v29;
-                v29.x1 = wire->type2[ idxs[0] ].pos3f.sx;
-                v29.y1 = wire->type2[ idxs[0] ].pos3f.sy;
-                v29.x2 = wire->type2[ idxs[1] ].pos3f.sx;
-                v29.y2 = wire->type2[ idxs[1] ].pos3f.sy;
+                v29.x1 = wire->type2[ poly->v[0] ].sx;
+                v29.y1 = wire->type2[ poly->v[0] ].sy;
+                v29.x2 = wire->type2[ poly->v[1] ].sx;
+                v29.y2 = wire->type2[ poly->v[1] ].sy;
 
                 if ( color_func )
                 {

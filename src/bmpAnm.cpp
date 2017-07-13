@@ -106,13 +106,14 @@ size_t NC_STACK_bmpanim::func3(stack_vals *stak)
 
 size_t NC_STACK_bmpanim::func5(IFFile **file)
 {
-    int16_t buf[128];
+    char buf[250];
 
     IFFile *mfile = *file;
 
-    int v7 = 0;
-    int v4;
-    char *v3;
+    int16_t animType = 0;
+    int16_t version = 0;
+    int16_t offset = 0;
+    char *anmName = NULL;
 
     while ( 1 )
     {
@@ -124,18 +125,14 @@ size_t NC_STACK_bmpanim::func5(IFFile **file)
 
         if ( mfile->getCurrentChunk()->TAG == TAG_STRC )
         {
+            mfile->readS16B(version);
+            mfile->readS16B(offset);
+            mfile->readS16B(animType);
+            mfile->read(buf, 250);
 
-            mfile->read(buf, sizeof(int16_t) * 128); //mfread
-            buf[0] = SWAP16(buf[0]);
-            buf[1] = SWAP16(buf[1]);
-            buf[2] = SWAP16(buf[2]);
-
-            v7 = buf[0];
-
-            if ( buf[0] >= 1 )
+            if ( version >= 1 )
             {
-                v4 = buf[2];
-                v3 = (char *)buf + buf[1];
+                anmName = buf + offset - 6;
             }
             mfile->parse();
         }
@@ -145,13 +142,13 @@ size_t NC_STACK_bmpanim::func5(IFFile **file)
         }
     }
 
-    if ( !v7 )
+    if ( !version )
         return 0;
 
-    stack_vals stk[4];
+    stack_vals stk[3];
 
-    stk[0].set(BANM_ATT_NAME, v3);
-    stk[1].set(BANM_ATT_ANIMTYPE, v4);
+    stk[0].set(BANM_ATT_NAME, anmName);
+    stk[1].set(BANM_ATT_ANIMTYPE, animType);
     stk[2].end();
 
     return func0(stk);
@@ -188,12 +185,10 @@ size_t NC_STACK_bmpanim::func6(IFFile **file)
 
     mfile->pushChunk(0, TAG_STRC, -1);
 
-    int16_t tmp[3];
-    tmp[0] = SWAP16(1);
-    tmp[1] = SWAP16(6); //sizeof tmp
-    tmp[2] = SWAP16(bmpAnm->anim_type);
+    mfile->writeS16B(1); //version
+    mfile->writeS16B(6); //offset of name
+    mfile->writeS16B(bmpAnm->anim_type);
 
-    mfile->write(&tmp, 6);
     mfile->write(a3, strlen(a3) + 1);
     mfile->popChunk();
     return mfile->popChunk() == IFFile::IFF_ERR_OK;
@@ -270,16 +265,16 @@ void *sub_4BFB60(void *mfl, const char *mode)
             IFFile *mfile = new IFFile(fil, dword_5B2410, true);
             if ( mfile )
             {
-                    if ( dword_5B2410 )
-                    {
-                        if ( (mfile->pushChunk(TAG_VANM, TAG_FORM, -1) | mfile->pushChunk(0, TAG_DATA, -1)) == IFFile::IFF_ERR_OK )
-                            return mfile;
-                    }
-                    else
-                    {
-                        if ( (mfile->parse() | mfile->parse()) == IFFile::IFF_ERR_OK )
-                            return mfile;
-                    }
+                if ( dword_5B2410 )
+                {
+                    if ( (mfile->pushChunk(TAG_VANM, TAG_FORM, -1) | mfile->pushChunk(0, TAG_DATA, -1)) == IFFile::IFF_ERR_OK )
+                        return mfile;
+                }
+                else
+                {
+                    if ( (mfile->parse() | mfile->parse()) == IFFile::IFF_ERR_OK )
+                        return mfile;
+                }
                 delete mfile;
             }
             else
