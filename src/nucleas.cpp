@@ -356,7 +356,7 @@ NC_STACK_nucleus * READ_OBJT(IFFile *mfile)
         if ( tag == TAG_CLID )
         {
             char classname[300];
-            memset(classname, 0 , 300);
+            memset(classname, 0, 300);
 
             if ( mfile->read(classname, 256) < 0 )
                 return NULL;

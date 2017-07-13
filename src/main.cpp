@@ -808,7 +808,6 @@ int main(int argc, char *argv[])
 //		return 0;
 //	}
 
-
     FSMgr::iDir::setBaseDir("");
     SDLWRAP_INIT();
 

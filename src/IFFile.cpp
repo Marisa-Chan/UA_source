@@ -7,313 +7,313 @@
 
 void IFFile::_Init()
 {
-	file_handle = NULL;
-	flags = 0;
-	depth = 0;
-	ctxStack.clear();
-	freeAfterUse = false;
+    file_handle = NULL;
+    flags = 0;
+    depth = 0;
+    ctxStack.clear();
+    freeAfterUse = false;
 
-	Context *ctx = new Context;
+    Context *ctx = new Context;
 
-	if ( !ctx )
-	{
-		printf("Can't create IFFile root context\n");
-		exit(1);
-	}
+    if ( !ctx )
+    {
+        printf("Can't create IFFile root context\n");
+        exit(1);
+    }
 
-	ctx->TAG = TAG_FORM;
-	ctx->TAG_EXTENSION = TAG_NONE;
-	ctx->TAG_SIZE = 0x80000000;
-	ctx->position = 0;
+    ctx->TAG = TAG_FORM;
+    ctx->TAG_EXTENSION = TAG_NONE;
+    ctx->TAG_SIZE = 0x80000000;
+    ctx->position = 0;
 
-	ctxStack.push_front(ctx);
+    ctxStack.push_front(ctx);
 }
 
 IFFile::IFFile(FSMgr::FileHandle *handle, bool forWrite, bool _freeAfterUse)
 {
-	_Init();
-	file_handle = handle;
+    _Init();
+    file_handle = handle;
 
-	if (forWrite)
-		flags |= IFF_FLAGS_WRITE;
+    if (forWrite)
+        flags |= IFF_FLAGS_WRITE;
 
-	freeAfterUse = _freeAfterUse;
+    freeAfterUse = _freeAfterUse;
 }
 
 IFFile::~IFFile()
 {
-	for(CtxList::iterator it = ctxStack.begin(); it != ctxStack.end(); it++)
-		delete *it;
+    for(CtxList::iterator it = ctxStack.begin(); it != ctxStack.end(); it++)
+        delete *it;
 
-	if (freeAfterUse)
-		delete file_handle;
+    if (freeAfterUse)
+        delete file_handle;
 }
 
 IFFile *IFFile::openIFFile(const char *filename, bool forWrite)
 {
-	std::string tmpBuf = "rsrc:";
-	tmpBuf += filename;
+    std::string tmpBuf = "rsrc:";
+    tmpBuf += filename;
 
-	FSMgr::FileHandle *fil;
+    FSMgr::FileHandle *fil;
 
-	if (forWrite)
-		fil = uaOpenFile(tmpBuf.c_str(), "wb");
-	else
-		fil = uaOpenFile(tmpBuf.c_str(), "rb");
+    if (forWrite)
+        fil = uaOpenFile(tmpBuf.c_str(), "wb");
+    else
+        fil = uaOpenFile(tmpBuf.c_str(), "rb");
 
-	if ( !fil )
-		return NULL;
+    if ( !fil )
+        return NULL;
 
-	IFFile *tmp = new IFFile(fil, forWrite, true);
+    IFFile *tmp = new IFFile(fil, forWrite, true);
 
-	if (!tmp)
-		delete fil;
+    if (!tmp)
+        delete fil;
 
-	return tmp;
+    return tmp;
 }
 
 int IFFile::pushChunk(uint32_t TAG1, uint32_t TAG2, int32_t TAG_SZ)
 {
-	int32_t position = 0;
+    int32_t position = 0;
 
-	if ( flags & IFF_FLAGS_WRITE )
-	{
-		Context *currentCtx = ctxStack.front();
+    if ( flags & IFF_FLAGS_WRITE )
+    {
+        Context *currentCtx = ctxStack.front();
 
-		if ( currentCtx->TAG != TAG_FORM )
-			return IFF_ERR_SYNTAX;
+        if ( currentCtx->TAG != TAG_FORM )
+            return IFF_ERR_SYNTAX;
 
-		if ( !file_handle->writeU32B(TAG2) )
-			return IFF_ERR_WRITE;
+        if ( !file_handle->writeU32B(TAG2) )
+            return IFF_ERR_WRITE;
 
-		if ( !file_handle->writeU32B(TAG_SZ) )
-			return IFF_ERR_WRITE;
+        if ( !file_handle->writeU32B(TAG_SZ) )
+            return IFF_ERR_WRITE;
 
-		if ( TAG2 == TAG_FORM )
-		{
-			if ( !file_handle->writeU32B(TAG1) )
-				return IFF_ERR_WRITE;
+        if ( TAG2 == TAG_FORM )
+        {
+            if ( !file_handle->writeU32B(TAG1) )
+                return IFF_ERR_WRITE;
 
-			position = 4;
-		}
-		else
-		{
-			TAG1 = currentCtx->TAG_EXTENSION;
-		}
-	}
-	else                                          // READING
-	{
-		Context *currentCtx = ctxStack.front();
+            position = 4;
+        }
+        else
+        {
+            TAG1 = currentCtx->TAG_EXTENSION;
+        }
+    }
+    else                                          // READING
+    {
+        Context *currentCtx = ctxStack.front();
 
-		if ( currentCtx->TAG != TAG_FORM )
-			return IFF_ERR_EOC;
+        if ( currentCtx->TAG != TAG_FORM )
+            return IFF_ERR_EOC;
 
-		if ( currentCtx->TAG_SIZE == currentCtx->position )
-			return IFF_ERR_EOC;
+        if ( currentCtx->TAG_SIZE == currentCtx->position )
+            return IFF_ERR_EOC;
 
-		TAG2 = file_handle->readU32B();
+        TAG2 = file_handle->readU32B();
 
-		TAG_SZ = file_handle->readU32B();
+        TAG_SZ = file_handle->readU32B();
 
-		TAG1 = currentCtx->TAG_EXTENSION;
+        TAG1 = currentCtx->TAG_EXTENSION;
 
-		if ( TAG2 == TAG_FORM )
-		{
-			TAG1 = file_handle->readU32B();
+        if ( TAG2 == TAG_FORM )
+        {
+            TAG1 = file_handle->readU32B();
 
-			position = 4;
-		}
-	}
+            position = 4;
+        }
+    }
 
-	Context *ctx = new Context();
+    Context *ctx = new Context();
 
-	if ( !ctx )
-		return IFF_ERR_MEM;
+    if ( !ctx )
+        return IFF_ERR_MEM;
 
-	ctx->TAG = TAG2;
-	ctx->TAG_EXTENSION = TAG1;
-	ctx->TAG_SIZE = TAG_SZ;
-	ctx->position = position;
+    ctx->TAG = TAG2;
+    ctx->TAG_EXTENSION = TAG1;
+    ctx->TAG_SIZE = TAG_SZ;
+    ctx->position = position;
 
-	ctxStack.push_front(ctx);
+    ctxStack.push_front(ctx);
 
-	depth++;
+    depth++;
 
-	return IFF_ERR_OK;
+    return IFF_ERR_OK;
 }
 
 int IFFile::popChunk()
 {
-	Context *ctx = ctxStack.front();
-	int TAG_SZ = ctx->TAG_SIZE;
+    Context *ctx = ctxStack.front();
+    int TAG_SZ = ctx->TAG_SIZE;
 
-	if ( ctx->TAG == TAG_FORM && ctx->TAG_EXTENSION == TAG_NONE )
-		return IFF_ERR_SYNTAX;
+    if ( ctx->TAG == TAG_FORM && ctx->TAG_EXTENSION == TAG_NONE )
+        return IFF_ERR_SYNTAX;
 
-	if ( flags & IFF_FLAGS_WRITE )
-	{
-		if ( TAG_SZ == -1 ) // UNKNOWN SIZE
-		{
-			TAG_SZ = ctx->position;
+    if ( flags & IFF_FLAGS_WRITE )
+    {
+        if ( TAG_SZ == -1 ) // UNKNOWN SIZE
+        {
+            TAG_SZ = ctx->position;
 
-			if ( file_handle->seek(-(ctx->position + 4), SEEK_CUR) ) // seek for write TAG SIZE
-				return IFF_ERR_SEEK;
+            if ( file_handle->seek(-(ctx->position + 4), SEEK_CUR) ) // seek for write TAG SIZE
+                return IFF_ERR_SEEK;
 
-			if ( !file_handle->writeU32B(ctx->position) )
-				return IFF_ERR_WRITE;
+            if ( !file_handle->writeU32B(ctx->position) )
+                return IFF_ERR_WRITE;
 
-			if ( file_handle->seek(ctx->position, SEEK_CUR) )
-				return IFF_ERR_SEEK;
-		}
+            if ( file_handle->seek(ctx->position, SEEK_CUR) )
+                return IFF_ERR_SEEK;
+        }
 
-		if ( ctx->position < TAG_SZ ) // if we not in the end
-			return IFF_ERR_CORRUPT;
+        if ( ctx->position < TAG_SZ ) // if we not in the end
+            return IFF_ERR_CORRUPT;
 
-		if ( TAG_SZ & 1 ) // pad 1 byte
-		{
-			if ( !file_handle->writeU8(0) )
-				return -IFF_ERR_WRITE;
+        if ( TAG_SZ & 1 ) // pad 1 byte
+        {
+            if ( !file_handle->writeU8(0) )
+                return -IFF_ERR_WRITE;
 
-			TAG_SZ++;
-		}
+            TAG_SZ++;
+        }
 
-		ctxStack.pop_front();
-		delete ctx;
+        ctxStack.pop_front();
+        delete ctx;
 
-		ctxStack.front()->position += TAG_SZ + 8;
+        ctxStack.front()->position += TAG_SZ + 8;
 
-		depth--;
-	}
-	else
-	{
-		if ( ctx->TAG != TAG_FORM )
-		{
-			if ( ctx->position < TAG_SZ && file_handle->seek(TAG_SZ -  ctx->position, SEEK_CUR) )
-				return IFF_ERR_SEEK;
+        depth--;
+    }
+    else
+    {
+        if ( ctx->TAG != TAG_FORM )
+        {
+            if ( ctx->position < TAG_SZ && file_handle->seek(TAG_SZ -  ctx->position, SEEK_CUR) )
+                return IFF_ERR_SEEK;
 
-			if ( TAG_SZ & 1 ) // pad 1 byte
-			{
-				if ( file_handle->seek(1, SEEK_CUR) )
-					return IFF_ERR_SEEK;
+            if ( TAG_SZ & 1 ) // pad 1 byte
+            {
+                if ( file_handle->seek(1, SEEK_CUR) )
+                    return IFF_ERR_SEEK;
 
-				TAG_SZ++;
-			}
-		}
+                TAG_SZ++;
+            }
+        }
 
-		ctxStack.pop_front();
-		delete ctx;
+        ctxStack.pop_front();
+        delete ctx;
 
-		ctx = ctxStack.front();
-		if ( ctx->TAG == TAG_FORM && ctx->TAG_EXTENSION == TAG_NONE )
-			return IFF_ERR_EOF;
+        ctx = ctxStack.front();
+        if ( ctx->TAG == TAG_FORM && ctx->TAG_EXTENSION == TAG_NONE )
+            return IFF_ERR_EOF;
 
-		ctx->position += TAG_SZ + 8;
-		depth--;
-	}
+        ctx->position += TAG_SZ + 8;
+        depth--;
+    }
 
-	return IFF_ERR_OK;
+    return IFF_ERR_OK;
 }
 
 int IFFile::parse()
 {
-	int res = IFF_ERR_SYNTAX;
+    int res = IFF_ERR_SYNTAX;
 
-	if (flags & IFF_FLAGS_POP)
-	{
-		res = popChunk();
-		flags &= ~IFF_FLAGS_POP;
+    if (flags & IFF_FLAGS_POP)
+    {
+        res = popChunk();
+        flags &= ~IFF_FLAGS_POP;
 
-		if (res != IFF_ERR_OK)
-			return res;
-	}
+        if (res != IFF_ERR_OK)
+            return res;
+    }
 
-	res = pushChunk(TAG_NONE, TAG_NONE, -1);
-	if ( res == IFF_ERR_EOC )
-		flags |= IFF_FLAGS_POP;
+    res = pushChunk(TAG_NONE, TAG_NONE, -1);
+    if ( res == IFF_ERR_EOC )
+        flags |= IFF_FLAGS_POP;
 
-	return res;
+    return res;
 }
 
 bool IFFile::skipChunk()
 {
-	while ( 1 )
-	{
-		int res = parse();
+    while ( 1 )
+    {
+        int res = parse();
 
-		if (res == IFF_ERR_EOC)
-			break;
-		else if ( res )
-			return false;
+        if (res == IFF_ERR_EOC)
+            break;
+        else if ( res )
+            return false;
 
-		if ( !skipChunk() )
-			return false;
-	}
+        if ( !skipChunk() )
+            return false;
+    }
 
-	return true;
+    return true;
 }
 
 int32_t IFFile::read(void *buf, int32_t sz)
 {
-	Context *ctx = getCurrentChunk();
+    Context *ctx = getCurrentChunk();
 
-	if ( !ctx )
-		return IFF_ERR_SYNTAX;
+    if ( !ctx )
+        return IFF_ERR_SYNTAX;
 
-	if ( ctx->TAG == TAG_FORM )
-		return IFF_ERR_SYNTAX;
+    if ( ctx->TAG == TAG_FORM )
+        return IFF_ERR_SYNTAX;
 
-	if ( sz + ctx->position > ctx->TAG_SIZE )
-	{
-		if (ctx->TAG_SIZE == ctx->position)
-			return 0;
+    if ( sz + ctx->position > ctx->TAG_SIZE )
+    {
+        if (ctx->TAG_SIZE == ctx->position)
+            return 0;
 
-		sz = ctx->TAG_SIZE - ctx->position;
-	}
+        sz = ctx->TAG_SIZE - ctx->position;
+    }
 
-	ctx->position += sz;
+    ctx->position += sz;
 
-	int32_t readed = file_handle->read(buf, sz);
+    int32_t readed = file_handle->read(buf, sz);
 
-	if ( readed != sz )
-		return IFF_ERR_READ;
+    if ( readed != sz )
+        return IFF_ERR_READ;
 
-	return readed;
+    return readed;
 }
 
 int32_t IFFile::write(const void *buf, int32_t sz)
 {
-	Context *ctx = getCurrentChunk();
+    Context *ctx = getCurrentChunk();
 
-	if ( !ctx )
-		return IFF_ERR_SYNTAX;
+    if ( !ctx )
+        return IFF_ERR_SYNTAX;
 
-	if ( ctx->TAG == TAG_FORM )
-		return IFF_ERR_SYNTAX;
+    if ( ctx->TAG == TAG_FORM )
+        return IFF_ERR_SYNTAX;
 
-	if ( ctx->TAG_SIZE != -1 &&
-			ctx->position + sz <= ctx->TAG_SIZE)
-	{
-		if ( ctx->TAG_SIZE == ctx->position )
-			return 0;
+    if ( ctx->TAG_SIZE != -1 &&
+            ctx->position + sz <= ctx->TAG_SIZE)
+    {
+        if ( ctx->TAG_SIZE == ctx->position )
+            return 0;
 
-		sz = ctx->TAG_SIZE - ctx->position;
-	}
+        sz = ctx->TAG_SIZE - ctx->position;
+    }
 
-	ctx->position += sz;
-	int32_t writed = file_handle->write(buf, sz);
+    ctx->position += sz;
+    int32_t writed = file_handle->write(buf, sz);
 
-	if ( writed != sz )
-		return IFF_ERR_WRITE;
+    if ( writed != sz )
+        return IFF_ERR_WRITE;
 
-	return writed;
+    return writed;
 }
 
 IFFile::Context *IFFile::getCurrentChunk()
 {
-	Context *ctx = ctxStack.front();
-	if ( ctx->TAG == TAG_FORM && ctx->TAG_EXTENSION == TAG_NONE )
-		return NULL;
-	return ctx;
+    Context *ctx = ctxStack.front();
+    if ( ctx->TAG == TAG_FORM && ctx->TAG_EXTENSION == TAG_NONE )
+        return NULL;
+    return ctx;
 }
 
 bool IFFile::readU8(uint8_t &dst)
