@@ -454,6 +454,26 @@ uint8_t *SDLWRAP_makeScreenCopy(int &ow, int &oh)
     return buf;
 }
 
+uint8_t *SDLWRAP_makeDepthScreenCopy(int &ow, int &oh)
+{
+    int ww,wh;
+    SDL_GL_GetDrawableSize(window, &ww, &wh);
+
+    // power of 2
+    ww &= ~1;
+    wh &= ~1;
+
+    uint8_t *buf = (uint8_t *)malloc(ww * wh);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glReadBuffer(GL_FRONT);
+    glReadPixels(0, 0, ww, wh, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, buf);
+
+    ow = ww;
+    oh = wh;
+    return buf;
+}
+
 void SDLWRAP_mousePosNorm(SDLWRAP_Point &in)
 {
     if (sW != curW || sH != curH)

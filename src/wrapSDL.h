@@ -27,6 +27,7 @@ SDL_Surface *SDLWRAP_getScreenSurface();
 TTF_Font *SDLWRAP_loadFont(const char *fontname, int height);
 
 uint8_t *SDLWRAP_makeScreenCopy(int &ow, int &oh);
+uint8_t *SDLWRAP_makeDepthScreenCopy(int &ow, int &oh);
 
 void SDLWRAP_addHandler(SDL_EventFilter);
 void SDLWRAP_GL_mapFormat(uint32_t pixelFormat, GLint *format, GLint *type);
