@@ -307,12 +307,13 @@ size_t NC_STACK_amesh::func5(IFFile **file)
 
                     for (int j = 0; j < cnt; j++)
                     {
-                        uint8_t tmp[2];
-                        mfile->readU8(tmp[0]);
-                        mfile->readU8(tmp[1]);
+                        uint8_t x; //If you cross refernce the VBMP these are the X,Y coordinates 
+                        uint8_t y; // as it is stored on disk
+                        mfile->readU8(x);
+                        mfile->readU8(y);
 
-                        uv->tu = tmp[0] / 256.0;
-                        uv->tv = tmp[1] / 256.0;
+                        uv->tu = x / 256.0;
+                        uv->tv = y / 256.0;
                         uv++;
                     }
 
@@ -377,12 +378,13 @@ size_t NC_STACK_amesh::func6(IFFile **file)
 
             for (int j = 0; j < cnt; j++)
             {
-                uint8_t tmp[2];
-                tmp[0] = uv[j].tu * 256.0;
-                tmp[1] = uv[j].tv * 256.0;
+                uint8_t x;
+                uint8_t y;
+                x = uv[j].tu * 256.0;
+                y = uv[j].tv * 256.0;
 
-                mfile->writeU8(tmp[0]);
-                mfile->writeU8(tmp[1]);
+                mfile->writeU8(x);
+                mfile->writeU8(y);
             }
         }
         mfile->popChunk();
