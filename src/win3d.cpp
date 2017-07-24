@@ -489,12 +489,6 @@ int NC_STACK_win3d::initPolyEngine()
     for (int i = 0; i < W3D_STATES_MAX; i++)
         w3d->rendStates2[i] = w3d->rendStates[i];
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
@@ -1778,7 +1772,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDatSub *polysDat, texStru *tex, int a5, in
 {
     struct vtxOut
     {
-        float x, y, z, rhw;
+        float x, y, z;
         float tu, tv;
         uint8_t r, g, b, a;
     };
@@ -1806,50 +1800,17 @@ void NC_STACK_win3d::sb_0x43b518(polysDatSub *polysDat, texStru *tex, int a5, in
 
     vtxOut vtx[24];
 
-    int x_max_id = 0;
-    int x_min_id = 0;
-    int y_max_id = 0;
-    int y_min_id = 0;
-
     for (int i = 0; i < polysDat->vertexCount; i++)
     {
         vtx[i].x = polysDat->vertexes[i].sx;
         vtx[i].y = polysDat->vertexes[i].sy;
-        vtx[i].z = polysDat->vertexes[i].sz / 8192.0;
-        vtx[i].rhw = polysDat->vertexes[i].sz;
+        vtx[i].z = polysDat->vertexes[i].sz;
         vtx[i].tu = 0.0;
         vtx[i].tv = 0.0;
         vtx[i].r = 255;
         vtx[i].g = 255;
         vtx[i].b = 255;
         vtx[i].a = 255;
-
-
-        if ( vtx[i].x > vtx[y_max_id].x )
-            x_max_id = i;
-        else if ( vtx[i].x < vtx[y_min_id].x )
-            x_min_id = i;
-
-        if ( vtx[i].y > vtx[y_max_id].y )
-            y_max_id = i;
-        else if ( vtx[i].y < vtx[y_min_id].y )
-            y_min_id = i;
-    }
-
-    float xLen = vtx[x_max_id].x - vtx[x_min_id].x;
-    if ( xLen <= 0.0 )
-        return;
-
-    float yLen = vtx[y_max_id].y - vtx[y_min_id].y;
-    if ( yLen <= 0.0 )
-        return;
-
-    if ( polysDat->renderFlags & 2 )
-    {
-        if ( xLen < 32.0 && yLen < 32.0 )
-        {
-            polysDat->renderFlags = (polysDat->renderFlags & 0xFFFFFFFC) | 1;
-        }
     }
 
     w3d->rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
@@ -1970,7 +1931,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDatSub *polysDat, texStru *tex, int a5, in
         {
             glColor4ub(vtx[i].r, vtx[i].g, vtx[i].b, vtx[i].a);
             glTexCoord2f(vtx[i].tu, vtx[i].tv);
-            glVertex4d(vtx[i].x * vtx[i].rhw, -vtx[i].y * vtx[i].rhw, vtx[i].z * vtx[i].rhw, vtx[i].rhw);
+            glVertex3d(vtx[i].x, -vtx[i].y, vtx[i].z);
         }
     }
     glEnd();
@@ -2323,6 +2284,12 @@ void NC_STACK_win3d::raster_func209(w3d_a209 *arg)
 
 void NC_STACK_win3d::BeginScene()
 {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glLoadMatrixd(frustum);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
     stack__win3d.sceneBeginned = 1;
 }
 
@@ -3313,6 +3280,38 @@ void NC_STACK_win3d::getAspectCorrection(float &cW, float &cH, bool invert)
         cW = stack__win3d.corrW;
         cH = stack__win3d.corrH;
     }
+}
+
+void NC_STACK_win3d::setFrustumClip(float near, float far)
+{
+    if (near != frustumNear || far != frustumFar)
+        _setFrustumClip(near, far);
+}
+
+void NC_STACK_win3d::_setFrustumClip(float near, float far)
+{
+    //-z * frustum
+    frustumNear = near;
+    frustumFar = far;
+    frustum[0] = 1.0;
+    frustum[1] = 0.0;
+    frustum[2] = 0.0;
+    frustum[3] = 0.0;
+
+    frustum[4] = 0.0;
+    frustum[5] = 1.0;
+    frustum[6] = 0.0;
+    frustum[7] = 0.0;
+
+    frustum[8] = 0.0;
+    frustum[9] = 0.0;
+    frustum[10] = (far + near) / (far - near);
+    frustum[11] = 1.0;
+
+    frustum[12] = 0.0;
+    frustum[13] = 0.0;
+    frustum[14] = -2.0 * (far * near) / (far - near);
+    frustum[15] = 0.0;
 }
 
 

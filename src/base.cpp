@@ -1032,6 +1032,8 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
     base77.adeCount = arg->field_C;
     base77.adeMax = 1000;
     base77.ownerID = base->ID;
+    base77.minZ = 1.0;
+    base77.maxZ = 1000.0;
 
     base_func77(&base77);
 
@@ -1051,6 +1053,8 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
     win3d->BeginFrame();
     win3d->setRSTR_BGpen(0);
     win3d->raster_func192(NULL);
+
+    win3d->setFrustumClip(base77.minZ, base77.maxZ);
     win3d->BeginScene();
 
     for (int i = 0; i < num; i++)
@@ -1412,8 +1416,8 @@ size_t NC_STACK_base::base_func77(baseRender_msg *arg)
 
             skel132.glob_1c = sub_430A28();
 
-            skel132.field_8 = arg->minZ;
-            skel132.field_C = arg->maxZ;
+            skel132.minZ = arg->minZ;
+            skel132.maxZ = arg->maxZ;
 
 
             v12 = base->OBJ_SKELETON->skeleton_func132(&skel132);

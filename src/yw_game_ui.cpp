@@ -9252,21 +9252,21 @@ void yw_RenderVector2D(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float pos
             float tmpx = wire->POO[i].sx * 0.001;
             float tmpz = -wire->POO[i].sz * 0.001;
 
-            wire->type2[i].sx = (tmpx * m00 + tmpz * m01) * scaleX * CW + posX;
-            wire->type2[i].sy = (tmpx * m10 + tmpz * m11) * scaleY * CH + posY;
+            wire->tformedVertex[i].sx = (tmpx * m00 + tmpz * m01) * scaleX * CW + posX;
+            wire->tformedVertex[i].sy = (tmpx * m10 + tmpz * m11) * scaleY * CH + posY;
         }
 
-        for (int i = 0; i < wire->pol_count; i++)
+        for (int i = 0; i < wire->polygonsCount; i++)
         {
-            Polygon *poly = &wire->pol_entries[i];
+            Polygon *poly = &wire->polygons[i];
 
             if (poly->num_vertices >= 2)
             {
                 w3d_func198arg v29;
-                v29.x1 = wire->type2[ poly->v[0] ].sx;
-                v29.y1 = wire->type2[ poly->v[0] ].sy;
-                v29.x2 = wire->type2[ poly->v[1] ].sx;
-                v29.y2 = wire->type2[ poly->v[1] ].sy;
+                v29.x1 = wire->tformedVertex[ poly->v[0] ].sx;
+                v29.y1 = wire->tformedVertex[ poly->v[0] ].sy;
+                v29.x2 = wire->tformedVertex[ poly->v[1] ].sx;
+                v29.y2 = wire->tformedVertex[ poly->v[1] ].sy;
 
                 if ( color_func )
                 {

@@ -742,14 +742,14 @@ size_t NC_STACK_ypacar::ypatank_func128(tank_arg128 *arg)
     if ( !arg136.field_20 )
         return 0;
 
-    Polygon *v8 = &arg136.field_3C->pol_entries[ arg136.field_38 ];
+    Polygon *v8 = &arg136.field_3C->polygons[ arg136.field_38 ];
 
     if ( v8->B < 0.6 )
     {
         arg->field_10 |= 1;
-        arg->field_14.sx = arg136.field_3C->pol_entries[ arg136.field_38 ].A;
-        arg->field_14.sy = arg136.field_3C->pol_entries[ arg136.field_38 ].B;
-        arg->field_14.sz = arg136.field_3C->pol_entries[ arg136.field_38 ].C;
+        arg->field_14.sx = arg136.field_3C->polygons[ arg136.field_38 ].A;
+        arg->field_14.sy = arg136.field_3C->polygons[ arg136.field_38 ].B;
+        arg->field_14.sz = arg136.field_3C->polygons[ arg136.field_38 ].C;
 
         return 0;
     }
@@ -989,7 +989,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
     if ( arg136.field_20 )
     {
-        Polygon *v48 = &arg136.field_3C->pol_entries[ arg136.field_38 ];
+        Polygon *v48 = &arg136.field_3C->polygons[ arg136.field_38 ];
 
         if ( fabs(v48->B) < 0.6 )
         {
@@ -1049,7 +1049,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
     if ( arg136_1.field_20 )
     {
-        Polygon *v54 = &arg136_1.field_3C->pol_entries[ arg136_1.field_38 ];
+        Polygon *v54 = &arg136_1.field_3C->polygons[ arg136_1.field_38 ];
 
         if ( fabs(v54->B) < 0.6 )
         {
@@ -1109,7 +1109,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
     if ( arg136_2.field_20 )
     {
-        Polygon *v54 = &arg136_2.field_3C->pol_entries[ arg136_2.field_38 ];
+        Polygon *v54 = &arg136_2.field_3C->polygons[ arg136_2.field_38 ];
 
         if ( fabs(v54->B) < 0.6 )
         {
@@ -1165,7 +1165,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
             if ( arg136_3.field_20 )
             {
-                if ( arg136_3.field_3C->pol_entries[ arg136_3.field_38 ].B < 0.6 )
+                if ( arg136_3.field_3C->polygons[ arg136_3.field_38 ].B < 0.6 )
                 {
                     if ( bact->fly_dir_length > 2.333333333333334 )
                     {
@@ -1321,7 +1321,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
     car->ywo->ypaworld_func136(&arg136_4);
 
-    if ( arg136_4.field_20 && (!arg136_4.field_20 || arg136_4.field_3C->pol_entries[ arg136_4.field_38 ].B >= 0.6) )
+    if ( arg136_4.field_20 && (!arg136_4.field_20 || arg136_4.field_3C->polygons[ arg136_4.field_38 ].B >= 0.6) )
     {
         bact->position.sy = arg136_4.field_30 - v5;
         return 0;

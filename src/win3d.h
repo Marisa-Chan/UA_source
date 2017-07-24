@@ -192,6 +192,7 @@ public:
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_win3d() {
+        _setFrustumClip(1.0, 10.0);
         //memset(&stack__win3d, 0, sizeof(stack__win3d));
     };
     virtual ~NC_STACK_win3d() {};
@@ -235,6 +236,8 @@ public:
     void matrixAspectCorrection(mat3x3 *inout, bool invert);
     void getAspectCorrection(float &cW, float &cH, bool invert);
 
+    void setFrustumClip(float near, float far);
+
 protected:
     int initPolyEngine();
     int initPixelFormats();
@@ -249,11 +252,18 @@ protected:
 
     static SDL_Cursor *wrapLoadCursor(const char *name);
 
+    void _setFrustumClip(float near, float far);
+
 public:
     //Data
     static const NewClassDescr description;
 
     __NC_STACK_win3d stack__win3d;
+
+protected:
+    GLdouble frustum[16];
+    float frustumNear;
+    float frustumFar;
 };
 
 

@@ -1301,9 +1301,9 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
                 else if ( robo->coll.roboColls[i].robo_coll_radius > 0.01 )
                 {
                     bact_arg88 arg88;
-                    arg88.pos1.sx = arg136.field_3C->pol_entries[ arg136.field_38 ].A;
-                    arg88.pos1.sy = arg136.field_3C->pol_entries[ arg136.field_38 ].B;
-                    arg88.pos1.sz = arg136.field_3C->pol_entries[ arg136.field_38 ].C;
+                    arg88.pos1.sx = arg136.field_3C->polygons[ arg136.field_38 ].A;
+                    arg88.pos1.sy = arg136.field_3C->polygons[ arg136.field_38 ].B;
+                    arg88.pos1.sz = arg136.field_3C->polygons[ arg136.field_38 ].C;
 
                     arg88.pos2.sx = 0.2;
                     arg88.pos2.sy = 2.0;

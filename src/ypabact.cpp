@@ -1803,9 +1803,9 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
         {
             if ( v78 + v79 > arg136.field_24 * 300.0 )
             {
-                arg88.pos1.sx = arg136.field_3C->pol_entries[arg136.field_38].A;
-                arg88.pos1.sy = arg136.field_3C->pol_entries[arg136.field_38].B;
-                arg88.pos1.sz = arg136.field_3C->pol_entries[arg136.field_38].C;
+                arg88.pos1.sx = arg136.field_3C->polygons[arg136.field_38].A;
+                arg88.pos1.sy = arg136.field_3C->polygons[arg136.field_38].B;
+                arg88.pos1.sz = arg136.field_3C->polygons[arg136.field_38].C;
                 v18++;
             }
         }
@@ -1814,9 +1814,9 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
         {
             if ( v78 + v79 > arg136_1.field_24 * 300.0 )
             {
-                arg88.pos1.sx += arg136_1.field_3C->pol_entries[arg136_1.field_38].A;
-                arg88.pos1.sy += arg136_1.field_3C->pol_entries[arg136_1.field_38].B;
-                arg88.pos1.sz += arg136_1.field_3C->pol_entries[arg136_1.field_38].C;
+                arg88.pos1.sx += arg136_1.field_3C->polygons[arg136_1.field_38].A;
+                arg88.pos1.sy += arg136_1.field_3C->polygons[arg136_1.field_38].B;
+                arg88.pos1.sz += arg136_1.field_3C->polygons[arg136_1.field_38].C;
                 v18++;
             }
         }
@@ -1825,9 +1825,9 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
         {
             if ( v78 + v79 > arg136_2.field_24 * 300.0 )
             {
-                arg88.pos1.sx += arg136_2.field_3C->pol_entries[arg136_2.field_38].A;
-                arg88.pos1.sy += arg136_2.field_3C->pol_entries[arg136_2.field_38].B;
-                arg88.pos1.sz += arg136_2.field_3C->pol_entries[arg136_2.field_38].C;
+                arg88.pos1.sx += arg136_2.field_3C->polygons[arg136_2.field_38].A;
+                arg88.pos1.sy += arg136_2.field_3C->polygons[arg136_2.field_38].B;
+                arg88.pos1.sz += arg136_2.field_3C->polygons[arg136_2.field_38].C;
                 v18++;
             }
         }
@@ -1923,9 +1923,9 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
         {
             if ( arg136_3.field_24 * bact->height < bact->radius && bact->fly_dir.sy > 0.0 )
             {
-                arg88.pos1.sx = arg88.pos1.sx + arg136_3.field_3C->pol_entries[arg136_3.field_38].A;
-                arg88.pos1.sy = arg88.pos1.sy + arg136_3.field_3C->pol_entries[arg136_3.field_38].B;
-                arg88.pos1.sz = arg88.pos1.sz + arg136_3.field_3C->pol_entries[arg136_3.field_38].C;
+                arg88.pos1.sx = arg88.pos1.sx + arg136_3.field_3C->polygons[arg136_3.field_38].A;
+                arg88.pos1.sy = arg88.pos1.sy + arg136_3.field_3C->polygons[arg136_3.field_38].B;
+                arg88.pos1.sz = arg88.pos1.sz + arg136_3.field_3C->polygons[arg136_3.field_38].C;
                 v18++;
             }
         }
@@ -2612,9 +2612,9 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
                     if ( arg136.field_20 )
                     {
                         bact_arg88 arg88;
-                        arg88.pos1.sx = arg136.field_3C->pol_entries[arg136.field_38].A;
-                        arg88.pos1.sy = arg136.field_3C->pol_entries[arg136.field_38].B;
-                        arg88.pos1.sz = arg136.field_3C->pol_entries[arg136.field_38].C;
+                        arg88.pos1.sx = arg136.field_3C->polygons[arg136.field_38].A;
+                        arg88.pos1.sy = arg136.field_3C->polygons[arg136.field_38].B;
+                        arg88.pos1.sz = arg136.field_3C->polygons[arg136.field_38].C;
                         arg88.pos2.sx = 0.7;
                         arg88.pos2.sy = 2.0;
                         arg88.pos2.sz = v106;
@@ -4899,9 +4899,9 @@ size_t NC_STACK_ypabact::CrashOrLand(bact_arg86 *arg)
                     {
                         bact_arg88 arg88;
 
-                        arg88.pos1.sx = arg136.field_3C->pol_entries[arg136.field_38].A;
-                        arg88.pos1.sy = arg136.field_3C->pol_entries[arg136.field_38].B;
-                        arg88.pos1.sz = arg136.field_3C->pol_entries[arg136.field_38].C;
+                        arg88.pos1.sx = arg136.field_3C->polygons[arg136.field_38].A;
+                        arg88.pos1.sy = arg136.field_3C->polygons[arg136.field_38].B;
+                        arg88.pos1.sz = arg136.field_3C->polygons[arg136.field_38].C;
 
                         xyz a2a = arg88.pos1;
 
@@ -4934,7 +4934,7 @@ size_t NC_STACK_ypabact::CrashOrLand(bact_arg86 *arg)
                                 bact->ywo->ypaworld_func180(&arg180);
                             }
 
-                            if ( arg136.field_3C->pol_entries[arg136.field_38].B < 0.6 )
+                            if ( arg136.field_3C->polygons[arg136.field_38].B < 0.6 )
                             {
                                 arg88.pos2.sy = 0.7;
                                 arg88.pos2.sx = 0.7;
@@ -4968,7 +4968,7 @@ size_t NC_STACK_ypabact::CrashOrLand(bact_arg86 *arg)
                                 bact->reb_count = 0;
                             }
                         }
-                        else if ( arg136.field_3C->pol_entries[arg136.field_38].B < 0.6 )
+                        else if ( arg136.field_3C->polygons[arg136.field_38].B < 0.6 )
                         {
                             arg88.pos2.sy = 2.0;
                             arg88.pos2.sx = 0.7;
@@ -6790,9 +6790,9 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
                         v57->SetStateInternal(&v69);
 
                         miss_arg130 v61;
-                        v61.pos.sx = v59.field_3C->pol_entries[ v59.field_38 ].A;
-                        v61.pos.sy = v59.field_3C->pol_entries[ v59.field_38 ].B;
-                        v61.pos.sz = v59.field_3C->pol_entries[ v59.field_38 ].C;
+                        v61.pos.sx = v59.field_3C->polygons[ v59.field_38 ].A;
+                        v61.pos.sy = v59.field_3C->polygons[ v59.field_38 ].B;
+                        v61.pos.sz = v59.field_3C->polygons[ v59.field_38 ].C;
 
                         v57->ypamissile_func131(&v61);
                     }

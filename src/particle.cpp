@@ -261,7 +261,7 @@ int sub_41A8D0(NC_STACK_particle::__NC_STACK_particle *prtcl)
 
     prtcl->particle_sklt_intern = prtcl->particle_sklt->getSKEL_pSkelet();
 
-    Polygon *v3 = prtcl->particle_sklt_intern->pol_entries;
+    Polygon *v3 = prtcl->particle_sklt_intern->polygons;
 
     v3[0].num_vertices = 4;
     v3[0].v[0] = 1;
@@ -941,7 +941,7 @@ void particle_func65__sub0__sub1(NC_STACK_particle::__NC_STACK_particle *prtcl, 
 {
     TForm3D *glob = arg->view;
     mat3x3 *pmat = &glob->globSclRot;
-    skeleton_type1 *v14 = prtcl->particle_sklt_intern->type2;
+    Vertex *v14 = prtcl->particle_sklt_intern->tformedVertex;
 
     int v27 = -1;
 
@@ -1074,7 +1074,7 @@ void particle_func65__sub0(NC_STACK_particle::__NC_STACK_particle *prtcl, NC_STA
             v44.sy = v11->globSclRot.m10 * a + v11->globSclRot.m11 * b + v11->globSclRot.m12 * c;
             v44.sz = v11->globSclRot.m20 * a + v11->globSclRot.m21 * b + v11->globSclRot.m22 * c;
 
-            skeleton_type1 *v19 = &arg->sklt->POO[prtcl->field_c];
+            Vertex *v19 = &arg->sklt->POO[prtcl->field_c];
 
             xyz v45;
             v45.sx = v11->globSclRot.m00 * v19->sx + v11->globSclRot.m01 * v19->sy + v11->globSclRot.m02 * v19->sz + arg->owner->globPos.sx;

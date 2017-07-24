@@ -4,11 +4,23 @@
 #include "rsrc.h"
 #include "engine_gfx.h"
 
-#define SKELETON_MAX_VERTEX 10
+#define SKELETON_MAX_VERTEX 12
 
-struct skeleton_type1: public xyz
+struct Vertex: public xyz
 {
     int flags;
+
+    enum CLIP
+    {
+        CLIP_NONE = 0,
+        CLIP_LEFT = 1,
+        CLIP_RIGHT = 2,
+        CLIP_BOTTOM = 4,
+        CLIP_TOP = 8,
+        CLIP_NEAR = 0x10,
+        CLIP_FAR = 0x20,
+        CLIP_ANY = (CLIP_LEFT | CLIP_RIGHT | CLIP_BOTTOM | CLIP_TOP | CLIP_NEAR | CLIP_FAR)
+    };
 };
 
 // Geometry plane Ax + Bx + Cz + D = 0
@@ -27,16 +39,43 @@ struct Polygon
 
 struct skeleton_64_stru
 {
-    skeleton_type1 *POO;
+    Vertex *POO;
     int16_t POO_NUM;
-    int16_t sen_count;
 
-    Polygon *pol_entries;
+    Vertex *SEN;
+    int16_t SEN_NUM;
 
-    int pol_count;
-    skeleton_type1 *sen_entries;
-    int field_14;
-    skeleton_type1 *type2;
+    Polygon *polygons;
+    int polygonsCount;
+
+    Vertex *tformedVertex;
+
+
+    skeleton_64_stru()
+    {
+        POO = NULL;
+        SEN = NULL;
+        polygons = NULL;
+        tformedVertex = NULL;
+        POO_NUM = 0;
+        SEN_NUM = 0;
+        polygonsCount = 0;
+    };
+
+    ~skeleton_64_stru()
+    {
+        if ( POO )
+            delete POO;
+
+        if ( polygons )
+            delete polygons;
+
+        if ( SEN )
+            delete SEN;
+
+        if ( tformedVertex )
+            delete tformedVertex;
+    };
 };
 
 struct __NC_STACK_skeleton
@@ -63,30 +102,8 @@ struct skeleton_arg_132
 {
     TForm3D *base_1c;
     TForm3D *glob_1c;
-    float field_8;
-    float field_C;
-};
-
-struct skeleton_intern133
-{
-    skeleton_type1 *skt1;
-    skeleton_type1 *skt2;
-    tUtV *uv1;
-    tUtV *uv2;
-    int field_10;
-    float field_14;
-    float field_18;
-};
-
-struct skeleton_intern133_sb
-{
-    skeleton_intern133 intern133;
-    int field_1C;
-    int field_20;
-    int field_24;
-    int field_28;
-    int field_2C;
-    int field_30;
+    float minZ;
+    float maxZ;
 };
 
 struct skeleton_arg133
@@ -95,11 +112,11 @@ struct skeleton_arg133
     int field_4;
     polysDatSub *rndrArg;
     tUtV *texCoords;
-    float field_10;
-    float field_14;
-    float field_18;
-    float field_1C;
-    float field_20;
+    float minZ;
+    float maxZ;
+    float shadeVal;
+    float fadeStart;
+    float fadeLength;
 };
 
 class NC_STACK_skeleton: public NC_STACK_rsrc
@@ -144,7 +161,12 @@ public:
     virtual int getSKEL_senCount();
     virtual int getSKEL_polyCount();
 
+protected:
+    bool PolygonCheckInvisible(Vertex *in, xyz *out, Polygon *pol);
+    bool TransformVertexes(skeleton_arg_132 *arg, Vertex *in, Vertex *out, int num);
 
+
+public:
     //Data
     static const NewClassDescr description;
 

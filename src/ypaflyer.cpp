@@ -676,9 +676,9 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
         {
             if ( v89 + v91 > arg136.field_24 * 300.0 )
             {
-                arg88.pos1.sx = arg136.field_3C->pol_entries[arg136.field_38].A;
-                arg88.pos1.sy = arg136.field_3C->pol_entries[arg136.field_38].B;
-                arg88.pos1.sz = arg136.field_3C->pol_entries[arg136.field_38].C;
+                arg88.pos1.sx = arg136.field_3C->polygons[arg136.field_38].A;
+                arg88.pos1.sy = arg136.field_3C->polygons[arg136.field_38].B;
+                arg88.pos1.sz = arg136.field_3C->polygons[arg136.field_38].C;
 
                 v18++;
             }
@@ -688,9 +688,9 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
         {
             if ( v89 + v91 > arg136_1.field_24 * 300.0 )
             {
-                arg88.pos1.sx += arg136_1.field_3C->pol_entries[arg136_1.field_38].A;
-                arg88.pos1.sy += arg136_1.field_3C->pol_entries[arg136_1.field_38].B;
-                arg88.pos1.sz += arg136_1.field_3C->pol_entries[arg136_1.field_38].C;
+                arg88.pos1.sx += arg136_1.field_3C->polygons[arg136_1.field_38].A;
+                arg88.pos1.sy += arg136_1.field_3C->polygons[arg136_1.field_38].B;
+                arg88.pos1.sz += arg136_1.field_3C->polygons[arg136_1.field_38].C;
 
                 v18++;
             }
@@ -700,9 +700,9 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
         {
             if ( v89 + v91 > arg136_2.field_24 * 300.0 )
             {
-                arg88.pos1.sx += arg136_2.field_3C->pol_entries[arg136_2.field_38].A;
-                arg88.pos1.sy += arg136_2.field_3C->pol_entries[arg136_2.field_38].B;
-                arg88.pos1.sz += arg136_2.field_3C->pol_entries[arg136_2.field_38].C;
+                arg88.pos1.sx += arg136_2.field_3C->polygons[arg136_2.field_38].A;
+                arg88.pos1.sy += arg136_2.field_3C->polygons[arg136_2.field_38].B;
+                arg88.pos1.sz += arg136_2.field_3C->polygons[arg136_2.field_38].C;
 
                 v18++;
             }
@@ -812,9 +812,9 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
 
         if ( arg136_3.field_20 && arg136_3.field_24 * bact->height < bact->radius && bact->fly_dir.sy > 0.0 )
         {
-            arg88.pos1.sx = arg136_3.field_3C->pol_entries[arg136_3.field_38].A;
-            arg88.pos1.sy = arg136_3.field_3C->pol_entries[arg136_3.field_38].B;
-            arg88.pos1.sz = arg136_3.field_3C->pol_entries[arg136_3.field_38].C;
+            arg88.pos1.sx = arg136_3.field_3C->polygons[arg136_3.field_38].A;
+            arg88.pos1.sy = arg136_3.field_3C->polygons[arg136_3.field_38].B;
+            arg88.pos1.sz = arg136_3.field_3C->polygons[arg136_3.field_38].C;
 
             arg88.pos2.sx = 0.7;
             arg88.pos2.sy = 2.0;
@@ -1379,9 +1379,9 @@ void NC_STACK_ypaflyer::User_layer(update_msg *arg)
                     if ( arg136.field_20 )
                     {
                         bact_arg88 arg88;
-                        arg88.pos1.sx = arg136.field_3C->pol_entries[ arg136.field_38 ].A;
-                        arg88.pos1.sy = arg136.field_3C->pol_entries[ arg136.field_38 ].B;
-                        arg88.pos1.sz = arg136.field_3C->pol_entries[ arg136.field_38 ].C;
+                        arg88.pos1.sx = arg136.field_3C->polygons[ arg136.field_38 ].A;
+                        arg88.pos1.sy = arg136.field_3C->polygons[ arg136.field_38 ].B;
+                        arg88.pos1.sz = arg136.field_3C->polygons[ arg136.field_38 ].C;
                         arg88.pos2.sx = 0.7;
                         arg88.pos2.sy = 2.0;
                         arg88.pos2.sz = a2;

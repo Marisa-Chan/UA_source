@@ -231,6 +231,7 @@ int sub_4D7BFC(const void *a1, const void *a2)
 
 void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc)
 {
+    yw->win3d->setFrustumClip(17.0, 32000.0);
     yw->win3d->BeginScene();
 
     brf->field_4174.frameTime = 1;

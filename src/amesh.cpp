@@ -397,36 +397,36 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
     __NC_STACK_amesh *amesh = &stack__amesh;
 
     //v5 = *(_uint16_t *)(amesh->field_14 + 6) & 0xFEF6;
-    int v5 = stack__area.polflags & ~(AREA_POL_FLAG_SCANLN | AREA_POL_FLAG_TEXBIT | AREA_POL_FLAG_TRACYBIT3);
+    int renderFlags = stack__area.polflags & ~(AREA_POL_FLAG_SCANLN | AREA_POL_FLAG_TEXBIT | AREA_POL_FLAG_TRACYBIT3);
 
-    if (v5 == 0)
-        v5 = 0;
-    else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
-        v5 = NC_STACK_display::RSTR_RFLAGS_LINMAP;
+    if (renderFlags == 0)
+        renderFlags = 0;
+    else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
+        renderFlags = NC_STACK_display::RSTR_RFLAGS_LINMAP;
 
-    else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
-        v5 = NC_STACK_display::RSTR_RFLAGS_PERSPMAP;
+    else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
+        renderFlags = NC_STACK_display::RSTR_RFLAGS_PERSPMAP;
 
-    else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
-        v5 = NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_GRADSHD;
+    else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
+        renderFlags = NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_GRADSHD;
 
-    else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
-        v5 = NC_STACK_display::RSTR_RFLAGS_PERSPMAP | NC_STACK_display::RSTR_RFLAGS_GRADSHD;
+    else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
+        renderFlags = NC_STACK_display::RSTR_RFLAGS_PERSPMAP | NC_STACK_display::RSTR_RFLAGS_GRADSHD;
 
-    else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        v5 = NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_ZEROTRACY;
+    else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        renderFlags = NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_ZEROTRACY;
 
-    else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        v5 = NC_STACK_display::RSTR_RFLAGS_PERSPMAP | NC_STACK_display::RSTR_RFLAGS_ZEROTRACY;
+    else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        renderFlags = NC_STACK_display::RSTR_RFLAGS_PERSPMAP | NC_STACK_display::RSTR_RFLAGS_ZEROTRACY;
 
-    else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        v5 = NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_GRADSHD | NC_STACK_display::RSTR_RFLAGS_ZEROTRACY;
+    else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        renderFlags = NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_GRADSHD | NC_STACK_display::RSTR_RFLAGS_ZEROTRACY;
 
-    else if (v5 == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        v5 = NC_STACK_display::RSTR_RFLAGS_PERSPMAP | NC_STACK_display::RSTR_RFLAGS_GRADSHD | NC_STACK_display::RSTR_RFLAGS_ZEROTRACY;
+    else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        renderFlags = NC_STACK_display::RSTR_RFLAGS_PERSPMAP | NC_STACK_display::RSTR_RFLAGS_GRADSHD | NC_STACK_display::RSTR_RFLAGS_ZEROTRACY;
 
-    else if (v5 == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_FLATTRACY) )
-        v5 = NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_LUMTRACY;
+    else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_FLATTRACY) )
+        renderFlags = NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_LUMTRACY;
     else
         return 1;
 
@@ -434,17 +434,17 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
 
     skel133.field_4 = 0;
 
-    if ( v5 & (NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_PERSPMAP ) )
+    if ( renderFlags & (NC_STACK_display::RSTR_RFLAGS_LINMAP | NC_STACK_display::RSTR_RFLAGS_PERSPMAP ) )
         skel133.field_4 |= 1;
-    if ( v5 & (NC_STACK_display::RSTR_RFLAGS_FLATSHD | NC_STACK_display::RSTR_RFLAGS_GRADSHD) )
+    if ( renderFlags & (NC_STACK_display::RSTR_RFLAGS_FLATSHD | NC_STACK_display::RSTR_RFLAGS_GRADSHD) )
         skel133.field_4 |= 2;
     if ( amesh->flags & AMESH_FLAG_DPTHFADE )
         skel133.field_4 |= 4;
 
-    skel133.field_10 = arg->minZ;
-    skel133.field_14 = arg->maxZ;
-    skel133.field_1C = arg->fadeStart;
-    skel133.field_20 = arg->fadeLength;
+    skel133.minZ = arg->minZ;
+    skel133.maxZ = arg->maxZ;
+    skel133.fadeStart = arg->fadeStart;
+    skel133.fadeLength = arg->fadeLength;
 
 
     bitmap_intern *v21;
@@ -467,7 +467,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
     {
         polysDatSub *datSub = &arg->argSTK_cur->datSub;
 
-        datSub->renderFlags = v5;
+        datSub->renderFlags = renderFlags;
 
         datSub->vertexes = (xyz *)(datSub + 1);
         datSub->pbitm = v21;
@@ -476,7 +476,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
 
         skel133.rndrArg = datSub;
 
-        skel133.field_18 = amesh->atts[i].shadeVal / 256.0;
+        skel133.shadeVal = amesh->atts[i].shadeVal / 256.0;
 
         if ( amesh->texCoords )
             skel133.texCoords = amesh->texCoords[i];

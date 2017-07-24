@@ -367,6 +367,15 @@ struct mat3x3
         }
         return res;
     }
+
+    xyz Transform(const xyz &b) const
+    {
+        xyz tmp;
+        tmp.sx = m00 * b.sx + m01 * b.sy + m02 * b.sz;
+        tmp.sy = m10 * b.sx + m11 * b.sy + m12 * b.sz;
+        tmp.sz = m20 * b.sx + m21 * b.sy + m22 * b.sz;
+        return tmp;
+    }
 };
 
 struct destFX
