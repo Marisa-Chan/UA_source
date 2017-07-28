@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <inttypes.h>
 #include <list>
 #include "wrapSDL.h"
@@ -177,7 +179,15 @@ __NC_STACK_win3d::__NC_STACK_win3d()
     sort_id = 0;
     flags = 0;
 
-    bigdata = NULL;
+    pending.clear();
+
+    for(int i = 0; i < 9; i++)
+    {
+        gray_colors__[i][0] = 0.0;
+        gray_colors__[i][1] = 0.0;
+        gray_colors__[i][2] = 0.0;
+    }
+
     dither = 0;
     filter = 0;
     antialias = 0;
@@ -404,52 +414,45 @@ void NC_STACK_win3d::DrawScreenText()
 
 int win3dInitialisation(__NC_STACK_win3d *w3d)
 {
-    win3d_bigdata *bigdata = (win3d_bigdata *)AllocVec(sizeof(win3d_bigdata), 0);
-    w3d->bigdata = bigdata;
-    if ( bigdata )
+    w3d->pending.clear();
+
+    for (int i = 0; i < 8; i++)
     {
-        memset(bigdata, 0, sizeof(win3d_bigdata));
-
-        for (int i = 0; i < 8; i++)
+        uint32_t color = 0;
+        switch(i)
         {
-            uint32_t color = 0;
-            switch(i)
-            {
-            case 0:
-            case 4:
-            case 5:
-            case 6:
-                color = 0xFFFFFF;
-                break;
-            case 1:
-                color = 0xFF0000;
-                break;
-            case 2:
-                color = 0xFF;
-                break;
-            case 3:
-                color = 0xFF80;
-                break;
-            case 7:
-                color = 0xFFC0;
-                break;
-            default:
-                break;
-            }
-
-            bigdata->gray_colors__[i][0] = ((color >> 16) & 0xFF) / 255.0;
-            bigdata->gray_colors__[i][1] = ((color >> 8) & 0xFF) / 255.0;
-            bigdata->gray_colors__[i][2] = (color & 0xFF) / 255.0;
+        case 0:
+        case 4:
+        case 5:
+        case 6:
+            color = 0xFFFFFF;
+            break;
+        case 1:
+            color = 0xFF0000;
+            break;
+        case 2:
+            color = 0x0000FF;
+            break;
+        case 3:
+            color = 0x00FF80;
+            break;
+        case 7:
+            color = 0x00FFC0;
+            break;
+        default:
+            break;
         }
 
-        bigdata->gray_colors__[8][0] = 1.0;
-        bigdata->gray_colors__[8][1] = 1.0;
-        bigdata->gray_colors__[8][2] = 1.0;
-
-        return 1;
+        w3d->gray_colors__[i][0] = ((color >> 16) & 0xFF) / 255.0;
+        w3d->gray_colors__[i][1] = ((color >> 8) & 0xFF) / 255.0;
+        w3d->gray_colors__[i][2] = (color & 0xFF) / 255.0;
     }
 
-    return 0;
+    w3d->gray_colors__[8][0] = 1.0;
+    w3d->gray_colors__[8][1] = 1.0;
+    w3d->gray_colors__[8][2] = 1.0;
+
+    return 1;
 }
 
 int NC_STACK_win3d::initPixelFormats()
@@ -513,8 +516,7 @@ int NC_STACK_win3d::initPolyEngine()
     //win3d__SetRenderState(w3d, D3DRENDERSTATE_STIPPLEENABLE, 0); /* TRUE to enable stippling */
     //win3d__SetRenderState(w3d, D3DRENDERSTATE_COLORKEYENABLE, 1); /* TRUE to enable source colorkeyed textures */
 
-    w3d->bigdata->dat_1C14_count = 0;
-    memset(w3d->bigdata->dat_1C14, 0, 4); //?
+    w3d->pending.clear();
 
     //glAlphaFunc ( GL_GREATER, 0.1 ) ;
     //glEnable ( GL_ALPHA_TEST );
@@ -1001,12 +1003,6 @@ size_t NC_STACK_win3d::func0(stack_vals *stak)
 size_t NC_STACK_win3d::func1(stack_vals *stak)
 {
     __NC_STACK_win3d *w3d = &stack__win3d;
-
-    if ( w3d->bigdata )
-    {
-        nc_FreeMem(w3d->bigdata);
-        w3d->bigdata = NULL;
-    }
 
     if (w3d->pixfmt)
     {
@@ -1768,8 +1764,10 @@ void NC_STACK_win3d::SetRenderStates(int setAll)
 }
 
 
-void NC_STACK_win3d::sb_0x43b518(polysDatSub *polysDat, texStru *tex, int a5, int a6)
+void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
 {
+    polysDatSub *polysDat = &in->datSub;
+
     struct vtxOut
     {
         float x, y, z;
@@ -1779,7 +1777,6 @@ void NC_STACK_win3d::sb_0x43b518(polysDatSub *polysDat, texStru *tex, int a5, in
 
     __NC_STACK_win3d *w3d = &stack__win3d;
 
-    win3d_bigdata *bigdata = w3d->bigdata;
     if ( !w3d->sceneBeginned )
         return;
 
@@ -1789,12 +1786,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDatSub *polysDat, texStru *tex, int a5, in
     //Store for rendering later ( from 214 method )
     if ( polysDat->renderFlags & 0x30 && !a6 )
     {
-        if ( bigdata->dat_1C14_count < 512 )
-        {
-            bigdata->dat_1C14[bigdata->dat_1C14_count].polyData = polysDat;
-            bigdata->dat_1C14[bigdata->dat_1C14_count].tex = tex;
-            bigdata->dat_1C14_count++;
-        }
+        w3d->pending.push_back( in );
         return;
     }
 
@@ -1937,10 +1929,10 @@ void NC_STACK_win3d::sb_0x43b518(polysDatSub *polysDat, texStru *tex, int a5, in
     glEnd();
 }
 
-size_t NC_STACK_win3d::raster_func206(polysDatSub *arg)
+size_t NC_STACK_win3d::raster_func206(polysDat *arg)
 {
-    if ( arg->pbitm )
-        sb_0x43b518(arg, arg->pbitm->ddrawSurfTex, 0, 0);
+    if ( arg->datSub.pbitm )
+        sb_0x43b518(arg, arg->datSub.pbitm->ddrawSurfTex, 0, 0);
     else
         sb_0x43b518(arg, NULL, 0, 0);
 
@@ -2293,57 +2285,29 @@ void NC_STACK_win3d::BeginScene()
     stack__win3d.sceneBeginned = 1;
 }
 
-int sub_43BB80(const void * a, const void * b)
+bool NC_STACK_win3d::compare(polysDat *a, polysDat *b)
 {
-    wind3d_sub1 *a1 = (wind3d_sub1 *)a;
-    wind3d_sub1 *a2 = (wind3d_sub1 *)b;
-
-    if (a1->tex->oTexture == a2->tex->oTexture)
-    {
-        if (a1->field_8 == a2->field_8)
-            return 0;
-        else if (a1->field_8 < a2->field_8)
-            return 1;
-        else if (a1->field_8 > a2->field_8)
-            return -1;
-    }
-    else if (a1->tex->oTexture < a2->tex->oTexture)
-        return -1;
-    else if (a1->tex->oTexture > a2->tex->oTexture)
-        return 1;
-
-    return 0;
+    return a->range > b->range;
 }
 
 void NC_STACK_win3d::RenderTransparent()
 {
-    win3d_bigdata *bigdata = stack__win3d.bigdata;
-
     if ( stack__win3d.sceneBeginned )
     {
-        if ( bigdata->dat_1C14_count )
+        if ( stack__win3d.pending.size() )
         {
-            for (int i = 0; i < bigdata->dat_1C14_count; i++)
+            std::sort(stack__win3d.pending.begin(), stack__win3d.pending.end(), compare);
+
+            for (std::deque<polysDat *>::iterator it = stack__win3d.pending.begin(); it != stack__win3d.pending.end(); it++)
             {
-                float tmp = 0.0;
-                wind3d_sub1* subt = &bigdata->dat_1C14[i];
-
-                for (int j = 0; j < subt->polyData->vertexCount; j++)
-                {
-                    xyz *vtx = &subt->polyData->vertexes[j];
-                    if (tmp < vtx->sz)
-                        tmp = vtx->sz;
-                }
-
-                subt->field_8 = tmp;
+                if ( (*it)->datSub.pbitm )
+                    sb_0x43b518((*it), (*it)->datSub.pbitm->ddrawSurfTex, 1, 1);
+                else
+                    sb_0x43b518((*it), NULL, 1, 1);
             }
 
-            qsort(bigdata->dat_1C14, bigdata->dat_1C14_count, sizeof(wind3d_sub1), sub_43BB80);
 
-            for (int i = 0; i < bigdata->dat_1C14_count; i++)
-                sb_0x43b518(bigdata->dat_1C14[i].polyData, bigdata->dat_1C14[i].tex, 1, 1);
-
-            bigdata->dat_1C14_count = 0;
+            stack__win3d.pending.clear();
         }
     }
 }
@@ -2570,16 +2534,14 @@ void win3d_func262__sub0(__NC_STACK_win3d *w3d, int a2, int *a3, int *a4)
         float tclr2 = 0.0;
         float tclr3 = 0.0;
 
-        win3d_bigdata *bigdata = w3d->bigdata;
-
         for(int i = 0; i < a2; i++)
         {
             float v15 = a4[i] / 255.0;
             int v14 = a3[i];
 
-            tclr1 += bigdata->gray_colors__[v14][0] * v15;
-            tclr2 += bigdata->gray_colors__[v14][1] * v15;
-            tclr3 += bigdata->gray_colors__[v14][2] * v15;
+            tclr1 += w3d->gray_colors__[v14][0] * v15;
+            tclr2 += w3d->gray_colors__[v14][1] * v15;
+            tclr3 += w3d->gray_colors__[v14][2] * v15;
         }
 
         cl1 = tclr1;
@@ -2593,9 +2555,9 @@ void win3d_func262__sub0(__NC_STACK_win3d *w3d, int a2, int *a3, int *a4)
     if ( cl3 > 1.0 )
         cl3 = 1.0;
 
-    w3d->bigdata->gray_colors__[8][0] = cl1;
-    w3d->bigdata->gray_colors__[8][1] = cl2;
-    w3d->bigdata->gray_colors__[8][2] = cl3;
+    w3d->gray_colors__[8][0] = cl1;
+    w3d->gray_colors__[8][1] = cl2;
+    w3d->gray_colors__[8][2] = cl3;
 }
 
 void NC_STACK_win3d::display_func262(rstr_262_arg *arg)
@@ -3349,7 +3311,7 @@ size_t NC_STACK_win3d::compatcall(int method_id, void *data)
         raster_func204( (rstr_arg204 *)data );
         return 1;
     case 206:
-        raster_func206( (polysDatSub *)data );
+        raster_func206( (polysDat *)data );
         return 1;
     case 209:
         raster_func209( (w3d_a209 *)data );

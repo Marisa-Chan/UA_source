@@ -3,10 +3,6 @@
 
 #include "def_parser.h"
 
-extern polys *p_renderStack;
-extern polysDat *p_renderARGstack;
-extern polysDat *p_renderARGstackEND;
-
 struct Key_stru
 {
     const char *title_by_language;
@@ -133,8 +129,6 @@ void yw_freeDebrief(_NC_STACK_ypaworld *yw);
 void yw_calcPlayerScore(_NC_STACK_ypaworld *yw);
 
 int sub_4DA41C(_NC_STACK_ypaworld *yw, mapProto *mapp, const char *fname);
-
-int sub_4D7BFC(const void *a1, const void *a2);
 
 void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
 

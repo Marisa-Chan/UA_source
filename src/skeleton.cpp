@@ -337,16 +337,15 @@ bool NC_STACK_skeleton::PolygonCheckInvisible(Vertex *in, xyz *out, Polygon *pol
 }
 
 
-void * NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
+bool NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
 {
-    void *result;
     skeleton_64_stru *sklt = this->stack__skeleton.data;
 
-    xyz PolyVertex[SKELETON_MAX_VERTEX];
+    xyz PolyVertex[GFX_MAX_VERTEX];
     Polygon *pol = &sklt->polygons[arg->polyID];
 
     if ( !PolygonCheckInvisible(sklt->tformedVertex, PolyVertex, pol) )
-        return NULL;
+        return false;
 
     arg->rndrArg->vertexCount = pol->num_vertices;
     int vtxCnt = pol->num_vertices;
@@ -354,24 +353,14 @@ void * NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
     for (int i = 0; i < vtxCnt; i++ )
         arg->rndrArg->vertexes[i] = PolyVertex[i];
 
-    tUtV *tmpuv = (tUtV *)&arg->rndrArg->vertexes[ vtxCnt ]; // tex coordinates going after vertex data
-
-    result = tmpuv;
-
     if ( arg->field_4 & 1 )
     {
-        arg->rndrArg->tu_tv = tmpuv;
-
         for (int i = 0; i < vtxCnt; i++)
             arg->rndrArg->tu_tv[i] = arg->texCoords[i];
-
-        result = &arg->rndrArg->tu_tv[vtxCnt];
     }
 
     if ( arg->field_4 & 2 )
     {
-        arg->rndrArg->color = (float *)result;
-
         if ( arg->field_4 & 4 )
         {
             for (int i = 0; i < vtxCnt; i++ )
@@ -394,11 +383,9 @@ void * NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
             for (int i = 0; i < vtxCnt; i++ )
                 arg->rndrArg->color[i] = arg->shadeVal;
         }
-
-        result = &arg->rndrArg->color[vtxCnt];
     }
 
-    return result; //return pointer to data after vertexes + uv coords + color
+    return true;
 }
 
 

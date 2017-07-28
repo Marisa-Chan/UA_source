@@ -1,9 +1,11 @@
 #ifndef WIN3D_H_INCLUDED
 #define WIN3D_H_INCLUDED
 
+#include <deque>
 #include "wrapSDL.h"
 
 struct bitmap_intern;
+struct polysDat;
 
 struct texStru
 {
@@ -11,12 +13,6 @@ struct texStru
     GLuint oTexture;
 };
 
-struct wind3d_sub1
-{
-    polysDatSub *polyData;
-    texStru *tex;
-    float field_8;
-};
 
 #define MSK(X) (1 << (X))
 
@@ -34,27 +30,6 @@ enum W3D_STATES
     TEXTUREMIN,
     W3D_STATES_MAX
 };
-
-struct win3d_bigdata
-{
-    int dat_1C14_count;
-    wind3d_sub1 dat_1C14[512];
-
-    float gray_colors__[9][3];
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 struct bitmap_intern;
@@ -120,7 +95,11 @@ struct __NC_STACK_win3d
     int sort_id;
     int flags;
 
-    win3d_bigdata *bigdata;
+    // From bigdata
+    std::deque<polysDat *> pending;
+    float gray_colors__[9][3];
+    // \From bigdata
+
     int dither;
     int filter;
     int antialias;
@@ -162,7 +141,7 @@ public:
     virtual size_t raster_func201(w3d_func199arg *arg);
     virtual size_t raster_func202(rstr_arg204 *arg);
     virtual size_t raster_func204(rstr_arg204 *arg);
-    virtual size_t raster_func206(polysDatSub *arg);
+    virtual size_t raster_func206(polysDat *arg);
     virtual void raster_func209(w3d_a209 *arg);
     virtual void BeginScene();
     virtual void EndScene();
@@ -238,11 +217,13 @@ public:
 
     void setFrustumClip(float near, float far);
 
+    static bool compare(polysDat *a, polysDat *b);
+
 protected:
     int initPolyEngine();
     int initPixelFormats();
     void SetRenderStates(int arg);
-    void sb_0x43b518(polysDatSub *polysDat, texStru *tex, int a5, int a6);
+    void sb_0x43b518(polysDat *polysDat, texStru *tex, int a5, int a6);
     void RenderTransparent();
     void DrawScreenText();
     void AddScreenText(const char *string, int p1, int p2, int p3, int p4, int flag);

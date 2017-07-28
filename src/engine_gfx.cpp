@@ -97,7 +97,7 @@ int GFXEngine::loadPal(const char *palette_ilbm)
 
 void GFXEngine::defRenderFunc(void *dat)
 {
-    GFXe.cls3D->raster_func206((polysDatSub *)dat);
+    GFXe.cls3D->raster_func206((polysDat *)dat);
 }
 
 int GFXEngine::getScreenH()

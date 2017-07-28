@@ -223,12 +223,6 @@ void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int ob
     }
 }
 
-int sub_4D7BFC(const void *a1, const void *a2)
-{
-    return ((const polys*)a1)->range - ((const polys*)a2)->range;
-}
-
-
 void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc)
 {
     yw->win3d->setFrustumClip(17.0, 32000.0);
@@ -237,13 +231,10 @@ void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, str
     brf->field_4174.frameTime = 1;
     brf->field_4174.globTime = 1;
     brf->field_4174.adeCount = 0;
-    brf->field_4174.adeMax = 1200;
     brf->field_4174.ownerID = 1;
     brf->field_4174.minZ = 17.0;
     brf->field_4174.maxZ = 32000.0;
-    brf->field_4174.rndrSTK_cur = p_renderStack;
-    brf->field_4174.argSTK_cur = p_renderARGstack;
-    brf->field_4174.argSTK_end = p_renderARGstackEND;
+    brf->field_4174.rndrStack = &NC_STACK_base::renderStack;
 
     if ( brf->brf_objs.field_0 )
     {
@@ -252,16 +243,7 @@ void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, str
             sb_0x4eb94c(yw, brf, struc, 0, v7 - 50);
     }
 
-    int v8 = brf->field_4174.rndrSTK_cur - p_renderStack;
-
-    if ( v8 > 1 )
-        qsort(p_renderStack, brf->field_4174.rndrSTK_cur - p_renderStack, sizeof(polys), sub_4D7BFC);
-
-    for (int i = 0; i < v8; i++)
-    {
-        polysDat *pol = p_renderStack[i].data;
-        pol->render_func(&pol->datSub);
-    }
+    brf->field_4174.rndrStack->render();
 
     yw->win3d->EndScene();
 }

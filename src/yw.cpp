@@ -24,9 +24,6 @@ key_value_stru ypaworld_keys[4] =
     {"game.debug", KEY_TYPE_BOOL, 0}
 };
 
-polys *p_renderStack;
-polysDat *p_renderARGstack;
-polysDat *p_renderARGstackEND;
 Key_stru keySS[256];
 
 int word_5A50C2;
@@ -652,10 +649,6 @@ size_t NC_STACK_ypaworld::func0(stack_vals *stak)
         func1(NULL);
         return 0;
     }
-
-    p_renderStack = getBASE_renderStack();
-    p_renderARGstack = (polysDat *)getBASE_argStack();
-    p_renderARGstackEND = (polysDat *)getBASE_endArgStack();
 
     yw->screen_width = GFXe.getScreenW();
     yw->screen_height = GFXe.getScreenH();

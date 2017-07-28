@@ -2608,11 +2608,8 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
         rndrs.frameTime = bs64->field_4;
         rndrs.globTime = bs64->field_0;
         rndrs.adeCount = 0;
-        rndrs.rndrSTK_cur = p_renderStack;
-        rndrs.adeMax = 2000;
-        rndrs.argSTK_cur = p_renderARGstack;
         rndrs.ownerID = 1;
-        rndrs.argSTK_end = p_renderARGstackEND;
+        rndrs.rndrStack = &NC_STACK_base::renderStack;
 
         rndrs.minZ = 1.0;
 
@@ -2671,19 +2668,12 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
         bs64->field_C = rndrs.adeCount;
 
         yw->field_1B6A = rndrs.adeCount;
-        yw->field_1b6c = rndrs.rndrSTK_cur - p_renderStack;
-
-        /*if ( yw->field_1b6c > 1 && !dword_514EFC )
-            qsort(p_renderStack, yw->field_1b6c, sizeof(polys), sub_4D7BFC);*/
+        yw->field_1b6c = rndrs.rndrStack->getSize();
 
         yw->win3d->setFrustumClip(1.0, rndrs.maxZ);
         yw->win3d->BeginScene();
 
-        for (int i = 0; i < yw->field_1b6c; i++)
-        {
-            polysDat *pol = p_renderStack[i].data;
-            pol->render_func(&pol->datSub);
-        }
+        rndrs.rndrStack->render(false);
 
         yw->win3d->EndScene();
 

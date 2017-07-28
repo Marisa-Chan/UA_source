@@ -5,6 +5,8 @@
 #include "wrapSDL.h"
 #include "engine_tform.h"
 
+#define GFX_MAX_VERTEX 12
+
 class NC_STACK_win3d;
 class NC_STACK_bitmap;
 
@@ -78,9 +80,9 @@ struct polysDatSub
 {
     int renderFlags;
     int vertexCount;
-    xyz *vertexes;
-    tUtV *tu_tv;
-    float *color;
+    xyz vertexes[GFX_MAX_VERTEX];
+    tUtV tu_tv[GFX_MAX_VERTEX];
+    float color[GFX_MAX_VERTEX];
     bitmap_intern *pbitm;
 };
 

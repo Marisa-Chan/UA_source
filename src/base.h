@@ -1,6 +1,7 @@
 #ifndef BASE_H_INCLUDED
 #define BASE_H_INCLUDED
 
+#include <deque>
 #include "nucleas.h"
 #include "nlist.h"
 
@@ -43,20 +44,39 @@ struct TForm3D
 struct polysDat
 {
     void (*render_func)(void *);
+    int32_t range;
     polysDatSub datSub;
 };
 
-struct polys
+class RenderStack
 {
-    int range;
-    polysDat *data;
+public:
+    RenderStack();
+    ~RenderStack();
+
+    polysDat *get();
+    void commit();
+    size_t getSize();
+    void clear(bool dealloc = false);
+    void render(bool sorting = true, bool Clear = true);
+
+private:
+    static bool compare(polysDat *a, polysDat *b);
+
+private:
+    static const size_t heapSize = 10000;
+    size_t currentElement;
+    std::deque<polysDat *> heaps;
+
+    std::deque<polysDat *> que;
 };
 
 struct area_arg_65
 {
     int ownerID;
-    polys *rndrSTK_cur;
-    polysDat *argSTK_cur;
+    //polys *rndrSTK_cur;
+    //polysDat *argSTK_cur;
+    RenderStack *rndrStack;
     int timeStamp;
     int frameTime;
     TForm3D *view;
@@ -134,11 +154,8 @@ struct baseRender_msg
 {
     int frameTime;
     int globTime;
-    polys *rndrSTK_cur;
-    polysDat *argSTK_cur;
-    polysDat *argSTK_end;
+    RenderStack *rndrStack;
     int adeCount;
-    int adeMax;
     int ownerID;
     float minZ;
     float maxZ;
@@ -292,12 +309,14 @@ public:
     virtual area_arg_65 *getBASE_renderParams();
     virtual int getBASE_mainKid();
     virtual int getBASE_mainObjt();
-    virtual polys *getBASE_renderStack();
-    virtual void *getBASE_argStack();
-    virtual void *getBASE_endArgStack();
+//    virtual polys *getBASE_renderStack();
+//    virtual void *getBASE_argStack();
+//    virtual void *getBASE_endArgStack();
     virtual int getBASE_fadeLength();
     virtual int getBASE_static();
     virtual int getBASE_embdRsrc();
+
+    RenderStack *getBASE_newRenderStack();
 
 
     int base_func0__sub0(stack_vals *stak);
@@ -305,8 +324,11 @@ public:
     void base_getter(stack_vals *stak);
 
 
+public:
     //Data
     static const NewClassDescr description;
+
+    static RenderStack renderStack;
 
     __NC_STACK_base stack__base;
 };

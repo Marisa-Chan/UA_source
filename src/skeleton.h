@@ -4,8 +4,6 @@
 #include "rsrc.h"
 #include "engine_gfx.h"
 
-#define SKELETON_MAX_VERTEX 12
-
 struct Vertex: public xyz
 {
     int flags;
@@ -29,7 +27,7 @@ struct Vertex: public xyz
 struct Polygon
 {
     int16_t num_vertices;
-    int16_t v[SKELETON_MAX_VERTEX];
+    int16_t v[GFX_MAX_VERTEX];
 
     float A;
     float B;
@@ -131,7 +129,7 @@ public:
     virtual size_t skeleton_func130(skeleton_130_arg *arg);
     virtual size_t skeleton_func131(int *arg);
     virtual size_t skeleton_func132(skeleton_arg_132 *arg);
-    virtual void * skeleton_func133(skeleton_arg133 *arg);
+    virtual bool skeleton_func133(skeleton_arg133 *arg);
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_skeleton() {

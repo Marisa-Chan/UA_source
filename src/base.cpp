@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "includes.h"
 
 #include "nucleas.h"
@@ -19,14 +21,93 @@
 
 
 const NewClassDescr NC_STACK_base::description("base.class", &newinstance);
+RenderStack NC_STACK_base::renderStack;
 
+RenderStack::RenderStack()
+{
+    heaps.clear();
+    que.clear();
 
+    currentElement = 0;
+}
 
-static const int __argsize = (sizeof(polysDat) + 12 * (sizeof(xyz) + sizeof(tUtV) + sizeof(float)) ); // Up to 12 vertexes for one render object
+RenderStack::~RenderStack()
+{
+    for(size_t i = 0; i < heaps.size(); i++)
+        delete[] heaps[i];
 
-polys renderStack[2100];
-uint8_t renderArgStack [2100 * __argsize];
-uint8_t *renderArgStackEND = renderArgStack + sizeof(renderArgStack) - 2 * __argsize;
+    heaps.clear();
+    que.clear();
+}
+
+polysDat *RenderStack::get()
+{
+    if (currentElement >= heaps.size() * heapSize)
+    {
+        heaps.push_back( new polysDat[heapSize] );
+        que.resize(heaps.size() * heapSize);
+    }
+
+    int heapID = currentElement / heapSize;
+    int elmID = currentElement % heapSize;
+
+    que[currentElement] = &(heaps[heapID])[elmID];
+
+    return &(heaps[heapID])[elmID];
+}
+
+void RenderStack::commit()
+{
+    currentElement++;
+
+    if (currentElement >= heaps.size() * heapSize)
+    {
+        heaps.push_back( new polysDat[heapSize] );
+        que.resize(heaps.size() * heapSize);
+    }
+}
+
+size_t RenderStack::getSize()
+{
+    return currentElement;
+}
+
+void RenderStack::clear(bool dealloc)
+{
+    if (dealloc)
+    {
+        for (size_t i = 0; i < heaps.size(); i++)
+            delete[] heaps[i];
+
+        heaps.clear();
+        que.clear();
+    }
+
+    currentElement = 0;
+}
+
+bool RenderStack::compare(polysDat *a, polysDat *b)
+{
+    return a->range < b->range;
+}
+
+void RenderStack::render(bool sorting, bool Clear)
+{
+    std::deque<polysDat *>::iterator qEnd = que.begin() + currentElement;
+
+    if (sorting)
+        std::sort(que.begin(), qEnd, compare);
+
+    for(std::deque<polysDat *>::iterator it = que.begin(); it != qEnd; it++)
+    {
+        polysDat *pol = *it;
+        pol->render_func( pol );
+    }
+
+    if (Clear)
+        clear();
+}
+
 
 
 TForm3D *dword_546DC0;
@@ -539,13 +620,13 @@ void NC_STACK_base::base_getter(stack_vals *stak)
                 *(int *)stk->value.p_data = getBASE_mainObjt();
                 break;
             case BASE_ATT_RENDERSTACK:
-                *(void **)stk->value.p_data = getBASE_renderStack();
+//                *(void **)stk->value.p_data = getBASE_renderStack();
                 break;
             case BASE_ATT_ARGSTACK:
-                *(void **)stk->value.p_data = getBASE_argStack();
+//                *(void **)stk->value.p_data = getBASE_argStack();
                 break;
             case BASE_ATT_ENDARGSTACK:
-                *(void **)stk->value.p_data = getBASE_endArgStack();
+//                *(void **)stk->value.p_data = getBASE_endArgStack();
                 break;
             case BASE_ATT_FADELEN:
                 *(int *)stk->value.p_data = getBASE_fadeLength();
@@ -1002,16 +1083,6 @@ void sub_430A38(TForm3D *s3d)
     }
 }
 
-
-int sub_430880(const void * a, const void * b)
-{
-    polys *a1 = (polys *)a;
-    polys *a2 = (polys *)b;
-
-    return a1->range - a2->range;
-}
-
-
 size_t NC_STACK_base::base_func64(base_64arg *arg)
 {
     __NC_STACK_base *base = &stack__base;
@@ -1026,11 +1097,8 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
     baseRender_msg base77;
     base77.frameTime = arg->field_4;
     base77.globTime = arg->field_0;
-    base77.rndrSTK_cur = renderStack;
-    base77.argSTK_cur = (polysDat *)renderArgStack;
-    base77.argSTK_end = (polysDat *)renderArgStackEND;
+    base77.rndrStack = &renderStack;
     base77.adeCount = arg->field_C;
-    base77.adeMax = 1000;
     base77.ownerID = base->ID;
     base77.minZ = 1.0;
     base77.maxZ = 1000.0;
@@ -1039,12 +1107,7 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
 
     arg->field_C = base77.adeCount;
 
-    int num = base77.rndrSTK_cur - renderStack;
-
-    arg->field_10 += num;
-
-    if ( num > 1 )
-        qsort(renderStack, num, sizeof(polys), sub_430880);
+    arg->field_10 += renderStack.getSize();
 
     NC_STACK_win3d *win3d;
     win3d = GFXe.getC3D();
@@ -1057,11 +1120,7 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
     win3d->setFrustumClip(base77.minZ, base77.maxZ);
     win3d->BeginScene();
 
-    for (int i = 0; i < num; i++)
-    {
-        polys *pol = renderStack + i;
-        pol->data->render_func(pol->data);
-    }
+    renderStack.render();
 
     win3d->EndScene();
     win3d->EndFrame();
@@ -1429,8 +1488,7 @@ size_t NC_STACK_base::base_func77(baseRender_msg *arg)
                 base->renderMsg.frameTime = arg->frameTime;
                 base->renderMsg.minZ = arg->minZ;
                 base->renderMsg.maxZ = arg->maxZ;
-                base->renderMsg.rndrSTK_cur = arg->rndrSTK_cur;
-                base->renderMsg.argSTK_cur = arg->argSTK_cur;
+                base->renderMsg.rndrStack = arg->rndrStack;
                 base->renderMsg.view = skel132.glob_1c;
                 base->renderMsg.owner = skel132.base_1c;
 
@@ -1441,20 +1499,13 @@ size_t NC_STACK_base::base_func77(baseRender_msg *arg)
 
                 while(cur_ade->next)
                 {
-                    if ( base->renderMsg.argSTK_cur >= arg->argSTK_end )
-                        break;
-
-                    if ( (arg->adeCount + base->renderMsg.adeCount) >= arg->adeMax )
-                        break;
-
                     cur_ade->self->ade_func65(&base->renderMsg);
 
                     cur_ade = (__NC_STACK_ade *)cur_ade->next;
                 }
 
                 arg->adeCount += base->renderMsg.adeCount;
-                arg->rndrSTK_cur = base->renderMsg.rndrSTK_cur;
-                arg->argSTK_cur = base->renderMsg.argSTK_cur;
+                arg->rndrStack = base->renderMsg.rndrStack;
             }
         }
     }
@@ -1752,20 +1803,25 @@ int NC_STACK_base::getBASE_mainObjt()
     return (stack__base.flags & BASE_FLAG_MAINOBJT) != 0;
 }
 
-polys *NC_STACK_base::getBASE_renderStack()
+RenderStack *NC_STACK_base::getBASE_newRenderStack()
 {
-    return renderStack;
+    return &renderStack;
 }
 
-void *NC_STACK_base::getBASE_argStack()
-{
-    return renderArgStack;
-}
-
-void *NC_STACK_base::getBASE_endArgStack()
-{
-    return renderArgStackEND;
-}
+//polys *NC_STACK_base::getBASE_renderStack()
+//{
+//    return renderStack;
+//}
+//
+//void *NC_STACK_base::getBASE_argStack()
+//{
+//    return renderArgStack;
+//}
+//
+//void *NC_STACK_base::getBASE_endArgStack()
+//{
+//    return renderArgStackEND;
+//}
 
 int NC_STACK_base::getBASE_fadeLength()
 {

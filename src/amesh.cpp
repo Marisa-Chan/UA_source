@@ -467,11 +467,12 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
 
     for (int i = 0; i < amesh->polyCnt; i++)
     {
-        polysDatSub *datSub = &arg->argSTK_cur->datSub;
+        //polysDatSub *datSub = &arg->argSTK_cur->datSub;
+        polysDat *data = arg->rndrStack->get();
+        polysDatSub *datSub = &data->datSub;
 
         datSub->renderFlags = renderFlags;
 
-        datSub->vertexes = (xyz *)(datSub + 1);
         datSub->pbitm = v21;
 
         skel133.polyID = amesh->atts[i].polyID;
@@ -485,8 +486,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
         else
             skel133.texCoords = NULL;
 
-        polysDat *v23 = (polysDat *)arg->OBJ_SKELETON->skeleton_func133(&skel133);
-        if (v23)
+        if (arg->OBJ_SKELETON->skeleton_func133(&skel133))
         {
             arg->adeCount++;
 
@@ -521,12 +521,16 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
                     maxz = datSub->vertexes[i].sz;
 
 
-            arg->rndrSTK_cur->range = maxz;
-            arg->rndrSTK_cur->data = arg->argSTK_cur;
-            arg->rndrSTK_cur++;
+//            arg->rndrSTK_cur->range = maxz;
+//            arg->rndrSTK_cur->data = arg->argSTK_cur;
+//            arg->rndrSTK_cur++;
 
-            arg->argSTK_cur->render_func = GFXEngine::defRenderFunc;
-            arg->argSTK_cur = v23;
+//            arg->argSTK_cur->render_func = GFXEngine::defRenderFunc;
+//            arg->argSTK_cur++;
+            data->render_func = GFXEngine::defRenderFunc;
+            data->range = maxz;
+
+            arg->rndrStack->commit();
         }
     }
 
