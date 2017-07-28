@@ -474,7 +474,7 @@ CTsmpl::~CTsmpl()
     {
         ALuint tmp = buffers[i];
         alCheck(alDeleteBuffers(1, &tmp));
-        delete smplBuffers[i];
+        delete [] smplBuffers[i];
     }
 
     alCheck(alDeleteSources(1, &source));
