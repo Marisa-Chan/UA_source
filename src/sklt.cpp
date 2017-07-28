@@ -165,7 +165,7 @@ int skeleton_read_poly(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt
 
     if ( !obj->skeleton_func130(&arg130) )
     {
-        delete entries;
+        delete[] entries;
         return 0;
     }
 
@@ -185,7 +185,7 @@ int skeleton_read_poly(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt
 
         sklt->polygons[i].num_vertices = vert_count;
     }
-    delete entries;
+    delete[] entries;
     return 1;
 }
 

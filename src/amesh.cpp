@@ -21,13 +21,13 @@ int sub_419E6C(__NC_STACK_amesh *amesh, tUtV **olpl)
 {
     if ( amesh->texCoords )
     {
-        delete amesh->texCoords;
+        delete[] amesh->texCoords;
         amesh->texCoords = NULL;
     }
 
     if ( amesh->texCoordsData )
     {
-        delete amesh->texCoordsData;
+        delete[] amesh->texCoordsData;
         amesh->texCoordsData = NULL;
     }
 
@@ -150,13 +150,13 @@ size_t NC_STACK_amesh::func1(stack_vals *stak)
     __NC_STACK_amesh *amesh = &stack__amesh;
 
     if ( amesh->atts )
-        delete amesh->atts;
+        delete[] amesh->atts;
 
     if ( amesh->texCoords )
-        delete amesh->texCoords;
+        delete[] amesh->texCoords;
 
     if ( amesh->texCoordsData )
-        delete amesh->texCoordsData;
+        delete[] amesh->texCoordsData;
 
     return NC_STACK_area::func1(stak);
 }
@@ -568,7 +568,7 @@ int NC_STACK_amesh::setAMESH_polys(ATTS *atts)
 {
     if ( stack__amesh.atts )
     {
-        delete stack__amesh.atts;
+        delete[] stack__amesh.atts;
         stack__amesh.atts = NULL;
     }
     stack__amesh.atts = new ATTS[stack__amesh.polyCnt];

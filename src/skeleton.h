@@ -65,16 +65,16 @@ struct skeleton_64_stru
     ~skeleton_64_stru()
     {
         if ( POO )
-            delete POO;
+            delete[] POO;
 
         if ( polygons )
-            delete polygons;
+            delete[] polygons;
 
         if ( SEN )
-            delete SEN;
+            delete[] SEN;
 
         if ( tformedVertex )
-            delete tformedVertex;
+            delete[] tformedVertex;
     };
 };
 
