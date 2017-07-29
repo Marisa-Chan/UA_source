@@ -556,7 +556,7 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
             if ( arg136.field_20 )
             {
-                Polygon * v55 = &arg136.field_3C->polygons[ arg136.field_38 ];
+                UAskeleton::Polygon * v55 = &arg136.field_3C->polygons[ arg136.field_38 ];
 
                 if ( v55->B < 0.6 && tank->field_1D == 0.0)
                 {
@@ -630,7 +630,7 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                         if ( arg136_2.field_20 )
                         {
-                            Polygon *v70 = arg136_2.field_3C->polygons;
+                            UAskeleton::Polygon *v70 = arg136_2.field_3C->polygons;
 
                             v189 = v221 * v70[ arg136_2.field_38 ].B - v216 * v70[ arg136_2.field_38 ].A;
                             v187 = v216 * v70[ arg136_2.field_38 ].C - v222 * v70[ arg136_2.field_38 ].B;
@@ -829,7 +829,7 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                     if ( arg136.field_20 )
                     {
-                        Polygon *v117 = &arg136.field_3C->polygons[ arg136.field_38 ];
+                        UAskeleton::Polygon *v117 = &arg136.field_3C->polygons[ arg136.field_38 ];
                         v208 = v117->A;
                         v207 = v117->B;
                         v210 = v117->C;
@@ -872,7 +872,7 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                     if ( arg136_4.field_20 )
                     {
-                        Polygon *v124 = arg136_4.field_3C->polygons;
+                        UAskeleton::Polygon *v124 = arg136_4.field_3C->polygons;
 
                         v185 = v182 * v124[arg136_4.field_38].A - v180 * v124[arg136_4.field_38].C;
                         v186 = v180 * v124[arg136_4.field_38].B - v181 * v124[arg136_4.field_38].A;
@@ -2459,7 +2459,7 @@ size_t NC_STACK_ypatank::ypatank_func128(tank_arg128 *arg)
 
     if ( arg136.field_20 )
     {
-        Polygon *v10 = &arg136.field_3C->polygons[ arg136.field_38 ];
+        UAskeleton::Polygon *v10 = &arg136.field_3C->polygons[ arg136.field_38 ];
 
         if ( v10->B < 0.6 )
         {
@@ -2648,7 +2648,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
 
     if ( arg136.field_20 )
     {
-        Polygon *v48 = &arg136.field_3C->polygons[ arg136.field_38 ];
+        UAskeleton::Polygon *v48 = &arg136.field_3C->polygons[ arg136.field_38 ];
 
         if ( fabs(v48->B) < 0.6 )
         {
@@ -2707,7 +2707,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
 
     if ( arg136_1.field_20 )
     {
-        Polygon *v54 = &arg136_1.field_3C->polygons[ arg136_1.field_38 ];
+        UAskeleton::Polygon *v54 = &arg136_1.field_3C->polygons[ arg136_1.field_38 ];
 
         if ( fabs(v54->B) < 0.6 )
         {

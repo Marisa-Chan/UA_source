@@ -742,7 +742,7 @@ size_t NC_STACK_ypacar::ypatank_func128(tank_arg128 *arg)
     if ( !arg136.field_20 )
         return 0;
 
-    Polygon *v8 = &arg136.field_3C->polygons[ arg136.field_38 ];
+    UAskeleton::Polygon *v8 = &arg136.field_3C->polygons[ arg136.field_38 ];
 
     if ( v8->B < 0.6 )
     {
@@ -989,7 +989,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
     if ( arg136.field_20 )
     {
-        Polygon *v48 = &arg136.field_3C->polygons[ arg136.field_38 ];
+        UAskeleton::Polygon *v48 = &arg136.field_3C->polygons[ arg136.field_38 ];
 
         if ( fabs(v48->B) < 0.6 )
         {
@@ -1049,7 +1049,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
     if ( arg136_1.field_20 )
     {
-        Polygon *v54 = &arg136_1.field_3C->polygons[ arg136_1.field_38 ];
+        UAskeleton::Polygon *v54 = &arg136_1.field_3C->polygons[ arg136_1.field_38 ];
 
         if ( fabs(v54->B) < 0.6 )
         {
@@ -1109,7 +1109,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
     if ( arg136_2.field_20 )
     {
-        Polygon *v54 = &arg136_2.field_3C->polygons[ arg136_2.field_38 ];
+        UAskeleton::Polygon *v54 = &arg136_2.field_3C->polygons[ arg136_2.field_38 ];
 
         if ( fabs(v54->B) < 0.6 )
         {

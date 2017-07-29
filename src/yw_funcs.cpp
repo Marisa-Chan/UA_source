@@ -1366,7 +1366,7 @@ int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
 
                 NC_STACK_skeleton *skeleton = full_kid->getBASE_skeleton();
 
-                skeleton_64_stru *skeleton_internal = skeleton->getSKEL_pSkelet();
+                UAskeleton::Data *skeleton_internal = skeleton->getSKEL_pSkelet();
                 if (i == 0)
                 {
                     yw->slurps1[j][k].skeletons_bas = full_kid;

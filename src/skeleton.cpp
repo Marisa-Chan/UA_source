@@ -26,7 +26,7 @@ size_t NC_STACK_skeleton::func0(stack_vals *stak)
         return 0;
 
     __NC_STACK_skeleton *skelt = &stack__skeleton;
-    skelt->data = (skeleton_64_stru *)getRsrc_pData();
+    skelt->data = (UAskeleton::Data *)getRsrc_pData();
 
     return 1;
 }
@@ -56,7 +56,7 @@ size_t NC_STACK_skeleton::func3(stack_vals *stak)
                 break;
 
             case SKEL_ATT_PSKELET:
-                *(skeleton_64_stru **)stk->value.p_data = getSKEL_pSkelet();
+                *(UAskeleton::Data **)stk->value.p_data = getSKEL_pSkelet();
                 break;
             case SKEL_ATT_POINTSCNT:
                 *(int *)stk->value.p_data = getSKEL_pntCount();
@@ -90,7 +90,7 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
         return NULL;
     }
 
-    skeleton_64_stru *sklt = new skeleton_64_stru;
+    UAskeleton::Data *sklt = new UAskeleton::Data;
 
     if (!sklt)
     {
@@ -100,7 +100,7 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
 
     res->data = sklt;
 
-    Vertex *POO = new Vertex[elm_num];
+    UAskeleton::Vertex *POO = new UAskeleton::Vertex[elm_num];
 
     sklt->POO = POO;
 
@@ -110,7 +110,7 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
         return NULL;
     }
 
-    Vertex *tformedVertex = new Vertex[elm_num];
+    UAskeleton::Vertex *tformedVertex = new UAskeleton::Vertex[elm_num];
 
     sklt->tformedVertex = tformedVertex;
 
@@ -166,7 +166,7 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
 size_t NC_STACK_skeleton::rsrc_func65(rsrc **pres)
 {
     rsrc *res = *pres;
-    skeleton_64_stru *sklt = (skeleton_64_stru *)res->data;
+    UAskeleton::Data *sklt = (UAskeleton::Data *)res->data;
 
     if ( sklt )
     {
@@ -184,9 +184,9 @@ __NC_STACK_skeleton * NC_STACK_skeleton::skeleton_func128(stack_vals *)
 
 size_t NC_STACK_skeleton::skeleton_func129(skeleton_129_arg *arg)
 {
-    skeleton_64_stru *sklt = arg->skeleton;
+    UAskeleton::Data *sklt = arg->skeleton;
 
-    sklt->SEN = new Vertex[arg->sen_count];
+    sklt->SEN = new UAskeleton::Vertex[arg->sen_count];
 
     if (!sklt->SEN)
         return 0;
@@ -197,9 +197,9 @@ size_t NC_STACK_skeleton::skeleton_func129(skeleton_129_arg *arg)
 
 size_t NC_STACK_skeleton::skeleton_func130(skeleton_130_arg *arg)
 {
-    skeleton_64_stru *sklt = arg->skeleton;
+    UAskeleton::Data *sklt = arg->skeleton;
 
-    sklt->polygons = new Polygon[arg->pol_count];
+    sklt->polygons = new UAskeleton::Polygon[arg->pol_count];
 
     if (!sklt->polygons)
         return 0;
@@ -211,16 +211,16 @@ size_t NC_STACK_skeleton::skeleton_func130(skeleton_130_arg *arg)
 
 size_t NC_STACK_skeleton::skeleton_func131(int *arg)
 {
-    skeleton_64_stru *sklt = this->stack__skeleton.data;
+    UAskeleton::Data *sklt = this->stack__skeleton.data;
 
     int vtxid = *arg;
 
     if ( sklt )
     {
-        Polygon *pol = &sklt->polygons[vtxid];
+        UAskeleton::Polygon *pol = &sklt->polygons[vtxid];
         if ( pol->num_vertices >= 3 )
         {
-            Vertex *POO = sklt->POO;
+            UAskeleton::Vertex *POO = sklt->POO;
 
             xyz vec1 = POO[ pol->v[1] ] - POO[ pol->v[0] ];
             xyz vec2 = POO[ pol->v[2] ] - POO[ pol->v[1] ];
@@ -247,7 +247,7 @@ size_t NC_STACK_skeleton::skeleton_func131(int *arg)
 }
 
 
-bool NC_STACK_skeleton::TransformVertexes(skeleton_arg_132 *arg, Vertex *in, Vertex *out, int num)
+bool NC_STACK_skeleton::TransformVertexes(skeleton_arg_132 *arg, UAskeleton::Vertex *in, UAskeleton::Vertex *out, int num)
 {
     if ( !num )
         return false;
@@ -269,20 +269,20 @@ bool NC_STACK_skeleton::TransformVertexes(skeleton_arg_132 *arg, Vertex *in, Ver
         int flags = 0;
 
         if ( fv.sz < arg->minZ )
-            flags = Vertex::CLIP_NEAR;
+            flags = UAskeleton::Vertex::CLIP_NEAR;
         else if ( fv.sz > arg->maxZ )
-            flags = Vertex::CLIP_FAR;
+            flags = UAskeleton::Vertex::CLIP_FAR;
         else
         {
             if ( fv.sx > fv.sz * 1.1 )
-                flags |= Vertex::CLIP_RIGHT;
+                flags |= UAskeleton::Vertex::CLIP_RIGHT;
             else if ( fv.sx < -fv.sz * 1.1 )
-                flags |= Vertex::CLIP_LEFT;
+                flags |= UAskeleton::Vertex::CLIP_LEFT;
 
             if ( fv.sy > fv.sz * 1.1 )
-                flags |= Vertex::CLIP_TOP;
+                flags |= UAskeleton::Vertex::CLIP_TOP;
             else if ( fv.sy < -fv.sz * 1.1 )
-                flags |= Vertex::CLIP_BOTTOM;
+                flags |= UAskeleton::Vertex::CLIP_BOTTOM;
         }
 
         andFlags &= flags;
@@ -298,7 +298,7 @@ bool NC_STACK_skeleton::TransformVertexes(skeleton_arg_132 *arg, Vertex *in, Ver
 
 size_t NC_STACK_skeleton::skeleton_func132(skeleton_arg_132 *arg)
 {
-    skeleton_64_stru *sklt = this->stack__skeleton.data;
+    UAskeleton::Data *sklt = this->stack__skeleton.data;
     int result = 1;
 
     if ( sklt->SEN_NUM )
@@ -313,7 +313,7 @@ size_t NC_STACK_skeleton::skeleton_func132(skeleton_arg_132 *arg)
     return result;
 }
 
-bool NC_STACK_skeleton::PolygonCheckInvisible(Vertex *in, xyz *out, Polygon *pol)
+bool NC_STACK_skeleton::PolygonCheckInvisible(UAskeleton::Vertex *in, xyz *out, UAskeleton::Polygon *pol)
 {
     uint16_t andFlags = ~0;
 
@@ -339,10 +339,10 @@ bool NC_STACK_skeleton::PolygonCheckInvisible(Vertex *in, xyz *out, Polygon *pol
 
 bool NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
 {
-    skeleton_64_stru *sklt = this->stack__skeleton.data;
+    UAskeleton::Data *sklt = this->stack__skeleton.data;
 
     xyz PolyVertex[GFX_MAX_VERTEX];
-    Polygon *pol = &sklt->polygons[arg->polyID];
+    UAskeleton::Polygon *pol = &sklt->polygons[arg->polyID];
 
     if ( !PolygonCheckInvisible(sklt->tformedVertex, PolyVertex, pol) )
         return false;
@@ -390,7 +390,7 @@ bool NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
 
 
 
-skeleton_64_stru *NC_STACK_skeleton::getSKEL_pSkelet()
+UAskeleton::Data *NC_STACK_skeleton::getSKEL_pSkelet()
 {
     return stack__skeleton.data;
 }

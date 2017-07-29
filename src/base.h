@@ -82,7 +82,7 @@ struct area_arg_65
     TForm3D *view;
     TForm3D *owner;
     NC_STACK_skeleton *OBJ_SKELETON;
-    skeleton_64_stru *sklt;
+    UAskeleton::Data *sklt;
     float minZ;
     float maxZ;
     float fadeStart;

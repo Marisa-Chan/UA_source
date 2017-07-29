@@ -9231,7 +9231,7 @@ void wis_color(_NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, u
 
 
 
-void yw_RenderVector2D(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float posX, float posY, float m00, float m01, float m10, float m11, float scaleX, float scaleY, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection)
+void yw_RenderVector2D(_NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float posX, float posY, float m00, float m01, float m10, float m11, float scaleX, float scaleY, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection)
 {
     float CW = 1.0, CH = 1.0;
 
@@ -9258,7 +9258,7 @@ void yw_RenderVector2D(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float pos
 
         for (int i = 0; i < wire->polygonsCount; i++)
         {
-            Polygon *poly = &wire->polygons[i];
+            UAskeleton::Polygon *poly = &wire->polygons[i];
 
             if (poly->num_vertices >= 2)
             {
@@ -9306,7 +9306,7 @@ void yw_RenderInfoVehicleWire(_NC_STACK_ypaworld *yw, sklt_wis *wis, VhclProto *
     uint32_t color_25 = yw_GetColor(yw, 25);
     uint32_t color_34 = yw_GetColor(yw, 34);
 
-    skeleton_64_stru *wairufureimu = NULL;
+    UAskeleton::Data *wairufureimu = NULL;
 
     wis_color_func func = NULL;
 
@@ -9558,7 +9558,7 @@ char * yw_RenderInfoVehicleName(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur
 
 void yw_RenderInfoWeaponWire(_NC_STACK_ypaworld *yw, sklt_wis *wis, WeapProto *wpn, float xpos, float ypos)
 {
-    skeleton_64_stru *wairufureimu = NULL;
+    UAskeleton::Data *wairufureimu = NULL;
 
     wis_color_func func;
 
@@ -10263,10 +10263,10 @@ void sub_4E3D98(_NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, 
 
 void yw_RenderHUDTarget(_NC_STACK_ypaworld *yw, sklt_wis *wis)
 {
-    skeleton_64_stru *mg_wure = NULL;
-    skeleton_64_stru *hud_wure = NULL;
-    skeleton_64_stru *wpn_wure = NULL;
-    skeleton_64_stru *wpn_wure2 = NULL;
+    UAskeleton::Data *mg_wure = NULL;
+    UAskeleton::Data *hud_wure = NULL;
+    UAskeleton::Data *wpn_wure = NULL;
+    UAskeleton::Data *wpn_wure2 = NULL;
 
     float v86 = (yw->timeStamp - wis->field_76 - 350) / 200.0;
 
@@ -10444,7 +10444,7 @@ void yw_RenderHUDTarget(_NC_STACK_ypaworld *yw, sklt_wis *wis)
                 float v35 = sin(v85);
                 float v83 = cos(v85);
 
-                skeleton_64_stru *v36;
+                UAskeleton::Data *v36;
 
                 if ( i & 1 )
                     v36 = wpn_wure;
@@ -10485,7 +10485,7 @@ void yw_RenderCursorOverUnit(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
         if ( a3 > -v30 && v33 < v30 && v33 > -v30 )
         {
             uint32_t v11 = yw_GetColor(yw, bact->owner);
-            skeleton_64_stru *v12 = yw->wis_skeletons.sklts_intern[13];
+            UAskeleton::Data *v12 = yw->wis_skeletons.sklts_intern[13];
 
             float a3a = a3 / v30;
             float v34 = v33 / v30;

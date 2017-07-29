@@ -58,7 +58,7 @@ public:
     struct __NC_STACK_particle
     {
         NC_STACK_skeleton *particle_sklt;
-        skeleton_64_stru *particle_sklt_intern;
+        UAskeleton::Data *particle_sklt_intern;
         int field_8;
         int field_c;
         int ADEs_count;

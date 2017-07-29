@@ -690,7 +690,7 @@ struct big_ypa_Brf
     int field_419C;
     int field_41A0;
     NC_STACK_sklt *wireless_db[4];
-    skeleton_64_stru *wireless_db_skels[4];
+    UAskeleton::Data *wireless_db_skels[4];
     NC_STACK_bitmap *copy2_of_ownmap;
     NC_STACK_bitmap *copy2_of_typmap;
     bitmap_intern *copy2_of_ownmap_bitm;
@@ -795,7 +795,7 @@ struct yw_movies
 struct slurp
 {
     NC_STACK_base *skeletons_bas;
-    skeleton_64_stru *skeleton_internal;
+    UAskeleton::Data *skeleton_internal;
 
     slurp()
     {
@@ -807,7 +807,7 @@ struct slurp
 struct slurp2
 {
     NC_STACK_sklt *skeleton;
-    skeleton_64_stru *skeleton_internal;
+    UAskeleton::Data *skeleton_internal;
 
     slurp2()
     {
@@ -820,7 +820,7 @@ struct sklt_wis
 {
     int field_0;
     NC_STACK_sklt *sklts[14];
-    skeleton_64_stru *sklts_intern[14];
+    UAskeleton::Data *sklts_intern[14];
     int field_72;
     int field_76;
     int field_7A;
@@ -974,8 +974,8 @@ struct _NC_STACK_ypaworld
     NC_STACK_base *additionalBeeBox;
     NC_STACK_sklt *colsub_sklt;
     NC_STACK_sklt *colcomp_sklt;
-    skeleton_64_stru *colsub_sklt_intrn;
-    skeleton_64_stru *colcomp_sklt_intrn;
+    UAskeleton::Data *colsub_sklt_intrn;
+    UAskeleton::Data *colcomp_sklt_intrn;
     NC_STACK_ilbm *tracyrmp_ilbm;
     NC_STACK_ilbm *shadermp_ilbm;
     NC_STACK_win3d *win3d;
@@ -1238,8 +1238,8 @@ struct cityBases
 {
     NC_STACK_base *base;
     NC_STACK_sklt *sklt_obj;
-    skeleton_64_stru *sklt_obj_intern;
-    skeleton_64_stru *selected_sklt_intern;
+    UAskeleton::Data *sklt_obj_intern;
+    UAskeleton::Data *selected_sklt_intern;
     char field_10;
     char field_11;
     char field_12;
@@ -1527,7 +1527,7 @@ struct ypaworld_arg136
     float field_30;
     float field_34;
     int field_38;
-    skeleton_64_stru *field_3C;
+    UAskeleton::Data *field_3C;
     int field_40;
 };
 

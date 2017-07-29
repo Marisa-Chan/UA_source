@@ -4,6 +4,9 @@
 #include "rsrc.h"
 #include "engine_gfx.h"
 
+namespace UAskeleton
+{
+
 struct Vertex: public xyz
 {
     int flags;
@@ -21,21 +24,20 @@ struct Vertex: public xyz
     };
 };
 
-// Geometry plane Ax + Bx + Cz + D = 0
-// A,B,C plane vector normal n
-
 struct Polygon
 {
     int16_t num_vertices;
     int16_t v[GFX_MAX_VERTEX];
 
+    // Geometry plane Ax + Bx + Cz + D = 0
+    // A,B,C plane vector normal n
     float A;
     float B;
     float C;
     float D;
 };
 
-struct skeleton_64_stru
+struct Data
 {
     Vertex *POO;
     int16_t POO_NUM;
@@ -49,7 +51,7 @@ struct skeleton_64_stru
     Vertex *tformedVertex;
 
 
-    skeleton_64_stru()
+    Data()
     {
         POO = NULL;
         SEN = NULL;
@@ -60,7 +62,7 @@ struct skeleton_64_stru
         polygonsCount = 0;
     };
 
-    ~skeleton_64_stru()
+    ~Data()
     {
         if ( POO )
             delete[] POO;
@@ -76,20 +78,22 @@ struct skeleton_64_stru
     };
 };
 
+};
+
 struct __NC_STACK_skeleton
 {
-    skeleton_64_stru *data;
+    UAskeleton::Data *data;
 };
 
 struct skeleton_129_arg
 {
-    skeleton_64_stru *skeleton;
+    UAskeleton::Data *skeleton;
     int sen_count;
 };
 
 struct skeleton_130_arg
 {
-    skeleton_64_stru *skeleton;
+    UAskeleton::Data *skeleton;
     int pol_count;
     int num_indexes;
 };
@@ -154,14 +158,14 @@ public:
         SKEL_ATT_POLYPNTCNT = 0x80002004
     };
 
-    virtual skeleton_64_stru *getSKEL_pSkelet();
+    virtual UAskeleton::Data *getSKEL_pSkelet();
     virtual int getSKEL_pntCount();
     virtual int getSKEL_senCount();
     virtual int getSKEL_polyCount();
 
 protected:
-    bool PolygonCheckInvisible(Vertex *in, xyz *out, Polygon *pol);
-    bool TransformVertexes(skeleton_arg_132 *arg, Vertex *in, Vertex *out, int num);
+    bool PolygonCheckInvisible(UAskeleton::Vertex *in, xyz *out, UAskeleton::Polygon *pol);
+    bool TransformVertexes(skeleton_arg_132 *arg, UAskeleton::Vertex *in, UAskeleton::Vertex *out, int num);
 
 
 public:

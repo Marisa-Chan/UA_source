@@ -23,7 +23,7 @@ struct video_mode_node : public nnode
 
 struct struct_44dbf8
 {
-    skeleton_64_stru *sklt;
+    UAskeleton::Data *sklt;
     float pos_x;
     float pos_y;
     float pos_z;
@@ -502,7 +502,7 @@ void ypaworld_func184__sub0(_NC_STACK_ypaworld *yw, yw_f726c *hist_list, yw_arg1
 void yw_score(_NC_STACK_ypaworld *yw, yw_arg184 *arg, player_status *pl_status);
 uint8_t *yw_histbf_read_evnt(uint8_t *st, yw_arg184 *arg);
 
-void yw_RenderVector2D(_NC_STACK_ypaworld *yw, skeleton_64_stru *wire, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection = false);
+void yw_RenderVector2D(_NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection = false);
 uint32_t yw_GetColor(_NC_STACK_ypaworld *yw, int color_id);
 void yw_debriefUpdate(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
 void sub_4D6958(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, samples_collection1 *collection);

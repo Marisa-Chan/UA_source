@@ -108,7 +108,7 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile, i
     rsrc *res = obj->NC_STACK_skeleton::rsrc_func64(stk);
     if ( res )
     {
-        skeleton_64_stru *sklt = (skeleton_64_stru *)res->data;
+        UAskeleton::Data *sklt = (UAskeleton::Data *)res->data;
 
         if ( version == 1 )                      // POOL
         {
@@ -139,7 +139,7 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile, i
     return res;
 }
 
-int skeleton_read_poly(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt)
+int skeleton_read_poly(NC_STACK_sklt *obj, IFFile *mfile, UAskeleton::Data *sklt)
 {
     IFFile::Context *chunk = mfile->getCurrentChunk();
     int32_t entrycnt = chunk->TAG_SIZE / 2;
@@ -189,7 +189,7 @@ int skeleton_read_poly(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt
     return 1;
 }
 
-int skeleton_read_pol2(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt)
+int skeleton_read_pol2(NC_STACK_sklt *obj, IFFile *mfile, UAskeleton::Data *sklt)
 {
     IFFile::Context *chunk = mfile->getCurrentChunk();
     int pol_count = 0;
@@ -220,7 +220,7 @@ int skeleton_read_pol2(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt
     return 1;
 }
 
-int skeleton_read_senX(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt, int version)
+int skeleton_read_senX(NC_STACK_sklt *obj, IFFile *mfile, UAskeleton::Data *sklt, int version)
 {
     IFFile::Context *chunk = mfile->getCurrentChunk();
     int sen_count;
@@ -275,14 +275,14 @@ int skeleton_read_senX(NC_STACK_sklt *obj, IFFile *mfile, skeleton_64_stru *sklt
     return 0;
 }
 
-void sklt_func64__sub0__sub0(skeleton_64_stru *sklt, int id)
+void sklt_func64__sub0__sub0(UAskeleton::Data *sklt, int id)
 {
     if ( sklt )
     {
-        Polygon *pol = &sklt->polygons[id];
+        UAskeleton::Polygon *pol = &sklt->polygons[id];
         if ( pol->num_vertices >= 3 )
         {
-            Vertex *POO = sklt->POO;
+            UAskeleton::Vertex *POO = sklt->POO;
 
             float dx1 = POO[pol->v[1]].sx - POO[pol->v[0]].sx;
             float dy1 = POO[pol->v[1]].sy - POO[pol->v[0]].sy;
@@ -327,7 +327,7 @@ void sklt_func64__sub0__sub0(skeleton_64_stru *sklt, int id)
 
 rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile)
 {
-    skeleton_64_stru *sklt = NULL;
+    UAskeleton::Data *sklt = NULL;
     rsrc *res = NULL;
     int read_ok = 1;
 
@@ -359,7 +359,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile)
                 res = skeleton_read_pooX(obj, stak, mfile, 1);
                 if ( res )
                 {
-                    sklt = (skeleton_64_stru *)res->data;
+                    sklt = (UAskeleton::Data *)res->data;
                     if ( !sklt )
                         read_ok = 0;
                 }
@@ -374,7 +374,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile)
                 res = skeleton_read_pooX(obj, stak, mfile, 2);
                 if ( res )
                 {
-                    sklt = (skeleton_64_stru *)res->data;
+                    sklt = (UAskeleton::Data *)res->data;
                     if ( !sklt )
                         read_ok = 0;
                 }
@@ -475,7 +475,7 @@ rsrc * NC_STACK_sklt::rsrc_func64(stack_vals *stak)
 
 size_t NC_STACK_sklt::rsrc_func66(rsrc_func66_arg *arg)
 {
-    skeleton_64_stru *sklt = (skeleton_64_stru *)getRsrc_pData();
+    UAskeleton::Data *sklt = (UAskeleton::Data *)getRsrc_pData();
 
     if ( !sklt )
         return 0;

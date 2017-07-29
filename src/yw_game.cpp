@@ -1704,9 +1704,9 @@ void sub_44DBF8(_NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, st
     }
 }
 
-void sub_44DF60(skeleton_64_stru *arg, int id)
+void sub_44DF60(UAskeleton::Data *arg, int id)
 {
-    Polygon *triangle = &arg->polygons[id];
+    UAskeleton::Polygon *triangle = &arg->polygons[id];
 
     int vtx1 = arg->polygons[id].v[0];
     int vtx2 = arg->polygons[id].v[1];
@@ -1853,9 +1853,9 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
     }
 }
 
-int sub_44D36C(float dx, float dy, float dz, int id, skeleton_64_stru *sklt)
+int sub_44D36C(float dx, float dy, float dz, int id, UAskeleton::Data *sklt)
 {
-    Polygon *triangle = &sklt->polygons[id];
+    UAskeleton::Polygon *triangle = &sklt->polygons[id];
 
     int v7 = 0;
 
@@ -1872,8 +1872,8 @@ int sub_44D36C(float dx, float dy, float dz, int id, skeleton_64_stru *sklt)
 
         for (int i = 0; i < sklt->polygons[id].num_vertices; i++)
         {
-            Vertex *v12 = &sklt->POO[ sklt->polygons[id].v[i] ];
-            Vertex *v13 = &sklt->POO[ sklt->polygons[id].v[prev] ];
+            UAskeleton::Vertex *v12 = &sklt->POO[ sklt->polygons[id].v[i] ];
+            UAskeleton::Vertex *v13 = &sklt->POO[ sklt->polygons[id].v[prev] ];
 
             if ( ( (v13->sz <= dz && dz < v12->sz) ||
                     (v12->sz <= dz && dz < v13->sz) ) &&
@@ -1891,8 +1891,8 @@ int sub_44D36C(float dx, float dy, float dz, int id, skeleton_64_stru *sklt)
 
         for (int i = 0; i < sklt->polygons[id].num_vertices; i++)
         {
-            Vertex *v12 = &sklt->POO[ sklt->polygons[id].v[i] ];
-            Vertex *v13 = &sklt->POO[ sklt->polygons[id].v[prev] ];
+            UAskeleton::Vertex *v12 = &sklt->POO[ sklt->polygons[id].v[i] ];
+            UAskeleton::Vertex *v13 = &sklt->POO[ sklt->polygons[id].v[prev] ];
 
             if ( ( (v13->sz <= dz && dz < v12->sz) ||
                     (v12->sz <= dz && dz < v13->sz) ) &&
@@ -1910,8 +1910,8 @@ int sub_44D36C(float dx, float dy, float dz, int id, skeleton_64_stru *sklt)
 
         for (int i = 0; i < sklt->polygons[id].num_vertices; i++)
         {
-            Vertex *v12 = &sklt->POO[ sklt->polygons[id].v[i] ];
-            Vertex *v13 = &sklt->POO[ sklt->polygons[id].v[prev] ];
+            UAskeleton::Vertex *v12 = &sklt->POO[ sklt->polygons[id].v[i] ];
+            UAskeleton::Vertex *v13 = &sklt->POO[ sklt->polygons[id].v[prev] ];
 
             if ( ( (v13->sy <= dy && dy < v12->sy) ||
                     (v12->sy <= dy && dy < v13->sy) ) &&
@@ -1930,7 +1930,7 @@ void sub_44D8B8(ypaworld_arg136 *arg, struct_44dbf8 *loc)
 {
     for ( int i = 0; i < loc->sklt->polygonsCount; i++)
     {
-        Polygon *triangle = &loc->sklt->polygons[i];
+        UAskeleton::Polygon *triangle = &loc->sklt->polygons[i];
 
         float v11 = triangle->B * arg->field_18 + triangle->A * arg->field_14 + triangle->C * arg->field_1C;
         if ( v11 > 0.0 )
@@ -2501,7 +2501,7 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub0(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
     int j = yw->secTypes[ sct2->p_cell->type_id ].field_1;
 
     NC_STACK_base *bs = yw->slurps2[i][j].skeletons_bas;
-    skeleton_64_stru *skel = yw->slurps2[i][j].skeleton_internal;
+    UAskeleton::Data *skel = yw->slurps2[i][j].skeleton_internal;
 
     flag_xyz grp_1;
     grp_1.flag = 5;
@@ -2531,7 +2531,7 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub1(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
     int j = yw->secTypes[ sct2->p_cell->type_id ].field_1;
 
     NC_STACK_base *bs = yw->slurps1[i][j].skeletons_bas;
-    skeleton_64_stru *skel = yw->slurps1[i][j].skeleton_internal;
+    UAskeleton::Data *skel = yw->slurps1[i][j].skeleton_internal;
 
     flag_xyz grp_1;
     grp_1.flag = 5;
@@ -3009,7 +3009,7 @@ int ypaworld_func148__sub1(_NC_STACK_ypaworld *yw, int id, int a4, int x, int y,
     return 0;
 }
 
-int ypaworld_func137__sub0__sub0(skeleton_64_stru *skl, int id, float x, float y, float z, float r, yw_137loc *out)
+int ypaworld_func137__sub0__sub0(UAskeleton::Data *skl, int id, float x, float y, float z, float r, yw_137loc *out)
 {
     int num = skl->polygons[id].num_vertices;
     int16_t *vtx = skl->polygons[id].v;
@@ -3054,7 +3054,7 @@ void ypaworld_func137__sub0(ypaworld_arg137 *arg, struct_44dbf8 *a2)
 
     for (int i = 0; i < a2->sklt->polygonsCount; i++)
     {
-        Polygon *tria = &a2->sklt->polygons[i];
+        UAskeleton::Polygon *tria = &a2->sklt->polygons[i];
 
         float t0 = tria->A;
         float t1 = tria->B;
