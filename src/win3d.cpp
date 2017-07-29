@@ -3244,17 +3244,17 @@ void NC_STACK_win3d::getAspectCorrection(float &cW, float &cH, bool invert)
     }
 }
 
-void NC_STACK_win3d::setFrustumClip(float near, float far)
+void NC_STACK_win3d::setFrustumClip(float _near, float _far)
 {
-    if (near != frustumNear || far != frustumFar)
-        _setFrustumClip(near, far);
+    if (_near != frustumNear || _far != frustumFar)
+        _setFrustumClip(_near, _far);
 }
 
-void NC_STACK_win3d::_setFrustumClip(float near, float far)
+void NC_STACK_win3d::_setFrustumClip(float _near, float _far)
 {
     //-z * frustum
-    frustumNear = near;
-    frustumFar = far;
+    frustumNear = _near;
+    frustumFar = _far;
     frustum[0] = 1.0;
     frustum[1] = 0.0;
     frustum[2] = 0.0;
@@ -3267,12 +3267,12 @@ void NC_STACK_win3d::_setFrustumClip(float near, float far)
 
     frustum[8] = 0.0;
     frustum[9] = 0.0;
-    frustum[10] = (far + near) / (far - near);
+    frustum[10] = (_far + _near) / (_far - _near);
     frustum[11] = 1.0;
 
     frustum[12] = 0.0;
     frustum[13] = 0.0;
-    frustum[14] = -2.0 * (far * near) / (far - near);
+    frustum[14] = -2.0 * (_far * _near) / (_far - _near);
     frustum[15] = 0.0;
 }
 
