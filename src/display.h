@@ -303,14 +303,16 @@ public:
     };
 
 
-    enum RSTR_RFLAGS
+    enum RFLAGS
     {
-        RSTR_RFLAGS_LINMAP = 0x1,
-        RSTR_RFLAGS_PERSPMAP = 0x2,
-        RSTR_RFLAGS_FLATSHD = 0x4,
-        RSTR_RFLAGS_GRADSHD = 0x8,
-        RSTR_RFLAGS_ZEROTRACY = 0x10,
-        RSTR_RFLAGS_LUMTRACY = 0x20
+        RFLAGS_LINMAP = 0x1,
+        RFLAGS_PERSPMAP = 0x2,
+        RFLAGS_FLATSHD = 0x4,
+        RFLAGS_GRADSHD = 0x8,
+        RFLAGS_ZEROTRACY = 0x10,
+        RFLAGS_LUMTRACY = 0x20,
+        RFLAGS_SKY = 0x40,
+        RFLAGS_FALLOFF = 0x80
     };
 
     enum RSTR_ATT

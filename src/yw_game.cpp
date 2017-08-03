@@ -2345,6 +2345,8 @@ void yw_renderSky(_NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
     if ( yw->sky_loaded_base )
     {
         float v6 = rndr_params->maxZ;
+        uint32_t flags = rndr_params->flags;
+
         flag_xyz v5;
         v5.x = yw->current_bact->position.sx;
         v5.y = yw->field_15f4 + yw->current_bact->position.sy;
@@ -2354,10 +2356,13 @@ void yw_renderSky(_NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
         yw->sky_loaded_base->base_func68(&v5);
 
         rndr_params->maxZ = 32000.0;
+        if (NC_STACK_win3d::win3d_keys[18].value.val)
+            rndr_params->flags = NC_STACK_display::RFLAGS_SKY;
 
         yw->sky_loaded_base->base_func77(rndr_params);
 
         rndr_params->maxZ = v6;
+        rndr_params->flags = flags;
     }
 }
 
@@ -2605,6 +2610,7 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
 
         baseRender_msg rndrs;
 
+        rndrs.flags = 0;
         rndrs.frameTime = bs64->field_4;
         rndrs.globTime = bs64->field_0;
         rndrs.adeCount = 0;
@@ -2670,10 +2676,12 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
         yw->field_1B6A = rndrs.adeCount;
         yw->field_1b6c = rndrs.rndrStack->getSize();
 
-        yw->win3d->setFrustumClip(1.0, rndrs.maxZ);
         yw->win3d->BeginScene();
 
-        rndrs.rndrStack->render(false);
+        if (NC_STACK_win3d::win3d_keys[18].value.val)
+            rndrs.rndrStack->render(true, RenderStack::comparePrio);
+        else
+            rndrs.rndrStack->render(false);
 
         yw->win3d->EndScene();
 

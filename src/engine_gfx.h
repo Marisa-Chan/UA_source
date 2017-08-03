@@ -83,6 +83,7 @@ struct polysDatSub
     xyz vertexes[GFX_MAX_VERTEX];
     tUtV tu_tv[GFX_MAX_VERTEX];
     float color[GFX_MAX_VERTEX];
+    float distance[GFX_MAX_VERTEX];
     bitmap_intern *pbitm;
 };
 

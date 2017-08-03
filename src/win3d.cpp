@@ -31,7 +31,7 @@ int txt16bit = 0;
 
 const NewClassDescr NC_STACK_win3d::description("win3d.class", &newinstance);
 
-key_value_stru win3d_keys[18] =
+key_value_stru NC_STACK_win3d::win3d_keys[21] =
 {
     {"gfx.dither", KEY_TYPE_BOOL, 0},               //0
     {"gfx.filter", KEY_TYPE_BOOL, 0},
@@ -50,7 +50,10 @@ key_value_stru win3d_keys[18] =
     {"gfx.blending", KEY_TYPE_DIGIT, 0},
     {"gfx.solidfont", KEY_TYPE_BOOL, true},          //15
     {"gfx.vsync", KEY_TYPE_DIGIT, 1},
-    {"gfx.maxfps", KEY_TYPE_DIGIT, 60}
+    {"gfx.maxfps", KEY_TYPE_DIGIT, 60},
+    {"gfx.newsky", KEY_TYPE_BOOL, false},
+    {"gfx.skydistance", KEY_TYPE_DIGIT, 3000},
+    {"gfx.skylength", KEY_TYPE_DIGIT, 500}               //20
 };
 
 
@@ -951,7 +954,7 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
 
 size_t NC_STACK_win3d::func0(stack_vals *stak)
 {
-    get_keyvalue_from_ini(0, win3d_keys, 18);
+    get_keyvalue_from_ini(0, win3d_keys, 21);
 
     if ( !windd_func0(stak) )
         return 0;
@@ -1784,11 +1787,12 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
         return;
 
     //Store for rendering later ( from 214 method )
-    if ( polysDat->renderFlags & 0x30 && !a6 )
-    {
-        w3d->pending.push_back( in );
-        return;
-    }
+    if ( !(polysDat->renderFlags & RFLAGS_FALLOFF) )
+        if ( polysDat->renderFlags & 0x30 && !a6 )
+        {
+            w3d->pending.push_back( in );
+            return;
+        }
 
     vtxOut vtx[24];
 
@@ -1817,17 +1821,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
     w3d->rendStates2[TEXTUREMAG] = (w3d->filter != 0);
     w3d->rendStates2[TEXTUREMIN] = (w3d->filter != 0);
 
-    if ( polysDat->renderFlags & 1 )
-    {
-        w3d->rendStates2[TEXTUREHANDLE] = tex->oTexture;
-
-        for (int i = 0; i < polysDat->vertexCount; i++)
-        {
-            vtx[i].tu = polysDat->tu_tv[i].tu;
-            vtx[i].tv = polysDat->tu_tv[i].tv;
-        }
-    }
-    else if ( polysDat->renderFlags & 2 )
+    if ( polysDat->renderFlags & (RFLAGS_LINMAP | RFLAGS_PERSPMAP) )
     {
         w3d->rendStates2[TEXTUREHANDLE] = tex->oTexture;
 
@@ -1849,7 +1843,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
 
     }
 
-    if ( polysDat->renderFlags & 0xC )
+    if ( polysDat->renderFlags & (RFLAGS_FLATSHD | RFLAGS_GRADSHD) )
     {
         w3d->rendStates2[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
         w3d->rendStates2[SHADEMODE] = 1;//D3DSHADE_GOURAUD;
@@ -1864,7 +1858,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
         }
     }
 
-    if ( polysDat->renderFlags & 0x20 )
+    if ( polysDat->renderFlags & RFLAGS_LUMTRACY )
     {
         if ( !w3d->zbuf_when_tracy )
             w3d->rendStates2[ZWRITEENABLE] = 0;
@@ -1898,7 +1892,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
         for (int i = 0; i < polysDat->vertexCount; i++)
             vtx[i].a = w3d->alpha;
     }
-    else if ( polysDat->renderFlags & 0x10 )
+    else if ( polysDat->renderFlags & RFLAGS_ZEROTRACY )
     {
         if ( !w3d->zbuf_when_tracy )
             w3d->rendStates2[ZWRITEENABLE] = 0;
@@ -1913,6 +1907,38 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
         w3d->rendStates2[TEXTUREMAG] = 0;//D3DFILTER_NEAREST;
         w3d->rendStates2[TEXTUREMIN] = 0;//D3DFILTER_NEAREST;
         w3d->rendStates2[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
+    }
+
+    if (win3d_keys[18].value.val)
+    {
+        if (polysDat->renderFlags & RFLAGS_SKY)
+        {
+            w3d->rendStates2[ZWRITEENABLE] = 0;
+        }
+        else if (polysDat->renderFlags & RFLAGS_FALLOFF)
+        {
+            w3d->rendStates2[ZWRITEENABLE] = 1;
+            w3d->rendStates2[ALPHABLENDENABLE] = 1;
+            w3d->rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
+            w3d->rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
+            w3d->rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
+            w3d->rendStates2[SHADEMODE] = 1;//D3DSHADE_FLAT;
+            w3d->rendStates2[STIPPLEENABLE] = 0;
+
+            float transDist = win3d_keys[19].value.val;
+            float transLen = win3d_keys[20].value.val;
+
+            for (int i = 0; i < polysDat->vertexCount; i++)
+            {
+                if (polysDat->distance[i] > transDist)
+                {
+                    float prc = (polysDat->distance[i] - transDist) / transLen;
+                    if (prc > 1.0)
+                        prc = 1.0;
+                    vtx[i].a = (1.0 - prc) * 255.0;
+                }
+            }
+        }
     }
 
     SetRenderStates(0);
@@ -2296,7 +2322,7 @@ void NC_STACK_win3d::RenderTransparent()
     {
         if ( stack__win3d.pending.size() )
         {
-            std::sort(stack__win3d.pending.begin(), stack__win3d.pending.end(), compare);
+            std::stable_sort(stack__win3d.pending.begin(), stack__win3d.pending.end(), compare);
 
             for (std::deque<polysDat *>::iterator it = stack__win3d.pending.begin(); it != stack__win3d.pending.end(); it++)
             {
@@ -2502,7 +2528,7 @@ void NC_STACK_win3d::BeginFrame()
     glPushAttrib(GL_DEPTH_WRITEMASK);
     glDepthMask(GL_TRUE);
 
-    glClearColor(0,0,0,0);
+    glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glPopAttrib();

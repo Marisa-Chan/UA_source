@@ -3,6 +3,7 @@
 
 #include <deque>
 #include "wrapSDL.h"
+#include "ini.h"
 
 struct bitmap_intern;
 struct polysDat;
@@ -171,7 +172,7 @@ public:
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_win3d() {
-        _setFrustumClip(1.0, 10.0);
+        _setFrustumClip(1.0, 8192.0);
         //memset(&stack__win3d, 0, sizeof(stack__win3d));
     };
     virtual ~NC_STACK_win3d() {};
@@ -240,6 +241,8 @@ public:
     static const NewClassDescr description;
 
     __NC_STACK_win3d stack__win3d;
+
+    static key_value_stru win3d_keys[21];
 
 protected:
     GLdouble frustum[16];

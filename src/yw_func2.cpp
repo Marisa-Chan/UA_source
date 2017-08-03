@@ -225,7 +225,6 @@ void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int ob
 
 void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc)
 {
-    yw->win3d->setFrustumClip(17.0, 32000.0);
     yw->win3d->BeginScene();
 
     brf->field_4174.frameTime = 1;
@@ -234,6 +233,7 @@ void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, str
     brf->field_4174.ownerID = 1;
     brf->field_4174.minZ = 17.0;
     brf->field_4174.maxZ = 32000.0;
+    brf->field_4174.flags = 0;
     brf->field_4174.rndrStack = &NC_STACK_base::renderStack;
 
     if ( brf->brf_objs.field_0 )

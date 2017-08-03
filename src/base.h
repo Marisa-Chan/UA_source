@@ -54,11 +54,15 @@ public:
     RenderStack();
     ~RenderStack();
 
+    typedef  bool (*tCompare) (polysDat *, polysDat *);
+
     polysDat *get();
     void commit();
     size_t getSize();
     void clear(bool dealloc = false);
-    void render(bool sorting = true, bool Clear = true);
+    void render(bool sorting = true, tCompare _func = NULL, bool Clear = true);
+
+    static bool comparePrio(polysDat *a, polysDat *b);
 
 private:
     static bool compare(polysDat *a, polysDat *b);
@@ -89,6 +93,7 @@ struct area_arg_65
     float fadeLength;
     int ambientLight;
     int adeCount;
+    uint32_t flags;
 };
 
 struct __NC_STACK_base
@@ -159,6 +164,7 @@ struct baseRender_msg
     int ownerID;
     float minZ;
     float maxZ;
+    uint32_t flags;
 };
 
 

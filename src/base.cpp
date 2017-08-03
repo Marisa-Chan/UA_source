@@ -18,8 +18,6 @@
 
 #include "engine_gfx.h"
 
-
-
 const NewClassDescr NC_STACK_base::description("base.class", &newinstance);
 RenderStack NC_STACK_base::renderStack;
 
@@ -91,12 +89,39 @@ bool RenderStack::compare(polysDat *a, polysDat *b)
     return a->range < b->range;
 }
 
-void RenderStack::render(bool sorting, bool Clear)
+bool RenderStack::comparePrio(polysDat *a, polysDat *b)
+{
+    if ((a->datSub.renderFlags | b->datSub.renderFlags) & NC_STACK_display::RFLAGS_SKY )
+    {
+        if ( (a->datSub.renderFlags & b->datSub.renderFlags) & NC_STACK_display::RFLAGS_SKY )
+            return a->range > b->range;
+        else if ( b->datSub.renderFlags & NC_STACK_display::RFLAGS_SKY )
+            return false;
+    }
+    else if ((a->datSub.renderFlags | b->datSub.renderFlags) & NC_STACK_display::RFLAGS_FALLOFF )
+    {
+        if ( (a->datSub.renderFlags & b->datSub.renderFlags) & NC_STACK_display::RFLAGS_FALLOFF )
+            return a->range > b->range;
+        else if ( b->datSub.renderFlags & NC_STACK_display::RFLAGS_FALLOFF )
+            return false;
+    }
+
+    return true;
+}
+
+void RenderStack::render(bool sorting, tCompare _func, bool Clear)
 {
     std::deque<polysDat *>::iterator qEnd = que.begin() + currentElement;
 
-    if (sorting)
-        std::sort(que.begin(), qEnd, compare);
+    if (sorting && currentElement > 1)
+    {
+        if (_func)
+            std::stable_sort(que.begin(), qEnd, _func);
+        else
+            std::stable_sort(que.begin(), qEnd, compare);
+
+        qEnd = que.begin() + currentElement;
+    }
 
     for(std::deque<polysDat *>::iterator it = que.begin(); it != qEnd; it++)
     {
@@ -1102,6 +1127,7 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
     base77.ownerID = base->ID;
     base77.minZ = 1.0;
     base77.maxZ = 1000.0;
+    base77.flags = 0;
 
     base_func77(&base77);
 
@@ -1117,7 +1143,6 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
     win3d->setRSTR_BGpen(0);
     win3d->raster_func192(NULL);
 
-    win3d->setFrustumClip(base77.minZ, base77.maxZ);
     win3d->BeginScene();
 
     renderStack.render();
@@ -1491,6 +1516,7 @@ size_t NC_STACK_base::base_func77(baseRender_msg *arg)
                 base->renderMsg.rndrStack = arg->rndrStack;
                 base->renderMsg.view = skel132.glob_1c;
                 base->renderMsg.owner = skel132.base_1c;
+                base->renderMsg.flags = arg->flags;
 
                 base->renderMsg.OBJ_SKELETON = base->OBJ_SKELETON;
                 base->renderMsg.adeCount = 0;
@@ -1505,7 +1531,6 @@ size_t NC_STACK_base::base_func77(baseRender_msg *arg)
                 }
 
                 arg->adeCount += base->renderMsg.adeCount;
-                arg->rndrStack = base->renderMsg.rndrStack;
             }
         }
     }
