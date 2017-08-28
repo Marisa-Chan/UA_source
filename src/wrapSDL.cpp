@@ -1,5 +1,6 @@
 #include <string>
 #include <list>
+#include <SDL2/SDL_image.h>
 #include "wrapSDL.h"
 #include "fsmgr.h"
 
@@ -237,10 +238,14 @@ void SDLWRAP_INIT()
     TTF_Init();
 
     SDLWRAP_ScanFonts();
+
+    printf("IMG_Init %x\n", IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP));
 }
 
 void SDLWRAP_DEINIT()
 {
+    IMG_Quit();
+
     for(std::list< FontNode *>::iterator it = fontsList.begin(); it != fontsList.end(); it++)
     {
         if (*it)

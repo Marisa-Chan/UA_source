@@ -662,8 +662,8 @@ struct brf_t1
 
 struct big_ypa_Brf
 {
-    NC_STACK_ilbm *mbmap_img;
-    NC_STACK_ilbm *briefing_map;
+    NC_STACK_bitmap *mbmap_img;
+    NC_STACK_bitmap *briefing_map;
     bitmap_intern *typ_map_bitm;
     stru_2d90 s2d90;
     mapProto map_prototype;
@@ -752,11 +752,11 @@ struct stru_LevelNet
     bkg_pct brief_map[4];
     bkg_pct debrief_map[4];
     mapINFO mapInfos[256];
-    NC_STACK_ilbm *ilbm_menu_map;
-    NC_STACK_ilbm *ilbm_mask_map;
-    NC_STACK_ilbm *ilbm_rollover_map;
-    NC_STACK_ilbm *ilbm_finished_map;
-    NC_STACK_ilbm *ilbm_enabled_map;
+    NC_STACK_bitmap *ilbm_menu_map;
+    NC_STACK_bitmap *ilbm_mask_map;
+    NC_STACK_bitmap *ilbm_rollover_map;
+    NC_STACK_bitmap *ilbm_finished_map;
+    NC_STACK_bitmap *ilbm_enabled_map;
     int field_BE38;
 };
 
@@ -976,8 +976,8 @@ struct _NC_STACK_ypaworld
     NC_STACK_sklt *colcomp_sklt;
     UAskeleton::Data *colsub_sklt_intrn;
     UAskeleton::Data *colcomp_sklt_intrn;
-    NC_STACK_ilbm *tracyrmp_ilbm;
-    NC_STACK_ilbm *shadermp_ilbm;
+    NC_STACK_bitmap *tracyrmp_ilbm;
+    NC_STACK_bitmap *shadermp_ilbm;
     NC_STACK_win3d *win3d;
     int field_138c;
     int str17_NOT_FALSE;
@@ -1061,7 +1061,7 @@ struct _NC_STACK_ypaworld
     int field_1ab4;
     xyz field_1ab8;
 
-    NC_STACK_ilbm *pointers[11];
+    NC_STACK_bitmap *pointers[11];
     bitmap_intern *pointers__bitm[11];
     int field_1b1c;
     int field_1b20; // saved mouse x
@@ -1118,10 +1118,10 @@ struct _NC_STACK_ypaworld
     char *lang_strings__end;
     char **string_pointers;
     char **string_pointers_p2;
-    NC_STACK_ilbm *typ_map;
-    NC_STACK_ilbm *own_map;
-    NC_STACK_ilbm *blg_map;
-    NC_STACK_ilbm *hgt_map;
+    NC_STACK_bitmap *typ_map;
+    NC_STACK_bitmap *own_map;
+    NC_STACK_bitmap *blg_map;
+    NC_STACK_bitmap *hgt_map;
 
     NC_STACK_bitmap *copyof_typemap;
     NC_STACK_bitmap *copyof_ownermap;

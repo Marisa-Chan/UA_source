@@ -51,6 +51,8 @@ public:
         return new NC_STACK_amesh();
     };
 
+    static NC_STACK_amesh *CInit(stack_vals *stak);
+
     enum AMESH_FLAG
     {
         AMESH_FLAG_DPTHFADE = 1

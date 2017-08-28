@@ -108,7 +108,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
         init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
         init_vals[3].end();
 
-        tileset->font_image = dynamic_cast<NC_STACK_bitmap *>( init_get_class("ilbm.class", init_vals) );
+        tileset->font_image = NC_STACK_ilbm::CInit(init_vals);
         if ( !tileset->font_image )
         {
             if ( tileset->chars )
@@ -249,7 +249,7 @@ tiles_stru * yw_LoadTileSet(const char *filename, int chr_width, int font_height
         init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
         init_vals[3].end();
 
-        tileset->font_image = dynamic_cast<NC_STACK_bitmap *>( init_get_class("ilbm.class", init_vals) );
+        tileset->font_image = NC_STACK_ilbm::CInit(init_vals);
         if ( tileset->font_image )
         {
             tileset->field_4 = tileset->font_image->getBMD_pBitmap();
@@ -340,34 +340,34 @@ int load_fonts_and_icons(_NC_STACK_ypaworld *yw)
             return 0;
         }
 
-        GFXe.setTileset(yw->tiles[i], i);
+        GFXEngine::GFXe.setTileset(yw->tiles[i], i);
     }
 
 
     yw->tiles[40] = yw_LoadTileSet("lego16.ilbm", 16, 16, 16, 16, 16, 16, 0, 0);
     if ( !yw->tiles[40] )
         return 0;
-    GFXe.setTileset(yw->tiles[40], 40);
+    GFXEngine::GFXe.setTileset(yw->tiles[40], 40);
 
     yw->tiles[41] = yw_LoadTileSet("lego8.ilbm", 8, 8, 8, 8, 16, 16, 0, 0);
     if ( !yw->tiles[41] )
         return 0;
-    GFXe.setTileset(yw->tiles[41], 41);
+    GFXEngine::GFXe.setTileset(yw->tiles[41], 41);
 
     yw->tiles[42] = yw_LoadTileSet("lego4.ilbm", 4, 4, 4, 4, 16, 16, 0, 0);
     if ( !yw->tiles[42] )
         return 0;
-    GFXe.setTileset(yw->tiles[42], 42);
+    GFXEngine::GFXe.setTileset(yw->tiles[42], 42);
 
     yw->tiles[43] = yw_LoadTileSet("sec4.ilbm", 4, 4, 4, 4, 16, 16, 0, 0);
     if ( !yw->tiles[43] )
         return 0;
-    GFXe.setTileset(yw->tiles[43], 43);
+    GFXEngine::GFXe.setTileset(yw->tiles[43], 43);
 
     yw->tiles[44] = yw_LoadTileSet("sec8.ilbm", 8, 8, 8, 8, 16, 16, 0, 0);
     if ( !yw->tiles[44] )
         return 0;
-    GFXe.setTileset(yw->tiles[44], 44);
+    GFXEngine::GFXe.setTileset(yw->tiles[44], 44);
 
     for (int i = 0; i < 5; i++)
     {
@@ -420,7 +420,7 @@ int load_fonts_and_icons(_NC_STACK_ypaworld *yw)
         v14->chars[8].width = v14->chars[0].width;
 
         yw->tiles[id] = v14;
-        GFXe.setTileset(v14, id);
+        GFXEngine::GFXe.setTileset(v14, id);
 
 
     }
@@ -428,22 +428,22 @@ int load_fonts_and_icons(_NC_STACK_ypaworld *yw)
     yw->tiles[59] = yw_LoadFont(yw, "mapvhcl3.font");
     if ( !yw->tiles[59] )
         return 0;
-    GFXe.setTileset(yw->tiles[59], 59);
+    GFXEngine::GFXe.setTileset(yw->tiles[59], 59);
 
     yw->tiles[60] = yw_LoadFont(yw, "mapvhcl5.font");
     if ( !yw->tiles[60] )
         return 0;
-    GFXe.setTileset(yw->tiles[60], 60);
+    GFXEngine::GFXe.setTileset(yw->tiles[60], 60);
 
     yw->tiles[61] = yw_LoadFont(yw, "mapvhcl7.font");
     if ( !yw->tiles[61] )
         return 0;
-    GFXe.setTileset(yw->tiles[61], 61);
+    GFXEngine::GFXe.setTileset(yw->tiles[61], 61);
 
     yw->tiles[62] = yw_LoadFont(yw, "mapvhcl9.font");
     if ( !yw->tiles[62] )
         return 0;
-    GFXe.setTileset(yw->tiles[62], 62);
+    GFXEngine::GFXe.setTileset(yw->tiles[62], 62);
 
     yw->font_default_h = yw->tiles[0]->font_height;
     yw->font_default_w__a = yw->tiles[0]->chars[97].width; // a
@@ -1473,7 +1473,7 @@ int yw_InitMouseStuff(_NC_STACK_ypaworld *yw)
         init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
         init_vals[3].end();
 
-        yw->pointers[i] = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
+        yw->pointers[i] = NC_STACK_ilbm::CInit(init_vals);
         if ( !yw->pointers[i] )
         {
             ypa_log_out("yw_select.c/yw_InitMouseStuff()\n");
@@ -1500,7 +1500,7 @@ int yw_InitMouseStuff(_NC_STACK_ypaworld *yw)
 
 int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
 {
-    yw->win3d = GFXe.getC3D();
+    yw->win3d = GFXEngine::GFXe.getC3D();
     yw->field_17c0 = 0;
 
     char buf[1024];
@@ -1541,7 +1541,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
 
     set_prefix_replacement("rsrc", buf);
 
-    if ( !GFXe.loadPal("palette/standard.pal") )
+    if ( !GFXEngine::GFXe.loadPal("palette/standard.pal") )
         ypa_log_out("WARNING: Could not load set default palette!\n");
 
     if ( setID != yw->set_number && setID != 46 )
@@ -1628,7 +1628,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
     init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "remap/tracyrmp.ilbm");
     init_vals[1].end();
 
-    yw->tracyrmp_ilbm = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
+    yw->tracyrmp_ilbm = NC_STACK_ilbm::CInit(init_vals);
     if ( !yw->tracyrmp_ilbm )
     {
         ypa_log_out("Couldn't load tracy remap table, set %d.\n", setID);
@@ -1639,15 +1639,15 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
     init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "remap/shadermp.ilbm");
     init_vals[1].end();
 
-    yw->shadermp_ilbm = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
+    yw->shadermp_ilbm = NC_STACK_ilbm::CInit(init_vals);
     if ( !yw->shadermp_ilbm )
     {
         ypa_log_out("Couldn't load shade remap table, set %d.\n", setID);
         return 0;
     }
 
-    GFXe.setTracyRmp( yw->tracyrmp_ilbm->getBMD_pBitmap() );
-    GFXe.setShadeRmp( yw->shadermp_ilbm->getBMD_pBitmap() );
+    GFXEngine::GFXe.setTracyRmp( yw->tracyrmp_ilbm->getBMD_pBitmap() );
+    GFXEngine::GFXe.setShadeRmp( yw->shadermp_ilbm->getBMD_pBitmap() );
 
     yw->additionalBeeBox = READ_BAS_FILE("rsrc:objects/beebox.base");
     if ( !yw->additionalBeeBox )
@@ -1715,7 +1715,7 @@ int writeTOD(_NC_STACK_ypaworld *yw, const char *fname, int tod)
 }
 
 
-void ypaworld_func158__sub4__sub0(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *bitm)
+void ypaworld_func158__sub4__sub0(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *bitm)
 {
     if ( yw )
     {
@@ -1802,7 +1802,7 @@ void sb_0x4ea37c(_NC_STACK_ypaworld *yw)
         yw->set_number = 0;
     }
 
-    NC_STACK_display *win3d = GFXe.getC3D();
+    NC_STACK_display *win3d = GFXEngine::GFXe.getC3D();
 
     win3d->display_func272(NULL);
 }
@@ -2366,7 +2366,7 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
                 init_vals[3].end();
 
                 if ( yw->LevelNet->brief_map[0].map_name[0] )
-                    brf->briefing_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
+                    brf->briefing_map = NC_STACK_ilbm::CInit(init_vals);
 
                 set_prefix_replacement("rsrc", "mbpix:");
 
@@ -2376,7 +2376,7 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
                 init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
                 init_vals[3].end();
 
-                brf->mbmap_img = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
+                brf->mbmap_img = NC_STACK_ilbm::CInit(init_vals);
 
                 if ( brf->mbmap_img )
                 {
@@ -2385,7 +2385,7 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
                     init_vals[1].end();
 
                     if ( !yw->typ_map )
-                        yw->typ_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
+                        yw->typ_map = NC_STACK_ilbm::CInit(init_vals);
 
                     if ( yw->typ_map )
                     {
@@ -2467,7 +2467,7 @@ NC_STACK_bitmap * sub_44816C(NC_STACK_bitmap *src, const char *name)
     init_vals[2].set(NC_STACK_bitmap::BMD_ATT_HEIGHT, a4->height);
     init_vals[3].end();
 
-    NC_STACK_bitmap *v3 = (NC_STACK_bitmap *)init_get_class("bitmap.class", init_vals);
+    NC_STACK_bitmap *v3 = NC_STACK_bitmap::CInit(init_vals);
 
     if ( v3 )
     {
@@ -2569,7 +2569,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
     init_vals[3].end();
 
     if ( yw->LevelNet->debrief_map[0].map_name[0] )
-        brf->briefing_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
+        brf->briefing_map = NC_STACK_ilbm::CInit(init_vals);
 
     set_prefix_replacement("rsrc", "mbpix:");
 
@@ -2579,7 +2579,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
     init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
     init_vals[3].end();
 
-    brf->mbmap_img = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
+    brf->mbmap_img = NC_STACK_ilbm::CInit(init_vals);
     if ( !brf->mbmap_img )
     {
         yw_freeDebrief(yw);
@@ -2916,7 +2916,7 @@ void ypaworld_func158__video_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 v16;
     v16 = usr->video_listvw.cmdstrm;
 
-    GFXe.drawText(&v16);
+    GFXEngine::GFXe.drawText(&v16);
 }
 
 void ypaworld_func158__d3d_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
@@ -2974,7 +2974,7 @@ void ypaworld_func158__d3d_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 v16;
     v16 = usr->d3d_listvw.cmdstrm;
 
-    GFXe.drawText(&v16);
+    GFXEngine::GFXe.drawText(&v16);
 }
 
 char * sub_4DDF78(_NC_STACK_ypaworld *yw, GuiList *lstvw, char *pos, int a3)
@@ -3265,7 +3265,7 @@ void ypaworld_func158__network_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
 
             case 3:
             {
-                tiles_stru *tiles = GFXe.getTileset(8);
+                tiles_stru *tiles = GFXEngine::GFXe.getTileset(8);
 
                 items[0].txt = connTp.c_str();
                 items[0].width = tiles->chars[80].width;
@@ -3372,7 +3372,7 @@ void ypaworld_func158__network_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     FontUA::set_end(&cmd);
 
     w3d_a209 txt = usr->network_listvw.cmdstrm;
-    GFXe.drawText(&txt);
+    GFXEngine::GFXe.drawText(&txt);
 }
 
 void ypaworld_func158__locale_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
@@ -3419,7 +3419,7 @@ void ypaworld_func158__locale_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 v13;
     v13 = usr->local_listvw.cmdstrm;
 
-    GFXe.drawText(&v13);
+    GFXEngine::GFXe.drawText(&v13);
 }
 
 void ypaworld_func158__saveload_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
@@ -3530,7 +3530,7 @@ void ypaworld_func158__saveload_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 arg;
     arg = usr->disk_listvw.cmdstrm;
 
-    GFXe.drawText(&arg);
+    GFXEngine::GFXe.drawText(&arg);
 }
 
 void sb_0x4dee74__sub0(UserData *usr, int x1, int y1, int w, int h)
@@ -3548,7 +3548,7 @@ void sb_0x4dee74__sub0(UserData *usr, int x1, int y1, int w, int h)
 
     int v6 = h;
 
-    tiles_stru *v7 = GFXe.getTileset(0);
+    tiles_stru *v7 = GFXEngine::GFXe.getTileset(0);
 
     while ( v6 > v7->font_height )
     {
@@ -3591,7 +3591,7 @@ void sb_0x4dee74__sub0(UserData *usr, int x1, int y1, int w, int h)
     a1a.cmdbuf = buf;
     a1a.includ = NULL;
 
-    GFXe.drawText(&a1a);
+    GFXEngine::GFXe.drawText(&a1a);
 }
 
 void ypaworld_func158__confirm_draw(UserData *usr)
@@ -3766,7 +3766,7 @@ void sb_0x44ac24(_NC_STACK_ypaworld *yw)
         yw->set_number = 0;
     }
 
-    NC_STACK_display *win3d = GFXe.getC3D();
+    NC_STACK_display *win3d = GFXEngine::GFXe.getC3D();
 
     win3d->display_func272(NULL);
 

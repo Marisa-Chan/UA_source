@@ -3,15 +3,6 @@
 
 #include "engine_gfx.h"
 
-struct xyxyNNN
-{
-    int x1;
-    int y1;
-    int x2;
-    int y2;
-    int NNN;
-};
-
 struct ua_dRect
 {
     int x1;
@@ -31,17 +22,17 @@ struct ua_fRect
 
 struct __NC_STACK_display
 {
-    bitmap_intern *bitm_intern;
+    //bitmap_intern *bitm_intern;
     uint32_t field_4; // Color?
     uint32_t field_8; // and Color2 ?
-    uint32_t field_c;
+    //uint32_t BG_Color;
 //  int field_10;
 //  int field_14;
 //  int field_18;
 //  int field_1c;
 //  int field_20;
-    xyxyNNN field_24;
-    xyxyNNN field_38;
+    ua_dRect field_24;
+    ua_dRect field_38;
 //  int field_4c;
 //  int field_50;
 //  int field_54;
@@ -132,8 +123,8 @@ struct __NC_STACK_display
 
     UA_PALETTE palette;
     UA_PALETTE field_300[8];
-    bitmap_intern *pointer_bitm;
-    int field_1b04;
+//    bitmap_intern *pointer_bitm;
+//    int field_1b04;
 };
 
 
@@ -186,7 +177,7 @@ struct rstr_arg217
 {
     uint32_t dword0;
     uint32_t dword4;
-    uint32_t dword8;
+//    uint32_t dword8;
 };
 
 struct rstr_218_arg
@@ -227,7 +218,7 @@ struct windd_arg256
     char name[32];
 };
 
-class NC_STACK_display: public NC_STACK_bitmap
+class NC_STACK_display: public NC_STACK_nucleus
 {
 public:
     virtual size_t func0(stack_vals *stak);
@@ -235,7 +226,7 @@ public:
     virtual size_t func2(stack_vals *stak);
     virtual size_t func3(stack_vals *stak);
     virtual size_t raster_func192(stack_vals *);
-    virtual size_t raster_func193(bitmap_intern **out);
+//    virtual size_t raster_func193(bitmap_intern **out);
     virtual size_t raster_func198(w3d_func198arg *);
     virtual size_t raster_func199(w3d_func199arg *);
     virtual size_t raster_func200(w3d_func198arg *);
@@ -269,9 +260,9 @@ public:
     virtual void display_func261(rstr_261_arg *arg);
     virtual void display_func262(rstr_262_arg *arg);
     virtual void display_func263(displ_arg263 *arg);
-    virtual void display_func264(void *);
-    virtual void display_func265(void *);
-    virtual size_t AllocTexture(bitmap_intern *pbitm);
+//    virtual void display_func264(void *);
+//    virtual void display_func265(void *);
+    virtual bool AllocTexture(bitmap_intern *pbitm);
     virtual void TextureApplyPalette(bitmap_intern *pbitm);
     virtual void FreeTexture(bitmap_intern *pbitm);
     virtual size_t LockTexture(bitmap_intern *);
@@ -298,10 +289,17 @@ public:
 
     enum DISP_ATT
     {
-        DISP_ATT_DISPLAY_ID = 0x80004000,
-        DISP_ATT_DISPLAY_INF = 0x80004001,
+        ATT_FGPEN       = 0x80001000,
+        ATT_BGPEN       = 0x80001001,
+        ATT_SHADE_RMP   = 0x80001002,
+        ATT_TRACY_RMP   = 0x80001003,
+        ATT_FGAPEN      = 0x80001004,
+        ATT_WIDTH       = 0x80001005,
+        ATT_HEIGHT      = 0x80001006,
+        ATT_PALETTE     = 0x80001007,
+        ATT_DISPLAY_ID  = 0x80001008,
+        ATT_DISPLAY_INF = 0x80001009
     };
-
 
     enum RFLAGS
     {
@@ -315,19 +313,8 @@ public:
         RFLAGS_FALLOFF = 0x80
     };
 
-    enum RSTR_ATT
-    {
-        RSTR_ATT_FGPEN = 0x80003000,
-        RSTR_ATT_BGPEN = 0x80003001,
-        RSTR_ATT_SHADE_RMP = 0x80003002,
-        RSTR_ATT_TRACY_RMP = 0x80003003,
-        RSTR_ATT_FGAPEN = 0x80003004
-    };
-
-
-
     //Set
-    virtual void setBMD_palette(UA_PALETTE *);
+    virtual void SetPalette(UA_PALETTE *);
 
     virtual void setRSTR_FGpen(uint32_t pen);
     virtual void setRSTR_BGpen(uint32_t pen);
@@ -336,12 +323,20 @@ public:
     virtual void setRSTR_FGApen(uint32_t pen);
 
     //Get
-    virtual UA_PALETTE *getBMD_palette();
+    virtual UA_PALETTE *GetPalette();
+
+    virtual int16_t GetWidth();
+    virtual int16_t GetHeight();
 
     //Data
+public:
     static const NewClassDescr description;
 
     __NC_STACK_display stack__display;
+
+protected:
+    int16_t width;
+    int16_t height;
 };
 
 #endif // DISPLAY_H_INCLUDED

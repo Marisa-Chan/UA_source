@@ -936,7 +936,7 @@ void sb_0x424c74__sub3()
         i++;
     }
 
-    NC_STACK_display *pwin3d = GFXe.getC3D();
+    NC_STACK_display *pwin3d = GFXEngine::GFXe.getC3D();
 
     if ( pwin3d )
     {

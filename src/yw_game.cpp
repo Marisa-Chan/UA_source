@@ -14,7 +14,7 @@
 extern uint32_t bact_id;
 
 
-NC_STACK_ilbm * loadDisk_screen(_NC_STACK_ypaworld *yw)
+NC_STACK_bitmap * loadDisk_screen(_NC_STACK_ypaworld *yw)
 {
     StopMusicTrack();
 
@@ -39,14 +39,14 @@ NC_STACK_ilbm * loadDisk_screen(_NC_STACK_ypaworld *yw)
     init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
     init_vals[3].end();
 
-    NC_STACK_ilbm *disk = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
+    NC_STACK_bitmap *disk = NC_STACK_ilbm::CInit(init_vals);
 
     set_prefix_replacement("rsrc", rsrc_def);
 
     return disk;
 }
 
-void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen)
+void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
 {
     if ( splashScreen )
     {
@@ -63,7 +63,7 @@ void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen)
         a4.float1C =  1.0;
         a4.float20 =  1.0;
 
-        NC_STACK_display *win3d = GFXe.getC3D();
+        NC_STACK_display *win3d = GFXEngine::GFXe.getC3D();
 
         if ( win3d )
         {
@@ -92,7 +92,7 @@ void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen)
     }
 }
 
-void drawSplashScreenWithTOD(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen, const char *text)
+void drawSplashScreenWithTOD(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen, const char *text)
 {
     if ( splashScreen )
     {
@@ -109,7 +109,7 @@ void drawSplashScreenWithTOD(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen
         a4.float1C =  1.0;
         a4.float20 =  1.0;
 
-        NC_STACK_win3d *win3d = GFXe.getC3D();
+        NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
 
         if ( win3d )
         {
@@ -142,7 +142,7 @@ void drawSplashScreenWithTOD(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen
     }
 }
 
-void deleteSplashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen)
+void deleteSplashScreen(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
 {
     if ( splashScreen )
         delete_class_obj(splashScreen);
@@ -625,7 +625,7 @@ void sb_0x44ca90__sub5(_NC_STACK_ypaworld *yw)
 
 void sb_0x44ca90__sub2(_NC_STACK_ypaworld *yw, mapProto *mapp)
 {
-    NC_STACK_win3d *win3d = GFXe.getC3D();
+    NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
 
     for (int i = 0; i < 8; i++)
     {
@@ -636,7 +636,7 @@ void sb_0x44ca90__sub2(_NC_STACK_ypaworld *yw, mapProto *mapp)
             init_vals[1].set(NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
             init_vals[2].end();
 
-            NC_STACK_ilbm *ilbm = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
+            NC_STACK_bitmap *ilbm = NC_STACK_ilbm::CInit(init_vals);
 
             if (ilbm)
             {
@@ -649,7 +649,7 @@ void sb_0x44ca90__sub2(_NC_STACK_ypaworld *yw, mapProto *mapp)
                 if ( i )
                     win3d->display_func261(&v7);
                 else
-                    win3d->setBMD_palette(v7.palette);
+                    win3d->SetPalette(v7.palette);
 
                 delete_class_obj(ilbm);
             }
@@ -739,11 +739,11 @@ int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
     {
         if ( yw->game_default_res != yw->shell_default_res )
         {
-            GFXe.setResolution(yw->game_default_res);
+            GFXEngine::GFXe.setResolution(yw->game_default_res);
 
-            yw->screen_width = GFXe.getScreenW();
-            yw->screen_height = GFXe.getScreenH();
-            yw->win3d = GFXe.getC3D();
+            yw->screen_width = GFXEngine::GFXe.getScreenW();
+            yw->screen_height = GFXEngine::GFXe.getScreenH();
+            yw->win3d = GFXEngine::GFXe.getC3D();
 
             yw->win3d->setWDD_cursor( (yw->field_73CE & 0x40) != 0 );
 
@@ -758,7 +758,7 @@ int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
         }
     }
 
-    NC_STACK_ilbm *diskScreenImage = loadDisk_screen(yw);
+    NC_STACK_bitmap *diskScreenImage = loadDisk_screen(yw);
 
     if ( diskScreenImage )
         draw_splashScreen(yw, diskScreenImage);
@@ -5036,7 +5036,7 @@ void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         yw->screenshot_seq_frame_id++;
 
-        NC_STACK_win3d *win3d = GFXe.getC3D();
+        NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
 
         const char *v13 = a1;
 

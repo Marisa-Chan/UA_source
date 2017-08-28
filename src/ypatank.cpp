@@ -1280,7 +1280,7 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
         v67.sz = bact->rotation.m22;
 
         float corW, corH;
-        GFXe.getC3D()->getAspectCorrection(corW, corH, true);
+        GFXEngine::GFXe.getC3D()->getAspectCorrection(corW, corH, true);
 
         v67.sx -= bact->rotation.m10 * bact->gun_angle_user * corH;
         v67.sx -= bact->rotation.m00 * bact->gun_leftright * corW;

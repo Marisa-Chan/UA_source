@@ -23,7 +23,7 @@ public:
     virtual size_t func0(stack_vals *stak);
     virtual size_t func3(stack_vals *stak);
     virtual rsrc * rsrc_func64(stack_vals *stak);
-    virtual size_t rsrc_func65(rsrc **pres);
+    virtual size_t rsrc_func65(rsrc *pres);
     virtual void * sample_func128(void **arg);
 
     virtual size_t compatcall(int method_id, void *data);

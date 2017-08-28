@@ -4,8 +4,6 @@
 #include "rsrc.h"
 #include "engine_gfx.h"
 
-struct texStru;
-
 struct pixel_2d
 {
     int x;
@@ -30,7 +28,8 @@ enum BITMAP_FLAG
     BITMAP_FLAG_TEXTURE  = 0x2,
     BITMAP_FLAG_HAS_PALETTE  = 0x4,
     BITMAP_FLAG_SYSMEM  = 0x8,
-    BITMAP_FLAG_TRANSP  = 0x10
+    BITMAP_FLAG_TRANSP  = 0x10,
+    BITMAP_FLAG_LOCKED = 0x80000000
 };
 
 struct bitmap_arg130
@@ -49,7 +48,7 @@ public:
     virtual size_t func2(stack_vals *stak);
     virtual size_t func3(stack_vals *stak);
     virtual rsrc * rsrc_func64(stack_vals *stak);
-    virtual size_t rsrc_func65(rsrc **pres);
+    virtual size_t rsrc_func65(rsrc *pres);
     virtual size_t bitmap_func128(stack_vals *);
     virtual size_t bitmap_func129(stack_vals *);
     virtual void bitmap_func130(bitmap_arg130 *out);
@@ -67,6 +66,8 @@ public:
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_bitmap();
     };
+
+    static NC_STACK_bitmap * CInit(stack_vals *stak);
 
     enum BMD_ATT
     {

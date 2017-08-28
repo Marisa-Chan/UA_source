@@ -58,6 +58,8 @@ public:
         return new NC_STACK_ilbm();
     };
 
+    static NC_STACK_ilbm * CInit(stack_vals *stak);
+
     enum ILBM_ATT
     {
         ILBM_ATT_FMT = 0x80003000

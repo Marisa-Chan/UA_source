@@ -7,6 +7,21 @@
 
 const NewClassDescr NC_STACK_bitmap::description("bitmap.class", &newinstance);
 
+NC_STACK_bitmap *NC_STACK_bitmap::CInit(stack_vals *stak)
+{
+    NC_STACK_bitmap *tmp = new NC_STACK_bitmap();
+    if (!tmp)
+        return NULL;
+
+    if (!tmp->func0(stak))
+    {
+        delete tmp;
+        return NULL;
+    }
+
+    return tmp;
+}
+
 int NC_STACK_bitmap::sub_416704(pixel_2d *src)
 {
     __NC_STACK_bitmap *a2 = &stack__bitmap;
@@ -180,10 +195,14 @@ rsrc * NC_STACK_bitmap::rsrc_func64(stack_vals *stak)
                 if (colormap)
                 {
                     intern->flags |= BITMAP_FLAG_HAS_PALETTE;
-                    intern->pallete = (UA_PALETTE *)AllocVec(sizeof(UA_PALETTE), 65537);
+                    intern->pallete = new UA_PALETTE;
                 }
 
-                if ( !colormap || intern->pallete != NULL )
+                if ( colormap && intern->pallete == NULL )
+                {
+                    nc_FreeMem(intern);
+                }
+                else
                 {
                     if ( width && height )
                     {
@@ -227,20 +246,16 @@ rsrc * NC_STACK_bitmap::rsrc_func64(stack_vals *stak)
                     }
                     res->data = intern;
                 }
-                else
-                {
-                    nc_FreeMem(intern);
-                }
             }
         }
     }
     return res;
 }
 
-size_t NC_STACK_bitmap::rsrc_func65(rsrc **pres)
+size_t NC_STACK_bitmap::rsrc_func65(rsrc *res)
 {
-    bitmap_intern *intern = (bitmap_intern *)(*pres)->data;
-    rsrc *res = *pres;
+    bitmap_intern *intern = (bitmap_intern *)(res)->data;
+
     if ( intern )
     {
         if ( intern->flags & BITMAP_FLAG_TEXTURE  &&  engines.display___win3d )
@@ -254,13 +269,13 @@ size_t NC_STACK_bitmap::rsrc_func65(rsrc **pres)
         }
 
         if ( intern->pallete )
-            nc_FreeMem(intern->pallete);
+            delete intern->pallete;
 
         nc_FreeMem(intern);
         res->data = NULL;
     }
 
-    return NC_STACK_rsrc::rsrc_func65(pres);
+    return NC_STACK_rsrc::rsrc_func65(res);
 }
 
 size_t NC_STACK_bitmap::bitmap_func128(stack_vals *)
@@ -290,7 +305,7 @@ void NC_STACK_bitmap::setBMD_outline(pixel_2d *otl)
 void NC_STACK_bitmap::setBMD_palette(UA_PALETTE *newPal)
 {
     if ( stack__bitmap.bitm_intern->pallete )
-        memcpy(stack__bitmap.bitm_intern->pallete, newPal, sizeof(UA_PALETTE));
+        *stack__bitmap.bitm_intern->pallete = *newPal;
 }
 
 
@@ -356,7 +371,7 @@ size_t NC_STACK_bitmap::compatcall(int method_id, void *data)
     case 64:
         return (size_t)rsrc_func64( (stack_vals *)data );
     case 65:
-        return rsrc_func65( (rsrc **)data );
+        return rsrc_func65( (rsrc *)data );
     case 128:
         return (size_t)bitmap_func128( (stack_vals *)data );
     case 129:

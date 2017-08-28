@@ -803,7 +803,7 @@ rsrc * NC_STACK_bmpanim::rsrc_func64(stack_vals *stak)
 
         if ( !res->data )
         {
-            rsrc_func65(&res);
+            rsrc_func65(res);
             return NULL;
         }
 
@@ -811,10 +811,8 @@ rsrc * NC_STACK_bmpanim::rsrc_func64(stack_vals *stak)
     return res;
 }
 
-size_t NC_STACK_bmpanim::rsrc_func65(rsrc **pres)
+size_t NC_STACK_bmpanim::rsrc_func65(rsrc *res)
 {
-    rsrc *res = *pres;
-
     bmpAnim_t1 *v5 = (bmpAnim_t1 *)res->data;
 
     if ( v5 )
@@ -822,7 +820,7 @@ size_t NC_STACK_bmpanim::rsrc_func65(rsrc **pres)
         sub_431608(v5);
         res->data = NULL;
     }
-    return NC_STACK_bitmap::rsrc_func65(pres);
+    return NC_STACK_bitmap::rsrc_func65(res);
 }
 
 int bmpanim_func66__sub0__sub3(void *fil, bmpAnim_t1 *t1)
@@ -1128,7 +1126,7 @@ size_t NC_STACK_bmpanim::compatcall(int method_id, void *data)
     case 64:
         return (size_t)rsrc_func64( (stack_vals *)data );
     case 65:
-        return rsrc_func65( (rsrc **)data );
+        return rsrc_func65( (rsrc *)data );
     case 66:
         return (size_t)rsrc_func66( (rsrc_func66_arg *)data );
     case 130:

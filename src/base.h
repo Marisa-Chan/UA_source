@@ -6,6 +6,7 @@
 #include "nlist.h"
 
 #include "engine_tform.h"
+#include "engine_input.h"
 #include "skeleton.h"
 
 

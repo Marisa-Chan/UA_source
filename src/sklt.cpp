@@ -341,7 +341,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile)
         if ( iff_flag )
         {
             if ( res )
-                obj->rsrc_func65(&res);
+                obj->rsrc_func65(res);
 
             return NULL;
         }
@@ -431,7 +431,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile)
     if ( !read_ok || !sklt )
     {
         if ( res )
-            obj->rsrc_func65(&res);
+            obj->rsrc_func65(res);
 
         return NULL;
     }

@@ -109,9 +109,8 @@ rsrc * NC_STACK_sample::rsrc_func64(stack_vals *stak)
     return res;
 }
 
-size_t NC_STACK_sample::rsrc_func65(rsrc **pres)
+size_t NC_STACK_sample::rsrc_func65(rsrc *res)
 {
-    rsrc *res = *pres;
     sampl *smpl = (sampl *)res->data;
 
     if ( smpl )
@@ -125,7 +124,7 @@ size_t NC_STACK_sample::rsrc_func65(rsrc **pres)
         res->data = NULL;
     }
 
-    return NC_STACK_rsrc::rsrc_func65(pres);
+    return NC_STACK_rsrc::rsrc_func65(res);
 }
 
 void * NC_STACK_sample::sample_func128(void **arg)
@@ -176,7 +175,7 @@ size_t NC_STACK_sample::compatcall(int method_id, void *data)
     case 64:
         return (size_t)rsrc_func64( (stack_vals *)data );
     case 65:
-        return rsrc_func65( (rsrc **)data );
+        return rsrc_func65( (rsrc *)data );
     case 128:
         return (size_t)sample_func128( (void **)data );
     default:

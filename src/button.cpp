@@ -78,8 +78,8 @@ size_t NC_STACK_button::func0(stack_vals *stak)
     {
         if ( btn->btn_width > 0 && btn->btn_height > 0 )
         {
-            btn->screen_width = GFXe.getScreenW();
-            btn->screen_height = GFXe.getScreenH();
+            btn->screen_width = GFXEngine::GFXe.getScreenW();
+            btn->screen_height = GFXEngine::GFXe.getScreenH();
         }
         else
         {
@@ -362,7 +362,7 @@ size_t NC_STACK_button::button_func64(button_64_arg *arg)
     if ( sbt->button_type == 3 )
         bt->h = 0;
     else
-        bt->h = GFXe.getTileset( arg->tileset_up )->font_height;
+        bt->h = GFXEngine::GFXe.getTileset( arg->tileset_up )->font_height;
 
     btn->field_10++;
 
@@ -435,7 +435,7 @@ size_t NC_STACK_button::button_func66(button_66arg *arg)
         if ( btn->field_d8[id]->button_type != 3 )
         {
             btn->buttons[id]->w = btn->field_d8[id]->width;
-            btn->buttons[id]->h = GFXe.getTileset( btn->field_d8[id]->tileset_down )->font_height;
+            btn->buttons[id]->h = GFXEngine::GFXe.getTileset( btn->field_d8[id]->tileset_down )->font_height;
         }
 
         btn->field_d8[id]->state &= 0xFFFD;
@@ -718,7 +718,7 @@ void button_func70__sub1(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
         v6 = sbt->tileset_down;
     }
 
-    tiles_stru *v7 = GFXe.getTileset(v6);
+    tiles_stru *v7 = GFXEngine::GFXe.getTileset(v6);
 
 
     char *v8 = *pbuf;
@@ -811,7 +811,7 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
         v7 = sbt->tileset_up;
     }
 
-    tiles_stru *v8 = GFXe.getTileset(v7);
+    tiles_stru *v8 = GFXEngine::GFXe.getTileset(v7);
 
     int strwdth = 0;
 
@@ -956,7 +956,7 @@ size_t NC_STACK_button::button_func70(void *)
         arg209.cmdbuf = button_tmpbuf;
         arg209.includ = NULL;
 
-        GFXe.drawText(&arg209);
+        GFXEngine::GFXe.drawText(&arg209);
     }
 
     return 1;

@@ -127,7 +127,7 @@ public:
     virtual size_t func0(stack_vals *stak);
     virtual size_t func3(stack_vals *stak);
     virtual rsrc * rsrc_func64(stack_vals *stak);
-    virtual size_t rsrc_func65(rsrc **pres);
+    virtual size_t rsrc_func65(rsrc *pres);
     virtual __NC_STACK_skeleton * skeleton_func128(stack_vals *);
     virtual size_t skeleton_func129(skeleton_129_arg *arg);
     virtual size_t skeleton_func130(skeleton_130_arg *arg);
@@ -148,6 +148,8 @@ public:
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_skeleton();
     };
+
+    static NC_STACK_skeleton * CInit(stack_vals *stak);
 
     enum SKEL_ATT
     {

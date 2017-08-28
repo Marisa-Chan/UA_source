@@ -490,6 +490,9 @@ size_t NC_STACK_area::ade_func65(area_arg_65 *arg)
         return 1;
 
     datSub->renderFlags = renderFlags;
+    datSub->r = 1.0;
+    datSub->g = 1.0;
+    datSub->b = 1.0;
 
     skeleton_arg133 skel133;
 

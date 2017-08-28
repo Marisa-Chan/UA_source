@@ -2,7 +2,7 @@
 #include "engine_gfx.h"
 #include "utils.h"
 
-GFXEngine GFXe;
+GFXEngine GFXEngine::GFXe;
 
 char gfx_palette[128];
 char gfx_display[128];
@@ -48,11 +48,9 @@ int GFXEngine::sub_422CE8(const char *display, const char *display2, int gfxmode
 
     if ( *display )
     {
-        stack_vals vals[4];
-        vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "display");
-        vals[1].set(NC_STACK_rsrc::RSRC_ATT_TRYSHARED, 2);
-        vals[2].set(NC_STACK_display::DISP_ATT_DISPLAY_ID, gfxmode);
-        vals[3].end();
+        stack_vals vals[2];
+        vals[0].set(NC_STACK_display::ATT_DISPLAY_ID, gfxmode);
+        vals[1].end();
 
         strcpy(buf, display);
 
@@ -83,12 +81,12 @@ int GFXEngine::loadPal(const char *palette_ilbm)
     vals[1].set(NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
     vals[2].end();
 
-    NC_STACK_ilbm *ilbm = dynamic_cast<NC_STACK_ilbm *>(init_get_class("ilbm.class", vals) );
+    NC_STACK_bitmap *ilbm = NC_STACK_ilbm::CInit(vals);
 
     if (!ilbm)
         return 0;
 
-    cls3D->setBMD_palette( ilbm->getBMD_palette() );
+    cls3D->SetPalette( ilbm->getBMD_palette() );
 
     delete_class_obj(ilbm);
 
@@ -102,12 +100,12 @@ void GFXEngine::defRenderFunc(void *dat)
 
 int GFXEngine::getScreenH()
 {
-    return cls3D->getBMD_height();
+    return cls3D->GetHeight();
 }
 
 int GFXEngine::getScreenW()
 {
-    return cls3D->getBMD_width();
+    return cls3D->GetWidth();
 }
 
 NC_STACK_win3d *GFXEngine::getC3D()
@@ -117,7 +115,7 @@ NC_STACK_win3d *GFXEngine::getC3D()
 
 void GFXEngine::setResolution(int res)
 {
-    UA_PALETTE *screen_palette = cls3D->getBMD_palette();
+    UA_PALETTE *screen_palette = cls3D->GetPalette();
 
     UA_PALETTE palette_copy;
     memset(&palette_copy, 0, sizeof(palette_copy));
@@ -133,7 +131,7 @@ void GFXEngine::setResolution(int res)
     {
         cls3D->BeginFrame();
 
-        cls3D->setBMD_palette(&palette_copy);
+        cls3D->SetPalette(&palette_copy);
     }
 }
 

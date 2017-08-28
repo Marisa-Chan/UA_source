@@ -964,14 +964,14 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
                 rstr_arg217 v22;
 
                 v22.dword4 = 0x7070;
-                v22.dword8 = 0xFFFFFFFF;
+//                v22.dword8 = 0xFFFFFFFF;
                 v22.dword0 = 0xA0A0;
 
                 yw->win3d->raster_func217(&v22);
                 yw->win3d->raster_func198(&v20);
 
                 v22.dword4 = 0x7070;
-                v22.dword8 = 0xFFFFFFFF;
+//                v22.dword8 = 0xFFFFFFFF;
                 v22.dword0 = 0x4040;
 
                 yw->win3d->raster_func217(&v22);
@@ -1575,7 +1575,7 @@ void yw_DebriefRenderSectorsOwners(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
                     rstr_arg217 arg217;
                     arg217.dword0 = yw_GetColor(yw, owner);
                     arg217.dword4 = arg217.dword0;
-                    arg217.dword8 = -1;
+//                    arg217.dword8 = -1;
 
                     yw->win3d->raster_func217(&arg217);
                     yw->win3d->raster_func198(&arg198);

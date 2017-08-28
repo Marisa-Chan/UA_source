@@ -27,8 +27,6 @@ struct gfxMode
 std::list<gfxMode *> graphicsModes;
 SDL_Cursor *cursors[11];
 
-int txt16bit = 0;
-
 const NewClassDescr NC_STACK_win3d::description("win3d.class", &newinstance);
 
 key_value_stru NC_STACK_win3d::win3d_keys[21] =
@@ -616,7 +614,7 @@ SDL_Cursor *NC_STACK_win3d::wrapLoadCursor(const char *name)
 
     FSMgr::FileHandle *fil = uaOpenFile(cur.c_str(), "rb");
 
-    UA_PALENTRY pal[256];
+    SDL_Color pal[256];
 
     if (!fil)
         return NULL;
@@ -809,8 +807,6 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
 
     int txt16bit_def = read_yes_no_status("env/txt16bit.def", 1);
     int drawprim_def = read_yes_no_status("env/drawprim.def", 0);
-    txt16bit = txt16bit_def;
-
     int export_window_mode = win3d_keys[13].value.val;     // gfx.export_window_mode
 
     if (win3d_keys[14].value.val == 0)
@@ -833,7 +829,7 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
     }
 
 
-    int v7 = find_id_in_stack_def_val(DISP_ATT_DISPLAY_ID, 0, stak);
+    int v7 = find_id_in_stack_def_val(ATT_DISPLAY_ID, 0, stak);
 
     gfxMode *picked = NULL;
     if ( v7 )
@@ -858,11 +854,9 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
     log_d3dlog(" picked mode %s\n", picked->name.c_str());
 
 
-    tmp[0].set(BMD_ATT_WIDTH, picked->w);
-    tmp[1].set(BMD_ATT_HEIGHT, picked->h);
-    tmp[2].set(BMD_ATT_BUFFER, 1);
-    tmp[3].set(BMD_ATT_HAS_COLORMAP, 1);
-    tmp[4].nextStack(stak);
+    tmp[0].set(ATT_WIDTH, picked->w);
+    tmp[1].set(ATT_HEIGHT, picked->h);
+    tmp[2].nextStack(stak);
 
     if ( !NC_STACK_display::func0(tmp) )
         return 0;
@@ -1099,7 +1093,7 @@ size_t NC_STACK_win3d::func3(stack_vals *stak)
             default:
                 break;
 
-            case DISP_ATT_DISPLAY_ID:
+            case ATT_DISPLAY_ID:
                 *(int *)stk->value.p_data = getDISP_displID();
                 break;
             case WDD_ATT_16BIT_TEX:
@@ -1256,7 +1250,7 @@ size_t NC_STACK_win3d::raster_func199(w3d_func199arg *arg)
     return 1;
 }
 
-int sub_420C74(xyxyNNN *a1, xyxyNNN *inout)
+int sub_420C74(ua_dRect *a1, ua_dRect *inout)
 {
     int flag1 = 0;
 
@@ -1382,7 +1376,7 @@ int sub_420C74(xyxyNNN *a1, xyxyNNN *inout)
 
 void sub_420EDC(__NC_STACK_display *rstr, __NC_STACK_win3d *w3d, int x1, int y1, int x2, int y2, int r, unsigned int g, unsigned int b, unsigned int a11, int a12, int a13)
 {
-    xyxyNNN tmp1;
+    ua_dRect tmp1;
 
     tmp1.x1 = x1;
     tmp1.x2 = x2;
@@ -1391,7 +1385,7 @@ void sub_420EDC(__NC_STACK_display *rstr, __NC_STACK_win3d *w3d, int x1, int y1,
 
     if ( sub_420C74(&rstr->field_24, &tmp1) != -1 )
     {
-        xyxyNNN tmp2 = tmp1;
+        ua_dRect tmp2 = tmp1;
 
         int v14;
 
@@ -1546,7 +1540,11 @@ size_t NC_STACK_win3d::raster_func202(rstr_arg204 *arg)
     int a7 = rstr->field_554 * (arg->float1C + 1.0);
     int a8 = rstr->field_558 * (arg->float20 + 1.0);
 
+    LockTexture(pbitm);
+
     sub_43CEE0(w3d, (uint16_t *)pbitm->buffer, pbitm->width, a1, a2, a3, a4, a5, a6, a7, a8);
+
+    UnlockTexture(pbitm);
     return 1;
 }
 
@@ -1624,7 +1622,14 @@ size_t NC_STACK_win3d::raster_func204(rstr_arg204 *arg)
     loc.dword24 = (arg->float20 + 1.0) * rstr->field_558;
 
     if ( win3d_func204__sub0(rstr, &loc) )
+    {
+        LockTexture(loc.pbitm);
+
         sub_43CEE0(w3d, (uint16_t *)loc.pbitm->buffer, loc.pbitm->width, loc.dword4, loc.dword8, loc.dwordC, loc.dword10, loc.dword18, loc.dword1C, loc.dword20, loc.dword24);
+
+        UnlockTexture(loc.pbitm);
+    }
+
 
     return 1;
 }
@@ -1767,7 +1772,7 @@ void NC_STACK_win3d::SetRenderStates(int setAll)
 }
 
 
-void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
+void NC_STACK_win3d::sb_0x43b518(polysDat *in, int a5, int a6)
 {
     polysDatSub *polysDat = &in->datSub;
 
@@ -1775,7 +1780,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
     {
         float x, y, z;
         float tu, tv;
-        uint8_t r, g, b, a;
+        float r, g, b, a;
     };
 
     __NC_STACK_win3d *w3d = &stack__win3d;
@@ -1803,10 +1808,10 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
         vtx[i].z = polysDat->vertexes[i].sz;
         vtx[i].tu = 0.0;
         vtx[i].tv = 0.0;
-        vtx[i].r = 255;
-        vtx[i].g = 255;
-        vtx[i].b = 255;
-        vtx[i].a = 255;
+        vtx[i].r = polysDat->r;
+        vtx[i].g = polysDat->g;
+        vtx[i].b = polysDat->b;
+        vtx[i].a = 1.0;
     }
 
     w3d->rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
@@ -1823,7 +1828,8 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
 
     if ( polysDat->renderFlags & (RFLAGS_LINMAP | RFLAGS_PERSPMAP) )
     {
-        w3d->rendStates2[TEXTUREHANDLE] = tex->oTexture;
+        if (in->datSub.pbitm)
+            w3d->rendStates2[TEXTUREHANDLE] = in->datSub.pbitm->hwTex;
 
         for (int i = 0; i < polysDat->vertexCount; i++)
         {
@@ -1838,7 +1844,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
             vtx[i].r = 0;
             vtx[i].g = 0;
             vtx[i].b = 0;
-            vtx[i].a = 255;
+            vtx[i].a = 1.0;
         }
 
     }
@@ -1850,11 +1856,11 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
 
         for (int i = 0; i < polysDat->vertexCount; i++)
         {
-            int comp = (1.0 - polysDat->color[i]) * 255.0;
-            vtx[i].r = comp;
-            vtx[i].g = comp;
-            vtx[i].b = comp;
-            vtx[i].a = 255;
+            float comp = (1.0 - polysDat->color[i]);
+            vtx[i].r *= comp;
+            vtx[i].g *= comp;
+            vtx[i].b *= comp;
+            vtx[i].a = 1.0;
         }
     }
 
@@ -1935,7 +1941,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
                     float prc = (polysDat->distance[i] - transDist) / transLen;
                     if (prc > 1.0)
                         prc = 1.0;
-                    vtx[i].a = (1.0 - prc) * 255.0;
+                    vtx[i].a = (1.0 - prc);
                 }
             }
         }
@@ -1947,7 +1953,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
     {
         for (int i = 0; i < polysDat->vertexCount; i++)
         {
-            glColor4ub(vtx[i].r, vtx[i].g, vtx[i].b, vtx[i].a);
+            glColor4f(vtx[i].r, vtx[i].g, vtx[i].b, vtx[i].a);
             glTexCoord2f(vtx[i].tu, vtx[i].tv);
             glVertex3d(vtx[i].x, -vtx[i].y, vtx[i].z);
         }
@@ -1957,10 +1963,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, texStru *tex, int a5, int a6)
 
 size_t NC_STACK_win3d::raster_func206(polysDat *arg)
 {
-    if ( arg->datSub.pbitm )
-        sb_0x43b518(arg, arg->datSub.pbitm->ddrawSurfTex, 0, 0);
-    else
-        sb_0x43b518(arg, NULL, 0, 0);
+    sb_0x43b518(arg, 0, 0);
 
     return 1;
 }
@@ -2049,9 +2052,10 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
                 else
                     src_width = tile->field_4->width;
 
+                LockTexture(tile->field_4);
+
                 if (bytesPerColor == 2)
                 {
-
                     uint16_t *srcpixel = (uint16_t *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
                     uint16_t *dstpixel = (uint16_t *)w3d->surface_locked_surfaceData + w_pixels * y_out + x_out;
                     uint16_t *maxdst = (uint16_t *)w3d->surface_locked_surfaceData + w_pixels * rilHeight;
@@ -2109,6 +2113,8 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
                 {
                     printf("win3d_func209__sub0, BytesPerPixel == %d\n", bytesPerColor);
                 }
+
+                UnlockTexture(tile->field_4);
 
                 line_width = 0;
                 x_off = 0;
@@ -2326,10 +2332,7 @@ void NC_STACK_win3d::RenderTransparent()
 
             for (std::deque<polysDat *>::iterator it = stack__win3d.pending.begin(); it != stack__win3d.pending.end(); it++)
             {
-                if ( (*it)->datSub.pbitm )
-                    sb_0x43b518((*it), (*it)->datSub.pbitm->ddrawSurfTex, 1, 1);
-                else
-                    sb_0x43b518((*it), NULL, 1, 1);
+                sb_0x43b518((*it), 1, 1);
             }
 
 
@@ -2467,7 +2470,9 @@ void NC_STACK_win3d::raster_func218(rstr_218_arg *arg)
     rect2.x2 = (arg->rect2.x2 + 1.0) * rstr->field_554;
     rect2.y2 = (arg->rect2.y2 + 1.0) * rstr->field_558;
 
+    LockTexture(arg->bitm_intern);
     win3d_func218__sub0(w3d, (uint16_t *)arg->bitm_intern->buffer, arg->bitm_intern->width, (uint8_t *)arg->bitm_intern2->buffer, arg->flg, rect1, rect2);
+    UnlockTexture(arg->bitm_intern);
 }
 
 size_t NC_STACK_win3d::display_func256(windd_arg256 *inout)
@@ -2603,124 +2608,86 @@ void NC_STACK_win3d::display_func263(displ_arg263 *arg)
     NC_STACK_display::display_func263(arg);
 }
 
-
-
-
-
-int allocTextureInSysMem(__NC_STACK_win3d *w3d, int w, int h, bitmap_intern *arg)
-{
-    arg->buffer = NULL;
-
-    void *buf = new uint8_t[w * h * w3d->pixfmt->BytesPerPixel];
-
-    if (!buf)
-        return 0;
-
-    arg->buffer = buf;
-    return w * w3d->pixfmt->BytesPerPixel;
-}
-
-int allocTextureWithHW(__NC_STACK_win3d *w3d, int w, int h, texStru **_tex)
-{
-    *_tex = NULL;
-
-    texStru *tex = new texStru;
-
-    if ( !tex )
-    {
-        log_d3d_fail("win3d.class/w3d_txtcache.c/ObtainTexture()", "Out Of Mem", 0);
-        return 0;
-    }
-
-    tex->sdlSurface = SDL_CreateRGBSurface(0, w, h, w3d->pixfmt->BitsPerPixel, w3d->pixfmt->Rmask, w3d->pixfmt->Gmask, w3d->pixfmt->Bmask, w3d->pixfmt->Amask);
-
-
-    glPushAttrib(GL_TEXTURE_2D | GL_TEXTURE_BINDING_2D);
-
-    glGenTextures(1, &tex->oTexture);
-    glBindTexture(GL_TEXTURE_2D, tex->oTexture);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, w3d->glPixfmt, w3d->glPixtype, tex->sdlSurface->pixels);
-
-    glPopAttrib();
-
-
-    tex->sdlSurface->userdata = (void *)(size_t)tex->oTexture;
-
-    *_tex = tex;
-    return 1;
-}
-
-size_t NC_STACK_win3d::AllocTexture(bitmap_intern *bitm)
+bool NC_STACK_win3d::AllocTexture(bitmap_intern *bitm)
 {
     __NC_STACK_win3d *w3d = &stack__win3d;
 
-    if ( bitm->flags & BITMAP_FLAG_SYSMEM )
+    if (bitm->flags & BITMAP_FLAG_TEXTURE)
     {
-        bitm->pitch = allocTextureInSysMem(w3d, bitm->width, bitm->height, bitm);
-        return bitm->pitch != 0;
+        if (bitm->swTex)
+            return false;
+
+        bitm->swTex = SDL_CreateRGBSurfaceWithFormat(0, bitm->width, bitm->height, w3d->pixfmt->BitsPerPixel, w3d->pixfmt->format);
+
+        if (!bitm->swTex)
+            return false;
+
+        bitm->pitch = bitm->swTex->pitch;
+
+        if ( !(bitm->flags & BITMAP_FLAG_SYSMEM) )
+        {
+            if (bitm->hwTex)
+                return false;
+
+            glPushAttrib(GL_TEXTURE_2D | GL_TEXTURE_BINDING_2D);
+
+            glGenTextures(1, &bitm->hwTex);
+
+            if (!bitm->hwTex)
+            {
+                glPopAttrib();
+                return false;
+            }
+
+            glBindTexture(GL_TEXTURE_2D, bitm->hwTex);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, w3d->glPixfmt, w3d->glPixtype, bitm->swTex->pixels);
+
+            glPopAttrib();
+        }
     }
-    else
-    {
-        return allocTextureWithHW(w3d, bitm->width, bitm->height, &bitm->ddrawSurfTex);
-    }
+
+    return true;
 }
 
-void win3d__tex_apply_palette_hw(__NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_STACK_display *dspl, texStru *tex, int a5)
+void NC_STACK_win3d::TextureApplyPalette(bitmap_intern *bitm)
 {
-    int BytesPerColor = w3d->pixfmt->BytesPerPixel;
+    if ( !(bitm->flags & BITMAP_FLAG_TEXTURE) )
+        return;
+
+    int BytesPerColor = stack__win3d.pixfmt->BytesPerPixel;
 
     if ( BytesPerColor == 1 )
-    {
+        return;
 
-//		PALETTEENTRY tmpPal[256];
-//		if ( pal )
-//		{
-//			for (int i = 0; i < 256; i++)
-//			{
-//				tmpPal[i].peRed = pal->pal_entries[i].r;
-//				tmpPal[i].peGreen = pal->pal_entries[i].g;
-//				tmpPal[i].peBlue = pal->pal_entries[i].b;
-//				tmpPal[i].peFlags = 0;
-//			}
-//		}
-//		else
-//		{
-//			for (int i = 0; i < 256; i++)
-//			{
-//				tmpPal[i].peRed = dspl->palette.pal_entries[i].r;
-//				tmpPal[i].peGreen = dspl->palette.pal_entries[i].g;
-//				tmpPal[i].peBlue = dspl->palette.pal_entries[i].b;
-//				tmpPal[i].peFlags = 0;
-//			}
-//		}
-//		tex->palette->SetEntries(0, 0, 256, tmpPal);
-    }
-    else if (BytesPerColor == 2)
-    {
-        uint32_t glpal[256];
+    uint32_t tmpPal[256];
 
-        for (int i = 0; i < 256; i++)
+    for (int i = 0; i < 256; i++)
+    {
+        int r,g,b,a;
+        a = 255;
+
+        if ( bitm->pallete )
         {
-            int r,g,b,a;
-            if ( pal )
-            {
-                r = pal->pal_entries[i].r;
-                g = pal->pal_entries[i].g;
-                b = pal->pal_entries[i].b;
-            }
-            else
-            {
-                r = dspl->palette.pal_entries[i].r;
-                g = dspl->palette.pal_entries[i].g;
-                b = dspl->palette.pal_entries[i].b;
-            }
+            r = bitm->pallete->pal_entries[i].r;
+            g = bitm->pallete->pal_entries[i].g;
+            b = bitm->pallete->pal_entries[i].b;
+        }
+        else
+        {
+            r = stack__display.palette.pal_entries[i].r;
+            g = stack__display.palette.pal_entries[i].g;
+            b = stack__display.palette.pal_entries[i].b;
+        }
 
+        // If surface hardware
+        if ( !(bitm->flags & BITMAP_FLAG_SYSMEM) )
+        {
             if (r == 255 && g == 255 && b == 0)
             {
                 a = 0;
@@ -2730,7 +2697,7 @@ void win3d__tex_apply_palette_hw(__NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_ST
             }
             else
             {
-                if (!can_destblend && can_srcblend && a5)
+                if (!can_destblend && can_srcblend && (bitm->flags & BITMAP_FLAG_TRANSP))
                 {
                     int mx = (r >= g) ? (r > b ? r: b) : (g > b ? g : b);
 
@@ -2755,259 +2722,124 @@ void win3d__tex_apply_palette_hw(__NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_ST
                     a = 255;
                 }
             }
-
-            glpal[i] = SDL_MapRGBA(w3d->pixfmt, r, g, b, a);
         }
 
-        if ( SDL_LockSurface(tex->sdlSurface) == 0)
+        tmpPal[i] = SDL_MapRGBA(stack__win3d.pixfmt, r, g, b, a);
+    }
+
+    bool lockd = bitm->flags & BITMAP_FLAG_LOCKED;
+
+    if (!lockd)
+        LockTexture(bitm);
+
+    if (BytesPerColor == 2)
+    {
+        uint8_t *indexes = (uint8_t *)bitm->swTex->pixels + (bitm->swTex->w * bitm->swTex->h) - 1;
+        uint16_t *glpix = (uint16_t *)bitm->swTex->pixels + (bitm->swTex->w * bitm->swTex->h) - 1;
+
+        for (int i = (bitm->swTex->w * bitm->swTex->h); i > 0; i--)
         {
-            uint8_t *indexes = (uint8_t *)tex->sdlSurface->pixels + (tex->sdlSurface->w * tex->sdlSurface->h) - 1;
-            uint32_t *glpix = (uint32_t *)tex->sdlSurface->pixels + (tex->sdlSurface->w * tex->sdlSurface->h) - 1;
-
-            for (int i = (tex->sdlSurface->w * tex->sdlSurface->h); i > 0; i--)
-            {
-                *glpix = glpal[*indexes];
-                indexes--;
-                glpix--;
-            }
-
-            glPushAttrib(GL_TEXTURE_2D | GL_TEXTURE_BINDING_2D);
-
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, tex->oTexture);
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex->sdlSurface->w, tex->sdlSurface->h, w3d->glPixfmt, w3d->glPixtype, tex->sdlSurface->pixels);
-
-            glPopAttrib();
-
-            SDL_UnlockSurface(tex->sdlSurface);
+            *glpix = tmpPal[*indexes];
+            indexes--;
+            glpix--;
         }
     }
     else if (BytesPerColor == 4)
     {
-        uint32_t tmpPal[256];
+        uint8_t *indexes = (uint8_t *)bitm->swTex->pixels + (bitm->swTex->w * bitm->swTex->h) - 1;
+        uint32_t *glpix = (uint32_t *)bitm->swTex->pixels + (bitm->swTex->w * bitm->swTex->h) - 1;
 
-        for (int i = 0; i < 256; i++)
+        for (int i = (bitm->swTex->w * bitm->swTex->h); i > 0; i--)
         {
-            int r,g,b,a;
-            if ( pal )
-            {
-                r = pal->pal_entries[i].r;
-                g = pal->pal_entries[i].g;
-                b = pal->pal_entries[i].b;
-            }
-            else
-            {
-                r = dspl->palette.pal_entries[i].r;
-                g = dspl->palette.pal_entries[i].g;
-                b = dspl->palette.pal_entries[i].b;
-            }
-
-            if (r == 255 && g == 255 && b == 0)
-            {
-                a = 0;
-                r = 0;
-                g = 0;
-                b = 0;
-            }
-            else
-            {
-                if (!can_destblend && can_srcblend && a5)
-                {
-                    int mx = (r >= g) ? (r > b ? r: b) : (g > b ? g : b);
-
-                    if (mx <= 8)
-                    {
-                        r = 0;
-                        g = 0;
-                        b = 0;
-                        a = 0;
-                    }
-                    else
-                    {
-                        float prm = mx;
-                        r = 255.0 * (r / prm);
-                        g = 255.0 * (g / prm);
-                        b = 255.0 * (b / prm);
-                        a = mx;
-                    }
-                }
-                else
-                {
-                    a = 255;
-                }
-            }
-
-            tmpPal[i] = SDL_MapRGBA(w3d->pixfmt, r, g, b, a);
-        }
-
-        if ( SDL_LockSurface(tex->sdlSurface) == 0)
-        {
-            uint8_t *indexes = (uint8_t *)tex->sdlSurface->pixels + (tex->sdlSurface->w * tex->sdlSurface->h) - 1;
-            uint32_t *glpix = (uint32_t *)tex->sdlSurface->pixels + (tex->sdlSurface->w * tex->sdlSurface->h) - 1;
-
-            for (int i = (tex->sdlSurface->w * tex->sdlSurface->h); i > 0; i--)
-            {
-                *glpix = tmpPal[*indexes];
-                indexes--;
-                glpix--;
-            }
-
-            glPushAttrib(GL_TEXTURE_2D | GL_TEXTURE_BINDING_2D);
-
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, tex->oTexture);
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex->sdlSurface->w, tex->sdlSurface->h, w3d->glPixfmt, w3d->glPixtype, tex->sdlSurface->pixels);
-
-            glPopAttrib();
-
-            SDL_UnlockSurface(tex->sdlSurface);
-        }
-    }
-}
-
-void win3d__tex_apply_palette(__NC_STACK_win3d *w3d, UA_PALETTE *pal, __NC_STACK_display *dspl, int w, int h, void *buf)
-{
-    int BytesPerColor = w3d->pixfmt->BytesPerPixel;
-
-    uint32_t tmpPal[256];
-
-    if ( BytesPerColor == 2 )
-    {
-        if ( pal )
-        {
-            for (int i = 0; i < 256; i++)
-            {
-                tmpPal[i] = SDL_MapRGBA(w3d->pixfmt, pal->pal_entries[i].r, pal->pal_entries[i].g, pal->pal_entries[i].b, 255);
-            }
-        }
-        else
-        {
-            for (int i = 0; i < 256; i++)
-            {
-                tmpPal[i] = SDL_MapRGBA(w3d->pixfmt, dspl->palette.pal_entries[i].r, dspl->palette.pal_entries[i].g, dspl->palette.pal_entries[i].b, 255);
-            }
-        }
-
-        uint8_t *indexes = (uint8_t *)buf + (h * w) - 1;
-        uint16_t *words = (uint16_t *)buf + (h * w) - 1;
-
-        for (int i = h * w; i > 0; i--)
-        {
-            *words = tmpPal[*indexes];
-            words--;
+            *glpix = tmpPal[*indexes];
             indexes--;
+            glpix--;
         }
     }
-    else if ( BytesPerColor == 4 )
-    {
-        if ( pal )
-        {
-            for (int i = 0; i < 256; i++)
-            {
-                tmpPal[i] = SDL_MapRGBA(w3d->pixfmt, pal->pal_entries[i].r, pal->pal_entries[i].g, pal->pal_entries[i].b, 255);
-            }
-        }
-        else
-        {
-            for (int i = 0; i < 256; i++)
-            {
-                tmpPal[i] = SDL_MapRGBA(w3d->pixfmt, dspl->palette.pal_entries[i].r, dspl->palette.pal_entries[i].g, dspl->palette.pal_entries[i].b, 255);
-            }
-        }
 
-        uint8_t *indexes = (uint8_t *)buf + (h * w) - 1;
-        uint32_t *dwords = (uint32_t *)buf + (h * w) - 1;
-
-        for (int i = h * w; i > 0; i--)
-        {
-            *dwords = tmpPal[*indexes];
-            dwords--;
-            indexes--;
-        }
-    }
-    else
-    {
-        log_d3d_fail("win3d.class/w3d_txtcacje.c/MangleTxtBlt()", "Unsupported txt pixformat.", 0);
-    }
-}
-
-void NC_STACK_win3d::TextureApplyPalette(bitmap_intern *arg)
-{
-    __NC_STACK_win3d *w3d = &stack__win3d;
-    __NC_STACK_display *dspl = &stack__display;
-
-    bitmap_intern *bitm = arg;
-
-    if (bitm->flags & BITMAP_FLAG_SYSMEM)
-        win3d__tex_apply_palette(w3d, bitm->pallete, dspl, bitm->width, bitm->height, bitm->buffer);
-    else
-        win3d__tex_apply_palette_hw(w3d, bitm->pallete, dspl, bitm->ddrawSurfTex, bitm->flags & 0x10);
+    if (!lockd)
+        UnlockTexture(bitm);
 }
 
 
-void NC_STACK_win3d::FreeTexture(bitmap_intern *arg)
+void NC_STACK_win3d::FreeTexture(bitmap_intern *bitm)
 {
-    bitmap_intern *bitm = arg;
-
-    if ( bitm->flags & BITMAP_FLAG_SYSMEM )
+    if ( bitm->flags & BITMAP_FLAG_TEXTURE )
     {
-        if ( bitm->buffer )
-            delete[] (uint8_t *)bitm->buffer;
-    }
-    else
-    {
-        if ( bitm->ddrawSurfTex->sdlSurface )
+        if ( !(bitm->flags & BITMAP_FLAG_SYSMEM) )
         {
-            SDL_FreeSurface(bitm->ddrawSurfTex->sdlSurface);
-            bitm->ddrawSurfTex->sdlSurface = NULL;
+            if ( bitm->hwTex )
+                glDeleteTextures(1, &bitm->hwTex);
+
+            bitm->hwTex = 0;
         }
 
-        if ( bitm->ddrawSurfTex->oTexture )
-            glDeleteTextures(1, &bitm->ddrawSurfTex->oTexture);
-
-        delete bitm->ddrawSurfTex;
+        if ( bitm->swTex )
+        {
+            SDL_FreeSurface(bitm->swTex);
+            bitm->swTex = NULL;
+        }
     }
 }
 
 
 
-size_t NC_STACK_win3d::LockTexture(bitmap_intern *arg)
+size_t NC_STACK_win3d::LockTexture(bitmap_intern *bitm)
 {
-    bitmap_intern *bitm = arg;
+    if ( bitm->flags & BITMAP_FLAG_LOCKED )
+        return true;
 
-    if ( !(bitm->flags & BITMAP_FLAG_SYSMEM) )
+    if ( bitm->flags & BITMAP_FLAG_TEXTURE )
     {
-        texStru *tex = bitm->ddrawSurfTex;
-        bitm->buffer = NULL;
-
-        SDL_LockSurface(tex->sdlSurface);
-        bitm->buffer = tex->sdlSurface->pixels;
+        SDL_LockSurface(bitm->swTex);
+        bitm->buffer = bitm->swTex->pixels;
     }
 
-    return 1;
+    bitm->flags |= BITMAP_FLAG_LOCKED;
+
+    return true;
 }
 
-
-void NC_STACK_win3d::UnlockTexture(bitmap_intern *arg)
+void NC_STACK_win3d::UpdateHwTexture(bitmap_intern *bitm)
 {
-    bitmap_intern *bitm = arg;
+    if (!bitm)
+        return;
 
-    if ( !(bitm->flags & BITMAP_FLAG_SYSMEM) )
+    if (bitm->hwTex == 0)
+        return;
+
+    bool lockd = bitm->swTex->locked;
+
+    if (!lockd)
+        SDL_LockSurface(bitm->swTex);
+
+    glPushAttrib(GL_TEXTURE_2D | GL_TEXTURE_BINDING_2D);
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, bitm->hwTex);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, bitm->swTex->w, bitm->swTex->h, stack__win3d.glPixfmt, stack__win3d.glPixtype, bitm->swTex->pixels);
+
+    glPopAttrib();
+
+    if (!lockd)
+        SDL_UnlockSurface(bitm->swTex);
+}
+
+void NC_STACK_win3d::UnlockTexture(bitmap_intern *bitm)
+{
+    if ( !(bitm->flags & BITMAP_FLAG_LOCKED) )
+        return;
+
+    if ( bitm->flags & BITMAP_FLAG_TEXTURE )
     {
-        texStru *tex = bitm->ddrawSurfTex;
+        if ( !(bitm->flags & BITMAP_FLAG_SYSMEM) )
+            UpdateHwTexture(bitm);
 
-        glPushAttrib(GL_TEXTURE_2D | GL_TEXTURE_BINDING_2D);
-
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, tex->oTexture);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex->sdlSurface->w, tex->sdlSurface->h, stack__win3d.glPixfmt, stack__win3d.glPixtype, tex->sdlSurface->pixels);
-
-        glPopAttrib();
-
-        SDL_UnlockSurface(tex->sdlSurface);
-
+        SDL_UnlockSurface(bitm->swTex);
         bitm->buffer = NULL;
     }
+
+    bitm->flags &= ~BITMAP_FLAG_LOCKED;
 }
 
 void NC_STACK_win3d::display_func271(stack_vals *stak)
@@ -3300,6 +3132,11 @@ void NC_STACK_win3d::_setFrustumClip(float _near, float _far)
     frustum[13] = 0.0;
     frustum[14] = -2.0 * (_far * _near) / (_far - _near);
     frustum[15] = 0.0;
+}
+
+SDL_Surface * NC_STACK_win3d::ConvertToScreen(SDL_Surface *src)
+{
+    return SDL_ConvertSurface(src, stack__win3d.pixfmt, 0);
 }
 
 

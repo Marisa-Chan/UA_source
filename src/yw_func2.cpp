@@ -253,7 +253,7 @@ void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, str
 void yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
 {
     usr->input_listview.SetRect(yw, -2, -2);
-    GFXe.getTileset(0);
+    GFXEngine::GFXe.getTileset(0);
 
     char *v4 = usr->input_listview.ItemsPreLayout(yw, usr->input_listview.itemBlock, 0, "uvw");
 
@@ -368,7 +368,7 @@ void yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 v21;
     v21 = usr->input_listview.cmdstrm;
 
-    GFXe.drawText(&v21);
+    GFXEngine::GFXe.drawText(&v21);
 }
 
 
@@ -868,7 +868,7 @@ void fill_videmodes_list(UserData *usr)
         nc_FreeMem(nod);
     }
 
-    usr->p_ypaworld->win3d = GFXe.getC3D();
+    usr->p_ypaworld->win3d = GFXEngine::GFXe.getC3D();
 
     windd_arg256 warg_256;
     warg_256.sort_id = 0;
@@ -1071,7 +1071,7 @@ void ypaworld_func154__sub0(_NC_STACK_ypaworld *yw)
 {
     if ( yw->movies.movies_names_present[0] )
     {
-        yw->win3d = GFXe.getC3D();
+        yw->win3d = GFXEngine::GFXe.getC3D();
         char buf[256];
 
         sub_412810(yw->movies.game_intro, buf, 256);

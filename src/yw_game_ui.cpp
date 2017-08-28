@@ -361,7 +361,7 @@ void sub_4F68FC(NC_STACK_display *displ, float a3, float a4, float a5, float a6,
     rstr_arg217 v10;
     v10.dword0 = a7;
     v10.dword4 = a7;
-    v10.dword8 = 0xFFFFFFFF;
+//    v10.dword8 = 0xFFFFFFFF;
 
     displ->raster_func217(&v10);
     displ->raster_func201(&a3a);
@@ -718,7 +718,7 @@ void sb_0x4f8f64__sub1(_NC_STACK_ypaworld *yw)
 
             v27.dword0 = yw_GetColor(yw, 12);
             v27.dword4 = yw_GetColor(yw, 12);
-            v27.dword8 = 0xFFFFFFFF;
+//            v27.dword8 = 0xFFFFFFFF;
 
             yw->win3d->raster_func217(&v27);
             yw->win3d->raster_func201(&v24);
@@ -1832,7 +1832,7 @@ void sb_0x4f8f64(_NC_STACK_ypaworld *yw)
     pcur = sb_0x4f8f64__sub0(yw, pcur);
     FontUA::set_end(&pcur);
 
-    GFXe.drawText(&arg);
+    GFXEngine::GFXe.drawText(&arg);
 }
 
 void sub_4C157C(_NC_STACK_ypaworld *yw)
@@ -3264,13 +3264,13 @@ void sb_0x4d7c08__sub0__sub1()
         w3d_a209 v0;
         v0 = bzda.cmdstrm;
 
-        GFXe.drawText(&v0);
+        GFXEngine::GFXe.drawText(&v0);
 
         if ( !(gui_lstvw.flags & GuiBase::FLAG_CLOSED) )
         {
             v0 = gui_lstvw.cmdstrm;
 
-            GFXe.drawText(&v0);
+            GFXEngine::GFXe.drawText(&v0);
         }
     }
 }
@@ -3308,7 +3308,7 @@ void sb_0x4d7c08__sub0(_NC_STACK_ypaworld *yw)
                         v6 = 1;
                 }
 
-                GFXe.drawText(&v8);
+                GFXEngine::GFXe.drawText(&v8);
 
                 if ( v6 )
                     lstnode->postDraw(yw);
@@ -9196,7 +9196,7 @@ void sb_0x4d7c08__sub0__sub0(_NC_STACK_ypaworld *yw)
     arg.cmdbuf = byte_5A7650;
     arg.includ = 0;
 
-    GFXe.drawText(&arg);
+    GFXEngine::GFXe.drawText(&arg);
 }
 
 
@@ -9236,14 +9236,14 @@ void yw_RenderVector2D(_NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float pos
     float CW = 1.0, CH = 1.0;
 
     if (aspectCorrection)
-        GFXe.getC3D()->getAspectCorrection(CW, CH, false);
+        GFXEngine::GFXe.getC3D()->getAspectCorrection(CW, CH, false);
 
     if ( wire )
     {
         rstr_arg217 v30;
         v30.dword0 = coloooor;
         v30.dword4 = coloooor;
-        v30.dword8 = 0xFFFFFFFF;
+//        v30.dword8 = 0xFFFFFFFF;
 
         yw->win3d->raster_func217(&v30);
 
@@ -9277,7 +9277,7 @@ void yw_RenderVector2D(_NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float pos
 
                     v30.dword0 = v32;
                     v30.dword4 = v31;
-                    v30.dword8 = 0xFFFFFFFF;
+//                    v30.dword8 = 0xFFFFFFFF;
 
                     yw->win3d->raster_func217(&v30);
                 }
@@ -9290,7 +9290,7 @@ void yw_RenderVector2D(_NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float pos
 
                     v30.dword0 = v34;
                     v30.dword4 = v33;
-                    v30.dword8 = 0xFFFFFFFF;
+//                    v30.dword8 = 0xFFFFFFFF;
 
                     yw->win3d->raster_func217(&v30);
                 }
@@ -10208,7 +10208,7 @@ void sb_0x4d7c08__sub0__sub4(_NC_STACK_ypaworld *yw)
     v20.cmdbuf = byte_5C8DB0;
     v20.includ = 0;
 
-    GFXe.drawText(&v20);
+    GFXEngine::GFXe.drawText(&v20);
 
     yw->hudi.field_18 = NULL;
 }
@@ -10850,7 +10850,7 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(_NC_STACK_ypaworld *yw)
 
     FontUA::set_end(&pcur);
 
-    GFXe.drawText(&post_rndr);
+    GFXEngine::GFXe.drawText(&post_rndr);
 }
 
 void yw_RenderHUDRadare(_NC_STACK_ypaworld *yw)

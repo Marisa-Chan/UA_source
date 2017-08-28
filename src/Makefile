@@ -3,15 +3,15 @@ CXX = g++
 MINGW = /usr/i686-w64-mingw32
 CC_WIN = i686-w64-mingw32-gcc
 CXX_WIN = i686-w64-mingw32-g++
-LIBS_WIN = -L$(MINGW)/lib/ -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lOpenAL32 -lopengl32 -lvorbisfile
+LIBS_WIN = -L$(MINGW)/lib/ -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lOpenAL32 -lopengl32 -lvorbisfile
 
 CLANG_WIN = i686-w64-mingw32-clang++
 
-LIBS_NIX = -lSDL2 -lSDL2_ttf -lGL -lopenal -lvorbisfile
+LIBS_NIX = -lSDL2 -lSDL2_ttf -lSDL2_image -lGL -lopenal -lvorbisfile
 
 CC_MAC = clang
 CXX_MAC = clang++
-LIBS_MAC = -lSDL2 -lSDL2_ttf -framework OpenGL -framework OpenAL -lvorbisfile
+LIBS_MAC = -lSDL2 -lSDL2_ttf -lSDL2_image -framework OpenGL -framework OpenAL -lvorbisfile
 
 TARGET = UA_source
 OBJS =  \
@@ -39,6 +39,7 @@ OBJS =  \
 	input.cpp\
 	itimer.cpp\
 	iwimp.cpp\
+	image.cpp\
 	log.cpp\
 	lstvw.cpp\
 	main.cpp\

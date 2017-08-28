@@ -583,7 +583,7 @@ void yw_write_ownermap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
     init_vals[2].set(NC_STACK_bitmap::BMD_ATT_HEIGHT, yw->sectors_maxY2);
     init_vals[3].end();
 
-    NC_STACK_bitmap *bitmap = (NC_STACK_bitmap *)init_get_class("bitmap.class", init_vals);
+    NC_STACK_bitmap *bitmap = NC_STACK_bitmap::CInit(init_vals);
 
     if ( bitmap )
     {
@@ -618,7 +618,7 @@ void yw_write_energymap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
     init_vals[2].set(NC_STACK_bitmap::BMD_ATT_HEIGHT, 3 * yw->sectors_maxY2);
     init_vals[3].end();
 
-    NC_STACK_bitmap *bitmap = (NC_STACK_bitmap *)init_get_class("bitmap.class", init_vals);
+    NC_STACK_bitmap *bitmap = NC_STACK_bitmap::CInit(init_vals);
 
     if ( bitmap )
     {

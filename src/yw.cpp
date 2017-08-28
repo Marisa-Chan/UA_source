@@ -650,8 +650,8 @@ size_t NC_STACK_ypaworld::func0(stack_vals *stak)
         return 0;
     }
 
-    yw->screen_width = GFXe.getScreenW();
-    yw->screen_height = GFXe.getScreenH();
+    yw->screen_width = GFXEngine::GFXe.getScreenW();
+    yw->screen_height = GFXEngine::GFXe.getScreenH();
 
     init_list(&yw->bact_list);
     init_list(&yw->field_17a0);
@@ -1007,7 +1007,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
     {
         uint32_t v92 = profiler_begin();
 
-        yw->win3d = GFXe.getC3D();
+        yw->win3d = GFXEngine::GFXe.getC3D();
 
         yw->field_7626 = 0;
         yw->b64_parms = arg;
@@ -2932,7 +2932,7 @@ void NC_STACK_ypaworld::ypaworld_func151(stack_vals *arg)
     yw->do_screenshooting = 0;
     yw->sceneRecorder->do_record = 0;
 
-    NC_STACK_ilbm *disk = loadDisk_screen(yw);
+    NC_STACK_bitmap *disk = loadDisk_screen(yw);
 
     if ( disk )
     {
@@ -3564,11 +3564,11 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int a2)
         char *finished_map = NULL;
         char *enabled_map = NULL;
 
-        NC_STACK_ilbm *ilbm_menu_map  = NULL;
-        NC_STACK_ilbm *ilbm_rollover_map = NULL;
-        NC_STACK_ilbm *ilbm_mask_map = NULL;
-        NC_STACK_ilbm *ilbm_finished_map = NULL;
-        NC_STACK_ilbm *ilbm_enabled_map = NULL;
+        NC_STACK_bitmap *ilbm_menu_map  = NULL;
+        NC_STACK_bitmap *ilbm_rollover_map = NULL;
+        NC_STACK_bitmap *ilbm_mask_map = NULL;
+        NC_STACK_bitmap *ilbm_finished_map = NULL;
+        NC_STACK_bitmap *ilbm_enabled_map = NULL;
 
         switch ( a2 )
         {
@@ -3607,7 +3607,7 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int a2)
             init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
             init_vals[3].end();
 
-            ilbm_menu_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
+            ilbm_menu_map = NC_STACK_ilbm::CInit(init_vals);
             if ( !ilbm_menu_map )
             {
                 ypa_log_out("world.ini: Could not load %s\n", menu_map);
@@ -3623,7 +3623,7 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int a2)
             init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
             init_vals[3].end();
 
-            ilbm_rollover_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
+            ilbm_rollover_map = NC_STACK_ilbm::CInit(init_vals);
             if ( !ilbm_rollover_map )
             {
                 ypa_log_out("world.ini: Could not load %s\n", rollover_map);
@@ -3639,7 +3639,7 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int a2)
             init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
             init_vals[3].end();
 
-            ilbm_finished_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
+            ilbm_finished_map = NC_STACK_ilbm::CInit(init_vals);
             if ( !ilbm_finished_map )
             {
                 ypa_log_out("world.ini: Could not load %s\n", finished_map);
@@ -3655,7 +3655,7 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int a2)
             init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
             init_vals[3].end();
 
-            ilbm_enabled_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
+            ilbm_enabled_map = NC_STACK_ilbm::CInit(init_vals);
             if ( !ilbm_enabled_map )
             {
                 ypa_log_out("world.ini: Could not load %s\n", enabled_map);
@@ -3668,7 +3668,7 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int a2)
             init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, mask_map);
             init_vals[1].end();
 
-            ilbm_mask_map = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
+            ilbm_mask_map = NC_STACK_ilbm::CInit(init_vals);
             if ( !ilbm_mask_map )
             {
                 ypa_log_out("world.ini: Could not load %s\n", mask_map);
@@ -3803,7 +3803,7 @@ void sb_0x4e75e8(_NC_STACK_ypaworld *yw, int a2)
 
 int ypaworld_func156__sub2(_NC_STACK_ypaworld *yw)
 {
-    NC_STACK_display *win3d = GFXe.getC3D();
+    NC_STACK_display *win3d = GFXEngine::GFXe.getC3D();
 
     ua_dRect v5;
     v5.x1 = -(yw->screen_width >> 1);
@@ -3861,7 +3861,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         return 0;
     }
 
-    yw->win3d = GFXe.getC3D();
+    yw->win3d = GFXEngine::GFXe.getC3D();
 
     if ( !yw->win3d )
     {
@@ -5501,13 +5501,12 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     usr->usernamedir_len = strlen(usr->usernamedir);
 
-    char v223[300];
+    std::string v223;
+
+    v223 = usr->usernamedir;
 
     if ( usr->field_0x1744 )
-        sprintf(v223, "%s%s", usr->usernamedir, "h");
-    else
-        sprintf(v223, "%s", usr->usernamedir);
-
+        v223 += "h";
 
     v70 = 0;
 
@@ -5567,7 +5566,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.down_id = 0;
                     btn_64arg.up_id = 0;
                     btn_64arg.pressed_id = 0;
-                    btn_64arg.caption = v223;
+                    btn_64arg.caption = v223.c_str();
                     btn_64arg.state = 112;
                     btn_64arg.button_id = 1100;
                     btn_64arg.ypos = 6 * word_5A50C0 + 14 * yw->font_default_h;
@@ -6057,7 +6056,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         {
             int v284 = ((dword_5A50B6 - 3 * word_5A50C0) * 0.25 - 3 * word_5A50C0) * 0.25;
 
-            tiles_stru *v198 = GFXe.getTileset(8);
+            tiles_stru *v198 = GFXEngine::GFXe.getTileset(8);
 
             btn_64arg.tileset_down = 16;
             btn_64arg.tileset_up = 16;
@@ -6753,7 +6752,7 @@ void sub_4476AC(_NC_STACK_ypaworld *yw)
 
     yw->field_2424++;
 
-    NC_STACK_win3d *w3d = GFXe.getC3D();
+    NC_STACK_win3d *w3d = GFXEngine::GFXe.getC3D();
 
     const char *v7 = a1a;
 
@@ -6797,7 +6796,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 
     sub_423EFC(usr->frameTime, &stru_515034, &stru_515034, &stru_515040);
 
-    yw->win3d = GFXe.getC3D();
+    yw->win3d = GFXEngine::GFXe.getC3D();
 
     yw->win3d->BeginFrame();
 
@@ -7051,7 +7050,7 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
     recorder *repl = yw->replayer;
     uint32_t v33 = profiler_begin();
 
-    yw->win3d = GFXe.getC3D();
+    yw->win3d = GFXEngine::GFXe.getC3D();
 
     yw->b64_parms = arg;
     yw->field_161c++;
@@ -7424,7 +7423,7 @@ size_t NC_STACK_ypaworld::ypaworld_func166(const char **langname)
 
     if ( v19 || load_lang_lng(yw, yw->lang_name) )
     {
-        NC_STACK_win3d *win3d = GFXe.getC3D();
+        NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
 
         const char *v11 = NULL;
 
@@ -8344,7 +8343,7 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
 
     UserData *usr = yw->GameShell;
 
-    NC_STACK_win3d *win3d = GFXe.getC3D();
+    NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
 
     int current_resolution;
 
@@ -8365,19 +8364,19 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
         v6 = 0;
     }
 
-    GFXe.setResolution( arg->resolution );
+    GFXEngine::GFXe.setResolution( arg->resolution );
 
-    yw->screen_width = GFXe.getScreenW();
-    yw->screen_height = GFXe.getScreenH();
+    yw->screen_width = GFXEngine::GFXe.getScreenW();
+    yw->screen_height = GFXEngine::GFXe.getScreenH();
 
     if ( v6 && !ypaworld_func156(usr))
     {
         ypa_log_out("Warning: Unable to open GameShell with mode %d\n", arg->resolution);
 
-        GFXe.setResolution( usr->p_ypaworld->shell_default_res );
+        GFXEngine::GFXe.setResolution( usr->p_ypaworld->shell_default_res );
 
-        yw->screen_width = GFXe.getScreenW();
-        yw->screen_height = GFXe.getScreenH();
+        yw->screen_width = GFXEngine::GFXe.getScreenW();
+        yw->screen_height = GFXEngine::GFXe.getScreenH();
 
         if ( !ypaworld_func156(usr) )
         {
@@ -8385,7 +8384,7 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
         }
     }
 
-    win3d = GFXe.getC3D();
+    win3d = GFXEngine::GFXe.getC3D();
 
     if ( usr->GFX_flags & 4 )
     {

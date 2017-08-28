@@ -3,17 +3,11 @@
 
 #include <deque>
 #include "wrapSDL.h"
+#include "display.h"
 #include "ini.h"
 
 struct bitmap_intern;
 struct polysDat;
-
-struct texStru
-{
-    SDL_Surface *sdlSurface;
-    GLuint oTexture;
-};
-
 
 #define MSK(X) (1 << (X))
 
@@ -155,7 +149,7 @@ public:
     virtual void display_func261(rstr_261_arg *arg);
     virtual void display_func262(rstr_262_arg *arg);
     virtual void display_func263(displ_arg263 *arg);
-    virtual size_t AllocTexture(bitmap_intern *arg);
+    virtual bool AllocTexture(bitmap_intern *arg);
     virtual void TextureApplyPalette(bitmap_intern *arg);
     virtual void FreeTexture(bitmap_intern *arg);
     virtual size_t LockTexture(bitmap_intern *arg);
@@ -187,11 +181,11 @@ public:
 
     enum WDD_ATT
     {
-        WDD_ATT_CURSOR = 0x80005000,
-        WDD_ATT_TEXFILT = 0x80005001,
-        WDD_ATT_DIS_LOWRES = 0x80005002,
-        WDD_ATT_16BIT_TEX = 0x80005003,
-        WDD_ATT_DRAW_PRIM = 0x80005004
+        WDD_ATT_CURSOR = 0x80002000,
+        WDD_ATT_TEXFILT = 0x80002001,
+        WDD_ATT_DIS_LOWRES = 0x80002002,
+        WDD_ATT_16BIT_TEX = 0x80002003,
+        WDD_ATT_DRAW_PRIM = 0x80002004
     };
 
     virtual void setWDD_cursor(int arg);
@@ -216,15 +210,19 @@ public:
     void matrixAspectCorrection(mat3x3 *inout, bool invert);
     void getAspectCorrection(float &cW, float &cH, bool invert);
 
+    void UpdateHwTexture(bitmap_intern *bitm);
+
     void setFrustumClip(float near, float far);
 
     static bool compare(polysDat *a, polysDat *b);
+
+    SDL_Surface *ConvertToScreen(SDL_Surface *src);
 
 protected:
     int initPolyEngine();
     int initPixelFormats();
     void SetRenderStates(int arg);
-    void sb_0x43b518(polysDat *polysDat, texStru *tex, int a5, int a6);
+    void sb_0x43b518(polysDat *polysDat, int a5, int a6);
     void RenderTransparent();
     void DrawScreenText();
     void AddScreenText(const char *string, int p1, int p2, int p3, int p4, int flag);

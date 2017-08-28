@@ -4653,7 +4653,7 @@ int LevelSuperItemsParser(scrCallBack *arg)
 }
 
 
-NC_STACK_ilbm * readMapDumpAsILBM(_NC_STACK_ypaworld *yw, const char *mapName, FSMgr::FileHandle *scrFile)
+NC_STACK_bitmap * readMapDumpAsILBM(_NC_STACK_ypaworld *yw, const char *mapName, FSMgr::FileHandle *scrFile)
 {
     char v15[1024];
 
@@ -4673,7 +4673,7 @@ NC_STACK_ilbm * readMapDumpAsILBM(_NC_STACK_ypaworld *yw, const char *mapName, F
     init_vals[3].set( NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
     init_vals[4].end();
 
-    NC_STACK_bitmap *v7 = (NC_STACK_bitmap *)init_get_class("bitmap.class", init_vals);
+    NC_STACK_bitmap *v7 = NC_STACK_bitmap::CInit(init_vals);
     if ( !v7 )
         return NULL;
 
@@ -4701,15 +4701,7 @@ NC_STACK_ilbm * readMapDumpAsILBM(_NC_STACK_ypaworld *yw, const char *mapName, F
         }
     }
 
-
-    init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, mapName);
-    init_vals[1].set( NC_STACK_ilbm::ILBM_ATT_FMT, 1);
-    init_vals[2].end();
-
-    NC_STACK_ilbm *tmp = (NC_STACK_ilbm *)init_get_class("ilbm.class", init_vals);
-    delete_class_obj(v7);
-
-    return tmp;
+    return v7;
 }
 
 
@@ -4826,7 +4818,7 @@ int parseSaveVideo(scrCallBack *arg)
     {
         if ( !strcasecmp(arg->p1, "end") )
         {
-            NC_STACK_win3d *win3d = GFXe.getC3D();
+            NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
 
             if ( win3d )
             {
@@ -6227,7 +6219,7 @@ int sub_4798D0(scrCallBack *scr)
         {
             scr->field_18 = 1;
 
-            NC_STACK_ilbm *v4 = readMapDumpAsILBM(yw, "nrgmap", scr->file);
+            NC_STACK_bitmap *v4 = readMapDumpAsILBM(yw, "nrgmap", scr->file);
 
             if ( v4 )
             {

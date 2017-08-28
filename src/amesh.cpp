@@ -16,6 +16,20 @@
 
 const NewClassDescr NC_STACK_amesh::description("amesh.class", &newinstance);
 
+NC_STACK_amesh *NC_STACK_amesh::CInit(stack_vals *stak)
+{
+    NC_STACK_amesh *tmp = new NC_STACK_amesh();
+    if (!tmp)
+        return NULL;
+
+    if (!tmp->func0(stak))
+    {
+        delete tmp;
+        return NULL;
+    }
+
+    return tmp;
+};
 
 int sub_419E6C(__NC_STACK_amesh *amesh, tUtV **olpl)
 {
@@ -307,7 +321,7 @@ size_t NC_STACK_amesh::func5(IFFile **file)
 
                     for (int j = 0; j < cnt; j++)
                     {
-                        uint8_t x; //If you cross refernce the VBMP these are the X,Y coordinates 
+                        uint8_t x; //If you cross refernce the VBMP these are the X,Y coordinates
                         uint8_t y; // as it is stored on disk
                         mfile->readU8(x);
                         mfile->readU8(y);
@@ -472,6 +486,9 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
         polysDatSub *datSub = &data->datSub;
 
         datSub->renderFlags = renderFlags;
+        datSub->r = 1.0;
+        datSub->g = 1.0;
+        datSub->b = 1.0;
 
         datSub->pbitm = v21;
 

@@ -538,7 +538,7 @@ void deinit_globl_engines()
     if ( audio_inited )
         SFXe.deinit();
     if ( gfx_inited )
-        GFXe.deinit();
+        GFXEngine::GFXe.deinit();
 
     sb_0x411c08();
 }
@@ -581,7 +581,7 @@ int WinMain__sub0__sub0()
     add_to_params_list("input.button[22] = winp:joyb6");
     add_to_params_list("input.button[23] = winp:joyb7");
 
-    gfx_inited = GFXe.init();
+    gfx_inited = GFXEngine::GFXe.init();
     audio_inited = SFXe.init();
     input_inited = INPe.init();
     tform_inited = TFe.init();

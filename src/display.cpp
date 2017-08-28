@@ -11,24 +11,28 @@ const NewClassDescr NC_STACK_display::description("display.class", &newinstance)
 
 size_t NC_STACK_display::func0(stack_vals *stak)
 {
-    if ( !NC_STACK_bitmap::func0(stak) )
+    if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
 
     dprintf("MAKE ME %s\n","raster_func0");
 
     __NC_STACK_display *rstr = &stack__display;
-    rstr->bitm_intern = (bitmap_intern *)getRsrc_pData();
+
+    width = find_id_in_stack_def_val(ATT_WIDTH, 0, stak);
+    height = find_id_in_stack_def_val(ATT_HEIGHT, 0, stak);
+
+//    rstr->bitm_intern = (bitmap_intern *)getRsrc_pData();
 
     rstr->field_24.x1 = 0;
     rstr->field_24.y1 = 0;
-    rstr->field_24.x2 = rstr->bitm_intern->width - 1;
-    rstr->field_24.y2 = rstr->bitm_intern->height - 1;
+    rstr->field_24.x2 = width - 1;
+    rstr->field_24.y2 = height - 1;
 
-    rstr->field_54c = rstr->bitm_intern->width / 2;
-    rstr->field_550 = rstr->bitm_intern->height / 2;
+    rstr->field_54c = width / 2;
+    rstr->field_550 = height / 2;
 
-    rstr->field_554 = (rstr->bitm_intern->width / 2);
-    rstr->field_558 = (rstr->bitm_intern->height / 2);
+    rstr->field_554 = width / 2;
+    rstr->field_558 = height / 2;
 
     engines.display___win3d = this;
 
@@ -38,7 +42,7 @@ size_t NC_STACK_display::func0(stack_vals *stak)
 size_t NC_STACK_display::func1(stack_vals *stak)
 {
     engines.display___win3d = NULL;
-    return NC_STACK_bitmap::func1(stak);
+    return NC_STACK_nucleus::func1(stak);
 }
 
 size_t NC_STACK_display::func2(stack_vals *stak)
@@ -63,28 +67,27 @@ size_t NC_STACK_display::func2(stack_vals *stak)
         {
             switch(stk->id)
             {
-            case BMD_ATT_PCOLORMAP:
-                setBMD_palette((UA_PALETTE *)stk->value.p_data);
-                stk->id = stack_vals::TAG_SKIP;
+            case ATT_PALETTE:
+                SetPalette((UA_PALETTE *)stk->value.p_data);
                 break;
 
-            case RSTR_ATT_FGPEN:
+            case ATT_FGPEN:
                 setRSTR_FGpen(stk->value.u_data);
                 break;
 
-            case RSTR_ATT_BGPEN:
+            case ATT_BGPEN:
                 setRSTR_BGpen(stk->value.u_data);
                 break;
 
-            case RSTR_ATT_SHADE_RMP:
+            case ATT_SHADE_RMP:
                 setRSTR_shdRmp((bitmap_intern *)stk->value.p_data);
                 break;
 
-            case RSTR_ATT_TRACY_RMP:
+            case ATT_TRACY_RMP:
                 setRSTR_trcRmp((bitmap_intern *)stk->value.p_data);
                 break;
 
-            case RSTR_ATT_FGAPEN:
+            case ATT_FGAPEN:
                 setRSTR_FGApen(stk->value.i_data);
                 break;
 
@@ -95,19 +98,18 @@ size_t NC_STACK_display::func2(stack_vals *stak)
         }
     }
 
-    return NC_STACK_bitmap::func2(stak);
+    return NC_STACK_nucleus::func2(stak);
 }
 
 size_t NC_STACK_display::func3(stack_vals *stak)
 {
-    stack_vals *val = find_id_in_stack2(BMD_ATT_PCOLORMAP, stak);
+    stack_vals *val = find_id_in_stack2(ATT_PALETTE, stak);
     if ( val )
     {
-        *(UA_PALETTE **)val->value.p_data = getBMD_palette();
-        val->id = stack_vals::TAG_SKIP;
+        *(UA_PALETTE **)val->value.p_data = GetPalette();
     }
 
-    return NC_STACK_bitmap::func3(stak);
+    return NC_STACK_nucleus::func3(stak);
 }
 
 
@@ -115,21 +117,21 @@ size_t NC_STACK_display::func3(stack_vals *stak)
 
 size_t NC_STACK_display::raster_func192(stack_vals *)
 {
-    __NC_STACK_display *rstr = &stack__display;
-    bitmap_intern *bitm = rstr->bitm_intern;
-
-    memset(bitm->buffer, rstr->field_c, bitm->width * bitm->height);
+//    __NC_STACK_display *rstr = &stack__display;
+//    bitmap_intern *bitm = rstr->bitm_intern;
+//
+//    memset(bitm->buffer, rstr->BG_Color, bitm->width * bitm->height);
     return 0;
 }
 
-size_t NC_STACK_display::raster_func193(bitmap_intern **out)
-{
-    __NC_STACK_display *rstr = &stack__display;
-    bitmap_intern *bitm = rstr->bitm_intern;
-
-    memcpy((*out)->buffer, bitm->buffer, bitm->width * bitm->height);
-    return 0;
-}
+//size_t NC_STACK_display::raster_func193(bitmap_intern **out)
+//{
+//    __NC_STACK_display *rstr = &stack__display;
+//    bitmap_intern *bitm = rstr->bitm_intern;
+//
+//    memcpy((*out)->buffer, bitm->buffer, bitm->width * bitm->height);
+//    return 0;
+//}
 
 size_t NC_STACK_display::raster_func198(w3d_func198arg *)
 {
@@ -271,8 +273,8 @@ size_t NC_STACK_display::raster_func217(rstr_arg217 *arg)
     if ( arg->dword4 != 0xFFFFFFFF )
         rstr->field_8 = arg->dword4;
 
-    if ( arg->dword8 != 0xFFFFFFFF )
-        rstr->field_c = arg->dword8;
+//    if ( arg->dword8 != 0xFFFFFFFF )
+//        rstr->BG_Color = arg->dword8;
 
     return 0;
 }
@@ -311,7 +313,8 @@ void NC_STACK_display::display_func261(rstr_261_arg *arg)
 {
     __NC_STACK_display *displ = &stack__display;
 
-    memcpy(&displ->field_300[arg->pal_id].pal_entries[arg->entrie_id], arg->palette, sizeof(UA_PALENTRY) * arg->pal_num);
+    for (int i = 0; i < arg->pal_num; i++)
+        displ->field_300[arg->pal_id].pal_entries[arg->entrie_id + i] = arg->palette->pal_entries[i];
 }
 
 void NC_STACK_display::display_func262(rstr_262_arg *arg)
@@ -351,27 +354,27 @@ void NC_STACK_display::display_func262(rstr_262_arg *arg)
 
 void NC_STACK_display::display_func263(displ_arg263 *arg)
 {
-    __NC_STACK_display *displ = &stack__display;
+//    __NC_STACK_display *displ = &stack__display;
 
-    display_func265(NULL);
-    displ->pointer_bitm = arg->bitm;
-    display_func264(NULL);
+//    display_func265(NULL);
+//    displ->pointer_bitm = arg->bitm;
+//    display_func264(NULL);
 }
 
-void NC_STACK_display::display_func264(void *)
-{
-    __NC_STACK_display *displ = &stack__display;
-    displ->field_1b04 &= 0xFFFFFFFE;
-}
+//void NC_STACK_display::display_func264(void *)
+//{
+//    __NC_STACK_display *displ = &stack__display;
+//    displ->field_1b04 &= 0xFFFFFFFE;
+//}
 
-void NC_STACK_display::display_func265(void *)
-{
-    __NC_STACK_display *displ = &stack__display;
-    displ->field_1b04 |= 1;
-}
+//void NC_STACK_display::display_func265(void *)
+//{
+//    __NC_STACK_display *displ = &stack__display;
+//    displ->field_1b04 |= 1;
+//}
 
 
-size_t NC_STACK_display::AllocTexture(bitmap_intern *pbitm)
+bool NC_STACK_display::AllocTexture(bitmap_intern *pbitm)
 {
     bitmap_intern *bitm = pbitm;
 
@@ -419,7 +422,7 @@ void NC_STACK_display::display_func274(const char **)
 
 
 
-void NC_STACK_display::setBMD_palette(UA_PALETTE *newPal)
+void NC_STACK_display::SetPalette(UA_PALETTE *newPal)
 {
     rstr_261_arg arg_261;
     rstr_262_arg arg_262;
@@ -438,8 +441,6 @@ void NC_STACK_display::setBMD_palette(UA_PALETTE *newPal)
     arg_262.weight = &v12;
 
     display_func262(&arg_262);
-
-    NC_STACK_bitmap::setBMD_palette(newPal);
 };
 
 
@@ -450,7 +451,7 @@ void NC_STACK_display::setRSTR_FGpen(uint32_t pen)
 
 void NC_STACK_display::setRSTR_BGpen(uint32_t pen)
 {
-    stack__display.field_c = pen;
+//    stack__display.BG_Color = pen;
 }
 
 void NC_STACK_display::setRSTR_shdRmp(bitmap_intern *rmp)
@@ -473,11 +474,20 @@ void NC_STACK_display::setRSTR_FGApen(uint32_t pen)
 }
 
 
-UA_PALETTE *NC_STACK_display::getBMD_palette()
+UA_PALETTE *NC_STACK_display::GetPalette()
 {
     return &stack__display.palette;
 }
 
+int16_t NC_STACK_display::GetWidth()
+{
+    return width;
+}
+
+int16_t NC_STACK_display::GetHeight()
+{
+    return height;
+}
 
 
 size_t NC_STACK_display::compatcall(int method_id, void *data)
@@ -494,8 +504,8 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
         return func3( (stack_vals *)data );
     case 192:
         return (size_t)raster_func192( (stack_vals *)data );
-    case 193:
-        return (size_t)raster_func193( (bitmap_intern **)data );
+//    case 193:
+//        return (size_t)raster_func193( (bitmap_intern **)data );
     case 198:
         return (size_t)raster_func198( (w3d_func198arg *)data );
     case 199:
@@ -564,12 +574,12 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
     case 263:
         display_func263( (displ_arg263 *)data );
         return 1;
-    case 264:
-        display_func264( (void *)data );
-        return 1;
-    case 265:
-        display_func265( (void *)data );
-        return 1;
+//    case 264:
+//        display_func264( (void *)data );
+//        return 1;
+//    case 265:
+//        display_func265( (void *)data );
+//        return 1;
     case 266:
         return (size_t)AllocTexture( (bitmap_intern *)data );
     case 267:
@@ -591,5 +601,5 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
     default:
         break;
     }
-    return NC_STACK_bitmap::compatcall(method_id, data);
+    return NC_STACK_nucleus::compatcall(method_id, data);
 }

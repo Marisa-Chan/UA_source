@@ -7,6 +7,21 @@
 
 const NewClassDescr NC_STACK_ilbm::description("ilbm.class", &newinstance);
 
+NC_STACK_ilbm *NC_STACK_ilbm::CInit(stack_vals *stak)
+{
+    NC_STACK_ilbm *tmp = new NC_STACK_ilbm();
+    if (!tmp)
+        return NULL;
+
+    if (!tmp->func0(stak))
+    {
+        delete tmp;
+        return NULL;
+    }
+
+    return tmp;
+}
+
 size_t NC_STACK_ilbm::func0(stack_vals *stak)
 {
     if ( !NC_STACK_bitmap::func0(stak) )
@@ -319,7 +334,7 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, IFFile *mfil, int val5)
         if ( v10 )
         {
             if ( res )
-                rsrc_func65(&res);
+                rsrc_func65(res);
 
             return NULL;
         }
@@ -352,7 +367,7 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, IFFile *mfil, int val5)
                 bitm = (bitmap_intern *)res->data;
                 if ( !bitm )
                 {
-                    rsrc_func65(&res);
+                    rsrc_func65(res);
                     return NULL;
                 }
             }
@@ -375,7 +390,7 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, IFFile *mfil, int val5)
                 bitm = (bitmap_intern *)res->data;
                 if ( !bitm )
                 {
-                    rsrc_func65(&res);
+                    rsrc_func65(res);
                     return NULL;
                 }
             }
@@ -386,12 +401,24 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, IFFile *mfil, int val5)
             if ( bitm )
             {
                 if ( !bitm->pallete )
-                    bitm->pallete = (UA_PALETTE *)AllocVec(sizeof(UA_PALETTE), 65537);
+                {
+                    bitm->pallete = new UA_PALETTE;
+                    bitm->flags |= BITMAP_FLAG_HAS_PALETTE;
+                }
 
                 if ( bitm->pallete )
                 {
-                    mfil->read(bitm->pallete, sizeof(UA_PALETTE));
-                    bitm->flags |= BITMAP_FLAG_HAS_PALETTE;
+                    for (int i = 0; i < 256; i++)
+                    {
+                        uint8_t r,g,b;
+                        mfil->readU8(r);
+                        mfil->readU8(g);
+                        mfil->readU8(b);
+                        bitm->pallete->pal_entries[i].r = r;
+                        bitm->pallete->pal_entries[i].g = g;
+                        bitm->pallete->pal_entries[i].b = b;
+                        bitm->pallete->pal_entries[i].a = 255;
+                    }
                 }
             }
             mfil->parse();
@@ -439,7 +466,7 @@ rsrc * NC_STACK_ilbm::READ_ILBM(stack_vals *stak, IFFile *mfil, int val5)
             }
             if ( !success )
             {
-                rsrc_func65(&res);
+                rsrc_func65(res);
                 return NULL;
             }
             mfil->parse();

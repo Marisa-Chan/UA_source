@@ -79,7 +79,7 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, stack_vals *stak, const char *filname
 
                         if ( !smpl )
                         {
-                            obj->rsrc_func65(&res);
+                            obj->rsrc_func65(res);
                             delete fil;
                             return NULL;
                         }

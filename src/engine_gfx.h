@@ -16,34 +16,21 @@ struct tile_xy
     int width;
 };
 
-struct texStru;
-
-struct __attribute__((packed)) UA_PALENTRY
+struct UA_PALETTE
 {
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-};
-
-struct __attribute__((packed)) UA_PALETTE
-{
-    UA_PALENTRY pal_entries[256];
+    SDL_Color pal_entries[256];
 };
 
 struct bitmap_intern
 {
     void *buffer;
-    void *sdlBuffer;
     int16_t width;
     int16_t height;
-    int pitch;
+    int16_t pitch;
     UA_PALETTE *pallete;
-    char flags;
-    char field_11;
-    int16_t field_12;
-    texStru *ddrawSurfTex;
-    int field_18;
-    int field_1C;
+    uint32_t flags;
+    SDL_Surface *swTex;
+    GLuint hwTex;
 };
 
 struct tiles_stru
@@ -83,6 +70,9 @@ struct polysDatSub
     xyz vertexes[GFX_MAX_VERTEX];
     tUtV tu_tv[GFX_MAX_VERTEX];
     float color[GFX_MAX_VERTEX];
+    float r;
+    float g;
+    float b;
     float distance[GFX_MAX_VERTEX];
     bitmap_intern *pbitm;
 };
@@ -114,11 +104,11 @@ private:
     int sub_422CE8(const char *display, const char *display2, int gfxmode);
 
 //Data
+public:
+    static GFXEngine GFXe;
 
 private:
     NC_STACK_win3d *cls3D;
 };
-
-extern GFXEngine GFXe;
 
 #endif // ENGINE_GFX_H_INCLUDED

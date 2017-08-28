@@ -553,7 +553,7 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
         arg79.tgt_pos.sz = bact->rotation.m22;
 
         float corW, corH;
-        GFXe.getC3D()->getAspectCorrection(corW, corH, true);
+        GFXEngine::GFXe.getC3D()->getAspectCorrection(corW, corH, true);
 
         bact_arg106 arg106;
         arg106.field_0 = 5;

@@ -90,7 +90,7 @@ int yw_InitTooltips(_NC_STACK_ypaworld *yw);
 int loadTOD(_NC_STACK_ypaworld *yw, const char *fname);
 int writeTOD(_NC_STACK_ypaworld *yw, const char *fname, int tod);
 
-void ypaworld_func158__sub4__sub0(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *bitm);
+void ypaworld_func158__sub4__sub0(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *bitm);
 
 void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int object_id, int a5);
 void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc);
@@ -494,9 +494,9 @@ void sub_4C8EB4(_NC_STACK_ypaworld *yw, bact_node *bct);
 void ypaworld_func151__sub0(_NC_STACK_ypaworld *yw);
 void ypaworld_func151__sub1(_NC_STACK_ypaworld *yw);
 
-NC_STACK_ilbm * loadDisk_screen(_NC_STACK_ypaworld *yw);
-void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen);
-void deleteSplashScreen(_NC_STACK_ypaworld *yw, NC_STACK_ilbm *splashScreen);
+NC_STACK_bitmap * loadDisk_screen(_NC_STACK_ypaworld *yw);
+void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen);
+void deleteSplashScreen(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen);
 
 void ypaworld_func184__sub0(_NC_STACK_ypaworld *yw, yw_f726c *hist_list, yw_arg184 *arg);
 void yw_score(_NC_STACK_ypaworld *yw, yw_arg184 *arg, player_status *pl_status);

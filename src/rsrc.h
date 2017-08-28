@@ -1,23 +1,29 @@
 #ifndef RSRC_H_INCLUDED
 #define RSRC_H_INCLUDED
 
+#include <string>
+#include <list>
 #include "nucleas.h"
 
-struct rsrc : public nnode
-{
-    const char *name;
-    char title[64];
-    int32_t ref_cnt;
-    int16_t what_list;
-    void *data;
-    const char *class_name;
-};
+struct rsrc;
 
-struct __NC_STACK_rsrc
+typedef std::list<rsrc *> RSRCList;
+
+struct rsrc
 {
-    rsrc *p_rsrc;
-    void *p_data;
-    uint32_t flags;
+    const std::string name;
+    const bool shared;
+
+    int32_t ref_cnt;
+    void *data;
+
+    rsrc(const char *_name, bool _shared):
+        name(_name),
+        shared(_shared)
+    {
+        ref_cnt = 0;
+        data = NULL;
+    }
 };
 
 struct rsrc_func66_arg
@@ -34,15 +40,13 @@ public:
     virtual size_t func1(stack_vals *a3);
     virtual size_t func3(stack_vals *stak);
     virtual rsrc * rsrc_func64(stack_vals *stak);
-    virtual size_t rsrc_func65(rsrc **res);
+    virtual size_t rsrc_func65(rsrc *res);
     virtual size_t rsrc_func66(rsrc_func66_arg *arg) {
         return 0;
     };
 
     virtual size_t compatcall(int method_id, void *data);
-    NC_STACK_rsrc() {
-        memset(&stack__rsrc, 0, sizeof(stack__rsrc));
-    };
+    NC_STACK_rsrc();
     virtual ~NC_STACK_rsrc() {};
 
     virtual const char * getClassName() {
@@ -72,13 +76,21 @@ public:
     virtual int getRsrc_tryShared();
     virtual void *getRsrc_pData();
     virtual int getRsrc_dontCopy();
-    virtual nlist *getRsrc_sharedList();
-    virtual nlist *getRsrc_privateList();
+
+    static RSRCList *getRsrc_sharedList();
+    static RSRCList *getRsrc_privateList();
 
     //Data
+public:
     static const NewClassDescr description;
 
-    __NC_STACK_rsrc stack__rsrc;
+protected:
+    rsrc *resource;
+    uint32_t flags;
+
+protected:
+    static RSRCList privateList;
+    static RSRCList publicList;
 };
 
 #endif // RSRC_H_INCLUDED

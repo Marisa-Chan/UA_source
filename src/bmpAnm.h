@@ -5,8 +5,6 @@
 #include "engine_gfx.h"
 #include "bitmap.h"
 
-struct texStru;
-
 struct bmpAnim_t2
 {
     tUtV *outline;
@@ -64,7 +62,7 @@ public:
     virtual size_t func5(IFFile **file);
     virtual size_t func6(IFFile **file);
     virtual rsrc * rsrc_func64(stack_vals *stak);
-    virtual size_t rsrc_func65(rsrc **pres);
+    virtual size_t rsrc_func65(rsrc *pres);
     virtual size_t rsrc_func66(rsrc_func66_arg *sv);
     virtual void bitmap_func130(bitmap_arg130 *arg);
 

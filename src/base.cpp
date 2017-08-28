@@ -1136,7 +1136,7 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
     arg->field_10 += renderStack.getSize();
 
     NC_STACK_win3d *win3d;
-    win3d = GFXe.getC3D();
+    win3d = GFXEngine::GFXe.getC3D();
 
 
     win3d->BeginFrame();

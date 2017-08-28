@@ -1,37 +1,33 @@
-#include "includes.h"
-#include "nucleas.h"
+#include <string.h>
+
 #include "rsrc.h"
-#include "utils.h"
 
 const NewClassDescr NC_STACK_rsrc::description("rsrc.class", &newinstance);
 
-nlist g_rsrc_list1;
-nlist g_rsrc_list2;
+RSRCList NC_STACK_rsrc::privateList;
+RSRCList NC_STACK_rsrc::publicList;
 
-rsrc *rsrc_find(nlist *list, const char *name)
+rsrc *rsrc_find(RSRCList *list, const char *name)
 {
-    rsrc *current = (rsrc *)list->head;
-    if ( current->next )
+    for(RSRCList::iterator it = list->begin(); it != list->end(); it++)
     {
-        while ( strcasecmp(name, current->name) )
-        {
-            current = (rsrc *)current->next;
-            if ( !current->next )
-                return NULL;
-        }
+        if (strcasecmp(name, (*it)->name.c_str()) == 0)
+            return (*it);
     }
-    else
-        return NULL;
 
-    return current;
+    return NULL;
+}
+
+NC_STACK_rsrc::NC_STACK_rsrc()
+{
+    resource = NULL;
+    flags = 0;
 }
 
 size_t NC_STACK_rsrc::func0(stack_vals *stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
-
-    __NC_STACK_rsrc *internal = &stack__rsrc;
 
     const char *res_name = (const char *)find_id_in_stack_def_val(RSRC_ATT_NAME, 0, stak);
     int reuse_loaded = find_id_in_stack_def_val(RSRC_ATT_TRYSHARED, 1, stak);
@@ -45,7 +41,7 @@ size_t NC_STACK_rsrc::func0(stack_vals *stak)
     rsrc *res = NULL;
 
     if ( reuse_loaded == 1 )
-        res = rsrc_find(&g_rsrc_list1, res_name);
+        res = rsrc_find(&publicList, res_name);
 
     if (!res)
         res = rsrc_func64(stak);
@@ -53,11 +49,10 @@ size_t NC_STACK_rsrc::func0(stack_vals *stak)
     if ( res )
     {
         res->ref_cnt++;
-        internal->p_rsrc = res;
-        internal->p_data = res->data;
+        resource = res;
 
         if ( find_id_in_stack_def_val(RSRC_ATT_DONTCOPY, 0, stak) )
-            internal->flags |= 1;
+            flags |= 1;
 
         return 1;
     }
@@ -70,16 +65,12 @@ size_t NC_STACK_rsrc::func0(stack_vals *stak)
 
 size_t NC_STACK_rsrc::func1(stack_vals *stak)
 {
-    __NC_STACK_rsrc *internal = &stack__rsrc;
-
-    if ( internal->p_rsrc )
+    if ( resource )
     {
-        rsrc *res = internal->p_rsrc;
+        resource->ref_cnt--;
 
-        res->ref_cnt--;
-
-        if ( !res->ref_cnt )
-            rsrc_func65(&res);
+        if ( !resource->ref_cnt )
+            rsrc_func65(resource);
     }
 
     return NC_STACK_nucleus::func1(stak);
@@ -126,11 +117,11 @@ size_t NC_STACK_rsrc::func3(stack_vals *stak)
                 break;
 
             case RSRC_ATT_SHAREDLIST:
-                *(nlist **)stk->value.p_data = getRsrc_sharedList();
+                *(RSRCList **)stk->value.p_data = getRsrc_sharedList();
                 break;
 
             case RSRC_ATT_PRIVATELIST:
-                *(nlist **)stk->value.p_data = getRsrc_privateList();
+                *(RSRCList **)stk->value.p_data = getRsrc_privateList();
                 break;
             }
             stk++;
@@ -142,92 +133,89 @@ size_t NC_STACK_rsrc::func3(stack_vals *stak)
 // Allocate resource node
 rsrc * NC_STACK_rsrc::rsrc_func64(stack_vals *stak)
 {
-    char *title = (char *)find_id_pval(RSRC_ATT_NAME, stak);
+    char *resname = (char *)find_id_pval(RSRC_ATT_NAME, stak);
 
-    int what_list = find_id_in_stack_def_val(RSRC_ATT_TRYSHARED, 1, stak);
+    int shared = find_id_in_stack_def_val(RSRC_ATT_TRYSHARED, 1, stak);
 
     int toTail = find_id_in_stack_def_val(RSRC_ATT_LISTYPE, 0, stak);
 
     rsrc *res = NULL;
 
-    if ( title )
+    if ( resname )
     {
-        res = (rsrc *)AllocVec(sizeof(rsrc), 1);
+        res = new rsrc(resname, shared);
 
         if ( res )
         {
-            strncpy(res->title, title, sizeof(res->title));
+            RSRCList *lst;
 
-            res->ref_cnt = 0;
-            res->data = NULL;
-            res->name = res->title;
-            res->what_list = what_list;
-
-            res->class_name = getClassName();
-
-            nlist *lst;
-
-            if (what_list == 1)
-                lst = &g_rsrc_list1;
+            if (shared == 1)
+                lst = &publicList;
             else
-                lst = &g_rsrc_list2;
+                lst = &privateList;
 
             if ( toTail )
-                AddTail(lst, res);
+                lst->push_back(res);
             else
-                AddHead(lst, res);
+                lst->push_front(res);
         }
     }
     return res;
 }
 
-size_t NC_STACK_rsrc::rsrc_func65(rsrc **res)
+size_t NC_STACK_rsrc::rsrc_func65(rsrc *res)
 {
-    Remove(*res);
+    if (res->shared)
+        publicList.remove(res);
+    else
+        privateList.remove(res);
 
-    if ( *res )
-        nc_FreeMem(*res);
+    if ( res )
+        delete res;
 
     return 1;
 }
 
 const char * NC_STACK_rsrc::getRsrc_name()
 {
-    if ( stack__rsrc.p_rsrc )
-        return stack__rsrc.p_rsrc->name;
+    if ( resource )
+        return resource->name.c_str();
 
     return NULL;
 }
 
 int NC_STACK_rsrc::getRsrc_tryShared()
 {
-    if ( stack__rsrc.p_rsrc )
-        return stack__rsrc.p_rsrc->what_list;
+    if ( resource )
+        return resource->shared;
 
     return 2;
 }
 
 void *NC_STACK_rsrc::getRsrc_pData()
 {
-    return stack__rsrc.p_data;
+    if (resource)
+        return resource->data;
+
+    else return NULL;
 }
 
 int NC_STACK_rsrc::getRsrc_dontCopy()
 {
-    if (stack__rsrc.flags & 1)
+    if (flags & 1)
         return 1;
 
     return 0;
 }
 
-nlist *NC_STACK_rsrc::getRsrc_sharedList()
+RSRCList *NC_STACK_rsrc::getRsrc_sharedList()
 {
-    return &g_rsrc_list1;
+    return &publicList;
 }
 
-nlist *NC_STACK_rsrc::getRsrc_privateList()
+RSRCList *NC_STACK_rsrc::getRsrc_privateList()
 {
-    return &g_rsrc_list2;
+    return &privateList;
 }
 
 
@@ -244,7 +232,7 @@ size_t NC_STACK_rsrc::compatcall(int method_id, void *data)
     case 64:
         return (size_t)rsrc_func64( (stack_vals *)data );
     case 65:
-        return (size_t)rsrc_func65( (rsrc **)data );
+        return (size_t)rsrc_func65( (rsrc *)data );
     default:
         break;
     }

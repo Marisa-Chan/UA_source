@@ -19,6 +19,20 @@
 
 const NewClassDescr NC_STACK_skeleton::description("skeleton.class", &newinstance);
 
+NC_STACK_skeleton *NC_STACK_skeleton::CInit(stack_vals *stak)
+{
+    NC_STACK_skeleton *tmp = new NC_STACK_skeleton();
+    if (!tmp)
+        return NULL;
+
+    if (!tmp->func0(stak))
+    {
+        delete tmp;
+        return NULL;
+    }
+
+    return tmp;
+};
 
 size_t NC_STACK_skeleton::func0(stack_vals *stak)
 {
@@ -86,7 +100,7 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
 
     if (!elm_num)
     {
-        rsrc_func65(&res);
+        rsrc_func65(res);
         return NULL;
     }
 
@@ -94,7 +108,7 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
 
     if (!sklt)
     {
-        rsrc_func65(&res);
+        rsrc_func65(res);
         return NULL;
     }
 
@@ -106,7 +120,7 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
 
     if (!POO)
     {
-        rsrc_func65(&res);
+        rsrc_func65(res);
         return NULL;
     }
 
@@ -116,7 +130,7 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
 
     if (!tformedVertex)
     {
-        rsrc_func65(&res);
+        rsrc_func65(res);
         return NULL;
     }
 
@@ -132,7 +146,7 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
 
         if ( !skeleton_func129(&arg129) )
         {
-            rsrc_func65(&res);
+            rsrc_func65(res);
             return NULL;
         }
     }
@@ -144,7 +158,7 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
     {
         if (num_indexes <= 0)
         {
-            rsrc_func65(&res);
+            rsrc_func65(res);
             return NULL;
         }
 
@@ -155,7 +169,7 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
 
         if ( !skeleton_func130(&arg130) )
         {
-            rsrc_func65(&res);
+            rsrc_func65(res);
             return NULL;
         }
     }
@@ -163,9 +177,8 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
     return res;
 }
 
-size_t NC_STACK_skeleton::rsrc_func65(rsrc **pres)
+size_t NC_STACK_skeleton::rsrc_func65(rsrc *res)
 {
-    rsrc *res = *pres;
     UAskeleton::Data *sklt = (UAskeleton::Data *)res->data;
 
     if ( sklt )
@@ -174,7 +187,7 @@ size_t NC_STACK_skeleton::rsrc_func65(rsrc **pres)
 
         res->data = NULL;
     }
-    return NC_STACK_rsrc::rsrc_func65(pres);
+    return NC_STACK_rsrc::rsrc_func65(res);
 }
 
 __NC_STACK_skeleton * NC_STACK_skeleton::skeleton_func128(stack_vals *)
@@ -355,8 +368,11 @@ bool NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
 
     if ( arg->field_4 & 1 )
     {
-        for (int i = 0; i < vtxCnt; i++)
-            arg->rndrArg->tu_tv[i] = arg->texCoords[i];
+        if (arg->texCoords)
+        {
+            for (int i = 0; i < vtxCnt; i++)
+                arg->rndrArg->tu_tv[i] = arg->texCoords[i];
+        }
     }
 
     if ( arg->field_4 & 2 )
@@ -429,7 +445,7 @@ size_t NC_STACK_skeleton::compatcall(int method_id, void *data)
     case 64:
         return (size_t)rsrc_func64( (stack_vals *)data );
     case 65:
-        return (size_t)rsrc_func65( (rsrc **)data );
+        return (size_t)rsrc_func65( (rsrc *)data );
     case 128:
         return (size_t)skeleton_func128( (stack_vals *)data );
     case 129:
