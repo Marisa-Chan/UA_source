@@ -265,19 +265,11 @@ bool NC_STACK_skeleton::TransformVertexes(skeleton_arg_132 *arg, UAskeleton::Ver
     if ( !num )
         return false;
 
-    TForm3D *glob_1c = arg->glob_1c;
-    TForm3D *base_1c = arg->base_1c;
-
     uint32_t andFlags = ~0;
 
     for(int i = 0; i < num; i++)
     {
-        xyz v = in[i];
-
-        if ( !(base_1c->flags & 2) )
-            v = base_1c->globSclRot.Transform(v);
-
-        xyz fv = glob_1c->globSclRot.Transform(v + base_1c->globPos - glob_1c->globPos);
+        xyz fv = arg->tform.Transform( in[i] );
 
         int flags = 0;
 

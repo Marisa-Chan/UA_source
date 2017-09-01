@@ -1085,26 +1085,20 @@ void sub_430A38(TForm3D *s3d)
 
     if ( s3d->parent_1c && s3d->flags & 1 )
     {
-        s3d->globPos.sx = prnt_s3d->globSclRot.m00 * s3d->locPos.sx + prnt_s3d->globSclRot.m01 * s3d->locPos.sy + prnt_s3d->globSclRot.m02 * s3d->locPos.sz + prnt_s3d->globPos.sx;
-        s3d->globPos.sy = prnt_s3d->globSclRot.m10 * s3d->locPos.sx + prnt_s3d->globSclRot.m11 * s3d->locPos.sy + prnt_s3d->globSclRot.m12 * s3d->locPos.sz + prnt_s3d->globPos.sy;
-        s3d->globPos.sz = prnt_s3d->globSclRot.m20 * s3d->locPos.sx + prnt_s3d->globSclRot.m21 * s3d->locPos.sy + prnt_s3d->globSclRot.m22 * s3d->locPos.sz + prnt_s3d->globPos.sz;
-        s3d->globSclRot.m00 = prnt_s3d->globSclRot.m00 * s3d->locSclRot.m00 + prnt_s3d->globSclRot.m01 * s3d->locSclRot.m10 + prnt_s3d->globSclRot.m02 * s3d->locSclRot.m20;
-        s3d->globSclRot.m01 = prnt_s3d->globSclRot.m00 * s3d->locSclRot.m01 + prnt_s3d->globSclRot.m01 * s3d->locSclRot.m11 + prnt_s3d->globSclRot.m02 * s3d->locSclRot.m21;
-        s3d->globSclRot.m02 = prnt_s3d->globSclRot.m00 * s3d->locSclRot.m02 + prnt_s3d->globSclRot.m01 * s3d->locSclRot.m12 + prnt_s3d->globSclRot.m02 * s3d->locSclRot.m22;
-        s3d->globSclRot.m10 = prnt_s3d->globSclRot.m10 * s3d->locSclRot.m00 + prnt_s3d->globSclRot.m11 * s3d->locSclRot.m10 + prnt_s3d->globSclRot.m12 * s3d->locSclRot.m20;
-        s3d->globSclRot.m11 = prnt_s3d->globSclRot.m10 * s3d->locSclRot.m01 + prnt_s3d->globSclRot.m11 * s3d->locSclRot.m11 + prnt_s3d->globSclRot.m12 * s3d->locSclRot.m21;
-        s3d->globSclRot.m12 = prnt_s3d->globSclRot.m10 * s3d->locSclRot.m02 + prnt_s3d->globSclRot.m11 * s3d->locSclRot.m12 + prnt_s3d->globSclRot.m12 * s3d->locSclRot.m22;
-        s3d->globSclRot.m20 = prnt_s3d->globSclRot.m20 * s3d->locSclRot.m00 + prnt_s3d->globSclRot.m21 * s3d->locSclRot.m10 + prnt_s3d->globSclRot.m22 * s3d->locSclRot.m20;
-        s3d->globSclRot.m21 = prnt_s3d->globSclRot.m20 * s3d->locSclRot.m01 + prnt_s3d->globSclRot.m21 * s3d->locSclRot.m11 + prnt_s3d->globSclRot.m22 * s3d->locSclRot.m21;
-        s3d->globSclRot.m22 = prnt_s3d->globSclRot.m20 * s3d->locSclRot.m02 + prnt_s3d->globSclRot.m21 * s3d->locSclRot.m12 + prnt_s3d->globSclRot.m22 * s3d->locSclRot.m22;
+        s3d->globPos = prnt_s3d->globSclRot.Transform( s3d->locPos );
+        s3d->globSclRot = prnt_s3d->globSclRot * s3d->locSclRot;
+
+        mat4x4 loc = s3d->locSclRot;
+        loc += s3d->locPos;
+        s3d->tform = loc * s3d->tform;
     }
     else
     {
-        s3d->globPos.sx = s3d->locPos.sx;
-        s3d->globPos.sy = s3d->locPos.sy;
-        s3d->globPos.sz = s3d->locPos.sz;
-
+        s3d->globPos = s3d->locPos;
         s3d->globSclRot = s3d->locSclRot;
+
+        s3d->tform = s3d->locSclRot;
+        s3d->tform += s3d->locPos;
     }
 }
 
@@ -1494,15 +1488,17 @@ size_t NC_STACK_base::base_func77(baseRender_msg *arg)
         {
             sub_430A38(&base->transform);
 
+            TForm3D *view = sub_430A28();
+
             skeleton_arg_132 skel132;
-
-            skel132.base_1c = &base->transform;
-
-            skel132.glob_1c = sub_430A28();
-
             skel132.minZ = arg->minZ;
             skel132.maxZ = arg->maxZ;
+            skel132.tform = view->globSclRot;
 
+            if ( !(base->transform.flags & 2) )
+                skel132.tform *= (base->transform.tform - view->globPos);
+            else
+                skel132.tform *= mat4x4(base->transform.globPos - view->globPos);
 
             v12 = base->OBJ_SKELETON->skeleton_func132(&skel132);
 
@@ -1514,8 +1510,8 @@ size_t NC_STACK_base::base_func77(baseRender_msg *arg)
                 base->renderMsg.minZ = arg->minZ;
                 base->renderMsg.maxZ = arg->maxZ;
                 base->renderMsg.rndrStack = arg->rndrStack;
-                base->renderMsg.view = skel132.glob_1c;
-                base->renderMsg.owner = skel132.base_1c;
+                base->renderMsg.view = view;
+                base->renderMsg.owner = &base->transform;
                 base->renderMsg.flags = arg->flags;
 
                 base->renderMsg.OBJ_SKELETON = base->OBJ_SKELETON;

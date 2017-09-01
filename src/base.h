@@ -40,6 +40,7 @@ struct TForm3D
     int32_t ry;
     int32_t rz;
     uint32_t flags;
+    mat4x4 tform;
 };
 
 struct polysDat

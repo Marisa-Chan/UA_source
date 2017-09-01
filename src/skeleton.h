@@ -102,8 +102,7 @@ struct TForm3D;
 
 struct skeleton_arg_132
 {
-    TForm3D *base_1c;
-    TForm3D *glob_1c;
+    mat4x4 tform;
     float minZ;
     float maxZ;
 };

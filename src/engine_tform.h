@@ -376,6 +376,249 @@ struct mat3x3
         tmp.sz = m20 * b.sx + m21 * b.sy + m22 * b.sz;
         return tmp;
     }
+
+    mat3x3 &operator*=(const mat3x3 &b)
+    {
+        mat3x3 a = *this;
+        m00 = a.m00 * b.m00 + a.m01 * b.m10 + a.m02 * b.m20;
+        m01 = a.m00 * b.m01 + a.m01 * b.m11 + a.m02 * b.m21;
+        m02 = a.m00 * b.m02 + a.m01 * b.m12 + a.m02 * b.m22;
+        m10 = a.m10 * b.m00 + a.m11 * b.m10 + a.m12 * b.m20;
+        m11 = a.m10 * b.m01 + a.m11 * b.m11 + a.m12 * b.m21;
+        m12 = a.m10 * b.m02 + a.m11 * b.m12 + a.m12 * b.m22;
+        m20 = a.m20 * b.m00 + a.m21 * b.m10 + a.m22 * b.m20;
+        m21 = a.m20 * b.m01 + a.m21 * b.m11 + a.m22 * b.m21;
+        m22 = a.m20 * b.m02 + a.m21 * b.m12 + a.m22 * b.m22;
+        return *this;
+    }
+
+    const mat3x3 operator*(const mat3x3 &b) const
+    {
+        mat3x3 tmp = *this;
+        tmp *= b;
+        return tmp;
+    }
+};
+
+struct mat4x4
+{
+    float m00;
+    float m01;
+    float m02;
+    float m03;
+    float m10;
+    float m11;
+    float m12;
+    float m13;
+    float m20;
+    float m21;
+    float m22;
+    float m23;
+    float m30;
+    float m31;
+    float m32;
+    float m33;
+
+    mat4x4()
+    {
+        identity();
+    }
+
+    mat4x4(const xyz &t)
+    {
+        identity();
+        setTranslate(t);
+    }
+
+    mat4x4(const mat3x3 &m)
+    {
+        *this = m;
+    }
+
+    inline void identity()
+    {
+        m00 = 1.0;
+        m01 = 0.0;
+        m02 = 0.0;
+        m03 = 0.0;
+        m10 = 0.0;
+        m11 = 1.0;
+        m12 = 0.0;
+        m13 = 0.0;
+        m20 = 0.0;
+        m21 = 0.0;
+        m22 = 1.0;
+        m23 = 0.0;
+        m30 = 0.0;
+        m31 = 0.0;
+        m32 = 0.0;
+        m33 = 1.0;
+    }
+
+    xyz Transform(const xyz &b) const
+    {
+        xyz tmp;
+        tmp.sx = m00 * b.sx + m01 * b.sy + m02 * b.sz + m03;
+        tmp.sy = m10 * b.sx + m11 * b.sy + m12 * b.sz + m13;
+        tmp.sz = m20 * b.sx + m21 * b.sy + m22 * b.sz + m23;
+        return tmp;
+    }
+
+    mat4x4 &operator*=(const mat3x3 &b)
+    {
+        mat4x4 a = *this;
+        m00 = a.m00 * b.m00 + a.m01 * b.m10 + a.m02 * b.m20;
+        m01 = a.m00 * b.m01 + a.m01 * b.m11 + a.m02 * b.m21;
+        m02 = a.m00 * b.m02 + a.m01 * b.m12 + a.m02 * b.m22;
+        //m03 = m03;
+        m10 = a.m10 * b.m00 + a.m11 * b.m10 + a.m12 * b.m20;
+        m11 = a.m10 * b.m01 + a.m11 * b.m11 + a.m12 * b.m21;
+        m12 = a.m10 * b.m02 + a.m11 * b.m12 + a.m12 * b.m22;
+        //m13 = m13;
+        m20 = a.m20 * b.m00 + a.m21 * b.m10 + a.m22 * b.m20;
+        m21 = a.m20 * b.m01 + a.m21 * b.m11 + a.m22 * b.m21;
+        m22 = a.m20 * b.m02 + a.m21 * b.m12 + a.m22 * b.m22;
+        //m23 = m23;
+        //m30 = a.m30 * b.m00 + a.m31 * b.m10 + a.m32 * b.m20;
+        //m31 = a.m30 * b.m01 + a.m31 * b.m11 + a.m32 * b.m21;
+        //m32 = a.m30 * b.m02 + a.m31 * b.m12 + a.m32 * b.m22;
+        //m33 = m33;
+        return *this;
+    }
+
+//    mat4x4 &operator*=(const mat4x4 &b)
+//    {
+//        mat4x4 a = *this;
+//        m00 = a.m00 * b.m00 + a.m01 * b.m10 + a.m02 * b.m20 + a.m03 * b.m30;
+//        m01 = a.m00 * b.m01 + a.m01 * b.m11 + a.m02 * b.m21 + a.m03 * b.m31;
+//        m02 = a.m00 * b.m02 + a.m01 * b.m12 + a.m02 * b.m22 + a.m03 * b.m32;
+//        m03 = a.m00 * b.m03 + a.m01 * b.m13 + a.m02 * b.m23 + a.m03 * b.m33;
+//        m10 = a.m10 * b.m00 + a.m11 * b.m10 + a.m12 * b.m20 + a.m13 * b.m30;
+//        m11 = a.m10 * b.m01 + a.m11 * b.m11 + a.m12 * b.m21 + a.m13 * b.m31;
+//        m12 = a.m10 * b.m02 + a.m11 * b.m12 + a.m12 * b.m22 + a.m13 * b.m32;
+//        m13 = a.m10 * b.m03 + a.m11 * b.m13 + a.m12 * b.m23 + a.m13 * b.m33;
+//        m20 = a.m20 * b.m00 + a.m21 * b.m10 + a.m22 * b.m20 + a.m23 * b.m30;
+//        m21 = a.m20 * b.m01 + a.m21 * b.m11 + a.m22 * b.m21 + a.m23 * b.m31;
+//        m22 = a.m20 * b.m02 + a.m21 * b.m12 + a.m22 * b.m22 + a.m23 * b.m32;
+//        m23 = a.m20 * b.m03 + a.m21 * b.m13 + a.m22 * b.m23 + a.m23 * b.m33;
+//        m30 = a.m30 * b.m00 + a.m31 * b.m10 + a.m32 * b.m20 + a.m33 * b.m30;
+//        m31 = a.m30 * b.m01 + a.m31 * b.m11 + a.m32 * b.m21 + a.m33 * b.m31;
+//        m32 = a.m30 * b.m02 + a.m31 * b.m12 + a.m32 * b.m22 + a.m33 * b.m32;
+//        m33 = a.m30 * b.m03 + a.m31 * b.m13 + a.m32 * b.m23 + a.m33 * b.m33;
+//        return *this;
+//    }
+
+    mat4x4 &operator*=(const mat4x4 &b)
+    {
+        mat4x4 a = *this;
+        m00 = a.m00 * b.m00 + a.m01 * b.m10 + a.m02 * b.m20;
+        m01 = a.m00 * b.m01 + a.m01 * b.m11 + a.m02 * b.m21;
+        m02 = a.m00 * b.m02 + a.m01 * b.m12 + a.m02 * b.m22;
+        m03 = a.m00 * b.m03 + a.m01 * b.m13 + a.m02 * b.m23 + a.m03;
+        m10 = a.m10 * b.m00 + a.m11 * b.m10 + a.m12 * b.m20;
+        m11 = a.m10 * b.m01 + a.m11 * b.m11 + a.m12 * b.m21;
+        m12 = a.m10 * b.m02 + a.m11 * b.m12 + a.m12 * b.m22;
+        m13 = a.m10 * b.m03 + a.m11 * b.m13 + a.m12 * b.m23 + a.m13;
+        m20 = a.m20 * b.m00 + a.m21 * b.m10 + a.m22 * b.m20;
+        m21 = a.m20 * b.m01 + a.m21 * b.m11 + a.m22 * b.m21;
+        m22 = a.m20 * b.m02 + a.m21 * b.m12 + a.m22 * b.m22;
+        m23 = a.m20 * b.m03 + a.m21 * b.m13 + a.m22 * b.m23 + a.m23;
+        m30 = 0.0;
+        m31 = 0.0;
+        m32 = 0.0;
+        m33 = 1.0;
+        return *this;
+    }
+
+    mat4x4 &operator+=(const xyz &t)
+    {
+        m03 += t.sx;
+        m13 += t.sy;
+        m23 += t.sz;
+        return *this;
+    }
+
+    mat4x4 &operator-=(const xyz &t)
+    {
+        m03 -= t.sx;
+        m13 -= t.sy;
+        m23 -= t.sz;
+        return *this;
+    }
+
+    mat4x4 &operator=(const mat3x3 &m)
+    {
+        m00 = m.m00;
+        m01 = m.m01;
+        m02 = m.m02;
+        m03 = 0.0;
+        m10 = m.m10;
+        m11 = m.m11;
+        m12 = m.m12;
+        m13 = 0.0;
+        m20 = m.m20;
+        m21 = m.m21;
+        m22 = m.m22;
+        m23 = 0.0;
+        m30 = 0.0;
+        m31 = 0.0;
+        m32 = 0.0;
+        m33 = 1.0;
+        return *this;
+    }
+
+    const mat4x4 operator*(const mat3x3 &b) const
+    {
+        mat4x4 tmp = *this;
+        tmp *= b;
+        return tmp;
+    }
+
+    const mat4x4 operator*(const mat4x4 &b) const
+    {
+        mat4x4 tmp = *this;
+        tmp *= b;
+        return tmp;
+    }
+
+    const mat4x4 operator+(const xyz &t) const
+    {
+        mat4x4 tmp = *this;
+        tmp += t;
+        return tmp;
+    }
+
+    const mat4x4 operator-(const xyz &t) const
+    {
+        mat4x4 tmp = *this;
+        tmp -= t;
+        return tmp;
+    }
+
+    xyz operator*(const xyz &v) const
+    {
+        return Transform(v);
+    }
+
+    void setTranslate(const xyz &t)
+    {
+        m03 = t.sx;
+        m13 = t.sy;
+        m23 = t.sz;
+    }
+
+    void invertTranslate()
+    {
+        m03 = -m03;
+        m13 = -m13;
+        m23 = -m23;
+    }
+
+    const xyz getTranslate() const
+    {
+        return xyz(m03, m13, m23);
+    }
+
 };
 
 struct destFX
