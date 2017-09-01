@@ -19,6 +19,7 @@
 				<Linker>
 					<Add library="SDL2" />
 					<Add library="SDL2_ttf" />
+					<Add library="SDL2_image" />
 					<Add library="GL" />
 					<Add library="openal" />
 					<Add library="vorbisfile" />
@@ -39,6 +40,7 @@
 					<Add option="-s" />
 					<Add library="SDL2" />
 					<Add library="SDL2_ttf" />
+					<Add library="SDL2_image" />
 					<Add library="GL" />
 					<Add library="openal" />
 					<Add library="vorbisfile" />
@@ -95,6 +97,8 @@
 		<Unit filename="idev.h" />
 		<Unit filename="ilbm.cpp" />
 		<Unit filename="ilbm.h" />
+		<Unit filename="image.cpp" />
+		<Unit filename="image.h" />
 		<Unit filename="includes.h" />
 		<Unit filename="ini.cpp" />
 		<Unit filename="ini.h" />
