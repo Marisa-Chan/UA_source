@@ -14,311 +14,254 @@
 
 const NewClassDescr NC_STACK_ypamissile::description("ypamissile.class", &newinstance);
 
-
-int NC_STACK_ypamissile::ypamissile_func0__sub0(stack_vals *stak)
-{
-    __NC_STACK_ypamissile *miss = &stack__ypamissile;
-    miss->ejaculator_bact = 0;
-    miss->life_time = 5000;
-    miss->delay_time = 0;
-    miss->field_c = 1;
-
-    stack_vals *stk = stak;
-
-    while ( 1 )
-    {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
-        {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
-            {
-            default:
-                break;
-
-            case BACT_ATT_WORLD:
-                miss->ywo = (NC_STACK_ypaworld *)stk->value.p_data;
-                miss->yw = &miss->ywo->stack__ypaworld;
-                break;
-
-            case BACT_ATT_VIEWER:
-                setBACT_viewer(stk->value.i_data);
-                break;
-
-            case MISS_ATT_LAUNCHER:
-                setMISS_launcher((__NC_STACK_ypabact *)stk->value.p_data);
-                break;
-
-            case MISS_ATT_TYPE:
-                setMISS_type(stk->value.i_data);
-                break;
-
-            case MISS_ATT_LIFETIME:
-                setMISS_lifeTime(stk->value.i_data);
-                break;
-
-            case MISS_ATT_DELAY:
-                setMISS_delay(stk->value.i_data);
-                break;
-
-            case MISS_ATT_DRIVETIME:
-                setMISS_driveTime(stk->value.i_data);
-                break;
-
-            case MISS_ATT_IGNOREBUILDS:
-                setMISS_ignoreBuilds ( stk->value.i_data );
-                break;
-
-            }
-            stk++;
-        }
-    }
-
-    return 1;
-}
-
-
-size_t NC_STACK_ypamissile::func0(stack_vals *stak)
+size_t NC_STACK_ypamissile::func0(IDVList *stak)
 {
     if ( !NC_STACK_ypabact::func0(stak) )
         return 0;
 
-    __NC_STACK_ypamissile *miss = &stack__ypamissile;
+    stack__ypamissile.selfie = &ypabact;
 
-    //bact = this->getBACT_pBact();
-    __NC_STACK_ypabact *bact = &stack__ypabact;
+    stack__ypamissile.selfie_node.bact = &ypabact;
+    stack__ypamissile.selfie_node.bacto = this;
 
-    miss->selfie = bact;
+    ypabact.bact_type = BACT_TYPES_MISSLE;
 
-    miss->selfie_node.bact = bact;
-    miss->selfie_node.bacto = this;
+    stack__ypamissile.ejaculator_bact = 0;
+    stack__ypamissile.life_time = 5000;
+    stack__ypamissile.delay_time = 0;
+    stack__ypamissile.field_c = 1;
 
-    bact->bact_type = BACT_TYPES_MISSLE;
-
-    if ( !ypamissile_func0__sub0(stak) )
+    if (stak)
     {
-        func1(NULL);
-        return 0;
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        {
+            IDVPair &val = it->second;
+
+            if ( !val.skip() )
+            {
+                switch (val.id)
+                {
+                case BACT_ATT_WORLD:
+                    stack__ypamissile.ywo = (NC_STACK_ypaworld *)val.value.p_data;
+                    stack__ypamissile.yw = &stack__ypamissile.ywo->stack__ypaworld;
+                    break;
+
+                case BACT_ATT_VIEWER:
+                    setBACT_viewer(val.value.i_data);
+                    break;
+
+                case MISS_ATT_LAUNCHER:
+                    setMISS_launcher((__NC_STACK_ypabact *)val.value.p_data);
+                    break;
+
+                case MISS_ATT_TYPE:
+                    setMISS_type(val.value.i_data);
+                    break;
+
+                case MISS_ATT_LIFETIME:
+                    setMISS_lifeTime(val.value.i_data);
+                    break;
+
+                case MISS_ATT_DELAY:
+                    setMISS_delay(val.value.i_data);
+                    break;
+
+                case MISS_ATT_DRIVETIME:
+                    setMISS_driveTime(val.value.i_data);
+                    break;
+
+                case MISS_ATT_IGNOREBUILDS:
+                    setMISS_ignoreBuilds ( val.value.i_data );
+                    break;
+
+                default:
+                    break;
+                }
+            }
+        }
     }
 
     return 1;
 }
 
-size_t NC_STACK_ypamissile::func1(stack_vals *stak)
+size_t NC_STACK_ypamissile::func1()
 {
-    return NC_STACK_ypabact::func1(stak);
+    return NC_STACK_ypabact::func1();
 }
 
-void NC_STACK_ypamissile::ypamissile_func2__sub0(stack_vals *stak)
-{
-    stack_vals *stk = stak;
-
-    while ( 1 )
-    {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
-        {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
-            {
-            default:
-                break;
-
-            case BACT_ATT_VIEWER:
-                setBACT_viewer(stk->value.i_data);
-                break;
-
-            case MISS_ATT_LAUNCHER:
-                setMISS_launcher((__NC_STACK_ypabact *)stk->value.p_data);
-                break;
-
-            case MISS_ATT_TYPE:
-                setMISS_type(stk->value.i_data);
-                break;
-
-            case MISS_ATT_LIFETIME:
-                setMISS_lifeTime(stk->value.i_data);
-                break;
-
-            case MISS_ATT_DELAY:
-                setMISS_delay(stk->value.i_data);
-                break;
-
-            case MISS_ATT_DRIVETIME:
-                setMISS_driveTime(stk->value.i_data);
-                break;
-
-            case MISS_ATT_IGNOREBUILDS:
-                setMISS_ignoreBuilds ( stk->value.i_data );
-                break;
-
-            case MISS_ATT_POW_HELI:
-                setMISS_powHeli(stk->value.i_data);
-                break;
-
-            case MISS_ATT_POW_TANK:
-                setMISS_powTank(stk->value.i_data);
-                break;
-
-            case MISS_ATT_POW_FLYER:
-                setMISS_powFlyer(stk->value.i_data);
-                break;
-
-            case MISS_ATT_POW_ROBO:
-                setMISS_powRobo(stk->value.i_data);
-                break;
-
-            case MISS_ATT_RAD_HELI:
-                setMISS_radHeli(stk->value.i_data);
-                break;
-
-            case MISS_ATT_RAD_TANK:
-                setMISS_radTank(stk->value.i_data);
-                break;
-
-            case MISS_ATT_RAD_FLYER:
-                setMISS_radFlyer(stk->value.i_data);
-                break;
-
-            case MISS_ATT_RAD_ROBO:
-                setMISS_radRobo(stk->value.i_data);
-                break;
-
-            case MISS_ATT_STHEIGHT:
-                setMISS_startHeight(stk->value.i_data);
-                break;
-
-            }
-            stk++;
-        }
-    }
-}
-
-size_t NC_STACK_ypamissile::func2(stack_vals *stak)
+size_t NC_STACK_ypamissile::func2(IDVList *stak)
 {
     NC_STACK_ypabact::func2(stak);
 
-    ypamissile_func2__sub0(stak);
+    if (stak)
+    {
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        {
+            IDVPair &val = it->second;
+
+            if ( !val.skip() )
+            {
+                switch (val.id)
+                {
+                case BACT_ATT_VIEWER:
+                    setBACT_viewer(val.value.i_data);
+                    break;
+
+                case MISS_ATT_LAUNCHER:
+                    setMISS_launcher((__NC_STACK_ypabact *)val.value.p_data);
+                    break;
+
+                case MISS_ATT_TYPE:
+                    setMISS_type(val.value.i_data);
+                    break;
+
+                case MISS_ATT_LIFETIME:
+                    setMISS_lifeTime(val.value.i_data);
+                    break;
+
+                case MISS_ATT_DELAY:
+                    setMISS_delay(val.value.i_data);
+                    break;
+
+                case MISS_ATT_DRIVETIME:
+                    setMISS_driveTime(val.value.i_data);
+                    break;
+
+                case MISS_ATT_IGNOREBUILDS:
+                    setMISS_ignoreBuilds ( val.value.i_data );
+                    break;
+
+                case MISS_ATT_POW_HELI:
+                    setMISS_powHeli(val.value.i_data);
+                    break;
+
+                case MISS_ATT_POW_TANK:
+                    setMISS_powTank(val.value.i_data);
+                    break;
+
+                case MISS_ATT_POW_FLYER:
+                    setMISS_powFlyer(val.value.i_data);
+                    break;
+
+                case MISS_ATT_POW_ROBO:
+                    setMISS_powRobo(val.value.i_data);
+                    break;
+
+                case MISS_ATT_RAD_HELI:
+                    setMISS_radHeli(val.value.i_data);
+                    break;
+
+                case MISS_ATT_RAD_TANK:
+                    setMISS_radTank(val.value.i_data);
+                    break;
+
+                case MISS_ATT_RAD_FLYER:
+                    setMISS_radFlyer(val.value.i_data);
+                    break;
+
+                case MISS_ATT_RAD_ROBO:
+                    setMISS_radRobo(val.value.i_data);
+                    break;
+
+                case MISS_ATT_STHEIGHT:
+                    setMISS_startHeight(val.value.i_data);
+                    break;
+
+                default:
+                    break;
+                }
+            }
+        }
+    }
+
     return 1;
 }
 
-void NC_STACK_ypamissile::ypamissile_func3__sub0(stack_vals *stak)
-{
-    stack_vals *stk = stak;
-
-    while ( 1 )
-    {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
-        {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
-            {
-            default:
-                break;
-
-            case MISS_ATT_LAUNCHER:
-                *(__NC_STACK_ypabact **)stk->value.p_data = getMISS_launcher();
-                break;
-
-            case MISS_ATT_TYPE:
-                *(int *)stk->value.p_data = getMISS_type();
-                break;
-
-            case MISS_ATT_PNODE:
-                *(bact_node **)stk->value.p_data = getMISS_pNode();
-                break;
-
-            case MISS_ATT_LIFETIME:
-                *(int *)stk->value.p_data = getMISS_lifeTime();
-                break;
-
-            case MISS_ATT_DELAY:
-                *(int *)stk->value.p_data = getMISS_delay();
-                break;
-
-            case MISS_ATT_DRIVETIME:
-                *(int *)stk->value.p_data = getMISS_driveTime();
-                break;
-
-            case MISS_ATT_IGNOREBUILDS:
-                *(int *)stk->value.p_data = getMISS_ignoreBuilds();
-                break;
-
-            case MISS_ATT_POW_HELI:
-                *(int *)stk->value.p_data = getMISS_powHeli();
-                break;
-
-            case MISS_ATT_POW_TANK:
-                *(int *)stk->value.p_data = getMISS_powTank();
-                break;
-
-            case MISS_ATT_POW_FLYER:
-                *(int *)stk->value.p_data = getMISS_powFlyer();
-                break;
-
-            case MISS_ATT_POW_ROBO:
-                *(int *)stk->value.p_data = getMISS_powRobo();
-                break;
-
-            case MISS_ATT_RAD_HELI:
-                *(int *)stk->value.p_data = getMISS_radHeli();
-                break;
-
-            case MISS_ATT_RAD_TANK:
-                *(int *)stk->value.p_data = getMISS_radTank();
-                break;
-
-            case MISS_ATT_RAD_FLYER:
-                *(int *)stk->value.p_data = getMISS_radFlyer();
-                break;
-
-            case MISS_ATT_RAD_ROBO:
-                *(int *)stk->value.p_data = getMISS_radRobo();
-                break;
-
-            case MISS_ATT_STHEIGHT:
-                *(int *)stk->value.p_data = getMISS_startHeight();
-                break;
-
-            }
-            stk++;
-        }
-    }
-}
-
-size_t NC_STACK_ypamissile::func3(stack_vals *stak)
+size_t NC_STACK_ypamissile::func3(IDVList *stak)
 {
     NC_STACK_ypabact::func3(stak);
 
-    ypamissile_func3__sub0(stak);
+    if (stak)
+    {
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        {
+            IDVPair &val = it->second;
+
+            if ( !val.skip() )
+            {
+                switch (val.id)
+                {
+                case MISS_ATT_LAUNCHER:
+                    *(__NC_STACK_ypabact **)val.value.p_data = getMISS_launcher();
+                    break;
+
+                case MISS_ATT_TYPE:
+                    *(int *)val.value.p_data = getMISS_type();
+                    break;
+
+                case MISS_ATT_PNODE:
+                    *(bact_node **)val.value.p_data = getMISS_pNode();
+                    break;
+
+                case MISS_ATT_LIFETIME:
+                    *(int *)val.value.p_data = getMISS_lifeTime();
+                    break;
+
+                case MISS_ATT_DELAY:
+                    *(int *)val.value.p_data = getMISS_delay();
+                    break;
+
+                case MISS_ATT_DRIVETIME:
+                    *(int *)val.value.p_data = getMISS_driveTime();
+                    break;
+
+                case MISS_ATT_IGNOREBUILDS:
+                    *(int *)val.value.p_data = getMISS_ignoreBuilds();
+                    break;
+
+                case MISS_ATT_POW_HELI:
+                    *(int *)val.value.p_data = getMISS_powHeli();
+                    break;
+
+                case MISS_ATT_POW_TANK:
+                    *(int *)val.value.p_data = getMISS_powTank();
+                    break;
+
+                case MISS_ATT_POW_FLYER:
+                    *(int *)val.value.p_data = getMISS_powFlyer();
+                    break;
+
+                case MISS_ATT_POW_ROBO:
+                    *(int *)val.value.p_data = getMISS_powRobo();
+                    break;
+
+                case MISS_ATT_RAD_HELI:
+                    *(int *)val.value.p_data = getMISS_radHeli();
+                    break;
+
+                case MISS_ATT_RAD_TANK:
+                    *(int *)val.value.p_data = getMISS_radTank();
+                    break;
+
+                case MISS_ATT_RAD_FLYER:
+                    *(int *)val.value.p_data = getMISS_radFlyer();
+                    break;
+
+                case MISS_ATT_RAD_ROBO:
+                    *(int *)val.value.p_data = getMISS_radRobo();
+                    break;
+
+                case MISS_ATT_STHEIGHT:
+                    *(int *)val.value.p_data = getMISS_startHeight();
+                    break;
+
+                default:
+                    break;
+                }
+            }
+        }
+    }
+
     return 1;
 }
 
@@ -340,15 +283,15 @@ void NC_STACK_ypamissile::AI_layer1(update_msg *arg)
     {
         if ( bact->primTtype == BACT_TGT_TYPE_UNIT )
         {
-            bact->target_vec.sx = bact->primT.pbact->position.sx - bact->position.sx;
-            bact->target_vec.sy = bact->primT.pbact->position.sy - bact->position.sy;
-            bact->target_vec.sz = bact->primT.pbact->position.sz - bact->position.sz;
+            bact->target_vec.x = bact->primT.pbact->position.x - bact->position.x;
+            bact->target_vec.y = bact->primT.pbact->position.y - bact->position.y;
+            bact->target_vec.z = bact->primT.pbact->position.z - bact->position.z;
         }
         else
         {
-            bact->target_vec.sx = bact->primTpos.sx - bact->position.sx;
-            bact->target_vec.sy = bact->primTpos.sy - bact->position.sy;
-            bact->target_vec.sz = bact->primTpos.sz - bact->position.sz;
+            bact->target_vec.x = bact->primTpos.x - bact->position.x;
+            bact->target_vec.y = bact->primTpos.y - bact->position.y;
+            bact->target_vec.z = bact->primTpos.z - bact->position.z;
         }
     }
 
@@ -366,7 +309,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
 
     int v90 = 0;
 
-    xyz v78(0.0, 0.0, 0.0);
+    vec3d v78(0.0, 0.0, 0.0);
 
     int v81 = 0;
     float v91 = 0.0;
@@ -377,16 +320,16 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
         a5 = bact->self->getBACT_viewer();
 
     yw_130arg arg130;
-    arg130.pos_x = bact->old_pos.sx;
-    arg130.pos_z = bact->old_pos.sz;
+    arg130.pos_x = bact->old_pos.x;
+    arg130.pos_z = bact->old_pos.z;
     miss->ywo->ypaworld_func130(&arg130);
 
     cellArea *v68[3];
 
     v68[0] = arg130.pcell;
 
-    arg130.pos_x = bact->position.sx;
-    arg130.pos_z = bact->position.sz;
+    arg130.pos_x = bact->position.x;
+    arg130.pos_z = bact->position.z;
     miss->ywo->ypaworld_func130(&arg130);
 
     v68[2] = arg130.pcell;
@@ -397,8 +340,8 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
     }
     else
     {
-        arg130.pos_x = (bact->position.sx - bact->old_pos.sx) * 0.5 + bact->old_pos.sx;
-        arg130.pos_z = (bact->position.sz - bact->old_pos.sz) * 0.5 + bact->old_pos.sz;
+        arg130.pos_x = (bact->position.x - bact->old_pos.x) * 0.5 + bact->old_pos.x;
+        arg130.pos_z = (bact->position.z - bact->old_pos.z) * 0.5 + bact->old_pos.z;
         miss->ywo->ypaworld_func130(&arg130);
 
         v68[1] = arg130.pcell;
@@ -409,7 +352,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
         if ( i == 0 || v68[i] != v68[i - 1] )
         {
             if (v68[i] == NULL)
-                ypa_log_out("ypamissile_func70__sub0 NULL sector i = %d, 621: %f %f 62D: %f %f \n", i, bact->position.sx, bact->position.sz, bact->old_pos.sx, bact->old_pos.sz);
+                ypa_log_out("ypamissile_func70__sub0 NULL sector i = %d, 621: %f %f 62D: %f %f \n", i, bact->position.x, bact->position.z, bact->old_pos.x, bact->old_pos.z);
 
             __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v68[ i ]->units_list.head;
             for (; bct->next ; bct = (__NC_STACK_ypabact *)bct->next)
@@ -452,7 +395,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                     }
                 }
 
-                if ( miss->field_c == 1 && bct->position.sy < miss->posy )
+                if ( miss->field_c == 1 && bct->position.y < miss->posy )
                     continue;
 
                 rbcolls *v82 = bct->self->getBACT_collNodes();
@@ -466,16 +409,16 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                 for (int j = v7 - 1; j >= 0; j--)
                 {
                     float radius;
-                    xyz ttmp;
+                    vec3d ttmp;
 
                     if ( v82 )
                     {
                         roboColl *v8 = &v82->roboColls[j];
                         radius = v8->robo_coll_radius;
 
-                        ttmp.sx = bct->rotation.m00 * v8->coll_pos.sx + bct->rotation.m10 * v8->coll_pos.sy + bct->rotation.m20 * v8->coll_pos.sz + bct->position.sx;
-                        ttmp.sy = bct->rotation.m01 * v8->coll_pos.sx + bct->rotation.m11 * v8->coll_pos.sy + bct->rotation.m21 * v8->coll_pos.sz + bct->position.sy;
-                        ttmp.sz = bct->rotation.m02 * v8->coll_pos.sx + bct->rotation.m12 * v8->coll_pos.sy + bct->rotation.m22 * v8->coll_pos.sz + bct->position.sz;
+                        ttmp.x = bct->rotation.m00 * v8->coll_pos.x + bct->rotation.m10 * v8->coll_pos.y + bct->rotation.m20 * v8->coll_pos.z + bct->position.x;
+                        ttmp.y = bct->rotation.m01 * v8->coll_pos.x + bct->rotation.m11 * v8->coll_pos.y + bct->rotation.m21 * v8->coll_pos.z + bct->position.y;
+                        ttmp.z = bct->rotation.m02 * v8->coll_pos.x + bct->rotation.m12 * v8->coll_pos.y + bct->rotation.m22 * v8->coll_pos.z + bct->position.z;
                     }
                     else
                     {
@@ -485,15 +428,15 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
 
                     if ( !v82 || radius >= 0.01 )
                     {
-                        xyz to_enemy = ttmp - bact->old_pos;
-                        xyz dist_vect = bact->position - bact->old_pos;
+                        vec3d to_enemy = ttmp - bact->old_pos;
+                        vec3d dist_vect = bact->position - bact->old_pos;
 
                         if ( to_enemy.dot( bact->rotation.getVect(2) ) >= 0.3 )
                         {
                             float dist_vect_len;
-                            xyz dir_vect = dist_vect.normolize(&dist_vect_len);
+                            vec3d dir_vect = dist_vect.normalise(&dist_vect_len);
 
-                            xyz vp = dir_vect * to_enemy;
+                            vec3d vp = dir_vect * to_enemy;
 
                             float wpn_radius = 0.0;
 
@@ -623,7 +566,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
 
         if ( v91 >= 50.0 )
         {
-            xyz v54 = bact->position - bact->old_pos;
+            vec3d v54 = bact->position - bact->old_pos;
 
             float v100 = v54.length();
 
@@ -643,9 +586,9 @@ void ypamissile_func70__sub1(__NC_STACK_ypamissile *miss, move_msg *arg74)
 
     bact->thraction = bact->force;
 
-    arg74->vec = bact->fly_dir * bact->fly_dir_length * bact->airconst + bact->target_dir * bact->thraction - xyz(0.0, bact->mass * 9.80665, 0.0);
+    arg74->vec = bact->fly_dir * bact->fly_dir_length * bact->airconst + bact->target_dir * bact->thraction - vec3d(0.0, bact->mass * 9.80665, 0.0);
 
-    arg74->vec.normolize();
+    arg74->vec.normalise();
 }
 
 void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
@@ -693,8 +636,8 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
                 {
                     yw_arg129 v25;
 
-                    v25.pos.sx = bact->fly_dir.sx * 5.0 + bact->position.sx;
-                    v25.pos.sz = bact->fly_dir.sz * 5.0 + bact->position.sz;
+                    v25.pos.x = bact->fly_dir.x * 5.0 + bact->position.x;
+                    v25.pos.z = bact->fly_dir.z * 5.0 + bact->position.z;
                     v25.field_10 = bact->energy;
                     v25.unit = miss->ejaculator_bact;
 
@@ -758,12 +701,12 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
             else if ( miss->field_c != 6 )
             {
                 ypaworld_arg136 arg136;
-                arg136.pos_x = bact->old_pos.sx;
-                arg136.pos_y = bact->old_pos.sy;
-                arg136.pos_z = bact->old_pos.sz;
-                arg136.field_14 = bact->position.sx - bact->old_pos.sx;
-                arg136.field_18 = bact->position.sy - bact->old_pos.sy;
-                arg136.field_1C = bact->position.sz - bact->old_pos.sz;
+                arg136.pos_x = bact->old_pos.x;
+                arg136.pos_y = bact->old_pos.y;
+                arg136.pos_z = bact->old_pos.z;
+                arg136.field_14 = bact->position.x - bact->old_pos.x;
+                arg136.field_18 = bact->position.y - bact->old_pos.y;
+                arg136.field_1C = bact->position.z - bact->old_pos.z;
                 arg136.field_40 = 0;
 
                 miss->ywo->ypaworld_func136(&arg136);
@@ -771,16 +714,16 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
                 if ( arg136.field_20 )
                 {
                     miss_arg130 arg131;
-                    arg131.pos.sx = arg136.field_3C->polygons[ arg136.field_38 ].A;
-                    arg131.pos.sy = arg136.field_3C->polygons[ arg136.field_38 ].B;
-                    arg131.pos.sz = arg136.field_3C->polygons[ arg136.field_38 ].C;
+                    arg131.pos.x = arg136.field_3C->polygons[ arg136.field_38 ].A;
+                    arg131.pos.y = arg136.field_3C->polygons[ arg136.field_38 ].B;
+                    arg131.pos.z = arg136.field_3C->polygons[ arg136.field_38 ].C;
 
                     ypamissile_func131(&arg131);
 
 
-                    bact->position.sx = arg136.field_2C;
-                    bact->position.sy = arg136.field_30;
-                    bact->position.sz = arg136.field_34;
+                    bact->position.x = arg136.field_2C;
+                    bact->position.y = arg136.field_30;
+                    bact->position.z = arg136.field_34;
 
                     ypamissile_func128(NULL);
 
@@ -806,8 +749,8 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
                             {
                                 yw_arg129 v25;
 
-                                v25.pos.sx = bact->fly_dir.sx * 5.0 + bact->position.sx;
-                                v25.pos.sz = bact->fly_dir.sz * 5.0 + bact->position.sz;
+                                v25.pos.x = bact->fly_dir.x * 5.0 + bact->position.x;
+                                v25.pos.z = bact->fly_dir.z * 5.0 + bact->position.z;
                                 v25.field_10 = bact->energy;
                                 v25.unit = miss->ejaculator_bact;
 
@@ -901,14 +844,14 @@ void NC_STACK_ypamissile::Move(move_msg *arg)
     else
         v8 = bact->mass * 39.2266;
 
-    xyz v26;
+    vec3d v26;
     float v35;
 
     if ( arg->flag & 1 )
     {
-        v26.sx = 0.0;
-        v26.sy = 0.0;
-        v26.sz = 0.0;
+        v26.x = 0.0;
+        v26.y = 0.0;
+        v26.z = 0.0;
 
         v35 = 0.0;
     }
@@ -919,13 +862,13 @@ void NC_STACK_ypamissile::Move(move_msg *arg)
         v35 = bact->thraction;
     }
 
-    xyz vec1 = xyz(0.0, v8, 0.0) + v26 * v35 - bact->fly_dir * (bact->fly_dir_length * bact->airconst);
+    vec3d vec1 = vec3d(0.0, v8, 0.0) + v26 * v35 - bact->fly_dir * (bact->fly_dir_length * bact->airconst);
 
-    float v33 = vec1.normolize();
+    float v33 = vec1.normalise();
 
     if ( v33 > 0.0 )
     {
-        xyz v36 = bact->fly_dir * bact->fly_dir_length + vec1 * (v33 / bact->mass * arg->field_0);
+        vec3d v36 = bact->fly_dir * bact->fly_dir_length + vec1 * (v33 / bact->mass * arg->field_0);
 
         float v32 = v36.length();
 
@@ -1117,12 +1060,12 @@ void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
-    if ( bact->fly_dir != xyz(0.0, 0.0, 0.0) )
+    if ( bact->fly_dir != vec3d(0.0, 0.0, 0.0) )
     {
-        xyz dir = bact->rotation.getVect(2); // Get Z-axis, as dir
-        xyz u = dir * bact->fly_dir; // vector cross product
+        vec3d dir = bact->rotation.getVect(2); // Get Z-axis, as dir
+        vec3d u = dir * bact->fly_dir; // vector cross product
 
-        float v37 = u.normolize(); // Normolize and get length
+        float v37 = u.normalise(); // normalise and get length
 
         if ( v37 > 0.0 )
         {
@@ -1177,7 +1120,7 @@ void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
             float v44 = acos(v53);
 
             if ( miss->selfie->rotation.m11 < 0.0 )
-                v44 = 3.14159265358979323846 - v44;
+                v44 = C_PI - v44;
 
             if ( miss->selfie->rotation.m01 < 0.0 )
                 v44 = -v44;
@@ -1211,12 +1154,12 @@ void NC_STACK_ypamissile::ypamissile_func131(miss_arg130 *arg)
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
-    xyz vec1 = bact->rotation.getVect(1);
-    xyz vec2 = arg->pos;
+    vec3d vec1 = bact->rotation.getVect(1);
+    vec3d vec2 = arg->pos;
 
-    xyz vaxis = vec1 * vec2;
+    vec3d vaxis = vec1 * vec2;
 
-    float v30 = vaxis.normolize();
+    float v30 = vaxis.normalise();
 
     if ( v30 != 0.0 )
     {
@@ -1423,13 +1366,13 @@ size_t NC_STACK_ypamissile::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (stack_vals *)data );
+        return (size_t)func0( (IDVList *)data );
     case 1:
-        return (size_t)func1( (stack_vals *)data );
+        return (size_t)func1();
     case 2:
-        return func2( (stack_vals *)data );
+        return func2( (IDVList *)data );
     case 3:
-        return func3( (stack_vals *)data );
+        return func3( (IDVList *)data );
     case 68:
         AI_layer1( (update_msg *)data );
         return 1;

@@ -125,11 +125,11 @@ struct __NC_STACK_win3d
 class NC_STACK_win3d: public NC_STACK_display
 {
 public:
-    virtual size_t func0(stack_vals *stak);
-    virtual size_t func1(stack_vals *stak);
-    virtual size_t func2(stack_vals *stak);
-    virtual size_t func3(stack_vals *stak);
-    virtual size_t raster_func192(stack_vals *);
+    virtual size_t func0(IDVList *stak);
+    virtual size_t func1();
+    virtual size_t func2(IDVList *stak);
+    virtual size_t func3(IDVList *stak);
+    virtual size_t raster_func192(IDVPair *);
     virtual size_t raster_func198(w3d_func198arg *arg);
     virtual size_t raster_func199(w3d_func199arg *arg);
     virtual size_t raster_func200(w3d_func198arg *arg);
@@ -154,11 +154,11 @@ public:
     virtual void FreeTexture(bitmap_intern *arg);
     virtual size_t LockTexture(bitmap_intern *arg);
     virtual void UnlockTexture(bitmap_intern *arg);
-    virtual void display_func271(stack_vals *stak);
-    virtual void display_func272(stack_vals *);
+    virtual void display_func271(IDVPair *stak);
+    virtual void display_func272(IDVPair *);
     virtual void display_func274(const char **name);
-    virtual void windd_func320(stack_vals *);
-    virtual void windd_func321(stack_vals *);
+    virtual void windd_func320(IDVPair *);
+    virtual void windd_func321(IDVPair *);
     virtual void windd_func322(windd_dlgBox *dlgBox);
     virtual void windd_func323(const char **filename);
     virtual void windd_func324(wdd_func324arg *inout);
@@ -198,7 +198,7 @@ public:
     virtual int getWDD_drawPrim();
 
     // windd methods
-    size_t windd_func0(stack_vals *stak);
+    size_t windd_func0(IDVList *stak);
 
     virtual void setW3D_texFilt(int arg);
 

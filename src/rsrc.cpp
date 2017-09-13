@@ -24,17 +24,23 @@ NC_STACK_rsrc::NC_STACK_rsrc()
     flags = 0;
 }
 
-size_t NC_STACK_rsrc::func0(stack_vals *stak)
+size_t NC_STACK_rsrc::func0(IDVList *stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
 
-    const char *res_name = (const char *)find_id_in_stack_def_val(RSRC_ATT_NAME, 0, stak);
-    int reuse_loaded = find_id_in_stack_def_val(RSRC_ATT_TRYSHARED, 1, stak);
+    const char *res_name = NULL;
+    int reuse_loaded = 1;
+
+    if (stak)
+    {
+        res_name = stak->GetConstChar(RSRC_ATT_NAME, NULL);
+        reuse_loaded = stak->Get(RSRC_ATT_TRYSHARED, 1);
+    }
 
     if ( !res_name )
     {
-        func1(NULL);
+        func1();
         return 0;
     }
 
@@ -51,19 +57,19 @@ size_t NC_STACK_rsrc::func0(stack_vals *stak)
         res->ref_cnt++;
         resource = res;
 
-        if ( find_id_in_stack_def_val(RSRC_ATT_DONTCOPY, 0, stak) )
+        if ( stak && stak->Get(RSRC_ATT_DONTCOPY, 0) )
             flags |= 1;
 
         return 1;
     }
     else
     {
-        func1(NULL);
+        func1();
         return 0;
     }
 }
 
-size_t NC_STACK_rsrc::func1(stack_vals *stak)
+size_t NC_STACK_rsrc::func1()
 {
     if ( resource )
     {
@@ -73,92 +79,83 @@ size_t NC_STACK_rsrc::func1(stack_vals *stak)
             rsrc_func65(resource);
     }
 
-    return NC_STACK_nucleus::func1(stak);
+    return NC_STACK_nucleus::func1();
 }
 
-size_t NC_STACK_rsrc::func3(stack_vals *stak)
+size_t NC_STACK_rsrc::func3(IDVList *stak)
 {
-    stack_vals *stk = stak;
-
-    while ( 1 )
+    if (stak)
     {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
         {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
+            IDVPair &val = it->second;
+
+            if ( !val.skip() )
             {
-            default:
-                break;
+                switch (val.id)
+                {
+                case RSRC_ATT_NAME:
+                    *(const char **)val.value.p_data = getRsrc_name();
+                    break;
 
-            case RSRC_ATT_NAME:
-                *(const char **)stk->value.p_data = getRsrc_name();
-                break;
+                case RSRC_ATT_PDATA:
+                    *(void **)val.value.p_data = getRsrc_pData();
+                    break;
 
-            case RSRC_ATT_PDATA:
-                *(void **)stk->value.p_data = getRsrc_pData();
-                break;
+                case RSRC_ATT_TRYSHARED:
+                    *(int *)val.value.p_data = getRsrc_tryShared();
+                    break;
 
-            case RSRC_ATT_TRYSHARED:
-                *(int *)stk->value.p_data = getRsrc_tryShared();
-                break;
+                case RSRC_ATT_DONTCOPY:
+                    *(int *)val.value.p_data = getRsrc_dontCopy();
+                    break;
 
-            case RSRC_ATT_DONTCOPY:
-                *(int *)stk->value.p_data = getRsrc_dontCopy();
-                break;
+                case RSRC_ATT_SHAREDLIST:
+                    *(RSRCList **)val.value.p_data = getRsrc_sharedList();
+                    break;
 
-            case RSRC_ATT_SHAREDLIST:
-                *(RSRCList **)stk->value.p_data = getRsrc_sharedList();
-                break;
+                case RSRC_ATT_PRIVATELIST:
+                    *(RSRCList **)val.value.p_data = getRsrc_privateList();
+                    break;
 
-            case RSRC_ATT_PRIVATELIST:
-                *(RSRCList **)stk->value.p_data = getRsrc_privateList();
-                break;
+                default:
+                    break;
+                }
             }
-            stk++;
         }
     }
+
     return NC_STACK_nucleus::func3(stak);
 }
 
 // Allocate resource node
-rsrc * NC_STACK_rsrc::rsrc_func64(stack_vals *stak)
+rsrc * NC_STACK_rsrc::rsrc_func64(IDVList *stak)
 {
-    char *resname = (char *)find_id_pval(RSRC_ATT_NAME, stak);
+    if (!stak)
+        return NULL;
 
-    int shared = find_id_in_stack_def_val(RSRC_ATT_TRYSHARED, 1, stak);
+    const char *resname = stak->GetConstChar(RSRC_ATT_NAME, NULL);
+    int shared = stak->Get(RSRC_ATT_TRYSHARED, 1);
+    int toTail = stak->Get(RSRC_ATT_LISTYPE, 0);
 
-    int toTail = find_id_in_stack_def_val(RSRC_ATT_LISTYPE, 0, stak);
+    if ( !resname )
+        return NULL;
 
-    rsrc *res = NULL;
+    rsrc *res = new rsrc(resname, shared);
 
-    if ( resname )
+    if ( res )
     {
-        res = new rsrc(resname, shared);
+        RSRCList *lst;
 
-        if ( res )
-        {
-            RSRCList *lst;
+        if (shared == 1)
+            lst = &publicList;
+        else
+            lst = &privateList;
 
-            if (shared == 1)
-                lst = &publicList;
-            else
-                lst = &privateList;
-
-            if ( toTail )
-                lst->push_back(res);
-            else
-                lst->push_front(res);
-        }
+        if ( toTail )
+            lst->push_back(res);
+        else
+            lst->push_front(res);
     }
     return res;
 }
@@ -224,13 +221,13 @@ size_t NC_STACK_rsrc::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (stack_vals *)data );
+        return (size_t)func0( (IDVList *)data );
     case 1:
-        return (size_t)func1( (stack_vals *)data );
+        return (size_t)func1();
     case 3:
-        return func3( (stack_vals *)data );
+        return func3( (IDVList *)data );
     case 64:
-        return (size_t)rsrc_func64( (stack_vals *)data );
+        return (size_t)rsrc_func64( (IDVList *)data );
     case 65:
         return (size_t)rsrc_func65( (rsrc *)data );
     default:

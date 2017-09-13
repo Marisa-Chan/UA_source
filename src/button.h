@@ -106,10 +106,10 @@ struct button_arg76
 class NC_STACK_button: public NC_STACK_nucleus
 {
 public:
-    virtual size_t func0(stack_vals *stak);
-    virtual size_t func1(stack_vals *stak);
-    virtual size_t func2(stack_vals *stak);
-    virtual size_t func3(stack_vals *stak);
+    virtual size_t func0(IDVList *stak);
+    virtual size_t func1();
+    virtual size_t func2(IDVList *stak);
+    virtual size_t func3(IDVList *stak);
     virtual size_t button_func64(button_64_arg *arg);
     virtual size_t button_func65(int *butID);
     virtual size_t button_func66(button_66arg *arg);
@@ -159,10 +159,6 @@ public:
     virtual int getBTN_w();
     virtual int getBTN_h();
     virtual __NC_STACK_button *getBTN_pButton();
-
-    int button_func0__sub0(stack_vals *stak);
-    int button_func2__sub0(stack_vals *stak);
-    int button_func3__sub0(stack_vals *stak);
 
     //Data
     static const NewClassDescr description;

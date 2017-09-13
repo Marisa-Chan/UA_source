@@ -948,28 +948,27 @@ int InputWatch(void *, SDL_Event *event)
 
 
 
-size_t NC_STACK_winp::func0(stack_vals *stak)
+size_t NC_STACK_winp::func0(IDVList *stak)
 {
     if ( !NC_STACK_iwimp::func0(stak) )
         return 0;
 
-    __NC_STACK_winp *winp = &stack__winp;
-    winp->remapIndex = -1;
+    stack__winp.remapIndex = -1;
 
     return 1;
 }
 
-size_t NC_STACK_winp::func1(stack_vals *stak)
+size_t NC_STACK_winp::func1()
 {
-    return NC_STACK_iwimp::func1(stak);
+    return NC_STACK_iwimp::func1();
 }
 
-size_t NC_STACK_winp::func2(stack_vals *stak)
+size_t NC_STACK_winp::func2(IDVList *stak)
 {
     return NC_STACK_iwimp::func2(stak);
 }
 
-size_t NC_STACK_winp::func3(stack_vals *stk)
+size_t NC_STACK_winp::func3(IDVList *stk)
 {
     return NC_STACK_iwimp::func3(stk);
 }
@@ -1872,7 +1871,7 @@ void NC_STACK_winp::idev_func71(winp_71arg *arg)
     }
 }
 
-size_t NC_STACK_winp::iwimp_func128(stack_vals *stak)
+size_t NC_STACK_winp::iwimp_func128(IDVPair *stak)
 {
     return 1;
 }
@@ -2187,14 +2186,14 @@ size_t NC_STACK_winp::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (stack_vals *)data );
+        return (size_t)func0( (IDVList *)data );
     case 1:
-        return (size_t)func1( (stack_vals *)data );
+        return (size_t)func1();
     case 2:
-        func2( (stack_vals *)data );
+        func2( (IDVList *)data );
         return 1;
     case 3:
-        func3( (stack_vals *)data );
+        func3( (IDVList *)data );
         return 1;
     case 64:
         idev_func64( (win_64arg *)data );
@@ -2219,7 +2218,7 @@ size_t NC_STACK_winp::compatcall(int method_id, void *data)
         idev_func71( (winp_71arg *)data );
         return 1;
     case 128:
-        return (size_t)iwimp_func128( (stack_vals *)data );
+        return (size_t)iwimp_func128( (IDVPair *)data );
     case 131:
         iwimp_func131( (winp_131arg *)data );
         return 1;

@@ -42,12 +42,12 @@ struct __NC_STACK_yparobo
     int dock_cnt;
     int dock_user;
     int dock_time;
-    xyz dock_tgt_pos;
+    vec3d dock_tgt_pos;
     __NC_STACK_ypabact *dock_tgt_bact;
     char dock_tgType;
     char dock_aggr;
     int dock_tgt_comm_id;
-    xyz dock_pos;
+    vec3d dock_pos;
 
     int radar_value;
     cellArea *radar_cell;  //For AI
@@ -130,7 +130,7 @@ struct __NC_STACK_yparobo
     int field_509;
     int field_50D;
     int field_511;
-    xyz field_515;
+    vec3d field_515;
     int field_521;
     robo_t1 field_525[16];
     int fe_time;
@@ -142,7 +142,7 @@ struct robo_arg128
     int flags;
     BactTarget tgt;
     char tgType;
-    xyz tgt_pos;
+    vec3d tgt_pos;
     int prim_comm_id;
     int comm_id;
     float distance;
@@ -154,7 +154,7 @@ struct robo_arg133
 {
     int type;
     int num;
-    xyz pos;
+    vec3d pos;
     int field_14;
     int *hetero_vehicles;
 };
@@ -186,7 +186,7 @@ struct robo_loct1
     float distance;
     int aggr;
     char tgType;
-    xyz tgt_pos;
+    vec3d tgt_pos;
     __NC_STACK_ypabact *tgt_bact;
     int command_id;
     int forbidden;
@@ -199,10 +199,10 @@ struct robo_loct1
 class NC_STACK_yparobo: public NC_STACK_ypabact
 {
 public:
-    virtual size_t func0(stack_vals *stak);
-    virtual size_t func1(stack_vals *stak);
-    virtual size_t func2(stack_vals *stak);
-    virtual size_t func3(stack_vals *stak);
+    virtual size_t func0(IDVList *stak);
+    virtual size_t func1();
+    virtual size_t func2(IDVList *stak);
+    virtual size_t func3(IDVList *stak);
     virtual void AI_layer1(update_msg *arg);
     virtual void AI_layer3(update_msg *arg);
     virtual void User_layer(update_msg *arg);
@@ -215,9 +215,9 @@ public:
     virtual void CorrectPositionOnLand(void *arg);
     virtual void DeadTimeUpdate(update_msg *arg);
     virtual void yparobo_func128(robo_arg128 *arg);
-    virtual void yparobo_func129(stack_vals *arg);
-    virtual void yparobo_func130(stack_vals *arg);
-    virtual void yparobo_func131(stack_vals *arg);
+    virtual void yparobo_func129(IDVPair *arg);
+    virtual void yparobo_func130(IDVPair *arg);
+    virtual void yparobo_func131(IDVPair *arg);
     virtual size_t yparobo_func132(setTarget_msg *arg);
     virtual int yparobo_func133(robo_arg133 *arg);
     virtual int placeMessage(robo_arg134 *arg);
@@ -358,11 +358,6 @@ public:
     virtual int getROBO_loadFlags();
     virtual int getROBO_lossFlags();
     virtual int getROBO_absReload();
-
-
-    void yparobo_func0__sub1(stack_vals *stak);
-    void yparobo_func2__sub0(stack_vals *stak);
-    void yparobo_func3__sub0(stack_vals *stak);
 
 protected:
 

@@ -53,8 +53,8 @@ struct input__func66__params
 class NC_STACK_input: public NC_STACK_nucleus
 {
 public:
-    virtual size_t func0(stack_vals *stak);
-    virtual size_t func1(stack_vals *stak);
+    virtual size_t func0(IDVList *stak);
+    virtual size_t func1();
     virtual size_t input_func64(input__func64__params *arg);
     virtual void input_func65(struC5 *arg);
     virtual size_t input_func66(input__func66__params *arg);

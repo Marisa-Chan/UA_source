@@ -18,14 +18,14 @@ int TFEngine::init()
 {
     get_keyvalue_from_ini(0, tform_keys, 4);
 
-    SinCos_table = (SinCos *)AllocVec(sizeof(SinCos) * 361, 1);
+    SinCos_table = new SinCos[361];
 
     if ( !SinCos_table)
         return 0;
 
     for (int i = 0; i < 361; i++)
     {
-        float rad = i * 3.141592653589793 / 180.0;
+        float rad = i * C_PI_180;
 
         SinCos_table[i].sin = sin(rad);
         SinCos_table[i].cos = cos(rad);
@@ -37,7 +37,7 @@ int TFEngine::init()
 void TFEngine::deinit()
 {
     if (SinCos_table)
-        nc_FreeMem(SinCos_table);
+        delete[] SinCos_table;
 
     SinCos_table = NULL;
 }
@@ -77,7 +77,7 @@ void mat_rotate_y(mat3x3 *mat, float a2)
     *mat = dst;
 }
 
-void mat_gen_axis_rotate(xyz *u, float angle, mat3x3 *out, int flags)
+void mat_gen_axis_rotate(vec3d *u, float angle, mat3x3 *out, int flags)
 {
     float cs = cos(angle);
     float sn = sin(angle);
@@ -90,13 +90,13 @@ void mat_gen_axis_rotate(xyz *u, float angle, mat3x3 *out, int flags)
 
     float ics = 1.0 - cs;
 
-    out->m00 = ics * u->sx * u->sx + cs;
-    out->m01 = ics * u->sx * u->sy - sn * u->sz;
-    out->m02 = ics * u->sz * u->sx + sn * u->sy;
-    out->m10 = ics * u->sx * u->sy + sn * u->sz;
-    out->m11 = ics * u->sy * u->sy + cs;
-    out->m12 = ics * u->sy * u->sz - sn * u->sx;
-    out->m20 = ics * u->sz * u->sx - sn * u->sy;
-    out->m21 = ics * u->sy * u->sz + sn * u->sx;
-    out->m22 = ics * u->sz * u->sz + cs;
+    out->m00 = ics * u->x * u->x + cs;
+    out->m01 = ics * u->x * u->y - sn * u->z;
+    out->m02 = ics * u->z * u->x + sn * u->y;
+    out->m10 = ics * u->x * u->y + sn * u->z;
+    out->m11 = ics * u->y * u->y + cs;
+    out->m12 = ics * u->y * u->z - sn * u->x;
+    out->m20 = ics * u->z * u->x - sn * u->y;
+    out->m21 = ics * u->y * u->z + sn * u->x;
+    out->m22 = ics * u->z * u->z + cs;
 }

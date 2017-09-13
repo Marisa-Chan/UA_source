@@ -11,19 +11,17 @@ const NewClassDescr NC_STACK_iwimp::description("iwimp.class", &newinstance);
 
 
 
-size_t NC_STACK_iwimp::func0(stack_vals *stak)
+size_t NC_STACK_iwimp::func0(IDVList *stak)
 {
     if ( !NC_STACK_idev::func0(stak) )
         return 0;
 
-    __NC_STACK_iwimp *wimp = &stack__iwimp;
-
-    init_list(&wimp->list);
+    init_list(&stack__iwimp.list);
 
     return 1;
 }
 
-size_t NC_STACK_iwimp::iwimp_func128(stack_vals *)
+size_t NC_STACK_iwimp::iwimp_func128(IDVPair *)
 {
     return 1;
 }
@@ -141,9 +139,9 @@ size_t NC_STACK_iwimp::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (stack_vals *)data );
+        return (size_t)func0( (IDVList *)data );
     case 128:
-        return (size_t)iwimp_func128( (stack_vals *)data );
+        return (size_t)iwimp_func128( (IDVPair *)data );
     case 129:
         iwimp_func129( (iwimp_arg129 *)data );
         return 1;

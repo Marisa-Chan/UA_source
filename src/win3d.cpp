@@ -800,11 +800,8 @@ int NC_STACK_win3d::load_font(const char *fontname)
     return 0;
 }
 
-size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
+size_t NC_STACK_win3d::windd_func0(IDVList *stak)
 {
-    stack_vals tmp[8];
-    memset(tmp, 0, sizeof(stack_vals) * 8);
-
     int txt16bit_def = read_yes_no_status("env/txt16bit.def", 1);
     int drawprim_def = read_yes_no_status("env/drawprim.def", 0);
     int export_window_mode = win3d_keys[13].value.val;     // gfx.export_window_mode
@@ -829,7 +826,7 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
     }
 
 
-    int v7 = find_id_in_stack_def_val(ATT_DISPLAY_ID, 0, stak);
+    int v7 = stak->Get(ATT_DISPLAY_ID, 0);
 
     gfxMode *picked = NULL;
     if ( v7 )
@@ -854,11 +851,10 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
     log_d3dlog(" picked mode %s\n", picked->name.c_str());
 
 
-    tmp[0].set(ATT_WIDTH, picked->w);
-    tmp[1].set(ATT_HEIGHT, picked->h);
-    tmp[2].nextStack(stak);
+    stak->Add(ATT_WIDTH, picked->w);
+    stak->Add(ATT_HEIGHT, picked->h);
 
-    if ( !NC_STACK_display::func0(tmp) )
+    if ( !NC_STACK_display::func0(stak) )
         return 0;
 
     __NC_STACK_win3d *win3d = &stack__win3d;
@@ -946,7 +942,7 @@ size_t NC_STACK_win3d::windd_func0(stack_vals *stak)
 
 
 
-size_t NC_STACK_win3d::func0(stack_vals *stak)
+size_t NC_STACK_win3d::func0(IDVList *stak)
 {
     get_keyvalue_from_ini(0, win3d_keys, 21);
 
@@ -969,35 +965,35 @@ size_t NC_STACK_win3d::func0(stack_vals *stak)
     if ( !win3dInitialisation(w3d) )
     {
         ypa_log_out("win3d.class: Initialization failed.\n");
-        func1(NULL);
+        func1();
         return 0;
     }
 
     if ( !initPixelFormats() )
     {
         ypa_log_out("win3d.class: Pixelformat problems.\n");
-        func1(NULL);
+        func1();
         return 0;
     }
 
     /*	if ( !initTextureCache(w3d) )
     	{
     		ypa_log_out("win3d.class: Failed to initialize texture cache.\n");
-    		func1(NULL);
+    		func1();
     		return 0;
     	}*/
 
     if ( !initPolyEngine() )
     {
         ypa_log_out("win3d.class: Failed to initialize polygon engine.\n");
-        func1(NULL);
+        func1();
         return 0;
     }
 
     return 1;
 }
 
-size_t NC_STACK_win3d::func1(stack_vals *stak)
+size_t NC_STACK_win3d::func1()
 {
     __NC_STACK_win3d *w3d = &stack__win3d;
 
@@ -1016,96 +1012,80 @@ size_t NC_STACK_win3d::func1(stack_vals *stak)
     if (w3d->windowed)
         SDLWRAP_restoreWindow();
 
-    return NC_STACK_display::func1(stak);
+    return NC_STACK_display::func1();
 }
 
-size_t NC_STACK_win3d::func2(stack_vals *stak)
+size_t NC_STACK_win3d::func2(IDVList *stak)
 {
-    stack_vals *stk = stak;
-
-    while ( 1 )
+    if (stak)
     {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
         {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
+            IDVPair &val = it->second;
+
+            if ( !val.skip() )
             {
-            default:
-                break;
+                switch (val.id)
+                {
+                case WDD_ATT_CURSOR:
+                    setWDD_cursor(val.value.i_data);
+                    break;
 
-            case WDD_ATT_CURSOR:
-                setWDD_cursor(stk->value.i_data);
-                break;
+                case WDD_ATT_DIS_LOWRES:
+                    setWDD_disLowRes(val.value.i_data);
+                    break;
 
-            case WDD_ATT_DIS_LOWRES:
-                setWDD_disLowRes(stk->value.i_data);
-                break;
+                case WDD_ATT_16BIT_TEX:
+                    setWDD_16bitTex(val.value.i_data);
+                    break;
 
-            case WDD_ATT_16BIT_TEX:
-                setWDD_16bitTex(stk->value.i_data);
-                break;
+                case WDD_ATT_DRAW_PRIM:
+                    setWDD_drawPrim(val.value.i_data);
+                    break;
 
-            case WDD_ATT_DRAW_PRIM:
-                setWDD_drawPrim(stk->value.i_data);
-                break;
+                case WDD_ATT_TEXFILT:
+                    setW3D_texFilt(val.value.i_data);
+                    break;
 
-            case WDD_ATT_TEXFILT:
-                setW3D_texFilt(stk->value.i_data);
-                break;
+                default:
+                    break;
+                }
             }
-            stk++;
         }
     }
+
     return NC_STACK_display::func2(stak);
 }
 
-size_t NC_STACK_win3d::func3(stack_vals *stak)
+size_t NC_STACK_win3d::func3(IDVList *stak)
 {
-    stack_vals *stk = stak;
-
-    while ( 1 )
+    if (stak)
     {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
         {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
-            {
-            default:
-                break;
+            IDVPair &val = it->second;
 
-            case ATT_DISPLAY_ID:
-                *(int *)stk->value.p_data = getDISP_displID();
-                break;
-            case WDD_ATT_16BIT_TEX:
-                *(int *)stk->value.p_data = getWDD_16bitTex();
-                break;
-            case WDD_ATT_DRAW_PRIM:
-                *(int *)stk->value.p_data = getWDD_drawPrim();
-                break;
+            if ( !val.skip() )
+            {
+                switch (val.id)
+                {
+                case ATT_DISPLAY_ID:
+                    *(int *)val.value.p_data = getDISP_displID();
+                    break;
+                case WDD_ATT_16BIT_TEX:
+                    *(int *)val.value.p_data = getWDD_16bitTex();
+                    break;
+                case WDD_ATT_DRAW_PRIM:
+                    *(int *)val.value.p_data = getWDD_drawPrim();
+                    break;
+
+                default:
+                    break;
+                }
             }
-            stk++;
         }
     }
+
     return NC_STACK_display::func3(stak);
 }
 
@@ -1200,7 +1180,7 @@ void sub_43CD40(__NC_STACK_win3d *w3d, int x1, int y1, int x2, int y2, unsigned 
     }
 }
 
-size_t NC_STACK_win3d::raster_func192(stack_vals *)
+size_t NC_STACK_win3d::raster_func192(IDVPair *)
 {
     return 1;
 }
@@ -1803,9 +1783,9 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, int a5, int a6)
 
     for (int i = 0; i < polysDat->vertexCount; i++)
     {
-        vtx[i].x = polysDat->vertexes[i].sx;
-        vtx[i].y = polysDat->vertexes[i].sy;
-        vtx[i].z = polysDat->vertexes[i].sz;
+        vtx[i].x = polysDat->vertexes[i].x;
+        vtx[i].y = polysDat->vertexes[i].y;
+        vtx[i].z = polysDat->vertexes[i].z;
         vtx[i].tu = 0.0;
         vtx[i].tv = 0.0;
         vtx[i].r = polysDat->r;
@@ -2842,12 +2822,12 @@ void NC_STACK_win3d::UnlockTexture(bitmap_intern *bitm)
     bitm->flags &= ~BITMAP_FLAG_LOCKED;
 }
 
-void NC_STACK_win3d::display_func271(stack_vals *stak)
+void NC_STACK_win3d::display_func271(IDVPair *stak)
 {
 
 }
 
-void NC_STACK_win3d::display_func272(stack_vals *)
+void NC_STACK_win3d::display_func272(IDVPair *)
 {
 }
 
@@ -2911,11 +2891,11 @@ void NC_STACK_win3d::display_func274(const char **name)
 }
 
 
-void NC_STACK_win3d::windd_func320(stack_vals *)
+void NC_STACK_win3d::windd_func320(IDVPair *)
 {
 }
 
-void NC_STACK_win3d::windd_func321(stack_vals *)
+void NC_STACK_win3d::windd_func321(IDVPair *)
 {
 }
 
@@ -3145,16 +3125,16 @@ size_t NC_STACK_win3d::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (stack_vals *)data );
+        return (size_t)func0( (IDVList *)data );
     case 1:
-        return (size_t)func1( (stack_vals *)data );
+        return (size_t)func1();
     case 2:
-        return func2( (stack_vals *)data );
+        return func2( (IDVList *)data );
     case 3:
-        func3( (stack_vals *)data );
+        func3( (IDVList *)data );
         return 1;
     case 192:
-        return (size_t)raster_func192( (stack_vals *)data );
+        return (size_t)raster_func192( (IDVPair *)data );
     case 198:
         raster_func198( (w3d_func198arg *)data );
         return 1;
@@ -3222,19 +3202,19 @@ size_t NC_STACK_win3d::compatcall(int method_id, void *data)
         UnlockTexture( (bitmap_intern *)data );
         return 1;
     case 271:
-        display_func271( (stack_vals *)data );
+        display_func271( (IDVPair *)data );
         return 1;
     case 272:
-        display_func272( (stack_vals *)data );
+        display_func272( (IDVPair *)data );
         return 1;
     case 274:
         display_func274( (const char **)data );
         return 1;
     case 320:
-        windd_func320( (stack_vals *)data );
+        windd_func320( (IDVPair *)data );
         return 1;
     case 321:
-        windd_func321( (stack_vals *)data );
+        windd_func321( (IDVPair *)data );
         return 1;
     case 322:
         windd_func322( (windd_dlgBox *)data );

@@ -37,7 +37,7 @@ enum EVPROTO_FLAG
 struct extra_vproto
 {
     float scale;
-    xyz pos;
+    vec3d pos;
     mat3x3 dir;
     int flags;
     vhclBases vp;
@@ -120,8 +120,8 @@ union BactTarget
 struct roboColl
 {
     float robo_coll_radius;
-    xyz coll_pos;
-    xyz field_10;
+    vec3d coll_pos;
+    vec3d field_10;
 };
 
 struct rbcolls
@@ -188,15 +188,15 @@ struct __NC_STACK_ypabact : public nnode
     int primT_cmdID;
     int secndT_cmdID;
     BactTarget primT;
-    xyz primTpos;
+    vec3d primTpos;
     BactTarget secndT;
-    xyz sencdTpos;
+    vec3d sencdTpos;
 
     float adist_sector;
     float adist_bact;
     float sdist_sector;
     float sdist_bact;
-    xyz waypoints[32]; //waypoints
+    vec3d waypoints[32]; //waypoints
     int16_t current_waypoint;
     int16_t waypoints_count;
     int m_cmdID;
@@ -209,7 +209,7 @@ struct __NC_STACK_ypabact : public nnode
     float airconst_static;
     float maxrot;
 
-    xyz viewer_position;
+    vec3d viewer_position;
     mat3x3 viewer_rotation;
     float viewer_horiz_angle;
     float viewer_vert_angle;
@@ -218,18 +218,18 @@ struct __NC_STACK_ypabact : public nnode
     float viewer_max_side;
 
     float thraction;
-    xyz fly_dir;
+    vec3d fly_dir;
     float fly_dir_length;
 
-    xyz position; //Current pos
-    xyz old_pos; //Prev pos
-    xyz target_vec; //Vector to target
-    xyz target_dir; //Target 1-vector direction
+    vec3d position; //Current pos
+    vec3d old_pos; //Prev pos
+    vec3d target_vec; //Vector to target
+    vec3d target_dir; //Target 1-vector direction
     mat3x3 rotation;
 
     float height;
     float height_max_user;
-    xyz scale;
+    vec3d scale;
     vhclBases vp_normal;
     vhclBases vp_fire;
     vhclBases vp_wait;
@@ -268,14 +268,14 @@ struct __NC_STACK_ypabact : public nnode
     int dead_time;
     int beam_time;
     int energy_time;
-    xyz mpos;
+    vec3d mpos;
     int weapon;
     char weapon_flags;
     int mgun;
     char num_weapons;
     nlist missiles_list;
     int weapon_time;
-    xyz fire_pos;
+    vec3d fire_pos;
     float gun_angle;
     float gun_angle_user;
     float gun_leftright;
@@ -292,7 +292,7 @@ struct __NC_STACK_ypabact : public nnode
     uint32_t lastFrmStamp;
     mat3x3 netDRot;
     mat3x3 netRotation;
-    xyz netDSpeed;
+    vec3d netDSpeed;
     float scale_start;
     float scale_speed;
     float scale_accel;
@@ -321,7 +321,7 @@ struct newMaster_msg
 
 struct bact_arg80
 {
-    xyz pos;
+    vec3d pos;
     int field_C;
 };
 
@@ -345,7 +345,7 @@ struct update_msg
     int target_sect_x;
     int target_sect_y;
     int target_point_flags;
-    xyz target_point;
+    vec3d target_point;
     __NC_STACK_ypabact *target_Bact;
     int energy;
 
@@ -372,7 +372,7 @@ struct setTarget_msg
     char tgt_type;
     int priority;
     BactTarget tgt;
-    xyz tgt_pos;
+    vec3d tgt_pos;
 };
 
 struct bact_arg124
@@ -383,7 +383,7 @@ struct bact_arg124
     float to_z;
     int16_t steps_cnt;
     int16_t field_12;
-    xyz waypoints[32];
+    vec3d waypoints[32];
 };
 
 struct bact_arg84
@@ -394,21 +394,21 @@ struct bact_arg84
 
 struct bact_arg88
 {
-    xyz pos1;
-    xyz pos2;
+    vec3d pos1;
+    vec3d pos2;
 };
 
 struct bact_arg94
 {
     int field_0;
-    xyz pos1;
-    xyz pos2;
+    vec3d pos1;
+    vec3d pos2;
 };
 
 struct move_msg
 {
     float field_0;
-    xyz vec;
+    vec3d vec;
     int flag;
 };
 
@@ -435,7 +435,7 @@ struct bact_arg109
 
 struct bact_arg92
 {
-    xyz pos;
+    vec3d pos;
     int energ1;
     int energ2;
     int field_14;
@@ -465,7 +465,7 @@ struct bact_hudi
 
 struct bact_arg105
 {
-    xyz field_0;
+    vec3d field_0;
     float field_C;
     int field_10;
 };
@@ -473,17 +473,17 @@ struct bact_arg105
 struct bact_arg106
 {
     int field_0;
-    xyz field_4;
+    vec3d field_4;
     __NC_STACK_ypabact *ret_bact;
 };
 
 struct bact_arg79
 {
-    xyz direction;
-    xyz start_point;
+    vec3d direction;
+    vec3d start_point;
     int tgType;
     BactTarget target;
-    xyz tgt_pos;
+    vec3d tgt_pos;
     int weapon;
     int g_time;
     int flags;
@@ -491,7 +491,7 @@ struct bact_arg79
 
 struct bact_arg75
 {
-    xyz pos;
+    vec3d pos;
     BactTarget target;
     int prio;
     float fperiod;
@@ -512,7 +512,7 @@ struct bact_arg86
 
 struct bact_arg101
 {
-    xyz pos;
+    vec3d pos;
     int unkn;
     float radius;
 };
@@ -520,8 +520,8 @@ struct bact_arg101
 struct bact_arg83
 {
     int energ;
-    xyz pos;
-    xyz pos2;
+    vec3d pos;
+    vec3d pos2;
     float force;
     float mass;
 };
@@ -530,10 +530,10 @@ struct bact_arg83
 class NC_STACK_ypabact: public NC_STACK_nucleus
 {
 public:
-    virtual size_t func0(stack_vals *stak);
-    virtual size_t func1(stack_vals *stak);
-    virtual size_t func2(stack_vals *stak);
-    virtual size_t func3(stack_vals *stak);
+    virtual size_t func0(IDVList *stak);
+    virtual size_t func1();
+    virtual size_t func2(IDVList *stak);
+    virtual size_t func3(IDVList *stak);
     virtual void Update(update_msg *arg);
     virtual void Render(baseRender_msg *arg);
     virtual void SetTarget(setTarget_msg *arg);
@@ -554,25 +554,25 @@ public:
     virtual void EnergyInteract(update_msg *arg);
     virtual void ApplyImpulse(bact_arg83 *arg);
     virtual void ModifyEnergy(bact_arg84 *arg);
-    virtual bool ypabact_func85(xyz *arg);
+    virtual bool ypabact_func85(vec3d *arg);
     virtual size_t CrashOrLand(bact_arg86 *arg);
     virtual size_t CollisionWithBact(int arg);
     virtual void Recoil(bact_arg88 *arg);
-    virtual void ypabact_func89(stack_vals *arg);
+    virtual void ypabact_func89(IDVPair *arg);
     virtual void GetSectorTarget(bact_arg90 *arg);
-    virtual void GetBestSectorPart(xyz *arg);
+    virtual void GetBestSectorPart(vec3d *arg);
     virtual void GetForcesRatio(bact_arg92 *arg);
-    virtual void ypabact_func93(stack_vals *arg);
+    virtual void ypabact_func93(IDVPair *arg);
     virtual void GetFormationPosition(bact_arg94 *arg);
-    virtual void ypabact_func95(stack_vals *arg);
+    virtual void ypabact_func95(IDVPair *arg);
     virtual void Renew();
     virtual void HandBrake(update_msg *arg);
-    virtual void ypabact_func98(stack_vals *arg);
+    virtual void ypabact_func98(IDVPair *arg);
     virtual void CreationTimeUpdate(update_msg *arg);
     virtual size_t IsDestroyed();
     virtual size_t CheckFireAI(bact_arg101 *arg);
-    virtual void MarkSectorsForView(stack_vals *arg);
-    virtual void ypabact_func103(stack_vals *arg);
+    virtual void MarkSectorsForView(IDVPair *arg);
+    virtual void ypabact_func103(IDVPair *arg);
     virtual void StuckFree(update_msg *arg);
     virtual size_t FireMinigun(bact_arg105 *arg);
     virtual size_t UserTargeting(bact_arg106 *arg);
@@ -599,7 +599,7 @@ public:
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ypabact()
     {
-        memset(&stack__ypabact, 0, sizeof(stack__ypabact) );
+        memset(&ypabact, 0, sizeof(ypabact) );
     };
     virtual ~NC_STACK_ypabact() {};
 
@@ -669,15 +669,10 @@ public:
     virtual bact_node *getBACT_secnAttackNode();
     virtual int getBACT_alwaysRender();
 
-
-    int ypabact_func0__sub0(stack_vals *stak);
-    int ypabact_func2__sub0(stack_vals *stak);
-    void ypabact_func3__sub0(stack_vals *stak);
-
     //Data
     static const NewClassDescr description;
 
-    __NC_STACK_ypabact stack__ypabact;
+    __NC_STACK_ypabact ypabact;
 };
 
 

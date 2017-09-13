@@ -577,13 +577,12 @@ void yw_write_map(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *bitmap, const char *p
 
 void yw_write_ownermap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    stack_vals init_vals[4];
-    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "temp_owner_map");
-    init_vals[1].set(NC_STACK_bitmap::BMD_ATT_WIDTH, yw->sectors_maxX2);
-    init_vals[2].set(NC_STACK_bitmap::BMD_ATT_HEIGHT, yw->sectors_maxY2);
-    init_vals[3].end();
+    IDVList init_vals;
+    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "temp_owner_map");
+    init_vals.Add(NC_STACK_bitmap::BMD_ATT_WIDTH, yw->sectors_maxX2);
+    init_vals.Add(NC_STACK_bitmap::BMD_ATT_HEIGHT, yw->sectors_maxY2);
 
-    NC_STACK_bitmap *bitmap = NC_STACK_bitmap::CInit(init_vals);
+    NC_STACK_bitmap *bitmap = NC_STACK_bitmap::CInit(&init_vals);
 
     if ( bitmap )
     {
@@ -612,13 +611,12 @@ void yw_write_buildmap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
 void yw_write_energymap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    stack_vals init_vals[4];
-    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, "ActualEnergyMap");
-    init_vals[1].set(NC_STACK_bitmap::BMD_ATT_WIDTH, 3 * yw->sectors_maxX2);
-    init_vals[2].set(NC_STACK_bitmap::BMD_ATT_HEIGHT, 3 * yw->sectors_maxY2);
-    init_vals[3].end();
+    IDVList init_vals;
+    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "ActualEnergyMap");
+    init_vals.Add(NC_STACK_bitmap::BMD_ATT_WIDTH, 3 * yw->sectors_maxX2);
+    init_vals.Add(NC_STACK_bitmap::BMD_ATT_HEIGHT, 3 * yw->sectors_maxY2);
 
-    NC_STACK_bitmap *bitmap = NC_STACK_bitmap::CInit(init_vals);
+    NC_STACK_bitmap *bitmap = NC_STACK_bitmap::CInit(&init_vals);
 
     if ( bitmap )
     {
@@ -687,7 +685,7 @@ int yw_write_bact(bact_node *bct, FSMgr::FileHandle *fil)
     sprintf(buf, "    energy         = %d\n", bct->bact->energy);
 
     fil->write(buf, strlen(buf));
-    sprintf(buf, "    speed          = %6.5f_%6.5f_%6.5f_%6.5f\n", bct->bact->fly_dir.sx, bct->bact->fly_dir.sy, bct->bact->fly_dir.sz, bct->bact->fly_dir_length);
+    sprintf(buf, "    speed          = %6.5f_%6.5f_%6.5f_%6.5f\n", bct->bact->fly_dir.x, bct->bact->fly_dir.y, bct->bact->fly_dir.z, bct->bact->fly_dir_length);
 
     fil->write(buf, strlen(buf));
 
@@ -712,17 +710,17 @@ int yw_write_bact(bact_node *bct, FSMgr::FileHandle *fil)
         sprintf(
             buf,
             "    pos            = %2.2f_%2.2f_%2.2f\n",
-            bct->bact->position.sx,
+            bct->bact->position.x,
             roboo->stack__yparobo.field_1D5,
-            bct->bact->position.sz);
+            bct->bact->position.z);
     }
     else
         sprintf(
             buf,
             "    pos            = %2.2f_%2.2f_%2.2f\n",
-            bct->bact->position.sx,
-            bct->bact->position.sy,
-            bct->bact->position.sz);
+            bct->bact->position.x,
+            bct->bact->position.y,
+            bct->bact->position.z);
 
     fil->write(buf, strlen(buf));
 
@@ -751,15 +749,15 @@ int yw_write_bact(bact_node *bct, FSMgr::FileHandle *fil)
     fil->write(buf, strlen(buf));
 
     if ( bct->bact->primTtype == BACT_TGT_TYPE_UNIT )
-        sprintf(buf, "    primary        = %d_%d_%2.2f_%2.2f_%d\n", bct->bact->primTtype, bct->bact->primT.pbact->gid, bct->bact->primTpos.sx, bct->bact->primTpos.sz, bct->bact->primT_cmdID);
+        sprintf(buf, "    primary        = %d_%d_%2.2f_%2.2f_%d\n", bct->bact->primTtype, bct->bact->primT.pbact->gid, bct->bact->primTpos.x, bct->bact->primTpos.z, bct->bact->primT_cmdID);
     else
-        sprintf(buf, "    primary        = %d_0_%2.2f_%2.2f_%d\n", bct->bact->primTtype, bct->bact->primTpos.sx, bct->bact->primTpos.sz, bct->bact->primT_cmdID);
+        sprintf(buf, "    primary        = %d_0_%2.2f_%2.2f_%d\n", bct->bact->primTtype, bct->bact->primTpos.x, bct->bact->primTpos.z, bct->bact->primT_cmdID);
 
     fil->write(buf, strlen(buf));
 
     for (int i = 0; i < bct->bact->waypoints_count; i++)
     {
-        sprintf(buf, "    waypoint       = %d_%2.2f_%2.2f\n", i, bct->bact->waypoints[i].sx, bct->bact->waypoints[i].sz);
+        sprintf(buf, "    waypoint       = %d_%2.2f_%2.2f\n", i, bct->bact->waypoints[i].x, bct->bact->waypoints[i].z);
         fil->write(buf, strlen(buf));
     }
 
@@ -811,7 +809,7 @@ int yw_write_robo(_NC_STACK_ypaworld *yw, bact_node *bct, FSMgr::FileHandle *fil
     sprintf(buf, "    docktime       = %d\n", robo->dock_time);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    docktargetpos  = %2.2f_%2.2f\n", robo->dock_tgt_pos.sx, robo->dock_tgt_pos.sz);
+    sprintf(buf, "    docktargetpos  = %2.2f_%2.2f\n", robo->dock_tgt_pos.x, robo->dock_tgt_pos.z);
     fil->write(buf, strlen(buf));
 
     sprintf(buf, "    docktargetID   = %d\n", robo->dock_tgt_comm_id);
@@ -912,9 +910,9 @@ int yw_write_gun(bact_node *bct, FSMgr::FileHandle *fil)
         sprintf(
             buf,
             "    gunbasis = %7.6f_%7.6f_%7.6f\n",
-            guno->stack__ypagun.dir.sx,
-            guno->stack__ypagun.dir.sy,
-            guno->stack__ypagun.dir.sz);
+            guno->ypagun.basis.x,
+            guno->ypagun.basis.y,
+            guno->ypagun.basis.z);
 
         fil->write(buf, strlen(buf));
     }

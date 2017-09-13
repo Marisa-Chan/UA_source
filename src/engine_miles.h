@@ -12,12 +12,40 @@ struct sndFXprm
     int slot;
     float mag0;
     float mag1;
+
+    sndFXprm()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        time = 0;
+        slot = 0;
+        mag0 = 0.0;
+        mag1 = 0.0;
+    }
 };
 
 struct sndFXprm2 : sndFXprm
 {
     float mute;
-    xyz pos;
+    vec3d pos;
+
+    sndFXprm2()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        pos = vec3d(0.0, 0.0, 0.0);
+        time = 0;
+        slot = 0;
+        mag0 = 0.0;
+        mag1 = 0.0;
+        mute = 0.0;
+    }
 };
 
 struct sndExt
@@ -30,12 +58,42 @@ struct sndExt
     int smplCnt;
     int rlOffset;
     int rlSmplCnt;
+
+    sndExt()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        sample = NULL;
+        loop = 0;
+        vol = 0;
+        smplRate = 0;
+        offset = 0;
+        smplCnt = 0;
+        rlOffset = 0;
+        rlSmplCnt = 0;
+    }
 };
 
 struct sndExtends
 {
     int cnt;
     sndExt sndExts[8];
+
+    sndExtends()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        cnt = 0;
+
+        for(int i = 0; i < 8; i++)
+            sndExts[i].clear();
+    }
 };
 
 struct userdata_sample_info
@@ -60,7 +118,7 @@ struct userdata_sample_info
 
 struct samples_collection1
 {
-    xyz field_0;
+    vec3d field_0;
     float field_C;
     float field_10;
     float field_14;
@@ -82,7 +140,7 @@ void PlayMusicTrack();
 void sb_0x4242e0(samples_collection1 *smpls);
 mat3x3 *sb_0x424c74(); //Update sounds and return shake matrix
 
-void sub_423EFC(int a1, xyz *a2, xyz *a3, mat3x3 *a4);
+void sub_423EFC(int a1, vec3d *a2, vec3d *a3, mat3x3 *a4);
 
 class SFXEngine
 {

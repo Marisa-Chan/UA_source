@@ -48,20 +48,19 @@ int GFXEngine::sub_422CE8(const char *display, const char *display2, int gfxmode
 
     if ( *display )
     {
-        stack_vals vals[2];
-        vals[0].set(NC_STACK_display::ATT_DISPLAY_ID, gfxmode);
-        vals[1].end();
+        IDVList vals;
+        vals.Add(NC_STACK_display::ATT_DISPLAY_ID, gfxmode);
 
         strcpy(buf, display);
 
-        cls3D = dynamic_cast<NC_STACK_win3d *>( init_get_class(buf, vals) );
+        cls3D = dynamic_cast<NC_STACK_win3d *>( init_get_class(buf, &vals) );
 
         if ( !cls3D )
         {
             if ( *display2 )
             {
                 strcpy(buf, display2);
-                cls3D = dynamic_cast<NC_STACK_win3d *>( init_get_class(buf, vals) );
+                cls3D = dynamic_cast<NC_STACK_win3d *>( init_get_class(buf, &vals) );
             }
         }
         if ( !cls3D )
@@ -76,12 +75,11 @@ int GFXEngine::sub_422CE8(const char *display, const char *display2, int gfxmode
 
 int GFXEngine::loadPal(const char *palette_ilbm)
 {
-    stack_vals vals[3];
-    vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, palette_ilbm);
-    vals[1].set(NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
-    vals[2].end();
+    IDVList vals;
+    vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, palette_ilbm);
+    vals.Add(NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
 
-    NC_STACK_bitmap *ilbm = NC_STACK_ilbm::CInit(vals);
+    NC_STACK_bitmap *ilbm = NC_STACK_ilbm::CInit(&vals);
 
     if (!ilbm)
         return 0;

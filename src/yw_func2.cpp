@@ -28,20 +28,21 @@ extern int word_5A50C0;
 extern int dword_5A50B6;
 extern int dword_5A50B6_h;
 
-void sb_0x4eb94c__sub0(_NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, xyz *pos, baseRender_msg *arg)
+void sb_0x4eb94c__sub0(_NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, vec3d *pos, baseRender_msg *arg)
 {
     //brf_obj *brobj = &yw->brief.brf_objs + obj_id; // Only one object
     brf_obj *brobj = &yw->brief.brf_objs;
 
     NC_STACK_base *model_base = yw->vhcls_models[ yw->VhclProtos[ brobj->object_id ].vp_normal ].base;
+
     model_base->setBASE_visLimit(16000);
     model_base->setBASE_fadeLength(100);
 
     flag_xyz tmp;
     tmp.flag = 7;
-    tmp.x = pos->sx;
-    tmp.y = pos->sy;
-    tmp.z = pos->sz;
+    tmp.x = pos->x;
+    tmp.y = pos->y;
+    tmp.z = pos->z;
 
     model_base->base_func68(&tmp);
 
@@ -69,7 +70,7 @@ void sb_0x4eb94c__sub0(_NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, xyz 
     model_base->base_func77(arg); //Draw vehicle
 }
 
-void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz *pos, baseRender_msg *arg)
+void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, vec3d *pos, baseRender_msg *arg)
 {
     //brf_obj *brobj = &yw->brief.brf_objs + obj_id; // Only one object
     brf_obj *brobj = &yw->brief.brf_objs;
@@ -126,9 +127,9 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, xyz
 
             flag_xyz v16;
             v16.flag = 7;
-            v16.x = p3d->locSclRot.m00 * v13 + pos->sx + 0.0 * p3d->locSclRot.m01 + p3d->locSclRot.m02 * v14;
-            v16.y = p3d->locSclRot.m10 * v13 + pos->sy + 0.0 * p3d->locSclRot.m11 + p3d->locSclRot.m12 * v14;
-            v16.z = p3d->locSclRot.m20 * v13 + pos->sz + 0.0 * p3d->locSclRot.m21 + p3d->locSclRot.m22 * v14;
+            v16.x = p3d->locSclRot.m00 * v13 + pos->x + 0.0 * p3d->locSclRot.m01 + p3d->locSclRot.m02 * v14;
+            v16.y = p3d->locSclRot.m10 * v13 + pos->y + 0.0 * p3d->locSclRot.m11 + p3d->locSclRot.m12 * v14;
+            v16.z = p3d->locSclRot.m20 * v13 + pos->z + 0.0 * p3d->locSclRot.m21 + p3d->locSclRot.m22 * v14;
 
             NC_STACK_base *lego = yw->legos[ scType->buildings[j][i]->health_models[0] ].base;
             lego->setBASE_static(0);
@@ -156,9 +157,9 @@ void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int ob
 
     TForm3D v14;
     memset(&v14, 0, sizeof(TForm3D));
-    v14.scale.sx = 1.0;
-    v14.scale.sy = 1.0;
-    v14.scale.sz = 1.0;
+    v14.scale.x = 1.0;
+    v14.scale.y = 1.0;
+    v14.scale.z = 1.0;
     v14.locSclRot.m00 = 1.0;
     v14.locSclRot.m01 = 0;
     v14.locSclRot.m02 = 0;
@@ -172,12 +173,12 @@ void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int ob
     sub_430A20(&v14);
     sub_430A38(&v14);
 
-    xyz pos;
+    vec3d pos;
 
     if ( brobj->field_0 )
     {
-        pos.sx = (brobj->field_18 + brobj->field_10) * 0.5;
-        pos.sy = (brobj->field_1C + brobj->field_14) * 0.5;
+        pos.x = (brobj->field_18 + brobj->field_10) * 0.5;
+        pos.y = (brobj->field_1C + brobj->field_14) * 0.5;
 
         float v16;
         float v17;
@@ -208,9 +209,9 @@ void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int ob
             rot = -90 * a5 / 500 + 90;
         }
 
-        pos.sz = v18;
-        pos.sy = pos.sy * v18;
-        pos.sx = pos.sx * v18;
+        pos.z = v18;
+        pos.y = pos.y * v18;
+        pos.x = pos.x * v18;
 
         if ( brobj->field_0 == 1 )
         {
@@ -1331,13 +1332,13 @@ void sb_0x47f810(_NC_STACK_ypaworld *yw)
 
     if ( yw->WeaponProtos )
     {
-        nc_FreeMem(yw->WeaponProtos);
+        delete[] yw->WeaponProtos;
         yw->WeaponProtos = NULL;
     }
 
     if ( yw->VhclProtos )
     {
-        nc_FreeMem(yw->VhclProtos);
+        delete[] yw->VhclProtos;
         yw->VhclProtos = NULL;
     }
 }
@@ -2277,11 +2278,10 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
         usr->field_ADA = 0;
     }
 
-    stack_vals init_vals[2];
-    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, a1a);
-    init_vals[1].end();
+    IDVList init_vals;
+    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, a1a);
 
-    usr->field_ADA = (NC_STACK_wav *)init_get_class("wav.class", init_vals);
+    usr->field_ADA = (NC_STACK_wav *)init_get_class("wav.class", &init_vals);
     if ( usr->field_ADA )
     {
         sub_423DB0(&usr->field_782);
@@ -2289,9 +2289,9 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
         usr->field_782.field_C = 0;
         usr->field_782.field_10 = 0;
         usr->field_782.field_14 = 0;
-        usr->field_782.field_0.sx = 0;
-        usr->field_782.field_0.sy = 0;
-        usr->field_782.field_0.sz = 0;
+        usr->field_782.field_0.x = 0;
+        usr->field_782.field_0.y = 0;
+        usr->field_782.field_0.z = 0;
         usr->field_782.samples_data[0].volume = 500;
         usr->field_782.samples_data[0].pitch = 0;
 

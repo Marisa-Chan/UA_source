@@ -7,39 +7,20 @@
 
 class NC_STACK_particle;
 
-struct StartEnd
-{
-    xyz start;
-    xyz end;
-};
-
-struct prtcl_att
-{
-    int16_t version;
-    StartEnd accel;
-    StartEnd magnify;
-    int32_t collide;
-    int32_t startSpeed;
-    int32_t contextNumber;
-    int32_t contextLifeTime;
-    int32_t contextStartGen;
-    int32_t contextStopGen;
-    int32_t genRate;
-    int32_t lifeTime;
-    int32_t startSize;
-    int32_t endSize;
-    int32_t noise;
-};
-
-
 class NC_STACK_particle: public NC_STACK_ade
 {
 public:
 
     struct Particle
     {
-        xyz pos;
-        xyz vec;
+        vec3d pos;
+        vec3d vec;
+    };
+
+    struct StartEnd
+    {
+        vec3d start;
+        vec3d end;
     };
 
     struct Context
@@ -52,7 +33,7 @@ public:
         int field_14;
         int field_18;
         int field_1C;
-        int field_20;
+        int age;
     };
 
     struct __NC_STACK_particle
@@ -64,14 +45,10 @@ public:
         int ADEs_count;
         int field_14;
         NC_STACK_ade *ADEs[12];
-        StartEnd field_3c;
-        float field_54;
-        float field_58;
-        float field_5c;
-        StartEnd field_60;
-        float field_78;
-        float field_7c;
-        float field_80;
+        StartEnd accel;
+        vec3d accelDelta;
+        StartEnd magnify;
+        vec3d magnifyDelta;
         int field_84;
         int field_88;
         int field_8c;
@@ -81,7 +58,7 @@ public:
         float field_9c;
         float field_a0;
         int tp1_cnt;
-        int field_a8;
+        int ctxLifeTime;
         int field_ac;
         int field_b0;
         Context *tp1;
@@ -92,15 +69,15 @@ public:
 
 
 
-    virtual size_t func0(stack_vals *stak);
-    virtual size_t func1(stack_vals *stak);
-    virtual size_t func2(stack_vals *stak);
-    virtual size_t func3(stack_vals *stak);
+    virtual size_t func0(IDVList *stak);
+    virtual size_t func1();
+    virtual size_t func2(IDVList *stak);
+    virtual size_t func3(IDVList *stak);
     virtual size_t func5(IFFile **file);
     virtual size_t func6(IFFile **file);
     virtual size_t ade_func65(area_arg_65 *arg);
-    virtual void particle_func128(StartEnd *arg);
-    virtual void particle_func129(StartEnd *arg);
+    virtual void SetAccel(StartEnd *arg);
+    virtual void SetMagnify(StartEnd *arg);
     virtual void particle_func130(StartEnd *out);
     virtual void particle_func131(StartEnd *out);
     virtual size_t particle_func132(NC_STACK_area **ade);
@@ -180,10 +157,7 @@ public:
     virtual int getPRTCL_noise();
     virtual NC_STACK_ade **getPRTCL_ppADE();
 
-
-    int particle_func0__sub0(stack_vals *stak);
-    void particle_func2__sub0(stack_vals *stak);
-    void particle_func3__sub0(stack_vals *stak);
+    int particle_func5__sub0(IFFile *mfile);
 
 private:
     void refreshParticle();

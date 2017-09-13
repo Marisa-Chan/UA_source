@@ -19,7 +19,7 @@ NC_STACK_image::~NC_STACK_image()
 {
 }
 
-NC_STACK_image *NC_STACK_image::CInit(stack_vals *stak)
+NC_STACK_image *NC_STACK_image::CInit(IDVList *stak)
 {
     NC_STACK_image *tmp = new NC_STACK_image();
     if (!tmp)
@@ -34,7 +34,7 @@ NC_STACK_image *NC_STACK_image::CInit(stack_vals *stak)
     return tmp;
 }
 
-size_t NC_STACK_image::func0(stack_vals *stak)
+size_t NC_STACK_image::func0(IDVList *stak)
 {
     if ( !NC_STACK_bitmap::func0(stak) )
         return 0;
@@ -120,9 +120,9 @@ static SDL_RWops * MyCustomRWop(FSMgr::FileHandle *fil)
 
 
 
-rsrc * NC_STACK_image::rsrc_func64(stack_vals *stak)
+rsrc * NC_STACK_image::rsrc_func64(IDVList *stak)
 {
-    const char *resName = (const char *)find_id_in_stack_def_val(RSRC_ATT_NAME, 0, stak);
+    const char *resName = stak->GetConstChar(RSRC_ATT_NAME, NULL);
 //    const char *reassignName = NULL;
 
     if ( !resName )
@@ -150,12 +150,14 @@ rsrc * NC_STACK_image::rsrc_func64(stack_vals *stak)
         return NULL;
     }
 
-    stack_vals stk[3];
-    stk[0].set(BMD_ATT_WIDTH, loaded->w);
-    stk[1].set(BMD_ATT_HEIGHT, loaded->h);
-    stk[2].nextStack(stak);
+    IDVList loclist;
+    if (!stak)
+        stak = &loclist;
 
-    rsrc *res = NC_STACK_bitmap::rsrc_func64(stk); // bitmap_func64
+    stak->Add(BMD_ATT_WIDTH, loaded->w);
+    stak->Add(BMD_ATT_HEIGHT, loaded->h);
+
+    rsrc *res = NC_STACK_bitmap::rsrc_func64(stak); // bitmap_func64
 
     if ( !res )
     {

@@ -16,10 +16,10 @@ struct __NC_STACK_ypacar
 class NC_STACK_ypacar: public NC_STACK_ypatank
 {
 public:
-    virtual size_t func0(stack_vals *stak);
-    virtual size_t func1(stack_vals *stak);
-    virtual size_t func2(stack_vals *stak);
-    virtual size_t func3(stack_vals *stak);
+    virtual size_t func0(IDVList *stak);
+    virtual size_t func1();
+    virtual size_t func2(IDVList *stak);
+    virtual size_t func3(IDVList *stak);
     virtual void User_layer(update_msg *arg);
     virtual size_t ypatank_func128(tank_arg128 *arg);
     virtual size_t ypatank_func129(tank_arg129 *arg);
@@ -49,11 +49,6 @@ public:
 
     virtual int getCAR_kamikaze();
     virtual int getCAR_blast();
-
-
-    int ypacar_func0__sub0(stack_vals *stak);
-    void ypacar_func2__sub0(stack_vals *stak);
-    void ypacar_func3__sub0(stack_vals *stak);
 
     //Data
     static const NewClassDescr description;

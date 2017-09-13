@@ -6,8 +6,8 @@
 class NC_STACK_image: public NC_STACK_bitmap
 {
 public:
-    virtual size_t func0(stack_vals *stak);
-    virtual rsrc * rsrc_func64(stack_vals *stak);
+    virtual size_t func0(IDVList *stak);
+    virtual rsrc * rsrc_func64(IDVList *stak);
 
     NC_STACK_image();
     virtual ~NC_STACK_image();
@@ -20,7 +20,7 @@ public:
         return new NC_STACK_image();
     };
 
-    static NC_STACK_image *CInit(stack_vals *stak);
+    static NC_STACK_image *CInit(IDVList *stak);
 
     //Data
 public:

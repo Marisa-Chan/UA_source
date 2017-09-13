@@ -27,10 +27,10 @@ struct clss_node: public nnode
 struct TForm3D
 {
     TForm3D *parent_1c;
-    xyz locPos;
-    xyz globPos;
-    xyz vec;
-    xyz scale;
+    vec3d locPos;
+    vec3d globPos;
+    vec3d vec;
+    vec3d scale;
     mat3x3 locSclRot;
     mat3x3 globSclRot;
     int32_t ax;
@@ -119,9 +119,9 @@ struct __NC_STACK_base
 struct STRC_base
 {
     int16_t version;
-    xyz pos;
-    xyz vec;
-    xyz scale;
+    vec3d pos;
+    vec3d vec;
+    vec3d scale;
     int16_t ax;
     int16_t ay;
     int16_t az;
@@ -193,10 +193,10 @@ struct vhclBases
 class NC_STACK_base: public NC_STACK_nucleus
 {
 public:
-    virtual size_t func0(stack_vals *stak);
-    virtual size_t func1(stack_vals *stak);
-    virtual size_t func2(stack_vals *stak);
-    virtual size_t func3(stack_vals *stak);
+    virtual size_t func0(IDVList *stak);
+    virtual size_t func1();
+    virtual size_t func2(IDVList *stak);
+    virtual size_t func3(IDVList *stak);
     virtual size_t func5(IFFile **file);
     virtual size_t func6(IFFile **file);
     virtual size_t base_func64(base_64arg *arg);
@@ -326,10 +326,8 @@ public:
 
     RenderStack *getBASE_newRenderStack();
 
-
-    int base_func0__sub0(stack_vals *stak);
-    void base_setter(stack_vals *stak);
-    void base_getter(stack_vals *stak);
+    void base_setter(IDVPair *stak);
+    void base_getter(IDVPair *stak);
 
 
 public:

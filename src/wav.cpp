@@ -30,7 +30,7 @@ struct __attribute__((packed)) PCM_fmt
     uint16_t BitsPerSample;
 };
 
-rsrc * wav_func64__sub0(NC_STACK_wav *obj, stack_vals *stak, const char *filname)
+rsrc * wav_func64__sub0(NC_STACK_wav *obj, IDVList *stak, const char *filname)
 {
     char buf[256];
     rsrc *res = NULL;
@@ -64,13 +64,10 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, stack_vals *stak, const char *filname
 
                 if (sbchunk.SubchunkID == TAG_data)
                 {
-                    stack_vals stk[3];
+                    stak->Add(NC_STACK_sample::SMPL_ATT_LEN, (int)sbchunk.SubchunkSize);
+                    stak->Add(NC_STACK_sample::SMPL_ATT_TYPE, 1);
 
-                    stk[0].set(NC_STACK_sample::SMPL_ATT_LEN, (int)sbchunk.SubchunkSize);
-                    stk[1].set(NC_STACK_sample::SMPL_ATT_TYPE, 1);
-                    stk[2].nextStack(stak);
-
-                    res = obj->NC_STACK_sample::rsrc_func64(stk); //Create sampl structure and alloc buff
+                    res = obj->NC_STACK_sample::rsrc_func64(stak); //Create sampl structure and alloc buff
 
                     if ( res )
                     {
@@ -118,9 +115,9 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, stack_vals *stak, const char *filname
     return res;
 }
 
-rsrc * NC_STACK_wav::rsrc_func64(stack_vals *stak)
+rsrc * NC_STACK_wav::rsrc_func64(IDVList *stak)
 {
-    const char *filename = (const char *)find_id_in_stack_def_val(RSRC_ATT_NAME, 0, stak);
+    const char *filename = stak->GetConstChar(RSRC_ATT_NAME, NULL);
 
     if ( filename )
         return wav_func64__sub0(this, stak, filename);
@@ -133,7 +130,7 @@ size_t NC_STACK_wav::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 64:
-        return (size_t)rsrc_func64( (stack_vals *)data );
+        return (size_t)rsrc_func64( (IDVList *)data );
     default:
         break;
     }

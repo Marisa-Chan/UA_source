@@ -67,7 +67,7 @@ struct polysDatSub
 {
     int renderFlags;
     int vertexCount;
-    xyz vertexes[GFX_MAX_VERTEX];
+    vec3d vertexes[GFX_MAX_VERTEX];
     tUtV tu_tv[GFX_MAX_VERTEX];
     float color[GFX_MAX_VERTEX];
     float r;

@@ -19,7 +19,7 @@
 
 const NewClassDescr NC_STACK_skeleton::description("skeleton.class", &newinstance);
 
-NC_STACK_skeleton *NC_STACK_skeleton::CInit(stack_vals *stak)
+NC_STACK_skeleton *NC_STACK_skeleton::CInit(IDVList *stak)
 {
     NC_STACK_skeleton *tmp = new NC_STACK_skeleton();
     if (!tmp)
@@ -34,69 +34,60 @@ NC_STACK_skeleton *NC_STACK_skeleton::CInit(stack_vals *stak)
     return tmp;
 };
 
-size_t NC_STACK_skeleton::func0(stack_vals *stak)
+size_t NC_STACK_skeleton::func0(IDVList *stak)
 {
     if ( !NC_STACK_rsrc::func0(stak) )
         return 0;
 
-    __NC_STACK_skeleton *skelt = &stack__skeleton;
-    skelt->data = (UAskeleton::Data *)getRsrc_pData();
+    stack__skeleton.data = (UAskeleton::Data *)getRsrc_pData();
 
     return 1;
 }
 
-size_t NC_STACK_skeleton::func3(stack_vals *stak)
+size_t NC_STACK_skeleton::func3(IDVList *stak)
 {
-    stack_vals *stk = stak;
-
-    while ( 1 )
+    if (stak)
     {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
         {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
-            {
-            default:
-                break;
+            IDVPair &val = it->second;
 
-            case SKEL_ATT_PSKELET:
-                *(UAskeleton::Data **)stk->value.p_data = getSKEL_pSkelet();
-                break;
-            case SKEL_ATT_POINTSCNT:
-                *(int *)stk->value.p_data = getSKEL_pntCount();
-                break;
-            case SKEL_ATT_SENCNT:
-                *(int *)stk->value.p_data = getSKEL_senCount();
-                break;
-            case SKEL_ATT_POLYCNT:
-                *(int *)stk->value.p_data = getSKEL_polyCount();
-                break;
+            if ( !val.skip() )
+            {
+                switch (val.id)
+                {
+                case SKEL_ATT_PSKELET:
+                    *(UAskeleton::Data **)val.value.p_data = getSKEL_pSkelet();
+                    break;
+                case SKEL_ATT_POINTSCNT:
+                    *(int *)val.value.p_data = getSKEL_pntCount();
+                    break;
+                case SKEL_ATT_SENCNT:
+                    *(int *)val.value.p_data = getSKEL_senCount();
+                    break;
+                case SKEL_ATT_POLYCNT:
+                    *(int *)val.value.p_data = getSKEL_polyCount();
+                    break;
+
+                default:
+                    break;
+                }
             }
-            stk++;
         }
     }
+
     return NC_STACK_rsrc::func3(stak);
 }
 
 // Create skeleton resource node and fill rsrc field data
-rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
+rsrc * NC_STACK_skeleton::rsrc_func64(IDVList *stak)
 {
     rsrc *res = NC_STACK_rsrc::rsrc_func64(stak);
 
     if ( !res )
         return NULL;
 
-    int elm_num = find_id_in_stack_def_val(SKEL_ATT_POINTSCNT, 0, stak);
+    int elm_num = stak->Get(SKEL_ATT_POINTSCNT, 0);
 
     if (!elm_num)
     {
@@ -136,7 +127,7 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
 
     sklt->POO_NUM = elm_num;
 
-    int sen_count = find_id_in_stack_def_val(SKEL_ATT_SENCNT, 0, stak);
+    int sen_count = stak->Get(SKEL_ATT_SENCNT, 0);
 
     if (sen_count > 0)
     {
@@ -151,8 +142,8 @@ rsrc * NC_STACK_skeleton::rsrc_func64(stack_vals *stak)
         }
     }
 
-    int pol_count = find_id_in_stack_def_val(SKEL_ATT_POLYCNT, 0, stak);
-    int num_indexes = find_id_in_stack_def_val(SKEL_ATT_POLYPNTCNT, 0, stak);
+    int pol_count = stak->Get(SKEL_ATT_POLYCNT, 0);
+    int num_indexes = stak->Get(SKEL_ATT_POLYPNTCNT, 0);
 
     if (pol_count > 0)
     {
@@ -190,7 +181,7 @@ size_t NC_STACK_skeleton::rsrc_func65(rsrc *res)
     return NC_STACK_rsrc::rsrc_func65(res);
 }
 
-__NC_STACK_skeleton * NC_STACK_skeleton::skeleton_func128(stack_vals *)
+__NC_STACK_skeleton * NC_STACK_skeleton::skeleton_func128(IDVPair *)
 {
     return &stack__skeleton;
 }
@@ -235,17 +226,17 @@ size_t NC_STACK_skeleton::skeleton_func131(int *arg)
         {
             UAskeleton::Vertex *POO = sklt->POO;
 
-            xyz vec1 = POO[ pol->v[1] ] - POO[ pol->v[0] ];
-            xyz vec2 = POO[ pol->v[2] ] - POO[ pol->v[1] ];
-            xyz norm = vec1 * vec2;
-            norm.normolize();
+            vec3d vec1 = POO[ pol->v[1] ] - POO[ pol->v[0] ];
+            vec3d vec2 = POO[ pol->v[2] ] - POO[ pol->v[1] ];
+            vec3d norm = vec1 * vec2;
+            norm.normalise();
 
-            sklt->polygons[vtxid].A = norm.sx;
-            sklt->polygons[vtxid].B = norm.sy;
-            sklt->polygons[vtxid].C = norm.sz;
-            sklt->polygons[vtxid].D = -(norm.sx * POO[ pol->v[0] ].sx +
-                                        norm.sy * POO[ pol->v[0] ].sy +
-                                        norm.sz * POO[ pol->v[0] ].sz);
+            sklt->polygons[vtxid].A = norm.x;
+            sklt->polygons[vtxid].B = norm.y;
+            sklt->polygons[vtxid].C = norm.z;
+            sklt->polygons[vtxid].D = -(norm.x * POO[ pol->v[0] ].x +
+                                        norm.y * POO[ pol->v[0] ].y +
+                                        norm.z * POO[ pol->v[0] ].z);
         }
         else
         {
@@ -269,32 +260,32 @@ bool NC_STACK_skeleton::TransformVertexes(skeleton_arg_132 *arg, UAskeleton::Ver
 
     for(int i = 0; i < num; i++)
     {
-        xyz fv = arg->tform.Transform( in[i] );
+        vec3d fv = arg->tform.Transform( in[i] );
 
         int flags = 0;
 
-        if ( fv.sz < arg->minZ )
+        if ( fv.z < arg->minZ )
             flags = UAskeleton::Vertex::CLIP_NEAR;
-        else if ( fv.sz > arg->maxZ )
+        else if ( fv.z > arg->maxZ )
             flags = UAskeleton::Vertex::CLIP_FAR;
         else
         {
-            if ( fv.sx > fv.sz * 1.1 )
+            if ( fv.x > fv.z * 1.1 )
                 flags |= UAskeleton::Vertex::CLIP_RIGHT;
-            else if ( fv.sx < -fv.sz * 1.1 )
+            else if ( fv.x < -fv.z * 1.1 )
                 flags |= UAskeleton::Vertex::CLIP_LEFT;
 
-            if ( fv.sy > fv.sz * 1.1 )
+            if ( fv.y > fv.z * 1.1 )
                 flags |= UAskeleton::Vertex::CLIP_TOP;
-            else if ( fv.sy < -fv.sz * 1.1 )
+            else if ( fv.y < -fv.z * 1.1 )
                 flags |= UAskeleton::Vertex::CLIP_BOTTOM;
         }
 
         andFlags &= flags;
 
-        out[i].sx = fv.sx;
-        out[i].sy = fv.sy;
-        out[i].sz = fv.sz;
+        out[i].x = fv.x;
+        out[i].y = fv.y;
+        out[i].z = fv.z;
         out[i].flags = flags;
     }
 
@@ -318,7 +309,7 @@ size_t NC_STACK_skeleton::skeleton_func132(skeleton_arg_132 *arg)
     return result;
 }
 
-bool NC_STACK_skeleton::PolygonCheckInvisible(UAskeleton::Vertex *in, xyz *out, UAskeleton::Polygon *pol)
+bool NC_STACK_skeleton::PolygonCheckInvisible(UAskeleton::Vertex *in, vec3d *out, UAskeleton::Polygon *pol)
 {
     uint16_t andFlags = ~0;
 
@@ -330,11 +321,11 @@ bool NC_STACK_skeleton::PolygonCheckInvisible(UAskeleton::Vertex *in, xyz *out, 
 
     if ( pol->num_vertices > 2 && !andFlags )
     {
-        xyz vec1 = out[1] - out[0];
-        xyz vec2 = out[2] - out[1];
-        xyz norm = vec1 * vec2;
+        vec3d vec1 = out[1] - out[0];
+        vec3d vec2 = out[2] - out[1];
+        vec3d norm = vec1 * vec2;
 
-        if ( norm.sx * out[0].sx + norm.sy * out[0].sy + norm.sz * out[0].sz < 0.0 )
+        if ( norm.x * out[0].x + norm.y * out[0].y + norm.z * out[0].z < 0.0 )
             return false;
     }
 
@@ -346,7 +337,7 @@ bool NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
 {
     UAskeleton::Data *sklt = this->stack__skeleton.data;
 
-    xyz PolyVertex[GFX_MAX_VERTEX];
+    vec3d PolyVertex[GFX_MAX_VERTEX];
     UAskeleton::Polygon *pol = &sklt->polygons[arg->polyID];
 
     if ( !PolygonCheckInvisible(sklt->tformedVertex, PolyVertex, pol) )
@@ -431,15 +422,15 @@ size_t NC_STACK_skeleton::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (stack_vals *)data );
+        return (size_t)func0( (IDVList *)data );
     case 3:
-        return (size_t)func3( (stack_vals *)data );
+        return (size_t)func3( (IDVList *)data );
     case 64:
-        return (size_t)rsrc_func64( (stack_vals *)data );
+        return (size_t)rsrc_func64( (IDVList *)data );
     case 65:
         return (size_t)rsrc_func65( (rsrc *)data );
     case 128:
-        return (size_t)skeleton_func128( (stack_vals *)data );
+        return (size_t)skeleton_func128( (IDVPair *)data );
     case 129:
         return (size_t)skeleton_func129( (skeleton_129_arg *)data );
     case 130:

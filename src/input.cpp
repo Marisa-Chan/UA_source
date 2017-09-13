@@ -9,22 +9,20 @@
 const NewClassDescr NC_STACK_input::description("input.class", &newinstance);
 
 
-size_t NC_STACK_input::func0(stack_vals *stak)
+size_t NC_STACK_input::func0(IDVList *stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
 
-    __NC_STACK_input *inp = &stack__input;
-
     for (int i = 0; i < 32; i++)
     {
-        init_list(&inp->buttons_lists[i]);
-        init_list(&inp->sliders_lists[i]);
+        init_list(&stack__input.buttons_lists[i]);
+        init_list(&stack__input.sliders_lists[i]);
     }
     return 1;
 }
 
-size_t NC_STACK_input::func1(stack_vals *stak)
+size_t NC_STACK_input::func1()
 {
     __NC_STACK_input *inp = &stack__input;
 
@@ -65,7 +63,7 @@ size_t NC_STACK_input::func1(stack_vals *stak)
             nc_FreeMem(nod);
         }
     }
-    return NC_STACK_nucleus::func1(stak);
+    return NC_STACK_nucleus::func1();
 }
 
 const char * input__parse__inputkey_node(const char *a1, nlist *lst)
@@ -476,9 +474,9 @@ size_t NC_STACK_input::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (stack_vals *)data );
+        return (size_t)func0( (IDVList *)data );
     case 1:
-        return (size_t)func1( (stack_vals *)data );
+        return (size_t)func1();
     case 64:
         return (size_t)input_func64( (input__func64__params *)data );
     case 65:

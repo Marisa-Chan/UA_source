@@ -142,17 +142,17 @@ int baseIDcounter = 1;
 // rot_x == 0   rot_y == 0   rot_z == 0
 void scale_rot_0(TForm3D *scrot)
 {
-    scrot->locSclRot.m00 = scrot->scale.sx;
+    scrot->locSclRot.m00 = scrot->scale.x;
     scrot->locSclRot.m01 = 0;
     scrot->locSclRot.m02 = 0;
 
     scrot->locSclRot.m10 = 0;
-    scrot->locSclRot.m11 = scrot->scale.sy;
+    scrot->locSclRot.m11 = scrot->scale.y;
     scrot->locSclRot.m12 = 0;
 
     scrot->locSclRot.m20 = 0;
     scrot->locSclRot.m21 = 0;
-    scrot->locSclRot.m22 = scrot->scale.sz;
+    scrot->locSclRot.m22 = scrot->scale.z;
 }
 
 // rot_x != 0   rot_y == 0   rot_z == 0
@@ -160,17 +160,17 @@ void scale_rot_1(TForm3D *scrot)
 {
     SinCos *angl = &TFEngine::SinCos_table[scrot->ax >> 16];
 
-    scrot->locSclRot.m00 = scrot->scale.sx;
+    scrot->locSclRot.m00 = scrot->scale.x;
     scrot->locSclRot.m01 = 0;
     scrot->locSclRot.m02 = 0;
 
     scrot->locSclRot.m10 = 0;
-    scrot->locSclRot.m11 = scrot->scale.sy * angl->cos;
-    scrot->locSclRot.m12 = scrot->scale.sy * -angl->sin;
+    scrot->locSclRot.m11 = scrot->scale.y * angl->cos;
+    scrot->locSclRot.m12 = scrot->scale.y * -angl->sin;
 
     scrot->locSclRot.m20 = 0;
-    scrot->locSclRot.m21 = scrot->scale.sz * angl->sin;
-    scrot->locSclRot.m22 = scrot->scale.sz * angl->cos;
+    scrot->locSclRot.m21 = scrot->scale.z * angl->sin;
+    scrot->locSclRot.m22 = scrot->scale.z * angl->cos;
 
 }
 
@@ -179,17 +179,17 @@ void scale_rot_2(TForm3D *scrot)
 {
     SinCos *angl = &TFEngine::SinCos_table[scrot->ay >> 16];
 
-    scrot->locSclRot.m00 = scrot->scale.sx * angl->cos;
+    scrot->locSclRot.m00 = scrot->scale.x * angl->cos;
     scrot->locSclRot.m01 = 0;
-    scrot->locSclRot.m02 = scrot->scale.sx * angl->sin;
+    scrot->locSclRot.m02 = scrot->scale.x * angl->sin;
 
     scrot->locSclRot.m10 = 0;
-    scrot->locSclRot.m11 = scrot->scale.sy;
+    scrot->locSclRot.m11 = scrot->scale.y;
     scrot->locSclRot.m12 = 0;
 
-    scrot->locSclRot.m20 = -angl->sin * scrot->scale.sz;
+    scrot->locSclRot.m20 = -angl->sin * scrot->scale.z;
     scrot->locSclRot.m21 = 0;
-    scrot->locSclRot.m22 = scrot->scale.sz * angl->cos;
+    scrot->locSclRot.m22 = scrot->scale.z * angl->cos;
 }
 
 // rot_x != 0   rot_y != 0   rot_z == 0
@@ -198,17 +198,17 @@ void scale_rot_3(TForm3D *scrot)
     SinCos *angl_x = &TFEngine::SinCos_table[scrot->ax >> 16];
     SinCos *angl_y = &TFEngine::SinCos_table[scrot->ay >> 16];
 
-    scrot->locSclRot.m00 = scrot->scale.sx * angl_y->cos;
+    scrot->locSclRot.m00 = scrot->scale.x * angl_y->cos;
     scrot->locSclRot.m01 = 0;
-    scrot->locSclRot.m02 = scrot->scale.sx * angl_y->sin;
+    scrot->locSclRot.m02 = scrot->scale.x * angl_y->sin;
 
-    scrot->locSclRot.m10 = angl_x->sin * angl_y->sin * scrot->scale.sy;
-    scrot->locSclRot.m11 = scrot->scale.sy * angl_x->cos;
-    scrot->locSclRot.m12 = -angl_x->sin * angl_y->cos * scrot->scale.sy;
+    scrot->locSclRot.m10 = angl_x->sin * angl_y->sin * scrot->scale.y;
+    scrot->locSclRot.m11 = scrot->scale.y * angl_x->cos;
+    scrot->locSclRot.m12 = -angl_x->sin * angl_y->cos * scrot->scale.y;
 
-    scrot->locSclRot.m20 = -angl_x->cos * angl_y->sin * scrot->scale.sz;
-    scrot->locSclRot.m21 = scrot->scale.sz * angl_x->sin;
-    scrot->locSclRot.m22 = angl_x->cos * angl_y->cos * scrot->scale.sz;
+    scrot->locSclRot.m20 = -angl_x->cos * angl_y->sin * scrot->scale.z;
+    scrot->locSclRot.m21 = scrot->scale.z * angl_x->sin;
+    scrot->locSclRot.m22 = angl_x->cos * angl_y->cos * scrot->scale.z;
 }
 
 // rot_x == 0   rot_y == 0   rot_z != 0
@@ -216,17 +216,17 @@ void scale_rot_4(TForm3D *scrot)
 {
     SinCos *angl = &TFEngine::SinCos_table[scrot->az >> 16];
 
-    scrot->locSclRot.m00 = scrot->scale.sx * angl->cos;
-    scrot->locSclRot.m01 = -angl->sin * scrot->scale.sx;
+    scrot->locSclRot.m00 = scrot->scale.x * angl->cos;
+    scrot->locSclRot.m01 = -angl->sin * scrot->scale.x;
     scrot->locSclRot.m02 = 0;
 
-    scrot->locSclRot.m10 = scrot->scale.sy * angl->sin;
-    scrot->locSclRot.m11 = scrot->scale.sy * angl->cos;
+    scrot->locSclRot.m10 = scrot->scale.y * angl->sin;
+    scrot->locSclRot.m11 = scrot->scale.y * angl->cos;
     scrot->locSclRot.m12 = 0;
 
     scrot->locSclRot.m20 = 0;
     scrot->locSclRot.m21 = 0;
-    scrot->locSclRot.m22 = scrot->scale.sz;
+    scrot->locSclRot.m22 = scrot->scale.z;
 }
 
 // rot_x != 0   rot_y == 0   rot_z != 0
@@ -235,17 +235,17 @@ void scale_rot_5(TForm3D *scrot)
     SinCos *angl_x = &TFEngine::SinCos_table[scrot->ax >> 16];
     SinCos *angl_z = &TFEngine::SinCos_table[scrot->az >> 16];
 
-    scrot->locSclRot.m00 = scrot->scale.sx * angl_z->cos;
-    scrot->locSclRot.m01 = -angl_z->sin * angl_x->cos * scrot->scale.sx;
-    scrot->locSclRot.m02 = angl_z->sin * angl_x->sin * scrot->scale.sx;
+    scrot->locSclRot.m00 = scrot->scale.x * angl_z->cos;
+    scrot->locSclRot.m01 = -angl_z->sin * angl_x->cos * scrot->scale.x;
+    scrot->locSclRot.m02 = angl_z->sin * angl_x->sin * scrot->scale.x;
 
-    scrot->locSclRot.m10 = scrot->scale.sy * angl_z->sin;
-    scrot->locSclRot.m11 = angl_z->cos * angl_x->cos * scrot->scale.sy;
-    scrot->locSclRot.m12 = -angl_z->cos * angl_x->sin * scrot->scale.sy;
+    scrot->locSclRot.m10 = scrot->scale.y * angl_z->sin;
+    scrot->locSclRot.m11 = angl_z->cos * angl_x->cos * scrot->scale.y;
+    scrot->locSclRot.m12 = -angl_z->cos * angl_x->sin * scrot->scale.y;
 
     scrot->locSclRot.m20 = 0;
-    scrot->locSclRot.m21 = scrot->scale.sz * angl_x->sin;
-    scrot->locSclRot.m22 = scrot->scale.sz * angl_x->cos;
+    scrot->locSclRot.m21 = scrot->scale.z * angl_x->sin;
+    scrot->locSclRot.m22 = scrot->scale.z * angl_x->cos;
 }
 
 // rot_x == 0   rot_y != 0   rot_z != 0
@@ -254,17 +254,17 @@ void scale_rot_6(TForm3D *scrot)
     SinCos *angl_y = &TFEngine::SinCos_table[scrot->ay >> 16];
     SinCos *angl_z = &TFEngine::SinCos_table[scrot->az >> 16];
 
-    scrot->locSclRot.m00 = angl_z->cos * angl_y->cos * scrot->scale.sx;
-    scrot->locSclRot.m01 = -angl_z->sin * scrot->scale.sx;
-    scrot->locSclRot.m02 = angl_z->cos * angl_y->sin * scrot->scale.sx;
+    scrot->locSclRot.m00 = angl_z->cos * angl_y->cos * scrot->scale.x;
+    scrot->locSclRot.m01 = -angl_z->sin * scrot->scale.x;
+    scrot->locSclRot.m02 = angl_z->cos * angl_y->sin * scrot->scale.x;
 
-    scrot->locSclRot.m10 = angl_z->sin * angl_y->cos * scrot->scale.sy;
-    scrot->locSclRot.m11 = scrot->scale.sy * angl_z->cos;
-    scrot->locSclRot.m12 = angl_z->sin * angl_y->sin * scrot->scale.sy;
+    scrot->locSclRot.m10 = angl_z->sin * angl_y->cos * scrot->scale.y;
+    scrot->locSclRot.m11 = scrot->scale.y * angl_z->cos;
+    scrot->locSclRot.m12 = angl_z->sin * angl_y->sin * scrot->scale.y;
 
-    scrot->locSclRot.m20 = -angl_y->sin * scrot->scale.sz;
+    scrot->locSclRot.m20 = -angl_y->sin * scrot->scale.z;
     scrot->locSclRot.m21 = 0;
-    scrot->locSclRot.m22 = scrot->scale.sz * angl_y->cos;
+    scrot->locSclRot.m22 = scrot->scale.z * angl_y->cos;
 
 }
 
@@ -276,24 +276,24 @@ void scale_rot_7(TForm3D *scrot)
     SinCos *angl_z = &TFEngine::SinCos_table[scrot->az >> 16];
 
 
-    scrot->locSclRot.m00 = (angl_z->cos * angl_y->cos - angl_z->sin * angl_x->sin * angl_y->sin) * scrot->scale.sx;
-    scrot->locSclRot.m01 = -angl_z->sin * angl_x->cos * scrot->scale.sx;
-    scrot->locSclRot.m02 = (angl_z->cos * angl_y->sin + angl_z->sin * angl_x->sin * angl_y->cos) * scrot->scale.sx;
+    scrot->locSclRot.m00 = (angl_z->cos * angl_y->cos - angl_z->sin * angl_x->sin * angl_y->sin) * scrot->scale.x;
+    scrot->locSclRot.m01 = -angl_z->sin * angl_x->cos * scrot->scale.x;
+    scrot->locSclRot.m02 = (angl_z->cos * angl_y->sin + angl_z->sin * angl_x->sin * angl_y->cos) * scrot->scale.x;
 
-    scrot->locSclRot.m10 = (angl_z->sin * angl_y->cos + angl_z->cos * angl_x->sin * angl_y->sin) * scrot->scale.sy;
-    scrot->locSclRot.m11 = angl_z->cos * angl_x->cos * scrot->scale.sy;
-    scrot->locSclRot.m12 = (angl_z->sin * angl_y->sin - angl_z->cos * angl_x->sin * angl_y->cos) * scrot->scale.sy;
+    scrot->locSclRot.m10 = (angl_z->sin * angl_y->cos + angl_z->cos * angl_x->sin * angl_y->sin) * scrot->scale.y;
+    scrot->locSclRot.m11 = angl_z->cos * angl_x->cos * scrot->scale.y;
+    scrot->locSclRot.m12 = (angl_z->sin * angl_y->sin - angl_z->cos * angl_x->sin * angl_y->cos) * scrot->scale.y;
 
-    scrot->locSclRot.m20 = -angl_x->cos * angl_y->sin * scrot->scale.sz;
-    scrot->locSclRot.m21 = scrot->scale.sz * angl_x->sin;
-    scrot->locSclRot.m22 = angl_x->cos * angl_y->cos * scrot->scale.sz;
+    scrot->locSclRot.m20 = -angl_x->cos * angl_y->sin * scrot->scale.z;
+    scrot->locSclRot.m21 = scrot->scale.z * angl_x->sin;
+    scrot->locSclRot.m22 = angl_x->cos * angl_y->cos * scrot->scale.z;
 }
 
 
 void make_scale_rotation__matrix(TForm3D *scrot)
 {
     typedef void (*matrfunc)(TForm3D *);
-    matrfunc off_5151E0[8] = {scale_rot_0, scale_rot_1, scale_rot_2, scale_rot_3, scale_rot_4, scale_rot_5, scale_rot_6, scale_rot_7};
+    static const matrfunc off_5151E0[8] = {scale_rot_0, scale_rot_1, scale_rot_2, scale_rot_3, scale_rot_4, scale_rot_5, scale_rot_6, scale_rot_7};
 
     uint8_t func_id = 0;
 
@@ -309,8 +309,23 @@ void make_scale_rotation__matrix(TForm3D *scrot)
     off_5151E0[func_id](scrot);
 }
 
-int NC_STACK_base::base_func0__sub0(stack_vals *stak)
+size_t NC_STACK_base::func0(IDVList *stak)
 {
+    if ( !NC_STACK_nucleus::func0(stak) )
+        return 0;
+
+    stack__base.ID = baseIDcounter;
+    baseIDcounter++;
+
+    init_list(&stack__base.ADES);
+    init_list(&stack__base.KIDS);
+
+    stack__base.transform.scale = vec3d(1.0, 1.0, 1.0);
+
+    stack__base.kid_node.self_full = this;
+
+    make_scale_rotation__matrix(&stack__base.transform);
+
     stack__base.visLimit = 4096;
 
     stack__base.renderMsg.fadeStart = 3496.0;
@@ -320,108 +335,67 @@ int NC_STACK_base::base_func0__sub0(stack_vals *stak)
     stack__base.flags |= BASE_FLAG_RENDERALL;
     stack__base.transform.flags |= 1;
 
-
-    stack_vals *stk = stak;
-
-    while ( 1 )
+    if (stak)
     {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
         {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
+            IDVPair &val = it->second;
+
+            if ( !val.skip() )
             {
-            default:
-                break;
+                switch (val.id)
+                {
+                case BASE_ATT_SKELET:
+                    setBASE_skeleton((NC_STACK_skeleton *)val.value.p_data);
+                    break;
 
-            case BASE_ATT_SKELET:
-                setBASE_skeleton((NC_STACK_skeleton *)stk->value.p_data);
-                break;
+                case BASE_ATT_ADE:
+                    setBASE_ADE((NC_STACK_ade *)val.value.p_data);
+                    break;
 
-            case BASE_ATT_ADE:
-                setBASE_ADE((NC_STACK_ade *)stk->value.p_data);
-                break;
+                case BASE_ATT_PARENTFOLLOW:
+                    setBASE_parentFollow(val.value.i_data);
+                    break;
 
-            case BASE_ATT_PARENTFOLLOW:
-                setBASE_parentFollow(stk->value.i_data);
-                break;
+                case BASE_ATT_VISLIMIT:
+                    setBASE_visLimit(val.value.i_data);
+                    break;
 
-            case BASE_ATT_VISLIMIT:
-                setBASE_visLimit(stk->value.i_data);
-                break;
+                case BASE_ATT_AMBIENTLIGHT:
+                    setBASE_ambientLight(val.value.i_data);
+                    break;
 
-            case BASE_ATT_AMBIENTLIGHT:
-                setBASE_ambientLight(stk->value.i_data);
-                break;
+                case BASE_ATT_RENDERALL:
+                    setBASE_renderAll(val.value.i_data);
+                    break;
 
-            case BASE_ATT_RENDERALL:
-                setBASE_renderAll(stk->value.i_data);
-                break;
+                case BASE_ATT_INPUTHANDLE:
+                    setBASE_inputHandle (val.value.i_data);
+                    break;
 
-            case BASE_ATT_INPUTHANDLE:
-                setBASE_inputHandle (stk->value.i_data);
-                break;
+                case BASE_ATT_FADELEN:
+                    setBASE_fadeLength(val.value.i_data);
+                    break;
 
-            case BASE_ATT_FADELEN:
-                setBASE_fadeLength(stk->value.i_data);
-                break;
+                case BASE_ATT_STATIC:
+                    setBASE_static (val.value.i_data);
+                    break;
 
-            case BASE_ATT_STATIC:
-                setBASE_static (stk->value.i_data);
-                break;
+                case BASE_ATT_EMBDRSRC:
+                    setBASE_embdRsrc(val.value.i_data);
+                    break;
 
-            case BASE_ATT_EMBDRSRC:
-                setBASE_embdRsrc(stk->value.i_data);
-                break;
+                default:
+                    break;
+                }
             }
-            stk++;
         }
     }
 
     return 1;
 }
 
-size_t NC_STACK_base::func0(stack_vals *stak)
-{
-    if ( !NC_STACK_nucleus::func0(stak) )
-        return 0;
-
-
-    __NC_STACK_base *base = &stack__base;
-
-    base->ID = baseIDcounter;
-    baseIDcounter++;
-
-    init_list(&base->ADES);
-    init_list(&base->KIDS);
-
-    base->transform.scale.sx = 1.0;
-    base->transform.scale.sy = 1.0;
-    base->transform.scale.sz = 1.0;
-
-    base->kid_node.self_full = this;
-
-    make_scale_rotation__matrix(&base->transform);
-
-    if ( !base_func0__sub0(stak) )
-    {
-        func1(NULL);
-        return 0;
-    }
-
-    return 1;
-}
-
-size_t NC_STACK_base::func1(stack_vals *stak)
+size_t NC_STACK_base::func1()
 {
     __NC_STACK_base *base = &stack__base;
 
@@ -454,223 +428,196 @@ size_t NC_STACK_base::func1(stack_vals *stak)
     if ( base->OBJT )
         delete_class_obj(base->OBJT);
 
-    return NC_STACK_nucleus::func1(stak);
+    return NC_STACK_nucleus::func1();
 }
 
-void NC_STACK_base::base_setter(stack_vals *stak)
+size_t NC_STACK_base::func2(IDVList *stak)
 {
-    stack_vals *stk = stak;
-
-    while ( 1 )
+    if (stak)
     {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
         {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
+            IDVPair &val = it->second;
+
+            if ( !val.skip() )
             {
-            default:
-                break;
+                switch (val.id)
+                {
+                case BASE_ATT_SKELET:
+                    setBASE_skeleton((NC_STACK_skeleton *)val.value.p_data);
+                    break;
 
-            case BASE_ATT_SKELET:
-                setBASE_skeleton((NC_STACK_skeleton *)stk->value.p_data);
-                break;
+                case BASE_ATT_ADE:
+                    setBASE_ADE((NC_STACK_ade *)val.value.p_data);
+                    break;
 
-            case BASE_ATT_ADE:
-                setBASE_ADE((NC_STACK_ade *)stk->value.p_data);
-                break;
+                case BASE_ATT_PARENTFOLLOW:
+                    setBASE_parentFollow(val.value.i_data);
+                    break;
 
-            case BASE_ATT_PARENTFOLLOW:
-                setBASE_parentFollow(stk->value.i_data);
-                break;
+                case BASE_ATT_VISLIMIT:
+                    setBASE_visLimit(val.value.i_data);
+                    break;
 
-            case BASE_ATT_VISLIMIT:
-                setBASE_visLimit(stk->value.i_data);
-                break;
+                case BASE_ATT_AMBIENTLIGHT:
+                    setBASE_ambientLight(val.value.i_data);
+                    break;
 
-            case BASE_ATT_AMBIENTLIGHT:
-                setBASE_ambientLight(stk->value.i_data);
-                break;
+                case BASE_ATT_RENDERALL:
+                    setBASE_renderAll(val.value.i_data);
+                    break;
 
-            case BASE_ATT_RENDERALL:
-                setBASE_renderAll(stk->value.i_data);
-                break;
+                case BASE_ATT_INPUTHANDLE:
+                    setBASE_inputHandle (val.value.i_data);
+                    break;
 
-            case BASE_ATT_INPUTHANDLE:
-                setBASE_inputHandle (stk->value.i_data);
-                break;
+                case BASE_ATT_FADELEN:
+                    setBASE_fadeLength(val.value.i_data);
+                    break;
 
-            case BASE_ATT_FADELEN:
-                setBASE_fadeLength(stk->value.i_data);
-                break;
+                case BASE_ATT_STATIC:
+                    setBASE_static (val.value.i_data);
+                    break;
 
-            case BASE_ATT_STATIC:
-                setBASE_static (stk->value.i_data);
-                break;
+                case BASE_ATT_EMBDRSRC:
+                    setBASE_embdRsrc(val.value.i_data);
+                    break;
 
-            case BASE_ATT_EMBDRSRC:
-                setBASE_embdRsrc(stk->value.i_data);
-                break;
+                default:
+                    break;
+                }
             }
-            stk++;
         }
     }
-}
-
-size_t NC_STACK_base::func2(stack_vals *stak)
-{
-    base_setter(stak);
 
     return NC_STACK_nucleus::func2(stak);
 }
 
-void NC_STACK_base::base_getter(stack_vals *stak)
+size_t NC_STACK_base::func3(IDVList *stak)
 {
-    stack_vals *stk = stak;
-
-    while ( 1 )
+    if (stak)
     {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
         {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
+            IDVPair &val = it->second;
+
+            if ( !val.skip() )
             {
-            default:
-                break;
-            case BASE_ATT_SKELET:
-                *(NC_STACK_skeleton **)stk->value.p_data = getBASE_skeleton();
-                break;
-            case BASE_ATT_PARENTFOLLOW:
-                *(int *)stk->value.p_data = getBASE_parentFollow();
-                break;
-            case 0x80001003:
-            case 0x80001007:
-                *(int *)stk->value.p_data = 0;
-                break;
-            case BASE_ATT_VISLIMIT:
-                *(int *)stk->value.p_data = getBASE_visLimit();
-                break;
-            case BASE_ATT_AMBIENTLIGHT:
-                *(int *)stk->value.p_data = getBASE_ambientLight();
-                break;
-            case BASE_ATT_RENDERALL:
-                *(int *)stk->value.p_data = getBASE_renderAll();
-                break;
-            case BASE_ATT_INPUTHANDLE:
-                *(int *)stk->value.p_data = getBASE_inputHandle();
-                break;
-            case BASE_ATT_X:
-                *(float *)stk->value.p_data = getBASE_x();
-                break;
-            case BASE_ATT_Y:
-                *(float *)stk->value.p_data = getBASE_y();
-                break;
-            case BASE_ATT_Z:
-                *(float *)stk->value.p_data = getBASE_z();
-                break;
-            case BASE_ATT_VX:
-                *(float *)stk->value.p_data = getBASE_vx();
-                break;
-            case BASE_ATT_VY:
-                *(float *)stk->value.p_data = getBASE_vy();
-                break;
-            case BASE_ATT_VZ:
-                *(float *)stk->value.p_data = getBASE_vz();
-                break;
-            case BASE_ATT_AX:
-                *(int *)stk->value.p_data = getBASE_ax();
-                break;
-            case BASE_ATT_AY:
-                *(int *)stk->value.p_data = getBASE_ay();
-                break;
-            case BASE_ATT_AZ:
-                *(int *)stk->value.p_data = getBASE_az();
-                break;
-            case BASE_ATT_RX:
-                *(int *)stk->value.p_data = getBASE_rx();
-                break;
-            case BASE_ATT_RY:
-                *(int *)stk->value.p_data = getBASE_ry();
-                break;
-            case BASE_ATT_RZ:
-                *(int *)stk->value.p_data = getBASE_rz();
-                break;
-            case BASE_ATT_SX:
-                *(float *)stk->value.p_data = getBASE_sx();
-                break;
-            case BASE_ATT_SY:
-                *(float *)stk->value.p_data = getBASE_sy();
-                break;
-            case BASE_ATT_SZ:
-                *(float *)stk->value.p_data = getBASE_sz();
-                break;
-            case BASE_ATT_ADELIST:
-                *(nlist **)stk->value.p_data = getBASE_adeList();
-                break;
-            case BASE_ATT_PTRANSFORM:
-                *(TForm3D **)stk->value.p_data = getBASE_pTransform();
-                break;
-            case BASE_ATT_KIDSLIST:
-                *(nlist **)stk->value.p_data = getBASE_kidList();
-                break;
-            case BASE_ATT_KIDNODE:
-                *(base_node **)stk->value.p_data = getBASE_kidNode();
-                break;
-            case BASE_ATT_RENDERPARAMS:
-                *(area_arg_65 **)stk->value.p_data = getBASE_renderParams();
-                break;
-            case BASE_ATT_MAINKID:
-                *(int *)stk->value.p_data = getBASE_mainKid();
-                break;
-            case BASE_ATT_MAINOBJT:
-                *(int *)stk->value.p_data = getBASE_mainObjt();
-                break;
-            case BASE_ATT_RENDERSTACK:
-//                *(void **)stk->value.p_data = getBASE_renderStack();
-                break;
-            case BASE_ATT_ARGSTACK:
-//                *(void **)stk->value.p_data = getBASE_argStack();
-                break;
-            case BASE_ATT_ENDARGSTACK:
-//                *(void **)stk->value.p_data = getBASE_endArgStack();
-                break;
-            case BASE_ATT_FADELEN:
-                *(int *)stk->value.p_data = getBASE_fadeLength();
-                break;
-            case BASE_ATT_STATIC:
-                *(int *)stk->value.p_data = getBASE_static();
-                break;
-            case BASE_ATT_EMBDRSRC:
-                *(int *)stk->value.p_data = getBASE_embdRsrc();
-                break;
+                switch (val.id)
+                {
+                case BASE_ATT_SKELET:
+                    *(NC_STACK_skeleton **)val.value.p_data = getBASE_skeleton();
+                    break;
+                case BASE_ATT_PARENTFOLLOW:
+                    *(int *)val.value.p_data = getBASE_parentFollow();
+                    break;
+                case 0x80001003:
+                case 0x80001007:
+                    *(int *)val.value.p_data = 0;
+                    break;
+                case BASE_ATT_VISLIMIT:
+                    *(int *)val.value.p_data = getBASE_visLimit();
+                    break;
+                case BASE_ATT_AMBIENTLIGHT:
+                    *(int *)val.value.p_data = getBASE_ambientLight();
+                    break;
+                case BASE_ATT_RENDERALL:
+                    *(int *)val.value.p_data = getBASE_renderAll();
+                    break;
+                case BASE_ATT_INPUTHANDLE:
+                    *(int *)val.value.p_data = getBASE_inputHandle();
+                    break;
+                case BASE_ATT_X:
+                    *(float *)val.value.p_data = getBASE_x();
+                    break;
+                case BASE_ATT_Y:
+                    *(float *)val.value.p_data = getBASE_y();
+                    break;
+                case BASE_ATT_Z:
+                    *(float *)val.value.p_data = getBASE_z();
+                    break;
+                case BASE_ATT_VX:
+                    *(float *)val.value.p_data = getBASE_vx();
+                    break;
+                case BASE_ATT_VY:
+                    *(float *)val.value.p_data = getBASE_vy();
+                    break;
+                case BASE_ATT_VZ:
+                    *(float *)val.value.p_data = getBASE_vz();
+                    break;
+                case BASE_ATT_AX:
+                    *(int *)val.value.p_data = getBASE_ax();
+                    break;
+                case BASE_ATT_AY:
+                    *(int *)val.value.p_data = getBASE_ay();
+                    break;
+                case BASE_ATT_AZ:
+                    *(int *)val.value.p_data = getBASE_az();
+                    break;
+                case BASE_ATT_RX:
+                    *(int *)val.value.p_data = getBASE_rx();
+                    break;
+                case BASE_ATT_RY:
+                    *(int *)val.value.p_data = getBASE_ry();
+                    break;
+                case BASE_ATT_RZ:
+                    *(int *)val.value.p_data = getBASE_rz();
+                    break;
+                case BASE_ATT_SX:
+                    *(float *)val.value.p_data = getBASE_sx();
+                    break;
+                case BASE_ATT_SY:
+                    *(float *)val.value.p_data = getBASE_sy();
+                    break;
+                case BASE_ATT_SZ:
+                    *(float *)val.value.p_data = getBASE_sz();
+                    break;
+                case BASE_ATT_ADELIST:
+                    *(nlist **)val.value.p_data = getBASE_adeList();
+                    break;
+                case BASE_ATT_PTRANSFORM:
+                    *(TForm3D **)val.value.p_data = getBASE_pTransform();
+                    break;
+                case BASE_ATT_KIDSLIST:
+                    *(nlist **)val.value.p_data = getBASE_kidList();
+                    break;
+                case BASE_ATT_KIDNODE:
+                    *(base_node **)val.value.p_data = getBASE_kidNode();
+                    break;
+                case BASE_ATT_RENDERPARAMS:
+                    *(area_arg_65 **)val.value.p_data = getBASE_renderParams();
+                    break;
+                case BASE_ATT_MAINKID:
+                    *(int *)val.value.p_data = getBASE_mainKid();
+                    break;
+                case BASE_ATT_MAINOBJT:
+                    *(int *)val.value.p_data = getBASE_mainObjt();
+                    break;
+                case BASE_ATT_RENDERSTACK:
+                    //                *(void **)val.value.p_data = getBASE_renderStack();
+                    break;
+                case BASE_ATT_ARGSTACK:
+                    //                *(void **)val.value.p_data = getBASE_argStack();
+                    break;
+                case BASE_ATT_ENDARGSTACK:
+                    //                *(void **)val.value.p_data = getBASE_endArgStack();
+                    break;
+                case BASE_ATT_FADELEN:
+                    *(int *)val.value.p_data = getBASE_fadeLength();
+                    break;
+                case BASE_ATT_STATIC:
+                    *(int *)val.value.p_data = getBASE_static();
+                    break;
+                case BASE_ATT_EMBDRSRC:
+                    *(int *)val.value.p_data = getBASE_embdRsrc();
+                    break;
+
+                default:
+                    break;
+                }
             }
-            stk++;
         }
     }
-}
-
-size_t NC_STACK_base::func3(stack_vals *stak)
-{
-    base_getter(stak);
 
     return NC_STACK_nucleus::func3(stak);
 }
@@ -685,17 +632,17 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, IFFile *mfile)
 
         readOK &= mfile->readS16B(dst.version);
 
-        readOK &= mfile->readFloatB(dst.pos.sx);
-        readOK &= mfile->readFloatB(dst.pos.sy);
-        readOK &= mfile->readFloatB(dst.pos.sz);
+        readOK &= mfile->readFloatB(dst.pos.x);
+        readOK &= mfile->readFloatB(dst.pos.y);
+        readOK &= mfile->readFloatB(dst.pos.z);
 
-        readOK &= mfile->readFloatB(dst.vec.sx);
-        readOK &= mfile->readFloatB(dst.vec.sy);
-        readOK &= mfile->readFloatB(dst.vec.sz);
+        readOK &= mfile->readFloatB(dst.vec.x);
+        readOK &= mfile->readFloatB(dst.vec.y);
+        readOK &= mfile->readFloatB(dst.vec.z);
 
-        readOK &= mfile->readFloatB(dst.scale.sx);
-        readOK &= mfile->readFloatB(dst.scale.sy);
-        readOK &= mfile->readFloatB(dst.scale.sz);
+        readOK &= mfile->readFloatB(dst.scale.x);
+        readOK &= mfile->readFloatB(dst.scale.y);
+        readOK &= mfile->readFloatB(dst.scale.z);
 
         readOK &= mfile->readS16B(dst.ax);
         readOK &= mfile->readS16B(dst.ay);
@@ -724,24 +671,24 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, IFFile *mfile)
             flag_xyz v38;
 
             v38.flag = 7;
-            v38.x = dst.pos.sx;
-            v38.y = dst.pos.sy;
-            v38.z = dst.pos.sz;
+            v38.x = dst.pos.x;
+            v38.y = dst.pos.y;
+            v38.z = dst.pos.z;
 
             obj->base_func68(&v38);
 
 
-            v38.x = dst.scale.sx;
-            v38.y = dst.scale.sy;
-            v38.z = dst.scale.sz;
+            v38.x = dst.scale.x;
+            v38.y = dst.scale.y;
+            v38.z = dst.scale.z;
 
             obj->base_func72(&v38); // SET_SCALE ?
 
             if ( dst.attFlags & 1 )
             {
-                v38.x = dst.vec.sx;
-                v38.y = dst.vec.sy;
-                v38.z = dst.vec.sz;
+                v38.x = dst.vec.x;
+                v38.y = dst.vec.y;
+                v38.z = dst.vec.z;
             }
             else
             {
@@ -878,7 +825,7 @@ size_t NC_STACK_base::func5(IFFile **file)
         if ( iff_res )
         {
             if ( obj_ok )
-                func1(NULL);
+                func1();
             return 0;
         }
 
@@ -898,9 +845,9 @@ size_t NC_STACK_base::func5(IFFile **file)
             init_list(&base->ADES);
             init_list(&base->KIDS);
 
-            base->transform.scale.sx = 1.0;
-            base->transform.scale.sy = 1.0;
-            base->transform.scale.sz = 1.0;
+            base->transform.scale.x = 1.0;
+            base->transform.scale.y = 1.0;
+            base->transform.scale.z = 1.0;
 
             base->ID = baseIDcounter;
 
@@ -920,7 +867,7 @@ size_t NC_STACK_base::func5(IFFile **file)
 
             if ( !base_READ_STRC(this, base, mfile) )
             {
-                func1(NULL);
+                func1();
                 return 0;
             }
             mfile->parse();
@@ -934,7 +881,7 @@ size_t NC_STACK_base::func5(IFFile **file)
                     NC_STACK_skeleton *skel = dynamic_cast<NC_STACK_skeleton *>(READ_OBJT(mfile));
                     if ( !skel )
                     {
-                        func1(NULL);
+                        func1();
                         return 0;
                     }
                     setBASE_skeleton(skel);
@@ -949,7 +896,7 @@ size_t NC_STACK_base::func5(IFFile **file)
         {
             if ( !base_READ_ADES(this, base, mfile) )
             {
-                func1(NULL);
+                func1();
                 return 0;
             }
         }
@@ -957,7 +904,7 @@ size_t NC_STACK_base::func5(IFFile **file)
         {
             if ( !base_READ_KIDS(this, base, mfile) )
             {
-                func1(NULL);
+                func1();
                 return 0;
             }
         }
@@ -997,17 +944,17 @@ size_t NC_STACK_base::func6(IFFile **file)
     mfile->pushChunk(0, TAG_STRC, -1);
 
     mfile->writeS16B(1); // version
-    mfile->writeFloatB(base->transform.locPos.sx);
-    mfile->writeFloatB(base->transform.locPos.sy);
-    mfile->writeFloatB(base->transform.locPos.sz);
+    mfile->writeFloatB(base->transform.locPos.x);
+    mfile->writeFloatB(base->transform.locPos.y);
+    mfile->writeFloatB(base->transform.locPos.z);
 
-    mfile->writeFloatB(base->transform.vec.sx);
-    mfile->writeFloatB(base->transform.vec.sy);
-    mfile->writeFloatB(base->transform.vec.sz);
+    mfile->writeFloatB(base->transform.vec.x);
+    mfile->writeFloatB(base->transform.vec.y);
+    mfile->writeFloatB(base->transform.vec.z);
 
-    mfile->writeFloatB(base->transform.scale.sx);
-    mfile->writeFloatB(base->transform.scale.sy);
-    mfile->writeFloatB(base->transform.scale.sz);
+    mfile->writeFloatB(base->transform.scale.x);
+    mfile->writeFloatB(base->transform.scale.y);
+    mfile->writeFloatB(base->transform.scale.z);
 
     mfile->writeS16B(base->transform.ax >> 16);
     mfile->writeS16B(base->transform.ay >> 16);
@@ -1273,20 +1220,20 @@ size_t NC_STACK_base::base_func68(flag_xyz *arg)
     if ( arg->flag & 0x10 )
     {
         if ( flg & 1 )
-            s3d->locPos.sx += arg->x;
+            s3d->locPos.x += arg->x;
         if ( flg & 2 )
-            s3d->locPos.sy += arg->y;
+            s3d->locPos.y += arg->y;
         if ( flg & 4 )
-            s3d->locPos.sz += arg->z;
+            s3d->locPos.z += arg->z;
     }
     else
     {
         if ( flg & 1 )
-            s3d->locPos.sx = arg->x;
+            s3d->locPos.x = arg->x;
         if ( flg & 2 )
-            s3d->locPos.sy = arg->y;
+            s3d->locPos.y = arg->y;
         if ( flg & 4 )
-            s3d->locPos.sz = arg->z;
+            s3d->locPos.z = arg->z;
     }
     return 1;
 }
@@ -1310,20 +1257,20 @@ size_t NC_STACK_base::base_func69(flag_xyz *arg)
         if ( flg & 0x10 )
         {
             if ( flg & 1 )
-                s3d->vec.sx += arg->x;
+                s3d->vec.x += arg->x;
             if ( flg & 2 )
-                s3d->vec.sy += arg->y;
+                s3d->vec.y += arg->y;
             if ( flg & 4 )
-                s3d->vec.sz += arg->z;
+                s3d->vec.z += arg->z;
         }
         else
         {
             if ( flg & 1 )
-                s3d->vec.sx = arg->x;
+                s3d->vec.x = arg->x;
             if ( flg & 2 )
-                s3d->vec.sy = arg->y;
+                s3d->vec.y = arg->y;
             if ( flg & 4 )
-                s3d->vec.sz = arg->z;
+                s3d->vec.z = arg->z;
         }
     }
 
@@ -1412,20 +1359,20 @@ size_t NC_STACK_base::base_func72(flag_xyz *arg)
     if ( arg->flag & 0x10 )
     {
         if ( flg & 1 )
-            s3d->scale.sx *= arg->x;
+            s3d->scale.x *= arg->x;
         if ( flg & 2 )
-            s3d->scale.sy *= arg->y;
+            s3d->scale.y *= arg->y;
         if ( flg & 4 )
-            s3d->scale.sz *= arg->z;
+            s3d->scale.z *= arg->z;
     }
     else
     {
         if ( flg & 1 )
-            s3d->scale.sx = arg->x;
+            s3d->scale.x = arg->x;
         if ( flg & 2 )
-            s3d->scale.sy = arg->y;
+            s3d->scale.y = arg->y;
         if ( flg & 4 )
-            s3d->scale.sz = arg->z;
+            s3d->scale.z = arg->z;
     }
 
     make_scale_rotation__matrix(s3d);
@@ -1449,9 +1396,9 @@ size_t NC_STACK_base::base_func73(base_64arg *arg)
 
             if ( base->flags & 1 )
             {
-                base->transform.locPos.sx += base->transform.vec.sx * arg->field_4;
-                base->transform.locPos.sy += base->transform.vec.sy * arg->field_4;
-                base->transform.locPos.sz += base->transform.vec.sz * arg->field_4;
+                base->transform.locPos.x += base->transform.vec.x * arg->field_4;
+                base->transform.locPos.y += base->transform.vec.y * arg->field_4;
+                base->transform.locPos.z += base->transform.vec.z * arg->field_4;
             }
 
             if ( base->flags & 2 )
@@ -1559,13 +1506,13 @@ size_t NC_STACK_base::base_func78(base_64arg *arg)
     base->transform.ry = -arg->field_8->sliders_vars[30] * 16384.0;
     base->transform.rz = -arg->field_8->sliders_vars[29] * 16384.0;
 
-    base->transform.vec.sx = -arg->field_8->sliders_vars[28] * base->transform.locSclRot.m20;
-    base->transform.vec.sy = 0;
-    base->transform.vec.sz = -arg->field_8->sliders_vars[28] * base->transform.locSclRot.m22;
+    base->transform.vec.x = -arg->field_8->sliders_vars[28] * base->transform.locSclRot.m20;
+    base->transform.vec.y = 0;
+    base->transform.vec.z = -arg->field_8->sliders_vars[28] * base->transform.locSclRot.m22;
 
-    base->transform.vec.sx += -arg->field_8->sliders_vars[27] * base->transform.locSclRot.m20;
-    base->transform.vec.sy += -arg->field_8->sliders_vars[27] * base->transform.locSclRot.m21;
-    base->transform.vec.sz += -arg->field_8->sliders_vars[27] * base->transform.locSclRot.m22;
+    base->transform.vec.x += -arg->field_8->sliders_vars[27] * base->transform.locSclRot.m20;
+    base->transform.vec.y += -arg->field_8->sliders_vars[27] * base->transform.locSclRot.m21;
+    base->transform.vec.z += -arg->field_8->sliders_vars[27] * base->transform.locSclRot.m22;
 
     return 1;
 }
@@ -1716,32 +1663,32 @@ int NC_STACK_base::getBASE_inputHandle()
 
 float NC_STACK_base::getBASE_x()
 {
-    return stack__base.transform.locPos.sx;
+    return stack__base.transform.locPos.x;
 }
 
 float NC_STACK_base::getBASE_y()
 {
-    return stack__base.transform.locPos.sy;
+    return stack__base.transform.locPos.y;
 }
 
 float NC_STACK_base::getBASE_z()
 {
-    return stack__base.transform.locPos.sz;
+    return stack__base.transform.locPos.z;
 }
 
 float NC_STACK_base::getBASE_vx()
 {
-    return stack__base.transform.vec.sx;
+    return stack__base.transform.vec.x;
 }
 
 float NC_STACK_base::getBASE_vy()
 {
-    return stack__base.transform.vec.sy;
+    return stack__base.transform.vec.y;
 }
 
 float NC_STACK_base::getBASE_vz()
 {
-    return stack__base.transform.vec.sz;
+    return stack__base.transform.vec.z;
 }
 
 int NC_STACK_base::getBASE_ax()
@@ -1776,17 +1723,17 @@ int NC_STACK_base::getBASE_rz()
 
 float NC_STACK_base::getBASE_sx()
 {
-    return stack__base.transform.scale.sx;
+    return stack__base.transform.scale.x;
 }
 
 float NC_STACK_base::getBASE_sy()
 {
-    return stack__base.transform.scale.sy;
+    return stack__base.transform.scale.y;
 }
 
 float NC_STACK_base::getBASE_sz()
 {
-    return stack__base.transform.scale.sz;
+    return stack__base.transform.scale.z;
 }
 
 nlist *NC_STACK_base::getBASE_adeList()
@@ -1871,13 +1818,13 @@ size_t NC_STACK_base::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (stack_vals *)data );
+        return (size_t)func0( (IDVList *)data );
     case 1:
-        return (size_t)func1( (stack_vals *)data );
+        return (size_t)func1();
     case 2:
-        return (size_t)func2( (stack_vals *)data );
+        return (size_t)func2( (IDVList *)data );
     case 3:
-        return (size_t)func3( (stack_vals *)data );
+        return (size_t)func3( (IDVList *)data );
     case 5:
         return (size_t)func5( (IFFile **)data );
     case 6:

@@ -25,7 +25,6 @@ const NewClassDescr NC_STACK_sklt::description("sklt.class", &newinstance);
 size_t NC_STACK_sklt::func5(IFFile **file)
 {
     char name[256];
-    stack_vals stk[3];
 
     IFFile *mfile = *file;
     int getted = 0;
@@ -54,11 +53,11 @@ size_t NC_STACK_sklt::func5(IFFile **file)
     if ( !getted )
         return 0;
 
-    stk[0].set(RSRC_ATT_NAME, name);
-    stk[1].set(RSRC_ATT_TRYSHARED, 1);
-    stk[2].end();
+    IDVList initVals;
+    initVals.Add(RSRC_ATT_NAME, name);
+    initVals.Add(RSRC_ATT_TRYSHARED, 1);
 
-    if ( !NC_STACK_skeleton::func0(stk) )
+    if ( !NC_STACK_skeleton::func0(&initVals) )
         return 0;
 
     return 1;
@@ -80,7 +79,7 @@ size_t NC_STACK_sklt::func6(IFFile **file)
     }
 }
 
-rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile, int version)
+rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, IDVList *stak, IFFile *mfile, int version)
 {
     IFFile::Context *chunk = mfile->getCurrentChunk();
 
@@ -100,12 +99,9 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile, i
     else
         return NULL;
 
-    stack_vals stk[2];
+    stak->Add(NC_STACK_skeleton::SKEL_ATT_POINTSCNT, num);
 
-    stk[0].set(NC_STACK_skeleton::SKEL_ATT_POINTSCNT, num);
-    stk[1].nextStack(stak);
-
-    rsrc *res = obj->NC_STACK_skeleton::rsrc_func64(stk);
+    rsrc *res = obj->NC_STACK_skeleton::rsrc_func64(stak);
     if ( res )
     {
         UAskeleton::Data *sklt = (UAskeleton::Data *)res->data;
@@ -120,9 +116,9 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile, i
                 mfile->readS16B(tmp[2]);
 
                 sklt->POO[i].flags = 0;
-                sklt->POO[i].sx = tmp[0];
-                sklt->POO[i].sy = tmp[1];
-                sklt->POO[i].sz = tmp[2];
+                sklt->POO[i].x = tmp[0];
+                sklt->POO[i].y = tmp[1];
+                sklt->POO[i].z = tmp[2];
             }
         }
         else if ( version == 2 )                  // POO2
@@ -130,9 +126,9 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile, i
             for (int i = 0; i < num; i++)
             {
                 sklt->POO[i].flags = 0;
-                mfile->readFloatB(sklt->POO[i].sx);
-                mfile->readFloatB(sklt->POO[i].sy);
-                mfile->readFloatB(sklt->POO[i].sz);
+                mfile->readFloatB(sklt->POO[i].x);
+                mfile->readFloatB(sklt->POO[i].y);
+                mfile->readFloatB(sklt->POO[i].z);
             }
         }
     }
@@ -255,9 +251,9 @@ int skeleton_read_senX(NC_STACK_sklt *obj, IFFile *mfile, UAskeleton::Data *sklt
                 mfile->readS16B(tmp[2]);
 
                 sklt->SEN[i].flags = 0;
-                sklt->SEN[i].sx = tmp[0];
-                sklt->SEN[i].sy = tmp[1];
-                sklt->SEN[i].sz = tmp[2];
+                sklt->SEN[i].x = tmp[0];
+                sklt->SEN[i].y = tmp[1];
+                sklt->SEN[i].z = tmp[2];
             }
         }
         else if ( version == 2 )
@@ -265,9 +261,9 @@ int skeleton_read_senX(NC_STACK_sklt *obj, IFFile *mfile, UAskeleton::Data *sklt
             for (int i = 0; i < sen_count; i++)
             {
                 sklt->SEN[i].flags = 0;
-                mfile->readFloatB(sklt->SEN[i].sx);
-                mfile->readFloatB(sklt->SEN[i].sy);
-                mfile->readFloatB(sklt->SEN[i].sz);
+                mfile->readFloatB(sklt->SEN[i].x);
+                mfile->readFloatB(sklt->SEN[i].y);
+                mfile->readFloatB(sklt->SEN[i].z);
             }
         }
         return 1;
@@ -284,14 +280,14 @@ void sklt_func64__sub0__sub0(UAskeleton::Data *sklt, int id)
         {
             UAskeleton::Vertex *POO = sklt->POO;
 
-            float dx1 = POO[pol->v[1]].sx - POO[pol->v[0]].sx;
-            float dy1 = POO[pol->v[1]].sy - POO[pol->v[0]].sy;
-            float dz1 = POO[pol->v[1]].sz - POO[pol->v[0]].sz;
+            float dx1 = POO[pol->v[1]].x - POO[pol->v[0]].x;
+            float dy1 = POO[pol->v[1]].y - POO[pol->v[0]].y;
+            float dz1 = POO[pol->v[1]].z - POO[pol->v[0]].z;
 
 
-            float dx2 = POO[pol->v[2]].sx - POO[pol->v[1]].sx;
-            float dy2 = POO[pol->v[2]].sy - POO[pol->v[1]].sy;
-            float dz2 = POO[pol->v[2]].sz - POO[pol->v[1]].sz;
+            float dx2 = POO[pol->v[2]].x - POO[pol->v[1]].x;
+            float dy2 = POO[pol->v[2]].y - POO[pol->v[1]].y;
+            float dz2 = POO[pol->v[2]].z - POO[pol->v[1]].z;
 
             float zx = dz1 * dx2 - dx1 * dz2;
             float zy = dy1 * dz2 - dy2 * dz1;
@@ -313,7 +309,7 @@ void sklt_func64__sub0__sub0(UAskeleton::Data *sklt, int id)
             sklt->polygons[id].A = dzy;
             sklt->polygons[id].B = dzx;
             sklt->polygons[id].C = dxy;
-            sklt->polygons[id].D = -(dzy * POO[pol->v[0]].sx + dzx * POO[pol->v[0]].sy + dxy * POO[pol->v[0]].sz);
+            sklt->polygons[id].D = -(dzy * POO[pol->v[0]].x + dzx * POO[pol->v[0]].y + dxy * POO[pol->v[0]].z);
         }
         else
         {
@@ -325,7 +321,7 @@ void sklt_func64__sub0__sub0(UAskeleton::Data *sklt, int id)
     }
 }
 
-rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile)
+rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, IDVList *stak, IFFile *mfile)
 {
     UAskeleton::Data *sklt = NULL;
     rsrc *res = NULL;
@@ -443,12 +439,12 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, stack_vals *stak, IFFile *mfile)
 }
 
 // Create sklt resource node and fill rsrc field data
-rsrc * NC_STACK_sklt::rsrc_func64(stack_vals *stak)
+rsrc * NC_STACK_sklt::rsrc_func64(IDVList *stak)
 {
-    const char *filename = (const char *)find_id_in_stack_def_val(RSRC_ATT_NAME, 0, stak);
+    const char *filename = stak->GetConstChar(RSRC_ATT_NAME, NULL);
     if ( filename )
     {
-        IFFile *mfile = (IFFile *)find_id_in_stack_def_val(RSRC_ATT_PIFFFILE, 0, stak);
+        IFFile *mfile = (IFFile *)stak->GetPointer(RSRC_ATT_PIFFFILE, NULL);
 
         int selfopened = 0;
 
@@ -503,9 +499,9 @@ size_t NC_STACK_sklt::rsrc_func66(rsrc_func66_arg *arg)
         mfile->pushChunk(0, TAG_POO2, 12 * sklt->POO_NUM);
         for (int i = 0; i < sklt->POO_NUM; i++)
         {
-            mfile->writeFloatB(sklt->POO[i].sx);
-            mfile->writeFloatB(sklt->POO[i].sy);
-            mfile->writeFloatB(sklt->POO[i].sz);
+            mfile->writeFloatB(sklt->POO[i].x);
+            mfile->writeFloatB(sklt->POO[i].y);
+            mfile->writeFloatB(sklt->POO[i].z);
         }
         mfile->popChunk();
     }
@@ -516,9 +512,9 @@ size_t NC_STACK_sklt::rsrc_func66(rsrc_func66_arg *arg)
 
         for (int i = 0; i < sklt->SEN_NUM; i++)
         {
-            mfile->writeFloatB(sklt->SEN[i].sx);
-            mfile->writeFloatB(sklt->SEN[i].sy);
-            mfile->writeFloatB(sklt->SEN[i].sz);
+            mfile->writeFloatB(sklt->SEN[i].x);
+            mfile->writeFloatB(sklt->SEN[i].y);
+            mfile->writeFloatB(sklt->SEN[i].z);
         }
         mfile->popChunk();
     }
@@ -557,7 +553,7 @@ size_t NC_STACK_sklt::compatcall(int method_id, void *data)
     case 6:
         return (size_t)func6( (IFFile **)data );
     case 64:
-        return (size_t)rsrc_func64( (stack_vals *)data );
+        return (size_t)rsrc_func64( (IDVList *)data );
     case 66:
         return (size_t)rsrc_func66( (rsrc_func66_arg *)data );
     default:

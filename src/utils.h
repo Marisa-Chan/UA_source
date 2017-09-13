@@ -1,6 +1,13 @@
 #ifndef UTILS_H_INCLUDED
 #define UTILS_H_INCLUDED
 
+#include <math.h>
+
+#define C_2PI		6.28318530717958647693
+#define C_PI		3.14159265358979323846
+#define C_PI_2		1.57079632679489661923
+#define C_PI_180    0.01745329251994329577
+
 #include "fsmgr.h"
 
 #define SWAP32(A) ( (((A) >> 24) & 0xFF ) | (((A) & 0xFF) << 24) | (((A) & 0xFF0000) >> 8) | (((A) & 0xFF00) << 8) )
@@ -131,5 +138,23 @@ bool uaDeleteFile(const char *path);
 bool uaDeleteDir(const char *path);
 bool uaCreateDir(const char *path);
 bool uaFileExist(const char *src_path, const char *prefix);
+
+inline double clp_asin(double x)
+{
+    if (x > 1.0)
+        x = 1.0;
+    else if (x < -1.0)
+        x = -1.0;
+    return asin(x);
+}
+
+inline double clp_acos(double x)
+{
+    if (x > 1.0)
+        x = 1.0;
+    else if (x < -1.0)
+        x = -1.0;
+    return acos(x);
+}
 
 #endif // UTILS_H_INCLUDED

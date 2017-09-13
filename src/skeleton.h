@@ -7,7 +7,7 @@
 namespace UAskeleton
 {
 
-struct Vertex: public xyz
+struct Vertex: public vec3d
 {
     int flags;
 
@@ -123,11 +123,11 @@ struct skeleton_arg133
 class NC_STACK_skeleton: public NC_STACK_rsrc
 {
 public:
-    virtual size_t func0(stack_vals *stak);
-    virtual size_t func3(stack_vals *stak);
-    virtual rsrc * rsrc_func64(stack_vals *stak);
+    virtual size_t func0(IDVList *stak);
+    virtual size_t func3(IDVList *stak);
+    virtual rsrc * rsrc_func64(IDVList *stak);
     virtual size_t rsrc_func65(rsrc *pres);
-    virtual __NC_STACK_skeleton * skeleton_func128(stack_vals *);
+    virtual __NC_STACK_skeleton * skeleton_func128(IDVPair *);
     virtual size_t skeleton_func129(skeleton_129_arg *arg);
     virtual size_t skeleton_func130(skeleton_130_arg *arg);
     virtual size_t skeleton_func131(int *arg);
@@ -148,7 +148,7 @@ public:
         return new NC_STACK_skeleton();
     };
 
-    static NC_STACK_skeleton * CInit(stack_vals *stak);
+    static NC_STACK_skeleton * CInit(IDVList *stak);
 
     enum SKEL_ATT
     {
@@ -165,7 +165,7 @@ public:
     virtual int getSKEL_polyCount();
 
 protected:
-    bool PolygonCheckInvisible(UAskeleton::Vertex *in, xyz *out, UAskeleton::Polygon *pol);
+    bool PolygonCheckInvisible(UAskeleton::Vertex *in, vec3d *out, UAskeleton::Polygon *pol);
     bool TransformVertexes(skeleton_arg_132 *arg, UAskeleton::Vertex *in, UAskeleton::Vertex *out, int num);
 
 

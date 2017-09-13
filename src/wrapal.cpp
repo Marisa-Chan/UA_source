@@ -3,9 +3,9 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "utils.h"
 #include "wrapal.h"
 
-static const float hpi = 3.1415926 / 2.0;
 
 #define WRAP_AL_BUFFS   3
 #define WRAP_AL_BUFFSZ  1024
@@ -720,7 +720,7 @@ void CTsmpl::pan(int _pan)
     {
         float perc = ((float)_pan - 64.0) / 64.0;
 
-        float angl = hpi + perc * hpi;
+        float angl = C_PI_2 + perc * C_PI_2;
 
         alCheck(alSource3f(source, AL_POSITION, (float)cos(angl), 0.0, (float)sin(angl)));
 

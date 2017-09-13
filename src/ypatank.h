@@ -11,7 +11,7 @@ struct __NC_STACK_ypatank
     __NC_STACK_ypabact *bact_internal;
     uint8_t field_c;
     int     field_D;
-    xyz     field_11;
+    vec3d     field_11;
     float   field_1D;
     float   field_21;
     uint8_t field_25;
@@ -21,24 +21,24 @@ struct __NC_STACK_ypatank
 struct tank_arg128
 {
     float field_0;
-    xyz field_4;
+    vec3d field_4;
     int field_10;
-    xyz field_14;
+    vec3d field_14;
 };
 
 struct tank_arg129
 {
     float field_0;
-    xyz field_4;
+    vec3d field_4;
 };
 
 class NC_STACK_ypatank: public NC_STACK_ypabact
 {
 public:
-    virtual size_t func0(stack_vals *stak);
-    virtual size_t func1(stack_vals *stak);
-    virtual size_t func2(stack_vals *stak);
-    virtual size_t func3(stack_vals *stak);
+    virtual size_t func0(IDVList *stak);
+    virtual size_t func1();
+    virtual size_t func2(IDVList *stak);
+    virtual size_t func3(IDVList *stak);
     virtual void AI_layer3(update_msg *arg);
     virtual void User_layer(update_msg *arg);
     virtual void Move(move_msg *arg);
@@ -75,11 +75,6 @@ public:
     virtual void setTANK_tip(int);
 
     virtual int getTANK_tip();
-
-
-    int ypatank_func0__sub0(stack_vals *stak);
-    void ypatank_func2__sub0(stack_vals *stak);
-    void ypatank_func3__sub0(stack_vals *stak);
 
     //Data
     static const NewClassDescr description;

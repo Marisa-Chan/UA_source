@@ -29,10 +29,10 @@ struct __NC_STACK_amesh
 class NC_STACK_amesh: public NC_STACK_area
 {
 public:
-    virtual size_t func0(stack_vals *stak);
-    virtual size_t func1(stack_vals *stak);
-    virtual size_t func2(stack_vals *stak);
-    virtual size_t func3(stack_vals *stak);
+    virtual size_t func0(IDVList *stak);
+    virtual size_t func1();
+    virtual size_t func2(IDVList *stak);
+    virtual size_t func3(IDVList *stak);
     virtual size_t func5(IFFile **file);
     virtual size_t func6(IFFile **file);
     virtual size_t ade_func65(area_arg_65 *arg);
@@ -51,7 +51,7 @@ public:
         return new NC_STACK_amesh();
     };
 
-    static NC_STACK_amesh *CInit(stack_vals *stak);
+    static NC_STACK_amesh *CInit(IDVList *stak);
 
     enum AMESH_FLAG
     {
@@ -75,10 +75,6 @@ public:
     virtual int setAMESH_otls(tUtV **);
 
     virtual int getAMESH_numpoly();
-
-
-    int amesh_func0__sub0(stack_vals *stak);
-    void amesh_func2__sub0(stack_vals *stak);
 
     //Data
     static const NewClassDescr description;

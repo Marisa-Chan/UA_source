@@ -4,42 +4,33 @@
 
 const NewClassDescr NC_STACK_nucleus::description("nucleus.class", &newinstance);
 
-
-void NC_STACK_nucleus::nucleus_func0__sub0(stack_vals *a2)
+size_t NC_STACK_nucleus::func0(IDVList *stak)
 {
-    while ( 1 )
+    if (stak)
     {
-        if ( a2->id == stack_vals::TAG_END)
-            break;
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        {
+            IDVPair &val = it->second;
 
-        if ( a2->id == stack_vals::TAG_PTAGS )
-        {
-            a2 = (stack_vals *)a2->value.p_data;
-        }
-        else if ( a2->id == stack_vals::TAG_SKIP_N )
-        {
-            a2 += a2->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            if ( a2->id == NC_ATT_NAME )
-                setName((const char *)a2->value.p_data);
+            if ( !val.skip() )
+            {
+                switch (val.id)
+                {
+                case NC_ATT_NAME:
+                    setName((const char *)val.value.p_data);
+                    break;
 
-            a2++;
+                default:
+                    break;
+                }
+            }
         }
     }
-}
 
-
-
-size_t NC_STACK_nucleus::func0(stack_vals *stack)
-{
-    nucleus_func0__sub0(stack);
     return 1;
 }
 
-size_t NC_STACK_nucleus::func1(stack_vals *)
+size_t NC_STACK_nucleus::func1()
 {
     if (NAME)
         free(NAME);
@@ -47,71 +38,58 @@ size_t NC_STACK_nucleus::func1(stack_vals *)
     return 1;
 }
 
-void NC_STACK_nucleus::nucleus_setter(stack_vals *a2)
+size_t NC_STACK_nucleus::func2(IDVList *stak)
 {
-    while ( 1 )
+    if (stak)
     {
-        if ( a2->id == stack_vals::TAG_END)
-            break;
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        {
+            IDVPair &val = it->second;
 
-        if ( a2->id == stack_vals::TAG_PTAGS )
-        {
-            a2 = (stack_vals *)a2->value.p_data;
-        }
-        else if ( a2->id == stack_vals::TAG_SKIP_N )
-        {
-            a2 += a2->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            if ( a2->id == NC_ATT_NAME )
-                setName( (const char *)a2->value.p_data );
+            if ( !val.skip() )
+            {
+                switch (val.id)
+                {
+                case NC_ATT_NAME:
+                    setName((const char *)val.value.p_data);
+                    break;
 
-            a2++;
+                default:
+                    break;
+                }
+            }
         }
     }
-}
-
-size_t NC_STACK_nucleus::func2(stack_vals *a3)
-{
-    nucleus_setter(a3);
 
     return 1;
 }
 
-
-void NC_STACK_nucleus::nucleus_getter(stack_vals *a2)
+size_t NC_STACK_nucleus::func3(IDVList *stak)
 {
-    while ( 1 )
+    if (stak)
     {
-        if ( a2->id == stack_vals::TAG_END)
-            break;
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        {
+            IDVPair &val = it->second;
 
-        if ( a2->id == stack_vals::TAG_PTAGS )
-        {
-            a2 = (stack_vals *)a2->value.p_data;
+            if ( !val.skip() )
+            {
+                switch (val.id)
+                {
+                case NC_ATT_NAME:
+                    *(const char **)val.value.p_data = getName();
+                    break;
+
+                case NC_ATT_CLASSNAME:
+                    *(const char **)val.value.p_data = getClassName();
+                    break;
+
+                default:
+                    break;
+                }
+            }
         }
-        else if ( a2->id == stack_vals::TAG_SKIP_N )
-        {
-            a2 += a2->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            if ( a2->id == NC_ATT_NAME )
-                *(const char **)a2->value.p_data = getName();
-            else if ( a2->id == NC_ATT_CLASSNAME )
-                *(const char **)a2->value.p_data = getClassName();
-            a2++;
-        };
     }
-}
-
-
-size_t NC_STACK_nucleus::func3(stack_vals *stk)
-{
-    nucleus_getter(stk);
 
     return 1;
 }
@@ -127,7 +105,7 @@ size_t NC_STACK_nucleus::func5(IFFile **file)
             break;
         if ( v6 )
         {
-            func1(NULL);
+            func1();
             return 0;
         }
         if ( mfile->getCurrentChunk()->TAG == TAG_NAME )
@@ -137,7 +115,7 @@ size_t NC_STACK_nucleus::func5(IFFile **file)
 
             if ( !mfile->read(a4, 32) )
             {
-                func1(NULL);
+                func1();
                 return 0;
             }
 
@@ -206,13 +184,13 @@ size_t NC_STACK_nucleus::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (stack_vals *)data );
+        return (size_t)func0( (IDVList *)data );
     case 1:
-        return (size_t)func1( (stack_vals *)data );
+        return (size_t)func1();
     case 2:
-        return (size_t)func2( (stack_vals *)data );
+        return (size_t)func2( (IDVList *)data );
     case 3:
-        return (size_t)func3( (stack_vals *)data );
+        return (size_t)func3( (IDVList *)data );
     case 5:
         return (size_t)func5( (IFFile **)data );
     case 6:
@@ -228,13 +206,12 @@ size_t NC_STACK_nucleus::compatcall(int method_id, void *data)
 
 
 
-NC_STACK_nucleus * init_get_class(const char *classname, stack_vals *stak)
+NC_STACK_nucleus * init_get_class(const char *classname, IDVList *stak)
 {
-    stack_vals tmp[1];
-    tmp[0].end();
+    IDVList NullList;
 
     if (stak == NULL)
-        stak = tmp;
+        stak = &NullList;
 
     const NewClassDescr *cls_descr = getClassAllocator(classname);
 
@@ -256,7 +233,7 @@ NC_STACK_nucleus * init_get_class(const char *classname, stack_vals *stak)
 
 int delete_class_obj(NC_STACK_nucleus *cls)
 {
-    int ret = cls->func1(NULL);
+    int ret = cls->func1();
 
     delete cls;
 
@@ -264,25 +241,25 @@ int delete_class_obj(NC_STACK_nucleus *cls)
 }
 
 
-stack_vals * find_id_in_stack2(unsigned int id, stack_vals *a2)
+IDVPair * find_id_in_stack2(unsigned int id, IDVPair *a2)
 {
     while ( 1 )
     {
         if ( a2->id == id )
             return a2;
-        if ( a2->id == stack_vals::TAG_END )
+        if ( a2->id == IDVPair::TAG_END )
             return NULL;
 
-        if ( a2->id == stack_vals::TAG_PTAGS )
-            a2 = (stack_vals *)a2->value.p_data;
-        else if ( a2->id == stack_vals::TAG_SKIP_N )
+        if ( a2->id == IDVPair::TAG_PTAGS )
+            a2 = (IDVPair *)a2->value.p_data;
+        else if ( a2->id == IDVPair::TAG_SKIP_N )
             a2 += a2->value.i_data;
         else
             a2++;
     }
 }
 
-size_t find_id_in_stack_def_val(unsigned int find_id, size_t def_value, stack_vals *a3)
+size_t find_id_in_stack_def_val(unsigned int find_id, size_t def_value, IDVPair *a3)
 {
     if (!a3)
         return def_value;
@@ -291,24 +268,24 @@ size_t find_id_in_stack_def_val(unsigned int find_id, size_t def_value, stack_va
     {
         if ( a3->id == find_id )
             return a3->value.u_data;
-        if ( a3->id == stack_vals::TAG_END )
+        if ( a3->id == IDVPair::TAG_END )
             return def_value;
 
-        if ( a3->id == stack_vals::TAG_PTAGS )
+        if ( a3->id == IDVPair::TAG_PTAGS )
         {
             if (a3->value.p_data == NULL)
                 printf("find_id_in_stack_def_val, stack NULL pointer\n");
             else
-                a3 = (stack_vals *)a3->value.p_data;
+                a3 = (IDVPair *)a3->value.p_data;
         }
-        else if ( a3->id == stack_vals::TAG_SKIP_N )
+        else if ( a3->id == IDVPair::TAG_SKIP_N )
             a3 += a3->value.i_data;
         else
             a3++;
     }
 }
 
-void *find_id_pval(unsigned int find_id, stack_vals *a3)
+void *find_id_pval(unsigned int find_id, IDVPair *a3)
 {
     if (!a3)
         return NULL;
@@ -317,17 +294,17 @@ void *find_id_pval(unsigned int find_id, stack_vals *a3)
     {
         if ( a3->id == find_id )
             return a3->value.p_data;
-        if ( a3->id == stack_vals::TAG_END )
+        if ( a3->id == IDVPair::TAG_END )
             return NULL;
 
-        if ( a3->id == stack_vals::TAG_PTAGS )
+        if ( a3->id == IDVPair::TAG_PTAGS )
         {
             if (a3->value.p_data == NULL)
                 printf("find_id_in_stack_def_val, stack NULL pointer\n");
             else
-                a3 = (stack_vals *)a3->value.p_data;
+                a3 = (IDVPair *)a3->value.p_data;
         }
-        else if ( a3->id == stack_vals::TAG_SKIP_N )
+        else if ( a3->id == IDVPair::TAG_SKIP_N )
             a3 += a3->value.i_data;
         else
             a3++;

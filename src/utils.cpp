@@ -87,7 +87,7 @@ uint32_t fileCrc32(const char *filename, uint32_t _crc)
 }
 
 
-int DO = 1; //Shutup "MAKE ME" screams
+int DO = 0; //Shutup "MAKE ME" screams
 
 void dprintf(const char *fmt, ...)
 {

@@ -239,7 +239,7 @@ void SDLWRAP_INIT()
 
     SDLWRAP_ScanFonts();
 
-    printf("IMG_Init %x\n", IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP));
+    IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP);
 }
 
 void SDLWRAP_DEINIT()

@@ -15,164 +15,114 @@
 const NewClassDescr NC_STACK_ypacar::description("ypacar.class", &newinstance);
 
 
-int NC_STACK_ypacar::ypacar_func0__sub0(stack_vals *stak)
-{
-    stack_vals *stk = stak;
-
-    while ( 1 )
-    {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
-        {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
-            {
-            default:
-                break;
-
-            case BACT_ATT_WORLD:
-                stack__ypacar.ywo = (NC_STACK_ypaworld *)stk->value.p_data;
-                stack__ypacar.yw = &stack__ypacar.ywo->stack__ypaworld;
-                break;
-
-            case CAR_ATT_KAMIKAZE:
-                setCAR_kamikaze(stk->value.i_data);
-                break;
-
-            case CAR_ATT_BLAST:
-                setCAR_blast(stk->value.i_data);
-                break;
-
-            }
-            stk++;
-        }
-    }
-
-    return 1;
-}
-
-size_t NC_STACK_ypacar::func0(stack_vals *stak)
+size_t NC_STACK_ypacar::func0(IDVList *stak)
 {
     if ( !NC_STACK_ypatank::func0(stak) )
         return 0;
 
-    __NC_STACK_ypacar *car = &stack__ypacar;
-    __NC_STACK_ypabact *bact = &stack__ypabact;
+    stack__ypacar.bact_internal = &ypabact;
 
-    car->bact_internal = bact;
+    ypabact.bact_type = BACT_TYPES_CAR;
 
-    bact->bact_type = BACT_TYPES_CAR;
-
-    if ( !ypacar_func0__sub0(stak) )
+    if (stak)
     {
-        func1(NULL);
-        return 0;
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        {
+            IDVPair &val = it->second;
+
+            if ( !val.skip() )
+            {
+                switch (val.id)
+                {
+                case BACT_ATT_WORLD:
+                    stack__ypacar.ywo = (NC_STACK_ypaworld *)val.value.p_data;
+                    stack__ypacar.yw = &stack__ypacar.ywo->stack__ypaworld;
+                    break;
+
+                case CAR_ATT_KAMIKAZE:
+                    setCAR_kamikaze(val.value.i_data);
+                    break;
+
+                case CAR_ATT_BLAST:
+                    setCAR_blast(val.value.i_data);
+                    break;
+
+                default:
+                    break;
+                }
+            }
+        }
     }
 
     return 1;
 }
 
-size_t NC_STACK_ypacar::func1(stack_vals *stak)
+size_t NC_STACK_ypacar::func1()
 {
-    return NC_STACK_ypatank::func1(stak);
+    return NC_STACK_ypatank::func1();
 }
 
-void NC_STACK_ypacar::ypacar_func2__sub0(stack_vals *stak)
-{
-    stack_vals *stk = stak;
-
-    while ( 1 )
-    {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
-        {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
-            {
-            default:
-                break;
-
-            case CAR_ATT_KAMIKAZE:
-                setCAR_kamikaze(stk->value.i_data);
-                break;
-
-            case CAR_ATT_BLAST:
-                setCAR_blast(stk->value.i_data);
-                break;
-
-            }
-            stk++;
-        }
-    }
-}
-
-size_t NC_STACK_ypacar::func2(stack_vals *stak)
+size_t NC_STACK_ypacar::func2(IDVList *stak)
 {
     NC_STACK_ypatank::func2(stak);
-    ypacar_func2__sub0(stak);
+
+    if (stak)
+    {
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        {
+            IDVPair &val = it->second;
+
+            if ( !val.skip() )
+            {
+                switch (val.id)
+                {
+                case CAR_ATT_KAMIKAZE:
+                    setCAR_kamikaze(val.value.i_data);
+                    break;
+
+                case CAR_ATT_BLAST:
+                    setCAR_blast(val.value.i_data);
+                    break;
+
+                default:
+                    break;
+                }
+            }
+        }
+    }
+
     return 1;
 }
 
-void NC_STACK_ypacar::ypacar_func3__sub0(stack_vals *stak)
-{
-    stack_vals *stk = stak;
-
-    while ( 1 )
-    {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
-        {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
-            {
-            default:
-                break;
-
-            case CAR_ATT_KAMIKAZE:
-                *(int *)stk->value.p_data = getCAR_kamikaze();
-                break;
-
-            case CAR_ATT_BLAST:
-                *(int *)stk->value.p_data = getCAR_blast();
-                break;
-
-            }
-            stk++;
-        }
-    }
-}
-
-size_t NC_STACK_ypacar::func3(stack_vals *stak)
+size_t NC_STACK_ypacar::func3(IDVList *stak)
 {
     NC_STACK_ypatank::func3(stak);
-    ypacar_func3__sub0(stak);
+
+    if (stak)
+    {
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        {
+            IDVPair &val = it->second;
+
+            if ( !val.skip() )
+            {
+                switch (val.id)
+                {
+                case CAR_ATT_KAMIKAZE:
+                    *(int *)val.value.p_data = getCAR_kamikaze();
+                    break;
+
+                case CAR_ATT_BLAST:
+                    *(int *)val.value.p_data = getCAR_blast();
+                    break;
+
+                default:
+                    break;
+                }
+            }
+        }
+    }
+
     return 1;
 }
 
@@ -202,7 +152,7 @@ void ypacar_func71__sub1(__NC_STACK_ypabact *bact, float angle)
 void ypacar_func71__sub0(NC_STACK_ypacar *caro)
 {
     __NC_STACK_ypacar *car = &caro->stack__ypacar;
-    __NC_STACK_ypabact *bact = &caro->stack__ypabact;
+    __NC_STACK_ypabact *bact = &caro->ypabact;
 
     float v53;
 
@@ -221,34 +171,34 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
         {
             yw_arg129 arg120;
             arg120.field_10 = exp( sqrt( POW2(i) + POW2(j) ) * (1200.0 * -2.8) / 1200.0 ) * car->field_10;
-            arg120.pos.sx = i * 300.0 + bact->position.sx;
-            arg120.pos.sy = 0;
-            arg120.pos.sz = j * 300.0 + bact->position.sz;
+            arg120.pos.x = i * 300.0 + bact->position.x;
+            arg120.pos.y = 0;
+            arg120.pos.z = j * 300.0 + bact->position.z;
             arg120.unit = bact;
 
-            if ( arg120.pos.sx > 1200.0  &&  arg120.pos.sx < bact->wrldX - 1200.0  &&  arg120.pos.sz < -1200.0  &&  arg120.pos.sz > bact->wrldY + 1200.0 )
+            if ( arg120.pos.x > 1200.0  &&  arg120.pos.x < bact->wrldX - 1200.0  &&  arg120.pos.z < -1200.0  &&  arg120.pos.z > bact->wrldY + 1200.0 )
                 caro->ChangeSectorEnergy(&arg120);
 
             if ( i )
             {
-                arg120.pos.sx = bact->position.sx - i * 300.0;
-                arg120.pos.sz = bact->position.sz + j * 300.0;
+                arg120.pos.x = bact->position.x - i * 300.0;
+                arg120.pos.z = bact->position.z + j * 300.0;
 
-                if ( arg120.pos.sx > 1200.0 )
+                if ( arg120.pos.x > 1200.0 )
                 {
-                    if ( arg120.pos.sx < bact->wrldX - 1200.0 && arg120.pos.sz < -1200.0 && arg120.pos.sz > bact->wrldY + 1200.0 )
+                    if ( arg120.pos.x < bact->wrldX - 1200.0 && arg120.pos.z < -1200.0 && arg120.pos.z > bact->wrldY + 1200.0 )
                         caro->ChangeSectorEnergy(&arg120);
                 }
             }
 
             if ( j )
             {
-                arg120.pos.sx = bact->position.sx + i * 300.0;
-                arg120.pos.sz = bact->position.sz - j * 300.0;
+                arg120.pos.x = bact->position.x + i * 300.0;
+                arg120.pos.z = bact->position.z - j * 300.0;
 
-                if ( arg120.pos.sx > 1200.0 )
+                if ( arg120.pos.x > 1200.0 )
                 {
-                    if ( arg120.pos.sx < bact->wrldX - 1200.0  &&  arg120.pos.sz < -1200.0  &&  arg120.pos.sz > bact->wrldY + 1200.0 )
+                    if ( arg120.pos.x < bact->wrldX - 1200.0  &&  arg120.pos.z < -1200.0  &&  arg120.pos.z > bact->wrldY + 1200.0 )
                         caro->ChangeSectorEnergy(&arg120);
                 }
             }
@@ -257,12 +207,12 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
             {
                 if ( j )
                 {
-                    arg120.pos.sx = bact->position.sx - i * 300.0;
-                    arg120.pos.sz = bact->position.sz - j * 300.0;
+                    arg120.pos.x = bact->position.x - i * 300.0;
+                    arg120.pos.z = bact->position.z - j * 300.0;
 
-                    if ( arg120.pos.sx > 1200.0 )
+                    if ( arg120.pos.x > 1200.0 )
                     {
-                        if ( arg120.pos.sx < bact->wrldX - 1200.0  &&  arg120.pos.sz < -1200.0  &&  arg120.pos.sz > bact->wrldY + 1200.0 )
+                        if ( arg120.pos.x < bact->wrldX - 1200.0  &&  arg120.pos.z < -1200.0  &&  arg120.pos.z > bact->wrldY + 1200.0 )
                             caro->ChangeSectorEnergy(&arg120);
                     }
                 }
@@ -293,12 +243,12 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
                     {
                         if ( v19->bact_type != BACT_TYPES_MISSLE )
                         {
-                            xyz tmp;
-                            tmp.sx = bact->position.sx - v19->position.sx;
-                            tmp.sy = bact->position.sy - v19->position.sy;
-                            tmp.sz = bact->position.sz - v19->position.sz;
+                            vec3d tmp;
+                            tmp.x = bact->position.x - v19->position.x;
+                            tmp.y = bact->position.y - v19->position.y;
+                            tmp.z = bact->position.z - v19->position.z;
 
-                            int v26 = exp(sqrt( POW2(tmp.sx) + POW2(tmp.sy) + POW2(tmp.sz) ) * -2.8 / 1200.0) * car->field_10;
+                            int v26 = exp(sqrt( POW2(tmp.x) + POW2(tmp.y) + POW2(tmp.z) ) * -2.8 / 1200.0) * car->field_10;
                             int v67 = ((1.0 - (float)v19->shield * 0.01) * (float)v26);
 
                             v19->energy -= v67;
@@ -401,9 +351,9 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
     bact->rotation.m11 = bact->rotation.m22 * bact->rotation.m00 - bact->rotation.m20 * bact->rotation.m02;
     bact->rotation.m12 = bact->rotation.m20 * bact->rotation.m01 - bact->rotation.m21 * bact->rotation.m00;
 
-    bact->fly_dir.sx = -bact->rotation.m20;
-    bact->fly_dir.sy = -bact->rotation.m21;
-    bact->fly_dir.sz = -bact->rotation.m22;
+    bact->fly_dir.x = -bact->rotation.m20;
+    bact->fly_dir.y = -bact->rotation.m21;
+    bact->fly_dir.z = -bact->rotation.m22;
 
     bact->fly_dir_length = 200.0;
     bact->status_flg &= ~BACT_STFLAG_LAND;
@@ -423,7 +373,7 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
 void NC_STACK_ypacar::User_layer(update_msg *arg)
 {
     __NC_STACK_ypacar *car = &stack__ypacar;
-    __NC_STACK_ypabact *bact = &stack__ypabact;
+    __NC_STACK_ypabact *bact = &ypabact;
 
     bact->airconst = bact->airconst_static;
 
@@ -435,9 +385,9 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
 
     tank_arg129 arg129;
     arg129.field_0 = v78;
-    arg129.field_4.sx = bact->rotation.m20;
-    arg129.field_4.sy = bact->rotation.m21;
-    arg129.field_4.sz = bact->rotation.m22;
+    arg129.field_4.x = bact->rotation.m20;
+    arg129.field_4.y = bact->rotation.m21;
+    arg129.field_4.z = bact->rotation.m22;
 
     if (bact->status == BACT_STATUS_DEAD)
         DeadTimeUpdate(arg);
@@ -457,7 +407,7 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
         }
         else
         {
-            if ( bact->primTtype != BACT_TGT_TYPE_CELL || sqrt( POW2(bact->primTpos.sx - bact->position.sx) + POW2(bact->primTpos.sz - bact->position.sz) ) <= 800.0 )
+            if ( bact->primTtype != BACT_TGT_TYPE_CELL || sqrt( POW2(bact->primTpos.x - bact->position.x) + POW2(bact->primTpos.z - bact->position.z) ) <= 800.0 )
             {
                 if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {
@@ -502,7 +452,7 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
 
         if ( (bact->fly_dir_length < 0.0 && bact->thraction > 0.0) || (bact->fly_dir_length > 0.0 && bact->thraction < 0.0) )
         {
-            if ( fabs(bact->fly_dir.sy) > 0.1 )
+            if ( fabs(bact->fly_dir.y) > 0.1 )
             {
                 float v74 = 1.0 - (v78 * 4.0);
 
@@ -548,18 +498,18 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
 
         bact_arg79 arg79;
         arg79.tgType = BACT_TGT_TYPE_DRCT;
-        arg79.tgt_pos.sx = bact->rotation.m20;
-        arg79.tgt_pos.sy = bact->rotation.m21;
-        arg79.tgt_pos.sz = bact->rotation.m22;
+        arg79.tgt_pos.x = bact->rotation.m20;
+        arg79.tgt_pos.y = bact->rotation.m21;
+        arg79.tgt_pos.z = bact->rotation.m22;
 
         float corW, corH;
         GFXEngine::GFXe.getC3D()->getAspectCorrection(corW, corH, true);
 
         bact_arg106 arg106;
         arg106.field_0 = 5;
-        arg106.field_4.sx = bact->rotation.m20;
-        arg106.field_4.sy = bact->rotation.m21 - bact->gun_angle_user * corH;
-        arg106.field_4.sz = bact->rotation.m22;
+        arg106.field_4.x = bact->rotation.m20;
+        arg106.field_4.y = bact->rotation.m21 - bact->gun_angle_user * corH;
+        arg106.field_4.z = bact->rotation.m22;
 
         if ( UserTargeting(&arg106) )
         {
@@ -576,18 +526,18 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
             else
             {
                 arg79.weapon = bact->weapon;
-                arg79.direction.sx = bact->rotation.m20 - bact->rotation.m10 * bact->gun_angle_user * corH;
-                arg79.direction.sy = bact->rotation.m21 - bact->rotation.m11 * bact->gun_angle_user * corH;
-                arg79.direction.sz = bact->rotation.m22 - bact->rotation.m12 * bact->gun_angle_user * corH;
+                arg79.direction.x = bact->rotation.m20 - bact->rotation.m10 * bact->gun_angle_user * corH;
+                arg79.direction.y = bact->rotation.m21 - bact->rotation.m11 * bact->gun_angle_user * corH;
+                arg79.direction.z = bact->rotation.m22 - bact->rotation.m12 * bact->gun_angle_user * corH;
                 arg79.g_time = bact->clock;
 
                 if ( bact->clock % 2 )
-                    arg79.start_point.sx = -bact->fire_pos.sx;
+                    arg79.start_point.x = -bact->fire_pos.x;
                 else
-                    arg79.start_point.sx = bact->fire_pos.sx;
+                    arg79.start_point.x = bact->fire_pos.x;
 
-                arg79.start_point.sy = bact->fire_pos.sy;
-                arg79.start_point.sz = bact->fire_pos.sz;
+                arg79.start_point.y = bact->fire_pos.y;
+                arg79.start_point.z = bact->fire_pos.z;
 
                 arg79.flags = ((arg->inpt->but_flags & 2) != 0) | 2;
 
@@ -623,9 +573,9 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
                 }
 
                 bact_arg105 arg105;
-                arg105.field_0.sx = bact->rotation.m20 - bact->rotation.m10 * bact->gun_angle_user * corH;
-                arg105.field_0.sy = bact->rotation.m21 - bact->rotation.m11 * bact->gun_angle_user * corH;
-                arg105.field_0.sz = bact->rotation.m22 - bact->rotation.m12 * bact->gun_angle_user * corH;
+                arg105.field_0.x = bact->rotation.m20 - bact->rotation.m10 * bact->gun_angle_user * corH;
+                arg105.field_0.y = bact->rotation.m21 - bact->rotation.m11 * bact->gun_angle_user * corH;
+                arg105.field_0.z = bact->rotation.m22 - bact->rotation.m12 * bact->gun_angle_user * corH;
                 arg105.field_C = v78;
                 arg105.field_10 = bact->clock;
 
@@ -677,12 +627,12 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
             {
                 ypaworld_arg136 arg136;
 
-                arg136.pos_x = bact->old_pos.sx;
-                arg136.pos_y = bact->old_pos.sy;
-                arg136.pos_z = bact->old_pos.sz;
-                arg136.field_14 = bact->position.sx - bact->old_pos.sx;
-                arg136.field_18 = bact->position.sy - bact->old_pos.sy;
-                arg136.field_1C = bact->position.sz - bact->old_pos.sz;
+                arg136.pos_x = bact->old_pos.x;
+                arg136.pos_y = bact->old_pos.y;
+                arg136.pos_z = bact->old_pos.z;
+                arg136.field_14 = bact->position.x - bact->old_pos.x;
+                arg136.field_18 = bact->position.y - bact->old_pos.y;
+                arg136.field_1C = bact->position.z - bact->old_pos.z;
                 arg136.field_40 = 0;
 
                 car->ywo->ypaworld_func136(&arg136);
@@ -715,7 +665,7 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
 size_t NC_STACK_ypacar::ypatank_func128(tank_arg128 *arg)
 {
     __NC_STACK_ypacar *car = &stack__ypacar;
-    __NC_STACK_ypabact *bact = &stack__ypabact;
+    __NC_STACK_ypabact *bact = &ypabact;
 
     arg->field_10 = 0;
 
@@ -729,9 +679,9 @@ size_t NC_STACK_ypacar::ypatank_func128(tank_arg128 *arg)
         v5 = bact->overeof;
 
     ypaworld_arg136 arg136;
-    arg136.pos_x = bact->rotation.m10 * v5 + bact->position.sx;
-    arg136.pos_y = bact->rotation.m11 * v5 + bact->position.sy - 50.0;
-    arg136.pos_z = bact->rotation.m12 * v5 + bact->position.sz;
+    arg136.pos_x = bact->rotation.m10 * v5 + bact->position.x;
+    arg136.pos_y = bact->rotation.m11 * v5 + bact->position.y - 50.0;
+    arg136.pos_z = bact->rotation.m12 * v5 + bact->position.z;
     arg136.field_14 = 0;
     arg136.field_18 = bact->overeof + 110.0;
     arg136.field_1C = 0;
@@ -747,27 +697,27 @@ size_t NC_STACK_ypacar::ypatank_func128(tank_arg128 *arg)
     if ( v8->B < 0.6 )
     {
         arg->field_10 |= 1;
-        arg->field_14.sx = arg136.field_3C->polygons[ arg136.field_38 ].A;
-        arg->field_14.sy = arg136.field_3C->polygons[ arg136.field_38 ].B;
-        arg->field_14.sz = arg136.field_3C->polygons[ arg136.field_38 ].C;
+        arg->field_14.x = arg136.field_3C->polygons[ arg136.field_38 ].A;
+        arg->field_14.y = arg136.field_3C->polygons[ arg136.field_38 ].B;
+        arg->field_14.z = arg136.field_3C->polygons[ arg136.field_38 ].C;
 
         return 0;
     }
 
-    xyz tmp;
-    tmp.sx = v8->A;
-    tmp.sy = v8->B;
-    tmp.sz = v8->C;
+    vec3d tmp;
+    tmp.x = v8->A;
+    tmp.y = v8->B;
+    tmp.z = v8->C;
 
-    xyz vaxis;
-    vaxis.sx = bact->rotation.m11 * tmp.sz - bact->rotation.m12 * tmp.sy;
-    vaxis.sy = bact->rotation.m12 * tmp.sx - bact->rotation.m10 * tmp.sz;
-    vaxis.sz = bact->rotation.m10 * tmp.sy - bact->rotation.m11 * tmp.sx;
+    vec3d vaxis;
+    vaxis.x = bact->rotation.m11 * tmp.z - bact->rotation.m12 * tmp.y;
+    vaxis.y = bact->rotation.m12 * tmp.x - bact->rotation.m10 * tmp.z;
+    vaxis.z = bact->rotation.m10 * tmp.y - bact->rotation.m11 * tmp.x;
 
-    float v44 = sqrt( POW2(vaxis.sx) + POW2(vaxis.sy) + POW2(vaxis.sz) );
+    float v44 = sqrt( POW2(vaxis.x) + POW2(vaxis.y) + POW2(vaxis.z) );
     if ( v44 > 0.0 )
     {
-        float v54 = tmp.sx * bact->rotation.m10 + tmp.sy * bact->rotation.m11 + tmp.sz * bact->rotation.m12;
+        float v54 = tmp.x * bact->rotation.m10 + tmp.y * bact->rotation.m11 + tmp.z * bact->rotation.m12;
 
         if ( v54 > 1.0 )
             v54 = 1.0;
@@ -784,9 +734,9 @@ size_t NC_STACK_ypacar::ypatank_func128(tank_arg128 *arg)
         if ( fabs(v56) < 0.01 )
             v56 = 0.0;
 
-        vaxis.sx /= v44;
-        vaxis.sy /= v44;
-        vaxis.sz /= v44;
+        vaxis.x /= v44;
+        vaxis.y /= v44;
+        vaxis.z /= v44;
 
         mat3x3 mat2;
 
@@ -798,17 +748,17 @@ size_t NC_STACK_ypacar::ypatank_func128(tank_arg128 *arg)
         bact->rotation = dst;
     }
 
-    bact->position.sx = arg136.field_2C - bact->rotation.m10 * v5;
-    bact->position.sy = arg136.field_30 - bact->rotation.m11 * v5;
-    bact->position.sz = arg136.field_34 - bact->rotation.m12 * v5;
+    bact->position.x = arg136.field_2C - bact->rotation.m10 * v5;
+    bact->position.y = arg136.field_30 - bact->rotation.m11 * v5;
+    bact->position.z = arg136.field_34 - bact->rotation.m12 * v5;
 
     return 1;
 }
 
-void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, xyz *darg)
+void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, vec3d *darg)
 {
     //__NC_STACK_ypacar *car = &caro->stack__ypacar;
-    __NC_STACK_ypabact *bact = &caro->stack__ypabact;
+    __NC_STACK_ypabact *bact = &caro->ypabact;
 
     float v65 = bact->rotation.m20;
     //v5 = bact->field_651.m21;
@@ -826,10 +776,10 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, xyz *darg)
 
     if ( fabs(v78) > 0.1 )
     {
-        xyz vaxis;
-        vaxis.sx = bact->rotation.m00;
-        vaxis.sy = bact->rotation.m01;
-        vaxis.sz = bact->rotation.m02;
+        vec3d vaxis;
+        vaxis.x = bact->rotation.m00;
+        vaxis.y = bact->rotation.m01;
+        vaxis.z = bact->rotation.m02;
 
         float v8 = v73 * v78 / bact->force;
 
@@ -837,15 +787,15 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, xyz *darg)
 
         mat_gen_axis_rotate(&vaxis, v8, &mat2, MAT_FLAG_INV_SIN);
 
-        xyz tmp;
-        tmp.sx = mat2.m00 * darg->sx + mat2.m01 * darg->sy + mat2.m02 * darg->sz;
-        tmp.sy = mat2.m10 * darg->sx + mat2.m11 * darg->sy + mat2.m12 * darg->sz;
-        tmp.sz = mat2.m20 * darg->sx + mat2.m21 * darg->sy + mat2.m22 * darg->sz;
+        vec3d tmp;
+        tmp.x = mat2.m00 * darg->x + mat2.m01 * darg->y + mat2.m02 * darg->z;
+        tmp.y = mat2.m10 * darg->x + mat2.m11 * darg->y + mat2.m12 * darg->z;
+        tmp.z = mat2.m20 * darg->x + mat2.m21 * darg->y + mat2.m22 * darg->z;
 
         *darg = tmp;
     }
 
-    float v76 = v65 * arg->field_4.sx + v66 * arg->field_4.sz;
+    float v76 = v65 * arg->field_4.x + v66 * arg->field_4.z;
 
     float tmpsq = sqrt( POW2(v65) + POW2(v66) );
 
@@ -853,7 +803,7 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, xyz *darg)
 
     v76 = v76 / tmpsq;
 
-    tmpsq = sqrt( POW2(arg->field_4.sx) + POW2(arg->field_4.sz) );
+    tmpsq = sqrt( POW2(arg->field_4.x) + POW2(arg->field_4.z) );
 
     v76 = v76 / tmpsq;
 
@@ -869,7 +819,7 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, xyz *darg)
 
         if ( v77 > 0.001 )
         {
-            if ( v65 * arg->field_4.sz - v66 * arg->field_4.sx < 0.0 )
+            if ( v65 * arg->field_4.z - v66 * arg->field_4.x < 0.0 )
                 v77 = -v77;
 
             float v42 = bact->rotation.m20;
@@ -880,10 +830,10 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, xyz *darg)
             float cs = cos(v77);
             float ics = 1.0 - cs;
 
-            xyz tmp;
-            tmp.sx = (ics * v42 * v43 - sn * v44) * darg->sy + (ics * v42 * v42 + cs) * darg->sx       + (ics * v44 * v42 + sn * v43) * darg->sz;
-            tmp.sy = (ics * v43 * v43 + cs) * darg->sy       + (ics * v42 * v43 + sn * v44) * darg->sx + (ics * v43 * v44 - sn * v42) * darg->sz;
-            tmp.sz = (ics * v43 * v44 + sn * v42) * darg->sy + (ics * v44 * v42 - sn * v43) * darg->sx + (ics * v44 * v44 + cs) * darg->sz;
+            vec3d tmp;
+            tmp.x = (ics * v42 * v43 - sn * v44) * darg->y + (ics * v42 * v42 + cs) * darg->x       + (ics * v44 * v42 + sn * v43) * darg->z;
+            tmp.y = (ics * v43 * v43 + cs) * darg->y       + (ics * v42 * v43 + sn * v44) * darg->x + (ics * v43 * v44 - sn * v42) * darg->z;
+            tmp.z = (ics * v43 * v44 + sn * v42) * darg->y + (ics * v44 * v42 - sn * v43) * darg->x + (ics * v44 * v44 + cs) * darg->z;
 
             *darg = tmp;
         }
@@ -893,7 +843,7 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, xyz *darg)
 size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 {
     __NC_STACK_ypacar *car = &stack__ypacar;
-    __NC_STACK_ypabact *bact = &stack__ypabact;
+    __NC_STACK_ypabact *bact = &ypabact;
 
     float v162 = 1.73;
     float v166 = 1.7;
@@ -918,33 +868,33 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
     if ( bact->fly_dir_length < 0.0 )
     {
-        v126 = (bact->rotation.m00 - bact->rotation.m20) * bact->viewer_radius * 0.7071 + bact->position.sx;
-        v127 = (bact->rotation.m01 - bact->rotation.m21) * bact->viewer_radius * 0.7071 + bact->position.sy;
-        v128 = (bact->rotation.m02 - bact->rotation.m22) * bact->viewer_radius * 0.7071 + bact->position.sz;
+        v126 = (bact->rotation.m00 - bact->rotation.m20) * bact->viewer_radius * 0.7071 + bact->position.x;
+        v127 = (bact->rotation.m01 - bact->rotation.m21) * bact->viewer_radius * 0.7071 + bact->position.y;
+        v128 = (bact->rotation.m02 - bact->rotation.m22) * bact->viewer_radius * 0.7071 + bact->position.z;
 
-        v129 = bact->rotation.m20 * bact->viewer_radius  +  bact->position.sx;
-        v130 = bact->rotation.m21 * bact->viewer_radius  +  bact->position.sy;
-        v131 = bact->rotation.m22 * bact->viewer_radius  +  bact->position.sz;
+        v129 = bact->rotation.m20 * bact->viewer_radius  +  bact->position.x;
+        v130 = bact->rotation.m21 * bact->viewer_radius  +  bact->position.y;
+        v131 = bact->rotation.m22 * bact->viewer_radius  +  bact->position.z;
 
-        v132 = (-bact->rotation.m20 - bact->rotation.m00) * bact->viewer_radius * 0.7071 + bact->position.sx;
-        v133 = (-bact->rotation.m21 - bact->rotation.m01) * bact->viewer_radius * 0.7071 + bact->position.sy;
-        v134 = (-bact->rotation.m22 - bact->rotation.m02) * bact->viewer_radius * 0.7071 + bact->position.sz;
+        v132 = (-bact->rotation.m20 - bact->rotation.m00) * bact->viewer_radius * 0.7071 + bact->position.x;
+        v133 = (-bact->rotation.m21 - bact->rotation.m01) * bact->viewer_radius * 0.7071 + bact->position.y;
+        v134 = (-bact->rotation.m22 - bact->rotation.m02) * bact->viewer_radius * 0.7071 + bact->position.z;
 
         v167 = -1.0;
     }
     else
     {
-        v126 = (bact->rotation.m20 + bact->rotation.m00) * bact->viewer_radius * 0.7071 + bact->position.sx;
-        v127 = (bact->rotation.m21 + bact->rotation.m01) * bact->viewer_radius * 0.7071 + bact->position.sy;
-        v128 = (bact->rotation.m22 + bact->rotation.m02) * bact->viewer_radius * 0.7071 + bact->position.sz;
+        v126 = (bact->rotation.m20 + bact->rotation.m00) * bact->viewer_radius * 0.7071 + bact->position.x;
+        v127 = (bact->rotation.m21 + bact->rotation.m01) * bact->viewer_radius * 0.7071 + bact->position.y;
+        v128 = (bact->rotation.m22 + bact->rotation.m02) * bact->viewer_radius * 0.7071 + bact->position.z;
 
-        v129 = bact->position.sx - bact->rotation.m20 * bact->viewer_radius;
-        v130 = bact->position.sy - bact->rotation.m21 * bact->viewer_radius;
-        v131 = bact->position.sz - bact->rotation.m22 * bact->viewer_radius;
+        v129 = bact->position.x - bact->rotation.m20 * bact->viewer_radius;
+        v130 = bact->position.y - bact->rotation.m21 * bact->viewer_radius;
+        v131 = bact->position.z - bact->rotation.m22 * bact->viewer_radius;
 
-        v132 = (bact->rotation.m20 - bact->rotation.m00) * bact->viewer_radius * 0.7071 + bact->position.sx;
-        v133 = (bact->rotation.m21 - bact->rotation.m01) * bact->viewer_radius * 0.7071 + bact->position.sy;
-        v134 = (bact->rotation.m22 - bact->rotation.m02) * bact->viewer_radius * 0.7071 + bact->position.sz;
+        v132 = (bact->rotation.m20 - bact->rotation.m00) * bact->viewer_radius * 0.7071 + bact->position.x;
+        v133 = (bact->rotation.m21 - bact->rotation.m01) * bact->viewer_radius * 0.7071 + bact->position.y;
+        v134 = (bact->rotation.m22 - bact->rotation.m02) * bact->viewer_radius * 0.7071 + bact->position.z;
 
         v167 = 1.0;
     }
@@ -957,17 +907,17 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
     ypaworld_arg136 arg136_1;
     ypaworld_arg136 arg136_2;
 
-    arg136.pos_x = bact->position.sx;
-    arg136_1.pos_x = bact->position.sx;
-    arg136_2.pos_x = bact->position.sx;
+    arg136.pos_x = bact->position.x;
+    arg136_1.pos_x = bact->position.x;
+    arg136_2.pos_x = bact->position.x;
 
-    arg136.pos_y = bact->position.sy - v162 * bact->viewer_radius;
-    arg136_1.pos_y = bact->position.sy - v162 * bact->viewer_radius;
-    arg136_2.pos_y = bact->position.sy - v162 * bact->viewer_radius;
+    arg136.pos_y = bact->position.y - v162 * bact->viewer_radius;
+    arg136_1.pos_y = bact->position.y - v162 * bact->viewer_radius;
+    arg136_2.pos_y = bact->position.y - v162 * bact->viewer_radius;
 
-    arg136.pos_z = bact->position.sz;
-    arg136_1.pos_z = bact->position.sz;
-    arg136_2.pos_z = bact->position.sz;
+    arg136.pos_z = bact->position.z;
+    arg136_1.pos_z = bact->position.z;
+    arg136_2.pos_z = bact->position.z;
 
     arg136.field_14 = (v132 - arg136.pos_x) * v166;
     arg136.field_18 = (v133 - arg136.pos_y) * v166;
@@ -1009,8 +959,8 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
                 }
                 else
                 {
-                    bact->position.sx = bact->old_pos.sx - v48->A * 10.0;
-                    bact->position.sz = bact->old_pos.sz - v48->C * 10.0;
+                    bact->position.x = bact->old_pos.x - v48->A * 10.0;
+                    bact->position.z = bact->old_pos.z - v48->C * 10.0;
                 }
 
                 if ( bact->fly_dir_length > 2.333333333333334 )
@@ -1038,9 +988,9 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
         if ( !v149 )
             return 2;
 
-        arg136.field_2C = bact->position.sx + arg136.field_14;
-        arg136.field_30 = bact->position.sy + arg136.field_18 - v162 * bact->viewer_radius;
-        arg136.field_34 = bact->position.sz + arg136.field_1C;
+        arg136.field_2C = bact->position.x + arg136.field_14;
+        arg136.field_30 = bact->position.y + arg136.field_18 - v162 * bact->viewer_radius;
+        arg136.field_34 = bact->position.z + arg136.field_1C;
 
         v158 = 1;
     }
@@ -1069,8 +1019,8 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
                 }
                 else
                 {
-                    bact->position.sx = bact->old_pos.sx - v54->A * 10.0;
-                    bact->position.sz = bact->old_pos.sz - v54->C * 10.0;
+                    bact->position.x = bact->old_pos.x - v54->A * 10.0;
+                    bact->position.z = bact->old_pos.z - v54->C * 10.0;
                 }
 
                 if ( bact->fly_dir_length > 2.333333333333334 )
@@ -1098,9 +1048,9 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
         if ( !v149 )
             return 1;
 
-        arg136_1.field_2C = bact->position.sx + arg136_1.field_14;
-        arg136_1.field_30 = bact->position.sy + arg136_1.field_18 - v162 * bact->viewer_radius;
-        arg136_1.field_34 = bact->position.sz + arg136_1.field_1C;
+        arg136_1.field_2C = bact->position.x + arg136_1.field_14;
+        arg136_1.field_30 = bact->position.y + arg136_1.field_18 - v162 * bact->viewer_radius;
+        arg136_1.field_34 = bact->position.z + arg136_1.field_1C;
 
         v160 = 1;
     }
@@ -1113,9 +1063,9 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
         if ( fabs(v54->B) < 0.6 )
         {
-            bact->position.sx += bact->fly_dir_length * bact->fly_dir.sx * arg->field_0 * 6.0;
-            bact->position.sy += bact->fly_dir_length * bact->fly_dir.sy * arg->field_0 * 6.0;
-            bact->position.sz += bact->fly_dir_length * bact->fly_dir.sz * arg->field_0 * 6.0;
+            bact->position.x += bact->fly_dir_length * bact->fly_dir.x * arg->field_0 * 6.0;
+            bact->position.y += bact->fly_dir_length * bact->fly_dir.y * arg->field_0 * 6.0;
+            bact->position.z += bact->fly_dir_length * bact->fly_dir.z * arg->field_0 * 6.0;
 
             bact->thraction = 0;
 
@@ -1139,9 +1089,9 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
     }
     else
     {
-        arg136_2.field_2C = bact->position.sx + arg136_2.field_14;
-        arg136_2.field_30 = bact->position.sy + arg136_2.field_18 - v162 * bact->viewer_radius;
-        arg136_2.field_34 = bact->position.sz + arg136_2.field_1C;
+        arg136_2.field_2C = bact->position.x + arg136_2.field_14;
+        arg136_2.field_30 = bact->position.y + arg136_2.field_18 - v162 * bact->viewer_radius;
+        arg136_2.field_34 = bact->position.z + arg136_2.field_1C;
 
         v161 = 1;
     }
@@ -1151,9 +1101,9 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
         if ( v167 > 0.0 )
         {
             ypaworld_arg136 arg136_3;
-            arg136_3.pos_x = bact->position.sx;
-            arg136_3.pos_y = bact->position.sy;
-            arg136_3.pos_z = bact->position.sz;
+            arg136_3.pos_x = bact->position.x;
+            arg136_3.pos_y = bact->position.y;
+            arg136_3.pos_z = bact->position.z;
 
             arg136_3.field_14 = bact->rotation.m20 * bact->viewer_radius;
             arg136_3.field_18 = bact->rotation.m21 * bact->viewer_radius;
@@ -1230,24 +1180,24 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
         if ( v151 )
         {
-            xyz v141;
-            v141.sx = v180;
-            v141.sy = v175;
-            v141.sz = v181;
+            vec3d v141;
+            v141.x = v180;
+            v141.y = v175;
+            v141.z = v181;
 
             ypacar_func129__sub0(this, arg, &v141);
 
-            v180 = v141.sx;
-            v175 = v141.sy;
-            v181 = v141.sz;
+            v180 = v141.x;
+            v175 = v141.y;
+            v181 = v141.z;
         }
 
         float v72 = fabs(bact->fly_dir_length);
 
-        xyz vaxis;
-        vaxis.sx = bact->rotation.m11 * v181 - bact->rotation.m12 * v175;
-        vaxis.sy = bact->rotation.m12 * v180 - bact->rotation.m10 * v181;
-        vaxis.sz = bact->rotation.m10 * v175 - bact->rotation.m11 * v180;
+        vec3d vaxis;
+        vaxis.x = bact->rotation.m11 * v181 - bact->rotation.m12 * v175;
+        vaxis.y = bact->rotation.m12 * v180 - bact->rotation.m10 * v181;
+        vaxis.z = bact->rotation.m10 * v175 - bact->rotation.m11 * v180;
 
         float v173;
 
@@ -1256,13 +1206,13 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
         else
             v173 = 0.01;
 
-        float v156 = sqrt( POW2(vaxis.sx) + POW2(vaxis.sy) + POW2(vaxis.sz) );
+        float v156 = sqrt( POW2(vaxis.x) + POW2(vaxis.y) + POW2(vaxis.z) );
 
         if ( v156 > 0.0 )
         {
-            vaxis.sx /= v156;
-            vaxis.sy /= v156;
-            vaxis.sz /= v156;
+            vaxis.x /= v156;
+            vaxis.y /= v156;
+            vaxis.z /= v156;
 
             float v177 = v180 * bact->rotation.m10 + v175 * bact->rotation.m11 + v181 * bact->rotation.m12;
 
@@ -1300,16 +1250,16 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
     if ( !v158 && !v160 && !v161 )
     {
-        bact->position.sy = (arg136.field_30 + arg136_1.field_30 + arg136_2.field_30) * 0.33333334 - v5;
+        bact->position.y = (arg136.field_30 + arg136_1.field_30 + arg136_2.field_30) * 0.33333334 - v5;
         return 0;
     }
 
     float v90 = bact->viewer_overeof * v166 * 0.8;
 
     ypaworld_arg136 arg136_4;
-    arg136_4.pos_x = bact->position.sx;
-    arg136_4.pos_y = bact->position.sy;
-    arg136_4.pos_z = bact->position.sz;
+    arg136_4.pos_x = bact->position.x;
+    arg136_4.pos_y = bact->position.y;
+    arg136_4.pos_z = bact->position.z;
 
     arg136_4.pos_y -= v90;
 
@@ -1323,7 +1273,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
     if ( arg136_4.field_20 && (!arg136_4.field_20 || arg136_4.field_3C->polygons[ arg136_4.field_38 ].B >= 0.6) )
     {
-        bact->position.sy = arg136_4.field_30 - v5;
+        bact->position.y = arg136_4.field_30 - v5;
         return 0;
     }
 
@@ -1354,9 +1304,9 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
         v125 -= v167 * bact->rotation.m22;
     }
 
-    bact->position.sx += v123 * arg->field_0 * 400.0;
-    bact->position.sy += v124 * arg->field_0 * 400.0;
-    bact->position.sz += v125 * arg->field_0 * 400.0;
+    bact->position.x += v123 * arg->field_0 * 400.0;
+    bact->position.y += v124 * arg->field_0 * 400.0;
+    bact->position.z += v125 * arg->field_0 * 400.0;
 
     return 0;
 }
@@ -1394,13 +1344,13 @@ size_t NC_STACK_ypacar::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (stack_vals *)data );
+        return (size_t)func0( (IDVList *)data );
     case 1:
-        return (size_t)func1( (stack_vals *)data );
+        return (size_t)func1();
     case 2:
-        return func2( (stack_vals *)data );
+        return func2( (IDVList *)data );
     case 3:
-        return func3( (stack_vals *)data );
+        return func3( (IDVList *)data );
     case 71:
         User_layer( (update_msg *)data );
         return 1;

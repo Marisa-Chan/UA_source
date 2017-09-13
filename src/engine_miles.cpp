@@ -35,8 +35,8 @@ struct soundSys
     size_t currentTime;
     int dword_546F14;
     float flt_546F18[64];
-    xyz stru_547018;
-    xyz stru_547024;
+    vec3d stru_547018;
+    vec3d stru_547024;
     mat3x3 stru_547030;
     mat3x3 shakeMatrix;
 
@@ -582,7 +582,7 @@ void sb_0x4242e0__sub2(samples_collection1 *smpls, float a2)
 // Insert new sound
 void sb_0x4242e0(samples_collection1 *smpls)
 {
-    float a2 = sqrt( POW2(smpls->field_0.sx - sndSys.stru_547018.sx) + POW2(smpls->field_0.sz - sndSys.stru_547018.sz) + POW2(smpls->field_0.sy - sndSys.stru_547018.sy) );
+    float a2 = sqrt( POW2(smpls->field_0.x - sndSys.stru_547018.x) + POW2(smpls->field_0.z - sndSys.stru_547018.z) + POW2(smpls->field_0.y - sndSys.stru_547018.y) );
 
     if ( a2 < 6000.0 )
     {
@@ -665,15 +665,15 @@ void sb_0x424c74__sub2__sub1(userdata_sample_info *smpl)
 {
     samples_collection1 *v2 = smpl->parent_sample_collection;
 
-    float v3 = sndSys.stru_547018.sx - v2->field_0.sx;
-    float v4 = sndSys.stru_547018.sy - v2->field_0.sy;
-    float v6 = sndSys.stru_547018.sz - v2->field_0.sz;
+    float v3 = sndSys.stru_547018.x - v2->field_0.x;
+    float v4 = sndSys.stru_547018.y - v2->field_0.y;
+    float v6 = sndSys.stru_547018.z - v2->field_0.z;
 
     float v27 = sqrt(POW2(v3) + POW2(v4) + POW2(v6));
 
-    float v8 = v2->field_C - sndSys.stru_547024.sx;
-    float v9 = v2->field_10 - sndSys.stru_547024.sy;
-    float v11 = v2->field_14 - sndSys.stru_547024.sz;
+    float v8 = v2->field_C - sndSys.stru_547024.x;
+    float v9 = v2->field_10 - sndSys.stru_547024.y;
+    float v11 = v2->field_14 - sndSys.stru_547024.z;
 
     float v20 = sqrt(POW2(v8) + POW2(v9) + POW2(v11));
 
@@ -951,10 +951,10 @@ void sb_0x424c74__sub3()
 
 void sb_0x424c74__sub4()
 {
-    xyz tmp;
-    tmp.sx = 0.0;
-    tmp.sy = 0.0;
-    tmp.sz = 0.0;
+    vec3d tmp;
+    tmp.x = 0.0;
+    tmp.y = 0.0;
+    tmp.z = 0.0;
 
     int i = 0;
 
@@ -962,26 +962,26 @@ void sb_0x424c74__sub4()
     {
         userdata_sample_info *v2 = sndSys.ShakeFXs[i];
 
-        tmp.sx += audio_rnd() * v2->shkMag * v2->shakeFX->pos.sx;
+        tmp.x += audio_rnd() * v2->shkMag * v2->shakeFX->pos.x;
 
-        tmp.sy += audio_rnd() * v2->shkMag * v2->shakeFX->pos.sy;
+        tmp.y += audio_rnd() * v2->shkMag * v2->shakeFX->pos.y;
 
-        tmp.sz += audio_rnd() * v2->shkMag * v2->shakeFX->pos.sz;
+        tmp.z += audio_rnd() * v2->shkMag * v2->shakeFX->pos.z;
     }
 
     if ( i > 0 )
     {
-        sndSys.shakeMatrix.m00 = cos(tmp.sz) * cos(tmp.sy) - sin(tmp.sz) * sin(tmp.sx) * sin(tmp.sy);
-        sndSys.shakeMatrix.m01 = -sin(tmp.sz) * cos(tmp.sx);
-        sndSys.shakeMatrix.m02 = sin(tmp.sz) * sin(tmp.sx) * cos(tmp.sy) + cos(tmp.sz) * sin(tmp.sy);
+        sndSys.shakeMatrix.m00 = cos(tmp.z) * cos(tmp.y) - sin(tmp.z) * sin(tmp.x) * sin(tmp.y);
+        sndSys.shakeMatrix.m01 = -sin(tmp.z) * cos(tmp.x);
+        sndSys.shakeMatrix.m02 = sin(tmp.z) * sin(tmp.x) * cos(tmp.y) + cos(tmp.z) * sin(tmp.y);
 
-        sndSys.shakeMatrix.m10 = cos(tmp.sz) * sin(tmp.sx) * sin(tmp.sy) + sin(tmp.sz) * cos(tmp.sy);
-        sndSys.shakeMatrix.m11 = cos(tmp.sz) * cos(tmp.sx);
-        sndSys.shakeMatrix.m12 = sin(tmp.sz) * sin(tmp.sy) - cos(tmp.sz) * sin(tmp.sx) * cos(tmp.sy);
+        sndSys.shakeMatrix.m10 = cos(tmp.z) * sin(tmp.x) * sin(tmp.y) + sin(tmp.z) * cos(tmp.y);
+        sndSys.shakeMatrix.m11 = cos(tmp.z) * cos(tmp.x);
+        sndSys.shakeMatrix.m12 = sin(tmp.z) * sin(tmp.y) - cos(tmp.z) * sin(tmp.x) * cos(tmp.y);
 
-        sndSys.shakeMatrix.m20 = -cos(tmp.sx) * sin(tmp.sy);
-        sndSys.shakeMatrix.m21 = sin(tmp.sx);
-        sndSys.shakeMatrix.m22 = cos(tmp.sx) * cos(tmp.sy);
+        sndSys.shakeMatrix.m20 = -cos(tmp.x) * sin(tmp.y);
+        sndSys.shakeMatrix.m21 = sin(tmp.x);
+        sndSys.shakeMatrix.m22 = cos(tmp.x) * cos(tmp.y);
     }
     else
     {
@@ -1042,7 +1042,7 @@ mat3x3 *sb_0x424c74()
     return &sndSys.shakeMatrix;
 }
 
-void sub_423EFC(int a1, xyz *a2, xyz *a3, mat3x3 *a4)
+void sub_423EFC(int a1, vec3d *a2, vec3d *a3, mat3x3 *a4)
 {
     sndSys.currentTime += a1;
 

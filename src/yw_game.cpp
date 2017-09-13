@@ -33,13 +33,12 @@ NC_STACK_bitmap * loadDisk_screen(_NC_STACK_ypaworld *yw)
 
     set_prefix_replacement("rsrc", "data:mc2res");
 
-    stack_vals init_vals[4];
-    init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, v3);
-    init_vals[1].set(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
-    init_vals[2].set(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
-    init_vals[3].end();
+    IDVList init_vals;
+    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, v3);
+    init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
+    init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
-    NC_STACK_bitmap *disk = NC_STACK_ilbm::CInit(init_vals);
+    NC_STACK_bitmap *disk = NC_STACK_ilbm::CInit(&init_vals);
 
     set_prefix_replacement("rsrc", rsrc_def);
 
@@ -631,12 +630,11 @@ void sb_0x44ca90__sub2(_NC_STACK_ypaworld *yw, mapProto *mapp)
     {
         if (mapp->palettes[i][0])
         {
-            stack_vals init_vals[3];
-            init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, mapp->palettes[i]);
-            init_vals[1].set(NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
-            init_vals[2].end();
+            IDVList init_vals;
+            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, mapp->palettes[i]);
+            init_vals.Add(NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
 
-            NC_STACK_bitmap *ilbm = NC_STACK_ilbm::CInit(init_vals);
+            NC_STACK_bitmap *ilbm = NC_STACK_ilbm::CInit(&init_vals);
 
             if (ilbm)
             {
@@ -991,14 +989,14 @@ int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_cou
 
             ypaworld_arg146 v15;
             v15.vehicle_id = v8->vehicle;
-            v15.pos.sx = v8->pos_x;
-            v15.pos.sy = v8->pos_y;
-            v15.pos.sz = v8->pos_z;
+            v15.pos.x = v8->pos_x;
+            v15.pos.y = v8->pos_y;
+            v15.pos.z = v8->pos_z;
 
             ywo->ypaworld_func136(&v14);
 
             if ( v14.field_20 )
-                v15.pos.sy = v14.field_30 + v8->pos_y;
+                v15.pos.y = v14.field_30 + v8->pos_y;
 
             NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>( ywo->ypaworld_func146(&v15) );
 
@@ -1170,9 +1168,9 @@ void yw_InitSquads(_NC_STACK_ypaworld *yw, int squad_cnt, squadProto *squads)
 
                     if ( arg136.field_20 )
                     {
-                        arg133.pos.sx = arg136.field_2C;
-                        arg133.pos.sz = arg136.field_34;
-                        arg133.pos.sy = arg136.field_30 + -50.0;
+                        arg133.pos.x = arg136.field_2C;
+                        arg133.pos.z = arg136.field_34;
+                        arg133.pos.y = arg136.field_30 + -50.0;
                     }
                     else
                     {
@@ -1186,9 +1184,9 @@ void yw_InitSquads(_NC_STACK_ypaworld *yw, int squad_cnt, squadProto *squads)
                             return;
                         }
 
-                        arg133.pos.sx = squad->pos_x;
-                        arg133.pos.sy = sect_info.pcell->height;
-                        arg133.pos.sz = squad->pos_z;
+                        arg133.pos.x = squad->pos_x;
+                        arg133.pos.y = sect_info.pcell->height;
+                        arg133.pos.z = squad->pos_z;
                     }
                     // Create squad by robo method
                     robo->yparobo_func133(&arg133); // yparobo_func133
@@ -1245,14 +1243,14 @@ void yw_InitBuddies(_NC_STACK_ypaworld *yw)
 
             if ( v3 != -1 )
             {
-                bact_add.pos.sx = yw->field_1b80->position.sx + sin(squad_sn * 1.745) * 500.0;
-                bact_add.pos.sy = yw->field_1b80->position.sy;
-                bact_add.pos.sz = yw->field_1b80->position.sz + cos(squad_sn * 1.745) * 500.0;
+                bact_add.pos.x = yw->field_1b80->position.x + sin(squad_sn * 1.745) * 500.0;
+                bact_add.pos.y = yw->field_1b80->position.y;
+                bact_add.pos.z = yw->field_1b80->position.z + cos(squad_sn * 1.745) * 500.0;
 
                 ypaworld_arg136 arg136;
-                arg136.pos_x = bact_add.pos.sx + 0.5;
+                arg136.pos_x = bact_add.pos.x + 0.5;
                 arg136.pos_y = -50000.0;
-                arg136.pos_z = bact_add.pos.sz + 0.75;
+                arg136.pos_z = bact_add.pos.z + 0.75;
                 arg136.field_14 = 0;
                 arg136.field_18 = 100000.0;
                 arg136.field_1C = 0;
@@ -1261,7 +1259,7 @@ void yw_InitBuddies(_NC_STACK_ypaworld *yw)
                 yw->self_full->ypaworld_func136(&arg136);
 
                 if ( arg136.field_20 )
-                    bact_add.pos.sy = arg136.field_30 + -100.0;
+                    bact_add.pos.y = arg136.field_30 + -100.0;
 
                 NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
 
@@ -1712,12 +1710,12 @@ void sub_44DF60(UAskeleton::Data *arg, int id)
     int vtx2 = arg->polygons[id].v[1];
     int vtx3 = arg->polygons[id].v[2];
 
-    float sy1 = arg->POO[vtx2].sy - arg->POO[vtx1].sy;
-    float sz1 = arg->POO[vtx2].sz - arg->POO[vtx1].sz;
-    float sx1 = arg->POO[vtx2].sx - arg->POO[vtx1].sx;
-    float sz2 = arg->POO[vtx3].sz - arg->POO[vtx2].sz;
-    float sx2 = arg->POO[vtx3].sx - arg->POO[vtx2].sx;
-    float sy2 = arg->POO[vtx3].sy - arg->POO[vtx2].sy;
+    float sy1 = arg->POO[vtx2].y - arg->POO[vtx1].y;
+    float sz1 = arg->POO[vtx2].z - arg->POO[vtx1].z;
+    float sx1 = arg->POO[vtx2].x - arg->POO[vtx1].x;
+    float sz2 = arg->POO[vtx3].z - arg->POO[vtx2].z;
+    float sx2 = arg->POO[vtx3].x - arg->POO[vtx2].x;
+    float sy2 = arg->POO[vtx3].y - arg->POO[vtx2].y;
 
     triangle->B = sx2 * sz1 - sx1 * sz2;
     triangle->A = sy1 * sz2 - sy2 * sz1;
@@ -1731,7 +1729,7 @@ void sub_44DF60(UAskeleton::Data *arg, int id)
         triangle->B = triangle->B / v28;
         triangle->C = triangle->C / v28;
     }
-    triangle->D = -(triangle->B * arg->POO[vtx1].sy + triangle->A * arg->POO[vtx1].sx + triangle->C * arg->POO[vtx1].sz);
+    triangle->D = -(triangle->B * arg->POO[vtx1].y + triangle->A * arg->POO[vtx1].x + triangle->C * arg->POO[vtx1].z);
 }
 
 void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
@@ -1744,10 +1742,10 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
         if ( !(arg->field_1E & 1) || fabs( (int)(cur->height - left->height)) < 500.0 )
         {
 
-            arg->sklt->POO[0].sy = left->height;
-            arg->sklt->POO[1].sy = cur->height;
-            arg->sklt->POO[2].sy = cur->height;
-            arg->sklt->POO[3].sy = left->height;
+            arg->sklt->POO[0].y = left->height;
+            arg->sklt->POO[1].y = cur->height;
+            arg->sklt->POO[2].y = cur->height;
+            arg->sklt->POO[3].y = left->height;
 
             sub_44DF60(arg->sklt, 0);
         }
@@ -1768,10 +1766,10 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
 
         if ( !(arg->field_1E & 1) || fabs( (int)(cur->height - up->height)) < 500.0 )
         {
-            arg->sklt->POO[0].sy = up->height;
-            arg->sklt->POO[1].sy = up->height;
-            arg->sklt->POO[2].sy = cur->height;
-            arg->sklt->POO[3].sy = cur->height;
+            arg->sklt->POO[0].y = up->height;
+            arg->sklt->POO[1].y = up->height;
+            arg->sklt->POO[2].y = cur->height;
+            arg->sklt->POO[3].y = cur->height;
 
             sub_44DF60(arg->sklt, 0);
         }
@@ -1839,11 +1837,11 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
         }
         if ( !kk )
         {
-            arg->sklt->POO[0].sy = leftup->height;
-            arg->sklt->POO[1].sy = up->height;
-            arg->sklt->POO[2].sy = cur->height;
-            arg->sklt->POO[3].sy = left->height;
-            arg->sklt->POO[4].sy = cur->averg_height;
+            arg->sklt->POO[0].y = leftup->height;
+            arg->sklt->POO[1].y = up->height;
+            arg->sklt->POO[2].y = cur->height;
+            arg->sklt->POO[3].y = left->height;
+            arg->sklt->POO[4].y = cur->averg_height;
 
             sub_44DF60(arg->sklt, 0);
             sub_44DF60(arg->sklt, 1);
@@ -1875,9 +1873,9 @@ int sub_44D36C(float dx, float dy, float dz, int id, UAskeleton::Data *sklt)
             UAskeleton::Vertex *v12 = &sklt->POO[ sklt->polygons[id].v[i] ];
             UAskeleton::Vertex *v13 = &sklt->POO[ sklt->polygons[id].v[prev] ];
 
-            if ( ( (v13->sz <= dz && dz < v12->sz) ||
-                    (v12->sz <= dz && dz < v13->sz) ) &&
-                    v13->sy + (v12->sy - v13->sy) * (dz - v13->sz) / (v12->sz - v13->sz) > dy )
+            if ( ( (v13->z <= dz && dz < v12->z) ||
+                    (v12->z <= dz && dz < v13->z) ) &&
+                    v13->y + (v12->y - v13->y) * (dz - v13->z) / (v12->z - v13->z) > dy )
             {
                 v7 = v7 == 0;
             }
@@ -1894,9 +1892,9 @@ int sub_44D36C(float dx, float dy, float dz, int id, UAskeleton::Data *sklt)
             UAskeleton::Vertex *v12 = &sklt->POO[ sklt->polygons[id].v[i] ];
             UAskeleton::Vertex *v13 = &sklt->POO[ sklt->polygons[id].v[prev] ];
 
-            if ( ( (v13->sz <= dz && dz < v12->sz) ||
-                    (v12->sz <= dz && dz < v13->sz) ) &&
-                    v13->sx + (v12->sx - v13->sx) * (dz - v13->sz) / (v12->sz - v13->sz) > dx )
+            if ( ( (v13->z <= dz && dz < v12->z) ||
+                    (v12->z <= dz && dz < v13->z) ) &&
+                    v13->x + (v12->x - v13->x) * (dz - v13->z) / (v12->z - v13->z) > dx )
             {
                 v7 = v7 == 0;
             }
@@ -1913,9 +1911,9 @@ int sub_44D36C(float dx, float dy, float dz, int id, UAskeleton::Data *sklt)
             UAskeleton::Vertex *v12 = &sklt->POO[ sklt->polygons[id].v[i] ];
             UAskeleton::Vertex *v13 = &sklt->POO[ sklt->polygons[id].v[prev] ];
 
-            if ( ( (v13->sy <= dy && dy < v12->sy) ||
-                    (v12->sy <= dy && dy < v13->sy) ) &&
-                    v13->sx + (v12->sx - v13->sx) * (dy - v13->sy) / (v12->sy - v13->sy) > dx )
+            if ( ( (v13->y <= dy && dy < v12->y) ||
+                    (v12->y <= dy && dy < v13->y) ) &&
+                    v13->x + (v12->x - v13->x) * (dy - v13->y) / (v12->y - v13->y) > dx )
             {
                 v7 = v7 == 0;
             }
@@ -2134,11 +2132,10 @@ NC_STACK_ypabact *yw_createUnit(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, 
 
     if ( !bacto )
     {
-        stack_vals init_vals[2];
-        init_vals[0].set(NC_STACK_ypabact::BACT_ATT_WORLD, ywo);
-        init_vals[1].end();
+        IDVList init_vals;
+        init_vals.Add(NC_STACK_ypabact::BACT_ATT_WORLD, ywo);
 
-        bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class(unit_classes_names[model_id], init_vals) );
+        bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class(unit_classes_names[model_id], &init_vals) );
 
         if ( !bacto )
             return NULL;
@@ -2181,11 +2178,10 @@ void sub_44BF34(vhclSndFX *sndfx)
         {
             for (int i = 0; i < sndfx->extS.cnt; i++)
             {
-                stack_vals init_vals[2];
-                init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->extSampleNames[i]);
-                init_vals[1].end();
+                IDVList init_vals;
+                init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->extSampleNames[i]);
 
-                sndfx->wavs[i] = (NC_STACK_wav *)init_get_class("wav.class", init_vals);
+                sndfx->wavs[i] = (NC_STACK_wav *)init_get_class("wav.class", &init_vals);
 
                 if ( sndfx->wavs[i] )
                 {
@@ -2212,11 +2208,10 @@ void sub_44BF34(vhclSndFX *sndfx)
         }
         else if ( sndfx->sample_name[0] )
         {
-            stack_vals init_vals[2];
-            init_vals[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->sample_name);
-            init_vals[1].end();
+            IDVList init_vals;
+            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->sample_name);
 
-            sndfx->single_sample = (NC_STACK_wav *)init_get_class("wav.class", init_vals);
+            sndfx->single_sample = (NC_STACK_wav *)init_get_class("wav.class", &init_vals);
 
             if ( !sndfx->single_sample )
                 ypa_log_out("Warning: Could not load sample %s.\n", sndfx->sample_name);
@@ -2348,9 +2343,9 @@ void yw_renderSky(_NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
         uint32_t flags = rndr_params->flags;
 
         flag_xyz v5;
-        v5.x = yw->current_bact->position.sx;
-        v5.y = yw->field_15f4 + yw->current_bact->position.sy;
-        v5.z = yw->current_bact->position.sz;
+        v5.x = yw->current_bact->position.x;
+        v5.y = yw->field_15f4 + yw->current_bact->position.y;
+        v5.z = yw->current_bact->position.z;
         v5.flag = 7;
 
         yw->sky_loaded_base->base_func68(&v5);
@@ -2428,9 +2423,9 @@ void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float p
                     }
 
 
-                    wall_trigo->locPos.sx = xx;
-                    wall_trigo->locPos.sy = v28;
-                    wall_trigo->locPos.sz = yy;
+                    wall_trigo->locPos.x = xx;
+                    wall_trigo->locPos.y = v28;
+                    wall_trigo->locPos.z = yy;
 
                     float v29 = xx - posx;
                     float v30 = yy - posy;
@@ -2476,7 +2471,7 @@ void sb_0x4d7c08__sub1(_NC_STACK_ypaworld *yw, baseRender_msg *arg)
 
             if ( supr->field_104 > 300 && supr->field_104 < v14 )
             {
-                float v17 = (2 * supr->field_104) * 3.1415 / 300.0;
+                float v17 = (2 * supr->field_104) * C_PI / 300.0;
 
                 if ( v17 > 2.0 )
                 {
@@ -2516,13 +2511,13 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub0(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
     bs->base_func68(&grp_1);
 
     for (int i = 0; i < 4; i++)
-        skel->POO[i].sy = sct->y;
+        skel->POO[i].y = sct->y;
 
     for (int i = 4; i < 8; i++)
-        skel->POO[i].sy = sct2->y;
+        skel->POO[i].y = sct2->y;
 
-    skel->POO[8].sy = a5;
-    skel->POO[9].sy = a4;
+    skel->POO[8].y = a5;
+    skel->POO[9].y = a4;
 
     return bs;
 }
@@ -2546,13 +2541,13 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub1(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
     bs->base_func68(&grp_1);
 
     for (int i = 0; i < 4; i++)
-        skel->POO[i].sy = sct->y;
+        skel->POO[i].y = sct->y;
 
     for (int i = 4; i < 8; i++)
-        skel->POO[i].sy = sct2->y;
+        skel->POO[i].y = sct2->y;
 
-    skel->POO[8].sy = a5;
-    skel->POO[9].sy = a4;
+    skel->POO[8].y = a5;
+    skel->POO[9].y = a4;
 
     return bs;
 }
@@ -2844,9 +2839,9 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
 
                     ypaworld_arg146 v33;
                     v33.vehicle_id = bld->sbacts[i].sbact_vehicle;
-                    v33.pos.sx = bld->sbacts[i].sbact_pos_x + x * 1200.0 + 600.0;
-                    v33.pos.sy = bld->sbacts[i].sbact_pos_y;
-                    v33.pos.sz = bld->sbacts[i].sbact_pos_z - (y * 1200.0 + 600.0);
+                    v33.pos.x = bld->sbacts[i].sbact_pos_x + x * 1200.0 + 600.0;
+                    v33.pos.y = bld->sbacts[i].sbact_pos_y;
+                    v33.pos.z = bld->sbacts[i].sbact_pos_z - (y * 1200.0 + 600.0);
 
                     NC_STACK_ypabact *gun_obj = ywo->ypaworld_func146(&v33);
                     NC_STACK_ypagun *gunn = dynamic_cast<NC_STACK_ypagun *>(gun_obj);
@@ -2860,13 +2855,9 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
 
                         if (gunn)
                         {
-                            gun_arg128 v32;
-                            v32.field_0 = 0;
-                            v32.dir.sx = bld->sbacts[i].sbact_dir_x;
-                            v32.dir.sy = bld->sbacts[i].sbact_dir_y;
-                            v32.dir.sz = bld->sbacts[i].sbact_dir_z;
+                            vec3d basis = vec3d(bld->sbacts[i].sbact_dir_x, bld->sbacts[i].sbact_dir_y, bld->sbacts[i].sbact_dir_z);
 
-                            gunn->ypagun_func128(&v32);
+                            gunn->ypagun_func128(basis, false);
                         }
 
                         setState_msg v34;
@@ -2877,9 +2868,9 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                         gunn->SetStateInternal(&v34);
 
                         gbct->scale_time = 500;
-                        gbct->scale.sx = 1.0;
-                        gbct->scale.sy = 1.0;
-                        gbct->scale.sz = 1.0;
+                        gbct->scale.x = 1.0;
+                        gbct->scale.y = 1.0;
+                        gbct->scale.z = 1.0;
 
                         gbct->host_station = robo;
                         gbct->commandID = v39;
@@ -2889,9 +2880,9 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                             gbct->gid |= ownerid2 << 24;
 
                             bvMsg.vhcl[i].id = gbct->gid;
-                            bvMsg.vhcl[i].base.sx = bld->sbacts[i].sbact_dir_x;
-                            bvMsg.vhcl[i].base.sy = bld->sbacts[i].sbact_dir_y;
-                            bvMsg.vhcl[i].base.sz = bld->sbacts[i].sbact_dir_z;
+                            bvMsg.vhcl[i].base.x = bld->sbacts[i].sbact_dir_x;
+                            bvMsg.vhcl[i].base.y = bld->sbacts[i].sbact_dir_y;
+                            bvMsg.vhcl[i].base.z = bld->sbacts[i].sbact_dir_z;
                             bvMsg.vhcl[i].pos = gbct->position;
                             bvMsg.vhcl[i].protoID = bld->sbacts[i].sbact_vehicle;
                         }
@@ -3022,24 +3013,24 @@ int ypaworld_func137__sub0__sub0(UAskeleton::Data *skl, int id, float x, float y
     int num = skl->polygons[id].num_vertices;
     int16_t *vtx = skl->polygons[id].v;
 
-    xyz tmp;
-    tmp.sx = 0.0;
-    tmp.sy = 0.0;
-    tmp.sz = 0.0;
+    vec3d tmp;
+    tmp.x = 0.0;
+    tmp.y = 0.0;
+    tmp.z = 0.0;
 
     for (int i = 0; i < num; i++)
     {
         int16_t idd = vtx[i];
-        tmp.sx += skl->POO[ idd ].sx;
-        tmp.sy += skl->POO[ idd ].sy;
-        tmp.sz += skl->POO[ idd ].sz;
+        tmp.x += skl->POO[ idd ].x;
+        tmp.y += skl->POO[ idd ].y;
+        tmp.z += skl->POO[ idd ].z;
     }
 
     float v19 = (float)num;
 
-    float xx = tmp.sx / v19 - x;
-    float yy = tmp.sy / v19 - y;
-    float zz = tmp.sz / v19 - z;
+    float xx = tmp.x / v19 - x;
+    float yy = tmp.y / v19 - y;
+    float zz = tmp.z / v19 - z;
 
 
     float v26 = sqrt(xx * xx + yy * yy + zz * zz);
@@ -3047,18 +3038,18 @@ int ypaworld_func137__sub0__sub0(UAskeleton::Data *skl, int id, float x, float y
     if ( v26 <= r )
         return 0;
 
-    out->pos.sx = xx / v26 * r + x;
-    out->pos.sy = yy / v26 * r + y;
-    out->pos.sz = zz / v26 * r + z;
+    out->pos.x = xx / v26 * r + x;
+    out->pos.y = yy / v26 * r + y;
+    out->pos.z = zz / v26 * r + z;
 
     return 1;
 }
 
 void ypaworld_func137__sub0(ypaworld_arg137 *arg, struct_44dbf8 *a2)
 {
-    float xx = arg->pos.sx;
-    float yy = arg->pos.sy;
-    float zz = arg->pos.sz;
+    float xx = arg->pos.x;
+    float yy = arg->pos.y;
+    float zz = arg->pos.z;
 
     for (int i = 0; i < a2->sklt->polygonsCount; i++)
     {
@@ -3068,7 +3059,7 @@ void ypaworld_func137__sub0(ypaworld_arg137 *arg, struct_44dbf8 *a2)
         float t1 = tria->B;
         float t2 = tria->C;
 
-        float v9 = t0 * arg->pos2.sx + t1 * arg->pos2.sy + t2 * arg->pos2.sz;
+        float v9 = t0 * arg->pos2.x + t1 * arg->pos2.y + t2 * arg->pos2.z;
 
         if ( v9 > 0.0 )
         {
@@ -3087,7 +3078,7 @@ void ypaworld_func137__sub0(ypaworld_arg137 *arg, struct_44dbf8 *a2)
 
                 yw_137loc v18;
 
-                if ( !ypaworld_func137__sub0__sub0(a2->sklt, i, tx, ty, tz, arg->radius, &v18) || sub_44D36C(v18.pos.sx, v18.pos.sy, v18.pos.sz, i, a2->sklt) )
+                if ( !ypaworld_func137__sub0__sub0(a2->sklt, i, tx, ty, tz, arg->radius, &v18) || sub_44D36C(v18.pos.x, v18.pos.y, v18.pos.z, i, a2->sklt) )
                     v27 = 1;
 
                 if ( v27 )
@@ -3096,12 +3087,12 @@ void ypaworld_func137__sub0(ypaworld_arg137 *arg, struct_44dbf8 *a2)
                     {
                         int pos = arg->coll_count;
 
-                        arg->collisions[pos].pos1.sx = a2->pos_x + tx;
-                        arg->collisions[pos].pos1.sy = a2->pos_y + ty;
-                        arg->collisions[pos].pos1.sz = a2->pos_z + tz;
-                        arg->collisions[pos].pos2.sx = tria->A;
-                        arg->collisions[pos].pos2.sy = tria->B;
-                        arg->collisions[pos].pos2.sz = tria->C;
+                        arg->collisions[pos].pos1.x = a2->pos_x + tx;
+                        arg->collisions[pos].pos1.y = a2->pos_y + ty;
+                        arg->collisions[pos].pos1.z = a2->pos_z + tz;
+                        arg->collisions[pos].pos2.x = tria->A;
+                        arg->collisions[pos].pos2.y = tria->B;
+                        arg->collisions[pos].pos2.z = tria->C;
                         arg->collisions[pos].field_1C = tria->D;
 
                         arg->coll_count++;
@@ -3627,11 +3618,7 @@ void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a
     {
         NC_STACK_ypagun *guno = (NC_STACK_ypagun *)bct1->bacto;
 
-        gun_arg128 arg128;
-        arg128.dir = guno->stack__ypagun.dir;
-        arg128.field_0 = 0;
-
-        guno->ypagun_func128(&arg128);
+        guno->ypagun_func128(guno->ypagun.basis, false);
     }
 
     setState_msg arg78;
@@ -3715,15 +3702,15 @@ int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
 
         yw->win3d->raster_func192(NULL);
 
-        xyz a2a;
-        a2a.sx = yw->field_1334.sx;
-        a2a.sy = yw->field_1334.sy + 50000.0;
-        a2a.sz = yw->field_1334.sz;
+        vec3d a2a;
+        a2a.x = yw->field_1334.x;
+        a2a.y = yw->field_1334.y + 50000.0;
+        a2a.z = yw->field_1334.z;
 
-        xyz a3;
-        a3.sx = 0;
-        a3.sy = 0;
-        a3.sz = 0;
+        vec3d a3;
+        a3.x = 0;
+        a3.y = 0;
+        a3.z = 0;
 
         mat3x3 a4;
         a4.m00 = 1.0;
@@ -4121,8 +4108,8 @@ void ypaworld_func64__sub19__sub2__sub0__sub0(_NC_STACK_ypaworld *yw, supetItemP
 
             if ( v9 )
             {
-                float v10 = a5 - bct->position.sx;
-                float v11 = a6 - bct->position.sz;
+                float v10 = a5 - bct->position.x;
+                float v11 = a6 - bct->position.z;
 
                 if ( sqrt(POW2(v10) + POW2(v11)) < a7 )
                 {
@@ -4153,7 +4140,7 @@ void ypaworld_func64__sub19__sub2__sub0(_NC_STACK_ypaworld *yw, int id)
 
     if ( sitem->field_104 > 300 && sitem->field_104 - sitem->field_108 > 200 && sitem->field_104 < v19 )
     {
-        float v9 = (2 * sitem->field_104) * 3.1415 / 150.0;
+        float v9 = (2 * sitem->field_104) * C_PI / 150.0;
 
         sitem->field_108 = sitem->field_104;
 
@@ -4172,9 +4159,9 @@ void ypaworld_func64__sub19__sub2__sub0(_NC_STACK_ypaworld *yw, int id)
                     yw->fxnumber = 2;
 
                     yw_arg129 arg129;
-                    arg129.pos.sx = v26;
-                    arg129.pos.sy = sitem->pcell->height;
-                    arg129.pos.sz = v21;
+                    arg129.pos.x = v26;
+                    arg129.pos.y = sitem->pcell->height;
+                    arg129.pos.z = v21;
                     arg129.field_10 = 200000;
                     arg129.field_14 = sitem->field_F4;
                     arg129.unit = 0;
@@ -4251,23 +4238,23 @@ void sub_4D6958(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, samples_collec
     }
     else
     {
-        xyz tmp;
-        tmp.sx = unit->position.sx - yw->field_1b84->position.sx;
-        tmp.sy = unit->position.sy - yw->field_1b84->position.sy;
-        tmp.sz = unit->position.sz - yw->field_1b84->position.sz;
+        vec3d tmp;
+        tmp.x = unit->position.x - yw->field_1b84->position.x;
+        tmp.y = unit->position.y - yw->field_1b84->position.y;
+        tmp.z = unit->position.z - yw->field_1b84->position.z;
 
-        float v11 = sqrt(POW2(tmp.sx) + POW2(tmp.sy) + POW2(tmp.sz));
+        float v11 = sqrt(POW2(tmp.x) + POW2(tmp.y) + POW2(tmp.z));
 
         if ( v11 > 0.0 )
         {
-            tmp.sx *= 100.0 / v11;
-            tmp.sy *= 100.0 / v11;
-            tmp.sz *= 100.0 / v11;
+            tmp.x *= 100.0 / v11;
+            tmp.y *= 100.0 / v11;
+            tmp.z *= 100.0 / v11;
         }
 
-        collection->field_0.sx = yw->field_1b84->position.sx + tmp.sx;
-        collection->field_0.sy = yw->field_1b84->position.sy + tmp.sy;
-        collection->field_0.sz = yw->field_1b84->position.sz + tmp.sz;
+        collection->field_0.x = yw->field_1b84->position.x + tmp.x;
+        collection->field_0.y = yw->field_1b84->position.y + tmp.y;
+        collection->field_0.z = yw->field_1b84->position.z + tmp.z;
     }
 }
 
@@ -4283,9 +4270,9 @@ void ypaworld_func64__sub23(_NC_STACK_ypaworld *yw)
         {
             sub_4D6958(yw, unit, &smpls->field_4);
 
-            smpls->field_4.field_C = yw->field_1b84->fly_dir.sx * yw->field_1b84->fly_dir_length;
-            smpls->field_4.field_10 = yw->field_1b84->fly_dir.sy * yw->field_1b84->fly_dir_length;
-            smpls->field_4.field_14 = yw->field_1b84->fly_dir.sz * yw->field_1b84->fly_dir_length;
+            smpls->field_4.field_C = yw->field_1b84->fly_dir.x * yw->field_1b84->fly_dir_length;
+            smpls->field_4.field_10 = yw->field_1b84->fly_dir.y * yw->field_1b84->fly_dir_length;
+            smpls->field_4.field_14 = yw->field_1b84->fly_dir.z * yw->field_1b84->fly_dir_length;
         }
 
         if ( smpls->field_4.samples_data[0].flags & 2 )
@@ -5117,7 +5104,7 @@ void recorder_store_bact(_NC_STACK_ypaworld *yw, recorder *rcrd, nlist *bct_lst)
     }
 }
 
-void rotmat_to_euler(mat3x3 *mat, xyz *out)
+void rotmat_to_euler(mat3x3 *mat, vec3d *out)
 {
     float sy = sqrt(POW2(mat->m00) + POW2(mat->m10));
 
@@ -5125,26 +5112,26 @@ void rotmat_to_euler(mat3x3 *mat, xyz *out)
 
     if ( !singular )
     {
-        out->sx = atan2(mat->m21, mat->m22);
-        out->sy = atan2(-mat->m20, sy);
-        out->sz = atan2(mat->m10, mat->m00);
+        out->x = atan2(mat->m21, mat->m22);
+        out->y = atan2(-mat->m20, sy);
+        out->z = atan2(mat->m10, mat->m00);
     }
     else
     {
-        out->sx = atan2(-mat->m12, mat->m11);
-        out->sy = atan2(-mat->m20, sy);
-        out->sz = 0.0;
+        out->x = atan2(-mat->m12, mat->m11);
+        out->y = atan2(-mat->m20, sy);
+        out->z = 0.0;
     }
 }
 
-void euler_to_rotmat(xyz *euler, mat3x3 *out)
+void euler_to_rotmat(vec3d *euler, mat3x3 *out)
 {
-    float _cx = cos(euler->sx);
-    float _sx = sin(euler->sx);
-    float _cy = cos(euler->sy);
-    float _sy = sin(euler->sy);
-    float _cz = cos(euler->sz);
-    float _sz = sin(euler->sz);
+    float _cx = cos(euler->x);
+    float _sx = sin(euler->x);
+    float _cy = cos(euler->y);
+    float _sy = sin(euler->y);
+    float _cz = cos(euler->z);
+    float _sz = sin(euler->z);
 
     out->m00 = _cy * _cz;
     out->m01 = _sy * _sx * _cz - _cx * _sz;
@@ -5178,14 +5165,12 @@ void recorder_world_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd)
         oinf->bact_id = bact->gid;
         oinf->pos = bact->position;
 
-        xyz euler;
+        vec3d euler;
         rotmat_to_euler(&bact->rotation, &euler);
 
-        const float pi2 = 6.283185307;
-
-        oinf->rot_x = dround(euler.sx * 127.0 / pi2);
-        oinf->rot_y = dround(euler.sy * 127.0 / pi2);
-        oinf->rot_z = dround(euler.sz * 127.0 / pi2);
+        oinf->rot_x = dround(euler.x * 127.0 / C_2PI);
+        oinf->rot_y = dround(euler.y * 127.0 / C_2PI);
+        oinf->rot_z = dround(euler.z * 127.0 / C_2PI);
 
         NC_STACK_base *a4 = bact->self->getBACT_visProto();
 
@@ -5636,16 +5621,15 @@ int recorder_open_replay(recorder *rcrd)
 
 int recorder_create_camera(_NC_STACK_ypaworld *yw)
 {
-    stack_vals init_vals[2];
-    init_vals[0].set(NC_STACK_ypabact::BACT_ATT_WORLD, yw->self_full);
-    init_vals[1].end();
+    IDVList init_vals;
+    init_vals.Add(NC_STACK_ypabact::BACT_ATT_WORLD, yw->self_full);
 
-    NC_STACK_ypabact *bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class("ypabact.class", init_vals) );
+    NC_STACK_ypabact *bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class("ypabact.class", &init_vals) );
 
     if ( !bacto )
         return 0;
 
-    __NC_STACK_ypabact *bact = &bacto->stack__ypabact;
+    __NC_STACK_ypabact *bact = &bacto->ypabact;
 
     bacto->Renew();
 
@@ -5761,9 +5745,9 @@ __NC_STACK_ypabact *recorder_newObject(_NC_STACK_ypaworld *yw, trec_bct *oinf)
         {
             ypaworld_arg146 arg146;
             arg146.vehicle_id = oinf->vhcl_id;
-            arg146.pos.sx = 0;
-            arg146.pos.sy = 0;
-            arg146.pos.sz = 0;
+            arg146.pos.x = 0;
+            arg146.pos.y = 0;
+            arg146.pos.z = 0;
 
             VhclProto *prot = &yw->VhclProtos[ oinf->vhcl_id ];
 
@@ -5777,14 +5761,13 @@ __NC_STACK_ypabact *recorder_newObject(_NC_STACK_ypaworld *yw, trec_bct *oinf)
         }
         else
         {
-            stack_vals init_vals[2];
-            init_vals[0].set(NC_STACK_ypabact::BACT_ATT_WORLD, yw->self_full);
-            init_vals[1].end();
+            IDVList init_vals;
+            init_vals.Add(NC_STACK_ypabact::BACT_ATT_WORLD, yw->self_full);
 
-            bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class("ypabact.class", init_vals) );
+            bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class("ypabact.class", &init_vals) );
             if ( bacto )
             {
-                bact = &bacto->stack__ypabact;
+                bact = &bacto->ypabact;
 
                 bacto->Renew();
 
@@ -5807,16 +5790,16 @@ __NC_STACK_ypabact *recorder_newObject(_NC_STACK_ypaworld *yw, trec_bct *oinf)
     {
         ypaworld_arg146 arg147;
         arg147.vehicle_id = oinf->vhcl_id;
-        arg147.pos.sx = 0;
-        arg147.pos.sy = 0;
-        arg147.pos.sz = 0;
+        arg147.pos.x = 0;
+        arg147.pos.y = 0;
+        arg147.pos.z = 0;
 
         bacto = yw->self_full->ypaworld_func147(&arg147);
     }
 
     if ( bacto )
     {
-        bact = &bacto->stack__ypabact;
+        bact = &bacto->ypabact;
 
         if ( bact->parent_bacto )
             Remove(&bact->subject_node);
@@ -5830,11 +5813,11 @@ __NC_STACK_ypabact *recorder_newObject(_NC_STACK_ypaworld *yw, trec_bct *oinf)
     return bact;
 }
 
-void recorder_set_bact_pos(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, xyz *pos)
+void recorder_set_bact_pos(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, vec3d *pos)
 {
     yw_130arg arg130;
-    arg130.pos_x = pos->sx;
-    arg130.pos_z = pos->sz;
+    arg130.pos_x = pos->x;
+    arg130.pos_z = pos->z;
 
     if ( yw->self_full->ypaworld_func130(&arg130) )
     {
@@ -5853,23 +5836,23 @@ void recorder_set_bact_pos(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, xyz
 
 void recorder_updateObject(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, trec_bct *oinf, uint16_t *ssnd, float a5, float a6)
 {
-    xyz bct_pos;
-    bct_pos.sx = (oinf->pos.sx - bact->position.sx) * a5 + bact->position.sx;
-    bct_pos.sy = (oinf->pos.sy - bact->position.sy) * a5 + bact->position.sy;
-    bct_pos.sz = (oinf->pos.sz - bact->position.sz) * a5 + bact->position.sz;
+    vec3d bct_pos;
+    bct_pos.x = (oinf->pos.x - bact->position.x) * a5 + bact->position.x;
+    bct_pos.y = (oinf->pos.y - bact->position.y) * a5 + bact->position.y;
+    bct_pos.z = (oinf->pos.z - bact->position.z) * a5 + bact->position.z;
 
     recorder_set_bact_pos(yw, bact, &bct_pos);
 
-    bact->fly_dir.sx = bact->position.sx - bact->old_pos.sx;
-    bact->fly_dir.sy = bact->position.sy - bact->old_pos.sy;
-    bact->fly_dir.sz = bact->position.sz - bact->old_pos.sz;
+    bact->fly_dir.x = bact->position.x - bact->old_pos.x;
+    bact->fly_dir.y = bact->position.y - bact->old_pos.y;
+    bact->fly_dir.z = bact->position.z - bact->old_pos.z;
 
-    float v82 = sqrt( POW2(bact->fly_dir.sx) + POW2(bact->fly_dir.sy) + POW2(bact->fly_dir.sz) );
+    float v82 = sqrt( POW2(bact->fly_dir.x) + POW2(bact->fly_dir.y) + POW2(bact->fly_dir.z) );
     if ( v82 > 0.0 )
     {
-        bact->fly_dir.sx /= v82;
-        bact->fly_dir.sy /= v82;
-        bact->fly_dir.sz /= v82;
+        bact->fly_dir.x /= v82;
+        bact->fly_dir.y /= v82;
+        bact->fly_dir.z /= v82;
 
         if ( a6 <= 0.0 )
             bact->fly_dir_length = 0;
@@ -5878,19 +5861,17 @@ void recorder_updateObject(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, tre
     }
     else
     {
-        bact->fly_dir.sx = 1.0;
-        bact->fly_dir.sy = 0;
-        bact->fly_dir.sz = 0;
+        bact->fly_dir.x = 1.0;
+        bact->fly_dir.y = 0;
+        bact->fly_dir.z = 0;
 
         bact->fly_dir_length = 0;
     }
 
-    const float pi2 = 3.141592653589793 * 2.0;
-
-    xyz euler;
-    euler.sx = oinf->rot_x / 127.0 * pi2;
-    euler.sy = oinf->rot_y / 127.0 * pi2;
-    euler.sz = oinf->rot_z / 127.0 * pi2;
+    vec3d euler;
+    euler.x = oinf->rot_x / 127.0 * C_2PI;
+    euler.y = oinf->rot_y / 127.0 * C_2PI;
+    euler.z = oinf->rot_z / 127.0 * C_2PI;
 
     mat3x3 tmp;
     euler_to_rotmat(&euler, &tmp);
@@ -6212,8 +6193,8 @@ void ypaworld_func163__sub2__sub1(_NC_STACK_ypaworld *yw, float fperiod, struC5 
         v18 /= v17;
     }
 
-    rcrd->field_44.sz += v15 * v18;
-    rcrd->field_44.sx += v15 * v20;
+    rcrd->field_44.z += v15 * v18;
+    rcrd->field_44.x += v15 * v20;
 
     float v21 = rcrd->rotation_matrix.m00;
     float v19 = rcrd->rotation_matrix.m02;
@@ -6225,9 +6206,9 @@ void ypaworld_func163__sub2__sub1(_NC_STACK_ypaworld *yw, float fperiod, struC5 
         v19 /= v16;
     }
 
-    rcrd->field_44.sy += v14;
-    rcrd->field_44.sz += v19 * v13;
-    rcrd->field_44.sx += v21 * v13;
+    rcrd->field_44.y += v14;
+    rcrd->field_44.z += v19 * v13;
+    rcrd->field_44.x += v21 * v13;
 }
 
 void ypaworld_func163__sub2__sub0(_NC_STACK_ypaworld *yw, float fperiod, struC5 *inpt)
@@ -6342,10 +6323,10 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
 
         if ( v12 )
         {
-            xyz v35;
-            v35.sx = v12->rotation.m10 * rcrd->field_44.sy + v12->rotation.m00 * rcrd->field_44.sx + v12->rotation.m20 * rcrd->field_44.sz + v12->position.sx;
-            v35.sy = v12->rotation.m11 * rcrd->field_44.sy + v12->rotation.m01 * rcrd->field_44.sx + v12->rotation.m21 * rcrd->field_44.sz + v12->position.sy;
-            v35.sz = v12->rotation.m12 * rcrd->field_44.sy + v12->rotation.m02 * rcrd->field_44.sx + v12->rotation.m22 * rcrd->field_44.sz + v12->position.sz;
+            vec3d v35;
+            v35.x = v12->rotation.m10 * rcrd->field_44.y + v12->rotation.m00 * rcrd->field_44.x + v12->rotation.m20 * rcrd->field_44.z + v12->position.x;
+            v35.y = v12->rotation.m11 * rcrd->field_44.y + v12->rotation.m01 * rcrd->field_44.x + v12->rotation.m21 * rcrd->field_44.z + v12->position.y;
+            v35.z = v12->rotation.m12 * rcrd->field_44.y + v12->rotation.m02 * rcrd->field_44.x + v12->rotation.m22 * rcrd->field_44.z + v12->position.z;
 
             recorder_set_bact_pos(yw, bact, &v35);
             mat_mult(&rcrd->rotation_matrix, &v12->rotation, &bact->rotation);
@@ -6369,33 +6350,33 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
 
         if ( v18 )
         {
-            xyz a3a;
-            a3a.sx = v18->rotation.m10 * rcrd->field_44.sy + v18->rotation.m00 * rcrd->field_44.sx + v18->rotation.m20 * rcrd->field_44.sz + v18->position.sx;
-            a3a.sy = v18->rotation.m11 * rcrd->field_44.sy + v18->rotation.m01 * rcrd->field_44.sx + v18->rotation.m21 * rcrd->field_44.sz + v18->position.sy;
-            a3a.sz = v18->rotation.m12 * rcrd->field_44.sy + v18->rotation.m02 * rcrd->field_44.sx + v18->rotation.m22 * rcrd->field_44.sz + v18->position.sz;
+            vec3d a3a;
+            a3a.x = v18->rotation.m10 * rcrd->field_44.y + v18->rotation.m00 * rcrd->field_44.x + v18->rotation.m20 * rcrd->field_44.z + v18->position.x;
+            a3a.y = v18->rotation.m11 * rcrd->field_44.y + v18->rotation.m01 * rcrd->field_44.x + v18->rotation.m21 * rcrd->field_44.z + v18->position.y;
+            a3a.z = v18->rotation.m12 * rcrd->field_44.y + v18->rotation.m02 * rcrd->field_44.x + v18->rotation.m22 * rcrd->field_44.z + v18->position.z;
             recorder_set_bact_pos(yw, bact, &a3a);
 
             mat_mult(&rcrd->rotation_matrix, &v18->rotation, &bact->rotation);
         }
     }
 
-    bact->fly_dir.sx = bact->old_pos.sx - bact->position.sx;
-    bact->fly_dir.sy = bact->old_pos.sy - bact->position.sy;
-    bact->fly_dir.sz = bact->old_pos.sz - bact->position.sz;
+    bact->fly_dir.x = bact->old_pos.x - bact->position.x;
+    bact->fly_dir.y = bact->old_pos.y - bact->position.y;
+    bact->fly_dir.z = bact->old_pos.z - bact->position.z;
 
-    float v39 = sqrt( POW2(bact->fly_dir.sx) + POW2(bact->fly_dir.sy) + POW2(bact->fly_dir.sz) );
+    float v39 = sqrt( POW2(bact->fly_dir.x) + POW2(bact->fly_dir.y) + POW2(bact->fly_dir.z) );
     if ( v39 <= 0.0 )
     {
-        bact->fly_dir.sx = 1.0;
-        bact->fly_dir.sy = 0;
-        bact->fly_dir.sz = 0;
+        bact->fly_dir.x = 1.0;
+        bact->fly_dir.y = 0;
+        bact->fly_dir.z = 0;
         bact->fly_dir_length = 0;
     }
     else
     {
-        bact->fly_dir.sx /= v39;
-        bact->fly_dir.sy /= v39;
-        bact->fly_dir.sz /= v39;
+        bact->fly_dir.x /= v39;
+        bact->fly_dir.y /= v39;
+        bact->fly_dir.z /= v39;
 
         if ( fperiod <= 0.0 )
             bact->fly_dir_length = 0;
@@ -6820,7 +6801,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                     {
                         NC_STACK_yparobo *roboo = dynamic_cast<NC_STACK_yparobo *>(v61->bacto);
                         __NC_STACK_yparobo *robo = &roboo->stack__yparobo;
-                        __NC_STACK_ypabact *rbact = &roboo->stack__ypabact;
+                        __NC_STACK_ypabact *rbact = &roboo->ypabact;
 
                         v109 = 1;
 

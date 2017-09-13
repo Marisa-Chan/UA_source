@@ -335,7 +335,7 @@ struct UserData
 struct trec_bct
 {
     uint32_t bact_id;
-    xyz pos;
+    vec3d pos;
     int8_t rot_x;
     int8_t rot_y;
     int8_t rot_z;
@@ -373,7 +373,7 @@ struct recorder
     int32_t ainf_size;
     int32_t do_record;
     int32_t field_40;
-    xyz field_44;
+    vec3d field_44;
     mat3x3 rotation_matrix;
     int32_t field_74;
     int32_t field_78;
@@ -967,7 +967,7 @@ struct _NC_STACK_ypaworld
     int16_t build_hp_ref[256];
     uint8_t sqrt_table[64][64];
     __NC_STACK_ypabact *current_bact;
-    xyz field_1334;
+    vec3d field_1334;
     mat3x3 field_1340;
     NC_STACK_base *sky_loaded_base;
     int field_1368;
@@ -1046,11 +1046,11 @@ struct _NC_STACK_ypaworld
     int field_1a64;
     int field_1A66;
     int field_1a68; //Network?
-    xyz field_1a6c;
+    vec3d field_1a6c;
 
-    xyz field_1a7c;
+    vec3d field_1a7c;
 
-    xyz field_1a8c;
+    vec3d field_1a8c;
     __NC_STACK_ypabact *field_1a98;
     float field_1a9c;
     int field_1aa0;
@@ -1059,7 +1059,7 @@ struct _NC_STACK_ypaworld
     __NC_STACK_ypabact *field_1aac;
     int field_1ab0;
     int field_1ab4;
-    xyz field_1ab8;
+    vec3d field_1ab8;
 
     NC_STACK_bitmap *pointers[11];
     bitmap_intern *pointers__bitm[11];
@@ -1276,6 +1276,30 @@ struct vhclSndFX
     sndFXprm sndPrm;
     sndFXprm2 sndPrm_shk;
     sndExtends extS;
+
+    vhclSndFX()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        sample_name[0] = 0;
+
+        for (int i = 0; i < 8; i++)
+        {
+            extSampleNames[i][0] = 0;
+            wavs[i] = NULL;
+        }
+
+        single_sample = NULL;
+        volume = 0;
+        pitch = 0;
+
+        sndPrm.clear();
+        sndPrm_shk.clear();
+        extS.clear();
+    }
 };
 
 struct VhclProto
@@ -1283,12 +1307,10 @@ struct VhclProto
     char model_id;
     char disable_enable_bitmask;
     int8_t weapon;
-    uint8_t field_3;
     int field_4;
     char mgun;
     uint8_t type_icon;
     char name[126];
-    char field_88;
     int16_t vp_normal;
     int16_t vp_fire;
     int16_t vp_dead;
@@ -1309,7 +1331,6 @@ struct VhclProto
     float sdist_sector;
     float sdist_bact;
     char radar;
-    char gap_1D8E[3];
     float mass;
     float force;
     float airconst;
@@ -1344,8 +1365,87 @@ struct VhclProto
     NC_STACK_sklt *mg_wireframe;
     NC_STACK_sklt *wpn_wireframe_1;
     NC_STACK_sklt *wpn_wireframe_2;
-    stack_vals *stack_pointer__position;
-    stack_vals stak[8];
+    IDVList initParams;
+
+    VhclProto()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        model_id = 0;
+        disable_enable_bitmask = 0;
+        weapon = 0;
+        field_4 = 0;
+        mgun = 0;
+        type_icon = 0;
+        name[0] = 0;
+        vp_normal = 0;
+        vp_fire = 0;
+        vp_dead = 0;
+        vp_wait = 0;
+        vp_megadeth = 0;
+        vp_genesis = 0;
+
+        for (int i = 0; i < 16; i++)
+            dest_fx[i].clear();
+
+        for (int i = 0; i < 12; i++)
+            sndFX[i].clear();
+
+        vo_type = 0;
+        max_pitch = 0.0;
+        field_1D6D = 0;
+        field_1D6F = 0;
+        shield = 0;
+        energy = 0;
+        field_1D79 = 0;
+        adist_sector = 0.0;
+        adist_bact = 0.0;
+        sdist_sector = 0.0;
+        sdist_bact = 0.0;
+        radar = 0;
+        mass = 0.0;
+        force = 0.0;
+        airconst = 0.0;
+        maxrot = 0.0;
+        height = 0.0;
+        radius = 0.0;
+        overeof = 0.0;
+        vwr_radius = 0.0;
+        vwr_overeof = 0.0;
+        gun_angle = 0.0;
+        fire_x = 0.0;
+        fire_y = 0.0;
+        fire_z = 0.0;
+        destFxCount = 0;
+        num_weapons = 0;
+        gun_power = 0.0;
+        gun_radius = 0.0;
+        kill_after_shot = 0;
+        scale_fx_p0 = 0.0;
+        scale_fx_p1 = 0.0;
+        scale_fx_p2 = 0.0;
+        scale_fx_p3 = 0;
+
+        for (int i = 0; i < 32; i++)
+            scale_fx_pXX[i] = 0;
+
+        job_fighttank = 0;
+        job_fighthelicopter = 0;
+        job_fightflyer = 0;
+        job_fightrobo = 0;
+        job_conquer = 0;
+        job_reconnoitre = 0;
+        wireframe = NULL;
+        hud_wireframe = NULL;
+        mg_wireframe = NULL;
+        wpn_wireframe_1 = NULL;
+        wpn_wireframe_2 = NULL;
+
+        initParams.clear();
+    }
 };
 
 struct WeapProto
@@ -1397,8 +1497,68 @@ struct WeapProto
     float vwr_overeof;
     float start_speed;
     NC_STACK_sklt *wireframe;
-    stack_vals *pointer;
-    stack_vals stack[8];
+    IDVList initParams;
+
+    WeapProto()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        field_0 = 0;
+        enable_mask = 0;
+        model_id = 0;
+        type_icon = 0;
+        name[0] = 0;
+        vp_normal = 0;
+        vp_fire = 0;
+        vp_dead = 0;
+        vp_wait = 0;
+        vp_megadeth = 0;
+        vp_genesis = 0;
+        destFxCount = 0;
+
+        for (int i = 0; i < 16; i++)
+            dfx[i].clear();
+
+        for (int i = 0; i < 3; i++)
+            sndFXes[i].clear();
+
+        field_870 = 0;
+        field_874 = 0;
+        energy = 0;
+        field_87C = 0;
+        life_time = 0;
+        life_time_nt = 0;
+        drive_time = 0;
+        delay_time = 0;
+        field_890 = 0;
+        field_894 = 0;
+        shot_time = 0;
+        shot_time_user = 0;
+        salve_shots = 0;
+        salve_delay = 0;
+        energy_heli = 0.0;
+        energy_tank = 0.0;
+        energy_flyer = 0.0;
+        energy_robo = 0.0;
+        radius_heli = 0.0;
+        radius_tank = 0.0;
+        radius_flyer = 0.0;
+        radius_robo = 0.0;
+        mass = 0.0;
+        force = 0.0;
+        airconst = 0.0;
+        maxrot = 0.0;
+        field_8D8 = 0;
+        radius = 0.0;
+        overeof = 0.0;
+        vwr_radius = 0.0;
+        vwr_overeof = 0.0;
+        start_speed = 0.0;
+        wireframe = NULL;
+    }
 };
 
 struct buildSbact
@@ -1429,8 +1589,8 @@ struct BuildProto
 
 struct roboGun
 {
-    xyz pos;
-    xyz dir;
+    vec3d pos;
+    vec3d dir;
     NC_STACK_ypabact *gun_obj;
     char robo_gun_name[32];
     uint8_t robo_gun_type;
@@ -1438,7 +1598,7 @@ struct roboGun
 
 struct roboProto
 {
-    xyz viewer;
+    vec3d viewer;
     mat3x3 matrix;
     int field_30;
     int field_34;
@@ -1447,7 +1607,7 @@ struct roboProto
     float robo_viewer_max_side;
     roboGun guns[8];
     char robo_num_guns;
-    xyz dock;
+    vec3d dock;
     rbcolls coll;
 };
 
@@ -1496,7 +1656,7 @@ struct yw_arg169
 struct ypaworld_arg146
 {
     int vehicle_id;
-    xyz pos;
+    vec3d pos;
 };
 
 struct yw_130arg
@@ -1534,17 +1694,17 @@ struct ypaworld_arg136
 struct yw_137col
 {
     int field_0;
-    xyz pos1;
-    xyz pos2;
+    vec3d pos1;
+    vec3d pos2;
     int field_1C;
 };
 
 struct ypaworld_arg137
 {
     int field_0;
-    xyz pos;
+    vec3d pos;
     int field_10;
-    xyz pos2;
+    vec3d pos2;
     float radius;
     yw_137col *collisions;
     int coll_max;
@@ -1574,7 +1734,7 @@ struct ypaworld_arg148
 struct yw_arg129
 {
     int field_0;
-    xyz pos;
+    vec3d pos;
     int field_10;
     int field_14;
     __NC_STACK_ypabact *unit;
@@ -1645,9 +1805,9 @@ struct yw_arg150
 {
     __NC_STACK_ypabact *unit;
     int field_4;
-    xyz pos;
+    vec3d pos;
     int field_14;
-    xyz field_18;
+    vec3d field_18;
     __NC_STACK_ypabact *field_24;
     float field_28;
 };
@@ -1661,10 +1821,10 @@ struct yw_arg165
 class NC_STACK_ypaworld: public NC_STACK_base
 {
 public:
-    virtual size_t func0(stack_vals *stak);
-    virtual size_t func1(stack_vals *arg);
-    virtual size_t func2(stack_vals *stak);
-    virtual size_t func3(stack_vals *stak);
+    virtual size_t func0(IDVList *stak);
+    virtual size_t func1();
+    virtual size_t func2(IDVList *stak);
+    virtual size_t func3(IDVList *stak);
     virtual size_t base_func64(base_64arg *arg);
     virtual void ypaworld_func129(yw_arg129 *arg);
     virtual size_t ypaworld_func130(yw_130arg *arg);
@@ -1686,7 +1846,7 @@ public:
     virtual size_t ypaworld_func148(ypaworld_arg148 *arg);
     virtual void ypaworld_func149(ypaworld_arg136 *arg);
     virtual void ypaworld_func150(yw_arg150 *arg);
-    virtual void ypaworld_func151(stack_vals *arg);
+    virtual void ypaworld_func151(IDVPair *arg);
     virtual void ypaworld_func153(bact_hudi *arg);
     virtual size_t ypaworld_func154(UserData *usr);
     virtual void ypaworld_func155(UserData *usr);
@@ -1806,11 +1966,6 @@ public:
     virtual int getYW_destroyFX();
     virtual NC_STACK_windp *getYW_pNET();
     virtual int getYW_invulnerable();
-
-
-    int yw_initAttrs(stack_vals *stak);
-    void ypaworld_func2__sub0(stack_vals *stak);
-    void ypaworld_func3__sub0(stack_vals *stak);
 
     //Data
     static const NewClassDescr description;

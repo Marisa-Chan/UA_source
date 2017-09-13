@@ -79,7 +79,7 @@ struct uamessage_load : uamessage_base
 
 struct uamessage_newVhcl : uamessage_base
 {
-    xyz pos;
+    vec3d pos;
     uint32_t parent;
     uint32_t id;
     uint32_t commandID;
@@ -103,16 +103,16 @@ struct uamessage_newLeader : uamessage_base
 
 struct uamessage_newWeapon : uamessage_base
 {
-    xyz pos;
+    vec3d pos;
     uint32_t id;
     uint32_t launcher;
-    xyz dir;
+    vec3d dir;
     uint32_t target;
     uint8_t flags;
     uint8_t type;
     uint8_t targetType;
     uint8_t targetOwner;
-    xyz targetPos;
+    vec3d targetPos;
 };
 
 struct uamessage_setState: uamessage_base
@@ -152,7 +152,7 @@ struct vhcldata
 
 struct vhcldataE : vhcldata
 {
-    xyz speed;
+    vec3d speed;
 };
 
 struct vhcldatahdr
@@ -200,7 +200,7 @@ struct uamessage_vhclEnergy : uamessage_base
 
 struct uamessage_sectorEnergy : uamessage_base
 {
-    xyz pos;
+    vec3d pos;
     int32_t energy;
     uint32_t whoHit;
     uint8_t sectOwner;
@@ -219,8 +219,8 @@ struct uamessage_bldVhcl : uamessage_base
     struct bldVhcl
     {
         uint32_t id;
-        xyz base;
-        xyz pos;
+        vec3d base;
+        vec3d pos;
         int16_t protoID;
         uint8_t bldp[2];
     };
@@ -299,7 +299,7 @@ struct vhclUpdData
     uint32_t status_flg;
     uint32_t gid;
     int32_t engy;
-    xyz pos;
+    vec3d pos;
 };
 
 struct uamessage_update : uamessage_base
@@ -312,10 +312,10 @@ struct uamessage_update : uamessage_base
 struct uamessage_impulse : uamessage_base
 {
     uint32_t id;
-    xyz pos;
+    vec3d pos;
     int32_t impulse;
     float mass;
-    xyz dir;
+    vec3d dir;
     float dir_len;
 };
 
@@ -346,7 +346,7 @@ struct uamessage_startPlasma : uamessage_base
     uint32_t time;
     float scale;
     uint32_t id;
-    xyz pos;
+    vec3d pos;
     mat3x3 dir;
 };
 
@@ -357,7 +357,7 @@ struct uamessage_endPlasma : uamessage_base
 
 struct uamessage_startBeam : uamessage_base
 {
-    xyz pos;
+    vec3d pos;
     uint32_t id;
 };
 

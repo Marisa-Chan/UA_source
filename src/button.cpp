@@ -11,92 +11,67 @@
 
 const NewClassDescr NC_STACK_button::description("button.class", &newinstance);
 
-int NC_STACK_button::button_func0__sub0(stack_vals *stak)
-{
-    __NC_STACK_button *btn = &stack__button;
-    stack_vals *stk = stak;
-
-    btn->field_19F = 97;
-    btn->field_1A0 = 115;
-    btn->field_1A1 = 99;
-
-    btn->field_19c = 97;
-    btn->field_19D = 99;
-    btn->field_19E = 32;
-
-    while ( 1 )
-    {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
-        {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
-            {
-            default:
-                break;
-
-            case BTN_ATT_X:
-                setBTN_x(stk->value.i_data);
-                break;
-            case BTN_ATT_Y:
-                setBTN_y(stk->value.i_data);
-                break;
-            case BTN_ATT_W:
-                setBTN_w(stk->value.i_data);
-                break;
-            case BTN_ATT_H:
-                setBTN_h(stk->value.i_data);
-                break;
-            case BTN_ATT_CHARS:
-                setBTN_chars((const char *)stk->value.p_data);
-                break;
-            }
-            stk++;
-        }
-    }
-
-    return 1;
-}
-
-size_t NC_STACK_button::func0(stack_vals *stak)
+size_t NC_STACK_button::func0(IDVList *stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
 
-    __NC_STACK_button *btn = &stack__button;
+    stack__button.field_19F = 97;
+    stack__button.field_1A0 = 115;
+    stack__button.field_1A1 = 99;
 
-    if ( button_func0__sub0(stak) )
+    stack__button.field_19c = 97;
+    stack__button.field_19D = 99;
+    stack__button.field_19E = 32;
+
+    if (stak)
     {
-        if ( btn->btn_width > 0 && btn->btn_height > 0 )
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
         {
-            btn->screen_width = GFXEngine::GFXe.getScreenW();
-            btn->screen_height = GFXEngine::GFXe.getScreenH();
+            IDVPair &val = it->second;
+
+            if ( !val.skip() )
+            {
+                switch (val.id)
+                {
+                case BTN_ATT_X:
+                    setBTN_x(val.value.i_data);
+                    break;
+                case BTN_ATT_Y:
+                    setBTN_y(val.value.i_data);
+                    break;
+                case BTN_ATT_W:
+                    setBTN_w(val.value.i_data);
+                    break;
+                case BTN_ATT_H:
+                    setBTN_h(val.value.i_data);
+                    break;
+                case BTN_ATT_CHARS:
+                    setBTN_chars((const char *)val.value.p_data);
+                    break;
+
+                default:
+                    break;
+                }
+            }
         }
-        else
-        {
-            func1(NULL);
-            return 0;
-        }
+    }
+
+    if ( stack__button.btn_width > 0 && stack__button.btn_height > 0 )
+    {
+        stack__button.screen_width = GFXEngine::GFXe.getScreenW();
+        stack__button.screen_height = GFXEngine::GFXe.getScreenH();
     }
     else
     {
-        func1(NULL);
+        func1();
         return 0;
     }
 
     return 1;
 }
 
-size_t NC_STACK_button::func1(stack_vals *stak)
+size_t NC_STACK_button::func1()
 {
     __NC_STACK_button *btn = &stack__button;
 
@@ -113,116 +88,85 @@ size_t NC_STACK_button::func1(stack_vals *stak)
             nc_FreeMem(btn->buttons[i]);
     }
 
-    return NC_STACK_nucleus::func1(stak);
+    return NC_STACK_nucleus::func1();
 }
 
-int NC_STACK_button::button_func2__sub0(stack_vals *stak)
-{
-    stack_vals *stk = stak;
-
-    while ( 1 )
-    {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
-        {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
-            {
-            default:
-                break;
-
-            case BTN_ATT_X:
-                setBTN_x(stk->value.i_data);
-                break;
-            case BTN_ATT_Y:
-                setBTN_y(stk->value.i_data);
-                break;
-            case BTN_ATT_W:
-                setBTN_w(stk->value.i_data);
-                break;
-            case BTN_ATT_H:
-                setBTN_h(stk->value.i_data);
-                break;
-            case BTN_ATT_CHARS:
-                setBTN_chars((const char *)stk->value.p_data);
-                break;
-            }
-            stk++;
-        }
-    }
-
-    return 1;
-}
-
-size_t NC_STACK_button::func2(stack_vals *stak)
+size_t NC_STACK_button::func2(IDVList *stak)
 {
     NC_STACK_nucleus::func2(stak);
-    button_func2__sub0(stak);
 
-    return 1;
-}
-
-
-int NC_STACK_button::button_func3__sub0(stack_vals *stak)
-{
-    stack_vals *stk = stak;
-
-    while ( 1 )
+    if (stak)
     {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
         {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch ( stk->id )
-            {
-            default:
-                break;
+            IDVPair &val = it->second;
 
-            case BTN_ATT_X:
-                *(int *)stk->value.p_data = getBTN_x();
-                break;
-            case BTN_ATT_Y:
-                *(int *)stk->value.p_data = getBTN_y();
-                break;
-            case BTN_ATT_W:
-                *(int *)stk->value.p_data = getBTN_w();
-                break;
-            case BTN_ATT_H:
-                *(int *)stk->value.p_data = getBTN_h();
-                break;
-            case BTN_ATT_PBTN:
-                *(__NC_STACK_button **)stk->value.p_data = getBTN_pButton();
-                break;
+            if ( !val.skip() )
+            {
+                switch (val.id)
+                {
+                case BTN_ATT_X:
+                    setBTN_x(val.value.i_data);
+                    break;
+                case BTN_ATT_Y:
+                    setBTN_y(val.value.i_data);
+                    break;
+                case BTN_ATT_W:
+                    setBTN_w(val.value.i_data);
+                    break;
+                case BTN_ATT_H:
+                    setBTN_h(val.value.i_data);
+                    break;
+                case BTN_ATT_CHARS:
+                    setBTN_chars((const char *)val.value.p_data);
+                    break;
+
+                default:
+                    break;
+                }
             }
-            stk++;
         }
     }
 
     return 1;
 }
 
-size_t NC_STACK_button::func3(stack_vals *stak)
+size_t NC_STACK_button::func3(IDVList *stak)
 {
     NC_STACK_nucleus::func3(stak);
-    button_func3__sub0(stak);
+
+    if (stak)
+    {
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        {
+            IDVPair &val = it->second;
+
+            if ( !val.skip() )
+            {
+                switch (val.id)
+                {
+                case BTN_ATT_X:
+                    *(int *)val.value.p_data = getBTN_x();
+                    break;
+                case BTN_ATT_Y:
+                    *(int *)val.value.p_data = getBTN_y();
+                    break;
+                case BTN_ATT_W:
+                    *(int *)val.value.p_data = getBTN_w();
+                    break;
+                case BTN_ATT_H:
+                    *(int *)val.value.p_data = getBTN_h();
+                    break;
+                case BTN_ATT_PBTN:
+                    *(__NC_STACK_button **)val.value.p_data = getBTN_pButton();
+                    break;
+
+                default:
+                    break;
+                }
+            }
+        }
+    }
 
     return 1;
 }
@@ -1153,13 +1097,13 @@ size_t NC_STACK_button::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (stack_vals *)data );
+        return (size_t)func0( (IDVList *)data );
     case 1:
-        return (size_t)func1( (stack_vals *)data );
+        return (size_t)func1();
     case 2:
-        return (size_t)func2( (stack_vals *)data );
+        return (size_t)func2( (IDVList *)data );
     case 3:
-        return (size_t)func3( (stack_vals *)data );
+        return (size_t)func3( (IDVList *)data );
     case 64:
         return (size_t)button_func64( (button_64_arg *)data );
     case 65:

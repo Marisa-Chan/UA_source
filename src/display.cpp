@@ -9,104 +9,100 @@
 const NewClassDescr NC_STACK_display::description("display.class", &newinstance);
 
 
-size_t NC_STACK_display::func0(stack_vals *stak)
+size_t NC_STACK_display::func0(IDVList *stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
 
     dprintf("MAKE ME %s\n","raster_func0");
 
-    __NC_STACK_display *rstr = &stack__display;
-
-    width = find_id_in_stack_def_val(ATT_WIDTH, 0, stak);
-    height = find_id_in_stack_def_val(ATT_HEIGHT, 0, stak);
+    if (stak)
+    {
+        width = stak->Get(ATT_WIDTH, 0);
+        height = stak->Get(ATT_HEIGHT, 0);
+    }
+    else
+    {
+        width = 0;
+        height = 0;
+    }
 
 //    rstr->bitm_intern = (bitmap_intern *)getRsrc_pData();
 
-    rstr->field_24.x1 = 0;
-    rstr->field_24.y1 = 0;
-    rstr->field_24.x2 = width - 1;
-    rstr->field_24.y2 = height - 1;
+    stack__display.field_24.x1 = 0;
+    stack__display.field_24.y1 = 0;
+    stack__display.field_24.x2 = width - 1;
+    stack__display.field_24.y2 = height - 1;
 
-    rstr->field_54c = width / 2;
-    rstr->field_550 = height / 2;
+    stack__display.field_54c = width / 2;
+    stack__display.field_550 = height / 2;
 
-    rstr->field_554 = width / 2;
-    rstr->field_558 = height / 2;
+    stack__display.field_554 = width / 2;
+    stack__display.field_558 = height / 2;
 
     engines.display___win3d = this;
 
     return 1;
 }
 
-size_t NC_STACK_display::func1(stack_vals *stak)
+size_t NC_STACK_display::func1()
 {
     engines.display___win3d = NULL;
-    return NC_STACK_nucleus::func1(stak);
+    return NC_STACK_nucleus::func1();
 }
 
-size_t NC_STACK_display::func2(stack_vals *stak)
+size_t NC_STACK_display::func2(IDVList *stak)
 {
-
-    stack_vals *stk = stak;
-
-    while ( 1 )
+    if (stak)
     {
-        if (stk->id == stack_vals::TAG_END)
-            break;
-        else if (stk->id == stack_vals::TAG_PTAGS)
+        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
         {
-            stk = (stack_vals *)stk->value.p_data;
-        }
-        else if ( stk->id == stack_vals::TAG_SKIP_N )
-        {
-            stk += stk->value.i_data;
-            ////a2++; ////BUGFIX?
-        }
-        else
-        {
-            switch(stk->id)
+            IDVPair &val = it->second;
+
+            if ( !val.skip() )
             {
-            case ATT_PALETTE:
-                SetPalette((UA_PALETTE *)stk->value.p_data);
-                break;
+                switch (val.id)
+                {
+                case ATT_PALETTE:
+                    SetPalette((UA_PALETTE *)val.value.p_data);
+                    break;
 
-            case ATT_FGPEN:
-                setRSTR_FGpen(stk->value.u_data);
-                break;
+                case ATT_FGPEN:
+                    setRSTR_FGpen(val.value.u_data);
+                    break;
 
-            case ATT_BGPEN:
-                setRSTR_BGpen(stk->value.u_data);
-                break;
+                case ATT_BGPEN:
+                    setRSTR_BGpen(val.value.u_data);
+                    break;
 
-            case ATT_SHADE_RMP:
-                setRSTR_shdRmp((bitmap_intern *)stk->value.p_data);
-                break;
+                case ATT_SHADE_RMP:
+                    setRSTR_shdRmp((bitmap_intern *)val.value.p_data);
+                    break;
 
-            case ATT_TRACY_RMP:
-                setRSTR_trcRmp((bitmap_intern *)stk->value.p_data);
-                break;
+                case ATT_TRACY_RMP:
+                    setRSTR_trcRmp((bitmap_intern *)val.value.p_data);
+                    break;
 
-            case ATT_FGAPEN:
-                setRSTR_FGApen(stk->value.i_data);
-                break;
+                case ATT_FGAPEN:
+                    setRSTR_FGApen(val.value.i_data);
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
+                }
             }
-            stk++;
         }
     }
 
     return NC_STACK_nucleus::func2(stak);
 }
 
-size_t NC_STACK_display::func3(stack_vals *stak)
+size_t NC_STACK_display::func3(IDVList *stak)
 {
-    stack_vals *val = find_id_in_stack2(ATT_PALETTE, stak);
-    if ( val )
+    IDVList::iterator it = stak->find(ATT_PALETTE);
+    if ( it != stak->end() )
     {
-        *(UA_PALETTE **)val->value.p_data = GetPalette();
+        *(UA_PALETTE **)it->second.value.p_data = GetPalette();
     }
 
     return NC_STACK_nucleus::func3(stak);
@@ -115,7 +111,7 @@ size_t NC_STACK_display::func3(stack_vals *stak)
 
 
 
-size_t NC_STACK_display::raster_func192(stack_vals *)
+size_t NC_STACK_display::raster_func192(IDVPair *)
 {
 //    __NC_STACK_display *rstr = &stack__display;
 //    bitmap_intern *bitm = rstr->bitm_intern;
@@ -163,7 +159,7 @@ size_t NC_STACK_display::raster_func202(rstr_arg204 *)
     return 0;
 }
 
-size_t NC_STACK_display::raster_func203(stack_vals *)
+size_t NC_STACK_display::raster_func203(IDVPair *)
 {
     dprintf("MAKE ME %s\n","raster_func203");
     return 0;
@@ -175,7 +171,7 @@ size_t NC_STACK_display::raster_func204(rstr_arg204 *)
     return 0;
 }
 
-size_t NC_STACK_display::raster_func205(stack_vals *)
+size_t NC_STACK_display::raster_func205(IDVPair *)
 {
     dprintf("MAKE ME %s\n","raster_func205");
     return 0;
@@ -241,7 +237,7 @@ void NC_STACK_display::raster_func211(ua_dRect *arg)
     rstr->field_24.y2 = rstr->field_550 + arg->y2;
 }
 
-size_t NC_STACK_display::raster_func212(stack_vals *)
+size_t NC_STACK_display::raster_func212(IDVPair *)
 {
     dprintf("MAKE ME %s\n","raster_func212");
     return 0;
@@ -284,13 +280,13 @@ void NC_STACK_display::raster_func218(rstr_218_arg *)
     dprintf("MAKE ME %s\n","raster_func218");
 }
 
-size_t NC_STACK_display::raster_func219(stack_vals *)
+size_t NC_STACK_display::raster_func219(IDVPair *)
 {
     dprintf("MAKE ME %s\n","raster_func219");
     return 0;
 }
 
-size_t NC_STACK_display::raster_func220(stack_vals *)
+size_t NC_STACK_display::raster_func220(IDVPair *)
 {
     dprintf("MAKE ME %s\n","raster_func220");
     return 0;
@@ -495,15 +491,15 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (stack_vals *)data );
+        return (size_t)func0( (IDVList *)data );
     case 1:
-        return (size_t)func1( (stack_vals *)data );
+        return (size_t)func1();
     case 2:
-        return func2( (stack_vals *)data );
+        return func2( (IDVList *)data );
     case 3:
-        return func3( (stack_vals *)data );
+        return func3( (IDVList *)data );
     case 192:
-        return (size_t)raster_func192( (stack_vals *)data );
+        return (size_t)raster_func192( (IDVPair *)data );
 //    case 193:
 //        return (size_t)raster_func193( (bitmap_intern **)data );
     case 198:
@@ -517,11 +513,11 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
     case 202:
         return (size_t)raster_func202( (rstr_arg204 *)data );
     case 203:
-        return (size_t)raster_func203( (stack_vals *)data );
+        return (size_t)raster_func203( (IDVPair *)data );
     case 204:
         return (size_t)raster_func204( (rstr_arg204 *)data );
     case 205:
-        return (size_t)raster_func205( (stack_vals *)data );
+        return (size_t)raster_func205( (IDVPair *)data );
     case 206:
         return (size_t)raster_func206( (polysDatSub *)data );
     case 207:
@@ -540,7 +536,7 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
         raster_func211( (ua_dRect *)data );
         return 1;
     case 212:
-        return (size_t)raster_func212( (stack_vals *)data );
+        return (size_t)raster_func212( (IDVPair *)data );
     case 213:
         BeginScene();
         return 1;
@@ -559,9 +555,9 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
         raster_func218( (rstr_218_arg *)data );
         return 1;
     case 219:
-        return (size_t)raster_func219( (stack_vals *)data );
+        return (size_t)raster_func219( (IDVPair *)data );
     case 220:
-        return (size_t)raster_func220( (stack_vals *)data );
+        return (size_t)raster_func220( (IDVPair *)data );
     case 221:
         raster_func221( (ua_dRect *)data );
         return 1;

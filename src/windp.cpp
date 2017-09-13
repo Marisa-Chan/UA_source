@@ -20,7 +20,7 @@ key_value_stru windp_keys[3] =
     {"game.debug", KEY_TYPE_BOOL, 0}
 };
 
-size_t NC_STACK_windp::func0(stack_vals *stak)
+size_t NC_STACK_windp::func0(IDVList *stak)
 {
     if ( !NC_STACK_network::func0(stak))
         return 0;
@@ -76,12 +76,12 @@ void NC_STACK_windp::deinit()
 
 }
 
-size_t NC_STACK_windp::func1(stack_vals *stak)
+size_t NC_STACK_windp::func1()
 {
-    return NC_STACK_nucleus::func1(stak);
+    return NC_STACK_nucleus::func1();
 }
 
-size_t NC_STACK_windp::func3(stack_vals *stak)
+size_t NC_STACK_windp::func3(IDVList *stak)
 {
     return NC_STACK_nucleus::func3(stak);
 }
@@ -114,7 +114,7 @@ size_t NC_STACK_windp::windp_func67(windp_t1 **pconn)
     return 0;
 }
 
-size_t NC_STACK_windp::windp_func68(stack_vals *stak)
+size_t NC_STACK_windp::windp_func68(IDVPair *stak)
 {
     return 0;
 }
@@ -139,17 +139,17 @@ size_t NC_STACK_windp::windp_func71(windp_openSessionMsg *osm)
     return 0;
 }
 
-size_t NC_STACK_windp::windp_func72(stack_vals *stak)
+size_t NC_STACK_windp::windp_func72(IDVPair *stak)
 {
     return 0;
 }
 
-size_t NC_STACK_windp::windp_func73(stack_vals *stak)
+size_t NC_STACK_windp::windp_func73(IDVPair *stak)
 {
     return 0;
 }
 
-size_t NC_STACK_windp::windp_func74(stack_vals *stak)
+size_t NC_STACK_windp::windp_func74(IDVPair *stak)
 {
     return 1;
 }
@@ -169,7 +169,7 @@ size_t NC_STACK_windp::windp_func77(const char *playerName)
     return 0;
 }
 
-size_t NC_STACK_windp::windp_func78(stack_vals *stak)
+size_t NC_STACK_windp::windp_func78(IDVPair *stak)
 {
     return 0;
 }
@@ -186,7 +186,7 @@ size_t NC_STACK_windp::windp_func79(windp_arg79 *arg)
     return 0;
 }
 
-size_t NC_STACK_windp::windp_func80(stack_vals *stak)
+size_t NC_STACK_windp::windp_func80(IDVPair *stak)
 {
     return 0;
 }
@@ -201,7 +201,7 @@ size_t NC_STACK_windp::windp_func82(windp_arg82 *stak)
     return 0;
 }
 
-size_t NC_STACK_windp::windp_func83(stack_vals *stak)
+size_t NC_STACK_windp::windp_func83(IDVPair *stak)
 {
     return 0;
 }
@@ -211,12 +211,12 @@ size_t NC_STACK_windp::windp_func84(int *arg)
     return 0;
 }
 
-size_t NC_STACK_windp::windp_func85(stack_vals *stak)
+size_t NC_STACK_windp::windp_func85(IDVPair *stak)
 {
     return 0;
 }
 
-size_t NC_STACK_windp::windp_func86(stack_vals *stak)
+size_t NC_STACK_windp::windp_func86(IDVPair *stak)
 {
     return 0;
 }
@@ -229,7 +229,7 @@ size_t NC_STACK_windp::windp_func87(windp_arg87 *arg)
     return 1;
 }
 
-size_t NC_STACK_windp::windp_func88(stack_vals *stak)
+size_t NC_STACK_windp::windp_func88(IDVPair *stak)
 {
     return 0;
 }
@@ -239,7 +239,7 @@ size_t NC_STACK_windp::windp_func89(const char **stak)
     return 0;
 }
 
-size_t NC_STACK_windp::windp_func90(stack_vals *stak)
+size_t NC_STACK_windp::windp_func90(IDVPair *stak)
 {
     return 0;
 }
@@ -260,11 +260,11 @@ size_t NC_STACK_windp::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (stack_vals *)data );
+        return (size_t)func0( (IDVList *)data );
     case 1:
-        return (size_t)func1( (stack_vals *)data );
+        return (size_t)func1();
     case 3:
-        func3( (stack_vals *)data );
+        func3( (IDVList *)data );
         return 1;
     case 64:
         return (size_t)windp_func64();
@@ -275,7 +275,7 @@ size_t NC_STACK_windp::compatcall(int method_id, void *data)
     case 67:
         return (size_t)windp_func67( (windp_t1 **)data );
     case 68:
-        return (size_t)windp_func68( (stack_vals *)data );
+        return (size_t)windp_func68( (IDVPair *)data );
     case 69:
         return (size_t)windp_func69( (windp_getNameMsg *)data );
     case 70:
@@ -283,11 +283,11 @@ size_t NC_STACK_windp::compatcall(int method_id, void *data)
     case 71:
         return (size_t)windp_func71( (windp_openSessionMsg *)data );
     case 72:
-        return (size_t)windp_func72( (stack_vals *)data );
+        return (size_t)windp_func72( (IDVPair *)data );
     case 73:
-        return (size_t)windp_func73( (stack_vals *)data );
+        return (size_t)windp_func73( (IDVPair *)data );
     case 74:
-        return (size_t)windp_func74( (stack_vals *)data );
+        return (size_t)windp_func74( (IDVPair *)data );
     case 75:
         return (size_t)windp_func75( (const char *)data );
     case 76:
@@ -295,31 +295,31 @@ size_t NC_STACK_windp::compatcall(int method_id, void *data)
     case 77:
         return (size_t)windp_func77( (const char *)data );
     case 78:
-        return (size_t)windp_func78( (stack_vals *)data );
+        return (size_t)windp_func78( (IDVPair *)data );
     case 79:
         return (size_t)windp_func79( (windp_arg79 *)data );
     case 80:
-        return (size_t)windp_func80( (stack_vals *)data );
+        return (size_t)windp_func80( (IDVPair *)data );
     case 81:
         return (size_t)windp_func81( (windp_recvMsg *)data );
     case 82:
         return (size_t)windp_func82( (windp_arg82 *)data );
     case 83:
-        return (size_t)windp_func83( (stack_vals *)data );
+        return (size_t)windp_func83( (IDVPair *)data );
     case 84:
         return (size_t)windp_func84( (int *)data );
     case 85:
-        return (size_t)windp_func85( (stack_vals *)data );
+        return (size_t)windp_func85( (IDVPair *)data );
     case 86:
-        return (size_t)windp_func86( (stack_vals *)data );
+        return (size_t)windp_func86( (IDVPair *)data );
     case 87:
         return (size_t)windp_func87( (windp_arg87 *)data );
     case 88:
-        return (size_t)windp_func88( (stack_vals *)data );
+        return (size_t)windp_func88( (IDVPair *)data );
     case 89:
         return (size_t)windp_func89( (const char **)data );
     case 90:
-        return (size_t)windp_func90( (stack_vals *)data );
+        return (size_t)windp_func90( (IDVPair *)data );
     case 91:
         return (size_t)windp_func91( (int *)data );
     default:

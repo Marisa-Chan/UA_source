@@ -27,8 +27,8 @@ struct iwimp_arg129
 class NC_STACK_iwimp: public NC_STACK_idev
 {
 public:
-    virtual size_t func0(stack_vals *stak);
-    virtual size_t iwimp_func128(stack_vals *);
+    virtual size_t func0(IDVList *stak);
+    virtual size_t iwimp_func128(IDVPair *);
     virtual void iwimp_func129(iwimp_arg129 *arg);
     virtual void iwimp_func130(iwimp_arg129 *arg);
     virtual void iwimp_func131(winp_131arg *arg);

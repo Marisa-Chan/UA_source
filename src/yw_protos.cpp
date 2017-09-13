@@ -200,11 +200,11 @@ int ParseVhclShk(VhclProto *vhcl, const char *p1, const char *p2)
     else if ( !strcasecmp(tp, "mute") )
         sndfx->sndPrm_shk.mute = strtof(p2, 0);
     else if ( !strcasecmp(tp, "x") )
-        sndfx->sndPrm_shk.pos.sx = strtof(p2, 0);
+        sndfx->sndPrm_shk.pos.x = strtof(p2, 0);
     else if ( !strcasecmp(tp, "y") )
-        sndfx->sndPrm_shk.pos.sy = strtof(p2, 0);
+        sndfx->sndPrm_shk.pos.y = strtof(p2, 0);
     else if ( !strcasecmp(tp, "z") )
-        sndfx->sndPrm_shk.pos.sz = strtof(p2, 0);
+        sndfx->sndPrm_shk.pos.z = strtof(p2, 0);
     else
         return 3;
 
@@ -262,7 +262,7 @@ int VhclProtoParser(scrCallBack *arg)
                 vhcl->wpn_wireframe_2 = NULL;
             }
 
-            memset(vhcl, 0, sizeof(VhclProto));
+            vhcl->clear();
 
             vhcl->model_id = 2;
             vhcl->weapon = -1;
@@ -306,15 +306,14 @@ int VhclProtoParser(scrCallBack *arg)
                 v9->sndPrm.mag0 = 1.0;
                 v9->sndPrm_shk.mag0 = 1.0;
                 v9->sndPrm_shk.mute = 0.02;
-                v9->sndPrm_shk.pos.sx = 0.2;
-                v9->sndPrm_shk.pos.sy = 0.2;
-                v9->sndPrm_shk.pos.sz = 0.2;
+                v9->sndPrm_shk.pos.x = 0.2;
+                v9->sndPrm_shk.pos.y = 0.2;
+                v9->sndPrm_shk.pos.z = 0.2;
                 v9->volume = 120;
                 v9->sndPrm.time = 1000;
                 v9->sndPrm_shk.time = 1000;
             }
-            vhcl->stack_pointer__position = vhcl->stak;
-            vhcl->stak[0].id = 0;
+            vhcl->initParams.clear();
 
             arg->field_18 = 1;
             arg->world2 = 0;
@@ -351,17 +350,7 @@ int VhclProtoParser(scrCallBack *arg)
         {
             if ( vhcl->model_id == 3 )
             {
-                stack_vals *val = find_id_in_stack2(NC_STACK_yparobo::ROBO_ATT_PROTO, vhcl->stak);
-                if ( val )
-                {
-                    val->value.p_data = robo;
-                }
-                else
-                {
-                    vhcl->stack_pointer__position->set(NC_STACK_yparobo::ROBO_ATT_PROTO, robo);
-                    vhcl->stack_pointer__position++;
-                    vhcl->stack_pointer__position->end();
-                }
+                vhcl->initParams.Add(NC_STACK_yparobo::ROBO_ATT_PROTO, robo);
             }
 
             if ( vhcl->model_id == 1 )
@@ -412,48 +401,18 @@ int VhclProtoParser(scrCallBack *arg)
             else if ( !strcasecmp(_p2, "plane") )
             {
                 vhcl->model_id = 6;
-                stack_vals *val = find_id_in_stack2(NC_STACK_ypaflyer::FLY_ATT_TYPE, vhcl->stak);
 
-                if ( val )
-                {
-                    val->value.i_data = 3;
-                }
-                else
-                {
-                    vhcl->stack_pointer__position->set(NC_STACK_ypaflyer::FLY_ATT_TYPE, 3);
-                    vhcl->stack_pointer__position++;
-                    vhcl->stack_pointer__position->end();
-                }
+                vhcl->initParams.Add(NC_STACK_ypaflyer::FLY_ATT_TYPE, 3);
             }
             else if ( !strcasecmp(_p2, "glider") )
             {
                 vhcl->model_id = 6;
-                stack_vals *val = find_id_in_stack2(NC_STACK_ypaflyer::FLY_ATT_TYPE, vhcl->stak);
-                if ( val )
-                {
-                    val->value.i_data = 2;
-                }
-                else
-                {
-                    vhcl->stack_pointer__position->set(NC_STACK_ypaflyer::FLY_ATT_TYPE, 2);
-                    vhcl->stack_pointer__position++;
-                    vhcl->stack_pointer__position->end();
-                }
+                vhcl->initParams.Add(NC_STACK_ypaflyer::FLY_ATT_TYPE, 2);
             }
             else if ( !strcasecmp(_p2, "zeppelin") )
             {
                 vhcl->model_id = 6;
-                stack_vals *val = find_id_in_stack2(NC_STACK_ypaflyer::FLY_ATT_TYPE, vhcl->stak);
-                if ( val )
-                {
-                    val->value.i_data = 0;
-                }
-                else
-                {
-                    vhcl->stack_pointer__position->set(NC_STACK_ypaflyer::FLY_ATT_TYPE, 0);
-                    vhcl->stack_pointer__position++;
-                    vhcl->stack_pointer__position->end();
-                }
+                vhcl->initParams.Add(NC_STACK_ypaflyer::FLY_ATT_TYPE, 0);
             }
             else
             {
@@ -637,7 +596,6 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "weapon") )
         {
-            vhcl->field_3 = -1;
             vhcl->weapon = strtol(_p2, NULL, 0);
         }
         else if ( !strcasecmp(_p1, "mgun") )
@@ -702,45 +660,15 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "gun_side_angle") )
         {
-            stack_vals *val = find_id_in_stack2(NC_STACK_ypagun::GUN_ATT_SIDEANGLE, vhcl->stak);
-            if ( val )
-            {
-                val->value.i_data = strtol(_p2, NULL, 0);
-            }
-            else
-            {
-                vhcl->stack_pointer__position->set(NC_STACK_ypagun::GUN_ATT_SIDEANGLE, (int)strtol(_p2, NULL, 0));
-                vhcl->stack_pointer__position++;
-                vhcl->stack_pointer__position->end();
-            }
+            vhcl->initParams.Add(NC_STACK_ypagun::GUN_ATT_SIDEANGLE, (int)strtol(_p2, NULL, 0));
         }
         else if ( !strcasecmp(_p1, "gun_up_angle") )
         {
-            stack_vals *val = find_id_in_stack2(NC_STACK_ypagun::GUN_ATT_UPANGLE, vhcl->stak);
-            if ( val )
-            {
-                val->value.i_data = strtol(_p2, NULL, 0);
-            }
-            else
-            {
-                vhcl->stack_pointer__position->set(NC_STACK_ypagun::GUN_ATT_UPANGLE, (int)strtol(_p2, NULL, 0));
-                vhcl->stack_pointer__position++;
-                vhcl->stack_pointer__position->end();
-            }
+            vhcl->initParams.Add(NC_STACK_ypagun::GUN_ATT_UPANGLE, (int)strtol(_p2, NULL, 0));
         }
         else if ( !strcasecmp(_p1, "gun_down_angle") )
         {
-            stack_vals *val = find_id_in_stack2(NC_STACK_ypagun::GUN_ATT_DOWNANGLE, vhcl->stak);
-            if ( val )
-            {
-                val->value.i_data = strtol(_p2, NULL, 0);
-            }
-            else
-            {
-                vhcl->stack_pointer__position->set(NC_STACK_ypagun::GUN_ATT_DOWNANGLE, (int)strtol(_p2, NULL, 0));
-                vhcl->stack_pointer__position++;
-                vhcl->stack_pointer__position->end();
-            }
+            vhcl->initParams.Add(NC_STACK_ypagun::GUN_ATT_DOWNANGLE, (int)strtol(_p2, NULL, 0));
         }
         else if ( !strcasecmp(_p1, "gun_type") )
         {
@@ -757,46 +685,15 @@ int VhclProtoParser(scrCallBack *arg)
             {
                 //strcasecmp(_p2, "dummy");
             }
+
             if ( gun_type )
-            {
-                stack_vals *val = find_id_in_stack2(NC_STACK_ypagun::GUN_ATT_FIRETYPE, vhcl->stak);
-                if ( val )
-                {
-                    val->value.i_data = gun_type;
-                }
-                else
-                {
-                    vhcl->stack_pointer__position->set(NC_STACK_ypagun::GUN_ATT_FIRETYPE, gun_type);
-                    vhcl->stack_pointer__position++;
-                    vhcl->stack_pointer__position->end();
-                }
-            }
+                vhcl->initParams.Add(NC_STACK_ypagun::GUN_ATT_FIRETYPE, gun_type);
         }
         else if ( !strcasecmp(_p1, "kamikaze") )
         {
-            stack_vals *val = find_id_in_stack2(NC_STACK_ypacar::CAR_ATT_KAMIKAZE, vhcl->stak);
-            if ( val )
-            {
-                val->value.i_data = 1;
-            }
-            else
-            {
-                vhcl->stack_pointer__position->set(NC_STACK_ypacar::CAR_ATT_KAMIKAZE, 1);
-                vhcl->stack_pointer__position++;
-                vhcl->stack_pointer__position->end();
-            }
+            vhcl->initParams.Add(NC_STACK_ypacar::CAR_ATT_KAMIKAZE, 1);
 
-            val = find_id_in_stack2(NC_STACK_ypacar::CAR_ATT_BLAST, vhcl->stak);
-            if ( val )
-            {
-                val->value.i_data = strtol(_p2, NULL, 0);
-            }
-            else
-            {
-                vhcl->stack_pointer__position->set(NC_STACK_ypacar::CAR_ATT_BLAST, (int)strtol(_p2, NULL, 0));
-                vhcl->stack_pointer__position++;
-                vhcl->stack_pointer__position->end();
-            }
+            vhcl->initParams.Add(NC_STACK_ypacar::CAR_ATT_BLAST, (int)strtol(_p2, NULL, 0));
         }
         else if ( !strcasecmp(_p1, "wireframe") )
         {
@@ -806,11 +703,10 @@ int VhclProtoParser(scrCallBack *arg)
                 vhcl->wireframe = NULL;
             }
 
-            stack_vals init_vals[2];
-            init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
-            init_vals[1].end();
+            IDVList init_vals;
+            init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
 
-            vhcl->wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
+            vhcl->wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
         }
         else if ( !strcasecmp(_p1, "hud_wireframe") )
         {
@@ -820,11 +716,10 @@ int VhclProtoParser(scrCallBack *arg)
                 vhcl->hud_wireframe = NULL;
             }
 
-            stack_vals init_vals[2];
-            init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
-            init_vals[1].end();
+            IDVList init_vals;
+            init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
 
-            vhcl->hud_wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
+            vhcl->hud_wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
         }
         else if ( !strcasecmp(_p1, "mg_wireframe") )
         {
@@ -834,11 +729,10 @@ int VhclProtoParser(scrCallBack *arg)
                 vhcl->mg_wireframe = NULL;
             }
 
-            stack_vals init_vals[2];
-            init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
-            init_vals[1].end();
+            IDVList init_vals;
+            init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
 
-            vhcl->mg_wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
+            vhcl->mg_wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
         }
         else if ( !strcasecmp(_p1, "wpn_wireframe_1") )
         {
@@ -848,11 +742,10 @@ int VhclProtoParser(scrCallBack *arg)
                 vhcl->wpn_wireframe_1 = NULL;
             }
 
-            stack_vals init_vals[2];
-            init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
-            init_vals[1].end();
+            IDVList init_vals;
+            init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
 
-            vhcl->wpn_wireframe_1 = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
+            vhcl->wpn_wireframe_1 = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
         }
         else if ( !strcasecmp(_p1, "wpn_wireframe_2") )
         {
@@ -862,11 +755,10 @@ int VhclProtoParser(scrCallBack *arg)
                 vhcl->wpn_wireframe_2 = NULL;
             }
 
-            stack_vals init_vals[2];
-            init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
-            init_vals[1].end();
+            IDVList init_vals;
+            init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
 
-            vhcl->wpn_wireframe_2 = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
+            vhcl->wpn_wireframe_2 = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
         }
         else if ( !strcasecmp(_p1, "vo_type") )
         {
@@ -931,27 +823,27 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "robo_gun_pos_x") )
         {
-            robo->guns[v76].pos.sx = strtof(_p2, 0);
+            robo->guns[v76].pos.x = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_gun_pos_y") )
         {
-            robo->guns[v76].pos.sy = strtof(_p2, 0);
+            robo->guns[v76].pos.y = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_gun_pos_z") )
         {
-            robo->guns[v76].pos.sz = strtof(_p2, 0);
+            robo->guns[v76].pos.z = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_gun_dir_x") )
         {
-            robo->guns[v76].dir.sx = strtof(_p2, 0);
+            robo->guns[v76].dir.x = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_gun_dir_y") )
         {
-            robo->guns[v76].dir.sy = strtof(_p2, 0);
+            robo->guns[v76].dir.y = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_gun_dir_z") )
         {
-            robo->guns[v76].dir.sz = strtof(_p2, 0);
+            robo->guns[v76].dir.z = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_gun_type") )
         {
@@ -963,15 +855,15 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "robo_dock_x") )
         {
-            robo->dock.sx = strtof(_p2, 0);
+            robo->dock.x = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_dock_y") )
         {
-            robo->dock.sy = strtof(_p2, 0);
+            robo->dock.y = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_dock_z") )
         {
-            robo->dock.sz = strtof(_p2, 0);
+            robo->dock.z = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_coll_num") )
         {
@@ -987,27 +879,27 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "robo_coll_x") )
         {
-            robo->coll.roboColls[v77].coll_pos.sx = strtof(_p2, 0);
+            robo->coll.roboColls[v77].coll_pos.x = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_coll_y") )
         {
-            robo->coll.roboColls[v77].coll_pos.sy = strtof(_p2, 0);
+            robo->coll.roboColls[v77].coll_pos.y = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_coll_z") )
         {
-            robo->coll.roboColls[v77].coll_pos.sz = strtof(_p2, 0);
+            robo->coll.roboColls[v77].coll_pos.z = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_viewer_x") )
         {
-            robo->viewer.sx = strtof(_p2, 0);
+            robo->viewer.x = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_viewer_y") )
         {
-            robo->viewer.sy = strtof(_p2, 0);
+            robo->viewer.y = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_viewer_z") )
         {
-            robo->viewer.sz = strtof(_p2, 0);
+            robo->viewer.z = strtof(_p2, 0);
         }
         else if ( !strcasecmp(_p1, "robo_viewer_max_up") )
         {
@@ -1023,31 +915,11 @@ int VhclProtoParser(scrCallBack *arg)
         }
         else if ( !strcasecmp(_p1, "robo_does_twist") )
         {
-            stack_vals *val = find_id_in_stack2(NC_STACK_yparobo::ROBO_ATT_WAIT_ROTATE, vhcl->stak);
-            if ( val )
-            {
-                val->value.i_data = 1;
-            }
-            else
-            {
-                vhcl->stack_pointer__position->set(NC_STACK_yparobo::ROBO_ATT_WAIT_ROTATE, 1);
-                vhcl->stack_pointer__position++;
-                vhcl->stack_pointer__position->end();
-            }
+            vhcl->initParams.Add(NC_STACK_yparobo::ROBO_ATT_WAIT_ROTATE, 1);
         }
         else if ( !strcasecmp(_p1, "robo_does_flux") )
         {
-            stack_vals *val = find_id_in_stack2(NC_STACK_yparobo::ROBO_ATT_WAIT_SWAY, vhcl->stak);
-            if ( val )
-            {
-                val->value.i_data = 1;
-            }
-            else
-            {
-                vhcl->stack_pointer__position->set(NC_STACK_yparobo::ROBO_ATT_WAIT_SWAY, 1);
-                vhcl->stack_pointer__position++;
-                vhcl->stack_pointer__position->end();
-            }
+            vhcl->initParams.Add(NC_STACK_yparobo::ROBO_ATT_WAIT_SWAY, 1);
         }
         else
             return 3;
@@ -1183,11 +1055,11 @@ int ParseWeaponShk(WeapProto *wpn, const char *p1, const char *p2)
     else if ( !strcasecmp(tp, "mute") )
         sndfx->sndPrm_shk.mute = strtof(p2, 0);
     else if ( !strcasecmp(tp, "x") )
-        sndfx->sndPrm_shk.pos.sx = strtof(p2, 0);
+        sndfx->sndPrm_shk.pos.x = strtof(p2, 0);
     else if ( !strcasecmp(tp, "y") )
-        sndfx->sndPrm_shk.pos.sy = strtof(p2, 0);
+        sndfx->sndPrm_shk.pos.y = strtof(p2, 0);
     else if ( !strcasecmp(tp, "z") )
-        sndfx->sndPrm_shk.pos.sz = strtof(p2, 0);
+        sndfx->sndPrm_shk.pos.z = strtof(p2, 0);
     else
         return 3;
 
@@ -1222,7 +1094,7 @@ int WeaponProtoParser(scrCallBack *arg)
                 wpn->wireframe = NULL;
             }
 
-            memset(wpn, 0, sizeof(WeapProto));
+            wpn->clear();
 
             wpn->field_0 = 4;
 
@@ -1267,16 +1139,15 @@ int WeaponProtoParser(scrCallBack *arg)
                 v9->sndPrm.mag0 = 1.0;
                 v9->sndPrm_shk.mag0 = 1.0;
                 v9->sndPrm_shk.mute = 0.02;
-                v9->sndPrm_shk.pos.sx = 0.2;
-                v9->sndPrm_shk.pos.sy = 0.2;
-                v9->sndPrm_shk.pos.sz = 0.2;
+                v9->sndPrm_shk.pos.x = 0.2;
+                v9->sndPrm_shk.pos.y = 0.2;
+                v9->sndPrm_shk.pos.z = 0.2;
                 v9->volume = 120;
                 v9->sndPrm.time = 1000;
                 v9->sndPrm_shk.time = 1000;
             }
 
-            wpn->pointer = wpn->stack;
-            wpn->stack[0].id = 0;
+            wpn->initParams.clear();
         }
         else if ( !strcasecmp(_p1, "modify_weapon") )
         {
@@ -1510,11 +1381,10 @@ int WeaponProtoParser(scrCallBack *arg)
                 wpn->wireframe = NULL;
             }
 
-            stack_vals init_vals[2];
-            init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
-            init_vals[1].end();
+            IDVList init_vals;
+            init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
 
-            wpn->wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", init_vals);
+            wpn->wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
         }
         else if ( !strcasecmp(_p1, "dest_fx") )
         {
@@ -3056,11 +2926,10 @@ int ShellSoundsParse_sample(UserData *usr, scrCallBack *arg)
     set_prefix_replacement("rsrc", "data:");
 
 
-    stack_vals init_vals[2];
-    init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, arg->p2);
-    init_vals[1].end();
+    IDVList init_vals;
+    init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, arg->p2);
 
-    v3[v4] = (NC_STACK_wav *)init_get_class("wav.class", init_vals);
+    v3[v4] = (NC_STACK_wav *)init_get_class("wav.class", &init_vals);
     if ( !v3[v4] )
         return 4;
 
@@ -4666,14 +4535,13 @@ NC_STACK_bitmap * readMapDumpAsILBM(_NC_STACK_ypaworld *yw, const char *mapName,
     int h = strtol(v3, NULL, 0);
 
 
-    stack_vals init_vals[5];
-    init_vals[0].set( NC_STACK_rsrc::RSRC_ATT_NAME, mapName);
-    init_vals[1].set( NC_STACK_bitmap::BMD_ATT_WIDTH, w);
-    init_vals[2].set( NC_STACK_bitmap::BMD_ATT_HEIGHT, h);
-    init_vals[3].set( NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
-    init_vals[4].end();
+    IDVList init_vals;
+    init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, mapName);
+    init_vals.Add( NC_STACK_bitmap::BMD_ATT_WIDTH, w);
+    init_vals.Add( NC_STACK_bitmap::BMD_ATT_HEIGHT, h);
+    init_vals.Add( NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
 
-    NC_STACK_bitmap *v7 = NC_STACK_bitmap::CInit(init_vals);
+    NC_STACK_bitmap *v7 = NC_STACK_bitmap::CInit(&init_vals);
     if ( !v7 )
         return NULL;
 
@@ -5346,12 +5214,12 @@ int sb_0x479f4c__sub0(scrCallBack *scr)
         char *v5 = strtok(scr->p2, " \t_\n");
         if ( v5 )
         {
-            robo->dock_tgt_pos.sx = strtod(v5, 0);
+            robo->dock_tgt_pos.x = strtod(v5, 0);
             v5 = strtok(0, " \t_\n");
 
             if ( v5 )
             {
-                robo->dock_tgt_pos.sz = strtod(v5, 0);
+                robo->dock_tgt_pos.z = strtod(v5, 0);
             }
         }
     }
@@ -5545,12 +5413,12 @@ int sub_47A0C0(scrCallBack *scr)
                 v9 = strtok(0, " \t_\n");
                 if ( v9 )
                 {
-                    dword_5A7A88->primTpos.sx = strtod(v9, 0);
+                    dword_5A7A88->primTpos.x = strtod(v9, 0);
 
                     v9 = strtok(0, " \t_\n");
                     if ( v9 )
                     {
-                        dword_5A7A88->primTpos.sz = strtod(v9, 0);
+                        dword_5A7A88->primTpos.z = strtod(v9, 0);
 
                         v9 = strtok(0, " \t_\n");
                         if ( v9 )
@@ -5566,13 +5434,13 @@ int sub_47A0C0(scrCallBack *scr)
     {
         if ( strtok(scr->p2, " \t_\n") )
         {
-            dword_5A7A88->fly_dir.sx = strtod(scr->p2, 0);
+            dword_5A7A88->fly_dir.x = strtod(scr->p2, 0);
             if ( strtok(0, " \t_\n") )
             {
-                dword_5A7A88->fly_dir.sy = strtod(scr->p2, 0);
+                dword_5A7A88->fly_dir.y = strtod(scr->p2, 0);
                 if ( strtok(0, " \t_\n") )
                 {
-                    dword_5A7A88->fly_dir.sz = strtod(scr->p2, 0);
+                    dword_5A7A88->fly_dir.z = strtod(scr->p2, 0);
                     if ( strtok(0, " \t_\n") )
                     {
                         dword_5A7A88->fly_dir_length = strtod(scr->p2, 0);
@@ -5647,18 +5515,18 @@ int sub_47A0C0(scrCallBack *scr)
         char *v22 = strtok(scr->p2, " \t_\n");
         if ( v22 )
         {
-            dword_5A7A88->position.sx = strtod(v22, 0);
+            dword_5A7A88->position.x = strtod(v22, 0);
 
             v22 = strtok(0, " \t_\n");
             if ( v22 )
             {
 
-                dword_5A7A88->position.sy = strtod(v22, 0);
+                dword_5A7A88->position.y = strtod(v22, 0);
 
                 v22 = strtok(0, " \t_\n");
                 if ( v22 )
                 {
-                    dword_5A7A88->position.sz = strtod(v22, 0);
+                    dword_5A7A88->position.z = strtod(v22, 0);
                 }
             }
         }
@@ -5674,22 +5542,21 @@ int sub_47A0C0(scrCallBack *scr)
     else if ( !strcasecmp(scr->p1, "gunbasis") )
     {
         NC_STACK_ypagun *guno = (NC_STACK_ypagun *)current_bact;
-        __NC_STACK_ypagun *gun = &guno->stack__ypagun;
 
         char *v26 = strtok(scr->p2, " \t_\n");
         if ( v26 )
         {
-            gun->dir.sx = strtod(v26, 0);
+            guno->ypagun.basis.x = strtod(v26, 0);
 
             v26 = strtok(0, " \t_\n");
             if ( v26 )
             {
-                gun->dir.sy = strtod(v26, 0);
+                guno->ypagun.basis.y = strtod(v26, 0);
 
                 v26 = strtok(0, " \t_\n");
                 if ( v26 )
                 {
-                    gun->dir.sz = strtod(v26, 0);
+                    guno->ypagun.basis.z = strtod(v26, 0);
                 }
             }
         }
@@ -5704,12 +5571,12 @@ int sub_47A0C0(scrCallBack *scr)
             v29 = strtok(0, " \t_\n");
             if ( v29 )
             {
-                dword_5A7A88->waypoints[v32].sx = strtod(v29, 0);
+                dword_5A7A88->waypoints[v32].x = strtod(v29, 0);
 
                 v29 = strtok(0, " \t_\n");
                 if ( v29 )
                 {
-                    dword_5A7A88->waypoints[v32].sz = strtod(v29, 0);
+                    dword_5A7A88->waypoints[v32].z = strtod(v29, 0);
                 }
             }
         }
@@ -5742,9 +5609,9 @@ int sb_0x479f4c(scrCallBack *scr)
             scr->field_18 = 1;
 
             ypaworld_arg146 v5;
-            v5.pos.sx = 600;
-            v5.pos.sz = -600.0;
-            v5.pos.sy = 0;
+            v5.pos.x = 600;
+            v5.pos.z = -600.0;
+            v5.pos.y = 0;
             v5.vehicle_id = atoi(scr->p2);
 
             current_bact = yw->self_full->ypaworld_func146(&v5);
@@ -5755,7 +5622,7 @@ int sb_0x479f4c(scrCallBack *scr)
 
                 //dword = v3->getBACT_pBact();
 
-                dword_5A7A88 = &current_robo->stack__ypabact;
+                dword_5A7A88 = &current_robo->ypabact;
 
                 yw->self_full->ypaworld_func134(current_bact);
                 return 1;
@@ -5813,16 +5680,16 @@ int sub_479E30(scrCallBack *scr)
             scr->field_18 = 1;
 
             ypaworld_arg146 v5;
-            v5.pos.sx = 600.0;
-            v5.pos.sz = -600.0;
-            v5.pos.sy = 0;
+            v5.pos.x = 600.0;
+            v5.pos.z = -600.0;
+            v5.pos.y = 0;
             v5.vehicle_id = atoi(scr->p2);
 
             current_bact = yw->self_full->ypaworld_func146(&v5);
 
             if ( current_bact )
             {
-                dword_5A7A88 = &current_bact->stack__ypabact;
+                dword_5A7A88 = &current_bact->ypabact;
 
                 current_commander = current_bact;
 
@@ -5865,16 +5732,16 @@ int sub_479D20(scrCallBack *scr)
             scr->field_18 = 1;
 
             ypaworld_arg146 v5;
-            v5.pos.sx = 600.0;
-            v5.pos.sz = -600.0;
-            v5.pos.sy = 0;
+            v5.pos.x = 600.0;
+            v5.pos.z = -600.0;
+            v5.pos.y = 0;
             v5.vehicle_id = atoi(scr->p2);
 
             current_bact = yw->self_full->ypaworld_func146(&v5);
 
             if ( current_bact )
             {
-                dword_5A7A88 = &current_bact->stack__ypabact;
+                dword_5A7A88 = &current_bact->ypabact;
 
                 current_commander->AddSubject(current_bact);
 

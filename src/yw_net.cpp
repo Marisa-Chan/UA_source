@@ -12,6 +12,9 @@
 #include "ypamissile.h"
 #include "font.h"
 
+#define C_2PI_127       0.04947390005653217698   // (2PI / 127)
+#define C_127_2PI       20.21267777267070764265  // (127 / 2PI)
+
 extern uint32_t bact_id;
 extern key_value_stru ypaworld_keys[4];
 extern char **ypaworld__string_pointers;
@@ -287,9 +290,9 @@ void yw_netBakeVhcl(__NC_STACK_ypabact *bact, uamessage_vhclData *dat, int id, i
         return;
     }
 
-    common->pos_x = (int32_t)bact->position.sx / 2;
-    common->pos_y = (int32_t)bact->position.sy / 2;
-    common->pos_z = (int32_t)bact->position.sz / 2;
+    common->pos_x = (int32_t)bact->position.x / 2;
+    common->pos_y = (int32_t)bact->position.y / 2;
+    common->pos_z = (int32_t)bact->position.z / 2;
 
     if ( !interpolate && extended)
     {
@@ -304,9 +307,9 @@ void yw_netBakeVhcl(__NC_STACK_ypabact *bact, uamessage_vhclData *dat, int id, i
 
     if ( bact->bact_type == BACT_TYPES_GUN )
     {
-        common->pos_x = (int32_t)bact->old_pos.sx / 2;
-        common->pos_y = (int32_t)bact->old_pos.sy / 2;
-        common->pos_z = (int32_t)bact->old_pos.sz / 2;
+        common->pos_x = (int32_t)bact->old_pos.x / 2;
+        common->pos_y = (int32_t)bact->old_pos.y / 2;
+        common->pos_z = (int32_t)bact->old_pos.z / 2;
 
         common->specialinfo |= vhcldata::SI_YPAGUN;
     }
@@ -315,12 +318,12 @@ void yw_netBakeVhcl(__NC_STACK_ypabact *bact, uamessage_vhclData *dat, int id, i
         common->specialinfo &= ~vhcldata::SI_YPAGUN;
     }
 
-    xyz out;
+    vec3d out;
     rotmat_to_euler(&bact->rotation, &out);
 
-    common->roll = out.sx * 0.1591549430918953 * 127.0;
-    common->pitch = out.sy * 0.1591549430918953 * 127.0;
-    common->yaw = out.sz * 0.1591549430918953 * 127.0;
+    common->roll = out.x * C_127_2PI;
+    common->pitch = out.y * C_127_2PI;
+    common->yaw = out.z * C_127_2PI;
 
     common->specialinfo &= ~vhcldata::SI_UNK;
     common->ident = bact->gid;
@@ -458,25 +461,25 @@ void yw_netApplyVhclDataI(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
 {
     if ( id < dat->hdr.number )
     {
-        xyz v49;
-        v49.sx = 2 * dat->data[id].pos_x;
-        v49.sy = 2 * dat->data[id].pos_y;
-        v49.sz = 2 * dat->data[id].pos_z;
+        vec3d v49;
+        v49.x = 2 * dat->data[id].pos_x;
+        v49.y = 2 * dat->data[id].pos_y;
+        v49.z = 2 * dat->data[id].pos_z;
 
-        if ( v49.sx < 0.0 || v49.sx > bact->wrldX || v49.sz > 0.0 || v49.sz < bact->wrldY )
+        if ( v49.x < 0.0 || v49.x > bact->wrldX || v49.z > 0.0 || v49.z < bact->wrldY )
             log_netlog(
                 "\n+++ EVD: impossible position x %7.2f(%d) z %7.2f(%d) of object %d\n",
-                v49.sx,
+                v49.x,
                 dat->data[id].pos_x,
-                v49.sz,
+                v49.z,
                 dat->data[id].pos_z,
                 bact->gid);
 
         float dtime = dat->hdr.diffTime * 0.001;
 
-        xyz tmp = (v49 - bact->old_pos) / (dtime * 6.0);
+        vec3d tmp = (v49 - bact->old_pos) / (dtime * 6.0);
 
-        bact->fly_dir_length = tmp.normolize();
+        bact->fly_dir_length = tmp.normalise();
 
         if ( bact->fly_dir_length > 0.0001 )
             bact->fly_dir = tmp;
@@ -490,10 +493,10 @@ void yw_netApplyVhclDataI(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
             bact->fly_dir_length = 0;
         }
 
-        xyz v47;
-        v47.sx = dat->data[id].roll * 0.007874015748031496 * 2.0 * 3.141592653589793;
-        v47.sy = dat->data[id].pitch * 0.007874015748031496 * 2.0 * 3.141592653589793;
-        v47.sz = dat->data[id].yaw * 0.007874015748031496 * 2.0 * 3.141592653589793;
+        vec3d v47;
+        v47.x = dat->data[id].roll * C_2PI_127;
+        v47.y = dat->data[id].pitch * C_2PI_127;
+        v47.z = dat->data[id].yaw * C_2PI_127;
 
         mat3x3 out;
         euler_to_rotmat(&v47, &out);
@@ -533,17 +536,17 @@ void yw_netApplyVhclDataE(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
         {
             bact->old_pos = bact->position;
 
-            bact->position.sx = 2 * dat->data[id].pos_x;
-            bact->position.sy = 2 * dat->data[id].pos_y;
-            bact->position.sz = 2 * dat->data[id].pos_z;
+            bact->position.x = 2 * dat->data[id].pos_x;
+            bact->position.y = 2 * dat->data[id].pos_y;
+            bact->position.z = 2 * dat->data[id].pos_z;
 
-            xyz v73 = dat->data[id].speed;
+            vec3d v73 = dat->data[id].speed;
 
             float dtime = tmstmp * 0.001;
 
-            bact->netDSpeed.sx = (v73.sx - bact->fly_dir.sx * bact->fly_dir_length) / dtime;
-            bact->netDSpeed.sy = (v73.sy - bact->fly_dir.sy * bact->fly_dir_length) / dtime;
-            bact->netDSpeed.sz = (v73.sz - bact->fly_dir.sz * bact->fly_dir_length) / dtime;
+            bact->netDSpeed.x = (v73.x - bact->fly_dir.x * bact->fly_dir_length) / dtime;
+            bact->netDSpeed.y = (v73.y - bact->fly_dir.y * bact->fly_dir_length) / dtime;
+            bact->netDSpeed.z = (v73.z - bact->fly_dir.z * bact->fly_dir_length) / dtime;
 
             float spd = bact->netDSpeed.length();
 
@@ -572,9 +575,9 @@ void yw_netApplyVhclDataE(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
             }
             else
             {
-                bact->fly_dir.sx = (bact->position.sx - bact->old_pos.sx) / (dtime * 6.0);
-                bact->fly_dir.sy = (bact->position.sy - bact->old_pos.sy) / (dtime * 6.0);
-                bact->fly_dir.sz = (bact->position.sz - bact->old_pos.sz) / (dtime * 6.0);
+                bact->fly_dir.x = (bact->position.x - bact->old_pos.x) / (dtime * 6.0);
+                bact->fly_dir.y = (bact->position.y - bact->old_pos.y) / (dtime * 6.0);
+                bact->fly_dir.z = (bact->position.z - bact->old_pos.z) / (dtime * 6.0);
 
                 bact->fly_dir_length = bact->fly_dir.length();
                 if ( bact->fly_dir_length > 0.001 )
@@ -584,13 +587,13 @@ void yw_netApplyVhclDataE(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
 
                 if ( bact->bact_type == BACT_TYPES_ROBO )
                 {
-                    bact->fly_dir.sz = 0;
-                    bact->fly_dir.sx = 0;
+                    bact->fly_dir.z = 0;
+                    bact->fly_dir.x = 0;
                 }
 
-                bact->netDSpeed.sx = 0;
-                bact->netDSpeed.sy = 0;
-                bact->netDSpeed.sz = 0;
+                bact->netDSpeed.x = 0;
+                bact->netDSpeed.y = 0;
+                bact->netDSpeed.z = 0;
             }
 
             if ( dat->data[id].specialinfo & vhcldata::SI_DSETTED )
@@ -599,10 +602,10 @@ void yw_netApplyVhclDataE(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
                 bact->fly_dir_length = 0;
             }
 
-            xyz rot;
-            rot.sx = dat->data[id].roll * 0.007874015748031496 * 3.141592653589793 * 2.0;
-            rot.sy = dat->data[id].pitch * 0.007874015748031496 * 3.141592653589793 * 2.0;
-            rot.sz = dat->data[id].yaw * 0.007874015748031496 * 3.141592653589793 * 2.0;
+            vec3d rot;
+            rot.x = dat->data[id].roll * C_2PI_127;
+            rot.y = dat->data[id].pitch * C_2PI_127;
+            rot.z = dat->data[id].yaw * C_2PI_127;
 
             mat3x3 out;
             euler_to_rotmat(&rot, &out);
@@ -633,9 +636,9 @@ void yw_netApplyVhclDataE(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
             if ( bact->status_flg & BACT_STFLAG_LAND )
             {
                 ypaworld_arg136 v69;
-                v69.pos_x = bact->position.sx;
-                v69.pos_y = bact->position.sy;
-                v69.pos_z = bact->position.sz;
+                v69.pos_x = bact->position.x;
+                v69.pos_y = bact->position.y;
+                v69.pos_z = bact->position.z;
                 v69.field_14 = bact->rotation.m10 * 200.0;
                 v69.field_18 = bact->rotation.m11 * 200.0;
                 v69.field_1C = bact->rotation.m12 * 200.0;
@@ -645,9 +648,9 @@ void yw_netApplyVhclDataE(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
 
                 if ( v69.field_20 )
                 {
-                    bact->position.sx = v69.field_2C - bact->rotation.m10 * bact->overeof;
-                    bact->position.sy = v69.field_30 - bact->rotation.m11 * bact->overeof;
-                    bact->position.sz = v69.field_34 - bact->rotation.m12 * bact->overeof;
+                    bact->position.x = v69.field_2C - bact->rotation.m10 * bact->overeof;
+                    bact->position.y = v69.field_30 - bact->rotation.m11 * bact->overeof;
+                    bact->position.z = v69.field_34 - bact->rotation.m12 * bact->overeof;
                 }
             }
 
@@ -823,22 +826,22 @@ void yw_netAddVhclUpdData(vhclUpdData *dat, uint8_t type, __NC_STACK_ypabact *ba
     dat->vhclID = bact->vehicleID;
     dat->engy = bact->energy;
 
-    xyz out;
+    vec3d out;
     rotmat_to_euler(&bact->rotation, &out);
 
-    dat->rot_x = out.sx * 0.1591549430918953 * 127.0;
-    dat->rot_y = out.sy * 0.1591549430918953 * 127.0;
-    dat->rot_z = out.sz * 0.1591549430918953 * 127.0;
+    dat->rot_x = out.x * C_127_2PI;
+    dat->rot_y = out.y * C_127_2PI;
+    dat->rot_z = out.z * C_127_2PI;
 }
 
 void yw_netUpdDataVhcl(vhclUpdData *dat, __NC_STACK_ypabact *bact, char owner, NC_STACK_yparobo *host_station)
 {
     bact->owner = owner;
 
-    xyz in;
-    in.sx = dat->rot_x * 0.007874015748031496 * 2.0 * 3.141592653589793;
-    in.sy = dat->rot_y * 0.007874015748031496 * 2.0 * 3.141592653589793;
-    in.sz = dat->rot_z * 0.007874015748031496 * 2.0 * 3.141592653589793;
+    vec3d in;
+    in.x = dat->rot_x * C_2PI_127;
+    in.y = dat->rot_y * C_2PI_127;
+    in.z = dat->rot_z * C_2PI_127;
 
     euler_to_rotmat(&in, &bact->rotation);
 
@@ -1378,8 +1381,8 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         v459.type = 4;
         v459.t34.field_1 = bact->owner;
         v459.t34.field_2 = bact->vehicleID;
-        v459.t34.field_4 = bact->position.sx * 256.0 / bact->wrldX;
-        v459.t34.field_5 = bact->position.sy * 256.0 / bact->wrldY;
+        v459.t34.field_4 = bact->position.x * 256.0 / bact->wrldX;
+        v459.t34.field_5 = bact->position.y * 256.0 / bact->wrldY;
 
         yw->self_full->ypaworld_func184(&v459);
         netDebug_AddCreated(host_node->bact->owner, nvMsg->id);
@@ -1603,7 +1606,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             weapo->SetTarget(&stargt);
 
             if ( nwMsg->targetType == BACT_TGT_TYPE_CELL )
-                weapbact->primTpos.sy = nwMsg->targetPos.sy;
+                weapbact->primTpos.y = nwMsg->targetPos.y;
         }
 
         if ( wpnType == 2 )
@@ -1765,7 +1768,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         if ( ddMsg->newParent == 0 && !fndBact->subjects_list.head->next)
         {
             NC_STACK_ypabact *hst = yw->self_full->getYW_userHostStation();
-            __NC_STACK_ypabact *hstbct = &hst->stack__ypabact;
+            __NC_STACK_ypabact *hstbct = &hst->ypabact;
 
             int sft = 0;
             if ( fndBact->bact_type == BACT_TYPES_GUN )
@@ -1882,8 +1885,8 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             if ( fndBact->bact_type == 3 )
                 v427.t34.field_2 |= 0x8000;
 
-            v427.t34.field_4 = fndBact->position.sx * 256.0 / fndBact->wrldX;
-            v427.t34.field_5 = fndBact->position.sz * 256.0 / fndBact->wrldY;
+            v427.t34.field_4 = fndBact->position.x * 256.0 / fndBact->wrldX;
+            v427.t34.field_5 = fndBact->position.z * 256.0 / fndBact->wrldY;
 
             yw->self_full->ypaworld_func184(&v427);
         }
@@ -1973,9 +1976,9 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             arg129.unit = 0;
         }
 
-        arg129.pos.sx = seMsg->pos.sx;
-        arg129.pos.sy = seMsg->pos.sy;
-        arg129.pos.sz = seMsg->pos.sz;
+        arg129.pos.x = seMsg->pos.x;
+        arg129.pos.y = seMsg->pos.y;
+        arg129.pos.z = seMsg->pos.z;
         arg129.field_10 = seMsg->energy;
         arg129.field_14 = seMsg->sectOwner;
 
@@ -2032,12 +2035,8 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             {
                 NC_STACK_ypagun *kmnd_gn = dynamic_cast<NC_STACK_ypagun *>(kmnd);
 
-                gun_arg128 v383;
-                v383.field_0 = 0;
-                v383.dir = bvMsg->vhcl[0].base;
-
                 if (kmnd_gn)
-                    kmnd_gn->ypagun_func128(&v383);
+                    kmnd_gn->ypagun_func128(bvMsg->vhcl[0].base, false);
 
                 setState_msg ssms;
                 ssms.newStatus = BACT_STATUS_CREATE;
@@ -2067,11 +2066,8 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                     {
                         NC_STACK_ypagun *slv_gn = dynamic_cast<NC_STACK_ypagun *>(slv);
 
-                        v383.field_0 = 0;
-                        v383.dir = bvMsg->vhcl[idid].base;
-
                         if (slv_gn)
-                            slv_gn->ypagun_func128(&v383);
+                            slv_gn->ypagun_func128(bvMsg->vhcl[idid].base, false);
 
                         ssms.newStatus = BACT_STATUS_CREATE;
                         ssms.setFlags = 0;
@@ -2362,8 +2358,8 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             if ( bhost->bact->bact_type == BACT_TYPES_ROBO )
                 mmsg.t34.field_2 |= 0x8000;
 
-            mmsg.t34.field_4 = bhost->bact->position.sx * 256.0 / bhost->bact->wrldX;
-            mmsg.t34.field_5 = bhost->bact->position.sz * 256.0 / bhost->bact->wrldY;
+            mmsg.t34.field_4 = bhost->bact->position.x * 256.0 / bhost->bact->wrldX;
+            mmsg.t34.field_5 = bhost->bact->position.z * 256.0 / bhost->bact->wrldY;
 
             yw->self_full->ypaworld_func184(&mmsg);
         }
@@ -2773,8 +2769,8 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             break;
 
         yw_130arg secInfo;
-        secInfo.pos_x = impMsg->pos.sx;
-        secInfo.pos_z = impMsg->pos.sz;
+        secInfo.pos_x = impMsg->pos.x;
+        secInfo.pos_z = impMsg->pos.z;
 
         if ( !yw->self_full->ypaworld_func130(&secInfo) )
             break;
@@ -3496,7 +3492,7 @@ const char *yw_corruptionCheck(UserData *usr)
                     {
                         if ( ywo->timeStamp - unit->bact->lastFrmStamp > 180000 )
                         {
-                            found = comm->bact;
+                            found = unit->bact;
                             break;
                         }
 
@@ -4000,14 +3996,14 @@ bool yw_NetSetHostStations(_NC_STACK_ypaworld *yw, mapRobo *mapHosts, int hosts_
             return false;
         }
 
-        xyz place(selHost->pos_x, selHost->pos_y, selHost->pos_z);
+        vec3d place(selHost->pos_x, selHost->pos_y, selHost->pos_z);
 
         strncpy(usr->players[owner].name, plData.name, 64);
 
         ypaworld_arg136 arg136;
-        arg136.pos_x = place.sx;
+        arg136.pos_x = place.x;
         arg136.pos_y = -30000.0;
-        arg136.pos_z = place.sz;
+        arg136.pos_z = place.z;
         arg136.field_18 = 50000.0;
         arg136.field_14 = 0;
         arg136.field_1C = 0;
@@ -4016,7 +4012,7 @@ bool yw_NetSetHostStations(_NC_STACK_ypaworld *yw, mapRobo *mapHosts, int hosts_
         yw->self_full->ypaworld_func136(&arg136);
 
         if ( arg136.field_20 )
-            place.sy += arg136.field_30;
+            place.y += arg136.field_30;
         else
             log_netlog("Warning: Robo placed without y-correction\n");
 

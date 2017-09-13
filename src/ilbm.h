@@ -36,12 +36,12 @@ struct VBMP_type
 class NC_STACK_ilbm: public NC_STACK_bitmap
 {
 public:
-    virtual size_t func0(stack_vals *stak);
-    virtual size_t func2(stack_vals *stak);
-    virtual size_t func3(stack_vals *stak);
+    virtual size_t func0(IDVList *stak);
+    virtual size_t func2(IDVList *stak);
+    virtual size_t func3(IDVList *stak);
     virtual size_t func5(IFFile **file);
     virtual size_t func6(IFFile **pmfile);
-    virtual rsrc * rsrc_func64(stack_vals *stak);
+    virtual rsrc * rsrc_func64(IDVList *stak);
     virtual size_t rsrc_func66(rsrc_func66_arg *arg);
 
     virtual size_t compatcall(int method_id, void *data);
@@ -58,7 +58,7 @@ public:
         return new NC_STACK_ilbm();
     };
 
-    static NC_STACK_ilbm * CInit(stack_vals *stak);
+    static NC_STACK_ilbm * CInit(IDVList *stak);
 
     enum ILBM_ATT
     {
@@ -70,7 +70,7 @@ public:
     virtual int getILBM_saveFmt();
 
     size_t ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile);
-    rsrc * READ_ILBM(stack_vals *stak, IFFile *mfil, int val5);
+    rsrc * READ_ILBM(IDVList *stak, IFFile *mfil, int val5);
 
     //Data
     static const NewClassDescr description;

@@ -40,13 +40,13 @@ int sub_41C418(nlist *list, NC_STACK_rsrc *obj)
 }
 
 // Create embed resource node and fill rsrc field data
-size_t NC_STACK_embed::func0(stack_vals *)
+size_t NC_STACK_embed::func0(IDVPair *)
 {
     dprintf("MAKE ME %s\n","embed_func0");
     return 0;
 }
 
-size_t NC_STACK_embed::func1(stack_vals *stak)
+size_t NC_STACK_embed::func1()
 {
     __NC_STACK_embed *embd = &stack__embed;
 
@@ -62,7 +62,7 @@ size_t NC_STACK_embed::func1(stack_vals *stak)
         Remove(nod);
         nc_FreeMem(nod);
     }
-    return NC_STACK_nucleus::func1(stak);
+    return NC_STACK_nucleus::func1();
 }
 
 size_t NC_STACK_embed::func5(IFFile **file)
@@ -81,7 +81,7 @@ size_t NC_STACK_embed::func5(IFFile **file)
         if ( v5 )
         {
             if ( obj_ok )
-                func1(NULL);
+                func1();
             return 0;
         }
 
@@ -104,19 +104,17 @@ size_t NC_STACK_embed::func5(IFFile **file)
             mfile->read(classname, 255);
             mfile->parse();
 
-            stack_vals init_atts[4];
-            init_atts[0].set(NC_STACK_rsrc::RSRC_ATT_NAME, &classname[strlen(classname) + 1]);
-            init_atts[1].set(NC_STACK_rsrc::RSRC_ATT_TRYSHARED, 1);
-            init_atts[2].set(NC_STACK_rsrc::RSRC_ATT_PIFFFILE, mfile);
-            init_atts[3].end();
+            IDVList init_atts;
+            init_atts.Add(NC_STACK_rsrc::RSRC_ATT_NAME, &classname[strlen(classname) + 1]);
+            init_atts.Add(NC_STACK_rsrc::RSRC_ATT_TRYSHARED, 1);
+            init_atts.Add(NC_STACK_rsrc::RSRC_ATT_PIFFFILE, mfile);
 
-
-            NC_STACK_rsrc *embd_class = dynamic_cast<NC_STACK_rsrc *>( init_get_class(classname, init_atts) );
+            NC_STACK_rsrc *embd_class = dynamic_cast<NC_STACK_rsrc *>( init_get_class(classname, &init_atts) );
 
             if ( embd_class && !sub_41C418(&embd->embed_objects, embd_class) )
             {
                 delete_class_obj(embd_class);
-                func1(NULL);
+                func1();
                 return 0;
             }
         }
@@ -188,9 +186,9 @@ size_t NC_STACK_embed::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (stack_vals *)data );
+        return (size_t)func0( (IDVPair *)data );
     case 1:
-        return (size_t)func1( (stack_vals *)data );
+        return (size_t)func1();
     case 5:
         return (size_t)func5( (IFFile **)data );
     case 6:
