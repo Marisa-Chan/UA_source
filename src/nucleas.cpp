@@ -32,8 +32,7 @@ size_t NC_STACK_nucleus::func0(IDVList *stak)
 
 size_t NC_STACK_nucleus::func1()
 {
-    if (NAME)
-        free(NAME);
+    NAME.clear();
 
     return 1;
 }
@@ -77,7 +76,7 @@ size_t NC_STACK_nucleus::func3(IDVList *stak)
                 switch (val.id)
                 {
                 case NC_ATT_NAME:
-                    *(const char **)val.value.p_data = getName();
+                    *(const char **)val.value.p_data = NAME.c_str();
                     break;
 
                 case NC_ATT_CLASSNAME:
@@ -139,10 +138,10 @@ size_t NC_STACK_nucleus::func6(IFFile **val)
         return 0;
     else
     {
-        if ( this->NAME )
+        if ( !NAME.empty() && NAME.length() <= 32 )
         {
             mfile->pushChunk(0, TAG_NAME, -1);
-            mfile->write(this->NAME, strlen(this->NAME));
+            mfile->write(NAME.c_str(), NAME.length());
             mfile->popChunk();
         }
         mfile->popChunk();
@@ -151,29 +150,15 @@ size_t NC_STACK_nucleus::func6(IFFile **val)
     return 0;
 }
 
-void NC_STACK_nucleus::setName(const char *newName)
+void NC_STACK_nucleus::setName(const std::string &newName)
 {
-    if ( newName )
-    {
-        if (NAME == NULL)
-        {
-            NAME = (char *)calloc(1, 33);
-
-            if ( NAME )
-                strncpy(NAME, newName, 32);
-        }
-        else
-            strncpy(NAME, newName, 32);
-
-    }
-    else if (NAME != NULL )
-    {
-        free(NAME);
-        NAME = NULL;
-    }
+    if ( !newName.empty() )
+        NAME = newName;
+    else
+        NAME.clear();
 }
 
-const char *NC_STACK_nucleus::getName()
+const std::string &NC_STACK_nucleus::getName() const
 {
     return NAME;
 }

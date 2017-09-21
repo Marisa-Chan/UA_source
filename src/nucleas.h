@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 #include <list>
+#include <string>
 #include "idvpair.h"
 #include "IFFile.h"
 
@@ -14,7 +15,7 @@ class NC_STACK_nucleus;
 
 struct NewClassDescr
 {
-    const char *classname;
+    const std::string classname;
     NC_STACK_nucleus *(*newinstance)();
 
     NewClassDescr(const char *_clsname, NC_STACK_nucleus *(*_newinst)() ): classname(_clsname), newinstance(_newinst) {}
@@ -22,8 +23,6 @@ struct NewClassDescr
 
 
 typedef std::list<const NewClassDescr *> ClassList;
-typedef std::list<const NewClassDescr *>::iterator ClassList_iter;
-
 
 
 class NC_STACK_nucleus
@@ -38,7 +37,7 @@ public:
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_nucleus() {
-        NAME = NULL;
+        NAME.clear();
     };
     virtual ~NC_STACK_nucleus() {};
 
@@ -57,10 +56,10 @@ public:
     };
 
     //Set
-    virtual void setName(const char *);
+    virtual void setName(const std::string&);
 
     //Get
-    virtual const char * getName();
+    virtual const std::string& getName() const;
 
     //Non-virtual methods
 
@@ -68,7 +67,7 @@ public:
     //Data
     static const NewClassDescr description;
 
-    char *NAME;
+    std::string NAME;
 };
 
 

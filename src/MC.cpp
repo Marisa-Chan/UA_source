@@ -124,9 +124,9 @@ void sb_0x411c08()
 
 const NewClassDescr * getClassAllocator(const char *name)
 {
-    for(ClassList_iter it = newclasses.begin(); it != newclasses.end(); it++)
+    for(ClassList::iterator it = newclasses.begin(); it != newclasses.end(); it++)
     {
-        if (!strcasecmp(name, (*it)->classname) )
+        if (!strcasecmp(name, (*it)->classname.c_str()) )
             return *it;
     }
 
