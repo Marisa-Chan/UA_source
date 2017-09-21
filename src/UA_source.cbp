@@ -95,6 +95,7 @@
 		<Unit filename="global.h" />
 		<Unit filename="idev.cpp" />
 		<Unit filename="idev.h" />
+		<Unit filename="idvpair.h" />
 		<Unit filename="ilbm.cpp" />
 		<Unit filename="ilbm.h" />
 		<Unit filename="image.cpp" />
