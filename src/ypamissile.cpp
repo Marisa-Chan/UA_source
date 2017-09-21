@@ -431,7 +431,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                         vec3d to_enemy = ttmp - bact->old_pos;
                         vec3d dist_vect = bact->position - bact->old_pos;
 
-                        if ( to_enemy.dot( bact->rotation.getVect(2) ) >= 0.3 )
+                        if ( to_enemy.dot( bact->rotation.AxisZ() ) >= 0.3 )
                         {
                             float dist_vect_len;
                             vec3d dir_vect = dist_vect.normalise(&dist_vect_len);
@@ -1062,7 +1062,7 @@ void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
 
     if ( bact->fly_dir != vec3d(0.0, 0.0, 0.0) )
     {
-        vec3d dir = bact->rotation.getVect(2); // Get Z-axis, as dir
+        vec3d dir = bact->rotation.AxisZ(); // Get Z-axis, as dir
         vec3d u = dir * bact->fly_dir; // vector cross product
 
         float v37 = u.normalise(); // normalise and get length
@@ -1154,7 +1154,7 @@ void NC_STACK_ypamissile::ypamissile_func131(miss_arg130 *arg)
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
-    vec3d vec1 = bact->rotation.getVect(1);
+    vec3d vec1 = bact->rotation.AxisY();
     vec3d vec2 = arg->pos;
 
     vec3d vaxis = vec1 * vec2;

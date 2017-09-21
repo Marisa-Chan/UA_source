@@ -5370,7 +5370,7 @@ void recorder_write_frame(_NC_STACK_ypaworld *yw)
                 trec_bct *oinf = &rcrd->oinf[i];
 
                 rcrd->mfile->writeU32L(oinf->bact_id);
-                oinf->pos.writeIFF(rcrd->mfile, false);
+                Vec3dWriteIFF(oinf->pos, rcrd->mfile, false);
                 rcrd->mfile->writeS8(oinf->rot_x);
                 rcrd->mfile->writeS8(oinf->rot_y);
                 rcrd->mfile->writeS8(oinf->rot_z);
@@ -5693,7 +5693,7 @@ void recorder_read_framedata(recorder *rcrd)
                 trec_bct *oinf = &rcrd->oinf[i];
 
                 rcrd->mfile->readU32L(oinf->bact_id);
-                oinf->pos.readIFF(rcrd->mfile, false);
+                Vec3dReadIFF(oinf->pos, rcrd->mfile, false);
                 rcrd->mfile->readS8(oinf->rot_x);
                 rcrd->mfile->readS8(oinf->rot_y);
                 rcrd->mfile->readS8(oinf->rot_z);

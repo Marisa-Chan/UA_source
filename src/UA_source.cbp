@@ -114,6 +114,7 @@
 		<Unit filename="lstvw.cpp" />
 		<Unit filename="lstvw.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="matrix.h" />
 		<Unit filename="network.cpp" />
 		<Unit filename="network.h" />
 		<Unit filename="nlist.cpp" />
@@ -132,6 +133,7 @@
 		<Unit filename="sklt.h" />
 		<Unit filename="utils.cpp" />
 		<Unit filename="utils.h" />
+		<Unit filename="vectors.h" />
 		<Unit filename="wav.cpp" />
 		<Unit filename="wav.h" />
 		<Unit filename="win3d.cpp" />

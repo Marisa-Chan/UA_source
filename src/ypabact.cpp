@@ -8799,7 +8799,7 @@ void NC_STACK_ypabact::ypabact_func122(update_msg *upd)
         bact->rotation.m21 += bact->netDRot.m21 * ftime;
         bact->rotation.m22 += bact->netDRot.m22 * ftime;
 
-        vec3d tmp = bact->rotation.getVect(0);
+        vec3d tmp = bact->rotation.AxisX();
         float ln = tmp.length();
 
         if (ln > 0.0001)
@@ -8815,7 +8815,7 @@ void NC_STACK_ypabact::ypabact_func122(update_msg *upd)
             bact->rotation.m02 = 0.0;
         }
 
-        tmp = bact->rotation.getVect(1);
+        tmp = bact->rotation.AxisY();
         ln = tmp.length();
 
         if (ln > 0.0001)
@@ -8831,10 +8831,8 @@ void NC_STACK_ypabact::ypabact_func122(update_msg *upd)
             bact->rotation.m12 = 0.0;
         }
 
-        tmp = bact->rotation.getVect(0);
-        vec3d tmp2 = bact->rotation.getVect(1);
 
-        float as = C_PI_2 - acos( tmp.dot( tmp2 ) );
+        float as = C_PI_2 - clp_acos( bact->rotation.AxisX().dot( bact->rotation.AxisY() ));
 
         vec3d axs;
         axs.x = bact->rotation.m01 * bact->rotation.m12 - bact->rotation.m02 * bact->rotation.m11;
@@ -8881,7 +8879,7 @@ void NC_STACK_ypabact::ypabact_func123(update_msg *upd)
         bact->rotation.m21 += bact->netDRot.m21 * ftime;
         bact->rotation.m22 += bact->netDRot.m22 * ftime;
 
-        vec3d tmp = bact->rotation.getVect(0);
+        vec3d tmp = bact->rotation.AxisX();
         float ln = tmp.length();
 
         if (ln > 0.0001)
@@ -8897,7 +8895,7 @@ void NC_STACK_ypabact::ypabact_func123(update_msg *upd)
             bact->rotation.m02 = 0.0;
         }
 
-        tmp = bact->rotation.getVect(1);
+        tmp = bact->rotation.AxisY();
         ln = tmp.length();
 
         if (ln > 0.0001)
@@ -8913,7 +8911,7 @@ void NC_STACK_ypabact::ypabact_func123(update_msg *upd)
             bact->rotation.m12 = 0.0;
         }
 
-        tmp = bact->rotation.getVect(2);
+        tmp = bact->rotation.AxisZ();
         ln = tmp.length();
 
         if (ln > 0.0001)

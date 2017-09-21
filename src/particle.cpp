@@ -680,11 +680,11 @@ int NC_STACK_particle::particle_func5__sub0(IFFile *mfile)
 
     mfile->readS16B(atts.version);
 
-    atts.accel.start.readIFF(mfile, true);
-    atts.accel.end.readIFF(mfile, true);
+    Vec3dReadIFF(atts.accel.start, mfile, true);
+    Vec3dReadIFF(atts.accel.end, mfile, true);
 
-    atts.magnify.start.readIFF(mfile, true);
-    atts.magnify.end.readIFF(mfile, true);
+    Vec3dReadIFF(atts.magnify.start, mfile, true);
+    Vec3dReadIFF(atts.magnify.end, mfile, true);
 
     mfile->readS32B(atts.collide);
     mfile->readS32B(atts.startSpeed);
