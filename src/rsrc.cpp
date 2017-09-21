@@ -18,12 +18,6 @@ rsrc *rsrc_find(RSRCList *list, const char *name)
     return NULL;
 }
 
-NC_STACK_rsrc::NC_STACK_rsrc()
-{
-    resource = NULL;
-    flags = 0;
-}
-
 size_t NC_STACK_rsrc::func0(IDVList *stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
@@ -75,8 +69,10 @@ size_t NC_STACK_rsrc::func1()
     {
         resource->ref_cnt--;
 
-        if ( !resource->ref_cnt )
+        if ( resource->ref_cnt == 0 )
             rsrc_func65(resource);
+
+        resource = NULL;
     }
 
     return NC_STACK_nucleus::func1();

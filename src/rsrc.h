@@ -17,7 +17,7 @@ struct rsrc
     int32_t ref_cnt;
     void *data;
 
-    rsrc(const char *_name, bool _shared):
+    rsrc(const std::string &_name, bool _shared):
         name(_name),
         shared(_shared)
     {
@@ -46,7 +46,13 @@ public:
     };
 
     virtual size_t compatcall(int method_id, void *data);
-    NC_STACK_rsrc();
+
+    NC_STACK_rsrc()
+    {
+        resource = NULL;
+        flags = 0;
+    };
+
     virtual ~NC_STACK_rsrc() {};
 
     virtual const char * getClassName() {
