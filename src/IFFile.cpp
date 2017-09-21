@@ -466,6 +466,26 @@ bool IFFile::readFloatB(float &dst)
     return true;
 }
 
+bool IFFile::readFloatL(double &dst)
+{
+    float tmp;
+    if (!readFloatL(tmp))
+        return false;
+
+    dst = tmp;
+    return true;
+}
+
+bool IFFile::readFloatB(double &dst)
+{
+    float tmp;
+    if (!readFloatB(tmp))
+        return false;
+
+    dst = tmp;
+    return true;
+}
+
 bool IFFile::writeU8(uint8_t val)
 {
     return write(&val, 1) == 1;

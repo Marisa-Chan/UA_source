@@ -59,6 +59,8 @@ public:
     bool readS32B(int32_t &dst);
     bool readFloatL(float &dst);
     bool readFloatB(float &dst);
+    bool readFloatL(double &dst);
+    bool readFloatB(double &dst);
 
     bool writeU8(uint8_t val);
     bool writeS8(int8_t val);
