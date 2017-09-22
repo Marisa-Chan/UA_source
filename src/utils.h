@@ -157,4 +157,11 @@ inline double clp_acos(double x)
     return acos(x);
 }
 
+inline double fSign(double x)
+{
+    if (x < 0.0)
+        return -1.0;
+    return 1.0;
+}
+
 #endif // UTILS_H_INCLUDED
