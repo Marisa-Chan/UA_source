@@ -318,8 +318,7 @@ void yw_netBakeVhcl(__NC_STACK_ypabact *bact, uamessage_vhclData *dat, int id, i
         common->specialinfo &= ~vhcldata::SI_YPAGUN;
     }
 
-    vec3d out;
-    rotmat_to_euler(&bact->rotation, &out);
+    vec3d out = bact->rotation.GetEuler();
 
     common->roll = out.x * C_127_2PI;
     common->pitch = out.y * C_127_2PI;
@@ -498,8 +497,7 @@ void yw_netApplyVhclDataI(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
         v47.y = dat->data[id].pitch * C_2PI_127;
         v47.z = dat->data[id].yaw * C_2PI_127;
 
-        mat3x3 out;
-        euler_to_rotmat(&v47, &out);
+        mat3x3 out = mat3x3::Euler(v47);
 
         bact->netDRot.m00 = (out.m00 - bact->netRotation.m00) / dtime;
         bact->netDRot.m01 = (out.m01 - bact->netRotation.m01) / dtime;
@@ -607,8 +605,7 @@ void yw_netApplyVhclDataE(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
             rot.y = dat->data[id].pitch * C_2PI_127;
             rot.z = dat->data[id].yaw * C_2PI_127;
 
-            mat3x3 out;
-            euler_to_rotmat(&rot, &out);
+            mat3x3 out = mat3x3::Euler(rot);
 
             bact->netDRot.m00 = (out.m00 - bact->netRotation.m00) / dtime;
             bact->netDRot.m01 = (out.m01 - bact->netRotation.m01) / dtime;
@@ -826,8 +823,7 @@ void yw_netAddVhclUpdData(vhclUpdData *dat, uint8_t type, __NC_STACK_ypabact *ba
     dat->vhclID = bact->vehicleID;
     dat->engy = bact->energy;
 
-    vec3d out;
-    rotmat_to_euler(&bact->rotation, &out);
+    vec3d out = bact->rotation.GetEuler();
 
     dat->rot_x = out.x * C_127_2PI;
     dat->rot_y = out.y * C_127_2PI;
@@ -838,12 +834,7 @@ void yw_netUpdDataVhcl(vhclUpdData *dat, __NC_STACK_ypabact *bact, char owner, N
 {
     bact->owner = owner;
 
-    vec3d in;
-    in.x = dat->rot_x * C_2PI_127;
-    in.y = dat->rot_y * C_2PI_127;
-    in.z = dat->rot_z * C_2PI_127;
-
-    euler_to_rotmat(&in, &bact->rotation);
+    bact->rotation = mat3x3::Euler( vec3d(dat->rot_x, dat->rot_y, dat->rot_z) * C_2PI_127 );
 
     bact->host_station = host_station;
     bact->gid = dat->gid;
@@ -3137,7 +3128,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         bbact->scale_time = plasmaMsg->time;
         bbact->vp_extra[0].scale = plasmaMsg->scale;
         bbact->vp_extra[0].pos = plasmaMsg->pos;
-        bbact->vp_extra[0].dir = plasmaMsg->dir;
+        bbact->vp_extra[0].rotate = plasmaMsg->dir;
         bbact->vp_extra[0].pos = plasmaMsg->pos;
 
         bbact->vp_extra[0].vp.base = bbact->vp_genesis.base;

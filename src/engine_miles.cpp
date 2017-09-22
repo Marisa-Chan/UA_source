@@ -1023,7 +1023,7 @@ void UpdateMusic()
 }
 
 
-mat3x3 *sb_0x424c74()
+const mat3x3 &sb_0x424c74()
 {
     if ( sndSys.digDriver->inited() )
     {
@@ -1039,7 +1039,7 @@ mat3x3 *sb_0x424c74()
 
     UpdateMusic();
 
-    return &sndSys.shakeMatrix;
+    return sndSys.shakeMatrix;
 }
 
 void sub_423EFC(int a1, vec3d *a2, vec3d *a3, mat3x3 *a4)

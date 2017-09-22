@@ -113,29 +113,6 @@ size_t NC_STACK_ypaflyer::func3(IDVList *stak)
     return 1;
 }
 
-
-void sb_0x4b255c__sub0(__NC_STACK_ypabact *bact, float a2)
-{
-    float v27 = sqrt( POW2(bact->rotation.m00) + POW2(bact->rotation.m02) );
-
-    if ( v27 >= 0.001 )
-    {
-        vec3d vaxis;
-        vaxis.x = bact->rotation.m00 / v27;
-        vaxis.y = 0.0;
-        vaxis.z = bact->rotation.m02 / v27;
-
-        mat3x3 mat2;
-
-        mat_gen_axis_rotate(&vaxis, a2, &mat2, MAT_FLAG_INV_SIN);
-
-        mat3x3 v16;
-        mat_mult(&bact->rotation, &mat2, &v16);
-
-        bact->rotation = v16;
-    }
-}
-
 void sb_0x4b255c(__NC_STACK_ypaflyer *fly, float a2, vec3d *a3, int a4)
 {
     __NC_STACK_ypabact *bact = fly->bact_internal;
@@ -237,7 +214,11 @@ void sb_0x4b255c(__NC_STACK_ypaflyer *fly, float a2, vec3d *a3, int a4)
             }
         }
 
-        sb_0x4b255c__sub0(bact, v51);
+        vec3d vaxis = bact->rotation.AxisX();
+        vaxis.y = 0.0;
+
+        if ( vaxis.normalise() >= 0.001 )
+            bact->rotation *= mat3x3::AxisAngle(vaxis, v51);
 
         if ( fly->field_10 & 2 )
         {
@@ -319,25 +300,7 @@ void sb_0x4b255c(__NC_STACK_ypaflyer *fly, float a2, vec3d *a3, int a4)
                     }
                 }
 
-                mat3x3 mat1;
-
-                mat1.m00 = cos(v50);
-                mat1.m01 = sin(v50);
-                mat1.m02 = 0;
-
-                mat1.m10 = -sin(v50);
-                mat1.m11 = cos(v50);
-                mat1.m12 = 0;
-
-                mat1.m20 = 0;
-                mat1.m21 = 0;
-                mat1.m22 = 1.0;
-
-                mat3x3 v26;
-
-                mat_mult(&mat1, &bact->rotation, &v26);
-
-                bact->rotation = v26;
+                bact->rotation = mat3x3::RotateZ(v50) * bact->rotation;
             }
         }
         else
@@ -371,26 +334,7 @@ void sb_0x4b255c(__NC_STACK_ypaflyer *fly, float a2, vec3d *a3, int a4)
                 }
             }
 
-
-            mat3x3 mat1;
-
-            mat1.m00 = cos(-v56);
-            mat1.m01 = sin(-v56);
-            mat1.m02 = 0;
-
-            mat1.m10 = -sin(-v56);
-            mat1.m11 = cos(-v56);
-            mat1.m12 = 0;
-
-            mat1.m20 = 0;
-            mat1.m21 = 0;
-            mat1.m22 = 1.0;
-
-            mat3x3 v26;
-
-            mat_mult(&mat1, &bact->rotation, &v26);
-
-            bact->rotation = v26;
+            bact->rotation = mat3x3::RotateZ(-v56) * bact->rotation;
         }
     }
 }
@@ -433,26 +377,7 @@ void ypaflyer_func70__sub0(__NC_STACK_ypaflyer *fly, float angl)
         if ( bact->rotation.m22 * bact->target_dir.x - bact->rotation.m20 * bact->target_dir.z > 0.0 )
             v21 = -v21;
 
-        float v19 = cos(v21);
-        float v18 = sin(v21);
-
-        mat3x3 v16;
-
-        v16.m00 = v19;
-        v16.m01 = 0;
-        v16.m02 = v18;
-        v16.m10 = 0;
-        v16.m11 = 1.0;
-        v16.m12 = 0;
-        v16.m20 = -v18;
-        v16.m21 = 0;
-        v16.m22 = v19;
-
-        mat3x3 dst;
-
-        mat_mult(&v16, &bact->rotation, &dst);
-
-        bact->rotation = dst;
+        bact->rotation = mat3x3::RotateY(v21) * bact->rotation;
     }
 
     bact->thraction = bact->force;
@@ -965,27 +890,6 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
     }
 }
 
-void ypaflyer_func71__sub1(__NC_STACK_ypabact *bact, float a4)
-{
-    mat3x3 mat2;
-    mat2.m00 = cos(a4);
-    mat2.m01 = 0;
-    mat2.m02 = sin(a4);
-    mat2.m10 = 0;
-    mat2.m11 = 1.0;
-    mat2.m12 = 0;
-    mat2.m20 = -sin(a4);
-    mat2.m21 = 0;
-    mat2.m22 = cos(a4);
-
-    mat3x3 v6;
-
-    mat_mult(&bact->rotation, &mat2, &v6);
-
-    bact->rotation = v6;
-}
-
-
 
 void NC_STACK_ypaflyer::User_layer(update_msg *arg)
 {
@@ -1117,7 +1021,7 @@ void NC_STACK_ypaflyer::User_layer(update_msg *arg)
             }
         }
 
-        ypaflyer_func71__sub1(fly->bact_internal, v60);
+        ypabact.rotation *= mat3x3::RotateY(v60);
 
         fly->bact_internal->thraction += fly->bact_internal->force * (a2 * 0.3) * arg->inpt->sliders_vars[2];
 

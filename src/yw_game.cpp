@@ -5104,46 +5104,6 @@ void recorder_store_bact(_NC_STACK_ypaworld *yw, recorder *rcrd, nlist *bct_lst)
     }
 }
 
-void rotmat_to_euler(mat3x3 *mat, vec3d *out)
-{
-    float sy = sqrt(POW2(mat->m00) + POW2(mat->m10));
-
-    bool singular = sy < 1e-6;
-
-    if ( !singular )
-    {
-        out->x = atan2(mat->m21, mat->m22);
-        out->y = atan2(-mat->m20, sy);
-        out->z = atan2(mat->m10, mat->m00);
-    }
-    else
-    {
-        out->x = atan2(-mat->m12, mat->m11);
-        out->y = atan2(-mat->m20, sy);
-        out->z = 0.0;
-    }
-}
-
-void euler_to_rotmat(vec3d *euler, mat3x3 *out)
-{
-    float _cx = cos(euler->x);
-    float _sx = sin(euler->x);
-    float _cy = cos(euler->y);
-    float _sy = sin(euler->y);
-    float _cz = cos(euler->z);
-    float _sz = sin(euler->z);
-
-    out->m00 = _cy * _cz;
-    out->m01 = _sy * _sx * _cz - _cx * _sz;
-    out->m02 = _sy * _cx * _cz + _sx * _sz;
-    out->m10 = _cy * _sz;
-    out->m11 = _sy * _sx * _sz + _cx * _cz;
-    out->m12 = _sy * _cx * _sz - _sx * _cz;
-    out->m20 = -_sy;
-    out->m21 = _cy * _sx;
-    out->m22 = _cy * _cx;
-}
-
 int recorder_sort_bact(const void *a1, const void *a2)
 {
     return (*(__NC_STACK_ypabact **)a1)->gid - (*(__NC_STACK_ypabact **)a2)->gid;
@@ -5165,8 +5125,7 @@ void recorder_world_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd)
         oinf->bact_id = bact->gid;
         oinf->pos = bact->position;
 
-        vec3d euler;
-        rotmat_to_euler(&bact->rotation, &euler);
+        vec3d euler = bact->rotation.GetEuler();
 
         oinf->rot_x = dround(euler.x * 127.0 / C_2PI);
         oinf->rot_y = dround(euler.y * 127.0 / C_2PI);
@@ -5868,13 +5827,7 @@ void recorder_updateObject(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, tre
         bact->fly_dir_length = 0;
     }
 
-    vec3d euler;
-    euler.x = oinf->rot_x / 127.0 * C_2PI;
-    euler.y = oinf->rot_y / 127.0 * C_2PI;
-    euler.z = oinf->rot_z / 127.0 * C_2PI;
-
-    mat3x3 tmp;
-    euler_to_rotmat(&euler, &tmp);
+    mat3x3 tmp = mat3x3::Euler( vec3d(oinf->rot_x, oinf->rot_y, oinf->rot_z) / 127.0 * C_2PI );
 
     mat3x3 tmp2;
 
@@ -6216,47 +6169,13 @@ void ypaworld_func163__sub2__sub0(_NC_STACK_ypaworld *yw, float fperiod, struC5 
     float v3 = inpt->sliders_vars[10] * 2.5 * fperiod;
 
     if ( fabs(v3) > 0.001 )
-    {
-        float cs = cos(v3);
-        float sn = sin(-v3);
-
-        mat3x3 a2;
-        a2.m00 = cs;
-        a2.m01 = 0;
-        a2.m02 = sn;
-        a2.m10 = 0;
-        a2.m11 = 1.0;
-        a2.m12 = 0;
-        a2.m20 = -sn;
-        a2.m21 = 0;
-        a2.m22 = cs;
-
-        mat3x3 v7;
-        mat_mult(&yw->replayer->rotation_matrix, &a2, &v7);
-        yw->replayer->rotation_matrix = v7;
-    }
+        yw->replayer->rotation_matrix = mat3x3::RotateY(-v3) * yw->replayer->rotation_matrix;
 
     float v5 = inpt->sliders_vars[11] * 2.5 * fperiod;
 
     if ( fabs(v5) > 0.001 )
     {
-        float cs = cos(v5);
-        float sn = sin(v5);
-
-        mat3x3 a2;
-        a2.m00 = 1.0;
-        a2.m01 = 0;
-        a2.m02 = 0;
-        a2.m10 = 0;
-        a2.m11 = cs;
-        a2.m12 = sn;
-        a2.m20 = 0;
-        a2.m21 = -sn;
-        a2.m22 = cs;
-
-        mat3x3 a3;
-        mat_mult(&a2, &yw->replayer->rotation_matrix, &a3);
-        yw->replayer->rotation_matrix = a3;
+        yw->replayer->rotation_matrix = mat3x3::RotateX(v5) * yw->replayer->rotation_matrix;
     }
 }
 
@@ -6329,7 +6248,7 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
             v35.z = v12->rotation.m12 * rcrd->field_44.y + v12->rotation.m02 * rcrd->field_44.x + v12->rotation.m22 * rcrd->field_44.z + v12->position.z;
 
             recorder_set_bact_pos(yw, bact, &v35);
-            mat_mult(&rcrd->rotation_matrix, &v12->rotation, &bact->rotation);
+            bact->rotation = rcrd->rotation_matrix * v12->rotation;
         }
     }
     else if ( rcrd->field_80 == 20 )
@@ -6356,7 +6275,7 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
             a3a.z = v18->rotation.m12 * rcrd->field_44.y + v18->rotation.m02 * rcrd->field_44.x + v18->rotation.m22 * rcrd->field_44.z + v18->position.z;
             recorder_set_bact_pos(yw, bact, &a3a);
 
-            mat_mult(&rcrd->rotation_matrix, &v18->rotation, &bact->rotation);
+            bact->rotation = rcrd->rotation_matrix * v18->rotation;
         }
     }
 

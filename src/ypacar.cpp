@@ -126,29 +126,6 @@ size_t NC_STACK_ypacar::func3(IDVList *stak)
     return 1;
 }
 
-void ypacar_func71__sub1(__NC_STACK_ypabact *bact, float angle)
-{
-    float cs = cos(angle);
-    float sn = sin(angle);
-
-    mat3x3 mat;
-
-    mat.m00 = cs;
-    mat.m01 = 0;
-    mat.m02 = sn;
-    mat.m10 = 0;
-    mat.m11 = 1.0;
-    mat.m12 = 0;
-    mat.m20 = -sn;
-    mat.m21 = 0;
-    mat.m22 = cs;
-
-    mat3x3 dst;
-    mat_mult(&mat, &bact->rotation, &dst);
-
-    bact->rotation = dst;
-}
-
 void ypacar_func71__sub0(NC_STACK_ypacar *caro)
 {
     __NC_STACK_ypacar *car = &caro->stack__ypacar;
@@ -445,8 +422,9 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
             if ( bact->fly_dir_length != 0.0 )
             {
                 float v63 = fabs(bact->fly_dir_length);
+                float angle = -arg->inpt->sliders_vars[3] * bact->maxrot * v78 * (sqrt(v63) * 0.2);
 
-                ypacar_func71__sub1(bact,  -arg->inpt->sliders_vars[3] * bact->maxrot * v78 * (sqrt(v63) * 0.2) );
+                bact->rotation = mat3x3::RotateY(angle) * bact->rotation;
             }
         }
 
@@ -738,14 +716,7 @@ size_t NC_STACK_ypacar::ypatank_func128(tank_arg128 *arg)
         vaxis.y /= v44;
         vaxis.z /= v44;
 
-        mat3x3 mat2;
-
-        mat_gen_axis_rotate(&vaxis, v56, &mat2, MAT_FLAG_INV_SIN);
-
-        mat3x3 dst;
-        mat_mult(&bact->rotation, &mat2, &dst);
-
-        bact->rotation = dst;
+        bact->rotation *= mat3x3::AxisAngle(vaxis, v56);
     }
 
     bact->position.x = arg136.field_2C - bact->rotation.m10 * v5;
@@ -755,7 +726,7 @@ size_t NC_STACK_ypacar::ypatank_func128(tank_arg128 *arg)
     return 1;
 }
 
-void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, vec3d *darg)
+void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, vec3d &darg)
 {
     //__NC_STACK_ypacar *car = &caro->stack__ypacar;
     __NC_STACK_ypabact *bact = &caro->ypabact;
@@ -776,23 +747,9 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, vec3d *darg)
 
     if ( fabs(v78) > 0.1 )
     {
-        vec3d vaxis;
-        vaxis.x = bact->rotation.m00;
-        vaxis.y = bact->rotation.m01;
-        vaxis.z = bact->rotation.m02;
-
         float v8 = v73 * v78 / bact->force;
 
-        mat3x3 mat2;
-
-        mat_gen_axis_rotate(&vaxis, v8, &mat2, MAT_FLAG_INV_SIN);
-
-        vec3d tmp;
-        tmp.x = mat2.m00 * darg->x + mat2.m01 * darg->y + mat2.m02 * darg->z;
-        tmp.y = mat2.m10 * darg->x + mat2.m11 * darg->y + mat2.m12 * darg->z;
-        tmp.z = mat2.m20 * darg->x + mat2.m21 * darg->y + mat2.m22 * darg->z;
-
-        *darg = tmp;
+        darg = mat3x3::AxisAngle(bact->rotation.AxisX(), v8).Transform(darg);
     }
 
     float v76 = v65 * arg->field_4.x + v66 * arg->field_4.z;
@@ -822,20 +779,7 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, vec3d *darg)
             if ( v65 * arg->field_4.z - v66 * arg->field_4.x < 0.0 )
                 v77 = -v77;
 
-            float v42 = bact->rotation.m20;
-            float v43 = bact->rotation.m21;
-            float v44 = bact->rotation.m22;
-
-            float sn = sin(-v77);
-            float cs = cos(v77);
-            float ics = 1.0 - cs;
-
-            vec3d tmp;
-            tmp.x = (ics * v42 * v43 - sn * v44) * darg->y + (ics * v42 * v42 + cs) * darg->x       + (ics * v44 * v42 + sn * v43) * darg->z;
-            tmp.y = (ics * v43 * v43 + cs) * darg->y       + (ics * v42 * v43 + sn * v44) * darg->x + (ics * v43 * v44 - sn * v42) * darg->z;
-            tmp.z = (ics * v43 * v44 + sn * v42) * darg->y + (ics * v44 * v42 - sn * v43) * darg->x + (ics * v44 * v44 + cs) * darg->z;
-
-            *darg = tmp;
+            darg = mat3x3::AxisAngle(bact->rotation.AxisZ(), v77).Transform(darg);
         }
     }
 }
@@ -1185,7 +1129,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
             v141.y = v175;
             v141.z = v181;
 
-            ypacar_func129__sub0(this, arg, &v141);
+            ypacar_func129__sub0(this, arg, v141);
 
             v180 = v141.x;
             v175 = v141.y;
@@ -1229,16 +1173,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
                 v174 = v155;
 
             if ( fabs(v174) > v173 )
-            {
-                mat3x3 mat2;
-
-                mat_gen_axis_rotate(&vaxis, v174, &mat2, MAT_FLAG_INV_SIN);
-
-                mat3x3 dst;
-                mat_mult(&bact->rotation, &mat2, &dst);
-
-                bact->rotation = dst;
-            }
+                bact->rotation *= mat3x3::AxisAngle(vaxis, v174);
         }
     }
 

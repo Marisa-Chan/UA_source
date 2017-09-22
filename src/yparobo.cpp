@@ -1001,7 +1001,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
                 robo->field_521 = v23;
 
                 bact->vp_extra[0].pos = bact->position;
-                bact->vp_extra[0].dir = bact->rotation;
+                bact->vp_extra[0].rotate = bact->rotation;
                 bact->vp_extra[0].flags = (EVPROTO_FLAG_ACTIVE | EVPROTO_FLAG_SCALE);
                 bact->vp_extra[0].scale = 1.0;
                 bact->vp_extra[0].vp = bact->vp_genesis;
@@ -1017,7 +1017,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
                 robo->field_521 = v23;
 
                 bact->vp_extra[1].pos = robo->field_515;
-                bact->vp_extra[1].dir = bact->rotation;
+                bact->vp_extra[1].rotate = bact->rotation;
                 bact->vp_extra[1].flags = EVPROTO_FLAG_ACTIVE;
                 bact->vp_extra[1].vp = bact->vp_genesis;
             }
@@ -1105,23 +1105,7 @@ void sub_4A1014(__NC_STACK_yparobo *robo, float angle)
 {
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    mat3x3 tmp1;
-
-    tmp1.m00 = cos(angle);
-    tmp1.m01 = 0;
-    tmp1.m02 = sin(angle);
-    tmp1.m10 = 0;
-    tmp1.m11 = 1.0;
-    tmp1.m12 = 0;
-    tmp1.m20 = -sin(angle);
-    tmp1.m21 = 0;
-    tmp1.m22 = cos(angle);
-
-    mat3x3 tmp2;
-
-    mat_mult(&tmp1, &bact->rotation, &tmp2);
-
-    bact->rotation = tmp2;
+    bact->rotation = mat3x3::RotateY(angle) * bact->rotation;
 
     vec3d v6;
     v6.x = bact->rotation.m10;
@@ -1137,23 +1121,7 @@ void sub_4A10E8(__NC_STACK_yparobo *robo, float angle)
 {
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    mat3x3 tmp1;
-
-    tmp1.m00 = cos(angle);
-    tmp1.m01 = 0;
-    tmp1.m02 = sin(angle);
-    tmp1.m10 = 0;
-    tmp1.m11 = 1.0;
-    tmp1.m12 = 0;
-    tmp1.m20 = -sin(angle);
-    tmp1.m21 = 0;
-    tmp1.m22 = cos(angle);
-
-    mat3x3 tmp2;
-
-    mat_mult(&tmp1, &bact->rotation, &tmp2);
-
-    bact->rotation = tmp2;
+    bact->rotation = mat3x3::RotateY(angle) * bact->rotation;
 
     vec3d v6;
     v6.x = 0;
@@ -5758,34 +5726,8 @@ void NC_STACK_yparobo::User_layer(update_msg *arg)
 
             bact->viewer_rotation = bact->rotation;
 
-            mat3x3 v21;
-            v21.m00 = cos(bact->viewer_horiz_angle);
-            v21.m01 = 0;
-            v21.m02 = sin(bact->viewer_horiz_angle);
-            v21.m10 = 0;
-            v21.m11 = 1.0;
-            v21.m12 = 0;
-            v21.m20 = -sin(bact->viewer_horiz_angle);
-            v21.m21 = 0;
-            v21.m22 = cos(bact->viewer_horiz_angle);
-
-            mat3x3 dst;
-            mat_mult(&v21, &bact->viewer_rotation, &dst);
-            bact->viewer_rotation = dst;
-
-            v21.m00 = 1.0;
-            v21.m01 = 0;
-            v21.m02 = 0;
-            v21.m10 = 0;
-            v21.m11 = cos(bact->viewer_vert_angle);
-            v21.m12 = sin(bact->viewer_vert_angle);
-            v21.m20 = 0;
-            v21.m21 = -sin(bact->viewer_vert_angle);
-            v21.m22 = cos(bact->viewer_vert_angle);
-
-            mat_mult(&v21, &bact->viewer_rotation, &dst);
-
-            bact->viewer_rotation = dst;
+            bact->viewer_rotation = mat3x3::RotateY(bact->viewer_horiz_angle) * bact->viewer_rotation;
+            bact->viewer_rotation = mat3x3::RotateX(bact->viewer_vert_angle) * bact->viewer_rotation;
         }
     }
     else if ( bact->status == BACT_STATUS_DEAD )
@@ -6497,21 +6439,7 @@ void NC_STACK_yparobo::DeadTimeUpdate(update_msg *arg)
 
         float v16 = bact->maxrot * 2.0 * ((float)arg->frameTime / 1000.0);
 
-        mat3x3 mat1, dst;
-
-        mat1.m00 = cos(v16);
-        mat1.m01 = 0;
-        mat1.m02 = sin(v16);
-        mat1.m10 = 0;
-        mat1.m11 = 1.0;
-        mat1.m12 = 0;
-        mat1.m20 = -sin(v16);
-        mat1.m21 = 0;
-        mat1.m22 = cos(v16);
-
-        mat_mult(&mat1, &bact->vp_extra[0].dir, &dst);
-
-        bact->vp_extra[0].dir = dst;
+        bact->vp_extra[0].rotate = mat3x3::RotateY(v16) * bact->vp_extra[0].rotate;
 
         if ( a4 <= 0 )
             bact->status_flg |= BACT_STFLAG_NORENDER;
@@ -6521,7 +6449,7 @@ void NC_STACK_yparobo::DeadTimeUpdate(update_msg *arg)
         bact->scale_time = v33;
         bact->vp_extra[0].scale = 0.75;
         bact->vp_extra[0].pos = bact->position;
-        bact->vp_extra[0].dir = bact->rotation;
+        bact->vp_extra[0].rotate = bact->rotation;
         bact->vp_extra[0].vp = bact->vp_genesis;
         bact->vp_extra[0].flags |= (EVPROTO_FLAG_ACTIVE | EVPROTO_FLAG_SCALE);
 
@@ -7353,7 +7281,7 @@ void NC_STACK_yparobo::setROBO_viewAngle(int angl)
 
     bact->viewer_horiz_angle = angl * C_PI_180;
 
-    mat_rotate_y(&bact->viewer_rotation, bact->viewer_horiz_angle);
+    ypabact.viewer_rotation = mat3x3::RotateY(ypabact.viewer_horiz_angle) * ypabact.viewer_rotation;
 }
 
 void NC_STACK_yparobo::setROBO_safDelay(int delay)

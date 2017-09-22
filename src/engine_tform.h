@@ -87,10 +87,7 @@ inline bool Vec3dWriteIFF(const vec3d &v, IFFile *iff, bool BigEndian)
     }
     return res;
 }
-void mat_mult(mat3x3 *mat1, mat3x3 *mat2, mat3x3 *dst);
-void mat_rotate_y(mat3x3 *mat, float a2);
 
-void mat_gen_axis_rotate(vec3d *u, float angle, mat3x3 *out, int flags = 0);
 inline bool Mat3x3ReadIFF(mat3x3 &m, IFFile *iff, bool BigEndian)
 {
     bool res = true;

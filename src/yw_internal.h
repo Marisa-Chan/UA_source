@@ -528,9 +528,6 @@ void sub_4F1A60(__NC_STACK_ypabact *bact);
 void sub_4D9550(_NC_STACK_ypaworld *yw, int arg);
 void sub_47C1EC(_NC_STACK_ypaworld *yw, gemProto *gemProt, int *a3, int *a4);
 
-void rotmat_to_euler(mat3x3 *mat, vec3d *out);
-void euler_to_rotmat(vec3d *euler, mat3x3 *out);
-
 void yw_NetMsgHndlLoop(_NC_STACK_ypaworld *yw);
 void yw_NetDrawStats(_NC_STACK_ypaworld *yw);
 #endif

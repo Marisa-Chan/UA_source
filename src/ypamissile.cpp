@@ -1093,18 +1093,8 @@ void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
                 }
             }
 
-            if ( v52 > MISSILE_BOMB_MIN_ANGLE || v52 < -MISSILE_BOMB_MIN_ANGLE )
-            {
-                mat3x3 mat2;
-
-                mat_gen_axis_rotate(&u, v52, &mat2, MAT_FLAG_INV_SIN);
-
-                mat3x3 dst;
-
-                mat_mult(&bact->rotation, &mat2, &dst);
-
-                bact->rotation = dst;
-            }
+            if ( fabs(v52) > MISSILE_BOMB_MIN_ANGLE )
+                bact->rotation *= mat3x3::AxisAngle(u, v52);
         }
 
         if ( miss->field_2D & 1 )
@@ -1125,26 +1115,7 @@ void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
             if ( miss->selfie->rotation.m01 < 0.0 )
                 v44 = -v44;
 
-            float v32 = cos(-v44);
-            float v33 = sin(-v44);
-
-            mat3x3 mat1;
-
-            mat1.m00 = v32;
-            mat1.m01 = v33;
-            mat1.m02 = 0;
-            mat1.m10 = -v33;
-            mat1.m11 = v32;
-            mat1.m12 = 0;
-            mat1.m20 = 0;
-            mat1.m21 = 0;
-            mat1.m22 = 1.0;
-
-            mat3x3 v23;
-
-            mat_mult(&mat1, &bact->rotation, &v23);
-
-            bact->rotation = v23;
+            bact->rotation = mat3x3::RotateZ(-v44) * bact->rotation;
         }
     }
 }
@@ -1174,17 +1145,7 @@ void NC_STACK_ypamissile::ypamissile_func131(miss_arg130 *arg)
         float v12 = acos(v43);
 
         if ( fabs(v12) > BACT_MIN_ANGLE )
-        {
-            mat3x3 mat2;
-
-            mat_gen_axis_rotate(&vaxis, v12, &mat2, MAT_FLAG_INV_SIN);
-
-            mat3x3 v21;
-
-            mat_mult(&bact->rotation, &mat2, &v21);
-
-            bact->rotation = v21;
-        }
+            bact->rotation *= mat3x3::AxisAngle(vaxis, v12);
     }
 }
 

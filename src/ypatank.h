@@ -76,6 +76,9 @@ public:
 
     virtual int getTANK_tip();
 
+
+    void sub_49DA3C(vec3d &v);
+
     //Data
     static const NewClassDescr description;
 

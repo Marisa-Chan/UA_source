@@ -38,7 +38,7 @@ struct extra_vproto
 {
     float scale;
     vec3d pos;
-    mat3x3 dir;
+    mat3x3 rotate;
     int flags;
     vhclBases vp;
 };

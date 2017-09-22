@@ -1202,13 +1202,10 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                 sb_0x4242e0(&yw->GameShell->field_782);
             }
 
-            mat3x3 *v57 = sb_0x424c74();
+            const mat3x3 &v57 = sb_0x424c74();
             TForm3D *v58 = sub_430A28();
 
-            mat3x3 dst;
-            mat_mult(v57, &v58->locSclRot, &dst);
-
-            v58->locSclRot = dst;
+            v58->locSclRot = v57 * v58->locSclRot;
 
             if ( yw->sceneRecorder->do_record )
                 recorder_write_frame(yw);
@@ -7058,13 +7055,10 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
         bct = (bact_node *)bct->next;
     }
 
-    mat3x3 *v25 = sb_0x424c74();
+    const mat3x3 &v25 = sb_0x424c74();
     TForm3D *v26 = sub_430A28();
 
-    mat3x3 v31;
-    mat_mult(v25, &v26->locSclRot, &v31);
-
-    v26->locSclRot = v31;
+    v26->locSclRot = v25 * v26->locSclRot;
 
     uint32_t v28 = profiler_begin();
 

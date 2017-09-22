@@ -185,41 +185,13 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
                                 if ( ufo->field_18 < 0.0 )
                                     v17 = -v17;
 
-                                ufo->field_18 = ufo->field_18 - v17;
+                                ufo->field_18 -= v17;
 
-                                mat3x3 v81;
-                                v81.m00 = cos(v17);
-                                v81.m01 = 0;
-                                v81.m02 = sin(v17);
-                                v81.m10 = 0;
-                                v81.m11 = 1.0;
-                                v81.m12 = 0;
-                                v81.m20 = -sin(v17);
-                                v81.m21 = 0;
-                                v81.m22 = cos(v17);
-
-                                mat3x3 v83;
-                                mat_mult(&v81, &bact->rotation, &v83);
-
-                                bact->rotation = v83;
+                                bact->rotation = mat3x3::RotateY(v17) * bact->rotation;
                             }
                             else
                             {
-                                mat3x3 v81;
-                                v81.m00 = cos(ufo->field_18);
-                                v81.m01 = 0;
-                                v81.m02 = sin(ufo->field_18);
-                                v81.m10 = 0;
-                                v81.m11 = 1.0;
-                                v81.m12 = 0;
-                                v81.m20 = -sin(ufo->field_18);
-                                v81.m21 = 0;
-                                v81.m22 = cos(ufo->field_18);
-
-                                mat3x3 v83;
-                                mat_mult(&v81, &bact->rotation, &v83);
-
-                                bact->rotation = v83;
+                                bact->rotation = mat3x3::RotateY(ufo->field_18) * bact->rotation;
 
                                 ufo->field_1c &= 0xFFFFFFF6;
                                 ufo->field_18 = 0;
@@ -536,24 +508,7 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
         if ( v93 == 0 )
         {
             bact->thraction = 0.0;
-
-            mat3x3 mat2;
-
-            mat2.m00 = cos(bact->maxrot * v110);
-            mat2.m01 = 0.0;
-            mat2.m02 = sin(bact->maxrot * v110);
-
-            mat2.m10 = 0.0;
-            mat2.m11 = 1.0;
-            mat2.m12 = 0.0;
-            mat2.m20 = -sin(bact->maxrot * v110);
-            mat2.m21 = 0.0;
-            mat2.m22 = cos(bact->maxrot * v110);
-
-            mat3x3 v82;
-            mat_mult(&bact->rotation, &mat2, &v82);
-
-            bact->rotation = v82;
+            bact->rotation *= mat3x3::RotateY(bact->maxrot * v110);
         }
         else
         {
@@ -716,46 +671,12 @@ void NC_STACK_ypaufo::User_layer(update_msg *arg)
         float v23 = -arg->inpt->sliders_vars[0] * bact->maxrot * v88;
 
         if ( fabs(v23) > 0.0 )
-        {
-            mat3x3 mat2;
-
-            mat2.m00 = cos(v23);
-            mat2.m01 = 0;
-            mat2.m02 = sin(v23);
-            mat2.m10 = 0;
-            mat2.m11 = 1.0;
-            mat2.m12 = 0;
-            mat2.m20 = -sin(v23);
-            mat2.m21 = 0;
-            mat2.m22 = cos(v23);
-
-            mat3x3 dst;
-            mat_mult(&bact->rotation, &mat2, &dst);
-
-            bact->rotation = dst;
-        }
+            bact->rotation *= mat3x3::RotateY(v23);
 
         float v25 = arg->inpt->sliders_vars[1] * bact->maxrot * v88;
 
         if ( fabs(v25) > 0.0 )
-        {
-            mat3x3 mat1;
-
-            mat1.m00 = 1.0;
-            mat1.m01 = 0;
-            mat1.m02 = 0;
-            mat1.m10 = 0;
-            mat1.m11 = cos(v25);
-            mat1.m12 = sin(v25);
-            mat1.m20 = 0;
-            mat1.m21 = -sin(v25);
-            mat1.m22 = cos(v25);
-
-            mat3x3 dst;
-            mat_mult(&mat1, &bact->rotation, &dst);
-
-            bact->rotation = dst;
-        }
+            bact->rotation = mat3x3::RotateX(v25) * bact->rotation;
 
         if ( arg->inpt->sliders_vars[2] != 0.0 )
         {
