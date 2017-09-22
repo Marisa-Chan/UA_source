@@ -35,6 +35,11 @@ struct Polygon
     float B;
     float C;
     float D;
+
+    const vec3d Normal() const
+    {
+        return vec3d(A, B, C);
+    }
 };
 
 struct Data
