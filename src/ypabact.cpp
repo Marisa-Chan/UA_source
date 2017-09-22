@@ -293,8 +293,7 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
     bact->status_flg &= ~(BACT_STFLAG_WAYPOINT | BACT_STFLAG_WAYPOINTCCL);
 
     int tgType;
-    float v17;
-    float v18;
+    vec2d wTo;
 
     if ( bact2->status_flg & BACT_STFLAG_WAYPOINT )
     {
@@ -302,8 +301,7 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
         {
             int v9 = bact2->waypoints_count - 1;
 
-            v17 = bact2->waypoints[v9].x;
-            v18 = bact2->waypoints[v9].z;
+            wTo = bact2->waypoints[v9].XZ();
 
             tgType = BACT_TGT_TYPE_CELL;
         }
@@ -326,8 +324,7 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
         }
         else if ( bact2->primTtype == BACT_TGT_TYPE_CELL )
         {
-            v17 = bact2->primTpos.x;
-            v18 = bact2->primTpos.z;
+            wTo = bact2->primTpos.XZ();
             tgType = BACT_TGT_TYPE_CELL;
         }
         else
@@ -352,8 +349,8 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
         }
         else
         {
-            arg67.tgt_pos.x = v17;
-            arg67.tgt_pos.z = v18;
+            arg67.tgt_pos.x = wTo.x;
+            arg67.tgt_pos.z = wTo.y;
         }
 
         bact->self->SetTarget(&arg67);
@@ -364,18 +361,15 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
 
         if ( tgType == BACT_TGT_TYPE_UNIT )
         {
-            arg125.to_x = v6->position.x;
-            arg125.to_z = v6->position.z;
+            arg125.to = v6->position.XZ();
         }
         else
         {
-            arg125.to_x = v17;
-            arg125.to_z = v18;
+            arg125.to = wTo;
         }
 
         arg125.steps_cnt = 32;
-        arg125.from_x = bact->position.x;
-        arg125.from_z = bact->position.z;
+        arg125.from = bact->position.XZ();
         arg125.field_12 = 1;
 
         bact->self->SetPath(&arg125);
@@ -8512,10 +8506,10 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
         }
     }
 
-    int from_sec_x = arg->from_x / 1200.0;
-    int from_sec_z = -arg->from_z / 1200.0;
-    int to_sec_x = arg->to_x / 1200.0;
-    int to_sec_z = -arg->to_z / 1200.0;
+    int from_sec_x = arg->from.x / 1200.0;
+    int from_sec_z = -arg->from.y / 1200.0;
+    int to_sec_x = arg->to.x / 1200.0;
+    int to_sec_z = -arg->to.y / 1200.0;
 
     cellArea *target_pcell = NULL;
 
@@ -8529,8 +8523,8 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
     if ( to_sec_x == from_sec_x && from_sec_z == to_sec_z )
     {
         arg->steps_cnt = 1;
-        arg->waypoints[0].x = arg->to_x;
-        arg->waypoints[0].z = arg->to_z;
+        arg->waypoints[0].x = arg->to.x;
+        arg->waypoints[0].z = arg->to.y;
         return 1;
     }
 
@@ -8731,8 +8725,8 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
     {
         if ( maxsteps <= 1 || nextcell == target_pcell)
         {
-            arg->waypoints[ step_id ].x = arg->to_x;
-            arg->waypoints[ step_id ].z = arg->to_z;
+            arg->waypoints[ step_id ].x = arg->to.x;
+            arg->waypoints[ step_id ].z = arg->to.y;
             break;
         }
 
@@ -8831,8 +8825,8 @@ size_t NC_STACK_ypabact::SetPath(bact_arg124 *arg)
     setTarget_msg arg67;
     if ( arg->steps_cnt <= 1 )
     {
-        arg67.tgt_pos.x = arg->to_x;
-        arg67.tgt_pos.z = arg->to_z;
+        arg67.tgt_pos.x = arg->to.x;
+        arg67.tgt_pos.z = arg->to.y;
     }
     else
     {
@@ -8864,10 +8858,8 @@ size_t NC_STACK_ypabact::SetPath(bact_arg124 *arg)
         {
             bact_arg124 arg125;
             arg125.steps_cnt = maxsteps;
-            arg125.from_x = kidunit->bact->position.x;
-            arg125.from_z = kidunit->bact->position.z;
-            arg125.to_x = arg->to_x;
-            arg125.to_z = arg->to_z;
+            arg125.from = kidunit->bact->position.XZ();
+            arg125.to = arg->to;
             arg125.field_12 = arg->field_12;
 
             kidunit->bacto->SetPath(&arg125);

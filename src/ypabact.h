@@ -396,10 +396,8 @@ struct setTarget_msg
 
 struct bact_arg124
 {
-    float from_x;
-    float from_z;
-    float to_x;
-    float to_z;
+    vec2d from;
+    vec2d to;
     int16_t steps_cnt;
     int16_t field_12;
     vec3d waypoints[32];

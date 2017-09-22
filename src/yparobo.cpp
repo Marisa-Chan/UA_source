@@ -582,18 +582,15 @@ void NC_STACK_yparobo::sub_4A9F24(bact_node *node)
         if ( node->bact->status != BACT_STATUS_DEAD )
         {
             bact_arg124 arg124;
-            arg124.from_x = node->bact->position.x;
-            arg124.from_z = node->bact->position.z;
+            arg124.from = node->bact->position.XZ();
 
             if ( arg67.tgt_type == 2 )
             {
-                arg124.to_x = arg67.tgt.pbact->position.x;
-                arg124.to_z = arg67.tgt.pbact->position.z;
+                arg124.to = arg67.tgt.pbact->position.XZ();
             }
             else
             {
-                arg124.to_x = arg67.tgt_pos.x;
-                arg124.to_z = arg67.tgt_pos.z;
+                arg124.to = arg67.tgt_pos.XZ();
             }
 
             arg124.field_12 = 1;
@@ -779,11 +776,9 @@ int sub_4A5A08(__NC_STACK_ypabact *bact, float a2, float a3)
     {
         bact_arg124 arg125;
         arg125.steps_cnt = 32;
-        arg125.from_x = bact->position.x;
-        arg125.from_z = bact->position.z;
-        arg125.to_x = a2;
+        arg125.from = bact->position.XZ();
+        arg125.to = vec2d(a2, a3);
         arg125.field_12 = 1;
-        arg125.to_z = a3;
         if ( !bact->self->SetPath(&arg125) )
             return 0;
     }
@@ -825,10 +820,8 @@ int sub_4A58C0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2)
     {
         bact_arg124 arg124;
         arg124.steps_cnt = 32;
-        arg124.from_x = bact->position.x;
-        arg124.from_z = bact->position.z;
-        arg124.to_x = bact2->position.x;
-        arg124.to_z = bact2->position.z;
+        arg124.from = bact->position.XZ();
+        arg124.to = bact2->position.XZ();
         arg124.field_12 = 1;
 
         if ( !bact->self->PathFinder(&arg124) )
@@ -2101,10 +2094,8 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
 
         if ( v11 )
         {
-            arg124.from_x = arg->selectBact->position.x;
-            arg124.from_z = arg->selectBact->position.z;
-            arg124.to_x = arg->target_point.x;
-            arg124.to_z = arg->target_point.z;
+            arg124.from = arg->selectBact->position.XZ();
+            arg124.to = arg->target_point.XZ();
             arg124.steps_cnt = 32;
             arg124.field_12 = 1;
 
@@ -2175,10 +2166,8 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
 
             if ( v20 )
             {
-                arg124.from_x = arg->selectBact->waypoints[v72 - 1].x;
-                arg124.from_z = arg->selectBact->waypoints[v72 - 1].z;
-                arg124.to_x = arg->target_point.x;
-                arg124.to_z = arg->target_point.z;
+                arg124.from = arg->selectBact->waypoints[v72 - 1].XZ();
+                arg124.to = arg->target_point.XZ();
                 arg124.steps_cnt = 32 - v72;
                 arg124.field_12 = 1;
 
@@ -4253,10 +4242,8 @@ void NC_STACK_yparobo::checkCommander()
                             {
                                 bact_arg124 arg124;
                                 arg124.steps_cnt = 32;
-                                arg124.from_x = commander_bact->position.x;
-                                arg124.from_z = commander_bact->position.z;
-                                arg124.to_x = bact->position.x;
-                                arg124.to_z = bact->position.z;
+                                arg124.from = commander_bact->position.XZ();
+                                arg124.to = bact->position.XZ();
                                 arg124.field_12 = 1;
 
                                 if ( ! commander->bacto->PathFinder(&arg124) )
