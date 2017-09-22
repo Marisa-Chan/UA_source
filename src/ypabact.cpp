@@ -732,7 +732,7 @@ void NC_STACK_ypabact::Update(update_msg *arg)
         else
             bact_cam.locSclRot = bact->rotation;
 
-        GFXEngine::GFXe.getC3D()->matrixAspectCorrection(&bact_cam.locSclRot, false);
+        GFXEngine::GFXe.getC3D()->matrixAspectCorrection(bact_cam.locSclRot, false);
     }
 
     bact->tForm.locPos = bact->position;
@@ -6440,7 +6440,7 @@ void sub_4843BC(__NC_STACK_ypabact *bact1, __NC_STACK_ypabact *bact2, int a3)
         float v19 = bact2->position.z - bact1->position.z;
 
         mat3x3 corrected = bact1->rotation;
-        GFXEngine::GFXe.getC3D()->matrixAspectCorrection(&corrected, false);
+        GFXEngine::GFXe.getC3D()->matrixAspectCorrection(corrected, false);
 
         float v20 = corrected.m00 * v17 + corrected.m01 * v18 + corrected.m02 * v19;
         float v21 = corrected.m10 * v17 + corrected.m11 * v18 + corrected.m12 * v19;

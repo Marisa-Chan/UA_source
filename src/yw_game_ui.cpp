@@ -10471,7 +10471,7 @@ void yw_RenderCursorOverUnit(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
     float v8 = bact->position.z - yw->field_1334.z;
 
     mat3x3 corrected = yw->field_1340;
-    yw->win3d->matrixAspectCorrection(&corrected, false);
+    yw->win3d->matrixAspectCorrection(corrected, false);
 
     float a3  = corrected.m00 * v6 + corrected.m01 * v4 + corrected.m02 * v8;
     float v33 = corrected.m10 * v6 + corrected.m11 * v4 + corrected.m12 * v8;
@@ -10521,7 +10521,7 @@ char *sb_0x4d7c08__sub0__sub4__sub0__sub0(_NC_STACK_ypaworld *yw, char *cur, __N
                 float v10 = bact->position.z - yw->field_1334.z;
 
                 mat3x3 corrected = yw->field_1340;
-                yw->win3d->matrixAspectCorrection(&corrected, false);
+                yw->win3d->matrixAspectCorrection(corrected, false);
 
                 float v32 = corrected.m00 * v5 + corrected.m01 * v6 + corrected.m02 * v10;
                 float v31 = corrected.m10 * v5 + corrected.m11 * v6 + corrected.m12 * v10;
@@ -10651,7 +10651,7 @@ char * yw_RenderUnitLifeBar(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabac
     float v9 = bact->position.z - yw->field_1334.z;
 
     mat3x3 corrected = yw->field_1340;
-    yw->win3d->matrixAspectCorrection(&corrected, false);
+    yw->win3d->matrixAspectCorrection(corrected, false);
 
     float v44 = corrected.m00 * v6 + corrected.m01 * v5 + corrected.m02 * v9;
     float v46 = corrected.m10 * v6 + corrected.m11 * v5 + corrected.m12 * v9;
@@ -11391,7 +11391,7 @@ int yw_MouseFindCreationPoint(_NC_STACK_ypaworld *yw, winp_131arg *winp)
                 float v57 = 0.0 * v62 + v52;
 
                 mat3x3 corrected = yw->field_1340;
-                yw->win3d->matrixAspectCorrection(&corrected, true);
+                yw->win3d->matrixAspectCorrection(corrected, true);
 
                 float v37 = v55 * corrected.m00 + v56 * corrected.m10 + v57 * corrected.m20;
                 float v38 = v55 * corrected.m01 + v56 * corrected.m11 + v57 * corrected.m21;
@@ -11814,7 +11814,7 @@ void ypaworld_func64__sub21__sub1__sub3__sub0(_NC_STACK_ypaworld *yw, winp_131ar
     float v4 = (float)(winp->move[0].y - (yw->screen_height / 2)) / (float)(yw->screen_height / 2);
 
     mat3x3 corrected = yw->field_1340;
-    yw->win3d->matrixAspectCorrection(&corrected, true);
+    yw->win3d->matrixAspectCorrection(corrected, true);
 
     float v16 = corrected.m00 * v3 + corrected.m10 * v4 + corrected.m20;
     float v17 = corrected.m01 * v3 + corrected.m11 * v4 + corrected.m21;

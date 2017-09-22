@@ -207,7 +207,7 @@ public:
 
     static void initfirst();
     int load_font(const char *fontname);
-    void matrixAspectCorrection(mat3x3 *inout, bool invert);
+    void matrixAspectCorrection(mat3x3 &inout, bool invert);
     void getAspectCorrection(float &cW, float &cH, bool invert);
 
     void UpdateHwTexture(bitmap_intern *bitm);

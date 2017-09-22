@@ -3046,25 +3046,25 @@ void NC_STACK_win3d::draw2DandFlush()
     SDL_FillRect(stack__win3d.screenSurface, NULL, SDL_MapRGBA(stack__win3d.screenSurface->format, 0, 0, 0, 0) );
 }
 
-void NC_STACK_win3d::matrixAspectCorrection(mat3x3 *inout, bool invert)
+void NC_STACK_win3d::matrixAspectCorrection(mat3x3 &inout, bool invert)
 {
     if (invert)
     {
-        inout->m00 *= stack__win3d.corrIW;
-        inout->m01 *= stack__win3d.corrIW;
-        inout->m02 *= stack__win3d.corrIW;
-        inout->m10 *= stack__win3d.corrIH;
-        inout->m11 *= stack__win3d.corrIH;
-        inout->m12 *= stack__win3d.corrIH;
+        inout.m00 *= stack__win3d.corrIW;
+        inout.m01 *= stack__win3d.corrIW;
+        inout.m02 *= stack__win3d.corrIW;
+        inout.m10 *= stack__win3d.corrIH;
+        inout.m11 *= stack__win3d.corrIH;
+        inout.m12 *= stack__win3d.corrIH;
     }
     else
     {
-        inout->m00 *= stack__win3d.corrW;
-        inout->m01 *= stack__win3d.corrW;
-        inout->m02 *= stack__win3d.corrW;
-        inout->m10 *= stack__win3d.corrH;
-        inout->m11 *= stack__win3d.corrH;
-        inout->m12 *= stack__win3d.corrH;
+        inout.m00 *= stack__win3d.corrW;
+        inout.m01 *= stack__win3d.corrW;
+        inout.m02 *= stack__win3d.corrW;
+        inout.m10 *= stack__win3d.corrH;
+        inout.m11 *= stack__win3d.corrH;
+        inout.m12 *= stack__win3d.corrH;
     }
 }
 
