@@ -633,21 +633,21 @@ void yw_netApplyVhclDataE(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
             if ( bact->status_flg & BACT_STFLAG_LAND )
             {
                 ypaworld_arg136 v69;
-                v69.pos_x = bact->position.x;
-                v69.pos_y = bact->position.y;
-                v69.pos_z = bact->position.z;
-                v69.field_14 = bact->rotation.m10 * 200.0;
-                v69.field_18 = bact->rotation.m11 * 200.0;
-                v69.field_1C = bact->rotation.m12 * 200.0;
-                v69.field_40 = 0;
+                v69.stPos.x = bact->position.x;
+                v69.stPos.y = bact->position.y;
+                v69.stPos.z = bact->position.z;
+                v69.vect.x = bact->rotation.m10 * 200.0;
+                v69.vect.y = bact->rotation.m11 * 200.0;
+                v69.vect.z = bact->rotation.m12 * 200.0;
+                v69.flags = 0;
 
                 yw->self_full->ypaworld_func136(&v69);
 
-                if ( v69.field_20 )
+                if ( v69.isect )
                 {
-                    bact->position.x = v69.field_2C - bact->rotation.m10 * bact->overeof;
-                    bact->position.y = v69.field_30 - bact->rotation.m11 * bact->overeof;
-                    bact->position.z = v69.field_34 - bact->rotation.m12 * bact->overeof;
+                    bact->position.x = v69.isectPos.x - bact->rotation.m10 * bact->overeof;
+                    bact->position.y = v69.isectPos.y - bact->rotation.m11 * bact->overeof;
+                    bact->position.z = v69.isectPos.z - bact->rotation.m12 * bact->overeof;
                 }
             }
 
@@ -3992,18 +3992,18 @@ bool yw_NetSetHostStations(_NC_STACK_ypaworld *yw, mapRobo *mapHosts, int hosts_
         strncpy(usr->players[owner].name, plData.name, 64);
 
         ypaworld_arg136 arg136;
-        arg136.pos_x = place.x;
-        arg136.pos_y = -30000.0;
-        arg136.pos_z = place.z;
-        arg136.field_18 = 50000.0;
-        arg136.field_14 = 0;
-        arg136.field_1C = 0;
-        arg136.field_40 = 0;
+        arg136.stPos.x = place.x;
+        arg136.stPos.y = -30000.0;
+        arg136.stPos.z = place.z;
+        arg136.vect.y = 50000.0;
+        arg136.vect.x = 0;
+        arg136.vect.z = 0;
+        arg136.flags = 0;
 
         yw->self_full->ypaworld_func136(&arg136);
 
-        if ( arg136.field_20 )
-            place.y += arg136.field_30;
+        if ( arg136.isect )
+            place.y += arg136.isectPos.y;
         else
             log_netlog("Warning: Robo placed without y-correction\n");
 

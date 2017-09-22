@@ -701,29 +701,29 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
             else if ( miss->field_c != 6 )
             {
                 ypaworld_arg136 arg136;
-                arg136.pos_x = bact->old_pos.x;
-                arg136.pos_y = bact->old_pos.y;
-                arg136.pos_z = bact->old_pos.z;
-                arg136.field_14 = bact->position.x - bact->old_pos.x;
-                arg136.field_18 = bact->position.y - bact->old_pos.y;
-                arg136.field_1C = bact->position.z - bact->old_pos.z;
-                arg136.field_40 = 0;
+                arg136.stPos.x = bact->old_pos.x;
+                arg136.stPos.y = bact->old_pos.y;
+                arg136.stPos.z = bact->old_pos.z;
+                arg136.vect.x = bact->position.x - bact->old_pos.x;
+                arg136.vect.y = bact->position.y - bact->old_pos.y;
+                arg136.vect.z = bact->position.z - bact->old_pos.z;
+                arg136.flags = 0;
 
                 miss->ywo->ypaworld_func136(&arg136);
 
-                if ( arg136.field_20 )
+                if ( arg136.isect )
                 {
                     miss_arg130 arg131;
-                    arg131.pos.x = arg136.field_3C->polygons[ arg136.field_38 ].A;
-                    arg131.pos.y = arg136.field_3C->polygons[ arg136.field_38 ].B;
-                    arg131.pos.z = arg136.field_3C->polygons[ arg136.field_38 ].C;
+                    arg131.pos.x = arg136.skel->polygons[ arg136.polyID ].A;
+                    arg131.pos.y = arg136.skel->polygons[ arg136.polyID ].B;
+                    arg131.pos.z = arg136.skel->polygons[ arg136.polyID ].C;
 
                     ypamissile_func131(&arg131);
 
 
-                    bact->position.x = arg136.field_2C;
-                    bact->position.y = arg136.field_30;
-                    bact->position.z = arg136.field_34;
+                    bact->position.x = arg136.isectPos.x;
+                    bact->position.y = arg136.isectPos.y;
+                    bact->position.z = arg136.isectPos.z;
 
                     ypamissile_func128(NULL);
 

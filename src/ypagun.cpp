@@ -181,22 +181,22 @@ size_t NC_STACK_ypagun::func3(IDVList *stak)
 bool NC_STACK_ypagun::CheckPedestal()
 {
     ypaworld_arg136 arg136;
-    arg136.pos_x = ypabact.position.x;
-    arg136.pos_y = ypabact.position.y;
-    arg136.pos_z = ypabact.position.z;
-    arg136.field_14 = 0;
+    arg136.stPos.x = ypabact.position.x;
+    arg136.stPos.y = ypabact.position.y;
+    arg136.stPos.z = ypabact.position.z;
+    arg136.vect.x = 0;
 
     if ( ypagun.gunFlags & GUN_FLAGS_FALLDOWN )
-        arg136.field_18 = -ypabact.height;
+        arg136.vect.y = -ypabact.height;
     else
-        arg136.field_18 = ypabact.height;
+        arg136.vect.y = ypabact.height;
 
-    arg136.field_1C = 0;
-    arg136.field_40 = 0;
+    arg136.vect.z = 0;
+    arg136.flags = 0;
 
     ypabact.ywo->ypaworld_func136(&arg136);
 
-    return arg136.field_20 != 0;
+    return arg136.isect != 0;
 }
 
 void NC_STACK_ypagun::AI_layer3(update_msg *arg)
@@ -656,18 +656,18 @@ size_t NC_STACK_ypagun::SetPosition(bact_arg80 *arg)
     if ( ypagun.gunFlags & GUN_FLAGS_GROUND )
     {
         ypaworld_arg136 arg136;
-        arg136.pos_x = arg->pos.x;
-        arg136.pos_y = arg->pos.y + -10000.0;
-        arg136.pos_z = arg->pos.z;
-        arg136.field_14 = 0;
-        arg136.field_18 = 20000.0;
-        arg136.field_1C = 0;
-        arg136.field_40 = 0;
+        arg136.stPos.x = arg->pos.x;
+        arg136.stPos.y = arg->pos.y + -10000.0;
+        arg136.stPos.z = arg->pos.z;
+        arg136.vect.x = 0;
+        arg136.vect.y = 20000.0;
+        arg136.vect.z = 0;
+        arg136.flags = 0;
 
         ypabact.ywo->ypaworld_func136(&arg136);
 
-        if ( arg136.field_20 )
-            ypabact.position.y = arg136.field_30 - ypabact.overeof;
+        if ( arg136.isect )
+            ypabact.position.y = arg136.isectPos.y - ypabact.overeof;
 
         ypagun_func128(vec3d(0, 0, 1.0), false);
     }

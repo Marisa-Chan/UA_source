@@ -228,27 +228,27 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                         if ( tank->field_25 & 4 )
                         {
-                            arg136.pos_x = bact->position.x - bact->rotation.m00 * 2.0 * bact->radius;
-                            arg136.pos_y = bact->position.y - bact->rotation.m01 * 2.0 * bact->radius;
-                            arg136.pos_z = bact->position.z - bact->rotation.m02 * 2.0 * bact->radius;
-                            arg136.field_14 = (bact->rotation.m00 * 4.0 + bact->rotation.m10 * 3.0) * bact->radius;
-                            arg136.field_18 = (bact->rotation.m01 * 4.0 + bact->rotation.m11 * 3.0) * bact->radius;
-                            arg136.field_1C = (bact->rotation.m02 * 4.0 + bact->rotation.m12 * 3.0) * bact->radius;
+                            arg136.stPos.x = bact->position.x - bact->rotation.m00 * 2.0 * bact->radius;
+                            arg136.stPos.y = bact->position.y - bact->rotation.m01 * 2.0 * bact->radius;
+                            arg136.stPos.z = bact->position.z - bact->rotation.m02 * 2.0 * bact->radius;
+                            arg136.vect.x = (bact->rotation.m00 * 4.0 + bact->rotation.m10 * 3.0) * bact->radius;
+                            arg136.vect.y = (bact->rotation.m01 * 4.0 + bact->rotation.m11 * 3.0) * bact->radius;
+                            arg136.vect.z = (bact->rotation.m02 * 4.0 + bact->rotation.m12 * 3.0) * bact->radius;
                         }
                         else
                         {
-                            arg136.pos_x = bact->rotation.m00 * 2.0 * bact->radius + bact->position.x;
-                            arg136.pos_y = bact->rotation.m01 * 2.0 * bact->radius + bact->position.y;
-                            arg136.pos_z = bact->rotation.m02 * 2.0 * bact->radius + bact->position.z;
-                            arg136.field_14 = (bact->rotation.m00 * -4.0 + bact->rotation.m10 * 3.0) * bact->radius;
-                            arg136.field_18 = (bact->rotation.m01 * -4.0 + bact->rotation.m11 * 3.0) * bact->radius;
-                            arg136.field_1C = (bact->rotation.m02 * -4.0 + bact->rotation.m12 * 3.0) * bact->radius;
+                            arg136.stPos.x = bact->rotation.m00 * 2.0 * bact->radius + bact->position.x;
+                            arg136.stPos.y = bact->rotation.m01 * 2.0 * bact->radius + bact->position.y;
+                            arg136.stPos.z = bact->rotation.m02 * 2.0 * bact->radius + bact->position.z;
+                            arg136.vect.x = (bact->rotation.m00 * -4.0 + bact->rotation.m10 * 3.0) * bact->radius;
+                            arg136.vect.y = (bact->rotation.m01 * -4.0 + bact->rotation.m11 * 3.0) * bact->radius;
+                            arg136.vect.z = (bact->rotation.m02 * -4.0 + bact->rotation.m12 * 3.0) * bact->radius;
                         }
-                        arg136.field_40 = 1;
+                        arg136.flags = 1;
 
                         tank->ywo->ypaworld_func136(&arg136);
 
-                        if ( !arg136.field_20 || arg136.field_3C->polygons[ arg136.field_38 ].B > 0.6 )
+                        if ( !arg136.isect || arg136.skel->polygons[ arg136.polyID ].B > 0.6 )
                             tank->field_25 &= 0xF3;
 
                         if ( !(tank->field_25 & 0xC) )
@@ -264,25 +264,25 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                         if ( tank->field_25 & 1 )
                         {
-                            arg136.field_14 = -bact->rotation.m00 * 150.0;
-                            arg136.field_18 = -bact->rotation.m01 * 150.0;
-                            arg136.field_1C = -bact->rotation.m02 * 150.0;
+                            arg136.vect.x = -bact->rotation.m00 * 150.0;
+                            arg136.vect.y = -bact->rotation.m01 * 150.0;
+                            arg136.vect.z = -bact->rotation.m02 * 150.0;
                         }
                         else
                         {
-                            arg136.field_14 = bact->rotation.m00 * 150.0;
-                            arg136.field_18 = bact->rotation.m01 * 150.0;
-                            arg136.field_1C = bact->rotation.m02 * 150.0;
+                            arg136.vect.x = bact->rotation.m00 * 150.0;
+                            arg136.vect.y = bact->rotation.m01 * 150.0;
+                            arg136.vect.z = bact->rotation.m02 * 150.0;
                         }
 
-                        arg136.pos_x = bact->position.x;
-                        arg136.pos_y = bact->position.y;
-                        arg136.pos_z = bact->position.z;
-                        arg136.field_40 = 1;
+                        arg136.stPos.x = bact->position.x;
+                        arg136.stPos.y = bact->position.y;
+                        arg136.stPos.z = bact->position.z;
+                        arg136.flags = 1;
 
                         tank->ywo->ypaworld_func136(&arg136);
 
-                        if ( !arg136.field_20 || arg136.field_3C->polygons[ arg136.field_38 ].B > 0.6 )
+                        if ( !arg136.isect || arg136.skel->polygons[ arg136.polyID ].B > 0.6 )
                             tank->field_25 &= 0xFC;
 
                         if ( !(tank->field_25 & 3) )
@@ -400,36 +400,36 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
             }
 
             ypaworld_arg136 arg136;
-            arg136.pos_x = bact->old_pos.x;
-            arg136.pos_y = bact->old_pos.y;
-            arg136.pos_z = bact->old_pos.z;
-            arg136.field_14 = bact->position.x - bact->old_pos.x;
-            arg136.field_18 = bact->position.y - bact->old_pos.y;
-            arg136.field_1C = bact->position.z - bact->old_pos.z;
+            arg136.stPos.x = bact->old_pos.x;
+            arg136.stPos.y = bact->old_pos.y;
+            arg136.stPos.z = bact->old_pos.z;
+            arg136.vect.x = bact->position.x - bact->old_pos.x;
+            arg136.vect.y = bact->position.y - bact->old_pos.y;
+            arg136.vect.z = bact->position.z - bact->old_pos.z;
 
-            float v217 = sqrt(POW2(arg136.field_14) + POW2(arg136.field_18) + POW2(arg136.field_1C));
+            float v217 = sqrt(POW2(arg136.vect.x) + POW2(arg136.vect.y) + POW2(arg136.vect.z));
 
             if ( v217 > 5.0 && bact->status_flg & BACT_STFLAG_MOVE )
             {
                 float v51 = v224 / v217;
 
-                arg136.field_14 *= v51;
-                arg136.field_18 *= v51;
-                arg136.field_1C *= v51;
+                arg136.vect.x *= v51;
+                arg136.vect.y *= v51;
+                arg136.vect.z *= v51;
             }
             else
             {
-                arg136.field_14 = bact->rotation.m20 * v224;
-                arg136.field_18 = bact->rotation.m21 * v224;
-                arg136.field_1C = bact->rotation.m22 * v224;
+                arg136.vect.x = bact->rotation.m20 * v224;
+                arg136.vect.y = bact->rotation.m21 * v224;
+                arg136.vect.z = bact->rotation.m22 * v224;
             }
-            arg136.field_40 = 1;
+            arg136.flags = 1;
 
             tank->ywo->ypaworld_func136(&arg136);
 
-            if ( arg136.field_20 )
+            if ( arg136.isect )
             {
-                UAskeleton::Polygon * v55 = &arg136.field_3C->polygons[ arg136.field_38 ];
+                UAskeleton::Polygon * v55 = &arg136.skel->polygons[ arg136.polyID ];
 
                 if ( v55->B < 0.6 && tank->field_1D == 0.0)
                 {
@@ -437,7 +437,7 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
                     float v216 = v55->B;
                     float v222 = v55->C;
 
-                    if ( arg136.field_24 * v224 > (bact->radius + 50.0) && fabs(v240) < 1.0 && fabs(0.0) < 0.7 && v220 >= 840.0 )
+                    if ( arg136.tVal * v224 > (bact->radius + 50.0) && fabs(v240) < 1.0 && fabs(0.0) < 0.7 && v220 >= 840.0 )
                     {
                         if ( !bact->secndTtype )
                         {
@@ -448,35 +448,35 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
                             else
                                 bact->rotation = mat3x3::RotateY(v242) * bact->rotation;
 
-                            tank->field_21 = arg136.field_24 * v224 + 10.0;
+                            tank->field_21 = arg136.tVal * v224 + 10.0;
                         }
                     }
 
-                    if ( arg136.field_24 * v224 <= (bact->radius + 50.0) )
+                    if ( arg136.tVal * v224 <= (bact->radius + 50.0) )
                     {
                         bact->status_flg &= ~BACT_STFLAG_MOVE;
                         bact->position = bact->old_pos;
 
                         ypaworld_arg136 arg136_2;
-                        arg136_2.pos_x = bact->position.x;
-                        arg136_2.pos_y = bact->position.y;
-                        arg136_2.pos_z = bact->position.z;
-                        arg136_2.field_14 = bact->rotation.m10 * 300.0;
-                        arg136_2.field_18 = bact->rotation.m11 * 300.0;
-                        arg136_2.field_1C = bact->rotation.m12 * 300.0;;
-                        arg136_2.field_40 = 1;
+                        arg136_2.stPos.x = bact->position.x;
+                        arg136_2.stPos.y = bact->position.y;
+                        arg136_2.stPos.z = bact->position.z;
+                        arg136_2.vect.x = bact->rotation.m10 * 300.0;
+                        arg136_2.vect.y = bact->rotation.m11 * 300.0;
+                        arg136_2.vect.z = bact->rotation.m12 * 300.0;;
+                        arg136_2.flags = 1;
 
                         tank->ywo->ypaworld_func136(&arg136_2);
 
                         float v189, v187, v188;
 
-                        if ( arg136_2.field_20 )
+                        if ( arg136_2.isect )
                         {
-                            UAskeleton::Polygon *v70 = arg136_2.field_3C->polygons;
+                            UAskeleton::Polygon *v70 = arg136_2.skel->polygons;
 
-                            v189 = v221 * v70[ arg136_2.field_38 ].B - v216 * v70[ arg136_2.field_38 ].A;
-                            v187 = v216 * v70[ arg136_2.field_38 ].C - v222 * v70[ arg136_2.field_38 ].B;
-                            v188 = v222 * v70[ arg136_2.field_38 ].A - v221 * v70[ arg136_2.field_38 ].C;
+                            v189 = v221 * v70[ arg136_2.polyID ].B - v216 * v70[ arg136_2.polyID ].A;
+                            v187 = v216 * v70[ arg136_2.polyID ].C - v222 * v70[ arg136_2.polyID ].B;
+                            v188 = v222 * v70[ arg136_2.polyID ].A - v221 * v70[ arg136_2.polyID ].C;
                         }
                         else
                         {
@@ -510,27 +510,27 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
                         ypaworld_arg136 arg136_1;
                         ypaworld_arg136 arg136_3;
 
-                        arg136_1.field_14 = tank->field_11.z * 150.0 / tmpsq;
-                        arg136_1.field_18 = 0;
-                        arg136_1.field_1C = -tank->field_11.x * 150.0 / tmpsq;
-                        arg136_1.pos_x = bact->old_pos.x;
-                        arg136_1.pos_y = bact->old_pos.y;
-                        arg136_1.pos_z = bact->old_pos.z;
-                        arg136_1.field_40 = 1;
+                        arg136_1.vect.x = tank->field_11.z * 150.0 / tmpsq;
+                        arg136_1.vect.y = 0;
+                        arg136_1.vect.z = -tank->field_11.x * 150.0 / tmpsq;
+                        arg136_1.stPos.x = bact->old_pos.x;
+                        arg136_1.stPos.y = bact->old_pos.y;
+                        arg136_1.stPos.z = bact->old_pos.z;
+                        arg136_1.flags = 1;
 
-                        arg136_3.field_14 = -tank->field_11.z * 150.0 / tmpsq;
-                        arg136_3.field_18 = 0;
-                        arg136_3.field_1C = tank->field_11.x * 150.0 / tmpsq;
-                        arg136_3.pos_x = bact->old_pos.x;
-                        arg136_3.pos_y = bact->old_pos.y;
-                        arg136_3.pos_z = bact->old_pos.z;
-                        arg136_3.field_40 = 1;
+                        arg136_3.vect.x = -tank->field_11.z * 150.0 / tmpsq;
+                        arg136_3.vect.y = 0;
+                        arg136_3.vect.z = tank->field_11.x * 150.0 / tmpsq;
+                        arg136_3.stPos.x = bact->old_pos.x;
+                        arg136_3.stPos.y = bact->old_pos.y;
+                        arg136_3.stPos.z = bact->old_pos.z;
+                        arg136_3.flags = 1;
 
                         tank->ywo->ypaworld_func136(&arg136_1);
                         tank->ywo->ypaworld_func136(&arg136_3);
 
-                        bool v86 = arg136_1.field_20 && arg136_1.field_3C->polygons[ arg136_1.field_38 ].B < 0.6;
-                        bool v87 = arg136_3.field_20 && arg136_3.field_3C->polygons[ arg136_3.field_38 ].B < 0.6;
+                        bool v86 = arg136_1.isect && arg136_1.skel->polygons[ arg136_1.polyID ].B < 0.6;
+                        bool v87 = arg136_3.isect && arg136_3.skel->polygons[ arg136_3.polyID ].B < 0.6;
 
                         int v93;
 
@@ -538,7 +538,7 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
                         {
                             if ( v87 )
                             {
-                                float v206 = bact->rotation.m20 * arg136_1.field_14 + bact->rotation.m22 * arg136_1.field_1C;
+                                float v206 = bact->rotation.m20 * arg136_1.vect.x + bact->rotation.m22 * arg136_1.vect.z;
 
                                 tmpsq = sqrt( POW2(bact->rotation.m20) + POW2(bact->rotation.m22) );
 
@@ -557,7 +557,7 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
                             }
                             else
                             {
-                                float v206 = bact->rotation.m20 * arg136_3.field_14 + bact->rotation.m22 * arg136_3.field_1C;
+                                float v206 = bact->rotation.m20 * arg136_3.vect.x + bact->rotation.m22 * arg136_3.vect.z;
 
                                 tmpsq = sqrt( POW2(bact->rotation.m20) + POW2(bact->rotation.m22) );
 
@@ -635,23 +635,23 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
                 bact->fly_dir_length = 0;
                 bact->thraction = 0;
 
-                arg136.field_20 = 0;
+                arg136.isect = 0;
 
                 if ( !(arg128.field_10 & 1) )
                 {
-                    arg136.pos_x = bact->rotation.m20 * bact->radius + bact->position.x;
-                    arg136.pos_y = bact->rotation.m21 * bact->radius + bact->position.y;
-                    arg136.pos_z = bact->rotation.m22 * bact->radius + bact->position.z;
+                    arg136.stPos.x = bact->rotation.m20 * bact->radius + bact->position.x;
+                    arg136.stPos.y = bact->rotation.m21 * bact->radius + bact->position.y;
+                    arg136.stPos.z = bact->rotation.m22 * bact->radius + bact->position.z;
 
                     float v223 = bact->radius * 8.0;
-                    arg136.field_14 = (bact->rotation.m10 - bact->rotation.m20) * v223;
-                    arg136.field_18 = (bact->rotation.m11 - bact->rotation.m21) * v223;
-                    arg136.field_1C = (bact->rotation.m12 - bact->rotation.m22) * v223;
-                    arg136.field_40 = 1;
+                    arg136.vect.x = (bact->rotation.m10 - bact->rotation.m20) * v223;
+                    arg136.vect.y = (bact->rotation.m11 - bact->rotation.m21) * v223;
+                    arg136.vect.z = (bact->rotation.m12 - bact->rotation.m22) * v223;
+                    arg136.flags = 1;
 
                     tank->ywo->ypaworld_func136(&arg136);
 
-                    if ( !arg136.field_20 || ( arg136.field_20 && arg136.field_24 * v223 * 0.7 > (bact->overeof + 30.0) ) )
+                    if ( !arg136.isect || ( arg136.isect && arg136.tVal * v223 * 0.7 > (bact->overeof + 30.0) ) )
                     {
                         bact->status_flg &= ~BACT_STFLAG_LAND;
                         break;
@@ -660,7 +660,7 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                 bact->position = bact->old_pos;
 
-                if ( (arg136.field_20 && arg136.field_3C->polygons[ arg136.field_38 ].B < 0.6) || arg128.field_10 & 1 )
+                if ( (arg136.isect && arg136.skel->polygons[ arg136.polyID ].B < 0.6) || arg128.field_10 & 1 )
                 {
                     bact->status_flg &= ~BACT_STFLAG_MOVE;
                     tank->field_25 &= 0xFC;
@@ -669,9 +669,9 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
                     float v207 = 0.0;
                     float v210 = 0.0;
 
-                    if ( arg136.field_20 )
+                    if ( arg136.isect )
                     {
-                        UAskeleton::Polygon *v117 = &arg136.field_3C->polygons[ arg136.field_38 ];
+                        UAskeleton::Polygon *v117 = &arg136.skel->polygons[ arg136.polyID ];
                         v208 = v117->A;
                         v207 = v117->B;
                         v210 = v117->C;
@@ -679,13 +679,13 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                     ypaworld_arg136 arg136_4;
 
-                    arg136_4.pos_x = bact->position.x;
-                    arg136_4.pos_y = bact->position.y;
-                    arg136_4.pos_z = bact->position.z;
-                    arg136_4.field_14 = bact->rotation.m10 * 300.0;
-                    arg136_4.field_18 = bact->rotation.m11 * 300.0;
-                    arg136_4.field_1C = bact->rotation.m12 * 300.0;
-                    arg136_4.field_40 = 1;
+                    arg136_4.stPos.x = bact->position.x;
+                    arg136_4.stPos.y = bact->position.y;
+                    arg136_4.stPos.z = bact->position.z;
+                    arg136_4.vect.x = bact->rotation.m10 * 300.0;
+                    arg136_4.vect.y = bact->rotation.m11 * 300.0;
+                    arg136_4.vect.z = bact->rotation.m12 * 300.0;
+                    arg136_4.flags = 1;
 
                     tank->ywo->ypaworld_func136(&arg136_4);
 
@@ -712,13 +712,13 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                     float v185, v186, v184;
 
-                    if ( arg136_4.field_20 )
+                    if ( arg136_4.isect )
                     {
-                        UAskeleton::Polygon *v124 = arg136_4.field_3C->polygons;
+                        UAskeleton::Polygon *v124 = arg136_4.skel->polygons;
 
-                        v185 = v182 * v124[arg136_4.field_38].A - v180 * v124[arg136_4.field_38].C;
-                        v186 = v180 * v124[arg136_4.field_38].B - v181 * v124[arg136_4.field_38].A;
-                        v184 = v181 * v124[arg136_4.field_38].C - v182 * v124[arg136_4.field_38].B;
+                        v185 = v182 * v124[arg136_4.polyID].A - v180 * v124[arg136_4.polyID].C;
+                        v186 = v180 * v124[arg136_4.polyID].B - v181 * v124[arg136_4.polyID].A;
+                        v184 = v181 * v124[arg136_4.polyID].C - v182 * v124[arg136_4.polyID].B;
                     }
                     else
                     {
@@ -1229,17 +1229,17 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
 
             ypaworld_arg136 arg136;
 
-            arg136.pos_x = bact->old_pos.x;
-            arg136.pos_y = bact->old_pos.y;
-            arg136.pos_z = bact->old_pos.z;
-            arg136.field_14 = bact->position.x - bact->old_pos.x;
-            arg136.field_18 = bact->position.y - bact->old_pos.y;
-            arg136.field_1C = bact->position.z - bact->old_pos.z;
-            arg136.field_40 = 0;
+            arg136.stPos.x = bact->old_pos.x;
+            arg136.stPos.y = bact->old_pos.y;
+            arg136.stPos.z = bact->old_pos.z;
+            arg136.vect.x = bact->position.x - bact->old_pos.x;
+            arg136.vect.y = bact->position.y - bact->old_pos.y;
+            arg136.vect.z = bact->position.z - bact->old_pos.z;
+            arg136.flags = 0;
 
             tank->ywo->ypaworld_func136(&arg136);
 
-            if ( (a4 && CollisionWithBact(arg->frameTime)) || !arg136.field_20 ) // Check it
+            if ( (a4 && CollisionWithBact(arg->frameTime)) || !arg136.isect ) // Check it
             {
                 ypatank_func129(&arg129);
             }
@@ -1379,25 +1379,25 @@ size_t NC_STACK_ypatank::SetPosition(bact_arg80 *arg)
         if ( arg->field_C & 1 )
         {
             ypaworld_arg136 arg136;
-            arg136.pos_x = bact->position.x;
-            arg136.pos_z = bact->position.z;
-            arg136.pos_y = -30000.0;
-            arg136.field_14 = 0;
-            arg136.field_1C = 0;
-            arg136.field_18 = 50000.0;
-            arg136.field_40 = 0;
+            arg136.stPos.x = bact->position.x;
+            arg136.stPos.z = bact->position.z;
+            arg136.stPos.y = -30000.0;
+            arg136.vect.x = 0;
+            arg136.vect.z = 0;
+            arg136.vect.y = 50000.0;
+            arg136.flags = 0;
 
             tank->ywo->ypaworld_func136(&arg136);
 
-            if ( !arg136.field_20 )
+            if ( !arg136.isect )
                 return 0;
 
             int a4 = getBACT_viewer();
 
             if ( a4 )
-                bact->position.y = arg136.field_30 - bact->viewer_overeof;
+                bact->position.y = arg136.isectPos.y - bact->viewer_overeof;
             else
-                bact->position.y = arg136.field_30 - bact->overeof;
+                bact->position.y = arg136.isectPos.y - bact->overeof;
 
             bact->status_flg |= BACT_STFLAG_LAND;
         }
@@ -1442,17 +1442,17 @@ void NC_STACK_ypatank::ApplyImpulse(bact_arg83 *arg)
     float v26 = bact->position.z + v29 * v14;
 
     ypaworld_arg136 arg136;
-    arg136.pos_x = bact->position.x;
-    arg136.pos_y = bact->position.y;
-    arg136.pos_z = bact->position.z;
-    arg136.field_14 = v24 - bact->position.x;
-    arg136.field_18 = v25 - bact->position.y;
-    arg136.field_1C = v26 - bact->position.z;
-    arg136.field_40 = 0;
+    arg136.stPos.x = bact->position.x;
+    arg136.stPos.y = bact->position.y;
+    arg136.stPos.z = bact->position.z;
+    arg136.vect.x = v24 - bact->position.x;
+    arg136.vect.y = v25 - bact->position.y;
+    arg136.vect.z = v26 - bact->position.z;
+    arg136.flags = 0;
 
     tank->ywo->ypaworld_func136(&arg136);
 
-    if ( !arg136.field_20 )
+    if ( !arg136.isect )
     {
         bact->position.x = v24;
         bact->position.y = v25;
@@ -1771,17 +1771,17 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
                             float v87 = v78[i].z * v127 + v80[i]->position.z;
 
                             ypaworld_arg136 arg136;
-                            arg136.pos_x = v80[i]->position.x;
-                            arg136.pos_y = v80[i]->position.y;
-                            arg136.pos_z = v80[i]->position.z;
-                            arg136.field_14 = v85 - v80[i]->position.x;
-                            arg136.field_18 = v86 - v80[i]->position.y;
-                            arg136.field_1C = v87 - v80[i]->position.z;
-                            arg136.field_40 = 0;
+                            arg136.stPos.x = v80[i]->position.x;
+                            arg136.stPos.y = v80[i]->position.y;
+                            arg136.stPos.z = v80[i]->position.z;
+                            arg136.vect.x = v85 - v80[i]->position.x;
+                            arg136.vect.y = v86 - v80[i]->position.y;
+                            arg136.vect.z = v87 - v80[i]->position.z;
+                            arg136.flags = 0;
 
                             tank->ywo->ypaworld_func136(&arg136);
 
-                            if ( !arg136.field_20 )
+                            if ( !arg136.isect )
                             {
 
                                 v80[i]->old_pos = v80[i]->position;
@@ -1982,17 +1982,17 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
 
     ypaworld_arg136 arg149;
 
-    arg149.pos_x = bact->position.x;
-    arg149.pos_y = bact->position.y;
-    arg149.pos_z = bact->position.z;
-    arg149.field_14 = arg->pos.x - arg149.pos_x;
-    arg149.field_18 = arg->pos.y - arg149.pos_y;
-    arg149.field_1C = arg->pos.z - arg149.pos_z;
-    arg149.field_40 = 0;
+    arg149.stPos.x = bact->position.x;
+    arg149.stPos.y = bact->position.y;
+    arg149.stPos.z = bact->position.z;
+    arg149.vect.x = arg->pos.x - arg149.stPos.x;
+    arg149.vect.y = arg->pos.y - arg149.stPos.y;
+    arg149.vect.z = arg->pos.z - arg149.stPos.z;
+    arg149.flags = 0;
 
     tank->ywo->ypaworld_func149(&arg149);
 
-    if ( arg149.field_20 )
+    if ( arg149.isect )
     {
         if ( arg->unkn == 2 )
         {
@@ -2019,8 +2019,8 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
             arg130.pos_x = arg->pos.x;
             arg130.pos_z = arg->pos.z;
 
-            arg130_1.pos_x = arg149.field_2C;
-            arg130_1.pos_z = arg149.field_34;
+            arg130_1.pos_x = arg149.isectPos.x;
+            arg130_1.pos_z = arg149.isectPos.z;
 
             if ( tank->ywo->ypaworld_func130(&arg130) )
             {
@@ -2205,18 +2205,18 @@ void NC_STACK_ypatank::CorrectPositionOnLand(void *)
             v6 = bact->overeof;
 
         ypaworld_arg136 arg136;
-        arg136.pos_x = bact->position.x;
-        arg136.pos_y = bact->position.y;
-        arg136.pos_z = bact->position.z;
-        arg136.field_14 = 0;
-        arg136.field_18 = v6 * 2.0;
-        arg136.field_1C = 0;
-        arg136.field_40 = 0;
+        arg136.stPos.x = bact->position.x;
+        arg136.stPos.y = bact->position.y;
+        arg136.stPos.z = bact->position.z;
+        arg136.vect.x = 0;
+        arg136.vect.y = v6 * 2.0;
+        arg136.vect.z = 0;
+        arg136.flags = 0;
 
         tank->ywo->ypaworld_func136(&arg136);
 
-        if ( arg136.field_20 )
-            bact->position.y = arg136.field_30 - v6;
+        if ( arg136.isect )
+            bact->position.y = arg136.isectPos.y - v6;
         else
             bact->status_flg &= ~BACT_STFLAG_LAND;
     }
@@ -2251,26 +2251,26 @@ size_t NC_STACK_ypatank::ypatank_func128(tank_arg128 *arg)
         v5 = bact->overeof;
 
     ypaworld_arg136 arg136;
-    arg136.pos_x = bact->rotation.m10 * v5 + bact->position.x;
-    arg136.pos_y = bact->rotation.m11 * v5 + bact->position.y - 50.0;
-    arg136.pos_z = bact->rotation.m12 * v5 + bact->position.z;
-    arg136.field_14 = 0;
-    arg136.field_18 = bact->overeof + 110.0;
-    arg136.field_1C = 0;
-    arg136.field_40 = 0;
+    arg136.stPos.x = bact->rotation.m10 * v5 + bact->position.x;
+    arg136.stPos.y = bact->rotation.m11 * v5 + bact->position.y - 50.0;
+    arg136.stPos.z = bact->rotation.m12 * v5 + bact->position.z;
+    arg136.vect.x = 0;
+    arg136.vect.y = bact->overeof + 110.0;
+    arg136.vect.z = 0;
+    arg136.flags = 0;
 
     tank->ywo->ypaworld_func136(&arg136);
 
-    if ( arg136.field_20 )
+    if ( arg136.isect )
     {
-        UAskeleton::Polygon *v10 = &arg136.field_3C->polygons[ arg136.field_38 ];
+        UAskeleton::Polygon *v10 = &arg136.skel->polygons[ arg136.polyID ];
 
         if ( v10->B < 0.6 )
         {
             arg->field_10 |= 1;
-            arg->field_14.x = arg136.field_3C->polygons[ arg136.field_38 ].A;
-            arg->field_14.y = arg136.field_3C->polygons[ arg136.field_38 ].B;
-            arg->field_14.z = arg136.field_3C->polygons[ arg136.field_38 ].C;
+            arg->field_14.x = arg136.skel->polygons[ arg136.polyID ].A;
+            arg->field_14.y = arg136.skel->polygons[ arg136.polyID ].B;
+            arg->field_14.z = arg136.skel->polygons[ arg136.polyID ].C;
         }
         else
         {
@@ -2324,9 +2324,9 @@ size_t NC_STACK_ypatank::ypatank_func128(tank_arg128 *arg)
                 bact->rotation *= mat3x3::AxisAngle(vaxis, v57);
             }
 
-            bact->position.x = arg136.field_2C - bact->rotation.m10 * v5;
-            bact->position.y = arg136.field_30 - bact->rotation.m11 * v5;
-            bact->position.z = arg136.field_34 - bact->rotation.m12 * v5;
+            bact->position.x = arg136.isectPos.x - bact->rotation.m10 * v5;
+            bact->position.y = arg136.isectPos.y - bact->rotation.m11 * v5;
+            bact->position.z = arg136.isectPos.z - bact->rotation.m12 * v5;
 
             return 1;
         }
@@ -2402,48 +2402,48 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
     ypaworld_arg136 arg136_1;
     ypaworld_arg136 arg136_2;
 
-    arg136.pos_x = bact->position.x;
-    arg136_1.pos_x = bact->position.x;
-    arg136_2.pos_x = bact->position.x;
+    arg136.stPos.x = bact->position.x;
+    arg136_1.stPos.x = bact->position.x;
+    arg136_2.stPos.x = bact->position.x;
 
-    arg136.pos_y = bact->position.y - v152 * bact->viewer_radius;
-    arg136_1.pos_y = bact->position.y - v152 * bact->viewer_radius;
-    arg136_2.pos_y = bact->position.y - v152 * bact->viewer_radius;
+    arg136.stPos.y = bact->position.y - v152 * bact->viewer_radius;
+    arg136_1.stPos.y = bact->position.y - v152 * bact->viewer_radius;
+    arg136_2.stPos.y = bact->position.y - v152 * bact->viewer_radius;
 
-    arg136.pos_z = bact->position.z;
-    arg136_1.pos_z = bact->position.z;
-    arg136_2.pos_z = bact->position.z;
+    arg136.stPos.z = bact->position.z;
+    arg136_1.stPos.z = bact->position.z;
+    arg136_2.stPos.z = bact->position.z;
 
-    arg136.field_14 = (v123.x - arg136.pos_x) * v155;
-    arg136.field_18 = (v123.y - arg136.pos_y) * v155;
-    arg136.field_1C = (v123.z - arg136.pos_z) * v155;
+    arg136.vect.x = (v123.x - arg136.stPos.x) * v155;
+    arg136.vect.y = (v123.y - arg136.stPos.y) * v155;
+    arg136.vect.z = (v123.z - arg136.stPos.z) * v155;
 
-    arg136_1.field_14 = (v133.x - arg136_1.pos_x) * v155;
-    arg136_1.field_18 = (v133.y - arg136_1.pos_y) * v155;
-    arg136_1.field_1C = (v133.z - arg136_1.pos_z) * v155;
+    arg136_1.vect.x = (v133.x - arg136_1.stPos.x) * v155;
+    arg136_1.vect.y = (v133.y - arg136_1.stPos.y) * v155;
+    arg136_1.vect.z = (v133.z - arg136_1.stPos.z) * v155;
 
-    arg136_2.field_14 = (v122.x - arg136_2.pos_x) * v155;
-    arg136_2.field_18 = (v122.y - arg136_2.pos_y) * v155;
-    arg136_2.field_1C = (v122.z - arg136_2.pos_z) * v155;
+    arg136_2.vect.x = (v122.x - arg136_2.stPos.x) * v155;
+    arg136_2.vect.y = (v122.y - arg136_2.stPos.y) * v155;
+    arg136_2.vect.z = (v122.z - arg136_2.stPos.z) * v155;
 
     if ( a4 )
     {
-        arg136.field_40 = 0;
-        arg136_1.field_40 = 0;
-        arg136_2.field_40 = 0;
+        arg136.flags = 0;
+        arg136_1.flags = 0;
+        arg136_2.flags = 0;
     }
     else
     {
-        arg136.field_40 = 1;
-        arg136_1.field_40 = 1;
-        arg136_2.field_40 = 1;
+        arg136.flags = 1;
+        arg136_1.flags = 1;
+        arg136_2.flags = 1;
     }
 
     tank->ywo->ypaworld_func136(&arg136);
 
-    if ( arg136.field_20 )
+    if ( arg136.isect )
     {
-        UAskeleton::Polygon *v48 = &arg136.field_3C->polygons[ arg136.field_38 ];
+        UAskeleton::Polygon *v48 = &arg136.skel->polygons[ arg136.polyID ];
 
         if ( fabs(v48->B) < 0.6 )
         {
@@ -2464,8 +2464,8 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
 
                         yw_arg180 arg180;
                         arg180.field_4 = 1.0;
-                        arg180.field_8 = arg136.field_2C;
-                        arg180.field_C = arg136.field_34;
+                        arg180.field_8 = arg136.isectPos.x;
+                        arg180.field_C = arg136.isectPos.z;
                         arg180.effects_type = 5;
 
                         tank->ywo->ypaworld_func180(&arg180);
@@ -2480,8 +2480,8 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                     return 2;
                 }
 
-                bact->position.x = bact->old_pos.x - arg136.field_3C->polygons[arg136.field_38].A * 10.0;
-                bact->position.z = bact->old_pos.z - arg136.field_3C->polygons[arg136.field_38].C * 10.0;
+                bact->position.x = bact->old_pos.x - arg136.skel->polygons[arg136.polyID].A * 10.0;
+                bact->position.z = bact->old_pos.z - arg136.skel->polygons[arg136.polyID].C * 10.0;
             }
             return 2;
         }
@@ -2491,18 +2491,18 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
         if ( !v143 )
             return 2;
 
-        arg136.field_2C = bact->position.x + arg136.field_14;
-        arg136.field_30 = bact->position.y + arg136.field_18 - v152 * bact->viewer_radius;
-        arg136.field_34 = bact->position.z + arg136.field_1C;
+        arg136.isectPos.x = bact->position.x + arg136.vect.x;
+        arg136.isectPos.y = bact->position.y + arg136.vect.y - v152 * bact->viewer_radius;
+        arg136.isectPos.z = bact->position.z + arg136.vect.z;
 
         v149 = 1;
     }
 
     tank->ywo->ypaworld_func136(&arg136_1);
 
-    if ( arg136_1.field_20 )
+    if ( arg136_1.isect )
     {
-        UAskeleton::Polygon *v54 = &arg136_1.field_3C->polygons[ arg136_1.field_38 ];
+        UAskeleton::Polygon *v54 = &arg136_1.skel->polygons[ arg136_1.polyID ];
 
         if ( fabs(v54->B) < 0.6 )
         {
@@ -2521,8 +2521,8 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                         startSound(&bact->soundcarrier, 5);
 
                         yw_arg180 arg180_3;
-                        arg180_3.field_8 = arg136_1.field_2C;
-                        arg180_3.field_C = arg136_1.field_34;
+                        arg180_3.field_8 = arg136_1.isectPos.x;
+                        arg180_3.field_C = arg136_1.isectPos.z;
                         arg180_3.effects_type = 5;
                         arg180_3.field_4 = 1.0;
 
@@ -2538,8 +2538,8 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                     return 1;
                 }
 
-                bact->position.x = bact->old_pos.x - arg136_1.field_3C->polygons[ arg136_1.field_38 ].A * 10.0;
-                bact->position.z = bact->old_pos.z - arg136_1.field_3C->polygons[ arg136_1.field_38 ].C * 10.0;
+                bact->position.x = bact->old_pos.x - arg136_1.skel->polygons[ arg136_1.polyID ].A * 10.0;
+                bact->position.z = bact->old_pos.z - arg136_1.skel->polygons[ arg136_1.polyID ].C * 10.0;
             }
             return 1;
         }
@@ -2549,18 +2549,18 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
         if ( !v143 )
             return 1;
 
-        arg136_1.field_2C = bact->position.x + arg136_1.field_14;
-        arg136_1.field_30 = bact->position.y + arg136_1.field_18 - v152 * bact->viewer_radius;
-        arg136_1.field_34 = bact->position.z + arg136_1.field_1C;
+        arg136_1.isectPos.x = bact->position.x + arg136_1.vect.x;
+        arg136_1.isectPos.y = bact->position.y + arg136_1.vect.y - v152 * bact->viewer_radius;
+        arg136_1.isectPos.z = bact->position.z + arg136_1.vect.z;
 
         v151 = 1;
     }
 
     tank->ywo->ypaworld_func136(&arg136_2);
 
-    if ( arg136_2.field_20 )
+    if ( arg136_2.isect )
     {
-        if ( fabs(arg136_2.field_3C->polygons[arg136_2.field_38].B) < 0.6 )
+        if ( fabs(arg136_2.skel->polygons[arg136_2.polyID].B) < 0.6 )
         {
             bact->thraction = 0;
 
@@ -2572,8 +2572,8 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
 
                     yw_arg180 arg180_1;
                     arg180_1.field_4 = 1.0;
-                    arg180_1.field_8 = arg136_2.field_2C;
-                    arg180_1.field_C = arg136_2.field_34;
+                    arg180_1.field_8 = arg136_2.isectPos.x;
+                    arg180_1.field_C = arg136_2.isectPos.z;
                     arg180_1.effects_type = 5;
 
                     tank->ywo->ypaworld_func180(&arg180_1);
@@ -2589,9 +2589,9 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
     }
     else
     {
-        arg136_2.field_2C = bact->position.x + arg136_2.field_14;
-        arg136_2.field_30 = bact->position.y + arg136_2.field_18 - v152 * bact->viewer_radius;
-        arg136_2.field_34 = bact->position.z + arg136_2.field_1C;
+        arg136_2.isectPos.x = bact->position.x + arg136_2.vect.x;
+        arg136_2.isectPos.y = bact->position.y + arg136_2.vect.y - v152 * bact->viewer_radius;
+        arg136_2.isectPos.z = bact->position.z + arg136_2.vect.z;
 
         v148 = 1;
     }
@@ -2601,19 +2601,19 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
         if ( v156 > 0.0 )
         {
             ypaworld_arg136 arg136_3;
-            arg136_3.pos_x = bact->position.x;
-            arg136_3.pos_y = bact->position.y;
-            arg136_3.pos_z = bact->position.z;
-            arg136_3.field_14 = bact->rotation.m20 * bact->viewer_radius;
-            arg136_3.field_18 = bact->rotation.m21 * bact->viewer_radius;
-            arg136_3.field_1C = bact->rotation.m22 * bact->viewer_radius;
-            arg136_3.field_40 = 0;
+            arg136_3.stPos.x = bact->position.x;
+            arg136_3.stPos.y = bact->position.y;
+            arg136_3.stPos.z = bact->position.z;
+            arg136_3.vect.x = bact->rotation.m20 * bact->viewer_radius;
+            arg136_3.vect.y = bact->rotation.m21 * bact->viewer_radius;
+            arg136_3.vect.z = bact->rotation.m22 * bact->viewer_radius;
+            arg136_3.flags = 0;
 
             tank->ywo->ypaworld_func136(&arg136_3);
 
-            if ( arg136_3.field_20 )
+            if ( arg136_3.isect )
             {
-                if ( arg136_3.field_3C->polygons[ arg136_3.field_38 ].B < 0.6 )
+                if ( arg136_3.skel->polygons[ arg136_3.polyID ].B < 0.6 )
                 {
                     if ( bact->fly_dir_length > 2.333333333333334 )
                     {
@@ -2624,8 +2624,8 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                             yw_arg180 arg180_2;
                             arg180_2.effects_type = 5;
                             arg180_2.field_4 = 1.0;
-                            arg180_2.field_8 = arg136_3.field_2C;
-                            arg180_2.field_C = arg136_3.field_34;
+                            arg180_2.field_8 = arg136_3.isectPos.x;
+                            arg180_2.field_C = arg136_3.isectPos.z;
 
                             tank->ywo->ypaworld_func180(&arg180_2);
                         }
@@ -2639,16 +2639,16 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
         }
     }
 
-    if ( arg136_1.field_20 && arg136.field_20 && arg136_2.field_20 )
+    if ( arg136_1.isect && arg136.isect && arg136_2.isect )
     {
 
-        float v124 = arg136_1.field_2C - arg136_2.field_2C;
-        float v125 = arg136_1.field_30 - arg136_2.field_30;
-        float v126 = arg136_1.field_34 - arg136_2.field_34;
+        float v124 = arg136_1.isectPos.x - arg136_2.isectPos.x;
+        float v125 = arg136_1.isectPos.y - arg136_2.isectPos.y;
+        float v126 = arg136_1.isectPos.z - arg136_2.isectPos.z;
 
-        float v127 = arg136.field_2C - arg136_2.field_2C;
-        float v128 = arg136.field_30 - arg136_2.field_30;
-        float v129 = arg136.field_34 - arg136_2.field_34;
+        float v127 = arg136.isectPos.x - arg136_2.isectPos.x;
+        float v128 = arg136.isectPos.y - arg136_2.isectPos.y;
+        float v129 = arg136.isectPos.z - arg136_2.isectPos.z;
 
         float v170 = v128 * v126 - v129 * v125;
         float v168 = v129 * v124 - v127 * v126;
@@ -2728,26 +2728,26 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
         }
     }
 
-    if ( arg136.field_20 || arg136_1.field_20 || arg136_2.field_20 )
+    if ( arg136.isect || arg136_1.isect || arg136_2.isect )
     {
         if ( v149 || v151 || v148 )
         {
             float v92 = bact->viewer_overeof * v155 * 0.8;
 
             ypaworld_arg136 arg136_4;
-            arg136_4.pos_x = bact->position.x;
-            arg136_4.pos_y = bact->position.y - v92;
-            arg136_4.pos_z = bact->position.z;
+            arg136_4.stPos.x = bact->position.x;
+            arg136_4.stPos.y = bact->position.y - v92;
+            arg136_4.stPos.z = bact->position.z;
 
-            arg136_4.field_14 = 0;
-            arg136_4.field_18 = v92 * 2.0;
-            arg136_4.field_1C = 0;
+            arg136_4.vect.x = 0;
+            arg136_4.vect.y = v92 * 2.0;
+            arg136_4.vect.z = 0;
 
-            arg136_4.field_40 = a4 == 0;
+            arg136_4.flags = a4 == 0;
 
             tank->ywo->ypaworld_func136(&arg136_4);
 
-            if ( !arg136_4.field_20 || (arg136_4.field_20 && arg136_4.field_3C->polygons[ arg136_4.field_38 ].B < 0.6) )
+            if ( !arg136_4.isect || (arg136_4.isect && arg136_4.skel->polygons[ arg136_4.polyID ].B < 0.6) )
             {
                 float v130 = 0.0;
                 float v131 = 0.0;
@@ -2781,11 +2781,11 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                 bact->position.z += v132 * arg->field_0 * 400.0;
                 return 0;
             }
-            bact->position.y = arg136_4.field_30 - v5;
+            bact->position.y = arg136_4.isectPos.y - v5;
         }
         else
         {
-            bact->position.y = (arg136.field_30 + arg136_1.field_30 + arg136_2.field_30) * 0.33333334 - v5;
+            bact->position.y = (arg136.isectPos.y + arg136_1.isectPos.y + arg136_2.isectPos.y) * 0.33333334 - v5;
         }
     }
     else

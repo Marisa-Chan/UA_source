@@ -1672,23 +1672,23 @@ struct yw_130arg
 
 struct ypaworld_arg136
 {
-    int field_0;
-    float pos_x;
-    float pos_y;
-    float pos_z;
-    int field_10;
-    float field_14;
-    float field_18;
-    float field_1C;
-    int field_20;
-    float field_24;
-    int field_28;
-    float field_2C;
-    float field_30;
-    float field_34;
-    int field_38;
-    UAskeleton::Data *field_3C;
-    int field_40;
+    vec3d stPos;
+    vec3d vect;
+    bool isect;
+    float tVal;
+    vec3d isectPos;
+    int polyID;
+    UAskeleton::Data *skel;
+    int flags;
+
+    ypaworld_arg136()
+    {
+        isect = false;
+        tVal = 0.0;
+        polyID = 0;
+        skel = NULL;
+        flags = 0;
+    }
 };
 
 struct yw_137col

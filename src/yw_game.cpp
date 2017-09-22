@@ -978,14 +978,14 @@ int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_cou
             mapRobo *v8 = robo + i;
 
             ypaworld_arg136 v14;
-            v14.pos_x = v8->pos_x;
-            v14.pos_y = -30000.0;
-            v14.pos_z = v8->pos_z;
+            v14.stPos.x = v8->pos_x;
+            v14.stPos.y = -30000.0;
+            v14.stPos.z = v8->pos_z;
 
-            v14.field_14 = 0;
-            v14.field_18 = 50000.0;
-            v14.field_1C = 0;
-            v14.field_40 = 0;
+            v14.vect.x = 0;
+            v14.vect.y = 50000.0;
+            v14.vect.z = 0;
+            v14.flags = 0;
 
             ypaworld_arg146 v15;
             v15.vehicle_id = v8->vehicle;
@@ -995,8 +995,8 @@ int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_cou
 
             ywo->ypaworld_func136(&v14);
 
-            if ( v14.field_20 )
-                v15.pos.y = v14.field_30 + v8->pos_y;
+            if ( v14.isect )
+                v15.pos.y = v14.isectPos.y + v8->pos_y;
 
             NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>( ywo->ypaworld_func146(&v15) );
 
@@ -1157,20 +1157,20 @@ void yw_InitSquads(_NC_STACK_ypaworld *yw, int squad_cnt, squadProto *squads)
                     arg133.field_14 = (squad->useable == 0) + 2;
 
                     ypaworld_arg136 arg136;
-                    arg136.pos_x = squad->pos_x;
-                    arg136.pos_y = -50000.0;
-                    arg136.pos_z = squad->pos_z;
-                    arg136.field_14 = 0;
-                    arg136.field_1C = 0;
-                    arg136.field_40 = 0;
-                    arg136.field_18 = 100000.0;
+                    arg136.stPos.x = squad->pos_x;
+                    arg136.stPos.y = -50000.0;
+                    arg136.stPos.z = squad->pos_z;
+                    arg136.vect.x = 0;
+                    arg136.vect.z = 0;
+                    arg136.flags = 0;
+                    arg136.vect.y = 100000.0;
                     yw->self_full->ypaworld_func136(&arg136);
 
-                    if ( arg136.field_20 )
+                    if ( arg136.isect )
                     {
-                        arg133.pos.x = arg136.field_2C;
-                        arg133.pos.z = arg136.field_34;
-                        arg133.pos.y = arg136.field_30 + -50.0;
+                        arg133.pos.x = arg136.isectPos.x;
+                        arg133.pos.z = arg136.isectPos.z;
+                        arg133.pos.y = arg136.isectPos.y + -50.0;
                     }
                     else
                     {
@@ -1248,18 +1248,18 @@ void yw_InitBuddies(_NC_STACK_ypaworld *yw)
                 bact_add.pos.z = yw->field_1b80->position.z + cos(squad_sn * 1.745) * 500.0;
 
                 ypaworld_arg136 arg136;
-                arg136.pos_x = bact_add.pos.x + 0.5;
-                arg136.pos_y = -50000.0;
-                arg136.pos_z = bact_add.pos.z + 0.75;
-                arg136.field_14 = 0;
-                arg136.field_18 = 100000.0;
-                arg136.field_1C = 0;
-                arg136.field_40 = 0;
+                arg136.stPos.x = bact_add.pos.x + 0.5;
+                arg136.stPos.y = -50000.0;
+                arg136.stPos.z = bact_add.pos.z + 0.75;
+                arg136.vect.x = 0;
+                arg136.vect.y = 100000.0;
+                arg136.vect.z = 0;
+                arg136.flags = 0;
 
                 yw->self_full->ypaworld_func136(&arg136);
 
-                if ( arg136.field_20 )
-                    bact_add.pos.y = arg136.field_30 + -100.0;
+                if ( arg136.isect )
+                    bact_add.pos.y = arg136.isectPos.y + -100.0;
 
                 NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
 
@@ -1930,25 +1930,25 @@ void sub_44D8B8(ypaworld_arg136 *arg, struct_44dbf8 *loc)
     {
         UAskeleton::Polygon *triangle = &loc->sklt->polygons[i];
 
-        float v11 = triangle->B * arg->field_18 + triangle->A * arg->field_14 + triangle->C * arg->field_1C;
+        float v11 = triangle->B * arg->vect.y + triangle->A * arg->vect.x + triangle->C * arg->vect.z;
         if ( v11 > 0.0 )
         {
-            float v19 = -(triangle->B * arg->pos_y + triangle->A * arg->pos_x + triangle->C * arg->pos_z + triangle->D) / v11;
-            if ( v19 > 0.0 && v19 <= 1.0 && v19 < arg->field_24 )
+            float v19 = -(triangle->B * arg->stPos.y + triangle->A * arg->stPos.x + triangle->C * arg->stPos.z + triangle->D) / v11;
+            if ( v19 > 0.0 && v19 <= 1.0 && v19 < arg->tVal )
             {
-                float pz = arg->field_1C * v19 + arg->pos_z;
-                float py = arg->field_18 * v19 + arg->pos_y;
-                float px = arg->field_14 * v19 + arg->pos_x;
+                float pz = arg->vect.z * v19 + arg->stPos.z;
+                float py = arg->vect.y * v19 + arg->stPos.y;
+                float px = arg->vect.x * v19 + arg->stPos.x;
 
                 if ( sub_44D36C(px, py, pz, i, loc->sklt) )
                 {
-                    arg->field_20 = 1;
-                    arg->field_24 = v19;
-                    arg->field_2C = loc->pos_x + px;
-                    arg->field_30 = loc->pos_y + py;
-                    arg->field_34 = loc->pos_z + pz;
-                    arg->field_38 = i;
-                    arg->field_3C = loc->sklt;
+                    arg->isect = 1;
+                    arg->tVal = v19;
+                    arg->isectPos.x = loc->pos_x + px;
+                    arg->isectPos.y = loc->pos_y + py;
+                    arg->isectPos.z = loc->pos_z + pz;
+                    arg->polyID = i;
+                    arg->skel = loc->sklt;
                 }
             }
         }
@@ -2406,19 +2406,19 @@ void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float p
                     else
                     {
                         ypaworld_arg136 v22;
-                        v22.field_14 = 0;
-                        v22.field_18 = 50000.0;
-                        v22.field_1C = 0;
-                        v22.pos_x = xx;
-                        v22.pos_y = -25000.0;
-                        v22.pos_z = yy;
-                        v22.field_40 = 0;
+                        v22.vect.x = 0;
+                        v22.vect.y = 50000.0;
+                        v22.vect.z = 0;
+                        v22.stPos.x = xx;
+                        v22.stPos.y = -25000.0;
+                        v22.stPos.z = yy;
+                        v22.flags = 0;
 
                         yw->self_full->ypaworld_func136(&v22);
 
-                        if ( v22.field_20 )
+                        if ( v22.isect )
                         {
-                            v28 = v22.field_30;
+                            v28 = v22.isectPos.y;
                         }
                     }
 

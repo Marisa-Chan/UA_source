@@ -1860,15 +1860,15 @@ void NC_STACK_ypaworld::ypaworld_func136(ypaworld_arg136 *arg)
 {
     _NC_STACK_ypaworld *yw = &stack__ypaworld;
 
-    float pos_x = arg->pos_x;
-    float pos_y = arg->pos_y;
-    float pos_z = arg->pos_z;
+    float pos_x = arg->stPos.x;
+    float pos_y = arg->stPos.y;
+    float pos_z = arg->stPos.z;
 
-    arg->field_24 = 2.0;
-    arg->field_20 = 0;
+    arg->tVal = 2.0;
+    arg->isect = 0;
 
-    float pos_xx = pos_x + arg->field_14;
-    float pos_zz = pos_z + arg->field_1C;
+    float pos_xx = pos_x + arg->vect.x;
+    float pos_zz = pos_z + arg->vect.z;
 
     int dx = (pos_x + 150) / 300;
     int dxx = (pos_xx + 150) / 300;
@@ -1885,15 +1885,15 @@ void NC_STACK_ypaworld::ypaworld_func136(ypaworld_arg136 *arg)
     {
         elems = 1;
         a6[0].field_1C = 0;
-        sub_44DBF8(yw, dx, dz, dx, dz, &a6[0], arg->field_40);
+        sub_44DBF8(yw, dx, dz, dx, dz, &a6[0], arg->flags);
     }
     else if ( dx == dxx || dz == dzz )
     {
         elems = 2;
         a6[0].field_1C = 0;
         a6[1].field_1C = 0;
-        sub_44DBF8(yw, dx, dz, dx,  dz,  &a6[0], arg->field_40);
-        sub_44DBF8(yw, dx, dz, dxx, dzz, &a6[1], arg->field_40);
+        sub_44DBF8(yw, dx, dz, dx,  dz,  &a6[0], arg->flags);
+        sub_44DBF8(yw, dx, dz, dxx, dzz, &a6[1], arg->flags);
     }
     else
     {
@@ -1902,10 +1902,10 @@ void NC_STACK_ypaworld::ypaworld_func136(ypaworld_arg136 *arg)
         a6[1].field_1C = 0;
         a6[2].field_1C = 0;
         a6[3].field_1C = 0;
-        sub_44DBF8(yw, dx, dz, dx,  dz,  &a6[0], arg->field_40);
-        sub_44DBF8(yw, dx, dz, dx,  dzz, &a6[1], arg->field_40);
-        sub_44DBF8(yw, dx, dz, dxx, dz,  &a6[2], arg->field_40);
-        sub_44DBF8(yw, dx, dz, dxx, dzz, &a6[3], arg->field_40);
+        sub_44DBF8(yw, dx, dz, dx,  dz,  &a6[0], arg->flags);
+        sub_44DBF8(yw, dx, dz, dx,  dzz, &a6[1], arg->flags);
+        sub_44DBF8(yw, dx, dz, dxx, dz,  &a6[2], arg->flags);
+        sub_44DBF8(yw, dx, dz, dxx, dzz, &a6[3], arg->flags);
     }
 
     for (int i = 0; i < elems; i++)
@@ -1915,13 +1915,13 @@ void NC_STACK_ypaworld::ypaworld_func136(ypaworld_arg136 *arg)
             if ( a6[i].field_1C != 1)
                 sub_44E07C(yw, &a6[i]);
 
-            arg->pos_x = pos_x - a6[i].pos_x;
-            arg->pos_y = pos_y - a6[i].pos_y;
-            arg->pos_z = pos_z - a6[i].pos_z;
+            arg->stPos.x = pos_x - a6[i].pos_x;
+            arg->stPos.y = pos_y - a6[i].pos_y;
+            arg->stPos.z = pos_z - a6[i].pos_z;
 
             sub_44D8B8(arg, &a6[i]);
 
-            if ( arg->field_20 )
+            if ( arg->isect )
                 break;
         }
     }
@@ -2565,18 +2565,18 @@ void NC_STACK_ypaworld::ypaworld_func149(ypaworld_arg136 *arg)
 {
     _NC_STACK_ypaworld *yw = &stack__ypaworld;
 
-    arg->field_24 = 2.0;
-    arg->field_20 = 0;
+    arg->tVal = 2.0;
+    arg->isect = 0;
 
-    float arg_posx = arg->pos_x;
-    float arg_posy = arg->pos_y;
-    float arg_posz = arg->pos_z;
+    float arg_posx = arg->stPos.x;
+    float arg_posy = arg->stPos.y;
+    float arg_posz = arg->stPos.z;
 
-    int v33 = (arg->pos_x + 150.0) / 75.0 * 16384.0;
-    int v34 = (arg->pos_z - 150.0) / 75.0 * 16384.0;
+    int v33 = (arg->stPos.x + 150.0) / 75.0 * 16384.0;
+    int v34 = (arg->stPos.z - 150.0) / 75.0 * 16384.0;
 
-    float v36 = fabs(arg->field_14);
-    float v39 = fabs(arg->field_1C);
+    float v36 = fabs(arg->vect.x);
+    float v39 = fabs(arg->vect.z);
 
     int v31;
     int v32;
@@ -2588,10 +2588,10 @@ void NC_STACK_ypaworld::ypaworld_func149(ypaworld_arg136 *arg)
         {
             v32 = (v36 / v39 * 16384.0);
 
-            if ( arg->field_14 < 0.0 )
+            if ( arg->vect.x < 0.0 )
                 v32 = -v32;
 
-            if ( arg->field_1C >= 0.0 )
+            if ( arg->vect.z >= 0.0 )
                 v31 = 16384;
             else
                 v31 = -16384;
@@ -2600,14 +2600,14 @@ void NC_STACK_ypaworld::ypaworld_func149(ypaworld_arg136 *arg)
         }
         else
         {
-            if ( arg->field_14 >= 0.0 )
+            if ( arg->vect.x >= 0.0 )
                 v32 = 16384;
             else
                 v32 = -16384;
 
             v31 = (v39 / v36 * 16384.0);
 
-            if ( arg->field_1C < 0.0 )
+            if ( arg->vect.z < 0.0 )
                 v31 = -v31;
 
             v37 = v36;
@@ -2633,20 +2633,20 @@ void NC_STACK_ypaworld::ypaworld_func149(ypaworld_arg136 *arg)
         v10 = v33 >> 16;
         v11 = -v34 >> 16;
 
-        sub_44DBF8(yw, a2a, a3a, v10, v11, &a6, arg->field_40);
+        sub_44DBF8(yw, a2a, a3a, v10, v11, &a6, arg->flags);
 
         if ( a6.field_1C )
         {
             if ( a6.field_1C != 1 )
                 sub_44E07C(yw, &a6);
 
-            arg->pos_x = arg_posx - a6.pos_x;
-            arg->pos_y = arg_posy - a6.pos_y;
-            arg->pos_z = arg_posz - a6.pos_z;
+            arg->stPos.x = arg_posx - a6.pos_x;
+            arg->stPos.y = arg_posy - a6.pos_y;
+            arg->stPos.z = arg_posz - a6.pos_z;
 
             sub_44D8B8(arg, &a6);
 
-            if ( arg->field_20 )
+            if ( arg->isect )
                 return;
         }
 
@@ -2661,23 +2661,23 @@ void NC_STACK_ypaworld::ypaworld_func149(ypaworld_arg136 *arg)
     }
     while( v37 > 0.0 );
 
-    int v24 = ((int)((arg->field_14 + arg->pos_x + 150.0) / 75.0 * 16384.0)) >> 16;
-    int v27 = ((int)((arg->field_1C + arg->pos_z - 150.0) / 75.0 * 16384.0)) >> 16;
+    int v24 = ((int)((arg->vect.x + arg->stPos.x + 150.0) / 75.0 * 16384.0)) >> 16;
+    int v27 = ((int)((arg->vect.z + arg->stPos.z - 150.0) / 75.0 * 16384.0)) >> 16;
 
     if ( v24 != v10 || -v27 != v11 )
     {
         a6.field_1C = 0;
 
-        sub_44DBF8(yw, a2a, a3a, v24, -v27, &a6, arg->field_40);
+        sub_44DBF8(yw, a2a, a3a, v24, -v27, &a6, arg->flags);
 
         if ( a6.field_1C )
         {
             if ( a6.field_1C != 1 )
                 sub_44E07C(yw, &a6);
 
-            arg->pos_x = arg_posx - a6.pos_x;
-            arg->pos_y = arg_posy - a6.pos_y;
-            arg->pos_z = arg_posz - a6.pos_z;
+            arg->stPos.x = arg_posx - a6.pos_x;
+            arg->stPos.y = arg_posy - a6.pos_y;
+            arg->stPos.z = arg_posz - a6.pos_z;
 
             sub_44D8B8(arg, &a6);
         }

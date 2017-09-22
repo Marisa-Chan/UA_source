@@ -11398,17 +11398,17 @@ int yw_MouseFindCreationPoint(_NC_STACK_ypaworld *yw, winp_131arg *winp)
                 float v39 = v55 * corrected.m02 + v56 * corrected.m12 + v57 * corrected.m22;
 
                 ypaworld_arg136 arg149;
-                arg149.pos_x = yw->field_1334.x;
-                arg149.pos_y = yw->field_1334.y;
-                arg149.pos_z = yw->field_1334.z;
-                arg149.field_14 = v37;
-                arg149.field_18 = v38;
-                arg149.field_1C = v39;
-                arg149.field_40 = 0;
+                arg149.stPos.x = yw->field_1334.x;
+                arg149.stPos.y = yw->field_1334.y;
+                arg149.stPos.z = yw->field_1334.z;
+                arg149.vect.x = v37;
+                arg149.vect.y = v38;
+                arg149.vect.z = v39;
+                arg149.flags = 0;
 
                 yw->self_full->ypaworld_func149(&arg149);
 
-                if ( !arg149.field_20 )
+                if ( !arg149.isect )
                 {
                     float v48 = sqrt(POW2(v37) + POW2(v38) + POW2(v39));
 
@@ -11549,28 +11549,28 @@ int ypaworld_func64__sub21__sub3(_NC_STACK_ypaworld *yw)
     float v19 = -100000.0;
 
     ypaworld_arg136 arg136;
-    arg136.field_14 = 0;
-    arg136.field_18 = 50000.0;
-    arg136.field_1C = 0;
-    arg136.field_40 = 0;
+    arg136.vect.x = 0;
+    arg136.vect.y = 50000.0;
+    arg136.vect.z = 0;
+    arg136.flags = 0;
 
     for (int j = -3; j <= 3; j++)
     {
         for (int i = -3; i <= 3; i++)
         {
-            arg136.pos_y = -25000.0;
-            arg136.pos_x = yw->field_1a6c.x - j * 57.14285714285715;
-            arg136.pos_z = yw->field_1a6c.z - i * 57.14285714285715;
+            arg136.stPos.y = -25000.0;
+            arg136.stPos.x = yw->field_1a6c.x - j * 57.14285714285715;
+            arg136.stPos.z = yw->field_1a6c.z - i * 57.14285714285715;
 
             yw->self_full->ypaworld_func136(&arg136);
 
-            if ( arg136.field_20 )
+            if ( arg136.isect )
             {
-                if ( arg136.field_30 < v20 )
-                    v20 = arg136.field_30;
+                if ( arg136.isectPos.y < v20 )
+                    v20 = arg136.isectPos.y;
 
-                if ( arg136.field_30 > v19 )
-                    v19 = arg136.field_30;
+                if ( arg136.isectPos.y > v19 )
+                    v19 = arg136.isectPos.y;
             }
         }
     }
@@ -11840,13 +11840,13 @@ void yw_3D_MouseSelect(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, winp_131a
     arg150.unit = yw->current_bact;
 
     ypaworld_arg136 arg149;
-    arg149.pos_x = arg150.pos.x;
-    arg149.pos_y = arg150.pos.y;
-    arg149.pos_z = arg150.pos.z;
-    arg149.field_14 = arg150.field_18.x;
-    arg149.field_18 = arg150.field_18.y;
-    arg149.field_1C = arg150.field_18.z;
-    arg149.field_40 = 0;
+    arg149.stPos.x = arg150.pos.x;
+    arg149.stPos.y = arg150.pos.y;
+    arg149.stPos.z = arg150.pos.z;
+    arg149.vect.x = arg150.field_18.x;
+    arg149.vect.y = arg150.field_18.y;
+    arg149.vect.z = arg150.field_18.z;
+    arg149.flags = 0;
 
     ywo->ypaworld_func149(&arg149);
 
@@ -11854,13 +11854,13 @@ void yw_3D_MouseSelect(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, winp_131a
 
     float v27, v28;
 
-    if ( arg149.field_20 )
+    if ( arg149.isect )
     {
         yw->field_1a58 |= 0x10;
 
-        float v5 = arg149.field_2C - yw->field_1334.x;
-        float v6 = arg149.field_30 - yw->field_1334.y;
-        float v8 = arg149.field_34 - yw->field_1334.z;
+        float v5 = arg149.isectPos.x - yw->field_1334.x;
+        float v6 = arg149.isectPos.y - yw->field_1334.y;
+        float v8 = arg149.isectPos.z - yw->field_1334.z;
 
         yw->field_1a9c = sqrt(POW2(v5) + POW2(v6) + POW2(v8));
 
@@ -11892,15 +11892,15 @@ void yw_3D_MouseSelect(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, winp_131a
 
     if ( yw->field_1a58 & 0x10 )
     {
-        int v12 = -arg149.field_34 / 1200.0;
-        int v25 = arg149.field_2C / 1200.0;
+        int v12 = -arg149.isectPos.z / 1200.0;
+        int v25 = arg149.isectPos.x / 1200.0;
 
         yw->field_1a60 = &yw->cells[v12 * yw->sectors_maxX2 + v25];
         yw->field_1a64 = v25;
         yw->field_1A66 = v12;
-        yw->field_1a6c.x = arg149.field_2C;
-        yw->field_1a6c.y = arg149.field_30;
-        yw->field_1a6c.z = arg149.field_34;
+        yw->field_1a6c.x = arg149.isectPos.x;
+        yw->field_1a6c.y = arg149.isectPos.y;
+        yw->field_1a6c.z = arg149.isectPos.z;
         yw->field_1a7c.x = v25 * 1200.0 + 600.0;
         yw->field_1a7c.y = yw->field_1a60->height;
         yw->field_1a7c.z = -(v12 * 1200.0 + 600.0);

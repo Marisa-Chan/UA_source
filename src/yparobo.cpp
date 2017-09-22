@@ -1181,32 +1181,32 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
                        bact->rotation.m22 * robo->coll.roboColls[i].coll_pos.z;
 
 
-            arg136.pos_x = tmp.x;
-            arg136.pos_y = tmp.y;
-            arg136.pos_z = tmp.z;
-            arg136.field_40 = 0;
+            arg136.stPos.x = tmp.x;
+            arg136.stPos.y = tmp.y;
+            arg136.stPos.z = tmp.z;
+            arg136.flags = 0;
 
             float v82 = sqrt( (tmp.z - tz) * (tmp.z - tz) + (tmp.x - tx) * (tmp.x - tx) );
 
             if ( v82 <= 1.0 )
             {
-                arg136.field_14 = bact->fly_dir.x * 300.0;
-                arg136.field_18 = bact->fly_dir.y * 300.0;
-                arg136.field_1C = bact->fly_dir.z * 300.0;
+                arg136.vect.x = bact->fly_dir.x * 300.0;
+                arg136.vect.y = bact->fly_dir.y * 300.0;
+                arg136.vect.z = bact->fly_dir.z * 300.0;
             }
             else
             {
-                arg136.field_14 = (tx - tmp.x) * 300.0 / v82;
-                arg136.field_18 = 0;
-                arg136.field_1C = (tz - tmp.z) * 300.0 / v82;
+                arg136.vect.x = (tx - tmp.x) * 300.0 / v82;
+                arg136.vect.y = 0;
+                arg136.vect.z = (tz - tmp.z) * 300.0 / v82;
             }
 
             robo->wrld->ypaworld_func136(&arg136);
 
 
-            if ( arg136.field_20 )
+            if ( arg136.isect )
             {
-                if ( arg136.field_24 * 300.0 >= robo->coll.roboColls[i].robo_coll_radius + v82)
+                if ( arg136.tVal * 300.0 >= robo->coll.roboColls[i].robo_coll_radius + v82)
                 {
                     bact->status_flg &= ~BACT_STFLAG_LCRASH;
                     bact->status_flg |= BACT_STFLAG_UPWRD;
@@ -1215,13 +1215,9 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
                 else if ( robo->coll.roboColls[i].robo_coll_radius > 0.01 )
                 {
                     bact_arg88 arg88;
-                    arg88.pos1.x = arg136.field_3C->polygons[ arg136.field_38 ].A;
-                    arg88.pos1.y = arg136.field_3C->polygons[ arg136.field_38 ].B;
-                    arg88.pos1.z = arg136.field_3C->polygons[ arg136.field_38 ].C;
-
-                    arg88.pos2.x = 0.2;
-                    arg88.pos2.y = 2.0;
-                    arg88.pos2.z = a2;
+                    arg88.pos1.x = arg136.skel->polygons[ arg136.polyID ].A;
+                    arg88.pos1.y = arg136.skel->polygons[ arg136.polyID ].B;
+                    arg88.pos1.z = arg136.skel->polygons[ arg136.polyID ].C;
 
                     Recoil(&arg88);
 
@@ -1233,17 +1229,17 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
                     }
 
                     yw_130arg arg130;
-                    arg130.pos_x = arg136.field_2C;
-                    arg130.pos_z = arg136.field_34;
+                    arg130.pos_x = arg136.isectPos.x;
+                    arg130.pos_z = arg136.isectPos.z;
 
                     robo->wrld->ypaworld_func130(&arg130);
 
                     if ( v81 || !arg130.pcell->w_type )
                     {
                         yw_arg129 v60;
-                        v60.pos.x = arg136.field_2C;
-                        v60.pos.y = arg136.field_30;
-                        v60.pos.z = arg136.field_34;
+                        v60.pos.x = arg136.isectPos.x;
+                        v60.pos.y = arg136.isectPos.y;
+                        v60.pos.z = arg136.isectPos.z;
                         v60.unit = NULL;
                         v60.field_14 = 255;
                         v60.field_10 = v82 * 15000.0 / a2;
@@ -1397,19 +1393,19 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
     bact->status_flg &= ~BACT_STFLAG_LCRASH;
 
-    arg136.pos_x = bact->position.x;
-    arg136.pos_y = bact->position.y;
-    arg136.pos_z = bact->position.z;
-    arg136.field_14 = bact->fly_dir.x * 100.0;
-    arg136.field_18 = bact->height * 1.5;
-    arg136.field_1C = bact->fly_dir.z * 100.0;
-    arg136.field_40 = 0;
+    arg136.stPos.x = bact->position.x;
+    arg136.stPos.y = bact->position.y;
+    arg136.stPos.z = bact->position.z;
+    arg136.vect.x = bact->fly_dir.x * 100.0;
+    arg136.vect.y = bact->height * 1.5;
+    arg136.vect.z = bact->fly_dir.z * 100.0;
+    arg136.flags = 0;
 
     robo->wrld->ypaworld_func136(&arg136);
 
-    if ( arg136.field_20 )
+    if ( arg136.isect )
     {
-        if ( arg136.field_24 < 0.66 )
+        if ( arg136.tVal < 0.66 )
         {
             bact->target_dir.y = -1.0;
             bact->status_flg |= BACT_STFLAG_UPWRD;
@@ -3351,17 +3347,17 @@ void NC_STACK_yparobo::buildConquer()
         v20 = enrg;
 
     ypaworld_arg136 arg136;
-    arg136.pos_x = bact->position.x + robo->dock_pos.x;
-    arg136.pos_y = bact->position.y + robo->dock_pos.y - 100.0;
-    arg136.pos_z = bact->position.z + robo->dock_pos.z;
-    arg136.field_1C = 0;
-    arg136.field_14 = 0;
-    arg136.field_18 = 20000.0;
-    arg136.field_40 = 0;
+    arg136.stPos.x = bact->position.x + robo->dock_pos.x;
+    arg136.stPos.y = bact->position.y + robo->dock_pos.y - 100.0;
+    arg136.stPos.z = bact->position.z + robo->dock_pos.z;
+    arg136.vect.z = 0;
+    arg136.vect.x = 0;
+    arg136.vect.y = 20000.0;
+    arg136.flags = 0;
 
     robo->wrld->ypaworld_func136(&arg136);
 
-    if ( bact->pSector->height - arg136.field_30 >= 50.0 )
+    if ( bact->pSector->height - arg136.isectPos.y >= 50.0 )
     {
         setTarget_msg arg67;
         arg67.tgt_pos.x = bact->position.x + 200.0;
@@ -3460,17 +3456,17 @@ void NC_STACK_yparobo::buildDefense()
         }
 
         ypaworld_arg136 arg136;
-        arg136.pos_x = bact->position.x + robo->dock_pos.x;
-        arg136.pos_y = bact->position.y + robo->dock_pos.y - 100.0;
-        arg136.pos_z = bact->position.z + robo->dock_pos.z;
-        arg136.field_1C = 0;
-        arg136.field_14 = 0;
-        arg136.field_18 = 20000.0;
-        arg136.field_40 = 0;
+        arg136.stPos.x = bact->position.x + robo->dock_pos.x;
+        arg136.stPos.y = bact->position.y + robo->dock_pos.y - 100.0;
+        arg136.stPos.z = bact->position.z + robo->dock_pos.z;
+        arg136.vect.z = 0;
+        arg136.vect.x = 0;
+        arg136.vect.y = 20000.0;
+        arg136.flags = 0;
 
         robo->wrld->ypaworld_func136(&arg136);
 
-        if ( bact->pSector->height - arg136.field_30 >= 50.0 )
+        if ( bact->pSector->height - arg136.isectPos.y >= 50.0 )
         {
             arg132.tgt_pos.x = bact->position.x + 200.0;
             arg132.tgt_pos.z = bact->position.z + 300.0;
@@ -3557,17 +3553,17 @@ void NC_STACK_yparobo::buildRobo()
     if ( yparobo_func132(&arg132) )
     {
         ypaworld_arg136 arg136;
-        arg136.pos_x = bact->position.x + robo->dock_pos.x;
-        arg136.pos_y = bact->position.y + robo->dock_pos.y - 100.0;
-        arg136.pos_z = bact->position.z + robo->dock_pos.z;
-        arg136.field_1C = 0;
-        arg136.field_14 = 0;
-        arg136.field_18 = 20000.0;
-        arg136.field_40 = 0;
+        arg136.stPos.x = bact->position.x + robo->dock_pos.x;
+        arg136.stPos.y = bact->position.y + robo->dock_pos.y - 100.0;
+        arg136.stPos.z = bact->position.z + robo->dock_pos.z;
+        arg136.vect.z = 0;
+        arg136.vect.x = 0;
+        arg136.vect.y = 20000.0;
+        arg136.flags = 0;
 
         robo->wrld->ypaworld_func136(&arg136);
 
-        if ( bact->pSector->height - arg136.field_30 >= 50.0 )
+        if ( bact->pSector->height - arg136.isectPos.y >= 50.0 )
         {
             arg132.tgt_pos.x = bact->position.x + 200.0;
             arg132.tgt_pos.z = bact->position.z + 300.0;
@@ -3634,17 +3630,17 @@ void NC_STACK_yparobo::buildReconnoitre()
     __NC_STACK_ypabact *bact = &ypabact;
 
     ypaworld_arg136 arg136;
-    arg136.pos_x = bact->position.x + robo->dock_pos.x;
-    arg136.pos_y = bact->position.y + robo->dock_pos.y + -100.0;
-    arg136.pos_z = bact->position.z + robo->dock_pos.z;
-    arg136.field_1C = 0;
-    arg136.field_14 = 0;
-    arg136.field_18 = 20000.0;
-    arg136.field_40 = 0;
+    arg136.stPos.x = bact->position.x + robo->dock_pos.x;
+    arg136.stPos.y = bact->position.y + robo->dock_pos.y + -100.0;
+    arg136.stPos.z = bact->position.z + robo->dock_pos.z;
+    arg136.vect.z = 0;
+    arg136.vect.x = 0;
+    arg136.vect.y = 20000.0;
+    arg136.flags = 0;
 
     robo->wrld->ypaworld_func136(&arg136);
 
-    if ( bact->pSector->height - arg136.field_30 >= 50.0 )
+    if ( bact->pSector->height - arg136.isectPos.y >= 50.0 )
     {
         setTarget_msg arg67;
         arg67.tgt_pos.x = bact->position.x + 200.0;
