@@ -5772,11 +5772,11 @@ __NC_STACK_ypabact *recorder_newObject(_NC_STACK_ypaworld *yw, trec_bct *oinf)
     return bact;
 }
 
-void recorder_set_bact_pos(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, vec3d *pos)
+void recorder_set_bact_pos(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, const vec3d &pos)
 {
     yw_130arg arg130;
-    arg130.pos_x = pos->x;
-    arg130.pos_z = pos->z;
+    arg130.pos_x = pos.x;
+    arg130.pos_z = pos.z;
 
     if ( yw->self_full->ypaworld_func130(&arg130) )
     {
@@ -5787,7 +5787,7 @@ void recorder_set_bact_pos(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, vec
 
         bact->pSector = arg130.pcell;
         bact->old_pos = bact->position;
-        bact->position = *pos;
+        bact->position = pos;
         bact->sectX = arg130.sec_x;
         bact->sectY = arg130.sec_z;
     }
@@ -5796,98 +5796,47 @@ void recorder_set_bact_pos(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, vec
 void recorder_updateObject(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, trec_bct *oinf, uint16_t *ssnd, float a5, float a6)
 {
     vec3d bct_pos;
-    bct_pos.x = (oinf->pos.x - bact->position.x) * a5 + bact->position.x;
-    bct_pos.y = (oinf->pos.y - bact->position.y) * a5 + bact->position.y;
-    bct_pos.z = (oinf->pos.z - bact->position.z) * a5 + bact->position.z;
+    bct_pos = (oinf->pos - bact->position) * a5 + bact->position;
 
-    recorder_set_bact_pos(yw, bact, &bct_pos);
+    recorder_set_bact_pos(yw, bact, bct_pos);
 
-    bact->fly_dir.x = bact->position.x - bact->old_pos.x;
-    bact->fly_dir.y = bact->position.y - bact->old_pos.y;
-    bact->fly_dir.z = bact->position.z - bact->old_pos.z;
+    bact->fly_dir = bact->position - bact->old_pos;
 
-    float v82 = sqrt( POW2(bact->fly_dir.x) + POW2(bact->fly_dir.y) + POW2(bact->fly_dir.z) );
-    if ( v82 > 0.0 )
+    float ln = bact->fly_dir.length();
+    if ( ln > 0.0 )
     {
-        bact->fly_dir.x /= v82;
-        bact->fly_dir.y /= v82;
-        bact->fly_dir.z /= v82;
+        bact->fly_dir /= ln;
 
         if ( a6 <= 0.0 )
             bact->fly_dir_length = 0;
         else
-            bact->fly_dir_length = (v82 / a6) / 6.0;
+            bact->fly_dir_length = (ln / a6) / 6.0;
     }
     else
     {
-        bact->fly_dir.x = 1.0;
-        bact->fly_dir.y = 0;
-        bact->fly_dir.z = 0;
+        bact->fly_dir = vec3d(1.0, 0.0, 0.0);
 
         bact->fly_dir_length = 0;
     }
 
     mat3x3 tmp = mat3x3::Euler( vec3d(oinf->rot_x, oinf->rot_y, oinf->rot_z) / 127.0 * C_2PI );
 
-    mat3x3 tmp2;
+    vec3d axisX = (tmp.AxisX() - bact->rotation.AxisX()) * a5 + bact->rotation.AxisX();
 
-    tmp2.m00 = (tmp.m00 - bact->rotation.m00) * a5 + bact->rotation.m00;
-    tmp2.m01 = (tmp.m01 - bact->rotation.m01) * a5 + bact->rotation.m01;
-    tmp2.m02 = (tmp.m02 - bact->rotation.m02) * a5 + bact->rotation.m02;
+    if ( axisX.normalise() == 0.0 )
+        axisX = vec3d(1.0, 0.0, 0.0);
 
-    float v80 = sqrt( POW2(tmp2.m00) + POW2(tmp2.m01) + POW2(tmp2.m02) );
-    if ( v80 > 0.0 )
-    {
-        tmp2.m00 /= v80;
-        tmp2.m01 /= v80;
-        tmp2.m02 /= v80;
-    }
-    else
-    {
-        tmp2.m00 = 1.0;
-        tmp2.m01 = 0.0;
-        tmp2.m02 = 0.0;
-    }
+    vec3d axisY = (tmp.AxisY() - bact->rotation.AxisY()) * a5 + bact->rotation.AxisY();
 
+    if ( axisY.normalise() == 0.0 )
+        axisY = vec3d(0.0, 1.0, 0.0);
 
-    tmp2.m10 = (tmp.m10 - bact->rotation.m10) * a5 + bact->rotation.m10;
-    tmp2.m11 = (tmp.m11 - bact->rotation.m11) * a5 + bact->rotation.m11;
-    tmp2.m12 = (tmp.m12 - bact->rotation.m12) * a5 + bact->rotation.m12;
+    vec3d axisZ = (tmp.AxisZ() - bact->rotation.AxisZ()) * a5 + bact->rotation.AxisZ();
 
-    v80 = sqrt( POW2(tmp2.m10) + POW2(tmp2.m11) + POW2(tmp2.m12) );
-    if ( v80 > 0.0 )
-    {
-        tmp2.m10 /= v80;
-        tmp2.m11 /= v80;
-        tmp2.m12 /= v80;
-    }
-    else
-    {
-        tmp2.m10 = 0.0;
-        tmp2.m11 = 1.0;
-        tmp2.m12 = 0.0;
-    }
+    if ( axisZ.normalise() == 0.0 )
+        axisZ = vec3d(0.0, 0.0, 1.0);
 
-
-    tmp2.m20 = (tmp.m20 - bact->rotation.m20) * a5 + bact->rotation.m20;
-    tmp2.m21 = (tmp.m21 - bact->rotation.m21) * a5 + bact->rotation.m21;
-    tmp2.m22 = (tmp.m22 - bact->rotation.m22) * a5 + bact->rotation.m22;
-
-    v80 = sqrt( POW2(tmp2.m20) + POW2(tmp2.m21) + POW2(tmp2.m22) );
-    if ( v80 > 0.0 )
-    {
-        tmp2.m20 /= v80;
-        tmp2.m21 /= v80;
-        tmp2.m22 /= v80;
-    }
-    else
-    {
-        tmp2.m20 = 0.0;
-        tmp2.m21 = 0.0;
-        tmp2.m22 = 1.0;
-    }
-
-    bact->rotation = tmp2;
+    bact->rotation = mat3x3::Basis(axisX, axisY, axisZ);
 
     TForm3D *v43 = NULL;
     NC_STACK_base *v44 = NULL;
@@ -6220,7 +6169,7 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
 
     if ( rcrd->field_80 == 16 )
     {
-        recorder_set_bact_pos(yw, bact, &rcrd->field_44);
+        recorder_set_bact_pos(yw, bact, rcrd->field_44);
         bact->rotation = rcrd->rotation_matrix;
     }
     else if ( rcrd->field_80 == 18 )
@@ -6242,12 +6191,9 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
 
         if ( v12 )
         {
-            vec3d v35;
-            v35.x = v12->rotation.m10 * rcrd->field_44.y + v12->rotation.m00 * rcrd->field_44.x + v12->rotation.m20 * rcrd->field_44.z + v12->position.x;
-            v35.y = v12->rotation.m11 * rcrd->field_44.y + v12->rotation.m01 * rcrd->field_44.x + v12->rotation.m21 * rcrd->field_44.z + v12->position.y;
-            v35.z = v12->rotation.m12 * rcrd->field_44.y + v12->rotation.m02 * rcrd->field_44.x + v12->rotation.m22 * rcrd->field_44.z + v12->position.z;
+            vec3d v35 = v12->position + v12->rotation.Transpose().Transform(rcrd->field_44);
+            recorder_set_bact_pos(yw, bact, v35);
 
-            recorder_set_bact_pos(yw, bact, &v35);
             bact->rotation = rcrd->rotation_matrix * v12->rotation;
         }
     }
@@ -6269,11 +6215,8 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
 
         if ( v18 )
         {
-            vec3d a3a;
-            a3a.x = v18->rotation.m10 * rcrd->field_44.y + v18->rotation.m00 * rcrd->field_44.x + v18->rotation.m20 * rcrd->field_44.z + v18->position.x;
-            a3a.y = v18->rotation.m11 * rcrd->field_44.y + v18->rotation.m01 * rcrd->field_44.x + v18->rotation.m21 * rcrd->field_44.z + v18->position.y;
-            a3a.z = v18->rotation.m12 * rcrd->field_44.y + v18->rotation.m02 * rcrd->field_44.x + v18->rotation.m22 * rcrd->field_44.z + v18->position.z;
-            recorder_set_bact_pos(yw, bact, &a3a);
+            vec3d a3a = v18->position + v18->rotation.Transpose().Transform(rcrd->field_44);
+            recorder_set_bact_pos(yw, bact, a3a);
 
             bact->rotation = rcrd->rotation_matrix * v18->rotation;
         }
