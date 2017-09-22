@@ -577,9 +577,6 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
         {
             float v19 = (float)v18;
 
-            arg88.pos2.x = 0.7;
-            arg88.pos2.y = 2.0;
-            arg88.pos2.z = a2a;
             arg88.pos1.x /= v19;
             arg88.pos1.y /= v19;
             arg88.pos1.z /= v19;
@@ -680,9 +677,6 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
             arg88.pos1.x = arg136_3.skel->polygons[arg136_3.polyID].A;
             arg88.pos1.y = arg136_3.skel->polygons[arg136_3.polyID].B;
             arg88.pos1.z = arg136_3.skel->polygons[arg136_3.polyID].C;
-            arg88.pos2.x = 0.7;
-            arg88.pos2.y = 2.0;
-            arg88.pos2.z = a2a;
 
             Recoil(&arg88);
         }
@@ -1195,9 +1189,6 @@ void NC_STACK_ypaflyer::User_layer(update_msg *arg)
 
                     bact_arg88 arg88;
                     arg88.pos1 = v52;
-                    arg88.pos2.x = 0.7;
-                    arg88.pos2.y = 2.0;
-                    arg88.pos2.z = a2;
 
                     Recoil(&arg88);
 
@@ -1225,9 +1216,6 @@ void NC_STACK_ypaflyer::User_layer(update_msg *arg)
                         arg88.pos1.x = arg136.skel->polygons[ arg136.polyID ].A;
                         arg88.pos1.y = arg136.skel->polygons[ arg136.polyID ].B;
                         arg88.pos1.z = arg136.skel->polygons[ arg136.polyID ].C;
-                        arg88.pos2.x = 0.7;
-                        arg88.pos2.y = 2.0;
-                        arg88.pos2.z = a2;
 
                         Recoil(&arg88);
 

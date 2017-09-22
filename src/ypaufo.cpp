@@ -267,9 +267,6 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
                         arg88.pos1.z = arg136.skel->polygons[arg136.polyID].C;
                     }
 
-                    arg88.pos2.y = 2.0;
-                    arg88.pos2.z = v110;
-
                     Recoil(&arg88);
                 }
 
@@ -895,10 +892,6 @@ void NC_STACK_ypaufo::User_layer(update_msg *arg)
 
                     bact->thraction = 0;
 
-                    arg88.pos2.z = v88;
-                    arg88.pos2.x = 0.7;
-                    arg88.pos2.y = 2.0;
-
                     Recoil(&arg88);
 
                     v49 = 1;
@@ -929,9 +922,6 @@ void NC_STACK_ypaufo::User_layer(update_msg *arg)
                         arg88.pos1.y = arg136.skel->polygons[arg136.polyID].B;
                         arg88.pos1.z = arg136.skel->polygons[arg136.polyID].C;
 
-                        arg88.pos2.x = 0.7;
-                        arg88.pos2.z = v88;
-                        arg88.pos2.y = 2.0;
 
                         Recoil(&arg88);
 

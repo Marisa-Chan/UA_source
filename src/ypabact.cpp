@@ -1789,9 +1789,6 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
         {
             float v29 = v18;
 
-            arg88.pos2.y = 2.0;
-            arg88.pos2.x = 0.7;
-            arg88.pos2.z = v75;
             arg88.pos1 /= v29;
 
             Recoil(&arg88);
@@ -2363,9 +2360,6 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
                     bact_arg88 arg88;
 
                     arg88.pos1 = v52;
-                    arg88.pos2.y = 2.0;
-                    arg88.pos2.x = 0.7;
-                    arg88.pos2.z = v106;
 
                     Recoil(&arg88);
 
@@ -2385,9 +2379,6 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
                     {
                         bact_arg88 arg88;
                         arg88.pos1 = arg136.skel->polygons[arg136.polyID].Normal();
-                        arg88.pos2.x = 0.7;
-                        arg88.pos2.y = 2.0;
-                        arg88.pos2.z = v106;
 
                         Recoil(&arg88);
 
@@ -4437,9 +4428,6 @@ size_t NC_STACK_ypabact::CrashOrLand(bact_arg86 *arg)
                             }
                             else
                             {
-                                arg88.pos2.y = 0.7;
-                                arg88.pos2.x = 0.7;
-                                arg88.pos2.z = v94;
 
                                 Recoil(&arg88);
 
@@ -4456,9 +4444,6 @@ size_t NC_STACK_ypabact::CrashOrLand(bact_arg86 *arg)
                         }
                         else if ( v104 < 0.6 )
                         {
-                            arg88.pos2.y = 2.0;
-                            arg88.pos2.x = 0.7;
-                            arg88.pos2.z = v94;
 
                             Recoil(&arg88);
 
@@ -4522,9 +4507,6 @@ size_t NC_STACK_ypabact::CrashOrLand(bact_arg86 *arg)
 
                             if ( arg136.skel->polygons[arg136.polyID].B < 0.6 )
                             {
-                                arg88.pos2.y = 0.7;
-                                arg88.pos2.x = 0.7;
-                                arg88.pos2.z = v94;
 
                                 Recoil(&arg88);
 
@@ -4553,9 +4535,6 @@ size_t NC_STACK_ypabact::CrashOrLand(bact_arg86 *arg)
                         }
                         else if ( arg136.skel->polygons[arg136.polyID].B < 0.6 )
                         {
-                            arg88.pos2.y = 2.0;
-                            arg88.pos2.x = 0.7;
-                            arg88.pos2.z = v94;
 
                             Recoil(&arg88);
 
@@ -4815,14 +4794,6 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
 
     if ( acos(v61) > 1.5708 )
         return 0;
-
-    v33.pos2.y = 2.0;
-    v33.pos2.z = arg / 1000.0;
-
-    if ( v55 )
-        v33.pos2.x = 1.2;
-    else
-        v33.pos2.x = 0.8;
 
     if ( !(bact->status_flg & BACT_STFLAG_BCRASH) )
     {

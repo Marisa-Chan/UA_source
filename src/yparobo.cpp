@@ -1364,9 +1364,6 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
                 bact->position = bact->old_pos;
 
-                arg88_2.pos2.z = a2;
-                arg88_2.pos2.y = 2.0;
-                arg88_2.pos2.x = 0.4;
 
                 Recoil(&arg88_2);
 

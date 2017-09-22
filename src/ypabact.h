@@ -412,7 +412,6 @@ struct bact_arg84
 struct bact_arg88
 {
     vec3d pos1;
-    vec3d pos2;
 };
 
 struct bact_arg94
