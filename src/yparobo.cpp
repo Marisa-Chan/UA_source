@@ -786,9 +786,9 @@ int sub_4A5A08(__NC_STACK_ypabact *bact, float a2, float a3)
     {
         setTarget_msg arg67;
         arg67.tgt_pos.x = a2;
+        arg67.tgt_pos.z = a3;
         arg67.tgt_type = BACT_TGT_TYPE_CELL;
         arg67.priority = 0;
-        arg67.tgt_pos.z = a3;
         bact->self->SetTarget(&arg67);
     }
     return 1;
@@ -1426,9 +1426,7 @@ void NC_STACK_yparobo::wallow(update_msg *arg)
         if (gun->gun_obj)
         {
             bact_arg80 v11;
-            v11.pos.x = bact->position.x + bact->rotation.m00 * gun->pos.x + bact->rotation.m10 * gun->pos.y + bact->rotation.m20 * gun->pos.z;
-            v11.pos.y = bact->position.y + bact->rotation.m01 * gun->pos.x + bact->rotation.m11 * gun->pos.y + bact->rotation.m21 * gun->pos.z;
-            v11.pos.z = bact->position.z + bact->rotation.m02 * gun->pos.x + bact->rotation.m12 * gun->pos.y + bact->rotation.m22 * gun->pos.z;
+            v11.pos = bact->position + bact->rotation.Transpose().Transform(gun->pos);
             v11.field_C = 4;
 
             gun->gun_obj->SetPosition(&v11);
@@ -1442,22 +1440,7 @@ void yparobo_func70__sub2__sub0(__NC_STACK_yparobo *robo)
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
     for (int i = 0; i < robo->coll.robo_coll_num; i++)
-    {
-        robo->coll.roboColls[i].field_10.x = bact->position.x
-                                             + bact->rotation.m00 * robo->coll.roboColls[i].coll_pos.x
-                                             + bact->rotation.m01 * robo->coll.roboColls[i].coll_pos.y
-                                             + bact->rotation.m02 * robo->coll.roboColls[i].coll_pos.z;
-
-        robo->coll.roboColls[i].field_10.y = bact->position.y
-                                             + bact->rotation.m10 * robo->coll.roboColls[i].coll_pos.x
-                                             + bact->rotation.m11 * robo->coll.roboColls[i].coll_pos.y
-                                             + bact->rotation.m12 * robo->coll.roboColls[i].coll_pos.z;
-
-        robo->coll.roboColls[i].field_10.z = bact->position.z
-                                             + bact->rotation.m20 * robo->coll.roboColls[i].coll_pos.x
-                                             + bact->rotation.m21 * robo->coll.roboColls[i].coll_pos.y
-                                             + bact->rotation.m22 * robo->coll.roboColls[i].coll_pos.z;
-    }
+        robo->coll.roboColls[i].field_10 = bact->position + bact->rotation.Transform( robo->coll.roboColls[i].coll_pos );
 }
 
 int yparobo_func70__sub2__sub1(__NC_STACK_yparobo *robo)
@@ -7247,20 +7230,8 @@ void NC_STACK_yparobo::setROBO_epRobo(int ep)
 
 void NC_STACK_yparobo::setROBO_viewAngle(int angl)
 {
-    __NC_STACK_ypabact *bact = &ypabact;
-
-    bact->viewer_rotation.m00 = 1.0;
-    bact->viewer_rotation.m01 = 0;
-    bact->viewer_rotation.m02 = 0;
-    bact->viewer_rotation.m10 = 0;
-    bact->viewer_rotation.m11 = 1.0;
-    bact->viewer_rotation.m12 = 0;
-    bact->viewer_rotation.m20 = 0;
-    bact->viewer_rotation.m21 = 0;
-    bact->viewer_rotation.m22 = 1.0;
-
-    bact->viewer_horiz_angle = angl * C_PI_180;
-
+    ypabact.viewer_rotation = mat3x3::Ident();
+    ypabact.viewer_horiz_angle = angl * C_PI_180;
     ypabact.viewer_rotation = mat3x3::RotateY(ypabact.viewer_horiz_angle) * ypabact.viewer_rotation;
 }
 
