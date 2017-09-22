@@ -5609,7 +5609,7 @@ void NC_STACK_ypabact::Renew()
     bact->oflags |= BACT_OFLAG_LANDONWAIT;
 
     for (int i = 0; i < 16; i++)
-        bact->destroyFX[i].p1 = 0;
+        bact->destroyFX[i].clear();
 
     memset(&bact->vp_extra, 0, sizeof(extra_vproto) * 3);
 
@@ -7474,26 +7474,22 @@ void NC_STACK_ypabact::BeamingTimeUpdate(update_msg *arg)
     }
 }
 
-void StartDestFX__sub0(__NC_STACK_ypabact *main, destFX *fx)
+void StartDestFX__sub0(__NC_STACK_ypabact *main, const destFX &fx)
 {
     ypaworld_arg146 arg146;
 
     arg146.pos = main->position;
-    arg146.vehicle_id = fx->p1;
+    arg146.vehicle_id = fx.ModelID;
 
     if ( main->radius > 31.0 )    // 31.0
     {
-        float v23 = sqrt( POW2(fx->p2) + POW2(fx->p3) + POW2(fx->p4) );
+        float len = fx.pos.length();
 
-        if ( v23 > 0.1 )
+        if ( len > 0.1 )
         {
-            float v15 = fx->p2 / v23 * main->radius;
-            float v16 = fx->p3 / v23 * main->radius;
-            float v17 = fx->p4 / v23 * main->radius;
+            vec3d pos = fx.pos / len * main->radius;
 
-            arg146.pos.x += v15 * main->rotation.m00 + v16 * main->rotation.m01 + v17 * main->rotation.m02;
-            arg146.pos.y += v15 * main->rotation.m10 + v16 * main->rotation.m11 + v17 * main->rotation.m12;
-            arg146.pos.z += v15 * main->rotation.m20 + v16 * main->rotation.m21 + v17 * main->rotation.m22;
+            arg146.pos += main->rotation.Transform(pos);
         }
     }
 
@@ -7510,30 +7506,15 @@ void StartDestFX__sub0(__NC_STACK_ypabact *main, destFX *fx)
 
         bah->SetStateInternal(&v18);
 
-        __NC_STACK_ypabact *a4;
-        a4 = bah->getBACT_pBact();
+        bah->ypabact.fly_dir = main->rotation.Transform(fx.pos);
 
-        a4->fly_dir.x = main->rotation.m00 * fx->p2 + main->rotation.m01 * fx->p3 + main->rotation.m02 * fx->p4;
-        a4->fly_dir.y = main->rotation.m10 * fx->p2 + main->rotation.m11 * fx->p3 + main->rotation.m12 * fx->p4;
-        a4->fly_dir.z = main->rotation.m20 * fx->p2 + main->rotation.m21 * fx->p3 + main->rotation.m22 * fx->p4;
+        if ( fx.type_flag & 0x10 )
+            bah->ypabact.fly_dir += main->fly_dir * main->fly_dir_length;
 
-        if ( fx->type_flag & 0x10 )
-        {
-            a4->fly_dir.x += main->fly_dir.x * main->fly_dir_length;
-            a4->fly_dir.y += main->fly_dir.y * main->fly_dir_length;
-            a4->fly_dir.z += main->fly_dir.z * main->fly_dir_length;
-        }
+        float len = bah->ypabact.fly_dir.length();
 
-        float v24 = sqrt( POW2(a4->fly_dir.x) + POW2(a4->fly_dir.y) + POW2(a4->fly_dir.z) );
-
-        if ( v24 > 0.001 )
-        {
-            a4->fly_dir_length = v24;
-
-            a4->fly_dir.x /= v24;
-            a4->fly_dir.y /= v24;
-            a4->fly_dir.z /= v24;
-        }
+        if ( len > 0.001 )
+            bah->ypabact.fly_dir_length = len;
     }
 }
 
@@ -7550,12 +7531,12 @@ void NC_STACK_ypabact::StartDestFX(uint8_t arg)
 
         for (int i = 0; i < a4; i++)
         {
-            if ( bact->destroyFX[i].p1 )
+            if ( bact->destroyFX[i].ModelID )
             {
-                destFX *v8 = &bact->destroyFX[i];
+                const destFX &fx = bact->destroyFX[i];
 
-                if ( (v8->type_flag & 2 && arg == 2) || (v8->type_flag & 1 && arg == 1) || (v8->type_flag & 4 && arg == 4) || (v8->type_flag & 8 && arg == 8) )
-                    StartDestFX__sub0(bact, v8);
+                if ( (fx.type_flag & 2 && arg == 2) || (fx.type_flag & 1 && arg == 1) || (fx.type_flag & 4 && arg == 4) || (fx.type_flag & 8 && arg == 8) )
+                    StartDestFX__sub0(bact, fx);
             }
         }
     }

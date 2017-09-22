@@ -17,29 +17,6 @@ struct SinCos
     float cos;
 };
 
-struct destFX
-{
-    char type_flag;
-    int p1; // Model id. >= 0
-    float p2;
-    float p3;
-    float p4;
-
-    destFX()
-    {
-        clear();
-    }
-
-    void clear()
-    {
-        type_flag = 0;
-        p1 = 0;
-        p2 = 0.0;
-        p3 = 0.0;
-        p4 = 0.0;
-    }
-};
-
 class TFEngine
 {
 public:

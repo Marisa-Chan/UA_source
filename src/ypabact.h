@@ -21,6 +21,25 @@ struct yw_arg129;
 
 struct cellArea;
 
+struct destFX
+{
+    char type_flag;
+    int ModelID; // Model id. >= 0
+    vec3d pos;
+
+    destFX()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        type_flag = 0;
+        ModelID = 0;
+        pos = 0.0;
+    }
+};
+
 
 struct bact_node : public nnode
 {

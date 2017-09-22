@@ -580,10 +580,11 @@ int VhclProtoParser(scrCallBack *arg)
                 {
                     return 4;
                 }
-                dfx->p1 = strtol(pp1, NULL, 0);
-                dfx->p2 = strtof(pp2, 0);
-                dfx->p3 = strtof(pp3, 0);
-                dfx->p4 = strtof(pp4, 0);
+
+                dfx->ModelID = strtol(pp1, NULL, 0);
+                dfx->pos.x = strtof(pp2, 0);
+                dfx->pos.y = strtof(pp3, 0);
+                dfx->pos.z = strtof(pp4, 0);
 
                 vhcl->destFxCount++;
                 if ( vhcl->destFxCount >= 16 )
@@ -1419,10 +1420,11 @@ int WeaponProtoParser(scrCallBack *arg)
                 {
                     return 4;
                 }
-                dfx->p1 = strtol(pp1, NULL, 0);
-                dfx->p2 = strtof(pp2, 0);
-                dfx->p3 = strtof(pp3, 0);
-                dfx->p4 = strtof(pp4, 0);
+
+                dfx->ModelID = strtol(pp1, NULL, 0);
+                dfx->pos.x = strtof(pp2, 0);
+                dfx->pos.y = strtof(pp3, 0);
+                dfx->pos.z = strtof(pp4, 0);
 
                 wpn->destFxCount++;
                 if ( wpn->destFxCount >= 16 )
