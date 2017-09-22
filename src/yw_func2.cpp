@@ -40,9 +40,7 @@ void sb_0x4eb94c__sub0(_NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, vec3
 
     flag_xyz tmp;
     tmp.flag = 7;
-    tmp.x = pos->x;
-    tmp.y = pos->y;
-    tmp.z = pos->z;
+    tmp.v = *pos;
 
     model_base->base_func68(&tmp);
 
@@ -127,9 +125,9 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, vec
 
             flag_xyz v16;
             v16.flag = 7;
-            v16.x = p3d->locSclRot.m00 * v13 + pos->x + 0.0 * p3d->locSclRot.m01 + p3d->locSclRot.m02 * v14;
-            v16.y = p3d->locSclRot.m10 * v13 + pos->y + 0.0 * p3d->locSclRot.m11 + p3d->locSclRot.m12 * v14;
-            v16.z = p3d->locSclRot.m20 * v13 + pos->z + 0.0 * p3d->locSclRot.m21 + p3d->locSclRot.m22 * v14;
+            v16.v.x = p3d->locSclRot.m00 * v13 + pos->x + 0.0 * p3d->locSclRot.m01 + p3d->locSclRot.m02 * v14;
+            v16.v.y = p3d->locSclRot.m10 * v13 + pos->y + 0.0 * p3d->locSclRot.m11 + p3d->locSclRot.m12 * v14;
+            v16.v.z = p3d->locSclRot.m20 * v13 + pos->z + 0.0 * p3d->locSclRot.m21 + p3d->locSclRot.m22 * v14;
 
             NC_STACK_base *lego = yw->legos[ scType->buildings[j][i]->health_models[0] ].base;
             lego->setBASE_static(0);

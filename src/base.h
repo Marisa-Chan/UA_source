@@ -137,9 +137,7 @@ struct STRC_base
 struct flag_xyz
 {
     int flag;
-    float x;
-    float y;
-    float z;
+    vec3d v;
 };
 
 struct flag_xyz2
@@ -328,6 +326,9 @@ public:
 
     void base_setter(IDVPair *stak);
     void base_getter(IDVPair *stak);
+
+    vec3d getBASE_pos();
+    vec3d getBASE_vec();
 
 
 public:

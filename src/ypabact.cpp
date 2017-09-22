@@ -6675,16 +6675,10 @@ void NC_STACK_ypabact::HandleVisChildrens(int *arg)
             {
                 kid->self_full->setBASE_parentFollow(1);
 
-                float v11 = kid->self_full->getBASE_x();
-                float v10 = kid->self_full->getBASE_y();
-                float v9 = kid->self_full->getBASE_z();
-
                 flag_xyz arg68;
 
                 arg68.flag = 7;
-                arg68.x = v11 - bact->position.x;
-                arg68.y = v10 - bact->position.y;
-                arg68.z = v9 - bact->position.z;
+                arg68.v = kid->self_full->getBASE_pos() - bact->position;
 
                 kid->self_full->base_func68(&arg68);
             }
@@ -6692,16 +6686,10 @@ void NC_STACK_ypabact::HandleVisChildrens(int *arg)
             {
                 kid->self_full->setBASE_parentFollow(1);
 
-                float v11 = kid->self_full->getBASE_x();
-                float v10 = kid->self_full->getBASE_y();
-                float v9 = kid->self_full->getBASE_z();
-
                 flag_xyz arg68;
 
                 arg68.flag = 7;
-                arg68.x = v11 + bact->position.x;
-                arg68.y = v10 + bact->position.y;
-                arg68.z = v9 + bact->position.z;
+                arg68.v = kid->self_full->getBASE_pos() + bact->position;
 
                 kid->self_full->base_func68(&arg68);
             }

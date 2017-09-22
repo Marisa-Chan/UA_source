@@ -671,24 +671,17 @@ int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, IFFile *mfile)
             flag_xyz v38;
 
             v38.flag = 7;
-            v38.x = dst.pos.x;
-            v38.y = dst.pos.y;
-            v38.z = dst.pos.z;
+            v38.v = dst.pos;
 
             obj->base_func68(&v38);
 
-
-            v38.x = dst.scale.x;
-            v38.y = dst.scale.y;
-            v38.z = dst.scale.z;
+            v38.v = dst.scale;
 
             obj->base_func72(&v38); // SET_SCALE ?
 
             if ( dst.attFlags & 1 )
             {
-                v38.x = dst.vec.x;
-                v38.y = dst.vec.y;
-                v38.z = dst.vec.z;
+                v38.v = dst.vec;
             }
             else
             {
@@ -1220,20 +1213,20 @@ size_t NC_STACK_base::base_func68(flag_xyz *arg)
     if ( arg->flag & 0x10 )
     {
         if ( flg & 1 )
-            s3d->locPos.x += arg->x;
+            s3d->locPos.x += arg->v.x;
         if ( flg & 2 )
-            s3d->locPos.y += arg->y;
+            s3d->locPos.y += arg->v.y;
         if ( flg & 4 )
-            s3d->locPos.z += arg->z;
+            s3d->locPos.z += arg->v.z;
     }
     else
     {
         if ( flg & 1 )
-            s3d->locPos.x = arg->x;
+            s3d->locPos.x = arg->v.x;
         if ( flg & 2 )
-            s3d->locPos.y = arg->y;
+            s3d->locPos.y = arg->v.y;
         if ( flg & 4 )
-            s3d->locPos.z = arg->z;
+            s3d->locPos.z = arg->v.z;
     }
     return 1;
 }
@@ -1257,20 +1250,20 @@ size_t NC_STACK_base::base_func69(flag_xyz *arg)
         if ( flg & 0x10 )
         {
             if ( flg & 1 )
-                s3d->vec.x += arg->x;
+                s3d->vec.x += arg->v.x;
             if ( flg & 2 )
-                s3d->vec.y += arg->y;
+                s3d->vec.y += arg->v.y;
             if ( flg & 4 )
-                s3d->vec.z += arg->z;
+                s3d->vec.z += arg->v.z;
         }
         else
         {
             if ( flg & 1 )
-                s3d->vec.x = arg->x;
+                s3d->vec.x = arg->v.x;
             if ( flg & 2 )
-                s3d->vec.y = arg->y;
+                s3d->vec.y = arg->v.y;
             if ( flg & 4 )
-                s3d->vec.z = arg->z;
+                s3d->vec.z = arg->v.z;
         }
     }
 
@@ -1359,20 +1352,20 @@ size_t NC_STACK_base::base_func72(flag_xyz *arg)
     if ( arg->flag & 0x10 )
     {
         if ( flg & 1 )
-            s3d->scale.x *= arg->x;
+            s3d->scale.x *= arg->v.x;
         if ( flg & 2 )
-            s3d->scale.y *= arg->y;
+            s3d->scale.y *= arg->v.y;
         if ( flg & 4 )
-            s3d->scale.z *= arg->z;
+            s3d->scale.z *= arg->v.z;
     }
     else
     {
         if ( flg & 1 )
-            s3d->scale.x = arg->x;
+            s3d->scale.x = arg->v.x;
         if ( flg & 2 )
-            s3d->scale.y = arg->y;
+            s3d->scale.y = arg->v.y;
         if ( flg & 4 )
-            s3d->scale.z = arg->z;
+            s3d->scale.z = arg->v.z;
     }
 
     make_scale_rotation__matrix(s3d);
@@ -1689,6 +1682,16 @@ float NC_STACK_base::getBASE_vy()
 float NC_STACK_base::getBASE_vz()
 {
     return stack__base.transform.vec.z;
+}
+
+vec3d NC_STACK_base::getBASE_pos()
+{
+    return stack__base.transform.locPos.x;
+}
+
+vec3d NC_STACK_base::getBASE_vec()
+{
+    return stack__base.transform.vec;
 }
 
 int NC_STACK_base::getBASE_ax()

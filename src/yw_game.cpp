@@ -2235,13 +2235,13 @@ void sub_4D7F60(_NC_STACK_ypaworld *yw, int x, int y, stru_a3 *sct, baseRender_m
 
         flag_xyz grp_1;
         grp_1.flag = 7;
-        grp_1.x = x * 1200.0 + 600.0;
-        grp_1.z = -(y * 1200.0 + 600.0);
-        grp_1.y = sct->p_cell->height;
+        grp_1.v.x = x * 1200.0 + 600.0;
+        grp_1.v.z = -(y * 1200.0 + 600.0);
+        grp_1.v.y = sct->p_cell->height;
 
-        sct->x = grp_1.x;
-        sct->y = grp_1.y;
-        sct->z = grp_1.z;
+        sct->x = grp_1.v.x;
+        sct->y = grp_1.v.y;
+        sct->z = grp_1.v.z;
 
         yw->additionalBeeBox->base_func68(&grp_1);
 
@@ -2260,9 +2260,9 @@ void sub_4D806C(_NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
 
         flag_xyz grp_1;
         grp_1.flag = 7;
-        grp_1.x = sct->x;
-        grp_1.y = sct->y;
-        grp_1.z = sct->z;
+        grp_1.v.x = sct->x;
+        grp_1.v.y = sct->y;
+        grp_1.v.z = sct->z;
 
         int v22 = 0;
 
@@ -2273,7 +2273,7 @@ void sub_4D806C(_NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
             yw_f80 *v5 = &yw->field_80[ pcell->w_id ];
 
             scel.flag = 2;
-            scel.y = (float)v5->field_4 / (float)v5->field_8;
+            scel.v.y = (float)v5->field_4 / (float)v5->field_8;
 
             pcell->type_id = yw->BuildProtos[ v5->blg_ID ].sec_type;
             pcell->comp_type = yw->secTypes[ pcell->type_id ].field_0;
@@ -2298,8 +2298,8 @@ void sub_4D806C(_NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
         {
             for (int xx = 0; xx < v20; xx++)
             {
-                grp_1.x = (v17 + xx) * 300.0 + sct->x;
-                grp_1.z = (v17 + zz) * 300.0 + sct->z;
+                grp_1.v.x = (v17 + xx) * 300.0 + sct->x;
+                grp_1.v.z = (v17 + zz) * 300.0 + sct->z;
 
                 if ( v22 )
                 {
@@ -2343,9 +2343,9 @@ void yw_renderSky(_NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
         uint32_t flags = rndr_params->flags;
 
         flag_xyz v5;
-        v5.x = yw->current_bact->position.x;
-        v5.y = yw->field_15f4 + yw->current_bact->position.y;
-        v5.z = yw->current_bact->position.z;
+        v5.v.x = yw->current_bact->position.x;
+        v5.v.y = yw->field_15f4 + yw->current_bact->position.y;
+        v5.v.z = yw->current_bact->position.z;
         v5.flag = 7;
 
         yw->sky_loaded_base->base_func68(&v5);
@@ -2505,8 +2505,8 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub0(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
 
     flag_xyz grp_1;
     grp_1.flag = 5;
-    grp_1.x = sct2->x;
-    grp_1.z = sct2->z;
+    grp_1.v.x = sct2->x;
+    grp_1.v.z = sct2->z;
 
     bs->base_func68(&grp_1);
 
@@ -2535,8 +2535,8 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub1(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
 
     flag_xyz grp_1;
     grp_1.flag = 5;
-    grp_1.x = sct2->x;
-    grp_1.z = sct2->z;
+    grp_1.v.x = sct2->x;
+    grp_1.v.z = sct2->z;
 
     bs->base_func68(&grp_1);
 
