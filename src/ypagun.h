@@ -25,7 +25,16 @@ public:
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ypagun()
     {
-        memset(&ypagun, 0, sizeof(ypagun));
+        ypagun.maxUp    = 0.0;
+        ypagun.maxDown  = 0.0;
+        ypagun.maxSide  = 0.0;
+        ypagun.basis    = vec3d(0.0, 0.0, 0.0);
+        ypagun.rott     = vec3d(0.0, 0.0, 0.0);
+        ypagun.gunType  = 0;
+        ypagun.fireTime = 0;
+        ypagun.fireCount = 0;
+        ypagun.gunFlags = 0;
+        ypagun.downTime = 0;
     };
     virtual ~NC_STACK_ypagun() {};
 
