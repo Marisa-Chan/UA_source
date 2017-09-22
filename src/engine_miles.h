@@ -119,9 +119,7 @@ struct userdata_sample_info
 struct samples_collection1
 {
     vec3d field_0;
-    float field_C;
-    float field_10;
-    float field_14;
+    vec3d field_C;
     userdata_sample_info samples_data[16];
 };
 

@@ -3089,14 +3089,14 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
     usr->samples2_info.field_0.x = 0;
     usr->samples2_info.field_0.y = 0;
     usr->samples2_info.field_0.z = 0;
-    usr->samples2_info.field_C = 0;
-    usr->samples2_info.field_10 = 0;
-    usr->samples2_info.field_14 = 0;
+    usr->samples2_info.field_C.x = 0;
+    usr->samples2_info.field_C.y = 0;
+    usr->samples2_info.field_C.z = 0;
 
     usr->samples1_info.field_0 = usr->samples2_info.field_0;
-    usr->samples1_info.field_C = usr->samples2_info.field_C;
-    usr->samples1_info.field_10 = usr->samples2_info.field_10;
-    usr->samples1_info.field_14 = usr->samples2_info.field_14;
+    usr->samples1_info.field_C.x = usr->samples2_info.field_C.x;
+    usr->samples1_info.field_C.y = usr->samples2_info.field_C.y;
+    usr->samples1_info.field_C.z = usr->samples2_info.field_C.z;
 
     for (int i = 0; i < 16; i++)
     {
@@ -7046,9 +7046,9 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
         bct->bact->soundcarrier.field_0 = bct->bact->position;
 
-        bct->bact->soundcarrier.field_C = bct->bact->fly_dir.x * bct->bact->fly_dir_length;
-        bct->bact->soundcarrier.field_10 = bct->bact->fly_dir.y * bct->bact->fly_dir_length;
-        bct->bact->soundcarrier.field_14 = bct->bact->fly_dir.z * bct->bact->fly_dir_length;
+        bct->bact->soundcarrier.field_C.x = bct->bact->fly_dir.x * bct->bact->fly_dir_length;
+        bct->bact->soundcarrier.field_C.y = bct->bact->fly_dir.y * bct->bact->fly_dir_length;
+        bct->bact->soundcarrier.field_C.z = bct->bact->fly_dir.z * bct->bact->fly_dir_length;
 
         sb_0x4242e0(&bct->bact->soundcarrier);
 

@@ -780,15 +780,9 @@ void NC_STACK_ypabact::Update(update_msg *arg)
     bact->soundcarrier.field_0 = bact->position;
 
     if ( bact->oflags & BACT_OFLAG_VIEWER )
-    {
-        bact->soundcarrier.field_0.y = bact->rotation.m11 * 400.0 + bact->soundcarrier.field_0.y;
-        bact->soundcarrier.field_0.z = bact->rotation.m12 * 400.0 + bact->soundcarrier.field_0.z;
-        bact->soundcarrier.field_0.x = bact->rotation.m10 * 400.0 + bact->soundcarrier.field_0.x;
-    }
+        bact->soundcarrier.field_0 += bact->rotation.AxisY() * 400.0;
 
-    bact->soundcarrier.field_C  = bact->fly_dir.x * bact->fly_dir_length;
-    bact->soundcarrier.field_10 = bact->fly_dir.y * bact->fly_dir_length;
-    bact->soundcarrier.field_14 = bact->fly_dir.z * bact->fly_dir_length;
+    bact->soundcarrier.field_C = bact->fly_dir * bact->fly_dir_length;
 
     sb_0x4242e0(&bact->soundcarrier);
 }
@@ -7778,10 +7772,8 @@ void NC_STACK_ypabact::NetUpdate(update_msg *upd)
     upd->units_count = units_cnt;
 
     bact->soundcarrier.field_0 = bact->position;
+    bact->soundcarrier.field_C = bact->fly_dir * bact->fly_dir_length;
 
-    bact->soundcarrier.field_C = bact->fly_dir.x * bact->fly_dir_length;
-    bact->soundcarrier.field_10 = bact->fly_dir.y * bact->fly_dir_length;
-    bact->soundcarrier.field_14 = bact->fly_dir.z * bact->fly_dir_length;
     sb_0x4242e0(&bact->soundcarrier);
 }
 

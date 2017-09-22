@@ -8218,9 +8218,9 @@ void ypaworld_func159__sub0__sub0(_NC_STACK_ypaworld *yw, yw_samples *smpls, con
 
         sub_4D6958(yw, unit, &smpls->field_4);
 
-        smpls->field_4.field_C = yw->field_1b84->fly_dir.x * yw->field_1b84->fly_dir_length;
-        smpls->field_4.field_10 = yw->field_1b84->fly_dir.y * yw->field_1b84->fly_dir_length;
-        smpls->field_4.field_14 = yw->field_1b84->fly_dir.z * yw->field_1b84->fly_dir_length;
+        smpls->field_4.field_C.x = yw->field_1b84->fly_dir.x * yw->field_1b84->fly_dir_length;
+        smpls->field_4.field_C.y = yw->field_1b84->fly_dir.y * yw->field_1b84->fly_dir_length;
+        smpls->field_4.field_C.z = yw->field_1b84->fly_dir.z * yw->field_1b84->fly_dir_length;
 
         startSound(&smpls->field_4, 0);
     }

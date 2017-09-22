@@ -671,9 +671,9 @@ void sb_0x424c74__sub2__sub1(userdata_sample_info *smpl)
 
     float v27 = sqrt(POW2(v3) + POW2(v4) + POW2(v6));
 
-    float v8 = v2->field_C - sndSys.stru_547024.x;
-    float v9 = v2->field_10 - sndSys.stru_547024.y;
-    float v11 = v2->field_14 - sndSys.stru_547024.z;
+    float v8 = v2->field_C.x - sndSys.stru_547024.x;
+    float v9 = v2->field_C.y - sndSys.stru_547024.y;
+    float v11 = v2->field_C.z - sndSys.stru_547024.z;
 
     float v20 = sqrt(POW2(v8) + POW2(v9) + POW2(v11));
 

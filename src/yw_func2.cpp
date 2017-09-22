@@ -2284,9 +2284,9 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
     {
         sub_423DB0(&usr->field_782);
 
-        usr->field_782.field_C = 0;
-        usr->field_782.field_10 = 0;
-        usr->field_782.field_14 = 0;
+        usr->field_782.field_C.x = 0;
+        usr->field_782.field_C.y = 0;
+        usr->field_782.field_C.z = 0;
         usr->field_782.field_0.x = 0;
         usr->field_782.field_0.y = 0;
         usr->field_782.field_0.z = 0;
