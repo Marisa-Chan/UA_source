@@ -282,17 +282,9 @@ void NC_STACK_ypamissile::AI_layer1(update_msg *arg)
     if ( bact->primTtype )
     {
         if ( bact->primTtype == BACT_TGT_TYPE_UNIT )
-        {
-            bact->target_vec.x = bact->primT.pbact->position.x - bact->position.x;
-            bact->target_vec.y = bact->primT.pbact->position.y - bact->position.y;
-            bact->target_vec.z = bact->primT.pbact->position.z - bact->position.z;
-        }
+            bact->target_vec = bact->primT.pbact->position - bact->position;
         else
-        {
-            bact->target_vec.x = bact->primTpos.x - bact->position.x;
-            bact->target_vec.y = bact->primTpos.y - bact->position.y;
-            bact->target_vec.z = bact->primTpos.z - bact->position.z;
-        }
+            bact->target_vec = bact->primTpos - bact->position;
     }
 
     AI_layer2(arg);
@@ -416,9 +408,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                         roboColl *v8 = &v82->roboColls[j];
                         radius = v8->robo_coll_radius;
 
-                        ttmp.x = bct->rotation.m00 * v8->coll_pos.x + bct->rotation.m10 * v8->coll_pos.y + bct->rotation.m20 * v8->coll_pos.z + bct->position.x;
-                        ttmp.y = bct->rotation.m01 * v8->coll_pos.x + bct->rotation.m11 * v8->coll_pos.y + bct->rotation.m21 * v8->coll_pos.z + bct->position.y;
-                        ttmp.z = bct->rotation.m02 * v8->coll_pos.x + bct->rotation.m12 * v8->coll_pos.y + bct->rotation.m22 * v8->coll_pos.z + bct->position.z;
+                        ttmp = bct->position + bct->rotation.Transpose().Transform(v8->coll_pos);
                     }
                     else
                     {
@@ -701,12 +691,8 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
             else if ( miss->field_c != 6 )
             {
                 ypaworld_arg136 arg136;
-                arg136.stPos.x = bact->old_pos.x;
-                arg136.stPos.y = bact->old_pos.y;
-                arg136.stPos.z = bact->old_pos.z;
-                arg136.vect.x = bact->position.x - bact->old_pos.x;
-                arg136.vect.y = bact->position.y - bact->old_pos.y;
-                arg136.vect.z = bact->position.z - bact->old_pos.z;
+                arg136.stPos = bact->old_pos;
+                arg136.vect = bact->position - bact->old_pos;
                 arg136.flags = 0;
 
                 miss->ywo->ypaworld_func136(&arg136);
@@ -714,16 +700,11 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
                 if ( arg136.isect )
                 {
                     miss_arg130 arg131;
-                    arg131.pos.x = arg136.skel->polygons[ arg136.polyID ].A;
-                    arg131.pos.y = arg136.skel->polygons[ arg136.polyID ].B;
-                    arg131.pos.z = arg136.skel->polygons[ arg136.polyID ].C;
+                    arg131.pos = arg136.skel->polygons[ arg136.polyID ].Normal();
 
                     ypamissile_func131(&arg131);
 
-
-                    bact->position.x = arg136.isectPos.x;
-                    bact->position.y = arg136.isectPos.y;
-                    bact->position.z = arg136.isectPos.z;
+                    bact->position = arg136.isectPos;
 
                     ypamissile_func128(NULL);
 
@@ -844,25 +825,12 @@ void NC_STACK_ypamissile::Move(move_msg *arg)
     else
         v8 = bact->mass * 39.2266;
 
-    vec3d v26;
-    float v35;
+    vec3d v26(0.0, 0.0, 0.0);
 
-    if ( arg->flag & 1 )
-    {
-        v26.x = 0.0;
-        v26.y = 0.0;
-        v26.z = 0.0;
+    if ( !(arg->flag & 1) )
+        v26 = arg->vec * bact->thraction;
 
-        v35 = 0.0;
-    }
-    else
-    {
-        v26 = arg->vec;
-
-        v35 = bact->thraction;
-    }
-
-    vec3d vec1 = vec3d(0.0, v8, 0.0) + v26 * v35 - bact->fly_dir * (bact->fly_dir_length * bact->airconst);
+    vec3d vec1 = vec3d(0.0, v8, 0.0) + v26 - bact->fly_dir * (bact->fly_dir_length * bact->airconst);
 
     float v33 = vec1.normalise();
 
@@ -1069,15 +1037,8 @@ void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
 
         if ( v37 > 0.0 )
         {
-            float v51 = dir.dot(bact->fly_dir); //scalar cross product
-
-            if ( v51 > 1.0 )
-                v51 = 1.0;
-
-            if ( v51 < -1.0 )
-                v51 = -1.0;
-
-            float v52 = acos(v51);
+            //scalar cross product
+            float v52 = clp_acos( dir.dot(bact->fly_dir) );
 
             if ( miss->field_c == 1 )
             {
@@ -1099,15 +1060,7 @@ void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
 
         if ( miss->field_2D & 1 )
         {
-            float v53 = sqrt( POW2(bact->rotation.m00) + POW2(bact->rotation.m02) );
-
-            if ( v53 > 1.0 )
-                v53 = 1.0;
-
-            if ( v53 < -1.0 )
-                v53 = -1.0;
-
-            float v44 = acos(v53);
+            float v44 = clp_acos( bact->rotation.AxisX().XZ().length() );
 
             if ( miss->selfie->rotation.m11 < 0.0 )
                 v44 = C_PI - v44;
@@ -1122,30 +1075,16 @@ void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
 
 void NC_STACK_ypamissile::ypamissile_func131(miss_arg130 *arg)
 {
-    __NC_STACK_ypamissile *miss = &stack__ypamissile;
-    __NC_STACK_ypabact *bact = miss->selfie;
+    vec3d vec1 = ypabact.rotation.AxisY();
 
-    vec3d vec1 = bact->rotation.AxisY();
-    vec3d vec2 = arg->pos;
+    vec3d vaxis = vec1 * arg->pos;
 
-    vec3d vaxis = vec1 * vec2;
-
-    float v30 = vaxis.normalise();
-
-    if ( v30 != 0.0 )
+    if ( vaxis.normalise() != 0.0 )
     {
-        float v43 = vec1.dot(vec2);
-
-        if ( v43 > 1.0 )
-            v43 = 1.0;
-
-        if ( v43 < -1.0 )
-            v43 = -1.0;
-
-        float v12 = acos(v43);
+        float v12 = clp_acos( vec1.dot(arg->pos) );
 
         if ( fabs(v12) > BACT_MIN_ANGLE )
-            bact->rotation *= mat3x3::AxisAngle(vaxis, v12);
+            ypabact.rotation *= mat3x3::AxisAngle(vaxis, v12);
     }
 }
 
