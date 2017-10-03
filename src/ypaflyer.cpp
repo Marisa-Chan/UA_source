@@ -185,7 +185,7 @@ void sb_0x4b255c(__NC_STACK_ypaflyer *fly, float a2, vec3d v, int a4)
         {
             if ( (tmp.x != 0.0 || tmp.y != 0.0) && (v.x != 0.0 || v.z != 0.0) )
             {
-                float v57 = clp_acos( tmp.dot( v.XZ() ) / tmp.length() / v.length() );
+                float v57 = clp_acos( tmp.dot( v.XZ() ) / tmp.length() / v.XZ().length() );
 
                 if ( v57 < 0.001 )
                     v57 = 0.0;
@@ -290,7 +290,7 @@ void ypaflyer_func70__sub0(__NC_STACK_ypaflyer *fly, float angl)
 
     if ( bact->target_dir.x != 0.0 || bact->target_dir.z != 0.0 )
     {
-        float v21 = acos( bact->target_dir.XZ().dot( bact->rotation.AxisZ().XZ() ) / bact->target_dir.XZ().length() / bact->rotation.AxisZ().XZ().length() );
+        float v21 = clp_acos( bact->target_dir.XZ().dot( bact->rotation.AxisZ().XZ() ) / bact->target_dir.XZ().length() / bact->rotation.AxisZ().XZ().length() );
 
         float v9 = bact->maxrot * angl;
 
@@ -388,7 +388,7 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
         arg136.stPos = bact->old_pos;
         arg136.vect = (bact->position - bact->old_pos).X0Z();
 
-        float v89 = arg136.vect.length();
+        float v89 = arg136.vect.XZ().length();
 
         if ( v89 <= 0.0 )
             arg136.vect = bact->rotation.AxisZ() * 300.0;
@@ -578,12 +578,12 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
         if ( bact->status_flg & BACT_STFLAG_DODGE_LEFT )
         {
             bact->target_dir.x = -arg136.vect.z / v92;
-            bact->target_dir.z  = arg136.vect.x / v92;
+            bact->target_dir.z = arg136.vect.x / v92;
         }
         else if ( bact->status_flg & BACT_STFLAG_DODGE_RIGHT )
         {
             bact->target_dir.x = arg136.vect.z  / v92;
-            bact->target_dir.z  = -arg136.vect.x  / v92;
+            bact->target_dir.z = -arg136.vect.x  / v92;
         }
 
         ypaflyer_func70__sub0(fly, a2a);
@@ -1118,6 +1118,7 @@ void NC_STACK_ypaflyer::Move(move_msg *arg)
 
     if ( v33 > 0.0 )
     {
+        //vec3d tmp3 = bact->fly_dir * bact->fly_dir_length + tmp2 * (v33 / bact->mass * arg->field_0) / v33; //(arg->field_0 / bact->mass);
         vec3d tmp3 = bact->fly_dir * bact->fly_dir_length + tmp2 * (arg->field_0 / bact->mass);
 
         bact->fly_dir_length = tmp3.length();
