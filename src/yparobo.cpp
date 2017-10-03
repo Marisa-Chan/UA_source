@@ -488,17 +488,9 @@ void NC_STACK_yparobo::AI_layer1(update_msg *arg)
     EnergyInteract(arg);
 
     if ( robo->bact_internal->primTtype == BACT_TGT_TYPE_CELL )
-    {
-        robo->bact_internal->target_vec.x = robo->bact_internal->primTpos.x - robo->bact_internal->position.x;
-        robo->bact_internal->target_vec.y = robo->bact_internal->primTpos.y - robo->bact_internal->position.y;
-        robo->bact_internal->target_vec.z = robo->bact_internal->primTpos.z - robo->bact_internal->position.z;
-    }
+        robo->bact_internal->target_vec = robo->bact_internal->primTpos - robo->bact_internal->position;
     else if ( robo->bact_internal->primTtype != BACT_TGT_TYPE_UNIT )
-    {
-        robo->bact_internal->target_vec.x = 0;
-        robo->bact_internal->target_vec.y = 0;
-        robo->bact_internal->target_vec.z = 0;
-    }
+        robo->bact_internal->target_vec = vec3d(0.0, 0.0, 0.0);
 
     int v9 = getBACT_inputting();
 
@@ -653,9 +645,7 @@ void NC_STACK_yparobo::initForce(bact_node *unit)
             {
                 ypaworld_arg146 arg146;
                 arg146.vehicle_id = unit->bact->vehicleID;
-                arg146.pos.x = bact->position.x + robo->dock_pos.x;
-                arg146.pos.y = bact->position.y + robo->dock_pos.y;
-                arg146.pos.z = bact->position.z + robo->dock_pos.z;
+                arg146.pos = bact->position + robo->dock_pos;
 
                 unt = robo->wrld->ypaworld_func146(&arg146);
             }
@@ -1080,7 +1070,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
     }
 }
 
-void sub_4A1270(__NC_STACK_yparobo *robo, vec3d *a2, float angle)
+void sub_4A1270(__NC_STACK_yparobo *robo,const vec3d &vaxis, float angle)
 {
     for (int i = 0; i < 8; i++)
     {
@@ -1089,7 +1079,7 @@ void sub_4A1270(__NC_STACK_yparobo *robo, vec3d *a2, float angle)
             NC_STACK_ypagun *gungun = dynamic_cast<NC_STACK_ypagun *>(robo->guns[i].gun_obj);
 
             if (gungun)
-                robo->guns[i].dir = gungun->ypagun_func129(*a2, -angle);
+                robo->guns[i].dir = gungun->ypagun_func129(vaxis, -angle);
         }
     }
 }
@@ -1100,12 +1090,7 @@ void sub_4A1014(__NC_STACK_yparobo *robo, float angle)
 
     bact->rotation = mat3x3::RotateY(angle) * bact->rotation;
 
-    vec3d v6;
-    v6.x = bact->rotation.m10;
-    v6.y = bact->rotation.m11;
-    v6.z = bact->rotation.m12;
-
-    sub_4A1270(robo, &v6, angle);
+    sub_4A1270(robo, bact->rotation.AxisY(), angle);
 
     robo->coll.field_0 = angle;
 }
@@ -1116,12 +1101,7 @@ void sub_4A10E8(__NC_STACK_yparobo *robo, float angle)
 
     bact->rotation = mat3x3::RotateY(angle) * bact->rotation;
 
-    vec3d v6;
-    v6.x = 0;
-    v6.y = 1.0;
-    v6.z = 0;
-
-    sub_4A1270(robo, &v6, angle);
+    sub_4A1270(robo, vec3d::OY(1.0), angle);
 
     robo->coll.field_0 = angle;
 }
@@ -1135,16 +1115,11 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
     int v81 = getBACT_inputting();
     int v79 = getBACT_exactCollisions();
 
-    vec3d *v3 = &bact->position;
-    vec3d *v5 = &bact->old_pos;
-
-    if ( v3->x == v5->x && v3->y == v5->y && v3->z == v5->z )
+    if ( bact->position == bact->old_pos )
         return 0;
 
     bact_arg88 arg88_2;
-    arg88_2.pos1.z = 0;
-    arg88_2.pos1.y = 0;
-    arg88_2.pos1.x = 0;
+    arg88_2.pos1 = vec3d(0.0, 0.0, 0.0);
 
     int v86 = 0;
 
@@ -1154,45 +1129,18 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
     {
         if ( !v81 || bact->primTtype )
         {
-            vec3d tmp;
-            tmp = robo->coll.roboColls[i].field_10;
+            vec3d tmp = robo->coll.roboColls[i].field_10;
+            vec3d t = bact->position + bact->rotation.Transform( robo->coll.roboColls[i].coll_pos );
 
-
-            float tx = bact->position.x +
-                       bact->rotation.m00 * robo->coll.roboColls[i].coll_pos.x +
-                       bact->rotation.m01 * robo->coll.roboColls[i].coll_pos.y +
-                       bact->rotation.m02 * robo->coll.roboColls[i].coll_pos.z;
-
-//            float ty = bact->field_621.sy +
-//			      bact->field_651.m10 * robo->coll.roboColls[i].coll_pos.x +
-//			      bact->field_651.m11 * robo->coll.roboColls[i].coll_pos.y +
-//			      bact->field_651.m12 * robo->coll.roboColls[i].coll_pos.z;
-
-            float tz = bact->position.z +
-                       bact->rotation.m20 * robo->coll.roboColls[i].coll_pos.x +
-                       bact->rotation.m21 * robo->coll.roboColls[i].coll_pos.y +
-                       bact->rotation.m22 * robo->coll.roboColls[i].coll_pos.z;
-
-
-            arg136.stPos.x = tmp.x;
-            arg136.stPos.y = tmp.y;
-            arg136.stPos.z = tmp.z;
+            arg136.stPos = tmp;
             arg136.flags = 0;
 
-            float v82 = sqrt( (tmp.z - tz) * (tmp.z - tz) + (tmp.x - tx) * (tmp.x - tx) );
+            float v82 = (tmp.XZ() - t.XZ()).length();
 
             if ( v82 <= 1.0 )
-            {
-                arg136.vect.x = bact->fly_dir.x * 300.0;
-                arg136.vect.y = bact->fly_dir.y * 300.0;
-                arg136.vect.z = bact->fly_dir.z * 300.0;
-            }
+                arg136.vect = bact->fly_dir * 300.0;
             else
-            {
-                arg136.vect.x = (tx - tmp.x) * 300.0 / v82;
-                arg136.vect.y = 0;
-                arg136.vect.z = (tz - tmp.z) * 300.0 / v82;
-            }
+                arg136.vect = vec3d::X0Z( (t.XZ() - tmp.XZ()) * 300.0 / v82 );
 
             robo->wrld->ypaworld_func136(&arg136);
 
@@ -1208,9 +1156,7 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
                 else if ( robo->coll.roboColls[i].robo_coll_radius > 0.01 )
                 {
                     bact_arg88 arg88;
-                    arg88.pos1.x = arg136.skel->polygons[ arg136.polyID ].A;
-                    arg88.pos1.y = arg136.skel->polygons[ arg136.polyID ].B;
-                    arg88.pos1.z = arg136.skel->polygons[ arg136.polyID ].C;
+                    arg88.pos1 = arg136.skel->polygons[ arg136.polyID ].Normal();
 
                     Recoil(&arg88);
 
@@ -1230,9 +1176,7 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
                     if ( v81 || !arg130.pcell->w_type )
                     {
                         yw_arg129 v60;
-                        v60.pos.x = arg136.isectPos.x;
-                        v60.pos.y = arg136.isectPos.y;
-                        v60.pos.z = arg136.isectPos.z;
+                        v60.pos = arg136.isectPos;
                         v60.unit = NULL;
                         v60.field_14 = 255;
                         v60.field_10 = v82 * 15000.0 / a2;
@@ -1253,42 +1197,24 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
         if ( (a4 || (v26 && v79)) && robo->coll.roboColls[i].robo_coll_radius > 0.01 )
         {
-            vec3d tmp;
-            tmp = robo->coll.roboColls[i].field_10;
-
-
-            float tx = bact->position.x +
-                       bact->rotation.m00 * robo->coll.roboColls[i].coll_pos.x +
-                       bact->rotation.m01 * robo->coll.roboColls[i].coll_pos.y +
-                       bact->rotation.m02 * robo->coll.roboColls[i].coll_pos.z;
-
-//            float ty = bact->field_621.sy +
-//			      bact->field_651.m10 * robo->coll.roboColls[i].coll_pos.sx +
-//			      bact->field_651.m11 * robo->coll.roboColls[i].coll_pos.sy +
-//			      bact->field_651.m12 * robo->coll.roboColls[i].coll_pos.sz;
-
-            float tz = bact->position.z +
-                       bact->rotation.m20 * robo->coll.roboColls[i].coll_pos.x +
-                       bact->rotation.m21 * robo->coll.roboColls[i].coll_pos.y +
-                       bact->rotation.m22 * robo->coll.roboColls[i].coll_pos.z;
+            vec3d tmp = robo->coll.roboColls[i].field_10;
+            vec3d t = bact->position + bact->rotation.Transform( robo->coll.roboColls[i].coll_pos );
 
             ypaworld_arg137 arg137;
-
             arg137.pos = tmp;
 
-            float v83 = sqrt( (tmp.z - tz) * (tmp.z - tz) + (tmp.x - tx) * (tmp.x - tx) );
+            float v83 = (tmp.XZ() - t.XZ()).length();
 
             if ( v83 <= 1.0 )
-            {
-                arg137.pos2.x = bact->fly_dir.x;
-                arg137.pos2.y = bact->fly_dir.y;
-                arg137.pos2.z = bact->fly_dir.z;
-            }
+                arg137.pos2 = bact->fly_dir;
             else
             {
-                arg137.pos2.x = 1.0 / v83 * (tx - tmp.x);
-                arg137.pos2.z = arg137.pos2.x;
+                arg137.pos2 = vec3d::X0Z( (t.XZ() - tmp.XZ()) ) / v83;
+
+                // TYPO??
+                /*arg137.pos2.x = 1.0 / v83 * (t.x - tmp.x);
                 arg137.pos2.y = 0;
+                arg137.pos2.z = 1.0 / v83 * (t.x - tmp.x); */
             }
 
             yw_137col v57[32];
@@ -1306,18 +1232,13 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
                 float v89 = v83 * 15000.0;
 
-                vec3d ttmp;
-                ttmp.x = 0;
-                ttmp.y = 0;
-                ttmp.z = 0;
+                vec3d ttmp(0.0, 0.0, 0.0);
 
                 for (int i = arg137.coll_count - 1; i >= 0; i--)
                 {
                     yw_137col *clzn = &arg137.collisions[i];
 
-                    ttmp.x += clzn->pos2.x;
-                    ttmp.y += clzn->pos2.y;
-                    ttmp.z += clzn->pos2.z;
+                    ttmp += clzn->pos2;
 
                     yw_130arg arg130;
                     arg130.pos_x = clzn->pos1.x;
@@ -1328,9 +1249,7 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
                     if ( v81 || !arg130.pcell->w_type )
                     {
                         yw_arg129 v60;
-                        v60.pos.x = clzn->pos1.x;
-                        v60.pos.y = clzn->pos1.y;
-                        v60.pos.z = clzn->pos1.z;
+                        v60.pos = clzn->pos1;
                         v60.unit = NULL;
                         v60.field_14 = 255;
                         v60.field_10 = v89 / a2;
@@ -1339,28 +1258,17 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
                     }
                 }
 
-                float v84 = sqrt(ttmp.x * ttmp.x + ttmp.y * ttmp.y + ttmp.z * ttmp.z);
+                float v84 = ttmp.length();
 
-                if ( v84 != 0.0 && !isnan(v84) )
-                {
-                    arg88_2.pos1.x += ttmp.x / v84;
-                    arg88_2.pos1.y += ttmp.y / v84;
-                    arg88_2.pos1.z += ttmp.z / v84;
-                }
+                if ( v84 != 0.0 )
+                    arg88_2.pos1 += ttmp / v84;
                 else
-                {
-                    arg88_2.pos1.x += bact->fly_dir.x;
-                    arg88_2.pos1.y += bact->fly_dir.y;
-                    arg88_2.pos1.z += bact->fly_dir.z;
-                }
+                    arg88_2.pos1 += bact->fly_dir;
             }
 
             if ( v86 )
             {
-                float v50 = (float)v86;
-                arg88_2.pos1.x = arg88_2.pos1.x / v50;
-                arg88_2.pos1.y = arg88_2.pos1.y / v50;
-                arg88_2.pos1.z = arg88_2.pos1.z / v50;
+                arg88_2.pos1 /= (float)v86;
 
                 bact->position = bact->old_pos;
 
@@ -1383,12 +1291,8 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
     bact->status_flg &= ~BACT_STFLAG_LCRASH;
 
-    arg136.stPos.x = bact->position.x;
-    arg136.stPos.y = bact->position.y;
-    arg136.stPos.z = bact->position.z;
-    arg136.vect.x = bact->fly_dir.x * 100.0;
-    arg136.vect.y = bact->height * 1.5;
-    arg136.vect.z = bact->fly_dir.z * 100.0;
+    arg136.stPos = bact->position;
+    arg136.vect = vec3d::OY( bact->height * 1.5 ) + bact->fly_dir.X0Z() * 100.0;
     arg136.flags = 0;
 
     robo->wrld->ypaworld_func136(&arg136);
@@ -1466,9 +1370,6 @@ void NC_STACK_yparobo::AI_doMove(update_msg *arg)
 
     yparobo_func70__sub2__sub0(robo);
 
-    mat3x3 *v5 = &bact->rotation;
-    vec3d *v6 = &bact->target_dir;
-
     float v49 = arg->frameTime / 1000.0;
 
     robo->field_c = bact->mass * 9.80665;
@@ -1481,7 +1382,7 @@ void NC_STACK_yparobo::AI_doMove(update_msg *arg)
 
     float v39;
     if ( bact->primTtype )
-        v39 = sqrt(bact->target_vec.x * bact->target_vec.x + bact->target_vec.z * bact->target_vec.z);
+        v39 = bact->target_vec.XZ().length();
     else
         v39 = 0.0;
 
@@ -1511,8 +1412,8 @@ void NC_STACK_yparobo::AI_doMove(update_msg *arg)
 
         if ( !(bact->status_flg & BACT_STFLAG_UPWRD) )
         {
-            float v52 = sqrt(v5->m20 * v5->m20 + v5->m22 * v5->m22);
-            float v51 = sqrt(v6->z * v6->z + v6->x * v6->x);
+            float v52 = ypabact.rotation.AxisZ().XZ().length();
+            float v51 = ypabact.target_dir.XZ().length();
 
             if ( v52 <= 0.0001 || v51 <= 0.0001 )
             {
@@ -1521,17 +1422,9 @@ void NC_STACK_yparobo::AI_doMove(update_msg *arg)
             }
             else
             {
-                float v47 = (v5->m22 * v6->z + v5->m20 * v6->x) / (v51 * v52);
+                float v47 = ypabact.target_dir.XZ().dot( ypabact.rotation.AxisZ().XZ() ) / (v51 * v52);
 
-                if ( v47 > 1.0 )
-                    v47 = 1.0;
-
-                if ( v47 < -1.0 )
-                    v47 = -1.0;
-
-                float v23 = acos(v47);
-
-                float a2 = v23;
+                float v23 = clp_acos(v47);
 
                 float v24 = fabs(v23);
 
@@ -1540,14 +1433,14 @@ void NC_STACK_yparobo::AI_doMove(update_msg *arg)
                     float mxx = v49 * bact->maxrot;
 
                     if ( v24 > mxx )
-                        a2 = mxx;
+                        v23 = mxx;
 
-                    if ( v5->m20 * v6->z - v5->m22 * v6->x < 0.0 )
-                        a2 = -a2;
+                    if ( ypabact.rotation.AxisZ().XZ().cross( ypabact.target_dir.XZ() ) < 0.0 )
+                        v23 = -v23;
 
                     float v28;
 
-                    if ( a2 <= 0.0 )
+                    if ( v23 <= 0.0 )
                     {
                         if ( !(bact->status_flg & BACT_STFLAG_XLEFT) || !bact->slider_time )
                             bact->slider_time = arg->gTime;
@@ -1567,18 +1460,16 @@ void NC_STACK_yparobo::AI_doMove(update_msg *arg)
                     if ( v28 > 1.0 )
                         v28 = 1.0;
 
-                    a2 *= v28;
+                    v23 *= v28;
 
-                    sub_4A10E8(robo, a2);
+                    sub_4A10E8(robo, v23);
                 }
             }
         }
 
         arg74.field_0 = v49;
         arg74.flag = 0;
-        arg74.vec.x = bact->target_vec.x / v39;
-        arg74.vec.y = 0;
-        arg74.vec.z = bact->target_vec.z / v39;
+        arg74.vec = bact->target_vec.X0Z() / v39;
     }
     else
     {
@@ -1622,7 +1513,7 @@ void NC_STACK_yparobo::AI_doMove(update_msg *arg)
             if ( fabs(bact->fly_dir.x * bact->fly_dir_length) < 0.1 && fabs(bact->fly_dir.z * bact->fly_dir_length) < 0.1 )
             {
                 bact->fly_dir.z = 0;
-                bact->fly_dir.x = bact->fly_dir.z;
+                bact->fly_dir.x = 0;
 
                 setTarget_msg v34;
                 v34.tgt_type = BACT_TGT_TYPE_NONE;
@@ -1630,9 +1521,7 @@ void NC_STACK_yparobo::AI_doMove(update_msg *arg)
                 SetTarget(&v34);
             }
         }
-        arg74.vec.x = 0;
-        arg74.vec.y = 0;
-        arg74.vec.z = 0;
+        arg74.vec = vec3d(0.0, 0.0, 0.0);
         arg74.flag = 0;
         arg74.field_0 = v49;
     }
@@ -1718,12 +1607,9 @@ int sb_0x4a45cc__sub0(__NC_STACK_ypabact *bact)
     else
         return 1;
 
-    vec3d tmp2;
-    tmp2.y = bact->position.y - tmp.y;
-    tmp2.x = bact->position.x - tmp.x;
-    tmp2.z = bact->position.z - tmp.z;
+    vec3d tmp2 = bact->position - tmp;
 
-    float v19 = sqrt(tmp2.y * tmp2.y + tmp2.x * tmp2.x + tmp2.z * tmp2.z);
+    float v19 = tmp2.length();
 
     bact_node *nod = (bact_node *)bact->subjects_list.head;
 
@@ -1731,14 +1617,9 @@ int sb_0x4a45cc__sub0(__NC_STACK_ypabact *bact)
     {
         __NC_STACK_ypabact *bct = nod->bact;
 
-        vec3d tmp3;
-        tmp3.y = bct->position.y - tmp.y;
-        tmp3.x = bct->position.x - tmp.x;
-        tmp3.z = bct->position.z - tmp.z;
+        vec3d tmp3 = bct->position - tmp;
 
-        float v20 = sqrt(tmp3.y * tmp3.y + tmp3.x * tmp3.x + tmp3.z * tmp3.z);
-
-        if ( v20 < v19 )
+        if ( tmp3.length() < v19 )
             return 0;
 
         nod = (bact_node *)nod->next;
@@ -1853,9 +1734,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
     case 3:
         if ( arg->energy <= robo->field_4F5 )
         {
-            arg146.pos.x = arg->target_point.x;
-            arg146.pos.y = arg->target_point.y;
-            arg146.pos.z = arg->target_point.z;
+            arg146.pos = arg->target_point;
             arg146.vehicle_id = arg->protoID;
 
             NC_STACK_ypabact *newbact = ywo->ypaworld_func146(&arg146);
@@ -2328,28 +2207,18 @@ void NC_STACK_yparobo::buildRadar(update_msg *arg)
                     arg67.priority = 0;
                     SetTarget(&arg67);
 
-                    float v30 = -(yy + 0.5) * 1200.0 - bact->position.z;
-                    float v29 = (xx + 0.5) * 1200.0 - bact->position.x;
+                    vec2d t ( (xx + 0.5) * 1200.0 - bact->position.x,
+                              -(yy + 0.5) * 1200.0 - bact->position.z );
 
-                    float tmpsq = sqrt(v30 * v30 + v29 * v29);
+                    t.normalise();
 
-                    NDIV_CARRY(tmpsq);
-
-                    v29 /= tmpsq;
-                    v30 /= tmpsq;
-
-                    float v41 = v29 * bact->rotation.m20 + v30 * bact->rotation.m22;
+                    float v41 = t.dot( bact->rotation.AxisZ().XZ() );
 
                     if ( v41 <= 0.9 )
                     {
-                        if ( v41 > 1.0 )
-                            v41 = 1.0;
-                        if ( v41 < -1.0 )
-                            v41 = -1.0;
+                        float a2 = clp_acos(v41);
 
-                        float a2 = acos(v41);
-
-                        if ( v29 * bact->rotation.m22 - v30 * bact->rotation.m20 > 0.0 )
+                        if ( t.cross( bact->rotation.AxisZ().XZ() ) > 0.0 )
                             a2 = -a2;
 
                         if ( a2 < -bact->maxrot * v35 )
@@ -2516,29 +2385,18 @@ void NC_STACK_yparobo::buildPower(update_msg *arg)
                         arg67.priority = 0;
                         SetTarget(&arg67);
 
-                        float v31 = -(yy + 0.5) * 1200.0 - bact->position.z;
-                        float v30 = (xx + 0.5) * 1200.0 - bact->position.x;
+                        vec2d t ( (xx + 0.5) * 1200.0 - bact->position.x,
+                                  -(yy + 0.5) * 1200.0 - bact->position.z );
 
-                        float tmpsq =  sqrt(v31 * v31 + v30 * v30);
+                        t.normalise();
 
-                        NDIV_CARRY(tmpsq);
-
-                        v30 /= tmpsq;
-                        v31 /= tmpsq;
-
-                        float v44 = v30 * bact->rotation.m20 + v31 * bact->rotation.m22;
+                        float v44 = t.dot( bact->rotation.AxisZ().XZ() );
 
                         if ( v44 <= 0.9 )
                         {
-                            if ( v44 > 1.0 )
-                                v44 = 1.0;
+                            float a2 = clp_acos(v44);
 
-                            if ( v44 < -1.0 )
-                                v44 = -1.0;
-
-                            float a2 = acos(v44);
-
-                            if ( v30 * bact->rotation.m22 - v31 * bact->rotation.m20 > 0.0 )
+                            if ( t.cross( bact->rotation.AxisZ().XZ() ) > 0.0 )
                                 a2 = -a2;
 
                             if ( a2 < -bact->maxrot * v38 )
@@ -2706,28 +2564,18 @@ void NC_STACK_yparobo::buildSafe(update_msg *arg)
                     arg67.priority = 0;
                     SetTarget(&arg67);
 
-                    float v30 = -(yy + 0.5) * 1200.0 - bact->position.z;
-                    float v29 = (xx + 0.5) * 1200.0 - bact->position.x;
+                    vec2d t ( (xx + 0.5) * 1200.0 - bact->position.x,
+                              -(yy + 0.5) * 1200.0 - bact->position.z );
 
-                    float tmpsq = sqrt(v30 * v30 + v29 * v29);
+                    t.normalise();
 
-                    NDIV_CARRY(tmpsq);
-
-                    v29 /= tmpsq;
-                    v30 /= tmpsq;
-
-                    float v41 = v29 * bact->rotation.m20 + v30 * bact->rotation.m22;
+                    float v41 = t.dot( bact->rotation.AxisZ().XZ() );
 
                     if ( v41 <= 0.9 )
                     {
-                        if ( v41 > 1.0 )
-                            v41 = 1.0;
-                        if ( v41 < -1.0 )
-                            v41 = -1.0;
+                        float a2 = clp_acos(v41);
 
-                        float a2 = acos(v41);
-
-                        if ( v29 * bact->rotation.m22 - v30 * bact->rotation.m20 > 0.0 )
+                        if ( t.cross( bact->rotation.AxisZ().XZ() ) > 0.0 )
                             a2 = -a2;
 
                         if ( a2 < -bact->maxrot * v35 )
@@ -2977,9 +2825,7 @@ bact_node *NC_STACK_yparobo::allocForce(robo_loct1 *arg)
                 else
                     v16 = 6;
 
-                float v13 = node->bact->position.x - arg->tgt_pos.x;
-                float v14 = node->bact->position.z - arg->tgt_pos.z;
-                float v78 = v13 * v13 + v14 * v14;
+                float v78 = (node->bact->position.XZ() - arg->tgt_pos.XZ()).length();
 
                 if ( v16 <= 5 )
                 {
@@ -3111,9 +2957,7 @@ bact_node *NC_STACK_yparobo::allocForce(robo_loct1 *arg)
 
         ypaworld_arg146 arg146;
         arg146.vehicle_id = v33;
-        arg146.pos.x = bact->position.x + robo->dock_pos.x;
-        arg146.pos.y = bact->position.y + robo->dock_pos.y;
-        arg146.pos.z = bact->position.z + robo->dock_pos.z;
+        arg146.pos = bact->position + robo->dock_pos;
 
         NC_STACK_ypabact *new_unit = robo->wrld->ypaworld_func146(&arg146);
 
@@ -3316,12 +3160,8 @@ void NC_STACK_yparobo::buildConquer()
         v20 = enrg;
 
     ypaworld_arg136 arg136;
-    arg136.stPos.x = bact->position.x + robo->dock_pos.x;
-    arg136.stPos.y = bact->position.y + robo->dock_pos.y - 100.0;
-    arg136.stPos.z = bact->position.z + robo->dock_pos.z;
-    arg136.vect.z = 0;
-    arg136.vect.x = 0;
-    arg136.vect.y = 20000.0;
+    arg136.stPos = bact->position + robo->dock_pos - vec3d::OY(100.0);
+    arg136.vect = vec3d::OY(20000.0);
     arg136.flags = 0;
 
     robo->wrld->ypaworld_func136(&arg136);
@@ -3338,15 +3178,10 @@ void NC_STACK_yparobo::buildConquer()
     }
     else
     {
-        float v9  = arg92.pos.x - bact->position.x;
-        float v10 = arg92.pos.z - bact->position.z;
-
         robo_loct1 loct;
 
-        loct.distance = sqrt(v9 * v9 + v10 * v10);
-        loct.tgt_pos.x = arg92.pos.x;
-        loct.tgt_pos.z = arg92.pos.z;
-        loct.tgt_pos.y = 0;
+        loct.distance = (arg92.pos.XZ() - bact->position.XZ()).length();
+        loct.tgt_pos = arg92.pos.X0Z();
 
         loct.tgt_bact = NULL;
 
@@ -3425,12 +3260,8 @@ void NC_STACK_yparobo::buildDefense()
         }
 
         ypaworld_arg136 arg136;
-        arg136.stPos.x = bact->position.x + robo->dock_pos.x;
-        arg136.stPos.y = bact->position.y + robo->dock_pos.y - 100.0;
-        arg136.stPos.z = bact->position.z + robo->dock_pos.z;
-        arg136.vect.z = 0;
-        arg136.vect.x = 0;
-        arg136.vect.y = 20000.0;
+        arg136.stPos = bact->position + robo->dock_pos - vec3d::OY(100.0);
+        arg136.vect = vec3d::OY(20000.0);
         arg136.flags = 0;
 
         robo->wrld->ypaworld_func136(&arg136);
@@ -3446,14 +3277,9 @@ void NC_STACK_yparobo::buildDefense()
         }
         else
         {
-            float v7 = arg132.tgt.pbact->position.x - bact->position.x;
-            float v8 = arg132.tgt.pbact->position.z - bact->position.z;
-
             robo_loct1 loct;
-            loct.distance = sqrt(v7 * v7 + v8 * v8);
-            loct.tgt_pos.x = arg132.tgt.pbact->position.x;
-            loct.tgt_pos.y = arg132.tgt.pbact->position.y;
-            loct.tgt_pos.z = arg132.tgt.pbact->position.z;
+            loct.distance = (arg132.tgt.pbact->position.XZ() - bact->position.XZ()).length();
+            loct.tgt_pos = arg132.tgt.pbact->position;
 
             int v9 = v18;
             if ( v9 >= 40000 )
@@ -3522,12 +3348,8 @@ void NC_STACK_yparobo::buildRobo()
     if ( yparobo_func132(&arg132) )
     {
         ypaworld_arg136 arg136;
-        arg136.stPos.x = bact->position.x + robo->dock_pos.x;
-        arg136.stPos.y = bact->position.y + robo->dock_pos.y - 100.0;
-        arg136.stPos.z = bact->position.z + robo->dock_pos.z;
-        arg136.vect.z = 0;
-        arg136.vect.x = 0;
-        arg136.vect.y = 20000.0;
+        arg136.stPos = bact->position + robo->dock_pos - vec3d::OY(100.0);
+        arg136.vect = vec3d::OY(20000.0);
         arg136.flags = 0;
 
         robo->wrld->ypaworld_func136(&arg136);
@@ -3542,14 +3364,9 @@ void NC_STACK_yparobo::buildRobo()
         }
         else
         {
-            float v4 = arg132.tgt.pbact->position.x - bact->position.x;
-            float v5 = arg132.tgt.pbact->position.z - bact->position.z;
-
             robo_loct1 loct;
-            loct.distance = sqrt(v4 * v4 + v5 * v5);
-            loct.tgt_pos.x = arg132.tgt.pbact->position.x;
-            loct.tgt_pos.y = arg132.tgt.pbact->position.y;
-            loct.tgt_pos.z = arg132.tgt.pbact->position.z;
+            loct.distance = (arg132.tgt.pbact->position.XZ() - bact->position.XZ()).length();
+            loct.tgt_pos = arg132.tgt.pbact->position;
 
             int v6 = arg132.tgt.pbact->energy_max / 2;
             if ( v6 < 120000 )
@@ -3599,12 +3416,8 @@ void NC_STACK_yparobo::buildReconnoitre()
     __NC_STACK_ypabact *bact = &ypabact;
 
     ypaworld_arg136 arg136;
-    arg136.stPos.x = bact->position.x + robo->dock_pos.x;
-    arg136.stPos.y = bact->position.y + robo->dock_pos.y + -100.0;
-    arg136.stPos.z = bact->position.z + robo->dock_pos.z;
-    arg136.vect.z = 0;
-    arg136.vect.x = 0;
-    arg136.vect.y = 20000.0;
+    arg136.stPos = bact->position + robo->dock_pos - vec3d::OY(100.0);
+    arg136.vect = vec3d::OY(20000.0);
     arg136.flags = 0;
 
     robo->wrld->ypaworld_func136(&arg136);
@@ -5530,20 +5343,12 @@ void NC_STACK_yparobo::AI_layer3(update_msg *arg)
 
     int a4 = getBACT_bactCollisions();
 
-    float tmp = sqrt(bact->target_vec.x * bact->target_vec.x + bact->target_vec.y * bact->target_vec.y + bact->target_vec.z * bact->target_vec.z);
+    float tmp = bact->target_vec.length();
 
     if ( tmp <= 0.0 )
-    {
-        bact->target_dir.y = 0;
-        bact->target_dir.x = 0;
-        bact->target_dir.z = 0;
-    }
+        bact->target_dir = vec3d(0.0, 0.0, 0.0);
     else
-    {
-        bact->target_dir.x = bact->target_vec.x / tmp;
-        bact->target_dir.y = bact->target_vec.y / tmp;
-        bact->target_dir.z = bact->target_vec.z / tmp;
-    }
+        bact->target_dir = bact->target_vec / tmp;
 
     if ( bact->status == BACT_STATUS_NORMAL )
     {
@@ -5653,20 +5458,12 @@ void NC_STACK_yparobo::User_layer(update_msg *arg)
 
     __NC_STACK_ypabact *bact = robo->bact_internal;
 
-    float v36 = sqrt(bact->target_vec.x * bact->target_vec.x + bact->target_vec.y * bact->target_vec.y + bact->target_vec.z * bact->target_vec.z);
+    float v36 = bact->target_vec.length();
 
     if ( v36 <= 0.0 )
-    {
-        bact->target_dir.y = 0;
-        bact->target_dir.x = bact->target_dir.y;
-        bact->target_dir.z = 0;
-    }
+        bact->target_dir = vec3d(0.0, 0.0, 0.0);
     else
-    {
-        bact->target_dir.x = bact->target_vec.x / v36;
-        bact->target_dir.y = bact->target_vec.y / v36;
-        bact->target_dir.z = bact->target_vec.z / v36;
-    }
+        bact->target_dir = bact->target_vec / v36;
 
     if ( bact->status == BACT_STATUS_NORMAL )
     {
@@ -5717,87 +5514,33 @@ void NC_STACK_yparobo::Move(move_msg *arg)
 
     bact->old_pos = bact->position;
 
-    float v46 = 0.0;
-    float v48 = 1.0;
-    float v50 = 0.0;
-
-
-    float v63;
+    vec3d v63;
     if ( bact->status == BACT_STATUS_DEAD )
-        v63 = bact->mass * 39.2266;
+        v63 = vec3d::OY(bact->mass * 39.2266);
     else
-        v63 = bact->mass * 9.80665;
+        v63 = vec3d::OY(bact->mass * 9.80665);
 
 
-    float v52, v54, v56, v65;
-    if ( arg->flag & 1 )
+    vec3d v52(0.0, 0.0, 0.0);
+    if ( !(arg->flag & 1) )
+        v52 = vec3d::OY(-robo->field_c);
+
+    vec3d v51(0.0, 0.0, 0.0);
+    if ( !(arg->flag & 1) )
+        v51 = arg->vec * bact->thraction;
+
+    vec3d v57 = v63 + v51 - bact->fly_dir * (bact->fly_dir_length * bact->airconst) + v52;
+
+    if ( v57.length() > 0.0 )
     {
-        v52 = 0.0;
-        v54 = 0.0;
-        v56 = 0.0;
-        v65 = 0.0;
-    }
-    else
-    {
-        v52 = 0.0;
-        v54 = -1.0;
-        v56 = 0.0;
-        v65 = robo->field_c;
-    }
+        vec3d v67 = bact->fly_dir * bact->fly_dir_length + v57 * (arg->field_0 / bact->mass);
 
-    float v51, v53, v55, v64;
-    if ( arg->flag & 1 )
-    {
-        v55 = 0.0;
-        v53 = 0.0;
-        v64 = 0.0;
-        v51 = 0.0;
-    }
-    else
-    {
-        v51 = arg->vec.x;
-        v55 = arg->vec.y;
-        v53 = arg->vec.z;
-        v64 = bact->thraction;
-    }
-
-    float v61 = bact->fly_dir_length * bact->airconst;
-
-    float v57 = v46 * v63 + v51 * v64 + -bact->fly_dir.x * v61 + v52 * v65;
-    float v58 = v48 * v63 + v55 * v64 + -bact->fly_dir.y * v61 + v54 * v65;
-    float v44 = v50 * v63 + v53 * v64 + -bact->fly_dir.z * v61 + v56 * v65;
-
-    float v62 = sqrt(v58 * v58 + v57 * v57 + v44 * v44);
-
-    if ( v62 > 0.0 )
-    {
-        float v43 = v62 / bact->mass * arg->field_0;
-
-        float v66 = bact->fly_dir.y * bact->fly_dir_length + v58 * v43 / v62;
-        float v67 = bact->fly_dir.x * bact->fly_dir_length + v57 * v43 / v62;
-        float v68 = bact->fly_dir.z * bact->fly_dir_length + v44 * v43 / v62;
-
-        float v59 = sqrt(v66 * v66 + v67 * v67 + v68 * v68);
-
-        if ( v59 > 0.0 )
-        {
-            v67 /= v59;
-            v66 /= v59;
-            v68 /= v59;
-        }
-
-        robo->bact_internal->fly_dir.x = v67;
-        robo->bact_internal->fly_dir.y = v66;
-        robo->bact_internal->fly_dir.z = v68;
-        robo->bact_internal->fly_dir_length = v59;
+        robo->bact_internal->fly_dir_length = v67.normalise();
+        robo->bact_internal->fly_dir = v67;
     }
 
     if ( fabs(bact->fly_dir_length) > 0.1 )
-    {
-        bact->position.x += bact->fly_dir.x * bact->fly_dir_length * arg->field_0 * 6.0;
-        bact->position.y += bact->fly_dir.y * bact->fly_dir_length * arg->field_0 * 6.0;
-        bact->position.z += bact->fly_dir.z * bact->fly_dir_length * arg->field_0 * 6.0;
-    }
+        bact->position += bact->fly_dir * (bact->fly_dir_length * arg->field_0 * 6.0);
 
     CorrectPositionInLevelBox(NULL);
 
@@ -5806,9 +5549,7 @@ void NC_STACK_yparobo::Move(move_msg *arg)
         if (robo->guns[i].gun_obj)
         {
             bact_arg80 arg80;
-            arg80.pos.x = bact->position.x + bact->rotation.m00 * robo->guns[i].pos.x + bact->rotation.m10 * robo->guns[i].pos.y + bact->rotation.m20 * robo->guns[i].pos.z;
-            arg80.pos.y = bact->position.y + bact->rotation.m01 * robo->guns[i].pos.x + bact->rotation.m11 * robo->guns[i].pos.y + bact->rotation.m21 * robo->guns[i].pos.z;
-            arg80.pos.z = bact->position.z + bact->rotation.m02 * robo->guns[i].pos.x + bact->rotation.m12 * robo->guns[i].pos.y + bact->rotation.m22 * robo->guns[i].pos.z;
+            arg80.pos = bact->position + bact->rotation.Transpose().Transform( robo->guns[i].pos );
             arg80.field_C = 4;
 
             robo->guns[i].gun_obj->SetPosition(&arg80);
@@ -6000,17 +5741,15 @@ size_t NC_STACK_yparobo::SetPosition(bact_arg80 *arg)
 
     for (int i = 0; i < 8; i++)
     {
-        roboGun *gun = &robo->guns[i];
+        roboGun &gun = robo->guns[i];
 
-        if (gun->gun_obj)
+        if (gun.gun_obj)
         {
             bact_arg80 v11;
-            v11.pos.x = bact->position.x + bact->rotation.m00 * gun->pos.x + bact->rotation.m10 * gun->pos.y + bact->rotation.m20 * gun->pos.z;
-            v11.pos.y = bact->position.y + bact->rotation.m01 * gun->pos.x + bact->rotation.m11 * gun->pos.y + bact->rotation.m21 * gun->pos.z;
-            v11.pos.z = bact->position.z + bact->rotation.m02 * gun->pos.x + bact->rotation.m12 * gun->pos.y + bact->rotation.m22 * gun->pos.z;
+            v11.pos = bact->position + bact->rotation.Transpose().Transform(gun.pos);
             v11.field_C = 4;
 
-            gun->gun_obj->SetPosition(&v11);
+            gun.gun_obj->SetPosition(&v11);
         }
     }
 
@@ -7080,20 +6819,7 @@ void NC_STACK_yparobo::setROBO_proto(roboProto *proto)
 
         ypaworld_arg146 gun_req;
 
-        gun_req.pos.x = bact->position.x
-                        + bact->rotation.m00 * robo->guns[i].pos.x
-                        + bact->rotation.m10 * robo->guns[i].pos.y
-                        + bact->rotation.m20 * robo->guns[i].pos.z;
-
-        gun_req.pos.y = bact->position.y
-                        + bact->rotation.m01 * robo->guns[i].pos.x
-                        + bact->rotation.m11 * robo->guns[i].pos.y
-                        + bact->rotation.m21 * robo->guns[i].pos.z;
-
-        gun_req.pos.z = bact->position.z
-                        + bact->rotation.m02 * robo->guns[i].pos.x
-                        + bact->rotation.m12 * robo->guns[i].pos.y
-                        + bact->rotation.m22 * robo->guns[i].pos.z;
+        gun_req.pos = bact->position + bact->rotation.Transpose().Transform(robo->guns[i].pos);
 
         gun_req.vehicle_id = robo->guns[i].robo_gun_type;
 
