@@ -135,14 +135,10 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
 
     int v5 = ufo->ywo->ypaworld_func145(bact);
 
-    float v108 = sqrt(  POW2(bact->target_vec.x) + POW2(bact->target_vec.y) + POW2(bact->target_vec.z)  );
+    float v108 = bact->target_vec.length();
 
     if ( v108 != 0.0 )
-    {
-        bact->target_dir.x = bact->target_vec.x / v108;
-        bact->target_dir.y = bact->target_vec.y / v108;
-        bact->target_dir.z = bact->target_vec.z / v108;
-    }
+        bact->target_dir = bact->target_vec / v108;
 
     int v8 = !bact->secndTtype && v108 < 1200.0;
 
@@ -216,32 +212,20 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
                 Move(&arg74);
 
                 ypaworld_arg136 arg136_2;
-                arg136_2.stPos.x = bact->old_pos.x;
-                arg136_2.stPos.y = bact->old_pos.y;
-                arg136_2.stPos.z = bact->old_pos.z;
+                arg136_2.stPos = bact->old_pos;
 
-                float v29 = sqrt( POW2( bact->position.z - bact->old_pos.z ) + POW2( bact->position.x - bact->old_pos.x ) );
+                vec2d ttmp = bact->position.XZ() - bact->old_pos.XZ();
+
+                float v29 = ttmp.length();
 
                 if ( v29 >= 0.01 )
-                {
-                    arg136_2.vect.x = (bact->position.x - bact->old_pos.x) * 300.0 / v29;
-                    arg136_2.vect.y = 0;
-                    arg136_2.vect.z = (bact->position.z - bact->old_pos.z) * 300.0 / v29;
-                }
+                    arg136_2.vect = vec3d::X0Z(ttmp * 300.0 / v29);
                 else
-                {
-                    arg136_2.vect.x = bact->rotation.m20 * 300.0;
-                    arg136_2.vect.y = bact->rotation.m21 * 300.0;
-                    arg136_2.vect.z = bact->rotation.m22 * 300.0;
-                }
+                    arg136_2.vect = bact->rotation.AxisZ() * 300.0;
 
                 ypaworld_arg136 arg136;
-                arg136.stPos.x = bact->position.x;
-                arg136.stPos.y = bact->position.y;
-                arg136.stPos.z = bact->position.z;
-                arg136.vect.x = 0;
-                arg136.vect.y = bact->height;
-                arg136.vect.z = 0;
+                arg136.stPos = bact->position;
+                arg136.vect = vec3d::OY( bact->height );
 
                 arg136_2.flags = 0;
                 arg136.flags = 0;
@@ -255,17 +239,9 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
                     bact_arg88 arg88;
 
                     if ( arg136_2.isect && arg136_2.tVal * 300.0 < bact->radius )
-                    {
-                        arg88.pos1.x = arg136_2.skel->polygons[arg136_2.polyID].A;
-                        arg88.pos1.y = arg136_2.skel->polygons[arg136_2.polyID].B;
-                        arg88.pos1.z = arg136_2.skel->polygons[arg136_2.polyID].C;
-                    }
+                        arg88.pos1 = arg136_2.skel->polygons[arg136_2.polyID].Normal();
                     else
-                    {
-                        arg88.pos1.x = arg136.skel->polygons[arg136.polyID].A;
-                        arg88.pos1.y = arg136.skel->polygons[arg136.polyID].B;
-                        arg88.pos1.z = arg136.skel->polygons[arg136.polyID].C;
-                    }
+                        arg88.pos1 = arg136.skel->polygons[arg136.polyID].Normal();
 
                     Recoil(&arg88);
                 }
@@ -305,58 +281,52 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
                     {
                         ufo->field_1c |= 9;
 
-                        float v104 = bact->rotation.m22 * arg136_2.skel->polygons[arg136_2.polyID].C + bact->rotation.m20 * arg136_2.skel->polygons[arg136_2.polyID].A;
+                        vec2d polv = arg136_2.skel->polygons[arg136_2.polyID].Normal().XZ();
+                        vec2d axsz = bact->rotation.AxisZ().XZ();
 
-                        float tmpsq = sqrt( POW2(bact->rotation.m20) + POW2(bact->rotation.m22) );
+                        float v104 = axsz.dot( polv );
 
-                        NDIV_CARRY(tmpsq);
-
-                        v104 /= tmpsq;
-
-                        tmpsq = sqrt( POW2(arg136_2.skel->polygons[arg136_2.polyID].C) + POW2(arg136_2.skel->polygons[arg136_2.polyID].A) );
+                        float tmpsq = axsz.length();
 
                         NDIV_CARRY(tmpsq);
 
                         v104 /= tmpsq;
 
-                        if ( v104 > 1.0 )
-                            v104 = 1.0;
+                        tmpsq = polv.length();
 
-                        if ( v104 < -1.0 )
-                            v104 = -1.0;
+                        NDIV_CARRY(tmpsq);
 
-                        ufo->field_18 = C_PI_2 - acos(v104);
+                        v104 /= tmpsq;
+
+                        ufo->field_18 = C_PI_2 - clp_acos(v104);
                     }
                 }
                 else if ( ufo->field_10 <= 0.0 )
                 {
                     if ( arg136.isect )
                     {
-                        float v104 = bact->rotation.m20 * bact->target_dir.x + bact->rotation.m22 * bact->target_dir.z;
+                        vec2d tgt2d = bact->target_dir.XZ();
+                        vec2d axsz = bact->rotation.AxisZ().XZ();
 
-                        float tmpsq = sqrt(POW2(bact->rotation.m20) + POW2(bact->rotation.m22));
+                        float v104 = tgt2d.dot( axsz );
 
-                        NDIV_CARRY(tmpsq);
-
-                        v104 /= tmpsq;
-
-                        tmpsq = sqrt(POW2(bact->target_dir.x) + POW2(bact->target_dir.z));
+                        float tmpsq = axsz.length();
 
                         NDIV_CARRY(tmpsq);
 
                         v104 /= tmpsq;
 
-                        if ( v104 > 1.0 )
-                            v104 = 1.0;
+                        tmpsq = tgt2d.length();
 
-                        if ( v104 < -1.0 )
-                            v104 = -1.0;
+                        NDIV_CARRY(tmpsq);
 
-                        float v121 = acos(v104);
+                        v104 /= tmpsq;
+
+                        float v121 = clp_acos(v104);
 
                         if ( v121 > 0.2 )
                         {
-                            if ( bact->rotation.m20 * bact->target_dir.z - bact->rotation.m22 * bact->target_dir.x < 0.0 )
+                            if ( axsz.cross( tgt2d ) < 0.0 )
                                 v121 = -v121;
 
                             ufo->field_18 = v121;
@@ -524,12 +494,8 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
 
                 ypaworld_arg136 arg136_1;
 
-                arg136_1.stPos.x = bact->position.x;
-                arg136_1.stPos.y = bact->position.y;
-                arg136_1.stPos.z = bact->position.z;
-                arg136_1.vect.x = 0;
-                arg136_1.vect.y = bact->overeof + 50.0;
-                arg136_1.vect.z = 0;
+                arg136_1.stPos = bact->position;
+                arg136_1.vect = vec3d::OY(bact->overeof + 50.0);
                 arg136_1.flags = 0;
 
                 ufo->ywo->ypaworld_func136(&arg136_1);
@@ -598,11 +564,8 @@ void NC_STACK_ypaufo::User_layer(update_msg *arg)
         else
         {
             ypaworld_arg136 arg136;
-            arg136.stPos.x = bact->position.x;
-            arg136.stPos.y = bact->position.y;
-            arg136.stPos.z = bact->position.z;
-            arg136.vect.x = 0;
-            arg136.vect.z = 0;
+            arg136.stPos = bact->position;
+            arg136.vect = vec3d(0.0, 0.0, 0.0);
 
             if ( bact->viewer_overeof <= bact->viewer_radius )
                 arg136.vect.y = bact->viewer_radius * 1.5;
@@ -716,16 +679,11 @@ void NC_STACK_ypaufo::User_layer(update_msg *arg)
         bact_arg79 arg79;
 
         arg79.tgType = BACT_TGT_TYPE_DRCT;
-        arg79.tgt_pos.x = bact->rotation.m20;
-        arg79.tgt_pos.y = bact->rotation.m21;
-        arg79.tgt_pos.z = bact->rotation.m22;
+        arg79.tgt_pos = bact->rotation.AxisZ();
 
         bact_arg106 arg106;
         arg106.field_0 = 5;
-        arg106.field_4.x = bact->rotation.m20;
-        arg106.field_4.y = bact->rotation.m21;
-        arg106.field_4.z = bact->rotation.m22;
-
+        arg106.field_4 = bact->rotation.AxisZ();
 
         if ( UserTargeting(&arg106) )
         {
@@ -736,9 +694,7 @@ void NC_STACK_ypaufo::User_layer(update_msg *arg)
         if ( arg->inpt->but_flags & 1 || arg->inpt->but_flags & 2 )
         {
             arg79.weapon = bact->weapon;
-            arg79.direction.x = bact->rotation.m20;
-            arg79.direction.y = bact->rotation.m21;
-            arg79.direction.z = bact->rotation.m22;
+            arg79.direction = bact->rotation.AxisZ();
             arg79.tgType = BACT_TGT_TYPE_NONE;
             arg79.g_time = bact->clock;
 
@@ -818,9 +774,7 @@ void NC_STACK_ypaufo::User_layer(update_msg *arg)
 
                 bact_arg105 arg105;
 
-                arg105.field_0.x = bact->rotation.m20;
-                arg105.field_0.y = bact->rotation.m21;
-                arg105.field_0.z = bact->rotation.m22;
+                arg105.field_0 = bact->rotation.AxisZ();
                 arg105.field_C = v88;
                 arg105.field_10 = bact->clock;
 
@@ -860,33 +814,21 @@ void NC_STACK_ypaufo::User_layer(update_msg *arg)
 
                 int v49 = 0;
 
-                float v94 = 0.0;
-                float v93 = 0.0;
-                float v92 = 0.0;
+                vec3d v93(0.0, 0.0, 0.0);
 
                 if ( arg137.coll_count )
                 {
 
 
                     for (int j = 0 ; j < arg137.coll_count; j++)
-                    {
-                        yw_137col *v50 = &arg137.collisions[j];
+                        v93 += arg137.collisions[j].pos2;
 
-                        v93 += v50->pos2.x;
-                        v94 += v50->pos2.z;
-                        v92 += v50->pos2.y;
-                    }
-
-                    float v89 = sqrt( POW2(v93) + POW2(v92) + POW2(v94) );
+                    float v89 = v93.length();
 
                     bact_arg88 arg88;
 
                     if ( v89 != 0.0 )
-                    {
-                        arg88.pos1.x = v93 / v89;
-                        arg88.pos1.y = v92 / v89;
-                        arg88.pos1.z = v94 / v89;
-                    }
+                        arg88.pos1 = v93 / v89;
                     else
                         arg88.pos1 = bact->fly_dir;
 
@@ -900,13 +842,8 @@ void NC_STACK_ypaufo::User_layer(update_msg *arg)
                 if ( v49 == 0 )
                 {
                     ypaworld_arg136 arg136;
-                    arg136.stPos.x = bact->old_pos.x;
-                    arg136.stPos.y = bact->old_pos.y;
-                    arg136.stPos.z = bact->old_pos.z;
-
-                    arg136.vect.x = bact->position.x - bact->old_pos.x;
-                    arg136.vect.y = bact->position.y - bact->old_pos.y;
-                    arg136.vect.z = bact->position.z - bact->old_pos.z;
+                    arg136.stPos = bact->old_pos;
+                    arg136.vect = bact->position - bact->old_pos;
 
                     arg136.flags = 0;
 
@@ -918,10 +855,7 @@ void NC_STACK_ypaufo::User_layer(update_msg *arg)
 
                         bact_arg88 arg88;
 
-                        arg88.pos1.x = arg136.skel->polygons[arg136.polyID].A;
-                        arg88.pos1.y = arg136.skel->polygons[arg136.polyID].B;
-                        arg88.pos1.z = arg136.skel->polygons[arg136.polyID].C;
-
+                        arg88.pos1 = arg136.skel->polygons[arg136.polyID].Normal();
 
                         Recoil(&arg88);
 
@@ -947,8 +881,8 @@ void NC_STACK_ypaufo::User_layer(update_msg *arg)
 
                         arg180.effects_type = 5;
                         arg180.field_4 = 1.0;
-                        arg180.field_8 = v93 * 10.0 + bact->position.x;
-                        arg180.field_C = v94 * 10.0 + bact->position.z;
+                        arg180.field_8 = v93.x * 10.0 + bact->position.x;
+                        arg180.field_C = v93.z * 10.0 + bact->position.z;
 
                         ufo->ywo->ypaworld_func180(&arg180);
                     }
@@ -972,91 +906,46 @@ void NC_STACK_ypaufo::Move(move_msg *arg)
     else
         v55 = bact->mass * 9.80665;
 
-    float v47, v48, v59;
+    vec3d mv(0.0, 0.0, 0.0);
 
-    if ( arg->flag & 1 )
+    if ( !(arg->flag & 1) )
     {
-        v47 = 0.0;
-        v48 = 0.0;
-        v59 = 0.0;
-    }
-    else
-    {
-        float v9 = sqrt( POW2(bact->rotation.m20) + POW2(bact->rotation.m22) );
+        vec3d az = bact->rotation.AxisZ().X0Z();
+        float v9 = az.length();
 
         if ( v9 <= 0.001 )
-        {
-            v47 = -bact->rotation.m10;
-            v48 = -bact->rotation.m12;
-
-            v59 = ufo->field_14;
-        }
+            mv = -bact->rotation.AxisY().X0Z() * ufo->field_14;
         else
-        {
-            v47 = bact->rotation.m20 / v9;
-            v48 = bact->rotation.m22 / v9;
-
-            v59 = bact->thraction;
-        }
+            mv = az * (bact->thraction / v9);
     }
 
-    float v44, v54;
+    float v44 = 0.0;
 
-    if ( arg->flag & 1 )
-    {
-        v44 = 0.0;
-        v54 = 0.0;
-    }
-    else
-    {
-        v44 = -1.0;
-        v54 = ufo->field_14;
-    }
+    if ( !(arg->flag & 1) )
+        v44 = -1.0 * ufo->field_14;
 
-    float v18 = fabs(bact->fly_dir_length) * bact->airconst;
+    vec3d v45 = vec3d::OY(v55) + mv - bact->fly_dir * (fabs(bact->fly_dir_length) * bact->airconst) + vec3d::OY(v44);
 
-    float v45 = 0.0 * v55 + v47 * v59 + -bact->fly_dir.x * v18 + 0.0 * v54;
-    float v46 = 1.0 * v55 + 0.0 * v59 + -bact->fly_dir.y * v18 + v44 * v54;
-    float v49 = 0.0 * v55 + v48 * v59 + -bact->fly_dir.z * v18 + 0.0 * v54;
-
-    float v52 = sqrt( POW2(v45) + POW2(v46) + POW2(v49) );
-
+    float v52 = v45.length();
     if ( v52 > 0.0 )
     {
-        float v26 = v52 / bact->mass * arg->field_0;
+        vec3d v42 = bact->fly_dir * bact->fly_dir_length + v45 * (arg->field_0 / bact->mass);
 
-        float v56 = bact->fly_dir.y * bact->fly_dir_length + v46 * v26 / v52;
-        float v42 = bact->fly_dir.x * bact->fly_dir_length + v45 * v26 / v52;
-        float v43 = bact->fly_dir.z * bact->fly_dir_length + v49 * v26 / v52;
-
-        float v51 = sqrt( POW2(v56) + POW2(v42) + POW2(v43) );
-
+        float v51 = v42.length();
         if ( v51 > 0.0 )
-        {
             v42 /= v51;
-            v56 /= v51;
-            v43 /= v51;
-        }
 
-        bact->fly_dir.x = v42;
-        bact->fly_dir.y = v56;
-        bact->fly_dir.z = v43;
+        bact->fly_dir = v42;
 
         bact->fly_dir_length = v51;
     }
 
-    float a1x = bact->fly_dir.x * bact->fly_dir_length * arg->field_0 * 6.0;
-    float a1y = bact->fly_dir.y * bact->fly_dir_length * arg->field_0 * 6.0;
-    float a1z = bact->fly_dir.z * bact->fly_dir_length * arg->field_0 * 6.0;
+    vec3d a1v = bact->fly_dir * (bact->fly_dir_length * arg->field_0 * 6.0);
 
     if ( fabs(bact->fly_dir_length) > 0.1 )
-    {
-        bact->position.x += a1x;
-        bact->position.y += a1y;
-        bact->position.z += a1z;
-    }
+        bact->position += a1v;
 
-    ufo->field_10 -= sqrt( POW2(a1x) + POW2(a1y) + POW2(a1z) );
+    ufo->field_10 -= a1v.length();
 
     if ( ufo->field_10 < 0.0 )
         ufo->field_10 = 0;
