@@ -181,9 +181,7 @@ size_t NC_STACK_ypagun::func3(IDVList *stak)
 bool NC_STACK_ypagun::CheckPedestal()
 {
     ypaworld_arg136 arg136;
-    arg136.stPos.x = ypabact.position.x;
-    arg136.stPos.y = ypabact.position.y;
-    arg136.stPos.z = ypabact.position.z;
+    arg136.stPos = ypabact.position;
     arg136.vect.x = 0;
 
     if ( ypagun.gunFlags & GUN_FLAGS_FALLDOWN )
