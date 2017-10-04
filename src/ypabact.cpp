@@ -2195,16 +2195,15 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
                         v81 += v31->pos2;
                     }
 
-                    vec3d v52;
-
-                    if ( v81.normalise() != 0.0 )
-                        v52 = v81;
-                    else
-                        v52 = bact->fly_dir;
-
                     bact_arg88 arg88;
 
-                    arg88.pos1 = v52;
+                    float ln = v81.length();
+                    if ( ln != 0.0 )
+                        arg88.pos1 = v81 / ln;
+                    else
+                        arg88.pos1 = bact->fly_dir;
+
+
 
                     Recoil(&arg88);
 
@@ -4126,9 +4125,11 @@ size_t NC_STACK_ypabact::CrashOrLand(bact_arg86 *arg)
                         bact_arg88 arg88;
                         vec3d a2a;
 
-                        if ( v98.normalise() != 0.0 )
+                        float lnn = v98.length();
+
+                        if ( lnn != 0.0 )
                         {
-                            arg88.pos1 = v98;
+                            arg88.pos1 = v98 / lnn;
 
                             a2a = arg88.pos1;
                         }
@@ -5116,8 +5117,7 @@ void NC_STACK_ypabact::GetFormationPosition(bact_arg94 *arg)
 {
     __NC_STACK_ypabact *bact = &ypabact;
 
-    vec3d v2d = bact->rotation.AxisZ();
-    v2d.y = 0;
+    vec3d v2d = bact->rotation.AxisZ().X0Z();
     v2d.normalise();
 
     arg->pos1 = bact->position - v2d * ( (arg->field_0 / 3 + 1) * 150.0 );
@@ -5243,14 +5243,12 @@ void NC_STACK_ypabact::HandBrake(update_msg *arg)
         {
             bact->rotation.SetY( vec3d(0.0, 1.0, 0.0) );
 
-            vec3d axisX = bact->rotation.AxisX();
-            axisX.y = 0.0;
+            vec3d axisX = bact->rotation.AxisX().X0Z();
             axisX.normalise();
 
             bact->rotation.SetX( axisX );
 
-            vec3d axisZ = bact->rotation.AxisZ();
-            axisZ.y = 0.0;
+            vec3d axisZ = bact->rotation.AxisZ().X0Z();
             axisZ.normalise();
 
             bact->rotation.SetZ( axisZ );
