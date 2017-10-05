@@ -860,6 +860,8 @@ size_t NC_STACK_particle::func6(IFFile **file)
 
 void particle_func65__sub0__sub0(NC_STACK_particle::__NC_STACK_particle *prtcl, NC_STACK_particle::Context *tp1, vec3d *pos1, vec3d *pos2, float a4)
 {
+    NC_STACK_particle::Particle *cur = tp1->field_C;
+
     tp1->field_C++;
 
     if (tp1->field_C >= tp1->tp2_end)
@@ -878,10 +880,8 @@ void particle_func65__sub0__sub0(NC_STACK_particle::__NC_STACK_particle *prtcl, 
     vec3d v12 = vec3d(particleRand(), particleRand(), particleRand()) + *pos1;
     float v16 = v12.length();
 
-    NC_STACK_particle::Particle *v7 = tp1->field_C;
-
-    v7->vec  = v12 * (prtcl->field_9c / v16);
-    v7->pos = v7->vec * a4 + *pos2;
+    cur->vec  = v12 * (prtcl->field_9c / v16);
+    cur->pos = cur->vec * a4 + *pos2;
 }
 
 void particle_func65__sub0__sub1(NC_STACK_particle::__NC_STACK_particle *prtcl, NC_STACK_particle::Particle *tp2, area_arg_65 *arg, float a3, unsigned int a4)
