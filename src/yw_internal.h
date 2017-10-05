@@ -24,9 +24,7 @@ struct video_mode_node : public nnode
 struct struct_44dbf8
 {
     UAskeleton::Data *sklt;
-    float pos_x;
-    float pos_y;
-    float pos_z;
+    vec3d pos;
     int sec_x;
     int sec_y;
     cellArea *p_cell;
@@ -45,13 +43,6 @@ struct stru_a3
     float z;
     float smooth_height;
 };
-
-struct yw_137loc
-{
-    int field_0;
-    vec3d pos;
-};
-
 
 int VhclProtoParser(scrCallBack *);
 int WeaponProtoParser(scrCallBack *);
@@ -188,9 +179,9 @@ void yw_InitSuperItems(_NC_STACK_ypaworld *yw);
 void sub_44F748(_NC_STACK_ypaworld *yw);
 int sb_0x451034(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw);
 void splashScreen_OutText(_NC_STACK_ypaworld *yw, NC_STACK_display *w3d, const char *txt, int x, int y);
-void sub_44DBF8(_NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, struct_44dbf8 *a6, int flags);
-void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg);
-void sub_44D8B8(ypaworld_arg136 *arg, struct_44dbf8 *loc);
+void sub_44DBF8(_NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, struct_44dbf8 &a6, int flags);
+void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 &arg);
+void sub_44D8B8(ypaworld_arg136 *arg, const struct_44dbf8 &loc);
 
 void ypaworld_func2__sub0__sub0(_NC_STACK_ypaworld *yw);
 void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact1, __NC_STACK_ypabact *bact2);
@@ -208,7 +199,7 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
 void ypaworld_func148__sub0(_NC_STACK_ypaworld *yw, int x, int y);
 int ypaworld_func148__sub1(_NC_STACK_ypaworld *yw, int id, int a4, int x, int y, int ownerID2, char blg_ID);
 
-void ypaworld_func137__sub0(ypaworld_arg137 *arg, struct_44dbf8 *a2);
+void ypaworld_func137__sub0(ypaworld_arg137 *arg, const struct_44dbf8 &a2);
 
 
 void create_squad_man(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw);

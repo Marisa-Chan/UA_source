@@ -875,20 +875,13 @@ void particle_func65__sub0__sub0(NC_STACK_particle::__NC_STACK_particle *prtcl, 
             tp1->field_8 = tp1->tp2;
     }
 
-    float v12 = particleRand() + pos1->x;
-    float v13 = particleRand() + pos1->y;
-    float v14 = particleRand() + pos1->z;
-    float v16 = sqrt(v12 * v12 + v13 * v13 + v14 * v14);
+    vec3d v12 = vec3d(particleRand(), particleRand(), particleRand()) + *pos1;
+    float v16 = v12.length();
 
     NC_STACK_particle::Particle *v7 = tp1->field_C;
 
-    v7->vec.x  = v12 / v16 * prtcl->field_9c;
-    v7->vec.y = v13 / v16 * prtcl->field_9c;
-    v7->vec.z = v14 / v16 * prtcl->field_9c;
-
-    v7->pos.x = v7->vec.x * a4 + pos2->x;
-    v7->pos.y = v7->vec.y * a4 + pos2->y;
-    v7->pos.z = v7->vec.z * a4 + pos2->z;
+    v7->vec  = v12 * (prtcl->field_9c / v16);
+    v7->pos = v7->vec * a4 + *pos2;
 }
 
 void particle_func65__sub0__sub1(NC_STACK_particle::__NC_STACK_particle *prtcl, NC_STACK_particle::Particle *tp2, area_arg_65 *arg, float a3, unsigned int a4)
@@ -899,74 +892,56 @@ void particle_func65__sub0__sub1(NC_STACK_particle::__NC_STACK_particle *prtcl, 
 
     int v27 = -1;
 
-    float v31 = tp2->pos.x - ((glob->globSclRot.m00 + glob->globSclRot.m10) * a3 * 0.5);
-    float v32 = tp2->pos.y - ((glob->globSclRot.m01 + glob->globSclRot.m11) * a3 * 0.5);
-    float v33 = tp2->pos.z - ((glob->globSclRot.m02 + glob->globSclRot.m12) * a3 * 0.5);
+    vec3d v31 = tp2->pos - ((glob->globSclRot.AxisX() + glob->globSclRot.AxisY()) * a3 * 0.5);
 
-    float v35, v36, v37;
+    vec3d v37;//, v36, v37;
 
     for (int i = 0; i < 5; i++)
     {
         switch ( i )
         {
         case 0:
-            v37 = tp2->pos.x;
-            v36 = tp2->pos.y;
-            v35 = tp2->pos.z;
+            v37 = tp2->pos;
             break;
         case 1:
             v37 = v31;
-            v36 = v32;
-            v35 = v33;
             break;
         case 2:
-            v37 = v31 + pmat->m00 * a3;
-            v36 = v32 + pmat->m01 * a3;
-            v35 = v33 + pmat->m02 * a3;
+            v37 = v31 + pmat->AxisX() * a3;
             break;
         case 3:
-            v37 = v31 + (pmat->m00 + pmat->m10) * a3;
-            v36 = v32 + (pmat->m01 + pmat->m11) * a3;
-            v35 = v33 + (pmat->m02 + pmat->m12) * a3;
+            v37 = v31 + (pmat->AxisX() + pmat->AxisY()) * a3;
             break;
         case 4:
-            v37 = v31 + pmat->m10 * a3;
-            v36 = v32 + pmat->m11 * a3;
-            v35 = v33 + pmat->m12 * a3;
+            v37 = v31 + pmat->AxisY() * a3;
             break;
         }
 
-        v36 -= glob->globPos.y;
-        v37 -= glob->globPos.x;
-        v35 -= glob->globPos.z;
+        v37 -= glob->globPos;
 
         int v20 = 0;
 
-        float v30 = pmat->m00 * v37 + pmat->m01 * v36 + pmat->m02 * v35;
-        float v29 = pmat->m10 * v37 + pmat->m11 * v36 + pmat->m12 * v35;
-        float v34 = pmat->m20 * v37 + pmat->m21 * v36 + pmat->m22 * v35;
+        vec3d v30 = pmat->Transform(v37);
 
-        if (v34 < arg->minZ)
+        if (v30.z < arg->minZ)
             v20 = 16;
-        else if (v34 > arg->maxZ)
+        else if (v30.z > arg->maxZ)
             v20 = 32;
 
-        if ( v30 > v34 )
+        if ( v30.x > v30.z )
             v20 |= 2;
 
-        if ( -v34 > v30 )
+        if ( -v30.z > v30.x )
             v20 |= 1;
 
-        if ( v29 > v34 )
+        if ( v30.y > v30.z )
             v20 |= 8;
 
-        if ( -v34 > v29 )
+        if ( -v30.z > v30.y )
             v20 |= 4;
 
+        *v14 = v30;
         v14->flags = v20;
-        v14->x = v30;
-        v14->y = v29;
-        v14->z = v34;
 
         v27 &= v20;
         v14++;
@@ -1071,9 +1046,9 @@ void particle_func65__sub0(NC_STACK_particle::__NC_STACK_particle *prtcl, NC_STA
 
             v31->vec += tmp;
 
-            v31->pos.x += particleRand() * prtcl->field_a0 + v31->vec.x  * v59;
-            v31->pos.y += particleRand() * prtcl->field_a0 + v31->vec.y * v59;
-            v31->pos.z += particleRand() * prtcl->field_a0 + v31->vec.z * v59;
+            vec3d rnd = vec3d( particleRand(), particleRand(), particleRand() );
+
+            v31->pos += rnd * prtcl->field_a0 + v31->vec * v59;
 
             particle_func65__sub0__sub1(prtcl, v31, arg, a3a, v30);
 

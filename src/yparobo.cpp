@@ -3439,9 +3439,6 @@ void NC_STACK_yparobo::buildReconnoitre()
         loct.tgt_pos.y = 0;
         loct.tgt_pos.z = -((robo->vehicle_cellID / bact->secMaxX) + 0.5) * 1200.0;
 
-        float v5 = loct.tgt_pos.x - bact->position.x;
-        float v6 = loct.tgt_pos.z - bact->position.z;
-
         loct.energ = 10;
         loct.aggr = 25;
         loct.forbidden = 0;
@@ -3450,7 +3447,7 @@ void NC_STACK_yparobo::buildReconnoitre()
         loct.job = 5;
         loct.tgType = BACT_TGT_TYPE_CELL;
         loct.bad = 32;
-        loct.distance = sqrt(v5 * v5 + v6 * v6);
+        loct.distance = (loct.tgt_pos.XZ() - bact->position.XZ()).length();
         loct.tgt_bact = NULL;
 
         bact_node *nod = allocForce(&loct);

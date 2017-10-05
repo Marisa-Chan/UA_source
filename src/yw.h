@@ -1693,10 +1693,8 @@ struct ypaworld_arg136
 
 struct yw_137col
 {
-    int field_0;
     vec3d pos1;
     vec3d pos2;
-    int field_1C;
 };
 
 struct ypaworld_arg137

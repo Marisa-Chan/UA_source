@@ -367,7 +367,7 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
         }
         else
         {
-            if ( bact->primTtype != BACT_TGT_TYPE_CELL || sqrt( POW2(bact->primTpos.x - bact->position.x) + POW2(bact->primTpos.z - bact->position.z) ) <= 800.0 )
+            if ( bact->primTtype != BACT_TGT_TYPE_CELL || (bact->primTpos.XZ() - bact->position.XZ()).length() <= 800.0 )
             {
                 if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
                 {

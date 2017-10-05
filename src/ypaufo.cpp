@@ -592,7 +592,7 @@ void NC_STACK_ypaufo::User_layer(update_msg *arg)
 
 
             if ( bact->primTtype != BACT_TGT_TYPE_CELL
-                    || sqrt( POW2(bact->primTpos.x - bact->position.x) + POW2(bact->primTpos.z - bact->position.z) ) <= 800.0 )
+                    || (bact->primTpos.XZ() - bact->position.XZ()).length() <= 800.0 )
             {
                 if ( bact->status_flg & BACT_STFLAG_LAND )
                 {

@@ -1692,7 +1692,7 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
         if ( bact->target_dir.y != 0.0 )
             bact->target_dir.normalise();
 
-        float tmpsq = sqrt(POW2(arg136.vect.x) + POW2(arg136.vect.z));
+        float tmpsq = arg136.vect.XZ().length();
 
         NDIV_CARRY(tmpsq);
 
@@ -2426,10 +2426,7 @@ void NC_STACK_ypabact::FightWithBact(bact_arg75 *arg)
 
     if ( v16 == 2 )
     {
-        float v19 = fui->x - bact->position.x;
-        float v18 = fui->z - bact->position.z;
-
-        float v48 = sqrt( POW2(v19) + POW2(v18) );
+        float v48 = ( fui->XZ() - bact->position.XZ() ).length();
 
         if ( bact->status_flg & BACT_STFLAG_APPROACH )
         {
@@ -2702,10 +2699,7 @@ void NC_STACK_ypabact::FightWithSect(bact_arg75 *arg)
 
     int v65 = bact->parent_bacto == bact->host_station && bact->host_station && bact->host_station == a4;
 
-    float v12 = bact->position.z - fui->z;
-    float v13 = bact->position.x - fui->x;
-
-    float v62 = sqrt(POW2(v12) + POW2(v13));
+    float v62 = (bact->position.XZ() - fui->XZ()).length();
 
     int v15 = 0;
 
@@ -2725,10 +2719,7 @@ void NC_STACK_ypabact::FightWithSect(bact_arg75 *arg)
 
     if ( v15 == 2 )
     {
-        float v17 = fui->z - bact->position.z;
-        float v18 = fui->x - bact->position.x;
-
-        float v63 = sqrt( POW2(v17) + POW2(v18) );
+        float v63 = (fui->XZ() - bact->position.XZ()).length();
 
         if ( bact->status_flg & BACT_STFLAG_APPROACH )
         {
@@ -6262,7 +6253,7 @@ __NC_STACK_ypabact *sb_0x493984__sub1(__NC_STACK_ypabact *bact)
             if ( !a4 )
             {
 
-                float v17 = sqrt(POW2(v12.z - kid_unit->bact->position.z) + POW2(v12.x - kid_unit->bact->position.x));
+                float v17 = (v12.XZ() - kid_unit->bact->position.XZ()).length();
 
                 if ( !new_leader || (kid_unit->bact->bact_type != BACT_TYPES_UFO && v14 > v17) || (new_leader->bact_type == BACT_TYPES_UFO && (kid_unit->bact->bact_type != BACT_TYPES_UFO || v14 > v17 )) )
                 {

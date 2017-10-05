@@ -492,22 +492,11 @@ void yw_netApplyVhclDataI(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
             bact->fly_dir_length = 0;
         }
 
-        vec3d v47;
-        v47.x = dat->data[id].roll * C_2PI_127;
-        v47.y = dat->data[id].pitch * C_2PI_127;
-        v47.z = dat->data[id].yaw * C_2PI_127;
+        vec3d v47 = vec3d(dat->data[id].roll, dat->data[id].pitch, dat->data[id].yaw)  *  C_2PI_127;
 
         mat3x3 out = mat3x3::Euler(v47);
 
-        bact->netDRot.m00 = (out.m00 - bact->netRotation.m00) / dtime;
-        bact->netDRot.m01 = (out.m01 - bact->netRotation.m01) / dtime;
-        bact->netDRot.m02 = (out.m02 - bact->netRotation.m02) / dtime;
-        bact->netDRot.m10 = (out.m10 - bact->netRotation.m10) / dtime;
-        bact->netDRot.m11 = (out.m11 - bact->netRotation.m11) / dtime;
-        bact->netDRot.m12 = (out.m12 - bact->netRotation.m12) / dtime;
-        bact->netDRot.m20 = (out.m20 - bact->netRotation.m20) / dtime;
-        bact->netDRot.m21 = (out.m21 - bact->netRotation.m21) / dtime;
-        bact->netDRot.m22 = (out.m22 - bact->netRotation.m22) / dtime;
+        bact->netDRot = (out - bact->netRotation) / dtime;
 
         bact->rotation = bact->netRotation;
         bact->netRotation = out;
@@ -542,9 +531,7 @@ void yw_netApplyVhclDataE(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
 
             float dtime = tmstmp * 0.001;
 
-            bact->netDSpeed.x = (v73.x - bact->fly_dir.x * bact->fly_dir_length) / dtime;
-            bact->netDSpeed.y = (v73.y - bact->fly_dir.y * bact->fly_dir_length) / dtime;
-            bact->netDSpeed.z = (v73.z - bact->fly_dir.z * bact->fly_dir_length) / dtime;
+            bact->netDSpeed = (v73 - bact->fly_dir * bact->fly_dir_length) / dtime;
 
             float spd = bact->netDSpeed.length();
 
@@ -573,9 +560,7 @@ void yw_netApplyVhclDataE(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
             }
             else
             {
-                bact->fly_dir.x = (bact->position.x - bact->old_pos.x) / (dtime * 6.0);
-                bact->fly_dir.y = (bact->position.y - bact->old_pos.y) / (dtime * 6.0);
-                bact->fly_dir.z = (bact->position.z - bact->old_pos.z) / (dtime * 6.0);
+                bact->fly_dir = (bact->position - bact->old_pos) / (dtime * 6.0);
 
                 bact->fly_dir_length = bact->fly_dir.length();
                 if ( bact->fly_dir_length > 0.001 )
@@ -589,9 +574,7 @@ void yw_netApplyVhclDataE(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
                     bact->fly_dir.x = 0;
                 }
 
-                bact->netDSpeed.x = 0;
-                bact->netDSpeed.y = 0;
-                bact->netDSpeed.z = 0;
+                bact->netDSpeed = vec3d(0.0, 0.0, 0.0);
             }
 
             if ( dat->data[id].specialinfo & vhcldata::SI_DSETTED )
@@ -607,15 +590,7 @@ void yw_netApplyVhclDataE(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
 
             mat3x3 out = mat3x3::Euler(rot);
 
-            bact->netDRot.m00 = (out.m00 - bact->netRotation.m00) / dtime;
-            bact->netDRot.m01 = (out.m01 - bact->netRotation.m01) / dtime;
-            bact->netDRot.m02 = (out.m02 - bact->netRotation.m02) / dtime;
-            bact->netDRot.m10 = (out.m10 - bact->netRotation.m10) / dtime;
-            bact->netDRot.m11 = (out.m11 - bact->netRotation.m11) / dtime;
-            bact->netDRot.m12 = (out.m12 - bact->netRotation.m12) / dtime;
-            bact->netDRot.m20 = (out.m20 - bact->netRotation.m20) / dtime;
-            bact->netDRot.m21 = (out.m21 - bact->netRotation.m21) / dtime;
-            bact->netDRot.m22 = (out.m22 - bact->netRotation.m22) / dtime;
+            bact->netDRot = (out - bact->netRotation) / dtime;
 
             bact->rotation = out;
             bact->netRotation = out;
@@ -633,22 +608,14 @@ void yw_netApplyVhclDataE(__NC_STACK_ypabact *bact, _NC_STACK_ypaworld *yw, uame
             if ( bact->status_flg & BACT_STFLAG_LAND )
             {
                 ypaworld_arg136 v69;
-                v69.stPos.x = bact->position.x;
-                v69.stPos.y = bact->position.y;
-                v69.stPos.z = bact->position.z;
-                v69.vect.x = bact->rotation.m10 * 200.0;
-                v69.vect.y = bact->rotation.m11 * 200.0;
-                v69.vect.z = bact->rotation.m12 * 200.0;
+                v69.stPos = bact->position;
+                v69.vect = bact->rotation.AxisY() * 200.0;
                 v69.flags = 0;
 
                 yw->self_full->ypaworld_func136(&v69);
 
                 if ( v69.isect )
-                {
-                    bact->position.x = v69.isectPos.x - bact->rotation.m10 * bact->overeof;
-                    bact->position.y = v69.isectPos.y - bact->rotation.m11 * bact->overeof;
-                    bact->position.z = v69.isectPos.z - bact->rotation.m12 * bact->overeof;
-                }
+                    bact->position = v69.isectPos - bact->rotation.AxisY() * bact->overeof;
             }
 
             bact->energy = dat->data[id].energy;
@@ -1967,9 +1934,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             arg129.unit = 0;
         }
 
-        arg129.pos.x = seMsg->pos.x;
-        arg129.pos.y = seMsg->pos.y;
-        arg129.pos.z = seMsg->pos.z;
+        arg129.pos = seMsg->pos;
         arg129.field_10 = seMsg->energy;
         arg129.field_14 = seMsg->sectOwner;
 
@@ -3992,12 +3957,8 @@ bool yw_NetSetHostStations(_NC_STACK_ypaworld *yw, mapRobo *mapHosts, int hosts_
         strncpy(usr->players[owner].name, plData.name, 64);
 
         ypaworld_arg136 arg136;
-        arg136.stPos.x = place.x;
-        arg136.stPos.y = -30000.0;
-        arg136.stPos.z = place.z;
-        arg136.vect.y = 50000.0;
-        arg136.vect.x = 0;
-        arg136.vect.z = 0;
+        arg136.stPos = place.X0Z() - vec3d::OY(30000.0);
+        arg136.vect = vec3d::OY(50000.0);
         arg136.flags = 0;
 
         yw->self_full->ypaworld_func136(&arg136);

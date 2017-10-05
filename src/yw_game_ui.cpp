@@ -8218,10 +8218,7 @@ void ypaworld_func159__sub0__sub0(_NC_STACK_ypaworld *yw, yw_samples *smpls, con
 
         sub_4D6958(yw, unit, &smpls->field_4);
 
-        smpls->field_4.field_C.x = yw->field_1b84->fly_dir.x * yw->field_1b84->fly_dir_length;
-        smpls->field_4.field_C.y = yw->field_1b84->fly_dir.y * yw->field_1b84->fly_dir_length;
-        smpls->field_4.field_C.z = yw->field_1b84->fly_dir.z * yw->field_1b84->fly_dir_length;
-
+        smpls->field_4.field_C = yw->field_1b84->fly_dir * yw->field_1b84->fly_dir_length;
         startSound(&smpls->field_4, 0);
     }
 }
@@ -11354,75 +11351,51 @@ void ypaworld_func2__sub0__sub1(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact
 
 int yw_MouseFindCreationPoint(_NC_STACK_ypaworld *yw, winp_131arg *winp)
 {
-    VhclProto *vhcl = &yw->VhclProtos[bzda.field_2DC[bzda.field_8EC]];
+    const VhclProto &vhcl = yw->VhclProtos[bzda.field_2DC[bzda.field_8EC]];
 
-    float v47 = (float)(winp->move[0].x - (yw->screen_width / 2)) / (float)(yw->screen_width / 2);
-    float v49 = (float)(winp->move[0].y - (yw->screen_height / 2)) / (float)(yw->screen_height / 2);
-    float v50 = 1.0;
+    vec3d v47( (float)(winp->move[0].x - (yw->screen_width / 2)) / (float)(yw->screen_width / 2),
+               (float)(winp->move[0].y - (yw->screen_height / 2)) / (float)(yw->screen_height / 2),
+               1.0 );
 
-    float v46 = sqrt( POW2(v47) + POW2(v49) + 1.0 );
+    v47.normalise();
 
-    if ( v46 > 0.0 )
-    {
-        v47 /= v46;
-        v49 /= v46;
-        v50 /= v46;
-    }
-
-    float v63 = vhcl->radius * 4.0 + 200.0;
+    float v63 = vhcl.radius * 4.0 + 200.0;
 
     float v62 = 0.0;
 
     if ( v63 > 0.0 )
     {
-        float v51 = v47 * v63;
-        float v53 = v49 * v63;
-        float v52 = v50 * v63;
+        vec3d v51 = v47 * v63;
 
         while ( v62 < v63 )
         {
             float v60 = 0.0;
-            float v40 = 0.0;
 
-            while ( v60 < 6.283 )
+            while ( v60 < C_2PI )
             {
-                float v56 = v62 * sin(v60) + 0.0 * cos(v60) + v40 + v53;
-                float v55 = 0.0 * -sin(v60) + v62 * cos(v60) + v40 + v51;
-                float v57 = 0.0 * v62 + v52;
+
+                vec3d v55 = v51 + vec3d(v62 * cos(v60),  v62 * sin(v60),  0.0);
 
                 mat3x3 corrected = yw->field_1340;
                 yw->win3d->matrixAspectCorrection(corrected, true);
 
-                float v37 = v55 * corrected.m00 + v56 * corrected.m10 + v57 * corrected.m20;
-                float v38 = v55 * corrected.m01 + v56 * corrected.m11 + v57 * corrected.m21;
-                float v39 = v55 * corrected.m02 + v56 * corrected.m12 + v57 * corrected.m22;
+                vec3d v37 = corrected.Transpose().Transform(v55);
 
                 ypaworld_arg136 arg149;
-                arg149.stPos.x = yw->field_1334.x;
-                arg149.stPos.y = yw->field_1334.y;
-                arg149.stPos.z = yw->field_1334.z;
-                arg149.vect.x = v37;
-                arg149.vect.y = v38;
-                arg149.vect.z = v39;
+                arg149.stPos = yw->field_1334;
+                arg149.vect = v37;
                 arg149.flags = 0;
 
                 yw->self_full->ypaworld_func149(&arg149);
 
                 if ( !arg149.isect )
                 {
-                    float v48 = sqrt(POW2(v37) + POW2(v38) + POW2(v39));
+                    float v48 = v37.length();
 
                     if ( v48 > 0.0 )
-                    {
                         v37 /= v48;
-                        v38 /= v48;
-                        v39 /= v48;
-                    }
 
-                    yw->field_1a8c.x = v37;
-                    yw->field_1a8c.y = v38;
-                    yw->field_1a8c.z = v39;
-
+                    yw->field_1a8c = v37;
                     yw->field_1a9c = v48;
 
                     return 1;
@@ -11834,18 +11807,12 @@ void yw_3D_MouseSelect(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, winp_131a
     yw_arg150 arg150;
     arg150.field_24 = NULL;
     arg150.pos = yw->field_1334;
-    arg150.field_18.x = yw->field_1a8c.x * yw->field_15e4;
-    arg150.field_18.y = yw->field_1a8c.y * yw->field_15e4;
-    arg150.field_18.z = yw->field_1a8c.z * yw->field_15e4;
+    arg150.field_18 = yw->field_1a8c * yw->field_15e4;
     arg150.unit = yw->current_bact;
 
     ypaworld_arg136 arg149;
-    arg149.stPos.x = arg150.pos.x;
-    arg149.stPos.y = arg150.pos.y;
-    arg149.stPos.z = arg150.pos.z;
-    arg149.vect.x = arg150.field_18.x;
-    arg149.vect.y = arg150.field_18.y;
-    arg149.vect.z = arg150.field_18.z;
+    arg149.stPos = arg150.pos;
+    arg149.vect = arg150.field_18;
     arg149.flags = 0;
 
     ywo->ypaworld_func149(&arg149);
@@ -11858,11 +11825,7 @@ void yw_3D_MouseSelect(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, winp_131a
     {
         yw->field_1a58 |= 0x10;
 
-        float v5 = arg149.isectPos.x - yw->field_1334.x;
-        float v6 = arg149.isectPos.y - yw->field_1334.y;
-        float v8 = arg149.isectPos.z - yw->field_1334.z;
-
-        yw->field_1a9c = sqrt(POW2(v5) + POW2(v6) + POW2(v8));
+        yw->field_1a9c = (arg149.isectPos - yw->field_1334).length();
 
         v27 = yw->field_1a9c;
     }
@@ -11898,9 +11861,7 @@ void yw_3D_MouseSelect(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, winp_131a
         yw->field_1a60 = &yw->cells[v12 * yw->sectors_maxX2 + v25];
         yw->field_1a64 = v25;
         yw->field_1A66 = v12;
-        yw->field_1a6c.x = arg149.isectPos.x;
-        yw->field_1a6c.y = arg149.isectPos.y;
-        yw->field_1a6c.z = arg149.isectPos.z;
+        yw->field_1a6c = arg149.isectPos;
         yw->field_1a7c.x = v25 * 1200.0 + 600.0;
         yw->field_1a7c.y = yw->field_1a60->height;
         yw->field_1a7c.z = -(v12 * 1200.0 + 600.0);
@@ -12054,9 +12015,7 @@ void ypaworld_func64__sub21__sub5(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw
     case 3:
         yw->field_1b24.user_action = 3;
         yw->field_1b24.protoID = bzda.field_2DC[bzda.field_8EC];
-        yw->field_1b24.target_point.x = yw->field_1a8c.x * yw->field_1a9c + yw->field_1334.x;
-        yw->field_1b24.target_point.y = yw->field_1a8c.y * yw->field_1a9c + yw->field_1334.y;
-        yw->field_1b24.target_point.z = yw->field_1a8c.z * yw->field_1a9c + yw->field_1334.z;
+        yw->field_1b24.target_point = yw->field_1a8c * yw->field_1a9c + yw->field_1334;
 
         bzda.field_1D0 = 4;
 
@@ -12071,9 +12030,7 @@ void ypaworld_func64__sub21__sub5(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw
             yw->field_1b24.selectBact = yw->field_1c0c[yw->field_2410];
 
             yw->field_1b24.protoID = bzda.field_2DC[bzda.field_8EC];
-            yw->field_1b24.target_point.x = yw->field_1a8c.x * yw->field_1a9c + yw->field_1334.x;
-            yw->field_1b24.target_point.y = yw->field_1a8c.y * yw->field_1a9c + yw->field_1334.y;
-            yw->field_1b24.target_point.z = yw->field_1a8c.z * yw->field_1a9c + yw->field_1334.z;
+            yw->field_1b24.target_point = yw->field_1a8c * yw->field_1a9c + yw->field_1334;
         }
         break;
 

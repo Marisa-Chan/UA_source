@@ -22,6 +22,15 @@ struct Vertex: public vec3d
         CLIP_FAR = 0x20,
         CLIP_ANY = (CLIP_LEFT | CLIP_RIGHT | CLIP_BOTTOM | CLIP_TOP | CLIP_NEAR | CLIP_FAR)
     };
+
+    Vertex &operator=(vec3d b)
+    {
+        x = b.x;
+        y = b.y;
+        z = b.z;
+
+        return *this;
+    }
 };
 
 struct Polygon

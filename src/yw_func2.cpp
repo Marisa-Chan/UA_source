@@ -120,14 +120,11 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, vec
         int v30 = first;
         for (int j = 0; j < demens; j++)
         {
-            float v13 = v30 * 300.0;
-            float v14 = v22 * 300.0;
+            vec3d v13 = vec3d(v30, 0.0, v22) * 300.0;
 
             flag_xyz v16;
             v16.flag = 7;
-            v16.v.x = p3d->locSclRot.m00 * v13 + pos->x + 0.0 * p3d->locSclRot.m01 + p3d->locSclRot.m02 * v14;
-            v16.v.y = p3d->locSclRot.m10 * v13 + pos->y + 0.0 * p3d->locSclRot.m11 + p3d->locSclRot.m12 * v14;
-            v16.v.z = p3d->locSclRot.m20 * v13 + pos->z + 0.0 * p3d->locSclRot.m21 + p3d->locSclRot.m22 * v14;
+            v16.v = *pos + p3d->locSclRot.Transform( v13 );
 
             NC_STACK_base *lego = yw->legos[ scType->buildings[j][i]->health_models[0] ].base;
             lego->setBASE_static(0);
@@ -155,18 +152,8 @@ void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int ob
 
     TForm3D v14;
     memset(&v14, 0, sizeof(TForm3D));
-    v14.scale.x = 1.0;
-    v14.scale.y = 1.0;
-    v14.scale.z = 1.0;
-    v14.locSclRot.m00 = 1.0;
-    v14.locSclRot.m01 = 0;
-    v14.locSclRot.m02 = 0;
-    v14.locSclRot.m10 = 0;
-    v14.locSclRot.m11 = 1.0;
-    v14.locSclRot.m12 = 0;
-    v14.locSclRot.m20 = 0;
-    v14.locSclRot.m21 = 0;
-    v14.locSclRot.m22 = 1.0;
+    v14.scale = vec3d(1.0, 1.0, 1.0);
+    v14.locSclRot = mat3x3::Ident();
 
     sub_430A20(&v14);
     sub_430A38(&v14);
@@ -2284,12 +2271,8 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
     {
         sub_423DB0(&usr->field_782);
 
-        usr->field_782.field_C.x = 0;
-        usr->field_782.field_C.y = 0;
-        usr->field_782.field_C.z = 0;
-        usr->field_782.field_0.x = 0;
-        usr->field_782.field_0.y = 0;
-        usr->field_782.field_0.z = 0;
+        usr->field_782.field_C = vec3d(0.0, 0.0, 0.0);
+        usr->field_782.field_0 = vec3d(0.0, 0.0, 0.0);
         usr->field_782.samples_data[0].volume = 500;
         usr->field_782.samples_data[0].pitch = 0;
 

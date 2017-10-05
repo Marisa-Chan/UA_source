@@ -114,12 +114,8 @@ struct Tvec2d
 
     Tvec2d &operator/=(T b)
     {
-        if (b != 0.0)
-        {
-            double tmp = 1.0 / b;
-            *this *= tmp;
-        }
-
+        x /= b;
+        y /= b;
         return *this;
     }
 
@@ -336,12 +332,9 @@ struct Tvec3d
 
     Tvec3d &operator/=(T b)
     {
-        if (b != 0.0)
-        {
-            double tmp = 1.0 / b;
-            *this *= tmp;
-        }
-
+        x /= b;
+        y /= b;
+        z /= b;
         return *this;
     }
 

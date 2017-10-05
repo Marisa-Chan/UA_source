@@ -354,10 +354,7 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                 if ( tank->field_21 > 0.0 )
                 {
-                    float v43 = bact->position.x - bact->old_pos.x;
-                    float v44 = bact->position.z - bact->old_pos.z;
-
-                    tank->field_21 -= sqrt( POW2(v43) + POW2(v44) );
+                    tank->field_21 -= ( bact->position.XZ() - bact->old_pos.XZ() ).length();
 
                     if ( tank->field_21 <= 0.0 )
                         tank->field_21 = 0;

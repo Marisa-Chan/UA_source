@@ -529,7 +529,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
 
                 for (int i = 0; i < datSub->vertexCount; i++)
                 {
-                    datSub->distance[i] = sqrt(POW2(datSub->vertexes[i].x) + POW2(datSub->vertexes[i].z));
+                    datSub->distance[i] = datSub->vertexes[i].XZ().length();
                     if (datSub->distance[i] > maxln)
                         maxln = datSub->distance[i];
                 }

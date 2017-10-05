@@ -756,7 +756,7 @@ void NC_STACK_ypagun::ypagun_func128(const vec3d &_basis, bool directDown)
     {
         if ( basis.x != 0.0 || basis.z != 0.0 )
         {
-            float v12 = -1.0 / ( basis.y / sqrt( POW2(basis.x) + POW2(basis.z) ) );
+            float v12 = -1.0 / ( basis.y / basis.XZ().length() );
 
             ypabact.rotation.m11 = sqrt(POW2(v12) / (POW2(v12) + 1.0));
 

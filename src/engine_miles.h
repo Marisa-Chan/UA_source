@@ -138,7 +138,7 @@ void PlayMusicTrack();
 void sb_0x4242e0(samples_collection1 *smpls);
 const mat3x3 &sb_0x424c74(); //Update sounds and return shake matrix
 
-void sub_423EFC(int a1, vec3d *a2, vec3d *a3, mat3x3 *a4);
+void sub_423EFC(int a1, const vec3d &a2, const vec3d &a3, const mat3x3 &a4);
 
 class SFXEngine
 {

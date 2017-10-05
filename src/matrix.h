@@ -146,6 +146,20 @@ struct Tmat3x3
         return *this;
     }
 
+    Tmat3x3 &operator/=(T b)
+    {
+        m00 /= b;
+        m01 /= b;
+        m02 /= b;
+        m10 /= b;
+        m11 /= b;
+        m12 /= b;
+        m20 /= b;
+        m21 /= b;
+        m22 /= b;
+        return *this;
+    }
+
     Tmat3x3 &operator+=(const Tmat3x3 &b)
     {
         m00 += b.m00;
@@ -157,6 +171,20 @@ struct Tmat3x3
         m20 += b.m20;
         m21 += b.m21;
         m22 += b.m22;
+        return *this;
+    }
+
+    Tmat3x3 &operator-=(const Tmat3x3 &b)
+    {
+        m00 -= b.m00;
+        m01 -= b.m01;
+        m02 -= b.m02;
+        m10 -= b.m10;
+        m11 -= b.m11;
+        m12 -= b.m12;
+        m20 -= b.m20;
+        m21 -= b.m21;
+        m22 -= b.m22;
         return *this;
     }
 
@@ -174,10 +202,24 @@ struct Tmat3x3
         return tmp;
     }
 
+    const Tmat3x3 operator-(const Tmat3x3 &b) const
+    {
+        Tmat3x3 tmp = *this;
+        tmp -= b;
+        return tmp;
+    }
+
     const Tmat3x3 operator*(T b) const
     {
         Tmat3x3 tmp = *this;
         tmp *= b;
+        return tmp;
+    }
+
+    const Tmat3x3 operator/(T b) const
+    {
+        Tmat3x3 tmp = *this;
+        tmp /= b;
         return tmp;
     }
 
@@ -290,6 +332,20 @@ struct Tmat3x3
         return Tmat3x3( _cy * _cz,   _sy * _sx * _cz - _cx * _sz,   _sy * _cx * _cz + _sx * _sz,
                         _cy * _sz,   _sy * _sx * _sz + _cx * _cz,   _sy * _cx * _sz - _sx * _cz,
                         -_sy,                     _cy * _sx,                     _cy * _cx );
+    }
+
+    static const Tmat3x3 Euler_ZXY(const Tvec3d<K> &euler)
+    {
+        float c1 = cos(euler.z);
+        float s1 = sin(euler.z);
+        float c2 = cos(euler.x);
+        float s2 = sin(euler.x);
+        float c3 = cos(euler.y);
+        float s3 = sin(euler.y);
+
+        return Tmat3x3( c1*c3 - s1*s2*s3,   -c2*s1,   c1*s3 + c3*s1*s2,
+                        c3*s1 + c1*s2*s3,    c1*c2,   s1*s3 - c1*c3*s2,
+                        -c2*s3,       s2,              c2*c3);
     }
 };
 

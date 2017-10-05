@@ -1160,18 +1160,12 @@ void yw_InitSquads(_NC_STACK_ypaworld *yw, int squad_cnt, squadProto *squads)
                     arg136.stPos.x = squad->pos_x;
                     arg136.stPos.y = -50000.0;
                     arg136.stPos.z = squad->pos_z;
-                    arg136.vect.x = 0;
-                    arg136.vect.z = 0;
+                    arg136.vect = vec3d::OY(100000.0);
                     arg136.flags = 0;
-                    arg136.vect.y = 100000.0;
                     yw->self_full->ypaworld_func136(&arg136);
 
                     if ( arg136.isect )
-                    {
-                        arg133.pos.x = arg136.isectPos.x;
-                        arg133.pos.z = arg136.isectPos.z;
-                        arg133.pos.y = arg136.isectPos.y + -50.0;
-                    }
+                        arg133.pos = arg136.isectPos - vec3d::OY(50.0);
                     else
                     {
                         yw_130arg sect_info;
@@ -1243,17 +1237,13 @@ void yw_InitBuddies(_NC_STACK_ypaworld *yw)
 
             if ( v3 != -1 )
             {
-                bact_add.pos.x = yw->field_1b80->position.x + sin(squad_sn * 1.745) * 500.0;
-                bact_add.pos.y = yw->field_1b80->position.y;
-                bact_add.pos.z = yw->field_1b80->position.z + cos(squad_sn * 1.745) * 500.0;
+                bact_add.pos = yw->field_1b80->position + vec3d( sin(squad_sn * 1.745) * 500.0,
+                               0.0,
+                               cos(squad_sn * 1.745) * 500.0 );
 
                 ypaworld_arg136 arg136;
-                arg136.stPos.x = bact_add.pos.x + 0.5;
-                arg136.stPos.y = -50000.0;
-                arg136.stPos.z = bact_add.pos.z + 0.75;
-                arg136.vect.x = 0;
-                arg136.vect.y = 100000.0;
-                arg136.vect.z = 0;
+                arg136.stPos = bact_add.pos.X0Z() + vec3d(0.5, -50000.0, 0.75);
+                arg136.vect = vec3d::OY(100000.0);
                 arg136.flags = 0;
 
                 yw->self_full->ypaworld_func136(&arg136);
@@ -1589,28 +1579,28 @@ void sb_0x44fc60(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int
 
 
 
-void sub_44DBF8(_NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, struct_44dbf8 *a6, int flags)
+void sub_44DBF8(_NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, struct_44dbf8 &a6, int flags)
 {
     int v8 = flags;
 
-    a6->sklt = NULL;
-    a6->field_1E = 0;
-    a6->field_1C = 0;
+    a6.sklt = NULL;
+    a6.field_1E = 0;
+    a6.field_1C = 0;
 
     if ( _dxx >= 1  &&  _dxx < 4 * yw->sectors_maxX2 - 1  &&  _dzz >= 1  &&  _dzz < 4 * yw->sectors_maxY2 - 1 )
     {
-        a6->sec_x = _dxx / 4;
-        a6->sec_y = _dzz / 4;
+        a6.sec_x = _dxx / 4;
+        a6.sec_y = _dzz / 4;
 
-        a6->p_cell = &yw->cells[a6->sec_x + yw->sectors_maxX2 * (_dzz / 4)];
+        a6.p_cell = &yw->cells[a6.sec_x + yw->sectors_maxX2 * (_dzz / 4)];
 
         if ( _dxx % 4 && _dzz % 4 )
         {
-            a6->field_1C = 1;
+            a6.field_1C = 1;
 
             int v14, v16;
 
-            if ( a6->p_cell->comp_type == 1 )
+            if ( a6.p_cell->comp_type == 1 )
             {
                 v14 = 0;
                 v16 = 0;
@@ -1618,9 +1608,9 @@ void sub_44DBF8(_NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, st
                 if ( (_dxx / 4) == (_dx / 4)  &&  (_dz / 4) == (_dzz / 4) )
                     v8 = flags & 0xFFFE;
 
-                a6->pos_x =   1200.0 * a6->sec_x + 600.0;
-                a6->pos_y = a6->p_cell->height;
-                a6->pos_z = -(1200.0 * a6->sec_y + 600.0);
+                a6.pos.x =   1200.0 * a6.sec_x + 600.0;
+                a6.pos.y = a6.p_cell->height;
+                a6.pos.z = -(1200.0 * a6.sec_y + 600.0);
             }
             else
             {
@@ -1630,55 +1620,55 @@ void sub_44DBF8(_NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, st
                 if ( _dxx == _dx && _dzz == _dz )
                     v8 = flags & 0xFFFE;
 
-                a6->pos_z = -(_dzz * 300.0);
-                a6->pos_x = _dxx * 300.0;
-                a6->pos_y = a6->p_cell->height;
+                a6.pos.z = -(_dzz * 300.0);
+                a6.pos.x = _dxx * 300.0;
+                a6.pos.y = a6.p_cell->height;
             }
 
-            a6->field_1E = v8;
+            a6.field_1E = v8;
 
-            int model_id = yw->secTypes[a6->p_cell->type_id].buildings[v16][v14]->health_models [   yw->build_hp_ref[    a6->p_cell->buildings_health[v16][v14]    ]    ];
+            int model_id = yw->secTypes[a6.p_cell->type_id].buildings[v16][v14]->health_models [   yw->build_hp_ref[    a6.p_cell->buildings_health[v16][v14]    ]    ];
 
             if ( v8 & 1 )
-                a6->sklt = yw->legos[model_id].selected_sklt_intern;
+                a6.sklt = yw->legos[model_id].selected_sklt_intern;
             else
-                a6->sklt = yw->legos[model_id].sklt_obj_intern;
+                a6.sklt = yw->legos[model_id].sklt_obj_intern;
         }
         else
         {
-            a6->pos_y = 0;
-            a6->pos_x = _dxx * 300.0;
-            a6->pos_z = -(_dzz * 300.0);
+            a6.pos.y = 0;
+            a6.pos.x = _dxx * 300.0;
+            a6.pos.z = -(_dzz * 300.0);
 
             if ( _dxx == _dx && _dzz == _dz )
                 v8 = flags & 0xFE;
 
-            a6->field_1E = v8;
+            a6.field_1E = v8;
 
             if ( _dxx % 4 == 0 && _dzz % 4 == 0)
             {
-                a6->sklt = yw->ColCross.skeleton_internal;
-                a6->field_1C = 4;
+                a6.sklt = yw->ColCross.skeleton_internal;
+                a6.field_1C = 4;
             }
             else if ( _dxx % 4 == 0 && _dzz % 4 != 0 )
             {
-                a6->sklt = yw->ColSide.skeleton_internal;
-                a6->field_1C = 2;
+                a6.sklt = yw->ColSide.skeleton_internal;
+                a6.field_1C = 2;
             }
             else if ( _dxx % 4 != 0 && _dzz % 4 == 0 )
             {
-                a6->sklt = yw->ColSide.skeleton_internal;
-                a6->field_1C = 3;
+                a6.sklt = yw->ColSide.skeleton_internal;
+                a6.field_1C = 3;
             }
         }
 
-        if ( a6->field_1C && !a6->sklt )
+        if ( a6.field_1C && !a6.sklt )
         {
             ypa_log_out("yw_GetSklt: WARNING, not CZT_INVALID, but Sklt NULL!\n");
 
             const char *v17 = "UNKNOWN";
 
-            switch ( a6->field_1C )
+            switch ( a6.field_1C )
             {
             case 4:
                 v17 = "czt_cross_slurp";
@@ -1695,105 +1685,96 @@ void sub_44DBF8(_NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, st
             default:
                 break;
             }
-            ypa_log_out("    Type=%s, sec_x=%d, sec_y=%d.\n", v17, a6->sec_x, a6->sec_y);
+            ypa_log_out("    Type=%s, sec_x=%d, sec_y=%d.\n", v17, a6.sec_x, a6.sec_y);
 
-            a6->field_1C = 0;
+            a6.field_1C = 0;
         }
     }
 }
 
 void sub_44DF60(UAskeleton::Data *arg, int id)
 {
-    UAskeleton::Polygon *triangle = &arg->polygons[id];
+    UAskeleton::Polygon &tr = arg->polygons[id];
 
     int vtx1 = arg->polygons[id].v[0];
     int vtx2 = arg->polygons[id].v[1];
     int vtx3 = arg->polygons[id].v[2];
 
-    float sy1 = arg->POO[vtx2].y - arg->POO[vtx1].y;
-    float sz1 = arg->POO[vtx2].z - arg->POO[vtx1].z;
-    float sx1 = arg->POO[vtx2].x - arg->POO[vtx1].x;
-    float sz2 = arg->POO[vtx3].z - arg->POO[vtx2].z;
-    float sx2 = arg->POO[vtx3].x - arg->POO[vtx2].x;
-    float sy2 = arg->POO[vtx3].y - arg->POO[vtx2].y;
+    vec3d tmp  = arg->POO[vtx2] - arg->POO[vtx1];
+    vec3d tmp2 = arg->POO[vtx3] - arg->POO[vtx2];
 
-    triangle->B = sx2 * sz1 - sx1 * sz2;
-    triangle->A = sy1 * sz2 - sy2 * sz1;
-    triangle->C = sx1 * sy2 - sx2 * sy1;
+    vec3d tmp3 = tmp * tmp2;
+    tmp3.normalise();
 
-    float v28 = sqrt((triangle->B * triangle->B) + (triangle->A * triangle->A) + (triangle->C * triangle->C));
+    tr.A = tmp3.x;
+    tr.B = tmp3.y;
+    tr.C = tmp3.z;
 
-    if (v28 != 0.0)
-    {
-        triangle->A = triangle->A / v28;
-        triangle->B = triangle->B / v28;
-        triangle->C = triangle->C / v28;
-    }
-    triangle->D = -(triangle->B * arg->POO[vtx1].y + triangle->A * arg->POO[vtx1].x + triangle->C * arg->POO[vtx1].z);
+    tr.D = -tmp3.dot( arg->POO[vtx1] );
 }
 
-void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
+void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 &arg)
 {
-    if ( arg->field_1C == 2 )
+    if ( arg.field_1C == 2 )
     {
-        cellArea *cur = arg->p_cell;
-        cellArea *left = arg->p_cell - 1;
+        cellArea *cur = arg.p_cell;
+        cellArea *left = arg.p_cell - 1;
 
-        if ( !(arg->field_1E & 1) || fabs( (int)(cur->height - left->height)) < 500.0 )
+        if ( !(arg.field_1E & 1) || fabs( (int)(cur->height - left->height)) < 500.0 )
         {
 
-            arg->sklt->POO[0].y = left->height;
-            arg->sklt->POO[1].y = cur->height;
-            arg->sklt->POO[2].y = cur->height;
-            arg->sklt->POO[3].y = left->height;
+            arg.sklt->POO[0].y = left->height;
+            arg.sklt->POO[1].y = cur->height;
+            arg.sklt->POO[2].y = cur->height;
+            arg.sklt->POO[3].y = left->height;
 
-            sub_44DF60(arg->sklt, 0);
+            sub_44DF60(arg.sklt, 0);
         }
         else
         {
-            arg->sklt = yw->colsub_sklt_intrn;
+            arg.sklt = yw->colsub_sklt_intrn;
 
             if ( cur->height > left->height )
-                arg->pos_y = cur->height;
+                arg.pos.y = cur->height;
             else
-                arg->pos_y = left->height;
+                arg.pos.y = left->height;
         }
     }
-    else if ( arg->field_1C == 3 )
+    else if ( arg.field_1C == 3 )
     {
-        cellArea *cur = arg->p_cell;
-        cellArea *up = arg->p_cell - yw->sectors_maxX2;
+        cellArea *cur = arg.p_cell;
+        cellArea *up = arg.p_cell - yw->sectors_maxX2;
 
-        if ( !(arg->field_1E & 1) || fabs( (int)(cur->height - up->height)) < 500.0 )
+        if ( !(arg.field_1E & 1) || fabs( (int)(cur->height - up->height)) < 500.0 )
         {
-            arg->sklt->POO[0].y = up->height;
-            arg->sklt->POO[1].y = up->height;
-            arg->sklt->POO[2].y = cur->height;
-            arg->sklt->POO[3].y = cur->height;
+            arg.sklt->POO[0].y = up->height;
+            arg.sklt->POO[1].y = up->height;
+            arg.sklt->POO[2].y = cur->height;
+            arg.sklt->POO[3].y = cur->height;
 
-            sub_44DF60(arg->sklt, 0);
+            sub_44DF60(arg.sklt, 0);
         }
         else
         {
-            arg->sklt = yw->colsub_sklt_intrn;
+            arg.sklt = yw->colsub_sklt_intrn;
 
             if ( cur->height > up->height )
-                arg->pos_y = cur->height;
+                arg.pos.y = cur->height;
             else
-                arg->pos_y = up->height;
+                arg.pos.y = up->height;
         }
     }
-    else if ( arg->field_1C == 4 )
+    else if ( arg.field_1C == 4 )
     {
 
         int kk = 0;
 
-        cellArea *cur = arg->p_cell;
-        cellArea *left = arg->p_cell - 1;
-        cellArea *up = arg->p_cell - yw->sectors_maxX2;
-        cellArea *leftup = arg->p_cell - yw->sectors_maxX2 - 1;
+        cellArea *cur = arg.p_cell;
+        cellArea *left = arg.p_cell - 1;
+        cellArea *up = arg.p_cell - yw->sectors_maxX2;
+        cellArea *leftup = arg.p_cell - yw->sectors_maxX2 - 1;
 
-        if ( arg->field_1E & 1 )
+        if ( arg.field_1E & 1 )
         {
             float cs = cur->height;
             float ls = left->height;
@@ -1830,52 +1811,51 @@ void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 *arg)
 
             if ( fabs( (int)(v18 - v16) ) > 300.0 )
             {
-                arg->sklt = yw->colsub_sklt_intrn;
-                arg->pos_y = v18;
+                arg.sklt = yw->colsub_sklt_intrn;
+                arg.pos.y = v18;
                 kk = 1;
             }
         }
         if ( !kk )
         {
-            arg->sklt->POO[0].y = leftup->height;
-            arg->sklt->POO[1].y = up->height;
-            arg->sklt->POO[2].y = cur->height;
-            arg->sklt->POO[3].y = left->height;
-            arg->sklt->POO[4].y = cur->averg_height;
+            arg.sklt->POO[0].y = leftup->height;
+            arg.sklt->POO[1].y = up->height;
+            arg.sklt->POO[2].y = cur->height;
+            arg.sklt->POO[3].y = left->height;
+            arg.sklt->POO[4].y = cur->averg_height;
 
-            sub_44DF60(arg->sklt, 0);
-            sub_44DF60(arg->sklt, 1);
-            sub_44DF60(arg->sklt, 2);
-            sub_44DF60(arg->sklt, 3);
+            sub_44DF60(arg.sklt, 0);
+            sub_44DF60(arg.sklt, 1);
+            sub_44DF60(arg.sklt, 2);
+            sub_44DF60(arg.sklt, 3);
         }
     }
 }
 
-int sub_44D36C(float dx, float dy, float dz, int id, UAskeleton::Data *sklt)
+int sub_44D36C(const vec3d &v, int id, const UAskeleton::Data *sklt)
 {
-    UAskeleton::Polygon *triangle = &sklt->polygons[id];
-
     int v7 = 0;
 
-    float v24 = fabs(triangle->A);
-    float v23 = fabs(triangle->B);
-    float v27 = fabs(triangle->C);
+    const UAskeleton::Polygon &tr = sklt->polygons[id];
+    float nX = fabs(tr.A);
+    float nY = fabs(tr.B);
+    float nZ = fabs(tr.C);
 
-    float v9 = (v24 <= v23 ? v23 : v24 );
-    v9 = (v9 <= v27 ? v27 : v9);
+    float maxAx = (nX <= nY ? nY : nX );
+    maxAx = (maxAx <= nZ ? nZ : maxAx);
 
-    if ( v9 == v24 )
+    if ( maxAx == nX )
     {
         int prev = sklt->polygons[id].num_vertices - 1;
 
         for (int i = 0; i < sklt->polygons[id].num_vertices; i++)
         {
-            UAskeleton::Vertex *v12 = &sklt->POO[ sklt->polygons[id].v[i] ];
-            UAskeleton::Vertex *v13 = &sklt->POO[ sklt->polygons[id].v[prev] ];
+            UAskeleton::Vertex &cur = sklt->POO[ sklt->polygons[id].v[i] ];
+            UAskeleton::Vertex &prv = sklt->POO[ sklt->polygons[id].v[prev] ];
 
-            if ( ( (v13->z <= dz && dz < v12->z) ||
-                    (v12->z <= dz && dz < v13->z) ) &&
-                    v13->y + (v12->y - v13->y) * (dz - v13->z) / (v12->z - v13->z) > dy )
+            if ( ( (prv.z <= v.z && v.z < cur.z) ||
+                    (cur.z <= v.z && v.z < prv.z) ) &&
+                    prv.y + (cur.y - prv.y) * (v.z - prv.z) / (cur.z - prv.z) > v.y )
             {
                 v7 = v7 == 0;
             }
@@ -1883,18 +1863,18 @@ int sub_44D36C(float dx, float dy, float dz, int id, UAskeleton::Data *sklt)
             prev = i;
         }
     }
-    else if ( v9 == v23 )
+    else if ( maxAx == nY )
     {
         int prev = sklt->polygons[id].num_vertices - 1;
 
         for (int i = 0; i < sklt->polygons[id].num_vertices; i++)
         {
-            UAskeleton::Vertex *v12 = &sklt->POO[ sklt->polygons[id].v[i] ];
-            UAskeleton::Vertex *v13 = &sklt->POO[ sklt->polygons[id].v[prev] ];
+            UAskeleton::Vertex &cur = sklt->POO[ sklt->polygons[id].v[i] ];
+            UAskeleton::Vertex &prv = sklt->POO[ sklt->polygons[id].v[prev] ];
 
-            if ( ( (v13->z <= dz && dz < v12->z) ||
-                    (v12->z <= dz && dz < v13->z) ) &&
-                    v13->x + (v12->x - v13->x) * (dz - v13->z) / (v12->z - v13->z) > dx )
+            if ( ( (prv.z <= v.z && v.z < cur.z) ||
+                    (cur.z <= v.z && v.z < prv.z) ) &&
+                    prv.x + (cur.x - prv.x) * (v.z - prv.z) / (cur.z - prv.z) > v.x )
             {
                 v7 = v7 == 0;
             }
@@ -1902,18 +1882,18 @@ int sub_44D36C(float dx, float dy, float dz, int id, UAskeleton::Data *sklt)
             prev = i;
         }
     }
-    else if ( v9 == v27 )
+    else if ( maxAx == nZ )
     {
         int prev = sklt->polygons[id].num_vertices - 1;
 
         for (int i = 0; i < sklt->polygons[id].num_vertices; i++)
         {
-            UAskeleton::Vertex *v12 = &sklt->POO[ sklt->polygons[id].v[i] ];
-            UAskeleton::Vertex *v13 = &sklt->POO[ sklt->polygons[id].v[prev] ];
+            UAskeleton::Vertex &cur = sklt->POO[ sklt->polygons[id].v[i] ];
+            UAskeleton::Vertex &prv = sklt->POO[ sklt->polygons[id].v[prev] ];
 
-            if ( ( (v13->y <= dy && dy < v12->y) ||
-                    (v12->y <= dy && dy < v13->y) ) &&
-                    v13->x + (v12->x - v13->x) * (dy - v13->y) / (v12->y - v13->y) > dx )
+            if ( ( (prv.y <= v.y && v.y < cur.y) ||
+                    (cur.y <= v.y && v.y < prv.y) ) &&
+                    prv.x + (cur.x - prv.x) * (v.y - prv.y) / (cur.y - prv.y) > v.x )
             {
                 v7 = v7 == 0;
             }
@@ -1924,31 +1904,28 @@ int sub_44D36C(float dx, float dy, float dz, int id, UAskeleton::Data *sklt)
     return v7;
 }
 
-void sub_44D8B8(ypaworld_arg136 *arg, struct_44dbf8 *loc)
+void sub_44D8B8(ypaworld_arg136 *arg, const struct_44dbf8 &loc)
 {
-    for ( int i = 0; i < loc->sklt->polygonsCount; i++)
+    for ( int i = 0; i < loc.sklt->polygonsCount; i++)
     {
-        UAskeleton::Polygon *triangle = &loc->sklt->polygons[i];
+        UAskeleton::Polygon &tr = loc.sklt->polygons[i];
+        vec3d norm = tr.Normal();
 
-        float v11 = triangle->B * arg->vect.y + triangle->A * arg->vect.x + triangle->C * arg->vect.z;
+        float v11 = norm.dot(arg->vect);
         if ( v11 > 0.0 )
         {
-            float v19 = -(triangle->B * arg->stPos.y + triangle->A * arg->stPos.x + triangle->C * arg->stPos.z + triangle->D) / v11;
+            float v19 = -(norm.dot( arg->stPos ) + tr.D) / v11;
             if ( v19 > 0.0 && v19 <= 1.0 && v19 < arg->tVal )
             {
-                float pz = arg->vect.z * v19 + arg->stPos.z;
-                float py = arg->vect.y * v19 + arg->stPos.y;
-                float px = arg->vect.x * v19 + arg->stPos.x;
+                vec3d px = arg->vect * v19 + arg->stPos;
 
-                if ( sub_44D36C(px, py, pz, i, loc->sklt) )
+                if ( sub_44D36C(px, i, loc.sklt) )
                 {
                     arg->isect = 1;
                     arg->tVal = v19;
-                    arg->isectPos.x = loc->pos_x + px;
-                    arg->isectPos.y = loc->pos_y + py;
-                    arg->isectPos.z = loc->pos_z + pz;
+                    arg->isectPos = loc.pos + px;
                     arg->polyID = i;
-                    arg->skel = loc->sklt;
+                    arg->skel = loc.sklt;
                 }
             }
         }
@@ -2148,15 +2125,7 @@ NC_STACK_ypabact *yw_createUnit(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, 
     bact->gid = bact_id;
     bact->owner = 0;
 
-    bact->rotation.m00 = 1.0;    // 1.0
-    bact->rotation.m01 = 0;
-    bact->rotation.m02 = 0;
-    bact->rotation.m10 = 0;
-    bact->rotation.m11 = 1.0;    // 1.0
-    bact->rotation.m12 = 0;
-    bact->rotation.m20 = 0;
-    bact->rotation.m21 = 0;
-    bact->rotation.m22 = 1.0;    // 1.0
+    bact->rotation = mat3x3::Ident();
 
     bact_id++;
 
@@ -2343,9 +2312,7 @@ void yw_renderSky(_NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
         uint32_t flags = rndr_params->flags;
 
         flag_xyz v5;
-        v5.v.x = yw->current_bact->position.x;
-        v5.v.y = yw->field_15f4 + yw->current_bact->position.y;
-        v5.v.z = yw->current_bact->position.z;
+        v5.v = yw->current_bact->position + vec3d::OY(yw->field_15f4);
         v5.flag = 7;
 
         yw->sky_loaded_base->base_func68(&v5);
@@ -2406,9 +2373,7 @@ void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float p
                     else
                     {
                         ypaworld_arg136 v22;
-                        v22.vect.x = 0;
-                        v22.vect.y = 50000.0;
-                        v22.vect.z = 0;
+                        v22.vect = vec3d::OY(50000.0);
                         v22.stPos.x = xx;
                         v22.stPos.y = -25000.0;
                         v22.stPos.z = yy;
@@ -2423,9 +2388,7 @@ void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float p
                     }
 
 
-                    wall_trigo->locPos.x = xx;
-                    wall_trigo->locPos.y = v28;
-                    wall_trigo->locPos.z = yy;
+                    wall_trigo->locPos = vec3d(xx, v28, yy);
 
                     float v29 = xx - posx;
                     float v30 = yy - posy;
@@ -3008,77 +2971,59 @@ int ypaworld_func148__sub1(_NC_STACK_ypaworld *yw, int id, int a4, int x, int y,
     return 0;
 }
 
-int ypaworld_func137__sub0__sub0(UAskeleton::Data *skl, int id, float x, float y, float z, float r, yw_137loc *out)
+int ypaworld_func137__sub0__sub0(UAskeleton::Data *skl, int id, const vec3d &v, float r, vec3d &out)
 {
     int num = skl->polygons[id].num_vertices;
     int16_t *vtx = skl->polygons[id].v;
 
-    vec3d tmp;
-    tmp.x = 0.0;
-    tmp.y = 0.0;
-    tmp.z = 0.0;
+    vec3d tmp(0.0, 0.0, 0.0);
 
     for (int i = 0; i < num; i++)
     {
         int16_t idd = vtx[i];
-        tmp.x += skl->POO[ idd ].x;
-        tmp.y += skl->POO[ idd ].y;
-        tmp.z += skl->POO[ idd ].z;
+        tmp += static_cast<vec3d> (skl->POO[ idd ]);
     }
 
-    float v19 = (float)num;
+    vec3d tmp2 = tmp / num - v;
 
-    float xx = tmp.x / v19 - x;
-    float yy = tmp.y / v19 - y;
-    float zz = tmp.z / v19 - z;
-
-
-    float v26 = sqrt(xx * xx + yy * yy + zz * zz);
+    float v26 = tmp2.length();
 
     if ( v26 <= r )
         return 0;
 
-    out->pos.x = xx / v26 * r + x;
-    out->pos.y = yy / v26 * r + y;
-    out->pos.z = zz / v26 * r + z;
+    out = tmp2 * (r / v26) + v;
 
     return 1;
 }
 
-void ypaworld_func137__sub0(ypaworld_arg137 *arg, struct_44dbf8 *a2)
+void ypaworld_func137__sub0(ypaworld_arg137 *arg, const struct_44dbf8 &a2)
 {
-    float xx = arg->pos.x;
-    float yy = arg->pos.y;
-    float zz = arg->pos.z;
-
-    for (int i = 0; i < a2->sklt->polygonsCount; i++)
+    for (int i = 0; i < a2.sklt->polygonsCount; i++)
     {
-        UAskeleton::Polygon *tria = &a2->sklt->polygons[i];
+        const UAskeleton::Polygon &tria = a2.sklt->polygons[i];
 
-        float t0 = tria->A;
-        float t1 = tria->B;
-        float t2 = tria->C;
+        vec3d t0 = tria.Normal();
 
-        float v9 = t0 * arg->pos2.x + t1 * arg->pos2.y + t2 * arg->pos2.z;
+        float v9 = t0.dot( arg->pos2 );
 
         if ( v9 > 0.0 )
         {
-            float v26 = -(t0 * xx + t1 * yy + t2 * zz + tria->D) / ((t0 * t0 + t1 * t1 + t2 * t2) * arg->radius);
+            float v26 = -( t0.dot( arg->pos ) + tria.D) / ( t0.dot( t0 ) * arg->radius);
 
             if ( v26 > 0.0 && v26 <= 1.0 )
             {
-                float rd = arg->radius * v26;
-
-
-                float tx = t0 * rd + xx;
-                float ty = t1 * rd + yy;
-                float tz = t2 * rd + zz;
+                vec3d tx = arg->pos + t0 * (arg->radius * v26);
 
                 int v27 = 0;
 
-                yw_137loc v18;
+                vec3d v18;
 
-                if ( !ypaworld_func137__sub0__sub0(a2->sklt, i, tx, ty, tz, arg->radius, &v18) || sub_44D36C(v18.pos.x, v18.pos.y, v18.pos.z, i, a2->sklt) )
+                if ( ypaworld_func137__sub0__sub0(a2.sklt, i, tx, arg->radius, v18) )
+                {
+                    if ( sub_44D36C(v18, i, a2.sklt) )
+                        v27 = 1;
+                }
+                else
                     v27 = 1;
 
                 if ( v27 )
@@ -3087,13 +3032,8 @@ void ypaworld_func137__sub0(ypaworld_arg137 *arg, struct_44dbf8 *a2)
                     {
                         int pos = arg->coll_count;
 
-                        arg->collisions[pos].pos1.x = a2->pos_x + tx;
-                        arg->collisions[pos].pos1.y = a2->pos_y + ty;
-                        arg->collisions[pos].pos1.z = a2->pos_z + tz;
-                        arg->collisions[pos].pos2.x = tria->A;
-                        arg->collisions[pos].pos2.y = tria->B;
-                        arg->collisions[pos].pos2.z = tria->C;
-                        arg->collisions[pos].field_1C = tria->D;
+                        arg->collisions[pos].pos1 = a2.pos + tx;
+                        arg->collisions[pos].pos2 = tria.Normal();
 
                         arg->coll_count++;
                     }
@@ -3702,28 +3642,9 @@ int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
 
         yw->win3d->raster_func192(NULL);
 
-        vec3d a2a;
-        a2a.x = yw->field_1334.x;
-        a2a.y = yw->field_1334.y + 50000.0;
-        a2a.z = yw->field_1334.z;
+        vec3d a2a = yw->field_1334 + vec3d::OY(50000.0);
 
-        vec3d a3;
-        a3.x = 0;
-        a3.y = 0;
-        a3.z = 0;
-
-        mat3x3 a4;
-        a4.m00 = 1.0;
-        a4.m01 = 0;
-        a4.m02 = 0;
-        a4.m10 = 0;
-        a4.m11 = 1.0;
-        a4.m12 = 0;
-        a4.m20 = 0;
-        a4.m22 = 1.0;
-        a4.m21 = 0;
-
-        sub_423EFC(1, &a2a, &a3, &a4);
+        sub_423EFC(1, a2a, vec3d(0.0), mat3x3::Ident());
 
         if ( arg->field_0 / 500 & 1 )
         {
@@ -4238,23 +4159,14 @@ void sub_4D6958(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, samples_collec
     }
     else
     {
-        vec3d tmp;
-        tmp.x = unit->position.x - yw->field_1b84->position.x;
-        tmp.y = unit->position.y - yw->field_1b84->position.y;
-        tmp.z = unit->position.z - yw->field_1b84->position.z;
+        vec3d tmp = unit->position - yw->field_1b84->position;
 
-        float v11 = sqrt(POW2(tmp.x) + POW2(tmp.y) + POW2(tmp.z));
+        float v11 = tmp.length();
 
         if ( v11 > 0.0 )
-        {
-            tmp.x *= 100.0 / v11;
-            tmp.y *= 100.0 / v11;
-            tmp.z *= 100.0 / v11;
-        }
+            tmp *= (100.0 / v11);
 
-        collection->field_0.x = yw->field_1b84->position.x + tmp.x;
-        collection->field_0.y = yw->field_1b84->position.y + tmp.y;
-        collection->field_0.z = yw->field_1b84->position.z + tmp.z;
+        collection->field_0 = yw->field_1b84->position + tmp;
     }
 }
 
@@ -4270,9 +4182,7 @@ void ypaworld_func64__sub23(_NC_STACK_ypaworld *yw)
         {
             sub_4D6958(yw, unit, &smpls->field_4);
 
-            smpls->field_4.field_C.x = yw->field_1b84->fly_dir.x * yw->field_1b84->fly_dir_length;
-            smpls->field_4.field_C.y = yw->field_1b84->fly_dir.y * yw->field_1b84->fly_dir_length;
-            smpls->field_4.field_C.z = yw->field_1b84->fly_dir.z * yw->field_1b84->fly_dir_length;
+            smpls->field_4.field_C = yw->field_1b84->fly_dir * yw->field_1b84->fly_dir_length;
         }
 
         if ( smpls->field_4.samples_data[0].flags & 2 )
@@ -5595,15 +5505,7 @@ int recorder_create_camera(_NC_STACK_ypaworld *yw)
     bact->gid = 0;
     bact->owner = 1;
 
-    bact->rotation.m00 = 1.0;
-    bact->rotation.m01 = 0;
-    bact->rotation.m02 = 0;
-    bact->rotation.m10 = 0;
-    bact->rotation.m11 = 1.0;
-    bact->rotation.m12 = 0;
-    bact->rotation.m20 = 0;
-    bact->rotation.m21 = 0;
-    bact->rotation.m22 = 1.0;
+    bact->rotation = mat3x3::Ident();
 
     sub_423DB0(&bact->soundcarrier);
 
@@ -5704,9 +5606,7 @@ __NC_STACK_ypabact *recorder_newObject(_NC_STACK_ypaworld *yw, trec_bct *oinf)
         {
             ypaworld_arg146 arg146;
             arg146.vehicle_id = oinf->vhcl_id;
-            arg146.pos.x = 0;
-            arg146.pos.y = 0;
-            arg146.pos.z = 0;
+            arg146.pos = vec3d(0.0, 0.0, 0.0);
 
             VhclProto *prot = &yw->VhclProtos[ oinf->vhcl_id ];
 
@@ -5733,15 +5633,7 @@ __NC_STACK_ypabact *recorder_newObject(_NC_STACK_ypaworld *yw, trec_bct *oinf)
                 bact->gid = 0;
                 bact->owner = 1;
 
-                bact->rotation.m00 = 1.0;
-                bact->rotation.m01 = 0;
-                bact->rotation.m02 = 0;
-                bact->rotation.m10 = 0;
-                bact->rotation.m11 = 1.0;
-                bact->rotation.m12 = 0;
-                bact->rotation.m20 = 0;
-                bact->rotation.m21 = 0;
-                bact->rotation.m22 = 1.0;
+                bact->rotation = mat3x3::Ident();
             }
         }
     }
@@ -5749,9 +5641,7 @@ __NC_STACK_ypabact *recorder_newObject(_NC_STACK_ypaworld *yw, trec_bct *oinf)
     {
         ypaworld_arg146 arg147;
         arg147.vehicle_id = oinf->vhcl_id;
-        arg147.pos.x = 0;
-        arg147.pos.y = 0;
-        arg147.pos.z = 0;
+        arg147.pos = vec3d(0.0, 0.0, 0.0);
 
         bacto = yw->self_full->ypaworld_func147(&arg147);
     }
@@ -5814,7 +5704,7 @@ void recorder_updateObject(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, tre
     }
     else
     {
-        bact->fly_dir = vec3d(1.0, 0.0, 0.0);
+        bact->fly_dir = vec3d::OX(1.0);
 
         bact->fly_dir_length = 0;
     }
@@ -5824,17 +5714,17 @@ void recorder_updateObject(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, tre
     vec3d axisX = (tmp.AxisX() - bact->rotation.AxisX()) * a5 + bact->rotation.AxisX();
 
     if ( axisX.normalise() == 0.0 )
-        axisX = vec3d(1.0, 0.0, 0.0);
+        axisX = vec3d::OX(1.0);
 
     vec3d axisY = (tmp.AxisY() - bact->rotation.AxisY()) * a5 + bact->rotation.AxisY();
 
     if ( axisY.normalise() == 0.0 )
-        axisY = vec3d(0.0, 1.0, 0.0);
+        axisY = vec3d::OY(1.0);
 
     vec3d axisZ = (tmp.AxisZ() - bact->rotation.AxisZ()) * a5 + bact->rotation.AxisZ();
 
     if ( axisZ.normalise() == 0.0 )
-        axisZ = vec3d(0.0, 0.0, 1.0);
+        axisZ = vec3d::OZ(1.0);
 
     bact->rotation = mat3x3::Basis(axisX, axisY, axisZ);
 
@@ -6150,17 +6040,7 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
     }
 
     if ( inpt->but_flags & 1 )
-    {
-        rcrd->rotation_matrix.m00 = 1.0;
-        rcrd->rotation_matrix.m01 = 0;
-        rcrd->rotation_matrix.m02 = 0;
-        rcrd->rotation_matrix.m10 = 0;
-        rcrd->rotation_matrix.m11 = 1.0;
-        rcrd->rotation_matrix.m12 = 0;
-        rcrd->rotation_matrix.m20 = 0;
-        rcrd->rotation_matrix.m21 = 0;
-        rcrd->rotation_matrix.m22 = 1.0;
-    }
+        rcrd->rotation_matrix = mat3x3::Ident();
 
     ypaworld_func163__sub2__sub1(yw, fperiod, inpt);
 
@@ -6222,28 +6102,22 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
         }
     }
 
-    bact->fly_dir.x = bact->old_pos.x - bact->position.x;
-    bact->fly_dir.y = bact->old_pos.y - bact->position.y;
-    bact->fly_dir.z = bact->old_pos.z - bact->position.z;
+    bact->fly_dir = bact->old_pos - bact->position;
 
-    float v39 = sqrt( POW2(bact->fly_dir.x) + POW2(bact->fly_dir.y) + POW2(bact->fly_dir.z) );
+    float v39 = bact->fly_dir.length();
     if ( v39 <= 0.0 )
     {
-        bact->fly_dir.x = 1.0;
-        bact->fly_dir.y = 0;
-        bact->fly_dir.z = 0;
+        bact->fly_dir = vec3d::OX(1.0);
         bact->fly_dir_length = 0;
     }
     else
     {
-        bact->fly_dir.x /= v39;
-        bact->fly_dir.y /= v39;
-        bact->fly_dir.z /= v39;
+        bact->fly_dir /= v39;
 
         if ( fperiod <= 0.0 )
             bact->fly_dir_length = 0;
         else
-            bact->fly_dir_length = v39 / fperiod / 6.0;
+            bact->fly_dir_length = (v39 / fperiod) / 6.0;
     }
 
     bact->tForm.locPos = bact->position;
