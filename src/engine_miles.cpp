@@ -957,7 +957,7 @@ void sb_0x424c74__sub4()
     }
 
     if ( i > 0 )
-        sndSys.shakeMatrix.Euler_ZXY(tmp);
+        sndSys.shakeMatrix = mat3x3::Euler_ZXY(tmp);
     else
         sndSys.shakeMatrix = mat3x3::Ident();
 }
