@@ -2597,7 +2597,11 @@ bool NC_STACK_win3d::AllocTexture(bitmap_intern *bitm)
         if (bitm->swTex)
             return false;
 
+#if SDL_VERSION_ATLEAST(2,0,5)
         bitm->swTex = SDL_CreateRGBSurfaceWithFormat(0, bitm->width, bitm->height, w3d->pixfmt->BitsPerPixel, w3d->pixfmt->format);
+#else
+        bitm->swTex = SDL_CreateRGBSurface(0, bitm->width, bitm->height, w3d->pixfmt->BitsPerPixel, w3d->pixfmt->Rmask, w3d->pixfmt->Gmask, w3d->pixfmt->Bmask, w3d->pixfmt->Amask );
+#endif
 
         if (!bitm->swTex)
             return false;
