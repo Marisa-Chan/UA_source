@@ -6098,7 +6098,7 @@ void NC_STACK_yparobo::DeadTimeUpdate(update_msg *arg)
         if ( v31 )
             bact->status_flg |= BACT_STFLAG_NORENDER;
         else
-            Release(this);
+            Release();
 
         return;
     }
@@ -6126,7 +6126,7 @@ void NC_STACK_yparobo::DeadTimeUpdate(update_msg *arg)
             if ( v30 )
                 bact->status_flg |= BACT_STFLAG_NORENDER;
             else
-                Release(this);
+                Release();
 
             return;
         }
@@ -6802,7 +6802,7 @@ void NC_STACK_yparobo::setROBO_proto(roboProto *proto)
             if ( !( gun_bact->status_flg & BACT_STFLAG_DEATH1 ) )
                 robo->guns[i].gun_obj->Die();
 
-            Release(robo->guns[i].gun_obj);
+            robo->guns[i].gun_obj->Release();
 
             robo->guns[i].gun_obj = NULL;
         }

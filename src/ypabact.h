@@ -603,7 +603,7 @@ public:
     virtual void CorrectPositionInLevelBox(void *);
     virtual void NetUpdate(update_msg *arg);
     virtual void ypabact_func117(update_msg *arg);
-    virtual void Release(NC_STACK_ypabact *b_bacto);
+    virtual void Release();
     virtual size_t SetStateInternal(setState_msg *arg);
     virtual void ChangeSectorEnergy(yw_arg129 *arg);
     virtual void DeadTimeUpdate(update_msg *arg);

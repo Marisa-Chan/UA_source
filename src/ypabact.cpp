@@ -604,7 +604,7 @@ void sub_481F94(__NC_STACK_ypabact *bact)
 
             node->bact->parent_bacto = NULL;
 
-            bact->self->Release(node->bacto);
+            node->bacto->Release();
         }
 
         node = next_node;
@@ -3982,7 +3982,7 @@ void CrashOrLand__sub0(__NC_STACK_ypabact *bact, int a2)
     else
     {
         bact->yls_time = -1;
-        bact->self->Release(bact->self);
+        bact->self->Release();
     }
 }
 
@@ -6873,7 +6873,7 @@ void NC_STACK_ypabact::BeamingTimeUpdate(update_msg *arg)
                 if ( bact->oflags & BACT_OFLAG_USERINPT )
                     bact->status_flg |= BACT_STFLAG_NORENDER;
                 else
-                    Release(this);
+                    Release();
 
                 bact->status_flg &= ~BACT_STFLAG_SCALE;
             }
@@ -7277,26 +7277,20 @@ void NC_STACK_ypabact::ypabact_func117(update_msg *upd)
         ypabact_func123(upd);
 }
 
-void NC_STACK_ypabact::Release(NC_STACK_ypabact *b_bacto)
+void NC_STACK_ypabact::Release()
 {
-    __NC_STACK_ypabact *bact = &ypabact;
-
-    _NC_STACK_ypaworld *yw = &bact->ywo->stack__ypaworld;
-
-    __NC_STACK_ypabact *b_bact = b_bacto->getBACT_pBact();
-
-    if ( b_bact->owner )
+    if ( ypabact.owner )
     {
-        if ( yw->isNetGame )
+        if ( ypabact.yw->isNetGame )
         {
-            if ( b_bact->bact_type != BACT_TYPES_MISSLE )
+            if ( ypabact.bact_type != BACT_TYPES_MISSLE )
             {
                 uamessage_destroyVhcl destrMsg;
 
                 destrMsg.msgID = UAMSG_DESTROYVHCL;
-                destrMsg.owner = b_bact->owner;
-                destrMsg.id = b_bact->gid;
-                destrMsg.type = b_bact->bact_type;
+                destrMsg.owner = ypabact.owner;
+                destrMsg.id = ypabact.gid;
+                destrMsg.type = ypabact.bact_type;
 
                 yw_arg181 v6;
                 v6.recvFlags = 2;
@@ -7305,12 +7299,12 @@ void NC_STACK_ypabact::Release(NC_STACK_ypabact *b_bacto)
                 v6.garant = 1;
                 v6.dataSize = sizeof(destrMsg);
 
-                yw->self_full->ypaworld_func181(&v6);
+                ypabact.ywo->ypaworld_func181(&v6);
             }
         }
     }
 
-    bact->ywo->ypaworld_func144(b_bacto);
+    ypabact.ywo->ypaworld_func144(this);
 }
 
 size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
@@ -7744,7 +7738,7 @@ void NC_STACK_ypabact::DeadTimeUpdate(update_msg *arg)
                         if ( bact->oflags & BACT_OFLAG_USERINPT )
                             bact->status_flg |= BACT_STFLAG_NORENDER;
                         else
-                            Release(this);
+                            Release();
 
                     }
                 }
@@ -7792,7 +7786,7 @@ void NC_STACK_ypabact::DeadTimeUpdate(update_msg *arg)
             if ( bact->oflags & BACT_OFLAG_USERINPT )
                 bact->status_flg |= BACT_STFLAG_NORENDER;
             else
-                Release(this);
+                Release();
         }
     }
     else
@@ -8736,7 +8730,7 @@ size_t NC_STACK_ypabact::compatcall(int method_id, void *data)
         ypabact_func117( (update_msg *)data );
         return 1;
     case 118:
-        Release( (NC_STACK_ypabact *)data );
+        Release();
         return 1;
     case 119:
         return (size_t)SetStateInternal( (setState_msg *)data );
