@@ -2303,17 +2303,10 @@ void NC_STACK_ypabact::Move(move_msg *arg)
     else
         weight = bact->mass * 9.80665;
 
-    float thraction;
+    float thraction = 0.0;
+    vec3d v54(0.0, 0.0, 0.0);
 
-    vec3d v54;
-
-    if ( arg->flag & 1 )
-    {
-        v54 = vec3d(0.0, 0.0, 0.0);
-
-        thraction = 0.0;
-    }
-    else
+    if ( !(arg->flag & 1) )
     {
         v54 = -bact->rotation.AxisY();
 
@@ -2327,9 +2320,7 @@ void NC_STACK_ypabact::Move(move_msg *arg)
         }
     }
 
-    float v11 = bact->fly_dir_length * bact->airconst;
-
-    vec3d v41 = vec3d(0.0, weight, 0.0) + v54 * thraction - bact->fly_dir * v11;
+    vec3d v41 = vec3d::OY(weight) + v54 * thraction - bact->fly_dir * (bact->fly_dir_length * bact->airconst);
 
     float len = v41.length();
 
@@ -2344,7 +2335,7 @@ void NC_STACK_ypabact::Move(move_msg *arg)
     if ( len > 0.0 )
     {
         //vec3d v42 = bact->fly_dir * bact->fly_dir_length + (v41 / len) * (len / bact->mass * arg->field_0);
-        vec3d v42 = bact->fly_dir * bact->fly_dir_length + v41 / bact->mass * arg->field_0;
+        vec3d v42 = bact->fly_dir * bact->fly_dir_length + v41 * (arg->field_0 / bact->mass);
 
         bact->fly_dir_length = v42.length();
 
@@ -2353,7 +2344,7 @@ void NC_STACK_ypabact::Move(move_msg *arg)
     }
 
     if ( fabs(bact->fly_dir_length) > 0.1 )
-        bact->position += bact->fly_dir * bact->fly_dir_length * arg->field_0 * 6.0;
+        bact->position += bact->fly_dir * (bact->fly_dir_length * arg->field_0 * 6.0);
 
     CorrectPositionInLevelBox(NULL);
 
