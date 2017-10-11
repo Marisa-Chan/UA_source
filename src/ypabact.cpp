@@ -2322,7 +2322,7 @@ void NC_STACK_ypabact::Move(move_msg *arg)
         if ( bact->oflags & BACT_OFLAG_USERINPT )
         {
             v54.x = fSign(v54.x) * sqrt( fabs(v54.x) );
-            v54.y = fSign(v54.y) * sqrt( fabs(v54.y) );
+            v54.y = fSign(v54.y) * v54.y * v54.y;
             v54.z = fSign(v54.z) * sqrt( fabs(v54.z) );
         }
     }
@@ -3787,7 +3787,7 @@ void NC_STACK_ypabact::ApplyImpulse(bact_arg83 *arg)
 
     if ( distance <= bact->radius )
     {
-        vec3d v63 = (arg->pos2 * (2.5 * arg->mass * arg->force) + bact->fly_dir * bact->fly_dir_length) / (bact->mass + arg->mass);
+        vec3d v63 = (arg->pos2 * (2.5 * arg->mass * arg->force) + bact->fly_dir * bact->mass * bact->fly_dir_length) / (bact->mass + arg->mass);
 
         bact->fly_dir_length = v63.normalise();
 
