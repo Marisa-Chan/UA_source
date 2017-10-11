@@ -3,60 +3,50 @@
 
 #include <list>
 
-template <typename T> struct ListNode
+template <typename T> class RefList: public std::list<T>
 {
-    typename std::list<T> *pList;
-    typename std::list<T>::iterator it;
-    bool assigned;
+public:
+    typedef typename std::list<T> _T_interList;
+    typedef typename std::list<T>::iterator _T_interListIter;
 
-    ListNode()
+    struct ListNode
     {
-        _Init();
+        _T_interList *pList;
+        _T_interListIter it;
+        bool assigned;
+
+        ListNode()
+        {
+            assigned = false;
+            pList = NULL;
+        };
+
+        ListNode(_T_interList &_lst, _T_interListIter _it)
+        {
+            pList = &_lst;
+            it = _it;
+            assigned = true;
+        };
+
+        void RemoveFromAnyList()
+        {
+            if (assigned && pList)
+                pList->erase(it);
+
+            assigned = false;
+            pList = NULL;
+        };
     };
 
-    void _Init()
+    ListNode refPushBack(const T &val)
     {
-        assigned = false;
-    };
+        return ListNode(this, insert(this->end(), val));
+    }
 
-    void RemoveFromAnyList()
+    ListNode refPushFront(const T &val)
     {
-        if (assigned && pList)
-            pList->erase(it);
-
-        assigned = false;
-    };
-
-    bool PushBack(std::list<T> *l, T val)
-    {
-        if (!l)
-            return false;
-
-        RemoveFromAnyList();
-
-        it = l->insert(l->end(), val);
-        pList = l;
-        assigned = true;
-
-        return true;
-    };
-
-    bool PushFront(std::list<T> *l, T val)
-    {
-        if (!l)
-            return false;
-
-        RemoveFromAnyList();
-
-        it = l->insert(l->begin(), val);
-        pList = l;
-        assigned = true;
-
-        return true;
-    };
-
+        return ListNode(this, insert(this->begin(), val));
+    }
 };
-
-
 
 #endif // LISTNODE_H_INCLUDED
