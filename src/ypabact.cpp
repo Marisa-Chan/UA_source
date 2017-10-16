@@ -6949,7 +6949,11 @@ void StartDestFX__sub0(__NC_STACK_ypabact *main, const destFX &fx)
         float len = bah->ypabact.fly_dir.length();
 
         if ( len > 0.001 )
+        {
+            bah->ypabact.fly_dir /= len;
             bah->ypabact.fly_dir_length = len;
+        }
+
     }
 }
 
