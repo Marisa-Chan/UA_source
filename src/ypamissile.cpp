@@ -11,7 +11,6 @@
 
 #include <math.h>
 
-
 const NewClassDescr NC_STACK_ypamissile::description("ypamissile.class", &newinstance);
 
 size_t NC_STACK_ypamissile::func0(IDVList *stak)
@@ -20,9 +19,6 @@ size_t NC_STACK_ypamissile::func0(IDVList *stak)
         return 0;
 
     stack__ypamissile.selfie = &ypabact;
-
-    stack__ypamissile.selfie_node.bact = &ypabact;
-    stack__ypamissile.selfie_node.bacto = this;
 
     ypabact.bact_type = BACT_TYPES_MISSLE;
 
@@ -197,10 +193,6 @@ size_t NC_STACK_ypamissile::func3(IDVList *stak)
 
                 case MISS_ATT_TYPE:
                     *(int *)val.value.p_data = getMISS_type();
-                    break;
-
-                case MISS_ATT_PNODE:
-                    *(bact_node **)val.value.p_data = getMISS_pNode();
                     break;
 
                 case MISS_ATT_LIFETIME:
@@ -421,12 +413,11 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                         vec3d to_enemy = ttmp - bact->old_pos;
                         vec3d dist_vect = bact->position - bact->old_pos;
 
-                        if ( to_enemy.dot( bact->rotation.AxisZ() ) >= 0.3 )
+                        if ( to_enemy.dot( bact->rotation.AxisZ() )>= 0.3 )
                         {
-                            float dist_vect_len;
-                            vec3d dir_vect = dist_vect.normalise(&dist_vect_len);
+                            float dist_vect_len = dist_vect.normalise();
 
-                            vec3d vp = dir_vect * to_enemy;
+                            vec3d vp = dist_vect * to_enemy;
 
                             float wpn_radius = 0.0;
 
@@ -1188,11 +1179,6 @@ __NC_STACK_ypabact *NC_STACK_ypamissile::getMISS_launcher()
 int NC_STACK_ypamissile::getMISS_type()
 {
     return stack__ypamissile.field_c;
-}
-
-bact_node *NC_STACK_ypamissile::getMISS_pNode()
-{
-    return &stack__ypamissile.selfie_node;
 }
 
 int NC_STACK_ypamissile::getMISS_lifeTime()

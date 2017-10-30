@@ -20,6 +20,133 @@ int ypabact_id = 1;
 char **dword_5490B0; // ypaworld strings
 
 
+__NC_STACK_ypabact::__NC_STACK_ypabact()
+{
+    self = NULL;
+    sectX = 0;
+    sectY = 0;
+    pSector = NULL;
+    wrldX = 0.0;
+    wrldY = 0.0;
+    secMaxX = 0;
+    secMaxY = 0;
+    bact_type = 0;
+    gid = 0;
+    vehicleID = 0;
+    bflags = 0;
+    commandID = 0;
+    host_station = NULL;
+    parent_bacto = NULL;
+    parent_bact = NULL;
+
+    memset(&soundcarrier, 0, sizeof(soundcarrier) ); //FIX IT
+
+    soundFlags = 0;
+    volume = 0;
+    pitch = 0;
+    pitch_max = 0.0;
+    energy = 0;
+    energy_max = 0;
+    reload_const = 0;
+    shield = 0;
+    radar = 0;
+    owner = 0;
+    aggr = 0;
+    status = 0;
+    status_flg = 0;
+    primTtype = 0;
+    secndTtype = 0;
+    primT_cmdID = 0;
+    secndT_cmdID = 0;
+    primT.pbact = NULL;
+    secndT.pbact = NULL;
+    adist_sector = 0.0;
+    adist_bact = 0.0;
+    sdist_sector = 0.0;
+    sdist_bact = 0.0;
+    current_waypoint = 0;
+    waypoints_count = 0;
+    m_cmdID = 0;
+    m_owner = 0;
+    fe_cmdID = 0;
+    fe_time = 0;
+    mass = 0.0;
+    force = 0.0;
+    airconst = 0.0;
+    airconst_static = 0.0;
+    maxrot = 0.0;
+    viewer_horiz_angle = 0.0;
+    viewer_vert_angle = 0.0;
+    viewer_max_up = 0.0;
+    viewer_max_down = 0.0;
+    viewer_max_side = 0.0;
+    thraction = 0.0;
+    fly_dir_length = 0.0;
+    height = 0.0;
+    height_max_user = 0.0;
+
+    vp_active = 0;
+    memset(vp_extra, 0, sizeof(vp_extra));
+    vp_extra_mode = 0;
+
+    radius = 0.0;
+    viewer_radius = 0.0;
+    overeof = 0.0;
+    viewer_overeof = 0.0;
+    clock = 0;
+    AI_time1 = 0;
+    AI_time2 = 0;
+    search_time1 = 0;
+    search_time2 = 0;
+    scale_time = 0;
+    brkfr_time = 0;
+    brkfr_time2 = 0;
+    newtarget_time = 0;
+    assess_time = 0;
+    waitCol_time = 0;
+    slider_time = 0;
+    dead_time = 0;
+    beam_time = 0;
+    energy_time = 0;
+    weapon = 0;
+    weapon_flags = 0;
+    mgun = 0;
+    num_weapons = 0;
+    weapon_time = 0;
+    gun_angle = 0.0;
+    gun_angle_user = 0.0;
+    gun_leftright = 0.0;
+    gun_radius = 0.0;
+    gun_power = 0.0;
+    mgun_time = 0;
+    salve_counter = 0;
+    kill_after_shot = 0;
+    heading_speed = 0.0;
+    killer = NULL;
+    killer_owner = 0;
+    reb_count = 0;
+    atk_ret = 0;
+    lastFrmStamp = 0;
+    scale_start = 0.0;
+    scale_speed = 0.0;
+    scale_accel = 0.0;
+    scale_duration = 0;
+    scale_pos = 0;
+    scale_delay = 0;
+
+    for (int i = 0; i < 32; i++)
+    {
+        vp_fx_models[i] = NULL;
+        vp_fx_tform[i] = NULL;
+    }
+
+    oflags = 0;
+    ywo = NULL;
+    yw = NULL;
+    yls_time = 0;
+};
+
+
 size_t NC_STACK_ypabact::func0(IDVList *stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
@@ -29,7 +156,7 @@ size_t NC_STACK_ypabact::func0(IDVList *stak)
 
     init_list(&ypabact.attackers_list);
     init_list(&ypabact.subjects_list);
-    init_list(&ypabact.missiles_list);
+    ypabact.missiles_list.clear();
 
     ypabact.gid = ypabact_id;
     ypabact.bact_type = BACT_TYPES_BACT;
@@ -256,17 +383,11 @@ size_t NC_STACK_ypabact::func1()
         delete_class_obj(nd->bacto);
     }
 
-    while ( 1 )
-    {
-        bact_node *nd = (bact_node *)bact->missiles_list.head;
 
-        if (!nd->next)
-            break;
+    for (YpamissileList::iterator it = bact->missiles_list.begin(); it != bact->missiles_list.end(); it++)
+        delete_class_obj(*it);
 
-        Remove(bact->missiles_list.head);
-
-        delete_class_obj(nd->bacto);
-    }
+    bact->missiles_list.clear();
 
     return NC_STACK_nucleus::func1();
 }
@@ -584,30 +705,25 @@ void sub_481E0C(__NC_STACK_ypabact *bact)
 
 void sub_481F94(__NC_STACK_ypabact *bact)
 {
-    bact_node *node = (bact_node *)bact->missiles_list.head;
 
-    while (node->next)
+    for (YpamissileList::iterator it = bact->missiles_list.begin(); it != bact->missiles_list.end(); )
     {
-        bact_node * next_node = (bact_node *)node->next; // Save next node before remove
-
-        int a4 = node->bacto->getBACT_yourLastSeconds();
-
-        if ( a4 <= 0 )
+        if ( (*it)->getBACT_yourLastSeconds() <= 0 )
         {
             setTarget_msg arg67;
             arg67.tgt_type = BACT_TGT_TYPE_NONE;
             arg67.priority = 0;
 
-            node->bacto->SetTarget(&arg67);
+            (*it)->SetTarget(&arg67);
 
-            Remove(node);
+            (*it)->ypabact.parent_bacto = NULL;
 
-            node->bact->parent_bacto = NULL;
+            (*it)->Release();
 
-            node->bacto->Release();
+            it = bact->missiles_list.erase(it);
         }
-
-        node = next_node;
+        else
+            it++;
     }
 }
 
@@ -680,12 +796,14 @@ void NC_STACK_ypabact::Update(update_msg *arg)
 
     AI_layer1(arg);
 
-    bact_node *vnod = (bact_node *)bact->missiles_list.head;
-    while(vnod->next)
+    for(YpamissileList::iterator it = bact->missiles_list.begin(); it != bact->missiles_list.end();)
     {
-        bact_node *next_vnod = (bact_node *)vnod->next;
-        vnod->bacto->Update(arg);
-        vnod = next_vnod;
+        YpamissileList::iterator next = it;
+        next++;
+
+        (*it)->Update(arg);
+
+        it = next;
     }
 
     sub_481F94(bact);
@@ -3222,14 +3340,9 @@ void NC_STACK_ypabact::Die()
 
         if ( (size_t)bact->parent_bacto <= 2 )
         {
-            while ( 1 )
+            for (YpamissileList::iterator it = bact->missiles_list.begin(); it != bact->missiles_list.end(); it = bact->missiles_list.erase(it))
             {
-                bact_node *v36 = (bact_node *)RemHead(&bact->missiles_list);
-
-                if ( !v36 )
-                    break;
-
-                NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v36->bacto);
+                NC_STACK_ypamissile *miss = *it;
 
                 miss->ypamissile_func128(NULL);
 
@@ -3244,24 +3357,18 @@ void NC_STACK_ypabact::Die()
                 arg67.priority = 0;
                 miss->SetTarget(&arg67);
 
-                v36->bact->parent_bacto = NULL;
+                miss->ypabact.parent_bacto = NULL;
 
                 bact->ywo->ypaworld_func144(miss);
             }
         }
         else
         {
-            while ( 1 )
+            for (YpamissileList::iterator it = bact->missiles_list.begin(); it != bact->missiles_list.end(); it = bact->missiles_list.erase(it))
             {
-                bact_node *v33 = (bact_node *)RemHead(&bact->missiles_list);
+                NC_STACK_ypamissile *miss = *it;
 
-                if ( !v33 )
-                    break;
-
-                AddTail(&bact->parent_bacto->ypabact.missiles_list, v33);
-
-                NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v33->bacto);
-
+                bact->parent_bacto->ypabact.missiles_list.push_back(miss);
                 miss->setMISS_launcher( bact->parent_bact );
             }
         }
@@ -3540,9 +3647,7 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
             wbact->parent_bacto = NULL;
         }
 
-        bact_node *a2a = wobj->getMISS_pNode();
-
-        AddTail(&bact->missiles_list, a2a);
+        bact->missiles_list.push_back(wobj);
 
         int v42 = wobj->getMISS_type();
 
@@ -5195,7 +5300,7 @@ void NC_STACK_ypabact::Renew()
 
     init_list(&bact->attackers_list);
     init_list(&bact->subjects_list);
-    init_list(&bact->missiles_list);
+    bact->missiles_list.clear();
 
     bact->attack_node_scnd.next = NULL;
     bact->attack_node_prim.next = NULL;
@@ -5879,9 +5984,7 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
                         v103->parent_bacto = NULL;
                     }
 
-                    bact_node *a2a = v57->getMISS_pNode();
-
-                    AddTail(&bact->missiles_list, a2a);
+                    bact->missiles_list.push_back(v57);
 
                     setState_msg v69;
                     v69.newStatus = BACT_STATUS_DEAD;
@@ -7234,14 +7337,10 @@ void NC_STACK_ypabact::NetUpdate(update_msg *upd)
 
     ypabact_func117(upd);
 
-    for ( bact_node *bct = (bact_node *)bact->missiles_list.head; bct->next; bct = (bact_node *)bct->next )
+    for ( YpamissileList::iterator it = bact->missiles_list.begin(); it != bact->missiles_list.end(); it++ )
     {
-        NC_STACK_ypamissile *misl = dynamic_cast<NC_STACK_ypamissile *>(bct->bacto);
-        if (misl)
-        {
-            misl->setMISS_launcher(bact);
-            misl->Update(upd);
-        }
+        (*it)->setMISS_launcher(bact);
+        (*it)->Update(upd);
     }
 
     sub_481F94(bact);

@@ -14,7 +14,6 @@ struct __NC_STACK_ypamissile
     __NC_STACK_ypabact *selfie;
     char field_c;
     __NC_STACK_ypabact *ejaculator_bact;
-    bact_node selfie_node;
     int life_time;
     int drive_time;
     int delay_time;
@@ -74,7 +73,6 @@ public:
     {
         MISS_ATT_LAUNCHER = 0x80002000,
         MISS_ATT_TYPE = 0x80002002,
-        MISS_ATT_PNODE = 0x80002003,
         MISS_ATT_LIFETIME = 0x80002004,
         MISS_ATT_DELAY = 0x80002005,
         MISS_ATT_DRIVETIME = 0x80002006,
@@ -109,7 +107,6 @@ public:
 
     virtual __NC_STACK_ypabact *getMISS_launcher();
     virtual int getMISS_type();
-    virtual bact_node *getMISS_pNode();
     virtual int getMISS_lifeTime();
     virtual int getMISS_delay();
     virtual int getMISS_driveTime();

@@ -690,28 +690,28 @@ int yw_netGetUnitsCount(__NC_STACK_ypabact *host)
 
 __NC_STACK_ypabact * yw_netGetMissileByID(__NC_STACK_ypabact *host, uint32_t id)
 {
-    for (bact_node *msl = (bact_node *)host->missiles_list.head; msl->next; msl = (bact_node *)msl->next)
+    for (YpamissileList::iterator it = host->missiles_list.begin(); it != host->missiles_list.end(); it++)
     {
-        if ( id == msl->bact->gid )
-            return msl->bact;
+        if ( (*it)->ypabact.gid == id )
+            return &(*it)->ypabact;
     }
 
     bact_node *comm = (bact_node *)host->subjects_list.head;
     while ( comm->next )
     {
-        for (bact_node *msl = (bact_node *)comm->bact->missiles_list.head; msl->next; msl = (bact_node *)msl->next)
+        for (YpamissileList::iterator it = comm->bact->missiles_list.begin(); it != comm->bact->missiles_list.end(); it++)
         {
-            if ( id == msl->bact->gid )
-                return msl->bact;
+            if ( (*it)->ypabact.gid == id )
+                return &(*it)->ypabact;
         }
 
         bact_node *unit = (bact_node *)comm->bact->subjects_list.head;
         while ( unit->next )
         {
-            for (bact_node *msl = (bact_node *)unit->bact->missiles_list.head; msl->next; msl = (bact_node *)msl->next)
+            for (YpamissileList::iterator it = unit->bact->missiles_list.begin(); it != unit->bact->missiles_list.end(); it++)
             {
-                if ( id == msl->bact->gid )
-                    return msl->bact;
+                if ( (*it)->ypabact.gid == id )
+                    return &(*it)->ypabact;
             }
 
             unit = (bact_node *)unit->next;
@@ -729,10 +729,10 @@ __NC_STACK_ypabact * yw_netGetMissileOfBact(__NC_STACK_ypabact *host, uint32_t m
 {
     if ( bactId == host->gid )
     {
-        for (bact_node *msl = (bact_node *)host->missiles_list.head; msl->next; msl = (bact_node *)msl->next)
+        for (YpamissileList::iterator it = host->missiles_list.begin(); it != host->missiles_list.end(); it++)
         {
-            if ( mslId == msl->bact->gid )
-                return msl->bact;
+            if ( mslId == (*it)->ypabact.gid )
+                return &(*it)->ypabact;
         }
     }
     else
@@ -742,10 +742,10 @@ __NC_STACK_ypabact * yw_netGetMissileOfBact(__NC_STACK_ypabact *host, uint32_t m
         {
             if ( bactId == comm->bact->gid )
             {
-                for (bact_node *msl = (bact_node *)comm->bact->missiles_list.head; msl->next; msl = (bact_node *)msl->next)
+                for (YpamissileList::iterator it = comm->bact->missiles_list.begin(); it != comm->bact->missiles_list.end(); it++)
                 {
-                    if ( mslId == msl->bact->gid )
-                        return msl->bact;
+                    if ( mslId == (*it)->ypabact.gid )
+                        return &(*it)->ypabact;
                 }
 
                 goto yw_netGetMissileOfBact_NOTFOUND;
@@ -757,10 +757,10 @@ __NC_STACK_ypabact * yw_netGetMissileOfBact(__NC_STACK_ypabact *host, uint32_t m
             {
                 if ( unit->bact->gid == bactId)
                 {
-                    for (bact_node *msl = (bact_node *)unit->bact->missiles_list.head; msl->next; msl = (bact_node *)msl->next)
+                    for (YpamissileList::iterator it = unit->bact->missiles_list.begin(); it != unit->bact->missiles_list.end(); it++)
                     {
-                        if ( mslId == msl->bact->gid )
-                            return msl->bact;
+                        if ( mslId == (*it)->ypabact.gid )
+                            return &(*it)->ypabact;
                     }
 
                     goto yw_netGetMissileOfBact_NOTFOUND;
@@ -862,17 +862,14 @@ void yw_netSendUpdate(_NC_STACK_ypaworld *yw, uint8_t owner, char *recvID)
 
     yw_netAddVhclUpdData(updinf.data, 1, bhost->bact);
 
-    bact_node *msl = (bact_node *)bhost->bact->missiles_list.head;
-    while (msl->next)
+    for(YpamissileList::iterator it = bhost->bact->missiles_list.begin(); it != bhost->bact->missiles_list.end(); it++)
     {
-        yw_netAddVhclUpdData(&updinf.data[numb], 4, msl->bact);
+        yw_netAddVhclUpdData(&updinf.data[numb], 4, &(*it)->ypabact);
 
         numb++;
 
         if ( numb >= 1023 )
             break;
-
-        msl = (bact_node *)msl->next;
     }
 
     bact_node *comnd = (bact_node *)bhost->bact->subjects_list.head;
@@ -897,17 +894,14 @@ void yw_netSendUpdate(_NC_STACK_ypaworld *yw, uint8_t owner, char *recvID)
         if ( numb >= 1023 )
             break;
 
-        msl = (bact_node *)comnd->bact->missiles_list.head;
-        while ( msl->next )
+        for(YpamissileList::iterator it = comnd->bact->missiles_list.begin(); it != comnd->bact->missiles_list.end(); it++)
         {
-            yw_netAddVhclUpdData(&updinf.data[numb], 4, msl->bact);
+            yw_netAddVhclUpdData(&updinf.data[numb], 4, &(*it)->ypabact);
 
             numb++;
 
             if ( numb >= 1023 )
                 break;
-
-            msl = (bact_node *)msl->next;
         }
 
         bact_node *slv = (bact_node *)comnd->bact->subjects_list.head;
@@ -921,18 +915,16 @@ void yw_netSendUpdate(_NC_STACK_ypaworld *yw, uint8_t owner, char *recvID)
             if ( numb >= 1023 )
                 break;
 
-            msl = (bact_node *)slv->bact->missiles_list.head;
-            while ( msl->next )
+            for(YpamissileList::iterator it = slv->bact->missiles_list.begin(); it != slv->bact->missiles_list.end(); it++)
             {
-                yw_netAddVhclUpdData(&updinf.data[numb], 4, msl->bact);
+                yw_netAddVhclUpdData(&updinf.data[numb], 4, &(*it)->ypabact);
 
                 numb++;
 
                 if ( numb >= 1023 )
                     break;
-
-                msl = (bact_node *)msl->next;
             }
+
             slv = (bact_node *)slv->next;
         }
 
@@ -1101,7 +1093,7 @@ bool yw_netRecvUpdate(_NC_STACK_ypaworld *yw, uamessage_update *msg, int owner)
                     tbact->parent_bacto = NULL;
                 }
 
-                AddTail(&lastBct->missiles_list, tmp->getMISS_pNode());
+                lastBct->missiles_list.push_back(tmp);
 
                 tmp->setMISS_launcher(lastBct);
             }
@@ -1391,11 +1383,12 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             strcpy(err, msg->senderID);
         }
 
-        while ( bctt->missiles_list.head->next )
+        while(bctt->missiles_list.begin() != bctt->missiles_list.end())
         {
-            bact_node *misl = (bact_node *)RemHead(&bctt->missiles_list);
+            NC_STACK_ypamissile * misl = bctt->missiles_list.front();
+            bctt->missiles_list.pop_front();
 
-            misl->bact->parent_bacto = NULL;
+            misl->ypabact.parent_bacto = NULL;
 
             sub_4F1B34(yw, bctt);
 
@@ -1514,8 +1507,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             weapbact->parent_bacto = NULL;
         }
 
-        bact_node *weapnode = weapo->getMISS_pNode();
-        AddTail(&weapLauncher->missiles_list, weapnode);
+        weapLauncher->missiles_list.push_back(weapo);
 
         weapo->setMISS_launcher(weapLauncher);
 
@@ -1782,20 +1774,13 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         }
         else
         {
-            while ( true )
+            for ( YpamissileList::iterator it = fndBact->missiles_list.begin(); it != fndBact->missiles_list.end(); it++ )
             {
-                bact_node *rmvd = (bact_node *)RemHead(&fndBact->missiles_list);
-
-                if ( !rmvd )
-                    break;
-
-                AddTail(&fndBact->parent_bact->missiles_list, rmvd);
-
-                NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(rmvd->bacto);
-
-                if (miss)
-                    miss->setMISS_launcher(fndBact->parent_bact);
+                fndBact->parent_bact->missiles_list.push_back(*it);
+                (*it)->setMISS_launcher(fndBact->parent_bact);
             }
+
+            fndBact->missiles_list.clear();
         }
 
         fndBact->status = BACT_STATUS_DEAD;

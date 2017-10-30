@@ -572,16 +572,9 @@ void NC_STACK_ypagun::FightWithBact(bact_arg75 *arg)
 
                 if ( !a5 )
                 {
-                    /*bact_node *v15 = (bact_node *)ypabact.list3.tailpred; //Check it,
-                    if ( v15->next ) //on null list it will work too */
-
-                    //must be like:
-                    bact_node *v15 = (bact_node *)ypabact.missiles_list.tailpred; //Check it,
-                    if ( v15 != (bact_node *)&ypabact.missiles_list )
-                    {
-                        NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v15->bacto);
-                        miss->setMISS_ignoreBuilds(1);
-                    }
+                    YpamissileList::reverse_iterator it = ypabact.missiles_list.rbegin();
+                    if ( it != ypabact.missiles_list.rend() )
+                        (*it)->setMISS_ignoreBuilds(1);
                 }
                 ypagun.fireCount = ypagun.fireTime;
 

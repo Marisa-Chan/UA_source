@@ -6,6 +6,12 @@ struct nnode
 {
     nnode *next;
     nnode *prev;
+
+    nnode()
+    {
+        next = NULL;
+        prev = NULL;
+    }
 };
 
 struct nlist

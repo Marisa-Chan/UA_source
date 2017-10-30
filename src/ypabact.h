@@ -4,13 +4,14 @@
 #include "nucleas.h"
 #include "engine_tform.h"
 #include "base.h"
-
+#include "listnode.h"
 
 // !!!! if period is small, then this never happen
 #define BACT_MIN_ANGLE 0.0002
 
 class NC_STACK_ypabact;
 struct __NC_STACK_ypabact;
+class NC_STACK_ypamissile;
 
 class NC_STACK_ypaworld;
 struct _NC_STACK_ypaworld;
@@ -20,6 +21,9 @@ class NC_STACK_yparobo;
 struct yw_arg129;
 
 struct cellArea;
+
+typedef RefList<NC_STACK_ypabact *> YpabactList;
+typedef RefList<NC_STACK_ypamissile *> YpamissileList;
 
 struct destFX
 {
@@ -45,6 +49,12 @@ struct bact_node : public nnode
 {
     NC_STACK_ypabact *bacto;
     __NC_STACK_ypabact *bact;
+
+    bact_node()
+    {
+        bacto = NULL;
+        bact = NULL;
+    }
 };
 
 enum EVPROTO_FLAG
@@ -292,7 +302,8 @@ struct __NC_STACK_ypabact : public nnode
     char weapon_flags;
     int mgun;
     char num_weapons;
-    nlist missiles_list;
+
+    YpamissileList missiles_list;
     int weapon_time;
     vec3d fire_pos;
     float gun_angle;
@@ -329,6 +340,8 @@ struct __NC_STACK_ypabact : public nnode
     bact_node attack_node_prim;
     bact_node attack_node_scnd;
     int yls_time;
+
+    __NC_STACK_ypabact();
 };
 
 struct newMaster_msg
@@ -615,7 +628,6 @@ public:
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ypabact()
     {
-        memset(&ypabact, 0, sizeof(ypabact) );
     };
     virtual ~NC_STACK_ypabact() {};
 
@@ -690,7 +702,6 @@ public:
 
     __NC_STACK_ypabact ypabact;
 };
-
 
 void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_ypaworld *ywo);
 void sb_0x4874c4(__NC_STACK_ypabact *bact, int a2, int a3, float a4);

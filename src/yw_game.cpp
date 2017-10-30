@@ -4351,34 +4351,26 @@ void sub_4F1A60(__NC_STACK_ypabact *bact)
 
 void sub_4F1B34(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
 {
-    while ( 1 )
+    for(YpamissileList::iterator it = bact->missiles_list.begin(); it != bact->missiles_list.end();)
     {
-        bact_node *v4 = (bact_node *)bact->missiles_list.head;
-
-        if (!v4->next)
-            break;
-
-        if ( v4->bact->primTtype == BACT_TGT_TYPE_UNIT )
+        if ( (*it)->ypabact.primTtype == BACT_TGT_TYPE_UNIT )
         {
-            bact_node *nd = v4->bacto->getBACT_primAttackNode();
+            bact_node *nd = (*it)->getBACT_primAttackNode();
 
             Remove(nd);
 
-            v4->bact->primTtype = BACT_TGT_TYPE_NONE;
+            (*it)->ypabact.primTtype = BACT_TGT_TYPE_NONE;
         }
 
-        sub_4F1A60(v4->bact);
+        sub_4F1A60(&(*it)->ypabact);
 
-        NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v4->bacto);
+        (*it)->ypabact.parent_bacto = NULL;
 
-        bact_node *weap_selfie = miss->getMISS_pNode();
-        Remove(weap_selfie);
+        yw->self_full->ypaworld_func144(*it);
 
-        v4->bact->parent_bacto = NULL;
+        (*it)->ypabact.status_flg |= BACT_STFLAG_DEATH1;
 
-        yw->self_full->ypaworld_func144(v4->bacto);
-
-        v4->bact->status_flg |= BACT_STFLAG_DEATH1;
+        it = bact->missiles_list.erase(it);
     }
 }
 
@@ -4993,6 +4985,28 @@ void recorder_update_time(_NC_STACK_ypaworld *yw, int dtime)
     yw->sceneRecorder->field_40 -= dtime;
 }
 
+
+void recorder_store_bact(_NC_STACK_ypaworld *yw, recorder *rcrd, YpamissileList &bct_lst);
+void recorder_store_bact(_NC_STACK_ypaworld *yw, recorder *rcrd, nlist *bct_lst);
+
+void recorder_store_bact(_NC_STACK_ypaworld *yw, recorder *rcrd, YpamissileList &bct_lst)
+{
+    for(YpamissileList::iterator it = bct_lst.begin(); it != bct_lst.end(); it++)
+    {
+        if ( (*it)->ypabact.gid >= 0xFFFF || &(*it)->ypabact == yw->field_1b80 )
+        {
+            if ( rcrd->bacts_count < rcrd->max_bacts )
+            {
+                rcrd->bacts[ rcrd->bacts_count ] = &(*it)->ypabact;
+                rcrd->bacts_count++;
+            }
+
+            recorder_store_bact(yw, rcrd, (*it)->ypabact.missiles_list);
+            recorder_store_bact(yw, rcrd, &(*it)->ypabact.subjects_list);
+        }
+    }
+}
+
 void recorder_store_bact(_NC_STACK_ypaworld *yw, recorder *rcrd, nlist *bct_lst)
 {
     bact_node *bct = (bact_node *)bct_lst->head;
@@ -5006,7 +5020,7 @@ void recorder_store_bact(_NC_STACK_ypaworld *yw, recorder *rcrd, nlist *bct_lst)
                 rcrd->bacts_count++;
             }
 
-            recorder_store_bact(yw, rcrd, &bct->bact->missiles_list);
+            recorder_store_bact(yw, rcrd, bct->bact->missiles_list);
             recorder_store_bact(yw, rcrd, &bct->bact->subjects_list);
         }
 
@@ -6184,13 +6198,7 @@ void debug_count_units(_NC_STACK_ypaworld *yw)
                     yw->dbg_num_vhcl_counter[ commanders->bact->owner ]++;
                 }
 
-                bact_node *com_piu = (bact_node *)commanders->bact->missiles_list.head;
-                while ( com_piu->next )
-                {
-                    yw->dbg_num_wpn_counter[ commanders->bact->owner ]++;
-
-                    com_piu = (bact_node *)com_piu->next;
-                }
+                yw->dbg_num_wpn_counter[ commanders->bact->owner ] += commanders->bact->missiles_list.size();
 
                 bact_node *slaves = (bact_node *)commanders->bact->subjects_list.head;
                 while (  slaves->next )
@@ -6201,13 +6209,7 @@ void debug_count_units(_NC_STACK_ypaworld *yw)
                         yw->dbg_num_vhcl_counter[ commanders->bact->owner ]++;
 
 
-                    bact_node *slv_piu = (bact_node *)slaves->bact->missiles_list.head;
-                    while (  slv_piu->next )
-                    {
-                        yw->dbg_num_wpn_counter[ commanders->bact->owner ]++;
-
-                        slv_piu = (bact_node *)slv_piu->next;
-                    }
+                    yw->dbg_num_wpn_counter[ commanders->bact->owner ] += slaves->bact->missiles_list.size();
 
                     slaves = (bact_node *)slaves->next;
                 }

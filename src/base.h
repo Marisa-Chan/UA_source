@@ -41,6 +41,18 @@ struct TForm3D
     int32_t rz;
     uint32_t flags;
     mat4x4 tform;
+
+    TForm3D()
+    {
+        parent_1c = NULL;
+        ax = 0;
+        ay = 0;
+        az = 0;
+        rx = 0;
+        ry = 0;
+        rz = 0;
+        flags = 0;
+    };
 };
 
 struct polysDat
@@ -185,6 +197,12 @@ struct vhclBases
 {
     NC_STACK_base *base;
     TForm3D *trigo;
+
+    vhclBases()
+    {
+        base = NULL;
+        trigo = NULL;
+    }
 };
 
 
