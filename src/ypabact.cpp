@@ -2045,9 +2045,9 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
         if ( fabs(v104) < 0.001 )
             v104 = 0.0;
 
-        bact->rotation = mat3x3::RotateX(v110 * 0.5) * bact->rotation;
-        bact->rotation = mat3x3::RotateZ(v104 * 0.5) * bact->rotation;
-        bact->rotation = mat3x3::RotateY(v103 * 0.5) * bact->rotation;
+        bact->rotation = mat3x3::RotateX(v110 * 0.5) * bact->rotation; // local
+        bact->rotation = mat3x3::RotateZ(v104 * 0.5) * bact->rotation; // local
+        bact->rotation *= mat3x3::RotateY(v103 * 0.5); // global
 
         bact->thraction += bact->force * v106 * 0.5 * arg->inpt->sliders_vars[2];
 
