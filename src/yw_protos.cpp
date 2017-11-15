@@ -4891,25 +4891,25 @@ int parseSaveSound(scrCallBack *arg)
         else if ( !strcasecmp(arg->p1, "volume") )
         {
             usr->snd__volume = atoi(arg->p2);
-            SFXe.setMasterVolume(usr->snd__volume);
+            SFXEngine::SFXe.setMasterVolume(usr->snd__volume);
         }
         else if ( !strcasecmp(arg->p1, "cdvolume") )
         {
             usr->snd__cdvolume = atoi(arg->p2);
 
-            SetMusicVolume(usr->snd__cdvolume);
+            SFXEngine::SFXe.SetMusicVolume(usr->snd__cdvolume);
         }
         else if ( !strcasecmp(arg->p1, "invertlr") )
         {
             if ( !strcasecmp(arg->p2, "yes") )
             {
                 usr->snd__flags2 |= 1;
-                SFXe.setReverseStereo(1);
+                SFXEngine::SFXe.setReverseStereo(1);
             }
             else
             {
                 usr->snd__flags2 &= ~1;
-                SFXe.setReverseStereo(0);
+                SFXEngine::SFXe.setReverseStereo(0);
             }
         }
         else if ( !strcasecmp(arg->p1, "sound") )
@@ -4922,14 +4922,14 @@ int parseSaveSound(scrCallBack *arg)
                 usr->snd__flags2 |= 0x10;
                 usr->p_ypaworld->snd__cdsound |= 1;
 
-                SetMusicIgnoreCommandsFlag(true);
+                SFXEngine::SFXe.SetMusicIgnoreCommandsFlag(true);
             }
             else
             {
                 usr->snd__flags2 &= 0xEF;
                 usr->p_ypaworld->snd__cdsound &= 0xFE;
 
-                SetMusicIgnoreCommandsFlag(false);
+                SFXEngine::SFXe.SetMusicIgnoreCommandsFlag(false);
             }
         }
         else

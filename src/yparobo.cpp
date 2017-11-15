@@ -1045,7 +1045,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
         bact->old_pos = tmp;
         bact->old_pos.y = tmp.y;
 
-        startSound(&bact->soundcarrier, 10);
+        SFXEngine::SFXe.startSound(&bact->soundcarrier, 10);
 
         robo->roboState &= ~ROBOSTATE_MOVE;
         bact->vp_extra[0].flags = 0;
@@ -1685,7 +1685,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
         if ( !v6 )
         {
             if ( yw->GameShell )
-                startSound(&yw->GameShell->samples2_info, 1);
+                SFXEngine::SFXe.startSound(&yw->GameShell->samples2_info, 1);
         }
         else
         {
@@ -1902,7 +1902,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
     case 10:
         if ( !(robo->roboState & ROBOSTATE_MOVE) )
         {
-            startSound(&bact->soundcarrier, 9);
+            SFXEngine::SFXe.startSound(&bact->soundcarrier, 9);
 
             robo->roboState |= ROBOSTATE_MOVE;
             robo->field_4FD -= arg->energy;
@@ -1976,7 +1976,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                 arg->selectBact->waypoints[0].z = arg->target_point.z;
 
                 if ( yw->GameShell )
-                    startSound(&yw->GameShell->samples2_info, 1);
+                    SFXEngine::SFXe.startSound(&yw->GameShell->samples2_info, 1);
             }
         }
         else
@@ -2047,7 +2047,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                     arg->selectBact->waypoints_count++;
 
                     if ( yw->GameShell )
-                        startSound(&yw->GameShell->samples2_info, 1);
+                        SFXEngine::SFXe.startSound(&yw->GameShell->samples2_info, 1);
                 }
             }
             else
@@ -5624,8 +5624,8 @@ void NC_STACK_yparobo::Die()
 
                 subnode->bact->status = BACT_STATUS_DEAD;
 
-                sub_424000(&subnode->bact->soundcarrier, 3);
-                startSound(&subnode->bact->soundcarrier, 7);
+                SFXEngine::SFXe.sub_424000(&subnode->bact->soundcarrier, 3);
+                SFXEngine::SFXe.startSound(&subnode->bact->soundcarrier, 7);
 
                 subnode->bact->soundFlags &= 0xFFFFFFF7;
                 subnode->bact->soundFlags |= 0x80;
@@ -5655,8 +5655,8 @@ void NC_STACK_yparobo::Die()
 
             node->bact->status = BACT_STATUS_DEAD;
 
-            sub_424000(&node->bact->soundcarrier, 3);
-            startSound(&node->bact->soundcarrier, 7);
+            SFXEngine::SFXe.sub_424000(&node->bact->soundcarrier, 3);
+            SFXEngine::SFXe.startSound(&node->bact->soundcarrier, 7);
 
             node->bact->soundFlags &= 0xFFFFFFF7;
             node->bact->soundFlags |= 0x80;

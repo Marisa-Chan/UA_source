@@ -1059,7 +1059,7 @@ void NC_STACK_ypaflyer::User_layer(update_msg *arg)
                     {
                         fly->bact_internal->status_flg |= BACT_STFLAG_LCRASH;
 
-                        startSound(&fly->bact_internal->soundcarrier, 5);
+                        SFXEngine::SFXe.startSound(&fly->bact_internal->soundcarrier, 5);
 
                         yw_arg180 arg180;
 

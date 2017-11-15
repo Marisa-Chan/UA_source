@@ -815,7 +815,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
                 if ( bact->fly_dir_length > 2.333333333333334 )
                 {
-                    startSound(&bact->soundcarrier, 5);
+                    SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
 
                     if ( v149 )
                     {
@@ -873,7 +873,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
                 if ( bact->fly_dir_length > 2.333333333333334 )
                 {
-                    startSound(&bact->soundcarrier, 5);
+                    SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
 
                     if ( v149 )
                     {
@@ -915,7 +915,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
             if ( bact->fly_dir_length < -2.333333333333334 )
             {
-                startSound(&bact->soundcarrier, 5);
+                SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
 
                 if ( v149 )
                 {
@@ -957,7 +957,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
                 {
                     if ( bact->fly_dir_length > 2.333333333333334 )
                     {
-                        startSound(&bact->soundcarrier, 5);
+                        SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
 
                         if ( v149 )
                         {

@@ -875,7 +875,7 @@ void NC_STACK_ypaufo::User_layer(update_msg *arg)
                     {
                         bact->status_flg |= BACT_STFLAG_LCRASH;
 
-                        startSound(&bact->soundcarrier, 5);
+                        SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
 
                         yw_arg180 arg180;
 

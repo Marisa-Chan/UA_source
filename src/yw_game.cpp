@@ -16,7 +16,7 @@ extern uint32_t bact_id;
 
 NC_STACK_bitmap * loadDisk_screen(_NC_STACK_ypaworld *yw)
 {
-    StopMusicTrack();
+    SFXEngine::SFXe.StopMusicTrack();
 
     const char *v3;
 
@@ -666,7 +666,7 @@ int sb_0x44ca90__sub8(_NC_STACK_ypaworld *yw)
         return 0;
 
     yw->samples->field_0 = -1;
-    sub_423DB0(&yw->samples->field_4);
+    SFXEngine::SFXe.sub_423DB0(&yw->samples->field_4);
 
     return 1;
 }
@@ -802,7 +802,7 @@ int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
 
     sb_0x44ca90__sub4(yw);
 
-    yw->audio_volume = SFXe.getMasterVolume();
+    yw->audio_volume = SFXEngine::SFXe.getMasterVolume();
 
     sb_0x44ca90__sub8(yw);
     sb_0x44ca90__sub6(yw);
@@ -2958,7 +2958,7 @@ int ypaworld_func148__sub1(_NC_STACK_ypaworld *yw, int id, int a4, int x, int y,
         {
             if ( node->bact->bact_type == BACT_TYPES_ROBO && ownerID2 == node->bact->owner )
             {
-                startSound(&node->bact->soundcarrier, 11);
+                SFXEngine::SFXe.startSound(&node->bact->soundcarrier, 11);
                 break;
             }
 
@@ -3644,7 +3644,7 @@ int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
 
         vec3d a2a = yw->field_1334 + vec3d::OY(50000.0);
 
-        sub_423EFC(1, a2a, vec3d(0.0), mat3x3::Ident());
+        SFXEngine::SFXe.sub_423EFC(1, a2a, vec3d(0.0), mat3x3::Ident());
 
         if ( arg->field_0 / 500 & 1 )
         {
@@ -3671,7 +3671,7 @@ int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
             yw->win3d->UnlockSurface();
         }
 
-        sb_0x424c74();
+        SFXEngine::SFXe.sb_0x424c74();
 
         yw->win3d->EndFrame();
     }
@@ -3942,14 +3942,14 @@ void ypaworld_func64__sub19__sub3(_NC_STACK_ypaworld *yw, int id)
 
         if ( v4 < 10 && v4 != sitem->field_100 )
         {
-            startSound(&yw->GameShell->samples1_info, 3);
+            SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
             sitem->field_100 = v4;
         }
 
         int v5 = v4 / 10;
         if ( v5 != sitem->field_FC )
         {
-            startSound(&yw->GameShell->samples1_info, 3);
+            SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
             sitem->field_FC = v5;
         }
     }
@@ -4187,11 +4187,11 @@ void ypaworld_func64__sub23(_NC_STACK_ypaworld *yw)
 
         if ( smpls->field_4.samples_data[0].flags & 2 )
         {
-            sb_0x4242e0(&smpls->field_4);
+            SFXEngine::SFXe.sb_0x4242e0(&smpls->field_4);
         }
         else
         {
-            sub_423DD8(&smpls->field_4);
+            SFXEngine::SFXe.sub_423DD8(&smpls->field_4);
 
             if ( smpls->field_35C )
                 delete_class_obj(smpls->field_35C);
@@ -4302,7 +4302,7 @@ void ypaworld_func151__sub6(_NC_STACK_ypaworld *yw)
 {
     if ( yw->samples )
     {
-        sub_423DD8(&yw->samples->field_4);
+        SFXEngine::SFXe.sub_423DD8(&yw->samples->field_4);
 
         if ( yw->samples->field_35C )
             delete_class_obj(yw->samples->field_35C);
@@ -4469,7 +4469,7 @@ void sub_44C144(vhclSndFX *sndfx)
 
 void ypaworld_func151__sub0(_NC_STACK_ypaworld *yw)
 {
-    sub_424CC8();
+    SFXEngine::SFXe.sub_424CC8();
 
     for (int i = 0; i < 256; i++)
     {
@@ -5521,7 +5521,7 @@ int recorder_create_camera(_NC_STACK_ypaworld *yw)
 
     bact->rotation = mat3x3::Ident();
 
-    sub_423DB0(&bact->soundcarrier);
+    SFXEngine::SFXe.sub_423DB0(&bact->soundcarrier);
 
     yw->self_full->ypaworld_func134(bacto);
 
@@ -5797,7 +5797,7 @@ void recorder_updateObject(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, tre
             if ( !(bact->soundFlags & v48) )
             {
                 bact->soundFlags |= v48;
-                startSound(&bact->soundcarrier, i);
+                SFXEngine::SFXe.startSound(&bact->soundcarrier, i);
             }
         }
         else
@@ -5807,7 +5807,7 @@ void recorder_updateObject(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, tre
                 bact->soundFlags &= ~v48;
 
                 if ( bact->soundcarrier.samples_data[i].flags & 1 )
-                    sub_424000(&bact->soundcarrier, i);
+                    SFXEngine::SFXe.sub_424000(&bact->soundcarrier, i);
             }
         }
     }

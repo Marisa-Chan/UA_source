@@ -866,9 +866,9 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
     __NC_STACK_ypamissile *miss = &stack__ypamissile;
     __NC_STACK_ypabact *bact = miss->selfie;
 
-    sub_424000(&bact->soundcarrier, 2);
-    sub_424000(&bact->soundcarrier, 0);
-    sub_424000(&bact->soundcarrier, 1);
+    SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 2);
+    SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 0);
+    SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 1);
 
     if ( arg->newStatus )
         bact->status = arg->newStatus;
@@ -884,7 +884,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
         setBACT_visProto(bact->vp_dead.base);
         setBACT_vpTransform(bact->vp_dead.trigo);
 
-        startSound(&bact->soundcarrier, 2);
+        SFXEngine::SFXe.startSound(&bact->soundcarrier, 2);
 
         StartDestFX(1);
 
@@ -896,7 +896,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
         setBACT_visProto(bact->vp_normal.base);
         setBACT_vpTransform(bact->vp_normal.trigo);
 
-        startSound(&bact->soundcarrier, 0);
+        SFXEngine::SFXe.startSound(&bact->soundcarrier, 0);
     }
 
     if ( arg->unsetFlags == BACT_STFLAG_DEATH2 )
@@ -904,7 +904,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
         setBACT_visProto(bact->vp_normal.base);
         setBACT_vpTransform(bact->vp_normal.trigo);
 
-        startSound(&bact->soundcarrier, 0);
+        SFXEngine::SFXe.startSound(&bact->soundcarrier, 0);
     }
 
     if ( arg->setFlags == BACT_STFLAG_DEATH2 )
@@ -914,7 +914,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
         setBACT_visProto(bact->vp_megadeth.base);
         setBACT_vpTransform(bact->vp_megadeth.trigo);
 
-        startSound(&bact->soundcarrier, 2);
+        SFXEngine::SFXe.startSound(&bact->soundcarrier, 2);
 
         StartDestFX(2);
 

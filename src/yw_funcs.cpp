@@ -1916,7 +1916,7 @@ void ypaworld_func158__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
         if ( v7 != yw->LevelNet->field_BE38 )
         {
             if ( yw->GameShell )
-                startSound(&yw->GameShell->samples1_info, 8);
+                SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 8);
         }
         yw->LevelNet->field_BE38 = v7;
     }
@@ -2221,7 +2221,7 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
     brf->mouseSelectedElement = -1;
     brf->field_2F90 = -1;
 
-    StopMusicTrack();
+    SFXEngine::SFXe.StopMusicTrack();
 
     if ( !ypaworld_func158__sub4__sub1__sub3__sub0(yw) )
         return 0; // May be HACK

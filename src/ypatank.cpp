@@ -1397,7 +1397,7 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
                                 v12->scale_time = -1;
 
                                 if ( tank->yw->GameShell )
-                                    startSound(&tank->yw->GameShell->samples2_info, 4);
+                                    SFXEngine::SFXe.startSound(&tank->yw->GameShell->samples2_info, 4);
 
                                 if ( tank->yw->isNetGame )
                                 {
@@ -1593,7 +1593,7 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
 
                 if ( !(bact->status_flg & BACT_STFLAG_BCRASH) )
                 {
-                    startSound(&bact->soundcarrier, 6);
+                    SFXEngine::SFXe.startSound(&bact->soundcarrier, 6);
                     bact->status_flg |= BACT_STFLAG_BCRASH;
                 }
 
@@ -2122,7 +2122,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                 {
                     if ( v143 )
                     {
-                        startSound(&bact->soundcarrier, 5);
+                        SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
 
                         yw_arg180 arg180;
                         arg180.field_4 = 1.0;
@@ -2178,7 +2178,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                 {
                     if ( v143 )
                     {
-                        startSound(&bact->soundcarrier, 5);
+                        SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
 
                         yw_arg180 arg180_3;
                         arg180_3.field_8 = arg136_1.isectPos.x;
@@ -2225,7 +2225,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
             {
                 if ( v143 )
                 {
-                    startSound(&bact->soundcarrier, 5);
+                    SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
 
                     yw_arg180 arg180_1;
                     arg180_1.field_4 = 1.0;
@@ -2268,7 +2268,7 @@ size_t NC_STACK_ypatank::ypatank_func129(tank_arg129 *arg)
                     {
                         if ( v143 )
                         {
-                            startSound(&bact->soundcarrier, 5);
+                            SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
 
                             yw_arg180 arg180_2;
                             arg180_2.effects_type = 5;

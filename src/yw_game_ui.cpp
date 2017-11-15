@@ -3247,8 +3247,8 @@ int sb_0x451034(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
 
     if ( yw->snd__cdsound & 1 )
     {
-        SetMusicTrack(yw->field_2d90->amb_track_p0, yw->field_2d90->amb_track_p1, yw->field_2d90->amb_track_p2);
-        PlayMusicTrack();
+        SFXEngine::SFXe.SetMusicTrack(yw->field_2d90->amb_track_p0, yw->field_2d90->amb_track_p1, yw->field_2d90->amb_track_p2);
+        SFXEngine::SFXe.PlayMusicTrack();
     }
 
     return 1;
@@ -4388,7 +4388,7 @@ int ypaworld_func64__sub7__sub2__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
             yw->field_1c0c[ yw->field_2410 ]->self->setBACT_aggression(v16);
 
             if ( yw->GameShell )
-                startSound(&yw->GameShell->samples1_info, 3);
+                SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
         }
         break;
 
@@ -4851,7 +4851,7 @@ void  ypaworld_func64__sub7__sub2(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 if ( yw->GameShell )
                 {
                     if ( winpt->flag & 0x10 )
-                        startSound(&yw->GameShell->samples1_info, 3);
+                        SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
                 }
             }
 
@@ -5509,7 +5509,7 @@ void ypaworld_func64__sub7__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
             if ( winpt->selected_btnID != -1 )
             {
                 if ( winpt->flag & 0x10 )
-                    startSound(&yw->GameShell->samples1_info, 3);
+                    SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
             }
         }
 
@@ -6309,7 +6309,7 @@ void ypaworld_func64__sub7__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
                         yw->field_1c0c[yw->field_2410]->self->setBACT_aggression(25 * v9);
 
                         if ( yw->GameShell )
-                            startSound(&yw->GameShell->samples1_info, 3);
+                            SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
                     }
                 }
 
@@ -6715,7 +6715,7 @@ void  ypaworld_func64__sub7__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 if ( winpt->flag & 0x10 )
                 {
                     if ( yw->GameShell )
-                        startSound(&yw->GameShell->samples1_info, 3);
+                        SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
                 }
             }
 
@@ -7243,7 +7243,7 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 if ( inpt->winp131arg.selected_btnID >= 8 )
                 {
                     if ( winpt->flag & 0x10 )
-                        startSound(&yw->GameShell->samples1_info, 3);
+                        SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
                 }
             }
 
@@ -7500,7 +7500,7 @@ void ypaworld_func64__sub7__sub4(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 if ( inpt->winp131arg.selected_btnID >= 8 )
                 {
                     if ( winpt->flag & 0x10 )
-                        startSound(&yw->GameShell->samples1_info, 3);
+                        SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
                 }
             }
 
@@ -7606,7 +7606,7 @@ void ypaworld_func64__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt)
                                 if ( winpt->flag & 0x10 )
                                 {
                                     if ( yw->GameShell )
-                                        startSound(&yw->GameShell->samples1_info, 3);
+                                        SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
                                 }
 
                                 if ( winpt->flag & 0x40 )
@@ -8160,7 +8160,7 @@ void ypaworld_func64__sub15(_NC_STACK_ypaworld *yw)
 
 void ypaworld_func159__sub0__sub0(_NC_STACK_ypaworld *yw, yw_samples *smpls, const char *flname, __NC_STACK_ypabact *unit, int a5)
 {
-    sub_423DD8(&smpls->field_4);
+    SFXEngine::SFXe.sub_423DD8(&smpls->field_4);
 
     if ( smpls->field_35C )
         delete_class_obj(smpls->field_35C);
@@ -8203,7 +8203,7 @@ void ypaworld_func159__sub0__sub0(_NC_STACK_ypaworld *yw, yw_samples *smpls, con
 
     if ( v23 )
     {
-        sub_423DB0(&smpls->field_4);
+        SFXEngine::SFXe.sub_423DB0(&smpls->field_4);
         smpls->field_4.samples_data[0].pitch = 0;
         smpls->field_4.samples_data[0].volume = a5 + 500;
 
@@ -8219,7 +8219,7 @@ void ypaworld_func159__sub0__sub0(_NC_STACK_ypaworld *yw, yw_samples *smpls, con
         sub_4D6958(yw, unit, &smpls->field_4);
 
         smpls->field_4.field_C = yw->field_1b84->fly_dir * yw->field_1b84->fly_dir_length;
-        startSound(&smpls->field_4, 0);
+        SFXEngine::SFXe.startSound(&smpls->field_4, 0);
     }
 }
 

@@ -986,7 +986,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             vec3d a3 = yw->field_1b84->fly_dir * yw->field_1b84->fly_dir_length;
 
-            sub_423EFC(arg->field_4, yw->field_1334, a3, yw->field_1340);
+            SFXEngine::SFXe.sub_423EFC(arg->field_4, yw->field_1334, a3, yw->field_1340);
         }
 
         if ( yw->field_161c == 1 )
@@ -1181,8 +1181,8 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                     yw->GameShell->samples1_info.field_0 = yw->field_1b84->position;
                     yw->GameShell->samples2_info.field_0 = yw->field_1b84->position;
 
-                    sb_0x4242e0(&yw->GameShell->samples1_info);
-                    sb_0x4242e0(&yw->GameShell->samples2_info);
+                    SFXEngine::SFXe.sb_0x4242e0(&yw->GameShell->samples1_info);
+                    SFXEngine::SFXe.sb_0x4242e0(&yw->GameShell->samples2_info);
                 }
             }
 
@@ -1194,10 +1194,10 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                 if ( yw->field_1b84 )
                     yw->GameShell->field_782.field_0 = yw->field_1b84->position;
 
-                sb_0x4242e0(&yw->GameShell->field_782);
+                SFXEngine::SFXe.sb_0x4242e0(&yw->GameShell->field_782);
             }
 
-            const mat3x3 &v57 = sb_0x424c74();
+            const mat3x3 &v57 = SFXEngine::SFXe.sb_0x424c74();
             TForm3D *v58 = sub_430A28();
 
             v58->locSclRot = v57 * v58->locSclRot;
@@ -2060,7 +2060,7 @@ void NC_STACK_ypaworld::ypaworld_func144(NC_STACK_ypabact *bacto)
             ypa_log_out("OH NO! The DEATH CACHE BUG is back!\n");
     }
 
-    sub_423DD8(&bact->soundcarrier);
+    SFXEngine::SFXe.sub_423DD8(&bact->soundcarrier);
 
     newMaster_msg cache;
     cache.bacto = (NC_STACK_ypabact *)1;
@@ -2236,7 +2236,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
             bact->status_flg |= BACT_STFLAG_SEFFECT;
         }
 
-        sub_423DB0(&bact->soundcarrier);
+        SFXEngine::SFXe.sub_423DB0(&bact->soundcarrier);
 
         for (int i = 0; i < 12; i++)
             sub_44BF34(&vhcl->sndFX[i]);
@@ -2405,7 +2405,7 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
         wobj->setMISS_radRobo(0.0);
     }
 
-    sub_423DB0(&wbact->soundcarrier);
+    SFXEngine::SFXe.sub_423DB0(&wbact->soundcarrier);
 
     for (int i = 0; i < 3; i++)
         sub_44BF34(&wproto->sndFXes[i]);
@@ -2860,7 +2860,7 @@ void NC_STACK_ypaworld::ypaworld_func151(IDVPair *arg)
     ypaworld_func151__sub5(yw);
     ypaworld_func151__sub6(yw);
 
-    SFXe.setMasterVolume(yw->audio_volume);
+    SFXEngine::SFXe.setMasterVolume(yw->audio_volume);
 
     ypaworld_func151__sub2(this, yw);
 
@@ -3058,9 +3058,9 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
         usr->samples1_info.samples_data[i].pitch = usr->samples2_info.samples_data[i].pitch;
     }
 
-    sub_423DB0(&usr->samples1_info);
-    sub_423DB0(&usr->samples2_info);
-    sub_423DB0(&usr->field_782);
+    SFXEngine::SFXe.sub_423DB0(&usr->samples1_info);
+    SFXEngine::SFXe.sub_423DB0(&usr->samples2_info);
+    SFXEngine::SFXe.sub_423DB0(&usr->field_782);
 
     if ( !ShellSoundsLoad(usr) )
     {
@@ -3374,7 +3374,7 @@ void NC_STACK_ypaworld::ypaworld_func155(UserData *usr)
         nc_FreeMem(v6);
     }
 
-    sub_424CC8();
+    SFXEngine::SFXe.sub_424CC8();
 
     for (int i = 0; i < 16; i++)
     {
@@ -3397,9 +3397,9 @@ void NC_STACK_ypaworld::ypaworld_func155(UserData *usr)
         usr->field_ADA = NULL;
     }
 
-    sub_423DD8(&usr->samples1_info);
-    sub_423DD8(&usr->samples2_info);
-    sub_423DD8(&usr->field_782);
+    SFXEngine::SFXe.sub_423DD8(&usr->samples1_info);
+    SFXEngine::SFXe.sub_423DD8(&usr->samples2_info);
+    SFXEngine::SFXe.sub_423DD8(&usr->field_782);
 }
 
 
@@ -6374,7 +6374,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     ypaworld_func167(usr);
 
-    startSound(&usr->samples1_info, 6);
+    SFXEngine::SFXe.startSound(&usr->samples1_info, 6);
 
     usr->field_0x0 = 1;
 
@@ -6396,9 +6396,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     if ( usr->p_ypaworld->snd__cdsound & 1 )
     {
-        StopMusicTrack();
-        SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
-        PlayMusicTrack();
+        SFXEngine::SFXe.StopMusicTrack();
+        SFXEngine::SFXe.SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
+        SFXEngine::SFXe.PlayMusicTrack();
     }
 
     return 1;
@@ -6529,7 +6529,7 @@ void NC_STACK_ypaworld::ypaworld_func157(UserData *usr)
             usr->network_button = NULL;
         }
 
-        sub_424CC8();
+        SFXEngine::SFXe.sub_424CC8();
 
         ypaworld_func157__sub0(yw);
 
@@ -6672,7 +6672,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
     _NC_STACK_ypaworld *yw = &stack__ypaworld;
     usr->field_0x2fbc = 0;
 
-    sub_423EFC(usr->frameTime, vec3d(0.0), vec3d(0.0), mat3x3::Ident());
+    SFXEngine::SFXe.sub_423EFC(usr->frameTime, vec3d(0.0), vec3d(0.0), mat3x3::Ident());
 
     yw->win3d = GFXEngine::GFXe.getC3D();
 
@@ -6714,11 +6714,11 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
         }
     }
 
-    sb_0x4242e0(&usr->samples1_info);
-    sb_0x4242e0(&usr->samples2_info);
-    sb_0x4242e0(&usr->field_782);
+    SFXEngine::SFXe.sb_0x4242e0(&usr->samples1_info);
+    SFXEngine::SFXe.sb_0x4242e0(&usr->samples2_info);
+    SFXEngine::SFXe.sb_0x4242e0(&usr->field_782);
 
-    sb_0x424c74();
+    SFXEngine::SFXe.sb_0x424c74();
 
 //  if ( usr->field_0x4 )
 //    nullsub_7();
@@ -6949,7 +6949,7 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
     vec3d a3a = yw->field_1b84->fly_dir * yw->field_1b84->fly_dir_length;
 
-    sub_423EFC(arg->field_4, yw->field_1b84->position, a3a, yw->field_1b84->rotation);
+    SFXEngine::SFXe.sub_423EFC(arg->field_4, yw->field_1b84->position, a3a, yw->field_1b84->rotation);
 
     bact_node *bct = (bact_node *)yw->field_1b84->subjects_list.head;
 
@@ -6963,12 +6963,12 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
         bct->bact->soundcarrier.field_C = bct->bact->fly_dir * bct->bact->fly_dir_length;
 
-        sb_0x4242e0(&bct->bact->soundcarrier);
+        SFXEngine::SFXe.sb_0x4242e0(&bct->bact->soundcarrier);
 
         bct = (bact_node *)bct->next;
     }
 
-    const mat3x3 &v25 = sb_0x424c74();
+    const mat3x3 &v25 = SFXEngine::SFXe.sb_0x424c74();
     TForm3D *v26 = sub_430A28();
 
     v26->locSclRot = v25 * v26->locSclRot;

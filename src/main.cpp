@@ -536,7 +536,7 @@ void deinit_globl_engines()
     if ( input_inited )
         INPe.deinit();
     if ( audio_inited )
-        SFXe.deinit();
+        SFXEngine::SFXe.deinit();
     if ( gfx_inited )
         GFXEngine::GFXe.deinit();
 
@@ -582,7 +582,7 @@ int WinMain__sub0__sub0()
     add_to_params_list("input.button[23] = winp:joyb7");
 
     gfx_inited = GFXEngine::GFXe.init();
-    audio_inited = SFXe.init();
+    audio_inited = SFXEngine::SFXe.init();
     input_inited = INPe.init();
     tform_inited = TFe.init();
 

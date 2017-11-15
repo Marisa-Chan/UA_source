@@ -2159,8 +2159,8 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                 un->bacto->SetStateInternal(&stm);
                 un->bact->status = BACT_STATUS_DEAD;
 
-                sub_424000(&un->bact->soundcarrier, 3);
-                startSound(&un->bact->soundcarrier, 7);
+                SFXEngine::SFXe.sub_424000(&un->bact->soundcarrier, 3);
+                SFXEngine::SFXe.startSound(&un->bact->soundcarrier, 7);
 
                 un->bact->soundFlags &= 0xFFFFFFF7;
                 un->bact->soundFlags |= 0x80;
@@ -2179,8 +2179,8 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             cm->bacto->SetState(&stm);
             cm->bact->status = BACT_STATUS_DEAD;
 
-            sub_424000(&cm->bact->soundcarrier, 3);
-            startSound(&cm->bact->soundcarrier, 7);
+            SFXEngine::SFXe.sub_424000(&cm->bact->soundcarrier, 3);
+            SFXEngine::SFXe.startSound(&cm->bact->soundcarrier, 7);
 
             cm->bact->soundFlags &= 0xFFFFFFF7;
             cm->bact->soundFlags |= 0x80;
@@ -3143,7 +3143,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             robo->field_515 = stbmMsg->pos;
             robo->field_511 = 1500;
 
-            startSound(&robo->bact_internal->soundcarrier, 9);
+            SFXEngine::SFXe.startSound(&robo->bact_internal->soundcarrier, 9);
             bhost->bact->vp_extra_mode = 2;
         }
     }

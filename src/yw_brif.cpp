@@ -12,11 +12,11 @@ extern GuiList stru_5C91D0;
 
 void ypaworld_func158__sub4__sub1__sub4__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
-    StopMusicTrack();
+    SFXEngine::SFXe.StopMusicTrack();
     if ( yw->GameShell->missiontrack )
     {
-        SetMusicTrack(yw->GameShell->missiontrack, yw->GameShell->missiontrack__adv.min_delay, yw->GameShell->missiontrack__adv.max_delay);
-        PlayMusicTrack();
+        SFXEngine::SFXe.SetMusicTrack(yw->GameShell->missiontrack, yw->GameShell->missiontrack__adv.min_delay, yw->GameShell->missiontrack__adv.max_delay);
+        SFXEngine::SFXe.PlayMusicTrack();
     }
 
     brf->startTime = brf->currTime;
@@ -262,7 +262,7 @@ int sub_4EBBA8(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, float xpos, float ypos,
     }
 
     if ( yw->GameShell )
-        startSound(&yw->GameShell->samples1_info, 11);
+        SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 11);
 
     return 0;
 }
@@ -1313,7 +1313,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(_NC_STACK_ypaworld *yw, struC5 *st
     brf->field_2F40.float20 = brf->field_2F74.y2;
 
     if ( yw->GameShell )
-        startSound(&yw->GameShell->samples1_info, 11);
+        SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 11);
 }
 
 void ypaworld_func158__sub4__sub1__sub6__sub1(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
@@ -1387,7 +1387,7 @@ void yw_DebriefConqSector(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *a
         yw_score(yw, arg, brf->field_42BC);
 
         if ( yw->GameShell )
-            startSound(&yw->GameShell->samples1_info, 12);
+            SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 12);
     }
 
     if ( dtime < 30000 )
@@ -1428,7 +1428,7 @@ void yw_DebriefVhclKill(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg
         yw_score(yw, arg, brf->field_42BC);
 
         if ( yw->GameShell )
-            startSound(&yw->GameShell->samples1_info, 13);
+            SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 13);
     }
 
     if ( dtime < 120000 )
@@ -2330,7 +2330,7 @@ void yw_DebriefRunDebrief(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *br
                         yw_score(yw, &arg184, brf->field_42BC);
 
                         if ( yw->GameShell )
-                            startSound(&yw->GameShell->samples1_info, 14);
+                            SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 14);
                     }
                     break;
 
@@ -2342,7 +2342,7 @@ void yw_DebriefRunDebrief(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *br
                         yw_DebriefAddTechUpgrade(yw, brf, &arg184);
 
                         if ( yw->GameShell )
-                            startSound(&yw->GameShell->samples1_info, 14);
+                            SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 14);
 
                     }
                     break;

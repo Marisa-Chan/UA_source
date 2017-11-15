@@ -1537,11 +1537,11 @@ void sb_0x46aa8c(UserData *usr)
             usr->snd__flags2 |= 0x10;
             yw->snd__cdsound |= 1;
 
-            SetMusicIgnoreCommandsFlag(true);
+            SFXEngine::SFXe.SetMusicIgnoreCommandsFlag(true);
             if ( usr->shelltrack )
             {
-                SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
-                PlayMusicTrack();
+                SFXEngine::SFXe.SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
+                SFXEngine::SFXe.PlayMusicTrack();
             }
         }
         else
@@ -1549,8 +1549,8 @@ void sb_0x46aa8c(UserData *usr)
             usr->snd__flags2 &= 0xEF;
             yw->snd__cdsound &= 0xFE;
 
-            StopMusicTrack();
-            SetMusicIgnoreCommandsFlag(false);
+            SFXEngine::SFXe.StopMusicTrack();
+            SFXEngine::SFXe.SetMusicIgnoreCommandsFlag(false);
         }
 
     }
@@ -1560,12 +1560,12 @@ void sb_0x46aa8c(UserData *usr)
         if ( usr->field_0x13b0 & 1 )
         {
             usr->snd__flags2 |= 1;
-            SFXe.setReverseStereo(1);
+            SFXEngine::SFXe.setReverseStereo(1);
         }
         else
         {
             usr->snd__flags2 &= ~1;
-            SFXe.setReverseStereo(0);
+            SFXEngine::SFXe.setReverseStereo(0);
         }
     }
 
@@ -1635,13 +1635,13 @@ void sb_0x46aa8c(UserData *usr)
     {
         usr->snd__cdvolume = usr->field_0x13b8;
 
-        SetMusicVolume(usr->field_0x13b8);
+        SFXEngine::SFXe.SetMusicVolume(usr->field_0x13b8);
     }
 
     if ( usr->field_13C2 & 0x80 )
     {
         usr->snd__volume = usr->field_0x13b4;
-        SFXe.setMasterVolume(usr->snd__volume);
+        SFXEngine::SFXe.setMasterVolume(usr->snd__volume);
     }
 
     if ( usr->field_13C2 & 1 )
@@ -2257,8 +2257,8 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
 
     if ( usr->field_ADA )
     {
-        sub_424000(&usr->field_782, 0);
-        sub_423DD8(&usr->field_782);
+        SFXEngine::SFXe.sub_424000(&usr->field_782, 0);
+        SFXEngine::SFXe.sub_423DD8(&usr->field_782);
         delete_class_obj(usr->field_ADA);
         usr->field_ADA = 0;
     }
@@ -2269,7 +2269,7 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
     usr->field_ADA = (NC_STACK_wav *)init_get_class("wav.class", &init_vals);
     if ( usr->field_ADA )
     {
-        sub_423DB0(&usr->field_782);
+        SFXEngine::SFXe.sub_423DB0(&usr->field_782);
 
         usr->field_782.field_C = vec3d(0.0, 0.0, 0.0);
         usr->field_782.field_0 = vec3d(0.0, 0.0, 0.0);
@@ -2277,7 +2277,7 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
         usr->field_782.samples_data[0].pitch = 0;
 
         usr->field_782.samples_data[0].psampl = usr->field_ADA->getSMPL_pSample();
-        startSound(&usr->field_782, 0);
+        SFXEngine::SFXe.startSound(&usr->field_782, 0);
     }
 
     set_prefix_replacement("rsrc", rsr);
@@ -2954,7 +2954,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     char v306[300];
 
     if ( usr->field_3A->winp131arg.flag & 0x10 )
-        startSound(&usr->samples1_info, 3);
+        SFXEngine::SFXe.startSound(&usr->samples1_info, 3);
 
     if ( usr->netSelMode )
         yw_HandleNetMsg(usr->p_ypaworld);
@@ -3289,7 +3289,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             usr->titel_button->button_func68(&v416);
 
             usr->field_0x2fbc = 1;
-            startSound(&usr->samples1_info, 4);
+            SFXEngine::SFXe.startSound(&usr->samples1_info, 4);
         }
         else if ( v6_l == 1022 )
         {
@@ -3318,11 +3318,11 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             sub_4EDCD8(yw);
             if ( usr->p_ypaworld->snd__cdsound & 1 )
             {
-                StopMusicTrack();
+                SFXEngine::SFXe.StopMusicTrack();
                 if ( usr->shelltrack )
                 {
-                    SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
-                    PlayMusicTrack();
+                    SFXEngine::SFXe.SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
+                    SFXEngine::SFXe.PlayMusicTrack();
                 }
             }
             if ( usr->field_4E )
@@ -3356,11 +3356,11 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 sub_4EDCD8(yw);
                 if ( usr->p_ypaworld->snd__cdsound & 1 )
                 {
-                    StopMusicTrack();
+                    SFXEngine::SFXe.StopMusicTrack();
                     if ( usr->shelltrack )
                     {
-                        SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
-                        PlayMusicTrack();
+                        SFXEngine::SFXe.SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
+                        SFXEngine::SFXe.PlayMusicTrack();
                     }
                 }
                 if ( usr->field_4E )
@@ -3675,7 +3675,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         if ( v6_l == 1100 )
         {
             usr->video_listvw.OpenDialog(yw);
-            startSound(&usr->samples1_info, 7);
+            SFXEngine::SFXe.startSound(&usr->samples1_info, 7);
 
             usr->field_3A->winp131arg.flag &= 0xFFFFFFFD;
         }
@@ -3729,12 +3729,12 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         }
         else if ( v6_l == 1115 )
         {
-            startSound(&usr->samples1_info, 0);
+            SFXEngine::SFXe.startSound(&usr->samples1_info, 0);
             usr->field_13C2 |= 0x80;
         }
         else if ( v6_l == 1117 )
         {
-            sub_424000(&usr->samples1_info, 0);
+            SFXEngine::SFXe.sub_424000(&usr->samples1_info, 0);
         }
         else if ( v6_l == 1118 )
         {
@@ -3800,7 +3800,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         else if ( v6_l == 1134 )
         {
             usr->d3d_listvw.OpenDialog(yw);
-            startSound(&usr->samples1_info, 7);
+            SFXEngine::SFXe.startSound(&usr->samples1_info, 7);
 
             usr->field_3A->winp131arg.flag &= 0xFFFFFFFD;
         }
@@ -3887,7 +3887,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     usr->video_button->button_func71(&v395);
     usr->field_0x13b4 = v67->field_0;
 
-    SFXe.setMasterVolume(usr->field_0x13b4);
+    SFXEngine::SFXe.setMasterVolume(usr->field_0x13b4);
 
 
     v347 = 1154;
@@ -3900,7 +3900,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     usr->video_button->button_func71(&v395);
     usr->field_0x13b8 = v67->field_0;
 
-    SetMusicVolume(usr->field_0x13b8);
+    SFXEngine::SFXe.SetMusicVolume(usr->field_0x13b8);
 
 
     char v308[300];
@@ -4534,7 +4534,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 if ( sub_449678(usr->p_ypaworld, usr->field_3A, 'K') )
                 {
                     ypaworld_func158__sub0__sub4(usr);
-                    startSound(&usr->samples2_info, 3);
+                    SFXEngine::SFXe.startSound(&usr->samples2_info, 3);
                 }
                 else
                 {

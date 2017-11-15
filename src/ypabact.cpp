@@ -239,7 +239,7 @@ size_t NC_STACK_ypabact::func0(IDVList *stak)
                             if ( yw->isNetGame )
                                 viewMsg.view = 1;
 
-                            startSound(&ypabact.soundcarrier, 8);
+                            SFXEngine::SFXe.startSound(&ypabact.soundcarrier, 8);
                         }
                         else
                         {
@@ -248,7 +248,7 @@ size_t NC_STACK_ypabact::func0(IDVList *stak)
                             if ( yw->isNetGame )
                                 viewMsg.view = 0;
 
-                            sub_424000(&ypabact.soundcarrier, 8);
+                            SFXEngine::SFXe.sub_424000(&ypabact.soundcarrier, 8);
                         }
 
                         if ( yw->isNetGame ) // Network message send routine?
@@ -360,7 +360,7 @@ size_t NC_STACK_ypabact::func1()
 {
     __NC_STACK_ypabact *bact = &ypabact;
 
-    sub_423DD8(&bact->soundcarrier);
+    SFXEngine::SFXe.sub_423DD8(&bact->soundcarrier);
 
     bact->status_flg |= BACT_STFLAG_CLEAN;
 
@@ -856,7 +856,7 @@ void NC_STACK_ypabact::Update(update_msg *arg)
 
     bact->soundcarrier.field_C = bact->fly_dir * bact->fly_dir_length;
 
-    sb_0x4242e0(&bact->soundcarrier);
+    SFXEngine::SFXe.sb_0x4242e0(&bact->soundcarrier);
 }
 
 void NC_STACK_ypabact::Render(baseRender_msg *arg)
@@ -2360,7 +2360,7 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
                     {
                         bact->status_flg |= BACT_STFLAG_LCRASH;
 
-                        startSound(&bact->soundcarrier, 5);
+                        SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
 
                         yw_arg180 arg180;
                         arg180.effects_type = 5;
@@ -3681,7 +3681,7 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
         wbact->host_station = bact->host_station;
         bact->weapon_time = arg->g_time;
 
-        startSound(&wbact->soundcarrier, 1);
+        SFXEngine::SFXe.startSound(&wbact->soundcarrier, 1);
 
         _NC_STACK_ypaworld *yw = &bact->ywo->stack__ypaworld;
 
@@ -4243,7 +4243,7 @@ size_t NC_STACK_ypabact::CrashOrLand(bact_arg86 *arg)
                             if ( bact->oflags & BACT_OFLAG_USERINPT )
                             {
                                 if ( fabs(bact->fly_dir_length) > 7.0 )
-                                    startSound(&bact->soundcarrier, 5);
+                                    SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
 
                                 yw_arg180 arg180_1;
 
@@ -4332,7 +4332,7 @@ size_t NC_STACK_ypabact::CrashOrLand(bact_arg86 *arg)
                             if ( bact->oflags & BACT_OFLAG_USERINPT )
                             {
                                 if ( fabs(bact->fly_dir_length) > 7.0 )
-                                    startSound(&bact->soundcarrier, 5);
+                                    SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
 
                                 yw_arg180 arg180;
 
@@ -4542,7 +4542,7 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
                         bnode->scale_time = -1;
 
                         if ( yw->GameShell )
-                            startSound(&yw->GameShell->samples2_info, 4);
+                            SFXEngine::SFXe.startSound(&yw->GameShell->samples2_info, 4);
 
                         if ( yw->isNetGame )
                         {
@@ -4605,7 +4605,7 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
     {
         if ( a4 )
         {
-            startSound(&bact->soundcarrier, 6);
+            SFXEngine::SFXe.startSound(&bact->soundcarrier, 6);
 
             bact->status_flg |= BACT_STFLAG_BCRASH;
 
@@ -7253,7 +7253,7 @@ void ypabact_NetUpdate_VPHACKS(__NC_STACK_ypabact *bact, update_msg *upd)
             if ( robo->field_511 <= 0 )
             {
                 robo->field_511 = 0;
-                startSound(&bact->soundcarrier, 10);
+                SFXEngine::SFXe.startSound(&bact->soundcarrier, 10);
 
                 robo->roboState &= ~NC_STACK_yparobo::ROBOSTATE_MOVE;
                 bact->vp_extra[0].flags = 0;
@@ -7367,7 +7367,7 @@ void NC_STACK_ypabact::NetUpdate(update_msg *upd)
     bact->soundcarrier.field_0 = bact->position;
     bact->soundcarrier.field_C = bact->fly_dir * bact->fly_dir_length;
 
-    sb_0x4242e0(&bact->soundcarrier);
+    SFXEngine::SFXe.sb_0x4242e0(&bact->soundcarrier);
 }
 
 void NC_STACK_ypabact::ypabact_func117(update_msg *upd)
@@ -7444,32 +7444,32 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
                 bact->ywo->ypaworld_func180(&v43);
             }
 
-            sub_424000(&bact->soundcarrier, 1);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 1);
             bact->soundFlags &= ~2;
         }
 
         if ( bact->oflags & BACT_OFLAG_USERINPT )
-            sub_424000(&bact->soundcarrier, 8);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 8);
 
         if ( bact->soundFlags & 1 )
         {
             bact->soundFlags &= ~1;
-            sub_424000(&bact->soundcarrier, 0);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 0);
         }
 
         if ( bact->soundFlags & 8 )
         {
             bact->soundFlags &= ~8;
-            sub_424000(&bact->soundcarrier, 3);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 3);
         }
 
         if ( bact->soundFlags & 4 )
         {
             bact->soundFlags &= ~4;
-            sub_424000(&bact->soundcarrier, 2);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 2);
         }
 
-        startSound(&bact->soundcarrier, 7);
+        SFXEngine::SFXe.startSound(&bact->soundcarrier, 7);
 
         bact->soundFlags |= 0x80;
 
@@ -7488,25 +7488,25 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         if ( bact->soundFlags & 8 )
         {
             bact->soundFlags &= ~8;
-            sub_424000(&bact->soundcarrier, 3);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 3);
         }
 
         if ( bact->soundFlags & 4 )
         {
             bact->soundFlags &= ~4;
-            sub_424000(&bact->soundcarrier, 2);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 2);
         }
 
         if ( bact->soundFlags & 0x80 )
         {
             bact->soundFlags &= ~0x80;
-            sub_424000(&bact->soundcarrier, 7);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 7);
         }
 
         if ( !(bact->soundFlags & 1) )
         {
             bact->soundFlags |= 1;
-            startSound(&bact->soundcarrier, 0);
+            SFXEngine::SFXe.startSound(&bact->soundcarrier, 0);
         }
 
         result = 1;
@@ -7521,25 +7521,25 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         if ( bact->soundFlags & 8 )
         {
             bact->soundFlags &= ~8;
-            sub_424000(&bact->soundcarrier, 3);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 3);
         }
 
         if ( bact->soundFlags & 4 )
         {
             bact->soundFlags &= ~4;
-            sub_424000(&bact->soundcarrier, 2);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 2);
         }
 
         if ( bact->soundFlags & 0x80 )
         {
             bact->soundFlags &= ~0x80;
-            sub_424000(&bact->soundcarrier, 7);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 7);
         }
 
         if ( !(bact->soundFlags & 0x200) )
         {
             bact->soundFlags |= 0x200;
-            startSound(&bact->soundcarrier, 9);
+            SFXEngine::SFXe.startSound(&bact->soundcarrier, 9);
         }
 
         StartDestFX(8);
@@ -7556,25 +7556,25 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         if ( bact->soundFlags & 1 )
         {
             bact->soundFlags &= ~1;
-            sub_424000(&bact->soundcarrier, 0);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 0);
         }
 
         if ( bact->soundFlags & 8 )
         {
             bact->soundFlags &= ~8;
-            sub_424000(&bact->soundcarrier, 3);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 3);
         }
 
         if ( bact->soundFlags & 0x80 )
         {
             bact->soundFlags &= ~0x80;
-            sub_424000(&bact->soundcarrier, 7);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 7);
         }
 
         if ( !(bact->soundFlags & 4) )
         {
             bact->soundFlags |= 4;
-            startSound(&bact->soundcarrier, 2);
+            SFXEngine::SFXe.startSound(&bact->soundcarrier, 2);
         }
 
         result = 1;
@@ -7596,32 +7596,32 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
                 bact->ywo->ypaworld_func180(&v46);
             }
 
-            sub_424000(&bact->soundcarrier, 1);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 1);
             bact->soundFlags &= ~2;
         }
 
         if ( bact->soundFlags & 1 )
         {
             bact->soundFlags &= ~1;
-            sub_424000(&bact->soundcarrier, 0);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 0);
         }
 
         if ( bact->soundFlags & 4 )
         {
             bact->soundFlags &= ~4;
-            sub_424000(&bact->soundcarrier, 2);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 2);
         }
 
         if ( bact->soundFlags & 0x80 )
         {
             bact->soundFlags &= ~0x80;
-            sub_424000(&bact->soundcarrier, 7);
+            SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 7);
         }
 
         if ( !(bact->soundFlags & 8) )
         {
             bact->soundFlags |= 8;
-            startSound(&bact->soundcarrier, 3);
+            SFXEngine::SFXe.startSound(&bact->soundcarrier, 3);
         }
 
         StartDestFX(4);
@@ -7642,7 +7642,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
         bact->current_vp.trigo = bact->vp_normal.trigo;
         bact->vp_active = 1;
 
-        sub_424000(&bact->soundcarrier, 1);
+        SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 1);
 
         bact->soundFlags &= ~2;
 
@@ -7674,7 +7674,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
             }
 
             bact->soundFlags |= 2;
-            startSound(&bact->soundcarrier, 1);
+            SFXEngine::SFXe.startSound(&bact->soundcarrier, 1);
         }
         result = 1;
     }
@@ -7698,38 +7698,38 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
                     bact->ywo->ypaworld_func180(&v44);
                 }
 
-                sub_424000(&bact->soundcarrier, 1);
+                SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 1);
                 bact->soundFlags &= ~2;
             }
 
             if ( bact->oflags & BACT_OFLAG_USERINPT )
-                sub_424000(&bact->soundcarrier, 8);
+                SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 8);
 
             if ( bact->soundFlags & 1 )
             {
                 bact->soundFlags &= ~2;
-                sub_424000(&bact->soundcarrier, 0);
+                SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 0);
             }
 
             if ( bact->soundFlags & 8 )
             {
                 bact->soundFlags &= ~8;
-                sub_424000(&bact->soundcarrier, 3);
+                SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 3);
             }
 
             if ( bact->soundFlags & 4 )
             {
                 bact->soundFlags &= ~4;
-                sub_424000(&bact->soundcarrier, 2);
+                SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 2);
             }
 
             if ( bact->soundFlags & 0x80 )
             {
                 bact->soundFlags &= ~0x80;
-                sub_424000(&bact->soundcarrier, 7);
+                SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 7);
             }
 
-            startSound(&bact->soundcarrier, 4);
+            SFXEngine::SFXe.startSound(&bact->soundcarrier, 4);
 
             StartDestFX(2);
 
@@ -8426,7 +8426,7 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
         if ( bact->bact_type == BACT_TYPES_BACT && !(bact->status_flg & BACT_STFLAG_LAND) && bact->status == BACT_STATUS_NORMAL )
             bact->thraction = bact->force;
 
-        startSound(&bact->soundcarrier, 8);
+        SFXEngine::SFXe.startSound(&bact->soundcarrier, 8);
     }
     else
     {
@@ -8435,7 +8435,7 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
         if ( bact->yw->isNetGame )
             viewMsg.view = 0;
 
-        sub_424000(&bact->soundcarrier, 8);
+        SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 8);
 
         if ( bact->bact_type != BACT_TYPES_MISSLE && bact->bact_type != BACT_TYPES_ROBO && bact->status != BACT_STATUS_DEAD )
         {
