@@ -54,7 +54,7 @@ void netDebug_addDestroyed(uint8_t owner, uint32_t id)
 void yw_netReportError(__NC_STACK_ypabact *host, uint32_t id)
 {
     NC_STACK_ypaworld *ywo = host->self->getBACT_pWorld();
-    _NC_STACK_ypaworld *yw = &ywo->stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ywo->ypaworld;
 
     if ( yw->field_1b78 != host->self )
     {
@@ -4035,7 +4035,7 @@ bool yw_NetSetHostStations(_NC_STACK_ypaworld *yw, mapRobo *mapHosts, int hosts_
 
 size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
     bact_id = 0x10000;
 
     mapProto proto;

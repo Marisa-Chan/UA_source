@@ -3045,7 +3045,7 @@ void ypaworld_func137__sub0(ypaworld_arg137 *arg, const struct_44dbf8 &a2)
 
 __NC_STACK_ypabact * sub_48C244(NC_STACK_ypaworld *ywo, int a2, char owner)
 {
-    bact_node *robos = (bact_node *)ywo->stack__ypaworld.bact_list.head;
+    bact_node *robos = (bact_node *)ywo->ypaworld.bact_list.head;
     while (robos->next)
     {
         if ( robos->bact->bact_type == BACT_TYPES_ROBO && robos->bact->owner == owner)

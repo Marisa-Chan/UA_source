@@ -5172,7 +5172,7 @@ int parseSaveShell(scrCallBack *arg)
 int sb_0x479f4c__sub0(scrCallBack *scr)
 {
     __NC_STACK_yparobo *robo = &current_robo->stack__yparobo;
-    _NC_STACK_ypaworld *yw = &robo->wrld->stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &robo->wrld->ypaworld;
 
     if ( !strcasecmp(scr->p1, "owner") )
     {

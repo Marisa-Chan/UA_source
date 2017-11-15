@@ -79,7 +79,7 @@ size_t NC_STACK_yparobo::func0(IDVList *stak)
                 {
                 case BACT_ATT_WORLD:
                     stack__yparobo.wrld = (NC_STACK_ypaworld *)val.value.p_data;
-                    stack__yparobo.wrld_yw = &stack__yparobo.wrld->stack__ypaworld;
+                    stack__yparobo.wrld_yw = &stack__yparobo.wrld->ypaworld;
                     break;
 
                 case BACT_ATT_INPUTTING:
@@ -672,7 +672,7 @@ void NC_STACK_yparobo::initForce(bact_node *unit)
                 arg67.tgt_pos.z = bact->position.z + bact->rotation.m22 * 1200.0 * 0.5;
                 unt->SetTarget(&arg67);
 
-                if ( robo->wrld->stack__ypaworld.isNetGame )
+                if ( robo->wrld->ypaworld.isNetGame )
                 {
                     untbct->gid |= untbct->owner << 24;
 
@@ -963,7 +963,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
     __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = &ypabact;
 
-    _NC_STACK_ypaworld *yw = &robo->wrld->stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &robo->wrld->ypaworld;
 
     robo->field_511 -= a2;
 
@@ -3845,7 +3845,7 @@ void NC_STACK_yparobo::searchEnemyRobo()
     __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = &ypabact;
 
-    bact_node *node = (bact_node *)robo->wrld->stack__ypaworld.bact_list.head;
+    bact_node *node = (bact_node *)robo->wrld->ypaworld.bact_list.head;
 
     while ( node->next )
     {
@@ -3930,7 +3930,7 @@ void NC_STACK_yparobo::checkCommander()
     __NC_STACK_yparobo *robo = &stack__yparobo;
     __NC_STACK_ypabact *bact = &ypabact;
 
-    _NC_STACK_ypaworld *yw = &robo->wrld->stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &robo->wrld->ypaworld;
 
     NC_STACK_ypabact *wee_bact = robo->wrld->getYW_userHostStation();
 
@@ -4077,7 +4077,7 @@ void NC_STACK_yparobo::checkCommander()
 
                                 placeMessage(&arg134);
 
-                                if ( robo->wrld->stack__ypaworld.isNetGame  )
+                                if ( robo->wrld->ypaworld.isNetGame  )
                                 {
                                     bact_arg90 arg90;
                                     arg90.unit = commander_bact;
@@ -6655,7 +6655,7 @@ int NC_STACK_yparobo::placeMessage(robo_arg134 *arg)
 
 void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
 {
-    _NC_STACK_ypaworld *yw = &bact->ywo->stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &bact->ywo->ypaworld;
 
     if ( bact->beam_time )
     {
@@ -6842,7 +6842,7 @@ void NC_STACK_yparobo::setROBO_proto(roboProto *proto)
 
             dword_5B1128++;
 
-            if ( robo->wrld->stack__ypaworld.isNetGame )
+            if ( robo->wrld->ypaworld.isNetGame )
             {
                 gun_bact->gid |= gun_bact->owner << 24;
                 gun_bact->commandID |= gun_bact->owner << 24;

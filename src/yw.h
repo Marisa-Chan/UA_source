@@ -1968,7 +1968,7 @@ public:
     //Data
     static const NewClassDescr description;
 
-    _NC_STACK_ypaworld stack__ypaworld;
+    _NC_STACK_ypaworld ypaworld;
 
 };
 

@@ -8916,7 +8916,7 @@ void ypaworld_func159__sub0(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, in
 
 void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg)
 {
-    _NC_STACK_ypaworld *yw = &obj->stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &obj->ypaworld;
 
     if ( arg->field_C )
         ypaworld_func159__sub0(yw, arg->unit, arg->field_4, arg->field_C);

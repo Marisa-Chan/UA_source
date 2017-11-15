@@ -213,7 +213,7 @@ size_t NC_STACK_ypabact::func0(IDVList *stak)
 
     if ( ywo )
     {
-        _NC_STACK_ypaworld *yw = &ywo->stack__ypaworld;
+        _NC_STACK_ypaworld *yw = &ywo->ypaworld;
         ypabact.yw = yw;
 
         if (stak)
@@ -3139,7 +3139,7 @@ void NC_STACK_ypabact::Die()
 
         deadMsg.killerOwner = bact->killer_owner;
 
-        _NC_STACK_ypaworld *yw = &bact->ywo->stack__ypaworld;
+        _NC_STACK_ypaworld *yw = &bact->ywo->ypaworld;
 
         bact_node *v74 = NULL;
 
@@ -3498,7 +3498,7 @@ void NC_STACK_ypabact::SetState(setState_msg *arg)
     {
         int v6 = SetStateInternal(arg);
 
-        _NC_STACK_ypaworld *yw = &bact->ywo->stack__ypaworld;
+        _NC_STACK_ypaworld *yw = &bact->ywo->ypaworld;
 
         if ( yw->isNetGame )
         {
@@ -3683,7 +3683,7 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
 
         SFXEngine::SFXe.startSound(&wbact->soundcarrier, 1);
 
-        _NC_STACK_ypaworld *yw = &bact->ywo->stack__ypaworld;
+        _NC_STACK_ypaworld *yw = &bact->ywo->ypaworld;
 
         if ( yw->isNetGame )
         {
@@ -3941,7 +3941,7 @@ void NC_STACK_ypabact::ModifyEnergy(bact_arg84 *arg)
 
     if ( !bact->ywo || !(bact->oflags & BACT_OFLAG_VIEWER) || !a4 || arg->energy <= -1000000 )
     {
-        _NC_STACK_ypaworld *yw = &bact->ywo->stack__ypaworld;
+        _NC_STACK_ypaworld *yw = &bact->ywo->ypaworld;
 
         if ( yw->isNetGame )
             v6 = 1;
@@ -4457,7 +4457,7 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
 {
     __NC_STACK_ypabact *bact = &ypabact;
 
-    _NC_STACK_ypaworld *yw = &bact->ywo->stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &bact->ywo->ypaworld;
 
     int a4 = bact->self->getBACT_viewer();
 
@@ -5712,7 +5712,7 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
 
     int a5 = 0;
 
-    if ( bact->ywo->stack__ypaworld.isNetGame )
+    if ( bact->ywo->ypaworld.isNetGame )
         a5 = 1;
 
     if ( bact->mgun == -1 )
@@ -6441,7 +6441,7 @@ __NC_STACK_ypabact *sb_0x493984(__NC_STACK_ypabact *bact, int a2)
 
 void sub_493480(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, int mode)
 {
-    if ( bact->ywo->stack__ypaworld.isNetGame )
+    if ( bact->ywo->ypaworld.isNetGame )
     {
         static uamessage_reorder ordMsg;
 
@@ -7374,7 +7374,7 @@ void NC_STACK_ypabact::ypabact_func117(update_msg *upd)
 {
     __NC_STACK_ypabact *bact = &ypabact;
 
-    if (bact->ywo->stack__ypaworld.netInterpolate)
+    if (bact->ywo->ypaworld.netInterpolate)
         ypabact_func122(upd);
     else
         ypabact_func123(upd);
@@ -7760,7 +7760,7 @@ void NC_STACK_ypabact::ChangeSectorEnergy(yw_arg129 *arg)
     else
         v5 = 0;
 
-    if ( bact->ywo->stack__ypaworld.isNetGame )
+    if ( bact->ywo->ypaworld.isNetGame )
     {
         uamessage_sectorEnergy seMsg;
         seMsg.msgID = UAMSG_SECTORENERGY;
@@ -7862,7 +7862,7 @@ void NC_STACK_ypabact::DeadTimeUpdate(update_msg *arg)
                 bact->vp_extra[0].vp = bact->vp_genesis;
                 bact->vp_extra[0].flags |= (EVPROTO_FLAG_ACTIVE | EVPROTO_FLAG_SCALE);
 
-                if ( bact->ywo->stack__ypaworld.isNetGame )
+                if ( bact->ywo->ypaworld.isNetGame )
                 {
                     uamessage_startPlasma splMsg;
                     splMsg.msgID = UAMSG_STARTPLASMA;

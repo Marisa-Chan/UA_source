@@ -36,7 +36,7 @@ size_t NC_STACK_ypacar::func0(IDVList *stak)
                 {
                 case BACT_ATT_WORLD:
                     stack__ypacar.ywo = (NC_STACK_ypaworld *)val.value.p_data;
-                    stack__ypacar.yw = &stack__ypacar.ywo->stack__ypaworld;
+                    stack__ypacar.yw = &stack__ypacar.ywo->ypaworld;
                     break;
 
                 case CAR_ATT_KAMIKAZE:

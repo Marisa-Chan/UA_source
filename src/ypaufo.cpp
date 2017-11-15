@@ -38,7 +38,7 @@ size_t NC_STACK_ypaufo::func0(IDVList *stak)
                 {
                 case BACT_ATT_WORLD:
                     stack__ypaufo.ywo = (NC_STACK_ypaworld *)val.value.p_data;
-                    stack__ypaufo.yw = &stack__ypaufo.ywo->stack__ypaworld;
+                    stack__ypaufo.yw = &stack__ypaufo.ywo->ypaworld;
                     break;
 
                 case BACT_ATT_INPUTTING:

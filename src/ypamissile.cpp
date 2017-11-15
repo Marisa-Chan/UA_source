@@ -39,7 +39,7 @@ size_t NC_STACK_ypamissile::func0(IDVList *stak)
                 {
                 case BACT_ATT_WORLD:
                     stack__ypamissile.ywo = (NC_STACK_ypaworld *)val.value.p_data;
-                    stack__ypamissile.yw = &stack__ypamissile.ywo->stack__ypaworld;
+                    stack__ypamissile.yw = &stack__ypamissile.ywo->ypaworld;
                     break;
 
                 case BACT_ATT_VIEWER:

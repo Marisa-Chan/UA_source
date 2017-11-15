@@ -563,7 +563,7 @@ size_t NC_STACK_ypaworld::func0(IDVList *stak)
         return 0;
     }
 
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     yw->self_full = this;
 
@@ -940,7 +940,7 @@ void sub_445230(_NC_STACK_ypaworld *yw)
 
 size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     extern GuiList gui_lstvw; //In yw_game_ui.cpp
     extern GuiList lstvw2; //In yw_game_ui.cpp
@@ -1620,7 +1620,7 @@ void ypaworld_func129__sub0(_NC_STACK_ypaworld *yw, cellArea *cell, yw_arg129 *a
 
 void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     int secX = arg->pos.x / 1200.0;
     int secY = -arg->pos.z / 1200.0;
@@ -1782,7 +1782,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
 
 size_t NC_STACK_ypaworld::ypaworld_func130(yw_130arg *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     arg->sec_x = arg->pos_x / 1200;
     arg->sec_z = -arg->pos_z / 1200;
@@ -1807,7 +1807,7 @@ size_t NC_STACK_ypaworld::ypaworld_func130(yw_130arg *arg)
 
 void NC_STACK_ypaworld::ypaworld_func131(__NC_STACK_ypabact *bact)
 {
-    stack__ypaworld.current_bact = bact;
+    ypaworld.current_bact = bact;
 
     setYW_userVehicle(bact->self);
 }
@@ -1827,7 +1827,7 @@ void NC_STACK_ypaworld::ypaworld_func133(void *arg)
 
 void NC_STACK_ypaworld::ypaworld_func134(NC_STACK_ypabact *bact)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     newMaster_msg arg73;
 
@@ -1847,7 +1847,7 @@ void NC_STACK_ypaworld::ypaworld_func135(void *arg)
 
 void NC_STACK_ypaworld::ypaworld_func136(ypaworld_arg136 *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     arg->tVal = 2.0;
     arg->isect = 0;
@@ -1915,7 +1915,7 @@ void NC_STACK_ypaworld::ypaworld_func136(ypaworld_arg136 *arg)
 
 void NC_STACK_ypaworld::ypaworld_func137(ypaworld_arg137 *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     arg->coll_count = 0;
 
@@ -2002,7 +2002,7 @@ void NC_STACK_ypaworld::ypaworld_func138(void *arg)
 
 void NC_STACK_ypaworld::ypaworld_func139(GuiBase *lstvw)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     if ( !(lstvw->flags & GuiBase::FLAG_WITH_ICON) )
         lstvw->flags &= ~GuiBase::FLAG_ICONIFED;
@@ -2050,7 +2050,7 @@ void NC_STACK_ypaworld::ypaworld_func143(void *arg)
 
 void NC_STACK_ypaworld::ypaworld_func144(NC_STACK_ypabact *bacto)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     __NC_STACK_ypabact *bact = bacto->getBACT_pBact();
 
@@ -2083,7 +2083,7 @@ void NC_STACK_ypaworld::ypaworld_func144(NC_STACK_ypabact *bacto)
 
 size_t NC_STACK_ypaworld::ypaworld_func145(__NC_STACK_ypabact *bact)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     if ( yw->current_bact )
     {
@@ -2152,7 +2152,7 @@ size_t NC_STACK_ypaworld::ypaworld_func145(__NC_STACK_ypabact *bact)
 
 NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     if ( vhcl_id->vehicle_id > 256 )
         return NULL;
@@ -2310,7 +2310,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
 
 NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     if ( arg->vehicle_id > 128 )
         return NULL;
@@ -2479,7 +2479,7 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
 
 size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     int y = arg->y;
     int x = arg->x;
@@ -2542,7 +2542,7 @@ size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
 
 void NC_STACK_ypaworld::ypaworld_func149(ypaworld_arg136 *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     arg->tVal = 2.0;
     arg->isect = 0;
@@ -2660,7 +2660,7 @@ void NC_STACK_ypaworld::ypaworld_func149(ypaworld_arg136 *arg)
 
 void NC_STACK_ypaworld::ypaworld_func150(yw_arg150 *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     arg->field_24 = NULL;
 
@@ -2768,7 +2768,7 @@ void NC_STACK_ypaworld::ypaworld_func150(yw_arg150 *arg)
 
 void NC_STACK_ypaworld::ypaworld_func151(IDVPair *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     sub_471AB8(yw);
 
@@ -2978,7 +2978,7 @@ void NC_STACK_ypaworld::ypaworld_func151(IDVPair *arg)
 
 void NC_STACK_ypaworld::ypaworld_func153(bact_hudi *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     yw->hudi = *arg;
 }
@@ -3010,7 +3010,7 @@ void sub_46D2B4(NC_STACK_ypaworld *obj, UserData *usr)
 
 size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     yw->GameShell = usr;
     usr->p_ypaworld = yw;
@@ -3720,7 +3720,7 @@ int ypaworld_func156__sub2(_NC_STACK_ypaworld *yw)
 
 size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     if ( !yw->one_game_res )
     {
@@ -6424,7 +6424,7 @@ void ypaworld_func157__sub0(_NC_STACK_ypaworld *yw)
 
 void NC_STACK_ypaworld::ypaworld_func157(UserData *usr)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     if ( usr->field_0x0 )
     {
@@ -6669,7 +6669,7 @@ int sub_46D3EC(struC5 *struc)
 
 void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
     usr->field_0x2fbc = 0;
 
     SFXEngine::SFXe.sub_423EFC(usr->frameTime, vec3d(0.0), vec3d(0.0), mat3x3::Ident());
@@ -6772,7 +6772,7 @@ void NC_STACK_ypaworld::ypaworld_func160(void *arg)
 // Load Level
 size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     int ok = 0;
     mapProto mapp;
@@ -6830,7 +6830,7 @@ size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
 
 size_t NC_STACK_ypaworld::ypaworld_func162(const char *fname)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     yw->replayer = recorder_allocate();
 
@@ -6913,7 +6913,7 @@ size_t NC_STACK_ypaworld::ypaworld_func162(const char *fname)
 
 void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     recorder *repl = yw->replayer;
     uint32_t v33 = profiler_begin();
@@ -6995,7 +6995,7 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
 void NC_STACK_ypaworld::ypaworld_func164(void *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     if ( yw->replayer )
     {
@@ -7029,7 +7029,7 @@ void NC_STACK_ypaworld::ypaworld_func164(void *arg)
 
 void NC_STACK_ypaworld::ypaworld_func165(yw_arg165 *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     recorder *repl = yw->replayer;
 
@@ -7249,7 +7249,7 @@ int load_lang_lng(_NC_STACK_ypaworld *yw, const char *lang)
 
 size_t NC_STACK_ypaworld::ypaworld_func166(const char **langname)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     sub_4711E0(yw);
     strcpy(yw->lang_name, *langname);
@@ -7448,7 +7448,7 @@ void NC_STACK_ypaworld::ypaworld_func167(UserData *usr)
 
 size_t NC_STACK_ypaworld::ypaworld_func168(__NC_STACK_ypabact **pbact)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
     __NC_STACK_ypabact *bact = *pbact;
 
     if ( bact->bact_type == BACT_TYPES_GUN || bact->bact_type == BACT_TYPES_MISSLE )
@@ -7660,7 +7660,7 @@ void ypaworld_func169__sub2(_NC_STACK_ypaworld *yw)
 
 size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     int v5 = 0;
 
@@ -7766,7 +7766,7 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
 
 size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     int write_ok = 1;
 
@@ -8181,7 +8181,7 @@ size_t NC_STACK_ypaworld::ypaworld_func173(UserData *usr)
 
 size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     UserData *usr = yw->GameShell;
 
@@ -8286,7 +8286,7 @@ size_t NC_STACK_ypaworld::ypaworld_func175(UserData *usr)
 
 void NC_STACK_ypaworld::ypaworld_func176(yw_arg176 *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     arg->field_4 = yw->field_1bcc[arg->owner];
     arg->field_8 = yw->field_1bec[arg->owner];
@@ -8296,7 +8296,7 @@ void NC_STACK_ypaworld::ypaworld_func176(yw_arg176 *arg)
 void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
 {
     //Reown sectors for new owner
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     if ( !arg->field_4 ) //New owner
         return;
@@ -8404,7 +8404,7 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
 
 void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     if ( !yw->field_739A || (!(yw->field_73CE & 4) && !(yw->field_73CE & 8)) )
     {
@@ -8532,7 +8532,7 @@ int ypaworld_func183__sub0(int lvlID, const char *userName)
 size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
 {
     char buf[128];
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     int v6;
 
@@ -8598,7 +8598,7 @@ size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
 
 void NC_STACK_ypaworld::ypaworld_func184(yw_arg184 *arg)
 {
-    _NC_STACK_ypaworld *yw = &stack__ypaworld;
+    _NC_STACK_ypaworld *yw = &ypaworld;
 
     if ( yw->history )
         ypaworld_func184__sub0(yw, yw->history, arg);
@@ -8613,92 +8613,93 @@ void NC_STACK_ypaworld::ypaworld_func185(void *arg)
 
 void NC_STACK_ypaworld::setYW_normVisLimit(int limit)
 {
-    stack__ypaworld.field_15e4 = limit;
+    ypaworld.field_15e4 = limit;
 }
 
 void NC_STACK_ypaworld::setYW_fadeLength(int len)
 {
-    stack__ypaworld.field_15e8 = len;
+    ypaworld.field_15e8 = len;
 }
 
 void NC_STACK_ypaworld::setYW_skyVisLimit(int limit)
 {
-    stack__ypaworld.field_15ec = limit;
+    ypaworld.field_15ec = limit;
 }
 
 void NC_STACK_ypaworld::setYW_skyFadeLength(int len)
 {
-    stack__ypaworld.field_15f0 = len;
+    ypaworld.field_15f0 = len;
 }
 
 void NC_STACK_ypaworld::setYW_skyHeight(int hght)
 {
-    stack__ypaworld.field_15f4 = hght;
+    ypaworld.field_15f4 = hght;
 }
 
 void NC_STACK_ypaworld::setYW_skyRender(int dorender)
 {
-    stack__ypaworld.field_15f8 = dorender;
+    ypaworld.field_15f8 = dorender;
 }
 
 void NC_STACK_ypaworld::setYW_doEnergyRecalc(int doRecalc)
 {
-    stack__ypaworld.field_15fc = doRecalc;
+    ypaworld.field_15fc = doRecalc;
 }
 
 void NC_STACK_ypaworld::setYW_visSectors(int visSectors)
 {
-    stack__ypaworld.field_1368 = visSectors;
+    ypaworld.field_1368 = visSectors;
 }
 
 void NC_STACK_ypaworld::setYW_userHostStation(NC_STACK_ypabact *host)
 {
-    stack__ypaworld.field_1b78 = host;
-    stack__ypaworld.field_1b80 = host->getBACT_pBact();
-    stack__ypaworld.field_1b88 = &stack__ypaworld.field_1b80->subjects_list;
+    ypaworld.field_1b78 = host;
+    ypaworld.field_1b80 = host->getBACT_pBact();
+    ypaworld.field_1b88 = &ypaworld.field_1b80->subjects_list;
 }
 
 void NC_STACK_ypaworld::setYW_userVehicle(NC_STACK_ypabact *bact)
 {
-    if ( bact != stack__ypaworld.field_1b7c )
+    if ( bact != ypaworld.field_1b7c )
     {
-        __NC_STACK_ypabact *oldpBact = stack__ypaworld.field_1b84;
+        __NC_STACK_ypabact *oldpBact = ypaworld.field_1b84;
 
         if ( oldpBact )
-            stack__ypaworld.field_241c = oldpBact->gid;
+            ypaworld.field_241c = oldpBact->gid;
 
-        stack__ypaworld.field_1b7c = bact;
-        stack__ypaworld.field_1b84 = bact->getBACT_pBact();
+        ypaworld.field_1b7c = bact;
+        ypaworld.field_1b84 = bact->getBACT_pBact();
 
-        stack__ypaworld.field_1a0c = stack__ypaworld.timeStamp;
-        stack__ypaworld.field_1a10 = stack__ypaworld.field_1b84->commandID;
-        stack__ypaworld.field_17bc = 0;
+        ypaworld.field_1a0c = ypaworld.timeStamp;
+        ypaworld.field_1a10 = ypaworld.field_1b84->commandID;
+        ypaworld.field_17bc = 0;
 
-        if ( stack__ypaworld.field_1b84->bact_type == BACT_TYPES_ROBO )
+        if ( ypaworld.field_1b84->bact_type == BACT_TYPES_ROBO )
         {
-            stack__ypaworld.field_7886 = 1;
-            stack__ypaworld.field_7882 = 1;
+            ypaworld.field_7886 = 1;
+            ypaworld.field_7882 = 1;
         }
-        ypaworld_func2__sub0__sub0(&stack__ypaworld);
+
+        ypaworld_func2__sub0__sub0(&ypaworld);
 
         if ( oldpBact )
-            ypaworld_func2__sub0__sub1(&stack__ypaworld, oldpBact, stack__ypaworld.field_1b84);
+            ypaworld_func2__sub0__sub1(&ypaworld, oldpBact, ypaworld.field_1b84);
     }
 }
 
 void NC_STACK_ypaworld::setYW_screenW(int w)
 {
-    stack__ypaworld.screen_width = w;
+    ypaworld.screen_width = w;
 }
 
 void NC_STACK_ypaworld::setYW_screenH(int h)
 {
-    stack__ypaworld.screen_height = h;
+    ypaworld.screen_height = h;
 }
 
 void NC_STACK_ypaworld::setYW_dontRender(int drndr)
 {
-    stack__ypaworld.field_138c = drndr;
+    ypaworld.field_138c = drndr;
 }
 
 
@@ -8706,82 +8707,82 @@ void NC_STACK_ypaworld::setYW_dontRender(int drndr)
 
 int NC_STACK_ypaworld::getYW_mapMaxX()
 {
-    return stack__ypaworld.sectors_maxX;
+    return ypaworld.sectors_maxX;
 }
 
 int NC_STACK_ypaworld::getYW_mapMaxY()
 {
-    return stack__ypaworld.sectors_maxY;
+    return ypaworld.sectors_maxY;
 }
 
 int NC_STACK_ypaworld::getYW_mapSizeX()
 {
-    return stack__ypaworld.sectors_maxX2;
+    return ypaworld.sectors_maxX2;
 }
 
 int NC_STACK_ypaworld::getYW_mapSizeY()
 {
-    return stack__ypaworld.sectors_maxY2;
+    return ypaworld.sectors_maxY2;
 }
 
 int NC_STACK_ypaworld::getYW_normVisLimit()
 {
-    return stack__ypaworld.field_15e4;
+    return ypaworld.field_15e4;
 }
 
 int NC_STACK_ypaworld::getYW_fadeLength()
 {
-    return stack__ypaworld.field_15e8;
+    return ypaworld.field_15e8;
 }
 
 int NC_STACK_ypaworld::getYW_skyHeight()
 {
-    return stack__ypaworld.field_15f4;
+    return ypaworld.field_15f4;
 }
 
 int NC_STACK_ypaworld::getYW_skyRender()
 {
-    return stack__ypaworld.field_15f8;
+    return ypaworld.field_15f8;
 }
 
 int NC_STACK_ypaworld::getYW_doEnergyRecalc()
 {
-    return stack__ypaworld.field_15fc;
+    return ypaworld.field_15fc;
 }
 
 int NC_STACK_ypaworld::getYW_visSectors()
 {
-    return stack__ypaworld.field_1368;
+    return ypaworld.field_1368;
 }
 
 NC_STACK_ypabact *NC_STACK_ypaworld::getYW_userHostStation()
 {
-    return stack__ypaworld.field_1b78;
+    return ypaworld.field_1b78;
 }
 
 NC_STACK_ypabact *NC_STACK_ypaworld::getYW_userVehicle()
 {
-    return stack__ypaworld.field_1b7c;
+    return ypaworld.field_1b7c;
 }
 
 WeapProto *NC_STACK_ypaworld::getYW_weaponProtos()
 {
-    return stack__ypaworld.WeaponProtos;
+    return ypaworld.WeaponProtos;
 }
 
 BuildProto *NC_STACK_ypaworld::getYW_buildProtos()
 {
-    return stack__ypaworld.BuildProtos;
+    return ypaworld.BuildProtos;
 }
 
 VhclProto *NC_STACK_ypaworld::getYW_vhclProtos()
 {
-    return stack__ypaworld.VhclProtos;
+    return ypaworld.VhclProtos;
 }
 
 int NC_STACK_ypaworld::getYW_lvlFinished()
 {
-    if ( stack__ypaworld.field_2d90->field_40 != 1 && stack__ypaworld.field_2d90->field_40 != 2 )
+    if ( ypaworld.field_2d90->field_40 != 1 && ypaworld.field_2d90->field_40 != 2 )
         return 0;
 
     return 1;
@@ -8789,37 +8790,37 @@ int NC_STACK_ypaworld::getYW_lvlFinished()
 
 int NC_STACK_ypaworld::getYW_screenW()
 {
-    return stack__ypaworld.screen_width;
+    return ypaworld.screen_width;
 }
 
 int NC_STACK_ypaworld::getYW_screenH()
 {
-    return stack__ypaworld.screen_height;
+    return ypaworld.screen_height;
 }
 
 char **NC_STACK_ypaworld::getYW_localeStrings()
 {
-    return stack__ypaworld.string_pointers;
+    return ypaworld.string_pointers;
 }
 
 stru_2d90 *NC_STACK_ypaworld::getYW_levelInfo()
 {
-    return stack__ypaworld.field_2d90;
+    return ypaworld.field_2d90;
 }
 
 int NC_STACK_ypaworld::getYW_destroyFX()
 {
-    return stack__ypaworld.fxnumber;
+    return ypaworld.fxnumber;
 }
 
 NC_STACK_windp *NC_STACK_ypaworld::getYW_pNET()
 {
-    return stack__ypaworld.windp;
+    return ypaworld.windp;
 }
 
 int NC_STACK_ypaworld::getYW_invulnerable()
 {
-    return stack__ypaworld.field_1a20;
+    return ypaworld.field_1a20;
 }
 
 

@@ -35,7 +35,7 @@ size_t NC_STACK_ypatank::func0(IDVList *stak)
                 {
                 case BACT_ATT_WORLD:
                     stack__ypatank.ywo = (NC_STACK_ypaworld *)val.value.p_data;
-                    stack__ypatank.yw = &stack__ypatank.ywo->stack__ypaworld;
+                    stack__ypatank.yw = &stack__ypatank.ywo->ypaworld;
                     break;
 
                 case TANK_ATT_TIP:

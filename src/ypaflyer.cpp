@@ -27,7 +27,7 @@ size_t NC_STACK_ypaflyer::func0(IDVList *stak)
                 {
                 case BACT_ATT_WORLD:
                     stack__ypaflyer.ywo = (NC_STACK_ypaworld *)val.value.p_data;
-                    stack__ypaflyer.yw = &stack__ypaflyer.ywo->stack__ypaworld;
+                    stack__ypaflyer.yw = &stack__ypaflyer.ywo->ypaworld;
                     break;
 
                 case FLY_ATT_TYPE:
