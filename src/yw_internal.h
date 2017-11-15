@@ -165,7 +165,6 @@ void sub_4EAC80(_NC_STACK_ypaworld *yw);
 void sub_4811E8(_NC_STACK_ypaworld *yw, int id);
 
 
-int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapProto, int levelID, int a5);
 int cells_mark_type(_NC_STACK_ypaworld *yw, const char *a2);
 int cells_mark_owner(_NC_STACK_ypaworld *yw, const char *a2);
 int cells_mark_hight(_NC_STACK_ypaworld *yw, const char *a2);
@@ -457,7 +456,7 @@ void ypaworld_func64__sub23(_NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub3(_NC_STACK_ypaworld *yw);
 void sub_44A094(_NC_STACK_ypaworld *yw);
 
-void ypaworld_func64__sub11(_NC_STACK_ypaworld *yw);
+void FFeedback_Update(_NC_STACK_ypaworld *yw);
 void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt);
 void recorder_update_time(_NC_STACK_ypaworld *yw, int dtime);
 void recorder_write_frame(_NC_STACK_ypaworld *yw);
@@ -480,7 +479,7 @@ void sub_471AB8(_NC_STACK_ypaworld *yw);
 void sub_47DB04(_NC_STACK_ypaworld *yw, char a2);
 
 void ypaworld_func151__sub6(_NC_STACK_ypaworld *yw);
-void ypaworld_func151__sub2(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw);
+void GUI_Close(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw);
 void sub_4C8EB4(_NC_STACK_ypaworld *yw, bact_node *bct);
 void ypaworld_func151__sub0(_NC_STACK_ypaworld *yw);
 void ypaworld_func151__sub1(_NC_STACK_ypaworld *yw);

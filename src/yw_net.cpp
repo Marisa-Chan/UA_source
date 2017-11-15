@@ -4041,7 +4041,7 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
     mapProto proto;
     bool loadOK = false;
 
-    if ( sb_0x44ca90(yw, &proto, arg->lvlID, arg->field_4) )
+    if ( LVLoaderCommon(proto, arg->lvlID, arg->field_4) )
     {
         if ( cells_mark_type(yw, proto.typ) )
         {

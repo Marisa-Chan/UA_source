@@ -2913,14 +2913,14 @@ int sb_0x451034__sub3(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
     return 1;
 }
 
-void sb_0x451034__sub1(_NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::FFeedback_Init()
 {
-    yw->input_class = INPe.getPInput();
+    ypaworld.input_class = INPe.getPInput();
 
-    yw->field_7562 = 0;
-    yw->field_7566 = -1;
-    yw->field_756A = 0;
-    yw->field_756E = 0;
+    ypaworld.field_7562 = 0;
+    ypaworld.field_7566 = -1;
+    ypaworld.field_756A = 0;
+    ypaworld.field_756E = 0;
 }
 
 
@@ -3181,26 +3181,26 @@ void sub_4C8524(_NC_STACK_ypaworld *yw)
     lstvw2.Free();
 }
 
-void sub_47E400(_NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::FFeedback_StopAll()
 {
-    if ( yw->input_class )
+    if ( ypaworld.input_class )
     {
         winp_71arg winp71;
-        winp71.state = 1;
+        winp71.state = NC_STACK_winp::FF_STATE_STOP;
         winp71.p4 = 0;
         winp71.p3 = 0;
         winp71.p2 = 0;
         winp71.p1 = 0;
-        winp71.effID = 0;
+        winp71.effID = NC_STACK_winp::FF_TYPE_ALL;
 
-        yw->input_class->wimp_ForceFeedback(&winp71);
+        ypaworld.input_class->wimp_ForceFeedback(&winp71);
     }
 }
 
 int sb_0x451034(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
 {
-    if ( yw->field_162c )
-        return yw->field_162c;
+    if ( yw->GUI_OK )
+        return yw->GUI_OK;
 
     yw->field_17b0 = 0;
     yw->field_17b4 = NULL;
@@ -3211,7 +3211,6 @@ int sb_0x451034(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
     yw->field_1aa8 = 0;
     yw->field_1aac = 0;
 
-    sb_0x451034__sub1(yw);
     sb_0x451034__sub9(yw);
     sb_0x451034__sub8(yw);
     sb_0x451034__sub2(obj, yw);
@@ -3243,7 +3242,7 @@ int sb_0x451034(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
         return 0;
     }
 
-    yw->field_162c = 1;
+    yw->GUI_OK = 1;
 
     if ( yw->snd__cdsound & 1 )
     {
@@ -12762,27 +12761,28 @@ void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
 }
 
 
-void ypaworld_func151__sub2(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::GUI_Close()
 {
-    if ( yw->field_162c )
+    if ( ypaworld.GUI_OK )
     {
-        obj->ypaworld_func140(&lstvw2);
-        obj->ypaworld_func140(&exit_menu);
-        obj->ypaworld_func140(&info_log.window);
-        obj->ypaworld_func140(&squadron_manager.lstvw);
-        obj->ypaworld_func140(&robo_map);
-        obj->ypaworld_func140(&netgame_wnd);
+        ypaworld_func140(&lstvw2);
+        ypaworld_func140(&exit_menu);
+        ypaworld_func140(&info_log.window);
+        ypaworld_func140(&squadron_manager.lstvw);
+        ypaworld_func140(&robo_map);
+        ypaworld_func140(&netgame_wnd);
 
-        sub_4DA874(yw);
-        sub_46E16C(yw);
-        sub_4C706C(yw);
-        sub_4C39A4(yw);
+        sub_4DA874(&ypaworld);
+        sub_46E16C(&ypaworld);
+        sub_4C706C(&ypaworld);
+        sub_4C39A4(&ypaworld);
         sub_4E1D24();
-        sub_4E2B24(yw);
-        sub_4C8524(yw);
-        sub_47E400(yw);
+        sub_4E2B24(&ypaworld);
+        sub_4C8524(&ypaworld);
 
-        yw->field_1b1c = 0;
-        yw->field_162c = 0;
+        FFeedback_StopAll();
+
+        ypaworld.field_1b1c = 0;
+        ypaworld.GUI_OK = 0;
     }
 }

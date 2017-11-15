@@ -4,25 +4,10 @@
 #include "engine_input.h"
 #include "winp.h"
 #include "utils.h"
+#include "log.h"
+#include "inp_ff.h"
 
 const NewClassDescr NC_STACK_winp::description("winp.class", &newinstance);
-
-//struct winp_effects
-//{
-//	IDirectInputEffect *effects[11];
-//	DIPERIODIC eff0_DIPERIODIC;
-//	DIPERIODIC eff1_DIPERIODIC;
-//	DIPERIODIC eff2_DIPERIODIC;
-//	DICONDITION eff3_DICONDITION[2];
-//	DIPERIODIC eff4_DIPERIODIC;
-//	DIPERIODIC eff5_DIPERIODIC;
-//	DIRAMPFORCE eff6_DIRAMPFORCE;
-//	DIRAMPFORCE eff7_DIRAMPFORCE;
-//	DIRAMPFORCE eff8_DIRAMPFORCE;
-//	DIPERIODIC eff9_DIPERIODIC;
-//	DIPERIODIC eff10_DIPERIODIC;
-//};
-
 
 struct winp__func67__internal
 {
@@ -106,24 +91,28 @@ bool joyEnable = false;
 SDL_JoystickGUID wantGuid;
 
 SDL_Joystick *sdljoy = NULL;
+SDL_Haptic* sdlHaptic = NULL;
 
 int joyAxisMap[32];
 bool joyAxisMapInv[32];
 int joyButtonMap[32];
 int joyHatMap[4];
 
-SDL_Haptic* ffDev = NULL;
-int ffEffects[11];
-
-
 uint32_t joyButtonStates;
 SDLWRAP_Point joyPov;
 SDLWRAP_Point joyXYpos;
 SDLWRAP_Point joyZRZpos;
 
-
-
-
+static FF_TankEngine ffTankEngine;
+static FF_JetEngine ffJetEngine;
+static FF_CopterEngine ffCopterEngine;
+static FF_RotationDamper ffRotDamper;
+static FF_MiniGun ffMGun;
+static FF_MissileFire ffMissFire;
+static FF_GrenadeFire ffGrenadeFire;
+static FF_BombFire ffBombFire;
+static FF_Collision ffCollide;
+static FF_Shake ffShake;
 
 void sdlInputResetLog()
 {
@@ -498,456 +487,6 @@ int InputWatch(void *, SDL_Event *event)
 
 
 
-
-
-
-
-
-
-
-
-
-
-//winp_loc winp_local;
-
-
-
-
-
-
-
-//void createEffect0()
-//{
-//	printf("CLEAN ME %s\n","createEffect0");
-//	DIEFFECT v1; // [sp+20h] [bp-5Ch]@1
-//	DIENVELOPE v2; // [sp+54h] [bp-28h]@1
-//	LONG directions[2]; // [sp+68h] [bp-14h]@1
-//	uint32_t rgdwAxes[2]; // [sp+70h] [bp-Ch]@1
-//
-//	v2.dwSize = 20;
-//	v2.dwAttackTime = 50000;
-//	v2.dwAttackLevel = 0;
-//	v2.dwFadeTime = 50000;
-//	v2.dwFadeLevel = 0;
-//	rgdwAxes[0] = 0;
-//	rgdwAxes[1] = 4;
-//	directions[1] = 0;
-//	v1.dwSize = 52;
-//	v1.dwFlags = 34;
-//	v1.dwSamplePeriod = 10000;
-//	v1.dwGain = 10000;
-//	v1.dwTriggerButton = -1;
-//	v1.dwTriggerRepeatInterval = 0;
-//	v1.cAxes = 2;
-//	v1.rgdwAxes = rgdwAxes;
-//	v1.rglDirection = directions;
-//	v1.lpEnvelope = &v2;
-//	winp_local.effects.eff0_DIPERIODIC.dwMagnitude = 3000;
-//	winp_local.effects.eff0_DIPERIODIC.lOffset = 0;
-//	winp_local.effects.eff0_DIPERIODIC.dwPhase = 0;
-//	winp_local.effects.eff0_DIPERIODIC.dwPeriod = 200000;
-//	v1.dwDuration = -1;
-//	directions[0] = 9000;
-//	v1.cbTypeSpecificParams = 16;
-//	v1.lpvTypeSpecificParams = &winp_local.effects.eff0_DIPERIODIC;
-//	winp_local.dinputDev2_2->CreateEffect(GUID_Sine, &v1, &winp_local.effects.effects[0], 0);
-//}
-//
-//void createEffect1()
-//{
-//	printf("CLEAN ME %s\n","createEffect1");
-//
-//	DIEFFECT v1; // [sp+20h] [bp-5Ch]@1
-//	DIENVELOPE v2; // [sp+54h] [bp-28h]@1
-//	LONG v3[2]; // [sp+68h] [bp-14h]@1
-//	uint32_t v4[2]; // [sp+70h] [bp-Ch]@1
-//
-//	v2.dwSize = 20;
-//	v2.dwAttackTime = 50000;
-//	v2.dwAttackLevel = 0;
-//	v2.dwFadeTime = 50000;
-//	v2.dwFadeLevel = 0;
-//	v4[0] = 0;
-//	v4[1] = 4;
-//	v3[1] = 0;
-//	v1.dwSize = 52;
-//	v1.dwFlags = 34;
-//	v1.dwSamplePeriod = 10000;
-//	v1.dwGain = 10000;
-//	v1.dwTriggerButton = -1;
-//	v1.dwTriggerRepeatInterval = 0;
-//	v1.cAxes = 2;
-//	v1.rgdwAxes = v4;
-//	v1.rglDirection = v3;
-//	v1.lpEnvelope = &v2;
-//	winp_local.effects.eff1_DIPERIODIC.dwMagnitude = 2300;
-//	winp_local.effects.eff1_DIPERIODIC.lOffset = 0;
-//	winp_local.effects.eff1_DIPERIODIC.dwPhase = 0;
-//	winp_local.effects.eff1_DIPERIODIC.dwPeriod = 71500;
-//	v1.dwDuration = -1;
-//	v3[0] = 9000;
-//	v1.cbTypeSpecificParams = 16;
-//	v1.lpvTypeSpecificParams = &winp_local.effects.eff1_DIPERIODIC;
-//	winp_local.dinputDev2_2->CreateEffect(GUID_Sine, &v1, &winp_local.effects.effects[1], 0);
-//}
-//
-//void createEffect2()
-//{
-//	printf("CLEAN ME %s\n","createEffect2");
-//
-//	DIEFFECT v1; // [sp+20h] [bp-5Ch]@1
-//	DIENVELOPE v2; // [sp+54h] [bp-28h]@1
-//	LONG v3[2]; // [sp+68h] [bp-14h]@1
-//	uint32_t v4[2]; // [sp+70h] [bp-Ch]@1
-//
-//	v2.dwSize = 20;
-//	v2.dwAttackTime = 50000;
-//	v2.dwAttackLevel = 0;
-//	v2.dwFadeTime = 50000;
-//	v2.dwFadeLevel = 0;
-//	v4[0] = 0;
-//	v4[1] = 4;
-//	v3[1] = 0;
-//	v1.dwSize = 52;
-//	v1.dwFlags = 34;
-//	v1.dwSamplePeriod = 10000;
-//	v1.dwGain = 10000;
-//	v1.dwTriggerButton = -1;
-//	v1.dwTriggerRepeatInterval = 0;
-//	v1.cAxes = 2;
-//	v1.rgdwAxes = v4;
-//	v1.rglDirection = v3;
-//	v1.lpEnvelope = &v2;
-//	winp_local.effects.eff2_DIPERIODIC.dwMagnitude = 4500;
-//	winp_local.effects.eff2_DIPERIODIC.lOffset = 0;
-//	winp_local.effects.eff2_DIPERIODIC.dwPhase = 0;
-//	winp_local.effects.eff2_DIPERIODIC.dwPeriod = 166666;
-//	v1.dwDuration = -1;
-//	v3[0] = 0;
-//	v1.cbTypeSpecificParams = 16;
-//	v1.lpvTypeSpecificParams = &winp_local.effects.eff2_DIPERIODIC;
-//	winp_local.dinputDev2_2->CreateEffect(GUID_SawtoothUp, &v1, &winp_local.effects.effects[2], 0);
-//}
-//
-//void createEffect3()
-//{
-//	printf("CLEAN ME %s\n","createEffect3");
-//
-//	DIEFFECT v0; // [sp+20h] [bp-5Ch]@1
-//	LONG v6[2]; // [sp+68h] [bp-14h]@1
-//	uint32_t v7[2]; // [sp+70h] [bp-Ch]@1
-//	int msgid; // [sp+78h] [bp-4h]@1
-//
-//	v7[0] = 0;
-//	v7[1] = 4;
-//	v6[0] = 0;
-//	v6[1] = 0;
-//	v0.dwSize = 52;
-//	v0.dwFlags = 34;
-//	v0.dwSamplePeriod = 10000;
-//	v0.dwGain = 10000;
-//	v0.dwTriggerButton = -1;
-//	v0.dwTriggerRepeatInterval = 0;
-//	v0.cAxes = 2;
-//	v0.rgdwAxes = v7;
-//	v0.rglDirection = v6;
-//	winp_local.effects.eff3_DICONDITION[0].lOffset = 0;
-//	winp_local.effects.eff3_DICONDITION[0].lPositiveCoefficient = 10000;
-//	winp_local.effects.eff3_DICONDITION[0].lNegativeCoefficient = 10000;
-//	winp_local.effects.eff3_DICONDITION[0].dwPositiveSaturation = 0;
-//	winp_local.effects.eff3_DICONDITION[0].dwNegativeSaturation = 0;
-//	winp_local.effects.eff3_DICONDITION[0].lDeadBand = 0;
-//	winp_local.effects.eff3_DICONDITION[1].lOffset = 0;
-//	winp_local.effects.eff3_DICONDITION[1].lPositiveCoefficient = 10000;
-//	winp_local.effects.eff3_DICONDITION[1].lNegativeCoefficient = 10000;
-//	winp_local.effects.eff3_DICONDITION[1].dwPositiveSaturation = 0;
-//	winp_local.effects.eff3_DICONDITION[1].dwNegativeSaturation = 0;
-//	winp_local.effects.eff3_DICONDITION[1].lDeadBand = 0;
-//	v0.dwDuration = -1;
-//	v0.lpEnvelope = 0;
-//	v0.cbTypeSpecificParams = 48;
-//	v0.lpvTypeSpecificParams = winp_local.effects.eff3_DICONDITION;
-//	msgid = winp_local.dinputDev2_2->CreateEffect(GUID_Damper, &v0, &winp_local.effects.effects[3], 0);
-//	if ( msgid )
-//		log_dinput_error("DirectInputEffect", "GetParameters()", msgid);
-//}
-//
-//void createEffect4()
-//{
-//	printf("CLEAN ME %s\n","createEffect4");
-//
-//	DIEFFECT v1; // [sp+20h] [bp-5Ch]@1
-//	DIENVELOPE v2; // [sp+54h] [bp-28h]@1
-//	LONG v3[2]; // [sp+68h] [bp-14h]@1
-//	uint32_t v4[2]; // [sp+70h] [bp-Ch]@1
-//
-//	v2.dwSize = 20;
-//	v2.dwAttackTime = 50000;
-//	v2.dwAttackLevel = 0;
-//	v2.dwFadeTime = 50000;
-//	v2.dwFadeLevel = 0;
-//	v4[0] = 0;
-//	v4[1] = 4;
-//	v3[1] = 0;
-//	v1.dwSize = 52;
-//	v1.dwFlags = 34;
-//	v1.dwSamplePeriod = 10000;
-//	v1.dwGain = 10000;
-//	v1.dwTriggerButton = -1;
-//	v1.dwTriggerRepeatInterval = 0;
-//	v1.cAxes = 2;
-//	v1.rgdwAxes = v4;
-//	v1.rglDirection = v3;
-//	v1.lpEnvelope = &v2;
-//	winp_local.effects.eff4_DIPERIODIC.dwMagnitude = 5000;
-//	winp_local.effects.eff4_DIPERIODIC.lOffset = 0;
-//	winp_local.effects.eff4_DIPERIODIC.dwPhase = 0;
-//	winp_local.effects.eff4_DIPERIODIC.dwPeriod = 83333;
-//	v1.dwDuration = -1;
-//	v3[0] = 0;
-//	v1.cbTypeSpecificParams = 16;
-//	v1.lpvTypeSpecificParams = &winp_local.effects.eff4_DIPERIODIC;
-//	winp_local.dinputDev2_2->CreateEffect(GUID_Square, &v1, &winp_local.effects.effects[4], 0);
-//}
-//
-//void createEffect5()
-//{
-//	printf("CLEAN ME %s\n","createEffect5");
-//
-//	DIEFFECT v0; // [sp+20h] [bp-5Ch]@1
-//	DIENVELOPE v1; // [sp+54h] [bp-28h]@1
-//	LONG v2[2]; // [sp+68h] [bp-14h]@1
-//	uint32_t v3[2]; // [sp+70h] [bp-Ch]@1
-//	int msgid; // [sp+78h] [bp-4h]@1
-//
-//	v1.dwSize = 20;
-//	v3[0] = 0;
-//	v3[1] = 4;
-//	v2[0] = 0;
-//	v2[1] = 0;
-//	v0.dwSize = 52;
-//	v0.dwFlags = 34;
-//	v0.dwSamplePeriod = 10000;
-//	v0.dwGain = 10000;
-//	v0.dwTriggerButton = -1;
-//	v0.dwTriggerRepeatInterval = 0;
-//	v0.cAxes = 2;
-//	v0.rgdwAxes = v3;
-//	v0.rglDirection = v2;
-//	v0.lpEnvelope = &v1;
-//	winp_local.effects.eff5_DIPERIODIC.dwMagnitude = 10000;
-//	winp_local.effects.eff5_DIPERIODIC.lOffset = 0;
-//	winp_local.effects.eff5_DIPERIODIC.dwPhase = 9000;
-//	winp_local.effects.eff5_DIPERIODIC.dwPeriod = 1000000;
-//	v1.dwAttackTime = 0;
-//	v1.dwAttackLevel = 10000;
-//	v1.dwFadeTime = 264000;
-//	v1.dwFadeLevel = 0;
-//	v0.dwDuration = 600000;
-//	v0.cbTypeSpecificParams = 16;
-//	v0.lpvTypeSpecificParams = &winp_local.effects.eff5_DIPERIODIC;
-//	msgid = winp_local.dinputDev2_2->CreateEffect(GUID_Sine, &v0, &winp_local.effects.effects[5], 0);
-//	if ( msgid )
-//		log_dinput_error("DirectInputDevice2", "CreateEffect()", msgid);
-//}
-//
-//void createEffect6()
-//{
-//	printf("CLEAN ME %s\n","createEffect6");
-//
-//	DIEFFECT v0; // [sp+20h] [bp-5Ch]@1
-//	DIENVELOPE v1; // [sp+54h] [bp-28h]@1
-//	LONG v2[2]; // [sp+68h] [bp-14h]@1
-//	uint32_t v3[2]; // [sp+70h] [bp-Ch]@1
-//	int msgid; // [sp+78h] [bp-4h]@1
-//
-//	v1.dwSize = 20;
-//	v3[0] = 0;
-//	v3[1] = 4;
-//	v2[0] = 0;
-//	v2[1] = 0;
-//	v0.dwSize = 52;
-//	v0.dwFlags = 34;
-//	v0.dwSamplePeriod = 10000;
-//	v0.dwGain = 10000;
-//	v0.dwTriggerButton = -1;
-//	v0.dwTriggerRepeatInterval = 0;
-//	v0.cAxes = 2;
-//	v0.rgdwAxes = v3;
-//	v0.rglDirection = v2;
-//	v0.lpEnvelope = &v1;
-//	winp_local.effects.eff6_DIRAMPFORCE.lStart = 10000;
-//	winp_local.effects.eff6_DIRAMPFORCE.lEnd = -10000;
-//	v1.dwAttackTime = 0;
-//	v1.dwAttackLevel = 10000;
-//	v1.dwFadeTime = 57000;
-//	v1.dwFadeLevel = 0;
-//	v0.dwDuration = 300000;
-//	v0.cbTypeSpecificParams = 8;
-//	v0.lpvTypeSpecificParams = &winp_local.effects.eff6_DIRAMPFORCE;
-//	msgid = winp_local.dinputDev2_2->CreateEffect(GUID_RampForce, &v0, &winp_local.effects.effects[6], 0);
-//	if ( msgid )
-//		log_dinput_error("DirectInputDevice2", "CreateEffect()", msgid);
-//}
-//
-//void createEffect7()
-//{
-//	printf("CLEAN ME %s\n","createEffect7");
-//
-//	DIEFFECT v0; // [sp+20h] [bp-5Ch]@1
-//	LONG v6[2]; // [sp+68h] [bp-14h]@1
-//	uint32_t v7[2]; // [sp+70h] [bp-Ch]@1
-//	int msgid; // [sp+78h] [bp-4h]@1
-//
-//	v7[0] = 0;
-//	v7[1] = 4;
-//	v6[0] = 0;
-//	v6[1] = 0;
-//	v0.dwSize = 52;
-//	v0.dwFlags = 34;
-//	v0.dwSamplePeriod = 10000;
-//	v0.dwGain = 10000;
-//	v0.dwTriggerButton = -1;
-//	v0.dwTriggerRepeatInterval = 0;
-//	v0.cAxes = 2;
-//	v0.rgdwAxes = v7;
-//	v0.rglDirection = v6;
-//	winp_local.effects.eff7_DIRAMPFORCE.lStart = 8000;
-//	winp_local.effects.eff7_DIRAMPFORCE.lEnd = -8000;
-//	v0.dwDuration = 400000;
-//	v0.lpEnvelope = 0;
-//	v0.cbTypeSpecificParams = 8;
-//	v0.lpvTypeSpecificParams = &winp_local.effects.eff7_DIRAMPFORCE;
-//	msgid = winp_local.dinputDev2_2->CreateEffect(GUID_RampForce, &v0, &winp_local.effects.effects[7], 0);
-//	if ( msgid )
-//		log_dinput_error("DirectInputDevice2", "CreateEffect()", msgid);
-//}
-//
-//void createEffect8()
-//{
-//	printf("CLEAN ME %s\n","createEffect8");
-//
-//	DIEFFECT v0; // [sp+20h] [bp-5Ch]@1
-//	LONG v2[2]; // [sp+68h] [bp-14h]@1
-//	uint32_t v3[2]; // [sp+70h] [bp-Ch]@1
-//	int msgid; // [sp+78h] [bp-4h]@1
-//
-//	v3[0] = 0;
-//	v3[1] = 4;
-//	v2[0] = 0;
-//	v2[1] = 0;
-//	v0.dwSize = 52;
-//	v0.dwSamplePeriod = 10000;
-//	v0.dwGain = 10000;
-//	v0.dwTriggerButton = -1;
-//	v0.dwTriggerRepeatInterval = 0;
-//	v0.cAxes = 2;
-//	v0.rgdwAxes = v3;
-//	v0.rglDirection = v2;
-//	winp_local.effects.eff8_DIRAMPFORCE.lStart = 10000;
-//	winp_local.effects.eff8_DIRAMPFORCE.lEnd = -10000;
-//	v0.dwFlags = 18;
-//	v0.dwDuration = 95000;
-//	v0.lpEnvelope = 0;
-//	v0.cbTypeSpecificParams = 8;
-//	v0.lpvTypeSpecificParams = &winp_local.effects.eff8_DIRAMPFORCE;
-//	msgid = winp_local.dinputDev2_2->CreateEffect(GUID_RampForce, &v0, &winp_local.effects.effects[8], 0);
-//	if ( msgid )
-//		log_dinput_error("DirectInputDevice2", "CreateEffect()", msgid);
-//}
-//
-//void createEffect9_10()
-//{
-//	printf("CLEAN ME %s\n","createEffect9_10");
-//
-//	DIEFFECT v0; // [sp+40h] [bp-5Ch]@1
-//	DIENVELOPE v1; // [sp+74h] [bp-28h]@1
-//	LONG v2[2]; // [sp+88h] [bp-14h]@1
-//	uint32_t v3[2]; // [sp+90h] [bp-Ch]@1
-//	int msgid; // [sp+98h] [bp-4h]@1
-//
-//	v1.dwSize = 20;
-//	v3[0] = 0;
-//	v3[1] = 4;
-//	v2[0] = 0;
-//	v2[1] = 0;
-//	v0.dwSize = 52;
-//	v0.dwSamplePeriod = 10000;
-//	v0.dwGain = 10000;
-//	v0.dwTriggerButton = -1;
-//	v0.dwTriggerRepeatInterval = 0;
-//	v0.cAxes = 2;
-//	v0.rgdwAxes = v3;
-//	v0.rglDirection = v2;
-//	v0.lpEnvelope = &v1;
-//	winp_local.effects.eff9_DIPERIODIC.dwMagnitude = 10000;
-//	winp_local.effects.eff9_DIPERIODIC.lOffset = 0;
-//	winp_local.effects.eff9_DIPERIODIC.dwPhase = 0;
-//	winp_local.effects.eff9_DIPERIODIC.dwPeriod = 71428;
-//	v1.dwAttackTime = 0;
-//	v1.dwAttackLevel = 10000;
-//	v1.dwFadeTime = 370000;
-//	v1.dwFadeLevel = 0;
-//	v0.dwFlags = 18;
-//	v0.dwDuration = 1000000;
-//	v0.cbTypeSpecificParams = 16;
-//	v0.lpvTypeSpecificParams = &winp_local.effects.eff9_DIPERIODIC;
-//	msgid = winp_local.dinputDev2_2->CreateEffect(GUID_Square, &v0, &winp_local.effects.effects[9], 0);
-//	if ( msgid )
-//		log_dinput_error("DirectInputDevice2", "CreateEffect()", msgid);
-//	v1.dwSize = 20;
-//	v3[0] = 0;
-//	v3[1] = 4;
-//	v2[0] = 0;
-//	v2[1] = 0;
-//	v0.dwSize = 52;
-//	v0.dwSamplePeriod = 10000;
-//	v0.dwGain = 10000;
-//	v0.dwTriggerButton = -1;
-//	v0.dwTriggerRepeatInterval = 0;
-//	v0.cAxes = 2;
-//	v0.rgdwAxes = v3;
-//	v0.rglDirection = v2;
-//	v0.lpEnvelope = &v1;
-//	winp_local.effects.eff10_DIPERIODIC.dwMagnitude = 10000;
-//	winp_local.effects.eff10_DIPERIODIC.lOffset = 0;
-//	winp_local.effects.eff10_DIPERIODIC.dwPhase = 0;
-//	winp_local.effects.eff10_DIPERIODIC.dwPeriod = 166666;
-//	v1.dwAttackTime = 0;
-//	v1.dwAttackLevel = 10000;
-//	v1.dwFadeTime = 630000;
-//	v1.dwFadeLevel = 0;
-//	v0.dwFlags = 18;
-//	v0.dwDuration = 1000000;
-//	v0.cbTypeSpecificParams = 16;
-//	v0.lpvTypeSpecificParams = &winp_local.effects.eff10_DIPERIODIC;
-//	msgid = winp_local.dinputDev2_2->CreateEffect(GUID_Sine, &v0, &winp_local.effects.effects[10], 0);
-//	if ( msgid )
-//		log_dinput_error("DirectInputDevice2", "CreateEffect()", msgid);
-//}
-//
-//int class_set_winp__sub0__sub1()
-//{
-//		if ( winp_local.dinputDev2_2 )
-//		{
-//			memset(&winp_local.effects, 0, sizeof(winp_effects));
-//			createEffect0();
-//			createEffect1();
-//			createEffect2();
-//			createEffect3();
-//			createEffect4();
-//			createEffect5();
-//			createEffect6();
-//			createEffect7();
-//			createEffect8();
-//			createEffect9_10();
-//		}
-//}
-
-
-
-
-
 size_t NC_STACK_winp::func0(IDVList *stak)
 {
     if ( !NC_STACK_iwimp::func0(stak) )
@@ -1310,522 +849,236 @@ void NC_STACK_winp::idev_func70(idev_query_arg *arg)
     }
 }
 
-
-//DIEFFECT stru_43D631 = {sizeof(DIEFFECT), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-//DIPERIODIC stru_43D665 = {0x10, 0, 0, 0};
-//DIEFFECT stru_43D675 = {sizeof(DIEFFECT), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-//DICONDITION stru_43D6A9[2] = {{0x30, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}};
-//DIEFFECT stru_43D6D9 = {sizeof(DIEFFECT), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-//DIRAMPFORCE stru_43D70D = {8, 0};
-//DIEFFECT stru_43D715 = {sizeof(DIEFFECT), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-//DIPERIODIC stru_43D749 = {0x10, 0, 0, 0};
-//DIENVELOPE stru_43D759 = {sizeof(DIENVELOPE), 0, 0, 0, 0};
-//
-//HRESULT sub_4404C4(IDirectInputEffect *effct)
-//{
-//	HRESULT hres = 0;
-//	if ( effct )
-//	{
-//		hres = effct->Start(1, 0);
-//		if ( hres == (HRESULT)0x80040203 )
-//		{
-//			effct->Download();
-//			hres = effct->Start(1, 0);
-//		}
-//	}
-//	return hres;
-//}
-//
-//void sub_440066(IDirectInputEffect *dinpEff, float a2, float a3)
-//{
-//	DIPERIODIC period;
-//	DIEFFECT dieff;
-//
-//	if ( dinpEff )
-//	{
-//		memcpy(&dieff, &stru_43D631, sizeof(DIEFFECT));
-//
-//		period.dwMagnitude = stru_43D665.dwMagnitude;
-//		period.lOffset = stru_43D665.lOffset;
-//		period.dwPhase = stru_43D665.dwPhase;
-//		period.dwPeriod = stru_43D665.dwPeriod;
-//
-//		dieff.dwSize = sizeof(DIEFFECT);
-//		dieff.cbTypeSpecificParams = sizeof(DIPERIODIC);
-//		dieff.lpvTypeSpecificParams = &period;
-//
-//		HRESULT hres = dinpEff->GetParameters(&dieff, DIEP_TYPESPECIFICPARAMS);
-//		if ( hres )
-//		{
-//			log_dinput_error("DirectInputEffect", "GetParameters()", hres);
-//		}
-//		else
-//		{
-//			period.dwMagnitude = a2;
-//			period.dwPeriod = a3;
-//			hres = dinpEff->SetParameters(&dieff, DIEP_TYPESPECIFICPARAMS);
-//			if ( hres )
-//				log_dinput_error("DirectInputEffect", "SetParameters()", hres);
-//		}
-//	}
-//}
-//
-//void winp_func71__sub0(int state, float p1, float p2)
-//{
-//	if ( winp_local.effects.effects[0] )
-//	{
-//		if ( state )
-//		{
-//			if ( state == 1 )
-//			{
-//				if ( winp_local.effects.effects[0] )
-//					winp_local.effects.effects[0]->Stop();
-//			}
-//			else
-//			{
-//				float v5 = p1 * 6000.0;
-//				float v6 = 1000000.0 / (p2 * 13.0 + 5.0);
-//				sub_440066(winp_local.effects.effects[0], v5, v6);
-//			}
-//		}
-//		else
-//		{
-//			if ( winp_local.effects.effects[0] )
-//				winp_local.effects.effects[0]->Stop();
-//			if ( winp_local.effects.effects[1] )
-//				winp_local.effects.effects[1]->Stop();
-//			if ( winp_local.effects.effects[2] )
-//				winp_local.effects.effects[2]->Stop();
-//
-//			HRESULT hres = sub_4404C4(winp_local.effects.effects[0]);
-//			if ( hres )
-//				log_dinput_error("DirectInputEffect", "winp_FFStart()", hres);
-//
-//			float a2 = p1 * 5000.0;
-//			float a3 = 1000000.0 / (p2 * 13.0 + 5.0);
-//			sub_440066(winp_local.effects.effects[0], a2, a3);
-//		}
-//	}
-//}
-//
-//void winp_func71__sub1(int state, float p1, float p2)
-//{
-//	if ( winp_local.effects.effects[1] )
-//	{
-//		if ( state )
-//		{
-//			if ( state == 1 )
-//			{
-//				if ( winp_local.effects.effects[1] )
-//					winp_local.effects.effects[1]->Stop();
-//			}
-//			else
-//			{
-//				float v5 = p1 * 6000.0;
-//				float v6 = 1000000.0 / (p2 * 12.0 + 14.0);
-//				sub_440066(winp_local.effects.effects[1], v5, v6);
-//			}
-//		}
-//		else
-//		{
-//			if ( winp_local.effects.effects[0] )
-//				winp_local.effects.effects[0]->Stop();
-//			if ( winp_local.effects.effects[1] )
-//				winp_local.effects.effects[1]->Stop();
-//			if ( winp_local.effects.effects[2] )
-//				winp_local.effects.effects[2]->Stop();
-//
-//			HRESULT errid = sub_4404C4(winp_local.effects.effects[1]);
-//			if ( errid )
-//				log_dinput_error("DirectInputEffect", "winp_FFStart()", errid);
-//
-//			float a2 = p1 * 6000.0;
-//			float a3 = 1000000.0 / (p2 * 12.0 + 14.0);
-//			sub_440066(winp_local.effects.effects[1], a2, a3);
-//		}
-//	}
-//}
-//
-//void winp_func71__sub2(int state, float p1, float p2)
-//{
-//	if ( winp_local.effects.effects[2] )
-//	{
-//		if ( state )
-//		{
-//			if ( state == 1 )
-//			{
-//				if ( winp_local.effects.effects[2] )
-//					winp_local.effects.effects[2]->Stop();
-//			}
-//			else
-//			{
-//				float v5 = p1 * 8000.0;
-//				float v6 = 1000000.0 / (p2 * 12.0 + 6.0);
-//				sub_440066(winp_local.effects.effects[2], v5, v6);
-//			}
-//		}
-//		else
-//		{
-//			if ( winp_local.effects.effects[0] )
-//				winp_local.effects.effects[0]->Stop();
-//			if ( winp_local.effects.effects[1] )
-//				winp_local.effects.effects[1]->Stop();
-//			if ( winp_local.effects.effects[2] )
-//				winp_local.effects.effects[2]->Stop();
-//
-//			HRESULT hres = sub_4404C4(winp_local.effects.effects[2]);
-//			if ( hres )
-//				log_dinput_error("DirectInputEffect", "winp_FFStart()", hres);
-//
-//			float a2 = p1 * 8000.0;
-//			float a3 = 1000000.0 / (p2 * 12.0 + 6.0);
-//			sub_440066(winp_local.effects.effects[2], a2, a3);
-//		}
-//	}
-//}
-//
-//void winp_func71__sub3__sub0(IDirectInputEffect *effct, float a2)
-//{
-//	DICONDITION v6[2];
-//	DIEFFECT v7;
-//
-//	if ( effct )
-//	{
-//		memcpy(&v7, &stru_43D675, sizeof(DIEFFECT));
-//		memcpy(v6, stru_43D6A9, sizeof(DICONDITION) * 2);
-//		v7.dwSize = sizeof(DIEFFECT);
-//		v7.cbTypeSpecificParams = sizeof(DICONDITION) * 2;
-//		v7.lpvTypeSpecificParams = v6;
-//
-//		HRESULT msgid = effct->GetParameters(&v7, DIEP_TYPESPECIFICPARAMS);
-//		if ( msgid )
-//		{
-//			log_dinput_error("DirectInputEffect", "GetParameters()", msgid);
-//		}
-//		else
-//		{
-//			v6[0].lPositiveCoefficient = a2;
-//			v6[0].lNegativeCoefficient = a2;
-//			v6[1].lPositiveCoefficient = a2;
-//			v6[1].lNegativeCoefficient = a2;
-//			msgid = effct->SetParameters(&v7, DIEP_TYPESPECIFICPARAMS);
-//			if ( msgid )
-//				log_dinput_error("DirectInputEffect", "SetParameters()", msgid);
-//		}
-//	}
-//}
-//
-//void winp_func71__sub3(int state, float p1)
-//{
-//	if ( winp_local.effects.effects[3] )
-//	{
-//		if ( state )
-//		{
-//			if ( state == 1 )
-//			{
-//				if ( winp_local.effects.effects[3] )
-//					winp_local.effects.effects[3]->Stop();
-//			}
-//		}
-//		else
-//		{
-//			if ( winp_local.effects.effects[3] )
-//				winp_local.effects.effects[3]->Stop();
-//
-//			float v2 = p1 * 10000.0;
-//			winp_func71__sub3__sub0(winp_local.effects.effects[3], v2);
-//
-//			HRESULT msgid = sub_4404C4(winp_local.effects.effects[3]);
-//			if ( msgid )
-//				log_dinput_error("DirectInputEffect", "winp_FFStart()", msgid);
-//		}
-//	}
-//}
-//
-//void winp_func71__sub4(int state)
-//{
-//	if ( winp_local.effects.effects[4] )
-//	{
-//		if ( state )
-//		{
-//			if ( state == 1 )
-//			{
-//				if ( winp_local.effects.effects[4] )
-//					winp_local.effects.effects[4]->Stop();
-//			}
-//		}
-//		else
-//		{
-//			if ( winp_local.effects.effects[4] )
-//				winp_local.effects.effects[4]->Stop();
-//
-//			HRESULT msgid = sub_4404C4(winp_local.effects.effects[4]);
-//			if ( msgid )
-//				log_dinput_error("DirectInputEffect", "winp_FFStart()", msgid);
-//		}
-//	}
-//}
-//
-//void winp_func71__sub5(int state)
-//{
-//	if ( winp_local.effects.effects[5] )
-//	{
-//		if ( state )
-//		{
-//			if ( state == 1 )
-//			{
-//				if ( winp_local.effects.effects[5] )
-//					winp_local.effects.effects[5]->Stop();
-//			}
-//		}
-//		else
-//		{
-//			if ( winp_local.effects.effects[5] )
-//				winp_local.effects.effects[5]->Stop();
-//			if ( winp_local.effects.effects[6] )
-//				winp_local.effects.effects[6]->Stop();
-//			if ( winp_local.effects.effects[7] )
-//				winp_local.effects.effects[7]->Stop();
-//
-//			HRESULT msgid = sub_4404C4(winp_local.effects.effects[5]);
-//			if ( msgid )
-//				log_dinput_error("DirectInputEffect", "winp_FFStart()", msgid);
-//		}
-//	}
-//}
-//
-//void winp_func71__sub6(int state)
-//{
-//	if ( winp_local.effects.effects[6] )
-//	{
-//		if ( state )
-//		{
-//			if ( state == 1 )
-//			{
-//				if ( winp_local.effects.effects[6] )
-//					winp_local.effects.effects[6]->Stop();
-//			}
-//		}
-//		else
-//		{
-//			if ( winp_local.effects.effects[5] )
-//				winp_local.effects.effects[5]->Stop();
-//			if ( winp_local.effects.effects[6] )
-//				winp_local.effects.effects[6]->Stop();
-//			if ( winp_local.effects.effects[7] )
-//				winp_local.effects.effects[7]->Stop();
-//
-//			HRESULT msgid = sub_4404C4(winp_local.effects.effects[6]);
-//			if ( msgid )
-//				log_dinput_error("DirectInputEffect", "winp_FFStart()", msgid);
-//		}
-//	}
-//}
-//
-//void winp_func71__sub7(int state)
-//{
-//	if ( winp_local.effects.effects[7] )
-//	{
-//		if ( state )
-//		{
-//			if ( state == 1 )
-//			{
-//				if ( winp_local.effects.effects[7] )
-//					winp_local.effects.effects[7]->Stop();
-//			}
-//		}
-//		else
-//		{
-//			if ( winp_local.effects.effects[5] )
-//				winp_local.effects.effects[5]->Stop();
-//			if ( winp_local.effects.effects[6] )
-//				winp_local.effects.effects[6]->Stop();
-//			if ( winp_local.effects.effects[7] )
-//				winp_local.effects.effects[7]->Stop();
-//
-//			HRESULT msgid = sub_4404C4(winp_local.effects.effects[7]);
-//			if ( msgid )
-//				log_dinput_error("DirectInputEffect", "winp_FFStart()", msgid);
-//		}
-//	}
-//}
-//
-//void winp_func71__sub8__sub0(IDirectInputEffect *effct, float a2, float a3, float a4)
-//{
-//	LONG v8[2];
-//	DIRAMPFORCE v9;
-//	DIEFFECT v10;
-//
-//	if ( effct )
-//	{
-//		memcpy(&v10, &stru_43D6D9, sizeof(DIEFFECT));
-//
-//		v9.lStart = stru_43D70D.lStart;
-//		v9.lEnd = stru_43D70D.lEnd;
-//		v10.cbTypeSpecificParams = sizeof(DIRAMPFORCE);
-//		v10.lpvTypeSpecificParams = &v9;
-//
-//		HRESULT msgid = effct->GetParameters(&v10, DIEP_TYPESPECIFICPARAMS);
-//		if ( msgid )
-//		{
-//			log_dinput_error("DirectInputEffect", "GetParameters()", msgid);
-//		}
-//		else
-//		{
-//			v9.lStart = a2 * 10000.0;
-//			v9.lEnd = a2 * -10000.0;
-//			v10.dwFlags = 18;
-//			v10.cAxes = 2;
-//			v10.rgdwAxes = 0;
-//			v10.rglDirection = v8;
-//			v8[0] = a3 * 1000.0;
-//			v8[1] = a4 * 1000.0;
-//
-//			msgid = effct->SetParameters(&v10, DIEP_TYPESPECIFICPARAMS | DIEP_DIRECTION);
-//			if ( msgid )
-//				log_dinput_error("DirectInputEffect", "SetParameters()", msgid);
-//		}
-//	}
-//}
-//
-//void winp_func71__sub8(int state, float a2, float a3, float a4)
-//{
-//	if ( winp_local.effects.effects[8] )
-//	{
-//		if ( state )
-//		{
-//			if ( state == 1 )
-//			{
-//				if ( winp_local.effects.effects[8] )
-//					winp_local.effects.effects[8]->Stop();
-//			}
-//		}
-//		else
-//		{
-//			if ( winp_local.effects.effects[8] )
-//				winp_local.effects.effects[8]->Stop();
-//
-//			winp_func71__sub8__sub0(winp_local.effects.effects[8], a2, a3, a4);
-//
-//			HRESULT msgid = sub_4404C4(winp_local.effects.effects[8]);
-//			if ( msgid )
-//				log_dinput_error("DirectInputEffect", "winp_FFStart()", msgid);
-//		}
-//	}
-//}
-//
-//void winp_func71__sub9__sub0(float a1, float a2, float a3, float a4)
-//{
-//	LONG v10[2];
-//	DIENVELOPE v12;
-//	DIPERIODIC v13;
-//	DIEFFECT v14;
-//	IDirectInputEffect *effct9 = winp_local.effects.effects[9];
-//	IDirectInputEffect *effct10 = winp_local.effects.effects[10];
-//
-//	if ( effct9 && effct10 )
-//	{
-//		memcpy(&v14, &stru_43D715, sizeof(DIEFFECT));
-//		v13.dwMagnitude = stru_43D749.dwMagnitude;
-//		v13.lOffset = stru_43D749.lOffset;
-//		v13.dwPhase = stru_43D749.dwPhase;
-//		v13.dwPeriod = stru_43D749.dwPeriod;
-//
-//		v12.dwSize = stru_43D759.dwSize;
-//		v12.dwAttackLevel = stru_43D759.dwAttackLevel;
-//		v12.dwAttackTime = stru_43D759.dwAttackTime;
-//		v12.dwFadeLevel = stru_43D759.dwFadeLevel;
-//		v12.dwFadeTime = stru_43D759.dwFadeTime;
-//
-//		v14.cbTypeSpecificParams = sizeof(DIPERIODIC);
-//		v14.lpvTypeSpecificParams = &v13;
-//
-//		HRESULT msgid = effct9->GetParameters(&v14, DIEP_TYPESPECIFICPARAMS);
-//		if ( !msgid )
-//		{
-//			v13.dwMagnitude = a1 * 10000.0;
-//			v13.lOffset = 0;
-//			v13.dwPhase = 0;
-//			v13.dwPeriod = 71428;
-//
-//			v12.dwAttackTime = 0;
-//			v12.dwAttackLevel = a1 * 10000.0;
-//			v12.dwFadeTime = a2 * 0.37 * 1000.0;
-//			v12.dwFadeLevel = 0;
-//
-//			v14.dwFlags = 18;
-//			v14.dwDuration = a2 * 0.63 * 1000.0;
-//			v14.cAxes = 2;
-//			v14.rgdwAxes = 0;
-//			v14.lpEnvelope = &v12;
-//			v14.rglDirection = v10;
-//
-//			v10[0] = a3 * 1000.0;
-//			v10[1] = a4 * 1000.0;
-//
-//			msgid = effct9->SetParameters(&v14, DIEP_TYPESPECIFICPARAMS | DIEP_ENVELOPE | DIEP_DIRECTION | DIEP_DURATION);
-//			if ( msgid )
-//				log_dinput_error("DirectInputEffect", "SetParameters(Shake1)", msgid);
-//		}
-//	}
-//}
-//
-//
-//void winp_func71__sub9(int state, float a2, float a3, float a4, float a5)
-//{
-//	if ( winp_local.effects.effects[9] )
-//	{
-//		if ( winp_local.effects.effects[10] )
-//		{
-//			if ( state )
-//			{
-//				if ( state == 1 )
-//				{
-//					if ( winp_local.effects.effects[9] )
-//						winp_local.effects.effects[9]->Stop();
-//				}
-//			}
-//			else
-//			{
-//				if ( winp_local.effects.effects[9] )
-//					winp_local.effects.effects[9]->Stop();
-//				if ( winp_local.effects.effects[10] )
-//					winp_local.effects.effects[10]->Stop();
-//
-//				winp_func71__sub9__sub0(a2, a3, a4, a5);
-//
-//				HRESULT msgid = sub_4404C4(winp_local.effects.effects[9]);
-//				if ( msgid )
-//					log_dinput_error("DirectInputEffect", "winp_FFStart(Shake1)", msgid);
-//			}
-//		}
-//	}
-//}
-
-void winp_func71__sub10()
+void NC_STACK_winp::FFDOTankEngine(int state, float p1, float p2)
 {
-//	if ( winp_local.effects.effects[0] )
-//		winp_local.effects.effects[0]->Stop();
-//	if ( winp_local.effects.effects[1] )
-//		winp_local.effects.effects[1]->Stop();
-//	if ( winp_local.effects.effects[2] )
-//		winp_local.effects.effects[2]->Stop();
-//	if ( winp_local.effects.effects[3] )
-//		winp_local.effects.effects[3]->Stop();
-//	if ( winp_local.effects.effects[4] )
-//		winp_local.effects.effects[4]->Stop();
-//	if ( winp_local.effects.effects[5] )
-//		winp_local.effects.effects[5]->Stop();
-//	if ( winp_local.effects.effects[6] )
-//		winp_local.effects.effects[6]->Stop();
-//	if ( winp_local.effects.effects[7] )
-//		winp_local.effects.effects[7]->Stop();
-//	if ( winp_local.effects.effects[8] )
-//		winp_local.effects.effects[8]->Stop();
-//	if ( winp_local.effects.effects[9] )
-//		winp_local.effects.effects[9]->Stop();
-//	if ( winp_local.effects.effects[10] )
-//		winp_local.effects.effects[10]->Stop();
+    if ( ffTankEngine.OK() )
+    {
+        if ( state == FF_STATE_START )
+        {
+            ffTankEngine.Stop();
+            ffJetEngine.Stop();
+            ffCopterEngine.Stop();
+
+            ffTankEngine.Run();
+
+            float a2 = p1 * 16383.0; // 5000
+            float a3 = 1000.0 / (p2 * 13.0 + 5.0);
+            ffTankEngine.Update(a2, a3);
+        }
+        else if ( state == FF_STATE_STOP )
+        {
+            ffTankEngine.Stop();
+        }
+        else if ( state == FF_STATE_UPDATE )
+        {
+            float v5 = p1 * 19660.0; // 6000
+            float v6 = 1000.0 / (p2 * 13.0 + 5.0);
+            ffTankEngine.Update(v5, v6);
+        }
+    }
+}
+
+void NC_STACK_winp::FFDOJetEngine(int state, float p1, float p2)
+{
+    if ( ffJetEngine.OK() )
+    {
+        if ( state == FF_STATE_START)
+        {
+            ffTankEngine.Stop();
+            ffJetEngine.Stop();
+            ffCopterEngine.Stop();
+
+            ffJetEngine.Run();
+
+            float a2 = p1 * 19660.0; // 6000
+            float a3 = 1000.0 / (p2 * 12.0 + 14.0);
+            ffJetEngine.Update(a2, a3);
+        }
+        else if ( state == FF_STATE_STOP )
+        {
+            ffJetEngine.Stop();
+        }
+        else if ( state == FF_STATE_UPDATE )
+        {
+            float v5 = p1 * 19660.0; // 6000
+            float v6 = 1000.0 / (p2 * 12.0 + 14.0);
+            ffJetEngine.Update(v5, v6);
+        }
+    }
+}
+
+void NC_STACK_winp::FFDOHeliEngine(int state, float p1, float p2)
+{
+    if ( ffCopterEngine.OK() )
+    {
+        if ( state == FF_STATE_START )
+        {
+            ffTankEngine.Stop();
+            ffJetEngine.Stop();
+            ffCopterEngine.Stop();
+
+            ffCopterEngine.Run();
+
+            float a2 = p1 * 26213.6; //8000.0;
+            float a3 = 1000.0 / (p2 * 12.0 + 6.0);
+            ffCopterEngine.Update(a2, a3);
+        }
+        else if ( state == FF_STATE_STOP )
+        {
+            ffCopterEngine.Stop();
+        }
+        else if ( state == FF_STATE_UPDATE )
+        {
+            float v5 = p1 * 26213.6; //8000.0;
+            float v6 = 1000.0 / (p2 * 12.0 + 6.0);
+            ffCopterEngine.Update(v5, v6);
+        }
+    }
+}
+
+void NC_STACK_winp::FFDORotDamper(int state, float p1)
+{
+    if ( ffRotDamper.OK() )
+    {
+        if ( state == FF_STATE_START )
+        {
+            ffRotDamper.Stop();
+
+            ffRotDamper.Update(p1 * 32767.0);
+
+            ffRotDamper.Run();
+        }
+        else if ( state == FF_STATE_STOP )
+        {
+            ffRotDamper.Stop();
+        }
+    }
+}
+
+void NC_STACK_winp::FFDOMiniGun(int state)
+{
+    if ( ffMGun.OK() )
+    {
+        if ( state == FF_STATE_START )
+        {
+            ffMGun.Stop();
+
+            ffMGun.Run();
+        }
+        else if ( state == FF_STATE_STOP )
+        {
+            ffMGun.Stop();
+        }
+    }
+}
+
+void NC_STACK_winp::FFDOMissileFire(int state)
+{
+    if ( ffMissFire.OK() )
+    {
+        if ( state == FF_STATE_START )
+        {
+            ffMissFire.Stop();
+            ffGrenadeFire.Stop();
+            ffBombFire.Stop();
+
+            ffMissFire.Run();
+        }
+        else if ( state == FF_STATE_STOP )
+        {
+            ffMissFire.Stop();
+        }
+    }
+}
+
+void NC_STACK_winp::FFDOGrenadeFire(int state)
+{
+    if ( ffGrenadeFire.OK() )
+    {
+        if ( state == FF_STATE_START )
+        {
+            ffMissFire.Stop();
+            ffGrenadeFire.Stop();
+            ffBombFire.Stop();
+
+            ffGrenadeFire.Run();
+        }
+        else if ( state == FF_STATE_STOP )
+        {
+            ffGrenadeFire.Stop();
+        }
+    }
+}
+
+void NC_STACK_winp::FFDOBombFire(int state)
+{
+    if ( ffBombFire.OK() )
+    {
+        if ( state == FF_STATE_START )
+        {
+            ffMissFire.Stop();
+            ffGrenadeFire.Stop();
+            ffBombFire.Stop();
+
+            ffBombFire.Run();
+        }
+        else if ( state == FF_STATE_STOP )
+        {
+            ffBombFire.Stop();
+        }
+    }
+}
+
+void NC_STACK_winp::FFDOCollision(int state, float a2, float a3, float a4)
+{
+    if ( ffCollide.OK() )
+    {
+        if ( state == FF_STATE_START )
+        {
+            ffCollide.Stop();
+
+            ffCollide.Update(a2, a3, a4);
+
+            ffCollide.Run();
+        }
+        else if ( state == FF_STATE_STOP )
+        {
+            ffCollide.Stop();
+        }
+    }
+}
+
+void NC_STACK_winp::FFDOShake(int state, float a2, float a3, float a4, float a5)
+{
+    if ( ffShake.OK() )
+    {
+        if ( state == FF_STATE_START )
+        {
+            ffShake.Stop();
+
+            ffShake.Update(a2, a3, a4, a5);
+
+            ffShake.Run();
+        }
+        else if ( state == FF_STATE_STOP )
+        {
+            ffShake.Stop();
+        }
+    }
+}
+
+void NC_STACK_winp::FFstopAll()
+{
+    ffTankEngine.Stop();
+    ffJetEngine.Stop();
+    ffCopterEngine.Stop();
+    ffRotDamper.Stop();
+    ffMGun.Stop();
+    ffMissFire.Stop();
+    ffGrenadeFire.Stop();
+    ffBombFire.Stop();
+    ffCollide.Stop();
+    ffShake.Stop();
 }
 
 
@@ -1833,39 +1086,39 @@ void NC_STACK_winp::idev_func71(winp_71arg *arg)
 {
     switch ( arg->effID )
     {
-//	case 1:
-//		winp_func71__sub0(arg->state, arg->p1, arg->p2);
-//		break;
-//	case 2:
-//		winp_func71__sub1(arg->state, arg->p1, arg->p2);
-//		break;
-//	case 3:
-//		winp_func71__sub2(arg->state, arg->p1, arg->p2);
-//		break;
-//	case 4:
-//		winp_func71__sub3(arg->state, arg->p1);
-//		break;
-//	case 5:
-//		winp_func71__sub4(arg->state);
-//		break;
-//	case 6:
-//		winp_func71__sub5(arg->state);
-//		break;
-//	case 7:
-//		winp_func71__sub6(arg->state);
-//		break;
-//	case 8:
-//		winp_func71__sub7(arg->state);
-//		break;
-//	case 9:
-//		winp_func71__sub8(arg->state, arg->p1, arg->p3, arg->p4);
-//		break;
-//	case 10:
-//		winp_func71__sub9(arg->state, arg->p1, arg->p2, arg->p3, arg->p4);
-//		break;
-//	case 0:
-//		winp_func71__sub10();
-//		break;
+    case FF_TYPE_TANKENGINE:
+        FFDOTankEngine(arg->state, arg->p1, arg->p2);
+        break;
+    case FF_TYPE_JETENGINE:
+        FFDOJetEngine(arg->state, arg->p1, arg->p2);
+        break;
+    case FF_TYPE_HELIENGINE:
+        FFDOHeliEngine(arg->state, arg->p1, arg->p2);
+        break;
+    case FF_TYPE_ROTDAMPER:
+        FFDORotDamper(arg->state, arg->p1);
+        break;
+    case FF_TYPE_MINIGUN:
+        FFDOMiniGun(arg->state);
+        break;
+    case FF_TYPE_MISSILEFIRE:
+        FFDOMissileFire(arg->state);
+        break;
+    case FF_TYPE_GRENADEFIRE:
+        FFDOGrenadeFire(arg->state);
+        break;
+    case FF_TYPE_BOMBFIRE:
+        FFDOBombFire(arg->state);
+        break;
+    case FF_TYPE_COLLISION:
+        FFDOCollision(arg->state, arg->p1, arg->p3, arg->p4);
+        break;
+    case FF_TYPE_SHAKE:
+        FFDOShake(arg->state, arg->p1, arg->p2, arg->p3, arg->p4);
+        break;
+    case FF_TYPE_ALL:
+        FFstopAll();
+        break;
     default:
         return;
     }
@@ -2149,12 +1402,12 @@ void NC_STACK_winp::initfirst()
                 sdljoy = SDL_JoystickOpen(i);
                 joydevid = i;
             }
-
         }
 
         if ( !sdljoy )
             sdljoy = SDL_JoystickOpen(0);
 
+        sdlHaptic = SDL_HapticOpenFromJoystick(sdljoy);
     }
     else
     {
@@ -2179,6 +1432,20 @@ void NC_STACK_winp::initfirst()
     SDLWRAP_addHandler(InputWatch);
 
     keybState.charBuffCnt = 0;
+
+    if (sdlHaptic)
+    {
+        ffTankEngine.Bind(sdlHaptic);
+        ffJetEngine.Bind(sdlHaptic);
+        ffCopterEngine.Bind(sdlHaptic);
+        ffRotDamper.Bind(sdlHaptic);
+        ffMGun.Bind(sdlHaptic);
+        ffMissFire.Bind(sdlHaptic);
+        ffGrenadeFire.Bind(sdlHaptic);
+        ffBombFire.Bind(sdlHaptic);
+        ffCollide.Bind(sdlHaptic);
+        ffShake.Bind(sdlHaptic);
+    }
 }
 
 size_t NC_STACK_winp::compatcall(int method_id, void *data)

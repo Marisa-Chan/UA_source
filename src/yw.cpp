@@ -126,7 +126,7 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     field_1624 = 0;
     field_1628 = 0;
     field_162A = 0;
-    field_162c = 0;
+    GUI_OK = 0;
 
     memset(tiles, 0, sizeof(tiles));
 
@@ -292,7 +292,7 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     field_7566 = 0;
     field_756A = 0;
     field_756E = 0;
-
+    field_7572 = NULL;
     windp = NULL;
     netUpdateTime = 0;
     isNetGame = 0;
@@ -1224,7 +1224,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                 yw->p_1_grp[0][5] = profiler_end(v62);
             }
 
-            ypaworld_func64__sub11(yw); // Do vibrate joystick
+            FFeedback_Update(); // Do vibrate joystick
 
             sb_0x447720(yw, arg->field_8); // Snaps/ start/stop recording
 
@@ -2862,7 +2862,7 @@ void NC_STACK_ypaworld::ypaworld_func151(IDVPair *arg)
 
     SFXEngine::SFXe.setMasterVolume(yw->audio_volume);
 
-    ypaworld_func151__sub2(this, yw);
+    GUI_Close();
 
     if ( yw->sky_loaded_base )
     {
@@ -6777,7 +6777,7 @@ size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
     int ok = 0;
     mapProto mapp;
 
-    if ( sb_0x44ca90(yw, &mapp, arg->lvlID, arg->field_4) )
+    if ( LVLoaderCommon(mapp, arg->lvlID, arg->field_4) )
     {
         if ( cells_mark_type(yw, mapp.typ) )
         {
@@ -7684,7 +7684,7 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
 
     mapProto mapp;
 
-    if ( sb_0x44ca90(yw, &mapp, lvlnum, 0) )
+    if ( LVLoaderCommon(mapp, lvlnum, 0) )
     {
         if ( cells_mark_type(yw, mapp.typ) )
         {
@@ -8404,99 +8404,100 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
 
 void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
-    if ( !yw->field_739A || (!(yw->field_73CE & 4) && !(yw->field_73CE & 8)) )
+    if ( ypaworld.field_739A )
     {
-        winp_71arg arg71;
+        if ( ypaworld.field_73CE & (4 | 8) )
+            return;
+    }
 
-        switch ( arg->effects_type )
-        {
-        case 0:
-            arg71.state = 0;
-            arg71.p4 = 0;
-            arg71.p3 = 0;
-            arg71.p2 = 0;
-            arg71.p1 = 0;
-            arg71.effID = 6;
+    winp_71arg arg71;
 
-            if ( yw->input_class )
-                yw->input_class->wimp_ForceFeedback(&arg71);
+    switch ( arg->effects_type )
+    {
+    case 0:
+        arg71.state = NC_STACK_winp::FF_STATE_START;
+        arg71.p4 = 0;
+        arg71.p3 = 0;
+        arg71.p2 = 0;
+        arg71.p1 = 0;
+        arg71.effID = NC_STACK_winp::FF_TYPE_MISSILEFIRE;
 
-            break;
+        if ( ypaworld.input_class )
+            ypaworld.input_class->wimp_ForceFeedback(&arg71);
 
-        case 1:
-            arg71.state = 0;
-            arg71.p4 = 0;
-            arg71.p3 = 0;
-            arg71.p2 = 0;
-            arg71.p1 = 0;
-            arg71.effID = 7;
-
-            if ( yw->input_class )
-                yw->input_class->wimp_ForceFeedback(&arg71);
-
-            break;
-
-        case 2:
-            arg71.state = 0;
-            arg71.p4 = 0;
-            arg71.p3 = 0;
-            arg71.p2 = 0;
-            arg71.p1 = 0;
-            arg71.effID = 8;
-
-            if ( yw->input_class )
-                yw->input_class->wimp_ForceFeedback(&arg71);
-
-            break;
-
-        case 3:
-            arg71.state = 0;
-            arg71.p4 = 0;
-            arg71.p3 = 0;
-            arg71.p2 = 0;
-            arg71.p1 = 0;
-            arg71.effID = 5;
-
-            if ( yw->input_class )
-                yw->input_class->wimp_ForceFeedback(&arg71);
-
-            break;
-
-        case 4:
-            arg71.state = 1;
-            arg71.p4 = 0;
-            arg71.p3 = 0;
-            arg71.p2 = 0;
-            arg71.p1 = 0;
-            arg71.effID = 5;
-
-            if ( yw->input_class )
-                yw->input_class->wimp_ForceFeedback(&arg71);
-
-            break;
-
-        case 5:
-        {
-            __NC_STACK_ypabact *bct = yw->field_1b84;
-
-            arg71.effID = 9;
-            arg71.state = 0;
-            arg71.p1 = arg->field_4;
-            arg71.p2 = 0;
-            arg71.p3 = (arg->field_C - bct->position.z) * bct->rotation.m02 + (arg->field_8 - bct->position.x) * bct->rotation.m00;
-            arg71.p4 = -((arg->field_8 - bct->position.x) * bct->rotation.m20 + (arg->field_C - bct->position.z) * bct->rotation.m22);
-
-            if ( yw->input_class )
-                yw->input_class->wimp_ForceFeedback(&arg71);
-
-        }
         break;
 
-        default:
-            break;
-        }
+    case 1:
+        arg71.state = NC_STACK_winp::FF_STATE_START;
+        arg71.p4 = 0;
+        arg71.p3 = 0;
+        arg71.p2 = 0;
+        arg71.p1 = 0;
+        arg71.effID = NC_STACK_winp::FF_TYPE_GRENADEFIRE;
+
+        if ( ypaworld.input_class )
+            ypaworld.input_class->wimp_ForceFeedback(&arg71);
+
+        break;
+
+    case 2:
+        arg71.state = NC_STACK_winp::FF_STATE_START;
+        arg71.p4 = 0;
+        arg71.p3 = 0;
+        arg71.p2 = 0;
+        arg71.p1 = 0;
+        arg71.effID = NC_STACK_winp::FF_TYPE_BOMBFIRE;
+
+        if ( ypaworld.input_class )
+            ypaworld.input_class->wimp_ForceFeedback(&arg71);
+
+        break;
+
+    case 3:
+        arg71.state = NC_STACK_winp::FF_STATE_START;
+        arg71.p4 = 0;
+        arg71.p3 = 0;
+        arg71.p2 = 0;
+        arg71.p1 = 0;
+        arg71.effID = NC_STACK_winp::FF_TYPE_MINIGUN;
+
+        if ( ypaworld.input_class )
+            ypaworld.input_class->wimp_ForceFeedback(&arg71);
+
+        break;
+
+    case 4:
+        arg71.state = NC_STACK_winp::FF_STATE_STOP;
+        arg71.p4 = 0;
+        arg71.p3 = 0;
+        arg71.p2 = 0;
+        arg71.p1 = 0;
+        arg71.effID = NC_STACK_winp::FF_TYPE_MINIGUN;
+
+        if ( ypaworld.input_class )
+            ypaworld.input_class->wimp_ForceFeedback(&arg71);
+
+        break;
+
+    case 5:
+    {
+        __NC_STACK_ypabact *bct = ypaworld.field_1b84;
+
+        arg71.effID = NC_STACK_winp::FF_TYPE_COLLISION;
+        arg71.state = NC_STACK_winp::FF_STATE_START;
+        arg71.p1 = arg->field_4;
+        arg71.p2 = 0;
+        arg71.p3 = (arg->field_C - bct->position.z) * bct->rotation.m02 + (arg->field_8 - bct->position.x) * bct->rotation.m00;
+        arg71.p4 = -((arg->field_8 - bct->position.x) * bct->rotation.m20 + (arg->field_C - bct->position.z) * bct->rotation.m22);
+
+        if ( ypaworld.input_class )
+            ypaworld.input_class->wimp_ForceFeedback(&arg71);
+
+    }
+    break;
+
+    default:
+        break;
     }
 }
 
@@ -8680,7 +8681,7 @@ void NC_STACK_ypaworld::setYW_userVehicle(NC_STACK_ypabact *bact)
             ypaworld.field_7882 = 1;
         }
 
-        ypaworld_func2__sub0__sub0(&ypaworld);
+        FFeedback_VehicleChanged();
 
         if ( oldpBact )
             ypaworld_func2__sub0__sub1(&ypaworld, oldpBact, ypaworld.field_1b84);

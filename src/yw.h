@@ -1005,7 +1005,7 @@ struct _NC_STACK_ypaworld
     int field_1624;
     int16_t field_1628;
     int16_t field_162A;
-    int field_162c;
+    int GUI_OK;
     tiles_stru *tiles[92];
     nlist field_17a0;
     int16_t screen_width;
@@ -1154,9 +1154,9 @@ struct _NC_STACK_ypaworld
     NC_STACK_input *input_class;
     int field_7562;
     int field_7566;
-    int field_756A;
-    int field_756E;
-
+    float field_756A;
+    float field_756E;
+    userdata_sample_info *field_7572;
     NC_STACK_windp *windp;
     uint32_t netUpdateTime;
     int isNetGame;
@@ -1965,6 +1965,16 @@ public:
     virtual NC_STACK_windp *getYW_pNET();
     virtual int getYW_invulnerable();
 
+protected:
+    int LVLoaderCommon(mapProto &mapp, int levelID, int a5);
+    void FFeedback_Init();
+    void FFeedback_StopAll();
+    void FFeedback_VehicleChanged();
+    void FFeedback_Update();
+
+    void GUI_Close();
+
+public:
     //Data
     static const NewClassDescr description;
 

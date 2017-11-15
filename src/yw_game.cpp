@@ -671,95 +671,95 @@ int sb_0x44ca90__sub8(_NC_STACK_ypaworld *yw)
     return 1;
 }
 
-int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
+int NC_STACK_ypaworld::LVLoaderCommon(mapProto &mapp, int levelID, int a5)
 {
     int ok = 0;
 
-    memset(mapp, 0, sizeof(mapProto));
+    memset(&mapp, 0, sizeof(mapProto));
 
-    memset(yw->ingamePlayerStatus, 0, sizeof(player_status) * 8);
+    memset(ypaworld.ingamePlayerStatus, 0, sizeof(player_status) * 8);
 
-    yw->timeStamp = 0;
-    yw->field_1a04 = 0;
-    yw->field_1a08 = 0;
-    yw->field_1a00 = 0;
-    yw->field_1a1c = 0;
-    yw->field_161c = 0;
+    ypaworld.timeStamp = 0;
+    ypaworld.field_1a04 = 0;
+    ypaworld.field_1a08 = 0;
+    ypaworld.field_1a00 = 0;
+    ypaworld.field_1a1c = 0;
+    ypaworld.field_161c = 0;
 
-    yw->field_2d90->levelID = levelID;
-    yw->field_2d90->field_48 = a5;
-    yw->field_2d90->field_40 = 0;
-    yw->field_2d90->gate_count = 0;
-    yw->field_2d90->supetItems_count = 0;
-    yw->field_2d90->ownerMap__has_vehicles = 0;
-    yw->field_2d90->field_60 = 0;
+    ypaworld.field_2d90->levelID = levelID;
+    ypaworld.field_2d90->field_48 = a5;
+    ypaworld.field_2d90->field_40 = 0;
+    ypaworld.field_2d90->gate_count = 0;
+    ypaworld.field_2d90->supetItems_count = 0;
+    ypaworld.field_2d90->ownerMap__has_vehicles = 0;
+    ypaworld.field_2d90->field_60 = 0;
 
-    yw->field_1a60 = 0;
-    yw->field_1a98 = NULL;
-    yw->field_1aac = 0;
-    yw->current_bact = NULL;
-    yw->field_1b78 = NULL;
-    yw->field_1b7c = NULL;
-    yw->field_1b80 = NULL;
-    yw->field_1b84 = NULL;
-    yw->field_1b88 = NULL;
-    yw->field_1ab0 = 0;
-    yw->field_160c = 0;
-    yw->field_1610 = 0;
-    yw->field_7882 = 1;
-    yw->field_7886 = 1;
-    yw->field_788A = 0;
-    yw->field_81AF = 0;
-    yw->field_241c = 0;
-    yw->field_1628 = 0;
-    yw->field_162A = 0;
-    yw->field_1624 = 0;
-    yw->vehicle_sector_ratio_1 = 0;
-    yw->field_8283 = 0;
-    yw->field_1a20 = 0;
+    ypaworld.field_1a60 = 0;
+    ypaworld.field_1a98 = NULL;
+    ypaworld.field_1aac = 0;
+    ypaworld.current_bact = NULL;
+    ypaworld.field_1b78 = NULL;
+    ypaworld.field_1b7c = NULL;
+    ypaworld.field_1b80 = NULL;
+    ypaworld.field_1b84 = NULL;
+    ypaworld.field_1b88 = NULL;
+    ypaworld.field_1ab0 = 0;
+    ypaworld.field_160c = 0;
+    ypaworld.field_1610 = 0;
+    ypaworld.field_7882 = 1;
+    ypaworld.field_7886 = 1;
+    ypaworld.field_788A = 0;
+    ypaworld.field_81AF = 0;
+    ypaworld.field_241c = 0;
+    ypaworld.field_1628 = 0;
+    ypaworld.field_162A = 0;
+    ypaworld.field_1624 = 0;
+    ypaworld.vehicle_sector_ratio_1 = 0;
+    ypaworld.field_8283 = 0;
+    ypaworld.field_1a20 = 0;
 
-    memset(yw->field_2d90->gates, 0, sizeof(gateProto) * 8);
-    memset(yw->field_2d90->supetItems, 0, sizeof(supetItemProto) * 8);
+    memset(ypaworld.field_2d90->gates, 0, sizeof(gateProto) * 8);
+    memset(ypaworld.field_2d90->supetItems, 0, sizeof(supetItemProto) * 8);
     for (int i = 0; i < 8; i++)
     {
-        yw->gems[i].init();
+        ypaworld.gems[i].init();
     }
-    memset(&yw->field_81CB, 0, sizeof(yw_81cb));
-    memset(yw->field_1bac, 0, sizeof(int) * 8);
+    memset(&ypaworld.field_81CB, 0, sizeof(yw_81cb));
+    memset(ypaworld.field_1bac, 0, sizeof(int) * 8);
 
-    yw->dbg_num_sqd_max = 0;
-    yw->dbg_num_vhcl_max = 0;
-    yw->dbg_num_flk_max = 0;
-    yw->dbg_num_wpn_max = 0;
-    yw->dbg_num_robo_max = 0;
+    ypaworld.dbg_num_sqd_max = 0;
+    ypaworld.dbg_num_vhcl_max = 0;
+    ypaworld.dbg_num_flk_max = 0;
+    ypaworld.dbg_num_wpn_max = 0;
+    ypaworld.dbg_num_robo_max = 0;
 
-    if ( !yw->one_game_res )
+    if ( !ypaworld.one_game_res )
     {
-        if ( yw->game_default_res != yw->shell_default_res )
+        if ( ypaworld.game_default_res != ypaworld.shell_default_res )
         {
-            GFXEngine::GFXe.setResolution(yw->game_default_res);
+            GFXEngine::GFXe.setResolution(ypaworld.game_default_res);
 
-            yw->screen_width = GFXEngine::GFXe.getScreenW();
-            yw->screen_height = GFXEngine::GFXe.getScreenH();
-            yw->win3d = GFXEngine::GFXe.getC3D();
+            ypaworld.screen_width = GFXEngine::GFXe.getScreenW();
+            ypaworld.screen_height = GFXEngine::GFXe.getScreenH();
+            ypaworld.win3d = GFXEngine::GFXe.getC3D();
 
-            yw->win3d->setWDD_cursor( (yw->field_73CE & 0x40) != 0 );
+            ypaworld.win3d->setWDD_cursor( (ypaworld.field_73CE & 0x40) != 0 );
 
-            if ( yw->screen_width >= 512 )
+            if ( ypaworld.screen_width >= 512 )
             {
-                yw->win3d->load_font( get_lang_string(yw->string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
+                ypaworld.win3d->load_font( get_lang_string(ypaworld.string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
             }
             else
             {
-                yw->win3d->load_font( get_lang_string(yw->string_pointers_p2, 16, "Arial,8,400,0") );
+                ypaworld.win3d->load_font( get_lang_string(ypaworld.string_pointers_p2, 16, "Arial,8,400,0") );
             }
         }
     }
 
-    NC_STACK_bitmap *diskScreenImage = loadDisk_screen(yw);
+    NC_STACK_bitmap *diskScreenImage = loadDisk_screen(&ypaworld);
 
     if ( diskScreenImage )
-        draw_splashScreen(yw, diskScreenImage);
+        draw_splashScreen(&ypaworld, diskScreenImage);
 
 
     char rsr[256];
@@ -768,69 +768,71 @@ int sb_0x44ca90(_NC_STACK_ypaworld *yw, mapProto *mapp, int levelID, int a5)
 
     set_prefix_replacement("rsrc", "data:fonts");
 
-    int v19 = load_fonts_and_icons(yw);
+    int v19 = load_fonts_and_icons(&ypaworld);
 
     set_prefix_replacement("rsrc", rsr);
 
     if ( !v19 )
         return 0;
 
-    int tod = loadTOD(yw, "tod.def");
+    int tod = loadTOD(&ypaworld, "tod.def");
 
-    const char *text = get_lang_string(yw->string_pointers_p2, tod + 2490, " ");
+    const char *text = get_lang_string(ypaworld.string_pointers_p2, tod + 2490, " ");
 
     tod++;
     if ( tod + 2490 > 2510 )
         tod = 0;
 
-    writeTOD(yw, "tod.def", tod);
+    writeTOD(&ypaworld, "tod.def", tod);
 
     if ( diskScreenImage )
     {
-        drawSplashScreenWithTOD(yw, diskScreenImage, text);
-        deleteSplashScreen(yw, diskScreenImage);
+        drawSplashScreenWithTOD(&ypaworld, diskScreenImage, text);
+        deleteSplashScreen(&ypaworld, diskScreenImage);
     }
 
-    yw->p_1_grp_cnt = 0;
+    ypaworld.p_1_grp_cnt = 0;
     for (int i = 0; i < 8; i++)
     {
-        yw->p_1_grp[0][i] = 0;
-        yw->p_1_grp[1][i] = 0;
-        yw->p_1_grp[2][i] = 100000;
-        yw->p_1_grp[3][i] = 0;
+        ypaworld.p_1_grp[0][i] = 0;
+        ypaworld.p_1_grp[1][i] = 0;
+        ypaworld.p_1_grp[2][i] = 100000;
+        ypaworld.p_1_grp[3][i] = 0;
     }
 
-    sb_0x44ca90__sub4(yw);
+    sb_0x44ca90__sub4(&ypaworld);
 
-    yw->audio_volume = SFXEngine::SFXe.getMasterVolume();
+    ypaworld.audio_volume = SFXEngine::SFXe.getMasterVolume();
 
-    sb_0x44ca90__sub8(yw);
-    sb_0x44ca90__sub6(yw);
+    sb_0x44ca90__sub8(&ypaworld);
+    sb_0x44ca90__sub6(&ypaworld);
 
     set_prefix_replacement("rsrc", "data:");
 
-    if ( sub_4DA41C(yw, mapp, yw->LevelNet->mapInfos[yw->field_2d90->levelID].mapPath) && (mapp->flags & 0x7F) == 0x7F )
+    if ( sub_4DA41C(&ypaworld, &mapp, ypaworld.LevelNet->mapInfos[ypaworld.field_2d90->levelID].mapPath) && (mapp.flags & 0x7F) == 0x7F )
     {
-        sb_0x44ca90__sub7(yw, mapp->event_loop);
+        sb_0x44ca90__sub7(&ypaworld, mapp.event_loop);
 
-        if ( !sb_0x44ca90__sub3(yw) )
+        if ( !sb_0x44ca90__sub3(&ypaworld) )
             return 0;
 
-        sb_0x44ca90__sub5(yw);
+        sb_0x44ca90__sub5(&ypaworld);
 
         char a1[32];
-        sprintf(a1, "data:set%d", mapp->setNumber);
+        sprintf(a1, "data:set%d", mapp.setNumber);
 
         set_prefix_replacement("rsrc", a1);
 
-        sb_0x44ca90__sub2(yw, mapp);
+        sb_0x44ca90__sub2(&ypaworld, &mapp);
 
-        if ( yw_LoadSet(yw, mapp->setNumber) )
+        if ( yw_LoadSet(&ypaworld, mapp.setNumber) )
         {
-            if ( yw_loadSky(yw, mapp->sky) )
+            if ( yw_loadSky(&ypaworld, mapp.sky) )
                 ok = 1;
         }
     }
+
+    FFeedback_Init();
 
     return ok;
 }
@@ -1933,138 +1935,141 @@ void sub_44D8B8(ypaworld_arg136 *arg, const struct_44dbf8 &loc)
 }
 
 
-void ypaworld_func2__sub0__sub0(_NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::FFeedback_VehicleChanged()
 {
-    if ( !yw->field_739A || (!(yw->field_73CE & 4) && !(yw->field_73CE & 8)) )
+    if ( ypaworld.field_739A )
     {
-        if ( yw->field_1b84 )
-        {
-            yw->field_7562 = yw->timeStamp;
+        if ( ypaworld.field_73CE & (4 | 8) )
+            return;
+    }
 
-            winp_71arg winp71;
-            winp71.effID = 0;
-            winp71.state = 1;
+    if ( ypaworld.field_1b84 )
+    {
+        ypaworld.field_7562 = ypaworld.timeStamp;
+
+        winp_71arg winp71;
+        winp71.effID = NC_STACK_winp::FF_TYPE_ALL;
+        winp71.state = NC_STACK_winp::FF_STATE_STOP;
+        winp71.p4 = 0;
+        winp71.p3 = 0;
+        winp71.p2 = 0;
+        winp71.p1 = 0;
+
+        if ( ypaworld.input_class )
+            ypaworld.input_class->wimp_ForceFeedback(&winp71);
+
+        int effectType;
+        float v13;
+        float v14;
+        float v15;
+        float v16;
+        float v17;
+        float v18;
+        float v19;
+        float v22;
+        float v24;
+        float v25;
+
+
+        switch ( ypaworld.field_1b84->bact_type )
+        {
+        case BACT_TYPES_BACT:
+            effectType = NC_STACK_winp::FF_TYPE_HELIENGINE;
+            v16 = 300.0;
+            v13 = 800.0;
+            v15 = 1.0;
+            v14 = 2.0;
+            v25 = 1.0;
+            v18 = 0.0;
+            v17 = 0.7;
+            v24 = 0.3;
+            v22 = 1.0;
+            v19 = 0.5;
+            break;
+
+        case BACT_TYPES_TANK:
+        case BACT_TYPES_CAR:
+            effectType = NC_STACK_winp::FF_TYPE_TANKENGINE;
+            v16 = 200.0;
+            v13 = 500.0;
+            v15 = 0.6;
+            v14 = 1.0;
+            v25 = 1.0;
+            v22 = 1.0;
+            v17 = 0.1;
+            v24 = 0.3;
+            v19 = 0.4;
+            v18 = 0.0;
+            break;
+
+        case BACT_TYPES_FLYER:
+            effectType = NC_STACK_winp::FF_TYPE_JETENGINE;
+            v16 = 200.0;
+            v13 = 500.0;
+            v15 = 1.0;
+            v14 = 2.0;
+            v25 = 1.0;
+            v18 = 0.0;
+            v17 = 0.1;
+            v24 = 0.3;
+            v22 = 1.0;
+            v19 = 0.75;
+            break;
+
+        default:
+            effectType = -1;
+            break;
+        }
+
+        if ( effectType != -1 )
+        {
+            float v4 = (ypaworld.field_1b84->mass - v16) / (v13 - v16);
+            float v5 = (ypaworld.field_1b84->maxrot - v15) / (v14 - v15);
+
+            float v21 = (v19 - v24) * v4 + v24;
+            float v23 = (v18 - v22) * v4 + v22;
+
+            float v20 = (v17 - v25) * v5 + v25;
+
+            if ( v21 < v24)
+                v21 = v24;
+            else if (v21 > v19)
+                v21 = v19;
+
+            if ( v23 < v18 )
+                v23 = v18;
+            else if ( v23 > v22)
+                v23 = v22;
+
+            if ( v20 < v17)
+                v20 = v17;
+            else if ( v20 > v25)
+                v20 = v25;
+
+            ypaworld.field_7566 = effectType;
+            ypaworld.field_756A = v23;
+            ypaworld.field_756E = v21;
+
+            winp71.effID = effectType;
+            winp71.p1 = v21;
+            winp71.state = NC_STACK_winp::FF_STATE_START;
+            winp71.p2 = v23;
+
+            winp71.p4 = 0;
+            winp71.p3 = 0;
+
+            if ( ypaworld.input_class )
+                ypaworld.input_class->wimp_ForceFeedback(&winp71);
+
+            winp71.state = NC_STACK_winp::FF_STATE_START;
+            winp71.p1 = v20;
             winp71.p4 = 0;
             winp71.p3 = 0;
             winp71.p2 = 0;
-            winp71.p1 = 0;
+            winp71.effID = NC_STACK_winp::FF_TYPE_ROTDAMPER;
 
-            if ( yw->input_class )
-                yw->input_class->wimp_ForceFeedback(&winp71);
-
-            int v2;
-            float v13;
-            float v14;
-            float v15;
-            float v16;
-            float v17;
-            float v18;
-            float v19;
-            float v22;
-            float v24;
-            float v25;
-
-
-            switch ( yw->field_1b84->bact_type )
-            {
-            case BACT_TYPES_BACT:
-                v2 = 3;
-                v16 = 300.0;
-                v13 = 800.0;
-                v15 = 1.0;
-                v14 = 2.0;
-                v25 = 1.0;
-                v18 = 0.0;
-                v17 = 0.7;
-                v24 = 0.3;
-                v22 = 1.0;
-                v19 = 0.5;
-                break;
-
-            case BACT_TYPES_TANK:
-            case BACT_TYPES_CAR:
-                v2 = 1;
-                v16 = 200.0;
-                v13 = 500.0;
-                v15 = 0.6;
-                v14 = 1.0;
-                v25 = 1.0;
-                v22 = 1.0;
-                v17 = 0.1;
-                v24 = 0.3;
-                v19 = 0.4;
-                v18 = 0.0;
-                break;
-
-            case BACT_TYPES_FLYER:
-                v2 = 2;
-                v16 = 200.0;
-                v13 = 500.0;
-                v15 = 1.0;
-                v14 = 2.0;
-                v25 = 1.0;
-                v18 = 0.0;
-                v17 = 0.1;
-                v24 = 0.3;
-                v22 = 1.0;
-                v19 = 0.75;
-                break;
-
-            default:
-                v2 = -1;
-                break;
-            }
-
-            if ( v2 != -1 )
-            {
-                float v4 = (yw->field_1b84->mass - v16) / (v13 - v16);
-                float v5 = (yw->field_1b84->maxrot - v15) / (v14 - v15);
-
-                float v21 = (v19 - v24) * v4 + v24;
-                float v23 = (v18 - v22) * v4 + v22;
-
-                float v20 = (v17 - v25) * v5 + v25;
-
-                if ( v21 < v24)
-                    v21 = v24;
-                else if (v21 > v19)
-                    v21 = v19;
-
-                if ( v23 < v18 )
-                    v23 = v18;
-                else if ( v23 > v22)
-                    v23 = v22;
-
-                if ( v20 < v17)
-                    v20 = v17;
-                else if ( v20 > v25)
-                    v20 = v25;
-
-                yw->field_7566 = v2;
-                yw->field_756A = v23;
-                yw->field_756E = v21;
-
-                winp71.effID = v2;
-                winp71.p1 = v21;
-                winp71.state = 0;
-                winp71.p2 = v23;
-
-                winp71.p4 = 0;
-                winp71.p3 = 0;
-
-                if ( yw->input_class )
-                    yw->input_class->wimp_ForceFeedback(&winp71);
-
-                winp71.state = 0;
-                winp71.p1 = v20;
-                winp71.p4 = 0;
-                winp71.p3 = 0;
-                winp71.p2 = 0;
-                winp71.effID = 4;
-
-                if ( yw->input_class )
-                    yw->input_class->wimp_ForceFeedback(&winp71);
-            }
+            if ( ypaworld.input_class )
+                ypaworld.input_class->wimp_ForceFeedback(&winp71);
         }
     }
 }
@@ -4823,9 +4828,94 @@ void ypaworld_func151__sub5(_NC_STACK_ypaworld *yw)
     }
 }
 
-void ypaworld_func64__sub11(_NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::FFeedback_Update()
 {
-    dprintf("MAKE ME %s (joy vibrate)\n", "ypaworld_func64__sub11");
+    if ( ypaworld.field_739A )
+    {
+        if ( ypaworld.field_73CE & (4 | 8) )
+            return;
+    }
+
+    if ( ypaworld.field_1b84 )
+    {
+        if ( ypaworld.timeStamp - ypaworld.field_7562 > 250 )
+        {
+            ypaworld.field_7562 = ypaworld.timeStamp;
+
+            if ( ypaworld.field_1b84->status == BACT_STATUS_DEAD )
+            {
+                winp_71arg v13;
+                v13.state = NC_STACK_winp::FF_STATE_UPDATE;
+                v13.p1 = 0.0;
+                v13.p2 = 0.0;
+                v13.p3 = 0.0;
+                v13.p4 = 0.0;
+                v13.effID = ypaworld.field_7566;
+
+                if ( ypaworld.input_class )
+                    ypaworld.input_class->wimp_ForceFeedback(&v13);
+            }
+            else
+            {
+                if ( ypaworld.field_7566 != -1 )
+                {
+                    float a1 = POW2(ypaworld.field_1b84->force) - POW2(ypaworld.field_1b84->mass) * 100.0;
+
+                    if (a1 < 0.0)
+                        a1 = 0.0;
+
+                    float v17 = fabs(ypaworld.field_1b84->fly_dir_length) / ( sqrt(a1) / ypaworld.field_1b84->airconst_static );
+                    if ( v17 >= 1.0 )
+                        v17 = 1.0;
+                    else if (v17 < 0.0)
+                        v17 = 0.0;
+
+                    winp_71arg warg71;
+                    warg71.effID = ypaworld.field_7566;
+                    warg71.state = NC_STACK_winp::FF_STATE_UPDATE;
+                    warg71.p1 = ypaworld.field_756E;
+                    warg71.p2 = ypaworld.field_756A * v17;
+                    warg71.p3 = 0.0;
+                    warg71.p4 = 0.0;
+
+                    if ( ypaworld.input_class )
+                        ypaworld.input_class->wimp_ForceFeedback(&warg71);
+                }
+            }
+        }
+
+        userdata_sample_info *top = SFXEngine::SFXe.SndGetTopShake();
+        if ( top )
+        {
+            ypaworld.field_7572 = top;
+            if ( top->startTime == SFXEngine::SFXe.currentTime )
+            {
+                winp_71arg warg71;
+                warg71.effID = NC_STACK_winp::FF_TYPE_SHAKE;
+                warg71.state = NC_STACK_winp::FF_STATE_START;
+
+                warg71.p1 = top->shkMag;
+                if ( warg71.p1 > 1.0 )
+                    warg71.p1 = 1.0;
+
+                vec3d tmp = top->parent_sample_collection->field_0 - ypaworld.field_1b84->position;
+
+                warg71.p2 = top->shakeFX->time;
+                warg71.p3 = ypaworld.field_1b84->rotation.AxisX().dot( tmp );
+                warg71.p4 = -ypaworld.field_1b84->rotation.AxisZ().dot( tmp );
+
+                if ( warg71.p2 > 0.0 )
+                {
+                    if ( ypaworld.input_class )
+                        ypaworld.input_class->wimp_ForceFeedback(&warg71);
+                }
+            }
+        }
+        else
+        {
+            ypaworld.field_7572 = NULL;
+        }
+    }
 }
 
 int recorder_startrec(_NC_STACK_ypaworld *yw)

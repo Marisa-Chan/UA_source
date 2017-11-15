@@ -45,12 +45,42 @@ public:
     };
     static void initfirst();
 
-    enum WINP_ATT
+    enum FF_TYPE
     {
-        WINP_ATT_WND = 0x80002000,
-        WINP_ATT_HWND = 0x80002001
+        FF_TYPE_ALL = 0,
+        FF_TYPE_TANKENGINE = 1,
+        FF_TYPE_JETENGINE = 2,
+        FF_TYPE_HELIENGINE = 3,
+        FF_TYPE_ROTDAMPER = 4,
+        FF_TYPE_MINIGUN = 5,
+        FF_TYPE_MISSILEFIRE = 6,
+        FF_TYPE_GRENADEFIRE = 7,
+        FF_TYPE_BOMBFIRE = 8,
+        FF_TYPE_COLLISION = 9,
+        FF_TYPE_SHAKE = 10
     };
 
+    enum FF_STATE
+    {
+        FF_STATE_START = 0,
+        FF_STATE_STOP = 1,
+        FF_STATE_UPDATE = 2
+    };
+
+protected:
+    void FFstopAll();
+    void FFDOTankEngine(int state, float p1, float p2);
+    void FFDOJetEngine(int state, float p1, float p2);
+    void FFDOHeliEngine(int state, float p1, float p2);
+    void FFDORotDamper(int state, float p1);
+    void FFDOMiniGun(int state);
+    void FFDOMissileFire(int state);
+    void FFDOGrenadeFire(int state);
+    void FFDOBombFire(int state);
+    void FFDOCollision(int state, float a2, float a3, float a4);
+    void FFDOShake(int state, float a2, float a3, float a4, float a5);
+
+public:
     //Data
     static const NewClassDescr description;
 
