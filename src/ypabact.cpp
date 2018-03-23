@@ -6589,7 +6589,10 @@ void NC_STACK_ypabact::ReorganizeGroup(bact_arg109 *arg)
 
             int a4 = bact->host_station->getROBO_commCount();
             bact->commandID = a4;
-            bact->commandID |= bact->owner << 24;
+
+            if (bact->yw->isNetGame)
+                bact->commandID |= bact->owner << 24;
+
             bact->host_station->setROBO_commCount(a4 + 1);
             sub_493480(bact, bact, 3);
         }

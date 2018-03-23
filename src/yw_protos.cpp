@@ -5368,7 +5368,7 @@ int sub_47A0C0(scrCallBack *scr)
     }
     else if ( !strcasecmp(scr->p1, "commandid") )
     {
-        dword_5A7A88->commandID = atoi(scr->p2);
+        dword_5A7A88->commandID = (atoi(scr->p2) & 0xFFFFFF);
 
         if ( dword_5A7A80 < dword_5A7A88->commandID )
         {

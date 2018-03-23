@@ -730,7 +730,7 @@ int yw_write_bact(bact_node *bct, FSMgr::FileHandle *fil)
     sprintf(buf, "    gunangle       = %5.4f\n", bct->bact->gun_angle_user);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    commandID      = %d\n", bct->bact->commandID);
+    sprintf(buf, "    commandID      = %d\n", (bct->bact->commandID & 0xFFFFFF));
     fil->write(buf, strlen(buf));
 
     sprintf(buf, "    aggression     = %d\n", bct->bact->aggr);
