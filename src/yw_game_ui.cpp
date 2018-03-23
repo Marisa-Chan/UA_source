@@ -7759,7 +7759,7 @@ __NC_STACK_ypabact * sub_449518(_NC_STACK_ypaworld *yw)
 
 int sub_4C3E34(const void *a1, const void *a2)
 {
-    return ((* (__NC_STACK_ypabact **)a1)->commandID & 0xFFF) - ((* (__NC_STACK_ypabact **)a2)->commandID & 0xFFF);
+    return ((* (__NC_STACK_ypabact **)a1)->commandID & 0xFFFFFF) - ((* (__NC_STACK_ypabact **)a2)->commandID & 0xFFFFFF);
 }
 
 
@@ -7783,6 +7783,9 @@ void sub_4C40AC(_NC_STACK_ypaworld *yw)
     }
     yw->field_2414 = v3;
 
+    // Do not sort it for select really last added bact?
+    // May produce another bug.
+    // Adding new vehicles must be reworked
     qsort(yw->field_1c0c, v3, sizeof(__NC_STACK_ypabact *), sub_4C3E34);
 
     if ( v3 )
