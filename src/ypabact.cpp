@@ -668,7 +668,7 @@ void sub_481F14(__NC_STACK_ypabact *bact)
 {
     ypaworld_arg136 arg136;
     arg136.stPos = vec3d(bact->position.x, -30000.0, bact->position.z);
-    arg136.vect = vec3d(0.0, 0.0, 50000.0);
+    arg136.vect = vec3d(0.0, 50000.0, 0.0);
     arg136.flags = 0;
 
     bact->ywo->ypaworld_func136(&arg136);
