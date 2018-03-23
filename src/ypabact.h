@@ -697,6 +697,10 @@ public:
     virtual bact_node *getBACT_secnAttackNode();
     virtual int getBACT_alwaysRender();
 
+
+    void FixSectorFall();
+    void FixBeyondTheWorld();
+
     //Data
     static const NewClassDescr description;
 

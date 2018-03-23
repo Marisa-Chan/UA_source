@@ -664,43 +664,43 @@ size_t NC_STACK_ypabact::func3(IDVList *stak)
 
 
 
-void sub_481F14(__NC_STACK_ypabact *bact)
+void NC_STACK_ypabact::FixSectorFall()
 {
     ypaworld_arg136 arg136;
-    arg136.stPos = vec3d(bact->position.x, -30000.0, bact->position.z);
+    arg136.stPos = vec3d(ypabact.position.x, -30000.0, ypabact.position.z);
     arg136.vect = vec3d(0.0, 50000.0, 0.0);
     arg136.flags = 0;
 
-    bact->ywo->ypaworld_func136(&arg136);
+    ypabact.ywo->ypaworld_func136(&arg136);
 
     if ( arg136.isect )
-        bact->position.y = arg136.isectPos.y - 50.0;
+        ypabact.position.y = arg136.isectPos.y - 50.0;
     else
-        bact->position.y = bact->pSector->height  - 50.0;
+        ypabact.position.y = ypabact.pSector->height  - 50.0;
 }
 
 
-void sub_481E0C(__NC_STACK_ypabact *bact)
+void NC_STACK_ypabact::FixBeyondTheWorld()
 {
-    int maxX = bact->ywo->getYW_mapSizeX();
-    int maxY = bact->ywo->getYW_mapSizeY();
+    int maxX = ypabact.ywo->getYW_mapSizeX();
+    int maxY = ypabact.ywo->getYW_mapSizeY();
 
     float mx = maxX * 1200.0;
     float my = -(maxY * 1200.0);
 
-    if ( bact->position.x > mx )
-        bact->position.x = mx - 600.0;
+    if ( ypabact.position.x > mx )
+        ypabact.position.x = mx - 600.0;
 
-    if ( bact->position.x < 0.0 )
-        bact->position.x = 600.0;
+    if ( ypabact.position.x < 0.0 )
+        ypabact.position.x = 600.0;
 
-    if ( bact->position.z < my )
-        bact->position.z = my + 600.0;
+    if ( ypabact.position.z < my )
+        ypabact.position.z = my + 600.0;
 
-    if ( bact->position.z > 0.0 )
-        bact->position.z = -600.0;
+    if ( ypabact.position.z > 0.0 )
+        ypabact.position.z = -600.0;
 
-    sub_481F14(bact);
+    FixSectorFall();
 }
 
 void sub_481F94(__NC_STACK_ypabact *bact)
@@ -742,7 +742,7 @@ void NC_STACK_ypabact::Update(update_msg *arg)
 
     if ( !bact->ywo->ypaworld_func130(&sect_info) )
     {
-        sub_481E0C(bact);
+        FixBeyondTheWorld();
 
         sect_info.pos_x = bact->position.x;
         sect_info.pos_z = bact->position.z;
@@ -766,8 +766,9 @@ void NC_STACK_ypabact::Update(update_msg *arg)
         AddTail(&bact->pSector->units_list, bact);  // Add unit to new cell
     }
 
+    // Test if bact fall through sector
     if ( bact->pSector->height + 1000.0 < bact->position.y )
-        sub_481F14(bact);
+        FixSectorFall();
 
     NC_STACK_ypabact *retbact = bact->ywo->getYW_userHostStation();
 
@@ -7312,7 +7313,7 @@ void NC_STACK_ypabact::NetUpdate(update_msg *upd)
     arg130.pos_z = bact->position.z;
     if ( !bact->ywo->ypaworld_func130(&arg130) )
     {
-        sub_481E0C(bact);
+        FixBeyondTheWorld();
 
         arg130.pos_x = bact->position.x;
         arg130.pos_z = bact->position.z;
