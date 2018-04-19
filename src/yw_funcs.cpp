@@ -531,7 +531,7 @@ int yw_InitLevelNet(_NC_STACK_ypaworld *yw)
     }
 
     yw_InitLevelNet__sub0(yw);
-    if ( !yw_ParseWorldIni(yw, "env:world.ini") && !yw_ParseWorldIni(yw, "data:world.ini"))
+    if ( !yw_ParseWorldIni(yw, "data:world.ini") && !yw_ParseWorldIni(yw, "env:world.ini"))
     {
         ypa_log_out("yw_ParseWorldIni() failed.\n");
         if ( yw->LevelNet )
