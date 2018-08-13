@@ -780,7 +780,7 @@ int NC_STACK_ypaworld::LVLoaderCommon(mapProto &mapp, int levelID, int a5)
     const char *text = get_lang_string(ypaworld.string_pointers_p2, tod + 2490, " ");
 
     tod++;
-    if ( tod + 2490 > 2510 )
+    if ( tod + 2490 > 2512 )
         tod = 0;
 
     writeTOD(&ypaworld, "tod.def", tod);

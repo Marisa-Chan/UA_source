@@ -3697,7 +3697,7 @@ void sb_0x4e75e8(_NC_STACK_ypaworld *yw, int a2)
 
         int v6 = yw->TOD_ID + 1;
 
-        if ( (v6 + 2490) > 2510 )
+        if ( (v6 + 2490) > 2512 )
             v6 = 0;
         writeTOD(yw, "tod.def", v6);
     }
