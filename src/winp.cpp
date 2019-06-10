@@ -185,7 +185,14 @@ int sdlJoyAxis(SDL_Joystick* joystick, int axis)
     if (abs(tmp) <= 6553) // 20% deadzone
         return 0;
 
-    return tmp / 300;
+    tmp /= 109; //-32768/32767  to -300/300
+
+    if (tmp > 300)
+        tmp = 300;
+    else if (tmp < -300)
+        tmp = -300;
+
+    return tmp;
 }
 
 void sdlJoyReadMapping(SDL_Joystick* joystick)
