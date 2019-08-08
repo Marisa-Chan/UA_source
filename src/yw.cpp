@@ -2486,7 +2486,7 @@ size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
 
     cellArea *cell = &yw->cells[x + y * yw->sectors_maxX2];
 
-    int v13 = 0;
+    bool UserInSec = false;
 
     __NC_STACK_ypabact *node = (__NC_STACK_ypabact *)cell->units_list.head;
 
@@ -2494,7 +2494,7 @@ size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
     {
         if ( yw->field_1b84 == node || node->bact_type == BACT_TYPES_ROBO)
         {
-            v13 = 1;
+            UserInSec = true;
             break;
         }
 
@@ -2502,38 +2502,30 @@ size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
     }
 
     if ( yw->field_1b84  &&  cell == yw->field_1b84->pSector )
-        v13 = 1;
+        UserInSec = true;
 
     if ( cell->w_type == 1 )
         return 0;
+    else if ( UserInSec  && !arg->field_C )
+        return 0;
+    else if ( cell->w_type == 2 )
+        sub_44F500(yw, cell->w_id);
+    else if ( (cell->w_type == 4 || cell->w_type == 5 || cell->w_type == 6) && !arg->field_C )
+        return 0;
+    else if ( cell->w_type == 7 && yw->isNetGame )
+        return 0;
 
-    if ( !v13 || arg->field_C != 0 )
+
+    if ( arg->field_C )
     {
-        if ( cell->w_type == 2 )
-        {
-            sub_44F500(yw, cell->w_id);
-        }
-        else if ( (cell->w_type == 4 || cell->w_type == 5 || cell->w_type == 6) && !arg->field_C )
-        {
+        sb_0x456384(this, yw, x, y, arg->ownerID2, arg->blg_ID, arg->field_18 & 1);
+    }
+    else
+    {
+        ypaworld_func148__sub0(yw, x, y);
+
+        if ( !ypaworld_func148__sub1(yw, arg->ownerID, 3000, x, y, arg->ownerID2, arg->blg_ID) )
             return 0;
-        }
-        else if ( cell->w_type == 7 && yw->isNetGame )
-        {
-            return 0;
-        }
-
-
-        if ( arg->field_C )
-        {
-            sb_0x456384(this, yw, x, y, arg->ownerID2, arg->blg_ID, arg->field_18 & 1);
-        }
-        else
-        {
-            ypaworld_func148__sub0(yw, x, y);
-
-            if ( !ypaworld_func148__sub1(yw, arg->ownerID, 3000, x, y, arg->ownerID2, arg->blg_ID) )
-                return 0;
-        }
     }
 
     return 1;
