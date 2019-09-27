@@ -20,11 +20,12 @@ void wrapper_setSampleVRP(void *, walsmpl *hSample, int rate, int volume, int pa
     hSample->pan(pan);
 }
 
-void wrapper_playSound(waldev *driver, walsmpl *hSample, void (*funceos)(void *), void *start, int len, int rate, int vol, int pan, int loop_cnt, int pos)
+void wrapper_playSound(waldev *driver, walsmpl *hSample, void (*funceos)(void *), void *start, int len, int rate, int vol, int mastersnd, int pan, int loop_cnt, int pos)
 {
     hSample->reset();
     hSample->EOS_callback(funceos);
     hSample->address(start, len, rate, AL_FORMAT_MONO8);
+    hSample->setMasterVolume(mastersnd);
     hSample->volume(vol);
     hSample->pan(pan);
     hSample->loop_count(loop_cnt);
@@ -764,6 +765,7 @@ void SFXEngine::sound_eos_clbk(void *_smpl)
                         v10->rlSmplCnt,
                         v3->resultRate,
                         v3->resultVol,
+                        SFXe.audio_volume,
                         v3->resultPan,
                         v10->loop,
                         0);
@@ -816,6 +818,7 @@ void SFXEngine::sb_0x424c74__sub2__sub0(int id, userdata_sample_info *smpl)
             v9->rlSmplCnt,
             smpl->resultRate,
             smpl->resultVol,
+            audio_volume,
             smpl->resultPan,
             v9->loop,
             v8);
@@ -830,6 +833,7 @@ void SFXEngine::sb_0x424c74__sub2__sub0(int id, userdata_sample_info *smpl)
             smpl->psampl->bufsz,
             smpl->resultRate,
             smpl->resultVol,
+            audio_volume,
             smpl->resultPan,
             (smpl->flags & 1) == 0,
             (int)((smpl->psampl->SampleRate + smpl->pitch) * (currentTime - smpl->startTime) >> 10) % smpl->psampl->bufsz);
