@@ -8,6 +8,7 @@
 #include "lstvw.h"
 #include "font.h"
 #include "button.h"
+#include "windp.h"
 
 extern GuiList stru_5C91D0;
 
@@ -583,8 +584,7 @@ int yw_InitNetwork(_NC_STACK_ypaworld *yw)
     yw->field_75A2 = 0;
     yw->field_75E2[0] = 0;
 
-    const char *v6 = yw->buildDate;
-    yw->windp->windp_func89(&v6);
+    yw->windp->SetVersion(yw->buildDate);
 
     return 1;
 }
@@ -981,7 +981,7 @@ NC_STACK_base * sub_44AD8C(const char *fname)
             strcpy(basfl, "rsrc:objects/");
             strcat(basfl, v4);
 
-            NC_STACK_base *kid = READ_BAS_FILE(basfl);
+            NC_STACK_base *kid = NC_STACK_base::READ_BAS_FILE(basfl);
 
             if ( !kid )
             {
@@ -1000,7 +1000,7 @@ NC_STACK_base * sub_44AD8C(const char *fname)
 
 NC_STACK_base *load_set_base()
 {
-    NC_STACK_base *base = READ_BAS_FILE("rsrc:objects/set.base");
+    NC_STACK_base *base = NC_STACK_base::READ_BAS_FILE("rsrc:objects/set.base");
     if ( !base )
     {
         ypa_log_out("init: no set.base, trying fragment load.\n");
@@ -1008,7 +1008,7 @@ NC_STACK_base *load_set_base()
         base = (NC_STACK_base *)init_get_class("base.class", 0);
         if ( base )
         {
-            NC_STACK_base *visproto = READ_BAS_FILE("rsrc:objects/visproto.base");
+            NC_STACK_base *visproto = NC_STACK_base::READ_BAS_FILE("rsrc:objects/visproto.base");
             if ( !visproto )
             {
                 ypa_log_out("init: no visproto.base, trying single load.\n");
@@ -1021,7 +1021,7 @@ NC_STACK_base *load_set_base()
             }
             base->base_func65(&visproto);
 
-            NC_STACK_base *lego = READ_BAS_FILE("rsrc:objects/lego.base");
+            NC_STACK_base *lego = NC_STACK_base::READ_BAS_FILE("rsrc:objects/lego.base");
             if ( !lego )
             {
                 ypa_log_out("init: no lego.base, trying single load.\n");
@@ -1034,7 +1034,7 @@ NC_STACK_base *load_set_base()
             }
             base->base_func65(&lego);
 
-            NC_STACK_base *slurp = READ_BAS_FILE("rsrc:objects/slurp.base");
+            NC_STACK_base *slurp = NC_STACK_base::READ_BAS_FILE("rsrc:objects/slurp.base");
             if ( !slurp )
             {
                 ypa_log_out("init: no slurp.base, trying single load.\n");
@@ -1641,7 +1641,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
     GFXEngine::GFXe.setTracyRmp( yw->tracyrmp_ilbm->getBMD_pBitmap() );
     GFXEngine::GFXe.setShadeRmp( yw->shadermp_ilbm->getBMD_pBitmap() );
 
-    yw->additionalBeeBox = READ_BAS_FILE("rsrc:objects/beebox.base");
+    yw->additionalBeeBox = NC_STACK_base::READ_BAS_FILE("rsrc:objects/beebox.base");
     if ( !yw->additionalBeeBox )
     {
         ypa_log_out("Couldn't load bbox object, set %d.\n", setID);
@@ -1707,28 +1707,25 @@ int writeTOD(_NC_STACK_ypaworld *yw, const char *fname, int tod)
 }
 
 
-void ypaworld_func158__sub4__sub0(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *bitm)
+void NC_STACK_ypaworld::GameShellBlitBkg(NC_STACK_bitmap *bitm)
 {
-    if ( yw )
-    {
-        yw->win3d->LockSurface();
+    ypaworld.win3d->LockSurface();
 
-        rstr_arg204 a4;
-        a4.pbitm = bitm->getBMD_pBitmap();
+    rstr_arg204 a4;
+    a4.pbitm = bitm->getBMD_pBitmap();
 
-        a4.float14 = -1.0;
-        a4.float4 = -1.0;
-        a4.float18 = -1.0;
-        a4.float8 = -1.0;
-        a4.float1C = 1.0;
-        a4.floatC = 1.0;
-        a4.float20 = 1.0;
-        a4.float10 = 1.0;
+    a4.float14 = -1.0;
+    a4.float4 = -1.0;
+    a4.float18 = -1.0;
+    a4.float8 = -1.0;
+    a4.float1C = 1.0;
+    a4.floatC = 1.0;
+    a4.float20 = 1.0;
+    a4.float10 = 1.0;
 
-        yw->win3d->raster_func202(&a4);
+    ypaworld.win3d->raster_func202(&a4);
 
-        yw->win3d->UnlockSurface();
-    }
+    ypaworld.win3d->UnlockSurface();
 }
 
 void sub_4491A0(_NC_STACK_ypaworld *yw, const char *movie_fname)
@@ -1824,7 +1821,7 @@ void sub_4EAC80(_NC_STACK_ypaworld *yw)
     }
 
     brf->briefStage = 0;
-    stru_5C91D0.CloseDialog(yw);
+    yw->self_full->GuiWinClose(&stru_5C91D0);
     stru_5C91D0.Free();
 }
 
@@ -1874,8 +1871,8 @@ void yw_freeDebrief(_NC_STACK_ypaworld *yw)
 // Select map
 void ypaworld_func158__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
 {
-    float v3 = (float)inpt->winp131arg.move[0].x / (float)yw->screen_width;
-    float v4 = (float)inpt->winp131arg.move[0].y / (float)yw->screen_height;
+    float v3 = (float)inpt->ClickInf.move.screenPos.x / (float)yw->screen_width;
+    float v4 = (float)inpt->ClickInf.move.screenPos.y / (float)yw->screen_height;
 
     if (v3 < 0.0)
         v3 = 0.0;
@@ -1892,7 +1889,7 @@ void ypaworld_func158__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
     if ( yw->LevelNet->ilbm_mask_map )
     {
-        if ( inpt->winp131arg.selected_btnID == -1 )
+        if ( inpt->ClickInf.selected_btnID == -1 )
         {
             bitmap_intern *a4 = yw->LevelNet->ilbm_mask_map->getBMD_pBitmap();
 
@@ -2207,7 +2204,7 @@ int ypaworld_func158__sub4__sub1__sub3__sub0(_NC_STACK_ypaworld *yw)
         return 0;
 
     stru_5C91D0.SetRect(yw, lft, top);
-    stru_5C91D0.OpenDialog(yw);
+    yw->self_full->GuiWinOpen( &stru_5C91D0 );
 
     return 1;
 }
@@ -2406,7 +2403,7 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
         }
     }
 
-    stru_5C91D0.CloseDialog(yw);
+    yw->self_full->GuiWinClose( &stru_5C91D0 );
     stru_5C91D0.Free();
 
     memcpy(yw->field_2d90, &brf->s2d90, sizeof(stru_2d90));
@@ -2663,9 +2660,9 @@ void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 
 
                 if ( yw->brief.briefStage == 1 )
                 {
-                    usr->field_0x2fbc = 2;
-                    usr->field_0x2fc0 = yw->field_2d90->levelID;
-                    usr->field_0x2fc4 = yw->field_2d90->levelID;
+                    usr->envAction.action = EnvAction::ACTION_PLAY;
+                    usr->envAction.params[0] = yw->field_2d90->levelID;
+                    usr->envAction.params[1] = yw->field_2d90->levelID;
                     sub_4EAC80(yw);
                 }
                 else if ( yw->brief.briefStage == 2 )
@@ -2687,7 +2684,7 @@ void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 
                 }
                 else
                 {
-                    yw_debriefUpdate(yw, usr, inpt);
+                    yw_debriefUpdate(yw, inpt);
                 }
             }
         }
@@ -2695,7 +2692,7 @@ void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 
         {
             ypaworld_func158__sub4__sub1__sub0(yw, inpt);
 
-            if ( yw->GameShell->field_46 == 4 )
+            if ( yw->GameShell->envMode == ENVMODE_TUTORIAL )
                 ypaworld_func158__sub4__sub1__sub2(yw);
             else
                 ypaworld_func158__sub4__sub1__sub1(yw);
@@ -2703,7 +2700,7 @@ void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 
 
             if ( yw->LevelNet->field_BE38 )
             {
-                if ( inpt->winp131arg.flag & 2 )
+                if ( inpt->ClickInf.flag & ClickBoxInf::FLAG_LM_DOWN )
                 {
                     if ( yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].field_0 == 3 )
                     {
@@ -2711,9 +2708,9 @@ void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 
 //            v15 = get_lang_string(yw->string_pointers_p2, 21, "21 == YOUR PERSONAL AMOK");
 //            if ( make_CD_CHECK(0, 1, v15, v14) )
 //            {
-                        usr->field_0x2fbc = 2;
-                        usr->field_0x2fc0 = yw->LevelNet->field_BE38;
-                        usr->field_0x2fc4 = yw->LevelNet->field_BE38;
+                        usr->envAction.action = EnvAction::ACTION_PLAY;
+                        usr->envAction.params[0] = yw->LevelNet->field_BE38;
+                        usr->envAction.params[1] = yw->LevelNet->field_BE38;
 //            }
                     }
                     else
@@ -2724,22 +2721,22 @@ void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 
 //            {
                         if ( !ypaworld_func158__sub4__sub1__sub3(yw, yw->LevelNet->field_BE38) )// LOAD LEVEL INFO
                         {
-                            usr->field_0x2fbc = 2;
-                            usr->field_0x2fc0 = yw->LevelNet->field_BE38;
-                            usr->field_0x2fc4 = yw->LevelNet->field_BE38;
+                            usr->envAction.action = EnvAction::ACTION_PLAY;
+                            usr->envAction.params[0] = yw->LevelNet->field_BE38;
+                            usr->envAction.params[1] = yw->LevelNet->field_BE38;
                         }
 //            }
                     }
                 }
-                else if ( inpt->winp131arg.flag & 0x80 )
+                else if ( inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_DOWN )
                 {
 //          v18 = get_lang_string(yw->string_pointers_p2, 2466, "2466 == THE YPA CD IS REQUIRED.");
 //          v19 = get_lang_string(yw->string_pointers_p2, 21, "21 == YOUR PERSONAL AMOK");
 //          if ( make_CD_CHECK(0, 1, v19, v18) )
 //          {
-                    usr->field_0x2fbc = 2;
-                    usr->field_0x2fc0 = yw->LevelNet->field_BE38;
-                    usr->field_0x2fc4 = yw->LevelNet->field_BE38;
+                    usr->envAction.action = EnvAction::ACTION_PLAY;
+                    usr->envAction.params[0] = yw->LevelNet->field_BE38;
+                    usr->envAction.params[1] = yw->LevelNet->field_BE38;
 //          }
                 }
             }
@@ -2981,7 +2978,7 @@ void ypaworld_func158__network_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
 
     cmd = usr->network_listvw.ItemsPreLayout(yw, cmd, 0, "uvw");
 
-    button_71arg setStr;
+    NC_STACK_button::button_71arg setStr;
     setStr.butID = 1200;
     setStr.field_8 = usr->netName;
 
@@ -3010,7 +3007,7 @@ void ypaworld_func158__network_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
         {
             windp_getNameMsg msg;
             msg.id = i;
-            if ( yw->windp->windp_func65(&msg) )
+            if ( yw->windp->GetProviderName(&msg) )
             {
                 str1 = msg.name;
                 brk = false;
@@ -3034,7 +3031,7 @@ void ypaworld_func158__network_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
         {
             windp_getNameMsg msg;
             msg.id = i;
-            if ( yw->windp->windp_func69(&msg) )
+            if ( yw->windp->GetSessionName(&msg) )
             {
                 size_t j;
                 for (j = 0; (uint8_t)msg.name[j] >= ' ' && msg.name[j] != '|'; j++ )
@@ -3087,7 +3084,7 @@ void ypaworld_func158__network_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
             {
                 mapINFO *lvl = &yw->LevelNet->mapInfos[ usr->map_descriptions[i].id ];
 
-                if ( lvl->robos_count < (int)yw->windp->windp_func86(NULL) )
+                if ( lvl->robos_count < (int)yw->windp->CountPlayers(NULL) )
                     continue;
 
                 str1 = usr->map_descriptions[i].pstring;
@@ -3598,49 +3595,49 @@ void ypaworld_func158__confirm_draw(UserData *usr)
 
 void ypaworld_func158__sub3(_NC_STACK_ypaworld *yw, UserData *usr)
 {
-    switch ( usr->field_46 )
+    switch ( usr->envMode )
     {
-    case 1:
+    case ENVMODE_TITLE:
         usr->titel_button->button_func70(0);
         break;
 
-    case 2:
+    case ENVMODE_INPUT:
         usr->button_input_button->button_func70(0);
         yw_draw_input_list(yw, usr);
         break;
 
-    case 3:
+    case ENVMODE_SETTINGS:
         usr->video_button->button_func70(0);
 
-        if ( !(usr->video_listvw.flags & GuiBase::FLAG_CLOSED) )
+        if ( usr->video_listvw.IsOpen() )
             ypaworld_func158__video_list_draw(yw, usr);
 
-        if ( !(usr->d3d_listvw.flags & GuiBase::FLAG_CLOSED) )
+        if ( usr->d3d_listvw.IsOpen() )
             ypaworld_func158__d3d_list_draw(yw, usr);
         break;
 
-    case 4:
-    case 5:
+    case ENVMODE_TUTORIAL:
+    case ENVMODE_SINGLEPLAY:
         usr->sub_bar_button->button_func70(0);
         break;
 
-    case 6:
+    case ENVMODE_NETPLAY:
         usr->network_button->button_func70(0);
 
         if ( usr->netSelMode != 2 )
             ypaworld_func158__network_list_draw(yw, usr);
         break;
 
-    case 7:
+    case ENVMODE_SELLOCALE:
         usr->locale_button->button_func70(0);
         ypaworld_func158__locale_list_draw(yw, usr);
         break;
 
-    case 8:
+    case ENVMODE_ABOUT:
         usr->about_button->button_func70(0);
         break;
 
-    case 9:
+    case ENVMODE_SELPLAYER:
         usr->disk_button->button_func70(0);
         ypaworld_func158__saveload_list_draw(yw, usr);
         break;

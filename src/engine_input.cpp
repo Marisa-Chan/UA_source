@@ -271,23 +271,18 @@ void INPEngine::sub_412D28(struC5 *a1)
     input_class->input_func65(a1);
 }
 
-void INPEngine::AddClickBox(ClickBox *btn, int a2)
+void INPEngine::AddClickBoxFront(ClickBox *box)
 {
-    iwimp_arg129 iwimp129;
-
-    iwimp129.node = btn;
-    iwimp129.field_4 = a2 == 0;
-
-    input_class->wimp_addClickNode(&iwimp129);
+    input_class->wimp_addClickNodeFront(box);
 }
 
-void INPEngine::RemClickBox(ClickBox *btn)
+void INPEngine::AddClickBoxBack(ClickBox *box)
 {
-    iwimp_arg129 iwimp129;
+    input_class->wimp_addClickNodeBack(box);
+}
 
-    iwimp129.node = btn;
-    iwimp129.field_4 = 0;
-
-    input_class->wimp_remClickNode(&iwimp129);
+void INPEngine::RemClickBox(ClickBox *box)
+{
+    input_class->wimp_remClickNode(box);
 }
 

@@ -62,11 +62,13 @@ public:
     virtual const std::string& getName() const;
 
     //Non-virtual methods
+    static NC_STACK_nucleus *READ_OBJT(IFFile *mfile);
 
-
+public:
     //Data
     static const NewClassDescr description;
 
+public:
     std::string NAME;
 };
 
@@ -75,12 +77,6 @@ NC_STACK_nucleus * init_get_class(const char *classname, IDVList *stak);
 
 int delete_class_obj(NC_STACK_nucleus *cls);
 
-NC_STACK_nucleus * READ_OBJT(IFFile *mfile);
 int sub_4117F8(NC_STACK_nucleus *obj, IFFile *mfile);
-
-struct NC_STACK_base;
-
-NC_STACK_base *READ_BAS_FILE(const char *fname);
-
 
 #endif // NUCLEAS_H_INCLUDED

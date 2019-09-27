@@ -83,7 +83,7 @@ int sb_0x411324__sub0()
     case 1:
     case 2:
     {
-        ypaworld->ypaworld_func151(NULL);
+        ypaworld->ypaworld_func151();
 
         if ( dword_513638 || var_2d90->field_40 == 2 )
         {
@@ -105,20 +105,20 @@ int sb_0x411324__sub0()
         if ( userdata.remoteMode )
             v0 = 0;
 
-        if ( userdata.field_46 == 6 )
+        if ( userdata.envMode == ENVMODE_NETPLAY )
         {
-            userdata.field_4E = 1;
-            userdata.field_46 = 5;
+            userdata.returnToTitle = true;
+            userdata.envMode = ENVMODE_SINGLEPLAY;
         }
         else
         {
-            userdata.field_4E = 0;
+            userdata.returnToTitle = false;
         }
 
         dword_520400 = 0;
         world_update_arg.field_0 = 0;
 
-        userdata.field_5457 = 0;
+        userdata.lastInputEvent = 0;
         userdata.field_0xc = 1;
 
         if ( ypaworld->ypaworld_func156(&userdata) )
@@ -140,7 +140,7 @@ int sb_0x411324__sub0()
 
     case 4:
     {
-        ypaworld->ypaworld_func151(NULL);
+        ypaworld->ypaworld_func151();
 
         sprintf(buf, "save:%s/%d.rst", userdata.user_name, var_2d90->levelID);
 
@@ -172,7 +172,7 @@ int sb_0x411324__sub0()
 
     case 7:
     {
-        ypaworld->ypaworld_func151(NULL);
+        ypaworld->ypaworld_func151();
 
         yw_arg169 arg169;
         arg169.usr = &userdata;
@@ -222,7 +222,7 @@ int sb_0x411324__sub2__sub0(base_64arg *arg)
     {
         char *gin_and_tonic = sub_4107A0(arg->field_0);
 
-        ypaworld->ypaworld_func164(NULL);
+        ypaworld->ypaworld_func164();
 
         if ( !ypaworld->ypaworld_func162(gin_and_tonic) )
         {
@@ -290,7 +290,7 @@ int sb_0x411324__sub2()
 {
     if ( !sb_0x411324__sub2__sub0(&world_update_arg) )
     {
-        ypaworld->ypaworld_func164(NULL);
+        ypaworld->ypaworld_func164();
 
         if ( dword_513638 )
         {
@@ -309,7 +309,7 @@ int sb_0x411324__sub2()
 
         dword_520400 = 0;
         world_update_arg.field_0 = 0;
-        userdata.field_5457 = 0;
+        userdata.lastInputEvent = 0;
 
         if ( !ypaworld->ypaworld_func156(&userdata) )
         {
@@ -338,9 +338,9 @@ int sb_0x411324__sub1()
 
     ypaworld->ypaworld_func158(&userdata);
 
-    if ( userdata.field_0x2fbc == 1 )
+    if ( userdata.envAction.action == EnvAction::ACTION_QUIT )
         return 0;
-    else if ( userdata.field_0x2fbc == 2 )
+    else if ( userdata.envAction.action == EnvAction::ACTION_PLAY )
     {
         sub_410628();
         ypaworld->ypaworld_func157(&userdata);
@@ -351,7 +351,7 @@ int sb_0x411324__sub1()
             return 0;
 
         yw_arg161 v22;
-        v22.lvlID = userdata.field_0x2fc0;
+        v22.lvlID = userdata.envAction.params[0];
         v22.field_4 = 0;
 
         if ( !ypaworld->ypaworld_func183(&v22) )
@@ -364,7 +364,7 @@ int sb_0x411324__sub1()
         dword_520400 = 2;
         INPe.sub_412D28(&input_states);
     }
-    else if ( userdata.field_0x2fbc == 3 )
+    else if ( userdata.envAction.action == EnvAction::ACTION_LOAD )
     {
         dword_520400 = 0;
 
@@ -393,7 +393,7 @@ int sb_0x411324__sub1()
         dword_520400 = 2;
         INPe.sub_412D28(&input_states);
     }
-    else if ( userdata.field_0x2fbc == 4 )
+    else if ( userdata.envAction.action == EnvAction::ACTION_NETPLAY )
     {
         sub_410628();
 
@@ -405,7 +405,7 @@ int sb_0x411324__sub1()
         ypaworld->ypaworld_func157(&userdata);
 
         yw_arg161 v22;
-        v22.lvlID = userdata.field_0x2fc0;
+        v22.lvlID = userdata.envAction.params[0];
         v22.field_4 = 0;
 
         dword_520400 = 0;
@@ -421,12 +421,12 @@ int sb_0x411324__sub1()
         dword_520400 = 2;
         INPe.sub_412D28(&input_states);
     }
-    else if ( userdata.field_0x2fbc == 5 )
+    else if ( userdata.envAction.action == EnvAction::ACTION_DEMO )
     {
         char *repname = sub_4107A0(world_update_arg.field_0);
         if ( !repname )
         {
-            userdata.field_5457 = world_update_arg.field_0;
+            userdata.lastInputEvent = world_update_arg.field_0;
             return 1;
         }
 
@@ -448,7 +448,7 @@ int sb_0x411324__sub1()
         {
             ypa_log_out("Sorry, unable to init player!\n");
             world_update_arg.field_0 = 0;
-            userdata.field_5457 = 0;
+            userdata.lastInputEvent = 0;
 
             if ( !ypaworld->ypaworld_func156(&userdata) )
             {
@@ -532,7 +532,7 @@ int add_to_params_list(const char *a1)
 void deinit_globl_engines()
 {
     if ( tform_inited )
-        TFe.deinit();
+        TFEngine::Engine.deinit();
     if ( input_inited )
         INPe.deinit();
     if ( audio_inited )
@@ -584,7 +584,7 @@ int WinMain__sub0__sub0()
     gfx_inited = GFXEngine::GFXe.init();
     audio_inited = SFXEngine::SFXe.init();
     input_inited = INPe.init();
-    tform_inited = TFe.init();
+    tform_inited = TFEngine::Engine.init();
 
     if ( !audio_inited )
     {
@@ -707,7 +707,7 @@ void sub_4113E8()
     {
         if ( dword_520400 == 2 )
         {
-            ypaworld->ypaworld_func151(NULL);
+            ypaworld->ypaworld_func151();
             ypaworld->ypaworld_func155(&userdata);
         }
         else if ( dword_520400 == 1 )

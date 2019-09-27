@@ -4117,7 +4117,7 @@ void NC_STACK_yparobo::checkCommander()
                                 bact_node *v17 = (bact_node *)v30->head;
                                 while (v17->next)
                                 {
-                                    if (yw->field_1b80->owner == v17->bact->owner)
+                                    if (yw->URBact->owner == v17->bact->owner)
                                     {
                                         v33 = v17->bact;
                                         break;
@@ -5712,10 +5712,10 @@ void NC_STACK_yparobo::Die()
                 arg181.garant = 1;
                 yw->self_full->ypaworld_func181(&arg181);
 
-                if ( this == yw->field_1b78 )
+                if ( this == yw->UserRobo )
                 {
-                    yw->field_1b7c->setBACT_inputting(0);
-                    yw->field_1b7c->setBACT_viewer(0);
+                    yw->UserUnit->setBACT_inputting(0);
+                    yw->UserUnit->setBACT_viewer(0);
 
                     setBACT_inputting(1);
                     setBACT_viewer(1);

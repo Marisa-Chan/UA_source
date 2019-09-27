@@ -277,7 +277,7 @@ struct __NC_STACK_ypabact : public nnode
 //
 //    float pos_y_cntr;
 
-    TForm3D tForm;
+    TFEngine::TForm3D tForm;
     int clock;           // local time
     int AI_time1;
     int AI_time2;
@@ -330,7 +330,7 @@ struct __NC_STACK_ypabact : public nnode
     int scale_pos;
     int scale_delay;
     NC_STACK_base *vp_fx_models[32];
-    TForm3D *vp_fx_tform[32];
+    TFEngine::TForm3D *vp_fx_tform[32];
 
     int oflags;
     NC_STACK_ypaworld *ywo;
@@ -673,13 +673,13 @@ public:
     virtual void setBACT_yourLastSeconds(int);
     virtual void setBACT_visProto(NC_STACK_base *);
     virtual void setBACT_aggression(int);
-    virtual void setBACT_vpTransform(TForm3D *);
+    virtual void setBACT_vpTransform(TFEngine::TForm3D *);
     virtual void setBACT_extraViewer(int);
     virtual void setBACT_alwaysRender(int);
 
 
     virtual NC_STACK_ypaworld *getBACT_pWorld();
-    virtual TForm3D *getBACT_pTransform();
+    virtual TFEngine::TForm3D *getBACT_pTransform();
     virtual __NC_STACK_ypabact *getBACT_pBact();
     virtual int getBACT_viewer();
     virtual int getBACT_inputting();
@@ -691,7 +691,7 @@ public:
     virtual NC_STACK_base *getBACT_visProto();
     virtual int getBACT_aggression();
     virtual rbcolls *getBACT_collNodes();
-    virtual TForm3D *getBACT_vpTransform();
+    virtual TFEngine::TForm3D *getBACT_vpTransform();
     virtual int getBACT_extraViewer();
     virtual bact_node *getBACT_primAttackNode();
     virtual bact_node *getBACT_secnAttackNode();

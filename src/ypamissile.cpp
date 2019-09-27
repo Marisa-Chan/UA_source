@@ -613,7 +613,7 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
 
             if ( !(miss->field_2D & 4) || !miss->selfie->pSector->w_type )
             {
-                if ( miss->yw->field_1b80->owner == miss->selfie->owner || !miss->yw->isNetGame )
+                if ( miss->yw->URBact->owner == miss->selfie->owner || !miss->yw->isNetGame )
                 {
                     yw_arg129 v25;
 
@@ -717,7 +717,7 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
 
                         if ( !(miss->field_2D & 4) || !miss->selfie->pSector->w_type )
                         {
-                            if ( miss->yw->field_1b80->owner == miss->selfie->owner || !miss->yw->isNetGame )
+                            if ( miss->yw->URBact->owner == miss->selfie->owner || !miss->yw->isNetGame )
                             {
                                 yw_arg129 v25;
 

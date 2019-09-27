@@ -5,11 +5,6 @@
 
 class NC_STACK_idev;
 
-struct __NC_STACK_idev
-{
-
-};
-
 struct win_64arg
 {
     int field_0;
@@ -67,7 +62,6 @@ public:
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_idev() {
-        memset(&stack__idev, 0, sizeof(stack__idev));
     };
     virtual ~NC_STACK_idev() {};
 
@@ -81,8 +75,6 @@ public:
 
     //Data
     static const NewClassDescr description;
-
-    __NC_STACK_idev stack__idev;
 };
 
 #endif // IDEV_H_INCLUDED

@@ -1131,11 +1131,6 @@ void NC_STACK_winp::idev_func71(winp_71arg *arg)
     }
 }
 
-size_t NC_STACK_winp::iwimp_func128(IDVPair *stak)
-{
-    return 1;
-}
-
 void winp_func131__sub1()
 {
     if ( joyEnable )
@@ -1234,14 +1229,14 @@ void winp_func131__sub1()
     }
 }
 
-void NC_STACK_winp::iwimp_func131(winp_131arg *arg)
+void NC_STACK_winp::CheckClick(ClickBoxInf *arg)
 {
     arg->flag = 0;
 
     winp_func131__sub1();
 
-    arg->move[0].x = mouseState.pos.x;
-    arg->move[0].y = mouseState.pos.y;
+    arg->move.screenPos.x = mouseState.pos.x;
+    arg->move.screenPos.y = mouseState.pos.y;
 
     mouseState.move.x = mouseState.__xrel.x;
     mouseState.move.y = mouseState.__xrel.y;
@@ -1249,41 +1244,41 @@ void NC_STACK_winp::iwimp_func131(winp_131arg *arg)
     mouseState.__xrel.y = 0;
 
     if ( mouseState.l_state )
-        arg->flag |= 4;
+        arg->flag |= ClickBoxInf::FLAG_LM_HOLD;
     if ( mouseState.m_state )
-        arg->flag |= 0x800;
+        arg->flag |= ClickBoxInf::FLAG_MM_HOLD;
     if ( mouseState.r_state )
-        arg->flag |= 0x100;
+        arg->flag |= ClickBoxInf::FLAG_RM_HOLD;
     if ( mouseState.dbl_state )
-        arg->flag |= 0x2000;
+        arg->flag |= ClickBoxInf::FLAG_DBL_CLICK;
 
     if ( mouseState.ld_cnt > 0 )
     {
-        arg->ldw_pos[0].x = mouseState.ld_pos.x;
-        arg->ldw_pos[0].y = mouseState.ld_pos.y;
-        arg->flag |= 2;
+        arg->ldw_pos.screenPos.x = mouseState.ld_pos.x;
+        arg->ldw_pos.screenPos.y = mouseState.ld_pos.y;
+        arg->flag |= ClickBoxInf::FLAG_LM_DOWN;
     }
     if ( mouseState.lu_cnt > 0 )
     {
-        arg->lup_pos[0].x = mouseState.lu_pos.x;
-        arg->lup_pos[0].y = mouseState.lu_pos.y;
-        arg->flag |= 8;
+        arg->lup_pos.screenPos.x = mouseState.lu_pos.x;
+        arg->lup_pos.screenPos.y = mouseState.lu_pos.y;
+        arg->flag |= ClickBoxInf::FLAG_LM_UP;
     }
     if ( mouseState.rd_cnt > 0 )
     {
-        arg->flag |= 0x80;
+        arg->flag |= ClickBoxInf::FLAG_RM_DOWN;
     }
     if ( mouseState.ru_cnt > 0 )
     {
-        arg->flag |= 0x200;
+        arg->flag |= ClickBoxInf::FLAG_RM_UP;
     }
     if ( mouseState.md_cnt > 0 )
     {
-        arg->flag |= 0x400;
+        arg->flag |= ClickBoxInf::FLAG_MM_DOWN;
     }
     if ( mouseState.mu_cnt > 0 )
     {
-        arg->flag |= 0x1000;
+        arg->flag |= ClickBoxInf::FLAG_MM_UP;
     }
 
     mouseState.dbl_state = 0;
@@ -1294,7 +1289,7 @@ void NC_STACK_winp::iwimp_func131(winp_131arg *arg)
     mouseState.md_cnt = 0;
     mouseState.mu_cnt = 0;
 
-    NC_STACK_iwimp::iwimp_func131(arg);
+    NC_STACK_iwimp::CheckClick(arg);
 }
 
 void NC_STACK_winp::initfirst()
@@ -1491,10 +1486,8 @@ size_t NC_STACK_winp::compatcall(int method_id, void *data)
     case 71:
         idev_func71( (winp_71arg *)data );
         return 1;
-    case 128:
-        return (size_t)iwimp_func128( (IDVPair *)data );
     case 131:
-        iwimp_func131( (winp_131arg *)data );
+        CheckClick( (ClickBoxInf *)data );
         return 1;
     default:
         break;

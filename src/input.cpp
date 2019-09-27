@@ -323,7 +323,7 @@ void NC_STACK_input::input_func65(struC5 *arg)
     inp->field_4 += arg->period;
 
     if ( inp->wimp &&
-            inp->wimp->iwimp_func128(NULL) )
+            inp->wimp->HasFocus() )
     {
         if ( inp->keyboard )
         {
@@ -338,7 +338,7 @@ void NC_STACK_input::input_func65(struC5 *arg)
             arg->chr = v15.chr;
         }
 
-        inp->wimp->iwimp_func131(&arg->winp131arg);
+        inp->wimp->CheckClick(&arg->ClickInf);
 
         for (int i = 0; i < 32; i++)
         {
@@ -434,15 +434,19 @@ void NC_STACK_input::keyb_queryHotkey(idev_query_arg *arg)
     stack__input.keyboard->idev_func70(arg);
 }
 
-void NC_STACK_input::wimp_addClickNode(iwimp_arg129 *arg)
+void NC_STACK_input::wimp_addClickNodeFront(ClickBox *box)
 {
-    stack__input.wimp->iwimp_func129(arg);
+    stack__input.wimp->AddClickBoxFront(box);
 }
 
-
-void NC_STACK_input::wimp_remClickNode(iwimp_arg129 *arg)
+void NC_STACK_input::wimp_addClickNodeBack(ClickBox *box)
 {
-    stack__input.wimp->iwimp_func130(arg);
+    stack__input.wimp->AddClickBoxBack(box);
+}
+
+void NC_STACK_input::wimp_remClickNode(ClickBox *box)
+{
+    stack__input.wimp->RemoveClickBox(box);
 }
 
 

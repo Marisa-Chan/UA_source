@@ -13,7 +13,6 @@
 #include "base.h"
 #include "sklt.h"
 #include "wav.h"
-#include "windp.h"
 #include "ypabact.h"
 #include "ypamissile.h"
 #include "ypagun.h"
@@ -31,6 +30,7 @@
 class NC_STACK_ypaworld;
 struct _NC_STACK_ypaworld;
 class NC_STACK_button;
+class NC_STACK_windp;
 
 struct vhclBases;
 struct cityBases;
@@ -136,8 +136,39 @@ struct netType2
     int latency;
 };
 
-struct UserData
+enum
 {
+    ENVMODE_TITLE = 1,
+    ENVMODE_INPUT = 2,
+    ENVMODE_SETTINGS = 3,
+    ENVMODE_TUTORIAL = 4,
+    ENVMODE_SINGLEPLAY = 5,
+    ENVMODE_NETPLAY = 6,
+    ENVMODE_SELLOCALE = 7,
+    ENVMODE_ABOUT = 8,
+    ENVMODE_SELPLAYER = 9,
+    ENVMODE_HELP = 10
+};
+
+struct EnvAction
+{
+    enum
+    {
+        ACTION_NONE     = 0,
+        ACTION_QUIT     = 1,
+        ACTION_PLAY     = 2,
+        ACTION_LOAD     = 3,
+        ACTION_NETPLAY  = 4,
+        ACTION_DEMO     = 5
+    };
+
+    int action;
+    int params[5];
+};
+
+class UserData
+{
+public:
     int field_0x0;
     int field_0x4;
     int field_0x8;
@@ -145,13 +176,16 @@ struct UserData
     int field_0x10;
     char user_name[34];
 
+    NC_STACK_ypaworld *p_YW;
     _NC_STACK_ypaworld *p_ypaworld;
     struC5 *field_3A;
     int frameTime;
     uint32_t glblTime;
-    int field_46;
-    int field_4A;
-    int field_4E;
+
+    int envMode;
+    bool envModeChanged;
+
+    bool returnToTitle;
 
     samples_collection1 samples1_info;
     NC_STACK_wav *samples1[16];
@@ -292,9 +326,7 @@ struct UserData
     NC_STACK_button *confirm_button;
     int field_0x2fb4;
 
-    int field_0x2fbc;
-    int field_0x2fc0;
-    int field_0x2fc4;
+    EnvAction envAction;
 
     inp_key_setting keyConfig[46];
 
@@ -311,8 +343,8 @@ struct UserData
     int16_t snap_count;
     uint8_t cd;
     uint32_t last_cdchk;
-    uint32_t field_5457;
-    uint32_t field_545B;
+    uint32_t lastInputEvent;
+    uint32_t WaitForDemo;
     uint32_t netsend_count;
     uint32_t netrecv_count;
     uint32_t netrecv_time;
@@ -330,6 +362,49 @@ struct UserData
     uint32_t net_packet_max;
     uint32_t net_packet_cnt;
     uint32_t net_packet_avr;
+
+public:
+    void sb_0x46ca74();
+    void sb_0x46cdf8();
+    void sb_0x46aa8c();
+    void sub_46C3E4();
+    void ypaworld_func158__sub0__sub1();
+    void ypaworld_func158__sub0__sub3();
+    void yw_returnToTitle();
+    void sb_0x46a8c0();
+    void sb_0x46a8c0__sub0();
+    void sub_46A3C0();
+    void sub_46C914();
+    void sub_46C748();
+    void sub_46B0E0();
+    void sub_46AA0C();
+
+    void GameShellUiHandleInput();
+    void sub_4DE248(int id);
+    void sub_46D698();
+    void yw_NetPrintStartInfo();
+    void yw_CheckCDs();
+    void sub_46B328();
+    void yw_NetOKProvider();
+    void yw_JoinNetGame();
+    int ypaworld_func158__sub0__sub8(const char**, const char**);
+    void ypaworld_func151__sub7();
+    void yw_FractionInit();
+    void yw_netcleanup();
+    void sub_46DC1C();
+    void sub_46D960();
+    void ypaworld_func158__sub0__sub2();
+    void GameShellUiOpenNetwork();
+    int ypaworld_func158__sub0__sub7();
+    void sub_46D9E0(int a2, const char *txt1, const char *txt2, int a5);
+    void sub_46D2B4();
+    void sub_457BC0();
+    void ypaworld_func158__sub0__sub0();
+    int  ypaworld_func158__sub0__sub0__sub0();
+    void sub_46C5F0(int a2);
+    void  ypaworld_func158__sub0__sub5(int a2);
+    void sub_46A7F8();
+    void ypaworld_func158__sub0__sub4();
 };
 
 struct trec_bct
@@ -1007,13 +1082,15 @@ struct _NC_STACK_ypaworld
     int16_t field_162A;
     int GUI_OK;
     tiles_stru *tiles[92];
-    nlist field_17a0;
+    GuiBaseList field_17a0;
     int16_t screen_width;
     int16_t screen_height;
-    int field_17b0;
-    GuiBase *field_17b4;
-    shortPoint field_17b8;
-    int field_17bc;
+
+    int isDragging;
+    GuiBase *draggingItem;
+    shortPoint draggingPos;
+    bool draggingLock;
+
     int field_17c0; // Grab mouse for unit steer-turn
     int field_17c4;
     int field_17c8;
@@ -1073,10 +1150,10 @@ struct _NC_STACK_ypaworld
     uint16_t field_1B6E;
     int field_1b70;
     int field_1b74;
-    NC_STACK_ypabact *field_1b78;
-    NC_STACK_ypabact *field_1b7c;
-    __NC_STACK_ypabact *field_1b80;
-    __NC_STACK_ypabact *field_1b84;
+    NC_STACK_ypabact *UserRobo;
+    NC_STACK_ypabact *UserUnit;
+    __NC_STACK_ypabact *URBact;
+    __NC_STACK_ypabact *UUBact;
     nlist *field_1b88;
     int sectors_count_by_owner[8];
     int field_1bac[8];
@@ -1844,7 +1921,7 @@ public:
     virtual size_t ypaworld_func148(ypaworld_arg148 *arg);
     virtual void ypaworld_func149(ypaworld_arg136 *arg);
     virtual void ypaworld_func150(yw_arg150 *arg);
-    virtual void ypaworld_func151(IDVPair *arg);
+    virtual void ypaworld_func151();
     virtual void ypaworld_func153(bact_hudi *arg);
     virtual size_t ypaworld_func154(UserData *usr);
     virtual void ypaworld_func155(UserData *usr);
@@ -1856,7 +1933,7 @@ public:
     virtual size_t ypaworld_func161(yw_arg161 *arg);
     virtual size_t ypaworld_func162(const char *fname);
     virtual void ypaworld_func163(base_64arg *arg);
-    virtual void ypaworld_func164(void *arg);
+    virtual void ypaworld_func164();
     virtual void ypaworld_func165(yw_arg165 *arg);
     virtual size_t ypaworld_func166(const char **langname);
     virtual void ypaworld_func167(UserData *usr);
@@ -1973,6 +2050,21 @@ protected:
     void FFeedback_Update();
 
     void GUI_Close();
+
+    void CameraPrepareRender(recorder *rcrd, __NC_STACK_ypabact *bact, struC5 *inpt);
+    bool IsAnyInput(struC5 *struc);
+
+
+    void GameShellUiOpenNetwork(); // On main menu "Multiplayer" press
+    void GameShellBkgProcess();
+    void GameShellBlitBkg(NC_STACK_bitmap *bitm);
+    void GameShellInitBkgMode(int mode);
+    bool GameShellInitBkg();
+
+public:
+    void GuiWinToFront(GuiBase *);
+    void GuiWinOpen(GuiBase *);
+    void GuiWinClose(GuiBase *);
 
 public:
     //Data

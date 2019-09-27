@@ -81,8 +81,6 @@ int yw_InitTooltips(_NC_STACK_ypaworld *yw);
 int loadTOD(_NC_STACK_ypaworld *yw, const char *fname);
 int writeTOD(_NC_STACK_ypaworld *yw, const char *fname, int tod);
 
-void ypaworld_func158__sub4__sub0(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *bitm);
-
 void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int object_id, int a5);
 void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc);
 
@@ -103,14 +101,11 @@ int  ShellSoundsLoad(UserData *usr);
 void ypaworld_func154__sub0(_NC_STACK_ypaworld *yw);
 
 void ypaworld_func156__sub1(UserData *usr);
-void sub_46C524(UserData *usr);
-void yw_netcleanup(_NC_STACK_ypaworld *yw);
 
-void sub_46D2B4(NC_STACK_ypaworld *obj, UserData *usr);
 int parseSaveInput(scrCallBack *arg);
 
 
-void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr);
+
 
 void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
 
@@ -139,7 +134,7 @@ int sub_449678(_NC_STACK_ypaworld *yw, struC5 *struc, int kkode);
 void sub_46D0F8(const char *path);
 
 int init_prototypes(_NC_STACK_ypaworld *yw);
-void sub_457BC0(UserData *usr);
+
 
 int parseSaveVideo(scrCallBack *arg);
 void sub_46D370(NC_STACK_ypaworld *obj, int a2);
@@ -210,9 +205,9 @@ void sub_4C40AC(_NC_STACK_ypaworld *yw);
 __NC_STACK_ypabact *sub_449518(_NC_STACK_ypaworld *yw);
 
 
-struct squadMan
+class squadMan: public GuiList
 {
-    GuiList lstvw;
+public:
     __NC_STACK_ypabact *squads[24];
     int field_2A8;
     int field_2AC;
@@ -233,8 +228,9 @@ struct squadMan
     int field_2DC;
 };
 
-struct energPanel : public GuiBase
+class energPanel : public GuiBase
 {
+public:
     int field_1CC;
     int field_1D0;
     int field_1D4;
@@ -250,8 +246,9 @@ struct bzd_t1
     int d;
 };
 
-struct bzd : public GuiBase
+class bzd : public GuiBase
 {
+public:
     int field_1CC;
     int field_1D0;
     int field_1D4;
@@ -288,9 +285,9 @@ struct inflog_msg
     char txt[128];
 };
 
-struct yw_infolog
+class yw_infolog : public GuiList
 {
-    GuiList window;
+public:
     int field_248;
     int field_24C;
     int field_250;
@@ -304,8 +301,9 @@ struct yw_infolog
     int field_256C;
 };
 
-struct tehMap : GuiBase
+class tehMap : public GuiBase
 {
+public:
     int16_t field_1CC;
     int16_t field_1CE;
     int16_t field_1D0;
@@ -494,7 +492,7 @@ uint8_t *yw_histbf_read_evnt(uint8_t *st, yw_arg184 *arg);
 
 void yw_RenderVector2D(_NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection = false);
 uint32_t yw_GetColor(_NC_STACK_ypaworld *yw, int color_id);
-void yw_debriefUpdate(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
+void yw_debriefUpdate(_NC_STACK_ypaworld *yw, struC5 *inpt);
 void sub_4D6958(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, samples_collection1 *collection);
 
 int sub_4C885C();
@@ -508,7 +506,6 @@ void recorder_stoprec(_NC_STACK_ypaworld *yw);
 
 void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt);
 void ypaworld_func163__sub1(_NC_STACK_ypaworld *yw, recorder *rcrd, int a3);
-void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_ypabact *bact, struC5 *inpt);
 
 char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, float y, int value, int maxval, int valCH, int valBG, const char *a10, const char *a11, int flag = 0);
 void sub_4D0C24(_NC_STACK_ypaworld *yw, const char *a1, const char *a2);

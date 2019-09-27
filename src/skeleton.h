@@ -112,8 +112,6 @@ struct skeleton_130_arg
     int num_indexes;
 };
 
-struct TForm3D;
-
 struct skeleton_arg_132
 {
     mat4x4 tform;

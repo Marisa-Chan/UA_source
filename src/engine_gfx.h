@@ -55,6 +55,8 @@ struct w3d_a209
 {
     char *cmdbuf;
     char **includ;
+
+    w3d_a209() : cmdbuf(NULL), includ(NULL) {};
 };
 
 struct tUtV

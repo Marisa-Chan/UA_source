@@ -779,7 +779,7 @@ int yw_write_robo(_NC_STACK_ypaworld *yw, bact_node *bct, FSMgr::FileHandle *fil
 
     const char *isuser = "no";
 
-    if (bct->bacto == yw->field_1b78)
+    if (bct->bacto == yw->UserRobo)
         isuser = "yes";
 
     sprintf(buf, "    is_user_robo   = %s\n", isuser);

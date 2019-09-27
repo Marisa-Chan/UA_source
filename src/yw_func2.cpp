@@ -9,6 +9,7 @@
 #include "button.h"
 
 #include "yw_net.h"
+#include "windp.h"
 
 #include <math.h>
 
@@ -98,7 +99,7 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, vec
 
     v7->base_func70(&v17);
 
-    TForm3D *p3d = v7->getBASE_pTransform();
+    TFEngine::TForm3D *p3d = v7->getBASE_pTransform();
 
     int first;
     int demens;
@@ -150,13 +151,13 @@ void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int ob
     brf->field_4174.globTime = brf->currTime;
     brf->field_4174.ownerID = 1;
 
-    TForm3D v14;
-    memset(&v14, 0, sizeof(TForm3D));
+    TFEngine::TForm3D v14;
+    memset(&v14, 0, sizeof(TFEngine::TForm3D));
     v14.scale = vec3d(1.0, 1.0, 1.0);
     v14.locSclRot = mat3x3::Ident();
 
-    sub_430A20(&v14);
-    sub_430A38(&v14);
+    TFEngine::Engine.SetViewPoint(&v14);
+    v14.CalcGlobal();
 
     vec3d pos;
 
@@ -830,7 +831,7 @@ int yw_loadSky(_NC_STACK_ypaworld *yw, const char *skyname)
     strcpy(buf, "data:");
     strcat(buf, skyname);
 
-    NC_STACK_base *sky = READ_BAS_FILE(buf);
+    NC_STACK_base *sky = NC_STACK_base::READ_BAS_FILE(buf);
     yw->sky_loaded_base = sky;
     if ( !sky )
     {
@@ -1020,35 +1021,29 @@ void listLocaleDir(UserData *usr, const char *dirname)
         usr->default_lang_dll = deflng;
 }
 
-void sub_46A7F8(UserData *usr)
+void UserData::sub_46A7F8()
 {
-    int v4 = 2;
-    usr->disk_button->button_func68( &v4 );
+    disk_button->Hide();
 
-    usr->disk_listvw.CloseDialog(usr->p_ypaworld);
+    p_YW->GuiWinClose( &disk_listvw );
 
-    NC_STACK_button *v2;
-    if ( usr->field_0x1760 )
+    if ( field_0x1760 )
     {
-        usr->field_46 = 5;
-        v4 = 1;
-        v2 = usr->sub_bar_button;
+        envMode = ENVMODE_SINGLEPLAY;
+        sub_bar_button->Show();
     }
     else
     {
-        usr->field_46 = 1;
-        v4 = 1;
-        v2 = usr->titel_button;
+        envMode = ENVMODE_TITLE;
+        titel_button->Show();
     }
 
-    v2->button_func68(&v4);
-
-    button_66arg v3;
+    NC_STACK_button::button_66arg v3;
     v3.field_4 = 2;
     v3.butID = 1156;
-    usr->video_button->button_func73(&v3);
+    video_button->button_func73(&v3);
 
-    usr->field_0x1744 = 0;
+    field_0x1744 = 0;
 }
 
 
@@ -1096,18 +1091,16 @@ void ypaworld_func156__sub1(UserData *usr)
 }
 
 
-void sub_46C524(UserData *usr)
+void UserData::GameShellUiOpenNetwork()
 {
-    int v4 = 2;
-    usr->titel_button->button_func68(&v4);
+    titel_button->Hide();
 
-    v4 = 1;
-    usr->network_button->button_func68(&v4);
+    network_button->Show();
 
-    usr->field_46 = 6;
+    envMode = ENVMODE_NETPLAY;
 
-    usr->network_listvw.CloseDialog(usr->p_ypaworld);
-    usr->network_listvw.OpenDialog(usr->p_ypaworld);
+    p_YW->GuiWinClose( &network_listvw );
+    p_YW->GuiWinOpen( &network_listvw );
 }
 
 
@@ -1133,15 +1126,13 @@ void sb_0x46ca74__sub0(const char *a1, const char *a2)
     }
 }
 
-void sb_0x46ca74(UserData *usr)
+void  UserData::sb_0x46ca74()
 {
-    const char *usernamedir = usr->usernamedir;
-
     char oldsave[300];
 
-    if ( usr->field_1612 )
+    if ( field_1612 )
     {
-        if ( strcasecmp(usr->usernamedir, usr->user_name) )
+        if ( strcasecmp(usernamedir, user_name) )
         {
             sprintf(oldsave, "save:%s", usernamedir);
             sub_46D0F8(oldsave);
@@ -1159,7 +1150,7 @@ void sb_0x46ca74(UserData *usr)
 
         strncpy(v3->profile_subdir, usernamedir, 32);
 
-        AddTail(&usr->files_list, v3);
+        AddTail(&files_list, v3);
 
         char a1a[300];
 
@@ -1171,25 +1162,25 @@ void sb_0x46ca74(UserData *usr)
             return;
         }
 
-        usr->disk_listvw.numEntries++;
-        usr->field_1612 = usr->disk_listvw.numEntries;
+        disk_listvw.numEntries++;
+        field_1612 = disk_listvw.numEntries;
     }
 
-    sprintf(oldsave, "%s/user.txt", usr->usernamedir);
+    sprintf(oldsave, "%s/user.txt", usernamedir);
 
     yw_arg172 v15;
     v15.usertxt = oldsave;
-    v15.field_4 = usr->usernamedir;
-    v15.usr = usr;
+    v15.field_4 = usernamedir;
+    v15.usr = this;
     v15.field_8 = 255;
     v15.field_10 = 0;
 
-    if ( ! usr->p_ypaworld->self_full->ypaworld_func171(&v15) )
-        ypa_log_out("Warning! Error while saving user data for %s\n", usr->usernamedir);
+    if ( ! p_YW->ypaworld_func171(&v15) )
+        ypa_log_out("Warning! Error while saving user data for %s\n", usernamedir);
 
-    sprintf(oldsave, "save:%s", usr->user_name);
+    sprintf(oldsave, "save:%s", user_name);
 
-    if ( strcasecmp(usr->usernamedir, usr->user_name) )
+    if ( strcasecmp(usernamedir, user_name) )
     {
         FSMgr::DirIter *v8 = uaOpenDir(oldsave);
         FSMgr::iNode *a2a;
@@ -1213,7 +1204,7 @@ void sb_0x46ca74(UserData *usr)
                     char v12[300];
 
                     sprintf(v11, "%s/%s", oldsave, tmp.c_str());
-                    sprintf(v12, "save:%s/%s", usr->usernamedir, tmp.c_str());
+                    sprintf(v12, "save:%s/%s", usernamedir, tmp.c_str());
                     sb_0x46ca74__sub0(v11, v12);
                 }
             }
@@ -1221,27 +1212,24 @@ void sb_0x46ca74(UserData *usr)
         }
     }
 
-    usr->field_0x1744 = 0;
-    strncpy(usr->user_name, usr->usernamedir, 32);
+    field_0x1744 = 0;
+    strncpy(user_name, usernamedir, 32);
 
-    int v16 = 2;
-    usr->disk_button->button_func68(&v16);
+    disk_button->Hide();
 
-    usr->disk_listvw.CloseDialog(usr->p_ypaworld);
+    p_YW->GuiWinClose( &disk_listvw );
 
-    if ( usr->field_0x1760 )
+    if ( field_0x1760 )
     {
-        usr->field_46 = 5;
+        envMode = ENVMODE_SINGLEPLAY;
 
-        int v16 = 1;
-        usr->sub_bar_button->button_func68(&v16);
+        sub_bar_button->Show();
     }
     else
     {
-        usr->field_46 = 1;
+        envMode = ENVMODE_TITLE;
 
-        int v16 = 1;
-        usr->titel_button->button_func68(&v16);
+        titel_button->Show();
     }
 }
 
@@ -1394,24 +1382,24 @@ void sub_44A1FC(_NC_STACK_ypaworld *yw)
     }
 }
 
-void sb_0x46cdf8(UserData *usr)
+void UserData::sb_0x46cdf8()
 {
     char a1a[300];
-    sprintf(a1a, "%s/user.txt", usr->user_name);
+    sprintf(a1a, "%s/user.txt", user_name);
 
     yw_arg172 v12;
     v12.usertxt = a1a;
-    v12.field_4 = usr->user_name;
-    v12.usr = usr;
+    v12.field_4 = user_name;
+    v12.usr = this;
     v12.field_8 = 255;
     v12.field_10 = 0;
 
-    if ( ! usr->p_ypaworld->self_full->ypaworld_func171(&v12) )
-        ypa_log_out("Warning! Error while saving user data for %s\n", usr->user_name);
+    if ( ! p_YW->ypaworld_func171(&v12) )
+        ypa_log_out("Warning! Error while saving user data for %s\n", user_name);
 
-    if ( usr->field_1612 )
+    if ( field_1612 )
     {
-        sprintf(a1a, "save:%s", usr->usernamedir);
+        sprintf(a1a, "save:%s", usernamedir);
         sub_46D0F8(a1a);
     }
     else
@@ -1424,12 +1412,12 @@ void sb_0x46cdf8(UserData *usr)
             return;
         }
 
-        strncpy(v4->profile_subdir, usr->usernamedir, 32);
+        strncpy(v4->profile_subdir, usernamedir, 32);
 
-        AddTail(&usr->files_list, v4);
+        AddTail(&files_list, v4);
 
         char v10[300];
-        sprintf(v10, "save:%s", usr->usernamedir);
+        sprintf(v10, "save:%s", usernamedir);
 
         if ( !uaCreateDir(v10) )
         {
@@ -1437,49 +1425,47 @@ void sb_0x46cdf8(UserData *usr)
             return;
         }
 
-        strncpy(usr->user_name, usr->usernamedir, 32);
-        usr->disk_listvw.numEntries++;
-        usr->field_1612 = usr->disk_listvw.numEntries;
+        strncpy(user_name, usernamedir, 32);
+        disk_listvw.numEntries++;
+        field_1612 = disk_listvw.numEntries;
     }
 
-    usr->p_ypaworld->field_2d90->buddies_count = 0;
+    p_ypaworld->field_2d90->buddies_count = 0;
 
-    sb_0x47f810(usr->p_ypaworld);
+    sb_0x47f810(p_ypaworld);
 
-    if ( init_prototypes(usr->p_ypaworld) )
+    if ( init_prototypes(p_ypaworld) )
     {
         for (int i = 0; i < 256; i++)
         {
-            mapINFO *mp = &usr->p_ypaworld->LevelNet->mapInfos[i];
+            mapINFO *mp = &p_ypaworld->LevelNet->mapInfos[i];
             if ( mp->field_0 && mp->field_0 != 4 )
                 mp->field_0 = 1;
         }
 
-        sub_44A1FC(usr->p_ypaworld);
+        sub_44A1FC(p_ypaworld);
 
-        usr->p_ypaworld->maxroboenergy = 0;
-        usr->p_ypaworld->maxreloadconst = 0;
+        p_ypaworld->maxroboenergy = 0;
+        p_ypaworld->maxreloadconst = 0;
 
-        memset(usr->p_ypaworld->playerstatus, 0, sizeof(player_status) * 8);
+        memset(p_ypaworld->playerstatus, 0, sizeof(player_status) * 8);
 
-        usr->field_0x1744 = 0;
+        field_0x1744 = 0;
 
-        usr->p_ypaworld->field_2d90->field_74 = 128;
-        usr->p_ypaworld->beamenergy = usr->p_ypaworld->beam_energy_start;
+        p_ypaworld->field_2d90->field_74 = 128;
+        p_ypaworld->beamenergy = p_ypaworld->beam_energy_start;
 
-        memset(usr->p_ypaworld->field_2d90->jodiefoster, 0, sizeof(int) * 8);
+        memset(p_ypaworld->field_2d90->jodiefoster, 0, sizeof(int) * 8);
 
-        usr->field_3426 = 0;
+        field_3426 = 0;
 
-        int v13 = 2;
-        usr->disk_button->button_func68(&v13);
+        disk_button->Hide();
 
-        usr->disk_listvw.CloseDialog(usr->p_ypaworld);
+        p_YW->GuiWinClose( &disk_listvw );
 
-        usr->field_46 = 5;
+        envMode = ENVMODE_SINGLEPLAY;
 
-        v13 = 1;
-        usr->sub_bar_button->button_func68(&v13);
+        sub_bar_button->Show();
     }
     else
     {
@@ -1487,19 +1473,18 @@ void sb_0x46cdf8(UserData *usr)
     }
 }
 
-void sub_46D960(UserData *usr)
+void UserData::sub_46D960()
 {
-    button_66arg v4;
+    NC_STACK_button::button_66arg v4;
     v4.butID = 1300;
-    usr->confirm_button->button_func67(&v4);
+    confirm_button->button_func67(&v4);
 
     v4.butID = 1301;
-    usr->confirm_button->button_func67(&v4);
+    confirm_button->button_func67(&v4);
 
-    int v5 = 2;
-    usr->confirm_button->button_func68(&v5);
+    confirm_button->Hide();
 
-    usr->field_0x2fb4 = 0;
+    field_0x2fb4 = 0;
 }
 
 void sub_46D370(NC_STACK_ypaworld *obj, int a2)
@@ -1519,9 +1504,9 @@ void sub_46D370(NC_STACK_ypaworld *obj, int a2)
 }
 
 //Options OK
-void sb_0x46aa8c(UserData *usr)
+void UserData::sb_0x46aa8c()
 {
-    _NC_STACK_ypaworld *yw = usr->p_ypaworld;
+    _NC_STACK_ypaworld *yw = p_ypaworld;
 
     int v3 = 0;
 
@@ -1530,23 +1515,23 @@ void sb_0x46aa8c(UserData *usr)
     int v5 = 0;
     int resolution;
 
-    if ( usr->field_13C2 & 0x200 )
+    if ( field_13C2 & 0x200 )
     {
-        if ( usr->field_0x13b0 & 0x10 )
+        if ( field_0x13b0 & 0x10 )
         {
-            usr->snd__flags2 |= 0x10;
+            snd__flags2 |= 0x10;
             yw->snd__cdsound |= 1;
 
             SFXEngine::SFXe.SetMusicIgnoreCommandsFlag(true);
-            if ( usr->shelltrack )
+            if ( shelltrack )
             {
-                SFXEngine::SFXe.SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
+                SFXEngine::SFXe.SetMusicTrack(shelltrack, shelltrack__adv.min_delay, shelltrack__adv.max_delay);
                 SFXEngine::SFXe.PlayMusicTrack();
             }
         }
         else
         {
-            usr->snd__flags2 &= 0xEF;
+            snd__flags2 &= 0xEF;
             yw->snd__cdsound &= 0xFE;
 
             SFXEngine::SFXe.StopMusicTrack();
@@ -1555,120 +1540,120 @@ void sb_0x46aa8c(UserData *usr)
 
     }
 
-    if ( usr->field_13C2 & 2 )
+    if ( field_13C2 & 2 )
     {
-        if ( usr->field_0x13b0 & 1 )
+        if ( field_0x13b0 & 1 )
         {
-            usr->snd__flags2 |= 1;
+            snd__flags2 |= 1;
             SFXEngine::SFXe.setReverseStereo(1);
         }
         else
         {
-            usr->snd__flags2 &= ~1;
+            snd__flags2 &= ~1;
             SFXEngine::SFXe.setReverseStereo(0);
         }
     }
 
-    if ( usr->field_13C2 & 0x10 )
+    if ( field_13C2 & 0x10 )
     {
-        if ( usr->field_0x13a8 & 1 )
+        if ( field_0x13a8 & 1 )
         {
-            usr->GFX_flags |= 1;
+            GFX_flags |= 1;
             sub_46D370(yw->self_full, 1);
         }
         else
         {
-            usr->GFX_flags &= 0xFE;
+            GFX_flags &= 0xFE;
             sub_46D370(yw->self_full, 0);
         }
     }
 
-    if ( usr->field_13C2 & 8 )
+    if ( field_13C2 & 8 )
     {
-        if ( usr->field_0x13a8 & 2 )
+        if ( field_0x13a8 & 2 )
         {
-            usr->GFX_flags |= 2;
+            GFX_flags |= 2;
             yw->self_full->setYW_skyRender(1);
         }
         else
         {
-            usr->GFX_flags &= ~2;
+            GFX_flags &= ~2;
             yw->self_full->setYW_skyRender(0);
         }
 
     }
 
-    if ( usr->field_13C2 & 0x800 )
+    if ( field_13C2 & 0x800 )
     {
-        if ( usr->field_0x13a8 & 4 )
+        if ( field_0x13a8 & 4 )
         {
-            usr->GFX_flags |= 4;
+            GFX_flags |= 4;
             yw->field_73CE |= 0x40;
             yw->win3d->setWDD_cursor(1);
         }
         else
         {
-            usr->GFX_flags &= 0xFB;
+            GFX_flags &= 0xFB;
             yw->field_73CE &= 0xBF;
             yw->win3d->setWDD_cursor(0);
         }
 
     }
 
-    if ( usr->field_13C2 & 0x20 )
+    if ( field_13C2 & 0x20 )
     {
-        usr->enemyindicator = usr->field_13BE;
+        enemyindicator = field_13BE;
 
-        if ( usr->enemyindicator )
-            usr->p_ypaworld->field_73CE |= 0x20;
+        if ( enemyindicator )
+            p_ypaworld->field_73CE |= 0x20;
         else
-            usr->p_ypaworld->field_73CE &= 0xDF;
+            p_ypaworld->field_73CE &= 0xDF;
     }
 
-    if ( usr->field_13C2 & 0x40 )
+    if ( field_13C2 & 0x40 )
     {
-        usr->fxnumber = usr->field_0x13a4;
-        yw->fxnumber = usr->fxnumber;
+        fxnumber = field_0x13a4;
+        yw->fxnumber = fxnumber;
     }
 
-    if ( usr->field_13C2 & 0x100 )
+    if ( field_13C2 & 0x100 )
     {
-        usr->snd__cdvolume = usr->field_0x13b8;
+        snd__cdvolume = field_0x13b8;
 
-        SFXEngine::SFXe.SetMusicVolume(usr->field_0x13b8);
+        SFXEngine::SFXe.SetMusicVolume(field_0x13b8);
     }
 
-    if ( usr->field_13C2 & 0x80 )
+    if ( field_13C2 & 0x80 )
     {
-        usr->snd__volume = usr->field_0x13b4;
-        SFXEngine::SFXe.setMasterVolume(usr->snd__volume);
+        snd__volume = field_0x13b4;
+        SFXEngine::SFXe.setMasterVolume(snd__volume);
     }
 
-    if ( usr->field_13C2 & 1 )
+    if ( field_13C2 & 1 )
     {
-        if ( usr->game_default_res != yw->game_default_res && usr->game_default_res )
+        if ( game_default_res != yw->game_default_res && game_default_res )
         {
             v3 = 1;
             resolution = yw->game_default_res;
 
-            yw->game_default_res = usr->game_default_res;
+            yw->game_default_res = game_default_res;
         }
     }
 
-    if ( usr->field_13C2 & 0x1000 )
+    if ( field_13C2 & 0x1000 )
     {
-        if ( usr->field_139A )
+        if ( field_139A )
         {
-            if ( strcasecmp(usr->field_139A, usr->win3d_guid) )
+            if ( strcasecmp(field_139A, win3d_guid) )
             {
-                strcpy(usr->win3d_name, usr->field_139E);
+                strcpy(win3d_name, field_139E);
 
-                strcpy(usr->win3d_guid, usr->field_139A);
+                strcpy(win3d_guid, field_139A);
 
                 wdd_func324arg v37;
 
-                v37.name = usr->win3d_name;
-                v37.guid = usr->win3d_guid;
+                v37.name = win3d_name;
+                v37.guid = win3d_guid;
                 v37.currr = 0;
 
                 yw->win3d->windd_func325(&v37); //Save to file new resolution
@@ -1681,16 +1666,16 @@ void sb_0x46aa8c(UserData *usr)
         }
     }
 
-    if ( usr->field_13C2 & 4 )
+    if ( field_13C2 & 4 )
     {
-        if ( usr->field_0x13a8 & 0x10 )
+        if ( field_0x13a8 & 0x10 )
         {
-            usr->GFX_flags |= 0x10;
+            GFX_flags |= 0x10;
             yw->win3d->setWDD_16bitTex(1);
         }
         else
         {
-            usr->GFX_flags &= 0xEF;
+            GFX_flags &= 0xEF;
             yw->win3d->setWDD_16bitTex(0);
         }
 
@@ -1699,16 +1684,16 @@ void sb_0x46aa8c(UserData *usr)
         v40.make_changes = 1;
     }
 
-    if ( usr->field_13C2 & 0x400 )
+    if ( field_13C2 & 0x400 )
     {
-        if ( usr->field_0x13a8 & 8 )
+        if ( field_0x13a8 & 8 )
         {
-            usr->GFX_flags |= 8;
+            GFX_flags |= 8;
             yw->win3d->setWDD_drawPrim(1);
         }
         else
         {
-            usr->GFX_flags &= 0xF7;
+            GFX_flags &= 0xF7;
             yw->win3d->setWDD_drawPrim(0);
         }
 
@@ -1718,29 +1703,29 @@ void sb_0x46aa8c(UserData *usr)
         v40.make_changes = 1;
     }
 
-    if ( (v3 && usr->p_ypaworld->one_game_res) || v5 )
+    if ( (v3 && p_ypaworld->one_game_res) || v5 )
     {
-        if ( usr->p_ypaworld->one_game_res || !v3 )
-            v40.resolution = usr->p_ypaworld->game_default_res;
+        if ( p_ypaworld->one_game_res || !v3 )
+            v40.resolution = p_ypaworld->game_default_res;
         else
             v40.resolution = resolution;
 
         yw->self_full->ypaworld_func174(&v40);
 
-        video_mode_node *nod = (video_mode_node *)usr->video_mode_list.head;
+        video_mode_node *nod = (video_mode_node *)video_mode_list.head;
         int v24 = 0;
 
         while (nod->next)
         {
             if (yw->game_default_res == nod->sort_id)
             {
-                usr->field_FBE = v24;
+                field_FBE = v24;
 
-                button_71arg v36;
+                NC_STACK_button::button_71arg v36;
                 v36.field_4 = nod->name;
                 v36.butID = 1156;
                 v36.field_8 = 0;
-                usr->video_button->button_func71(&v36);
+                video_button->button_func71(&v36);
 
                 break;
             }
@@ -1750,38 +1735,36 @@ void sb_0x46aa8c(UserData *usr)
         }
     }
 
-    usr->field_13C2 = 0;
-    usr->field_46 = 1;
+    field_13C2 = 0;
+    envMode = ENVMODE_TITLE;
 
-    int v42 = 2;
-    usr->video_button->button_func68(&v42);
+    video_button->Hide();
 
-    if ( !(usr->video_listvw.flags & GuiBase::FLAG_CLOSED) )
-        usr->video_listvw.CloseDialog(usr->p_ypaworld);
+    if ( video_listvw.IsOpen() )
+        p_YW->GuiWinClose( &video_listvw );
 
-    if ( !(usr->d3d_listvw.flags & GuiBase::FLAG_CLOSED) )
-        usr->d3d_listvw.CloseDialog(usr->p_ypaworld);
+    if ( d3d_listvw.IsOpen() )
+        p_YW->GuiWinClose( &d3d_listvw );
 
-    button_66arg v38;
+    NC_STACK_button::button_66arg v38;
     v38.field_4 = 2;
     v38.butID = 1156;
 
-    usr->video_button->button_func73(&v38);
+    video_button->button_func73(&v38);
 
     v38.butID = 1172;
-    usr->video_button->button_func73(&v38);
+    video_button->button_func73(&v38);
 
-    v42 = 1;
-    usr->titel_button->button_func68(&v42);
+    titel_button->Show();
 }
 
 
-void sub_46DC1C(UserData *usr)
+void UserData::sub_46DC1C()
 {
     uamessage_load lvlMsg;
     lvlMsg.msgID = UAMSG_LOAD;
     lvlMsg.owner = 0;
-    lvlMsg.level = usr->netLevelID;
+    lvlMsg.level = netLevelID;
 
     yw_arg181 v5;
     v5.data = &lvlMsg;
@@ -1790,26 +1773,26 @@ void sub_46DC1C(UserData *usr)
     v5.recvFlags = 2;
     v5.garant = 1;
 
-    usr->p_ypaworld->self_full->ypaworld_func181(&v5);
+    p_YW->ypaworld_func181(&v5);
 
     windp_arg82 v6;
-    v6.senderID = usr->callSIGN;
+    v6.senderID = callSIGN;
     v6.senderFlags = 1;
     v6.receiverID = 0;
     v6.receiverFlags = 2;
     v6.guarant = 1;
 
-    usr->p_ypaworld->windp->windp_func82(&v6);
+    p_ypaworld->windp->FlushBuffer(v6);
 
-    usr->field_0x2fbc = 4;
-    usr->field_0x2fc0 = usr->netLevelID;
-    usr->network_listvw.firstShownEntries = 0;
-    usr->field_0x2fc4 = usr->netLevelID;
+    envAction.action = EnvAction::ACTION_NETPLAY;
+    envAction.params[0] = netLevelID;
+    network_listvw.firstShownEntries = 0;
+    envAction.params[1] = netLevelID;
 
     int v12 = 1;
-    usr->p_ypaworld->windp->windp_func84(&v12);
+    p_ypaworld->windp->LockSession(&v12);
 
-    yw_NetPrintStartInfo(usr);
+    yw_NetPrintStartInfo();
 }
 
 int sub_4EDCC4(_NC_STACK_ypaworld *yw)
@@ -1832,11 +1815,11 @@ int sub_47B388(int a1, const char *a2)
     return 1;
 }
 
-int ypaworld_func158__sub0__sub7(UserData *usr)
+int UserData::ypaworld_func158__sub0__sub7()
 {
     char buf[300];
 
-    sprintf(buf, "save:%s/sgisold.txt", usr->user_name);
+    sprintf(buf, "save:%s/sgisold.txt",user_name);
     FSMgr::FileHandle *fl = uaOpenFile(buf, "r");
     if ( !fl )
         return 0;
@@ -1854,7 +1837,7 @@ void sub_4811E8(_NC_STACK_ypaworld *yw, int id)
     }
 }
 
-void sub_4DE248(UserData *usr, int id)
+void UserData::sub_4DE248(int id)
 {
     switch (id)
     {
@@ -1862,47 +1845,47 @@ void sub_4DE248(UserData *usr, int id)
         break;
 
     case 1001:
-        sub_4811E8(usr->p_ypaworld, 0x7B);
+        sub_4811E8(p_ypaworld, 0x7B);
         break;
 
     case 1003:
-        sub_4811E8(usr->p_ypaworld, 0x78);
+        sub_4811E8(p_ypaworld, 0x78);
         break;
 
     case 1004:
-        sub_4811E8(usr->p_ypaworld, 0x79);
+        sub_4811E8(p_ypaworld, 0x79);
         break;
 
     case 1005:
-        sub_4811E8(usr->p_ypaworld, 0x7A);
+        sub_4811E8(p_ypaworld, 0x7A);
         break;
 
     case 1007:
-        sub_4811E8(usr->p_ypaworld, 0x83);
+        sub_4811E8(p_ypaworld, 0x83);
         break;
 
     case 1008:
-        sub_4811E8(usr->p_ypaworld, 0x7C);
+        sub_4811E8(p_ypaworld, 0x7C);
         break;
 
     case 1011:
-        sub_4811E8(usr->p_ypaworld, 0x81);
+        sub_4811E8(p_ypaworld, 0x81);
         break;
 
     case 1013:
-        sub_4811E8(usr->p_ypaworld, 0x80);
+        sub_4811E8(p_ypaworld, 0x80);
         break;
 
     case 1014:
-        sub_4811E8(usr->p_ypaworld, 0x82);
+        sub_4811E8(p_ypaworld, 0x82);
         break;
 
     case 1015:
-        sub_4811E8(usr->p_ypaworld, 0x7F);
+        sub_4811E8(p_ypaworld, 0x7F);
         break;
 
     case 1016:
-        sub_4811E8(usr->p_ypaworld, 0x88);
+        sub_4811E8(p_ypaworld, 0x88);
         break;
 
     case 1017:
@@ -1910,89 +1893,89 @@ void sub_4DE248(UserData *usr, int id)
     case 1107:
     case 1167:
     case 1218:
-        sub_4811E8(usr->p_ypaworld, 0x89);
+        sub_4811E8(p_ypaworld, 0x89);
         break;
 
     case 1018:
-        sub_4811E8(usr->p_ypaworld, 0x6A);
+        sub_4811E8(p_ypaworld, 0x6A);
         break;
 
     case 1019:
-        if ( sub_4EDCC4(usr->p_ypaworld) )
+        if ( sub_4EDCC4(p_ypaworld) )
         {
-            if ( usr->p_ypaworld->field_2d90->field_40 == 9 )
-                sub_4811E8(usr->p_ypaworld, 0x49);
+            if ( p_ypaworld->field_2d90->field_40 == 9 )
+                sub_4811E8(p_ypaworld, 0x49);
             else
-                sub_4811E8(usr->p_ypaworld, 0x8B);
+                sub_4811E8(p_ypaworld, 0x8B);
         }
         else
         {
-            sub_4811E8(usr->p_ypaworld, 0x8A);
+            sub_4811E8(p_ypaworld, 0x8A);
         }
         break;
 
     case 1020:
-        sub_4811E8(usr->p_ypaworld, 0x4A);
+        sub_4811E8(p_ypaworld, 0x4A);
         break;
 
     case 1050:
-        sub_4811E8(usr->p_ypaworld, 0xC4);
+        sub_4811E8(p_ypaworld, 0xC4);
         break;
 
     case 1051:
-        sub_4811E8(usr->p_ypaworld, 0xC1);
+        sub_4811E8(p_ypaworld, 0xC1);
         break;
 
     case 1053:
-        sub_4811E8(usr->p_ypaworld, 0xC3);
+        sub_4811E8(p_ypaworld, 0xC3);
         break;
 
     case 1054:
-        sub_4811E8(usr->p_ypaworld, 0xC2);
+        sub_4811E8(p_ypaworld, 0xC2);
         break;
 
     case 1055:
-        sub_4811E8(usr->p_ypaworld, 0xC5);
+        sub_4811E8(p_ypaworld, 0xC5);
         break;
 
     case 1056:
-        sub_4811E8(usr->p_ypaworld, 0xC6);
+        sub_4811E8(p_ypaworld, 0xC6);
         break;
 
     case 1061:
-        sub_4811E8(usr->p_ypaworld, 0x4D);
+        sub_4811E8(p_ypaworld, 0x4D);
         break;
 
     case 1101:
-        sub_4811E8(usr->p_ypaworld, 0x76);
+        sub_4811E8(p_ypaworld, 0x76);
         break;
 
     case 1102:
-        sub_4811E8(usr->p_ypaworld, 0xA8);
+        sub_4811E8(p_ypaworld, 0xA8);
         break;
 
     case 1103:
-        sub_4811E8(usr->p_ypaworld, 0xA9);
+        sub_4811E8(p_ypaworld, 0xA9);
         break;
 
     case 1104:
-        sub_4811E8(usr->p_ypaworld, 0x77);
+        sub_4811E8(p_ypaworld, 0x77);
         break;
 
     case 1105:
-        switch ( usr->field_0x1744 )
+        switch ( field_0x1744 )
         {
         case 1:
-            sub_4811E8(usr->p_ypaworld, 0xAB);
+            sub_4811E8(p_ypaworld, 0xAB);
             break;
         case 2:
-            sub_4811E8(usr->p_ypaworld, 0xAA);
+            sub_4811E8(p_ypaworld, 0xAA);
             break;
         case 3:
-            sub_4811E8(usr->p_ypaworld, 0xAD);
+            sub_4811E8(p_ypaworld, 0xAD);
             break;
         case 4:
-            sub_4811E8(usr->p_ypaworld, 0xAC);
+            sub_4811E8(p_ypaworld, 0xAC);
             break;
         default:
             break;
@@ -2000,104 +1983,104 @@ void sub_4DE248(UserData *usr, int id)
         break;
 
     case 1106:
-        switch ( usr->field_0x1744 )
+        switch ( field_0x1744 )
         {
         case 0:
-            sub_4811E8(usr->p_ypaworld, 0xAE);
+            sub_4811E8(p_ypaworld, 0xAE);
             break;
         case 1:
-            sub_4811E8(usr->p_ypaworld, 0xB0);
+            sub_4811E8(p_ypaworld, 0xB0);
             break;
         case 2:
-            sub_4811E8(usr->p_ypaworld, 0xAF);
+            sub_4811E8(p_ypaworld, 0xAF);
             break;
         case 3:
-            sub_4811E8(usr->p_ypaworld, 0xB2);
+            sub_4811E8(p_ypaworld, 0xB2);
             break;
         case 4:
-            sub_4811E8(usr->p_ypaworld, 0xB1);
+            sub_4811E8(p_ypaworld, 0xB1);
             break;
         default:
             break;
         }
         break;
     case 1150:
-        sub_4811E8(usr->p_ypaworld, 0x4E);
+        sub_4811E8(p_ypaworld, 0x4E);
         break;
 
     case 1151:
-        sub_4811E8(usr->p_ypaworld, 0xB7);
+        sub_4811E8(p_ypaworld, 0xB7);
         break;
 
     case 1152:
-        sub_4811E8(usr->p_ypaworld, 0xBE);
+        sub_4811E8(p_ypaworld, 0xBE);
         break;
 
     case 1154:
-        sub_4811E8(usr->p_ypaworld, 0xBF);
+        sub_4811E8(p_ypaworld, 0xBF);
         break;
 
     case 1156:
-        sub_4811E8(usr->p_ypaworld, 0xB5);
+        sub_4811E8(p_ypaworld, 0xB5);
         break;
 
     case 1157:
-        sub_4811E8(usr->p_ypaworld, 0xB8);
+        sub_4811E8(p_ypaworld, 0xB8);
         break;
 
     case 1159:
-        sub_4811E8(usr->p_ypaworld, 0xC0);
+        sub_4811E8(p_ypaworld, 0xC0);
         break;
 
     case 1160:
-        sub_4811E8(usr->p_ypaworld, 0xB9);
+        sub_4811E8(p_ypaworld, 0xB9);
         break;
 
     case 1161:
-        sub_4811E8(usr->p_ypaworld, 0xB4);
+        sub_4811E8(p_ypaworld, 0xB4);
         break;
 
     case 1162:
-        sub_4811E8(usr->p_ypaworld, 0xB3);
+        sub_4811E8(p_ypaworld, 0xB3);
         break;
 
     case 1163:
-        sub_4811E8(usr->p_ypaworld, 0xBD);
+        sub_4811E8(p_ypaworld, 0xBD);
         break;
 
     case 1164:
-        sub_4811E8(usr->p_ypaworld, 0xBB);
+        sub_4811E8(p_ypaworld, 0xBB);
         break;
 
     case 1165:
-        sub_4811E8(usr->p_ypaworld, 0xBC);
+        sub_4811E8(p_ypaworld, 0xBC);
         break;
 
     case 1166:
-        sub_4811E8(usr->p_ypaworld, 0x4F);
+        sub_4811E8(p_ypaworld, 0x4F);
         break;
 
     case 1172:
-        sub_4811E8(usr->p_ypaworld, 0x4B);
+        sub_4811E8(p_ypaworld, 0x4B);
         break;
 
     case 1201:
-        switch ( usr->netSelMode )
+        switch ( netSelMode )
         {
         case 0:
-            sub_4811E8(usr->p_ypaworld, 0x8E);
+            sub_4811E8(p_ypaworld, 0x8E);
             break;
         case 1:
-            sub_4811E8(usr->p_ypaworld, 0x91);
+            sub_4811E8(p_ypaworld, 0x91);
             break;
         case 2:
-            sub_4811E8(usr->p_ypaworld, 0x8F);
+            sub_4811E8(p_ypaworld, 0x8F);
             break;
         case 3:
-            sub_4811E8(usr->p_ypaworld, 0x90);
+            sub_4811E8(p_ypaworld, 0x90);
             break;
         case 4:
-            sub_4811E8(usr->p_ypaworld, 0x92);
+            sub_4811E8(p_ypaworld, 0x92);
             break;
         default:
             break;
@@ -2105,32 +2088,32 @@ void sub_4DE248(UserData *usr, int id)
         break;
 
     case 1202:
-        if ( usr->netSelMode == 1 )
+        if ( netSelMode == 1 )
         {
-            sub_4811E8(usr->p_ypaworld, 0x6E);
+            sub_4811E8(p_ypaworld, 0x6E);
         }
-        else if ( usr->netSelMode == 4 )
+        else if ( netSelMode == 4 )
         {
-            sub_4811E8(usr->p_ypaworld, 0x6F);
+            sub_4811E8(p_ypaworld, 0x6F);
         }
         break;
 
     case 1203:
-        sub_4811E8(usr->p_ypaworld, 0x8C);
+        sub_4811E8(p_ypaworld, 0x8C);
         break;
 
     case 1205:
-        switch ( usr->netSelMode )
+        switch ( netSelMode )
         {
         case 1:
-            sub_4811E8(usr->p_ypaworld, 0x94);
+            sub_4811E8(p_ypaworld, 0x94);
             break;
         case 2:
-            sub_4811E8(usr->p_ypaworld, 0x93);
+            sub_4811E8(p_ypaworld, 0x93);
             break;
         case 3:
         case 4:
-            sub_4811E8(usr->p_ypaworld, 0x95);
+            sub_4811E8(p_ypaworld, 0x95);
             break;
         default:
             break;
@@ -2138,101 +2121,95 @@ void sub_4DE248(UserData *usr, int id)
         break;
 
     case 1206:
-        sub_4811E8(usr->p_ypaworld, 0x70);
+        sub_4811E8(p_ypaworld, 0x70);
         break;
 
     case 1207:
-        sub_4811E8(usr->p_ypaworld, 0x71);
+        sub_4811E8(p_ypaworld, 0x71);
         break;
 
     case 1208:
-        sub_4811E8(usr->p_ypaworld, 0x72);
+        sub_4811E8(p_ypaworld, 0x72);
         break;
 
     case 1209:
-        sub_4811E8(usr->p_ypaworld, 0x73);
+        sub_4811E8(p_ypaworld, 0x73);
         break;
 
     case 1219:
-        if ( usr->rdyStart )
-            sub_4811E8(usr->p_ypaworld, 0x75);
+        if ( rdyStart )
+            sub_4811E8(p_ypaworld, 0x75);
         else
-            sub_4811E8(usr->p_ypaworld, 0x74);
+            sub_4811E8(p_ypaworld, 0x74);
         break;
 
     case 1225:
-        sub_4811E8(usr->p_ypaworld, 0x4C);
+        sub_4811E8(p_ypaworld, 0x4C);
         break;
 
     case 1250:
-        sub_4811E8(usr->p_ypaworld, 0x6C);
+        sub_4811E8(p_ypaworld, 0x6C);
         break;
 
     case 1251:
-        sub_4811E8(usr->p_ypaworld, 0x6D);
+        sub_4811E8(p_ypaworld, 0x6D);
         break;
 
     case 1252:
-        sub_4811E8(usr->p_ypaworld, 0x89);
+        sub_4811E8(p_ypaworld, 0x89);
         break;
     }
 }
 
 // Go to options menu
-void ypaworld_func158__sub0__sub2(UserData *usr)
+void UserData::ypaworld_func158__sub0__sub2()
 {
-    int v5 = 2;
-    usr->titel_button->button_func68(&v5);
+    titel_button->Hide();
 
-    v5 = 1;
-    usr->video_button->button_func68(&v5);
+    video_button->Show();
 
-    usr->field_46 = 3;
+    envMode = ENVMODE_SETTINGS;
 
-    if ( !(usr->video_listvw.flags & GuiBase::FLAG_CLOSED) )
+    if ( video_listvw.IsOpen() )
     {
-        usr->video_listvw.CloseDialog(usr->p_ypaworld);
-        usr->video_listvw.OpenDialog(usr->p_ypaworld);
+        p_YW->GuiWinClose( &video_listvw );
+        p_YW->GuiWinOpen( &video_listvw );
     }
 
-    usr->video_listvw.selectedEntry = usr->field_FBE;
+    video_listvw.selectedEntry = field_FBE;
 }
 
-void sub_46C3E4(UserData *usr)
+void UserData::sub_46C3E4()
 {
-    int v5 = 2;
-    usr->titel_button->button_func68(&v5);
+    titel_button->Hide();
 
-    v5 = 1;
-    usr->disk_button->button_func68(&v5);
+    disk_button->Show();
 
-    usr->field_46 = 9;
+    envMode = ENVMODE_SELPLAYER;
 
-    profilesNode *v4 = (profilesNode *)usr->files_list.head;
+    profilesNode *v4 = (profilesNode *)files_list.head;
     while (v4->next)
     {
-        if ( !strcasecmp(v4->profile_subdir, usr->user_name))
+        if ( !strcasecmp(v4->profile_subdir, user_name))
         {
-            v4->pStatus_3 = usr->p_ypaworld->playerstatus[1].elapsedTime;
+            v4->pStatus_3 = p_ypaworld->playerstatus[1].elapsedTime;
             break;
         }
         v4 = (profilesNode *)v4->next;
     }
-    usr->disk_listvw.CloseDialog(usr->p_ypaworld);
-    usr->disk_listvw.OpenDialog(usr->p_ypaworld);
+    p_YW->GuiWinClose( &disk_listvw );
+    p_YW->GuiWinOpen( &disk_listvw );
 }
 
-void ypaworld_func158__sub0__sub1(UserData *usr)
+void UserData::ypaworld_func158__sub0__sub1()
 {
-    int v5 = 2;
-    usr->titel_button->button_func68(&v5);
+    titel_button->Hide();
 
-    v5 = 1;
-    usr->button_input_button->button_func68(&v5);
+    button_input_button->Show();
 
-    usr->field_46 = 2;
-    usr->input_listview.CloseDialog(usr->p_ypaworld);
-    usr->input_listview.OpenDialog(usr->p_ypaworld);
+    envMode = ENVMODE_INPUT;
+    p_YW->GuiWinClose( &input_listview );
+    p_YW->GuiWinOpen( &input_listview );
 }
 
 void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
@@ -2342,43 +2319,39 @@ void sub_4D0C24(_NC_STACK_ypaworld *yw, const char *a1, const char *a2)
 }
 
 
-void sub_46D1E8(UserData *usr)
+void UserData::yw_returnToTitle()
 {
-    yw_calcPlayerScore(usr->p_ypaworld);
-    yw_freeDebrief(usr->p_ypaworld);
+    yw_calcPlayerScore(p_ypaworld);
+    yw_freeDebrief(p_ypaworld);
 
-    int v4 = 2;
-    usr->sub_bar_button->button_func68(&v4);
+    sub_bar_button->Hide();
 
-    v4 = 1;
-    usr->titel_button->button_func68(&v4);
+    titel_button->Show();
 
-    usr->field_46 = 1;
-    usr->field_4E = 0;
+    envMode = ENVMODE_TITLE;
+    returnToTitle = false;
 }
 
-void ypaworld_func158__sub0__sub3(UserData *usr)
+void UserData::ypaworld_func158__sub0__sub3()
 {
-    int v7 = 2;
-    usr->titel_button->button_func68(&v7);
+    titel_button->Hide();
 
-    v7 = 1;
-    usr->locale_button->button_func68(&v7);
+    locale_button->Show();
 
-    usr->field_46 = 7;
-    usr->local_listvw.CloseDialog(usr->p_ypaworld);
-    usr->local_listvw.OpenDialog(usr->p_ypaworld);
+    envMode = ENVMODE_SELLOCALE;
+    p_YW->GuiWinClose( &local_listvw );
+    p_YW->GuiWinOpen( &local_listvw );
 
-    langDll_node *v5 = (langDll_node *)usr->lang_dlls.head;
+    langDll_node *v5 = (langDll_node *)lang_dlls.head;
     int i = 0;
 
-    while ( v5 != usr->default_lang_dll )
+    while ( v5 != default_lang_dll )
     {
         i++;
         v5 = (langDll_node *)v5->next;
     }
 
-    usr->local_listvw.selectedEntry = i;
+    local_listvw.selectedEntry = i;
 }
 
 void sub_4EDCD8(_NC_STACK_ypaworld *yw)
@@ -2386,49 +2359,49 @@ void sub_4EDCD8(_NC_STACK_ypaworld *yw)
     yw->brief.briefStage = 2;
 }
 
-void sub_46D9E0(UserData *usr, int a2, const char *txt1, const char *txt2, int a5)
+void UserData::sub_46D9E0( int a2, const char *txt1, const char *txt2, int a5)
 {
-    usr->field_0x2fb4 = a2;
+    field_0x2fb4 = a2;
 
-    button_66arg v12;
+    NC_STACK_button::button_66arg v12;
     v12.butID = 1300;
-    usr->confirm_button->button_func66(&v12);
+    confirm_button->button_func66(&v12);
 
 
-    button_arg76 v10;
+    NC_STACK_button::button_arg76 v10;
 
     if ( a5 )
     {
         v10.butID = 1300;
-        v10.xpos = usr->p_ypaworld->screen_width * 0.4375;
+        v10.xpos = p_ypaworld->screen_width * 0.4375;
         v10.ypos = -1;
         v10.width = -1;
         //v11 = -1;
-        usr->confirm_button->button_func76(&v10);
+        confirm_button->button_func76(&v10);
     }
     else
     {
         v12.butID = 1301;
-        usr->confirm_button->button_func66(&v12);
+        confirm_button->button_func66(&v12);
 
         v10.butID = 1300;
-        v10.xpos = usr->p_ypaworld->screen_width * 0.25;
+        v10.xpos = p_ypaworld->screen_width * 0.25;
         v10.ypos = -1;
         v10.width = -1;
         //v11 = -1;
-        usr->confirm_button->button_func76(&v10);
+        confirm_button->button_func76(&v10);
 
         v10.butID = 1301;
-        v10.xpos = usr->p_ypaworld->screen_width * 0.625;
-        usr->confirm_button->button_func76(&v10);
+        v10.xpos = p_ypaworld->screen_width * 0.625;
+        confirm_button->button_func76(&v10);
     }
 
-    button_71arg v9;
+    NC_STACK_button::button_71arg v9;
 
     v9.field_4 = txt1;
     v9.field_8 = 0;
     v9.butID = 1302;
-    usr->confirm_button->button_func71(&v9);
+    confirm_button->button_func71(&v9);
 
     if ( txt2 )
         v9.field_4 = txt2;
@@ -2437,10 +2410,9 @@ void sub_46D9E0(UserData *usr, int a2, const char *txt1, const char *txt2, int a
 
     v9.field_8 = 0;
     v9.butID = 1303;
-    usr->confirm_button->button_func71(&v9);
+    confirm_button->button_func71(&v9);
 
-    int v13 = 1;
-    usr->confirm_button->button_func68(&v13);
+    confirm_button->Show();
 }
 
 void ypaworld_func158__sub0__sub9(_NC_STACK_ypaworld *yw)
@@ -2464,221 +2436,217 @@ void ypaworld_func158__sub0__sub11(_NC_STACK_ypaworld *yw)
 }
 
 
-void sb_0x46a8c0__sub0(UserData *usr)
+void UserData::sb_0x46a8c0__sub0()
 {
     for (int i = 1; i < 46; i++)
     {
-        usr->keyConfig[i].KeyCode = usr->keyConfig[i].field_8;
-        usr->keyConfig[i].slider_neg = usr->keyConfig[i].field_A;
+        keyConfig[i].KeyCode = keyConfig[i].field_8;
+        keyConfig[i].slider_neg = keyConfig[i].field_A;
     }
 }
 
-void sb_0x46a8c0(UserData *usr)
+void UserData::sb_0x46a8c0()
 {
-    usr->field_46 = 1;
-    sb_0x46a8c0__sub0(usr);
+    envMode = ENVMODE_TITLE;
+    sb_0x46a8c0__sub0();
 
-    button_66arg v6;
+    NC_STACK_button::button_66arg v6;
     v6.butID = 1003;
     v6.field_4 = 2;
-    usr->sub_bar_button->button_func73(&v6);
+    sub_bar_button->button_func73(&v6);
 
-    usr->field_D5E = 0;
+    field_D5E = 0;
 
     v6.butID = 1050;
-    v6.field_4 = (usr->inp_joystick == 0) + 1;
-    usr->button_input_button->button_func73(&v6);
+    v6.field_4 = (inp_joystick == 0) + 1;
+    button_input_button->button_func73(&v6);
 
-    v6.field_4 = (usr->inp_altjoystick == 0) + 1;
+    v6.field_4 = (inp_altjoystick == 0) + 1;
     v6.butID = 1061;
-    usr->button_input_button->button_func73(&v6);
+    button_input_button->button_func73(&v6);
 
     v6.butID = 1055;
-    v6.field_4 = ((usr->p_ypaworld->field_73CE & 8) != 0) + 1;
-    usr->button_input_button->button_func73(&v6);
+    v6.field_4 = ((p_ypaworld->field_73CE & 8) != 0) + 1;
+    button_input_button->button_func73(&v6);
 
-    int v7 = 2;
-    usr->button_input_button->button_func68(&v7);
+    button_input_button->Hide();
 
-    usr->input_listview.CloseDialog(usr->p_ypaworld);
+    p_YW->GuiWinClose( &input_listview );
 
-    v7 = 1;
-    usr->titel_button->button_func68(&v7);
+    titel_button->Show();
 }
 
-void sub_457BC0(UserData *usr)
+void UserData::sub_457BC0()
 {
     for(int i = 1; i < 46; i++)
     {
-        usr->keyConfig[i].field_8 = usr->keyConfig[i].KeyCode;
-        usr->keyConfig[i].field_A = usr->keyConfig[i].slider_neg;
+        keyConfig[i].field_8 = keyConfig[i].KeyCode;
+        keyConfig[i].field_A = keyConfig[i].slider_neg;
     }
 }
 
-int ypaworld_func158__sub0__sub0__sub0(UserData *usr)
+int UserData::ypaworld_func158__sub0__sub0__sub0()
 {
     char a1a[300];
-    sprintf(a1a, "data:settings/%s/input.def", usr->p_ypaworld->lang_name);
+    sprintf(a1a, "data:settings/%s/input.def", p_ypaworld->lang_name);
 
     scrCallBack a3a;
     a3a.func = parseSaveInput;
-    a3a.world = (_NC_STACK_ypaworld *)usr->p_ypaworld->self_full;
-    a3a.dataForStore = usr;
+    a3a.world = (_NC_STACK_ypaworld *)p_YW;
+    a3a.dataForStore = this;
 
     return def_parseFile(a1a, 1, &a3a, 2);
 }
 
-void ypaworld_func158__sub0__sub0(UserData *usr)
+void UserData::ypaworld_func158__sub0__sub0()
 {
-    if ( ypaworld_func158__sub0__sub0__sub0(usr) )
+    if ( ypaworld_func158__sub0__sub0__sub0() )
     {
         for (int i = 1; i < 46; i++)
         {
-            usr->keyConfig[i].field_C = usr->keyConfig[i].KeyCode;
-            usr->keyConfig[i].field_E = usr->keyConfig[i].slider_neg;
+            keyConfig[i].field_C = keyConfig[i].KeyCode;
+            keyConfig[i].field_E = keyConfig[i].slider_neg;
         }
     }
     for (int i = 1; i < 46; i++)
     {
-        usr->keyConfig[i].KeyCode = usr->keyConfig[i].field_C;
-        usr->keyConfig[i].slider_neg = usr->keyConfig[i].field_E;
+        keyConfig[i].KeyCode = keyConfig[i].field_C;
+        keyConfig[i].slider_neg = keyConfig[i].field_E;
     }
 }
 
-void sub_46C5F0(UserData *usr, int a2)
+void UserData::sub_46C5F0(int a2)
 {
-    if ( usr->video_listvw.selectedEntry != usr->field_FBE && !a2 )
+    if ( video_listvw.selectedEntry != field_FBE && !a2 )
     {
 
-        usr->field_FBE = usr->video_listvw.selectedEntry;
+        field_FBE = video_listvw.selectedEntry;
 
-        video_mode_node *v6 = (video_mode_node *)usr->video_mode_list.head;
+        video_mode_node *v6 = (video_mode_node *)video_mode_list.head;
 
-        for (int i = 0; i < usr->video_listvw.selectedEntry; i++)
+        for (int i = 0; i < video_listvw.selectedEntry; i++)
         {
             v6 = (video_mode_node *)v6->next;
         }
 
-        usr->game_default_res = v6->sort_id;
+        game_default_res = v6->sort_id;
 
-        button_71arg v7;
+        NC_STACK_button::button_71arg v7;
         v7.butID = 1156;
         v7.field_4 = v6->name;
         v7.field_8 = 0;
 
-        usr->video_button->button_func71(&v7);
+        video_button->button_func71(&v7);
     }
 }
 
 //Options Cancel
-void sub_46A3C0(UserData *usr)
+void UserData::sub_46A3C0()
 {
-    usr->field_13C2 = 0;
-    usr->field_46 = 1;
+    field_13C2 = 0;
+    envMode = ENVMODE_TITLE;
 
-    video_mode_node *v2 = (video_mode_node *)usr->video_mode_list.head;
+    video_mode_node *v2 = (video_mode_node *)video_mode_list.head;
 
     int i = 0;
-    while( v2->sort_id != usr->p_ypaworld->game_default_res )
+    while( v2->sort_id != p_ypaworld->game_default_res )
     {
         i++;
         v2 = (video_mode_node *)v2->next;
     }
 
-    usr->video_listvw.selectedEntry = i;
-    usr->field_FBE = i;
-    usr->game_default_res = usr->p_ypaworld->game_default_res;
+    video_listvw.selectedEntry = i;
+    field_FBE = i;
+    game_default_res = p_ypaworld->game_default_res;
 
-    button_71arg v9;
+    NC_STACK_button::button_71arg v9;
     v9.field_4 = v2->name;
     v9.field_8 = 0;
     v9.butID = 1156;
 
-    usr->video_button->button_func71(&v9);
+    video_button->button_func71(&v9);
 
     v9.butID = 1172;
     v9.field_8 = 0;
-    v9.field_4 = usr->win3d_name;
-    usr->video_button->button_func71(&v9);
+    v9.field_4 = win3d_name;
+    video_button->button_func71(&v9);
 
-    usr->field_139A = usr->win3d_guid;
-    usr->field_139E = usr->win3d_name;
+    field_139A = win3d_guid;
+    field_139E = win3d_name;
 
-    button_66arg v10;
+    NC_STACK_button::button_66arg v10;
     v10.butID = 1151;
-    v10.field_4 = ((usr->snd__flags2 & 1) == 0) + 1;
-    usr->video_button->button_func73(&v10);
+    v10.field_4 = ((snd__flags2 & 1) == 0) + 1;
+    video_button->button_func73(&v10);
 
-    v10.field_4 = ((usr->snd__flags2 & 0x10) == 0) + 1;
+    v10.field_4 = ((snd__flags2 & 0x10) == 0) + 1;
     v10.butID = 1164;
-    usr->video_button->button_func73(&v10);
+    video_button->button_func73(&v10);
 
     v10.butID = 1157;
-    v10.field_4 = ((usr->GFX_flags & 1) == 0) + 1;
-    usr->video_button->button_func73(&v10);
+    v10.field_4 = ((GFX_flags & 1) == 0) + 1;
+    video_button->button_func73(&v10);
 
-    v10.field_4 = ((usr->GFX_flags & 2) == 0) + 1;
+    v10.field_4 = ((GFX_flags & 2) == 0) + 1;
     v10.butID = 1160;
-    usr->video_button->button_func73(&v10);
+    video_button->button_func73(&v10);
 
     v10.butID = 1150;
-    v10.field_4 = ((usr->GFX_flags & 0x10) == 0) + 1;
-    usr->video_button->button_func73(&v10);
+    v10.field_4 = ((GFX_flags & 0x10) == 0) + 1;
+    video_button->button_func73(&v10);
 
     v10.butID = 1166;
-    v10.field_4 = ((usr->GFX_flags & 8) == 0) + 1;
-    usr->video_button->button_func73(&v10);
+    v10.field_4 = ((GFX_flags & 8) == 0) + 1;
+    video_button->button_func73(&v10);
 
     v10.butID = 1165;
-    v10.field_4 = ((usr->GFX_flags & 4) == 0) + 1;
-    usr->video_button->button_func73(&v10);
+    v10.field_4 = ((GFX_flags & 4) == 0) + 1;
+    video_button->button_func73(&v10);
 
-    v10.field_4 = (usr->enemyindicator == 0) + 1;
+    v10.field_4 = (enemyindicator == 0) + 1;
     v10.butID = 1163;
-    usr->video_button->button_func73(&v10);
+    video_button->button_func73(&v10);
 
     int v12 = 1159;
 
-    button_str2_t2 *tmp = (button_str2_t2 *)usr->video_button->button_func74(&v12);
-    tmp->field_0 = usr->fxnumber;
+    NC_STACK_button::Slider *tmp = video_button->button_func74(&v12);
+    tmp->value = fxnumber;
 
-    usr->video_button->button_func75(&v12);
+    video_button->button_func75(&v12);
 
     v12 = 1152;
 
-    tmp = (button_str2_t2 *)usr->video_button->button_func74(&v12);
-    tmp->field_0 = usr->snd__volume;
+    tmp = video_button->button_func74(&v12);
+    tmp->value = snd__volume;
 
-    usr->video_button->button_func75(&v12);
+    video_button->button_func75(&v12);
 
     v12 = 1154;
 
-    tmp = (button_str2_t2 *)usr->video_button->button_func74(&v12);
-    tmp->field_0 = usr->snd__cdvolume;
+    tmp = video_button->button_func74(&v12);
+    tmp->value = snd__cdvolume;
 
-    usr->video_button->button_func75(&v12);
+    video_button->button_func75(&v12);
 
-    int v11 = 2;
-    usr->video_button->button_func68(&v11);
+    video_button->Hide();
 
-    if ( !(usr->video_listvw.flags & GuiBase::FLAG_CLOSED) )
-        usr->video_listvw.CloseDialog(usr->p_ypaworld);
+    if ( video_listvw.IsOpen() )
+        p_YW->GuiWinClose( &video_listvw );
 
-    if ( !(usr->d3d_listvw.flags & GuiBase::FLAG_CLOSED) )
-        usr->d3d_listvw.CloseDialog(usr->p_ypaworld);
+    if ( d3d_listvw.IsOpen() )
+        p_YW->GuiWinClose( &d3d_listvw );
 
-    v11 = 1;
-    usr->titel_button->button_func68(&v11);
+    titel_button->Show();
 
     v10.field_4 = 2;
     v10.butID = 1156;
-    usr->video_button->button_func73(&v10);
+    video_button->button_func73(&v10);
 
     v10.butID = 1172;
-    usr->video_button->button_func73(&v10);
+    video_button->button_func73(&v10);
 }
 
-void  ypaworld_func158__sub0__sub5(UserData *usr, int a2)
+void  UserData::ypaworld_func158__sub0__sub5(int a2)
 {
     int v4 = 0;
 
@@ -2690,17 +2658,15 @@ void  ypaworld_func158__sub0__sub5(UserData *usr, int a2)
     const char *v2;
     const char *v12;
 
-    NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(usr->p_ypaworld->win3d);
-
     while ( a1.name )
     {
-        windd->windd_func324(&a1);
+        p_ypaworld->win3d->windd_func324(&a1);
         if ( a1.name )
         {
-            if ( v4 == usr->d3d_listvw.selectedEntry )
+            if ( v4 == d3d_listvw.selectedEntry )
             {
                 if ( !strcmp(a1.name, "software") )
-                    v2 = get_lang_string(usr->p_ypaworld->string_pointers_p2, 2472, "2472 = Software");
+                    v2 = get_lang_string(p_ypaworld->string_pointers_p2, 2472, "2472 = Software");
                 else
                     v2 = a1.name;
 
@@ -2712,25 +2678,25 @@ void  ypaworld_func158__sub0__sub5(UserData *usr, int a2)
 
     if ( !a2 )
     {
-        usr->field_139E = v2;
-        usr->field_139A = v12;
+        field_139E = v2;
+        field_139A = v12;
 
-        button_71arg v7;
+        NC_STACK_button::button_71arg v7;
         v7.butID = 1172;
         v7.field_4 = v2;
         v7.field_8 = 0;
 
-        usr->video_button->button_func71(&v7);
+        video_button->button_func71(&v7);
     }
 }
 
-void sub_46C914(UserData *usr)
+void UserData::sub_46C914()
 {
-    if ( usr->field_1612 )
+    if ( field_1612 )
     {
-        profilesNode *node = (profilesNode *)usr->files_list.head;
+        profilesNode *node = (profilesNode *)files_list.head;
 
-        for (int i = 0; i < usr->field_1612 - 1; i++) // check usr->field_1612 - 1
+        for (int i = 0; i < field_1612 - 1; i++) // check usr->field_1612 - 1
         {
             node = (profilesNode *)node->next;
         }
@@ -2743,27 +2709,25 @@ void sub_46C914(UserData *usr)
         arg172.usertxt = a1a;
         arg172.field_4 = node->profile_subdir;
         arg172.field_8 = 255;
-        arg172.usr = usr;
+        arg172.usr = this;
         arg172.field_10 = 1;
 
-        usr->p_ypaworld->self_full->ypaworld_func172(&arg172);
+        p_YW->ypaworld_func172(&arg172);
 
-        strcpy(usr->user_name, node->profile_subdir);
-        strcpy(usr->usernamedir, node->profile_subdir);
+        strcpy(user_name, node->profile_subdir);
+        strcpy(usernamedir, node->profile_subdir);
 
 
-        usr->field_0x1744 = 0;
-        usr->field_3426 = 0;
+        field_0x1744 = 0;
+        field_3426 = 0;
 
-        int v16 = 2;
-        usr->disk_button->button_func68(&v16);
+        disk_button->Hide();
 
-        usr->disk_listvw.CloseDialog(usr->p_ypaworld);
+        p_YW->GuiWinClose( &disk_listvw );
 
-        usr->field_46 = 5;
+        envMode = ENVMODE_SINGLEPLAY;
 
-        v16 = 1;
-        usr->sub_bar_button->button_func68(&v16);
+        sub_bar_button->Show();
     }
 }
 
@@ -2788,16 +2752,16 @@ void sub_46D0F8(const char *path)
     }
 }
 
-void sub_46C748(UserData *usr)
+void UserData::sub_46C748()
 {
-    if ( usr->field_1612 )
+    if ( field_1612 )
     {
-        if ( strcasecmp(usr->usernamedir, usr->user_name) )
+        if ( strcasecmp(usernamedir, user_name) )
         {
 
-            profilesNode *node = (profilesNode *)usr->files_list.head;
+            profilesNode *node = (profilesNode *)files_list.head;
 
-            for (int i = 0; i < usr->field_1612 - 1; i++) // check usr->field_1612 - 1
+            for (int i = 0; i < field_1612 - 1; i++) // check usr->field_1612 - 1
                 node = (profilesNode *)node->next;
 
             profilesNode *v4 = (profilesNode *)node->next;
@@ -2823,114 +2787,105 @@ void sub_46C748(UserData *usr)
 
             Remove(node);
 
-            usr->disk_listvw.numEntries--;
-            if ( usr->files_list.tail == usr->files_list.head )
+            disk_listvw.numEntries--;
+            if ( files_list.tail == files_list.head )
             {
-                usr->field_1612 = 0;
-                strcpy(usr->usernamedir, "NEWUSER");
+                field_1612 = 0;
+                strcpy(usernamedir, "NEWUSER");
             }
             else
             {
                 if ( !v5 )
-                    usr->field_1612--;
+                    field_1612--;
 
-                strcpy(usr->usernamedir, v4->profile_subdir);
+                strcpy(usernamedir, v4->profile_subdir);
             }
 
-            usr->usernamedir_len = strlen(usr->usernamedir);
+            usernamedir_len = strlen(usernamedir);
 
-            if ( usr->field_1612 )
-                usr->disk_listvw.PosOnSelected(usr->field_1612 - 1);
+            if ( field_1612 )
+                disk_listvw.PosOnSelected(field_1612 - 1);
 
             nc_FreeMem(node);
 
-            usr->field_0x1744 = 0;
+            field_0x1744 = 0;
 
-            int v14 = 2;
-            usr->disk_button->button_func68(&v14);
+            disk_button->Hide();
 
-            usr->disk_listvw.CloseDialog(usr->p_ypaworld);
+            p_YW->GuiWinClose( &disk_listvw );
 
-            if ( usr->field_0x1760 )
+            if ( field_0x1760 )
             {
-                usr->field_46 = 5;
-                v14 = 1;
-                usr->sub_bar_button->button_func68(&v14);
+                envMode = ENVMODE_SINGLEPLAY;
+                sub_bar_button->Show();
             }
             else
             {
-                usr->field_46 = 1;
-                v14 = 1;
-                usr->titel_button->button_func68(&v14);
+                envMode = ENVMODE_TITLE;
+                titel_button->Show();
             }
         }
     }
 }
 
-void sub_46B0E0(UserData *usr)
+void UserData::sub_46B0E0()
 {
-    langDll_node *node = (langDll_node *)usr->lang_dlls.head;
+    langDll_node *node = (langDll_node *)lang_dlls.head;
 
-    for (int v5 = 0; v5 < usr->local_listvw.selectedEntry; v5++)
+    for (int v5 = 0; v5 < local_listvw.selectedEntry; v5++)
     {
         node = (langDll_node *)node->next;
     }
 
-    usr->prev_lang = node;
+    prev_lang = node;
 
-    if ( node != usr->default_lang_dll )
+    if ( node != default_lang_dll )
     {
         if ( node )
         {
-            usr->default_lang_dll = node;
-            usr->p_ypaworld->self_full->ypaworld_func175( usr );
+            default_lang_dll = node;
+            p_YW->ypaworld_func175( this );
         }
     }
 
-    usr->field_19CA = 0;
-    usr->field_46 = 1;
-    usr->field_19CA = 0;
-    usr->prev_lang = usr->default_lang_dll;
+    field_19CA = 0;
+    envMode = ENVMODE_TITLE;
+    field_19CA = 0;
+    prev_lang = default_lang_dll;
 
-    int v7 = 2;
-    usr->locale_button->button_func68(&v7);
+    locale_button->Hide();
 
-    usr->local_listvw.CloseDialog(usr->p_ypaworld);
+    p_YW->GuiWinClose( &local_listvw );
 
-    v7 = 1;
-    usr->titel_button->button_func68(&v7);
+    titel_button->Show();
 }
 
-void sub_46AA0C(UserData *usr)
+void UserData::sub_46AA0C()
 {
-    usr->field_46 = 1;
-    usr->field_19CA = 0;
-    usr->prev_lang = usr->default_lang_dll;
+    envMode = ENVMODE_TITLE;
+    field_19CA = 0;
+    prev_lang = default_lang_dll;
 
-    int v5 = 2;
-    usr->locale_button->button_func68(&v5);
+    locale_button->Hide();
 
-    usr->local_listvw.CloseDialog(usr->p_ypaworld);
+    p_YW->GuiWinClose( &local_listvw );
 
-    v5 = 1;
-    usr->titel_button->button_func68(&v5);
+    titel_button->Show();
 }
 
 
 int sub_449678(_NC_STACK_ypaworld *yw, struC5 *struc, int kkode)
 {
-    return struc->downed_key == kkode && ( (struc->winp131arg.flag & 0x100) || yw->easy_cheat_keys );
+    return struc->downed_key == kkode && ( (struc->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD) || yw->easy_cheat_keys );
 }
 
-void ypaworld_func158__sub0__sub4(UserData *usr)
+void UserData::ypaworld_func158__sub0__sub4()
 {
-    int v4 = 2;
-    usr->titel_button->button_func68(&v4);
+    titel_button->Hide();
 
-    v4 = 1;
-    usr->about_button->button_func68(&v4);
+    about_button->Show();
 
-    usr->field_46 = 8;
+    envMode = ENVMODE_ABOUT;
 }
 
 
@@ -2948,479 +2903,462 @@ int ypaworld_func158__sub0__sub6(char a1)
 
 
 
-void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
+void UserData::GameShellUiHandleInput()
 {
     int v3 = 0;
     char v306[300];
 
-    if ( usr->field_3A->winp131arg.flag & 0x10 )
-        SFXEngine::SFXe.startSound(&usr->samples1_info, 3);
+    if ( field_3A->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
+        SFXEngine::SFXe.startSound(&samples1_info, 3);
 
-    if ( usr->netSelMode )
-        yw_HandleNetMsg(usr->p_ypaworld);
+    if ( netSelMode )
+        yw_HandleNetMsg(p_ypaworld);
 
-    NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(usr->p_ypaworld->win3d);
+    NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(p_ypaworld->win3d);
 
-    if ( usr->netSelMode == 1 )
+    if ( netSelMode == 1 )
     {
-        if ( usr->p_ypaworld->windp->windp_func90(NULL) == 4 )
+        if ( p_ypaworld->windp->GetProvType(NULL) == 4 )
         {
-            if ( usr->modemAskSession )
+            if ( modemAskSession )
             {
-                if ( usr->field_3A->downed_key == UAVK_SPACE )
+                if ( field_3A->downed_key == UAVK_SPACE )
                 {
                     windd->windd_func320(NULL);
-                    yw->windp->windp_func68(NULL);
+                    p_ypaworld->windp->EnumSessions(NULL);
                     windd->windd_func321(NULL);
                 }
             }
         }
-        else if ( yw->windp->windp_func90(NULL) != 3 || usr->field_3A->downed_key == UAVK_SPACE )
+        else if ( p_ypaworld->windp->GetProvType(NULL) != 3 || field_3A->downed_key == UAVK_SPACE )
         {
-            yw->windp->windp_func68(NULL);
+            p_ypaworld->windp->EnumSessions(NULL);
         }
     }
 
-    button_66arg v408;
-    button_66arg v410;
+    NC_STACK_button::button_66arg v408;
+    NC_STACK_button::button_66arg v410;
 
     v410.field_4 = 0;
     v410.butID = 1015;
-    usr->sub_bar_button->button_func67(&v410);
+    sub_bar_button->button_func67(&v410);
     v410.butID = 1011;
-    usr->sub_bar_button->button_func67(&v410);
+    sub_bar_button->button_func67(&v410);
     v410.butID = 1019;
-    usr->sub_bar_button->button_func67(&v410);
+    sub_bar_button->button_func67(&v410);
     v410.butID = 1014;
-    usr->sub_bar_button->button_func67(&v410);
+    sub_bar_button->button_func67(&v410);
     v410.butID = 1013;
-    usr->sub_bar_button->button_func67(&v410);
+    sub_bar_button->button_func67(&v410);
     v410.butID = 1020;
-    usr->sub_bar_button->button_func67(&v410);
+    sub_bar_button->button_func67(&v410);
 
     v410.butID = 1003;
-    usr->titel_button->button_func67(&v410);
+    titel_button->button_func67(&v410);
     v410.butID = 1004;
-    usr->titel_button->button_func67(&v410);
+    titel_button->button_func67(&v410);
     v410.butID = 1001;
-    usr->titel_button->button_func67(&v410);
+    titel_button->button_func67(&v410);
     v410.butID = 1008;
-    usr->titel_button->button_func67(&v410);
+    titel_button->button_func67(&v410);
     v410.butID = 1007;
-    usr->titel_button->button_func67(&v410);
+    titel_button->button_func67(&v410);
     v410.butID = 1018;
-    usr->titel_button->button_func67(&v410);
+    titel_button->button_func67(&v410);
     v410.butID = 1017;
-    usr->titel_button->button_func67(&v410);
+    titel_button->button_func67(&v410);
     v410.butID = 1016;
-    usr->titel_button->button_func67(&v410);
+    titel_button->button_func67(&v410);
 
-    button_arg76 v393;
+    NC_STACK_button::button_arg76 v393;
     v393.ypos = -1;
     v393.width = -1;
     //v394 = -1;
     v393.butID = 1014;
     v393.xpos = 0;
-    usr->sub_bar_button->button_func76(&v393);
+    sub_bar_button->button_func76(&v393);
 
     v393.butID = 1019;
-    v393.xpos = yw->screen_width - dword_5A50B6_h;
-    usr->sub_bar_button->button_func76(&v393);
+    v393.xpos = p_ypaworld->screen_width - dword_5A50B6_h;
+    sub_bar_button->button_func76(&v393);
 
     v393.butID = 1011;
     v393.xpos = word_5A50C0 + dword_5A50B6_h;
-    usr->sub_bar_button->button_func76(&v393);
+    sub_bar_button->button_func76(&v393);
 
-    button_71arg v395;
+    NC_STACK_button::button_71arg v395;
     v395.butID = 1019;
     v395.field_4 = get_lang_string(ypaworld__string_pointers, 644, "GO BACK");
     v395.field_8 = NULL;
-    usr->sub_bar_button->button_func71(&v395);
+    sub_bar_button->button_func71(&v395);
 
-    if ( sub_4EDCC4(yw) )
+    if ( sub_4EDCC4(p_ypaworld) )
     {
-        if ( yw->field_2d90->field_40 != 9 && !usr->field_0xc )
+        if ( p_ypaworld->field_2d90->field_40 != 9 && !field_0xc )
         {
             v410.butID = 1014;
-            usr->sub_bar_button->button_func66(&v410);
+            sub_bar_button->button_func66(&v410);
 
             v393.butID = 1014;
-            v393.xpos = yw->screen_width - dword_5A50B6_h;
-            usr->sub_bar_button->button_func76(&v393);
+            v393.xpos = p_ypaworld->screen_width - dword_5A50B6_h;
+            sub_bar_button->button_func76(&v393);
 
             v393.butID = 1019;
             v393.xpos = 0;
-            usr->sub_bar_button->button_func76(&v393);
+            sub_bar_button->button_func76(&v393);
 
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 2438, "2438 == BACK");
             v395.butID = 1019;
             v395.field_8 = NULL;
-            usr->sub_bar_button->button_func71(&v395);
+            sub_bar_button->button_func71(&v395);
         }
 
-        if ( yw->field_2d90->field_40 == 9 )
+        if ( p_ypaworld->field_2d90->field_40 == 9 )
         {
             v410.butID = 1011;
-            usr->sub_bar_button->button_func66(&v410);
+            sub_bar_button->button_func66(&v410);
 
             v393.butID = 1011;
             v393.xpos = 0;
-            usr->sub_bar_button->button_func76(&v393);
+            sub_bar_button->button_func76(&v393);
 
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 2420, "CONTINUE");
             v395.butID = 1019;
             v395.field_8 = NULL;
-            usr->sub_bar_button->button_func71(&v395);
+            sub_bar_button->button_func71(&v395);
         }
 
         v410.butID = 1019;
-        usr->sub_bar_button->button_func66(&v410);
+        sub_bar_button->button_func66(&v410);
 
-        int v416 = 2;
-        usr->button_input_button->button_func68(&v416);
-        usr->video_button->button_func68(&v416);
-        usr->disk_button->button_func68(&v416);
-        usr->locale_button->button_func68(&v416);
-        usr->network_button->button_func68(&v416);
+        button_input_button->Hide();
+        video_button->Hide();
+        disk_button->Hide();
+        locale_button->Hide();
+        network_button->Hide();
 
-        usr->input_listview.CloseDialog(usr->p_ypaworld);
-        usr->video_listvw.CloseDialog(usr->p_ypaworld);
-        usr->disk_listvw.CloseDialog(usr->p_ypaworld);
-        usr->local_listvw.CloseDialog(usr->p_ypaworld);
-        usr->network_listvw.CloseDialog(usr->p_ypaworld);
+        p_YW->GuiWinClose( &input_listview );
+        p_YW->GuiWinClose( &video_listvw );
+        p_YW->GuiWinClose( &disk_listvw );
+        p_YW->GuiWinClose( &local_listvw );
+        p_YW->GuiWinClose( &network_listvw );
     }
-    else if ( usr->field_46 == 1 )
+    else if ( envMode == ENVMODE_TITLE )
     {
         v410.butID = 1003;
-        usr->titel_button->button_func66(&v410);
+        titel_button->button_func66(&v410);
 
         v410.butID = 1004;
-        usr->titel_button->button_func66(&v410);
+        titel_button->button_func66(&v410);
 
         v410.butID = 1001;
-        usr->titel_button->button_func66(&v410);
+        titel_button->button_func66(&v410);
 
         v410.butID = 1008;
-        if ( usr->lang_dlls_count > 1 )
-            usr->titel_button->button_func66(&v410);
+        if ( lang_dlls_count > 1 )
+            titel_button->button_func66(&v410);
         else
-            usr->titel_button->button_func67(&v410);
+            titel_button->button_func67(&v410);
 
         v410.butID = 1007;
-        usr->titel_button->button_func66(&v410);
+        titel_button->button_func66(&v410);
 
         v410.butID = 1017;
-        usr->titel_button->button_func66(&v410);
+        titel_button->button_func66(&v410);
 
         v410.butID = 1018;
-        usr->titel_button->button_func66(&v410);
+        titel_button->button_func66(&v410);
 
         v410.butID = 1016;
-        usr->titel_button->button_func66(&v410);
+        titel_button->button_func66(&v410);
     }
-    else if ( usr->field_46 == 5 || usr->field_46 == 4 )
+    else if ( envMode == ENVMODE_SINGLEPLAY || envMode == ENVMODE_TUTORIAL )
     {
-        if ( !usr->field_3426 )
+        if ( !field_3426 )
         {
-            if ( sub_47B388(0, usr->user_name) )
-                usr->field_3426 = 1;
+            if ( sub_47B388(0, user_name) )
+                field_3426 = 1;
             else
-                usr->field_3426 = 2;
+                field_3426 = 2;
         }
 
-        if ( usr->field_3426 == 1 )
+        if ( field_3426 == 1 )
         {
             v410.butID = 1015;
-            usr->sub_bar_button->button_func66(&v410);
+            sub_bar_button->button_func66(&v410);
         }
 
         v410.butID = 1019;
-        usr->sub_bar_button->button_func66(&v410);
+        sub_bar_button->button_func66(&v410);
 
         v410.butID = 1020;
-        usr->sub_bar_button->button_func66(&v410);
+        sub_bar_button->button_func66(&v410);
     }
 
-    if ( usr->field_0x2fb4 )
+    if ( field_0x2fb4 )
         v3 = 1;
 
-    uint32_t v6 = usr->confirm_button->button_func69(usr->field_3A);
-    int v6_l = v6 & 0xFFFF;
-    int v6_h = (v6 >> 16) & 0xFFFF;
+    NC_STACK_button::ResCode r = confirm_button->button_func69(field_3A);
 
-    if ( v6 )
+    if ( r )
     {
-        if ( v6_h )
-            sub_4DE248(usr, v6_h);
+        if ( r.btn )
+            sub_4DE248(r.btn);
 
-        if ( v6_l == 1350 ) // OK
+        if ( r.code == 1350 ) // OK
         {
-            switch ( usr->field_0x2fb4 )
+            switch ( field_0x2fb4 )
             {
             case 1:
             {
-                usr->field_AE2 = 0;
-                usr->field_3426 = 0;
-                usr->p_ypaworld->isNetGame = 0;
+                field_AE2 = 0;
+                field_3426 = 0;
+                p_ypaworld->isNetGame = 0;
 
-                int v418 = 2;
-                usr->sub_bar_button->button_func68(&v418);
+                sub_bar_button->Hide();
 
-                usr->field_0x2fbc = 3;
-                usr->field_0x2fc0 = 0;
+                envAction.action = EnvAction::ACTION_LOAD;
+                envAction.params[0] = 0;
             }
             break;
 
             case 2:
-                sub_46DC1C(usr);
+                sub_46DC1C();
                 break;
             case 3:
-                sb_0x46ca74(usr);
+                sb_0x46ca74();
                 break;
             case 4:
-                sub_46D960(usr);
+                sub_46D960();
                 break;
             case 5:
-                sb_0x46aa8c(usr);
+                sb_0x46aa8c();
                 break;
             case 6:
-                sb_0x46cdf8(usr);
+                sb_0x46cdf8();
                 break;
             default:
                 break;
             }
-            sub_46D960(usr);
+            sub_46D960();
         }
-        else if ( v6_l == 1351 ) // Cancel
+        else if ( r.code == 1351 ) // Cancel
         {
-            if ( usr->field_0x2fb4 == 3 || usr->field_0x2fb4 == 6 )
-                usr->field_0x1744 = 0;
+            if ( field_0x2fb4 == 3 || field_0x2fb4 == 6 )
+                field_0x1744 = 0;
 
-            sub_46D960(usr);
+            sub_46D960();
         }
     }
 
-    if ( usr->field_0x2fb4 )
+    if ( field_0x2fb4 )
     {
-        if ( usr->field_3A->dword8 == (0x80 | 0x18) )
+        if ( field_3A->dword8 == (0x80 | 0x18) )
         {
-            if ( usr->field_0x2fb4 == 3 || usr->field_0x2fb4 == 6 )
-                usr->field_0x1744 = 0;
-            sub_46D960(usr);
+            if ( field_0x2fb4 == 3 || field_0x2fb4 == 6 )
+                field_0x1744 = 0;
+            sub_46D960();
         }
-        if ( usr->field_3A->downed_key == UAVK_RETURN )
+        if ( field_3A->downed_key == UAVK_RETURN )
         {
-            switch ( usr->field_0x2fb4 )
+            switch ( field_0x2fb4 )
             {
             case 1:
             {
-                usr->field_AE2 = 0;
-                usr->field_3426 = 0;
-                usr->p_ypaworld->isNetGame = 0;
-                int v419 = 2;
-                usr->sub_bar_button->button_func68(&v419);
-                usr->field_0x2fbc = 3;
-                usr->field_0x2fc0 = 0;
+                field_AE2 = 0;
+                field_3426 = 0;
+                p_ypaworld->isNetGame = 0;
+                sub_bar_button->Hide();
+                envAction.action = EnvAction::ACTION_LOAD;
+                envAction.params[0] = 0;
             }
             break;
             case 2:
-                sub_46DC1C(usr);
+                sub_46DC1C();
                 break;
             case 3:
-                sb_0x46ca74(usr);
+                sb_0x46ca74();
                 break;
             case 4:
-                sub_46D960(usr);
+                sub_46D960();
                 break;
             case 5:
-                sb_0x46aa8c(usr);
+                sb_0x46aa8c();
                 break;
             case 6:
-                sb_0x46cdf8(usr);
+                sb_0x46cdf8();
                 break;
             default:
                 break;
             }
-            sub_46D960(usr);
+            sub_46D960();
         }
     }
 
     if ( v3 )
     {
-        usr->field_3A->winp131arg.flag = 0;
-        usr->field_3A->downed_key = 0;
-        usr->field_3A->downed_key_2 = 0;
-        usr->field_3A->chr = 0;
-        usr->field_3A->dword8 = 0;
+        field_3A->ClickInf.flag = 0;
+        field_3A->downed_key = 0;
+        field_3A->downed_key_2 = 0;
+        field_3A->chr = 0;
+        field_3A->dword8 = 0;
     }
 
-    if ( usr->field_46 == 1 && usr->field_3A->dword8 == (0x80 | 0x2B) )
-        yw->field_81AF = get_lang_string(ypaworld__string_pointers, 750, "help\\start.html");
+    if ( envMode == ENVMODE_TITLE && field_3A->dword8 == (0x80 | 0x2B) )
+        p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 750, "help\\start.html");
 
-    v6 = usr->titel_button->button_func69(usr->field_3A);
-    v6_l = v6 & 0xFFFF;
-    v6_h = (v6 >> 16) & 0xFFFF;
+    r = titel_button->button_func69(field_3A);
 
-    if ( v6 )
+    if ( r )
     {
-        if ( v6_h )
-            sub_4DE248(usr, v6_h);
+        if ( r.btn )
+            sub_4DE248(r.btn);
 
-        if ( v6_l == 1001 )
+        if ( r.code == 1001 )
         {
-            sub_46C3E4(usr);
-            usr->field_0x1760 = 0;
+            sub_46C3E4();
+            field_0x1760 = 0;
         }
-        else if ( v6_l == 1005 ) // Options button
+        else if ( r.code == 1005 ) // Options button
         {
-            ypaworld_func158__sub0__sub2(usr);
+            ypaworld_func158__sub0__sub2();
         }
-        else if ( v6_l == 1007 )
+        else if ( r.code == 1007 )
         {
-            ypaworld_func158__sub0__sub1(usr);
+            ypaworld_func158__sub0__sub1();
         }
-        else if ( v6_l == 1011 )
+        else if ( r.code == 1011 )
         {
-            ypaworld_func158__sub0__sub3(usr);
+            ypaworld_func158__sub0__sub3();
         }
-        else if ( v6_l == 1013 )
+        else if ( r.code == 1013 )
         {
-            int v416 = 2;
-            usr->titel_button->button_func68(&v416);
+            titel_button->Hide();
 
-            usr->field_0x2fbc = 1;
-            SFXEngine::SFXe.startSound(&usr->samples1_info, 4);
+            envAction.action = EnvAction::ACTION_QUIT;
+            SFXEngine::SFXe.startSound(&samples1_info, 4);
         }
-        else if ( v6_l == 1022 )
+        else if ( r.code == 1022 )
         {
-            sub_46C524(usr);
+            GameShellUiOpenNetwork();
         }
-        else if ( v6_l == 1024 )
+        else if ( r.code == 1024 )
         {
-            int v416 = 1;
-            usr->sub_bar_button->button_func68(&v416);
+            sub_bar_button->Show();
 
-            v416 = 2;
-            usr->titel_button->button_func68(&v416);
+            titel_button->Hide();
 
-            usr->field_46 = 5;
+            envMode = ENVMODE_SINGLEPLAY;
         }
-        else if ( v6_l == 1025 )
+        else if ( r.code == 1025 )
         {
-            yw->field_81AF = get_lang_string(ypaworld__string_pointers, 750, "help\\start.html");
+            p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 750, "help\\start.html");
         }
     }
 
-    if ( (usr->field_46 == 5 || usr->field_46 == 4) && usr->field_3A->dword8 == (0x80 | 0x18) )
+    if ( (envMode == ENVMODE_SINGLEPLAY || envMode == ENVMODE_TUTORIAL) && field_3A->dword8 == (0x80 | 0x18) )
     {
-        if ( sub_4EDCC4(yw) )
+        if ( sub_4EDCC4(p_ypaworld) )
         {
-            sub_4EDCD8(yw);
-            if ( usr->p_ypaworld->snd__cdsound & 1 )
+            sub_4EDCD8(p_ypaworld);
+            if ( p_ypaworld->snd__cdsound & 1 )
             {
                 SFXEngine::SFXe.StopMusicTrack();
-                if ( usr->shelltrack )
+                if ( shelltrack )
                 {
-                    SFXEngine::SFXe.SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
+                    SFXEngine::SFXe.SetMusicTrack(shelltrack, shelltrack__adv.min_delay, shelltrack__adv.max_delay);
                     SFXEngine::SFXe.PlayMusicTrack();
                 }
             }
-            if ( usr->field_4E )
-                sub_46D1E8(usr);
+            if ( returnToTitle )
+                yw_returnToTitle();
         }
         else
         {
-            int v416 = 2;
-            usr->sub_bar_button->button_func68(&v416);
+            sub_bar_button->Hide();
 
-            v416 = 1;
-            usr->titel_button->button_func68(&v416);
+            titel_button->Show();
 
-            usr->field_46 = 1;
+            envMode = ENVMODE_TITLE;
         }
     }
 
-    v6 = usr->sub_bar_button->button_func69(usr->field_3A);
-    v6_l = v6 & 0xFFFF;
-    v6_h = (v6 >> 16) & 0xFFFF;
+    r = sub_bar_button->button_func69(field_3A);
 
-    if ( v6 )
+    if ( r )
     {
-        if ( v6_h )
-            sub_4DE248(usr, v6_h);
-        switch ( v6_l )
+        if ( r.btn )
+            sub_4DE248(r.btn);
+        switch ( r.code )
         {
         case 1013:
-            if ( sub_4EDCC4(yw) )
+            if ( sub_4EDCC4(p_ypaworld) )
             {
-                sub_4EDCD8(yw);
-                if ( usr->p_ypaworld->snd__cdsound & 1 )
+                sub_4EDCD8(p_ypaworld);
+                if ( p_ypaworld->snd__cdsound & 1 )
                 {
                     SFXEngine::SFXe.StopMusicTrack();
-                    if ( usr->shelltrack )
+                    if ( shelltrack )
                     {
-                        SFXEngine::SFXe.SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
+                        SFXEngine::SFXe.SetMusicTrack(shelltrack, shelltrack__adv.min_delay, shelltrack__adv.max_delay);
                         SFXEngine::SFXe.PlayMusicTrack();
                     }
                 }
-                if ( usr->field_4E )
-                    sub_46D1E8(usr);
+                if ( returnToTitle )
+                    yw_returnToTitle();
             }
             else
             {
-                int v416 = 2;
-                usr->sub_bar_button->button_func68(&v416);
+                sub_bar_button->Hide();
 
-                v416 = 1;
-                usr->titel_button->button_func68(&v416);
+                titel_button->Show();
 
-                usr->field_46 = 1;
+                envMode = ENVMODE_TITLE;
             }
             break;
 
         case 1019:
         {
-            usr->field_AE2 = 0;
-            usr->field_3426 = 0;
-            yw->isNetGame = 0;
+            field_AE2 = 0;
+            field_3426 = 0;
+            p_ypaworld->isNetGame = 0;
 
-            int v416 = 2;
-            usr->sub_bar_button->button_func68(&v416);
+            sub_bar_button->Hide();
 
-            ypaworld_func158__sub0__sub9(yw);
+            ypaworld_func158__sub0__sub9(p_ypaworld);
         }
         break;
 
         case 1021:
-            if ( ypaworld_func158__sub0__sub7(usr) )
+            if ( ypaworld_func158__sub0__sub7() )
             {
                 const char *v18 = get_lang_string(ypaworld__string_pointers, 2439, "2439");
                 const char *v19 = get_lang_string(ypaworld__string_pointers, 2434, "DO YOU WANT TO LOAD >>>OLDER<<< SAVEGAME?");
-                sub_46D9E0(usr, 1, v19, v18, 0);
+                sub_46D9E0(1, v19, v18, 0);
             }
             else
             {
                 const char *v20 = get_lang_string(ypaworld__string_pointers, 2440, "2440");
                 const char *v21 = get_lang_string(ypaworld__string_pointers, 2482, "DO YOU WANT TO LOAD INGAME SAVEGAME?");
-                sub_46D9E0(usr, 1, v21, v20, 0);
+                sub_46D9E0(1, v21, v20, 0);
             }
             break;
 
         case 1016:
-            usr->field_AE2 = 0;
-            ypaworld_func158__sub0__sub12(yw);
+            field_AE2 = 0;
+            ypaworld_func158__sub0__sub12(p_ypaworld);
             break;
 
         case 1020:
-            if ( usr->field_AE2 )
-                ypaworld_func158__sub0__sub10(yw);
+            if ( field_AE2 )
+                ypaworld_func158__sub0__sub10(p_ypaworld);
             else
-                ypaworld_func158__sub0__sub11(yw);
+                ypaworld_func158__sub0__sub11(p_ypaworld);
             break;
 
         case 1026:
-            sub_46C3E4(usr);
-            usr->field_0x1760 = 1;
+            sub_46C3E4();
+            field_0x1760 = 1;
             break;
 
         default:
@@ -3428,574 +3366,565 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         }
     }
 
-    if ( usr->field_46 == 2 )
+    if ( envMode == ENVMODE_INPUT )
     {
-        if ( usr->field_3A->dword8 )
+        if ( field_3A->dword8 )
         {
-            if ( !usr->field_D52 && usr->field_3A->dword8 == (0x80 | 0x2B) )
-                yw->field_81AF = get_lang_string(ypaworld__string_pointers, 759, "help\\19.html");
+            if ( !field_D52 && field_3A->dword8 == (0x80 | 0x2B) )
+                p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 759, "help\\19.html");
         }
 
-        if ( usr->field_3A->downed_key )
+        if ( field_3A->downed_key )
         {
-            if ( usr->field_D52 )
+            if ( field_D52 )
             {
-                usr->input_listview.listFlags &= ~GuiList::GLIST_FLAG_KEYB_INPUT;
+                input_listview.listFlags &= ~GuiList::GLIST_FLAG_KEYB_INPUT;
 
-                if ( keySS[ (int)usr->field_3A->downed_key ].short_name )
+                if ( keySS[ (int)field_3A->downed_key ].short_name )
                 {
-                    if ( usr->field_D3A )
+                    if ( field_D3A )
                     {
-                        usr->keyConfig[usr->field_D36].KeyCode = usr->field_3A->downed_key;
+                        keyConfig[field_D36].KeyCode = field_3A->downed_key;
 
-                        if ( usr->keyConfig[usr->field_D36].inp_type == 2 )
-                            usr->field_D3A = 0;
+                        if ( keyConfig[field_D36].inp_type == 2 )
+                            field_D3A = 0;
 
-                        usr->field_D52 = 0;
-                        usr->keyConfig[usr->field_D36].field_10 = 0;
+                        field_D52 = 0;
+                        keyConfig[field_D36].field_10 = 0;
                     }
                     else
                     {
-                        usr->keyConfig[usr->field_D36].slider_neg = usr->field_3A->downed_key;
-                        usr->keyConfig[usr->field_D36].field_10 &= 0xFFFFFFFD;
-                        usr->field_D3A = 1;
+                        keyConfig[field_D36].slider_neg = field_3A->downed_key;
+                        keyConfig[field_D36].field_10 &= 0xFFFFFFFD;
+                        field_D3A = 1;
                     }
                 }
-                usr->field_3A->downed_key = 0;
+                field_3A->downed_key = 0;
             }
             else
             {
-                usr->input_listview.listFlags |= GuiList::GLIST_FLAG_KEYB_INPUT;
+                input_listview.listFlags |= GuiList::GLIST_FLAG_KEYB_INPUT;
 
-                if ( usr->field_3A->downed_key == UAVK_BACK  || usr->field_3A->downed_key == UAVK_DELETE)
+                if ( field_3A->downed_key == UAVK_BACK  || field_3A->downed_key == UAVK_DELETE)
                 {
-                    if (usr->keyConfig[usr->field_D36].inp_type != 2)
-                        usr->keyConfig[usr->field_D36].KeyCode = 0;
+                    if (keyConfig[field_D36].inp_type != 2)
+                        keyConfig[field_D36].KeyCode = 0;
                 }
-                else if ( usr->field_3A->downed_key == UAVK_RETURN )
+                else if ( field_3A->downed_key == UAVK_RETURN )
                 {
-                    usr->keyConfig[usr->field_D36].field_10 = 3;
-                    usr->field_D52 = 1;
-                    if ( usr->keyConfig[usr->field_D36].inp_type == 2 )
-                        usr->field_D3A = 0;
+                    keyConfig[field_D36].field_10 = 3;
+                    field_D52 = 1;
+                    if ( keyConfig[field_D36].inp_type == 2 )
+                        field_D3A = 0;
                 }
-                else if ( usr->field_3A->downed_key == UAVK_ESCAPE )
+                else if ( field_3A->downed_key == UAVK_ESCAPE )
                 {
-                    sb_0x46a8c0(usr);
+                    sb_0x46a8c0();
                 }
             }
         }
     }
 
-    if ( usr->keyConfig[usr->field_D36].inp_type == 2 )
+    if ( keyConfig[field_D36].inp_type == 2 )
     {
         v410.field_4 = 0;
         v410.butID = 1056;
-        usr->button_input_button->button_func67(&v410);
+        button_input_button->button_func67(&v410);
     }
     else
     {
         v410.field_4 = 0;
         v410.butID = 1056;
-        usr->button_input_button->button_func66(&v410);
+        button_input_button->button_func66(&v410);
     }
 
-    v6 = usr->button_input_button->button_func69(usr->field_3A);
-    v6_l = v6 & 0xFFFF;
-    v6_h = (v6 >> 16) & 0xFFFF;
+    r = button_input_button->button_func69(field_3A);
 
-    if ( v6 )
+    if ( r )
     {
-        if ( v6_h )
-            sub_4DE248(usr, v6_h);
+        if ( r.btn )
+            sub_4DE248(r.btn);
 
-        if (v6_l == 1050)
+        if (r.code == 1050)
         {
-            usr->field_D42 = 1;
-            usr->field_D5E |= 1;
+            field_D42 = 1;
+            field_D5E |= 1;
         }
-        else if (v6_l == 1051)
+        else if (r.code == 1051)
         {
-            usr->field_D42 = 0;
-            usr->field_D5E |= 1;
+            field_D42 = 0;
+            field_D5E |= 1;
         }
-        else if (v6_l == 1052)
+        else if (r.code == 1052)
         {
-            if ( usr->field_D5E & 1 )
+            if ( field_D5E & 1 )
             {
-                usr->inp_joystick = usr->field_D42;
-                if ( usr->field_D42 )
-                    usr->p_ypaworld->field_73CE &= 0xFB;
+                inp_joystick = field_D42;
+                if ( field_D42 )
+                    p_ypaworld->field_73CE &= 0xFB;
                 else
-                    usr->p_ypaworld->field_73CE |= 4;
+                    p_ypaworld->field_73CE |= 4;
             }
 
-            if ( usr->field_D5E & 4 )
+            if ( field_D5E & 4 )
             {
-                usr->inp_altjoystick = usr->field_D4A;
-                if ( usr->field_D4A )
-                    usr->p_ypaworld->snd__cdsound |= 2;
+                inp_altjoystick = field_D4A;
+                if ( field_D4A )
+                    p_ypaworld->snd__cdsound |= 2;
                 else
-                    usr->p_ypaworld->snd__cdsound &= 0xFD;
+                    p_ypaworld->snd__cdsound &= 0xFD;
             }
 
-            if ( usr->field_D5E & 2 )
+            if ( field_D5E & 2 )
             {
-                if ( usr->field_D4E )
-                    usr->p_ypaworld->field_73CE &= 0xF7;
+                if ( field_D4E )
+                    p_ypaworld->field_73CE &= 0xF7;
                 else
-                    usr->p_ypaworld->field_73CE |= 8;
+                    p_ypaworld->field_73CE |= 8;
             }
 
-            usr->field_D5E = 0;
-            sub_46D2B4(usr->p_ypaworld->self_full, usr);
-            sub_457BC0(usr);
+            field_D5E = 0;
+            sub_46D2B4();
+            sub_457BC0();
 
-            int v416 = 2;
-            usr->button_input_button->button_func68(&v416);
+            button_input_button->Hide();
 
-            v416 = 1;
-            usr->titel_button->button_func68(&v416);
+            titel_button->Show();
 
-            usr->input_listview.CloseDialog(usr->p_ypaworld);
-            usr->field_46 = 1;
+            p_YW->GuiWinClose( &input_listview );
+            envMode = ENVMODE_TITLE;
         }
-        else if (v6_l == 1053)
+        else if (r.code == 1053)
         {
-            ypaworld_func158__sub0__sub0(usr);
+            ypaworld_func158__sub0__sub0();
         }
-        else if (v6_l == 1054)
+        else if (r.code == 1054)
         {
-            sb_0x46a8c0(usr);
+            sb_0x46a8c0();
         }
-        else if ( v6_l == 1055 )
+        else if ( r.code == 1055 )
         {
-            usr->field_D4E = 0;
-            usr->field_D5E |= 2;
+            field_D4E = 0;
+            field_D5E |= 2;
         }
-        else if ( v6_l == 1056 )
+        else if ( r.code == 1056 )
         {
-            usr->field_D4E = 1;
-            usr->field_D5E |= 2;
+            field_D4E = 1;
+            field_D5E |= 2;
         }
-        else if ( v6_l == 1057 )
+        else if ( r.code == 1057 )
         {
-            usr->keyConfig[ usr->field_D36 ].KeyCode = 0;
+            keyConfig[ field_D36 ].KeyCode = 0;
         }
-        else if ( v6_l == 1058 )
+        else if ( r.code == 1058 )
         {
-            usr->field_D4A = 1;
-            usr->field_D5E |= 4;
+            field_D4A = 1;
+            field_D5E |= 4;
         }
-        else if ( v6_l == 1059 )
+        else if ( r.code == 1059 )
         {
-            usr->field_D4A = 0;
-            usr->field_D5E |= 4;
+            field_D4A = 0;
+            field_D5E |= 4;
         }
-        else if ( v6_l == 1250 )
+        else if ( r.code == 1250 )
         {
-            yw->field_81AF = get_lang_string(ypaworld__string_pointers, 759, "help\\19.html");
-            usr->field_D52 = 0;
+            p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 759, "help\\19.html");
+            field_D52 = 0;
         }
     }
 
-    if ( usr->field_46 == 2 )
+    if ( envMode == ENVMODE_INPUT )
     {
-        usr->input_listview.InputHandle(yw, usr->field_3A);
+        input_listview.InputHandle(p_ypaworld, field_3A);
 
-        usr->field_D36 = usr->input_listview.selectedEntry + 1;
+        field_D36 = input_listview.selectedEntry + 1;
 
-        if ( usr->input_listview.listFlags & GuiList::GLIST_FLAG_IN_SELECT )
+        if ( input_listview.listFlags & GuiList::GLIST_FLAG_IN_SELECT )
         {
-            usr->keyConfig[ usr->field_D36 ].field_10 = 0;
-            usr->field_D3A = 1;
-            usr->field_D52 = 0;
+            keyConfig[ field_D36 ].field_10 = 0;
+            field_D3A = 1;
+            field_D52 = 0;
         }
-        usr->input_listview.Formate(yw);
+        input_listview.Formate(p_ypaworld);
     }
 
-    if ( usr->field_46 == 3 )
+    if ( envMode == ENVMODE_SETTINGS )
     {
-        if ( usr->field_3A->downed_key == UAVK_RETURN )
+        if ( field_3A->downed_key == UAVK_RETURN )
         {
-            if ( usr->video_listvw.flags & GuiBase::FLAG_CLOSED )
+            if ( video_listvw.IsClosed() && d3d_listvw.IsClosed() )
             {
-                if ( usr->d3d_listvw.flags & GuiBase::FLAG_CLOSED )
+                if ( field_13C2 & 1 && game_default_res != p_ypaworld->game_default_res && game_default_res )
                 {
-                    if ( usr->field_13C2 & 1 && usr->game_default_res != usr->p_ypaworld->game_default_res && usr->game_default_res )
-                    {
-                        const char *v44 = get_lang_string(ypaworld__string_pointers, 342, "THIS CAN ... PROBLEMS");
-                        const char *v45 = get_lang_string(ypaworld__string_pointers, 341, "DO YOU WANT TO CHANGE VIDEOMODE?");
+                    const char *v44 = get_lang_string(ypaworld__string_pointers, 342, "THIS CAN ... PROBLEMS");
+                    const char *v45 = get_lang_string(ypaworld__string_pointers, 341, "DO YOU WANT TO CHANGE VIDEOMODE?");
 
-                        sub_46D9E0(usr, 5, v45, v44, 0);
-                    }
-                    else
-                    {
-                        sb_0x46aa8c(usr);
-                    }
+                    sub_46D9E0(5, v45, v44, 0);
+                }
+                else
+                {
+                    sb_0x46aa8c();
                 }
             }
 
-            if ( !(usr->video_listvw.flags & GuiBase::FLAG_CLOSED) )
+            if ( video_listvw.IsOpen() )
             {
-                usr->video_listvw.CloseDialog(usr->p_ypaworld);
+                p_YW->GuiWinClose( &video_listvw );
 
-                if ( usr->video_listvw.flags & GuiBase::FLAG_CLOSED )
+                if ( video_listvw.IsClosed() )
                 {
                     v408.butID = 1156;
                     v408.field_4 = 2;
 
-                    usr->video_button->button_func73(&v408);
+                    video_button->button_func73(&v408);
                 }
 
-                usr->field_13C2 |= 1;
-                sub_46C5F0(usr, 0);
+                field_13C2 |= 1;
+                sub_46C5F0(0);
             }
 
         }
-        else if ( usr->field_3A->downed_key == UAVK_ESCAPE )
+        else if ( field_3A->downed_key == UAVK_ESCAPE )
         {
-            sub_46A3C0(usr);
-            usr->field_46 = 1;
+            sub_46A3C0();
+            envMode = ENVMODE_TITLE;
         }
-        if ( usr->field_3A->dword8 == (0x80 | 0x2B) )
-            yw->field_81AF = get_lang_string(ypaworld__string_pointers, 760, "help\\110.html");
+        if ( field_3A->dword8 == (0x80 | 0x2B) )
+            p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 760, "help\\110.html");
     }
 
 
-    v6 = usr->video_button->button_func69(usr->field_3A);
-    v6_l = v6 & 0xFFFF;
-    v6_h = (v6 >> 16) & 0xFFFF;
+    r = video_button->button_func69(field_3A);
 
-    if ( v6 )
+    if ( r )
     {
-        if ( v6_h )
-            sub_4DE248(usr, v6_h);
+        if ( r.btn )
+            sub_4DE248(r.btn);
 
-        if ( v6_l == 1100 )
+        if ( r.code == 1100 )
         {
-            usr->video_listvw.OpenDialog(yw);
-            SFXEngine::SFXe.startSound(&usr->samples1_info, 7);
+            p_YW->GuiWinOpen( &video_listvw );
+            SFXEngine::SFXe.startSound(&samples1_info, 7);
 
-            usr->field_3A->winp131arg.flag &= 0xFFFFFFFD;
+            field_3A->ClickInf.flag &= ~ClickBoxInf::FLAG_LM_DOWN;
         }
-        else if ( v6_l == 1101 )
+        else if ( r.code == 1101 )
         {
-            usr->video_listvw.CloseDialog(usr->p_ypaworld);
+            p_YW->GuiWinClose( &video_listvw );
         }
-        else if ( v6_l == 1102 )
+        else if ( r.code == 1102 )
         {
-            usr->field_13C2 |= 0x10;
-            usr->field_0x13a8 |= 1;
+            field_13C2 |= 0x10;
+            field_0x13a8 |= 1;
         }
-        else if ( v6_l == 1103 )
+        else if ( r.code == 1103 )
         {
-            usr->field_0x13a8 &= 0xFFFE;
-            usr->field_13C2 |= 0x10;
+            field_0x13a8 &= 0xFFFE;
+            field_13C2 |= 0x10;
         }
-        else if ( v6_l == 1106 )
+        else if ( r.code == 1106 )
         {
-            usr->field_13C2 |= 8;
-            usr->field_0x13a8 |= 2;
+            field_13C2 |= 8;
+            field_0x13a8 |= 2;
         }
-        else if ( v6_l == 1107 )
+        else if ( r.code == 1107 )
         {
-            usr->field_0x13a8 &= 0xFFFD;
-            usr->field_13C2 |= 8;
+            field_0x13a8 &= 0xFFFD;
+            field_13C2 |= 8;
         }
-        else if ( v6_l == 1108 )
+        else if ( r.code == 1108 )
         {
-            usr->field_13C2 |= 0x40;
+            field_13C2 |= 0x40;
         }
-        else if ( v6_l == 1111 )
+        else if ( r.code == 1111 )
         {
-            usr->field_13C2 |= 2;
-            usr->field_0x13b0 &= 0xFFFE;
+            field_13C2 |= 2;
+            field_0x13b0 &= 0xFFFE;
         }
-        else if ( v6_l == 1112 )
+        else if ( r.code == 1112 )
         {
-            usr->field_0x13b0 |= 1;
-            usr->field_13C2 |= 2;
+            field_0x13b0 |= 1;
+            field_13C2 |= 2;
         }
-        else if ( v6_l == 1113 )
+        else if ( r.code == 1113 )
         {
-            usr->field_0x13a8 |= 0x10;
-            usr->field_13C2 |= 4;
+            field_0x13a8 |= 0x10;
+            field_13C2 |= 4;
         }
-        else if ( v6_l == 1114 )
+        else if ( r.code == 1114 )
         {
-            usr->field_0x13a8 &= 0xEF;
-            usr->field_13C2 |= 4;
+            field_0x13a8 &= 0xEF;
+            field_13C2 |= 4;
         }
-        else if ( v6_l == 1115 )
+        else if ( r.code == 1115 )
         {
-            SFXEngine::SFXe.startSound(&usr->samples1_info, 0);
-            usr->field_13C2 |= 0x80;
+            SFXEngine::SFXe.startSound(&samples1_info, 0);
+            field_13C2 |= 0x80;
         }
-        else if ( v6_l == 1117 )
+        else if ( r.code == 1117 )
         {
-            SFXEngine::SFXe.sub_424000(&usr->samples1_info, 0);
+            SFXEngine::SFXe.sub_424000(&samples1_info, 0);
         }
-        else if ( v6_l == 1118 )
+        else if ( r.code == 1118 )
         {
-            usr->field_13C2 |= 0x100;
+            field_13C2 |= 0x100;
         }
-        else if ( v6_l == 1124 )
+        else if ( r.code == 1124 )
         {
-            if ( (usr->field_13C2 & 1) &&  usr->game_default_res != usr->p_ypaworld->game_default_res && usr->game_default_res )
+            if ( (field_13C2 & 1) &&  game_default_res != p_ypaworld->game_default_res && game_default_res )
             {
                 const char *v51 = get_lang_string(ypaworld__string_pointers, 342, "THIS CAN ... PROBLEMS");
                 const char *v52 = get_lang_string(ypaworld__string_pointers, 341, "DO YOU WANT TO CHANGE VIDEOMODE?");
-                sub_46D9E0(usr, 5, v52, v51, 0);
+                sub_46D9E0(5, v52, v51, 0);
             }
             else
             {
-                sb_0x46aa8c(usr);
+                sb_0x46aa8c();
             }
         }
-        else if ( v6_l == 1125 ) // Options CANCEL
+        else if ( r.code == 1125 ) // Options CANCEL
         {
-            sub_46A3C0(usr);
+            sub_46A3C0();
         }
-        else if ( v6_l == 1126 )
+        else if ( r.code == 1126 )
         {
-            usr->field_13BE = 1;
-            usr->field_13C2 |= 0x20;
+            field_13BE = 1;
+            field_13C2 |= 0x20;
         }
-        else if ( v6_l == 1127 )
+        else if ( r.code == 1127 )
         {
-            usr->field_13BE = 0;
-            usr->field_13C2 |= 0x20;
+            field_13BE = 0;
+            field_13C2 |= 0x20;
         }
-        else if ( v6_l == 1128 )
+        else if ( r.code == 1128 )
         {
-            usr->field_13C2 |= 0x200;
-            usr->field_0x13b0 |= 0x10;
+            field_13C2 |= 0x200;
+            field_0x13b0 |= 0x10;
         }
-        else if ( v6_l == 1129 )
+        else if ( r.code == 1129 )
         {
-            usr->field_0x13b0 &= 0xFFEF;
-            usr->field_13C2 |= 0x200;
+            field_0x13b0 &= 0xFFEF;
+            field_13C2 |= 0x200;
         }
-        else if ( v6_l == 1130 )
+        else if ( r.code == 1130 )
         {
-            usr->field_13C2 |= 0x400;
-            usr->field_0x13a8 |= 8;
+            field_13C2 |= 0x400;
+            field_0x13a8 |= 8;
         }
-        else if ( v6_l == 1131 )
+        else if ( r.code == 1131 )
         {
-            usr->field_0x13a8 &= 0xFFF7;
-            usr->field_13C2 |= 0x400;
+            field_0x13a8 &= 0xFFF7;
+            field_13C2 |= 0x400;
         }
-        else if ( v6_l == 1132 )
+        else if ( r.code == 1132 )
         {
-            usr->field_13C2 |= 0x800;
-            usr->field_0x13a8 |= 4;
+            field_13C2 |= 0x800;
+            field_0x13a8 |= 4;
         }
-        else if ( v6_l == 1133 )
+        else if ( r.code == 1133 )
         {
-            usr->field_0x13a8 &= 0xFFFB;
-            usr->field_13C2 |= 0x800;
+            field_0x13a8 &= 0xFFFB;
+            field_13C2 |= 0x800;
         }
-        else if ( v6_l == 1134 )
+        else if ( r.code == 1134 )
         {
-            usr->d3d_listvw.OpenDialog(yw);
-            SFXEngine::SFXe.startSound(&usr->samples1_info, 7);
+            p_YW->GuiWinOpen( &d3d_listvw );
+            SFXEngine::SFXe.startSound(&samples1_info, 7);
 
-            usr->field_3A->winp131arg.flag &= 0xFFFFFFFD;
+            field_3A->ClickInf.flag &= ~ClickBoxInf::FLAG_LM_DOWN;
         }
-        else if ( v6_l == 1135 )
+        else if ( r.code == 1135 )
         {
-            usr->d3d_listvw.CloseDialog(usr->p_ypaworld);
+            p_YW->GuiWinClose( &d3d_listvw );
         }
-        else if ( v6_l == 1250 )
-            yw->field_81AF = get_lang_string(ypaworld__string_pointers, 760, "help\\110.html");
+        else if ( r.code == 1250 )
+            p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 760, "help\\110.html");
     }
 
-    if ( usr->field_46 == 3 && !(usr->video_listvw.flags & GuiBase::FLAG_CLOSED) )
+    if ( envMode == ENVMODE_SETTINGS && video_listvw.IsOpen() )
     {
-        usr->video_listvw.InputHandle(yw, usr->field_3A);
+        video_listvw.InputHandle(p_ypaworld, field_3A);
 
-        if ( usr->video_listvw.listFlags & GuiList::GLIST_FLAG_SEL_DONE )
+        if ( video_listvw.listFlags & GuiList::GLIST_FLAG_SEL_DONE )
         {
             int v65 = 0;
 
-            if ( yw->GameShell->remoteMode )
+            if ( remoteMode )
                 v65 = 1;
 
-            usr->field_13C2 |= 1;
-            sub_46C5F0(usr, v65);
+            field_13C2 |= 1;
+            sub_46C5F0(v65);
         }
 
-        if ( usr->video_listvw.flags & GuiBase::FLAG_CLOSED )
+        if ( video_listvw.IsClosed() )
         {
             v408.field_4 = 2;
             v408.butID = 1156;
 
-            usr->video_button->button_func73(&v408);
+            video_button->button_func73(&v408);
         }
 
-        usr->video_listvw.Formate(yw);
+        video_listvw.Formate(p_ypaworld);
     }
 
-    if ( usr->field_46 == 3 && !(usr->d3d_listvw.flags & GuiBase::FLAG_CLOSED) )
+    if ( envMode == ENVMODE_SETTINGS && d3d_listvw.IsOpen() )
     {
-        usr->d3d_listvw.InputHandle(yw, usr->field_3A);
+        d3d_listvw.InputHandle(p_ypaworld, field_3A);
 
-        if ( usr->d3d_listvw.listFlags & GuiList::GLIST_FLAG_SEL_DONE )
+        if ( d3d_listvw.listFlags & GuiList::GLIST_FLAG_SEL_DONE )
         {
             int v66 = 0;
 
-            if ( yw->GameShell->remoteMode )
+            if ( remoteMode )
                 v66 = 1;
 
-            usr->field_13C2 |= 0x1000;
-            ypaworld_func158__sub0__sub5(usr, v66);
+            field_13C2 |= 0x1000;
+            ypaworld_func158__sub0__sub5(v66);
         }
 
-        if ( usr->d3d_listvw.flags & GuiBase::FLAG_CLOSED )
+        if ( d3d_listvw.IsClosed() )
         {
             v408.field_4 = 2;
             v408.butID = 1172;
 
-            usr->video_button->button_func73(&v408);
+            video_button->button_func73(&v408);
         }
 
-        usr->d3d_listvw.Formate(yw);
+        d3d_listvw.Formate(p_ypaworld);
     }
 
 
     int v347 = 1159;
-    button_str2_t2 *v67 = (button_str2_t2 *)usr->video_button->button_func74(&v347);
-    sprintf(v306, "%d", v67->field_0);
+    NC_STACK_button::Slider *v67 = video_button->button_func74(&v347);
+    sprintf(v306, "%d", v67->value);
 
     v395.field_4 = v306;
     v395.field_8 = v306;
     v395.butID = 1158;
-    usr->video_button->button_func71(&v395);
+    video_button->button_func71(&v395);
 
-    usr->field_0x13a4 = v67->field_0;
+    field_0x13a4 = v67->value;
 
 
     v347 = 1152;
-    v67 = (button_str2_t2 *)usr->video_button->button_func74(&v347);
-    sprintf(v306, "%d", v67->field_0);
+    v67 = video_button->button_func74(&v347);
+    sprintf(v306, "%d", v67->value);
 
     v395.field_4 = v306;
     v395.field_8 = v306;
     v395.butID = 1153;
-    usr->video_button->button_func71(&v395);
-    usr->field_0x13b4 = v67->field_0;
+    video_button->button_func71(&v395);
+    field_0x13b4 = v67->value;
 
-    SFXEngine::SFXe.setMasterVolume(usr->field_0x13b4);
+    SFXEngine::SFXe.setMasterVolume(field_0x13b4);
 
 
     v347 = 1154;
-    v67 = (button_str2_t2 *)usr->video_button->button_func74(&v347);
-    sprintf(v306, "%d", v67->field_0);
+    v67 = video_button->button_func74(&v347);
+    sprintf(v306, "%d", v67->value);
 
     v395.field_4 = v306;
     v395.field_8 = v306;
     v395.butID = 1155;
-    usr->video_button->button_func71(&v395);
-    usr->field_0x13b8 = v67->field_0;
+    video_button->button_func71(&v395);
+    field_0x13b8 = v67->value;
 
-    SFXEngine::SFXe.SetMusicVolume(usr->field_0x13b8);
+    SFXEngine::SFXe.SetMusicVolume(field_0x13b8);
 
 
     char v308[300];
 
-    if ( usr->field_46 == 9 ) //Load/Save
+    if ( envMode == ENVMODE_SELPLAYER ) //Load/Save
     {
-        if ( (usr->field_3A->downed_key > 0 && usr->field_3A->downed_key < 0x81) || (usr->field_3A->downed_key >= 0xA0 && usr->field_3A->downed_key < 0xFF) || usr->field_3A->chr )
+        if ( (field_3A->downed_key > 0 && field_3A->downed_key < 0x81) || (field_3A->downed_key >= 0xA0 && field_3A->downed_key < 0xFF) || field_3A->chr )
         {
-            if ( usr->field_0x1744 )
+            if ( field_0x1744 )
             {
-                if ( usr->field_3A->downed_key == UAVK_BACK )
+                if ( field_3A->downed_key == UAVK_BACK )
                 {
-                    if ( usr->usernamedir_len > 0 && usr->p_ypaworld->str17_NOT_FALSE == 0 )
+                    if ( usernamedir_len > 0 && p_ypaworld->str17_NOT_FALSE == 0 )
                     {
-                        int ln = strlen(usr->usernamedir);
-                        for (int i = usr->usernamedir_len - 1; i < ln - 1; i++)
-                            usr->usernamedir[i] = usr->usernamedir[i + 1];
+                        int ln = strlen(usernamedir);
+                        for (int i = usernamedir_len - 1; i < ln - 1; i++)
+                            usernamedir[i] = usernamedir[i + 1];
 
-                        usr->usernamedir[ln - 1] = 0;
-                        usr->usernamedir_len--;
+                        usernamedir[ln - 1] = 0;
+                        usernamedir_len--;
                     }
                 }
-                else if ( usr->field_3A->downed_key == UAVK_RETURN )
+                else if ( field_3A->downed_key == UAVK_RETURN )
                 {
-                    switch ( usr->field_0x1744 )
+                    switch ( field_0x1744 )
                     {
                     case 1:
-                        if ( usr->field_1612 )
+                        if ( field_1612 )
                         {
                             const char *v88 = get_lang_string(ypaworld__string_pointers, 2441, "2441");
                             const char *v89 = get_lang_string(ypaworld__string_pointers, 2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?");
-                            sub_46D9E0(usr, 3, v89, v88, 0);
+                            sub_46D9E0(3, v89, v88, 0);
                         }
                         else
                         {
-                            sb_0x46ca74(usr);
+                            sb_0x46ca74();
                         }
                         break;
 
                     case 2:
-                        sub_46C914(usr);
+                        sub_46C914();
                         break;
 
                     case 3:
-                        if ( usr->field_1612 )
+                        if ( field_1612 )
                         {
                             const char *v90 = get_lang_string(ypaworld__string_pointers, 2441, "2441");
                             const char *v91 = get_lang_string(ypaworld__string_pointers, 2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?");
-                            sub_46D9E0(usr, 6, v91, v90, 0);
+                            sub_46D9E0(6, v91, v90, 0);
                         }
                         else
                         {
-                            sb_0x46cdf8(usr);
+                            sb_0x46cdf8();
                         }
                         break;
 
                     case 4:
-                        sub_46C748(usr);
+                        sub_46C748();
                         break;
 
                     default:
                         break;
                     }
                 }
-                else if ( usr->field_3A->downed_key == UAVK_ESCAPE )
+                else if ( field_3A->downed_key == UAVK_ESCAPE )
                 {
-                    usr->field_0x1744 = 0;
+                    field_0x1744 = 0;
                 }
-                else if ( usr->field_3A->downed_key == UAVK_LEFT )
+                else if ( field_3A->downed_key == UAVK_LEFT )
                 {
-                    if ( usr->usernamedir_len > 0 && usr->p_ypaworld->str17_NOT_FALSE == 0 )
-                        usr->usernamedir_len--;
+                    if ( usernamedir_len > 0 && p_ypaworld->str17_NOT_FALSE == 0 )
+                        usernamedir_len--;
                 }
-                else if ( usr->field_3A->downed_key == UAVK_RIGHT )
+                else if ( field_3A->downed_key == UAVK_RIGHT )
                 {
-                    if ( usr->usernamedir_len < (int)strlen(usr->usernamedir) && usr->p_ypaworld->str17_NOT_FALSE == 0 )
-                        usr->usernamedir_len++;
+                    if ( usernamedir_len < (int)strlen(usernamedir) && p_ypaworld->str17_NOT_FALSE == 0 )
+                        usernamedir_len++;
                 }
-                else if ( usr->field_3A->downed_key == UAVK_DELETE && usr->usernamedir_len < (int)strlen(usr->usernamedir) && usr->p_ypaworld->str17_NOT_FALSE == 0 )
+                else if ( field_3A->downed_key == UAVK_DELETE && usernamedir_len < (int)strlen(usernamedir) && p_ypaworld->str17_NOT_FALSE == 0 )
                 {
-                    int ln = strlen(usr->usernamedir);
-                    for (int i = usr->usernamedir_len; i < ln - 1; i++)
-                        usr->usernamedir[i] = usr->usernamedir[i + 1];
+                    int ln = strlen(usernamedir);
+                    for (int i = usernamedir_len; i < ln - 1; i++)
+                        usernamedir[i] = usernamedir[i + 1];
 
-                    usr->usernamedir[ln - 1] = 0;
+                    usernamedir[ln - 1] = 0;
                 }
 
-                if ( strlen(usr->usernamedir) < 32 )
+                if ( strlen(usernamedir) < 32 )
                 {
-                    if ( usr->field_3A->chr > 0x1F && usr->p_ypaworld->str17_NOT_FALSE == 0 )
+                    if ( field_3A->chr > 0x1F && p_ypaworld->str17_NOT_FALSE == 0 )
                     {
                         char v337[6];
                         char a2a[6];
 
-                        sprintf(v337, "%c", usr->field_3A->chr);
+                        sprintf(v337, "%c", field_3A->chr);
 
                         strcpy(a2a, v337);
 
@@ -4003,12 +3932,12 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                         {
                             if ( ypaworld_func158__sub0__sub6(v337[0]) )
                             {
-                                strncpy(v308, usr->usernamedir, usr->usernamedir_len);
-                                strncpy(v308 + usr->usernamedir_len, a2a, 1);
-                                strcpy(v308 + usr->usernamedir_len + 1, usr->usernamedir + usr->usernamedir_len);
+                                strncpy(v308, usernamedir, usernamedir_len);
+                                strncpy(v308 + usernamedir_len, a2a, 1);
+                                strcpy(v308 + usernamedir_len + 1, usernamedir + usernamedir_len);
 
-                                strcpy(usr->usernamedir, v308);
-                                usr->usernamedir_len++;
+                                strcpy(usernamedir, v308);
+                                usernamedir_len++;
                             }
                         }
                     }
@@ -4016,29 +3945,29 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             }
             else
             {
-                if ( usr->field_3A->downed_key == UAVK_ESCAPE )
-                    sub_46A7F8(usr);
+                if ( field_3A->downed_key == UAVK_ESCAPE )
+                    sub_46A7F8();
 
-                if ( usr->field_3A->dword8 == (0x80 | 0x2B) )
-                    yw->field_81AF = get_lang_string(ypaworld__string_pointers, 758, "help\\18.html");
+                if ( field_3A->dword8 == (0x80 | 0x2B) )
+                    p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 758, "help\\18.html");
 
             }
 
-            if ( usr->field_1612 )
-                usr->disk_listvw.PosOnSelected(usr->field_1612 - 1);
+            if ( field_1612 )
+                disk_listvw.PosOnSelected(field_1612 - 1);
         }
     }
 
 
-    profilesNode *v107 = (profilesNode *)usr->files_list.head;
-    usr->field_1612 = 0;
+    profilesNode *v107 = (profilesNode *)files_list.head;
+    field_1612 = 0;
     int v108 = 1;
 
     while (v107->next)
     {
-        if ( !strcasecmp(v107->profile_subdir, usr->usernamedir) )
+        if ( !strcasecmp(v107->profile_subdir, usernamedir) )
         {
-            usr->field_1612 = v108;
+            field_1612 = v108;
             break;
         }
 
@@ -4046,64 +3975,62 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v107 = (profilesNode *)v107->next;
     }
 
-    v6 = usr->disk_button->button_func69(usr->field_3A);
-    v6_l = v6 & 0xFFFF;
-    v6_h = (v6 >> 16) & 0xFFFF;
+    r = disk_button->button_func69(field_3A);
 
-    if ( v6 )
+    if ( r )
     {
-        if ( v6_h )
-            sub_4DE248(usr, v6_h);
+        if ( r.btn )
+            sub_4DE248(r.btn);
 
-        if ( v6_l == 103 )
+        if ( r.code == 103 )
         {
-            sub_46A7F8(usr);
+            sub_46A7F8();
         }
-        else if ( v6_l == 1160 )
+        else if ( r.code == 1160 )
         {
-            usr->field_0x1744 = 2;
+            field_0x1744 = 2;
 
-            if ( !usr->field_1612 )
+            if ( !field_1612 )
             {
-                strcpy(usr->usernamedir, get_lang_string(ypaworld__string_pointers, 366, "NEW GAME"));
+                strcpy(usernamedir, get_lang_string(ypaworld__string_pointers, 366, "NEW GAME"));
             }
 
-            usr->usernamedir_len = strlen(usr->usernamedir);
-            strncpy(v308, usr->usernamedir, usr->usernamedir_len);
-            strncpy(&v308[usr->usernamedir_len], "h", 1);
+            usernamedir_len = strlen(usernamedir);
+            strncpy(v308, usernamedir, usernamedir_len);
+            strncpy(&v308[usernamedir_len], "h", 1);
 
-            strcpy(&v308[usr->usernamedir_len + 1], &usr->usernamedir[usr->usernamedir_len]);
+            strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
 
             v395.field_8 = NULL;
             v395.butID = 1100;
             v395.field_4 = v308;
-            usr->disk_button->button_func71(&v395);
+            disk_button->button_func71(&v395);
         }
-        else if ( v6_l == 1161 )
+        else if ( r.code == 1161 )
         {
-            usr->field_0x1744 = 4;
-            if ( !usr->field_1612 )
+            field_0x1744 = 4;
+            if ( !field_1612 )
             {
-                strcpy(usr->usernamedir, get_lang_string(ypaworld__string_pointers, 366, "NEW GAME"));
+                strcpy(usernamedir, get_lang_string(ypaworld__string_pointers, 366, "NEW GAME"));
             }
-            usr->usernamedir_len = strlen(usr->usernamedir);
-            strncpy(v308, usr->usernamedir, usr->usernamedir_len);
-            strncpy(&v308[usr->usernamedir_len], "h", 1);
+            usernamedir_len = strlen(usernamedir);
+            strncpy(v308, usernamedir, usernamedir_len);
+            strncpy(&v308[usernamedir_len], "h", 1);
 
-            strcpy(&v308[usr->usernamedir_len + 1], &usr->usernamedir[usr->usernamedir_len]);
+            strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
 
             v395.field_8 = NULL;
             v395.butID = 1100;
             v395.field_4 = v308;
-            usr->disk_button->button_func71(&v395);
+            disk_button->button_func71(&v395);
         }
-        else if ( v6_l == 1162 )
+        else if ( r.code == 1162 )
         {
-            usr->field_0x1744 = 3;
+            field_0x1744 = 3;
 
             const char *v135 = get_lang_string(ypaworld__string_pointers, 366, "NEW GAME");
 
-            profilesNode *v136 = (profilesNode *)usr->files_list.head;
+            profilesNode *v136 = (profilesNode *)files_list.head;
             int v420 = 0;
 
             while (v136->next)
@@ -4119,9 +4046,9 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v136 = (profilesNode *)v136->next;
             }
 
-            sprintf(usr->usernamedir, "%s%d", v135, v420 + 1);
+            sprintf(usernamedir, "%s%d", v135, v420 + 1);
 
-            if ( usr->p_ypaworld->str17_NOT_FALSE )
+            if ( p_ypaworld->str17_NOT_FALSE )
             {
                 windd_dlgBox a1a;
                 memset(&a1a, 0, sizeof(windd_dlgBox));
@@ -4130,7 +4057,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 a1a.ok = get_lang_string(ypaworld__string_pointers, 2, "OK");
                 a1a.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
                 a1a.timer_func = 0;
-                a1a.startText = usr->usernamedir;
+                a1a.startText = usernamedir;
                 a1a.maxLen = 32;
                 a1a.replace = 1;
 
@@ -4138,36 +4065,36 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
                 if ( !a1a.result )
                 {
-                    usr->field_0x1744 = 0;
+                    field_0x1744 = 0;
                 }
                 else
                 {
-                    strcpy(usr->usernamedir, a1a.result);
+                    strcpy(usernamedir, a1a.result);
                 }
             }
             else
             {
-                usr->usernamedir_len = strlen(usr->usernamedir);
-                strncpy(v308, usr->usernamedir, usr->usernamedir_len);
-                strncpy(&v308[usr->usernamedir_len], "h", 1);
+                usernamedir_len = strlen(usernamedir);
+                strncpy(v308, usernamedir, usernamedir_len);
+                strncpy(&v308[usernamedir_len], "h", 1);
 
-                strcpy(&v308[usr->usernamedir_len + 1], &usr->usernamedir[usr->usernamedir_len]);
+                strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
 
                 v395.field_8 = NULL;
                 v395.butID = 1100;
                 v395.field_4 = v308;
-                usr->disk_button->button_func71(&v395);
+                disk_button->button_func71(&v395);
             }
         }
-        else if ( v6_l == 1163 )
+        else if ( r.code == 1163 )
         {
-            usr->field_0x1744 = 1;
-            if ( !usr->field_1612 )
+            field_0x1744 = 1;
+            if ( !field_1612 )
             {
-                strcpy( usr->usernamedir, get_lang_string(ypaworld__string_pointers, 366, "NEW GAME") );
+                strcpy( usernamedir, get_lang_string(ypaworld__string_pointers, 366, "NEW GAME") );
             }
 
-            if ( usr->p_ypaworld->str17_NOT_FALSE )
+            if ( p_ypaworld->str17_NOT_FALSE )
             {
                 windd_dlgBox a1a;
                 memset(&a1a, 0, sizeof(windd_dlgBox));
@@ -4176,7 +4103,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 a1a.ok = get_lang_string(ypaworld__string_pointers, 2, "OK");
                 a1a.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
                 a1a.timer_func = 0;
-                a1a.startText = usr->usernamedir;
+                a1a.startText = usernamedir;
                 a1a.maxLen = 32;
                 a1a.replace = 1;
 
@@ -4184,104 +4111,104 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
                 if ( !a1a.result )
                 {
-                    usr->field_0x1744 = 0;
+                    field_0x1744 = 0;
                 }
                 else
                 {
-                    strcpy(usr->usernamedir, a1a.result);
+                    strcpy(usernamedir, a1a.result);
                 }
             }
             else
             {
-                usr->usernamedir_len = strlen(usr->usernamedir);
-                strncpy(v308, usr->usernamedir, usr->usernamedir_len);
-                strncpy(&v308[usr->usernamedir_len], "h", 1);
+                usernamedir_len = strlen(usernamedir);
+                strncpy(v308, usernamedir, usernamedir_len);
+                strncpy(&v308[usernamedir_len], "h", 1);
 
-                strcpy(&v308[usr->usernamedir_len + 1], &usr->usernamedir[usr->usernamedir_len]);
+                strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
 
                 v395.field_8 = NULL;
                 v395.butID = 1100;
                 v395.field_4 = v308;
-                usr->disk_button->button_func71(&v395);
+                disk_button->button_func71(&v395);
             }
         }
-        else if ( v6_l == 1164)
+        else if ( r.code == 1164)
         {
-            switch ( usr->field_0x1744 )
+            switch ( field_0x1744 )
             {
             case 1:
-                if ( usr->field_1612 )
+                if ( field_1612 )
                 {
                     const char *v112 = get_lang_string(ypaworld__string_pointers, 2441, "2441");
                     const char *v113 = get_lang_string(ypaworld__string_pointers, 2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?");
-                    sub_46D9E0(usr, 3, v113, v112, 0);
+                    sub_46D9E0(3, v113, v112, 0);
                 }
                 else
                 {
-                    sb_0x46ca74(usr);
+                    sb_0x46ca74();
                 }
                 break;
             case 2:
-                sub_46C914(usr);
+                sub_46C914();
                 break;
             case 3:
-                if ( usr->field_1612 )
+                if ( field_1612 )
                 {
                     const char *v114 = get_lang_string(ypaworld__string_pointers, 2441, "2441");
                     const char *v115 = get_lang_string(ypaworld__string_pointers, 2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?");
-                    sub_46D9E0(usr, 6, v115, v114, 0);
+                    sub_46D9E0(6, v115, v114, 0);
                 }
                 else
                 {
-                    sb_0x46cdf8(usr);
+                    sb_0x46cdf8();
                 }
                 break;
             case 4:
-                sub_46C748(usr);
+                sub_46C748();
                 break;
             default:
                 break;
             }
         }
-        else if (v6_l == 1165)
+        else if (r.code == 1165)
         {
-            if ( usr->field_0x1744 )
+            if ( field_0x1744 )
             {
-                usr->field_0x1744 = 0;
+                field_0x1744 = 0;
             }
             else
-                sub_46A7F8(usr);
+                sub_46A7F8();
         }
-        else if (v6_l == 1250)
+        else if (r.code == 1250)
         {
-            yw->field_81AF = get_lang_string(ypaworld__string_pointers, 758, "help\\18.html");
-            usr->field_0x1744 = 0;
+            p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 758, "help\\18.html");
+            field_0x1744 = 0;
         }
     }
 
-    if ( usr->field_46 == 9 ) // Multiplayer
+    if ( envMode == ENVMODE_SELPLAYER ) // Multiplayer
     {
-        usr->disk_listvw.InputHandle(yw, usr->field_3A);
+        disk_listvw.InputHandle(p_ypaworld, field_3A);
 
-        if ( usr->disk_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT || usr->field_3A->downed_key == UAVK_UP || usr->field_3A->downed_key == UAVK_DOWN )
+        if ( disk_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT || field_3A->downed_key == UAVK_UP || field_3A->downed_key == UAVK_DOWN )
         {
-            usr->field_1612 = usr->disk_listvw.selectedEntry + 1;
+            field_1612 = disk_listvw.selectedEntry + 1;
 
-            if ( usr->field_1612 < 1 )
-                usr->field_1612 = 1;
+            if ( field_1612 < 1 )
+                field_1612 = 1;
 
-            if ( usr->field_1612 > usr->disk_listvw.numEntries  )
-                usr->field_1612 = usr->disk_listvw.numEntries;
+            if ( field_1612 > disk_listvw.numEntries  )
+                field_1612 = disk_listvw.numEntries;
 
 
-            profilesNode *node = (profilesNode *)usr->files_list.head;
+            profilesNode *node = (profilesNode *)files_list.head;
 
-            for (int i = 0; i < usr->field_1612 - 1; i++) // check usr->field_1612 - 1
+            for (int i = 0; i < field_1612 - 1; i++) // check field_1612 - 1
             {
                 if ( ! node->next)
                 {
                     node = NULL;
-                    usr->field_1612 = 0;
+                    field_1612 = 0;
                     break;
                 }
                 node = (profilesNode *)node->next;
@@ -4289,257 +4216,250 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
             if (node)
             {
-                strcpy(usr->usernamedir, node->profile_subdir);
-                usr->usernamedir_len = strlen(usr->usernamedir);
+                strcpy(usernamedir, node->profile_subdir);
+                usernamedir_len = strlen(usernamedir);
             }
         }
-        usr->disk_listvw.Formate(yw);
+        disk_listvw.Formate(p_ypaworld);
     }
 
-    if ( usr->field_0x1744 )
+    if ( field_0x1744 )
     {
         v410.butID = 1105;
-        usr->disk_button->button_func66(&v410);
+        disk_button->button_func66(&v410);
 
         v410.field_4 = 0;
         v410.butID = 1104;
-        usr->disk_button->button_func67(&v410);
+        disk_button->button_func67(&v410);
 
         v410.butID = 1101;
-        usr->disk_button->button_func67(&v410);
+        disk_button->button_func67(&v410);
 
         v410.butID = 1102;
-        usr->disk_button->button_func67(&v410);
+        disk_button->button_func67(&v410);
 
         v410.butID = 1103;
-        usr->disk_button->button_func67(&v410);
+        disk_button->button_func67(&v410);
 
         v410.butID = 1100;
-        usr->disk_button->button_func67(&v410);
+        disk_button->button_func67(&v410);
 
-        if ( usr->field_0x1744 == 4 )
+        if ( field_0x1744 == 4 )
         {
             v410.field_4 = 0;
             v410.butID = 1105;
 
-            if ( !usr->field_1612 || !strcasecmp(usr->usernamedir, usr->user_name) )
-                usr->disk_button->button_func67(&v410);
+            if ( !field_1612 || !strcasecmp(usernamedir, user_name) )
+                disk_button->button_func67(&v410);
             else
-                usr->disk_button->button_func66(&v410);
+                disk_button->button_func66(&v410);
         }
 
-        if ( usr->field_0x1744 == 2 && !usr->field_1612 )
+        if ( field_0x1744 == 2 && !field_1612 )
         {
             v410.field_4 = 0;
             v410.butID = 1105;
-            usr->disk_button->button_func67(&v410);
+            disk_button->button_func67(&v410);
         }
 
-        if ( usr->field_0x1744 == 1 || usr->field_0x1744 == 3 )
+        if ( field_0x1744 == 1 || field_0x1744 == 3 )
         {
             v410.butID = 1100;
-            usr->disk_button->button_func66(&v410);
+            disk_button->button_func66(&v410);
         }
 
-        if ( usr->p_ypaworld->str17_NOT_FALSE )
+        if ( p_ypaworld->str17_NOT_FALSE )
         {
-            strcpy(v308, usr->usernamedir);
+            strcpy(v308, usernamedir);
         }
         else
         {
-            char *v174 = usr->usernamedir;
+            char *v174 = usernamedir;
 
-            strncpy(v308, usr->usernamedir, usr->usernamedir_len);
-            strncpy(&v308[usr->usernamedir_len], "_", 1);
+            strncpy(v308, usernamedir, usernamedir_len);
+            strncpy(&v308[usernamedir_len], "_", 1);
 
-            v174 += usr->usernamedir_len;
+            v174 += usernamedir_len;
 
-            strcpy(&v308[usr->usernamedir_len + 1], v174);
+            strcpy(&v308[usernamedir_len + 1], v174);
         }
     }
     else
     {
         v410.field_4 = 0;
         v410.butID = 1105;
-        usr->disk_button->button_func67(&v410);
+        disk_button->button_func67(&v410);
 
         v410.butID = 1104;
-        usr->disk_button->button_func66(&v410);
+        disk_button->button_func66(&v410);
 
         v410.butID = 1101;
-        usr->disk_button->button_func66(&v410);
+        disk_button->button_func66(&v410);
 
         v410.butID = 1103;
-        usr->disk_button->button_func66(&v410);
+        disk_button->button_func66(&v410);
 
         v410.butID = 1100;
-        usr->disk_button->button_func67(&v410);
+        disk_button->button_func67(&v410);
 
         v410.butID = 1102;
-        if ( !strcasecmp(usr->usernamedir, usr->user_name) )
-            usr->disk_button->button_func67(&v410);
+        if ( !strcasecmp(usernamedir, user_name) )
+            disk_button->button_func67(&v410);
         else
-            usr->disk_button->button_func66(&v410);
+            disk_button->button_func66(&v410);
 
-        strcpy(v308, usr->usernamedir);
+        strcpy(v308, usernamedir);
     }
 
     v395.field_8 = NULL;
     v395.field_4 = v308;
     v395.butID = 1100;
-    usr->disk_button->button_func71(&v395);
+    disk_button->button_func71(&v395);
 
-    if ( usr->field_46 == 7 )
+    if ( envMode == ENVMODE_SELLOCALE )
     {
 
-        if ( usr->field_3A->downed_key == UAVK_RETURN )
+        if ( field_3A->downed_key == UAVK_RETURN )
         {
-            sub_46B0E0(usr);
+            sub_46B0E0();
         }
-        else if ( usr->field_3A->downed_key == UAVK_ESCAPE )
+        else if ( field_3A->downed_key == UAVK_ESCAPE )
         {
-            sub_46AA0C(usr);
+            sub_46AA0C();
         }
 
-        if ( usr->field_3A->dword8 == (0x80 | 0x2B) )
-            yw->field_81AF = get_lang_string(ypaworld__string_pointers, 761, "help\\111.html");
+        if ( field_3A->dword8 == (0x80 | 0x2B) )
+            p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 761, "help\\111.html");
     }
 
 
-    v6 = usr->locale_button->button_func69(usr->field_3A);
-    v6_l = v6 & 0xFFFF;
-    v6_h = (v6 >> 16) & 0xFFFF;
+    r = locale_button->button_func69(field_3A);
 
-    if (v6)
+    if (r)
     {
-        if ( v6_h )
-            sub_4DE248(usr, v6_h);
+        if ( r.btn )
+            sub_4DE248(r.btn);
 
-        if ( v6_l == 103 )
+        if ( r.code == 103 )
         {
-            sub_46AA0C(usr);
+            sub_46AA0C();
         }
-        else if ( v6_l == 1250 )
+        else if ( r.code == 1250 )
         {
-            yw->field_81AF = get_lang_string(ypaworld__string_pointers, 761, "help\\111.html");
+            p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 761, "help\\111.html");
         }
-        else if ( v6_l == 1300 )
+        else if ( r.code == 1300 )
         {
-            sub_46B0E0(usr);
+            sub_46B0E0();
         }
-        else if ( v6_l == 1301 )
+        else if ( r.code == 1301 )
         {
-            sub_46AA0C(usr);
+            sub_46AA0C();
         }
     }
 
-    if ( usr->field_46 == 7 ) //Locale
+    if ( envMode == ENVMODE_SELLOCALE ) //Locale
     {
-        usr->local_listvw.InputHandle(yw, usr->field_3A);
+        local_listvw.InputHandle(p_ypaworld, field_3A);
 
-        if ( usr->local_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT )
+        if ( local_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT )
         {
-            langDll_node *node = (langDll_node *)usr->lang_dlls.head;
+            langDll_node *node = (langDll_node *)lang_dlls.head;
 
-            usr->field_19CA |= 1;
+            field_19CA |= 1;
 
-            for(int i = 0; i < usr->local_listvw.selectedEntry; i++)
+            for(int i = 0; i < local_listvw.selectedEntry; i++)
                 node = (langDll_node *)node->next;
 
-            usr->prev_lang = node;
+            prev_lang = node;
         }
 
-        usr->local_listvw.Formate(yw);
+        local_listvw.Formate(p_ypaworld);
     }
 
-    v6 = usr->about_button->button_func69(usr->field_3A);
-    v6_l = v6 & 0xFFFF;
-    v6_h = (v6 >> 16) & 0xFFFF;
+    r = about_button->button_func69(field_3A);
 
-    if ( v6 )
+    if ( r )
     {
-        if ( v6_l == 103 )
+        if ( r.code == 103 )
         {
-            usr->field_46 = 1;
+            envMode = ENVMODE_TITLE;
 
-            int v416 = 2;
-            usr->about_button->button_func68(&v416);
+            about_button->Hide();
         }
     }
 
-    if ( usr->field_46 == 8 )
+    if ( envMode == ENVMODE_ABOUT )
     {
-        if ( usr->field_3A->downed_key == UAVK_RETURN || usr->field_3A->downed_key == UAVK_ESCAPE )
+        if ( field_3A->downed_key == UAVK_RETURN || field_3A->downed_key == UAVK_ESCAPE )
         {
-            usr->field_46 = 1;
+            envMode = ENVMODE_TITLE;
 
-            int v416 = 2;
-            usr->about_button->button_func68(&v416);
+            about_button->Hide();
 
-            v416 = 1;
-            usr->titel_button->button_func68(&v416);
+            titel_button->Show();
         }
     }
 
-    if ( usr->field_46 == 1 )
+    if ( envMode == ENVMODE_TITLE )
     {
-        if ( usr->field_19DA && usr->glblTime - usr->field_19D6 >= 700 )
+        if ( field_19DA && glblTime - field_19D6 >= 700 )
         {
-            usr->field_19DA = 0;
+            field_19DA = 0;
         }
         else
         {
-            switch ( usr->field_19DA )
+            switch ( field_19DA )
             {
             case 0:
-                if ( sub_449678(usr->p_ypaworld, usr->field_3A, 'A') ) // VK_A
+                if ( sub_449678(p_ypaworld, field_3A, 'A') ) // VK_A
                 {
-                    usr->field_19D6 = usr->glblTime;
-                    usr->field_19DA++;
+                    field_19D6 = glblTime;
+                    field_19DA++;
                 }
                 else
                 {
-                    if ( usr->field_3A->downed_key )
-                        usr->field_19DA = 0;
+                    if ( field_3A->downed_key )
+                        field_19DA = 0;
                 }
                 break;
 
             case 1:
-                if ( sub_449678(usr->p_ypaworld, usr->field_3A, 'M') )
+                if ( sub_449678(p_ypaworld, field_3A, 'M') )
                 {
-                    usr->field_19D6 = usr->glblTime;
-                    usr->field_19DA++;
+                    field_19D6 = glblTime;
+                    field_19DA++;
                 }
                 else
                 {
-                    if ( usr->field_3A->downed_key )
-                        usr->field_19DA = 0;
+                    if ( field_3A->downed_key )
+                        field_19DA = 0;
                 }
                 break;
 
             case 2:
-                if ( sub_449678(usr->p_ypaworld, usr->field_3A, 'O') )
+                if ( sub_449678(p_ypaworld, field_3A, 'O') )
                 {
-                    usr->field_19D6 = usr->glblTime;
-                    usr->field_19DA++;
+                    field_19D6 = glblTime;
+                    field_19DA++;
                 }
                 else
                 {
-                    if ( usr->field_3A->downed_key )
-                        usr->field_19DA = 0;
+                    if ( field_3A->downed_key )
+                        field_19DA = 0;
                 }
                 break;
 
             case 3:
-                if ( sub_449678(usr->p_ypaworld, usr->field_3A, 'K') )
+                if ( sub_449678(p_ypaworld, field_3A, 'K') )
                 {
-                    ypaworld_func158__sub0__sub4(usr);
-                    SFXEngine::SFXe.startSound(&usr->samples2_info, 3);
+                    ypaworld_func158__sub0__sub4();
+                    SFXEngine::SFXe.startSound(&samples2_info, 3);
                 }
                 else
                 {
-                    if ( usr->field_3A->downed_key )
-                        usr->field_19DA = 0;
+                    if ( field_3A->downed_key )
+                        field_19DA = 0;
                 }
                 break;
             default:
@@ -4549,39 +4469,39 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
     }
     else
     {
-        usr->field_19DA = 0;
+        field_19DA = 0;
     }
 
-    switch ( usr->netSelMode )
+    switch ( netSelMode )
     {
     case 0:
-        usr->nInputMode = 0;
-        usr->field_1C36 = 1;
-        usr->network_listvw.maxShownEntries = 12;
-        usr->field_0x1c30 = 3 * (yw->font_default_h + word_5A50C2);
+        nInputMode = 0;
+        field_1C36 = 1;
+        network_listvw.maxShownEntries = 12;
+        field_0x1c30 = 3 * (p_ypaworld->font_default_h + word_5A50C2);
         break;
     case 1:
-        usr->nInputMode = 0;
-        usr->field_1C36 = 1;
-        usr->network_listvw.maxShownEntries = 12;
-        usr->field_0x1c30 = 3 * (yw->font_default_h + word_5A50C2);
+        nInputMode = 0;
+        field_1C36 = 1;
+        network_listvw.maxShownEntries = 12;
+        field_0x1c30 = 3 * (p_ypaworld->font_default_h + word_5A50C2);
         break;
     case 3:
-        usr->nInputMode = 0;
-        usr->field_1C36 = 1;
-        usr->network_listvw.maxShownEntries = 12;
-        usr->field_0x1c30 = 3 * (yw->font_default_h + word_5A50C2);
+        nInputMode = 0;
+        field_1C36 = 1;
+        network_listvw.maxShownEntries = 12;
+        field_0x1c30 = 3 * (p_ypaworld->font_default_h + word_5A50C2);
         break;
     case 2:
-        usr->field_1C36 = 0;
-        usr->network_listvw.maxShownEntries = 12;
-        usr->nInputMode = 1;
+        field_1C36 = 0;
+        network_listvw.maxShownEntries = 12;
+        nInputMode = 1;
         break;
     case 4:
-        usr->nInputMode = 1;
-        usr->field_1C36 = 1;
-        usr->network_listvw.maxShownEntries = 6;
-        usr->field_0x1c30 = yw->font_default_h * 9.5 + 2 * word_5A50C2;
+        nInputMode = 1;
+        field_1C36 = 1;
+        network_listvw.maxShownEntries = 6;
+        field_0x1c30 = p_ypaworld->font_default_h * 9.5 + 2 * word_5A50C2;
         break;
     default:
         break;
@@ -4593,16 +4513,14 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
     windp_arg79 v368;
 
-    v6 = usr->network_button->button_func69(usr->field_3A);
-    v6_l = v6 & 0xFFFF;
-    v6_h = (v6 >> 16) & 0xFFFF;
+    r = network_button->button_func69(field_3A);
 
-    if ( v6 )
+    if ( r )
     {
-        if ( v6_h )
-            sub_4DE248(usr, v6_h);
+        if ( r.btn )
+            sub_4DE248(r.btn);
 
-        if ( v6_l == 1204 || v6_l == 1205 || v6_l == 1206 || v6_l == 1207 )
+        if ( r.code == 1204 || r.code == 1205 || r.code == 1206 || r.code == 1207 )
         {
             fracMsg.msgID = UAMSG_FRACTION;
             fracMsg.owner = 0;
@@ -4614,100 +4532,100 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             v346.recvFlags = 2;
         }
 
-        if ( v6_l == 103 || v6_l == 1202 )
+        if ( r.code == 103 || r.code == 1202 )
         {
-            sub_46D698(usr);
+            sub_46D698();
         }
-        else if ( v6_l == 1204 )
+        else if ( r.code == 1204 )
         {
-            fracMsg.freefrac = usr->SelectedFraction;
-            usr->FreeFraction |= usr->SelectedFraction;
+            fracMsg.freefrac = SelectedFraction;
+            FreeFraction |= SelectedFraction;
             fracMsg.newfrac = 1;
-            usr->SelectedFraction = 1;
-            usr->FreeFraction &= 0xFE;
+            SelectedFraction = 1;
+            FreeFraction &= 0xFE;
 
-            usr->p_ypaworld->self_full->ypaworld_func181(&v346);
+            p_ypaworld->self_full->ypaworld_func181(&v346);
         }
-        else if ( v6_l == 1205 )
+        else if ( r.code == 1205 )
         {
-            fracMsg.freefrac = usr->SelectedFraction;
-            usr->FreeFraction |= usr->SelectedFraction;
+            fracMsg.freefrac = SelectedFraction;
+            FreeFraction |= SelectedFraction;
             fracMsg.newfrac = 2;
-            usr->FreeFraction &= 0xFD;
-            usr->SelectedFraction = 2;
+            FreeFraction &= 0xFD;
+            SelectedFraction = 2;
 
-            usr->p_ypaworld->self_full->ypaworld_func181(&v346);
+            p_ypaworld->self_full->ypaworld_func181(&v346);
         }
-        else if ( v6_l == 1206 )
+        else if ( r.code == 1206 )
         {
-            fracMsg.freefrac = usr->SelectedFraction;
-            usr->FreeFraction |= usr->SelectedFraction;
+            fracMsg.freefrac = SelectedFraction;
+            FreeFraction |= SelectedFraction;
             fracMsg.newfrac = 4;
-            usr->SelectedFraction = 4;
-            usr->FreeFraction &= 0xFB;
+            SelectedFraction = 4;
+            FreeFraction &= 0xFB;
 
-            usr->p_ypaworld->self_full->ypaworld_func181(&v346);
+            p_ypaworld->self_full->ypaworld_func181(&v346);
         }
-        else if ( v6_l == 1207 )
+        else if ( r.code == 1207 )
         {
-            fracMsg.freefrac = usr->SelectedFraction;
-            usr->FreeFraction |= usr->SelectedFraction;
+            fracMsg.freefrac = SelectedFraction;
+            FreeFraction |= SelectedFraction;
             fracMsg.newfrac = 8;
-            usr->SelectedFraction = 8;
-            usr->FreeFraction &= 0xF7;
+            SelectedFraction = 8;
+            FreeFraction &= 0xF7;
 
-            usr->p_ypaworld->self_full->ypaworld_func181(&v346);
+            p_ypaworld->self_full->ypaworld_func181(&v346);
         }
 
-        switch ( usr->netSelMode )
+        switch ( netSelMode )
         {
         case 0:
-            if ( v6_l == 1200 )
+            if ( r.code == 1200 )
             {
-                yw_NetOKProvider(usr);
+                yw_NetOKProvider();
             }
-            else if ( v6_l == 1250 )
+            else if ( r.code == 1250 )
             {
-                yw->field_81AF = get_lang_string(ypaworld__string_pointers, 753, "help\\13.html");
+                p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 753, "help\\13.html");
             }
             break;
 
         case 1:
-            if ( v6_l == 1200 )
+            if ( r.code == 1200 )
             {
-                yw_JoinNetGame(usr);
+                yw_JoinNetGame();
             }
-            else if ( v6_l == 1201 )
+            else if ( r.code == 1201 )
             {
-                usr->isHost = 1;
-                usr->netSel = -1;
-                usr->network_listvw.firstShownEntries = 0;
-                usr->netSelMode = 3;
+                isHost = 1;
+                netSel = -1;
+                network_listvw.firstShownEntries = 0;
+                netSelMode = 3;
             }
-            else if ( v6_l == 1250 )
+            else if ( r.code == 1250 )
             {
-                yw->field_81AF = get_lang_string(ypaworld__string_pointers, 755, "help\\15.html");
+                p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 755, "help\\15.html");
             }
             break;
 
         case 2:
-            if ( v6_l == 1200 )
+            if ( r.code == 1200 )
             {
-                if ( usr->netName[0] )
+                if ( netName[0] )
                 {
-                    strcpy(usr->callSIGN, usr->netName);
+                    strcpy(callSIGN, netName);
 
-                    usr->netSelMode = 1;
-                    usr->netSel = -1;
-                    usr->network_listvw.firstShownEntries = 0;
-                    usr->netName[0] = 0;
+                    netSelMode = 1;
+                    netSel = -1;
+                    network_listvw.firstShownEntries = 0;
+                    netName[0] = 0;
 
-                    usr->network_listvw.OpenDialog(usr->p_ypaworld);
+                    p_YW->GuiWinOpen( &network_listvw );
                 }
             }
-            else if ( v6_l == 1201 )
+            else if ( r.code == 1201 )
             {
-                if ( yw->str17_NOT_FALSE )
+                if ( p_ypaworld->str17_NOT_FALSE )
                 {
                     windd_dlgBox v339;
                     memset(&v339, 0, sizeof(windd_dlgBox));
@@ -4717,82 +4635,82 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     v339.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
                     v339.maxLen = 32;
                     v339.timer_func = NULL;
-                    v339.startText = usr->netName;
+                    v339.startText = netName;
 
                     windd->windd_func322(&v339);
 
                     if ( v339.result )
                     {
-                        strncpy(usr->netName, v339.result, 64);
-                        usr->netName[63] = 0;
+                        strncpy(netName, v339.result, 64);
+                        netName[63] = 0;
                     }
                 }
             }
-            else if ( v6_l == 1250 )
+            else if ( r.code == 1250 )
             {
-                yw->field_81AF = get_lang_string(ypaworld__string_pointers, 754, "help\\14.html");
+                p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 754, "help\\14.html");
             }
             break;
 
         case 3:
-            if ( v6_l == 1200 )
+            if ( r.code == 1200 )
             {
-                sub_46B328(usr);
+                sub_46B328();
             }
-            else if ( v6_l == 1250 )
+            else if ( r.code == 1250 )
             {
-                yw->field_81AF = get_lang_string(ypaworld__string_pointers, 756, "help\\16.html");
+                p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 756, "help\\16.html");
             }
             break;
 
         case 4:
-            if ( v6_l == 1200 )
+            if ( r.code == 1200 )
             {
-                if ( usr->isHost )
+                if ( isHost )
                 {
                     const char *v425;
                     const char *v425_1;
 
-                    if ( usr->p_ypaworld->windp->windp_func86(NULL) <= 1 )
+                    if ( p_ypaworld->windp->CountPlayers(NULL) <= 1 )
                     {
                         const char *v217 = get_lang_string(ypaworld__string_pointers, 2442, "2442");
                         const char *v218 = get_lang_string(ypaworld__string_pointers, 2435, "DO YOU REALLY WANT TO START WITHOUT OTHER PLAYERS?");
-                        sub_46D9E0(usr, 2, v218, v217, 0);
+                        sub_46D9E0(2, v218, v217, 0);
                     }
-                    else if ( ypaworld_func158__sub0__sub8(usr, &v425, &v425_1) )
+                    else if ( ypaworld_func158__sub0__sub8(&v425, &v425_1) )
                     {
-                        sub_46D9E0(usr, 4, v425, v425_1, 1);
+                        sub_46D9E0(4, v425, v425_1, 1);
                     }
                     else
                     {
-                        sub_46DC1C(usr);
+                        sub_46DC1C();
                     }
                 }
             }
-            else if ( v6_l == 1203 )
+            else if ( r.code == 1203 )
             {
-                if ( usr->isHost )
+                if ( isHost )
                 {
-                    usr->netSel = -1;
-                    usr->network_listvw.firstShownEntries = 0;
-                    usr->msgBuffLine = 0;
-                    usr->lastSender[0] = 0;
-                    usr->netName[0] = 0;
-                    usr->netSelMode = 3;
+                    netSel = -1;
+                    network_listvw.firstShownEntries = 0;
+                    msgBuffLine = 0;
+                    lastSender[0] = 0;
+                    netName[0] = 0;
+                    netSelMode = 3;
                 }
             }
-            else if ( v6_l == 1208 )
+            else if ( r.code == 1208 )
             {
                 v368.mode = 0;
                 v368.ID = 0;
-                while ( yw->windp->windp_func79(&v368) && strcasecmp(v368.name, usr->callSIGN) )
+                while ( p_ypaworld->windp->GetPlayerData(&v368) && strcasecmp(v368.name, callSIGN) )
                     v368.ID++;
 
                 yw_arg181 v353;
                 uamessage_ready rdyMsg;
 
-                usr->rdyStart = 1;
-                usr->players2[v368.ID].rdyStart = 1;
+                rdyStart = 1;
+                players2[v368.ID].rdyStart = 1;
 
                 rdyMsg.msgID = UAMSG_READY;
                 rdyMsg.owner = 0;
@@ -4804,30 +4722,30 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v353.recvID = 0;
                 v353.garant = 1;
 
-                usr->p_ypaworld->self_full->ypaworld_func181(&v353);
+                p_ypaworld->self_full->ypaworld_func181(&v353);
 
                 windp_arg82 v387;
                 v387.receiverFlags = 2;
                 v387.receiverID = 0;
                 v387.senderFlags = 1;
-                v387.senderID = usr->callSIGN;
+                v387.senderID = callSIGN;
                 v387.guarant = 1;
 
-                usr->p_ypaworld->windp->windp_func82(&v387);
+                p_ypaworld->windp->FlushBuffer(v387);
             }
-            else if ( v6_l == 1209 )
+            else if ( r.code == 1209 )
             {
                 v368.mode = 0;
                 v368.ID = 0;
-                while ( yw->windp->windp_func79(&v368) && strcasecmp(v368.name, usr->callSIGN) )
+                while ( p_ypaworld->windp->GetPlayerData(&v368) && strcasecmp(v368.name, callSIGN) )
                     v368.ID++;
 
 
                 yw_arg181 v353;
                 uamessage_ready rdyMsg;
 
-                usr->rdyStart = 0;
-                usr->players2[v368.ID].rdyStart = 0;
+                rdyStart = 0;
+                players2[v368.ID].rdyStart = 0;
 
                 rdyMsg.msgID = UAMSG_READY;
                 rdyMsg.owner = 0;
@@ -4839,20 +4757,20 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 v353.dataSize = sizeof(rdyMsg);
                 v353.garant = 1;
 
-                usr->p_ypaworld->self_full->ypaworld_func181(&v353);
+                p_ypaworld->self_full->ypaworld_func181(&v353);
 
                 windp_arg82 v387;
                 v387.receiverFlags = 2;
                 v387.receiverID = 0;
                 v387.senderFlags = 1;
-                v387.senderID = usr->callSIGN;
+                v387.senderID = callSIGN;
                 v387.guarant = 1;
 
-                usr->p_ypaworld->windp->windp_func82(&v387);
+                p_ypaworld->windp->FlushBuffer(v387);
             }
-            else if ( v6_l == 1210 )
+            else if ( r.code == 1210 )
             {
-                if ( yw->str17_NOT_FALSE )
+                if ( p_ypaworld->str17_NOT_FALSE )
                 {
                     windd_dlgBox v316;
                     memset(&v316, 0, sizeof(windd_dlgBox));
@@ -4860,7 +4778,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     v316.title = get_lang_string(ypaworld__string_pointers, 422, "ENTER MESSAGE");
                     v316.ok = get_lang_string(ypaworld__string_pointers, 2, "OK");
                     v316.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
-                    v316.startText = usr->netName;
+                    v316.startText = netName;
                     v316.timer_func = NULL;
                     v316.maxLen = 64;
 
@@ -4868,42 +4786,42 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
                     if ( v316.result )
                     {
-                        strncpy(usr->netName, v316.result, 64);
-                        usr->netName[63] = 0;
+                        strncpy(netName, v316.result, 64);
+                        netName[63] = 0;
                     }
                 }
 
-                if ( usr->netName[0] )
+                if ( netName[0] )
                 {
                     uamessage_message msgMsg;
                     msgMsg.msgID = UAMSG_MESSAGE;
                     msgMsg.owner = 0;
 
-                    strncpy(msgMsg.message, usr->netName, 64);
+                    strncpy(msgMsg.message, netName, 64);
 
                     v346.senderFlags = 1;
                     v346.data = &msgMsg;
                     v346.dataSize = sizeof(msgMsg);
                     v346.recvFlags = 2;
                     v346.recvID = 0;
-                    v346.senderID = usr->callSIGN;
+                    v346.senderID = callSIGN;
                     v346.garant = 1;
 
-                    usr->p_ypaworld->self_full->ypaworld_func181(&v346);
+                    p_ypaworld->self_full->ypaworld_func181(&v346);
 
-                    sub_4D0C24(usr->p_ypaworld, usr->callSIGN, msgMsg.message);
+                    sub_4D0C24(p_ypaworld, callSIGN, msgMsg.message);
 
-                    usr->netName[0] = 0;
-                    usr->netNameCurPos = 0;
+                    netName[0] = 0;
+                    netNameCurPos = 0;
 
                     int v223 = strtol(msgMsg.message, NULL, 0);
                     if ( v223 > 0 )
-                        sub_4D9550(yw, v223);
+                        sub_4D9550(p_ypaworld, v223);
                 }
             }
-            else if ( v6_l == 1250 )
+            else if ( r.code == 1250 )
             {
-                yw->field_81AF = get_lang_string(ypaworld__string_pointers, 757, "help\\17.html");
+                p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 757, "help\\17.html");
             }
             break;
         default:
@@ -4911,38 +4829,38 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         }
     }
 
-    if ( usr->field_46 == 6 )
+    if ( envMode == ENVMODE_NETPLAY )
     {
-        int a4 = usr->network_button->getBTN_y();
+        int a4 = network_button->getBTN_y();
 
-        usr->network_listvw.dialogBox.ypos = usr->field_0x1c30 + a4;
+        network_listvw.y = field_0x1c30 + a4;
 
-        usr->network_listvw.InputHandle(yw, usr->field_3A);
+        network_listvw.InputHandle(p_ypaworld, field_3A);
 
-        if ( (usr->network_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT) || usr->field_3A->downed_key == UAVK_UP || usr->field_3A->downed_key == UAVK_DOWN )
+        if ( (network_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT) || field_3A->downed_key == UAVK_UP || field_3A->downed_key == UAVK_DOWN )
         {
-            usr->netSel = usr->network_listvw.selectedEntry;
+            netSel = network_listvw.selectedEntry;
 
-            switch ( usr->netSelMode )
+            switch ( netSelMode )
             {
             case 0:
             case 1:
-                usr->nInputMode = 0;
+                nInputMode = 0;
                 break;
             case 3:
             {
-                int v227 = usr->p_ypaworld->windp->windp_func86(NULL);
+                int v227 = p_ypaworld->windp->CountPlayers(NULL);
 
                 int v228 = 0;
 
                 for (int i = 0; i < 256; i++)
                 {
-                    if ( v227 <= 1 || v227 <= usr->p_ypaworld->LevelNet->mapInfos[ usr->map_descriptions[i].id ].robos_count)
+                    if ( v227 <= 1 || v227 <= p_ypaworld->LevelNet->mapInfos[ map_descriptions[i].id ].robos_count)
                     {
-                        if ( v228 == usr->netSel )
+                        if ( v228 == netSel )
                         {
-                            usr->netLevelName = usr->map_descriptions[i].pstring;
-                            usr->netLevelID = usr->map_descriptions[i].id;
+                            netLevelName = map_descriptions[i].pstring;
+                            netLevelID = map_descriptions[i].id;
                             break;
                         }
 
@@ -4956,33 +4874,33 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 break;
             }
 
-            usr->netNameCurPos = strlen(usr->netName);
+            netNameCurPos = strlen(netName);
         }
 
-        usr->network_listvw.Formate(yw);
+        network_listvw.Formate(p_ypaworld);
     }
 
-    if ( usr->field_46 == 6 )
+    if ( envMode == ENVMODE_NETPLAY )
     {
-        if ( usr->field_3A->downed_key || usr->field_3A->chr || usr->field_3A->dword8 )
+        if ( field_3A->downed_key || field_3A->chr || field_3A->dword8 )
         {
-            if ( usr->nInputMode )
+            if ( nInputMode )
             {
                 uint32_t v233;
 
-                if ( usr->netSelMode == 2 )
+                if ( netSelMode == 2 )
                     v233 = 32;
                 else
                     v233 = 38;
 
-                if ( strlen(usr->netName) < v233 )
+                if ( strlen(netName) < v233 )
                 {
-                    if ( usr->field_3A->chr > 0x1F && yw->str17_NOT_FALSE == 0 )
+                    if ( field_3A->chr > 0x1F && p_ypaworld->str17_NOT_FALSE == 0 )
                     {
                         char v354[12];
                         char v345[12];
 
-                        sprintf(v354, "%c", usr->field_3A->chr);
+                        sprintf(v354, "%c", field_3A->chr);
 
                         strcpy(v345, v354);
 
@@ -4990,96 +4908,96 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                         {
                             char v313[68];
 
-                            strncpy(v313, usr->netName, usr->netNameCurPos);
-                            strncpy(v313 + usr->netNameCurPos, v345, 1);
+                            strncpy(v313, netName, netNameCurPos);
+                            strncpy(v313 + netNameCurPos, v345, 1);
 
-                            strcpy(v313 + usr->netNameCurPos + 1, usr->netName + usr->netNameCurPos );
+                            strcpy(v313 + netNameCurPos + 1, netName + netNameCurPos );
 
-                            strcpy(usr->netName, v313);
+                            strcpy(netName, v313);
 
-                            usr->netNameCurPos++;
+                            netNameCurPos++;
                         }
                     }
                 }
 
-                if ( usr->field_3A->downed_key == UAVK_BACK && usr->netNameCurPos > 0 && (yw->str17_NOT_FALSE == 0) )
+                if ( field_3A->downed_key == UAVK_BACK && netNameCurPos > 0 && (p_ypaworld->str17_NOT_FALSE == 0) )
                 {
-                    int ln = strlen(usr->netName);
+                    int ln = strlen(netName);
 
-                    for (int i = usr->netNameCurPos - 1; i < ln - 1; i++)
-                        usr->netName[i] = usr->netName[i + 1];
+                    for (int i = netNameCurPos - 1; i < ln - 1; i++)
+                        netName[i] = netName[i + 1];
 
-                    usr->netName[ln - 1] = 0;
+                    netName[ln - 1] = 0;
 
-                    usr->netNameCurPos--;
+                    netNameCurPos--;
                 }
-                else if ( usr->field_3A->downed_key == UAVK_LEFT )
+                else if ( field_3A->downed_key == UAVK_LEFT )
                 {
-                    if ( usr->netNameCurPos > 0 && (yw->str17_NOT_FALSE == 0) )
-                        usr->netNameCurPos--;
+                    if ( netNameCurPos > 0 && (p_ypaworld->str17_NOT_FALSE == 0) )
+                        netNameCurPos--;
                 }
-                else if ( usr->field_3A->downed_key == UAVK_RIGHT )
+                else if ( field_3A->downed_key == UAVK_RIGHT )
                 {
-                    if ( usr->netNameCurPos < (int32_t)strlen(usr->netName) && (yw->str17_NOT_FALSE == 0) )
-                        usr->netNameCurPos++;
+                    if ( netNameCurPos < (int32_t)strlen(netName) && (p_ypaworld->str17_NOT_FALSE == 0) )
+                        netNameCurPos++;
                 }
-                else if ( usr->field_3A->downed_key == UAVK_DELETE && usr->netNameCurPos < (int32_t)strlen(usr->netName) && (yw->str17_NOT_FALSE == 0) )
+                else if ( field_3A->downed_key == UAVK_DELETE && netNameCurPos < (int32_t)strlen(netName) && (p_ypaworld->str17_NOT_FALSE == 0) )
                 {
-                    int ln = strlen(usr->netName);
+                    int ln = strlen(netName);
 
-                    for (int i = usr->netNameCurPos; i < ln - 1; i++)
-                        usr->netName[i] = usr->netName[i + 1];
+                    for (int i = netNameCurPos; i < ln - 1; i++)
+                        netName[i] = netName[i + 1];
 
-                    usr->netName[ln - 1] = 0;
+                    netName[ln - 1] = 0;
                 }
             }
 
-            if ( usr->field_3A->downed_key == UAVK_RETURN )
+            if ( field_3A->downed_key == UAVK_RETURN )
             {
-                switch ( usr->netSelMode )
+                switch ( netSelMode )
                 {
                 case 0:
-                    yw_NetOKProvider(usr);
+                    yw_NetOKProvider();
                     break;
 
                 case 1:
-                    if ( usr->network_listvw.numEntries )
+                    if ( network_listvw.numEntries )
                     {
-                        yw_JoinNetGame(usr);
+                        yw_JoinNetGame();
                     }
                     else
                     {
-                        usr->isHost = 1;
-                        usr->netSel = -1;
-                        usr->netSelMode = 3;
-                        usr->network_listvw.firstShownEntries = 0;
+                        isHost = 1;
+                        netSel = -1;
+                        netSelMode = 3;
+                        network_listvw.firstShownEntries = 0;
                     }
                     break;
 
                 case 2:
-                    if ( usr->netName[0] )
+                    if ( netName[0] )
                     {
-                        strcpy(usr->callSIGN, usr->netName);
+                        strcpy(callSIGN, netName);
 
-                        usr->netSelMode = 1;
-                        usr->netSel = -1;
-                        usr->network_listvw.firstShownEntries = 0;
-                        usr->netName[0] = 0;
-                        usr->network_listvw.OpenDialog(usr->p_ypaworld);
+                        netSelMode = 1;
+                        netSel = -1;
+                        network_listvw.firstShownEntries = 0;
+                        netName[0] = 0;
+                        p_YW->GuiWinOpen( &network_listvw );
                     }
                     break;
 
                 case 3:
-                    sub_46B328(usr);
+                    sub_46B328();
                     break;
                 case 4:
-                    if ( usr->netName[0] )
+                    if ( netName[0] )
                     {
                         uamessage_message msgMsg;
                         msgMsg.msgID = UAMSG_MESSAGE;
                         msgMsg.owner = 0;
 
-                        strncpy(msgMsg.message, usr->netName, 64);
+                        strncpy(msgMsg.message, netName, 64);
 
                         yw_arg181 v325;
 
@@ -5089,177 +5007,177 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                         v325.recvFlags = 2;
                         v325.recvID = 0;
 
-                        usr->p_ypaworld->self_full->ypaworld_func181(&v325);
+                        p_ypaworld->self_full->ypaworld_func181(&v325);
 
-                        sub_4D0C24(usr->p_ypaworld, usr->callSIGN, msgMsg.message);
-                        usr->netName[0] = 0;
-                        usr->netNameCurPos = 0;
+                        sub_4D0C24(p_ypaworld, callSIGN, msgMsg.message);
+                        netName[0] = 0;
+                        netNameCurPos = 0;
 
                         int v271 = strtol(msgMsg.message, NULL, 0);
                         if ( v271 > 0 )
-                            sub_4D9550(yw, v271);
+                            sub_4D9550(p_ypaworld, v271);
                     }
                     break;
                 default:
                     break;
                 }
             }
-            else if ( usr->field_3A->downed_key == UAVK_ESCAPE )
+            else if ( field_3A->downed_key == UAVK_ESCAPE )
             {
-                sub_46D698(usr);
+                sub_46D698();
             }
 
-            if ( usr->field_3A->dword8 == (0x80 | 0x2B) && !usr->nInputMode )
+            if ( field_3A->dword8 == (0x80 | 0x2B) && !nInputMode )
             {
-                switch ( usr->netSelMode )
+                switch ( netSelMode )
                 {
                 case 0:
-                    yw->field_81AF = get_lang_string(ypaworld__string_pointers, 753, "help\\13.html");
+                    p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 753, "help\\13.html");
                     break;
                 case 1:
-                    yw->field_81AF = get_lang_string(ypaworld__string_pointers, 755, "help\\15.html");
+                    p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 755, "help\\15.html");
                     break;
                 case 2:
-                    yw->field_81AF = get_lang_string(ypaworld__string_pointers, 754, "help\\14.html");
+                    p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 754, "help\\14.html");
                     break;
                 case 3:
-                    yw->field_81AF = get_lang_string(ypaworld__string_pointers, 756, "help\\16.html");
+                    p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 756, "help\\16.html");
                     break;
                 case 4:
-                    yw->field_81AF = get_lang_string(ypaworld__string_pointers, 757, "help\\17.html");
+                    p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 757, "help\\17.html");
                     break;
                 default:
                     break;
                 }
             }
 
-            if ( usr->netSel != -1 )
-                usr->network_listvw.PosOnSelected(usr->netSel);
+            if ( netSel != -1 )
+                network_listvw.PosOnSelected(netSel);
 
-            usr->field_3A->downed_key = 0;
+            field_3A->downed_key = 0;
         }
     }
 
-    if ( usr->isHost )
+    if ( isHost )
     {
-        if ( usr->netSelMode == 4 && usr->field_0x2fbc != 4 )
+        if ( netSelMode == 4 && envAction.action != EnvAction::ACTION_NETPLAY )
         {
-            if ( (int)usr->p_ypaworld->windp->windp_func86(NULL)   <   usr->p_ypaworld->LevelNet->mapInfos[ usr->netLevelID ].robos_count )
+            if ( (int)p_ypaworld->windp->CountPlayers(NULL)   <   p_ypaworld->LevelNet->mapInfos[ netLevelID ].robos_count )
             {
-                if ( usr->blocked )
+                if ( blocked )
                 {
                     int v357 = 0;
-                    usr->p_ypaworld->windp->windp_func84(&v357);
+                    p_ypaworld->windp->LockSession(&v357);
 
-                    usr->blocked = 0;
+                    blocked = 0;
                 }
             }
-            else if ( !usr->blocked )
+            else if ( !blocked )
             {
                 int v357 = 1;
-                usr->p_ypaworld->windp->windp_func84(&v357);
+                p_ypaworld->windp->LockSession(&v357);
 
-                usr->blocked = 1;
+                blocked = 1;
             }
         }
     }
 
     v410.butID = 1201;
-    usr->network_button->button_func66(&v410);
+    network_button->button_func66(&v410);
 
     v410.butID = 1205;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1202;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1203;
-    usr->network_button->button_func66(&v410);
+    network_button->button_func66(&v410);
 
     v410.butID = 1225;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1226;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1227;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
 
-    button_71arg v336;
+    NC_STACK_button::button_71arg v336;
 
     v336.butID = 1201;
     v336.field_4 = get_lang_string(ypaworld__string_pointers, 2, "OK");
     v336.field_8 = 0;
 
-    usr->network_button->button_func71(&v336);
+    network_button->button_func71(&v336);
 
     v410.butID = 1220;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1206;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1207;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1208;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1209;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1219;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1221;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.field_4 = 0;
     v410.butID = 1210;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1211;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1212;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1213;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1214;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1215;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1216;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
     v410.butID = 1217;
-    usr->network_button->button_func67(&v410);
+    network_button->button_func67(&v410);
 
-    if ( (usr->netSelMode != 1 || usr->p_ypaworld->windp->windp_func90(NULL) != 3)
-            && (usr->netSelMode != 1 || usr->modemAskSession != 1 || usr->p_ypaworld->windp->windp_func90(NULL) != 4)
-            && usr->netSelMode )
+    if ( (netSelMode != 1 || p_ypaworld->windp->GetProvType(NULL) != 3)
+            && (netSelMode != 1 || modemAskSession != 1 || p_ypaworld->windp->GetProvType(NULL) != 4)
+            && netSelMode )
     {
         v410.butID = 1228;
-        usr->network_button->button_func67(&v410);
+        network_button->button_func67(&v410);
     }
     else
     {
         const char *v280;
 
-        if ( usr->netSelMode )
+        if ( netSelMode )
         {
             v280 = get_lang_string(ypaworld__string_pointers, 2402, "PRESS SPACEBAR TO UPDATE SESSION LIST");
         }
         else
         {
-            if ( usr->p_ypaworld->field_75E2[0] )
+            if ( p_ypaworld->field_75E2[0] )
             {
-                char *v278 = usr->p_ypaworld->field_75E2;
+                char *v278 = p_ypaworld->field_75E2;
                 const char *v279 = get_lang_string(ypaworld__string_pointers, 2437, "YOUR TCP/IP ADDRESS");
                 sprintf(v306, "%s  %s", v279, v278);
             }
@@ -5273,140 +5191,140 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v395.field_4 = v280;
         v395.field_8 = 0;
         v395.butID = 1228;
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
 
         v410.butID = 1228;
-        usr->network_button->button_func66(&v410);
+        network_button->button_func66(&v410);
     }
 
-    if ( (!usr->nInputMode || yw->str17_NOT_FALSE) && usr->netSelMode != 2 )
+    if ( (!nInputMode || p_ypaworld->str17_NOT_FALSE) && netSelMode != 2 )
     {
         v410.butID = 1200;
-        usr->network_button->button_func67(&v410);
+        network_button->button_func67(&v410);
     }
     else
     {
         v410.butID = 1200;
-        usr->network_button->button_func66(&v410);
+        network_button->button_func66(&v410);
 
         v393.xpos = -1;
         v393.butID = 1200;
 
-        if ( usr->netSelMode == 2 )
+        if ( netSelMode == 2 )
         {
             v393.width = dword_5A50B6;
-            v393.ypos = 3 * (word_5A50C2 + yw->font_default_h);
+            v393.ypos = 3 * (word_5A50C2 + p_ypaworld->font_default_h);
         }
         else
         {
             v393.width = dword_5A50B6 * 0.8;
-            v393.ypos = 14 * (word_5A50C2 + yw->font_default_h);
+            v393.ypos = 14 * (word_5A50C2 + p_ypaworld->font_default_h);
         }
 
-        usr->network_button->button_func76(&v393);
+        network_button->button_func76(&v393);
 
 
-        if ( yw->str17_NOT_FALSE )
+        if ( p_ypaworld->str17_NOT_FALSE )
         {
-            strcpy(v308, usr->netName);
+            strcpy(v308, netName);
         }
         else
         {
-            strncpy(v308, usr->netName, usr->netNameCurPos);
-            strncpy(v308 + usr->netNameCurPos, "_", 1);
+            strncpy(v308, netName, netNameCurPos);
+            strncpy(v308 + netNameCurPos, "_", 1);
 
-            strcpy(v308 + usr->netNameCurPos + 1, usr->netName + usr->netNameCurPos);
+            strcpy(v308 + netNameCurPos + 1, netName + netNameCurPos);
         }
 
         v395.butID = 1200;
         v395.field_4 = v308;
         v395.field_8 = 0;
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
     }
 
     v393.xpos = -1;
     v393.width = -1;
     v393.butID = 1202;
 
-    if ( usr->netSelMode == 2 )
+    if ( netSelMode == 2 )
     {
-        v393.ypos = 4 * (word_5A50C2 + yw->font_default_h);
+        v393.ypos = 4 * (word_5A50C2 + p_ypaworld->font_default_h);
     }
     else
     {
-        v393.ypos = (word_5A50C2 + yw->font_default_h) * 15.2;
+        v393.ypos = (word_5A50C2 + p_ypaworld->font_default_h) * 15.2;
     }
 
-    usr->network_button->button_func76(&v393);
+    network_button->button_func76(&v393);
 
-    switch ( usr->netSelMode )
+    switch ( netSelMode )
     {
     case 0:
         v410.field_4 = 0;
         v410.butID = 1205;
 
-        usr->network_button->button_func67(&v410);
+        network_button->button_func67(&v410);
 
         v395.butID = 1204;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 410, "SELECT PROVIDER");
         v395.field_8 = 0;
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
 
         v395.butID = 1222;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 425, "2");
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
 
         v395.butID = 1223;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 426, "3");
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
         break;
 
     case 1:
-        if ( usr->p_ypaworld->windp->windp_func90(NULL) != 4 || !usr->modemAskSession )
+        if ( p_ypaworld->windp->GetProvType(NULL) != 4 || !modemAskSession )
         {
             v395.butID = 1202;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 402, "NEW");
             v395.field_8 = 0;
-            usr->network_button->button_func71(&v395);
+            network_button->button_func71(&v395);
 
             v410.butID = 1202;
-            usr->network_button->button_func66(&v410);
+            network_button->button_func66(&v410);
         }
 
         v395.butID = 1204;
         v395.field_8 = 0;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 411, "SELECT SESSION");
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
 
         v395.butID = 1222;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 428, "5");
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
 
         v395.butID = 1223;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 429, "6");
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
 
         windp_getNameMsg msg;
         msg.id = 0;
 
-        if ( usr->p_ypaworld->windp->windp_func69(&msg) )
+        if ( p_ypaworld->windp->GetSessionName(&msg) )
         {
             v395.butID = 1201;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 406, "JOIN");
             v395.field_8 = 0;
-            usr->network_button->button_func71(&v395);
+            network_button->button_func71(&v395);
         }
-        else if ( usr->p_ypaworld->windp->windp_func90(NULL) != 4 || usr->modemAskSession )
+        else if ( p_ypaworld->windp->GetProvType(NULL) != 4 || modemAskSession )
         {
             v410.butID = 1201;
-            usr->network_button->button_func67(&v410);
+            network_button->button_func67(&v410);
         }
         else
         {
             v395.butID = 1201;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 421, "SEARCH");
             v395.field_8 = 0;
-            usr->network_button->button_func71(&v395);
+            network_button->button_func71(&v395);
         }
         break;
 
@@ -5414,130 +5332,130 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v395.butID = 1204;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 413, "ENTER PLAYER");
         v395.field_8 = 0;
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
 
         v395.butID = 1222;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 434, "11");
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
 
         v395.butID = 1223;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 435, "12");
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
 
-        if ( yw->str17_NOT_FALSE )
+        if ( p_ypaworld->str17_NOT_FALSE )
         {
             v410.butID = 1202;
-            usr->network_button->button_func66(&v410);
+            network_button->button_func66(&v410);
 
             v395.butID = 1202;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 423, "CHANGE");
             v395.field_8 = 0;
-            usr->network_button->button_func71(&v395);
+            network_button->button_func71(&v395);
         }
         break;
 
     case 3:
-        if ( usr->remoteMode )
+        if ( remoteMode )
         {
             v410.butID = 1205;
-            usr->network_button->button_func67(&v410);
+            network_button->button_func67(&v410);
         }
 
         v395.butID = 1204;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 412, "SELECT LEVE");
         v395.field_8 = 0;
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
 
         v395.butID = 1222;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 431, "8");
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
 
         v395.butID = 1223;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 432, "9");
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
         break;
 
     case 4:
         v410.butID = 1225;
-        usr->network_button->button_func66(&v410);
+        network_button->button_func66(&v410);
 
         v395.butID = 1225;
         v395.field_4 = get_lang_string(ypaworld__string_pointers, 405, "SEND");
         v395.field_8 = 0;
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
 
         v410.butID = 1226;
-        usr->network_button->button_func66(&v410);
+        network_button->button_func66(&v410);
 
         v410.butID = 1227;
-        usr->network_button->button_func66(&v410);
+        network_button->button_func66(&v410);
 
-        if ( usr->netLevelID )
-            v395.field_4 = usr->netLevelName;
+        if ( netLevelID )
+            v395.field_4 = netLevelName;
         else
             v395.field_4 = " ";
 
         v395.butID = 1226;
         v395.field_8 = 0;
 
-        usr->network_button->button_func71(&v395);
+        network_button->button_func71(&v395);
 
-        if ( usr->isHost )
+        if ( isHost )
         {
             v410.butID = 1205;
-            usr->network_button->button_func66(&v410);
+            network_button->button_func66(&v410);
         }
 
-        if ( usr->rdyStart )
+        if ( rdyStart )
         {
-            if ( !usr->isHost )
+            if ( !isHost )
             {
                 v410.butID = 1205;
-                usr->network_button->button_func67(&v410);
+                network_button->button_func67(&v410);
             }
         }
 
         v410.butID = 1220;
-        usr->network_button->button_func66(&v410);
+        network_button->button_func66(&v410);
 
-        if ( usr->netLevelID > 0 && usr->netLevelID < 256 )
+        if ( netLevelID > 0 && netLevelID < 256 )
         {
 
-            if ( !usr->isHost && usr->rdyStart )
+            if ( !isHost && rdyStart )
             {
                 v410.butID = 1220;
-                usr->network_button->button_func67(&v410);
+                network_button->button_func67(&v410);
             }
             else
             {
                 v410.butID = 1206;
-                if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->netLevelID ].fractions_mask & 2 )
-                    usr->network_button->button_func66(&v410);
+                if ( p_ypaworld->LevelNet->mapInfos[ netLevelID ].fractions_mask & 2 )
+                    network_button->button_func66(&v410);
                 else
-                    usr->network_button->button_func67(&v410);
+                    network_button->button_func67(&v410);
 
                 v410.butID = 1207;
-                if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->netLevelID ].fractions_mask & 0x40 )
-                    usr->network_button->button_func66(&v410);
+                if ( p_ypaworld->LevelNet->mapInfos[ netLevelID ].fractions_mask & 0x40 )
+                    network_button->button_func66(&v410);
                 else
-                    usr->network_button->button_func67(&v410);
+                    network_button->button_func67(&v410);
 
                 v410.butID = 1208;
-                if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->netLevelID ].fractions_mask & 8 )
-                    usr->network_button->button_func66(&v410);
+                if ( p_ypaworld->LevelNet->mapInfos[ netLevelID ].fractions_mask & 8 )
+                    network_button->button_func66(&v410);
                 else
-                    usr->network_button->button_func67(&v410);
+                    network_button->button_func67(&v410);
 
                 v410.butID = 1209;
-                if ( usr->p_ypaworld->LevelNet->mapInfos[ usr->netLevelID ].fractions_mask & 0x10 )
-                    usr->network_button->button_func66(&v410);
+                if ( p_ypaworld->LevelNet->mapInfos[ netLevelID ].fractions_mask & 0x10 )
+                    network_button->button_func66(&v410);
                 else
-                    usr->network_button->button_func67(&v410);
+                    network_button->button_func67(&v410);
             }
 
             v408.butID = 0;
 
-            switch ( usr->SelectedFraction - 1 )
+            switch ( SelectedFraction - 1 )
             {
             case 0:
                 v408.butID = 1206;
@@ -5561,7 +5479,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             if ( v408.butID )
             {
                 v408.field_4 = 1;
-                usr->network_button->button_func73(&v408);
+                network_button->button_func73(&v408);
             }
 
             int v298 = 0;
@@ -5569,50 +5487,50 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             v368.mode = 0;
             v368.ID = 0;
 
-            usr->field_1CD7 = 1;
-            usr->field_1CE8 = 1;
+            field_1CD7 = 1;
+            field_1CE8 = 1;
 
-            if ( !(usr->p_ypaworld->LevelNet->mapInfos[usr->netLevelID].fractions_mask & 2) )
+            if ( !(p_ypaworld->LevelNet->mapInfos[netLevelID].fractions_mask & 2) )
                 v298 = 1;
 
-            if ( !(usr->p_ypaworld->LevelNet->mapInfos[usr->netLevelID].fractions_mask & 0x40) )
+            if ( !(p_ypaworld->LevelNet->mapInfos[netLevelID].fractions_mask & 0x40) )
                 v298 |= 2;
 
-            if ( !(usr->p_ypaworld->LevelNet->mapInfos[usr->netLevelID].fractions_mask & 8) )
+            if ( !(p_ypaworld->LevelNet->mapInfos[netLevelID].fractions_mask & 8) )
                 v298 |= 4;
 
-            if ( !(usr->p_ypaworld->LevelNet->mapInfos[usr->netLevelID].fractions_mask & 0x10) )
+            if ( !(p_ypaworld->LevelNet->mapInfos[netLevelID].fractions_mask & 0x10) )
                 v298 |= 8;
 
             int v373, v374, v375, v376;
 
-            while ( usr->p_ypaworld->windp->windp_func79(&v368) )
+            while ( p_ypaworld->windp->GetPlayerData(&v368) )
             {
                 int v299;
 
                 if ( v368.flags & 1 )
-                    v299 = usr->SelectedFraction;
+                    v299 = SelectedFraction;
                 else
-                    v299 = usr->players2[v368.ID].Fraction;
+                    v299 = players2[v368.ID].Fraction;
 
                 if ( v299 & v298 )
                 {
-                    usr->players2[v368.ID].trbl = 1;
-                    usr->field_1CD7 = 0;
+                    players2[v368.ID].trbl = 1;
+                    field_1CD7 = 0;
 
                     switch ( v299 - 1 )
                     {
                     case 0:
-                        usr->players2[v375].trbl = 1;
+                        players2[v375].trbl = 1;
                         break;
                     case 1:
-                        usr->players2[v373].trbl = 1;
+                        players2[v373].trbl = 1;
                         break;
                     case 3:
-                        usr->players2[v376].trbl = 1;
+                        players2[v376].trbl = 1;
                         break;
                     case 7:
-                        usr->players2[v374].trbl = 1;
+                        players2[v374].trbl = 1;
                         break;
                     default:
                         break;
@@ -5620,7 +5538,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                 }
                 else
                 {
-                    usr->players2[v368.ID].trbl = 0;
+                    players2[v368.ID].trbl = 0;
 
                     switch ( v299 - 1 )
                     {
@@ -5650,44 +5568,44 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
         v368.mode = 0;
         v368.ID = 0;
 
-        while ( usr->p_ypaworld->windp->windp_func79(&v368) )
+        while ( p_ypaworld->windp->GetPlayerData(&v368) )
         {
             if ( !(v368.flags & 1) )
             {
-                if ( !usr->players2[v368.ID].rdyStart )
-                    usr->field_1CD7 = 0;
+                if ( !players2[v368.ID].rdyStart )
+                    field_1CD7 = 0;
 
-                if ( !usr->players2[v368.ID].welcmd )
-                    usr->field_1CE8 = 0;
+                if ( !players2[v368.ID].welcmd )
+                    field_1CE8 = 0;
             }
             v368.ID++;
         }
 
-        if ( usr->isHost )
+        if ( isHost )
         {
             v395.butID = 1204;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 414, "START GAME OR ENTER MESSAGE TO THE PLAYERS");
             v395.field_8 = 0;
-            usr->network_button->button_func71(&v395);
+            network_button->button_func71(&v395);
 
             v395.butID = 1222;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 437, "14");
-            usr->network_button->button_func71(&v395);
+            network_button->button_func71(&v395);
 
             v395.butID = 1223;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 438, "15");
-            usr->network_button->button_func71(&v395);
+            network_button->button_func71(&v395);
 
             v395.butID = 1201;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 407, "START");
             v395.field_8 = 0;
-            usr->network_button->button_func71(&v395);
+            network_button->button_func71(&v395);
 
-            if ( !usr->field_1CD7 )
+            if ( !field_1CD7 )
             {
                 v410.field_4 = 0;
                 v410.butID = 1201;
-                usr->network_button->button_func67(&v410);
+                network_button->button_func67(&v410);
             }
         }
         else
@@ -5695,51 +5613,51 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             v395.butID = 1204;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 415, "WAIT FOR START OR SEND MESSAGES");
             v395.field_8 = 0;
-            usr->network_button->button_func71(&v395);
+            network_button->button_func71(&v395);
 
             v395.butID = 1222;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 440, "17");
-            usr->network_button->button_func71(&v395);
+            network_button->button_func71(&v395);
 
             v395.butID = 1223;
             v395.field_4 = get_lang_string(ypaworld__string_pointers, 441, "18");
-            usr->network_button->button_func71(&v395);
+            network_button->button_func71(&v395);
 
-            if ( usr->field_1CE8 )
+            if ( field_1CE8 )
             {
                 v410.butID = 1219;
-                usr->network_button->button_func66(&v410);
+                network_button->button_func66(&v410);
 
                 v410.butID = 1221;
-                usr->network_button->button_func66(&v410);
+                network_button->button_func66(&v410);
             }
 
             v410.butID = 1201;
-            usr->network_button->button_func67(&v410);
+            network_button->button_func67(&v410);
         }
         v410.butID = 1210;
-        usr->network_button->button_func66(&v410);
+        network_button->button_func66(&v410);
 
         v410.butID = 1211;
-        usr->network_button->button_func66(&v410);
+        network_button->button_func66(&v410);
 
         v410.butID = 1212;
-        usr->network_button->button_func66(&v410);
+        network_button->button_func66(&v410);
 
         v410.butID = 1213;
-        usr->network_button->button_func66(&v410);
+        network_button->button_func66(&v410);
 
         v410.butID = 1214;
-        usr->network_button->button_func66(&v410);
+        network_button->button_func66(&v410);
 
         v410.butID = 1215;
-        usr->network_button->button_func66(&v410);
+        network_button->button_func66(&v410);
 
         v410.butID = 1216;
-        usr->network_button->button_func66(&v410);
+        network_button->button_func66(&v410);
 
         v410.butID = 1217;
-        usr->network_button->button_func66(&v410);
+        network_button->button_func66(&v410);
 
         v368.ID = 0;
         v368.mode = 0;
@@ -5750,7 +5668,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             char v339[12];
             int v370;
 
-            int v304 = yw->windp->windp_func79(&v368);
+            int v304 = p_ypaworld->windp->GetPlayerData(&v368);
 
             switch ( i )
             {
@@ -5795,7 +5713,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
             }
 
             v395.field_8 = 0;
-            usr->network_button->button_func71(&v395);
+            network_button->button_func71(&v395);
 
             if ( v304 )
             {
@@ -5803,11 +5721,11 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
                 if ( v368.flags & 1 )
                 {
-                    v305 = usr->SelectedFraction;
+                    v305 = SelectedFraction;
                 }
                 else
                 {
-                    v305 = usr->players2[v368.ID].Fraction;
+                    v305 = players2[v368.ID].Fraction;
                 }
 
                 switch ( v305 - 1 )
@@ -5828,17 +5746,17 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
                     v339[0] = ' ';
                     break;
                 }
-                if ( usr->players2[v368.ID].trbl && ((usr->glblTime / 300) & 1) )
+                if ( players2[v368.ID].trbl && ((glblTime / 300) & 1) )
                     v339[1] = 'f';
                 else
                     v339[1] = ' ';
 
-                if ( usr->players2[v368.ID].rdyStart )
+                if ( players2[v368.ID].rdyStart )
                     v339[2] = 'h';
                 else
                     v339[2] = ' ';
 
-                if ( usr->players2[v368.ID].cd )
+                if ( players2[v368.ID].cd )
                     v339[3] = 'i';
                 else
                     v339[3] = ' ';
@@ -5853,7 +5771,7 @@ void ypaworld_func158__sub0(_NC_STACK_ypaworld *yw, UserData *usr)
 
             v395.butID = v370;
             v395.field_4 = v339;
-            usr->network_button->button_func71(&v395);
+            network_button->button_func71(&v395);
 
             v368.ID++;
         }

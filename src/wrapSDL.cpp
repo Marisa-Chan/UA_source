@@ -1,6 +1,7 @@
 #include <string>
 #include <list>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_net.h>
 #include "wrapSDL.h"
 #include "fsmgr.h"
 
@@ -240,6 +241,8 @@ void SDLWRAP_INIT()
     SDLWRAP_ScanFonts();
 
     IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP);
+
+    SDLNet_Init();
 }
 
 void SDLWRAP_DEINIT()

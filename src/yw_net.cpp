@@ -11,6 +11,7 @@
 #include "ypagun.h"
 #include "ypamissile.h"
 #include "font.h"
+#include "windp.h"
 
 #define C_2PI_127       0.04947390005653217698   // (2PI / 127)
 #define C_127_2PI       20.21267777267070764265  // (127 / 2PI)
@@ -56,7 +57,7 @@ void yw_netReportError(__NC_STACK_ypabact *host, uint32_t id)
     NC_STACK_ypaworld *ywo = host->self->getBACT_pWorld();
     _NC_STACK_ypaworld *yw = &ywo->ypaworld;
 
-    if ( yw->field_1b78 != host->self )
+    if ( yw->UserRobo != host->self )
     {
         bool created = false;
         for (int i = 0; i < netDebug_CREATE_CNT; i++)
@@ -140,7 +141,7 @@ void yw_CheckCRCs(_NC_STACK_ypaworld *yw)
     {
         usr->takTime = 15000;
 
-        int plCnt = yw->windp->windp_func86(NULL);
+        int plCnt = yw->windp->CountPlayers(NULL);
 
         bool err = false;
         int errmsg = 0;
@@ -174,31 +175,31 @@ void yw_CheckCRCs(_NC_STACK_ypaworld *yw)
     }
 }
 
-void yw_CheckCDs(UserData *usr)
+void UserData::yw_CheckCDs()
 {
-    if ( usr->glblTime - usr->last_cdchk >= 1500 )
+    if ( glblTime - last_cdchk >= 1500 )
     {
-        usr->last_cdchk = usr->glblTime;
+        last_cdchk = glblTime;
 
         windp_arg79 plData;
         plData.ID = 0;
         plData.mode = 0;
 
-        while ( usr->p_ypaworld->windp->windp_func79(&plData) )
+        while ( p_ypaworld->windp->GetPlayerData(&plData) )
         {
-            if ( !strcasecmp(plData.name, usr->callSIGN) )
+            if ( !strcasecmp(plData.name, callSIGN) )
             {
-                usr->players2[plData.ID].cd = 1;
+                players2[plData.ID].cd = 1;
                 break;
             }
             plData.ID++;
         }
 
-        usr->cd = 1;
+        cd = 1;
 
         uamessage_cd cdMsg;
         cdMsg.cd = 1;
-        cdMsg.rdy = usr->rdyStart;
+        cdMsg.rdy = rdyStart;
         cdMsg.msgID = UAMSG_CD;
         cdMsg.owner = 0;
 
@@ -209,7 +210,7 @@ void yw_CheckCDs(UserData *usr)
         ywMsg.garant = 1;
         ywMsg.data = &cdMsg;
 
-        usr->p_ypaworld->self_full->ypaworld_func181(&ywMsg);
+        p_YW->ypaworld_func181(&ywMsg);
     }
 }
 
@@ -360,7 +361,7 @@ bool yw_prepareVHCLData(_NC_STACK_ypaworld *yw, uamessage_vhclData *dat)
 
     while(hosts)
     {
-        if ( yw->field_1b78 == hosts->bacto )
+        if ( yw->UserRobo == hosts->bacto )
         {
             found = true;
             break;
@@ -1238,12 +1239,12 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             break;
 
         uamessage_load *ldMsg = (uamessage_load *)msg->data;
-        yw->GameShell->field_0x2fbc = 4;
-        yw->GameShell->field_0x2fc0 = ldMsg->level;
-        yw->GameShell->field_0x2fc4 = ldMsg->level;
+        yw->GameShell->envAction.action = EnvAction::ACTION_NETPLAY;
+        yw->GameShell->envAction.params[0] = ldMsg->level;
+        yw->GameShell->envAction.params[1] = ldMsg->level;
 
         yw->isNetGame = 1;
-        yw_NetPrintStartInfo(yw->GameShell);
+        yw->GameShell->yw_NetPrintStartInfo();
     }
     break;
 
@@ -1853,7 +1854,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             break;
         }
 
-        if ( host_node->bacto != yw->field_1b78 )
+        if ( host_node->bacto != yw->UserRobo )
             break;
 
         __NC_STACK_ypabact *fbact = yw_netGetBactByID(host_node->bact, veMsg->id);
@@ -2305,7 +2306,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             yw->self_full->ypaworld_func184(&mmsg);
         }
 
-        if ( hdMsg->killer && hdMsg->killerOwner == yw->field_1b80->owner )
+        if ( hdMsg->killer && hdMsg->killerOwner == yw->URBact->owner )
         {
             bact_node *nde = yw_getHostByOwner(yw, hdMsg->killerOwner);
 
@@ -2345,7 +2346,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         plDat.mode = 0;
         plDat.ID = 0;
 
-        while( yw->windp->windp_func79(&plDat) )
+        while( yw->windp->GetPlayerData(&plDat) )
         {
             if ( !strcasecmp(msg->senderID, plDat.name) )
             {
@@ -2556,7 +2557,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         plDat.ID = 0;
         plDat.mode = 0;
 
-        while ( yw->windp->windp_func79(&plDat) )
+        while ( yw->windp->GetPlayerData(&plDat) )
         {
             if ( !strcasecmp(msg->senderID, plDat.name) )
             {
@@ -2581,7 +2582,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         plDat.mode = 0;
         plDat.ID = 0;
 
-        while ( yw->windp->windp_func79(&plDat) )
+        while ( yw->windp->GetPlayerData(&plDat) )
         {
             if ( !strcasecmp(msg->senderID, plDat.name) )
             {
@@ -2649,7 +2650,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         plDat.mode = 0;
         plDat.ID = 0;
 
-        while(yw->windp->windp_func79(&plDat))
+        while(yw->windp->GetPlayerData(&plDat))
         {
             if ( !strcasecmp(msg->senderID, plDat.name) )
             {
@@ -2735,7 +2736,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                     curUnit->bact_type != BACT_TYPES_GUN &&
                     curUnit->bact_type != BACT_TYPES_HOVER &&
                     !(curUnit->status_flg & BACT_STFLAG_DEATH2) &&
-                    curUnit->owner == yw->field_1b80->owner)
+                    curUnit->owner == yw->URBact->owner)
                 curUnit->self->ApplyImpulse(&impls);
 
             curUnit = (__NC_STACK_ypabact *)curUnit->next;
@@ -2758,7 +2759,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             break;
         }
 
-        if ( bhost->bacto != yw->field_1b78 )
+        if ( bhost->bacto != yw->UserRobo )
             break;
 
         robo_arg134 rarg134;
@@ -2845,7 +2846,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         plDat.mode = 0;
 
 
-        while ( yw->windp->windp_func79(&plDat) )
+        while ( yw->windp->GetPlayerData(&plDat) )
         {
             if ( !strcasecmp(plDat.name, lobbyMsg->hostName) )
             {
@@ -2856,7 +2857,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         }
 
         mapINFO *minf = &yw->LevelNet->mapInfos[lobbyMsg->lvlID];
-        int tmp = yw->windp->windp_func86(NULL);
+        int tmp = yw->windp->CountPlayers(NULL);
 
         plDat.ID = 0;
         plDat.mode = 0;
@@ -2867,7 +2868,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                 yw->GameShell->FreeFraction &= ~FREE_FRACTION_RESISTANCE;
                 yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_RESISTANCE;
 
-                yw->windp->windp_func79(&plDat);
+                yw->windp->GetPlayerData(&plDat);
 
                 if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_RESISTANCE;
@@ -2887,7 +2888,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             {
                 yw->GameShell->FreeFraction &= ~FREE_FRACTION_GHORKOV;
                 yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_GHORKOV;
-                yw->windp->windp_func79(&plDat);
+                yw->windp->GetPlayerData(&plDat);
 
                 if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_GHORKOV;
@@ -2907,7 +2908,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             {
                 yw->GameShell->FreeFraction &= ~FREE_FRACTION_MIKO;
                 yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_MIKO;
-                yw->windp->windp_func79(&plDat);
+                yw->windp->GetPlayerData(&plDat);
 
                 if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_MIKO;
@@ -2927,7 +2928,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             {
                 yw->GameShell->FreeFraction &= ~FREE_FRACTION_TAER;
                 yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_TAER;
-                yw->windp->windp_func79(&plDat);
+                yw->windp->GetPlayerData(&plDat);
 
                 if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_TAER;
@@ -2962,7 +2963,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         }
 
         mapINFO *minf = &yw->LevelNet->mapInfos[stlvlMsg->lvlID];
-        int tmp = yw->windp->windp_func86(NULL);
+        int tmp = yw->windp->CountPlayers(NULL);
 
         windp_arg79 plDat;
         plDat.ID = 0;
@@ -2975,7 +2976,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                 yw->GameShell->FreeFraction &= ~FREE_FRACTION_RESISTANCE;
                 yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_RESISTANCE;
 
-                yw->windp->windp_func79(&plDat);
+                yw->windp->GetPlayerData(&plDat);
 
                 if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_RESISTANCE;
@@ -2995,7 +2996,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             {
                 yw->GameShell->FreeFraction &= ~FREE_FRACTION_GHORKOV;
                 yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_GHORKOV;
-                yw->windp->windp_func79(&plDat);
+                yw->windp->GetPlayerData(&plDat);
 
                 if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_GHORKOV;
@@ -3015,7 +3016,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             {
                 yw->GameShell->FreeFraction &= ~FREE_FRACTION_MIKO;
                 yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_MIKO;
-                yw->windp->windp_func79(&plDat);
+                yw->windp->GetPlayerData(&plDat);
 
                 if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_MIKO;
@@ -3035,7 +3036,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             {
                 yw->GameShell->FreeFraction &= ~FREE_FRACTION_TAER;
                 yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_TAER;
-                yw->windp->windp_func79(&plDat);
+                yw->windp->GetPlayerData(&plDat);
 
                 if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_TAER;
@@ -3105,7 +3106,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             break;
         }
 
-        if ( bhost->bacto != yw->field_1b78 )
+        if ( bhost->bacto != yw->UserRobo )
             break;
 
         __NC_STACK_ypabact *bbact = yw_netGetBactByID(bhost->bact, endpMsg->id);
@@ -3239,7 +3240,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         plDat.mode = 0;
         plDat.ID = 0;
 
-        while ( yw->windp->windp_func79(&plDat) )
+        while ( yw->windp->GetPlayerData(&plDat) )
         {
             if ( !strcasecmp(msg->senderID, plDat.name) )
                 yw->GameShell->players2[plDat.ID].checksum = crcMsg->checksum;
@@ -3283,7 +3284,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         warg82.guarant = 0;
         warg82.receiverFlags = 2;
 
-        yw->windp->windp_func82(&warg82);
+        yw->windp->FlushBuffer(warg82);
     }
     break;
 
@@ -3372,7 +3373,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         plDat.mode = 0;
         plDat.ID = 0;
 
-        while ( yw->windp->windp_func79(&plDat) )
+        while ( yw->windp->GetPlayerData(&plDat) )
         {
             if ( !strcasecmp(msg->senderID, plDat.name) )
             {
@@ -3560,7 +3561,7 @@ void yw_HandleNetMsg(_NC_STACK_ypaworld *yw)
 
     windp_recvMsg recvMsg;
 
-    while ( yw->windp->windp_func81(&recvMsg) )
+    while ( yw->windp->RecvMessage(&recvMsg) )
     {
         usr->netrecv_count += recvMsg.size;
 
@@ -3568,7 +3569,7 @@ void yw_HandleNetMsg(_NC_STACK_ypaworld *yw)
 
         if ( yw->field_2d90->field_40 != 2 || !yw->netGameStarted )
         {
-            if ( yw->windp->windp_func86(NULL) * 5 >= msgcount )
+            if ( yw->windp->CountPlayers(NULL) * 5 >= msgcount )
             {
                 yw->netInfoOverkill = 0;
             }
@@ -3696,7 +3697,7 @@ void yw_HandleNetMsg(_NC_STACK_ypaworld *yw)
                 if ( !yw->netGameStarted )
                 {
                     int v70 = 0;
-                    yw->windp->windp_func84(&v70);
+                    yw->windp->LockSession(&v70);
 
                     usr->rdyStart = 1;
                     usr->blocked = 0;
@@ -3704,7 +3705,7 @@ void yw_HandleNetMsg(_NC_STACK_ypaworld *yw)
                     windp_arg79 plData;
                     plData.ID = 0;
                     plData.mode = 0;
-                    while ( yw->windp->windp_func79(&plData) )
+                    while ( yw->windp->GetPlayerData(&plData) )
                     {
                         if ( !strcasecmp(usr->callSIGN, plData.name) )
                         {
@@ -3873,7 +3874,7 @@ bool yw_NetSetHostStations(_NC_STACK_ypaworld *yw, mapRobo *mapHosts, int hosts_
     plData.ID = 0;
     plData.mode = 0;
 
-    while ( yw->windp->windp_func79(&plData) )
+    while ( yw->windp->GetPlayerData(&plData) )
     {
         if ( plData.ID == hosts_cnt )
         {
@@ -4079,7 +4080,7 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
     if ( !loadOK )
     {
         log_netlog("Unable to init network level (1)\n");
-        ypaworld_func151(NULL);
+        ypaworld_func151();
         return 0;
     }
 
@@ -4185,7 +4186,7 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
         windp82.senderID = yw->GameShell->callSIGN;
         windp82.guarant = 1;
 
-        yw->windp->windp_func82(&windp82);
+        yw->windp->FlushBuffer(windp82);
 
         log_netlog("Sent a READY TO PLAY to all for my Owner %d\n", yw->GameShell->netPlayerOwner);
 
@@ -4288,7 +4289,7 @@ int yw_NetCheckPlayers(_NC_STACK_ypaworld *yw)
     windp_arg79 arg79;
     arg79.ID = 0;
     arg79.mode = 0;
-    while ( yw->windp->windp_func79(&arg79) )
+    while ( yw->windp->GetPlayerData(&arg79) )
     {
         if ( arg79.flags & 1 )
         {
@@ -4409,7 +4410,7 @@ int yw_NetCheckPlayersInGame(_NC_STACK_ypaworld *yw)
 {
     UserData *usr = yw->GameShell;
 
-    int numpl = yw->windp->windp_func86(NULL);
+    int numpl = yw->windp->CountPlayers(NULL);
 
     if ( yw->netGameStarted )
         return 1;
@@ -4577,7 +4578,7 @@ void yw_NetCheckPing(_NC_STACK_ypaworld *yw)
             dp82.senderID = usr->callSIGN;
             dp82.guarant = 0;
             dp82.receiverFlags = 2;
-            yw->windp->windp_func82(&dp82);
+            yw->windp->FlushBuffer(dp82);
         }
     }
     else

@@ -29,10 +29,10 @@ public:
         Particle *tp2_end;
         Particle *field_8;
         Particle *field_C;
-        int field_10;
-        int field_14;
+        int OldestAge;
+        int time;
         int field_18;
-        int field_1C;
+        int timeStamp;
         int age;
     };
 
@@ -59,11 +59,11 @@ public:
         float field_a0;
         int tp1_cnt;
         int ctxLifeTime;
-        int field_ac;
-        int field_b0;
+        int ctxGenStart;
+        int ctxGenEnd;
         Context *tp1;
         Context *tp1_end;
-        Context *tp1_st;
+        Context *tp1_next;
     };
 
 

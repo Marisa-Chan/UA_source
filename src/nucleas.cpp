@@ -225,7 +225,7 @@ int delete_class_obj(NC_STACK_nucleus *cls)
     return ret;
 }
 
-NC_STACK_nucleus * READ_OBJT(IFFile *mfile)
+NC_STACK_nucleus *NC_STACK_nucleus::READ_OBJT(IFFile *mfile)
 {
     const NewClassDescr *clss = NULL;
     NC_STACK_nucleus *obj = NULL;
@@ -281,37 +281,6 @@ NC_STACK_nucleus * READ_OBJT(IFFile *mfile)
         }
     }
     return obj;
-}
-
-NC_STACK_base *READ_BAS_FILE(const char *fname)
-{
-    NC_STACK_base *result = NULL;
-
-    FSMgr::FileHandle *fil = uaOpenFile(fname, "rb");
-    if ( !fil )
-        return NULL;
-
-    IFFile *mfile = new IFFile(fil, false, true);
-    if ( !mfile )
-    {
-        delete fil;
-        return NULL;
-    }
-
-    if ( !mfile->parse() )
-    {
-        IFFile::Context *chunk = mfile->getCurrentChunk();
-        if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_MC2 && !mfile->parse() )
-        {
-            chunk = mfile->getCurrentChunk();
-            if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
-                result = (NC_STACK_base *)READ_OBJT(mfile);
-        }
-    }
-
-    delete mfile;
-
-    return result;
 }
 
 int sub_4117F8(NC_STACK_nucleus *obj, IFFile *mfile)

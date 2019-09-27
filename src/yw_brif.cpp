@@ -661,10 +661,10 @@ void ypaworld_func158__sub4__sub1__sub4__sub21(_NC_STACK_ypaworld *yw, struC5 *i
 {
     int v20 = -1;
 
-    if ( !inpt->winp131arg.selected_btn )
+    if ( !inpt->ClickInf.selected_btn )
     {
-        float mx = (float)inpt->winp131arg.move[0].x / (float)yw->screen_width;
-        float my = (float)inpt->winp131arg.move[0].y / (float)yw->screen_height;
+        float mx = (float)inpt->ClickInf.move.screenPos.x / (float)yw->screen_width;
+        float my = (float)inpt->ClickInf.move.screenPos.y / (float)yw->screen_height;
 
         for (int i = 0; i < brf->tp2_count; i++)
         {
@@ -2377,7 +2377,7 @@ void yw_DebriefRunDebrief(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *br
     yw->win3d->UnlockSurface();
 }
 
-void yw_debriefUpdate(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
+void yw_debriefUpdate(_NC_STACK_ypaworld *yw, struC5 *inpt)
 {
     big_ypa_Brf *brf = &yw->brief;
 

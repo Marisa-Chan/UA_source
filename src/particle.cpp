@@ -348,7 +348,7 @@ int sub_41A954(NC_STACK_particle::__NC_STACK_particle *prtcl)
 
 
 
-    int v5 = prtcl->field_b0 - prtcl->field_ac;
+    int v5 = prtcl->ctxGenEnd - prtcl->ctxGenStart;
 
     if ( v5 > prtcl->field_84 )
         v5 = prtcl->field_84;
@@ -383,7 +383,7 @@ int sub_41A954(NC_STACK_particle::__NC_STACK_particle *prtcl)
         return 0;
 
     prtcl->tp1_end = &prtcl->tp1[prtcl->tp1_cnt];
-    prtcl->tp1_st = prtcl->tp1;
+    prtcl->tp1_next = prtcl->tp1;
 
     return 1;
 }
@@ -408,8 +408,8 @@ size_t NC_STACK_particle::func0(IDVList *stak)
     stack__particle.field_84 = 3000;
     stack__particle.field_90 = 30.0;
     stack__particle.field_94 = 30.0;
-    stack__particle.field_ac = 0;
-    stack__particle.field_b0 = 1000;
+    stack__particle.ctxGenStart = 0;
+    stack__particle.ctxGenEnd = 1000;
     stack__particle.field_9c = 50.0;
 
     if (stak)
@@ -680,11 +680,11 @@ int NC_STACK_particle::particle_func5__sub0(IFFile *mfile)
 
     mfile->readS16B(atts.version);
 
-    Vec3dReadIFF(atts.accel.start, mfile, true);
-    Vec3dReadIFF(atts.accel.end, mfile, true);
+    TFEngine::Vec3dReadIFF(atts.accel.start, mfile, true);
+    TFEngine::Vec3dReadIFF(atts.accel.end, mfile, true);
 
-    Vec3dReadIFF(atts.magnify.start, mfile, true);
-    Vec3dReadIFF(atts.magnify.end, mfile, true);
+    TFEngine::Vec3dReadIFF(atts.magnify.start, mfile, true);
+    TFEngine::Vec3dReadIFF(atts.magnify.end, mfile, true);
 
     mfile->readS32B(atts.collide);
     mfile->readS32B(atts.startSpeed);
@@ -838,8 +838,8 @@ size_t NC_STACK_particle::func6(IFFile **file)
     mfile->writeS32B(prtcl->field_9c);
     mfile->writeS32B(prtcl->tp1_cnt);
     mfile->writeS32B(prtcl->ctxLifeTime);
-    mfile->writeS32B(prtcl->field_ac);
-    mfile->writeS32B(prtcl->field_b0);
+    mfile->writeS32B(prtcl->ctxGenStart);
+    mfile->writeS32B(prtcl->ctxGenEnd);
     mfile->writeS32B(prtcl->field_88);
     mfile->writeS32B(prtcl->field_84);
     mfile->writeS32B(prtcl->field_90);
@@ -869,7 +869,7 @@ void particle_func65__sub0__sub0(NC_STACK_particle::__NC_STACK_particle *prtcl, 
 
     if ( tp1->field_8 == tp1->field_C )
     {
-        tp1->field_10 -= prtcl->field_8c;
+        tp1->OldestAge -= prtcl->field_8c;
 
         tp1->field_8++;
 
@@ -886,7 +886,7 @@ void particle_func65__sub0__sub0(NC_STACK_particle::__NC_STACK_particle *prtcl, 
 
 void particle_func65__sub0__sub1(NC_STACK_particle::__NC_STACK_particle *prtcl, NC_STACK_particle::Particle *tp2, area_arg_65 *arg, float a3, unsigned int a4)
 {
-    TForm3D *glob = arg->view;
+    TFEngine::TForm3D *glob = arg->view;
     mat3x3 *pmat = &glob->globSclRot;
     UAskeleton::Vertex *v14 = prtcl->particle_sklt_intern->tformedVertex;
 
@@ -973,54 +973,29 @@ void particle_func65__sub0__sub1(NC_STACK_particle::__NC_STACK_particle *prtcl, 
 
 void particle_func65__sub0(NC_STACK_particle::__NC_STACK_particle *prtcl, NC_STACK_particle::Context *ctx, area_arg_65 *arg)
 {
-    ctx->field_14 += arg->frameTime;
-    ctx->field_10 += arg->frameTime;
+    ctx->time += arg->frameTime;
+    ctx->OldestAge += arg->frameTime;
 
     float v59 = (float)arg->frameTime * 0.001;
 
-    int v6 = arg->timeStamp - ctx->field_1C;
+    int age = arg->timeStamp - ctx->timeStamp;
 
-    ctx->age = v6;
+    ctx->age = age;
 
-    if ( v6 >= prtcl->ctxLifeTime )
+    if ( age >= prtcl->ctxLifeTime )
     {
         ctx->field_18 = 0;
         return;
     }
 
-    if ( v6 < prtcl->field_b0 )
-    {
-        if ( v6 >= prtcl->field_ac && ctx->field_14 >= 0 )
-        {
-            TForm3D *v11 = arg->owner;
-
-            vec3d v = prtcl->magnify.start + prtcl->magnifyDelta * v6;
-
-            vec3d v44 = v11->globSclRot.Transform(v);
-
-            UAskeleton::Vertex *v19 = &arg->sklt->POO[prtcl->field_c];
-
-            //xyz v45 = arg->owner->globPos + arg->owner->globSclRot.Transform(*v19);
-            vec3d v45 = arg->owner->tform * (*v19);
-
-            float v61 = 0.0;
-            float tmp = prtcl->field_8c * 0.001;
-            while ( ctx->field_14 >= 0 )
-            {
-                particle_func65__sub0__sub0(prtcl, ctx, &v44, &v45, v61);
-                v61 += tmp;
-                ctx->field_14 -= prtcl->field_8c;
-            }
-        }
-    }
-    else
+    if ( age >= prtcl->ctxGenEnd )
     {
         if ( ctx->field_8 == ctx->field_C )
             return;
 
-        while ( prtcl->field_84 <= ctx->field_10 )
+        while ( prtcl->field_84 <= ctx->OldestAge )
         {
-            ctx->field_10 -= prtcl->field_8c;
+            ctx->OldestAge -= prtcl->field_8c;
 
             if ( ctx->field_8 != ctx->field_C )
             {
@@ -1031,12 +1006,30 @@ void particle_func65__sub0(NC_STACK_particle::__NC_STACK_particle *prtcl, NC_STA
             }
         }
     }
+    else if ( age >= prtcl->ctxGenStart && ctx->time >= 0 )
+    {
+        vec3d v = prtcl->magnify.start + prtcl->magnifyDelta * age;
+        vec3d v44 = arg->owner->globSclRot.Transform(v);
+
+        //xyz v45 = arg->owner->globPos + arg->owner->globSclRot.Transform(*v19);
+        vec3d v45 = arg->owner->tform * ( arg->sklt->POO[prtcl->field_c] );
+
+        float v61 = 0.0;
+        float tmp = prtcl->field_8c * 0.001;
+        while ( ctx->time >= 0 )
+        {
+            particle_func65__sub0__sub0(prtcl, ctx, &v44, &v45, v61);
+            v61 += tmp;
+            ctx->time -= prtcl->field_8c;
+        }
+    }
+
 
     if ( ctx->field_8 != ctx->field_C )
     {
-        int v30 = ctx->field_10;
+        int v30 = ctx->OldestAge;
 
-        vec3d tmp = prtcl->accel.start + prtcl->accelDelta * v6;
+        vec3d tmp = prtcl->accel.start + prtcl->accelDelta * age;
 
         NC_STACK_particle::Particle *v31 = ctx->field_8;
 
@@ -1067,11 +1060,14 @@ size_t NC_STACK_particle::ade_func65(area_arg_65 *arg)
 
     NC_STACK_particle::Context *ctx = prtcl->tp1;
 
+    int ctxs = 0;
+
     if (arg->ownerID != ctx->field_18)
     {
         while( 1 )
         {
             ctx++;
+            ctxs++;
             if (ctx >= prtcl->tp1_end)
             {
                 ctx = NULL;
@@ -1088,31 +1084,31 @@ size_t NC_STACK_particle::ade_func65(area_arg_65 *arg)
         particle_func65__sub0(prtcl, ctx, arg);
     else
     {
-        NC_STACK_particle::Context *cur = prtcl->tp1_st;
+        NC_STACK_particle::Context *cur = prtcl->tp1_next;
 
-        if ( cur->field_18 && arg->timeStamp - cur->field_1C < 1000 )
+        if ( cur->field_18 && arg->timeStamp - cur->timeStamp < 1000 )
         {
             ctx = NULL;
         }
         else
         {
             cur->field_18 = arg->ownerID;
-            prtcl->tp1_st++;
+            prtcl->tp1_next++;
 
-            if ( prtcl->tp1_st == prtcl->tp1_end )
-                prtcl->tp1_st = prtcl->tp1;
+            if ( prtcl->tp1_next == prtcl->tp1_end )
+                prtcl->tp1_next = prtcl->tp1;
 
             ctx = cur;
         }
 
         if ( ctx )
         {
-            ctx->field_10 = 0;
-            ctx->field_14 = 0;
+            ctx->OldestAge = 0;
+            ctx->time = 0;
             ctx->age = 0;
             ctx->field_8 = ctx->tp2;
             ctx->field_C = ctx->tp2;
-            ctx->field_1C = arg->timeStamp;
+            ctx->timeStamp = arg->timeStamp;
             particle_func65__sub0(prtcl, ctx, arg);
         }
 
@@ -1325,7 +1321,7 @@ void NC_STACK_particle::setPRTCL_endSize(int sz)
 
 void NC_STACK_particle::setPRTCL_startGen(int gn)
 {
-    stack__particle.field_ac = gn;
+    stack__particle.ctxGenStart = gn;
 
     if (msetter)
         updateflags |= 1;
@@ -1335,7 +1331,7 @@ void NC_STACK_particle::setPRTCL_startGen(int gn)
 
 void NC_STACK_particle::setPRTCL_endGen(int gn)
 {
-    stack__particle.field_b0 = gn;
+    stack__particle.ctxGenEnd = gn;
 
     if (msetter)
         updateflags |= 1;
@@ -1435,12 +1431,12 @@ int NC_STACK_particle::getPRTCL_endSize()
 
 int NC_STACK_particle::getPRTCL_startGen()
 {
-    return stack__particle.field_ac;
+    return stack__particle.ctxGenStart;
 }
 
 int NC_STACK_particle::getPRTCL_endGen()
 {
-    return stack__particle.field_b0;
+    return stack__particle.ctxGenEnd;
 }
 
 int NC_STACK_particle::getPRTCL_noise()

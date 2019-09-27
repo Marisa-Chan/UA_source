@@ -62,8 +62,9 @@ public:
     virtual int keyb_setHotkey(winp_68arg *arg);
     virtual void keyb_queryHotkey(idev_query_arg *arg);
 
-    virtual void wimp_addClickNode(iwimp_arg129 *arg);
-    virtual void wimp_remClickNode(iwimp_arg129 *arg);
+    virtual void wimp_addClickNodeFront(ClickBox *box);
+    virtual void wimp_addClickNodeBack(ClickBox *box);
+    virtual void wimp_remClickNode(ClickBox *box);
     virtual void wimp_ForceFeedback(winp_71arg *ctrl);
 
     virtual void slider_reset(int sldr, int rtp);

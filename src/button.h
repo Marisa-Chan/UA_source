@@ -5,106 +5,135 @@
 #include "inttypes.h"
 #include "utils.h"
 #include "input.h"
+#include <vector>
 
-struct button_str2_t2 //slider
+class NC_STACK_button: public NC_STACK_nucleus, public ClickBox
 {
-    int16_t field_0; // current value
-    int16_t field_2; // maximal value
-    int16_t field_4; // minimal value
-    int16_t field_6;
-    int16_t field_8;
-    int16_t field_A;
-    int16_t field_C;
-    int16_t field_E;
-};
+//Structures
+public:
 
-struct button_str2
-{
-    int16_t xpos;
-    int16_t ypos;
-    int16_t width;
-    int16_t field_6;
-    char caption[512];
-    char caption2[512];
-    int16_t state;
-    int16_t field_40A;
-    int down_id;
-    int up_id;
-    int pressed_id;
-    int16_t button_type;
-    int16_t button_id;
-    button_str2_t2 *field_41C;
-    int txt_r;
-    int txt_g;
-    int txt_b;
-    uint8_t tileset_down;
-    uint8_t tileset_up;
-    uint8_t field_42E;
-};
+    enum // button types
+    {
+        TYPE_BUTTON     = 1,
+        TYPE_CHECKBX    = 2,
+        TYPE_CAPTION    = 3,
+        TYPE_RADIOBTN   = 4,
+        TYPE_SLIDER     = 5
+    };
 
-struct __NC_STACK_button : public ClickBox
-{
-    button_str2 *field_d8[48];
-    int16_t idd;
-    int16_t field_19A;
-    uint8_t field_19c;
-    uint8_t field_19D;
-    uint8_t field_19E;
-    uint8_t field_19F;
-    uint8_t field_1A0;
-    uint8_t field_1A1;
-    int16_t screen_width;
-    int16_t screen_height;
-};
-
-struct button_64_arg
-{
-    int button_type;
-    int xpos;
-    int ypos;
-    int width;
-    int field_10;
-    const char *caption;
-    const char *caption2;
-    int field_1C;
-    int down_id;
-    int up_id;
-    int pressed_id;
-    int button_id;
-    int state;
-    button_str2_t2 *field_34;
-    uint8_t tileset_down;
-    uint8_t tileset_up;
-    uint8_t field_3A;
-    int txt_r;
-    int txt_g;
-    int txt_b;
-};
-
-struct button_66arg
-{
-    int butID;
-    int field_4;
-};
-
-struct button_71arg
-{
-    int butID;
-    const char *field_4;
-    char *field_8;
-};
-
-struct button_arg76
-{
-    int butID;
-    int16_t xpos;
-    int16_t ypos;
-    int16_t width;
-};
+    enum // button states
+    {
+        FLAG_PRESSED    = 1,
+        FLAG_DISABLED   = 2,
+        FLAG_DOWN       = 4,
+        FLAG_DRAW       = 8,
+        FLAG_BORDER     = 0x10,
+        FLAG_CENTER     = 0x20,
+        FLAG_TEXT       = 0x40,
+        FLAG_NOPRESS    = 0x80,
+        FLAG_RALIGN     = 0x100
+    };
 
 
-class NC_STACK_button: public NC_STACK_nucleus
-{
+    struct Slider //slider
+    {
+        int16_t value; // current value
+        int16_t max; // maximal value
+        int16_t min; // minimal value
+
+        int16_t field_6_;
+        int16_t field_8_;
+
+        int16_t pressPart;
+        int16_t oldValue;
+        int16_t scrDownX;
+    };
+
+    struct button_str2
+    {
+        int16_t xpos;
+        int16_t ypos;
+        int16_t width;
+        int16_t height;
+        char caption[512];
+        char caption2[512];
+        int16_t flags;
+        int down_id;
+        int up_id;
+        int pressed_id;
+        int16_t button_type;
+        int16_t button_id;
+        Slider *field_41C;
+        int txt_r;
+        int txt_g;
+        int txt_b;
+        uint8_t tileset_down;
+        uint8_t tileset_up;
+        uint8_t field_42E;
+    };
+
+    typedef std::vector<button_str2> WidgetArr;
+
+    struct button_64_arg
+    {
+        int button_type;
+        int xpos;
+        int ypos;
+        int width;
+        int field_10;
+        const char *caption;
+        const char *caption2;
+        int down_id;
+        int up_id;
+        int pressed_id;
+        int button_id;
+        int flags;
+        Slider *field_34;
+        uint8_t tileset_down;
+        uint8_t tileset_up;
+        uint8_t field_3A;
+        int txt_r;
+        int txt_g;
+        int txt_b;
+    };
+
+    struct button_66arg
+    {
+        int butID;
+        int field_4;
+    };
+
+    struct button_71arg
+    {
+        int butID;
+        const char *field_4;
+        char *field_8;
+    };
+
+    struct button_arg76
+    {
+        int butID;
+        int16_t xpos;
+        int16_t ypos;
+        int16_t width;
+    };
+
+    struct ResCode
+    {
+        uint16_t code;
+        uint16_t btn;
+
+        ResCode() : code(0), btn(0) {};
+        ResCode(uint16_t _code) : code(_code), btn(0) {};
+        ResCode(uint16_t _code, uint16_t _btn) : code(_code), btn(_btn) {};
+
+        explicit operator bool() const
+        {
+            return code != 0 || btn != 0;
+        }
+    };
+
+// Methods
 public:
     virtual size_t func0(IDVList *stak);
     virtual size_t func1();
@@ -114,19 +143,22 @@ public:
     virtual size_t button_func65(int *butID);
     virtual size_t button_func66(button_66arg *arg);
     virtual size_t button_func67(button_66arg *arg);
-    virtual size_t button_func68(int *arg);
-    virtual size_t button_func69(struC5 *arg);
+    virtual size_t Show(); // Part of 68th method
+    virtual size_t Hide(); // Part of 68th method
+    virtual ResCode button_func69(struC5 *arg);
     virtual size_t button_func70(void *);
     virtual size_t button_func71(button_71arg *arg);
     virtual int button_func72(int *butid);
-    virtual size_t button_func73(button_66arg *arg);
-    virtual button_str2_t2 * button_func74(int *butid);
+    virtual void button_func73(button_66arg *arg);
+    virtual Slider * button_func74(int *butid);
     virtual size_t button_func75(int *butid);
     virtual size_t button_func76(button_arg76 *arg);
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_button() {
-        memset(&stack__button, 0, sizeof(stack__button));
+        clear();
+        field_d8.reserve(ClickBox::RESERVED);
+        buttons.reserve(ClickBox::RESERVED);
     };
     virtual ~NC_STACK_button() {};
 
@@ -158,12 +190,30 @@ public:
     virtual int getBTN_y();
     virtual int getBTN_w();
     virtual int getBTN_h();
-    virtual __NC_STACK_button *getBTN_pButton();
+
+protected:
+    void clear();
+    void sub_436F58(NC_STACK_button *btn, button_str2 *sbt);
+    void button_func70__sub1(NC_STACK_button *btn, button_str2 *sbt, char **pbuf);
+    void button_func70__sub0(NC_STACK_button *btn, button_str2 *sbt, char **pbuf);
+
+    void UnsetRadioButtons();
 
     //Data
+public:
     static const NewClassDescr description;
 
-    __NC_STACK_button stack__button;
+    WidgetArr field_d8;
+    int16_t idd;
+    bool    visible;
+    uint8_t field_19c;
+    uint8_t field_19D;
+    uint8_t field_19E;
+    uint8_t field_19F;
+    uint8_t field_1A0;
+    uint8_t field_1A1;
+    int16_t screen_width;
+    int16_t screen_height;
 };
 
 #endif // BUTTON_H_INCLUDED

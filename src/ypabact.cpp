@@ -318,7 +318,7 @@ size_t NC_STACK_ypabact::func0(IDVList *stak)
                         break;
 
                     case BACT_ATT_VPTRANSFORM:
-                        setBACT_vpTransform( (TForm3D *)val.value.p_data);
+                        setBACT_vpTransform( (TFEngine::TForm3D *)val.value.p_data);
                         break;
 
                     case BACT_ATT_EXTRAVIEWER:
@@ -542,7 +542,7 @@ size_t NC_STACK_ypabact::func2(IDVList *stak)
                     break;
 
                 case BACT_ATT_VPTRANSFORM:
-                    setBACT_vpTransform((TForm3D *)val.value.p_data);
+                    setBACT_vpTransform((TFEngine::TForm3D *)val.value.p_data);
                     break;
 
                 case BACT_ATT_EXTRAVIEWER:
@@ -582,7 +582,7 @@ size_t NC_STACK_ypabact::func3(IDVList *stak)
                     break;
 
                 case BACT_ATT_PTRANSFORM:
-                    *(TForm3D **)val.value.p_data = getBACT_pTransform();
+                    *(TFEngine::TForm3D **)val.value.p_data = getBACT_pTransform();
                     break;
 
                 case BACT_ATT_PBACT:
@@ -630,7 +630,7 @@ size_t NC_STACK_ypabact::func3(IDVList *stak)
                     break;
 
                 case BACT_ATT_VPTRANSFORM:
-                    *(TForm3D **)val.value.p_data = getBACT_vpTransform();
+                    *(TFEngine::TForm3D **)val.value.p_data = getBACT_vpTransform();
                     break;
 
                 case BACT_ATT_EXTRAVIEWER:
@@ -728,13 +728,13 @@ void sub_481F94(__NC_STACK_ypabact *bact)
 }
 
 
-TForm3D bact_cam;
+TFEngine::TForm3D bact_cam;
 
 void NC_STACK_ypabact::Update(update_msg *arg)
 {
     __NC_STACK_ypabact *bact = &ypabact;
 
-    sub_430A20(&bact_cam);
+    TFEngine::Engine.SetViewPoint(&bact_cam);
 
     yw_130arg sect_info;
     sect_info.pos_x = bact->position.x;
@@ -8562,7 +8562,7 @@ void NC_STACK_ypabact::setBACT_aggression(int aggr)
     }
 }
 
-void NC_STACK_ypabact::setBACT_vpTransform(TForm3D *tr)
+void NC_STACK_ypabact::setBACT_vpTransform(TFEngine::TForm3D *tr)
 {
     ypabact.current_vp.trigo = tr;
 }
@@ -8590,7 +8590,7 @@ NC_STACK_ypaworld *NC_STACK_ypabact::getBACT_pWorld()
     return ypabact.ywo;
 }
 
-TForm3D *NC_STACK_ypabact::getBACT_pTransform()
+TFEngine::TForm3D *NC_STACK_ypabact::getBACT_pTransform()
 {
     return &ypabact.tForm;
 }
@@ -8650,7 +8650,7 @@ rbcolls *NC_STACK_ypabact::getBACT_collNodes()
     return NULL;
 }
 
-TForm3D *NC_STACK_ypabact::getBACT_vpTransform()
+TFEngine::TForm3D *NC_STACK_ypabact::getBACT_vpTransform()
 {
     return ypabact.current_vp.trigo;
 }

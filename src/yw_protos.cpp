@@ -5260,7 +5260,7 @@ int sb_0x479f4c__sub0(scrCallBack *scr)
     {
         robo->bact_internal->energy_max = atoi(scr->p2);
 
-        if ( yw->field_1b78 == current_robo )
+        if ( yw->UserRobo == current_robo )
         {
             if ( robo->bact_internal->energy_max < yw->maxroboenergy )
             {

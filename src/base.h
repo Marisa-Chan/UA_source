@@ -17,43 +17,24 @@ class NC_STACK_ade;
 struct base_node: public nnode
 {
     NC_STACK_base *self_full;
+
+    base_node()
+    {
+        self_full = NULL;
+    }
 };
 
 struct clss_node: public nnode
 {
     NC_STACK_nucleus *obj;
-};
 
-struct TForm3D
-{
-    TForm3D *parent_1c;
-    vec3d locPos;
-    vec3d globPos;
-    vec3d vec;
-    vec3d scale;
-    mat3x3 locSclRot;
-    mat3x3 globSclRot;
-    int32_t ax;
-    int32_t ay;
-    int32_t az;
-    int32_t rx;
-    int32_t ry;
-    int32_t rz;
-    uint32_t flags;
-    mat4x4 tform;
-
-    TForm3D()
+    clss_node()
     {
-        parent_1c = NULL;
-        ax = 0;
-        ay = 0;
-        az = 0;
-        rx = 0;
-        ry = 0;
-        rz = 0;
-        flags = 0;
-    };
+        obj = NULL;
+    }
 };
+
+
 
 struct polysDat
 {
@@ -97,8 +78,8 @@ struct area_arg_65
     RenderStack *rndrStack;
     int timeStamp;
     int frameTime;
-    TForm3D *view;
-    TForm3D *owner;
+    TFEngine::TForm3D *view;
+    TFEngine::TForm3D *owner;
     NC_STACK_skeleton *OBJ_SKELETON;
     UAskeleton::Data *sklt;
     float minZ;
@@ -108,24 +89,25 @@ struct area_arg_65
     int ambientLight;
     int adeCount;
     uint32_t flags;
-};
 
-struct __NC_STACK_base
-{
-    int ID;
-    uint32_t flags;
-    int timeStamp;
-    NC_STACK_skeleton *OBJ_SKELETON;
-    nlist ADES;
-    TForm3D transform;
-    NC_STACK_base *parent;
-    NC_STACK_base *mainChild;
-    NC_STACK_base *mainObject;
-    nlist KIDS;
-    base_node kid_node;
-    int visLimit;
-    area_arg_65 renderMsg;
-    NC_STACK_nucleus *OBJT;
+    area_arg_65()
+    {
+        ownerID = 0;
+        rndrStack = NULL;
+        timeStamp = 0;
+        frameTime = 0;
+        view = NULL;
+        owner = NULL;
+        OBJ_SKELETON = NULL;
+        sklt = NULL;
+        minZ = 0.0;
+        maxZ = 0.0;
+        fadeStart = 0.0;
+        fadeLength = 0.0;
+        ambientLight = 0;
+        adeCount = 0;
+        flags = 0;
+    }
 };
 
 struct STRC_base
@@ -163,7 +145,7 @@ struct flag_xyz2
 struct base_66_arg_struct //Parent info struct
 {
     NC_STACK_base *parent;
-    TForm3D *parent_field_1c;
+    TFEngine::TForm3D *parent_field_1c;
     nlist *KIDS;
 };
 
@@ -189,14 +171,10 @@ struct base_64arg
     int field_10;
 };
 
-void sub_430A20(TForm3D *s3d);
-TForm3D *sub_430A28();
-void sub_430A38(TForm3D *s3d);
-
 struct vhclBases
 {
     NC_STACK_base *base;
-    TForm3D *trigo;
+    TFEngine::TForm3D *trigo;
 
     vhclBases()
     {
@@ -231,7 +209,15 @@ public:
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_base() {
-        memset(&stack__base, 0, sizeof(stack__base));
+        ID = 0;
+        flags = 0;
+        timeStamp = 0;
+        OBJ_SKELETON = NULL;
+        parent = NULL;
+//        mainChild = NULL;
+        mainObject = NULL;
+        visLimit = 0;
+        OBJT = NULL;
     };
     virtual ~NC_STACK_base() {};
 
@@ -243,55 +229,55 @@ public:
         return new NC_STACK_base();
     };
 
-    enum BASE_FLAG
+    enum //Flags
     {
-        BASE_FLAG_MOVING = 1,
-        BASE_FLAG_ROTATING = 2,
-        BASE_FLAG_MAINKID = 4,
-        BASE_FLAG_RENDERALL = 8,
-        BASE_FLAG_TERMCOLL = 0x10,
-        BASE_FLAG_INPUTHANDLE = 0x20,
-        BASE_FLAG_MAINOBJT = 0x40,
-        BASE_FLAG_EMBDRSRC = 0x80
+        FLAG_MOVING = 1,
+        FLAG_ROTATING = 2,
+        FLAG_MAINKID = 4,
+        FLAG_RENDERALL = 8,
+        FLAG_TERMCOLL = 0x10,
+        FLAG_INPUTHANDLE = 0x20,
+        FLAG_MAINOBJT = 0x40,
+        FLAG_EMBDRSRC = 0x80
     };
 
-    enum BASE_ATT
+    enum //Attributes
     {
-        BASE_ATT_SKELET = 0x80001000,
-        BASE_ATT_ADE = 0x80001001,
-        BASE_ATT_PARENTFOLLOW = 0x80001002,
-        BASE_ATT_VISLIMIT = 0x80001004,
-        BASE_ATT_AMBIENTLIGHT = 0x80001005,
-        BASE_ATT_RENDERALL = 0x80001006,
-        BASE_ATT_INPUTHANDLE = 0x80001008,
-        BASE_ATT_X = 0x80001009,
-        BASE_ATT_Y = 0x8000100A,
-        BASE_ATT_Z = 0x8000100B,
-        BASE_ATT_VX = 0x8000100C,
-        BASE_ATT_VY = 0x8000100D,
-        BASE_ATT_VZ = 0x8000100E,
-        BASE_ATT_AX = 0x8000100F,
-        BASE_ATT_AY = 0x80001010,
-        BASE_ATT_AZ = 0x80001011,
-        BASE_ATT_RX = 0x80001012,
-        BASE_ATT_RY = 0x80001013,
-        BASE_ATT_RZ = 0x80001014,
-        BASE_ATT_SX = 0x80001015,
-        BASE_ATT_SY = 0x80001016,
-        BASE_ATT_SZ = 0x80001017,
-        BASE_ATT_ADELIST = 0x80001018,
-        BASE_ATT_PTRANSFORM = 0x80001019,
-        BASE_ATT_KIDSLIST = 0x8000101A,
-        BASE_ATT_KIDNODE = 0x8000101B,
-        BASE_ATT_RENDERPARAMS = 0x8000101D,
-        BASE_ATT_MAINKID = 0x8000101E,
-        BASE_ATT_MAINOBJT = 0x8000101F,
-        BASE_ATT_RENDERSTACK = 0x80001020,
-        BASE_ATT_ARGSTACK = 0x80001021,
-        BASE_ATT_ENDARGSTACK = 0x80001022,
-        BASE_ATT_FADELEN = 0x80001023,
-        BASE_ATT_STATIC = 0x80001024,
-        BASE_ATT_EMBDRSRC = 0x80001025
+        ATT_SKELET = 0x80001000,
+        ATT_ADE = 0x80001001,
+        ATT_PARENTFOLLOW = 0x80001002,
+        ATT_VISLIMIT = 0x80001004,
+        ATT_AMBIENTLIGHT = 0x80001005,
+        ATT_RENDERALL = 0x80001006,
+        ATT_INPUTHANDLE = 0x80001008,
+        ATT_X = 0x80001009,
+        ATT_Y = 0x8000100A,
+        ATT_Z = 0x8000100B,
+        ATT_VX = 0x8000100C,
+        ATT_VY = 0x8000100D,
+        ATT_VZ = 0x8000100E,
+        ATT_AX = 0x8000100F,
+        ATT_AY = 0x80001010,
+        ATT_AZ = 0x80001011,
+        ATT_RX = 0x80001012,
+        ATT_RY = 0x80001013,
+        ATT_RZ = 0x80001014,
+        ATT_SX = 0x80001015,
+        ATT_SY = 0x80001016,
+        ATT_SZ = 0x80001017,
+        ATT_ADELIST = 0x80001018,
+        ATT_PTRANSFORM = 0x80001019,
+        ATT_KIDSLIST = 0x8000101A,
+        ATT_KIDNODE = 0x8000101B,
+        ATT_RENDERPARAMS = 0x8000101D,
+        ATT_MAINKID = 0x8000101E,
+        ATT_MAINOBJT = 0x8000101F,
+        ATT_RENDERSTACK = 0x80001020,
+        ATT_ARGSTACK = 0x80001021,
+        ATT_ENDARGSTACK = 0x80001022,
+        ATT_FADELEN = 0x80001023,
+        ATT_STATIC = 0x80001024,
+        ATT_EMBDRSRC = 0x80001025
     };
 
     virtual void setBASE_skeleton(NC_STACK_skeleton *);
@@ -327,7 +313,7 @@ public:
     virtual float getBASE_sy();
     virtual float getBASE_sz();
     virtual nlist *getBASE_adeList();
-    virtual TForm3D *getBASE_pTransform();
+    virtual TFEngine::TForm3D *getBASE_pTransform();
     virtual nlist *getBASE_kidList();
     virtual base_node *getBASE_kidNode();
     virtual area_arg_65 *getBASE_renderParams();
@@ -348,6 +334,14 @@ public:
     vec3d getBASE_pos();
     vec3d getBASE_vec();
 
+protected:
+    int READ_STRC(IFFile *mfile);
+    int READ_ADES(IFFile *mfile);
+    int READ_KIDS(IFFile *mfile);
+
+public:
+    static NC_STACK_base *READ_BAS_FILE(const char *fname);
+
 
 public:
     //Data
@@ -355,7 +349,22 @@ public:
 
     static RenderStack renderStack;
 
-    __NC_STACK_base stack__base;
+public:
+
+    int ID;
+    uint32_t flags;
+    int timeStamp;
+    NC_STACK_skeleton *OBJ_SKELETON;
+    nlist ADES;
+    TFEngine::TForm3D transform;
+    NC_STACK_base *parent;
+//    NC_STACK_base *mainChild;
+    NC_STACK_base *mainObject;
+    nlist KIDS;
+    base_node kid_node;
+    int visLimit;
+    area_arg_65 renderMsg;
+    NC_STACK_nucleus *OBJT;
 };
 
 #endif // BASE_H_INCLUDED

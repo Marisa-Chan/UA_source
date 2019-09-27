@@ -1,12 +1,17 @@
 #ifndef LSTVW_H_INCLUDED
 #define LSTVW_H_INCLUDED
 
+#include <list>
+
 struct _NC_STACK_ypaworld;
 
-struct GuiBase : public nnode
+struct GuiBase;
+typedef std::list<GuiBase *> GuiBaseList;
+
+class GuiBase : public ClickBox
 {
+public:
     int flags;
-    ClickBox dialogBox;
     ClickBox iconBox;
     char *iconString;
     w3d_a209 cmdstrm;
@@ -25,14 +30,24 @@ struct GuiBase : public nnode
         FLAG_WITH_HELP = 0x100
     };
 
-    void OpenDialog(_NC_STACK_ypaworld *yw);
-    void CloseDialog(_NC_STACK_ypaworld *yw);
+    void Detach();
+    void Attach(GuiBaseList &);
 
     static char * FormateTitle(_NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const char *title, char *in, uint8_t postf_char, int flag);
+
+    GuiBase() : flags(0), iconString(NULL), postDraw(NULL), AttachedTo(NULL) {};
+
+
+    inline bool IsClosed() { return ((flags & FLAG_CLOSED) != 0); };
+    inline bool IsOpen() { return ((flags & FLAG_CLOSED) == 0); };
+
+protected:
+    GuiBaseList *AttachedTo;
 };
 
-struct GuiList : public GuiBase
+class GuiList : public GuiBase
 {
+public:
     int scrollTimer;
     int listFlags;
     int closeChar;

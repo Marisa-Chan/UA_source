@@ -135,205 +135,37 @@ void RenderStack::render(bool sorting, tCompare _func, bool Clear)
 
 
 
-TForm3D *dword_546DC0;
+
 int baseIDcounter = 1;
 
 
-// rot_x == 0   rot_y == 0   rot_z == 0
-void scale_rot_0(TForm3D *scrot)
-{
-    scrot->locSclRot.m00 = scrot->scale.x;
-    scrot->locSclRot.m01 = 0;
-    scrot->locSclRot.m02 = 0;
 
-    scrot->locSclRot.m10 = 0;
-    scrot->locSclRot.m11 = scrot->scale.y;
-    scrot->locSclRot.m12 = 0;
-
-    scrot->locSclRot.m20 = 0;
-    scrot->locSclRot.m21 = 0;
-    scrot->locSclRot.m22 = scrot->scale.z;
-}
-
-// rot_x != 0   rot_y == 0   rot_z == 0
-void scale_rot_1(TForm3D *scrot)
-{
-    SinCos *angl = &TFEngine::SinCos_table[scrot->ax >> 16];
-
-    scrot->locSclRot.m00 = scrot->scale.x;
-    scrot->locSclRot.m01 = 0;
-    scrot->locSclRot.m02 = 0;
-
-    scrot->locSclRot.m10 = 0;
-    scrot->locSclRot.m11 = scrot->scale.y * angl->cos;
-    scrot->locSclRot.m12 = scrot->scale.y * -angl->sin;
-
-    scrot->locSclRot.m20 = 0;
-    scrot->locSclRot.m21 = scrot->scale.z * angl->sin;
-    scrot->locSclRot.m22 = scrot->scale.z * angl->cos;
-
-}
-
-// rot_x == 0   rot_y != 0   rot_z == 0
-void scale_rot_2(TForm3D *scrot)
-{
-    SinCos *angl = &TFEngine::SinCos_table[scrot->ay >> 16];
-
-    scrot->locSclRot.m00 = scrot->scale.x * angl->cos;
-    scrot->locSclRot.m01 = 0;
-    scrot->locSclRot.m02 = scrot->scale.x * angl->sin;
-
-    scrot->locSclRot.m10 = 0;
-    scrot->locSclRot.m11 = scrot->scale.y;
-    scrot->locSclRot.m12 = 0;
-
-    scrot->locSclRot.m20 = -angl->sin * scrot->scale.z;
-    scrot->locSclRot.m21 = 0;
-    scrot->locSclRot.m22 = scrot->scale.z * angl->cos;
-}
-
-// rot_x != 0   rot_y != 0   rot_z == 0
-void scale_rot_3(TForm3D *scrot)
-{
-    SinCos *angl_x = &TFEngine::SinCos_table[scrot->ax >> 16];
-    SinCos *angl_y = &TFEngine::SinCos_table[scrot->ay >> 16];
-
-    scrot->locSclRot.m00 = scrot->scale.x * angl_y->cos;
-    scrot->locSclRot.m01 = 0;
-    scrot->locSclRot.m02 = scrot->scale.x * angl_y->sin;
-
-    scrot->locSclRot.m10 = angl_x->sin * angl_y->sin * scrot->scale.y;
-    scrot->locSclRot.m11 = scrot->scale.y * angl_x->cos;
-    scrot->locSclRot.m12 = -angl_x->sin * angl_y->cos * scrot->scale.y;
-
-    scrot->locSclRot.m20 = -angl_x->cos * angl_y->sin * scrot->scale.z;
-    scrot->locSclRot.m21 = scrot->scale.z * angl_x->sin;
-    scrot->locSclRot.m22 = angl_x->cos * angl_y->cos * scrot->scale.z;
-}
-
-// rot_x == 0   rot_y == 0   rot_z != 0
-void scale_rot_4(TForm3D *scrot)
-{
-    SinCos *angl = &TFEngine::SinCos_table[scrot->az >> 16];
-
-    scrot->locSclRot.m00 = scrot->scale.x * angl->cos;
-    scrot->locSclRot.m01 = -angl->sin * scrot->scale.x;
-    scrot->locSclRot.m02 = 0;
-
-    scrot->locSclRot.m10 = scrot->scale.y * angl->sin;
-    scrot->locSclRot.m11 = scrot->scale.y * angl->cos;
-    scrot->locSclRot.m12 = 0;
-
-    scrot->locSclRot.m20 = 0;
-    scrot->locSclRot.m21 = 0;
-    scrot->locSclRot.m22 = scrot->scale.z;
-}
-
-// rot_x != 0   rot_y == 0   rot_z != 0
-void scale_rot_5(TForm3D *scrot)
-{
-    SinCos *angl_x = &TFEngine::SinCos_table[scrot->ax >> 16];
-    SinCos *angl_z = &TFEngine::SinCos_table[scrot->az >> 16];
-
-    scrot->locSclRot.m00 = scrot->scale.x * angl_z->cos;
-    scrot->locSclRot.m01 = -angl_z->sin * angl_x->cos * scrot->scale.x;
-    scrot->locSclRot.m02 = angl_z->sin * angl_x->sin * scrot->scale.x;
-
-    scrot->locSclRot.m10 = scrot->scale.y * angl_z->sin;
-    scrot->locSclRot.m11 = angl_z->cos * angl_x->cos * scrot->scale.y;
-    scrot->locSclRot.m12 = -angl_z->cos * angl_x->sin * scrot->scale.y;
-
-    scrot->locSclRot.m20 = 0;
-    scrot->locSclRot.m21 = scrot->scale.z * angl_x->sin;
-    scrot->locSclRot.m22 = scrot->scale.z * angl_x->cos;
-}
-
-// rot_x == 0   rot_y != 0   rot_z != 0
-void scale_rot_6(TForm3D *scrot)
-{
-    SinCos *angl_y = &TFEngine::SinCos_table[scrot->ay >> 16];
-    SinCos *angl_z = &TFEngine::SinCos_table[scrot->az >> 16];
-
-    scrot->locSclRot.m00 = angl_z->cos * angl_y->cos * scrot->scale.x;
-    scrot->locSclRot.m01 = -angl_z->sin * scrot->scale.x;
-    scrot->locSclRot.m02 = angl_z->cos * angl_y->sin * scrot->scale.x;
-
-    scrot->locSclRot.m10 = angl_z->sin * angl_y->cos * scrot->scale.y;
-    scrot->locSclRot.m11 = scrot->scale.y * angl_z->cos;
-    scrot->locSclRot.m12 = angl_z->sin * angl_y->sin * scrot->scale.y;
-
-    scrot->locSclRot.m20 = -angl_y->sin * scrot->scale.z;
-    scrot->locSclRot.m21 = 0;
-    scrot->locSclRot.m22 = scrot->scale.z * angl_y->cos;
-
-}
-
-// rot_x != 0   rot_y != 0   rot_z != 0
-void scale_rot_7(TForm3D *scrot)
-{
-    SinCos *angl_x = &TFEngine::SinCos_table[scrot->ax >> 16];
-    SinCos *angl_y = &TFEngine::SinCos_table[scrot->ay >> 16];
-    SinCos *angl_z = &TFEngine::SinCos_table[scrot->az >> 16];
-
-
-    scrot->locSclRot.m00 = (angl_z->cos * angl_y->cos - angl_z->sin * angl_x->sin * angl_y->sin) * scrot->scale.x;
-    scrot->locSclRot.m01 = -angl_z->sin * angl_x->cos * scrot->scale.x;
-    scrot->locSclRot.m02 = (angl_z->cos * angl_y->sin + angl_z->sin * angl_x->sin * angl_y->cos) * scrot->scale.x;
-
-    scrot->locSclRot.m10 = (angl_z->sin * angl_y->cos + angl_z->cos * angl_x->sin * angl_y->sin) * scrot->scale.y;
-    scrot->locSclRot.m11 = angl_z->cos * angl_x->cos * scrot->scale.y;
-    scrot->locSclRot.m12 = (angl_z->sin * angl_y->sin - angl_z->cos * angl_x->sin * angl_y->cos) * scrot->scale.y;
-
-    scrot->locSclRot.m20 = -angl_x->cos * angl_y->sin * scrot->scale.z;
-    scrot->locSclRot.m21 = scrot->scale.z * angl_x->sin;
-    scrot->locSclRot.m22 = angl_x->cos * angl_y->cos * scrot->scale.z;
-}
-
-
-void make_scale_rotation__matrix(TForm3D *scrot)
-{
-    typedef void (*matrfunc)(TForm3D *);
-    static const matrfunc off_5151E0[8] = {scale_rot_0, scale_rot_1, scale_rot_2, scale_rot_3, scale_rot_4, scale_rot_5, scale_rot_6, scale_rot_7};
-
-    uint8_t func_id = 0;
-
-    if ( scrot->ax )
-        func_id |= 1;
-
-    if ( scrot->ay )
-        func_id |= 2;
-
-    if ( scrot->az )
-        func_id |= 4;
-
-    off_5151E0[func_id](scrot);
-}
 
 size_t NC_STACK_base::func0(IDVList *stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
 
-    stack__base.ID = baseIDcounter;
+    ID = baseIDcounter;
     baseIDcounter++;
 
-    init_list(&stack__base.ADES);
-    init_list(&stack__base.KIDS);
+    init_list(&ADES);
+    init_list(&KIDS);
 
-    stack__base.transform.scale = vec3d(1.0, 1.0, 1.0);
+    transform.scale = vec3d(1.0, 1.0, 1.0);
 
-    stack__base.kid_node.self_full = this;
+    kid_node.self_full = this;
 
-    make_scale_rotation__matrix(&stack__base.transform);
+    transform.MakeScaleRotationMatrix();
 
-    stack__base.visLimit = 4096;
+    visLimit = 4096;
 
-    stack__base.renderMsg.fadeStart = 3496.0;
-    stack__base.renderMsg.fadeLength = 600.0;
-    stack__base.renderMsg.ambientLight = 255;
+    renderMsg.fadeStart = 3496.0;
+    renderMsg.fadeLength = 600.0;
+    renderMsg.ambientLight = 255;
 
-    stack__base.flags |= BASE_FLAG_RENDERALL;
-    stack__base.transform.flags |= 1;
+    flags |= FLAG_RENDERALL;
+    transform.flags |= TFEngine::TForm3D::FLAG_FOLLOW_PARENT;
 
     if (stak)
     {
@@ -345,43 +177,43 @@ size_t NC_STACK_base::func0(IDVList *stak)
             {
                 switch (val.id)
                 {
-                case BASE_ATT_SKELET:
+                case ATT_SKELET:
                     setBASE_skeleton((NC_STACK_skeleton *)val.value.p_data);
                     break;
 
-                case BASE_ATT_ADE:
+                case ATT_ADE:
                     setBASE_ADE((NC_STACK_ade *)val.value.p_data);
                     break;
 
-                case BASE_ATT_PARENTFOLLOW:
+                case ATT_PARENTFOLLOW:
                     setBASE_parentFollow(val.value.i_data);
                     break;
 
-                case BASE_ATT_VISLIMIT:
+                case ATT_VISLIMIT:
                     setBASE_visLimit(val.value.i_data);
                     break;
 
-                case BASE_ATT_AMBIENTLIGHT:
+                case ATT_AMBIENTLIGHT:
                     setBASE_ambientLight(val.value.i_data);
                     break;
 
-                case BASE_ATT_RENDERALL:
+                case ATT_RENDERALL:
                     setBASE_renderAll(val.value.i_data);
                     break;
 
-                case BASE_ATT_INPUTHANDLE:
+                case ATT_INPUTHANDLE:
                     setBASE_inputHandle (val.value.i_data);
                     break;
 
-                case BASE_ATT_FADELEN:
+                case ATT_FADELEN:
                     setBASE_fadeLength(val.value.i_data);
                     break;
 
-                case BASE_ATT_STATIC:
+                case ATT_STATIC:
                     setBASE_static (val.value.i_data);
                     break;
 
-                case BASE_ATT_EMBDRSRC:
+                case ATT_EMBDRSRC:
                     setBASE_embdRsrc(val.value.i_data);
                     break;
 
@@ -397,14 +229,12 @@ size_t NC_STACK_base::func0(IDVList *stak)
 
 size_t NC_STACK_base::func1()
 {
-    __NC_STACK_base *base = &stack__base;
-
-    if (base->OBJ_SKELETON)
-        delete_class_obj(base->OBJ_SKELETON);
+    if (OBJ_SKELETON)
+        delete_class_obj(OBJ_SKELETON);
 
     while ( 1 )
     {
-        clss_node *tmp = (clss_node *)base->ADES.head;
+        clss_node *tmp = (clss_node *)ADES.head;
 
         if ( !tmp->next )
             break;
@@ -412,12 +242,12 @@ size_t NC_STACK_base::func1()
         delete_class_obj(tmp->obj); // this objects delete self from kids parent list
     }
 
-    if ( base->parent )
-        Remove(&base->kid_node);
+    if ( parent )
+        Remove(&kid_node);
 
     while ( 1 )
     {
-        clss_node *tmp = (clss_node *)base->KIDS.head;
+        clss_node *tmp = (clss_node *)KIDS.head;
 
         if ( !tmp->next )
             break;
@@ -425,8 +255,8 @@ size_t NC_STACK_base::func1()
         delete_class_obj(tmp->obj); // this objects delete self from kids parent list
     }
 
-    if ( base->OBJT )
-        delete_class_obj(base->OBJT);
+    if ( OBJT )
+        delete_class_obj(OBJT);
 
     return NC_STACK_nucleus::func1();
 }
@@ -443,43 +273,43 @@ size_t NC_STACK_base::func2(IDVList *stak)
             {
                 switch (val.id)
                 {
-                case BASE_ATT_SKELET:
+                case ATT_SKELET:
                     setBASE_skeleton((NC_STACK_skeleton *)val.value.p_data);
                     break;
 
-                case BASE_ATT_ADE:
+                case ATT_ADE:
                     setBASE_ADE((NC_STACK_ade *)val.value.p_data);
                     break;
 
-                case BASE_ATT_PARENTFOLLOW:
+                case ATT_PARENTFOLLOW:
                     setBASE_parentFollow(val.value.i_data);
                     break;
 
-                case BASE_ATT_VISLIMIT:
+                case ATT_VISLIMIT:
                     setBASE_visLimit(val.value.i_data);
                     break;
 
-                case BASE_ATT_AMBIENTLIGHT:
+                case ATT_AMBIENTLIGHT:
                     setBASE_ambientLight(val.value.i_data);
                     break;
 
-                case BASE_ATT_RENDERALL:
+                case ATT_RENDERALL:
                     setBASE_renderAll(val.value.i_data);
                     break;
 
-                case BASE_ATT_INPUTHANDLE:
+                case ATT_INPUTHANDLE:
                     setBASE_inputHandle (val.value.i_data);
                     break;
 
-                case BASE_ATT_FADELEN:
+                case ATT_FADELEN:
                     setBASE_fadeLength(val.value.i_data);
                     break;
 
-                case BASE_ATT_STATIC:
+                case ATT_STATIC:
                     setBASE_static (val.value.i_data);
                     break;
 
-                case BASE_ATT_EMBDRSRC:
+                case ATT_EMBDRSRC:
                     setBASE_embdRsrc(val.value.i_data);
                     break;
 
@@ -505,110 +335,110 @@ size_t NC_STACK_base::func3(IDVList *stak)
             {
                 switch (val.id)
                 {
-                case BASE_ATT_SKELET:
+                case ATT_SKELET:
                     *(NC_STACK_skeleton **)val.value.p_data = getBASE_skeleton();
                     break;
-                case BASE_ATT_PARENTFOLLOW:
+                case ATT_PARENTFOLLOW:
                     *(int *)val.value.p_data = getBASE_parentFollow();
                     break;
                 case 0x80001003:
                 case 0x80001007:
                     *(int *)val.value.p_data = 0;
                     break;
-                case BASE_ATT_VISLIMIT:
+                case ATT_VISLIMIT:
                     *(int *)val.value.p_data = getBASE_visLimit();
                     break;
-                case BASE_ATT_AMBIENTLIGHT:
+                case ATT_AMBIENTLIGHT:
                     *(int *)val.value.p_data = getBASE_ambientLight();
                     break;
-                case BASE_ATT_RENDERALL:
+                case ATT_RENDERALL:
                     *(int *)val.value.p_data = getBASE_renderAll();
                     break;
-                case BASE_ATT_INPUTHANDLE:
+                case ATT_INPUTHANDLE:
                     *(int *)val.value.p_data = getBASE_inputHandle();
                     break;
-                case BASE_ATT_X:
+                case ATT_X:
                     *(float *)val.value.p_data = getBASE_x();
                     break;
-                case BASE_ATT_Y:
+                case ATT_Y:
                     *(float *)val.value.p_data = getBASE_y();
                     break;
-                case BASE_ATT_Z:
+                case ATT_Z:
                     *(float *)val.value.p_data = getBASE_z();
                     break;
-                case BASE_ATT_VX:
+                case ATT_VX:
                     *(float *)val.value.p_data = getBASE_vx();
                     break;
-                case BASE_ATT_VY:
+                case ATT_VY:
                     *(float *)val.value.p_data = getBASE_vy();
                     break;
-                case BASE_ATT_VZ:
+                case ATT_VZ:
                     *(float *)val.value.p_data = getBASE_vz();
                     break;
-                case BASE_ATT_AX:
+                case ATT_AX:
                     *(int *)val.value.p_data = getBASE_ax();
                     break;
-                case BASE_ATT_AY:
+                case ATT_AY:
                     *(int *)val.value.p_data = getBASE_ay();
                     break;
-                case BASE_ATT_AZ:
+                case ATT_AZ:
                     *(int *)val.value.p_data = getBASE_az();
                     break;
-                case BASE_ATT_RX:
+                case ATT_RX:
                     *(int *)val.value.p_data = getBASE_rx();
                     break;
-                case BASE_ATT_RY:
+                case ATT_RY:
                     *(int *)val.value.p_data = getBASE_ry();
                     break;
-                case BASE_ATT_RZ:
+                case ATT_RZ:
                     *(int *)val.value.p_data = getBASE_rz();
                     break;
-                case BASE_ATT_SX:
+                case ATT_SX:
                     *(float *)val.value.p_data = getBASE_sx();
                     break;
-                case BASE_ATT_SY:
+                case ATT_SY:
                     *(float *)val.value.p_data = getBASE_sy();
                     break;
-                case BASE_ATT_SZ:
+                case ATT_SZ:
                     *(float *)val.value.p_data = getBASE_sz();
                     break;
-                case BASE_ATT_ADELIST:
+                case ATT_ADELIST:
                     *(nlist **)val.value.p_data = getBASE_adeList();
                     break;
-                case BASE_ATT_PTRANSFORM:
-                    *(TForm3D **)val.value.p_data = getBASE_pTransform();
+                case ATT_PTRANSFORM:
+                    *(TFEngine::TForm3D **)val.value.p_data = getBASE_pTransform();
                     break;
-                case BASE_ATT_KIDSLIST:
+                case ATT_KIDSLIST:
                     *(nlist **)val.value.p_data = getBASE_kidList();
                     break;
-                case BASE_ATT_KIDNODE:
+                case ATT_KIDNODE:
                     *(base_node **)val.value.p_data = getBASE_kidNode();
                     break;
-                case BASE_ATT_RENDERPARAMS:
+                case ATT_RENDERPARAMS:
                     *(area_arg_65 **)val.value.p_data = getBASE_renderParams();
                     break;
-                case BASE_ATT_MAINKID:
+                case ATT_MAINKID:
                     *(int *)val.value.p_data = getBASE_mainKid();
                     break;
-                case BASE_ATT_MAINOBJT:
+                case ATT_MAINOBJT:
                     *(int *)val.value.p_data = getBASE_mainObjt();
                     break;
-                case BASE_ATT_RENDERSTACK:
+                case ATT_RENDERSTACK:
                     //                *(void **)val.value.p_data = getBASE_renderStack();
                     break;
-                case BASE_ATT_ARGSTACK:
+                case ATT_ARGSTACK:
                     //                *(void **)val.value.p_data = getBASE_argStack();
                     break;
-                case BASE_ATT_ENDARGSTACK:
+                case ATT_ENDARGSTACK:
                     //                *(void **)val.value.p_data = getBASE_endArgStack();
                     break;
-                case BASE_ATT_FADELEN:
+                case ATT_FADELEN:
                     *(int *)val.value.p_data = getBASE_fadeLength();
                     break;
-                case BASE_ATT_STATIC:
+                case ATT_STATIC:
                     *(int *)val.value.p_data = getBASE_static();
                     break;
-                case BASE_ATT_EMBDRSRC:
+                case ATT_EMBDRSRC:
                     *(int *)val.value.p_data = getBASE_embdRsrc();
                     break;
 
@@ -622,122 +452,115 @@ size_t NC_STACK_base::func3(IDVList *stak)
     return NC_STACK_nucleus::func3(stak);
 }
 
-int base_READ_STRC(NC_STACK_base *obj, __NC_STACK_base *, IFFile *mfile)
+int NC_STACK_base::READ_STRC(IFFile *mfile)
 {
-    if ( obj )
+    bool readOK = true;
+
+    STRC_base dst;
+
+    readOK &= mfile->readS16B(dst.version);
+
+    readOK &= mfile->readFloatB(dst.pos.x);
+    readOK &= mfile->readFloatB(dst.pos.y);
+    readOK &= mfile->readFloatB(dst.pos.z);
+
+    readOK &= mfile->readFloatB(dst.vec.x);
+    readOK &= mfile->readFloatB(dst.vec.y);
+    readOK &= mfile->readFloatB(dst.vec.z);
+
+    readOK &= mfile->readFloatB(dst.scale.x);
+    readOK &= mfile->readFloatB(dst.scale.y);
+    readOK &= mfile->readFloatB(dst.scale.z);
+
+    readOK &= mfile->readS16B(dst.ax);
+    readOK &= mfile->readS16B(dst.ay);
+    readOK &= mfile->readS16B(dst.az);
+
+    readOK &= mfile->readS16B(dst.rx);
+    readOK &= mfile->readS16B(dst.ry);
+    readOK &= mfile->readS16B(dst.rz);
+
+    readOK &= mfile->readS16B(dst.attFlags);
+    readOK &= mfile->readS16B(dst._un1);
+
+    readOK &= mfile->readS32B(dst.visLimit);
+    readOK &= mfile->readS32B(dst.ambientLight);
+
+    if (!readOK)
+        return 0;
+
+    if ( dst.version >= 1 )
     {
-        bool readOK = true;
+        NC_STACK_base *zzz[2] = {NULL, NULL};
 
-        STRC_base dst;
+        if ( dst.attFlags & 4 )
+            base_func67(zzz);
 
-        readOK &= mfile->readS16B(dst.version);
+        flag_xyz v38;
 
-        readOK &= mfile->readFloatB(dst.pos.x);
-        readOK &= mfile->readFloatB(dst.pos.y);
-        readOK &= mfile->readFloatB(dst.pos.z);
+        v38.flag = 7;
+        v38.v = dst.pos;
 
-        readOK &= mfile->readFloatB(dst.vec.x);
-        readOK &= mfile->readFloatB(dst.vec.y);
-        readOK &= mfile->readFloatB(dst.vec.z);
+        base_func68(&v38);
 
-        readOK &= mfile->readFloatB(dst.scale.x);
-        readOK &= mfile->readFloatB(dst.scale.y);
-        readOK &= mfile->readFloatB(dst.scale.z);
+        v38.v = dst.scale;
 
-        readOK &= mfile->readS16B(dst.ax);
-        readOK &= mfile->readS16B(dst.ay);
-        readOK &= mfile->readS16B(dst.az);
+        base_func72(&v38); // SET_SCALE ?
 
-        readOK &= mfile->readS16B(dst.rx);
-        readOK &= mfile->readS16B(dst.ry);
-        readOK &= mfile->readS16B(dst.rz);
-
-        readOK &= mfile->readS16B(dst.attFlags);
-        readOK &= mfile->readS16B(dst._un1);
-
-        readOK &= mfile->readS32B(dst.visLimit);
-        readOK &= mfile->readS32B(dst.ambientLight);
-
-        if (!readOK)
-            return 0;
-
-        if ( dst.version >= 1 )
+        if ( dst.attFlags & 1 )
         {
-            NC_STACK_base *zzz[2] = {NULL, NULL};
+            v38.v = dst.vec;
+        }
+        else
+        {
+            v38.flag = 8;
+        }
 
-            if ( dst.attFlags & 4 )
-                obj->base_func67(zzz);
+        base_func69(&v38);
 
-            flag_xyz v38;
+        flag_xyz2 v39;
 
-            v38.flag = 7;
-            v38.v = dst.pos;
+        v39.flag = 7;
 
-            obj->base_func68(&v38);
+        v39.x = dst.ax;
+        v39.y = dst.ay;
+        v39.z = dst.az;
 
-            v38.v = dst.scale;
+        base_func70(&v39);
 
-            obj->base_func72(&v38); // SET_SCALE ?
+        if ( dst.attFlags & 2 )
+        {
+            v39.x = dst.rx;
+            v39.y = dst.ry;
+            v39.z = dst.rz;
+        }
+        else
+        {
+            v39.flag = 8;
+        }
 
-            if ( dst.attFlags & 1 )
-            {
-                v38.v = dst.vec;
-            }
-            else
-            {
-                v38.flag = 8;
-            }
+        base_func71(&v39);
 
-            obj->base_func69(&v38);
-
-            flag_xyz2 v39;
-
-            v39.flag = 7;
-
-            v39.x = dst.ax;
-            v39.y = dst.ay;
-            v39.z = dst.az;
-
-            obj->base_func70(&v39);
-
-            if ( dst.attFlags & 2 )
-            {
-                v39.x = dst.rx;
-                v39.y = dst.ry;
-                v39.z = dst.rz;
-            }
-            else
-            {
-                v39.flag = 8;
-            }
-
-            obj->base_func71(&v39);
-
-            obj->setBASE_renderAll( (dst.attFlags & 8) != 0 );
+        setBASE_renderAll( (dst.attFlags & 8) != 0 );
 
 //				stk[1].id = 0x80001007;
 //				stk[1].value = (dst.p17 & 0x10) != 0;
 
-            obj->setBASE_inputHandle( (dst.attFlags & 0x20) != 0 );
-            obj->setBASE_parentFollow( (dst.attFlags & 0x40) != 0 );
+        setBASE_inputHandle( (dst.attFlags & 0x20) != 0 );
+        setBASE_parentFollow( (dst.attFlags & 0x40) != 0 );
 
 //				stk[4].id = 0x80001003;
 //				stk[4].value = dst.p18;
 
-            obj->setBASE_visLimit( dst.visLimit );
-            obj->setBASE_ambientLight( dst.ambientLight );
+        setBASE_visLimit( dst.visLimit );
+        setBASE_ambientLight( dst.ambientLight );
 
-        }
-        return 1;
     }
-    return 0;
+    return 1;
 }
 
-int base_READ_ADES(NC_STACK_base *obj, __NC_STACK_base *, IFFile *mfile)
+int NC_STACK_base::READ_ADES(IFFile *mfile)
 {
-    if (!obj)
-        return 0;
-
     while ( 1 )
     {
         int v5 = mfile->parse();
@@ -754,7 +577,7 @@ int base_READ_ADES(NC_STACK_base *obj, __NC_STACK_base *, IFFile *mfile)
             if ( !ade )
                 return 0;
 
-            obj->setBASE_ADE(ade);
+            setBASE_ADE(ade);
         }
         else
         {
@@ -764,11 +587,8 @@ int base_READ_ADES(NC_STACK_base *obj, __NC_STACK_base *, IFFile *mfile)
     return 1;
 }
 
-int base_READ_KIDS(NC_STACK_base *obj, __NC_STACK_base *, IFFile *mfile)
+int NC_STACK_base::READ_KIDS(IFFile *mfile)
 {
-    if (!obj)
-        return 0;
-
     int kidid = 0;
 
     while ( 1 )
@@ -790,7 +610,7 @@ int base_READ_KIDS(NC_STACK_base *obj, __NC_STACK_base *, IFFile *mfile)
             }
             kidid++;
 
-            obj->base_func65(&objt);
+            base_func65(&objt);
         }
         else
         {
@@ -805,7 +625,6 @@ size_t NC_STACK_base::func5(IFFile **file)
 {
     IFFile *mfile = *file;
     int obj_ok = 0;
-    __NC_STACK_base *base = NULL;
     int STRC_readed = 0;
 
     while ( 1 )
@@ -833,32 +652,28 @@ size_t NC_STACK_base::func5(IFFile **file)
             if ( !obj_ok )
                 return 0;
 
-            base = &stack__base;
+            init_list(&ADES);
+            init_list(&KIDS);
 
-            init_list(&base->ADES);
-            init_list(&base->KIDS);
+            transform.scale = vec3d(1.0, 1.0, 1.0);
 
-            base->transform.scale.x = 1.0;
-            base->transform.scale.y = 1.0;
-            base->transform.scale.z = 1.0;
-
-            base->ID = baseIDcounter;
+            ID = baseIDcounter;
 
             baseIDcounter++;
 
-            base->kid_node.self_full = this;
+            kid_node.self_full = this;
 
-            make_scale_rotation__matrix(&base->transform);
+            transform.MakeScaleRotationMatrix();
 
-            base->visLimit = 4096;
-            base->renderMsg.fadeStart = 3496.0;
-            base->renderMsg.fadeLength = 600.0;
+            visLimit = 4096;
+            renderMsg.fadeStart = 3496.0;
+            renderMsg.fadeLength = 600.0;
         }
         else if ( chunk->TAG == TAG_STRC )
         {
             STRC_readed = 1;
 
-            if ( !base_READ_STRC(this, base, mfile) )
+            if ( !READ_STRC(mfile) )
             {
                 func1();
                 return 0;
@@ -881,13 +696,13 @@ size_t NC_STACK_base::func5(IFFile **file)
                 }
                 else
                 {
-                    base->OBJT = (NC_STACK_nucleus *)READ_OBJT(mfile);
+                    OBJT = READ_OBJT(mfile);
                 }
             }
         }
         else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ADES )
         {
-            if ( !base_READ_ADES(this, base, mfile) )
+            if ( !READ_ADES(mfile) )
             {
                 func1();
                 return 0;
@@ -895,7 +710,7 @@ size_t NC_STACK_base::func5(IFFile **file)
         }
         else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_KIDS )
         {
-            if ( !base_READ_KIDS(this, base, mfile) )
+            if ( !READ_KIDS(mfile) )
             {
                 func1();
                 return 0;
@@ -912,7 +727,6 @@ size_t NC_STACK_base::func5(IFFile **file)
 size_t NC_STACK_base::func6(IFFile **file)
 {
     IFFile *mfile = *file;
-    __NC_STACK_base *base = &stack__base;
 
     if ( mfile->pushChunk(TAG_BASE, TAG_FORM, -1) )
         return 0;
@@ -920,7 +734,7 @@ size_t NC_STACK_base::func6(IFFile **file)
     if ( !NC_STACK_nucleus::func6(file) )
         return 0;
 
-    if ( base->flags & 0x80 )
+    if ( flags & FLAG_EMBDRSRC )
     {
         NC_STACK_embed *embd = dynamic_cast<NC_STACK_embed *>(init_get_class("embed.class", NULL));
         if ( embd )
@@ -937,66 +751,66 @@ size_t NC_STACK_base::func6(IFFile **file)
     mfile->pushChunk(0, TAG_STRC, -1);
 
     mfile->writeS16B(1); // version
-    mfile->writeFloatB(base->transform.locPos.x);
-    mfile->writeFloatB(base->transform.locPos.y);
-    mfile->writeFloatB(base->transform.locPos.z);
+    mfile->writeFloatB(transform.locPos.x);
+    mfile->writeFloatB(transform.locPos.y);
+    mfile->writeFloatB(transform.locPos.z);
 
-    mfile->writeFloatB(base->transform.vec.x);
-    mfile->writeFloatB(base->transform.vec.y);
-    mfile->writeFloatB(base->transform.vec.z);
+    mfile->writeFloatB(transform.vec.x);
+    mfile->writeFloatB(transform.vec.y);
+    mfile->writeFloatB(transform.vec.z);
 
-    mfile->writeFloatB(base->transform.scale.x);
-    mfile->writeFloatB(base->transform.scale.y);
-    mfile->writeFloatB(base->transform.scale.z);
+    mfile->writeFloatB(transform.scale.x);
+    mfile->writeFloatB(transform.scale.y);
+    mfile->writeFloatB(transform.scale.z);
 
-    mfile->writeS16B(base->transform.ax >> 16);
-    mfile->writeS16B(base->transform.ay >> 16);
-    mfile->writeS16B(base->transform.az >> 16);
+    mfile->writeS16B(transform.ax >> 16);
+    mfile->writeS16B(transform.ay >> 16);
+    mfile->writeS16B(transform.az >> 16);
 
-    mfile->writeS16B(base->transform.rx >> 6);
-    mfile->writeS16B(base->transform.ry >> 6);
-    mfile->writeS16B(base->transform.rz >> 6);
+    mfile->writeS16B(transform.rx >> 6);
+    mfile->writeS16B(transform.ry >> 6);
+    mfile->writeS16B(transform.rz >> 6);
 
     int16_t attFlags = 0;
-    if ( base->flags & 1 )
+    if ( flags & FLAG_MOVING )
         attFlags = 1;
 
-    if ( base->flags & 2 )
+    if ( flags & FLAG_ROTATING )
         attFlags |= 2;
 
-    if ( base->flags & 0x40 )
+    if ( flags & FLAG_MAINOBJT )
         attFlags |= 4;
 
-    if ( base->flags & 8 )
+    if ( flags & FLAG_RENDERALL )
         attFlags |= 8;
 
-    if ( base->flags & 0x10 )
+    if ( flags & FLAG_TERMCOLL )
         attFlags |= 0x10;
 
-    if ( base->flags & 0x20 )
+    if ( flags & FLAG_INPUTHANDLE )
         attFlags |= 0x20;
 
-    if ( base->transform.flags & 1 )
+    if ( transform.flags & TFEngine::TForm3D::FLAG_FOLLOW_PARENT )
         attFlags |= 0x40;
 
     mfile->writeS16B(attFlags);
 
     mfile->writeS16B(0); // _un1
 
-    mfile->writeS32B(base->renderMsg.fadeStart + base->renderMsg.fadeLength); // visLimit
-    mfile->writeS32B(base->renderMsg.ambientLight); // ambientLight
+    mfile->writeS32B(renderMsg.fadeStart + renderMsg.fadeLength); // visLimit
+    mfile->writeS32B(renderMsg.ambientLight); // ambientLight
 
     mfile->popChunk();
 
-    if ( base->OBJ_SKELETON )
+    if ( OBJ_SKELETON )
     {
-        if ( !sub_4117F8(base->OBJ_SKELETON, mfile) )
+        if ( !sub_4117F8(OBJ_SKELETON, mfile) )
             return 0;
 
-        if ( base->ADES.head->next )
+        if ( ADES.head->next )
         {
             mfile->pushChunk(TAG_ADES, TAG_FORM, -1);
-            for ( __NC_STACK_ade *cur_ade = (__NC_STACK_ade *)base->ADES.head; cur_ade->next; cur_ade = (__NC_STACK_ade *)cur_ade->next )
+            for ( __NC_STACK_ade *cur_ade = (__NC_STACK_ade *)ADES.head; cur_ade->next; cur_ade = (__NC_STACK_ade *)cur_ade->next )
             {
                 if ( !sub_4117F8(cur_ade->self, mfile) )
                     return 0;
@@ -1005,10 +819,10 @@ size_t NC_STACK_base::func6(IFFile **file)
         }
     }
 
-    if ( base->KIDS.head->next )
+    if ( KIDS.head->next )
     {
         mfile->pushChunk(TAG_KIDS, TAG_FORM, -1);
-        for ( base_node *kid = (base_node *)base->KIDS.head; kid->next; kid = (base_node *)kid->next )
+        for ( base_node *kid = (base_node *)KIDS.head; kid->next; kid = (base_node *)kid->next )
         {
             if ( !sub_4117F8(kid->self_full, mfile) )
                 return 0;
@@ -1019,37 +833,12 @@ size_t NC_STACK_base::func6(IFFile **file)
     return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
 
-void sub_430A38(TForm3D *s3d)
-{
-    TForm3D *prnt_s3d = s3d->parent_1c;
-
-    if ( s3d->parent_1c && s3d->flags & 1 )
-    {
-        s3d->globPos = prnt_s3d->globSclRot.Transform( s3d->locPos );
-        s3d->globSclRot = prnt_s3d->globSclRot * s3d->locSclRot;
-
-        mat4x4 loc = s3d->locSclRot;
-        loc += s3d->locPos;
-        s3d->tform = loc * s3d->tform;
-    }
-    else
-    {
-        s3d->globPos = s3d->locPos;
-        s3d->globSclRot = s3d->locSclRot;
-
-        s3d->tform = s3d->locSclRot;
-        s3d->tform += s3d->locPos;
-    }
-}
-
 size_t NC_STACK_base::base_func64(base_64arg *arg)
 {
-    __NC_STACK_base *base = &stack__base;
-
-    TForm3D *glob_1c = sub_430A28();
+    TFEngine::TForm3D *glob_1c = TFEngine::Engine.GetViewPoint();
 
     if ( glob_1c )
-        sub_430A38(glob_1c);
+        glob_1c->CalcGlobal();
 
     base_func73(arg);
 
@@ -1058,7 +847,7 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
     base77.globTime = arg->field_0;
     base77.rndrStack = &renderStack;
     base77.adeCount = arg->field_C;
-    base77.ownerID = base->ID;
+    base77.ownerID = ID;
     base77.minZ = 1.0;
     base77.maxZ = 1000.0;
     base77.flags = 0;
@@ -1090,15 +879,13 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
 // Fill parent info struct and push it to kid
 size_t NC_STACK_base::base_func65(NC_STACK_base **kid)
 {
-    __NC_STACK_base *base = &stack__base;
-
     base_66_arg_struct v6; // Parent info
 
     v6.parent = this;
-    v6.KIDS = &base->KIDS;
+    v6.KIDS = &KIDS;
 
-    if ( base->OBJ_SKELETON )
-        v6.parent_field_1c = &base->transform;
+    if ( OBJ_SKELETON )
+        v6.parent_field_1c = &transform;
     else
         v6.parent_field_1c = NULL;
 
@@ -1110,93 +897,79 @@ size_t NC_STACK_base::base_func65(NC_STACK_base **kid)
 // Add object to parent kids list
 size_t NC_STACK_base::base_func66(base_66_arg_struct *prnt_info)
 {
-    __NC_STACK_base *base = &stack__base;
-
-    if ( base->parent )
+    if ( parent )
     {
-        Remove(&base->kid_node);
+        Remove(&kid_node);
 
-        if ( base->flags & 4 )
+        if ( flags & FLAG_MAINKID )
         {
             NC_STACK_base *v7[2];
             v7[0] = (NC_STACK_base *)-1;
             v7[1] = NULL;
-            base->parent->base_func67(v7);
+            parent->base_func67(v7);
         }
     }
 
-    base->parent = prnt_info->parent;
+    parent = prnt_info->parent;
     if ( prnt_info->parent )
     {
-        AddTail(prnt_info->KIDS, &base->kid_node);
-        if ( base->flags & 4 )
+        AddTail(prnt_info->KIDS, &kid_node);
+        if ( flags & FLAG_MAINKID )
         {
             NC_STACK_base *v7[2];
             v7[0] = this;
             v7[1] = this;
 
-            base->parent->base_func67(v7);
+            parent->base_func67(v7);
         }
     }
-    base->transform.parent_1c = prnt_info->parent_field_1c;
+    transform.parent_1c = prnt_info->parent_field_1c;
 
     return 1;
 }
 
-void sub_430A20(TForm3D *s3d)
-{
-    dword_546DC0 = s3d;
-}
-
-TForm3D *sub_430A28()
-{
-    return dword_546DC0;
-}
-
 size_t NC_STACK_base::base_func67(NC_STACK_base **arg)
 {
-    __NC_STACK_base *base = &stack__base;
-
     if (arg[0] == NULL)
     {
-        base->mainChild = NULL;
-        base->flags |= 0x44;
-        base->mainObject = this;
+//        mainChild = NULL;
+        flags |= (FLAG_MAINOBJT | FLAG_MAINKID);
+        mainObject = this;
 
-        if ( base->parent )
+        if ( parent )
         {
             arg[0] = this;
             arg[1] = this;
 
-            base->parent->base_func67(arg);
+            parent->base_func67(arg);
         }
-        sub_430A20(&base->transform);
+        TFEngine::Engine.SetViewPoint(&transform);
     }
     else if ((int)(size_t)arg[0] == -1)
     {
-        base->mainObject = 0;
-        base->mainChild = NULL;
-        base->flags &= 0xBB;
+        mainObject = 0;
+//        mainChild = NULL;
+        flags &= ~(FLAG_MAINOBJT | FLAG_MAINKID);
 
-        if ( !base->parent )
+        if ( !parent )
             return 1;
 
-        base->parent->base_func67(arg);
+        parent->base_func67(arg);
     }
     else if (arg[0])
     {
-        base->mainChild = arg[0];
-        base->mainObject = arg[1];
+//        mainChild = arg[0];
+        mainObject = arg[1];
 
-        base->flags |= 4;
-        base->flags &= 0xBF;
+        flags |= FLAG_MAINKID;
+        flags &= ~FLAG_MAINOBJT;
 
-        if ( !base->parent )
+        if ( !parent )
             return 1;
 
         arg[0] = this;
 
-        base->parent->base_func67(arg);
+        parent->base_func67(arg);
     }
 
     return 1;
@@ -1204,66 +977,58 @@ size_t NC_STACK_base::base_func67(NC_STACK_base **arg)
 
 size_t NC_STACK_base::base_func68(flag_xyz *arg)
 {
-    __NC_STACK_base *base = &stack__base;
-
     int flg = arg->flag;
-
-    TForm3D *s3d = &base->transform;
 
     if ( arg->flag & 0x10 )
     {
         if ( flg & 1 )
-            s3d->locPos.x += arg->v.x;
+            transform.locPos.x += arg->v.x;
         if ( flg & 2 )
-            s3d->locPos.y += arg->v.y;
+            transform.locPos.y += arg->v.y;
         if ( flg & 4 )
-            s3d->locPos.z += arg->v.z;
+            transform.locPos.z += arg->v.z;
     }
     else
     {
         if ( flg & 1 )
-            s3d->locPos.x = arg->v.x;
+            transform.locPos.x = arg->v.x;
         if ( flg & 2 )
-            s3d->locPos.y = arg->v.y;
+            transform.locPos.y = arg->v.y;
         if ( flg & 4 )
-            s3d->locPos.z = arg->v.z;
+            transform.locPos.z = arg->v.z;
     }
     return 1;
 }
 
 size_t NC_STACK_base::base_func69(flag_xyz *arg)
 {
-    __NC_STACK_base *base = &stack__base;
-
     int flg = arg->flag;
-
-    TForm3D *s3d = &base->transform;
 
     if ( arg->flag & 8 )
     {
-        base->flags &= 0xFE;
+        flags &= ~FLAG_MOVING;
     }
     else
     {
-        base->flags |= 1;
+        flags |= FLAG_MOVING;
 
         if ( flg & 0x10 )
         {
             if ( flg & 1 )
-                s3d->vec.x += arg->v.x;
+                transform.vec.x += arg->v.x;
             if ( flg & 2 )
-                s3d->vec.y += arg->v.y;
+                transform.vec.y += arg->v.y;
             if ( flg & 4 )
-                s3d->vec.z += arg->v.z;
+                transform.vec.z += arg->v.z;
         }
         else
         {
             if ( flg & 1 )
-                s3d->vec.x = arg->v.x;
+                transform.vec.x = arg->v.x;
             if ( flg & 2 )
-                s3d->vec.y = arg->v.y;
+                transform.vec.y = arg->v.y;
             if ( flg & 4 )
-                s3d->vec.z = arg->v.z;
+                transform.vec.z = arg->v.z;
         }
     }
 
@@ -1272,69 +1037,61 @@ size_t NC_STACK_base::base_func69(flag_xyz *arg)
 
 size_t NC_STACK_base::base_func70(flag_xyz2 *arg)
 {
-    __NC_STACK_base *base = &stack__base;
-
     int flg = arg->flag;
-
-    TForm3D *s3d = &base->transform;
 
     if ( arg->flag & 0x10 )
     {
         if ( flg & 1 )
-            s3d->ax = (s3d->ax + (arg->x << 16)) % (360 << 16);
+            transform.ax = (transform.ax + (arg->x << 16)) % (360 << 16);
         if ( flg & 2 )
-            s3d->ay = (s3d->ay + (arg->y << 16)) % (360 << 16);
+            transform.ay = (transform.ay + (arg->y << 16)) % (360 << 16);
         if ( flg & 4 )
-            s3d->az = (s3d->az + (arg->z << 16)) % (360 << 16);
+            transform.az = (transform.az + (arg->z << 16)) % (360 << 16);
     }
     else
     {
         if ( flg & 1 )
-            s3d->ax = arg->x << 16;
+            transform.ax = arg->x << 16;
         if ( flg & 2 )
-            s3d->ay = arg->y << 16;
+            transform.ay = arg->y << 16;
         if ( flg & 4 )
-            s3d->az = arg->z << 16;
+            transform.az = arg->z << 16;
     }
 
-    make_scale_rotation__matrix(s3d);
+    transform.MakeScaleRotationMatrix();
 
     return 1;
 }
 
 size_t NC_STACK_base::base_func71(flag_xyz2 *arg)
 {
-    __NC_STACK_base *base = &stack__base;
-
     int flg = arg->flag;
-
-    TForm3D *s3d = &base->transform;
 
     if ( arg->flag & 8 )
     {
-        base->flags &= 0xFD;
+        flags &= ~FLAG_ROTATING;
     }
     else
     {
-        base->flags |= 1;
+        flags |= FLAG_ROTATING;
 
         if ( flg & 0x10 )
         {
             if ( flg & 1 )
-                s3d->rx = (s3d->rx + (arg->x << 6)) % (360 << 16);
+                transform.rx = (transform.rx + (arg->x << 6)) % (360 << 16);
             if ( flg & 2 )
-                s3d->ry = (s3d->ry + (arg->y << 6)) % (360 << 16);
+                transform.ry = (transform.ry + (arg->y << 6)) % (360 << 16);
             if ( flg & 4 )
-                s3d->rz = (s3d->rz + (arg->z << 6)) % (360 << 16);
+                transform.rz = (transform.rz + (arg->z << 6)) % (360 << 16);
         }
         else
         {
             if ( flg & 1 )
-                s3d->rx = arg->x << 6;
+                transform.rx = arg->x << 6;
             if ( flg & 2 )
-                s3d->ry = arg->y << 6;
+                transform.ry = arg->y << 6;
             if ( flg & 4 )
-                s3d->rz = arg->z << 6;
+                transform.rz = arg->z << 6;
         }
     }
 
@@ -1343,32 +1100,28 @@ size_t NC_STACK_base::base_func71(flag_xyz2 *arg)
 
 size_t NC_STACK_base::base_func72(flag_xyz *arg)
 {
-    __NC_STACK_base *base = &stack__base;
-
     int flg = arg->flag;
-
-    TForm3D *s3d = &base->transform;
 
     if ( arg->flag & 0x10 )
     {
         if ( flg & 1 )
-            s3d->scale.x *= arg->v.x;
+            transform.scale.x *= arg->v.x;
         if ( flg & 2 )
-            s3d->scale.y *= arg->v.y;
+            transform.scale.y *= arg->v.y;
         if ( flg & 4 )
-            s3d->scale.z *= arg->v.z;
+            transform.scale.z *= arg->v.z;
     }
     else
     {
         if ( flg & 1 )
-            s3d->scale.x = arg->v.x;
+            transform.scale.x = arg->v.x;
         if ( flg & 2 )
-            s3d->scale.y = arg->v.y;
+            transform.scale.y = arg->v.y;
         if ( flg & 4 )
-            s3d->scale.z = arg->v.z;
+            transform.scale.z = arg->v.z;
     }
 
-    make_scale_rotation__matrix(s3d);
+    transform.MakeScaleRotationMatrix();
 
     return 1;
 }
@@ -1376,41 +1129,36 @@ size_t NC_STACK_base::base_func72(flag_xyz *arg)
 size_t NC_STACK_base::base_func73(base_64arg *arg)
 {
     printf("%s - NOT RECOGINZED ARGUMENT\n","base_func73");
-    __NC_STACK_base *base = &stack__base;
 
-    if ( arg->field_0 != base->timeStamp )
+    if ( arg->field_0 != timeStamp )
     {
-        base->timeStamp = arg->field_0;
+        timeStamp = arg->field_0;
 
-        if ( base->OBJ_SKELETON )
+        if ( OBJ_SKELETON )
         {
-            if ( base->flags & 0x20 )
+            if ( flags & FLAG_INPUTHANDLE )
                 base_func78(arg);
 
-            if ( base->flags & 1 )
-            {
-                base->transform.locPos.x += base->transform.vec.x * arg->field_4;
-                base->transform.locPos.y += base->transform.vec.y * arg->field_4;
-                base->transform.locPos.z += base->transform.vec.z * arg->field_4;
-            }
+            if ( flags & FLAG_MOVING )
+                transform.locPos += transform.vec * arg->field_4;
 
-            if ( base->flags & 2 )
+            if ( flags & FLAG_ROTATING )
             {
                 int a,b,c;
-                a = (base->transform.rx * arg->field_4 + base->transform.ax) % (360 << 16);
-                b = (base->transform.ry * arg->field_4 + base->transform.ay) % (360 << 16);
-                c = (base->transform.rz * arg->field_4 + base->transform.az) % (360 << 16);
+                a = (transform.rx * arg->field_4 + transform.ax) % (360 << 16);
+                b = (transform.ry * arg->field_4 + transform.ay) % (360 << 16);
+                c = (transform.rz * arg->field_4 + transform.az) % (360 << 16);
 
-                base->transform.ax = a + (a < 0 ? (360 << 16) : 0);
-                base->transform.ay = b + (b < 0 ? (360 << 16) : 0);
-                base->transform.az = c + (c < 0 ? (360 << 16) : 0);
+                transform.ax = a + (a < 0 ? (360 << 16) : 0);
+                transform.ay = b + (b < 0 ? (360 << 16) : 0);
+                transform.az = c + (c < 0 ? (360 << 16) : 0);
 
-                make_scale_rotation__matrix(&base->transform);
+                transform.MakeScaleRotationMatrix();
             }
         }
     }
 
-    for ( base_node *kid = (base_node *)base->KIDS.head; kid->next; kid = (base_node *)kid->next )
+    for ( base_node *kid = (base_node *)KIDS.head; kid->next; kid = (base_node *)kid->next )
         kid->self_full->base_func73(arg);
 
     return 1;
@@ -1418,60 +1166,58 @@ size_t NC_STACK_base::base_func73(base_64arg *arg)
 
 size_t NC_STACK_base::base_func77(baseRender_msg *arg)
 {
-    __NC_STACK_base *base = &stack__base;
-
     int v12 = 0;
 
-    if ( base->OBJ_SKELETON )
+    if ( OBJ_SKELETON )
     {
-        if ( !(base->flags & 0x40) )
+        if ( !(flags & FLAG_MAINOBJT) )
         {
-            sub_430A38(&base->transform);
+            transform.CalcGlobal();
 
-            TForm3D *view = sub_430A28();
+            TFEngine::TForm3D *view = TFEngine::Engine.GetViewPoint();
 
             skeleton_arg_132 skel132;
             skel132.minZ = arg->minZ;
             skel132.maxZ = arg->maxZ;
             skel132.tform = view->globSclRot;
 
-            if ( !(base->transform.flags & 2) )
-                skel132.tform *= (base->transform.tform - view->globPos);
+            if ( !(transform.flags & TFEngine::TForm3D::FLAG_NO_WRLD_ROT) )
+                skel132.tform *= (transform.tform - view->globPos);
             else
-                skel132.tform *= mat4x4(base->transform.globPos - view->globPos);
+                skel132.tform *= mat4x4(transform.globPos - view->globPos);
 
-            v12 = base->OBJ_SKELETON->skeleton_func132(&skel132);
+            v12 = OBJ_SKELETON->skeleton_func132(&skel132);
 
             if ( v12 )
             {
-                base->renderMsg.ownerID = arg->ownerID;
-                base->renderMsg.timeStamp = arg->globTime;
-                base->renderMsg.frameTime = arg->frameTime;
-                base->renderMsg.minZ = arg->minZ;
-                base->renderMsg.maxZ = arg->maxZ;
-                base->renderMsg.rndrStack = arg->rndrStack;
-                base->renderMsg.view = view;
-                base->renderMsg.owner = &base->transform;
-                base->renderMsg.flags = arg->flags;
+                renderMsg.ownerID = arg->ownerID;
+                renderMsg.timeStamp = arg->globTime;
+                renderMsg.frameTime = arg->frameTime;
+                renderMsg.minZ = arg->minZ;
+                renderMsg.maxZ = arg->maxZ;
+                renderMsg.rndrStack = arg->rndrStack;
+                renderMsg.view = view;
+                renderMsg.owner = &transform;
+                renderMsg.flags = arg->flags;
 
-                base->renderMsg.OBJ_SKELETON = base->OBJ_SKELETON;
-                base->renderMsg.adeCount = 0;
+                renderMsg.OBJ_SKELETON = OBJ_SKELETON;
+                renderMsg.adeCount = 0;
 
-                __NC_STACK_ade *cur_ade = (__NC_STACK_ade *)base->ADES.head;
+                __NC_STACK_ade *cur_ade = (__NC_STACK_ade *)ADES.head;
 
                 while(cur_ade->next)
                 {
-                    cur_ade->self->ade_func65(&base->renderMsg);
+                    cur_ade->self->ade_func65(&renderMsg);
 
                     cur_ade = (__NC_STACK_ade *)cur_ade->next;
                 }
 
-                arg->adeCount += base->renderMsg.adeCount;
+                arg->adeCount += renderMsg.adeCount;
             }
         }
     }
 
-    for ( base_node *kid = (base_node *)base->KIDS.head; kid->next; kid = (base_node *)kid->next )
+    for ( base_node *kid = (base_node *)KIDS.head; kid->next; kid = (base_node *)kid->next )
     {
         if ( kid->self_full->base_func77(arg) )
             v12 = 1;
@@ -1484,28 +1230,26 @@ size_t NC_STACK_base::base_func78(base_64arg *arg)
 {
     printf("%s - NOT RECOGINZED ARGUMENT\n","base_func78");
 
-    __NC_STACK_base *base = &stack__base;
-
-    base->flags |= 3;
+    flags |= (FLAG_MOVING | FLAG_ROTATING);
 
     if ( arg->field_8->but_flags & 0x80000000 )
     {
-        base->transform.ay = 0;
-        base->transform.az = 0;
-        base->transform.ax = 0;
+        transform.ay = 0;
+        transform.az = 0;
+        transform.ax = 0;
     }
 
-    base->transform.rx = -arg->field_8->sliders_vars[31] * 16384.0;
-    base->transform.ry = -arg->field_8->sliders_vars[30] * 16384.0;
-    base->transform.rz = -arg->field_8->sliders_vars[29] * 16384.0;
+    transform.rx = -arg->field_8->sliders_vars[31] * 16384.0;
+    transform.ry = -arg->field_8->sliders_vars[30] * 16384.0;
+    transform.rz = -arg->field_8->sliders_vars[29] * 16384.0;
 
-    base->transform.vec.x = -arg->field_8->sliders_vars[28] * base->transform.locSclRot.m20;
-    base->transform.vec.y = 0;
-    base->transform.vec.z = -arg->field_8->sliders_vars[28] * base->transform.locSclRot.m22;
+    transform.vec.x = -arg->field_8->sliders_vars[28] * transform.locSclRot.m20;
+    transform.vec.y = 0;
+    transform.vec.z = -arg->field_8->sliders_vars[28] * transform.locSclRot.m22;
 
-    base->transform.vec.x += -arg->field_8->sliders_vars[27] * base->transform.locSclRot.m20;
-    base->transform.vec.y += -arg->field_8->sliders_vars[27] * base->transform.locSclRot.m21;
-    base->transform.vec.z += -arg->field_8->sliders_vars[27] * base->transform.locSclRot.m22;
+    transform.vec.x += -arg->field_8->sliders_vars[27] * transform.locSclRot.m20;
+    transform.vec.y += -arg->field_8->sliders_vars[27] * transform.locSclRot.m21;
+    transform.vec.z += -arg->field_8->sliders_vars[27] * transform.locSclRot.m22;
 
     return 1;
 }
@@ -1514,8 +1258,7 @@ size_t NC_STACK_base::base_func79(NC_STACK_base **arg)
 {
     printf("%s - NOT RECOGINZED ARGUMENT\n","base_func79");
 
-    __NC_STACK_base *base = &stack__base;
-    NC_STACK_base *field_bc = base->mainObject;
+    NC_STACK_base *field_bc = mainObject;
 
     if ( field_bc )
     {
@@ -1544,11 +1287,11 @@ void NC_STACK_base::setBASE_skeleton(NC_STACK_skeleton *skel)
 {
     if (skel)
     {
-        if ( stack__base.OBJ_SKELETON )
-            delete_class_obj(stack__base.OBJ_SKELETON);
+        if ( OBJ_SKELETON )
+            delete_class_obj(OBJ_SKELETON);
 
-        stack__base.OBJ_SKELETON = skel;
-        stack__base.renderMsg.sklt = skel->getSKEL_pSkelet();
+        OBJ_SKELETON = skel;
+        renderMsg.sklt = skel->getSKEL_pSkelet();
     }
 }
 
@@ -1556,7 +1299,7 @@ void NC_STACK_base::setBASE_ADE(NC_STACK_ade *ade)
 {
     if (ade)
     {
-        nlist *tmp = &stack__base.ADES;
+        nlist *tmp = &ADES;
         ade->ade_func64(&tmp);
     }
 }
@@ -1564,214 +1307,214 @@ void NC_STACK_base::setBASE_ADE(NC_STACK_ade *ade)
 void NC_STACK_base::setBASE_parentFollow(int follow)
 {
     if ( follow )
-        stack__base.transform.flags |= 1;
+        transform.flags |= TFEngine::TForm3D::FLAG_FOLLOW_PARENT;
     else
-        stack__base.transform.flags &= ~1;
+        transform.flags &= ~TFEngine::TForm3D::FLAG_FOLLOW_PARENT;
 }
 
 void NC_STACK_base::setBASE_visLimit(int val)
 {
-    stack__base.visLimit = val;
-    stack__base.renderMsg.fadeStart = val - stack__base.renderMsg.fadeLength;
+    visLimit = val;
+    renderMsg.fadeStart = val - renderMsg.fadeLength;
 }
 
 void NC_STACK_base::setBASE_ambientLight(int val)
 {
-    stack__base.renderMsg.ambientLight = val;
+    renderMsg.ambientLight = val;
 }
 
 void NC_STACK_base::setBASE_renderAll(int rndr)
 {
     if (rndr)
-        stack__base.flags |= BASE_FLAG_RENDERALL;
+        flags |= FLAG_RENDERALL;
     else
-        stack__base.flags &= ~BASE_FLAG_RENDERALL;
+        flags &= ~FLAG_RENDERALL;
 }
 
 void NC_STACK_base::setBASE_inputHandle(int hndl)
 {
     if (hndl)
-        stack__base.flags |= BASE_FLAG_INPUTHANDLE;
+        flags |= FLAG_INPUTHANDLE;
     else
-        stack__base.flags &= ~BASE_FLAG_INPUTHANDLE;
+        flags &= ~FLAG_INPUTHANDLE;
 }
 
 void NC_STACK_base::setBASE_fadeLength(int len)
 {
-    stack__base.renderMsg.fadeLength = len;
-    stack__base.renderMsg.fadeStart = stack__base.visLimit - len;
+    renderMsg.fadeLength = len;
+    renderMsg.fadeStart = visLimit - len;
 }
 
 void NC_STACK_base::setBASE_static(int stic)
 {
     if (stic)
-        stack__base.transform.flags |= 2;
+        transform.flags |= TFEngine::TForm3D::FLAG_NO_WRLD_ROT;
     else
-        stack__base.transform.flags &= ~2;
+        transform.flags &= ~TFEngine::TForm3D::FLAG_NO_WRLD_ROT;
 }
 
 void NC_STACK_base::setBASE_embdRsrc(int embd)
 {
     if (embd)
-        stack__base.flags |= BASE_FLAG_EMBDRSRC;
+        flags |= FLAG_EMBDRSRC;
     else
-        stack__base.flags &= ~BASE_FLAG_EMBDRSRC;
+        flags &= ~FLAG_EMBDRSRC;
 }
 
 NC_STACK_skeleton *NC_STACK_base::getBASE_skeleton()
 {
-    return stack__base.OBJ_SKELETON;
+    return OBJ_SKELETON;
 }
 
 int NC_STACK_base::getBASE_parentFollow()
 {
-    if ( (stack__base.transform.flags & 1) )
+    if ( (transform.flags & TFEngine::TForm3D::FLAG_FOLLOW_PARENT) )
         return 1;
     return 0;
 }
 
 int NC_STACK_base::getBASE_visLimit()
 {
-    return stack__base.visLimit;
+    return visLimit;
 }
 
 int NC_STACK_base::getBASE_ambientLight()
 {
-    return stack__base.renderMsg.ambientLight;
+    return renderMsg.ambientLight;
 }
 
 int NC_STACK_base::getBASE_renderAll()
 {
-    if ( (stack__base.flags & BASE_FLAG_RENDERALL) )
+    if ( (flags & FLAG_RENDERALL) )
         return 1;
     return 0;
 }
 
 int NC_STACK_base::getBASE_inputHandle()
 {
-    if ( (stack__base.flags & BASE_FLAG_INPUTHANDLE) )
+    if ( (flags & FLAG_INPUTHANDLE) )
         return 1;
     return 0;
 }
 
 float NC_STACK_base::getBASE_x()
 {
-    return stack__base.transform.locPos.x;
+    return transform.locPos.x;
 }
 
 float NC_STACK_base::getBASE_y()
 {
-    return stack__base.transform.locPos.y;
+    return transform.locPos.y;
 }
 
 float NC_STACK_base::getBASE_z()
 {
-    return stack__base.transform.locPos.z;
+    return transform.locPos.z;
 }
 
 float NC_STACK_base::getBASE_vx()
 {
-    return stack__base.transform.vec.x;
+    return transform.vec.x;
 }
 
 float NC_STACK_base::getBASE_vy()
 {
-    return stack__base.transform.vec.y;
+    return transform.vec.y;
 }
 
 float NC_STACK_base::getBASE_vz()
 {
-    return stack__base.transform.vec.z;
+    return transform.vec.z;
 }
 
 vec3d NC_STACK_base::getBASE_pos()
 {
-    return stack__base.transform.locPos.x;
+    return transform.locPos.x;
 }
 
 vec3d NC_STACK_base::getBASE_vec()
 {
-    return stack__base.transform.vec;
+    return transform.vec;
 }
 
 int NC_STACK_base::getBASE_ax()
 {
-    return stack__base.transform.ax >> 16;
+    return transform.ax >> 16;
 }
 
 int NC_STACK_base::getBASE_ay()
 {
-    return stack__base.transform.ay >> 16;
+    return transform.ay >> 16;
 }
 
 int NC_STACK_base::getBASE_az()
 {
-    return stack__base.transform.az >> 16;
+    return transform.az >> 16;
 }
 
 int NC_STACK_base::getBASE_rx()
 {
-    return stack__base.transform.rx >> 6;
+    return transform.rx >> 6;
 }
 
 int NC_STACK_base::getBASE_ry()
 {
-    return stack__base.transform.ry >> 6;
+    return transform.ry >> 6;
 }
 
 int NC_STACK_base::getBASE_rz()
 {
-    return stack__base.transform.rz >> 6;
+    return transform.rz >> 6;
 }
 
 float NC_STACK_base::getBASE_sx()
 {
-    return stack__base.transform.scale.x;
+    return transform.scale.x;
 }
 
 float NC_STACK_base::getBASE_sy()
 {
-    return stack__base.transform.scale.y;
+    return transform.scale.y;
 }
 
 float NC_STACK_base::getBASE_sz()
 {
-    return stack__base.transform.scale.z;
+    return transform.scale.z;
 }
 
 nlist *NC_STACK_base::getBASE_adeList()
 {
-    return &stack__base.ADES;
+    return &ADES;
 }
 
-TForm3D *NC_STACK_base::getBASE_pTransform()
+TFEngine::TForm3D *NC_STACK_base::getBASE_pTransform()
 {
-    return &stack__base.transform;
+    return &transform;
 }
 
 nlist *NC_STACK_base::getBASE_kidList()
 {
-    return &stack__base.KIDS;
+    return &KIDS;
 }
 
 base_node *NC_STACK_base::getBASE_kidNode()
 {
-    return &stack__base.kid_node;
+    return &kid_node;
 }
 
 area_arg_65 *NC_STACK_base::getBASE_renderParams()
 {
-    return &stack__base.renderMsg;
+    return &renderMsg;
 }
 
 int NC_STACK_base::getBASE_mainKid()
 {
-    return (stack__base.flags & BASE_FLAG_MAINKID) != 0;
+    return (flags & FLAG_MAINKID) != 0;
 }
 
 int NC_STACK_base::getBASE_mainObjt()
 {
-    return (stack__base.flags & BASE_FLAG_MAINOBJT) != 0;
+    return (flags & FLAG_MAINOBJT) != 0;
 }
 
 RenderStack *NC_STACK_base::getBASE_newRenderStack()
@@ -1796,19 +1539,19 @@ RenderStack *NC_STACK_base::getBASE_newRenderStack()
 
 int NC_STACK_base::getBASE_fadeLength()
 {
-    return stack__base.renderMsg.fadeLength;
+    return renderMsg.fadeLength;
 }
 
 int NC_STACK_base::getBASE_static()
 {
-    if ( (stack__base.transform.flags & 2) )
+    if ( (transform.flags & TFEngine::TForm3D::FLAG_NO_WRLD_ROT) )
         return 1;
     return 0;
 }
 
 int NC_STACK_base::getBASE_embdRsrc()
 {
-    if ( (stack__base.flags & BASE_FLAG_EMBDRSRC) )
+    if ( (flags & FLAG_EMBDRSRC) )
         return 1;
     return 0;
 }
@@ -1862,4 +1605,38 @@ size_t NC_STACK_base::compatcall(int method_id, void *data)
         break;
     }
     return NC_STACK_nucleus::compatcall(method_id, data);
+}
+
+
+
+
+NC_STACK_base *NC_STACK_base::READ_BAS_FILE(const char *fname)
+{
+    NC_STACK_base *result = NULL;
+
+    FSMgr::FileHandle *fil = uaOpenFile(fname, "rb");
+    if ( !fil )
+        return NULL;
+
+    IFFile *mfile = new IFFile(fil, false, true);
+    if ( !mfile )
+    {
+        delete fil;
+        return NULL;
+    }
+
+    if ( !mfile->parse() )
+    {
+        IFFile::Context *chunk = mfile->getCurrentChunk();
+        if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_MC2 && !mfile->parse() )
+        {
+            chunk = mfile->getCurrentChunk();
+            if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
+                result = dynamic_cast<NC_STACK_base *>(READ_OBJT(mfile));
+        }
+    }
+
+    delete mfile;
+
+    return result;
 }

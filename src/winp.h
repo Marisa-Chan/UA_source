@@ -27,8 +27,7 @@ public:
     virtual void idev_func69(int arg);
     virtual void idev_func70(idev_query_arg *arg);
     virtual void idev_func71(winp_71arg *arg);
-    virtual size_t iwimp_func128(IDVPair *stak);
-    virtual void iwimp_func131(winp_131arg *arg);
+    virtual void CheckClick(ClickBoxInf *arg);
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_winp() {
