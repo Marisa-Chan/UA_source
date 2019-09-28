@@ -52,6 +52,7 @@
 #include "yparobo.h"
 #include "ypaufo.h"
 
+#include "3ds.h"
 #include "image.h"
 
 ClassList newclasses;
@@ -98,6 +99,7 @@ int set_classes_list()
     newclasses.push_back(&NC_STACK_ypacar::description);
     newclasses.push_back(&NC_STACK_ypaufo::description);
     newclasses.push_back(&NC_STACK_ypagun::description);
+    newclasses.push_back(&NC_STACK_3ds::description);
     newclasses.push_back(&NC_STACK_image::description);
     return 1;
 }
