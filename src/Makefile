@@ -3,22 +3,23 @@ CXX = g++
 MINGW = /usr/i686-w64-mingw32
 CC_WIN = i686-w64-mingw32-gcc
 CXX_WIN = i686-w64-mingw32-g++
-LIBS_WIN = -L$(MINGW)/lib/ -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lOpenAL32 -lopengl32 -lvorbisfile
+LIBS_WIN = -L$(MINGW)/lib/ -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lOpenAL32 -lopengl32 -lvorbisfile
 
 CLANG_WIN = i686-w64-mingw32-clang++
 
-LIBS_NIX = -lSDL2 -lSDL2_ttf -lSDL2_image -lGL -lopenal -lvorbisfile
+LIBS_NIX = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lGL -lopenal -lvorbisfile
 
 CC_MAC = clang
 CXX_MAC = clang++
-LIBS_MAC = -lSDL2 -lSDL2_ttf -lSDL2_image -framework OpenGL -framework OpenAL -lvorbisfile
+LIBS_MAC = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -framework OpenGL -framework OpenAL -lvorbisfile
 
 TARGET = UA_source
 OBJS =  \
+	3ds.cpp\
 	ade.cpp\
 	area.cpp\
 	amesh.cpp\
-        bitmap.cpp\
+	bitmap.cpp\
 	base.cpp\
 	bmpAnm.cpp\
 	button.cpp\
@@ -35,17 +36,25 @@ OBJS =  \
 	glob_funcs.cpp\
 	idev.cpp\
 	ilbm.cpp\
+	image.cpp\
 	ini.cpp\
 	input.cpp\
 	itimer.cpp\
 	iwimp.cpp\
-	image.cpp\
 	log.cpp\
 	lstvw.cpp\
 	main.cpp\
 	MC.cpp\
 	IFFile.cpp\
 	network.cpp\
+	netlib/client.cpp\
+	netlib/client_threads.cpp\
+	netlib/server.cpp\
+	netlib/server_session.cpp\
+	netlib/server_threads.cpp\
+	netlib/single.cpp\
+	netlib/single_threads.cpp\
+	netlib/zndNet.cpp\
 	nlist.cpp\
 	nucleas.cpp\
 	particle.cpp\
