@@ -2,6 +2,7 @@
 #define UTILS_H_INCLUDED
 
 #include <math.h>
+#include <string.h>
 
 #define C_2PI		6.28318530717958647693
 #define C_PI		3.14159265358979323846
@@ -119,7 +120,10 @@ struct __attribute__((packed)) shortPoint
 };
 
 const char *get_lang_string(char **array, int id, const char *def);
+
+#ifndef strnicmp
 int strnicmp (const char *s1, const char *s2, size_t n);
+#endif
 
 uint32_t fileCrc32(const char *filename, uint32_t _crc = 0);
 

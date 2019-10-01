@@ -42,7 +42,7 @@ const char *get_lang_string(char **array, int id, const char *def)
     return v4;
 }
 
-
+#ifndef strnicmp
 int strnicmp (const char *s1, const char *s2, size_t n)
 {
     const char *s2end = s2 + n;
@@ -53,6 +53,7 @@ int strnicmp (const char *s1, const char *s2, size_t n)
         return 0;
     return (int) (toupper(*s1) - toupper(*s2));
 }
+#endif
 
 int dround(float val)
 {
