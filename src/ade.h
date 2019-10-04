@@ -2,9 +2,11 @@
 #define ADE_H_INCLUDED
 
 #include "nucleas.h"
-#include "nlist.h"
 
 class NC_STACK_ade;
+struct area_arg_65;
+
+typedef std::list<NC_STACK_ade *> AdeList;
 
 struct ADE_STRC
 {
@@ -16,15 +18,6 @@ struct ADE_STRC
     int16_t _nu2; // Not used
 };
 
-
-struct __NC_STACK_ade : public nnode
-{
-    NC_STACK_ade *self;
-    char flags;
-    int16_t point;
-    int16_t poly;
-};
-
 class NC_STACK_ade: public NC_STACK_nucleus
 {
 public:
@@ -34,12 +27,15 @@ public:
     virtual size_t func3(IDVList *stak);
     virtual size_t func5(IFFile **file);
     virtual size_t func6(IFFile **file);
-    virtual size_t ade_func64(nlist **lst);
+    virtual size_t ade_func64(AdeList &lst);
     virtual size_t ade_func65(area_arg_65 *arg);
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ade() {
-        memset(&stack__ade, 0, sizeof(stack__ade));
+        flags = 0;
+        point = 0;
+        poly = 0;
+        AttachedTo = NULL;
     };
     virtual ~NC_STACK_ade() {};
 
@@ -53,7 +49,7 @@ public:
 
     enum ADE_FLAG
     {
-        ADE_FLAG_INLIST = 1,
+//        ADE_FLAG_INLIST = 1,
         ADE_FLAG_DPTHFADE = 2,
         ADE_FLAG_BKCHECK = 4
     };
@@ -71,7 +67,7 @@ public:
     virtual int getADE_depthFade();
     virtual int getADE_point();
     virtual int getADE_poly();
-    virtual __NC_STACK_ade *getADE_pAde();
+//    virtual __NC_STACK_ade *getADE_pAde();
 
     virtual void setADE_bkCheck(int);
     virtual void setADE_depthFade(int);
@@ -81,7 +77,13 @@ public:
     //Data
     static const NewClassDescr description;
 
-    __NC_STACK_ade stack__ade;
+
+public:
+    char flags;
+    int16_t point;
+    int16_t poly;
+
+    AdeList *AttachedTo;
 };
 
 #endif // ADE_H_INCLUDED

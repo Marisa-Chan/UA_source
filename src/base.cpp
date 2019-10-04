@@ -149,12 +149,12 @@ size_t NC_STACK_base::func0(IDVList *stak)
     ID = baseIDcounter;
     baseIDcounter++;
 
-    init_list(&ADES);
-    init_list(&KIDS);
+    ADES.clear();
+    KIDS.clear();
 
     transform.scale = vec3d(1.0, 1.0, 1.0);
 
-    kid_node.self_full = this;
+    parentList = NULL;
 
     transform.MakeScaleRotationMatrix();
 
@@ -232,28 +232,21 @@ size_t NC_STACK_base::func1()
     if (OBJ_SKELETON)
         delete_class_obj(OBJ_SKELETON);
 
-    while ( 1 )
+    for (AdeList::iterator it = ADES.begin(); it != ADES.end(); it = ADES.erase(it))
     {
-        clss_node *tmp = (clss_node *)ADES.head;
-
-        if ( !tmp->next )
-            break;
-
-        delete_class_obj(tmp->obj); // this objects delete self from kids parent list
+        (*it)->AttachedTo = NULL; //Clear ade ield, because we do erase in this list
+        delete_class_obj(*it);
     }
 
     if ( parent )
-        Remove(&kid_node);
+        parent->KIDS.remove(this);
 
-    while ( 1 )
+    for (BaseList::iterator it = KIDS.begin(); it != KIDS.end(); it = KIDS.erase(it))
     {
-        clss_node *tmp = (clss_node *)KIDS.head;
-
-        if ( !tmp->next )
-            break;
-
-        delete_class_obj(tmp->obj); // this objects delete self from kids parent list
+        (*it)->parent = NULL; //Clear kid parent field, because we do erase in this list
+        delete_class_obj(*it);
     }
+
 
     if ( OBJT )
         delete_class_obj(OBJT);
@@ -403,17 +396,17 @@ size_t NC_STACK_base::func3(IDVList *stak)
                     *(float *)val.value.p_data = getBASE_sz();
                     break;
                 case ATT_ADELIST:
-                    *(nlist **)val.value.p_data = getBASE_adeList();
+                    *(AdeList **)val.value.p_data = getBASE_adeList();
                     break;
                 case ATT_PTRANSFORM:
                     *(TFEngine::TForm3D **)val.value.p_data = getBASE_pTransform();
                     break;
                 case ATT_KIDSLIST:
-                    *(nlist **)val.value.p_data = getBASE_kidList();
+                    *(BaseList **)val.value.p_data = &KIDS;
                     break;
-                case ATT_KIDNODE:
-                    *(base_node **)val.value.p_data = getBASE_kidNode();
-                    break;
+//                case ATT_KIDNODE:
+//                    *(base_node **)val.value.p_data = getBASE_kidNode();
+//                    break;
                 case ATT_RENDERPARAMS:
                     *(area_arg_65 **)val.value.p_data = getBASE_renderParams();
                     break;
@@ -610,7 +603,7 @@ int NC_STACK_base::READ_KIDS(IFFile *mfile)
             }
             kidid++;
 
-            base_func65(&objt);
+            base_func65(objt);
         }
         else
         {
@@ -652,8 +645,8 @@ size_t NC_STACK_base::func5(IFFile **file)
             if ( !obj_ok )
                 return 0;
 
-            init_list(&ADES);
-            init_list(&KIDS);
+            ADES.clear();
+            KIDS.clear();
 
             transform.scale = vec3d(1.0, 1.0, 1.0);
 
@@ -661,7 +654,7 @@ size_t NC_STACK_base::func5(IFFile **file)
 
             baseIDcounter++;
 
-            kid_node.self_full = this;
+//            kid_node.self_full = this;
 
             transform.MakeScaleRotationMatrix();
 
@@ -807,24 +800,25 @@ size_t NC_STACK_base::func6(IFFile **file)
         if ( !sub_4117F8(OBJ_SKELETON, mfile) )
             return 0;
 
-        if ( ADES.head->next )
+        if ( !ADES.empty() )
         {
             mfile->pushChunk(TAG_ADES, TAG_FORM, -1);
-            for ( __NC_STACK_ade *cur_ade = (__NC_STACK_ade *)ADES.head; cur_ade->next; cur_ade = (__NC_STACK_ade *)cur_ade->next )
+            for (AdeList::iterator it = ADES.begin(); it != ADES.end(); it++)
             {
-                if ( !sub_4117F8(cur_ade->self, mfile) )
+                if ( !sub_4117F8(*it, mfile) )
                     return 0;
             }
             mfile->popChunk();
         }
     }
 
-    if ( KIDS.head->next )
+    if ( !KIDS.empty() )
     {
         mfile->pushChunk(TAG_KIDS, TAG_FORM, -1);
-        for ( base_node *kid = (base_node *)KIDS.head; kid->next; kid = (base_node *)kid->next )
+
+        for (BaseList::iterator it = KIDS.begin(); it != KIDS.end(); it++)
         {
-            if ( !sub_4117F8(kid->self_full, mfile) )
+            if ( !sub_4117F8(*it, mfile) )
                 return 0;
         }
         mfile->popChunk();
@@ -876,30 +870,22 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
     return 1;
 }
 
-// Fill parent info struct and push it to kid
-size_t NC_STACK_base::base_func65(NC_STACK_base **kid)
+// Push parent info to kid
+size_t NC_STACK_base::base_func65(NC_STACK_base *kid)
 {
-    base_66_arg_struct v6; // Parent info
-
-    v6.parent = this;
-    v6.KIDS = &KIDS;
-
     if ( OBJ_SKELETON )
-        v6.parent_field_1c = &transform;
+        kid->base_func66(this, &transform);
     else
-        v6.parent_field_1c = NULL;
-
-    (*kid)->base_func66(&v6);
-
+        kid->base_func66(this, NULL);
     return 1;
 }
 
 // Add object to parent kids list
-size_t NC_STACK_base::base_func66(base_66_arg_struct *prnt_info)
+size_t NC_STACK_base::base_func66(NC_STACK_base *_parent, TFEngine::TForm3D *_tform)
 {
     if ( parent )
     {
-        Remove(&kid_node);
+        parent->KIDS.remove(this);
 
         if ( flags & FLAG_MAINKID )
         {
@@ -910,10 +896,11 @@ size_t NC_STACK_base::base_func66(base_66_arg_struct *prnt_info)
         }
     }
 
-    parent = prnt_info->parent;
-    if ( prnt_info->parent )
+    parent = _parent;
+    if ( parent )
     {
-        AddTail(prnt_info->KIDS, &kid_node);
+        parent->KIDS.push_back(this);
+
         if ( flags & FLAG_MAINKID )
         {
             NC_STACK_base *v7[2];
@@ -923,7 +910,8 @@ size_t NC_STACK_base::base_func66(base_66_arg_struct *prnt_info)
             parent->base_func67(v7);
         }
     }
-    transform.parent_1c = prnt_info->parent_field_1c;
+
+    transform.parent_1c = _tform;
 
     return 1;
 }
@@ -1158,8 +1146,8 @@ size_t NC_STACK_base::base_func73(base_64arg *arg)
         }
     }
 
-    for ( base_node *kid = (base_node *)KIDS.head; kid->next; kid = (base_node *)kid->next )
-        kid->self_full->base_func73(arg);
+    for (BaseList::iterator it = KIDS.begin(); it != KIDS.end(); it++)
+        (*it)->base_func73(arg);
 
     return 1;
 }
@@ -1203,23 +1191,17 @@ size_t NC_STACK_base::base_func77(baseRender_msg *arg)
                 renderMsg.OBJ_SKELETON = OBJ_SKELETON;
                 renderMsg.adeCount = 0;
 
-                __NC_STACK_ade *cur_ade = (__NC_STACK_ade *)ADES.head;
-
-                while(cur_ade->next)
-                {
-                    cur_ade->self->ade_func65(&renderMsg);
-
-                    cur_ade = (__NC_STACK_ade *)cur_ade->next;
-                }
+                for (AdeList::iterator it = ADES.begin(); it != ADES.end(); it++)
+                    (*it)->ade_func65(&renderMsg);
 
                 arg->adeCount += renderMsg.adeCount;
             }
         }
     }
 
-    for ( base_node *kid = (base_node *)KIDS.head; kid->next; kid = (base_node *)kid->next )
+    for (BaseList::iterator it = KIDS.begin(); it != KIDS.end(); it++)
     {
-        if ( kid->self_full->base_func77(arg) )
+        if ( (*it)->base_func77(arg) )
             v12 = 1;
     }
 
@@ -1298,10 +1280,7 @@ void NC_STACK_base::setBASE_skeleton(NC_STACK_skeleton *skel)
 void NC_STACK_base::setBASE_ADE(NC_STACK_ade *ade)
 {
     if (ade)
-    {
-        nlist *tmp = &ADES;
-        ade->ade_func64(&tmp);
-    }
+        ade->ade_func64(ADES);
 }
 
 void NC_STACK_base::setBASE_parentFollow(int follow)
@@ -1482,7 +1461,7 @@ float NC_STACK_base::getBASE_sz()
     return transform.scale.z;
 }
 
-nlist *NC_STACK_base::getBASE_adeList()
+AdeList *NC_STACK_base::getBASE_adeList()
 {
     return &ADES;
 }
@@ -1492,15 +1471,15 @@ TFEngine::TForm3D *NC_STACK_base::getBASE_pTransform()
     return &transform;
 }
 
-nlist *NC_STACK_base::getBASE_kidList()
+BaseList &NC_STACK_base::getBASE_kidList()
 {
-    return &KIDS;
+    return KIDS;
 }
 
-base_node *NC_STACK_base::getBASE_kidNode()
-{
-    return &kid_node;
-}
+//base_node *NC_STACK_base::getBASE_kidNode()
+//{
+//    return &kid_node;
+//}
 
 area_arg_65 *NC_STACK_base::getBASE_renderParams()
 {
@@ -1578,9 +1557,9 @@ size_t NC_STACK_base::compatcall(int method_id, void *data)
     case 64:
         return (size_t)base_func64( (base_64arg *)data );
     case 65:
-        return (size_t)base_func65( (NC_STACK_base **)data );
+        return (size_t)base_func65( (NC_STACK_base *)data );
     case 66:
-        return (size_t)base_func66( (base_66_arg_struct *)data );
+        return 0;//(size_t)base_func66( (base_66_arg_struct *)data );
     case 67:
         return (size_t)base_func67( (NC_STACK_base **)data );
     case 68:

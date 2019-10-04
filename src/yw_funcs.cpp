@@ -991,7 +991,7 @@ NC_STACK_base * sub_44AD8C(const char *fname)
                 return NULL;
             }
 
-            obj->base_func65(&kid); //Add to kid list
+            obj->base_func65(kid); //Add to kid list
         }
         delete fil;
     }
@@ -1019,7 +1019,7 @@ NC_STACK_base *load_set_base()
                 delete_class_obj(base);
                 return NULL;
             }
-            base->base_func65(&visproto);
+            base->base_func65(visproto);
 
             NC_STACK_base *lego = NC_STACK_base::READ_BAS_FILE("rsrc:objects/lego.base");
             if ( !lego )
@@ -1032,7 +1032,7 @@ NC_STACK_base *load_set_base()
                 delete_class_obj(base);
                 return NULL;
             }
-            base->base_func65(&lego);
+            base->base_func65(lego);
 
             NC_STACK_base *slurp = NC_STACK_base::READ_BAS_FILE("rsrc:objects/slurp.base");
             if ( !slurp )
@@ -1045,7 +1045,7 @@ NC_STACK_base *load_set_base()
                 delete_class_obj(base);
                 return NULL;
             }
-            base->base_func65(&slurp);
+            base->base_func65(slurp);
         }
     }
     return base;
@@ -1053,35 +1053,32 @@ NC_STACK_base *load_set_base()
 
 int sub_44A12C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
 {
-    nlist *kid_list = base->getBASE_kidList();
-
     int id = 0;
-    for ( base_node *bkid = (base_node *)kid_list->head; bkid->next; bkid = (base_node *)bkid->next)
-    {
-        NC_STACK_base *kid_obj = bkid->self_full;
+    BaseList &kid_list = base->getBASE_kidList();
 
-        yw->vhcls_models[id].base = kid_obj;
-        kid_obj->setBASE_visLimit(yw->field_15e4);
-        kid_obj->setBASE_fadeLength(yw->field_15e8);
-        yw->vhcls_models[id].trigo = kid_obj->getBASE_pTransform();
+    for(BaseList::iterator it = kid_list.begin(); it != kid_list.end(); it++)
+    {
+        yw->vhcls_models[id].base = *it;
+        (*it)->setBASE_visLimit(yw->field_15e4);
+        (*it)->setBASE_fadeLength(yw->field_15e8);
+        yw->vhcls_models[id].trigo = (*it)->getBASE_pTransform();
         id++;
     }
+
     return 1;
 }
 
 int yw_parse_lego(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil, NC_STACK_base *base)
 {
-    nlist *kid_list = base->getBASE_kidList();
-
     int id = 0;
-    for ( base_node *bkid = (base_node *)kid_list->head; bkid->next; bkid = (base_node *)bkid->next)
-    {
-        NC_STACK_base *kid_obj = bkid->self_full;
+    BaseList &kid_list = base->getBASE_kidList();
 
-        yw->legos[id].base = kid_obj;
-        kid_obj->setBASE_visLimit(yw->field_15e4);
-        kid_obj->setBASE_fadeLength(yw->field_15e8);
-        kid_obj->setBASE_static(1);
+    for(BaseList::iterator it = kid_list.begin(); it != kid_list.end(); it++)
+    {
+        yw->legos[id].base = *it;
+        (*it)->setBASE_visLimit(yw->field_15e4);
+        (*it)->setBASE_fadeLength(yw->field_15e8);
+        (*it)->setBASE_static(1);
         id++;
     }
 
@@ -1339,9 +1336,8 @@ int yw_parse_sektor(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
 int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
 {
-    nlist *kid_list = base->getBASE_kidList();
-
-    base_node *kid = (base_node *)kid_list->head;
+    BaseList &kid_list = base->getBASE_kidList();
+    BaseList::iterator it = kid_list.begin();
 
     for (int i = 0; i < 2; i++)
     {
@@ -1349,32 +1345,30 @@ int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
         {
             for (int k = 0; k < 6; k++)
             {
-                if ( !kid->next)
+                if ( it == kid_list.end() )
                 {
                     ypa_log_out("Too few slurps in slurp child.\n");
                     return 0;
                 }
+                (*it)->setBASE_visLimit(yw->field_15e4);
+                (*it)->setBASE_fadeLength(yw->field_15e8);
+                (*it)->setBASE_static(1);
 
-                NC_STACK_base *full_kid = kid->self_full;
-
-                full_kid->setBASE_visLimit(yw->field_15e4);
-                full_kid->setBASE_fadeLength(yw->field_15e8);
-                full_kid->setBASE_static(1);
-
-                NC_STACK_skeleton *skeleton = full_kid->getBASE_skeleton();
+                NC_STACK_skeleton *skeleton = (*it)->getBASE_skeleton();
 
                 UAskeleton::Data *skeleton_internal = skeleton->getSKEL_pSkelet();
                 if (i == 0)
                 {
-                    yw->slurps1[j][k].skeletons_bas = full_kid;
+                    yw->slurps1[j][k].skeletons_bas = *it;
                     yw->slurps1[j][k].skeleton_internal = skeleton_internal;
                 }
                 else if (i == 1)
                 {
-                    yw->slurps2[j][k].skeletons_bas = full_kid;
+                    yw->slurps2[j][k].skeletons_bas = *it;
                     yw->slurps2[j][k].skeleton_internal = skeleton_internal;
                 }
-                kid = (base_node *)kid->next;
+
+                it++;
             }
         }
     }
@@ -1569,15 +1563,15 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
             return 0;
         }
 
-        nlist *kid_list = yw->additionalSet->getBASE_kidList();
+        BaseList &kid_list = yw->additionalSet->getBASE_kidList();
 
         int kid_id = 0;
 
-        for (base_node *bnode = (base_node *)kid_list->head; bnode->next; bnode = (base_node *)bnode->next)
+        for(BaseList::iterator it = kid_list.begin(); it != kid_list.end(); it++)
         {
             if ( kid_id == 0 )
             {
-                if ( !sub_44A12C(yw, bnode->self_full) )
+                if ( !sub_44A12C(yw, *it) )
                 {
                     delete fil;
                     return 0;
@@ -1585,7 +1579,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
             }
             else if ( kid_id == 1 )
             {
-                if ( !yw_parse_lego(yw, fil, bnode->self_full) )
+                if ( !yw_parse_lego(yw, fil, *it) )
                 {
                     delete fil;
                     return 0;
@@ -1605,7 +1599,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
             }
             else if ( kid_id == 2 )
             {
-                if ( !sub_44A97C(yw, bnode->self_full) )
+                if ( !sub_44A97C(yw, *it) )
                 {
                     delete fil;
                     return 0;

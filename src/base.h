@@ -2,37 +2,19 @@
 #define BASE_H_INCLUDED
 
 #include <deque>
+#include <list>
 #include "nucleas.h"
-#include "nlist.h"
-
 #include "engine_tform.h"
 #include "engine_input.h"
 #include "skeleton.h"
+#include "ade.h"
 
 
 class NC_STACK_base;
 class NC_STACK_skeleton;
 class NC_STACK_ade;
 
-struct base_node: public nnode
-{
-    NC_STACK_base *self_full;
-
-    base_node()
-    {
-        self_full = NULL;
-    }
-};
-
-struct clss_node: public nnode
-{
-    NC_STACK_nucleus *obj;
-
-    clss_node()
-    {
-        obj = NULL;
-    }
-};
+typedef std::list<NC_STACK_base *> BaseList;
 
 
 
@@ -194,8 +176,8 @@ public:
     virtual size_t func5(IFFile **file);
     virtual size_t func6(IFFile **file);
     virtual size_t base_func64(base_64arg *arg);
-    virtual size_t base_func65(NC_STACK_base **kid);
-    virtual size_t base_func66(base_66_arg_struct *prnt_info);
+    virtual size_t base_func65(NC_STACK_base *kid);
+    virtual size_t base_func66(NC_STACK_base *parent, TFEngine::TForm3D *tform);
     virtual size_t base_func67(NC_STACK_base **arg);
     virtual size_t base_func68(flag_xyz *arg);
     virtual size_t base_func69(flag_xyz *arg);
@@ -312,10 +294,10 @@ public:
     virtual float getBASE_sx();
     virtual float getBASE_sy();
     virtual float getBASE_sz();
-    virtual nlist *getBASE_adeList();
+    virtual AdeList *getBASE_adeList();
     virtual TFEngine::TForm3D *getBASE_pTransform();
-    virtual nlist *getBASE_kidList();
-    virtual base_node *getBASE_kidNode();
+    virtual BaseList &getBASE_kidList();
+//    virtual base_node *getBASE_kidNode();
     virtual area_arg_65 *getBASE_renderParams();
     virtual int getBASE_mainKid();
     virtual int getBASE_mainObjt();
@@ -355,13 +337,14 @@ public:
     uint32_t flags;
     int timeStamp;
     NC_STACK_skeleton *OBJ_SKELETON;
-    nlist ADES;
+    AdeList ADES;
     TFEngine::TForm3D transform;
     NC_STACK_base *parent;
 //    NC_STACK_base *mainChild;
     NC_STACK_base *mainObject;
-    nlist KIDS;
-    base_node kid_node;
+    BaseList KIDS;
+    BaseList *parentList;
+//    base_node kid_node;
     int visLimit;
     area_arg_65 renderMsg;
     NC_STACK_nucleus *OBJT;

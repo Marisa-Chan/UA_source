@@ -133,15 +133,14 @@ int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
             return 0;
         }
 
-        nlist *kid_list = yw->additionalSet->getBASE_kidList();
-
         int kid_id = 0;
+        BaseList &kids_list = yw->additionalSet->getBASE_kidList();
 
-        for (base_node *bnode = (base_node *)kid_list->head; bnode->next; bnode = (base_node *)bnode->next)
+        for(BaseList::iterator it = kids_list.begin(); it != kids_list.end(); it++)
         {
             if ( kid_id == 0 )
             {
-                if ( !sub_44A12C(yw, bnode->self_full) )
+                if ( !sub_44A12C(yw, *it) )
                 {
                     delete fil;
                     return 0;
@@ -149,7 +148,7 @@ int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
             }
             else if ( kid_id == 1 )
             {
-                if ( !yw_parse_lego(yw, fil, bnode->self_full) )
+                if ( !yw_parse_lego(yw, fil, *it) )
                 {
                     delete fil;
                     return 0;
@@ -169,7 +168,7 @@ int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
             }
             else if ( kid_id == 2 )
             {
-                if ( !sub_44A97C(yw, bnode->self_full) )
+                if ( !sub_44A97C(yw, *it) )
                 {
                     delete fil;
                     return 0;

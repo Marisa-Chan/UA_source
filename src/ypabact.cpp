@@ -6230,50 +6230,45 @@ size_t NC_STACK_ypabact::UserTargeting(bact_arg106 *arg)
 
 void NC_STACK_ypabact::HandleVisChildrens(int *arg)
 {
-    __NC_STACK_ypabact *bact = &ypabact;
-
     NC_STACK_base *vps[7];
-    vps[0] = bact->vp_normal.base;
-    vps[1] = bact->vp_dead.base;
-    vps[2] = bact->vp_fire.base;
-    vps[3] = bact->vp_genesis.base;
-    vps[4] = bact->vp_wait.base;
-    vps[5] = bact->vp_megadeth.base;
-    vps[6] = 0;
+    vps[0] = ypabact.vp_normal.base;
+    vps[1] = ypabact.vp_dead.base;
+    vps[2] = ypabact.vp_fire.base;
+    vps[3] = ypabact.vp_genesis.base;
+    vps[4] = ypabact.vp_wait.base;
+    vps[5] = ypabact.vp_megadeth.base;
+    vps[6] = NULL;
 
     int v13 = 0;
 
     while ( vps[v13] )
     {
-        nlist *kids_list = vps[v13]->getBASE_kidList();
+        BaseList &kids_list = vps[v13]->getBASE_kidList();
 
-        base_node *kid = (base_node *)kids_list->head;
-        while (kid->next)
+        for(BaseList::iterator it = kids_list.begin(); it != kids_list.end(); it++)
         {
             if ( *arg == 1 )
             {
-                kid->self_full->setBASE_parentFollow(1);
+                (*it)->setBASE_parentFollow(1);
 
                 flag_xyz arg68;
 
                 arg68.flag = 7;
-                arg68.v = kid->self_full->getBASE_pos() - bact->position;
+                arg68.v = (*it)->getBASE_pos() - ypabact.position;
 
-                kid->self_full->base_func68(&arg68);
+                (*it)->base_func68(&arg68);
             }
             else if ( *arg == 2 )
             {
-                kid->self_full->setBASE_parentFollow(1);
+                (*it)->setBASE_parentFollow(1);
 
                 flag_xyz arg68;
 
                 arg68.flag = 7;
-                arg68.v = kid->self_full->getBASE_pos() + bact->position;
+                arg68.v = (*it)->getBASE_pos() + ypabact.position;
 
-                kid->self_full->base_func68(&arg68);
+                (*it)->base_func68(&arg68);
             }
-
-            kid = (base_node *)kid->next;
         }
 
         v13++;
