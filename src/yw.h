@@ -47,12 +47,19 @@ struct usr_str
 {
     int id;
     const char *pstring;
+
+    usr_str()
+    {
+        id = 0;
+        pstring = NULL;
+    }
 };
 
 struct audiotrack_adv
 {
     int min_delay;
     int max_delay;
+    audiotrack_adv() : min_delay(0), max_delay(0) {};
 };
 
 struct inp_key_setting
@@ -164,6 +171,8 @@ struct EnvAction
 
     int action;
     int params[5];
+
+    EnvAction() : action(ACTION_NONE), params{0, 0, 0, 0, 0} {};
 };
 
 class UserData
@@ -364,6 +373,8 @@ public:
     uint32_t net_packet_avr;
 
 public:
+    void clear();
+
     void sb_0x46ca74();
     void sb_0x46cdf8();
     void sb_0x46aa8c();

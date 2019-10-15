@@ -3748,3 +3748,198 @@ void sb_0x44ac24(_NC_STACK_ypaworld *yw)
 
     sb_0x44ac24__sub0(yw);
 }
+
+void UserData::clear()
+{
+    field_0x0 = 0;
+    field_0x4 = 0;
+    field_0x8 = 0;
+    field_0xc = 0;
+    field_0x10 = 0;
+    memset(user_name, 0, sizeof(user_name));
+
+    p_YW = NULL;
+    p_ypaworld = NULL;
+    field_3A = NULL;
+    frameTime = 0;
+    glblTime = 0;
+
+    envMode = 0;
+    envModeChanged = false;
+
+    returnToTitle = false;
+
+    for(int i = 0; i < 16; i++)
+        samples1[i] = NULL;
+    for(int i = 0; i < 16; i++)
+        samples2[i] = NULL;
+
+    field_ADA = NULL;
+    sub_bar_button = NULL;
+    field_AE2 = 0;
+    titel_button = NULL;
+    button_input_button = NULL;
+
+    field_D36 = 0;
+    field_D3A = 0;
+    inp_joystick = 0;
+    field_D42 = 0;
+    inp_altjoystick = 0;
+    field_D4A = 0;
+    field_D4E = 0;
+    field_D52 = 0;
+
+    field_D5A = 0;
+    field_0xd5c = 0;
+
+    field_D5E = 0;
+    video_button = NULL;
+    //GuiList video_listvw;
+    game_default_res = 0;
+    //nlist video_mode_list;
+    field_FBE = 0;
+    //GuiList d3d_listvw;
+    memset(win3d_guid, 0, sizeof(win3d_guid));
+    memset(win3d_name, 0, sizeof(win3d_name));
+
+    field_139A = NULL;
+    field_139E = NULL;
+    fxnumber = 0;
+    field_0x13a4 = 0;
+    GFX_flags = 0;
+    field_0x13a8 = 0;
+    field_13AA = 0;
+    field_0x13ac = 0;
+    snd__flags2 = 0;
+
+    field_0x13b0 = 0;
+    snd__volume = 0;
+    field_0x13b4 = 0;
+    snd__cdvolume = 0;
+    field_0x13b8 = 0;
+    enemyindicator = 0;
+    field_13BE = 0;
+    field_13C2 = 0;
+    disk_button = NULL;
+    //GuiList disk_listvw;
+    field_1612 = 0;
+    memset(usernamedir, 0, sizeof(usernamedir));
+    usernamedir_len = 0;
+    field_0x1744 = 0;
+    opened_dir = NULL;
+    //nlist files_list;
+    field_1756 = 0;
+    snd__flags1 = 0;
+    field_0x1758 = 0;
+    field_175A = 0;
+    field_0x175c = 0;
+    field_175E = 0;
+    field_0x1760 = 0;
+    locale_button = NULL;
+    //nlist lang_dlls;
+    //GuiList local_listvw;
+    default_lang_dll = NULL;
+    prev_lang = NULL;
+
+    field_19C6 = 0;
+    field_0x19c8 = 0;
+    field_19CA = 0;
+    lang_dlls_count = 0;
+    about_button = NULL;
+    field_19D6 = 0;
+    field_19DA = 0;
+    field_19DE = 0;
+    field_0x19e0 = 0;
+    network_button = NULL;
+    //GuiList network_listvw;
+    field_1C2E = 0;
+    field_0x1c30 = 0;
+    field_1C32 = 0;
+    field_0x1c34 = 0;
+
+    field_1C36 = 0;
+    netSelMode = 0;
+    netSel = 0;
+    nInputMode = 0;
+    memset(netName, 0, sizeof(netName));
+
+    netNameCurPos = 0;
+    netLevelID = 0;
+    netLevelName = NULL;
+
+    memset(callSIGN, 0, sizeof(callSIGN));
+    netCRC = 0;
+    takTime = 0;
+    netPlayerOwner = 0;
+    FreeFraction = 0;
+    SelectedFraction = 0;
+    field_1CD7 = 0;
+    isHost = 0;
+    modemAskSession = 0;
+
+    msgcount = 0;
+    field_1CE8 = 0;
+    rdyStart = 0;
+    remoteMode = 0;
+    disconnected = 0;
+    blocked = 0;
+    problemCnt = 0;
+    msgBuffLine = 0;
+    memset(msgBuffers, 0, sizeof(msgBuffers));
+    memset(lastSender, 0, sizeof(lastSender));
+    //usr_str map_descriptions[256];
+    map_descriptions_count = 0;
+    noSent = 0;
+    sentAQ = 0;
+    netProblemOwner = 0;
+    memset(netProblemName, 0, sizeof(netProblemName));
+    netProblem = 0;
+    netAllOk = 0;
+    update_time_norm = 0;
+    flush_time_norm = 0;
+    kickTime = 0;
+    latencyCheck = 0;
+    netProblemCount = 0;
+    netAllOkCount = 0;
+    deadCheck = 0;
+    sendScore = 0;
+    memset(players, 0, sizeof(players));
+    memset(players2, 0, sizeof(players2));
+    confirm_button = NULL;
+    field_0x2fb4 = 0;
+
+    memset(keyConfig, 0, sizeof(keyConfig));
+
+    field_3426 = 0;
+    shelltrack = 0;
+    missiontrack = 0;
+    loadingtrack = 0;
+    debriefingtrack = 0;
+//     audiotrack_adv shelltrack__adv;
+//     audiotrack_adv missiontrack__adv;
+//     audiotrack_adv loadingtrack__adv;
+//     audiotrack_adv debriefingtrack__adv;
+    memset(snaps, 0, sizeof(snaps));
+    snap_count = 0;
+    cd = 0;
+    last_cdchk = 0;
+    lastInputEvent = 0;
+    WaitForDemo = 0;
+    netsend_count = 0;
+    netrecv_count = 0;
+    netrecv_time = 0;
+    netsend_speed = 0;
+    netrecv_speed = 0;
+    netrecv_bpsMin = 0;
+    netrecv_bpsMax = 0;
+    netrecv_bpsAvr = 0;
+    netsend_bpsMin = 0;
+    netsend_bpsMax = 0;
+    netsend_bpsAvr = 0;
+    net_gcnt = 0;
+    net_packet_size = 0;
+    net_packet_min = 0;
+    net_packet_max = 0;
+    net_packet_cnt = 0;
+    net_packet_avr = 0;
+}

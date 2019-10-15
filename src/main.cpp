@@ -547,7 +547,7 @@ int WinMain__sub0__sub0()
 {
     ypaworld = 0;
     dword_520400 = 0;
-    memset(&userdata, 0, sizeof(UserData));
+    userdata.clear();
     memset(&input_states, 0, sizeof(struC5));
     memset(&world_update_arg, 0, sizeof(base_64arg));
 
