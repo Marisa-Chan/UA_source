@@ -89,6 +89,9 @@
 		<Unit filename="engine_miles.h" />
 		<Unit filename="engine_tform.cpp" />
 		<Unit filename="engine_tform.h" />
+		<Unit filename="fmtlib/core.h" />
+		<Unit filename="fmtlib/format.cc" />
+		<Unit filename="fmtlib/printf.h" />
 		<Unit filename="font.cpp" />
 		<Unit filename="font.h" />
 		<Unit filename="fsmgr.cpp" />

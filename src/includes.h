@@ -8,6 +8,9 @@
 #include <stddef.h>
 #include <inttypes.h>
 
+#include "fmtlib/core.h"
+#include "fmtlib/printf.h"
+
 #include "IFFile.h"
 
 #include "yw.h"

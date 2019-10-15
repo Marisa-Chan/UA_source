@@ -31,6 +31,7 @@ OBJS =  \
 	engine_input.cpp\
 	engine_miles.cpp\
 	engine_tform.cpp\
+	fmtlib/format.cc\
 	font.cpp\
 	fsmgr.cpp\
 	glob_funcs.cpp\
