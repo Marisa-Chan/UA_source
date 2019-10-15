@@ -27,6 +27,8 @@
 #define YW_RENDER_SECTORS_DEF   5
 
 
+typedef std::list< std::string > StringList;
+
 class NC_STACK_ypaworld;
 struct _NC_STACK_ypaworld;
 class NC_STACK_button;
@@ -96,11 +98,6 @@ struct player_status
         power = 0;
         upgrades = 0;
     }
-};
-
-struct langDll_node : public nnode
-{
-    char langDllName[32];
 };
 
 struct ProfilesNode
@@ -266,10 +263,10 @@ public:
     int16_t field_175E;
     int16_t field_0x1760;
     NC_STACK_button *locale_button;
-    nlist lang_dlls;
+    StringList lang_dlls;
     GuiList local_listvw;
-    langDll_node *default_lang_dll;
-    langDll_node *prev_lang;
+    std::string *default_lang_dll;
+    std::string *prev_lang;
 
     int16_t field_19C6;
     int16_t field_0x19c8;

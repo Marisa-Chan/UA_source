@@ -949,7 +949,7 @@ void listLocaleDir(UserData *usr, const char *dirname)
 {
     usr->lang_dlls_count = 0;
 
-    langDll_node *deflng = NULL;
+    std::string *deflng = NULL;
     FSMgr::DirIter *dir = uaOpenDir(dirname);
     if ( dir )
     {
@@ -973,33 +973,28 @@ void listLocaleDir(UserData *usr, const char *dirname)
                 for (size_t i = 0; i < tmp.length(); i++)
                     tmp[i] = std::toupper(tmp[i]);
 
-                langDll_node *v7 = (langDll_node *)usr->lang_dlls.head;
-
                 int finded = 0;
 
-                while( v7->next )
+                for(StringList::iterator it = usr->lang_dlls.begin(); it != usr->lang_dlls.end(); it++)
                 {
-                    if ( !strcasecmp(v7->langDllName, tmp.c_str()) )
+                    if ( !strcasecmp( it->c_str(), tmp.c_str() ) )
                     {
                         finded = 1;
                         break;
                     }
-                    v7 = (langDll_node *)v7->next;
                 }
 
                 if ( !finded )
                 {
                     usr->lang_dlls_count++;
 
-                    langDll_node *v9 = (langDll_node *)AllocVec(sizeof(langDll_node), 65537);
-                    if ( v9 )
-                    {
-                        strcpy(v9->langDllName, tmp.c_str());
-                        AddTail(&usr->lang_dlls, v9);
+                    usr->lang_dlls.emplace_back();
+                    std::string &elm = usr->lang_dlls.back();
 
-                        if ( !strcasecmp(v9->langDllName, "language") )
-                            deflng = v9;
-                    }
+                    elm = tmp;
+
+                    if ( !strcasecmp(elm.c_str(), "language") )
+                        deflng = &elm;
                 }
             }
         }
@@ -2198,7 +2193,7 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
 
 
     if ( usr->default_lang_dll )
-        sprintf(a1a, "sounds/speech/%s/9%d.wav", usr->default_lang_dll->langDllName, arg);
+        sprintf(a1a, "sounds/speech/%s/9%d.wav", usr->default_lang_dll->c_str(), arg);
     else
         sprintf(a1a, "sounds/speech/language/9%d.wav", arg);
 
@@ -2315,13 +2310,13 @@ void UserData::ypaworld_func158__sub0__sub3()
     p_YW->GuiWinClose( &local_listvw );
     p_YW->GuiWinOpen( &local_listvw );
 
-    langDll_node *v5 = (langDll_node *)lang_dlls.head;
     int i = 0;
-
-    while ( v5 != default_lang_dll )
+    for(StringList::iterator it = lang_dlls.begin(); it != lang_dlls.end(); it++)
     {
+        if ( &(*it) == default_lang_dll )
+            break;
+
         i++;
-        v5 = (langDll_node *)v5->next;
     }
 
     local_listvw.selectedEntry = i;
@@ -2796,20 +2791,18 @@ void UserData::sub_46C748()
 
 void UserData::sub_46B0E0()
 {
-    langDll_node *node = (langDll_node *)lang_dlls.head;
+    StringList::iterator lang = lang_dlls.begin();
 
     for (int v5 = 0; v5 < local_listvw.selectedEntry; v5++)
-    {
-        node = (langDll_node *)node->next;
-    }
+        lang++;
 
-    prev_lang = node;
+    prev_lang = &(*lang);
 
-    if ( node != default_lang_dll )
+    if ( prev_lang != default_lang_dll )
     {
-        if ( node )
+        if ( prev_lang )
         {
-            default_lang_dll = node;
+            default_lang_dll = prev_lang;
             p_YW->ypaworld_func175( this );
         }
     }
@@ -4324,14 +4317,13 @@ void UserData::GameShellUiHandleInput()
 
         if ( local_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT )
         {
-            langDll_node *node = (langDll_node *)lang_dlls.head;
-
             field_19CA |= 1;
 
+            StringList::iterator it = lang_dlls.begin();
             for(int i = 0; i < local_listvw.selectedEntry; i++)
-                node = (langDll_node *)node->next;
+                it++;
 
-            prev_lang = node;
+            prev_lang = &(*it);
         }
 
         local_listvw.Formate(p_ypaworld);

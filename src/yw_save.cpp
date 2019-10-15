@@ -401,7 +401,7 @@ int yw_write_shell(FSMgr::FileHandle *fil, UserData *usr)
 
     if ( usr->default_lang_dll )
     {
-        sprintf(buf, "    language = %s\n", usr->default_lang_dll->langDllName);
+        sprintf(buf, "    language = %s\n", usr->default_lang_dll->c_str());
         fil->write(buf, strlen(buf));
     }
 

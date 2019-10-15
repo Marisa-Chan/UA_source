@@ -3359,23 +3359,18 @@ void ypaworld_func158__locale_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
 
     v3 = usr->local_listvw.ItemsPreLayout(yw, v3, 0, "uvw");
 
-    langDll_node *node = (langDll_node *)usr->lang_dlls.head;
-
     int v5 = 0;
-
-    while ( node->next )
+    for(StringList::iterator it = usr->lang_dlls.begin(); it != usr->lang_dlls.end(); it++)
     {
         if ( v5 >= usr->local_listvw.firstShownEntries && v5 < usr->local_listvw.shownEntries + usr->local_listvw.firstShownEntries)
         {
             if ( v5 == usr->local_listvw.selectedEntry )
-                v3 = sub_4C4284(yw, &usr->local_listvw, v3, node->langDllName);
+                v3 = sub_4C4284(yw, &usr->local_listvw, v3, it->c_str());
             else
-                v3 = sub_4C41DC(yw, &usr->local_listvw, v3, node->langDllName);
+                v3 = sub_4C41DC(yw, &usr->local_listvw, v3, it->c_str());
         }
 
         v5++;
-
-        node = (langDll_node *)node->next;
     }
 
     if ( v5 > 10 )

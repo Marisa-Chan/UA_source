@@ -3019,7 +3019,7 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
 
     usr->profiles.clear();
     init_list(&usr->video_mode_list);
-    init_list(&usr->lang_dlls);
+    usr->lang_dlls.clear();
 
     set_keys_vals(yw);
 
@@ -3349,15 +3349,7 @@ void NC_STACK_ypaworld::ypaworld_func155(UserData *usr)
         nc_FreeMem(v5);
     }
 
-    while ( 1 )
-    {
-        nnode *v6 = RemHead(&usr->lang_dlls);
-
-        if ( !v6 )
-            break;
-
-        nc_FreeMem(v6);
-    }
+    usr->lang_dlls.clear();
 
     SFXEngine::SFXe.sub_424CC8();
 
@@ -3731,7 +3723,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     if ( usr->default_lang_dll )
     {
-        const char *v237 = usr->default_lang_dll->langDllName;
+        const char *v237 = usr->default_lang_dll->c_str();
         if ( ! ypaworld_func166(&v237) )
             ypa_log_out("Warning: Catalogue not found\n");
     }
@@ -8152,7 +8144,7 @@ size_t NC_STACK_ypaworld::ypaworld_func175(UserData *usr)
         v6 = 0;
     }
 
-    const char *v7 = usr->default_lang_dll->langDllName;
+    const char *v7 = usr->default_lang_dll->c_str();
     if ( !ypaworld_func166(&v7) )
         ypa_log_out("Warning: SETLANGUAGE failed\n");
 

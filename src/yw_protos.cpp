@@ -5109,19 +5109,15 @@ int parseSaveShell(scrCallBack *arg)
 
         if ( !strcasecmp(arg->p1, "LANGUAGE") )
         {
-            langDll_node *nod = (langDll_node *)usr->lang_dlls.head;
+            std::string * deflt = NULL;
+            std::string * slct = NULL;
 
-            langDll_node * deflt = NULL;
-            langDll_node * slct = NULL;
-
-            while ( nod->next )
+            for(StringList::iterator it = usr->lang_dlls.begin(); it != usr->lang_dlls.end(); it++)
             {
-                if ( !strcasecmp(nod->langDllName, arg->p2) )
-                    slct = nod;
-                if ( !strcasecmp(nod->langDllName, "language") )
-                    deflt = nod;
-
-                nod = (langDll_node *)nod->next;
+                if ( !strcasecmp(it->c_str(), arg->p2) )
+                    slct = &(*it);
+                if ( !strcasecmp(it->c_str(), "language") )
+                    deflt = &(*it);
             }
 
             if ( slct )
