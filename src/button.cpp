@@ -271,10 +271,10 @@ size_t NC_STACK_button::button_func64(button_64_arg *arg)
     ButtonBox &bt = buttons[idd];
 
     if (   arg->button_type != TYPE_BUTTON
-        && arg->button_type != TYPE_CHECKBX
-        && arg->button_type != TYPE_CAPTION
-        && arg->button_type != TYPE_RADIOBTN
-        && arg->button_type != TYPE_SLIDER )
+            && arg->button_type != TYPE_CHECKBX
+            && arg->button_type != TYPE_CAPTION
+            && arg->button_type != TYPE_RADIOBTN
+            && arg->button_type != TYPE_SLIDER )
         return 0;
 
     sbt.button_type = arg->button_type;
@@ -1059,10 +1059,10 @@ size_t NC_STACK_button::compatcall(int method_id, void *data)
         else
             return Hide();
     case 69:
-        {
-            ResCode r = button_func69( (struC5 *)data );
-            return (size_t) (r.code | (r.btn << 16));
-        }
+    {
+        ResCode r = button_func69( (struC5 *)data );
+        return (size_t) (r.code | (r.btn << 16));
+    }
     case 70:
         return (size_t)button_func70( (void *)data );
     case 71:

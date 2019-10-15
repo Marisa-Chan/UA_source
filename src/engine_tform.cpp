@@ -203,7 +203,8 @@ void TFEngine::TForm3D::MakeScaleRotationMatrix()
                                            &TFEngine::TForm3D::scale_rot_4,
                                            &TFEngine::TForm3D::scale_rot_5,
                                            &TFEngine::TForm3D::scale_rot_6,
-                                           &TFEngine::TForm3D::scale_rot_7};
+                                           &TFEngine::TForm3D::scale_rot_7
+                                          };
 
     uint8_t func_id = 0;
 

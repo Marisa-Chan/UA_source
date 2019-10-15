@@ -12,7 +12,9 @@ class NC_STACK_iwimp: public NC_STACK_idev
 {
 public:
     virtual size_t func0(IDVList *stak);
-    virtual bool HasFocus() {return true;};
+    virtual bool HasFocus() {
+        return true;
+    };
     virtual void AddClickBoxFront(ClickBox *box);
     virtual void AddClickBoxBack(ClickBox *box);
     virtual void RemoveClickBox(ClickBox *box);

@@ -274,7 +274,7 @@ void sb_0x451034__sub8(_NC_STACK_ypaworld *yw)
 
     for (int i = 0; i < 4; i++)
         up_panel.buttons[i] = ButtonBox(up_panel.field_1D4 + (up_panel.field_1D0 + up_panel.field_1D8) * i,    0,
-                                                  up_panel.field_1D0,   up_panel.field_1CC);
+                                        up_panel.field_1D0,   up_panel.field_1CC);
 
     up_panel.cmdstrm.cmdbuf = byte_51805C;
 
@@ -1871,7 +1871,7 @@ void sub_4C0C00(_NC_STACK_ypaworld *yw)
     for (int i = 3; i < 9; i++)
     {
         robo_map.buttons[i] = ButtonBox(v5,  v23 - robo_map.field_240 - robo_map.field_230,
-                                                  robo_map.field_22C,  robo_map.field_230);
+                                        robo_map.field_22C,  robo_map.field_230);
 
         v5 += robo_map.field_22C;
     }

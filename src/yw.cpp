@@ -948,7 +948,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
     extern bool SPEED_DOWN_NET; //In yw_net.cpp
 
     if ( (gui_lstvw.IsClosed() && lstvw2.IsClosed())
-      || (arg->field_8->downed_key != UAVK_RETURN && arg->field_8->downed_key != UAVK_ESCAPE) )
+            || (arg->field_8->downed_key != UAVK_RETURN && arg->field_8->downed_key != UAVK_ESCAPE) )
     {
         yw->field_826F = 0;
     }
@@ -6423,18 +6423,18 @@ void NC_STACK_ypaworld::GameShellBkgProcess()
 
     switch(ypaworld.GameShell->envMode)
     {
-        case ENVMODE_TUTORIAL:
-        case ENVMODE_SINGLEPLAY:
-            ypaworld_func158__sub4__sub1(&ypaworld, ypaworld.GameShell, ypaworld.GameShell->field_3A);
-            break;
+    case ENVMODE_TUTORIAL:
+    case ENVMODE_SINGLEPLAY:
+        ypaworld_func158__sub4__sub1(&ypaworld, ypaworld.GameShell, ypaworld.GameShell->field_3A);
+        break;
 
-        case ENVMODE_TITLE:
-            GameShellBlitBkg(ypaworld.LevelNet->ilbm_menu_map);
-            break;
+    case ENVMODE_TITLE:
+        GameShellBlitBkg(ypaworld.LevelNet->ilbm_menu_map);
+        break;
 
-        default:
-            GameShellBlitBkg(ypaworld.LevelNet->ilbm_rollover_map);
-            break;
+    default:
+        GameShellBlitBkg(ypaworld.LevelNet->ilbm_rollover_map);
+        break;
     }
 }
 

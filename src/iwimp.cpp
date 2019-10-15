@@ -39,8 +39,8 @@ void NC_STACK_iwimp::RemoveClickBox(ClickBox *box)
 void NC_STACK_iwimp::GetClick(ClickBoxInf *click, MousePos &mouse)
 {
     for(std::list<ClickBox *>::iterator it = cboxList.begin();
-        it != cboxList.end();
-        it++)
+            it != cboxList.end();
+            it++)
     {
         ClickBox *box = *it;
 
@@ -48,7 +48,7 @@ void NC_STACK_iwimp::GetClick(ClickBoxInf *click, MousePos &mouse)
         mouse.boxPos.y = mouse.screenPos.y - box->y;
 
         if ( mouse.boxPos.x >= 0 && mouse.boxPos.x < box->w &&
-             mouse.boxPos.y >= 0 && mouse.boxPos.y < box->h )
+                mouse.boxPos.y >= 0 && mouse.boxPos.y < box->h )
         {
             click->selected_btn = box;
 
@@ -60,7 +60,7 @@ void NC_STACK_iwimp::GetClick(ClickBoxInf *click, MousePos &mouse)
                 mouse.btnPos.y = mouse.boxPos.y - btn.y;
 
                 if ( mouse.btnPos.x >= 0 && mouse.btnPos.x < btn.w &&
-                     mouse.btnPos.y >= 0 && mouse.btnPos.y < btn.h )
+                        mouse.btnPos.y >= 0 && mouse.btnPos.y < btn.h )
                 {
                     click->selected_btnID = i;
                     break;
@@ -82,8 +82,8 @@ void NC_STACK_iwimp::CheckClick(ClickBoxInf *arg)
     if ( arg->flag & ClickBoxInf::FLAG_LM_HOLD )
     {
         if ( arg->selected_btnID >= 0 &&
-             selectedCbox == arg->selected_btn &&
-             selectedButton == arg->selected_btnID )
+                selectedCbox == arg->selected_btn &&
+                selectedButton == arg->selected_btnID )
             arg->flag |= ClickBoxInf::FLAG_BTN_HOLD;
     }
 

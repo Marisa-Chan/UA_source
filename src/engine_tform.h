@@ -76,9 +76,15 @@ public:
     int init();
     void deinit();
 
-    inline SinCos& Angle(int angle) {return SinCos_table[angle];};
-    inline TForm3D *GetViewPoint() {return viewPoint;};
-    inline void SetViewPoint(TForm3D *pnt) {viewPoint = pnt;};
+    inline SinCos& Angle(int angle) {
+        return SinCos_table[angle];
+    };
+    inline TForm3D *GetViewPoint() {
+        return viewPoint;
+    };
+    inline void SetViewPoint(TForm3D *pnt) {
+        viewPoint = pnt;
+    };
 
     inline static bool Vec3dReadIFF(vec3d &v, IFFile *iff, bool BigEndian)
     {

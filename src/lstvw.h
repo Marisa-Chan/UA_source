@@ -38,8 +38,12 @@ public:
     GuiBase() : flags(0), iconString(NULL), postDraw(NULL), AttachedTo(NULL) {};
 
 
-    inline bool IsClosed() { return ((flags & FLAG_CLOSED) != 0); };
-    inline bool IsOpen() { return ((flags & FLAG_CLOSED) == 0); };
+    inline bool IsClosed() {
+        return ((flags & FLAG_CLOSED) != 0);
+    };
+    inline bool IsOpen() {
+        return ((flags & FLAG_CLOSED) == 0);
+    };
 
 protected:
     GuiBaseList *AttachedTo;
