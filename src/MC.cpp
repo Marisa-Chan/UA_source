@@ -115,9 +115,6 @@ void sb_0x411c08__sub0()
 
 void sb_0x411c08()
 {
-    for(std::list<TKVPair *>::iterator it = engines.kvPairs.begin(); it != engines.kvPairs.end(); it++)
-        delete *it;
-
     engines.kvPairs.clear();
 
 

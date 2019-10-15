@@ -1724,11 +1724,11 @@ void NC_STACK_ypaworld::GameShellBlitBkg(NC_STACK_bitmap *bitm)
 
 void sub_4491A0(_NC_STACK_ypaworld *yw, const char *movie_fname)
 {
-    char v5[256];
-    sub_412810(movie_fname, v5, 256);
+    std::string buf;
+    sub_412810(movie_fname, buf);
 
     const char *v6;
-    v6 = v5;
+    v6 = buf.c_str();
 
     NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(yw->win3d);
 

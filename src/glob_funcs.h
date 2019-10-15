@@ -23,7 +23,7 @@ struct g_engines
     const char *some_params_pointers[32];
     int some_params_count;
     NC_STACK_display *display___win3d;
-    std::list<TKVPair *> kvPairs;
+    std::list<TKVPair> kvPairs;
 
     g_engines()
     {
@@ -49,10 +49,10 @@ void *AllocVec(size_t size, int a2);
 const char * get_prefix_replacement(const char *prefix);
 void set_prefix_replacement(const char *str1, const char *str2);
 
-char * file_path_copy_manipul(const char *src, char *dst, int size);
+void file_path_copy_manipul(const std::string &src, std::string &dst);
 
 
-void sub_412810(const char *a1, char *a2, int num);
+void sub_412810(const std::string &src, std::string &dst);
 
 void fpsLimitter(int value);
 bool tuneGetWeaponRadiusFix();

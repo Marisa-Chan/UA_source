@@ -1053,10 +1053,10 @@ void ypaworld_func154__sub0(_NC_STACK_ypaworld *yw)
     if ( yw->movies.movies_names_present[0] )
     {
         yw->win3d = GFXEngine::GFXe.getC3D();
-        char buf[256];
 
-        sub_412810(yw->movies.game_intro, buf, 256);
-        const char *v5 = buf;
+        std::string buf;
+        sub_412810(yw->movies.game_intro, buf);
+        const char *v5 = buf.c_str();
 
         yw->win3d->windd_func323(&v5);
 

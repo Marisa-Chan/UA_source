@@ -168,4 +168,6 @@ inline double fSign(double x)
     return 1.0;
 }
 
+void correctSeparatorAndExt(std::string &str);
+
 #endif // UTILS_H_INCLUDED
