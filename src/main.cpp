@@ -619,7 +619,7 @@ int yw_initGameWithSettings()
 {
     FSMgr::FileHandle *user_def = uaOpenFile("env:user.def", "r");
 
-    char a1[300];
+    std::string a1;
 
     if ( user_def )
     {
@@ -627,7 +627,7 @@ int yw_initGameWithSettings()
 
         user_def->gets(v11, 300);
 
-        sprintf(a1, "save:%s/user.txt", v11);
+        a1 = fmt::sprintf("save:%s/user.txt", v11);
 
         FSMgr::FileHandle *user_txt = uaOpenFile(a1, "r");
 
@@ -636,12 +636,12 @@ int yw_initGameWithSettings()
             delete user_txt;
 
             strcpy(userdata.user_name, v11);
-            sprintf(a1, "%s/user.txt", v11);
+            a1 = fmt::sprintf("%s/user.txt", v11);
         }
         else
         {
             ypa_log_out("Warning: default user file doesn't exist (%s)\n", a1);
-            strcpy(a1, "sdu7/user.txt");
+            a1 = fmt::sprintf("sdu7/user.txt");
             strcpy(userdata.user_name, "SDU7");
         }
 
@@ -649,7 +649,7 @@ int yw_initGameWithSettings()
     }
     else
     {
-        strcpy(a1, "sdu7/user.txt");
+        a1 = fmt::sprintf("sdu7/user.txt");
         strcpy(userdata.user_name, "SDU7");
         ypa_log_out("Warning: No default user set\n");
     }
@@ -670,7 +670,7 @@ int yw_initGameWithSettings()
 
     yw_arg172 v13;
 
-    v13.usertxt = a1;
+    v13.usertxt = a1.c_str();
     v13.usr = &userdata;
     v13.field_4 = userdata.user_name;
     v13.field_8 = 255;

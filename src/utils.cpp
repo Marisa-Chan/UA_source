@@ -42,6 +42,7 @@ const char *get_lang_string(char **array, int id, const char *def)
     return v4;
 }
 
+
 #ifndef strnicmp
 int strnicmp (const char *s1, const char *s2, size_t n)
 {
@@ -129,9 +130,9 @@ uint32_t profiler_end(uint32_t prev)
 
 void correctSeparatorAndExt(std::string &str)
 {
-    replace(str.begin(), str.end(), '/', '\\');
+    std::replace(str.begin(), str.end(), '/', '\\');
 
-    size_t pos = str.find_last_of('.');
+    size_t pos = str.rfind('.');
     if (pos != std::string::npos && (str.length() - pos - 1) > 3)
         str.resize(pos + 3 + 1);
 }
@@ -154,7 +155,23 @@ bool uaFileExist(const char *src_path, const char *prefix)
     return FSMgr::iDir::fileExist(path.c_str());
 }
 
-FSMgr::FileHandle *uaOpenFile(const char *src_path, const char *mode)
+//FSMgr::FileHandle *uaOpenFile(const char *src_path, const char *mode)
+//{
+//    std::string path;
+//    file_path_copy_manipul(src_path, path);
+//    correctSeparatorAndExt(path);
+//
+//    FSMgr::FileHandle *v4 = FSMgr::iDir::openFile(path.c_str(), mode);
+//
+//    if ( v4 )
+//        engines.file_handles++;
+//    else
+//        ypa_log_out("uaOpenFile('%s','%s') failed!\n", path.c_str(), mode);
+//
+//    return v4;
+//}
+
+FSMgr::FileHandle *uaOpenFile(const std::string &src_path, const char *mode)
 {
     std::string path;
     file_path_copy_manipul(src_path, path);

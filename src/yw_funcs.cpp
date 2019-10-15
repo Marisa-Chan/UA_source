@@ -1730,9 +1730,7 @@ void sub_4491A0(_NC_STACK_ypaworld *yw, const char *movie_fname)
     const char *v6;
     v6 = buf.c_str();
 
-    NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(yw->win3d);
-
-    windd->windd_func323(&v6);
+    yw->win3d->windd_func323(&v6);
 
     INPe.sub_412D28(&input_states);
 

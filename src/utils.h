@@ -135,7 +135,8 @@ int dround(double val);
 uint32_t profiler_begin();
 uint32_t profiler_end(uint32_t prev);
 
-FSMgr::FileHandle *uaOpenFile(const char *src_path, const char *mode);
+//FSMgr::FileHandle *uaOpenFile(const char *src_path, const char *mode);
+FSMgr::FileHandle *uaOpenFile(const std::string &src_path, const char *mode);
 FSMgr::DirIter *uaOpenDir(const char *dir);
 
 bool uaDeleteFile(const char *path);
