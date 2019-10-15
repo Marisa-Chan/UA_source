@@ -901,36 +901,30 @@ void listSaveDir(UserData *usr, const char *saveDir)
     usr->opened_dir = uaOpenDir(saveDir);
     if ( usr->opened_dir )
     {
-        FSMgr::iNode *a2a;
-        while ( usr->opened_dir->getNext(a2a) )
+        FSMgr::iNode *dirNode;
+        while ( usr->opened_dir->getNext(dirNode) )
         {
-            if ( a2a->getType() == FSMgr::iNode::NTYPE_DIR )
+            if ( dirNode->getType() == FSMgr::iNode::NTYPE_DIR )
             {
-                if ( strcmp(a2a->getName(), ".") && strcmp(a2a->getName(), "..") )
+                if ( strcmp(dirNode->getName(), ".") && strcmp(dirNode->getName(), "..") )
                 {
-                    profilesNode *v10 = (profilesNode *)AllocVec(sizeof(profilesNode), 65537);
-                    if ( v10 )
-                    {
-                        strcpy(v10->profile_subdir, a2a->getName());
+                    usr->profiles.emplace_back();
+                    ProfilesNode &profile = usr->profiles.back();
+                    profile.name = dirNode->getName();
 
-                        AddTail(&usr->files_list, v10);
+                    scrCallBack v25;
 
-                        scrCallBack v25;
+                    v25.func = parseSaveUser;
+                    v25.world = (_NC_STACK_ypaworld *)usr->p_ypaworld->self_full;
+                    v25.world2 = usr->p_ypaworld;
 
-                        v25.func = parseSaveUser;
-                        v25.world = (_NC_STACK_ypaworld *)usr->p_ypaworld->self_full;
-                        v25.world2 = usr->p_ypaworld;
+                    std::string buf = fmt::sprintf("%s/%s/user.txt\n", saveDir, dirNode->getName());
 
-                        char buf[300];
+                    if ( !def_parseFile(buf.c_str(), 1, &v25, 2) )
+                        ypa_log_out("Warning, cannot parse %s for time scanning\n", buf.c_str());
 
-                        sprintf(buf, "%s/%s/user.txt\n", saveDir, a2a->getName());
-
-                        if ( !def_parseFile(buf, 1, &v25, 2) )
-                            ypa_log_out("Warning, cannot parse %s for time scanning\n", buf);
-
-                        v10->field_C = 1;
-                        v10->pStatus_3 = usr->p_ypaworld->playerstatus[1].elapsedTime;
-                    }
+                    profile.fraction = 1;
+                    profile.totalElapsedTime = usr->p_ypaworld->playerstatus[1].elapsedTime;
                 }
             }
         }
@@ -1128,37 +1122,30 @@ void sb_0x46ca74__sub0(const char *a1, const char *a2)
 
 void  UserData::sb_0x46ca74()
 {
-    char oldsave[300];
+    std::string oldsave;
 
     if ( field_1612 )
     {
         if ( strcasecmp(usernamedir, user_name) )
         {
-            sprintf(oldsave, "save:%s", usernamedir);
-            sub_46D0F8(oldsave);
+            oldsave = fmt::sprintf("save:%s", usernamedir);
+            sub_46D0F8(oldsave.c_str());
         }
     }
     else
     {
-        profilesNode *v3 = (profilesNode *)AllocVec(sizeof(profilesNode), 65537);
+        profiles.emplace_back();
+        ProfilesNode &profile = profiles.back();
 
-        if ( !v3 )
+        profile.name = usernamedir;
+
+        std::string tmp;
+
+        tmp = fmt::sprintf("save:%s", usernamedir);
+
+        if ( !uaCreateDir(tmp.c_str()) )
         {
-            ypa_log_out("Warning: No Memory!\n");
-            return;
-        }
-
-        strncpy(v3->profile_subdir, usernamedir, 32);
-
-        AddTail(&files_list, v3);
-
-        char a1a[300];
-
-        sprintf(a1a, "save:%s", usernamedir);
-
-        if ( !uaCreateDir(a1a) )
-        {
-            ypa_log_out("Unable to create directory %s\n", a1a);
+            ypa_log_out("Unable to create directory %s\n", tmp.c_str());
             return;
         }
 
@@ -1166,10 +1153,10 @@ void  UserData::sb_0x46ca74()
         field_1612 = disk_listvw.numEntries;
     }
 
-    sprintf(oldsave, "%s/user.txt", usernamedir);
+    oldsave = fmt::sprintf("%s/user.txt", usernamedir);
 
     yw_arg172 v15;
-    v15.usertxt = oldsave;
+    v15.usertxt = oldsave.c_str();
     v15.field_4 = usernamedir;
     v15.usr = this;
     v15.field_8 = 255;
@@ -1178,11 +1165,11 @@ void  UserData::sb_0x46ca74()
     if ( ! p_YW->ypaworld_func171(&v15) )
         ypa_log_out("Warning! Error while saving user data for %s\n", usernamedir);
 
-    sprintf(oldsave, "save:%s", user_name);
+    oldsave = fmt::sprintf("save:%s", user_name);
 
     if ( strcasecmp(usernamedir, user_name) )
     {
-        FSMgr::DirIter *v8 = uaOpenDir(oldsave);
+        FSMgr::DirIter *v8 = uaOpenDir(oldsave.c_str());
         FSMgr::iNode *a2a;
 
         if ( v8 )
@@ -1200,12 +1187,9 @@ void  UserData::sb_0x46ca74()
                             || tmp.rfind(".def") != std::string::npos
                             || tmp.rfind(".DEF") != std::string::npos) )
                 {
-                    char v11[300];
-                    char v12[300];
-
-                    sprintf(v11, "%s/%s", oldsave, tmp.c_str());
-                    sprintf(v12, "save:%s/%s", usernamedir, tmp.c_str());
-                    sb_0x46ca74__sub0(v11, v12);
+                    std::string v11 = fmt::sprintf("%s/%s", oldsave.c_str(), tmp.c_str());
+                    std::string v12 = fmt::sprintf("save:%s/%s", usernamedir, tmp.c_str());
+                    sb_0x46ca74__sub0(v11.c_str(), v12.c_str());
                 }
             }
             delete v8;
@@ -1384,11 +1368,10 @@ void sub_44A1FC(_NC_STACK_ypaworld *yw)
 
 void UserData::sb_0x46cdf8()
 {
-    char a1a[300];
-    sprintf(a1a, "%s/user.txt", user_name);
+    std::string a1a = fmt::sprintf("%s/user.txt", user_name);
 
     yw_arg172 v12;
-    v12.usertxt = a1a;
+    v12.usertxt = a1a.c_str();
     v12.field_4 = user_name;
     v12.usr = this;
     v12.field_8 = 255;
@@ -1399,29 +1382,21 @@ void UserData::sb_0x46cdf8()
 
     if ( field_1612 )
     {
-        sprintf(a1a, "save:%s", usernamedir);
-        sub_46D0F8(a1a);
+        a1a = fmt::sprintf("save:%s", usernamedir);
+        sub_46D0F8(a1a.c_str());
     }
     else
     {
-        profilesNode *v4 = (profilesNode *)AllocVec(sizeof(profilesNode), 65537);
+        profiles.emplace_back();
+        ProfilesNode &profile = profiles.back();
 
-        if ( !v4 )
+        profile.name = usernamedir;
+
+        std::string v10 = fmt::sprintf("save:%s", usernamedir);
+
+        if ( !uaCreateDir(v10.c_str()) )
         {
-            ypa_log_out("Warning: No Memory!\n");
-            return;
-        }
-
-        strncpy(v4->profile_subdir, usernamedir, 32);
-
-        AddTail(&files_list, v4);
-
-        char v10[300];
-        sprintf(v10, "save:%s", usernamedir);
-
-        if ( !uaCreateDir(v10) )
-        {
-            ypa_log_out("Unable to create directory %s\n", v10);
+            ypa_log_out("Unable to create directory %s\n", v10.c_str());
             return;
         }
 
@@ -2187,15 +2162,13 @@ void UserData::sub_46C3E4()
 
     envMode = ENVMODE_SELPLAYER;
 
-    profilesNode *v4 = (profilesNode *)files_list.head;
-    while (v4->next)
+    for( ProfileList::iterator it = profiles.begin(); it != profiles.end(); it++ )
     {
-        if ( !strcasecmp(v4->profile_subdir, user_name))
+        if ( !strcasecmp(it->name.c_str(), user_name))
         {
-            v4->pStatus_3 = p_ypaworld->playerstatus[1].elapsedTime;
+            it->totalElapsedTime = p_ypaworld->playerstatus[1].elapsedTime;
             break;
         }
-        v4 = (profilesNode *)v4->next;
     }
     p_YW->GuiWinClose( &disk_listvw );
     p_YW->GuiWinOpen( &disk_listvw );
@@ -2694,28 +2667,26 @@ void UserData::sub_46C914()
 {
     if ( field_1612 )
     {
-        profilesNode *node = (profilesNode *)files_list.head;
+        ProfileList::iterator it = profiles.begin();
 
         for (int i = 0; i < field_1612 - 1; i++) // check usr->field_1612 - 1
-        {
-            node = (profilesNode *)node->next;
-        }
+            it++;
 
         char a1a[300];
-        sprintf(a1a, "%s/user.txt", node->profile_subdir);
+        sprintf(a1a, "%s/user.txt", it->name.c_str());
 
         yw_arg172 arg172;
 
         arg172.usertxt = a1a;
-        arg172.field_4 = node->profile_subdir;
+        arg172.field_4 = it->name.c_str();
         arg172.field_8 = 255;
         arg172.usr = this;
         arg172.field_10 = 1;
 
         p_YW->ypaworld_func172(&arg172);
 
-        strcpy(user_name, node->profile_subdir);
-        strcpy(usernamedir, node->profile_subdir);
+        strcpy(user_name, it->name.c_str());
+        strcpy(usernamedir, it->name.c_str());
 
 
         field_0x1744 = 0;
@@ -2759,54 +2730,49 @@ void UserData::sub_46C748()
         if ( strcasecmp(usernamedir, user_name) )
         {
 
-            profilesNode *node = (profilesNode *)files_list.head;
+            ProfileList::iterator it = profiles.begin();
 
             for (int i = 0; i < field_1612 - 1; i++) // check usr->field_1612 - 1
-                node = (profilesNode *)node->next;
+                it++;
 
-            profilesNode *v4 = (profilesNode *)node->next;
+            ProfileList::iterator nextIt = std::next(it);
 
-            int v5;
+            bool HasElements;
 
-            if ( v4->next )
-            {
-                v5 = 1;
-            }
+            if ( nextIt != profiles.end() )
+                HasElements = true;
             else
             {
-                v4 = (profilesNode *)node->prev;
-                v5 = 0;
+                nextIt = std::prev(it);
+                HasElements = false;
             }
 
-            char a1[300];
-            sprintf(a1, "save:%s", node->profile_subdir);
+            std::string a1 = fmt::sprintf("save:%s", it->name);
 
-            sub_46D0F8(a1);
+            sub_46D0F8(a1.c_str());
 
-            uaDeleteDir(a1);
+            uaDeleteDir(a1.c_str());
 
-            Remove(node);
+            profiles.erase(it);
 
             disk_listvw.numEntries--;
-            if ( files_list.tail == files_list.head )
+            if ( profiles.empty() )
             {
                 field_1612 = 0;
                 strcpy(usernamedir, "NEWUSER");
             }
             else
             {
-                if ( !v5 )
+                if ( !HasElements )
                     field_1612--;
 
-                strcpy(usernamedir, v4->profile_subdir);
+                strcpy(usernamedir, nextIt->name.c_str());
             }
 
             usernamedir_len = strlen(usernamedir);
 
             if ( field_1612 )
                 disk_listvw.PosOnSelected(field_1612 - 1);
-
-            nc_FreeMem(node);
 
             field_0x1744 = 0;
 
@@ -3959,20 +3925,17 @@ void UserData::GameShellUiHandleInput()
     }
 
 
-    profilesNode *v107 = (profilesNode *)files_list.head;
     field_1612 = 0;
     int v108 = 1;
 
-    while (v107->next)
+    for ( ProfileList::iterator it = profiles.begin(); it != profiles.end(); it++)
     {
-        if ( !strcasecmp(v107->profile_subdir, usernamedir) )
+        if ( !strcasecmp(it->name.c_str(), usernamedir) )
         {
             field_1612 = v108;
             break;
         }
-
         v108++;
-        v107 = (profilesNode *)v107->next;
     }
 
     r = disk_button->button_func69(field_3A);
@@ -4030,20 +3993,17 @@ void UserData::GameShellUiHandleInput()
 
             const char *v135 = get_lang_string(ypaworld__string_pointers, 366, "NEW GAME");
 
-            profilesNode *v136 = (profilesNode *)files_list.head;
             int v420 = 0;
 
-            while (v136->next)
+            for (ProfileList::iterator it = profiles.begin(); it != profiles.end(); it++)
             {
-                if ( !strnicmp(v135, v136->profile_subdir, strlen(v135)) )
+                if ( !strnicmp(v135, it->name.c_str(), strlen(v135)) )
                 {
-                    int v138 = atoi( v136->profile_subdir + strlen(v135) );
+                    int v138 = atoi( it->name.c_str() + strlen(v135) );
 
                     if ( v138 > v420 )
                         v420 = v138;
                 }
-
-                v136 = (profilesNode *)v136->next;
             }
 
             sprintf(usernamedir, "%s%d", v135, v420 + 1);
@@ -4201,22 +4161,22 @@ void UserData::GameShellUiHandleInput()
                 field_1612 = disk_listvw.numEntries;
 
 
-            profilesNode *node = (profilesNode *)files_list.head;
+            ProfileList::iterator it = profiles.begin();
 
             for (int i = 0; i < field_1612 - 1; i++) // check field_1612 - 1
             {
-                if ( ! node->next)
+                if ( it == profiles.end() )
                 {
-                    node = NULL;
                     field_1612 = 0;
                     break;
                 }
-                node = (profilesNode *)node->next;
+
+                it++;
             }
 
-            if (node)
+            if (it != profiles.end())
             {
-                strcpy(usernamedir, node->profile_subdir);
+                strcpy(usernamedir, it->name.c_str());
                 usernamedir_len = strlen(usernamedir);
             }
         }

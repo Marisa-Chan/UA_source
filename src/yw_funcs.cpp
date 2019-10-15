@@ -3406,11 +3406,9 @@ void ypaworld_func158__saveload_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
 
     v4 = usr->disk_listvw.ItemsPreLayout(yw, v4, 0, "uvw");
 
-    profilesNode *v6 = (profilesNode *)usr->files_list.head;
-
     int v54 = 0;
 
-    while ( v6->next )
+    for ( ProfileList::iterator it = usr->profiles.begin(); it != usr->profiles.end(); it++ )
     {
         if ( v54 >= usr->disk_listvw.firstShownEntries && v54 < usr->disk_listvw.shownEntries + usr->disk_listvw.firstShownEntries )
         {
@@ -3437,7 +3435,7 @@ void ypaworld_func158__saveload_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
             int v37 = usr->disk_listvw.entryWidth - 2 * usr->p_ypaworld->font_default_w__b;
 
             char a1a[20];
-            sprintf(a1a, "%02d:%02d:%02d", (v6->pStatus_3 / 1000) / 3600, (v6->pStatus_3 / 1000) % 3600 / 60, (v6->pStatus_3 / 1000) % 3600 % 60 );
+            sprintf(a1a, "%02d:%02d:%02d", (it->totalElapsedTime / 1000) / 3600, (it->totalElapsedTime / 1000) % 3600 / 60, (it->totalElapsedTime / 1000) % 3600 % 60 );
 
             v31[0].fontID = v8;
             v31[0].spaceChar = v9;
@@ -3445,7 +3443,7 @@ void ypaworld_func158__saveload_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
             v31[0].width = (v37 * 0.75);
             v31[0].prefixChar = v45;
             v31[0].postfixChar = 0;
-            v31[0].txt = v6->profile_subdir;
+            v31[0].txt = it->name.c_str();
 
             v31[1].fontID = v8;
             v31[1].spaceChar = v9;
@@ -3459,7 +3457,7 @@ void ypaworld_func158__saveload_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
 
             FontUA::store_u8(&v4, 123);
 
-            if ( !strcasecmp(v6->profile_subdir, usr->user_name) )
+            if ( !strcasecmp(it->name.c_str(), usr->user_name) )
             {
                 FontUA::set_txtColor(&v4, yw->iniColors[2].r, yw->iniColors[2].g, yw->iniColors[2].b);
             }
@@ -3485,7 +3483,6 @@ void ypaworld_func158__saveload_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
         }
 
         v54++;
-        v6 = (profilesNode *)v6->next;
     }
 
     if ( v54 <= 10 )

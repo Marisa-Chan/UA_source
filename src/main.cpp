@@ -657,18 +657,15 @@ int yw_initGameWithSettings()
     userdata.field_1612 = -1;
 
     int v8 = 1;
-    profilesNode *node = (profilesNode *)userdata.files_list.head;
-
-    while ( node->next )
+    for ( ProfileList::iterator it = userdata.profiles.begin(); it != userdata.profiles.end(); it++ )
     {
-        if ( !strcasecmp(node->profile_subdir, userdata.user_name) )
+        if ( !strcasecmp(it->name.c_str(), userdata.user_name) )
         {
             userdata.field_1612 = v8;
             break;
         }
 
         v8++;
-        node = (profilesNode *)node->next;
     }
 
     yw_arg172 v13;

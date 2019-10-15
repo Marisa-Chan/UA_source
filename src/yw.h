@@ -103,13 +103,16 @@ struct langDll_node : public nnode
     char langDllName[32];
 };
 
-struct profilesNode : public nnode
+struct ProfilesNode
 {
-    int pStatus_3;
-    char field_C;
-    char profile_subdir[32];
-    int16_t field_2D;
+    int totalElapsedTime;
+    char fraction;
+    std::string name;
+
+    ProfilesNode() : totalElapsedTime(0), fraction(0) {};
 };
+
+typedef std::list<ProfilesNode> ProfileList;
 
 
 struct netType1
@@ -254,7 +257,7 @@ public:
     int usernamedir_len;
     int16_t field_0x1744;
     FSMgr::DirIter *opened_dir;
-    nlist files_list;
+    ProfileList profiles;
     char field_1756;
     char snd__flags1;
     int16_t field_0x1758;
@@ -1706,7 +1709,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID);
 struct yw_arg172
 {
     const char *usertxt;
-    char *field_4;
+    const char *field_4;
     int field_8;
     UserData *usr;
     int field_10;

@@ -10,9 +10,9 @@
 #  define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include "fmt/posix.h"
+#include "posix.h"
 
-#include <climits>
+#include <limits.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -49,7 +49,7 @@
 namespace {
 #ifdef _WIN32
 // Return type of read and write functions.
-using RWResult = int;
+typedef int RWResult;
 
 // On Windows the count argument to read and write is unsigned, so convert
 // it from size_t preventing integer overflow.
@@ -58,7 +58,7 @@ inline unsigned convert_rwcount(std::size_t count) {
 }
 #else
 // Return type of read and write functions.
-using RWResult = ssize_t;
+typedef ssize_t RWResult;
 
 inline std::size_t convert_rwcount(std::size_t count) { return count; }
 #endif
@@ -138,7 +138,7 @@ long long file::size() const {
   unsigned long long long_size = size_upper;
   return (long_size << sizeof(DWORD) * CHAR_BIT) | size_lower;
 #else
-  using Stat = struct stat;
+  typedef struct stat Stat;
   Stat file_stat = Stat();
   if (FMT_POSIX_CALL(fstat(fd_, &file_stat)) == -1)
     FMT_THROW(system_error(errno, "cannot get file attributes"));

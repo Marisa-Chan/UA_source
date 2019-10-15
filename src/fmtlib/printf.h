@@ -24,7 +24,7 @@ template <typename T> inline T const_check(T value) { return value; }
 // signed and unsigned integers.
 template <bool IsSigned> struct int_checker {
   template <typename T> static bool fits_in_int(T value) {
-    unsigned max = max_value<int>();
+    unsigned max = std::numeric_limits<int>::max();
     return value <= max;
   }
   static bool fits_in_int(bool) { return true; }
@@ -33,7 +33,7 @@ template <bool IsSigned> struct int_checker {
 template <> struct int_checker<true> {
   template <typename T> static bool fits_in_int(T value) {
     return value >= std::numeric_limits<int>::min() &&
-           value <= max_value<int>();
+           value <= std::numeric_limits<int>::max();
   }
   static bool fits_in_int(int) { return true; }
 };
@@ -158,12 +158,12 @@ template <typename Char> class printf_width_handler {
 
   template <typename T, FMT_ENABLE_IF(std::is_integral<T>::value)>
   unsigned operator()(T value) {
-    auto width = static_cast<uint32_or_64_or_128_t<T>>(value);
+    auto width = static_cast<uint32_or_64_t<T>>(value);
     if (internal::is_negative(value)) {
       specs_.align = align::left;
       width = 0 - width;
     }
-    unsigned int_max = max_value<int>();
+    unsigned int_max = std::numeric_limits<int>::max();
     if (width > int_max) FMT_THROW(format_error("number is too big"));
     return static_cast<unsigned>(width);
   }
@@ -339,7 +339,7 @@ template <typename OutputIt, typename Char> class basic_printf_context {
 
   // Returns the argument with specified index or, if arg_index is equal
   // to the maximum unsigned value, the next argument.
-  format_arg get_arg(unsigned arg_index = internal::max_value<unsigned>());
+  format_arg get_arg(unsigned arg_index = std::numeric_limits<unsigned>::max());
 
   // Parses argument index, flags and width and returns the argument index.
   unsigned parse_header(const Char*& it, const Char* end, format_specs& specs);
@@ -368,7 +368,8 @@ template <typename OutputIt, typename Char> class basic_printf_context {
   }
 
   /** Formats stored arguments and writes the output to the range. */
-  template <typename ArgFormatter = printf_arg_formatter<buffer_range<Char>>>
+  template <typename ArgFormatter =
+                printf_arg_formatter<internal::buffer_range<Char>>>
   OutputIt format();
 };
 
@@ -402,7 +403,7 @@ void basic_printf_context<OutputIt, Char>::parse_flags(format_specs& specs,
 template <typename OutputIt, typename Char>
 typename basic_printf_context<OutputIt, Char>::format_arg
 basic_printf_context<OutputIt, Char>::get_arg(unsigned arg_index) {
-  if (arg_index == internal::max_value<unsigned>())
+  if (arg_index == std::numeric_limits<unsigned>::max())
     arg_index = parse_ctx_.next_arg_id();
   else
     parse_ctx_.check_arg_id(--arg_index);
@@ -412,7 +413,7 @@ basic_printf_context<OutputIt, Char>::get_arg(unsigned arg_index) {
 template <typename OutputIt, typename Char>
 unsigned basic_printf_context<OutputIt, Char>::parse_header(
     const Char*& it, const Char* end, format_specs& specs) {
-  unsigned arg_index = internal::max_value<unsigned>();
+  unsigned arg_index = std::numeric_limits<unsigned>::max();
   char_type c = *it;
   if (c >= '0' && c <= '9') {
     // Parse an argument index (if followed by '$') or a width possibly

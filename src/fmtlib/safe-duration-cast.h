@@ -62,7 +62,7 @@ FMT_CONSTEXPR To lossless_integral_conversion(const From from, int& ec) {
 
   if (F::is_signed && !T::is_signed) {
     // From may be negative, not allowed!
-    if (fmt::internal::is_negative(from)) {
+    if (from < 0) {
       ec = 1;
       return {};
     }
@@ -161,8 +161,7 @@ To safe_duration_cast(std::chrono::duration<FromRep, FromPeriod> from,
   ec = 0;
   // the basic idea is that we need to convert from count() in the from type
   // to count() in the To type, by multiplying it with this:
-  struct Factor
-      : std::ratio_divide<typename From::period, typename To::period> {};
+  using Factor = std::ratio_divide<typename From::period, typename To::period>;
 
   static_assert(Factor::num > 0, "num must be positive");
   static_assert(Factor::den > 0, "den must be positive");
@@ -183,12 +182,14 @@ To safe_duration_cast(std::chrono::duration<FromRep, FromPeriod> from,
   }
   // multiply with Factor::num without overflow or underflow
   if (Factor::num != 1) {
-    const auto max1 = internal::max_value<IntermediateRep>() / Factor::num;
+    constexpr auto max1 =
+        std::numeric_limits<IntermediateRep>::max() / Factor::num;
     if (count > max1) {
       ec = 1;
       return {};
     }
-    const auto min1 = std::numeric_limits<IntermediateRep>::min() / Factor::num;
+    constexpr auto min1 =
+        std::numeric_limits<IntermediateRep>::min() / Factor::num;
     if (count < min1) {
       ec = 1;
       return {};
@@ -233,8 +234,7 @@ To safe_duration_cast(std::chrono::duration<FromRep, FromPeriod> from,
 
   // the basic idea is that we need to convert from count() in the from type
   // to count() in the To type, by multiplying it with this:
-  struct Factor
-      : std::ratio_divide<typename From::period, typename To::period> {};
+  using Factor = std::ratio_divide<typename From::period, typename To::period>;
 
   static_assert(Factor::num > 0, "num must be positive");
   static_assert(Factor::den > 0, "den must be positive");
@@ -257,7 +257,7 @@ To safe_duration_cast(std::chrono::duration<FromRep, FromPeriod> from,
 
   // multiply with Factor::num without overflow or underflow
   if (Factor::num != 1) {
-    constexpr auto max1 = internal::max_value<IntermediateRep>() /
+    constexpr auto max1 = std::numeric_limits<IntermediateRep>::max() /
                           static_cast<IntermediateRep>(Factor::num);
     if (count > max1) {
       ec = 1;

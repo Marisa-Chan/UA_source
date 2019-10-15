@@ -3017,7 +3017,7 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
 
     ypaworld__string_pointers = getYW_localeStrings();
 
-    init_list(&usr->files_list);
+    usr->profiles.clear();
     init_list(&usr->video_mode_list);
     init_list(&usr->lang_dlls);
 
@@ -3337,15 +3337,7 @@ void NC_STACK_ypaworld::ypaworld_func155(UserData *usr)
 {
     usr->yw_netcleanup();
 
-    while ( 1 )
-    {
-        nnode *v4 = RemHead(&usr->files_list);
-
-        if ( !v4 )
-            break;
-
-        nc_FreeMem(v4);
-    }
+    usr->profiles.clear();
 
     while ( 1 )
     {
@@ -5278,7 +5270,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     args.Init();
     args.resizeable = false;
-    args.numEntries = listCnt(&usr->files_list);
+    args.numEntries = usr->profiles.size();
     args.shownEntries = 10;
     args.firstShownEntry = 0;
     args.selectedEntry = 0;

@@ -46,13 +46,9 @@ template <class Char> class formatbuf : public std::basic_streambuf<Char> {
 
 template <typename Char> struct test_stream : std::basic_ostream<Char> {
  private:
+  struct null;
   // Hide all operator<< from std::basic_ostream<Char>.
-  void_t<> operator<<(null<>);
-  void_t<> operator<<(const Char*);
-
-  template <typename T, FMT_ENABLE_IF(std::is_convertible<T, int>::value &&
-                                      !std::is_enum<T>::value)>
-  void_t<> operator<<(T);
+  void operator<<(null);
 };
 
 // Checks if T has a user-defined operator<< (e.g. not a member of
@@ -60,9 +56,9 @@ template <typename Char> struct test_stream : std::basic_ostream<Char> {
 template <typename T, typename Char> class is_streamable {
  private:
   template <typename U>
-  static bool_constant<!std::is_same<decltype(std::declval<test_stream<Char>&>()
-                                              << std::declval<U>()),
-                                     void_t<>>::value>
+  static decltype((void)(std::declval<test_stream<Char>&>()
+                         << std::declval<U>()),
+                  std::true_type())
   test(int);
 
   template <typename> static std::false_type test(...);
@@ -79,7 +75,8 @@ void write(std::basic_ostream<Char>& os, buffer<Char>& buf) {
   const Char* buf_data = buf.data();
   using unsigned_streamsize = std::make_unsigned<std::streamsize>::type;
   unsigned_streamsize size = buf.size();
-  unsigned_streamsize max_size = to_unsigned(max_value<std::streamsize>());
+  unsigned_streamsize max_size =
+      to_unsigned((std::numeric_limits<std::streamsize>::max)());
   do {
     unsigned_streamsize n = size <= max_size ? size : max_size;
     os.write(buf_data, static_cast<std::streamsize>(n));
