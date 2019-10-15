@@ -3923,7 +3923,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     btn_64arg.tileset_down = 19;
     btn_64arg.tileset_up = 18;
-    btn_64arg.button_type = 1;
+    btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
     btn_64arg.field_3A = 30;
     btn_64arg.xpos = yw->screen_width * 0.3328125;
     btn_64arg.ypos = yw->screen_height * 0.2291666666666666;
@@ -4063,7 +4063,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.tileset_down = 19;
     btn_64arg.field_3A = 30;
     btn_64arg.ypos = 0;
-    btn_64arg.button_type = 1;
+    btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
     btn_64arg.tileset_up = 18;
     btn_64arg.xpos = dword_5A50B6_h + word_5A50C0;
     btn_64arg.width = dword_5A50B6_h;
@@ -4175,7 +4175,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.tileset_up = 18;
     btn_64arg.tileset_down = 19;
     btn_64arg.field_3A = 30;
-    btn_64arg.button_type = 1;
+    btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
     btn_64arg.xpos = yw->screen_width * 0.25;
     btn_64arg.ypos = yw->screen_height * 0.53125;
     btn_64arg.width = yw->screen_width * 0.125;
@@ -4203,7 +4203,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         if ( usr->confirm_button->button_func64(&btn_64arg) )
         {
             btn_64arg.tileset_down = 16;
-            btn_64arg.button_type = 3;
+            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
             btn_64arg.tileset_up = 16;
             btn_64arg.field_3A = 16;
             btn_64arg.xpos = yw->screen_width * 0.25;
@@ -4289,7 +4289,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.tileset_up = 16;
     btn_64arg.field_3A = 16;
     btn_64arg.xpos = 0;
-    btn_64arg.button_type = 3;
+    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
     btn_64arg.ypos = 0;
     btn_64arg.width = v278_4;
     btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 309, "INPUT SETTINGS");
@@ -4338,7 +4338,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.tileset_down = 19;
                     btn_64arg.field_3A = 30;
                     btn_64arg.tileset_up = 18;
-                    btn_64arg.button_type = 2;
+                    btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                     btn_64arg.xpos = v278_4 / 6;
                     btn_64arg.caption = "g";
                     btn_64arg.caption2 = "g";
@@ -4356,7 +4356,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.tileset_up = 16;
                         btn_64arg.field_3A = 16;
                         btn_64arg.xpos = (v259_4 + word_5A50C0 + v278_4 / 6);
-                        btn_64arg.button_type = 3;
+                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                         btn_64arg.width = (v278_4 / 2 - word_5A50C0);
                         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 305, "JOYSTICK");
                         btn_64arg.button_id = 2;
@@ -4376,7 +4376,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                             btn_64arg.tileset_up = 18;
                             btn_64arg.caption = "g";
                             btn_64arg.caption2 = "g";
-                            btn_64arg.button_type = 2;
+                            btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                             btn_64arg.xpos = word_5A50C0 + (v278_4 / 2);
                             btn_64arg.width = v259_4;
                             btn_64arg.down_id = 1058;
@@ -4390,7 +4390,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                 btn_64arg.tileset_down = 16;
                                 btn_64arg.tileset_up = 16;
                                 btn_64arg.field_3A = 16;
-                                btn_64arg.button_type = 3;
+                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                 btn_64arg.xpos = (v259_4 + (v278_4 / 2) + 2 * word_5A50C0);
                                 btn_64arg.width = ((v278_4 / 2) - word_5A50C0);
                                 btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2433, "ALTERNATE JOYSTICK MODEL");
@@ -4409,7 +4409,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                     btn_64arg.tileset_down = 19;
                                     btn_64arg.field_3A = 30;
                                     btn_64arg.tileset_up = 18;
-                                    btn_64arg.button_type = 2;
+                                    btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                                     btn_64arg.xpos = v278_4 / 3;
                                     btn_64arg.caption = "g";
                                     btn_64arg.caption2 = "g";
@@ -4426,7 +4426,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                         btn_64arg.tileset_down = 16;
                                         btn_64arg.tileset_up = 16;
                                         btn_64arg.field_3A = 16;
-                                        btn_64arg.button_type = 3;
+                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                         btn_64arg.xpos = (v259_4 + (v278_4 / 3) + word_5A50C0);
                                         btn_64arg.width = v278_4 / 2;
                                         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 306, "DISABLE FORCE FEEDBACK");
@@ -4441,7 +4441,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                         {
                                             btn_64arg.tileset_down = 19;
                                             btn_64arg.tileset_up = 18;
-                                            btn_64arg.button_type = 1;
+                                            btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
                                             btn_64arg.field_3A = 30;
                                             btn_64arg.xpos = v278_4 / 6;
                                             btn_64arg.ypos = 5 * word_5A50C2 + 13 * yw->font_default_h;
@@ -4471,7 +4471,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                     btn_64arg.xpos = v267;
                                                     btn_64arg.ypos = v269;
                                                     btn_64arg.width = v270;
-                                                    btn_64arg.button_type = 1;
+                                                    btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
                                                     btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2, "OK");
                                                     btn_64arg.caption2 = 0;
                                                     btn_64arg.pressed_id = 0;
@@ -4605,7 +4605,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.tileset_down = 16;
     btn_64arg.tileset_up = 16;
     btn_64arg.field_3A = 16;
-    btn_64arg.button_type = 3;
+    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
     btn_64arg.xpos = 0;
     btn_64arg.ypos = 0;
     btn_64arg.width = v278_4;
@@ -4656,7 +4656,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.tileset_up = 16;
                     btn_64arg.field_3A = 16;
                     btn_64arg.xpos = 0;
-                    btn_64arg.button_type = 3;
+                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                     btn_64arg.ypos = 5 * (yw->font_default_h + word_5A50C2);
                     btn_64arg.width = v98;
                     btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 340, "RESOLUTION SHELL");
@@ -4683,7 +4683,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                         btn_64arg.tileset_down = 19;
                         btn_64arg.field_3A = 30;
-                        btn_64arg.button_type = 2;
+                        btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                         btn_64arg.caption = vnode->name;
                         btn_64arg.caption2 = 0;
                         btn_64arg.pressed_id = 0;
@@ -4703,7 +4703,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                             btn_64arg.tileset_down = 16;
                             btn_64arg.tileset_up = 16;
                             btn_64arg.field_3A = 16;
-                            btn_64arg.button_type = 3;
+                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                             btn_64arg.xpos = 0;
                             btn_64arg.ypos = 2 * (3 * (word_5A50C2 + yw->font_default_h));
                             btn_64arg.width = v294 * 0.4;
@@ -4723,7 +4723,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                 btn_64arg.width = v294 * 0.6;
                                 btn_64arg.tileset_down = 19;
                                 btn_64arg.field_3A = 30;
-                                btn_64arg.button_type = 2;
+                                btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                                 btn_64arg.down_id = 1134;
                                 btn_64arg.up_id = 1135;
                                 btn_64arg.tileset_up = 18;
@@ -4742,7 +4742,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                     int v117 = dword_5A50B2 - 6 * word_5A50C0 - 2 * v259_4;
 
                                     btn_64arg.tileset_down = 19;
-                                    btn_64arg.button_type = 2;
+                                    btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                                     btn_64arg.tileset_up = 18;
                                     btn_64arg.field_3A = 30;
                                     btn_64arg.xpos = 0;
@@ -4764,7 +4764,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                         btn_64arg.tileset_up = 16;
                                         btn_64arg.field_3A = 16;
                                         btn_64arg.xpos = v259_4 + word_5A50C0;
-                                        btn_64arg.button_type = 3;
+                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                         btn_64arg.width = v120;
                                         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 344, "FAR VIEW");
                                         btn_64arg.caption2 = 0;
@@ -4786,7 +4786,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                             btn_64arg.caption2 = "g";
                                             btn_64arg.field_3A = 30;
                                             btn_64arg.up_id = 1107;
-                                            btn_64arg.button_type = 2;
+                                            btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                                             btn_64arg.down_id = 1106;
                                             btn_64arg.xpos = 3 * word_5A50C0 + v259_4 + v120;
                                             btn_64arg.pressed_id = 0;
@@ -4800,7 +4800,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                 btn_64arg.field_3A = 16;
                                                 btn_64arg.width = v120;
                                                 btn_64arg.xpos = 4 * word_5A50C0 + v120 + 2 * v259_4;
-                                                btn_64arg.button_type = 3;
+                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                 btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 345, "HEAVEN");
                                                 btn_64arg.caption2 = 0;
                                                 btn_64arg.down_id = 0;
@@ -4813,7 +4813,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                 {
                                                     btn_64arg.tileset_down = 19;
                                                     btn_64arg.tileset_up = 18;
-                                                    btn_64arg.button_type = 2;
+                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                                                     btn_64arg.xpos = 0;
                                                     btn_64arg.field_3A = 30;
                                                     btn_64arg.width = v259_4;
@@ -4833,7 +4833,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                         btn_64arg.field_3A = 16;
                                                         btn_64arg.width = v120;
                                                         btn_64arg.xpos = v259_4 + word_5A50C0;
-                                                        btn_64arg.button_type = 3;
+                                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 350, "SW MOUSEPOINTER");
                                                         btn_64arg.caption2 = 0;
                                                         btn_64arg.down_id = 0;
@@ -4847,7 +4847,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                             btn_64arg.width = v259_4;
                                                             btn_64arg.tileset_down = 19;
                                                             btn_64arg.tileset_up = 18;
-                                                            btn_64arg.button_type = 2;
+                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                                                             btn_64arg.field_3A = 30;
                                                             btn_64arg.down_id = 1130;
                                                             btn_64arg.pressed_id = 0;
@@ -4863,7 +4863,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                 btn_64arg.tileset_down = 16;
                                                                 btn_64arg.tileset_up = 16;
                                                                 btn_64arg.field_3A = 16;
-                                                                btn_64arg.button_type = 3;
+                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                 btn_64arg.xpos = 4 * word_5A50C0 + v120 + 2 * v259_4;
                                                                 btn_64arg.width = v120;
                                                                 btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2432, "OPENGL LIKE (:-)");
@@ -4876,7 +4876,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                                                                 if ( usr->video_button->button_func64(&btn_64arg) )
                                                                 {
-                                                                    btn_64arg.button_type = 3;
+                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                     btn_64arg.xpos = v259_4 + word_5A50C0;
                                                                     btn_64arg.ypos = 9 * (word_5A50C2 + yw->font_default_h);
                                                                     btn_64arg.width = v120;
@@ -4893,7 +4893,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                         btn_64arg.width = v259_4;
                                                                         btn_64arg.tileset_down = 19;
                                                                         btn_64arg.tileset_up = 18;
-                                                                        btn_64arg.button_type = 2;
+                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                                                                         btn_64arg.pressed_id = 0;
                                                                         btn_64arg.flags = 0;
                                                                         btn_64arg.field_3A = 30;
@@ -4909,7 +4909,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                             btn_64arg.tileset_down = 16;
                                                                             btn_64arg.tileset_up = 16;
                                                                             btn_64arg.field_3A = 16;
-                                                                            btn_64arg.button_type = 3;
+                                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                             btn_64arg.xpos = v120 + 2 * v259_4 + 4 * word_5A50C0;
                                                                             btn_64arg.width = v120;
                                                                             btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 326, "ENABLE CD AUDIO");
@@ -4925,7 +4925,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                 btn_64arg.width = v259_4;
                                                                                 btn_64arg.tileset_down = 19;
                                                                                 btn_64arg.tileset_up = 18;
-                                                                                btn_64arg.button_type = 2;
+                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                                                                                 btn_64arg.field_3A = 30;
                                                                                 btn_64arg.down_id = 1128;
                                                                                 btn_64arg.pressed_id = 0;
@@ -4942,7 +4942,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                     btn_64arg.field_3A = 30;
                                                                                     btn_64arg.tileset_up = 18;
                                                                                     btn_64arg.xpos = 0;
-                                                                                    btn_64arg.button_type = 2;
+                                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                                                                                     btn_64arg.width = v259_4;
                                                                                     btn_64arg.caption = "g";
                                                                                     btn_64arg.caption2 = "g";
@@ -4958,7 +4958,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                         btn_64arg.tileset_down = 16;
                                                                                         btn_64arg.tileset_up = 16;
                                                                                         btn_64arg.field_3A = 16;
-                                                                                        btn_64arg.button_type = 3;
+                                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                         btn_64arg.xpos = v259_4 + word_5A50C0;
                                                                                         btn_64arg.width = v120 - v259_4;
                                                                                         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 325, "ENEMY INDICATOR");
@@ -4974,7 +4974,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                             btn_64arg.tileset_down = 16;
                                                                                             btn_64arg.tileset_up = 16;
                                                                                             btn_64arg.field_3A = 16;
-                                                                                            btn_64arg.button_type = 3;
+                                                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                             btn_64arg.xpos = v120 + 2 * v259_4 + 4 * word_5A50C0;
                                                                                             btn_64arg.width = v120;
                                                                                             btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 323, "INVERT LEFT-RIGHT DIVISION ");
@@ -4998,7 +4998,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                 btn_64arg.button_id = 1151;
                                                                                                 btn_64arg.xpos = 3 * word_5A50C0 + v259_4 + v120;
                                                                                                 btn_64arg.down_id = 1112;
-                                                                                                btn_64arg.button_type = 2;
+                                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                                                                                                 btn_64arg.up_id = 1111;
 
                                                                                                 if ( usr->video_button->button_func64(&btn_64arg) )
@@ -5006,7 +5006,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                     btn_64arg.tileset_down = 16;
                                                                                                     btn_64arg.tileset_up = 16;
                                                                                                     btn_64arg.field_3A = 16;
-                                                                                                    btn_64arg.button_type = 3;
+                                                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                     btn_64arg.xpos = 0;
                                                                                                     btn_64arg.ypos = 11 * (yw->font_default_h + word_5A50C2);
                                                                                                     btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
@@ -5030,7 +5030,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                         btn_64arg.tileset_down = 18;
                                                                                                         btn_64arg.tileset_up = 18;
                                                                                                         btn_64arg.field_3A = 30;
-                                                                                                        btn_64arg.button_type = 5;
+                                                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_SLIDER;
                                                                                                         btn_64arg.pressed_id = 1110;
                                                                                                         btn_64arg.button_id = 1159;
                                                                                                         btn_64arg.xpos = word_5A50C0 + (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
@@ -5046,7 +5046,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                             btn_64arg.tileset_down = 16;
                                                                                                             btn_64arg.tileset_up = 16;
                                                                                                             btn_64arg.field_3A = 16;
-                                                                                                            btn_64arg.button_type = 3;
+                                                                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                             btn_64arg.caption2 = 0;
                                                                                                             btn_64arg.xpos = word_5A50C0 + (dword_5A50B2 - 5 * word_5A50C0) * 0.85;
                                                                                                             btn_64arg.down_id = 0;
@@ -5059,7 +5059,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                                                                                                             if ( usr->video_button->button_func64(&btn_64arg) )
                                                                                                             {
-                                                                                                                btn_64arg.button_type = 3;
+                                                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                                 btn_64arg.xpos = 0;
                                                                                                                 btn_64arg.ypos = 12 * (word_5A50C2 + yw->font_default_h);
                                                                                                                 btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
@@ -5082,7 +5082,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                     btn_64arg.field_3A = 30;
                                                                                                                     btn_64arg.tileset_down = 18;
                                                                                                                     btn_64arg.tileset_up = 18;
-                                                                                                                    btn_64arg.button_type = 5;
+                                                                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_SLIDER;
                                                                                                                     btn_64arg.caption2 = 0;
                                                                                                                     btn_64arg.button_id = 1152;
                                                                                                                     btn_64arg.xpos = word_5A50C0 + (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
@@ -5095,7 +5095,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                                                                                                                     if ( usr->video_button->button_func64(&btn_64arg) )
                                                                                                                     {
-                                                                                                                        btn_64arg.button_type = 3;
+                                                                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                                         btn_64arg.tileset_down = 16;
                                                                                                                         btn_64arg.tileset_up = 16;
                                                                                                                         btn_64arg.field_3A = 16;
@@ -5111,7 +5111,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                                                                                                                         if ( usr->video_button->button_func64(&btn_64arg) )
                                                                                                                         {
-                                                                                                                            btn_64arg.button_type = 3;
+                                                                                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                                             btn_64arg.xpos = 0;
                                                                                                                             btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
                                                                                                                             btn_64arg.ypos = 13 * (word_5A50C2 + yw->font_default_h);
@@ -5134,7 +5134,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                                 btn_64arg.tileset_up = 18;
                                                                                                                                 btn_64arg.up_id = 1120;
                                                                                                                                 btn_64arg.field_3A = 30;
-                                                                                                                                btn_64arg.button_type = 5;
+                                                                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_SLIDER;
                                                                                                                                 btn_64arg.caption2 = 0;
                                                                                                                                 btn_64arg.down_id = 1118;
                                                                                                                                 btn_64arg.xpos = word_5A50C0 + (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
@@ -5149,7 +5149,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                                     btn_64arg.tileset_down = 16;
                                                                                                                                     btn_64arg.tileset_up = 16;
                                                                                                                                     btn_64arg.field_3A = 16;
-                                                                                                                                    btn_64arg.button_type = 3;
+                                                                                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                                                     btn_64arg.caption = "4";
                                                                                                                                     btn_64arg.caption2 = 0;
                                                                                                                                     btn_64arg.down_id = 0;
@@ -5164,7 +5164,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                                     {
                                                                                                                                         btn_64arg.tileset_up = 18;
                                                                                                                                         btn_64arg.field_3A = 30;
-                                                                                                                                        btn_64arg.button_type = 1;
+                                                                                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
                                                                                                                                         btn_64arg.xpos = v267;
                                                                                                                                         btn_64arg.ypos = v269;
                                                                                                                                         btn_64arg.width = v270;
@@ -5320,7 +5320,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.tileset_down = 16;
     btn_64arg.tileset_up = 16;
     btn_64arg.field_3A = 16;
-    btn_64arg.button_type = 3;
+    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
 
     btn_64arg.xpos = 0;
     btn_64arg.ypos = 0;
@@ -5366,7 +5366,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.tileset_up = 17;
                     btn_64arg.field_3A = 17;
                     btn_64arg.xpos = 0;
-                    btn_64arg.button_type = 3;
+                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                     btn_64arg.width = v278_4;
                     btn_64arg.caption2 = 0;
                     btn_64arg.down_id = 0;
@@ -5382,7 +5382,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.tileset_down = 19;
                         btn_64arg.tileset_up = 18;
                         btn_64arg.field_3A = 30;
-                        btn_64arg.button_type = 1;
+                        btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
                         btn_64arg.xpos = word_5A50C0 + (v278_4 - 3 * word_5A50C0) * 0.25;
                         btn_64arg.ypos = 7 * word_5A50C0 + 15 * yw->font_default_h;
                         btn_64arg.width = (v278_4 - 3 * word_5A50C0) * 0.25;
@@ -5523,7 +5523,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     v70 = 0;
     btn_64arg.tileset_down = 16;
     btn_64arg.tileset_up = 16;
-    btn_64arg.button_type = 3;
+    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
     btn_64arg.xpos = 0;
     btn_64arg.width = v278_4;
     btn_64arg.field_3A = 30;
@@ -5570,7 +5570,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                 {
                     btn_64arg.tileset_down = 19;
                     btn_64arg.tileset_up = 18;
-                    btn_64arg.button_type = 1;
+                    btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
                     btn_64arg.field_3A = 30;
                     btn_64arg.xpos = v267 - (usr->field_19C6 - v278);
                     btn_64arg.ypos = v269 - (usr->field_0x19c8 - v273);
@@ -5647,7 +5647,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.tileset_down = 16;
     btn_64arg.tileset_up = 16;
     btn_64arg.field_3A = 16;
-    btn_64arg.button_type = 3;
+    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
     btn_64arg.xpos = 0;
     btn_64arg.width = (yw->screen_width - 4 * word_5A50C0);
     btn_64arg.caption2 = 0;
@@ -5809,7 +5809,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.tileset_down = 17;
     btn_64arg.tileset_up = 17;
     btn_64arg.field_3A = 17;
-    btn_64arg.button_type = 3;
+    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
     btn_64arg.xpos = 0;
     btn_64arg.caption = "???";
     btn_64arg.caption2 = 0;
@@ -5833,7 +5833,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         btn_64arg.xpos = word_5A50C0 + dword_5A50B6 * 0.8;
         btn_64arg.field_3A = 30;
         btn_64arg.width = dword_5A50B6 * 0.2 - word_5A50C0;
-        btn_64arg.button_type = 1;
+        btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 405, "SEND");
         btn_64arg.caption2 = 0;
         btn_64arg.up_id = 1210;
@@ -5853,7 +5853,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.tileset_down = 16;
             btn_64arg.tileset_up = 16;
             btn_64arg.field_3A = 16;
-            btn_64arg.button_type = 3;
+            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
             btn_64arg.ypos = (15 * (word_5A50C2 + yw->font_default_h));
             btn_64arg.xpos = 0;
             btn_64arg.width = dword_5A50B6 * 0.4 - 2 * word_5A50C0;
@@ -5909,7 +5909,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                 btn_64arg.tileset_down = 19;
                                 btn_64arg.tileset_up = 18;
                                 btn_64arg.field_3A = 30;
-                                btn_64arg.button_type = 1;
+                                btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
                                 btn_64arg.xpos += v284 + 2 * word_5A50C0;
                                 btn_64arg.width = dword_5A50B2_h - btn_64arg.xpos;
                                 btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 401, "BACK");
@@ -5931,7 +5931,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                     btn_64arg.tileset_up = 16;
                                     btn_64arg.field_3A = 16;
                                     btn_64arg.width = dword_5A50B2_h;
-                                    btn_64arg.button_type = 3;
+                                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                     btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 410, "SELECT PROVIDER");
                                     btn_64arg.caption2 = 0;
                                     btn_64arg.down_id = 0;
@@ -5963,7 +5963,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                             {
                                                 btn_64arg.tileset_down = 19;
                                                 btn_64arg.tileset_up = 18;
-                                                btn_64arg.button_type = 1;
+                                                btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
                                                 btn_64arg.field_3A = 30;
                                                 btn_64arg.xpos = dword_5A50B6 * 0.3;
                                                 btn_64arg.ypos = (word_5A50C0 + yw->font_default_h) * 15.2;
@@ -6024,7 +6024,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                 btn_64arg.tileset_down = 16;
                                                                 btn_64arg.tileset_up = 16;
                                                                 btn_64arg.field_3A = 16;
-                                                                btn_64arg.button_type = 3;
+                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                 btn_64arg.xpos = v204 + v259_4;
                                                                 btn_64arg.ypos = 4 * (yw->font_default_h + word_5A50C0);
                                                                 btn_64arg.caption = " ";
@@ -6059,7 +6059,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                 btn_64arg.tileset_down = 8;
                                                                                 btn_64arg.tileset_up = 8;
                                                                                 btn_64arg.field_3A = 8;
-                                                                                btn_64arg.button_type = 3;
+                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                 btn_64arg.xpos = 0;
                                                                                 btn_64arg.width = v204;
                                                                                 btn_64arg.caption2 = 0;
@@ -6095,7 +6095,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                 btn_64arg.tileset_up = 18;
                                                                                                 btn_64arg.xpos = v267;
                                                                                                 btn_64arg.field_3A = 30;
-                                                                                                btn_64arg.button_type = 2;
+                                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                                                                                                 btn_64arg.width = v259_4;
                                                                                                 btn_64arg.caption = "g";
                                                                                                 btn_64arg.caption2 = "g";
@@ -6111,7 +6111,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                     btn_64arg.tileset_down = 16;
                                                                                                     btn_64arg.tileset_up = 16;
                                                                                                     btn_64arg.field_3A = 16;
-                                                                                                    btn_64arg.button_type = 3;
+                                                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                     btn_64arg.xpos += word_5A50C0 + v259_4;
                                                                                                     btn_64arg.width = v270 - v259_4 - word_5A50C0;
                                                                                                     btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 409, "READY");
@@ -6128,7 +6128,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                         btn_64arg.tileset_down = 16;
                                                                                                         btn_64arg.tileset_up = 16;
                                                                                                         btn_64arg.field_3A = 16;
-                                                                                                        btn_64arg.button_type = 3;
+                                                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                         btn_64arg.ypos = 3 * (yw->font_default_h + word_5A50C0);
                                                                                                         btn_64arg.width = dword_5A50B6 * 0.3;
                                                                                                         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 600, "YOU PLAY");
@@ -6145,7 +6145,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                         if ( usr->network_button->button_func64(&btn_64arg) )
                                                                                                         {
                                                                                                             btn_64arg.xpos = dword_5A50B6 * 0.3;
-                                                                                                            btn_64arg.button_type = 3;
+                                                                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                             btn_64arg.width = dword_5A50B6 * 0.7;
                                                                                                             btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
                                                                                                             btn_64arg.button_id = 1226;
@@ -6156,7 +6156,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                 btn_64arg.tileset_down = 16;
                                                                                                                 btn_64arg.tileset_up = 16;
                                                                                                                 btn_64arg.field_3A = 16;
-                                                                                                                btn_64arg.button_type = 3;
+                                                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                                 btn_64arg.xpos = 0;
                                                                                                                 btn_64arg.ypos = (14 * (word_5A50C2 + yw->font_default_h));
                                                                                                                 btn_64arg.width = dword_5A50B2_h;
