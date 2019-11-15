@@ -137,22 +137,12 @@ void correctSeparatorAndExt(std::string &str)
         str.resize(pos + 3 + 1);
 }
 
-bool uaFileExist(const char *src_path, const char *prefix)
+bool uaFileExist(const std::string &src_path)
 {
-    std::string pre_copy;
-    if (prefix)
-    {
-        pre_copy = prefix;
-        pre_copy += src_path;
-    }
-    else
-        pre_copy = src_path;
-
-    std::string path;
-    file_path_copy_manipul(pre_copy, path);
+    std::string path = file_path_copy_manipul(src_path);
     correctSeparatorAndExt(path);
 
-    return FSMgr::iDir::fileExist(path.c_str());
+    return FSMgr::iDir::fileExist(path);
 }
 
 //FSMgr::FileHandle *uaOpenFile(const char *src_path, const char *mode)
@@ -171,56 +161,51 @@ bool uaFileExist(const char *src_path, const char *prefix)
 //    return v4;
 //}
 
-FSMgr::FileHandle *uaOpenFile(const std::string &src_path, const char *mode)
+FSMgr::FileHandle *uaOpenFile(const std::string &src_path, const std::string &mode)
 {
-    std::string path;
-    file_path_copy_manipul(src_path, path);
+    std::string path = file_path_copy_manipul(src_path);
     correctSeparatorAndExt(path);
 
-    FSMgr::FileHandle *v4 = FSMgr::iDir::openFile(path.c_str(), mode);
+    FSMgr::FileHandle *v4 = FSMgr::iDir::openFile(path, mode);
 
     if ( v4 )
         engines.file_handles++;
     else
-        ypa_log_out("uaOpenFile('%s','%s') failed!\n", path.c_str(), mode);
+        ypa_log_out("uaOpenFile('%s','%s') failed!\n", path, mode);
 
     return v4;
 }
 
 FSMgr::DirIter uaOpenDir(const std::string &dir)
 {
-    std::string dst;
-    file_path_copy_manipul(dir, dst);
+    std::string dst = file_path_copy_manipul(dir);
     correctSeparatorAndExt(dst);
 
     return FSMgr::iDir::readDir(dst);
 }
 
-bool uaDeleteFile(const char *path)
+bool uaDeleteFile(const std::string &path)
 {
-    std::string dst;
-    file_path_copy_manipul(path, dst);
+    std::string dst = file_path_copy_manipul(path);
     correctSeparatorAndExt(dst);
 
-    return FSMgr::iDir::deleteFile(dst.c_str());
+    return FSMgr::iDir::deleteFile(dst);
 }
 
-bool uaDeleteDir(const char *path)
+bool uaDeleteDir(const std::string &path)
 {
-    std::string dst;
-    file_path_copy_manipul(path, dst);
+    std::string dst = file_path_copy_manipul(path);
     correctSeparatorAndExt(dst);
 
-    return FSMgr::iDir::deleteDir(dst.c_str());
+    return FSMgr::iDir::deleteDir(dst);
 }
 
-bool uaCreateDir(const char *path)
+bool uaCreateDir(const std::string &path)
 {
-    std::string dst;
-    file_path_copy_manipul(path, dst);
+    std::string dst = file_path_copy_manipul(path);
     correctSeparatorAndExt(dst);
 
-    return FSMgr::iDir::createDir(dst.c_str());
+    return FSMgr::iDir::createDir(dst);
 }
 
 int StriCmp(const std::string &a, const std::string &b)

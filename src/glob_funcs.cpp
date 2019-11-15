@@ -16,7 +16,7 @@ void *AllocVec(size_t size, int a2)
 }
 
 
-void file_path_copy_manipul(const std::string &src, std::string &dst)
+std::string file_path_copy_manipul(const std::string &src)
 {
     std::string buf1 = src;
 
@@ -27,17 +27,14 @@ void file_path_copy_manipul(const std::string &src, std::string &dst)
     size_t fndPos = buf1.find(':', stpos);
 
     if ( fndPos == std::string::npos )
-    {
-        dst = buf1;
-        return;
-    }
+        return buf1;
 
 
     std::string kword = buf1.substr(0, fndPos);
 
     for (std::list<TKVPair>::iterator it = engines.kvPairs.begin(); it != engines.kvPairs.end(); it++)
     {
-        if ( strcasecmp(it->name.c_str(), kword.c_str()) == 0 )
+        if ( !StriCmp(it->name, kword) )
         {
             std::string buf2;
             if (it->value.back() == ':') // if value has colon - do not add slash
@@ -45,16 +42,13 @@ void file_path_copy_manipul(const std::string &src, std::string &dst)
             else
                 buf2 = it->value + '/' + buf1.substr(fndPos + 1);
 
-            dst = buf2;
-            file_path_copy_manipul(buf2.c_str(), dst);
-
-            return;
+            return file_path_copy_manipul(buf2);
         }
     }
 
     buf1[fndPos] = '/';
 
-    dst = buf1;
+    return buf1;
 }
 
 const char * get_prefix_replacement(const char *prefix)
@@ -68,11 +62,11 @@ const char * get_prefix_replacement(const char *prefix)
     return "";
 }
 
-void set_prefix_replacement(const char *str1, const char *str2)
+void set_prefix_replacement(const std::string &str1, const std::string &str2)
 {
     for (std::list<TKVPair>::iterator it = engines.kvPairs.begin(); it != engines.kvPairs.end(); it++)
     {
-        if ( strcasecmp(it->name.c_str(), str1) == 0 )
+        if ( !StriCmp(it->name, str1) )
         {
             it->value = str2;
             return;
@@ -90,7 +84,7 @@ void set_prefix_replacement(const char *str1, const char *str2)
 
 void sub_412810(const std::string &src, std::string &dst)
 {
-    file_path_copy_manipul(src, dst);
+    dst = file_path_copy_manipul(src);
     correctSeparatorAndExt(dst);
 }
 

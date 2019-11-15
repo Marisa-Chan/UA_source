@@ -136,13 +136,13 @@ uint32_t profiler_begin();
 uint32_t profiler_end(uint32_t prev);
 
 //FSMgr::FileHandle *uaOpenFile(const char *src_path, const char *mode);
-FSMgr::FileHandle *uaOpenFile(const std::string &src_path, const char *mode);
+FSMgr::FileHandle *uaOpenFile(const std::string &src_path, const std::string &mode);
 FSMgr::DirIter uaOpenDir(const std::string &dir);
 
-bool uaDeleteFile(const char *path);
-bool uaDeleteDir(const char *path);
-bool uaCreateDir(const char *path);
-bool uaFileExist(const char *src_path, const char *prefix);
+bool uaDeleteFile(const std::string &path);
+bool uaDeleteDir(const std::string &path);
+bool uaCreateDir(const std::string &path);
+bool uaFileExist(const std::string &path);
 
 inline double clp_asin(double x)
 {

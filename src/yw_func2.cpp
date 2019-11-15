@@ -2190,7 +2190,7 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
     else
         sprintf(a1a, "sounds/speech/language/9%d.wav", arg);
 
-    if ( !uaFileExist(a1a, "rsrc:") )
+    if ( !uaFileExist(std::string("rsrc:") + a1a) )
         sprintf(a1a, "sounds/speech/language/9%d.wav", arg);
 
     if ( usr->field_ADA )

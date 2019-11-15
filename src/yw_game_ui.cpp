@@ -7927,7 +7927,7 @@ void ypaworld_func159__sub0__sub0(_NC_STACK_ypaworld *yw, yw_samples *smpls, con
 
     filename += flname;
 
-    if ( !uaFileExist(filename.c_str(), "rsrc:") )
+    if ( !uaFileExist("rsrc:" + filename) )
     {
         filename = "sounds/speech/language/";
         filename += flname;

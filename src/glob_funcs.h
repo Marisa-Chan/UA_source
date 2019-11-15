@@ -7,6 +7,7 @@
 #include "MC.h"
 #include "ini.h"
 
+
 struct TKVPair
 {
     std::string name;
@@ -47,9 +48,9 @@ void *AllocVec(size_t size, int a2);
 
 
 const char * get_prefix_replacement(const char *prefix);
-void set_prefix_replacement(const char *str1, const char *str2);
+void set_prefix_replacement(const std::string &str1, const std::string &str2);
 
-void file_path_copy_manipul(const std::string &src, std::string &dst);
+std::string file_path_copy_manipul(const std::string &src);
 
 
 void sub_412810(const std::string &src, std::string &dst);
