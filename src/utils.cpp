@@ -223,3 +223,12 @@ bool uaCreateDir(const char *path)
     return FSMgr::iDir::createDir(dst.c_str());
 }
 
+int StriCmp(const std::string &a, const std::string &b)
+{
+	return strcasecmp(a.c_str(), b.c_str());
+}
+
+bool StrGetBool(const std::string &str)
+{
+    return !StriCmp(str, "yes") || !StriCmp(str, "true") || !StriCmp(str, "on");
+}

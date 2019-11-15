@@ -171,4 +171,80 @@ inline double fSign(double x)
 
 void correctSeparatorAndExt(std::string &str);
 
+int StriCmp(const std::string &a, const std::string &b);
+bool StrGetBool(const std::string &str);
+
+
+
+
+class Stok
+{
+public:
+    Stok(const std::string &in, const std::string &chars)
+    {
+        _buf = in;
+        _chars = chars;
+        _pos = 0;
+    }
+
+    Stok(const std::string &chars)
+    {
+        _buf.clear();
+        _chars = chars;
+        _pos = 0;
+    }
+
+    bool GetNext(std::string *word)
+    {
+        if (_buf.empty() || _pos >= _buf.size() || _pos == std::string::npos)
+            return false;
+
+        _pos = _buf.find_first_not_of(_chars, _pos);
+        if (_pos == std::string::npos)
+            return false;
+
+        size_t next = _buf.find_first_of(_chars, _pos);
+
+        if (next != std::string::npos)
+            *word = _buf.substr(_pos, next - _pos);
+        else
+            *word = _buf.substr(_pos);
+
+        _pos = next;
+        return true;
+    }
+
+    bool GetNext(std::string *word, const std::string &chars)
+    {
+        _chars = chars;
+        return GetNext(word);
+    }
+
+    Stok& operator=(const std::string &b)
+    {
+        _buf = b;
+        _pos = 0;
+        return *this;
+    }
+
+    /*** Only for one result ***/
+    static std::string Fast(const std::string &str, const std::string &chars)
+    {
+        size_t pos = str.find_first_not_of(chars);
+        if (pos == std::string::npos)
+            return std::string();
+
+        size_t next = str.find_first_of(chars, pos);
+
+        if (next != std::string::npos)
+            return str.substr(pos, next - pos);
+        else
+            return str.substr(pos);
+    }
+private:
+    std::string _buf;
+    std::string _chars;
+    size_t      _pos;
+};
+
 #endif // UTILS_H_INCLUDED
