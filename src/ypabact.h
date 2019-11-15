@@ -151,13 +151,38 @@ struct roboColl
     float robo_coll_radius;
     vec3d coll_pos;
     vec3d field_10;
+
+    roboColl()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        robo_coll_radius = 0.;
+        coll_pos = vec3d();
+        field_10 = vec3d();
+    }
 };
 
 struct rbcolls
 {
     int field_0;
-    char robo_coll_num;
-    roboColl roboColls[16];
+    int8_t robo_coll_num;
+    std::array<roboColl, 16> roboColls;
+
+    rbcolls()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        field_0 = 0;
+        robo_coll_num = 0;
+        for ( auto &c : roboColls )
+            c.clear();
+    }
 };
 
 enum BACT_TYPES
@@ -268,7 +293,7 @@ struct __NC_STACK_ypabact : public nnode
     int vp_active;
     extra_vproto vp_extra[3];
     int vp_extra_mode;
-    destFX destroyFX[16];
+    std::array<destFX, 16> destroyFX;
     float radius;
     float viewer_radius;
     float overeof;

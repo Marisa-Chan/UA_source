@@ -619,7 +619,7 @@ void UserData::sub_46B328()
         p_ypaworld->SendCRC(netLevelID);
 
         windp_arg82 flushmsg;
-        flushmsg.senderID = callSIGN;
+        flushmsg.senderID = callSIGN.c_str();
         flushmsg.senderFlags = 1;
         flushmsg.receiverID = NULL;
         flushmsg.receiverFlags = 2;
@@ -628,7 +628,7 @@ void UserData::sub_46B328()
         p_ypaworld->windp->FlushBuffer(flushmsg);
 
         char bff[300];
-        sprintf(bff, "%d%s%s%s%s", netLevelID, "|", callSIGN, "|", p_ypaworld->buildDate);
+        sprintf(bff, "%d%s%s%s%s", netLevelID, "|", callSIGN.c_str(), "|", p_ypaworld->buildDate);
 
         p_ypaworld->windp->SetSessionName(bff);
     }
@@ -736,7 +736,7 @@ void UserData::sub_46B328()
         p_YW->ypaworld_func181(&ywmsg);
 
         windp_arg82 flushmsg;
-        flushmsg.senderID = callSIGN;
+        flushmsg.senderID = callSIGN.c_str();
         flushmsg.senderFlags = 1;
         flushmsg.receiverID = NULL;
         flushmsg.receiverFlags = 2;
@@ -749,7 +749,7 @@ void UserData::sub_46B328()
         if (isHost)
         {
             char bff[300];
-            sprintf(bff, "%d%s%s%s%s", netLevelID, "|", callSIGN, "|", p_ypaworld->buildDate);
+            sprintf(bff, "%d%s%s%s%s", netLevelID, "|", callSIGN.c_str(), "|", p_ypaworld->buildDate);
 
             if (p_ypaworld->windp->GetProvType(NULL) == 4) //MODEM!!!!
                 p_ypaworld->win3d->windd_func320(NULL);
@@ -768,7 +768,7 @@ void UserData::sub_46B328()
         }
 
         windp_createPlayerMsg cp;
-        cp.name = callSIGN;
+        cp.name = callSIGN.c_str();
         cp.flags = 1;
 
         if (p_ypaworld->windp->CreatePlayer(&cp))
@@ -816,7 +816,7 @@ void UserData::yw_NetOKProvider()
 
                 p_YW->GuiWinClose( &network_listvw );
 
-                strcpy(netName, callSIGN);
+                strcpy(netName, callSIGN.c_str());
 
                 netNameCurPos = strlen(netName);
             }
@@ -882,7 +882,7 @@ void UserData::yw_JoinNetGame()
                 {
                     buf = plData.name;
 
-                    if ( !strcasecmp(plData.name, callSIGN) )
+                    if ( !StriCmp(plData.name, callSIGN) )
                     {
                         buf += "X";
                     }
@@ -894,7 +894,7 @@ void UserData::yw_JoinNetGame()
                 }
 
                 windp_createPlayerMsg crPlayerMsg;
-                crPlayerMsg.name = callSIGN;
+                crPlayerMsg.name = callSIGN.c_str();
                 crPlayerMsg.flags = 1;
 
                 if ( p_ypaworld->windp->CreatePlayer(&crPlayerMsg) )
@@ -910,7 +910,7 @@ void UserData::yw_JoinNetGame()
 
                     int plid = p_ypaworld->windp->getNumPlayers();
 
-                    strncpy(players2[plid - 1].name, callSIGN, sizeof(players2[plid - 1].name));
+                    strncpy(players2[plid - 1].name, callSIGN.c_str(), sizeof(players2[plid - 1].name));
 
                     yw_FractionInit();
 
@@ -937,7 +937,7 @@ void UserData::yw_JoinNetGame()
                 plData.mode = 0;
                 plData.ID = 0;
 
-                while ( p_ypaworld->windp->GetPlayerData(&plData) && strcasecmp(plData.name, callSIGN) )
+                while ( p_ypaworld->windp->GetPlayerData(&plData) && StriCmp(plData.name, callSIGN.c_str()) )
                     plData.ID++;
 
                 rdyStart = 0;
@@ -1012,7 +1012,7 @@ int yw_DestroyPlayer(_NC_STACK_ypaworld *yw, const char *playerName)
 void UserData::yw_netcleanup()
 {
     windp_arg82 flushmsg;
-    flushmsg.senderID = callSIGN;
+    flushmsg.senderID = callSIGN.c_str();
     flushmsg.senderFlags = 1;
     flushmsg.receiverID = NULL;
     flushmsg.receiverFlags = 2;
@@ -1021,7 +1021,7 @@ void UserData::yw_netcleanup()
     p_ypaworld->windp->FlushBuffer(flushmsg);
 
     if( netSelMode == 4 || p_ypaworld->netGameStarted )
-        yw_DestroyPlayer( p_ypaworld, callSIGN );
+        yw_DestroyPlayer( p_ypaworld, callSIGN.c_str() );
 
     if( ( netSelMode == 4 && isHost) || p_ypaworld->netGameStarted )
         p_ypaworld->windp->CloseSession(NULL);
@@ -1166,9 +1166,9 @@ void UserData::yw_NetPrintStartInfo()
         }
 
         if ( isHost )
-            log_netlog("\nThe local player is %s and is HOST\n", callSIGN);
+            log_netlog("\nThe local player is %s and is HOST\n", callSIGN.c_str());
         else
-            log_netlog("\nThe local player is %s and is CLIENT\n", callSIGN);
+            log_netlog("\nThe local player is %s and is CLIENT\n", callSIGN.c_str());
 
         const char *tmp = get_lang_string(ypaworld__string_pointers, netLevelID + 1800, p_ypaworld->LevelNet->mapInfos[ netLevelID ].map_name);
         log_netlog("They play level %d, this is %s\n", netLevelID, tmp);

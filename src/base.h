@@ -141,6 +141,23 @@ struct baseRender_msg
     float minZ;
     float maxZ;
     uint32_t flags;
+
+    baseRender_msg()
+    {
+    	clear();
+    }
+
+    void clear()
+    {
+    	frameTime = 0;
+		globTime = 0;
+		rndrStack = NULL;
+		adeCount = 0;
+		ownerID = 0;
+		minZ = 0.;
+		maxZ = 0.;
+		flags = 0;
+    }
 };
 
 

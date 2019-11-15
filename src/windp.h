@@ -72,7 +72,7 @@ struct windp_recvMsg
 
 struct windp_arg82
 {
-    char *senderID;
+    const char *senderID;
     int senderFlags;
     char *receiverID;
     int receiverFlags;

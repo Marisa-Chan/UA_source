@@ -6031,7 +6031,8 @@ void NC_STACK_yparobo::Renew()
 
     robo->dock_time = 0;
 
-    memset(robo->guns, 0, sizeof(robo->guns));
+    for(auto &g : robo->guns)
+        g.clear();
     memset(robo->field_525, 0, sizeof(robo->field_525));
 
     robo->bact_internal->commandID = dword_5B1128;
@@ -6681,7 +6682,7 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
                 robo->field_1D5 = bact->old_pos.y;
 
                 char a1a[200];
-                sprintf(a1a, "save:%s/%d.fin", yw->GameShell->user_name, yw->field_2d90->levelID);
+                sprintf(a1a, "save:%s/%d.fin", yw->GameShell->user_name.c_str(), yw->field_2d90->levelID);
 
                 yw_arg169 v23;
                 v23.usr = yw->GameShell;
@@ -6695,7 +6696,7 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
                 if ( yw->GameShell )
                 {
                     char v18[300];
-                    sprintf(v18, "save:%s/%d.rst", yw->GameShell->user_name, yw->field_2d90->levelID);
+                    sprintf(v18, "save:%s/%d.rst", yw->GameShell->user_name.c_str(), yw->field_2d90->levelID);
 
                     uaDeleteFile(v18);
                 }
@@ -6734,7 +6735,9 @@ void ypabact_func65__sub0(__NC_STACK_ypabact *bact) // This bact is robo!
 
 
         yw->field_2d90->buddies_count = 0;
-        memset(yw->field_2d90->buddies, 0, sizeof(yw->field_2d90->buddies));
+
+        for(auto &x : yw->field_2d90->buddies)
+			x.clear();
 
         int v15 = 0;
 
@@ -7048,7 +7051,7 @@ int NC_STACK_yparobo::getROBO_fillMode()
 
 roboGun *NC_STACK_yparobo::getROBO_guns()
 {
-    return stack__yparobo.guns;
+    return stack__yparobo.guns.data();
 }
 
 int NC_STACK_yparobo::getROBO_epChangeplace()
@@ -7196,4 +7199,137 @@ size_t NC_STACK_yparobo::compatcall(int method_id, void *data)
         break;
     }
     return NC_STACK_ypabact::compatcall(method_id, data);
+}
+
+
+void __NC_STACK_yparobo::clear()
+{
+    wrld = NULL;
+    wrld_yw = NULL;
+    bact_internal = NULL;
+    roboo = NULL;
+
+    field_c = 0.;
+    coll.clear();
+    field_1D5 = 0.;
+
+    field_1DA = 0;
+    roboState = 0;
+    newAI = 0;
+    field_1E3 = 0;
+
+    epConquer = 0;
+    epRadar = 0;
+    epPower = 0;
+    epDefense = 0;
+    epSafety = 0;
+    epRecon = 0;
+    epChangePlace = 0;
+    epRobo = 0;
+
+    dock_energ = 0;
+    dock_cnt = 0;
+    dock_user = 0;
+    dock_time = 0;
+    dock_tgt_pos = vec3d();
+    dock_tgt_bact = NULL;
+    dock_tgType = 0;
+    dock_aggr = 0;
+    dock_tgt_comm_id = 0;
+    dock_pos = vec3d();
+
+    radar_value = 0;
+    radar_cell = NULL;
+    radar_cellID = 0;  //For AI
+    radar_cellIDpos = 0;
+    radar_time = 0;
+    radar_delay = 0; //??
+
+    safety_value = 0;
+    safety_cell = NULL;  //For AI
+    safety_cellID = 0;  //For AI
+    safety_cellIDpos = 0;
+    safety_time = 0;
+    safety_delay = 0; //??
+
+    //Power
+    field_251 = 0;
+    field_255 = NULL;  //For AI
+    field_259 = 0;  //For AI
+    field_25D = 0;
+    field_261 = 0;
+    field_265 = 0; //??
+
+    //Enemy
+    field_269 = 0;
+    field_26D = NULL;  //For AI
+    field_271 = 0;  //For AI
+    field_275 = 0;  //For AI
+    field_279 = 0;
+    field_27D = 0;
+    field_281 = 0; //??
+
+    conq_value = 0;
+    conq_cell = NULL;  //For AI
+    conq_cellID = 0;  //For AI
+    conq_cellIDpos = 0;
+    conq_time = 0;
+    conq_delay = 0; //??
+
+    field_29D = 0;
+    field_2A1 = NULL;  //For AI
+    field_2A5 = 0;  //For AI
+    field_2A9 = 0;  //For AI
+    field_2AD = 0;
+    field_2B1 = 0; //??
+    field_2B5 = 0;
+    field_2B9 = NULL;  //For AI
+    field_2BD = 0;  //For AI
+    field_2C1 = 0;  //For AI
+    field_2C5 = 0;
+    field_2C9 = 0; //??
+    field_2CD = 0;
+    field_2D1 = NULL;  //For AI
+    field_2D5 = 0;  //For AI
+    field_2D9 = 0;  //For AI
+    field_2DD = 0;
+    field_2E1 = 0; //??
+    vehicle_cellID = 0;  //For AI
+    vehicle_cell = NULL;  //For AI
+
+    vehicle_type = 0;  //For AI
+    field_2F1 = 0;  //For AI
+    field_2F5 = 0;  //For AI
+    field_2F9 = NULL;  //For AI
+    field_2FD = 0;  //For AI
+    pcell = NULL;
+
+    field_309 = 0;
+
+    for(auto &g : guns)
+        g.clear();
+
+    field_4F5 = 0; //??
+    field_4F9 = 0; //??
+    field_4FD = 0; //??
+
+    field_501 = 0;
+    field_502 = 0;
+    field_503 = 0;
+
+    field_505 = 0;
+    field_509 = 0;
+    field_50D = 0;
+    field_511 = 0;
+    field_515 = vec3d();
+    field_521 = 0;
+
+    for (auto &t : field_525)
+    {
+        t.field_0 = 0;
+        t.field_4 = 0;
+    }
+
+    fe_time = 0;
+    field_5A9 = 0;
 }

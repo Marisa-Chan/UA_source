@@ -40,7 +40,7 @@ int sub_4107FC(UserData *usr)
 
     arg171.usr = usr;
     arg171.usertxt = "settings.tmp";
-    arg171.field_4 = usr->user_name;
+    arg171.field_4 = usr->user_name.c_str();
     arg171.field_8 = 193;
     arg171.field_10 = 0;
 
@@ -50,11 +50,11 @@ int sub_4107FC(UserData *usr)
 void sub_410628()
 {
     char buf[300];
-    sprintf(buf, "%s/user.txt", userdata.user_name);
+    sprintf(buf, "%s/user.txt", userdata.user_name.c_str());
 
     yw_arg172 arg171;
     arg171.usertxt = buf;
-    arg171.field_4 = userdata.user_name;
+    arg171.field_4 = userdata.user_name.c_str();
     arg171.usr = &userdata;
     arg171.field_8 = 255;
     arg171.field_10 = 0;
@@ -64,7 +64,7 @@ void sub_410628()
     FSMgr::FileHandle *fil = uaOpenFile("env:user.def", "w");
     if ( fil )
     {
-        strcpy(buf, userdata.user_name);
+        strcpy(buf, userdata.user_name.c_str());
         fil->write(buf, strlen(buf));
         delete fil;
     }
@@ -91,7 +91,7 @@ int sb_0x411324__sub0()
             arg172.usr = &userdata;
             arg172.usertxt = "settings.tmp";
             arg172.field_10 = 0;
-            arg172.field_4 = userdata.user_name;
+            arg172.field_4 = userdata.user_name.c_str();
             arg172.field_8 = 0xC1;
 
             if ( !ypaworld->ypaworld_func172(&arg172) )
@@ -142,7 +142,7 @@ int sb_0x411324__sub0()
     {
         ypaworld->ypaworld_func151();
 
-        sprintf(buf, "save:%s/%d.rst", userdata.user_name, var_2d90->levelID);
+        sprintf(buf, "save:%s/%d.rst", userdata.user_name.c_str(), var_2d90->levelID);
 
         yw_arg169 arg169;
         arg169.saveFile = buf;
@@ -161,7 +161,7 @@ int sb_0x411324__sub0()
         arg169.usr = &userdata;
         arg169.saveFile = buf;
 
-        sprintf(buf, "save:%s/%d.sgm", userdata.user_name, 0);
+        sprintf(buf, "save:%s/%d.sgm", userdata.user_name.c_str(), 0);
 
         if ( !ypaworld->ypaworld_func170(&arg169) )
             ypa_log_out("Warning, Save error\n");
@@ -177,7 +177,7 @@ int sb_0x411324__sub0()
         yw_arg169 arg169;
         arg169.usr = &userdata;
         arg169.saveFile = buf;
-        sprintf(buf, "save:%s/%d.sgm", userdata.user_name, 0);
+        sprintf(buf, "save:%s/%d.sgm", userdata.user_name.c_str(), 0);
 
         if ( !ypaworld->ypaworld_func169(&arg169) )
             ypa_log_out("Warning, load error\n");
@@ -298,7 +298,7 @@ int sb_0x411324__sub2()
             arg172.usr = &userdata;
             arg172.usertxt = "settings.tmp";
             arg172.field_10 = 0;
-            arg172.field_4 = userdata.user_name;
+            arg172.field_4 = userdata.user_name.c_str();
             arg172.field_8 = 193;
 
             if ( !ypaworld->ypaworld_func172(&arg172) )
@@ -334,7 +334,7 @@ int sb_0x411324__sub1()
 {
     userdata.glblTime = world_update_arg.field_0;
     userdata.frameTime = world_update_arg.field_4;
-    userdata.field_3A = &input_states;
+    userdata._input = &input_states;
 
     ypaworld->ypaworld_func158(&userdata);
 
@@ -381,11 +381,11 @@ int sb_0x411324__sub1()
         arg169.saveFile = a1;
         arg169.usr = &userdata;
 
-        sprintf(a1, "save:%s/%d.sgm", userdata.user_name, 0);
+        sprintf(a1, "save:%s/%d.sgm", userdata.user_name.c_str(), 0);
 
         if ( !ypaworld->ypaworld_func169(&arg169) )
         {
-            ypa_log_out("Error while loading level (level %d, User %s\n", a4->levelID, userdata.user_name);
+            ypa_log_out("Error while loading level (level %d, User %s\n", a4->levelID, userdata.user_name.c_str());
 
             ypaworld->ypaworld_func155(&userdata);
             return 0;
@@ -635,14 +635,14 @@ int yw_initGameWithSettings()
         {
             delete user_txt;
 
-            strcpy(userdata.user_name, v11);
+            userdata.user_name = v11;
             a1 = fmt::sprintf("%s/user.txt", v11);
         }
         else
         {
             ypa_log_out("Warning: default user file doesn't exist (%s)\n", a1);
             a1 = fmt::sprintf("sdu7/user.txt");
-            strcpy(userdata.user_name, "SDU7");
+            userdata.user_name = "SDU7";
         }
 
         delete user_def;
@@ -650,7 +650,7 @@ int yw_initGameWithSettings()
     else
     {
         a1 = fmt::sprintf("sdu7/user.txt");
-        strcpy(userdata.user_name, "SDU7");
+        userdata.user_name = "SDU7";
         ypa_log_out("Warning: No default user set\n");
     }
 
@@ -659,7 +659,7 @@ int yw_initGameWithSettings()
     int v8 = 1;
     for ( ProfileList::iterator it = userdata.profiles.begin(); it != userdata.profiles.end(); it++ )
     {
-        if ( !strcasecmp(it->name.c_str(), userdata.user_name) )
+        if ( !StriCmp(it->name, userdata.user_name) )
         {
             userdata.field_1612 = v8;
             break;
@@ -672,7 +672,7 @@ int yw_initGameWithSettings()
 
     v13.usertxt = a1.c_str();
     v13.usr = &userdata;
-    v13.field_4 = userdata.user_name;
+    v13.field_4 = userdata.user_name.c_str();
     v13.field_8 = 255;
     v13.field_10 = 1;
 

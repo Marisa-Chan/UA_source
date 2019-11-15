@@ -229,7 +229,7 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
                                 arg181.recvFlags = 2;
                                 arg181.senderFlags = 1;
                                 arg181.dataSize = sizeof(veMsg);
-                                arg181.senderID = car->yw->GameShell->callSIGN;
+                                arg181.senderID = car->yw->GameShell->callSIGN.c_str();
                                 arg181.garant = 1;
                                 arg181.data = &veMsg;
 

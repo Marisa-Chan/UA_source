@@ -19,7 +19,7 @@ int read_yes_no_status(const char *file, int result)
             char *lend = strpbrk(buf, "; \n\r");
             if ( lend )
                 *lend = 0;
-            result = strcasecmp(buf, "yes") == 0;
+            result = StrGetBool(buf);
         }
         delete fil;
     }

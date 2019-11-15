@@ -22,7 +22,7 @@ struct winp_66arg
 
 struct winp_68arg
 {
-    const char *keyname;
+    std::string keyname;
     uint32_t id;
 };
 

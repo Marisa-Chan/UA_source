@@ -17,6 +17,14 @@ struct ua_fRect
     float y1;
     float x2;
     float y2;
+
+    ua_fRect()
+    {
+    	x1 = 0.;
+    	y1 = 0.;
+    	x2 = 0.;
+    	y2 = 0.;
+    }
 };
 
 
@@ -157,6 +165,24 @@ struct rstr_arg204
     float float18;
     float float1C;
     float float20;
+
+    rstr_arg204()
+    {
+    	clear();
+    }
+
+    void clear()
+    {
+    	pbitm = NULL;
+		float4 = 0.;
+		float8 = 0.;
+		floatC = 0.;
+		float10 = 0.;
+		float14 = 0.;
+		float18 = 0.;
+		float1C = 0.;
+		float20 = 0.;
+    }
 };
 
 struct rstr_loc204

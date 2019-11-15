@@ -2,6 +2,7 @@
 #define YW_H_INCLUDED
 
 #include <string.h>
+#include <array>
 
 #include "types.h"
 
@@ -25,10 +26,11 @@
 
 #include "glob_funcs.h"
 
+#include "world/parsers.h"
+#include "world/saveparsers.h"
+
 
 #define YW_RENDER_SECTORS_DEF   5
-
-
 
 class NC_STACK_ypaworld;
 struct _NC_STACK_ypaworld;
@@ -45,6 +47,219 @@ struct BuildProto;
 struct roboProto;
 struct map_event;
 struct uamessage_base;
+
+
+namespace World
+{
+
+enum COLOR_IDS
+{
+	COLOR_OWNER_0 = 0,
+	COLOR_OWNER_1 = 1,
+	COLOR_OWNER_2 = 2,
+	COLOR_OWNER_3 = 3,
+	COLOR_OWNER_4 = 4,
+	COLOR_OWNER_5 = 5,
+	COLOR_OWNER_6 = 6,
+	COLOR_OWNER_7 = 7,
+
+	COLOR_MAP_DIRECTION 	= 8,
+	COLOR_MAP_PRIMTARGET 	= 9,
+	COLOR_MAP_SECTARGET 	= 10,
+	COLOR_MAP_COMMANDER 	= 11,
+	COLOR_MAP_DRAGBOX 		= 12,
+	COLOR_MAP_VIEWER 		= 13,
+
+	COLOR_HUD_WEAPON_0 			= 20,
+	COLOR_HUD_COMPASS_CMDVEC_0 	= 21,
+	COLOR_HUD_COMPASS_PRIMTGT_0 = 22,
+	COLOR_HUD_COMPASS_LOCKTGT_0 = 23,
+	COLOR_HUD_COMPASS_0 		= 24,
+	COLOR_HUD_VEHICLE_0 		= 25,
+	COLOR_HUD_VISOR_MG_0 		= 26,
+	COLOR_HUD_VISOR_LOCKED_0 	= 27,
+	COLOR_HUD_VISOR_AUTONOM_0 	= 28,
+
+	COLOR_HUD_WEAPON_1 			= 29,
+	COLOR_HUD_COMPASS_CMDVEC_1 	= 30,
+	COLOR_HUD_COMPASS_PRIMTGT_1 = 31,
+	COLOR_HUD_COMPASS_LOCKTGT_1 = 32,
+	COLOR_HUD_COMPASS_1 		= 33,
+	COLOR_HUD_VEHICLE_1 		= 34,
+	COLOR_HUD_VISOR_MG_1 		= 35,
+	COLOR_HUD_VISOR_LOCKED_1 	= 36,
+	COLOR_HUD_VISOR_AUTONOM_1 	= 37,
+
+	COLOR_BRIEF_LINES 	= 50,
+
+	COLOR_TEXT_DEFAULT 		= 60,
+	COLOR_TEXT_LIST 		= 61,
+	COLOR_TEXT_LIST_SEL		= 62,
+	COLOR_TEXT_TOOLTIP		= 63,
+	COLOR_TEXT_MESSAGE		= 64,
+	COLOR_TEXT_HUD			= 65,
+	COLOR_TEXT_BRIEFING		= 66,
+	COLOR_TEXT_DEBRIEFING	= 67,
+	COLOR_TEXT_BUTTON		= 68,
+
+	COLOR_MAX_NUMBER		= 70,
+};
+
+enum MOVIE_IDS
+{
+	MOVIE_INTRO		= 0,
+	MOVIE_LOSE		= 1,
+	MOVIE_WIN		= 2,
+	MOVIE_USER		= 3,
+	MOVIE_KYT		= 4,
+	MOVIE_TAER		= 5,
+	MOVIE_MYK		= 6,
+	MOVIE_SULG		= 7,
+	MOVIE_BLACK		= 8,
+
+	MOVIE_MAX_NUMBER = 9
+};
+
+enum PREFERENCES_FLAGS
+{
+    PREF_JOYDISABLE     =     4,
+    PREF_FFDISABLE      =     8,
+    PREF_ENEMYINDICATOR =  0x20,
+    PREF_SOFTMOUSE      =  0x40,
+    PREF_CDMUSICDISABLE = 0x100,
+    PREF_ALTJOYSTICK    = 0x200,
+};
+
+enum KEYCONF
+{
+    KEYC_TYPE_BUTTON        = 1,
+    KEYC_TYPE_SLIDER        = 2,
+    KEYC_TYPE_HOTKEY        = 3,
+
+    KEYC_PAUSE      = 1,
+    KEYC_QUIT       = 2,
+    KEYC_DRIVE_DIR  = 3,
+    KEYC_DRIVE_SPEED= 4,
+    KEYC_GUN_HEIGHT = 5,
+    KEYC_FLY_HEIGHT = 6,
+    KEYC_FLY_SPEED  = 7,
+    KEYC_FLY_DIR    = 8,
+    KEYC_BRAKE      = 9,
+    KEYC_FIRE       = 10,
+    KEYC_CAMFIRE    = 11,
+    KEYC_GUN        = 12,
+    KEYC_SET_COMM   = 13,
+    KEYC_HUD        = 14,
+    KEYC_AUTOPILOT  = 15,
+    KEYC_ORDER      = 16,
+    KEYC_NEW        = 17,
+    KEYC_ADD        = 18,
+    KEYC_SQ_MANAGE  = 19,
+    KEYC_AGGR_1     = 20,
+    KEYC_AGGR_2     = 21,
+    KEYC_AGGR_3     = 22,
+    KEYC_AGGR_4     = 23,
+    KEYC_AGGR_5     = 24,
+    KEYC_MAP        = 25,
+    KEYC_WAPOINT    = 26,
+    KEYC_LANDLAYER  = 27,
+    KEYC_OWNER      = 28,
+    KEYC_HEIGHT     = 29,
+    KEYC_MINIMAP    = 30,
+    KEYC_LOCKVIEW   = 31,
+    KEYC_ZOOMIN     = 32,
+    KEYC_ZOOMOUT    = 33,
+    KEYC_LOG_WND    = 34,
+    KEYC_CONTROL    = 35,
+    KEYC_LAST_SEAT  = 36,
+    KEYC_ATTACK     = 37,
+    KEYC_TO_HOST    = 38,
+    KEYC_TO_COMM    = 39,
+    KEYC_NEXT_UNIT  = 40,
+    KEYC_NEXT_COMM  = 41,
+    KEYC_LAST_MSG   = 42,
+    KEYC_TO_ALL     = 43,
+    KEYC_HELP       = 44,
+    KEYC_ANALYZER   = 45,
+
+    KEYC_KEY_NUMBER = 46,
+};
+
+enum SOUND_ID
+{
+    SOUND_ID_VOLUME = 0,
+    SOUND_ID_RIGHT  = 1,
+    SOUND_ID_LEFT   = 2,
+    SOUND_ID_BUTTON = 3,
+    SOUND_ID_QUIT   = 4,
+    SOUND_ID_SLIDER = 5,
+    SOUND_ID_WELCOME = 6,
+    SOUND_ID_MENUOPEN = 7,
+    SOUND_ID_OVERLEVEL = 8,
+    SOUND_ID_LEVELSEL = 9,
+    SOUND_ID_TEXTAPPEAR = 10,
+    SOUND_ID_OBJAPPEAR = 11,
+    SOUND_ID_SECTCONQ = 12,
+    SOUND_ID_VHCLDESTR = 13,
+    SOUND_ID_BLDGCONQ = 14,
+    SOUND_ID_TIMERCOUNT = 15,
+
+    SOUND_ID_SELECT = 0,
+    SOUND_ID_ERROR  = 1,
+    SOUND_ID_ATTEN  = 2,
+    SOUND_ID_SECRET = 3,
+    SOUND_ID_PLASMA = 4,
+};
+
+enum GFX_FLAG
+{
+    GFX_FLAG_FARVIEW            =    1,
+    GFX_FLAG_SKYRENDER          =    2,
+    GFX_FLAG_SOFTMOUSE          =    4,
+    GFX_FLAG_DRAWPRIMITIVES     =    8,
+    GFX_FLAG_16BITTEXTURE       = 0x10,
+};
+
+enum SAVE_DATA_FLAG
+{
+    SDF_USER     =    1,
+    SDF_INPUT    =    2,
+    SDF_VIDEO    =    4,
+    SDF_SOUND    =    8,
+    SDF_SCORE    = 0x10,
+    SDF_SHELL    = 0x20,
+    SDF_PROTO    = 0x40,
+    SDF_BUDDY    = 0x80,
+};
+
+enum SOUND_FLAGS
+{
+    SF_INVERTLR  =    1,
+    SF_CDSOUND   = 0x10,
+};
+
+
+class AssignParser : public ScriptParser::DataHandler
+{
+public:
+	virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
+	virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt) { return !StriCmp(word, "begin_assign"); };
+
+	static ScriptParser::DataHandler *MakeParser() {return new AssignParser;};
+};
+
+};
+
+struct video_mode_node
+{
+    std::string name;
+    int sort_id;
+    int16_t width;
+    int16_t height;
+};
+
+typedef std::list<video_mode_node> VideoModesList;
+
 
 struct usr_str
 {
@@ -91,7 +306,12 @@ struct player_status
 
     player_status()
     {
-        destroyed = 0;
+    	clear();
+    }
+
+    void clear()
+    {
+    	destroyed = 0;
         destroyedByUser = 0;
         elapsedTime = 0;
         sectorsTaked = 0;
@@ -178,17 +398,19 @@ struct EnvAction
 
 class UserData
 {
+friend class World::Parsers::ShellSoundParser;
+
 public:
     int field_0x0;
     int field_0x4;
     int field_0x8;
     int field_0xc;
     int field_0x10;
-    char user_name[34];
+    std::string user_name;
 
     NC_STACK_ypaworld *p_YW;
     _NC_STACK_ypaworld *p_ypaworld;
-    struC5 *field_3A;
+    struC5 *_input;
     int frameTime;
     uint32_t glblTime;
 
@@ -210,9 +432,9 @@ public:
     GuiList input_listview;
     int field_D36;
     int field_D3A;
-    int inp_joystick;
+    bool inp_joystick;
     int field_D42;
-    int inp_altjoystick;
+    bool inp_altjoystick;
     int field_D4A;
     int field_D4E;
     int field_D52;
@@ -224,7 +446,7 @@ public:
     NC_STACK_button *video_button;
     GuiList video_listvw;
     int game_default_res;
-    nlist video_mode_list;
+    VideoModesList video_mode_list;
     int field_FBE;
     GuiList d3d_listvw;
     char win3d_guid[100];
@@ -245,7 +467,7 @@ public:
     int16_t field_0x13b4;
     int16_t snd__cdvolume;
     int16_t field_0x13b8;
-    int enemyindicator;
+    bool enemyindicator;
     int field_13BE;
     int field_13C2;
     NC_STACK_button *disk_button;
@@ -254,10 +476,10 @@ public:
     char usernamedir[300];
     int usernamedir_len;
     int16_t field_0x1744;
-    FSMgr::DirIter *opened_dir;
+    //FSMgr::DirIter *opened_dir;
     ProfileList profiles;
     char field_1756;
-    char snd__flags1;
+    uint8_t _saveDataFlags;
     int16_t field_0x1758;
     int16_t field_175A;
     int16_t field_0x175c;
@@ -295,7 +517,7 @@ public:
     int16_t netLevelID;
     const char *netLevelName;
 
-    char callSIGN[64];
+    std::string callSIGN;
     uint32_t netCRC;
     int32_t takTime;
     uint8_t netPlayerOwner;
@@ -412,11 +634,17 @@ public:
     void sub_46D2B4();
     void sub_457BC0();
     void ypaworld_func158__sub0__sub0();
-    int  ypaworld_func158__sub0__sub0__sub0();
     void sub_46C5F0(int a2);
     void  ypaworld_func158__sub0__sub5(int a2);
     void sub_46A7F8();
     void ypaworld_func158__sub0__sub4();
+
+    bool  ShellSoundsLoad();
+
+    static int KeyIndexFromConfig(uint32_t type, uint32_t index);
+
+protected:
+    bool LoadSample(int block, int sampleID, const std::string &file);
 };
 
 struct trec_bct
@@ -507,6 +735,18 @@ struct keysec
     int x;
     int y;
     cellArea *cell;
+
+    keysec()
+    {
+    	clear();
+    }
+
+    void clear()
+    {
+    	x = 0;
+    	y = 0;
+    	cell = NULL;
+    }
 };
 
 struct gateProto
@@ -521,6 +761,31 @@ struct gateProto
     int keySectors_count;
     keysec keySectors[16];
     int mb_status;
+
+    gateProto()
+    {
+    	clear();
+    }
+
+    void clear()
+    {
+    	pcell = NULL;
+		sec_x = 0;
+		sec_y = 0;
+		closed_bp = 0;
+		opened_bp = 0;
+		target_level_count = 0;
+
+		for (auto &x : target_levels)
+			x = 0;
+
+		keySectors_count = 0;
+
+		for (auto &x : keySectors)
+			x.clear();
+
+		mb_status = 0;
+    }
 };
 
 struct squadProto
@@ -534,13 +799,30 @@ struct squadProto
     int field_18;
     float pos_z;
     int mb_status;
+
+    squadProto()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        field_0 = 0;
+        useable = 0;
+        owner = 0;
+        vehicle = 0;
+        num = 0;
+        pos_x = 0.;
+        field_18 = 0;
+        pos_z = 0.;
+        mb_status = 0;
+    }
 };
 
 struct mapRobo
 {
     int16_t owner;
     int16_t vehicle;
-    char gap_4[4];
     float pos_x;
     float pos_y;
     float pos_z;
@@ -564,6 +846,40 @@ struct mapRobo
     int con_delay;
     int rec_delay;
     int rob_delay;
+
+    mapRobo()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        owner = 0;
+        vehicle = 0;
+        pos_x = 0.;
+        pos_y = 0.;
+        pos_z = 0.;
+        energy = 0;
+        con_budget = 0;
+        rad_budget = 0;
+        pow_budget = 0;
+        def_budget = 0;
+        reload_const = 0;
+        saf_budget = 0;
+        rec_budget = 0;
+        cpl_budget = 0;
+        rob_budget = 0;
+        mb_status = 0;
+        viewangle = 0;
+        saf_delay = 0;
+        pow_delay = 0;
+        rad_delay = 0;
+        cpl_delay = 0;
+        def_delay = 0;
+        con_delay = 0;
+        rec_delay = 0;
+        rob_delay = 0;
+    }
 };
 
 struct gemProto
@@ -573,8 +889,8 @@ struct gemProto
     int16_t sec_x;
     int16_t sec_y;
     int mb_status;
-    char script[64];
-    char msg_default[128];
+    std::string script;
+    std::string msg_default;
     int16_t nw_vproto_num_1;
     int16_t nw_vproto_num_2;
     int16_t nw_vproto_num_3;
@@ -583,19 +899,18 @@ struct gemProto
     int16_t nw_bproto_num_2;
     int16_t nw_bproto_num_3;
     int16_t nw_bproto_num_4;
-    int16_t begin_action__line;
-    int16_t end_action__line;
+    Engine::StringList actions;
     int type;
 
-    void init()
+    void clear()
     {
         field_0 = 0;
         building = 0;
         sec_x = 0;
         sec_y = 0;
         mb_status = 0;
-        memset(script, 0, sizeof(script));
-        memset(msg_default, 0, sizeof(msg_default));
+        script.clear();
+        msg_default.clear();
         nw_vproto_num_1 = 0;
         nw_vproto_num_2 = 0;
         nw_vproto_num_3 = 0;
@@ -604,14 +919,13 @@ struct gemProto
         nw_bproto_num_2 = 0;
         nw_bproto_num_3 = 0;
         nw_bproto_num_4 = 0;
-        begin_action__line = 0;
-        end_action__line = 0;
+        actions.clear();
         type = 0;
     }
 
     gemProto()
     {
-        init();
+        clear();
     };
 };
 
@@ -619,34 +933,89 @@ struct dbmapProto
 {
     int16_t size_x;
     int16_t size_y;
-    char name[32];
+    std::string name;
+
+    dbmapProto()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        size_x = 0;
+        size_y = 0;
+        name.clear();
+    }
 };
 
 struct mapProto
 {
     char flags;
-    char gap_1[3];
     int setNumber;
     int event_loop;
     int secXsize;
     int secYsize;
     int slow_connection;
-    char sky[64];
-    char typ[64];
-    char own[64];
-    char hgt[64];
-    char blg[64];
+    std::string sky;
+    std::string typ;
+    std::string own;
+    std::string hgt;
+    std::string blg;
     int mapRobos_count;
     mapRobo mapRobos[8];
     int squad_count;
     squadProto squads[96];
-    char palettes[8][64];
+    std::string palettes[8];
     int mbmaps_count;
     dbmapProto mbmaps[4];
     int dbmap_count;
     dbmapProto dbmaps[4];
 
     int playerOwner; //Firsts host station owner, for correct XP brief
+
+    mapProto()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        flags = 0;
+        setNumber = 0;
+        event_loop = 0;
+        secXsize = 0;
+        secYsize = 0;
+        slow_connection = 0;
+
+        sky.clear();
+        typ.clear();
+        own.clear();
+        hgt.clear();
+        blg.clear();
+
+        mapRobos_count = 0;
+
+        for (auto &r : mapRobos)
+            r.clear();
+
+        squad_count = 0;
+
+        for (auto &s : squads)
+            s.clear();
+
+        for (auto &p : palettes)
+            p.clear();
+
+        mbmaps_count = 0;
+
+        for (auto &m : mbmaps)
+            m.clear();
+
+        dbmap_count = 0;
+
+        for (auto &d : dbmaps)
+            d.clear();
+    }
 };
 
 struct yw_buddy
@@ -655,6 +1024,19 @@ struct yw_buddy
     int16_t type;
     int16_t field_6;
     int energy;
+
+    yw_buddy()
+    {
+    	clear();
+    }
+
+    void clear()
+    {
+    	commandid = 0;
+		type = 0;
+		field_6 = 0;
+		energy = 0;
+    }
 };
 
 struct supetItemProto
@@ -679,11 +1061,43 @@ struct supetItemProto
     int field_100;
     int field_104;
     int field_108;
+
+    supetItemProto()
+    {
+    	clear();
+    }
+
+    void clear()
+    {
+    	type = 0;
+		field_4 = 0;
+		countdown = 0;
+		pcell = NULL;
+		sec_x = 0;
+		sec_y = 0;
+		inactive_bp = 0;
+		active_bp = 0;
+		trigger_bp = 0;
+		keySectors_count = 0;
+
+		for ( auto &x : keySectors )
+			x.clear();
+
+		mb_status = 0;
+		field_EC = 0;
+		field_F0 = 0;
+		field_F4 = 0;
+		field_F8 = 0;
+		field_FC = 0;
+		field_100 = 0;
+		field_104 = 0;
+		field_108 = 0;
+    }
 };
 
 struct stru_2d90
 {
-    char map_name[64];
+    std::string map_name;
     int field_40;
     int levelID;
     int field_48;
@@ -705,9 +1119,94 @@ struct stru_2d90
     int supetItems_count;
     supetItemProto supetItems[8];
     int jodiefoster[8];
-    char movie[256];
-    char win_movie[256];
-    char lose_movie[256];
+    std::string movie;
+    std::string win_movie;
+    std::string lose_movie;
+
+    stru_2d90()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        map_name.clear();
+		field_40 = 0;
+		levelID = 0;
+		field_48 = 0;
+		field_4C = 0;
+		amb_track_p0 = 0;
+		amb_track_p1 = 0;
+		amb_track_p2 = 0;
+		ownerMap__has_vehicles = 0;
+		field_60 = 0;
+		field_64 = 0;
+		field_68 = 0;
+		field_6C = 0;
+		field_70 = 0;
+		field_74 = 0;
+		buddies_count = 0;
+
+		for ( auto &x : buddies )
+			x.clear();
+
+		gate_count = 0;
+
+		for ( auto &x : gates )
+			x.clear();
+
+		supetItems_count = 0;
+
+		for ( auto &x : supetItems )
+			x.clear();
+
+		for ( auto &x : jodiefoster )
+			x = 0;
+
+		movie.clear();
+		win_movie.clear();
+		lose_movie.clear();
+    }
+
+    void operator=(const stru_2d90 &b)
+    {
+        map_name = b.map_name;
+		field_40 = b.field_40;
+		levelID = b.levelID;
+		field_48 = b.field_48;
+		field_4C = b.field_4C;
+		amb_track_p0 = b.amb_track_p0;
+		amb_track_p1 = b.amb_track_p1;
+		amb_track_p2 = b.amb_track_p2;
+		ownerMap__has_vehicles = b.ownerMap__has_vehicles;
+		field_60 = b.field_60;
+		field_64 = b.field_64;
+		field_68 = b.field_68;
+		field_6C = b.field_6C;
+		field_70 = b.field_70;
+		field_74 = b.field_74;
+		buddies_count = b.buddies_count;
+
+		for (int i = 0; i < 128; i++)
+			buddies[i] = b.buddies[i];
+
+		gate_count = b.gate_count;
+
+		for (int i = 0; i < 8; i++)
+			gates[i] = b.gates[i];
+
+		supetItems_count = b.supetItems_count;
+
+		for (int i = 0; i < 8; i++)
+			supetItems[i] = b.supetItems[i];
+
+		for (int i = 0; i < 8; i++)
+			jodiefoster[i] = b.jodiefoster[i];
+
+		movie = b.movie;
+		win_movie = b.win_movie;
+		lose_movie = b.lose_movie;
+    }
 };
 
 struct brf_obj
@@ -724,7 +1223,29 @@ struct brf_obj
     int field_24;
     float ypos;
     int field_2C;
-    char title[128];
+    std::string title;
+
+    brf_obj()
+    {
+    	clear();
+    }
+
+    void clear()
+    {
+    	field_0 = 0;
+		object_id = 0;
+		field_8 = 0;
+		field_C = 0;
+		field_10 = 0.;
+		field_14 = 0.;
+		field_18 = 0.;
+		field_1C = 0.;
+		xpos = 0.;
+		field_24 = 0;
+		ypos = 0.;
+		field_2C = 0;
+		title.clear();
+    }
 };
 
 struct brf_t2
@@ -736,7 +1257,24 @@ struct brf_t2
     int field_C;
     int field_D;
     int field_E;
-    char title[128];
+    std::string title;
+
+    brf_t2()
+    {
+    	clear();
+    }
+
+    void clear()
+    {
+    	xpos = 0.;
+		ypos = 0.;
+		field_8 = 0;
+		vehicle_id = 0;
+		field_C = 0;
+		field_D = 0;
+		field_E = 0;
+		title.clear();
+    }
 };
 
 struct brf_t1
@@ -745,6 +1283,18 @@ struct brf_t1
     int16_t last_vhcl;
     int16_t last_weapon;
     int16_t last_build;
+
+    brf_t1()
+    {
+    	clear();
+    }
+    void clear()
+    {
+    	field_0 = 0;
+		last_vhcl = 0;
+		last_weapon = 0;
+		last_build = 0;
+    }
 };
 
 struct big_ypa_Brf
@@ -762,8 +1312,8 @@ struct big_ypa_Brf
     int currTime;
     int field_2E80;
     int field_2E84;
-    const char *field_2E88;
-    const char *LEVEL_BRIEF_INFO;
+    std::string field_2E88;
+    std::string LEVEL_BRIEF_INFO;
     brf_obj brf_objs;
     rstr_arg204 field_2F40;
     ua_fRect field_2F64;
@@ -786,27 +1336,78 @@ struct big_ypa_Brf
     int field_41D8;
     player_status copy_of_playerstatus[8];
     player_status field_42BC[8];
-    char movie[256];
+    std::string movie;
     int tp1_count;
     brf_t1 tp1[7];
-};
 
+    big_ypa_Brf()
+    {
+    	clear();
+    }
 
-struct bkg_pct
-{
-    int16_t size_x;
-    int16_t size_y;
-    char map_name[32];
+    void clear()
+    {
+		mbmap_img = NULL;
+		briefing_map = NULL;
+		typ_map_bitm = NULL;
+		s2d90.clear();
+		map_prototype.clear();
+		briefStage = 0;
+		field_2E6C = 0;
+		activeElement = 0;
+		elementsCount = 0;
+		startTime = 0;
+		currTime = 0;
+		field_2E80 = 0;
+		field_2E84 = 0;
+		field_2E88.clear();
+		LEVEL_BRIEF_INFO.clear();
+		brf_objs.clear();
+		field_2F40.clear();
+		field_2F64 = ua_fRect();
+		field_2F74 = ua_fRect();
+		field_2F84 = 0;
+		tp2_count = 0;
+		mouseSelectedElement = 0;
+		field_2F90 = 0;
+
+		for (auto &x : tp2)
+			x.clear();
+
+		field_4174.clear();
+		field_419C = 0;
+		field_41A0 = 0;
+
+		for (auto &x : wireless_db)
+			x = NULL;
+
+		for (auto &x : wireless_db_skels)
+			x = NULL;
+
+		copy2_of_ownmap = NULL;
+		copy2_of_typmap = NULL;
+		copy2_of_ownmap_bitm = NULL;
+		copy2_of_typmap_bitm = NULL;
+		field_41D4 = 0;
+		field_41D8 = 0;
+
+		for (auto &x : copy_of_playerstatus)
+			x.clear();
+
+		for (auto &x : field_42BC)
+			x.clear();
+
+		movie.clear();
+		tp1_count = 0;
+
+		for (auto &x : tp1)
+			x.clear();
+    }
 };
 
 struct mapINFO
 {
     int field_0;
-    float field_4;
-    float field_8;
-    float field_C;
-    float field_10;
-    int field_14[2]; //Was ist das?
     char mapPath[64];
     char map_name[64];
     ua_fRect field_9C;
@@ -819,25 +1420,38 @@ struct mapINFO
 
 struct stru_LevelNet
 {
+	enum
+	{
+		MAX_NUM = 4
+	};
+
+	struct bkg_pct
+	{
+		int16_t size_x;
+		int16_t size_y;
+		std::string map_name;
+
+	};
+
     int bg_n;
-    bkg_pct background_map[4];
-    bkg_pct rollover_map[4];
-    bkg_pct finished_map[4];
-    bkg_pct enabled_map[4];
-    bkg_pct mask_map[4];
-    bkg_pct tut_background_map[4];
-    bkg_pct tut_rollover_map[4];
-    bkg_pct tut_mask_map[4];
-    bkg_pct menu_map[4];
-    bkg_pct input_map[4];
-    bkg_pct settings_map[4];
-    bkg_pct network_map[4];
-    bkg_pct locale_map[4];
-    bkg_pct save_map[4];
-    bkg_pct about_map[4];
-    bkg_pct help_map[4];
-    bkg_pct brief_map[4];
-    bkg_pct debrief_map[4];
+    bkg_pct background_map[MAX_NUM];
+    bkg_pct rollover_map[MAX_NUM];
+    bkg_pct finished_map[MAX_NUM];
+    bkg_pct enabled_map[MAX_NUM];
+    bkg_pct mask_map[MAX_NUM];
+    bkg_pct tut_background_map[MAX_NUM];
+    bkg_pct tut_rollover_map[MAX_NUM];
+    bkg_pct tut_mask_map[MAX_NUM];
+    bkg_pct menu_map[MAX_NUM];
+    bkg_pct input_map[MAX_NUM];
+    bkg_pct settings_map[MAX_NUM];
+    bkg_pct network_map[MAX_NUM];
+    bkg_pct locale_map[MAX_NUM];
+    bkg_pct save_map[MAX_NUM];
+    bkg_pct about_map[MAX_NUM];
+    bkg_pct help_map[MAX_NUM];
+    bkg_pct brief_map[MAX_NUM];
+    bkg_pct debrief_map[MAX_NUM];
     mapINFO mapInfos[256];
     NC_STACK_bitmap *ilbm_menu_map;
     NC_STACK_bitmap *ilbm_mask_map;
@@ -865,18 +1479,34 @@ struct rgbiColor
     }
 };
 
-struct yw_movies
+class yw_movie : public std::string
 {
-    char movies_names_present[9];
-    char game_intro[256];
-    char lose_extro[256];
-    char win_extro[256];
-    char user_intro[256];
-    char kyt_intro[256];
-    char taer_intro[256];
-    char myk_intro[256];
-    char sulg_intro[256];
-    char black_intro[256];
+public:
+	bool _present;
+
+	yw_movie() : _present(false) {};
+	void clear()
+	{
+		std::string::clear();
+		_present = false;
+	}
+
+	operator bool() const
+	{
+		return _present;
+	}
+
+	yw_movie& operator=(bool b)
+	{
+		_present = b;
+		return *this;
+	}
+
+	yw_movie& operator=(const std::string &b)
+	{
+		std::string::operator=(b);
+		return *this;
+	}
 };
 
 struct slurp
@@ -937,9 +1567,14 @@ struct save_status
     int16_t p4;
     int16_t p5;
     int16_t p6;
-    int pX[8];
+    std::array<int, 8> pX;
 
     save_status()
+    {
+        clear();
+    }
+
+    void clear()
     {
         p1 = 0;
         p2 = 0;
@@ -947,7 +1582,8 @@ struct save_status
         p4 = 0;
         p5 = 0;
         p6 = 0;
-        memset(pX, 0, sizeof(pX));
+        for (auto &t : pX)
+            t = 0;
     }
 };
 
@@ -1013,6 +1649,8 @@ struct yw_f726c
     uint8_t *last_bufStart;
     uint8_t *field_1C;
     uint8_t *last_bufEnd;
+
+    int sub_47EDDC(int bufsize);
 };
 
 struct yw_f726c_nod : public nnode
@@ -1048,8 +1686,8 @@ struct _NC_STACK_ypaworld
     secType *secTypes;
     VhclProto *VhclProtos;
     WeapProto *WeaponProtos;
-    BuildProto *BuildProtos;
-    roboProto *RoboProtos;
+    std::vector<BuildProto> BuildProtos;
+    std::vector<roboProto> RoboProtos;
     yw_f80 field_80[8];
     int16_t build_hp_ref[256];
     uint8_t sqrt_table[64][64];
@@ -1107,7 +1745,7 @@ struct _NC_STACK_ypaworld
     int field_17c4;
     int field_17c8;
     const char **tooltips;
-    rgbiColor iniColors[70];
+    rgbiColor iniColors[World::COLOR_MAX_NUMBER];
     int field_1a00;
     int field_1a04;
     int field_1a08;
@@ -1217,8 +1855,7 @@ struct _NC_STACK_ypaworld
     sklt_wis wis_skeletons;
     int field_739A;
 
-    char field_73CE;
-    char snd__cdsound;
+    uint32_t  field_73CE;
 
     save_status robo_map_status;
     save_status robo_finder_status;
@@ -1267,7 +1904,7 @@ struct _NC_STACK_ypaworld
 
     int p_1_grp_cnt;
     int p_1_grp[4][8];
-    player_status playerstatus[8];
+    std::array<player_status, 8> playerstatus;
     player_status ingamePlayerStatus[8];
     int maxroboenergy;
     int maxreloadconst;
@@ -1280,7 +1917,7 @@ struct _NC_STACK_ypaworld
     float field_7896; //input sliders
     float field_789A; //input sliders
     float field_789E; //input sliders
-    yw_movies movies;
+    std::array<yw_movie, World::MOVIE_MAX_NUMBER> movies;
     int field_81AB;
     const char *field_81AF;
     const char *field_81B3;
@@ -1356,10 +1993,10 @@ struct secType
 
 struct vhclSndFX
 {
-    char sample_name[32];
-    char extSampleNames[8][32];
+    std::string sample_name;
+    std::array<std::string, 8> extSampleNames;
     NC_STACK_wav *single_sample;
-    NC_STACK_wav *wavs[8];
+    std::array<NC_STACK_wav *, 8> wavs;
     int16_t volume;
     int16_t pitch;
     sndFXprm sndPrm;
@@ -1373,15 +2010,15 @@ struct vhclSndFX
 
     void clear()
     {
-        sample_name[0] = 0;
-
-        for (int i = 0; i < 8; i++)
-        {
-            extSampleNames[i][0] = 0;
-            wavs[i] = NULL;
-        }
-
+        sample_name.clear();
         single_sample = NULL;
+
+        for (auto &t : extSampleNames)
+            t.clear();
+
+        for (auto &t : wavs)
+            t = NULL;
+
         volume = 0;
         pitch = 0;
 
@@ -1399,15 +2036,15 @@ struct VhclProto
     int field_4;
     char mgun;
     uint8_t type_icon;
-    char name[126];
+    std::string name;
     int16_t vp_normal;
     int16_t vp_fire;
     int16_t vp_dead;
     int16_t vp_wait;
     int16_t vp_megadeth;
     int16_t vp_genesis;
-    destFX dest_fx[16];
-    vhclSndFX sndFX[12];
+    std::array<destFX, 16> dest_fx;
+    std::array<vhclSndFX, 12> sndFX;
     int vo_type;
     float max_pitch;
     int16_t field_1D6D;
@@ -1433,7 +2070,7 @@ struct VhclProto
     float fire_x;
     float fire_y;
     float fire_z;
-    int16_t destFxCount;
+    uint16_t destFxCount;
     int16_t num_weapons;
     float gun_power;
     float gun_radius;
@@ -1442,7 +2079,7 @@ struct VhclProto
     float scale_fx_p1;
     float scale_fx_p2;
     int scale_fx_p3;
-    int16_t scale_fx_pXX[32];
+    std::array<int16_t, 32> scale_fx_pXX;
     char job_fighttank;
     char job_fighthelicopter;
     char job_fightflyer;
@@ -1469,7 +2106,7 @@ struct VhclProto
         field_4 = 0;
         mgun = 0;
         type_icon = 0;
-        name[0] = 0;
+        name.clear();
         vp_normal = 0;
         vp_fire = 0;
         vp_dead = 0;
@@ -1477,11 +2114,11 @@ struct VhclProto
         vp_megadeth = 0;
         vp_genesis = 0;
 
-        for (int i = 0; i < 16; i++)
-            dest_fx[i].clear();
+        for (auto &x : dest_fx)
+            x.clear();
 
-        for (int i = 0; i < 12; i++)
-            sndFX[i].clear();
+        for (auto &x : sndFX)
+            x.clear();
 
         vo_type = 0;
         max_pitch = 0.0;
@@ -1518,8 +2155,8 @@ struct VhclProto
         scale_fx_p2 = 0.0;
         scale_fx_p3 = 0;
 
-        for (int i = 0; i < 32; i++)
-            scale_fx_pXX[i] = 0;
+        for (auto &x : scale_fx_pXX)
+            x = 0;
 
         job_fighttank = 0;
         job_fighthelicopter = 0;
@@ -1543,7 +2180,7 @@ struct WeapProto
     char enable_mask;
     int16_t model_id;
     char type_icon;
-    char name[127];
+    std::string name;
     int16_t vp_normal;
     int16_t vp_fire;
     int16_t vp_dead;
@@ -1551,7 +2188,7 @@ struct WeapProto
     int16_t vp_megadeth;
     int16_t vp_genesis;
     int destFxCount;
-    destFX dfx[16];
+    std::array<destFX, 16> dfx;
     vhclSndFX sndFXes[3];
     int field_870;
     int field_874;
@@ -1599,7 +2236,7 @@ struct WeapProto
         enable_mask = 0;
         model_id = 0;
         type_icon = 0;
-        name[0] = 0;
+        name.clear();
         vp_normal = 0;
         vp_fire = 0;
         vp_dead = 0;
@@ -1608,11 +2245,11 @@ struct WeapProto
         vp_genesis = 0;
         destFxCount = 0;
 
-        for (int i = 0; i < 16; i++)
-            dfx[i].clear();
+        for (auto &f: dfx)
+            f.clear();
 
-        for (int i = 0; i < 3; i++)
-            sndFXes[i].clear();
+        for (auto &s: sndFXes)
+            s.clear();
 
         field_870 = 0;
         field_874 = 0;
@@ -1661,19 +2298,57 @@ struct buildSbact
     float sbact_dir_x;
     float sbact_dir_y;
     float sbact_dir_z;
+
+    buildSbact()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        sbact_vehicle = 0;
+        field_4 = 0;
+        sbact_pos_x = 0.;
+        sbact_pos_y = 0.;
+        sbact_pos_z = 0.;
+        field_14 = 0;
+        sbact_dir_x = 0.;
+        sbact_dir_y = 0.;
+        sbact_dir_z = 0.;
+    }
 };
 
 struct BuildProto
 {
     uint8_t sec_type;
-    char enable_mask;
+    uint8_t enable_mask;
     uint8_t model_id;
     uint8_t power;
     uint8_t type_icon;
-    char name[127];
+    std::string name;
     int energy;
     vhclSndFX sndfx;
-    buildSbact sbacts[8];
+    std::array<buildSbact, 8> sbacts;
+
+    BuildProto()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        sec_type = 0;
+        enable_mask = 0;
+        model_id = 0;
+        power = 0;
+        type_icon = 0;
+        name.clear();
+        energy = 0;
+        sndfx.clear();
+
+        for (auto &x : sbacts)
+            x.clear();
+    }
 };
 
 struct roboGun
@@ -1681,8 +2356,32 @@ struct roboGun
     vec3d pos;
     vec3d dir;
     NC_STACK_ypabact *gun_obj;
-    char robo_gun_name[32];
+    std::string robo_gun_name;
     uint8_t robo_gun_type;
+
+    roboGun()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        pos = vec3d();
+        dir = vec3d();
+        gun_obj = NULL;
+        robo_gun_name.clear();
+        robo_gun_type = 0;
+    }
+
+    roboGun& operator=(const roboGun &b)
+    {
+        pos = b.pos;
+        dir = b.dir;
+        gun_obj = b.gun_obj;
+        robo_gun_name = b.robo_gun_name;
+        robo_gun_type = b.robo_gun_type;
+        return *this;
+    }
 };
 
 struct roboProto
@@ -1694,10 +2393,33 @@ struct roboProto
     float robo_viewer_max_up;
     float robo_viewer_max_down;
     float robo_viewer_max_side;
-    roboGun guns[8];
-    char robo_num_guns;
+    std::array<roboGun, 8> guns;
+    int8_t robo_num_guns;
     vec3d dock;
     rbcolls coll;
+
+    roboProto()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        viewer = vec3d();
+        matrix = mat3x3();
+        field_30 = 0;
+        field_34 = 0;
+        robo_viewer_max_up = 0.;
+        robo_viewer_max_down = 0.;
+        robo_viewer_max_side = 0.;
+
+        for( auto &g : guns )
+            g.clear();
+
+        robo_num_guns = 0;
+        dock = vec3d();
+        coll.clear();
+    }
 };
 
 int load_fonts_and_icons(_NC_STACK_ypaworld *yw);
@@ -1717,7 +2439,7 @@ struct yw_arg181
 {
     uamessage_base *data;
     int dataSize;
-    char *senderID;
+    const char *senderID;
     int senderFlags;
     char *recvID;
     int recvFlags;
@@ -1907,6 +2629,28 @@ struct yw_arg165
 
 class NC_STACK_ypaworld: public NC_STACK_base
 {
+friend class UserData;
+friend class World::Parsers::UserParser;
+friend class World::Parsers::SaveRoboParser;
+friend class World::Parsers::SaveSquadParser;
+friend class World::Parsers::SaveGemParser;
+friend class World::Parsers::VhclProtoParser;
+friend class World::Parsers::WeaponProtoParser;
+friend class World::Parsers::BuildProtoParser;
+friend class World::Parsers::SaveExtraViewParser;
+friend class World::Parsers::SaveKwFactorParser;
+friend class World::Parsers::SaveGlobalsParser;
+friend class World::Parsers::SaveOwnerMapParser;
+friend class World::Parsers::SaveBuildingMapParser;
+friend class World::Parsers::SaveEnergyMapParser;
+friend class World::Parsers::SaveLevelNumParser;
+friend class World::Parsers::LevelStatusParser;
+friend class World::Parsers::SaveHistoryParser;
+friend class World::Parsers::SaveMasksParser;
+friend class World::Parsers::SaveSuperBombParser;
+
+
+
 public:
     virtual size_t func0(IDVList &stak);
     virtual size_t func1();
@@ -1968,9 +2712,7 @@ public:
     virtual void ypaworld_func185(void *arg);
 
     virtual size_t compatcall(int method_id, void *data);
-    NC_STACK_ypaworld()
-    {
-    };
+    NC_STACK_ypaworld();
     virtual ~NC_STACK_ypaworld() {};
 
     virtual const char * getClassName()
@@ -2073,16 +2815,60 @@ protected:
     void GameShellInitBkgMode(int mode);
     bool GameShellInitBkg();
 
+    int  ypaworld_func158__sub0__sub0__sub0();
+
 public:
     void GuiWinToFront(GuiBase *);
     void GuiWinOpen(GuiBase *);
     void GuiWinClose(GuiBase *);
+
+
+    void setIniColor(int color_id, int r, int g, int b, int i);
+	bool ParseColorString(int color_id, const std::string &color_string);
+
+
+	void SetFarView(bool farvw);
+
+
+//protected:
+	void sub_4491A0(const std::string &movie_fname);
+    bool sub_4DA354(const std::string &filename);
+    bool sb_0x4e1a88__sub0__sub0(mapProto *mapp, const std::string &fname);
+    void ypaworld_func158__sub4__sub1();
+    size_t ypaworld_func158__sub4__sub1__sub5();
+    int ypaworld_func158__sub4__sub1__sub5__sub0(mapProto *mapproto, const std::string &filename);
+    int sub_4DA41C(mapProto *mapp, const std::string &fname);
+    int ypaworld_func158__sub4__sub1__sub3(int lvlid);
+    int ypaworld_func158__sub4__sub1__sub3__sub0();
+    void yw_ActivateWunderstein(cellArea *cell, int a3);
+    void yw_InitTechUpgradeBuildings();
+    void sub_4D12D8(int id, int a3);
+    void sub_4D1594(int id);
+    void sub_4D1444(int id);
+    int ypaworld_func169__sub1(const std::string &filename);
+    void ypaworld_func169__sub2();
+    int ypaworld_func172__sub0(const std::string &fname, int parsers_mask);
+    void listSaveDir(const std::string &saveDir);
+    int yw_InitLevelNet();
+    int yw_ParseWorldIni(const std::string &filename);
+    bool sb_0x4e1a88__sub0(const std::string &fname, bool multiplayer);
+    int sb_0x4e1a88(bool multiplayer);
+    int yw_ScanLevels();
+    int yw_RestoreVehicleData();
+    void sub_471AB8();
 
 public:
     //Data
     static const Nucleus::ClassDescr description;
 
     _NC_STACK_ypaworld ypaworld;
+
+
+protected:
+
+    /** On saved game load variables **/
+    bool _extraViewEnable; // If you seat in robo gun
+    int _extraViewNumber; // robo gun index
 
 };
 

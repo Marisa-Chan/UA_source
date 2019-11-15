@@ -1,188 +1,192 @@
-#include <stdio.h>
-#include "includes.h"
-#include "yw.h"
 #include "def_parser.h"
+#include "utils.h"
+#include "log.h"
 
-
-int sb_0x4d9f1c(FSMgr::FileHandle *fil, const char *filename, int callbacks_num, scrCallBack *callbacks, int *line_number, int flag);
-
-
-int def_parseFile(const char *filename, int num, scrCallBack *callbacks, int flag)
+namespace ScriptParser
 {
-    int v9 = 1;
 
-    FSMgr::FileHandle *fil = uaOpenFile(filename, "r");
-    if ( fil )
+bool Parser::ParseNextLine(std::string *p1, std::string *p2)
+{
+    p1->clear();
+    p2->clear();
+
+    std::string buf;
+    std::string word;
+
+    Stok stok("= \t");
+
+    bool p1read = false;
+    bool loop = true;
+
+    while ( loop )
     {
-        int a5 = 0;
-        int v6 = 2;
-        while (v6 == 2)
-            v6 = sb_0x4d9f1c(fil, filename, num, callbacks, &a5, flag);
+    	if ( !ReadLine(&buf) )
+			return p1read;
 
-        if ( v6 >= 3 && v6 <= 5 )
-            v9 = 0;
+		size_t line_end = buf.find_first_of(";\n\r");
+		if (line_end != std::string::npos)
+			buf.erase(line_end);
 
-        delete fil; //File will close on delete
+        stok = buf;
+		if (!p1read && stok.GetNext(&word) )
+		{
+			p1read = true;
+			(*p1) = word;
+		}
+
+		if (p1read)
+		{
+			loop = false;
+			if (stok.GetNext(&word))
+			{
+				(*p2) += word;
+				if (p2->back() == '\\')
+				{
+					p2->back() = '\n';
+					loop = true;
+				}
+			}
+		}
     }
-    else
-    {
-        v9 = 0;
-    }
-    return v9;
+
+    return true;
 }
 
 
-
-
-
-
-int sb_0x4d9f1c__sub0(FSMgr::FileHandle *fil, char *p1, char *p2, char **p3, char **p4, int *line_number)
+int Parser::ParseRoutine(const std::string &filename, HandlersList &callbacks, int flags)
 {
-    int lopp = 1;
-    *p1 = 0;
-    *p2 = 0;
-    *p3 = NULL;
-    *p4 = NULL;
+	std::string p1;
+	std::string p2;
 
-    char *prev_token = NULL;
-    char buf[4096];
+	int selectedHandler = -1;
 
-    char *v7;
-
-    while ( lopp )
+    while ( ParseNextLine(&p1, &p2) )
     {
-        v7 = fil->gets(buf, 4096);
-
-        if ( !v7 )
-            break;
-
-        (*line_number)++;
-
-        char *line_end = strpbrk(buf, ";\n\r");
-        if ( line_end )
-            *line_end = 0;
-
-        char *token = NULL;
-
-        if ( prev_token )
+        if ( selectedHandler != -1 )
         {
-            token = strtok(buf, "= \t");
+            int res = callbacks[ selectedHandler ]->Handle(*this, p1, p2);
+
+            if ( res == RESULT_SCOPE_END )
+            {
+				selectedHandler = -1;
+            }
+			else if ( res )
+            {
+                if ( res == RESULT_UNKNOWN )
+                    ypa_log_out("PARSE ERROR: script %s line #%d unknown keyword %s.\n", filename.c_str(), _line, p1.c_str());
+                else if ( res == RESULT_BAD_DATA )
+                    ypa_log_out("PARSE ERROR: script %s line #%d data expected or bogus data.\n", filename.c_str(), _line);
+
+                return res;
+            }
+        }
+        else if ( !(flags & FLAG_NO_INCLUDE) && !StriCmp(p1, "include") )
+        {
+        	Parser include;
+            if ( !include.ParseFile(p2, callbacks, flags) )
+            {
+                ypa_log_out("ERROR: script %s line #%d include %s failed!\n", filename.c_str(), _line, p1.c_str());
+                return RESULT_BAD_DATA;
+            }
         }
         else
         {
-            token = strtok(buf, "= \t");
-            prev_token = token;
-
-            if ( token )
+            for (uint32_t i = 0; i < callbacks.size(); i++)
             {
-                strcpy(p1, token);
-
-                token = strtok(0, "= \t");
+            	if ( callbacks[i]->IsScope(*this, p1, p2) )
+				{
+					selectedHandler = i;
+					break;
+				}
             }
-        }
 
-        if ( token )
-        {
-            if ( token[strlen(token) - 1] == '\\' )
-                token[strlen(token) - 1] = '\n';
-            else
-                lopp = 0;
-
-            strcat(p2, token);
-        }
-        else if ( prev_token )
-        {
-            lopp = 0;
+            if ( selectedHandler == -1 && (flags & FLAG_NO_SCOPE_SKIP) )
+            {
+                ypa_log_out("PARSE ERROR: script %s line #%d unknown keyword %s.\n", filename.c_str(), _line, p1.c_str());
+                return RESULT_UNKNOWN;
+            }
         }
     }
 
-    if ( *p1 )
-        *p3 = p1;
+    if ( selectedHandler != -1 )
+    {
+        ypa_log_out("PARSE ERROR: script %s unexpected EOF!\n", filename.c_str());
+        return RESULT_UNEXP_EOF;
+    }
 
-    if ( *p2 )
-        *p4 = p2;
-
-    return v7 != NULL;
+    return RESULT_EOF;
 }
 
 
-int sb_0x4d9f1c(FSMgr::FileHandle *fil, const char *filename, int callbacks_num, scrCallBack *callbacks, int *line_number, int flag)
+bool Parser::ReadLine(std::string *out)
 {
-    char p1[64];
-    char p2[8192];
-
-    char *pp1;
-    char *pp2;
-
-
-    scrCallBack *returned1 = NULL;
-
-    while ( sb_0x4d9f1c__sub0(fil, p1, p2, &pp1, &pp2, line_number) )
+    bool ok = false;
+    switch(_mode)
     {
-        if ( returned1 )
-        {
-            returned1->p1 = pp1;
-            returned1->p2 = pp2;
-            returned1->line_number = *line_number;
-            returned1->file = fil;
+        case MODE_FILE:
+            ok = _file->ReadLine(out);
+            break;
 
-            int v9 = returned1->func(returned1);
-
-            if ( v9 )
+        case MODE_SLIST:
+            if (_strlistIt != _strlistEnd)
             {
-                if ( v9 == 3 )
-                    ypa_log_out("PARSE ERROR: script %s line #%d unknown keyword %s.\n", filename, *line_number, pp1);
-                else if ( v9 == 4 )
-                    ypa_log_out("PARSE ERROR: script %s line #%d data expected or bogus data.\n", filename, *line_number);
-
-                return v9;
+                (*out) = *_strlistIt;
+                _strlistIt++;
+                ok = true;
             }
-        }
-        else if ( flag & 4 || strcasecmp(pp1, "include") != 0 )
-        {
-            for (int i = 0; i < callbacks_num; i++)
-            {
-                scrCallBack *clbk = &callbacks[i];
-                if ( clbk->func )
-                {
-                    clbk->field_18 = 0;
-                    clbk->line_number = *line_number;
-                    clbk->p1 = pp1;
-                    clbk->p2 = pp2;
-                    clbk->file = fil;
+            break;
 
-                    if ( clbk->func(clbk) == 1 )
-                    {
-                        returned1 = clbk;
-                        break;
-                    }
-
-                }
-            }
-
-            if ( !returned1 && flag & 1 )
-            {
-                ypa_log_out("PARSE ERROR: script %s line #%d unknown keyword %s.\n", filename, *line_number, pp1);
-                return 3;
-            }
-        }
-        else  // include
-        {
-            if ( !def_parseFile(pp2, callbacks_num, callbacks, flag) )
-            {
-                ypa_log_out("ERROR: script %s line #%d include %s failed!\n", filename, *line_number, pp2);
-                return 4;
-            }
-        }
+        case MODE_NO:
+        default:
+            break;
     }
+	_line++;
+    return ok;
+}
 
-    if ( returned1 )
-    {
-        ypa_log_out("PARSE ERROR: script %s unexpected EOF!\n", filename);
-        return 5;
-    }
+bool Parser::ParseFile(const std::string &filename, HandlersList &callbacks, int flags)
+{
+    Parser parser;
+	parser._line = 0;
+	parser._file = uaOpenFile(filename, "r");
+	parser._mode = MODE_FILE;
 
-    return 6;
+	if (!parser._file)
+		return false;
+
+	int res = RESULT_SCOPE_END;
+	while (res == RESULT_SCOPE_END)
+		res = parser.ParseRoutine(filename, callbacks, flags);
+
+	delete parser._file;
+	parser._file = NULL;
+
+	if ( res == RESULT_UNKNOWN || res == RESULT_BAD_DATA || res == RESULT_UNEXP_EOF )
+		return false;
+
+	return true;
+}
+
+bool Parser::ParseStringList(const Engine::StringList &slist, HandlersList &callbacks, int flags)
+{
+    Parser parser;
+	parser._line = 0;
+	parser._strlistIt = slist.cbegin();
+	parser._strlistEnd = slist.cend();
+	parser._mode = MODE_SLIST;
+
+	int res = RESULT_SCOPE_END;
+	while (res == RESULT_SCOPE_END)
+		res = parser.ParseRoutine("StringList", callbacks, flags);
+
+	parser._file = NULL;
+
+	if ( res == RESULT_UNKNOWN || res == RESULT_BAD_DATA || res == RESULT_UNEXP_EOF )
+		return false;
+
+	return true;
+}
+
 }
 
 

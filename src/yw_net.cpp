@@ -148,7 +148,7 @@ void yw_CheckCRCs(_NC_STACK_ypaworld *yw)
 
         for (int i = 0; i < plCnt; i++)
         {
-            if ( strcasecmp(yw->GameShell->callSIGN, yw->GameShell->players2[i].name) &&
+            if ( StriCmp(yw->GameShell->callSIGN, yw->GameShell->players2[i].name) &&
                     usr->netCRC != yw->GameShell->players2[i].checksum &&
                     yw->GameShell->players2[i].checksum != 0 &&
                     usr->netCRC != 0 )
@@ -187,7 +187,7 @@ void UserData::yw_CheckCDs()
 
         while ( p_ypaworld->windp->GetPlayerData(&plData) )
         {
-            if ( !strcasecmp(plData.name, callSIGN) )
+            if ( !StriCmp(plData.name, callSIGN) )
             {
                 players2[plData.ID].cd = 1;
                 break;
@@ -2397,7 +2397,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
 
         strcpy(yw->GameShell->netProblemName, kcMsg->text);
 
-        if ( !strcasecmp(kcMsg->text, yw->GameShell->callSIGN) )
+        if ( !StriCmp(kcMsg->text, yw->GameShell->callSIGN) )
         {
             yw->GameShell->players[owner].isKilled = 1;
             yw->GameShell->noSent = 1;
@@ -2416,7 +2416,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             }
         }
 
-        if ( !strcasecmp(kcMsg->text, yw->GameShell->callSIGN) )
+        if ( !StriCmp(kcMsg->text, yw->GameShell->callSIGN) )
         {
             log_netlog(">>> I was kicked off by the host! (time %d)\n", yw->timeStamp / 1000);
         }
@@ -2515,13 +2515,12 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
 
         if ( cl->w_type != 4 )
         {
-            char bff[256];
-            strcpy(bff, get_lang_string(yw->string_pointers_p2, 229, "TECH-UPGRADE LOST! "));
-            strcat(bff, gemProt->msg_default);
+            std::string bff = get_lang_string(yw->string_pointers_p2, 229, "TECH-UPGRADE LOST! ");
+            bff += gemProt->msg_default;
 
             yw_arg159 arg159;
             arg159.field_4 = 80;
-            arg159.txt = bff;
+            arg159.txt = bff.c_str();
             arg159.field_C = 29;
             arg159.unit = NULL;
 
@@ -2870,7 +2869,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
 
                 yw->windp->GetPlayerData(&plDat);
 
-                if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
+                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_RESISTANCE;
 
                 tmp--;
@@ -2890,7 +2889,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                 yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_GHORKOV;
                 yw->windp->GetPlayerData(&plDat);
 
-                if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
+                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_GHORKOV;
 
                 tmp--;
@@ -2910,7 +2909,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                 yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_MIKO;
                 yw->windp->GetPlayerData(&plDat);
 
-                if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
+                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_MIKO;
 
                 tmp--;
@@ -2930,7 +2929,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                 yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_TAER;
                 yw->windp->GetPlayerData(&plDat);
 
-                if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
+                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_TAER;
 
                 tmp--;
@@ -2978,7 +2977,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
 
                 yw->windp->GetPlayerData(&plDat);
 
-                if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
+                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_RESISTANCE;
 
                 tmp--;
@@ -2998,7 +2997,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                 yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_GHORKOV;
                 yw->windp->GetPlayerData(&plDat);
 
-                if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
+                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_GHORKOV;
 
                 tmp--;
@@ -3018,7 +3017,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                 yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_MIKO;
                 yw->windp->GetPlayerData(&plDat);
 
-                if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
+                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_MIKO;
 
                 tmp--;
@@ -3038,7 +3037,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                 yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_TAER;
                 yw->windp->GetPlayerData(&plDat);
 
-                if ( !strcasecmp(plDat.name, yw->GameShell->callSIGN) )
+                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
                     yw->GameShell->SelectedFraction = FREE_FRACTION_TAER;
 
                 tmp--;
@@ -3279,7 +3278,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
 
         windp_arg82 warg82;
         warg82.senderFlags = 1;
-        warg82.senderID = yw->GameShell->callSIGN;
+        warg82.senderID = yw->GameShell->callSIGN.c_str();
         warg82.receiverID = 0;
         warg82.guarant = 0;
         warg82.receiverFlags = 2;
@@ -3592,7 +3591,7 @@ void yw_HandleNetMsg(_NC_STACK_ypaworld *yw)
                     if ( usr->netLevelID > 0 && usr->netLevelID < 256 )
                     {
                         uamessage_lobbyInit lbyMsg;
-                        strncpy(lbyMsg.hostName, usr->callSIGN, 64);
+                        strncpy(lbyMsg.hostName, usr->callSIGN.c_str(), 64);
                         lbyMsg.msgID = UAMSG_LOBBYINIT;
                         lbyMsg.lvlID = usr->netLevelID;
                         lbyMsg.owner = 0;
@@ -3637,7 +3636,7 @@ void yw_HandleNetMsg(_NC_STACK_ypaworld *yw)
                 bool itisI = false;
                 bool plFound = false;
 
-                if ( !strcasecmp(usr->callSIGN, (const char *)recvMsg.data) )
+                if ( !StriCmp(usr->callSIGN, (const char *)recvMsg.data) )
                 {
                     itisI = true;
                     yw->field_2d90->field_40 = 2;
@@ -3707,7 +3706,7 @@ void yw_HandleNetMsg(_NC_STACK_ypaworld *yw)
                     plData.mode = 0;
                     while ( yw->windp->GetPlayerData(&plData) )
                     {
-                        if ( !strcasecmp(usr->callSIGN, plData.name) )
+                        if ( !StriCmp(usr->callSIGN, plData.name) )
                         {
                             usr->players2[plData.ID].rdyStart = 1;
                             break;
@@ -4044,15 +4043,15 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
 
     if ( LVLoaderCommon(proto, arg->lvlID, arg->field_4) )
     {
-        if ( cells_mark_type(yw, proto.typ) )
+        if ( cells_mark_type(yw, proto.typ.c_str()) )
         {
-            if ( cells_mark_owner(yw, proto.own) )
+            if ( cells_mark_owner(yw, proto.own.c_str()) )
             {
-                if ( cells_mark_hight(yw, proto.hgt) )
+                if ( cells_mark_hight(yw, proto.hgt.c_str()) )
                 {
                     if ( yw_NetSetHostStations(yw, proto.mapRobos, proto.mapRobos_count) )
                     {
-                        if ( sub_44B9B8(this, yw, proto.blg) )
+                        if ( sub_44B9B8(this, yw, proto.blg.c_str()) )
                         {
                             for (int y = 0; y < yw->sectors_maxY2; y++)
                             {
@@ -4063,7 +4062,7 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
                                 }
                             }
 
-                            yw_InitTechUpgradeBuildings(this, yw);
+                            yw_InitTechUpgradeBuildings();
                             yw_InitGates(yw);
                             yw_InitSuperItems(yw);
                             sub_44F748(yw);
@@ -4183,7 +4182,7 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
         windp82.senderFlags = 1;
         windp82.receiverFlags = 2;
         windp82.receiverID = 0;
-        windp82.senderID = yw->GameShell->callSIGN;
+        windp82.senderID = yw->GameShell->callSIGN.c_str();
         windp82.guarant = 1;
 
         yw->windp->FlushBuffer(windp82);
@@ -4213,7 +4212,8 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
     yw->GameShell->deadCheck = yw->timeStamp + 300000;
     yw->GameShell->sendScore = 3000;
 
-    memset(yw->playerstatus, 0, sizeof(yw->playerstatus));
+    for (auto &x : yw->playerstatus)
+        x.clear();
 
     return 1;
 }
@@ -4575,7 +4575,7 @@ void yw_NetCheckPing(_NC_STACK_ypaworld *yw)
             windp_arg82 dp82;
             dp82.senderFlags = 1;
             dp82.receiverID = 0;
-            dp82.senderID = usr->callSIGN;
+            dp82.senderID = usr->callSIGN.c_str();
             dp82.guarant = 0;
             dp82.receiverFlags = 2;
             yw->windp->FlushBuffer(dp82);
@@ -4707,7 +4707,7 @@ void yw_NetDrawStats(_NC_STACK_ypaworld *yw)
                 {
                     if ( usr->players[i].rdyStart )
                     {
-                        if ( strcasecmp(usr->players[i].name, usr->callSIGN) )
+                        if ( StriCmp(usr->players[i].name, usr->callSIGN) )
                         {
                             strcpy(t[numelm], usr->players[i].name);
                             numelm++;

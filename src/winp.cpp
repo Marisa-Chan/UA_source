@@ -813,7 +813,7 @@ int NC_STACK_winp::idev_func68(winp_68arg *arg)
     {
         for ( int i = 0; i < 128; i++ )
         {
-            if ( !strcasecmp(winp_keys[i].keyname, arg->keyname) && winp_keys[i].keytype == 1 )
+            if ( !StriCmp(winp_keys[i].keyname, arg->keyname) && winp_keys[i].keytype == 1 )
             {
                 winp->hotKeys[ arg->id ] = winp_keys[i].keycode;
                 return 3;

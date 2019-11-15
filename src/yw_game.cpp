@@ -2,7 +2,6 @@
 #include <string.h>
 #include <math.h>
 #include "includes.h"
-#include "def_parser.h"
 #include "yw_internal.h"
 #include "yw.h"
 #include "yw_net.h"
@@ -632,7 +631,7 @@ void sb_0x44ca90__sub2(_NC_STACK_ypaworld *yw, mapProto *mapp)
         if (mapp->palettes[i][0])
         {
             IDVList init_vals;
-            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, mapp->palettes[i]);
+            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, mapp->palettes[i].c_str());
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
 
             NC_STACK_bitmap *ilbm = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
@@ -676,7 +675,7 @@ int NC_STACK_ypaworld::LVLoaderCommon(mapProto &mapp, int levelID, int a5)
 {
     int ok = 0;
 
-    memset(&mapp, 0, sizeof(mapProto));
+    mapp.clear();
 
     memset(ypaworld.ingamePlayerStatus, 0, sizeof(player_status) * 8);
 
@@ -719,11 +718,15 @@ int NC_STACK_ypaworld::LVLoaderCommon(mapProto &mapp, int levelID, int a5)
     ypaworld.field_8283 = 0;
     ypaworld.field_1a20 = 0;
 
-    memset(ypaworld.field_2d90->gates, 0, sizeof(gateProto) * 8);
-    memset(ypaworld.field_2d90->supetItems, 0, sizeof(supetItemProto) * 8);
+    for(auto &x : ypaworld.field_2d90->gates)
+		x.clear();
+
+	for(auto &x : ypaworld.field_2d90->supetItems)
+		x.clear();
+
     for (int i = 0; i < 8; i++)
     {
-        ypaworld.gems[i].init();
+        ypaworld.gems[i].clear();
     }
     memset(&ypaworld.field_81CB, 0, sizeof(yw_81cb));
     memset(ypaworld.field_1bac, 0, sizeof(int) * 8);
@@ -810,7 +813,7 @@ int NC_STACK_ypaworld::LVLoaderCommon(mapProto &mapp, int levelID, int a5)
 
     set_prefix_replacement("rsrc", "data:");
 
-    if ( sub_4DA41C(&ypaworld, &mapp, ypaworld.LevelNet->mapInfos[ypaworld.field_2d90->levelID].mapPath) && (mapp.flags & 0x7F) == 0x7F )
+    if ( sub_4DA41C(&mapp, ypaworld.LevelNet->mapInfos[ypaworld.field_2d90->levelID].mapPath) && (mapp.flags & 0x7F) == 0x7F )
     {
         sb_0x44ca90__sub7(&ypaworld, mapp.event_loop);
 
@@ -828,7 +831,7 @@ int NC_STACK_ypaworld::LVLoaderCommon(mapProto &mapp, int levelID, int a5)
 
         if ( yw_LoadSet(&ypaworld, mapp.setNumber) )
         {
-            if ( yw_loadSky(&ypaworld, mapp.sky) )
+            if ( yw_loadSky(&ypaworld, mapp.sky.c_str()) )
                 ok = 1;
         }
     }
@@ -1271,37 +1274,37 @@ void yw_InitBuddies(_NC_STACK_ypaworld *yw)
     }
 }
 
-void yw_InitTechUpgradeBuildings(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::yw_InitTechUpgradeBuildings()
 {
-    yw->field_2b7c = 0;
-    yw->last_modify_build = 0;
-    yw->last_modify_vhcl = 0;
-    yw->last_modify_weapon = 0;
-    yw->field_2b78 = -1;
+    ypaworld.field_2b7c = 0;
+    ypaworld.last_modify_build = 0;
+    ypaworld.last_modify_vhcl = 0;
+    ypaworld.last_modify_weapon = 0;
+    ypaworld.field_2b78 = -1;
 
     for (int i = 0; i < 8; i++)
     {
-        if ( yw->gems[0].field_0 )
+        if ( ypaworld.gems[i].field_0 )
         {
-            int xx = yw->gems[i].sec_x;
-            int yy = yw->gems[i].sec_y;
+            int xx = ypaworld.gems[i].sec_x;
+            int yy = ypaworld.gems[i].sec_y;
 
-            cellArea *cell = &yw->cells[xx + yy * yw->sectors_maxX2];
+            cellArea *cell = &ypaworld.cells[xx + yy * ypaworld.sectors_maxX2];
 
-            if (yw->gems[i].building)
+            if (ypaworld.gems[i].building)
             {
-                if ( cell->w_type != 3 || yw->gems[i].building != cell->w_id )
+                if ( cell->w_type != 3 || ypaworld.gems[i].building != cell->w_id )
                 {
                     ypaworld_arg148 arg148;
                     arg148.ownerID = cell->owner;
                     arg148.ownerID2 = cell->owner;
-                    arg148.blg_ID = yw->gems[i].building;
+                    arg148.blg_ID = ypaworld.gems[i].building;
                     arg148.x = xx;
                     arg148.y = yy;
                     arg148.field_C = 1;
                     arg148.field_18 = 0;
 
-                    ywo->ypaworld_func148(&arg148);
+                    ypaworld_func148(&arg148);
                 }
             }
 
@@ -2154,7 +2157,7 @@ void sub_44BF34(vhclSndFX *sndfx)
             for (int i = 0; i < sndfx->extS.cnt; i++)
             {
                 IDVList init_vals;
-                init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->extSampleNames[i]);
+                init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->extSampleNames[i].c_str());
 
                 sndfx->wavs[i] = Nucleus::CInit<NC_STACK_wav>(init_vals);
 
@@ -2184,7 +2187,7 @@ void sub_44BF34(vhclSndFX *sndfx)
         else if ( sndfx->sample_name[0] )
         {
             IDVList init_vals;
-            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->sample_name);
+            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->sample_name.c_str());
 
             sndfx->single_sample = Nucleus::CInit<NC_STACK_wav>(init_vals);
 
@@ -2879,7 +2882,7 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                 yw_arg181 v31;
                 v31.recvFlags = 2;
                 v31.recvID = 0;
-                v31.senderID = yw->GameShell->callSIGN;
+                v31.senderID = yw->GameShell->callSIGN.c_str();
                 v31.senderFlags = 1;
                 v31.data = &bvMsg;
                 v31.dataSize = sizeof(bvMsg);
@@ -3343,7 +3346,7 @@ void ypaworld_func64__sub5(_NC_STACK_ypaworld *yw)
     }
 }
 
-int sub_47EDDC(yw_f726c *hist, int bufsize)
+int yw_f726c::sub_47EDDC(int bufsize)
 {
     yw_f726c_nod *node = (yw_f726c_nod *)AllocVec(sizeof(yw_f726c_nod), 65537);
 
@@ -3354,11 +3357,11 @@ int sub_47EDDC(yw_f726c *hist, int bufsize)
         {
             node->bufEnd = &node->bufStart[bufsize];
 
-            AddTail(&hist->lst, node);
+            AddTail(&lst, node);
 
-            hist->last_bufStart = node->bufStart;
-            hist->last_bufEnd = node->bufEnd;
-            hist->numNodes++;
+            last_bufStart = node->bufStart;
+            last_bufEnd = node->bufEnd;
+            numNodes++;
             return 1;
         }
         else
@@ -3371,48 +3374,48 @@ int sub_47EDDC(yw_f726c *hist, int bufsize)
 }
 
 
-void sub_4D12D8(_NC_STACK_ypaworld *yw, int id, int a3)
+void NC_STACK_ypaworld::sub_4D12D8(int id, int a3)
 {
-    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+    supetItemProto &sitem = ypaworld.field_2d90->supetItems[id];
 
-    sitem->field_4 = 1;
-    sitem->field_F0 = 0;
-    sitem->field_F4 = sitem->pcell->owner;
+    sitem.field_4 = 1;
+    sitem.field_F0 = 0;
+    sitem.field_F4 = sitem.pcell->owner;
 
     if ( !a3 )
     {
-        sitem->field_EC = yw->timeStamp;
-        sitem->field_FC = 0;
-        sitem->field_100 = 0;
-        sitem->field_F8 = sitem->countdown;
+        sitem.field_EC = ypaworld.timeStamp;
+        sitem.field_FC = 0;
+        sitem.field_100 = 0;
+        sitem.field_F8 = sitem.countdown;
     }
 
     ypaworld_arg148 arg148;
-    arg148.ownerID = sitem->pcell->owner;
-    arg148.ownerID2 = sitem->pcell->owner;
-    arg148.blg_ID = sitem->active_bp;
+    arg148.ownerID = sitem.pcell->owner;
+    arg148.ownerID2 = sitem.pcell->owner;
+    arg148.blg_ID = sitem.active_bp;
     arg148.field_C = 1;
-    arg148.x = sitem->sec_x;
-    arg148.y = sitem->sec_y;
+    arg148.x = sitem.sec_x;
+    arg148.y = sitem.sec_y;
     arg148.field_18 = 0;
 
-    yw->self_full->ypaworld_func148(&arg148);
+    ypaworld_func148(&arg148);
 
-    sitem->pcell->w_type = 8;
-    sitem->pcell->w_id = id;
+    sitem.pcell->w_type = 8;
+    sitem.pcell->w_id = id;
 
     yw_arg159 arg159;
     arg159.unit = 0;
     arg159.field_4 = 94;
 
-    if ( sitem->type == 1 )
+    if ( sitem.type == 1 )
     {
-        arg159.txt = get_lang_string(yw->string_pointers_p2, 250, "Superbomb activated.");
+        arg159.txt = get_lang_string(ypaworld.string_pointers_p2, 250, "Superbomb activated.");
         arg159.field_C = 70;
     }
-    else if ( sitem->type == 2 )
+    else if ( sitem.type == 2 )
     {
-        arg159.txt = get_lang_string(yw->string_pointers_p2, 254, "Superwave activated.");
+        arg159.txt = get_lang_string(ypaworld.string_pointers_p2, 254, "Superwave activated.");
         arg159.field_C = 74;
     }
     else
@@ -3421,41 +3424,41 @@ void sub_4D12D8(_NC_STACK_ypaworld *yw, int id, int a3)
         arg159.txt = "Cant happen.";
     }
 
-    yw->self_full->ypaworld_func159(&arg159);
+    ypaworld_func159(&arg159);
 }
 
-void sub_4D1594(_NC_STACK_ypaworld *yw, int id)
+void NC_STACK_ypaworld::sub_4D1594(int id)
 {
-    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+    supetItemProto &sitem = ypaworld.field_2d90->supetItems[id];
 
-    sitem->field_4 = 2;
+    sitem.field_4 = 2;
 
     ypaworld_arg148 arg148;
-    arg148.ownerID = sitem->pcell->owner;
-    arg148.ownerID2 = sitem->pcell->owner;
-    arg148.blg_ID = sitem->inactive_bp;
+    arg148.ownerID = sitem.pcell->owner;
+    arg148.ownerID2 = sitem.pcell->owner;
+    arg148.blg_ID = sitem.inactive_bp;
     arg148.field_C = 1;
-    arg148.x = sitem->sec_x;
-    arg148.y = sitem->sec_y;
+    arg148.x = sitem.sec_x;
+    arg148.y = sitem.sec_y;
     arg148.field_18 = 0;
 
-    yw->self_full->ypaworld_func148(&arg148);
+    ypaworld_func148(&arg148);
 
-    sitem->pcell->w_type = 8;
-    sitem->pcell->w_id = id;
+    sitem.pcell->w_type = 8;
+    sitem.pcell->w_id = id;
 
     yw_arg159 arg159;
     arg159.unit = 0;
     arg159.field_4 = 93;
 
-    if ( sitem->type == 1 )
+    if ( sitem.type == 1 )
     {
-        arg159.txt = get_lang_string(yw->string_pointers_p2, 252, "Superbomb frozen.");
+        arg159.txt = get_lang_string(ypaworld.string_pointers_p2, 252, "Superbomb frozen.");
         arg159.field_C = 72;
     }
-    else if ( sitem->type == 2 )
+    else if ( sitem.type == 2 )
     {
-        arg159.txt = get_lang_string(yw->string_pointers_p2, 256, "Superwave frozen.");
+        arg159.txt = get_lang_string(ypaworld.string_pointers_p2, 256, "Superwave frozen.");
         arg159.field_C = 76;
     }
     else
@@ -3464,43 +3467,43 @@ void sub_4D1594(_NC_STACK_ypaworld *yw, int id)
         arg159.txt = "Cant happen.";
     }
 
-    yw->self_full->ypaworld_func159(&arg159);
+    ypaworld_func159(&arg159);
 }
 
-void sub_4D1444(_NC_STACK_ypaworld *yw, int id)
+void NC_STACK_ypaworld::sub_4D1444(int id)
 {
-    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
-    sitem->field_4 = 3;
-    sitem->field_F0 = yw->timeStamp;
+    supetItemProto &sitem = ypaworld.field_2d90->supetItems[id];
+    sitem.field_4 = 3;
+    sitem.field_F0 = ypaworld.timeStamp;
 
     ypaworld_arg148 arg148;
-    arg148.ownerID = sitem->pcell->owner;
-    arg148.ownerID2 = sitem->pcell->owner;
-    arg148.blg_ID = sitem->trigger_bp;
+    arg148.ownerID = sitem.pcell->owner;
+    arg148.ownerID2 = sitem.pcell->owner;
+    arg148.blg_ID = sitem.trigger_bp;
     arg148.field_C = 1;
-    arg148.x = sitem->sec_x;
-    arg148.y = sitem->sec_y;
+    arg148.x = sitem.sec_x;
+    arg148.y = sitem.sec_y;
     arg148.field_18 = 0;
 
-    yw->self_full->ypaworld_func148(&arg148);
+    ypaworld_func148(&arg148);
 
-    sitem->pcell->w_type = 8;
-    sitem->pcell->w_id = id;
+    sitem.pcell->w_type = 8;
+    sitem.pcell->w_id = id;
 
-    yw->field_2d90->supetItems[id].field_108 = 0;
+    sitem.field_108 = 0;
 
     yw_arg159 arg159;
     arg159.field_4 = 95;
     arg159.unit = 0;
 
-    if ( sitem->type == 1 )
+    if ( sitem.type == 1 )
     {
-        arg159.txt = get_lang_string(yw->string_pointers_p2, 251, "Superbomb triggered.");
+        arg159.txt = get_lang_string(ypaworld.string_pointers_p2, 251, "Superbomb triggered.");
         arg159.field_C = 71;
     }
-    else if ( sitem->type == 2 )
+    else if ( sitem.type == 2 )
     {
-        arg159.txt = get_lang_string(yw->string_pointers_p2, 255, "Superwave triggered.");
+        arg159.txt = get_lang_string(ypaworld.string_pointers_p2, 255, "Superwave triggered.");
         arg159.field_C = 75;
     }
     else
@@ -3509,7 +3512,7 @@ void sub_4D1444(_NC_STACK_ypaworld *yw, int id)
         arg159.txt = "Cant happen.";
     }
 
-    yw->self_full->ypaworld_func159(&arg159);
+    ypaworld_func159(&arg159);
 }
 
 
@@ -3920,15 +3923,15 @@ void ypaworld_func64__sub19__sub0(_NC_STACK_ypaworld *yw, int id)
             if ( sitem->field_F8 > 0 )
                 sitem->field_F8 = sitem->field_F8 - yw->field_1618;
             else
-                sub_4D1444(yw, id);
+                yw->self_full->sub_4D1444(id);
         }
         else if ( sitem->keySectors_count )
         {
-            sub_4D1594(yw, id);
+            yw->self_full->sub_4D1594(id);
         }
         else
         {
-            sub_4D12D8(yw, id, 0);
+            yw->self_full->sub_4D12D8(id, 0);
         }
     }
     else
@@ -4003,7 +4006,7 @@ void ypaworld_func64__sub19__sub1(_NC_STACK_ypaworld *yw, int id)
     else
     {
         if ( sub_4D11C0(yw, id, sitem->field_F4) )
-            sub_4D12D8(yw, id, 1);
+            yw->self_full->sub_4D12D8(id, 1);
         else if ( sub_4D1230(yw, id, sitem->field_F4) )
             sub_4D16C4(yw, id);
     }
@@ -4133,7 +4136,7 @@ void ypaworld_func64__sub19(_NC_STACK_ypaworld *yw)
                 if ( sub_4D11C0(yw, i, sitem->pcell->owner) )
                 {
                     if ( sub_4D12A0(yw, sitem->pcell->owner) )
-                        sub_4D12D8(yw, i, 0);
+                        yw->self_full->sub_4D12D8(i, 0);
                 }
                 break;
 
@@ -4258,47 +4261,34 @@ void sub_44A094(_NC_STACK_ypaworld *yw)
     }
 }
 
-int yw_RestoreVehicleData(_NC_STACK_ypaworld *yw)
+int NC_STACK_ypaworld::yw_RestoreVehicleData()
 {
-    char buf[256];
+    std::string buf = fmt::sprintf("save:%s/%d.rst", ypaworld.GameShell->user_name, ypaworld.field_2d90->levelID);
 
-    if ( yw->GameShell )
-    {
-        scrCallBack funcs[3];
-        memset(funcs, 0, sizeof(funcs));
+    ScriptParser::HandlersList parsers {
+        new World::Parsers::VhclProtoParser(this),
+        new World::Parsers::WeaponProtoParser(this),
+        new World::Parsers::BuildProtoParser(this)
+    };
 
-        sprintf(buf, "save:%s/%d.rst", yw->GameShell->user_name, yw->field_2d90->levelID);
-
-        funcs[0].func = VhclProtoParser;
-        funcs[0].world = yw;
-
-        funcs[1].func = WeaponProtoParser;
-        funcs[1].world = yw;
-
-        funcs[2].world2 = yw;
-        funcs[2].func = BuildProtoParser;
-
-        return def_parseFile(buf, 3, funcs, 2);
-    }
-
-    return 1;
+    return ScriptParser::ParseFile(buf, parsers, 0);
 }
 
-void sub_471AB8(_NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::sub_471AB8()
 {
-    if ( yw->field_2d90->field_40 == 1 )
+    if ( ypaworld.field_2d90->field_40 == 1 )
     {
-        gateProto *gate = &yw->field_2d90->gates[ yw->field_2d90->field_4C ];
+        gateProto &gate = ypaworld.field_2d90->gates[ ypaworld.field_2d90->field_4C ];
 
-        yw->LevelNet->mapInfos[ yw->field_2d90->levelID ].field_0 = 3;
+        ypaworld.LevelNet->mapInfos[ ypaworld.field_2d90->levelID ].field_0 = 3;
 
-        for (int i = 0; i < gate->target_level_count; i++)
+        for (int i = 0; i < gate.target_level_count; i++)
         {
-            if ( yw->LevelNet->mapInfos[ gate->target_levels[i] ].field_0 == 1 )
-                yw->LevelNet->mapInfos[ gate->target_levels[i] ].field_0 = 2;
+            if ( ypaworld.LevelNet->mapInfos[ gate.target_levels[i] ].field_0 == 1 )
+                ypaworld.LevelNet->mapInfos[ gate.target_levels[i] ].field_0 = 2;
         }
     }
-    else if ( yw->field_2d90->field_40 == 2 && !yw_RestoreVehicleData(yw) )
+    else if ( ypaworld.field_2d90->field_40 == 2 && !yw_RestoreVehicleData() )
     {
         ypa_log_out("yw_RestoreVehicleData() failed.\n");
     }
@@ -4757,7 +4747,7 @@ uint8_t *yw_histbf_read_evnt(uint8_t *st, yw_arg184 *arg)
 
 void ypaworld_func184__sub0(_NC_STACK_ypaworld *yw, yw_f726c *hist_list, yw_arg184 *arg)
 {
-    if ( hist_list->last_bufStart || sub_47EDDC(hist_list, 4096) )
+    if ( hist_list->last_bufStart || hist_list->sub_47EDDC(4096) )
     {
         int tlen = 0;
 
@@ -4803,7 +4793,7 @@ void ypaworld_func184__sub0(_NC_STACK_ypaworld *yw, yw_f726c *hist_list, yw_arg1
         {
             hist_list->field_1C = hist_list->last_bufStart;
 
-            if ( hist_list->last_bufStart + tlen + 1 < hist_list->last_bufEnd || sub_47EDDC(hist_list, 4096) )
+            if ( hist_list->last_bufStart + tlen + 1 < hist_list->last_bufEnd || hist_list->sub_47EDDC(4096) )
             {
                 hist_list->last_bufStart = yw_histbf_write_evnt(hist_list->last_bufStart, arg);
             }

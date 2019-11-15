@@ -55,7 +55,7 @@ int get_keyvalue_from_ini(const char *ini_filename, key_value_stru *key, unsigne
                         tmp = strtok(0, "= \t");
                         if ( tmp )
                         {
-                            if ( !strcasecmp("yes", tmp) || !strcasecmp("true", tmp) || !strcasecmp("on", tmp) )
+                            if ( StrGetBool(tmp) )
                                 kkey->value.val = 1;
                             else
                                 kkey->value.val = 0;

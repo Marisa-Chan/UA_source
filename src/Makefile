@@ -69,6 +69,8 @@ OBJS =  \
 	windp.cpp\
 	winp.cpp\
 	wintimer.cpp\
+	world/parsers.cpp\
+	world/saveparsers.cpp\
 	wrapal.cpp\
 	wrapSDL.cpp\
 	yw.cpp\
@@ -78,7 +80,6 @@ OBJS =  \
 	yw_game.cpp\
 	yw_game_ui.cpp\
 	yw_net.cpp\
-	yw_protos.cpp\
 	yw_save.cpp\
 	ypabact.cpp\
 	ypacar.cpp\

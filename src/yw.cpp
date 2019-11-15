@@ -4,8 +4,6 @@
 #include "includes.h"
 #include "yw.h"
 
-#include "def_parser.h"
-
 #include "yw_internal.h"
 
 #include "button.h"
@@ -24,8 +22,6 @@ key_value_stru ypaworld_keys[4] =
     {"net.kickoff", KEY_TYPE_DIGIT, 20000},
     {"game.debug", KEY_TYPE_BOOL, 0}
 };
-
-Key_stru keySS[256];
 
 int word_5A50C2;
 int word_5A50AC;
@@ -48,8 +44,6 @@ GuiList stru_5C91D0;
 uint32_t bact_id = 0x10000;
 
 // method 169
-int dword_5A7A78;
-int dword_5A7A8C;
 int dword_5A7A80;
 
 _NC_STACK_ypaworld::_NC_STACK_ypaworld()
@@ -79,8 +73,8 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     secTypes = NULL;
     VhclProtos = NULL;
     WeaponProtos = NULL;
-    BuildProtos = NULL;
-    RoboProtos = NULL;
+    BuildProtos.clear();
+    RoboProtos.clear();
 //yw_f80 field_80[8];
 
     memset(build_hp_ref, 0, sizeof(build_hp_ref));
@@ -237,7 +231,7 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     LevelNet = NULL;
     field_2d90 = NULL;
 
-    memset(&brief, 0, sizeof(brief)); //hacky
+    brief.clear();
 
     history = NULL;
     superbomb_wall_vproto = 0;
@@ -262,7 +256,6 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     field_739A = 0;
 
     field_73CE = 0;
-    snd__cdsound = 0;
 
 //	save_status robo_map_status;
 //	save_status robo_finder_status;
@@ -328,7 +321,8 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     field_789A = 0.0; //input sliders
     field_789E = 0.0; //input sliders
 
-    memset(&movies, 0, sizeof(movies));
+    for (yw_movie &movie : movies)
+		movie.clear();
 
     field_81AB = 0;
     field_81AF = NULL;
@@ -359,44 +353,48 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     playerOwner = 0;
 }
 
-int sub_4493B0(scrCallBack *arg)
+NC_STACK_ypaworld::NC_STACK_ypaworld()
 {
-    if ( arg->field_18 )
-    {
-        if ( !strcasecmp(arg->p1, "end") )
-        {
-            arg->field_18 = 0;
-            return 2;
-        }
-        else if ( arg->p1 && arg->p2 )
-        {
-            set_prefix_replacement(arg->p1, arg->p2);
-            ypa_log_out("parsing assign.txt: set assign %s to %s\n", arg->p1, arg->p2);
-            return 0;
-        }
-        else
-        {
-            return 4;
-        }
-    }
-    else if ( !strcasecmp(arg->p1, "begin_assign") )
-    {
-        arg->field_18 = 1;
-        return 1;
-    }
+    _extraViewEnable = false;
+    _extraViewNumber = -1;
+};
 
-    return 3;
+namespace World
+{
+int AssignParser::Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2)
+{
+	if ( !StriCmp(p1, "end") )
+	{
+		return ScriptParser::RESULT_SCOPE_END;
+	}
+	else if ( !p1.empty() && !p2.empty() )
+	{
+		set_prefix_replacement(p1, p2);
+		ypa_log_out("parsing assign.txt: set assign %s to %s\n", p1.c_str(), p2.c_str());
+		return ScriptParser::RESULT_OK;
+	}
+	else
+	{
+		return ScriptParser::RESULT_BAD_DATA;
+	}
+
+    return ScriptParser::RESULT_UNKNOWN;
+}
+
+bool ParseAssignFile(const std::string &file)
+{
+	ScriptParser::HandlersList hndls{
+		AssignParser::MakeParser()
+	};
+
+	return ScriptParser::ParseFile(file, hndls, 0);
+}
+
 }
 
 
-int ypaworld_func0__sub0(const char *file)
-{
-    scrCallBack v3;
 
-    memset(&v3, 0, sizeof(scrCallBack));
-    v3.func = sub_4493B0;
-    return def_parseFile(file, 1, &v3, 0);
-}
+
 
 void sub_4711E0(_NC_STACK_ypaworld *yw)
 {
@@ -445,25 +443,20 @@ int yw_InitLocale(_NC_STACK_ypaworld *yw)
     return v3;
 }
 
-int sub_4DA354(_NC_STACK_ypaworld *yw, const char *filename)
+bool NC_STACK_ypaworld::sub_4DA354(const std::string &filename)
 {
-    scrCallBack clbk[3];
-    memset(clbk, 0, sizeof(clbk));
-
-    char buf[256];
-
-    strcpy(buf, get_prefix_replacement("rsrc"));
+    std::string buf = get_prefix_replacement("rsrc");
     set_prefix_replacement("rsrc", "data:");
 
-    clbk[0].world = yw;
-    clbk[0].func = VhclProtoParser;
-    clbk[1].world = yw;
-    clbk[1].func = WeaponProtoParser;
-    clbk[2].world2 = yw;
-    clbk[2].func = BuildProtoParser;
+    ScriptParser::HandlersList parsers {
+        new World::Parsers::VhclProtoParser(this),
+        new World::Parsers::WeaponProtoParser(this),
+        new World::Parsers::BuildProtoParser(this)
+    };
 
-    int res = def_parseFile(filename, 3, clbk, 1);
+    bool res = ScriptParser::ParseFile(filename, parsers, ScriptParser::FLAG_NO_SCOPE_SKIP);
     set_prefix_replacement("rsrc", buf);
+
     return res;
 }
 
@@ -471,12 +464,12 @@ int init_prototypes(_NC_STACK_ypaworld *yw)
 {
     yw->VhclProtos = new VhclProto[256];
     yw->WeaponProtos = new WeapProto[128];
-    yw->BuildProtos = (BuildProto *)AllocVec(sizeof(BuildProto) * 128, 65537);
-    yw->RoboProtos = (roboProto *)AllocVec(sizeof(roboProto) * 16, 65537);
+    yw->BuildProtos.resize(128);
+    yw->RoboProtos.resize(16);
 
-    if ( yw->VhclProtos && yw->WeaponProtos && yw->BuildProtos && yw->RoboProtos )
+    if ( yw->VhclProtos && yw->WeaponProtos )
     {
-        if ( sub_4DA354(yw, yw->initScriptLoc.c_str()) )
+        if ( yw->self_full->sub_4DA354(yw->initScriptLoc) )
             return 1;
     }
 
@@ -578,7 +571,7 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
     set_prefix_replacement("locale", "locale");
     set_prefix_replacement("scripts", "data:scripts");
 
-    if ( !ypaworld_func0__sub0("env:assign.txt") )
+    if ( !World::ParseAssignFile("env:assign.txt") )
         ypa_log_out("Warning, no env:assign.txt script.\n");
 
     yw_setInitScriptLoc(yw);
@@ -695,7 +688,7 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
     yw->shell_default_res = (640 << 12) | 480;
     yw->game_default_res = (640 << 12) | 480;
 
-    if ( !yw_InitLevelNet(yw) )
+    if ( !yw_InitLevelNet() )
     {
         ypa_log_out("yw_main.c/OM_NEW: yw_InitLevelNet() failed!\n");
         func1();
@@ -1142,7 +1135,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                 if ( yw->field_7586 <= 0 )
                 {
                     windp_arg82 arg82;
-                    arg82.senderID = yw->GameShell->callSIGN;
+                    arg82.senderID = yw->GameShell->callSIGN.c_str();
                     arg82.senderFlags = 1;
                     arg82.receiverFlags = 2;
                     arg82.receiverID = 0;
@@ -1387,15 +1380,13 @@ void ypaworld_func129__sub1(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
     if ( a4 )
         yw->BuildProtos[a4].enable_mask = 0;
 
-    char v13[128];
-
-    strcpy(v13, get_lang_string(yw->string_pointers_p2, 229, "TECH-UPGRADE LOST!  "));
-    strcat(v13, v18->msg_default);
+    std::string v13 = get_lang_string(yw->string_pointers_p2, 229, "TECH-UPGRADE LOST!  ");
+    v13 += v18->msg_default;
 
     yw_arg159 arg159;
     arg159.unit = 0;
     arg159.field_4 = 80;
-    arg159.txt = v13;
+    arg159.txt = v13.c_str();
     arg159.field_C = 29;
 
     yw->self_full->ypaworld_func159(&arg159);
@@ -1422,98 +1413,50 @@ void ypaworld_func129__sub1(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
     cell->w_type = 0;
 }
 
-void sb_0x44f820__sub0(_NC_STACK_ypaworld *yw, int a2, int a3)
+void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
 {
-    if ( a2 != a3 )
+    ypaworld.last_modify_vhcl = 0;
+    ypaworld.last_modify_build = 0;
+    ypaworld.last_modify_weapon = 0;
+
+    ypaworld.field_2b78 = gemid;
+    ypaworld.field_2b7c = ypaworld.timeStamp;
+
+    gemProto &gem = ypaworld.gems[gemid];
+
+    if ( !gem.script.empty() )
     {
-        char *a2a = yw->LevelNet->mapInfos[ yw->field_2d90->levelID ].mapPath;
-
-        FSMgr::FileHandle *fil = uaOpenFile(a2a, "r");
-
-        if ( fil )
-        {
-            char v12[256];
-
-            int lnid = 1;
-
-            while ( a2 >= lnid )
-            {
-                fil->gets(v12, 255);
-                lnid++;
-            }
-
-            char v11[256];
-            strcpy(v11, get_prefix_replacement("rsrc"));
-
-            set_prefix_replacement("rsrc", "data:");
-
-            scrCallBack a1[3];
-
-            memset(a1, 0, sizeof(a1));
-
-            a1[0].world = yw;
-            a1[1].func = WeaponProtoParser;
-            a1[1].world = yw;
-            a1[2].func = BuildProtoParser;
-            a1[2].world2 = yw;
-            a1[0].func = VhclProtoParser;
-
-            int v10 = 2;
-
-            while ( v10 == 2 && lnid < a3 )
-                v10 = sb_0x4d9f1c(fil, a2a, 3, a1, &lnid, 1);
-
-
-            if ( v10 == 3 )
-                ypa_log_out("GEM PARSE ERROR: Unknown Keyword, Script <%s> Line #%d\n", a2a, lnid);
-            else if ( v10 == 4 )
-                ypa_log_out("GEM PARSE ERROR: Bogus Data, Script <%s> Line #%d\n", a2a, lnid);
-            else if ( v10 == 5 )
-                ypa_log_out("GEM PARSE ERROR: Unexpected EOF, Script <%s> Line #%d\n", a2a, lnid);
-
-            set_prefix_replacement("rsrc", v11);
-
-            delete fil;
-        }
-    }
-}
-
-void yw_ActivateWunderstein(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
-{
-    yw->last_modify_vhcl = 0;
-    yw->last_modify_build = 0;
-    yw->last_modify_weapon = 0;
-
-    yw->field_2b78 = a3;
-    yw->field_2b7c = yw->timeStamp;
-
-    gemProto *v4 = &yw->gems[a3];
-
-    if ( v4->script[0] )
-    {
-        if ( !sub_4DA354(yw, v4->script) )
-            ypa_log_out("yw_ActivateWunderstein: ERROR parsing script %s.\n", v4->script);
+        if ( !sub_4DA354(gem.script) )
+            ypa_log_out("yw_ActivateWunderstein: ERROR parsing script %s.\n", gem.script);
     }
     else
     {
-        sb_0x44f820__sub0(yw, v4->begin_action__line, v4->end_action__line);
+        std::string tmp = get_prefix_replacement("rsrc");
+        set_prefix_replacement("rsrc", "data:");
+
+        ScriptParser::HandlersList parsers {
+            new World::Parsers::VhclProtoParser(this),
+            new World::Parsers::WeaponProtoParser(this),
+            new World::Parsers::BuildProtoParser(this)
+        };
+
+        ScriptParser::ParseStringList(gem.actions, parsers, ScriptParser::FLAG_NO_SCOPE_SKIP);
+        set_prefix_replacement("rsrc", tmp);
     }
 
-    char v9[256];
-
-    strcpy(v9, get_lang_string(yw->string_pointers_p2, 221, "TECHNOLOGY UPGRADE!\n"));
+    std::string txt = get_lang_string(ypaworld.string_pointers_p2, 221, "TECHNOLOGY UPGRADE!\n");
 
     yw_arg159 arg159;
     arg159.unit = NULL;
     arg159.field_4 = 48;
-    arg159.txt = v9;
+    arg159.txt = txt.c_str();
 
-    if ( v4->type )
-        arg159.field_C = v4->type;
+    if ( gem.type )
+        arg159.field_C = gem.type;
     else
         arg159.field_C = 0;
 
-    yw->self_full->ypaworld_func159(&arg159);
+    ypaworld_func159(&arg159);
 
     cell->w_type = 7;
 }
@@ -1706,7 +1649,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
                     if ( yw->isNetGame )
                         sub_47C29C(yw, cell, cell->w_id);
                     else
-                        yw_ActivateWunderstein(yw, cell, cell->w_id);
+                        yw_ActivateWunderstein(cell, cell->w_id);
 
                     yw_arg184 arg184;
                     arg184.t7.secX = secX;
@@ -2212,7 +2155,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         bact->vp_genesis.base = yw->vhcls_models[ vhcl->vp_genesis ].base;
         bact->vp_genesis.trigo = yw->vhcls_models[ vhcl->vp_genesis ].trigo;
 
-        memcpy(bact->destroyFX, vhcl->dest_fx, sizeof(bact->destroyFX));
+        bact->destroyFX = vhcl->dest_fx;
 
         memset(bact->vp_fx_models, 0, sizeof(NC_STACK_base *) * 32);
         memset(bact->vp_fx_tform, 0, sizeof(TFEngine::TForm3D *) * 32);
@@ -2756,7 +2699,7 @@ void NC_STACK_ypaworld::ypaworld_func151()
 {
     _NC_STACK_ypaworld *yw = &ypaworld;
 
-    sub_471AB8(yw);
+    sub_471AB8();
 
     if ( yw->field_2d90->field_40 == 1 )
     {
@@ -2775,18 +2718,18 @@ void NC_STACK_ypaworld::ypaworld_func151()
         if ( yw->GameShell )
         {
             char buf[300];
-            sprintf(buf, "save:%s/sgisold.txt", yw->GameShell->user_name);
+            sprintf(buf, "save:%s/sgisold.txt", yw->GameShell->user_name.c_str());
 
             FSMgr::FileHandle *fil = uaOpenFile(buf, "w");
 
             if ( fil )
                 delete fil;
 
-            sprintf(buf, "%s/user.txt", yw->GameShell->user_name);
+            sprintf(buf, "%s/user.txt", yw->GameShell->user_name.c_str());
 
             yw_arg172 arg171;
             arg171.usertxt = buf;
-            arg171.field_4 = yw->GameShell->user_name;
+            arg171.field_4 = yw->GameShell->user_name.c_str();
             arg171.usr = yw->GameShell;
             arg171.field_10 = 0;
             arg171.field_8 = 255;
@@ -2797,7 +2740,7 @@ void NC_STACK_ypaworld::ypaworld_func151()
 
             if ( fil )
             {
-                strcpy(buf, yw->GameShell->user_name);
+                strcpy(buf, yw->GameShell->user_name.c_str());
                 fil->write(buf, strlen(buf));
                 delete fil;
             }
@@ -2951,11 +2894,7 @@ void NC_STACK_ypaworld::ypaworld_func151()
         {
             if ( yw->WeaponProtos )
             {
-                if ( yw->BuildProtos )
-                {
-                    if ( yw->RoboProtos )
-                        sub_4DA354(yw, yw->initScriptLoc.c_str());
-                }
+                yw->self_full->sub_4DA354(yw->initScriptLoc);
             }
         }
     }
@@ -3012,13 +2951,13 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
     ypaworld__string_pointers = getYW_localeStrings();
 
     usr->profiles.clear();
-    init_list(&usr->video_mode_list);
+    usr->video_mode_list.clear();
     usr->lang_dlls.clear();
 
     set_keys_vals(yw);
 
     fill_videmodes_list(usr);
-    listSaveDir(usr, "save:");
+    listSaveDir("save:");
     listLocaleDir(usr, "locale");
 
 
@@ -3049,7 +2988,7 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
     SFXEngine::SFXe.sub_423DB0(&usr->samples2_info);
     SFXEngine::SFXe.sub_423DB0(&usr->field_782);
 
-    if ( !ShellSoundsLoad(usr) )
+    if ( !usr->ShellSoundsLoad() )
     {
         ypa_log_out("Error: Unable to load from Shell.ini\n");
         return 0;
@@ -3057,191 +2996,191 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
 
     usr->field_FBE = 0;
 
-    usr->keyConfig[3].inp_type = 2;
+    usr->keyConfig[3].inp_type = World::KEYC_TYPE_SLIDER;
     usr->keyConfig[3].keyID = 3;
     usr->keyConfig[3].KeyCode = 39;
     usr->keyConfig[3].slider_neg = 37;
 
 
-    usr->keyConfig[4].inp_type = 2;
+    usr->keyConfig[4].inp_type = World::KEYC_TYPE_SLIDER;
     usr->keyConfig[4].keyID = 4;
     usr->keyConfig[4].KeyCode = 38;
     usr->keyConfig[4].slider_neg = 40;
 
-    usr->keyConfig[8].inp_type = 2;
+    usr->keyConfig[8].inp_type = World::KEYC_TYPE_SLIDER;
     usr->keyConfig[8].keyID = 0;
     usr->keyConfig[8].KeyCode = 39;
     usr->keyConfig[8].slider_neg = 37;
 
 
-    usr->keyConfig[6].inp_type = 2;
+    usr->keyConfig[6].inp_type = World::KEYC_TYPE_SLIDER;
     usr->keyConfig[6].keyID = 1;
     usr->keyConfig[6].KeyCode = 38;
     usr->keyConfig[6].slider_neg = 40;
 
-    usr->keyConfig[7].inp_type = 2;
+    usr->keyConfig[7].inp_type = World::KEYC_TYPE_SLIDER;
     usr->keyConfig[7].keyID = 2;
     usr->keyConfig[7].KeyCode = 17;
     usr->keyConfig[7].slider_neg = 16;
 
-    usr->keyConfig[5].inp_type = 2;
+    usr->keyConfig[5].inp_type = World::KEYC_TYPE_SLIDER;
     usr->keyConfig[5].keyID = 5;
     usr->keyConfig[5].KeyCode = 65;
     usr->keyConfig[5].slider_neg = 89;
 
-    usr->keyConfig[10].inp_type = 1;
+    usr->keyConfig[10].inp_type = World::KEYC_TYPE_BUTTON;
     usr->keyConfig[10].keyID = 0;
     usr->keyConfig[10].KeyCode = 32;
 
-    usr->keyConfig[11].inp_type = 1;
+    usr->keyConfig[11].inp_type = World::KEYC_TYPE_BUTTON;
     usr->keyConfig[11].keyID = 1;
     usr->keyConfig[11].KeyCode = 9;
 
-    usr->keyConfig[12].inp_type = 1;
+    usr->keyConfig[12].inp_type = World::KEYC_TYPE_BUTTON;
     usr->keyConfig[12].keyID = 2;
     usr->keyConfig[12].KeyCode = 13;
 
-    usr->keyConfig[9].inp_type = 1;
+    usr->keyConfig[9].inp_type = World::KEYC_TYPE_BUTTON;
     usr->keyConfig[9].keyID = 3;
     usr->keyConfig[9].KeyCode = 96;
 
-    usr->keyConfig[14].inp_type = 3;
+    usr->keyConfig[14].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[14].keyID = 25;
     usr->keyConfig[14].KeyCode = 86;
 
-    usr->keyConfig[17].inp_type = 3;
+    usr->keyConfig[17].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[17].keyID = 2;
     usr->keyConfig[17].KeyCode = 78;
 
-    usr->keyConfig[18].inp_type = 3;
+    usr->keyConfig[18].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[18].keyID = 3;
     usr->keyConfig[18].KeyCode = 65;
 
-    usr->keyConfig[16].inp_type = 3;
+    usr->keyConfig[16].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[16].keyID = 0;
     usr->keyConfig[16].KeyCode = 79;
 
-    usr->keyConfig[37].inp_type = 3;
+    usr->keyConfig[37].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[37].keyID = 1;
     usr->keyConfig[37].KeyCode = 32;
 
-    usr->keyConfig[35].inp_type = 3;
+    usr->keyConfig[35].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[35].keyID = 4;
     usr->keyConfig[35].KeyCode = 67;
 
-    usr->keyConfig[15].inp_type = 3;
+    usr->keyConfig[15].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[15].keyID = 7;
     usr->keyConfig[15].KeyCode = 71;
 
-    usr->keyConfig[25].inp_type = 3;
+    usr->keyConfig[25].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[25].keyID = 8;
     usr->keyConfig[25].KeyCode = 77;
 
-    usr->keyConfig[19].inp_type = 3;
+    usr->keyConfig[19].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[19].keyID = 9;
     usr->keyConfig[19].KeyCode = 70;
 
-    usr->keyConfig[27].inp_type = 3;
+    usr->keyConfig[27].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[27].keyID = 10;
     usr->keyConfig[27].KeyCode = 0;
 
-    usr->keyConfig[28].inp_type = 3;
+    usr->keyConfig[28].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[28].keyID = 11;
     usr->keyConfig[28].KeyCode = 0;
 
-    usr->keyConfig[29].inp_type = 3;
+    usr->keyConfig[29].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[29].keyID = 12;
     usr->keyConfig[29].KeyCode = 0;
 
-    usr->keyConfig[31].inp_type = 3;
+    usr->keyConfig[31].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[31].keyID = 14;
     usr->keyConfig[31].KeyCode = 0;
 
-    usr->keyConfig[32].inp_type = 3;
+    usr->keyConfig[32].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[32].keyID = 16;
     usr->keyConfig[32].KeyCode = 0;
 
-    usr->keyConfig[33].inp_type = 3;
+    usr->keyConfig[33].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[33].keyID = 17;
     usr->keyConfig[33].KeyCode = 0;
 
-    usr->keyConfig[30].inp_type = 3;
+    usr->keyConfig[30].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[30].keyID = 18;
     usr->keyConfig[30].KeyCode = 0;
 
-    usr->keyConfig[41].inp_type = 3;
+    usr->keyConfig[41].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[41].keyID = 20;
     usr->keyConfig[41].KeyCode = 112;
 
-    usr->keyConfig[38].inp_type = 3;
+    usr->keyConfig[38].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[38].keyID = 21;
     usr->keyConfig[38].KeyCode = 113;
 
-    usr->keyConfig[40].inp_type = 3;
+    usr->keyConfig[40].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[40].keyID = 22;
     usr->keyConfig[40].KeyCode = 114;
 
-    usr->keyConfig[39].inp_type = 3;
+    usr->keyConfig[39].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[39].keyID = 23;
     usr->keyConfig[39].KeyCode = 115;
 
-    usr->keyConfig[2].inp_type = 3;
+    usr->keyConfig[2].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[2].keyID = 24;
     usr->keyConfig[2].KeyCode = 27;
 
-    usr->keyConfig[34].inp_type = 3;
+    usr->keyConfig[34].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[34].keyID = 27;
     usr->keyConfig[34].KeyCode = 0;
 
-    usr->keyConfig[42].inp_type = 3;
+    usr->keyConfig[42].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[42].keyID = 31;
     usr->keyConfig[42].KeyCode = 8;
 
-    usr->keyConfig[1].inp_type = 3;
+    usr->keyConfig[1].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[1].keyID = 32;
     usr->keyConfig[1].KeyCode = 0;
 
-    usr->keyConfig[43].inp_type = 3;
+    usr->keyConfig[43].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[43].keyID = 37;
     usr->keyConfig[43].KeyCode = 101;
 
-    usr->keyConfig[20].inp_type = 3;
+    usr->keyConfig[20].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[20].keyID = 38;
     usr->keyConfig[20].KeyCode = 49;
 
-    usr->keyConfig[21].inp_type = 3;
+    usr->keyConfig[21].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[21].keyID = 39;
     usr->keyConfig[21].KeyCode = 50;
 
-    usr->keyConfig[22].inp_type = 3;
+    usr->keyConfig[22].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[22].keyID = 40;
     usr->keyConfig[22].KeyCode = 51;
 
-    usr->keyConfig[23].inp_type = 3;
+    usr->keyConfig[23].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[23].keyID = 41;
     usr->keyConfig[23].KeyCode = 52;
 
-    usr->keyConfig[24].inp_type = 3;
+    usr->keyConfig[24].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[24].keyID = 42;
     usr->keyConfig[24].KeyCode = 53;
 
-    usr->keyConfig[26].inp_type = 1;
+    usr->keyConfig[26].inp_type = World::KEYC_TYPE_BUTTON;
     usr->keyConfig[26].keyID = 4;
     usr->keyConfig[26].KeyCode = 16;
 
-    usr->keyConfig[44].inp_type = 3;
+    usr->keyConfig[44].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[44].keyID = 43;
     usr->keyConfig[44].KeyCode = 0;
 
-    usr->keyConfig[36].inp_type = 3;
+    usr->keyConfig[36].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[36].keyID = 44;
     usr->keyConfig[36].KeyCode = 0;
 
-    usr->keyConfig[13].inp_type = 3;
+    usr->keyConfig[13].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[13].keyID = 45;
     usr->keyConfig[13].KeyCode = 0;
 
-    usr->keyConfig[45].inp_type = 3;
+    usr->keyConfig[45].inp_type = World::KEYC_TYPE_HOTKEY;
     usr->keyConfig[45].keyID = 46;
     usr->keyConfig[45].KeyCode = 0;
 
@@ -3271,7 +3210,7 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
 
     if ( v67.isClient )
     {
-        strcpy(yw->GameShell->callSIGN, v67.callSIGN);
+        yw->GameShell->callSIGN = v67.callSIGN;
 
         if ( v67.isHoster )
             yw->GameShell->isHost = 1;
@@ -3290,7 +3229,7 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
             v68.mode = 0;
             v68.ID = 0;
 
-            while ( yw->windp->GetPlayerData(&v68) && strcasecmp(v68.name, usr->callSIGN) )
+            while ( yw->windp->GetPlayerData(&v68) && StriCmp(v68.name, usr->callSIGN) )
                 v68.ID++;
 
             usr->players2[v68.ID].rdyStart = 1;
@@ -3333,15 +3272,7 @@ void NC_STACK_ypaworld::ypaworld_func155(UserData *usr)
 
     usr->profiles.clear();
 
-    while ( 1 )
-    {
-        nnode *v5 = RemHead(&usr->video_mode_list);
-
-        if ( !v5 )
-            break;
-
-        nc_FreeMem(v5);
-    }
+    usr->video_mode_list.clear();
 
     usr->lang_dlls.clear();
 
@@ -3436,11 +3367,11 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int mode)
             }
         }
 
-        char *menu_map = NULL;
-        char *rollover_map = NULL;
-        char *mask_map = NULL;
-        char *finished_map = NULL;
-        char *enabled_map = NULL;
+        std::string menu_map;
+        std::string rollover_map;
+        std::string mask_map;
+        std::string finished_map;
+        std::string enabled_map;
 
         NC_STACK_bitmap *ilbm_menu_map  = NULL;
         NC_STACK_bitmap *ilbm_rollover_map = NULL;
@@ -3477,74 +3408,74 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int mode)
             break;
         }
 
-        if ( menu_map )
+        if ( !menu_map.empty() )
         {
             IDVList init_vals;
-            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, menu_map);
+            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, menu_map.c_str());
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
             ilbm_menu_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
             if ( !ilbm_menu_map )
             {
-                ypa_log_out("world.ini: Could not load %s\n", menu_map);
+                ypa_log_out("world.ini: Could not load %s\n", menu_map.c_str());
                 v37 = 0;
             }
         }
 
-        if ( rollover_map )
+        if ( !rollover_map.empty() )
         {
             IDVList init_vals;
-            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, rollover_map);
+            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, rollover_map.c_str());
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
             ilbm_rollover_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
             if ( !ilbm_rollover_map )
             {
-                ypa_log_out("world.ini: Could not load %s\n", rollover_map);
+                ypa_log_out("world.ini: Could not load %s\n", rollover_map.c_str());
                 v37 = 0;
             }
         }
 
-        if ( finished_map )
+        if ( !finished_map.empty() )
         {
             IDVList init_vals;
-            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, finished_map);
+            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, finished_map.c_str());
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
             ilbm_finished_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
             if ( !ilbm_finished_map )
             {
-                ypa_log_out("world.ini: Could not load %s\n", finished_map);
+                ypa_log_out("world.ini: Could not load %s\n", finished_map.c_str());
                 v37 = 0;
             }
         }
 
-        if ( enabled_map )
+        if ( !enabled_map.empty() )
         {
             IDVList init_vals;
-            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, enabled_map);
+            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, enabled_map.c_str());
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
             ilbm_enabled_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
             if ( !ilbm_enabled_map )
             {
-                ypa_log_out("world.ini: Could not load %s\n", enabled_map);
+                ypa_log_out("world.ini: Could not load %s\n", enabled_map.c_str());
                 v37 = 0;
             }
         }
-        if ( mask_map )
+        if ( !mask_map.empty() )
         {
             IDVList init_vals;
-            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, mask_map);
+            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, mask_map.c_str());
 
             ilbm_mask_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
             if ( !ilbm_mask_map )
             {
-                ypa_log_out("world.ini: Could not load %s\n", mask_map);
+                ypa_log_out("world.ini: Could not load %s\n", mask_map.c_str());
                 v37 = 0;
             }
         }
@@ -4521,14 +4452,13 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     usr->button_input_button->Hide();
 
-    int cnt = listCnt(&usr->video_mode_list);
     int v294 = v278_4 - 3 * word_5A50C0 - yw->font_yscrl_bkg_w;
     int v94 = (v278_4 - 3 * word_5A50C0 - yw->font_yscrl_bkg_w) * 0.6;
 
 
     args.Init();
     args.resizeable = false;
-    args.numEntries = cnt;
+    args.numEntries = usr->video_mode_list.size();
     args.shownEntries = 4;
     args.firstShownEntry = 0;
     args.selectedEntry = 0;
@@ -4666,19 +4596,20 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                     if ( usr->video_button->button_func64(&btn_64arg) )
                     {
-                        video_mode_node *vnode = (video_mode_node *)usr->video_mode_list.head;
-                        while (vnode->next)
+                        std::string name;
+                        for (const auto &nod : usr->video_mode_list)
                         {
-                            if (vnode->sort_id == yw->game_default_res)
+                            if (nod.sort_id == yw->game_default_res)
+                            {
+                                name = nod.name;
                                 break;
-
-                            vnode = (video_mode_node *)vnode->next;
+                            }
                         }
 
                         btn_64arg.tileset_down = 19;
                         btn_64arg.field_3A = 30;
                         btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                        btn_64arg.caption = vnode->name;
+                        btn_64arg.caption = name.c_str();
                         btn_64arg.caption2 = 0;
                         btn_64arg.pressed_id = 0;
                         btn_64arg.tileset_up = 18;
@@ -5298,7 +5229,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     usr->disk_listvw.x = usr->field_0x1758;
     usr->disk_listvw.y = usr->field_175A;
 
-    strcpy(usr->usernamedir, usr->user_name);
+    strcpy(usr->usernamedir, usr->user_name.c_str());
 
     usr->usernamedir_len = strlen(usr->usernamedir);
 
@@ -6276,7 +6207,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     usr->netSel = -1;
 
-    if ( usr->p_ypaworld->snd__cdsound & 1 )
+    if ( usr->p_ypaworld->field_73CE & World::PREF_CDMUSICDISABLE )
     {
         SFXEngine::SFXe.StopMusicTrack();
         SFXEngine::SFXe.SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
@@ -6419,7 +6350,7 @@ void NC_STACK_ypaworld::GameShellBkgProcess()
     {
     case ENVMODE_TUTORIAL:
     case ENVMODE_SINGLEPLAY:
-        ypaworld_func158__sub4__sub1(&ypaworld, ypaworld.GameShell, ypaworld.GameShell->field_3A);
+        ypaworld_func158__sub4__sub1();
         break;
 
     case ENVMODE_TITLE:
@@ -6439,10 +6370,10 @@ char * sb_0x481264__sub0(_NC_STACK_ypaworld *yw, int a2)
 {
     byte_5AFC10[0] = 0;
 
-    if (  !yw->GameShell || !keySS[a2].title_by_language )
+    if (  !yw->GameShell || Input::KeysInfo[a2]._title.empty() )
         return NULL;
 
-    sprintf(byte_5AFC10, "[%s]", keySS[a2].title_by_language);
+    sprintf(byte_5AFC10, "[%s]", Input::KeysInfo[a2]._title.c_str());
     return byte_5AFC10;
 }
 
@@ -6571,7 +6502,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
         {
             windp_arg82 arg82;
             arg82.senderFlags = 1;
-            arg82.senderID = usr->callSIGN;
+            arg82.senderID = usr->callSIGN.c_str();
             arg82.receiverFlags = 2;
             arg82.receiverID = 0;
             arg82.guarant = 1;
@@ -6599,7 +6530,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 //    nullsub_7();
     }
 
-    if ( sub_449678(yw, usr->field_3A, UAVK_MULTIPLY) )
+    if ( sub_449678(yw, usr->_input, UAVK_MULTIPLY) )
         sub_4476AC(yw);
 
     if ( usr->netSelMode == 4 )
@@ -6608,7 +6539,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
         usr->yw_CheckCDs();
     }
 
-    if ( IsAnyInput(usr->field_3A) )
+    if ( IsAnyInput(usr->_input) )
         usr->lastInputEvent = usr->glblTime;
 
     if ( (usr->glblTime - usr->lastInputEvent) > usr->WaitForDemo && usr->envMode == ENVMODE_TITLE )
@@ -6647,15 +6578,15 @@ size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
 
     if ( LVLoaderCommon(mapp, arg->lvlID, arg->field_4) )
     {
-        if ( cells_mark_type(yw, mapp.typ) )
+        if ( cells_mark_type(yw, mapp.typ.c_str()) )
         {
-            if ( cells_mark_owner(yw, mapp.own) )
+            if ( cells_mark_owner(yw, mapp.own.c_str()) )
             {
-                if ( cells_mark_hight(yw, mapp.hgt) )
+                if ( cells_mark_hight(yw, mapp.hgt.c_str()) )
                 {
                     if ( yw_createRobos(this, yw, mapp.mapRobos_count, mapp.mapRobos) )
                     {
-                        if ( sub_44B9B8(this, yw, mapp.blg) )
+                        if ( sub_44B9B8(this, yw, mapp.blg.c_str()) )
                         {
                             if ( yw->field_2d90->field_48 != 1 )
                             {
@@ -6671,7 +6602,7 @@ size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
                                     }
                                 }
 
-                                yw_InitTechUpgradeBuildings(this, yw);
+                                yw_InitTechUpgradeBuildings();
                                 yw_InitGates(yw);
                                 yw_InitSuperItems(yw);
                                 sub_44F748(yw);
@@ -7174,7 +7105,7 @@ void ypaworld_func167__sub0(UserData *usr)
     usr->button_input_button->button_func73(&v9);
 
     v9.butID = 1061;
-    v9.field_4 = (usr->inp_altjoystick == 0) + 1;
+    v9.field_4 = (usr->inp_altjoystick == false) + 1;
     usr->button_input_button->button_func73(&v9);
 
     v9.butID = 1055;
@@ -7282,17 +7213,17 @@ void NC_STACK_ypaworld::ypaworld_func167(UserData *usr)
     v16.field_4 = ((usr->GFX_flags & 8) == 0) + 1;
     usr->video_button->button_func73(&v16);
 
-    video_mode_node *node = (video_mode_node *)usr->video_mode_list.head;
-
-    while (node->next)
+    std::string name;
+    for (const auto &nod : usr->video_mode_list)
     {
-        if (usr->p_ypaworld->game_default_res == node->sort_id )
+        if (usr->p_ypaworld->game_default_res == nod.sort_id )
+        {
+            name = nod.name;
             break;
-
-        node = (video_mode_node *)node->next;
+        }
     }
 
-    usr->video_button->button_func71(1156, node->name);
+    usr->video_button->button_func71(1156, name);
 
     tmp = usr->video_button->button_func74(1159);
     tmp->value = usr->fxnumber;
@@ -7405,93 +7336,52 @@ int get_lvlnum_from_save(const char *filename, int *lvlnum_out)
     return 0;
 }
 
-int ypaworld_func169__sub1(_NC_STACK_ypaworld *yw, const char *filename)
+int NC_STACK_ypaworld::ypaworld_func169__sub1(const std::string &filename)
 {
-    int v6;
+    int lvlnum;
+    ScriptParser::HandlersList parsers
+    {
+        new World::Parsers::UserParser(this),
+        new World::Parsers::SaveRoboParser(this),
+        new World::Parsers::SaveSquadParser(this), // commander and units
+        new World::Parsers::SaveGemParser(this),
+        new World::Parsers::VhclProtoParser(this),
+        new World::Parsers::WeaponProtoParser(this),
+        new World::Parsers::BuildProtoParser(this),
+        new World::Parsers::SaveExtraViewParser(this),
+        new World::Parsers::SaveKwFactorParser(this),
+        new World::Parsers::SaveGlobalsParser(this),
+        new World::Parsers::SaveOwnerMapParser(this),
+        new World::Parsers::SaveBuildingMapParser(this),
+        new World::Parsers::SaveEnergyMapParser(this),
+        new World::Parsers::SaveLevelNumParser(this, &lvlnum),
+        new World::Parsers::LevelStatusParser(this, true),
+        new World::Parsers::SaveHistoryParser(this),
+        new World::Parsers::SaveMasksParser(this),
+        new World::Parsers::SaveSuperBombParser(this),
+    };
 
-    scrCallBack parsers[19];
-    memset(parsers, 0, sizeof(parsers));
-
-    parsers[0].func = parseSaveUser;
-    parsers[0].world = (_NC_STACK_ypaworld *)yw->self_full;
-    parsers[0].world2 = yw;
-
-    parsers[1].func = sb_0x479f4c;
-    parsers[1].dataForStore = yw;
-
-    parsers[2].func = sub_479E30;
-    parsers[2].dataForStore = yw;
-
-    parsers[3].func = sub_479D20;
-    parsers[3].dataForStore = yw;
-
-    parsers[4].func = sub_479C40;
-    parsers[4].dataForStore = yw;
-
-    parsers[5].func = VhclProtoParser;
-    parsers[5].world = yw;
-
-    parsers[6].func = WeaponProtoParser;
-    parsers[6].world = yw;
-
-    parsers[7].func = BuildProtoParser;
-    parsers[7].world2 = yw;
-
-    parsers[8].func = sub_479B98;
-
-    parsers[9].dataForStore = yw;
-    parsers[9].func = sub_479AB0;
-
-    parsers[10].dataForStore = yw;
-    parsers[10].func = sub_479A30;
-
-    parsers[11].dataForStore = yw;
-    parsers[11].func = sub_47965C;
-
-    parsers[12].dataForStore = yw;
-    parsers[12].func = sub_479770;
-
-    parsers[13].dataForStore = yw;
-    parsers[13].func = sub_4798D0;
-
-    parsers[14].dataForStore = &v6;
-    parsers[14].func = sub_47925C;
-
-    parsers[15].dataForStore = yw;
-    parsers[15].func = parseSaveLevelStatus;
-
-    parsers[16].func = sb_0x47f2d8;
-    parsers[16].dataForStore = yw;
-
-    parsers[17].dataForStore = yw;
-    parsers[17].func = sub_4795B0;
-
-    parsers[18].dataForStore = yw;
-    parsers[18].func = sub_4792D0;
-
-    return def_parseFile(filename, 19, parsers, 1);
+    return ScriptParser::ParseFile(filename, parsers, ScriptParser::FLAG_NO_SCOPE_SKIP);
 }
 
-void ypaworld_func169__sub2(_NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::ypaworld_func169__sub2()
 {
-    bact_node *station = (bact_node *)yw->bact_list.head;
-
-
+    bact_node *station = (bact_node *)ypaworld.bact_list.head;
 
     while(station->next)
     {
-        sb_0x47b028(yw, station, station, 1);
+        sb_0x47b028(&ypaworld, station, station, 1);
 
         bact_node *commander = (bact_node *)station->bact->subjects_list.head;
 
         while (commander->next)
         {
-            sb_0x47b028(yw, commander, station, 0);
+            sb_0x47b028(&ypaworld, commander, station, 0);
 
             bact_node *slave = (bact_node *)commander->bact->subjects_list.head;
             while (slave->next)
             {
-                sb_0x47b028(yw, slave, station, 0);
+                sb_0x47b028(&ypaworld, slave, station, 0);
 
                 slave = (bact_node *)slave->next;
             }
@@ -7502,15 +7392,15 @@ void ypaworld_func169__sub2(_NC_STACK_ypaworld *yw)
         station = (bact_node *)station->next;
     }
 
-    if ( dword_5A7A8C == 1 )
+    if ( _extraViewEnable )
     {
-        NC_STACK_yparobo *player_station = dynamic_cast<NC_STACK_yparobo *>(yw->UserRobo);
+        NC_STACK_yparobo *player_station = dynamic_cast<NC_STACK_yparobo *>(ypaworld.UserRobo);
         __NC_STACK_yparobo *robo = &player_station->stack__yparobo;
 
-        if ( robo->guns[dword_5A7A78].gun_obj )
+        if ( robo->guns[_extraViewNumber].gun_obj )
         {
-            robo->guns[dword_5A7A78].gun_obj->setBACT_viewer(dword_5A7A8C);
-            robo->guns[dword_5A7A78].gun_obj->setBACT_inputting(dword_5A7A8C);
+            robo->guns[_extraViewNumber].gun_obj->setBACT_viewer(true);
+            robo->guns[_extraViewNumber].gun_obj->setBACT_inputting(true);
         }
     }
 }
@@ -7536,20 +7426,20 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
     int lvlnum;
     get_lvlnum_from_save(save_filename, &lvlnum);
 
-    dword_5A7A78 = -1;
-    dword_5A7A8C = 0;
+    _extraViewNumber = -1;
+    _extraViewEnable = false;
 
     mapProto mapp;
 
     if ( LVLoaderCommon(mapp, lvlnum, 0) )
     {
-        if ( cells_mark_type(yw, mapp.typ) )
+        if ( cells_mark_type(yw, mapp.typ.c_str()) )
         {
-            if ( cells_mark_owner(yw, mapp.own) )
+            if ( cells_mark_owner(yw, mapp.own.c_str()) )
             {
-                if ( cells_mark_hight(yw, mapp.hgt) )
+                if ( cells_mark_hight(yw, mapp.hgt.c_str()) )
                 {
-                    if ( sub_44B9B8(this, yw, mapp.blg) )
+                    if ( sub_44B9B8(this, yw, mapp.blg.c_str()) )
                         v5 = 1;
                 }
             }
@@ -7588,7 +7478,7 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
     if ( yw->own_map )
         yw->copyof_ownermap = sub_44816C(yw->own_map, "copyof_ownermap");
 
-    if ( !ypaworld_func169__sub1(yw, save_filename) )
+    if ( !ypaworld_func169__sub1(save_filename) )
         return 0;
 
     dword_5A7A80++;
@@ -7597,7 +7487,7 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
     if ( yw->UserRobo )
         dynamic_cast<NC_STACK_yparobo *>(yw->UserRobo) ->setROBO_commCount(dword_5A7A80);
 
-    ypaworld_func169__sub2(yw);
+    ypaworld_func169__sub2();
 
     if ( strstr(arg->saveFile, ".fin") || strstr(arg->saveFile, ".FIN") )
         yw_InitBuddies(yw);
@@ -7630,7 +7520,7 @@ size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
     if ( strstr(arg->saveFile, ".sgm") || strstr(arg->saveFile, ".SGM") )
     {
         char flname[300];
-        sprintf(flname, "save:%s/sgisold.txt", yw->GameShell->user_name);
+        sprintf(flname, "save:%s/sgisold.txt", yw->GameShell->user_name.c_str());
         uaDeleteFile(flname);
     }
 
@@ -7813,95 +7703,38 @@ size_t NC_STACK_ypaworld::ypaworld_func171(yw_arg172 *arg)
 
 
 
-int ypaworld_func172__sub0(UserData *usr, const char *fname, int parsers_mask, NC_STACK_ypaworld *ywo)
+int NC_STACK_ypaworld::ypaworld_func172__sub0(const std::string &fname, int parsers_mask)
 {
-    scrCallBack v18[10];
+    ScriptParser::HandlersList parsers;
+    if ( parsers_mask & World::SDF_USER )
+        parsers += new World::Parsers::UserParser(this);
 
-    memset(v18, 0, sizeof(v18));
+    if ( parsers_mask & World::SDF_INPUT )
+        parsers += new World::Parsers::InputParser(this);
 
-    int parsers_number = 0;
+    if ( parsers_mask & World::SDF_VIDEO )
+        parsers += new World::Parsers::VideoParser(this);
 
-    if ( parsers_mask & 1 )
+    if ( parsers_mask & World::SDF_SOUND )
+        parsers += new World::Parsers::SoundParser(this);
+
+    if ( parsers_mask & World::SDF_SCORE )
+        parsers += new World::Parsers::LevelStatusParser(this, true);
+
+    if ( parsers_mask & World::SDF_BUDDY )
+        parsers += new World::Parsers::BuddyParser(this);
+
+    if ( parsers_mask & World::SDF_SHELL )
+        parsers += new World::Parsers::ShellParser(this);
+
+    if ( parsers_mask & World::SDF_PROTO )
     {
-        v18[parsers_number].world = (_NC_STACK_ypaworld *)ywo;
-        v18[parsers_number].func = parseSaveUser;
-        v18[parsers_number].world2 = usr->p_ypaworld;
-
-        parsers_number++;
+        parsers += new World::Parsers::VhclProtoParser(this);
+        parsers += new World::Parsers::WeaponProtoParser(this);
+        parsers += new World::Parsers::BuildProtoParser(this);
     }
 
-    if ( parsers_mask & 2 )
-    {
-        v18[parsers_number].world = (_NC_STACK_ypaworld *)ywo;
-        v18[parsers_number].func = parseSaveInput;
-        v18[parsers_number].dataForStore = usr;
-
-        parsers_number++;
-    }
-
-    if ( parsers_mask & 4 )
-    {
-        v18[parsers_number].world = (_NC_STACK_ypaworld *)ywo;
-        v18[parsers_number].func = parseSaveVideo;
-        v18[parsers_number].dataForStore = usr;
-
-        parsers_number++;
-    }
-
-    if ( parsers_mask & 8 )
-    {
-        v18[parsers_number].world = (_NC_STACK_ypaworld *)ywo;
-        v18[parsers_number].func = parseSaveSound;
-        v18[parsers_number].dataForStore = usr;
-
-        parsers_number++;
-    }
-
-    if ( parsers_mask & 0x10 )
-    {
-        v18[parsers_number].world = (_NC_STACK_ypaworld *)&usr->snd__flags1;
-        v18[parsers_number].func = parseSaveLevelStatus;
-        v18[parsers_number].dataForStore = usr->p_ypaworld;
-
-        parsers_number++;
-    }
-
-    if ( parsers_mask & 0x80 )
-    {
-        v18[parsers_number].func = parseSaveBuddy;
-        v18[parsers_number].dataForStore = usr->p_ypaworld;
-
-        parsers_number++;
-    }
-
-    if ( parsers_mask & 0x20 )
-    {
-        v18[parsers_number].world = (_NC_STACK_ypaworld *)ywo;
-        v18[parsers_number].func = parseSaveShell;
-        v18[parsers_number].dataForStore = usr;
-
-        parsers_number++;
-    }
-
-    if ( parsers_mask & 0x40 )
-    {
-        v18[parsers_number].world = usr->p_ypaworld;
-        v18[parsers_number].func = VhclProtoParser;
-
-        parsers_number++;
-
-        v18[parsers_number].world = usr->p_ypaworld;
-        v18[parsers_number].func = WeaponProtoParser;
-
-        parsers_number++;
-
-        v18[parsers_number].world2 = usr->p_ypaworld;
-        v18[parsers_number].func = BuildProtoParser;
-
-        parsers_number++;
-    }
-
-    return def_parseFile(fname, parsers_number, v18, 2);
+    return ScriptParser::ParseFile(fname, parsers, 0);
 }
 
 // Load user save
@@ -7919,20 +7752,20 @@ size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg)
         }
         else
         {
-            sprintf(a1a, "%s/user.txt", usr->user_name);
+            sprintf(a1a, "%s/user.txt", usr->user_name.c_str());
 
             yw_arg172 v12;
             v12.usr = usr;
             v12.usertxt = a1a;
             v12.field_10 = 0;
-            v12.field_4 = usr->user_name;
+            v12.field_4 = usr->user_name.c_str();
             v12.field_8 = 255;
 
             ypaworld_func171(&v12);
         }
     }
 
-    usr->snd__flags1 = 0;
+    usr->_saveDataFlags = 0;
 
     if ( arg->field_8 & 0x80 )
         usr->p_ypaworld->field_2d90->buddies_count = 0;
@@ -7940,7 +7773,7 @@ size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg)
     char buf[300];
     sprintf(buf, "save:%s", arg->usertxt);
 
-    if ( !ypaworld_func172__sub0(usr, buf, arg->field_8, this) )
+    if ( !ypaworld_func172__sub0(buf, arg->field_8) )
     {
         ypa_log_out("Error while loading information from %s\n", arg->usertxt);
         return 0;
@@ -7952,9 +7785,9 @@ size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg)
         return 0;
     }
 
-    if ( arg->field_8 & 0x10 && usr->snd__flags1 & 0x10 )
+    if ( arg->field_8 & 0x10 && usr->_saveDataFlags & 0x10 )
     {
-        strcpy(usr->user_name, arg->field_4);
+        usr->user_name = arg->field_4;
     }
 
     if ( arg->field_8 & 2 )
@@ -7977,33 +7810,33 @@ size_t NC_STACK_ypaworld::ypaworld_func173(UserData *usr)
 
     inp_key_setting *v5 = &usr->keyConfig[usr->field_D36];
 
-    if ( !keySS[v5->field_10].short_name )
+    if ( Input::KeysInfo[v5->field_10]._name.empty() )
         return 0;
 
-    if ( v5->inp_type == 2 && !keySS[v5->slider_neg].short_name )
+    if ( v5->inp_type == World::KEYC_TYPE_SLIDER && Input::KeysInfo[v5->slider_neg]._name.empty() )
         return 0;
 
-    if ( v5->inp_type == 2 )
+    if ( v5->inp_type == World::KEYC_TYPE_SLIDER )
     {
         strcpy(v28, "~#");
         strcat(v28, "winp:");
-        strcat(v28, keySS[v5->slider_neg].short_name);
+        strcat(v28, Input::KeysInfo[v5->slider_neg]._name.c_str());
         strcat(v28, " #");
         strcat(v28, "winp:");
     }
-    else if ( v5->inp_type == 1 )
+    else if ( v5->inp_type == World::KEYC_TYPE_BUTTON )
     {
         strcpy(v28, "winp:");
     }
 
-    if ( !keySS[ v5->KeyCode ].short_name )
+    if ( Input::KeysInfo[ v5->KeyCode ]._name.empty() )
         return 0;
 
-    strcat(v28, keySS[ v5->KeyCode ].short_name);
+    strcat(v28, Input::KeysInfo[ v5->KeyCode ]._name.c_str());
 
     NC_STACK_input *v38 = INPe.getPInput();
 
-    if ( v5->inp_type == 3 )
+    if ( v5->inp_type == World::KEYC_TYPE_HOTKEY )
     {
         winp_68arg v33;
         v33.keyname = v28;
@@ -8014,19 +7847,14 @@ size_t NC_STACK_ypaworld::ypaworld_func173(UserData *usr)
     }
     else
     {
-        input__func64__params v30;
-        v30.item_number = v5->keyID;
-        v30.value = v28;
-        if ( v5->inp_type == 1 )
+        if ( v5->inp_type == World::KEYC_TYPE_BUTTON )
         {
-            v30.type_id = 4;
-            if ( !v38->input_func64(&v30) )
+            if ( !v38->input_func64(Input::ITYPE_BUTTON, v5->keyID, v28) )
                 ypa_log_out("input.engine: WARNING: Button[%d] (%s) not accepted.\n", v5->keyID, v28);
         }
         else
         {
-            v30.type_id = 5;
-            if ( !v38->input_func64(&v30) )
+            if ( !v38->input_func64(Input::ITYPE_SLIDER, v5->keyID, v28) )
                 ypa_log_out("input.engine: WARNING: Slider[%d] (%s) not accepted.\n", v5->keyID, v28);
         }
     }
@@ -8206,7 +8034,7 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
                 if ( yw->isNetGame )
                     sub_47C29C(yw, v15, v15->w_id);
                 else
-                    yw_ActivateWunderstein(yw, v15, v15->w_id);
+                    yw_ActivateWunderstein(v15, v15->w_id);
 
                 yw_arg184 arg184;
                 arg184.t7.secX = j;
@@ -8394,9 +8222,9 @@ size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
 
     int v6;
 
-    if ( yw->LevelNet->mapInfos[ arg->lvlID ].field_0 == 3 && ypaworld_func183__sub0(arg->lvlID, yw->GameShell->user_name) )
+    if ( yw->LevelNet->mapInfos[ arg->lvlID ].field_0 == 3 && ypaworld_func183__sub0(arg->lvlID, yw->GameShell->user_name.c_str()) )
     {
-        sprintf(buf, "save:%s/%d.fin", yw->GameShell->user_name, arg->lvlID);
+        sprintf(buf, "save:%s/%d.fin", yw->GameShell->user_name.c_str(), arg->lvlID);
 
         yw_arg169 v11;
         v11.saveFile = buf;
@@ -8426,10 +8254,10 @@ size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
         v11.usr = yw->GameShell;
         v11.saveFile = buf;
 
-        sprintf(buf, "save:%s/%d.rst", yw->GameShell->user_name, yw->field_2d90->levelID);
+        sprintf(buf, "save:%s/%d.rst", yw->GameShell->user_name.c_str(), yw->field_2d90->levelID);
 
         if ( !ypaworld_func170(&v11) )
-            ypa_log_out("Warning: could not create restart file for level %d, user %s.\n", yw->field_2d90->levelID, yw->GameShell->user_name);
+            ypa_log_out("Warning: could not create restart file for level %d, user %s.\n", yw->field_2d90->levelID, yw->GameShell->user_name.c_str());
     }
 
     if ( yw->copyof_typemap )
@@ -8630,7 +8458,7 @@ WeapProto *NC_STACK_ypaworld::getYW_weaponProtos()
 
 BuildProto *NC_STACK_ypaworld::getYW_buildProtos()
 {
-    return ypaworld.BuildProtos;
+    return ypaworld.BuildProtos.data();
 }
 
 VhclProto *NC_STACK_ypaworld::getYW_vhclProtos()

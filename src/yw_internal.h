@@ -1,25 +1,8 @@
 #ifndef  YWINT_H_INCLUDED
 #define YWINT_H_INCLUDED
 
-#include "def_parser.h"
 
-struct Key_stru
-{
-    const char *title_by_language;
-    const char *short_name;
-    char KEYCODE;
-    char field_9;
-    char field_A;
-    char field_B;
-};
 
-struct video_mode_node : public nnode
-{
-    char name[128];
-    int sort_id;
-    int16_t width;
-    int16_t height;
-};
 
 struct struct_44dbf8
 {
@@ -44,38 +27,10 @@ struct stru_a3
     float smooth_height;
 };
 
-int VhclProtoParser(scrCallBack *);
-int WeaponProtoParser(scrCallBack *);
-int BuildProtoParser(scrCallBack *);
 
-int MoviesParser(scrCallBack *arg);
-int BkgParser(scrCallBack *arg);
-int Colors_Parser(scrCallBack *arg);
-int Misc_Parse(scrCallBack *arg);
-int SuperItem_Parse(scrCallBack *arg);
-
-int LevelDataParser(scrCallBack *arg);
-int MapParseSizes(scrCallBack *arg);
-int parse_map_robos(scrCallBack *arg);
-
-int LevelSquadParser(scrCallBack *arg);
-int LevelGatesParser(scrCallBack *arg);
-int LevelMbMapParser(scrCallBack *arg);
-int LevelGemParser(scrCallBack *arg);
-int LevelEnableParser(scrCallBack *arg);
-int LevelMapsParser(scrCallBack *arg);
-int LeveldbMapParser(scrCallBack *arg);
-int LevelSuperItemsParser(scrCallBack *arg);
-
-int yw_InitLevelNet(_NC_STACK_ypaworld *yw);
 int yw_InitNetwork(_NC_STACK_ypaworld *yw);
 
-void yw_setIniColor(_NC_STACK_ypaworld *yw, int color_id, int r, int g, int b, int i);
-int yw_parse_color(_NC_STACK_ypaworld *yw, int color_number, char *color_string);
-int yw_ScanLevels(_NC_STACK_ypaworld *yw);
 
-
-int sub_4DA354(_NC_STACK_ypaworld *yw, const char *filename);
 int yw_InitTooltips(_NC_STACK_ypaworld *yw);
 
 int loadTOD(_NC_STACK_ypaworld *yw, const char *fname);
@@ -91,25 +46,18 @@ int yw_loadSky(_NC_STACK_ypaworld *yw, const char *skyname);
 //void yw_renderSky_test(_NC_STACK_ypaworld *yw, base77Func *rndr_params);
 
 void fill_videmodes_list(UserData *usr);
-void listSaveDir(UserData *usr, const char *saveDir);
-int parseSaveUser(scrCallBack *arg);
+
 
 void listLocaleDir(UserData *usr, const char *dirname);
 
-int  ShellSoundsLoad(UserData *usr);
+
 
 void ypaworld_func154__sub0(_NC_STACK_ypaworld *yw);
 
 void ypaworld_func156__sub1(UserData *usr);
 
-int parseSaveInput(scrCallBack *arg);
 
 
-
-
-void ypaworld_func158__sub4__sub1(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
-
-void sub_4491A0(_NC_STACK_ypaworld *yw, const char *movie_fname);
 
 void yw_freeDebrief(_NC_STACK_ypaworld *yw);
 void yw_calcPlayerScore(_NC_STACK_ypaworld *yw);
@@ -136,12 +84,6 @@ void sub_46D0F8(const char *path);
 int init_prototypes(_NC_STACK_ypaworld *yw);
 
 
-int parseSaveVideo(scrCallBack *arg);
-void sub_46D370(NC_STACK_ypaworld *obj, int a2);
-int parseSaveSound(scrCallBack *arg);
-int parseSaveLevelStatus(scrCallBack *arg);
-int parseSaveBuddy(scrCallBack *arg);
-int parseSaveShell(scrCallBack *arg);
 
 int yw_write_callSign(_NC_STACK_ypaworld *yw, const char *filename, const char *callsign);
 int yw_write_user(FSMgr::FileHandle *fil, UserData *usr);
@@ -167,7 +109,6 @@ int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_cou
 int sub_44B9B8(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, const char *a3);
 void yw_InitSquads(_NC_STACK_ypaworld *yw, int cnt, squadProto *squads);
 void yw_InitBuddies(_NC_STACK_ypaworld *yw);
-void yw_InitTechUpgradeBuildings(NC_STACK_ypaworld *yw, _NC_STACK_ypaworld *a2);
 void yw_InitGates(_NC_STACK_ypaworld *yw);
 void yw_InitSuperItems(_NC_STACK_ypaworld *yw);
 void sub_44F748(_NC_STACK_ypaworld *yw);
@@ -423,28 +364,8 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw, stru
 
 void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt);
 
-int sub_47EDDC(yw_f726c *hist, int bufsize);
-
-void sub_4D12D8(_NC_STACK_ypaworld *yw, int id, int a3);
-void sub_4D1594(_NC_STACK_ypaworld *yw, int id);
-void sub_4D1444(_NC_STACK_ypaworld *yw, int id);
 void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a3);
 
-//Saves protos
-int sb_0x479f4c(scrCallBack *scr);
-int sub_479E30(scrCallBack *scr);
-int sub_479D20(scrCallBack *scr);
-int sub_479C40(scrCallBack *scr);
-int sub_479B98(scrCallBack *scr);
-int sub_479AB0(scrCallBack *scr);
-int sub_479A30(scrCallBack *scr);
-int sub_47965C(scrCallBack *scr);
-int sub_479770(scrCallBack *scr);
-int sub_4798D0(scrCallBack *scr);
-int sub_47925C(scrCallBack *scr);
-int sb_0x47f2d8(scrCallBack *scr);
-int sub_4795B0(scrCallBack *scr);
-int sub_4792D0(scrCallBack *scr);
 
 int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg);
 void ypaworld_func64__sub2(_NC_STACK_ypaworld *yw);

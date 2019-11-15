@@ -2,7 +2,6 @@
 #include <string.h>
 #include <math.h>
 #include "includes.h"
-#include "def_parser.h"
 #include "yw_internal.h"
 #include "yw.h"
 #include "yw_net.h"
@@ -3093,7 +3092,7 @@ int sb_0x451034(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
 
     yw->GUI_OK = 1;
 
-    if ( yw->snd__cdsound & 1 )
+    if ( yw->field_73CE & World::PREF_CDMUSICDISABLE )
     {
         SFXEngine::SFXe.SetMusicTrack(yw->field_2d90->amb_track_p0, yw->field_2d90->amb_track_p1, yw->field_2d90->amb_track_p2);
         SFXEngine::SFXe.PlayMusicTrack();
@@ -3317,7 +3316,7 @@ char * gui_update_create_btn__sub0(_NC_STACK_ypaworld *yw)
 
             int v17 = dround(sub_4498F4(yw) * 2 * v6->energy / 100.0);
 
-            const char *v8 = get_lang_string(yw->string_pointers_p2, v5 + 1200, v6->name);
+            const char *v8 = get_lang_string(yw->string_pointers_p2, v5 + 1200, v6->name.c_str());
 
             if ( v3 == gui_lstvw.selectedEntry )
                 v21 = 1;
@@ -3337,7 +3336,7 @@ char * gui_update_create_btn__sub0(_NC_STACK_ypaworld *yw)
             else
                 v12 = v9 + 1500;
 
-            const char *v13 = get_lang_string(yw->string_pointers_p2, v12, v10->name);
+            const char *v13 = get_lang_string(yw->string_pointers_p2, v12, v10->name.c_str());
 
             if ( v3 == gui_lstvw.selectedEntry )
                 v21 = 1;
@@ -6909,9 +6908,9 @@ void ypaworld_func64__sub7__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
             if ( yw->GameShell )
             {
-                yw->field_1604 = sub_47B388(0, yw->GameShell->user_name) != 0;
+                yw->field_1604 = sub_47B388(0, yw->GameShell->user_name.c_str()) != 0;
 
-                if ( ypaworld_func64__sub7__sub6__sub0(yw->field_2d90->levelID, yw->GameShell->user_name) )
+                if ( ypaworld_func64__sub7__sub6__sub0(yw->field_2d90->levelID, yw->GameShell->user_name.c_str()) )
                     yw->field_1608 = 1;
                 else
                     yw->field_1608 = 0;
@@ -9447,7 +9446,7 @@ char * yw_RenderHUDInfo(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float 
         if ( vhcl->model_id != 9 )
         {
             float v15 = wis->field_92 * 12.0 + ypos;
-            const char *v16 = get_lang_string(yw->string_pointers_p2, vhclid + 1200, vhcl->name);
+            const char *v16 = get_lang_string(yw->string_pointers_p2, vhclid + 1200, vhcl->name.c_str());
 
             pcur = yw_RenderInfoVehicleName(yw, wis, pcur, v16, xpos, v15);
         }
@@ -9484,7 +9483,7 @@ char *sb_0x4d7c08__sub0__sub0__sub0__sub0(_NC_STACK_ypaworld *yw, sklt_wis *wis,
             else
                 v11 = a6 + 1500;
 
-            const char *v12 = get_lang_string(yw->string_pointers_p2, v11, yw->BuildProtos[a6].name);
+            const char *v12 = get_lang_string(yw->string_pointers_p2, v11, yw->BuildProtos[a6].name.c_str());
 
             pcur = yw_RenderInfoVehicleName(yw, wis, pcur, v12, a4, a5);
         }
@@ -12282,7 +12281,7 @@ void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
         {
             if ( v13 )
             {
-                if ( (yw->snd__cdsound & 2 ) && inpt->sliders_vars[5] != 0.0 )
+                if ( (yw->field_73CE & World::PREF_ALTJOYSTICK ) && inpt->sliders_vars[5] != 0.0 )
                     yw->field_7886 = 1;
                 else if ( inpt->sliders_vars[4] != 0.0 )
                     yw->field_7886 = 1;
@@ -12300,7 +12299,7 @@ void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
         {
             if ( v13 )
             {
-                if ( (yw->snd__cdsound & 2) && inpt->sliders_vars[4] != 0.0 )
+                if ( (yw->field_73CE & World::PREF_ALTJOYSTICK) && inpt->sliders_vars[4] != 0.0 )
                     yw->field_788A = 1;
             }
             else if ( !v34 && inpt->sliders_vars[2] != 0.0 )
@@ -12337,7 +12336,7 @@ void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
         {
             if ( v13 )
             {
-                if ( yw->snd__cdsound & 2 )
+                if ( yw->field_73CE & World::PREF_ALTJOYSTICK )
                 {
                     if ( inpt->sliders_vars[16] != 0.0 )
                         inpt->sliders_vars[5] += inpt->sliders_vars[16];
@@ -12365,7 +12364,7 @@ void ypaworld_func64__sub1(_NC_STACK_ypaworld *yw, struC5 *inpt)
         {
             if ( v13 )
             {
-                if ( yw->snd__cdsound & 2 )
+                if ( yw->field_73CE & World::PREF_ALTJOYSTICK )
                 {
                     if ( inpt->sliders_vars[4] != 0.0 )
                     {

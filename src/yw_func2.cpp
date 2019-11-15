@@ -2,7 +2,6 @@
 #include <string.h>
 
 #include "includes.h"
-#include "def_parser.h"
 #include "yw.h"
 #include "yw_internal.h"
 #include "font.h"
@@ -13,7 +12,6 @@
 
 #include <math.h>
 
-extern Key_stru keySS[256];
 extern char **ypaworld__string_pointers;
 extern int word_5A50C2;
 extern int word_5A50AC;
@@ -278,16 +276,16 @@ void yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
 
             char v19[200];
 
-            if ( usr->keyConfig[ v24 ].inp_type == 2 )
+            if ( usr->keyConfig[ v24 ].inp_type == World::KEYC_TYPE_SLIDER )
             {
-                const char *nm1, *a4;
+                std::string nm1, a4;
                 if ( usr->keyConfig[ v24 ].slider_neg )
-                    nm1 = keySS[usr->keyConfig[ v24 ].slider_neg].title_by_language;
+                    nm1 = Input::KeysInfo[usr->keyConfig[ v24 ].slider_neg]._title;
                 else
                     nm1 = "-";
 
                 if ( usr->keyConfig[ v24 ].KeyCode )
-                    a4 = keySS[ usr->keyConfig[ v24 ].KeyCode ].title_by_language;
+                    a4 = Input::KeysInfo[ usr->keyConfig[ v24 ].KeyCode ]._title;
                 else
                     a4 = "-";
 
@@ -297,21 +295,21 @@ void yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
                 if ( usr->keyConfig[ v24 ].field_10 & 2 )
                     nm1 = get_lang_string(ypaworld__string_pointers, 308, "?");
 
-                sprintf(v19, "%s/%s", nm1, a4);
+                sprintf(v19, "%s/%s", nm1.c_str(), a4.c_str());
             }
             else
             {
-                const char *v8;
+                std::string v8;
 
                 if ( usr->keyConfig[ v24 ].KeyCode )
-                    v8 = keySS[ usr->keyConfig[ v24 ].KeyCode ].title_by_language;
+                    v8 = Input::KeysInfo[ usr->keyConfig[ v24 ].KeyCode ]._title;
                 else
                     v8 = "-";
 
                 if ( usr->keyConfig[ v24 ].field_10 & 1 )
                     v8 = get_lang_string(ypaworld__string_pointers, 308, "?");
 
-                sprintf(v19, "%s", v8);
+                sprintf(v19, "%s", v8.c_str());
             }
 
             a1a[0].txt = usr->keyConfig[v24].slider_name;
@@ -361,467 +359,356 @@ void yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
 
 void set_keys_vals(_NC_STACK_ypaworld *yw)
 {
-    memset(keySS, 0, sizeof(keySS));
-
-    keySS[0].title_by_language = "*";
-    keySS[0].KEYCODE = '*';
-    keySS[0].short_name = "nop";
-
-    keySS[27].title_by_language = get_lang_string(yw->string_pointers_p2, 1001, "ESC");
-    keySS[27].KEYCODE = 0;
-    keySS[27].short_name = "esc";
-
-    keySS[32].title_by_language = get_lang_string(yw->string_pointers_p2, 1002, "SPACE");
-    keySS[32].KEYCODE = ' ';
-    keySS[32].short_name = "space";
-
-    keySS[38].title_by_language = get_lang_string(yw->string_pointers_p2, 1003, "UP");
-    keySS[38].KEYCODE = 0;
-    keySS[38].short_name = "up";
-
-    keySS[40].title_by_language = get_lang_string(yw->string_pointers_p2, 1004, "DOWN");
-    keySS[40].KEYCODE = 0;
-    keySS[40].short_name = "down";
-
-    keySS[37].title_by_language = get_lang_string(yw->string_pointers_p2, 1005, "LEFT");
-    keySS[37].short_name = "left";
-    keySS[37].KEYCODE = 0;
-
-    keySS[39].title_by_language = get_lang_string(yw->string_pointers_p2, 1006, "RIGHT");
-    keySS[39].KEYCODE = 0;
-    keySS[39].short_name = "right";
-
-    keySS[112].title_by_language = get_lang_string(yw->string_pointers_p2, 1007, "F1");
-    keySS[112].KEYCODE = 0;
-    keySS[112].short_name = "f1";
-
-    keySS[113].title_by_language = get_lang_string(yw->string_pointers_p2, 1008, "F2");
-    keySS[113].KEYCODE = 0;
-    keySS[113].short_name = "f2";
-
-    keySS[114].title_by_language = get_lang_string(yw->string_pointers_p2, 1009, "F3");
-    keySS[114].KEYCODE = 0;
-    keySS[114].short_name = "f3";
-
-    keySS[115].title_by_language = get_lang_string(yw->string_pointers_p2, 1010, "F4");
-    keySS[115].KEYCODE = 0;
-    keySS[115].short_name = "f4";
-
-    keySS[116].title_by_language = get_lang_string(yw->string_pointers_p2, 1011, "F5");
-    keySS[116].short_name = "f5";
-    keySS[116].KEYCODE = 0;
-
-    keySS[117].title_by_language = get_lang_string(yw->string_pointers_p2, 1012, "F6");
-    keySS[117].short_name = "f6";
-    keySS[117].KEYCODE = 0;
-
-    keySS[118].title_by_language = get_lang_string(yw->string_pointers_p2, 1013, "F7");
-    keySS[118].KEYCODE = 0;
-    keySS[118].short_name = "f7";
-
-    keySS[119].title_by_language = get_lang_string(yw->string_pointers_p2, 1014, "F8");
-    keySS[119].KEYCODE = 0;
-    keySS[119].short_name = "f8";
-
-    keySS[120].title_by_language = get_lang_string(yw->string_pointers_p2, 1015, "F9");
-    keySS[120].KEYCODE = 0;
-    keySS[120].short_name = "f9";
-
-    keySS[121].title_by_language = get_lang_string(yw->string_pointers_p2, 1016, "F10");
-    keySS[121].KEYCODE = 0;
-    keySS[121].short_name = "f10";
-
-    keySS[122].title_by_language = get_lang_string(yw->string_pointers_p2, 1017, "F11");
-    keySS[122].short_name = "f11";
-    keySS[122].KEYCODE = 0;
-
-    keySS[123].title_by_language = get_lang_string(yw->string_pointers_p2, 1018, "F12");
-    keySS[123].short_name = "f12";
-    keySS[123].KEYCODE = 0;
-
-    keySS[8].title_by_language = get_lang_string(yw->string_pointers_p2, 1019, "BACK");
-    keySS[8].KEYCODE = 0;
-    keySS[8].short_name = "bs";
-
-    keySS[9].title_by_language = get_lang_string(yw->string_pointers_p2, 1020, "TAB");
-    keySS[9].KEYCODE = 0;
-    keySS[9].short_name = "tab";
-
-    keySS[12].title_by_language = get_lang_string(yw->string_pointers_p2, 1021, "CLEAR");
-    keySS[12].KEYCODE = 0;
-    keySS[12].short_name = "clear";
-
-    keySS[13].title_by_language = get_lang_string(yw->string_pointers_p2, 1022, "RETURN");
-    keySS[13].KEYCODE = 0;
-    keySS[13].short_name = "return";
-
-    keySS[17].title_by_language = get_lang_string(yw->string_pointers_p2, 1023, "CTRL");
-    keySS[17].short_name = "ctrl";
-    keySS[17].KEYCODE = 0;
-
-    keySS[16].title_by_language = get_lang_string(yw->string_pointers_p2, 1024, "SHIFT");
-    keySS[16].short_name = "rshift";
-    keySS[16].KEYCODE = 0;
-
-    keySS[18].title_by_language = get_lang_string(yw->string_pointers_p2, 1025, "ALT");
-    keySS[18].KEYCODE = 0;
-    keySS[18].short_name = "alt";
-
-    keySS[19].title_by_language = get_lang_string(yw->string_pointers_p2, 1026, "PAUSE");
-    keySS[19].KEYCODE = 0;
-    keySS[19].short_name = "pause";
-
-    keySS[33].title_by_language = get_lang_string(yw->string_pointers_p2, 1027, "PGUP");
-    keySS[33].KEYCODE = 0;
-    keySS[33].short_name = "pageup";
-
-    keySS[34].title_by_language = get_lang_string(yw->string_pointers_p2, 1028, "PGDOWN");
-    keySS[34].KEYCODE = 0;
-    keySS[34].short_name = "pagedown";
-
-    keySS[35].title_by_language = get_lang_string(yw->string_pointers_p2, 1029, "END");
-    keySS[35].short_name = "end";
-    keySS[35].KEYCODE = 0;
-
-    keySS[36].title_by_language = get_lang_string(yw->string_pointers_p2, 1030, "HOME");
-    keySS[36].short_name = "home";
-    keySS[36].KEYCODE = 0;
-
-    keySS[41].title_by_language = get_lang_string(yw->string_pointers_p2, 1031, "SELECT");
-    keySS[41].KEYCODE = 0;
-    keySS[41].short_name = "select";
-
-    keySS[43].title_by_language = get_lang_string(yw->string_pointers_p2, 1032, "EXEC");
-    keySS[43].KEYCODE = 0;
-    keySS[43].short_name = "execute";
-
-    keySS[44].title_by_language = get_lang_string(yw->string_pointers_p2, 1033, "PRINT");
-    keySS[44].KEYCODE = 0;
-    keySS[44].short_name = "snapshot";
-
-    keySS[45].title_by_language = get_lang_string(yw->string_pointers_p2, 1034, "INS");
-    keySS[45].KEYCODE = 0;
-    keySS[45].short_name = "ins";
-
-    keySS[46].title_by_language = get_lang_string(yw->string_pointers_p2, 1035, "DEL");
-    keySS[46].short_name = "del";
-    keySS[46].KEYCODE = 0;
-
-    keySS[49].title_by_language = get_lang_string(yw->string_pointers_p2, 1037, "1");
-    keySS[49].short_name = "1";
-    keySS[49].KEYCODE = '1';
-
-    keySS[50].title_by_language = get_lang_string(yw->string_pointers_p2, 1038, "2");
-    keySS[50].KEYCODE = '2';
-    keySS[50].short_name = "2";
-
-    keySS[51].title_by_language = get_lang_string(yw->string_pointers_p2, 1039, "3");
-    keySS[51].KEYCODE = '3';
-    keySS[51].short_name = "3";
-
-    keySS[52].title_by_language = get_lang_string(yw->string_pointers_p2, 1040, "4");
-    keySS[52].KEYCODE = 0x34;
-    keySS[52].short_name = "4";
-
-    keySS[53].title_by_language = get_lang_string(yw->string_pointers_p2, 1041, "5");
-    keySS[53].KEYCODE = '5';
-    keySS[53].short_name = "5";
-
-    keySS[54].title_by_language = get_lang_string(yw->string_pointers_p2, 1042, "6");
-    keySS[54].KEYCODE = '6';
-    keySS[54].short_name = "6";
-
-    keySS[55].title_by_language = get_lang_string(yw->string_pointers_p2, 1043, "7");
-    keySS[55].short_name = "7";
-    keySS[55].KEYCODE = '7';
-
-    keySS[56].title_by_language = get_lang_string(yw->string_pointers_p2, 1044, "8");
-    keySS[56].KEYCODE = '8';
-    keySS[56].short_name = "8";
-
-    keySS[57].title_by_language = get_lang_string(yw->string_pointers_p2, 1045, "9");
-    keySS[57].KEYCODE = '9';
-    keySS[57].short_name = "9";
-
-    keySS[48].title_by_language = get_lang_string(yw->string_pointers_p2, 1046, "0");
-    keySS[48].KEYCODE = '0';
-    keySS[48].short_name = "0";
-
-    keySS[65].title_by_language = get_lang_string(yw->string_pointers_p2, 1047, "A");
-    keySS[65].KEYCODE = 'A';
-    keySS[65].short_name = "a";
-
-    keySS[66].title_by_language = get_lang_string(yw->string_pointers_p2, 1048, "B");
-    keySS[66].short_name = "b";
-    keySS[66].KEYCODE = 'B';
-
-    keySS[67].title_by_language = get_lang_string(yw->string_pointers_p2, 1049, "C");
-    keySS[67].KEYCODE = 'C';
-    keySS[67].short_name = "c";
-
-    keySS[68].title_by_language = get_lang_string(yw->string_pointers_p2, 1050, "D");
-    keySS[68].KEYCODE = 68;
-    keySS[68].short_name = "d";
-
-    keySS[69].title_by_language = get_lang_string(yw->string_pointers_p2, 1051, "E");
-    keySS[69].KEYCODE = 69;
-    keySS[69].short_name = "e";
-
-    keySS[70].title_by_language = get_lang_string(yw->string_pointers_p2, 1052, "F");
-    keySS[70].KEYCODE = 70;
-    keySS[70].short_name = "f";
-
-    keySS[71].title_by_language = get_lang_string(yw->string_pointers_p2, 1053, "G");
-    keySS[71].KEYCODE = 71;
-    keySS[71].short_name = "g";
-
-    keySS[72].title_by_language = get_lang_string(yw->string_pointers_p2, 1054, "H");
-    keySS[72].short_name = "h";
-    keySS[72].KEYCODE = 72;
-
-    keySS[73].title_by_language = get_lang_string(yw->string_pointers_p2, 1055, "I");
-    keySS[73].short_name = "i";
-    keySS[73].KEYCODE = 73;
-
-    keySS[74].title_by_language = get_lang_string(yw->string_pointers_p2, 1056, "J");
-    keySS[74].KEYCODE = 74;
-    keySS[74].short_name = "j";
-
-    keySS[75].title_by_language = get_lang_string(yw->string_pointers_p2, 1057, "K");
-    keySS[75].KEYCODE = 75;
-    keySS[75].short_name = "k";
-
-    keySS[76].title_by_language = get_lang_string(yw->string_pointers_p2, 1058, "L");
-    keySS[76].KEYCODE = 76;
-    keySS[76].short_name = "l";
-
-    keySS[77].title_by_language = get_lang_string(yw->string_pointers_p2, 1059, "M");
-    keySS[77].KEYCODE = 77;
-    keySS[77].short_name = "m";
-
-    keySS[78].title_by_language = get_lang_string(yw->string_pointers_p2, 1060, "N");
-    keySS[78].short_name = "n";
-    keySS[78].KEYCODE = 78;
-
-    keySS[79].title_by_language = get_lang_string(yw->string_pointers_p2, 1061, "O");
-    keySS[79].short_name = "o";
-    keySS[79].KEYCODE = 79;
-
-    keySS[80].title_by_language = get_lang_string(yw->string_pointers_p2, 1062, "P");
-    keySS[80].KEYCODE = 80;
-    keySS[80].short_name = "p";
-
-    keySS[81].title_by_language = get_lang_string(yw->string_pointers_p2, 1063, "Q");
-    keySS[81].KEYCODE = 81;
-    keySS[81].short_name = "q";
-
-    keySS[82].title_by_language = get_lang_string(yw->string_pointers_p2, 1064, "R");
-    keySS[82].KEYCODE = 82;
-    keySS[82].short_name = "r";
-
-    keySS[83].title_by_language = get_lang_string(yw->string_pointers_p2, 1065, "S");
-    keySS[83].KEYCODE = 83;
-    keySS[83].short_name = "s";
-
-    keySS[84].title_by_language = get_lang_string(yw->string_pointers_p2, 1066, "T");
-    keySS[84].short_name = "t";
-    keySS[84].KEYCODE = 84;
-
-    keySS[85].title_by_language = get_lang_string(yw->string_pointers_p2, 1067, "U");
-    keySS[85].short_name = "u";
-    keySS[85].KEYCODE = 85;
-
-    keySS[86].title_by_language = get_lang_string(yw->string_pointers_p2, 1068, "V");
-    keySS[86].KEYCODE = 86;
-    keySS[86].short_name = "v";
-
-    keySS[87].title_by_language = get_lang_string(yw->string_pointers_p2, 1069, "W");
-    keySS[87].KEYCODE = 87;
-    keySS[87].short_name = "w";
-
-    keySS[88].title_by_language = get_lang_string(yw->string_pointers_p2, 1070, "X");
-    keySS[88].KEYCODE = 88;
-    keySS[88].short_name = "x";
-
-    keySS[89].title_by_language = get_lang_string(yw->string_pointers_p2, 1071, "Y");
-    keySS[89].KEYCODE = 89;
-    keySS[89].short_name = "y";
-
-    keySS[90].title_by_language = get_lang_string(yw->string_pointers_p2, 1072, "Z");
-    keySS[90].short_name = "z";
-    keySS[90].KEYCODE = 90;
-
-    keySS[96].title_by_language = get_lang_string(yw->string_pointers_p2, 1073, "NUM 0");
-    keySS[96].short_name = "num0";
-    keySS[96].KEYCODE = 0;
-
-    keySS[97].title_by_language = get_lang_string(yw->string_pointers_p2, 1074, "NUM 1");
-    keySS[97].KEYCODE = 0;
-    keySS[97].short_name = "num1";
-
-    keySS[98].title_by_language = get_lang_string(yw->string_pointers_p2, 1075, "NUM 2");
-    keySS[98].KEYCODE = 0;
-    keySS[98].short_name = "num2";
-
-    keySS[99].title_by_language = get_lang_string(yw->string_pointers_p2, 1076, "NUM 3");
-    keySS[99].KEYCODE = 0;
-    keySS[99].short_name = "num3";
-
-    keySS[100].title_by_language = get_lang_string(yw->string_pointers_p2, 1077, "NUM 4");
-    keySS[100].KEYCODE = 0;
-    keySS[100].short_name = "num4";
-
-    keySS[101].title_by_language = get_lang_string(yw->string_pointers_p2, 1078, "NUM 5");
-    keySS[101].short_name = "num5";
-    keySS[101].KEYCODE = 0;
-
-    keySS[102].title_by_language = get_lang_string(yw->string_pointers_p2, 1079, "NUM 6");
-    keySS[102].short_name = "num6";
-    keySS[102].KEYCODE = 0;
-
-    keySS[103].title_by_language = get_lang_string(yw->string_pointers_p2, 1080, "NUM 7");
-    keySS[103].KEYCODE = 0;
-    keySS[103].short_name = "num7";
-
-    keySS[104].title_by_language = get_lang_string(yw->string_pointers_p2, 1081, "NUM 8");
-    keySS[104].KEYCODE = 0;
-    keySS[104].short_name = "num8";
-
-    keySS[105].title_by_language = get_lang_string(yw->string_pointers_p2, 1082, "NUM 9");
-    keySS[105].KEYCODE = 0;
-    keySS[105].short_name = "num9";
-
-    keySS[106].title_by_language = get_lang_string(yw->string_pointers_p2, 1083, "MUL");
-    keySS[106].KEYCODE = 0;
-    keySS[106].short_name = "nummul";
-
-    keySS[107].title_by_language = get_lang_string(yw->string_pointers_p2, 1084, "ADD");
-    keySS[107].KEYCODE = 0;
-    keySS[107].short_name = "numplus";
-
-    keySS[110].title_by_language = get_lang_string(yw->string_pointers_p2, 1085, "DOT");
-    keySS[110].short_name = "numdot";
-    keySS[110].KEYCODE = 0;
-
-    keySS[109].title_by_language = get_lang_string(yw->string_pointers_p2, 1086, "SUB");
-    keySS[109].KEYCODE = 0;
-    keySS[109].short_name = "numminus";
-
-    keySS[108].title_by_language = get_lang_string(yw->string_pointers_p2, 1087, "ENTER");
-    keySS[108].KEYCODE = 0;
-    keySS[108].short_name = "enter";
-
-    keySS[111].title_by_language = get_lang_string(yw->string_pointers_p2, 1088, "DIV");
-    keySS[111].KEYCODE = 0;
-    keySS[111].short_name = "numdiv";
-
-    keySS[188].title_by_language = get_lang_string(yw->string_pointers_p2, 1089, "EXTRA_1");
-    keySS[188].KEYCODE = 44;
-    keySS[188].short_name = "extra1";
-
-    keySS[190].title_by_language = get_lang_string(yw->string_pointers_p2, 1090, "EXTRA_2");
-    keySS[190].short_name = "extra2";
-    keySS[190].KEYCODE = 46;
-
-    keySS[189].title_by_language = get_lang_string(yw->string_pointers_p2, 1091, "EXTRA_3");
-    keySS[189].KEYCODE = 45;
-    keySS[189].short_name = "extra3";
-
-    keySS[226].title_by_language = get_lang_string(yw->string_pointers_p2, 1092, "EXTRA_4");
-    keySS[226].KEYCODE = 60;
-    keySS[226].short_name = "extra4";
-
-    keySS[186].title_by_language = get_lang_string(yw->string_pointers_p2, 1093, "EXTRA_5");
-    keySS[186].KEYCODE = 252;
-    keySS[186].short_name = "extra5";
-
-    keySS[187].title_by_language = get_lang_string(yw->string_pointers_p2, 1094, "EXTRA_6");
-    keySS[187].KEYCODE = 43;
-    keySS[187].short_name = "extra6";
-
-    keySS[192].title_by_language = get_lang_string(yw->string_pointers_p2, 1095, "EXTRA_7");
-    keySS[192].KEYCODE = 246;
-    keySS[192].short_name = "extra7";
-
-    keySS[222].title_by_language = get_lang_string(yw->string_pointers_p2, 1096, "EXTRA_8");
-    keySS[222].short_name = "extra8";
-    keySS[222].KEYCODE = 228;
-
-    keySS[191].title_by_language = get_lang_string(yw->string_pointers_p2, 1097, "EXTRA_9");
-    keySS[191].short_name = "extra9";
-    keySS[191].KEYCODE = 35;
-
-    keySS[221].title_by_language = get_lang_string(yw->string_pointers_p2, 1098, "EXTRA_10");
-    keySS[221].KEYCODE = 96;
-    keySS[221].short_name = "extra10";
-
-    keySS[220].title_by_language = get_lang_string(yw->string_pointers_p2, 1099, "EXTRA_11");
-    keySS[220].KEYCODE = 94;
-    keySS[220].short_name = "extra11";
-
-    keySS[219].title_by_language = get_lang_string(yw->string_pointers_p2, 1100, "EXTRA_12");
-    keySS[219].KEYCODE = 0;
-    keySS[219].short_name = "extra12";
-
-    keySS[223].title_by_language = get_lang_string(yw->string_pointers_p2, 1101, "EXTRA_13");
-    keySS[223].KEYCODE = 0;
-    keySS[223].short_name = "extra13";
-
-    keySS[145].title_by_language = get_lang_string(yw->string_pointers_p2, 1102, "EXTRA_14");
-    keySS[145].short_name = "extra14";
-    keySS[145].KEYCODE = 0;
-
-    keySS[144].title_by_language = get_lang_string(yw->string_pointers_p2, 1103, "EXTRA_15");
-    keySS[144].short_name = "extra15";
-    keySS[144].KEYCODE = 0;
-
-    keySS[124].title_by_language = get_lang_string(yw->string_pointers_p2, 1104, "EXTRA_16");
-    keySS[124].KEYCODE = 0;
-    keySS[124].short_name = "extra16";
-
-    keySS[125].title_by_language = get_lang_string(yw->string_pointers_p2, 1105, "EXTRA_17");
-    keySS[125].KEYCODE = 0;
-    keySS[125].short_name = "extra17";
-
-    keySS[126].title_by_language = get_lang_string(yw->string_pointers_p2, 1106, "EXTRA_18");
-    keySS[126].KEYCODE = 0;
-    keySS[126].short_name = "extra18";
-
-    keySS[131].title_by_language = get_lang_string(yw->string_pointers_p2, 1121, "MIDDLE MOUSE");
-    keySS[131].KEYCODE = 0;
-    keySS[131].short_name = "mmb";
-
-    keySS[134].title_by_language = get_lang_string(yw->string_pointers_p2, 1123, "JOYB0");
-    keySS[134].short_name = "joyb0";
-    keySS[134].KEYCODE = 0;
-
-    keySS[135].title_by_language = get_lang_string(yw->string_pointers_p2, 1124, "JOYB1");
-    keySS[135].short_name = "joyb1";
-    keySS[135].KEYCODE = 0;
-
-    keySS[136].title_by_language = get_lang_string(yw->string_pointers_p2, 1125, "JOYB2");
-    keySS[136].KEYCODE = 0;
-    keySS[136].short_name = "joyb2";
-
-    keySS[137].title_by_language = get_lang_string(yw->string_pointers_p2, 1126, "JOYB3");
-    keySS[137].KEYCODE = 0;
-    keySS[137].short_name = "joyb3";
-
-    keySS[138].title_by_language = get_lang_string(yw->string_pointers_p2, 1127, "JOYB4");
-    keySS[138].KEYCODE = 0;
-    keySS[138].short_name = "joyb4";
-
-    keySS[139].title_by_language = get_lang_string(yw->string_pointers_p2, 1128, "JOYB5");
-    keySS[139].KEYCODE = 0;
-    keySS[139].short_name = "joyb5";
-
-    keySS[140].title_by_language = get_lang_string(yw->string_pointers_p2, 1129, "JOYB6");
-    keySS[140].short_name = "joyb6";
-    keySS[140].KEYCODE = 0;
-
-    keySS[141].title_by_language = get_lang_string(yw->string_pointers_p2, 1130, "JOYB7");
-    keySS[141].short_name = "joyb7";
-    keySS[141].KEYCODE = 0;
+    for (auto &a: Input::KeysInfo)
+    {
+        a._title.clear();
+        a._name.clear();
+    }
+
+    Input::KeysInfo[0]._title = "*";
+    Input::KeysInfo[0]._name = "nop";
+
+    Input::KeysInfo[27]._title = get_lang_string(yw->string_pointers_p2, 1001, "ESC");
+    Input::KeysInfo[27]._name = "esc";
+
+    Input::KeysInfo[32]._title = get_lang_string(yw->string_pointers_p2, 1002, "SPACE");
+    Input::KeysInfo[32]._name = "space";
+
+    Input::KeysInfo[38]._title = get_lang_string(yw->string_pointers_p2, 1003, "UP");
+    Input::KeysInfo[38]._name = "up";
+
+    Input::KeysInfo[40]._title = get_lang_string(yw->string_pointers_p2, 1004, "DOWN");
+    Input::KeysInfo[40]._name = "down";
+
+    Input::KeysInfo[37]._title = get_lang_string(yw->string_pointers_p2, 1005, "LEFT");
+    Input::KeysInfo[37]._name = "left";
+
+    Input::KeysInfo[39]._title = get_lang_string(yw->string_pointers_p2, 1006, "RIGHT");
+    Input::KeysInfo[39]._name = "right";
+
+    Input::KeysInfo[112]._title = get_lang_string(yw->string_pointers_p2, 1007, "F1");
+    Input::KeysInfo[112]._name = "f1";
+
+    Input::KeysInfo[113]._title = get_lang_string(yw->string_pointers_p2, 1008, "F2");
+    Input::KeysInfo[113]._name = "f2";
+
+    Input::KeysInfo[114]._title = get_lang_string(yw->string_pointers_p2, 1009, "F3");
+    Input::KeysInfo[114]._name = "f3";
+
+    Input::KeysInfo[115]._title = get_lang_string(yw->string_pointers_p2, 1010, "F4");
+    Input::KeysInfo[115]._name = "f4";
+
+    Input::KeysInfo[116]._title = get_lang_string(yw->string_pointers_p2, 1011, "F5");
+    Input::KeysInfo[116]._name = "f5";
+
+    Input::KeysInfo[117]._title = get_lang_string(yw->string_pointers_p2, 1012, "F6");
+    Input::KeysInfo[117]._name = "f6";
+
+    Input::KeysInfo[118]._title = get_lang_string(yw->string_pointers_p2, 1013, "F7");
+    Input::KeysInfo[118]._name = "f7";
+
+    Input::KeysInfo[119]._title = get_lang_string(yw->string_pointers_p2, 1014, "F8");
+    Input::KeysInfo[119]._name = "f8";
+
+    Input::KeysInfo[120]._title = get_lang_string(yw->string_pointers_p2, 1015, "F9");
+    Input::KeysInfo[120]._name = "f9";
+
+    Input::KeysInfo[121]._title = get_lang_string(yw->string_pointers_p2, 1016, "F10");
+    Input::KeysInfo[121]._name = "f10";
+
+    Input::KeysInfo[122]._title = get_lang_string(yw->string_pointers_p2, 1017, "F11");
+    Input::KeysInfo[122]._name = "f11";
+
+    Input::KeysInfo[123]._title = get_lang_string(yw->string_pointers_p2, 1018, "F12");
+    Input::KeysInfo[123]._name = "f12";
+
+    Input::KeysInfo[8]._title = get_lang_string(yw->string_pointers_p2, 1019, "BACK");
+    Input::KeysInfo[8]._name = "bs";
+
+    Input::KeysInfo[9]._title = get_lang_string(yw->string_pointers_p2, 1020, "TAB");
+    Input::KeysInfo[9]._name = "tab";
+
+    Input::KeysInfo[12]._title = get_lang_string(yw->string_pointers_p2, 1021, "CLEAR");
+    Input::KeysInfo[12]._name = "clear";
+
+    Input::KeysInfo[13]._title = get_lang_string(yw->string_pointers_p2, 1022, "RETURN");
+    Input::KeysInfo[13]._name = "return";
+
+    Input::KeysInfo[17]._title = get_lang_string(yw->string_pointers_p2, 1023, "CTRL");
+    Input::KeysInfo[17]._name = "ctrl";
+
+    Input::KeysInfo[16]._title = get_lang_string(yw->string_pointers_p2, 1024, "SHIFT");
+    Input::KeysInfo[16]._name = "rshift";
+
+    Input::KeysInfo[18]._title = get_lang_string(yw->string_pointers_p2, 1025, "ALT");
+    Input::KeysInfo[18]._name = "alt";
+
+    Input::KeysInfo[19]._title = get_lang_string(yw->string_pointers_p2, 1026, "PAUSE");
+    Input::KeysInfo[19]._name = "pause";
+
+    Input::KeysInfo[33]._title = get_lang_string(yw->string_pointers_p2, 1027, "PGUP");
+    Input::KeysInfo[33]._name = "pageup";
+
+    Input::KeysInfo[34]._title = get_lang_string(yw->string_pointers_p2, 1028, "PGDOWN");
+    Input::KeysInfo[34]._name = "pagedown";
+
+    Input::KeysInfo[35]._title = get_lang_string(yw->string_pointers_p2, 1029, "END");
+    Input::KeysInfo[35]._name = "end";
+
+    Input::KeysInfo[36]._title = get_lang_string(yw->string_pointers_p2, 1030, "HOME");
+    Input::KeysInfo[36]._name = "home";
+
+    Input::KeysInfo[41]._title = get_lang_string(yw->string_pointers_p2, 1031, "SELECT");
+    Input::KeysInfo[41]._name = "select";
+
+    Input::KeysInfo[43]._title = get_lang_string(yw->string_pointers_p2, 1032, "EXEC");
+    Input::KeysInfo[43]._name = "execute";
+
+    Input::KeysInfo[44]._title = get_lang_string(yw->string_pointers_p2, 1033, "PRINT");
+    Input::KeysInfo[44]._name = "snapshot";
+
+    Input::KeysInfo[45]._title = get_lang_string(yw->string_pointers_p2, 1034, "INS");
+    Input::KeysInfo[45]._name = "ins";
+
+    Input::KeysInfo[46]._title = get_lang_string(yw->string_pointers_p2, 1035, "DEL");
+    Input::KeysInfo[46]._name = "del";
+
+    Input::KeysInfo[49]._title = get_lang_string(yw->string_pointers_p2, 1037, "1");
+    Input::KeysInfo[49]._name = "1";
+
+    Input::KeysInfo[50]._title = get_lang_string(yw->string_pointers_p2, 1038, "2");
+    Input::KeysInfo[50]._name = "2";
+
+    Input::KeysInfo[51]._title = get_lang_string(yw->string_pointers_p2, 1039, "3");
+    Input::KeysInfo[51]._name = "3";
+
+    Input::KeysInfo[52]._title = get_lang_string(yw->string_pointers_p2, 1040, "4");
+    Input::KeysInfo[52]._name = "4";
+
+    Input::KeysInfo[53]._title = get_lang_string(yw->string_pointers_p2, 1041, "5");
+    Input::KeysInfo[53]._name = "5";
+
+    Input::KeysInfo[54]._title = get_lang_string(yw->string_pointers_p2, 1042, "6");
+    Input::KeysInfo[54]._name = "6";
+
+    Input::KeysInfo[55]._title = get_lang_string(yw->string_pointers_p2, 1043, "7");
+    Input::KeysInfo[55]._name = "7";
+
+    Input::KeysInfo[56]._title = get_lang_string(yw->string_pointers_p2, 1044, "8");
+    Input::KeysInfo[56]._name = "8";
+
+    Input::KeysInfo[57]._title = get_lang_string(yw->string_pointers_p2, 1045, "9");
+    Input::KeysInfo[57]._name = "9";
+
+    Input::KeysInfo[48]._title = get_lang_string(yw->string_pointers_p2, 1046, "0");
+    Input::KeysInfo[48]._name = "0";
+
+    Input::KeysInfo[65]._title = get_lang_string(yw->string_pointers_p2, 1047, "A");
+    Input::KeysInfo[65]._name = "a";
+
+    Input::KeysInfo[66]._title = get_lang_string(yw->string_pointers_p2, 1048, "B");
+    Input::KeysInfo[66]._name = "b";
+
+    Input::KeysInfo[67]._title = get_lang_string(yw->string_pointers_p2, 1049, "C");
+    Input::KeysInfo[67]._name = "c";
+
+    Input::KeysInfo[68]._title = get_lang_string(yw->string_pointers_p2, 1050, "D");
+    Input::KeysInfo[68]._name = "d";
+
+    Input::KeysInfo[69]._title = get_lang_string(yw->string_pointers_p2, 1051, "E");
+    Input::KeysInfo[69]._name = "e";
+
+    Input::KeysInfo[70]._title = get_lang_string(yw->string_pointers_p2, 1052, "F");
+    Input::KeysInfo[70]._name = "f";
+
+    Input::KeysInfo[71]._title = get_lang_string(yw->string_pointers_p2, 1053, "G");
+    Input::KeysInfo[71]._name = "g";
+
+    Input::KeysInfo[72]._title = get_lang_string(yw->string_pointers_p2, 1054, "H");
+    Input::KeysInfo[72]._name = "h";
+
+    Input::KeysInfo[73]._title = get_lang_string(yw->string_pointers_p2, 1055, "I");
+    Input::KeysInfo[73]._name = "i";
+
+    Input::KeysInfo[74]._title = get_lang_string(yw->string_pointers_p2, 1056, "J");
+    Input::KeysInfo[74]._name = "j";
+
+    Input::KeysInfo[75]._title = get_lang_string(yw->string_pointers_p2, 1057, "K");
+    Input::KeysInfo[75]._name = "k";
+
+    Input::KeysInfo[76]._title = get_lang_string(yw->string_pointers_p2, 1058, "L");
+    Input::KeysInfo[76]._name = "l";
+
+    Input::KeysInfo[77]._title = get_lang_string(yw->string_pointers_p2, 1059, "M");
+    Input::KeysInfo[77]._name = "m";
+
+    Input::KeysInfo[78]._title = get_lang_string(yw->string_pointers_p2, 1060, "N");
+    Input::KeysInfo[78]._name = "n";
+
+    Input::KeysInfo[79]._title = get_lang_string(yw->string_pointers_p2, 1061, "O");
+    Input::KeysInfo[79]._name = "o";
+
+    Input::KeysInfo[80]._title = get_lang_string(yw->string_pointers_p2, 1062, "P");
+    Input::KeysInfo[80]._name = "p";
+
+    Input::KeysInfo[81]._title = get_lang_string(yw->string_pointers_p2, 1063, "Q");
+    Input::KeysInfo[81]._name = "q";
+
+    Input::KeysInfo[82]._title = get_lang_string(yw->string_pointers_p2, 1064, "R");
+    Input::KeysInfo[82]._name = "r";
+
+    Input::KeysInfo[83]._title = get_lang_string(yw->string_pointers_p2, 1065, "S");
+    Input::KeysInfo[83]._name = "s";
+
+    Input::KeysInfo[84]._title = get_lang_string(yw->string_pointers_p2, 1066, "T");
+    Input::KeysInfo[84]._name = "t";
+
+    Input::KeysInfo[85]._title = get_lang_string(yw->string_pointers_p2, 1067, "U");
+    Input::KeysInfo[85]._name = "u";
+
+    Input::KeysInfo[86]._title = get_lang_string(yw->string_pointers_p2, 1068, "V");
+    Input::KeysInfo[86]._name = "v";
+
+    Input::KeysInfo[87]._title = get_lang_string(yw->string_pointers_p2, 1069, "W");
+    Input::KeysInfo[87]._name = "w";
+
+    Input::KeysInfo[88]._title = get_lang_string(yw->string_pointers_p2, 1070, "X");
+    Input::KeysInfo[88]._name = "x";
+
+    Input::KeysInfo[89]._title = get_lang_string(yw->string_pointers_p2, 1071, "Y");
+    Input::KeysInfo[89]._name = "y";
+
+    Input::KeysInfo[90]._title = get_lang_string(yw->string_pointers_p2, 1072, "Z");
+    Input::KeysInfo[90]._name = "z";
+
+    Input::KeysInfo[96]._title = get_lang_string(yw->string_pointers_p2, 1073, "NUM 0");
+    Input::KeysInfo[96]._name = "num0";
+
+    Input::KeysInfo[97]._title = get_lang_string(yw->string_pointers_p2, 1074, "NUM 1");
+    Input::KeysInfo[97]._name = "num1";
+
+    Input::KeysInfo[98]._title = get_lang_string(yw->string_pointers_p2, 1075, "NUM 2");
+    Input::KeysInfo[98]._name = "num2";
+
+    Input::KeysInfo[99]._title = get_lang_string(yw->string_pointers_p2, 1076, "NUM 3");
+    Input::KeysInfo[99]._name = "num3";
+
+    Input::KeysInfo[100]._title = get_lang_string(yw->string_pointers_p2, 1077, "NUM 4");
+    Input::KeysInfo[100]._name = "num4";
+
+    Input::KeysInfo[101]._title = get_lang_string(yw->string_pointers_p2, 1078, "NUM 5");
+    Input::KeysInfo[101]._name = "num5";
+
+    Input::KeysInfo[102]._title = get_lang_string(yw->string_pointers_p2, 1079, "NUM 6");
+    Input::KeysInfo[102]._name = "num6";
+
+    Input::KeysInfo[103]._title = get_lang_string(yw->string_pointers_p2, 1080, "NUM 7");
+    Input::KeysInfo[103]._name = "num7";
+
+    Input::KeysInfo[104]._title = get_lang_string(yw->string_pointers_p2, 1081, "NUM 8");
+    Input::KeysInfo[104]._name = "num8";
+
+    Input::KeysInfo[105]._title = get_lang_string(yw->string_pointers_p2, 1082, "NUM 9");
+    Input::KeysInfo[105]._name = "num9";
+
+    Input::KeysInfo[106]._title = get_lang_string(yw->string_pointers_p2, 1083, "MUL");
+    Input::KeysInfo[106]._name = "nummul";
+
+    Input::KeysInfo[107]._title = get_lang_string(yw->string_pointers_p2, 1084, "ADD");
+    Input::KeysInfo[107]._name = "numplus";
+
+    Input::KeysInfo[110]._title = get_lang_string(yw->string_pointers_p2, 1085, "DOT");
+    Input::KeysInfo[110]._name = "numdot";
+
+    Input::KeysInfo[109]._title = get_lang_string(yw->string_pointers_p2, 1086, "SUB");
+    Input::KeysInfo[109]._name = "numminus";
+
+    Input::KeysInfo[108]._title = get_lang_string(yw->string_pointers_p2, 1087, "ENTER");
+    Input::KeysInfo[108]._name = "enter";
+
+    Input::KeysInfo[111]._title = get_lang_string(yw->string_pointers_p2, 1088, "DIV");
+    Input::KeysInfo[111]._name = "numdiv";
+
+    Input::KeysInfo[188]._title = get_lang_string(yw->string_pointers_p2, 1089, "EXTRA_1");
+    Input::KeysInfo[188]._name = "extra1";
+
+    Input::KeysInfo[190]._title = get_lang_string(yw->string_pointers_p2, 1090, "EXTRA_2");
+    Input::KeysInfo[190]._name = "extra2";
+
+    Input::KeysInfo[189]._title = get_lang_string(yw->string_pointers_p2, 1091, "EXTRA_3");
+    Input::KeysInfo[189]._name = "extra3";
+
+    Input::KeysInfo[226]._title = get_lang_string(yw->string_pointers_p2, 1092, "EXTRA_4");
+    Input::KeysInfo[226]._name = "extra4";
+
+    Input::KeysInfo[186]._title = get_lang_string(yw->string_pointers_p2, 1093, "EXTRA_5");
+    Input::KeysInfo[186]._name = "extra5";
+
+    Input::KeysInfo[187]._title = get_lang_string(yw->string_pointers_p2, 1094, "EXTRA_6");
+    Input::KeysInfo[187]._name = "extra6";
+
+    Input::KeysInfo[192]._title = get_lang_string(yw->string_pointers_p2, 1095, "EXTRA_7");
+    Input::KeysInfo[192]._name = "extra7";
+
+    Input::KeysInfo[222]._title = get_lang_string(yw->string_pointers_p2, 1096, "EXTRA_8");
+    Input::KeysInfo[222]._name = "extra8";
+
+    Input::KeysInfo[191]._title = get_lang_string(yw->string_pointers_p2, 1097, "EXTRA_9");
+    Input::KeysInfo[191]._name = "extra9";
+
+    Input::KeysInfo[221]._title = get_lang_string(yw->string_pointers_p2, 1098, "EXTRA_10");
+    Input::KeysInfo[221]._name = "extra10";
+
+    Input::KeysInfo[220]._title = get_lang_string(yw->string_pointers_p2, 1099, "EXTRA_11");
+    Input::KeysInfo[220]._name = "extra11";
+
+    Input::KeysInfo[219]._title = get_lang_string(yw->string_pointers_p2, 1100, "EXTRA_12");
+    Input::KeysInfo[219]._name = "extra12";
+
+    Input::KeysInfo[223]._title = get_lang_string(yw->string_pointers_p2, 1101, "EXTRA_13");
+    Input::KeysInfo[223]._name = "extra13";
+
+    Input::KeysInfo[145]._title = get_lang_string(yw->string_pointers_p2, 1102, "EXTRA_14");
+    Input::KeysInfo[145]._name = "extra14";
+
+    Input::KeysInfo[144]._title = get_lang_string(yw->string_pointers_p2, 1103, "EXTRA_15");
+    Input::KeysInfo[144]._name = "extra15";
+
+    Input::KeysInfo[124]._title = get_lang_string(yw->string_pointers_p2, 1104, "EXTRA_16");
+    Input::KeysInfo[124]._name = "extra16";
+
+    Input::KeysInfo[125]._title = get_lang_string(yw->string_pointers_p2, 1105, "EXTRA_17");
+    Input::KeysInfo[125]._name = "extra17";
+
+    Input::KeysInfo[126]._title = get_lang_string(yw->string_pointers_p2, 1106, "EXTRA_18");
+    Input::KeysInfo[126]._name = "extra18";
+
+    Input::KeysInfo[131]._title = get_lang_string(yw->string_pointers_p2, 1121, "MIDDLE MOUSE");
+    Input::KeysInfo[131]._name = "mmb";
+
+    Input::KeysInfo[134]._title = get_lang_string(yw->string_pointers_p2, 1123, "JOYB0");
+    Input::KeysInfo[134]._name = "joyb0";
+
+    Input::KeysInfo[135]._title = get_lang_string(yw->string_pointers_p2, 1124, "JOYB1");
+    Input::KeysInfo[135]._name = "joyb1";
+
+    Input::KeysInfo[136]._title = get_lang_string(yw->string_pointers_p2, 1125, "JOYB2");
+    Input::KeysInfo[136]._name = "joyb2";
+
+    Input::KeysInfo[137]._title = get_lang_string(yw->string_pointers_p2, 1126, "JOYB3");
+    Input::KeysInfo[137]._name = "joyb3";
+
+    Input::KeysInfo[138]._title = get_lang_string(yw->string_pointers_p2, 1127, "JOYB4");
+    Input::KeysInfo[138]._name = "joyb4";
+
+    Input::KeysInfo[139]._title = get_lang_string(yw->string_pointers_p2, 1128, "JOYB5");
+    Input::KeysInfo[139]._name = "joyb5";
+
+    Input::KeysInfo[140]._title = get_lang_string(yw->string_pointers_p2, 1129, "JOYB6");
+    Input::KeysInfo[140]._name = "joyb6";
+
+    Input::KeysInfo[141]._title = get_lang_string(yw->string_pointers_p2, 1130, "JOYB7");
+    Input::KeysInfo[141]._name = "joyb7";
 }
 
 
@@ -847,13 +734,7 @@ int yw_loadSky(_NC_STACK_ypaworld *yw, const char *skyname)
 
 void fill_videmodes_list(UserData *usr)
 {
-    while ( 1 )
-    {
-        nnode *nod = RemHead(&usr->video_mode_list);
-        if ( !nod )
-            break;
-        nc_FreeMem(nod);
-    }
+    usr->video_mode_list.clear();
 
     usr->p_ypaworld->win3d = GFXEngine::GFXe.getC3D();
 
@@ -866,37 +747,25 @@ void fill_videmodes_list(UserData *usr)
     {
         id = usr->p_ypaworld->win3d->display_func256(&warg_256);
 
-        video_mode_node *vnode = (video_mode_node *)AllocVec(sizeof(video_mode_node), 65536);
+        usr->video_mode_list.emplace_back();
+        video_mode_node &vnode = usr->video_mode_list.back();
 
-        if ( vnode )
-        {
-            vnode->sort_id = warg_256.sort_id;
-            vnode->width = warg_256.width;
-            vnode->height = warg_256.height;
-
-            memset(vnode->name, 0, 128);
-            strncpy(vnode->name, warg_256.name, 127);
-
-            AddTail(&usr->video_mode_list, vnode);
-        }
+        vnode.sort_id = warg_256.sort_id;
+        vnode.width = warg_256.width;
+        vnode.height = warg_256.height;
+        vnode.name = warg_256.name;
 
         warg_256.sort_id = id;
     }
 }
 
 
-void listSaveDir(UserData *usr, const char *saveDir)
+void NC_STACK_ypaworld::listSaveDir(const std::string &saveDir)
 {
-    player_status statuses[8];
-
-    memcpy(statuses, usr->p_ypaworld->playerstatus, sizeof(player_status) * 8);
-
-    char v21[300];
-
-    strcpy(v21, usr->callSIGN);
-
-    int v5 = usr->p_ypaworld->maxroboenergy;
-    int v27 = usr->p_ypaworld->maxreloadconst;
+    auto savedStatuses = ypaworld.playerstatus;
+    auto savedCallsign = ypaworld.GameShell->callSIGN;
+    auto savedMaxroboenrgy = ypaworld.maxroboenergy;
+    auto savedMaxreloadconst = ypaworld.maxreloadconst;
 
     FSMgr::DirIter dir = uaOpenDir(saveDir);
     if ( dir )
@@ -906,25 +775,24 @@ void listSaveDir(UserData *usr, const char *saveDir)
         {
             if ( dirNode->getType() == FSMgr::iNode::NTYPE_DIR )
             {
-                if ( strcmp(dirNode->getName(), ".") && strcmp(dirNode->getName(), "..") )
+                if ( StriCmp(dirNode->getName(), ".") && StriCmp(dirNode->getName(), "..") )
                 {
-                    usr->profiles.emplace_back();
-                    ProfilesNode &profile = usr->profiles.back();
+                    ypaworld.GameShell->profiles.emplace_back();
+                    ProfilesNode &profile = ypaworld.GameShell->profiles.back();
+
                     profile.name = dirNode->getName();
 
-                    scrCallBack v25;
-
-                    v25.func = parseSaveUser;
-                    v25.world = (_NC_STACK_ypaworld *)usr->p_ypaworld->self_full;
-                    v25.world2 = usr->p_ypaworld;
+                    ScriptParser::HandlersList hndls{
+                        new World::Parsers::UserParser(this)
+                    };
 
                     std::string buf = fmt::sprintf("%s/%s/user.txt\n", saveDir, dirNode->getName());
 
-                    if ( !def_parseFile(buf.c_str(), 1, &v25, 2) )
+                    if ( !ScriptParser::ParseFile(buf, hndls,0) )
                         ypa_log_out("Warning, cannot parse %s for time scanning\n", buf.c_str());
 
                     profile.fraction = 1;
-                    profile.totalElapsedTime = usr->p_ypaworld->playerstatus[1].elapsedTime;
+                    profile.totalElapsedTime = ypaworld.playerstatus[1].elapsedTime;
                 }
             }
         }
@@ -934,12 +802,10 @@ void listSaveDir(UserData *usr, const char *saveDir)
         ypa_log_out("Unknown Game-Directory %s\n", saveDir);
     }
 
-    memcpy(usr->p_ypaworld->playerstatus, statuses, sizeof(player_status) * 8);
-
-    usr->p_ypaworld->maxreloadconst = v27;
-    usr->p_ypaworld->maxroboenergy = v5;
-
-    strcpy(usr->callSIGN, v21);
+    ypaworld.playerstatus = savedStatuses;
+    ypaworld.maxreloadconst = savedMaxreloadconst;
+    ypaworld.maxroboenergy = savedMaxroboenrgy;
+    ypaworld.GameShell->callSIGN = savedCallsign;
 }
 
 
@@ -1034,12 +900,12 @@ void UserData::sub_46A7F8()
 
 void ypaworld_func154__sub0(_NC_STACK_ypaworld *yw)
 {
-    if ( yw->movies.movies_names_present[0] )
+    if ( yw->movies[World::MOVIE_INTRO] )
     {
         yw->win3d = GFXEngine::GFXe.getC3D();
 
         std::string buf;
-        sub_412810(yw->movies.game_intro, buf);
+        sub_412810(yw->movies[World::MOVIE_INTRO], buf);
         const char *v5 = buf.c_str();
 
         yw->win3d->windd_func323(&v5);
@@ -1116,7 +982,7 @@ void  UserData::sb_0x46ca74()
 
     if ( field_1612 )
     {
-        if ( strcasecmp(usernamedir, user_name) )
+        if ( StriCmp(usernamedir, user_name) )
         {
             oldsave = fmt::sprintf("save:%s", usernamedir);
             sub_46D0F8(oldsave.c_str());
@@ -1157,7 +1023,7 @@ void  UserData::sb_0x46ca74()
 
     oldsave = fmt::sprintf("save:%s", user_name);
 
-    if ( strcasecmp(usernamedir, user_name) )
+    if ( StriCmp(usernamedir, user_name) )
     {
         FSMgr::DirIter dir = uaOpenDir(oldsave);
         if ( dir )
@@ -1185,7 +1051,7 @@ void  UserData::sb_0x46ca74()
     }
 
     field_0x1744 = 0;
-    strncpy(user_name, usernamedir, 32);
+    user_name = usernamedir;
 
     disk_button->Hide();
 
@@ -1263,17 +1129,8 @@ void sb_0x47f810(_NC_STACK_ypaworld *yw)
 {
     sb_0x47f810__sub0(yw);
 
-    if ( yw->RoboProtos )
-    {
-        nc_FreeMem(yw->RoboProtos);
-        yw->RoboProtos = NULL;
-    }
-
-    if ( yw->BuildProtos )
-    {
-        nc_FreeMem(yw->BuildProtos);
-        yw->BuildProtos = NULL;
-    }
+    yw->RoboProtos.clear();
+    yw->BuildProtos.clear();
 
     if ( yw->WeaponProtos )
     {
@@ -1360,13 +1217,13 @@ void UserData::sb_0x46cdf8()
 
     yw_arg172 v12;
     v12.usertxt = a1a.c_str();
-    v12.field_4 = user_name;
+    v12.field_4 = user_name.c_str();
     v12.usr = this;
     v12.field_8 = 255;
     v12.field_10 = 0;
 
     if ( ! p_YW->ypaworld_func171(&v12) )
-        ypa_log_out("Warning! Error while saving user data for %s\n", user_name);
+        ypa_log_out("Warning! Error while saving user data for %s\n", user_name.c_str());
 
     if ( field_1612 )
     {
@@ -1388,7 +1245,7 @@ void UserData::sb_0x46cdf8()
             return;
         }
 
-        strncpy(user_name, usernamedir, 32);
+        user_name = usernamedir;
         disk_listvw.numEntries++;
         field_1612 = disk_listvw.numEntries;
     }
@@ -1411,14 +1268,16 @@ void UserData::sb_0x46cdf8()
         p_ypaworld->maxroboenergy = 0;
         p_ypaworld->maxreloadconst = 0;
 
-        memset(p_ypaworld->playerstatus, 0, sizeof(player_status) * 8);
+        for(auto &x : p_ypaworld->playerstatus)
+			x.clear();
 
         field_0x1744 = 0;
 
         p_ypaworld->field_2d90->field_74 = 128;
         p_ypaworld->beamenergy = p_ypaworld->beam_energy_start;
 
-        memset(p_ypaworld->field_2d90->jodiefoster, 0, sizeof(int) * 8);
+        for(auto &x : p_ypaworld->field_2d90->jodiefoster)
+			x = 0;
 
         field_3426 = 0;
 
@@ -1450,19 +1309,19 @@ void UserData::sub_46D960()
     field_0x2fb4 = 0;
 }
 
-void sub_46D370(NC_STACK_ypaworld *obj, int a2)
+void NC_STACK_ypaworld::SetFarView(bool farvw)
 {
-    if ( a2 )
+    if ( farvw )
     {
-        obj->setYW_visSectors(9);
-        obj->setYW_normVisLimit(2100);
-        obj->setYW_fadeLength(900);
+        setYW_visSectors(9);
+        setYW_normVisLimit(2100);
+        setYW_fadeLength(900);
     }
     else
     {
-        obj->setYW_visSectors(5);
-        obj->setYW_normVisLimit(1400);
-        obj->setYW_fadeLength(600);
+        setYW_visSectors(5);
+        setYW_normVisLimit(1400);
+        setYW_fadeLength(600);
     }
 }
 
@@ -1483,7 +1342,7 @@ void UserData::sb_0x46aa8c()
         if ( field_0x13b0 & 0x10 )
         {
             snd__flags2 |= 0x10;
-            yw->snd__cdsound |= 1;
+            yw->field_73CE |= World::PREF_CDMUSICDISABLE;
 
             SFXEngine::SFXe.SetMusicIgnoreCommandsFlag(true);
             if ( shelltrack )
@@ -1495,7 +1354,7 @@ void UserData::sb_0x46aa8c()
         else
         {
             snd__flags2 &= 0xEF;
-            yw->snd__cdsound &= 0xFE;
+            yw->field_73CE &= ~World::PREF_CDMUSICDISABLE;
 
             SFXEngine::SFXe.StopMusicTrack();
             SFXEngine::SFXe.SetMusicIgnoreCommandsFlag(false);
@@ -1522,12 +1381,12 @@ void UserData::sb_0x46aa8c()
         if ( field_0x13a8 & 1 )
         {
             GFX_flags |= 1;
-            sub_46D370(yw->self_full, 1);
+            p_YW->SetFarView(true);
         }
         else
         {
             GFX_flags &= 0xFE;
-            sub_46D370(yw->self_full, 0);
+            p_YW->SetFarView(false);
         }
     }
 
@@ -1675,22 +1534,18 @@ void UserData::sb_0x46aa8c()
 
         yw->self_full->ypaworld_func174(&v40);
 
-        video_mode_node *nod = (video_mode_node *)video_mode_list.head;
         int v24 = 0;
-
-        while (nod->next)
+        for (auto const &nod : video_mode_list)
         {
-            if (yw->game_default_res == nod->sort_id)
+            if (yw->game_default_res == nod.sort_id)
             {
                 field_FBE = v24;
-
-                video_button->button_func71(1156, nod->name);
+                video_button->button_func71(1156, nod.name);
 
                 break;
             }
 
             v24++;
-            nod = (video_mode_node *)nod->next;
         }
     }
 
@@ -1735,7 +1590,7 @@ void UserData::sub_46DC1C()
     p_YW->ypaworld_func181(&v5);
 
     windp_arg82 v6;
-    v6.senderID = callSIGN;
+    v6.senderID = callSIGN.c_str();
     v6.senderFlags = 1;
     v6.receiverID = 0;
     v6.receiverFlags = 2;
@@ -1778,7 +1633,7 @@ int UserData::ypaworld_func158__sub0__sub7()
 {
     char buf[300];
 
-    sprintf(buf, "save:%s/sgisold.txt",user_name);
+    sprintf(buf, "save:%s/sgisold.txt",user_name.c_str());
     FSMgr::FileHandle *fl = uaOpenFile(buf, "r");
     if ( !fl )
         return 0;
@@ -2148,7 +2003,7 @@ void UserData::sub_46C3E4()
 
     for( ProfileList::iterator it = profiles.begin(); it != profiles.end(); it++ )
     {
-        if ( !strcasecmp(it->name.c_str(), user_name))
+        if ( !StriCmp(it->name.c_str(), user_name))
         {
             it->totalElapsedTime = p_ypaworld->playerstatus[1].elapsedTime;
             break;
@@ -2406,10 +2261,10 @@ void UserData::sb_0x46a8c0()
     field_D5E = 0;
 
     v6.butID = 1050;
-    v6.field_4 = (inp_joystick == 0) + 1;
+    v6.field_4 = (inp_joystick == false) + 1;
     button_input_button->button_func73(&v6);
 
-    v6.field_4 = (inp_altjoystick == 0) + 1;
+    v6.field_4 = (inp_altjoystick == false) + 1;
     v6.butID = 1061;
     button_input_button->button_func73(&v6);
 
@@ -2433,22 +2288,21 @@ void UserData::sub_457BC0()
     }
 }
 
-int UserData::ypaworld_func158__sub0__sub0__sub0()
+int NC_STACK_ypaworld::ypaworld_func158__sub0__sub0__sub0()
 {
-    char a1a[300];
-    sprintf(a1a, "data:settings/%s/input.def", p_ypaworld->lang_name);
+    std::string file = fmt::sprintf("data:settings/%s/input.def", ypaworld.lang_name);
 
-    scrCallBack a3a;
-    a3a.func = parseSaveInput;
-    a3a.world = (_NC_STACK_ypaworld *)p_YW;
-    a3a.dataForStore = this;
+    ScriptParser::HandlersList hndls
+    {
+        new World::Parsers::InputParser(this)
+    };
 
-    return def_parseFile(a1a, 1, &a3a, 2);
+    return ScriptParser::ParseFile(file, hndls, 0);
 }
 
 void UserData::ypaworld_func158__sub0__sub0()
 {
-    if ( ypaworld_func158__sub0__sub0__sub0() )
+    if ( p_YW->ypaworld_func158__sub0__sub0__sub0() )
     {
         for (int i = 1; i < 46; i++)
         {
@@ -2470,16 +2324,10 @@ void UserData::sub_46C5F0(int a2)
 
         field_FBE = video_listvw.selectedEntry;
 
-        video_mode_node *v6 = (video_mode_node *)video_mode_list.head;
+        VideoModesList::const_iterator it = std::next(video_mode_list.cbegin(), video_listvw.selectedEntry);
 
-        for (int i = 0; i < video_listvw.selectedEntry; i++)
-        {
-            v6 = (video_mode_node *)v6->next;
-        }
-
-        game_default_res = v6->sort_id;
-
-        video_button->button_func71(1156, v6->name);
+        game_default_res = it->sort_id;
+        video_button->button_func71(1156, it->name);
     }
 }
 
@@ -2489,20 +2337,23 @@ void UserData::sub_46A3C0()
     field_13C2 = 0;
     envMode = ENVMODE_TITLE;
 
-    video_mode_node *v2 = (video_mode_node *)video_mode_list.head;
-
+    std::string name;
     int i = 0;
-    while( v2->sort_id != p_ypaworld->game_default_res )
+    for( auto const &nod: video_mode_list)
     {
+        if (nod.sort_id == p_ypaworld->game_default_res )
+        {
+            name = nod.name;
+            break;
+        }
         i++;
-        v2 = (video_mode_node *)v2->next;
     }
 
     video_listvw.selectedEntry = i;
     field_FBE = i;
     game_default_res = p_ypaworld->game_default_res;
 
-    video_button->button_func71(1156, v2->name);
+    video_button->button_func71(1156, name);
 
     video_button->button_func71(1172, win3d_name);
 
@@ -2633,7 +2484,7 @@ void UserData::sub_46C914()
 
         p_YW->ypaworld_func172(&arg172);
 
-        strcpy(user_name, it->name.c_str());
+        user_name = it->name;
         strcpy(usernamedir, it->name.c_str());
 
 
@@ -2674,7 +2525,7 @@ void UserData::sub_46C748()
 {
     if ( field_1612 )
     {
-        if ( strcasecmp(usernamedir, user_name) )
+        if ( StriCmp(usernamedir, user_name) )
         {
 
             ProfileList::iterator it = profiles.begin();
@@ -2816,7 +2667,7 @@ void UserData::GameShellUiHandleInput()
     int v3 = 0;
     char v306[300];
 
-    if ( field_3A->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
+    if ( _input->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
         SFXEngine::SFXe.startSound(&samples1_info, 3);
 
     if ( netSelMode )
@@ -2830,7 +2681,7 @@ void UserData::GameShellUiHandleInput()
         {
             if ( modemAskSession )
             {
-                if ( field_3A->downed_key == UAVK_SPACE )
+                if ( _input->downed_key == UAVK_SPACE )
                 {
                     windd->windd_func320(NULL);
                     p_ypaworld->windp->EnumSessions(NULL);
@@ -2838,7 +2689,7 @@ void UserData::GameShellUiHandleInput()
                 }
             }
         }
-        else if ( p_ypaworld->windp->GetProvType(NULL) != 3 || field_3A->downed_key == UAVK_SPACE )
+        else if ( p_ypaworld->windp->GetProvType(NULL) != 3 || _input->downed_key == UAVK_SPACE )
         {
             p_ypaworld->windp->EnumSessions(NULL);
         }
@@ -2974,7 +2825,7 @@ void UserData::GameShellUiHandleInput()
     {
         if ( !field_3426 )
         {
-            if ( sub_47B388(0, user_name) )
+            if ( sub_47B388(0, user_name.c_str()) )
                 field_3426 = 1;
             else
                 field_3426 = 2;
@@ -2996,7 +2847,7 @@ void UserData::GameShellUiHandleInput()
     if ( field_0x2fb4 )
         v3 = 1;
 
-    NC_STACK_button::ResCode r = confirm_button->button_func69(field_3A);
+    NC_STACK_button::ResCode r = confirm_button->button_func69(_input);
 
     if ( r )
     {
@@ -3051,13 +2902,13 @@ void UserData::GameShellUiHandleInput()
 
     if ( field_0x2fb4 )
     {
-        if ( field_3A->dword8 == (0x80 | 0x18) )
+        if ( _input->dword8 == (0x80 | 0x18) )
         {
             if ( field_0x2fb4 == 3 || field_0x2fb4 == 6 )
                 field_0x1744 = 0;
             sub_46D960();
         }
-        if ( field_3A->downed_key == UAVK_RETURN )
+        if ( _input->downed_key == UAVK_RETURN )
         {
             switch ( field_0x2fb4 )
             {
@@ -3095,17 +2946,17 @@ void UserData::GameShellUiHandleInput()
 
     if ( v3 )
     {
-        field_3A->ClickInf.flag = 0;
-        field_3A->downed_key = 0;
-        field_3A->downed_key_2 = 0;
-        field_3A->chr = 0;
-        field_3A->dword8 = 0;
+        _input->ClickInf.flag = 0;
+        _input->downed_key = 0;
+        _input->downed_key_2 = 0;
+        _input->chr = 0;
+        _input->dword8 = 0;
     }
 
-    if ( envMode == ENVMODE_TITLE && field_3A->dword8 == (0x80 | 0x2B) )
+    if ( envMode == ENVMODE_TITLE && _input->dword8 == (0x80 | 0x2B) )
         p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 750, "help\\start.html");
 
-    r = titel_button->button_func69(field_3A);
+    r = titel_button->button_func69(_input);
 
     if ( r )
     {
@@ -3154,12 +3005,12 @@ void UserData::GameShellUiHandleInput()
         }
     }
 
-    if ( (envMode == ENVMODE_SINGLEPLAY || envMode == ENVMODE_TUTORIAL) && field_3A->dword8 == (0x80 | 0x18) )
+    if ( (envMode == ENVMODE_SINGLEPLAY || envMode == ENVMODE_TUTORIAL) && _input->dword8 == (0x80 | 0x18) )
     {
         if ( sub_4EDCC4(p_ypaworld) )
         {
             sub_4EDCD8(p_ypaworld);
-            if ( p_ypaworld->snd__cdsound & 1 )
+            if ( p_ypaworld->field_73CE & World::PREF_CDMUSICDISABLE )
             {
                 SFXEngine::SFXe.StopMusicTrack();
                 if ( shelltrack )
@@ -3181,7 +3032,7 @@ void UserData::GameShellUiHandleInput()
         }
     }
 
-    r = sub_bar_button->button_func69(field_3A);
+    r = sub_bar_button->button_func69(_input);
 
     if ( r )
     {
@@ -3193,7 +3044,7 @@ void UserData::GameShellUiHandleInput()
             if ( sub_4EDCC4(p_ypaworld) )
             {
                 sub_4EDCD8(p_ypaworld);
-                if ( p_ypaworld->snd__cdsound & 1 )
+                if ( p_ypaworld->field_73CE & World::PREF_CDMUSICDISABLE )
                 {
                     SFXEngine::SFXe.StopMusicTrack();
                     if ( shelltrack )
@@ -3266,25 +3117,25 @@ void UserData::GameShellUiHandleInput()
 
     if ( envMode == ENVMODE_INPUT )
     {
-        if ( field_3A->dword8 )
+        if ( _input->dword8 )
         {
-            if ( !field_D52 && field_3A->dword8 == (0x80 | 0x2B) )
+            if ( !field_D52 && _input->dword8 == (0x80 | 0x2B) )
                 p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 759, "help\\19.html");
         }
 
-        if ( field_3A->downed_key )
+        if ( _input->downed_key )
         {
             if ( field_D52 )
             {
                 input_listview.listFlags &= ~GuiList::GLIST_FLAG_KEYB_INPUT;
 
-                if ( keySS[ (int)field_3A->downed_key ].short_name )
+                if ( !Input::KeysInfo[ (int)_input->downed_key ]._name.empty() )
                 {
                     if ( field_D3A )
                     {
-                        keyConfig[field_D36].KeyCode = field_3A->downed_key;
+                        keyConfig[field_D36].KeyCode = _input->downed_key;
 
-                        if ( keyConfig[field_D36].inp_type == 2 )
+                        if ( keyConfig[field_D36].inp_type == World::KEYC_TYPE_SLIDER )
                             field_D3A = 0;
 
                         field_D52 = 0;
@@ -3292,30 +3143,30 @@ void UserData::GameShellUiHandleInput()
                     }
                     else
                     {
-                        keyConfig[field_D36].slider_neg = field_3A->downed_key;
+                        keyConfig[field_D36].slider_neg = _input->downed_key;
                         keyConfig[field_D36].field_10 &= 0xFFFFFFFD;
                         field_D3A = 1;
                     }
                 }
-                field_3A->downed_key = 0;
+                _input->downed_key = 0;
             }
             else
             {
                 input_listview.listFlags |= GuiList::GLIST_FLAG_KEYB_INPUT;
 
-                if ( field_3A->downed_key == UAVK_BACK  || field_3A->downed_key == UAVK_DELETE)
+                if ( _input->downed_key == UAVK_BACK  || _input->downed_key == UAVK_DELETE)
                 {
-                    if (keyConfig[field_D36].inp_type != 2)
+                    if (keyConfig[field_D36].inp_type != World::KEYC_TYPE_SLIDER)
                         keyConfig[field_D36].KeyCode = 0;
                 }
-                else if ( field_3A->downed_key == UAVK_RETURN )
+                else if ( _input->downed_key == UAVK_RETURN )
                 {
                     keyConfig[field_D36].field_10 = 3;
                     field_D52 = 1;
-                    if ( keyConfig[field_D36].inp_type == 2 )
+                    if ( keyConfig[field_D36].inp_type == World::KEYC_TYPE_SLIDER )
                         field_D3A = 0;
                 }
-                else if ( field_3A->downed_key == UAVK_ESCAPE )
+                else if ( _input->downed_key == UAVK_ESCAPE )
                 {
                     sb_0x46a8c0();
                 }
@@ -3323,7 +3174,7 @@ void UserData::GameShellUiHandleInput()
         }
     }
 
-    if ( keyConfig[field_D36].inp_type == 2 )
+    if ( keyConfig[field_D36].inp_type == World::KEYC_TYPE_SLIDER )
     {
         v410.field_4 = 0;
         v410.butID = 1056;
@@ -3336,7 +3187,7 @@ void UserData::GameShellUiHandleInput()
         button_input_button->button_func66(&v410);
     }
 
-    r = button_input_button->button_func69(field_3A);
+    r = button_input_button->button_func69(_input);
 
     if ( r )
     {
@@ -3359,18 +3210,18 @@ void UserData::GameShellUiHandleInput()
             {
                 inp_joystick = field_D42;
                 if ( field_D42 )
-                    p_ypaworld->field_73CE &= 0xFB;
+                    p_ypaworld->field_73CE &= ~World::PREF_JOYDISABLE;
                 else
-                    p_ypaworld->field_73CE |= 4;
+                    p_ypaworld->field_73CE |= World::PREF_JOYDISABLE;
             }
 
             if ( field_D5E & 4 )
             {
                 inp_altjoystick = field_D4A;
                 if ( field_D4A )
-                    p_ypaworld->snd__cdsound |= 2;
+                    p_ypaworld->field_73CE |= World::PREF_ALTJOYSTICK;
                 else
-                    p_ypaworld->snd__cdsound &= 0xFD;
+                    p_ypaworld->field_73CE &= ~World::PREF_ALTJOYSTICK;
             }
 
             if ( field_D5E & 2 )
@@ -3433,7 +3284,7 @@ void UserData::GameShellUiHandleInput()
 
     if ( envMode == ENVMODE_INPUT )
     {
-        input_listview.InputHandle(p_ypaworld, field_3A);
+        input_listview.InputHandle(p_ypaworld, _input);
 
         field_D36 = input_listview.selectedEntry + 1;
 
@@ -3448,7 +3299,7 @@ void UserData::GameShellUiHandleInput()
 
     if ( envMode == ENVMODE_SETTINGS )
     {
-        if ( field_3A->downed_key == UAVK_RETURN )
+        if ( _input->downed_key == UAVK_RETURN )
         {
             if ( video_listvw.IsClosed() && d3d_listvw.IsClosed() )
             {
@@ -3482,17 +3333,17 @@ void UserData::GameShellUiHandleInput()
             }
 
         }
-        else if ( field_3A->downed_key == UAVK_ESCAPE )
+        else if ( _input->downed_key == UAVK_ESCAPE )
         {
             sub_46A3C0();
             envMode = ENVMODE_TITLE;
         }
-        if ( field_3A->dword8 == (0x80 | 0x2B) )
+        if ( _input->dword8 == (0x80 | 0x2B) )
             p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 760, "help\\110.html");
     }
 
 
-    r = video_button->button_func69(field_3A);
+    r = video_button->button_func69(_input);
 
     if ( r )
     {
@@ -3504,7 +3355,7 @@ void UserData::GameShellUiHandleInput()
             p_YW->GuiWinOpen( &video_listvw );
             SFXEngine::SFXe.startSound(&samples1_info, 7);
 
-            field_3A->ClickInf.flag &= ~ClickBoxInf::FLAG_LM_DOWN;
+            _input->ClickInf.flag &= ~ClickBoxInf::FLAG_LM_DOWN;
         }
         else if ( r.code == 1101 )
         {
@@ -3629,7 +3480,7 @@ void UserData::GameShellUiHandleInput()
             p_YW->GuiWinOpen( &d3d_listvw );
             SFXEngine::SFXe.startSound(&samples1_info, 7);
 
-            field_3A->ClickInf.flag &= ~ClickBoxInf::FLAG_LM_DOWN;
+            _input->ClickInf.flag &= ~ClickBoxInf::FLAG_LM_DOWN;
         }
         else if ( r.code == 1135 )
         {
@@ -3641,7 +3492,7 @@ void UserData::GameShellUiHandleInput()
 
     if ( envMode == ENVMODE_SETTINGS && video_listvw.IsOpen() )
     {
-        video_listvw.InputHandle(p_ypaworld, field_3A);
+        video_listvw.InputHandle(p_ypaworld, _input);
 
         if ( video_listvw.listFlags & GuiList::GLIST_FLAG_SEL_DONE )
         {
@@ -3667,7 +3518,7 @@ void UserData::GameShellUiHandleInput()
 
     if ( envMode == ENVMODE_SETTINGS && d3d_listvw.IsOpen() )
     {
-        d3d_listvw.InputHandle(p_ypaworld, field_3A);
+        d3d_listvw.InputHandle(p_ypaworld, _input);
 
         if ( d3d_listvw.listFlags & GuiList::GLIST_FLAG_SEL_DONE )
         {
@@ -3691,14 +3542,12 @@ void UserData::GameShellUiHandleInput()
         d3d_listvw.Formate(p_ypaworld);
     }
 
-
     NC_STACK_button::Slider *v67 = video_button->button_func74(1159);
     sprintf(v306, "%d", v67->value);
 
     video_button->button_func71(1158, v306);
 
     field_0x13a4 = v67->value;
-
 
     v67 = video_button->button_func74(1152);
     sprintf(v306, "%d", v67->value);
@@ -3721,11 +3570,11 @@ void UserData::GameShellUiHandleInput()
 
     if ( envMode == ENVMODE_SELPLAYER ) //Load/Save
     {
-        if ( (field_3A->downed_key > 0 && field_3A->downed_key < 0x81) || (field_3A->downed_key >= 0xA0 && field_3A->downed_key < 0xFF) || field_3A->chr )
+        if ( (_input->downed_key > 0 && _input->downed_key < 0x81) || (_input->downed_key >= 0xA0 && _input->downed_key < 0xFF) || _input->chr )
         {
             if ( field_0x1744 )
             {
-                if ( field_3A->downed_key == UAVK_BACK )
+                if ( _input->downed_key == UAVK_BACK )
                 {
                     if ( usernamedir_len > 0 && p_ypaworld->str17_NOT_FALSE == 0 )
                     {
@@ -3737,7 +3586,7 @@ void UserData::GameShellUiHandleInput()
                         usernamedir_len--;
                     }
                 }
-                else if ( field_3A->downed_key == UAVK_RETURN )
+                else if ( _input->downed_key == UAVK_RETURN )
                 {
                     switch ( field_0x1744 )
                     {
@@ -3779,21 +3628,21 @@ void UserData::GameShellUiHandleInput()
                         break;
                     }
                 }
-                else if ( field_3A->downed_key == UAVK_ESCAPE )
+                else if ( _input->downed_key == UAVK_ESCAPE )
                 {
                     field_0x1744 = 0;
                 }
-                else if ( field_3A->downed_key == UAVK_LEFT )
+                else if ( _input->downed_key == UAVK_LEFT )
                 {
                     if ( usernamedir_len > 0 && p_ypaworld->str17_NOT_FALSE == 0 )
                         usernamedir_len--;
                 }
-                else if ( field_3A->downed_key == UAVK_RIGHT )
+                else if ( _input->downed_key == UAVK_RIGHT )
                 {
                     if ( usernamedir_len < (int)strlen(usernamedir) && p_ypaworld->str17_NOT_FALSE == 0 )
                         usernamedir_len++;
                 }
-                else if ( field_3A->downed_key == UAVK_DELETE && usernamedir_len < (int)strlen(usernamedir) && p_ypaworld->str17_NOT_FALSE == 0 )
+                else if ( _input->downed_key == UAVK_DELETE && usernamedir_len < (int)strlen(usernamedir) && p_ypaworld->str17_NOT_FALSE == 0 )
                 {
                     int ln = strlen(usernamedir);
                     for (int i = usernamedir_len; i < ln - 1; i++)
@@ -3804,12 +3653,12 @@ void UserData::GameShellUiHandleInput()
 
                 if ( strlen(usernamedir) < 32 )
                 {
-                    if ( field_3A->chr > 0x1F && p_ypaworld->str17_NOT_FALSE == 0 )
+                    if ( _input->chr > 0x1F && p_ypaworld->str17_NOT_FALSE == 0 )
                     {
                         char v337[6];
                         char a2a[6];
 
-                        sprintf(v337, "%c", field_3A->chr);
+                        sprintf(v337, "%c", _input->chr);
 
                         strcpy(a2a, v337);
 
@@ -3830,10 +3679,10 @@ void UserData::GameShellUiHandleInput()
             }
             else
             {
-                if ( field_3A->downed_key == UAVK_ESCAPE )
+                if ( _input->downed_key == UAVK_ESCAPE )
                     sub_46A7F8();
 
-                if ( field_3A->dword8 == (0x80 | 0x2B) )
+                if ( _input->dword8 == (0x80 | 0x2B) )
                     p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 758, "help\\18.html");
 
             }
@@ -3857,7 +3706,7 @@ void UserData::GameShellUiHandleInput()
         v108++;
     }
 
-    r = disk_button->button_func69(field_3A);
+    r = disk_button->button_func69(_input);
 
     if ( r )
     {
@@ -4055,9 +3904,9 @@ void UserData::GameShellUiHandleInput()
 
     if ( envMode == ENVMODE_SELPLAYER ) // Multiplayer
     {
-        disk_listvw.InputHandle(p_ypaworld, field_3A);
+        disk_listvw.InputHandle(p_ypaworld, _input);
 
-        if ( disk_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT || field_3A->downed_key == UAVK_UP || field_3A->downed_key == UAVK_DOWN )
+        if ( disk_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT || _input->downed_key == UAVK_UP || _input->downed_key == UAVK_DOWN )
         {
             field_1612 = disk_listvw.selectedEntry + 1;
 
@@ -4116,7 +3965,7 @@ void UserData::GameShellUiHandleInput()
             v410.field_4 = 0;
             v410.butID = 1105;
 
-            if ( !field_1612 || !strcasecmp(usernamedir, user_name) )
+            if ( !field_1612 || !StriCmp(usernamedir, user_name) )
                 disk_button->button_func67(&v410);
             else
                 disk_button->button_func66(&v410);
@@ -4170,7 +4019,7 @@ void UserData::GameShellUiHandleInput()
         disk_button->button_func67(&v410);
 
         v410.butID = 1102;
-        if ( !strcasecmp(usernamedir, user_name) )
+        if ( !StriCmp(usernamedir, user_name) )
             disk_button->button_func67(&v410);
         else
             disk_button->button_func66(&v410);
@@ -4183,21 +4032,21 @@ void UserData::GameShellUiHandleInput()
     if ( envMode == ENVMODE_SELLOCALE )
     {
 
-        if ( field_3A->downed_key == UAVK_RETURN )
+        if ( _input->downed_key == UAVK_RETURN )
         {
             sub_46B0E0();
         }
-        else if ( field_3A->downed_key == UAVK_ESCAPE )
+        else if ( _input->downed_key == UAVK_ESCAPE )
         {
             sub_46AA0C();
         }
 
-        if ( field_3A->dword8 == (0x80 | 0x2B) )
+        if ( _input->dword8 == (0x80 | 0x2B) )
             p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 761, "help\\111.html");
     }
 
 
-    r = locale_button->button_func69(field_3A);
+    r = locale_button->button_func69(_input);
 
     if (r)
     {
@@ -4224,7 +4073,7 @@ void UserData::GameShellUiHandleInput()
 
     if ( envMode == ENVMODE_SELLOCALE ) //Locale
     {
-        local_listvw.InputHandle(p_ypaworld, field_3A);
+        local_listvw.InputHandle(p_ypaworld, _input);
 
         if ( local_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT )
         {
@@ -4238,7 +4087,7 @@ void UserData::GameShellUiHandleInput()
         local_listvw.Formate(p_ypaworld);
     }
 
-    r = about_button->button_func69(field_3A);
+    r = about_button->button_func69(_input);
 
     if ( r )
     {
@@ -4252,7 +4101,7 @@ void UserData::GameShellUiHandleInput()
 
     if ( envMode == ENVMODE_ABOUT )
     {
-        if ( field_3A->downed_key == UAVK_RETURN || field_3A->downed_key == UAVK_ESCAPE )
+        if ( _input->downed_key == UAVK_RETURN || _input->downed_key == UAVK_ESCAPE )
         {
             envMode = ENVMODE_TITLE;
 
@@ -4273,53 +4122,53 @@ void UserData::GameShellUiHandleInput()
             switch ( field_19DA )
             {
             case 0:
-                if ( sub_449678(p_ypaworld, field_3A, 'A') ) // VK_A
+                if ( sub_449678(p_ypaworld, _input, 'A') ) // VK_A
                 {
                     field_19D6 = glblTime;
                     field_19DA++;
                 }
                 else
                 {
-                    if ( field_3A->downed_key )
+                    if ( _input->downed_key )
                         field_19DA = 0;
                 }
                 break;
 
             case 1:
-                if ( sub_449678(p_ypaworld, field_3A, 'M') )
+                if ( sub_449678(p_ypaworld, _input, 'M') )
                 {
                     field_19D6 = glblTime;
                     field_19DA++;
                 }
                 else
                 {
-                    if ( field_3A->downed_key )
+                    if ( _input->downed_key )
                         field_19DA = 0;
                 }
                 break;
 
             case 2:
-                if ( sub_449678(p_ypaworld, field_3A, 'O') )
+                if ( sub_449678(p_ypaworld, _input, 'O') )
                 {
                     field_19D6 = glblTime;
                     field_19DA++;
                 }
                 else
                 {
-                    if ( field_3A->downed_key )
+                    if ( _input->downed_key )
                         field_19DA = 0;
                 }
                 break;
 
             case 3:
-                if ( sub_449678(p_ypaworld, field_3A, 'K') )
+                if ( sub_449678(p_ypaworld, _input, 'K') )
                 {
                     ypaworld_func158__sub0__sub4();
                     SFXEngine::SFXe.startSound(&samples2_info, 3);
                 }
                 else
                 {
-                    if ( field_3A->downed_key )
+                    if ( _input->downed_key )
                         field_19DA = 0;
                 }
                 break;
@@ -4374,7 +4223,7 @@ void UserData::GameShellUiHandleInput()
 
     windp_arg79 v368;
 
-    r = network_button->button_func69(field_3A);
+    r = network_button->button_func69(_input);
 
     if ( r )
     {
@@ -4474,7 +4323,7 @@ void UserData::GameShellUiHandleInput()
             {
                 if ( netName[0] )
                 {
-                    strcpy(callSIGN, netName);
+                    callSIGN = netName;
 
                     netSelMode = 1;
                     netSel = -1;
@@ -4564,7 +4413,7 @@ void UserData::GameShellUiHandleInput()
             {
                 v368.mode = 0;
                 v368.ID = 0;
-                while ( p_ypaworld->windp->GetPlayerData(&v368) && strcasecmp(v368.name, callSIGN) )
+                while ( p_ypaworld->windp->GetPlayerData(&v368) && StriCmp(v368.name, callSIGN) )
                     v368.ID++;
 
                 yw_arg181 v353;
@@ -4589,7 +4438,7 @@ void UserData::GameShellUiHandleInput()
                 v387.receiverFlags = 2;
                 v387.receiverID = 0;
                 v387.senderFlags = 1;
-                v387.senderID = callSIGN;
+                v387.senderID = callSIGN.c_str();
                 v387.guarant = 1;
 
                 p_ypaworld->windp->FlushBuffer(v387);
@@ -4598,7 +4447,7 @@ void UserData::GameShellUiHandleInput()
             {
                 v368.mode = 0;
                 v368.ID = 0;
-                while ( p_ypaworld->windp->GetPlayerData(&v368) && strcasecmp(v368.name, callSIGN) )
+                while ( p_ypaworld->windp->GetPlayerData(&v368) && StriCmp(v368.name, callSIGN) )
                     v368.ID++;
 
 
@@ -4624,7 +4473,7 @@ void UserData::GameShellUiHandleInput()
                 v387.receiverFlags = 2;
                 v387.receiverID = 0;
                 v387.senderFlags = 1;
-                v387.senderID = callSIGN;
+                v387.senderID = callSIGN.c_str();
                 v387.guarant = 1;
 
                 p_ypaworld->windp->FlushBuffer(v387);
@@ -4665,12 +4514,12 @@ void UserData::GameShellUiHandleInput()
                     v346.dataSize = sizeof(msgMsg);
                     v346.recvFlags = 2;
                     v346.recvID = 0;
-                    v346.senderID = callSIGN;
+                    v346.senderID = callSIGN.c_str();
                     v346.garant = 1;
 
                     p_ypaworld->self_full->ypaworld_func181(&v346);
 
-                    sub_4D0C24(p_ypaworld, callSIGN, msgMsg.message);
+                    sub_4D0C24(p_ypaworld, callSIGN.c_str(), msgMsg.message);
 
                     netName[0] = 0;
                     netNameCurPos = 0;
@@ -4696,9 +4545,9 @@ void UserData::GameShellUiHandleInput()
 
         network_listvw.y = field_0x1c30 + a4;
 
-        network_listvw.InputHandle(p_ypaworld, field_3A);
+        network_listvw.InputHandle(p_ypaworld, _input);
 
-        if ( (network_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT) || field_3A->downed_key == UAVK_UP || field_3A->downed_key == UAVK_DOWN )
+        if ( (network_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT) || _input->downed_key == UAVK_UP || _input->downed_key == UAVK_DOWN )
         {
             netSel = network_listvw.selectedEntry;
 
@@ -4743,7 +4592,7 @@ void UserData::GameShellUiHandleInput()
 
     if ( envMode == ENVMODE_NETPLAY )
     {
-        if ( field_3A->downed_key || field_3A->chr || field_3A->dword8 )
+        if ( _input->downed_key || _input->chr || _input->dword8 )
         {
             if ( nInputMode )
             {
@@ -4756,12 +4605,12 @@ void UserData::GameShellUiHandleInput()
 
                 if ( strlen(netName) < v233 )
                 {
-                    if ( field_3A->chr > 0x1F && p_ypaworld->str17_NOT_FALSE == 0 )
+                    if ( _input->chr > 0x1F && p_ypaworld->str17_NOT_FALSE == 0 )
                     {
                         char v354[12];
                         char v345[12];
 
-                        sprintf(v354, "%c", field_3A->chr);
+                        sprintf(v354, "%c", _input->chr);
 
                         strcpy(v345, v354);
 
@@ -4781,7 +4630,7 @@ void UserData::GameShellUiHandleInput()
                     }
                 }
 
-                if ( field_3A->downed_key == UAVK_BACK && netNameCurPos > 0 && (p_ypaworld->str17_NOT_FALSE == 0) )
+                if ( _input->downed_key == UAVK_BACK && netNameCurPos > 0 && (p_ypaworld->str17_NOT_FALSE == 0) )
                 {
                     int ln = strlen(netName);
 
@@ -4792,17 +4641,17 @@ void UserData::GameShellUiHandleInput()
 
                     netNameCurPos--;
                 }
-                else if ( field_3A->downed_key == UAVK_LEFT )
+                else if ( _input->downed_key == UAVK_LEFT )
                 {
                     if ( netNameCurPos > 0 && (p_ypaworld->str17_NOT_FALSE == 0) )
                         netNameCurPos--;
                 }
-                else if ( field_3A->downed_key == UAVK_RIGHT )
+                else if ( _input->downed_key == UAVK_RIGHT )
                 {
                     if ( netNameCurPos < (int32_t)strlen(netName) && (p_ypaworld->str17_NOT_FALSE == 0) )
                         netNameCurPos++;
                 }
-                else if ( field_3A->downed_key == UAVK_DELETE && netNameCurPos < (int32_t)strlen(netName) && (p_ypaworld->str17_NOT_FALSE == 0) )
+                else if ( _input->downed_key == UAVK_DELETE && netNameCurPos < (int32_t)strlen(netName) && (p_ypaworld->str17_NOT_FALSE == 0) )
                 {
                     int ln = strlen(netName);
 
@@ -4813,7 +4662,7 @@ void UserData::GameShellUiHandleInput()
                 }
             }
 
-            if ( field_3A->downed_key == UAVK_RETURN )
+            if ( _input->downed_key == UAVK_RETURN )
             {
                 switch ( netSelMode )
                 {
@@ -4838,7 +4687,7 @@ void UserData::GameShellUiHandleInput()
                 case 2:
                     if ( netName[0] )
                     {
-                        strcpy(callSIGN, netName);
+                        callSIGN = netName;
 
                         netSelMode = 1;
                         netSel = -1;
@@ -4870,7 +4719,7 @@ void UserData::GameShellUiHandleInput()
 
                         p_ypaworld->self_full->ypaworld_func181(&v325);
 
-                        sub_4D0C24(p_ypaworld, callSIGN, msgMsg.message);
+                        sub_4D0C24(p_ypaworld, callSIGN.c_str(), msgMsg.message);
                         netName[0] = 0;
                         netNameCurPos = 0;
 
@@ -4883,12 +4732,12 @@ void UserData::GameShellUiHandleInput()
                     break;
                 }
             }
-            else if ( field_3A->downed_key == UAVK_ESCAPE )
+            else if ( _input->downed_key == UAVK_ESCAPE )
             {
                 sub_46D698();
             }
 
-            if ( field_3A->dword8 == (0x80 | 0x2B) && !nInputMode )
+            if ( _input->dword8 == (0x80 | 0x2B) && !nInputMode )
             {
                 switch ( netSelMode )
                 {
@@ -4915,7 +4764,7 @@ void UserData::GameShellUiHandleInput()
             if ( netSel != -1 )
                 network_listvw.PosOnSelected(netSel);
 
-            field_3A->downed_key = 0;
+            _input->downed_key = 0;
         }
     }
 
@@ -4963,7 +4812,6 @@ void UserData::GameShellUiHandleInput()
 
     v410.butID = 1227;
     network_button->button_func67(&v410);
-
 
     network_button->button_func71(1201, get_lang_string(ypaworld__string_pointers, 2, "OK"));
 
@@ -5557,4 +5405,113 @@ void UserData::GameShellUiHandleInput()
         break;
     }
 
+}
+
+bool UserData::LoadSample(int block, int sampleID, const std::string &file)
+{
+    if (block < 0 || block >= 2)
+        return false;
+
+    std::string rsrc = get_prefix_replacement("rsrc");
+
+    set_prefix_replacement("rsrc", "data:");
+
+    IDVList init_vals;
+    init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, file.c_str());
+
+    NC_STACK_wav *wav = Nucleus::CInit<NC_STACK_wav>(init_vals);
+    if ( !wav )
+        return false;
+
+    if (block == 0)
+    {
+        samples1[sampleID] = wav;
+        samples1_info.samples_data[sampleID].psampl = wav->getSMPL_pSample();
+
+        if (sampleID == World::SOUND_ID_VOLUME ||
+            sampleID == World::SOUND_ID_SLIDER ||
+            sampleID == World::SOUND_ID_TEXTAPPEAR ||
+            sampleID == World::SOUND_ID_TIMERCOUNT)
+            samples1_info.samples_data[sampleID].flags |= 1;
+
+    }
+    else if (block == 1)
+    {
+        samples2[sampleID] = wav;
+        samples2_info.samples_data[sampleID].psampl = wav->getSMPL_pSample();
+    }
+
+    set_prefix_replacement("rsrc", rsrc);
+    return true;
+}
+
+bool UserData::ShellSoundsLoad()
+{
+    ScriptParser::HandlersList hndls {
+        new World::Parsers::ShellSoundParser(this),
+        new World::Parsers::ShellTracksParser(this),
+    };
+
+    return ScriptParser::ParseFile("env:world.ini", hndls, 0) || ScriptParser::ParseFile("data:world.ini", hndls, 0);
+}
+
+int UserData::KeyIndexFromConfig(uint32_t type, uint32_t index)
+{
+    static const std::array<int, 5> BUTTON
+    {
+        World::KEYC_FIRE,       World::KEYC_CAMFIRE,
+        World::KEYC_GUN,        World::KEYC_BRAKE,
+        World::KEYC_WAPOINT
+    };
+
+    static const std::array<int, 6> SLIDER
+    {
+        World::KEYC_FLY_DIR,    World::KEYC_FLY_HEIGHT,
+        World::KEYC_FLY_SPEED,  World::KEYC_DRIVE_DIR,
+        World::KEYC_DRIVE_SPEED,World::KEYC_GUN_HEIGHT,
+    };
+
+    static const std::array<int, 47> HOTKEY
+    {
+        World::KEYC_ORDER,      World::KEYC_ATTACK,
+        World::KEYC_NEW,        World::KEYC_ADD,
+        World::KEYC_CONTROL,    -1,
+        -1,                     World::KEYC_AUTOPILOT,
+        World::KEYC_MAP,        World::KEYC_SQ_MANAGE,
+
+        // 10
+        World::KEYC_LANDLAYER,  World::KEYC_OWNER,
+        World::KEYC_HEIGHT,     -1,
+        World::KEYC_LOCKVIEW,   -1,
+        World::KEYC_ZOOMIN,     World::KEYC_ZOOMOUT,
+        World::KEYC_MINIMAP,    -1,
+
+        // 20
+        World::KEYC_NEXT_COMM,  World::KEYC_TO_HOST,
+        World::KEYC_NEXT_UNIT,  World::KEYC_TO_COMM,
+        World::KEYC_QUIT,       World::KEYC_HUD,
+        -1,                     World::KEYC_LOG_WND,
+        -1,                     -1,
+
+        // 30
+        -1,                     World::KEYC_LAST_MSG,
+        World::KEYC_PAUSE,      -1,
+        -1,                     -1,
+        -1,                     World::KEYC_TO_ALL,
+        World::KEYC_TO_HOST,    World::KEYC_TO_COMM,
+
+        // 40
+        World::KEYC_AGGR_3,     World::KEYC_AGGR_4,
+        World::KEYC_AGGR_5,     World::KEYC_HELP,
+        World::KEYC_LAST_SEAT,  World::KEYC_SET_COMM,
+        World::KEYC_ANALYZER
+    };
+
+    if ( type == World::KEYC_TYPE_BUTTON && index < BUTTON.size())
+        return BUTTON[index];
+    else if ( type == World::KEYC_TYPE_SLIDER && index < SLIDER.size() )
+        return SLIDER[index];
+    else if ( type == World::KEYC_TYPE_HOTKEY && index < HOTKEY.size() )
+        return HOTKEY[index];
+    return -1;
 }

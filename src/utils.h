@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <string.h>
+#include <regex>
 
 #define C_2PI		6.28318530717958647693
 #define C_PI		3.14159265358979323846

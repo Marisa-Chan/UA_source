@@ -116,7 +116,7 @@ struct __NC_STACK_yparobo
     cellArea *pcell;
 
     int field_309;
-    roboGun guns[8];
+    std::array<roboGun, 8> guns;
 
     int field_4F5; //??
     int field_4F9; //??
@@ -135,6 +135,13 @@ struct __NC_STACK_yparobo
     robo_t1 field_525[16];
     int fe_time;
     int field_5A9;
+
+    __NC_STACK_yparobo()
+    {
+        clear();
+    }
+
+    void clear();
 };
 
 struct robo_arg128
@@ -224,7 +231,7 @@ public:
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_yparobo() {
-        memset(&stack__yparobo, 0, sizeof(stack__yparobo));
+        stack__yparobo.clear();
     };
     virtual ~NC_STACK_yparobo() {};
 

@@ -2,7 +2,6 @@
 #include <string.h>
 
 #include "includes.h"
-#include "def_parser.h"
 #include "yw.h"
 #include "yw_internal.h"
 #include "lstvw.h"
@@ -238,8 +237,7 @@ int sub_4EBBA8(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, float xpos, float ypos,
     brobj->field_0 = a9;
 
     brobj->object_id = vehicle_id;
-    memset(brobj->title, 0, 128);
-    strcpy(brobj->title, title);
+    brobj->title = title;
 
     if ( a11 )
     {
@@ -251,8 +249,7 @@ int sub_4EBBA8(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, float xpos, float ypos,
 
         brtp2->field_8 = a9;
         brtp2->vehicle_id = vehicle_id;
-        memset(brtp2->title, 0, 128);
-        strcpy(brtp2->title, title);
+        brtp2->title = title;
 
         brf->tp2_count++;
 
@@ -275,7 +272,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub7(_NC_STACK_ypaworld *yw, struC5 *in
     else if ( brf->activeElement )
     {
         mapRobo *robo = brf->map_prototype.mapRobos;
-        const char *v6 = get_lang_string(yw->string_pointers_p2, robo[0].vehicle + 1200, yw->VhclProtos[ robo[0].vehicle ].name);
+        const char *v6 = get_lang_string(yw->string_pointers_p2, robo[0].vehicle + 1200, yw->VhclProtos[ robo[0].vehicle ].name.c_str());
 
         brf->activeElement = 0;
         sub_4EBBA8(yw, brf, robo[0].pos_x, robo[0].pos_z, 25, v6, 26, robo[0].owner + 128, 2, robo[0].vehicle, brf->field_2F84);
@@ -463,7 +460,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub13(_NC_STACK_ypaworld *yw, struC5 *i
             }
         }
 
-        const char *v11 = get_lang_string(yw->string_pointers_p2, v9->vehicle + 1200, yw->VhclProtos[ v9->vehicle ].name);
+        const char *v11 = get_lang_string(yw->string_pointers_p2, v9->vehicle + 1200, yw->VhclProtos[ v9->vehicle ].name.c_str());
         sub_4EBBA8(yw, brf, v9->pos_x, v9->pos_z, 25, v11, 26, v9->owner + 128, 2, v9->vehicle, brf->field_2F84);
     }
 }
@@ -519,7 +516,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub15(_NC_STACK_ypaworld *yw, struC5 *i
 
         if ( v9 )
         {
-            const char *v11 = get_lang_string(yw->string_pointers_p2, v9->vehicle + 1200, yw->VhclProtos[v9->vehicle].name);
+            const char *v11 = get_lang_string(yw->string_pointers_p2, v9->vehicle + 1200, yw->VhclProtos[v9->vehicle].name.c_str());
 
             char a1[128];
             sprintf(a1, "%d %s", v9->num, v11);
@@ -583,7 +580,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub17(_NC_STACK_ypaworld *yw, struC5 *i
 
         if ( v9 )
         {
-            const char *v11 = get_lang_string(yw->string_pointers_p2, v9->vehicle + 1200, yw->VhclProtos[v9->vehicle].name);
+            const char *v11 = get_lang_string(yw->string_pointers_p2, v9->vehicle + 1200, yw->VhclProtos[v9->vehicle].name.c_str());
 
             char title[128];
             sprintf(title, "%d %s", v9->num, v11);
@@ -697,7 +694,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub21(_NC_STACK_ypaworld *yw, struC5 *i
         {
             brf_t2 *v16 = &brf->tp2[v20];
             brf->mouseSelectedElement = v20;
-            brf->field_2F90 = sub_4EBBA8(yw, brf, v16->xpos, v16->ypos, v16->field_E, v16->title, v16->field_C, v16->field_D, v16->field_8, v16->vehicle_id, 0);
+            brf->field_2F90 = sub_4EBBA8(yw, brf, v16->xpos, v16->ypos, v16->field_E, v16->title.c_str(), v16->field_C, v16->field_D, v16->field_8, v16->vehicle_id, 0);
         }
     }
 }
@@ -708,51 +705,43 @@ void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
 
     if ( brf->field_2E80 > 0 )
     {
-        const char *ln = brf->LEVEL_BRIEF_INFO;
-
-        int v5 = 1;
-
-        while( 1 )
+        int numLines = 1;
+		size_t pos = brf->LEVEL_BRIEF_INFO.find_first_of("\n\r");
+        while( pos != std::string::npos )
         {
-            ln = strpbrk(ln, "\n\r");
-            if (!ln)
-                break;
-
-            ln++;
-            v5++;
+        	pos = brf->LEVEL_BRIEF_INFO.find_first_of("\n\r", pos + 1);
+            numLines++;
         }
 
         int v34 = brf->currTime - brf->field_2E80;
         int v33 = 100 * v34;
 
-        stru_5C91D0.numEntries = v5;
+        stru_5C91D0.numEntries = numLines;
 
         v3 = stru_5C91D0.ItemsPreLayout(yw, v3, 16, "   ");
 
         int v37 = 0;
 
-        ln = brf->LEVEL_BRIEF_INFO;
+        pos = 0;
 
         while ( 1 )
         {
-            int en = 0;
+            bool endline = false;
 
-            char a4[512];
+            size_t stpos = pos;
+            pos = brf->LEVEL_BRIEF_INFO.find_first_of("\n\r", stpos);
 
-            const char *epos = strpbrk(ln, "\n\r");
+            std::string line;
 
-            if (epos)
+            if (pos == std::string::npos)
             {
-                int len = epos - ln;
-                memcpy(a4, ln, len);
-                a4[len] = 0;
-
-                ln = epos + 1;
+                endline = true;
+                line = brf->LEVEL_BRIEF_INFO.substr(stpos);
             }
             else
             {
-                en = 1;
-                strcpy(a4, ln);
+                line = brf->LEVEL_BRIEF_INFO.substr(stpos, pos - stpos);
+                pos++;
             }
 
             int v12 = 0;
@@ -782,14 +771,14 @@ void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
             {
                 FontUA::set_txtColor(&v3, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
 
-                v3 = FontUA::TextRelWidthItem(yw->tiles[16], v3, a4, v12, 4);
+                v3 = FontUA::TextRelWidthItem(yw->tiles[16], v3, line.c_str(), v12, 4);
 
                 FontUA::next_line(&v3);
             }
 
             v37++;
 
-            if ( en )
+            if ( endline )
             {
                 v3 = stru_5C91D0.ItemsPostLayout(yw, v3, 16, "   ");
                 break;
@@ -911,7 +900,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub0(_NC_STACK_ypaworld *yw)
     FontUA::set_center_ypos(&pos, 4 + v37);
     FontUA::set_txtColor(&pos, yw->iniColors[66].r, yw->iniColors[66].g, yw->iniColors[66].b);
 
-    const char *v7 = get_lang_string(yw->string_pointers_p2, yw->field_2d90->levelID + 1800, yw->field_2d90->map_name);
+    const char *v7 = get_lang_string(yw->string_pointers_p2, yw->field_2d90->levelID + 1800, yw->field_2d90->map_name.c_str());
 
     pos = FontUA::FormateCenteredSkipableItem(yw->tiles[16], pos, v7, v34 - v35);
     FontUA::set_end(&pos);
@@ -1001,7 +990,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
                 FontUA::set_center_ypos(&pos, ypos);
                 FontUA::set_txtColor(&pos, yw->iniColors[66].r, yw->iniColors[66].g, yw->iniColors[66].b);
 
-                pos = FontUA::TextRelWidthItem(yw->tiles[16], pos, br_obj->title, v13, 16);
+                pos = FontUA::TextRelWidthItem(yw->tiles[16], pos, br_obj->title.c_str(), v13, 16);
 
                 FontUA::set_end(&pos);
 
@@ -1021,7 +1010,7 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
 
     if ( yw->brief.briefStage == 28 )
     {
-        sub_4491A0(yw, yw->brief.movie);
+        yw->self_full->sub_4491A0(yw->brief.movie);
         brf->briefStage = 4;
     }
     else
@@ -1599,7 +1588,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(_NC_STACK_ypaworld *yw, big_
     int v13 = (yw->screen_width / 2) * 0.03125;
     int v16 = (yw->screen_height / 2) * -0.9333333333333333;
 
-    const char *v7 = get_lang_string(yw->string_pointers_p2, yw->field_2d90->levelID + 1800, yw->field_2d90->map_name);
+    const char *v7 = get_lang_string(yw->string_pointers_p2, yw->field_2d90->levelID + 1800, yw->field_2d90->map_name.c_str());
 
     char cmdBuff[264];
     char *cur = cmdBuff;
@@ -2102,14 +2091,14 @@ char * yw_DebriefTechUpgradeLine(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, brf_t
 
     if ( vhcl )
     {
-        v33 = get_lang_string(yw->string_pointers_p2, last_vhcl + 1200, vhcl->name);
+        v33 = get_lang_string(yw->string_pointers_p2, last_vhcl + 1200, vhcl->name.c_str());
     }
     else if ( bld )
     {
         if ( yw->field_727c )
-            v33 = get_lang_string(yw->string_pointers_p2, last_build + 1700, bld->name);
+            v33 = get_lang_string(yw->string_pointers_p2, last_build + 1700, bld->name.c_str());
         else
-            v33 = get_lang_string(yw->string_pointers_p2, last_build + 1500, bld->name);
+            v33 = get_lang_string(yw->string_pointers_p2, last_build + 1500, bld->name.c_str());
     }
 
     switch ( tp1->field_0 )
@@ -2169,9 +2158,9 @@ char * yw_DebriefTechUpgradeLine(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, brf_t
             if ( bld )
             {
                 if ( yw->field_727c )
-                    strcpy(a1, get_lang_string(yw->string_pointers_p2, last_build + 1700, bld->name));
+                    strcpy(a1, get_lang_string(yw->string_pointers_p2, last_build + 1700, bld->name.c_str()));
                 else
-                    strcpy(a1, get_lang_string(yw->string_pointers_p2, last_build + 1500, bld->name));
+                    strcpy(a1, get_lang_string(yw->string_pointers_p2, last_build + 1500, bld->name.c_str()));
 
                 v13 = get_lang_string(yw->string_pointers_p2, 2464, "COMBINED UPGRADE:");
                 v14 = a1;

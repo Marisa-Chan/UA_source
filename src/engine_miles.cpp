@@ -48,7 +48,7 @@ int SFXEngine::init()
     memset(palFXs, 0, sizeof(palFXs));
     memset(ShakeFXs, 0, sizeof(ShakeFXs));
 
-    audio_rev_stereo = 0;
+    audio_rev_stereo = false;
     dword_546F0C = 0;
     currentTime = 0;
     dword_546F14 = 0;
@@ -137,7 +137,7 @@ void SFXEngine::setMasterVolume(int vol)
 //    wrapper_setVolume(digDriver, vol);
 }
 
-void SFXEngine::setReverseStereo(int rev)
+void SFXEngine::setReverseStereo(bool rev)
 {
     audio_rev_stereo = rev;
 }

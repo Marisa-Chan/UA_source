@@ -1,13 +1,11 @@
 #include <inttypes.h>
 #include <string.h>
 #include "includes.h"
-#include "def_parser.h"
 #include "yw_internal.h"
 #include "yw.h"
 #include "input.h"
 #include "yparobo.h"
 
-extern Key_stru keySS[256];
 
 int yw_write_callSign(_NC_STACK_ypaworld *yw, const char *filename, const char *callsign)
 {
@@ -16,11 +14,11 @@ int yw_write_callSign(_NC_STACK_ypaworld *yw, const char *filename, const char *
     if ( !usr )
         return 0;
 
-    if ( !usr->user_name[0] )
+    if ( usr->user_name.empty() )
         return 0;
 
     char buf[260];
-    sprintf(buf, "save:%s/%s", usr->user_name, filename);
+    sprintf(buf, "save:%s/%s", usr->user_name.c_str(), filename);
 
     FSMgr::FileHandle *fil = uaOpenFile(buf, "w");
 
@@ -39,7 +37,7 @@ int yw_write_user(FSMgr::FileHandle *fil, UserData *usr)
     _NC_STACK_ypaworld *yw = usr->p_ypaworld;
 
     if ( usr->callSIGN[0] >= ' ' )
-        yw_write_callSign(yw, "callsign.def", usr->callSIGN);
+        yw_write_callSign(yw, "callsign.def", usr->callSIGN.c_str());
 
     char buf[300];
 
@@ -128,7 +126,7 @@ int yw_write_input(FSMgr::FileHandle *fil, UserData *usr)
 
     for (int i = 1; i < 46; i++)
     {
-        if ( usr->keyConfig[i].inp_type == 1 )
+        if ( usr->keyConfig[i].inp_type == World::KEYC_TYPE_BUTTON )
         {
             sprintf(buf, "    input.button[%d] = ", usr->keyConfig[i].keyID);
 
@@ -136,14 +134,14 @@ int yw_write_input(FSMgr::FileHandle *fil, UserData *usr)
 
             if ( usr->keyConfig[i].KeyCode )
             {
-                strcat(buf, keySS[usr->keyConfig[i].KeyCode].short_name);
+                strcat(buf, Input::KeysInfo[usr->keyConfig[i].KeyCode]._name.c_str());
             }
             else
             {
                 strcat(buf, "nop");
             }
         }
-        else if ( usr->keyConfig[i].inp_type == 2 )
+        else if ( usr->keyConfig[i].inp_type == World::KEYC_TYPE_SLIDER )
         {
             sprintf(buf, "    input.slider[%d] = ", usr->keyConfig[i].keyID);
 
@@ -153,7 +151,7 @@ int yw_write_input(FSMgr::FileHandle *fil, UserData *usr)
 
             if ( usr->keyConfig[i].slider_neg )
             {
-                strcat(buf, keySS[ usr->keyConfig[i].slider_neg ].short_name);
+                strcat(buf, Input::KeysInfo[ usr->keyConfig[i].slider_neg ]._name.c_str());
             }
             else
             {
@@ -168,7 +166,7 @@ int yw_write_input(FSMgr::FileHandle *fil, UserData *usr)
 
             if ( usr->keyConfig[i].KeyCode )
             {
-                strcat(buf, keySS[ usr->keyConfig[i].KeyCode ].short_name);
+                strcat(buf, Input::KeysInfo[ usr->keyConfig[i].KeyCode ]._name.c_str());
             }
             else
             {
@@ -178,13 +176,13 @@ int yw_write_input(FSMgr::FileHandle *fil, UserData *usr)
                 strcat(buf, "space");
             }
         }
-        else if ( usr->keyConfig[i].inp_type == 3 )
+        else if ( usr->keyConfig[i].inp_type == World::KEYC_TYPE_HOTKEY )
         {
             sprintf(buf, "    input.hotkey[%d] = ", usr->keyConfig[i].keyID);
 
             if ( usr->keyConfig[i].KeyCode )
             {
-                strcat(buf, keySS[ usr->keyConfig[i].KeyCode ].short_name);
+                strcat(buf, Input::KeysInfo[ usr->keyConfig[i].KeyCode ]._name.c_str());
             }
             else
             {
