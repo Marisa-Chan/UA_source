@@ -61,11 +61,11 @@ void SDLWRAP_ScanFonts()
 
     fontsList.clear();
 
-    FSMgr::DirIter *dir = FSMgr::iDir::readDir("fonts/");
+    FSMgr::DirIter dir = FSMgr::iDir::readDir("fonts/");
     if (dir)
     {
         FSMgr::iNode *nod = NULL;
-        while(dir->getNext(nod))
+        while(dir.getNext(&nod))
         {
             if (nod && nod->getType() == FSMgr::iNode::NTYPE_FILE)
             {
@@ -90,8 +90,6 @@ void SDLWRAP_ScanFonts()
                 }
             }
         }
-
-        delete dir;
     }
 }
 

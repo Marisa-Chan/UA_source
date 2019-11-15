@@ -898,11 +898,11 @@ void listSaveDir(UserData *usr, const char *saveDir)
     int v5 = usr->p_ypaworld->maxroboenergy;
     int v27 = usr->p_ypaworld->maxreloadconst;
 
-    usr->opened_dir = uaOpenDir(saveDir);
-    if ( usr->opened_dir )
+    FSMgr::DirIter dir = uaOpenDir(saveDir);
+    if ( dir )
     {
         FSMgr::iNode *dirNode;
-        while ( usr->opened_dir->getNext(dirNode) )
+        while ( dir.getNext(&dirNode) )
         {
             if ( dirNode->getType() == FSMgr::iNode::NTYPE_DIR )
             {
@@ -928,8 +928,6 @@ void listSaveDir(UserData *usr, const char *saveDir)
                 }
             }
         }
-
-        delete usr->opened_dir;
     }
     else
     {
@@ -950,12 +948,11 @@ void listLocaleDir(UserData *usr, const char *dirname)
     usr->lang_dlls_count = 0;
 
     std::string *deflng = NULL;
-    FSMgr::DirIter *dir = uaOpenDir(dirname);
+    FSMgr::DirIter dir = uaOpenDir(dirname);
     if ( dir )
     {
         FSMgr::iNode *v18;
-
-        while ( dir->getNext(v18) )
+        while ( dir.getNext(&v18) )
         {
             std::string tmp = v18->getName();
             size_t v3 = tmp.rfind(".LNG");
@@ -998,8 +995,6 @@ void listLocaleDir(UserData *usr, const char *dirname)
                 }
             }
         }
-
-        delete dir;
     }
     else
     {
@@ -1164,12 +1159,11 @@ void  UserData::sb_0x46ca74()
 
     if ( strcasecmp(usernamedir, user_name) )
     {
-        FSMgr::DirIter *v8 = uaOpenDir(oldsave.c_str());
-        FSMgr::iNode *a2a;
-
-        if ( v8 )
+        FSMgr::DirIter dir = uaOpenDir(oldsave);
+        if ( dir )
         {
-            while ( v8->getNext(a2a) )
+            FSMgr::iNode *a2a;
+            while ( dir.getNext(&a2a) )
             {
                 std::string tmp = a2a->getName();
                 if ( a2a->getType() == FSMgr::iNode::NTYPE_FILE
@@ -1187,7 +1181,6 @@ void  UserData::sb_0x46ca74()
                     sb_0x46ca74__sub0(v11.c_str(), v12.c_str());
                 }
             }
-            delete v8;
         }
     }
 
@@ -2701,12 +2694,12 @@ void sub_46D0F8(const char *path)
 {
     char a1a[200];
 
-    FSMgr::DirIter *v4 = uaOpenDir(path);
-    if ( v4 )
+    FSMgr::DirIter dir = uaOpenDir(path);
+    if ( dir )
     {
         FSMgr::iNode *v5;
 
-        while ( v4->getNext(v5) )
+        while ( dir.getNext(&v5) )
         {
             if ( v5->getType() == FSMgr::iNode::NTYPE_FILE || (strcmp(v5->getName(), ".") && strcmp(v5->getName(), "..")) )
             {
@@ -2714,7 +2707,6 @@ void sub_46D0F8(const char *path)
                 uaDeleteFile(a1a);
             }
         }
-        delete v4;
     }
 }
 

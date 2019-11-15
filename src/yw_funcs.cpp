@@ -740,26 +740,25 @@ int sb_0x4e1a88(_NC_STACK_ypaworld *yw, int multiplayer)
     else
         v4 = "levels:single/";
 
-    FSMgr::DirIter *v6 = uaOpenDir(v4);
-    if ( v6 )
+    FSMgr::DirIter dir = uaOpenDir(v4);
+    if ( dir )
     {
-        FSMgr::iNode *v8;
-        while ( v6->getNext(v8) )
+        FSMgr::iNode *fsnode;
+        while ( dir.getNext(&fsnode) )
         {
-            if ( strcmp(v8->getName(), ".") && strcmp(v8->getName(), "..") )
+            if ( strcmp(fsnode->getName(), ".") && strcmp(fsnode->getName(), "..") )
             {
-                if ( sb_0x4e1a88__sub0(yw, multiplayer, v8->getName()) )
+                if ( sb_0x4e1a88__sub0(yw, multiplayer, fsnode->getName()) )
                 {
-                    ypa_log_out("Scanning [%s%s] .. ok.\n", v4, v8->getName());
+                    ypa_log_out("Scanning [%s%s] .. ok.\n", v4, fsnode->getName());
                 }
                 else
                 {
-                    ypa_log_out("Scanning [%s%s] .. FAILED.\n", v4, v8->getName());
+                    ypa_log_out("Scanning [%s%s] .. FAILED.\n", v4, fsnode->getName());
                     v10 = 0;
                 }
             }
         }
-        delete v6;
     }
 
     return v10;

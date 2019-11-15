@@ -681,12 +681,12 @@ int yw_initGameWithSettings()
 
 void ReadSnapsDir()
 {
-    FSMgr::DirIter *dir = uaOpenDir("env:snaps/");
+    FSMgr::DirIter dir = uaOpenDir("env:snaps/");
 
     if ( dir )
     {
         FSMgr::iNode *entr;
-        while ( dir->getNext(entr) )
+        while ( dir.getNext(&entr) )
         {
             if ( entr->getType() == FSMgr::iNode::NTYPE_FILE && userdata.snap_count < 32 && !strnicmp(entr->getName(), "demo", 4) )
             {
@@ -694,7 +694,6 @@ void ReadSnapsDir()
                 userdata.snap_count++;
             }
         }
-        delete dir;
     }
 }
 

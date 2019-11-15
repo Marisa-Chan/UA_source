@@ -187,13 +187,13 @@ FSMgr::FileHandle *uaOpenFile(const std::string &src_path, const char *mode)
     return v4;
 }
 
-FSMgr::DirIter *uaOpenDir(const char *dir)
+FSMgr::DirIter uaOpenDir(const std::string &dir)
 {
     std::string dst;
     file_path_copy_manipul(dir, dst);
     correctSeparatorAndExt(dst);
 
-    return FSMgr::iDir::readDir(dst.c_str());
+    return FSMgr::iDir::readDir(dst);
 }
 
 bool uaDeleteFile(const char *path)
