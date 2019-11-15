@@ -970,13 +970,13 @@ void listLocaleDir(UserData *usr, const char *dirname)
                 for (size_t i = 0; i < tmp.length(); i++)
                     tmp[i] = std::toupper(tmp[i]);
 
-                int finded = 0;
+                bool finded = false;
 
-                for(StringList::iterator it = usr->lang_dlls.begin(); it != usr->lang_dlls.end(); it++)
+                for(const auto &x : usr->lang_dlls)
                 {
-                    if ( !strcasecmp( it->c_str(), tmp.c_str() ) )
+                    if ( !StriCmp( x, tmp ) )
                     {
-                        finded = 1;
+                        finded = true;
                         break;
                     }
                 }
@@ -2300,9 +2300,9 @@ void UserData::ypaworld_func158__sub0__sub3()
     p_YW->GuiWinOpen( &local_listvw );
 
     int i = 0;
-    for(StringList::iterator it = lang_dlls.begin(); it != lang_dlls.end(); it++)
+    for(const auto &x : lang_dlls)
     {
-        if ( &(*it) == default_lang_dll )
+        if ( &x == default_lang_dll )
             break;
 
         i++;
@@ -2743,10 +2743,7 @@ void UserData::sub_46C748()
 
 void UserData::sub_46B0E0()
 {
-    StringList::iterator lang = lang_dlls.begin();
-
-    for (int v5 = 0; v5 < local_listvw.selectedEntry; v5++)
-        lang++;
+    Engine::StringList::iterator lang = std::next(lang_dlls.begin(), local_listvw.selectedEntry);
 
     prev_lang = &(*lang);
 
@@ -4233,9 +4230,7 @@ void UserData::GameShellUiHandleInput()
         {
             field_19CA |= 1;
 
-            StringList::iterator it = lang_dlls.begin();
-            for(int i = 0; i < local_listvw.selectedEntry; i++)
-                it++;
+            Engine::StringList::iterator it = std::next(lang_dlls.begin(), local_listvw.selectedEntry);
 
             prev_lang = &(*it);
         }

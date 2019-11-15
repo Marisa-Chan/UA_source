@@ -8,8 +8,11 @@
 #include <stddef.h>
 #include <inttypes.h>
 
+#include <string>
 #include "fmtlib/core.h"
 #include "fmtlib/printf.h"
+
+#include "types.h"
 
 #include "IFFile.h"
 
@@ -18,6 +21,8 @@
 #include "global.h"
 
 #include "log.h"
+
+
 
 
 

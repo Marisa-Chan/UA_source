@@ -5112,12 +5112,12 @@ int parseSaveShell(scrCallBack *arg)
             std::string * deflt = NULL;
             std::string * slct = NULL;
 
-            for(StringList::iterator it = usr->lang_dlls.begin(); it != usr->lang_dlls.end(); it++)
+            for(std::string &s : usr->lang_dlls)
             {
-                if ( !strcasecmp(it->c_str(), arg->p2) )
-                    slct = &(*it);
-                if ( !strcasecmp(it->c_str(), "language") )
-                    deflt = &(*it);
+                if ( !StriCmp(s, arg->p2) )
+                    slct = &s;
+                if ( !StriCmp(s, "language") )
+                    deflt = &s;
             }
 
             if ( slct )

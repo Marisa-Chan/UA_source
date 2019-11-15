@@ -3350,14 +3350,14 @@ void ypaworld_func158__locale_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
     v3 = usr->local_listvw.ItemsPreLayout(yw, v3, 0, "uvw");
 
     int v5 = 0;
-    for(StringList::iterator it = usr->lang_dlls.begin(); it != usr->lang_dlls.end(); it++)
+    for( const auto &x : usr->lang_dlls )
     {
         if ( v5 >= usr->local_listvw.firstShownEntries && v5 < usr->local_listvw.shownEntries + usr->local_listvw.firstShownEntries)
         {
             if ( v5 == usr->local_listvw.selectedEntry )
-                v3 = sub_4C4284(yw, &usr->local_listvw, v3, it->c_str());
+                v3 = sub_4C4284(yw, &usr->local_listvw, v3, x.c_str());
             else
-                v3 = sub_4C41DC(yw, &usr->local_listvw, v3, it->c_str());
+                v3 = sub_4C41DC(yw, &usr->local_listvw, v3, x.c_str());
         }
 
         v5++;

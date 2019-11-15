@@ -3,6 +3,8 @@
 
 #include <string.h>
 
+#include "types.h"
+
 #include "engine_gfx.h"
 #include "engine_input.h"
 #include "engine_miles.h"
@@ -27,7 +29,6 @@
 #define YW_RENDER_SECTORS_DEF   5
 
 
-typedef std::list< std::string > StringList;
 
 class NC_STACK_ypaworld;
 struct _NC_STACK_ypaworld;
@@ -263,7 +264,7 @@ public:
     int16_t field_175E;
     int16_t field_0x1760;
     NC_STACK_button *locale_button;
-    StringList lang_dlls;
+    Engine::StringList lang_dlls;
     GuiList local_listvw;
     std::string *default_lang_dll;
     std::string *prev_lang;

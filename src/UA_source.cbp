@@ -160,6 +160,7 @@
 		<Unit filename="skeleton.h" />
 		<Unit filename="sklt.cpp" />
 		<Unit filename="sklt.h" />
+		<Unit filename="types.h" />
 		<Unit filename="utils.cpp" />
 		<Unit filename="utils.h" />
 		<Unit filename="vectors.h" />
