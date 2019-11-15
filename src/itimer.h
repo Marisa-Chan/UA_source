@@ -31,7 +31,7 @@ public:
     };
 
     //Data
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
     __NC_STACK_itimer stack__itimer;
 };

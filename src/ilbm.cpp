@@ -5,50 +5,32 @@
 #include "utils.h"
 
 
-const NewClassDescr NC_STACK_ilbm::description("ilbm.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_ilbm::description("ilbm.class", &newinstance);
 
-NC_STACK_ilbm *NC_STACK_ilbm::CInit(IDVList *stak)
-{
-    NC_STACK_ilbm *tmp = new NC_STACK_ilbm();
-    if (!tmp)
-        return NULL;
-
-    if (!tmp->func0(stak))
-    {
-        delete tmp;
-        return NULL;
-    }
-
-    return tmp;
-}
-
-size_t NC_STACK_ilbm::func0(IDVList *stak)
+size_t NC_STACK_ilbm::func0(IDVList &stak)
 {
     if ( !NC_STACK_bitmap::func0(stak) )
         return 0;
 
-    if ( stak )
-    {
-        if ( stak->Get(ILBM_ATT_FMT, 0) )
-            stack__ilbm.flags |= 1;
-    }
+    if ( stak.Get(ILBM_ATT_FMT, 0) )
+        stack__ilbm.flags |= 1;
 
     return 1;
 }
 
-size_t NC_STACK_ilbm::func2(IDVList *stak)
+size_t NC_STACK_ilbm::func2(IDVList &stak)
 {
-    IDVList::iterator it = stak->find(ILBM_ATT_FMT);
+    IDVList::iterator it = stak.find(ILBM_ATT_FMT);
 
-    if ( it != stak->end() )
+    if ( it != stak.end() )
         setILBM_saveFmt( it->second.value.i_data );
 
     return NC_STACK_bitmap::func2(stak);
 }
 
-size_t NC_STACK_ilbm::func3(IDVList *stak)
+size_t NC_STACK_ilbm::func3(IDVList &stak)
 {
-    int *val = (int *)stak->GetPointer(ILBM_ATT_FMT, NULL);
+    int *val = (int *)stak.GetPointer(ILBM_ATT_FMT, NULL);
 
     if ( val )
         *val = getILBM_saveFmt();
@@ -125,7 +107,7 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile)
         if ( has_opl )
             stk.Add(BMD_ATT_OUTLINE, &opls);
 
-        return NC_STACK_bitmap::func0(&stk);
+        return NC_STACK_bitmap::func0(stk);
     }
     return 0;
 }
@@ -289,7 +271,7 @@ int ILBM_BODY_READ(IFFile *mfile, BMHD_type *bmhd, bitmap_intern *bitm)
     return 0;
 }
 
-rsrc * NC_STACK_ilbm::READ_ILBM(IDVList *stak, IFFile *mfil, int val5)
+rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int val5)
 {
     int ILBM__OR__VBMP;
 
@@ -297,9 +279,6 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList *stak, IFFile *mfil, int val5)
     VBMP_type vbmp;
     IDVList loclist;
     rsrc *res = NULL;
-
-    if (!stak)
-        stak = &loclist;
 
     bitmap_intern *bitm = NULL;
 
@@ -357,8 +336,8 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList *stak, IFFile *mfil, int val5)
             mfil->readU16B(bmhd.pageWidth);
             mfil->readU16B(bmhd.pageHeight);
 
-            stak->Add(BMD_ATT_WIDTH, bmhd.width);
-            stak->Add(BMD_ATT_HEIGHT, bmhd.height);
+            stak.Add(BMD_ATT_WIDTH, bmhd.width);
+            stak.Add(BMD_ATT_HEIGHT, bmhd.height);
 
             res = NC_STACK_bitmap::rsrc_func64(stak); // bitmap_func64
             if ( res )
@@ -378,8 +357,8 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList *stak, IFFile *mfil, int val5)
             mfil->readU16B(vbmp.height);
             mfil->readU16B(vbmp.flags);
 
-            stak->Add(BMD_ATT_WIDTH, vbmp.width);
-            stak->Add(BMD_ATT_HEIGHT, vbmp.height);
+            stak.Add(BMD_ATT_WIDTH, vbmp.width);
+            stak.Add(BMD_ATT_HEIGHT, vbmp.height);
 
             res = NC_STACK_bitmap::rsrc_func64(stak); // bitmap_func64
             // creation of bitmap internal structure and allocation buffer, creation of surface, texture and palette
@@ -479,9 +458,9 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList *stak, IFFile *mfil, int val5)
 
 
 // Create ilbm resource node and fill rsrc field data
-rsrc * NC_STACK_ilbm::rsrc_func64(IDVList *stak)
+rsrc * NC_STACK_ilbm::rsrc_func64(IDVList &stak)
 {
-    const char *resName = stak->GetConstChar(RSRC_ATT_NAME, NULL);
+    const char *resName = stak.GetConstChar(RSRC_ATT_NAME, NULL);
     const char *reassignName = NULL;
 
     if ( !resName )
@@ -515,7 +494,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(IDVList *stak)
             reassignName = "hi/gamma/fx3.ilbm";
     }
 
-    IFFile *mfile = (IFFile *)stak->GetPointer(RSRC_ATT_PIFFFILE, NULL);
+    IFFile *mfile = (IFFile *)stak.GetPointer(RSRC_ATT_PIFFFILE, NULL);
 
     int selfOpened = 0;
 
@@ -523,7 +502,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(IDVList *stak)
     {
         if ( mfile )
         {
-            stak->Add(BMD_ATT_TEXTURE, 1);
+            stak.Add(BMD_ATT_TEXTURE, 1);
 
             mfile->parse();
             mfile->skipChunk();
@@ -540,7 +519,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(IDVList *stak)
     {
         if ( mfile )
         {
-            stak->Add(BMD_ATT_TEXTURE, 1);
+            stak.Add(BMD_ATT_TEXTURE, 1);
         }
         else
         {
@@ -729,17 +708,17 @@ size_t NC_STACK_ilbm::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 5:
         return (size_t)func5( (IFFile **)data );
     case 6:
         return (size_t)func6( (IFFile **)data );
     case 64:
-        return (size_t)rsrc_func64( (IDVList *)data );
+        return (size_t)rsrc_func64( *(IDVList *)data );
     case 66:
         return (size_t)rsrc_func66( (rsrc_func66_arg *)data );
     default:

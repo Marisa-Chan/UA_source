@@ -108,7 +108,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
         init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
         init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
-        tileset->font_image = NC_STACK_ilbm::CInit(&init_vals);
+        tileset->font_image = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
         if ( !tileset->font_image )
         {
             if ( tileset->chars )
@@ -248,7 +248,7 @@ tiles_stru * yw_LoadTileSet(const char *filename, int chr_width, int font_height
         init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
         init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
-        tileset->font_image = NC_STACK_ilbm::CInit(&init_vals);
+        tileset->font_image = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
         if ( tileset->font_image )
         {
             tileset->field_4 = tileset->font_image->getBMD_pBitmap();
@@ -567,7 +567,7 @@ int yw_InitLevelNet(_NC_STACK_ypaworld *yw)
 int yw_InitNetwork(_NC_STACK_ypaworld *yw)
 {
 
-    NC_STACK_windp *windp = (NC_STACK_windp *)init_get_class("windp.class", 0);
+    NC_STACK_windp *windp = Nucleus::CInit<NC_STACK_windp>();
 
     yw->windp = windp;
 
@@ -957,7 +957,7 @@ int yw_InitTooltips(_NC_STACK_ypaworld *yw)
 
 NC_STACK_base * sub_44AD8C(const char *fname)
 {
-    NC_STACK_base *obj = (NC_STACK_base *)init_get_class("base.class", 0);
+    NC_STACK_base *obj = Nucleus::CInit<NC_STACK_base>();
     if ( obj )
     {
         FSMgr::FileHandle *fil = uaOpenFile(fname, "r");
@@ -1004,7 +1004,7 @@ NC_STACK_base *load_set_base()
     {
         ypa_log_out("init: no set.base, trying fragment load.\n");
 
-        base = (NC_STACK_base *)init_get_class("base.class", 0);
+        base = Nucleus::CInit<NC_STACK_base>();
         if ( base )
         {
             NC_STACK_base *visproto = NC_STACK_base::READ_BAS_FILE("rsrc:objects/visproto.base");
@@ -1107,7 +1107,7 @@ int yw_parse_lego(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil, NC_STACK_base 
             IDVList init_vals;
             init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, v11);
 
-            NC_STACK_sklt *skelet = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
+            NC_STACK_sklt *skelet = Nucleus::CInit<NC_STACK_sklt>(init_vals);
             if ( !skelet )
             {
                 ypa_log_out("Couldn't load sklt (%s)\n", v11);
@@ -1380,7 +1380,7 @@ int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
     IDVList init_vals;
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "Skeleton/ColSide.sklt");
 
-    NC_STACK_sklt *tmp_skel = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
+    NC_STACK_sklt *tmp_skel = Nucleus::CInit<NC_STACK_sklt>(init_vals);
     if ( !tmp_skel )
     {
         ypa_log_out("Couldn't create side collision sklt.\n");
@@ -1393,7 +1393,7 @@ int sub_44A97C(_NC_STACK_ypaworld *yw, NC_STACK_base *base)
     init_vals.clear();
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "Skeleton/ColCross.sklt");
 
-    tmp_skel = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
+    tmp_skel = Nucleus::CInit<NC_STACK_sklt>(init_vals);
     if ( !tmp_skel )
     {
         ypa_log_out("Couldn't create cross collision sklt.\n");
@@ -1460,7 +1460,7 @@ int yw_InitMouseStuff(_NC_STACK_ypaworld *yw)
         init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
         init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
-        yw->pointers[i] = NC_STACK_ilbm::CInit(&init_vals);
+        yw->pointers[i] = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
         if ( !yw->pointers[i] )
         {
             ypa_log_out("yw_select.c/yw_InitMouseStuff()\n");
@@ -1504,7 +1504,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
     IDVList init_vals;
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "skeleton/colsub.sklt");
 
-    yw->colsub_sklt = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
+    yw->colsub_sklt = Nucleus::CInit<NC_STACK_sklt>(init_vals);
     if ( !yw->colsub_sklt )
     {
         ypa_log_out("Couldn't load <skeleton/colsub.sklt>, set %d.\n", setID);
@@ -1516,7 +1516,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
     init_vals.clear();
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "skeleton/colcomp.sklt");
 
-    yw->colcomp_sklt = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
+    yw->colcomp_sklt = Nucleus::CInit<NC_STACK_sklt>(init_vals);
     if ( !yw->colcomp_sklt )
     {
         ypa_log_out("Couldn't load <skeleton/colcomp.sklt>, set %d.\n", setID);
@@ -1614,7 +1614,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
     init_vals.clear();
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "remap/tracyrmp.ilbm");
 
-    yw->tracyrmp_ilbm = NC_STACK_ilbm::CInit(&init_vals);
+    yw->tracyrmp_ilbm = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
     if ( !yw->tracyrmp_ilbm )
     {
         ypa_log_out("Couldn't load tracy remap table, set %d.\n", setID);
@@ -1624,7 +1624,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
     init_vals.clear();
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "remap/shadermp.ilbm");
 
-    yw->shadermp_ilbm = NC_STACK_ilbm::CInit(&init_vals);
+    yw->shadermp_ilbm = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
     if ( !yw->shadermp_ilbm )
     {
         ypa_log_out("Couldn't load shade remap table, set %d.\n", setID);
@@ -2345,7 +2345,7 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
                 init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
                 if ( yw->LevelNet->brief_map[0].map_name[0] )
-                    brf->briefing_map = NC_STACK_ilbm::CInit(&init_vals);
+                    brf->briefing_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
 
                 set_prefix_replacement("rsrc", "mbpix:");
 
@@ -2354,7 +2354,7 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
                 init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
                 init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
-                brf->mbmap_img = NC_STACK_ilbm::CInit(&init_vals);
+                brf->mbmap_img = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
 
                 if ( brf->mbmap_img )
                 {
@@ -2362,7 +2362,7 @@ int ypaworld_func158__sub4__sub1__sub3(_NC_STACK_ypaworld *yw, int lvlid)
                     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, mproto->typ);
 
                     if ( !yw->typ_map )
-                        yw->typ_map = NC_STACK_ilbm::CInit(&init_vals);
+                        yw->typ_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
 
                     if ( yw->typ_map )
                     {
@@ -2443,7 +2443,7 @@ NC_STACK_bitmap * sub_44816C(NC_STACK_bitmap *src, const char *name)
     init_vals.Add(NC_STACK_bitmap::BMD_ATT_WIDTH, a4->width);
     init_vals.Add(NC_STACK_bitmap::BMD_ATT_HEIGHT, a4->height);
 
-    NC_STACK_bitmap *v3 = NC_STACK_bitmap::CInit(&init_vals);
+    NC_STACK_bitmap *v3 = Nucleus::CInit<NC_STACK_bitmap>(init_vals);
 
     if ( v3 )
     {
@@ -2499,7 +2499,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
         IDVList init_vals;
         init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, wireless_db[i]);
 
-        brf->wireless_db[i] = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
+        brf->wireless_db[i] = Nucleus::CInit<NC_STACK_sklt>(init_vals);
         if (brf->wireless_db[i])
             brf->wireless_db_skels[i] = brf->wireless_db[i]->getSKEL_pSkelet();
     }
@@ -2543,7 +2543,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
     init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
     if ( yw->LevelNet->debrief_map[0].map_name[0] )
-        brf->briefing_map = NC_STACK_ilbm::CInit(&init_vals);
+        brf->briefing_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
 
     set_prefix_replacement("rsrc", "mbpix:");
 
@@ -2552,7 +2552,7 @@ size_t ypaworld_func158__sub4__sub1__sub5(_NC_STACK_ypaworld *yw)
     init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
     init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
-    brf->mbmap_img = NC_STACK_ilbm::CInit(&init_vals);
+    brf->mbmap_img = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
     if ( !brf->mbmap_img )
     {
         yw_freeDebrief(yw);

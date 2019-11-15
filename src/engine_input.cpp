@@ -147,7 +147,7 @@ int INPEngine::init()
 
     get_keyvalue_from_ini(0, input_keyconfig, 116);
 
-    input_class = (NC_STACK_input *)init_get_class("input.class", 0);
+    input_class = Nucleus::CInit<NC_STACK_input>();
 
     if ( !input_class )
     {

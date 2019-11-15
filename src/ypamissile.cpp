@@ -11,9 +11,9 @@
 
 #include <math.h>
 
-const NewClassDescr NC_STACK_ypamissile::description("ypamissile.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_ypamissile::description("ypamissile.class", &newinstance);
 
-size_t NC_STACK_ypamissile::func0(IDVList *stak)
+size_t NC_STACK_ypamissile::func0(IDVList &stak)
 {
     if ( !NC_STACK_ypabact::func0(stak) )
         return 0;
@@ -27,52 +27,49 @@ size_t NC_STACK_ypamissile::func0(IDVList *stak)
     stack__ypamissile.delay_time = 0;
     stack__ypamissile.field_c = 1;
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BACT_ATT_WORLD:
-                    stack__ypamissile.ywo = (NC_STACK_ypaworld *)val.value.p_data;
-                    stack__ypamissile.yw = &stack__ypamissile.ywo->ypaworld;
-                    break;
+            case BACT_ATT_WORLD:
+                stack__ypamissile.ywo = (NC_STACK_ypaworld *)val.value.p_data;
+                stack__ypamissile.yw = &stack__ypamissile.ywo->ypaworld;
+                break;
 
-                case BACT_ATT_VIEWER:
-                    setBACT_viewer(val.value.i_data);
-                    break;
+            case BACT_ATT_VIEWER:
+                setBACT_viewer(val.value.i_data);
+                break;
 
-                case MISS_ATT_LAUNCHER:
-                    setMISS_launcher((__NC_STACK_ypabact *)val.value.p_data);
-                    break;
+            case MISS_ATT_LAUNCHER:
+                setMISS_launcher((__NC_STACK_ypabact *)val.value.p_data);
+                break;
 
-                case MISS_ATT_TYPE:
-                    setMISS_type(val.value.i_data);
-                    break;
+            case MISS_ATT_TYPE:
+                setMISS_type(val.value.i_data);
+                break;
 
-                case MISS_ATT_LIFETIME:
-                    setMISS_lifeTime(val.value.i_data);
-                    break;
+            case MISS_ATT_LIFETIME:
+                setMISS_lifeTime(val.value.i_data);
+                break;
 
-                case MISS_ATT_DELAY:
-                    setMISS_delay(val.value.i_data);
-                    break;
+            case MISS_ATT_DELAY:
+                setMISS_delay(val.value.i_data);
+                break;
 
-                case MISS_ATT_DRIVETIME:
-                    setMISS_driveTime(val.value.i_data);
-                    break;
+            case MISS_ATT_DRIVETIME:
+                setMISS_driveTime(val.value.i_data);
+                break;
 
-                case MISS_ATT_IGNOREBUILDS:
-                    setMISS_ignoreBuilds ( val.value.i_data );
-                    break;
+            case MISS_ATT_IGNOREBUILDS:
+                setMISS_ignoreBuilds ( val.value.i_data );
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -85,87 +82,84 @@ size_t NC_STACK_ypamissile::func1()
     return NC_STACK_ypabact::func1();
 }
 
-size_t NC_STACK_ypamissile::func2(IDVList *stak)
+size_t NC_STACK_ypamissile::func2(IDVList &stak)
 {
     NC_STACK_ypabact::func2(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BACT_ATT_VIEWER:
-                    setBACT_viewer(val.value.i_data);
-                    break;
+            case BACT_ATT_VIEWER:
+                setBACT_viewer(val.value.i_data);
+                break;
 
-                case MISS_ATT_LAUNCHER:
-                    setMISS_launcher((__NC_STACK_ypabact *)val.value.p_data);
-                    break;
+            case MISS_ATT_LAUNCHER:
+                setMISS_launcher((__NC_STACK_ypabact *)val.value.p_data);
+                break;
 
-                case MISS_ATT_TYPE:
-                    setMISS_type(val.value.i_data);
-                    break;
+            case MISS_ATT_TYPE:
+                setMISS_type(val.value.i_data);
+                break;
 
-                case MISS_ATT_LIFETIME:
-                    setMISS_lifeTime(val.value.i_data);
-                    break;
+            case MISS_ATT_LIFETIME:
+                setMISS_lifeTime(val.value.i_data);
+                break;
 
-                case MISS_ATT_DELAY:
-                    setMISS_delay(val.value.i_data);
-                    break;
+            case MISS_ATT_DELAY:
+                setMISS_delay(val.value.i_data);
+                break;
 
-                case MISS_ATT_DRIVETIME:
-                    setMISS_driveTime(val.value.i_data);
-                    break;
+            case MISS_ATT_DRIVETIME:
+                setMISS_driveTime(val.value.i_data);
+                break;
 
-                case MISS_ATT_IGNOREBUILDS:
-                    setMISS_ignoreBuilds ( val.value.i_data );
-                    break;
+            case MISS_ATT_IGNOREBUILDS:
+                setMISS_ignoreBuilds ( val.value.i_data );
+                break;
 
-                case MISS_ATT_POW_HELI:
-                    setMISS_powHeli(val.value.i_data);
-                    break;
+            case MISS_ATT_POW_HELI:
+                setMISS_powHeli(val.value.i_data);
+                break;
 
-                case MISS_ATT_POW_TANK:
-                    setMISS_powTank(val.value.i_data);
-                    break;
+            case MISS_ATT_POW_TANK:
+                setMISS_powTank(val.value.i_data);
+                break;
 
-                case MISS_ATT_POW_FLYER:
-                    setMISS_powFlyer(val.value.i_data);
-                    break;
+            case MISS_ATT_POW_FLYER:
+                setMISS_powFlyer(val.value.i_data);
+                break;
 
-                case MISS_ATT_POW_ROBO:
-                    setMISS_powRobo(val.value.i_data);
-                    break;
+            case MISS_ATT_POW_ROBO:
+                setMISS_powRobo(val.value.i_data);
+                break;
 
-                case MISS_ATT_RAD_HELI:
-                    setMISS_radHeli(val.value.i_data);
-                    break;
+            case MISS_ATT_RAD_HELI:
+                setMISS_radHeli(val.value.i_data);
+                break;
 
-                case MISS_ATT_RAD_TANK:
-                    setMISS_radTank(val.value.i_data);
-                    break;
+            case MISS_ATT_RAD_TANK:
+                setMISS_radTank(val.value.i_data);
+                break;
 
-                case MISS_ATT_RAD_FLYER:
-                    setMISS_radFlyer(val.value.i_data);
-                    break;
+            case MISS_ATT_RAD_FLYER:
+                setMISS_radFlyer(val.value.i_data);
+                break;
 
-                case MISS_ATT_RAD_ROBO:
-                    setMISS_radRobo(val.value.i_data);
-                    break;
+            case MISS_ATT_RAD_ROBO:
+                setMISS_radRobo(val.value.i_data);
+                break;
 
-                case MISS_ATT_STHEIGHT:
-                    setMISS_startHeight(val.value.i_data);
-                    break;
+            case MISS_ATT_STHEIGHT:
+                setMISS_startHeight(val.value.i_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -173,83 +167,80 @@ size_t NC_STACK_ypamissile::func2(IDVList *stak)
     return 1;
 }
 
-size_t NC_STACK_ypamissile::func3(IDVList *stak)
+size_t NC_STACK_ypamissile::func3(IDVList &stak)
 {
     NC_STACK_ypabact::func3(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case MISS_ATT_LAUNCHER:
-                    *(__NC_STACK_ypabact **)val.value.p_data = getMISS_launcher();
-                    break;
+            case MISS_ATT_LAUNCHER:
+                *(__NC_STACK_ypabact **)val.value.p_data = getMISS_launcher();
+                break;
 
-                case MISS_ATT_TYPE:
-                    *(int *)val.value.p_data = getMISS_type();
-                    break;
+            case MISS_ATT_TYPE:
+                *(int *)val.value.p_data = getMISS_type();
+                break;
 
-                case MISS_ATT_LIFETIME:
-                    *(int *)val.value.p_data = getMISS_lifeTime();
-                    break;
+            case MISS_ATT_LIFETIME:
+                *(int *)val.value.p_data = getMISS_lifeTime();
+                break;
 
-                case MISS_ATT_DELAY:
-                    *(int *)val.value.p_data = getMISS_delay();
-                    break;
+            case MISS_ATT_DELAY:
+                *(int *)val.value.p_data = getMISS_delay();
+                break;
 
-                case MISS_ATT_DRIVETIME:
-                    *(int *)val.value.p_data = getMISS_driveTime();
-                    break;
+            case MISS_ATT_DRIVETIME:
+                *(int *)val.value.p_data = getMISS_driveTime();
+                break;
 
-                case MISS_ATT_IGNOREBUILDS:
-                    *(int *)val.value.p_data = getMISS_ignoreBuilds();
-                    break;
+            case MISS_ATT_IGNOREBUILDS:
+                *(int *)val.value.p_data = getMISS_ignoreBuilds();
+                break;
 
-                case MISS_ATT_POW_HELI:
-                    *(int *)val.value.p_data = getMISS_powHeli();
-                    break;
+            case MISS_ATT_POW_HELI:
+                *(int *)val.value.p_data = getMISS_powHeli();
+                break;
 
-                case MISS_ATT_POW_TANK:
-                    *(int *)val.value.p_data = getMISS_powTank();
-                    break;
+            case MISS_ATT_POW_TANK:
+                *(int *)val.value.p_data = getMISS_powTank();
+                break;
 
-                case MISS_ATT_POW_FLYER:
-                    *(int *)val.value.p_data = getMISS_powFlyer();
-                    break;
+            case MISS_ATT_POW_FLYER:
+                *(int *)val.value.p_data = getMISS_powFlyer();
+                break;
 
-                case MISS_ATT_POW_ROBO:
-                    *(int *)val.value.p_data = getMISS_powRobo();
-                    break;
+            case MISS_ATT_POW_ROBO:
+                *(int *)val.value.p_data = getMISS_powRobo();
+                break;
 
-                case MISS_ATT_RAD_HELI:
-                    *(int *)val.value.p_data = getMISS_radHeli();
-                    break;
+            case MISS_ATT_RAD_HELI:
+                *(int *)val.value.p_data = getMISS_radHeli();
+                break;
 
-                case MISS_ATT_RAD_TANK:
-                    *(int *)val.value.p_data = getMISS_radTank();
-                    break;
+            case MISS_ATT_RAD_TANK:
+                *(int *)val.value.p_data = getMISS_radTank();
+                break;
 
-                case MISS_ATT_RAD_FLYER:
-                    *(int *)val.value.p_data = getMISS_radFlyer();
-                    break;
+            case MISS_ATT_RAD_FLYER:
+                *(int *)val.value.p_data = getMISS_radFlyer();
+                break;
 
-                case MISS_ATT_RAD_ROBO:
-                    *(int *)val.value.p_data = getMISS_radRobo();
-                    break;
+            case MISS_ATT_RAD_ROBO:
+                *(int *)val.value.p_data = getMISS_radRobo();
+                break;
 
-                case MISS_ATT_STHEIGHT:
-                    *(int *)val.value.p_data = getMISS_startHeight();
-                    break;
+            case MISS_ATT_STHEIGHT:
+                *(int *)val.value.p_data = getMISS_startHeight();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -1252,13 +1243,13 @@ size_t NC_STACK_ypamissile::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 68:
         AI_layer1( (update_msg *)data );
         return 1;

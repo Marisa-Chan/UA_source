@@ -9,7 +9,7 @@
 
 #include "glob_funcs.h"
 
-const NewClassDescr NC_STACK_image::description("image.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_image::description("image.class", &newinstance);
 
 NC_STACK_image::NC_STACK_image()
 {
@@ -19,22 +19,7 @@ NC_STACK_image::~NC_STACK_image()
 {
 }
 
-NC_STACK_image *NC_STACK_image::CInit(IDVList *stak)
-{
-    NC_STACK_image *tmp = new NC_STACK_image();
-    if (!tmp)
-        return NULL;
-
-    if (!tmp->func0(stak))
-    {
-        delete tmp;
-        return NULL;
-    }
-
-    return tmp;
-}
-
-size_t NC_STACK_image::func0(IDVList *stak)
+size_t NC_STACK_image::func0(IDVList &stak)
 {
     if ( !NC_STACK_bitmap::func0(stak) )
         return 0;
@@ -120,9 +105,9 @@ static SDL_RWops * MyCustomRWop(FSMgr::FileHandle *fil)
 
 
 
-rsrc * NC_STACK_image::rsrc_func64(IDVList *stak)
+rsrc * NC_STACK_image::rsrc_func64(IDVList &stak)
 {
-    const char *resName = stak->GetConstChar(RSRC_ATT_NAME, NULL);
+    const char *resName = stak.GetConstChar(RSRC_ATT_NAME, NULL);
 //    const char *reassignName = NULL;
 
     if ( !resName )
@@ -150,12 +135,8 @@ rsrc * NC_STACK_image::rsrc_func64(IDVList *stak)
         return NULL;
     }
 
-    IDVList loclist;
-    if (!stak)
-        stak = &loclist;
-
-    stak->Add(BMD_ATT_WIDTH, loaded->w);
-    stak->Add(BMD_ATT_HEIGHT, loaded->h);
+    stak.Add(BMD_ATT_WIDTH, loaded->w);
+    stak.Add(BMD_ATT_HEIGHT, loaded->h);
 
     rsrc *res = NC_STACK_bitmap::rsrc_func64(stak); // bitmap_func64
 

@@ -5,7 +5,7 @@
 #include "utils.h"
 
 
-const NewClassDescr NC_STACK_itimer::description("itimer.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_itimer::description("itimer.class", &newinstance);
 
 size_t NC_STACK_itimer::compatcall(int method_id, void *data)
 {

@@ -2947,7 +2947,7 @@ void sb_0x451034__sub9(_NC_STACK_ypaworld *yw)
         IDVList init_vals;
         init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, off_51825C[i]);
 
-        wis->sklts[i] = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
+        wis->sklts[i] = Nucleus::CInit<NC_STACK_sklt>(init_vals);
 
         if ( wis->sklts[i] )
             wis->sklts_intern[i] = wis->sklts[i]->getSKEL_pSkelet();
@@ -7936,7 +7936,7 @@ void ypaworld_func159__sub0__sub0(_NC_STACK_ypaworld *yw, yw_samples *smpls, con
     IDVList init_vals;
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, filename.c_str());
 
-    NC_STACK_wav *v23 = (NC_STACK_wav *)init_get_class("wav.class", &init_vals);
+    NC_STACK_wav *v23 = Nucleus::CInit<NC_STACK_wav>(init_vals);
 
     set_prefix_replacement("rsrc", rsr);
 

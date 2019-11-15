@@ -221,10 +221,10 @@ struct windd_arg256
 class NC_STACK_display: public NC_STACK_nucleus
 {
 public:
-    virtual size_t func0(IDVList *stak);
+    virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func2(IDVList *stak);
-    virtual size_t func3(IDVList *stak);
+    virtual size_t func2(IDVList &stak);
+    virtual size_t func3(IDVList &stak);
     virtual size_t raster_func192(IDVPair *);
 //    virtual size_t raster_func193(bitmap_intern **out);
     virtual size_t raster_func198(w3d_func198arg *);
@@ -330,7 +330,7 @@ public:
 
     //Data
 public:
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
     __NC_STACK_display stack__display;
 

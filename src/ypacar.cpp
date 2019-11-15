@@ -12,10 +12,10 @@
 #include "log.h"
 
 
-const NewClassDescr NC_STACK_ypacar::description("ypacar.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_ypacar::description("ypacar.class", &newinstance);
 
 
-size_t NC_STACK_ypacar::func0(IDVList *stak)
+size_t NC_STACK_ypacar::func0(IDVList &stak)
 {
     if ( !NC_STACK_ypatank::func0(stak) )
         return 0;
@@ -24,32 +24,29 @@ size_t NC_STACK_ypacar::func0(IDVList *stak)
 
     ypabact.bact_type = BACT_TYPES_CAR;
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BACT_ATT_WORLD:
-                    stack__ypacar.ywo = (NC_STACK_ypaworld *)val.value.p_data;
-                    stack__ypacar.yw = &stack__ypacar.ywo->ypaworld;
-                    break;
+            case BACT_ATT_WORLD:
+                stack__ypacar.ywo = (NC_STACK_ypaworld *)val.value.p_data;
+                stack__ypacar.yw = &stack__ypacar.ywo->ypaworld;
+                break;
 
-                case CAR_ATT_KAMIKAZE:
-                    setCAR_kamikaze(val.value.i_data);
-                    break;
+            case CAR_ATT_KAMIKAZE:
+                setCAR_kamikaze(val.value.i_data);
+                break;
 
-                case CAR_ATT_BLAST:
-                    setCAR_blast(val.value.i_data);
-                    break;
+            case CAR_ATT_BLAST:
+                setCAR_blast(val.value.i_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -62,31 +59,28 @@ size_t NC_STACK_ypacar::func1()
     return NC_STACK_ypatank::func1();
 }
 
-size_t NC_STACK_ypacar::func2(IDVList *stak)
+size_t NC_STACK_ypacar::func2(IDVList &stak)
 {
     NC_STACK_ypatank::func2(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case CAR_ATT_KAMIKAZE:
-                    setCAR_kamikaze(val.value.i_data);
-                    break;
+            case CAR_ATT_KAMIKAZE:
+                setCAR_kamikaze(val.value.i_data);
+                break;
 
-                case CAR_ATT_BLAST:
-                    setCAR_blast(val.value.i_data);
-                    break;
+            case CAR_ATT_BLAST:
+                setCAR_blast(val.value.i_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -94,31 +88,28 @@ size_t NC_STACK_ypacar::func2(IDVList *stak)
     return 1;
 }
 
-size_t NC_STACK_ypacar::func3(IDVList *stak)
+size_t NC_STACK_ypacar::func3(IDVList &stak)
 {
     NC_STACK_ypatank::func3(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case CAR_ATT_KAMIKAZE:
-                    *(int *)val.value.p_data = getCAR_kamikaze();
-                    break;
+            case CAR_ATT_KAMIKAZE:
+                *(int *)val.value.p_data = getCAR_kamikaze();
+                break;
 
-                case CAR_ATT_BLAST:
-                    *(int *)val.value.p_data = getCAR_blast();
-                    break;
+            case CAR_ATT_BLAST:
+                *(int *)val.value.p_data = getCAR_blast();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -1103,13 +1094,13 @@ size_t NC_STACK_ypacar::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 71:
         User_layer( (update_msg *)data );
         return 1;

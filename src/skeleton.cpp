@@ -17,24 +17,9 @@
 #include <float.h>
 
 
-const NewClassDescr NC_STACK_skeleton::description("skeleton.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_skeleton::description("skeleton.class", &newinstance);
 
-NC_STACK_skeleton *NC_STACK_skeleton::CInit(IDVList *stak)
-{
-    NC_STACK_skeleton *tmp = new NC_STACK_skeleton();
-    if (!tmp)
-        return NULL;
-
-    if (!tmp->func0(stak))
-    {
-        delete tmp;
-        return NULL;
-    }
-
-    return tmp;
-};
-
-size_t NC_STACK_skeleton::func0(IDVList *stak)
+size_t NC_STACK_skeleton::func0(IDVList &stak)
 {
     if ( !NC_STACK_rsrc::func0(stak) )
         return 0;
@@ -44,34 +29,31 @@ size_t NC_STACK_skeleton::func0(IDVList *stak)
     return 1;
 }
 
-size_t NC_STACK_skeleton::func3(IDVList *stak)
+size_t NC_STACK_skeleton::func3(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case SKEL_ATT_PSKELET:
-                    *(UAskeleton::Data **)val.value.p_data = getSKEL_pSkelet();
-                    break;
-                case SKEL_ATT_POINTSCNT:
-                    *(int *)val.value.p_data = getSKEL_pntCount();
-                    break;
-                case SKEL_ATT_SENCNT:
-                    *(int *)val.value.p_data = getSKEL_senCount();
-                    break;
-                case SKEL_ATT_POLYCNT:
-                    *(int *)val.value.p_data = getSKEL_polyCount();
-                    break;
+            case SKEL_ATT_PSKELET:
+                *(UAskeleton::Data **)val.value.p_data = getSKEL_pSkelet();
+                break;
+            case SKEL_ATT_POINTSCNT:
+                *(int *)val.value.p_data = getSKEL_pntCount();
+                break;
+            case SKEL_ATT_SENCNT:
+                *(int *)val.value.p_data = getSKEL_senCount();
+                break;
+            case SKEL_ATT_POLYCNT:
+                *(int *)val.value.p_data = getSKEL_polyCount();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -80,14 +62,14 @@ size_t NC_STACK_skeleton::func3(IDVList *stak)
 }
 
 // Create skeleton resource node and fill rsrc field data
-rsrc * NC_STACK_skeleton::rsrc_func64(IDVList *stak)
+rsrc * NC_STACK_skeleton::rsrc_func64(IDVList &stak)
 {
     rsrc *res = NC_STACK_rsrc::rsrc_func64(stak);
 
     if ( !res )
         return NULL;
 
-    int elm_num = stak->Get(SKEL_ATT_POINTSCNT, 0);
+    int elm_num = stak.Get(SKEL_ATT_POINTSCNT, 0);
 
     if (!elm_num)
     {
@@ -127,7 +109,7 @@ rsrc * NC_STACK_skeleton::rsrc_func64(IDVList *stak)
 
     sklt->POO_NUM = elm_num;
 
-    int sen_count = stak->Get(SKEL_ATT_SENCNT, 0);
+    int sen_count = stak.Get(SKEL_ATT_SENCNT, 0);
 
     if (sen_count > 0)
     {
@@ -142,8 +124,8 @@ rsrc * NC_STACK_skeleton::rsrc_func64(IDVList *stak)
         }
     }
 
-    int pol_count = stak->Get(SKEL_ATT_POLYCNT, 0);
-    int num_indexes = stak->Get(SKEL_ATT_POLYPNTCNT, 0);
+    int pol_count = stak.Get(SKEL_ATT_POLYCNT, 0);
+    int num_indexes = stak.Get(SKEL_ATT_POLYPNTCNT, 0);
 
     if (pol_count > 0)
     {
@@ -422,11 +404,11 @@ size_t NC_STACK_skeleton::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 3:
-        return (size_t)func3( (IDVList *)data );
+        return (size_t)func3( *(IDVList *)data );
     case 64:
-        return (size_t)rsrc_func64( (IDVList *)data );
+        return (size_t)rsrc_func64( *(IDVList *)data );
     case 65:
         return (size_t)rsrc_func65( (rsrc *)data );
     case 128:

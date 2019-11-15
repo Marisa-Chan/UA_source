@@ -13,7 +13,7 @@
 
 
 
-const NewClassDescr NC_STACK_ypabact::description("ypabact.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_ypabact::description("ypabact.class", &newinstance);
 
 
 int ypabact_id = 1;
@@ -147,7 +147,7 @@ __NC_STACK_ypabact::__NC_STACK_ypabact()
 };
 
 
-size_t NC_STACK_ypabact::func0(IDVList *stak)
+size_t NC_STACK_ypabact::func0(IDVList &stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
@@ -208,7 +208,7 @@ size_t NC_STACK_ypabact::func0(IDVList *stak)
     ypabact.sdist_bact = 100.0;
     ypabact.oflags = BACT_OFLAG_EXACTCOLL;
 
-    NC_STACK_ypaworld *ywo = (NC_STACK_ypaworld *)stak->GetPointer(BACT_ATT_WORLD, 0);// get ypaworld
+    NC_STACK_ypaworld *ywo = (NC_STACK_ypaworld *)stak.GetPointer(BACT_ATT_WORLD, 0);// get ypaworld
     ypabact.ywo = ywo;
 
     if ( ywo )
@@ -216,122 +216,119 @@ size_t NC_STACK_ypabact::func0(IDVList *stak)
         _NC_STACK_ypaworld *yw = &ywo->ypaworld;
         ypabact.yw = yw;
 
-        if (stak)
+        for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
         {
-            for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+            IDVPair &val = it->second;
+
+            if ( !val.skip() )
             {
-                IDVPair &val = it->second;
-
-                if ( !val.skip() )
+                switch (val.id)
                 {
-                    switch (val.id)
+                case BACT_ATT_VIEWER:
+                {
+                    uamessage_viewer viewMsg;
+
+                    if ( val.value.i_data )
                     {
-                    case BACT_ATT_VIEWER:
+                        ywo->ypaworld_func131(&ypabact); //Set current bact
+
+                        ypabact.oflags |= BACT_OFLAG_VIEWER;
+
+                        if ( yw->isNetGame )
+                            viewMsg.view = 1;
+
+                        SFXEngine::SFXe.startSound(&ypabact.soundcarrier, 8);
+                    }
+                    else
                     {
-                        uamessage_viewer viewMsg;
+                        ypabact.oflags &= ~BACT_OFLAG_VIEWER;
 
-                        if ( val.value.i_data )
+                        if ( yw->isNetGame )
+                            viewMsg.view = 0;
+
+                        SFXEngine::SFXe.sub_424000(&ypabact.soundcarrier, 8);
+                    }
+
+                    if ( yw->isNetGame ) // Network message send routine?
+                    {
+                        viewMsg.msgID = UAMSG_VIEWER;
+                        viewMsg.owner = ypabact.owner;
+                        viewMsg.classID = ypabact.bact_type;
+                        viewMsg.id = ypabact.gid;
+
+                        if ( viewMsg.classID == 4 )
                         {
-                            ywo->ypaworld_func131(&ypabact); //Set current bact
-
-                            ypabact.oflags |= BACT_OFLAG_VIEWER;
-
-                            if ( yw->isNetGame )
-                                viewMsg.view = 1;
-
-                            SFXEngine::SFXe.startSound(&ypabact.soundcarrier, 8);
-                        }
-                        else
-                        {
-                            ypabact.oflags &= ~BACT_OFLAG_VIEWER;
-
-                            if ( yw->isNetGame )
-                                viewMsg.view = 0;
-
-                            SFXEngine::SFXe.sub_424000(&ypabact.soundcarrier, 8);
+                            NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(this);
+                            __NC_STACK_ypabact *a4 = miss->getMISS_launcher();
+                            viewMsg.launcher = a4->gid;
                         }
 
-                        if ( yw->isNetGame ) // Network message send routine?
-                        {
-                            viewMsg.msgID = UAMSG_VIEWER;
-                            viewMsg.owner = ypabact.owner;
-                            viewMsg.classID = ypabact.bact_type;
-                            viewMsg.id = ypabact.gid;
+                        yw_arg181 ywMsg;
+                        ywMsg.recvID = 0;
+                        ywMsg.recvFlags = 2;
+                        ywMsg.data = &viewMsg;
+                        ywMsg.garant = 1;
+                        ywMsg.dataSize = sizeof(viewMsg);
 
-                            if ( viewMsg.classID == 4 )
-                            {
-                                NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(this);
-                                __NC_STACK_ypabact *a4 = miss->getMISS_launcher();
-                                viewMsg.launcher = a4->gid;
-                            }
+                        ywo->ypaworld_func181(&ywMsg);
+                    }
+                }
+                break;
 
-                            yw_arg181 ywMsg;
-                            ywMsg.recvID = 0;
-                            ywMsg.recvFlags = 2;
-                            ywMsg.data = &viewMsg;
-                            ywMsg.garant = 1;
-                            ywMsg.dataSize = sizeof(viewMsg);
-
-                            ywo->ypaworld_func181(&ywMsg);
-                        }
+                case BACT_ATT_INPUTTING:
+                    if ( val.value.i_data )
+                    {
+                        ypabact.oflags |= BACT_OFLAG_USERINPT;
+                        ywo->setYW_userVehicle(this);
+                    }
+                    else
+                    {
+                        ypabact.oflags &= ~BACT_OFLAG_USERINPT;
                     }
                     break;
 
-                    case BACT_ATT_INPUTTING:
-                        if ( val.value.i_data )
-                        {
-                            ypabact.oflags |= BACT_OFLAG_USERINPT;
-                            ywo->setYW_userVehicle(this);
-                        }
-                        else
-                        {
-                            ypabact.oflags &= ~BACT_OFLAG_USERINPT;
-                        }
-                        break;
+                case BACT_ATT_EXACTCOLL:
+                    setBACT_exactCollisions(val.value.i_data);
+                    break;
 
-                    case BACT_ATT_EXACTCOLL:
-                        setBACT_exactCollisions(val.value.i_data);
-                        break;
+                case BACT_ATT_BACTCOLL:
+                    setBACT_bactCollisions ( val.value.i_data );
+                    break;
 
-                    case BACT_ATT_BACTCOLL:
-                        setBACT_bactCollisions ( val.value.i_data );
-                        break;
+                case BACT_ATT_AIRCONST:
+                    setBACT_airconst(val.value.i_data);
+                    break;
 
-                    case BACT_ATT_AIRCONST:
-                        setBACT_airconst(val.value.i_data);
-                        break;
+                case BACT_ATT_LANDINGONWAIT:
+                    setBACT_landingOnWait ( val.value.i_data );
+                    break;
 
-                    case BACT_ATT_LANDINGONWAIT:
-                        setBACT_landingOnWait ( val.value.i_data );
-                        break;
+                case BACT_ATT_YOURLS:
+                    setBACT_yourLastSeconds(val.value.i_data);
+                    break;
 
-                    case BACT_ATT_YOURLS:
-                        setBACT_yourLastSeconds(val.value.i_data);
-                        break;
+                case BACT_ATT_VISPROT:
+                    setBACT_visProto( (NC_STACK_base *)val.value.p_data);
+                    break;
 
-                    case BACT_ATT_VISPROT:
-                        setBACT_visProto( (NC_STACK_base *)val.value.p_data);
-                        break;
+                case BACT_ATT_AGGRESSION:
+                    setBACT_aggression(val.value.i_data);
+                    break;
 
-                    case BACT_ATT_AGGRESSION:
-                        setBACT_aggression(val.value.i_data);
-                        break;
+                case BACT_ATT_VPTRANSFORM:
+                    setBACT_vpTransform( (TFEngine::TForm3D *)val.value.p_data);
+                    break;
 
-                    case BACT_ATT_VPTRANSFORM:
-                        setBACT_vpTransform( (TFEngine::TForm3D *)val.value.p_data);
-                        break;
+                case BACT_ATT_EXTRAVIEWER:
+                    setBACT_extraViewer ( val.value.i_data );
+                    break;
 
-                    case BACT_ATT_EXTRAVIEWER:
-                        setBACT_extraViewer ( val.value.i_data );
-                        break;
+                case BACT_ATT_ALWAYSRENDER:
+                    setBACT_alwaysRender ( val.value.i_data );
+                    break;
 
-                    case BACT_ATT_ALWAYSRENDER:
-                        setBACT_alwaysRender ( val.value.i_data );
-                        break;
-
-                    default:
-                        break;
-                    }
+                default:
+                    break;
                 }
             }
         }
@@ -491,71 +488,68 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
     }
 }
 
-size_t NC_STACK_ypabact::func2(IDVList *stak)
+size_t NC_STACK_ypabact::func2(IDVList &stak)
 {
     NC_STACK_nucleus::func2(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BACT_ATT_VIEWER:
-                    setBACT_viewer(val.value.i_data);
-                    break;
+            case BACT_ATT_VIEWER:
+                setBACT_viewer(val.value.i_data);
+                break;
 
-                case BACT_ATT_INPUTTING:
-                    setBACT_inputting(val.value.i_data);
-                    break;
+            case BACT_ATT_INPUTTING:
+                setBACT_inputting(val.value.i_data);
+                break;
 
-                case BACT_ATT_EXACTCOLL:
-                    setBACT_exactCollisions ( val.value.i_data );
-                    break;
+            case BACT_ATT_EXACTCOLL:
+                setBACT_exactCollisions ( val.value.i_data );
+                break;
 
-                case BACT_ATT_BACTCOLL:
-                    setBACT_bactCollisions ( val.value.i_data );
-                    break;
+            case BACT_ATT_BACTCOLL:
+                setBACT_bactCollisions ( val.value.i_data );
+                break;
 
-                case BACT_ATT_AIRCONST:
-                    setBACT_airconst(val.value.i_data);
-                    break;
+            case BACT_ATT_AIRCONST:
+                setBACT_airconst(val.value.i_data);
+                break;
 
-                case BACT_ATT_LANDINGONWAIT:
-                    setBACT_landingOnWait ( val.value.i_data );
-                    break;
+            case BACT_ATT_LANDINGONWAIT:
+                setBACT_landingOnWait ( val.value.i_data );
+                break;
 
-                case BACT_ATT_YOURLS:
-                    setBACT_yourLastSeconds(val.value.i_data);
-                    break;
+            case BACT_ATT_YOURLS:
+                setBACT_yourLastSeconds(val.value.i_data);
+                break;
 
-                case BACT_ATT_VISPROT:
-                    setBACT_visProto( (NC_STACK_base *)val.value.p_data);
-                    break;
+            case BACT_ATT_VISPROT:
+                setBACT_visProto( (NC_STACK_base *)val.value.p_data);
+                break;
 
-                case BACT_ATT_AGGRESSION:
-                    setBACT_aggression(val.value.i_data);
-                    break;
+            case BACT_ATT_AGGRESSION:
+                setBACT_aggression(val.value.i_data);
+                break;
 
-                case BACT_ATT_VPTRANSFORM:
-                    setBACT_vpTransform((TFEngine::TForm3D *)val.value.p_data);
-                    break;
+            case BACT_ATT_VPTRANSFORM:
+                setBACT_vpTransform((TFEngine::TForm3D *)val.value.p_data);
+                break;
 
-                case BACT_ATT_EXTRAVIEWER:
-                    setBACT_extraViewer ( val.value.i_data );
-                    break;
+            case BACT_ATT_EXTRAVIEWER:
+                setBACT_extraViewer ( val.value.i_data );
+                break;
 
-                case BACT_ATT_ALWAYSRENDER:
-                    setBACT_alwaysRender ( val.value.i_data );
-                    break;
+            case BACT_ATT_ALWAYSRENDER:
+                setBACT_alwaysRender ( val.value.i_data );
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -563,95 +557,92 @@ size_t NC_STACK_ypabact::func2(IDVList *stak)
     return 1;
 }
 
-size_t NC_STACK_ypabact::func3(IDVList *stak)
+size_t NC_STACK_ypabact::func3(IDVList &stak)
 {
     NC_STACK_nucleus::func3(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BACT_ATT_WORLD:
-                    *(NC_STACK_ypaworld **)val.value.p_data = getBACT_pWorld();
-                    break;
+            case BACT_ATT_WORLD:
+                *(NC_STACK_ypaworld **)val.value.p_data = getBACT_pWorld();
+                break;
 
-                case BACT_ATT_PTRANSFORM:
-                    *(TFEngine::TForm3D **)val.value.p_data = getBACT_pTransform();
-                    break;
+            case BACT_ATT_PTRANSFORM:
+                *(TFEngine::TForm3D **)val.value.p_data = getBACT_pTransform();
+                break;
 
-                case BACT_ATT_PBACT:
-                    *(__NC_STACK_ypabact **)val.value.p_data = getBACT_pBact();
-                    break;
+            case BACT_ATT_PBACT:
+                *(__NC_STACK_ypabact **)val.value.p_data = getBACT_pBact();
+                break;
 
-                case BACT_ATT_VIEWER:
-                    *(int *)val.value.p_data = getBACT_viewer();
-                    break;
+            case BACT_ATT_VIEWER:
+                *(int *)val.value.p_data = getBACT_viewer();
+                break;
 
-                case BACT_ATT_INPUTTING:
-                    *(int *)val.value.p_data = getBACT_inputting();
-                    break;
+            case BACT_ATT_INPUTTING:
+                *(int *)val.value.p_data = getBACT_inputting();
+                break;
 
-                case BACT_ATT_EXACTCOLL:
-                    *(int *)val.value.p_data = getBACT_exactCollisions();
-                    break;
+            case BACT_ATT_EXACTCOLL:
+                *(int *)val.value.p_data = getBACT_exactCollisions();
+                break;
 
-                case BACT_ATT_BACTCOLL:
-                    *(int *)val.value.p_data = getBACT_bactCollisions();
-                    break;
+            case BACT_ATT_BACTCOLL:
+                *(int *)val.value.p_data = getBACT_bactCollisions();
+                break;
 
-                case BACT_ATT_ATTACKLIST:
-                    *(nlist **)val.value.p_data = getBACT_attackList();
-                    break;
+            case BACT_ATT_ATTACKLIST:
+                *(nlist **)val.value.p_data = getBACT_attackList();
+                break;
 
-                case BACT_ATT_LANDINGONWAIT:
-                    *(int *)val.value.p_data = getBACT_landingOnWait();
-                    break;
+            case BACT_ATT_LANDINGONWAIT:
+                *(int *)val.value.p_data = getBACT_landingOnWait();
+                break;
 
-                case BACT_ATT_YOURLS:
-                    *(int *)val.value.p_data = getBACT_yourLastSeconds();
-                    break;
+            case BACT_ATT_YOURLS:
+                *(int *)val.value.p_data = getBACT_yourLastSeconds();
+                break;
 
-                case BACT_ATT_VISPROT:
-                    *(NC_STACK_base **)val.value.p_data = getBACT_visProto();
-                    break;
+            case BACT_ATT_VISPROT:
+                *(NC_STACK_base **)val.value.p_data = getBACT_visProto();
+                break;
 
-                case BACT_ATT_AGGRESSION:
-                    *(int *)val.value.p_data = getBACT_aggression();
-                    break;
+            case BACT_ATT_AGGRESSION:
+                *(int *)val.value.p_data = getBACT_aggression();
+                break;
 
-                case BACT_ATT_COLLNODES:
-                    *(rbcolls **)val.value.p_data = getBACT_collNodes();
-                    break;
+            case BACT_ATT_COLLNODES:
+                *(rbcolls **)val.value.p_data = getBACT_collNodes();
+                break;
 
-                case BACT_ATT_VPTRANSFORM:
-                    *(TFEngine::TForm3D **)val.value.p_data = getBACT_vpTransform();
-                    break;
+            case BACT_ATT_VPTRANSFORM:
+                *(TFEngine::TForm3D **)val.value.p_data = getBACT_vpTransform();
+                break;
 
-                case BACT_ATT_EXTRAVIEWER:
-                    *(int *)val.value.p_data = getBACT_extraViewer();
-                    break;
+            case BACT_ATT_EXTRAVIEWER:
+                *(int *)val.value.p_data = getBACT_extraViewer();
+                break;
 
-                case BACT_ATT_P_ATTACKNODE:
-                    *(bact_node **)val.value.p_data = getBACT_primAttackNode();
-                    break;
+            case BACT_ATT_P_ATTACKNODE:
+                *(bact_node **)val.value.p_data = getBACT_primAttackNode();
+                break;
 
-                case BACT_ATT_S_ATTACKNODE:
-                    *(bact_node **)val.value.p_data = getBACT_secnAttackNode();
-                    break;
+            case BACT_ATT_S_ATTACKNODE:
+                *(bact_node **)val.value.p_data = getBACT_secnAttackNode();
+                break;
 
-                case BACT_ATT_ALWAYSRENDER:
-                    *(int *)val.value.p_data = getBACT_alwaysRender();
-                    break;
+            case BACT_ATT_ALWAYSRENDER:
+                *(int *)val.value.p_data = getBACT_alwaysRender();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -8677,13 +8668,13 @@ size_t NC_STACK_ypabact::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return (size_t)func2( (IDVList *)data );
+        return (size_t)func2( *(IDVList *)data );
     case 3:
-        return (size_t)func3( (IDVList *)data );
+        return (size_t)func3( *(IDVList *)data );
     case 65:
         Update( (update_msg *)data );
         return 1;

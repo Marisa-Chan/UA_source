@@ -9,7 +9,7 @@
 #include "font.h"
 
 
-const NewClassDescr NC_STACK_button::description("button.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_button::description("button.class", &newinstance);
 
 void NC_STACK_button::clear()
 {
@@ -32,7 +32,7 @@ void NC_STACK_button::clear()
     screen_height = 0;
 }
 
-size_t NC_STACK_button::func0(IDVList *stak)
+size_t NC_STACK_button::func0(IDVList &stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
@@ -45,35 +45,32 @@ size_t NC_STACK_button::func0(IDVList *stak)
     field_19D = 99;
     field_19E = 32;
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BTN_ATT_X:
-                    setBTN_x(val.value.i_data);
-                    break;
-                case BTN_ATT_Y:
-                    setBTN_y(val.value.i_data);
-                    break;
-                case BTN_ATT_W:
-                    setBTN_w(val.value.i_data);
-                    break;
-                case BTN_ATT_H:
-                    setBTN_h(val.value.i_data);
-                    break;
-                case BTN_ATT_CHARS:
-                    setBTN_chars((const char *)val.value.p_data);
-                    break;
+            case BTN_ATT_X:
+                setBTN_x(val.value.i_data);
+                break;
+            case BTN_ATT_Y:
+                setBTN_y(val.value.i_data);
+                break;
+            case BTN_ATT_W:
+                setBTN_w(val.value.i_data);
+                break;
+            case BTN_ATT_H:
+                setBTN_h(val.value.i_data);
+                break;
+            case BTN_ATT_CHARS:
+                setBTN_chars((const char *)val.value.p_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -106,39 +103,36 @@ size_t NC_STACK_button::func1()
     return NC_STACK_nucleus::func1();
 }
 
-size_t NC_STACK_button::func2(IDVList *stak)
+size_t NC_STACK_button::func2(IDVList &stak)
 {
     NC_STACK_nucleus::func2(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BTN_ATT_X:
-                    setBTN_x(val.value.i_data);
-                    break;
-                case BTN_ATT_Y:
-                    setBTN_y(val.value.i_data);
-                    break;
-                case BTN_ATT_W:
-                    setBTN_w(val.value.i_data);
-                    break;
-                case BTN_ATT_H:
-                    setBTN_h(val.value.i_data);
-                    break;
-                case BTN_ATT_CHARS:
-                    setBTN_chars((const char *)val.value.p_data);
-                    break;
+            case BTN_ATT_X:
+                setBTN_x(val.value.i_data);
+                break;
+            case BTN_ATT_Y:
+                setBTN_y(val.value.i_data);
+                break;
+            case BTN_ATT_W:
+                setBTN_w(val.value.i_data);
+                break;
+            case BTN_ATT_H:
+                setBTN_h(val.value.i_data);
+                break;
+            case BTN_ATT_CHARS:
+                setBTN_chars((const char *)val.value.p_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -146,39 +140,36 @@ size_t NC_STACK_button::func2(IDVList *stak)
     return 1;
 }
 
-size_t NC_STACK_button::func3(IDVList *stak)
+size_t NC_STACK_button::func3(IDVList &stak)
 {
     NC_STACK_nucleus::func3(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BTN_ATT_X:
-                    *(int *)val.value.p_data = getBTN_x();
-                    break;
-                case BTN_ATT_Y:
-                    *(int *)val.value.p_data = getBTN_y();
-                    break;
-                case BTN_ATT_W:
-                    *(int *)val.value.p_data = getBTN_w();
-                    break;
-                case BTN_ATT_H:
-                    *(int *)val.value.p_data = getBTN_h();
-                    break;
-                case BTN_ATT_PBTN:
-                    *(NC_STACK_button **)val.value.p_data = this;
-                    break;
+            case BTN_ATT_X:
+                *(int *)val.value.p_data = getBTN_x();
+                break;
+            case BTN_ATT_Y:
+                *(int *)val.value.p_data = getBTN_y();
+                break;
+            case BTN_ATT_W:
+                *(int *)val.value.p_data = getBTN_w();
+                break;
+            case BTN_ATT_H:
+                *(int *)val.value.p_data = getBTN_h();
+                break;
+            case BTN_ATT_PBTN:
+                *(NC_STACK_button **)val.value.p_data = this;
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -1038,13 +1029,13 @@ size_t NC_STACK_button::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return (size_t)func2( (IDVList *)data );
+        return (size_t)func2( *(IDVList *)data );
     case 3:
-        return (size_t)func3( (IDVList *)data );
+        return (size_t)func3( *(IDVList *)data );
     case 64:
         return (size_t)button_func64( (button_64_arg *)data );
     case 65:

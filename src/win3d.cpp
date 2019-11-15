@@ -27,7 +27,7 @@ struct gfxMode
 std::list<gfxMode *> graphicsModes;
 SDL_Cursor *cursors[11];
 
-const NewClassDescr NC_STACK_win3d::description("win3d.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_win3d::description("win3d.class", &newinstance);
 
 key_value_stru NC_STACK_win3d::win3d_keys[21] =
 {
@@ -800,7 +800,7 @@ int NC_STACK_win3d::load_font(const char *fontname)
     return 0;
 }
 
-size_t NC_STACK_win3d::windd_func0(IDVList *stak)
+size_t NC_STACK_win3d::windd_func0(IDVList &stak)
 {
     int txt16bit_def = read_yes_no_status("env/txt16bit.def", 1);
     int drawprim_def = read_yes_no_status("env/drawprim.def", 0);
@@ -826,7 +826,7 @@ size_t NC_STACK_win3d::windd_func0(IDVList *stak)
     }
 
 
-    int v7 = stak->Get(ATT_DISPLAY_ID, 0);
+    int v7 = stak.Get(ATT_DISPLAY_ID, 0);
 
     gfxMode *picked = NULL;
     if ( v7 )
@@ -851,8 +851,8 @@ size_t NC_STACK_win3d::windd_func0(IDVList *stak)
     log_d3dlog(" picked mode %s\n", picked->name.c_str());
 
 
-    stak->Add(ATT_WIDTH, picked->w);
-    stak->Add(ATT_HEIGHT, picked->h);
+    stak.Add(ATT_WIDTH, picked->w);
+    stak.Add(ATT_HEIGHT, picked->h);
 
     if ( !NC_STACK_display::func0(stak) )
         return 0;
@@ -942,7 +942,7 @@ size_t NC_STACK_win3d::windd_func0(IDVList *stak)
 
 
 
-size_t NC_STACK_win3d::func0(IDVList *stak)
+size_t NC_STACK_win3d::func0(IDVList &stak)
 {
     get_keyvalue_from_ini(0, win3d_keys, 21);
 
@@ -1015,41 +1015,38 @@ size_t NC_STACK_win3d::func1()
     return NC_STACK_display::func1();
 }
 
-size_t NC_STACK_win3d::func2(IDVList *stak)
+size_t NC_STACK_win3d::func2(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case WDD_ATT_CURSOR:
-                    setWDD_cursor(val.value.i_data);
-                    break;
+            case WDD_ATT_CURSOR:
+                setWDD_cursor(val.value.i_data);
+                break;
 
-                case WDD_ATT_DIS_LOWRES:
-                    setWDD_disLowRes(val.value.i_data);
-                    break;
+            case WDD_ATT_DIS_LOWRES:
+                setWDD_disLowRes(val.value.i_data);
+                break;
 
-                case WDD_ATT_16BIT_TEX:
-                    setWDD_16bitTex(val.value.i_data);
-                    break;
+            case WDD_ATT_16BIT_TEX:
+                setWDD_16bitTex(val.value.i_data);
+                break;
 
-                case WDD_ATT_DRAW_PRIM:
-                    setWDD_drawPrim(val.value.i_data);
-                    break;
+            case WDD_ATT_DRAW_PRIM:
+                setWDD_drawPrim(val.value.i_data);
+                break;
 
-                case WDD_ATT_TEXFILT:
-                    setW3D_texFilt(val.value.i_data);
-                    break;
+            case WDD_ATT_TEXFILT:
+                setW3D_texFilt(val.value.i_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -1057,31 +1054,28 @@ size_t NC_STACK_win3d::func2(IDVList *stak)
     return NC_STACK_display::func2(stak);
 }
 
-size_t NC_STACK_win3d::func3(IDVList *stak)
+size_t NC_STACK_win3d::func3(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case ATT_DISPLAY_ID:
-                    *(int *)val.value.p_data = getDISP_displID();
-                    break;
-                case WDD_ATT_16BIT_TEX:
-                    *(int *)val.value.p_data = getWDD_16bitTex();
-                    break;
-                case WDD_ATT_DRAW_PRIM:
-                    *(int *)val.value.p_data = getWDD_drawPrim();
-                    break;
+            case ATT_DISPLAY_ID:
+                *(int *)val.value.p_data = getDISP_displID();
+                break;
+            case WDD_ATT_16BIT_TEX:
+                *(int *)val.value.p_data = getWDD_16bitTex();
+                break;
+            case WDD_ATT_DRAW_PRIM:
+                *(int *)val.value.p_data = getWDD_drawPrim();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -3129,13 +3123,13 @@ size_t NC_STACK_win3d::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        func3( (IDVList *)data );
+        func3( *(IDVList *)data );
         return 1;
     case 192:
         return (size_t)raster_func192( (IDVPair *)data );

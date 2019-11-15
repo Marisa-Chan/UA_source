@@ -11,7 +11,7 @@
 
 
 
-const NewClassDescr NC_STACK_embed::description("embed.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_embed::description("embed.class", &newinstance);
 
 
 
@@ -40,7 +40,7 @@ int sub_41C418(nlist *list, NC_STACK_rsrc *obj)
 }
 
 // Create embed resource node and fill rsrc field data
-size_t NC_STACK_embed::func0(IDVPair *)
+size_t NC_STACK_embed::func0(IDVList &)
 {
     dprintf("MAKE ME %s\n","embed_func0");
     return 0;
@@ -109,7 +109,7 @@ size_t NC_STACK_embed::func5(IFFile **file)
             init_atts.Add(NC_STACK_rsrc::RSRC_ATT_TRYSHARED, 1);
             init_atts.Add(NC_STACK_rsrc::RSRC_ATT_PIFFFILE, mfile);
 
-            NC_STACK_rsrc *embd_class = dynamic_cast<NC_STACK_rsrc *>( init_get_class(classname, &init_atts) );
+            NC_STACK_rsrc *embd_class = Nucleus::CTFInit<NC_STACK_rsrc>(classname, init_atts);
 
             if ( embd_class && !sub_41C418(&embd->embed_objects, embd_class) )
             {
@@ -186,7 +186,7 @@ size_t NC_STACK_embed::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVPair *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 5:

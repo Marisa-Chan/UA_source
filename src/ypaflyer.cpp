@@ -8,34 +8,31 @@
 #include <math.h>
 
 
-const NewClassDescr NC_STACK_ypaflyer::description("ypaflyer.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_ypaflyer::description("ypaflyer.class", &newinstance);
 
-size_t NC_STACK_ypaflyer::func0(IDVList *stak)
+size_t NC_STACK_ypaflyer::func0(IDVList &stak)
 {
     if ( !NC_STACK_ypabact::func0(stak) )
         return 0;
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BACT_ATT_WORLD:
-                    stack__ypaflyer.ywo = (NC_STACK_ypaworld *)val.value.p_data;
-                    stack__ypaflyer.yw = &stack__ypaflyer.ywo->ypaworld;
-                    break;
+            case BACT_ATT_WORLD:
+                stack__ypaflyer.ywo = (NC_STACK_ypaworld *)val.value.p_data;
+                stack__ypaflyer.yw = &stack__ypaflyer.ywo->ypaworld;
+                break;
 
-                case FLY_ATT_TYPE:
-                    setFLY_type(val.value.i_data);
-                    break;
-                default:
-                    break;
-                }
+            case FLY_ATT_TYPE:
+                setFLY_type(val.value.i_data);
+                break;
+            default:
+                break;
             }
         }
     }
@@ -57,27 +54,24 @@ size_t NC_STACK_ypaflyer::func1()
     return NC_STACK_ypabact::func1();
 }
 
-size_t NC_STACK_ypaflyer::func2(IDVList *stak)
+size_t NC_STACK_ypaflyer::func2(IDVList &stak)
 {
     NC_STACK_ypabact::func2(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case FLY_ATT_TYPE:
-                    setFLY_type(val.value.i_data);
-                    break;
+            case FLY_ATT_TYPE:
+                setFLY_type(val.value.i_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -85,27 +79,24 @@ size_t NC_STACK_ypaflyer::func2(IDVList *stak)
     return 1;
 }
 
-size_t NC_STACK_ypaflyer::func3(IDVList *stak)
+size_t NC_STACK_ypaflyer::func3(IDVList &stak)
 {
     NC_STACK_ypabact::func3(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case FLY_ATT_TYPE:
-                    *(int *)val.value.p_data = getFLY_type();
-                    break;
+            case FLY_ATT_TYPE:
+                *(int *)val.value.p_data = getFLY_type();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -1200,14 +1191,14 @@ size_t NC_STACK_ypaflyer::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        func2( (IDVList *)data );
+        func2( *(IDVList *)data );
         return 1;
     case 3:
-        func3( (IDVList *)data );
+        func3( *(IDVList *)data );
         return 1;
     case 70:
         AI_layer3( (update_msg *)data );

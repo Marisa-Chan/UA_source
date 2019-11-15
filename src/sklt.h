@@ -13,7 +13,7 @@ class NC_STACK_sklt: public NC_STACK_skeleton
 public:
     virtual size_t func5(IFFile **file);
     virtual size_t func6(IFFile **file);
-    virtual rsrc * rsrc_func64(IDVList *stak);
+    virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func66(rsrc_func66_arg *arg);
 
     virtual size_t compatcall(int method_id, void *data);
@@ -31,7 +31,7 @@ public:
     };
 
     //Data
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
     __NC_STACK_sklt stack__sklt;
 };

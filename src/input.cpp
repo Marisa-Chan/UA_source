@@ -6,10 +6,10 @@
 #include "input.h"
 
 
-const NewClassDescr NC_STACK_input::description("input.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_input::description("input.class", &newinstance);
 
 
-size_t NC_STACK_input::func0(IDVList *stak)
+size_t NC_STACK_input::func0(IDVList &stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
@@ -172,7 +172,7 @@ int input__set_buttons_and_sliders(__NC_STACK_input *inp, input__func64__params 
                 strcpy(classname, node->driver_name);
                 strcat(classname, ".class");
 
-                node->driver_obj = dynamic_cast<NC_STACK_idev *>( init_get_class(classname, 0) );
+                node->driver_obj = Nucleus::CTFInit<NC_STACK_idev>(classname);
                 if ( node->driver_obj )
                 {
                     const char *v26 = node->keyname;
@@ -207,7 +207,7 @@ size_t NC_STACK_input::input_func64(input__func64__params *arg)
         strcpy(classname, arg->value);
         strcat(classname, ".class");
 
-        inp->wimp = dynamic_cast<NC_STACK_iwimp *>( init_get_class(classname, 0) );
+        inp->wimp = Nucleus::CTFInit<NC_STACK_iwimp>(classname);
         if ( !inp->wimp )
             return 0;
         break;
@@ -219,7 +219,7 @@ size_t NC_STACK_input::input_func64(input__func64__params *arg)
         strcpy(classname, arg->value);
         strcat(classname, ".class");
 
-        inp->timer = dynamic_cast<NC_STACK_itimer *>( init_get_class(classname, 0) );
+        inp->timer = Nucleus::CTFInit<NC_STACK_itimer>(classname);
         if ( !inp->timer )
             return 0;
         break;
@@ -231,7 +231,7 @@ size_t NC_STACK_input::input_func64(input__func64__params *arg)
         strcpy(classname, arg->value);
         strcat(classname, ".class");
 
-        inp->keyboard = dynamic_cast<NC_STACK_idev *>( init_get_class(classname, 0) );
+        inp->keyboard = Nucleus::CTFInit<NC_STACK_idev>(classname);
         if ( !inp->keyboard )
             return 0;
         break;
@@ -478,7 +478,7 @@ size_t NC_STACK_input::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 64:

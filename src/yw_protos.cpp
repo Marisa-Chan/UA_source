@@ -707,7 +707,7 @@ int VhclProtoParser(scrCallBack *arg)
             IDVList init_vals;
             init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
 
-            vhcl->wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
+            vhcl->wireframe = Nucleus::CInit<NC_STACK_sklt>(init_vals);
         }
         else if ( !strcasecmp(_p1, "hud_wireframe") )
         {
@@ -720,7 +720,7 @@ int VhclProtoParser(scrCallBack *arg)
             IDVList init_vals;
             init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
 
-            vhcl->hud_wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
+            vhcl->hud_wireframe = Nucleus::CInit<NC_STACK_sklt>(init_vals);
         }
         else if ( !strcasecmp(_p1, "mg_wireframe") )
         {
@@ -733,7 +733,7 @@ int VhclProtoParser(scrCallBack *arg)
             IDVList init_vals;
             init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
 
-            vhcl->mg_wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
+            vhcl->mg_wireframe = Nucleus::CInit<NC_STACK_sklt>(init_vals);
         }
         else if ( !strcasecmp(_p1, "wpn_wireframe_1") )
         {
@@ -746,7 +746,7 @@ int VhclProtoParser(scrCallBack *arg)
             IDVList init_vals;
             init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
 
-            vhcl->wpn_wireframe_1 = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
+            vhcl->wpn_wireframe_1 = Nucleus::CInit<NC_STACK_sklt>(init_vals);
         }
         else if ( !strcasecmp(_p1, "wpn_wireframe_2") )
         {
@@ -759,7 +759,7 @@ int VhclProtoParser(scrCallBack *arg)
             IDVList init_vals;
             init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
 
-            vhcl->wpn_wireframe_2 = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
+            vhcl->wpn_wireframe_2 = Nucleus::CInit<NC_STACK_sklt>(init_vals);
         }
         else if ( !strcasecmp(_p1, "vo_type") )
         {
@@ -1385,7 +1385,7 @@ int WeaponProtoParser(scrCallBack *arg)
             IDVList init_vals;
             init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, _p2);
 
-            wpn->wireframe = (NC_STACK_sklt *)init_get_class("sklt.class", &init_vals);
+            wpn->wireframe = Nucleus::CInit<NC_STACK_sklt>(init_vals);
         }
         else if ( !strcasecmp(_p1, "dest_fx") )
         {
@@ -2931,7 +2931,7 @@ int ShellSoundsParse_sample(UserData *usr, scrCallBack *arg)
     IDVList init_vals;
     init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, arg->p2);
 
-    v3[v4] = (NC_STACK_wav *)init_get_class("wav.class", &init_vals);
+    v3[v4] = Nucleus::CInit<NC_STACK_wav>(init_vals);
     if ( !v3[v4] )
         return 4;
 
@@ -4543,7 +4543,7 @@ NC_STACK_bitmap * readMapDumpAsILBM(_NC_STACK_ypaworld *yw, const char *mapName,
     init_vals.Add( NC_STACK_bitmap::BMD_ATT_HEIGHT, h);
     init_vals.Add( NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
 
-    NC_STACK_bitmap *v7 = NC_STACK_bitmap::CInit(&init_vals);
+    NC_STACK_bitmap *v7 = Nucleus::CInit<NC_STACK_bitmap>(init_vals);
     if ( !v7 )
         return NULL;
 

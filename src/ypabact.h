@@ -559,10 +559,10 @@ struct bact_arg83
 class NC_STACK_ypabact: public NC_STACK_nucleus
 {
 public:
-    virtual size_t func0(IDVList *stak);
+    virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func2(IDVList *stak);
-    virtual size_t func3(IDVList *stak);
+    virtual size_t func2(IDVList &stak);
+    virtual size_t func3(IDVList &stak);
     virtual void Update(update_msg *arg);
     virtual void Render(baseRender_msg *arg);
     virtual void SetTarget(setTarget_msg *arg);
@@ -702,7 +702,7 @@ public:
     void FixBeyondTheWorld();
 
     //Data
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
     __NC_STACK_ypabact ypabact;
 };

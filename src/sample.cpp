@@ -4,10 +4,10 @@
 #include "utils.h"
 
 
-const NewClassDescr NC_STACK_sample::description("sample.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_sample::description("sample.class", &newinstance);
 
 
-size_t NC_STACK_sample::func0(IDVList *stak)
+size_t NC_STACK_sample::func0(IDVList &stak)
 {
     if ( !NC_STACK_rsrc::func0(stak) )
         return 0;
@@ -17,34 +17,31 @@ size_t NC_STACK_sample::func0(IDVList *stak)
     return 1;
 }
 
-size_t NC_STACK_sample::func3(IDVList *stak)
+size_t NC_STACK_sample::func3(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case SMPL_ATT_PSAMPLE:
-                    *(sampl **)val.value.p_data = getSMPL_pSample();
-                    break;
-                case SMPL_ATT_TYPE:
-                    *(int *)val.value.p_data = getSMPL_type();
-                    break;
-                case SMPL_ATT_LEN:
-                    *(int *)val.value.p_data = getSMPL_len();
-                    break;
-                case SMPL_ATT_BUFFER:
-                    *(void **)val.value.p_data = getSMPL_buffer();
-                    break;
+            case SMPL_ATT_PSAMPLE:
+                *(sampl **)val.value.p_data = getSMPL_pSample();
+                break;
+            case SMPL_ATT_TYPE:
+                *(int *)val.value.p_data = getSMPL_type();
+                break;
+            case SMPL_ATT_LEN:
+                *(int *)val.value.p_data = getSMPL_len();
+                break;
+            case SMPL_ATT_BUFFER:
+                *(void **)val.value.p_data = getSMPL_buffer();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -53,15 +50,15 @@ size_t NC_STACK_sample::func3(IDVList *stak)
 }
 
 
-rsrc * NC_STACK_sample::rsrc_func64(IDVList *stak)
+rsrc * NC_STACK_sample::rsrc_func64(IDVList &stak)
 {
     rsrc *res = NC_STACK_rsrc::rsrc_func64(stak);
 
     if ( !res )
         return NULL;
 
-    int bufsz = stak->Get(SMPL_ATT_LEN, 0);
-    int type = stak->Get(SMPL_ATT_TYPE, 0xFFFF);
+    int bufsz = stak.Get(SMPL_ATT_LEN, 0);
+    int type = stak.Get(SMPL_ATT_TYPE, 0xFFFF);
 
     if ( bufsz == 0 || type == 0xFFFF )
         return res;
@@ -74,7 +71,7 @@ rsrc * NC_STACK_sample::rsrc_func64(IDVList *stak)
     smpl->bufsz = bufsz;
     smpl->field_8 = type;
 
-    void *buf = (void *)stak->GetPointer(SMPL_ATT_BUFFER, NULL);
+    void *buf = (void *)stak.GetPointer(SMPL_ATT_BUFFER, NULL);
 
     if ( !buf )
     {
@@ -158,11 +155,11 @@ size_t NC_STACK_sample::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 64:
-        return (size_t)rsrc_func64( (IDVList *)data );
+        return (size_t)rsrc_func64( *(IDVList *)data );
     case 65:
         return rsrc_func65( (rsrc *)data );
     case 128:

@@ -86,7 +86,7 @@ struct d3dsMaterial
 class NC_STACK_3ds: public NC_STACK_base
 {
 public:
-    virtual size_t func0(IDVList *stak);
+    virtual size_t func0(IDVList &stak);
     virtual size_t func1();
     virtual size_t base_func77(baseRender_msg *arg);
 
@@ -100,8 +100,6 @@ public:
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_3ds();
     };
-
-    static NC_STACK_3ds * CInit(IDVList *stak);
 
     bool readFile(const char *filename);
 
@@ -121,7 +119,7 @@ private:
 
 public:
     //Data
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
 private:
     tUtV *texCoords;

@@ -74,7 +74,7 @@ public:
     };
 
     //Data
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 };
 
 #endif // IDEV_H_INCLUDED

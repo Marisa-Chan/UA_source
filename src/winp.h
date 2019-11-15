@@ -15,10 +15,10 @@ struct __NC_STACK_winp
 class NC_STACK_winp: public NC_STACK_iwimp
 {
 public:
-    virtual size_t func0(IDVList *stak);
+    virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func2(IDVList *stak);
-    virtual size_t func3(IDVList *stk);
+    virtual size_t func2(IDVList &stak);
+    virtual size_t func3(IDVList &stk);
     virtual void idev_func64(win_64arg *arg);
     virtual void idev_func65(win_64arg *arg);
     virtual void idev_func66(winp_66arg *arg);
@@ -81,7 +81,7 @@ protected:
 
 public:
     //Data
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
     __NC_STACK_winp stack__winp;
 };

@@ -729,7 +729,7 @@ int WinMain__sub0__sub1()
     IDVList init_vals;
     init_vals.Add(NC_STACK_ypaworld::YW_ATT_BUILD_DATE, buildDate);
 
-    ypaworld = dynamic_cast<NC_STACK_ypaworld *>( init_get_class("ypaworld.class", &init_vals) );
+    ypaworld = Nucleus::CInit<NC_STACK_ypaworld>(init_vals);
     if ( !ypaworld )
     {
         ypa_log_out("Unable to init ypaworld.class\n");

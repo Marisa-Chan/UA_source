@@ -55,8 +55,6 @@
 #include "3ds.h"
 #include "image.h"
 
-ClassList newclasses;
-
 int set_classes_list()
 {
     engines.__AllocCount = 0;
@@ -64,43 +62,43 @@ int set_classes_list()
     engines.__AllocMax = 0;
     engines.file_handles = 0;
 
-    newclasses.push_back(&NC_STACK_nucleus::description);
-    newclasses.push_back(&NC_STACK_rsrc::description);
-    newclasses.push_back(&NC_STACK_bitmap::description);
-    newclasses.push_back(&NC_STACK_skeleton::description);
-    newclasses.push_back(&NC_STACK_ilbm::description);
-    newclasses.push_back(&NC_STACK_sklt::description);
-    newclasses.push_back(&NC_STACK_ade::description);
-    newclasses.push_back(&NC_STACK_area::description);
-    newclasses.push_back(&NC_STACK_base::description);
-    newclasses.push_back(&NC_STACK_bmpanim::description);
-    newclasses.push_back(&NC_STACK_amesh::description);
-    newclasses.push_back(&NC_STACK_particle::description);
-    newclasses.push_back(&NC_STACK_embed::description);
-    newclasses.push_back(&NC_STACK_idev::description);
-    newclasses.push_back(&NC_STACK_input::description);
-    newclasses.push_back(&NC_STACK_itimer::description);
-    newclasses.push_back(&NC_STACK_iwimp::description);
-    newclasses.push_back(&NC_STACK_sample::description);
-    newclasses.push_back(&NC_STACK_wav::description);
-    newclasses.push_back(&NC_STACK_display::description);
-    newclasses.push_back(&NC_STACK_button::description);
-    newclasses.push_back(&NC_STACK_network::description);
-    newclasses.push_back(&NC_STACK_win3d::description);
-    newclasses.push_back(&NC_STACK_winp::description);
-    newclasses.push_back(&NC_STACK_wintimer::description);
-    newclasses.push_back(&NC_STACK_windp::description);
-    newclasses.push_back(&NC_STACK_ypaworld::description);
-    newclasses.push_back(&NC_STACK_ypabact::description);
-    newclasses.push_back(&NC_STACK_ypatank::description);
-    newclasses.push_back(&NC_STACK_yparobo::description);
-    newclasses.push_back(&NC_STACK_ypamissile::description);
-    newclasses.push_back(&NC_STACK_ypaflyer::description);
-    newclasses.push_back(&NC_STACK_ypacar::description);
-    newclasses.push_back(&NC_STACK_ypaufo::description);
-    newclasses.push_back(&NC_STACK_ypagun::description);
-    newclasses.push_back(&NC_STACK_3ds::description);
-    newclasses.push_back(&NC_STACK_image::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_nucleus::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_rsrc::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_bitmap::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_skeleton::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_ilbm::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_sklt::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_ade::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_area::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_base::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_bmpanim::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_amesh::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_particle::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_embed::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_idev::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_input::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_itimer::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_iwimp::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_sample::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_wav::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_display::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_button::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_network::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_win3d::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_winp::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_wintimer::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_windp::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_ypaworld::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_ypabact::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_ypatank::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_yparobo::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_ypamissile::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_ypaflyer::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_ypacar::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_ypaufo::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_ypagun::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_3ds::description);
+    Nucleus::ClassList::Instance.push_back(NC_STACK_image::description);
     return 1;
 }
 
@@ -121,14 +119,5 @@ void sb_0x411c08()
     sb_0x411c08__sub0();
 }
 
-const NewClassDescr * getClassAllocator(const char *name)
-{
-    for(ClassList::iterator it = newclasses.begin(); it != newclasses.end(); it++)
-    {
-        if (!strcasecmp(name, (*it)->classname.c_str()) )
-            return *it;
-    }
 
-    return NULL;
-}
 

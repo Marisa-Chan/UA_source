@@ -6,26 +6,18 @@
 #include "utils.h"
 
 
-const NewClassDescr NC_STACK_display::description("display.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_display::description("display.class", &newinstance);
 
 
-size_t NC_STACK_display::func0(IDVList *stak)
+size_t NC_STACK_display::func0(IDVList &stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
 
     dprintf("MAKE ME %s\n","raster_func0");
 
-    if (stak)
-    {
-        width = stak->Get(ATT_WIDTH, 0);
-        height = stak->Get(ATT_HEIGHT, 0);
-    }
-    else
-    {
-        width = 0;
-        height = 0;
-    }
+    width = stak.Get(ATT_WIDTH, 0);
+    height = stak.Get(ATT_HEIGHT, 0);
 
 //    rstr->bitm_intern = (bitmap_intern *)getRsrc_pData();
 
@@ -51,45 +43,42 @@ size_t NC_STACK_display::func1()
     return NC_STACK_nucleus::func1();
 }
 
-size_t NC_STACK_display::func2(IDVList *stak)
+size_t NC_STACK_display::func2(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case ATT_PALETTE:
-                    SetPalette((UA_PALETTE *)val.value.p_data);
-                    break;
+            case ATT_PALETTE:
+                SetPalette((UA_PALETTE *)val.value.p_data);
+                break;
 
-                case ATT_FGPEN:
-                    setRSTR_FGpen(val.value.u_data);
-                    break;
+            case ATT_FGPEN:
+                setRSTR_FGpen(val.value.u_data);
+                break;
 
-                case ATT_BGPEN:
-                    setRSTR_BGpen(val.value.u_data);
-                    break;
+            case ATT_BGPEN:
+                setRSTR_BGpen(val.value.u_data);
+                break;
 
-                case ATT_SHADE_RMP:
-                    setRSTR_shdRmp((bitmap_intern *)val.value.p_data);
-                    break;
+            case ATT_SHADE_RMP:
+                setRSTR_shdRmp((bitmap_intern *)val.value.p_data);
+                break;
 
-                case ATT_TRACY_RMP:
-                    setRSTR_trcRmp((bitmap_intern *)val.value.p_data);
-                    break;
+            case ATT_TRACY_RMP:
+                setRSTR_trcRmp((bitmap_intern *)val.value.p_data);
+                break;
 
-                case ATT_FGAPEN:
-                    setRSTR_FGApen(val.value.i_data);
-                    break;
+            case ATT_FGAPEN:
+                setRSTR_FGApen(val.value.i_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -97,10 +86,10 @@ size_t NC_STACK_display::func2(IDVList *stak)
     return NC_STACK_nucleus::func2(stak);
 }
 
-size_t NC_STACK_display::func3(IDVList *stak)
+size_t NC_STACK_display::func3(IDVList &stak)
 {
-    IDVList::iterator it = stak->find(ATT_PALETTE);
-    if ( it != stak->end() )
+    IDVList::iterator it = stak.find(ATT_PALETTE);
+    if ( it != stak.end() )
     {
         *(UA_PALETTE **)it->second.value.p_data = GetPalette();
     }
@@ -491,13 +480,13 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 192:
         return (size_t)raster_func192( (IDVPair *)data );
 //    case 193:

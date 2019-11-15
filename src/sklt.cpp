@@ -18,7 +18,7 @@
 
 
 
-const NewClassDescr NC_STACK_sklt::description("sklt.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_sklt::description("sklt.class", &newinstance);
 
 
 
@@ -57,7 +57,7 @@ size_t NC_STACK_sklt::func5(IFFile **file)
     initVals.Add(RSRC_ATT_NAME, name);
     initVals.Add(RSRC_ATT_TRYSHARED, 1);
 
-    if ( !NC_STACK_skeleton::func0(&initVals) )
+    if ( !NC_STACK_skeleton::func0(initVals) )
         return 0;
 
     return 1;
@@ -79,7 +79,7 @@ size_t NC_STACK_sklt::func6(IFFile **file)
     }
 }
 
-rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, IDVList *stak, IFFile *mfile, int version)
+rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, IDVList &stak, IFFile *mfile, int version)
 {
     IFFile::Context *chunk = mfile->getCurrentChunk();
 
@@ -99,7 +99,7 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, IDVList *stak, IFFile *mfile, int 
     else
         return NULL;
 
-    stak->Add(NC_STACK_skeleton::SKEL_ATT_POINTSCNT, num);
+    stak.Add(NC_STACK_skeleton::SKEL_ATT_POINTSCNT, num);
 
     rsrc *res = obj->NC_STACK_skeleton::rsrc_func64(stak);
     if ( res )
@@ -321,7 +321,7 @@ void sklt_func64__sub0__sub0(UAskeleton::Data *sklt, int id)
     }
 }
 
-rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, IDVList *stak, IFFile *mfile)
+rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, IDVList &stak, IFFile *mfile)
 {
     UAskeleton::Data *sklt = NULL;
     rsrc *res = NULL;
@@ -439,12 +439,12 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, IDVList *stak, IFFile *mfile)
 }
 
 // Create sklt resource node and fill rsrc field data
-rsrc * NC_STACK_sklt::rsrc_func64(IDVList *stak)
+rsrc * NC_STACK_sklt::rsrc_func64(IDVList &stak)
 {
-    const char *filename = stak->GetConstChar(RSRC_ATT_NAME, NULL);
+    const char *filename = stak.GetConstChar(RSRC_ATT_NAME, NULL);
     if ( filename )
     {
-        IFFile *mfile = (IFFile *)stak->GetPointer(RSRC_ATT_PIFFFILE, NULL);
+        IFFile *mfile = (IFFile *)stak.GetPointer(RSRC_ATT_PIFFFILE, NULL);
 
         int selfopened = 0;
 
@@ -553,7 +553,7 @@ size_t NC_STACK_sklt::compatcall(int method_id, void *data)
     case 6:
         return (size_t)func6( (IFFile **)data );
     case 64:
-        return (size_t)rsrc_func64( (IDVList *)data );
+        return (size_t)rsrc_func64( *(IDVList *)data );
     case 66:
         return (size_t)rsrc_func66( (rsrc_func66_arg *)data );
     default:

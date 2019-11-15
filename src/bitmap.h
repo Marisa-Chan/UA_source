@@ -43,11 +43,11 @@ struct bitmap_arg130
 class NC_STACK_bitmap: public NC_STACK_rsrc
 {
 public:
-    virtual size_t func0(IDVList *stak);
+    virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func2(IDVList *stak);
-    virtual size_t func3(IDVList *stak);
-    virtual rsrc * rsrc_func64(IDVList *stak);
+    virtual size_t func2(IDVList &stak);
+    virtual size_t func3(IDVList &stak);
+    virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func65(rsrc *pres);
     virtual size_t bitmap_func128(IDVPair *);
     virtual size_t bitmap_func129(IDVPair *);
@@ -66,8 +66,6 @@ public:
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_bitmap();
     };
-
-    static NC_STACK_bitmap * CInit(IDVList *stak);
 
     enum BMD_ATT
     {
@@ -98,7 +96,7 @@ public:
     int sub_416704(pixel_2d *a3);
 
     //Data
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
     __NC_STACK_bitmap stack__bitmap;
 };

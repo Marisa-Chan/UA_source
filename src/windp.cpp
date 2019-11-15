@@ -9,7 +9,7 @@
 #include "yw_net.h"
 
 
-const NewClassDescr NC_STACK_windp::description("windp.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_windp::description("windp.class", &newinstance);
 
 const char *SERV_STR = "UA:SOURCE TEST NETWORK";
 
@@ -20,7 +20,7 @@ key_value_stru windp_keys[3] =
     {"game.debug", KEY_TYPE_BOOL, 0}
 };
 
-size_t NC_STACK_windp::func0(IDVList *stak)
+size_t NC_STACK_windp::func0(IDVList &stak)
 {
     if ( !NC_STACK_network::func0(stak))
         return 0;
@@ -103,7 +103,7 @@ size_t NC_STACK_windp::func1()
     return NC_STACK_nucleus::func1();
 }
 
-size_t NC_STACK_windp::func3(IDVList *stak)
+size_t NC_STACK_windp::func3(IDVList &stak)
 {
     return NC_STACK_nucleus::func3(stak);
 }
@@ -377,11 +377,11 @@ size_t NC_STACK_windp::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 3:
-        func3( (IDVList *)data );
+        func3( *(IDVList *)data );
         return 1;
     case 64:
         return (size_t)EnumProviders();

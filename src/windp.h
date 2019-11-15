@@ -124,9 +124,9 @@ void ypaworld_func64__sub7__sub5(_NC_STACK_ypaworld *yw, struC5 *inpt);
 class NC_STACK_windp: public NC_STACK_network
 {
 public:
-    virtual size_t func0(IDVList *stak);
+    virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func3(IDVList *stak);
+    virtual size_t func3(IDVList &stak);
 
     virtual size_t EnumProviders();
     virtual size_t GetProviderName(windp_getNameMsg *arg);
@@ -207,7 +207,7 @@ protected:
 
     //Data
 public:
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
 
     int numProviders;

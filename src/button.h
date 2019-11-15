@@ -135,10 +135,10 @@ public:
 
 // Methods
 public:
-    virtual size_t func0(IDVList *stak);
+    virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func2(IDVList *stak);
-    virtual size_t func3(IDVList *stak);
+    virtual size_t func2(IDVList &stak);
+    virtual size_t func3(IDVList &stak);
     virtual size_t button_func64(button_64_arg *arg);
     virtual size_t button_func65(int *butID);
     virtual size_t button_func66(button_66arg *arg);
@@ -201,7 +201,7 @@ protected:
 
     //Data
 public:
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
     WidgetArr field_d8;
     int16_t idd;

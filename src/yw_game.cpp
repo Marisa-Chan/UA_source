@@ -39,7 +39,7 @@ NC_STACK_bitmap * loadDisk_screen(_NC_STACK_ypaworld *yw)
     init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
     init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
-    NC_STACK_bitmap *disk = NC_STACK_ilbm::CInit(&init_vals);
+    NC_STACK_bitmap *disk = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
 
     set_prefix_replacement("rsrc", rsrc_def);
 
@@ -635,7 +635,7 @@ void sb_0x44ca90__sub2(_NC_STACK_ypaworld *yw, mapProto *mapp)
             init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, mapp->palettes[i]);
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
 
-            NC_STACK_bitmap *ilbm = NC_STACK_ilbm::CInit(&init_vals);
+            NC_STACK_bitmap *ilbm = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
 
             if (ilbm)
             {
@@ -2118,7 +2118,7 @@ NC_STACK_ypabact *yw_createUnit(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, 
         IDVList init_vals;
         init_vals.Add(NC_STACK_ypabact::BACT_ATT_WORLD, ywo);
 
-        bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class(unit_classes_names[model_id], &init_vals) );
+        bacto = Nucleus::CTFInit<NC_STACK_ypabact>(unit_classes_names[model_id], init_vals);
 
         if ( !bacto )
             return NULL;
@@ -2156,7 +2156,7 @@ void sub_44BF34(vhclSndFX *sndfx)
                 IDVList init_vals;
                 init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->extSampleNames[i]);
 
-                sndfx->wavs[i] = (NC_STACK_wav *)init_get_class("wav.class", &init_vals);
+                sndfx->wavs[i] = Nucleus::CInit<NC_STACK_wav>(init_vals);
 
                 if ( sndfx->wavs[i] )
                 {
@@ -2186,7 +2186,7 @@ void sub_44BF34(vhclSndFX *sndfx)
             IDVList init_vals;
             init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->sample_name);
 
-            sndfx->single_sample = (NC_STACK_wav *)init_get_class("wav.class", &init_vals);
+            sndfx->single_sample = Nucleus::CInit<NC_STACK_wav>(init_vals);
 
             if ( !sndfx->single_sample )
                 ypa_log_out("Warning: Could not load sample %s.\n", sndfx->sample_name);
@@ -5598,7 +5598,7 @@ int recorder_create_camera(_NC_STACK_ypaworld *yw)
     IDVList init_vals;
     init_vals.Add(NC_STACK_ypabact::BACT_ATT_WORLD, yw->self_full);
 
-    NC_STACK_ypabact *bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class("ypabact.class", &init_vals) );
+    NC_STACK_ypabact *bacto = Nucleus::CInit<NC_STACK_ypabact>(init_vals);
 
     if ( !bacto )
         return 0;
@@ -5728,7 +5728,7 @@ __NC_STACK_ypabact *recorder_newObject(_NC_STACK_ypaworld *yw, trec_bct *oinf)
             IDVList init_vals;
             init_vals.Add(NC_STACK_ypabact::BACT_ATT_WORLD, yw->self_full);
 
-            bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class("ypabact.class", &init_vals) );
+            bacto = Nucleus::CInit<NC_STACK_ypabact>(init_vals);
             if ( bacto )
             {
                 bact = &bacto->ypabact;

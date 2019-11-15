@@ -2204,7 +2204,7 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
     IDVList init_vals;
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, a1a);
 
-    usr->field_ADA = (NC_STACK_wav *)init_get_class("wav.class", &init_vals);
+    usr->field_ADA = Nucleus::CInit<NC_STACK_wav>(init_vals);
     if ( usr->field_ADA )
     {
         SFXEngine::SFXe.sub_423DB0(&usr->field_782);

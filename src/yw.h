@@ -1907,10 +1907,10 @@ struct yw_arg165
 class NC_STACK_ypaworld: public NC_STACK_base
 {
 public:
-    virtual size_t func0(IDVList *stak);
+    virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func2(IDVList *stak);
-    virtual size_t func3(IDVList *stak);
+    virtual size_t func2(IDVList &stak);
+    virtual size_t func3(IDVList &stak);
     virtual size_t base_func64(base_64arg *arg);
     virtual void ypaworld_func129(yw_arg129 *arg);
     virtual size_t ypaworld_func130(yw_130arg *arg);
@@ -2079,7 +2079,7 @@ public:
 
 public:
     //Data
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
     _NC_STACK_ypaworld ypaworld;
 

@@ -19,10 +19,10 @@ struct __NC_STACK_ypaufo
 class NC_STACK_ypaufo: public NC_STACK_ypabact
 {
 public:
-    virtual size_t func0(IDVList *stak);
+    virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func2(IDVList *stak);
-    virtual size_t func3(IDVList *stak);
+    virtual size_t func2(IDVList &stak);
+    virtual size_t func3(IDVList &stak);
     virtual void AI_layer3(update_msg *arg);
     virtual void User_layer(update_msg *arg);
     virtual void Move(move_msg *arg);
@@ -54,7 +54,7 @@ public:
     virtual int getUFO_togo();
 
     //Data
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
     __NC_STACK_ypaufo stack__ypaufo;
 };

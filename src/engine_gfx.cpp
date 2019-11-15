@@ -44,24 +44,17 @@ void GFXEngine::deinit()
 
 int GFXEngine::sub_422CE8(const char *display, const char *display2, int gfxmode)
 {
-    char buf[33];
-
     if ( *display )
     {
         IDVList vals;
         vals.Add(NC_STACK_display::ATT_DISPLAY_ID, gfxmode);
 
-        strcpy(buf, display);
-
-        cls3D = dynamic_cast<NC_STACK_win3d *>( init_get_class(buf, &vals) );
+        cls3D = Nucleus::CTFInit<NC_STACK_win3d>(display, vals);
 
         if ( !cls3D )
         {
             if ( *display2 )
-            {
-                strcpy(buf, display2);
-                cls3D = dynamic_cast<NC_STACK_win3d *>( init_get_class(buf, &vals) );
-            }
+                cls3D = Nucleus::CTFInit<NC_STACK_win3d>(display2, vals);
         }
         if ( !cls3D )
             ypa_log_out("gfx.engine: display driver init failed!\n");
@@ -79,7 +72,7 @@ int GFXEngine::loadPal(const char *palette_ilbm)
     vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, palette_ilbm);
     vals.Add(NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
 
-    NC_STACK_bitmap *ilbm = NC_STACK_ilbm::CInit(&vals);
+    NC_STACK_bitmap *ilbm = Nucleus::CInit<NC_STACK_ilbm>(vals);
 
     if (!ilbm)
         return 0;

@@ -7,11 +7,11 @@
 
 
 
-const NewClassDescr NC_STACK_iwimp::description("iwimp.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_iwimp::description("iwimp.class", &newinstance);
 
 
 
-size_t NC_STACK_iwimp::func0(IDVList *stak)
+size_t NC_STACK_iwimp::func0(IDVList &stak)
 {
     if ( !NC_STACK_idev::func0(stak) )
         return 0;
@@ -132,7 +132,7 @@ size_t NC_STACK_iwimp::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 128:
         return (size_t)HasFocus();
     case 131:

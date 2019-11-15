@@ -6,7 +6,7 @@
 
 
 
-const NewClassDescr NC_STACK_idev::description("idev.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_idev::description("idev.class", &newinstance);
 
 
 size_t NC_STACK_idev::compatcall(int method_id, void *data)

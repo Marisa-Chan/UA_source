@@ -11,9 +11,9 @@
 #include "yw_net.h"
 
 
-const NewClassDescr NC_STACK_ypatank::description("ypatank.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_ypatank::description("ypatank.class", &newinstance);
 
-size_t NC_STACK_ypatank::func0(IDVList *stak)
+size_t NC_STACK_ypatank::func0(IDVList &stak)
 {
     if ( !NC_STACK_ypabact::func0(stak) )
         return 0;
@@ -23,28 +23,25 @@ size_t NC_STACK_ypatank::func0(IDVList *stak)
 
     stack__ypatank.field_c = 3;
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BACT_ATT_WORLD:
-                    stack__ypatank.ywo = (NC_STACK_ypaworld *)val.value.p_data;
-                    stack__ypatank.yw = &stack__ypatank.ywo->ypaworld;
-                    break;
+            case BACT_ATT_WORLD:
+                stack__ypatank.ywo = (NC_STACK_ypaworld *)val.value.p_data;
+                stack__ypatank.yw = &stack__ypatank.ywo->ypaworld;
+                break;
 
-                case TANK_ATT_TIP:
-                    setTANK_tip( val.value.i_data );
-                    break;
+            case TANK_ATT_TIP:
+                setTANK_tip( val.value.i_data );
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -58,27 +55,24 @@ size_t NC_STACK_ypatank::func1()
 }
 
 
-size_t NC_STACK_ypatank::func2(IDVList *stak)
+size_t NC_STACK_ypatank::func2(IDVList &stak)
 {
     NC_STACK_ypabact::func2(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case TANK_ATT_TIP:
-                    setTANK_tip( val.value.i_data );
-                    break;
+            case TANK_ATT_TIP:
+                setTANK_tip( val.value.i_data );
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -86,27 +80,24 @@ size_t NC_STACK_ypatank::func2(IDVList *stak)
     return 1;
 }
 
-size_t NC_STACK_ypatank::func3(IDVList *stak)
+size_t NC_STACK_ypatank::func3(IDVList &stak)
 {
     NC_STACK_ypabact::func3(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case TANK_ATT_TIP:
-                    *(int *)val.value.p_data = getTANK_tip();
-                    break;
+            case TANK_ATT_TIP:
+                *(int *)val.value.p_data = getTANK_tip();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -2401,13 +2392,13 @@ size_t NC_STACK_ypatank::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 70:
         AI_layer3( (update_msg *)data );
         return 1;

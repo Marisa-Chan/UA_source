@@ -125,10 +125,10 @@ struct __NC_STACK_win3d
 class NC_STACK_win3d: public NC_STACK_display
 {
 public:
-    virtual size_t func0(IDVList *stak);
+    virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func2(IDVList *stak);
-    virtual size_t func3(IDVList *stak);
+    virtual size_t func2(IDVList &stak);
+    virtual size_t func3(IDVList &stak);
     virtual size_t raster_func192(IDVPair *);
     virtual size_t raster_func198(w3d_func198arg *arg);
     virtual size_t raster_func199(w3d_func199arg *arg);
@@ -198,7 +198,7 @@ public:
     virtual int getWDD_drawPrim();
 
     // windd methods
-    size_t windd_func0(IDVList *stak);
+    size_t windd_func0(IDVList &stak);
 
     virtual void setW3D_texFilt(int arg);
 
@@ -236,7 +236,7 @@ protected:
 
 public:
     //Data
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
     __NC_STACK_win3d stack__win3d;
 

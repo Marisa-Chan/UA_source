@@ -9,10 +9,10 @@
 #include <math.h>
 
 
-const NewClassDescr NC_STACK_ypaufo::description("ypaufo.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_ypaufo::description("ypaufo.class", &newinstance);
 
 
-size_t NC_STACK_ypaufo::func0(IDVList *stak)
+size_t NC_STACK_ypaufo::func0(IDVList &stak)
 {
     if ( !NC_STACK_ypabact::func0(stak) )
         return 0;
@@ -26,32 +26,29 @@ size_t NC_STACK_ypaufo::func0(IDVList *stak)
 
     stack__ypaufo.field_c = 200.0;
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BACT_ATT_WORLD:
-                    stack__ypaufo.ywo = (NC_STACK_ypaworld *)val.value.p_data;
-                    stack__ypaufo.yw = &stack__ypaufo.ywo->ypaworld;
-                    break;
+            case BACT_ATT_WORLD:
+                stack__ypaufo.ywo = (NC_STACK_ypaworld *)val.value.p_data;
+                stack__ypaufo.yw = &stack__ypaufo.ywo->ypaworld;
+                break;
 
-                case BACT_ATT_INPUTTING:
-                    setBACT_inputting(val.value.i_data);
-                    break;
+            case BACT_ATT_INPUTTING:
+                setBACT_inputting(val.value.i_data);
+                break;
 
-                case UFO_ATT_TOGO:
-                    setUFO_togo(val.value.i_data);
-                    break;
+            case UFO_ATT_TOGO:
+                setUFO_togo(val.value.i_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -64,31 +61,28 @@ size_t NC_STACK_ypaufo::func1()
     return NC_STACK_ypabact::func1();
 }
 
-size_t NC_STACK_ypaufo::func2(IDVList *stak)
+size_t NC_STACK_ypaufo::func2(IDVList &stak)
 {
     NC_STACK_ypabact::func2(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BACT_ATT_INPUTTING:
-                    setBACT_inputting(val.value.i_data);
-                    break;
+            case BACT_ATT_INPUTTING:
+                setBACT_inputting(val.value.i_data);
+                break;
 
-                case UFO_ATT_TOGO:
-                    setUFO_togo(val.value.i_data);
-                    break;
+            case UFO_ATT_TOGO:
+                setUFO_togo(val.value.i_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -96,27 +90,24 @@ size_t NC_STACK_ypaufo::func2(IDVList *stak)
     return 1;
 }
 
-size_t NC_STACK_ypaufo::func3(IDVList *stak)
+size_t NC_STACK_ypaufo::func3(IDVList &stak)
 {
     NC_STACK_ypabact::func3(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case UFO_ATT_TOGO:
-                    *(int *)val.value.p_data = getUFO_togo();
-                    break;
+            case UFO_ATT_TOGO:
+                *(int *)val.value.p_data = getUFO_togo();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -1030,13 +1021,13 @@ size_t NC_STACK_ypaufo::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 70:
         AI_layer3( (update_msg *)data );
         return 1;

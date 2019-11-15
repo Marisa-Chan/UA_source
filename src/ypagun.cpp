@@ -8,9 +8,9 @@
 #include "yparobo.h"
 
 
-const NewClassDescr NC_STACK_ypagun::description("ypagun.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_ypagun::description("ypagun.class", &newinstance);
 
-size_t NC_STACK_ypagun::func0(IDVList *stak)
+size_t NC_STACK_ypagun::func0(IDVList &stak)
 {
     if ( !NC_STACK_ypabact::func0(stak) )
         return 0;
@@ -20,47 +20,44 @@ size_t NC_STACK_ypagun::func0(IDVList *stak)
     ypagun.gunType = GUN_TYPE_REAL;
     ypagun.fireTime = 100;
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case GUN_ATT_SIDEANGLE:
-                    setGUN_sideAngle(val.value.i_data);
-                    break;
+            case GUN_ATT_SIDEANGLE:
+                setGUN_sideAngle(val.value.i_data);
+                break;
 
-                case GUN_ATT_UPANGLE:
-                    setGUN_upAngle(val.value.i_data);
-                    break;
+            case GUN_ATT_UPANGLE:
+                setGUN_upAngle(val.value.i_data);
+                break;
 
-                case GUN_ATT_DOWNANGLE:
-                    setGUN_downAngle(val.value.i_data);
-                    break;
+            case GUN_ATT_DOWNANGLE:
+                setGUN_downAngle(val.value.i_data);
+                break;
 
-                case GUN_ATT_FIRETYPE:
-                    setGUN_fireType(val.value.i_data);
-                    break;
+            case GUN_ATT_FIRETYPE:
+                setGUN_fireType(val.value.i_data);
+                break;
 
-                case GUN_ATT_FIRETIME:
-                    setGUN_fireTime(val.value.i_data);
-                    break;
+            case GUN_ATT_FIRETIME:
+                setGUN_fireTime(val.value.i_data);
+                break;
 
-                case GUN_ATT_SETGROUND:
-                    setGUN_setGround ( val.value.i_data );
-                    break;
+            case GUN_ATT_SETGROUND:
+                setGUN_setGround ( val.value.i_data );
+                break;
 
-                case GUN_ATT_ROBOGUN:
-                    setGUN_roboGun ( val.value.i_data );
-                    break;
+            case GUN_ATT_ROBOGUN:
+                setGUN_roboGun ( val.value.i_data );
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -73,51 +70,48 @@ size_t NC_STACK_ypagun::func1()
     return NC_STACK_ypabact::func1();
 }
 
-size_t NC_STACK_ypagun::func2(IDVList *stak)
+size_t NC_STACK_ypagun::func2(IDVList &stak)
 {
     NC_STACK_ypabact::func2(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case GUN_ATT_SIDEANGLE:
-                    setGUN_sideAngle(val.value.i_data);
-                    break;
+            case GUN_ATT_SIDEANGLE:
+                setGUN_sideAngle(val.value.i_data);
+                break;
 
-                case GUN_ATT_UPANGLE:
-                    setGUN_upAngle(val.value.i_data);
-                    break;
+            case GUN_ATT_UPANGLE:
+                setGUN_upAngle(val.value.i_data);
+                break;
 
-                case GUN_ATT_DOWNANGLE:
-                    setGUN_downAngle(val.value.i_data);
-                    break;
+            case GUN_ATT_DOWNANGLE:
+                setGUN_downAngle(val.value.i_data);
+                break;
 
-                case GUN_ATT_FIRETYPE:
-                    setGUN_fireType(val.value.i_data);
-                    break;
+            case GUN_ATT_FIRETYPE:
+                setGUN_fireType(val.value.i_data);
+                break;
 
-                case GUN_ATT_FIRETIME:
-                    setGUN_fireTime(val.value.i_data);
-                    break;
+            case GUN_ATT_FIRETIME:
+                setGUN_fireTime(val.value.i_data);
+                break;
 
-                case GUN_ATT_SETGROUND:
-                    setGUN_setGround ( val.value.i_data );
-                    break;
+            case GUN_ATT_SETGROUND:
+                setGUN_setGround ( val.value.i_data );
+                break;
 
-                case GUN_ATT_ROBOGUN:
-                    setGUN_roboGun ( val.value.i_data );
-                    break;
+            case GUN_ATT_ROBOGUN:
+                setGUN_roboGun ( val.value.i_data );
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -125,51 +119,48 @@ size_t NC_STACK_ypagun::func2(IDVList *stak)
     return 1;
 }
 
-size_t NC_STACK_ypagun::func3(IDVList *stak)
+size_t NC_STACK_ypagun::func3(IDVList &stak)
 {
     NC_STACK_ypabact::func3(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case GUN_ATT_SIDEANGLE:
-                    *(int *)val.value.p_data = getGUN_sideAngle();
-                    break;
+            case GUN_ATT_SIDEANGLE:
+                *(int *)val.value.p_data = getGUN_sideAngle();
+                break;
 
-                case GUN_ATT_UPANGLE:
-                    *(int *)val.value.p_data = getGUN_upAngle();
-                    break;
+            case GUN_ATT_UPANGLE:
+                *(int *)val.value.p_data = getGUN_upAngle();
+                break;
 
-                case GUN_ATT_DOWNANGLE:
-                    *(int *)val.value.p_data = getGUN_downAngle();
-                    break;
+            case GUN_ATT_DOWNANGLE:
+                *(int *)val.value.p_data = getGUN_downAngle();
+                break;
 
-                case GUN_ATT_FIRETYPE:
-                    *(int *)val.value.p_data = getGUN_fireType();
-                    break;
+            case GUN_ATT_FIRETYPE:
+                *(int *)val.value.p_data = getGUN_fireType();
+                break;
 
-                case GUN_ATT_FIRETIME:
-                    *(int *)val.value.p_data = getGUN_fireTime();
-                    break;
+            case GUN_ATT_FIRETIME:
+                *(int *)val.value.p_data = getGUN_fireTime();
+                break;
 
-                case GUN_ATT_SETGROUND:
-                    *(int *)val.value.p_data = getGUN_setGround();
-                    break;
+            case GUN_ATT_SETGROUND:
+                *(int *)val.value.p_data = getGUN_setGround();
+                break;
 
-                case GUN_ATT_ROBOGUN:
-                    *(int *)val.value.p_data = getGUN_roboGun();
-                    break;
+            case GUN_ATT_ROBOGUN:
+                *(int *)val.value.p_data = getGUN_roboGun();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -894,13 +885,13 @@ size_t NC_STACK_ypagun::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 70:
         AI_layer3( (update_msg *)data );
         return 1;

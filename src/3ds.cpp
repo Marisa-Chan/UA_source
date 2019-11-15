@@ -6,22 +6,7 @@
 #include "glob_funcs.h"
 
 
-const NewClassDescr NC_STACK_3ds::description("3ds.class", &newinstance);
-
-NC_STACK_3ds *NC_STACK_3ds::CInit(IDVList *stak)
-{
-    NC_STACK_3ds *tmp = new NC_STACK_3ds();
-    if (!tmp)
-        return NULL;
-
-    if (!tmp->func0(stak))
-    {
-        delete tmp;
-        return NULL;
-    }
-
-    return tmp;
-}
+const Nucleus::ClassDescr NC_STACK_3ds::description("3ds.class", &newinstance);
 
 NC_STACK_3ds::NC_STACK_3ds()
 {
@@ -42,7 +27,7 @@ NC_STACK_3ds::~NC_STACK_3ds()
         delete *it;
 }
 
-size_t NC_STACK_3ds::func0(IDVList *stak)
+size_t NC_STACK_3ds::func0(IDVList &stak)
 {
     if ( !NC_STACK_base::func0(stak) )
         return 0;
@@ -232,7 +217,7 @@ size_t NC_STACK_3ds::readChunkVertex(FSMgr::FileHandle *fil, size_t sz)
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_TRYSHARED, 2);
     init_vals.Add(NC_STACK_skeleton::SKEL_ATT_POINTSCNT, numvertex);
 
-    OBJ_SKELETON = NC_STACK_skeleton::CInit(&init_vals);
+    OBJ_SKELETON = Nucleus::CInit<NC_STACK_skeleton>(init_vals);
     UAskeleton::Data *dat = OBJ_SKELETON->getSKEL_pSkelet();
 
     for (int i = 0; i < numvertex; i++)
@@ -412,7 +397,7 @@ size_t NC_STACK_3ds::readChunkTexMap(d3dsTextureMap &texmap, FSMgr::FileHandle *
                 std::string oldprefix = get_prefix_replacement("rsrc");
                 set_prefix_replacement("rsrc", "");
 
-                texmap.tex = NC_STACK_image::CInit(&vals);
+                texmap.tex = Nucleus::CInit<NC_STACK_image>(vals);
 
                 set_prefix_replacement("rsrc", oldprefix.c_str());
                 printf("%s\n", texName);

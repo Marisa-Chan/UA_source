@@ -5,22 +5,7 @@
 #include "utils.h"
 
 
-const NewClassDescr NC_STACK_bitmap::description("bitmap.class", &newinstance);
-
-NC_STACK_bitmap *NC_STACK_bitmap::CInit(IDVList *stak)
-{
-    NC_STACK_bitmap *tmp = new NC_STACK_bitmap();
-    if (!tmp)
-        return NULL;
-
-    if (!tmp->func0(stak))
-    {
-        delete tmp;
-        return NULL;
-    }
-
-    return tmp;
-}
+const Nucleus::ClassDescr NC_STACK_bitmap::description("bitmap.class", &newinstance);
 
 int NC_STACK_bitmap::sub_416704(pixel_2d *src)
 {
@@ -75,7 +60,7 @@ int NC_STACK_bitmap::sub_416704(pixel_2d *src)
 }
 
 
-size_t NC_STACK_bitmap::func0(IDVList *stak)
+size_t NC_STACK_bitmap::func0(IDVList &stak)
 {
     if ( !NC_STACK_rsrc::func0(stak) )
         return 0;
@@ -84,8 +69,7 @@ size_t NC_STACK_bitmap::func0(IDVList *stak)
 
     pixel_2d *v9 = NULL;
 
-    if (stak)
-        v9 = (pixel_2d *)stak->GetPointer(BMD_ATT_OUTLINE, NULL);
+    v9 = (pixel_2d *)stak.GetPointer(BMD_ATT_OUTLINE, NULL);
 
     if ( v9 )
         sub_416704(v9);
@@ -110,56 +94,53 @@ size_t NC_STACK_bitmap::func1()
     return NC_STACK_rsrc::func1();
 }
 
-size_t NC_STACK_bitmap::func2(IDVList *stak)
+size_t NC_STACK_bitmap::func2(IDVList &stak)
 {
-    pixel_2d *v5 = (pixel_2d *)stak->GetPointer(BMD_ATT_OUTLINE, NULL);
+    pixel_2d *v5 = (pixel_2d *)stak.GetPointer(BMD_ATT_OUTLINE, NULL);
     if ( v5 )
         setBMD_outline(v5);
 
-    UA_PALETTE *ppal = (UA_PALETTE *)stak->GetPointer(BMD_ATT_PCOLORMAP, NULL);
+    UA_PALETTE *ppal = (UA_PALETTE *)stak.GetPointer(BMD_ATT_PCOLORMAP, NULL);
     if ( ppal )
         setBMD_palette(ppal);
 
     return NC_STACK_rsrc::func2(stak);
 }
 
-size_t NC_STACK_bitmap::func3(IDVList *stak)
+size_t NC_STACK_bitmap::func3(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BMD_ATT_PBITMAP:
-                    *(bitmap_intern **)val.value.p_data = getBMD_pBitmap();
-                    break;
-                case BMD_ATT_OUTLINE:
-                    *(void **)val.value.p_data = NULL;
-                    break;
-                case BMD_ATT_WIDTH:
-                    *(int *)val.value.p_data = getBMD_width();
-                    break;
-                case BMD_ATT_HEIGHT:
-                    *(int *)val.value.p_data = getBMD_height();
-                    break;
-                case BMD_ATT_BUFFER:
-                    *(void **)val.value.p_data = getBMD_buffer();
-                    break;
-                case BMD_ATT_HAS_COLORMAP:
-                    *(int *)val.value.p_data = getBMD_hasPalette();
-                    break;
-                case BMD_ATT_PCOLORMAP:
-                    *(UA_PALETTE **)val.value.p_data = getBMD_palette();
-                    break;
+            case BMD_ATT_PBITMAP:
+                *(bitmap_intern **)val.value.p_data = getBMD_pBitmap();
+                break;
+            case BMD_ATT_OUTLINE:
+                *(void **)val.value.p_data = NULL;
+                break;
+            case BMD_ATT_WIDTH:
+                *(int *)val.value.p_data = getBMD_width();
+                break;
+            case BMD_ATT_HEIGHT:
+                *(int *)val.value.p_data = getBMD_height();
+                break;
+            case BMD_ATT_BUFFER:
+                *(void **)val.value.p_data = getBMD_buffer();
+                break;
+            case BMD_ATT_HAS_COLORMAP:
+                *(int *)val.value.p_data = getBMD_hasPalette();
+                break;
+            case BMD_ATT_PCOLORMAP:
+                *(UA_PALETTE **)val.value.p_data = getBMD_palette();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -168,16 +149,16 @@ size_t NC_STACK_bitmap::func3(IDVList *stak)
 }
 
 // Create bitmap resource node and fill rsrc field data
-rsrc * NC_STACK_bitmap::rsrc_func64(IDVList *stak)
+rsrc * NC_STACK_bitmap::rsrc_func64(IDVList &stak)
 {
     rsrc *res = NC_STACK_rsrc::rsrc_func64(stak);// rsrc_func64
-    if ( res && stak )
+    if ( res )
     {
-        int width = stak->Get(BMD_ATT_WIDTH, 0);
-        int height = stak->Get(BMD_ATT_HEIGHT, 0);
-        int colormap = stak->Get(BMD_ATT_HAS_COLORMAP, 0);
-        int create_texture = stak->Get(BMD_ATT_TEXTURE, 0);
-        int sysmem = stak->Get(BMD_ATT_TEXTURE_SYS, 0);// software surface
+        int width = stak.Get(BMD_ATT_WIDTH, 0);
+        int height = stak.Get(BMD_ATT_HEIGHT, 0);
+        int colormap = stak.Get(BMD_ATT_HAS_COLORMAP, 0);
+        int create_texture = stak.Get(BMD_ATT_TEXTURE, 0);
+        int sysmem = stak.Get(BMD_ATT_TEXTURE_SYS, 0);// software surface
 
 
         if ( (width && height) || colormap )
@@ -220,7 +201,7 @@ rsrc * NC_STACK_bitmap::rsrc_func64(IDVList *stak)
                         }
                         else
                         {
-                            void *buf = stak->GetPointer(BMD_ATT_BUFFER, NULL);
+                            void *buf = stak.GetPointer(BMD_ATT_BUFFER, NULL);
                             intern->pitch = width;
                             if ( buf )
                             {
@@ -355,15 +336,15 @@ size_t NC_STACK_bitmap::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 64:
-        return (size_t)rsrc_func64( (IDVList *)data );
+        return (size_t)rsrc_func64( *(IDVList *)data );
     case 65:
         return rsrc_func65( (rsrc *)data );
     case 128:

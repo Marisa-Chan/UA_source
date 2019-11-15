@@ -10,28 +10,132 @@
 #include "idvpair.h"
 #include "IFFile.h"
 
-
 class NC_STACK_nucleus;
 
-struct NewClassDescr
+namespace Nucleus
 {
-    const std::string classname;
-    NC_STACK_nucleus *(*newinstance)();
+struct ClassDescr
+{
+    const std::string _classname;
+    NC_STACK_nucleus *(*_newinstance)();
 
-    NewClassDescr(const char *_clsname, NC_STACK_nucleus *(*_newinst)() ): classname(_clsname), newinstance(_newinst) {}
+    ClassDescr(const std::string &clsname,  NC_STACK_nucleus *(*newinst)() );
+};
+
+class ClassList: public std::list<ClassDescr>
+{
+public:
+    iterator find(const std::string &clsname);
+
+static ClassList Instance;
 };
 
 
-typedef std::list<const NewClassDescr *> ClassList;
+
+/***
+    Default class constructor when you exactly
+    know what class you are want
+
+    With values list.
+***/
+template<class T>
+T* CInit(IDVList &stak)
+{
+    T *tmp = new T();
+    if (!tmp)
+        return NULL;
+
+    if (!tmp->func0(stak))
+    {
+        delete tmp;
+        return NULL;
+    }
+
+    return tmp;
+};
+
+/***
+    Default class constructor when you exactly
+    know what class you are want
+
+    With empty values list.
+***/
+template<class T>
+T* CInit()
+{
+    T *tmp = new T();
+    if (!tmp)
+        return NULL;
+
+    IDVList stak;
+    if (!tmp->func0(stak))
+    {
+        delete tmp;
+        return NULL;
+    }
+
+    return tmp;
+};
+
+
+/***
+    Class constructor when you get class name as string
+    Will return pointer to default base class
+
+    Null on unknown
+***/
+NC_STACK_nucleus *CFInit(const std::string &classname, IDVList &stak);
+NC_STACK_nucleus *CFInit(const std::string &classname);
+
+
+/***
+    Class constructor when you get class name as string
+    Will try to cast created class to specified class
+
+    Null on unknown or if can't cast
+***/
+template <class T>
+T *CTFInit(const std::string &classname, IDVList &stak)
+{
+    ClassList::iterator it = ClassList::Instance.find(classname);
+    if (it == ClassList::Instance.end())
+        return NULL;
+
+    NC_STACK_nucleus *inst = it->_newinstance();
+    T *tInst = dynamic_cast<T *>(inst);
+
+    if (!tInst || !tInst->func0(stak) )
+    {
+        delete inst;
+        return NULL;
+    }
+
+    return tInst;
+};
+
+template <class T>
+T *CTFInit(const std::string &classname)
+{
+    IDVList empty;
+    return CTFInit<T>(classname, empty);
+}
+
+
+void Delete(NC_STACK_nucleus *clas);
+};
+
+
+
+
 
 
 class NC_STACK_nucleus
 {
 public:
-    virtual size_t func0(IDVList *stak);
+    virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func2(IDVList *stak);
-    virtual size_t func3(IDVList *stak);
+    virtual size_t func2(IDVList &stak);
+    virtual size_t func3(IDVList &stak);
     virtual size_t func5(IFFile **file);
     virtual size_t func6(IFFile **file);
 
@@ -66,14 +170,11 @@ public:
 
 public:
     //Data
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
 public:
     std::string NAME;
 };
-
-
-NC_STACK_nucleus * init_get_class(const char *classname, IDVList *stak);
 
 int delete_class_obj(NC_STACK_nucleus *cls);
 

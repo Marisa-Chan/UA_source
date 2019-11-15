@@ -7,7 +7,7 @@
 #include "log.h"
 #include "inp_ff.h"
 
-const NewClassDescr NC_STACK_winp::description("winp.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_winp::description("winp.class", &newinstance);
 
 struct winp__func67__internal
 {
@@ -494,7 +494,7 @@ int InputWatch(void *, SDL_Event *event)
 
 
 
-size_t NC_STACK_winp::func0(IDVList *stak)
+size_t NC_STACK_winp::func0(IDVList &stak)
 {
     if ( !NC_STACK_iwimp::func0(stak) )
         return 0;
@@ -509,12 +509,12 @@ size_t NC_STACK_winp::func1()
     return NC_STACK_iwimp::func1();
 }
 
-size_t NC_STACK_winp::func2(IDVList *stak)
+size_t NC_STACK_winp::func2(IDVList &stak)
 {
     return NC_STACK_iwimp::func2(stak);
 }
 
-size_t NC_STACK_winp::func3(IDVList *stk)
+size_t NC_STACK_winp::func3(IDVList &stk)
 {
     return NC_STACK_iwimp::func3(stk);
 }
@@ -1455,14 +1455,14 @@ size_t NC_STACK_winp::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        func2( (IDVList *)data );
+        func2( *(IDVList *)data );
         return 1;
     case 3:
-        func3( (IDVList *)data );
+        func3( *(IDVList *)data );
         return 1;
     case 64:
         idev_func64( (win_64arg *)data );

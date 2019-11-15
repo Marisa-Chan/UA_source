@@ -582,7 +582,7 @@ void yw_write_ownermap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
     init_vals.Add(NC_STACK_bitmap::BMD_ATT_WIDTH, yw->sectors_maxX2);
     init_vals.Add(NC_STACK_bitmap::BMD_ATT_HEIGHT, yw->sectors_maxY2);
 
-    NC_STACK_bitmap *bitmap = NC_STACK_bitmap::CInit(&init_vals);
+    NC_STACK_bitmap *bitmap = Nucleus::CInit<NC_STACK_bitmap>(init_vals);
 
     if ( bitmap )
     {
@@ -616,7 +616,7 @@ void yw_write_energymap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
     init_vals.Add(NC_STACK_bitmap::BMD_ATT_WIDTH, 3 * yw->sectors_maxX2);
     init_vals.Add(NC_STACK_bitmap::BMD_ATT_HEIGHT, 3 * yw->sectors_maxY2);
 
-    NC_STACK_bitmap *bitmap = NC_STACK_bitmap::CInit(&init_vals);
+    NC_STACK_bitmap *bitmap = Nucleus::CInit<NC_STACK_bitmap>(init_vals);
 
     if ( bitmap )
     {

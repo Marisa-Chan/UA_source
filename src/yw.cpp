@@ -15,7 +15,7 @@
 #include "yw_net.h"
 
 
-const NewClassDescr NC_STACK_ypaworld::description("ypaworld.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_ypaworld::description("ypaworld.class", &newinstance);
 
 key_value_stru ypaworld_keys[4] =
 {
@@ -556,7 +556,7 @@ void yw_setInitScriptLoc(_NC_STACK_ypaworld *yw)
         yw->initScriptLoc = "data:scripts/startup.scr";
 }
 
-size_t NC_STACK_ypaworld::func0(IDVList *stak)
+size_t NC_STACK_ypaworld::func0(IDVList &stak)
 {
     if ( !NC_STACK_base::func0(stak) )
     {
@@ -626,20 +626,20 @@ size_t NC_STACK_ypaworld::func0(IDVList *stak)
 
 
     yw->fxnumber = 16;
-    yw->field_1368 = stak->Get(YW_ATT_VISSECTORS, YW_RENDER_SECTORS_DEF);
-    yw->field_15e4 = stak->Get(YW_ATT_NORMVISLIMIT, 1400);
-    yw->field_15e8 = stak->Get(YW_ATT_FADELENGTH, 600);
-    yw->field_15ec = stak->Get(YW_ATT_SKYVISLIMIT, 4200);
-    yw->field_15f0 = stak->Get(YW_ATT_SKYFADELENGTH, 1100);
-    yw->sectors_maxX = stak->Get(YW_ATT_MAPMAX_X, 64);
-    yw->sectors_maxY = stak->Get(YW_ATT_MAPMAX_Y, 64);
+    yw->field_1368 = stak.Get(YW_ATT_VISSECTORS, YW_RENDER_SECTORS_DEF);
+    yw->field_15e4 = stak.Get(YW_ATT_NORMVISLIMIT, 1400);
+    yw->field_15e8 = stak.Get(YW_ATT_FADELENGTH, 600);
+    yw->field_15ec = stak.Get(YW_ATT_SKYVISLIMIT, 4200);
+    yw->field_15f0 = stak.Get(YW_ATT_SKYFADELENGTH, 1100);
+    yw->sectors_maxX = stak.Get(YW_ATT_MAPMAX_X, 64);
+    yw->sectors_maxY = stak.Get(YW_ATT_MAPMAX_Y, 64);
     yw->sectors_maxX2 = yw->sectors_maxX;
     yw->sectors_maxY2 = yw->sectors_maxY;
-    yw->field_15f4 = stak->Get(YW_ATT_SKYHEIGHT, -550);
-    yw->field_15f8 = stak->Get(YW_ATT_SKYRENDER, 1);
-    yw->field_15fc = stak->Get(YW_ATT_DOENERGYRECALC, 1);
+    yw->field_15f4 = stak.Get(YW_ATT_SKYHEIGHT, -550);
+    yw->field_15f8 = stak.Get(YW_ATT_SKYRENDER, 1);
+    yw->field_15fc = stak.Get(YW_ATT_DOENERGYRECALC, 1);
 
-    char *v4 = (char *)stak->GetPointer(YW_ATT_BUILD_DATE, NULL);
+    char *v4 = (char *)stak.GetPointer(YW_ATT_BUILD_DATE, NULL);
     yw->buildDate = v4;
     if ( v4 )
     {
@@ -724,73 +724,70 @@ size_t NC_STACK_ypaworld::func1()
     return NC_STACK_nucleus::func1();
 }
 
-size_t NC_STACK_ypaworld::func2(IDVList *stak)
+size_t NC_STACK_ypaworld::func2(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case YW_ATT_NORMVISLIMIT:
-                    setYW_normVisLimit(val.value.i_data);
-                    break;
+            case YW_ATT_NORMVISLIMIT:
+                setYW_normVisLimit(val.value.i_data);
+                break;
 
-                case YW_ATT_FADELENGTH:
-                    setYW_fadeLength(val.value.i_data);
-                    break;
+            case YW_ATT_FADELENGTH:
+                setYW_fadeLength(val.value.i_data);
+                break;
 
-                case YW_ATT_SKYVISLIMIT:
-                    setYW_skyVisLimit(val.value.i_data);
-                    break;
+            case YW_ATT_SKYVISLIMIT:
+                setYW_skyVisLimit(val.value.i_data);
+                break;
 
-                case YW_ATT_SKYFADELENGTH:
-                    setYW_skyFadeLength(val.value.i_data);
-                    break;
+            case YW_ATT_SKYFADELENGTH:
+                setYW_skyFadeLength(val.value.i_data);
+                break;
 
-                case YW_ATT_SKYHEIGHT:
-                    setYW_skyHeight(val.value.i_data);
-                    break;
+            case YW_ATT_SKYHEIGHT:
+                setYW_skyHeight(val.value.i_data);
+                break;
 
-                case YW_ATT_SKYRENDER:
-                    setYW_skyRender(val.value.i_data);
-                    break;
+            case YW_ATT_SKYRENDER:
+                setYW_skyRender(val.value.i_data);
+                break;
 
-                case YW_ATT_DOENERGYRECALC:
-                    setYW_doEnergyRecalc(val.value.i_data);
-                    break;
+            case YW_ATT_DOENERGYRECALC:
+                setYW_doEnergyRecalc(val.value.i_data);
+                break;
 
-                case YW_ATT_VISSECTORS:
-                    setYW_visSectors(val.value.i_data);
-                    break;
+            case YW_ATT_VISSECTORS:
+                setYW_visSectors(val.value.i_data);
+                break;
 
-                case YW_ATT_USERHOST:
-                    setYW_userHostStation((NC_STACK_ypabact *)val.value.p_data);
-                    break;
+            case YW_ATT_USERHOST:
+                setYW_userHostStation((NC_STACK_ypabact *)val.value.p_data);
+                break;
 
-                case YW_ATT_USERVEHICLE:
-                    setYW_userVehicle((NC_STACK_ypabact *)val.value.p_data);
-                    break;
+            case YW_ATT_USERVEHICLE:
+                setYW_userVehicle((NC_STACK_ypabact *)val.value.p_data);
+                break;
 
-                case YW_ATT_SCREEN_W:
-                    setYW_screenW(val.value.i_data);
-                    break;
+            case YW_ATT_SCREEN_W:
+                setYW_screenW(val.value.i_data);
+                break;
 
-                case YW_ATT_SCREEN_H:
-                    setYW_screenH(val.value.i_data);
-                    break;
+            case YW_ATT_SCREEN_H:
+                setYW_screenH(val.value.i_data);
+                break;
 
-                case YW_ATT_DONT_RENDER:
-                    setYW_dontRender(val.value.i_data);
-                    break;
+            case YW_ATT_DONT_RENDER:
+                setYW_dontRender(val.value.i_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -798,121 +795,118 @@ size_t NC_STACK_ypaworld::func2(IDVList *stak)
     return NC_STACK_base::func2(stak);
 }
 
-size_t NC_STACK_ypaworld::func3(IDVList *stak)
+size_t NC_STACK_ypaworld::func3(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case YW_ATT_MAPMAX_X:
-                    *(int *)val.value.p_data = getYW_mapMaxX();
-                    break;
+            case YW_ATT_MAPMAX_X:
+                *(int *)val.value.p_data = getYW_mapMaxX();
+                break;
 
-                case YW_ATT_MAPMAX_Y:
-                    *(int *)val.value.p_data = getYW_mapMaxY();
-                    break;
+            case YW_ATT_MAPMAX_Y:
+                *(int *)val.value.p_data = getYW_mapMaxY();
+                break;
 
-                case YW_ATT_MAPSIZE_X:
-                    *(int *)val.value.p_data = getYW_mapSizeX();
-                    break;
+            case YW_ATT_MAPSIZE_X:
+                *(int *)val.value.p_data = getYW_mapSizeX();
+                break;
 
-                case YW_ATT_MAPSIZE_Y:
-                    *(int *)val.value.p_data = getYW_mapSizeY();
-                    break;
+            case YW_ATT_MAPSIZE_Y:
+                *(int *)val.value.p_data = getYW_mapSizeY();
+                break;
 
-                //            case YW_ATT_SECTORSIZE_X:
-                //                *(int *)val.value = yw->field_20;
-                //                break;
-                //
-                //            case YW_ATT_SECTORSIZE_Y:
-                //                *(int *)val.value = yw->field_24;
-                //                break;
+            //            case YW_ATT_SECTORSIZE_X:
+            //                *(int *)val.value = yw->field_20;
+            //                break;
+            //
+            //            case YW_ATT_SECTORSIZE_Y:
+            //                *(int *)val.value = yw->field_24;
+            //                break;
 
-                case YW_ATT_NORMVISLIMIT:
-                    *(int *)val.value.p_data = getYW_normVisLimit();
-                    break;
+            case YW_ATT_NORMVISLIMIT:
+                *(int *)val.value.p_data = getYW_normVisLimit();
+                break;
 
-                case YW_ATT_FADELENGTH:
-                    *(int *)val.value.p_data = getYW_fadeLength();
-                    break;
+            case YW_ATT_FADELENGTH:
+                *(int *)val.value.p_data = getYW_fadeLength();
+                break;
 
-                case YW_ATT_SKYHEIGHT:
-                    *(int *)val.value.p_data = getYW_skyHeight();
-                    break;
+            case YW_ATT_SKYHEIGHT:
+                *(int *)val.value.p_data = getYW_skyHeight();
+                break;
 
-                case YW_ATT_SKYRENDER:
-                    *(int *)val.value.p_data = getYW_skyRender();
-                    break;
+            case YW_ATT_SKYRENDER:
+                *(int *)val.value.p_data = getYW_skyRender();
+                break;
 
-                case YW_ATT_DOENERGYRECALC:
-                    *(int *)val.value.p_data = getYW_doEnergyRecalc();
-                    break;
+            case YW_ATT_DOENERGYRECALC:
+                *(int *)val.value.p_data = getYW_doEnergyRecalc();
+                break;
 
-                case YW_ATT_VISSECTORS:
-                    *(int *)val.value.p_data = getYW_visSectors();
-                    break;
+            case YW_ATT_VISSECTORS:
+                *(int *)val.value.p_data = getYW_visSectors();
+                break;
 
-                case YW_ATT_USERHOST:
-                    *(NC_STACK_ypabact **)val.value.p_data = getYW_userHostStation();
-                    break;
+            case YW_ATT_USERHOST:
+                *(NC_STACK_ypabact **)val.value.p_data = getYW_userHostStation();
+                break;
 
-                case YW_ATT_USERVEHICLE:
-                    *(NC_STACK_ypabact **)val.value.p_data = getYW_userVehicle();
-                    break;
+            case YW_ATT_USERVEHICLE:
+                *(NC_STACK_ypabact **)val.value.p_data = getYW_userVehicle();
+                break;
 
-                case YW_ATT_WPNPROTOS:
-                    *(WeapProto **)val.value.p_data = getYW_weaponProtos();
-                    break;
+            case YW_ATT_WPNPROTOS:
+                *(WeapProto **)val.value.p_data = getYW_weaponProtos();
+                break;
 
-                case YW_ATT_BUILDPROTOS:
-                    *(BuildProto **)val.value.p_data = getYW_buildProtos();
-                    break;
+            case YW_ATT_BUILDPROTOS:
+                *(BuildProto **)val.value.p_data = getYW_buildProtos();
+                break;
 
-                case YW_ATT_VHCLPROTOS:
-                    *(VhclProto **)val.value.p_data = getYW_vhclProtos();
-                    break;
+            case YW_ATT_VHCLPROTOS:
+                *(VhclProto **)val.value.p_data = getYW_vhclProtos();
+                break;
 
-                case YW_ATT_LVLFINISHED:
-                    *(int *)val.value.p_data = getYW_lvlFinished();
-                    break;
+            case YW_ATT_LVLFINISHED:
+                *(int *)val.value.p_data = getYW_lvlFinished();
+                break;
 
-                case YW_ATT_SCREEN_W:
-                    *(int *)val.value.p_data = getYW_screenW();
-                    break;
+            case YW_ATT_SCREEN_W:
+                *(int *)val.value.p_data = getYW_screenW();
+                break;
 
-                case YW_ATT_SCREEN_H:
-                    *(int *)val.value.p_data = getYW_screenH();
-                    break;
+            case YW_ATT_SCREEN_H:
+                *(int *)val.value.p_data = getYW_screenH();
+                break;
 
-                case YW_ATT_LOCALE_STRINGS:
-                    *(char ***)val.value.p_data = getYW_localeStrings();
-                    break;
+            case YW_ATT_LOCALE_STRINGS:
+                *(char ***)val.value.p_data = getYW_localeStrings();
+                break;
 
-                case YW_ATT_LVL_INFO:
-                    *(stru_2d90 **)val.value.p_data = getYW_levelInfo();
-                    break;
+            case YW_ATT_LVL_INFO:
+                *(stru_2d90 **)val.value.p_data = getYW_levelInfo();
+                break;
 
-                case YW_ATT_DESTROY_FX:
-                    *(int *)val.value.p_data = getYW_destroyFX();
-                    break;
+            case YW_ATT_DESTROY_FX:
+                *(int *)val.value.p_data = getYW_destroyFX();
+                break;
 
-                case YW_ATT_PNET:
-                    *(NC_STACK_windp **)val.value.p_data = getYW_pNET();
-                    break;
+            case YW_ATT_PNET:
+                *(NC_STACK_windp **)val.value.p_data = getYW_pNET();
+                break;
 
-                case YW_ATT_INVULNERABLE:
-                    *(int *)val.value.p_data = getYW_invulnerable();
-                    break;
+            case YW_ATT_INVULNERABLE:
+                *(int *)val.value.p_data = getYW_invulnerable();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -2291,7 +2285,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         bact->pitch = bact->soundcarrier.samples_data[0].pitch;
         bact->volume = bact->soundcarrier.samples_data[0].volume;
 
-        bacto->func2(&vhcl->initParams);
+        bacto->func2(vhcl->initParams);
 
         bact_arg80 arg80;
         arg80.pos = vhcl_id->pos;
@@ -2457,7 +2451,7 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
         }
     }
 
-    wobj->func2(&wproto->initParams);
+    wobj->func2(wproto->initParams);
 
     bact_arg80 arg80;
 
@@ -3490,7 +3484,7 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int mode)
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
-            ilbm_menu_map = NC_STACK_ilbm::CInit(&init_vals);
+            ilbm_menu_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
             if ( !ilbm_menu_map )
             {
                 ypa_log_out("world.ini: Could not load %s\n", menu_map);
@@ -3505,7 +3499,7 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int mode)
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
-            ilbm_rollover_map = NC_STACK_ilbm::CInit(&init_vals);
+            ilbm_rollover_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
             if ( !ilbm_rollover_map )
             {
                 ypa_log_out("world.ini: Could not load %s\n", rollover_map);
@@ -3520,7 +3514,7 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int mode)
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
-            ilbm_finished_map = NC_STACK_ilbm::CInit(&init_vals);
+            ilbm_finished_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
             if ( !ilbm_finished_map )
             {
                 ypa_log_out("world.ini: Could not load %s\n", finished_map);
@@ -3535,7 +3529,7 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int mode)
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
 
-            ilbm_enabled_map = NC_STACK_ilbm::CInit(&init_vals);
+            ilbm_enabled_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
             if ( !ilbm_enabled_map )
             {
                 ypa_log_out("world.ini: Could not load %s\n", enabled_map);
@@ -3547,7 +3541,7 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int mode)
             IDVList init_vals;
             init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, mask_map);
 
-            ilbm_mask_map = NC_STACK_ilbm::CInit(&init_vals);
+            ilbm_mask_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
             if ( !ilbm_mask_map )
             {
                 ypa_log_out("world.ini: Could not load %s\n", mask_map);
@@ -3911,7 +3905,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width);
     init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height);
 
-    usr->titel_button = (NC_STACK_button *)init_get_class("button.class", &init_vals);
+    usr->titel_button = Nucleus::CInit<NC_STACK_button>(init_vals);
     if ( !usr->titel_button )
     {
         ypa_log_out("Unable to create Titel-Button-Object\n");
@@ -4050,7 +4044,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width);
     init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->font_default_h);
 
-    usr->sub_bar_button = (NC_STACK_button *)init_get_class("button.class", &init_vals);
+    usr->sub_bar_button = Nucleus::CInit<NC_STACK_button>(init_vals);
 
     if ( !usr->sub_bar_button )
     {
@@ -4165,7 +4159,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width);
     init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height);
 
-    usr->confirm_button = (NC_STACK_button *)init_get_class("button.class", &init_vals);
+    usr->confirm_button = Nucleus::CInit<NC_STACK_button>(init_vals);
     if ( !usr->confirm_button )
     {
         ypa_log_out("Unable to create Confirm-Button-Object\n");
@@ -4276,7 +4270,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width - usr->field_D5A);
     init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height - usr->field_0xd5c);
 
-    usr->button_input_button = (NC_STACK_button *)init_get_class("button.class", &init_vals);
+    usr->button_input_button = Nucleus::CInit<NC_STACK_button>(init_vals);
     if ( !usr->button_input_button )
     {
         ypa_log_out("Unable to create Input-Button\n");
@@ -4583,7 +4577,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width - usr->field_13AA);
     init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height - usr->field_0x13ac);
 
-    usr->video_button = (NC_STACK_button *)init_get_class("button.class", &init_vals);
+    usr->video_button = Nucleus::CInit<NC_STACK_button>(init_vals);
 
     if ( !usr->video_button )
     {
@@ -5290,7 +5284,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width - usr->field_0x175c);
     init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height - usr->field_175E);
 
-    usr->disk_button = (NC_STACK_button *)init_get_class("button.class", &init_vals);
+    usr->disk_button = Nucleus::CInit<NC_STACK_button>(init_vals);
 
     if ( !usr->disk_button )
     {
@@ -5509,7 +5503,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width - usr->field_19C6);
     init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height - usr->field_0x19c8);
 
-    usr->locale_button = (NC_STACK_button *)init_get_class("button.class", &init_vals);
+    usr->locale_button = Nucleus::CInit<NC_STACK_button>(init_vals);
 
     if ( !usr->locale_button )
     {
@@ -5635,7 +5629,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width - usr->field_19DE);
     init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height - usr->field_0x19e0);
 
-    usr->about_button = (NC_STACK_button *)init_get_class("button.class", &init_vals);
+    usr->about_button = Nucleus::CInit<NC_STACK_button>(init_vals);
 
     if ( !usr->about_button )
     {
@@ -5793,7 +5787,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width - usr->field_1C32);
     init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height - usr->field_0x1c34);
 
-    usr->network_button = (NC_STACK_button *)init_get_class("button.class", &init_vals);
+    usr->network_button = Nucleus::CInit<NC_STACK_button>(init_vals);
     if ( !usr->network_button )
     {
         ypa_log_out("Unable to create network-buttonobject\n");
@@ -8707,15 +8701,15 @@ size_t NC_STACK_ypaworld::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         func1();
         return 1;
     case 2:
-        func2( (IDVList *)data );
+        func2( *(IDVList *)data );
         return 1;
     case 3:
-        func3( (IDVList *)data );
+        func3( *(IDVList *)data );
         return 1;
     case 64:
         base_func64( (base_64arg *)data );
