@@ -103,13 +103,6 @@ public:
         int field_4;
     };
 
-    struct button_71arg
-    {
-        int butID;
-        const char *field_4;
-        char *field_8;
-    };
-
     struct button_arg76
     {
         int butID;
@@ -140,18 +133,19 @@ public:
     virtual size_t func2(IDVList &stak);
     virtual size_t func3(IDVList &stak);
     virtual size_t button_func64(button_64_arg *arg);
-    virtual size_t button_func65(int *butID);
+    virtual size_t button_func65(int butID);
     virtual size_t button_func66(button_66arg *arg);
     virtual size_t button_func67(button_66arg *arg);
     virtual size_t Show(); // Part of 68th method
     virtual size_t Hide(); // Part of 68th method
     virtual ResCode button_func69(struC5 *arg);
     virtual size_t button_func70(void *);
-    virtual size_t button_func71(button_71arg *arg);
-    virtual int button_func72(int *butid);
+    bool button_func71(int butID, const std::string &field_4, const std::string &field_8);
+    bool button_func71(int butID, const std::string &field_4);
+    int button_func72(int butid);
     virtual void button_func73(button_66arg *arg);
-    virtual Slider * button_func74(int *butid);
-    virtual size_t button_func75(int *butid);
+    Slider * button_func74(int butid);
+    size_t button_func75(int butid);
     virtual size_t button_func76(button_arg76 *arg);
 
     virtual size_t compatcall(int method_id, void *data);

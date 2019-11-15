@@ -1684,11 +1684,7 @@ void UserData::sb_0x46aa8c()
             {
                 field_FBE = v24;
 
-                NC_STACK_button::button_71arg v36;
-                v36.field_4 = nod->name;
-                v36.butID = 1156;
-                v36.field_8 = 0;
-                video_button->button_func71(&v36);
+                video_button->button_func71(1156, nod->name);
 
                 break;
             }
@@ -2357,21 +2353,12 @@ void UserData::sub_46D9E0( int a2, const char *txt1, const char *txt2, int a5)
         confirm_button->button_func76(&v10);
     }
 
-    NC_STACK_button::button_71arg v9;
-
-    v9.field_4 = txt1;
-    v9.field_8 = 0;
-    v9.butID = 1302;
-    confirm_button->button_func71(&v9);
+    confirm_button->button_func71(1302, txt1);
 
     if ( txt2 )
-        v9.field_4 = txt2;
+        confirm_button->button_func71(1303, txt2);
     else
-        v9.field_4 = " ";
-
-    v9.field_8 = 0;
-    v9.butID = 1303;
-    confirm_button->button_func71(&v9);
+        confirm_button->button_func71(1303, " ");
 
     confirm_button->Show();
 }
@@ -2492,12 +2479,7 @@ void UserData::sub_46C5F0(int a2)
 
         game_default_res = v6->sort_id;
 
-        NC_STACK_button::button_71arg v7;
-        v7.butID = 1156;
-        v7.field_4 = v6->name;
-        v7.field_8 = 0;
-
-        video_button->button_func71(&v7);
+        video_button->button_func71(1156, v6->name);
     }
 }
 
@@ -2520,17 +2502,9 @@ void UserData::sub_46A3C0()
     field_FBE = i;
     game_default_res = p_ypaworld->game_default_res;
 
-    NC_STACK_button::button_71arg v9;
-    v9.field_4 = v2->name;
-    v9.field_8 = 0;
-    v9.butID = 1156;
+    video_button->button_func71(1156, v2->name);
 
-    video_button->button_func71(&v9);
-
-    v9.butID = 1172;
-    v9.field_8 = 0;
-    v9.field_4 = win3d_name;
-    video_button->button_func71(&v9);
+    video_button->button_func71(1172, win3d_name);
 
     field_139A = win3d_guid;
     field_139E = win3d_name;
@@ -2568,26 +2542,17 @@ void UserData::sub_46A3C0()
     v10.butID = 1163;
     video_button->button_func73(&v10);
 
-    int v12 = 1159;
-
-    NC_STACK_button::Slider *tmp = video_button->button_func74(&v12);
+    NC_STACK_button::Slider *tmp = video_button->button_func74(1159);
     tmp->value = fxnumber;
+    video_button->button_func75(1159);
 
-    video_button->button_func75(&v12);
-
-    v12 = 1152;
-
-    tmp = video_button->button_func74(&v12);
+    tmp = video_button->button_func74(1152);
     tmp->value = snd__volume;
+    video_button->button_func75(1152);
 
-    video_button->button_func75(&v12);
-
-    v12 = 1154;
-
-    tmp = video_button->button_func74(&v12);
+    tmp = video_button->button_func74(1154);
     tmp->value = snd__cdvolume;
-
-    video_button->button_func75(&v12);
+    video_button->button_func75(1154);
 
     video_button->Hide();
 
@@ -2642,12 +2607,7 @@ void  UserData::ypaworld_func158__sub0__sub5(int a2)
         field_139E = v2;
         field_139A = v12;
 
-        NC_STACK_button::button_71arg v7;
-        v7.butID = 1172;
-        v7.field_4 = v2;
-        v7.field_8 = 0;
-
-        video_button->button_func71(&v7);
+        video_button->button_func71(1172, v2);
     }
 }
 
@@ -2937,11 +2897,7 @@ void UserData::GameShellUiHandleInput()
     v393.xpos = word_5A50C0 + dword_5A50B6_h;
     sub_bar_button->button_func76(&v393);
 
-    NC_STACK_button::button_71arg v395;
-    v395.butID = 1019;
-    v395.field_4 = get_lang_string(ypaworld__string_pointers, 644, "GO BACK");
-    v395.field_8 = NULL;
-    sub_bar_button->button_func71(&v395);
+    sub_bar_button->button_func71(1019,  get_lang_string(ypaworld__string_pointers, 644, "GO BACK"));
 
     if ( sub_4EDCC4(p_ypaworld) )
     {
@@ -2958,10 +2914,7 @@ void UserData::GameShellUiHandleInput()
             v393.xpos = 0;
             sub_bar_button->button_func76(&v393);
 
-            v395.field_4 = get_lang_string(ypaworld__string_pointers, 2438, "2438 == BACK");
-            v395.butID = 1019;
-            v395.field_8 = NULL;
-            sub_bar_button->button_func71(&v395);
+            sub_bar_button->button_func71(1019, get_lang_string(ypaworld__string_pointers, 2438, "2438 == BACK"));
         }
 
         if ( p_ypaworld->field_2d90->field_40 == 9 )
@@ -2973,10 +2926,7 @@ void UserData::GameShellUiHandleInput()
             v393.xpos = 0;
             sub_bar_button->button_func76(&v393);
 
-            v395.field_4 = get_lang_string(ypaworld__string_pointers, 2420, "CONTINUE");
-            v395.butID = 1019;
-            v395.field_8 = NULL;
-            sub_bar_button->button_func71(&v395);
+            sub_bar_button->button_func71(1019, get_lang_string(ypaworld__string_pointers, 2420, "CONTINUE"));
         }
 
         v410.butID = 1019;
@@ -3745,39 +3695,26 @@ void UserData::GameShellUiHandleInput()
     }
 
 
-    int v347 = 1159;
-    NC_STACK_button::Slider *v67 = video_button->button_func74(&v347);
+    NC_STACK_button::Slider *v67 = video_button->button_func74(1159);
     sprintf(v306, "%d", v67->value);
 
-    v395.field_4 = v306;
-    v395.field_8 = v306;
-    v395.butID = 1158;
-    video_button->button_func71(&v395);
+    video_button->button_func71(1158, v306);
 
     field_0x13a4 = v67->value;
 
 
-    v347 = 1152;
-    v67 = video_button->button_func74(&v347);
+    v67 = video_button->button_func74(1152);
     sprintf(v306, "%d", v67->value);
 
-    v395.field_4 = v306;
-    v395.field_8 = v306;
-    v395.butID = 1153;
-    video_button->button_func71(&v395);
+    video_button->button_func71(1153, v306);
     field_0x13b4 = v67->value;
 
     SFXEngine::SFXe.setMasterVolume(field_0x13b4);
 
-
-    v347 = 1154;
-    v67 = video_button->button_func74(&v347);
+    v67 = video_button->button_func74(1154);
     sprintf(v306, "%d", v67->value);
 
-    v395.field_4 = v306;
-    v395.field_8 = v306;
-    v395.butID = 1155;
-    video_button->button_func71(&v395);
+    video_button->button_func71(1155, v306);
     field_0x13b8 = v67->value;
 
     SFXEngine::SFXe.SetMusicVolume(field_0x13b8);
@@ -3949,10 +3886,7 @@ void UserData::GameShellUiHandleInput()
 
             strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
 
-            v395.field_8 = NULL;
-            v395.butID = 1100;
-            v395.field_4 = v308;
-            disk_button->button_func71(&v395);
+            disk_button->button_func71(1100, v308);
         }
         else if ( r.code == 1161 )
         {
@@ -3967,10 +3901,7 @@ void UserData::GameShellUiHandleInput()
 
             strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
 
-            v395.field_8 = NULL;
-            v395.butID = 1100;
-            v395.field_4 = v308;
-            disk_button->button_func71(&v395);
+            disk_button->button_func71(1100, v308);
         }
         else if ( r.code == 1162 )
         {
@@ -4025,10 +3956,7 @@ void UserData::GameShellUiHandleInput()
 
                 strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
 
-                v395.field_8 = NULL;
-                v395.butID = 1100;
-                v395.field_4 = v308;
-                disk_button->button_func71(&v395);
+                disk_button->button_func71(1100, v308);
             }
         }
         else if ( r.code == 1163 )
@@ -4071,10 +3999,7 @@ void UserData::GameShellUiHandleInput()
 
                 strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
 
-                v395.field_8 = NULL;
-                v395.butID = 1100;
-                v395.field_4 = v308;
-                disk_button->button_func71(&v395);
+                disk_button->button_func71(1100, v308);
             }
         }
         else if ( r.code == 1164)
@@ -4256,10 +4181,7 @@ void UserData::GameShellUiHandleInput()
         strcpy(v308, usernamedir);
     }
 
-    v395.field_8 = NULL;
-    v395.field_4 = v308;
-    v395.butID = 1100;
-    disk_button->button_func71(&v395);
+    disk_button->button_func71(1100, v308);
 
     if ( envMode == ENVMODE_SELLOCALE )
     {
@@ -5048,13 +4970,7 @@ void UserData::GameShellUiHandleInput()
     network_button->button_func67(&v410);
 
 
-    NC_STACK_button::button_71arg v336;
-
-    v336.butID = 1201;
-    v336.field_4 = get_lang_string(ypaworld__string_pointers, 2, "OK");
-    v336.field_8 = 0;
-
-    network_button->button_func71(&v336);
+    network_button->button_func71(1201, get_lang_string(ypaworld__string_pointers, 2, "OK"));
 
     v410.butID = 1220;
     network_button->button_func67(&v410);
@@ -5132,10 +5048,7 @@ void UserData::GameShellUiHandleInput()
             v280 = v306;
         }
 
-        v395.field_4 = v280;
-        v395.field_8 = 0;
-        v395.butID = 1228;
-        network_button->button_func71(&v395);
+        network_button->button_func71(1228, v280);
 
         v410.butID = 1228;
         network_button->button_func66(&v410);
@@ -5180,10 +5093,7 @@ void UserData::GameShellUiHandleInput()
             strcpy(v308 + netNameCurPos + 1, netName + netNameCurPos);
         }
 
-        v395.butID = 1200;
-        v395.field_4 = v308;
-        v395.field_8 = 0;
-        network_button->button_func71(&v395);
+        network_button->button_func71(1200, v308);
     }
 
     v393.xpos = -1;
@@ -5209,54 +5119,34 @@ void UserData::GameShellUiHandleInput()
 
         network_button->button_func67(&v410);
 
-        v395.butID = 1204;
-        v395.field_4 = get_lang_string(ypaworld__string_pointers, 410, "SELECT PROVIDER");
-        v395.field_8 = 0;
-        network_button->button_func71(&v395);
+        network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 410, "SELECT PROVIDER"));
 
-        v395.butID = 1222;
-        v395.field_4 = get_lang_string(ypaworld__string_pointers, 425, "2");
-        network_button->button_func71(&v395);
+        network_button->button_func71(1222, get_lang_string(ypaworld__string_pointers, 425, "2"));
 
-        v395.butID = 1223;
-        v395.field_4 = get_lang_string(ypaworld__string_pointers, 426, "3");
-        network_button->button_func71(&v395);
+        network_button->button_func71(1223, get_lang_string(ypaworld__string_pointers, 426, "3"));
         break;
 
     case 1:
         if ( p_ypaworld->windp->GetProvType(NULL) != 4 || !modemAskSession )
         {
-            v395.butID = 1202;
-            v395.field_4 = get_lang_string(ypaworld__string_pointers, 402, "NEW");
-            v395.field_8 = 0;
-            network_button->button_func71(&v395);
+            network_button->button_func71(1202, get_lang_string(ypaworld__string_pointers, 402, "NEW"));
 
             v410.butID = 1202;
             network_button->button_func66(&v410);
         }
 
-        v395.butID = 1204;
-        v395.field_8 = 0;
-        v395.field_4 = get_lang_string(ypaworld__string_pointers, 411, "SELECT SESSION");
-        network_button->button_func71(&v395);
+        network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 411, "SELECT SESSION"));
 
-        v395.butID = 1222;
-        v395.field_4 = get_lang_string(ypaworld__string_pointers, 428, "5");
-        network_button->button_func71(&v395);
+        network_button->button_func71(1222, get_lang_string(ypaworld__string_pointers, 428, "5"));
 
-        v395.butID = 1223;
-        v395.field_4 = get_lang_string(ypaworld__string_pointers, 429, "6");
-        network_button->button_func71(&v395);
+        network_button->button_func71(1223, get_lang_string(ypaworld__string_pointers, 429, "6"));
 
         windp_getNameMsg msg;
         msg.id = 0;
 
         if ( p_ypaworld->windp->GetSessionName(&msg) )
         {
-            v395.butID = 1201;
-            v395.field_4 = get_lang_string(ypaworld__string_pointers, 406, "JOIN");
-            v395.field_8 = 0;
-            network_button->button_func71(&v395);
+            network_button->button_func71(1201, get_lang_string(ypaworld__string_pointers, 406, "JOIN"));
         }
         else if ( p_ypaworld->windp->GetProvType(NULL) != 4 || modemAskSession )
         {
@@ -5265,36 +5155,23 @@ void UserData::GameShellUiHandleInput()
         }
         else
         {
-            v395.butID = 1201;
-            v395.field_4 = get_lang_string(ypaworld__string_pointers, 421, "SEARCH");
-            v395.field_8 = 0;
-            network_button->button_func71(&v395);
+            network_button->button_func71(1201, get_lang_string(ypaworld__string_pointers, 421, "SEARCH"));
         }
         break;
 
     case 2:
-        v395.butID = 1204;
-        v395.field_4 = get_lang_string(ypaworld__string_pointers, 413, "ENTER PLAYER");
-        v395.field_8 = 0;
-        network_button->button_func71(&v395);
+        network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 413, "ENTER PLAYER"));
 
-        v395.butID = 1222;
-        v395.field_4 = get_lang_string(ypaworld__string_pointers, 434, "11");
-        network_button->button_func71(&v395);
+        network_button->button_func71(1222, get_lang_string(ypaworld__string_pointers, 434, "11"));
 
-        v395.butID = 1223;
-        v395.field_4 = get_lang_string(ypaworld__string_pointers, 435, "12");
-        network_button->button_func71(&v395);
+        network_button->button_func71(1223, get_lang_string(ypaworld__string_pointers, 435, "12"));
 
         if ( p_ypaworld->str17_NOT_FALSE )
         {
             v410.butID = 1202;
             network_button->button_func66(&v410);
 
-            v395.butID = 1202;
-            v395.field_4 = get_lang_string(ypaworld__string_pointers, 423, "CHANGE");
-            v395.field_8 = 0;
-            network_button->button_func71(&v395);
+            network_button->button_func71(1202, get_lang_string(ypaworld__string_pointers, 423, "CHANGE"));
         }
         break;
 
@@ -5305,28 +5182,18 @@ void UserData::GameShellUiHandleInput()
             network_button->button_func67(&v410);
         }
 
-        v395.butID = 1204;
-        v395.field_4 = get_lang_string(ypaworld__string_pointers, 412, "SELECT LEVE");
-        v395.field_8 = 0;
-        network_button->button_func71(&v395);
+        network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 412, "SELECT LEVE"));
 
-        v395.butID = 1222;
-        v395.field_4 = get_lang_string(ypaworld__string_pointers, 431, "8");
-        network_button->button_func71(&v395);
+        network_button->button_func71(1222, get_lang_string(ypaworld__string_pointers, 431, "8"));
 
-        v395.butID = 1223;
-        v395.field_4 = get_lang_string(ypaworld__string_pointers, 432, "9");
-        network_button->button_func71(&v395);
+        network_button->button_func71(1223, get_lang_string(ypaworld__string_pointers, 432, "9"));
         break;
 
     case 4:
         v410.butID = 1225;
         network_button->button_func66(&v410);
 
-        v395.butID = 1225;
-        v395.field_4 = get_lang_string(ypaworld__string_pointers, 405, "SEND");
-        v395.field_8 = 0;
-        network_button->button_func71(&v395);
+        network_button->button_func71(1225, get_lang_string(ypaworld__string_pointers, 405, "SEND"));
 
         v410.butID = 1226;
         network_button->button_func66(&v410);
@@ -5335,14 +5202,9 @@ void UserData::GameShellUiHandleInput()
         network_button->button_func66(&v410);
 
         if ( netLevelID )
-            v395.field_4 = netLevelName;
+            network_button->button_func71(1226, netLevelName);
         else
-            v395.field_4 = " ";
-
-        v395.butID = 1226;
-        v395.field_8 = 0;
-
-        network_button->button_func71(&v395);
+            network_button->button_func71(1226, " ");
 
         if ( isHost )
         {
@@ -5527,23 +5389,13 @@ void UserData::GameShellUiHandleInput()
 
         if ( isHost )
         {
-            v395.butID = 1204;
-            v395.field_4 = get_lang_string(ypaworld__string_pointers, 414, "START GAME OR ENTER MESSAGE TO THE PLAYERS");
-            v395.field_8 = 0;
-            network_button->button_func71(&v395);
+            network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 414, "START GAME OR ENTER MESSAGE TO THE PLAYERS"));
 
-            v395.butID = 1222;
-            v395.field_4 = get_lang_string(ypaworld__string_pointers, 437, "14");
-            network_button->button_func71(&v395);
+            network_button->button_func71(1222, get_lang_string(ypaworld__string_pointers, 437, "14"));
 
-            v395.butID = 1223;
-            v395.field_4 = get_lang_string(ypaworld__string_pointers, 438, "15");
-            network_button->button_func71(&v395);
+            network_button->button_func71(1223, get_lang_string(ypaworld__string_pointers, 438, "15"));
 
-            v395.butID = 1201;
-            v395.field_4 = get_lang_string(ypaworld__string_pointers, 407, "START");
-            v395.field_8 = 0;
-            network_button->button_func71(&v395);
+            network_button->button_func71(1201, get_lang_string(ypaworld__string_pointers, 407, "START"));
 
             if ( !field_1CD7 )
             {
@@ -5554,18 +5406,11 @@ void UserData::GameShellUiHandleInput()
         }
         else
         {
-            v395.butID = 1204;
-            v395.field_4 = get_lang_string(ypaworld__string_pointers, 415, "WAIT FOR START OR SEND MESSAGES");
-            v395.field_8 = 0;
-            network_button->button_func71(&v395);
+            network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 415, "WAIT FOR START OR SEND MESSAGES"));
 
-            v395.butID = 1222;
-            v395.field_4 = get_lang_string(ypaworld__string_pointers, 440, "17");
-            network_button->button_func71(&v395);
+            network_button->button_func71(1222, get_lang_string(ypaworld__string_pointers, 440, "17"));
 
-            v395.butID = 1223;
-            v395.field_4 = get_lang_string(ypaworld__string_pointers, 441, "18");
-            network_button->button_func71(&v395);
+            network_button->button_func71(1223, get_lang_string(ypaworld__string_pointers, 441, "18"));
 
             if ( field_1CE8 )
             {
@@ -5614,50 +5459,44 @@ void UserData::GameShellUiHandleInput()
 
             int v304 = p_ypaworld->windp->GetPlayerData(&v368);
 
+            std::string name = " ";
+            int btID;
+
             switch ( i )
             {
             case 0:
                 v370 = 1214;
-                v395.butID = 1210;
+                btID = 1210;
                 if ( v304 )
-                    v395.field_4 = v368.name;
-                else
-                    v395.field_4 = " ";
+                    name = v368.name;
                 break;
 
             case 1:
                 v370 = 1215;
-                v395.butID = 1211;
+                btID = 1211;
                 if ( v304 )
-                    v395.field_4 = v368.name;
-                else
-                    v395.field_4 = " ";
+                    name = v368.name;
                 break;
 
             case 2:
                 v370 = 1216;
-                v395.butID = 1212;
+                btID = 1212;
                 if ( v304 )
-                    v395.field_4 = v368.name;
-                else
-                    v395.field_4 = " ";
+                    name = v368.name;
                 break;
 
             case 3:
                 v370 = 1217;
-                v395.butID = 1213;
+                btID = 1213;
                 if ( v304 )
-                    v395.field_4 = v368.name;
-                else
-                    v395.field_4 = " ";
+                    name = v368.name;
                 break;
 
             default:
                 break;
             }
 
-            v395.field_8 = 0;
-            network_button->button_func71(&v395);
+            network_button->button_func71(btID, name);
 
             if ( v304 )
             {
@@ -5713,9 +5552,7 @@ void UserData::GameShellUiHandleInput()
                 strcpy(v339, "     ");
             }
 
-            v395.butID = v370;
-            v395.field_4 = v339;
-            network_button->button_func71(&v395);
+            network_button->button_func71(v370, v339);
 
             v368.ID++;
         }

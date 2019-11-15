@@ -338,7 +338,7 @@ size_t NC_STACK_button::button_func64(button_64_arg *arg)
     return 0;
 }
 
-size_t NC_STACK_button::button_func65(int *butID)
+size_t NC_STACK_button::button_func65(int butID)
 {
     int id = button_func72(butID);
 
@@ -360,7 +360,7 @@ size_t NC_STACK_button::button_func65(int *butID)
 
 size_t NC_STACK_button::button_func66(button_66arg *arg)
 {
-    int id = button_func72(&arg->butID);
+    int id = button_func72(arg->butID);
 
     if ( id >= 0 && id < idd )
     {
@@ -380,7 +380,7 @@ size_t NC_STACK_button::button_func66(button_66arg *arg)
 
 size_t NC_STACK_button::button_func67(button_66arg *arg)
 {
-    int id = button_func72(&arg->butID);
+    int id = button_func72(arg->butID);
 
     if ( id >= 0 && id < idd )
     {
@@ -858,35 +858,52 @@ size_t NC_STACK_button::button_func70(void *)
     return 1;
 }
 
-size_t NC_STACK_button::button_func71(button_71arg *arg)
+bool NC_STACK_button::button_func71(int butID, const std::string &field_4, const std::string &field_8)
 {
-    int v5 = button_func72(&arg->butID);
+    int v5 = button_func72(butID);
 
-    if ( v5 >= 0 && v5 < idd &&  arg->field_4 )
+    if ( v5 >= 0 && v5 < idd &&  !field_4.empty() )
     {
         button_str2 &v7 = field_d8[v5];
 
-        strncpy(v7.caption, arg->field_4, 511);
+        strncpy(v7.caption, field_4.c_str(), 511);
 
-        if ( arg->field_8 )
+        if ( !field_8.empty() )
         {
-            strncpy(v7.caption2, arg->field_8, 511);
+            strncpy(v7.caption2, field_8.c_str(), 511);
         }
         else
         {
             strcpy(v7.caption2, v7.caption);
         }
-        return 1;
+        return true;
     }
 
-    return 0;
+    return false;
 }
 
-int NC_STACK_button::button_func72(int *butid)
+bool NC_STACK_button::button_func71(int butID, const std::string &field_4)
+{
+    int v5 = button_func72(butID);
+
+    if ( v5 >= 0 && v5 < idd &&  !field_4.empty() )
+    {
+        button_str2 &v7 = field_d8[v5];
+
+        strncpy(v7.caption, field_4.c_str(), 511);
+        strncpy(v7.caption2, field_4.c_str(), 511);
+
+        return true;
+    }
+
+    return false;
+}
+
+int NC_STACK_button::button_func72(int butid)
 {
     for (unsigned int i = 0; i < field_d8.size(); i++)
     {
-        if (field_d8[i].button_id == *butid)
+        if (field_d8[i].button_id == butid)
             return i;
     }
     return -1;
@@ -894,7 +911,7 @@ int NC_STACK_button::button_func72(int *butid)
 
 void NC_STACK_button::button_func73(button_66arg *arg)
 {
-    int id = button_func72(&arg->butID);
+    int id = button_func72(arg->butID);
 
     if ( id < 0 || id >= idd )
         return;
@@ -913,7 +930,7 @@ void NC_STACK_button::button_func73(button_66arg *arg)
     }
 }
 
-NC_STACK_button::Slider * NC_STACK_button::button_func74(int *butid)
+NC_STACK_button::Slider * NC_STACK_button::button_func74(int butid)
 {
     int id = button_func72(butid);
 
@@ -923,7 +940,7 @@ NC_STACK_button::Slider * NC_STACK_button::button_func74(int *butid)
     return NULL;
 }
 
-size_t NC_STACK_button::button_func75(int *butid)
+size_t NC_STACK_button::button_func75(int butid)
 {
     int id = button_func72(butid);
 
@@ -935,7 +952,7 @@ size_t NC_STACK_button::button_func75(int *butid)
 
 size_t NC_STACK_button::button_func76(button_arg76 *arg)
 {
-    int id = button_func72(&arg->butID);
+    int id = button_func72(arg->butID);
 
     if ( id >= 0 && id < idd )
     {
@@ -1039,7 +1056,7 @@ size_t NC_STACK_button::compatcall(int method_id, void *data)
     case 64:
         return (size_t)button_func64( (button_64_arg *)data );
     case 65:
-        return (size_t)button_func65( (int *)data );
+        return (size_t)button_func65( (size_t)data );
     case 66:
         return (size_t)button_func66( (button_66arg *)data );
     case 67:
@@ -1057,16 +1074,16 @@ size_t NC_STACK_button::compatcall(int method_id, void *data)
     case 70:
         return (size_t)button_func70( (void *)data );
     case 71:
-        return (size_t)button_func71( (button_71arg *)data );
+        return false;//(size_t)button_func71( (button_71arg *)data );
     case 72:
-        return (size_t)button_func72( (int *)data );
+        return (size_t)button_func72( (size_t )data );
     case 73:
         button_func73( (button_66arg *)data );
         return 1;
     case 74:
-        return (size_t)button_func74( (int *)data );
+        return (size_t)button_func74( (size_t)data );
     case 75:
-        return (size_t)button_func75( (int *)data );
+        return (size_t)button_func75( (size_t)data );
     case 76:
         return (size_t)button_func76( (button_arg76 *)data );
     default:

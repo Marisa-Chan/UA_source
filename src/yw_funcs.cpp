@@ -2969,10 +2969,6 @@ void ypaworld_func158__network_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
 
     cmd = usr->network_listvw.ItemsPreLayout(yw, cmd, 0, "uvw");
 
-    NC_STACK_button::button_71arg setStr;
-    setStr.butID = 1200;
-    setStr.field_8 = usr->netName;
-
     int cnt = -1;
 
     std::string str1;
@@ -3007,8 +3003,7 @@ void ypaworld_func158__network_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
                 {
                     strcpy(usr->netName, msg.name);
 
-                    setStr.field_4 = usr->netName;
-                    usr->network_button->button_func71(&setStr);
+                    usr->network_button->button_func71(1200, usr->netName);
                     usr->netSel = 0;
                 }
 
@@ -3059,8 +3054,7 @@ void ypaworld_func158__network_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
 
                     strcpy(usr->netName, yw->LevelNet->mapInfos[ lvlid ].map_name);
 
-                    setStr.field_4 = usr->netName;
-                    usr->network_button->button_func71(&setStr);
+                    usr->network_button->button_func71(1200, usr->netName);
 
                     usr->netSel = 0;
                 }
@@ -3135,8 +3129,7 @@ void ypaworld_func158__network_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
                 {
                     strcpy(usr->netName, usr->map_descriptions[ i ].pstring);
 
-                    setStr.field_4 = usr->netName;
-                    usr->network_button->button_func71(&setStr);
+                    usr->network_button->button_func71(1200, usr->netName);
 
                     usr->netLevelName = usr->map_descriptions[ i ].pstring;
                     usr->netLevelID = usr->map_descriptions[ i ].id;

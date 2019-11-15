@@ -7252,20 +7252,15 @@ void NC_STACK_ypaworld::ypaworld_func167(UserData *usr)
     v16.butID = 1164;
     usr->video_button->button_func73(&v16);
 
-    int v19;
-    v19 = 1152;
-
-    NC_STACK_button::Slider *tmp = usr->video_button->button_func74(&v19);
+    NC_STACK_button::Slider *tmp = usr->video_button->button_func74(1152);
     tmp->value = usr->snd__volume;
 
-    usr->video_button->button_func75(&v19);
+    usr->video_button->button_func75(1152);
 
-
-    v19 = 1154;
-    tmp = usr->video_button->button_func74(&v19);
+    tmp = usr->video_button->button_func74(1154);
     tmp->value = usr->snd__cdvolume;
 
-    usr->video_button->button_func75(&v19);
+    usr->video_button->button_func75(1154);
 
     v16.butID = 1163;
     v16.field_4 = (usr->enemyindicator == 0) + 1;
@@ -7297,18 +7292,12 @@ void NC_STACK_ypaworld::ypaworld_func167(UserData *usr)
         node = (video_mode_node *)node->next;
     }
 
-    NC_STACK_button::button_71arg v15;
-    v15.field_4 = node->name;
-    v15.field_8 = node->name;
-    v15.butID = 1156;
+    usr->video_button->button_func71(1156, node->name);
 
-    usr->video_button->button_func71(&v15);
-
-    v19 = 1159;
-    tmp = usr->video_button->button_func74(&v19);
+    tmp = usr->video_button->button_func74(1159);
     tmp->value = usr->fxnumber;
 
-    usr->video_button->button_func75(&v19);
+    usr->video_button->button_func75(1159);
 
     ypaworld_func167__sub0(usr);
 }
