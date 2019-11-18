@@ -3576,7 +3576,7 @@ void UserData::GameShellUiHandleInput()
             {
                 if ( _input->downed_key == UAVK_BACK )
                 {
-                    if ( usernamedir_len > 0 && p_ypaworld->str17_NOT_FALSE == 0 )
+                    if ( usernamedir_len > 0 )
                     {
                         int ln = strlen(usernamedir);
                         for (int i = usernamedir_len - 1; i < ln - 1; i++)
@@ -3634,15 +3634,15 @@ void UserData::GameShellUiHandleInput()
                 }
                 else if ( _input->downed_key == UAVK_LEFT )
                 {
-                    if ( usernamedir_len > 0 && p_ypaworld->str17_NOT_FALSE == 0 )
+                    if ( usernamedir_len > 0 )
                         usernamedir_len--;
                 }
                 else if ( _input->downed_key == UAVK_RIGHT )
                 {
-                    if ( usernamedir_len < (int)strlen(usernamedir) && p_ypaworld->str17_NOT_FALSE == 0 )
+                    if ( usernamedir_len < (int)strlen(usernamedir) )
                         usernamedir_len++;
                 }
-                else if ( _input->downed_key == UAVK_DELETE && usernamedir_len < (int)strlen(usernamedir) && p_ypaworld->str17_NOT_FALSE == 0 )
+                else if ( _input->downed_key == UAVK_DELETE && usernamedir_len < (int)strlen(usernamedir) )
                 {
                     int ln = strlen(usernamedir);
                     for (int i = usernamedir_len; i < ln - 1; i++)
@@ -3653,7 +3653,7 @@ void UserData::GameShellUiHandleInput()
 
                 if ( strlen(usernamedir) < 32 )
                 {
-                    if ( _input->chr > 0x1F && p_ypaworld->str17_NOT_FALSE == 0 )
+                    if ( _input->chr > 0x1F )
                     {
                         char v337[6];
                         char a2a[6];
@@ -3770,40 +3770,13 @@ void UserData::GameShellUiHandleInput()
 
             sprintf(usernamedir, "%s%d", v135, v420 + 1);
 
-            if ( p_ypaworld->str17_NOT_FALSE )
-            {
-                windd_dlgBox a1a;
-                memset(&a1a, 0, sizeof(windd_dlgBox));
+            usernamedir_len = strlen(usernamedir);
+            strncpy(v308, usernamedir, usernamedir_len);
+            strncpy(&v308[usernamedir_len], "h", 1);
 
-                a1a.title = get_lang_string(ypaworld__string_pointers, 365, "ENTER NAME");
-                a1a.ok = get_lang_string(ypaworld__string_pointers, 2, "OK");
-                a1a.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
-                a1a.timer_func = 0;
-                a1a.startText = usernamedir;
-                a1a.maxLen = 32;
-                a1a.replace = 1;
+            strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
 
-                windd->windd_func322(&a1a);
-
-                if ( !a1a.result )
-                {
-                    field_0x1744 = 0;
-                }
-                else
-                {
-                    strcpy(usernamedir, a1a.result);
-                }
-            }
-            else
-            {
-                usernamedir_len = strlen(usernamedir);
-                strncpy(v308, usernamedir, usernamedir_len);
-                strncpy(&v308[usernamedir_len], "h", 1);
-
-                strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
-
-                disk_button->button_func71(1100, v308);
-            }
+            disk_button->button_func71(1100, v308);
         }
         else if ( r.code == 1163 )
         {
@@ -3813,40 +3786,13 @@ void UserData::GameShellUiHandleInput()
                 strcpy( usernamedir, get_lang_string(ypaworld__string_pointers, 366, "NEW GAME") );
             }
 
-            if ( p_ypaworld->str17_NOT_FALSE )
-            {
-                windd_dlgBox a1a;
-                memset(&a1a, 0, sizeof(windd_dlgBox));
+            usernamedir_len = strlen(usernamedir);
+            strncpy(v308, usernamedir, usernamedir_len);
+            strncpy(&v308[usernamedir_len], "h", 1);
 
-                a1a.title = get_lang_string(ypaworld__string_pointers, 365, "ENTER NAME");
-                a1a.ok = get_lang_string(ypaworld__string_pointers, 2, "OK");
-                a1a.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
-                a1a.timer_func = 0;
-                a1a.startText = usernamedir;
-                a1a.maxLen = 32;
-                a1a.replace = 1;
+            strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
 
-                windd->windd_func322(&a1a);
-
-                if ( !a1a.result )
-                {
-                    field_0x1744 = 0;
-                }
-                else
-                {
-                    strcpy(usernamedir, a1a.result);
-                }
-            }
-            else
-            {
-                usernamedir_len = strlen(usernamedir);
-                strncpy(v308, usernamedir, usernamedir_len);
-                strncpy(&v308[usernamedir_len], "h", 1);
-
-                strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
-
-                disk_button->button_func71(1100, v308);
-            }
+            disk_button->button_func71(1100, v308);
         }
         else if ( r.code == 1164)
         {
@@ -3984,21 +3930,14 @@ void UserData::GameShellUiHandleInput()
             disk_button->button_func66(&v410);
         }
 
-        if ( p_ypaworld->str17_NOT_FALSE )
-        {
-            strcpy(v308, usernamedir);
-        }
-        else
-        {
-            char *v174 = usernamedir;
+        char *v174 = usernamedir;
 
-            strncpy(v308, usernamedir, usernamedir_len);
-            strncpy(&v308[usernamedir_len], "_", 1);
+        strncpy(v308, usernamedir, usernamedir_len);
+        strncpy(&v308[usernamedir_len], "_", 1);
 
-            v174 += usernamedir_len;
+        v174 += usernamedir_len;
 
-            strcpy(&v308[usernamedir_len + 1], v174);
-        }
+        strcpy(&v308[usernamedir_len + 1], v174);
     }
     else
     {
@@ -4335,26 +4274,26 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1201 )
             {
-                if ( p_ypaworld->str17_NOT_FALSE )
-                {
-                    windd_dlgBox v339;
-                    memset(&v339, 0, sizeof(windd_dlgBox));
-
-                    v339.title = get_lang_string(ypaworld__string_pointers, 413, "ENTER CALLSIGN");
-                    v339.ok = get_lang_string(ypaworld__string_pointers, 2, "OK");
-                    v339.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
-                    v339.maxLen = 32;
-                    v339.timer_func = NULL;
-                    v339.startText = netName;
-
-                    windd->windd_func322(&v339);
-
-                    if ( v339.result )
-                    {
-                        strncpy(netName, v339.result, 64);
-                        netName[63] = 0;
-                    }
-                }
+//                if ( str17_NOT_FALSE )
+//                {
+//                    windd_dlgBox v339;
+//                    memset(&v339, 0, sizeof(windd_dlgBox));
+//
+//                    v339.title = get_lang_string(ypaworld__string_pointers, 413, "ENTER CALLSIGN");
+//                    v339.ok = get_lang_string(ypaworld__string_pointers, 2, "OK");
+//                    v339.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
+//                    v339.maxLen = 32;
+//                    v339.timer_func = NULL;
+//                    v339.startText = netName;
+//
+//                    windd->windd_func322(&v339);
+//
+//                    if ( v339.result )
+//                    {
+//                        strncpy(netName, v339.result, 64);
+//                        netName[63] = 0;
+//                    }
+//                }
             }
             else if ( r.code == 1250 )
             {
@@ -4480,26 +4419,26 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1210 )
             {
-                if ( p_ypaworld->str17_NOT_FALSE )
-                {
-                    windd_dlgBox v316;
-                    memset(&v316, 0, sizeof(windd_dlgBox));
-
-                    v316.title = get_lang_string(ypaworld__string_pointers, 422, "ENTER MESSAGE");
-                    v316.ok = get_lang_string(ypaworld__string_pointers, 2, "OK");
-                    v316.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
-                    v316.startText = netName;
-                    v316.timer_func = NULL;
-                    v316.maxLen = 64;
-
-                    windd->windd_func322(&v316);
-
-                    if ( v316.result )
-                    {
-                        strncpy(netName, v316.result, 64);
-                        netName[63] = 0;
-                    }
-                }
+//                if ( str17_NOT_FALSE )
+//                {
+//                    windd_dlgBox v316;
+//                    memset(&v316, 0, sizeof(windd_dlgBox));
+//
+//                    v316.title = get_lang_string(ypaworld__string_pointers, 422, "ENTER MESSAGE");
+//                    v316.ok = get_lang_string(ypaworld__string_pointers, 2, "OK");
+//                    v316.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
+//                    v316.startText = netName;
+//                    v316.timer_func = NULL;
+//                    v316.maxLen = 64;
+//
+//                    windd->windd_func322(&v316);
+//
+//                    if ( v316.result )
+//                    {
+//                        strncpy(netName, v316.result, 64);
+//                        netName[63] = 0;
+//                    }
+//                }
 
                 if ( netName[0] )
                 {
@@ -4605,7 +4544,7 @@ void UserData::GameShellUiHandleInput()
 
                 if ( strlen(netName) < v233 )
                 {
-                    if ( _input->chr > 0x1F && p_ypaworld->str17_NOT_FALSE == 0 )
+                    if ( _input->chr > 0x1F )
                     {
                         char v354[12];
                         char v345[12];
@@ -4630,7 +4569,7 @@ void UserData::GameShellUiHandleInput()
                     }
                 }
 
-                if ( _input->downed_key == UAVK_BACK && netNameCurPos > 0 && (p_ypaworld->str17_NOT_FALSE == 0) )
+                if ( _input->downed_key == UAVK_BACK && netNameCurPos > 0 )
                 {
                     int ln = strlen(netName);
 
@@ -4643,15 +4582,15 @@ void UserData::GameShellUiHandleInput()
                 }
                 else if ( _input->downed_key == UAVK_LEFT )
                 {
-                    if ( netNameCurPos > 0 && (p_ypaworld->str17_NOT_FALSE == 0) )
+                    if ( netNameCurPos > 0 )
                         netNameCurPos--;
                 }
                 else if ( _input->downed_key == UAVK_RIGHT )
                 {
-                    if ( netNameCurPos < (int32_t)strlen(netName) && (p_ypaworld->str17_NOT_FALSE == 0) )
+                    if ( netNameCurPos < (int32_t)strlen(netName) )
                         netNameCurPos++;
                 }
-                else if ( _input->downed_key == UAVK_DELETE && netNameCurPos < (int32_t)strlen(netName) && (p_ypaworld->str17_NOT_FALSE == 0) )
+                else if ( _input->downed_key == UAVK_DELETE && netNameCurPos < (int32_t)strlen(netName) )
                 {
                     int ln = strlen(netName);
 
@@ -4897,7 +4836,7 @@ void UserData::GameShellUiHandleInput()
         network_button->button_func66(&v410);
     }
 
-    if ( (!nInputMode || p_ypaworld->str17_NOT_FALSE) && netSelMode != 2 )
+    if ( !nInputMode && netSelMode != 2 )
     {
         v410.butID = 1200;
         network_button->button_func67(&v410);
@@ -4923,18 +4862,10 @@ void UserData::GameShellUiHandleInput()
 
         network_button->button_func76(&v393);
 
+        strncpy(v308, netName, netNameCurPos);
+        strncpy(v308 + netNameCurPos, "_", 1);
 
-        if ( p_ypaworld->str17_NOT_FALSE )
-        {
-            strcpy(v308, netName);
-        }
-        else
-        {
-            strncpy(v308, netName, netNameCurPos);
-            strncpy(v308 + netNameCurPos, "_", 1);
-
-            strcpy(v308 + netNameCurPos + 1, netName + netNameCurPos);
-        }
+        strcpy(v308 + netNameCurPos + 1, netName + netNameCurPos);
 
         network_button->button_func71(1200, v308);
     }
@@ -5009,13 +4940,13 @@ void UserData::GameShellUiHandleInput()
 
         network_button->button_func71(1223, get_lang_string(ypaworld__string_pointers, 435, "12"));
 
-        if ( p_ypaworld->str17_NOT_FALSE )
-        {
-            v410.butID = 1202;
-            network_button->button_func66(&v410);
-
-            network_button->button_func71(1202, get_lang_string(ypaworld__string_pointers, 423, "CHANGE"));
-        }
+//        if ( str17_NOT_FALSE )
+//        {
+//            v410.butID = 1202;
+//            network_button->button_func66(&v410);
+//
+//            network_button->button_func71(1202, get_lang_string(ypaworld__string_pointers, 423, "CHANGE"));
+//        }
         break;
 
     case 3:

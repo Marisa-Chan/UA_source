@@ -94,7 +94,6 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     shadermp_ilbm = NULL;
     win3d = NULL;
     field_138c = 0;
-    str17_NOT_FALSE = 0;
 
 //slurp slurps1[6][6];
 //slurp slurps2[6][6];
@@ -704,7 +703,6 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
         return 0;
     }
 
-    yw->str17_NOT_FALSE = 0;
     yw->field_138c = 0;
 
     return 1;
@@ -7074,19 +7072,6 @@ size_t NC_STACK_ypaworld::ypaworld_func166(const char **langname)
             v11 = get_lang_string(yw->string_pointers_p2, 16, "Arial,8,400,0");
 
         win3d->load_font(v11);
-
-        if ( !strcasecmp( get_lang_string(yw->string_pointers_p2, 17, "FALSE"), "FALSE") )
-        {
-            if ( win3d )
-                win3d->setWDD_disLowRes(0);
-            yw->str17_NOT_FALSE = 0;
-        }
-        else
-        {
-            if ( win3d )
-                win3d->setWDD_disLowRes(1);
-            yw->str17_NOT_FALSE = 1;
-        }
 
         return 1;
     }
