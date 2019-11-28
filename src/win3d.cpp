@@ -2519,12 +2519,6 @@ void NC_STACK_win3d::EndFrame()
 }
 
 
-void NC_STACK_win3d::display_func261(rstr_261_arg *arg)
-{
-    NC_STACK_display::display_func261(arg);
-}
-
-
 
 
 void win3d_func262__sub0(__NC_STACK_win3d *w3d, int a2, int *a3, int *a4)
@@ -2652,15 +2646,15 @@ void NC_STACK_win3d::TextureApplyPalette(bitmap_intern *bitm)
 
         if ( bitm->pallete )
         {
-            r = bitm->pallete->pal_entries[i].r;
-            g = bitm->pallete->pal_entries[i].g;
-            b = bitm->pallete->pal_entries[i].b;
+            r = bitm->pallete->at(i).r;
+            g = bitm->pallete->at(i).g;
+            b = bitm->pallete->at(i).b;
         }
         else
         {
-            r = stack__display.palette.pal_entries[i].r;
-            g = stack__display.palette.pal_entries[i].g;
-            b = stack__display.palette.pal_entries[i].b;
+            r = stack__display.palette[i].r;
+            g = stack__display.palette[i].g;
+            b = stack__display.palette[i].b;
         }
 
         // If surface hardware

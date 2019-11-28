@@ -77,7 +77,7 @@ int GFXEngine::loadPal(const char *palette_ilbm)
     if (!ilbm)
         return 0;
 
-    cls3D->SetPalette( ilbm->getBMD_palette() );
+    cls3D->SetPalette( *ilbm->getBMD_palette() );
 
     delete_class_obj(ilbm);
 
@@ -109,10 +109,19 @@ void GFXEngine::setResolution(int res)
     UA_PALETTE *screen_palette = cls3D->GetPalette();
 
     UA_PALETTE palette_copy;
-    memset(&palette_copy, 0, sizeof(palette_copy));
 
     if ( screen_palette )
         palette_copy = *screen_palette; // Copy palette
+    else
+    {
+        for(auto &x : palette_copy)
+        {
+            x.r = 0;
+            x.g = 0;
+            x.b = 0;
+            x.a = 0;
+        }
+    }
 
     cls3D->EndFrame();
 
@@ -122,7 +131,7 @@ void GFXEngine::setResolution(int res)
     {
         cls3D->BeginFrame();
 
-        cls3D->SetPalette(&palette_copy);
+        cls3D->SetPalette(palette_copy);
     }
 }
 

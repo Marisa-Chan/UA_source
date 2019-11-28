@@ -215,14 +215,6 @@ struct rstr_218_arg
     ua_fRect rect2;
 };
 
-struct rstr_261_arg
-{
-    int pal_id;
-    int entrie_id;
-    int pal_num;
-    UA_PALETTE *palette;
-};
-
 struct rstr_262_arg
 {
     int cnt;
@@ -283,7 +275,8 @@ public:
     virtual void BeginFrame() {};
     virtual void EndFrame() {};
 
-    virtual void display_func261(rstr_261_arg *arg);
+    virtual void display_func261(int ID, UA_PALETTE &pal, int from, int num);
+    virtual void display_func261(int ID, UA_PALETTE &pal);
     virtual void display_func262(rstr_262_arg *arg);
     virtual void display_func263(displ_arg263 *arg);
 //    virtual void display_func264(void *);
@@ -295,7 +288,7 @@ public:
     virtual void UnlockTexture(bitmap_intern *);
     virtual void display_func271(IDVPair *stak) {};
     virtual void display_func272(IDVPair *) {};
-    virtual UA_PALETTE * display_func273(rstr_261_arg *arg);
+    virtual UA_PALETTE * display_func273(int paletteId);
     virtual void display_func274(const char **);
 
 
@@ -340,7 +333,7 @@ public:
     };
 
     //Set
-    virtual void SetPalette(UA_PALETTE *);
+    virtual void SetPalette(UA_PALETTE &pal);
 
     virtual void setRSTR_FGpen(uint32_t pen);
     virtual void setRSTR_BGpen(uint32_t pen);

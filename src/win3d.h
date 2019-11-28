@@ -146,7 +146,6 @@ public:
     virtual size_t display_func256(windd_arg256 *inout);
     virtual void BeginFrame();
     virtual void EndFrame();
-    virtual void display_func261(rstr_261_arg *arg);
     virtual void display_func262(rstr_262_arg *arg);
     virtual void display_func263(displ_arg263 *arg);
     virtual bool AllocTexture(bitmap_intern *arg);

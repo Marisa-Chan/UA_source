@@ -391,10 +391,10 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int val5)
                         mfil->readU8(r);
                         mfil->readU8(g);
                         mfil->readU8(b);
-                        bitm->pallete->pal_entries[i].r = r;
-                        bitm->pallete->pal_entries[i].g = g;
-                        bitm->pallete->pal_entries[i].b = b;
-                        bitm->pallete->pal_entries[i].a = 255;
+                        bitm->pallete->at(i).r = r;
+                        bitm->pallete->at(i).g = g;
+                        bitm->pallete->at(i).b = b;
+                        bitm->pallete->at(i).a = 255;
                     }
                 }
             }

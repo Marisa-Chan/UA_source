@@ -183,7 +183,7 @@ rsrc * NC_STACK_image::rsrc_func64(IDVList &stak)
             if ( bitm->pallete )
             {
                 for (int i = 0; i < loaded->format->palette->ncolors; i++)
-                    bitm->pallete->pal_entries[i] = loaded->format->palette->colors[i];
+                    bitm->pallete->at(i) = loaded->format->palette->colors[i];
             }
         }
 

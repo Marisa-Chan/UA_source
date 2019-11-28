@@ -54,7 +54,7 @@ size_t NC_STACK_display::func2(IDVList &stak)
             switch (val.id)
             {
             case ATT_PALETTE:
-                SetPalette((UA_PALETTE *)val.value.p_data);
+                SetPalette(*(UA_PALETTE *)val.value.p_data);
                 break;
 
             case ATT_FGPEN:
@@ -294,12 +294,15 @@ void NC_STACK_display::raster_func221(ua_dRect *arg)
 
 
 
-void NC_STACK_display::display_func261(rstr_261_arg *arg)
+void NC_STACK_display::display_func261(int ID, UA_PALETTE &pal, int from, int num)
 {
-    __NC_STACK_display *displ = &stack__display;
+    for (int i = 0; i < num; i++)
+        stack__display.field_300[ID][from + i] = pal[i];
+}
 
-    for (int i = 0; i < arg->pal_num; i++)
-        displ->field_300[arg->pal_id].pal_entries[arg->entrie_id + i] = arg->palette->pal_entries[i];
+void NC_STACK_display::display_func261(int ID, UA_PALETTE &pal)
+{
+    stack__display.field_300[ID] = pal;
 }
 
 void NC_STACK_display::display_func262(rstr_262_arg *arg)
@@ -314,10 +317,10 @@ void NC_STACK_display::display_func262(rstr_262_arg *arg)
 
         for (int j = 0; j < arg->cnt; j++)
         {
-            UA_PALETTE *pal = &displ->field_300[ arg->slot[j] ];
-            tmpr += arg->weight[j] * pal->pal_entries[i].r;
-            tmpg += arg->weight[j] * pal->pal_entries[i].g;
-            tmpb += arg->weight[j] * pal->pal_entries[i].b;
+            UA_PALETTE &pal = displ->field_300[ arg->slot[j] ];
+            tmpr += arg->weight[j] * pal[i].r;
+            tmpg += arg->weight[j] * pal[i].g;
+            tmpb += arg->weight[j] * pal[i].b;
         }
 
         tmpr >>= 8;
@@ -331,9 +334,9 @@ void NC_STACK_display::display_func262(rstr_262_arg *arg)
         if (tmpb > 255)
             tmpb = 255;
 
-        displ->palette.pal_entries[i].r = tmpr;
-        displ->palette.pal_entries[i].g = tmpg;
-        displ->palette.pal_entries[i].b = tmpb;
+        displ->palette[i].r = tmpr;
+        displ->palette[i].g = tmpg;
+        displ->palette[i].b = tmpb;
     }
 }
 
@@ -392,12 +395,9 @@ void NC_STACK_display::UnlockTexture(bitmap_intern *)
 {
 }
 
-UA_PALETTE * NC_STACK_display::display_func273(rstr_261_arg *arg)
+UA_PALETTE * NC_STACK_display::display_func273(int paletteId)
 {
-    __NC_STACK_display *displ = &stack__display;
-
-    arg->palette = &displ->field_300[arg->pal_id];
-    return arg->palette;
+    return &stack__display.field_300[paletteId];
 }
 
 void NC_STACK_display::display_func274(const char **)
@@ -407,18 +407,11 @@ void NC_STACK_display::display_func274(const char **)
 
 
 
-void NC_STACK_display::SetPalette(UA_PALETTE *newPal)
+void NC_STACK_display::SetPalette(UA_PALETTE &newPal)
 {
-    rstr_261_arg arg_261;
+    display_func261(0, newPal);
+
     rstr_262_arg arg_262;
-
-    arg_261.palette = newPal;
-    arg_261.pal_id = 0;
-    arg_261.entrie_id = 0;
-    arg_261.pal_num = 256;
-
-    display_func261(&arg_261);
-
     int v11 = 0;
     int v12 = 256;
     arg_262.slot = &v11;
@@ -551,7 +544,7 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
         raster_func221( (ua_dRect *)data );
         return 1;
     case 261:
-        display_func261( (rstr_261_arg *)data );
+        //display_func261( (rstr_261_arg *)data );
         return 1;
     case 262:
         display_func262( (rstr_262_arg *)data );
@@ -579,7 +572,7 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
         UnlockTexture( (bitmap_intern *)data );
         return 1;
     case 273:
-        return (size_t)display_func273( (rstr_261_arg *)data );
+        return (size_t)display_func273( (size_t)data );
     case 274:
         display_func274( (const char **)data );
         return 1;

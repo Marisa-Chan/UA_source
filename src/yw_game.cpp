@@ -638,16 +638,10 @@ void sb_0x44ca90__sub2(_NC_STACK_ypaworld *yw, mapProto *mapp)
 
             if (ilbm)
             {
-                rstr_261_arg v7;
-                v7.pal_num = 256;
-                v7.pal_id = i;
-                v7.entrie_id = 0;
-                v7.palette = ilbm->getBMD_palette();
-
                 if ( i )
-                    win3d->display_func261(&v7);
+                    win3d->display_func261(i, *ilbm->getBMD_palette());
                 else
-                    win3d->SetPalette(v7.palette);
+                    win3d->SetPalette(*ilbm->getBMD_palette());
 
                 delete_class_obj(ilbm);
             }

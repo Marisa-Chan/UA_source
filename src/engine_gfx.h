@@ -16,10 +16,7 @@ struct tile_xy
     int width;
 };
 
-struct UA_PALETTE
-{
-    SDL_Color pal_entries[256];
-};
+typedef std::array<SDL_Color, 256> UA_PALETTE;
 
 struct bitmap_intern
 {
