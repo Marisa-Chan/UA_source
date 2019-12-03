@@ -1,19 +1,26 @@
-CC = gcc
-CXX = g++
-MINGW = /usr/i686-w64-mingw32
-CC_WIN = i686-w64-mingw32-gcc
-CXX_WIN = i686-w64-mingw32-g++
-LIBS_WIN = -L$(MINGW)/lib/ -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lOpenAL32 -lopengl32 -lvorbisfile
-
-CLANG_WIN = i686-w64-mingw32-clang++
-
-LIBS_NIX = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lGL -lopenal -lvorbisfile
-
-CC_MAC = clang
-CXX_MAC = clang++
-LIBS_MAC = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -framework OpenGL -framework OpenAL -lvorbisfile
-
+CDEFS = 
+CFLAGS = -std=c++11 -mno-ms-bitfields -O0 -g
 TARGET = UA_source
+LDFLAGS = 
+OBJDIR := obj
+
+nix: CXX = g++
+nix: CC = gcc
+nix: LIBS = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lGL -lopenal -lvorbisfile
+
+win32: MINGW = /usr/i686-w64-mingw32
+win32: CXX = i686-w64-mingw32-g++
+win32: CC = i686-w64-mingw32-gcc
+win32: CDEFS = -DWIN32
+win32: TARGET := $(TARGET).exe
+win32: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lOpenAL32 -lopengl32 -lvorbisfile
+win32: LDFLAGS = -L$(MINGW)/lib/
+win32: CFLAGS := $(CFLAGS) -I$(MINGW)/include/
+
+mac: CXX = clang++
+mac: CC = clang
+mac: LIBS = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -framework OpenGL -framework OpenAL -lvorbisfile
+
 OBJS =  \
 	3ds.cpp\
 	ade.cpp\
@@ -89,21 +96,24 @@ OBJS =  \
 	yparobo.cpp\
 	ypatank.cpp\
 	ypaufo.cpp
-	
-WINOBJ = \
-	win_funct.cpp
 
-win32: $(OBJS)
-	$(CXX_WIN) -std=c++11 -DWIN32 -mno-ms-bitfields -O0 -g -o $(TARGET).exe $(OBJS) $(LIBS_WIN) -I $(MINGW)/include/
+win32: OBJS := $(OBJS) win_funct.cpp
 
-nix: $(OBJS)
-	$(CXX) -std=c++11 -mno-ms-bitfields -O0 -g -o $(TARGET) $(OBJS) $(LIBS_NIX)
+CCFILES     := $(filter %.cc, $(OBJS))
+CPPFILES    := $(filter %.cpp, $(OBJS))
+CCOBJFILES  := $(addprefix $(OBJDIR)/,$(CCFILES:.cc=.o))
+CPPOBJFILES := $(addprefix $(OBJDIR)/,$(CPPFILES:.cpp=.o))
+OBJFILES    := $(CCOBJFILES) $(CPPOBJFILES)
 
-mac: $(OBJS)
-	$(CXX_MAC) -std=c++11 -mno-ms-bitfields -O0 -g -o $(TARGET) $(OBJS) $(LIBS_MAC)
+$(CCOBJFILES): $(OBJDIR)/%.o: %.cc
+$(CPPOBJFILES): $(OBJDIR)/%.o: %.cpp
+$(OBJFILES):
+	mkdir -p $(@D)
+	$(CXX) $(CFLAGS) $(CDEFS) -c $< -o $@
 
-wclang: $(OBJS)
-	$(CLANG_WIN) -mno-ms-bitfields -O0 -g -o $(TARGET).exe $(OBJS) $(LIBS_WIN) -m32 -I $(MINGW)/include/
+
+win32 nix mac: $(OBJFILES)
+	$(CXX) $(OBJFILES) $(LDFLAGS) $(LIBS) -o $(TARGET)
 
 clean:
-	rm -f $(TARGET) $(TARGET_DINGOO) *.o
+	rm -f $(OBJFILES)
