@@ -547,23 +547,21 @@ int yw_write_levelnum(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
     return 1;
 }
 
-void yw_write_map(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *bitmap, const char *padding, FSMgr::FileHandle *fil)
+void yw_write_map(_NC_STACK_ypaworld *yw, Common::PlaneBytes *map, const std::string &padding, FSMgr::FileHandle *fil)
 {
-    bitmap_intern *bitm = bitmap->getBMD_pBitmap();
+    if ( !padding.empty() )
+        fil->printf(padding.c_str());
 
-    if ( padding )
-        fil->printf(padding);
+    fil->printf("%d %d\n", map->Width(), map->Height());
 
-    fil->printf("%d %d\n", bitm->width, bitm->height);
-
-    uint8_t *v6 = (uint8_t *)bitm->buffer;
-
-    for (int y = 0; y < bitm->height; y++)
+    for (uint32_t y = 0; y < map->Height(); y++)
     {
-        if ( padding )
-            fil->printf(padding);
+        if ( !padding.empty() )
+            fil->printf(padding.c_str());
 
-        for (int x = 0; x < bitm->width; x++ )
+        uint8_t *v6 = map->Line(y);
+        
+        for (uint32_t x = 0; x < map->Width(); x++ )
         {
             fil->printf("%02x ", *v6);
             v6++;
@@ -575,28 +573,18 @@ void yw_write_map(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *bitmap, const char *p
 
 void yw_write_ownermap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    IDVList init_vals;
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "temp_owner_map");
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_WIDTH, yw->sectors_maxX2);
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_HEIGHT, yw->sectors_maxY2);
+    Common::PlaneBytes *ownermap = new Common::PlaneBytes(yw->sectors_maxX2, yw->sectors_maxY2);
 
-    NC_STACK_bitmap *bitmap = Nucleus::CInit<NC_STACK_bitmap>(init_vals);
-
-    if ( bitmap )
+    if ( ownermap )
     {
-        bitmap_intern *bitm = bitmap->getBMD_pBitmap();
-
-        int sz = yw->sectors_maxY2 * yw->sectors_maxX2;
-        uint8_t *outbf = (uint8_t *)bitm->buffer;
-
-        for (int i = 0; i < sz; i++)
-            outbf[i] = yw->cells[i].owner;
+        for (uint32_t i = 0; i < ownermap->size(); i++)
+            (*ownermap)[i] = yw->cells[i].owner;
 
         fil->printf("\nbegin_ownermap\n");
-        yw_write_map(yw, bitmap, "        ", fil);
+        yw_write_map(yw, ownermap, "        ", fil);
         fil->printf("end\n");
 
-        delete_class_obj(bitmap);
+        delete ownermap;
     }
 }
 
@@ -609,45 +597,37 @@ void yw_write_buildmap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
 void yw_write_energymap(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    IDVList init_vals;
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "ActualEnergyMap");
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_WIDTH, 3 * yw->sectors_maxX2);
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_HEIGHT, 3 * yw->sectors_maxY2);
+    Common::PlaneBytes *energymap = new Common::PlaneBytes(yw->sectors_maxX2 * 3, yw->sectors_maxY2 * 3);
 
-    NC_STACK_bitmap *bitmap = Nucleus::CInit<NC_STACK_bitmap>(init_vals);
-
-    if ( bitmap )
+    if ( energymap )
     {
-        bitmap_intern *bitm = bitmap->getBMD_pBitmap();
-
         int sz = yw->sectors_maxY2 * yw->sectors_maxX2;
-        uint8_t *outbf = (uint8_t *)bitm->buffer;
+        uint8_t *outbf = energymap->data();
 
         for (int i = 0; i < sz; i++)
         {
-            cellArea *cell = &yw->cells[i];
+            cellArea &cell = yw->cells[i];
 
             for (int j = 0; j < 3; j++)
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    *outbf = cell->buildings_health[j][k];
+                    *outbf = cell.buildings_health[j][k];
                     outbf++;
                 }
             }
         }
 
         fil->printf("\nbegin_energymap\n");
-        yw_write_map(yw, bitmap, "        ", fil);
+        yw_write_map(yw, energymap, "        ", fil);
         fil->printf("end\n");
+        
+        delete energymap;
     }
     else
     {
         ypa_log_out("game save error: Unable to create bmo for saving owner\n");
     }
-
-    if ( bitmap )
-        delete_class_obj(bitmap);
 }
 
 int yw_write_bact(bact_node *bct, FSMgr::FileHandle *fil)

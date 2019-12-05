@@ -2,6 +2,7 @@
 #define DISPLAY_H_INCLUDED
 
 #include "engine_gfx.h"
+#include "common.h"
 
 struct ua_dRect
 {
@@ -346,6 +347,8 @@ public:
 
     virtual int16_t GetWidth();
     virtual int16_t GetHeight();
+
+    Common::Point GetSize() const { return Common::Point(width, height); };
 
     //Data
 public:

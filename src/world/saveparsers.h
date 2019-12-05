@@ -82,7 +82,7 @@ protected:
     NC_STACK_ypaworld &_o;
 };
 
-class SaveOwnerMapParser : public ScriptParser::DataHandler, public MapAsILBM
+class SaveOwnerMapParser : public ScriptParser::DataHandler, public MapAsPlaneBytes
 {
 public:
     SaveOwnerMapParser(NC_STACK_ypaworld *o) : _o(*o) {} ;
@@ -92,7 +92,7 @@ protected:
     NC_STACK_ypaworld &_o;
 };
 
-class SaveBuildingMapParser : public ScriptParser::DataHandler, public MapAsILBM
+class SaveBuildingMapParser : public ScriptParser::DataHandler, public MapAsPlaneBytes
 {
 public:
     SaveBuildingMapParser(NC_STACK_ypaworld *o) : _o(*o) {} ;
@@ -102,7 +102,7 @@ protected:
     NC_STACK_ypaworld &_o;
 };
 
-class SaveEnergyMapParser : public ScriptParser::DataHandler, public MapAsILBM
+class SaveEnergyMapParser : public ScriptParser::DataHandler, public MapAsPlaneBytes
 {
 public:
     SaveEnergyMapParser(NC_STACK_ypaworld *o) : _o(*o) {} ;

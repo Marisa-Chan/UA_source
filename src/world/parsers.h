@@ -4,6 +4,7 @@
 #include <string>
 #include "../types.h"
 #include "../utils.h"
+#include "../common.h"
 
 #include "../def_parser.h"
 
@@ -295,13 +296,13 @@ protected:
     dbmapProto *_d;
 };
 
-class MapAsILBM
+class MapAsPlaneBytes
 {
 protected:
-    NC_STACK_bitmap *ReadMapAsILBM(ScriptParser::Parser &parser, const std::string mapName);
+    Common::PlaneBytes *ReadMapAsPlaneBytes(ScriptParser::Parser &parser);
 };
 
-class LevelMapsParser : public ScriptParser::DataHandler, public MapAsILBM
+class LevelMapsParser : public ScriptParser::DataHandler, public MapAsPlaneBytes
 {
 public:
     LevelMapsParser(NC_STACK_ypaworld *o, mapProto *m) : _o(*o), _m(*m) {} ;

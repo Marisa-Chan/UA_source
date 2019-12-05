@@ -2857,25 +2857,25 @@ void NC_STACK_ypaworld::ypaworld_func151()
 
     if ( yw->typ_map )
     {
-        delete_class_obj(yw->typ_map);
+        delete yw->typ_map;
         yw->typ_map = NULL;
     }
 
     if ( yw->own_map )
     {
-        delete_class_obj(yw->own_map);
+        delete yw->own_map;
         yw->own_map = NULL;
     }
 
     if ( yw->blg_map )
     {
-        delete_class_obj(yw->blg_map);
+        delete yw->blg_map;
         yw->blg_map = NULL;
     }
 
     if ( yw->hgt_map )
     {
-        delete_class_obj(yw->hgt_map);
+        delete yw->hgt_map;
         yw->hgt_map = NULL;
     }
 
@@ -7447,21 +7447,21 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
 
     if ( yw->copyof_typemap )
     {
-        delete_class_obj(yw->copyof_typemap);
+        delete yw->copyof_typemap;
         yw->copyof_typemap = NULL;
     }
 
     if ( yw->copyof_ownermap )
     {
-        delete_class_obj(yw->copyof_ownermap);
+        delete yw->copyof_ownermap;
         yw->copyof_ownermap = NULL;
     }
 
     if ( yw->typ_map )
-        yw->copyof_typemap = sub_44816C(yw->typ_map, "copyof_typemap");
+        yw->copyof_typemap = yw->typ_map->Copy();
 
     if ( yw->own_map )
-        yw->copyof_ownermap = sub_44816C(yw->own_map, "copyof_ownermap");
+        yw->copyof_ownermap = yw->own_map->Copy();
 
     if ( !ypaworld_func169__sub1(save_filename) )
         return 0;
@@ -8247,21 +8247,21 @@ size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
 
     if ( yw->copyof_typemap )
     {
-        delete_class_obj(yw->copyof_typemap);
+        delete yw->copyof_typemap;
         yw->copyof_typemap = NULL;
     }
 
     if ( yw->copyof_ownermap )
     {
-        delete_class_obj(yw->copyof_ownermap);
+        delete yw->copyof_ownermap;
         yw->copyof_ownermap = NULL;
     }
 
     if ( yw->typ_map )
-        yw->copyof_typemap = sub_44816C(yw->typ_map, "copyof_typemap");
+        yw->copyof_typemap = yw->typ_map->Copy();
 
     if ( yw->own_map )
-        yw->copyof_ownermap = sub_44816C(yw->own_map, "copyof_ownermap");
+        yw->copyof_ownermap = yw->own_map->Copy();
 
     return v6;
 }

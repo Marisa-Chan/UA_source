@@ -4085,21 +4085,21 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
 
     if ( yw->copyof_typemap )
     {
-        delete_class_obj(yw->copyof_typemap);
+        delete yw->copyof_typemap;
         yw->copyof_typemap = 0;
     }
 
     if ( yw->copyof_ownermap )
     {
-        delete_class_obj(yw->copyof_ownermap);
+        delete yw->copyof_ownermap;
         yw->copyof_ownermap = 0;
     }
 
     if ( yw->typ_map )
-        yw->copyof_typemap = sub_44816C(yw->typ_map, "copyof_typemap");
+        yw->copyof_typemap = yw->typ_map->Copy();
 
     if ( yw->own_map )
-        yw->copyof_ownermap = sub_44816C(yw->own_map, "copyof_ownermap");
+        yw->copyof_ownermap = yw->own_map->Copy();
 
     yw->GameShell->msgcount = 0;
 

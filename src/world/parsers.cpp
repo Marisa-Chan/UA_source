@@ -3186,9 +3186,7 @@ int LevelSuperItemsParser::Handle(ScriptParser::Parser &parser, const std::strin
     return ScriptParser::RESULT_OK;
 }
 
-
-
-NC_STACK_bitmap * MapAsILBM::ReadMapAsILBM(ScriptParser::Parser &parser, const std::string mapName)
+Common::PlaneBytes *MapAsPlaneBytes::ReadMapAsPlaneBytes(ScriptParser::Parser &parser)
 {
     std::string buf;
     parser.ReadLine(&buf);
@@ -3200,28 +3198,17 @@ NC_STACK_bitmap * MapAsILBM::ReadMapAsILBM(ScriptParser::Parser &parser, const s
     stok.GetNext(&tmp);
     int h = std::stol(tmp, NULL, 0);
 
-    IDVList init_vals;
-    init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, mapName.c_str());
-    init_vals.Add( NC_STACK_bitmap::BMD_ATT_WIDTH, w);
-    init_vals.Add( NC_STACK_bitmap::BMD_ATT_HEIGHT, h);
-    init_vals.Add( NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
+    Common::PlaneBytes *bmp = new Common::PlaneBytes;
+    bmp->Resize(w, h);
 
-    NC_STACK_bitmap *bmp = Nucleus::CInit<NC_STACK_bitmap>(init_vals);
-    if ( !bmp )
-        return NULL;
-
-    bitmap_intern *bmd = bmp->getBMD_pBitmap();
-
-    uint8_t *bf = (uint8_t *)bmd->buffer;
-
-    for (int j = 0; j < bmd->height; j++)
+    for (int j = 0; j < h; j++)
     {
         parser.ReadLine(&buf);
         stok = buf;
 
-        uint8_t *ln = bf + j * bmd->width;
+        uint8_t *ln = bmp->Line(j);
 
-        for (int i = 0; i < bmd->width; i++)
+        for (int i = 0; i < w; i++)
         {
             stok.GetNext(&tmp);
             ln[i] = std::stol(tmp, NULL, 16);
@@ -3238,25 +3225,25 @@ bool LevelMapsParser::IsScope(ScriptParser::Parser &parser, const std::string &w
 
     if ( _o.ypaworld.typ_map )
     {
-        Nucleus::Delete(_o.ypaworld.typ_map);
+        delete _o.ypaworld.typ_map;
         _o.ypaworld.typ_map = NULL;
     }
 
     if ( _o.ypaworld.own_map )
     {
-        Nucleus::Delete(_o.ypaworld.own_map);
+        delete _o.ypaworld.own_map;
         _o.ypaworld.own_map = NULL;
     }
 
     if ( _o.ypaworld.hgt_map )
     {
-        Nucleus::Delete(_o.ypaworld.hgt_map);
+        delete _o.ypaworld.hgt_map;
         _o.ypaworld.hgt_map = NULL;
     }
 
     if ( _o.ypaworld.blg_map )
     {
-        Nucleus::Delete(_o.ypaworld.blg_map);
+        delete _o.ypaworld.blg_map;
         _o.ypaworld.blg_map = NULL;
     }
 
@@ -3270,19 +3257,19 @@ int LevelMapsParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
 
     if ( !StriCmp(p1, "typ_map") )
     {
-        _o.ypaworld.typ_map = ReadMapAsILBM(parser, "typmap");
+        _o.ypaworld.typ_map = ReadMapAsPlaneBytes(parser);
 
         if ( !_o.ypaworld.typ_map )
             return ScriptParser::RESULT_BAD_DATA;
 
-        _m.secXsize = _o.ypaworld.typ_map->getBMD_width();
-        _m.secYsize = _o.ypaworld.typ_map->getBMD_height();
+        _m.secXsize = _o.ypaworld.typ_map->Width();
+        _m.secYsize = _o.ypaworld.typ_map->Height();
 
         _m.flags |= 4;
     }
     else if ( !StriCmp(p1, "own_map") )
     {
-        _o.ypaworld.own_map = ReadMapAsILBM(parser, "ownmap");
+        _o.ypaworld.own_map = ReadMapAsPlaneBytes(parser);
         if ( !_o.ypaworld.own_map )
             return ScriptParser::RESULT_BAD_DATA;
 
@@ -3290,7 +3277,7 @@ int LevelMapsParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
     else if ( !StriCmp(p1, "hgt_map") )
     {
-        _o.ypaworld.hgt_map = ReadMapAsILBM(parser, "hgtmap");
+        _o.ypaworld.hgt_map = ReadMapAsPlaneBytes(parser);
         if ( !_o.ypaworld.hgt_map )
             return ScriptParser::RESULT_BAD_DATA;
 
@@ -3298,7 +3285,7 @@ int LevelMapsParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
     else if ( !StriCmp(p1, "blg_map") )
     {
-        _o.ypaworld.blg_map = ReadMapAsILBM(parser, "blgmap");
+        _o.ypaworld.blg_map = ReadMapAsPlaneBytes(parser);
         if ( !_o.ypaworld.blg_map )
             return ScriptParser::RESULT_BAD_DATA;
 

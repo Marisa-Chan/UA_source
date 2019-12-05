@@ -1301,7 +1301,6 @@ struct big_ypa_Brf
 {
     NC_STACK_bitmap *mbmap_img;
     NC_STACK_bitmap *briefing_map;
-    bitmap_intern *typ_map_bitm;
     stru_2d90 s2d90;
     mapProto map_prototype;
     int briefStage;
@@ -1328,10 +1327,8 @@ struct big_ypa_Brf
     int field_41A0;
     NC_STACK_sklt *wireless_db[4];
     UAskeleton::Data *wireless_db_skels[4];
-    NC_STACK_bitmap *copy2_of_ownmap;
-    NC_STACK_bitmap *copy2_of_typmap;
-    bitmap_intern *copy2_of_ownmap_bitm;
-    bitmap_intern *copy2_of_typmap_bitm;
+    Common::PlaneBytes *copy2_of_ownmap;
+    Common::PlaneBytes *copy2_of_typmap;
     int field_41D4;
     int field_41D8;
     player_status copy_of_playerstatus[8];
@@ -1349,7 +1346,6 @@ struct big_ypa_Brf
     {
 		mbmap_img = NULL;
 		briefing_map = NULL;
-		typ_map_bitm = NULL;
 		s2d90.clear();
 		map_prototype.clear();
 		briefStage = 0;
@@ -1386,8 +1382,6 @@ struct big_ypa_Brf
 
 		copy2_of_ownmap = NULL;
 		copy2_of_typmap = NULL;
-		copy2_of_ownmap_bitm = NULL;
-		copy2_of_typmap_bitm = NULL;
 		field_41D4 = 0;
 		field_41D8 = 0;
 
@@ -1845,13 +1839,13 @@ struct _NC_STACK_ypaworld
     char *lang_strings__end;
     char **string_pointers;
     char **string_pointers_p2;
-    NC_STACK_bitmap *typ_map;
-    NC_STACK_bitmap *own_map;
-    NC_STACK_bitmap *blg_map;
-    NC_STACK_bitmap *hgt_map;
+    Common::PlaneBytes *typ_map;
+    Common::PlaneBytes *own_map;
+    Common::PlaneBytes *blg_map;
+    Common::PlaneBytes *hgt_map;
 
-    NC_STACK_bitmap *copyof_typemap;
-    NC_STACK_bitmap *copyof_ownermap;
+    Common::PlaneBytes *copyof_typemap;
+    Common::PlaneBytes *copyof_ownermap;
     sklt_wis wis_skeletons;
     int field_739A;
 

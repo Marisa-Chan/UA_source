@@ -1754,19 +1754,19 @@ void sub_4EAC80(_NC_STACK_ypaworld *yw)
 
     if ( yw->typ_map )
     {
-        delete_class_obj(yw->typ_map);
+        delete yw->typ_map;
         yw->typ_map = NULL;
     }
 
     if ( brf->mbmap_img )
     {
-        delete_class_obj(brf->mbmap_img);
+        delete brf->mbmap_img;
         brf->mbmap_img = NULL;
     }
 
     if ( brf->briefing_map )
     {
-        delete_class_obj(brf->briefing_map);
+        delete brf->briefing_map;
         brf->briefing_map = NULL;
     }
 
@@ -1781,13 +1781,13 @@ void yw_freeDebrief(_NC_STACK_ypaworld *yw)
 
     if ( yw->brief.copy2_of_ownmap )
     {
-        delete_class_obj(yw->brief.copy2_of_ownmap);
+        delete yw->brief.copy2_of_ownmap;
         brf->copy2_of_ownmap = NULL;
     }
 
     if ( brf->copy2_of_typmap )
     {
-        delete_class_obj(brf->copy2_of_typmap);
+        delete brf->copy2_of_typmap;
         brf->copy2_of_typmap = NULL;
     }
 
@@ -2274,18 +2274,13 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3(int lvlid)
 
                 if ( ypaworld.brief.mbmap_img )
                 {
-                    init_vals.clear();
-                    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, mproto->typ.c_str());
-
                     if ( !ypaworld.typ_map )
-                        ypaworld.typ_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
+                        ypaworld.typ_map = new Common::PlaneBytes;
 
                     if ( ypaworld.typ_map )
                     {
-                        ypaworld.brief.typ_map_bitm = ypaworld.typ_map->getBMD_pBitmap();
-
-                        ypaworld.sectors_maxX2 = ypaworld.brief.typ_map_bitm->width;
-                        ypaworld.sectors_maxY2 = ypaworld.brief.typ_map_bitm->height;
+                        ypaworld.sectors_maxX2 = ypaworld.typ_map->Width();
+                        ypaworld.sectors_maxY2 = ypaworld.typ_map->Height();
 
                         ypaworld.map_Width_meters = ypaworld.sectors_maxX2 * 1200.0;
                         ypaworld.map_Height_meters = ypaworld.sectors_maxY2 * 1200.0;
@@ -2333,27 +2328,6 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub5__sub0(mapProto *mappro
     };
 
     return ScriptParser::ParseFile(filename, parsers, ScriptParser::FLAG_NO_INCLUDE);
-}
-
-NC_STACK_bitmap * sub_44816C(NC_STACK_bitmap *src, const char *name)
-{
-    bitmap_intern *a4 = src->getBMD_pBitmap();
-
-    IDVList init_vals;
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, name);
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_WIDTH, a4->width);
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_HEIGHT, a4->height);
-
-    NC_STACK_bitmap *v3 = Nucleus::CInit<NC_STACK_bitmap>(init_vals);
-
-    if ( v3 )
-    {
-        bitmap_intern *v6 = v3->getBMD_pBitmap();
-
-        memcpy(v6->buffer, a4->buffer, a4->width * a4->height);
-    }
-
-    return v3;
 }
 
 size_t NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub5()
@@ -2404,16 +2378,11 @@ size_t NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub5()
     }
 
     if ( ypaworld.copyof_ownermap )
-    {
-        ypaworld.brief.copy2_of_ownmap = sub_44816C(ypaworld.copyof_ownermap, "copy2_of_ownmap");
-        ypaworld.brief.copy2_of_ownmap_bitm = ypaworld.brief.copy2_of_ownmap->getBMD_pBitmap();
-    }
+        ypaworld.brief.copy2_of_ownmap = ypaworld.copyof_ownermap->Copy();
 
     if ( ypaworld.copyof_typemap )
-    {
-        ypaworld.brief.copy2_of_typmap = sub_44816C(ypaworld.copyof_typemap, "copy2_of_typmap");
-        ypaworld.brief.copy2_of_typmap_bitm = ypaworld.brief.copy2_of_typmap->getBMD_pBitmap();
-    }
+        ypaworld.brief.copy2_of_typmap = ypaworld.copyof_typemap->Copy();
+
 
     ypaworld.brief.field_419C = 0;
 
@@ -2458,10 +2427,8 @@ size_t NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub5()
         return 0;
     }
 
-    ypaworld.brief.typ_map_bitm = ypaworld.copyof_typemap->getBMD_pBitmap();
-
-    ypaworld.sectors_maxX2 = ypaworld.brief.typ_map_bitm->width;
-    ypaworld.sectors_maxY2 = ypaworld.brief.typ_map_bitm->height;
+    ypaworld.sectors_maxX2 = ypaworld.typ_map->Width();
+    ypaworld.sectors_maxY2 = ypaworld.typ_map->Height();
     ypaworld.map_Width_meters = ypaworld.sectors_maxX2 * 1200.0;
     ypaworld.map_Height_meters = ypaworld.sectors_maxY2 * 1200.0;
 

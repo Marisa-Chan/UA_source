@@ -584,26 +584,22 @@ bool SaveOwnerMapParser::IsScope(ScriptParser::Parser &parser, const std::string
         _o.ypaworld.sectors_count_by_owner[i] = 0;
 
     if ( _o.ypaworld.own_map )
-        Nucleus::Delete(_o.ypaworld.own_map);
+        delete _o.ypaworld.own_map;
 
-    _o.ypaworld.own_map = ReadMapAsILBM(parser, "ownmap");
+    _o.ypaworld.own_map = ReadMapAsPlaneBytes(parser);
 
     if ( _o.ypaworld.own_map )
     {
-        bitmap_intern *bitm = _o.ypaworld.own_map->getBMD_pBitmap();
-
-        int smax = _o.ypaworld.sectors_maxY2 * _o.ypaworld.sectors_maxX2;
-        uint8_t *pbuf = (uint8_t *)bitm->buffer;
+        uint8_t *pbuf = _o.ypaworld.own_map->data();
         cellArea *v6 = _o.ypaworld.cells;
 
-        for (int i = 0; i < smax; i++)
+        for (int i = 0; i < (int)_o.ypaworld.own_map->size(); i++)
         {
             int v8 = *pbuf;
             v6->owner = v8;
             _o.ypaworld.sectors_count_by_owner[v8]++;
 
             v6++;
-            pbuf++;
         }
     }
     return true;
@@ -623,36 +619,30 @@ bool SaveBuildingMapParser::IsScope(ScriptParser::Parser &parser, const std::str
         return false;
 
     if ( _o.ypaworld.blg_map )
-        Nucleus::Delete(_o.ypaworld.blg_map);
+        delete _o.ypaworld.blg_map;
 
-    _o.ypaworld.blg_map = ReadMapAsILBM(parser, "blgmap");
+    _o.ypaworld.blg_map = ReadMapAsPlaneBytes(parser);
     if ( _o.ypaworld.blg_map )
     {
-        bitmap_intern *bitm = _o.ypaworld.blg_map->getBMD_pBitmap();
-
-        int smax = _o.ypaworld.sectors_maxY2 * _o.ypaworld.sectors_maxX2;
-        uint8_t *pbuf = (uint8_t *)bitm->buffer;
+        uint8_t *pbuf = _o.ypaworld.blg_map->data();
         cellArea *v6 = _o.ypaworld.cells;
 
-        for (int i = 0; i < smax; i++)
+        for (int i = 0; i < (int)_o.ypaworld.blg_map->size(); i++)
         {
             int v8 = *pbuf;
 
-            if ( v8 )
+            if ( v8 && v6->owner )
             {
-                if ( v6->owner )
-                {
-                    ypaworld_arg148 arg148;
-                    arg148.field_18 = 1;
-                    arg148.ownerID = v6->owner;
-                    arg148.ownerID2 = v6->owner;
-                    arg148.blg_ID = v8;
-                    arg148.field_C = 1;
-                    arg148.x = i % _o.ypaworld.sectors_maxX2;
-                    arg148.y = i / _o.ypaworld.sectors_maxX2;
+                ypaworld_arg148 arg148;
+                arg148.field_18 = 1;
+                arg148.ownerID = v6->owner;
+                arg148.ownerID2 = v6->owner;
+                arg148.blg_ID = v8;
+                arg148.field_C = 1;
+                arg148.x = i % _o.ypaworld.sectors_maxX2;
+                arg148.y = i / _o.ypaworld.sectors_maxX2;
 
-                    _o.ypaworld_func148(&arg148);
-                }
+                _o.ypaworld_func148(&arg148);
             }
 
             v6++;
@@ -674,15 +664,13 @@ bool SaveEnergyMapParser::IsScope(ScriptParser::Parser &parser, const std::strin
     if ( StriCmp(word, "begin_energymap") )
         return false;
 
-    NC_STACK_bitmap *v4 = ReadMapAsILBM(parser, "nrgmap");
+    Common::PlaneBytes *nrgmap = ReadMapAsPlaneBytes(parser);
 
-    if ( v4 )
+    if ( nrgmap )
     {
-        bitmap_intern *bitm = v4->getBMD_pBitmap();
-
         int smax = _o.ypaworld.sectors_maxY2 * _o.ypaworld.sectors_maxX2;
         cellArea *v6 = _o.ypaworld.cells;
-        uint8_t *pbuf = (uint8_t *)bitm->buffer;
+        int n = 0;
 
         for (int i = 0; i < smax; i++)
         {
@@ -690,8 +678,8 @@ bool SaveEnergyMapParser::IsScope(ScriptParser::Parser &parser, const std::strin
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    v6->buildings_health[j][k] = *pbuf;
-                    pbuf++;
+                    v6->buildings_health[j][k] = (*nrgmap)[n];
+                    n++;
                 }
             }
 
@@ -699,7 +687,7 @@ bool SaveEnergyMapParser::IsScope(ScriptParser::Parser &parser, const std::strin
 
         }
 
-        Nucleus::Delete(v4);
+        delete nrgmap;
     }
     return true;
 }

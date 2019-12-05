@@ -563,12 +563,7 @@ void  sub_44F500(_NC_STACK_ypaworld *yw, int id)
         cell->w_type = 0;
 
         if ( yw->blg_map )
-        {
-            bitmap_intern *bitm = yw->blg_map->getBMD_pBitmap();
-
-            uint8_t *tmp = (uint8_t *)bitm->buffer + fld34->x + fld34->y * bitm->width;
-            *tmp = 0;
-        }
+            (*yw->blg_map)(fld34->x, fld34->y) = 0;
     }
 }
 
@@ -840,12 +835,10 @@ int cells_mark_type(_NC_STACK_ypaworld *yw, const char *a2)
     if ( !yw->typ_map )
         return 0;
 
-    bitmap_intern *bitm = yw->typ_map->getBMD_pBitmap();
+    uint8_t *typMap = yw->typ_map->data();
 
-    uint8_t *typMap = (uint8_t *)bitm->buffer;
-
-    yw->sectors_maxX2 = bitm->width;
-    yw->sectors_maxY2 = bitm->height;
+    yw->sectors_maxX2 = yw->typ_map->Width();
+    yw->sectors_maxY2 = yw->typ_map->Height();
 
     yw->map_Width_meters = yw->sectors_maxX2 * 1200.0;
     yw->map_Height_meters = yw->sectors_maxY2 * 1200.0;
@@ -886,27 +879,23 @@ int cells_mark_owner(_NC_STACK_ypaworld *yw, const char *a2)
     if ( !yw->own_map )
         return 0;
 
-    bitmap_intern *bitm = yw->own_map->getBMD_pBitmap();
-
-    uint8_t *ownmap = (uint8_t *)bitm->buffer;
-
-    if ( bitm->width != yw->sectors_maxX2 || bitm->height != yw->sectors_maxY2 )
+    if ( (int)yw->own_map->Width() != yw->sectors_maxX2 || (int)yw->own_map->Height() != yw->sectors_maxY2 )
     {
-        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", a2, bitm->width, bitm->height, yw->sectors_maxX2, yw->sectors_maxY2);
-        delete_class_obj(yw->own_map);
+        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", a2, yw->own_map->Width(), yw->own_map->Height(), yw->sectors_maxX2, yw->sectors_maxY2);
+        delete yw->own_map;
         yw->own_map = NULL;
         return 0;
     }
 
 
-    for (int yy = 0; yy < yw->sectors_maxY2; yy++)
+    for (uint32_t yy = 0; yy < yw->own_map->Height(); yy++)
     {
-        uint8_t *ownmapp = ownmap + yy * yw->sectors_maxX2;
+        uint8_t *ownmapp = yw->own_map->Line(yy);
         cellArea *cells = yw->cells + yy * yw->sectors_maxX2;
 
-        for (int xx = 0; xx < yw->sectors_maxX2; xx++)
+        for (uint32_t xx = 0; xx < yw->own_map->Width(); xx++)
         {
-            if ( xx > 0 && yy > 0 && xx != yw->sectors_maxX2 - 1 && yy != yw->sectors_maxY2 - 1 )
+            if ( xx > 0 && yy > 0 && xx != (uint32_t)yw->sectors_maxX2 - 1 && yy != (uint32_t)yw->sectors_maxY2 - 1 )
                 cells[xx].owner = ownmapp[xx];
             else
                 cells[xx].owner = 0;
@@ -923,23 +912,17 @@ int cells_mark_hight(_NC_STACK_ypaworld *yw, const char *a2)
     if ( !yw->hgt_map )
         return 0;
 
-    bitmap_intern *bitm = yw->hgt_map->getBMD_pBitmap();
-
-    uint8_t *hgtMap = (uint8_t *)bitm->buffer;
-
-    if ( bitm->width != yw->sectors_maxX2 || bitm->height != yw->sectors_maxY2 )
+    if ( (int)yw->hgt_map->Width() != yw->sectors_maxX2 || (int)yw->hgt_map->Height() != yw->sectors_maxY2 )
     {
-        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", a2, bitm->width, bitm->height, yw->sectors_maxX2, yw->sectors_maxY2);
-        delete_class_obj(yw->hgt_map);
+        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", a2, yw->hgt_map->Width(), yw->hgt_map->Height(), yw->sectors_maxX2, yw->sectors_maxY2);
+        delete yw->hgt_map;
         yw->hgt_map = NULL;
         return 0;
     }
 
-    int sectors_cnt = yw->sectors_maxY2 * yw->sectors_maxX2;
-
-    for (int i = 0; i < sectors_cnt; i++)
+    for (uint32_t i = 0; i < yw->hgt_map->size(); i++)
     {
-        yw->cells[i].height = hgtMap[i] * -100.0;
+        yw->cells[i].height = (*yw->hgt_map)[i] * -100.0;
     }
 
     for (int y = 1; y < yw->sectors_maxY2; y++)
@@ -1081,24 +1064,20 @@ int sub_44B9B8(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, const char *mapp)
     if ( !yw->blg_map )
         return 0;
 
-    bitmap_intern *bitmp = yw->blg_map->getBMD_pBitmap();
-
-    uint8_t *blgMap = (uint8_t *)bitmp->buffer;
-
-    if ( bitmp->width != yw->sectors_maxX2 || bitmp->height != yw->sectors_maxY2 )
+    if ( (int)yw->blg_map->Width() != yw->sectors_maxX2 || (int)yw->blg_map->Height() != yw->sectors_maxY2 )
     {
-        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", mapp, bitmp->width, bitmp->height, yw->sectors_maxX2, yw->sectors_maxY2);
-        delete_class_obj(yw->blg_map);
+        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", mapp, yw->blg_map->Width(), yw->blg_map->Height(), yw->sectors_maxX2, yw->sectors_maxY2);
+        delete yw->blg_map;
         yw->blg_map = NULL;
         return 0;
     }
 
-    for ( int y = 0; y < yw->sectors_maxY2; y++)
+    for ( uint32_t y = 0; y < yw->blg_map->Height(); y++)
     {
-        uint8_t *blgln = blgMap + y * yw->sectors_maxX2;
+        uint8_t *blgln = yw->blg_map->Line(y);
         cellArea *cellln = yw->cells + y * yw->sectors_maxX2;
 
-        for ( int x = 0; x < yw->sectors_maxX2; x++)
+        for ( uint32_t x = 0; x < yw->blg_map->Width(); x++)
         {
             if (blgln[x] && cellln[x].owner)
             {
@@ -2726,15 +2705,8 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
 
     if ( x && y && yw->sectors_maxX2 - 1 != x && yw->sectors_maxY2 - 1 != y )
     {
-        bitmap_intern *bitm_blg = yw->blg_map->getBMD_pBitmap();
-
-        uint8_t *tmp = (uint8_t *)bitm_blg->buffer + x + y * bitm_blg->width;
-        *tmp = blg_id;
-
-        bitmap_intern *bitm_typ = yw->typ_map->getBMD_pBitmap();
-
-        tmp = (uint8_t *)bitm_typ->buffer + x + y * bitm_typ->width;
-        *tmp = bld->sec_type;
+        (*yw->blg_map)(x, y) = blg_id;
+        (*yw->typ_map)(x, y) = bld->sec_type;
 
         cell->type_id = bld->sec_type;
         cell->energy_power = 0;

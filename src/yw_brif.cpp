@@ -332,7 +332,7 @@ void yw_BriefUpdateKeySectors(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf 
                     {
                         float xpos = ks->x * 1200.0 + 600.0;
                         float ypos = -(ks->y * 1200.0 + 600.0);
-                        uint8_t v12 = *( (uint8_t *)brf->typ_map_bitm->buffer + ks->x + ks->y * brf->typ_map_bitm->width );
+                        uint8_t v12 = (*yw->typ_map)(ks->x, ks->y);
                         const char *v13 = get_lang_string(yw->string_pointers_p2, 157, "KEY SECTOR");
 
                         sub_4EBBA8(yw, brf, xpos, ypos, 25, v13, 26, 146, 1, v12, brf->field_2F84);
@@ -1341,16 +1341,8 @@ void ypaworld_func158__sub4__sub1__sub6__sub2(_NC_STACK_ypaworld *yw, struC5 *st
     brf->briefStage = 8;
     brf->field_41D8 = 0;
 
-    bitmap_intern *v5 = brf->copy2_of_ownmap->getBMD_pBitmap();
-    bitmap_intern *a4 = yw->copyof_ownermap->getBMD_pBitmap();
-
-    memcpy(v5->buffer, a4->buffer, a4->width * a4->height);
-
-
-    v5 = brf->copy2_of_typmap->getBMD_pBitmap();
-    a4 = yw->copyof_typemap->getBMD_pBitmap();
-
-    memcpy(v5->buffer, a4->buffer, a4->width * a4->height);
+    *brf->copy2_of_ownmap = *yw->copyof_ownermap;
+    *brf->copy2_of_typmap = *yw->copyof_typemap;
 
     for (int i = 0; i < 8; i++)
         brf->copy_of_playerstatus[i] = yw->playerstatus[i];
@@ -1368,7 +1360,7 @@ void yw_DebriefConqSector(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *a
     int own = arg->t26.owner;
     int dtime = time - stime;
 
-    *( (uint8_t *)brf->copy2_of_ownmap_bitm->buffer + sx + sy * brf->copy2_of_ownmap_bitm->width) = own;
+    (*brf->copy2_of_ownmap)(sx, sy) = own;
 
     if ( stime == brf->field_41D8 )
     {
@@ -1522,8 +1514,6 @@ void yw_DebriefAddTechUpgrade(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg18
 
 void yw_DebriefRenderSectorsOwners(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
 {
-    uint8_t *ownmap = (uint8_t *)brf->copy2_of_ownmap_bitm->buffer;
-
     yw->win3d->LockSurface();
 
     float v3 = (brf->field_2F74.x2 - brf->field_2F74.x1) / (float)yw->sectors_maxX2;
@@ -1537,6 +1527,8 @@ void yw_DebriefRenderSectorsOwners(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
     for (int yy = 0; yy < yw->sectors_maxY2; yy++)
     {
         float v23 = brf->field_2F74.x1 + v3 * 0.5;
+        
+        uint8_t *ownmap = brf->copy2_of_ownmap->Line(yy);
 
         for (int xx = 0; xx < yw->sectors_maxX2; xx++)
         {
