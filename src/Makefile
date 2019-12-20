@@ -1,5 +1,5 @@
 CDEFS = 
-CFLAGS = -std=c++11 -mno-ms-bitfields -O0 -g
+CFLAGS = -std=c++11 -O0 -g -Wall -fexceptions -mno-ms-bitfields -Wno-class-memaccess
 TARGET = UA_source
 LDFLAGS = 
 OBJDIR := obj
@@ -105,15 +105,29 @@ CCOBJFILES  := $(addprefix $(OBJDIR)/,$(CCFILES:.cc=.o))
 CPPOBJFILES := $(addprefix $(OBJDIR)/,$(CPPFILES:.cpp=.o))
 OBJFILES    := $(CCOBJFILES) $(CPPOBJFILES)
 
+CCDEPFILES  := $(addprefix $(OBJDIR)/,$(CCFILES:.cc=.d))
+CPPDEPFILES := $(addprefix $(OBJDIR)/,$(CPPFILES:.cpp=.d))
+DEPFILES    := $(CCDEPFILES) $(CPPDEPFILES)
+
 $(CCOBJFILES): $(OBJDIR)/%.o: %.cc
 $(CPPOBJFILES): $(OBJDIR)/%.o: %.cpp
 $(OBJFILES):
 	mkdir -p $(@D)
 	$(CXX) $(CFLAGS) $(CDEFS) -c $< -o $@
 
+$(CCDEPFILES): $(OBJDIR)/%.d: %.cc
+$(CPPDEPFILES): $(OBJDIR)/%.d: %.cpp
+
+$(DEPFILES):
+	mkdir -p $(@D)
+	echo -n "$(OBJDIR)/" > $@
+	$(CXX) $(CFLAGS) $(CDEFS) -c $< -MM >> $@
+
+-include $(DEPFILES)
+
 
 win32 nix mac: $(OBJFILES)
 	$(CXX) $(OBJFILES) $(LDFLAGS) $(LIBS) -o $(TARGET)
 
 clean:
-	rm -f $(OBJFILES)
+	rm -f $(OBJFILES) $(DEPFILES)
