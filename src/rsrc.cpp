@@ -49,7 +49,7 @@ size_t NC_STACK_rsrc::func0(IDVList &stak)
         resource = res;
 
         if ( stak.Get(RSRC_ATT_DONTCOPY, 0) )
-            flags |= 1;
+            _flags |= 1;
 
         return 1;
     }
@@ -186,7 +186,7 @@ void *NC_STACK_rsrc::getRsrc_pData()
 
 int NC_STACK_rsrc::getRsrc_dontCopy()
 {
-    if (flags & 1)
+    if (_flags & 1)
         return 1;
 
     return 0;

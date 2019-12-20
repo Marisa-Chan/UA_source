@@ -348,7 +348,7 @@ public:
     virtual int16_t GetWidth();
     virtual int16_t GetHeight();
 
-    Common::Point GetSize() const { return Common::Point(width, height); };
+    Common::Point GetSize() const { return Common::Point(_width, _height); };
 
     //Data
 public:
@@ -357,8 +357,8 @@ public:
     __NC_STACK_display stack__display;
 
 protected:
-    int16_t width;
-    int16_t height;
+    int16_t _width;
+    int16_t _height;
 };
 
 #endif // DISPLAY_H_INCLUDED

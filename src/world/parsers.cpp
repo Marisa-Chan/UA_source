@@ -2999,7 +2999,7 @@ bool LevelEnableParser::IsScope(ScriptParser::Parser &parser, const std::string 
     if ( StriCmp(word, "begin_enable") )
         return false;
 
-    int _fraction = std::stol(opt, NULL, 0);
+    _fraction = std::stol(opt, NULL, 0);
 
     for (int i = 0; i < 256; i++)
         _o.ypaworld.VhclProtos[i].disable_enable_bitmask &= ~(1 << _fraction);

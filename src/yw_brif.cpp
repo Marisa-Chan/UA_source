@@ -271,7 +271,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub7(_NC_STACK_ypaworld *yw, struC5 *in
     }
     else if ( brf->activeElement )
     {
-        mapRobo *robo = brf->map_prototype.mapRobos;
+        MapRobo *robo = brf->map_prototype.mapRobos;
         const char *v6 = get_lang_string(yw->string_pointers_p2, robo[0].vehicle + 1200, yw->VhclProtos[ robo[0].vehicle ].name.c_str());
 
         brf->activeElement = 0;
@@ -445,7 +445,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub13(_NC_STACK_ypaworld *yw, struC5 *i
         int v6 = v5;
         brf->activeElement = v5;
 
-        mapRobo *v9 = &brf->map_prototype.mapRobos[1];
+        MapRobo *v9 = &brf->map_prototype.mapRobos[1];
 
         for (int i = 1; i < brf->map_prototype.mapRobos_count; i++)
         {

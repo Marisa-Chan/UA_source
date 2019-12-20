@@ -420,22 +420,22 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
                         if ( bact->rotation.AxisZ().dot(tank->field_11) < 0.0 )
                             tank->field_11 = -tank->field_11;
 
-                        float tmpsq = tank->field_11.XZ().length();
+                        float tmpLn = tank->field_11.XZ().length();
 
-                        NDIV_CARRY(tmpsq);
+                        NDIV_CARRY(tmpLn);
 
                         ypaworld_arg136 arg136_1;
                         ypaworld_arg136 arg136_3;
 
-                        arg136_1.vect.x = tank->field_11.z * 150.0 / tmpsq;
+                        arg136_1.vect.x = tank->field_11.z * 150.0 / tmpLn;
                         arg136_1.vect.y = 0;
-                        arg136_1.vect.z = -tank->field_11.x * 150.0 / tmpsq;
+                        arg136_1.vect.z = -tank->field_11.x * 150.0 / tmpLn;
                         arg136_1.stPos = bact->old_pos;
                         arg136_1.flags = 1;
 
-                        arg136_3.vect.x = -tank->field_11.z * 150.0 / tmpsq;
+                        arg136_3.vect.x = -tank->field_11.z * 150.0 / tmpLn;
                         arg136_3.vect.y = 0;
-                        arg136_3.vect.z = tank->field_11.x * 150.0 / tmpsq;
+                        arg136_3.vect.z = tank->field_11.x * 150.0 / tmpLn;
                         arg136_3.stPos = bact->old_pos;
                         arg136_3.flags = 1;
 
@@ -453,48 +453,48 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
                         {
                             if ( v87 )
                             {
-                                float v206 = arg136_1.vect.XZ().dot( az2d );
+                                float dotLen = arg136_1.vect.XZ().dot( az2d );
 
-                                tmpsq = az2d.length();
+                                tmpLn = az2d.length();
 
-                                NDIV_CARRY(tmpsq);
+                                NDIV_CARRY(tmpLn);
 
-                                v206 = v206 / tmpsq / 150.0;
+                                dotLen = dotLen / tmpLn / 150.0;
 
-                                tank->field_1D = clp_acos(v206);
+                                tank->field_1D = clp_acos(dotLen);
                                 v93 = 1;
                             }
                             else
                             {
-                                float v206 = az2d.dot( arg136_3.vect.XZ() );
+                                float dotLen = az2d.dot( arg136_3.vect.XZ() );
 
-                                tmpsq = az2d.length();
+                                tmpLn = az2d.length();
 
-                                NDIV_CARRY(tmpsq);
+                                NDIV_CARRY(tmpLn);
 
-                                v206 = v206 / tmpsq / 150.0;
+                                dotLen = dotLen / tmpLn / 150.0;
 
-                                tank->field_1D = clp_acos(v206);
+                                tank->field_1D = clp_acos(dotLen);
                                 v93 = 0;
                             }
                         }
                         else
                         {
-                            float v206 = az2d.dot( tank->field_11.XZ() );
+                            float dotLen = az2d.dot( tank->field_11.XZ() );
 
-                            tmpsq = az2d.length();
+                            tmpLn = az2d.length();
 
-                            NDIV_CARRY(tmpsq);
+                            NDIV_CARRY(tmpLn);
 
-                            v206 = v206 / tmpsq;
+                            dotLen = dotLen / tmpLn;
 
-                            tmpsq = tank->field_11.XZ().length();
+                            tmpLn = tank->field_11.XZ().length();
 
-                            NDIV_CARRY(tmpsq);
+                            NDIV_CARRY(tmpLn);
 
-                            v206 = v206 / tmpsq;
+                            dotLen = dotLen / tmpLn;
 
-                            tank->field_1D = C_PI_2 - clp_acos(v206) + 0.01;
+                            tank->field_1D = C_PI_2 - clp_acos(dotLen) + 0.01;
 
                             if ( az2d.cross( tank->field_11.XZ() ) <= 0.0 )
                                 v93 = 0;
@@ -588,21 +588,21 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                     vec2d axsZ = bact->rotation.AxisZ().XZ();
 
-                    float v206 = axsZ.dot( tank->field_11.XZ() );
+                    float dotLen = axsZ.dot( tank->field_11.XZ() );
 
-                    float tmpsq = axsZ.length();
+                    float ln = axsZ.length();
 
-                    NDIV_CARRY(tmpsq);
+                    NDIV_CARRY(ln);
 
-                    v206 = v206 / tmpsq;
+                    dotLen = dotLen / ln;
 
-                    tmpsq = tank->field_11.XZ().length();
+                    ln = tank->field_11.XZ().length();
 
-                    NDIV_CARRY(tmpsq);
+                    NDIV_CARRY(ln);
 
-                    v206 = v206 / tmpsq;
+                    dotLen = dotLen / ln;
 
-                    tank->field_1D = C_PI_2 - clp_acos(v206);
+                    tank->field_1D = C_PI_2 - clp_acos(dotLen);
 
                     if ( tank->field_1D < 0.1 )
                         tank->field_1D = 0.1;

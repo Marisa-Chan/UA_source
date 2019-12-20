@@ -947,7 +947,7 @@ int cells_mark_hight(_NC_STACK_ypaworld *yw, const char *a2)
     return 1;
 }
 
-int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_count, mapRobo *robo)
+int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_count, MapRobo *mRobo)
 {
     stru_2d90 *f2d90 = yw->field_2d90;
 
@@ -958,7 +958,7 @@ int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_cou
 
         for (int i = 0; i < robos_count; i++)
         {
-            mapRobo *v8 = robo + i;
+            MapRobo *v8 = mRobo + i;
 
             ypaworld_arg136 v14;
             v14.stPos.x = v8->pos_x;
@@ -2442,11 +2442,11 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub0(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
     if ( sct->dword4 != 1 || sct2->dword4 != 1 || (sct->dword8 != 1 && sct2->dword8 != 1) )
         return 0;
 
-    int i = yw->secTypes[ sct->p_cell->type_id ].field_1;
-    int j = yw->secTypes[ sct2->p_cell->type_id ].field_1;
+    int x = yw->secTypes[ sct->p_cell->type_id ].field_1;
+    int y = yw->secTypes[ sct2->p_cell->type_id ].field_1;
 
-    NC_STACK_base *bs = yw->slurps2[i][j].skeletons_bas;
-    UAskeleton::Data *skel = yw->slurps2[i][j].skeleton_internal;
+    NC_STACK_base *bs = yw->slurps2[x][y].skeletons_bas;
+    UAskeleton::Data *skel = yw->slurps2[x][y].skeleton_internal;
 
     flag_xyz grp_1;
     grp_1.flag = 5;
@@ -2472,11 +2472,11 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub1(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
     if ( sct->dword4 != 1 || sct2->dword4 != 1 || (sct->dword8 != 1 && sct2->dword8 != 1) )
         return NULL;
 
-    int i = yw->secTypes[ sct->p_cell->type_id ].field_1;
-    int j = yw->secTypes[ sct2->p_cell->type_id ].field_1;
+    int x = yw->secTypes[ sct->p_cell->type_id ].field_1;
+    int y = yw->secTypes[ sct2->p_cell->type_id ].field_1;
 
-    NC_STACK_base *bs = yw->slurps1[i][j].skeletons_bas;
-    UAskeleton::Data *skel = yw->slurps1[i][j].skeleton_internal;
+    NC_STACK_base *bs = yw->slurps1[x][y].skeletons_bas;
+    UAskeleton::Data *skel = yw->slurps1[x][y].skeleton_internal;
 
     flag_xyz grp_1;
     grp_1.flag = 5;

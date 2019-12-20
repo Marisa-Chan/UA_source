@@ -3855,7 +3855,7 @@ void yw_HandleNetMsg(_NC_STACK_ypaworld *yw)
 
 
 
-bool yw_NetSetHostStations(_NC_STACK_ypaworld *yw, mapRobo *mapHosts, int hosts_cnt)
+bool yw_NetSetHostStations(_NC_STACK_ypaworld *yw, MapRobo *mapHosts, int hosts_cnt)
 {
     UserData *usr = yw->GameShell;
 
@@ -3865,7 +3865,7 @@ bool yw_NetSetHostStations(_NC_STACK_ypaworld *yw, mapRobo *mapHosts, int hosts_
     for (int i = 0; i < 8; i++)
         usr->players[i].rdyStart = 0;
 
-    mapRobo *selHost = NULL;
+    MapRobo *selHost = NULL;
 
     int owner = 0;
 
@@ -4791,14 +4791,10 @@ void yw_NetDrawStats(_NC_STACK_ypaworld *yw)
 
         FontUA::set_end(&cur);
 
-        yw->win3d->LockSurface();
+        w3d_a209 v77_1;
+        v77_1.cmdbuf = drawbuf;
+        v77_1.includ = NULL;
 
-        w3d_a209 v77;
-        v77.cmdbuf = drawbuf;
-        v77.includ = NULL;
-
-        yw->win3d->raster_func209(&v77);
-
-        yw->win3d->UnlockSurface();
+        yw->win3d->raster_func209(&v77_1);
     }
 }

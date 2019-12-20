@@ -20,7 +20,7 @@ struct VhclProto;
 struct WeapProto;
 struct BuildProto;
 struct mapProto;
-struct mapRobo;
+struct MapRobo;
 struct gemProto;
 struct squadProto;
 struct gateProto;
@@ -236,7 +236,7 @@ public:
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
     mapProto &_m;
-    mapRobo *_r;
+    MapRobo *_r;
 };
 
 class MapSizesParser : public ScriptParser::DataHandler

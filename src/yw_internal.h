@@ -1,9 +1,6 @@
 #ifndef  YWINT_H_INCLUDED
 #define YWINT_H_INCLUDED
 
-
-
-
 struct struct_44dbf8
 {
     UAskeleton::Data *sklt;
@@ -105,7 +102,7 @@ void sub_4811E8(_NC_STACK_ypaworld *yw, int id);
 int cells_mark_type(_NC_STACK_ypaworld *yw, const char *a2);
 int cells_mark_owner(_NC_STACK_ypaworld *yw, const char *a2);
 int cells_mark_hight(_NC_STACK_ypaworld *yw, const char *a2);
-int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_count, mapRobo *robo);
+int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_count, MapRobo *robo);
 int sub_44B9B8(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, const char *a3);
 void yw_InitSquads(_NC_STACK_ypaworld *yw, int cnt, squadProto *squads);
 void yw_InitBuddies(_NC_STACK_ypaworld *yw);

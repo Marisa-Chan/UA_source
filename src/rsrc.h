@@ -50,7 +50,7 @@ public:
     NC_STACK_rsrc()
     {
         resource = NULL;
-        flags = 0;
+        _flags = 0;
     };
 
     virtual ~NC_STACK_rsrc() {};
@@ -92,7 +92,7 @@ public:
 
 protected:
     rsrc *resource;
-    uint32_t flags;
+    uint32_t _flags;
 
 protected:
     static RSRCList privateList;

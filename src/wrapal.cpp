@@ -233,78 +233,78 @@ int waldev::_updateThread(void *data)
 walsmpl::walsmpl(waldev *_dev):
     CTsmpl(_dev, WRAP_AL_BUFFSZ)
 {
-    pos = 0;
-    len = 0;
-    start = NULL;
+    _pos = 0;
+    _len = 0;
+    _start = NULL;
 }
 
 size_t walsmpl::_read(void *buf, size_t bufsz)
 {
-    if (pos >= len)
+    if (_pos >= _len)
         return 0;
 
-    if (bufsz > len - pos)
-        bufsz = len - pos;
+    if (bufsz > _len - _pos)
+        bufsz = _len - _pos;
 
     if (bufsz)
-        memcpy(buf, (uint8_t *)start + pos, bufsz);
+        memcpy(buf, (uint8_t *)_start + _pos, bufsz);
 
-    pos += bufsz;
+    _pos += bufsz;
 
     return bufsz;
 }
 
 void walsmpl::_rewind()
 {
-    pos = 0;
+    _pos = 0;
 }
 
 void walsmpl::_reset()
 {
     CTsmpl::_reset();
 
-    pos = 0;
-    len = 0;
-    start = NULL;
+    _pos = 0;
+    _len = 0;
+    _start = NULL;
 }
 
 
-void walsmpl::address(void *_start, size_t _size, int _freq, ALenum _format)
+void walsmpl::address(void *start, size_t size, int freq, ALenum format)
 {
-    if ( SDL_LockMutex(mutex) == 0)
+    if ( SDL_LockMutex(_mutex) == 0)
     {
-        alCheck(alSourceStop(source));
+        alCheck(alSourceStop(_source));
 
         _clearQueue();
 
-        start = _start;
-        len = _size;
-        pos = 0;
+        _start = start;
+        _len = size;
+        _pos = 0;
 
-        freq = _freq;
-        format = _format;
+        _freq = freq;
+        _format = format;
 
-        endStreamed = false;
+        _endStreamed = false;
 
-        status = SMPL_STATUS_STOPPED;
+        _status = SMPL_STATUS_STOPPED;
 
-        SDL_UnlockMutex(mutex);
+        SDL_UnlockMutex(_mutex);
     }
 }
 
 void walsmpl::position(size_t newpos)
 {
-    if ( SDL_LockMutex(mutex) == 0)
+    if ( SDL_LockMutex(_mutex) == 0)
     {
-        if (newpos >= 0 && newpos < len)
+        if (newpos >= 0 && newpos < _len)
         {
-            if ( status == SMPL_STATUS_PLAYING )
-                alCheck(alSourceStop(source));
+            if ( _status == SMPL_STATUS_PLAYING )
+                alCheck(alSourceStop(_source));
 
             _clearQueue();
 
-            pos = newpos;
-            endStreamed = false;
+            _pos = newpos;
+            _endStreamed = false;
 
             for (int i = 0; i < WRAP_AL_BUFFS; i++)
             {
@@ -312,11 +312,11 @@ void walsmpl::position(size_t newpos)
                     break;
             }
 
-            if ( status == SMPL_STATUS_PLAYING )
-                alCheck(alSourcePlay(source));
+            if ( _status == SMPL_STATUS_PLAYING )
+                alCheck(alSourcePlay(_source));
         }
 
-        SDL_UnlockMutex(mutex);
+        SDL_UnlockMutex(_mutex);
     }
 }
 
@@ -361,11 +361,11 @@ walmus::~walmus()
 
 bool walmus::open(const char *fname)
 {
-    if ( SDL_LockMutex(mutex) == 0)
+    if ( SDL_LockMutex(_mutex) == 0)
     {
         _clearQueue();
-        status = SMPL_STATUS_STOPPED;
-        endStreamed = false;
+        _status = SMPL_STATUS_STOPPED;
+        _endStreamed = false;
 
         if (hndl)
         {
@@ -389,15 +389,15 @@ bool walmus::open(const char *fname)
         vorbis_info* vorbisInfo = ov_info(&m_vorbis, -1);
 
         if (vorbisInfo->channels == 1)
-            format = AL_FORMAT_MONO16;
+            _format = AL_FORMAT_MONO16;
         else if (vorbisInfo->channels == 2)
-            format = AL_FORMAT_STEREO16;
+            _format = AL_FORMAT_STEREO16;
 
-        freq = vorbisInfo->rate;
+        _freq = vorbisInfo->rate;
 
-        len = ov_pcm_total(&m_vorbis, -1) * 1000 / freq;
+        len = ov_pcm_total(&m_vorbis, -1) * 1000 / _freq;
 
-        SDL_UnlockMutex(mutex);
+        SDL_UnlockMutex(_mutex);
         return true;
     }
     return false;
@@ -427,80 +427,74 @@ void walmus::_rewind()
 
 
 
-CTsmpl::CTsmpl(waldev *_dev, size_t bufsz):
-    BufSZ(bufsz)
+CTsmpl::CTsmpl(waldev *dev, size_t bufsz)
+:   _device(dev)
+,   _BufSZ(bufsz)
 {
-    device = _dev;
+    _mutex = SDL_CreateMutex();
 
-    mutex = SDL_CreateMutex();
+    alCheck(alGenSources(1, &_source));
 
-    alCheck(alGenSources(1, &source));
-
-    buffers.resize(WRAP_AL_BUFFS);
-    used.resize(WRAP_AL_BUFFS);
-    smplBuffers.resize(WRAP_AL_BUFFS);
+    _buffers.resize(WRAP_AL_BUFFS);
+    _used.resize(WRAP_AL_BUFFS);
+    _smplBuffers.resize(WRAP_AL_BUFFS);
 
     for (int i = 0; i < WRAP_AL_BUFFS; i++)
     {
         ALuint tmp = 0;
         alCheck(alGenBuffers(1, &tmp));
-        buffers[i] = tmp;
-        used[i] = false;
-        smplBuffers[i] = new uint8_t[ bufsz + bufsz % 2 ];
+        _buffers[i] = tmp;
+        _used[i] = false;
+        _smplBuffers[i].resize(bufsz + bufsz % 2);
     }
 
-    alCheck(alSource3f(source, AL_POSITION, 0.0, 0.0, 0.0));
-    alCheck(alSourcef(source, AL_GAIN, 1.0));
-    alCheck(alSourcef(source, AL_PITCH, 1.0));
+    alCheck(alSource3f(_source, AL_POSITION, 0.0, 0.0, 0.0));
+    alCheck(alSourcef(_source, AL_GAIN, 1.0));
+    alCheck(alSourcef(_source, AL_PITCH, 1.0));
 
-    status = SMPL_STATUS_STOPPED;
-    freq = 44100;
-    format = AL_FORMAT_STEREO16;
-    endStreamed = false;
-    eosfunc = NULL;
-    cVolume = 1.0;
-    mVolume = 1.0;
+    _status = SMPL_STATUS_STOPPED;
+    _freq = 44100;
+    _format = AL_FORMAT_STEREO16;
+    _endStreamed = false;
+    _eosfunc = NULL;
+    _cVolume = 1.0;
+    _mVolume = 1.0;
 
-    loops = 1;
+    _loops = 1;
 }
 
 CTsmpl::~CTsmpl()
 {
-    alCheck(alSourceStop(source));
+    alCheck(alSourceStop(_source));
 
     _clearQueue();
 
-    for (int i = 0; i < WRAP_AL_BUFFS; i++)
-    {
-        ALuint tmp = buffers[i];
-        alCheck(alDeleteBuffers(1, &tmp));
-        delete [] smplBuffers[i];
-    }
+    alCheck(alDeleteBuffers(_buffers.size(), _buffers.data() ));
 
-    alCheck(alDeleteSources(1, &source));
+    alCheck(alDeleteSources(1, &_source));
 
-    SDL_DestroyMutex(mutex);
+    SDL_DestroyMutex(_mutex);
 }
 
 void CTsmpl::update()
 {
-    if ( SDL_TryLockMutex(mutex) == 0) // we can't wait!
+    if ( SDL_TryLockMutex(_mutex) == 0) // we can't wait!
     {
-        if ( status == SMPL_STATUS_PLAYING )
+        if ( _status == SMPL_STATUS_PLAYING )
         {
             ALint state;
-            alCheck(alGetSourcei(source, AL_SOURCE_STATE, &state));
+            alCheck(alGetSourcei(_source, AL_SOURCE_STATE, &state));
 
             if (state == AL_STOPPED)
             {
-                if (endStreamed) // If data was streamed at all
+                if (_endStreamed) // If data was streamed at all
                 {
-                    if (eosfunc)
-                        eosfunc(this);
+                    if (_eosfunc)
+                        _eosfunc(this);
 
                     _clearQueue();
 
-                    status = SMPL_STATUS_STOPPED;
+                    _status = SMPL_STATUS_STOPPED;
                 }
                 else // If some data avaliable but for some reason buffers are already played -> continue
                 {
@@ -512,29 +506,29 @@ void CTsmpl::update()
                             break;
                     }
 
-                    alCheck(alSourcePlay(source));
+                    alCheck(alSourcePlay(_source));
                 }
             }
             else if ( state == AL_PLAYING )
             {
                 ALint processed = 0;
-                alCheck(alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed));
+                alCheck(alGetSourcei(_source, AL_BUFFERS_PROCESSED, &processed));
 
                 while (processed--)
                 {
                     ALuint bufid;
-                    alCheck(alSourceUnqueueBuffers(source, 1, &bufid));
+                    alCheck(alSourceUnqueueBuffers(_source, 1, &bufid));
 
                     for (int i = 0; i < WRAP_AL_BUFFS; i++)
                     {
-                        if ( buffers[i] == bufid )
-                            used[i] = _fill_n_queue(i);
+                        if ( _buffers[i] == bufid )
+                            _used[i] = _fill_n_queue(i);
                     }
                 }
             }
         }
 
-        SDL_UnlockMutex(mutex);
+        SDL_UnlockMutex(_mutex);
     }
 }
 
@@ -542,18 +536,18 @@ void CTsmpl::update()
 void CTsmpl::_clearQueue()
 {
     ALint queued;
-    alCheck(alGetSourcei(source, AL_BUFFERS_QUEUED, &queued));
+    alCheck(alGetSourcei(_source, AL_BUFFERS_QUEUED, &queued));
 
     for (ALint i = 0; i < queued; ++i)
     {
         ALuint buffer;
-        alCheck(alSourceUnqueueBuffers(source, 1, &buffer));
+        alCheck(alSourceUnqueueBuffers(_source, 1, &buffer));
 
         for (int j = 0; j < WRAP_AL_BUFFS; ++j)
         {
-            if ( buffers[j] == buffer)
+            if ( _buffers[j] == buffer)
             {
-                used[j] = false;
+                _used[j] = false;
                 break;
             }
         }
@@ -562,77 +556,77 @@ void CTsmpl::_clearQueue()
 
 void CTsmpl::EOS_callback( void (*func)(void *) )
 {
-    if ( SDL_LockMutex(mutex) == 0)
+    if ( SDL_LockMutex(_mutex) == 0)
     {
-        eosfunc = func;
+        _eosfunc = func;
 
-        SDL_UnlockMutex(mutex);
+        SDL_UnlockMutex(_mutex);
     }
 }
 
-void CTsmpl::volume(int _vol)
+void CTsmpl::volume(int vol)
 {
-    if ( SDL_LockMutex(mutex) == 0)
+    if ( SDL_LockMutex(_mutex) == 0)
     {
-        cVolume = (float)_vol / 127.0;
-        alCheck(alSourcef(source, AL_GAIN, cVolume * mVolume));
+        _cVolume = (float)vol / 127.0;
+        alCheck(alSourcef(_source, AL_GAIN, _cVolume * _mVolume));
 
-        SDL_UnlockMutex(mutex);
+        SDL_UnlockMutex(_mutex);
     }
 }
 
-void CTsmpl::setMasterVolume(int _vol)
+void CTsmpl::setMasterVolume(int vol)
 {
-    if ( SDL_LockMutex(mutex) == 0)
+    if ( SDL_LockMutex(_mutex) == 0)
     {
-        mVolume = (float)_vol / 127.0;
-        alCheck(alSourcef(source, AL_GAIN, cVolume * mVolume));
+        _mVolume = (float)vol / 127.0;
+        alCheck(alSourcef(_source, AL_GAIN, _cVolume * _mVolume));
 
-        SDL_UnlockMutex(mutex);
+        SDL_UnlockMutex(_mutex);
     }
 }
 
-void CTsmpl::loop_count(int _loops)
+void CTsmpl::loop_count(int loops)
 {
-    if ( SDL_LockMutex(mutex) == 0)
+    if ( SDL_LockMutex(_mutex) == 0)
     {
-        loops = _loops;
+        _loops = loops;
 
-        SDL_UnlockMutex(mutex);
+        SDL_UnlockMutex(_mutex);
     }
 }
 
 bool CTsmpl::_fill_n_queue(int bufID)
 {
-    if (endStreamed)
+    if (_endStreamed)
         return false;
 
     size_t totalRead = 0;
     bool zeroread = false;
 
-    while ( totalRead < BufSZ )
+    while ( totalRead < _BufSZ )
     {
-        size_t maxRead = BufSZ - totalRead;
-        size_t readed = _read( ((int8_t *)smplBuffers[bufID]) + totalRead, maxRead );
+        size_t maxRead = _BufSZ - totalRead;
+        size_t readed = _read( _smplBuffers[bufID].data() + totalRead, maxRead );
 
         if (readed == 0)
         {
             if (zeroread) //twice in row readed 0 bytes
             {
-                loops = 1;
-                endStreamed = true;
+                _loops = 1;
+                _endStreamed = true;
                 break;
             }
 
-            if ( loops == 1) //Last loop readed
+            if ( _loops == 1) //Last loop readed
             {
-                endStreamed = true;
+                _endStreamed = true;
                 break;
             }
             else
             {
-                if (loops != 0)
-                    loops--;
+                if (_loops != 0)
+                    _loops--;
 
                 _rewind();
             }
@@ -647,12 +641,12 @@ bool CTsmpl::_fill_n_queue(int bufID)
 
     if (totalRead > 0)
     {
-        ALuint bfid = buffers[bufID];
+        ALuint bfid = _buffers[bufID];
 
-        alCheck(alBufferData(bfid, format, smplBuffers[bufID], totalRead, freq));
-        used[bufID] = true;
+        alCheck(alBufferData(bfid, _format, _smplBuffers[bufID].data(), totalRead, _freq));
+        _used[bufID] = true;
 
-        alCheck(alSourceQueueBuffers(source, 1, &bfid));
+        alCheck(alSourceQueueBuffers(_source, 1, &bfid));
     }
 
     return totalRead > 0; // Has data
@@ -660,115 +654,115 @@ bool CTsmpl::_fill_n_queue(int bufID)
 
 void CTsmpl::_stop()
 {
-    alCheck(alSourceStop(source));
+    alCheck(alSourceStop(_source));
 
-    status = SMPL_STATUS_STOPPED;
+    _status = SMPL_STATUS_STOPPED;
 
     _clearQueue();
 
-    endStreamed = false;
+    _endStreamed = false;
 
     _rewind();
 }
 
 void CTsmpl::_reset()
 {
-    alCheck(alSourceStop(source));
+    alCheck(alSourceStop(_source));
 
     _clearQueue();
 
-    alCheck(alSource3f(source, AL_POSITION, 0.0, 0.0, 0.0));
-    alCheck(alSourcef(source, AL_GAIN, 1.0));
-    alCheck(alSourcef(source, AL_PITCH, 1.0));
+    alCheck(alSource3f(_source, AL_POSITION, 0.0, 0.0, 0.0));
+    alCheck(alSourcef(_source, AL_GAIN, 1.0));
+    alCheck(alSourcef(_source, AL_PITCH, 1.0));
 
-    status = SMPL_STATUS_STOPPED;
-    loops = 1;
+    _status = SMPL_STATUS_STOPPED;
+    _loops = 1;
 
-    eosfunc = NULL;
-    endStreamed = false;
+    _eosfunc = NULL;
+    _endStreamed = false;
 
-    freq = 44100;
-    format = AL_FORMAT_STEREO16;
+    _freq = 44100;
+    _format = AL_FORMAT_STEREO16;
 
-    cVolume = 1.0;
-    mVolume = 1.0;
+    _cVolume = 1.0;
+    _mVolume = 1.0;
 }
 
 void CTsmpl::reset()
 {
-    if ( SDL_LockMutex(mutex) == 0)
+    if ( SDL_LockMutex(_mutex) == 0)
     {
         _reset();
 
-        SDL_UnlockMutex(mutex);
+        SDL_UnlockMutex(_mutex);
     }
 }
 
 void CTsmpl::stop()
 {
-    if ( SDL_LockMutex(mutex) == 0)
+    if ( SDL_LockMutex(_mutex) == 0)
     {
         _stop();
 
-        SDL_UnlockMutex(mutex);
+        SDL_UnlockMutex(_mutex);
     }
 }
 
 void CTsmpl::pan(int _pan)
 {
-    if ( SDL_LockMutex(mutex) == 0)
+    if ( SDL_LockMutex(_mutex) == 0)
     {
         float perc = ((float)_pan - 64.0) / 64.0;
 
         float angl = C_PI_2 + perc * C_PI_2;
 
-        alCheck(alSource3f(source, AL_POSITION, (float)cos(angl), 0.0, (float)sin(angl)));
+        alCheck(alSource3f(_source, AL_POSITION, (float)cos(angl), 0.0, (float)sin(angl)));
 
-        SDL_UnlockMutex(mutex);
+        SDL_UnlockMutex(_mutex);
     }
 }
 
 void CTsmpl::playback_rate(int newfreq)
 {
-    if ( SDL_LockMutex(mutex) == 0)
+    if ( SDL_LockMutex(_mutex) == 0)
     {
-        alCheck(alSourcef(source, AL_PITCH, (float)newfreq / (float)freq));
+        alCheck(alSourcef(_source, AL_PITCH, (float)newfreq / (float)_freq));
 
-        SDL_UnlockMutex(mutex);
+        SDL_UnlockMutex(_mutex);
     }
 }
 
 void CTsmpl::play()
 {
-    if ( SDL_LockMutex(mutex) == 0)
+    if ( SDL_LockMutex(_mutex) == 0)
     {
-        if ( status == SMPL_STATUS_PLAYING )
+        if ( _status == SMPL_STATUS_PLAYING )
             _stop(); //Rewind, clear flags
 
         for (int i = 0; i < WRAP_AL_BUFFS; i++)
         {
-            if ( used[i] == false )
+            if ( _used[i] == false )
             {
                 if ( !_fill_n_queue(i) ) //No data - don't try
                     break;
             }
         }
 
-        alCheck(alSourcePlay(source));
+        alCheck(alSourcePlay(_source));
 
-        status = SMPL_STATUS_PLAYING;
+        _status = SMPL_STATUS_PLAYING;
 
-        SDL_UnlockMutex(mutex);
+        SDL_UnlockMutex(_mutex);
     }
 }
 
 
 bool CTsmpl::isPlaying()
 {
-    return status == SMPL_STATUS_PLAYING;
+    return _status == SMPL_STATUS_PLAYING;
 }
 
 bool CTsmpl::isStopped()
 {
-    return status == SMPL_STATUS_STOPPED;
+    return _status == SMPL_STATUS_STOPPED;
 }

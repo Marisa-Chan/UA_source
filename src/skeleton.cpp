@@ -244,31 +244,31 @@ bool NC_STACK_skeleton::TransformVertexes(skeleton_arg_132 *arg, UAskeleton::Ver
     {
         vec3d fv = arg->tform.Transform( in[i] );
 
-        int flags = 0;
+        int clipFlags = 0;
 
         if ( fv.z < arg->minZ )
-            flags = UAskeleton::Vertex::CLIP_NEAR;
+            clipFlags = UAskeleton::Vertex::CLIP_NEAR;
         else if ( fv.z > arg->maxZ )
-            flags = UAskeleton::Vertex::CLIP_FAR;
+            clipFlags = UAskeleton::Vertex::CLIP_FAR;
         else
         {
             if ( fv.x > fv.z * 1.1 )
-                flags |= UAskeleton::Vertex::CLIP_RIGHT;
+                clipFlags |= UAskeleton::Vertex::CLIP_RIGHT;
             else if ( fv.x < -fv.z * 1.1 )
-                flags |= UAskeleton::Vertex::CLIP_LEFT;
+                clipFlags |= UAskeleton::Vertex::CLIP_LEFT;
 
             if ( fv.y > fv.z * 1.1 )
-                flags |= UAskeleton::Vertex::CLIP_TOP;
+                clipFlags |= UAskeleton::Vertex::CLIP_TOP;
             else if ( fv.y < -fv.z * 1.1 )
-                flags |= UAskeleton::Vertex::CLIP_BOTTOM;
+                clipFlags |= UAskeleton::Vertex::CLIP_BOTTOM;
         }
 
-        andFlags &= flags;
+        andFlags &= clipFlags;
 
         out[i].x = fv.x;
         out[i].y = fv.y;
         out[i].z = fv.z;
-        out[i].flags = flags;
+        out[i].flags = clipFlags;
     }
 
     return andFlags == 0;

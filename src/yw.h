@@ -819,7 +819,7 @@ struct squadProto
     }
 };
 
-struct mapRobo
+struct MapRobo
 {
     int16_t owner;
     int16_t vehicle;
@@ -847,7 +847,7 @@ struct mapRobo
     int rec_delay;
     int rob_delay;
 
-    mapRobo()
+    MapRobo()
     {
         clear();
     }
@@ -962,7 +962,7 @@ struct mapProto
     std::string hgt;
     std::string blg;
     int mapRobos_count;
-    mapRobo mapRobos[8];
+    MapRobo mapRobos[8];
     int squad_count;
     squadProto squads[96];
     std::string palettes[8];

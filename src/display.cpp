@@ -16,21 +16,21 @@ size_t NC_STACK_display::func0(IDVList &stak)
 
     dprintf("MAKE ME %s\n","raster_func0");
 
-    width = stak.Get(ATT_WIDTH, 0);
-    height = stak.Get(ATT_HEIGHT, 0);
+    _width = stak.Get(ATT_WIDTH, 0);
+    _height = stak.Get(ATT_HEIGHT, 0);
 
 //    rstr->bitm_intern = (bitmap_intern *)getRsrc_pData();
 
     stack__display.field_24.x1 = 0;
     stack__display.field_24.y1 = 0;
-    stack__display.field_24.x2 = width - 1;
-    stack__display.field_24.y2 = height - 1;
+    stack__display.field_24.x2 = _width - 1;
+    stack__display.field_24.y2 = _height - 1;
 
-    stack__display.field_54c = width / 2;
-    stack__display.field_550 = height / 2;
+    stack__display.field_54c = _width / 2;
+    stack__display.field_550 = _height / 2;
 
-    stack__display.field_554 = width / 2;
-    stack__display.field_558 = height / 2;
+    stack__display.field_554 = _width / 2;
+    stack__display.field_558 = _height / 2;
 
     engines.display___win3d = this;
 
@@ -459,12 +459,12 @@ UA_PALETTE *NC_STACK_display::GetPalette()
 
 int16_t NC_STACK_display::GetWidth()
 {
-    return width;
+    return _width;
 }
 
 int16_t NC_STACK_display::GetHeight()
 {
-    return height;
+    return _height;
 }
 
 

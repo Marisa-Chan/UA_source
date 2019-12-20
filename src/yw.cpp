@@ -81,8 +81,8 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     memset(sqrt_table, 0, sizeof(sqrt_table));
 
     current_bact = NULL;
-    vec3d field_1334;
-    mat3x3 field_1340;
+    field_1334 = vec3d();
+    field_1340 = mat3x3();
     sky_loaded_base = NULL;
     field_1368 = 0;
     additionalBeeBox = NULL;

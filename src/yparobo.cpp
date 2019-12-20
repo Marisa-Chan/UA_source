@@ -1225,9 +1225,9 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
                 vec3d ttmp(0.0, 0.0, 0.0);
 
-                for (int i = arg137.coll_count - 1; i >= 0; i--)
+                for (int j = arg137.coll_count - 1; j >= 0; j--)
                 {
-                    yw_137col *clzn = &arg137.collisions[i];
+                    yw_137col *clzn = &arg137.collisions[j];
 
                     ttmp += clzn->pos2;
 
@@ -2253,11 +2253,11 @@ void NC_STACK_yparobo::buildRadar(update_msg *arg)
                         }
                         else
                         {
-                            setTarget_msg arg67;
-                            arg67.tgt_type = BACT_TGT_TYPE_NONE;
-                            arg67.priority = 0;
+                            setTarget_msg arg67_1;
+                            arg67_1.tgt_type = BACT_TGT_TYPE_NONE;
+                            arg67_1.priority = 0;
 
-                            SetTarget(&arg67);
+                            SetTarget(&arg67_1);
 
                             robo->field_2FD = 0;
                         }
@@ -2430,10 +2430,10 @@ void NC_STACK_yparobo::buildPower(update_msg *arg)
                             }
                             else
                             {
-                                setTarget_msg arg67;
-                                arg67.tgt_type = BACT_TGT_TYPE_NONE;
-                                arg67.priority = 0;
-                                SetTarget(&arg67);
+                                setTarget_msg arg67_1;
+                                arg67_1.tgt_type = BACT_TGT_TYPE_NONE;
+                                arg67_1.priority = 0;
+                                SetTarget(&arg67_1);
                                 robo->field_2FD = 0;
                             }
                         }
@@ -2610,11 +2610,11 @@ void NC_STACK_yparobo::buildSafe(update_msg *arg)
                         }
                         else
                         {
-                            setTarget_msg arg67;
-                            arg67.tgt_type = BACT_TGT_TYPE_NONE;
-                            arg67.priority = 0;
+                            setTarget_msg arg67_1;
+                            arg67_1.tgt_type = BACT_TGT_TYPE_NONE;
+                            arg67_1.priority = 0;
 
-                            SetTarget(&arg67);
+                            SetTarget(&arg67_1);
 
                             robo->field_2FD = 0;
                         }
@@ -5035,14 +5035,14 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
 
         if ( v22 > robo->field_2CD )
         {
-            robo_arg128 arg128;
-            arg128.flags = 2;
-            arg128.tgType = BACT_TGT_TYPE_UNIT;
-            arg128.prim_comm_id = v91;
+            robo_arg128 arg128_1;
+            arg128_1.flags = 2;
+            arg128_1.tgType = BACT_TGT_TYPE_UNIT;
+            arg128_1.prim_comm_id = v91;
 
-            robo->roboo->yparobo_func128(&arg128);
+            robo->roboo->yparobo_func128(&arg128_1);
 
-            if ( !arg128.comm_bacto )
+            if ( !arg128_1.comm_bacto )
             {
                 robo->field_2CD = v22;
                 robo->field_2D9 = v91;
@@ -5296,15 +5296,15 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
 
                 if ( v81 > robo->field_2B5 )
                 {
-                    robo_arg128 arg128;
-                    arg128.tgType = BACT_TGT_TYPE_CELL;
-                    arg128.flags = 2;
-                    arg128.tgt_pos.x = (xx + 0.5) * 1200.0;
-                    arg128.tgt_pos.z = -(yy + 0.5) * 1200.0;
+                    robo_arg128 arg128_1;
+                    arg128_1.tgType = BACT_TGT_TYPE_CELL;
+                    arg128_1.flags = 2;
+                    arg128_1.tgt_pos.x = (xx + 0.5) * 1200.0;
+                    arg128_1.tgt_pos.z = -(yy + 0.5) * 1200.0;
 
-                    robo->roboo->yparobo_func128(&arg128);
+                    robo->roboo->yparobo_func128(&arg128_1);
 
-                    if ( !arg128.comm_bacto )
+                    if ( !arg128_1.comm_bacto )
                     {
                         robo->field_2B5 = v81;
                         robo->field_2BD = robo->field_2C1;

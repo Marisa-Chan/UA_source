@@ -631,9 +631,9 @@ size_t NC_STACK_3ds::base_func77(baseRender_msg *arg)
                             int v6 = 0;
                             int v8 = 0;
 
-                            for (int i = 0; i < datSub->vertexCount; i++)
+                            for (int j = 0; j < datSub->vertexCount; j++)
                             {
-                                float clr = datSub->color[i];
+                                float clr = datSub->color[j];
                                 if (clr < 0.01)
                                     v6++;
                                 else if (clr > 0.99)
@@ -654,19 +654,19 @@ size_t NC_STACK_3ds::base_func77(baseRender_msg *arg)
 
                         float maxz = 0.0;
 
-                        for (int i = 0; i < datSub->vertexCount; i++)
-                            if (datSub->vertexes[i].z > maxz)
-                                maxz = datSub->vertexes[i].z;
+                        for (int j = 0; j < datSub->vertexCount; j++)
+                            if (datSub->vertexes[j].z > maxz)
+                                maxz = datSub->vertexes[j].z;
 
                         if ( NC_STACK_win3d::win3d_keys[18].value.val )
                         {
                             float maxln = 0.0;
 
-                            for (int i = 0; i < datSub->vertexCount; i++)
+                            for (int j = 0; j < datSub->vertexCount; j++)
                             {
-                                datSub->distance[i] = sqrt(POW2(datSub->vertexes[i].x) + POW2(datSub->vertexes[i].z));
-                                if (datSub->distance[i] > maxln)
-                                    maxln = datSub->distance[i];
+                                datSub->distance[j] = sqrt(POW2(datSub->vertexes[j].x) + POW2(datSub->vertexes[j].z));
+                                if (datSub->distance[j] > maxln)
+                                    maxln = datSub->distance[j];
                             }
 
                             if (maxln > NC_STACK_win3d::win3d_keys[19].value.val)

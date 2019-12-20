@@ -8250,7 +8250,7 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
             break;
         }
 
-        cellArea *curcell = nextcell;
+        curcell = nextcell;
         nextcell = (cellArea *)nextcell->next;
 
         if ( nextcell->pos_x - curcell->pos_x != v61 || nextcell->pos_y - curcell->pos_y != v62 )
