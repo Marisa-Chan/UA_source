@@ -40,8 +40,8 @@ struct __NC_STACK_display
 //  int field_18;
 //  int field_1c;
 //  int field_20;
-    ua_dRect field_24;
-    ua_dRect field_38;
+    Common::Rect _clip;
+    Common::Rect _inverseClip;
 //  int field_4c;
 //  int field_50;
 //  int field_54;
@@ -157,7 +157,7 @@ struct w3d_func199arg
 
 struct rstr_arg204
 {
-    bitmap_intern *pbitm;
+    ResBitmap *pbitm;
     float float4;
     float float8;
     float floatC;
@@ -188,7 +188,7 @@ struct rstr_arg204
 
 struct rstr_loc204
 {
-    bitmap_intern *pbitm;
+    ResBitmap *pbitm;
     int dword4;
     int dword8;
     int dwordC;
@@ -209,8 +209,8 @@ struct rstr_arg217
 
 struct rstr_218_arg
 {
-    bitmap_intern *bitm_intern;
-    bitmap_intern *bitm_intern2;
+    ResBitmap *bitm_intern;
+    ResBitmap *bitm_intern2;
     int flg;
     ua_fRect rect1;
     ua_fRect rect2;
@@ -225,7 +225,7 @@ struct rstr_262_arg
 
 struct displ_arg263
 {
-    bitmap_intern *bitm;
+    ResBitmap *bitm;
     int pointer_id;
 };
 
@@ -263,8 +263,6 @@ public:
     virtual size_t raster_func212(IDVPair *);
     virtual void BeginScene();
     virtual void EndScene();
-    virtual void LockSurface();
-    virtual void UnlockSurface();
     virtual size_t raster_func217(rstr_arg217 *arg);
     virtual void raster_func218(rstr_218_arg *arg);
     virtual size_t raster_func219(IDVPair *);
@@ -282,11 +280,8 @@ public:
     virtual void display_func263(displ_arg263 *arg);
 //    virtual void display_func264(void *);
 //    virtual void display_func265(void *);
-    virtual bool AllocTexture(bitmap_intern *pbitm);
-    virtual void TextureApplyPalette(bitmap_intern *pbitm);
-    virtual void FreeTexture(bitmap_intern *pbitm);
-    virtual size_t LockTexture(bitmap_intern *);
-    virtual void UnlockTexture(bitmap_intern *);
+    virtual bool AllocTexture(ResBitmap *pbitm);
+    virtual void FreeTexture(ResBitmap *pbitm);
     virtual void display_func271(IDVPair *stak) {};
     virtual void display_func272(IDVPair *) {};
     virtual UA_PALETTE * display_func273(int paletteId);
@@ -304,7 +299,7 @@ public:
     };
 
     static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_display();
+        return NULL;//new NC_STACK_display();
     };
 
     enum DISP_ATT
@@ -338,8 +333,8 @@ public:
 
     virtual void setRSTR_FGpen(uint32_t pen);
     virtual void setRSTR_BGpen(uint32_t pen);
-    virtual void setRSTR_shdRmp(bitmap_intern *rmp);
-    virtual void setRSTR_trcRmp(bitmap_intern *rmp);
+    virtual void setRSTR_shdRmp(ResBitmap *rmp);
+    virtual void setRSTR_trcRmp(ResBitmap *rmp);
     virtual void setRSTR_FGApen(uint32_t pen);
 
     //Get
@@ -349,6 +344,10 @@ public:
     virtual int16_t GetHeight();
 
     Common::Point GetSize() const { return Common::Point(_width, _height); };
+    
+    
+    virtual void ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool transp) = 0;
+    virtual SDL_PixelFormat *GetScreenFormat() = 0;
 
     //Data
 public:

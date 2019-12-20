@@ -1,6 +1,7 @@
 #ifndef COMMON_H_INCLUDED
 #define COMMON_H_INCLUDED
 
+#include <inttypes.h>
 #include <vector>
 
 #ifdef ABS
@@ -28,24 +29,24 @@ struct Point
     int y;
 
     Point() : x(0), y(0) {};
-	Point(int x1, int y1) : x(x1), y(y1) {};
+    Point(int x1, int y1) : x(x1), y(y1) {};
 
-	bool  operator==(const Point &p)    const { return x == p.x && y == p.y; }
-	bool  operator!=(const Point &p)    const { return x != p.x || y != p.y; }
-	Point operator+(const Point &delta) const { return Point(x + delta.x, y + delta.y); }
-	Point operator-(const Point &delta) const { return Point(x - delta.x, y - delta.y); }
+    bool  operator==(const Point &p)    const { return x == p.x && y == p.y; }
+    bool  operator!=(const Point &p)    const { return x != p.x || y != p.y; }
+    Point operator+(const Point &delta) const { return Point(x + delta.x, y + delta.y); }
+    Point operator-(const Point &delta) const { return Point(x - delta.x, y - delta.y); }
 
-	void operator+=(const Point &delta) {
-		x += delta.x;
-		y += delta.y;
-	}
+    void operator+=(const Point &delta) {
+            x += delta.x;
+            y += delta.y;
+    }
 
-	void operator-=(const Point &delta) {
-		x -= delta.x;
-		y -= delta.y;
-	}
+    void operator-=(const Point &delta) {
+            x -= delta.x;
+            y -= delta.y;
+    }
 
-	Point Invert() { return Point( -x, -y ); }
+    Point Invert() { return Point( -x, -y ); }
 };
 
 struct Rect
@@ -56,108 +57,108 @@ struct Rect
     int bottom;
 
     Rect() : left(0), top(0), right(0), bottom(0) {};
-	Rect(int w, int h) : left(0), top(0), right(w), bottom(h) {};
-	Rect(Point p) : left(0), top(0), right(p.x), bottom(p.y) {};
-	Rect(int x1, int y1, int x2, int y2) : left(x1), top(y1), right(x2), bottom(y2) {};
+    Rect(int w, int h) : left(0), top(0), right(w), bottom(h) {};
+    Rect(Point p) : left(0), top(0), right(p.x), bottom(p.y) {};
+    Rect(int x1, int y1, int x2, int y2) : left(x1), top(y1), right(x2), bottom(y2) {};
 
-	bool IsValid() const {
-		return (left <= right && top <= bottom);
-	}
+    bool IsValid() const {
+            return (left <= right && top <= bottom);
+    }
 
-	bool IsEmpty() const {
-		return (left >= right || top >= bottom);
-	}
+    bool IsEmpty() const {
+            return (left >= right || top >= bottom);
+    }
 
-	int Width() const { return right - left; }
-	int Height() const { return bottom - top; }
+    int Width() const { return right - left; }
+    int Height() const { return bottom - top; }
 
-	void SetWidth(int Width) {
-		right = left + Width;
-	}
+    void SetWidth(int Width) {
+            right = left + Width;
+    }
 
-	void SetHeight(int Height) {
-		bottom = top + Height;
-	}
+    void SetHeight(int Height) {
+            bottom = top + Height;
+    }
 
-	void SetSize(Point sz) {
-		right = left + sz.x;
-		bottom = top + sz.y;
-	}
+    void SetSize(Point sz) {
+            right = left + sz.x;
+            bottom = top + sz.y;
+    }
 
-	bool IsIn(int x, int y) const {
-		return (left <= x) && (x < right) && (top <= y) && (y < bottom);
-	}
-	bool IsIn(const Point &p) const {
-		return IsIn(p.x, p.y);
-	}
-	bool IsIn(const Rect &r) const {
-		return (left <= r.left) && (r.right <= right) && (top <= r.top) && (r.bottom <= bottom);
-	}
+    bool IsIn(int x, int y) const {
+            return (x >= left) && (x < right) && (y >= top) && (y < bottom);
+    }
+    bool IsIn(const Point &p) const {
+            return IsIn(p.x, p.y);
+    }
+    bool IsIn(const Rect &r) const {
+            return (left <= r.left) && (right >= r.right) && (top <= r.top) && (bottom >= r.bottom);
+    }
 
-	bool IsIntersects(const Rect &r) const {
-		return (left < r.right) && (r.left < right) && (top < r.bottom) && (r.top < bottom);
-	}
+    bool IsIntersects(const Rect &r) const {
+            return (left < r.right) && (r.left < right) && (top < r.bottom) && (r.top < bottom);
+    }
 
-	Rect IntersectionRect(const Rect &r) const {
-		if (!IsIntersects(r))
-			return Rect();
+    Rect IntersectionRect(const Rect &r) const {
+            if (!IsIntersects(r))
+                    return Rect();
 
-		return Rect(MAX(r.left, left), MAX(r.top, top), MIN(r.right, right), MIN(r.bottom, bottom));
-	}
+            return Rect(MAX(r.left, left), MAX(r.top, top), MIN(r.right, right), MIN(r.bottom, bottom));
+    }
 
-	void Clip(const Rect &r) {
-		if (top < r.top) top = r.top;
-		else if (top > r.bottom) top = r.bottom;
+    void Clip(const Rect &r) {
+            if (top < r.top) top = r.top;
+            else if (top > r.bottom) top = r.bottom;
 
-		if (left < r.left) left = r.left;
-		else if (left > r.right) left = r.right;
+            if (left < r.left) left = r.left;
+            else if (left > r.right) left = r.right;
 
-		if (bottom > r.bottom) bottom = r.bottom;
-		else if (bottom < r.top) bottom = r.top;
+            if (bottom > r.bottom) bottom = r.bottom;
+            else if (bottom < r.top) bottom = r.top;
 
-		if (right > r.right) right = r.right;
-		else if (right < r.left) right = r.left;
-	}
+            if (right > r.right) right = r.right;
+            else if (right < r.left) right = r.left;
+    }
 
-	void Clip(int maxw, int maxh) {
-		Clip(Rect(0, 0, maxw, maxh));
-	}
+    void Clip(int maxw, int maxh) {
+            Clip(Rect(0, 0, maxw, maxh));
+    }
 
-	void MoveTo(int x, int y) {
-		bottom += y - top;
-		right += x - left;
-		top = y;
-		left = x;
-	}
+    void MoveTo(int x, int y) {
+            bottom += y - top;
+            right += x - left;
+            top = y;
+            left = x;
+    }
 
-	void MoveTo(const Point &p) {
-		MoveTo(p.x, p.y);
-	}
+    void MoveTo(const Point &p) {
+            MoveTo(p.x, p.y);
+    }
 
-	void Translate(int dx, int dy) {
-		left += dx; right += dx;
-		top += dy; bottom += dy;
-	}
+    void Translate(int dx, int dy) {
+            left += dx; right += dx;
+            top += dy; bottom += dy;
+    }
 
-	void Translate(const Point &p) {
-		left += p.x; right += p.x;
-		top += p.y; bottom += p.y;
-	}
+    void Translate(const Point &p) {
+            left += p.x; right += p.x;
+            top += p.y; bottom += p.y;
+    }
 
-	operator bool()
-	{
-	    return !IsEmpty();
-	}
+    operator bool()
+    {
+        return !IsEmpty();
+    }
 
-	Point Pos() const
-	{
-	    return Point(left, top);
-	}
+    Point Pos() const
+    {
+        return Point(left, top);
+    }
 
-	Point Size() const
-	{
-	    return Point(Width(), Height());
-	}
+    Point Size() const
+    {
+        return Point(Width(), Height());
+    }
 
 };
 
@@ -234,9 +235,15 @@ protected:
     uint32_t _h;
 };
 
-typedef Common::PlaneVector<uint8_t> PlaneBytes;
+typedef PlaneVector<uint8_t> PlaneBytes;
      
 
+/**
+ * Clip line by clip rect
+ * Result - is part of line in clip rect
+ * line parameter will be modified
+ **/
+bool ClipLine(const Rect &clip, Rect *line);
 
 }
 

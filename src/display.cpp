@@ -21,10 +21,7 @@ size_t NC_STACK_display::func0(IDVList &stak)
 
 //    rstr->bitm_intern = (bitmap_intern *)getRsrc_pData();
 
-    stack__display.field_24.x1 = 0;
-    stack__display.field_24.y1 = 0;
-    stack__display.field_24.x2 = _width - 1;
-    stack__display.field_24.y2 = _height - 1;
+    stack__display._clip = Common::Rect(_width - 1, _height - 1);
 
     stack__display.field_54c = _width / 2;
     stack__display.field_550 = _height / 2;
@@ -66,11 +63,11 @@ size_t NC_STACK_display::func2(IDVList &stak)
                 break;
 
             case ATT_SHADE_RMP:
-                setRSTR_shdRmp((bitmap_intern *)val.value.p_data);
+                setRSTR_shdRmp((ResBitmap *)val.value.p_data);
                 break;
 
             case ATT_TRACY_RMP:
-                setRSTR_trcRmp((bitmap_intern *)val.value.p_data);
+                setRSTR_trcRmp((ResBitmap *)val.value.p_data);
                 break;
 
             case ATT_FGAPEN:
@@ -210,20 +207,20 @@ void NC_STACK_display::raster_func210(ua_fRect *arg)
 {
     __NC_STACK_display *rstr = &stack__display;
 
-    rstr->field_24.x1 = (arg->x1 + 1.0) * (rstr->field_554 + -1.0);
-    rstr->field_24.y1 = (arg->y1 + 1.0) * (rstr->field_558 + -1.0);
-    rstr->field_24.x2 = (arg->x2 + 1.0) * (rstr->field_554 + -1.0);
-    rstr->field_24.y2 = (arg->y2 + 1.0) * (rstr->field_558 + -1.0);
+    rstr->_clip = Common::Rect( (arg->x1 + 1.0) * (rstr->field_554 + -1.0),
+                                (arg->y1 + 1.0) * (rstr->field_558 + -1.0),
+                                (arg->x2 + 1.0) * (rstr->field_554 + -1.0),
+                                (arg->y2 + 1.0) * (rstr->field_558 + -1.0) );
 }
 
 void NC_STACK_display::raster_func211(ua_dRect *arg)
 {
     __NC_STACK_display *rstr = &stack__display;
 
-    rstr->field_24.x1 = rstr->field_54c + arg->x1;
-    rstr->field_24.y1 = rstr->field_550 + arg->y1;
-    rstr->field_24.x2 = rstr->field_54c + arg->x2;
-    rstr->field_24.y2 = rstr->field_550 + arg->y2;
+    rstr->_clip = Common::Rect( rstr->field_54c + arg->x1,
+                                rstr->field_550 + arg->y1,
+                                rstr->field_54c + arg->x2,
+                                rstr->field_550 + arg->y2 );
 }
 
 size_t NC_STACK_display::raster_func212(IDVPair *)
@@ -240,13 +237,6 @@ void NC_STACK_display::EndScene()
 {
 }
 
-void NC_STACK_display::LockSurface()
-{
-}
-
-void NC_STACK_display::UnlockSurface()
-{
-}
 
 size_t NC_STACK_display::raster_func217(rstr_arg217 *arg)
 {
@@ -283,12 +273,10 @@ size_t NC_STACK_display::raster_func220(IDVPair *)
 
 void NC_STACK_display::raster_func221(ua_dRect *arg)
 {
-    __NC_STACK_display *rstr = &stack__display;
-
-    rstr->field_38.x1 = rstr->field_54c + arg->x1;
-    rstr->field_38.y1 = rstr->field_550 + arg->y1;
-    rstr->field_38.x2 = rstr->field_54c + arg->x2;
-    rstr->field_38.y2 = rstr->field_550 + arg->y2;
+    stack__display._inverseClip.left = stack__display.field_54c + arg->x1;
+    stack__display._inverseClip.top = stack__display.field_550 + arg->y1;
+    stack__display._inverseClip.right = stack__display.field_54c + arg->x2;
+    stack__display._inverseClip.bottom = stack__display.field_550 + arg->y2;
 }
 
 
@@ -362,36 +350,12 @@ void NC_STACK_display::display_func263(displ_arg263 *arg)
 //}
 
 
-bool NC_STACK_display::AllocTexture(bitmap_intern *pbitm)
+bool NC_STACK_display::AllocTexture(ResBitmap *pbitm)
 {
-    bitmap_intern *bitm = pbitm;
-
-    bitm->pitch = bitm->width;
-    bitm->buffer = AllocVec(bitm->width * bitm->height, 65537);
-    bitm->flags |= BITMAP_FLAG_TEXTURE;
-    return bitm->buffer != NULL;
+    return false;
 }
 
-void NC_STACK_display::TextureApplyPalette(bitmap_intern *)
-{
-}
-
-void NC_STACK_display::FreeTexture(bitmap_intern *pbitm)
-{
-    bitmap_intern *bitm = pbitm;
-    if (bitm->buffer)
-    {
-        nc_FreeMem(bitm->buffer);
-        bitm->buffer = NULL;
-    }
-}
-
-size_t NC_STACK_display::LockTexture(bitmap_intern *)
-{
-    return 1;
-}
-
-void NC_STACK_display::UnlockTexture(bitmap_intern *)
+void NC_STACK_display::FreeTexture(ResBitmap *pbitm)
 {
 }
 
@@ -432,14 +396,14 @@ void NC_STACK_display::setRSTR_BGpen(uint32_t pen)
 //    stack__display.BG_Color = pen;
 }
 
-void NC_STACK_display::setRSTR_shdRmp(bitmap_intern *rmp)
+void NC_STACK_display::setRSTR_shdRmp(ResBitmap *rmp)
 {
 //	rstr->field_10 = rmp;
 //	if ( rmp )
 //		rstr->field_14 = rmp->buffer;
 }
 
-void NC_STACK_display::setRSTR_trcRmp(bitmap_intern *rmp)
+void NC_STACK_display::setRSTR_trcRmp(ResBitmap *rmp)
 {
 //	rstr->field_18 = rmp;
 //	if ( rmp )
@@ -526,10 +490,10 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
         EndScene();
         return 1;
     case 215:
-        LockSurface();
+        //LockSurface();
         return 1;
     case 216:
-        UnlockSurface();
+        //UnlockSurface();
         return 1;
     case 217:
         return (size_t)raster_func217( (rstr_arg217 *)data );
@@ -559,17 +523,11 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
 //        display_func265( (void *)data );
 //        return 1;
     case 266:
-        return (size_t)AllocTexture( (bitmap_intern *)data );
+        return (size_t)AllocTexture( (ResBitmap *)data );
     case 267:
-        TextureApplyPalette( (bitmap_intern *)data );
         return 1;
     case 268:
-        FreeTexture( (bitmap_intern *)data );
-        return 1;
-    case 269:
-        return (size_t)LockTexture( (bitmap_intern *)data );
-    case 270:
-        UnlockTexture( (bitmap_intern *)data );
+        FreeTexture( (ResBitmap *)data );
         return 1;
     case 273:
         return (size_t)display_func273( (size_t)data );

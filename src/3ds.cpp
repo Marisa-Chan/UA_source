@@ -392,7 +392,7 @@ size_t NC_STACK_3ds::readChunkTexMap(d3dsTextureMap &texmap, FSMgr::FileHandle *
                 IDVList vals;
                 vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, texName);
                 vals.Add(NC_STACK_rsrc::RSRC_ATT_TRYSHARED, 2);
-                vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
+                vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
 
                 std::string oldprefix = get_prefix_replacement("rsrc");
                 set_prefix_replacement("rsrc", "");
@@ -572,7 +572,7 @@ size_t NC_STACK_3ds::base_func77(baseRender_msg *arg)
                     skel133.fadeStart = renderMsg.fadeStart;
                     skel133.fadeLength = renderMsg.fadeLength;
 
-                    bitmap_intern *bitm = NULL;
+                    ResBitmap *bitm = NULL;
 
                     if ( faceMaterial[i] )
                     {

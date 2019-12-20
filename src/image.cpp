@@ -108,7 +108,7 @@ static SDL_RWops * MyCustomRWop(FSMgr::FileHandle *fil)
 rsrc * NC_STACK_image::rsrc_func64(IDVList &stak)
 {
     const char *resName = stak.GetConstChar(RSRC_ATT_NAME, NULL);
-//    const char *reassignName = NULL;
+    int convertColor = stak.Get(BMD_ATT_CONVCOLOR, 0);
 
     if ( !resName )
         return NULL;
@@ -135,10 +135,7 @@ rsrc * NC_STACK_image::rsrc_func64(IDVList &stak)
         return NULL;
     }
 
-    stak.Add(BMD_ATT_WIDTH, loaded->w);
-    stak.Add(BMD_ATT_HEIGHT, loaded->h);
-
-    rsrc *res = NC_STACK_bitmap::rsrc_func64(stak); // bitmap_func64
+    rsrc *res = NC_STACK_rsrc::rsrc_func64(stak); // bitmap_func64
 
     if ( !res )
     {
@@ -146,58 +143,40 @@ rsrc * NC_STACK_image::rsrc_func64(IDVList &stak)
         return NULL;
     }
 
-    bitmap_intern *bitm = (bitmap_intern *)res->data;
+    ResBitmap *bitm = new ResBitmap;   
     if ( !bitm )
     {
         SDL_FreeSurface(loaded);
         rsrc_func65(res);
         return NULL;
     }
-
-    NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
-
-    if (bitm->flags & BITMAP_FLAG_TEXTURE)
+    
+    res->data = bitm;
+    
+    bitm->_width = loaded->w;
+    bitm->_height = loaded->h;
+    bitm->_swTex = loaded;
+    
+    if (convertColor)
     {
-        SDL_BlitSurface(loaded, NULL, bitm->swTex, NULL);
-
-        if (!(bitm->flags & BITMAP_FLAG_SYSMEM))
-            win3d->UpdateHwTexture(bitm);
-    }
-    else
+        SDL_Surface *screenFmt = ConvertToScreen(loaded);
+        if (screenFmt)
+        {
+            SDL_FreeSurface(bitm->_swTex);
+            bitm->_swTex = screenFmt;
+        }
+    } 
+    else if (loaded->format->palette)
     {
-        if (loaded->format->BitsPerPixel > 8)
+        if ( !bitm->_pallete )
+            bitm->_pallete = new UA_PALETTE;
+
+        if ( bitm->_pallete )
         {
-            SDL_FreeSurface(loaded);
-            rsrc_func65(res);
-            return NULL;
+            for (int i = 0; i < loaded->format->palette->ncolors; i++)
+                (*bitm->_pallete)[i] = loaded->format->palette->colors[i];
         }
-
-        if (loaded->format->palette)
-        {
-            if ( !bitm->pallete )
-            {
-                bitm->pallete = new UA_PALETTE;
-                bitm->flags |= BITMAP_FLAG_HAS_PALETTE;
-            }
-
-            if ( bitm->pallete )
-            {
-                for (int i = 0; i < loaded->format->palette->ncolors; i++)
-                    bitm->pallete->at(i) = loaded->format->palette->colors[i];
-            }
-        }
-
-        SDL_LockSurface(loaded);
-        uint8_t *dst = (uint8_t *)bitm->buffer;
-        uint8_t *src = (uint8_t *)loaded->pixels;
-
-        for(int i = 0; i < loaded->h; i++)
-            memcpy( &dst[i * bitm->width], &src[i * loaded->pitch], bitm->width);
-
-        SDL_UnlockSurface(loaded);
     }
-
-    SDL_FreeSurface(loaded);
 
     return res;
 }

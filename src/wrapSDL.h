@@ -10,6 +10,9 @@
 #include <GL/gl.h>
 #endif
 
+#include "common.h"
+
+
 void SDLWRAP_INIT();
 void SDLWRAP_DEINIT();
 int SDLWRAP_UPDATE();
@@ -22,7 +25,13 @@ struct SDLWRAP_Point
 
 void SDLWRAP_resizeWindow(int w, int h);
 
-SDL_Surface *SDLWRAP_getScreenSurface();
+namespace SDLWRAP 
+{
+    SDL_Surface *Screen();
+    
+    void DrawLine(SDL_Surface *surface, const Common::Rect &line, uint8_t cr, uint8_t cg, uint8_t cb);
+    void BlitScaleMasked(SDL_Surface *src, Common::Rect sRect, SDL_Surface *mask, uint8_t index, SDL_Surface *dst, Common::Rect dRect);
+}
 
 TTF_Font *SDLWRAP_loadFont(const char *fontname, int height);
 

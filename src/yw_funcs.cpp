@@ -104,8 +104,8 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
 
         IDVList init_vals;
         init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, bitmap_name);
-        init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
-        init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+        init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
+        init_vals.Add(NC_STACK_ilbm::ATT_ALPHAPALETTE, 0);
 
         tileset->font_image = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
         if ( !tileset->font_image )
@@ -119,7 +119,7 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
         }
 
         tileset->field_4 = tileset->font_image->getBMD_pBitmap();
-        tileset->field_8 = tileset->field_4->buffer;
+        SDL_SetColorKey(tileset->field_4->_swTex, SDL_TRUE, SDL_MapRGB(tileset->field_4->_swTex->format, 255, 255, 0));
 
         char *fntHeight = strtok(0, " \t");
         if ( !fntHeight )
@@ -193,8 +193,9 @@ tiles_stru * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
                         char *str_w = strtok(0, " \t");
                         if ( str_w )
                         {
-                            tileset->chars[chr].byteoff = tileset->field_4->width * ypos + xpos;
                             tileset->chars[chr].width = strtol(str_w, NULL, 0);
+                            tileset->chars[chr].x = xpos;
+                            tileset->chars[chr].y = ypos;
                         }
                     }
                 }
@@ -244,15 +245,15 @@ tiles_stru * yw_LoadTileSet(const char *filename, int chr_width, int font_height
     {
         IDVList init_vals;
         init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, filename);
-        init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
-        init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+        init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1); // Speed up painting
+        init_vals.Add(NC_STACK_ilbm::ATT_ALPHAPALETTE, 0);
 
         tileset->font_image = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
         if ( tileset->font_image )
         {
             tileset->field_4 = tileset->font_image->getBMD_pBitmap();
+            SDL_SetColorKey(tileset->field_4->_swTex, SDL_TRUE, SDL_MapRGB(tileset->field_4->_swTex->format, 255, 255, 0));
 
-            tileset->field_8 = tileset->field_4->buffer;
             tileset->font_height = font_height;
 
             int id = 0;
@@ -261,19 +262,20 @@ tiles_stru * yw_LoadTileSet(const char *filename, int chr_width, int font_height
             {
                 for (int i = 0; i < columns; i++ )
                 {
-                    bitmap_intern *bitm = tileset->field_4;
+                    ResBitmap *bitm = tileset->field_4;
 
                     int x_pos = x_off + i * tile_width;
                     int y_pos = y;
 
-                    if ( chr_width + (x_off + i * tile_width) > bitm->width )
-                        x_pos = bitm->width - chr_width;
+                    if ( chr_width + (x_off + i * tile_width) > bitm->_width )
+                        x_pos = bitm->_width - chr_width;
 
-                    if ( font_height + y > bitm->height )
-                        y_pos = bitm->height - font_height;
+                    if ( font_height + y > bitm->_height )
+                        y_pos = bitm->_height - font_height;
 
-                    tileset->chars[id].byteoff = tileset->field_4->width * y_pos + x_pos;
                     tileset->chars[id].width = chr_width;
+                    tileset->chars[id].x = x_pos;
+                    tileset->chars[id].y = y_pos;
 
                     id++;
                 }
@@ -412,10 +414,8 @@ int load_fonts_and_icons(_NC_STACK_ypaworld *yw)
         if ( !v14 )
             return 0;
 
-        v14->chars[9].byteoff = v14->chars[8].byteoff;
-        v14->chars[9].width = v14->chars[8].width;
-        v14->chars[8].byteoff = v14->chars[0].byteoff;
-        v14->chars[8].width = v14->chars[0].width;
+        v14->chars[9] = v14->chars[8];
+        v14->chars[8] = v14->chars[0];
 
         yw->tiles[id] = v14;
         GFXEngine::GFXe.setTileset(v14, id);
@@ -1416,8 +1416,7 @@ int yw_InitMouseStuff(_NC_STACK_ypaworld *yw)
 
         IDVList init_vals;
         init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, v5);
-        init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
-        init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+        init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
 
         yw->pointers[i] = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
         if ( !yw->pointers[i] )
@@ -1661,8 +1660,6 @@ int writeTOD(_NC_STACK_ypaworld *yw, const char *fname, int tod)
 
 void NC_STACK_ypaworld::GameShellBlitBkg(NC_STACK_bitmap *bitm)
 {
-    ypaworld.win3d->LockSurface();
-
     rstr_arg204 a4;
     a4.pbitm = bitm->getBMD_pBitmap();
 
@@ -1676,8 +1673,6 @@ void NC_STACK_ypaworld::GameShellBlitBkg(NC_STACK_bitmap *bitm)
     a4.float10 = 1.0;
 
     ypaworld.win3d->raster_func202(&a4);
-
-    ypaworld.win3d->UnlockSurface();
 }
 
 void NC_STACK_ypaworld::sub_4491A0(const std::string &movie_fname)
@@ -1841,14 +1836,15 @@ void ypaworld_func158__sub4__sub1__sub0(_NC_STACK_ypaworld *yw, struC5 *inpt)
     {
         if ( inpt->ClickInf.selected_btnID == -1 )
         {
-            bitmap_intern *a4 = yw->LevelNet->ilbm_mask_map->getBMD_pBitmap();
+            ResBitmap *a4 = yw->LevelNet->ilbm_mask_map->getBMD_pBitmap();
 
-            int xpos = a4->width * v3;
-            int ypos = a4->height * v4;
+            int xpos = a4->_width * v3;
+            int ypos = a4->_height * v4;
 
-            uint8_t *pos = (uint8_t *)a4->buffer + a4->pitch * ypos + xpos;
-
-            v7 = *pos;
+            SDL_LockSurface(a4->_swTex);
+            v7 = ((uint8_t *)a4->_swTex->pixels)[a4->_swTex->pitch * ypos + xpos];
+            SDL_UnlockSurface(a4->_swTex);
+            
             if ( v7 > 0 && v7 < 256 )
             {
                 int v15 = yw->LevelNet->mapInfos[v7].field_0;
@@ -1933,8 +1929,6 @@ void ypaworld_func158__sub4__sub1__sub2(_NC_STACK_ypaworld *yw)
 
     if ( lvlnet->ilbm_menu_map && lvlnet->ilbm_mask_map && lvlnet->ilbm_rollover_map )
     {
-        yw->win3d->LockSurface();
-
         rstr_arg204 a4;
         a4.pbitm = yw->LevelNet->ilbm_menu_map->getBMD_pBitmap();
 
@@ -1956,7 +1950,7 @@ void ypaworld_func158__sub4__sub1__sub2(_NC_STACK_ypaworld *yw)
 
             if ( v5->field_9C.x1 != v5->field_9C.x2 )
             {
-                bitmap_intern *v20 = NULL;
+                ResBitmap *v20 = NULL;
 
                 if ( v5->field_0 == 2 ||  v5->field_0 == 3)
                 {
@@ -2015,8 +2009,6 @@ void ypaworld_func158__sub4__sub1__sub2(_NC_STACK_ypaworld *yw)
 
             yw->win3d->raster_func209(&v19);
         }
-
-        yw->win3d->UnlockSurface();
     }
 
 }
@@ -2027,8 +2019,6 @@ void ypaworld_func158__sub4__sub1__sub1(_NC_STACK_ypaworld *yw)
 
     if ( lvlnet->ilbm_menu_map && lvlnet->ilbm_mask_map && lvlnet->ilbm_rollover_map && lvlnet->ilbm_finished_map && lvlnet->ilbm_enabled_map )
     {
-        yw->win3d->LockSurface();
-
         rstr_arg204 a4;
         a4.pbitm = yw->LevelNet->ilbm_menu_map->getBMD_pBitmap();
 
@@ -2051,7 +2041,7 @@ void ypaworld_func158__sub4__sub1__sub1(_NC_STACK_ypaworld *yw)
 
             if ( v5->field_9C.x1 != v5->field_9C.x2 )
             {
-                bitmap_intern *v20 = NULL;
+                ResBitmap *v20 = NULL;
 
                 if ( v5->field_0 == 2 )
                 {
@@ -2120,8 +2110,6 @@ void ypaworld_func158__sub4__sub1__sub1(_NC_STACK_ypaworld *yw)
         }
         const char *v13 = get_lang_string(yw->string_pointers_p2, yw->TOD_ID + 2490, " ");
         splashScreen_OutText(yw, yw->win3d, v13, yw->screen_width / 20, yw->screen_width / 20);
-
-        yw->win3d->UnlockSurface();
     }
 }
 
@@ -2172,9 +2160,7 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3(int lvlid)
         return 0; // May be HACK
 
     ypaworld.win3d->display_func271(NULL);
-    ypaworld.win3d->LockSurface();
     ypaworld.win3d->raster_func192(NULL);
-    ypaworld.win3d->UnlockSurface();
 
     ypaworld.brief.s2d90 = *ypaworld.field_2d90;
 
@@ -2257,8 +2243,7 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3(int lvlid)
 
                 IDVList init_vals;
                 init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, ypaworld.LevelNet->brief_map[0].map_name.c_str());
-                init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
-                init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+                init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
 
                 if ( ypaworld.LevelNet->brief_map[0].map_name[0] )
                     ypaworld.brief.briefing_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
@@ -2267,8 +2252,7 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3(int lvlid)
 
                 init_vals.clear();
                 init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, mproto->mbmaps[0].name.c_str());
-                init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
-                init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+                init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
 
                 ypaworld.brief.mbmap_img = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
 
@@ -2407,8 +2391,7 @@ size_t NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub5()
 
     IDVList init_vals;
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, ypaworld.LevelNet->debrief_map[0].map_name.c_str());
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+    init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
 
     if ( ypaworld.LevelNet->debrief_map[0].map_name[0] )
         ypaworld.brief.briefing_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
@@ -2417,8 +2400,7 @@ size_t NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub5()
 
     init_vals.clear();
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, v8->name.c_str());
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+    init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
 
     ypaworld.brief.mbmap_img = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
     if ( !ypaworld.brief.mbmap_img )
@@ -3638,7 +3620,6 @@ void UserData::clear()
     //GuiList disk_listvw;
     field_1612 = 0;
     memset(usernamedir, 0, sizeof(usernamedir));
-    usernamedir_len = 0;
     field_0x1744 = 0;
     //opened_dir = NULL;
     //nlist files_list;

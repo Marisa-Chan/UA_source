@@ -12,33 +12,37 @@ class NC_STACK_bitmap;
 
 struct tile_xy
 {
-    int byteoff;
     int width;
+    int x;
+    int y;
 };
 
 typedef std::array<SDL_Color, 256> UA_PALETTE;
 
-struct bitmap_intern
-{
-    void *buffer;
-    int16_t width;
-    int16_t height;
-    int16_t pitch;
-    UA_PALETTE *pallete;
-    uint32_t flags;
-    SDL_Surface *swTex;
-    GLuint hwTex;
+struct ResBitmap
+{    
+    int16_t _width;
+    int16_t _height;
+    UA_PALETTE *_pallete;
+    SDL_Surface *_swTex;
+    GLuint _hwTex;
+    
+    ResBitmap()
+    {
+        _width = 0;
+        _height = 0;
+        _pallete = NULL;
+        _swTex = NULL;
+        _hwTex = 0;
+    }
 };
 
 struct tiles_stru
 {
     NC_STACK_bitmap *font_image;
-    bitmap_intern *field_4;
-    void  *field_8;
+    ResBitmap *field_4;
     tile_xy *chars;
     int font_height;
-    int field_12;
-    int field_14;
 };
 
 
@@ -73,7 +77,7 @@ struct polysDatSub
     float g;
     float b;
     float distance[GFX_MAX_VERTEX];
-    bitmap_intern *pbitm;
+    ResBitmap *pbitm;
 };
 
 
@@ -88,8 +92,8 @@ public:
     NC_STACK_win3d *getC3D();
 
     void setResolution(int res);
-    void setTracyRmp(bitmap_intern *rmp);
-    void setShadeRmp(bitmap_intern *rmp);
+    void setTracyRmp(ResBitmap *rmp);
+    void setShadeRmp(ResBitmap *rmp);
 
     int loadPal(const char *palette_ilbm);
 

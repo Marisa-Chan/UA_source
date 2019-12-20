@@ -8,7 +8,7 @@
 struct bmpAnim_t2
 {
     tUtV *outline;
-    bitmap_intern *bitm;
+    ResBitmap *bitm;
     int frm_time;
     int16_t bitm_index;
     int16_t otl_index;
@@ -17,7 +17,7 @@ struct bmpAnim_t2
 struct bmpAnim_t1_objs
 {
     NC_STACK_bitmap *bitmObj;
-    bitmap_intern *bitm_intern;
+    ResBitmap *bitm_intern;
     char *title;
 };
 
@@ -95,7 +95,7 @@ public:
     virtual void setBANM_animType(int newType);
 
     //Get
-    virtual bitmap_intern * getBMD_pBitmap();
+    virtual ResBitmap * getBMD_pBitmap();
     virtual int getBMD_width();
     virtual int getBMD_height();
     virtual void *getBMD_buffer();
@@ -103,6 +103,9 @@ public:
     virtual const char *getBANM_classname();
     virtual int getBANM_framecnt();
     virtual int getBANM_animtype();
+    
+    
+    virtual void PrepareTexture( bool force = false );
 
     //Data
     static const Nucleus::ClassDescr description;

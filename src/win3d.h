@@ -6,7 +6,7 @@
 #include "display.h"
 #include "ini.h"
 
-struct bitmap_intern;
+struct ResBitmap;
 struct polysDat;
 
 #define MSK(X) (1 << (X))
@@ -27,7 +27,7 @@ enum W3D_STATES
 };
 
 
-struct bitmap_intern;
+struct ResBitmap;
 
 struct windd_dlgBox
 {
@@ -76,10 +76,8 @@ struct __NC_STACK_win3d
 {
     int width;
     int height;
-    void *surface_locked_surfaceData;
     SDL_Surface *screenSurface;
     int currentCursor;
-    int surface_locked_pitch;
     int forcesoftcursor;
     int movie_player;
     int field_38;
@@ -103,7 +101,6 @@ struct __NC_STACK_win3d
     int colorkey;
 
     SDL_PixelFormat *pixfmt;
-    uint32_t colorKey;
     SDL_DisplayMode mode;
     GLint glPixfmt, glPixtype;
     bool windowed;
@@ -140,19 +137,14 @@ public:
     virtual void raster_func209(w3d_a209 *arg);
     virtual void BeginScene();
     virtual void EndScene();
-    virtual void LockSurface();
-    virtual void UnlockSurface();
     virtual void raster_func218(rstr_218_arg *arg);
     virtual size_t display_func256(windd_arg256 *inout);
     virtual void BeginFrame();
     virtual void EndFrame();
     virtual void display_func262(rstr_262_arg *arg);
     virtual void display_func263(displ_arg263 *arg);
-    virtual bool AllocTexture(bitmap_intern *arg);
-    virtual void TextureApplyPalette(bitmap_intern *arg);
-    virtual void FreeTexture(bitmap_intern *arg);
-    virtual size_t LockTexture(bitmap_intern *arg);
-    virtual void UnlockTexture(bitmap_intern *arg);
+    virtual bool AllocTexture(ResBitmap *arg);
+    virtual void FreeTexture(ResBitmap *arg);
     virtual void display_func271(IDVPair *stak);
     virtual void display_func272(IDVPair *);
     virtual void display_func274(const char **name);
@@ -209,13 +201,12 @@ public:
     void matrixAspectCorrection(mat3x3 &inout, bool invert);
     void getAspectCorrection(float &cW, float &cH, bool invert);
 
-    void UpdateHwTexture(bitmap_intern *bitm);
-
     void setFrustumClip(float near, float far);
 
     static bool compare(polysDat *a, polysDat *b);
 
-    SDL_Surface *ConvertToScreen(SDL_Surface *src);
+    virtual void ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool transp);
+    virtual SDL_PixelFormat *GetScreenFormat();
 
 protected:
     int initPolyEngine();
@@ -232,6 +223,8 @@ protected:
     static SDL_Cursor *wrapLoadCursor(const char *name);
 
     void _setFrustumClip(float near, float far);
+    
+    void sub_420EDC(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
 
 public:
     //Data

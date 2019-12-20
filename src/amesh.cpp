@@ -424,7 +424,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
     skel133.fadeLength = arg->fadeLength;
 
 
-    bitmap_intern *v21;
+    ResBitmap *v21;
 
     if ( amesh->ilbm1 )
     {
@@ -539,6 +539,7 @@ void NC_STACK_amesh::setADE_depthFade(int arg)
 void NC_STACK_amesh::setAREA_bitm(NC_STACK_bitmap *bitm)
 {
     stack__amesh.ilbm1 = bitm;
+    bitm->PrepareTexture();
 
     NC_STACK_area::setAREA_bitm(bitm);
 }
@@ -546,6 +547,7 @@ void NC_STACK_amesh::setAREA_bitm(NC_STACK_bitmap *bitm)
 void NC_STACK_amesh::setAREA_tracybitm(NC_STACK_bitmap *bitm)
 {
     stack__amesh.ilbm2 = bitm;
+    bitm->PrepareTexture();
 
     NC_STACK_area::setAREA_tracybitm(bitm);
 }

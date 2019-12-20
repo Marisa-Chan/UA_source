@@ -1783,7 +1783,7 @@ struct _NC_STACK_ypaworld
     vec3d field_1ab8;
 
     NC_STACK_bitmap *pointers[11];
-    bitmap_intern *pointers__bitm[11];
+    ResBitmap *pointers__bitm[11];
     int field_1b1c;
     int field_1b20; // saved mouse x
     int field_1b22; // saved mouse y

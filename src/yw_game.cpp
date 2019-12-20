@@ -35,8 +35,7 @@ NC_STACK_bitmap * loadDisk_screen(_NC_STACK_ypaworld *yw)
 
     IDVList init_vals;
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, v3);
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+    init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
 
     NC_STACK_bitmap *disk = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
 
@@ -73,19 +72,11 @@ void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
             win3d->display_func263(&v4);
 
             win3d->BeginFrame();
-            win3d->LockSurface();
-
             win3d->raster_func202(&a4);
-
-            win3d->UnlockSurface();
             win3d->EndFrame();
 
             win3d->BeginFrame();
-            win3d->LockSurface();
-
             win3d->raster_func202(&a4);
-
-            win3d->UnlockSurface();
             win3d->EndFrame();
         }
     }
@@ -119,23 +110,13 @@ void drawSplashScreenWithTOD(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScre
             win3d->display_func263(&v4);
 
             win3d->BeginFrame();
-            win3d->LockSurface();
-
             win3d->raster_func202(&a4);
-
             splashScreen_OutText(yw, win3d, text, yw->screen_width / 7, yw->screen_height / 5);
-
-            win3d->UnlockSurface();
             win3d->EndFrame();
 
             win3d->BeginFrame();
-            win3d->LockSurface();
-
             win3d->raster_func202(&a4);
-
             splashScreen_OutText(yw, win3d, text, yw->screen_width / 7, yw->screen_height / 5);
-
-            win3d->UnlockSurface();
             win3d->EndFrame();
         }
     }
@@ -2627,9 +2608,7 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
 
         if ( a2 )
         {
-            yw->win3d->LockSurface();
             sb_0x4d7c08__sub0(yw);
-            yw->win3d->UnlockSurface();
         }
     }
 }
@@ -3641,9 +3620,7 @@ int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
             arg209.includ = 0;
             arg209.cmdbuf = v10;
 
-            yw->win3d->LockSurface();
             yw->win3d->raster_func209(&arg209);
-            yw->win3d->UnlockSurface();
         }
 
         SFXEngine::SFXe.sb_0x424c74();
@@ -6746,15 +6723,12 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         FontUA::set_end(&cmd);
 
-        yw->win3d->LockSurface();
-
         w3d_a209 arg209;
         arg209.cmdbuf = dbg_txt;
         arg209.includ = 0;
 
         yw->win3d->raster_func209(&arg209);
 
-        yw->win3d->UnlockSurface();
 
         if ( v104 )
         {

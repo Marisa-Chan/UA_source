@@ -554,6 +554,7 @@ void NC_STACK_area::setAREA_bitm(NC_STACK_bitmap *bitm)
             delete_class_obj(stack__area.texImg);
 
         stack__area.texImg = bitm;
+        bitm->PrepareTexture();
     }
 }
 
@@ -620,6 +621,7 @@ void NC_STACK_area::setAREA_tracybitm(NC_STACK_bitmap *bitm)
             delete_class_obj(stack__area.tracyImg);
 
         stack__area.tracyImg = bitm;
+        bitm->PrepareTexture();
     }
 }
 

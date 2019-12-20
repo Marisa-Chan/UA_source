@@ -3410,8 +3410,7 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int mode)
         {
             IDVList init_vals;
             init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, menu_map.c_str());
-            init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
-            init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+            init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
 
             ilbm_menu_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
             if ( !ilbm_menu_map )
@@ -3425,8 +3424,7 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int mode)
         {
             IDVList init_vals;
             init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, rollover_map.c_str());
-            init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
-            init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+            init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
 
             ilbm_rollover_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
             if ( !ilbm_rollover_map )
@@ -3440,8 +3438,7 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int mode)
         {
             IDVList init_vals;
             init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, finished_map.c_str());
-            init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
-            init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+            init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
 
             ilbm_finished_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
             if ( !ilbm_finished_map )
@@ -3455,8 +3452,7 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int mode)
         {
             IDVList init_vals;
             init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, enabled_map.c_str());
-            init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
-            init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+            init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
 
             ilbm_enabled_map = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
             if ( !ilbm_enabled_map )
@@ -3531,13 +3527,14 @@ void sb_0x4e75e8__sub0(_NC_STACK_ypaworld *yw)
             regions[i].y2 = -10000;
         }
 
-        bitmap_intern *bitm = yw->LevelNet->ilbm_mask_map->getBMD_pBitmap();
+        ResBitmap *bitm = yw->LevelNet->ilbm_mask_map->getBMD_pBitmap();
 
-        for (int y = 0; y < bitm->height; y++ )
+        SDL_LockSurface(bitm->_swTex);
+        for (int y = 0; y < bitm->_height; y++ )
         {
-            uint8_t *ln = ((uint8_t *)bitm->buffer + y * bitm->pitch);
+            uint8_t *ln = ((uint8_t *)bitm->_swTex->pixels + y * bitm->_swTex->pitch);
 
-            for (int x = 0; x < bitm->width; x++)
+            for (int x = 0; x < bitm->_width; x++)
             {
 
                 int v7 = ln[x];
@@ -3566,10 +3563,10 @@ void sb_0x4e75e8__sub0(_NC_STACK_ypaworld *yw)
 
             if ( minf->field_0 && minf->field_0 != 4 && regions[i].x1 != 10000 )
             {
-                minf->field_9C.x1 = 2.0 * ((float)(regions[i].x1) / (float)bitm->width) + -1.0;
-                minf->field_9C.x2 = 2.0 * ((float)(regions[i].x2) / (float)bitm->width) + -1.0;
-                minf->field_9C.y1 = 2.0 * ((float)(regions[i].y1) / (float)bitm->height) + -1.0;
-                minf->field_9C.y2 = 2.0 * ((float)(regions[i].y2) / (float)bitm->height) + -1.0;
+                minf->field_9C.x1 = 2.0 * ((float)(regions[i].x1) / (float)bitm->_width) + -1.0;
+                minf->field_9C.x2 = 2.0 * ((float)(regions[i].x2) / (float)bitm->_width) + -1.0;
+                minf->field_9C.y1 = 2.0 * ((float)(regions[i].y1) / (float)bitm->_height) + -1.0;
+                minf->field_9C.y2 = 2.0 * ((float)(regions[i].y2) / (float)bitm->_height) + -1.0;
             }
             else
             {
@@ -3579,6 +3576,8 @@ void sb_0x4e75e8__sub0(_NC_STACK_ypaworld *yw)
                 minf->field_9C.x1 = 0;
             }
         }
+        
+        SDL_UnlockSurface(bitm->_swTex);
     }
 }
 
@@ -6485,13 +6484,9 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 
     GameShellBkgProcess();
 
-    yw->win3d->LockSurface();
-
     draw_tooltip(yw);
 
     ypaworld_func158__sub3(yw, usr);
-
-    yw->win3d->UnlockSurface();
 
     if ( yw->isNetGame )
     {

@@ -62,11 +62,7 @@ size_t NC_STACK_bmpanim::func3(IDVList &stak)
         {
             switch (val.id)
             {
-            case BMD_ATT_PBITMAP:
-                *(bitmap_intern **)val.value.p_data = getBMD_pBitmap();
-                break;
             case BMD_ATT_OUTLINE:
-            case BMD_ATT_BUFFER:
                 *(void **)val.value.p_data = NULL;
                 break;
             case BMD_ATT_WIDTH:
@@ -1051,7 +1047,7 @@ void NC_STACK_bmpanim::setBANM_animType(int newType)
     stack__bmpanim.anim_type = newType;
 }
 
-bitmap_intern * NC_STACK_bmpanim::getBMD_pBitmap()
+ResBitmap * NC_STACK_bmpanim::getBMD_pBitmap()
 {
     return stack__bmpanim.current_frame->bitm;
 }
@@ -1089,6 +1085,15 @@ int NC_STACK_bmpanim::getBANM_framecnt()
 int NC_STACK_bmpanim::getBANM_animtype()
 {
     return stack__bmpanim.anim_type;
+}
+
+void NC_STACK_bmpanim::PrepareTexture( bool force )
+{
+    if (!stack__bmpanim.bmpanm_intern)
+        return;
+    
+    for(int i = 0; i < stack__bmpanim.bmpanm_intern->bitm_buff_cnt; i++)
+        stack__bmpanim.bmpanm_intern->bitm_buff[i].bitmObj->PrepareTexture(force);
 }
 
 

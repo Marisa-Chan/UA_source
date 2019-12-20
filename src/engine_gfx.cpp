@@ -1,6 +1,7 @@
 #include "includes.h"
 #include "engine_gfx.h"
 #include "utils.h"
+#include "common.h"
 
 GFXEngine GFXEngine::GFXe;
 
@@ -135,12 +136,12 @@ void GFXEngine::setResolution(int res)
     }
 }
 
-void GFXEngine::setTracyRmp(bitmap_intern *rmp)
+void GFXEngine::setTracyRmp(ResBitmap *rmp)
 {
     cls3D->setRSTR_trcRmp(rmp);
 }
 
-void GFXEngine::setShadeRmp(bitmap_intern *rmp)
+void GFXEngine::setShadeRmp(ResBitmap *rmp)
 {
     cls3D->setRSTR_shdRmp(rmp);
 }

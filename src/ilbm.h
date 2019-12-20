@@ -60,7 +60,8 @@ public:
 
     enum ILBM_ATT
     {
-        ILBM_ATT_FMT = 0x80003000
+        ILBM_ATT_FMT = 0x80003000,
+        ATT_ALPHAPALETTE = 0x80003001, // Special mode for compatibility
     };
 
     virtual void setILBM_saveFmt(int);

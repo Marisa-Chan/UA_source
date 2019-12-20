@@ -1162,8 +1162,6 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
 
         ypaworld_func158__sub4__sub1__sub4__sub21(yw, inpt, brf);
 
-        yw->win3d->LockSurface();
-
         if ( brf->briefing_map )
         {
             rstr_arg204 a4;
@@ -1184,13 +1182,9 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
 
         yw->win3d->raster_func204(&brf->field_2F40);
 
-        yw->win3d->UnlockSurface();
-
         yw->win3d->draw2DandFlush();
 
         ypaworld_func158__DrawVehicle(yw, brf, inpt);
-
-        yw->win3d->LockSurface();
 
         ypaworld_func158__sub4__sub1__sub4__sub1(yw, brf);
         ypaworld_func158__sub4__sub1__sub4__sub0(yw);
@@ -1201,8 +1195,6 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
         yw->win3d->raster_func209(&v10);
 
         ypaworld_func158__sub4__sub1__sub4__sub2(yw, brf, inpt, 0, 2);
-
-        yw->win3d->UnlockSurface();
     }
 }
 
@@ -1514,8 +1506,6 @@ void yw_DebriefAddTechUpgrade(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg18
 
 void yw_DebriefRenderSectorsOwners(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
 {
-    yw->win3d->LockSurface();
-
     float v3 = (brf->field_2F74.x2 - brf->field_2F74.x1) / (float)yw->sectors_maxX2;
     float v4 = (brf->field_2F74.y2 - brf->field_2F74.y1) / (float)yw->sectors_maxY2;
 
@@ -1569,8 +1559,6 @@ void yw_DebriefRenderSectorsOwners(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
 
         v21 += v4;
     }
-
-    yw->win3d->UnlockSurface();
 }
 
 
@@ -2241,7 +2229,6 @@ void yw_DebriefRunDebrief(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *br
     v24.includ = 0;
     v24.cmdbuf = cmdbuf;
 
-    yw->win3d->LockSurface();
     yw->win3d->raster_func209(&v24);
 
     int v26 = 0;
@@ -2353,8 +2340,6 @@ void yw_DebriefRunDebrief(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *br
     }
 
     ypaworld_func158__sub4__sub1__sub6__sub3__sub6(yw, brf);
-
-    yw->win3d->UnlockSurface();
 }
 
 void yw_debriefUpdate(_NC_STACK_ypaworld *yw, struC5 *inpt)
@@ -2386,8 +2371,6 @@ void yw_debriefUpdate(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         if ( brf->briefStage != 4 )
         {
-            yw->win3d->LockSurface();
-
             if ( brf->briefing_map )
             {
                 rstr_arg204 arg204;
@@ -2406,7 +2389,6 @@ void yw_debriefUpdate(_NC_STACK_ypaworld *yw, struC5 *inpt)
             }
 
             yw->win3d->raster_func204(&brf->field_2F40);
-            yw->win3d->UnlockSurface();
         }
 
         switch ( brf->briefStage )
