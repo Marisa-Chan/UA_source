@@ -171,7 +171,7 @@ FSMgr::FileHandle *uaOpenFile(const std::string &src_path, const std::string &mo
     if ( v4 )
         engines.file_handles++;
     else
-        ypa_log_out("uaOpenFile('%s','%s') failed!\n", path, mode);
+        ypa_log_out("uaOpenFile('%s','%s') failed!\n", path.c_str(), mode.c_str());
 
     return v4;
 }

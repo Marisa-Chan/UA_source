@@ -709,11 +709,11 @@ int NC_STACK_ypaworld::sb_0x4e1a88(bool multiplayer)
             {
                 if ( sb_0x4e1a88__sub0(fsnode->getName(), multiplayer) )
                 {
-                    ypa_log_out("Scanning [%s%s] .. ok.\n", path, fsnode->getName());
+                    ypa_log_out("Scanning [%s%s] .. ok.\n", path.c_str(), fsnode->getName());
                 }
                 else
                 {
-                    ypa_log_out("Scanning [%s%s] .. FAILED.\n", path, fsnode->getName());
+                    ypa_log_out("Scanning [%s%s] .. FAILED.\n", path.c_str(), fsnode->getName());
                     v10 = 0;
                 }
             }
