@@ -1402,14 +1402,24 @@ struct big_ypa_Brf
 struct mapINFO
 {
     int field_0;
-    char mapPath[64];
-    char map_name[64];
+    std::string mapPath;
+    std::string map_name;
     ua_fRect field_9C;
     char robos_count;
     char fractions_mask;
     char secXsize;
     char secYsize;
     int slow_connection;
+    
+    mapINFO()
+    {
+        field_0 = 0;
+        robos_count = 0;
+        fractions_mask = 0;
+        secXsize = 0;
+        secYsize = 0;
+        slow_connection = 0;
+    }
 };
 
 struct stru_LevelNet
@@ -1421,10 +1431,15 @@ struct stru_LevelNet
 
 	struct bkg_pct
 	{
-		int16_t size_x;
-		int16_t size_y;
-		std::string map_name;
-
+            int16_t size_x;
+            int16_t size_y;
+            std::string map_name;
+            
+            bkg_pct()
+            {
+                size_x = 0;
+                size_y = 0;
+            }
 	};
 
     int bg_n;
@@ -1453,6 +1468,17 @@ struct stru_LevelNet
     NC_STACK_bitmap *ilbm_finished_map;
     NC_STACK_bitmap *ilbm_enabled_map;
     int field_BE38;
+    
+    stru_LevelNet()
+    {
+        bg_n = 0;
+        ilbm_menu_map = NULL;
+        ilbm_mask_map = NULL;
+        ilbm_rollover_map = NULL;
+        ilbm_finished_map = NULL;
+        ilbm_enabled_map = NULL;
+        field_BE38 = 0;
+    }
 };
 
 struct rgbiColor

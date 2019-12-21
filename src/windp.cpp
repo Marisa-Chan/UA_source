@@ -873,7 +873,7 @@ void UserData::yw_JoinNetGame()
                     }
                 }
                 network_listvw.firstShownEntries = 0;
-                netLevelName = get_lang_string(p_ypaworld->string_pointers_p2, 1800 + netLevelID, p_ypaworld->LevelNet->mapInfos[ netLevelID ].map_name);
+                netLevelName = get_lang_string(p_ypaworld->string_pointers_p2, 1800 + netLevelID, p_ypaworld->LevelNet->mapInfos[ netLevelID ].map_name.c_str());
 
                 windp_arg79 plData;
                 plData.ID = 0;
@@ -1170,7 +1170,7 @@ void UserData::yw_NetPrintStartInfo()
         else
             log_netlog("\nThe local player is %s and is CLIENT\n", callSIGN.c_str());
 
-        const char *tmp = get_lang_string(ypaworld__string_pointers, netLevelID + 1800, p_ypaworld->LevelNet->mapInfos[ netLevelID ].map_name);
+        const char *tmp = get_lang_string(ypaworld__string_pointers, netLevelID + 1800, p_ypaworld->LevelNet->mapInfos[ netLevelID ].map_name.c_str());
         log_netlog("They play level %d, this is %s\n", netLevelID, tmp);
         log_netlog("the session started at timeindex %d\n", p_ypaworld->timeStamp / 1000);
         log_netlog("\n\n--------------------------------------------------------\n");

@@ -2838,7 +2838,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             break;
 
         yw->GameShell->netLevelID = lobbyMsg->lvlID;
-        yw->GameShell->netLevelName = get_lang_string(yw->string_pointers_p2, 1800 + yw->GameShell->netLevelID, yw->LevelNet->mapInfos[yw->GameShell->netLevelID].map_name);
+        yw->GameShell->netLevelName = get_lang_string(yw->string_pointers_p2, 1800 + yw->GameShell->netLevelID, yw->LevelNet->mapInfos[yw->GameShell->netLevelID].map_name.c_str());
 
         windp_arg79 plDat;
         plDat.ID = 0;
@@ -2954,7 +2954,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             break;
 
         yw->GameShell->netLevelID = stlvlMsg->lvlID;
-        yw->GameShell->netLevelName = get_lang_string(yw->string_pointers_p2, 1800 + yw->GameShell->netLevelID, yw->LevelNet->mapInfos[yw->GameShell->netLevelID].map_name);
+        yw->GameShell->netLevelName = get_lang_string(yw->string_pointers_p2, 1800 + yw->GameShell->netLevelID, yw->LevelNet->mapInfos[yw->GameShell->netLevelID].map_name.c_str());
 
         for (int i = 0; i < 4; i++)
         {

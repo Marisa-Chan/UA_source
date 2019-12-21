@@ -930,7 +930,7 @@ void ypaworld_func156__sub1(UserData *usr)
         if (usr->p_ypaworld->LevelNet->mapInfos[i].field_0 == 4)
         {
             usr->map_descriptions[v2].id = i;
-            usr->map_descriptions[v2].pstring = get_lang_string(ypaworld__string_pointers, i + 1800, usr->p_ypaworld->LevelNet->mapInfos[i].map_name);
+            usr->map_descriptions[v2].pstring = get_lang_string(ypaworld__string_pointers, i + 1800, usr->p_ypaworld->LevelNet->mapInfos[i].map_name.c_str());
             v2++;
         }
     }

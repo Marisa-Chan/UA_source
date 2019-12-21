@@ -670,9 +670,9 @@ bool NC_STACK_ypaworld::sb_0x4e1a88__sub0(const std::string &fname, bool multipl
     else
         minf.field_0 = 2;
 
-    strcpy(minf.mapPath, buf.c_str());
+    minf.mapPath = buf;
 
-    strcpy(minf.map_name, ypaworld.field_2d90->map_name.c_str());
+    minf.map_name = ypaworld.field_2d90->map_name;
 
     minf.field_9C = ua_fRect();
 
@@ -1988,9 +1988,9 @@ void ypaworld_func158__sub4__sub1__sub2(_NC_STACK_ypaworld *yw)
 
             if ( yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].field_0 )
             {
-                if ( yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name[0] )
+                if ( !yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name.empty() )
                 {
-                    const char *v12 = get_lang_string(yw->string_pointers_p2, yw->LevelNet->field_BE38 + 1800, yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name);
+                    const char *v12 = get_lang_string(yw->string_pointers_p2, yw->LevelNet->field_BE38 + 1800, yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name.c_str());
 
                     FontUA::select_tileset(&v11, 15);
                     FontUA::set_xpos(&v11, 0);
@@ -2087,9 +2087,9 @@ void ypaworld_func158__sub4__sub1__sub1(_NC_STACK_ypaworld *yw)
 
             if ( yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].field_0 )
             {
-                if ( yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name[0] )
+                if ( !yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name.empty() )
                 {
-                    const char *v12 = get_lang_string(yw->string_pointers_p2, yw->LevelNet->field_BE38 + 1800, yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name);
+                    const char *v12 = get_lang_string(yw->string_pointers_p2, yw->LevelNet->field_BE38 + 1800, yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name.c_str());
 
                     FontUA::select_tileset(&v11, 15);
                     FontUA::set_xpos(&v11, 0);
@@ -2838,7 +2838,7 @@ void ypaworld_func158__network_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
 
                 int lvlid = atoi(str1.c_str());
 
-                str1 = get_lang_string( yw->string_pointers_p2, lvlid + 1800, yw->LevelNet->mapInfos[ lvlid ].map_name );
+                str1 = get_lang_string( yw->string_pointers_p2, lvlid + 1800, yw->LevelNet->mapInfos[ lvlid ].map_name.c_str() );
 
                 if (msg.name[j] == 0)
                     str4 = "";
@@ -2865,7 +2865,7 @@ void ypaworld_func158__network_list_draw(_NC_STACK_ypaworld *yw, UserData *usr)
 
                     lvlid = atoi(str1.c_str());
 
-                    strcpy(usr->netName, yw->LevelNet->mapInfos[ lvlid ].map_name);
+                    strcpy(usr->netName, yw->LevelNet->mapInfos[ lvlid ].map_name.c_str());
 
                     usr->network_button->button_func71(1200, usr->netName);
 
