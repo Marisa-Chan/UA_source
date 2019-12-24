@@ -377,7 +377,7 @@ int bmpanim_func64__sub1__sub2(void *fil, bmpAnim_t1 *arg)
                         if ( !frames[i].bitmObj )
                             return 0;
 
-                        frames[i].bitm_intern = frames[i].bitmObj->getBMD_pBitmap();
+                        frames[i].bitm_intern = frames[i].bitmObj->GetResBmp();
                         frames[i].title = pbmpAnm_titles[i];
                     }
                     return 1;
@@ -628,7 +628,7 @@ int bmpanim_func64__sub0__sub0(bmpAnim_t1 *t1, char **a2, const char *className)
         if ( !t1->bitm_buff[i].bitmObj )
             return 0;
 
-        t1->bitm_buff[i].bitm_intern = t1->bitm_buff[i].bitmObj->getBMD_pBitmap();
+        t1->bitm_buff[i].bitm_intern = t1->bitm_buff[i].bitmObj->GetResBmp();
 
         t1->bitm_buff[i].title = out;
 
@@ -1047,7 +1047,7 @@ void NC_STACK_bmpanim::setBANM_animType(int newType)
     stack__bmpanim.anim_type = newType;
 }
 
-ResBitmap * NC_STACK_bmpanim::getBMD_pBitmap()
+ResBitmap * NC_STACK_bmpanim::GetResBmp()
 {
     return stack__bmpanim.current_frame->bitm;
 }

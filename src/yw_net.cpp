@@ -4622,13 +4622,13 @@ void yw_NetDrawStats(_NC_STACK_ypaworld *yw)
 
     UserData *usr = yw->GameShell;
 
-    tiles_stru *font29 = yw->tiles[29];
+    TileMap *font29 = yw->tiles[29];
     char drawbuf[2000];
     char *cur = drawbuf;
 
     FontUA::select_tileset(&cur, 29);
-    FontUA::set_center_xpos(&cur, font29->font_height - (yw->screen_width / 2) );
-    FontUA::set_center_ypos(&cur, font29->font_height - (yw->screen_height / 2) );
+    FontUA::set_center_xpos(&cur, font29->h - (yw->screen_width / 2) );
+    FontUA::set_center_ypos(&cur, font29->h - (yw->screen_height / 2) );
 
     if ( usr->disconnected == 0 && usr->problemCnt > 0 )
     {
@@ -4744,7 +4744,7 @@ void yw_NetDrawStats(_NC_STACK_ypaworld *yw)
 
     if ( toDraw )
     {
-        tiles_stru *font0 = yw->tiles[0];
+        TileMap *font0 = yw->tiles[0];
         cur = drawbuf;
 
         FontUA::select_tileset(&cur, 0);
@@ -4766,20 +4766,20 @@ void yw_NetDrawStats(_NC_STACK_ypaworld *yw)
             FontUA::store_u8(&cur, '{');
 
             FontUA::copy_position(&cur);
-            FontUA::op17(&cur, yw->screen_width / 2 - font0->chars[(int)'}'].width);
+            FontUA::op17(&cur, yw->screen_width / 2 - font0->map['}'].w);
 
             FontUA::store_u8(&cur, ' ');
             FontUA::store_u8(&cur, '}');
 
-            FontUA::add_txt(&cur, yw->screen_width / 2 - 2 * font0->chars[(int)'W'].width, 4, t[i] );
+            FontUA::add_txt(&cur, yw->screen_width / 2 - 2 * font0->map['W'].w, 4, t[i] );
 
             FontUA::next_line(&cur);
         }
 
-        FontUA::set_yoff(&cur, font0->font_height - 1);
+        FontUA::set_yoff(&cur, font0->h - 1);
 
         FontUA::store_u8(&cur, 'x');
-        FontUA::op17(&cur, yw->screen_height / 2 - font0->chars[(int)'z'].width);
+        FontUA::op17(&cur, yw->screen_height / 2 - font0->map['z'].w);
         FontUA::store_u8(&cur, 'y');
         FontUA::store_u8(&cur, 'z');
 

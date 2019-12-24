@@ -175,7 +175,7 @@ void ILBM_BODY_READ__sub0(BMHD_type *bmhd, const std::vector<int8_t> &ilbm_data,
 {
     uint8_t masks[8] = {1, 2, 4, 8, 16, 32, 64, 128};
 
-    SDL_LockSurface(img->_swTex);
+    SDL_LockSurface(img->swTex);
     uint8_t udp[1024];
 
     int pln_w = (bmhd->width + 7) / 8;
@@ -185,7 +185,7 @@ void ILBM_BODY_READ__sub0(BMHD_type *bmhd, const std::vector<int8_t> &ilbm_data,
 
     for (int y = 0; y < bmhd->height; y++)
     {
-        uint8_t *img_buffer = (uint8_t *)img->_swTex->pixels + y * img->_swTex->pitch;
+        uint8_t *img_buffer = (uint8_t *)img->swTex->pixels + y * img->swTex->pitch;
         if ( bmhd->compression )
         {
             for (int plan = 0; plan < bmhd->nPlanes; plan++)
@@ -250,12 +250,12 @@ void ILBM_BODY_READ__sub0(BMHD_type *bmhd, const std::vector<int8_t> &ilbm_data,
             img_buffer++;
         }
     }
-    SDL_UnlockSurface(img->_swTex);
+    SDL_UnlockSurface(img->swTex);
 }
 
 int ILBM_BODY_READ(IFFile *mfile, BMHD_type *bmhd, ResBitmap *bitm)
 {
-    if ( !bitm->_swTex )
+    if ( !bitm->swTex )
         return false;
 
     IFFile::Context *chunk = mfile->getCurrentChunk();
@@ -342,8 +342,8 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
             mfil->readU16B(bmhd.pageHeight);
 
             bitm = new ResBitmap;
-            bitm->_width = bmhd.width;
-            bitm->_height = bmhd.height;
+            bitm->width = bmhd.width;
+            bitm->height = bmhd.height;
             
             res->data = bitm;
             
@@ -356,8 +356,8 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
             mfil->readU16B(vbmp.flags);
             
             bitm = new ResBitmap;
-            bitm->_width = vbmp.width;
-            bitm->_height = vbmp.height;
+            bitm->width = vbmp.width;
+            bitm->height = vbmp.height;
             
             res->data = bitm;
 
@@ -367,10 +367,10 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
         {
             if ( bitm )
             {
-                if ( !bitm->_pallete )
-                    bitm->_pallete = new UA_PALETTE;
+                if ( !bitm->palette )
+                    bitm->palette = new UA_PALETTE;
                 
-                if ( bitm->_pallete )
+                if ( bitm->palette )
                 {
                     for (int i = 0; i < 256; i++)
                     {
@@ -378,10 +378,10 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
                         mfil->readU8(r);
                         mfil->readU8(g);
                         mfil->readU8(b);
-                        bitm->_pallete->at(i).r = r;
-                        bitm->_pallete->at(i).g = g;
-                        bitm->_pallete->at(i).b = b;
-                        bitm->_pallete->at(i).a = 255;
+                        bitm->palette->at(i).r = r;
+                        bitm->palette->at(i).g = g;
+                        bitm->palette->at(i).b = b;
+                        bitm->palette->at(i).a = 255;
                     }
                 }
             }
@@ -393,18 +393,18 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
 
             if ( bitm )
             {
-                bitm->_swTex = SDL_CreateRGBSurface(0, bitm->_width, bitm->_height, 8, 0, 0, 0, 0);
+                bitm->swTex = SDL_CreateRGBSurface(0, bitm->width, bitm->height, 8, 0, 0, 0, 0);
                 
                 if ( ILBM__OR__VBMP )
                 {
                     success = ILBM_BODY_READ(mfil, &bmhd, bitm);
                 }
-                else if ( bitm->_swTex )              // VBMP READ
+                else if ( bitm->swTex )              // VBMP READ
                 {
-                    SDL_LockSurface(bitm->_swTex);
-                    for(int y = 0; y < bitm->_height; y++)
-                        mfil->read((uint8_t *)bitm->_swTex->pixels + y * bitm->_swTex->pitch, bitm->_width);                   
-                    SDL_UnlockSurface(bitm->_swTex);
+                    SDL_LockSurface(bitm->swTex);
+                    for(int y = 0; y < bitm->height; y++)
+                        mfil->read((uint8_t *)bitm->swTex->pixels + y * bitm->swTex->pitch, bitm->width);                   
+                    SDL_UnlockSurface(bitm->swTex);
                     success = true;
                 }
                 else
@@ -425,11 +425,11 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
         }
     }
     
-    if (bitm && bitm->_swTex)
+    if (bitm && bitm->swTex)
     {
-        if (bitm->_swTex->format->palette)
+        if (bitm->swTex->format->palette)
         {
-            UA_PALETTE *pal = bitm->_pallete;
+            UA_PALETTE *pal = bitm->palette;
             if (!pal)
                 pal = engines.display___win3d->GetPalette();
             
@@ -437,24 +437,24 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
             {
                 UA_PALETTE tmp;
                 engines.display___win3d->ConvAlphaPalette(&tmp, *pal, transp);
-                SDL_SetPaletteColors(bitm->_swTex->format->palette, tmp.data(), 0, 256);
+                SDL_SetPaletteColors(bitm->swTex->format->palette, tmp.data(), 0, 256);
             }
             else
-                SDL_SetPaletteColors(bitm->_swTex->format->palette, pal->data(), 0, 256);
+                SDL_SetPaletteColors(bitm->swTex->format->palette, pal->data(), 0, 256);
         }
 
         if ( convertColor )
         {
-            SDL_Surface *screenFmt = ConvertToScreen(bitm->_swTex);
+            SDL_Surface *screenFmt = ConvertToScreen(bitm->swTex);
             if (screenFmt)
             {
-                SDL_FreeSurface(bitm->_swTex);
-                bitm->_swTex = screenFmt;
+                SDL_FreeSurface(bitm->swTex);
+                bitm->swTex = screenFmt;
 
-                if (bitm->_pallete)
+                if (bitm->palette)
                 {
-                    delete bitm->_pallete;
-                    bitm->_pallete = NULL;
+                    delete bitm->palette;
+                    bitm->palette = NULL;
                 }
             }
         }
@@ -549,8 +549,8 @@ void ILBM__WRITE_TO_FILE_BMHD(IFFile *mfile, ResBitmap *bitm)
 {
     mfile->pushChunk(0, TAG_BMHD, -1); //20 bytes
 
-    mfile->writeU16B(bitm->_width);
-    mfile->writeU16B(bitm->_height);
+    mfile->writeU16B(bitm->width);
+    mfile->writeU16B(bitm->height);
     mfile->writeU16B(0); // x
     mfile->writeU16B(0); // y
     mfile->writeS8(8); // nPlanes
@@ -560,32 +560,32 @@ void ILBM__WRITE_TO_FILE_BMHD(IFFile *mfile, ResBitmap *bitm)
     mfile->writeU16B(0); // transparentColor
     mfile->writeS8(22); // xAspect
     mfile->writeS8(22); // yAspect
-    mfile->writeU16B(bitm->_width); // pageWidth
-    mfile->writeU16B(bitm->_height); // pageHeight
+    mfile->writeU16B(bitm->width); // pageWidth
+    mfile->writeU16B(bitm->height); // pageHeight
 
     mfile->popChunk();
 }
 
 int ILBM__WRITE_TO_FILE_BODY(IFFile *mfile, ResBitmap *bitm)
 {
-    int planeSz = 2 * ((bitm->_width + 15) / 16);
+    int planeSz = 2 * ((bitm->width + 15) / 16);
     uint8_t *buf = (uint8_t *)AllocVec(planeSz, 1);
 
     if (!buf)
         return 0;
 
-    mfile->pushChunk(0, TAG_BODY, 8 * bitm->_height * planeSz);
+    mfile->pushChunk(0, TAG_BODY, 8 * bitm->height * planeSz);
 
-    SDL_LockSurface(bitm->_swTex);
-    const uint8_t *bfline = (uint8_t *)bitm->_swTex->pixels;
+    SDL_LockSurface(bitm->swTex);
+    const uint8_t *bfline = (uint8_t *)bitm->swTex->pixels;
 
-    for (int i = bitm->_height; i > 0; i-- )
+    for (int i = bitm->height; i > 0; i-- )
     {
         for (int plane = 0; plane < 8; plane++)
         {
             memset((void *)buf, 0, planeSz);
 
-            for (int x = 0; x < bitm->_width; x++)
+            for (int x = 0; x < bitm->width; x++)
             {
                 if ( (1 << plane) & bfline[x] )
                     buf[ x / 8 ] |= ( 1 << ( (x & 7) ^ 7) );
@@ -594,9 +594,9 @@ int ILBM__WRITE_TO_FILE_BODY(IFFile *mfile, ResBitmap *bitm)
             mfile->write((const void *)buf, planeSz);
         }
 
-        bfline += bitm->_width;
+        bfline += bitm->width;
     }
-    SDL_UnlockSurface(bitm->_swTex);
+    SDL_UnlockSurface(bitm->swTex);
 
     mfile->popChunk();
     nc_FreeMem(buf);
@@ -611,10 +611,10 @@ int ILBM__WRITE_TO_FILE(IFFile *mfile, ResBitmap *bitm)
 
     ILBM__WRITE_TO_FILE_BMHD(mfile, bitm);
 
-    if ( bitm->_pallete )
+    if ( bitm->palette )
     {
         mfile->pushChunk(0, TAG_CMAP, 256 * 3);
-        mfile->write(bitm->_pallete, 256 * 3);
+        mfile->write(bitm->palette, 256 * 3);
         mfile->popChunk();
     }
 
@@ -626,30 +626,30 @@ int ILBM__WRITE_TO_FILE(IFFile *mfile, ResBitmap *bitm)
 
 int VBMP__WRITE_TO_FILE(IFFile *mfile, ResBitmap *bitm)
 {
-    int pixelCount = bitm->_height * bitm->_width;
+    int pixelCount = bitm->height * bitm->width;
     if ( mfile->pushChunk(TAG_VBMP, TAG_FORM, -1) )
         return 0;
 
     mfile->pushChunk(0, TAG_HEAD, -1); // 6 bytes
 
-    mfile->writeU16B(bitm->_width);
-    mfile->writeU16B(bitm->_height);
+    mfile->writeU16B(bitm->width);
+    mfile->writeU16B(bitm->height);
     mfile->writeU16B(0); // flags
 
     mfile->popChunk();
 
-    if ( bitm->_pallete )
+    if ( bitm->palette )
     {
         mfile->pushChunk(0, TAG_CMAP, 256 * 3);
-        mfile->write(bitm->_pallete, 256 * 3);
+        mfile->write(bitm->palette, 256 * 3);
         mfile->popChunk();
     }
 
     mfile->pushChunk(0, TAG_BODY, pixelCount);
     
-    SDL_LockSurface(bitm->_swTex);
-    mfile->write(bitm->_swTex->pixels, pixelCount);
-    SDL_UnlockSurface(bitm->_swTex);
+    SDL_LockSurface(bitm->swTex);
+    mfile->write(bitm->swTex->pixels, pixelCount);
+    SDL_UnlockSurface(bitm->swTex);
     
     mfile->popChunk();
 
@@ -681,7 +681,7 @@ size_t NC_STACK_ilbm::rsrc_func66(rsrc_func66_arg *arg)
 
     bitmap_func130(&v6);
 
-    if ( !v6.pbitm || !v6.pbitm->_swTex )
+    if ( !v6.pbitm || !v6.pbitm->swTex )
         return 0;
 
     int res;

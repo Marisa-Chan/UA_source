@@ -1251,12 +1251,12 @@ void sb_0x451034__sub6(_NC_STACK_ypaworld *yw)
     netgame_wnd.h = 2 * yw->font_default_h + 2;
 
     netgame_wnd.buttons.resize(2);
-    netgame_wnd.buttons[0] = ButtonBox(yw->tiles[0]->chars[97].width, 0,
-                                       yw->tiles[0]->chars[97].width, yw->font_default_h);
+    netgame_wnd.buttons[0] = ButtonBox(yw->tiles[0]->map[97].w, 0,
+                                       yw->tiles[0]->map[97].w, yw->font_default_h);
     netgame_wnd.buttons[1] = ButtonBox(0, 0,
-                                       yw->tiles[0]->chars[97].width, yw->font_default_h);
+                                       yw->tiles[0]->map[97].w, yw->font_default_h);
 
-    netgame_wnd.field_1CC = yw->tiles[0]->chars[97].width;
+    netgame_wnd.field_1CC = yw->tiles[0]->map[97].w;
     netgame_wnd.field_1D0 = 2 * yw->font_default_h;
     netgame_wnd.field_1D4 = yw->screen_width;
     netgame_wnd.field_1D8 = netgame_wnd.field_1D0;

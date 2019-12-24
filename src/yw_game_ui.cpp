@@ -159,18 +159,18 @@ void sub_449DE8(_NC_STACK_ypaworld *yw, const char *a2)
 
 void create_squad_man(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
 {
-    tile_xy *fnt0 = yw->tiles[0]->chars;
-    tile_xy *fnt24 = yw->tiles[24]->chars;
-    tile_xy *fnt28 = yw->tiles[28]->chars;
+    auto &fnt0 = yw->tiles[0]->map;
+    auto &fnt24 = yw->tiles[24]->map;
+    auto &fnt28 = yw->tiles[28]->map;
 
-    int f0c32_w = fnt0[32].width;
-    int v6 = f0c32_w + fnt0[123].width;
+    int f0c32_w = fnt0[32].w;
+    int v6 = f0c32_w + fnt0[123].w;
 
     int v9 = yw->field_1a38 + yw->font_default_h;
     int v10 = yw->field_1a38;
 
-    int v8 = f0c32_w + v6 + 5 * fnt24[49].width;
-    int v11 = 4 * fnt0[65].width + v8 + fnt28[97].width + f0c32_w + 8;
+    int v8 = f0c32_w + v6 + 5 * fnt24[49].w;
+    int v11 = 4 * fnt0[65].w + v8 + fnt28[97].w + f0c32_w + 8;
 
     GuiList::tInit args;
     args.title = get_lang_string(yw->string_pointers_p2, 51, "FINDER");
@@ -193,11 +193,11 @@ void create_squad_man(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
 
     if ( squadron_manager.Init(yw, args) )
     {
-        squadron_manager.field_2CC = fnt28[65].width;
-        squadron_manager.field_2D0 = fnt28[64].width + fnt28[97].width + yw->font_default_w__b;
+        squadron_manager.field_2CC = fnt28[65].w;
+        squadron_manager.field_2D0 = fnt28[64].w + fnt28[97].w + yw->font_default_w__b;
         squadron_manager.field_2D8 = v8;
         squadron_manager.field_2DC = v6;
-        squadron_manager.field_2D4 = fnt28[64].width + squadron_manager.field_2CC + squadron_manager.field_2D0;
+        squadron_manager.field_2D4 = fnt28[64].w + squadron_manager.field_2CC + squadron_manager.field_2D0;
     }
 }
 
@@ -250,16 +250,16 @@ void sb_0x451034__sub8(_NC_STACK_ypaworld *yw)
 {
     memset(&up_panel, 0, sizeof(up_panel));
 
-    tiles_stru *f30 = yw->tiles[30];
+    TileMap *f30 = yw->tiles[30];
 
-    up_panel.field_1CC = f30->font_height;
-    up_panel.field_1DC = f30->chars[65].width;
+    up_panel.field_1CC = f30->h;
+    up_panel.field_1DC = f30->map[65].w;
     up_panel.flags = 0;
-    up_panel.field_1D0 = up_panel.field_1DC + f30->chars[84].width;
+    up_panel.field_1D0 = up_panel.field_1DC + f30->map[84].w;
     up_panel.buttons.resize(4);
 
 
-    int v8 = yw->screen_width - 4 * (up_panel.field_1DC + f30->chars[84].width);
+    int v8 = yw->screen_width - 4 * (up_panel.field_1DC + f30->map[84].w);
 
     up_panel.field_1D8 = v8 / 4;
     up_panel.field_1D4 = v8 / 8;
@@ -302,12 +302,7 @@ void sub_4F68FC(NC_STACK_display *displ, float a3, float a4, float a5, float a6,
     sub_4F681C(a3, a4, &a3a.x1, &a3a.y1);
     sub_4F681C(a5, a6, &a3a.x2, &a3a.y2);
 
-    rstr_arg217 v10;
-    v10.dword0 = a7;
-    v10.dword4 = a7;
-//    v10.dword8 = 0xFFFFFFFF;
-
-    displ->raster_func217(&v10);
+    displ->raster_func217(a7);
     displ->raster_func201(&a3a);
 }
 
@@ -633,7 +628,6 @@ void sb_0x4f8f64__sub1(_NC_STACK_ypaworld *yw)
             w3d_func199arg v24;
             w3d_func199arg v25;
             w3d_func199arg v26;
-            rstr_arg217 v27;
 
             int v21 = yw->screen_width / 2;
             int v22 = yw->screen_height / 2;
@@ -659,12 +653,7 @@ void sb_0x4f8f64__sub1(_NC_STACK_ypaworld *yw)
             v26.y2 = dword_51651C - v22;
 
 
-
-            v27.dword0 = yw_GetColor(yw, 12);
-            v27.dword4 = yw_GetColor(yw, 12);
-//            v27.dword8 = 0xFFFFFFFF;
-
-            yw->win3d->raster_func217(&v27);
+            yw->win3d->raster_func217( yw_GetColor(yw, 12) );
             yw->win3d->raster_func201(&v24);
             yw->win3d->raster_func201(&v26);
             yw->win3d->raster_func201(&v23);
@@ -1259,7 +1248,7 @@ int sb_0x4f8f64__sub3__sub0(_NC_STACK_ypaworld *yw, cellArea *cell)
 }
 
 // Get string width in pixel
-int sub_4513E0(const char *strr, tiles_stru *charset)
+int sub_4513E0(const char *strr, TileMap *charset)
 {
     int i = 0;
 
@@ -1267,7 +1256,7 @@ int sub_4513E0(const char *strr, tiles_stru *charset)
 
     while (strr[i])
     {
-        wdth += charset->chars[ (uint8_t)strr[i] ].width;
+        wdth += charset->map[ (uint8_t)strr[i] ].w;
         i++;
     }
 
@@ -1290,7 +1279,7 @@ char * sb_0x4f8f64__sub3__sub1(_NC_STACK_ypaworld *yw, const char *labl, int til
 
     char *pcur = cur;
 
-    if ( a3a - robo_map.field_200 > 0 && v10 > 0 && a3a - robo_map.field_200 + v8 < robo_map.field_1F8 && a4a - robo_map.field_204 + yw->tiles[tileset_id]->font_height < robo_map.field_1FC )
+    if ( a3a - robo_map.field_200 > 0 && v10 > 0 && a3a - robo_map.field_200 + v8 < robo_map.field_1F8 && a4a - robo_map.field_204 + yw->tiles[tileset_id]->h < robo_map.field_1FC )
     {
         FontUA::select_tileset(&pcur, tileset_id);
         FontUA::set_center_xpos(&pcur, robo_map.field_200 + v9);
@@ -1325,8 +1314,8 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
         v111 = 4;
         v114 = 59;
         v110 = 16;
-        a5 = yw->tiles[59]->font_height;
-        a4 = yw->tiles[59]->chars[1].width;
+        a5 = yw->tiles[59]->h;
+        a4 = yw->tiles[59]->map[1].w;
         v7 = 23;
         v99 = 19;
         break;
@@ -1335,8 +1324,8 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
         v114 = 59;
         v111 = 8;
         v110 = 17;
-        a5 = yw->tiles[59]->font_height;
-        a4 = yw->tiles[59]->chars[1].width;
+        a5 = yw->tiles[59]->h;
+        a4 = yw->tiles[59]->map[1].w;
         v7 = 23;
         v99 = 19;
         break;
@@ -1345,8 +1334,8 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
         v111 = 16;
         v114 = 60;
         v110 = 18;
-        a5 = yw->tiles[60]->font_height;
-        a4 = yw->tiles[60]->chars[1].width;
+        a5 = yw->tiles[60]->h;
+        a4 = yw->tiles[60]->map[1].w;
         v7 = 22;
         v99 = 18;
         break;
@@ -1355,8 +1344,8 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
         v110 = 19;
         v111 = 32;
         v114 = 61;
-        a5 = yw->tiles[61]->font_height;
-        a4 = yw->tiles[61]->chars[1].width;
+        a5 = yw->tiles[61]->h;
+        a4 = yw->tiles[61]->map[1].w;
         v7 = 21;
         v99 = 17;
         break;
@@ -1365,8 +1354,8 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
         v110 = 20;
         v111 = 64;
         v114 = 28;
-        a5 = yw->tiles[28]->font_height;
-        a4 = yw->tiles[28]->chars[1].width;
+        a5 = yw->tiles[28]->h;
+        a4 = yw->tiles[28]->map[1].w;
         v7 = 20;
         v99 = 16;
         break;
@@ -1421,7 +1410,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
             {
                 if ( yw->field_1a98 == yw->URBact )
                 {
-                    int v22 = yw->tiles[1]->font_height;
+                    int v22 = yw->tiles[1]->h;
 
                     FontUA::select_tileset(&pcur, 1);
 
@@ -1455,7 +1444,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
     {
         FontUA::select_tileset(&pcur, 1);
 
-        int v44 = yw->tiles[1]->font_height;
+        int v44 = yw->tiles[1]->h;
 
         pcur = sub_4F6980(pcur, yw->URBact->position.x, yw->URBact->position.z, v99, v44, v44);
     }
@@ -1643,8 +1632,8 @@ void sb_0x4f8f64(_NC_STACK_ypaworld *yw)
         break;
     }
 
-    int height = yw->tiles[setid]->chars[128].width;
-    int width = yw->tiles[setid]->font_height;
+    int height = yw->tiles[setid]->map[128].w;
+    int width = yw->tiles[setid]->h;
 
     robo_map.field_1F8 = robo_map.w - robo_map.field_24C;
     robo_map.field_1FC = robo_map.h - robo_map.field_250;
@@ -1703,7 +1692,7 @@ void sb_0x4f8f64(_NC_STACK_ypaworld *yw)
                         {
                             FontUA::select_tileset(&pcur, 1);
 
-                            pcur = sub_4F6DFC(yw, pcur, yw->tiles[1]->font_height, yw->tiles[1]->chars[24].width, bct, 0);
+                            pcur = sub_4F6DFC(yw, pcur, yw->tiles[1]->h, yw->tiles[1]->map[24].w, bct, 0);
 
                             FontUA::select_tileset(&pcur, setid);
 
@@ -2475,13 +2464,13 @@ void  sb_0x451034__sub2(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
 
     robo_map.flags = (GuiBase::FLAG_WITH_HELP | GuiBase::FLAG_CLOSED | GuiBase::FLAG_WITH_CLOSE | GuiBase::FLAG_WITH_DRAGBAR);
     robo_map.field_228 = 8;
-    robo_map.field_22C = yw->tiles[10]->chars[65].width;
-    robo_map.field_230 = yw->tiles[10]->font_height;
+    robo_map.field_22C = yw->tiles[10]->map[65].w;
+    robo_map.field_230 = yw->tiles[10]->h;
     robo_map.field_234 = 4;
-    robo_map.field_238 = yw->tiles[0]->chars[113].width;
+    robo_map.field_238 = yw->tiles[0]->map[113].w;
     robo_map.field_23C = yw->font_default_h;
     robo_map.field_240 = yw->font_xscrl_h;
-    robo_map.field_244 = yw->tiles[12]->chars[65].width;
+    robo_map.field_244 = yw->tiles[12]->map[65].w;
     robo_map.field_248 = yw->font_yscrl_bkg_w;
     robo_map.field_24C = robo_map.field_248 + robo_map.field_244;
     robo_map.field_250 = robo_map.field_240 + robo_map.field_23C;
@@ -2636,9 +2625,9 @@ int sb_0x451034__sub3(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
 
     int v5;
     if ( yw->screen_width >= 512 )
-        v5 = 7 * yw->tiles[0]->chars[87].width;
+        v5 = 7 * yw->tiles[0]->map[87].w;
     else
-        v5 = 9 * yw->tiles[0]->chars[87].width;
+        v5 = 9 * yw->tiles[0]->map[87].w;
 
     bzda.field_900 = 2 * v5;
     bzda.field_904 = bzda.field_8FC / 2;
@@ -2800,7 +2789,7 @@ void create_info_log(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
     args.entryHeight = yw->font_default_h;
     args.entryWidth = 200;
     args.maxEntryWidth = 32000;
-    args.minEntryWidth = 2 * (5 * yw->tiles[0]->chars[48].width);
+    args.minEntryWidth = 2 * (5 * yw->tiles[0]->map[48].w);
     args.enabled = true;
     args.vborder = yw->field_1a38;
     args.closeChar = 74;
@@ -2821,7 +2810,7 @@ void create_info_log(NC_STACK_ypaworld *obj, _NC_STACK_ypaworld *yw)
         info_log.field_2560 = yw->timeStamp;
         info_log.field_2564 = 0;
         info_log.field_250 = 127;
-        info_log.field_248 = 6 * yw->tiles[0]->chars[48].width + 2 * yw->tiles[0]->chars[58].width + 12;
+        info_log.field_248 = 6 * yw->tiles[0]->map[48].w + 2 * yw->tiles[0]->map[58].w + 12;
     }
 }
 
@@ -2856,7 +2845,7 @@ void create_exit_menu(_NC_STACK_ypaworld *yw)
     {
         int v5 = yw->font_default_h + exit_menu.upperVborder + dword_5C8B84;
 
-        dword_5C8B80 = 2 * yw->tiles[0]->chars[32].width + yw->font_default_w__b;
+        dword_5C8B80 = 2 * yw->tiles[0]->map[32].w + yw->font_default_w__b;
         dword_5C8B88 = exit_menu.entryWidth - 2 * dword_5C8B80;
 
         for (int i = 8; i < 13; i++)
@@ -2894,7 +2883,7 @@ void sb_0x451034__sub5(_NC_STACK_ypaworld *yw)
     {
         int v1 = yw->font_default_h + lstvw2.upperVborder + 2 * lstvw2.entryHeight;
 
-        dword_5BAFA8 = 2 * yw->tiles[0]->chars[32].width + yw->font_default_w__b;
+        dword_5BAFA8 = 2 * yw->tiles[0]->map[32].w + yw->font_default_w__b;
         dword_5BAFA0 = (lstvw2.entryWidth - 2 * dword_5BAFA8) / 3;
 
         lstvw2.buttons.resize(10);
@@ -2959,7 +2948,7 @@ void sb_0x451034__sub9(_NC_STACK_ypaworld *yw)
     {
         wis->field_9E = 8;
         wis->field_96 = 28;
-        wis->field_92 = (float)yw->tiles[0]->font_height / ((float)yw->screen_height * CH);
+        wis->field_92 = (float)yw->tiles[0]->h / ((float)yw->screen_height * CH);
         wis->field_8E = wis->field_92 * 14.0;
         wis->field_9A = 28;
     }
@@ -2967,13 +2956,13 @@ void sb_0x451034__sub9(_NC_STACK_ypaworld *yw)
     {
         wis->field_9E = 6;
         wis->field_96 = 18;
-        wis->field_92 = (float)yw->tiles[0]->font_height * 1.5 / ((float)yw->screen_height * CH);
+        wis->field_92 = (float)yw->tiles[0]->h * 1.5 / ((float)yw->screen_height * CH);
         wis->field_8E = wis->field_92 * 18.0;
         wis->field_9A = 18;
     }
 
     wis->field_72 = 0;
-    wis->field_8A = (float)(yw->tiles[51]->chars[1].width * wis->field_9E + wis->field_9A + wis->field_96) / ((float)yw->screen_width * CW);
+    wis->field_8A = (float)(yw->tiles[51]->map[1].w * wis->field_9E + wis->field_9A + wis->field_96) / ((float)yw->screen_width * CW);
 
     wis->field_72 = 1;
 }
@@ -3209,7 +3198,7 @@ char * buy_list_update_sub(_NC_STACK_ypaworld *yw, int a2, GuiList *lstvw, char 
     v28[0] = a5;
     v28[1] = 0;
 
-    int v19 = yw->tiles[v14]->chars[48].width;
+    int v19 = yw->tiles[v14]->map[48].w;
 
     char a1a[32];
     sprintf(a1a, "%d", a7);
@@ -3686,7 +3675,7 @@ char * sub_449970(_NC_STACK_ypaworld *yw, char *cur, int a4, int a3, const char 
     FontUA::set_xpos(&pcur, a4);
     FontUA::set_ypos(&pcur, a3);
 
-    int v14 = yw->font_default_h - yw->tiles[51]->font_height;
+    int v14 = yw->font_default_h - yw->tiles[51]->h;
 
     FontUA::ColumnItem arg;
     arg.txt = a5;
@@ -5355,7 +5344,7 @@ char * ypaworld_func64__sub7__sub3__sub0__sub2(_NC_STACK_ypaworld *yw, char *cur
 }
 
 
-char * sub_4514F0(tiles_stru *tyle, char *cur, char *a4, int a3, char a5)
+char * sub_4514F0(TileMap *tyle, char *cur, char *a4, int a3, char a5)
 {
     char *pcur = cur;
 
@@ -5369,12 +5358,12 @@ char * sub_4514F0(tiles_stru *tyle, char *cur, char *a4, int a3, char a5)
     {
         int v18 = (uint8_t)*v6;
 
-        wdth += tyle->chars[v18].width;
+        wdth += tyle->map[v18].w;
 
         if ( wdth <= a3 )
             char_num++;
         else
-            neg_wdth = tyle->chars[v18].width - (wdth - a3);
+            neg_wdth = tyle->map[v18].w - (wdth - a3);
 
         v6++;
     }
@@ -5646,7 +5635,7 @@ char * ypaworld_func64__sub7__sub3__sub0__sub3(_NC_STACK_ypaworld *yw, char *cur
 
         FontUA::set_txtColor(&pcur, yw->iniColors[60].r, yw->iniColors[60].g, yw->iniColors[60].b);
 
-        pcur = FontUA::FormateClippedText(yw->tiles[0], pcur, a1a, 4 * yw->tiles[0]->chars[65].width, 32);
+        pcur = FontUA::FormateClippedText(yw->tiles[0], pcur, a1a, 4 * yw->tiles[0]->map[65].w, 32);
 
         FontUA::store_u8(&pcur, 32);
 
@@ -5661,7 +5650,7 @@ char * ypaworld_func64__sub7__sub3__sub0__sub3(_NC_STACK_ypaworld *yw, char *cur
 
     FontUA::reset_tileset(&pcur, 28);
 
-    FontUA::set_yoff(&pcur, yw->tiles[28]->font_height - yw->field_1a38);
+    FontUA::set_yoff(&pcur, yw->tiles[28]->h - yw->field_1a38);
 
     FontUA::store_u8(&pcur, 38);
 
@@ -6048,7 +6037,7 @@ void ypaworld_func64__sub7__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt)
             }
             if ( winpt->selected_btnID == 6 && yw->field_2410 != -1 && !(bzda.field_1D0 & 0x20) )
             {
-                int v9 = (winpt->move.btnPos.x - squadron_manager.field_2DC) / yw->tiles[24]->chars[49].width;
+                int v9 = (winpt->move.btnPos.x - squadron_manager.field_2DC) / yw->tiles[24]->map[49].w;
 
                 if ( v9 >= 0 && v9 <= 4 )
                 {
@@ -6756,7 +6745,7 @@ void sub_47DB04(_NC_STACK_ypaworld *yw, char a2)
     yw->GameShell->sentAQ = 0;
 }
 
-char * sub_451714(tiles_stru *, char *cur, const char *a3, int a2, uint8_t a4)
+char * sub_451714(TileMap *, char *cur, const char *a3, int a2, uint8_t a4)
 {
     char *pcur = cur;
 
@@ -8972,12 +8961,7 @@ void yw_RenderVector2D(_NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float pos
 
     if ( wire )
     {
-        rstr_arg217 v30;
-        v30.dword0 = coloooor;
-        v30.dword4 = coloooor;
-//        v30.dword8 = 0xFFFFFFFF;
-
-        yw->win3d->raster_func217(&v30);
+        yw->win3d->raster_func217(coloooor);
 
         for (int i = 0; i < wire->POO_NUM; i++)
         {
@@ -9007,11 +8991,7 @@ void yw_RenderVector2D(_NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float pos
 
                     color_func(yw,  v29.x1 - posX,   v29.y1 - posY,   v29.x2 - posX,   v29.y2 - posY, &v32, &v31);
 
-                    v30.dword0 = v32;
-                    v30.dword4 = v31;
-//                    v30.dword8 = 0xFFFFFFFF;
-
-                    yw->win3d->raster_func217(&v30);
+                    yw->win3d->raster_func217(v32);
                 }
                 else if ( color_func2 )
                 {
@@ -9020,11 +9000,7 @@ void yw_RenderVector2D(_NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float pos
 
                     color_func2(yw, v29.x1, v29.y1, v29.x2, v29.y2, &v34, &v33);
 
-                    v30.dword0 = v34;
-                    v30.dword4 = v33;
-//                    v30.dword8 = 0xFFFFFFFF;
-
-                    yw->win3d->raster_func217(&v30);
+                    yw->win3d->raster_func217(v34);
                 }
 
                 yw->win3d->raster_func200(&v29);
@@ -9092,7 +9068,7 @@ char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, flo
     int v51 = (yw->screen_width / 2) * x;
     int v50 = (yw->screen_height / 2) * y;
 
-    int v49 = yw->tiles[51]->chars[valCH].width * wis->field_9E;
+    int v49 = yw->tiles[51]->map[valCH].w * wis->field_9E;
 
 
     char *pcur = cur;
@@ -9122,10 +9098,10 @@ char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, flo
     v51 += wis->field_96;
 
     FontUA::set_center_xpos(&pcur, v51);
-    FontUA::set_center_ypos(&pcur, v50 - (yw->tiles[51]->font_height / 2));
+    FontUA::set_center_ypos(&pcur, v50 - (yw->tiles[51]->h / 2));
 
-    int v29 = v51 + (yw->tiles[51]->chars[1].width / 2);
-    int v30 = v50 + (yw->tiles[51]->font_height >> 1);
+    int v29 = v51 + (yw->tiles[51]->map[1].w / 2);
+    int v30 = v50 + (yw->tiles[51]->h >> 1);
 
     for (int i = 1; i <= wis->field_9E; i++)
     {
@@ -9138,18 +9114,18 @@ char * sub_4E4F80(_NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, flo
                 if ( (flag & 2) == 0 )
                     FontUA::store_u8(&pcur, valBG);
                 else
-                    FontUA::add_xpos(&pcur, yw->tiles[51]->chars[1].width);
+                    FontUA::add_xpos(&pcur, yw->tiles[51]->map[1].w);
             }
             else
             {
                 if ( (flag & 1) == 0 )
                     FontUA::store_u8(&pcur, valCH);
                 else
-                    FontUA::add_xpos(&pcur, yw->tiles[51]->chars[1].width);
+                    FontUA::add_xpos(&pcur, yw->tiles[51]->map[1].w);
             }
         }
 
-        v29 += yw->tiles[51]->chars[1].width;
+        v29 += yw->tiles[51]->map[1].w;
     }
 
     v51 += wis->field_9A + v49;
@@ -10266,7 +10242,7 @@ char *sb_0x4d7c08__sub0__sub4__sub0__sub0(_NC_STACK_ypaworld *yw, char *cur, __N
                 {
                     if ( v32 > -v26 && v31 < v26 && v31 > -v26 )
                     {
-                        int v30 = yw->tiles[15]->font_height;
+                        int v30 = yw->tiles[15]->h;
 
                         int v27_4 = ((yw->screen_width / 2) * (v32 / v26 + 1.0));
                         int v15 = (yw->screen_height / 2) * (v31 / v26 + 1.0);
@@ -10421,7 +10397,7 @@ char * yw_RenderUnitLifeBar(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabac
             else
                 v13 = 4;
 
-            int v43 = v13 * yw->tiles[50]->chars->width;
+            int v43 = v13 * yw->tiles[50]->map[0].w;
 
             int v42 = (yw->screen_width / 2) * (v45 + 1.0);
             int v41 = (yw->screen_height / 2) * (v47 + 1.0);
@@ -10429,13 +10405,13 @@ char * yw_RenderUnitLifeBar(_NC_STACK_ypaworld *yw, char *cur, __NC_STACK_ypabac
             if ( !v30 || v42 <= v11 || v42 >= v33 || v41 <= v36 || v41 >= v34 )
             {
                 v42 -= v43 / 2;
-                v41 -= (yw->tiles[50]->font_height / 2) + (yw->screen_height / 16);
+                v41 -= (yw->tiles[50]->h / 2) + (yw->screen_height / 16);
 
                 if ( v42 >= 0 )
                 {
                     if ( v42 + v43 < yw->screen_width && v41 >= 0 )
                     {
-                        if ( yw->tiles[50]->font_height + v41 < yw->screen_height )
+                        if ( yw->tiles[50]->h + v41 < yw->screen_height )
                         {
                             FontUA::select_tileset(&pcur, 50);
 
@@ -10548,7 +10524,7 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(_NC_STACK_ypaworld *yw)
                             {
                                 FontUA::select_tileset(&pcur, 1);
 
-                                pcur = sub_4F6DFC(yw, pcur, yw->tiles[1]->font_height, yw->tiles[1]->chars[24].width, bact, 0);
+                                pcur = sub_4F6DFC(yw, pcur, yw->tiles[1]->h, yw->tiles[1]->map[24].w, bact, 0);
 
                                 FontUA::select_tileset(&pcur, 61);
 

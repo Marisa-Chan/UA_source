@@ -12,15 +12,15 @@ char *GuiBase::FormateTitle(_NC_STACK_ypaworld *yw, int xpos, int ypos, int w, c
 {
     int v27 = 0;
     if ( flag & FLAG_WITH_CLOSE )
-        v27 = yw->tiles[24]->chars[65].width; // Help button
+        v27 = yw->tiles[24]->map[65].w; // Help button
 
     int v26 = 0;
     if ( flag & FLAG_WITH_HELP )
-        v26 = yw->tiles[24]->chars[66].width; // Close button
+        v26 = yw->tiles[24]->map[66].w; // Close button
 
     int v29 = 0;
     if ( postf_char )
-        v29 = yw->tiles[0]->chars[postf_char].width;
+        v29 = yw->tiles[0]->map[postf_char].w;
 
     char buf[128];
     strcpy(buf, " ");
@@ -611,7 +611,7 @@ char *GuiList::ItemsPostLayout(_NC_STACK_ypaworld *yw, char *cmdbuf, int tileset
 {
     char *tmp = cmdbuf;
     FontUA::reset_tileset(&tmp, tileset);
-    FontUA::set_yoff(&tmp, yw->tiles[tileset]->font_height - lowerVborder);
+    FontUA::set_yoff(&tmp, yw->tiles[tileset]->h - lowerVborder);
     FontUA::store_s8(&tmp, a5[0]);
     FontUA::op17(&tmp, entryWidth - yw->font_default_w__b);
     FontUA::store_s8(&tmp, a5[1]);

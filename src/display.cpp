@@ -55,7 +55,7 @@ size_t NC_STACK_display::func2(IDVList &stak)
                 break;
 
             case ATT_FGPEN:
-                setRSTR_FGpen(val.value.u_data);
+                SetPen(val.value.u_data);
                 break;
 
             case ATT_BGPEN:
@@ -169,33 +169,27 @@ size_t NC_STACK_display::raster_func206(polysDatSub *)
     return 0;
 }
 
-void NC_STACK_display::raster_func207(rstr_207_arg *arg)
+void NC_STACK_display::raster_func207(int id, TileMap *tiles)
 {
-    __NC_STACK_display *rstr = &stack__display;
-    rstr->tiles[arg->id] = arg->tiles;
+    stack__display.tiles[id] = tiles;
 }
 
-void NC_STACK_display::raster_func208(rstr_207_arg *arg)
+TileMap *NC_STACK_display::raster_func208(int id)
 {
-    __NC_STACK_display *rstr = &stack__display;
+    return stack__display.tiles[id];
+}
 
-    if ( arg->tiles )
+int NC_STACK_display::raster_func208(TileMap *tiles)
+{
+    if ( tiles )
     {
-        arg->id = -1;
-
         for (int i = 0; i < 256; i++)
         {
-            if (rstr->tiles[i] == arg->tiles)
-            {
-                arg->id = i;
-                break;
-            }
+            if (stack__display.tiles[i] == tiles)
+                return i;
         }
     }
-    else
-    {
-        arg->tiles = rstr->tiles[arg->id];
-    }
+    return -1;
 }
 
 void NC_STACK_display::raster_func209(w3d_a209 *)
@@ -238,18 +232,10 @@ void NC_STACK_display::EndScene()
 }
 
 
-size_t NC_STACK_display::raster_func217(rstr_arg217 *arg)
+size_t NC_STACK_display::raster_func217(uint32_t color)
 {
-    __NC_STACK_display *rstr = &stack__display;
-
-    if ( arg->dword0 != 0xFFFFFFFF )
-        rstr->field_4 = arg->dword0;
-
-    if ( arg->dword4 != 0xFFFFFFFF )
-        rstr->field_8 = arg->dword4;
-
-//    if ( arg->dword8 != 0xFFFFFFFF )
-//        rstr->BG_Color = arg->dword8;
+    if ( color != 0xFFFFFFFF )
+        stack__display.field_4 = color;
 
     return 0;
 }
@@ -386,7 +372,7 @@ void NC_STACK_display::SetPalette(UA_PALETTE &newPal)
 };
 
 
-void NC_STACK_display::setRSTR_FGpen(uint32_t pen)
+void NC_STACK_display::SetPen(uint32_t pen)
 {
     stack__display.field_4 = pen;
 }
@@ -412,7 +398,7 @@ void NC_STACK_display::setRSTR_trcRmp(ResBitmap *rmp)
 
 void NC_STACK_display::setRSTR_FGApen(uint32_t pen)
 {
-    stack__display.field_8 = pen;
+    //stack__display.field_8 = pen;
 }
 
 
@@ -467,10 +453,10 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
     case 206:
         return (size_t)raster_func206( (polysDatSub *)data );
     case 207:
-        raster_func207( (rstr_207_arg *)data );
+        //raster_func207( (rstr_207_arg *)data );
         return 1;
     case 208:
-        raster_func208( (rstr_207_arg *)data );
+        //raster_func208( (rstr_207_arg *)data );
         return 1;
     case 209:
         raster_func209( (w3d_a209 *)data );
@@ -496,7 +482,8 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
         //UnlockSurface();
         return 1;
     case 217:
-        return (size_t)raster_func217( (rstr_arg217 *)data );
+        //return (size_t)raster_func217( (rstr_arg217 *)data );
+        return 1;
     case 218:
         raster_func218( (rstr_218_arg *)data );
         return 1;

@@ -3,6 +3,7 @@
 
 #include <inttypes.h>
 #include <vector>
+#include <SDL2/SDL.h>
 
 #ifdef ABS
 #undef ABS
@@ -47,6 +48,16 @@ struct Point
     }
 
     Point Invert() { return Point( -x, -y ); }
+    
+    operator SDL_Rect()
+    {
+        SDL_Rect tmp;
+        tmp.x = x;
+        tmp.y = y;
+        tmp.w = 0;
+        tmp.h = 0;
+        return tmp;
+    }
 };
 
 struct Rect
@@ -106,7 +117,7 @@ struct Rect
             return Rect(MAX(r.left, left), MAX(r.top, top), MIN(r.right, right), MIN(r.bottom, bottom));
     }
 
-    void Clip(const Rect &r) {
+    void ClipBy(const Rect &r) {
             if (top < r.top) top = r.top;
             else if (top > r.bottom) top = r.bottom;
 
@@ -120,8 +131,8 @@ struct Rect
             else if (right < r.left) right = r.left;
     }
 
-    void Clip(int maxw, int maxh) {
-            Clip(Rect(0, 0, maxw, maxh));
+    void ClipBy(int maxw, int maxh) {
+            ClipBy(Rect(0, 0, maxw, maxh));
     }
 
     void MoveTo(int x, int y) {
@@ -158,6 +169,164 @@ struct Rect
     Point Size() const
     {
         return Point(Width(), Height());
+    }
+    
+    operator SDL_Rect()
+    {
+        SDL_Rect tmp;
+        tmp.x = left;
+        tmp.y = top;
+        tmp.w = Width();
+        tmp.h = Height();
+        return tmp;
+    }
+
+};
+
+struct PointRect
+{
+    int x;
+    int y;
+    int w;
+    int h;
+
+    PointRect() : x(0), y(0), w(0), h(0) {};
+    PointRect(int x1, int y1) : x(x1), y(y1), w(0), h(0) {};
+    PointRect(Point p) : x(p.x), y(p.y), w(0), h(0) {};
+    PointRect(int x_, int y_, int w_, int h_) : x(x_), y(y_), w(w_), h(h_) {};
+    
+    int Right() const { return x + w; }
+    int Bottom() const { return y + h; }
+    
+    bool  operator==(const PointRect &p)    const { return x == p.x && y == p.y && w == p.w && h == p.h; }
+    bool  operator!=(const PointRect &p)    const { return x != p.x || y != p.y || w != p.w || h != p.h; }
+    PointRect operator+(const Point &delta) const { return PointRect(x + delta.x, y + delta.y, w, h); }
+    PointRect operator-(const Point &delta) const { return PointRect(x - delta.x, y - delta.y, w, h); }
+
+    void operator+=(const Point &delta) {
+            x += delta.x;
+            y += delta.y;
+    }
+
+    void operator-=(const Point &delta) {
+            x -= delta.x;
+            y -= delta.y;
+    }
+    
+    void MoveTo(int px, int py) {
+            x = px;
+            y = py;
+    }
+
+    void MoveTo(const Point &p) {
+            MoveTo(p.x, p.y);
+    }
+
+    void Translate(int dx, int dy) {
+            x += dx;
+            y += dy;
+    }
+
+    void Translate(const Point &p) {
+            x += p.x;
+            y += p.y;
+    }
+    
+    bool IsIn(int px, int py) const {
+            return (px >= x) && (px < Right()) && (py >= y) && (py < Bottom());
+    }
+    bool IsIn(const Point &p) const {
+            return IsIn(p.x, p.y);
+    }
+    bool IsIn(const Rect &r) const {
+            return (r.left >= x) && (r.right <= Right()) && (r.top >= y) && (r.bottom <= Bottom());
+    }
+    bool IsIn(const PointRect &r) const {
+            return (r.x >= x) && (r.Right() <= Right()) && (r.y >= y) && (r.Bottom() <= Bottom());
+    }
+
+    bool IsIntersects(const Rect &r) const {
+            return (x < r.right) && (Right() > r.left) && (y < r.bottom) && (Bottom() > r.top);
+    }
+    
+    bool IsIntersects(const PointRect &r) const {
+            return (x < r.Right()) && (Right() > r.x) && (y < r.Bottom()) && (Bottom() > r.y);
+    }
+   
+    void ClipBy(const Rect &r) {
+            if (y < r.top) y = r.top;
+            else if (y > r.bottom) y = r.bottom;
+
+            if (x < r.left) x = r.left;
+            else if (x > r.right) x = r.right;
+
+            if (Bottom() > r.bottom) h = r.bottom - y;
+            else if (Bottom() < r.top) h = r.top - y;
+
+            if (Right() > r.right) w = r.right - x;
+            else if (Right() < r.left) w = r.left - x;
+    }
+
+    void ClipBy(int maxw, int maxh) {
+            ClipBy(Rect(0, 0, maxw, maxh));
+    }
+    
+    void ClipBy(const PointRect &r) {
+            if (y < r.y) y = r.y;
+            else if (y > r.Bottom()) y = r.Bottom();
+
+            if (x < r.x) x = r.x;
+            else if (x > r.Right()) x = r.Right();
+
+            if (Bottom() > r.Bottom()) h = r.Bottom() - y;
+            else if (Bottom() < r.y) h = r.y - y;
+
+            if (Right() > r.Right()) w = r.Right() - x;
+            else if (Right() < r.x) w = r.x - x;
+    }
+    
+
+    bool IsEmpty() const {
+            return (w == 0 || h == 0);
+    }
+    
+    bool IsValid() const {
+            return (w >= 0 && h >= 0);
+    }
+    
+    Point Pos() const
+    {
+        return Point(x, y);
+    }
+
+    Point Size() const
+    {
+        return Point(w, h);
+    }
+    
+    operator bool()
+    {
+        return !IsEmpty();
+    }
+
+    operator Point()
+    {
+        return Point(x, y);
+    }
+    
+    operator Rect()
+    {
+        return Rect(x, y, x + w, y + h);
+    }
+    
+    operator SDL_Rect()
+    {
+        SDL_Rect tmp;
+        tmp.x = x;
+        tmp.y = y;
+        tmp.w = w;
+        tmp.h = h;
+        return tmp;
     }
 
 };

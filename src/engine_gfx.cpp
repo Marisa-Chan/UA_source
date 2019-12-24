@@ -148,15 +148,9 @@ void GFXEngine::setShadeRmp(ResBitmap *rmp)
 
 
 
-tiles_stru * GFXEngine::getTileset(int id)
+TileMap * GFXEngine::getTileset(int id)
 {
-    rstr_207_arg arg207;
-
-    arg207.tiles = 0;
-    arg207.id = id;
-
-    cls3D->raster_func208(&arg207);
-    return arg207.tiles;
+    return cls3D->raster_func208(id);
 }
 
 void GFXEngine::drawText(w3d_a209 *arg)
@@ -166,12 +160,20 @@ void GFXEngine::drawText(w3d_a209 *arg)
     cls3D->raster_func209(&arg209);
 }
 
-void GFXEngine::setTileset(tiles_stru *tileset, int id)
+void GFXEngine::setTileset(TileMap *tileset, int id)
 {
-    rstr_207_arg arg;
+    cls3D->raster_func207(id, tileset);
+}
 
-    arg.tiles = tileset;
-    arg.id = id;
 
-    cls3D->raster_func207(&arg);
+TileMap::TileMap()
+{
+    img = NULL;
+    h = 0;
+}
+    
+TileMap::~TileMap()
+{
+    if (img)
+        Nucleus::Delete(img);
 }

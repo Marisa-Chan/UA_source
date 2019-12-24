@@ -75,11 +75,13 @@ public:
     virtual void setBMD_palette(UA_PALETTE *);
 
     //Get
-    virtual ResBitmap * getBMD_pBitmap();
+    virtual ResBitmap  * GetResBmp();
     virtual int getBMD_width();
     virtual int getBMD_height();
     virtual int getBMD_hasPalette();
     virtual UA_PALETTE *getBMD_palette();
+    
+    virtual SDL_Surface * GetSwTex();
 
 
     int sub_416704(pixel_2d *a3);

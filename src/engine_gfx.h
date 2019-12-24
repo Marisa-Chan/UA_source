@@ -2,54 +2,44 @@
 #define ENGINE_GFX_H_INCLUDED
 
 #include <inttypes.h>
+#include <array>
 #include "wrapSDL.h"
 #include "engine_tform.h"
+#include "nucleas.h"
 
 #define GFX_MAX_VERTEX 12
 
 class NC_STACK_win3d;
 class NC_STACK_bitmap;
 
-struct tile_xy
-{
-    int width;
-    int x;
-    int y;
-};
-
 typedef std::array<SDL_Color, 256> UA_PALETTE;
 
 struct ResBitmap
 {    
-    int16_t _width;
-    int16_t _height;
-    UA_PALETTE *_pallete;
-    SDL_Surface *_swTex;
-    GLuint _hwTex;
+    int16_t width;
+    int16_t height;
+    UA_PALETTE *palette;
+    SDL_Surface *swTex;
+    GLuint hwTex;
     
     ResBitmap()
     {
-        _width = 0;
-        _height = 0;
-        _pallete = NULL;
-        _swTex = NULL;
-        _hwTex = 0;
+        width = 0;
+        height = 0;
+        palette = NULL;
+        swTex = NULL;
+        hwTex = 0;
     }
 };
 
-struct tiles_stru
+struct TileMap
 {
-    NC_STACK_bitmap *font_image;
-    ResBitmap *field_4;
-    tile_xy *chars;
-    int font_height;
-};
-
-
-struct rstr_207_arg
-{
-    tiles_stru *tiles;
-    int id;
+    NC_STACK_bitmap *img;
+    std::array<Common::PointRect, 256> map;
+    int h;
+    
+    TileMap();  
+    ~TileMap();
 };
 
 struct w3d_a209
@@ -97,8 +87,8 @@ public:
 
     int loadPal(const char *palette_ilbm);
 
-    void setTileset(tiles_stru *tileset, int id);
-    tiles_stru * getTileset(int id);
+    void setTileset(TileMap *tileset, int id);
+    TileMap * getTileset(int id);
     void drawText(w3d_a209 *arg);
 
     static void defRenderFunc(void *dat);

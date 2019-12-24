@@ -304,7 +304,7 @@ size_t NC_STACK_button::button_func64(button_64_arg *arg)
     if ( sbt.button_type == TYPE_CAPTION )
         bt.h = 0;
     else
-        bt.h = GFXEngine::GFXe.getTileset( arg->tileset_up )->font_height;
+        bt.h = GFXEngine::GFXe.getTileset( arg->tileset_up )->h;
 
     idd++;
 
@@ -367,7 +367,7 @@ size_t NC_STACK_button::button_func66(button_66arg *arg)
         if ( field_d8[id].button_type != TYPE_CAPTION )
         {
             buttons[id].w = field_d8[id].width;
-            buttons[id].h = GFXEngine::GFXe.getTileset( field_d8[id].tileset_down )->font_height;
+            buttons[id].h = GFXEngine::GFXe.getTileset( field_d8[id].tileset_down )->h;
         }
 
         field_d8[id].flags &= ~FLAG_DISABLED;
@@ -619,7 +619,7 @@ void NC_STACK_button::button_func70__sub1(NC_STACK_button *btn, button_str2 *sbt
         v6 = sbt->tileset_down;
     }
 
-    tiles_stru *v7 = GFXEngine::GFXe.getTileset(v6);
+    TileMap *v7 = GFXEngine::GFXe.getTileset(v6);
 
 
     char *v8 = *pbuf;
@@ -637,7 +637,7 @@ void NC_STACK_button::button_func70__sub1(NC_STACK_button *btn, button_str2 *sbt
         if ( sbt->flags & FLAG_BORDER )
         {
             FontUA::store_u8(&v8, btn->field_19c); //Padding gfx
-            tmp += -v7->chars[btn->field_19c].width - v7->chars[btn->field_19D].width;
+            tmp += -v7->map[btn->field_19c].w - v7->map[btn->field_19D].w;
         }
     }
 
@@ -712,7 +712,7 @@ void NC_STACK_button::button_func70__sub0(NC_STACK_button *btn, button_str2 *sbt
         v7 = sbt->tileset_up;
     }
 
-    tiles_stru *v8 = GFXEngine::GFXe.getTileset(v7);
+    TileMap *v8 = GFXEngine::GFXe.getTileset(v7);
 
     int strwdth = 0;
 
@@ -721,17 +721,17 @@ void NC_STACK_button::button_func70__sub0(NC_STACK_button *btn, button_str2 *sbt
         int caplen = strlen(sbt->caption2);
 
         for (int i = 0; i < caplen; i++)
-            strwdth += v8->chars[(uint8_t)sbt->caption2[i]].width;
+            strwdth += v8->map[(uint8_t)sbt->caption2[i]].w;
     }
     else
     {
         int caplen = strlen(sbt->caption);
 
         for (int i = 0; i < caplen; i++)
-            strwdth += v8->chars[(uint8_t)sbt->caption[i]].width;
+            strwdth += v8->map[(uint8_t)sbt->caption[i]].w;
     }
 
-    int v47 = (sbt->width - strwdth - v8->chars[btn->field_19c].width) / 2;
+    int v47 = (sbt->width - strwdth - v8->map[btn->field_19c].w) / 2;
 
     FontUA::select_tileset(&v5, v7);
 
@@ -757,7 +757,7 @@ void NC_STACK_button::button_func70__sub0(NC_STACK_button *btn, button_str2 *sbt
             if ( sbt->flags & FLAG_BORDER )
             {
                 FontUA::store_u8(&v5, btn->field_19c);
-                ttmp += -v8->chars[btn->field_19c].width - v8->chars[btn->field_19D].width;
+                ttmp += -v8->map[btn->field_19c].w - v8->map[btn->field_19D].w;
             }
         }
 
@@ -783,8 +783,8 @@ void NC_STACK_button::button_func70__sub0(NC_STACK_button *btn, button_str2 *sbt
         int v26 = 0;
         while ( capt[v26] )
         {
-            tile_xy *v28 = &v8->chars[(uint8_t)capt[v26]];
-            if ( v28->width + v6 > ttmp )
+            Common::PointRect &pr = v8->map[(uint8_t)capt[v26]];
+            if ( pr.w + v6 > ttmp )
             {
                 if ( (ttmp - v6) > 2 )
                 {
@@ -797,7 +797,7 @@ void NC_STACK_button::button_func70__sub0(NC_STACK_button *btn, button_str2 *sbt
                 break;
             }
 
-            v6 += v28->width;
+            v6 += pr.w;
 
             FontUA::store_s8(&v5, capt[v26]);
 
@@ -808,7 +808,7 @@ void NC_STACK_button::button_func70__sub0(NC_STACK_button *btn, button_str2 *sbt
         {
             if ( sbt->button_type != TYPE_CAPTION && sbt->flags & FLAG_BORDER )
             {
-                FontUA::op17(&v5, sbt->width - v8->chars[btn->field_19D].width);
+                FontUA::op17(&v5, sbt->width - v8->map[btn->field_19D].w);
             }
             else
             {

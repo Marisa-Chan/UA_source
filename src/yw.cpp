@@ -122,7 +122,8 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     field_162A = 0;
     GUI_OK = 0;
 
-    memset(tiles, 0, sizeof(tiles));
+    for ( auto &x : tiles )
+        x = NULL;
 
 //nlist field_17a0;
     screen_width = 0;
@@ -3527,14 +3528,14 @@ void sb_0x4e75e8__sub0(_NC_STACK_ypaworld *yw)
             regions[i].y2 = -10000;
         }
 
-        ResBitmap *bitm = yw->LevelNet->ilbm_mask_map->getBMD_pBitmap();
+        ResBitmap *bitm = yw->LevelNet->ilbm_mask_map->GetResBmp();
 
-        SDL_LockSurface(bitm->_swTex);
-        for (int y = 0; y < bitm->_height; y++ )
+        SDL_LockSurface(bitm->swTex);
+        for (int y = 0; y < bitm->height; y++ )
         {
-            uint8_t *ln = ((uint8_t *)bitm->_swTex->pixels + y * bitm->_swTex->pitch);
+            uint8_t *ln = ((uint8_t *)bitm->swTex->pixels + y * bitm->swTex->pitch);
 
-            for (int x = 0; x < bitm->_width; x++)
+            for (int x = 0; x < bitm->width; x++)
             {
 
                 int v7 = ln[x];
@@ -3563,10 +3564,10 @@ void sb_0x4e75e8__sub0(_NC_STACK_ypaworld *yw)
 
             if ( minf->field_0 && minf->field_0 != 4 && regions[i].x1 != 10000 )
             {
-                minf->field_9C.x1 = 2.0 * ((float)(regions[i].x1) / (float)bitm->_width) + -1.0;
-                minf->field_9C.x2 = 2.0 * ((float)(regions[i].x2) / (float)bitm->_width) + -1.0;
-                minf->field_9C.y1 = 2.0 * ((float)(regions[i].y1) / (float)bitm->_height) + -1.0;
-                minf->field_9C.y2 = 2.0 * ((float)(regions[i].y2) / (float)bitm->_height) + -1.0;
+                minf->field_9C.x1 = 2.0 * ((float)(regions[i].x1) / (float)bitm->width) + -1.0;
+                minf->field_9C.x2 = 2.0 * ((float)(regions[i].x2) / (float)bitm->width) + -1.0;
+                minf->field_9C.y1 = 2.0 * ((float)(regions[i].y1) / (float)bitm->height) + -1.0;
+                minf->field_9C.y2 = 2.0 * ((float)(regions[i].y2) / (float)bitm->height) + -1.0;
             }
             else
             {
@@ -3577,7 +3578,7 @@ void sb_0x4e75e8__sub0(_NC_STACK_ypaworld *yw)
             }
         }
         
-        SDL_UnlockSurface(bitm->_swTex);
+        SDL_UnlockSurface(bitm->swTex);
     }
 }
 
@@ -5770,7 +5771,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         {
             int v284 = ((dword_5A50B6 - 3 * word_5A50C0) * 0.25 - 3 * word_5A50C0) * 0.25;
 
-            tiles_stru *v198 = GFXEngine::GFXe.getTileset(8);
+            TileMap *v198 = GFXEngine::GFXe.getTileset(8);
 
             btn_64arg.tileset_down = 16;
             btn_64arg.tileset_up = 16;
@@ -5795,7 +5796,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                 btn_64arg.field_3A = 30;
                 btn_64arg.button_type = 4;
                 btn_64arg.xpos += btn_64arg.width + 2 * word_5A50C0;
-                btn_64arg.width = v198->chars[65].width;
+                btn_64arg.width = v198->map[65].w;
                 btn_64arg.caption = "A";
                 btn_64arg.caption2 = "B";
                 btn_64arg.button_id = 1206;

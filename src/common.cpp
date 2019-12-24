@@ -106,5 +106,5 @@ bool ClipLine(const Rect &clip, Rect *line)
     
     return true;
 }
-    
+
 }

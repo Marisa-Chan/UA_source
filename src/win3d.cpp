@@ -1189,10 +1189,10 @@ size_t NC_STACK_win3d::raster_func202(rstr_arg204 *arg)
 
     ResBitmap *pbitm = arg->pbitm;
 
-    int a1 = (arg->float4 + 1.0) * (arg->pbitm->_width / 2);
-    int a2 = (arg->float8 + 1.0) * (arg->pbitm->_height / 2);
-    int a3 = (arg->floatC + 1.0) * (arg->pbitm->_width / 2);
-    int a4 = (arg->float10 + 1.0) * (arg->pbitm->_height / 2);
+    int a1 = (arg->float4 + 1.0) * (arg->pbitm->width / 2);
+    int a2 = (arg->float8 + 1.0) * (arg->pbitm->height / 2);
+    int a3 = (arg->floatC + 1.0) * (arg->pbitm->width / 2);
+    int a4 = (arg->float10 + 1.0) * (arg->pbitm->height / 2);
 
     int a5 = rstr->field_554 * (arg->float14 + 1.0);
     int a6 = rstr->field_558 * (arg->float18 + 1.0);
@@ -1211,7 +1211,7 @@ size_t NC_STACK_win3d::raster_func202(rstr_arg204 *arg)
     dst.w = a7 - a5;
     dst.h = a8 - a6;
     
-    SDL_BlitScaled(pbitm->_swTex, &src, stack__win3d.screenSurface, &dst);
+    SDL_BlitScaled(pbitm->swTex, &src, stack__win3d.screenSurface, &dst);
     
     return 1;
 }
@@ -1279,10 +1279,10 @@ size_t NC_STACK_win3d::raster_func204(rstr_arg204 *arg)
     rstr_loc204 loc;
 
     loc.pbitm = arg->pbitm;
-    loc.dword4 = (arg->float4 + 1.0) * (arg->pbitm->_width / 2);
-    loc.dword8 = (arg->float8 + 1.0) * (arg->pbitm->_height / 2);
-    loc.dwordC = (arg->floatC + 1.0) * (arg->pbitm->_width / 2);
-    loc.dword10 = (arg->float10 + 1.0) * (arg->pbitm->_height / 2);
+    loc.dword4 = (arg->float4 + 1.0) * (arg->pbitm->width / 2);
+    loc.dword8 = (arg->float8 + 1.0) * (arg->pbitm->height / 2);
+    loc.dwordC = (arg->floatC + 1.0) * (arg->pbitm->width / 2);
+    loc.dword10 = (arg->float10 + 1.0) * (arg->pbitm->height / 2);
 
     loc.dword18 = (arg->float14 + 1.0) * rstr->field_554;
     loc.dword1C = (arg->float18 + 1.0) * rstr->field_558;
@@ -1303,7 +1303,7 @@ size_t NC_STACK_win3d::raster_func204(rstr_arg204 *arg)
         dst.w = loc.dword20 - loc.dword18;
         dst.h = loc.dword24 - loc.dword1C;
 
-        SDL_BlitScaled(loc.pbitm->_swTex, &src, w3d->screenSurface, &dst);
+        SDL_BlitScaled(loc.pbitm->swTex, &src, w3d->screenSurface, &dst);
     }
 
 
@@ -1505,7 +1505,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, int a5, int a6)
     if ( polysDat->renderFlags & (RFLAGS_LINMAP | RFLAGS_PERSPMAP) )
     {
         if (in->datSub.pbitm)
-            w3d->rendStates2[TEXTUREHANDLE] = in->datSub.pbitm->_hwTex;
+            w3d->rendStates2[TEXTUREHANDLE] = in->datSub.pbitm->hwTex;
 
         for (int i = 0; i < polysDat->vertexCount; i++)
         {
@@ -1644,7 +1644,7 @@ size_t NC_STACK_win3d::raster_func206(polysDat *arg)
     return 1;
 }
 
-void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char **arr)
+void NC_STACK_win3d::win3d_func209__sub0(TileMap **tiles, char *cmdline, char **arr)
 {
     __NC_STACK_win3d *w3d = &stack__win3d;
 
@@ -1654,7 +1654,7 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
 
     char *curpos = cmdline;
     int w_pixels = w3d->screenSurface->pitch / bytesPerColor;
-    tiles_stru *tile = NULL;
+    TileMap *tile = NULL;
 
     int x_out = 0;
     int y_out = 0;
@@ -1706,14 +1706,14 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
 
         if ( v13 )
         {
-            tile_xy *chrr = &tile->chars[v13];
+            Common::PointRect &chrr = tile->map[v13];
 
             int cpy_width;
 
             if ( line_width )
                 cpy_width = line_width - x_off;
             else
-                cpy_width = chrr->width - x_off;
+                cpy_width = chrr.w - x_off;
 
             int cpy_height = line_height - y_off;
 
@@ -1723,8 +1723,8 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
             dstR.w = cpy_width;
             dstR.h = cpy_height;
             
-            srcR.x = chrr->x + x_off;
-            srcR.y = chrr->y + y_off;
+            srcR.x = chrr.x + x_off;
+            srcR.y = chrr.y + y_off;
             srcR.h = cpy_height;
             
             if (v11)
@@ -1734,7 +1734,7 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
             
             for(int i = 0; i < cpy_width; i += srcR.w)
             {
-                SDL_BlitSurface(tile->field_4->_swTex, &srcR, w3d->screenSurface, &dstR);
+                SDL_BlitSurface(tile->img->GetSwTex(), &srcR, w3d->screenSurface, &dstR);
                 dstR.x += srcR.w;
             }                
 
@@ -1766,7 +1766,7 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
                 y_pos_line = y_out;
                 y_off = 0;
 
-                line_height = tile->font_height;
+                line_height = tile->h;
                 break;
 
             case 2: // y pos from center
@@ -1776,7 +1776,7 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
                 y_pos_line = y_out;
                 y_off = 0;
 
-                line_height = tile->font_height;
+                line_height = tile->h;
                 break;
 
             case 3: //xpos
@@ -1787,7 +1787,7 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
                 x_pos_line = x_out;
                 y_pos_line = y_out;
 
-                line_height = tile->font_height;
+                line_height = tile->h;
                 y_off = 0;
                 break;
 
@@ -1799,7 +1799,7 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
                 x_pos_line = x_out;
                 y_pos_line = y_out;
 
-                line_height = tile->font_height;
+                line_height = tile->h;
                 y_off = 0;
                 break;
 
@@ -1817,7 +1817,7 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
                 x_out = x_pos_line;
 
                 y_off = 0;
-                line_height = tile->font_height;
+                line_height = tile->h;
                 break;
 
             case 8: // Select tileset
@@ -1869,7 +1869,7 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
 
             case 16: // Full reset tileset
                 tile = tiles[FontUA::get_u8(&curpos)];
-                line_height = tile->font_height;
+                line_height = tile->h;
                 y_off = 0;
                 break;
 
@@ -1888,7 +1888,7 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
                 char *txtpos = (char *)curpos;
 
                 curpos += strlen(txtpos) + 1;
-                AddScreenText(txtpos, x_out_txt, y_out_txt, block_width, tile->font_height, flag);
+                AddScreenText(txtpos, x_out_txt, y_out_txt, block_width, tile->h, flag);
             }
             break;
 
@@ -1923,7 +1923,7 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
 
 void NC_STACK_win3d::raster_func209(w3d_a209 *arg)
 {
-    win3d_func209__sub0(stack__display.tiles, arg->cmdbuf, arg->includ);
+    win3d_func209__sub0(stack__display.tiles.data(), arg->cmdbuf, arg->includ);
 }
 
 
@@ -1974,17 +1974,17 @@ void NC_STACK_win3d::raster_func218(rstr_218_arg *arg)
 {
     __NC_STACK_display *rstr = &stack__display;
 
-    Common::Rect sRect( (arg->rect1.x1 + 1.0) * (arg->bitm_intern->_width / 2),
-                        (arg->rect1.y1 + 1.0) * (arg->bitm_intern->_height / 2),
-                        (arg->rect1.x2 + 1.0) * (arg->bitm_intern->_width / 2),
-                        (arg->rect1.y2 + 1.0) * (arg->bitm_intern->_height / 2) );
+    Common::Rect sRect( (arg->rect1.x1 + 1.0) * (arg->bitm_intern->width / 2),
+                        (arg->rect1.y1 + 1.0) * (arg->bitm_intern->height / 2),
+                        (arg->rect1.x2 + 1.0) * (arg->bitm_intern->width / 2),
+                        (arg->rect1.y2 + 1.0) * (arg->bitm_intern->height / 2) );
 
     Common::Rect dRect( (arg->rect2.x1 + 1.0) * rstr->field_554,
                         (arg->rect2.y1 + 1.0) * rstr->field_558,
                         (arg->rect2.x2 + 1.0) * rstr->field_554,
                         (arg->rect2.y2 + 1.0) * rstr->field_558 );
 
-    SDLWRAP::BlitScaleMasked(arg->bitm_intern->_swTex, sRect, arg->bitm_intern2->_swTex, arg->flg, stack__win3d.screenSurface, dRect);
+    SDLWRAP::BlitScaleMasked(arg->bitm_intern->swTex, sRect, arg->bitm_intern2->swTex, arg->flg, stack__win3d.screenSurface, dRect);
 }
 
 size_t NC_STACK_win3d::display_func256(windd_arg256 *inout)
@@ -2111,37 +2111,37 @@ void NC_STACK_win3d::display_func263(displ_arg263 *arg)
 
 bool NC_STACK_win3d::AllocTexture(ResBitmap *bitm)
 {
-    if (bitm->_swTex && !bitm->_hwTex)
+    if (bitm->swTex && !bitm->hwTex)
     {
         glPushAttrib(GL_TEXTURE_2D | GL_TEXTURE_BINDING_2D);
 
-        glGenTextures(1, &bitm->_hwTex);
+        glGenTextures(1, &bitm->hwTex);
 
-        if (!bitm->_hwTex)
+        if (!bitm->hwTex)
         {
             glPopAttrib();
             return false;
         }
 
-        glBindTexture(GL_TEXTURE_2D, bitm->_hwTex);
+        glBindTexture(GL_TEXTURE_2D, bitm->hwTex);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        if (bitm->_swTex->format->format == stack__win3d.pixfmt->format)
+        if (bitm->swTex->format->format == stack__win3d.pixfmt->format)
         {
-            SDL_LockSurface(bitm->_swTex);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->_width, bitm->_height, 0, stack__win3d.glPixfmt, stack__win3d.glPixtype, bitm->_swTex->pixels);
-            SDL_UnlockSurface(bitm->_swTex);
+            SDL_LockSurface(bitm->swTex);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, stack__win3d.glPixfmt, stack__win3d.glPixtype, bitm->swTex->pixels);
+            SDL_UnlockSurface(bitm->swTex);
         }
         else
         {
-            SDL_Surface *conv = SDL_ConvertSurface(bitm->_swTex, stack__win3d.pixfmt, 0);
+            SDL_Surface *conv = SDL_ConvertSurface(bitm->swTex, stack__win3d.pixfmt, 0);
             
             SDL_LockSurface(conv);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->_width, bitm->_height, 0, stack__win3d.glPixfmt, stack__win3d.glPixtype, bitm->_swTex->pixels);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, stack__win3d.glPixfmt, stack__win3d.glPixtype, bitm->swTex->pixels);
             SDL_UnlockSurface(conv);
             
             SDL_FreeSurface(conv);
@@ -2155,10 +2155,10 @@ bool NC_STACK_win3d::AllocTexture(ResBitmap *bitm)
 
 void NC_STACK_win3d::FreeTexture(ResBitmap *bitm)
 {
-    if ( bitm->_hwTex )
-        glDeleteTextures(1, &bitm->_hwTex);
+    if ( bitm->hwTex )
+        glDeleteTextures(1, &bitm->hwTex);
 
-    bitm->_hwTex = 0;
+    bitm->hwTex = 0;
 }
 
 void NC_STACK_win3d::display_func271(IDVPair *stak)

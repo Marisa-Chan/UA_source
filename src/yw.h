@@ -1751,7 +1751,7 @@ struct _NC_STACK_ypaworld
     int16_t field_1628;
     int16_t field_162A;
     int GUI_OK;
-    tiles_stru *tiles[92];
+    std::array<TileMap *, 92> tiles;
     GuiBaseList field_17a0;
     int16_t screen_width;
     int16_t screen_height;

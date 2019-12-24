@@ -158,19 +158,19 @@ rsrc * NC_STACK_bitmap::rsrc_func64(IDVList &stak)
             if ( intern )
             {
                 if (colormap)
-                    intern->_pallete = new UA_PALETTE;
+                    intern->palette = new UA_PALETTE;
 
-                intern->_width = width;
-                intern->_height = height;
+                intern->width = width;
+                intern->height = height;
 
                 if ( !colormap )
                 {
-                    intern->_width = width;
-                    intern->_height = height;
+                    intern->width = width;
+                    intern->height = height;
 
                     // allocate buffer, create palette, surface and texture
-                    intern->_swTex = CreateSurfaceScreenFormat(width, height);
-                    if (!intern->_swTex)
+                    intern->swTex = CreateSurfaceScreenFormat(width, height);
+                    if (!intern->swTex)
                     {
                         delete intern;
                         return res;
@@ -178,8 +178,8 @@ rsrc * NC_STACK_bitmap::rsrc_func64(IDVList &stak)
                 }
                 else
                 {
-                    intern->_swTex = SDL_CreateRGBSurface(0, width, height, 8, 0, 0, 0, 0);
-                    if ( !intern->_swTex )
+                    intern->swTex = SDL_CreateRGBSurface(0, width, height, 8, 0, 0, 0, 0);
+                    if ( !intern->swTex )
                     {
                         delete intern;
                         return res;
@@ -198,14 +198,14 @@ size_t NC_STACK_bitmap::rsrc_func65(rsrc *res)
 
     if ( intern )
     {
-        if ( intern->_hwTex )
+        if ( intern->hwTex )
             engines.display___win3d->FreeTexture(intern);
 
-        if ( intern->_swTex )
-            SDL_FreeSurface(intern->_swTex);
+        if ( intern->swTex )
+            SDL_FreeSurface(intern->swTex);
 
-        if ( intern->_pallete )
-            delete intern->_pallete;
+        if ( intern->palette )
+            delete intern->palette;
 
         delete intern;
         res->data = NULL;
@@ -240,13 +240,13 @@ void NC_STACK_bitmap::setBMD_outline(pixel_2d *otl)
 
 void NC_STACK_bitmap::setBMD_palette(UA_PALETTE *newPal)
 {
-    if ( stack__bitmap.bitm_intern->_pallete )
-        *stack__bitmap.bitm_intern->_pallete = *newPal;
+    if ( stack__bitmap.bitm_intern->palette )
+        *stack__bitmap.bitm_intern->palette = *newPal;
 }
 
 
 
-ResBitmap * NC_STACK_bitmap::getBMD_pBitmap()
+ResBitmap * NC_STACK_bitmap::GetResBmp()
 {
     return stack__bitmap.bitm_intern;
 }
@@ -254,7 +254,7 @@ ResBitmap * NC_STACK_bitmap::getBMD_pBitmap()
 int NC_STACK_bitmap::getBMD_width()
 {
     if (stack__bitmap.bitm_intern)
-        return stack__bitmap.bitm_intern->_width;
+        return stack__bitmap.bitm_intern->width;
 
     return 0;
 }
@@ -262,7 +262,7 @@ int NC_STACK_bitmap::getBMD_width()
 int NC_STACK_bitmap::getBMD_height()
 {
     if (stack__bitmap.bitm_intern)
-        return stack__bitmap.bitm_intern->_height;
+        return stack__bitmap.bitm_intern->height;
 
     return 0;
 }
@@ -270,7 +270,7 @@ int NC_STACK_bitmap::getBMD_height()
 int NC_STACK_bitmap::getBMD_hasPalette()
 {
     if (stack__bitmap.bitm_intern)
-        return stack__bitmap.bitm_intern->_pallete != NULL;
+        return stack__bitmap.bitm_intern->palette != NULL;
 
     return 0;
 }
@@ -278,7 +278,15 @@ int NC_STACK_bitmap::getBMD_hasPalette()
 UA_PALETTE *NC_STACK_bitmap::getBMD_palette()
 {
     if (stack__bitmap.bitm_intern)
-        return stack__bitmap.bitm_intern->_pallete;
+        return stack__bitmap.bitm_intern->palette;
+
+    return NULL;
+}
+
+SDL_Surface * NC_STACK_bitmap::GetSwTex()
+{
+    if (stack__bitmap.bitm_intern)
+        return stack__bitmap.bitm_intern->swTex;
 
     return NULL;
 }
@@ -288,10 +296,10 @@ void NC_STACK_bitmap::PrepareTexture( bool force )
     if (!stack__bitmap.bitm_intern)
         return;
     
-    if (stack__bitmap.bitm_intern->_hwTex && !force)
+    if (stack__bitmap.bitm_intern->hwTex && !force)
         return;
     
-    if (stack__bitmap.bitm_intern->_hwTex)
+    if (stack__bitmap.bitm_intern->hwTex)
         engines.display___win3d->FreeTexture(stack__bitmap.bitm_intern);
         
     engines.display___win3d->AllocTexture(stack__bitmap.bitm_intern);

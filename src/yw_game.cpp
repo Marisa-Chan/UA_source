@@ -50,7 +50,7 @@ void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
     {
         rstr_arg204 a4;
 
-        a4.pbitm = splashScreen->getBMD_pBitmap();
+        a4.pbitm = splashScreen->GetResBmp();
 
         a4.float4  = -1.0;
         a4.float8  = -1.0;
@@ -88,7 +88,7 @@ void drawSplashScreenWithTOD(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScre
     {
         rstr_arg204 a4;
 
-        a4.pbitm = splashScreen->getBMD_pBitmap();
+        a4.pbitm = splashScreen->GetResBmp();
 
         a4.float4  = -1.0;
         a4.float8  = -1.0;

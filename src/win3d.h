@@ -218,7 +218,7 @@ protected:
     void AddScreenText(const char *string, int p1, int p2, int p3, int p4, int flag);
     void DrawTextEntry(const ScreenText *txt);
 
-    void win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char **arr);
+    void win3d_func209__sub0(TileMap **tiles, char *cmdline, char **arr);
 
     static SDL_Cursor *wrapLoadCursor(const char *name);
 

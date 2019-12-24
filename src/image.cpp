@@ -153,28 +153,28 @@ rsrc * NC_STACK_image::rsrc_func64(IDVList &stak)
     
     res->data = bitm;
     
-    bitm->_width = loaded->w;
-    bitm->_height = loaded->h;
-    bitm->_swTex = loaded;
+    bitm->width = loaded->w;
+    bitm->height = loaded->h;
+    bitm->swTex = loaded;
     
     if (convertColor)
     {
         SDL_Surface *screenFmt = ConvertToScreen(loaded);
         if (screenFmt)
         {
-            SDL_FreeSurface(bitm->_swTex);
-            bitm->_swTex = screenFmt;
+            SDL_FreeSurface(bitm->swTex);
+            bitm->swTex = screenFmt;
         }
     } 
     else if (loaded->format->palette)
     {
-        if ( !bitm->_pallete )
-            bitm->_pallete = new UA_PALETTE;
+        if ( !bitm->palette )
+            bitm->palette = new UA_PALETTE;
 
-        if ( bitm->_pallete )
+        if ( bitm->palette )
         {
             for (int i = 0; i < loaded->format->palette->ncolors; i++)
-                (*bitm->_pallete)[i] = loaded->format->palette->colors[i];
+                (*bitm->palette)[i] = loaded->format->palette->colors[i];
         }
     }
 

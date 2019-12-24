@@ -95,7 +95,7 @@ public:
     virtual void setBANM_animType(int newType);
 
     //Get
-    virtual ResBitmap * getBMD_pBitmap();
+    virtual ResBitmap * GetResBmp();
     virtual int getBMD_width();
     virtual int getBMD_height();
     virtual void *getBMD_buffer();

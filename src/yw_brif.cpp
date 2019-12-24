@@ -21,7 +21,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub3(_NC_STACK_ypaworld *yw, struC5 *in
     brf->startTime = brf->currTime;
     brf->briefStage = 5;
 
-    brf->field_2F40.pbitm = brf->mbmap_img->getBMD_pBitmap();
+    brf->field_2F40.pbitm = brf->mbmap_img->GetResBmp();
 
     brf->field_2F64.x1 = -0.4515625;
     brf->field_2F64.y1 = -0.324999988079;
@@ -860,7 +860,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub1(_NC_STACK_ypaworld *yw, big_ypa_Br
                 FontUA::select_tileset(&pos, v31->field_C);
             }
 
-            int v38 = yw->tiles[(int)v31->field_C]->font_height / 2;
+            int v38 = yw->tiles[(int)v31->field_C]->h / 2;
 
             float v15 = (brf->field_2F74.x2 - brf->field_2F74.x1) * (v31->xpos / yw->map_Width_meters) + brf->field_2F74.x1;
             float v14 = (brf->field_2F74.y2 - brf->field_2F74.y1) * (-v31->ypos / yw->map_Height_meters) + brf->field_2F74.y1;
@@ -949,20 +949,10 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
                     v20.x2 = v21.x1;
                 }
 
-                rstr_arg217 v22;
-
-                v22.dword4 = 0x7070;
-//                v22.dword8 = 0xFFFFFFFF;
-                v22.dword0 = 0xA0A0;
-
-                yw->win3d->raster_func217(&v22);
+                yw->win3d->raster_func217(0xA0A0);
                 yw->win3d->raster_func198(&v20);
 
-                v22.dword4 = 0x7070;
-//                v22.dword8 = 0xFFFFFFFF;
-                v22.dword0 = 0x4040;
-
-                yw->win3d->raster_func217(&v22);
+                yw->win3d->raster_func217(0x4040);
                 yw->win3d->raster_func198(&v21);
             }
         }
@@ -980,7 +970,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
                     v13 = 100 * v11 / 500;
 
                 int xpos = ((br_obj->field_10 + br_obj->field_18) * 0.5) * (yw->screen_width / 2);
-                int ypos = ((yw->screen_height / 2) * br_obj->field_1C - yw->tiles[16]->font_height + -1.0);
+                int ypos = ((yw->screen_height / 2) * br_obj->field_1C - yw->tiles[16]->h + -1.0);
 
                 char cmdbuf[128];
                 char *pos = cmdbuf;
@@ -1166,7 +1156,7 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
         {
             rstr_arg204 a4;
 
-            a4.pbitm = brf->briefing_map->getBMD_pBitmap();
+            a4.pbitm = brf->briefing_map->GetResBmp();
 
             a4.float4 = -1.0;
             a4.floatC = 1.0;
@@ -1232,7 +1222,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(_NC_STACK_ypaworld *yw, struC5 *st
     brf->startTime = brf->currTime;
     brf->briefStage = 5;
 
-    brf->field_2F40.pbitm = brf->mbmap_img->getBMD_pBitmap();
+    brf->field_2F40.pbitm = brf->mbmap_img->GetResBmp();
 
     float v21, v22;
 
@@ -1542,12 +1532,7 @@ void yw_DebriefRenderSectorsOwners(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
                     arg198_1.x2 = v23;
                     arg198_1.y2 = v21 + v16;
 
-                    rstr_arg217 arg217;
-                    arg217.dword0 = yw_GetColor(yw, owner);
-                    arg217.dword4 = arg217.dword0;
-//                    arg217.dword8 = -1;
-
-                    yw->win3d->raster_func217(&arg217);
+                    yw->win3d->raster_func217( yw_GetColor(yw, owner) );
                     yw->win3d->raster_func198(&arg198);
                     yw->win3d->raster_func198(&arg198_1);
                 }
@@ -2374,7 +2359,7 @@ void yw_debriefUpdate(_NC_STACK_ypaworld *yw, struC5 *inpt)
             if ( brf->briefing_map )
             {
                 rstr_arg204 arg204;
-                arg204.pbitm = brf->briefing_map->getBMD_pBitmap();
+                arg204.pbitm = brf->briefing_map->GetResBmp();
 
                 arg204.float4 = -1.0;
                 arg204.floatC = 1.0;
