@@ -400,7 +400,7 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                         ypaworld_arg136 arg136_2;
                         arg136_2.stPos = bact->position;
-                        arg136_2.vect = bact->rotation.AxisX() * 300.0;
+                        arg136_2.vect = bact->rotation.AxisY() * 300.0;
                         arg136_2.flags = 1;
 
                         tank->ywo->ypaworld_func136(&arg136_2);
