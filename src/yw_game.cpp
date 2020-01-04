@@ -742,7 +742,7 @@ int NC_STACK_ypaworld::LVLoaderCommon(mapProto &mapp, int levelID, int a5)
 
     set_prefix_replacement("rsrc", "data:fonts");
 
-    int v19 = load_fonts_and_icons(&ypaworld);
+    int v19 = load_fonts_and_icons();
 
     set_prefix_replacement("rsrc", rsr);
 

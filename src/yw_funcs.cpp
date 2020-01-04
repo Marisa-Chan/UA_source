@@ -323,7 +323,6 @@ int NC_STACK_ypaworld::load_fonts_and_icons()
     ypaworld.icon_energy__h = ypaworld.tiles[30]->h; // ENERGIE height
     ypaworld.icon0___h = ypaworld.icon_order__h;
     
-    ypaworld.self_full->UpdateGuiSettings();
 
     return 1;
 }
