@@ -1334,7 +1334,7 @@ void NC_STACK_ypabact::AI_layer2(update_msg *arg)
                         if ( arg90.ret_unit->bact_type == BACT_TYPES_GUN )
                         {
                             NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( arg90.ret_unit->self );
-                            v32 = gun->getGUN_roboGun();
+                            v32 = gun->IsRoboGun();
                         }
 
                         if ( !v32 )
@@ -5751,7 +5751,7 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
     if ( bact->bact_type == BACT_TYPES_GUN )
     {
         NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( this );
-        int a4 = gun->getGUN_roboGun();
+        int a4 = gun->IsRoboGun();
 
         if ( a4 )
             v107 = 1;
@@ -5775,7 +5775,7 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
                     if (v21->bact_type == BACT_TYPES_GUN)
                     {
                         NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( v21->self );
-                        v89 = gun->getGUN_roboGun();
+                        v89 = gun->IsRoboGun();
                     }
 
                     if ( v21->bact_type != BACT_TYPES_GUN || v21->shield > 100 || !v89 )
@@ -6153,7 +6153,7 @@ size_t NC_STACK_ypabact::UserTargeting(bact_arg106 *arg)
                                 if (bct->bact_type == BACT_TYPES_GUN)
                                 {
                                     NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
-                                    v53 = gun->getGUN_roboGun();
+                                    v53 = gun->IsRoboGun();
                                 }
 
                                 if ( !v53 )
@@ -7979,7 +7979,7 @@ void NC_STACK_ypabact::ypabact_func123(update_msg *upd)
             NC_STACK_ypagun *guno = dynamic_cast<NC_STACK_ypagun *>(this);
             if (guno)
             {
-                hgun = guno->getGUN_roboGun();
+                hgun = guno->IsRoboGun();
             }
         }
 

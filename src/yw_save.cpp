@@ -994,7 +994,7 @@ int yw_write_units(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
                 if ( commander->bact->bact_type == BACT_TYPES_GUN )
                 {
                     NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( commander->bacto );
-                    a4 = gun->getGUN_roboGun();
+                    a4 = gun->IsRoboGun();
                 }
 
                 if ( !a4 )
@@ -1021,7 +1021,7 @@ int yw_write_units(_NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
                     if ( slave->bact->bact_type == BACT_TYPES_GUN )
                     {
                         NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( slave->bacto );
-                        v9 = gun->getGUN_roboGun();
+                        v9 = gun->IsRoboGun();
                     }
 
                     if ( !v9 )

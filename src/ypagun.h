@@ -88,7 +88,7 @@ public:
     virtual int getGUN_fireType();
     virtual int getGUN_fireTime();
     virtual bool getGUN_setGround();
-    virtual bool getGUN_roboGun();
+    virtual bool IsRoboGun();
 
 
     bool CheckPedestal();

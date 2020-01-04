@@ -2857,7 +2857,7 @@ void ypaworld_func148__sub0(_NC_STACK_ypaworld *yw, int x, int y)
                     {
                         NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( node->self );
 
-                        if (!gun->getGUN_roboGun())
+                        if (!gun->IsRoboGun())
                             v5 = 1;
                     }
                 }
@@ -2871,7 +2871,7 @@ void ypaworld_func148__sub0(_NC_STACK_ypaworld *yw, int x, int y)
                 {
                     NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( node->self );
 
-                    if (!gun->getGUN_roboGun())
+                    if (!gun->IsRoboGun())
                         v5 = 1;
                 }
             }
@@ -3112,7 +3112,7 @@ void ypaworld_func64__sub6__sub0(_NC_STACK_ypaworld *yw)
                         if ( comnd_node->bact->bact_type == BACT_TYPES_GUN )
                         {
                             NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( comnd_node->bact->self );
-                            a4 = gun->getGUN_roboGun();
+                            a4 = gun->IsRoboGun();
                         }
 
                         if ( a4 == 0 )
@@ -4319,7 +4319,7 @@ void sub_4F1BE8(_NC_STACK_ypaworld *yw, bact_node *bct)
     {
         NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->bacto );
 
-        if ( gun->getGUN_roboGun() )
+        if ( gun->IsRoboGun() )
         {
             roboGun *v4 = bct->bact->host_station->getROBO_guns();
 

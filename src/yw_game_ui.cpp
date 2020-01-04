@@ -1702,7 +1702,7 @@ void sb_0x4f8f64(_NC_STACK_ypaworld *yw)
                         {
                             NC_STACK_ypagun *gn = (NC_STACK_ypagun *)bct->self;
 
-                            if ( !gn->getGUN_roboGun() || bct == yw->UUBact )
+                            if ( !gn->IsRoboGun() || bct == yw->UUBact )
                             {
                                 pcur = sub_4F6DFC(yw, pcur, height, width, bct, a6);
                                 v41++;
@@ -9000,6 +9000,7 @@ void yw_RenderVector2D(_NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float pos
 
                     color_func2(yw, v29.x1, v29.y1, v29.x2, v29.y2, &v34, &v33);
 
+
                     yw->win3d->raster_func217(v34);
                 }
 
@@ -10323,7 +10324,7 @@ char * yw_RenderOverlayCursors(_NC_STACK_ypaworld *yw, char *cur)
                                 {
                                     NC_STACK_ypagun *gun = (NC_STACK_ypagun *)bct->self;
 
-                                    if ( !gun->getGUN_roboGun() )
+                                    if ( !gun->IsRoboGun() )
                                         yw_RenderCursorOverUnit(yw, bct);
                                 }
 
@@ -10535,7 +10536,7 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(_NC_STACK_ypaworld *yw)
                         {
                             NC_STACK_ypagun *gun = (NC_STACK_ypagun *)bact->self;
 
-                            if ( (!gun->getGUN_roboGun() || bact == yw->UUBact) && !v19 )
+                            if ( (!gun->IsRoboGun() || bact == yw->UUBact) && !v19 )
                             {
                                 pcur = sub_4F6DFC(yw, pcur, 7, 7, bact, 0);
 

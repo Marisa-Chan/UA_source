@@ -339,7 +339,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                 {
                     NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
 
-                    if ( gun->getGUN_roboGun() )
+                    if ( gun->IsRoboGun() )
                         continue;
                 }
 
@@ -354,7 +354,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
 
                     if (bct->owner == bact->owner)
                     {
-                        if (gun->getGUN_roboGun())
+                        if (gun->IsRoboGun())
                         {
                             if (bct->bact_type == BACT_TYPES_ROBO)
                                 continue;
@@ -363,7 +363,7 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                             {
                                 NC_STACK_ypagun *bgun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
 
-                                if (bgun->getGUN_roboGun())
+                                if (bgun->IsRoboGun())
                                     continue;
                             }
                         }

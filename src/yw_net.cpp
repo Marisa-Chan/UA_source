@@ -882,7 +882,7 @@ void yw_netSendUpdate(_NC_STACK_ypaworld *yw, uint8_t owner, char *recvID)
         {
             NC_STACK_ypagun *gn = dynamic_cast<NC_STACK_ypagun *>(comnd->bacto);
             if ( gn )
-                isrobogun = gn->getGUN_roboGun();
+                isrobogun = gn->IsRoboGun();
         }
 
         if ( isrobogun )
@@ -1022,7 +1022,7 @@ bool yw_netRecvUpdate(_NC_STACK_ypaworld *yw, uamessage_update *msg, int owner)
                     {
                         NC_STACK_ypagun *gn = dynamic_cast<NC_STACK_ypagun *>(bctnd->bacto);
 
-                        if (gn && gn->getGUN_roboGun())
+                        if (gn && gn->IsRoboGun())
                             break;
                     }
                 }
@@ -2109,7 +2109,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             {
                 NC_STACK_ypagun *gno = dynamic_cast<NC_STACK_ypagun *>(v166->bacto);
                 if (gno)
-                    rbgun = gno->getGUN_roboGun();
+                    rbgun = gno->IsRoboGun();
             }
 
             if ( rbgun )
@@ -4161,7 +4161,7 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
 
             int rbgun = 0;
             if (bct->bact->bact_type == BACT_TYPES_GUN)
-                rbgun = ((NC_STACK_ypagun *)bct->bacto)->getGUN_roboGun();
+                rbgun = ((NC_STACK_ypagun *)bct->bacto)->IsRoboGun();
 
             if (rbgun)
             {

@@ -156,7 +156,7 @@ size_t NC_STACK_ypagun::func3(IDVList &stak)
                 break;
 
             case GUN_ATT_ROBOGUN:
-                *(int *)val.value.p_data = getGUN_roboGun();
+                *(int *)val.value.p_data = IsRoboGun();
                 break;
 
             default:
@@ -874,7 +874,7 @@ bool NC_STACK_ypagun::getGUN_setGround()
     return (ypagun.gunFlags & GUN_FLAGS_GROUND) != 0;
 }
 
-bool NC_STACK_ypagun::getGUN_roboGun()
+bool NC_STACK_ypagun::IsRoboGun()
 {
     return (ypagun.gunFlags & GUN_FLAGS_ROBO) != 0;
 }

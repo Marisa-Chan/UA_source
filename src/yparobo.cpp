@@ -865,7 +865,7 @@ void sb_0x4a7010__sub1__sub0(NC_STACK_ypabact *unit1, NC_STACK_ypabact *unit2)
                             if ( v10->bact_type == BACT_TYPES_GUN && bact1->owner == v10->owner && v10->status != BACT_STATUS_DEAD )
                             {
                                 NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( v10->self );
-                                int a4 = gun->getGUN_roboGun();
+                                int a4 = gun->IsRoboGun();
 
                                 if ( !a4 )
                                 {
@@ -1024,7 +1024,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
                 if ( node->bact->bact_type == BACT_TYPES_GUN )
                 {
                     NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( node->bacto );
-                    int a4 = gun->getGUN_roboGun();
+                    int a4 = gun->IsRoboGun();
 
                     if ( a4 )
                         node->bact->status_flg |= BACT_STFLAG_DSETTED;
@@ -3117,7 +3117,7 @@ void NC_STACK_yparobo::buildConquer()
         if ( bact->owner != cell_unit->owner && cell_unit->bact_type == BACT_TYPES_GUN && (cell_unit->weapon != -1 || cell_unit->mgun != -1) )
         {
             NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( cell_unit->self );
-            int a4 = gun->getGUN_roboGun();
+            int a4 = gun->IsRoboGun();
 
             if ( !a4 )
             {
@@ -3227,7 +3227,7 @@ void NC_STACK_yparobo::buildDefense()
         if ( arg132.tgt.pbact->bact_type == BACT_TYPES_GUN && (arg132.tgt.pbact->weapon != -1 || arg132.tgt.pbact->mgun != -1) )
         {
             NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( arg132.tgt.pbact->self );
-            int a4 = gun->getGUN_roboGun();
+            int a4 = gun->IsRoboGun();
 
             if ( !a4 )
             {
@@ -4524,7 +4524,7 @@ int yparobo_func70__sub6__sub8(__NC_STACK_yparobo *robo)
                 if ( bct->bact_type == BACT_TYPES_GUN && bct->status != BACT_STATUS_DEAD && bact->owner == bct->owner )
                 {
                     NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
-                    int a4 = gun->getGUN_roboGun();
+                    int a4 = gun->IsRoboGun();
 
                     if ( a4 == 0 && ( bct->weapon != -1 || bct->mgun != -1 ) )
                     {
@@ -4561,7 +4561,7 @@ int yparobo_func70__sub6__sub9(__NC_STACK_yparobo *robo)
                 if ( bct->bact_type == BACT_TYPES_GUN && bct->status != BACT_STATUS_DEAD && bact->owner == bct->owner )
                 {
                     NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
-                    int a4 = gun->getGUN_roboGun();
+                    int a4 = gun->IsRoboGun();
 
                     if ( a4 == 0 && bct->weapon == -1 && bct->mgun == -1 )
                     {
@@ -4740,7 +4740,7 @@ int yparobo_func70__sub6__sub5(__NC_STACK_yparobo *robo, int *a2, int *px, int *
                     if ( ndbct->bact->bact_type == BACT_TYPES_GUN )
                     {
                         NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( ndbct->bacto );
-                        v26 = gun->getGUN_roboGun();
+                        v26 = gun->IsRoboGun();
                     }
 
                     if ( (1 << bact->owner) & ndbct->bact->pSector->view_mask )
@@ -4870,7 +4870,7 @@ int sub_4F4E48(__NC_STACK_yparobo *robo, int x, int y)
                     {
                         NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
 
-                        if ( !gun->getGUN_roboGun() )
+                        if ( !gun->IsRoboGun() )
                             v16 = 1.0;
                     }
                 }
@@ -6568,7 +6568,7 @@ int yparobo_func134__sub1(__NC_STACK_yparobo *robo, robo_arg134 *arg)
         {
             NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( arg->unit->self );
 
-            if ( gun->getGUN_roboGun() )
+            if ( gun->IsRoboGun() )
                 v2 = 0;
         }
 
