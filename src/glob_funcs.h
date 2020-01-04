@@ -48,7 +48,9 @@ void *AllocVec(size_t size, int a2);
 
 
 const char * get_prefix_replacement(const char *prefix);
+std::string get_prefix_replacement(const std::string &prefix);
 void set_prefix_replacement(const std::string &str1, const std::string &str2);
+std::string SetPathKeys(const std::string &name, const std::string &value);
 
 std::string file_path_copy_manipul(const std::string &src);
 

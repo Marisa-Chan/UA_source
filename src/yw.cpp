@@ -3630,7 +3630,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         ypaworld_func174(&v247);
     }
 
-    if ( !yw_LoadSet(yw, 46) )
+    if ( !yw_LoadSet(46) )
     {
         ypa_log_out("Unable to load set for shell\n");
         return 0;

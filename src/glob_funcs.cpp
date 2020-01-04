@@ -62,6 +62,17 @@ const char * get_prefix_replacement(const char *prefix)
     return "";
 }
 
+std::string get_prefix_replacement(const std::string &prefix)
+{
+    for( auto &x : engines.kvPairs )
+    {
+        if ( !StriCmp(x.name, prefix ) )
+            return x.value;
+    }
+
+    return "";
+}
+
 void set_prefix_replacement(const std::string &str1, const std::string &str2)
 {
     for (std::list<TKVPair>::iterator it = engines.kvPairs.begin(); it != engines.kvPairs.end(); it++)
@@ -79,6 +90,25 @@ void set_prefix_replacement(const std::string &str1, const std::string &str2)
 
     tmp.name = str1;
     tmp.value = str2;
+}
+
+std::string SetPathKeys(const std::string &name, const std::string &value)
+{
+    for( auto &x : engines.kvPairs )
+    {
+        if ( !StriCmp(x.name, name) )
+        {
+            std::string old = x.value;
+            x.value = value;
+            return old;
+        }
+    }
+
+    engines.kvPairs.emplace_front();
+    TKVPair &tmp = engines.kvPairs.front();
+    tmp.name = name;
+    tmp.value = value;
+    return "";
 }
 
 

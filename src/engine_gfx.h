@@ -40,6 +40,10 @@ struct TileMap
     
     TileMap();  
     ~TileMap();
+    
+    void Draw(SDL_Surface *surface, const Common::Point &pos, uint8_t c);
+    void Draw(SDL_Surface *surface, const Common::PointRect &posRect, uint8_t c);
+    void Draw(SDL_Surface *surface, const Common::Rect &posRect, uint8_t c);
 };
 
 struct w3d_a209

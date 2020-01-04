@@ -111,7 +111,7 @@ struct __attribute__((packed)) shortPoint
     short x;
     short y;
 
-    shortPoint(int a)
+    shortPoint(int32_t a)
     {
         x = a & 0xFFFF;
         y = a >> 16;
@@ -247,5 +247,17 @@ private:
     std::string _chars;
     size_t      _pos;
 };
+
+namespace Utils
+{
+    
+inline void StringSetEnd(std::string *str, const std::string &chars)
+{
+    size_t line_end = str->find_first_of(chars);
+    if (line_end != std::string::npos)
+        str->erase(line_end);
+}
+
+}
 
 #endif // UTILS_H_INCLUDED

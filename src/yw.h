@@ -2456,9 +2456,6 @@ struct roboProto
     }
 };
 
-int load_fonts_and_icons(_NC_STACK_ypaworld *yw);
-int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID);
-
 
 struct yw_arg172
 {
@@ -2890,6 +2887,14 @@ public:
     int yw_ScanLevels();
     int yw_RestoreVehicleData();
     void sub_471AB8();
+    int load_fonts_and_icons();
+    int yw_LoadSet(int setID);
+    
+    
+    static TileMap * yw_LoadFont(const std::string &fontname);
+    static TileMap * yw_LoadTileSet(const std::string &bitmap, Common::Point chrSz, Common::Point delta, Common::Point cr, Common::Point offset);
+    
+    
 
 public:
     //Data

@@ -47,9 +47,9 @@ struct Point
             y -= delta.y;
     }
 
-    Point Invert() { return Point( -x, -y ); }
+    Point Invert() const { return Point( -x, -y ); }
     
-    operator SDL_Rect()
+    operator SDL_Rect() const
     {
         SDL_Rect tmp;
         tmp.x = x;
@@ -156,7 +156,7 @@ struct Rect
             top += p.y; bottom += p.y;
     }
 
-    operator bool()
+    operator bool() const
     {
         return !IsEmpty();
     }
@@ -171,7 +171,7 @@ struct Rect
         return Point(Width(), Height());
     }
     
-    operator SDL_Rect()
+    operator SDL_Rect() const
     {
         SDL_Rect tmp;
         tmp.x = left;
@@ -193,6 +193,7 @@ struct PointRect
     PointRect() : x(0), y(0), w(0), h(0) {};
     PointRect(int x1, int y1) : x(x1), y(y1), w(0), h(0) {};
     PointRect(Point p) : x(p.x), y(p.y), w(0), h(0) {};
+    PointRect(Point p, int w_, int h_) : x(p.x), y(p.y), w(w_), h(h_) {};
     PointRect(int x_, int y_, int w_, int h_) : x(x_), y(y_), w(w_), h(h_) {};
     
     int Right() const { return x + w; }
@@ -304,22 +305,22 @@ struct PointRect
         return Point(w, h);
     }
     
-    operator bool()
+    operator bool() const
     {
         return !IsEmpty();
     }
 
-    operator Point()
+    operator Point() const
     {
         return Point(x, y);
     }
     
-    operator Rect()
+    operator Rect() const
     {
         return Rect(x, y, x + w, y + h);
     }
     
-    operator SDL_Rect()
+    operator SDL_Rect() const
     {
         SDL_Rect tmp;
         tmp.x = x;
@@ -348,7 +349,7 @@ public:
         Resize(w, h);
     }
     
-    PlaneVector<T> *Copy()
+    PlaneVector<T>* Copy()
     {
         PlaneVector<T> *tmp = new PlaneVector<T>;
         *tmp = *this;

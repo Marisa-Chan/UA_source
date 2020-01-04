@@ -177,3 +177,32 @@ TileMap::~TileMap()
     if (img)
         Nucleus::Delete(img);
 }
+
+void TileMap::Draw(SDL_Surface *surface, const Common::Point &pos, uint8_t c)
+{
+    SDL_Rect src = map[c];
+    SDL_Rect dst = pos;
+    SDL_BlitSurface(img->GetSwTex(), &src, surface, &dst);
+}
+
+void TileMap::Draw(SDL_Surface *surface, const Common::PointRect &pos, uint8_t c)
+{
+    SDL_Rect src = map[c];
+    if (src.w > pos.w)
+        src.w = pos.w;
+    if (src.h > pos.h)
+        src.h = pos.h;    
+    SDL_Rect dst = pos;
+    SDL_BlitSurface(img->GetSwTex(), &src, surface, &dst);
+}
+
+void TileMap::Draw(SDL_Surface *surface, const Common::Rect &pos, uint8_t c)
+{
+    SDL_Rect src = map[c];
+    if (src.w > pos.Width())
+        src.w = pos.Width();
+    if (src.h > pos.Height())
+        src.h = pos.Height();    
+    SDL_Rect dst = pos;
+    SDL_BlitSurface(img->GetSwTex(), &src, surface, &dst);
+}

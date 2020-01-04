@@ -12,168 +12,105 @@
 extern GuiList stru_5C91D0;
 
 
-TileMap * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
+TileMap * NC_STACK_ypaworld::yw_LoadFont(const std::string &fontname)
 {
-    char filename[256];
-
-    strcpy(filename, "rsrc:");
-
-    if ( yw->screen_width >= 512 )
-        strcat(filename, "hfonts/");
-    else
-        strcat(filename, "fonts/");
-
-    strcat(filename, fontname);
-
-    FSMgr::FileHandle *fil = uaOpenFile(filename, "r");
+    FSMgr::FileHandle *fil = uaOpenFile("rsrc:hfonts/" + fontname, "r");
     if ( !fil )
         return NULL;
 
     TileMap *tileset = new TileMap;
-
     if ( !tileset )
     {
         delete fil;
         return NULL;
     }
 
-    if ( tileset )
+    std::string buf;
+    if ( !fil->ReadLine(&buf) )
     {
-        char buf[128];
+        ypa_log_out("yw_LoadFont(): font %s, font definition file corrupt.\n", fontname);
+        delete tileset;
+        delete fil;
+        return NULL;
+    }
 
-        if ( !fil->gets(buf, 128) )
+    Utils::StringSetEnd(&buf, ";\n\r");
+
+    std::string bitmap_name;
+    std::string fntHeight;
+    Stok tk(buf, " \t");
+
+    if ( !tk.GetNext(&bitmap_name) || !tk.GetNext(&fntHeight) )
+    {
+        delete tileset;
+        ypa_log_out("yw_LoadFont(): font %s, font definition file corrupt.\n", fontname);
+        delete fil;
+        return NULL;
+    }
+
+    IDVList init_vals;
+    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, bitmap_name.c_str());
+    init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
+    init_vals.Add(NC_STACK_ilbm::ATT_ALPHAPALETTE, 0);
+
+    tileset->img = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
+    if ( !tileset->img )
+    {
+        delete tileset;
+        ypa_log_out("yw_LoadFont(): font %s, couldn't load fontpage %s.\n", fontname, bitmap_name);
+        delete fil;
+        return NULL;
+    }
+
+    SDL_SetColorKey(tileset->img->GetSwTex(), SDL_TRUE, SDL_MapRGB(tileset->img->GetSwTex()->format, 255, 255, 0));
+
+    tileset->h = std::stol(fntHeight, NULL, 0);
+
+    while ( fil->ReadLine(&buf) )
+    {
+        Utils::StringSetEnd(&buf, "\n\r");
+        Stok tkc(buf, " \t");
+
+        int chr = -1;          
+
+        if ( buf[0] == ' ' )
+            chr = (uint8_t)' ';
+        else
         {
-            ypa_log_out("yw_LoadFont(): font %s, font definition file corrupt.\n", fontname);
-            delete tileset;
-            delete fil;
-            return NULL;
-        }
-
-        char *chrpos = buf;
-
-        while (*chrpos)
-        {
-            if (*chrpos == '\n')
+            std::string sChar;
+            if (tkc.GetNext(&sChar))
             {
-                *chrpos = 0;
-                break;
-            }
-            chrpos++;
-        }
-
-        char *bitmap_name = strtok(buf, " \t");
-
-        if ( !bitmap_name )
-        {
-            delete tileset;
-            ypa_log_out("yw_LoadFont(): font %s, font definition file corrupt.\n", fontname);
-            delete fil;
-            return NULL;
-        }
-
-        IDVList init_vals;
-        init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, bitmap_name);
-        init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
-        init_vals.Add(NC_STACK_ilbm::ATT_ALPHAPALETTE, 0);
-
-        tileset->img = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
-        if ( !tileset->img )
-        {
-            delete tileset;
-            ypa_log_out("yw_LoadFont(): font %s, couldn't load fontpage %s.\n", fontname, bitmap_name);
-            delete fil;
-            return NULL;
-        }
-
-        SDL_SetColorKey(tileset->img->GetSwTex(), SDL_TRUE, SDL_MapRGB(tileset->img->GetSwTex()->format, 255, 255, 0));
-
-        char *fntHeight = strtok(0, " \t");
-        if ( !fntHeight )
-        {
-            ypa_log_out("yw_LoadFont(): font %s, font definition file corrupt.\n", fontname);
-            delete tileset;
-            delete fil;
-            return NULL;
-        }
-
-        tileset->h = strtol(fntHeight, NULL, 0);
-
-        while ( fil->gets(buf, 128) )
-        {
-            chrpos = buf;
-
-            while (*chrpos)
-            {
-                if (*chrpos == '\n')
-                {
-                    *chrpos = 0;
-                    break;
-                }
-                chrpos++;
-            }
-
-            int go = 0;
-            uint8_t chr;
-            char *nxt;
-
-            if ( buf[0] == ' ' )
-            {
-                chr = (uint8_t)' ';
-                nxt = buf + 1;
-                go = 1;
-            }
-            else
-            {
-                char *chrname = strtok(buf, " \t");
-                if (chrname)
-                {
-                    if ( *chrname == '#' && chrname[1] )
-                        chr = strtol(chrname + 1, NULL, 0);
-                    else
-                        chr = *(uint8_t *)chrname;
-
-                    nxt = 0;
-                    go = 1;
-                }
-            }
-
-            if ( go )
-            {
-                char *str_x = strtok(nxt, " \t");
-                if ( str_x )
-                {
-                    int xpos = strtol(str_x, NULL, 0);
-
-                    char *str_y = strtok(0, " \t");
-                    if ( str_y )
-                    {
-                        int ypos = strtol(str_y, NULL, 0);
-
-                        char *str_w = strtok(0, " \t");
-                        if ( str_w )
-                        {
-                            tileset->map[chr].w = strtol(str_w, NULL, 0);
-                            tileset->map[chr].h = tileset->h;
-                            tileset->map[chr].x = xpos;
-                            tileset->map[chr].y = ypos;
-                        }
-                    }
-                }
+                if ( sChar[0] == '#' && sChar.length() > 1 )
+                    chr = std::stol(sChar.substr(1), NULL, 0);
+                else
+                    chr = (uint8_t)sChar[0];
             }
         }
 
-        // All empty to first non-empty
-        for ( auto &i : tileset->map)
+        if ( chr >= 0 )
         {
-            if ( !i.IsEmpty() )
+            std::string sX, sY, sW;
+            if ( tkc.GetNext(&sX) && tkc.GetNext(&sY) && tkc.GetNext(&sW) )
             {
-                for ( auto &j : tileset->map)
-                {
-                    if ( j.IsEmpty() )
-                        j = i;
-                }
-                break;
+                tileset->map[chr].x = std::stol(sX, NULL, 0);
+                tileset->map[chr].y = std::stol(sY, NULL, 0);
+                tileset->map[chr].w = std::stol(sW, NULL, 0);
+                tileset->map[chr].h = tileset->h;
             }
+        }
+    }
+
+    // All empty to first non-empty
+    for ( auto &i : tileset->map)
+    {
+        if ( !i.IsEmpty() )
+        {
+            for ( auto &j : tileset->map)
+            {
+                if ( j.IsEmpty() )
+                    j = i;
+            }
+            break;
         }
     }
     delete fil;
@@ -181,16 +118,15 @@ TileMap * yw_LoadFont(_NC_STACK_ypaworld *yw, const char *fontname)
 }
 
 
-TileMap * yw_LoadTileSet(const char *filename, int chr_width, int font_height, int tile_width, int tile_height, int columns, int rows, int x_off, int y_off)
+TileMap * NC_STACK_ypaworld::yw_LoadTileSet(const std::string &bitmap, Common::Point chrSz, Common::Point delta, Common::Point cr, Common::Point offset)
 {
-    
     TileMap *tileset = new TileMap;
 
     if ( !tileset )
         return NULL;
 
     IDVList init_vals;
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, filename);
+    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, bitmap.c_str());
     init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1); // Speed up painting
     init_vals.Add(NC_STACK_ilbm::ATT_ALPHAPALETTE, 0);
 
@@ -203,38 +139,38 @@ TileMap * yw_LoadTileSet(const char *filename, int chr_width, int font_height, i
 
     SDL_SetColorKey(tileset->img->GetSwTex(), SDL_TRUE, SDL_MapRGB(tileset->img->GetSwTex()->format, 255, 255, 0));
 
-    tileset->h = font_height;
+    tileset->h = chrSz.y;
 
     int id = 0;
-    int y = y_off;
-    for (int j = 0; j < rows; j++)
+    int y_pos = offset.y;
+    for (int j = 0; j < cr.y; j++)
     {
-        for (int i = 0; i < columns; i++ )
+        int x_pos = offset.x;
+        
+        for (int i = 0; i < cr.x; i++ )
         {
             ResBitmap *bitm = tileset->img->GetResBmp();
 
-            int x_pos = x_off + i * tile_width;
-            int y_pos = y;
+            if ( x_pos + chrSz.x > bitm->width )
+                x_pos = bitm->width - chrSz.x;
 
-            if ( chr_width + (x_off + i * tile_width) > bitm->width )
-                x_pos = bitm->width - chr_width;
+            if ( y_pos + chrSz.y > bitm->height )
+                y_pos = bitm->height - chrSz.y;
 
-            if ( font_height + y > bitm->height )
-                y_pos = bitm->height - font_height;
-
-            tileset->map[id].w = chr_width;
-            tileset->map[id].h = font_height;
+            tileset->map[id].w = chrSz.x;
+            tileset->map[id].h = chrSz.y;
             tileset->map[id].x = x_pos;
             tileset->map[id].y = y_pos;
 
             id++;
+            x_pos += delta.x;
         }
-        y += tile_height;
+        y_pos += delta.y;
     }
     return tileset;
 }
 
-int load_fonts_and_icons(_NC_STACK_ypaworld *yw)
+int NC_STACK_ypaworld::load_fonts_and_icons()
 {
     const char *font_names[32] =
     {
@@ -274,135 +210,120 @@ int load_fonts_and_icons(_NC_STACK_ypaworld *yw)
 
     for (int i = 0; i < 32; i++)
     {
-        yw->tiles[i] = yw_LoadFont(yw, font_names[i]);
-        if ( !yw->tiles[i] )
+        ypaworld.tiles[i] = ypaworld.self_full->yw_LoadFont(font_names[i]);
+        if ( !ypaworld.tiles[i] )
         {
             ypa_log_out("Could not load font (%s)", font_names[i]);
             return 0;
         }
 
-        GFXEngine::GFXe.setTileset(yw->tiles[i], i);
+        GFXEngine::GFXe.setTileset(ypaworld.tiles[i], i);
     }
 
 
-    yw->tiles[40] = yw_LoadTileSet("lego16.ilbm", 16, 16, 16, 16, 16, 16, 0, 0);
-    if ( !yw->tiles[40] )
+    ypaworld.tiles[40] = yw_LoadTileSet("lego16.ilbm", Common::Point(16, 16), Common::Point(16, 16), Common::Point(16, 16), Common::Point());
+    if ( !ypaworld.tiles[40] )
         return 0;
-    GFXEngine::GFXe.setTileset(yw->tiles[40], 40);
+    GFXEngine::GFXe.setTileset(ypaworld.tiles[40], 40);
 
-    yw->tiles[41] = yw_LoadTileSet("lego8.ilbm", 8, 8, 8, 8, 16, 16, 0, 0);
-    if ( !yw->tiles[41] )
+    ypaworld.tiles[41] = yw_LoadTileSet("lego8.ilbm", Common::Point(8, 8), Common::Point(8, 8), Common::Point(16, 16), Common::Point());
+    if ( !ypaworld.tiles[41] )
         return 0;
-    GFXEngine::GFXe.setTileset(yw->tiles[41], 41);
+    GFXEngine::GFXe.setTileset(ypaworld.tiles[41], 41);
 
-    yw->tiles[42] = yw_LoadTileSet("lego4.ilbm", 4, 4, 4, 4, 16, 16, 0, 0);
-    if ( !yw->tiles[42] )
+    ypaworld.tiles[42] = yw_LoadTileSet("lego4.ilbm", Common::Point(4, 4), Common::Point(4, 4), Common::Point(16, 16), Common::Point());
+    if ( !ypaworld.tiles[42] )
         return 0;
-    GFXEngine::GFXe.setTileset(yw->tiles[42], 42);
+    GFXEngine::GFXe.setTileset(ypaworld.tiles[42], 42);
 
-    yw->tiles[43] = yw_LoadTileSet("sec4.ilbm", 4, 4, 4, 4, 16, 16, 0, 0);
-    if ( !yw->tiles[43] )
+    ypaworld.tiles[43] = yw_LoadTileSet("sec4.ilbm", Common::Point(4, 4), Common::Point(4, 4), Common::Point(16, 16), Common::Point());
+    if ( !ypaworld.tiles[43] )
         return 0;
-    GFXEngine::GFXe.setTileset(yw->tiles[43], 43);
+    GFXEngine::GFXe.setTileset(ypaworld.tiles[43], 43);
 
-    yw->tiles[44] = yw_LoadTileSet("sec8.ilbm", 8, 8, 8, 8, 16, 16, 0, 0);
-    if ( !yw->tiles[44] )
+    ypaworld.tiles[44] = yw_LoadTileSet("sec8.ilbm", Common::Point(8, 8), Common::Point(8, 8), Common::Point(16, 16), Common::Point());
+    if ( !ypaworld.tiles[44] )
         return 0;
-    GFXEngine::GFXe.setTileset(yw->tiles[44], 44);
+    GFXEngine::GFXe.setTileset(ypaworld.tiles[44], 44);
+    
+    
+    
+    ypaworld.tiles[50] = yw_LoadTileSet("mapmisc.ilbm", Common::Point(4, 4), Common::Point(4, 0), Common::Point(9, 1), Common::Point(504, 64));
+    if ( !ypaworld.tiles[50] )
+        return 0;
+    GFXEngine::GFXe.setTileset(ypaworld.tiles[50], 50);
+    
+    ypaworld.tiles[51] = yw_LoadTileSet("mapmisc.ilbm", Common::Point(8, 8), Common::Point(8, 0), Common::Point(9, 1), Common::Point(432, 64));
+    if ( !ypaworld.tiles[51] )
+        return 0;
+    GFXEngine::GFXe.setTileset(ypaworld.tiles[51], 51);
+    
+    ypaworld.tiles[52] = yw_LoadTileSet("mapmisc.ilbm", Common::Point(16, 16), Common::Point(16, 0), Common::Point(9, 1), Common::Point(288, 64));
+    if ( !ypaworld.tiles[52] )
+        return 0;
+    GFXEngine::GFXe.setTileset(ypaworld.tiles[52], 52);
+    
+    ypaworld.tiles[53] = yw_LoadTileSet("mapmisc.ilbm", Common::Point(32, 32), Common::Point(32, 0), Common::Point(9, 1), Common::Point(0, 64));
+    if ( !ypaworld.tiles[53] )
+        return 0;
+    GFXEngine::GFXe.setTileset(ypaworld.tiles[53], 53);
+    
+    ypaworld.tiles[54] = yw_LoadTileSet("mapmisc.ilbm", Common::Point(64, 64), Common::Point(64, 0), Common::Point(9, 1), Common::Point(0, 0));
+    if ( !ypaworld.tiles[54] )
+        return 0;
+    GFXEngine::GFXe.setTileset(ypaworld.tiles[54], 54);
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 50; i < 55; i++)
     {
-        int id = 50 + i;
+        TileMap *t = ypaworld.tiles[i];
 
-        int v12 = 4 << i;
-        int v13 = 4 << i;
-        int v1, v2, a10;
-
-        switch ( i )
-        {
-        case 0:
-            v1 = 4;
-            v2 = 504;
-            a10 = 64;
-            break;
-        case 1:
-            v1 = 8;
-            v2 = 432;
-            a10 = 64;
-            break;
-        case 2:
-            v1 = 16;
-            v2 = 288;
-            a10 = 64;
-            break;
-        case 3:
-            v1 = 32;
-            v2 = 0;
-            a10 = 64;
-            break;
-        case 4:
-            v1 = 64;
-            v2 = 0;
-            a10 = 0;
-            break;
-
-        default:
-            break;
-        }
-
-        TileMap *v14 = yw_LoadTileSet("mapmisc.ilbm",v12, v13, v1, 0, 9, 1, v2, a10);
-
-        if ( !v14 )
-            return 0;
-
-        v14->map[9] = v14->map[8];
-        v14->map[8] = v14->map[0];
-
-        yw->tiles[id] = v14;
-        GFXEngine::GFXe.setTileset(v14, id);
-
-
+        t->map[9] = t->map[8];
+        t->map[8] = t->map[0];
     }
+    
+    
 
-    yw->tiles[59] = yw_LoadFont(yw, "mapvhcl3.font");
-    if ( !yw->tiles[59] )
+    ypaworld.tiles[59] = yw_LoadFont("mapvhcl3.font");
+    if ( !ypaworld.tiles[59] )
         return 0;
-    GFXEngine::GFXe.setTileset(yw->tiles[59], 59);
+    GFXEngine::GFXe.setTileset(ypaworld.tiles[59], 59);
 
-    yw->tiles[60] = yw_LoadFont(yw, "mapvhcl5.font");
-    if ( !yw->tiles[60] )
+    ypaworld.tiles[60] = yw_LoadFont("mapvhcl5.font");
+    if ( !ypaworld.tiles[60] )
         return 0;
-    GFXEngine::GFXe.setTileset(yw->tiles[60], 60);
+    GFXEngine::GFXe.setTileset(ypaworld.tiles[60], 60);
 
-    yw->tiles[61] = yw_LoadFont(yw, "mapvhcl7.font");
-    if ( !yw->tiles[61] )
+    ypaworld.tiles[61] = yw_LoadFont("mapvhcl7.font");
+    if ( !ypaworld.tiles[61] )
         return 0;
-    GFXEngine::GFXe.setTileset(yw->tiles[61], 61);
+    GFXEngine::GFXe.setTileset(ypaworld.tiles[61], 61);
 
-    yw->tiles[62] = yw_LoadFont(yw, "mapvhcl9.font");
-    if ( !yw->tiles[62] )
+    ypaworld.tiles[62] = yw_LoadFont("mapvhcl9.font");
+    if ( !ypaworld.tiles[62] )
         return 0;
-    GFXEngine::GFXe.setTileset(yw->tiles[62], 62);
+    GFXEngine::GFXe.setTileset(ypaworld.tiles[62], 62);
 
-    yw->font_default_h = yw->tiles[0]->h;
-    yw->font_default_w__a = yw->tiles[0]->map[97].w; // a
-    yw->font_default_w__b = yw->tiles[0]->map[98].w; // b
+    ypaworld.font_default_h = ypaworld.tiles[0]->h;
+    ypaworld.font_default_w__a = ypaworld.tiles[0]->map[97].w; // a
+    ypaworld.font_default_w__b = ypaworld.tiles[0]->map[98].w; // b
 
-    yw->font_yscrl_bkg_w = yw->tiles[12]->map[66].w; // B (Y-Scroller, Background-Inners)
-    yw->font_xscrl_h = yw->tiles[11]->h;
+    ypaworld.font_yscrl_bkg_w = ypaworld.tiles[12]->map[66].w; // B (Y-Scroller, Background-Inners)
+    ypaworld.font_xscrl_h = ypaworld.tiles[11]->h;
 
-    yw->field_1a38 = 2;
+    ypaworld.field_1a38 = 2;
 
-    yw->font_yscrl_h = yw->tiles[12]->h;
+    ypaworld.font_yscrl_h = ypaworld.tiles[12]->h;
 
-    yw->icon_order__w = yw->tiles[21]->map[65].w; // A (Mode:      ORDER)
-    yw->icon_order__h = yw->tiles[21]->h;
+    ypaworld.icon_order__w = ypaworld.tiles[21]->map[65].w; // A (Mode:      ORDER)
+    ypaworld.icon_order__h = ypaworld.tiles[21]->h;
 
-    yw->icon_help__w = yw->tiles[24]->map[65].w; // A (NEU: DER HILFEBUTTTON)
-    yw->icon_help__h = yw->tiles[24]->h;
+    ypaworld.icon_help__w = ypaworld.tiles[24]->map[65].w; // A (NEU: DER HILFEBUTTTON)
+    ypaworld.icon_help__h = ypaworld.tiles[24]->h;
 
-    yw->icon_energy__h = yw->tiles[30]->h; // ENERGIE height
-    yw->icon0___h = yw->icon_order__h;
+    ypaworld.icon_energy__h = ypaworld.tiles[30]->h; // ENERGIE height
+    ypaworld.icon0___h = ypaworld.icon_order__h;
+    
+    ypaworld.self_full->UpdateGuiSettings();
 
     return 1;
 }
@@ -1384,10 +1305,10 @@ int yw_InitMouseStuff(_NC_STACK_ypaworld *yw)
     return 1;
 }
 
-int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
+int NC_STACK_ypaworld::yw_LoadSet(int setID)
 {
-    yw->win3d = GFXEngine::GFXe.getC3D();
-    yw->field_17c0 = 0;
+    ypaworld.win3d = GFXEngine::GFXe.getC3D();
+    ypaworld.field_17c0 = 0;
 
     char buf[1024];
     sprintf(buf, "data:set%d", setID);
@@ -1395,7 +1316,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
     char rsr[256];
     strcpy(rsr,  get_prefix_replacement("rsrc"));
 
-    yw->win3d->display_func271(NULL);
+    ypaworld.win3d->display_func271(NULL);
 
 
     set_prefix_replacement("rsrc", "data:mc2res");
@@ -1403,25 +1324,25 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
     IDVList init_vals;
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "skeleton/colsub.sklt");
 
-    yw->colsub_sklt = Nucleus::CInit<NC_STACK_sklt>(init_vals);
-    if ( !yw->colsub_sklt )
+    ypaworld.colsub_sklt = Nucleus::CInit<NC_STACK_sklt>(init_vals);
+    if ( !ypaworld.colsub_sklt )
     {
         ypa_log_out("Couldn't load <skeleton/colsub.sklt>, set %d.\n", setID);
         return 0;
     }
-    yw->colsub_sklt_intrn = yw->colsub_sklt->getSKEL_pSkelet();
+    ypaworld.colsub_sklt_intrn = ypaworld.colsub_sklt->getSKEL_pSkelet();
 
 
     init_vals.clear();
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "skeleton/colcomp.sklt");
 
-    yw->colcomp_sklt = Nucleus::CInit<NC_STACK_sklt>(init_vals);
-    if ( !yw->colcomp_sklt )
+    ypaworld.colcomp_sklt = Nucleus::CInit<NC_STACK_sklt>(init_vals);
+    if ( !ypaworld.colcomp_sklt )
     {
         ypa_log_out("Couldn't load <skeleton/colcomp.sklt>, set %d.\n", setID);
         return 0;
     }
-    yw->colcomp_sklt_intrn = yw->colcomp_sklt->getSKEL_pSkelet();
+    ypaworld.colcomp_sklt_intrn = ypaworld.colcomp_sklt->getSKEL_pSkelet();
 
 
     set_prefix_replacement("rsrc", buf);
@@ -1429,25 +1350,25 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
     if ( !GFXEngine::GFXe.loadPal("palette/standard.pal") )
         ypa_log_out("WARNING: Could not load set default palette!\n");
 
-    if ( setID != yw->set_number && setID != 46 )
+    if ( setID != ypaworld.set_number && setID != 46 )
     {
-        if ( yw->additionalSet )
+        if ( ypaworld.additionalSet )
         {
-            ypa_log_out("yw_LoadSet(): killing set object %d\n", yw->set_number);
-            delete_class_obj(yw->additionalSet);
-            yw->additionalSet = NULL;
-            yw->set_number = 0;
+            ypa_log_out("yw_LoadSet(): killing set object %d\n", ypaworld.set_number);
+            delete_class_obj(ypaworld.additionalSet);
+            ypaworld.additionalSet = NULL;
+            ypaworld.set_number = 0;
         }
 
-        yw->additionalSet = load_set_base();
-        if ( !yw->additionalSet )
+        ypaworld.additionalSet = load_set_base();
+        if ( !ypaworld.additionalSet )
         {
-            yw->set_number = 0;
+            ypaworld.set_number = 0;
             ypa_log_out("yw_LoadSet(): loading set object %d failed\n", setID);
             set_prefix_replacement("rsrc", rsr);
             return 0;
         }
-        yw->set_number = setID;
+        ypaworld.set_number = setID;
         ypa_log_out("yw_LoadSet(): loaded set object %d ok\n", setID);
     }
 
@@ -1461,7 +1382,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
             return 0;
         }
 
-        BaseList &kid_list = yw->additionalSet->getBASE_kidList();
+        BaseList &kid_list = ypaworld.additionalSet->getBASE_kidList();
 
         int kid_id = 0;
 
@@ -1469,7 +1390,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
         {
             if ( kid_id == 0 )
             {
-                if ( !sub_44A12C(yw, *it) )
+                if ( !sub_44A12C(&ypaworld, *it) )
                 {
                     delete fil;
                     return 0;
@@ -1477,19 +1398,19 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
             }
             else if ( kid_id == 1 )
             {
-                if ( !yw_parse_lego(yw, fil, *it) )
+                if ( !yw_parse_lego(&ypaworld, fil, *it) )
                 {
                     delete fil;
                     return 0;
                 }
 
-                if ( !yw_parse_subSect(yw, fil) )
+                if ( !yw_parse_subSect(&ypaworld, fil) )
                 {
                     delete fil;
                     return 0;
                 }
 
-                if ( !yw_parse_sektor(yw, fil) )
+                if ( !yw_parse_sektor(&ypaworld, fil) )
                 {
                     delete fil;
                     return 0;
@@ -1497,7 +1418,7 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
             }
             else if ( kid_id == 2 )
             {
-                if ( !sub_44A97C(yw, *it) )
+                if ( !sub_44A97C(&ypaworld, *it) )
                 {
                     delete fil;
                     return 0;
@@ -1513,8 +1434,8 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
     init_vals.clear();
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "remap/tracyrmp.ilbm");
 
-    yw->tracyrmp_ilbm = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
-    if ( !yw->tracyrmp_ilbm )
+    ypaworld.tracyrmp_ilbm = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
+    if ( !ypaworld.tracyrmp_ilbm )
     {
         ypa_log_out("Couldn't load tracy remap table, set %d.\n", setID);
         return 0;
@@ -1523,32 +1444,32 @@ int yw_LoadSet(_NC_STACK_ypaworld *yw, int setID)
     init_vals.clear();
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "remap/shadermp.ilbm");
 
-    yw->shadermp_ilbm = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
-    if ( !yw->shadermp_ilbm )
+    ypaworld.shadermp_ilbm = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
+    if ( !ypaworld.shadermp_ilbm )
     {
         ypa_log_out("Couldn't load shade remap table, set %d.\n", setID);
         return 0;
     }
 
-    GFXEngine::GFXe.setTracyRmp( yw->tracyrmp_ilbm->GetResBmp() );
-    GFXEngine::GFXe.setShadeRmp( yw->shadermp_ilbm->GetResBmp() );
+    GFXEngine::GFXe.setTracyRmp( ypaworld.tracyrmp_ilbm->GetResBmp() );
+    GFXEngine::GFXe.setShadeRmp( ypaworld.shadermp_ilbm->GetResBmp() );
 
-    yw->additionalBeeBox = NC_STACK_base::READ_BAS_FILE("rsrc:objects/beebox.base");
-    if ( !yw->additionalBeeBox )
+    ypaworld.additionalBeeBox = NC_STACK_base::READ_BAS_FILE("rsrc:objects/beebox.base");
+    if ( !ypaworld.additionalBeeBox )
     {
         ypa_log_out("Couldn't load bbox object, set %d.\n", setID);
         return 0;
     }
 
-    yw->additionalBeeBox->setBASE_static(1);
+    ypaworld.additionalBeeBox->setBASE_static(1);
 
     if ( setID == 46 || setID == 42 )
     {
-        if ( load_fonts_and_icons(yw) == 0 )
+        if ( load_fonts_and_icons() == 0 )
             return 0;
     }
 
-    yw_InitMouseStuff(yw);
+    yw_InitMouseStuff(&ypaworld);
     return 1;
 }
 

@@ -799,7 +799,7 @@ int NC_STACK_ypaworld::LVLoaderCommon(mapProto &mapp, int levelID, int a5)
 
         sb_0x44ca90__sub2(&ypaworld, &mapp);
 
-        if ( yw_LoadSet(&ypaworld, mapp.setNumber) )
+        if ( yw_LoadSet(mapp.setNumber) )
         {
             if ( yw_loadSky(&ypaworld, mapp.sky.c_str()) )
                 ok = 1;
