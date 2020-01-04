@@ -645,7 +645,7 @@ public:
     virtual size_t TestTargetSector(__NC_STACK_ypabact *);
     virtual void BeamingTimeUpdate(update_msg *arg);
     virtual void StartDestFX(uint8_t arg);
-    virtual void CorrectPositionOnLand(void *);
+    virtual void CorrectPositionOnLand();
     virtual void CorrectPositionInLevelBox(void *);
     virtual void NetUpdate(update_msg *arg);
     virtual void ypabact_func117(update_msg *arg);

@@ -7065,7 +7065,7 @@ void NC_STACK_ypabact::StartDestFX(uint8_t arg)
     }
 }
 
-void NC_STACK_ypabact::CorrectPositionOnLand(void *)
+void NC_STACK_ypabact::CorrectPositionOnLand()
 {
     __NC_STACK_ypabact *bact = &ypabact;
 
@@ -8477,7 +8477,7 @@ void NC_STACK_ypabact::setBACT_inputting(int inpt)
         bact->ywo->setYW_userVehicle(this);
 
         if ( bact->bact_type != BACT_TYPES_GUN )
-            CorrectPositionOnLand(NULL);
+            CorrectPositionOnLand();
     }
     else
     {
@@ -8802,7 +8802,7 @@ size_t NC_STACK_ypabact::compatcall(int method_id, void *data)
         StartDestFX( (uint8_t)(size_t)data );
         return 1;
     case 114:
-        CorrectPositionOnLand( (void *)data );
+        CorrectPositionOnLand();
         return 1;
     case 115:
         CorrectPositionInLevelBox( (void *)data );

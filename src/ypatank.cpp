@@ -1873,7 +1873,7 @@ size_t NC_STACK_ypatank::TestTargetSector(__NC_STACK_ypabact *cel_unit)
     return 1;
 }
 
-void NC_STACK_ypatank::CorrectPositionOnLand(void *)
+void NC_STACK_ypatank::CorrectPositionOnLand()
 {
     NC_STACK_ypabact::CorrectPositionOnLand();
 
@@ -2383,7 +2383,7 @@ size_t NC_STACK_ypatank::compatcall(int method_id, void *data)
     case 111:
         return (size_t)TestTargetSector( (__NC_STACK_ypabact *)data );
     case 114:
-        CorrectPositionOnLand( (void *)data );
+        CorrectPositionOnLand();
         return 1;
     default:
         break;

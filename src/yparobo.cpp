@@ -6057,7 +6057,7 @@ void NC_STACK_yparobo::HandBrake(update_msg *)
     robo->field_c = bact->mass * 9.80665;
 }
 
-void NC_STACK_yparobo::CorrectPositionOnLand(void *arg)
+void NC_STACK_yparobo::CorrectPositionOnLand()
 {
 }
 
@@ -7172,7 +7172,7 @@ size_t NC_STACK_yparobo::compatcall(int method_id, void *data)
         HandBrake( (update_msg *)data );
         return 1;
     case 114:
-        CorrectPositionOnLand( (void *)data );
+        CorrectPositionOnLand();
         return 1;
     case 121:
         DeadTimeUpdate( (update_msg *)data );

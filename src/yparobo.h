@@ -219,7 +219,7 @@ public:
     virtual void EnergyInteract(update_msg *arg);
     virtual void Renew();
     virtual void HandBrake(update_msg *);
-    virtual void CorrectPositionOnLand(void *arg);
+    virtual void CorrectPositionOnLand();
     virtual void DeadTimeUpdate(update_msg *arg);
     virtual void yparobo_func128(robo_arg128 *arg);
     virtual void yparobo_func129(IDVPair *arg);
