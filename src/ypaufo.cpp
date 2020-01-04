@@ -426,9 +426,9 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
 
             int v66 = TargetAssess(&arg110_1);
 
-            if ( v63 != 3 || v66 != 3 )
+            if ( v63 != TA_IGNORE || v66 != TA_IGNORE )
             {
-                if ( !v63 )
+                if ( v63 == TA_CANCEL )
                 {
                     setTarget_msg arg67;
                     arg67.tgt_type = BACT_TGT_TYPE_NONE;
@@ -437,7 +437,7 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
                     SetTarget(&arg67);
                 }
 
-                if ( !v66 )
+                if ( v66 == TA_CANCEL )
                 {
                     setTarget_msg arg67;
                     arg67.tgt_type = BACT_TGT_TYPE_CELL;

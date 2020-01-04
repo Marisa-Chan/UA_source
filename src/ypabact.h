@@ -584,6 +584,14 @@ struct bact_arg83
 class NC_STACK_ypabact: public NC_STACK_nucleus
 {
 public:
+    enum TA
+    {
+        TA_CANCEL,
+        TA_MOVE,
+        TA_FIGHT,
+        TA_IGNORE
+    };
+public:
     virtual size_t func0(IDVList &stak);
     virtual size_t func1();
     virtual size_t func2(IDVList &stak);
@@ -653,6 +661,7 @@ public:
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ypabact()
     {
+        _world = NULL;
     };
     virtual ~NC_STACK_ypabact() {};
 
@@ -722,7 +731,7 @@ public:
     virtual bact_node *getBACT_secnAttackNode();
     virtual int getBACT_alwaysRender();
 
-
+    void DoTargetWaypoint();
     void FixSectorFall();
     void FixBeyondTheWorld();
 
@@ -730,6 +739,7 @@ public:
     static const Nucleus::ClassDescr description;
 
     __NC_STACK_ypabact ypabact;
+    NC_STACK_ypaworld *_world;
 };
 
 void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_ypaworld *ywo);

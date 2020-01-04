@@ -4,15 +4,6 @@
 #include "nucleas.h"
 #include "ypatank.h"
 
-struct __NC_STACK_ypacar
-{
-    NC_STACK_ypaworld *ywo;
-    _NC_STACK_ypaworld *yw;
-    __NC_STACK_ypabact *bact_internal;
-    int field_c;
-    int field_10;
-};
-
 class NC_STACK_ypacar: public NC_STACK_ypatank
 {
 public:
@@ -21,13 +12,11 @@ public:
     virtual size_t func2(IDVList &stak);
     virtual size_t func3(IDVList &stak);
     virtual void User_layer(update_msg *arg);
-    virtual size_t ypatank_func128(tank_arg128 *arg);
-    virtual size_t ypatank_func129(tank_arg129 *arg);
+    virtual int AlignVehicleAI(float dtime, vec3d *pNormal);
+    virtual int AlignVehicleUser(float dtime, const vec3d &oldDir);
 
     virtual size_t compatcall(int method_id, void *data);
-    NC_STACK_ypacar() {
-        memset(&stack__ypacar, 0, sizeof(stack__ypacar));
-    };
+    NC_STACK_ypacar();
     virtual ~NC_STACK_ypacar() {};
 
     virtual const char * getClassName() {
@@ -44,16 +33,22 @@ public:
         CAR_ATT_BLAST = 0x80003001
     };
 
-    virtual void setCAR_kamikaze(int);
-    virtual void setCAR_blast(int);
+    virtual void setCAR_kamikaze(bool kam);
+    virtual void setCAR_blast(int blast);
 
-    virtual int getCAR_kamikaze();
+    virtual bool getCAR_kamikaze();
     virtual int getCAR_blast();
+    
+    vec3d CarTip(float dtime, const vec3d &oldDir, vec3d rot);
+    void DoKamikaze();
 
     //Data
+public:
     static const Nucleus::ClassDescr description;
 
-    __NC_STACK_ypacar stack__ypacar;
+protected:
+    bool _carKamikaze;
+    int _carBlast;
 };
 
 #endif // YCAR_H_INCLUDED

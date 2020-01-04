@@ -183,7 +183,7 @@ bool NC_STACK_ypagun::CheckPedestal()
     arg136.vect.z = 0;
     arg136.flags = 0;
 
-    ypabact.ywo->ypaworld_func136(&arg136);
+    _world->ypaworld_func136(&arg136);
 
     return arg136.isect != 0;
 }
@@ -646,7 +646,7 @@ size_t NC_STACK_ypagun::SetPosition(bact_arg80 *arg)
         arg136.vect.z = 0;
         arg136.flags = 0;
 
-        ypabact.ywo->ypaworld_func136(&arg136);
+        _world->ypaworld_func136(&arg136);
 
         if ( arg136.isect )
             ypabact.position.y = arg136.isectPos.y - ypabact.overeof;

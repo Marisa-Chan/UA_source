@@ -4,36 +4,29 @@
 #include "nucleas.h"
 #include "ypabact.h"
 
-struct __NC_STACK_ypatank
-{
-    NC_STACK_ypaworld *ywo;
-    _NC_STACK_ypaworld *yw;
-    __NC_STACK_ypabact *bact_internal;
-    uint8_t field_c;
-    int     field_D;
-    vec3d     field_11;
-    float   field_1D;
-    float   field_21;
-    uint8_t field_25;
-    int     field_26;
-};
-
-struct tank_arg128
-{
-    float field_0;
-    vec3d field_4;
-    int field_10;
-    vec3d field_14;
-};
-
-struct tank_arg129
-{
-    float field_0;
-    vec3d field_4;
-};
-
 class NC_STACK_ypatank: public NC_STACK_ypabact
 {
+public:
+    enum FLAG_TANK
+    {
+        FLAG_TANK_TIP     = (1 << 0),
+        FLAG_TANK_ROTWAIT = (1 << 1)
+    };
+    
+    enum ALIGN
+    {
+        ALIGN_NONE = 0,
+        ALIGN_DONE = 1,
+        ALIGN_NORMAL = 2,
+    };
+    
+    enum
+    {
+        COLL_WALL_L = (1 << 0),
+        COLL_WALL_R = (1 << 1),
+        COLL_HILL_L = (1 << 2),
+        COLL_HILL_R = (1 << 3),
+    };
 public:
     virtual size_t func0(IDVList &stak);
     virtual size_t func1();
@@ -50,13 +43,11 @@ public:
     virtual size_t CheckFireAI(bact_arg101 *arg);
     virtual size_t TestTargetSector(__NC_STACK_ypabact *cel_unit);
     virtual void CorrectPositionOnLand(void *);
-    virtual size_t ypatank_func128(tank_arg128 *arg);
-    virtual size_t ypatank_func129(tank_arg129 *arg);
+    virtual int AlignVehicleAI(float dtime, vec3d *pNormal);
+    virtual int AlignVehicleUser(float dtime, const vec3d &oldDir);
 
     virtual size_t compatcall(int method_id, void *data);
-    NC_STACK_ypatank() {
-        memset(&stack__ypatank, 0, sizeof(stack__ypatank));
-    };
+    NC_STACK_ypatank();
     virtual ~NC_STACK_ypatank() {};
 
     virtual const char * getClassName() {
@@ -77,12 +68,20 @@ public:
     virtual int getTANK_tip();
 
 
-    void sub_49DA3C(vec3d &v);
+    vec3d TankTip(vec3d v);
 
     //Data
+public:
     static const Nucleus::ClassDescr description;
 
-    __NC_STACK_ypatank stack__ypatank;
+protected:
+    uint8_t _tankFlags;
+    int     _tankWaitCount;
+    vec3d   _tankCollisionVector;
+    float   _tankCollisionAngle;
+    float   _tankCollisionWay;
+    uint8_t _tankCollisionFlag;
+    bool    _tankExpectTgt;
 };
 
 

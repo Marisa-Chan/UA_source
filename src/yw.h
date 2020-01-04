@@ -728,6 +728,20 @@ struct cellArea : public nnode
     nlist units_list; // Units in this sector
     float height;
     float averg_height;
+    
+    int GetEnergy()
+    {
+        if ( comp_type == 1 )
+            return buildings_health[0][0];
+
+        int e = 0;
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+                e += buildings_health[i][j];
+        }
+        return e;
+    }
 };
 
 struct keysec
