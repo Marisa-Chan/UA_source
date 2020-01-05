@@ -595,10 +595,10 @@ bool SaveOwnerMapParser::IsScope(ScriptParser::Parser &parser, const std::string
 
         for (int i = 0; i < (int)_o.ypaworld.own_map->size(); i++)
         {
-            int v8 = *pbuf;
+            int v8 = pbuf[i];
             v6->owner = v8;
             _o.ypaworld.sectors_count_by_owner[v8]++;
-
+            
             v6++;
         }
     }
