@@ -441,9 +441,9 @@ void sub_4F72E8(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
                 uint32_t clr = yw_GetColor(yw, 9);
 
                 for (int i = 1; i < bact->waypoints_count; i++)
-                    sub_4F68FC(yw->win3d, bact->waypoints[i].x, bact->waypoints[i].z, bact->waypoints[i - 1].x, bact->waypoints[i - 1].z, clr);
+                    sub_4F68FC(yw->win3d, bact->waypoints[i - 1].x, bact->waypoints[i - 1].z, bact->waypoints[i].x, bact->waypoints[i].z, clr);
 
-                sub_4F68FC(yw->win3d, bact->waypoints[bact->waypoints_count - 1].z, bact->waypoints[bact->waypoints_count - 1].y, bact->waypoints[0].x, bact->waypoints[0].z, clr);
+                sub_4F68FC(yw->win3d, bact->waypoints[bact->waypoints_count - 1].x, bact->waypoints[bact->waypoints_count - 1].z, bact->waypoints[0].x, bact->waypoints[0].z, clr);
             }
             else if ( bact->waypoints_count > 0 )
             {
