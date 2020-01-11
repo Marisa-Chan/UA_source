@@ -1096,7 +1096,7 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
                 {
                     node->bacto->SetTarget(arg);
                     if ( !(bact->status_flg & BACT_STFLAG_WAYPOINT)  )
-                        bact->status_flg &= ~(BACT_STFLAG_WAYPOINT | BACT_STFLAG_WAYPOINTCCL);
+                        node->bacto->ypabact.status_flg &= ~(BACT_STFLAG_WAYPOINT | BACT_STFLAG_WAYPOINTCCL);
                 }
 
                 node = (bact_node *)node->next;
