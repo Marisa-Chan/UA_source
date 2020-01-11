@@ -6869,7 +6869,7 @@ size_t NC_STACK_ypabact::TargetAssess(bact_arg110 *arg)
             cellPos = ypabact.primTpos.XZ();
 
             aggr = 25;
-            isSecTgt = true;
+            isSecTgt = false;
         }
 
         if ( (ypabact.status_flg & BACT_STFLAG_WAYPOINT) && !isSecTgt )
