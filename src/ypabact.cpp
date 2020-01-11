@@ -390,30 +390,30 @@ size_t NC_STACK_ypabact::func1()
 }
 
 
-void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_ypaworld *ywo)
+void NC_STACK_ypabact::CopyTargetOf(NC_STACK_ypabact *unit)
 {
-    __NC_STACK_ypabact *v6 = NULL;
+    NC_STACK_ypabact *v6 = NULL;
 
-    bact->waypoints_count = 0;
-    bact->m_cmdID = 0;
-    bact->status_flg &= ~(BACT_STFLAG_WAYPOINT | BACT_STFLAG_WAYPOINTCCL);
+    ypabact.waypoints_count = 0;
+    ypabact.m_cmdID = 0;
+    ypabact.status_flg &= ~(BACT_STFLAG_WAYPOINT | BACT_STFLAG_WAYPOINTCCL);
 
     int tgType;
     vec2d wTo;
 
-    if ( bact2->status_flg & BACT_STFLAG_WAYPOINT )
+    if ( unit->ypabact.status_flg & BACT_STFLAG_WAYPOINT )
     {
-        if ( !bact2->m_cmdID )
+        if ( !unit->ypabact.m_cmdID )
         {
-            int v9 = bact2->waypoints_count - 1;
+            int v9 = unit->ypabact.waypoints_count - 1;
 
-            wTo = bact2->waypoints[v9].XZ();
+            wTo = unit->ypabact.waypoints[v9].XZ();
 
             tgType = BACT_TGT_TYPE_CELL;
         }
         else
         {
-            v6 = sub_48C244(ywo, bact2->m_cmdID, bact2->m_owner);
+            v6 = _world->FindBactByCmdOwn(unit->ypabact.m_cmdID, unit->ypabact.m_owner);
 
             if ( v6 )
                 tgType = BACT_TGT_TYPE_UNIT;
@@ -423,27 +423,27 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
     }
     else
     {
-        if ( bact2->primTtype == BACT_TGT_TYPE_UNIT )
+        if ( unit->ypabact.primTtype == BACT_TGT_TYPE_UNIT )
         {
-            v6 = bact2->primT.pbact;
+            v6 = unit->ypabact.primT.pbact->self;
             tgType = BACT_TGT_TYPE_UNIT;
         }
-        else if ( bact2->primTtype == BACT_TGT_TYPE_CELL )
+        else if ( unit->ypabact.primTtype == BACT_TGT_TYPE_CELL )
         {
-            wTo = bact2->primTpos.XZ();
+            wTo = unit->ypabact.primTpos.XZ();
             tgType = BACT_TGT_TYPE_CELL;
         }
         else
             tgType = BACT_TGT_TYPE_NONE;
     }
 
-    if ( !tgType )
+    if ( tgType == BACT_TGT_TYPE_NONE )
     {
         tgType = BACT_TGT_TYPE_UNIT;
-        v6 = bact2;
+        v6 = unit;
     }
 
-    if ( bact->bact_type != BACT_TYPES_TANK && bact->bact_type != BACT_TYPES_CAR )
+    if ( ypabact.bact_type != BACT_TYPES_TANK && ypabact.bact_type != BACT_TYPES_CAR )
     {
         setTarget_msg arg67;
         arg67.tgt_type = tgType;
@@ -451,7 +451,7 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
 
         if ( tgType == BACT_TGT_TYPE_UNIT )
         {
-            arg67.tgt.pbact = v6;
+            arg67.tgt.pbact = &v6->ypabact;
         }
         else
         {
@@ -459,7 +459,7 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
             arg67.tgt_pos.z = wTo.y;
         }
 
-        bact->self->SetTarget(&arg67);
+        SetTarget(&arg67);
     }
     else
     {
@@ -467,7 +467,7 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
 
         if ( tgType == BACT_TGT_TYPE_UNIT )
         {
-            arg125.to = v6->position.XZ();
+            arg125.to = v6->ypabact.position.XZ();
         }
         else
         {
@@ -475,15 +475,15 @@ void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_yp
         }
 
         arg125.steps_cnt = 32;
-        arg125.from = bact->position.XZ();
+        arg125.from = ypabact.position.XZ();
         arg125.field_12 = 1;
 
-        bact->self->SetPath(&arg125);
+        SetPath(&arg125);
 
         if ( tgType == BACT_TGT_TYPE_UNIT )
         {
-            bact->m_cmdID = v6->commandID;
-            bact->m_owner = v6->owner;
+            ypabact.m_cmdID = v6->ypabact.commandID;
+            ypabact.m_owner = v6->ypabact.owner;
         }
     }
 }
@@ -1349,8 +1349,8 @@ void NC_STACK_ypabact::AI_layer2(update_msg *arg)
                         robo_arg134 arg134;
                         arg134.field_4 = 7;
                         arg134.field_8 = arg90.ret_unit->commandID;
-                        arg134.field_C = isRoboGun;
-                        arg134.field_10 = isRoboGun;
+                        arg134.field_C = 0;
+                        arg134.field_10 = 0;
                         arg134.unit = bact;
                         arg134.field_14 = 46;
 
@@ -1378,7 +1378,7 @@ void NC_STACK_ypabact::AI_layer2(update_msg *arg)
                     SetTarget(&arg67);
                 }
 
-                if ( bact->clock - bact->search_time2 > 2000 && 
+                if ( (bact->clock - bact->search_time2) > 2000 && 
                      bact->aggr == 75 && 
                     !(bact->oflags & BACT_OFLAG_VIEWER) && 
                      bact->parent_bacto == bact->host_station &&
@@ -6400,8 +6400,6 @@ __NC_STACK_ypabact *sb_0x493984(__NC_STACK_ypabact *bact, int a2)
 {
     if ( bact->subjects_list.head->next )
     {
-        NC_STACK_ypaworld *ywo = bact->self->getBACT_pWorld();
-
         __NC_STACK_ypabact *new_leader = NULL;
 
         if (a2)
@@ -6416,7 +6414,7 @@ __NC_STACK_ypabact *sb_0x493984(__NC_STACK_ypabact *bact, int a2)
         {
             bact->host_station->AddSubject(new_leader->self);
 
-            sub_493DB0(new_leader, bact, ywo);
+            new_leader->self->CopyTargetOf(bact->self);
 
             bact_node *kid_unit = (bact_node *)bact->subjects_list.head;
 
@@ -6426,7 +6424,7 @@ __NC_STACK_ypabact *sb_0x493984(__NC_STACK_ypabact *bact, int a2)
 
                 new_leader->self->AddSubject(kid_unit->bacto);
 
-                sub_493DB0(kid_unit->bact, new_leader, ywo);
+                kid_unit->bacto->CopyTargetOf(new_leader->self);
 
                 kid_unit = next1;
             }
@@ -6475,8 +6473,6 @@ void sub_493480(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, int mode)
 
 void NC_STACK_ypabact::ReorganizeGroup(bact_arg109 *arg)
 {
-    __NC_STACK_ypabact *bact = &ypabact;
-
     switch ( arg->field_0 )
     {
     case 1:
@@ -6486,51 +6482,51 @@ void NC_STACK_ypabact::ReorganizeGroup(bact_arg109 *arg)
             {
                 ypa_log_out("ORG_NEWCHIEF: Dead master\n");
             }
-            else if ( arg->field_4->self != bact->parent_bacto && bact != arg->field_4 )
+            else if ( arg->field_4->self != ypabact.parent_bacto && arg->field_4 != &ypabact )
             {
-                bact->commandID = arg->field_4->commandID;
-                bact->aggr = arg->field_4->aggr;
+                ypabact.commandID = arg->field_4->commandID;
+                ypabact.aggr = arg->field_4->aggr;
 
                 arg->field_4->self->AddSubject(this);
 
                 while ( 1 )
                 {
-                    bact_node *v6 = (bact_node *)bact->subjects_list.head;
+                    bact_node *v6 = (bact_node *)ypabact.subjects_list.head;
                     if ( !v6->next )
                         break;
 
                     v6->bact->aggr = arg->field_4->aggr;
                     v6->bact->commandID = arg->field_4->commandID;
 
-                    sub_493DB0(v6->bact, arg->field_4, bact->ywo);
+                    v6->bacto->CopyTargetOf(arg->field_4->self);
 
                     arg->field_4->self->AddSubject(v6->bacto);
                 }
 
-                sub_493DB0(bact, arg->field_4, bact->ywo);
-                sub_493480(bact, arg->field_4, 1);
+                CopyTargetOf(arg->field_4->self);
+                sub_493480(&ypabact, arg->field_4, 1);
             }
         }
         break;
 
     case 2:
-        if ( bact->host_station != bact->parent_bacto || bact != arg->field_4 )
+        if ( ypabact.host_station != ypabact.parent_bacto || arg->field_4 != &ypabact )
         {
-            if ( bact->status == BACT_STATUS_DEAD )
+            if ( ypabact.status == BACT_STATUS_DEAD )
             {
                 ypa_log_out("ORG_BECOMECHIEF dead vehicle\n");
             }
             else
             {
-                if ( bact->host_station != bact->parent_bacto )
-                    bact->host_station->AddSubject(this);
+                if ( ypabact.host_station != ypabact.parent_bacto )
+                    ypabact.host_station->AddSubject(this);
 
                 if ( arg->field_4 )
                 {
-                    sub_493DB0(bact, arg->field_4, bact->ywo);
+                    CopyTargetOf(arg->field_4->self);
 
-                    bact->aggr = arg->field_4->aggr;
-                    bact->commandID = arg->field_4->commandID;
+                    ypabact.aggr = arg->field_4->aggr;
+                    ypabact.commandID = arg->field_4->commandID;
 
                     AddSubject(arg->field_4->self);
 
@@ -6543,56 +6539,56 @@ void NC_STACK_ypabact::ReorganizeGroup(bact_arg109 *arg)
                         AddSubject(v10->bacto);
                         v10->bact->aggr = arg->field_4->aggr;
 
-                        sub_493DB0(v10->bact, bact, bact->ywo);
+                        v10->bacto->CopyTargetOf(this);
                     }
 
-                    bact->commandID = arg->field_4->commandID;
-                    sub_493480(bact, bact, 2);
+                    ypabact.commandID = arg->field_4->commandID;
+                    sub_493480(&ypabact, &ypabact, 2);
                 }
                 else
                 {
-                    if ( bact->host_station != bact->parent_bacto )
+                    if ( ypabact.host_station != ypabact.parent_bacto )
                     {
-                        int a4 = bact->host_station->getROBO_commCount();
+                        int a4 = ypabact.host_station->getROBO_commCount();
 
-                        bact->commandID = a4;
+                        ypabact.commandID = a4;
 
-                        bact->host_station->setROBO_commCount(a4 + 1);
+                        ypabact.host_station->setROBO_commCount(a4 + 1);
                     }
-                    sub_493480(bact, bact, 2);
+                    sub_493480(&ypabact, &ypabact, 2);
                 }
             }
         }
         break;
 
     case 3:
-        if ( bact->status == BACT_STATUS_DEAD )
+        if ( ypabact.status == BACT_STATUS_DEAD )
         {
             ypa_log_out("ORG_NEWCOMMAND: dead vehicle\n");
         }
         else
         {
 
-            if ( bact->host_station == bact->parent_bacto )
+            if ( ypabact.host_station == ypabact.parent_bacto )
             {
-                __NC_STACK_ypabact *v14 = sb_0x493984(bact, 0);
+                __NC_STACK_ypabact *v14 = sb_0x493984(&ypabact, 0);
 
                 if ( v14 )
-                    sub_493480(bact, v14, 13);
+                    sub_493480(&ypabact, v14, 13);
             }
             else
             {
-                bact->host_station->AddSubject(bact->self);
+                ypabact.host_station->AddSubject(this);
             }
 
-            int a4 = bact->host_station->getROBO_commCount();
-            bact->commandID = a4;
+            int a4 = ypabact.host_station->getROBO_commCount();
+            ypabact.commandID = a4;
 
-            if (bact->yw->isNetGame)
-                bact->commandID |= bact->owner << 24;
+            if (ypabact.yw->isNetGame)
+                ypabact.commandID |= ypabact.owner << 24;
 
-            bact->host_station->setROBO_commCount(a4 + 1);
-            sub_493480(bact, bact, 3);
+            ypabact.host_station->setROBO_commCount(a4 + 1);
+            sub_493480(&ypabact, &ypabact, 3);
         }
         break;
 
@@ -6602,15 +6598,15 @@ void NC_STACK_ypabact::ReorganizeGroup(bact_arg109 *arg)
             __NC_STACK_ypabact *v19 = sb_0x493984(arg->field_4, 0);
 
             if ( v19 )
-                sub_493480(bact, v19, 14);
+                sub_493480(&ypabact, v19, 14);
         }
 
         AddSubject(arg->field_4->self);
 
-        arg->field_4->commandID = bact->commandID;
+        arg->field_4->commandID = ypabact.commandID;
 
-        sub_493DB0(arg->field_4, bact, bact->ywo);
-        sub_493480(bact, bact, 4);
+        arg->field_4->self->CopyTargetOf(this);
+        sub_493480(&ypabact, &ypabact, 4);
         break;
 
     case 6:
@@ -6619,14 +6615,14 @@ void NC_STACK_ypabact::ReorganizeGroup(bact_arg109 *arg)
 
         if ( !a4 )
         {
-            __NC_STACK_ypabact *v21 = sb_0x493984(bact, 1);
+            __NC_STACK_ypabact *v21 = sb_0x493984(&ypabact, 1);
 
             if ( v21 )
             {
                 v21->self->AddSubject(this);
-                v21->commandID = bact->commandID;
+                v21->commandID = ypabact.commandID;
 
-                sub_493480(bact, v21, 6);
+                sub_493480(&ypabact, v21, 6);
             }
         }
     }
@@ -6661,13 +6657,13 @@ void NC_STACK_ypabact::DoTargetWaypoint()
         {
             if ( ypabact.m_cmdID )
             {
-                __NC_STACK_ypabact *v9 = sub_48C244(_world, ypabact.m_cmdID, ypabact.m_owner);
+                NC_STACK_ypabact *v9 = _world->FindBactByCmdOwn(ypabact.m_cmdID, ypabact.m_owner);
 
                 if ( v9 )
                 {
-                    if ( (1 << ypabact.owner) & v9->pSector->view_mask )
+                    if ( (1 << ypabact.owner) & v9->ypabact.pSector->view_mask )
                     {
-                        arg67.tgt.pbact = v9;
+                        arg67.tgt.pbact = &v9->ypabact;
                         arg67.tgt_type = BACT_TGT_TYPE_UNIT;
                         arg67.priority = 0;
 
@@ -8428,7 +8424,7 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
 
                     while(node->next)
                     {
-                        sub_493DB0(node->bact, bact, bact->ywo);
+                        node->bacto->CopyTargetOf(this);
 
                         node = (bact_node *)node->next;
                     }
@@ -8437,7 +8433,7 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
             else
             {
                 if ( !(bact->status_flg & BACT_STFLAG_WAYPOINT) || !(bact->status_flg & BACT_STFLAG_WAYPOINTCCL) )
-                    sub_493DB0(bact, bact->parent_bact, bact->ywo);
+                    CopyTargetOf(bact->parent_bacto);
             }
         }
     }

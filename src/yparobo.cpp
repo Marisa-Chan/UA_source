@@ -494,16 +494,16 @@ void NC_STACK_yparobo::AI_layer1(update_msg *arg)
 
 
 
-void sub_4A6720(NC_STACK_ypaworld *ywo, __NC_STACK_ypabact *bact)
+void NC_STACK_ypaworld::HistoryAktCreate(NC_STACK_ypabact *bact)
 {
     yw_arg184 arg184;
     arg184.type = 4;
-    arg184.t34.field_1 = bact->owner;
-    arg184.t34.field_2 = bact->vehicleID;
-    arg184.t34.field_4 = bact->position.x * 256.0 / bact->wrldX;
-    arg184.t34.field_5 = bact->position.z * 256.0 / bact->wrldY;
+    arg184.t34.field_1 = bact->ypabact.owner;
+    arg184.t34.field_2 = bact->ypabact.vehicleID;
+    arg184.t34.field_4 = bact->ypabact.position.x * 256.0 / bact->ypabact.wrldX;
+    arg184.t34.field_5 = bact->ypabact.position.z * 256.0 / bact->ypabact.wrldY;
 
-    ywo->ypaworld_func184(&arg184);
+    ypaworld_func184(&arg184);
 }
 
 int groundVehicleInSquad(__NC_STACK_ypabact *bact)
@@ -716,7 +716,7 @@ void NC_STACK_yparobo::initForce(bact_node *unit)
                 robo->dock_time = untbct->scale_time + 2000;
                 robo->dock_cnt++;
 
-                sub_4A6720(robo->wrld, untbct);
+                _world->HistoryAktCreate(unt);
             }
             else
             {
@@ -1790,7 +1790,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                 bct->host_station = this;
                 robo->field_4F5 -= arg->energy;
 
-                sub_4A6720(ywo, bct);
+                _world->HistoryAktCreate(newbact);
             }
         }
         break;
@@ -1849,8 +1849,8 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                 bct->host_station = this;
                 robo->field_4F5 -= arg->energy;
 
-                sub_4A6720(ywo, bct);
-                sub_493DB0(bct, arg->selectBact, ywo);
+                _world->HistoryAktCreate(newbact2);
+                newbact2->CopyTargetOf(arg->selectBact->self);
             }
         }
         break;
@@ -3051,7 +3051,7 @@ bact_node *NC_STACK_yparobo::allocForce(robo_loct1 *arg)
 
         v74 = &unt_bct->subject_node;
         v72 = 1;
-        sub_4A6720(robo->wrld, unt_bct);
+        _world->HistoryAktCreate(new_unit);
     }
 
     if ( v72 )

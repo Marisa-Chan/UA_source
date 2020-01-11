@@ -734,15 +734,18 @@ public:
     void DoTargetWaypoint();
     void FixSectorFall();
     void FixBeyondTheWorld();
+    
+    void CopyTargetOf(NC_STACK_ypabact *commander);
 
     //Data
+public:
     static const Nucleus::ClassDescr description;
-
+public:
     __NC_STACK_ypabact ypabact;
+protected:
     NC_STACK_ypaworld *_world;
 };
 
-void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_ypaworld *ywo);
 void sb_0x4874c4(__NC_STACK_ypabact *bact, int a2, int a3, float a4);
 
 #endif // YBACT_H_INCLUDED

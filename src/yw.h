@@ -2893,7 +2893,10 @@ public:
     
     static TileMap * yw_LoadFont(const std::string &fontname);
     static TileMap * yw_LoadTileSet(const std::string &bitmap, Common::Point chrSz, Common::Point delta, Common::Point cr, Common::Point offset);
+    NC_STACK_ypabact * FindBactByCmdOwn(int commandID, char owner);
     
+    
+    void HistoryAktCreate(NC_STACK_ypabact *bact);
     
 
 public:
@@ -2910,7 +2913,5 @@ protected:
     int _extraViewNumber; // robo gun index
 
 };
-
-__NC_STACK_ypabact * sub_48C244(NC_STACK_ypaworld *ywo, int a2, char owner);
 
 #endif
