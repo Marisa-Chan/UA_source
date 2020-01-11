@@ -82,7 +82,7 @@ int Parser::ParseRoutine(const std::string &filename, HandlersList &callbacks, i
         }
         else if ( !(flags & FLAG_NO_INCLUDE) && !StriCmp(p1, "include") )
         {
-        	Parser include;
+        	Parser include(p2);
             if ( !include.ParseFile(p2, callbacks, flags) )
             {
                 ypa_log_out("ERROR: script %s line #%d include %s failed!\n", filename.c_str(), _line, p1.c_str());
@@ -146,45 +146,45 @@ bool Parser::ReadLine(std::string *out)
 
 bool Parser::ParseFile(const std::string &filename, HandlersList &callbacks, int flags)
 {
-    Parser parser;
-	parser._line = 0;
-	parser._file = uaOpenFile(filename, "r");
-	parser._mode = MODE_FILE;
+    Parser parser(filename);
+    parser._line = 0;
+    parser._file = uaOpenFile(filename, "r");
+    parser._mode = MODE_FILE;
 
-	if (!parser._file)
-		return false;
+    if (!parser._file)
+            return false;
 
-	int res = RESULT_SCOPE_END;
-	while (res == RESULT_SCOPE_END)
-		res = parser.ParseRoutine(filename, callbacks, flags);
+    int res = RESULT_SCOPE_END;
+    while (res == RESULT_SCOPE_END)
+            res = parser.ParseRoutine(filename, callbacks, flags);
 
-	delete parser._file;
-	parser._file = NULL;
+    delete parser._file;
+    parser._file = NULL;
 
-	if ( res == RESULT_UNKNOWN || res == RESULT_BAD_DATA || res == RESULT_UNEXP_EOF )
-		return false;
+    if ( res == RESULT_UNKNOWN || res == RESULT_BAD_DATA || res == RESULT_UNEXP_EOF )
+            return false;
 
-	return true;
+    return true;
 }
 
 bool Parser::ParseStringList(const Engine::StringList &slist, HandlersList &callbacks, int flags)
 {
-    Parser parser;
-	parser._line = 0;
-	parser._strlistIt = slist.cbegin();
-	parser._strlistEnd = slist.cend();
-	parser._mode = MODE_SLIST;
+    Parser parser("StringList");
+    parser._line = 0;
+    parser._strlistIt = slist.cbegin();
+    parser._strlistEnd = slist.cend();
+    parser._mode = MODE_SLIST;
 
-	int res = RESULT_SCOPE_END;
-	while (res == RESULT_SCOPE_END)
-		res = parser.ParseRoutine("StringList", callbacks, flags);
+    int res = RESULT_SCOPE_END;
+    while (res == RESULT_SCOPE_END)
+        res = parser.ParseRoutine("StringList", callbacks, flags);
 
-	parser._file = NULL;
+    parser._file = NULL;
 
-	if ( res == RESULT_UNKNOWN || res == RESULT_BAD_DATA || res == RESULT_UNEXP_EOF )
-		return false;
+    if ( res == RESULT_UNKNOWN || res == RESULT_BAD_DATA || res == RESULT_UNEXP_EOF )
+            return false;
 
-	return true;
+    return true;
 }
 
 }

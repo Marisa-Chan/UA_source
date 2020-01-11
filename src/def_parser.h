@@ -77,24 +77,26 @@ private:
     };
 
 public:
-	static bool ParseFile(const std::string &filename, HandlersList &callbacks, int flags = 0);
-	static bool ParseStringList(const Engine::StringList &slist, HandlersList &callbacks, int flags = 0);
+    static bool ParseFile(const std::string &filename, HandlersList &callbacks, int flags = 0);
+    static bool ParseStringList(const Engine::StringList &slist, HandlersList &callbacks, int flags = 0);
 
 public:
     /** Useable from handlers **/
     bool ReadLine(std::string *out);
 
 private:
-    Parser() : _file(NULL), _line(0), _mode(MODE_NO) {};
-	int ParseRoutine(const std::string &filename, HandlersList &callbacks, int flags);
-	bool ParseNextLine(std::string *p1, std::string *p2);
-
+    Parser(const std::string &name) : _Name(name), _file(NULL), _line(0), _mode(MODE_NO) {};
+    int ParseRoutine(const std::string &filename, HandlersList &callbacks, int flags);
+    bool ParseNextLine(std::string *p1, std::string *p2);
+    
+public:
+    const std::string _Name;
 private:
-	FSMgr::FileHandle *_file;
-	int _line;
-	Engine::StringList::const_iterator _strlistIt;
-	Engine::StringList::const_iterator _strlistEnd;
-	int _mode;
+    FSMgr::FileHandle *_file;
+    int _line;
+    Engine::StringList::const_iterator _strlistIt;
+    Engine::StringList::const_iterator _strlistEnd;
+    int _mode;
 };
 
 /** Sort of sugar **/
