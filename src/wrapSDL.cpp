@@ -534,7 +534,9 @@ SDL_Surface *Screen()
 // Draw line Bresenham's algorithm
 void DrawLine(SDL_Surface *surface, const Common::Rect &line, uint8_t cr, uint8_t cg, uint8_t cb )
 {
-    if ((!line.Width() && !line.Height()) || !Common::Rect(surface->w, surface->h).IsIn(line))
+    if ((!line.Width() && !line.Height()) || 
+         !Common::Rect(surface->w, surface->h).IsIn(Common::Point(line.left, line.top)) ||
+         !Common::Rect(surface->w, surface->h).IsIn(Common::Point(line.right, line.bottom)) )
         return;
     
     int rilWidth = surface->pitch / surface->format->BytesPerPixel;
