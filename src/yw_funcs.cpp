@@ -566,15 +566,15 @@ int NC_STACK_ypaworld::sb_0x4e1a88(bool multiplayer)
         FSMgr::iNode *fsnode;
         while ( dir.getNext(&fsnode) )
         {
-            if ( strcmp(fsnode->getName(), ".") && strcmp(fsnode->getName(), "..") )
+            if ( strcmp(fsnode->getName().c_str(), ".") && strcmp(fsnode->getName().c_str(), "..") )
             {
                 if ( sb_0x4e1a88__sub0(fsnode->getName(), multiplayer) )
                 {
-                    ypa_log_out("Scanning [%s%s] .. ok.\n", path.c_str(), fsnode->getName());
+                    ypa_log_out("Scanning [%s%s] .. ok.\n", path.c_str(), fsnode->getName().c_str());
                 }
                 else
                 {
-                    ypa_log_out("Scanning [%s%s] .. FAILED.\n", path.c_str(), fsnode->getName());
+                    ypa_log_out("Scanning [%s%s] .. FAILED.\n", path.c_str(), fsnode->getName().c_str());
                     v10 = 0;
                 }
             }

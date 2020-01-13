@@ -25,10 +25,10 @@ public:
     virtual ~iNode() {};
 
     int getType();
-    const char *getPath();
+    std::string getPath() const;
     //const std::string &getPath();
-    std::string getVPath();
-    const char *getName();
+    std::string getVPath() const;
+    std::string getName() const;
     //const std::string &getName();
 
     enum NTYPE

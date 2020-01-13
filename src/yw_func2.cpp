@@ -2512,9 +2512,9 @@ void sub_46D0F8(const char *path)
 
         while ( dir.getNext(&v5) )
         {
-            if ( v5->getType() == FSMgr::iNode::NTYPE_FILE || (strcmp(v5->getName(), ".") && strcmp(v5->getName(), "..")) )
+            if ( v5->getType() == FSMgr::iNode::NTYPE_FILE || (strcmp(v5->getName().c_str(), ".") && strcmp(v5->getName().c_str(), "..")) )
             {
-                sprintf(a1a, "%s/%s", path, v5->getName());
+                sprintf(a1a, "%s/%s", path, v5->getName().c_str());
                 uaDeleteFile(a1a);
             }
         }

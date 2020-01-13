@@ -5,14 +5,13 @@
 #if defined(WIN32) && !defined(__WINE__)
 
 #include <windows.h>
-#define FSD '\\'
+
 #else
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
-#define FSD '/'
 #endif
 
 #include "fsmgr.h"
@@ -20,6 +19,12 @@
 
 namespace FSMgr
 {
+#if defined(WIN32) && !defined(__WINE__)
+const static std::string FSD("\\");
+#else
+const static std::string FSD("/");
+#endif
+
 static iDir directories("", "", NULL);
 
 iNode::iNode(const std::string &_name, const std::string &filepath, iDir *_parent)
@@ -34,17 +39,17 @@ int iNode::getType()
     return type;
 }
 
-const char *iNode::getPath()
+std::string iNode::getPath() const
 {
-    return path.c_str();
+    return path;
 }
 
-const char *iNode::getName()
+std::string iNode::getName() const
 {
-    return name.c_str();
+    return name;
 }
 
-std::string iNode::getVPath()
+std::string iNode::getVPath() const
 {
     if (parent != NULL)
         return parent->getVPath() + FSD + getName();
@@ -88,7 +93,7 @@ iNode *iDir::getNode(const std::string &n)
     {
         for (const auto &i : nodes)
         {
-            if ( !strcasecmp(n.c_str(), i->getName()) )
+            if ( !strcasecmp(n.c_str(), i->getName().c_str()) )
                 return i;
         }
     }
@@ -108,13 +113,13 @@ void iDir::flush()
 void iDir::_dumpdir()
 {
     std::string pth = getVPath();
-    printf("%s \t(%s)\n", pth.c_str(), getPath());
+    printf("%s \t(%s)\n", pth.c_str(), getPath().c_str());
 
     for (std::list<iNode *>::iterator it = nodes.begin(); it != nodes.end(); it++)
     {
         if ( (*it)->getType() == iNode::NTYPE_FILE )
         {
-            printf("%s%c%s \t(%s)\n", pth.c_str(), FSD, (*it)->getName(), (*it)->getPath());
+            printf("%s%s%s \t(%s)\n", pth.c_str(), FSD.c_str(), (*it)->getName().c_str(), (*it)->getPath().c_str());
         }
     }
 
@@ -389,9 +394,7 @@ bool iDir::createDir(const std::string &path)
 
             if ( leaved.find_first_of("\\/") == std::string::npos )
             {
-                std::string newPath = node->getPath();
-                newPath += FSD;
-                newPath += leaved;
+                std::string newPath = node->getPath() + FSD + leaved;
 
                 iDir *newDir = NULL;
 #if defined(WIN32) && !defined(__WINE__)
@@ -434,10 +437,10 @@ bool iDir::deleteDir(const std::string &path)
             return false;
 
 #if defined(WIN32) && !defined(__WINE__)
-        if ( !RemoveDirectory(node->getPath()) )
+        if ( !RemoveDirectory(node->getPath().c_str()) )
             return false;
 #else
-        if (rmdir(node->getPath()) == -1)
+        if (rmdir(node->getPath().c_str()) == -1)
             return false;
 #endif // WIN32
 
@@ -532,6 +535,9 @@ FileHandle *iDir::openFile(const std::string &path, const std::string &mode)
 
         if ( leaved.find_first_of("\\/") != std::string::npos ) // With path
             return NULL;
+        
+        if (node->getType() != NTYPE_DIR)
+            return NULL;
 
         iDir *dr = (iDir *)node;
 
@@ -576,10 +582,10 @@ bool iDir::deleteFile(const std::string &path)
         return false;
 
 #if defined(WIN32) && !defined(__WINE__)
-    if (DeleteFile(node->getPath()) == 0)
+    if (DeleteFile(node->getPath().c_str()) == 0)
         return false;
 #else
-    if (remove(node->getPath()) != 0)
+    if (remove(node->getPath().c_str()) != 0)
         return false;
 #endif // WIN32
 

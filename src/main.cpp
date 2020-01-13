@@ -688,9 +688,9 @@ void ReadSnapsDir()
         FSMgr::iNode *entr;
         while ( dir.getNext(&entr) )
         {
-            if ( entr->getType() == FSMgr::iNode::NTYPE_FILE && userdata.snap_count < 32 && !strnicmp(entr->getName(), "demo", 4) )
+            if ( entr->getType() == FSMgr::iNode::NTYPE_FILE && userdata.snap_count < 32 && !strnicmp(entr->getName().c_str(), "demo", 4) )
             {
-                sprintf( userdata.snaps[ userdata.snap_count ], "env:snaps/%s", entr->getName());
+                sprintf( userdata.snaps[ userdata.snap_count ], "env:snaps/%s", entr->getName().c_str());
                 userdata.snap_count++;
             }
         }

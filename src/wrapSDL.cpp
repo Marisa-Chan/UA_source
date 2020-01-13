@@ -77,7 +77,7 @@ void SDLWRAP_ScanFonts()
 
                 if( strstr(tmp.c_str(), ".ttf") || strstr(tmp.c_str(), ".otf") || strstr(tmp.c_str(), ".fon") )
                 {
-                    TTF_Font *fnt = TTF_OpenFont(nod->getPath(), 12);
+                    TTF_Font *fnt = TTF_OpenFont(nod->getPath().c_str(), 12);
                     if (fnt)
                     {
                         FontNode *nd = new FontNode;
