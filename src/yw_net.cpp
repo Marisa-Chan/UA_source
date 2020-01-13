@@ -1096,7 +1096,7 @@ bool yw_netRecvUpdate(_NC_STACK_ypaworld *yw, uamessage_update *msg, int owner)
 
                 lastBct->missiles_list.push_back(tmp);
 
-                tmp->setMISS_launcher(lastBct);
+                tmp->setMISS_launcher(lastBct->self);
             }
             break;
 
@@ -1510,7 +1510,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
 
         weapLauncher->missiles_list.push_back(weapo);
 
-        weapo->setMISS_launcher(weapLauncher);
+        weapo->setMISS_launcher(weapLauncher->self);
 
         weapbact->owner = nwMsg->owner;
         weapbact->gid = nwMsg->id;
@@ -1526,7 +1526,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             weapbact->fly_dir /= weapbact->fly_dir_length;
         }
 
-        weapo->ypamissile_func130(NULL);
+        weapo->AlignMissile();
 
         int wpnType = weapo->getMISS_type();
 
@@ -1778,7 +1778,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             for ( YpamissileList::iterator it = fndBact->missiles_list.begin(); it != fndBact->missiles_list.end(); it++ )
             {
                 fndBact->parent_bact->missiles_list.push_back(*it);
-                (*it)->setMISS_launcher(fndBact->parent_bact);
+                (*it)->setMISS_launcher(fndBact->parent_bacto);
             }
 
             fndBact->missiles_list.clear();

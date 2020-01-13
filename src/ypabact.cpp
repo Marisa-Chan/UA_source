@@ -259,8 +259,7 @@ size_t NC_STACK_ypabact::func0(IDVList &stak)
                         if ( viewMsg.classID == 4 )
                         {
                             NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(this);
-                            __NC_STACK_ypabact *a4 = miss->getMISS_launcher();
-                            viewMsg.launcher = a4->gid;
+                            viewMsg.launcher = miss->getMISS_launcher()->ypabact.gid;
                         }
 
                         yw_arg181 ywMsg;
@@ -3349,7 +3348,7 @@ void NC_STACK_ypabact::Die()
         {
             NC_STACK_ypamissile *miss = *it;
 
-            miss->ypamissile_func128(NULL);
+            miss->ResetViewing();
 
             setState_msg arg119;
             arg119.newStatus = BACT_STATUS_DEAD;
@@ -3374,7 +3373,7 @@ void NC_STACK_ypabact::Die()
             NC_STACK_ypamissile *miss = *it;
 
             bact->parent_bacto->ypabact.missiles_list.push_back(miss);
-            miss->setMISS_launcher( bact->parent_bact );
+            miss->setMISS_launcher( bact->parent_bacto );
         }
     }
 
@@ -3610,7 +3609,7 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
         __NC_STACK_ypabact *wbact;
         wbact = wobj->getBACT_pBact();
 
-        wobj->setMISS_launcher(bact);
+        wobj->setMISS_launcher(this);
 
         wobj->setMISS_startHeight(arg147.pos.y);
 
@@ -6004,10 +6003,7 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
                         v69.unsetFlags = 0;
                         v57->SetStateInternal(&v69);
 
-                        miss_arg130 v61;
-                        v61.pos = v59.skel->polygons[ v59.polyID ].Normal();
-
-                        v57->ypamissile_func131(&v61);
+                        v57->AlignMissileByNormal( v59.skel->polygons[ v59.polyID ].Normal() );
                     }
                 }
             }
@@ -7316,7 +7312,7 @@ void NC_STACK_ypabact::NetUpdate(update_msg *upd)
 
     for ( YpamissileList::iterator it = bact->missiles_list.begin(); it != bact->missiles_list.end(); it++ )
     {
-        (*it)->setMISS_launcher(bact);
+        (*it)->setMISS_launcher(this);
         (*it)->Update(upd);
     }
 
@@ -8448,8 +8444,7 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
         if ( viewMsg.classID == BACT_TYPES_MISSLE )
         {
             NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(this);
-            __NC_STACK_ypabact *a4 = miss->getMISS_launcher();
-            viewMsg.launcher = a4->gid;
+            viewMsg.launcher = miss->getMISS_launcher()->ypabact.gid;
         }
 
         yw_arg181 v13;

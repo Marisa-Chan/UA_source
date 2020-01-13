@@ -4101,7 +4101,7 @@ void NC_STACK_yparobo::checkCommander()
                             }
                             else
                             {
-                                __NC_STACK_ypabact *v33 = NULL;
+                                NC_STACK_ypabact *v33 = NULL;
 
                                 nlist *v30 = commander->bacto->getBACT_attackList();
 
@@ -4110,7 +4110,7 @@ void NC_STACK_yparobo::checkCommander()
                                 {
                                     if (yw->URBact->owner == v17->bact->owner)
                                     {
-                                        v33 = v17->bact;
+                                        v33 = v17->bacto;
                                         break;
                                     }
 
@@ -4119,21 +4119,21 @@ void NC_STACK_yparobo::checkCommander()
 
                                 if ( v33 )
                                 {
-                                    if ( v33->bact_type == BACT_TYPES_MISSLE ) //If missile
+                                    if ( v33->ypabact.bact_type == BACT_TYPES_MISSLE ) //If missile
                                     {
-                                        NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v33->self);
+                                        NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v33);
                                         v33 = miss->getMISS_launcher(); //Get emitter bact
                                     }
 
-                                    if ( v33->host_station != v33->parent_bacto )
-                                        v33 = v33->parent_bact;
+                                    if ( v33->ypabact.host_station != v33->ypabact.parent_bacto )
+                                        v33 = v33->ypabact.parent_bacto;
 
                                     robo_arg134 arg134;
                                     arg134.field_8 = 0;
                                     arg134.field_10 = 0;
                                     arg134.field_C = 0;
                                     arg134.field_4 = 19;
-                                    arg134.unit = v33;
+                                    arg134.unit = &v33->ypabact;
                                     arg134.field_14 = 34;
                                     placeMessage(&arg134);
                                 }

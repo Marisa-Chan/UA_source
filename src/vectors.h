@@ -436,6 +436,15 @@ struct Tvec3d
     {
         return Tvec3d(0.0, 0.0, _z);
     }
+    
+    static const Tvec3d Normalise(const Tvec3d &b)
+    {
+        Tvec3d tmp = b;
+        T l = tmp.length();
+        if (l != 0.0)
+            tmp /= l;
+        return tmp;
+    }
 };
 
 #endif // VECTORS_H_INCLUDED

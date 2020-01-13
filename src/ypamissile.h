@@ -4,39 +4,31 @@
 #include "nucleas.h"
 #include "ypabact.h"
 
-// Bomb rotation speed
-#define MISSILE_BOMB_MIN_ANGLE 0.001
-
-struct __NC_STACK_ypamissile
-{
-    NC_STACK_ypaworld *ywo;
-    _NC_STACK_ypaworld *yw;
-    __NC_STACK_ypabact *selfie;
-    char field_c;
-    __NC_STACK_ypabact *ejaculator_bact;
-    int life_time;
-    int drive_time;
-    int delay_time;
-    int field_2D;
-    float posy;
-    float energy_heli;
-    float energy_tank;
-    float energy_flyer;
-    float energy_robo;
-    float radius_heli;
-    float radius_tank;
-    float radius_flyer;
-    float radius_robo;
-};
-
-struct miss_arg130
-{
-    vec3d pos;
-    float period;
-};
-
 class NC_STACK_ypamissile: public NC_STACK_ypabact
 {
+protected:
+    // Bomb rotation speed
+    const int BOMB_MIN_ANGLE = 0.001;
+        
+public:
+    
+    enum FLAG_MISL
+    {
+        FLAG_MISL_VIEW          = (1 << 0),
+        FLAG_MISL_COUNTDELAY    = (1 << 1),
+        FLAG_MISL_IGNOREBUILDS  = (1 << 2),
+    };
+    
+    enum MISL_TYPE
+    {
+        MISL_BOMB       = 1, // Drop down
+        MISL_DIRECT     = 2, // Simple missile
+        MISL_TARGETED   = 3, // Targeted missile
+        MISL_GRENADE    = 4, // Gravity affected
+        MISL_OBSAVOID   = 5, // Obstacle avoiding
+        MISL_INTERNAL   = 6, // Only for internal use
+    };
+    
 public:
     virtual size_t func0(IDVList &stak);
     virtual size_t func1();
@@ -50,15 +42,13 @@ public:
     virtual void SetState(setState_msg *arg);
     virtual void Renew();
     virtual size_t SetStateInternal(setState_msg *arg);
-    virtual void ypamissile_func128(void *);
-    virtual void ypamissile_func129(void *);
-    virtual void ypamissile_func130(miss_arg130 *arg);
-    virtual void ypamissile_func131(miss_arg130 *arg);
+    virtual void ResetViewing();
+    virtual void ApplyImpulse(); // Apply impulse to all in sector
+    virtual void AlignMissile(float dtime = 0.0);
+    virtual void AlignMissileByNormal(const vec3d &normal);
 
     virtual size_t compatcall(int method_id, void *data);
-    NC_STACK_ypamissile() {
-        memset(&stack__ypamissile, 0, sizeof(stack__ypamissile));
-    };
+    NC_STACK_ypamissile();
     virtual ~NC_STACK_ypamissile() {};
 
     virtual const char * getClassName() {
@@ -89,7 +79,7 @@ public:
     };
 
     virtual void setBACT_viewer(int);
-    virtual void setMISS_launcher(__NC_STACK_ypabact *);
+    virtual void setMISS_launcher(NC_STACK_ypabact *);
     virtual void setMISS_type(int);
     virtual void setMISS_lifeTime(int);
     virtual void setMISS_delay(int);
@@ -105,7 +95,7 @@ public:
     virtual void setMISS_radRobo(int);
     virtual void setMISS_startHeight(int);
 
-    virtual __NC_STACK_ypabact *getMISS_launcher();
+    virtual NC_STACK_ypabact *getMISS_launcher();
     virtual int getMISS_type();
     virtual int getMISS_lifeTime();
     virtual int getMISS_delay();
@@ -120,11 +110,30 @@ public:
     virtual int getMISS_radFlyer();
     virtual int getMISS_radRobo();
     virtual int getMISS_startHeight();
+    
+    vec3d CalcForceVector();
+    bool TubeCollisionTest();
 
     //Data
+public:
     static const Nucleus::ClassDescr description;
-
-    __NC_STACK_ypamissile stack__ypamissile;
+    
+public:
+    int _mislType = 0;
+    NC_STACK_ypabact *_mislEmitter = NULL;
+    int _mislLifeTime   = 0;
+    int _mislDriveTime  = 0;
+    int _mislDelayTime  = 0;
+    int _mislFlags      = 0;
+    float _mislStartHeight  = 0.0;
+    float _mislEnergyHeli   = 0.0;
+    float _mislEnergyTank   = 0.0;
+    float _mislEnergyFlyer  = 0.0;
+    float _mislEnergyRobo   = 0.0;
+    float _mislRadiusHeli   = 0.0;
+    float _mislRadiusTank   = 0.0;
+    float _mislRadiusFlyer  = 0.0;
+    float _mislRadiusRobo   = 0.0;
 };
 
 #endif // YMISSILE_H_INCLUDED

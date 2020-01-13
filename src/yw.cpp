@@ -2293,35 +2293,35 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
     for (int i = 0; i < 16; i++)
         wbact->destroyFX[i] = wproto->dfx[i];
 
-    int v11;
+    int missileType;
 
     switch(wproto->model_id)
     {
     case 1:
-        v11 = 1;
+        missileType = NC_STACK_ypamissile::MISL_BOMB;
         break;
 
     case 7:
-        v11 = 3;
+        missileType = NC_STACK_ypamissile::MISL_TARGETED;
         break;
 
     case 11:
-        v11 = 5;
+        missileType = NC_STACK_ypamissile::MISL_OBSAVOID;
         break;
 
     case 17:
-        v11 = 4;
+        missileType = NC_STACK_ypamissile::MISL_GRENADE;
         break;
 
     default:
-        v11 = 2;
+        missileType = NC_STACK_ypamissile::MISL_DIRECT;
         break;
     }
 
     wobj->setMISS_lifeTime(wproto->life_time);
     wobj->setMISS_delay(wproto->delay_time);
     wobj->setMISS_driveTime(wproto->drive_time);
-    wobj->setMISS_type(v11);
+    wobj->setMISS_type(missileType);
     wobj->setMISS_powHeli(wproto->energy_heli * 1000.0);
     wobj->setMISS_powTank(wproto->energy_tank * 1000.0);
     wobj->setMISS_powFlyer(wproto->energy_flyer * 1000.0);
