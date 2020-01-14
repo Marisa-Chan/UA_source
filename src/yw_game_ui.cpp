@@ -1373,7 +1373,7 @@ char * sb_0x4f8f64__sub3(_NC_STACK_ypaworld *yw, char *cur)
 
                 pcur = sub_4F6980(pcur, yw->field_1a98->position.x, yw->field_1a98->position.z, 0x86, a4, a5);
             }
-            else if ( yw->field_1a58 & 0x10 )
+            else if ( yw->field_1a58 & 0x10 && yw->field_17c0 == 0)
             {
                 if ( yw->field_1a60->owner == yw->URBact->owner && ( (1 << yw->URBact->owner) & yw->field_1a60->view_mask ) )
                 {
