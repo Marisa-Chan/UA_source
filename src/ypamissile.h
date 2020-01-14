@@ -118,7 +118,7 @@ public:
 public:
     static const Nucleus::ClassDescr description;
     
-public:
+protected:
     int _mislType = 0;
     NC_STACK_ypabact *_mislEmitter = NULL;
     int _mislLifeTime   = 0;
