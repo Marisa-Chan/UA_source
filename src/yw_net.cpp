@@ -2193,7 +2193,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         sub_4F1A60(bhost->bact);
         sub_4F1B34(yw, bhost->bact);
 
-        bhost->bact->status_flg |= 0x400;
+        bhost->bact->status_flg |= BACT_STFLAG_DEATH1;
 
         if ( yw->GameShell->netPlayerOwner != bhost->bact->owner )
         {
