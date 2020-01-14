@@ -8644,6 +8644,20 @@ int NC_STACK_ypabact::getBACT_alwaysRender()
 }
 
 
+bool NC_STACK_ypabact::IsNeedsWaypoints( NC_STACK_ypabact *bact)
+{
+    if (bact->IsGroundUnit())
+        return true;
+    
+    for (bact_node *node = (bact_node *)bact->ypabact.subjects_list.head; node->next; node = (bact_node *)node->next)
+    {
+        if (node->bacto->IsGroundUnit())
+            return true;
+    }
+    
+    return false;
+}
+
 
 size_t NC_STACK_ypabact::compatcall(int method_id, void *data)
 {

@@ -730,6 +730,10 @@ public:
     virtual bact_node *getBACT_primAttackNode();
     virtual bact_node *getBACT_secnAttackNode();
     virtual int getBACT_alwaysRender();
+    
+    virtual bool IsGroundUnit() { return false; };
+    
+    static bool IsNeedsWaypoints( NC_STACK_ypabact *bact);
 
     void DoTargetWaypoint();
     void FixSectorFall();

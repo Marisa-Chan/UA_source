@@ -57,6 +57,9 @@ public:
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_ypatank();
     };
+    
+    
+    virtual bool IsGroundUnit() { return true; };
 
     enum TANK_ATT
     {
