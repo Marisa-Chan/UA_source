@@ -506,24 +506,6 @@ void NC_STACK_ypaworld::HistoryAktCreate(NC_STACK_ypabact *bact)
     ypaworld_func184(&arg184);
 }
 
-int groundVehicleInSquad(__NC_STACK_ypabact *bact)
-{
-    if ( bact->bact_type == BACT_TYPES_TANK || bact->bact_type == BACT_TYPES_CAR )
-        return 1;
-
-    bact_node *node = (bact_node *)bact->subjects_list.head;
-
-    while (node->next)
-    {
-        if (node->bact->bact_type == BACT_TYPES_TANK || node->bact->bact_type == BACT_TYPES_CAR)
-            return 1;
-
-        node = (bact_node *)node->next;
-    }
-
-    return 0;
-}
-
 void NC_STACK_yparobo::sub_4A9F24(bact_node *node)
 {
     //__NC_STACK_ypabact *bact = robo->bact_internal;
@@ -579,7 +561,7 @@ void NC_STACK_yparobo::sub_4A9F24(bact_node *node)
             arg124.field_12 = 1;
             arg124.steps_cnt = 32;
 
-            if ( groundVehicleInSquad(node->bact) && node->bacto->PathFinder(&arg124) )
+            if ( IsNeedsWaypoints(node->bacto) && node->bacto->PathFinder(&arg124) )
             {
                 arg124.steps_cnt = 32;
 
@@ -4019,7 +4001,7 @@ void NC_STACK_yparobo::checkCommander()
                                 nod = (bact_node *)nod->next;
                             }
 
-                            if ( groundVehicleInSquad(commander_bact) )
+                            if ( IsNeedsWaypoints(commander->bacto) )
                             {
                                 bact_arg124 arg124;
                                 arg124.steps_cnt = 32;
