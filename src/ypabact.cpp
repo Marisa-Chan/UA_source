@@ -899,7 +899,7 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
     bact->assess_time = 0;
     yw_130arg arg130;
 
-    if ( bact->status_flg & BACT_STFLAG_DEATH1 && arg->tgt_type == 2 )
+    if ( bact->status_flg & BACT_STFLAG_DEATH1 && arg->tgt_type == BACT_TGT_TYPE_UNIT )
     {
         ypa_log_out("ALARM!!! bact-settarget auf logische Leiche owner %d, class %d, prio %d\n", bact->owner, bact->bact_type, arg->priority);
     }

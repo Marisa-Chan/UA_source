@@ -1551,7 +1551,7 @@ size_t yw_handleNormMsg(_NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                 stargt.tgt.pbact = yw_netGetBactByID(ownerhost->bact, nwMsg->target);
 
                 if ( !stargt.tgt.pbact )
-                    stargt.tgt_type = 0;
+                    stargt.tgt_type = BACT_TGT_TYPE_NONE;
             }
 
             weapo->SetTarget(&stargt);
