@@ -1220,9 +1220,9 @@ void NC_STACK_ypatank::ApplyImpulse(bact_arg83 *arg)
         bact->position = v24;
 }
 
-void ypatank_func87__sub0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2)
+void NC_STACK_ypatank::ypatank_func87__sub0(NC_STACK_ypabact *bact2)
 {
-    int v23 = (float)bact2->energy_max * 0.7;
+    int v23 = (float)bact2->ypabact.energy_max * 0.7;
 
     if ( v23 < 10000 )
         v23 = 10000;
@@ -1230,49 +1230,47 @@ void ypatank_func87__sub0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2)
     if ( v23 > 25000 )
         v23 = 25000;
 
-    float v3 = (float)bact2->scale_time * 0.2 / (float)v23 * (float)bact2->energy_max;
+    float v3 = (float)bact2->ypabact.scale_time * 0.2 / (float)v23 * (float)bact2->ypabact.energy_max;
 
-    if ( v3 + bact->energy > bact->energy_max )
+    if ( v3 + ypabact.energy > ypabact.energy_max )
     {
-        __NC_STACK_yparobo *robo = &bact->host_station->stack__yparobo;
-        __NC_STACK_ypabact *rbact = &bact->host_station->ypabact;
+        NC_STACK_yparobo *robo = ypabact.host_station;
 
-        bact->energy = bact->energy_max;
-        rbact = robo->bact_internal;
+        ypabact.energy = ypabact.energy_max;
 
-        int v10 = (int)v3 - (bact->energy_max - bact->energy);
+        int v10 = (int)v3 - (ypabact.energy_max - ypabact.energy);
 
-        if ( v10 + rbact->energy > rbact->energy_max )
+        if ( v10 + robo->ypabact.energy > robo->ypabact.energy_max )
         {
-            int v13 = rbact->energy;
+            int v13 = robo->ypabact.energy;
 
-            rbact->energy = rbact->energy_max;
-            int v14 = v10 - (rbact->energy_max - v13);
-            int v16 = v14 + robo->field_4F5;
+            robo->ypabact.energy = robo->ypabact.energy_max;
+            int v14 = v10 - (robo->ypabact.energy_max - v13);
+            int v16 = v14 + robo->yparobo.field_4F5;
 
-            if ( v16 >= rbact->energy_max )
+            if ( v16 >= robo->ypabact.energy_max )
             {
-                int v17 = robo->field_4F5;
-                robo->field_4F5 = rbact->energy_max;
+                int v17 = robo->yparobo.field_4F5;
+                robo->yparobo.field_4F5 = robo->ypabact.energy_max;
 
-                robo->field_4FD += v14 - (rbact->energy_max - v17);
+                robo->yparobo.field_4FD += v14 - (robo->ypabact.energy_max - v17);
 
-                if ( robo->field_4FD > rbact->energy_max )
-                    robo->field_4FD = rbact->energy_max;
+                if ( robo->yparobo.field_4FD > robo->ypabact.energy_max )
+                    robo->yparobo.field_4FD = robo->ypabact.energy_max;
             }
             else
             {
-                robo->field_4F5 = v16;
+                robo->yparobo.field_4F5 = v16;
             }
         }
         else
         {
-            rbact->energy = v10 + rbact->energy;
+            robo->ypabact.energy = v10 + robo->ypabact.energy;
         }
     }
     else
     {
-        bact->energy = v3 + bact->energy;
+        ypabact.energy = v3 + ypabact.energy;
     }
 }
 
@@ -1365,7 +1363,7 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
 
                             if ( v114 && v126 < v115 )
                             {
-                                ypatank_func87__sub0(&ypabact, v12);
+                                ypatank_func87__sub0(v12->self);
 
                                 v12->scale_time = -1;
 
