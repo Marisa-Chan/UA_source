@@ -3599,6 +3599,7 @@ void NC_STACK_yparobo::AI_clearAttackerSlots()
 {
     if ( _clock - _roboAttackersClearTime > 4000 )
     {
+        _roboAttackersClearTime = _clock;
         for (int i = 0; i < 16; i++)
         {
             if ( _roboAttackers[i].field_0 )
