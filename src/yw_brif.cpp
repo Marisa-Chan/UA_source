@@ -9,7 +9,7 @@
 
 extern GuiList stru_5C91D0;
 
-void ypaworld_func158__sub4__sub1__sub4__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub3(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     SFXEngine::SFXe.StopMusicTrack();
     if ( yw->GameShell->missiontrack )
@@ -63,7 +63,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub3(_NC_STACK_ypaworld *yw, struC5 *in
     brf->field_2E84 = brf->currTime;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub4(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub4(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     int v5 = brf->currTime - brf->startTime;
 
@@ -79,7 +79,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub4(_NC_STACK_ypaworld *yw, struC5 *in
         v4.bitm = yw->pointers__bitm[5];
         v4.pointer_id = 6;
 
-        yw->win3d->display_func263(&v4);
+        yw->_win3d->display_func263(&v4);
     }
     else
     {
@@ -91,7 +91,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub4(_NC_STACK_ypaworld *yw, struC5 *in
     }
 }
 
-int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
+int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
 {
     char rsr[256];
     strcpy(rsr, get_prefix_replacement("rsrc"));
@@ -185,7 +185,7 @@ int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
     return 1;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub5(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub5(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     brf->field_2F84 = 1;
     brf->field_2E80 = brf->currTime;
@@ -199,7 +199,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub5(_NC_STACK_ypaworld *yw, struC5 *in
         v6.bitm = yw->pointers__bitm[0];
         v6.pointer_id = 1;
 
-        yw->win3d->display_func263(&v6);
+        yw->_win3d->display_func263(&v6);
     }
     else
     {
@@ -207,7 +207,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub5(_NC_STACK_ypaworld *yw, struC5 *in
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub6(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     brf_obj *brobj = &brf->brf_objs;
     brobj->field_0 = 0;
@@ -224,7 +224,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub6(_NC_STACK_ypaworld *yw, struC5 *in
     brf->field_2E88 = get_lang_string(yw->string_pointers_p2, 150, "YOU ARE HERE");
 }
 
-int sub_4EBBA8(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, float xpos, float ypos, int a5, const char *title, int a7, int a8, int a9, int vehicle_id, int a11)
+int sub_4EBBA8(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, float xpos, float ypos, int a5, const char *title, int a7, int a8, int a9, int vehicle_id, int a11)
 {
     brf_obj *brobj = &brf->brf_objs;
 
@@ -263,7 +263,7 @@ int sub_4EBBA8(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, float xpos, float ypos,
     return 0;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub7(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     if ( brf->currTime - brf->startTime >= 2500 )
     {
@@ -279,7 +279,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub7(_NC_STACK_ypaworld *yw, struC5 *in
     }
 }
 
-void yw_BriefSetupKeySectors(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void yw_BriefSetupKeySectors(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     if ( brf->field_2F90 )
     {
@@ -307,7 +307,7 @@ void yw_BriefSetupKeySectors(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *
         brf->briefStage = 11;
 }
 
-void yw_BriefUpdateKeySectors(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void yw_BriefUpdateKeySectors(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     int elmID = (brf->currTime - brf->startTime) / 2500;
 
@@ -345,7 +345,7 @@ void yw_BriefUpdateKeySectors(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf 
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub10(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub10(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     if ( brf->field_2F90 )
     {
@@ -370,7 +370,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub10(_NC_STACK_ypaworld *yw, struC5 *i
     brf->briefStage = (brf->elementsCount == 0) + 14;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub11(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub11(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     int v5 = (brf->currTime - brf->startTime) / 2500;
     if ( v5 >= brf->elementsCount )
@@ -409,7 +409,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub11(_NC_STACK_ypaworld *yw, struC5 *i
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub12(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub12(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     if ( brf->field_2F90 )
     {
@@ -432,7 +432,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub12(_NC_STACK_ypaworld *yw, struC5 *i
     brf->briefStage = (brf->elementsCount == 0) + 17;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub13(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub13(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     int v5 = (brf->currTime - brf->startTime) / 2500;
 
@@ -465,7 +465,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub13(_NC_STACK_ypaworld *yw, struC5 *i
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub14(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub14(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     if ( brf->field_2F90 )
     {
@@ -488,7 +488,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub14(_NC_STACK_ypaworld *yw, struC5 *i
     brf->briefStage = (brf->elementsCount == 0) + 20;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub15(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub15(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     int v5 = (brf->currTime - brf->startTime) / 2500;
     if ( v5 >= brf->elementsCount )
@@ -526,7 +526,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub15(_NC_STACK_ypaworld *yw, struC5 *i
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub16(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub16(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     if ( brf->field_2F90 )
     {
@@ -551,7 +551,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub16(_NC_STACK_ypaworld *yw, struC5 *i
     brf->briefStage = (brf->elementsCount == 0) + 23;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub17(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub17(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     int v5 = (brf->currTime - brf->startTime) / 2500;
     if ( v5 >= brf->elementsCount )
@@ -590,7 +590,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub17(_NC_STACK_ypaworld *yw, struC5 *i
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub18(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub18(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     if ( brf->field_2F90 )
     {
@@ -615,7 +615,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub18(_NC_STACK_ypaworld *yw, struC5 *i
     brf->briefStage = (brf->elementsCount == 0) + 26;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub19(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub19(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     int v6 = (brf->currTime - brf->startTime) / 2500;
 
@@ -653,7 +653,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub19(_NC_STACK_ypaworld *yw, struC5 *i
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub21(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub21(NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
 {
     int v20 = -1;
 
@@ -699,7 +699,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub21(_NC_STACK_ypaworld *yw, struC5 *i
     }
 }
 
-void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
+void sub_4ED434(NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
 {
     char *v3 = stru_5C91D0.itemBlock;
 
@@ -820,7 +820,7 @@ void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
     FontUA::set_end(&v3);
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub1(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub1(NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
 {
     char v27[1024];
     char *pos = v27;
@@ -879,10 +879,10 @@ void ypaworld_func158__sub4__sub1__sub4__sub1(_NC_STACK_ypaworld *yw, big_ypa_Br
     v28.cmdbuf = v27;
     v28.includ = NULL;
 
-    yw->win3d->raster_func209(&v28);
+    yw->_win3d->raster_func209(&v28);
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub0(_NC_STACK_ypaworld *yw)
+void ypaworld_func158__sub4__sub1__sub4__sub0(NC_STACK_ypaworld *yw)
 {
     int w = yw->screen_width / 2;
     int h = yw->screen_height / 2;
@@ -909,10 +909,10 @@ void ypaworld_func158__sub4__sub1__sub4__sub0(_NC_STACK_ypaworld *yw)
     v32.cmdbuf = buf;
     v32.includ = NULL;
 
-    yw->win3d->raster_func209(&v32);
+    yw->_win3d->raster_func209(&v32);
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *inpt, int obj_id, char a4)
+void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *inpt, int obj_id, char a4)
 {
     //brf_obj *br_obj = &brf->brf_objs + obj_id; //By first design it had more than 1 brf_obj
     brf_obj *br_obj = &brf->brf_objs;
@@ -949,11 +949,11 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
                     v20.x2 = v21.x1;
                 }
 
-                yw->win3d->raster_func217(0xA0A0);
-                yw->win3d->raster_func198(&v20);
+                yw->_win3d->raster_func217(0xA0A0);
+                yw->_win3d->raster_func198(&v20);
 
-                yw->win3d->raster_func217(0x4040);
-                yw->win3d->raster_func198(&v21);
+                yw->_win3d->raster_func217(0x4040);
+                yw->_win3d->raster_func198(&v21);
             }
         }
 
@@ -988,19 +988,19 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
                 v23.cmdbuf = cmdbuf;
                 v23.includ = NULL;
 
-                yw->win3d->raster_func209(&v23);
+                yw->_win3d->raster_func209(&v23);
             }
         }
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
+void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
 {
     big_ypa_Brf *brf = &yw->brief;
 
     if ( yw->brief.briefStage == 28 )
     {
-        yw->self_full->sub_4491A0(yw->brief.movie);
+        yw->sub_4491A0(yw->brief.movie);
         brf->briefStage = 4;
     }
     else
@@ -1167,12 +1167,12 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
             a4.float18 = -1.0;
             a4.float20 = 1.0;
 
-            yw->win3d->raster_func204(&a4);
+            yw->_win3d->raster_func204(&a4);
         }
 
-        yw->win3d->raster_func204(&brf->field_2F40);
+        yw->_win3d->raster_func204(&brf->field_2F40);
 
-        yw->win3d->draw2DandFlush();
+        yw->_win3d->draw2DandFlush();
 
         ypaworld_func158__DrawVehicle(yw, brf, inpt);
 
@@ -1182,7 +1182,7 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
         w3d_a209 v10;
         v10 = stru_5C91D0.cmdstrm;
 
-        yw->win3d->raster_func209(&v10);
+        yw->_win3d->raster_func209(&v10);
 
         ypaworld_func158__sub4__sub1__sub4__sub2(yw, brf, inpt, 0, 2);
     }
@@ -1217,7 +1217,7 @@ void sub_449310(ua_fRect *rect)
         rect->y2 = -1.0;
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub0(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub6__sub0(NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
 {
     brf->startTime = brf->currTime;
     brf->briefStage = 5;
@@ -1286,7 +1286,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(_NC_STACK_ypaworld *yw, struC5 *st
         SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 11);
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub1(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub6__sub1(NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
 {
     int v4 = brf->currTime - brf->startTime;
 
@@ -1317,7 +1317,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub1(_NC_STACK_ypaworld *yw, struC5 *st
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub2(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub6__sub2(NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
 {
     brf->startTime = brf->currTime;
     brf->briefStage = 8;
@@ -1335,7 +1335,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub2(_NC_STACK_ypaworld *yw, struC5 *st
     memset(brf->tp1, 0, sizeof(brf->tp1));
 }
 
-void yw_DebriefConqSector(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg, int time, int stime)
+void yw_DebriefConqSector(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg, int time, int stime)
 {
     int sx = arg->t26.secX;
     int sy = arg->t26.secY;
@@ -1380,7 +1380,7 @@ void yw_DebriefConqSector(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *a
     }
 }
 
-void yw_DebriefVhclKill(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg, int time, int stime)
+void yw_DebriefVhclKill(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg, int time, int stime)
 {
     int own = arg->t34.field_1 & 7;
     int dtime = time - stime;
@@ -1427,7 +1427,7 @@ void yw_DebriefVhclKill(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg
     }
 }
 
-void yw_DebriefVhclCreate(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg, int time, int stime)
+void yw_DebriefVhclCreate(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg, int time, int stime)
 {
     int dtime = time - stime;
     if ( dtime < 45000 )
@@ -1455,7 +1455,7 @@ void yw_DebriefVhclCreate(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *a
     }
 }
 
-void yw_DebriefAddTechUpgrade(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg)
+void yw_DebriefAddTechUpgrade(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg)
 {
     int v4 = arg->t7.field_4;
     int last_vhcl = arg->t7.last_vhcl;
@@ -1494,7 +1494,7 @@ void yw_DebriefAddTechUpgrade(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg18
     }
 }
 
-void yw_DebriefRenderSectorsOwners(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
+void yw_DebriefRenderSectorsOwners(NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
 {
     float v3 = (brf->field_2F74.x2 - brf->field_2F74.x1) / (float)yw->sectors_maxX2;
     float v4 = (brf->field_2F74.y2 - brf->field_2F74.y1) / (float)yw->sectors_maxY2;
@@ -1532,9 +1532,9 @@ void yw_DebriefRenderSectorsOwners(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
                     arg198_1.x2 = v23;
                     arg198_1.y2 = v21 + v16;
 
-                    yw->win3d->raster_func217( yw_GetColor(yw, owner) );
-                    yw->win3d->raster_func198(&arg198);
-                    yw->win3d->raster_func198(&arg198_1);
+                    yw->_win3d->raster_func217( yw_GetColor(yw, owner) );
+                    yw->_win3d->raster_func198(&arg198);
+                    yw->_win3d->raster_func198(&arg198_1);
                 }
             }
 
@@ -1547,7 +1547,7 @@ void yw_DebriefRenderSectorsOwners(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
 }
 
 
-void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
 {
     int v14 = (yw->screen_width / 2) * -0.934375;
     int v13 = (yw->screen_width / 2) * 0.03125;
@@ -1572,10 +1572,10 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(_NC_STACK_ypaworld *yw, big_
     arg209.cmdbuf = cmdBuff;
     arg209.includ = 0;
 
-    yw->win3d->raster_func209(&arg209);
+    yw->_win3d->raster_func209(&arg209);
 }
 
-char * yw_DebriefKillsTitleLine(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
+char * yw_DebriefKillsTitleLine(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
 {
     char *cur = in;
 
@@ -1614,7 +1614,7 @@ int sub_4EF2A8(const void *a1, const void *a2)
     return ((debrif_t1 *)a2)->status - ((debrif_t1 *)a1)->status;
 }
 
-char * yw_DebriefKillsScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
+char * yw_DebriefKillsScore(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
 {
     char *cur = in;
     int a2 = 0;
@@ -1723,7 +1723,7 @@ char * yw_DebriefKillsScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
     return cur;
 }
 
-char * yw_DebriefMPlayScoreTitle(_NC_STACK_ypaworld *yw, char *in, int a4)
+char * yw_DebriefMPlayScoreTitle(NC_STACK_ypaworld *yw, char *in, int a4)
 {
     char *cur = in;
 
@@ -1742,7 +1742,7 @@ char * yw_DebriefMPlayScoreTitle(_NC_STACK_ypaworld *yw, char *in, int a4)
     return FormateColumnItem(yw, cur, 1, &elm);
 }
 
-char *yw_DebriefMPlayScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
+char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
 {
     char *cur = in;
 
@@ -1892,7 +1892,7 @@ char *yw_DebriefMPlayScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, i
     return cur;
 }
 
-char * yw_DebriefRenderTime(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
+char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
 {
     char *cur = in;
     FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
@@ -1979,7 +1979,7 @@ char * yw_DebriefRenderTime(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
     return cur;
 }
 
-char * yw_DebriefScoreTable(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in)
+char * yw_DebriefScoreTable(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in)
 {
     char *cur = in;
 
@@ -2004,7 +2004,7 @@ char * yw_DebriefScoreTable(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in)
     return yw_DebriefRenderTime(yw, brf, cur, v14);
 }
 
-char * yw_DebriefTechUpgradeLine(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, brf_t1 *tp1, char *in, int a5)
+char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, brf_t1 *tp1, char *in, int a5)
 {
     char *cur = in;
 
@@ -2178,7 +2178,7 @@ char * yw_DebriefTechUpgradeLine(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, brf_t
     return cur;
 }
 
-char * yw_DebriefTechUpgradesTable(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in)
+char * yw_DebriefTechUpgradesTable(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in)
 {
     char *cur = in;
 
@@ -2194,7 +2194,7 @@ char * yw_DebriefTechUpgradesTable(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, cha
     return cur;
 }
 
-void yw_DebriefRunDebrief(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
+void yw_DebriefRunDebrief(NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
 {
     char cmdbuf[2048];
     char *cur = cmdbuf;
@@ -2214,7 +2214,7 @@ void yw_DebriefRunDebrief(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *br
     v24.includ = 0;
     v24.cmdbuf = cmdbuf;
 
-    yw->win3d->raster_func209(&v24);
+    yw->_win3d->raster_func209(&v24);
 
     int v26 = 0;
 
@@ -2327,7 +2327,7 @@ void yw_DebriefRunDebrief(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *br
     ypaworld_func158__sub4__sub1__sub6__sub3__sub6(yw, brf);
 }
 
-void yw_debriefUpdate(_NC_STACK_ypaworld *yw, struC5 *inpt)
+void yw_debriefUpdate(NC_STACK_ypaworld *yw, struC5 *inpt)
 {
     big_ypa_Brf *brf = &yw->brief;
 
@@ -2370,10 +2370,10 @@ void yw_debriefUpdate(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 arg204.float18 = -1.0;
                 arg204.float20 = 1.0;
 
-                yw->win3d->raster_func204(&arg204);
+                yw->_win3d->raster_func204(&arg204);
             }
 
-            yw->win3d->raster_func204(&brf->field_2F40);
+            yw->_win3d->raster_func204(&brf->field_2F40);
         }
 
         switch ( brf->briefStage )

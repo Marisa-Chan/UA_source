@@ -4,18 +4,6 @@
 #include "nucleas.h"
 #include "ypabact.h"
 
-struct __NC_STACK_ypaufo
-{
-    NC_STACK_ypaworld *ywo;
-    _NC_STACK_ypaworld *yw;
-    __NC_STACK_ypabact *bact_internal;
-    float field_c;
-    float field_10;
-    float field_14;
-    float field_18;
-    int field_1c;
-};
-
 class NC_STACK_ypaufo: public NC_STACK_ypabact
 {
 public:
@@ -30,8 +18,13 @@ public:
     virtual void Renew();
 
     virtual size_t compatcall(int method_id, void *data);
-    NC_STACK_ypaufo() {
-        memset(&stack__ypaufo, 0, sizeof(stack__ypaufo));
+    NC_STACK_ypaufo() 
+    {
+        _ufoTogo        = 0.0;
+        _ufoTogoRisidue = 0.0;
+        _ufoBoost       = 0.0;
+        _ufoProcAngle   = 0.0;
+        _ufoFlags       = 0;
     };
     virtual ~NC_STACK_ypaufo() {};
 
@@ -56,7 +49,12 @@ public:
     //Data
     static const Nucleus::ClassDescr description;
 
-    __NC_STACK_ypaufo stack__ypaufo;
+    
+    float _ufoTogo        = 0.0;
+    float _ufoTogoRisidue = 0.0;
+    float _ufoBoost       = 0.0;
+    float _ufoProcAngle   = 0.0;
+    int   _ufoFlags       = 0;
 };
 
 #endif // YUFO_H_INCLUDED

@@ -21,7 +21,7 @@ bool SaveRoboParser::RoboParser(const std::string &p1, const std::string &p2)
 {
     if ( !StriCmp(p1, "owner") )
     {
-        _r->ypabact.owner = std::stoi(p2);
+        _r->_owner = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "is_user_robo") )
     {
@@ -30,31 +30,31 @@ bool SaveRoboParser::RoboParser(const std::string &p1, const std::string &p2)
     }
     else if ( !StriCmp(p1, "robostate") )
     {
-        _r->stack__yparobo.roboState = std::stoi(p2);
+        _r->_roboState = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "dockenergy") )
     {
-        _r->stack__yparobo.dock_energ = std::stoi(p2);
+        _r->_roboDockEnerg = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "dockcount") )
     {
-        _r->stack__yparobo.dock_cnt = std::stoi(p2);
+        _r->_roboDockCnt = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "dockuser") )
     {
-        _r->stack__yparobo.dock_user = std::stoi(p2);
+        _r->_roboDockUser = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "docktime") )
     {
-        _r->stack__yparobo.dock_time = std::stoi(p2);
+        _r->_roboDockTime = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "docktargettype") )
     {
-        _r->stack__yparobo.dock_tgType = std::stoi(p2);
+        _r->_roboDockTargetType = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "dockaggr") )
     {
-        _r->stack__yparobo.dock_aggr = std::stoi(p2);
+        _r->_roboDockAggr = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "docktargetpos") )
     {
@@ -62,123 +62,123 @@ bool SaveRoboParser::RoboParser(const std::string &p1, const std::string &p2)
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            _r->stack__yparobo.dock_tgt_pos.x = std::stod(tmp, 0);
+            _r->_roboDockTargetPos.x = std::stod(tmp, 0);
             if ( stok.GetNext(&tmp) )
-                _r->stack__yparobo.dock_tgt_pos.z = std::stod(tmp, 0);
+                _r->_roboDockTargetPos.z = std::stod(tmp, 0);
         }
     }
     else if ( !StriCmp(p1, "docktargetID") )
     {
-        _r->stack__yparobo.dock_tgt_comm_id = std::stoi(p2);
+        _r->_roboDockTargetCommandID = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "fillmodus") )
     {
-        _r->stack__yparobo.field_501 = std::stoi(p2);
+        _r->_roboFillMode = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "battbuilding") )
     {
     }
     else if ( !StriCmp(p1, "battvehicle") )
     {
-        _r->stack__yparobo.field_4F5 = std::stoi(p2);
+        _r->_roboEnergyLife = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "buildspare") )
     {
-        _r->stack__yparobo.field_509 = std::stoi(p2);
+        _r->_roboBuildSpare = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "battbeam") )
     {
-        _r->stack__yparobo.field_4FD = std::stoi(p2);
+        _r->_roboEnergyMove = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "vhoriz") )
     {
-        _r->ypabact.viewer_horiz_angle = std::stod(p2, 0);
+        _r->_viewer_horiz_angle = std::stod(p2, 0);
     }
     else if ( !StriCmp(p1, "vvert") )
     {
-        _r->ypabact.viewer_vert_angle = std::stod(p2, 0);
+        _r->_viewer_vert_angle = std::stod(p2, 0);
     }
     else if ( !StriCmp(p1, "maximum") )
     {
-        _r->ypabact.energy_max = std::stoi(p2);
+        _r->_energy_max = std::stoi(p2);
 
-        if ( _o.ypaworld.UserRobo == _r )
+        if ( _o.UserRobo == _r )
         {
-            if ( _r->ypabact.energy_max < _o.ypaworld.maxroboenergy )
+            if ( _r->_energy_max < _o.maxroboenergy )
             {
-                _r->ypabact.energy_max = _o.ypaworld.maxroboenergy;
-                _r->ypabact.reload_const = _o.ypaworld.maxreloadconst;
+                _r->_energy_max = _o.maxroboenergy;
+                _r->_reload_const = _o.maxreloadconst;
             }
         }
     }
     else if ( !StriCmp(p1, "con_budget") )
     {
-        _r->stack__yparobo.epConquer = std::stoi(p2);
+        _r->_roboEpConquer = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "def_budget") )
     {
-        _r->stack__yparobo.epDefense = std::stoi(p2);
+        _r->_roboEpDefense = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "rec_budget") )
     {
-        _r->stack__yparobo.epRecon = std::stoi(p2);
+        _r->_roboEpRecon = std::stoi(p2);
     }
     else  if ( !StriCmp(p1, "rob_budget") )
     {
-        _r->stack__yparobo.epRobo = std::stoi(p2);
+        _r->_roboEpRobo = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "rad_budget") )
     {
-        _r->stack__yparobo.epRadar = std::stoi(p2);
+        _r->_roboEpRadar = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "pow_budget") )
     {
-        _r->stack__yparobo.epPower = std::stoi(p2);
+        _r->_roboEpPower = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "saf_budget") )
     {
-        _r->stack__yparobo.epSafety = std::stoi(p2);
+        _r->_roboEpSafety = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "cpl_budget") )
     {
-        _r->stack__yparobo.epChangePlace = std::stoi(p2);
+        _r->_roboEpChangePlace = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "saf_delay") )
     {
-        _r->stack__yparobo.safety_delay = std::stoi(p2);
+        _r->_roboSafetyDelay = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "pow_delay") )
     {
-        _r->stack__yparobo.field_265 = std::stoi(p2);
+        _r->_roboPowerDelay = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "rad_delay") )
     {
-        _r->stack__yparobo.radar_delay = std::stoi(p2);
+        _r->_roboRadarDelay = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "cpl_delay") )
     {
-        _r->stack__yparobo.field_2B1 = std::stoi(p2);
+        _r->_roboPositionDelay = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "def_delay") )
     {
-        _r->stack__yparobo.field_281 = std::stoi(p2);
+        _r->_roboEnemyDelay = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "con_delay") )
     {
-        _r->stack__yparobo.conq_delay = std::stoi(p2);
+        _r->_roboConqDelay = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "rec_delay") )
     {
-        _r->stack__yparobo.field_2C9 = std::stoi(p2);
+        _r->_roboExploreDelay = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "rob_delay") )
     {
-        _r->stack__yparobo.field_2E1 = std::stoi(p2);
+        _r->_roboDangerDelay = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "reload_const") )
     {
-        if ( !_r->ypabact.reload_const )
-            _r->ypabact.reload_const = std::stoi(p2);
+        if ( !_r->_reload_const )
+            _r->_reload_const = std::stoi(p2);
     }
     else
         return false;
@@ -206,34 +206,34 @@ bool SaveBact::SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const 
     }
     else if ( !StriCmp(p1, "commandid") )
     {
-        b->ypabact.commandID = (std::stoi(p2) & 0xFFFFFF);
+        b->_commandID = (std::stoi(p2) & 0xFFFFFF);
 
-        if ( dword_5A7A80 < b->ypabact.commandID )
-            dword_5A7A80 = b->ypabact.commandID;
+        if ( dword_5A7A80 < b->_commandID )
+            dword_5A7A80 = b->_commandID;
     }
     else if ( !StriCmp(p1, "aggression") )
     {
-        b->ypabact.aggr = std::stoi(p2);
+        b->_aggr = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "mainstate") )
     {
-        b->ypabact.status = std::stoi(p2);
+        b->_status = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "extrastate") )
     {
-        b->ypabact.status_flg = std::stoi(p2);
+        b->_status_flg = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "killerowner") )
     {
-        b->ypabact.killer_owner = std::stoi(p2);
+        b->_killer_owner = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "ident") )
     {
-        b->ypabact.gid = std::stoi(p2);
+        b->_gid = std::stoi(p2);
 
-        if ( bact_id < b->ypabact.gid )
+        if ( bact_id < b->_gid )
         {
-            bact_id = b->ypabact.gid;
+            bact_id = b->_gid;
         }
     }
     else if ( !StriCmp(p1, "primary") )
@@ -242,18 +242,18 @@ bool SaveBact::SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const 
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            b->ypabact.primTtype = std::stoi(tmp);
+            b->_primTtype = std::stoi(tmp);
             if ( stok.GetNext(&tmp) )
             {
-                b->ypabact.primT.pbact = (__NC_STACK_ypabact *)(size_t)std::stoi(tmp);
+                b->_primT.pbact = (NC_STACK_ypabact *)(size_t)std::stoi(tmp);
                 if ( stok.GetNext(&tmp) )
                 {
-                    b->ypabact.primTpos.x = std::stod(tmp, 0);
+                    b->_primTpos.x = std::stod(tmp, 0);
                     if ( stok.GetNext(&tmp) )
                     {
-                        b->ypabact.primTpos.z = std::stod(tmp, 0);
+                        b->_primTpos.z = std::stod(tmp, 0);
                         if ( stok.GetNext(&tmp) )
-                            b->ypabact.primT_cmdID = std::stoi(tmp);
+                            b->_primT_cmdID = std::stoi(tmp);
                     }
                 }
             }
@@ -265,22 +265,22 @@ bool SaveBact::SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const 
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            b->ypabact.fly_dir.x = std::stod(tmp, 0);
+            b->_fly_dir.x = std::stod(tmp, 0);
             if ( stok.GetNext(&tmp) )
             {
-                b->ypabact.fly_dir.y = std::stod(tmp, 0);
+                b->_fly_dir.y = std::stod(tmp, 0);
                 if ( stok.GetNext(&tmp) )
                 {
-                    b->ypabact.fly_dir.z = std::stod(tmp, 0);
+                    b->_fly_dir.z = std::stod(tmp, 0);
                     if ( stok.GetNext(&tmp) )
-                        b->ypabact.fly_dir_length = std::stod(tmp, 0);
+                        b->_fly_dir_length = std::stod(tmp, 0);
                 }
             }
         }
     }
     else if ( !StriCmp(p1, "energy") )
     {
-        b->ypabact.energy = std::stoi(p2);
+        b->_energy = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "matrix") )
     {
@@ -288,30 +288,30 @@ bool SaveBact::SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const 
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            b->ypabact.rotation.m00 = std::stod(tmp, 0);
+            b->_rotation.m00 = std::stod(tmp, 0);
             if ( stok.GetNext(&tmp) )
             {
-                b->ypabact.rotation.m01 = std::stod(tmp, 0);
+                b->_rotation.m01 = std::stod(tmp, 0);
                 if ( stok.GetNext(&tmp) )
                 {
-                    b->ypabact.rotation.m02 = std::stod(tmp, 0);
+                    b->_rotation.m02 = std::stod(tmp, 0);
                     if ( stok.GetNext(&tmp) )
                     {
-                        b->ypabact.rotation.m10 = std::stod(tmp, 0);
+                        b->_rotation.m10 = std::stod(tmp, 0);
                         if ( stok.GetNext(&tmp) )
                         {
-                            b->ypabact.rotation.m11 = std::stod(tmp, 0);
+                            b->_rotation.m11 = std::stod(tmp, 0);
                             if ( stok.GetNext(&tmp) )
                             {
-                                b->ypabact.rotation.m12 = std::stod(tmp, 0);
+                                b->_rotation.m12 = std::stod(tmp, 0);
                                 if ( stok.GetNext(&tmp) )
                                 {
-                                    b->ypabact.rotation.m20 = std::stod(tmp, 0);
+                                    b->_rotation.m20 = std::stod(tmp, 0);
                                     if ( stok.GetNext(&tmp) )
                                     {
-                                        b->ypabact.rotation.m21 = std::stod(tmp, 0);
+                                        b->_rotation.m21 = std::stod(tmp, 0);
                                         if ( stok.GetNext(&tmp) )
-                                            b->ypabact.rotation.m22 = std::stod(tmp, 0);
+                                            b->_rotation.m22 = std::stod(tmp, 0);
                                     }
                                 }
                             }
@@ -327,22 +327,22 @@ bool SaveBact::SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const 
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            b->ypabact.position.x = std::stod(tmp, 0);
+            b->_position.x = std::stod(tmp, 0);
             if ( stok.GetNext(&tmp) )
             {
-                b->ypabact.position.y = std::stod(tmp, 0);
+                b->_position.y = std::stod(tmp, 0);
                 if ( stok.GetNext(&tmp) )
-                    b->ypabact.position.z = std::stod(tmp, 0);
+                    b->_position.z = std::stod(tmp, 0);
             }
         }
     }
     else if ( !StriCmp(p1, "force") )
     {
-        b->ypabact.thraction = std::stod(p2, 0);
+        b->_thraction = std::stod(p2, 0);
     }
     else if ( !StriCmp(p1, "gunangle") )
     {
-        b->ypabact.gun_angle_user = std::stod(p2, 0);
+        b->_gun_angle_user = std::stod(p2, 0);
     }
     else if ( !StriCmp(p1, "gunbasis") )
     {
@@ -352,12 +352,12 @@ bool SaveBact::SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const 
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            guno->ypagun.basis.x = std::stod(tmp, 0);
+            guno->_gunBasis.x = std::stod(tmp, 0);
             if ( stok.GetNext(&tmp) )
             {
-                guno->ypagun.basis.y = std::stod(tmp, 0);
+                guno->_gunBasis.y = std::stod(tmp, 0);
                 if ( stok.GetNext(&tmp) )
-                    guno->ypagun.basis.z = std::stod(tmp, 0);
+                    guno->_gunBasis.z = std::stod(tmp, 0);
             }
         }
     }
@@ -370,19 +370,19 @@ bool SaveBact::SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const 
             int id = std::stoi(tmp);
             if ( stok.GetNext(&tmp) )
             {
-                b->ypabact.waypoints[id].x = std::stod(tmp, 0);
+                b->_waypoints[id].x = std::stod(tmp, 0);
                 if ( stok.GetNext(&tmp) )
-                    b->ypabact.waypoints[id].z = std::stod(tmp, 0);
+                    b->_waypoints[id].z = std::stod(tmp, 0);
             }
         }
     }
     else if ( !StriCmp(p1, "num_wp") )
     {
-        b->ypabact.waypoints_count = std::stoi(p2);
+        b->_waypoints_count = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "count_wp") )
     {
-        b->ypabact.current_waypoint = std::stoi(p2);
+        b->_current_waypoint = std::stoi(p2);
     }
     else
         return false;
@@ -419,8 +419,8 @@ int SaveRoboParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
 {
     if ( !StriCmp(p1, "end") )
     {
-        if ( !_r->ypabact.reload_const )
-            _r->ypabact.reload_const = _r->ypabact.energy_max;
+        if ( !_r->_reload_const )
+            _r->_reload_const = _r->_energy_max;
 
         return ScriptParser::RESULT_SCOPE_END;
     }
@@ -501,7 +501,7 @@ int SaveGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, c
         int gemId = std::stoi(p2);
 
         if ( gemId >= 0 && gemId < 8 )
-            _o.ypaworld.cells[_o.ypaworld.sectors_maxX2 * _o.ypaworld.gems[gemId].sec_y + _o.ypaworld.gems[gemId].sec_x].w_type = 0;
+            _o.cells[_o.sectors_maxX2 * _o.gems[gemId].sec_y + _o.gems[gemId].sec_x].w_type = 0;
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -547,7 +547,7 @@ int SaveKwFactorParser::Handle(ScriptParser::Parser &parser, const std::string &
 
                     for (int i = 0; i < 256; i++)
                     {
-                        yw_field34 &kw = _o.ypaworld.field_34[i];
+                        yw_field34 &kw = _o.field_34[i];
                         if ( kw.p_cell )
                         {
                             if ( secX == kw.x && secY == kw.y )
@@ -569,7 +569,7 @@ int SaveGlobalsParser::Handle(ScriptParser::Parser &parser, const std::string &p
         return ScriptParser::RESULT_SCOPE_END;
 
     if ( !StriCmp(p1, "time") )
-        _o.ypaworld.timeStamp = std::stoi(p2);
+        _o.timeStamp = std::stoi(p2);
     else
         return ScriptParser::RESULT_UNKNOWN;
     return ScriptParser::RESULT_OK;
@@ -581,23 +581,23 @@ bool SaveOwnerMapParser::IsScope(ScriptParser::Parser &parser, const std::string
         return false;
 
     for (int i = 0; i < 8; i++)
-        _o.ypaworld.sectors_count_by_owner[i] = 0;
+        _o.sectors_count_by_owner[i] = 0;
 
-    if ( _o.ypaworld.own_map )
-        delete _o.ypaworld.own_map;
+    if ( _o.own_map )
+        delete _o.own_map;
 
-    _o.ypaworld.own_map = ReadMapAsPlaneBytes(parser);
+    _o.own_map = ReadMapAsPlaneBytes(parser);
 
-    if ( _o.ypaworld.own_map )
+    if ( _o.own_map )
     {
-        uint8_t *pbuf = _o.ypaworld.own_map->data();
-        cellArea *v6 = _o.ypaworld.cells;
+        uint8_t *pbuf = _o.own_map->data();
+        cellArea *v6 = _o.cells;
 
-        for (int i = 0; i < (int)_o.ypaworld.own_map->size(); i++)
+        for (int i = 0; i < (int)_o.own_map->size(); i++)
         {
             int v8 = pbuf[i];
             v6->owner = v8;
-            _o.ypaworld.sectors_count_by_owner[v8]++;
+            _o.sectors_count_by_owner[v8]++;
             
             v6++;
         }
@@ -618,16 +618,16 @@ bool SaveBuildingMapParser::IsScope(ScriptParser::Parser &parser, const std::str
     if ( StriCmp(word, "begin_buildingmap") )
         return false;
 
-    if ( _o.ypaworld.blg_map )
-        delete _o.ypaworld.blg_map;
+    if ( _o.blg_map )
+        delete _o.blg_map;
 
-    _o.ypaworld.blg_map = ReadMapAsPlaneBytes(parser);
-    if ( _o.ypaworld.blg_map )
+    _o.blg_map = ReadMapAsPlaneBytes(parser);
+    if ( _o.blg_map )
     {
-        uint8_t *pbuf = _o.ypaworld.blg_map->data();
-        cellArea *v6 = _o.ypaworld.cells;
+        uint8_t *pbuf = _o.blg_map->data();
+        cellArea *v6 = _o.cells;
 
-        for (int i = 0; i < (int)_o.ypaworld.blg_map->size(); i++)
+        for (int i = 0; i < (int)_o.blg_map->size(); i++)
         {
             int v8 = *pbuf;
 
@@ -639,8 +639,8 @@ bool SaveBuildingMapParser::IsScope(ScriptParser::Parser &parser, const std::str
                 arg148.ownerID2 = v6->owner;
                 arg148.blg_ID = v8;
                 arg148.field_C = 1;
-                arg148.x = i % _o.ypaworld.sectors_maxX2;
-                arg148.y = i / _o.ypaworld.sectors_maxX2;
+                arg148.x = i % _o.sectors_maxX2;
+                arg148.y = i / _o.sectors_maxX2;
 
                 _o.ypaworld_func148(&arg148);
             }
@@ -668,8 +668,8 @@ bool SaveEnergyMapParser::IsScope(ScriptParser::Parser &parser, const std::strin
 
     if ( nrgmap )
     {
-        int smax = _o.ypaworld.sectors_maxY2 * _o.ypaworld.sectors_maxX2;
-        cellArea *v6 = _o.ypaworld.cells;
+        int smax = _o.sectors_maxY2 * _o.sectors_maxX2;
+        cellArea *v6 = _o.cells;
         int n = 0;
 
         for (int i = 0; i < smax; i++)
@@ -730,9 +730,9 @@ int SaveHistoryParser::Handle(ScriptParser::Parser &parser, const std::string &p
         stok.GetNext(&tmp);
         int h = std::stol(tmp, NULL, 0);
 
-        if ( _o.ypaworld.history->sub_47EDDC(h * w) )
+        if ( _o.history->sub_47EDDC(h * w) )
         {
-            uint8_t *cur = _o.ypaworld.history->last_bufStart;
+            uint8_t *cur = _o.history->last_bufStart;
             for (int i = 0; i < h; i++)
             {
                 parser.ReadLine(&buf);
@@ -747,7 +747,7 @@ int SaveHistoryParser::Handle(ScriptParser::Parser &parser, const std::string &p
                 }
             }
 
-            cur = _o.ypaworld.history->last_bufStart;
+            cur = _o.history->last_bufStart;
             while(*cur)
             {
                 int wdth = 0;
@@ -781,8 +781,8 @@ int SaveHistoryParser::Handle(ScriptParser::Parser &parser, const std::string &p
                 cur += wdth;
             }
 
-            _o.ypaworld.history->field_1C = NULL;
-            _o.ypaworld.history->last_bufStart = cur;
+            _o.history->field_1C = NULL;
+            _o.history->last_bufStart = cur;
         }
     }
     else
@@ -797,11 +797,11 @@ int SaveMasksParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
 
     if ( !StriCmp(p1, "ownermask") )
     {
-        _o.ypaworld.field_2d90->ownerMap__has_vehicles = std::stoi(p2);
+        _o.field_2d90->ownerMap__has_vehicles = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "usermask") )
     {
-        _o.ypaworld.field_2d90->field_60 = std::stoi(p2);
+        _o.field_2d90->field_60 = std::stoi(p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -836,35 +836,35 @@ int SaveSuperBombParser::Handle(ScriptParser::Parser &parser, const std::string 
     }
     else if ( !StriCmp(p1, "activated_by") )
     {
-        _o.ypaworld.field_2d90->supetItems[_id].field_F4 = std::stoi(p2);
+        _o.field_2d90->supetItems[_id].field_F4 = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "active_timestamp") )
     {
-        _o.ypaworld.field_2d90->supetItems[_id].field_EC = std::stoi(p2);
+        _o.field_2d90->supetItems[_id].field_EC = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "trigger_timestamp") )
     {
-        _o.ypaworld.field_2d90->supetItems[_id].field_F0 = std::stoi(p2);
+        _o.field_2d90->supetItems[_id].field_F0 = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "countdown") )
     {
-        _o.ypaworld.field_2d90->supetItems[_id].field_F8 = std::stoi(p2);
+        _o.field_2d90->supetItems[_id].field_F8 = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "last_ten_sec") )
     {
-        _o.ypaworld.field_2d90->supetItems[_id].field_FC = std::stoi(p2);
+        _o.field_2d90->supetItems[_id].field_FC = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "last_sec") )
     {
-        _o.ypaworld.field_2d90->supetItems[_id].field_100 = std::stoi(p2);
+        _o.field_2d90->supetItems[_id].field_100 = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "radius") )
     {
-        _o.ypaworld.field_2d90->supetItems[_id].field_104 = std::stoi(p2);
+        _o.field_2d90->supetItems[_id].field_104 = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "last_radius") )
     {
-        _o.ypaworld.field_2d90->supetItems[_id].field_108 = std::stoi(p2);
+        _o.field_2d90->supetItems[_id].field_108 = std::stoi(p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;

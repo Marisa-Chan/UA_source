@@ -3,50 +3,100 @@
 
 #include <list>
 
-template <typename T> class RefList: public std::list<T>
+template <typename T> class RefList: protected std::list<T>
 {
 public:
-    typedef typename std::list<T> _T_interList;
+    class Node;
+    
+    typedef RefList<T> _T_List;
     typedef typename std::list<T>::iterator _T_interListIter;
-
-    struct ListNode
+    typedef Node& (* _T_Clear)(T);
+    
+    class Node
     {
-        _T_interList *pList;
-        _T_interListIter it;
-        bool assigned;
-
-        ListNode()
+    friend class RefList;
+    public:
+        Node() : _pList(NULL) {};
+        Node(_T_List *lst, _T_interListIter it)
         {
-            assigned = false;
-            pList = NULL;
+            _pList = lst;
+            _it = it;
         };
-
-        ListNode(_T_interList &_lst, _T_interListIter _it)
+        
+        void Detach()
         {
-            pList = &_lst;
-            it = _it;
-            assigned = true;
-        };
-
-        void RemoveFromAnyList()
+            if (_pList)
+            {
+                _pList->erase(_it);
+                _pList = NULL;
+            }
+        }
+        
+        operator bool() const
         {
-            if (assigned && pList)
-                pList->erase(it);
-
-            assigned = false;
-            pList = NULL;
-        };
+            return (_pList != NULL);
+        }
+        
+        T *PList()
+        {
+            return _pList;
+        }
+        
+        void *PObj()
+        {
+            if (_pList)
+                return _pList->_o;
+            return NULL;
+        }
+        
+    protected:
+        _T_List *_pList;
+        _T_interListIter _it;
     };
-
-    ListNode refPushBack(const T &val)
+    
+public:
+    using std::list<T>::begin;
+    using std::list<T>::end;
+    using std::list<T>::insert;
+    using std::list<T>::size;
+    
+    RefList(void *O) : _o(O), _clearMethod(NULL) {};
+    RefList(void *O, _T_Clear ClrMethod) : _o(O), _clearMethod(ClrMethod) {};
+    
+    Node push_back(T c)
     {
-        return ListNode(this, insert(this->end(), val));
+        return Node(this, insert(this->end(), c));
     }
-
-    ListNode refPushFront(const T &val)
+    
+    Node push_front(T c)
     {
-        return ListNode(this, insert(this->begin(), val));
+        return Node(this, insert(this->front(), c));
     }
+    
+    void unsafe_clear()
+    {
+        std::list<T>::clear();
+    }
+    
+    void clear()
+    {
+        if (_clearMethod)
+        {
+            while(this->begin() != this->end())
+            {
+                _clearMethod(this->front())._pList = NULL;
+                this->erase(this->begin());
+            }
+        }
+        else
+            std::list<T>::clear();
+    }
+    
+public:
+    void * const _o; // Pointer to object that contain this list
+    
+protected:
+    _T_Clear _clearMethod;
 };
 
 #endif // LISTNODE_H_INCLUDED

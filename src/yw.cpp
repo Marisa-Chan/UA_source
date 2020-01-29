@@ -46,9 +46,8 @@ uint32_t bact_id = 0x10000;
 // method 169
 int dword_5A7A80;
 
-_NC_STACK_ypaworld::_NC_STACK_ypaworld()
+NC_STACK_ypaworld::NC_STACK_ypaworld()
 {
-    self_full = NULL;
     GameShell = NULL;
     b64_parms = NULL;
     sectors_maxX = 0;
@@ -92,7 +91,7 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     colcomp_sklt_intrn = NULL;
     tracyrmp_ilbm = NULL;
     shadermp_ilbm = NULL;
-    win3d = NULL;
+    _win3d = NULL;
     field_138c = 0;
 
 //slurp slurps1[6][6];
@@ -194,8 +193,6 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     field_1b74 = 0;
     UserRobo = NULL;
     UserUnit = NULL;
-    URBact = NULL;
-    UUBact = NULL;
     field_1b88 = NULL;
 
     memset(sectors_count_by_owner, 0, sizeof(sectors_count_by_owner));
@@ -351,13 +348,12 @@ _NC_STACK_ypaworld::_NC_STACK_ypaworld()
     easy_cheat_keys = 0;
 
     playerOwner = 0;
-}
-
-NC_STACK_ypaworld::NC_STACK_ypaworld()
-{
+    
+    
+    
     _extraViewEnable = false;
     _extraViewNumber = -1;
-};
+}
 
 namespace World
 {
@@ -396,7 +392,7 @@ bool ParseAssignFile(const std::string &file)
 
 
 
-void sub_4711E0(_NC_STACK_ypaworld *yw)
+void sub_4711E0(NC_STACK_ypaworld *yw)
 {
     yw->very_big_array__p_begin = yw->lang_strings;
     yw->lang_strings__end = yw->lang_strings + 0x20000;
@@ -408,7 +404,7 @@ void sub_4711E0(_NC_STACK_ypaworld *yw)
     strcpy(yw->lang_name, "default");
 }
 
-int yw_InitLocale(_NC_STACK_ypaworld *yw)
+int yw_InitLocale(NC_STACK_ypaworld *yw)
 {
     int v3 = 0;
     yw->lang_strings = (char *)AllocVec(0x20000, 1);
@@ -460,7 +456,7 @@ bool NC_STACK_ypaworld::sub_4DA354(const std::string &filename)
     return res;
 }
 
-int init_prototypes(_NC_STACK_ypaworld *yw)
+int init_prototypes(NC_STACK_ypaworld *yw)
 {
     yw->VhclProtos = new VhclProto[256];
     yw->WeaponProtos = new WeapProto[128];
@@ -469,7 +465,7 @@ int init_prototypes(_NC_STACK_ypaworld *yw)
 
     if ( yw->VhclProtos && yw->WeaponProtos )
     {
-        if ( yw->self_full->sub_4DA354(yw->initScriptLoc) )
+        if ( yw->sub_4DA354(yw->initScriptLoc) )
             return 1;
     }
 
@@ -484,7 +480,7 @@ recorder *recorder_allocate()
     if ( !rcrd )
         return NULL;
 
-    rcrd->bacts = (__NC_STACK_ypabact **)AllocVec(sizeof(__NC_STACK_ypabact *) * 1024, 1);
+    rcrd->bacts = (NC_STACK_ypabact **)AllocVec(sizeof(NC_STACK_ypabact *) * 1024, 1);
     rcrd->oinf = (trec_bct *)AllocVec(sizeof(trec_bct) * 1024, 1);
     rcrd->sound_status = (uint16_t *)AllocVec(sizeof(uint16_t) * 2 * 1024, 1);
     rcrd->field_20 = AllocVec(0x4000, 1);
@@ -517,13 +513,13 @@ recorder *recorder_allocate()
     return rcrd;
 }
 
-int yw_InitSceneRecorder(_NC_STACK_ypaworld *yw)
+int yw_InitSceneRecorder(NC_STACK_ypaworld *yw)
 {
     yw->sceneRecorder = recorder_allocate();
     return yw->sceneRecorder != 0;
 }
 
-void yw_setInitScriptLoc(_NC_STACK_ypaworld *yw)
+void yw_setInitScriptLoc(NC_STACK_ypaworld *yw)
 {
     bool ok = false;
     FSMgr::FileHandle *fil = uaOpenFile("env:startup.def", "r");
@@ -551,15 +547,11 @@ void yw_setInitScriptLoc(_NC_STACK_ypaworld *yw)
 
 size_t NC_STACK_ypaworld::func0(IDVList &stak)
 {
-    if ( !NC_STACK_base::func0(stak) )
+    if ( !NC_STACK_nucleus::func0(stak) )
     {
         ypa_log_out("yw_main.c/OM_NEW: _supermethoda() failed!\n");
         return 0;
     }
-
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
-    yw->self_full = this;
 
     set_prefix_replacement("rsrc", "mc2res");
     set_prefix_replacement("data", "Data");
@@ -574,9 +566,9 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
     if ( !World::ParseAssignFile("env:assign.txt") )
         ypa_log_out("Warning, no env:assign.txt script.\n");
 
-    yw_setInitScriptLoc(yw);
+    yw_setInitScriptLoc(this);
 
-    if ( !yw_InitLocale(yw) )
+    if ( !yw_InitLocale(this) )
     {
         ypa_log_out("yw_main.c/OM_NEW: yw_InitLocale() failed!\n");
         func1();
@@ -592,48 +584,48 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
 //			return NULL;
 //		}
 
-    yw->vhcls_models = (vhclBases *)AllocVec(sizeof(vhclBases) * 512, 65537);
-    yw->legos = (cityBases *)AllocVec(sizeof(cityBases) * 256, 65537);
-    yw->subSectors = (subSec *)AllocVec(sizeof(subSec) * 256, 65537);
-    yw->secTypes = (secType *)AllocVec(sizeof(secType) * 256, 65537);
+    vhcls_models = (vhclBases *)AllocVec(sizeof(vhclBases) * 512, 65537);
+    legos = (cityBases *)AllocVec(sizeof(cityBases) * 256, 65537);
+    subSectors = (subSec *)AllocVec(sizeof(subSec) * 256, 65537);
+    secTypes = (secType *)AllocVec(sizeof(secType) * 256, 65537);
 
-    if ( !yw->vhcls_models || !yw->legos || !yw->subSectors || !yw->secTypes )
+    if ( !vhcls_models || !legos || !subSectors || !secTypes )
     {
         func1();
         return 0;
     }
 
-    if ( !init_prototypes(yw) )
+    if ( !init_prototypes(this) )
     {
         ypa_log_out("ERROR: couldn't initialize prototypes.\n");
         func1();
         return 0;
     }
 
-    yw->screen_width = GFXEngine::GFXe.getScreenW();
-    yw->screen_height = GFXEngine::GFXe.getScreenH();
+    screen_width = GFXEngine::GFXe.getScreenW();
+    screen_height = GFXEngine::GFXe.getScreenH();
 
-    init_list(&yw->bact_list);
-    yw->field_17a0.clear();
-    init_list(&yw->dead_cache);
+    init_list(&bact_list);
+    field_17a0.clear();
+    init_list(&dead_cache);
 
 
-    yw->fxnumber = 16;
-    yw->field_1368 = stak.Get(YW_ATT_VISSECTORS, YW_RENDER_SECTORS_DEF);
-    yw->field_15e4 = stak.Get(YW_ATT_NORMVISLIMIT, 1400);
-    yw->field_15e8 = stak.Get(YW_ATT_FADELENGTH, 600);
-    yw->field_15ec = stak.Get(YW_ATT_SKYVISLIMIT, 4200);
-    yw->field_15f0 = stak.Get(YW_ATT_SKYFADELENGTH, 1100);
-    yw->sectors_maxX = stak.Get(YW_ATT_MAPMAX_X, 64);
-    yw->sectors_maxY = stak.Get(YW_ATT_MAPMAX_Y, 64);
-    yw->sectors_maxX2 = yw->sectors_maxX;
-    yw->sectors_maxY2 = yw->sectors_maxY;
-    yw->field_15f4 = stak.Get(YW_ATT_SKYHEIGHT, -550);
-    yw->field_15f8 = stak.Get(YW_ATT_SKYRENDER, 1);
-    yw->field_15fc = stak.Get(YW_ATT_DOENERGYRECALC, 1);
+    fxnumber = 16;
+    field_1368 = stak.Get(YW_ATT_VISSECTORS, YW_RENDER_SECTORS_DEF);
+    field_15e4 = stak.Get(YW_ATT_NORMVISLIMIT, 1400);
+    field_15e8 = stak.Get(YW_ATT_FADELENGTH, 600);
+    field_15ec = stak.Get(YW_ATT_SKYVISLIMIT, 4200);
+    field_15f0 = stak.Get(YW_ATT_SKYFADELENGTH, 1100);
+    sectors_maxX = stak.Get(YW_ATT_MAPMAX_X, 64);
+    sectors_maxY = stak.Get(YW_ATT_MAPMAX_Y, 64);
+    sectors_maxX2 = sectors_maxX;
+    sectors_maxY2 = sectors_maxY;
+    field_15f4 = stak.Get(YW_ATT_SKYHEIGHT, -550);
+    field_15f8 = stak.Get(YW_ATT_SKYRENDER, 1);
+    field_15fc = stak.Get(YW_ATT_DOENERGYRECALC, 1);
 
     char *v4 = (char *)stak.GetPointer(YW_ATT_BUILD_DATE, NULL);
-    yw->buildDate = v4;
+    buildDate = v4;
     if ( v4 )
     {
         for (char *pchr = v4; *pchr; pchr++)
@@ -647,46 +639,46 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
 
 
 
-    yw->build_hp_ref[0] = 3;
+    build_hp_ref[0] = 3;
     for (int i = 1; i <= 100; i++ )
-        yw->build_hp_ref[i] = 2;
+        build_hp_ref[i] = 2;
     for (int i = 101; i <= 200; i++ )
-        yw->build_hp_ref[i] = 1;
+        build_hp_ref[i] = 1;
     for (int i = 201; i < 256; i++ )
-        yw->build_hp_ref[i] = 0;
+        build_hp_ref[i] = 0;
 
     for (int j = 0; j < 64; j++)
     {
         for (int i = 0; i < 64; i++)
         {
-            yw->sqrt_table[j][i] = sqrt(j * j + i * i);
+            sqrt_table[j][i] = sqrt(j * j + i * i);
         }
     }
 
-    yw->cells = (cellArea *)AllocVec(sizeof(cellArea) * yw->sectors_maxX * yw->sectors_maxY, 65537);
+    cells = new cellArea[sectors_maxX * sectors_maxY];
 
-    if ( !yw->cells )
+    if ( !cells )
     {
         ypa_log_out("yw_main.c/OM_NEW: alloc of cell area failed!\n");
         func1();
         return 0;
     }
-    if ( !yw_InitSceneRecorder(yw) )
+    if ( !yw_InitSceneRecorder(this) )
     {
         ypa_log_out("yw_main.c/OM_NEW: init scene recorder failed!\n");
         func1();
         return 0;
     }
-    if ( !yw_InitTooltips(yw) )
+    if ( !yw_InitTooltips(this) )
     {
         ypa_log_out("yw_main.c/OM_NEW: yw_InitTooltips() failed!\n");
         func1();
         return 0;
     }
 
-    yw->one_game_res = 1;
-    yw->shell_default_res = (640 << 12) | 480;
-    yw->game_default_res = (640 << 12) | 480;
+    one_game_res = 1;
+    shell_default_res = (640 << 12) | 480;
+    game_default_res = (640 << 12) | 480;
 
     if ( !yw_InitLevelNet() )
     {
@@ -695,16 +687,16 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
         return 0;
     }
 
-    yw->field_73CE |= 0x10;
+    field_73CE |= 0x10;
 
-    if ( !yw_InitNetwork(yw) )
+    if ( !yw_InitNetwork(this) )
     {
         ypa_log_out("yw_main.c/OM_NEW: yw_InitNetwork() failed!\n");
         func1();
         return 0;
     }
 
-    yw->field_138c = 0;
+    field_138c = 0;
 
     return 1;
 }
@@ -784,7 +776,7 @@ size_t NC_STACK_ypaworld::func2(IDVList &stak)
         }
     }
 
-    return NC_STACK_base::func2(stak);
+    return NC_STACK_nucleus::func2(stak);
 }
 
 size_t NC_STACK_ypaworld::func3(IDVList &stak)
@@ -903,32 +895,30 @@ size_t NC_STACK_ypaworld::func3(IDVList &stak)
         }
     }
 
-    return NC_STACK_base::func3(stak);
+    return NC_STACK_nucleus::func3(stak);
 }
 
 
-void sub_445230(_NC_STACK_ypaworld *yw)
+void sub_445230(NC_STACK_ypaworld *yw)
 {
-    if ( yw->current_bact->self->getBACT_extraViewer() )
+    if ( yw->current_bact->getBACT_extraViewer() )
     {
-        __NC_STACK_ypabact *v4 = yw->current_bact;
+        NC_STACK_ypabact *v4 = yw->current_bact;
 
-        yw->field_1334 = v4->position + v4->rotation.Transpose().Transform(v4->viewer_position);
+        yw->field_1334 = v4->_position + v4->_rotation.Transpose().Transform(v4->_viewer_position);
 
-        yw->field_1340 = yw->current_bact->viewer_rotation;
+        yw->field_1340 = yw->current_bact->_viewer_rotation;
     }
     else
     {
-        yw->field_1334 = yw->current_bact->position;
+        yw->field_1334 = yw->current_bact->_position;
 
-        yw->field_1340 = yw->current_bact->rotation;
+        yw->field_1340 = yw->current_bact->_rotation;
     }
 }
 
 size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     extern GuiList gui_lstvw; //In yw_game_ui.cpp
     extern GuiList lstvw2; //In yw_game_ui.cpp
     extern bool SPEED_DOWN_NET; //In yw_net.cpp
@@ -936,26 +926,26 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
     if ( (gui_lstvw.IsClosed() && lstvw2.IsClosed())
             || (arg->field_8->downed_key != UAVK_RETURN && arg->field_8->downed_key != UAVK_ESCAPE) )
     {
-        yw->field_826F = 0;
+        field_826F = 0;
     }
     else
     {
-        yw->field_826F = arg->field_8->downed_key;
+        field_826F = arg->field_8->downed_key;
         arg->field_8->downed_key = 0;
         arg->field_8->downed_key_2 = 0;
         arg->field_8->dword8 = 0;
     }
 
-    if ( !ypaworld_func64__sub4(yw, arg) )
+    if ( !ypaworld_func64__sub4(this, arg) )
     {
         uint32_t v92 = profiler_begin();
 
-        yw->win3d = GFXEngine::GFXe.getC3D();
+        _win3d = GFXEngine::GFXe.getC3D();
 
-        yw->field_7626 = 0;
-        yw->b64_parms = arg;
+        field_7626 = 0;
+        b64_parms = arg;
 
-        if ( yw->do_screenshooting )
+        if ( do_screenshooting )
         {
             arg->field_0 -= arg->field_4;
             arg->field_8->period = 40;
@@ -963,23 +953,23 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             arg->field_0 += arg->field_4;
         }
 
-        if ( yw->UUBact )
+        if ( UserUnit )
         {
-            if ( yw->field_161c == 1 )
+            if ( field_161c == 1 )
             {
-                yw->field_1334 = yw->UUBact->position;
-                yw->field_1340 = yw->UUBact->rotation;
+                field_1334 = UserUnit->_position;
+                field_1340 = UserUnit->_rotation;
             }
 
-            vec3d a3 = yw->UUBact->fly_dir * yw->UUBact->fly_dir_length;
+            vec3d a3 = UserUnit->_fly_dir * UserUnit->_fly_dir_length;
 
-            SFXEngine::SFXe.sub_423EFC(arg->field_4, yw->field_1334, a3, yw->field_1340);
+            SFXEngine::SFXe.sub_423EFC(arg->field_4, field_1334, a3, field_1340);
         }
 
-        if ( yw->field_161c == 1 )
+        if ( field_161c == 1 )
         {
             yw_arg159 arg159;
-            arg159.unit = yw->URBact;
+            arg159.unit = UserRobo;
             arg159.field_4 = 128;
             arg159.txt = NULL;
             arg159.field_C = 41;
@@ -987,19 +977,19 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             ypaworld_func159(&arg159);
         }
 
-        ypaworld_func64__sub6(yw);
-        ypaworld_func64__sub2(yw);
+        ypaworld_func64__sub6(this);
+        ypaworld_func64__sub2(this);
 
-        if ( !yw->field_138c )
+        if ( !field_138c )
         {
-            ypaworld_func64__sub1(yw, arg->field_8); //Precompute input (add mouse turn)
+            ypaworld_func64__sub1(this, arg->field_8); //Precompute input (add mouse turn)
 
             ClickBoxInf *winp = &arg->field_8->ClickInf;
 
-            if ( yw->field_1b1c )
+            if ( field_1b1c )
             {
-                if ( winp->move.screenPos.x != yw->field_1b20 || winp->move.screenPos.y != yw->field_1b22 )
-                    yw->field_1b1c = 0;
+                if ( winp->move.screenPos.x != field_1b20 || winp->move.screenPos.y != field_1b22 )
+                    field_1b1c = 0;
             }
             else
             {
@@ -1007,181 +997,181 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                 {
                     if ( arg->field_8->downed_key != 0x81 && arg->field_8->downed_key != 0x83 && arg->field_8->downed_key != 0x82 && !(arg->field_8->but_flags & 0x10) )
                     {
-                        yw->field_1b1c = 1;
-                        yw->field_1b20 = winp->move.screenPos.x;
-                        yw->field_1b22 = winp->move.screenPos.y;
+                        field_1b1c = 1;
+                        field_1b20 = winp->move.screenPos.x;
+                        field_1b22 = winp->move.screenPos.y;
                     }
                 }
             }
         }
 
-        yw->timeStamp += arg->field_4;
-        yw->field_1618 = arg->field_4;
-        yw->field_161c++;
+        timeStamp += arg->field_4;
+        field_1618 = arg->field_4;
+        field_161c++;
 
-        yw->field_1b24.user_action = 0;
-        yw->field_1b24.gTime = yw->timeStamp;
-        yw->field_1b24.frameTime = arg->field_4;
-        yw->field_1b24.units_count = 0;
-        yw->field_1b24.inpt = arg->field_8;
-        yw->field_1B6E = 1024 / arg->field_4;
-        yw->p_1_grp[0][0] = yw->field_1B6E;
+        field_1b24.user_action = 0;
+        field_1b24.gTime = timeStamp;
+        field_1b24.frameTime = arg->field_4;
+        field_1b24.units_count = 0;
+        field_1b24.inpt = arg->field_8;
+        field_1B6E = 1024 / arg->field_4;
+        p_1_grp[0][0] = field_1B6E;
 
         yw_arg184 arg184;
         arg184.type = 1;
-        arg184.t15.field_1 = yw->timeStamp;
-        yw->self_full->ypaworld_func184(&arg184);
+        arg184.t15.field_1 = timeStamp;
+        ypaworld_func184(&arg184);
 
         uint32_t v22 = profiler_begin();
 
-        if ( yw->isNetGame )
-            yw_NetMsgHndlLoop(yw);
+        if ( isNetGame )
+            yw_NetMsgHndlLoop(this);
 
-        if ( !yw->isNetGame || yw->field_2d90->field_40 != 2 )
+        if ( !isNetGame || field_2d90->field_40 != 2 )
         {
-            yw->p_1_grp[0][6] = profiler_end(v22);
+            p_1_grp[0][6] = profiler_end(v22);
 
             uint32_t v23 = profiler_begin();
 
-            for (int i = 0; i < yw->sectors_maxY2 * yw->sectors_maxX2; i++)
+            for (int i = 0; i < sectors_maxY2 * sectors_maxX2; i++)
             {
-                cellArea *tmp = yw->cells + i;
+                cellArea *tmp = cells + i;
 
                 tmp->view_mask = 1 << tmp->owner;
             }
 
-            bact_node *v32 = (bact_node *)yw->bact_list.head;
+            bact_node *v32 = (bact_node *)bact_list.head;
             while (v32->next)
             {
-                v32->bacto->MarkSectorsForView(NULL);
+                v32->bact->MarkSectorsForView(NULL);
 
                 v32 = (bact_node *)v32->next;
             }
 
-            yw->p_1_grp[0][2] = profiler_end(v23);
+            p_1_grp[0][2] = profiler_end(v23);
 
-            if ( !yw->field_138c )
+            if ( !field_138c )
             {
-                yw->win3d->BeginFrame();
-                yw->win3d->setRSTR_BGpen(0);
-                yw->win3d->raster_func192(NULL);
+                _win3d->BeginFrame();
+                _win3d->setRSTR_BGpen(0);
+                _win3d->raster_func192(NULL);
             }
 
-            ypaworld_func64__sub15(yw);
-            ypaworld_func64__sub16(yw);
-            ypaworld_func64__sub17(yw);
-            sub_4C40AC(yw);
-            ypaworld_func64__sub9(yw);
-            ypaworld_func64__sub19(yw);
-            ypaworld_func64__sub20(this, yw, arg->field_4);
+            ypaworld_func64__sub15(this);
+            ypaworld_func64__sub16(this);
+            ypaworld_func64__sub17(this);
+            sub_4C40AC(this);
+            ypaworld_func64__sub9(this);
+            ypaworld_func64__sub19(this);
+            ypaworld_func64__sub20(this, arg->field_4);
 
-            if ( !yw->field_138c )
+            if ( !field_138c )
             {
                 uint32_t v33 = profiler_begin();
 
-                ypaworld_func64__sub8(this, yw);
-                ypaworld_func64__sub7(yw, arg->field_8);
+                ypaworld_func64__sub8(this);
+                ypaworld_func64__sub7(this, arg->field_8);
 
-                sub_445230(yw);
+                sub_445230(this);
 
-                ypaworld_func64__sub14(yw);
-                ypaworld_func64__sub21(this, yw, arg->field_8);
+                ypaworld_func64__sub14(this);
+                ypaworld_func64__sub21(this, arg->field_8);
 
-                yw->p_1_grp[0][3] = profiler_end(v33);
+                p_1_grp[0][3] = profiler_end(v33);
             }
 
-            if ( yw->field_15fc )
-                ypaworld_func64__sub5(yw);
+            if ( field_15fc )
+                ypaworld_func64__sub5(this);
 
-            if ( yw->sceneRecorder->do_record )
-                recorder_update_time(yw, arg->field_4);
+            if ( sceneRecorder->do_record )
+                recorder_update_time(this, arg->field_4);
 
-            yw->hudi.field_0 = 0;
-            yw->hudi.field_4 = 0;
+            hudi.field_0 = 0;
+            hudi.field_4 = 0;
 
-            yw->field_1b74 = yw->UUBact->pSector->owner;
+            field_1b74 = UserUnit->_pSector->owner;
 
             uint32_t v37 = profiler_begin();
 
-            bact_node *nnode = (bact_node *)yw->bact_list.head;
+            bact_node *nnode = (bact_node *)bact_list.head;
             while ( nnode->next )
             {
                 bact_node *next_node = (bact_node *)nnode->next;
 
-                if (yw->isNetGame && nnode->bacto != yw->UserRobo && nnode->bact->bact_type == BACT_TYPES_ROBO)
-                    nnode->bacto->NetUpdate(&yw->field_1b24);
+                if (isNetGame && nnode->bact != UserRobo && nnode->bact->_bact_type == BACT_TYPES_ROBO)
+                    nnode->bact->NetUpdate(&field_1b24);
                 else
-                    nnode->bacto->Update(&yw->field_1b24);
+                    nnode->bact->Update(&field_1b24);
 
-                yw->field_1b24.units_count++;
+                field_1b24.units_count++;
 
                 nnode = next_node;
             }
 
-            yw->p_1_grp[0][4] = profiler_end(v37);
+            p_1_grp[0][4] = profiler_end(v37);
 
-            sub_445230(yw);
+            sub_445230(this);
 
             uint32_t v41 = profiler_begin();
 
-            if ( yw->isNetGame )
+            if ( isNetGame )
             {
                 if ( arg->field_4 == 1 )
-                    yw->field_7586 -= 20;
+                    field_7586 -= 20;
                 else
-                    yw->field_7586 -= arg->field_4;
+                    field_7586 -= arg->field_4;
 
-                if ( yw->field_7586 <= 0 )
+                if ( field_7586 <= 0 )
                 {
                     windp_arg82 arg82;
-                    arg82.senderID = yw->GameShell->callSIGN.c_str();
+                    arg82.senderID = GameShell->callSIGN.c_str();
                     arg82.senderFlags = 1;
                     arg82.receiverFlags = 2;
                     arg82.receiverID = 0;
                     arg82.guarant = 0;
 
-                    uint32_t v44 = yw->windp->FlushBuffer(arg82);
+                    uint32_t v44 = windp->FlushBuffer(arg82);
 
-                    yw->GameShell->netsend_count += v44;
+                    GameShell->netsend_count += v44;
 
-                    if ( !yw->GameShell->net_packet_min || v44 < yw->GameShell->net_packet_min )
-                        yw->GameShell->net_packet_min = v44;
+                    if ( !GameShell->net_packet_min || v44 < GameShell->net_packet_min )
+                        GameShell->net_packet_min = v44;
 
-                    if ( v44 > yw->GameShell->net_packet_max )
-                        yw->GameShell->net_packet_max = v44;
+                    if ( v44 > GameShell->net_packet_max )
+                        GameShell->net_packet_max = v44;
 
                     if ( v44 )
-                        yw->GameShell->net_packet_cnt++;
+                        GameShell->net_packet_cnt++;
 
                     if ( SPEED_DOWN_NET )
-                        yw->field_7586 = 1500;
+                        field_7586 = 1500;
                     else
-                        yw->field_7586 = yw->GameShell->flush_time_norm;
+                        field_7586 = GameShell->flush_time_norm;
                 }
             }
-            yw->p_1_grp[0][6] += profiler_end(v41);
+            p_1_grp[0][6] += profiler_end(v41);
 
-            if ( yw->UUBact )
+            if ( UserUnit )
             {
-                if ( yw->GameShell )
+                if ( GameShell )
                 {
-                    yw->GameShell->samples1_info.field_0 = yw->UUBact->position;
-                    yw->GameShell->samples2_info.field_0 = yw->UUBact->position;
+                    GameShell->samples1_info.field_0 = UserUnit->_position;
+                    GameShell->samples2_info.field_0 = UserUnit->_position;
 
-                    SFXEngine::SFXe.sb_0x4242e0(&yw->GameShell->samples1_info);
-                    SFXEngine::SFXe.sb_0x4242e0(&yw->GameShell->samples2_info);
+                    SFXEngine::SFXe.sb_0x4242e0(&GameShell->samples1_info);
+                    SFXEngine::SFXe.sb_0x4242e0(&GameShell->samples2_info);
                 }
             }
 
-            ypaworld_func64__sub22(yw); // scene events
-            ypaworld_func64__sub23(yw); // update sound messages
+            ypaworld_func64__sub22(this); // scene events
+            ypaworld_func64__sub23(this); // update sound messages
 
-            if ( yw->isNetGame ) // update additional sounds of netplay
+            if ( isNetGame ) // update additional sounds of netplay
             {
-                if ( yw->UUBact )
-                    yw->GameShell->field_782.field_0 = yw->UUBact->position;
+                if ( UserUnit )
+                    GameShell->field_782.field_0 = UserUnit->_position;
 
-                SFXEngine::SFXe.sb_0x4242e0(&yw->GameShell->field_782);
+                SFXEngine::SFXe.sb_0x4242e0(&GameShell->field_782);
             }
 
             const mat3x3 &v57 = SFXEngine::SFXe.sb_0x424c74();
@@ -1189,42 +1179,42 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             v58->locSclRot = v57 * v58->locSclRot;
 
-            if ( yw->sceneRecorder->do_record )
-                recorder_write_frame(yw);
+            if ( sceneRecorder->do_record )
+                recorder_write_frame(this);
 
-            ypaworld_func64__sub3(yw);
+            ypaworld_func64__sub3(this);
 
-            if ( !yw->field_138c )
+            if ( !field_138c )
             {
                 uint32_t v62 = profiler_begin();
 
-                if ( yw->UUBact->sectX || yw->UUBact->sectY )
+                if ( UserUnit->_sectX || UserUnit->_sectY )
                 {
-                    sb_0x4d7c08(this, yw, arg, 1);
+                    sb_0x4d7c08(this, arg, 1);
 
-                    if ( yw->isNetGame )
-                        yw_NetDrawStats(yw);
+                    if ( isNetGame )
+                        yw_NetDrawStats(this);
                 }
 
-                yw->win3d->EndFrame();
+                _win3d->EndFrame();
 
-                yw->p_1_grp[0][5] = profiler_end(v62);
+                p_1_grp[0][5] = profiler_end(v62);
             }
 
             FFeedback_Update(); // Do vibrate joystick
 
-            sb_0x447720(yw, arg->field_8); // Snaps/ start/stop recording
+            sb_0x447720(this, arg->field_8); // Snaps/ start/stop recording
 
-            yw->p_1_grp[0][1] = profiler_end(v92);
-            yw->p_1_grp[0][7] = yw->field_1b6c;
+            p_1_grp[0][1] = profiler_end(v92);
+            p_1_grp[0][7] = field_1b6c;
 
-            sub_44A094(yw);
+            sub_44A094(this);
 
-            if ( !yw->field_138c )
+            if ( !field_138c )
             {
-                if ( yw->field_7626 )
+                if ( field_7626 )
                 {
-                    yw->field_138c = 1;
+                    field_138c = 1;
 
                     dprintf("MAKE ME %s (multiplayer part Messaging)\n", "ypaworld_func64");
 
@@ -1246,17 +1236,17 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 //
 //          yw->win3d->windd_func322(&dlgBox);
 //
-                    yw->field_138c = 0;
+                    field_138c = 0;
 //
 //          if ( dlgBox.result )
 //            sub_4D9418(yw, dlgBox.result, yw->field_762E, yw->field_762A);
                 }
             }
 
-            if ( yw->field_81AF )
+            if ( field_81AF )
             {
-                const char *help_link = yw->field_81AF;
-                yw->field_81AF = 0;
+                const char *help_link = field_81AF;
+                field_81AF = 0;
 
                 ypaworld_func185(&help_link); //launch online help
             }
@@ -1268,7 +1258,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
     return 1;
 }
 
-void sub_47C1EC(_NC_STACK_ypaworld *yw, gemProto *gemProt, int *a3, int *a4)
+void sub_47C1EC(NC_STACK_ypaworld *yw, gemProto *gemProt, int *a3, int *a4)
 {
     switch ( yw->GameShell->netPlayerOwner )
     {
@@ -1299,7 +1289,7 @@ void sub_47C1EC(_NC_STACK_ypaworld *yw, gemProto *gemProt, int *a3, int *a4)
     }
 }
 
-void sub_47C29C(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
+void sub_47C29C(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
 {
     gemProto *v17 = &yw->gems[a3];
 
@@ -1338,7 +1328,7 @@ void sub_47C29C(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
     else
         v14.field_C = 0;
 
-    yw->self_full->ypaworld_func159(&v14);
+    yw->ypaworld_func159(&v14);
 
     if ( yw->isNetGame )
     {
@@ -1357,14 +1347,14 @@ void sub_47C29C(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
             arg181.recvFlags = 2;
             arg181.data = &upMsg;
 
-            yw->self_full->ypaworld_func181(&arg181);
+            yw->ypaworld_func181(&arg181);
         }
     }
 
     cell->w_type = 7;
 }
 
-void ypaworld_func129__sub1(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
+void ypaworld_func129__sub1(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
 {
     gemProto *v18 = &yw->gems[a3];
 
@@ -1388,7 +1378,7 @@ void ypaworld_func129__sub1(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
     arg159.txt = v13.c_str();
     arg159.field_C = 29;
 
-    yw->self_full->ypaworld_func159(&arg159);
+    yw->ypaworld_func159(&arg159);
 
     if ( yw->isNetGame )
     {
@@ -1405,7 +1395,7 @@ void ypaworld_func129__sub1(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
         arg181.garant = 1;
         arg181.data = &upMsg;
 
-        yw->self_full->ypaworld_func181(&arg181);
+        yw->ypaworld_func181(&arg181);
     }
 
     cell->w_id = 0;
@@ -1414,14 +1404,14 @@ void ypaworld_func129__sub1(_NC_STACK_ypaworld *yw, cellArea *cell, int a3)
 
 void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
 {
-    ypaworld.last_modify_vhcl = 0;
-    ypaworld.last_modify_build = 0;
-    ypaworld.last_modify_weapon = 0;
+    last_modify_vhcl = 0;
+    last_modify_build = 0;
+    last_modify_weapon = 0;
 
-    ypaworld.field_2b78 = gemid;
-    ypaworld.field_2b7c = ypaworld.timeStamp;
+    field_2b78 = gemid;
+    field_2b7c = timeStamp;
 
-    gemProto &gem = ypaworld.gems[gemid];
+    gemProto &gem = gems[gemid];
 
     if ( !gem.script.empty() )
     {
@@ -1443,7 +1433,7 @@ void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
         set_prefix_replacement("rsrc", tmp);
     }
 
-    std::string txt = get_lang_string(ypaworld.string_pointers_p2, 221, "TECHNOLOGY UPGRADE!\n");
+    std::string txt = get_lang_string(string_pointers_p2, 221, "TECHNOLOGY UPGRADE!\n");
 
     yw_arg159 arg159;
     arg159.unit = NULL;
@@ -1460,12 +1450,12 @@ void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
     cell->w_type = 7;
 }
 
-void sub_44FD6C(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int a5, int a6, int a7)
+void sub_44FD6C(NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int a5, int a6, int a7)
 {
-    __NC_STACK_ypabact *cbact = yw->current_bact;
+    NC_STACK_ypabact *cbact = yw->current_bact;
 
-    int v8 = abs(cbact->sectX - secX);
-    int v9 = abs(cbact->sectY - secY);
+    int v8 = abs(cbact->_sectX - secX);
+    int v9 = abs(cbact->_sectY - secY);
 
     if ( v8 + v9 <= (yw->field_1368 - 1) / 2 )
     {
@@ -1491,13 +1481,11 @@ void sub_44FD6C(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int 
             arg146.pos.y = cell->height + v10.field_24[i].pos_y;
             arg146.pos.z = v27 + v10.field_24[i].pos_z;
 
-            NC_STACK_ypabact *boom = yw->self_full->ypaworld_func146(&arg146);
+            NC_STACK_ypabact *boom = yw->ypaworld_func146(&arg146);
 
             if ( boom )
             {
-                __NC_STACK_ypabact *a4 = &boom->ypabact;
-                //a4 = boom->getBACT_pBact();
-                a4->owner = 0;
+                boom->_owner = 0;
 
                 setState_msg arg78;
                 arg78.newStatus = BACT_STATUS_DEAD;
@@ -1505,7 +1493,7 @@ void sub_44FD6C(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int 
                 arg78.unsetFlags = 0;
                 boom->SetState(&arg78);
 
-                yw->self_full->ypaworld_func134(boom);
+                yw->ypaworld_func134(boom);
 
                 bact_arg83 arg83;
                 arg83.pos = arg146.pos;
@@ -1528,15 +1516,15 @@ void sub_44FD6C(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int 
     }
 }
 
-void ypaworld_func129__sub0(_NC_STACK_ypaworld *yw, cellArea *cell, yw_arg129 *arg)
+void ypaworld_func129__sub0(NC_STACK_ypaworld *yw, cellArea *cell, yw_arg129 *arg)
 {
     if ( cell->w_type == 2 )
     {
-        if ( cell->owner == yw->URBact->owner )
+        if ( cell->owner == yw->UserRobo->_owner )
         {
             if ( arg->unit )
             {
-                if ( yw->URBact->owner != arg->unit->owner && yw->timeStamp - yw->field_1a1c > 5000 )
+                if ( yw->UserRobo->_owner != arg->unit->_owner && yw->timeStamp - yw->field_1a1c > 5000 )
                 {
                     yw->field_1a1c = yw->timeStamp;
 
@@ -1546,7 +1534,7 @@ void ypaworld_func129__sub0(_NC_STACK_ypaworld *yw, cellArea *cell, yw_arg129 *a
                     arg159.txt = NULL;
                     arg159.field_C = 33;
 
-                    yw->self_full->ypaworld_func159(&arg159);
+                    yw->ypaworld_func159(&arg159);
                 }
             }
         }
@@ -1557,14 +1545,12 @@ void ypaworld_func129__sub0(_NC_STACK_ypaworld *yw, cellArea *cell, yw_arg129 *a
 
 void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     int secX = arg->pos.x / 1200.0;
     int secY = -arg->pos.z / 1200.0;
 
-    if ( secX > 0 && yw->sectors_maxX2 - 1 > secX && secY > 0 && yw->sectors_maxY2 - 1 > secY )
+    if ( secX > 0 && sectors_maxX2 - 1 > secX && secY > 0 && sectors_maxY2 - 1 > secY )
     {
-        cellArea *cell = &yw->cells[secX + yw->sectors_maxX2 * secY];
+        cellArea *cell = &cells[secX + sectors_maxX2 * secY];
 
         int v8 = (int)(arg->pos.x / 150.0) % 8;
 
@@ -1606,21 +1592,21 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
 
             int v16 = cell->buildings_health[a5][v38];
 
-            int v34 = v16 - arg->field_10 * (100 - yw->legos[  yw->secTypes[cell->type_id].buildings[a5][v38]->health_models[  yw->build_hp_ref[v16]  ]  ].field_10 ) / 100 / 400;
+            int v34 = v16 - arg->field_10 * (100 - legos[  secTypes[cell->type_id].buildings[a5][v38]->health_models[  build_hp_ref[v16]  ]  ].field_10 ) / 100 / 400;
 
             if ( v34 < 0 )
                 v34 = 0;
             else if ( v34 > 255 )
                 v34 = 255;
 
-            int v18 = yw->build_hp_ref[v16];
-            int v36 = yw->build_hp_ref[v34];
+            int v18 = build_hp_ref[v16];
+            int v36 = build_hp_ref[v34];
 
             if ( v18 > v36 )
             {
                 while ( v18 > v36 )
                 {
-                    sub_44FD6C(yw, cell, secX, secY, a5, v38, v18);
+                    sub_44FD6C(this, cell, secX, secY, a5, v38, v18);
 
                     v18--;
                 }
@@ -1629,7 +1615,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
             {
                 while ( v18 < v36 )
                 {
-                    sub_44FD6C(yw, cell, secX, secY, a5, v38, v18);
+                    sub_44FD6C(this, cell, secX, secY, a5, v38, v18);
 
                     v18++;
                 }
@@ -1637,16 +1623,16 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
 
             cell->buildings_health[a5][v38] = v34;
 
-            ypaworld_func129__sub0(yw, cell, arg);
+            ypaworld_func129__sub0(this, cell, arg);
 
-            sb_0x44fc60(yw, cell, secX, secY, arg->field_14, arg);
+            sb_0x44fc60(this, cell, secX, secY, arg->field_14, arg);
 
             if ( cell->w_type == 4 )
             {
-                if ( yw->URBact && yw->URBact->owner == cell->owner )
+                if ( UserRobo && UserRobo->_owner == cell->owner )
                 {
-                    if ( yw->isNetGame )
-                        sub_47C29C(yw, cell, cell->w_id);
+                    if ( isNetGame )
+                        sub_47C29C(this, cell, cell->w_id);
                     else
                         yw_ActivateWunderstein(cell, cell->w_id);
 
@@ -1655,11 +1641,11 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
                     arg184.type = 7;
                     arg184.t7.secY = secY;
                     arg184.t7.owner = cell->owner;
-                    arg184.t7.last_vhcl = yw->last_modify_vhcl;
-                    arg184.t7.last_weapon = yw->last_modify_weapon;
-                    arg184.t7.last_build = yw->last_modify_build;
+                    arg184.t7.last_vhcl = last_modify_vhcl;
+                    arg184.t7.last_weapon = last_modify_weapon;
+                    arg184.t7.last_build = last_modify_build;
 
-                    switch(yw->gems[ yw->field_2b78 ].type)
+                    switch(gems[ field_2b78 ].type)
                     {
                     case 25:
                         arg184.t7.field_4 = 1;
@@ -1696,7 +1682,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
             }
             else if ( cell->w_type == 7 )
             {
-                if ( yw->isNetGame )
+                if ( isNetGame )
                 {
                     int v27 = 0;
 
@@ -1709,7 +1695,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
                     }
 
                     if ( !v27 )
-                        ypaworld_func129__sub1(yw, cell, cell->w_id);
+                        ypaworld_func129__sub1(this, cell, cell->w_id);
                 }
             }
         }
@@ -1719,17 +1705,15 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
 
 size_t NC_STACK_ypaworld::ypaworld_func130(yw_130arg *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     arg->sec_x = arg->pos_x / 1200;
     arg->sec_z = -arg->pos_z / 1200;
 
     arg->pos_x_cntr = arg->pos_x - arg->sec_x * 1200.0 + -600.0;
     arg->pos_y_cntr = arg->pos_z + arg->sec_z * 1200.0 + 600.0;
 
-    if ( arg->sec_x < 0 || arg->sec_z < 0 || arg->sec_x >= yw->sectors_maxX2 || arg->sec_z >= yw->sectors_maxY2 )
+    if ( arg->sec_x < 0 || arg->sec_z < 0 || arg->sec_x >= sectors_maxX2 || arg->sec_z >= sectors_maxY2 )
     {
-        ypa_log_out("YWM_GETSECTORINFO %d %d max: %d %d\n", arg->sec_x, arg->sec_z, yw->sectors_maxX2, yw->sectors_maxY2);
+        ypa_log_out("YWM_GETSECTORINFO %d %d max: %d %d\n", arg->sec_x, arg->sec_z, sectors_maxX2, sectors_maxY2);
         ypa_log_out("YWM_GETSECTORINFO ausserhalb!!!\n");
 
         arg->pcell = NULL;
@@ -1737,16 +1721,16 @@ size_t NC_STACK_ypaworld::ypaworld_func130(yw_130arg *arg)
         return 0;
     }
 
-    arg->pcell = &yw->cells[yw->sectors_maxX2 * arg->sec_z + arg->sec_x];
+    arg->pcell = &cells[sectors_maxX2 * arg->sec_z + arg->sec_x];
     return 1;
 }
 
 
-void NC_STACK_ypaworld::ypaworld_func131(__NC_STACK_ypabact *bact)
+void NC_STACK_ypaworld::ypaworld_func131(NC_STACK_ypabact *bact)
 {
-    ypaworld.current_bact = bact;
+    current_bact = bact;
 
-    setYW_userVehicle(bact->self);
+    setYW_userVehicle(bact);
 }
 
 
@@ -1764,13 +1748,10 @@ void NC_STACK_ypaworld::ypaworld_func133(void *arg)
 
 void NC_STACK_ypaworld::ypaworld_func134(NC_STACK_ypabact *bact)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     newMaster_msg arg73;
 
-    arg73.bacto = (NC_STACK_ypabact *)1;
-    arg73.bact = NULL;
-    arg73.list = &yw->bact_list;
+    arg73.bact = (NC_STACK_ypabact *)1;
+    arg73.list = &bact_list;
 
     bact->SetNewMaster(&arg73);
 }
@@ -1784,8 +1765,6 @@ void NC_STACK_ypaworld::ypaworld_func135(void *arg)
 
 void NC_STACK_ypaworld::ypaworld_func136(ypaworld_arg136 *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     arg->tVal = 2.0;
     arg->isect = 0;
 
@@ -1809,15 +1788,15 @@ void NC_STACK_ypaworld::ypaworld_func136(ypaworld_arg136 *arg)
     {
         elems = 1;
         a6[0].field_1C = 0;
-        sub_44DBF8(yw, dx, dz, dx, dz, a6[0], arg->flags);
+        sub_44DBF8(this, dx, dz, dx, dz, a6[0], arg->flags);
     }
     else if ( dx == dxx || dz == dzz )
     {
         elems = 2;
         a6[0].field_1C = 0;
         a6[1].field_1C = 0;
-        sub_44DBF8(yw, dx, dz, dx,  dz,  a6[0], arg->flags);
-        sub_44DBF8(yw, dx, dz, dxx, dzz, a6[1], arg->flags);
+        sub_44DBF8(this, dx, dz, dx,  dz,  a6[0], arg->flags);
+        sub_44DBF8(this, dx, dz, dxx, dzz, a6[1], arg->flags);
     }
     else
     {
@@ -1826,10 +1805,10 @@ void NC_STACK_ypaworld::ypaworld_func136(ypaworld_arg136 *arg)
         a6[1].field_1C = 0;
         a6[2].field_1C = 0;
         a6[3].field_1C = 0;
-        sub_44DBF8(yw, dx, dz, dx,  dz,  a6[0], arg->flags);
-        sub_44DBF8(yw, dx, dz, dx,  dzz, a6[1], arg->flags);
-        sub_44DBF8(yw, dx, dz, dxx, dz,  a6[2], arg->flags);
-        sub_44DBF8(yw, dx, dz, dxx, dzz, a6[3], arg->flags);
+        sub_44DBF8(this, dx, dz, dx,  dz,  a6[0], arg->flags);
+        sub_44DBF8(this, dx, dz, dx,  dzz, a6[1], arg->flags);
+        sub_44DBF8(this, dx, dz, dxx, dz,  a6[2], arg->flags);
+        sub_44DBF8(this, dx, dz, dxx, dzz, a6[3], arg->flags);
     }
 
     for (int i = 0; i < elems; i++)
@@ -1837,7 +1816,7 @@ void NC_STACK_ypaworld::ypaworld_func136(ypaworld_arg136 *arg)
         if ( a6[i].field_1C )
         {
             if ( a6[i].field_1C != 1)
-                sub_44E07C(yw, a6[i]);
+                sub_44E07C(this, a6[i]);
 
             arg->stPos = stpos - a6[i].pos;
 
@@ -1852,8 +1831,6 @@ void NC_STACK_ypaworld::ypaworld_func136(ypaworld_arg136 *arg)
 
 void NC_STACK_ypaworld::ypaworld_func137(ypaworld_arg137 *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     arg->coll_count = 0;
 
     vec3d pos = arg->pos;
@@ -1874,54 +1851,54 @@ void NC_STACK_ypaworld::ypaworld_func137(ypaworld_arg137 *arg)
         switch ( i )
         {
         case 0:
-            sub_44DBF8(yw, dxx, dzz, dxx, dzz, a6, arg->field_30);
+            sub_44DBF8(this, dxx, dzz, dxx, dzz, a6, arg->field_30);
             break;
 
         case 1:
             if ( dxx != xxmr )
-                sub_44DBF8(yw, dxx, dzz, xxmr, dzz, a6, arg->field_30);
+                sub_44DBF8(this, dxx, dzz, xxmr, dzz, a6, arg->field_30);
             break;
 
         case 2:
             if ( dxx != xxpr )
-                sub_44DBF8(yw, dxx, dzz, xxpr, dzz, a6, arg->field_30);
+                sub_44DBF8(this, dxx, dzz, xxpr, dzz, a6, arg->field_30);
             break;
 
         case 3:
             if ( dzz != zzmr )
-                sub_44DBF8(yw, dxx, dzz, dxx, zzmr, a6, arg->field_30);
+                sub_44DBF8(this, dxx, dzz, dxx, zzmr, a6, arg->field_30);
             break;
 
         case 4:
             if ( dzz != zzpr )
-                sub_44DBF8(yw, dxx, dzz, dxx, zzpr, a6, arg->field_30);
+                sub_44DBF8(this, dxx, dzz, dxx, zzpr, a6, arg->field_30);
             break;
 
         case 5:
             if ( dxx != xxmr && dzz != zzmr )
-                sub_44DBF8(yw, dxx, dzz, xxmr, zzmr, a6, arg->field_30);
+                sub_44DBF8(this, dxx, dzz, xxmr, zzmr, a6, arg->field_30);
             break;
 
         case 6:
             if ( dxx != xxpr && dzz != zzmr )
-                sub_44DBF8(yw, dxx, dzz, xxpr, zzmr, a6, arg->field_30);
+                sub_44DBF8(this, dxx, dzz, xxpr, zzmr, a6, arg->field_30);
             break;
 
         case 7:
             if ( dxx != xxpr && dzz != zzpr )
-                sub_44DBF8(yw, dxx, dzz, xxpr, zzpr, a6, arg->field_30);
+                sub_44DBF8(this, dxx, dzz, xxpr, zzpr, a6, arg->field_30);
             break;
 
         case 8:
             if ( dxx != xxmr && dzz != zzpr )
-                sub_44DBF8(yw, dxx, dzz, xxmr, zzpr, a6, arg->field_30);
+                sub_44DBF8(this, dxx, dzz, xxmr, zzpr, a6, arg->field_30);
             break;
         }
 
         if ( a6.field_1C )
         {
             if ( a6.field_1C != 1 )
-                sub_44E07C(yw, a6);
+                sub_44E07C(this, a6);
 
             arg->pos = pos - a6.pos;
 
@@ -1939,15 +1916,13 @@ void NC_STACK_ypaworld::ypaworld_func138(void *arg)
 
 void NC_STACK_ypaworld::ypaworld_func139(GuiBase *lstvw)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     if ( !(lstvw->flags & GuiBase::FLAG_WITH_ICON) )
         lstvw->flags &= ~GuiBase::FLAG_ICONIFED;
 
     if ( lstvw->flags & GuiBase::FLAG_IN_LIST )
         ypaworld_func140(lstvw);
 
-    lstvw->Attach(yw->field_17a0);
+    lstvw->Attach(field_17a0);
 
     lstvw->flags |= GuiBase::FLAG_IN_LIST;
 
@@ -1987,22 +1962,17 @@ void NC_STACK_ypaworld::ypaworld_func143(void *arg)
 
 void NC_STACK_ypaworld::ypaworld_func144(NC_STACK_ypabact *bacto)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
-    __NC_STACK_ypabact *bact = bacto->getBACT_pBact();
-
-    if ( bact->bact_type == BACT_TYPES_MISSLE )
+    if ( bacto->_bact_type == BACT_TYPES_MISSLE )
     {
-        if ( bact->primTtype )
+        if ( bacto->_primTtype )
             ypa_log_out("OH NO! The DEATH CACHE BUG is back!\n");
     }
 
-    SFXEngine::SFXe.sub_423DD8(&bact->soundcarrier);
+    SFXEngine::SFXe.sub_423DD8(&bacto->_soundcarrier);
 
     newMaster_msg cache;
-    cache.bacto = (NC_STACK_ypabact *)1;
-    cache.bact = 0;
-    cache.list = &yw->dead_cache;
+    cache.bact = (NC_STACK_ypabact *)1;
+    cache.list = &dead_cache;
 
     bacto->SetNewMaster(&cache);
 
@@ -2014,63 +1984,61 @@ void NC_STACK_ypaworld::ypaworld_func144(NC_STACK_ypabact *bacto)
 
     bacto->SetPosition(&v6);
 
-    bact->status_flg |= BACT_STFLAG_NORENDER;
+    bacto->_status_flg |= BACT_STFLAG_NORENDER;
 }
 
 
-size_t NC_STACK_ypaworld::ypaworld_func145(__NC_STACK_ypabact *bact)
+size_t NC_STACK_ypaworld::ypaworld_func145(NC_STACK_ypabact *bact)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
-    if ( yw->current_bact )
+    if ( current_bact )
     {
-        int v6 = abs(yw->current_bact->sectX - bact->sectX);
-        int v7 = abs(yw->current_bact->sectY - bact->sectY);
+        int v6 = abs(current_bact->_sectX - bact->_sectX);
+        int v7 = abs(current_bact->_sectY - bact->_sectY);
 
-        if ( v6 + v7 <= (yw->field_1368 - 1) / 2 )
+        if ( v6 + v7 <= (field_1368 - 1) / 2 )
             return 1;
     }
 
-    bact_node *v21 = (bact_node *)yw->bact_list.head;
+    bact_node *v21 = (bact_node *)bact_list.head;
 
     while (v21->next) //Robos
     {
-        if ( v21->bact->status_flg & BACT_STFLAG_ISVIEW )
+        if ( v21->bact->_status_flg & BACT_STFLAG_ISVIEW )
         {
-            int v10 = abs(v21->bact->sectX - bact->sectX);
-            int v11 = abs(v21->bact->sectY - bact->sectY);
+            int v10 = abs(v21->bact->_sectX - bact->_sectX);
+            int v11 = abs(v21->bact->_sectY - bact->_sectY);
 
-            if ( v10 + v11 <= (yw->field_1368 - 1) / 2 )
+            if ( v10 + v11 <= (field_1368 - 1) / 2 )
                 return 1;
         }
 
 
 
-        bact_node *v22 = (bact_node *)v21->bact->subjects_list.head;
+        bact_node *v22 = (bact_node *)v21->bact->_subjects_list.head;
 
         while (v22->next) // Squad comms
         {
-            if ( v22->bact->status_flg & BACT_STFLAG_ISVIEW )
+            if ( v22->bact->_status_flg & BACT_STFLAG_ISVIEW )
             {
-                int v10 = abs(v22->bact->sectX - bact->sectX);
-                int v11 = abs(v22->bact->sectY - bact->sectY);
+                int v10 = abs(v22->bact->_sectX - bact->_sectX);
+                int v11 = abs(v22->bact->_sectY - bact->_sectY);
 
-                if ( v10 + v11 <= (yw->field_1368 - 1) / 2 )
+                if ( v10 + v11 <= (field_1368 - 1) / 2 )
                     return 1;
             }
 
 
 
-            bact_node *v23 = (bact_node *)v22->bact->subjects_list.head;
+            bact_node *v23 = (bact_node *)v22->bact->_subjects_list.head;
 
             while (v23->next) // Squad units
             {
-                if ( v23->bact->status_flg & BACT_STFLAG_ISVIEW )
+                if ( v23->bact->_status_flg & BACT_STFLAG_ISVIEW )
                 {
-                    int v10 = abs(v23->bact->sectX - bact->sectX);
-                    int v11 = abs(v23->bact->sectY - bact->sectY);
+                    int v10 = abs(v23->bact->_sectX - bact->_sectX);
+                    int v11 = abs(v23->bact->_sectY - bact->_sectY);
 
-                    if ( v10 + v11 <= (yw->field_1368 - 1) / 2 )
+                    if ( v10 + v11 <= (field_1368 - 1) / 2 )
                         return 1;
                 }
 
@@ -2089,98 +2057,92 @@ size_t NC_STACK_ypaworld::ypaworld_func145(__NC_STACK_ypabact *bact)
 
 NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     if ( vhcl_id->vehicle_id > 256 )
         return NULL;
 
-    VhclProto *vhcl = &yw->VhclProtos[vhcl_id->vehicle_id];
+    VhclProto *vhcl = &VhclProtos[vhcl_id->vehicle_id];
 
-    NC_STACK_ypabact *bacto = yw_createUnit(this, yw, vhcl->model_id);
+    NC_STACK_ypabact *bacto = yw_createUnit(this, vhcl->model_id);
 
     if ( bacto )
     {
-        __NC_STACK_ypabact *bact;
-
-        bact = bacto->getBACT_pBact();// bact
-
-        bact->energy = vhcl->energy;
-        bact->energy_max = vhcl->energy;
-        bact->shield = vhcl->shield;
-        bact->mass = vhcl->mass;
-        bact->force = vhcl->force;
-        bact->maxrot = vhcl->maxrot;
-        bact->height = vhcl->height;
-        bact->radius = vhcl->radius;
-        bact->viewer_radius = vhcl->vwr_radius;
-        bact->overeof = vhcl->overeof;
-        bact->viewer_overeof = vhcl->vwr_overeof;
-        bact->airconst = vhcl->airconst;
-        bact->airconst_static = vhcl->airconst;
-        bact->adist_sector = vhcl->adist_sector;
-        bact->adist_bact = vhcl->adist_bact;
-        bact->sdist_sector = vhcl->sdist_sector;
-        bact->sdist_bact = vhcl->sdist_bact;
-        bact->radar = vhcl->radar;
-        bact->gun_radius = vhcl->gun_radius;
-        bact->gun_power = vhcl->gun_power;
-        bact->pitch_max = vhcl->max_pitch;
-        bact->vehicleID = vhcl_id->vehicle_id;
-        bact->weapon = vhcl->weapon;
+        bacto->_energy = vhcl->energy;
+        bacto->_energy_max = vhcl->energy;
+        bacto->_shield = vhcl->shield;
+        bacto->_mass = vhcl->mass;
+        bacto->_force = vhcl->force;
+        bacto->_maxrot = vhcl->maxrot;
+        bacto->_height = vhcl->height;
+        bacto->_radius = vhcl->radius;
+        bacto->_viewer_radius = vhcl->vwr_radius;
+        bacto->_overeof = vhcl->overeof;
+        bacto->_viewer_overeof = vhcl->vwr_overeof;
+        bacto->_airconst = vhcl->airconst;
+        bacto->_airconst_static = vhcl->airconst;
+        bacto->_adist_sector = vhcl->adist_sector;
+        bacto->_adist_bact = vhcl->adist_bact;
+        bacto->_sdist_sector = vhcl->sdist_sector;
+        bacto->_sdist_bact = vhcl->sdist_bact;
+        bacto->_radar = vhcl->radar;
+        bacto->_gun_radius = vhcl->gun_radius;
+        bacto->_gun_power = vhcl->gun_power;
+        bacto->_pitch_max = vhcl->max_pitch;
+        bacto->_vehicleID = vhcl_id->vehicle_id;
+        bacto->_weapon = vhcl->weapon;
 
         if ( vhcl->weapon == -1 )
-            bact->weapon_flags = 0;
+            bacto->_weapon_flags = 0;
         else
-            bact->weapon_flags = yw->WeaponProtos[ vhcl->weapon ].model_id;
+            bacto->_weapon_flags = WeaponProtos[ vhcl->weapon ].model_id;
 
-        bact->mgun = vhcl->mgun;
-        bact->fire_pos.x = vhcl->fire_x;
-        bact->fire_pos.y = vhcl->fire_y;
-        bact->fire_pos.z = vhcl->fire_z;
-        bact->gun_angle = vhcl->gun_angle;
-        bact->gun_angle_user = vhcl->gun_angle;
-        bact->num_weapons = vhcl->num_weapons;
-        bact->kill_after_shot = vhcl->kill_after_shot;
-        bact->vp_normal.base = yw->vhcls_models[ vhcl->vp_normal ].base;
-        bact->vp_normal.trigo = yw->vhcls_models[ vhcl->vp_normal ].trigo;
-        bact->vp_fire.base = yw->vhcls_models[ vhcl->vp_fire ].base;
-        bact->vp_fire.trigo = yw->vhcls_models[ vhcl->vp_fire ].trigo;
-        bact->vp_dead.base = yw->vhcls_models[ vhcl->vp_dead ].base;
-        bact->vp_dead.trigo = yw->vhcls_models[ vhcl->vp_dead ].trigo;
-        bact->vp_wait.base = yw->vhcls_models[ vhcl->vp_wait ].base;
-        bact->vp_wait.trigo = yw->vhcls_models[ vhcl->vp_wait ].trigo;
-        bact->vp_megadeth.base = yw->vhcls_models[ vhcl->vp_megadeth ].base;
-        bact->vp_megadeth.trigo = yw->vhcls_models[ vhcl->vp_megadeth ].trigo;
-        bact->vp_genesis.base = yw->vhcls_models[ vhcl->vp_genesis ].base;
-        bact->vp_genesis.trigo = yw->vhcls_models[ vhcl->vp_genesis ].trigo;
+        bacto->_mgun = vhcl->mgun;
+        bacto->_fire_pos.x = vhcl->fire_x;
+        bacto->_fire_pos.y = vhcl->fire_y;
+        bacto->_fire_pos.z = vhcl->fire_z;
+        bacto->_gun_angle = vhcl->gun_angle;
+        bacto->_gun_angle_user = vhcl->gun_angle;
+        bacto->_num_weapons = vhcl->num_weapons;
+        bacto->_kill_after_shot = vhcl->kill_after_shot;
+        bacto->_vp_normal.base = vhcls_models[ vhcl->vp_normal ].base;
+        bacto->_vp_normal.trigo = vhcls_models[ vhcl->vp_normal ].trigo;
+        bacto->_vp_fire.base = vhcls_models[ vhcl->vp_fire ].base;
+        bacto->_vp_fire.trigo = vhcls_models[ vhcl->vp_fire ].trigo;
+        bacto->_vp_dead.base = vhcls_models[ vhcl->vp_dead ].base;
+        bacto->_vp_dead.trigo = vhcls_models[ vhcl->vp_dead ].trigo;
+        bacto->_vp_wait.base = vhcls_models[ vhcl->vp_wait ].base;
+        bacto->_vp_wait.trigo = vhcls_models[ vhcl->vp_wait ].trigo;
+        bacto->_vp_megadeth.base = vhcls_models[ vhcl->vp_megadeth ].base;
+        bacto->_vp_megadeth.trigo = vhcls_models[ vhcl->vp_megadeth ].trigo;
+        bacto->_vp_genesis.base = vhcls_models[ vhcl->vp_genesis ].base;
+        bacto->_vp_genesis.trigo = vhcls_models[ vhcl->vp_genesis ].trigo;
 
-        bact->destroyFX = vhcl->dest_fx;
+        bacto->_destroyFX = vhcl->dest_fx;
 
-        memset(bact->vp_fx_models, 0, sizeof(NC_STACK_base *) * 32);
-        memset(bact->vp_fx_tform, 0, sizeof(TFEngine::TForm3D *) * 32);
+        memset(bacto->_vp_fx_models, 0, sizeof(NC_STACK_base *) * 32);
+        memset(bacto->_vp_fx_tform, 0, sizeof(TFEngine::TForm3D *) * 32);
 
-        bact->scale_start = vhcl->scale_fx_p0;
-        bact->scale_speed = vhcl->scale_fx_p1;
-        bact->scale_accel = vhcl->scale_fx_p2;
-        bact->scale_duration = vhcl->scale_fx_p3;
-        bact->scale_pos = 0;
+        bacto->_scale_start = vhcl->scale_fx_p0;
+        bacto->_scale_speed = vhcl->scale_fx_p1;
+        bacto->_scale_accel = vhcl->scale_fx_p2;
+        bacto->_scale_duration = vhcl->scale_fx_p3;
+        bacto->_scale_pos = 0;
 
         for (int i = 0; vhcl->scale_fx_pXX[ i ]; i++ )
         {
-            bact->vp_fx_models[i] = yw->vhcls_models[ vhcl->scale_fx_pXX[ i ] ].base;
-            bact->vp_fx_tform[i] = yw->vhcls_models[ vhcl->scale_fx_pXX[ i ] ].trigo;
+            bacto->_vp_fx_models[i] = vhcls_models[ vhcl->scale_fx_pXX[ i ] ].base;
+            bacto->_vp_fx_tform[i] = vhcls_models[ vhcl->scale_fx_pXX[ i ] ].trigo;
 
-            bact->status_flg |= BACT_STFLAG_SEFFECT;
+            bacto->_status_flg |= BACT_STFLAG_SEFFECT;
         }
 
-        SFXEngine::SFXe.sub_423DB0(&bact->soundcarrier);
+        SFXEngine::SFXe.sub_423DB0(&bacto->_soundcarrier);
 
         for (int i = 0; i < 12; i++)
             sub_44BF34(&vhcl->sndFX[i]);
 
         for (int i = 0; i < 12; i++)
         {
-            userdata_sample_info *smpl_inf = &bact->soundcarrier.samples_data[ i ];
+            userdata_sample_info *smpl_inf = &bacto->_soundcarrier.samples_data[ i ];
 
             smpl_inf->volume = vhcl->sndFX[i].volume;
             smpl_inf->pitch = vhcl->sndFX[i].pitch;
@@ -2224,8 +2186,8 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
             }
         }
 
-        bact->pitch = bact->soundcarrier.samples_data[0].pitch;
-        bact->volume = bact->soundcarrier.samples_data[0].volume;
+        bacto->_pitch = bacto->_soundcarrier.samples_data[0].pitch;
+        bacto->_volume = bacto->_soundcarrier.samples_data[0].volume;
 
         bacto->func2(vhcl->initParams);
 
@@ -2247,51 +2209,46 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
 
 NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     if ( arg->vehicle_id > 128 )
         return NULL;
 
-    WeapProto *wproto = &yw->WeaponProtos[arg->vehicle_id];
+    WeapProto *wproto = &WeaponProtos[arg->vehicle_id];
 
     if ( !(wproto->model_id & 1) )
         return NULL;
 
-    NC_STACK_ypamissile *wobj = dynamic_cast<NC_STACK_ypamissile *>( yw_createUnit(this, yw, wproto->field_0) );
+    NC_STACK_ypamissile *wobj = dynamic_cast<NC_STACK_ypamissile *>( yw_createUnit(this, wproto->field_0) );
 
     if ( !wobj )
         return NULL;
 
-    __NC_STACK_ypabact *wbact = &wobj->ypabact;
-    //wbact = wobj->getBACT_pBact();
+    wobj->_energy = wproto->energy;
+    wobj->_energy_max = wproto->energy;
+    wobj->_shield = 0;
+    wobj->_mass = wproto->mass;
+    wobj->_force = wproto->force;
+    wobj->_maxrot = wproto->maxrot;
+    wobj->_height = wproto->field_8D8;
+    wobj->_radius = wproto->radius;
+    wobj->_viewer_radius = wproto->vwr_radius;
+    wobj->_overeof = wproto->overeof;
+    wobj->_viewer_overeof = wproto->vwr_overeof;
+    wobj->_airconst = wproto->airconst;
+    wobj->_airconst_static = wproto->airconst;
+    wobj->_adist_sector = wproto->field_890;
+    wobj->_adist_bact = wproto->field_894;
+    wobj->_vehicleID = arg->vehicle_id;
+    wobj->_weapon = 0;
 
-    wbact->energy = wproto->energy;
-    wbact->energy_max = wproto->energy;
-    wbact->shield = 0;
-    wbact->mass = wproto->mass;
-    wbact->force = wproto->force;
-    wbact->maxrot = wproto->maxrot;
-    wbact->height = wproto->field_8D8;
-    wbact->radius = wproto->radius;
-    wbact->viewer_radius = wproto->vwr_radius;
-    wbact->overeof = wproto->overeof;
-    wbact->viewer_overeof = wproto->vwr_overeof;
-    wbact->airconst = wproto->airconst;
-    wbact->airconst_static = wproto->airconst;
-    wbact->adist_sector = wproto->field_890;
-    wbact->adist_bact = wproto->field_894;
-    wbact->vehicleID = arg->vehicle_id;
-    wbact->weapon = 0;
-
-    wbact->vp_normal =   yw->vhcls_models[wproto->vp_normal];
-    wbact->vp_fire =     yw->vhcls_models[wproto->vp_fire];
-    wbact->vp_dead =     yw->vhcls_models[wproto->vp_dead];
-    wbact->vp_wait =     yw->vhcls_models[wproto->vp_wait];
-    wbact->vp_megadeth = yw->vhcls_models[wproto->vp_megadeth];
-    wbact->vp_genesis =  yw->vhcls_models[wproto->vp_genesis];
+    wobj->_vp_normal =   vhcls_models[wproto->vp_normal];
+    wobj->_vp_fire =     vhcls_models[wproto->vp_fire];
+    wobj->_vp_dead =     vhcls_models[wproto->vp_dead];
+    wobj->_vp_wait =     vhcls_models[wproto->vp_wait];
+    wobj->_vp_megadeth = vhcls_models[wproto->vp_megadeth];
+    wobj->_vp_genesis =  vhcls_models[wproto->vp_genesis];
 
     for (int i = 0; i < 16; i++)
-        wbact->destroyFX[i] = wproto->dfx[i];
+        wobj->_destroyFX[i] = wproto->dfx[i];
 
     int missileType;
 
@@ -2342,14 +2299,14 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
         wobj->setMISS_radRobo(0.0);
     }
 
-    SFXEngine::SFXe.sub_423DB0(&wbact->soundcarrier);
+    SFXEngine::SFXe.sub_423DB0(&wobj->_soundcarrier);
 
     for (int i = 0; i < 3; i++)
         sub_44BF34(&wproto->sndFXes[i]);
 
     for (int i = 0; i < 3; i++)
     {
-        userdata_sample_info *v25 = &wbact->soundcarrier.samples_data[i];
+        userdata_sample_info *v25 = &wobj->_soundcarrier.samples_data[i];
 
         v25->volume = wproto->sndFXes[i].volume;
         v25->pitch = wproto->sndFXes[i].pitch;
@@ -2416,29 +2373,24 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
 
 size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     int y = arg->y;
     int x = arg->x;
 
-    cellArea *cell = &yw->cells[x + y * yw->sectors_maxX2];
+    cellArea *cell = &cells[x + y * sectors_maxX2];
 
     bool UserInSec = false;
 
-    __NC_STACK_ypabact *node = (__NC_STACK_ypabact *)cell->units_list.head;
-
-    while ( node->next )
+    for ( NC_STACK_ypabact* &node : cell->unitsList )
     {
-        if ( yw->UUBact == node || node->bact_type == BACT_TYPES_ROBO)
+        
+        if ( UserUnit == node || node->_bact_type == BACT_TYPES_ROBO)
         {
             UserInSec = true;
             break;
         }
-
-        node = (__NC_STACK_ypabact *)node->next;
     }
 
-    if ( yw->UUBact  &&  cell == yw->UUBact->pSector )
+    if ( UserUnit  &&  cell == UserUnit->_pSector )
         UserInSec = true;
 
     if ( cell->w_type == 1 )
@@ -2446,21 +2398,21 @@ size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
     else if ( UserInSec  && !arg->field_C )
         return 0;
     else if ( cell->w_type == 2 )
-        sub_44F500(yw, cell->w_id);
+        sub_44F500(this, cell->w_id);
     else if ( (cell->w_type == 4 || cell->w_type == 5 || cell->w_type == 6) && !arg->field_C )
         return 0;
-    else if ( cell->w_type == 7 && yw->isNetGame )
+    else if ( cell->w_type == 7 && isNetGame )
         return 0;
 
     if ( arg->field_C )
     {
-        sb_0x456384(this, yw, x, y, arg->ownerID2, arg->blg_ID, arg->field_18 & 1);
+        sb_0x456384(this, x, y, arg->ownerID2, arg->blg_ID, arg->field_18 & 1);
     }
     else
     {
-        ypaworld_func148__sub0(yw, x, y);
+        ypaworld_func148__sub0(this, x, y);
 
-        if ( !ypaworld_func148__sub1(yw, arg->ownerID, 3000, x, y, arg->ownerID2, arg->blg_ID) )
+        if ( !ypaworld_func148__sub1(this, arg->ownerID, 3000, x, y, arg->ownerID2, arg->blg_ID) )
             return 0;
     }
 
@@ -2470,8 +2422,6 @@ size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
 
 void NC_STACK_ypaworld::ypaworld_func149(ypaworld_arg136 *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     arg->tVal = 2.0;
     arg->isect = 0;
 
@@ -2538,12 +2488,12 @@ void NC_STACK_ypaworld::ypaworld_func149(ypaworld_arg136 *arg)
         v10 = v33 >> 16;
         v11 = -v34 >> 16;
 
-        sub_44DBF8(yw, a2a, a3a, v10, v11, a6, arg->flags);
+        sub_44DBF8(this, a2a, a3a, v10, v11, a6, arg->flags);
 
         if ( a6.field_1C )
         {
             if ( a6.field_1C != 1 )
-                sub_44E07C(yw, a6);
+                sub_44E07C(this, a6);
 
             arg->stPos = stpos - a6.pos;
 
@@ -2571,12 +2521,12 @@ void NC_STACK_ypaworld::ypaworld_func149(ypaworld_arg136 *arg)
     {
         a6.field_1C = 0;
 
-        sub_44DBF8(yw, a2a, a3a, v24, -v27, a6, arg->flags);
+        sub_44DBF8(this, a2a, a3a, v24, -v27, a6, arg->flags);
 
         if ( a6.field_1C )
         {
             if ( a6.field_1C != 1 )
-                sub_44E07C(yw, a6);
+                sub_44E07C(this, a6);
 
             arg->stPos = stpos - a6.pos;
 
@@ -2588,8 +2538,6 @@ void NC_STACK_ypaworld::ypaworld_func149(ypaworld_arg136 *arg)
 
 void NC_STACK_ypaworld::ypaworld_func150(yw_arg150 *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     arg->field_24 = NULL;
 
     int v6 = arg->pos.x / 300.0 * 16384.0;
@@ -2647,36 +2595,32 @@ void NC_STACK_ypaworld::ypaworld_func150(yw_arg150 *arg)
         int v12 = -v7 >> 16;
         int v29 = v6 >> 16;
 
-        if ( v29 >= 0 && v29 < yw->sectors_maxX2 && v12 >= 0 && v12 < yw->sectors_maxY2 )
+        if ( v29 >= 0 && v29 < sectors_maxX2 && v12 >= 0 && v12 < sectors_maxY2 )
         {
-            __NC_STACK_ypabact *sect_bacts = (__NC_STACK_ypabact *)yw->cells[v29 + v12 * yw->sectors_maxX2].units_list.head;
-
-            while (sect_bacts->next)
+            for ( NC_STACK_ypabact* &sect_bacts : cells[v29 + v12 * sectors_maxX2].unitsList )
             {
-                if ( sect_bacts != arg->unit && sect_bacts->status != BACT_STATUS_DEAD )
+                if ( sect_bacts != arg->unit && sect_bacts->_status != BACT_STATUS_DEAD )
                 {
-                    if ( !(arg->unit == yw->UUBact && yw->field_1b70) || sect_bacts != yw->URBact )
+                    if ( !(arg->unit == UserUnit && field_1b70) || sect_bacts != UserRobo )
                     {
-                        vec3d v36 = sect_bacts->position - arg->pos;
+                        vec3d v36 = sect_bacts->_position - arg->pos;
                         vec3d v16 = v41 * v36;
 
-                        if ( v16.length() < sect_bacts->radius )
+                        if ( v16.length() < sect_bacts->_radius )
                         {
                             float v30 = v36.length();
 
                             if ( v41.dot(v36) / v30 > 0.0 )
                             {
-                                if ( arg->field_28 > v30 - sect_bacts->radius )
+                                if ( arg->field_28 > v30 - sect_bacts->_radius )
                                 {
                                     arg->field_24 = sect_bacts;
-                                    arg->field_28 = v30 - sect_bacts->radius;
+                                    arg->field_28 = v30 - sect_bacts->_radius;
                                 }
                             }
                         }
                     }
                 }
-
-                sect_bacts = (__NC_STACK_ypabact *)sect_bacts->next;
             }
         }
 
@@ -2696,40 +2640,38 @@ void NC_STACK_ypaworld::ypaworld_func150(yw_arg150 *arg)
 
 void NC_STACK_ypaworld::ypaworld_func151()
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     sub_471AB8();
 
-    if ( yw->field_2d90->field_40 == 1 )
+    if ( field_2d90->field_40 == 1 )
     {
-        yw->field_7278 = 1;
+        field_7278 = 1;
 
-        if ( yw->field_81AB )
-            yw->field_2d90->jodiefoster[ yw->field_81AB ] = 1;
+        if ( field_81AB )
+            field_2d90->jodiefoster[ field_81AB ] = 1;
     }
     else
     {
-        yw->field_7278 = 0;
+        field_7278 = 0;
     }
 
-    if ( yw->field_2d90->field_40 == 1 )
+    if ( field_2d90->field_40 == 1 )
     {
-        if ( yw->GameShell )
+        if ( GameShell )
         {
             char buf[300];
-            sprintf(buf, "save:%s/sgisold.txt", yw->GameShell->user_name.c_str());
+            sprintf(buf, "save:%s/sgisold.txt", GameShell->user_name.c_str());
 
             FSMgr::FileHandle *fil = uaOpenFile(buf, "w");
 
             if ( fil )
                 delete fil;
 
-            sprintf(buf, "%s/user.txt", yw->GameShell->user_name.c_str());
+            sprintf(buf, "%s/user.txt", GameShell->user_name.c_str());
 
             yw_arg172 arg171;
             arg171.usertxt = buf;
-            arg171.field_4 = yw->GameShell->user_name.c_str();
-            arg171.usr = yw->GameShell;
+            arg171.field_4 = GameShell->user_name.c_str();
+            arg171.usr = GameShell;
             arg171.field_10 = 0;
             arg171.field_8 = 255;
 
@@ -2739,84 +2681,84 @@ void NC_STACK_ypaworld::ypaworld_func151()
 
             if ( fil )
             {
-                strcpy(buf, yw->GameShell->user_name.c_str());
+                strcpy(buf, GameShell->user_name.c_str());
                 fil->write(buf, strlen(buf));
                 delete fil;
             }
         }
     }
 
-    if ( yw->isNetGame )
+    if ( isNetGame )
     {
-        if ( !yw->GameShell->sentAQ )
-            sub_47DB04(yw, 0);
+        if ( !GameShell->sentAQ )
+            sub_47DB04(this, 0);
 
-        yw->GameShell->ypaworld_func151__sub7();
-        yw->GameShell->yw_netcleanup();
+        GameShell->ypaworld_func151__sub7();
+        GameShell->yw_netcleanup();
 
-        yw->field_7278 = 1;
-        yw->field_727c = 1;
+        field_7278 = 1;
+        field_727c = 1;
 
-        if ( yw->UUBact )
-            yw->field_7280 = yw->UUBact->owner;
+        if ( UserUnit )
+            field_7280 = UserUnit->_owner;
     }
     else
     {
-        yw->field_7280 = 0;
-        yw->field_727c = 0;
+        field_7280 = 0;
+        field_727c = 0;
     }
 
-    if ( yw->UUBact )
-        yw->playerOwner = yw->UUBact->owner;
+    if ( UserUnit )
+        playerOwner = UserUnit->_owner;
     else
-        yw->playerOwner = 0;
+        playerOwner = 0;
 
-    if ( yw->sceneRecorder->do_record )
-        recorder_stoprec(yw);
+    if ( sceneRecorder->do_record )
+        recorder_stoprec(this);
 
-    yw->do_screenshooting = 0;
-    yw->sceneRecorder->do_record = 0;
+    do_screenshooting = 0;
+    sceneRecorder->do_record = 0;
 
-    NC_STACK_bitmap *disk = loadDisk_screen(yw);
+    NC_STACK_bitmap *disk = loadDisk_screen(this);
 
     if ( disk )
     {
-        draw_splashScreen(yw, disk);
-        deleteSplashScreen(yw, disk);
+        draw_splashScreen(this, disk);
+        deleteSplashScreen(this, disk);
     }
 
-    ypaworld_func151__sub5(yw);
-    ypaworld_func151__sub6(yw);
+    ypaworld_func151__sub5(this);
+    ypaworld_func151__sub6(this);
 
-    SFXEngine::SFXe.setMasterVolume(yw->audio_volume);
+    SFXEngine::SFXe.setMasterVolume(audio_volume);
 
     GUI_Close();
 
-    if ( yw->sky_loaded_base )
+    if ( sky_loaded_base )
     {
-        delete_class_obj(yw->sky_loaded_base);
-        yw->sky_loaded_base = NULL;
+        delete_class_obj(sky_loaded_base);
+        sky_loaded_base = NULL;
     }
 
     int plowner;
-    if ( yw->URBact )
-        plowner = yw->URBact->owner;
+    if ( UserRobo )
+        plowner = UserRobo->_owner;
     else
         plowner = 0;
 
     while ( 1 )
     {
-        bact_node *bct = (bact_node *)yw->dead_cache.head;
+        bact_node *bct = (bact_node *)dead_cache.head;
 
         if ( !bct->next )
             break;
 
-        NC_STACK_ypabact *bacto = bct->bacto;
+        NC_STACK_ypabact *bacto = bct->bact;
 
-        if ( yw->field_727c )
+        if ( field_727c )
         {
-            if ( plowner != bct->bact->owner && bct->bact->bact_type == BACT_TYPES_ROBO )
-                sub_4C8EB4(yw, bct);
+            if ( plowner != bct->bact->_owner && bct->bact->_bact_type == BACT_TYPES_ROBO )
+                sub_4C8EB4(bct->bact);
         }
 
         delete_class_obj(bacto);
@@ -2824,17 +2766,17 @@ void NC_STACK_ypaworld::ypaworld_func151()
 
     while ( 1 )
     {
-        bact_node *bct = (bact_node *)yw->bact_list.head;
+        bact_node *bct = (bact_node *)bact_list.head;
 
         if ( !bct->next )
             break;
 
-        NC_STACK_ypabact *bacto = bct->bacto;
+        NC_STACK_ypabact *bacto = bct->bact;
 
-        if ( yw->field_727c )
+        if ( field_727c )
         {
-            if ( plowner != bct->bact->owner && bct->bact->bact_type == BACT_TYPES_ROBO )
-                sub_4C8EB4(yw, bct);
+            if ( plowner != bct->bact->_owner && bct->bact->_bact_type == BACT_TYPES_ROBO )
+                sub_4C8EB4(bct->bact);
         }
 
         delete_class_obj(bacto);
@@ -2842,58 +2784,58 @@ void NC_STACK_ypaworld::ypaworld_func151()
 
     while ( 1 )
     {
-        bact_node *bct = (bact_node *)yw->dead_cache.head;
+        bact_node *bct = (bact_node *)dead_cache.head;
 
         if ( !bct->next )
             break;
 
-        delete_class_obj(bct->bacto);
+        delete_class_obj(bct->bact);
     }
 
-    ypaworld_func151__sub0(yw);
+    ypaworld_func151__sub0(this);
 
-    sb_0x44ac24(yw);
+    sb_0x44ac24(this);
 
-    ypaworld_func151__sub1(yw);
+    ypaworld_func151__sub1(this);
 
-    if ( yw->typ_map )
+    if ( typ_map )
     {
-        delete yw->typ_map;
-        yw->typ_map = NULL;
+        delete typ_map;
+        typ_map = NULL;
     }
 
-    if ( yw->own_map )
+    if ( own_map )
     {
-        delete yw->own_map;
-        yw->own_map = NULL;
+        delete own_map;
+        own_map = NULL;
     }
 
-    if ( yw->blg_map )
+    if ( blg_map )
     {
-        delete yw->blg_map;
-        yw->blg_map = NULL;
+        delete blg_map;
+        blg_map = NULL;
     }
 
-    if ( yw->hgt_map )
+    if ( hgt_map )
     {
-        delete yw->hgt_map;
-        yw->hgt_map = NULL;
+        delete hgt_map;
+        hgt_map = NULL;
     }
 
-    if ( yw->GameShell )
+    if ( GameShell )
     {
-        yw->GameShell->samples1_info.field_0 = vec3d(0.0, 0.0, 0.0);
+        GameShell->samples1_info.field_0 = vec3d(0.0, 0.0, 0.0);
 
-        yw->GameShell->samples2_info.field_0 = vec3d(0.0, 0.0, 0.0);
+        GameShell->samples2_info.field_0 = vec3d(0.0, 0.0, 0.0);
     }
 
-    if ( yw->field_727c )
+    if ( field_727c )
     {
-        if ( yw->VhclProtos )
+        if ( VhclProtos )
         {
-            if ( yw->WeaponProtos )
+            if ( WeaponProtos )
             {
-                yw->self_full->sub_4DA354(yw->initScriptLoc);
+                sub_4DA354(initScriptLoc);
             }
         }
     }
@@ -2902,9 +2844,7 @@ void NC_STACK_ypaworld::ypaworld_func151()
 
 void NC_STACK_ypaworld::ypaworld_func153(bact_hudi *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
-    yw->hudi = *arg;
+    hudi = *arg;
 }
 
 void UserData::sub_46D2B4()
@@ -2934,18 +2874,16 @@ void UserData::sub_46D2B4()
 
 size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
-    yw->GameShell = usr;
-    usr->p_ypaworld = yw;
+    GameShell = usr;
+    usr->p_ypaworld = this;
     usr->p_YW = this;
 
-    yw->field_2d90->field_40 = 8;
+    field_2d90->field_40 = 8;
     usr->envMode = ENVMODE_TITLE;
 
     get_keyvalue_from_ini(0, ypaworld_keys, 4);
 
-    yw->netgame_exclusivegem = ypaworld_keys[0].value.val;
+    netgame_exclusivegem = ypaworld_keys[0].value.val;
 
     ypaworld__string_pointers = getYW_localeStrings();
 
@@ -2953,7 +2891,7 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
     usr->video_mode_list.clear();
     usr->lang_dlls.clear();
 
-    set_keys_vals(yw);
+    set_keys_vals(this);
 
     fill_videmodes_list(usr);
     listSaveDir("save:");
@@ -3201,7 +3139,7 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
 
     windp_arg87 v67;
 
-    if (!yw->windp->GetRemoteStart(&v67) )
+    if (!windp->GetRemoteStart(&v67) )
     {
         ypa_log_out("Error while remote start check\n");
         return  0;
@@ -3209,14 +3147,14 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
 
     if ( v67.isClient )
     {
-        yw->GameShell->callSIGN = v67.callSIGN;
+        GameShell->callSIGN = v67.callSIGN;
 
         if ( v67.isHoster )
-            yw->GameShell->isHost = 1;
+            GameShell->isHost = 1;
         else
-            yw->GameShell->isHost = 0;
+            GameShell->isHost = 0;
 
-        yw->GameShell->remoteMode = 1;
+        GameShell->remoteMode = 1;
 
         usr->netLevelID = 0;
         usr->envMode = ENVMODE_NETPLAY;
@@ -3228,7 +3166,7 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
             v68.mode = 0;
             v68.ID = 0;
 
-            while ( yw->windp->GetPlayerData(&v68) && StriCmp(v68.name, usr->callSIGN) )
+            while ( windp->GetPlayerData(&v68) && StriCmp(v68.name, usr->callSIGN) )
                 v68.ID++;
 
             usr->players2[v68.ID].rdyStart = 1;
@@ -3243,9 +3181,9 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
         v68.mode = 0;
         v68.ID = 0;
 
-        while ( yw->windp->GetPlayerData(&v68) )
+        while ( windp->GetPlayerData(&v68) )
         {
-            strncpy(yw->GameShell->players2[v68.ID].name, v68.name, 64);
+            strncpy(GameShell->players2[v68.ID].name, v68.name, 64);
             v68.ID++;
         }
         usr->update_time_norm = 400;
@@ -3253,13 +3191,13 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
     }
     else
     {
-        yw->GameShell->remoteMode = 0;
+        GameShell->remoteMode = 0;
     }
 
     usr->WaitForDemo = 200000;
 
     if ( !usr->remoteMode )
-        ypaworld_func154__sub0(yw);
+        ypaworld_func154__sub0(this);
 
     return 1;
 }
@@ -3305,7 +3243,7 @@ void NC_STACK_ypaworld::ypaworld_func155(UserData *usr)
 
 
 
-void sub_4E6FEC(_NC_STACK_ypaworld *yw)
+void sub_4E6FEC(NC_STACK_ypaworld *yw)
 {
     stru_LevelNet *lvlnet;
 
@@ -3338,7 +3276,7 @@ void sub_4E6FEC(_NC_STACK_ypaworld *yw)
 }
 
 
-void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int mode)
+void sb_0x4e75e8__sub1(NC_STACK_ypaworld *yw, int mode)
 {
     int v37 = 1;
 
@@ -3514,7 +3452,7 @@ void sb_0x4e75e8__sub1(_NC_STACK_ypaworld *yw, int mode)
     }
 }
 
-void sb_0x4e75e8__sub0(_NC_STACK_ypaworld *yw)
+void sb_0x4e75e8__sub0(NC_STACK_ypaworld *yw)
 {
     ua_dRect regions[256];
 
@@ -3584,22 +3522,22 @@ void sb_0x4e75e8__sub0(_NC_STACK_ypaworld *yw)
 
 void NC_STACK_ypaworld::GameShellInitBkgMode(int mode)
 {
-    sb_0x4e75e8__sub1(&ypaworld, mode);
+    sb_0x4e75e8__sub1(this, mode);
     if ( mode == ENVMODE_TUTORIAL || mode == ENVMODE_SINGLEPLAY )
     {
-        ypaworld.field_81AB = 0;
-        ypaworld.brief.briefStage = 0;
-        ypaworld.LevelNet->field_BE38 = 0;
+        field_81AB = 0;
+        brief.briefStage = 0;
+        LevelNet->field_BE38 = 0;
 
-        sb_0x4e75e8__sub0(&ypaworld);
+        sb_0x4e75e8__sub0(this);
 
-        ypaworld.TOD_ID = loadTOD(&ypaworld, "tod.def");
+        TOD_ID = loadTOD(this, "tod.def");
 
-        int v6 = ypaworld.TOD_ID + 1;
+        int v6 = TOD_ID + 1;
 
         if ( (v6 + 2490) > 2512 )
             v6 = 0;
-        writeTOD(&ypaworld, "tod.def", v6);
+        writeTOD(this, "tod.def", v6);
     }
 }
 
@@ -3608,24 +3546,22 @@ bool NC_STACK_ypaworld::GameShellInitBkg()
     NC_STACK_display *win3d = GFXEngine::GFXe.getC3D();
 
     ua_dRect v5;
-    v5.x1 = -(ypaworld.screen_width >> 1);
-    v5.x2 = ypaworld.screen_width >> 1;
-    v5.y1 = -(ypaworld.screen_height >> 1);
-    v5.y2 = ypaworld.screen_height >> 1;
+    v5.x1 = -(screen_width >> 1);
+    v5.x2 = screen_width >> 1;
+    v5.y1 = -(screen_height >> 1);
+    v5.y2 = screen_height >> 1;
 
     win3d->raster_func211(&v5);
-    GameShellInitBkgMode(ypaworld.GameShell->envMode);
+    GameShellInitBkgMode(GameShell->envMode);
     return true;
 }
 
 size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
-    if ( !yw->one_game_res )
+    if ( !one_game_res )
     {
         yw_174arg v247;
-        v247.resolution = yw->shell_default_res;
+        v247.resolution = shell_default_res;
         v247.make_changes = 0;
         ypaworld_func174(&v247);
     }
@@ -3663,9 +3599,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         return 0;
     }
 
-    yw->win3d = GFXEngine::GFXe.getC3D();
+    _win3d = GFXEngine::GFXe.getC3D();
 
-    if ( !yw->win3d )
+    if ( !_win3d )
     {
         ypa_log_out("No GfxObject in OpengameShell!\n");
         return 0;
@@ -3673,10 +3609,10 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     displ_arg263 v233;
 
-    v233.bitm = yw->pointers__bitm[0];
+    v233.bitm = pointers__bitm[0];
     v233.pointer_id = 1;
 
-    yw->win3d->display_func263(&v233);
+    _win3d->display_func263(&v233);
 
     fill_videmodes_list(usr);
 
@@ -3690,7 +3626,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     while ( 1 )
     {
-        yw->win3d->windd_func324(&v227);
+        _win3d->windd_func324(&v227);
         if ( !v227.name )
             break;
 
@@ -3702,7 +3638,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                 if ( !strcmp(v227.name, "software") )
                 {
-                    strcpy(usr->win3d_name, get_lang_string(yw->string_pointers_p2, 2472, "2472 = Software"));
+                    strcpy(usr->win3d_name, get_lang_string(string_pointers_p2, 2472, "2472 = Software"));
                 }
                 else
                 {
@@ -3717,14 +3653,14 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     if ( usr->GFX_flags & 4 )
     {
-        usr->p_ypaworld->win3d->setWDD_cursor(1);
+        usr->p_ypaworld->_win3d->setWDD_cursor(1);
     }
     else
     {
-        usr->p_ypaworld->win3d->setWDD_cursor(0);
+        usr->p_ypaworld->_win3d->setWDD_cursor(0);
     }
 
-    set_keys_vals(yw);
+    set_keys_vals(this);
 
     usr->keyConfig[1].slider_name = get_lang_string(ypaworld__string_pointers, 544, "PAUSE");
     usr->keyConfig[2].slider_name = get_lang_string(ypaworld__string_pointers, 536, "QUIT");
@@ -3774,7 +3710,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     int v259_4;
 
-    if ( yw->screen_width < 512 )
+    if ( screen_width < 512 )
     {
         word_5A50C0 = 2;
         word_5A50C2 = 2;
@@ -3799,22 +3735,22 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         word_5A50BE = 480;
     }
 
-    int v278_4 = yw->screen_width * 0.7;
-    int v285 = yw->screen_height * 0.8;
+    int v278_4 = screen_width * 0.7;
+    int v285 = screen_height * 0.8;
 
-    int v278 = (yw->screen_width - v278_4) / 2;
+    int v278 = (screen_width - v278_4) / 2;
 
-    int v273 = yw->font_default_h;
-    if ( yw->screen_width >= 512 )
-        v273 += (yw->screen_height - 384) / 2;
+    int v273 = font_default_h;
+    if ( screen_width >= 512 )
+        v273 += (screen_height - 384) / 2;
 
     int v267 = 0;
     int v269;
 
-    if ( yw->screen_width < 512 )
-        v269 = v285 - yw->font_default_h;
+    if ( screen_width < 512 )
+        v269 = v285 - font_default_h;
     else
-        v269 = v285 - yw->font_default_h - (yw->screen_height - 384) / 2;
+        v269 = v285 - font_default_h - (screen_height - 384) / 2;
 
     int v270 = ( v278_4 - 2 * word_5A50C0 )/ 3;
 
@@ -3831,8 +3767,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     IDVList init_vals;
     init_vals.Add(NC_STACK_button::BTN_ATT_X, 0);
     init_vals.Add(NC_STACK_button::BTN_ATT_Y, 0);
-    init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width);
-    init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height);
+    init_vals.Add(NC_STACK_button::BTN_ATT_W, screen_width);
+    init_vals.Add(NC_STACK_button::BTN_ATT_H, screen_height);
 
     usr->titel_button = Nucleus::CInit<NC_STACK_button>(init_vals);
     if ( !usr->titel_button )
@@ -3848,9 +3784,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.tileset_up = 18;
     btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
     btn_64arg.field_3A = 30;
-    btn_64arg.xpos = yw->screen_width * 0.3328125;
-    btn_64arg.ypos = yw->screen_height * 0.2291666666666666;
-    btn_64arg.width = yw->screen_width / 3;
+    btn_64arg.xpos = screen_width * 0.3328125;
+    btn_64arg.ypos = screen_height * 0.2291666666666666;
+    btn_64arg.width = screen_width / 3;
     btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 80, "GAME");
     btn_64arg.caption2 = 0;
     btn_64arg.down_id = 1251;
@@ -3858,13 +3794,13 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.button_id = 1018;
     btn_64arg.up_id = 1024;
     btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-    btn_64arg.txt_r = yw->iniColors[68].r;
-    btn_64arg.txt_g = yw->iniColors[68].g;
-    btn_64arg.txt_b = yw->iniColors[68].b;
+    btn_64arg.txt_r = iniColors[68].r;
+    btn_64arg.txt_g = iniColors[68].g;
+    btn_64arg.txt_b = iniColors[68].b;
 
     if ( usr->titel_button->button_func64(&btn_64arg) )
     {
-        btn_64arg.ypos = yw->screen_height * 0.3083333333333334;
+        btn_64arg.ypos = screen_height * 0.3083333333333334;
         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 81, "NETWORK");
         btn_64arg.caption2 = 0;
         btn_64arg.up_id = 1022;
@@ -3874,9 +3810,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
         if ( usr->titel_button->button_func64(&btn_64arg) )
         {
-            btn_64arg.xpos = yw->screen_width * 0.3328125;
-            btn_64arg.ypos = yw->screen_height * 0.4333333333333334;
-            btn_64arg.width = yw->screen_width / 3;
+            btn_64arg.xpos = screen_width * 0.3328125;
+            btn_64arg.ypos = screen_height * 0.4333333333333334;
+            btn_64arg.width = screen_width / 3;
             btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 83, "INPUT");
             btn_64arg.caption2 = 0;
             btn_64arg.pressed_id = 0;
@@ -3886,7 +3822,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
             if ( usr->titel_button->button_func64(&btn_64arg) )
             {
-                btn_64arg.ypos = yw->screen_height * 0.5125;
+                btn_64arg.ypos = screen_height * 0.5125;
                 btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 84, "SETTINGS");
                 btn_64arg.caption2 = 0;
                 btn_64arg.up_id = 1005;
@@ -3896,7 +3832,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                 if ( usr->titel_button->button_func64(&btn_64arg) )
                 {
-                    btn_64arg.ypos = yw->screen_height * 0.5916666666666667;
+                    btn_64arg.ypos = screen_height * 0.5916666666666667;
                     btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 85, "PLAYER");
                     btn_64arg.caption2 = 0;
                     btn_64arg.pressed_id = 0;
@@ -3906,9 +3842,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                     if ( usr->titel_button->button_func64(&btn_64arg) )
                     {
-                        btn_64arg.xpos = yw->screen_width * 0.890625;
-                        btn_64arg.ypos = yw->screen_height * 0.9583333333333334;
-                        btn_64arg.width = yw->screen_width * 0.1;
+                        btn_64arg.xpos = screen_width * 0.890625;
+                        btn_64arg.ypos = screen_height * 0.9583333333333334;
+                        btn_64arg.width = screen_width * 0.1;
                         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 86, "LOCALE");
                         btn_64arg.caption2 = 0;
                         btn_64arg.up_id = 1011;
@@ -3918,9 +3854,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                         if ( usr->titel_button->button_func64(&btn_64arg) )
                         {
-                            btn_64arg.xpos = yw->screen_width * 0.3328125;
-                            btn_64arg.ypos = yw->screen_height * 0.7166666666666667;
-                            btn_64arg.width = yw->screen_width / 3;
+                            btn_64arg.xpos = screen_width * 0.3328125;
+                            btn_64arg.ypos = screen_height * 0.7166666666666667;
+                            btn_64arg.width = screen_width / 3;
                             btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 87, "HELP");
                             btn_64arg.caption2 = 0;
                             btn_64arg.pressed_id = 0;
@@ -3930,7 +3866,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                             if ( usr->titel_button->button_func64(&btn_64arg) )
                             {
-                                btn_64arg.ypos = yw->screen_height * 0.7958333333333333;
+                                btn_64arg.ypos = screen_height * 0.7958333333333333;
                                 btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 88, "QUIT");
                                 btn_64arg.caption2 = 0;
                                 btn_64arg.up_id = 1013;
@@ -3965,13 +3901,13 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     usr->titel_button->Hide();
 
-    dword_5A50B6_h = yw->screen_width / 4 - 20;
+    dword_5A50B6_h = screen_width / 4 - 20;
 
     init_vals.clear();
     init_vals.Add(NC_STACK_button::BTN_ATT_X, 0);
-    init_vals.Add(NC_STACK_button::BTN_ATT_Y, yw->screen_height - yw->font_default_h);
-    init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width);
-    init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->font_default_h);
+    init_vals.Add(NC_STACK_button::BTN_ATT_Y, screen_height - font_default_h);
+    init_vals.Add(NC_STACK_button::BTN_ATT_W, screen_width);
+    init_vals.Add(NC_STACK_button::BTN_ATT_H, font_default_h);
 
     usr->sub_bar_button = Nucleus::CInit<NC_STACK_button>(init_vals);
 
@@ -4020,7 +3956,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
             if ( usr->sub_bar_button->button_func64(&btn_64arg) )
             {
-                btn_64arg.xpos = (yw->screen_width - 3 * dword_5A50B6_h - 2 * word_5A50C0);
+                btn_64arg.xpos = (screen_width - 3 * dword_5A50B6_h - 2 * word_5A50C0);
                 btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2422, "GOTO LOADSAVE");
                 btn_64arg.caption2 = 0;
                 btn_64arg.pressed_id = 0;
@@ -4030,7 +3966,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                 if ( usr->sub_bar_button->button_func64(&btn_64arg) )
                 {
-                    btn_64arg.xpos = (yw->screen_width - 2 * dword_5A50B6_h - word_5A50C0);
+                    btn_64arg.xpos = (screen_width - 2 * dword_5A50B6_h - word_5A50C0);
                     btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 642, "LOAD GAME");
                     btn_64arg.caption2 = 0;
                     btn_64arg.up_id = 1021;
@@ -4040,7 +3976,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                     if ( usr->sub_bar_button->button_func64(&btn_64arg) )
                     {
-                        btn_64arg.xpos = yw->screen_width - dword_5A50B6_h;
+                        btn_64arg.xpos = screen_width - dword_5A50B6_h;
                         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 644, "GO BACK");
                         btn_64arg.caption2 = 0;
                         btn_64arg.pressed_id = 0;
@@ -4085,8 +4021,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     init_vals.clear();
     init_vals.Add(NC_STACK_button::BTN_ATT_X, 0);
     init_vals.Add(NC_STACK_button::BTN_ATT_Y, 0);
-    init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width);
-    init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height);
+    init_vals.Add(NC_STACK_button::BTN_ATT_W, screen_width);
+    init_vals.Add(NC_STACK_button::BTN_ATT_H, screen_height);
 
     usr->confirm_button = Nucleus::CInit<NC_STACK_button>(init_vals);
     if ( !usr->confirm_button )
@@ -4099,9 +4035,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.tileset_down = 19;
     btn_64arg.field_3A = 30;
     btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-    btn_64arg.xpos = yw->screen_width * 0.25;
-    btn_64arg.ypos = yw->screen_height * 0.53125;
-    btn_64arg.width = yw->screen_width * 0.125;
+    btn_64arg.xpos = screen_width * 0.25;
+    btn_64arg.ypos = screen_height * 0.53125;
+    btn_64arg.width = screen_width * 0.125;
     btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2, "OK");
     btn_64arg.caption2 = 0;
     btn_64arg.pressed_id = 0;
@@ -4109,13 +4045,13 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.up_id = 1350;
     btn_64arg.down_id = 1251;
     btn_64arg.button_id = 1300;
-    btn_64arg.txt_r = yw->iniColors[68].r;
-    btn_64arg.txt_g = yw->iniColors[68].g;
-    btn_64arg.txt_b = yw->iniColors[68].b;
+    btn_64arg.txt_r = iniColors[68].r;
+    btn_64arg.txt_g = iniColors[68].g;
+    btn_64arg.txt_b = iniColors[68].b;
 
     if ( usr->confirm_button->button_func64(&btn_64arg) )
     {
-        btn_64arg.xpos = yw->screen_width * 0.625;
+        btn_64arg.xpos = screen_width * 0.625;
         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
         btn_64arg.up_id = 1351;
         btn_64arg.caption2 = 0;
@@ -4129,8 +4065,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
             btn_64arg.tileset_up = 16;
             btn_64arg.field_3A = 16;
-            btn_64arg.xpos = yw->screen_width * 0.25;
-            btn_64arg.ypos = yw->screen_height * 0.4375;
+            btn_64arg.xpos = screen_width * 0.25;
+            btn_64arg.ypos = screen_height * 0.4375;
             btn_64arg.caption = " ";
             btn_64arg.caption2 = 0;
             btn_64arg.down_id = 0;
@@ -4138,15 +4074,15 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.pressed_id = 0;
             btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
             btn_64arg.button_id = 1302;
-            btn_64arg.width = yw->screen_width * 0.5;
-            btn_64arg.txt_r = yw->iniColors[60].r;
-            btn_64arg.txt_g = yw->iniColors[60].g;
-            btn_64arg.txt_b = yw->iniColors[60].b;
+            btn_64arg.width = screen_width * 0.5;
+            btn_64arg.txt_r = iniColors[60].r;
+            btn_64arg.txt_g = iniColors[60].g;
+            btn_64arg.txt_b = iniColors[60].b;
 
             if ( usr->confirm_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.button_id = 1303;
-                btn_64arg.ypos = yw->screen_height * 0.46875;
+                btn_64arg.ypos = screen_height * 0.46875;
                 btn_64arg.caption = " ";
                 btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                 btn_64arg.caption2 = 0;
@@ -4164,7 +4100,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     usr->confirm_button->Hide();
 
-    dword_5A50B2_h = v278_4 - yw->font_yscrl_bkg_w;
+    dword_5A50B2_h = v278_4 - font_yscrl_bkg_w;
 
     GuiList::tInit args;
     args.resizeable = false;
@@ -4174,21 +4110,21 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     args.selectedEntry = 0;
     args.maxShownEntries = 8;
     args.withIcon = false;
-    args.entryHeight = yw->font_default_h;
+    args.entryHeight = font_default_h;
     args.entryWidth = dword_5A50B2_h;
     args.enabled = true;
-    args.vborder = yw->field_1a38;
+    args.vborder = field_1a38;
     args.instantInput = false;
     args.keyboardInput = true;
 
-    if ( !usr->input_listview.Init(yw, args) )
+    if ( !usr->input_listview.Init(this, args) )
     {
         ypa_log_out("Unable to create Input-ListView\n");
         return 0;
     }
 
     usr->input_listview.x = v278;
-    usr->input_listview.y = v273 + (word_5A50C2 + yw->font_default_h) * 4;
+    usr->input_listview.y = v273 + (word_5A50C2 + font_default_h) * 4;
 
     usr->field_D5A = v278;
     usr->field_0xd5c = v273;
@@ -4196,8 +4132,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     init_vals.clear();
     init_vals.Add(NC_STACK_button::BTN_ATT_X, usr->field_D5A);
     init_vals.Add(NC_STACK_button::BTN_ATT_Y, usr->field_0xd5c);
-    init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width - usr->field_D5A);
-    init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height - usr->field_0xd5c);
+    init_vals.Add(NC_STACK_button::BTN_ATT_W, screen_width - usr->field_D5A);
+    init_vals.Add(NC_STACK_button::BTN_ATT_H, screen_height - usr->field_0xd5c);
 
     usr->button_input_button = Nucleus::CInit<NC_STACK_button>(init_vals);
     if ( !usr->button_input_button )
@@ -4222,26 +4158,26 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.pressed_id = 0;
     btn_64arg.button_id = 1057;
     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-    btn_64arg.txt_r = yw->iniColors[68].r;
-    btn_64arg.txt_g = yw->iniColors[68].g;
-    btn_64arg.txt_b = yw->iniColors[68].b;
+    btn_64arg.txt_r = iniColors[68].r;
+    btn_64arg.txt_g = iniColors[68].g;
+    btn_64arg.txt_b = iniColors[68].b;
 
     if ( usr->button_input_button->button_func64(&btn_64arg) )
     {
         btn_64arg.xpos = 0;
-        btn_64arg.ypos = word_5A50C2 + yw->font_default_h;
+        btn_64arg.ypos = word_5A50C2 + font_default_h;
         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 310, "2");
         btn_64arg.caption2 = 0;
         btn_64arg.pressed_id = 0;
         btn_64arg.button_id = 1058;
-        btn_64arg.txt_r = yw->iniColors[60].r;
-        btn_64arg.txt_g = yw->iniColors[60].g;
-        btn_64arg.txt_b = yw->iniColors[60].b;
+        btn_64arg.txt_r = iniColors[60].r;
+        btn_64arg.txt_g = iniColors[60].g;
+        btn_64arg.txt_b = iniColors[60].b;
 
         if ( usr->button_input_button->button_func64(&btn_64arg) )
         {
             btn_64arg.xpos = 0;
-            btn_64arg.ypos = 2 * (yw->font_default_h + word_5A50C2);
+            btn_64arg.ypos = 2 * (font_default_h + word_5A50C2);
             btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 311, "3");
             btn_64arg.caption2 = 0;
             btn_64arg.pressed_id = 0;
@@ -4250,7 +4186,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             if ( usr->button_input_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.xpos = 0;
-                btn_64arg.ypos = 3 * (word_5A50C2 + yw->font_default_h);
+                btn_64arg.ypos = 3 * (word_5A50C2 + font_default_h);
                 btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 312, "4");
                 btn_64arg.caption2 = 0;
                 btn_64arg.pressed_id = 0;
@@ -4268,7 +4204,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.up_id = 1051;
                     btn_64arg.pressed_id = 0;
                     btn_64arg.flags = 0;
-                    btn_64arg.ypos = 6 * word_5A50C2 + 14 * yw->font_default_h;
+                    btn_64arg.ypos = 6 * word_5A50C2 + 14 * font_default_h;
                     btn_64arg.width = v259_4;
                     btn_64arg.down_id = 1050;
                     btn_64arg.button_id = 1050;
@@ -4288,9 +4224,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.up_id = 0;
                         btn_64arg.pressed_id = 0;
                         btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                        btn_64arg.txt_r = yw->iniColors[60].r;
-                        btn_64arg.txt_g = yw->iniColors[60].g;
-                        btn_64arg.txt_b = yw->iniColors[60].b;
+                        btn_64arg.txt_r = iniColors[60].r;
+                        btn_64arg.txt_g = iniColors[60].g;
+                        btn_64arg.txt_b = iniColors[60].b;
 
                         if ( usr->button_input_button->button_func64(&btn_64arg) )
                         {
@@ -4323,9 +4259,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                 btn_64arg.pressed_id = 0;
                                 btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
                                 btn_64arg.button_id = 2;
-                                btn_64arg.txt_r = yw->iniColors[60].r;
-                                btn_64arg.txt_g = yw->iniColors[60].g;
-                                btn_64arg.txt_b = yw->iniColors[60].b;
+                                btn_64arg.txt_r = iniColors[60].r;
+                                btn_64arg.txt_g = iniColors[60].g;
+                                btn_64arg.txt_b = iniColors[60].b;
 
                                 if ( usr->button_input_button->button_func64(&btn_64arg) )
                                 {
@@ -4338,7 +4274,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                     btn_64arg.caption2 = "g";
                                     btn_64arg.up_id = 1055;
                                     btn_64arg.button_id = 1055;
-                                    btn_64arg.ypos = 7 * word_5A50C2 + (15 * yw->font_default_h);
+                                    btn_64arg.ypos = 7 * word_5A50C2 + (15 * font_default_h);
                                     btn_64arg.pressed_id = 0;
                                     btn_64arg.width = v259_4;
                                     btn_64arg.flags = 0;
@@ -4367,7 +4303,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                             btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
                                             btn_64arg.field_3A = 30;
                                             btn_64arg.xpos = v278_4 / 6;
-                                            btn_64arg.ypos = 5 * word_5A50C2 + 13 * yw->font_default_h;
+                                            btn_64arg.ypos = 5 * word_5A50C2 + 13 * font_default_h;
                                             btn_64arg.width = (v278_4 / 3 - word_5A50C0);
                                             btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 307, "SWITCH OFF");
                                             btn_64arg.down_id = 1251;
@@ -4376,9 +4312,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                             btn_64arg.pressed_id = 0;
                                             btn_64arg.up_id = 1057;
                                             btn_64arg.button_id = 1056;
-                                            btn_64arg.txt_r = yw->iniColors[68].r;
-                                            btn_64arg.txt_g = yw->iniColors[68].g;
-                                            btn_64arg.txt_b = yw->iniColors[68].b;
+                                            btn_64arg.txt_r = iniColors[68].r;
+                                            btn_64arg.txt_g = iniColors[68].g;
+                                            btn_64arg.txt_b = iniColors[68].b;
 
                                             if ( usr->button_input_button->button_func64(&btn_64arg) )
                                             {
@@ -4450,8 +4386,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     usr->button_input_button->Hide();
 
-    int v294 = v278_4 - 3 * word_5A50C0 - yw->font_yscrl_bkg_w;
-    int v94 = (v278_4 - 3 * word_5A50C0 - yw->font_yscrl_bkg_w) * 0.6;
+    int v294 = v278_4 - 3 * word_5A50C0 - font_yscrl_bkg_w;
+    int v94 = (v278_4 - 3 * word_5A50C0 - font_yscrl_bkg_w) * 0.6;
 
 
     args.Init();
@@ -4462,14 +4398,14 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     args.selectedEntry = 0;
     args.maxShownEntries = 4;
     args.withIcon = false;
-    args.entryHeight = yw->font_default_h;
+    args.entryHeight = font_default_h;
     args.entryWidth = v94;
     args.enabled = true;
-    args.vborder = yw->field_1a38;
+    args.vborder = field_1a38;
     args.instantInput = true;
     args.keyboardInput = true;
 
-    if ( !usr->video_listvw.Init(yw, args) )
+    if ( !usr->video_listvw.Init(this, args) )
     {
         ypa_log_out("Unable to create Game-Video-Menu\n");
         return 0;
@@ -4483,14 +4419,14 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     args.selectedEntry = v3;
     args.maxShownEntries = 4;
     args.withIcon = false;
-    args.entryHeight = yw->font_default_h;
+    args.entryHeight = font_default_h;
     args.entryWidth = v94;
     args.enabled = true;
-    args.vborder = yw->field_1a38;
+    args.vborder = field_1a38;
     args.instantInput = true;
     args.keyboardInput = true;
 
-    if ( !usr->d3d_listvw.Init(yw, args) )
+    if ( !usr->d3d_listvw.Init(this, args) )
     {
         ypa_log_out("Unable to create D3D-Menu\n");
         return 0;
@@ -4502,8 +4438,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     init_vals.clear();
     init_vals.Add(NC_STACK_button::BTN_ATT_X, usr->field_13AA);
     init_vals.Add(NC_STACK_button::BTN_ATT_Y, usr->field_0x13ac);
-    init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width - usr->field_13AA);
-    init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height - usr->field_0x13ac);
+    init_vals.Add(NC_STACK_button::BTN_ATT_W, screen_width - usr->field_13AA);
+    init_vals.Add(NC_STACK_button::BTN_ATT_H, screen_height - usr->field_0x13ac);
 
     usr->video_button = Nucleus::CInit<NC_STACK_button>(init_vals);
 
@@ -4517,10 +4453,10 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     int v99 = v278 + word_5A50C0 + v98;
 
     usr->video_listvw.x = v99;
-    usr->video_listvw.y = 6 * word_5A50C2 + 6 * yw->font_default_h + v273;
+    usr->video_listvw.y = 6 * word_5A50C2 + 6 * font_default_h + v273;
 
     usr->d3d_listvw.x = v99;
-    usr->d3d_listvw.y = 7 * word_5A50C2 + 7 * yw->font_default_h + v273;
+    usr->d3d_listvw.y = 7 * word_5A50C2 + 7 * font_default_h + v273;
 
     v70 = 0;
 
@@ -4538,26 +4474,26 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.pressed_id = 0;
     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
     btn_64arg.button_id = 1168;
-    btn_64arg.txt_r = yw->iniColors[68].r;
-    btn_64arg.txt_g = yw->iniColors[68].g;
-    btn_64arg.txt_b = yw->iniColors[68].b;
+    btn_64arg.txt_r = iniColors[68].r;
+    btn_64arg.txt_g = iniColors[68].g;
+    btn_64arg.txt_b = iniColors[68].b;
 
     if ( usr->video_button->button_func64(&btn_64arg) )
     {
         btn_64arg.xpos = 0;
-        btn_64arg.ypos = word_5A50C2 + yw->font_default_h;
+        btn_64arg.ypos = word_5A50C2 + font_default_h;
         btn_64arg.width = v278_4;
         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 328, "2");
         btn_64arg.caption2 = 0;
         btn_64arg.button_id = 1169;
-        btn_64arg.txt_r = yw->iniColors[60].r;
-        btn_64arg.txt_g = yw->iniColors[60].g;
-        btn_64arg.txt_b = yw->iniColors[60].b;
+        btn_64arg.txt_r = iniColors[60].r;
+        btn_64arg.txt_g = iniColors[60].g;
+        btn_64arg.txt_b = iniColors[60].b;
 
         if ( usr->video_button->button_func64(&btn_64arg) )
         {
             btn_64arg.xpos = 0;
-            btn_64arg.ypos = 2 * (yw->font_default_h + word_5A50C2);
+            btn_64arg.ypos = 2 * (font_default_h + word_5A50C2);
             btn_64arg.width = v278_4;
             btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 329, "3");
             btn_64arg.button_id = 1170;
@@ -4567,7 +4503,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             {
                 btn_64arg.xpos = 0;
                 btn_64arg.width = v278_4;
-                btn_64arg.ypos = 3 * (yw->font_default_h + word_5A50C2);
+                btn_64arg.ypos = 3 * (font_default_h + word_5A50C2);
                 btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 330, "4");
                 btn_64arg.caption2 = 0;
                 btn_64arg.button_id = 1171;
@@ -4579,7 +4515,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.field_3A = 16;
                     btn_64arg.xpos = 0;
                     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                    btn_64arg.ypos = 5 * (yw->font_default_h + word_5A50C2);
+                    btn_64arg.ypos = 5 * (font_default_h + word_5A50C2);
                     btn_64arg.width = v98;
                     btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 340, "RESOLUTION SHELL");
                     btn_64arg.caption2 = 0;
@@ -4588,16 +4524,16 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.pressed_id = 0;
                     btn_64arg.button_id = 2;
                     btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_TEXT;
-                    btn_64arg.txt_r = yw->iniColors[60].r;
-                    btn_64arg.txt_g = yw->iniColors[60].g;
-                    btn_64arg.txt_b = yw->iniColors[60].b;
+                    btn_64arg.txt_r = iniColors[60].r;
+                    btn_64arg.txt_g = iniColors[60].g;
+                    btn_64arg.txt_b = iniColors[60].b;
 
                     if ( usr->video_button->button_func64(&btn_64arg) )
                     {
                         std::string name;
                         for (const auto &nod : usr->video_mode_list)
                         {
-                            if (nod.sort_id == yw->game_default_res)
+                            if (nod.sort_id == game_default_res)
                             {
                                 name = nod.name;
                                 break;
@@ -4617,9 +4553,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.up_id = 1101;
                         btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                         btn_64arg.width = v294 * 0.6;
-                        btn_64arg.txt_r = yw->iniColors[68].r;
-                        btn_64arg.txt_g = yw->iniColors[68].g;
-                        btn_64arg.txt_b = yw->iniColors[68].b;
+                        btn_64arg.txt_r = iniColors[68].r;
+                        btn_64arg.txt_g = iniColors[68].g;
+                        btn_64arg.txt_b = iniColors[68].b;
 
                         if ( usr->video_button->button_func64(&btn_64arg) )
                         {
@@ -4628,7 +4564,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                             btn_64arg.field_3A = 16;
                             btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                             btn_64arg.xpos = 0;
-                            btn_64arg.ypos = 2 * (3 * (word_5A50C2 + yw->font_default_h));
+                            btn_64arg.ypos = 2 * (3 * (word_5A50C2 + font_default_h));
                             btn_64arg.width = v294 * 0.4;
                             btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 352, "SELECT 3D DEVICE");
                             btn_64arg.caption2 = 0;
@@ -4637,9 +4573,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                             btn_64arg.pressed_id = 0;
                             btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_TEXT;
                             btn_64arg.button_id = 2;
-                            btn_64arg.txt_r = yw->iniColors[60].r;
-                            btn_64arg.txt_g = yw->iniColors[60].g;
-                            btn_64arg.txt_b = yw->iniColors[60].b;
+                            btn_64arg.txt_r = iniColors[60].r;
+                            btn_64arg.txt_g = iniColors[60].g;
+                            btn_64arg.txt_b = iniColors[60].b;
 
                             if ( usr->video_button->button_func64(&btn_64arg) )
                             {
@@ -4656,9 +4592,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                 btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                                 btn_64arg.caption = usr->win3d_name;
                                 btn_64arg.button_id = 1172;
-                                btn_64arg.txt_r = yw->iniColors[68].r;
-                                btn_64arg.txt_g = yw->iniColors[68].g;
-                                btn_64arg.txt_b = yw->iniColors[68].b;
+                                btn_64arg.txt_r = iniColors[68].r;
+                                btn_64arg.txt_g = iniColors[68].g;
+                                btn_64arg.txt_b = iniColors[68].b;
 
                                 if ( usr->video_button->button_func64(&btn_64arg) )
                                 {
@@ -4674,7 +4610,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                     btn_64arg.down_id = 1102;
                                     btn_64arg.width = v259_4;
                                     btn_64arg.up_id = 1103;
-                                    btn_64arg.ypos = 7 * (word_5A50C2 + yw->font_default_h);
+                                    btn_64arg.ypos = 7 * (word_5A50C2 + font_default_h);
                                     btn_64arg.pressed_id = 0;
                                     btn_64arg.flags = 0;
                                     btn_64arg.button_id = 1157;
@@ -4696,9 +4632,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                         btn_64arg.pressed_id = 0;
                                         btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
                                         btn_64arg.button_id = 2;
-                                        btn_64arg.txt_r = yw->iniColors[60].r;
-                                        btn_64arg.txt_g = yw->iniColors[60].g;
-                                        btn_64arg.txt_b = yw->iniColors[60].b;
+                                        btn_64arg.txt_r = iniColors[60].r;
+                                        btn_64arg.txt_g = iniColors[60].g;
+                                        btn_64arg.txt_b = iniColors[60].b;
 
                                         if ( usr->video_button->button_func64(&btn_64arg) )
                                         {
@@ -4743,7 +4679,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                     btn_64arg.caption = "g";
                                                     btn_64arg.caption2 = "g";
                                                     btn_64arg.pressed_id = 0;
-                                                    btn_64arg.ypos = 8 * (yw->font_default_h + word_5A50C2);
+                                                    btn_64arg.ypos = 8 * (font_default_h + word_5A50C2);
                                                     btn_64arg.down_id = 1132;
                                                     btn_64arg.up_id = 1133;
                                                     btn_64arg.button_id = 1165;
@@ -4801,7 +4737,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                 {
                                                                     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                     btn_64arg.xpos = v259_4 + word_5A50C0;
-                                                                    btn_64arg.ypos = 9 * (word_5A50C2 + yw->font_default_h);
+                                                                    btn_64arg.ypos = 9 * (word_5A50C2 + font_default_h);
                                                                     btn_64arg.width = v120;
                                                                     btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2431, "USE 16BIT TEXTURE");
                                                                     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
@@ -4869,7 +4805,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                     btn_64arg.width = v259_4;
                                                                                     btn_64arg.caption = "g";
                                                                                     btn_64arg.caption2 = "g";
-                                                                                    btn_64arg.ypos = 10 * (word_5A50C2 + yw->font_default_h);
+                                                                                    btn_64arg.ypos = 10 * (word_5A50C2 + font_default_h);
                                                                                     btn_64arg.down_id = 1126;
                                                                                     btn_64arg.pressed_id = 0;
                                                                                     btn_64arg.button_id = 1163;
@@ -4931,7 +4867,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                     btn_64arg.field_3A = 16;
                                                                                                     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                     btn_64arg.xpos = 0;
-                                                                                                    btn_64arg.ypos = 11 * (yw->font_default_h + word_5A50C2);
+                                                                                                    btn_64arg.ypos = 11 * (font_default_h + word_5A50C2);
                                                                                                     btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
                                                                                                     btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 343, "DESTRUCTION FX");
                                                                                                     btn_64arg.caption2 = 0;
@@ -4984,7 +4920,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                             {
                                                                                                                 btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                                 btn_64arg.xpos = 0;
-                                                                                                                btn_64arg.ypos = 12 * (word_5A50C2 + yw->font_default_h);
+                                                                                                                btn_64arg.ypos = 12 * (word_5A50C2 + font_default_h);
                                                                                                                 btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
                                                                                                                 btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 321, "FX VOLUME");
                                                                                                                 btn_64arg.caption2 = 0;
@@ -5037,7 +4973,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                             btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                                             btn_64arg.xpos = 0;
                                                                                                                             btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
-                                                                                                                            btn_64arg.ypos = 13 * (word_5A50C2 + yw->font_default_h);
+                                                                                                                            btn_64arg.ypos = 13 * (word_5A50C2 + font_default_h);
                                                                                                                             btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 324, "CD VOLUME");
                                                                                                                             btn_64arg.caption2 = 0;
                                                                                                                             btn_64arg.down_id = 0;
@@ -5099,9 +5035,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                                         btn_64arg.pressed_id = 0;
                                                                                                                                         btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                                                                                                                                         btn_64arg.button_id = 1161;
-                                                                                                                                        btn_64arg.txt_r = yw->iniColors[68].r;
-                                                                                                                                        btn_64arg.txt_g = yw->iniColors[68].g;
-                                                                                                                                        btn_64arg.txt_b = yw->iniColors[68].b;
+                                                                                                                                        btn_64arg.txt_r = iniColors[68].r;
+                                                                                                                                        btn_64arg.txt_g = iniColors[68].g;
+                                                                                                                                        btn_64arg.txt_b = iniColors[68].b;
 
                                                                                                                                         if ( usr->video_button->button_func64(&btn_64arg) )
                                                                                                                                         {
@@ -5191,14 +5127,14 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     args.selectedEntry = 0;
     args.maxShownEntries = 10;
     args.withIcon = false;
-    args.entryHeight = yw->font_default_h;
+    args.entryHeight = font_default_h;
     args.entryWidth = v278_4;
     args.enabled = true;
-    args.vborder = yw->field_1a38;
+    args.vborder = field_1a38;
     args.instantInput = false;
     args.keyboardInput = true;
 
-    if ( !usr->disk_listvw.Init(yw, args) )
+    if ( !usr->disk_listvw.Init(this, args) )
     {
         ypa_log_out("Unable to create disk-listview\n");
         return 0;
@@ -5210,8 +5146,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     init_vals.clear();
     init_vals.Add(NC_STACK_button::BTN_ATT_X, usr->field_0x175c);
     init_vals.Add(NC_STACK_button::BTN_ATT_Y, usr->field_175E);
-    init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width - usr->field_0x175c);
-    init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height - usr->field_175E);
+    init_vals.Add(NC_STACK_button::BTN_ATT_W, screen_width - usr->field_0x175c);
+    init_vals.Add(NC_STACK_button::BTN_ATT_H, screen_height - usr->field_175E);
 
     usr->disk_button = Nucleus::CInit<NC_STACK_button>(init_vals);
 
@@ -5222,7 +5158,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     }
 
     usr->field_0x1758 = v278;
-    usr->field_175A = 4 * (word_5A50C2 + yw->font_default_h) + v273;
+    usr->field_175A = 4 * (word_5A50C2 + font_default_h) + v273;
 
     usr->disk_listvw.x = usr->field_0x1758;
     usr->disk_listvw.y = usr->field_175A;
@@ -5252,25 +5188,25 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.caption2 = 0;
     btn_64arg.button_id = 1108;
     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-    btn_64arg.txt_r = yw->iniColors[68].r;
-    btn_64arg.txt_g = yw->iniColors[68].g;
-    btn_64arg.txt_b = yw->iniColors[68].b;
+    btn_64arg.txt_r = iniColors[68].r;
+    btn_64arg.txt_g = iniColors[68].g;
+    btn_64arg.txt_b = iniColors[68].b;
 
     if ( usr->disk_button->button_func64(&btn_64arg) )
     {
         btn_64arg.xpos = 0;
-        btn_64arg.ypos = word_5A50C0 + yw->font_default_h;
+        btn_64arg.ypos = word_5A50C0 + font_default_h;
         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 368, "2");
         btn_64arg.button_id = 1109;
         btn_64arg.caption2 = 0;
-        btn_64arg.txt_r = yw->iniColors[60].r;
-        btn_64arg.txt_g = yw->iniColors[60].g;
-        btn_64arg.txt_b = yw->iniColors[60].b;
+        btn_64arg.txt_r = iniColors[60].r;
+        btn_64arg.txt_g = iniColors[60].g;
+        btn_64arg.txt_b = iniColors[60].b;
 
         if ( usr->disk_button->button_func64(&btn_64arg))
         {
             btn_64arg.xpos = 0;
-            btn_64arg.ypos = 2 * (yw->font_default_h + word_5A50C0);
+            btn_64arg.ypos = 2 * (font_default_h + word_5A50C0);
             btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 369, "3");
             btn_64arg.caption2 = 0;
             btn_64arg.button_id = 1110;
@@ -5278,7 +5214,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             if ( usr->disk_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.xpos = 0;
-                btn_64arg.ypos = 3 * (word_5A50C0 + yw->font_default_h);
+                btn_64arg.ypos = 3 * (word_5A50C0 + font_default_h);
                 btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 370, "4");
                 btn_64arg.caption2 = 0;
                 btn_64arg.button_id = 1111;
@@ -5298,7 +5234,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.caption = v223.c_str();
                     btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                     btn_64arg.button_id = 1100;
-                    btn_64arg.ypos = 6 * word_5A50C0 + 14 * yw->font_default_h;
+                    btn_64arg.ypos = 6 * word_5A50C0 + 14 * font_default_h;
 
                     if ( usr->disk_button->button_func64(&btn_64arg) )
                     {
@@ -5307,7 +5243,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.field_3A = 30;
                         btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
                         btn_64arg.xpos = word_5A50C0 + (v278_4 - 3 * word_5A50C0) * 0.25;
-                        btn_64arg.ypos = 7 * word_5A50C0 + 15 * yw->font_default_h;
+                        btn_64arg.ypos = 7 * word_5A50C0 + 15 * font_default_h;
                         btn_64arg.width = (v278_4 - 3 * word_5A50C0) * 0.25;
                         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 360, "LOAD");
                         btn_64arg.down_id = 1251;
@@ -5316,9 +5252,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.pressed_id = 0;
                         btn_64arg.button_id = 1101;
                         btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                        btn_64arg.txt_r = yw->iniColors[68].r;
-                        btn_64arg.txt_g = yw->iniColors[68].g;
-                        btn_64arg.txt_b = yw->iniColors[68].b;
+                        btn_64arg.txt_r = iniColors[68].r;
+                        btn_64arg.txt_g = iniColors[68].g;
+                        btn_64arg.txt_b = iniColors[68].b;
 
                         if ( usr->disk_button->button_func64(&btn_64arg) )
                         {
@@ -5409,15 +5345,15 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     args.selectedEntry = 0;
     args.maxShownEntries = 10;
     args.withIcon = false;
-    args.entryHeight = yw->font_default_h;
-    args.entryWidth = v278_4 - yw->font_yscrl_bkg_w;
+    args.entryHeight = font_default_h;
+    args.entryWidth = v278_4 - font_yscrl_bkg_w;
     args.enabled = true;
-    args.vborder = yw->field_1a38;
+    args.vborder = field_1a38;
     args.instantInput = false;
     args.keyboardInput = true;
 
 
-    if ( !usr->local_listvw.Init(yw, args) )
+    if ( !usr->local_listvw.Init(this, args) )
     {
         ypa_log_out("Unable to create local-listview\n");
         return 0;
@@ -5429,8 +5365,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     init_vals.clear();
     init_vals.Add(NC_STACK_button::BTN_ATT_X, usr->field_19C6);
     init_vals.Add(NC_STACK_button::BTN_ATT_Y, usr->field_0x19c8);
-    init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width - usr->field_19C6);
-    init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height - usr->field_0x19c8);
+    init_vals.Add(NC_STACK_button::BTN_ATT_W, screen_width - usr->field_19C6);
+    init_vals.Add(NC_STACK_button::BTN_ATT_H, screen_height - usr->field_0x19c8);
 
     usr->locale_button = Nucleus::CInit<NC_STACK_button>(init_vals);
 
@@ -5441,7 +5377,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     }
 
     usr->local_listvw.x = v278;
-    usr->local_listvw.y = 4 * (word_5A50C2 + yw->font_default_h) + v273;
+    usr->local_listvw.y = 4 * (word_5A50C2 + font_default_h) + v273;
 
     v70 = 0;
     btn_64arg.tileset_down = 16;
@@ -5458,25 +5394,25 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.pressed_id = 0;
     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
     btn_64arg.button_id = 1253;
-    btn_64arg.txt_r = yw->iniColors[68].r;
-    btn_64arg.txt_g = yw->iniColors[68].g;
-    btn_64arg.txt_b = yw->iniColors[68].b;
+    btn_64arg.txt_r = iniColors[68].r;
+    btn_64arg.txt_g = iniColors[68].g;
+    btn_64arg.txt_b = iniColors[68].b;
 
     if ( usr->locale_button->button_func64(&btn_64arg) )
     {
         btn_64arg.xpos = 0;
-        btn_64arg.ypos = word_5A50C2 + yw->font_default_h;
+        btn_64arg.ypos = word_5A50C2 + font_default_h;
         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 396, "2");
         btn_64arg.caption2 = 0;
         btn_64arg.button_id = 1254;
-        btn_64arg.txt_r = yw->iniColors[60].r;
-        btn_64arg.txt_g = yw->iniColors[60].g;
-        btn_64arg.txt_b = yw->iniColors[60].b;
+        btn_64arg.txt_r = iniColors[60].r;
+        btn_64arg.txt_g = iniColors[60].g;
+        btn_64arg.txt_b = iniColors[60].b;
 
         if ( usr->locale_button->button_func64(&btn_64arg) )
         {
             btn_64arg.xpos = 0;
-            btn_64arg.ypos = 2 * (yw->font_default_h + word_5A50C2);
+            btn_64arg.ypos = 2 * (font_default_h + word_5A50C2);
             btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 397, "3");
             btn_64arg.caption2 = 0;
             btn_64arg.button_id = 1255;
@@ -5484,7 +5420,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             if ( usr->locale_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.xpos = 0;
-                btn_64arg.ypos = 3 * (word_5A50C2 + yw->font_default_h);
+                btn_64arg.ypos = 3 * (word_5A50C2 + font_default_h);
                 btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 398, "4");
                 btn_64arg.caption2 = 0;
                 btn_64arg.button_id = 1256;
@@ -5505,9 +5441,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.up_id = 1300;
                     btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                     btn_64arg.button_id = 1250;
-                    btn_64arg.txt_r = yw->iniColors[68].r;
-                    btn_64arg.txt_g = yw->iniColors[68].g;
-                    btn_64arg.txt_b = yw->iniColors[68].b;
+                    btn_64arg.txt_r = iniColors[68].r;
+                    btn_64arg.txt_g = iniColors[68].g;
+                    btn_64arg.txt_b = iniColors[68].b;
 
                     if ( usr->locale_button->button_func64(&btn_64arg) )
                     {
@@ -5555,8 +5491,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     init_vals.clear();
     init_vals.Add(NC_STACK_button::BTN_ATT_X, usr->field_19DE);
     init_vals.Add(NC_STACK_button::BTN_ATT_Y, usr->field_0x19e0);
-    init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width - usr->field_19DE);
-    init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height - usr->field_0x19e0);
+    init_vals.Add(NC_STACK_button::BTN_ATT_W, screen_width - usr->field_19DE);
+    init_vals.Add(NC_STACK_button::BTN_ATT_H, screen_height - usr->field_0x19e0);
 
     usr->about_button = Nucleus::CInit<NC_STACK_button>(init_vals);
 
@@ -5572,89 +5508,89 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.field_3A = 16;
     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
     btn_64arg.xpos = 0;
-    btn_64arg.width = (yw->screen_width - 4 * word_5A50C0);
+    btn_64arg.width = (screen_width - 4 * word_5A50C0);
     btn_64arg.caption2 = 0;
     btn_64arg.down_id = 0;
     btn_64arg.up_id = 0;
     btn_64arg.pressed_id = 0;
     btn_64arg.button_id = 2;
-    btn_64arg.ypos = word_5A50C2 + yw->font_default_h;
+    btn_64arg.ypos = word_5A50C2 + font_default_h;
     btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
     btn_64arg.caption = "Fuer den Kauf dieses erzgebirgischen Qualitaetsspielzeuges bedanken sich";
 
     if ( usr->about_button->button_func64(&btn_64arg) )
     {
-        btn_64arg.ypos = 2 * (yw->font_default_h + word_5A50C2);
+        btn_64arg.ypos = 2 * (font_default_h + word_5A50C2);
         btn_64arg.caption = "Bernd Beyreuther,";
 
         if ( usr->about_button->button_func64(&btn_64arg) )
         {
-            btn_64arg.ypos = 3 * (word_5A50C2 + yw->font_default_h);
+            btn_64arg.ypos = 3 * (word_5A50C2 + font_default_h);
             btn_64arg.caption = "Andre 'Floh' Weissflog, Andreas Flemming,";
 
             if ( usr->about_button->button_func64(&btn_64arg) )
             {
-                btn_64arg.ypos = 4 * (yw->font_default_h + word_5A50C2);
+                btn_64arg.ypos = 4 * (font_default_h + word_5A50C2);
                 btn_64arg.caption = "Stefan 'Metzel Hetzel' Karau, Sylvius Lack,";
 
                 if ( usr->about_button->button_func64(&btn_64arg) )
                 {
-                    btn_64arg.ypos = 5 * (word_5A50C2 + yw->font_default_h);
+                    btn_64arg.ypos = 5 * (word_5A50C2 + font_default_h);
                     btn_64arg.caption = "Dietmar 'Didi' Koebelin, Nico Nitsch, Steffen Priebus, ";
 
                     if ( usr->about_button->button_func64(&btn_64arg) )
                     {
-                        btn_64arg.ypos = 6 * (yw->font_default_h + word_5A50C2);
+                        btn_64arg.ypos = 6 * (font_default_h + word_5A50C2);
                         btn_64arg.caption = "Stefan Warias, Henrik Volkening und";
 
                         if ( usr->about_button->button_func64(&btn_64arg) )
                         {
-                            btn_64arg.ypos = 7 * (word_5A50C2 + yw->font_default_h);
+                            btn_64arg.ypos = 7 * (word_5A50C2 + font_default_h);
                             btn_64arg.caption = "Uta Kapp";
 
                             if ( usr->about_button->button_func64(&btn_64arg) )
                             {
-                                btn_64arg.ypos = 8 * (yw->font_default_h + word_5A50C2);
+                                btn_64arg.ypos = 8 * (font_default_h + word_5A50C2);
                                 btn_64arg.caption = " ";
 
                                 if ( usr->about_button->button_func64(&btn_64arg) )
                                 {
-                                    btn_64arg.ypos = 9 * (yw->font_default_h + word_5A50C2);
+                                    btn_64arg.ypos = 9 * (font_default_h + word_5A50C2);
                                     btn_64arg.caption = "Unser Dank gilt:";
 
                                     if ( usr->about_button->button_func64(&btn_64arg) )
                                     {
-                                        btn_64arg.ypos = 10 * (yw->font_default_h + word_5A50C2);
+                                        btn_64arg.ypos = 10 * (font_default_h + word_5A50C2);
                                         btn_64arg.caption = "dem gesamten Microsoft Team, besonders";
 
                                         if ( usr->about_button->button_func64(&btn_64arg) )
                                         {
-                                            btn_64arg.ypos = 11 * (word_5A50C2 + yw->font_default_h);
+                                            btn_64arg.ypos = 11 * (word_5A50C2 + font_default_h);
                                             btn_64arg.caption = "Michael Lyons, Jonathan Sposato und Earnest Yuen";
 
                                             if ( usr->about_button->button_func64(&btn_64arg) )
                                             {
-                                                btn_64arg.ypos = 12 * (yw->font_default_h + word_5A50C2);
+                                                btn_64arg.ypos = 12 * (font_default_h + word_5A50C2);
                                                 btn_64arg.caption = "weiterhin";
 
                                                 if ( usr->about_button->button_func64(&btn_64arg) )
                                                 {
-                                                    btn_64arg.ypos = 13 * (yw->font_default_h + word_5A50C2);
+                                                    btn_64arg.ypos = 13 * (font_default_h + word_5A50C2);
                                                     btn_64arg.caption = "Robert Birker, Andre 'Goetz' Blechschmidt, Jan Blechschmidt, Stephan Bludau,";
 
                                                     if ( usr->about_button->button_func64(&btn_64arg) )
                                                     {
-                                                        btn_64arg.ypos = 14 * (yw->font_default_h + word_5A50C2);
+                                                        btn_64arg.ypos = 14 * (font_default_h + word_5A50C2);
                                                         btn_64arg.caption = "Andre Kunth, Markus Lorenz, Dirk Mansbart";
 
                                                         if ( usr->about_button->button_func64(&btn_64arg) )
                                                         {
-                                                            btn_64arg.ypos = 15 * (word_5A50C2 + yw->font_default_h);
+                                                            btn_64arg.ypos = 15 * (word_5A50C2 + font_default_h);
                                                             btn_64arg.caption = "und natuerlich";
 
                                                             if ( usr->about_button->button_func64(&btn_64arg) )
                                                             {
-                                                                btn_64arg.ypos = 16 * (yw->font_default_h + word_5A50C2);
+                                                                btn_64arg.ypos = 16 * (font_default_h + word_5A50C2);
                                                                 btn_64arg.caption = "        GoldEd - dPaint - SAS/C";
 
                                                                 if ( usr->about_button->button_func64(&btn_64arg) )
@@ -5684,7 +5620,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     usr->about_button->Hide();
 
-    dword_5A50B6 = v278_4 - yw->font_yscrl_bkg_w;
+    dword_5A50B6 = v278_4 - font_yscrl_bkg_w;
 
     args.Init();
     args.resizeable = false;
@@ -5694,27 +5630,27 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     args.selectedEntry = 0;
     args.maxShownEntries = 12;
     args.withIcon = false;
-    args.entryHeight = yw->font_default_h;
+    args.entryHeight = font_default_h;
     args.entryWidth = dword_5A50B2_h;
     args.enabled = true;
-    args.vborder = yw->field_1a38;
+    args.vborder = field_1a38;
     args.instantInput = false;
     args.keyboardInput = true;
 
-    if ( !usr->network_listvw.Init(yw, args) )
+    if ( !usr->network_listvw.Init(this, args) )
     {
         ypa_log_out("Unable to create network-listview\n");
         return 0;
     }
 
     usr->field_1C32 = v278;
-    usr->field_0x1c34 = v273 - yw->font_default_h;
+    usr->field_0x1c34 = v273 - font_default_h;
 
     init_vals.clear();
     init_vals.Add(NC_STACK_button::BTN_ATT_X, usr->field_1C32);
     init_vals.Add(NC_STACK_button::BTN_ATT_Y, usr->field_0x1c34);
-    init_vals.Add(NC_STACK_button::BTN_ATT_W, yw->screen_width - usr->field_1C32);
-    init_vals.Add(NC_STACK_button::BTN_ATT_H, yw->screen_height - usr->field_0x1c34);
+    init_vals.Add(NC_STACK_button::BTN_ATT_W, screen_width - usr->field_1C32);
+    init_vals.Add(NC_STACK_button::BTN_ATT_H, screen_height - usr->field_0x1c34);
 
     usr->network_button = Nucleus::CInit<NC_STACK_button>(init_vals);
     if ( !usr->network_button )
@@ -5724,7 +5660,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     }
 
     usr->field_1C2E = usr->field_1C32;
-    usr->field_0x1c30 = 3 * (word_5A50C2 + yw->font_default_h) + usr->field_0x1c34;
+    usr->field_0x1c30 = 3 * (word_5A50C2 + font_default_h) + usr->field_0x1c34;
 
     usr->network_listvw.x = usr->field_1C2E;
     usr->network_listvw.y = usr->field_0x1c30;
@@ -5739,13 +5675,13 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.down_id = 0;
     btn_64arg.up_id = 0;
     btn_64arg.pressed_id = 0;
-    btn_64arg.ypos = 14 * (word_5A50C2 + yw->font_default_h);
+    btn_64arg.ypos = 14 * (word_5A50C2 + font_default_h);
     btn_64arg.button_id = 1200;
     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
     btn_64arg.width = dword_5A50B6 * 0.8;
-    btn_64arg.txt_r = yw->iniColors[60].r;
-    btn_64arg.txt_g = yw->iniColors[60].g;
-    btn_64arg.txt_b = yw->iniColors[60].b;
+    btn_64arg.txt_r = iniColors[60].r;
+    btn_64arg.txt_g = iniColors[60].g;
+    btn_64arg.txt_b = iniColors[60].b;
 
     v70 = 0;
 
@@ -5763,9 +5699,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         btn_64arg.pressed_id = 0;
         btn_64arg.button_id = 1225;
         btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-        btn_64arg.txt_r = yw->iniColors[68].r;
-        btn_64arg.txt_g = yw->iniColors[68].g;
-        btn_64arg.txt_b = yw->iniColors[68].b;
+        btn_64arg.txt_r = iniColors[68].r;
+        btn_64arg.txt_g = iniColors[68].g;
+        btn_64arg.txt_b = iniColors[68].b;
 
         if ( usr->network_button->button_func64(&btn_64arg) )
         {
@@ -5777,7 +5713,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.tileset_up = 16;
             btn_64arg.field_3A = 16;
             btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-            btn_64arg.ypos = (15 * (word_5A50C2 + yw->font_default_h));
+            btn_64arg.ypos = (15 * (word_5A50C2 + font_default_h));
             btn_64arg.xpos = 0;
             btn_64arg.width = dword_5A50B6 * 0.4 - 2 * word_5A50C0;
             btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 424, "SELECT YOUR RACE");
@@ -5785,9 +5721,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.down_id = 0;
             btn_64arg.flags = NC_STACK_button::FLAG_TEXT | NC_STACK_button::FLAG_RALIGN;
             btn_64arg.button_id = 1220;
-            btn_64arg.txt_r = yw->iniColors[60].r;
-            btn_64arg.txt_g = yw->iniColors[60].g;
-            btn_64arg.txt_b = yw->iniColors[60].b;
+            btn_64arg.txt_r = iniColors[60].r;
+            btn_64arg.txt_g = iniColors[60].g;
+            btn_64arg.txt_b = iniColors[60].b;
 
             if ( usr->network_button->button_func64(&btn_64arg) )
             {
@@ -5842,9 +5778,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                 btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                                 btn_64arg.up_id = 1203;
                                 btn_64arg.down_id = 1251;
-                                btn_64arg.txt_r = yw->iniColors[68].r;
-                                btn_64arg.txt_g = yw->iniColors[68].g;
-                                btn_64arg.txt_b = yw->iniColors[68].b;
+                                btn_64arg.txt_r = iniColors[68].r;
+                                btn_64arg.txt_g = iniColors[68].g;
+                                btn_64arg.txt_b = iniColors[68].b;
 
                                 if ( usr->network_button->button_func64(&btn_64arg) )
                                 {
@@ -5866,18 +5802,18 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                     if ( usr->network_button->button_func64(&btn_64arg) )
                                     {
                                         btn_64arg.xpos = 0;
-                                        btn_64arg.ypos = word_5A50C0 + yw->font_default_h;
+                                        btn_64arg.ypos = word_5A50C0 + font_default_h;
                                         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 425, "2");
                                         btn_64arg.caption2 = 0;
                                         btn_64arg.button_id = 1222;
-                                        btn_64arg.txt_r = yw->iniColors[60].r;
-                                        btn_64arg.txt_g = yw->iniColors[60].g;
-                                        btn_64arg.txt_b = yw->iniColors[60].b;
+                                        btn_64arg.txt_r = iniColors[60].r;
+                                        btn_64arg.txt_g = iniColors[60].g;
+                                        btn_64arg.txt_b = iniColors[60].b;
 
                                         if ( usr->network_button->button_func64(&btn_64arg) )
                                         {
                                             btn_64arg.xpos = 0;
-                                            btn_64arg.ypos = 2 * (yw->font_default_h + word_5A50C0);
+                                            btn_64arg.ypos = 2 * (font_default_h + word_5A50C0);
                                             btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 426, "3");
                                             btn_64arg.caption2 = 0;
                                             btn_64arg.button_id = 1223;
@@ -5889,7 +5825,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                 btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
                                                 btn_64arg.field_3A = 30;
                                                 btn_64arg.xpos = dword_5A50B6 * 0.3;
-                                                btn_64arg.ypos = (word_5A50C0 + yw->font_default_h) * 15.2;
+                                                btn_64arg.ypos = (word_5A50C0 + font_default_h) * 15.2;
                                                 btn_64arg.width = dword_5A50B6 * 0.4;
                                                 btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 402, "NEW");
                                                 btn_64arg.button_id = 1202;
@@ -5898,14 +5834,14 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                 btn_64arg.up_id = 1201;
                                                 btn_64arg.caption2 = 0;
                                                 btn_64arg.pressed_id = 0;
-                                                btn_64arg.txt_r = yw->iniColors[68].r;
-                                                btn_64arg.txt_g = yw->iniColors[68].g;
-                                                btn_64arg.txt_b = yw->iniColors[68].b;
+                                                btn_64arg.txt_r = iniColors[68].r;
+                                                btn_64arg.txt_g = iniColors[68].g;
+                                                btn_64arg.txt_b = iniColors[68].b;
 
                                                 if ( usr->network_button->button_func64(&btn_64arg) )
                                                 {
                                                     btn_64arg.xpos = v267;
-                                                    btn_64arg.ypos = v269 + yw->font_default_h;
+                                                    btn_64arg.ypos = v269 + font_default_h;
                                                     btn_64arg.width = v270;
                                                     btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 400, "NEXT");
                                                     btn_64arg.caption2 = 0;
@@ -5916,7 +5852,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                     if ( usr->network_button->button_func64(&btn_64arg) )
                                                     {
                                                         btn_64arg.xpos = v274;
-                                                        btn_64arg.ypos = v258 + yw->font_default_h;
+                                                        btn_64arg.ypos = v258 + font_default_h;
                                                         btn_64arg.width = v262;
                                                         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 20, "HELP");
                                                         btn_64arg.caption2 = 0;
@@ -5927,7 +5863,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                         if ( usr->network_button->button_func64(&btn_64arg) )
                                                         {
                                                             btn_64arg.xpos = v264;
-                                                            btn_64arg.ypos = v276 + yw->font_default_h;
+                                                            btn_64arg.ypos = v276 + font_default_h;
                                                             btn_64arg.width = v298;
                                                             btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 403, "CANCEL");
                                                             btn_64arg.caption2 = 0;
@@ -5939,7 +5875,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                             {
                                                                 int v204;
 
-                                                                if ( yw->screen_width < 512 )
+                                                                if ( screen_width < 512 )
                                                                     v204 = 6 * v259_4;
                                                                 else
                                                                     v204 = 4 * v259_4;
@@ -5949,7 +5885,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                 btn_64arg.field_3A = 16;
                                                                 btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                 btn_64arg.xpos = v204 + v259_4;
-                                                                btn_64arg.ypos = 4 * (yw->font_default_h + word_5A50C0);
+                                                                btn_64arg.ypos = 4 * (font_default_h + word_5A50C0);
                                                                 btn_64arg.caption = " ";
                                                                 btn_64arg.width = dword_5A50B2_h - v204 - v259_4;
                                                                 btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
@@ -5958,23 +5894,23 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                 btn_64arg.up_id = 0;
                                                                 btn_64arg.pressed_id = 0;
                                                                 btn_64arg.button_id = 1210;
-                                                                btn_64arg.txt_r = yw->iniColors[60].r;
-                                                                btn_64arg.txt_g = yw->iniColors[60].g;
-                                                                btn_64arg.txt_b = yw->iniColors[60].b;
+                                                                btn_64arg.txt_r = iniColors[60].r;
+                                                                btn_64arg.txt_g = iniColors[60].g;
+                                                                btn_64arg.txt_b = iniColors[60].b;
 
                                                                 if ( usr->network_button->button_func64(&btn_64arg) )
                                                                 {
-                                                                    btn_64arg.ypos = 5 * (word_5A50C0 + yw->font_default_h);
+                                                                    btn_64arg.ypos = 5 * (word_5A50C0 + font_default_h);
                                                                     btn_64arg.button_id = 1211;
 
                                                                     if ( usr->network_button->button_func64(&btn_64arg) )
                                                                     {
-                                                                        btn_64arg.ypos = 6 * (word_5A50C0 + yw->font_default_h);
+                                                                        btn_64arg.ypos = 6 * (word_5A50C0 + font_default_h);
                                                                         btn_64arg.button_id = 1212;
 
                                                                         if ( usr->network_button->button_func64(&btn_64arg) )
                                                                         {
-                                                                            btn_64arg.ypos = 7 * (word_5A50C0 + yw->font_default_h);
+                                                                            btn_64arg.ypos = 7 * (word_5A50C0 + font_default_h);
                                                                             btn_64arg.button_id = 1213;
 
                                                                             if ( usr->network_button->button_func64(&btn_64arg) )
@@ -5988,28 +5924,28 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                 btn_64arg.caption2 = 0;
                                                                                 btn_64arg.down_id = 0;
                                                                                 btn_64arg.up_id = 0;
-                                                                                btn_64arg.ypos = 4 * (yw->font_default_h + word_5A50C0);
+                                                                                btn_64arg.ypos = 4 * (font_default_h + word_5A50C0);
                                                                                 btn_64arg.pressed_id = 0;
                                                                                 btn_64arg.caption = " ";
                                                                                 btn_64arg.flags = 0;
                                                                                 btn_64arg.button_id = 1214;
-                                                                                btn_64arg.txt_r = yw->iniColors[60].r;
-                                                                                btn_64arg.txt_g = yw->iniColors[60].g;
-                                                                                btn_64arg.txt_b = yw->iniColors[60].b;
+                                                                                btn_64arg.txt_r = iniColors[60].r;
+                                                                                btn_64arg.txt_g = iniColors[60].g;
+                                                                                btn_64arg.txt_b = iniColors[60].b;
 
                                                                                 if ( usr->network_button->button_func64(&btn_64arg) )
                                                                                 {
-                                                                                    btn_64arg.ypos = 5 * (yw->font_default_h + word_5A50C0);
+                                                                                    btn_64arg.ypos = 5 * (font_default_h + word_5A50C0);
                                                                                     btn_64arg.button_id = 1215;
 
                                                                                     if ( usr->network_button->button_func64(&btn_64arg) )
                                                                                     {
-                                                                                        btn_64arg.ypos = 6 * (word_5A50C0 + yw->font_default_h);
+                                                                                        btn_64arg.ypos = 6 * (word_5A50C0 + font_default_h);
                                                                                         btn_64arg.button_id = 1216;
 
                                                                                         if ( usr->network_button->button_func64(&btn_64arg) )
                                                                                         {
-                                                                                            btn_64arg.ypos = 7 * (word_5A50C0 + yw->font_default_h);
+                                                                                            btn_64arg.ypos = 7 * (word_5A50C0 + font_default_h);
                                                                                             btn_64arg.button_id = 1217;
 
                                                                                             if ( usr->network_button->button_func64(&btn_64arg) )
@@ -6024,7 +5960,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                 btn_64arg.caption2 = "g";
                                                                                                 btn_64arg.pressed_id = 0;
                                                                                                 btn_64arg.button_id = 1219;
-                                                                                                btn_64arg.ypos = v269 + yw->font_default_h;
+                                                                                                btn_64arg.ypos = v269 + font_default_h;
                                                                                                 btn_64arg.down_id = 1208;
                                                                                                 btn_64arg.flags = 0;
                                                                                                 btn_64arg.up_id = 1209;
@@ -6052,7 +5988,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                         btn_64arg.tileset_up = 16;
                                                                                                         btn_64arg.field_3A = 16;
                                                                                                         btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                                                        btn_64arg.ypos = 3 * (yw->font_default_h + word_5A50C0);
+                                                                                                        btn_64arg.ypos = 3 * (font_default_h + word_5A50C0);
                                                                                                         btn_64arg.width = dword_5A50B6 * 0.3;
                                                                                                         btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 600, "YOU PLAY");
                                                                                                         btn_64arg.caption2 = 0;
@@ -6061,9 +5997,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                         btn_64arg.pressed_id = 0;
                                                                                                         btn_64arg.button_id = 1227;
                                                                                                         btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                                                                                        btn_64arg.txt_r = yw->iniColors[68].r;
-                                                                                                        btn_64arg.txt_g = yw->iniColors[68].g;
-                                                                                                        btn_64arg.txt_b = yw->iniColors[68].b;
+                                                                                                        btn_64arg.txt_r = iniColors[68].r;
+                                                                                                        btn_64arg.txt_g = iniColors[68].g;
+                                                                                                        btn_64arg.txt_b = iniColors[68].b;
 
                                                                                                         if ( usr->network_button->button_func64(&btn_64arg) )
                                                                                                         {
@@ -6081,7 +6017,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                 btn_64arg.field_3A = 16;
                                                                                                                 btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                                 btn_64arg.xpos = 0;
-                                                                                                                btn_64arg.ypos = (14 * (word_5A50C2 + yw->font_default_h));
+                                                                                                                btn_64arg.ypos = (14 * (word_5A50C2 + font_default_h));
                                                                                                                 btn_64arg.width = dword_5A50B2_h;
                                                                                                                 btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2402, "PRESS SPACEBAR TO UPDATE SESSION LIST");
                                                                                                                 btn_64arg.caption2 = 0;
@@ -6090,9 +6026,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                 btn_64arg.pressed_id = 0;
                                                                                                                 btn_64arg.button_id = 1228;
                                                                                                                 btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                                                                                                btn_64arg.txt_r = yw->iniColors[60].r;
-                                                                                                                btn_64arg.txt_g = yw->iniColors[60].g;
-                                                                                                                btn_64arg.txt_b = yw->iniColors[60].b;
+                                                                                                                btn_64arg.txt_r = iniColors[60].r;
+                                                                                                                btn_64arg.txt_g = iniColors[60].g;
+                                                                                                                btn_64arg.txt_b = iniColors[60].b;
 
                                                                                                                 if ( usr->network_button->button_func64(&btn_64arg) )
                                                                                                                     v70 = 1;
@@ -6216,7 +6152,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 }
 
 
-void ypaworld_func157__sub0(_NC_STACK_ypaworld *yw)
+void ypaworld_func157__sub0(NC_STACK_ypaworld *yw)
 {
     sub_4E6FEC(yw);
 
@@ -6235,8 +6171,6 @@ void ypaworld_func157__sub0(_NC_STACK_ypaworld *yw)
 
 void NC_STACK_ypaworld::ypaworld_func157(UserData *usr)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     if ( usr->field_0x0 )
     {
         if ( usr->confirm_button )
@@ -6328,9 +6262,9 @@ void NC_STACK_ypaworld::ypaworld_func157(UserData *usr)
 
         SFXEngine::SFXe.sub_424CC8();
 
-        ypaworld_func157__sub0(yw);
+        ypaworld_func157__sub0(this);
 
-        sb_0x44ac24(yw);
+        sb_0x44ac24(this);
 
         //nullsub_7();
 
@@ -6341,10 +6275,10 @@ void NC_STACK_ypaworld::ypaworld_func157(UserData *usr)
 //Draw bkg or briefing
 void NC_STACK_ypaworld::GameShellBkgProcess()
 {
-    if ( ypaworld.GameShell->envModeChanged )
-        GameShellInitBkgMode(ypaworld.GameShell->envMode);
+    if ( GameShell->envModeChanged )
+        GameShellInitBkgMode(GameShell->envMode);
 
-    switch(ypaworld.GameShell->envMode)
+    switch(GameShell->envMode)
     {
     case ENVMODE_TUTORIAL:
     case ENVMODE_SINGLEPLAY:
@@ -6352,11 +6286,11 @@ void NC_STACK_ypaworld::GameShellBkgProcess()
         break;
 
     case ENVMODE_TITLE:
-        GameShellBlitBkg(ypaworld.LevelNet->ilbm_menu_map);
+        GameShellBlitBkg(LevelNet->ilbm_menu_map);
         break;
 
     default:
-        GameShellBlitBkg(ypaworld.LevelNet->ilbm_rollover_map);
+        GameShellBlitBkg(LevelNet->ilbm_rollover_map);
         break;
     }
 }
@@ -6364,7 +6298,7 @@ void NC_STACK_ypaworld::GameShellBkgProcess()
 
 char byte_5AFC10[64];
 
-char * sb_0x481264__sub0(_NC_STACK_ypaworld *yw, int a2)
+char * sb_0x481264__sub0(NC_STACK_ypaworld *yw, int a2)
 {
     byte_5AFC10[0] = 0;
 
@@ -6375,7 +6309,7 @@ char * sb_0x481264__sub0(_NC_STACK_ypaworld *yw, int a2)
     return byte_5AFC10;
 }
 
-void draw_tooltip(_NC_STACK_ypaworld *yw)
+void draw_tooltip(NC_STACK_ypaworld *yw)
 {
     if ( yw->field_17c0 || (yw->field_17c4 && !yw->field_1b1c) )
     {
@@ -6428,14 +6362,14 @@ void draw_tooltip(_NC_STACK_ypaworld *yw)
         v10.cmdbuf = buf;
         v10.includ = 0;
 
-        yw->win3d->raster_func209(&v10);
+        yw->_win3d->raster_func209(&v10);
     }
     yw->field_17c8 = 0;
     yw->field_17c4 = 0;
 }
 
 //Make screenshot
-void sub_4476AC(_NC_STACK_ypaworld *yw)
+void sub_4476AC(NC_STACK_ypaworld *yw)
 {
     char a1a[256];
     sprintf(a1a, "env:snaps/f_%04d", yw->field_2424);
@@ -6466,14 +6400,13 @@ bool NC_STACK_ypaworld::IsAnyInput(struC5 *struc)
 
 void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
     usr->envAction.action = EnvAction::ACTION_NONE;
 
     SFXEngine::SFXe.sub_423EFC(usr->frameTime, vec3d(0.0), vec3d(0.0), mat3x3::Ident());
 
-    yw->win3d = GFXEngine::GFXe.getC3D();
+    _win3d = GFXEngine::GFXe.getC3D();
 
-    yw->win3d->BeginFrame();
+    _win3d->BeginFrame();
 
     int oldMode = usr->envMode;
     usr->envModeChanged = false;
@@ -6485,14 +6418,14 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 
     GameShellBkgProcess();
 
-    draw_tooltip(yw);
+    draw_tooltip(this);
 
-    ypaworld_func158__sub3(yw, usr);
+    ypaworld_func158__sub3(this, usr);
 
-    if ( yw->isNetGame )
+    if ( isNetGame )
     {
-        yw->field_7586 -= usr->frameTime;
-        if ( yw->field_7586 <= 0 )
+        field_7586 -= usr->frameTime;
+        if ( field_7586 <= 0 )
         {
             windp_arg82 arg82;
             arg82.senderFlags = 1;
@@ -6501,9 +6434,9 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
             arg82.receiverID = 0;
             arg82.guarant = 1;
 
-            yw->windp->FlushBuffer(arg82);
+            windp->FlushBuffer(arg82);
 
-            yw->field_7586 = 100;
+            field_7586 = 100;
         }
     }
 
@@ -6516,7 +6449,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 //  if ( usr->field_0x4 )
 //    nullsub_7();
 
-    yw->win3d->EndFrame();
+    _win3d->EndFrame();
 
     if ( usr->field_0x4 )
     {
@@ -6524,12 +6457,12 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 //    nullsub_7();
     }
 
-    if ( sub_449678(yw, usr->_input, UAVK_MULTIPLY) )
-        sub_4476AC(yw);
+    if ( sub_449678(this, usr->_input, UAVK_MULTIPLY) )
+        sub_4476AC(this);
 
     if ( usr->netSelMode == 4 )
     {
-        yw_CheckCRCs(yw);
+        yw_CheckCRCs(this);
         usr->yw_CheckCDs();
     }
 
@@ -6541,12 +6474,12 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 
     usr->field_0xc = 0;
 
-    if ( yw->field_81AF )
+    if ( field_81AF )
     {
-        const char *v22 = yw->field_81AF;
+        const char *v22 = field_81AF;
         ypaworld_func185(&v22);
 
-        yw->field_81AF = NULL;
+        field_81AF = NULL;
     }
 }
 
@@ -6565,44 +6498,42 @@ void NC_STACK_ypaworld::ypaworld_func160(void *arg)
 // Load Level
 size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     int ok = 0;
     mapProto mapp;
 
     if ( LVLoaderCommon(mapp, arg->lvlID, arg->field_4) )
     {
-        if ( cells_mark_type(yw, mapp.typ.c_str()) )
+        if ( cells_mark_type(this, mapp.typ.c_str()) )
         {
-            if ( cells_mark_owner(yw, mapp.own.c_str()) )
+            if ( cells_mark_owner(this, mapp.own.c_str()) )
             {
-                if ( cells_mark_hight(yw, mapp.hgt.c_str()) )
+                if ( cells_mark_hight(this, mapp.hgt.c_str()) )
                 {
-                    if ( yw_createRobos(this, yw, mapp.mapRobos_count, mapp.mapRobos) )
+                    if ( yw_createRobos(this, mapp.mapRobos_count, mapp.mapRobos) )
                     {
-                        if ( sub_44B9B8(this, yw, mapp.blg.c_str()) )
+                        if ( sub_44B9B8(this, mapp.blg.c_str()) )
                         {
-                            if ( yw->field_2d90->field_48 != 1 )
+                            if ( field_2d90->field_48 != 1 )
                             {
-                                yw_InitSquads(yw, mapp.squad_count, mapp.squads);
-                                yw_InitBuddies(yw);
+                                yw_InitSquads(this, mapp.squad_count, mapp.squads);
+                                yw_InitBuddies(this);
 
-                                for (int yy = 0; yy < yw->sectors_maxY2; yy++)
+                                for (int yy = 0; yy < sectors_maxY2; yy++)
                                 {
-                                    for (int xx = 0; xx < yw->sectors_maxX2; xx++)
+                                    for (int xx = 0; xx < sectors_maxX2; xx++)
                                     {
-                                        cellArea *cell = &yw->cells[xx + yy * yw->sectors_maxX2];
-                                        sb_0x44fc60(yw, cell, xx, yy, 255, NULL);
+                                        cellArea *cell = &cells[xx + yy * sectors_maxX2];
+                                        sb_0x44fc60(this, cell, xx, yy, 255, NULL);
                                     }
                                 }
 
                                 yw_InitTechUpgradeBuildings();
-                                yw_InitGates(yw);
-                                yw_InitSuperItems(yw);
-                                sub_44F748(yw);
+                                yw_InitGates(this);
+                                yw_InitSuperItems(this);
+                                sub_44F748(this);
                             }
 
-                            if ( sb_0x451034(this, yw) )
+                            if ( sb_0x451034(this) )
                                 ok = 1;
                         }
                     }
@@ -6623,17 +6554,15 @@ size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
 
 size_t NC_STACK_ypaworld::ypaworld_func162(const char *fname)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
+    replayer = recorder_allocate();
 
-    yw->replayer = recorder_allocate();
-
-    if ( !yw->replayer )
+    if ( !replayer )
         return 0;
 
-    recorder *repl = yw->replayer;
+    recorder *repl = replayer;
 
     strcpy(repl->filename, fname);
-    yw->timeStamp = 0;
+    timeStamp = 0;
 
     if ( !recorder_open_replay(repl) )
         return 0;
@@ -6672,7 +6601,7 @@ size_t NC_STACK_ypaworld::ypaworld_func162(const char *fname)
     if ( !ypaworld_func161(&arg161) )
         return 0;
 
-    if ( !recorder_create_camera(yw) )
+    if ( !recorder_create_camera(this) )
     {
         ypa_log_out("PLAYER ERROR: could not create virtual camera!\n");
         ypaworld_func164();
@@ -6683,7 +6612,7 @@ size_t NC_STACK_ypaworld::ypaworld_func162(const char *fname)
     repl->field_44 = vec3d(0.0, 0.0, 0.0);
     repl->rotation_matrix = mat3x3::Ident();
 
-    if ( !recorder_go_to_frame(yw, repl, 0) )
+    if ( !recorder_go_to_frame(this, repl, 0) )
     {
         ypa_log_out("PLAYER ERROR: could not position on 1st frame!\n");
         ypaworld_func164();
@@ -6706,57 +6635,55 @@ size_t NC_STACK_ypaworld::ypaworld_func162(const char *fname)
 
 void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
-    recorder *repl = yw->replayer;
+    recorder *repl = replayer;
     uint32_t v33 = profiler_begin();
 
-    yw->win3d = GFXEngine::GFXe.getC3D();
+    _win3d = GFXEngine::GFXe.getC3D();
 
-    yw->b64_parms = arg;
-    yw->field_161c++;
-    yw->field_1b24.user_action = 0;
-    yw->field_1b24.gTime = arg->field_0;
-    yw->field_1b24.frameTime = arg->field_4;
-    yw->field_1b24.units_count = 0;
-    yw->field_1b24.inpt = arg->field_8;
-    yw->field_1B6E = 1024 / arg->field_4;
+    b64_parms = arg;
+    field_161c++;
+    field_1b24.user_action = 0;
+    field_1b24.gTime = arg->field_0;
+    field_1b24.frameTime = arg->field_4;
+    field_1b24.units_count = 0;
+    field_1b24.inpt = arg->field_8;
+    field_1B6E = 1024 / arg->field_4;
 
-    yw->p_1_grp[0][0] = yw->field_1B6E;
+    p_1_grp[0][0] = field_1B6E;
 
-    yw->win3d->BeginFrame();
+    _win3d->BeginFrame();
 
-    yw->win3d->setRSTR_BGpen(0);
+    _win3d->setRSTR_BGpen(0);
 
-    yw->win3d->raster_func192(NULL);
+    _win3d->raster_func192(NULL);
 
-    sub_4C40AC(yw);
+    sub_4C40AC(this);
 
-    yw->hudi.field_0 = 0;
-    yw->hudi.field_4 = 0;
+    hudi.field_0 = 0;
+    hudi.field_4 = 0;
 
     if ( repl->field_7C != 1 )
-        ypaworld_func163__sub1(yw, repl, arg->field_4);
+        ypaworld_func163__sub1(this, repl, arg->field_4);
 
-    CameraPrepareRender(repl, yw->UUBact, arg->field_8);
+    CameraPrepareRender(repl, UserUnit, arg->field_8);
 
-    vec3d a3a = yw->UUBact->fly_dir * yw->UUBact->fly_dir_length;
+    vec3d a3a = UserUnit->_fly_dir * UserUnit->_fly_dir_length;
 
-    SFXEngine::SFXe.sub_423EFC(arg->field_4, yw->UUBact->position, a3a, yw->UUBact->rotation);
+    SFXEngine::SFXe.sub_423EFC(arg->field_4, UserUnit->_position, a3a, UserUnit->_rotation);
 
-    bact_node *bct = (bact_node *)yw->UUBact->subjects_list.head;
+    bact_node *bct = (bact_node *)UserUnit->_subjects_list.head;
 
     while ( bct->next )
     {
-        bct->bact->tForm.locPos = bct->bact->position;
+        bct->bact->_tForm.locPos = bct->bact->_position;
 
-        bct->bact->tForm.locSclRot = bct->bact->rotation.Transpose();
+        bct->bact->_tForm.locSclRot = bct->bact->_rotation.Transpose();
 
-        bct->bact->soundcarrier.field_0 = bct->bact->position;
+        bct->bact->_soundcarrier.field_0 = bct->bact->_position;
 
-        bct->bact->soundcarrier.field_C = bct->bact->fly_dir * bct->bact->fly_dir_length;
+        bct->bact->_soundcarrier.field_C = bct->bact->_fly_dir * bct->bact->_fly_dir_length;
 
-        SFXEngine::SFXe.sb_0x4242e0(&bct->bact->soundcarrier);
+        SFXEngine::SFXe.sb_0x4242e0(&bct->bact->_soundcarrier);
 
         bct = (bact_node *)bct->next;
     }
@@ -6768,68 +6695,64 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
     uint32_t v28 = profiler_begin();
 
-    sb_0x4d7c08(this, yw, arg, 0);
+    sb_0x4d7c08(this, arg, 0);
 
-    debug_info_draw(yw, arg->field_8);
+    debug_info_draw(this, arg->field_8);
 
-    yw->win3d->EndFrame();
+    _win3d->EndFrame();
 
-    yw->p_1_grp[0][5] = profiler_end(v28);
+    p_1_grp[0][5] = profiler_end(v28);
 
-    sb_0x447720(yw, arg->field_8);
+    sb_0x447720(this, arg->field_8);
 
-    yw->p_1_grp[0][1] = profiler_end(v33);
-    yw->p_1_grp[0][7] = yw->field_1b6c;
+    p_1_grp[0][1] = profiler_end(v33);
+    p_1_grp[0][7] = field_1b6c;
 
-    sub_44A094(yw);
+    sub_44A094(this);
 }
 
 
 
 void NC_STACK_ypaworld::ypaworld_func164()
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
-    if ( yw->replayer )
+    if ( replayer )
     {
-        if ( yw->replayer->mfile )
+        if ( replayer->mfile )
         {
-            delete yw->replayer->mfile;
+            delete replayer->mfile;
 
-            yw->replayer->mfile = NULL;
+            replayer->mfile = NULL;
         }
 
         ypaworld_func151();
 
-        if ( yw->replayer->oinf )
-            nc_FreeMem(yw->replayer->oinf);
+        if ( replayer->oinf )
+            nc_FreeMem(replayer->oinf);
 
-        if ( yw->replayer->sound_status )
-            nc_FreeMem(yw->replayer->sound_status);
+        if ( replayer->sound_status )
+            nc_FreeMem(replayer->sound_status);
 
-        if ( yw->replayer->field_20 )
-            nc_FreeMem(yw->replayer->field_20);
+        if ( replayer->field_20 )
+            nc_FreeMem(replayer->field_20);
 
-        if ( yw->replayer->ainf )
-            nc_FreeMem(yw->replayer->ainf);
+        if ( replayer->ainf )
+            nc_FreeMem(replayer->ainf);
 
-        nc_FreeMem(yw->replayer);
+        nc_FreeMem(replayer);
 
-        yw->replayer = NULL;
+        replayer = NULL;
     }
 }
 
 
 void NC_STACK_ypaworld::ypaworld_func165(yw_arg165 *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
-    recorder *repl = yw->replayer;
+    recorder *repl = replayer;
 
     if ( (repl->field_80 == 18 || repl->field_80 == 19 || repl->field_80 == 20) && (arg->field_0 == 16 || arg->field_0 == 17) )
     {
-        repl->field_44 = yw->UUBact->position;
-        repl->rotation_matrix = yw->UUBact->rotation;
+        repl->field_44 = UserUnit->_position;
+        repl->rotation_matrix = UserUnit->_rotation;
     }
 
     if ( arg->field_0 == 1 || arg->field_0 == 2 )
@@ -6838,19 +6761,19 @@ void NC_STACK_ypaworld::ypaworld_func165(yw_arg165 *arg)
     }
     else if ( arg->field_0 == 3 )
     {
-        recorder_go_to_frame(yw, repl, arg->frame);
+        recorder_go_to_frame(this, repl, arg->frame);
     }
     else if ( arg->field_0 == 4 )
     {
-        recorder_go_to_frame(yw, repl, repl->frame_id + 1);
+        recorder_go_to_frame(this, repl, repl->frame_id + 1);
     }
     else if ( arg->field_0 == 5 )
     {
-        recorder_go_to_frame(yw, repl, repl->frame_id - 1);
+        recorder_go_to_frame(this, repl, repl->frame_id - 1);
     }
     else if ( arg->field_0 == 7 )
     {
-        recorder_go_to_frame(yw, repl, repl->frame_id + arg->frame);
+        recorder_go_to_frame(this, repl, repl->frame_id + arg->frame);
     }
     else if ( arg->field_0 == 16 || arg->field_0 == 17 )
     {
@@ -6897,7 +6820,7 @@ char * sb_0x471428__sub0(char *a1, const char *a2)
     return a1;
 }
 
-int simple_lang_parser(_NC_STACK_ypaworld *yw, const char *filename)
+int simple_lang_parser(NC_STACK_ypaworld *yw, const char *filename)
 {
     FSMgr::FileHandle *fil = uaOpenFile(filename, "r");
     if ( !fil )
@@ -7026,7 +6949,7 @@ int simple_lang_parser(_NC_STACK_ypaworld *yw, const char *filename)
     return 1;
 }
 
-int load_lang_lng(_NC_STACK_ypaworld *yw, const char *lang)
+int load_lang_lng(NC_STACK_ypaworld *yw, const char *lang)
 {
     char buf[128];
     sprintf(buf, "locale:%s.lng", lang);
@@ -7042,10 +6965,8 @@ int load_lang_lng(_NC_STACK_ypaworld *yw, const char *lang)
 
 size_t NC_STACK_ypaworld::ypaworld_func166(const char **langname)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
-    sub_4711E0(yw);
-    strcpy(yw->lang_name, *langname);
+    sub_4711E0(this);
+    strcpy(lang_name, *langname);
 
     int v19 = 0;
 //// We do not use this dll-garbage
@@ -7056,23 +6977,23 @@ size_t NC_STACK_ypaworld::ypaworld_func166(const char **langname)
 //  if ( load_lang_dll(LibFileName, yw->lang_strings, yw->lang_strings__end, yw->string_pointers, 2600) )
 //    v19 = 1;
 
-    if ( v19 || load_lang_lng(yw, yw->lang_name) )
+    if ( v19 || load_lang_lng(this, lang_name) )
     {
         NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
 
         const char *v11 = NULL;
 
-        if ( yw->screen_width >= 512 )
-            v11 = get_lang_string(yw->string_pointers_p2, 15, "MS Sans Serif,12,400,0");
+        if ( screen_width >= 512 )
+            v11 = get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0");
         else
-            v11 = get_lang_string(yw->string_pointers_p2, 16, "Arial,8,400,0");
+            v11 = get_lang_string(string_pointers_p2, 16, "Arial,8,400,0");
 
         win3d->load_font(v11);
 
         return 1;
     }
 
-    sub_4711E0(yw);
+    sub_4711E0(this);
     return 0;
 }
 
@@ -7215,44 +7136,41 @@ void NC_STACK_ypaworld::ypaworld_func167(UserData *usr)
 }
 
 
-size_t NC_STACK_ypaworld::ypaworld_func168(__NC_STACK_ypabact **pbact)
+size_t NC_STACK_ypaworld::ypaworld_func168(NC_STACK_ypabact *bact)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-    __NC_STACK_ypabact *bact = *pbact;
-
-    if ( bact->bact_type == BACT_TYPES_GUN || bact->bact_type == BACT_TYPES_MISSLE )
+    if ( bact->_bact_type == BACT_TYPES_GUN || bact->_bact_type == BACT_TYPES_MISSLE )
         return 1;
 
-    if ( bact->owner == yw->URBact->owner )
+    if ( bact->_owner == UserRobo->_owner )
     {
-        cellArea *cell = bact->pSector;
+        cellArea *cell = bact->_pSector;
 
         if ( cell->w_type == 6 )
         {
-            if ( yw->URBact == bact )
+            if ( UserRobo == bact )
             {
-                yw->field_2d90->field_40 = 1;
-                yw->field_2d90->field_4C = cell->w_id;
-                yw->field_2d90->field_64 = yw->URBact->energy;
+                field_2d90->field_40 = 1;
+                field_2d90->field_4C = cell->w_id;
+                field_2d90->field_64 = UserRobo->_energy;
 
-                NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->UserRobo);
+                NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(UserRobo);
 
-                yw->field_2d90->field_70 = robo->getROBO_battVehicle();
-                yw->field_2d90->field_70 = robo->getROBO_battBeam(); //CHECK IT
+                field_2d90->field_70 = robo->getROBO_battVehicle();
+                field_2d90->field_70 = robo->getROBO_battBeam(); //CHECK IT
             }
             else
             {
-                yw->field_8283 += (bact->energy_max + 99) / 100;
+                field_8283 += (bact->_energy_max + 99) / 100;
 
-                if ( yw->field_2d90->buddies_count < 128 && yw->field_8283 < yw->beamenergy )
+                if ( field_2d90->buddies_count < 128 && field_8283 < beamenergy )
                 {
-                    int v15 = yw->field_2d90->buddies_count;
+                    int v15 = field_2d90->buddies_count;
 
-                    yw->field_2d90->buddies[v15].commandid = bact->commandID;
-                    yw->field_2d90->buddies[v15].type = bact->vehicleID;
-                    yw->field_2d90->buddies[v15].energy = bact->energy;
+                    field_2d90->buddies[v15].commandid = bact->_commandID;
+                    field_2d90->buddies[v15].type = bact->_vehicleID;
+                    field_2d90->buddies[v15].energy = bact->_energy;
 
-                    yw->field_2d90->buddies_count++;
+                    field_2d90->buddies_count++;
                 }
                 else
                     return 0;
@@ -7347,22 +7265,22 @@ int NC_STACK_ypaworld::ypaworld_func169__sub1(const std::string &filename)
 
 void NC_STACK_ypaworld::ypaworld_func169__sub2()
 {
-    bact_node *station = (bact_node *)ypaworld.bact_list.head;
+    bact_node *station = (bact_node *)bact_list.head;
 
     while(station->next)
     {
-        sb_0x47b028(&ypaworld, station, station, 1);
+        sb_0x47b028(this, station->bact, station->bact, 1);
 
-        bact_node *commander = (bact_node *)station->bact->subjects_list.head;
+        bact_node *commander = (bact_node *)station->bact->_subjects_list.head;
 
         while (commander->next)
         {
-            sb_0x47b028(&ypaworld, commander, station, 0);
+            sb_0x47b028(this, commander->bact, station->bact, 0);
 
-            bact_node *slave = (bact_node *)commander->bact->subjects_list.head;
+            bact_node *slave = (bact_node *)commander->bact->_subjects_list.head;
             while (slave->next)
             {
-                sb_0x47b028(&ypaworld, slave, station, 0);
+                sb_0x47b028(this, slave->bact, station->bact, 0);
 
                 slave = (bact_node *)slave->next;
             }
@@ -7375,21 +7293,18 @@ void NC_STACK_ypaworld::ypaworld_func169__sub2()
 
     if ( _extraViewEnable )
     {
-        NC_STACK_yparobo *player_station = dynamic_cast<NC_STACK_yparobo *>(ypaworld.UserRobo);
-        __NC_STACK_yparobo *robo = &player_station->stack__yparobo;
+        NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(UserRobo);
 
-        if ( robo->guns[_extraViewNumber].gun_obj )
+        if ( robo->_roboGuns[_extraViewNumber].gun_obj )
         {
-            robo->guns[_extraViewNumber].gun_obj->setBACT_viewer(true);
-            robo->guns[_extraViewNumber].gun_obj->setBACT_inputting(true);
+            robo->_roboGuns[_extraViewNumber].gun_obj->setBACT_viewer(true);
+            robo->_roboGuns[_extraViewNumber].gun_obj->setBACT_inputting(true);
         }
     }
 }
 
 size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     int v5 = 0;
 
     if ( !ypaworld_func169__sub3(arg->saveFile) )
@@ -7397,8 +7312,8 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
 
     if ( strstr(arg->saveFile, ".SGM") || strstr(arg->saveFile, ".sgm") )
     {
-        yw->maxreloadconst = 0;
-        yw->maxroboenergy = 0;
+        maxreloadconst = 0;
+        maxroboenergy = 0;
     }
 
     char save_filename[300];
@@ -7414,13 +7329,13 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
 
     if ( LVLoaderCommon(mapp, lvlnum, 0) )
     {
-        if ( cells_mark_type(yw, mapp.typ.c_str()) )
+        if ( cells_mark_type(this, mapp.typ.c_str()) )
         {
-            if ( cells_mark_owner(yw, mapp.own.c_str()) )
+            if ( cells_mark_owner(this, mapp.own.c_str()) )
             {
-                if ( cells_mark_hight(yw, mapp.hgt.c_str()) )
+                if ( cells_mark_hight(this, mapp.hgt.c_str()) )
                 {
-                    if ( sub_44B9B8(this, yw, mapp.blg.c_str()) )
+                    if ( sub_44B9B8(this, mapp.blg.c_str()) )
                         v5 = 1;
                 }
             }
@@ -7433,31 +7348,31 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
         return 0;
     }
 
-    yw->field_2d90->ownerMap__has_vehicles = 0;
-    yw->field_2d90->field_60 = 0;
+    field_2d90->ownerMap__has_vehicles = 0;
+    field_2d90->field_60 = 0;
 
     bact_id = 0x10000;
     dword_5A7A80 = 0;
 
-    yw_InitSuperItems(yw);
+    yw_InitSuperItems(this);
 
-    if ( yw->copyof_typemap )
+    if ( copyof_typemap )
     {
-        delete yw->copyof_typemap;
-        yw->copyof_typemap = NULL;
+        delete copyof_typemap;
+        copyof_typemap = NULL;
     }
 
-    if ( yw->copyof_ownermap )
+    if ( copyof_ownermap )
     {
-        delete yw->copyof_ownermap;
-        yw->copyof_ownermap = NULL;
+        delete copyof_ownermap;
+        copyof_ownermap = NULL;
     }
 
-    if ( yw->typ_map )
-        yw->copyof_typemap = yw->typ_map->Copy();
+    if ( typ_map )
+        copyof_typemap = typ_map->Copy();
 
-    if ( yw->own_map )
-        yw->copyof_ownermap = yw->own_map->Copy();
+    if ( own_map )
+        copyof_ownermap = own_map->Copy();
 
     if ( !ypaworld_func169__sub1(save_filename) )
         return 0;
@@ -7465,27 +7380,27 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
     dword_5A7A80++;
     bact_id++;
 
-    if ( yw->UserRobo )
-        dynamic_cast<NC_STACK_yparobo *>(yw->UserRobo) ->setROBO_commCount(dword_5A7A80);
+    if ( UserRobo )
+        dynamic_cast<NC_STACK_yparobo *>(UserRobo) ->setROBO_commCount(dword_5A7A80);
 
     ypaworld_func169__sub2();
 
     if ( strstr(arg->saveFile, ".fin") || strstr(arg->saveFile, ".FIN") )
-        yw_InitBuddies(yw);
+        yw_InitBuddies(this);
 
-    for(int y = 0; y < yw->sectors_maxY2; y++)
+    for(int y = 0; y < sectors_maxY2; y++)
     {
-        for(int x = 0; x < yw->sectors_maxX2; x++)
+        for(int x = 0; x < sectors_maxX2; x++)
         {
-            cellArea *cell = &yw->cells[x + y * yw->sectors_maxX2];
-            sb_0x44fc60(yw, cell, x, y, 255, 0);
+            cellArea *cell = &cells[x + y * sectors_maxX2];
+            sb_0x44fc60(this, cell, x, y, 255, 0);
         }
     }
 
-    yw_InitGates(yw);
-    sub_44F748(yw);
+    yw_InitGates(this);
+    sub_44F748(this);
 
-    if ( !sb_0x451034(this, yw) )
+    if ( !sb_0x451034(this) )
         return 0;
 
     return 1;
@@ -7494,14 +7409,12 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
 
 size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
     int write_ok = 1;
 
     if ( strstr(arg->saveFile, ".sgm") || strstr(arg->saveFile, ".SGM") )
     {
         char flname[300];
-        sprintf(flname, "save:%s/sgisold.txt", yw->GameShell->user_name.c_str());
+        sprintf(flname, "save:%s/sgisold.txt", GameShell->user_name.c_str());
         uaDeleteFile(flname);
     }
 
@@ -7513,11 +7426,11 @@ size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
 
     if ( isfin_save )
     {
-        yw->maxroboenergy = yw->URBact->energy_max;
+        maxroboenergy = UserRobo->_energy_max;
         write_modifers = 0;
         write_user = 0;
         write_level_statuses = 0;
-        yw->maxreloadconst = yw->URBact->reload_const;
+        maxreloadconst = UserRobo->_reload_const;
     }
     else
     {
@@ -7539,33 +7452,33 @@ size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
 
     if ( write_modifers )
     {
-        if ( !yw_write_item_modifers(yw, fil) )
+        if ( !yw_write_item_modifers(this, fil) )
             write_ok = 0;
     }
 
     if ( write_user )
     {
-        if ( !yw_write_user(fil, yw->GameShell) )
+        if ( !yw_write_user(fil, GameShell) )
             write_ok = 0;
     }
 
     if ( write_ok )
     {
-        if ( yw_write_levelnum(yw, fil) )
+        if ( yw_write_levelnum(this, fil) )
         {
-            yw_write_ownermap(yw, fil);
-            yw_write_buildmap(yw, fil);
-            yw_write_energymap(yw, fil);
+            yw_write_ownermap(this, fil);
+            yw_write_buildmap(this, fil);
+            yw_write_energymap(this, fil);
 
-            if ( yw_write_units(yw, fil) )
+            if ( yw_write_units(this, fil) )
             {
-                if ( yw_write_wunderinfo(yw, fil) )
+                if ( yw_write_wunderinfo(this, fil) )
                 {
-                    if ( yw_write_kwfactor(yw, fil) )
+                    if ( yw_write_kwfactor(this, fil) )
                     {
-                        if ( yw_write_globals(yw, fil) )
+                        if ( yw_write_globals(this, fil) )
                         {
-                            if ( yw_write_superbomb(yw, fil) )
+                            if ( yw_write_superbomb(this, fil) )
                                 write_ok = 1;
                         }
                     }
@@ -7578,9 +7491,9 @@ size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
     {
         for (int i = 0; i < 256; i++)
         {
-            if ( yw->LevelNet->mapInfos[i].field_0 )
+            if ( LevelNet->mapInfos[i].field_0 )
             {
-                if ( !yw_write_level_status(fil, yw, i) )
+                if ( !yw_write_level_status(fil, this, i) )
                 {
                     write_ok = 0;
                     break;
@@ -7593,8 +7506,8 @@ size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
     {
         if ( !isfin_save )
         {
-            yw_write_history(yw, fil);
-            yw_write_masks(yw, fil);
+            yw_write_history(this, fil);
+            yw_write_masks(this, fil);
         }
     }
 
@@ -7847,9 +7760,7 @@ size_t NC_STACK_ypaworld::ypaworld_func173(UserData *usr)
 
 size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
-    UserData *usr = yw->GameShell;
+    UserData *usr = GameShell;
 
     NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
 
@@ -7874,8 +7785,8 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
 
     GFXEngine::GFXe.setResolution( arg->resolution );
 
-    yw->screen_width = GFXEngine::GFXe.getScreenW();
-    yw->screen_height = GFXEngine::GFXe.getScreenH();
+    screen_width = GFXEngine::GFXe.getScreenW();
+    screen_height = GFXEngine::GFXe.getScreenH();
 
     if ( v6 && !ypaworld_func156(usr))
     {
@@ -7883,8 +7794,8 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
 
         GFXEngine::GFXe.setResolution( usr->p_ypaworld->shell_default_res );
 
-        yw->screen_width = GFXEngine::GFXe.getScreenW();
-        yw->screen_height = GFXEngine::GFXe.getScreenH();
+        screen_width = GFXEngine::GFXe.getScreenW();
+        screen_height = GFXEngine::GFXe.getScreenH();
 
         if ( !ypaworld_func156(usr) )
         {
@@ -7903,13 +7814,13 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
         win3d->setWDD_cursor(0);
     }
 
-    if ( yw->screen_width >= 512 )
+    if ( screen_width >= 512 )
     {
-        win3d->load_font( get_lang_string(yw->string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
+        win3d->load_font( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
     }
     else
     {
-        win3d->load_font( get_lang_string(yw->string_pointers_p2, 16, "Arial,8,400,0") );
+        win3d->load_font( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
     }
 
     return 1;
@@ -7952,68 +7863,65 @@ size_t NC_STACK_ypaworld::ypaworld_func175(UserData *usr)
 
 void NC_STACK_ypaworld::ypaworld_func176(yw_arg176 *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
-    arg->field_4 = yw->field_1bcc[arg->owner];
-    arg->field_8 = yw->field_1bec[arg->owner];
+    arg->field_4 = field_1bcc[arg->owner];
+    arg->field_8 = field_1bec[arg->owner];
 }
 
 
 void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
 {
     //Reown sectors for new owner
-    _NC_STACK_ypaworld *yw = &ypaworld;
 
     if ( !arg->field_4 ) //New owner
         return;
 
-    if ( arg->bact == yw->URBact )
-        yw->field_1624 = 1;
+    if ( arg->bact == UserRobo )
+        field_1624 = 1;
 
-    if ( yw->URBact )
+    if ( UserRobo )
     {
-        if ( yw->URBact->owner == arg->field_4 )
-            yw->beamenergy += yw->beam_energy_add;
+        if ( UserRobo->_owner == arg->field_4 )
+            beamenergy += beam_energy_add;
     }
 
-    bact_node *v6 = (bact_node *)yw->bact_list.head;
+    bact_node *v6 = (bact_node *)bact_list.head;
 
     while ( v6->next )
     {
-        if ( v6->bact->bact_type == BACT_TYPES_ROBO && v6->bact != arg->bact && arg->bact->owner == v6->bact->owner )
+        if ( v6->bact->_bact_type == BACT_TYPES_ROBO && v6->bact != arg->bact && arg->bact->_owner == v6->bact->_owner )
             return;
 
         v6 = (bact_node *)v6->next;
     }
 
-    for (int i = 0; i < yw->sectors_maxY2; i++)
+    for (int i = 0; i < sectors_maxY2; i++)
     {
-        for (int j = 0; j < yw->sectors_maxX2; j++)
+        for (int j = 0; j < sectors_maxX2; j++)
         {
-            cellArea *v9 = yw->cells + yw->sectors_maxX2 * i + j;
+            cellArea *v9 = cells + sectors_maxX2 * i + j;
 
-            if ( v9->owner == arg->bact->owner )
-                sub_44F958(yw, v9, j, i, arg->field_4);
+            if ( v9->owner == arg->bact->_owner )
+                sub_44F958(this, v9, j, i, arg->field_4);
         }
     }
 
-    if ( !yw->URBact )
+    if ( !UserRobo )
         return;
 
-    if ( yw->URBact->owner != arg->field_4 )
+    if ( UserRobo->_owner != arg->field_4 )
         return;
 
-    for (int i = 0; i < yw->sectors_maxY2; i++)
+    for (int i = 0; i < sectors_maxY2; i++)
     {
-        for (int j = 0; j < yw->sectors_maxX2; j++)
+        for (int j = 0; j < sectors_maxX2; j++)
         {
-            cellArea *v15 = yw->cells + yw->sectors_maxX2 * i + j;
+            cellArea *v15 = cells + sectors_maxX2 * i + j;
 
-            if ( v15->w_type == 4 && v15->owner == yw->URBact->owner )
+            if ( v15->w_type == 4 && v15->owner == UserRobo->_owner )
             {
 
-                if ( yw->isNetGame )
-                    sub_47C29C(yw, v15, v15->w_id);
+                if ( isNetGame )
+                    sub_47C29C(this, v15, v15->w_id);
                 else
                     yw_ActivateWunderstein(v15, v15->w_id);
 
@@ -8022,12 +7930,12 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
                 arg184.type = 7;
                 arg184.t7.secY = i;
                 arg184.t7.owner = v15->owner;
-                arg184.t7.last_vhcl = yw->last_modify_vhcl;
-                arg184.t7.last_weapon = yw->last_modify_weapon;
-                arg184.t7.last_build = yw->last_modify_build;
+                arg184.t7.last_vhcl = last_modify_vhcl;
+                arg184.t7.last_weapon = last_modify_weapon;
+                arg184.t7.last_build = last_modify_build;
 
 
-                switch(yw->gems[ yw->field_2b78 ].type)
+                switch(gems[ field_2b78 ].type)
                 {
                 case 25:
                     arg184.t7.field_4 = 1;
@@ -8070,9 +7978,9 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
 
 void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
 {
-    if ( ypaworld.field_739A )
+    if ( field_739A )
     {
-        if ( ypaworld.field_73CE & (4 | 8) )
+        if ( field_73CE & (4 | 8) )
             return;
     }
 
@@ -8088,8 +7996,8 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
         arg71.p1 = 0;
         arg71.effID = NC_STACK_winp::FF_TYPE_MISSILEFIRE;
 
-        if ( ypaworld.input_class )
-            ypaworld.input_class->wimp_ForceFeedback(&arg71);
+        if ( input_class )
+            input_class->wimp_ForceFeedback(&arg71);
 
         break;
 
@@ -8101,8 +8009,8 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
         arg71.p1 = 0;
         arg71.effID = NC_STACK_winp::FF_TYPE_GRENADEFIRE;
 
-        if ( ypaworld.input_class )
-            ypaworld.input_class->wimp_ForceFeedback(&arg71);
+        if ( input_class )
+            input_class->wimp_ForceFeedback(&arg71);
 
         break;
 
@@ -8114,8 +8022,8 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
         arg71.p1 = 0;
         arg71.effID = NC_STACK_winp::FF_TYPE_BOMBFIRE;
 
-        if ( ypaworld.input_class )
-            ypaworld.input_class->wimp_ForceFeedback(&arg71);
+        if ( input_class )
+            input_class->wimp_ForceFeedback(&arg71);
 
         break;
 
@@ -8127,8 +8035,8 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
         arg71.p1 = 0;
         arg71.effID = NC_STACK_winp::FF_TYPE_MINIGUN;
 
-        if ( ypaworld.input_class )
-            ypaworld.input_class->wimp_ForceFeedback(&arg71);
+        if ( input_class )
+            input_class->wimp_ForceFeedback(&arg71);
 
         break;
 
@@ -8140,24 +8048,24 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
         arg71.p1 = 0;
         arg71.effID = NC_STACK_winp::FF_TYPE_MINIGUN;
 
-        if ( ypaworld.input_class )
-            ypaworld.input_class->wimp_ForceFeedback(&arg71);
+        if ( input_class )
+            input_class->wimp_ForceFeedback(&arg71);
 
         break;
 
     case 5:
     {
-        __NC_STACK_ypabact *bct = ypaworld.UUBact;
+        NC_STACK_ypabact *bct = UserUnit;
 
         arg71.effID = NC_STACK_winp::FF_TYPE_COLLISION;
         arg71.state = NC_STACK_winp::FF_STATE_START;
         arg71.p1 = arg->field_4;
         arg71.p2 = 0;
-        arg71.p3 = (arg->field_C - bct->position.z) * bct->rotation.m02 + (arg->field_8 - bct->position.x) * bct->rotation.m00;
-        arg71.p4 = -((arg->field_8 - bct->position.x) * bct->rotation.m20 + (arg->field_C - bct->position.z) * bct->rotation.m22);
+        arg71.p3 = (arg->field_C - bct->_position.z) * bct->_rotation.m02 + (arg->field_8 - bct->_position.x) * bct->_rotation.m00;
+        arg71.p4 = -((arg->field_8 - bct->_position.x) * bct->_rotation.m20 + (arg->field_C - bct->_position.z) * bct->_rotation.m22);
 
-        if ( ypaworld.input_class )
-            ypaworld.input_class->wimp_ForceFeedback(&arg71);
+        if ( input_class )
+            input_class->wimp_ForceFeedback(&arg71);
 
     }
     break;
@@ -8199,27 +8107,26 @@ int ypaworld_func183__sub0(int lvlID, const char *userName)
 size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
 {
     char buf[128];
-    _NC_STACK_ypaworld *yw = &ypaworld;
 
     int v6;
 
-    if ( yw->LevelNet->mapInfos[ arg->lvlID ].field_0 == 3 && ypaworld_func183__sub0(arg->lvlID, yw->GameShell->user_name.c_str()) )
+    if ( LevelNet->mapInfos[ arg->lvlID ].field_0 == 3 && ypaworld_func183__sub0(arg->lvlID, GameShell->user_name.c_str()) )
     {
-        sprintf(buf, "save:%s/%d.fin", yw->GameShell->user_name.c_str(), arg->lvlID);
+        sprintf(buf, "save:%s/%d.fin", GameShell->user_name.c_str(), arg->lvlID);
 
         yw_arg169 v11;
         v11.saveFile = buf;
-        v11.usr = yw->GameShell;
+        v11.usr = GameShell;
 
         v6 = ypaworld_func169(&v11);
 
         if ( !v6 )
             ypa_log_out("Warning: in YWM_ADVANCEDCREATELEVEL: YWM_LOADGAME of %s failed!\n", buf);
 
-        yw->URBact->energy = yw->URBact->energy_max;
+        UserRobo->_energy = UserRobo->_energy_max;
 
-        if ( yw->map_events )
-            yw->map_events->event_loop_id = 0;
+        if ( map_events )
+            map_events->event_loop_id = 0;
     }
     else
     {
@@ -8232,32 +8139,32 @@ size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
     if ( v6 )
     {
         yw_arg169 v11;
-        v11.usr = yw->GameShell;
+        v11.usr = GameShell;
         v11.saveFile = buf;
 
-        sprintf(buf, "save:%s/%d.rst", yw->GameShell->user_name.c_str(), yw->field_2d90->levelID);
+        sprintf(buf, "save:%s/%d.rst", GameShell->user_name.c_str(), field_2d90->levelID);
 
         if ( !ypaworld_func170(&v11) )
-            ypa_log_out("Warning: could not create restart file for level %d, user %s.\n", yw->field_2d90->levelID, yw->GameShell->user_name.c_str());
+            ypa_log_out("Warning: could not create restart file for level %d, user %s.\n", field_2d90->levelID, GameShell->user_name.c_str());
     }
 
-    if ( yw->copyof_typemap )
+    if ( copyof_typemap )
     {
-        delete yw->copyof_typemap;
-        yw->copyof_typemap = NULL;
+        delete copyof_typemap;
+        copyof_typemap = NULL;
     }
 
-    if ( yw->copyof_ownermap )
+    if ( copyof_ownermap )
     {
-        delete yw->copyof_ownermap;
-        yw->copyof_ownermap = NULL;
+        delete copyof_ownermap;
+        copyof_ownermap = NULL;
     }
 
-    if ( yw->typ_map )
-        yw->copyof_typemap = yw->typ_map->Copy();
+    if ( typ_map )
+        copyof_typemap = typ_map->Copy();
 
-    if ( yw->own_map )
-        yw->copyof_ownermap = yw->own_map->Copy();
+    if ( own_map )
+        copyof_ownermap = own_map->Copy();
 
     return v6;
 }
@@ -8265,10 +8172,8 @@ size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
 
 void NC_STACK_ypaworld::ypaworld_func184(yw_arg184 *arg)
 {
-    _NC_STACK_ypaworld *yw = &ypaworld;
-
-    if ( yw->history )
-        ypaworld_func184__sub0(yw, yw->history, arg);
+    if ( history )
+        ypaworld_func184__sub0(this, history, arg);
 }
 
 
@@ -8280,93 +8185,91 @@ void NC_STACK_ypaworld::ypaworld_func185(void *arg)
 
 void NC_STACK_ypaworld::setYW_normVisLimit(int limit)
 {
-    ypaworld.field_15e4 = limit;
+    field_15e4 = limit;
 }
 
 void NC_STACK_ypaworld::setYW_fadeLength(int len)
 {
-    ypaworld.field_15e8 = len;
+    field_15e8 = len;
 }
 
 void NC_STACK_ypaworld::setYW_skyVisLimit(int limit)
 {
-    ypaworld.field_15ec = limit;
+    field_15ec = limit;
 }
 
 void NC_STACK_ypaworld::setYW_skyFadeLength(int len)
 {
-    ypaworld.field_15f0 = len;
+    field_15f0 = len;
 }
 
 void NC_STACK_ypaworld::setYW_skyHeight(int hght)
 {
-    ypaworld.field_15f4 = hght;
+    field_15f4 = hght;
 }
 
 void NC_STACK_ypaworld::setYW_skyRender(int dorender)
 {
-    ypaworld.field_15f8 = dorender;
+    field_15f8 = dorender;
 }
 
 void NC_STACK_ypaworld::setYW_doEnergyRecalc(int doRecalc)
 {
-    ypaworld.field_15fc = doRecalc;
+    field_15fc = doRecalc;
 }
 
 void NC_STACK_ypaworld::setYW_visSectors(int visSectors)
 {
-    ypaworld.field_1368 = visSectors;
+    field_1368 = visSectors;
 }
 
 void NC_STACK_ypaworld::setYW_userHostStation(NC_STACK_ypabact *host)
 {
-    ypaworld.UserRobo = host;
-    ypaworld.URBact = host->getBACT_pBact();
-    ypaworld.field_1b88 = &ypaworld.URBact->subjects_list;
+    UserRobo = host;
+    field_1b88 = &UserRobo->_subjects_list;
 }
 
 void NC_STACK_ypaworld::setYW_userVehicle(NC_STACK_ypabact *bact)
 {
-    if ( bact != ypaworld.UserUnit )
+    if ( bact != UserUnit )
     {
-        __NC_STACK_ypabact *oldpBact = ypaworld.UUBact;
+        NC_STACK_ypabact *oldpBact = UserUnit;
 
         if ( oldpBact )
-            ypaworld.field_241c = oldpBact->gid;
+            field_241c = oldpBact->_gid;
 
-        ypaworld.UserUnit = bact;
-        ypaworld.UUBact = bact->getBACT_pBact();
+        UserUnit = bact;
 
-        ypaworld.field_1a0c = ypaworld.timeStamp;
-        ypaworld.field_1a10 = ypaworld.UUBact->commandID;
-        ypaworld.draggingLock = 0;
+        field_1a0c = timeStamp;
+        field_1a10 = UserUnit->_commandID;
+        draggingLock = 0;
 
-        if ( ypaworld.UUBact->bact_type == BACT_TYPES_ROBO )
+        if ( UserUnit->_bact_type == BACT_TYPES_ROBO )
         {
-            ypaworld.field_7886 = 1;
-            ypaworld.field_7882 = 1;
+            field_7886 = 1;
+            field_7882 = 1;
         }
 
         FFeedback_VehicleChanged();
 
         if ( oldpBact )
-            ypaworld_func2__sub0__sub1(&ypaworld, oldpBact, ypaworld.UUBact);
+            ypaworld_func2__sub0__sub1(this, oldpBact, UserUnit);
     }
 }
 
 void NC_STACK_ypaworld::setYW_screenW(int w)
 {
-    ypaworld.screen_width = w;
+    screen_width = w;
 }
 
 void NC_STACK_ypaworld::setYW_screenH(int h)
 {
-    ypaworld.screen_height = h;
+    screen_height = h;
 }
 
 void NC_STACK_ypaworld::setYW_dontRender(int drndr)
 {
-    ypaworld.field_138c = drndr;
+    field_138c = drndr;
 }
 
 
@@ -8374,82 +8277,82 @@ void NC_STACK_ypaworld::setYW_dontRender(int drndr)
 
 int NC_STACK_ypaworld::getYW_mapMaxX()
 {
-    return ypaworld.sectors_maxX;
+    return sectors_maxX;
 }
 
 int NC_STACK_ypaworld::getYW_mapMaxY()
 {
-    return ypaworld.sectors_maxY;
+    return sectors_maxY;
 }
 
 int NC_STACK_ypaworld::getYW_mapSizeX()
 {
-    return ypaworld.sectors_maxX2;
+    return sectors_maxX2;
 }
 
 int NC_STACK_ypaworld::getYW_mapSizeY()
 {
-    return ypaworld.sectors_maxY2;
+    return sectors_maxY2;
 }
 
 int NC_STACK_ypaworld::getYW_normVisLimit()
 {
-    return ypaworld.field_15e4;
+    return field_15e4;
 }
 
 int NC_STACK_ypaworld::getYW_fadeLength()
 {
-    return ypaworld.field_15e8;
+    return field_15e8;
 }
 
 int NC_STACK_ypaworld::getYW_skyHeight()
 {
-    return ypaworld.field_15f4;
+    return field_15f4;
 }
 
 int NC_STACK_ypaworld::getYW_skyRender()
 {
-    return ypaworld.field_15f8;
+    return field_15f8;
 }
 
 int NC_STACK_ypaworld::getYW_doEnergyRecalc()
 {
-    return ypaworld.field_15fc;
+    return field_15fc;
 }
 
 int NC_STACK_ypaworld::getYW_visSectors()
 {
-    return ypaworld.field_1368;
+    return field_1368;
 }
 
 NC_STACK_ypabact *NC_STACK_ypaworld::getYW_userHostStation()
 {
-    return ypaworld.UserRobo;
+    return UserRobo;
 }
 
 NC_STACK_ypabact *NC_STACK_ypaworld::getYW_userVehicle()
 {
-    return ypaworld.UserUnit;
+    return UserUnit;
 }
 
 WeapProto *NC_STACK_ypaworld::getYW_weaponProtos()
 {
-    return ypaworld.WeaponProtos;
+    return WeaponProtos;
 }
 
 BuildProto *NC_STACK_ypaworld::getYW_buildProtos()
 {
-    return ypaworld.BuildProtos.data();
+    return BuildProtos.data();
 }
 
 VhclProto *NC_STACK_ypaworld::getYW_vhclProtos()
 {
-    return ypaworld.VhclProtos;
+    return VhclProtos;
 }
 
 int NC_STACK_ypaworld::getYW_lvlFinished()
 {
-    if ( ypaworld.field_2d90->field_40 != 1 && ypaworld.field_2d90->field_40 != 2 )
+    if ( field_2d90->field_40 != 1 && field_2d90->field_40 != 2 )
         return 0;
 
     return 1;
@@ -8457,37 +8360,97 @@ int NC_STACK_ypaworld::getYW_lvlFinished()
 
 int NC_STACK_ypaworld::getYW_screenW()
 {
-    return ypaworld.screen_width;
+    return screen_width;
 }
 
 int NC_STACK_ypaworld::getYW_screenH()
 {
-    return ypaworld.screen_height;
+    return screen_height;
 }
 
 char **NC_STACK_ypaworld::getYW_localeStrings()
 {
-    return ypaworld.string_pointers;
+    return string_pointers;
 }
 
 stru_2d90 *NC_STACK_ypaworld::getYW_levelInfo()
 {
-    return ypaworld.field_2d90;
+    return field_2d90;
 }
 
 int NC_STACK_ypaworld::getYW_destroyFX()
 {
-    return ypaworld.fxnumber;
+    return fxnumber;
 }
 
 NC_STACK_windp *NC_STACK_ypaworld::getYW_pNET()
 {
-    return ypaworld.windp;
+    return windp;
 }
 
 int NC_STACK_ypaworld::getYW_invulnerable()
 {
-    return ypaworld.field_1a20;
+    return field_1a20;
+}
+
+
+
+int NC_STACK_ypaworld::TestVehicle(int protoID, int job)
+{
+    VhclProto &proto = VhclProtos[ protoID ];
+
+    WeapProto *wpn;
+
+    if ( proto.weapon == -1 )
+        wpn = NULL;
+    else
+        wpn = &WeaponProtos[ proto.weapon ];
+
+    switch ( job )
+    {
+    case 1:
+        if ( (proto.mgun == -1 && !wpn) || proto.model_id == 7 )
+            return -1;
+
+        return proto.job_fightrobo;
+        break;
+
+    case 2:
+        if ( (proto.mgun == -1 && !wpn) || proto.model_id == 7 )
+            return -1;
+
+        return proto.job_fighttank;
+        break;
+
+    case 4:
+        if ( (proto.mgun == -1 && !wpn) || proto.model_id == 7 )
+            return -1;
+
+        return proto.job_fighthelicopter;
+        break;
+
+    case 3:
+        if ( (proto.mgun == -1 && !wpn) || proto.model_id == 7 )
+            return -1;
+
+        return proto.job_fightflyer;
+        break;
+
+    case 5:
+        return proto.job_reconnoitre;
+        break;
+
+    case 6:
+        if ( !wpn || proto.model_id == 7 )
+            return -1;
+
+        return proto.job_conquer;
+        break;
+
+    default:
+        break;
+    }
+    return -1;
 }
 
 
@@ -8518,7 +8481,7 @@ size_t NC_STACK_ypaworld::compatcall(int method_id, void *data)
     case 130:
         return (size_t)ypaworld_func130( (yw_130arg *)data );
     case 131:
-        ypaworld_func131( (__NC_STACK_ypabact *)data );
+        ypaworld_func131( (NC_STACK_ypabact *)data );
         return 1;
     case 132:
         ypaworld_func132( (void *)data );
@@ -8554,7 +8517,7 @@ size_t NC_STACK_ypaworld::compatcall(int method_id, void *data)
         ypaworld_func144( (NC_STACK_ypabact *)data );
         return 1;
     case 145:
-        return (size_t)ypaworld_func145( (__NC_STACK_ypabact *)data );
+        return (size_t)ypaworld_func145( (NC_STACK_ypabact *)data );
     case 146:
         return (size_t)ypaworld_func146( (ypaworld_arg146 *)data );
     case 147:
@@ -8611,7 +8574,7 @@ size_t NC_STACK_ypaworld::compatcall(int method_id, void *data)
         ypaworld_func167( (UserData *)data );
         return 1;
     case 168:
-        return (size_t)ypaworld_func168( (__NC_STACK_ypabact **)data );
+        return (size_t)ypaworld_func168( (NC_STACK_ypabact *)data );
     case 169:
         return (size_t)ypaworld_func169( (yw_arg169 *)data );
     case 170:
@@ -8654,5 +8617,5 @@ size_t NC_STACK_ypaworld::compatcall(int method_id, void *data)
     default:
         break;
     }
-    return NC_STACK_base::compatcall(method_id, data);
+    return NC_STACK_nucleus::compatcall(method_id, data);
 }

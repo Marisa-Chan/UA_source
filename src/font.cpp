@@ -374,7 +374,7 @@ char * FontUA::TextRelWidthItem(TileMap *, char *pos, const char *txt, int wdth,
 
 
 
-char * FontUA::FormateTextAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg)
+char * FontUA::FormateTextAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg)
 {
     TileMap *v3 = yw->tiles[ arg->fontID ];
 
@@ -439,7 +439,7 @@ char * FontUA::FormateTextAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmd
     return tmp;
 }
 
-char *FontUA::FormateAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg)
+char *FontUA::FormateAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg)
 {
     TileMap *v30 = yw->tiles[ arg->fontID ];
 
@@ -580,7 +580,7 @@ char *FontUA::FormateAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmdbuf, 
 }
 
 
-char * FontUA::FormateColumnItem(_NC_STACK_ypaworld *yw, char *cmdbuf, int num, ColumnItem *a4)
+char * FontUA::FormateColumnItem(NC_STACK_ypaworld *yw, char *cmdbuf, int num, ColumnItem *a4)
 {
     char *tmp = cmdbuf;
     for (int i = 0; i < num; i++)

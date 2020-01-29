@@ -16,16 +16,16 @@ namespace Parsers
 
 bool UserParser::ReadUserNameFile(const std::string &filename)
 {
-    if ( !_o.ypaworld.GameShell->user_name.empty() )
+    if ( !_o.GameShell->user_name.empty() )
         return false;
 
-    std::string buf = fmt::sprintf("save:%s/%s", _o.ypaworld.GameShell->user_name, filename);
+    std::string buf = fmt::sprintf("save:%s/%s", _o.GameShell->user_name, filename);
     FSMgr::FileHandle *signFile = uaOpenFile(buf, "r");
 
     if ( !signFile )
         return false;
 
-    bool res = signFile->ReadLine(&_o.ypaworld.GameShell->callSIGN);
+    bool res = signFile->ReadLine(&_o.GameShell->callSIGN);
 
     delete signFile;
     return res;
@@ -37,10 +37,10 @@ bool UserParser::IsScope(ScriptParser::Parser &parser, const std::string &word, 
     if (StriCmp(word, "new_user"))
         return false;
 
-    if (!_o.ypaworld.GameShell->remoteMode)
+    if (!_o.GameShell->remoteMode)
     {
         if ( !ReadUserNameFile("callsign.def") )
-            _o.ypaworld.GameShell->callSIGN =  get_lang_string(_o.ypaworld.string_pointers_p2, 366, "UNNAMED");
+            _o.GameShell->callSIGN =  get_lang_string(_o.string_pointers_p2, 366, "UNNAMED");
     }
     return true;
 }
@@ -58,18 +58,18 @@ int UserParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
     }
     else if ( !StriCmp(p1, "maxroboenergy") )
     {
-        _o.ypaworld.maxroboenergy = std::stol(p2, NULL, 0);
+        _o.maxroboenergy = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "maxreloadconst") )
     {
-        _o.ypaworld.maxreloadconst = std::stol(p2, NULL, 0);
+        _o.maxreloadconst = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "numbuddies") )
     {
     }
     else if ( !StriCmp(p1, "beamenergy") )
     {
-        _o.ypaworld.beamenergy = std::stol(p2, NULL, 0);
+        _o.beamenergy = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "playerstatus") )
     {
@@ -80,25 +80,25 @@ int UserParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
             int plid = std::stol(val, NULL, 0);
             if ( stok.GetNext(&val) )
             {
-                _o.ypaworld.playerstatus[plid].destroyed = std::stol(val, NULL, 0);
+                _o.playerstatus[plid].destroyed = std::stol(val, NULL, 0);
                 if ( stok.GetNext(&val) )
                 {
-                    _o.ypaworld.playerstatus[plid].destroyedByUser = std::stol(val, NULL, 0);
+                    _o.playerstatus[plid].destroyedByUser = std::stol(val, NULL, 0);
                     if ( stok.GetNext(&val) )
                     {
-                        _o.ypaworld.playerstatus[plid].elapsedTime = std::stol(val, NULL, 0);
+                        _o.playerstatus[plid].elapsedTime = std::stol(val, NULL, 0);
                         if ( stok.GetNext(&val) )
                         {
-                            _o.ypaworld.playerstatus[plid].sectorsTaked = std::stol(val, NULL, 0);
+                            _o.playerstatus[plid].sectorsTaked = std::stol(val, NULL, 0);
                             if ( stok.GetNext(&val) )
                             {
-                                _o.ypaworld.playerstatus[plid].score = std::stol(val, NULL, 0);
+                                _o.playerstatus[plid].score = std::stol(val, NULL, 0);
                                 if ( stok.GetNext(&val) )
                                 {
-                                    _o.ypaworld.playerstatus[plid].power = std::stol(val, NULL, 0);
+                                    _o.playerstatus[plid].power = std::stol(val, NULL, 0);
                                     if ( stok.GetNext(&val) )
                                     {
-                                        _o.ypaworld.playerstatus[plid].upgrades = std::stol(val, NULL, 0);
+                                        _o.playerstatus[plid].upgrades = std::stol(val, NULL, 0);
                                     }
                                 }
                             }
@@ -114,27 +114,27 @@ int UserParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
         std::string val;
         if ( stok.GetNext(&val) )
         {
-            _o.ypaworld.field_2d90->jodiefoster[0] = std::stol(val, NULL, 0);
+            _o.field_2d90->jodiefoster[0] = std::stol(val, NULL, 0);
             if ( stok.GetNext(&val) )
             {
-                _o.ypaworld.field_2d90->jodiefoster[1] = std::stol(val, NULL, 0);
+                _o.field_2d90->jodiefoster[1] = std::stol(val, NULL, 0);
                 if ( stok.GetNext(&val) )
                 {
-                    _o.ypaworld.field_2d90->jodiefoster[2] = std::stol(val, NULL, 0);
+                    _o.field_2d90->jodiefoster[2] = std::stol(val, NULL, 0);
                     if ( stok.GetNext(&val) )
                     {
-                        _o.ypaworld.field_2d90->jodiefoster[3] = std::stol(val, NULL, 0);
+                        _o.field_2d90->jodiefoster[3] = std::stol(val, NULL, 0);
                         if ( stok.GetNext(&val) )
                         {
-                            _o.ypaworld.field_2d90->jodiefoster[4] = std::stol(val, NULL, 0);
+                            _o.field_2d90->jodiefoster[4] = std::stol(val, NULL, 0);
                             if ( stok.GetNext(&val) )
                             {
-                                _o.ypaworld.field_2d90->jodiefoster[5] = std::stol(val, NULL, 0);
+                                _o.field_2d90->jodiefoster[5] = std::stol(val, NULL, 0);
                                 if ( stok.GetNext(&val) )
                                 {
-                                    _o.ypaworld.field_2d90->jodiefoster[6] = std::stol(val, NULL, 0);
+                                    _o.field_2d90->jodiefoster[6] = std::stol(val, NULL, 0);
                                     if ( stok.GetNext(&val) )
-                                        _o.ypaworld.field_2d90->jodiefoster[7] = std::stol(val, NULL, 0);
+                                        _o.field_2d90->jodiefoster[7] = std::stol(val, NULL, 0);
                                 }
                             }
                         }
@@ -155,7 +155,7 @@ bool InputParser::IsScope(ScriptParser::Parser &parser, const std::string &word,
 {
     if ( !StriCmp(word, "new_input") )
     {
-        for( auto &k: _o.ypaworld.GameShell->keyConfig )
+        for( auto &k: _o.GameShell->keyConfig )
             k.KeyCode = 0;
         return true;
     }
@@ -170,7 +170,7 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     if ( !StriCmp(p1, "end") )
         return ScriptParser::RESULT_SCOPE_END;
 
-    _o.ypaworld.GameShell->_saveDataFlags |= World::SDF_INPUT;
+    _o.GameShell->_saveDataFlags |= World::SDF_INPUT;
 
     if ( !StriCmp(p1, "qualmode") )
     {
@@ -179,34 +179,34 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     {
         if ( StrGetBool(p2) )
         {
-             _o.ypaworld.GameShell->inp_joystick = true;
-             _o.ypaworld.field_73CE &= ~World::PREF_JOYDISABLE;
+             _o.GameShell->inp_joystick = true;
+             _o.field_73CE &= ~World::PREF_JOYDISABLE;
         }
         else
         {
-            _o.ypaworld.GameShell->inp_joystick = false;
-            _o.ypaworld.field_73CE |= World::PREF_JOYDISABLE;
+            _o.GameShell->inp_joystick = false;
+            _o.field_73CE |= World::PREF_JOYDISABLE;
         }
     }
     else if ( !StriCmp(p1, "altjoystick") )
     {
         if ( StrGetBool(p2) )
         {
-            _o.ypaworld.GameShell->inp_altjoystick = true;
-            _o.ypaworld.field_73CE |= World::PREF_ALTJOYSTICK;
+            _o.GameShell->inp_altjoystick = true;
+            _o.field_73CE |= World::PREF_ALTJOYSTICK;
         }
         else
         {
-            _o.ypaworld.GameShell->inp_altjoystick = false;
-            _o.ypaworld.field_73CE &= ~World::PREF_ALTJOYSTICK;
+            _o.GameShell->inp_altjoystick = false;
+            _o.field_73CE &= ~World::PREF_ALTJOYSTICK;
         }
     }
     else if ( !StriCmp(p1, "forcefeedback") )
     {
         if ( StrGetBool(p2) )
-            _o.ypaworld.field_73CE &= ~World::PREF_FFDISABLE;
+            _o.field_73CE &= ~World::PREF_FFDISABLE;
         else
-            _o.ypaworld.field_73CE |= World::PREF_FFDISABLE;
+            _o.field_73CE |= World::PREF_FFDISABLE;
     }
     else
     {
@@ -239,16 +239,16 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
                 ypa_log_out("Unknown number in slider-declaration (%d)\n", cfgIdex);
                 return ScriptParser::RESULT_BAD_DATA;
             }
-            _o.ypaworld.GameShell->keyConfig[ gsIndex ].inp_type = World::KEYC_TYPE_SLIDER;
-            _o.ypaworld.GameShell->keyConfig[ gsIndex ].keyID = cfgIdex;
+            _o.GameShell->keyConfig[ gsIndex ].inp_type = World::KEYC_TYPE_SLIDER;
+            _o.GameShell->keyConfig[ gsIndex ].keyID = cfgIdex;
 
             Stok stok(buf, " :\t\n");
             std::string tmp;
             if ( stok.GetNext(&tmp) && stok.GetNext(&tmp) ) // skip drivername before ':'
             {
-                _o.ypaworld.GameShell->keyConfig[ gsIndex ].slider_neg = Input::GetKeyIdByName(tmp);
+                _o.GameShell->keyConfig[ gsIndex ].slider_neg = Input::GetKeyIdByName(tmp);
 
-                if ( _o.ypaworld.GameShell->keyConfig[ gsIndex ].slider_neg == -1 )
+                if ( _o.GameShell->keyConfig[ gsIndex ].slider_neg == -1 )
                 {
                     ypa_log_out("Unknown keyword for slider %s\n", tmp.c_str());
                     return ScriptParser::RESULT_BAD_DATA;
@@ -256,9 +256,9 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
                 if ( stok.GetNext(&tmp) && stok.GetNext(&tmp) ) // skip drivername before ':'
                 {
-                    _o.ypaworld.GameShell->keyConfig[ gsIndex ].KeyCode = Input::GetKeyIdByName(tmp);
+                    _o.GameShell->keyConfig[ gsIndex ].KeyCode = Input::GetKeyIdByName(tmp);
 
-                    if ( _o.ypaworld.GameShell->keyConfig[ gsIndex ].KeyCode == -1 )
+                    if ( _o.GameShell->keyConfig[ gsIndex ].KeyCode == -1 )
                     {
                         ypa_log_out("Unknown keyword for slider %s\n", tmp.c_str());
                         return ScriptParser::RESULT_BAD_DATA;
@@ -291,16 +291,16 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
                 ypa_log_out("Unknown number in button-declaration (%d)\n", cfgIdex);
                 return ScriptParser::RESULT_BAD_DATA;
             }
-            _o.ypaworld.GameShell->keyConfig[ gsIndex ].inp_type = World::KEYC_TYPE_BUTTON;
-            _o.ypaworld.GameShell->keyConfig[ gsIndex ].keyID = cfgIdex;
+            _o.GameShell->keyConfig[ gsIndex ].inp_type = World::KEYC_TYPE_BUTTON;
+            _o.GameShell->keyConfig[ gsIndex ].keyID = cfgIdex;
 
             Stok stok(buf, " :\t\n");
             std::string tmp;
             if ( stok.GetNext(&tmp) && stok.GetNext(&tmp) ) // skip drivername before ':'
             {
-                _o.ypaworld.GameShell->keyConfig[ gsIndex ].KeyCode = Input::GetKeyIdByName(tmp);
+                _o.GameShell->keyConfig[ gsIndex ].KeyCode = Input::GetKeyIdByName(tmp);
 
-                if ( _o.ypaworld.GameShell->keyConfig[ gsIndex ].KeyCode == -1 )
+                if ( _o.GameShell->keyConfig[ gsIndex ].KeyCode == -1 )
                 {
                     ypa_log_out("Unknown keyword for button %s\n", tmp);
                     return ScriptParser::RESULT_BAD_DATA;
@@ -337,14 +337,14 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
                 return ScriptParser::RESULT_BAD_DATA;
             }
 
-            _o.ypaworld.GameShell->keyConfig[ gsIndex ].inp_type = World::KEYC_TYPE_HOTKEY;
-            _o.ypaworld.GameShell->keyConfig[ gsIndex ].keyID = cfgIdex;
+            _o.GameShell->keyConfig[ gsIndex ].inp_type = World::KEYC_TYPE_HOTKEY;
+            _o.GameShell->keyConfig[ gsIndex ].keyID = cfgIdex;
 
             std::string tmp = Stok::Fast(buf, " :\t\n");
             if ( !tmp.empty() )
             {
-                _o.ypaworld.GameShell->keyConfig[ gsIndex ].KeyCode = Input::GetKeyIdByName(tmp);
-                if ( _o.ypaworld.GameShell->keyConfig[ gsIndex ].KeyCode == -1 )
+                _o.GameShell->keyConfig[ gsIndex ].KeyCode = Input::GetKeyIdByName(tmp);
+                if ( _o.GameShell->keyConfig[ gsIndex ].KeyCode == -1 )
                 {
                     ypa_log_out("Unknown keyword for hotkey: %s\n", tmp.c_str());
                     return ScriptParser::RESULT_BAD_DATA;
@@ -517,7 +517,7 @@ int FxParser::ParseSndFX(const std::string &p1, const std::string &p2)
 
 int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2)
 {
-    roboProto &robo = _o.ypaworld.RoboProtos[_vhclID & 0xF];
+    roboProto &robo = _o.RoboProtos[_vhclID & 0xF];
 
     if ( !StriCmp(p1, "end") )
     {
@@ -1044,7 +1044,7 @@ bool VhclProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     if ( !StriCmp(word, "new_vehicle") )
     {
         _vhclID = std::stol(opt, NULL, 0);
-        _vhcl = &_o.ypaworld.VhclProtos[_vhclID];
+        _vhcl = &_o.VhclProtos[_vhclID];
 
         if ( _vhcl->wireframe )
         {
@@ -1134,9 +1134,9 @@ bool VhclProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     else if ( !StriCmp(word, "modify_vehicle") )
     {
         _vhclID = std::stol(opt, NULL, 0);
-        _vhcl = &_o.ypaworld.VhclProtos[_vhclID];
+        _vhcl = &_o.VhclProtos[_vhclID];
 
-        _o.ypaworld.last_modify_vhcl = _vhclID;
+        _o.last_modify_vhcl = _vhclID;
         return true;
     }
 
@@ -1160,7 +1160,7 @@ bool WeaponProtoParser::IsScope(ScriptParser::Parser &parser, const std::string 
     if (!StriCmp(word, "new_weapon"))
     {
         int wpnId = std::stol(opt, NULL, 0);
-        _wpn = &_o.ypaworld.WeaponProtos[wpnId];
+        _wpn = &_o.WeaponProtos[wpnId];
 
         if ( _wpn->wireframe )
         {
@@ -1224,9 +1224,9 @@ bool WeaponProtoParser::IsScope(ScriptParser::Parser &parser, const std::string 
     else if (!StriCmp(word, "modify_weapon"))
     {
         int wpnId = std::stol(opt, NULL, 0);
-        _wpn = &_o.ypaworld.WeaponProtos[wpnId];
+        _wpn = &_o.WeaponProtos[wpnId];
 
-        _o.ypaworld.last_modify_weapon = wpnId;
+        _o.last_modify_weapon = wpnId;
         return true;
     }
 
@@ -1479,7 +1479,7 @@ bool BuildProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &
     {
         int bldId = std::stol(opt, NULL, 0);
 
-        _bld = &_o.ypaworld.BuildProtos[bldId];
+        _bld = &_o.BuildProtos[bldId];
         _bld->clear();
         _bld->energy = 50000;
         _bld->type_icon = 65;
@@ -1490,8 +1490,8 @@ bool BuildProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &
     {
         int bldId = std::stol(opt, NULL, 0);
 
-        _bld = &_o.ypaworld.BuildProtos[bldId];
-        _o.ypaworld.last_modify_build = bldId;
+        _bld = &_o.BuildProtos[bldId];
+        _o.last_modify_build = bldId;
         return true;
     }
 
@@ -1613,7 +1613,7 @@ bool MovieParser::IsScope(ScriptParser::Parser &parser, const std::string &word,
     if ( StriCmp(word, "begin_movies") )
         return false;
 
-    for (yw_movie &movie : _o.ypaworld.movies)
+    for (yw_movie &movie : _o.movies)
         movie.clear();
     return true;
 }
@@ -1624,48 +1624,48 @@ int MovieParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 		return ScriptParser::RESULT_SCOPE_END;
 	else if ( !StriCmp(p1, "game_intro") )
 	{
-		_o.ypaworld.movies[World::MOVIE_INTRO] = p2;
-		_o.ypaworld.movies[World::MOVIE_INTRO] = true;
+		_o.movies[World::MOVIE_INTRO] = p2;
+		_o.movies[World::MOVIE_INTRO] = true;
 	}
 	else if ( !StriCmp(p1, "win_extro") )
 	{
-		_o.ypaworld.movies[World::MOVIE_WIN] = p2;
-		_o.ypaworld.movies[World::MOVIE_WIN] = true;
+		_o.movies[World::MOVIE_WIN] = p2;
+		_o.movies[World::MOVIE_WIN] = true;
 	}
 	else if ( !StriCmp(p1, "lose_extro") )
 	{
-		_o.ypaworld.movies[World::MOVIE_LOSE] = p2;
-		_o.ypaworld.movies[World::MOVIE_LOSE] = true;
+		_o.movies[World::MOVIE_LOSE] = p2;
+		_o.movies[World::MOVIE_LOSE] = true;
 	}
 	else if ( !StriCmp(p1, "user_intro") )
 	{
-		_o.ypaworld.movies[World::MOVIE_USER] = p2;
-		_o.ypaworld.movies[World::MOVIE_USER] = true;
+		_o.movies[World::MOVIE_USER] = p2;
+		_o.movies[World::MOVIE_USER] = true;
 	}
 	else if ( !StriCmp(p1, "kyt_intro") )
 	{
-		_o.ypaworld.movies[World::MOVIE_KYT] = p2;
-		_o.ypaworld.movies[World::MOVIE_KYT] = true;
+		_o.movies[World::MOVIE_KYT] = p2;
+		_o.movies[World::MOVIE_KYT] = true;
 	}
 	else if ( !StriCmp(p1, "taer_intro") )
 	{
-		_o.ypaworld.movies[World::MOVIE_TAER] = p2;
-		_o.ypaworld.movies[World::MOVIE_TAER] = true;
+		_o.movies[World::MOVIE_TAER] = p2;
+		_o.movies[World::MOVIE_TAER] = true;
 	}
 	else if ( !StriCmp(p1, "myk_intro") )
 	{
-		_o.ypaworld.movies[World::MOVIE_MYK] = p2;
-		_o.ypaworld.movies[World::MOVIE_MYK] = true;
+		_o.movies[World::MOVIE_MYK] = p2;
+		_o.movies[World::MOVIE_MYK] = true;
 	}
 	else if ( !StriCmp(p1, "sulg_intro") )
 	{
-		_o.ypaworld.movies[World::MOVIE_SULG] = p2;
-		_o.ypaworld.movies[World::MOVIE_SULG] = true;
+		_o.movies[World::MOVIE_SULG] = p2;
+		_o.movies[World::MOVIE_SULG] = true;
 	}
 	else if ( !StriCmp(p1, "black_intro") )
 	{
-		_o.ypaworld.movies[World::MOVIE_BLACK] = p2;
-		_o.ypaworld.movies[World::MOVIE_BLACK] = true;
+		_o.movies[World::MOVIE_BLACK] = p2;
+		_o.movies[World::MOVIE_BLACK] = true;
 	}
 	else
 		return ScriptParser::RESULT_UNKNOWN;
@@ -1674,7 +1674,7 @@ int MovieParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
 
 BkgParser::BkgParser(NC_STACK_ypaworld *o)
-: _o(*(o->ypaworld.LevelNet))
+: _o(*(o->LevelNet))
 {}
 
 int BkgParser::Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2)
@@ -1958,12 +1958,12 @@ bool MiscParser::IsScope(ScriptParser::Parser &parser, const std::string &word, 
     if ( StriCmp(word, "begin_misc") )
         return false;
 
-    _o.ypaworld.beam_energy_start = 500;
-	_o.ypaworld.beam_energy_add = 100;
-	_o.ypaworld.unit_limit = 512;
-	_o.ypaworld.unit_limit_type = 0;
-	_o.ypaworld.unit_limit_arg = 0;
-	_o.ypaworld.easy_cheat_keys = 0;
+    _o.beam_energy_start = 500;
+	_o.beam_energy_add = 100;
+	_o.unit_limit = 512;
+	_o.unit_limit_type = 0;
+	_o.unit_limit_arg = 0;
+	_o.easy_cheat_keys = 0;
     return true;
 }
 
@@ -1975,7 +1975,7 @@ int MiscParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
     }
     else if ( !StriCmp(p1, "one_game_res") )
     {
-        _o.ypaworld.one_game_res = StrGetBool(p2);
+        _o.one_game_res = StrGetBool(p2);
     }
     else if ( !StriCmp(p1, "shell_default_res") )
     {
@@ -1983,7 +1983,7 @@ int MiscParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
     	std::string pp1, pp2;
         if ( stok.GetNext(&pp1) && stok.GetNext(&pp2) )
         {
-            _o.ypaworld.shell_default_res = std::stol(pp2, NULL, 0) | (std::stol(pp1, NULL, 0) << 12);
+            _o.shell_default_res = std::stol(pp2, NULL, 0) | (std::stol(pp1, NULL, 0) << 12);
         }
     }
     else if ( !StriCmp(p1, "game_default_res") )
@@ -1992,36 +1992,36 @@ int MiscParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
         std::string pp1, pp2;
         if ( stok.GetNext(&pp1) && stok.GetNext(&pp2) )
         {
-            _o.ypaworld.game_default_res = std::stol(pp2, NULL, 0) | (std::stol(pp1, NULL, 0) << 12);
+            _o.game_default_res = std::stol(pp2, NULL, 0) | (std::stol(pp1, NULL, 0) << 12);
         }
     }
     else if ( !StriCmp(p1, "max_impulse") )
     {
-        _o.ypaworld.max_impulse = std::stof(p2);
+        _o.max_impulse = std::stof(p2);
     }
     else if ( !StriCmp(p1, "unit_limit") )
     {
-        _o.ypaworld.unit_limit = std::stol(p2, NULL, 0);
+        _o.unit_limit = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "unit_limit_type") )
     {
-        _o.ypaworld.unit_limit_type = std::stol(p2, NULL, 0);
+        _o.unit_limit_type = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "unit_limit_arg") )
     {
-        _o.ypaworld.unit_limit_arg = std::stol(p2, NULL, 0);
+        _o.unit_limit_arg = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "beam_energy_start") )
     {
-        _o.ypaworld.beam_energy_start = std::stol(p2, NULL, 0);
+        _o.beam_energy_start = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "beam_energy_add") )
     {
-        _o.ypaworld.beam_energy_add = std::stol(p2, NULL, 0);
+        _o.beam_energy_add = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "easy_cheat_keys") )
     {
-        _o.ypaworld.easy_cheat_keys = std::stol(p2, NULL, 0);
+        _o.easy_cheat_keys = std::stol(p2, NULL, 0);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -2035,8 +2035,8 @@ bool SuperItemParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     if ( StriCmp(word, "begin_superitem") )
         return false;
 
-    _o.ypaworld.superbomb_wall_vproto = 0;
-    _o.ypaworld.superbomb_center_vproto = 0;
+    _o.superbomb_wall_vproto = 0;
+    _o.superbomb_center_vproto = 0;
     return true;
 };
 
@@ -2048,11 +2048,11 @@ int SuperItemParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
 	else if ( !StriCmp(p1, "superbomb_center_vproto") )
     {
-        _o.ypaworld.superbomb_center_vproto = std::stol(p2, NULL, 0);
+        _o.superbomb_center_vproto = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "superbomb_wall_vproto") )
     {
-        _o.ypaworld.superbomb_wall_vproto = std::stol(p2, NULL, 0);
+        _o.superbomb_wall_vproto = std::stol(p2, NULL, 0);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -2113,14 +2113,14 @@ bool LevelDataParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     if ( StriCmp(word, "begin_level") )
         return false;
 
-    _o.ypaworld.field_2d90->map_name = "<NO NAME>";
-    _o.ypaworld.field_2d90->movie.clear();
-    _o.ypaworld.field_2d90->win_movie.clear();
-    _o.ypaworld.field_2d90->lose_movie.clear();
-    _o.ypaworld.vehicle_sector_ratio_1 = 0;
-    _o.ypaworld.unit_limit_1 = _o.ypaworld.unit_limit;
-    _o.ypaworld.unit_limit_type_1 = _o.ypaworld.unit_limit_type;
-    _o.ypaworld.unit_limit_arg_1 = _o.ypaworld.unit_limit_arg;
+    _o.field_2d90->map_name = "<NO NAME>";
+    _o.field_2d90->movie.clear();
+    _o.field_2d90->win_movie.clear();
+    _o.field_2d90->lose_movie.clear();
+    _o.vehicle_sector_ratio_1 = 0;
+    _o.unit_limit_1 = _o.unit_limit;
+    _o.unit_limit_type_1 = _o.unit_limit_type;
+    _o.unit_limit_arg_1 = _o.unit_limit_arg;
     return true;
 }
 
@@ -2132,10 +2132,10 @@ int LevelDataParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     if ( p1.find("title_") != std::string::npos )
     {
         std::string title_lang = "title_";
-        title_lang += _o.ypaworld.lang_name;
+        title_lang += _o.lang_name;
 
         if ( !StriCmp(p1, "title_default") || !StriCmp(p1, title_lang) )
-                _o.ypaworld.field_2d90->map_name = p2;
+                _o.field_2d90->map_name = p2;
     }
     else if ( !StriCmp(p1, "set") )
     {
@@ -2211,33 +2211,33 @@ int LevelDataParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
     else if ( !StriCmp(p1, "ambiencetrack") )
     {
-        _o.ypaworld.field_2d90->amb_track_p1 = 0;
-        _o.ypaworld.field_2d90->amb_track_p2 = 0;
+        _o.field_2d90->amb_track_p1 = 0;
+        _o.field_2d90->amb_track_p2 = 0;
 
         Stok stok(p2, " \t_\n");
         std::string tmp;
         stok.GetNext(&tmp);
-        _o.ypaworld.field_2d90->amb_track_p0 = std::stol(tmp, NULL, 0);
+        _o.field_2d90->amb_track_p0 = std::stol(tmp, NULL, 0);
 
         if ( stok.GetNext(&tmp) )
         {
-            _o.ypaworld.field_2d90->amb_track_p1 = std::stol(tmp, NULL, 0);
+            _o.field_2d90->amb_track_p1 = std::stol(tmp, NULL, 0);
 
             if ( stok.GetNext(&tmp) )
-                _o.ypaworld.field_2d90->amb_track_p2 = std::stol(tmp, NULL, 0);
+                _o.field_2d90->amb_track_p2 = std::stol(tmp, NULL, 0);
         }
     }
     else if ( !StriCmp(p1, "movie") )
     {
-        _o.ypaworld.field_2d90->movie = p2;
+        _o.field_2d90->movie = p2;
     }
     else if ( !StriCmp(p1, "win_movie") )
     {
-        _o.ypaworld.field_2d90->win_movie = p2;
+        _o.field_2d90->win_movie = p2;
     }
     else if ( !StriCmp(p1, "lose_movie") )
     {
-        _o.ypaworld.field_2d90->lose_movie = p2;
+        _o.field_2d90->lose_movie = p2;
     }
     else if ( !StriCmp(p1, "event_loop") )
     {
@@ -2256,19 +2256,19 @@ int LevelDataParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
     else if ( !StriCmp(p1, "vehicle_sector_ratio") )
     {
-        _o.ypaworld.vehicle_sector_ratio_1 = std::stof(p2, 0);
+        _o.vehicle_sector_ratio_1 = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "unit_limit") )
     {
-        _o.ypaworld.unit_limit_1 = std::stol(p2, NULL, 0);
+        _o.unit_limit_1 = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "unit_limit_type") )
     {
-        _o.ypaworld.unit_limit_type_1 = std::stol(p2, NULL, 0);
+        _o.unit_limit_type_1 = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "unit_limit_arg") )
     {
-        _o.ypaworld.unit_limit_arg_1 = std::stol(p2, NULL, 0);
+        _o.unit_limit_arg_1 = std::stol(p2, NULL, 0);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -2693,7 +2693,7 @@ bool LevelGatesParser::IsScope(ScriptParser::Parser &parser, const std::string &
     if ( StriCmp(word, "begin_gate") )
         return false;
 
-    _g = &_o.ypaworld.field_2d90->gates[ _o.ypaworld.field_2d90->gate_count ];
+    _g = &_o.field_2d90->gates[ _o.field_2d90->gate_count ];
     _g->mb_status = 0;
     return true;
 }
@@ -2704,29 +2704,29 @@ int LevelGatesParser::Handle(ScriptParser::Parser &parser, const std::string &p1
     {
         if ( !_g->closed_bp )
         {
-            ypa_log_out("Gate init: gate[%d] no closed building defined!\n", _o.ypaworld.field_2d90->gate_count);
+            ypa_log_out("Gate init: gate[%d] no closed building defined!\n", _o.field_2d90->gate_count);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
         if ( !_g->opened_bp )
         {
-            ypa_log_out("Gate init: gate[%d] no opened building defined!\n", _o.ypaworld.field_2d90->gate_count);
+            ypa_log_out("Gate init: gate[%d] no opened building defined!\n", _o.field_2d90->gate_count);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
         if ( _g->sec_x == 0 || _g->sec_y == 0)
         {
-            ypa_log_out("Gate init: gate[%d] no sector coords!\n", _o.ypaworld.field_2d90->gate_count);
+            ypa_log_out("Gate init: gate[%d] no sector coords!\n", _o.field_2d90->gate_count);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
         if ( !_g->target_level_count )
         {
-            ypa_log_out("Gate init: gate[%d] no target levels defined!\n", _o.ypaworld.field_2d90->gate_count);
+            ypa_log_out("Gate init: gate[%d] no target levels defined!\n", _o.field_2d90->gate_count);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        _o.ypaworld.field_2d90->gate_count++;
+        _o.field_2d90->gate_count++;
         return ScriptParser::RESULT_SCOPE_END;
     }
 
@@ -2838,7 +2838,7 @@ bool LevelGemParser::IsScope(ScriptParser::Parser &parser, const std::string &wo
     if ( StriCmp(word, "begin_gem") )
         return false;
 
-    _g = &_o.ypaworld.gems[_count];
+    _g = &_o.gems[_count];
     _g->mb_status = 0;
     return true;
 }
@@ -2866,7 +2866,7 @@ int LevelGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
 
     if ( p1.find("msg_") != std::string::npos )
     {
-        std::string tmp = fmt::sprintf("msg_%s", _o.ypaworld.lang_name);
+        std::string tmp = fmt::sprintf("msg_%s", _o.lang_name);
 
         if ( !StriCmp(p1, "msg_default") || !StriCmp(p1, tmp) )
             _g->msg_default = p2;
@@ -3002,10 +3002,10 @@ bool LevelEnableParser::IsScope(ScriptParser::Parser &parser, const std::string 
     _fraction = std::stol(opt, NULL, 0);
 
     for (int i = 0; i < 256; i++)
-        _o.ypaworld.VhclProtos[i].disable_enable_bitmask &= ~(1 << _fraction);
+        _o.VhclProtos[i].disable_enable_bitmask &= ~(1 << _fraction);
 
     for (int i = 0; i < 128; i++)
-        _o.ypaworld.BuildProtos[i].enable_mask &= ~(1 << _fraction);
+        _o.BuildProtos[i].enable_mask &= ~(1 << _fraction);
 
     return true;
 }
@@ -3019,7 +3019,7 @@ int LevelEnableParser::Handle(ScriptParser::Parser &parser, const std::string &p
     {
         int id = std::stol(p2, NULL, 0);
         if ( id >= 0 && id < 256 ) //_o.ypaworld.VhclProtos.size() )
-            _o.ypaworld.VhclProtos[id].disable_enable_bitmask |= (1 << _fraction);
+            _o.VhclProtos[id].disable_enable_bitmask |= (1 << _fraction);
         else
             return ScriptParser::RESULT_BAD_DATA;
     }
@@ -3027,7 +3027,7 @@ int LevelEnableParser::Handle(ScriptParser::Parser &parser, const std::string &p
     {
         int id = std::stol(p2, NULL, 0);
         if ( id >= 0 && id < 128 )
-            _o.ypaworld.BuildProtos[id].enable_mask |= (1 << _fraction);
+            _o.BuildProtos[id].enable_mask |= (1 << _fraction);
         else
             return ScriptParser::RESULT_BAD_DATA;
     }
@@ -3080,7 +3080,7 @@ bool LevelSuperItemsParser::IsScope(ScriptParser::Parser &parser, const std::str
     if ( StriCmp(word, "begin_item") )
         return false;
 
-    _s = &_o.ypaworld.field_2d90->supetItems[_o.ypaworld.field_2d90->supetItems_count];
+    _s = &_o.field_2d90->supetItems[_o.field_2d90->supetItems_count];
     _s->type = 0;
     _s->countdown = 60000; //1hour
     _s->field_4 = 0;
@@ -3094,35 +3094,35 @@ int LevelSuperItemsParser::Handle(ScriptParser::Parser &parser, const std::strin
     {
         if ( _s->sec_x == 0 || _s->sec_y == 0)
         {
-            ypa_log_out("Super item #%d: invalid sector coordinates!\n", _o.ypaworld.field_2d90->supetItems_count);
+            ypa_log_out("Super item #%d: invalid sector coordinates!\n", _o.field_2d90->supetItems_count);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
         if ( !_s->inactive_bp )
         {
-            ypa_log_out("Super item #%d: no <inactive_bp> defined!\n", _o.ypaworld.field_2d90->supetItems_count);
+            ypa_log_out("Super item #%d: no <inactive_bp> defined!\n", _o.field_2d90->supetItems_count);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
         if ( !_s->active_bp )
         {
-            ypa_log_out("Super item #%d: no <active_bp> defined!\n", _o.ypaworld.field_2d90->supetItems_count);
+            ypa_log_out("Super item #%d: no <active_bp> defined!\n", _o.field_2d90->supetItems_count);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
         if ( !_s->trigger_bp )
         {
-            ypa_log_out("Super item #%d: no <trigger_bp> defined!\n", _o.ypaworld.field_2d90->supetItems_count);
+            ypa_log_out("Super item #%d: no <trigger_bp> defined!\n", _o.field_2d90->supetItems_count);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
         if ( _s->type != 1 && _s->type != 2 )
         {
-            ypa_log_out("Super item #%d: no valid <type> defined!\n", _o.ypaworld.field_2d90->supetItems_count);
+            ypa_log_out("Super item #%d: no valid <type> defined!\n", _o.field_2d90->supetItems_count);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        _o.ypaworld.field_2d90->supetItems_count++;
+        _o.field_2d90->supetItems_count++;
         return ScriptParser::RESULT_SCOPE_END;
     }
 
@@ -3197,7 +3197,7 @@ Common::PlaneBytes *MapAsPlaneBytes::ReadMapAsPlaneBytes(ScriptParser::Parser &p
     int w = std::stol(tmp, NULL, 0);
     stok.GetNext(&tmp);
     int h = std::stol(tmp, NULL, 0);
-
+    
     Common::PlaneBytes *bmp = new Common::PlaneBytes;
     bmp->Resize(w, h);
 
@@ -3223,28 +3223,28 @@ bool LevelMapsParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     if ( StriCmp(word, "begin_maps") )
         return false;
 
-    if ( _o.ypaworld.typ_map )
+    if ( _o.typ_map )
     {
-        delete _o.ypaworld.typ_map;
-        _o.ypaworld.typ_map = NULL;
+        delete _o.typ_map;
+        _o.typ_map = NULL;
     }
 
-    if ( _o.ypaworld.own_map )
+    if ( _o.own_map )
     {
-        delete _o.ypaworld.own_map;
-        _o.ypaworld.own_map = NULL;
+        delete _o.own_map;
+        _o.own_map = NULL;
     }
 
-    if ( _o.ypaworld.hgt_map )
+    if ( _o.hgt_map )
     {
-        delete _o.ypaworld.hgt_map;
-        _o.ypaworld.hgt_map = NULL;
+        delete _o.hgt_map;
+        _o.hgt_map = NULL;
     }
 
-    if ( _o.ypaworld.blg_map )
+    if ( _o.blg_map )
     {
-        delete _o.ypaworld.blg_map;
-        _o.ypaworld.blg_map = NULL;
+        delete _o.blg_map;
+        _o.blg_map = NULL;
     }
 
     return true;
@@ -3257,36 +3257,36 @@ int LevelMapsParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
 
     if ( !StriCmp(p1, "typ_map") )
     {
-        _o.ypaworld.typ_map = ReadMapAsPlaneBytes(parser);
+        _o.typ_map = ReadMapAsPlaneBytes(parser);
 
-        if ( !_o.ypaworld.typ_map )
+        if ( !_o.typ_map )
             return ScriptParser::RESULT_BAD_DATA;
 
-        _m.secXsize = _o.ypaworld.typ_map->Width();
-        _m.secYsize = _o.ypaworld.typ_map->Height();
+        _m.secXsize = _o.typ_map->Width();
+        _m.secYsize = _o.typ_map->Height();
 
         _m.flags |= 4;
     }
     else if ( !StriCmp(p1, "own_map") )
     {
-        _o.ypaworld.own_map = ReadMapAsPlaneBytes(parser);
-        if ( !_o.ypaworld.own_map )
+        _o.own_map = ReadMapAsPlaneBytes(parser);
+        if ( !_o.own_map )
             return ScriptParser::RESULT_BAD_DATA;
 
         _m.flags |= 8;
     }
     else if ( !StriCmp(p1, "hgt_map") )
     {
-        _o.ypaworld.hgt_map = ReadMapAsPlaneBytes(parser);
-        if ( !_o.ypaworld.hgt_map )
+        _o.hgt_map = ReadMapAsPlaneBytes(parser);
+        if ( !_o.hgt_map )
             return ScriptParser::RESULT_BAD_DATA;
 
         _m.flags |= 0x10;
     }
     else if ( !StriCmp(p1, "blg_map") )
     {
-        _o.ypaworld.blg_map = ReadMapAsPlaneBytes(parser);
-        if ( !_o.ypaworld.blg_map )
+        _o.blg_map = ReadMapAsPlaneBytes(parser);
+        if ( !_o.blg_map )
             return ScriptParser::RESULT_BAD_DATA;
 
         _m.flags |= 0x20;
@@ -3311,19 +3311,19 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
             int simple_d3d = win3d->getWDD_drawPrim();
 
             if ( simple_d3d )
-                _o.ypaworld.GameShell->GFX_flags |= World::GFX_FLAG_DRAWPRIMITIVES;
+                _o.GameShell->GFX_flags |= World::GFX_FLAG_DRAWPRIMITIVES;
             else
-                _o.ypaworld.GameShell->GFX_flags &= ~World::GFX_FLAG_DRAWPRIMITIVES;
+                _o.GameShell->GFX_flags &= ~World::GFX_FLAG_DRAWPRIMITIVES;
 
             if ( txt16bit )
-                _o.ypaworld.GameShell->GFX_flags |= World::GFX_FLAG_16BITTEXTURE;
+                _o.GameShell->GFX_flags |= World::GFX_FLAG_16BITTEXTURE;
             else
-                _o.ypaworld.GameShell->GFX_flags &= ~World::GFX_FLAG_16BITTEXTURE;
+                _o.GameShell->GFX_flags &= ~World::GFX_FLAG_16BITTEXTURE;
         }
         return ScriptParser::RESULT_SCOPE_END;
     }
 
-    _o.ypaworld.GameShell->_saveDataFlags |= World::SDF_VIDEO;
+    _o.GameShell->_saveDataFlags |= World::SDF_VIDEO;
 
     if ( !StriCmp(p1, "videomode") )
     {
@@ -3331,7 +3331,7 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
         const video_mode_node *vdmd = NULL;
         int index = 0;
 
-        for (const auto &nod : _o.ypaworld.GameShell->video_mode_list)
+        for (const auto &nod : _o.GameShell->video_mode_list)
         {
             if (modeid == nod.sort_id)
             {
@@ -3346,7 +3346,7 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
             ypa_log_out("Warning: This machine doesn't support mode %d\n", modeid);
 
             index = 0;
-            for (const auto &nod : _o.ypaworld.GameShell->video_mode_list)
+            for (const auto &nod : _o.GameShell->video_mode_list)
             {
                 if (nod.width == 640 && nod.height == 480)
                 {
@@ -3360,20 +3360,20 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
         if ( !vdmd )
             printf("vdmd is NULL %s:%d\n", __FILE__, __LINE__);
 
-        _o.ypaworld.GameShell->field_FBE = index;
-        _o.ypaworld.game_default_res = vdmd->sort_id;
-        _o.ypaworld.GameShell->game_default_res = vdmd->sort_id;
+        _o.GameShell->field_FBE = index;
+        _o.game_default_res = vdmd->sort_id;
+        _o.GameShell->game_default_res = vdmd->sort_id;
     }
     else if ( !StriCmp(p1, "farview") )
     {
         if ( StrGetBool(p2) )
         {
-            _o.ypaworld.GameShell->GFX_flags |= World::GFX_FLAG_FARVIEW;
+            _o.GameShell->GFX_flags |= World::GFX_FLAG_FARVIEW;
             _o.SetFarView(true);
         }
         else
         {
-            _o.ypaworld.GameShell->GFX_flags &= ~World::GFX_FLAG_FARVIEW;
+            _o.GameShell->GFX_flags &= ~World::GFX_FLAG_FARVIEW;
             _o.SetFarView(false);
         }
     }
@@ -3383,32 +3383,32 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     else if ( !StriCmp(p1, "drawprimitive") )
     {
         if ( StrGetBool(p2) )
-            _o.ypaworld.GameShell->GFX_flags |= World::GFX_FLAG_DRAWPRIMITIVES;
+            _o.GameShell->GFX_flags |= World::GFX_FLAG_DRAWPRIMITIVES;
         else
-            _o.ypaworld.GameShell->GFX_flags &= ~World::GFX_FLAG_DRAWPRIMITIVES;
+            _o.GameShell->GFX_flags &= ~World::GFX_FLAG_DRAWPRIMITIVES;
     }
     else if ( !StriCmp(p1, "16bittexture") )
     {
         if ( StrGetBool(p2) )
-            _o.ypaworld.GameShell->GFX_flags |= World::GFX_FLAG_16BITTEXTURE;
+            _o.GameShell->GFX_flags |= World::GFX_FLAG_16BITTEXTURE;
         else
-            _o.ypaworld.GameShell->GFX_flags &= ~World::GFX_FLAG_16BITTEXTURE;
+            _o.GameShell->GFX_flags &= ~World::GFX_FLAG_16BITTEXTURE;
     }
     else if ( !StriCmp(p1, "softmouse") )
     {
         if ( StrGetBool(p2) )
         {
-            _o.ypaworld.GameShell->GFX_flags |= World::GFX_FLAG_SOFTMOUSE;
-            _o.ypaworld.field_73CE |= World::PREF_SOFTMOUSE;
+            _o.GameShell->GFX_flags |= World::GFX_FLAG_SOFTMOUSE;
+            _o.field_73CE |= World::PREF_SOFTMOUSE;
 
-            _o.ypaworld.win3d->setWDD_cursor(1);
+            _o._win3d->setWDD_cursor(1);
         }
         else
         {
-            _o.ypaworld.GameShell->GFX_flags &= ~World::GFX_FLAG_SOFTMOUSE;
-            _o.ypaworld.field_73CE &= ~World::PREF_SOFTMOUSE;
+            _o.GameShell->GFX_flags &= ~World::GFX_FLAG_SOFTMOUSE;
+            _o.field_73CE &= ~World::PREF_SOFTMOUSE;
 
-            _o.ypaworld.win3d->setWDD_cursor(0);
+            _o._win3d->setWDD_cursor(0);
         }
     }
     else if ( !StriCmp(p1, "palettefx") )
@@ -3418,31 +3418,31 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     {
         if ( StrGetBool(p2) )
         {
-            _o.ypaworld.GameShell->GFX_flags |= World::GFX_FLAG_SKYRENDER;
+            _o.GameShell->GFX_flags |= World::GFX_FLAG_SKYRENDER;
             _o.setYW_skyRender(true);
         }
         else
         {
-            _o.ypaworld.GameShell->GFX_flags &= ~World::GFX_FLAG_SKYRENDER;
+            _o.GameShell->GFX_flags &= ~World::GFX_FLAG_SKYRENDER;
             _o.setYW_skyRender(false);
         }
     }
     else if ( !StriCmp(p1, "fxnumber") )
     {
-        _o.ypaworld.fxnumber = std::stoi(p2);
-        _o.ypaworld.GameShell->fxnumber = _o.ypaworld.fxnumber;
+        _o.fxnumber = std::stoi(p2);
+        _o.GameShell->fxnumber = _o.fxnumber;
     }
     else if ( !StriCmp(p1, "enemyindicator") )
     {
         if ( StrGetBool(p2) )
         {
-            _o.ypaworld.field_73CE |= World::PREF_ENEMYINDICATOR;
-            _o.ypaworld.GameShell->enemyindicator = true;
+            _o.field_73CE |= World::PREF_ENEMYINDICATOR;
+            _o.GameShell->enemyindicator = true;
         }
         else
         {
-            _o.ypaworld.field_73CE &= ~World::PREF_ENEMYINDICATOR;
-            _o.ypaworld.GameShell->enemyindicator = false;
+            _o.field_73CE &= ~World::PREF_ENEMYINDICATOR;
+            _o.GameShell->enemyindicator = false;
         }
     }
     else
@@ -3455,31 +3455,31 @@ int SoundParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     if ( !StriCmp(p1, "end") )
         return ScriptParser::RESULT_SCOPE_END;
 
-    _o.ypaworld.GameShell->_saveDataFlags |= World::SDF_SOUND;
+    _o.GameShell->_saveDataFlags |= World::SDF_SOUND;
 
     if ( !StriCmp(p1, "channels") )
     {
     }
     else if ( !StriCmp(p1, "volume") )
     {
-        _o.ypaworld.GameShell->snd__volume = std::stoi(p2);
-        SFXEngine::SFXe.setMasterVolume(_o.ypaworld.GameShell->snd__volume);
+        _o.GameShell->snd__volume = std::stoi(p2);
+        SFXEngine::SFXe.setMasterVolume(_o.GameShell->snd__volume);
     }
     else if ( !StriCmp(p1, "cdvolume") )
     {
-        _o.ypaworld.GameShell->snd__cdvolume = std::stoi(p2);
-        SFXEngine::SFXe.SetMusicVolume(_o.ypaworld.GameShell->snd__cdvolume);
+        _o.GameShell->snd__cdvolume = std::stoi(p2);
+        SFXEngine::SFXe.SetMusicVolume(_o.GameShell->snd__cdvolume);
     }
     else if ( !StriCmp(p1, "invertlr") )
     {
         if ( !StriCmp(p2, "yes") )
         {
-            _o.ypaworld.GameShell->snd__flags2 |= World::SF_INVERTLR;
+            _o.GameShell->snd__flags2 |= World::SF_INVERTLR;
             SFXEngine::SFXe.setReverseStereo(true);
         }
         else
         {
-            _o.ypaworld.GameShell->snd__flags2 &= ~World::SF_INVERTLR;
+            _o.GameShell->snd__flags2 &= ~World::SF_INVERTLR;
             SFXEngine::SFXe.setReverseStereo(false);
         }
     }
@@ -3490,15 +3490,15 @@ int SoundParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     {
         if ( !StriCmp(p2, "yes") )
         {
-            _o.ypaworld.GameShell->snd__flags2 |= World::SF_CDSOUND;
-            _o.ypaworld.field_73CE |= World::PREF_CDMUSICDISABLE;
+            _o.GameShell->snd__flags2 |= World::SF_CDSOUND;
+            _o.field_73CE |= World::PREF_CDMUSICDISABLE;
 
             SFXEngine::SFXe.SetMusicIgnoreCommandsFlag(true);
         }
         else
         {
-            _o.ypaworld.GameShell->snd__flags2 &= ~World::SF_CDSOUND;
-            _o.ypaworld.field_73CE &= ~World::PREF_CDMUSICDISABLE;
+            _o.GameShell->snd__flags2 &= ~World::SF_CDSOUND;
+            _o.field_73CE &= ~World::PREF_CDMUSICDISABLE;
 
             SFXEngine::SFXe.SetMusicIgnoreCommandsFlag(false);
         }
@@ -3525,12 +3525,12 @@ int LevelStatusParser::Handle(ScriptParser::Parser &parser, const std::string &p
         return ScriptParser::RESULT_SCOPE_END;
 
     if ( _setFlag )
-        _o.ypaworld.GameShell->_saveDataFlags |= World::SDF_SCORE;
+        _o.GameShell->_saveDataFlags |= World::SDF_SCORE;
 
     if ( !StriCmp(p1, "status") )
     {
-        if ( _o.ypaworld.LevelNet->mapInfos[_levelId].field_0 )
-            _o.ypaworld.LevelNet->mapInfos[_levelId].field_0 = std::stoi(p2);
+        if ( _o.LevelNet->mapInfos[_levelId].field_0 )
+            _o.LevelNet->mapInfos[_levelId].field_0 = std::stoi(p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -3542,22 +3542,22 @@ int BuddyParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 {
     if ( !StriCmp(p1, "end") )
     {
-        _o.ypaworld.field_2d90->buddies_count++;
+        _o.field_2d90->buddies_count++;
 
         return ScriptParser::RESULT_SCOPE_END;
     }
 
     if ( !StriCmp(p1, "commandid") )
     {
-        _o.ypaworld.field_2d90->buddies[ _o.ypaworld.field_2d90->buddies_count ].commandid = std::stoi(p2);
+        _o.field_2d90->buddies[ _o.field_2d90->buddies_count ].commandid = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "type") )
     {
-        _o.ypaworld.field_2d90->buddies[ _o.ypaworld.field_2d90->buddies_count ].type = std::stoi(p2);
+        _o.field_2d90->buddies[ _o.field_2d90->buddies_count ].type = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "energy") )
     {
-        _o.ypaworld.field_2d90->buddies[ _o.ypaworld.field_2d90->buddies_count ].energy = std::stoi(p2);
+        _o.field_2d90->buddies[ _o.field_2d90->buddies_count ].energy = std::stoi(p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -3602,18 +3602,18 @@ int ShellParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 {
     if ( !StriCmp(p1, "end") )
     {
-        _o.ypaworld.field_739A = 1;
+        _o.field_739A = 1;
         return ScriptParser::RESULT_SCOPE_END;
     }
 
-    _o.ypaworld.GameShell->_saveDataFlags |= World::SDF_SHELL;
+    _o.GameShell->_saveDataFlags |= World::SDF_SHELL;
 
     if ( !StriCmp(p1, "LANGUAGE") )
     {
         std::string * deflt = NULL;
         std::string * slct = NULL;
 
-        for(std::string &s : _o.ypaworld.GameShell->lang_dlls)
+        for(std::string &s : _o.GameShell->lang_dlls)
         {
             if ( !StriCmp(s, p2) )
                 slct = &s;
@@ -3622,13 +3622,13 @@ int ShellParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
         }
 
         if ( slct )
-            _o.ypaworld.GameShell->default_lang_dll = slct;
+            _o.GameShell->default_lang_dll = slct;
         else
-            _o.ypaworld.GameShell->default_lang_dll = deflt;
+            _o.GameShell->default_lang_dll = deflt;
 
-        _o.ypaworld.GameShell->prev_lang = _o.ypaworld.GameShell->default_lang_dll;
+        _o.GameShell->prev_lang = _o.GameShell->default_lang_dll;
 
-        if ( !_o.ypaworld_func175(_o.ypaworld.GameShell) )
+        if ( !_o.ypaworld_func175(_o.GameShell) )
         {
             ypa_log_out("Unable to set new language\n");
         }
@@ -3644,19 +3644,19 @@ int ShellParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     }
     else if ( !StriCmp(p1, "robo_map_status") )
     {
-        ParseStatus(&_o.ypaworld.robo_map_status, p2);
+        ParseStatus(&_o.robo_map_status, p2);
     }
     else if ( !StriCmp(p1, "robo_finder_status") )
     {
-        ParseStatus(&_o.ypaworld.robo_finder_status, p2);
+        ParseStatus(&_o.robo_finder_status, p2);
     }
     else if ( !StriCmp(p1, "vhcl_map_status") )
     {
-        ParseStatus(&_o.ypaworld.vhcl_map_status, p2);
+        ParseStatus(&_o.vhcl_map_status, p2);
     }
     else if ( !StriCmp(p1, "vhcl_finder_status") )
     {
-        ParseStatus(&_o.ypaworld.vhcl_finder_status, p2);
+        ParseStatus(&_o.vhcl_finder_status, p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;

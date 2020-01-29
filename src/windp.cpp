@@ -752,7 +752,7 @@ void UserData::sub_46B328()
             sprintf(bff, "%d%s%s%s%s", netLevelID, "|", callSIGN.c_str(), "|", p_ypaworld->buildDate);
 
             if (p_ypaworld->windp->GetProvType(NULL) == 4) //MODEM!!!!
-                p_ypaworld->win3d->windd_func320(NULL);
+                p_ypaworld->_win3d->windd_func320(NULL);
 
             windp_openSessionMsg os;
             os.name = bff;
@@ -761,7 +761,7 @@ void UserData::sub_46B328()
             size_t res = p_ypaworld->windp->CreateSession(&os);
 
             if (p_ypaworld->windp->GetProvType(NULL) == 4) //MODEM!!!!
-                p_ypaworld->win3d->windd_func321(NULL);
+                p_ypaworld->_win3d->windd_func321(NULL);
 
             if ( !res )
                 return;
@@ -805,7 +805,7 @@ void UserData::yw_NetOKProvider()
 
         if ( p_ypaworld->windp->GetProviderName(&prNameMsg) )
         {
-            p_ypaworld->win3d->windd_func320(NULL);
+            p_ypaworld->_win3d->windd_func320(NULL);
 
             if ( p_ypaworld->windp->SelectProvider(prNameMsg.name) )
             {
@@ -821,7 +821,7 @@ void UserData::yw_NetOKProvider()
                 netNameCurPos = strlen(netName);
             }
 
-            p_ypaworld->win3d->windd_func321(NULL);
+            p_ypaworld->_win3d->windd_func321(NULL);
 
             int type = p_ypaworld->windp->GetProvType(NULL);
 
@@ -849,12 +849,12 @@ void UserData::yw_JoinNetGame()
         if ( p_ypaworld->windp->GetSessionName(&gName) )
         {
             if ( p_ypaworld->windp->GetProvType(NULL) == 4 )
-                p_ypaworld->win3d->windd_func320(NULL);
+                p_ypaworld->_win3d->windd_func320(NULL);
 
             if ( p_ypaworld->windp->JoinSession(gName.name) )
             {
                 if ( p_ypaworld->windp->GetProvType(NULL) == 4 )
-                    p_ypaworld->win3d->windd_func321(NULL);
+                    p_ypaworld->_win3d->windd_func321(NULL);
 
                 netName[0] = 0;
                 netNameCurPos = 0;
@@ -948,7 +948,7 @@ void UserData::yw_JoinNetGame()
             else
             {
                 if ( p_ypaworld->windp->GetProvType(NULL) == 4 )
-                    p_ypaworld->win3d->windd_func320(NULL);
+                    p_ypaworld->_win3d->windd_func320(NULL);
 
                 //sb_0x46bb54__sub0(p_ypaworld, get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
                 printf("%s: %s\n", get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
@@ -968,7 +968,7 @@ void UserData::yw_JoinNetGame()
     else
     {
         if ( p_ypaworld->windp->GetProvType(NULL) == 4 )
-            p_ypaworld->win3d->windd_func320(NULL);
+            p_ypaworld->_win3d->windd_func320(NULL);
 
         if ( p_ypaworld->windp->EnumSessions(NULL) )
         {
@@ -976,11 +976,11 @@ void UserData::yw_JoinNetGame()
         }
 
         if ( p_ypaworld->windp->GetProvType(NULL) == 4 )
-            p_ypaworld->win3d->windd_func321(NULL);
+            p_ypaworld->_win3d->windd_func321(NULL);
     }
 }
 
-int yw_DestroyPlayer(_NC_STACK_ypaworld *yw, const char *playerName)
+int yw_DestroyPlayer(NC_STACK_ypaworld *yw, const char *playerName)
 {
     int plID = -1;
     UserData *usr = yw->GameShell;
@@ -1242,7 +1242,7 @@ void UserData::ypaworld_func151__sub7()
 netgamelst netgame_wnd;
 char b_stru_5C85C0__cmdbuf[1024];
 
-void sb_0x451034__sub6(_NC_STACK_ypaworld *yw)
+void sb_0x451034__sub6(NC_STACK_ypaworld *yw)
 {
     netgame_wnd.flags = 0x138;
     netgame_wnd.x = 0;
@@ -1269,7 +1269,7 @@ void sb_0x451034__sub6(_NC_STACK_ypaworld *yw)
 }
 
 //netgui update
-void ypaworld_func64__sub7__sub5(_NC_STACK_ypaworld *yw, struC5 *inpt)
+void ypaworld_func64__sub7__sub5(NC_STACK_ypaworld *yw, struC5 *inpt)
 {
     dprintf("MAKE ME %s (multiplayer)\n", "ypaworld_func64__sub7__sub5");
 }

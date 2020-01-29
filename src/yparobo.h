@@ -13,137 +13,6 @@ struct robo_t1
     int field_4;
 };
 
-struct __NC_STACK_yparobo
-{
-    NC_STACK_ypaworld *wrld;
-    _NC_STACK_ypaworld *wrld_yw;
-    __NC_STACK_ypabact *bact_internal;
-    NC_STACK_yparobo *roboo;
-
-    float field_c;
-    rbcolls coll;
-    float field_1D5;
-
-    char field_1DA;
-    int roboState;
-    int newAI;
-    int field_1E3;
-
-    char epConquer;
-    char epRadar;
-    char epPower;
-    char epDefense;
-    char epSafety;
-    char epRecon;
-    char epChangePlace;
-    char epRobo;
-
-    int dock_energ;
-    int dock_cnt;
-    int dock_user;
-    int dock_time;
-    vec3d dock_tgt_pos;
-    __NC_STACK_ypabact *dock_tgt_bact;
-    char dock_tgType;
-    char dock_aggr;
-    int dock_tgt_comm_id;
-    vec3d dock_pos;
-
-    int radar_value;
-    cellArea *radar_cell;  //For AI
-    int radar_cellID;  //For AI
-    int radar_cellIDpos;
-    int radar_time;
-    int radar_delay; //??
-
-    int safety_value;
-    cellArea *safety_cell;  //For AI
-    int safety_cellID;  //For AI
-    int safety_cellIDpos;
-    int safety_time;
-    int safety_delay; //??
-
-    //Power
-    int field_251;
-    cellArea *field_255;  //For AI
-    int field_259;  //For AI
-    int field_25D;
-    int field_261;
-    int field_265; //??
-
-    //Enemy
-    int field_269;
-    cellArea *field_26D;  //For AI
-    int field_271;  //For AI
-    int field_275;  //For AI
-    int field_279;
-    uint32_t field_27D;
-    int field_281; //??
-
-    int conq_value;
-    cellArea *conq_cell;  //For AI
-    int conq_cellID;  //For AI
-    int conq_cellIDpos;
-    int conq_time;
-    int conq_delay; //??
-
-    int field_29D;
-    cellArea *field_2A1;  //For AI
-    int field_2A5;  //For AI
-    int field_2A9;  //For AI
-    int field_2AD;
-    int field_2B1; //??
-    int field_2B5;
-    cellArea *field_2B9;  //For AI
-    int field_2BD;  //For AI
-    int field_2C1;  //For AI
-    int field_2C5;
-    int field_2C9; //??
-    int field_2CD;
-    cellArea *field_2D1;  //For AI
-    int field_2D5;  //For AI
-    int field_2D9;  //For AI
-    int field_2DD;
-    int field_2E1; //??
-    int vehicle_cellID;  //For AI
-    cellArea *vehicle_cell;  //For AI
-
-    int vehicle_type;  //For AI
-    int field_2F1;  //For AI
-    int field_2F5;  //For AI
-    cellArea *field_2F9;  //For AI
-    int field_2FD;  //For AI
-    cellArea *pcell;
-
-    int field_309;
-    std::array<roboGun, 8> guns;
-
-    int field_4F5; //??
-    int field_4F9; //??
-    int field_4FD; //??
-
-    char field_501;
-    char field_502;
-    char field_503;
-
-    int field_505;
-    int field_509;
-    int field_50D;
-    int field_511;
-    vec3d field_515;
-    int field_521;
-    robo_t1 field_525[16];
-    int fe_time;
-    int field_5A9;
-
-    __NC_STACK_yparobo()
-    {
-        clear();
-    }
-
-    void clear();
-};
-
 struct robo_arg128
 {
     int flags;
@@ -153,7 +22,7 @@ struct robo_arg128
     int prim_comm_id;
     int comm_id;
     float distance;
-    __NC_STACK_ypabact *comm_bact;
+    NC_STACK_ypabact *comm_bact;
     NC_STACK_ypabact *comm_bacto;
 };
 
@@ -168,7 +37,7 @@ struct robo_arg133
 
 struct robo_arg134
 {
-    __NC_STACK_ypabact *unit;
+    NC_STACK_ypabact *unit;
     int field_4;
     int field_8;
     int field_C;
@@ -194,7 +63,7 @@ struct robo_loct1
     int aggr;
     char tgType;
     vec3d tgt_pos;
-    __NC_STACK_ypabact *tgt_bact;
+    NC_STACK_ypabact *tgt_bact;
     int command_id;
     int forbidden;
     int want;
@@ -230,12 +99,10 @@ public:
     virtual int placeMessage(robo_arg134 *arg);
 
     virtual size_t compatcall(int method_id, void *data);
-    NC_STACK_yparobo() {
-        stack__yparobo.clear();
-    };
+    NC_STACK_yparobo();
     virtual ~NC_STACK_yparobo() {};
 
-    virtual const char * getClassName() {
+    virtual const char * getClassName(){
         return "yparobo.class";
     };
 
@@ -365,14 +232,16 @@ public:
     virtual int getROBO_loadFlags();
     virtual int getROBO_lossFlags();
     virtual int getROBO_absReload();
+    
+    void ypabact_func65__sub0();
 
 protected:
 
     void checkCommander();
-    void initForce(bact_node *unit);
-    void sub_4A9F24(bact_node *node);
+    void InitForce(NC_STACK_ypabact *unit);
+    void sub_4A9F24(NC_STACK_ypabact *unit);
 
-    bact_node *allocForce(robo_loct1 *arg);
+    NC_STACK_ypabact *AllocForce(robo_loct1 *arg);
 
     void buildConquer();
     void buildDefense();
@@ -400,6 +269,49 @@ protected:
 
     void checkDanger();
     size_t checkCollisions(float a2);
+    
+    bool yparobo_func70__sub2__sub1();
+    void yparobo_func70__sub2__sub0();
+    int yparobo_func70__sub6__sub0(cellArea *cell);
+    int yparobo_func70__sub6__sub2(cellArea *cell);
+    int yparobo_func70__sub6__sub1(cellArea *cell);
+    int yparobo_func70__sub6__sub7();
+    int yparobo_func70__sub6__sub6(int *a2, int *px, int *py);
+    int yparobo_func70__sub6__sub5(int *a2, int *px, int *py);
+    int yparobo_func70__sub6__sub13();
+    int yparobo_func70__sub6__sub12();
+    int yparobo_func70__sub6__sub3(cellArea *cell);
+    int yparobo_func70__sub6__sub4(cellArea *cell);
+    int yparobo_func70__sub6__sub8();
+    int yparobo_func70__sub6__sub9();
+    int yparobo_func70__sub6__sub10();
+    int yparobo_func70__sub6__sub11();
+    int sub_4F4E48(int x, int y);
+    float sub_4F4C6C(NC_STACK_ypabact *bctnd, int a4, int a3);
+    
+    int yparobo_func134__sub1(robo_arg134 *arg);
+    const char * yparobo_func134__sub0(char **strings, int a2);
+    
+    void sub_4A4538(NC_STACK_ypabact *bact);
+    void sub_4A448C(NC_STACK_ypabact *bact);
+    void sub_4AB69C(NC_STACK_ypabact *bact, char a2);
+    int sb_0x4a45cc__sub0(NC_STACK_ypabact *bact);
+    void sb_0x4a7010__sub1__sub0(NC_STACK_ypabact *unit1, NC_STACK_ypabact *unit2);
+    void sb_0x4a7010__sub1(NC_STACK_ypabact *unit, robo_t1 *rbt);
+    int sub_4A5A08(NC_STACK_ypabact *bact, float a2, float a3);
+    int sub_4A58C0(NC_STACK_ypabact *bact, NC_STACK_ypabact *bact2);
+    
+    void sub_4A1270(const vec3d &vaxis, float angle);
+    void sub_4A1014(float angle);
+    void sub_4A10E8(float angle);
+    
+    cellArea * yparobo_func0__sub0();
+    void sub_4F4FF4(int a2, setTarget_msg *parg67);
+    
+    void yparobo_func71__sub0(update_msg *arg);
+    int yparobo_func70__sub4__sub2__sub0(BuildProto *protos);
+    int yparobo_func70__sub4__sub1__sub0(BuildProto *protos);
+    int yparobo_func70__sub4__sub0__sub0(BuildProto *protos);
 
 
 public:
@@ -407,9 +319,131 @@ public:
     //Data
     static const Nucleus::ClassDescr description;
 
-    __NC_STACK_yparobo stack__yparobo;
-};
+    
+    float _roboFlotage;
+    rbcolls _roboColls;
+    float _roboYPos;
 
-void ypabact_func65__sub0(__NC_STACK_ypabact *bact);
+    char _roboWFlags;
+    int _roboState;
+    int _roboNewAI;
+    int _roboTimeScale;
+
+    char _roboEpConquer;
+    char _roboEpRadar;
+    char _roboEpPower;
+    char _roboEpDefense;
+    char _roboEpSafety;
+    char _roboEpRecon;
+    char _roboEpChangePlace;
+    char _roboEpRobo;
+
+    int _roboDockEnerg;
+    int _roboDockCnt;
+    int _roboDockUser;
+    int _roboDockTime;
+    vec3d _roboDockTargetPos;
+    NC_STACK_ypabact *_roboDockTargetBact;
+    char _roboDockTargetType;
+    char _roboDockAggr;
+    int _roboDockTargetCommandID;
+    vec3d _roboDockPos;
+
+    int _roboRadarValue;
+    cellArea *_roboRadarCell;  //For AI
+    int _roboRadarCellID;  //For AI
+    int _roboRadarCellIndex;
+    int _roboRadarTime;
+    int _roboRadarDelay; //??
+
+    int _roboSafetyValue;
+    cellArea *_roboSafetyCell;  //For AI
+    int _roboSafetyCellID;  //For AI
+    int _roboSafetyCellIndex;
+    int _roboSafetyTime;
+    int _roboSafetyDelay; //??
+
+    //Power
+    int _roboPowerValue;
+    cellArea *_roboPowerCell;  //For AI
+    int _roboPowerCellID;  //For AI
+    int _roboPowerCellIndex;
+    int _roboPowerTime;
+    int _roboPowerDelay; //??
+
+    //Enemy
+    int _roboEnemyValue;
+    cellArea *_roboEnemyCell;  //For AI
+    int _roboEnemyCellID;  //For AI
+    int _roboEnemyCommandID;  //For AI
+    int _roboEnemyTime;
+    uint32_t _roboEnemyDiv;
+    int _roboEnemyDelay; //??
+
+    int _roboConqValue;
+    cellArea *_roboConqCell;  //For AI
+    int _roboConqCellID;  //For AI
+    int _roboConqCellIndex;
+    int _roboConqTime;
+    int _roboConqDelay; //??
+
+    int _roboPositionValue;
+    cellArea *_roboPositionCell;  //For AI
+    int _roboPositionCellID;  //For AI
+    int _roboPositionCellIndex;  //For AI
+    int _roboPositionTime;
+    int _roboPositionDelay; //??
+    
+    int _roboExploreValue;
+    cellArea *_roboExploreCell;  //For AI
+    int _roboExploreCellID;  //For AI
+    int _roboExploreCellIndex;  //For AI
+    int _roboExploreTime;
+    int _roboExploreDelay; //??
+    
+    int _roboDangerValue;
+    cellArea *_roboDangerCell;  //For AI
+    int _roboDangerCellID;  //For AI
+    int _roboDangerCommandID;  //For AI
+    int _roboDangerTime;
+    int _roboDangerDelay; //??
+    
+    int _roboVehicleCellID;  //For AI
+    cellArea *_roboVehicleCell;  //For AI
+    int _roboVehicleDuty;  //For AI
+    int _roboVehicleCommandID;  //For AI
+    
+    
+    int _roboBuildingCellID;  //For AI
+    cellArea *_roboBuildingCell;  //For AI
+    int _roboBuildingDuty;  //For AI
+    
+    cellArea *_roboPCells; //Is it needed??? May be use first cell from _world?
+
+    int _roboTestEnemyTime;
+    
+    std::array<roboGun, 8> _roboGuns;
+
+    int _roboEnergyLife; //??
+    int _roboEnergyBuilding; //??
+    int _roboEnergyMove; //??
+
+    char _roboFillMode;
+    char _roboEnergyLoadFlags;
+    char _roboEnergyLossFlags;
+
+    int _roboEnergyReloadPS; // Reload per second
+    
+    int _roboBuildSpare;
+    int _roboVehicleSpare;
+    
+    int _roboBeamTimePre;
+    vec3d _roboBeamPos;
+    int _roboBeamFXTime;
+    
+    robo_t1 _roboAttackers[16];
+    int _roboAttackersTime;
+    int _roboAttackersClearTime; //FIX IT
+};
 
 #endif // YROBO_H_INCLUDED

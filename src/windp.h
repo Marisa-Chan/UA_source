@@ -89,16 +89,16 @@ struct windp_arg87
 
 
 
-struct _NC_STACK_ypaworld;
+struct NC_STACK_ypaworld;
 struct UserData;
 
-void yw_HandleNetMsg(_NC_STACK_ypaworld *yw);
+void yw_HandleNetMsg(NC_STACK_ypaworld *yw);
 
 
-void yw_CheckCRCs(_NC_STACK_ypaworld *yw);
+void yw_CheckCRCs(NC_STACK_ypaworld *yw);
 
 
-int yw_DestroyPlayer(_NC_STACK_ypaworld *yw, const char *playerName);
+int yw_DestroyPlayer(NC_STACK_ypaworld *yw, const char *playerName);
 
 
 
@@ -115,8 +115,8 @@ public:
 
 extern netgamelst netgame_wnd;
 
-void sb_0x451034__sub6(_NC_STACK_ypaworld *yw);
-void ypaworld_func64__sub7__sub5(_NC_STACK_ypaworld *yw, struC5 *inpt);
+void sb_0x451034__sub6(NC_STACK_ypaworld *yw);
+void ypaworld_func64__sub7__sub5(NC_STACK_ypaworld *yw, struC5 *inpt);
 
 
 

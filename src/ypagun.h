@@ -18,23 +18,23 @@ public:
     virtual size_t SetPosition(bact_arg80 *arg);
     virtual void EnergyInteract(update_msg *arg);
     virtual void Renew();
-    virtual size_t TestTargetSector(__NC_STACK_ypabact *cel_unit);
+    virtual size_t TestTargetSector(NC_STACK_ypabact *cel_unit);
     virtual void ypagun_func128(const vec3d &basis, bool directDown);
     virtual vec3d ypagun_func129(const vec3d &axis, float angle);
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ypagun()
     {
-        ypagun.maxUp    = 0.0;
-        ypagun.maxDown  = 0.0;
-        ypagun.maxSide  = 0.0;
-        ypagun.basis    = vec3d(0.0, 0.0, 0.0);
-        ypagun.rott     = vec3d(0.0, 0.0, 0.0);
-        ypagun.gunType  = 0;
-        ypagun.fireTime = 0;
-        ypagun.fireCount = 0;
-        ypagun.gunFlags = 0;
-        ypagun.downTime = 0;
+        _gunMaxUp    = 0.0;
+        _gunMaxDown  = 0.0;
+        _gunMaxSide  = 0.0;
+        _gunBasis    = vec3d(0.0, 0.0, 0.0);
+        _gunRott     = vec3d(0.0, 0.0, 0.0);
+        _gunType  = 0;
+        _gunFireTime = 0;
+        _gunFireCount = 0;
+        _gunFlags = 0;
+        _gunDownTime = 0;
     };
     virtual ~NC_STACK_ypagun() {};
 
@@ -96,19 +96,16 @@ public:
     //Data
     static const Nucleus::ClassDescr description;
 
-    struct
-    {
-        float maxUp;
-        float maxDown;
-        float maxSide;
-        vec3d basis; // Basis Z
-        vec3d rott; // Basis Y
-        char gunType;
-        int fireTime;
-        int fireCount;
-        char gunFlags;
-        int downTime;
-    } ypagun;
+    float _gunMaxUp;
+    float _gunMaxDown;
+    float _gunMaxSide;
+    vec3d _gunBasis; // Basis Z
+    vec3d _gunRott; // Basis Y
+    char _gunType;
+    int _gunFireTime;
+    int _gunFireCount;
+    char _gunFlags;
+    int _gunDownTime;
 };
 
 #endif // YGUN_H_INCLUDED

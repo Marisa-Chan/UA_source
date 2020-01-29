@@ -4,15 +4,6 @@
 #include "nucleas.h"
 #include "ypabact.h"
 
-struct __NC_STACK_ypaflyer
-{
-    NC_STACK_ypaworld *ywo;
-    _NC_STACK_ypaworld *yw;
-    __NC_STACK_ypabact *bact_internal;
-    float field_c;
-    int field_10;
-};
-
 class NC_STACK_ypaflyer: public NC_STACK_ypabact
 {
 public:
@@ -28,8 +19,10 @@ public:
     virtual void HandBrake(update_msg *arg);
 
     virtual size_t compatcall(int method_id, void *data);
-    NC_STACK_ypaflyer() {
-        memset(&stack__ypaflyer, 0, sizeof(stack__ypaflyer));
+    NC_STACK_ypaflyer() 
+    {
+        _flyerBoost = 0.0;
+        _flyerType    = 0;
     };
     virtual ~NC_STACK_ypaflyer() {};
 
@@ -49,11 +42,16 @@ public:
     virtual void setFLY_type(int);
 
     virtual int getFLY_type();
+    
+    
+    void sb_0x4b255c(float a2, vec3d v, int a4);
+    void ypaflyer_func70__sub0(float angl);
 
     //Data
     static const Nucleus::ClassDescr description;
-
-    __NC_STACK_ypaflyer stack__ypaflyer;
+    
+    float _flyerBoost = 0.0;
+    int _flyerType    = 0;
 };
 
 #endif // YFLYER_H_INCLUDED

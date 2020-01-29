@@ -21,6 +21,7 @@
 #include "ypagun.h"
 
 #include "lstvw.h"
+#include "listnode.h"
 
 #include "input.h"
 
@@ -33,7 +34,6 @@
 #define YW_RENDER_SECTORS_DEF   5
 
 class NC_STACK_ypaworld;
-struct _NC_STACK_ypaworld;
 class NC_STACK_button;
 class NC_STACK_windp;
 
@@ -47,7 +47,9 @@ struct BuildProto;
 struct roboProto;
 struct map_event;
 struct uamessage_base;
-
+struct uamessage_vhclData;
+struct uamessage_vhclDataE;
+struct uamessage_vhclDataI;
 
 namespace World
 {
@@ -409,7 +411,7 @@ public:
     std::string user_name;
 
     NC_STACK_ypaworld *p_YW;
-    _NC_STACK_ypaworld *p_ypaworld;
+    NC_STACK_ypaworld *p_ypaworld;
     struC5 *_input;
     int frameTime;
     uint32_t glblTime;
@@ -675,7 +677,7 @@ struct recorder
     int32_t time;
     uint32_t ctrl_bact_id;
 
-    __NC_STACK_ypabact **bacts;
+    NC_STACK_ypabact **bacts;
     trec_bct *oinf;
     uint16_t *sound_status;
     void *field_20;
@@ -726,8 +728,11 @@ struct cellArea : public nnode
     char w_type;
     uint8_t w_id;
     nlist units_list; // Units in this sector
+    World::CellBactList unitsList;
     float height;
     float averg_height;
+    
+    cellArea() : unitsList(this, NC_STACK_ypabact::CellClearCallback) { clear(); };
     
     int GetEnergy()
     {
@@ -741,6 +746,41 @@ struct cellArea : public nnode
                 e += buildings_health[i][j];
         }
         return e;
+    }
+    
+    void clear()
+    {
+        pos_x = 0;
+        pos_y = 0;
+
+        addit_cost = 0;
+        pf_flags = 0;
+        cost_to_this = 0.0;
+        cost_to_target = 0.0;
+        //nlist pf_treelist;
+        //nnode pf_treenode;
+        pf_treeup = NULL;
+
+        owner = 0;
+        type_id = 0;
+        comp_type = 0;
+        energy_power = 0;
+        
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+                buildings_health[i][j] = 0;
+        }
+        
+        view_mask = 0;
+        w_type = 0;
+        w_id = 0;
+        
+        init_list(&units_list);
+        unitsList.clear();
+        
+        height = 0.0;
+        averg_height = 0.0;
     }
 };
 
@@ -1575,7 +1615,7 @@ struct sklt_wis
     int field_72;
     int field_76;
     int field_7A;
-    __NC_STACK_ypabact *field_7E;
+    NC_STACK_ypabact *field_7E;
     int field_82;
     float field_86;
     float field_8A;
@@ -1634,7 +1674,7 @@ struct yw_samples
     int field_0;
     samples_collection1 field_4;
     NC_STACK_wav *field_35C;
-    __NC_STACK_ypabact *field_360;
+    NC_STACK_ypabact *field_360;
 };
 
 struct yw_f80
@@ -1691,299 +1731,6 @@ struct yw_f726c_nod : public nnode
 {
     uint8_t *bufStart;
     uint8_t *bufEnd;
-};
-
-struct _NC_STACK_ypaworld
-{
-    NC_STACK_ypaworld *self_full;
-    UserData *GameShell;
-    base_64arg *b64_parms;
-    int sectors_maxX;
-    int sectors_maxY;
-    int sectors_maxX2;
-    int sectors_maxY2;
-    cellArea *cells;
-
-    float map_Width_meters;
-    float map_Height_meters;
-    yw_f30 *field_30;
-    yw_field34 *field_34;
-    int field_38;
-    int field_3c;
-    int set_number;
-    NC_STACK_base *additionalSet;
-    nlist bact_list;
-    nlist dead_cache;
-    vhclBases *vhcls_models;
-    cityBases *legos;
-    subSec *subSectors;
-    secType *secTypes;
-    VhclProto *VhclProtos;
-    WeapProto *WeaponProtos;
-    std::vector<BuildProto> BuildProtos;
-    std::vector<roboProto> RoboProtos;
-    yw_f80 field_80[8];
-    int16_t build_hp_ref[256];
-    uint8_t sqrt_table[64][64];
-    __NC_STACK_ypabact *current_bact;
-    vec3d field_1334;
-    mat3x3 field_1340;
-    NC_STACK_base *sky_loaded_base;
-    int field_1368;
-    NC_STACK_base *additionalBeeBox;
-    NC_STACK_sklt *colsub_sklt;
-    NC_STACK_sklt *colcomp_sklt;
-    UAskeleton::Data *colsub_sklt_intrn;
-    UAskeleton::Data *colcomp_sklt_intrn;
-    NC_STACK_bitmap *tracyrmp_ilbm;
-    NC_STACK_bitmap *shadermp_ilbm;
-    NC_STACK_win3d *win3d;
-    int field_138c;
-    int str17_NOT_FALSE;
-    slurp slurps1[6][6];
-    slurp slurps2[6][6];
-    slurp2 ColSide;
-    slurp2 ColCross;
-    int field_15e4;
-    int field_15e8;
-    int field_15ec;
-    int field_15f0;
-    int field_15f4;
-    int field_15f8;
-    int field_15fc;
-
-    int audio_volume;
-    int field_1604;
-    int field_1608;
-    int field_160c;
-    int field_1610;
-    int timeStamp;
-    int field_1618;
-    int field_161c;
-    char *buildDate;
-    int field_1624;
-    int16_t field_1628;
-    int16_t field_162A;
-    int GUI_OK;
-    std::array<TileMap *, 92> tiles;
-    GuiBaseList field_17a0;
-    int16_t screen_width;
-    int16_t screen_height;
-
-    int isDragging;
-    GuiBase *draggingItem;
-    shortPoint draggingPos;
-    bool draggingLock;
-
-    int field_17c0; // Grab mouse for unit steer-turn
-    int field_17c4;
-    int field_17c8;
-    const char **tooltips;
-    rgbiColor iniColors[World::COLOR_MAX_NUMBER];
-    int field_1a00;
-    int field_1a04;
-    int field_1a08;
-    int field_1a0c;
-    int field_1a10;
-
-    int field_1a1c;
-    int field_1a20;
-    int font_default_h;
-    int font_default_w__a;
-    int font_yscrl_bkg_w;
-    int font_xscrl_h;
-    int font_default_w__b;
-    int field_1a38;
-    int font_yscrl_h;
-    int icon_order__w;
-    int icon_order__h;
-    int icon_help__w;
-    int icon_help__h;
-    int icon_energy__h;
-    int icon0___h;
-    int field_1a58;
-    int field_1a5c;
-    cellArea *field_1a60;
-    int field_1a64;
-    int field_1A66;
-    int field_1a68; //Network?
-    vec3d field_1a6c;
-
-    vec3d field_1a7c;
-
-    vec3d field_1a8c;
-    __NC_STACK_ypabact *field_1a98;
-    float field_1a9c;
-    int field_1aa0;
-    int field_1aa4;
-    int field_1aa8;
-    __NC_STACK_ypabact *field_1aac;
-    int field_1ab0;
-    int field_1ab4;
-    vec3d field_1ab8;
-
-    NC_STACK_bitmap *pointers[11];
-    ResBitmap *pointers__bitm[11];
-    int field_1b1c;
-    int field_1b20; // saved mouse x
-    int field_1b22; // saved mouse y
-    update_msg field_1b24;
-    int16_t field_1b68; // debug info draw
-    int16_t field_1B6A;
-    int16_t field_1b6c;
-    uint16_t field_1B6E;
-    int field_1b70;
-    int field_1b74;
-    NC_STACK_ypabact *UserRobo;
-    NC_STACK_ypabact *UserUnit;
-    __NC_STACK_ypabact *URBact;
-    __NC_STACK_ypabact *UUBact;
-    nlist *field_1b88;
-    int sectors_count_by_owner[8];
-    int field_1bac[8];
-    float field_1bcc[8];
-    float field_1bec[8];
-    __NC_STACK_ypabact *field_1c0c[512];
-    int field_240c;
-    int field_2410;
-    int field_2414;
-    int field_2418;
-    uint32_t field_241c;
-    __NC_STACK_ypabact *field_2420;
-    int field_2424;
-    int do_screenshooting;
-    int screenshot_seq_id; //Screenshoting sequence id
-    int screenshot_seq_frame_id; //Screenshoting frame id
-    recorder *replayer; // For play replay
-    recorder *sceneRecorder; // For record replay
-    bact_hudi hudi;
-    gemProto gems[8];
-    int field_2b78;
-    int field_2b7c;
-    int last_modify_vhcl;
-    int last_modify_weapon;
-    int last_modify_build;
-
-    stru_LevelNet *LevelNet;
-    stru_2d90 *field_2d90;
-    big_ypa_Brf brief;
-    yw_f726c *history;
-    int superbomb_wall_vproto;
-    int superbomb_center_vproto;
-    int field_7278;
-    int field_727c;
-    int field_7280;
-    char lang_name[32];
-    char *lang_strings;
-    char *very_big_array__p_begin;
-    char *lang_strings__end;
-    char **string_pointers;
-    char **string_pointers_p2;
-    Common::PlaneBytes *typ_map;
-    Common::PlaneBytes *own_map;
-    Common::PlaneBytes *blg_map;
-    Common::PlaneBytes *hgt_map;
-
-    Common::PlaneBytes *copyof_typemap;
-    Common::PlaneBytes *copyof_ownermap;
-    sklt_wis wis_skeletons;
-    int field_739A;
-
-    uint32_t  field_73CE;
-
-    save_status robo_map_status;
-    save_status robo_finder_status;
-    save_status vhcl_map_status;
-    save_status vhcl_finder_status;
-    int fxnumber;
-    int dbg_num_sqd_counter[8];
-    int dbg_num_vhcl_counter[8];
-    int dbg_num_flk_counter[8];
-    int dbg_num_robo_counter[8];
-    int dbg_num_wpn_counter[8];
-    int dbg_num_sqd;
-    int dbg_num_sqd_max;
-    int dbg_num_vhcl;
-    int dbg_num_vhcl_max;
-    int dbg_num_flk;
-    int dbg_num_flk_max;
-    int dbg_num_robo;
-    int dbg_num_robo_max;
-    int dbg_num_wpn;
-    int dbg_num_wpn_max;
-    NC_STACK_input *input_class;
-    int field_7562;
-    int field_7566;
-    float field_756A;
-    float field_756E;
-    userdata_sample_info *field_7572;
-    NC_STACK_windp *windp;
-    uint32_t netUpdateTime;
-    int isNetGame;
-    uint32_t netGameStarted;
-    int field_7586;
-
-    int netInfoOverkill;
-
-    int netStartTime;
-    int netInterpolate;
-    int field_759E;
-    char field_75A2; //array 64?
-
-    char field_75E2[64]; //array 64?
-
-
-    int netgame_exclusivegem;
-    int field_7626;
-
-    int p_1_grp_cnt;
-    int p_1_grp[4][8];
-    std::array<player_status, 8> playerstatus;
-    player_status ingamePlayerStatus[8];
-    int maxroboenergy;
-    int maxreloadconst;
-    yw_samples *samples;
-    int field_7882;
-    int field_7886;
-    int field_788A;
-    float field_788E; //input sliders
-    float field_7892; //input sliders
-    float field_7896; //input sliders
-    float field_789A; //input sliders
-    float field_789E; //input sliders
-    std::array<yw_movie, World::MOVIE_MAX_NUMBER> movies;
-    int field_81AB;
-    const char *field_81AF;
-    const char *field_81B3;
-    int one_game_res;
-    int shell_default_res;
-    int game_default_res;
-    map_event *map_events;
-    float max_impulse;
-    yw_81cb field_81CB;
-    float vehicle_sector_ratio_1;
-    int unit_limit;
-    int unit_limit_arg;
-    int unit_limit_type;
-    int unit_limit_1;
-    int unit_limit_arg_1;
-    int unit_limit_type_1;
-    int field_826F;
-    int TOD_ID;
-    int beam_energy_start;
-    int beam_energy_add;
-    int beamenergy;
-    int field_8283;
-    int easy_cheat_keys;
-
-    std::string initScriptLoc;
-    int playerOwner;
-
-
-
-    _NC_STACK_ypaworld();
-
-    void SendCRC(int lvlid);
 };
 
 struct lego_xyz
@@ -2577,7 +2324,7 @@ struct yw_arg129
     vec3d pos;
     int field_10;
     int field_14;
-    __NC_STACK_ypabact *unit;
+    NC_STACK_ypabact *unit;
 };
 
 struct yw_arg184
@@ -2622,7 +2369,7 @@ struct yw_arg184
 
 struct yw_arg159
 {
-    __NC_STACK_ypabact *unit;
+    NC_STACK_ypabact *unit;
     int field_4;
     const char *txt;
     int field_C;
@@ -2637,18 +2384,18 @@ struct yw_arg176
 
 struct yw_arg177
 {
-    __NC_STACK_ypabact *bact;
+    NC_STACK_ypabact *bact;
     int field_4;
 };
 
 struct yw_arg150
 {
-    __NC_STACK_ypabact *unit;
+    NC_STACK_ypabact *unit;
     int field_4;
     vec3d pos;
     int field_14;
     vec3d field_18;
-    __NC_STACK_ypabact *field_24;
+    NC_STACK_ypabact *field_24;
     float field_28;
 };
 
@@ -2658,7 +2405,7 @@ struct yw_arg165
     int frame;
 };
 
-class NC_STACK_ypaworld: public NC_STACK_base
+class NC_STACK_ypaworld: public NC_STACK_nucleus //NC_STACK_base
 {
 friend class UserData;
 friend class World::Parsers::UserParser;
@@ -2690,7 +2437,7 @@ public:
     virtual size_t base_func64(base_64arg *arg);
     virtual void ypaworld_func129(yw_arg129 *arg);
     virtual size_t ypaworld_func130(yw_130arg *arg);
-    virtual void ypaworld_func131(__NC_STACK_ypabact *bact);
+    virtual void ypaworld_func131(NC_STACK_ypabact *bact);
     virtual void ypaworld_func132(void *arg);
     virtual void ypaworld_func133(void *arg);
     virtual void ypaworld_func134(NC_STACK_ypabact *bact);
@@ -2702,7 +2449,7 @@ public:
     virtual void ypaworld_func140(GuiBase *lstvw);
     virtual void ypaworld_func143(void *arg);
     virtual void ypaworld_func144(NC_STACK_ypabact *bacto);
-    virtual size_t ypaworld_func145(__NC_STACK_ypabact *bact);
+    virtual size_t ypaworld_func145(NC_STACK_ypabact *bact);
     virtual NC_STACK_ypabact * ypaworld_func146(ypaworld_arg146 *vhcl_id);
     virtual NC_STACK_ypamissile * ypaworld_func147(ypaworld_arg146 *arg);
     virtual size_t ypaworld_func148(ypaworld_arg148 *arg);
@@ -2724,7 +2471,7 @@ public:
     virtual void ypaworld_func165(yw_arg165 *arg);
     virtual size_t ypaworld_func166(const char **langname);
     virtual void ypaworld_func167(UserData *usr);
-    virtual size_t ypaworld_func168(__NC_STACK_ypabact **pbact);
+    virtual size_t ypaworld_func168(NC_STACK_ypabact *pbact);
     virtual size_t ypaworld_func169(yw_arg169 *arg);
     virtual size_t ypaworld_func170(yw_arg169 *arg);
     virtual size_t ypaworld_func171(yw_arg172 *arg);
@@ -2836,7 +2583,7 @@ protected:
 
     void GUI_Close();
 
-    void CameraPrepareRender(recorder *rcrd, __NC_STACK_ypabact *bact, struC5 *inpt);
+    void CameraPrepareRender(recorder *rcrd, NC_STACK_ypabact *bact, struC5 *inpt);
     bool IsAnyInput(struC5 *struc);
 
 
@@ -2855,14 +2602,16 @@ public:
 
 
     void setIniColor(int color_id, int r, int g, int b, int i);
-	bool ParseColorString(int color_id, const std::string &color_string);
+    bool ParseColorString(int color_id, const std::string &color_string);
 
 
-	void SetFarView(bool farvw);
+    void SetFarView(bool farvw);
+    
+    int TestVehicle(int protoID, int job);
 
 
 //protected:
-	void sub_4491A0(const std::string &movie_fname);
+    void sub_4491A0(const std::string &movie_fname);
     bool sub_4DA354(const std::string &filename);
     bool sb_0x4e1a88__sub0__sub0(mapProto *mapp, const std::string &fname);
     void ypaworld_func158__sub4__sub1();
@@ -2890,11 +2639,23 @@ public:
     int load_fonts_and_icons();
     int yw_LoadSet(int setID);
     
+    void sb_0x47b028(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bct1, NC_STACK_ypabact *bct2, int a3);
+    void yw_processVhclDataMsgs(uamessage_vhclData *msg, NC_STACK_ypabact *host_node);
+    NC_STACK_ypabact * yw_getHostByOwner(uint8_t owner);
+    void yw_netApplyVhclDataE(NC_STACK_ypabact *bact, uamessage_vhclDataE *dat, int id, uint32_t timestamp);
+    void yw_netApplyVhclDataI(NC_STACK_ypabact *bact, uamessage_vhclDataI *dat, int id, uint32_t timestamp);
+    void sub_4C8EB4(NC_STACK_ypabact *bct);
+    void sub_4F1B34(NC_STACK_ypabact *bact);
+    void sub_4F1BE8(NC_STACK_ypabact *bct);
+    void sub_4F1A60(NC_STACK_ypabact *bact);
+    
     
     static TileMap * yw_LoadFont(const std::string &fontname);
     static TileMap * yw_LoadTileSet(const std::string &bitmap, Common::Point chrSz, Common::Point delta, Common::Point cr, Common::Point offset);
     NC_STACK_ypabact * FindBactByCmdOwn(int commandID, char owner);
     
+    
+    void SendCRC(int lvlid);
     
     void HistoryAktCreate(NC_STACK_ypabact *bact);
     
@@ -2902,9 +2663,289 @@ public:
 public:
     //Data
     static const Nucleus::ClassDescr description;
+  
+    
+    
+    UserData *GameShell;
+    base_64arg *b64_parms;
+    int sectors_maxX;
+    int sectors_maxY;
+    int sectors_maxX2;
+    int sectors_maxY2;
+    cellArea *cells;
 
-    _NC_STACK_ypaworld ypaworld;
+    float map_Width_meters;
+    float map_Height_meters;
+    yw_f30 *field_30;
+    yw_field34 *field_34;
+    int field_38;
+    int field_3c;
+    int set_number;
+    NC_STACK_base *additionalSet;
+    nlist bact_list;
+    nlist dead_cache;
+    vhclBases *vhcls_models;
+    cityBases *legos;
+    subSec *subSectors;
+    secType *secTypes;
+    VhclProto *VhclProtos;
+    WeapProto *WeaponProtos;
+    std::vector<BuildProto> BuildProtos;
+    std::vector<roboProto> RoboProtos;
+    yw_f80 field_80[8];
+    int16_t build_hp_ref[256];
+    uint8_t sqrt_table[64][64];
+    NC_STACK_ypabact *current_bact;
+    vec3d field_1334;
+    mat3x3 field_1340;
+    NC_STACK_base *sky_loaded_base;
+    int field_1368;
+    NC_STACK_base *additionalBeeBox;
+    NC_STACK_sklt *colsub_sklt;
+    NC_STACK_sklt *colcomp_sklt;
+    UAskeleton::Data *colsub_sklt_intrn;
+    UAskeleton::Data *colcomp_sklt_intrn;
+    NC_STACK_bitmap *tracyrmp_ilbm;
+    NC_STACK_bitmap *shadermp_ilbm;
+    NC_STACK_win3d *_win3d;
+    int field_138c;
+    int str17_NOT_FALSE;
+    slurp slurps1[6][6];
+    slurp slurps2[6][6];
+    slurp2 ColSide;
+    slurp2 ColCross;
+    int field_15e4;
+    int field_15e8;
+    int field_15ec;
+    int field_15f0;
+    int field_15f4;
+    int field_15f8;
+    int field_15fc;
 
+    int audio_volume;
+    int field_1604;
+    int field_1608;
+    int field_160c;
+    int field_1610;
+    int timeStamp;
+    int field_1618;
+    int field_161c;
+    char *buildDate;
+    int field_1624;
+    int16_t field_1628;
+    int16_t field_162A;
+    int GUI_OK;
+    std::array<TileMap *, 92> tiles;
+    GuiBaseList field_17a0;
+    int16_t screen_width;
+    int16_t screen_height;
+
+    int isDragging;
+    GuiBase *draggingItem;
+    shortPoint draggingPos;
+    bool draggingLock;
+
+    int field_17c0; // Grab mouse for unit steer-turn
+    int field_17c4;
+    int field_17c8;
+    const char **tooltips;
+    rgbiColor iniColors[World::COLOR_MAX_NUMBER];
+    int field_1a00;
+    int field_1a04;
+    int field_1a08;
+    int field_1a0c;
+    int field_1a10;
+
+    int field_1a1c;
+    int field_1a20;
+    int font_default_h;
+    int font_default_w__a;
+    int font_yscrl_bkg_w;
+    int font_xscrl_h;
+    int font_default_w__b;
+    int field_1a38;
+    int font_yscrl_h;
+    int icon_order__w;
+    int icon_order__h;
+    int icon_help__w;
+    int icon_help__h;
+    int icon_energy__h;
+    int icon0___h;
+    int field_1a58;
+    int field_1a5c;
+    cellArea *field_1a60;
+    int field_1a64;
+    int field_1A66;
+    int field_1a68; //Network?
+    vec3d field_1a6c;
+
+    vec3d field_1a7c;
+
+    vec3d field_1a8c;
+    NC_STACK_ypabact *field_1a98;
+    float field_1a9c;
+    int field_1aa0;
+    int field_1aa4;
+    int field_1aa8;
+    NC_STACK_ypabact *field_1aac;
+    int field_1ab0;
+    int field_1ab4;
+    vec3d field_1ab8;
+
+    NC_STACK_bitmap *pointers[11];
+    ResBitmap *pointers__bitm[11];
+    int field_1b1c;
+    int field_1b20; // saved mouse x
+    int field_1b22; // saved mouse y
+    update_msg field_1b24;
+    int16_t field_1b68; // debug info draw
+    int16_t field_1B6A;
+    int16_t field_1b6c;
+    uint16_t field_1B6E;
+    int field_1b70;
+    int field_1b74;
+    NC_STACK_ypabact *UserRobo;
+    NC_STACK_ypabact *UserUnit;
+    nlist *field_1b88;
+    int sectors_count_by_owner[8];
+    int field_1bac[8];
+    float field_1bcc[8];
+    float field_1bec[8];
+    NC_STACK_ypabact *field_1c0c[512];
+    int field_240c;
+    int field_2410;
+    int field_2414;
+    int field_2418;
+    uint32_t field_241c;
+    NC_STACK_ypabact *field_2420;
+    int field_2424;
+    int do_screenshooting;
+    int screenshot_seq_id; //Screenshoting sequence id
+    int screenshot_seq_frame_id; //Screenshoting frame id
+    recorder *replayer; // For play replay
+    recorder *sceneRecorder; // For record replay
+    bact_hudi hudi;
+    gemProto gems[8];
+    int field_2b78;
+    int field_2b7c;
+    int last_modify_vhcl;
+    int last_modify_weapon;
+    int last_modify_build;
+
+    stru_LevelNet *LevelNet;
+    stru_2d90 *field_2d90;
+    big_ypa_Brf brief;
+    yw_f726c *history;
+    int superbomb_wall_vproto;
+    int superbomb_center_vproto;
+    int field_7278;
+    int field_727c;
+    int field_7280;
+    char lang_name[32];
+    char *lang_strings;
+    char *very_big_array__p_begin;
+    char *lang_strings__end;
+    char **string_pointers;
+    char **string_pointers_p2;
+    Common::PlaneBytes *typ_map;
+    Common::PlaneBytes *own_map;
+    Common::PlaneBytes *blg_map;
+    Common::PlaneBytes *hgt_map;
+
+    Common::PlaneBytes *copyof_typemap;
+    Common::PlaneBytes *copyof_ownermap;
+    sklt_wis wis_skeletons;
+    int field_739A;
+
+    uint32_t  field_73CE;
+
+    save_status robo_map_status;
+    save_status robo_finder_status;
+    save_status vhcl_map_status;
+    save_status vhcl_finder_status;
+    int fxnumber;
+    int dbg_num_sqd_counter[8];
+    int dbg_num_vhcl_counter[8];
+    int dbg_num_flk_counter[8];
+    int dbg_num_robo_counter[8];
+    int dbg_num_wpn_counter[8];
+    int dbg_num_sqd;
+    int dbg_num_sqd_max;
+    int dbg_num_vhcl;
+    int dbg_num_vhcl_max;
+    int dbg_num_flk;
+    int dbg_num_flk_max;
+    int dbg_num_robo;
+    int dbg_num_robo_max;
+    int dbg_num_wpn;
+    int dbg_num_wpn_max;
+    NC_STACK_input *input_class;
+    int field_7562;
+    int field_7566;
+    float field_756A;
+    float field_756E;
+    userdata_sample_info *field_7572;
+    NC_STACK_windp *windp;
+    uint32_t netUpdateTime;
+    int isNetGame;
+    uint32_t netGameStarted;
+    int field_7586;
+
+    int netInfoOverkill;
+
+    int netStartTime;
+    int netInterpolate;
+    int field_759E;
+    char field_75A2; //array 64?
+
+    char field_75E2[64]; //array 64?
+
+
+    int netgame_exclusivegem;
+    int field_7626;
+
+    int p_1_grp_cnt;
+    int p_1_grp[4][8];
+    std::array<player_status, 8> playerstatus;
+    player_status ingamePlayerStatus[8];
+    int maxroboenergy;
+    int maxreloadconst;
+    yw_samples *samples;
+    int field_7882;
+    int field_7886;
+    int field_788A;
+    float field_788E; //input sliders
+    float field_7892; //input sliders
+    float field_7896; //input sliders
+    float field_789A; //input sliders
+    float field_789E; //input sliders
+    std::array<yw_movie, World::MOVIE_MAX_NUMBER> movies;
+    int field_81AB;
+    const char *field_81AF;
+    const char *field_81B3;
+    int one_game_res;
+    int shell_default_res;
+    int game_default_res;
+    map_event *map_events;
+    float max_impulse;
+    yw_81cb field_81CB;
+    float vehicle_sector_ratio_1;
+    int unit_limit;
+    int unit_limit_arg;
+    int unit_limit_type;
+    int unit_limit_1;
+    int unit_limit_arg_1;
+    int unit_limit_type_1;
+    int field_826F;
+    int TOD_ID;
+    int beam_energy_start;
+    int beam_energy_add;
+    int beamenergy;
+    int field_8283;
+    int easy_cheat_keys;
+
+    std::string initScriptLoc;
+    int playerOwner;
 
 protected:
 

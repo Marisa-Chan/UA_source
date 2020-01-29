@@ -27,7 +27,7 @@ extern int word_5A50C0;
 extern int dword_5A50B6;
 extern int dword_5A50B6_h;
 
-void sb_0x4eb94c__sub0(_NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, vec3d *pos, baseRender_msg *arg)
+void sb_0x4eb94c__sub0(NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, vec3d *pos, baseRender_msg *arg)
 {
     //brf_obj *brobj = &yw->brief.brf_objs + obj_id; // Only one object
     brf_obj *brobj = &yw->brief.brf_objs;
@@ -67,7 +67,7 @@ void sb_0x4eb94c__sub0(_NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, vec3
     model_base->base_func77(arg); //Draw vehicle
 }
 
-void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, vec3d *pos, baseRender_msg *arg)
+void sb_0x4eb94c__sub1(NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, vec3d *pos, baseRender_msg *arg)
 {
     //brf_obj *brobj = &yw->brief.brf_objs + obj_id; // Only one object
     brf_obj *brobj = &yw->brief.brf_objs;
@@ -140,7 +140,7 @@ void sb_0x4eb94c__sub1(_NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, vec
     }
 }
 
-void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int object_id, int a5)
+void sb_0x4eb94c(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int object_id, int a5)
 {
     //brf_obj *brobj = &brf->brf_objs + object_id; // Only one object
     brf_obj *brobj = &brf->brf_objs;
@@ -208,9 +208,9 @@ void sb_0x4eb94c(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int ob
     }
 }
 
-void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc)
+void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc)
 {
-    yw->win3d->BeginScene();
+    yw->_win3d->BeginScene();
 
     brf->field_4174.frameTime = 1;
     brf->field_4174.globTime = 1;
@@ -230,12 +230,12 @@ void ypaworld_func158__DrawVehicle(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, str
 
     brf->field_4174.rndrStack->render();
 
-    yw->win3d->EndScene();
+    yw->_win3d->EndScene();
 }
 
 
 
-void yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
+void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
 {
     usr->input_listview.SetRect(yw, -2, -2);
     GFXEngine::GFXe.getTileset(0);
@@ -357,7 +357,7 @@ void yw_draw_input_list(_NC_STACK_ypaworld *yw, UserData *usr)
 }
 
 
-void set_keys_vals(_NC_STACK_ypaworld *yw)
+void set_keys_vals(NC_STACK_ypaworld *yw)
 {
     for (auto &a: Input::KeysInfo)
     {
@@ -712,7 +712,7 @@ void set_keys_vals(_NC_STACK_ypaworld *yw)
 }
 
 
-int yw_loadSky(_NC_STACK_ypaworld *yw, const char *skyname)
+int yw_loadSky(NC_STACK_ypaworld *yw, const char *skyname)
 {
     char buf[256];
     strcpy(buf, "data:");
@@ -736,7 +736,7 @@ void fill_videmodes_list(UserData *usr)
 {
     usr->video_mode_list.clear();
 
-    usr->p_ypaworld->win3d = GFXEngine::GFXe.getC3D();
+    usr->p_ypaworld->_win3d = GFXEngine::GFXe.getC3D();
 
     windd_arg256 warg_256;
     warg_256.sort_id = 0;
@@ -745,7 +745,7 @@ void fill_videmodes_list(UserData *usr)
 
     while( id )
     {
-        id = usr->p_ypaworld->win3d->display_func256(&warg_256);
+        id = usr->p_ypaworld->_win3d->display_func256(&warg_256);
 
         usr->video_mode_list.emplace_back();
         video_mode_node &vnode = usr->video_mode_list.back();
@@ -762,10 +762,10 @@ void fill_videmodes_list(UserData *usr)
 
 void NC_STACK_ypaworld::listSaveDir(const std::string &saveDir)
 {
-    auto savedStatuses = ypaworld.playerstatus;
-    auto savedCallsign = ypaworld.GameShell->callSIGN;
-    auto savedMaxroboenrgy = ypaworld.maxroboenergy;
-    auto savedMaxreloadconst = ypaworld.maxreloadconst;
+    auto savedStatuses = playerstatus;
+    auto savedCallsign = GameShell->callSIGN;
+    auto savedMaxroboenrgy = maxroboenergy;
+    auto savedMaxreloadconst = maxreloadconst;
 
     FSMgr::DirIter dir = uaOpenDir(saveDir);
     if ( dir )
@@ -777,8 +777,8 @@ void NC_STACK_ypaworld::listSaveDir(const std::string &saveDir)
             {
                 if ( StriCmp(dirNode->getName(), ".") && StriCmp(dirNode->getName(), "..") )
                 {
-                    ypaworld.GameShell->profiles.emplace_back();
-                    ProfilesNode &profile = ypaworld.GameShell->profiles.back();
+                    GameShell->profiles.emplace_back();
+                    ProfilesNode &profile = GameShell->profiles.back();
 
                     profile.name = dirNode->getName();
 
@@ -792,7 +792,7 @@ void NC_STACK_ypaworld::listSaveDir(const std::string &saveDir)
                         ypa_log_out("Warning, cannot parse %s for time scanning\n", buf.c_str());
 
                     profile.fraction = 1;
-                    profile.totalElapsedTime = ypaworld.playerstatus[1].elapsedTime;
+                    profile.totalElapsedTime = playerstatus[1].elapsedTime;
                 }
             }
         }
@@ -802,10 +802,10 @@ void NC_STACK_ypaworld::listSaveDir(const std::string &saveDir)
         ypa_log_out("Unknown Game-Directory %s\n", saveDir);
     }
 
-    ypaworld.playerstatus = savedStatuses;
-    ypaworld.maxreloadconst = savedMaxreloadconst;
-    ypaworld.maxroboenergy = savedMaxroboenrgy;
-    ypaworld.GameShell->callSIGN = savedCallsign;
+    playerstatus = savedStatuses;
+    maxreloadconst = savedMaxreloadconst;
+    maxroboenergy = savedMaxroboenrgy;
+    GameShell->callSIGN = savedCallsign;
 }
 
 
@@ -898,17 +898,17 @@ void UserData::sub_46A7F8()
 
 
 
-void ypaworld_func154__sub0(_NC_STACK_ypaworld *yw)
+void ypaworld_func154__sub0(NC_STACK_ypaworld *yw)
 {
     if ( yw->movies[World::MOVIE_INTRO] )
     {
-        yw->win3d = GFXEngine::GFXe.getC3D();
+        yw->_win3d = GFXEngine::GFXe.getC3D();
 
         std::string buf;
         sub_412810(yw->movies[World::MOVIE_INTRO], buf);
         const char *v5 = buf.c_str();
 
-        yw->win3d->windd_func323(&v5);
+        yw->_win3d->windd_func323(&v5);
 
         INPe.sub_412D28(&input_states);
         input_states.downed_key = 0;
@@ -995,11 +995,8 @@ void  UserData::sb_0x46ca74()
 
         profile.name = usernamedir;
 
-        std::string tmp;
-
-        tmp = fmt::sprintf("save:%s", usernamedir);
-
-        if ( !uaCreateDir(tmp.c_str()) )
+        std::string tmp = fmt::sprintf("save:%s", usernamedir);
+        if ( !uaCreateDir(tmp) )
         {
             ypa_log_out("Unable to create directory %s\n", tmp.c_str());
             return;
@@ -1042,8 +1039,8 @@ void  UserData::sb_0x46ca74()
                             || tmp.rfind(".def") != std::string::npos
                             || tmp.rfind(".DEF") != std::string::npos) )
                 {
-                    std::string v11 = fmt::sprintf("%s/%s", oldsave.c_str(), tmp.c_str());
-                    std::string v12 = fmt::sprintf("save:%s/%s", usernamedir, tmp.c_str());
+                    std::string v11 = fmt::sprintf("%s/%s", oldsave, tmp);
+                    std::string v12 = fmt::sprintf("save:%s/%s", usernamedir, tmp);
                     sb_0x46ca74__sub0(v11.c_str(), v12.c_str());
                 }
             }
@@ -1071,7 +1068,7 @@ void  UserData::sb_0x46ca74()
     }
 }
 
-void sb_0x47f810__sub0(_NC_STACK_ypaworld *yw)
+void sb_0x47f810__sub0(NC_STACK_ypaworld *yw)
 {
     if ( yw->VhclProtos )
     {
@@ -1125,7 +1122,7 @@ void sb_0x47f810__sub0(_NC_STACK_ypaworld *yw)
     }
 }
 
-void sb_0x47f810(_NC_STACK_ypaworld *yw)
+void sb_0x47f810(NC_STACK_ypaworld *yw)
 {
     sb_0x47f810__sub0(yw);
 
@@ -1145,7 +1142,7 @@ void sb_0x47f810(_NC_STACK_ypaworld *yw)
     }
 }
 
-void sub_44A1FC(_NC_STACK_ypaworld *yw)
+void sub_44A1FC(NC_STACK_ypaworld *yw)
 {
     int v2 = 0;
 
@@ -1239,7 +1236,7 @@ void UserData::sb_0x46cdf8()
 
         std::string v10 = fmt::sprintf("save:%s", usernamedir);
 
-        if ( !uaCreateDir(v10.c_str()) )
+        if ( !uaCreateDir(v10) )
         {
             ypa_log_out("Unable to create directory %s\n", v10.c_str());
             return;
@@ -1328,7 +1325,7 @@ void NC_STACK_ypaworld::SetFarView(bool farvw)
 //Options OK
 void UserData::sb_0x46aa8c()
 {
-    _NC_STACK_ypaworld *yw = p_ypaworld;
+    NC_STACK_ypaworld *yw = p_ypaworld;
 
     int v3 = 0;
 
@@ -1395,12 +1392,12 @@ void UserData::sb_0x46aa8c()
         if ( field_0x13a8 & 2 )
         {
             GFX_flags |= 2;
-            yw->self_full->setYW_skyRender(1);
+            yw->setYW_skyRender(1);
         }
         else
         {
             GFX_flags &= ~2;
-            yw->self_full->setYW_skyRender(0);
+            yw->setYW_skyRender(0);
         }
 
     }
@@ -1411,13 +1408,13 @@ void UserData::sb_0x46aa8c()
         {
             GFX_flags |= 4;
             yw->field_73CE |= 0x40;
-            yw->win3d->setWDD_cursor(1);
+            yw->_win3d->setWDD_cursor(1);
         }
         else
         {
             GFX_flags &= 0xFB;
             yw->field_73CE &= 0xBF;
-            yw->win3d->setWDD_cursor(0);
+            yw->_win3d->setWDD_cursor(0);
         }
 
     }
@@ -1478,7 +1475,7 @@ void UserData::sb_0x46aa8c()
                 v37.guid = win3d_guid;
                 v37.currr = 0;
 
-                yw->win3d->windd_func325(&v37); //Save to file new resolution
+                yw->_win3d->windd_func325(&v37); //Save to file new resolution
 
                 yw->game_default_res = 0x2801E0; //640 x 480
                 resolution = 0x2801E0; //640 x 480
@@ -1493,12 +1490,12 @@ void UserData::sb_0x46aa8c()
         if ( field_0x13a8 & 0x10 )
         {
             GFX_flags |= 0x10;
-            yw->win3d->setWDD_16bitTex(1);
+            yw->_win3d->setWDD_16bitTex(1);
         }
         else
         {
             GFX_flags &= 0xEF;
-            yw->win3d->setWDD_16bitTex(0);
+            yw->_win3d->setWDD_16bitTex(0);
         }
 
         resolution = yw->game_default_res;
@@ -1511,12 +1508,12 @@ void UserData::sb_0x46aa8c()
         if ( field_0x13a8 & 8 )
         {
             GFX_flags |= 8;
-            yw->win3d->setWDD_drawPrim(1);
+            yw->_win3d->setWDD_drawPrim(1);
         }
         else
         {
             GFX_flags &= 0xF7;
-            yw->win3d->setWDD_drawPrim(0);
+            yw->_win3d->setWDD_drawPrim(0);
         }
 
 
@@ -1532,7 +1529,7 @@ void UserData::sb_0x46aa8c()
         else
             v40.resolution = resolution;
 
-        yw->self_full->ypaworld_func174(&v40);
+        yw->ypaworld_func174(&v40);
 
         int v24 = 0;
         for (auto const &nod : video_mode_list)
@@ -1609,7 +1606,7 @@ void UserData::sub_46DC1C()
     yw_NetPrintStartInfo();
 }
 
-int sub_4EDCC4(_NC_STACK_ypaworld *yw)
+int sub_4EDCC4(NC_STACK_ypaworld *yw)
 {
     return yw->field_2d90->field_40 != 8;
 }
@@ -1642,7 +1639,7 @@ int UserData::ypaworld_func158__sub0__sub7()
     return 1;
 }
 
-void sub_4811E8(_NC_STACK_ypaworld *yw, int id)
+void sub_4811E8(NC_STACK_ypaworld *yw, int id)
 {
     if ( id > yw->field_17c4 )
     {
@@ -2024,7 +2021,7 @@ void UserData::ypaworld_func158__sub0__sub1()
     p_YW->GuiWinOpen( &input_listview );
 }
 
-void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
+void sub_4D9550(NC_STACK_ypaworld *yw, int arg)
 {
     char a1a[260];
 
@@ -2072,7 +2069,7 @@ void sub_4D9550(_NC_STACK_ypaworld *yw, int arg)
     set_prefix_replacement("rsrc", rsr);
 }
 
-void sub_4D0C24(_NC_STACK_ypaworld *yw, const char *a1, const char *a2)
+void sub_4D0C24(NC_STACK_ypaworld *yw, const char *a1, const char *a2)
 {
     UserData *usr = yw->GameShell;
 
@@ -2166,7 +2163,7 @@ void UserData::ypaworld_func158__sub0__sub3()
     local_listvw.selectedEntry = i;
 }
 
-void sub_4EDCD8(_NC_STACK_ypaworld *yw)
+void sub_4EDCD8(NC_STACK_ypaworld *yw)
 {
     yw->brief.briefStage = 2;
 }
@@ -2218,22 +2215,22 @@ void UserData::sub_46D9E0( int a2, const char *txt1, const char *txt2, int a5)
     confirm_button->Show();
 }
 
-void ypaworld_func158__sub0__sub9(_NC_STACK_ypaworld *yw)
+void ypaworld_func158__sub0__sub9(NC_STACK_ypaworld *yw)
 {
     yw->brief.briefStage = 1;
 }
 
-void ypaworld_func158__sub0__sub10(_NC_STACK_ypaworld *yw)
+void ypaworld_func158__sub0__sub10(NC_STACK_ypaworld *yw)
 {
     yw->brief.field_2E6C = 1;
 }
 
-void ypaworld_func158__sub0__sub12(_NC_STACK_ypaworld *yw)
+void ypaworld_func158__sub0__sub12(NC_STACK_ypaworld *yw)
 {
     yw->brief.field_2E6C = 3;
 }
 
-void ypaworld_func158__sub0__sub11(_NC_STACK_ypaworld *yw)
+void ypaworld_func158__sub0__sub11(NC_STACK_ypaworld *yw)
 {
     yw->brief.field_2E6C = 2;
 }
@@ -2290,7 +2287,7 @@ void UserData::sub_457BC0()
 
 int NC_STACK_ypaworld::ypaworld_func158__sub0__sub0__sub0()
 {
-    std::string file = fmt::sprintf("data:settings/%s/input.def", ypaworld.lang_name);
+    std::string file = fmt::sprintf("data:settings/%s/input.def", lang_name);
 
     ScriptParser::HandlersList hndls
     {
@@ -2437,7 +2434,7 @@ void  UserData::ypaworld_func158__sub0__sub5(int a2)
 
     while ( a1.name )
     {
-        p_ypaworld->win3d->windd_func324(&a1);
+        p_ypaworld->_win3d->windd_func324(&a1);
         if ( a1.name )
         {
             if ( v4 == d3d_listvw.selectedEntry )
@@ -2633,7 +2630,7 @@ void UserData::sub_46AA0C()
 }
 
 
-int sub_449678(_NC_STACK_ypaworld *yw, struC5 *struc, int kkode)
+int sub_449678(NC_STACK_ypaworld *yw, struC5 *struc, int kkode)
 {
     return struc->downed_key == kkode && ( (struc->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD) || yw->easy_cheat_keys );
 }
@@ -2673,7 +2670,7 @@ void UserData::GameShellUiHandleInput()
     if ( netSelMode )
         yw_HandleNetMsg(p_ypaworld);
 
-    NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(p_ypaworld->win3d);
+    NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(p_ypaworld->_win3d);
 
     if ( netSelMode == 1 )
     {
@@ -4193,7 +4190,7 @@ void UserData::GameShellUiHandleInput()
             SelectedFraction = 1;
             FreeFraction &= 0xFE;
 
-            p_ypaworld->self_full->ypaworld_func181(&v346);
+            p_ypaworld->ypaworld_func181(&v346);
         }
         else if ( r.code == 1205 )
         {
@@ -4203,7 +4200,7 @@ void UserData::GameShellUiHandleInput()
             FreeFraction &= 0xFD;
             SelectedFraction = 2;
 
-            p_ypaworld->self_full->ypaworld_func181(&v346);
+            p_ypaworld->ypaworld_func181(&v346);
         }
         else if ( r.code == 1206 )
         {
@@ -4213,7 +4210,7 @@ void UserData::GameShellUiHandleInput()
             SelectedFraction = 4;
             FreeFraction &= 0xFB;
 
-            p_ypaworld->self_full->ypaworld_func181(&v346);
+            p_ypaworld->ypaworld_func181(&v346);
         }
         else if ( r.code == 1207 )
         {
@@ -4223,7 +4220,7 @@ void UserData::GameShellUiHandleInput()
             SelectedFraction = 8;
             FreeFraction &= 0xF7;
 
-            p_ypaworld->self_full->ypaworld_func181(&v346);
+            p_ypaworld->ypaworld_func181(&v346);
         }
 
         switch ( netSelMode )
@@ -4371,7 +4368,7 @@ void UserData::GameShellUiHandleInput()
                 v353.recvID = 0;
                 v353.garant = 1;
 
-                p_ypaworld->self_full->ypaworld_func181(&v353);
+                p_ypaworld->ypaworld_func181(&v353);
 
                 windp_arg82 v387;
                 v387.receiverFlags = 2;
@@ -4406,7 +4403,7 @@ void UserData::GameShellUiHandleInput()
                 v353.dataSize = sizeof(rdyMsg);
                 v353.garant = 1;
 
-                p_ypaworld->self_full->ypaworld_func181(&v353);
+                p_ypaworld->ypaworld_func181(&v353);
 
                 windp_arg82 v387;
                 v387.receiverFlags = 2;
@@ -4456,7 +4453,7 @@ void UserData::GameShellUiHandleInput()
                     v346.senderID = callSIGN.c_str();
                     v346.garant = 1;
 
-                    p_ypaworld->self_full->ypaworld_func181(&v346);
+                    p_ypaworld->ypaworld_func181(&v346);
 
                     sub_4D0C24(p_ypaworld, callSIGN.c_str(), msgMsg.message);
 
@@ -4656,7 +4653,7 @@ void UserData::GameShellUiHandleInput()
                         v325.recvFlags = 2;
                         v325.recvID = 0;
 
-                        p_ypaworld->self_full->ypaworld_func181(&v325);
+                        p_ypaworld->ypaworld_func181(&v325);
 
                         sub_4D0C24(p_ypaworld, callSIGN.c_str(), msgMsg.message);
                         netName[0] = 0;

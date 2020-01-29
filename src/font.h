@@ -101,9 +101,9 @@ char *FormateClippedText(TileMap *, char *curpos, const char *str, int width_spa
 char *FormateCenteredSkipableItem(TileMap *, char *in, const char *str, int width);
 char *TextRelWidthItem(TileMap *, char *pos, const char *txt, int wdth, int arg);
 
-char *FormateColumnItem(_NC_STACK_ypaworld *yw, char *cmdbuf, int num, ColumnItem *a4);
-char *FormateTextAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg);
-char *FormateAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg);
+char *FormateColumnItem(NC_STACK_ypaworld *yw, char *cmdbuf, int num, ColumnItem *a4);
+char *FormateTextAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg);
+char *FormateAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg);
 };
 
 #endif //FONT_H_INCLUDED

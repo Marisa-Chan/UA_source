@@ -8,7 +8,7 @@
 
 
 
-char *GuiBase::FormateTitle(_NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const char *title, char *in, uint8_t postf_char, int flag)
+char *GuiBase::FormateTitle(NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const char *title, char *in, uint8_t postf_char, int flag)
 {
     int v27 = 0;
     if ( flag & FLAG_WITH_CLOSE )
@@ -63,7 +63,7 @@ char *GuiBase::FormateTitle(_NC_STACK_ypaworld *yw, int xpos, int ypos, int w, c
 }
 
 
-int GuiList::initDialogStrings(_NC_STACK_ypaworld *yw)
+int GuiList::initDialogStrings(NC_STACK_ypaworld *yw)
 {
     char *draw_cmd = (char *)AllocVec(512, 1);
 
@@ -96,7 +96,7 @@ int GuiList::initDialogStrings(_NC_STACK_ypaworld *yw)
     return 1;
 }
 
-int GuiList::InitBuffers(_NC_STACK_ypaworld *yw)
+int GuiList::InitBuffers(NC_STACK_ypaworld *yw)
 {
     char *p = (char *)AllocVec(32, 1);
 
@@ -139,7 +139,7 @@ int GuiList::InitBuffers(_NC_STACK_ypaworld *yw)
     return 1;
 }
 
-void GuiList::SetRect(_NC_STACK_ypaworld *yw, int xpos, int ypos)
+void GuiList::SetRect(NC_STACK_ypaworld *yw, int xpos, int ypos)
 {
     if ( entryWidth < minEntryWidth)
         entryWidth = minEntryWidth;
@@ -216,7 +216,7 @@ int GuiList::initButtons()
     return 1;
 }
 
-void GuiList::FormateTitle(_NC_STACK_ypaworld *yw)
+void GuiList::FormateTitle(NC_STACK_ypaworld *yw)
 {
     if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
     {
@@ -268,7 +268,7 @@ void GuiList::FormateTitle(_NC_STACK_ypaworld *yw)
     }
 }
 
-void GuiList::ScrollParamsFromEntries(_NC_STACK_ypaworld *yw)
+void GuiList::ScrollParamsFromEntries(NC_STACK_ypaworld *yw)
 {
     int v3 = h;
 
@@ -312,7 +312,7 @@ void GuiList::ScrollParamsFromEntries(_NC_STACK_ypaworld *yw)
     scrlSize = v3;
 }
 
-void GuiList::FormateScrollbar(_NC_STACK_ypaworld *yw)
+void GuiList::FormateScrollbar(NC_STACK_ypaworld *yw)
 {
     char *v5 = scrollbar;
 
@@ -456,7 +456,7 @@ void GuiList::FormateScrollbar(_NC_STACK_ypaworld *yw)
     FontUA::set_end(&v5);
 }
 
-void GuiList::FormateItemBlock(_NC_STACK_ypaworld *yw)
+void GuiList::FormateItemBlock(NC_STACK_ypaworld *yw)
 {
     buttons.resize(shownEntries + 8);
 
@@ -470,7 +470,7 @@ void GuiList::FormateItemBlock(_NC_STACK_ypaworld *yw)
 }
 
 
-int GuiList::Init(_NC_STACK_ypaworld *yw, tInit &in)
+int GuiList::Init(NC_STACK_ypaworld *yw, tInit &in)
 {
     closeChar = in.closeChar;
     numEntries = in.numEntries;
@@ -581,7 +581,7 @@ int GuiList::Init(_NC_STACK_ypaworld *yw, tInit &in)
 }
 
 
-char *GuiList::ItemsPreLayout(_NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5)
+char *GuiList::ItemsPreLayout(NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5)
 {
     int v14 = x - (yw->screen_width / 2);
     int v12 = y - (yw->screen_height / 2);
@@ -607,7 +607,7 @@ char *GuiList::ItemsPreLayout(_NC_STACK_ypaworld *yw, char *cmdbuf, int tileset,
     return tmp;
 }
 
-char *GuiList::ItemsPostLayout(_NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5)
+char *GuiList::ItemsPostLayout(NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5)
 {
     char *tmp = cmdbuf;
     FontUA::reset_tileset(&tmp, tileset);
@@ -620,7 +620,7 @@ char *GuiList::ItemsPostLayout(_NC_STACK_ypaworld *yw, char *cmdbuf, int tileset
 }
 
 
-void GuiList::InputHandle(_NC_STACK_ypaworld *yw, struC5 *struc)
+void GuiList::InputHandle(NC_STACK_ypaworld *yw, struC5 *struc)
 {
     if ( flags & (FLAG_CLOSED | FLAG_ICONIFED) )
     {
@@ -940,7 +940,7 @@ void GuiBase::Attach(GuiBaseList &_lst)
     AttachedTo = &_lst;
 }
 
-void GuiList::Formate(_NC_STACK_ypaworld *yw)
+void GuiList::Formate(NC_STACK_ypaworld *yw)
 {
     FormateTitle(yw);
     FormateScrollbar(yw);
