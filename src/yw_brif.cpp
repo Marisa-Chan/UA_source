@@ -1853,7 +1853,7 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, in
         v35[0].flags = 36;
 
         char v34[32];
-        sprintf(v34, "%d", brf->field_42BC[1].score);
+        sprintf(v34, "%d", brf->field_42BC[yw->playerOwner].score);
 
         v35[1].txt = v34;
         v35[1].fontID = 15;
@@ -1875,7 +1875,7 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, in
         v35[0].postfixChar = 0;
         v35[0].fontID = 15;
 
-        sprintf(v34, "%d", brf->field_42BC[1].score + brf->copy_of_playerstatus[1].score);
+        sprintf(v34, "%d", brf->field_42BC[yw->playerOwner].score + brf->copy_of_playerstatus[yw->playerOwner].score);
 
         v35[1].txt = v34;
         v35[1].fontID = 15;
@@ -1960,7 +1960,7 @@ char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, i
         a4a[0].postfixChar = 0;
         a4a[0].fontID = 15;
 
-        v19 = (brf->field_41D8 + brf->copy_of_playerstatus[1].elapsedTime) / 1024;
+        v19 = (brf->field_41D8 + brf->copy_of_playerstatus[yw->playerOwner].elapsedTime) / 1024;
         sprintf(v28, "%02d:%02d:%02d", v19 / 60 / 60, v19 / 60 % 60, v19 % 60);
 
         a4a[1].txt = v28;
