@@ -914,7 +914,7 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
             _vhcl->scale_fx_p3 = std::stol(pp3, NULL, 0);
 
             int tmp = 0;
-            while ( !stok.GetNext(&pp0) )
+            while ( stok.GetNext(&pp0) )
             {
                 _vhcl->scale_fx_pXX[tmp] = std::stol(pp0, NULL, 0);
                 tmp++;
