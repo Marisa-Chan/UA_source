@@ -5426,7 +5426,7 @@ int UserData::KeyIndexFromConfig(uint32_t type, uint32_t index)
         World::KEYC_PAUSE,      -1,
         -1,                     -1,
         -1,                     World::KEYC_TO_ALL,
-        World::KEYC_TO_HOST,    World::KEYC_TO_COMM,
+        World::KEYC_AGGR_1,     World::KEYC_AGGR_2,
 
         // 40
         World::KEYC_AGGR_3,     World::KEYC_AGGR_4,
