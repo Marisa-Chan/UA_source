@@ -27,12 +27,11 @@ extern int word_5A50C0;
 extern int dword_5A50B6;
 extern int dword_5A50B6_h;
 
-void sb_0x4eb94c__sub0(NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, vec3d *pos, baseRender_msg *arg)
+void sb_0x4eb94c__sub0(NC_STACK_ypaworld *yw, bool clockwise, int a3, vec3d *pos, baseRender_msg *arg)
 {
     //brf_obj *brobj = &yw->brief.brf_objs + obj_id; // Only one object
-    brf_obj *brobj = &yw->brief.brf_objs;
 
-    NC_STACK_base *model_base = yw->vhcls_models[ yw->VhclProtos[ brobj->object_id ].vp_normal ].base;
+    NC_STACK_base *model_base = yw->vhcls_models[ yw->VhclProtos[ yw->brief.ViewingObject.ID ].vp_normal ].base;
 
     model_base->setBASE_visLimit(16000);
     model_base->setBASE_fadeLength(100);
@@ -43,23 +42,23 @@ void sb_0x4eb94c__sub0(NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, vec3d
 
     model_base->base_func68(&tmp);
 
-    if ( obj_id >= 3 )
+    if (clockwise)
     {
-        brobj->field_8 -= (arg->frameTime / 5);
-        if ( brobj->field_8 < 0 )
-            brobj->field_8 += 360;
+        yw->brief.ViewingObjectAngle += (arg->frameTime / 5);
+        if ( yw->brief.ViewingObjectAngle >= 360 )
+            yw->brief.ViewingObjectAngle -= 360;
     }
     else
     {
-        brobj->field_8 += (arg->frameTime / 5);
-        if ( brobj->field_8 >= 360 )
-            brobj->field_8 -= 360;
+        yw->brief.ViewingObjectAngle -= (arg->frameTime / 5);
+        if ( yw->brief.ViewingObjectAngle < 0 )
+            yw->brief.ViewingObjectAngle += 360;
     }
 
     flag_xyz2 rot;
     rot.flag = 7;
     rot.x = a3 + 10;
-    rot.y = brobj->field_8;
+    rot.y = yw->brief.ViewingObjectAngle;
     rot.z = 0;
 
     model_base->base_func70(&rot);
@@ -67,32 +66,29 @@ void sb_0x4eb94c__sub0(NC_STACK_ypaworld *yw, unsigned int obj_id, int a3, vec3d
     model_base->base_func77(arg); //Draw vehicle
 }
 
-void sb_0x4eb94c__sub1(NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, vec3d *pos, baseRender_msg *arg)
+void sb_0x4eb94c__sub1(NC_STACK_ypaworld *yw, bool clockwise, int rot, vec3d *pos, baseRender_msg *arg)
 {
-    //brf_obj *brobj = &yw->brief.brf_objs + obj_id; // Only one object
-    brf_obj *brobj = &yw->brief.brf_objs;
-
-    secType *scType = &yw->secTypes[brobj->object_id];
+    secType *scType = &yw->secTypes[yw->brief.ViewingObject.ID];
 
     NC_STACK_base *v7 = yw->vhcls_models[0].base;
 
-    if ( obj_id >= 3 )
+    if (clockwise)
     {
-        brobj->field_8 -= (arg->frameTime / 5);
-        if ( brobj->field_8 < 0 )
-            brobj->field_8 += 360;
+        yw->brief.ViewingObjectAngle += (arg->frameTime / 5);
+        if ( yw->brief.ViewingObjectAngle >= 360 )
+            yw->brief.ViewingObjectAngle -= 360;
     }
     else
     {
-        brobj->field_8 += (arg->frameTime / 5);
-        if ( brobj->field_8 >= 360 )
-            brobj->field_8 -= 360;
+        yw->brief.ViewingObjectAngle -= (arg->frameTime / 5);
+        if ( yw->brief.ViewingObjectAngle < 0 )
+            yw->brief.ViewingObjectAngle += 360;
     }
 
     flag_xyz2 v17;
     v17.flag = 7;
     v17.x = rot + 10;
-    v17.y = brobj->field_8;
+    v17.y = yw->brief.ViewingObjectAngle;
     v17.z = 0;
 
     v7->base_func70(&v17);
@@ -140,14 +136,11 @@ void sb_0x4eb94c__sub1(NC_STACK_ypaworld *yw, unsigned int obj_id, int rot, vec3
     }
 }
 
-void sb_0x4eb94c(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int object_id, int a5)
+void sb_0x4eb94c(NC_STACK_ypaworld *yw, BriefengScreen *brf, struC5 *struc, int a5)
 {
-    //brf_obj *brobj = &brf->brf_objs + object_id; // Only one object
-    brf_obj *brobj = &brf->brf_objs;
-
-    brf->field_4174.frameTime = struc->period;
-    brf->field_4174.globTime = brf->currTime;
-    brf->field_4174.ownerID = 1;
+    brf->ObjRenderParams.frameTime = struc->period;
+    brf->ObjRenderParams.globTime = brf->CurrTime;
+    brf->ObjRenderParams.ownerID = 1;
 
     TFEngine::TForm3D v14;
     memset(&v14, 0, sizeof(TFEngine::TForm3D));
@@ -159,24 +152,24 @@ void sb_0x4eb94c(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int obj
 
     vec3d pos;
 
-    if ( brobj->field_0 )
+    if ( brf->ViewingObject ) // Not none
     {
-        pos.x = (brobj->field_18 + brobj->field_10) * 0.5;
-        pos.y = (brobj->field_1C + brobj->field_14) * 0.5;
+        pos.x = (brf->ViewingObjectRect.x2 + brf->ViewingObjectRect.x1) / 2.0;
+        pos.y = (brf->ViewingObjectRect.y2 + brf->ViewingObjectRect.y1) / 2.0;
 
         float v16;
         float v17;
         float v18;
         int rot;
 
-        if ( brobj->field_0 == 1 )
+        if ( brf->ViewingObject.ObjType == BriefObject::TYPE_SECTOR )
         {
             v16 = 9600.0;
             v17 = 3600.0;
         }
-        else if ( brobj->field_0 == 2 )
+        else if ( brf->ViewingObject.ObjType == BriefObject::TYPE_VEHICLE )
         {
-            float radius = yw->VhclProtos[brobj->object_id].radius;
+            float radius = yw->VhclProtos[brf->ViewingObject.ID].radius;
 
             v17 = radius * 7.0;
             v16 = radius * 32.0;
@@ -197,38 +190,38 @@ void sb_0x4eb94c(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int obj
         pos.y = pos.y * v18;
         pos.x = pos.x * v18;
 
-        if ( brobj->field_0 == 1 )
+        if ( brf->ViewingObject.ObjType == BriefObject::TYPE_SECTOR )
         {
-            sb_0x4eb94c__sub1(yw, object_id, rot, &pos, &brf->field_4174);
+            sb_0x4eb94c__sub1(yw, true, rot, &pos, &brf->ObjRenderParams);
         }
-        else if ( brobj->field_0 == 2 )
+        else if ( brf->ViewingObject.ObjType == BriefObject::TYPE_VEHICLE )
         {
-            sb_0x4eb94c__sub0(yw, object_id, rot, &pos, &brf->field_4174);
+            sb_0x4eb94c__sub0(yw, true, rot, &pos, &brf->ObjRenderParams);
         }
     }
 }
 
-void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc)
+void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, BriefengScreen *brf, struC5 *struc)
 {
     yw->_win3d->BeginScene();
 
-    brf->field_4174.frameTime = 1;
-    brf->field_4174.globTime = 1;
-    brf->field_4174.adeCount = 0;
-    brf->field_4174.ownerID = 1;
-    brf->field_4174.minZ = 17.0;
-    brf->field_4174.maxZ = 32000.0;
-    brf->field_4174.flags = 0;
-    brf->field_4174.rndrStack = &NC_STACK_base::renderStack;
+    brf->ObjRenderParams.frameTime = 1;
+    brf->ObjRenderParams.globTime = 1;
+    brf->ObjRenderParams.adeCount = 0;
+    brf->ObjRenderParams.ownerID = 1;
+    brf->ObjRenderParams.minZ = 17.0;
+    brf->ObjRenderParams.maxZ = 32000.0;
+    brf->ObjRenderParams.flags = 0;
+    brf->ObjRenderParams.rndrStack = &NC_STACK_base::renderStack;
 
-    if ( brf->brf_objs.field_0 )
+    if ( brf->ViewingObject ) // Not none
     {
-        int v7 = brf->currTime - brf->brf_objs.field_C;
+        int v7 = brf->CurrTime - brf->ViewingObjectStartTime;
         if ( v7 > 50 )
-            sb_0x4eb94c(yw, brf, struc, 0, v7 - 50);
+            sb_0x4eb94c(yw, brf, struc, v7 - 50);
     }
 
-    brf->field_4174.rndrStack->render();
+    brf->ObjRenderParams.rndrStack->render();
 
     yw->_win3d->EndScene();
 }
@@ -248,9 +241,6 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
         if ( usr->keyConfig[v24].slider_name )
         {
             FontUA::ColumnItem a1a[2];
-
-            //v5 = v24;
-            memset(a1a, 0, sizeof(a1a));
 
             int v33;
             int v31;
@@ -274,7 +264,7 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
 
             int v34 = usr->input_listview.entryWidth - 2 * usr->p_ypaworld->font_default_w__b + 1;
 
-            char v19[200];
+            std::string v19;
 
             if ( usr->keyConfig[ v24 ].inp_type == World::KEYC_TYPE_SLIDER )
             {
@@ -295,21 +285,17 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
                 if ( usr->keyConfig[ v24 ].field_10 & 2 )
                     nm1 = get_lang_string(ypaworld__string_pointers, 308, "?");
 
-                sprintf(v19, "%s/%s", nm1.c_str(), a4.c_str());
+                v19 = fmt::sprintf("%s/%s", nm1, a4);
             }
             else
             {
-                std::string v8;
-
                 if ( usr->keyConfig[ v24 ].KeyCode )
-                    v8 = Input::KeysInfo[ usr->keyConfig[ v24 ].KeyCode ]._title;
+                    v19 = Input::KeysInfo[ usr->keyConfig[ v24 ].KeyCode ]._title;
                 else
-                    v8 = "-";
+                    v19 = "-";
 
                 if ( usr->keyConfig[ v24 ].field_10 & 1 )
-                    v8 = get_lang_string(ypaworld__string_pointers, 308, "?");
-
-                sprintf(v19, "%s", v8.c_str());
+                    v19 = get_lang_string(ypaworld__string_pointers, 308, "?");
             }
 
             a1a[0].txt = usr->keyConfig[v24].slider_name;
@@ -764,8 +750,8 @@ void NC_STACK_ypaworld::listSaveDir(const std::string &saveDir)
 {
     auto savedStatuses = playerstatus;
     auto savedCallsign = GameShell->callSIGN;
-    auto savedMaxroboenrgy = maxroboenergy;
-    auto savedMaxreloadconst = maxreloadconst;
+    auto savedMaxroboenrgy = _maxRoboEnergy;
+    auto savedMaxreloadconst = _maxReloadConst;
 
     FSMgr::DirIter dir = uaOpenDir(saveDir);
     if ( dir )
@@ -803,8 +789,8 @@ void NC_STACK_ypaworld::listSaveDir(const std::string &saveDir)
     }
 
     playerstatus = savedStatuses;
-    maxreloadconst = savedMaxreloadconst;
-    maxroboenergy = savedMaxroboenrgy;
+    _maxReloadConst = savedMaxreloadconst;
+    _maxRoboEnergy = savedMaxroboenrgy;
     GameShell->callSIGN = savedCallsign;
 }
 
@@ -900,7 +886,7 @@ void UserData::sub_46A7F8()
 
 void ypaworld_func154__sub0(NC_STACK_ypaworld *yw)
 {
-    if ( yw->movies[World::MOVIE_INTRO] )
+    if ( !yw->movies[World::MOVIE_INTRO].empty() )
     {
         yw->_win3d = GFXEngine::GFXe.getC3D();
 
@@ -1247,7 +1233,7 @@ void UserData::sb_0x46cdf8()
         field_1612 = disk_listvw.numEntries;
     }
 
-    p_ypaworld->field_2d90->buddies_count = 0;
+    p_ypaworld->_levelInfo->Buddies.clear();
 
     sb_0x47f810(p_ypaworld);
 
@@ -1262,18 +1248,17 @@ void UserData::sb_0x46cdf8()
 
         sub_44A1FC(p_ypaworld);
 
-        p_ypaworld->maxroboenergy = 0;
-        p_ypaworld->maxreloadconst = 0;
+        p_ypaworld->_maxRoboEnergy = 0;
+        p_ypaworld->_maxReloadConst = 0;
 
         for(auto &x : p_ypaworld->playerstatus)
 			x.clear();
 
         field_0x1744 = 0;
 
-        p_ypaworld->field_2d90->field_74 = 128;
         p_ypaworld->beamenergy = p_ypaworld->beam_energy_start;
 
-        for(auto &x : p_ypaworld->field_2d90->jodiefoster)
+        for(auto &x : p_ypaworld->_levelInfo->JodieFoster)
 			x = 0;
 
         field_3426 = 0;
@@ -1608,7 +1593,7 @@ void UserData::sub_46DC1C()
 
 int sub_4EDCC4(NC_STACK_ypaworld *yw)
 {
-    return yw->field_2d90->field_40 != 8;
+    return yw->_levelInfo->State != 8;
 }
 
 int sub_47B388(int a1, const char *a2)
@@ -1714,7 +1699,7 @@ void UserData::sub_4DE248(int id)
     case 1019:
         if ( sub_4EDCC4(p_ypaworld) )
         {
-            if ( p_ypaworld->field_2d90->field_40 == 9 )
+            if ( p_ypaworld->_levelInfo->State == 9 )
                 sub_4811E8(p_ypaworld, 0x49);
             else
                 sub_4811E8(p_ypaworld, 0x8B);
@@ -2165,7 +2150,7 @@ void UserData::ypaworld_func158__sub0__sub3()
 
 void sub_4EDCD8(NC_STACK_ypaworld *yw)
 {
-    yw->brief.briefStage = 2;
+    yw->brief.Stage = 2;
 }
 
 void UserData::sub_46D9E0( int a2, const char *txt1, const char *txt2, int a5)
@@ -2217,22 +2202,17 @@ void UserData::sub_46D9E0( int a2, const char *txt1, const char *txt2, int a5)
 
 void ypaworld_func158__sub0__sub9(NC_STACK_ypaworld *yw)
 {
-    yw->brief.briefStage = 1;
-}
-
-void ypaworld_func158__sub0__sub10(NC_STACK_ypaworld *yw)
-{
-    yw->brief.field_2E6C = 1;
+    yw->brief.Stage = 1;
 }
 
 void ypaworld_func158__sub0__sub12(NC_STACK_ypaworld *yw)
 {
-    yw->brief.field_2E6C = 3;
+    yw->brief.TimerStatus = 3;
 }
 
 void ypaworld_func158__sub0__sub11(NC_STACK_ypaworld *yw)
 {
-    yw->brief.field_2E6C = 2;
+    yw->brief.TimerStatus = 2;
 }
 
 
@@ -2746,7 +2726,7 @@ void UserData::GameShellUiHandleInput()
 
     if ( sub_4EDCC4(p_ypaworld) )
     {
-        if ( p_ypaworld->field_2d90->field_40 != 9 && !field_0xc )
+        if ( p_ypaworld->_levelInfo->State != 9 && !field_0xc )
         {
             v410.butID = 1014;
             sub_bar_button->button_func66(&v410);
@@ -2762,7 +2742,7 @@ void UserData::GameShellUiHandleInput()
             sub_bar_button->button_func71(1019, get_lang_string(ypaworld__string_pointers, 2438, "2438 == BACK"));
         }
 
-        if ( p_ypaworld->field_2d90->field_40 == 9 )
+        if ( p_ypaworld->_levelInfo->State == 9 )
         {
             v410.butID = 1011;
             sub_bar_button->button_func66(&v410);
@@ -2857,7 +2837,6 @@ void UserData::GameShellUiHandleInput()
             {
             case 1:
             {
-                field_AE2 = 0;
                 field_3426 = 0;
                 p_ypaworld->isNetGame = 0;
 
@@ -2911,7 +2890,6 @@ void UserData::GameShellUiHandleInput()
             {
             case 1:
             {
-                field_AE2 = 0;
                 field_3426 = 0;
                 p_ypaworld->isNetGame = 0;
                 sub_bar_button->Hide();
@@ -3065,7 +3043,6 @@ void UserData::GameShellUiHandleInput()
 
         case 1019:
         {
-            field_AE2 = 0;
             field_3426 = 0;
             p_ypaworld->isNetGame = 0;
 
@@ -3091,15 +3068,11 @@ void UserData::GameShellUiHandleInput()
             break;
 
         case 1016:
-            field_AE2 = 0;
             ypaworld_func158__sub0__sub12(p_ypaworld);
             break;
 
         case 1020:
-            if ( field_AE2 )
-                ypaworld_func158__sub0__sub10(p_ypaworld);
-            else
-                ypaworld_func158__sub0__sub11(p_ypaworld);
+            ypaworld_func158__sub0__sub11(p_ypaworld);
             break;
 
         case 1026:

@@ -26,15 +26,6 @@ struct robo_arg128
     NC_STACK_ypabact *comm_bacto;
 };
 
-struct robo_arg133
-{
-    int type;
-    int num;
-    vec3d pos;
-    int field_14;
-    int *hetero_vehicles;
-};
-
 struct robo_arg134
 {
     NC_STACK_ypabact *unit;
@@ -95,7 +86,7 @@ public:
     virtual void yparobo_func130(IDVPair *arg);
     virtual void yparobo_func131(IDVPair *arg);
     virtual size_t yparobo_func132(setTarget_msg *arg);
-    virtual int yparobo_func133(robo_arg133 *arg);
+    virtual bool MakeSquad(const std::vector<int> &VhclIDS, vec3d pos, bool usable);
     virtual int placeMessage(robo_arg134 *arg);
 
     virtual size_t compatcall(int method_id, void *data);

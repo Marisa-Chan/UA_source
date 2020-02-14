@@ -33,8 +33,8 @@ int yw_InitTooltips(NC_STACK_ypaworld *yw);
 int loadTOD(NC_STACK_ypaworld *yw, const char *fname);
 int writeTOD(NC_STACK_ypaworld *yw, const char *fname, int tod);
 
-void sb_0x4eb94c(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc, int object_id, int a5);
-void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *struc);
+void sb_0x4eb94c(NC_STACK_ypaworld *yw, BriefengScreen *brf, struC5 *struc, int a5);
+void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, BriefengScreen *brf, struC5 *struc);
 
 void set_keys_vals(NC_STACK_ypaworld *yw);
 void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr);
@@ -59,7 +59,7 @@ void ypaworld_func156__sub1(UserData *usr);
 void yw_freeDebrief(NC_STACK_ypaworld *yw);
 void yw_calcPlayerScore(NC_STACK_ypaworld *yw);
 
-int sub_4DA41C(NC_STACK_ypaworld *yw, mapProto *mapp, const char *fname);
+int sub_4DA41C(NC_STACK_ypaworld *yw, LevelDesc *mapp, const char *fname);
 
 void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
 
@@ -102,9 +102,8 @@ void sub_4811E8(NC_STACK_ypaworld *yw, int id);
 int cells_mark_type(NC_STACK_ypaworld *yw, const char *a2);
 int cells_mark_owner(NC_STACK_ypaworld *yw, const char *a2);
 int cells_mark_hight(NC_STACK_ypaworld *yw, const char *a2);
-int yw_createRobos(NC_STACK_ypaworld *yw, int robos_count, MapRobo *robo);
+
 int sub_44B9B8(NC_STACK_ypaworld *yw, const char *a3);
-void yw_InitSquads(NC_STACK_ypaworld *yw, int cnt, squadProto *squads);
 void yw_InitBuddies(NC_STACK_ypaworld *yw);
 void yw_InitGates(NC_STACK_ypaworld *yw);
 void yw_InitSuperItems(NC_STACK_ypaworld *yw);
@@ -402,10 +401,6 @@ NC_STACK_bitmap * loadDisk_screen(NC_STACK_ypaworld *yw);
 void draw_splashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen);
 void deleteSplashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen);
 
-void ypaworld_func184__sub0(NC_STACK_ypaworld *yw, yw_f726c *hist_list, yw_arg184 *arg);
-void yw_score(NC_STACK_ypaworld *yw, yw_arg184 *arg, player_status *pl_status);
-uint8_t *yw_histbf_read_evnt(uint8_t *st, yw_arg184 *arg);
-
 void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection = false);
 uint32_t yw_GetColor(NC_STACK_ypaworld *yw, int color_id);
 void yw_debriefUpdate(NC_STACK_ypaworld *yw, struC5 *inpt);
@@ -428,7 +423,7 @@ void sub_4D0C24(NC_STACK_ypaworld *yw, const char *a1, const char *a2);
 
 
 void sub_4D9550(NC_STACK_ypaworld *yw, int arg);
-void sub_47C1EC(NC_STACK_ypaworld *yw, gemProto *gemProt, int *a3, int *a4);
+void sub_47C1EC(NC_STACK_ypaworld *yw, MapGem *gemProt, int *a3, int *a4);
 
 void yw_NetMsgHndlLoop(NC_STACK_ypaworld *yw);
 void yw_NetDrawStats(NC_STACK_ypaworld *yw);

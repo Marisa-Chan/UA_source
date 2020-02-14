@@ -169,7 +169,7 @@ public:
         SKEL_ATT_POLYPNTCNT = 0x80002004
     };
 
-    virtual UAskeleton::Data *getSKEL_pSkelet();
+    virtual UAskeleton::Data *GetSkelet();
     virtual int getSKEL_pntCount();
     virtual int getSKEL_senCount();
     virtual int getSKEL_polyCount();

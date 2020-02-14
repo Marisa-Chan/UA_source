@@ -19,13 +19,13 @@ struct vhclSndFX;
 struct VhclProto;
 struct WeapProto;
 struct BuildProto;
-struct mapProto;
+struct LevelDesc;
 struct MapRobo;
-struct gemProto;
-struct squadProto;
-struct gateProto;
+struct MapGem;
+struct MapSquad;
+struct MapGate;
 struct dbmapProto;
-struct supetItemProto;
+struct MapSuperItem;
 struct stru_LevelNet;
 
 namespace World
@@ -146,7 +146,7 @@ class BuddyParser : public ScriptParser::DataHandler
 public:
     BuddyParser(NC_STACK_ypaworld *o) : _o(*o) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
-    virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt) { return !StriCmp(word, "begin_buddy"); };
+    virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
     NC_STACK_ypaworld &_o;
 };
@@ -220,58 +220,57 @@ protected:
 class LevelDataParser : public ScriptParser::DataHandler
 {
 public:
-    LevelDataParser(NC_STACK_ypaworld *o, mapProto *p) : _o(*o), _m(*p) {} ;
+    LevelDataParser(NC_STACK_ypaworld *o, LevelDesc *p) : _o(*o), _m(*p) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
     NC_STACK_ypaworld &_o;
-    mapProto &_m;
+    LevelDesc &_m;
 };
 
 class MapRobosParser : public ScriptParser::DataHandler
 {
 public:
-    MapRobosParser(mapProto *m) : _m(*m), _r(NULL) {} ;
+    MapRobosParser(LevelDesc *m) : _m(*m), _r(NULL) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
-    mapProto &_m;
+    LevelDesc &_m;
     MapRobo *_r;
 };
 
 class MapSizesParser : public ScriptParser::DataHandler
 {
 public:
-    MapSizesParser(mapProto *m) : _m(*m) {} ;
+    MapSizesParser(LevelDesc *m) : _m(*m) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt) { return !StriCmp(word, "begin_maps"); };
 protected:
     void ParseSizes(ScriptParser::Parser &parser, int *outx, int *outy);
 
-    mapProto &_m;
+    LevelDesc &_m;
 };
 
 class LevelGemParser : public ScriptParser::DataHandler
 {
 public:
-    LevelGemParser(NC_STACK_ypaworld *o) : _o(*o), _g(NULL), _count(0) {} ;
+    LevelGemParser(NC_STACK_ypaworld *o) : _o(*o), _g(NULL) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
     NC_STACK_ypaworld &_o;
-    gemProto *_g;
-    int _count;
+    MapGem *_g;
 };
 
 class LevelSquadParser : public ScriptParser::DataHandler
 {
 public:
-    LevelSquadParser(mapProto *m) : _m(*m), _s(NULL) {} ;
+    LevelSquadParser(LevelDesc *m) : _m(*m), _s(NULL) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
-    mapProto &_m;
-    squadProto *_s;
+    LevelDesc &_m;
+    MapSquad *_s;
 };
 
 class LevelGatesParser : public ScriptParser::DataHandler
@@ -282,17 +281,17 @@ public:
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
     NC_STACK_ypaworld &_o;
-    gateProto *_g;
+    MapGate *_g;
 };
 
 class LevelMbMapParser : public ScriptParser::DataHandler
 {
 public:
-    LevelMbMapParser(mapProto *m) : _m(*m), _d(NULL) {} ;
+    LevelMbMapParser(LevelDesc *m) : _m(*m), _d(NULL) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
-    mapProto &_m;
+    LevelDesc &_m;
     dbmapProto *_d;
 };
 
@@ -305,22 +304,22 @@ protected:
 class LevelMapsParser : public ScriptParser::DataHandler, public MapAsPlaneBytes
 {
 public:
-    LevelMapsParser(NC_STACK_ypaworld *o, mapProto *m) : _o(*o), _m(*m) {} ;
+    LevelMapsParser(NC_STACK_ypaworld *o, LevelDesc *m) : _o(*o), _m(*m) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
     NC_STACK_ypaworld &_o;
-    mapProto &_m;
+    LevelDesc &_m;
 };
 
 class LevelDebMapParser : public ScriptParser::DataHandler
 {
 public:
-    LevelDebMapParser(mapProto *m) : _m(*m), _d(NULL) {} ;
+    LevelDebMapParser(LevelDesc *m) : _m(*m), _d(NULL) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
-    mapProto &_m;
+    LevelDesc &_m;
     dbmapProto *_d;
 };
 
@@ -343,7 +342,7 @@ public:
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
     NC_STACK_ypaworld &_o;
-    supetItemProto *_s;
+    MapSuperItem *_s;
 };
 
 class ShellSoundParser : public ScriptParser::DataHandler

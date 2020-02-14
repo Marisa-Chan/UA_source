@@ -21,6 +21,7 @@
         <in>zndNet.cpp</in>
       </df>
       <df name="world">
+        <in>history.h</in>
         <in>parsers.cpp</in>
         <in>saveparsers.cpp</in>
       </df>
@@ -56,6 +57,7 @@
       <in>log.cpp</in>
       <in>lstvw.cpp</in>
       <in>main.cpp</in>
+      <in>memstream.h</in>
       <in>network.cpp</in>
       <in>nlist.cpp</in>
       <in>nucleas.cpp</in>
@@ -298,6 +300,8 @@
         <ccTool flags="0">
         </ccTool>
       </item>
+      <item path="memstream.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="netlib/client.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
@@ -385,6 +389,8 @@
       <item path="wintimer.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
+      </item>
+      <item path="world/history.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="world/parsers.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">

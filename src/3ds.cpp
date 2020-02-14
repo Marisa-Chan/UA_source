@@ -218,7 +218,7 @@ size_t NC_STACK_3ds::readChunkVertex(FSMgr::FileHandle *fil, size_t sz)
     init_vals.Add(NC_STACK_skeleton::SKEL_ATT_POINTSCNT, numvertex);
 
     OBJ_SKELETON = Nucleus::CInit<NC_STACK_skeleton>(init_vals);
-    UAskeleton::Data *dat = OBJ_SKELETON->getSKEL_pSkelet();
+    UAskeleton::Data *dat = OBJ_SKELETON->GetSkelet();
 
     for (int i = 0; i < numvertex; i++)
     {
@@ -241,7 +241,7 @@ size_t NC_STACK_3ds::readChunkFaces(FSMgr::FileHandle *fil, size_t sz)
     readed += 2;
     printf("faces %d\n", numfaces);
 
-    UAskeleton::Data *dat = OBJ_SKELETON->getSKEL_pSkelet();
+    UAskeleton::Data *dat = OBJ_SKELETON->GetSkelet();
 
     skeleton_130_arg arg;
     arg.skeleton = dat;
@@ -524,7 +524,7 @@ size_t NC_STACK_3ds::base_func77(baseRender_msg *arg)
 
     if ( OBJ_SKELETON )
     {
-        UAskeleton::Data *skeldat = OBJ_SKELETON->getSKEL_pSkelet();
+        UAskeleton::Data *skeldat = OBJ_SKELETON->GetSkelet();
 
         if ( !(flags & FLAG_MAINOBJT) )
         {

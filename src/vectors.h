@@ -14,6 +14,12 @@ struct Tvec2d
         x = 0.0;
         y = 0.0;
     }
+    
+    Tvec2d( const Tvec2d<T> &b)
+    {
+        x = b.x;
+        y = b.y;
+    }
 
     Tvec2d(T _x, T _y)
     {
@@ -214,6 +220,13 @@ struct Tvec3d
         x = 0.0;
         y = 0.0;
         z = 0.0;
+    }
+    
+    Tvec3d(const Tvec3d<T> &b)
+    {
+        x = b.x;
+        y = b.y;
+        z = b.z;
     }
 
     Tvec3d(T _x, T _y, T _z)
@@ -420,6 +433,11 @@ struct Tvec3d
     static const Tvec3d X0Z(const Tvec2d<T> &in)
     {
         return Tvec3d(in.x, 0.0, in.y);
+    }
+    
+    static const Tvec3d X0Z(const Tvec3d<T> &in)
+    {
+        return Tvec3d(in.x, 0.0, in.z);
     }
 
     static const Tvec3d OX(T _x)

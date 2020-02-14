@@ -1264,7 +1264,7 @@ void NC_STACK_base::setBASE_skeleton(NC_STACK_skeleton *skel)
             delete_class_obj(OBJ_SKELETON);
 
         OBJ_SKELETON = skel;
-        renderMsg.sklt = skel->getSKEL_pSkelet();
+        renderMsg.sklt = skel->GetSkelet();
     }
 }
 

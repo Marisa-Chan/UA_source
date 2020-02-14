@@ -58,11 +58,11 @@ int UserParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
     }
     else if ( !StriCmp(p1, "maxroboenergy") )
     {
-        _o.maxroboenergy = std::stol(p2, NULL, 0);
+        _o._maxRoboEnergy = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "maxreloadconst") )
     {
-        _o.maxreloadconst = std::stol(p2, NULL, 0);
+        _o._maxReloadConst = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "numbuddies") )
     {
@@ -114,27 +114,27 @@ int UserParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
         std::string val;
         if ( stok.GetNext(&val) )
         {
-            _o.field_2d90->jodiefoster[0] = std::stol(val, NULL, 0);
+            _o._levelInfo->JodieFoster[0] = std::stol(val, NULL, 0);
             if ( stok.GetNext(&val) )
             {
-                _o.field_2d90->jodiefoster[1] = std::stol(val, NULL, 0);
+                _o._levelInfo->JodieFoster[1] = std::stol(val, NULL, 0);
                 if ( stok.GetNext(&val) )
                 {
-                    _o.field_2d90->jodiefoster[2] = std::stol(val, NULL, 0);
+                    _o._levelInfo->JodieFoster[2] = std::stol(val, NULL, 0);
                     if ( stok.GetNext(&val) )
                     {
-                        _o.field_2d90->jodiefoster[3] = std::stol(val, NULL, 0);
+                        _o._levelInfo->JodieFoster[3] = std::stol(val, NULL, 0);
                         if ( stok.GetNext(&val) )
                         {
-                            _o.field_2d90->jodiefoster[4] = std::stol(val, NULL, 0);
+                            _o._levelInfo->JodieFoster[4] = std::stol(val, NULL, 0);
                             if ( stok.GetNext(&val) )
                             {
-                                _o.field_2d90->jodiefoster[5] = std::stol(val, NULL, 0);
+                                _o._levelInfo->JodieFoster[5] = std::stol(val, NULL, 0);
                                 if ( stok.GetNext(&val) )
                                 {
-                                    _o.field_2d90->jodiefoster[6] = std::stol(val, NULL, 0);
+                                    _o._levelInfo->JodieFoster[6] = std::stol(val, NULL, 0);
                                     if ( stok.GetNext(&val) )
-                                        _o.field_2d90->jodiefoster[7] = std::stol(val, NULL, 0);
+                                        _o._levelInfo->JodieFoster[7] = std::stol(val, NULL, 0);
                                 }
                             }
                         }
@@ -1613,7 +1613,7 @@ bool MovieParser::IsScope(ScriptParser::Parser &parser, const std::string &word,
     if ( StriCmp(word, "begin_movies") )
         return false;
 
-    for (yw_movie &movie : _o.movies)
+    for (std::string &movie : _o.movies)
         movie.clear();
     return true;
 }
@@ -1623,50 +1623,23 @@ int MovieParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 	if ( !StriCmp(p1, "end") )
 		return ScriptParser::RESULT_SCOPE_END;
 	else if ( !StriCmp(p1, "game_intro") )
-	{
 		_o.movies[World::MOVIE_INTRO] = p2;
-		_o.movies[World::MOVIE_INTRO] = true;
-	}
 	else if ( !StriCmp(p1, "win_extro") )
-	{
 		_o.movies[World::MOVIE_WIN] = p2;
-		_o.movies[World::MOVIE_WIN] = true;
-	}
 	else if ( !StriCmp(p1, "lose_extro") )
-	{
 		_o.movies[World::MOVIE_LOSE] = p2;
-		_o.movies[World::MOVIE_LOSE] = true;
-	}
 	else if ( !StriCmp(p1, "user_intro") )
-	{
 		_o.movies[World::MOVIE_USER] = p2;
-		_o.movies[World::MOVIE_USER] = true;
-	}
 	else if ( !StriCmp(p1, "kyt_intro") )
-	{
 		_o.movies[World::MOVIE_KYT] = p2;
-		_o.movies[World::MOVIE_KYT] = true;
-	}
 	else if ( !StriCmp(p1, "taer_intro") )
-	{
 		_o.movies[World::MOVIE_TAER] = p2;
-		_o.movies[World::MOVIE_TAER] = true;
-	}
 	else if ( !StriCmp(p1, "myk_intro") )
-	{
 		_o.movies[World::MOVIE_MYK] = p2;
-		_o.movies[World::MOVIE_MYK] = true;
-	}
 	else if ( !StriCmp(p1, "sulg_intro") )
-	{
 		_o.movies[World::MOVIE_SULG] = p2;
-		_o.movies[World::MOVIE_SULG] = true;
-	}
 	else if ( !StriCmp(p1, "black_intro") )
-	{
 		_o.movies[World::MOVIE_BLACK] = p2;
-		_o.movies[World::MOVIE_BLACK] = true;
-	}
 	else
 		return ScriptParser::RESULT_UNKNOWN;
 	return ScriptParser::RESULT_OK;
@@ -2095,8 +2068,8 @@ int MapSizesParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
         int x_size;
 
         ParseSizes(parser, &x_size, &y_size);
-        _m.secXsize = x_size;
-        _m.secYsize = y_size;
+        _m.MapXSize = x_size;
+        _m.MapYSize = y_size;
     }
     else if ( !StriCmp(p1, "own_map") || !StriCmp(p1, "hgt_map") || !StriCmp(p1, "blg_map") )
     {
@@ -2113,10 +2086,10 @@ bool LevelDataParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     if ( StriCmp(word, "begin_level") )
         return false;
 
-    _o.field_2d90->map_name = "<NO NAME>";
-    _o.field_2d90->movie.clear();
-    _o.field_2d90->win_movie.clear();
-    _o.field_2d90->lose_movie.clear();
+    _o._levelInfo->MapName = "<NO NAME>";
+    _o._levelInfo->MovieStr.clear();
+    _o._levelInfo->MovieWinStr.clear();
+    _o._levelInfo->MovieLoseStr.clear();
     _o.vehicle_sector_ratio_1 = 0;
     _o.unit_limit_1 = _o.unit_limit;
     _o.unit_limit_type_1 = _o.unit_limit_type;
@@ -2135,73 +2108,73 @@ int LevelDataParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
         title_lang += _o.lang_name;
 
         if ( !StriCmp(p1, "title_default") || !StriCmp(p1, title_lang) )
-                _o.field_2d90->map_name = p2;
+                _o._levelInfo->MapName = p2;
     }
     else if ( !StriCmp(p1, "set") )
     {
-        _m.setNumber = std::stol(p2, NULL, 0);
-        _m.flags |= 1;
+        _m.SetID = std::stol(p2, NULL, 0);
+        _m.Flags |= 1;
     }
     else if ( !StriCmp(p1, "sky") )
     {
-        _m.sky = p2;
-        _m.flags |= 2;
+        _m.SkyStr = p2;
+        _m.Flags |= 2;
     }
     else if ( !StriCmp(p1, "typ") )
     {
-        _m.typ = p2;
-        _m.flags |= 4;
+        _m.TypStr = p2;
+        _m.Flags |= 4;
     }
     else if ( !StriCmp(p1, "own") )
     {
-        _m.own = p2;
-        _m.flags |= 8;
+        _m.OwnStr = p2;
+        _m.Flags |= 8;
     }
     else if ( !StriCmp(p1, "hgt") )
     {
-        _m.hgt = p2;
-        _m.flags |= 0x10;
+        _m.HgtStr = p2;
+        _m.Flags |= 0x10;
     }
     else if ( !StriCmp(p1, "blg") )
     {
-        _m.blg = p2;
-        _m.flags |= 0x20;
+        _m.BlgStr = p2;
+        _m.Flags |= 0x20;
     }
     else if ( !StriCmp(p1, "palette") )
     {
-        _m.palettes[0] = p2;
+        _m.Palettes[0] = p2;
     }
     else if ( !StriCmp(p1, "slot0") )
     {
-        _m.palettes[0] = p2;
+        _m.Palettes[0] = p2;
     }
     else if ( !StriCmp(p1, "slot1") )
     {
-        _m.palettes[1] = p2;
+        _m.Palettes[1] = p2;
     }
     else if ( !StriCmp(p1, "slot2") )
     {
-        _m.palettes[2] = p2;
+        _m.Palettes[2] = p2;
     }
     else if ( !StriCmp(p1, "slot3") )
     {
-        _m.palettes[3] = p2;
+        _m.Palettes[3] = p2;
     }
     else if ( !StriCmp(p1, "slot4") )
     {
-        _m.palettes[4] = p2;
+        _m.Palettes[4] = p2;
     }
     else if ( !StriCmp(p1, "slot5") )
     {
-        _m.palettes[5] = p2;
+        _m.Palettes[5] = p2;
     }
     else if ( !StriCmp(p1, "slot6") )
     {
-        _m.palettes[6] = p2;
+        _m.Palettes[6] = p2;
     }
     else if ( !StriCmp(p1, "slot7") )
     {
-        _m.palettes[7] = p2;
+        _m.Palettes[7] = p2;
     }
     else if ( !StriCmp(p1, "script") )
     {
@@ -2211,47 +2184,47 @@ int LevelDataParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
     else if ( !StriCmp(p1, "ambiencetrack") )
     {
-        _o.field_2d90->amb_track_p1 = 0;
-        _o.field_2d90->amb_track_p2 = 0;
+        _o._levelInfo->MusicTrackMinDelay = 0;
+        _o._levelInfo->MusicTrackMaxDelay = 0;
 
         Stok stok(p2, " \t_\n");
         std::string tmp;
         stok.GetNext(&tmp);
-        _o.field_2d90->amb_track_p0 = std::stol(tmp, NULL, 0);
+        _o._levelInfo->MusicTrack = std::stol(tmp, NULL, 0);
 
         if ( stok.GetNext(&tmp) )
         {
-            _o.field_2d90->amb_track_p1 = std::stol(tmp, NULL, 0);
+            _o._levelInfo->MusicTrackMinDelay = std::stol(tmp, NULL, 0);
 
             if ( stok.GetNext(&tmp) )
-                _o.field_2d90->amb_track_p2 = std::stol(tmp, NULL, 0);
+                _o._levelInfo->MusicTrackMaxDelay = std::stol(tmp, NULL, 0);
         }
     }
     else if ( !StriCmp(p1, "movie") )
     {
-        _o.field_2d90->movie = p2;
+        _o._levelInfo->MovieStr = p2;
     }
     else if ( !StriCmp(p1, "win_movie") )
     {
-        _o.field_2d90->win_movie = p2;
+        _o._levelInfo->MovieWinStr = p2;
     }
     else if ( !StriCmp(p1, "lose_movie") )
     {
-        _o.field_2d90->lose_movie = p2;
+        _o._levelInfo->MovieLoseStr = p2;
     }
     else if ( !StriCmp(p1, "event_loop") )
     {
-        _m.event_loop = std::stol(p2, NULL, 0);
+        _m.EventLoopID = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "slow_connection") )
     {
         if ( StrGetBool(p2) )
         {
-            _m.slow_connection = 1;
+            _m.SlowConnection = true;
         }
         else
         {
-            _m.slow_connection = 0;
+            _m.SlowConnection = false;
         }
     }
     else if ( !StriCmp(p1, "vehicle_sector_ratio") )
@@ -2281,8 +2254,9 @@ bool MapRobosParser::IsScope(ScriptParser::Parser &parser, const std::string &wo
     if (StriCmp(word, "begin_robo"))
         return false;
 
-    _r = &_m.mapRobos[_m.mapRobos_count];
-    _r->mb_status = 0;
+    _m.Robos.emplace_back(); // Construct new element
+    _r = &_m.Robos.back();
+    _r->MbStatus = 0;
     return true;
 }
 
@@ -2291,138 +2265,137 @@ int MapRobosParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
 {
     if ( !StriCmp(p1, "end") )
     {
-        if (_m.mapRobos_count == 0) //If it's first host station - save owner for brief
-            _m.playerOwner = _r->owner;
+        if (_m.Robos.size() == 1) //If it's first host station - save owner for brief
+            _m.PlayerOwner = _r->Owner;
 
-        _m.mapRobos_count++;
-        _m.flags |= 0x40;
+        _m.Flags |= 0x40;
         return ScriptParser::RESULT_SCOPE_END;
     }
 
     if ( !StriCmp(p1, "owner") )
     {
-        _r->owner = std::stol(p2, NULL, 0);
+        _r->Owner = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "vehicle") )
     {
-        _r->vehicle = std::stol(p2, NULL, 0);
+        _r->VhclID = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "sec_x") )
     {
         int tmp = std::stol(p2, NULL, 0);
-        _r->pos_y = -300;
-        _r->pos_x = tmp * 1200.0 + 600.0;
+        _r->Pos.y = -300;
+        _r->Pos.x = tmp * 1200.0 + 600.0;
     }
     else if ( !StriCmp(p1, "sec_y") )
     {
         int tmp = std::stol(p2, NULL, 0);
-        _r->pos_y = -300;
-        _r->pos_z = -(tmp * 1200.0 + 600.0);
+        _r->Pos.y = -300;
+        _r->Pos.z = -(tmp * 1200.0 + 600.0);
     }
     else if ( !StriCmp(p1, "pos_x") )
     {
-        _r->pos_x = std::stof(p2, 0) + 0.3;
+        _r->Pos.x = std::stof(p2, 0) + 0.3;
     }
     else if ( !StriCmp(p1, "pos_y") )
     {
-        _r->pos_y = std::stof(p2, 0) + 0.3;
+        _r->Pos.y = std::stof(p2, 0) + 0.3;
     }
     else if ( !StriCmp(p1, "pos_z") )
     {
-        _r->pos_z = std::stof(p2, 0) + 0.3;
+        _r->Pos.z = std::stof(p2, 0) + 0.3;
     }
     else if ( !StriCmp(p1, "energy") )
     {
-        _r->energy = std::stol(p2, NULL, 0);
+        _r->Energy = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "con_budget") )
     {
-        _r->con_budget = std::stol(p2, NULL, 0);
+        _r->ConBudget = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "rad_budget") )
     {
-        _r->rad_budget = std::stol(p2, NULL, 0);
+        _r->RadBudget = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "pow_budget") )
     {
-        _r->pow_budget = std::stol(p2, NULL, 0);
+        _r->PowBudget = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "def_budget") )
     {
-        _r->def_budget = std::stol(p2, NULL, 0);
+        _r->DefBudget = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "saf_budget") )
     {
-        _r->saf_budget = std::stol(p2, NULL, 0);
+        _r->SafBudget = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "rec_budget") )
     {
-        _r->rec_budget = std::stol(p2, NULL, 0);
+        _r->RecBudget = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "cpl_budget") )
     {
-        _r->cpl_budget = std::stol(p2, NULL, 0);
+        _r->CplBudget = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "rob_budget") )
     {
-        _r->rob_budget = std::stol(p2, NULL, 0);
+        _r->RobBudget = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "viewangle") )
     {
-        _r->viewangle = std::stol(p2, NULL, 0);
+        _r->ViewAngle = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "saf_delay") )
     {
-        _r->saf_delay = std::stol(p2, NULL, 0);
+        _r->SafDelay = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "pow_delay") )
     {
-        _r->pow_delay = std::stol(p2, NULL, 0);
+        _r->PowDelay = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "rad_delay") )
     {
-        _r->rad_delay = std::stol(p2, NULL, 0);
+        _r->RadDelay = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "cpl_delay") )
     {
-        _r->cpl_delay = std::stol(p2, NULL, 0);
+        _r->CplDelay = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "def_delay") )
     {
-        _r->def_delay = std::stol(p2, NULL, 0);
+        _r->DefDelay = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "con_delay") )
     {
-        _r->con_delay = std::stol(p2, NULL, 0);
+        _r->ConDelay = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "rec_delay") )
     {
-        _r->rec_delay = std::stol(p2, NULL, 0);
+        _r->RecDelay = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "rob_delay") )
     {
-        _r->rob_delay = std::stol(p2, NULL, 0);
+        _r->RobDelay = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "mb_status") )
     {
         if ( !StriCmp(p2, "known") )
         {
-            _r->mb_status = 0;
+            _r->MbStatus = 0;
         }
         else if ( !StriCmp(p2, "unknown") )
         {
-            _r->mb_status = 1;
+            _r->MbStatus = 1;
         }
         else if ( !StriCmp(p2, "hidden") )
         {
-            _r->mb_status = 2;
+            _r->MbStatus = 2;
         }
         else
             return ScriptParser::RESULT_BAD_DATA;
     }
     else if ( !StriCmp(p1, "reload_const") )
     {
-        _r->reload_const = std::stol(p2, NULL, 0);
+        _r->ReloadConst = std::stol(p2, NULL, 0);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -2609,7 +2582,8 @@ bool LevelSquadParser::IsScope(ScriptParser::Parser &parser, const std::string &
     if (StriCmp(word, "begin_squad"))
         return false;
 
-    _s = &_m.squads[ _m.squad_count ];
+    _m.Squads.emplace_back();
+    _s = &_m.Squads.back();
     return true;
 }
 
@@ -2617,66 +2591,64 @@ int LevelSquadParser::Handle(ScriptParser::Parser &parser, const std::string &p1
 {
     if ( !StriCmp(p1, "end") )
     {
-        if ( !_s->vehicle )
+        if ( !_s->VhclID )
         {
-            ypa_log_out("Squad init: squad[%d]аno vehicle defined!\n", _m.squad_count);
+            ypa_log_out("Squad init: squad[%d]аno vehicle defined!\n", _m.Squads.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        if ( !_s->num )
+        if ( !_s->Count )
         {
-            ypa_log_out("Squad init: squad[%d] num of vehicles is 0!\n", _m.squad_count);
+            ypa_log_out("Squad init: squad[%d] num of vehicles is 0!\n", _m.Squads.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        if ( _s->pos_x == 0.0 || _s->pos_z == 0.0 )
+        if ( _s->X == 0.0 || _s->Z == 0.0 )
         {
-            ypa_log_out("Squad init: squad[%d] no pos given!\n", _m.squad_count);
+            ypa_log_out("Squad init: squad[%d] no pos given!\n", _m.Squads.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
-
-        _s->field_0 = 1;
-        _m.squad_count++;
+        
         return ScriptParser::RESULT_SCOPE_END;
     }
 
     if ( !StriCmp(p1, "owner") )
     {
-        _s->owner = std::stol(p2, NULL, 0);
+        _s->Owner = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "useable") )
     {
-        _s->useable = 1;
+        _s->Useable = true;
     }
     else if ( !StriCmp(p1, "vehicle") )
     {
-        _s->vehicle = std::stol(p2, NULL, 0);
+        _s->VhclID = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "num") )
     {
-        _s->num = std::stol(p2, NULL, 0);
+        _s->Count = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "pos_x") )
     {
-        _s->pos_x = std::stod(p2, 0) + 0.3;
+        _s->X = std::stod(p2, 0) + 0.3;
     }
     else if ( !StriCmp(p1, "pos_z") )
     {
-        _s->pos_z = std::stod(p2, 0) + 0.3;
+        _s->Z = std::stod(p2, 0) + 0.3;
     }
     else if ( !StriCmp(p1, "mb_status") )
     {
         if ( !StriCmp(p2, "known") )
         {
-            _s->mb_status = 0;
+            _s->MbStatus = 0;
         }
         else if ( !StriCmp(p2, "unknown") )
         {
-            _s->mb_status = 1;
+            _s->MbStatus = 1;
         }
         else if ( !StriCmp(p2, "hidden") )
         {
-            _s->mb_status = 2;
+            _s->MbStatus = 2;
         }
         else
             return ScriptParser::RESULT_BAD_DATA;
@@ -2693,8 +2665,9 @@ bool LevelGatesParser::IsScope(ScriptParser::Parser &parser, const std::string &
     if ( StriCmp(word, "begin_gate") )
         return false;
 
-    _g = &_o.field_2d90->gates[ _o.field_2d90->gate_count ];
-    _g->mb_status = 0;
+    _o._levelInfo->Gates.emplace_back();
+    _g = &_o._levelInfo->Gates.back();
+    _g->MbStatus = 0;
     return true;
 }
 
@@ -2702,86 +2675,75 @@ int LevelGatesParser::Handle(ScriptParser::Parser &parser, const std::string &p1
 {
     if ( !StriCmp(p1, "end") )
     {
-        if ( !_g->closed_bp )
+        if ( !_g->ClosedBldID )
         {
-            ypa_log_out("Gate init: gate[%d] no closed building defined!\n", _o.field_2d90->gate_count);
+            ypa_log_out("Gate init: gate[%d] no closed building defined!\n", _o._levelInfo->Gates.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        if ( !_g->opened_bp )
+        if ( !_g->OpenBldID )
         {
-            ypa_log_out("Gate init: gate[%d] no opened building defined!\n", _o.field_2d90->gate_count);
+            ypa_log_out("Gate init: gate[%d] no opened building defined!\n", _o._levelInfo->Gates.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        if ( _g->sec_x == 0 || _g->sec_y == 0)
+        if ( _g->SecX == 0 || _g->SecY == 0)
         {
-            ypa_log_out("Gate init: gate[%d] no sector coords!\n", _o.field_2d90->gate_count);
+            ypa_log_out("Gate init: gate[%d] no sector coords!\n", _o._levelInfo->Gates.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        if ( !_g->target_level_count )
+        if ( !_g->PassToLevels.size() )
         {
-            ypa_log_out("Gate init: gate[%d] no target levels defined!\n", _o.field_2d90->gate_count);
+            ypa_log_out("Gate init: gate[%d] no target levels defined!\n", _o._levelInfo->Gates.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        _o.field_2d90->gate_count++;
         return ScriptParser::RESULT_SCOPE_END;
     }
 
     if ( !StriCmp(p1, "sec_x") )
     {
-        _g->sec_x = std::stol(p2, NULL, 0);
+        _g->SecX = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "sec_y") )
     {
-        _g->sec_y = std::stol(p2, NULL, 0);
+        _g->SecY = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "closed_bp") )
     {
-        _g->closed_bp = std::stol(p2, NULL, 0);
+        _g->ClosedBldID = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "opened_bp") )
     {
-        _g->opened_bp = std::stol(p2, NULL, 0);
+        _g->OpenBldID = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "target_level") )
     {
-        if ( _g->target_level_count < 8 )
-        {
-            _g->target_levels[ _g->target_level_count ] = std::stol(p2, NULL, 0);
-            _g->target_level_count++;
-        }
+        _g->PassToLevels.push_back( std::stol(p2, NULL, 0) );
     }
     else if ( !StriCmp(p1, "keysec_x") )
     {
-        if ( _g->keySectors_count < 16 )
-        {
-            _g->keySectors[_g->keySectors_count].x = std::stol(p2, NULL, 0);
-        }
+        _g->KeySectors.emplace_back();
+        _g->KeySectors.back().x = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "keysec_y") )
     {
-        if ( _g->keySectors_count < 16 )
-        {
-            _g->keySectors[ _g->keySectors_count ].y = std::stol(p2, NULL, 0);
-            _g->keySectors_count++;
-        }
+        _g->KeySectors.back().y = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "mb_status") )
     {
         if ( !StriCmp(p2, "known") )
         {
-            _g->mb_status = 0;
+            _g->MbStatus = 0;
         }
         else if ( !StriCmp(p2, "unknown") )
         {
-            _g->mb_status = 1;
+            _g->MbStatus = 1;
         }
         else if ( !StriCmp(p2, "hidden") )
         {
-            _g->mb_status = 2;
+            _g->MbStatus = 2;
         }
         else
             return ScriptParser::RESULT_BAD_DATA;
@@ -2800,7 +2762,9 @@ bool LevelMbMapParser::IsScope(ScriptParser::Parser &parser, const std::string &
 {
     if ( StriCmp(word, "begin_mbmap") )
         return false;
-    _d = &_m.mbmaps[ _m.mbmaps_count ];
+    
+    _m.Mbmaps.emplace_back();
+    _d = &_m.Mbmaps.back();
     return true;
 }
 
@@ -2808,21 +2772,20 @@ int LevelMbMapParser::Handle(ScriptParser::Parser &parser, const std::string &p1
 {
     if ( !StriCmp(p1, "end") )
     {
-        _m.mbmaps_count++;
         return ScriptParser::RESULT_SCOPE_END;
     }
 
     if ( !StriCmp(p1, "name") )
     {
-        _d->name = p2;
+        _d->Name = p2;
     }
     else if ( !StriCmp(p1, "size_x") )
     {
-        _d->size_x = std::stol(p2, NULL, 0);
+        _d->SizeX = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "size_y") )
     {
-        _d->size_y = std::stol(p2, NULL, 0);
+        _d->SizeY = std::stol(p2, NULL, 0);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -2838,8 +2801,9 @@ bool LevelGemParser::IsScope(ScriptParser::Parser &parser, const std::string &wo
     if ( StriCmp(word, "begin_gem") )
         return false;
 
-    _g = &_o.gems[_count];
-    _g->mb_status = 0;
+    _o._Gems.emplace_back();
+    _g = &_o._Gems.back();
+    _g->MbStatus = 0;
     return true;
 }
 
@@ -2847,20 +2811,18 @@ int LevelGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
 {
     if ( !StriCmp(p1, "end") )
     {
-        if ( !_g->building )
+        if ( !_g->BuildingID )
         {
-            ypa_log_out("WStein init: gem[%d] no building defined!\n", _count);
+            ypa_log_out("WStein init: gem[%d] no building defined!\n", _o._Gems.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        if ( _g->sec_x == 0 || _g->sec_y == 0 )
+        if ( _g->SecX == 0 || _g->SecY == 0 )
         {
-            ypa_log_out("WStein init: gem[%d] sector pos wonky tonk!\n", _count);
+            ypa_log_out("WStein init: gem[%d] sector pos wonky tonk!\n", _o._Gems.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        _g->field_0 = 1;
-        _count++;
         return ScriptParser::RESULT_SCOPE_END;
     }
 
@@ -2869,52 +2831,29 @@ int LevelGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
         std::string tmp = fmt::sprintf("msg_%s", _o.lang_name);
 
         if ( !StriCmp(p1, "msg_default") || !StriCmp(p1, tmp) )
-            _g->msg_default = p2;
+            _g->MsgDefault = p2;
     }
     else if ( !StriCmp(p1, "sec_x") )
     {
-        _g->sec_x = std::stol(p2, NULL, 0);
+        _g->SecX = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "sec_y") )
     {
-        _g->sec_y = std::stol(p2, NULL, 0);
+        _g->SecY = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "building") )
     {
-        _g->building = std::stol(p2, NULL, 0);
+        _g->BuildingID = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "type") )
     {
-        switch ( std::stol(p2, NULL, 0) )
-        {
-        case 1:
-            _g->type = 25;
-            break;
-        case 2:
-            _g->type = 26;
-            break;
-        case 3:
-            _g->type = 27;
-            break;
-        case 4:
-            _g->type = 28;
-            break;
-        case 5:
-            _g->type = 78;
-            break;
-        case 6:
-            _g->type = 79;
-            break;
-        default:
-            _g->type = 80;
-            break;
-        }
+        _g->Type =std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "script") )
     {
-        _g->script = p2;
+        _g->ScriptFile = p2;
 
-        FSMgr::FileHandle *tmp = uaOpenFile(_g->script, "r");
+        FSMgr::FileHandle *tmp = uaOpenFile(_g->ScriptFile, "r");
 
         if ( !tmp )
             return ScriptParser::RESULT_BAD_DATA;
@@ -2925,15 +2864,15 @@ int LevelGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
     {
         if ( !StriCmp(p2, "known") )
         {
-            _g->mb_status = 0;
+            _g->MbStatus = 0;
         }
         else if ( !StriCmp(p2, "unknown") )
         {
-            _g->mb_status = 1;
+            _g->MbStatus = 1;
         }
         else if ( !StriCmp(p2, "hidden") )
         {
-            _g->mb_status = 2;
+            _g->MbStatus = 2;
         }
         else
         {
@@ -2946,15 +2885,15 @@ int LevelGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            _g->nw_vproto_num_1 = std::stol(tmp, NULL, 0);
+            _g->NwVprotoNum1 = std::stol(tmp, NULL, 0);
             if ( stok.GetNext(&tmp) )
             {
-                _g->nw_vproto_num_2 = std::stol(tmp, NULL, 0);
+                _g->NwVprotoNum2 = std::stol(tmp, NULL, 0);
                 if ( stok.GetNext(&tmp) )
                 {
-                    _g->nw_vproto_num_3 = std::stol(tmp, NULL, 0);
+                    _g->NwVprotoNum3 = std::stol(tmp, NULL, 0);
                     if ( stok.GetNext(&tmp) )
-                        _g->nw_vproto_num_4 = std::stol(tmp, NULL, 0);
+                        _g->NwVprotoNum4 = std::stol(tmp, NULL, 0);
                 }
             }
         }
@@ -2965,15 +2904,15 @@ int LevelGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            _g->nw_bproto_num_1 = std::stol(tmp, NULL, 0);
+            _g->NwBprotoNum1 = std::stol(tmp, NULL, 0);
             if ( stok.GetNext(&tmp) )
             {
-                _g->nw_bproto_num_2 = std::stol(tmp, NULL, 0);
+                _g->NwBprotoNum2 = std::stol(tmp, NULL, 0);
                 if ( stok.GetNext(&tmp) )
                 {
-                    _g->nw_bproto_num_3 = std::stol(tmp, NULL, 0);
+                    _g->NwBprotoNum3 = std::stol(tmp, NULL, 0);
                     if ( stok.GetNext(&tmp) )
-                        _g->nw_bproto_num_4 = std::stol(tmp, NULL, 0);
+                        _g->NwBprotoNum4 = std::stol(tmp, NULL, 0);
                 }
             }
         }
@@ -2983,7 +2922,7 @@ int LevelGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
         std::string tmp;
 
         while( parser.ReadLine(&tmp) && (tmp.find("end_action") == std::string::npos) )
-            _g->actions.push_back(tmp);
+            _g->ActionsList.push_back(tmp);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -3044,7 +2983,8 @@ bool LevelDebMapParser::IsScope(ScriptParser::Parser &parser, const std::string 
     if ( StriCmp(word, "begin_dbmap") )
         return false;
 
-    _d = &_m.dbmaps[ _m.dbmap_count ];
+    _m.Dbmaps.emplace_back();
+    _d = &_m.Dbmaps.back();
     return true;
 }
 
@@ -3052,21 +2992,20 @@ int LevelDebMapParser::Handle(ScriptParser::Parser &parser, const std::string &p
 {
     if ( !StriCmp(p1, "end") )
     {
-        _m.mbmaps_count++;
         return ScriptParser::RESULT_SCOPE_END;
     }
 
     if ( !StriCmp(p1, "name") )
     {
-        _d->name = p2;
+        _d->Name = p2;
     }
     else if ( !StriCmp(p1, "size_x") )
     {
-        _d->size_x = std::stol(p2, NULL, 0);
+        _d->SizeX = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "size_y") )
     {
-        _d->size_y = std::stol(p2, NULL, 0);
+        _d->SizeY = std::stol(p2, NULL, 0);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -3080,11 +3019,13 @@ bool LevelSuperItemsParser::IsScope(ScriptParser::Parser &parser, const std::str
     if ( StriCmp(word, "begin_item") )
         return false;
 
-    _s = &_o.field_2d90->supetItems[_o.field_2d90->supetItems_count];
-    _s->type = 0;
-    _s->countdown = 60000; //1hour
-    _s->field_4 = 0;
-    _s->mb_status = 0;
+    _o._levelInfo->SuperItems.emplace_back();
+    
+    _s = &_o._levelInfo->SuperItems.back();
+    _s->Type = 0;
+    _s->TimerValue = 60000; //1hour
+    _s->State = 0;
+    _s->MbStatus = 0;
     return true;
 }
 
@@ -3092,93 +3033,92 @@ int LevelSuperItemsParser::Handle(ScriptParser::Parser &parser, const std::strin
 {
     if ( !StriCmp(p1, "end") )
     {
-        if ( _s->sec_x == 0 || _s->sec_y == 0)
+        if ( _s->SecX == 0 || _s->SecY == 0)
         {
-            ypa_log_out("Super item #%d: invalid sector coordinates!\n", _o.field_2d90->supetItems_count);
+            ypa_log_out("Super item #%d: invalid sector coordinates!\n", _o._levelInfo->SuperItems.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        if ( !_s->inactive_bp )
+        if ( !_s->InactiveBldID )
         {
-            ypa_log_out("Super item #%d: no <inactive_bp> defined!\n", _o.field_2d90->supetItems_count);
+            ypa_log_out("Super item #%d: no <inactive_bp> defined!\n", _o._levelInfo->SuperItems.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        if ( !_s->active_bp )
+        if ( !_s->ActiveBldID )
         {
-            ypa_log_out("Super item #%d: no <active_bp> defined!\n", _o.field_2d90->supetItems_count);
+            ypa_log_out("Super item #%d: no <active_bp> defined!\n", _o._levelInfo->SuperItems.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        if ( !_s->trigger_bp )
+        if ( !_s->TriggerBldID )
         {
-            ypa_log_out("Super item #%d: no <trigger_bp> defined!\n", _o.field_2d90->supetItems_count);
+            ypa_log_out("Super item #%d: no <trigger_bp> defined!\n", _o._levelInfo->SuperItems.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        if ( _s->type != 1 && _s->type != 2 )
+        if ( _s->Type != 1 && _s->Type != 2 )
         {
-            ypa_log_out("Super item #%d: no valid <type> defined!\n", _o.field_2d90->supetItems_count);
+            ypa_log_out("Super item #%d: no valid <type> defined!\n", _o._levelInfo->SuperItems.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        _o.field_2d90->supetItems_count++;
         return ScriptParser::RESULT_SCOPE_END;
     }
 
     if ( !StriCmp(p1, "sec_x") )
     {
-        _s->sec_x = std::stol(p2, NULL, 0);
+        _s->SecX = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "sec_y") )
     {
-        _s->sec_y = std::stol(p2, NULL, 0);
+        _s->SecY = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "inactive_bp") )
     {
-        _s->inactive_bp = std::stol(p2, NULL, 0);
+        _s->InactiveBldID = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "active_bp") )
     {
-        _s->active_bp = std::stol(p2, NULL, 0);
+        _s->ActiveBldID = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "trigger_bp") )
     {
-        _s->trigger_bp = std::stol(p2, NULL, 0);
+        _s->TriggerBldID = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "keysec_x") )
     {
-        _s->keySectors[_s->keySectors_count].x = std::stol(p2, NULL, 0);
+        _s->KeySectors.emplace_back();
+        _s->KeySectors.back().x = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "keysec_y") )
     {
-        _s->keySectors[_s->keySectors_count].y = std::stol(p2, NULL, 0);
-        _s->keySectors_count++;
+        _s->KeySectors.back().y = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "mb_status") )
     {
         if ( !StriCmp(p2, "known") )
         {
-            _s->mb_status = 0;
+            _s->MbStatus = 0;
         }
         else if ( !StriCmp(p2, "unknown") )
         {
-            _s->mb_status = 1;
+            _s->MbStatus = 1;
         }
         else if ( !StriCmp(p2, "hidden") )
         {
-            _s->mb_status = 2;
+            _s->MbStatus = 2;
         }
         else
             return ScriptParser::RESULT_BAD_DATA;
     }
     else if ( !StriCmp(p1, "type") )
     {
-        _s->type = std::stol(p2, NULL, 0);
+        _s->Type = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "countdown") )
     {
-        _s->countdown = std::stol(p2, NULL, 0);
+        _s->TimerValue = std::stol(p2, NULL, 0);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -3262,10 +3202,10 @@ int LevelMapsParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
         if ( !_o.typ_map )
             return ScriptParser::RESULT_BAD_DATA;
 
-        _m.secXsize = _o.typ_map->Width();
-        _m.secYsize = _o.typ_map->Height();
+        _m.MapXSize = _o.typ_map->Width();
+        _m.MapYSize = _o.typ_map->Height();
 
-        _m.flags |= 4;
+        _m.Flags |= 4;
     }
     else if ( !StriCmp(p1, "own_map") )
     {
@@ -3273,7 +3213,7 @@ int LevelMapsParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
         if ( !_o.own_map )
             return ScriptParser::RESULT_BAD_DATA;
 
-        _m.flags |= 8;
+        _m.Flags |= 8;
     }
     else if ( !StriCmp(p1, "hgt_map") )
     {
@@ -3281,7 +3221,7 @@ int LevelMapsParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
         if ( !_o.hgt_map )
             return ScriptParser::RESULT_BAD_DATA;
 
-        _m.flags |= 0x10;
+        _m.Flags |= 0x10;
     }
     else if ( !StriCmp(p1, "blg_map") )
     {
@@ -3289,7 +3229,7 @@ int LevelMapsParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
         if ( !_o.blg_map )
             return ScriptParser::RESULT_BAD_DATA;
 
-        _m.flags |= 0x20;
+        _m.Flags |= 0x20;
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -3538,26 +3478,34 @@ int LevelStatusParser::Handle(ScriptParser::Parser &parser, const std::string &p
     return ScriptParser::RESULT_OK;
 }
 
+bool BuddyParser::IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt) 
+{ 
+    if (!StriCmp(word, "begin_buddy"))
+    {
+        _o._levelInfo->Buddies.emplace_back();
+        return true;
+    }
+    return false;
+};
+
 int BuddyParser::Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2)
 {
     if ( !StriCmp(p1, "end") )
     {
-        _o.field_2d90->buddies_count++;
-
         return ScriptParser::RESULT_SCOPE_END;
     }
 
     if ( !StriCmp(p1, "commandid") )
     {
-        _o.field_2d90->buddies[ _o.field_2d90->buddies_count ].commandid = std::stoi(p2);
+        _o._levelInfo->Buddies.back().CommandID = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "type") )
     {
-        _o.field_2d90->buddies[ _o.field_2d90->buddies_count ].type = std::stoi(p2);
+        _o._levelInfo->Buddies.back().Type = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "energy") )
     {
-        _o.field_2d90->buddies[ _o.field_2d90->buddies_count ].energy = std::stoi(p2);
+        _o._levelInfo->Buddies.back().Energy = std::stoi(p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;

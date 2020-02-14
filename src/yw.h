@@ -5,6 +5,7 @@
 #include <array>
 
 #include "types.h"
+#include "memstream.h"
 
 #include "engine_gfx.h"
 #include "engine_input.h"
@@ -29,6 +30,7 @@
 
 #include "world/parsers.h"
 #include "world/saveparsers.h"
+
 
 
 #define YW_RENDER_SECTORS_DEF   5
@@ -240,6 +242,19 @@ enum SOUND_FLAGS
     SF_CDSOUND   = 0x10,
 };
 
+enum UPGRADE_TYPES
+{
+    UPGRADE_NONE       = 0,
+    UPGRADE_WEAPON     = 1,
+    UPGRADE_ARMOR      = 2,
+    UPGRADE_VEHICLE    = 3,
+    UPGRADE_BUILDING   = 4,
+    UPGRADE_RADARE     = 5,
+    UPGRADE_BLDVHCL    = 6,
+    UPGRADE_GENERIC    = 7,
+};
+
+
 
 class AssignParser : public ScriptParser::DataHandler
 {
@@ -250,7 +265,48 @@ public:
 	static ScriptParser::DataHandler *MakeParser() {return new AssignParser;};
 };
 
+
+
+
+
+
+
+namespace Log
+{
+enum LOGMSG
+{
+    LOGMSG_UPGRADE_WEAPON   = 25,
+    LOGMSG_UPGRADE_ARMOR    = 26,
+    LOGMSG_UPGRADE_VEHICLE  = 27,
+    LOGMSG_UPGRADE_BUILDING = 28,
+    LOGMSG_UPGRADE_RADARE   = 78,
+    LOGMSG_UPGRADE_BLDVHCL  = 79,
+    LOGMSG_UPGRADE_GENERIC  = 80,
 };
+
+inline uint32_t GetUpgradeLogID(uint8_t upg)
+{
+    switch ( upg )
+    {
+    case UPGRADE_WEAPON:    return LOGMSG_UPGRADE_WEAPON;
+    case UPGRADE_ARMOR:     return LOGMSG_UPGRADE_ARMOR;
+    case UPGRADE_VEHICLE:   return LOGMSG_UPGRADE_VEHICLE;
+    case UPGRADE_BUILDING:  return LOGMSG_UPGRADE_BUILDING;
+    case UPGRADE_RADARE:    return LOGMSG_UPGRADE_RADARE;
+    case UPGRADE_BLDVHCL:   return LOGMSG_UPGRADE_BLDVHCL;
+    default:                return UPGRADE_GENERIC;
+    }
+}
+}
+
+};
+
+
+
+#include "world/history.h"
+
+
+
 
 struct video_mode_node
 {
@@ -296,32 +352,6 @@ struct inp_key_setting
     const char *slider_name;
 };
 
-struct player_status
-{
-    int destroyed;
-    int destroyedByUser;
-    int elapsedTime;
-    int sectorsTaked;
-    int score;
-    int power;
-    int upgrades;
-
-    player_status()
-    {
-    	clear();
-    }
-
-    void clear()
-    {
-    	destroyed = 0;
-        destroyedByUser = 0;
-        elapsedTime = 0;
-        sectorsTaked = 0;
-        score = 0;
-        power = 0;
-        upgrades = 0;
-    }
-};
 
 struct ProfilesNode
 {
@@ -428,7 +458,7 @@ public:
     samples_collection1 field_782;
     NC_STACK_wav *field_ADA;
     NC_STACK_button *sub_bar_button;
-    int field_AE2;
+
     NC_STACK_button *titel_button;
     NC_STACK_button *button_input_button;
     GuiList input_listview;
@@ -784,13 +814,13 @@ struct cellArea : public nnode
     }
 };
 
-struct keysec
+struct MapKeySector
 {
     int x;
     int y;
-    cellArea *cell;
+    cellArea *PCell;
 
-    keysec()
+    MapKeySector()
     {
     	clear();
     }
@@ -799,185 +829,163 @@ struct keysec
     {
     	x = 0;
     	y = 0;
-    	cell = NULL;
+    	PCell = NULL;
     }
 };
 
-struct gateProto
+struct MapGate
 {
-    cellArea *pcell;
-    int sec_x;
-    int sec_y;
-    int closed_bp;
-    int opened_bp;
-    int target_level_count;
-    int target_levels[8];
-    int keySectors_count;
-    keysec keySectors[16];
-    int mb_status;
+    cellArea *PCell;
+    int SecX;
+    int SecY;
+    int ClosedBldID;
+    int OpenBldID;
+    std::vector<int> PassToLevels;
+    std::vector<MapKeySector> KeySectors;
+    int MbStatus;
 
-    gateProto()
+    MapGate()
     {
     	clear();
     }
 
     void clear()
     {
-    	pcell = NULL;
-		sec_x = 0;
-		sec_y = 0;
-		closed_bp = 0;
-		opened_bp = 0;
-		target_level_count = 0;
+    	PCell = NULL;
+        SecX = 0;
+        SecY = 0;
+        ClosedBldID = 0;
+        OpenBldID = 0;
 
-		for (auto &x : target_levels)
-			x = 0;
+        PassToLevels.clear();
+        
+        KeySectors.clear();
 
-		keySectors_count = 0;
-
-		for (auto &x : keySectors)
-			x.clear();
-
-		mb_status = 0;
+        MbStatus = 0;
     }
 };
 
-struct squadProto
+struct MapSquad
 {
-    int field_0;
-    int useable;
-    int owner;
-    int vehicle;
-    int num;
-    float pos_x;
-    int field_18;
-    float pos_z;
-    int mb_status;
+    bool Useable;
+    int Owner;
+    int VhclID;
+    int Count;
+    float X;
+    float Z;
+    int MbStatus;
 
-    squadProto()
+    MapSquad()
     {
         clear();
     }
 
     void clear()
     {
-        field_0 = 0;
-        useable = 0;
-        owner = 0;
-        vehicle = 0;
-        num = 0;
-        pos_x = 0.;
-        field_18 = 0;
-        pos_z = 0.;
-        mb_status = 0;
+        Useable = false;
+        Owner = 0;
+        VhclID = 0;
+        Count = 0;
+        X = 0.;
+        Z = 0.;
+        MbStatus = 0;
     }
 };
 
 struct MapRobo
 {
-    int16_t owner;
-    int16_t vehicle;
-    float pos_x;
-    float pos_y;
-    float pos_z;
-    int energy;
-    char con_budget;
-    char rad_budget;
-    char pow_budget;
-    char def_budget;
-    int reload_const;
-    char saf_budget;
-    char rec_budget;
-    char cpl_budget;
-    char rob_budget;
-    int mb_status;
-    int16_t viewangle;
-    int saf_delay;
-    int pow_delay;
-    int rad_delay;
-    int cpl_delay;
-    int def_delay;
-    int con_delay;
-    int rec_delay;
-    int rob_delay;
+    int16_t Owner;
+    int16_t VhclID;
+    vec3d Pos;
+    int Energy;
+    int ConBudget;
+    int RadBudget;
+    int PowBudget;
+    int DefBudget;
+    int ReloadConst;
+    int SafBudget;
+    int RecBudget;
+    int CplBudget;
+    int RobBudget;
+    int MbStatus;
+    int16_t ViewAngle;
+    int SafDelay;
+    int PowDelay;
+    int RadDelay;
+    int CplDelay;
+    int DefDelay;
+    int ConDelay;
+    int RecDelay;
+    int RobDelay;
 
     MapRobo()
     {
-        clear();
-    }
-
-    void clear()
-    {
-        owner = 0;
-        vehicle = 0;
-        pos_x = 0.;
-        pos_y = 0.;
-        pos_z = 0.;
-        energy = 0;
-        con_budget = 0;
-        rad_budget = 0;
-        pow_budget = 0;
-        def_budget = 0;
-        reload_const = 0;
-        saf_budget = 0;
-        rec_budget = 0;
-        cpl_budget = 0;
-        rob_budget = 0;
-        mb_status = 0;
-        viewangle = 0;
-        saf_delay = 0;
-        pow_delay = 0;
-        rad_delay = 0;
-        cpl_delay = 0;
-        def_delay = 0;
-        con_delay = 0;
-        rec_delay = 0;
-        rob_delay = 0;
+        Owner = 0;
+        VhclID = 0;
+        Pos = vec3d();
+        Energy = 0;
+        ConBudget = 0;
+        RadBudget = 0;
+        PowBudget = 0;
+        DefBudget = 0;
+        ReloadConst = 0;
+        SafBudget = 0;
+        RecBudget = 0;
+        CplBudget = 0;
+        RobBudget = 0;
+        MbStatus = 0;
+        ViewAngle = 0;
+        SafDelay = 0;
+        PowDelay = 0;
+        RadDelay = 0;
+        CplDelay = 0;
+        DefDelay = 0;
+        ConDelay = 0;
+        RecDelay = 0;
+        RobDelay = 0;
     }
 };
 
-struct gemProto
+struct MapGem
 {
-    int16_t field_0;
-    int16_t building;
-    int16_t sec_x;
-    int16_t sec_y;
-    int mb_status;
-    std::string script;
-    std::string msg_default;
-    int16_t nw_vproto_num_1;
-    int16_t nw_vproto_num_2;
-    int16_t nw_vproto_num_3;
-    int16_t nw_vproto_num_4;
-    int16_t nw_bproto_num_1;
-    int16_t nw_bproto_num_2;
-    int16_t nw_bproto_num_3;
-    int16_t nw_bproto_num_4;
-    Engine::StringList actions;
-    int type;
+    int16_t BuildingID;
+    int16_t SecX;
+    int16_t SecY;
+    int MbStatus;
+    std::string ScriptFile;
+    std::string MsgDefault;
+    int16_t NwVprotoNum1;
+    int16_t NwVprotoNum2;
+    int16_t NwVprotoNum3;
+    int16_t NwVprotoNum4;
+    int16_t NwBprotoNum1;
+    int16_t NwBprotoNum2;
+    int16_t NwBprotoNum3;
+    int16_t NwBprotoNum4;
+    Engine::StringList ActionsList;
+    int Type;
 
     void clear()
     {
-        field_0 = 0;
-        building = 0;
-        sec_x = 0;
-        sec_y = 0;
-        mb_status = 0;
-        script.clear();
-        msg_default.clear();
-        nw_vproto_num_1 = 0;
-        nw_vproto_num_2 = 0;
-        nw_vproto_num_3 = 0;
-        nw_vproto_num_4 = 0;
-        nw_bproto_num_1 = 0;
-        nw_bproto_num_2 = 0;
-        nw_bproto_num_3 = 0;
-        nw_bproto_num_4 = 0;
-        actions.clear();
-        type = 0;
+        BuildingID = 0;
+        SecX = 0;
+        SecY = 0;
+        MbStatus = 0;
+        ScriptFile.clear();
+        MsgDefault.clear();
+        NwVprotoNum1 = 0;
+        NwVprotoNum2 = 0;
+        NwVprotoNum3 = 0;
+        NwVprotoNum4 = 0;
+        NwBprotoNum1 = 0;
+        NwBprotoNum2 = 0;
+        NwBprotoNum3 = 0;
+        NwBprotoNum4 = 0;
+        ActionsList.clear();
+        Type = 0;
     }
 
-    gemProto()
+    MapGem()
     {
         clear();
     };
@@ -985,9 +993,9 @@ struct gemProto
 
 struct dbmapProto
 {
-    int16_t size_x;
-    int16_t size_y;
-    std::string name;
+    int16_t SizeX;
+    int16_t SizeY;
+    std::string Name;
 
     dbmapProto()
     {
@@ -996,460 +1004,371 @@ struct dbmapProto
 
     void clear()
     {
-        size_x = 0;
-        size_y = 0;
-        name.clear();
+        SizeX = 0;
+        SizeY = 0;
+        Name.clear();
     }
 };
 
-struct mapProto
+struct LevelDesc
 {
-    char flags;
-    int setNumber;
-    int event_loop;
-    int secXsize;
-    int secYsize;
-    int slow_connection;
-    std::string sky;
-    std::string typ;
-    std::string own;
-    std::string hgt;
-    std::string blg;
-    int mapRobos_count;
-    MapRobo mapRobos[8];
-    int squad_count;
-    squadProto squads[96];
-    std::string palettes[8];
-    int mbmaps_count;
-    dbmapProto mbmaps[4];
-    int dbmap_count;
-    dbmapProto dbmaps[4];
+    int Flags;
+    int SetID;
+    int EventLoopID;
+    int MapXSize;
+    int MapYSize;
+    bool SlowConnection;
+    std::string SkyStr;
+    std::string TypStr;
+    std::string OwnStr;
+    std::string HgtStr;
+    std::string BlgStr;
+    std::vector<MapRobo> Robos;
+    std::vector<MapSquad> Squads;
+    std::array<std::string, 8> Palettes;
+    std::vector<dbmapProto> Mbmaps;
+    std::vector<dbmapProto> Dbmaps;
 
-    int playerOwner; //Firsts host station owner, for correct XP brief
+    int PlayerOwner; //Firsts host station owner, for correct XP brief
 
-    mapProto()
+    LevelDesc()
     {
         clear();
     }
 
     void clear()
     {
-        flags = 0;
-        setNumber = 0;
-        event_loop = 0;
-        secXsize = 0;
-        secYsize = 0;
-        slow_connection = 0;
+        Flags = 0;
+        SetID = 0;
+        EventLoopID = 0;
+        MapXSize = 0;
+        MapYSize = 0;
+        SlowConnection = false;
 
-        sky.clear();
-        typ.clear();
-        own.clear();
-        hgt.clear();
-        blg.clear();
+        SkyStr.clear();
+        TypStr.clear();
+        OwnStr.clear();
+        HgtStr.clear();
+        BlgStr.clear();
 
-        mapRobos_count = 0;
+        Robos.clear();
 
-        for (auto &r : mapRobos)
-            r.clear();
+        Squads.clear();
 
-        squad_count = 0;
-
-        for (auto &s : squads)
-            s.clear();
-
-        for (auto &p : palettes)
+        for (std::string &p : Palettes)
             p.clear();
 
-        mbmaps_count = 0;
-
-        for (auto &m : mbmaps)
-            m.clear();
-
-        dbmap_count = 0;
-
-        for (auto &d : dbmaps)
-            d.clear();
+        Mbmaps.clear();
+        Dbmaps.clear();
     }
 };
 
-struct yw_buddy
+struct MapBuddy
 {
-    int commandid;
-    int16_t type;
-    int16_t field_6;
-    int energy;
+    int CommandID;
+    int16_t Type;
+    int Energy;
 
-    yw_buddy()
+    MapBuddy()
+    {
+    	clear();
+    }
+    
+    MapBuddy( int cmdID, int16_t tp, int e)
+    : CommandID(cmdID), Type(tp), Energy(e)
+    {}
+
+    void clear()
+    {
+    	CommandID = 0;
+        Type = 0;
+        Energy = 0;
+    }
+};
+
+struct MapSuperItem
+{
+    int Type;
+    int State;
+    int TimerValue;
+    cellArea *PCell;
+    int SecX;
+    int SecY;
+    int InactiveBldID;
+    int ActiveBldID;
+    int TriggerBldID;
+    std::vector<MapKeySector> KeySectors;
+    int MbStatus;
+    int ActiveTime;
+    int TriggerTime;
+    int ActivateOwner;
+    int CountDown;
+    int LastTenSec;
+    int LastSec;
+    int CurrentRadius; // Current radius of the propagation wave
+    int LastRadius;
+
+    MapSuperItem()
     {
     	clear();
     }
 
     void clear()
     {
-    	commandid = 0;
-		type = 0;
-		field_6 = 0;
-		energy = 0;
+    	Type = 0;
+        State = 0;
+        TimerValue = 0;
+        PCell = NULL;
+        SecX = 0;
+        SecY = 0;
+        InactiveBldID = 0;
+        ActiveBldID = 0;
+        TriggerBldID = 0;
+
+        KeySectors.clear();
+
+        MbStatus = 0;
+        ActiveTime = 0;
+        TriggerTime = 0;
+        ActivateOwner = 0;
+        CountDown = 0;
+        LastTenSec = 0;
+        LastSec = 0;
+        CurrentRadius = 0;
+        LastRadius = 0;
     }
 };
 
-struct supetItemProto
+struct LevelInfo
 {
-    int type;
-    int field_4;
-    int countdown;
-    cellArea *pcell;
-    int sec_x;
-    int sec_y;
-    int inactive_bp;
-    int active_bp;
-    int trigger_bp;
-    int keySectors_count;
-    keysec keySectors[16];
-    int mb_status;
-    int field_EC;
-    int field_F0;
-    int field_F4;
-    int field_F8;
-    int field_FC;
-    int field_100;
-    int field_104;
-    int field_108;
+    std::string MapName;
+    int State;
+    int LevelID;
+    int Mode;      // 0 - Normal, 1 - Replay
+    int GateCompleteID; // Index of gate through level complete
+    int MusicTrack;
+    int MusicTrackMinDelay;
+    int MusicTrackMaxDelay;
+    int OwnerMask;
+    int UserMask;
 
-    supetItemProto()
-    {
-    	clear();
-    }
+    std::vector<MapBuddy> Buddies;
+    std::vector<MapGate> Gates;
+    std::vector<MapSuperItem> SuperItems;
+    std::array<int, 8> JodieFoster;
+    std::string MovieStr;
+    std::string MovieWinStr;
+    std::string MovieLoseStr;
 
-    void clear()
-    {
-    	type = 0;
-		field_4 = 0;
-		countdown = 0;
-		pcell = NULL;
-		sec_x = 0;
-		sec_y = 0;
-		inactive_bp = 0;
-		active_bp = 0;
-		trigger_bp = 0;
-		keySectors_count = 0;
-
-		for ( auto &x : keySectors )
-			x.clear();
-
-		mb_status = 0;
-		field_EC = 0;
-		field_F0 = 0;
-		field_F4 = 0;
-		field_F8 = 0;
-		field_FC = 0;
-		field_100 = 0;
-		field_104 = 0;
-		field_108 = 0;
-    }
-};
-
-struct stru_2d90
-{
-    std::string map_name;
-    int field_40;
-    int levelID;
-    int field_48;
-    int field_4C;
-    int amb_track_p0;
-    int amb_track_p1;
-    int amb_track_p2;
-    int ownerMap__has_vehicles;
-    int field_60;
-    int field_64;
-    int field_68;
-    int field_6C;
-    int field_70;
-    int field_74;
-    int buddies_count;
-    yw_buddy buddies[128];
-    int gate_count;
-    gateProto gates[8];
-    int supetItems_count;
-    supetItemProto supetItems[8];
-    int jodiefoster[8];
-    std::string movie;
-    std::string win_movie;
-    std::string lose_movie;
-
-    stru_2d90()
+    LevelInfo()
     {
         clear();
     }
 
     void clear()
     {
-        map_name.clear();
-		field_40 = 0;
-		levelID = 0;
-		field_48 = 0;
-		field_4C = 0;
-		amb_track_p0 = 0;
-		amb_track_p1 = 0;
-		amb_track_p2 = 0;
-		ownerMap__has_vehicles = 0;
-		field_60 = 0;
-		field_64 = 0;
-		field_68 = 0;
-		field_6C = 0;
-		field_70 = 0;
-		field_74 = 0;
-		buddies_count = 0;
+        MapName.clear();
+        State = 0;
+        LevelID = 0;
+        Mode = 0;
+        GateCompleteID = 0;
+        MusicTrack = 0;
+        MusicTrackMinDelay = 0;
+        MusicTrackMaxDelay = 0;
+        OwnerMask = 0;
+        UserMask = 0;
 
-		for ( auto &x : buddies )
-			x.clear();
+        Buddies.clear();
 
-		gate_count = 0;
+        Gates.clear();
 
-		for ( auto &x : gates )
-			x.clear();
+        SuperItems.clear();
 
-		supetItems_count = 0;
+        for ( auto &x : JodieFoster )
+            x = 0;
 
-		for ( auto &x : supetItems )
-			x.clear();
-
-		for ( auto &x : jodiefoster )
-			x = 0;
-
-		movie.clear();
-		win_movie.clear();
-		lose_movie.clear();
+        MovieStr.clear();
+        MovieWinStr.clear();
+        MovieLoseStr.clear();
     }
 
-    void operator=(const stru_2d90 &b)
+    void operator=(const LevelInfo &b)
     {
-        map_name = b.map_name;
-		field_40 = b.field_40;
-		levelID = b.levelID;
-		field_48 = b.field_48;
-		field_4C = b.field_4C;
-		amb_track_p0 = b.amb_track_p0;
-		amb_track_p1 = b.amb_track_p1;
-		amb_track_p2 = b.amb_track_p2;
-		ownerMap__has_vehicles = b.ownerMap__has_vehicles;
-		field_60 = b.field_60;
-		field_64 = b.field_64;
-		field_68 = b.field_68;
-		field_6C = b.field_6C;
-		field_70 = b.field_70;
-		field_74 = b.field_74;
-		buddies_count = b.buddies_count;
+        MapName = b.MapName;
+        State = b.State;
+        LevelID = b.LevelID;
+        Mode = b.Mode;
+        GateCompleteID = b.GateCompleteID;
+        MusicTrack = b.MusicTrack;
+        MusicTrackMinDelay = b.MusicTrackMinDelay;
+        MusicTrackMaxDelay = b.MusicTrackMaxDelay;
+        OwnerMask = b.OwnerMask;
+        UserMask = b.UserMask;
 
-		for (int i = 0; i < 128; i++)
-			buddies[i] = b.buddies[i];
+        Buddies = b.Buddies;
 
-		gate_count = b.gate_count;
+        Gates = b.Gates;
 
-		for (int i = 0; i < 8; i++)
-			gates[i] = b.gates[i];
+        SuperItems = b.SuperItems;
 
-		supetItems_count = b.supetItems_count;
+        JodieFoster = b.JodieFoster;
 
-		for (int i = 0; i < 8; i++)
-			supetItems[i] = b.supetItems[i];
-
-		for (int i = 0; i < 8; i++)
-			jodiefoster[i] = b.jodiefoster[i];
-
-		movie = b.movie;
-		win_movie = b.win_movie;
-		lose_movie = b.lose_movie;
+        MovieStr = b.MovieStr;
+        MovieWinStr = b.MovieWinStr;
+        MovieLoseStr = b.MovieLoseStr;
     }
 };
 
-struct brf_obj
-{
-    int field_0;
-    int object_id;
-    int field_8;
-    int field_C;
-    float field_10;
-    float field_14;
-    float field_18;
-    float field_1C;
-    float xpos;
-    int field_24;
-    float ypos;
-    int field_2C;
-    std::string title;
 
-    brf_obj()
+struct BriefObject
+{
+    enum
+    {
+        TYPE_NONE    = 0,
+        TYPE_SECTOR  = 1,
+        TYPE_VEHICLE = 2
+    };
+    
+    float X;
+    float Y;
+    int16_t ObjType;
+    int16_t ID;
+    int TileSet;
+    int TileID;
+    int Color;
+    std::string Title;
+
+    BriefObject()
+    {
+    	X = 0.;
+        Y = 0.;
+        ObjType = TYPE_NONE;
+        ID = 0;
+        TileSet = 0;
+        TileID = 0;
+        Color = 0;
+    }
+    
+    BriefObject(int16_t tp, int16_t oid, float sx, float sy, int tset, int tid, int clr, const std::string &ttl)
+    {
+    	X = sx;
+        Y = sy;
+        ObjType = tp;
+        ID = oid;
+        TileSet = tset;
+        TileID = tid;
+        Color = clr;
+        Title = ttl;
+    }
+
+    bool operator==(const BriefObject &b) const
+    {
+        return ObjType == b.ObjType && ID == b.ID && X == b.X && Y == b.Y;
+    }
+    
+    operator bool() const
+    {
+        return ObjType != TYPE_NONE;
+    }
+};
+
+struct BriefengScreen
+{
+    NC_STACK_bitmap *MbmapImg;
+    NC_STACK_bitmap *BriefingMapImg;
+    LevelDesc Desc;
+    int Stage;
+    int TimerStatus;
+    int ActiveElementID; // In current heap
+    int ElementsCount;
+    int StartTime;
+    int CurrTime;
+    int TextTime;
+    int PreTextTime;
+    std::string ObjDescription;
+    std::string BriefingText;
+    
+    rstr_arg204 MapBlitParams;
+    ua_fRect MapBlitStart;
+    ua_fRect MapBlitEnd;
+
+    int SelectedObjID;
+    
+    bool AddObjectsFlag;
+    BriefObject ViewingObject;
+    ua_fRect ViewingObjectRect;
+    int ViewingObjectAngle;
+    uint32_t ViewingObjectStartTime;
+    
+    std::vector<BriefObject> Objects;
+    
+    baseRender_msg ObjRenderParams;
+
+    bool ZoomFromGate;
+    
+    std::array<NC_STACK_sklt *, 4> VectorGfx;
+    Common::PlaneBytes OwnMap;
+    Common::PlaneBytes TypMap;
+    //int _owner;
+    uint32_t LastFrameTimeStamp;
+    std::array<World::player_status, 8> StatsGlobal;
+    std::array<World::player_status, 8> StatsIngame;
+    std::string MovieStr;
+    std::vector<World::History::Upgrade> Upgrades;
+
+    BriefengScreen()
     {
     	clear();
     }
 
     void clear()
     {
-    	field_0 = 0;
-		object_id = 0;
-		field_8 = 0;
-		field_C = 0;
-		field_10 = 0.;
-		field_14 = 0.;
-		field_18 = 0.;
-		field_1C = 0.;
-		xpos = 0.;
-		field_24 = 0;
-		ypos = 0.;
-		field_2C = 0;
-		title.clear();
-    }
-};
+        MbmapImg = NULL;
+        BriefingMapImg = NULL;
+        Desc.clear();
+        Stage = 0;
+        TimerStatus = 0;
+        ActiveElementID = 0;
+        ElementsCount = 0;
+        StartTime = 0;
+        CurrTime = 0;
+        TextTime = 0;
+        PreTextTime = 0;
+        ObjDescription.clear();
+        BriefingText.clear();
+        
+        ViewingObject = BriefObject();
+        
+        ViewingObjectRect = ua_fRect();
+        ViewingObjectAngle = 0;
+        ViewingObjectStartTime = 0;
+        
+        MapBlitParams.clear();
+        MapBlitStart = ua_fRect();
+        MapBlitEnd = ua_fRect();
+        AddObjectsFlag = false;
+        SelectedObjID = 0;
 
-struct brf_t2
-{
-    float xpos;
-    float ypos;
-    int16_t field_8;
-    int16_t vehicle_id;
-    int field_C;
-    int field_D;
-    int field_E;
-    std::string title;
+        Objects.clear();
 
-    brf_t2()
-    {
-    	clear();
-    }
+        ObjRenderParams.clear();
+        ZoomFromGate = false;
 
-    void clear()
-    {
-    	xpos = 0.;
-		ypos = 0.;
-		field_8 = 0;
-		vehicle_id = 0;
-		field_C = 0;
-		field_D = 0;
-		field_E = 0;
-		title.clear();
-    }
-};
+        for (NC_STACK_sklt* &x : VectorGfx)
+            x = NULL;
 
-struct brf_t1
-{
-    int16_t field_0;
-    int16_t last_vhcl;
-    int16_t last_weapon;
-    int16_t last_build;
+        //_owner = 0;
+        LastFrameTimeStamp = 0;
 
-    brf_t1()
-    {
-    	clear();
-    }
-    void clear()
-    {
-    	field_0 = 0;
-		last_vhcl = 0;
-		last_weapon = 0;
-		last_build = 0;
-    }
-};
+        for (auto &x : StatsGlobal)
+            x.clear();
 
-struct big_ypa_Brf
-{
-    NC_STACK_bitmap *mbmap_img;
-    NC_STACK_bitmap *briefing_map;
-    stru_2d90 s2d90;
-    mapProto map_prototype;
-    int briefStage;
-    int field_2E6C;
-    int activeElement;
-    int elementsCount;
-    int startTime;
-    int currTime;
-    int field_2E80;
-    int field_2E84;
-    std::string field_2E88;
-    std::string LEVEL_BRIEF_INFO;
-    brf_obj brf_objs;
-    rstr_arg204 field_2F40;
-    ua_fRect field_2F64;
-    ua_fRect field_2F74;
-    int field_2F84;
-    int tp2_count;
-    int mouseSelectedElement;
-    int field_2F90;
-    brf_t2 tp2[32];
-    baseRender_msg field_4174;
-    int field_419C;
-    int field_41A0;
-    NC_STACK_sklt *wireless_db[4];
-    UAskeleton::Data *wireless_db_skels[4];
-    Common::PlaneBytes *copy2_of_ownmap;
-    Common::PlaneBytes *copy2_of_typmap;
-    int field_41D4;
-    int field_41D8;
-    player_status copy_of_playerstatus[8];
-    player_status field_42BC[8];
-    std::string movie;
-    int tp1_count;
-    brf_t1 tp1[7];
+        for (auto &x : StatsIngame)
+            x.clear();
 
-    big_ypa_Brf()
-    {
-    	clear();
-    }
+        MovieStr.clear();
 
-    void clear()
-    {
-		mbmap_img = NULL;
-		briefing_map = NULL;
-		s2d90.clear();
-		map_prototype.clear();
-		briefStage = 0;
-		field_2E6C = 0;
-		activeElement = 0;
-		elementsCount = 0;
-		startTime = 0;
-		currTime = 0;
-		field_2E80 = 0;
-		field_2E84 = 0;
-		field_2E88.clear();
-		LEVEL_BRIEF_INFO.clear();
-		brf_objs.clear();
-		field_2F40.clear();
-		field_2F64 = ua_fRect();
-		field_2F74 = ua_fRect();
-		field_2F84 = 0;
-		tp2_count = 0;
-		mouseSelectedElement = 0;
-		field_2F90 = 0;
-
-		for (auto &x : tp2)
-			x.clear();
-
-		field_4174.clear();
-		field_419C = 0;
-		field_41A0 = 0;
-
-		for (auto &x : wireless_db)
-			x = NULL;
-
-		for (auto &x : wireless_db_skels)
-			x = NULL;
-
-		copy2_of_ownmap = NULL;
-		copy2_of_typmap = NULL;
-		field_41D4 = 0;
-		field_41D8 = 0;
-
-		for (auto &x : copy_of_playerstatus)
-			x.clear();
-
-		for (auto &x : field_42BC)
-			x.clear();
-
-		movie.clear();
-		tp1_count = 0;
-
-		for (auto &x : tp1)
-			x.clear();
+        Upgrades.clear();
     }
 };
 
@@ -1551,36 +1470,6 @@ struct rgbiColor
         i = 0;
         color = 0;
     }
-};
-
-class yw_movie : public std::string
-{
-public:
-	bool _present;
-
-	yw_movie() : _present(false) {};
-	void clear()
-	{
-		std::string::clear();
-		_present = false;
-	}
-
-	operator bool() const
-	{
-		return _present;
-	}
-
-	yw_movie& operator=(bool b)
-	{
-		_present = b;
-		return *this;
-	}
-
-	yw_movie& operator=(const std::string &b)
-	{
-		std::string::operator=(b);
-		return *this;
-	}
 };
 
 struct slurp
@@ -1712,25 +1601,6 @@ struct yw_f30
 {
     char owner;
     uint8_t field_1;
-};
-
-struct yw_f726c
-{
-    nlist lst;
-    int field_C;
-    int field_10;
-    int numNodes;
-    uint8_t *last_bufStart;
-    uint8_t *field_1C;
-    uint8_t *last_bufEnd;
-
-    int sub_47EDDC(int bufsize);
-};
-
-struct yw_f726c_nod : public nnode
-{
-    uint8_t *bufStart;
-    uint8_t *bufEnd;
 };
 
 struct lego_xyz
@@ -2327,46 +2197,6 @@ struct yw_arg129
     NC_STACK_ypabact *unit;
 };
 
-struct yw_arg184
-{
-    char type;
-
-    union
-    {
-        struct
-        {
-            int field_1;
-        } t15;
-
-        struct
-        {
-            int secX;
-            int secY;
-            uint8_t owner;
-        } t26;
-
-        struct
-        {
-            uint8_t field_1;
-            int16_t field_2;
-            uint8_t field_4;
-            uint8_t field_5;
-        } t34;
-
-        struct
-        {
-            int secX;
-            int secY;
-            uint8_t owner;
-            int field_4;
-            int field_5;
-            int16_t last_vhcl;
-            int16_t last_weapon;
-            int16_t last_build;
-        } t7;
-    };
-};
-
 struct yw_arg159
 {
     NC_STACK_ypabact *unit;
@@ -2486,7 +2316,7 @@ public:
     virtual bool ypaworld_func181(void *arg);
     virtual void ypaworld_func182(void *arg);
     virtual size_t ypaworld_func183(yw_arg161 *arg);
-    virtual void ypaworld_func184(yw_arg184 *arg);
+    virtual void ypaworld_func184(const World::History::Record &arg);
     virtual void ypaworld_func185(void *arg);
 
     virtual size_t compatcall(int method_id, void *data);
@@ -2569,13 +2399,13 @@ public:
     virtual int getYW_screenW();
     virtual int getYW_screenH();
     virtual char **getYW_localeStrings();
-    virtual stru_2d90 *getYW_levelInfo();
+    virtual LevelInfo *getYW_levelInfo();
     virtual int getYW_destroyFX();
     virtual NC_STACK_windp *getYW_pNET();
     virtual int getYW_invulnerable();
 
 protected:
-    int LVLoaderCommon(mapProto &mapp, int levelID, int a5);
+    int LVLoaderCommon(LevelDesc &mapp, int levelID, int a5);
     void FFeedback_Init();
     void FFeedback_StopAll();
     void FFeedback_VehicleChanged();
@@ -2613,11 +2443,11 @@ public:
 //protected:
     void sub_4491A0(const std::string &movie_fname);
     bool sub_4DA354(const std::string &filename);
-    bool sb_0x4e1a88__sub0__sub0(mapProto *mapp, const std::string &fname);
+    bool sb_0x4e1a88__sub0__sub0(LevelDesc *mapp, const std::string &fname);
     void ypaworld_func158__sub4__sub1();
-    size_t ypaworld_func158__sub4__sub1__sub5();
-    int ypaworld_func158__sub4__sub1__sub5__sub0(mapProto *mapproto, const std::string &filename);
-    int sub_4DA41C(mapProto *mapp, const std::string &fname);
+    bool InitDebrief();
+    int ypaworld_func158__sub4__sub1__sub5__sub0(LevelDesc *mapproto, const std::string &filename);
+    int sub_4DA41C(LevelDesc *mapp, const std::string &fname);
     int ypaworld_func158__sub4__sub1__sub3(int lvlid);
     int ypaworld_func158__sub4__sub1__sub3__sub0();
     void yw_ActivateWunderstein(cellArea *cell, int a3);
@@ -2648,6 +2478,7 @@ public:
     void sub_4F1B34(NC_STACK_ypabact *bact);
     void sub_4F1BE8(NC_STACK_ypabact *bct);
     void sub_4F1A60(NC_STACK_ypabact *bact);
+    void BriefingSetObject(const BriefObject &obj, bool doAdd);
     
     
     static TileMap * yw_LoadFont(const std::string &fontname);
@@ -2655,9 +2486,15 @@ public:
     NC_STACK_ypabact * FindBactByCmdOwn(int commandID, char owner);
     
     
+    bool yw_createRobos(const std::vector<MapRobo> &Robos);
+    bool yw_NetSetHostStations(const std::vector<MapRobo> &Robos);
+    void yw_InitSquads(const std::vector<MapSquad> &squads);
+    
+    
     void SendCRC(int lvlid);
     
     void HistoryAktCreate(NC_STACK_ypabact *bact);
+    void HistoryAktKill(NC_STACK_ypabact *bact);
     
 
 public:
@@ -2825,7 +2662,7 @@ public:
     recorder *replayer; // For play replay
     recorder *sceneRecorder; // For record replay
     bact_hudi hudi;
-    gemProto gems[8];
+    std::vector<MapGem> _Gems;
     int field_2b78;
     int field_2b7c;
     int last_modify_vhcl;
@@ -2833,9 +2670,15 @@ public:
     int last_modify_build;
 
     stru_LevelNet *LevelNet;
-    stru_2d90 *field_2d90;
-    big_ypa_Brf brief;
-    yw_f726c *history;
+    LevelInfo *_levelInfo;
+    
+    BriefengScreen brief;
+    
+    // History
+    Common::BlocksStream _history;
+    World::History::Frame _historyLastFrame;
+    bool      _historyLastIsTimeStamp;
+    
     int superbomb_wall_vproto;
     int superbomb_center_vproto;
     int field_7278;
@@ -2906,10 +2749,10 @@ public:
 
     int p_1_grp_cnt;
     int p_1_grp[4][8];
-    std::array<player_status, 8> playerstatus;
-    player_status ingamePlayerStatus[8];
-    int maxroboenergy;
-    int maxreloadconst;
+    std::array<World::player_status, 8> playerstatus;
+    std::array<World::player_status, 8> ingamePlayerStatus;
+    int _maxRoboEnergy;
+    int _maxReloadConst;
     yw_samples *samples;
     int field_7882;
     int field_7886;
@@ -2919,7 +2762,7 @@ public:
     float field_7896; //input sliders
     float field_789A; //input sliders
     float field_789E; //input sliders
-    std::array<yw_movie, World::MOVIE_MAX_NUMBER> movies;
+    std::array<std::string, World::MOVIE_MAX_NUMBER> movies;
     int field_81AB;
     const char *field_81AF;
     const char *field_81B3;

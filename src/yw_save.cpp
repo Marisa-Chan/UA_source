@@ -59,13 +59,13 @@ int yw_write_user(FSMgr::FileHandle *fil, UserData *usr)
         fil->write(buf, strlen(buf));
     }
 
-    sprintf(buf, "    maxroboenergy = %d\n", usr->p_ypaworld->maxroboenergy);
+    sprintf(buf, "    maxroboenergy = %d\n", usr->p_ypaworld->_maxRoboEnergy);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    maxreloadconst = %d\n", usr->p_ypaworld->maxreloadconst);
+    sprintf(buf, "    maxreloadconst = %d\n", usr->p_ypaworld->_maxReloadConst);
     fil->write(buf, strlen(buf));
 
-    sprintf(buf, "    numbuddies    = %d\n", usr->p_ypaworld->field_2d90->field_74);
+    sprintf(buf, "    numbuddies    = %d\n", 128);
     fil->write(buf, strlen(buf));
 
     sprintf(buf, "    beamenergy    = %d\n", usr->p_ypaworld->beamenergy);
@@ -78,7 +78,7 @@ int yw_write_user(FSMgr::FileHandle *fil, UserData *usr)
     {
         char v29[12];
 
-        sprintf(v29, "%d", usr->p_ypaworld->field_2d90->jodiefoster[i]);
+        sprintf(v29, "%d", usr->p_ypaworld->_levelInfo->JodieFoster[i]);
         strcat(buf, v29);
 
         if ( i < 7 )
@@ -329,36 +329,21 @@ int yw_write_levels_statuses(FSMgr::FileHandle *fil, NC_STACK_ypaworld *yw)
     return 1;
 }
 
-int yw_write_buddy(FSMgr::FileHandle *fil, NC_STACK_ypaworld *yw, int buddy_id)
-{
-    char buf[300];
-
-    sprintf(buf, "\nbegin_buddy\n");
-    fil->write(buf, strlen(buf));
-
-    //sprintf(buf, "    commandid = %ld\n", yw->field_2d90->buddies[buddy_id].commandid);
-    sprintf(buf, "    commandid = %d\n", yw->field_2d90->buddies[buddy_id].commandid);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    type      = %d\n", yw->field_2d90->buddies[buddy_id].type);
-    fil->write(buf, strlen(buf));
-
-    //sprintf(buf, "    energy    = %ld\n", yw->field_2d90->buddies[buddy_id].energy);
-    sprintf(buf, "    energy    = %d\n", yw->field_2d90->buddies[buddy_id].energy);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "end\n\n");
-    fil->write(buf, strlen(buf));
-
-    return 1;
-}
-
 int yw_write_buddies(FSMgr::FileHandle *fil, NC_STACK_ypaworld *yw)
 {
-    for (int i = 0; i < yw->field_2d90->buddies_count; i++ )
+    for (const MapBuddy &buddy : yw->_levelInfo->Buddies )
     {
-        if ( !yw_write_buddy(fil, yw, i) )
-            return 0;
+        fil->printf("\nbegin_buddy\n");
+
+        //sprintf(buf, "    commandid = %ld\n", yw->field_2d90->buddies[buddy_id].commandid);
+        fil->printf("    commandid = %d\n", buddy.CommandID);
+
+        fil->printf("    type      = %d\n", buddy.Type);
+
+        //sprintf(buf, "    energy    = %ld\n", yw->field_2d90->buddies[buddy_id].energy);
+        fil->printf("    energy    = %d\n", buddy.Energy);
+
+        fil->printf("end\n\n");
     }
 
     return 1;
@@ -541,7 +526,7 @@ int yw_write_item_modifers(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 int yw_write_levelnum(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     fil->printf("\nbegin_levelnum\n");
-    fil->printf("    levelnum = %d\n", yw->field_2d90->levelID);
+    fil->printf("    levelnum = %d\n", yw->_levelInfo->LevelID);
     fil->printf("end\n");
 
     return 1;
@@ -1052,27 +1037,18 @@ int yw_write_units(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
 int yw_write_wunderinfo(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    char buf[300];
+    fil->printf("\nbegin_wunderinfo\n");
 
-    sprintf(buf, "\nbegin_wunderinfo\n");
-    fil->write(buf, strlen(buf));
-
-    for (int i = 0; i < 8; i++)
+    size_t i = 0;
+    for ( const MapGem &gem : yw->_Gems )
     {
-        gemProto *gem = &yw->gems[i];
+        if ( yw->cells[gem.SecX + gem.SecY * yw->sectors_maxX2].w_type != 4 )
+            fil->printf("    disablegem %d\n", i);
 
-        if ( gem->field_0 )
-        {
-            if ( yw->cells[gem->sec_x + gem->sec_y * yw->sectors_maxX2].w_type != 4 )
-            {
-                sprintf(buf, "    disablegem %d\n", i);
-                fil->write(buf, strlen(buf));
-            }
-        }
+        i++;
     }
 
-    sprintf(buf, "end\n\n");
-    fil->write(buf, strlen(buf));
+    fil->printf("end\n\n");
     return 1;
 }
 
@@ -1115,41 +1091,42 @@ int yw_write_globals(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
 int yw_write_superbomb(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    for (int i = 0; i < yw->field_2d90->supetItems_count; i++)
+    int i = 0;
+    for ( const MapSuperItem &sitem : yw->_levelInfo->SuperItems)
     {
         fil->printf("\nbegin_superbomb\n");
         fil->printf("    num               = %d\n", i);
-        fil->printf("    status            = %d\n", yw->field_2d90->supetItems[i].field_4);
-        fil->printf("    active_timestamp  = %d\n", yw->field_2d90->supetItems[i].field_EC);
-        fil->printf("    trigger_timestamp = %d\n", yw->field_2d90->supetItems[i].field_F0);
-        fil->printf("    activated_by      = %d\n", yw->field_2d90->supetItems[i].field_F4);
-        fil->printf("    countdown         = %d\n", yw->field_2d90->supetItems[i].field_F8);
-        fil->printf("    last_ten_sec      = %d\n", yw->field_2d90->supetItems[i].field_FC);
-        fil->printf("    last_sec          = %d\n", yw->field_2d90->supetItems[i].field_100);
-        fil->printf("    radius            = %d\n", yw->field_2d90->supetItems[i].field_104);
-        fil->printf("    last_radius       = %d\n", yw->field_2d90->supetItems[i].field_108);
+        fil->printf("    status            = %d\n", sitem.State);
+        fil->printf("    active_timestamp  = %d\n", sitem.ActiveTime);
+        fil->printf("    trigger_timestamp = %d\n", sitem.TriggerTime);
+        fil->printf("    activated_by      = %d\n", sitem.ActivateOwner);
+        fil->printf("    countdown         = %d\n", sitem.CountDown);
+        fil->printf("    last_ten_sec      = %d\n", sitem.LastTenSec);
+        fil->printf("    last_sec          = %d\n", sitem.LastSec);
+        fil->printf("    radius            = %d\n", sitem.CurrentRadius);
+        fil->printf("    last_radius       = %d\n", sitem.LastRadius);
         fil->printf("end\n");
+        
+        i++;
     }
 
     return 1;
 }
 
-int yw_write_histbuffer(yw_f726c_nod *hist_node, FSMgr::FileHandle *fil)
+int yw_write_histbuffer(const std::vector<uint8_t> &buff, FSMgr::FileHandle *fil)
 {
-    uint8_t *bufpos = hist_node->bufStart;
-    int lines = (hist_node->bufEnd - hist_node->bufStart) / 64;
-
     fil->printf("    history_buffer = \n");
-    fil->printf("    %d %d\n", 64, lines);
+    fil->printf("    64 64\n");
 
-    for (int i = 0; i < lines; i++)
+    size_t k = 0;
+    for (int i = 0; i < 64; i++)
     {
         fil->printf("    ");
 
         for (int j = 0; j < 64; j++)
         {
-            fil->printf("%02x ", *bufpos);
-            bufpos++;
+            fil->printf("%02x ", buff[k]);
+            k++;
         }
 
         fil->printf("\n");
@@ -1161,22 +1138,54 @@ int yw_write_histbuffer(yw_f726c_nod *hist_node, FSMgr::FileHandle *fil)
 
 int yw_write_history(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    if ( yw->history )
+    if ( yw->_history.Size() )
     {
         fil->printf(";------------------------------------------------------------\n");
         fil->printf("; History Buffers\n");
         fil->printf(";------------------------------------------------------------\n");
         fil->printf("begin_history\n");
-
-        yw_f726c_nod *histnode = (yw_f726c_nod *)yw->history->lst.head;
-
-        while ( histnode->next )
+        
+        std::vector<uint8_t> buf;
+        const size_t BuffSize = 64 * 64;
+       
+        World::History::Instance HistDecoders;
+        
+        auto reader = yw->_history.GetReader();
+        
+        bool run = true;
+        while ( run && !reader.Eof() )
         {
-            yw_write_histbuffer(histnode, fil);
-
-            histnode = (yw_f726c_nod *)histnode->next;
+            World::History::Record *decoder = HistDecoders[ reader.ReadU8() ];
+            
+            if (decoder)
+            {
+                if ( buf.size() + 1 + decoder->dataSize > BuffSize ) // Write buffer
+                {
+                    if (BuffSize - buf.size() > 0)
+                        Common::Append(&buf, std::vector<uint8_t>(BuffSize - buf.size(), 0));
+                    
+                    yw_write_histbuffer(buf, fil);
+                    
+                    buf.clear();
+                }
+                
+                buf.push_back(decoder->type);
+                Common::Append(&buf, reader.Read(decoder->dataSize));
+            }
+            else
+            {
+                run = false;
+            }
         }
-
+        
+        if (buf.size())
+        {
+            if (BuffSize - buf.size() > 0)
+                Common::Append(&buf, std::vector<uint8_t>(BuffSize - buf.size(), 0));
+            
+            yw_write_histbuffer(buf, fil);
+        }
+        
         fil->printf("end");
     }
 
@@ -1186,8 +1195,8 @@ int yw_write_history(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 int yw_write_masks(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     fil->printf("\nbegin_masks\n");
-    fil->printf("    ownermask = %d\n", yw->field_2d90->ownerMap__has_vehicles);
-    fil->printf("    usermask  = %d\n", yw->field_2d90->field_60);
+    fil->printf("    ownermask = %d\n", yw->_levelInfo->OwnerMask);
+    fil->printf("    usermask  = %d\n", yw->_levelInfo->UserMask);
     fil->printf("end\n");
     return 1;
 }

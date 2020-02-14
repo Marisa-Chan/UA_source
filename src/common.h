@@ -333,9 +333,13 @@ struct PointRect
 };
 
 template <class T>
-class PlaneVector : public std::vector<T>
+class PlaneVector : protected std::vector<T>
 {
 public:
+    using std::vector<T>::data;
+    using std::vector<T>::operator[];
+    using std::vector<T>::size;
+    
     PlaneVector()
     {}
     
@@ -398,6 +402,13 @@ public:
         std::vector<T>::operator=(b);
         _w = b._w;
         _h = b._h;
+    }
+    
+    void Clear()
+    {
+        _w = 0;
+        _h = 0;
+        std::vector<T>::clear();
     }
     
 protected:

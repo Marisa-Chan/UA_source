@@ -1323,14 +1323,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         bacto->_lastFrmStamp = yw->timeStamp;
         bacto->_host_station = dynamic_cast<NC_STACK_yparobo *>(host_node);
 
-        yw_arg184 v459;
-        v459.type = 4;
-        v459.t34.field_1 = bacto->_owner;
-        v459.t34.field_2 = bacto->_vehicleID;
-        v459.t34.field_4 = bacto->_position.x * 256.0 / bacto->_wrldX;
-        v459.t34.field_5 = bacto->_position.y * 256.0 / bacto->_wrldY;
-
-        yw->ypaworld_func184(&v459);
+        yw->HistoryAktCreate( bacto );
         netDebug_AddCreated(host_node->_owner, nvMsg->id);
         break;
     }
@@ -1804,28 +1797,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                 fndBact->_killer = NULL;
         }
 
-        if ( fndBact->_killer )
-        {
-            yw_arg184 v427;
-            v427.type = 3;
-            v427.t34.field_1 = 8 * fndBact->_killer->_owner | fndBact->_owner;
-
-            if ( fndBact->_killer->getBACT_viewer() || (fndBact->_killer->_status_flg & BACT_STFLAG_ISVIEW) )
-                v427.t34.field_1 |= 0x80;
-
-            if ( fndBact->getBACT_viewer() || (fndBact->_status_flg & BACT_STFLAG_ISVIEW) )
-                v427.t34.field_1 |= 0x40;
-
-            v427.t34.field_2 = fndBact->_vehicleID;
-
-            if ( fndBact->_bact_type == 3 )
-                v427.t34.field_2 |= 0x8000;
-
-            v427.t34.field_4 = fndBact->_position.x * 256.0 / fndBact->_wrldX;
-            v427.t34.field_5 = fndBact->_position.z * 256.0 / fndBact->_wrldY;
-
-            yw->ypaworld_func184(&v427);
-        }
+        yw->HistoryAktKill(fndBact);
 
         fndBact->_status_flg |= BACT_STFLAG_DEATH1;
     }
@@ -2270,29 +2242,8 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             else
                 bhost->_killer = NULL;
         }
-
-        if ( bhost->_killer )
-        {
-            yw_arg184 mmsg;
-            mmsg.type = 3;
-            mmsg.t34.field_1 = 8 * bhost->_killer->_owner | bhost->_owner;
-
-            if ( bhost->_killer->getBACT_viewer() || bhost->_status_flg & BACT_STFLAG_ISVIEW )
-                mmsg.t34.field_1 |= 0x80;
-
-            if ( bhost->getBACT_viewer() || bhost->_status_flg & BACT_STFLAG_ISVIEW )
-                mmsg.t34.field_1 |= 0x40;
-
-            mmsg.t34.field_2 = bhost->_vehicleID;
-
-            if ( bhost->_bact_type == BACT_TYPES_ROBO )
-                mmsg.t34.field_2 |= 0x8000;
-
-            mmsg.t34.field_4 = bhost->_position.x * 256.0 / bhost->_wrldX;
-            mmsg.t34.field_5 = bhost->_position.z * 256.0 / bhost->_wrldY;
-
-            yw->ypaworld_func184(&mmsg);
-        }
+        
+        yw->HistoryAktKill(bhost);
 
         if ( hdMsg->killer && hdMsg->killerOwner == yw->UserRobo->_owner )
         {
@@ -2423,8 +2374,8 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         if ( yw->GameShell->players[owner].isKilled )
             break;
 
-        gemProto *gemProt = &yw->gems[upMsg->upgradeID];
-        cellArea *cl = &yw->cells[yw->sectors_maxX2 * gemProt->sec_y + gemProt->sec_x];
+        MapGem *gemProt = &yw->_Gems[upMsg->upgradeID];
+        cellArea *cl = &yw->cells[yw->sectors_maxX2 * gemProt->SecY + gemProt->SecX];
 
         int vhcl, bld;
         sub_47C1EC(yw, gemProt, &vhcl, &bld);
@@ -2434,77 +2385,41 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
 
         if ( bld )
             yw->BuildProtos[bld].enable_mask = 0;
-
-        yw_arg184 arg184;
-        arg184.type = 7;
-        arg184.t7.secX = gemProt->sec_x;
-        arg184.t7.secY = gemProt->sec_y;
-        arg184.t7.owner = owner;
+      
+        uint16_t lastVhcl = 0;
+        uint16_t lastBuild = 0;
 
         switch ( yw->GameShell->netPlayerOwner )
         {
         case 1:
-            arg184.t7.last_vhcl = gemProt->nw_vproto_num_1;
-            arg184.t7.last_build = gemProt->nw_bproto_num_1;
+            lastVhcl = gemProt->NwVprotoNum1;
+            lastBuild = gemProt->NwBprotoNum1;
             break;
         case 6:
-            arg184.t7.last_vhcl = gemProt->nw_vproto_num_2;
-            arg184.t7.last_build = gemProt->nw_bproto_num_2;
+            lastVhcl = gemProt->NwVprotoNum2;
+            lastBuild = gemProt->NwBprotoNum2;
             break;
         case 3:
-            arg184.t7.last_vhcl = gemProt->nw_vproto_num_3;
-            arg184.t7.last_build = gemProt->nw_bproto_num_3;
+            lastVhcl = gemProt->NwVprotoNum3;
+            lastBuild = gemProt->NwBprotoNum3;
             break;
         case 4:
-            arg184.t7.last_vhcl = gemProt->nw_vproto_num_4;
-            arg184.t7.last_build = gemProt->nw_bproto_num_4;
+            lastVhcl = gemProt->NwVprotoNum4;
+            lastBuild = gemProt->NwBprotoNum4;
             break;
         case 2:
         case 5:
-            arg184.t7.last_build = 0;
-            arg184.t7.last_vhcl = 0;
+            lastBuild = 0;
+            lastVhcl = 0;
             break;
         }
 
-        arg184.t7.last_weapon = 0;
-
-        switch(gemProt->type)
-        {
-        case 25:
-            arg184.t7.field_4 = 1;
-            break;
-
-        case 26:
-            arg184.t7.field_4 = 2;
-            break;
-
-        case 27:
-            arg184.t7.field_4 = 3;
-            break;
-
-        case 28:
-            arg184.t7.field_4 = 4;
-            break;
-
-        case 78:
-            arg184.t7.field_4 = 5;
-            break;
-
-        case 79:
-            arg184.t7.field_4 = 6;
-            break;
-
-        default:
-            arg184.t7.field_4 = 7;
-            break;
-        }
-
-        yw->ypaworld_func184(&arg184);
+        yw->ypaworld_func184( World::History::Upgrade(gemProt->SecX, gemProt->SecY, owner, gemProt->Type, lastVhcl, 0, lastBuild) );
 
         if ( cl->w_type != 4 )
         {
             std::string bff = get_lang_string(yw->string_pointers_p2, 229, "TECH-UPGRADE LOST! ");
-            bff += gemProt->msg_default;
+            bff += gemProt->MsgDefault;
 
             yw_arg159 arg159;
             arg159.field_4 = 80;
@@ -3547,7 +3462,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
 
         msgcount++;
 
-        if ( yw->field_2d90->field_40 != 2 || !yw->netGameStarted )
+        if ( yw->_levelInfo->State != 2 || !yw->netGameStarted )
         {
             if ( yw->windp->CountPlayers(NULL) * 5 >= msgcount )
             {
@@ -3620,7 +3535,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                 if ( !StriCmp(usr->callSIGN, (const char *)recvMsg.data) )
                 {
                     itisI = true;
-                    yw->field_2d90->field_40 = 2;
+                    yw->_levelInfo->State = 2;
                 }
 
                 for(int i = 0; i < 4; i++)
@@ -3836,17 +3751,15 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
 
 
 
-bool yw_NetSetHostStations(NC_STACK_ypaworld *yw, MapRobo *mapHosts, int hosts_cnt)
+bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
 {
-    UserData *usr = yw->GameShell;
-
-    yw->field_2d90->ownerMap__has_vehicles = 0;
-    yw->field_2d90->field_60 = 0;
+    _levelInfo->OwnerMask = 0;
+    _levelInfo->UserMask = 0;
 
     for (int i = 0; i < 8; i++)
-        usr->players[i].rdyStart = 0;
+        GameShell->players[i].rdyStart = 0;
 
-    MapRobo *selHost = NULL;
+    const MapRobo *selHost = NULL;
 
     int owner = 0;
 
@@ -3854,11 +3767,11 @@ bool yw_NetSetHostStations(NC_STACK_ypaworld *yw, MapRobo *mapHosts, int hosts_c
     plData.ID = 0;
     plData.mode = 0;
 
-    while ( yw->windp->GetPlayerData(&plData) )
+    while ( windp->GetPlayerData(&plData) )
     {
-        if ( plData.ID == hosts_cnt )
+        if ( (size_t)plData.ID == Robos.size() )
         {
-            log_netlog("No Robo declared for player %d\n", hosts_cnt);
+            log_netlog("No Robo declared for player %d\n", Robos.size());
             return false;
         }
 
@@ -3866,11 +3779,11 @@ bool yw_NetSetHostStations(NC_STACK_ypaworld *yw, MapRobo *mapHosts, int hosts_c
 
         if ( plData.flags & 1 )
         {
-            selFraction = usr->SelectedFraction;
+            selFraction = GameShell->SelectedFraction;
         }
         else
         {
-            selFraction = usr->players2[plData.ID].Fraction;
+            selFraction = GameShell->players2[plData.ID].Fraction;
         }
 
         if ( !selFraction )
@@ -3901,13 +3814,13 @@ bool yw_NetSetHostStations(NC_STACK_ypaworld *yw, MapRobo *mapHosts, int hosts_c
         }
 
         selHost = NULL;
-        usr->players2[plData.ID].owner = owner;
+        GameShell->players2[plData.ID].owner = owner;
 
-        for (int i = 0; i < hosts_cnt; i++)
+        for ( const MapRobo &host: Robos )
         {
-            if ( owner == mapHosts[i].owner )
+            if ( owner == host.Owner )
             {
-                selHost = &mapHosts[i];
+                selHost = &host;
                 break;
             }
         }
@@ -3918,16 +3831,16 @@ bool yw_NetSetHostStations(NC_STACK_ypaworld *yw, MapRobo *mapHosts, int hosts_c
             return false;
         }
 
-        vec3d place(selHost->pos_x, selHost->pos_y, selHost->pos_z);
+        vec3d place(selHost->Pos);
 
-        strncpy(usr->players[owner].name, plData.name, 64);
+        strncpy(GameShell->players[owner].name, plData.name, 64);
 
         ypaworld_arg136 arg136;
         arg136.stPos = place.X0Z() - vec3d::OY(30000.0);
         arg136.vect = vec3d::OY(50000.0);
         arg136.flags = 0;
 
-        yw->ypaworld_func136(&arg136);
+        ypaworld_func136(&arg136);
 
         if ( arg136.isect )
             place.y += arg136.isectPos.y;
@@ -3957,7 +3870,7 @@ bool yw_NetSetHostStations(NC_STACK_ypaworld *yw, MapRobo *mapHosts, int hosts_c
         }
         arg146.pos = place;
 
-        NC_STACK_ypabact *hostObj = yw->ypaworld_func146(&arg146);
+        NC_STACK_ypabact *hostObj = ypaworld_func146(&arg146);
 
         if ( !hostObj )
         {
@@ -3968,7 +3881,7 @@ bool yw_NetSetHostStations(NC_STACK_ypaworld *yw, MapRobo *mapHosts, int hosts_c
         hostObj->_owner = owner;
         hostObj->_gid |= owner << 24;
 
-        yw->field_2d90->ownerMap__has_vehicles |= 1 << owner;
+        _levelInfo->OwnerMask |= 1 << owner;
 
         for (bact_node *bct = (bact_node *)hostObj->_subjects_list.head; bct->next; bct = (bact_node *)bct->next )
         {
@@ -3980,28 +3893,28 @@ bool yw_NetSetHostStations(NC_STACK_ypaworld *yw, MapRobo *mapHosts, int hosts_c
         {
             hostObj->setBACT_viewer(1);
             hostObj->setBACT_inputting(1);
-            yw->GameShell->netPlayerOwner = owner;
-            yw->field_2d90->field_60 |= 1 << owner;
+            GameShell->netPlayerOwner = owner;
+            _levelInfo->UserMask |= 1 << owner;
         }
 
-        yw->ypaworld_func134(hostObj);
+        ypaworld_func134(hostObj);
 
         hostObj->setBACT_bactCollisions(1);
 
         NC_STACK_yparobo *robo = static_cast<NC_STACK_yparobo *>(hostObj);
         robo->setROBO_fillMode(15);
 
-        int enrg = selHost->energy / 4;
+        int enrg = selHost->Energy / 4;
 
         robo->setROBO_battVehicle(enrg);
         robo->setROBO_battBeam(enrg);
-        robo->setROBO_viewAngle(selHost->viewangle);
+        robo->setROBO_viewAngle(selHost->ViewAngle);
 
         hostObj->_energy = enrg;
         hostObj->_energy_max = enrg;
 
-        if ( selHost->reload_const )
-            hostObj->_reload_const = selHost->reload_const;
+        if ( selHost->ReloadConst )
+            hostObj->_reload_const = selHost->ReloadConst;
         else
             hostObj->_reload_const = hostObj->_energy_max;
 
@@ -4016,20 +3929,20 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
 {
     bact_id = 0x10000;
 
-    mapProto proto;
+    LevelDesc proto;
     bool loadOK = false;
 
     if ( LVLoaderCommon(proto, arg->lvlID, arg->field_4) )
     {
-        if ( cells_mark_type(this, proto.typ.c_str()) )
+        if ( cells_mark_type(this, proto.TypStr.c_str()) )
         {
-            if ( cells_mark_owner(this, proto.own.c_str()) )
+            if ( cells_mark_owner(this, proto.OwnStr.c_str()) )
             {
-                if ( cells_mark_hight(this, proto.hgt.c_str()) )
+                if ( cells_mark_hight(this, proto.HgtStr.c_str()) )
                 {
-                    if ( yw_NetSetHostStations(this, proto.mapRobos, proto.mapRobos_count) )
+                    if ( yw_NetSetHostStations(proto.Robos) )
                     {
-                        if ( sub_44B9B8(this, proto.blg.c_str()) )
+                        if ( sub_44B9B8(this, proto.BlgStr.c_str()) )
                         {
                             for (int y = 0; y < sectors_maxY2; y++)
                             {
@@ -4238,7 +4151,7 @@ void yw_NetHandleProblems(NC_STACK_ypaworld *yw)
         usr->netProblemCount -= yw->field_1b24.frameTime;
         if ( usr->netProblemCount < 0 )
         {
-            yw->field_2d90->field_40 = 2;
+            yw->_levelInfo->State = 2;
             usr->netProblem = 0;
         }
         break;
@@ -4575,7 +4488,7 @@ void yw_NetMsgHndlLoop(NC_STACK_ypaworld *yw)
 
         yw_HandleNetMsg(yw);
 
-        if ( yw->field_2d90->field_40 == 2 )
+        if ( yw->_levelInfo->State == 2 )
             break;
 
         SPEED_DOWN_NET = 0;

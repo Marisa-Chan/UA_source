@@ -47,6 +47,7 @@ uint32_t bact_id = 0x10000;
 int dword_5A7A80;
 
 NC_STACK_ypaworld::NC_STACK_ypaworld()
+: _history(4096)
 {
     GameShell = NULL;
     b64_parms = NULL;
@@ -226,11 +227,13 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     last_modify_build = 0;
 
     LevelNet = NULL;
-    field_2d90 = NULL;
+    _levelInfo = NULL;
 
     brief.clear();
+    
+    _historyLastIsTimeStamp = false;
 
-    history = NULL;
+    
     superbomb_wall_vproto = 0;
     superbomb_center_vproto = 0;
     field_7278 = 0;
@@ -306,8 +309,8 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     memset(p_1_grp, 0, sizeof(p_1_grp));
 //	player_status playerstatus[8];
 //	player_status field_7796[8];
-    maxroboenergy = 0;
-    maxreloadconst = 0;
+    _maxRoboEnergy = 0;
+    _maxReloadConst = 0;
     samples = NULL;
     field_7882 = 0;
     field_7886 = 0;
@@ -318,7 +321,7 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     field_789A = 0.0; //input sliders
     field_789E = 0.0; //input sliders
 
-    for (yw_movie &movie : movies)
+    for (std::string &movie : movies)
 		movie.clear();
 
     field_81AB = 0;
@@ -874,7 +877,7 @@ size_t NC_STACK_ypaworld::func3(IDVList &stak)
                 break;
 
             case YW_ATT_LVL_INFO:
-                *(stru_2d90 **)val.value.p_data = getYW_levelInfo();
+                *(LevelInfo **)val.value.p_data = getYW_levelInfo();
                 break;
 
             case YW_ATT_DESTROY_FX:
@@ -1017,17 +1020,14 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
         field_1B6E = 1024 / arg->field_4;
         p_1_grp[0][0] = field_1B6E;
 
-        yw_arg184 arg184;
-        arg184.type = 1;
-        arg184.t15.field_1 = timeStamp;
-        ypaworld_func184(&arg184);
+        ypaworld_func184(World::History::Frame(timeStamp));
 
         uint32_t v22 = profiler_begin();
 
         if ( isNetGame )
             yw_NetMsgHndlLoop(this);
 
-        if ( !isNetGame || field_2d90->field_40 != 2 )
+        if ( !isNetGame || _levelInfo->State != 2 )
         {
             p_1_grp[0][6] = profiler_end(v22);
 
@@ -1258,28 +1258,28 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
     return 1;
 }
 
-void sub_47C1EC(NC_STACK_ypaworld *yw, gemProto *gemProt, int *a3, int *a4)
+void sub_47C1EC(NC_STACK_ypaworld *yw, MapGem *gemProt, int *a3, int *a4)
 {
     switch ( yw->GameShell->netPlayerOwner )
     {
     case 1:
-        *a3 = gemProt->nw_vproto_num_1;
-        *a4 = gemProt->nw_bproto_num_1;
+        *a3 = gemProt->NwVprotoNum1;
+        *a4 = gemProt->NwBprotoNum1;
         break;
 
     case 6:
-        *a3 = gemProt->nw_vproto_num_2;
-        *a4 = gemProt->nw_bproto_num_2;
+        *a3 = gemProt->NwVprotoNum2;
+        *a4 = gemProt->NwBprotoNum2;
         break;
 
     case 3:
-        *a3 = gemProt->nw_vproto_num_3;
-        *a4 = gemProt->nw_bproto_num_3;
+        *a3 = gemProt->NwVprotoNum3;
+        *a4 = gemProt->NwBprotoNum3;
         break;
 
     case 4:
-        *a3 = gemProt->nw_vproto_num_4;
-        *a4 = gemProt->nw_bproto_num_4;
+        *a3 = gemProt->NwVprotoNum4;
+        *a4 = gemProt->NwBprotoNum4;
         break;
 
     default:
@@ -1291,10 +1291,10 @@ void sub_47C1EC(NC_STACK_ypaworld *yw, gemProto *gemProt, int *a3, int *a4)
 
 void sub_47C29C(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
 {
-    gemProto *v17 = &yw->gems[a3];
+    MapGem &gem = yw->_Gems[a3];
 
     int a3a, a4;
-    sub_47C1EC(yw, v17, &a3a, &a4);
+    sub_47C1EC(yw, &gem, &a3a, &a4);
 
     yw->field_2b78 = a3;
     yw->field_2b7c = yw->timeStamp;
@@ -1323,8 +1323,8 @@ void sub_47C29C(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
     v14.unit = 0;
     v14.field_4 = 48;
 
-    if ( v17->type )
-        v14.field_C = v17->type;
+    if ( gem.Type )
+        v14.field_C = World::Log::GetUpgradeLogID(gem.Type);
     else
         v14.field_C = 0;
 
@@ -1356,12 +1356,12 @@ void sub_47C29C(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
 
 void ypaworld_func129__sub1(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
 {
-    gemProto *v18 = &yw->gems[a3];
+    MapGem &gem = yw->_Gems[a3];
 
     int a3a;
     int a4;
 
-    sub_47C1EC(yw, v18, &a3a, &a4);
+    sub_47C1EC(yw, &gem, &a3a, &a4);
 
     if ( a3a )
         yw->VhclProtos[a3a].disable_enable_bitmask = 0;
@@ -1370,7 +1370,7 @@ void ypaworld_func129__sub1(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
         yw->BuildProtos[a4].enable_mask = 0;
 
     std::string v13 = get_lang_string(yw->string_pointers_p2, 229, "TECH-UPGRADE LOST!  ");
-    v13 += v18->msg_default;
+    v13 += gem.MsgDefault;
 
     yw_arg159 arg159;
     arg159.unit = 0;
@@ -1411,12 +1411,12 @@ void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
     field_2b78 = gemid;
     field_2b7c = timeStamp;
 
-    gemProto &gem = gems[gemid];
+    MapGem &gem = _Gems[gemid];
 
-    if ( !gem.script.empty() )
+    if ( !gem.ScriptFile.empty() )
     {
-        if ( !sub_4DA354(gem.script) )
-            ypa_log_out("yw_ActivateWunderstein: ERROR parsing script %s.\n", gem.script);
+        if ( !sub_4DA354(gem.ScriptFile) )
+            ypa_log_out("yw_ActivateWunderstein: ERROR parsing script %s.\n", gem.ScriptFile);
     }
     else
     {
@@ -1429,7 +1429,7 @@ void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
             new World::Parsers::BuildProtoParser(this)
         };
 
-        ScriptParser::ParseStringList(gem.actions, parsers, ScriptParser::FLAG_NO_SCOPE_SKIP);
+        ScriptParser::ParseStringList(gem.ActionsList, parsers, ScriptParser::FLAG_NO_SCOPE_SKIP);
         set_prefix_replacement("rsrc", tmp);
     }
 
@@ -1440,8 +1440,8 @@ void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
     arg159.field_4 = 48;
     arg159.txt = txt.c_str();
 
-    if ( gem.type )
-        arg159.field_C = gem.type;
+    if ( gem.Type )
+        arg159.field_C = World::Log::GetUpgradeLogID(gem.Type);
     else
         arg159.field_C = 0;
 
@@ -1634,50 +1634,9 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
                     if ( isNetGame )
                         sub_47C29C(this, cell, cell->w_id);
                     else
-                        yw_ActivateWunderstein(cell, cell->w_id);
+                        yw_ActivateWunderstein(cell, cell->w_id);                  
 
-                    yw_arg184 arg184;
-                    arg184.t7.secX = secX;
-                    arg184.type = 7;
-                    arg184.t7.secY = secY;
-                    arg184.t7.owner = cell->owner;
-                    arg184.t7.last_vhcl = last_modify_vhcl;
-                    arg184.t7.last_weapon = last_modify_weapon;
-                    arg184.t7.last_build = last_modify_build;
-
-                    switch(gems[ field_2b78 ].type)
-                    {
-                    case 25:
-                        arg184.t7.field_4 = 1;
-                        break;
-
-                    case 26:
-                        arg184.t7.field_4 = 2;
-                        break;
-
-                    case 27:
-                        arg184.t7.field_4 = 3;
-                        break;
-
-                    case 28:
-                        arg184.t7.field_4 = 4;
-                        break;
-
-                    case 78:
-                        arg184.t7.field_4 = 5;
-                        break;
-
-                    case 79:
-                        arg184.t7.field_4 = 6;
-                        break;
-
-                    default:
-                        arg184.t7.field_4 = 7;
-                        break;
-
-                    }
-
-                    ypaworld_func184(&arg184);
+                    ypaworld_func184( World::History::Upgrade(secX, secY, cell->owner, _Gems[ field_2b78 ].Type, last_modify_vhcl, last_modify_weapon, last_modify_build) );
                 }
             }
             else if ( cell->w_type == 7 )
@@ -2642,19 +2601,19 @@ void NC_STACK_ypaworld::ypaworld_func151()
 {
     sub_471AB8();
 
-    if ( field_2d90->field_40 == 1 )
+    if ( _levelInfo->State == 1 )
     {
         field_7278 = 1;
 
         if ( field_81AB )
-            field_2d90->jodiefoster[ field_81AB ] = 1;
+            _levelInfo->JodieFoster[ field_81AB ] = 1;
     }
     else
     {
         field_7278 = 0;
     }
 
-    if ( field_2d90->field_40 == 1 )
+    if ( _levelInfo->State == 1 )
     {
         if ( GameShell )
         {
@@ -2878,7 +2837,7 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
     usr->p_ypaworld = this;
     usr->p_YW = this;
 
-    field_2d90->field_40 = 8;
+    _levelInfo->State = 8;
     usr->envMode = ENVMODE_TITLE;
 
     get_keyvalue_from_ini(0, ypaworld_keys, 4);
@@ -3526,7 +3485,7 @@ void NC_STACK_ypaworld::GameShellInitBkgMode(int mode)
     if ( mode == ENVMODE_TUTORIAL || mode == ENVMODE_SINGLEPLAY )
     {
         field_81AB = 0;
-        brief.briefStage = 0;
+        brief.Stage = 0;
         LevelNet->field_BE38 = 0;
 
         sb_0x4e75e8__sub0(this);
@@ -6158,11 +6117,11 @@ void ypaworld_func157__sub0(NC_STACK_ypaworld *yw)
 
     if ( yw->GameShell->envMode == ENVMODE_TUTORIAL || yw->GameShell->envMode == ENVMODE_SINGLEPLAY )
     {
-        if ( yw->field_2d90->field_40 == 5 )
+        if ( yw->_levelInfo->State == 5 )
         {
             sub_4EAC80(yw);
         }
-        else if ( yw->field_2d90->field_40 == 9 )
+        else if ( yw->_levelInfo->State == 9 )
         {
             yw_freeDebrief(yw);
         }
@@ -6499,23 +6458,23 @@ void NC_STACK_ypaworld::ypaworld_func160(void *arg)
 size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
 {
     int ok = 0;
-    mapProto mapp;
+    LevelDesc mapp;
 
     if ( LVLoaderCommon(mapp, arg->lvlID, arg->field_4) )
     {
-        if ( cells_mark_type(this, mapp.typ.c_str()) )
+        if ( cells_mark_type(this, mapp.TypStr.c_str()) )
         {
-            if ( cells_mark_owner(this, mapp.own.c_str()) )
+            if ( cells_mark_owner(this, mapp.OwnStr.c_str()) )
             {
-                if ( cells_mark_hight(this, mapp.hgt.c_str()) )
+                if ( cells_mark_hight(this, mapp.HgtStr.c_str()) )
                 {
-                    if ( yw_createRobos(this, mapp.mapRobos_count, mapp.mapRobos) )
+                    if ( yw_createRobos(mapp.Robos) )
                     {
-                        if ( sub_44B9B8(this, mapp.blg.c_str()) )
+                        if ( sub_44B9B8(this, mapp.BlgStr.c_str()) )
                         {
-                            if ( field_2d90->field_48 != 1 )
+                            if ( _levelInfo->Mode != 1 )
                             {
-                                yw_InitSquads(this, mapp.squad_count, mapp.squads);
+                                yw_InitSquads(mapp.Squads);
                                 yw_InitBuddies(this);
 
                                 for (int yy = 0; yy < sectors_maxY2; yy++)
@@ -7149,29 +7108,15 @@ size_t NC_STACK_ypaworld::ypaworld_func168(NC_STACK_ypabact *bact)
         {
             if ( UserRobo == bact )
             {
-                field_2d90->field_40 = 1;
-                field_2d90->field_4C = cell->w_id;
-                field_2d90->field_64 = UserRobo->_energy;
-
-                NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(UserRobo);
-
-                field_2d90->field_70 = robo->getROBO_battVehicle();
-                field_2d90->field_70 = robo->getROBO_battBeam(); //CHECK IT
+                _levelInfo->State = 1;
+                _levelInfo->GateCompleteID = cell->w_id;
             }
             else
             {
                 field_8283 += (bact->_energy_max + 99) / 100;
 
-                if ( field_2d90->buddies_count < 128 && field_8283 < beamenergy )
-                {
-                    int v15 = field_2d90->buddies_count;
-
-                    field_2d90->buddies[v15].commandid = bact->_commandID;
-                    field_2d90->buddies[v15].type = bact->_vehicleID;
-                    field_2d90->buddies[v15].energy = bact->_energy;
-
-                    field_2d90->buddies_count++;
-                }
+                if ( field_8283 < beamenergy )
+                    _levelInfo->Buddies.push_back( MapBuddy( bact->_commandID, bact->_vehicleID, bact->_energy ) );
                 else
                     return 0;
             }
@@ -7312,8 +7257,8 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
 
     if ( strstr(arg->saveFile, ".SGM") || strstr(arg->saveFile, ".sgm") )
     {
-        maxreloadconst = 0;
-        maxroboenergy = 0;
+        _maxReloadConst = 0;
+        _maxRoboEnergy = 0;
     }
 
     char save_filename[300];
@@ -7325,17 +7270,17 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
     _extraViewNumber = -1;
     _extraViewEnable = false;
 
-    mapProto mapp;
+    LevelDesc mapp;
 
     if ( LVLoaderCommon(mapp, lvlnum, 0) )
     {
-        if ( cells_mark_type(this, mapp.typ.c_str()) )
+        if ( cells_mark_type(this, mapp.TypStr.c_str()) )
         {
-            if ( cells_mark_owner(this, mapp.own.c_str()) )
+            if ( cells_mark_owner(this, mapp.OwnStr.c_str()) )
             {
-                if ( cells_mark_hight(this, mapp.hgt.c_str()) )
+                if ( cells_mark_hight(this, mapp.HgtStr.c_str()) )
                 {
-                    if ( sub_44B9B8(this, mapp.blg.c_str()) )
+                    if ( sub_44B9B8(this, mapp.BlgStr.c_str()) )
                         v5 = 1;
                 }
             }
@@ -7348,8 +7293,8 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
         return 0;
     }
 
-    field_2d90->ownerMap__has_vehicles = 0;
-    field_2d90->field_60 = 0;
+    _levelInfo->OwnerMask = 0;
+    _levelInfo->UserMask = 0;
 
     bact_id = 0x10000;
     dword_5A7A80 = 0;
@@ -7426,11 +7371,11 @@ size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
 
     if ( isfin_save )
     {
-        maxroboenergy = UserRobo->_energy_max;
+        _maxRoboEnergy = UserRobo->_energy_max;
         write_modifers = 0;
         write_user = 0;
         write_level_statuses = 0;
-        maxreloadconst = UserRobo->_reload_const;
+        _maxReloadConst = UserRobo->_reload_const;
     }
     else
     {
@@ -7662,7 +7607,7 @@ size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg)
     usr->_saveDataFlags = 0;
 
     if ( arg->field_8 & 0x80 )
-        usr->p_ypaworld->field_2d90->buddies_count = 0;
+        _levelInfo->Buddies.clear();
 
     char buf[300];
     sprintf(buf, "save:%s", arg->usertxt);
@@ -7924,49 +7869,8 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
                     sub_47C29C(this, v15, v15->w_id);
                 else
                     yw_ActivateWunderstein(v15, v15->w_id);
-
-                yw_arg184 arg184;
-                arg184.t7.secX = j;
-                arg184.type = 7;
-                arg184.t7.secY = i;
-                arg184.t7.owner = v15->owner;
-                arg184.t7.last_vhcl = last_modify_vhcl;
-                arg184.t7.last_weapon = last_modify_weapon;
-                arg184.t7.last_build = last_modify_build;
-
-
-                switch(gems[ field_2b78 ].type)
-                {
-                case 25:
-                    arg184.t7.field_4 = 1;
-                    break;
-
-                case 26:
-                    arg184.t7.field_4 = 2;
-                    break;
-
-                case 27:
-                    arg184.t7.field_4 = 3;
-                    break;
-
-                case 28:
-                    arg184.t7.field_4 = 4;
-                    break;
-
-                case 78:
-                    arg184.t7.field_4 = 5;
-                    break;
-
-                case 79:
-                    arg184.t7.field_4 = 6;
-                    break;
-
-                default:
-                    arg184.t7.field_4 = 7;
-                    break;
-
-                }
-                ypaworld_func184(&arg184);
+                
+                ypaworld_func184( World::History::Upgrade(j, i, v15->owner, _Gems[ field_2b78 ].Type, last_modify_vhcl, last_modify_weapon, last_modify_build) );
             }
 
         }
@@ -8142,10 +8046,10 @@ size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
         v11.usr = GameShell;
         v11.saveFile = buf;
 
-        sprintf(buf, "save:%s/%d.rst", GameShell->user_name.c_str(), field_2d90->levelID);
+        sprintf(buf, "save:%s/%d.rst", GameShell->user_name.c_str(), _levelInfo->LevelID);
 
         if ( !ypaworld_func170(&v11) )
-            ypa_log_out("Warning: could not create restart file for level %d, user %s.\n", field_2d90->levelID, GameShell->user_name.c_str());
+            ypa_log_out("Warning: could not create restart file for level %d, user %s.\n", _levelInfo->LevelID, GameShell->user_name.c_str());
     }
 
     if ( copyof_typemap )
@@ -8170,10 +8074,37 @@ size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
 }
 
 
-void NC_STACK_ypaworld::ypaworld_func184(yw_arg184 *arg)
+void NC_STACK_ypaworld::ypaworld_func184(const World::History::Record &arg)
 {
-    if ( history )
-        ypaworld_func184__sub0(this, history, arg);
+    switch ( arg.type )
+    {
+    case World::History::TYPE_FRAME: // Do not write timestamp every frame, wait for any another data
+        _historyLastIsTimeStamp = true;
+        _historyLastFrame = static_cast<const World::History::Frame&>(arg);
+        break;
+                
+    case World::History::TYPE_CONQ:
+    case World::History::TYPE_VHCLKILL:
+    case World::History::TYPE_VHCLCREATE:
+    case World::History::TYPE_POWERST:
+    case World::History::TYPE_UPGRADE:
+        
+        if (_historyLastIsTimeStamp) // If 
+            _history.Write(_historyLastFrame.MakeByteArray());
+            
+        _history.Write(arg.MakeByteArray());
+        
+        _historyLastIsTimeStamp = false;
+        
+        if (GameShell && GameShell->isHost )
+            arg.AddScore(&ingamePlayerStatus);
+        break;
+
+    default:
+        break;
+    }
+
+    
 }
 
 
@@ -8352,7 +8283,7 @@ VhclProto *NC_STACK_ypaworld::getYW_vhclProtos()
 
 int NC_STACK_ypaworld::getYW_lvlFinished()
 {
-    if ( field_2d90->field_40 != 1 && field_2d90->field_40 != 2 )
+    if ( _levelInfo->State != 1 && _levelInfo->State != 2 )
         return 0;
 
     return 1;
@@ -8373,9 +8304,9 @@ char **NC_STACK_ypaworld::getYW_localeStrings()
     return string_pointers;
 }
 
-stru_2d90 *NC_STACK_ypaworld::getYW_levelInfo()
+LevelInfo *NC_STACK_ypaworld::getYW_levelInfo()
 {
-    return field_2d90;
+    return _levelInfo;
 }
 
 int NC_STACK_ypaworld::getYW_destroyFX()
@@ -8609,7 +8540,6 @@ size_t NC_STACK_ypaworld::compatcall(int method_id, void *data)
     case 183:
         return (size_t)ypaworld_func183( (yw_arg161 *)data );
     case 184:
-        ypaworld_func184( (yw_arg184 *)data );
         return 1;
     case 185:
         ypaworld_func185( (void *)data );

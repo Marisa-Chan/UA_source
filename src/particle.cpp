@@ -272,7 +272,7 @@ int sub_41A8D0(NC_STACK_particle::__NC_STACK_particle *prtcl)
     if ( !sklt )
         return 0;
 
-    prtcl->particle_sklt_intern = prtcl->particle_sklt->getSKEL_pSkelet();
+    prtcl->particle_sklt_intern = prtcl->particle_sklt->GetSkelet();
 
     UAskeleton::Polygon *v3 = prtcl->particle_sklt_intern->polygons;
 

@@ -3403,34 +3403,7 @@ void NC_STACK_ypabact::Die()
     if ( _owner )
     {
         if ( !(_status_flg & BACT_STFLAG_CLEAN) )
-        {
-            if ( _killer )
-            {
-                yw_arg184 arg184;
-                arg184.type = 3;
-                arg184.t34.field_1 = 8 * _killer->_owner | _owner;
-
-                int v70 = _killer->getBACT_viewer();
-
-                if ( v70 || _killer->_status_flg & BACT_STFLAG_ISVIEW )
-                    arg184.t34.field_1 |= 0x80;
-
-                v70 = getBACT_viewer();
-
-                if ( v70 || _status_flg & BACT_STFLAG_ISVIEW )
-                    arg184.t34.field_1 |= 0x40;
-
-                arg184.t34.field_2 = _vehicleID;
-
-                if ( _bact_type == BACT_TYPES_ROBO )
-                    arg184.t34.field_2 |= 0x8000;
-
-                arg184.t34.field_4 = _position.x * 256.0 / _wrldX;
-                arg184.t34.field_5 = _position.z * 256.0 / _wrldY;
-
-                _world->ypaworld_func184(&arg184);
-            }
-        }
+            _world->HistoryAktKill(this);
     }
 }
 
@@ -6904,7 +6877,7 @@ void NC_STACK_ypabact::StartDestFX(uint8_t arg)
             {
                 const destFX &fx = _destroyFX[i];
 
-                if ( (fx.type_flag & 2 && arg == 2) || (fx.type_flag & 1 && arg == 1) || (fx.type_flag & 4 && arg == 4) || (fx.type_flag & 8 && arg == 8) )
+                if ( ((fx.type_flag & 2) && arg == 2) || ((fx.type_flag & 1) && arg == 1) || ((fx.type_flag & 4) && arg == 4) || ((fx.type_flag & 8) && arg == 8) )
                     StartDestFX__sub0(fx);
             }
         }

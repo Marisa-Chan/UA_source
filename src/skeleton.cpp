@@ -40,7 +40,7 @@ size_t NC_STACK_skeleton::func3(IDVList &stak)
             switch (val.id)
             {
             case SKEL_ATT_PSKELET:
-                *(UAskeleton::Data **)val.value.p_data = getSKEL_pSkelet();
+                *(UAskeleton::Data **)val.value.p_data = GetSkelet();
                 break;
             case SKEL_ATT_POINTSCNT:
                 *(int *)val.value.p_data = getSKEL_pntCount();
@@ -371,7 +371,7 @@ bool NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
 
 
 
-UAskeleton::Data *NC_STACK_skeleton::getSKEL_pSkelet()
+UAskeleton::Data *NC_STACK_skeleton::GetSkelet()
 {
     return stack__skeleton.data;
 }

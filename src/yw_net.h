@@ -410,7 +410,7 @@ struct uamessage_cd : uamessage_base
 
 struct uamessage_score : uamessage_base
 {
-    player_status status[8];
+    World::player_status status[8];
 };
 
 

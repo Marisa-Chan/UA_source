@@ -75,7 +75,7 @@ void set_txtColor(char **pos, uint8_t r, uint8_t g, uint8_t b);
 
 struct ColumnItem
 {
-    const char *txt;
+    std::string txt;
     int width;
     uint8_t fontID;
     uint8_t spaceChar;
@@ -85,7 +85,6 @@ struct ColumnItem
 
     ColumnItem()
     {
-        txt = NULL;
         width = 0;
         fontID = 0;
         spaceChar = 0;

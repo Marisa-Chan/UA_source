@@ -477,20 +477,6 @@ void NC_STACK_yparobo::AI_layer1(update_msg *arg)
 }
 
 
-
-
-void NC_STACK_ypaworld::HistoryAktCreate(NC_STACK_ypabact *bact)
-{
-    yw_arg184 arg184;
-    arg184.type = 4;
-    arg184.t34.field_1 = bact->_owner;
-    arg184.t34.field_2 = bact->_vehicleID;
-    arg184.t34.field_4 = bact->_position.x * 256.0 / bact->_wrldX;
-    arg184.t34.field_5 = bact->_position.z * 256.0 / bact->_wrldY;
-
-    ypaworld_func184(&arg184);
-}
-
 void NC_STACK_yparobo::sub_4A9F24(NC_STACK_ypabact *unit)
 {
     if ( _roboState & ROBOSTATE_SETDOCKTARGET )
@@ -6054,30 +6040,26 @@ size_t NC_STACK_yparobo::yparobo_func132(setTarget_msg *arg)
 }
 
 // Create squad for robo
-int NC_STACK_yparobo::yparobo_func133(robo_arg133 *arg)
+bool NC_STACK_yparobo::MakeSquad(const std::vector<int> &VhclIDS, vec3d pos, bool usable)
 {
-    int curid = 0;
-    int col = sqrt(arg->num) + 2;
+    size_t curid = 0;
+    int col = sqrt(VhclIDS.size()) + 2;
 
     ypaworld_arg146 arg146;
-    arg146.pos.y = arg->pos.y;
-    arg146.pos.x = 100 * (curid % col - col / 2) + arg->pos.x;
-    arg146.pos.z = 100 * (curid / col) + arg->pos.z;
-
-    if ( arg->hetero_vehicles )
-        arg146.vehicle_id = arg->hetero_vehicles[0];
-    else
-        arg146.vehicle_id = arg->type;
+    arg146.pos.y = pos.y;
+    arg146.pos.x = 100.0 * (curid % col - col / 2.0) + pos.x;
+    arg146.pos.z = 100.0 * (curid / col) + pos.z;
+    
+    arg146.vehicle_id = VhclIDS[0];
 
     NC_STACK_ypabact *squad_commander = _world->ypaworld_func146(&arg146); //Create first bact
 
     if ( !squad_commander )
-        return 0;
+        return false;
 
-    int v32 = getBACT_bactCollisions();
-    squad_commander->setBACT_bactCollisions(v32);
+    squad_commander->setBACT_bactCollisions( getBACT_bactCollisions() );
 
-    if ( arg->field_14 & 1 )
+    if ( !usable )
         squad_commander->_status_flg |= BACT_STFLAG_UNUSE;
 
     squad_commander->_owner = _owner;
@@ -6100,15 +6082,12 @@ int NC_STACK_yparobo::yparobo_func133(robo_arg133 *arg)
 
     squad_commander->SetTarget(&arg67); //Set target
 
-    for ( curid = 1; curid < arg->num; curid++)
+    for ( curid = 1; curid < VhclIDS.size(); curid++)
     {
-        if ( arg->hetero_vehicles ) // there must be a joke about gay and straight
-            arg146.vehicle_id = arg->hetero_vehicles[arg->num - curid];
-        else
-            arg146.vehicle_id = arg->type;
+        arg146.vehicle_id = VhclIDS[VhclIDS.size() - curid]; // CHECK IT Why from end ?
 
-        arg146.pos.x = 100 * (curid % col - col / 2) + arg->pos.x;
-        arg146.pos.z = 100 * (curid / col) + arg->pos.z;
+        arg146.pos.x = 100.0 * (curid % col - col / 2.0) + pos.x;
+        arg146.pos.z = 100.0 * (curid / col) + pos.z;
 
         NC_STACK_ypabact *next_bact = (NC_STACK_ypabact *)_world->ypaworld_func146(&arg146);
 
@@ -6121,9 +6100,9 @@ int NC_STACK_yparobo::yparobo_func133(robo_arg133 *arg)
         arg67.tgt_pos.z = arg146.pos.z;
         next_bact->SetTarget(&arg67); //Set target
 
-        next_bact->setBACT_bactCollisions(v32);
+        next_bact->setBACT_bactCollisions( getBACT_bactCollisions() );
 
-        if ( arg->field_14 & 1 )
+        if ( !usable )
             next_bact->_status_flg |= BACT_STFLAG_UNUSE;
 
         next_bact->_owner = _owner;
@@ -6138,7 +6117,7 @@ int NC_STACK_yparobo::yparobo_func133(robo_arg133 *arg)
 
     AddSubject(squad_commander);  //Add squad commander into robo list
 
-    return 1;
+    return true;
 }
 
 
@@ -6341,7 +6320,7 @@ void NC_STACK_yparobo::ypabact_func65__sub0()
                 _roboYPos = _old_pos.y;
 
                 char a1a[200];
-                sprintf(a1a, "save:%s/%d.fin", _world->GameShell->user_name.c_str(), _world->field_2d90->levelID);
+                sprintf(a1a, "save:%s/%d.fin", _world->GameShell->user_name.c_str(), _world->_levelInfo->LevelID);
 
                 yw_arg169 v23;
                 v23.usr = _world->GameShell;
@@ -6355,7 +6334,7 @@ void NC_STACK_yparobo::ypabact_func65__sub0()
                 if ( _world->GameShell )
                 {
                     char v18[300];
-                    sprintf(v18, "save:%s/%d.rst", _world->GameShell->user_name.c_str(), _world->field_2d90->levelID);
+                    sprintf(v18, "save:%s/%d.rst", _world->GameShell->user_name.c_str(), _world->_levelInfo->LevelID);
 
                     uaDeleteFile(v18);
                 }
@@ -6390,10 +6369,7 @@ void NC_STACK_yparobo::ypabact_func65__sub0()
             unit = (bact_node *)unit->next;
         }
 
-        _world->field_2d90->buddies_count = 0;
-
-        for(auto &x : _world->field_2d90->buddies)
-			x.clear();
+        _world->_levelInfo->Buddies.clear();
 
         int v15 = 0;
 
@@ -6837,8 +6813,6 @@ size_t NC_STACK_yparobo::compatcall(int method_id, void *data)
         return 1;
     case 132:
         return (size_t)yparobo_func132( (setTarget_msg *)data );
-    case 133:
-        return (size_t)yparobo_func133( (robo_arg133 *)data );
     case 134:
         return (size_t)placeMessage( (robo_arg134 *)data );
     default:

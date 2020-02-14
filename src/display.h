@@ -18,8 +18,17 @@ struct ua_fRect
     float y1;
     float x2;
     float y2;
+    
+    ua_fRect(float sx1, float sy1, float sx2, float sy2)
+    : x1(sx1), y1(sy1), x2(sx2), y2(sy2)
+    {}
 
     ua_fRect()
+    {
+    	clear();
+    }
+    
+    void clear()
     {
     	x1 = 0.;
     	y1 = 0.;

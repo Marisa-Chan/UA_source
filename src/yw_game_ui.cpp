@@ -818,109 +818,94 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                 }
             }
 
-            for (int i = 0; i < 8; i++)
+            for ( const MapGem &gem : yw->_Gems )
             {
-                gemProto *v11 = &yw->gems[i];
-
-                cellArea *v12 = &yw->cells[v11->sec_y * yw->sectors_maxX2 + v11->sec_x];
-                if ( v11->field_0 )
+                cellArea *cell = &yw->cells[gem.SecY * yw->sectors_maxX2 + gem.SecX];
+                if ( cell->view_mask & (1 << yw->UserRobo->_owner) )
                 {
-                    if ( v12->view_mask & (1 << yw->UserRobo->_owner) )
+                    int v13 = 1;
+
+                    if ( cell->w_type == 4 )
                     {
-                        int v13 = 1;
+                        if ( yw->timeStamp / 300 & 1 )
+                            v13 = 0;
+                    }
 
-                        if ( v12->w_type == 4 )
-                        {
-                            if ( yw->timeStamp / 300 & 1 )
-                                v13 = 0;
-                        }
-
-                        if ( v13 )
-                        {
-                            float v14 = v11->sec_x * 1200.0 + 600.0;
-                            float v15 = -(v11->sec_y * 1200.0 + 600.0);
-                            pcur = sub_4F6980(pcur, v14, v15, 0x88, a4, a4);
-                        }
+                    if ( v13 )
+                    {
+                        float v14 = gem.SecX * 1200.0 + 600.0;
+                        float v15 = -(gem.SecY * 1200.0 + 600.0);
+                        pcur = sub_4F6980(pcur, v14, v15, 0x88, a4, a4);
                     }
                 }
             }
 
-            for (int i = 0; i < yw->field_2d90->gate_count; i++ )
+            for ( const MapGate &gate : yw->_levelInfo->Gates )
             {
-                gateProto *v16 = &yw->field_2d90->gates[i];
-
-                if ( v16->pcell->w_type == 5 )
+                if ( gate.PCell->w_type == 5 )
                 {
-                    if ( (1 << yw->UserRobo->_owner) & v16->pcell->view_mask )
+                    if ( (1 << yw->UserRobo->_owner) & gate.PCell->view_mask )
                     {
-                        float v19 = v16->sec_x * 1200.0 + 600.0;
-                        float v20 = -(v16->sec_y * 1200.0 + 600.0);
+                        float v19 = gate.SecX * 1200.0 + 600.0;
+                        float v20 = -(gate.SecY * 1200.0 + 600.0);
                         pcur = sub_4F6980(pcur, v19, v20, 0x93, a4, a4);
                     }
 
-                    for (int j = 0; j < v16->keySectors_count; j++)
+                    for ( const MapKeySector &ks : gate.KeySectors )
                     {
-                        cellArea *v22 = v16->keySectors[j].cell;
-                        int v52 = 0;
-
-                        if ( v22 )
+                        if ( ks.PCell )
                         {
-                            if ( (1 << yw->UserRobo->_owner) & v22->view_mask )
+                            if ( (1 << yw->UserRobo->_owner) & ks.PCell->view_mask )
                             {
-                                if ( v22->owner == yw->UserRobo->_owner || yw->timeStamp / 300 & 1 )
-                                    v52 = 1;
+                                if ( ks.PCell->owner == yw->UserRobo->_owner || yw->timeStamp / 300 & 1 )
+                                {
+                                    float v23 = ks.x * 1200.0 + 600.0;
+                                    float v24 = -(ks.y * 1200.0 + 600.0);
+                                    pcur = sub_4F6980(pcur, v23, v24, 0x8A, a4, a4);
+                                }
                             }
-                        }
-
-                        if ( v52 )
-                        {
-                            float v23 = v16->keySectors[j].x * 1200.0 + 600.0;
-                            float v24 = -(v16->keySectors[j].y * 1200.0 + 600.0);
-                            pcur = sub_4F6980(pcur, v23, v24, 0x8A, a4, a4);
                         }
                     }
                 }
-                else if ( v16->pcell->w_type == 6 )
+                else if ( gate.PCell->w_type == 6 )
                 {
-                    if ( (1 << yw->UserRobo->_owner) & v16->pcell->view_mask )
+                    if ( (1 << yw->UserRobo->_owner) & gate.PCell->view_mask )
                     {
                         if ( yw->timeStamp / 300 & 1 )
                         {
-                            float v25 = v16->sec_x * 1200.0 + 600.0;
-                            float v26 = -(v16->sec_y * 1200.0 + 600.0);
+                            float v25 = gate.SecX * 1200.0 + 600.0;
+                            float v26 = -(gate.SecY * 1200.0 + 600.0);
                             pcur = sub_4F6980(pcur, v25, v26, 0x94, a4, a4);
                         }
                     }
                 }
             }
 
-            for (int i = 0; i < yw->field_2d90->supetItems_count; i++)
+            for (const MapSuperItem &sitem : yw->_levelInfo->SuperItems)
             {
-                supetItemProto *v28 = &yw->field_2d90->supetItems[i];
-
                 int v29 = 0;
                 int v61 = 0;
 
-                if ( v28->type == 1 )
+                if ( sitem.Type == 1 )
                 {
                     v29 = 0x8E;
 
-                    if ( v28->field_4 == 0 )
+                    if ( sitem.State == 0 )
                         v61 = 0x8B;
-                    else if ( v28->field_4 <= 2 )
+                    else if ( sitem.State <= 2 )
                         v61 = 0x8C;
-                    else if ( v28->field_4 == 3 )
+                    else if ( sitem.State == 3 )
                         v61 = 0x8D;
                 }
-                else if ( v28->type == 2 )
+                else if ( sitem.Type == 2 )
                 {
                     v29 = 0x92;
 
-                    if ( v28->field_4 == 0 )
+                    if ( sitem.State == 0 )
                         v61 = 0x8F;
-                    else if ( v28->field_4 <= 2 )
+                    else if ( sitem.State <= 2 )
                         v61 = 0x90;
-                    else if ( v28->field_4 == 3 )
+                    else if ( sitem.State == 3 )
                         v61 = 0x91;
                 }
 
@@ -928,42 +913,35 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                 {
                     int v34 = 0;
 
-                    if ( v28->pcell->view_mask & (1 << yw->UserRobo->_owner) )
+                    if ( sitem.PCell->view_mask & (1 << yw->UserRobo->_owner) )
                     {
-                        if ( v28->pcell->owner == yw->UserRobo->_owner || yw->timeStamp / 300 & 1 )
+                        if ( sitem.PCell->owner == yw->UserRobo->_owner || yw->timeStamp / 300 & 1 )
                             v34 = 1;
                     }
 
                     if ( v34 )
                     {
-                        float v35 = v28->sec_x * 1200.0 + 600.0;
-                        float v36 = -(v28->sec_y * 1200.0 + 600.0);
+                        float v35 = sitem.SecX * 1200.0 + 600.0;
+                        float v36 = -(sitem.SecY * 1200.0 + 600.0);
                         pcur = sub_4F6980(pcur, v35, v36, v61, a4, a4);
                     }
 
                     if ( v29 )
                     {
-                        for (int j = 0; j < v28->keySectors_count; j++)
+                        for ( const MapKeySector &ks : sitem.KeySectors )
                         {
-                            cellArea *v38 = v28->keySectors[j].cell;
-
-                            int v60 = 0;
-
-                            if ( v38 )
+                            if ( ks.PCell )
                             {
-                                if ( (1 << yw->UserRobo->_owner) & v38->view_mask )
+                                if ( (1 << yw->UserRobo->_owner) & ks.PCell->view_mask )
                                 {
-                                    if ( v38->owner == yw->UserRobo->_owner || yw->timeStamp / 500 & 1 )
-                                        v60 = 1;
+                                    if ( ks.PCell->owner == yw->UserRobo->_owner || yw->timeStamp / 500 & 1 )
+                                    {
+                                        float v39 = ks.x * 1200.0 + 600.0;
+                                        float v40 = -(ks.y * 1200.0 + 600.0);
+
+                                        pcur = sub_4F6980(pcur, v39, v40, v61, a4, a4);
+                                    }
                                 }
-                            }
-
-                            if ( v60 )
-                            {
-                                float v39 = v28->keySectors[j].x * 1200.0 + 600.0;
-                                float v40 = -(v28->keySectors[j].y * 1200.0 + 600.0);
-
-                                pcur = sub_4F6980(pcur, v39, v40, v61, a4, a4);
                             }
                         }
                     }
@@ -1522,13 +1500,11 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
         }
     }
 
-    for ( int i = 0; i < yw->field_2d90->gate_count ; i++ )
+    for ( const MapGate &gate : yw->_levelInfo->Gates )
     {
-        gateProto *v80 = &yw->field_2d90->gates[i];
-
-        if ( v80->pcell->w_type == 6 )
+        if ( gate.PCell->w_type == 6 )
         {
-            int v81 = sb_0x4f8f64__sub3__sub0(yw, v80->pcell);
+            int v81 = sb_0x4f8f64__sub3__sub0(yw, gate.PCell);
 
             int v85 = 1;
 
@@ -1543,7 +1519,7 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
 
                 sprintf(a1a, "%d / %d", 2 * v81, 2 * yw->beamenergy);
 
-                pcur = sb_0x4f8f64__sub3__sub1(yw, a1a, 0x1F, pcur, v80->sec_x, v80->sec_y);
+                pcur = sb_0x4f8f64__sub3__sub1(yw, a1a, 0x1F, pcur, gate.SecX, gate.SecY);
             }
         }
     }
@@ -2924,7 +2900,7 @@ void sb_0x451034__sub9(NC_STACK_ypaworld *yw)
         wis->sklts[i] = Nucleus::CInit<NC_STACK_sklt>(init_vals);
 
         if ( wis->sklts[i] )
-            wis->sklts_intern[i] = wis->sklts[i]->getSKEL_pSkelet();
+            wis->sklts_intern[i] = wis->sklts[i]->GetSkelet();
     }
 
     float CW, CH;
@@ -3069,7 +3045,7 @@ int sb_0x451034(NC_STACK_ypaworld *yw)
 
     if ( yw->field_73CE & World::PREF_CDMUSICDISABLE )
     {
-        SFXEngine::SFXe.SetMusicTrack(yw->field_2d90->amb_track_p0, yw->field_2d90->amb_track_p1, yw->field_2d90->amb_track_p2);
+        SFXEngine::SFXe.SetMusicTrack(yw->_levelInfo->MusicTrack, yw->_levelInfo->MusicTrackMinDelay, yw->_levelInfo->MusicTrackMaxDelay);
         SFXEngine::SFXe.PlayMusicTrack();
     }
 
@@ -3152,7 +3128,6 @@ char * buy_list_update_sub(NC_STACK_ypaworld *yw, int a2, GuiList *lstvw, char *
     int v33 = lstvw->entryWidth - 2 * yw->font_default_w__b;
 
     FontUA::ColumnItem v24[3];
-    memset(v24, 0, sizeof(v24));
 
     char *pcur = cur;
 
@@ -3180,16 +3155,9 @@ char * buy_list_update_sub(NC_STACK_ypaworld *yw, int a2, GuiList *lstvw, char *
         v17 = 102;
     }
 
-    char v28[8];
-    v28[0] = a5;
-    v28[1] = 0;
-
     int v19 = yw->tiles[v14]->map[48].w;
 
-    char a1a[32];
-    sprintf(a1a, "%d", a7);
-
-    v24[0].txt = v28;
+    v24[0].txt = a5;
     v24[0].fontID = 28;
     v24[0].width = squadron_manager.field_2CC;
     v24[0].prefixChar = 0;
@@ -3205,7 +3173,7 @@ char * buy_list_update_sub(NC_STACK_ypaworld *yw, int a2, GuiList *lstvw, char *
     v24[1].width = v33 - squadron_manager.field_2CC - 5 * v19;
     v24[1].postfixChar = 0;
 
-    v24[2].txt = a1a;
+    v24[2].txt = fmt::sprintf("%d", a7);
     v24[2].fontID = v14;
     v24[2].spaceChar = v16;
     v24[2].postfixChar = v17;
@@ -6854,9 +6822,9 @@ void ypaworld_func64__sub7__sub6(NC_STACK_ypaworld *yw, struC5 *inpt)
 {
     if ( exit_menu.IsClosed() )
     {
-        if ( yw->field_2d90->field_40 )
+        if ( yw->_levelInfo->State )
         {
-            if ( yw->field_2d90->field_40 == 6 )
+            if ( yw->_levelInfo->State == 6 )
             {
                 yw_arg159 v18;
                 v18.unit = 0;
@@ -6867,20 +6835,20 @@ void ypaworld_func64__sub7__sub6(NC_STACK_ypaworld *yw, struC5 *inpt)
                 yw->ypaworld_func159(&v18);
             }
 
-            yw->field_2d90->field_40 = 0;
+            yw->_levelInfo->State = 0;
         }
     }
     else
     {
-        if ( yw->field_2d90->field_40 != 3 )
+        if ( yw->_levelInfo->State != 3 )
         {
-            yw->field_2d90->field_40 = 3;
+            yw->_levelInfo->State = 3;
 
             if ( yw->GameShell )
             {
                 yw->field_1604 = sub_47B388(0, yw->GameShell->user_name.c_str()) != 0;
 
-                if ( ypaworld_func64__sub7__sub6__sub0(yw->field_2d90->levelID, yw->GameShell->user_name.c_str()) )
+                if ( ypaworld_func64__sub7__sub6__sub0(yw->_levelInfo->LevelID, yw->GameShell->user_name.c_str()) )
                     yw->field_1608 = 1;
                 else
                     yw->field_1608 = 0;
@@ -6897,7 +6865,7 @@ void ypaworld_func64__sub7__sub6(NC_STACK_ypaworld *yw, struC5 *inpt)
             switch ( dword_5C8B78 )
             {
             case 8:
-                yw->field_2d90->field_40 = 2;
+                yw->_levelInfo->State = 2;
 
                 if ( yw->isNetGame )
                     sub_47DB04(yw, 1);
@@ -6905,15 +6873,15 @@ void ypaworld_func64__sub7__sub6(NC_STACK_ypaworld *yw, struC5 *inpt)
                 break;
 
             case 9:
-                yw->field_2d90->field_40 = 6;
+                yw->_levelInfo->State = 6;
                 break;
 
             case 10:
-                yw->field_2d90->field_40 = 7;
+                yw->_levelInfo->State = 7;
                 break;
 
             case 11:
-                yw->field_2d90->field_40 = 4;
+                yw->_levelInfo->State = 4;
                 break;
 
             case 13:
@@ -9002,7 +8970,7 @@ void yw_RenderInfoVehicleWire(NC_STACK_ypaworld *yw, sklt_wis *wis, VhclProto *v
         func = wis_color;
 
     if ( vhcl->wireframe )
-        wairufureimu = vhcl->wireframe->getSKEL_pSkelet();
+        wairufureimu = vhcl->wireframe->GetSkelet();
 
     if ( wairufureimu )
     {
@@ -9258,7 +9226,7 @@ void yw_RenderInfoWeaponWire(NC_STACK_ypaworld *yw, sklt_wis *wis, WeapProto *wp
     if ( wpn )
     {
         if ( wpn->wireframe )
-            wairufureimu = wpn->wireframe->getSKEL_pSkelet();
+            wairufureimu = wpn->wireframe->GetSkelet();
 
         if ( wairufureimu )
         {
@@ -9490,7 +9458,7 @@ int sb_0x4d7c08__sub0__sub0__sub0(NC_STACK_ypaworld *yw)
 
     wis->field_86 = 1.0;
 
-    int v10 = yw->gems[ yw->field_2b78 ].type;
+    int v10 = yw->_Gems[ yw->field_2b78 ].Type;
 
     if ( v10 == 25 )
         a8 |= 1;
@@ -9968,17 +9936,17 @@ void yw_RenderHUDTarget(NC_STACK_ypaworld *yw, sklt_wis *wis)
             vhcl = NULL;
 
         if ( vhcl->hud_wireframe )
-            hud_wure = vhcl->hud_wireframe->getSKEL_pSkelet();
+            hud_wure = vhcl->hud_wireframe->GetSkelet();
         else
             hud_wure = NULL;
 
         if ( vhcl->mg_wireframe )
-            mg_wure = vhcl->mg_wireframe->getSKEL_pSkelet();
+            mg_wure = vhcl->mg_wireframe->GetSkelet();
         else
             mg_wure = wis->sklts_intern[4];
 
         if ( vhcl->wpn_wireframe_1 )
-            wpn_wure = vhcl->wpn_wireframe_1->getSKEL_pSkelet();
+            wpn_wure = vhcl->wpn_wireframe_1->GetSkelet();
         else if ( yw->hudi.field_4 == 2)
             wpn_wure = wis->sklts_intern[5];
         else if ( yw->hudi.field_4 == 3 )
@@ -9987,7 +9955,7 @@ void yw_RenderHUDTarget(NC_STACK_ypaworld *yw, sklt_wis *wis)
             wpn_wure = wis->sklts_intern[7];
 
         if ( vhcl->wpn_wireframe_2 )
-            wpn_wure2 = vhcl->wpn_wireframe_2->getSKEL_pSkelet();
+            wpn_wure2 = vhcl->wpn_wireframe_2->GetSkelet();
         else if ( yw->hudi.field_4 == 2)
             wpn_wure2 = wis->sklts_intern[9];
         else if ( yw->hudi.field_4 == 3 )
@@ -10598,7 +10566,7 @@ int sub_47F360(const void *a1, const void *a2)
     return (((const aab *)a2)->b) - (((const aab *)a1)->b);
 }
 
-char *sb_0x4d7c08__sub0__sub2__sub1(NC_STACK_ypaworld *yw, char *cur, player_status *statuses, int a3)
+char *sb_0x4d7c08__sub0__sub2__sub1(NC_STACK_ypaworld *yw, char *cur, const std::array<World::player_status, 8> &statuses, int a3)
 {
     char *pcur = cur;
 
@@ -10610,7 +10578,7 @@ char *sb_0x4d7c08__sub0__sub2__sub1(NC_STACK_ypaworld *yw, char *cur, player_sta
 
         for (int i = 0; i < 8; i++)
         {
-            if ( (1 << i) & yw->field_2d90->ownerMap__has_vehicles )
+            if ( (1 << i) & yw->_levelInfo->OwnerMask )
             {
                 v25[nums].a = i;
                 v25[nums].b = statuses[i].score;
@@ -10675,10 +10643,7 @@ char *sb_0x4d7c08__sub0__sub2__sub1(NC_STACK_ypaworld *yw, char *cur, player_sta
             a4a[0].flags = 36;
             a4a[0].width = a3 * 0.5;
 
-            char a1a[32];
-            sprintf(a1a, "%d", statuses[ v25[i].a ].score);
-
-            a4a[1].txt = a1a;
+            a4a[1].txt = fmt::sprintf("%d", statuses[ v25[i].a ].score);
             a4a[1].width = a3 * 0.5;
             a4a[1].fontID = 15;
             a4a[1].spaceChar = 32;
@@ -10718,10 +10683,7 @@ char * sb_0x4d7c08__sub0__sub2__sub0(NC_STACK_ypaworld *yw, char *cur, int a3)
         a4[0].postfixChar = 0;
         a4[0].flags = 36;
 
-        char a1a[64];
-        sprintf(a1a, "%d / %d", yw->field_1bac[ yw->UserRobo->_owner ], yw->unit_limit_1);
-
-        a4[1].txt = a1a;
+        a4[1].txt = fmt::sprintf("%d / %d", yw->field_1bac[ yw->UserRobo->_owner ], yw->unit_limit_1);
         a4[1].width = a3 * 0.5;
         a4[1].fontID = 15;
         a4[1].postfixChar = 0;
@@ -10751,37 +10713,34 @@ void sb_0x4d7c08__sub0__sub2(NC_STACK_ypaworld *yw)
     pcur = sb_0x4d7c08__sub0__sub2__sub0(yw, pcur, v2);
     pcur = sb_0x4d7c08__sub0__sub2__sub1(yw, pcur, yw->ingamePlayerStatus, v2);
 
-    for (int i = 0; i < yw->field_2d90->supetItems_count; i++)
+    for (const MapSuperItem &sitem : yw->_levelInfo->SuperItems)
     {
-        supetItemProto *item = &yw->field_2d90->supetItems[i];
-
-        if ( item->type )
+        if ( sitem.Type )
         {
-            char a1[128];
+            std::string timeStr;
+            std::string typeStr = "SUPER ITEM";
 
-            const char *v8 = "SUPER ITEM";
-
-            if (item->type == 1)
-                v8 = get_lang_string(yw->string_pointers_p2, 18, "18 == STOUDSON BOMB");
-            else if ( item->type == 2 )
-                v8 = get_lang_string(yw->string_pointers_p2, 19, "19 == STOUDSON WAVE");
+            if (sitem.Type == 1)
+                typeStr = get_lang_string(yw->string_pointers_p2, 18, "18 == STOUDSON BOMB");
+            else if ( sitem.Type == 2 )
+                typeStr = get_lang_string(yw->string_pointers_p2, 19, "19 == STOUDSON WAVE");
 
             int v23 = 0;
 
-            if ( item->field_4 == 1 || item->field_4 == 2 )
+            if ( sitem.State == 1 || sitem.State == 2 )
             {
-                int v10 = (item->field_F8 + 1023) / 1024;
+                int v10 = (sitem.CountDown + 1023) / 1024;
 
                 if ( v10 < 0 )
                     v10 = 0;
 
-                sprintf(a1, "%s: %02d:%02d", v8, v10 / 60 % 60, v10 % 60);
+                timeStr = fmt::sprintf("%s: %02d:%02d", typeStr, v10 / 60 % 60, v10 % 60);
 
                 v23 = 1;
             }
-            else if ( item->field_4 == 3 )
+            else if ( sitem.State == 3 )
             {
-                sprintf(a1, "%s: %s", v8,  get_lang_string(yw->string_pointers_p2, 2471, "2471 == TRIGGERED") );
+                timeStr = fmt::sprintf("%s: %s", typeStr,  get_lang_string(yw->string_pointers_p2, 2471, "2471 == TRIGGERED") );
 
                 v23 = 1;
             }
@@ -10790,9 +10749,9 @@ void sb_0x4d7c08__sub0__sub2(NC_STACK_ypaworld *yw)
             {
                 FontUA::set_xpos(&pcur, v25);
 
-                FontUA::set_txtColor(&pcur, yw->iniColors[item->field_F4].r, yw->iniColors[item->field_F4].g, yw->iniColors[item->field_F4].b);
+                FontUA::set_txtColor(&pcur, yw->iniColors[sitem.ActivateOwner].r, yw->iniColors[sitem.ActivateOwner].g, yw->iniColors[sitem.ActivateOwner].b);
 
-                pcur = FontUA::FormateClippedText(yw->tiles[15], pcur, a1, yw->screen_width - v25, 32);
+                pcur = FontUA::FormateClippedText(yw->tiles[15], pcur, timeStr.c_str(), yw->screen_width - v25, 32);
 
                 FontUA::next_line(&pcur);
             }

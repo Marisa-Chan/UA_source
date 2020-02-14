@@ -51,6 +51,7 @@
         <in>zndNet.h</in>
       </df>
       <df name="world">
+        <in>history.h</in>
         <in>parsers.cpp</in>
         <in>parsers.h</in>
         <in>saveparsers.cpp</in>
@@ -125,6 +126,7 @@
       <in>lstvw.h</in>
       <in>main.cpp</in>
       <in>matrix.h</in>
+      <in>memstream.h</in>
       <in>network.cpp</in>
       <in>network.h</in>
       <in>nlist.cpp</in>

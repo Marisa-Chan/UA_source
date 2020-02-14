@@ -4,6 +4,7 @@
 #include "../yw.h"
 #include "../yparobo.h"
 #include "../log.h"
+#include "history.h"
 
 
 extern int dword_5A7A80;
@@ -104,10 +105,10 @@ bool SaveRoboParser::RoboParser(const std::string &p1, const std::string &p2)
 
         if ( _o.UserRobo == _r )
         {
-            if ( _r->_energy_max < _o.maxroboenergy )
+            if ( _r->_energy_max < _o._maxRoboEnergy )
             {
-                _r->_energy_max = _o.maxroboenergy;
-                _r->_reload_const = _o.maxreloadconst;
+                _r->_energy_max = _o._maxRoboEnergy;
+                _r->_reload_const = _o._maxReloadConst;
             }
         }
     }
@@ -500,8 +501,10 @@ int SaveGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, c
     {
         int gemId = std::stoi(p2);
 
-        if ( gemId >= 0 && gemId < 8 )
-            _o.cells[_o.sectors_maxX2 * _o.gems[gemId].sec_y + _o.gems[gemId].sec_x].w_type = 0;
+        if ( gemId >= 0 && gemId < (int)_o._Gems.size() )
+            _o.cells[_o.sectors_maxX2 * _o._Gems[gemId].SecY + _o._Gems[gemId].SecX].w_type = 0;
+        else
+            printf("SaveGemParser::Handle : gemId = %d but _Gems.size() = %d\n", gemId, (int)_o._Gems.size());
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -730,59 +733,30 @@ int SaveHistoryParser::Handle(ScriptParser::Parser &parser, const std::string &p
         stok.GetNext(&tmp);
         int h = std::stol(tmp, NULL, 0);
 
-        if ( _o.history->sub_47EDDC(h * w) )
+        std::vector<uint8_t> hh( w * h );
+        size_t k = 0;
+        for (int i = 0; i < h; i++)
         {
-            uint8_t *cur = _o.history->last_bufStart;
-            for (int i = 0; i < h; i++)
+            parser.ReadLine(&buf);
+            stok = buf;
+
+            for (int j = 0; j < w; j++)
             {
-                parser.ReadLine(&buf);
-                stok = buf;
+                stok.GetNext(&tmp);
 
-                for (int j = 0; j < w; j++)
-                {
-                    stok.GetNext(&tmp);
-
-                    *cur = std::stol(tmp, 0, 16);
-                    cur++;
-                }
+                hh[k] = std::stol(tmp, 0, 16);
+                k++;
             }
+        }
+        
+        History::Instance decoders;
 
-            cur = _o.history->last_bufStart;
-            while(*cur)
-            {
-                int wdth = 0;
-
-                switch (*cur)
-                {
-                case 1:
-                    wdth = 5;
-                    break;
-
-                case 2:
-                case 6:
-                    wdth = 4;
-                    break;
-
-                case 7:
-                    wdth = 12;
-                    break;
-
-                case 3:
-                case 4:
-                    wdth = 6;
-                    break;
-
-                case 5:
-                    wdth = 0;
-                    *cur = 0;
-                    break;
-                }
-
-                cur += wdth;
-            }
-
-            _o.history->field_1C = NULL;
-            _o.history->last_bufStart = cur;
+        k = 0;
+        while(decoders[ hh[k] ] != NULL)
+        {
+            size_t sz = decoders[ hh[k] ]->dataSize + 1;
+            _o._history.Write(&hh[k], sz);
+            k += sz;            
         }
     }
     else
@@ -797,11 +771,11 @@ int SaveMasksParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
 
     if ( !StriCmp(p1, "ownermask") )
     {
-        _o.field_2d90->ownerMap__has_vehicles = std::stoi(p2);
+        _o._levelInfo->OwnerMask = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "usermask") )
     {
-        _o.field_2d90->field_60 = std::stoi(p2);
+        _o._levelInfo->UserMask = std::stoi(p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -836,35 +810,35 @@ int SaveSuperBombParser::Handle(ScriptParser::Parser &parser, const std::string 
     }
     else if ( !StriCmp(p1, "activated_by") )
     {
-        _o.field_2d90->supetItems[_id].field_F4 = std::stoi(p2);
+        _o._levelInfo->SuperItems[_id].ActivateOwner = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "active_timestamp") )
     {
-        _o.field_2d90->supetItems[_id].field_EC = std::stoi(p2);
+        _o._levelInfo->SuperItems[_id].ActiveTime = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "trigger_timestamp") )
     {
-        _o.field_2d90->supetItems[_id].field_F0 = std::stoi(p2);
+        _o._levelInfo->SuperItems[_id].TriggerTime = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "countdown") )
     {
-        _o.field_2d90->supetItems[_id].field_F8 = std::stoi(p2);
+        _o._levelInfo->SuperItems[_id].CountDown = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "last_ten_sec") )
     {
-        _o.field_2d90->supetItems[_id].field_FC = std::stoi(p2);
+        _o._levelInfo->SuperItems[_id].LastTenSec = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "last_sec") )
     {
-        _o.field_2d90->supetItems[_id].field_100 = std::stoi(p2);
+        _o._levelInfo->SuperItems[_id].LastSec = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "radius") )
     {
-        _o.field_2d90->supetItems[_id].field_104 = std::stoi(p2);
+        _o._levelInfo->SuperItems[_id].CurrentRadius = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "last_radius") )
     {
-        _o.field_2d90->supetItems[_id].field_108 = std::stoi(p2);
+        _o._levelInfo->SuperItems[_id].LastRadius = std::stoi(p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;

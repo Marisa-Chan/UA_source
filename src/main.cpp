@@ -74,18 +74,18 @@ int sb_0x411324__sub0()
 {
     ypaworld->base_func64(&world_update_arg);
 
-    stru_2d90 *var_2d90 = ypaworld->getYW_levelInfo();
+    LevelInfo *var_2d90 = ypaworld->getYW_levelInfo();
 
     char buf[200];
 
-    switch( var_2d90->field_40 )
+    switch( var_2d90->State )
     {
     case 1:
     case 2:
     {
         ypaworld->ypaworld_func151();
 
-        if ( dword_513638 || var_2d90->field_40 == 2 )
+        if ( dword_513638 || var_2d90->State == 2 )
         {
             yw_arg172 arg172;
             arg172.usr = &userdata;
@@ -142,7 +142,7 @@ int sb_0x411324__sub0()
     {
         ypaworld->ypaworld_func151();
 
-        sprintf(buf, "save:%s/%d.rst", userdata.user_name.c_str(), var_2d90->levelID);
+        sprintf(buf, "save:%s/%d.rst", userdata.user_name.c_str(), var_2d90->LevelID);
 
         yw_arg169 arg169;
         arg169.saveFile = buf;
@@ -319,7 +319,7 @@ int sb_0x411324__sub2()
             return 0;
         }
 
-        userdata.p_ypaworld->field_2d90->field_40 = 8;
+        userdata.p_ypaworld->_levelInfo->State = 8;
 
         dword_520400 = 1;
 
@@ -368,7 +368,7 @@ int sb_0x411324__sub1()
     {
         dword_520400 = 0;
 
-        stru_2d90 *a4 = ypaworld->getYW_levelInfo();
+        LevelInfo *a4 = ypaworld->getYW_levelInfo();
 
         sub_410628();
         ypaworld->ypaworld_func157(&userdata);
@@ -385,7 +385,7 @@ int sb_0x411324__sub1()
 
         if ( !ypaworld->ypaworld_func169(&arg169) )
         {
-            ypa_log_out("Error while loading level (level %d, User %s\n", a4->levelID, userdata.user_name.c_str());
+            ypa_log_out("Error while loading level (level %d, User %s\n", a4->LevelID, userdata.user_name.c_str());
 
             ypaworld->ypaworld_func155(&userdata);
             return 0;
