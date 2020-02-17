@@ -2277,6 +2277,8 @@ void yw_calcPlayerScore(NC_STACK_ypaworld *yw)
             World::History::Record *decoder = HistDecoders[ reader.ReadU8() ];
             if (decoder)
             {
+                World::History::FillDecoderBStrm(decoder, &reader);
+                
                 switch(decoder->type)
                 {
                 case World::History::TYPE_FRAME:
