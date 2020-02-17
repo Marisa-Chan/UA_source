@@ -2102,8 +2102,7 @@ void yw_DebriefRunDebrief(NC_STACK_ypaworld *yw, struC5 *struc, BriefengScreen *
             World::History::Record *decoder = HistDecoders[ reader.ReadU8() ];
             if (decoder)
             {
-                Common::ByteArray data = reader.Read( decoder->dataSize );
-                decoder->ReadBytes( data.data() );
+                World::History::FillDecoderBStrm(decoder, &reader);
                 
                 switch(decoder->type)
                 {

@@ -41,6 +41,15 @@ public:
     
     virtual void AddScore(std::array<player_status, 8> *score) const {};
     
+    bool ReadByteArray(const Common::ByteArray &bt)
+    {
+        if (bt.size() < dataSize)
+            return false;
+        
+        ReadBytes(bt.data());
+        return true;
+    }
+    
 protected:
     Record(uint8_t tp, size_t sz) : type(tp), dataSize(sz) {};
 };
@@ -442,6 +451,12 @@ public:
 protected:
     std::array<Record *, TYPES_COUNT> instances;
 };
+
+
+inline bool FillDecoderBStrm(Record *d, Common::BlocksStream::Reader *r)
+{
+    return d->ReadByteArray( r->Read( d->dataSize ) );
+}
 
 
 }
