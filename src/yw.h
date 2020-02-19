@@ -505,7 +505,7 @@ public:
     NC_STACK_button *disk_button;
     GuiList disk_listvw;
     int field_1612;
-    char usernamedir[300];
+    std::string usernamedir;
     int usernamedir_len;
     int16_t field_0x1744;
     //FSMgr::DirIter *opened_dir;

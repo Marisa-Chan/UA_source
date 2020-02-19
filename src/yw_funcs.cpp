@@ -3429,7 +3429,7 @@ void UserData::clear()
     disk_button = NULL;
     //GuiList disk_listvw;
     field_1612 = 0;
-    memset(usernamedir, 0, sizeof(usernamedir));
+    usernamedir.clear();
     field_0x1744 = 0;
     //opened_dir = NULL;
     //nlist files_list;

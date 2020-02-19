@@ -996,7 +996,7 @@ void  UserData::sb_0x46ca74()
 
     yw_arg172 v15;
     v15.usertxt = oldsave.c_str();
-    v15.field_4 = usernamedir;
+    v15.field_4 = usernamedir.c_str();
     v15.usr = this;
     v15.field_8 = 255;
     v15.field_10 = 0;
@@ -2462,7 +2462,7 @@ void UserData::sub_46C914()
         p_YW->ypaworld_func172(&arg172);
 
         user_name = it->name;
-        strcpy(usernamedir, it->name.c_str());
+        usernamedir = it->name;
 
 
         field_0x1744 = 0;
@@ -2534,17 +2534,17 @@ void UserData::sub_46C748()
             if ( profiles.empty() )
             {
                 field_1612 = 0;
-                strcpy(usernamedir, "NEWUSER");
+                usernamedir = "NEWUSER";
             }
             else
             {
                 if ( !HasElements )
                     field_1612--;
 
-                strcpy(usernamedir, nextIt->name.c_str());
+                usernamedir = nextIt->name;
             }
 
-            usernamedir_len = strlen(usernamedir);
+            usernamedir_len = usernamedir.size();
 
             if ( field_1612 )
                 disk_listvw.PosOnSelected(field_1612 - 1);
@@ -3535,9 +3535,6 @@ void UserData::GameShellUiHandleInput()
 
     SFXEngine::SFXe.SetMusicVolume(field_0x13b8);
 
-
-    char v308[300];
-
     if ( envMode == ENVMODE_SELPLAYER ) //Load/Save
     {
         if ( (_input->downed_key > 0 && _input->downed_key < 0x81) || (_input->downed_key >= 0xA0 && _input->downed_key < 0xFF) || _input->chr )
@@ -3548,11 +3545,7 @@ void UserData::GameShellUiHandleInput()
                 {
                     if ( usernamedir_len > 0 )
                     {
-                        int ln = strlen(usernamedir);
-                        for (int i = usernamedir_len - 1; i < ln - 1; i++)
-                            usernamedir[i] = usernamedir[i + 1];
-
-                        usernamedir[ln - 1] = 0;
+                        usernamedir.erase( usernamedir_len - 1, 1 );
                         usernamedir_len--;
                     }
                 }
@@ -3567,7 +3560,7 @@ void UserData::GameShellUiHandleInput()
                             const char *v89 = get_lang_string(ypaworld__string_pointers, 2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?");
                             sub_46D9E0(3, v89, v88, 0);
                         }
-                        else
+                        else if (usernamedir.size() > 0)
                         {
                             sb_0x46ca74();
                         }
@@ -3584,7 +3577,7 @@ void UserData::GameShellUiHandleInput()
                             const char *v91 = get_lang_string(ypaworld__string_pointers, 2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?");
                             sub_46D9E0(6, v91, v90, 0);
                         }
-                        else
+                        else if (usernamedir.size() > 0)
                         {
                             sb_0x46cdf8();
                         }
@@ -3609,40 +3602,23 @@ void UserData::GameShellUiHandleInput()
                 }
                 else if ( _input->downed_key == UAVK_RIGHT )
                 {
-                    if ( usernamedir_len < (int)strlen(usernamedir) )
+                    if ( usernamedir_len < (int)usernamedir.size() )
                         usernamedir_len++;
                 }
-                else if ( _input->downed_key == UAVK_DELETE && usernamedir_len < (int)strlen(usernamedir) )
+                else if ( _input->downed_key == UAVK_DELETE )
                 {
-                    int ln = strlen(usernamedir);
-                    for (int i = usernamedir_len; i < ln - 1; i++)
-                        usernamedir[i] = usernamedir[i + 1];
-
-                    usernamedir[ln - 1] = 0;
+                    if ( usernamedir_len < (int)usernamedir.size() )
+                        usernamedir.erase(usernamedir_len, 1);
                 }
 
-                if ( strlen(usernamedir) < 32 )
+                if ( usernamedir.size() < 32 )
                 {
-                    if ( _input->chr > 0x1F )
+                    if ( _input->chr >= ' ' )
                     {
-                        char v337[6];
-                        char a2a[6];
-
-                        sprintf(v337, "%c", _input->chr);
-
-                        strcpy(a2a, v337);
-
-                        if ( v337[0] == '*' || a2a[0] != '*' )
+                        if ( ypaworld_func158__sub0__sub6(_input->chr) )
                         {
-                            if ( ypaworld_func158__sub0__sub6(v337[0]) )
-                            {
-                                strncpy(v308, usernamedir, usernamedir_len);
-                                strncpy(v308 + usernamedir_len, a2a, 1);
-                                strcpy(v308 + usernamedir_len + 1, usernamedir + usernamedir_len);
-
-                                strcpy(usernamedir, v308);
-                                usernamedir_len++;
-                            }
+                            usernamedir.insert(usernamedir_len, 1, _input->chr);
+                            usernamedir_len++;
                         }
                     }
                 }
@@ -3668,7 +3644,7 @@ void UserData::GameShellUiHandleInput()
 
     for ( ProfileList::iterator it = profiles.begin(); it != profiles.end(); it++)
     {
-        if ( !strcasecmp(it->name.c_str(), usernamedir) )
+        if ( !StriCmp(it->name, usernamedir) )
         {
             field_1612 = v108;
             break;
@@ -3693,76 +3669,61 @@ void UserData::GameShellUiHandleInput()
 
             if ( !field_1612 )
             {
-                strcpy(usernamedir, get_lang_string(ypaworld__string_pointers, 366, "NEW GAME"));
+                usernamedir = get_lang_string(ypaworld__string_pointers, 366, "NEW GAME");
             }
-
-            usernamedir_len = strlen(usernamedir);
-            strncpy(v308, usernamedir, usernamedir_len);
-            strncpy(&v308[usernamedir_len], "h", 1);
-
-            strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
-
-            disk_button->button_func71(1100, v308);
+            
+            usernamedir_len = usernamedir.size();
+                        
+            disk_button->button_func71(1100, usernamedir + 'h');
         }
         else if ( r.code == 1161 )
         {
             field_0x1744 = 4;
             if ( !field_1612 )
             {
-                strcpy(usernamedir, get_lang_string(ypaworld__string_pointers, 366, "NEW GAME"));
+                usernamedir = get_lang_string(ypaworld__string_pointers, 366, "NEW GAME");
             }
-            usernamedir_len = strlen(usernamedir);
-            strncpy(v308, usernamedir, usernamedir_len);
-            strncpy(&v308[usernamedir_len], "h", 1);
+            
+            usernamedir_len = usernamedir.size();
 
-            strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
-
-            disk_button->button_func71(1100, v308);
+            disk_button->button_func71(1100, usernamedir + 'h');
         }
         else if ( r.code == 1162 )
         {
             field_0x1744 = 3;
 
-            const char *v135 = get_lang_string(ypaworld__string_pointers, 366, "NEW GAME");
+            std::string tmp = get_lang_string(ypaworld__string_pointers, 366, "NEW GAME");
 
-            int v420 = 0;
+            int maxN = 0;
 
             for (ProfileList::iterator it = profiles.begin(); it != profiles.end(); it++)
             {
-                if ( !strnicmp(v135, it->name.c_str(), strlen(v135)) )
+                if ( !StriCmp(tmp, it->name.substr(0, tmp.size())) )
                 {
-                    int v138 = atoi( it->name.c_str() + strlen(v135) );
+                    int n = std::stoi( it->name.substr(tmp.size()) );
 
-                    if ( v138 > v420 )
-                        v420 = v138;
+                    if ( n > maxN )
+                        maxN = n;
                 }
             }
 
-            sprintf(usernamedir, "%s%d", v135, v420 + 1);
+            usernamedir = fmt::sprintf("%s%d", tmp, maxN + 1);
+            
+            usernamedir_len = usernamedir.size();
 
-            usernamedir_len = strlen(usernamedir);
-            strncpy(v308, usernamedir, usernamedir_len);
-            strncpy(&v308[usernamedir_len], "h", 1);
-
-            strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
-
-            disk_button->button_func71(1100, v308);
+            disk_button->button_func71(1100, usernamedir + 'h');
         }
         else if ( r.code == 1163 )
         {
             field_0x1744 = 1;
             if ( !field_1612 )
             {
-                strcpy( usernamedir, get_lang_string(ypaworld__string_pointers, 366, "NEW GAME") );
+                usernamedir = get_lang_string(ypaworld__string_pointers, 366, "NEW GAME");
             }
 
-            usernamedir_len = strlen(usernamedir);
-            strncpy(v308, usernamedir, usernamedir_len);
-            strncpy(&v308[usernamedir_len], "h", 1);
+            usernamedir_len = usernamedir.size();
 
-            strcpy(&v308[usernamedir_len + 1], &usernamedir[usernamedir_len]);
-
-            disk_button->button_func71(1100, v308);
+            disk_button->button_func71(1100, usernamedir + 'h');
         }
         else if ( r.code == 1164)
         {
@@ -3848,8 +3809,8 @@ void UserData::GameShellUiHandleInput()
 
             if (it != profiles.end())
             {
-                strcpy(usernamedir, it->name.c_str());
-                usernamedir_len = strlen(usernamedir);
+                usernamedir = it->name;
+                usernamedir_len = usernamedir.size();
             }
         }
         disk_listvw.Formate(p_ypaworld);
@@ -3900,14 +3861,10 @@ void UserData::GameShellUiHandleInput()
             disk_button->button_func66(&v410);
         }
 
-        char *v174 = usernamedir;
-
-        strncpy(v308, usernamedir, usernamedir_len);
-        strncpy(&v308[usernamedir_len], "_", 1);
-
-        v174 += usernamedir_len;
-
-        strcpy(&v308[usernamedir_len + 1], v174);
+        std::string tmp = usernamedir;
+        tmp.insert(usernamedir_len, 1, '_');
+        
+        disk_button->button_func71(1100, tmp);
     }
     else
     {
@@ -3933,10 +3890,8 @@ void UserData::GameShellUiHandleInput()
         else
             disk_button->button_func66(&v410);
 
-        strcpy(v308, usernamedir);
+        disk_button->button_func71(1100, usernamedir);
     }
-
-    disk_button->button_func71(1100, v308);
 
     if ( envMode == ENVMODE_SELLOCALE )
     {
@@ -4832,12 +4787,10 @@ void UserData::GameShellUiHandleInput()
 
         network_button->button_func76(&v393);
 
-        strncpy(v308, netName, netNameCurPos);
-        strncpy(v308 + netNameCurPos, "_", 1);
-
-        strcpy(v308 + netNameCurPos + 1, netName + netNameCurPos);
-
-        network_button->button_func71(1200, v308);
+        std::string tmp = netName;
+        tmp.insert(netNameCurPos, 1, '_');
+        
+        network_button->button_func71(1200, tmp);
     }
 
     v393.xpos = -1;

@@ -2604,7 +2604,6 @@ void NC_STACK_ypaworld::ypaworld_func151()
     if ( _levelInfo->State == 1 )
     {
         field_7278 = 1;
-
         if ( field_81AB )
             _levelInfo->JodieFoster[ field_81AB ] = 1;
     }
@@ -2857,14 +2856,12 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
     listLocaleDir(usr, "locale");
 
 
-    strcpy(usr->usernamedir, "NEWUSER");
+    usr->usernamedir = "NEWUSER";
+    usr->usernamedir_len = usr->usernamedir.size();
 
     usr->field_0x8 = 1;
     usr->field_1612 = 0;
-    usr->field_D36 = 1;
-
-
-    usr->usernamedir_len = strlen(usr->usernamedir);
+    usr->field_D36 = 1;   
 
     usr->samples2_info.field_0 = vec3d(0.0, 0.0, 0.0);
     usr->samples2_info.field_C = vec3d(0.0, 0.0, 0.0);
@@ -5122,13 +5119,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     usr->disk_listvw.x = usr->field_0x1758;
     usr->disk_listvw.y = usr->field_175A;
 
-    strcpy(usr->usernamedir, usr->user_name.c_str());
+    usr->usernamedir = usr->user_name;
 
-    usr->usernamedir_len = strlen(usr->usernamedir);
+    usr->usernamedir_len = usr->usernamedir.size();
 
-    std::string v223;
-
-    v223 = usr->usernamedir;
+    std::string v223 = usr->usernamedir;
 
     if ( usr->field_0x1744 )
         v223 += "h";
