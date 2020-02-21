@@ -17,6 +17,15 @@ win32: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSD
 win32: LDFLAGS = -L$(MINGW)/lib/
 win32: CFLAGS := $(CFLAGS) -I$(MINGW)/include/
 
+msys: MINGW = /usr/i686-w64-mingw32
+msys: CXX = i686-w64-mingw32-g++
+msys: CC = i686-w64-mingw32-gcc
+msys: CDEFS = -DWIN32
+msys: TARGET := $(TARGET).exe
+msys: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lopenal -lopengl32 -lvorbisfile
+msys: LDFLAGS = -L$(MINGW)/lib/
+msys: CFLAGS := $(CFLAGS) -I$(MINGW)/include/
+
 mac: CXX = clang++
 mac: CC = clang
 mac: LIBS = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -framework OpenGL -framework OpenAL -lvorbisfile
@@ -98,7 +107,7 @@ OBJS =  \
 	ypatank.cpp\
 	ypaufo.cpp
 
-win32: OBJS := $(OBJS) win_funct.cpp
+win32 msys: OBJS := $(OBJS) win_funct.cpp
 
 CCFILES     := $(filter %.cc, $(OBJS))
 CPPFILES    := $(filter %.cpp, $(OBJS))
@@ -127,7 +136,7 @@ $(DEPFILES):
 -include $(DEPFILES)
 
 
-win32 nix mac: $(OBJFILES)
+win32 nix mac msys: $(OBJFILES)
 	$(CXX) $(OBJFILES) $(LDFLAGS) $(LIBS) -o $(TARGET)
 
 clean:
