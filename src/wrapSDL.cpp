@@ -49,8 +49,7 @@ static struct FontLookup
     {"dungeon", "xolonium bold", "xolonium regular"},
     {"ms sans serif", "microsoft sans serif", "liberation serif"},
     {"courier", "liberation mono", ""},
-    {"small font", "press start 2p", ""},
-    {"", "", ""}
+    {"small font", "press start 2p", ""}
 };
 
 void SDLWRAP_ScanFonts()
@@ -356,27 +355,25 @@ void SDLWRAP_setFullscreen(uint32_t full, SDL_DisplayMode *mode)
 
 std::string SDLWRAP_FindFont(const std::string &fontName)
 {
-    for(std::list< FontNode *>::iterator it = fontsList.begin(); it != fontsList.end(); it++)
+    for(FontNode *fnt : fontsList )
     {
-        if (*it)
+        if (fnt)
         {
-            FontNode *fntn = *it;
-
-            if (StriCmp(fontName, fntn->name) == 0)
-                return fntn->filepath;
+            if (StriCmp(fontName, fnt->name) == 0)
+                return fnt->filepath;
             else
             {
-                std::string ttmp = fntn->name;
+                std::string ttmp = fnt->name;
                 ttmp += " ";
-                ttmp += fntn->stylename;
+                ttmp += fnt->stylename;
 
                 if (StriCmp(fontName, ttmp) == 0)
-                    return fntn->filepath;
+                    return fnt->filepath;
             }
         }
     }
 
-    return "";
+    return std::string();
 }
 
 
@@ -388,20 +385,20 @@ TTF_Font *SDLWRAP_loadFont(const std::string &fontname, int height)
 
     TTF_Font *fnt = NULL;
 
-    std::string filename = SDLWRAP_FindFont(tmp2.c_str());
+    std::string filename = SDLWRAP_FindFont(tmp2);
 
     if (filename.empty())
     {
-        for(int i = 0; !fontsLookup[i].sign.empty(); i++ )
+        for( const FontLookup &lookup : fontsLookup )
         {
-            if ( !StriCmp(tmp2, fontsLookup[i].sign) )
+            if ( !StriCmp(tmp2, lookup.sign) )
             {
-                filename = SDLWRAP_FindFont(fontsLookup[i].alt1);
+                filename = SDLWRAP_FindFont(lookup.alt1);
 
                 if (!filename.empty())
                     break;
 
-                filename = SDLWRAP_FindFont(fontsLookup[i].alt2);
+                filename = SDLWRAP_FindFont(lookup.alt2);
 
                 if (!filename.empty())
                     break;
@@ -411,16 +408,16 @@ TTF_Font *SDLWRAP_loadFont(const std::string &fontname, int height)
 
     if (filename.empty())
     {
-        for(int i = 0; !fontsLookup[i].sign.empty(); i++ )
+        for( const FontLookup &lookup : fontsLookup )
         {
-            if ( tmp2.find(fontsLookup[i].sign) != std::string::npos )
+            if ( tmp2.find(lookup.sign) != std::string::npos )
             {
-                filename = SDLWRAP_FindFont(fontsLookup[i].alt1);
+                filename = SDLWRAP_FindFont(lookup.alt1);
 
                 if (!filename.empty())
                     break;
 
-                filename = SDLWRAP_FindFont(fontsLookup[i].alt2);
+                filename = SDLWRAP_FindFont(lookup.alt2);
 
                 if (!filename.empty())
                     break;

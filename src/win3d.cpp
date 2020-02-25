@@ -46,7 +46,7 @@ key_value_stru NC_STACK_win3d::win3d_keys[21] =
     {"gfx.disable_lowres", KEY_TYPE_BOOL, 0},
     {"gfx.export_window_mode", KEY_TYPE_BOOL, 0},
     {"gfx.blending", KEY_TYPE_DIGIT, 0},
-    {"gfx.solidfont", KEY_TYPE_BOOL, true},          //15
+    {"gfx.solidfont", KEY_TYPE_BOOL, false},          //15
     {"gfx.vsync", KEY_TYPE_DIGIT, 1},
     {"gfx.maxfps", KEY_TYPE_DIGIT, 60},
     {"gfx.newsky", KEY_TYPE_BOOL, false},
@@ -779,6 +779,8 @@ int NC_STACK_win3d::load_font(const char *fontname)
     {
         if (!stack__win3d.solidFont)
             TTF_SetFontHinting(stack__win3d.font.ttfFont, TTF_HINTING_LIGHT);
+        else
+            TTF_SetFontHinting(stack__win3d.font.ttfFont, TTF_HINTING_MONO);
 
         return 1;
     }
