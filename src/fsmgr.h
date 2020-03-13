@@ -96,7 +96,7 @@ protected:
 class DirIter
 {
 public:
-    DirIter(iDir *dr);
+    explicit DirIter(iDir *dr);
     DirIter();
     iNode *getNext();
     bool getNext(iNode **node);

@@ -459,13 +459,13 @@ DirIter iDir::readDir(const std::string &path)
     iNode *node = _parseNodePath(path, &leaved);
 
     if (!node)
-        return NULL;
+        return DirIter();
 
     if ( node->getType() != NTYPE_DIR )
-        return NULL;
+        return DirIter();
 
     if ( !leaved.empty() ) //If not exist
-        return NULL;
+        return DirIter();
 
     return DirIter( (iDir *)node );
 }
