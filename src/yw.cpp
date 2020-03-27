@@ -11,7 +11,7 @@
 #include "yparobo.h"
 #include "windp.h"
 #include "yw_net.h"
-#include "gui/uabutton.h"
+#include "gui/uacommon.h"
 
 
 const Nucleus::ClassDescr NC_STACK_ypaworld::description("ypaworld.class", &newinstance);

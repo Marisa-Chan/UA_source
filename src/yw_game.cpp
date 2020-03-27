@@ -10,7 +10,7 @@
 
 #include "yparobo.h"
 #include "font.h"
-#include "gui/uabutton.h"
+#include "gui/uacommon.h"
 
 extern uint32_t bact_id;
 
