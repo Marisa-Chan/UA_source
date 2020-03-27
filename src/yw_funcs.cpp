@@ -50,6 +50,7 @@ TileMap * NC_STACK_ypaworld::yw_LoadFont(const std::string &fontname)
 
     IDVList init_vals;
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, bitmap_name.c_str());
+    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_TRYSHARED, 0);
     init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
     init_vals.Add(NC_STACK_ilbm::ATT_ALPHAPALETTE, 0);
 
@@ -323,6 +324,7 @@ int NC_STACK_ypaworld::load_fonts_and_icons()
     icon_energy__h = tiles[30]->h; // ENERGIE height
     icon0___h = icon_order__h;
     
+    UpdateGuiSettings();
 
     return 1;
 }
@@ -3339,6 +3341,7 @@ void sb_0x44ac24(NC_STACK_ypaworld *yw)
     }
 
     yw_freeTileSets(yw);
+    yw->UpdateGuiSettings();
 
     if ( yw->additionalSet )
     {

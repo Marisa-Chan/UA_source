@@ -10,6 +10,7 @@
 
 #include "yparobo.h"
 #include "font.h"
+#include "gui/uabutton.h"
 
 extern uint32_t bact_id;
 
@@ -688,10 +689,12 @@ int NC_STACK_ypaworld::LVLoaderCommon(LevelDesc &mapp, int levelID, int a5)
             if ( screen_width >= 512 )
             {
                 _win3d->load_font( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
+                Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
             }
             else
             {
                 _win3d->load_font( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
+                Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
             }
         }
     }

@@ -8,6 +8,13 @@
       <df name="gui">
         <in>root.cpp</in>
         <in>uabutton.cpp</in>
+		<in>uacommon.cpp</in>
+        <in>uacommon.h</in>
+        <in>uascroll.cpp</in>
+        <in>uascroll.h</in>
+        <in>uawidgets.h</in>
+        <in>uawindow.cpp</in>
+        <in>uawindow.h</in>
         <in>widget.cpp</in>
       </df>
       <df name="netlib">
@@ -255,6 +262,20 @@
       <item path="gui/uabutton.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
+      </item>
+      <item path="gui/uacommon.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="gui/uacommon.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="gui/uascroll.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="gui/uascroll.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="gui/uawidgets.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="gui/uawindow.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="gui/uawindow.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="gui/widget.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">

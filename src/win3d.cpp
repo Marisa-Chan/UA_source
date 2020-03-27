@@ -13,6 +13,8 @@
 
 #include "font.h"
 
+#include "gui/root.h"
+
 struct gfxMode
 {
     int w;
@@ -2050,7 +2052,9 @@ void NC_STACK_win3d::BeginFrame()
 
 void NC_STACK_win3d::EndFrame()
 {
+    Gui::Root::Instance.Draw(SDLWRAP::Screen());
     SDLWRAP_drawScreen();
+    Gui::Root::Instance.HwCompose();
     
     SDLWRAP_flipWindow();
 }
@@ -2382,7 +2386,9 @@ void NC_STACK_win3d::setW3D_texFilt(int arg)
 
 void NC_STACK_win3d::draw2DandFlush()
 {
+    Gui::Root::Instance.Draw(SDLWRAP::Screen());
     SDLWRAP_drawScreen();
+    Gui::Root::Instance.HwCompose();
 
     SDL_FillRect(stack__win3d.screenSurface, NULL, SDL_MapRGBA(stack__win3d.screenSurface->format, 0, 0, 0, 0) );
 }

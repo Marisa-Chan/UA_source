@@ -11,6 +11,7 @@
 #include "yparobo.h"
 #include "windp.h"
 #include "yw_net.h"
+#include "gui/uabutton.h"
 
 
 const Nucleus::ClassDescr NC_STACK_ypaworld::description("ypaworld.class", &newinstance);
@@ -700,6 +701,8 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
     }
 
     field_138c = 0;
+    
+    UpdateGuiSettings();
 
     return 1;
 }
@@ -6943,6 +6946,7 @@ size_t NC_STACK_ypaworld::ypaworld_func166(const char **langname)
             v11 = get_lang_string(string_pointers_p2, 16, "Arial,8,400,0");
 
         win3d->load_font(v11);
+        Gui::UA::LoadFont(v11);
 
         return 1;
     }
@@ -7757,10 +7761,12 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
     if ( screen_width >= 512 )
     {
         win3d->load_font( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
+        Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
     }
     else
     {
         win3d->load_font( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
+        Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
     }
 
     return 1;
@@ -8380,7 +8386,38 @@ int NC_STACK_ypaworld::TestVehicle(int protoID, int job)
 }
 
 
+void NC_STACK_ypaworld::UpdateGuiSettings()
+{
+    Gui::UA::_UATextColor.a = 255;
+    Gui::UA::_UATextColor.r = iniColors[60].r;
+    Gui::UA::_UATextColor.g = iniColors[60].g;
+    Gui::UA::_UATextColor.b = iniColors[60].b;
 
+    
+
+    /*for (uint8_t i = 0; i < ypaworld.tiles.size(); i++)
+        Gui::UA::_UATiles[i] = ypaworld.tiles[i];*/
+}
+
+void NC_STACK_ypaworld::LoadGuiFonts()
+{
+    std::string old = SetPathKeys("rsrc", "data:set46");
+
+    Gui::UA::_UATiles[Gui::UA::TILESET_46MAPC16] = yw_LoadFont("mapcur16.font"); //18
+    Gui::UA::_UATiles[Gui::UA::TILESET_46MAPC32] = yw_LoadFont("mapcur32.font"); //19
+    Gui::UA::_UATiles[Gui::UA::TILESET_46ENERGY] = yw_LoadFont("energy.font"); //30
+    
+    SetPathKeys("rsrc", "data:fonts");
+    Gui::UA::_UATiles[Gui::UA::TILESET_DEFAULT]     = yw_LoadFont("default.font"); //0
+    Gui::UA::_UATiles[Gui::UA::TILESET_MENUGRAY]    = yw_LoadFont("menugray.font"); //6
+    Gui::UA::_UATiles[Gui::UA::TILESET_ICONNS]      = yw_LoadFont("icon_ns.font"); //24
+    Gui::UA::_UATiles[Gui::UA::TILESET_ICONPS]      = yw_LoadFont("icon_ps.font"); //25
+    Gui::UA::_UATiles[Gui::UA::TILESET_MAPHORZ]     = yw_LoadFont("maphorz.font"); //11
+    Gui::UA::_UATiles[Gui::UA::TILESET_MAPVERT]     = yw_LoadFont("mapvert.font"); //12
+    Gui::UA::_UATiles[Gui::UA::TILESET_MAPVERT1]    = yw_LoadFont("mapvert1.font"); //13
+
+    SetPathKeys("rsrc", old);    
+}
 
 
 size_t NC_STACK_ypaworld::compatcall(int method_id, void *data)

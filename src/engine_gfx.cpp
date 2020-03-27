@@ -2,6 +2,7 @@
 #include "engine_gfx.h"
 #include "utils.h"
 #include "common.h"
+#include "gui/root.h"
 
 GFXEngine GFXEngine::GFXe;
 
@@ -64,6 +65,9 @@ int GFXEngine::sub_422CE8(const char *display, const char *display2, int gfxmode
     {
         ypa_log_out("gfx.engine: no display driver name given!\n");
     }
+
+    Gui::Root::Instance.SetScreenSize(cls3D->GetSize());
+
     return cls3D != NULL;
 }
 

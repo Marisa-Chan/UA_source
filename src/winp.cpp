@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "log.h"
 #include "inp_ff.h"
+#include "gui/widget.h"
 
 const Nucleus::ClassDescr NC_STACK_winp::description("winp.class", &newinstance);
 
@@ -390,95 +391,104 @@ int InputWatch(void *, SDL_Event *event)
     break;
 
     case SDL_MOUSEBUTTONDOWN:
-        if (event->button.button == SDL_BUTTON_LEFT)
+        if ( !Gui::Root::Instance.MouseDown(Common::Point(event->button.x, event->button.y), event->button.button) )
         {
-            mouseState.l_state = 1;
-            mouseState.ld_pos.x = event->button.x;
-            mouseState.ld_pos.y = event->button.y;
+            if (event->button.button == SDL_BUTTON_LEFT)
+            {
+                mouseState.l_state = 1;
+                mouseState.ld_pos.x = event->button.x;
+                mouseState.ld_pos.y = event->button.y;
 
-            SDLWRAP_mousePosNorm(mouseState.ld_pos);
+                SDLWRAP_mousePosNorm(mouseState.ld_pos);
 
-            mouseState.ld_cnt++;
+                mouseState.ld_cnt++;
 
-            vkkeydown(0x81);
-        }
-        else if (event->button.button == SDL_BUTTON_RIGHT)
-        {
-            mouseState.r_state = 1;
-            mouseState.rd_pos.x = event->button.x;
-            mouseState.rd_pos.y = event->button.y;
+                vkkeydown(0x81);
+            }
+            else if (event->button.button == SDL_BUTTON_RIGHT)
+            {
+                mouseState.r_state = 1;
+                mouseState.rd_pos.x = event->button.x;
+                mouseState.rd_pos.y = event->button.y;
 
-            SDLWRAP_mousePosNorm(mouseState.rd_pos);
+                SDLWRAP_mousePosNorm(mouseState.rd_pos);
 
-            mouseState.rd_cnt++;
+                mouseState.rd_cnt++;
 
-            vkkeydown(0x82);
-        }
-        else if (event->button.button == SDL_BUTTON_MIDDLE)
-        {
-            mouseState.m_state = 1;
-            mouseState.md_pos.x = event->button.x;
-            mouseState.md_pos.y = event->button.y;
+                vkkeydown(0x82);
+            }
+            else if (event->button.button == SDL_BUTTON_MIDDLE)
+            {
+                mouseState.m_state = 1;
+                mouseState.md_pos.x = event->button.x;
+                mouseState.md_pos.y = event->button.y;
 
-            SDLWRAP_mousePosNorm(mouseState.md_pos);
+                SDLWRAP_mousePosNorm(mouseState.md_pos);
 
-            mouseState.md_cnt++;
+                mouseState.md_cnt++;
 
-            vkkeydown(0x83);
+                vkkeydown(0x83);
+            }
         }
 
         break;
 
     case SDL_MOUSEBUTTONUP:
-        if (event->button.button == SDL_BUTTON_LEFT)
+        if ( !Gui::Root::Instance.MouseUp(Common::Point(event->button.x, event->button.y), event->button.button) )
         {
-            mouseState.l_state = 0;
-            mouseState.lu_pos.x = event->button.x;
-            mouseState.lu_pos.y = event->button.y;
+            if (event->button.button == SDL_BUTTON_LEFT)
+            {
+                mouseState.l_state = 0;
+                mouseState.lu_pos.x = event->button.x;
+                mouseState.lu_pos.y = event->button.y;
 
-            SDLWRAP_mousePosNorm(mouseState.lu_pos);
+                SDLWRAP_mousePosNorm(mouseState.lu_pos);
 
-            mouseState.lu_cnt++;
+                mouseState.lu_cnt++;
 
-            vkkeyup(0x81);
+                vkkeyup(0x81);
 
-            if ((event->button.clicks & 1) == 0)
-                mouseState.dbl_state = 1;
-        }
-        else if (event->button.button == SDL_BUTTON_RIGHT)
-        {
-            mouseState.r_state = 0;
-            mouseState.ru_pos.x = event->button.x;
-            mouseState.ru_pos.y = event->button.y;
+                if ((event->button.clicks & 1) == 0)
+                    mouseState.dbl_state = 1;
+            }
+            else if (event->button.button == SDL_BUTTON_RIGHT)
+            {
+                mouseState.r_state = 0;
+                mouseState.ru_pos.x = event->button.x;
+                mouseState.ru_pos.y = event->button.y;
 
-            SDLWRAP_mousePosNorm(mouseState.ru_pos);
+                SDLWRAP_mousePosNorm(mouseState.ru_pos);
 
-            mouseState.ru_cnt++;
+                mouseState.ru_cnt++;
 
-            vkkeyup(0x82);
-        }
-        else if (event->button.button == SDL_BUTTON_MIDDLE)
-        {
-            mouseState.m_state = 0;
-            mouseState.mu_pos.x = event->button.x;
-            mouseState.mu_pos.y = event->button.y;
+                vkkeyup(0x82);
+            }
+            else if (event->button.button == SDL_BUTTON_MIDDLE)
+            {
+                mouseState.m_state = 0;
+                mouseState.mu_pos.x = event->button.x;
+                mouseState.mu_pos.y = event->button.y;
 
-            SDLWRAP_mousePosNorm(mouseState.mu_pos);
+                SDLWRAP_mousePosNorm(mouseState.mu_pos);
 
-            mouseState.mu_cnt++;
+                mouseState.mu_cnt++;
 
-            vkkeyup(0x83);
+                vkkeyup(0x83);
+            }
         }
 
         break;
 
     case SDL_MOUSEMOTION:
-        mouseState.pos.x = event->motion.x;
-        mouseState.pos.y = event->motion.y;
-        mouseState.__xrel.x = event->motion.xrel;
-        mouseState.__xrel.y = event->motion.yrel;
+        if ( !Gui::Root::Instance.MouseMove(Common::Point(event->button.x, event->button.y)) )
+        {
+            mouseState.pos.x = event->motion.x;
+            mouseState.pos.y = event->motion.y;
+            mouseState.__xrel.x = event->motion.xrel;
+            mouseState.__xrel.y = event->motion.yrel;
 
-        SDLWRAP_mousePosNorm(mouseState.pos);
+            SDLWRAP_mousePosNorm(mouseState.pos);
+        }
         break;
 
     default:

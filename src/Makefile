@@ -52,6 +52,12 @@ OBJS =  \
 	font.cpp\
 	fsmgr.cpp\
 	glob_funcs.cpp\
+	gui/root.cpp\
+	gui/uabutton.cpp\
+	gui/uacommon.cpp\
+	gui/uascroll.cpp\
+	gui/uawindow.cpp\
+	gui/widget.cpp\
 	idev.cpp\
 	ilbm.cpp\
 	image.cpp\

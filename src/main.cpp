@@ -16,6 +16,10 @@
 #include "engine_gfx.h"
 #include "engine_input.h"
 
+#include "gui/widget.h"
+#include "gui/uawidgets.h"
+
+
 int dword_513638 = 0;
 int dword_51362C = 0;
 int dword_513630 = 0;
@@ -491,6 +495,8 @@ int sb_0x411324()
         SDLWRAP_releativeMouse(true);
     else
         SDLWRAP_releativeMouse(false);
+    
+    Gui::Root::Instance.TimersUpdate( input_states.period );
 
     if ( dword_520400 == 1 )
     {
@@ -732,6 +738,9 @@ int WinMain__sub0__sub1()
     init_vals.Add(NC_STACK_ypaworld::YW_ATT_BUILD_DATE, buildDate);
 
     ypaworld = Nucleus::CInit<NC_STACK_ypaworld>(init_vals);
+    
+    Gui::UA::yw = ypaworld;
+    
     if ( !ypaworld )
     {
         ypa_log_out("Unable to init ypaworld.class\n");
@@ -805,6 +814,7 @@ int main(int argc, char *argv[])
 //		return 0;
 //	}
 
+    Gui::UA::Init();
     FSMgr::iDir::setBaseDir("");
     SDLWRAP_INIT();
 
@@ -816,6 +826,32 @@ int main(int argc, char *argv[])
     fixWeaponRadius = tuneKeys[0].value.val;
 
     uint32_t ticks = 0;
+    
+    Gui::Root::Instance.SetHwCompose(true);
+    ypaworld->LoadGuiFonts();
+    
+    // New gui test windows
+    /*Gui::UAWindow *smpl = new Gui::UAWindow("Test1", Common::PointRect(100, 100, 200, 300), 
+        Gui::UAWindow::FLAG_WND_RESIZEABLE | 
+        Gui::UAWindow::FLAG_WND_VSCROLL | 
+        Gui::UAWindow::FLAG_WND_CLOSE );
+    smpl->SetEnable(true);
+    smpl->SetAlpha(190);
+
+    Gui::Root::Instance.AddWidget(smpl);
+    
+    Gui::UAWindow *smpl2 = new Gui::UAWindow("Test2", Common::PointRect(115, 120, 50, 60), 
+        Gui::UAWindow::FLAG_WND_RESIZEABLE | 
+        Gui::UAWindow::FLAG_WND_VSCROLL | 
+        Gui::UAWindow::FLAG_WND_CLOSE |
+        Gui::UAWindow::FLAG_WND_HELP | 
+        Gui::UAWindow::FLAG_WND_MAXM |
+        Gui::UAWindow::FLAG_WND_HSCROLL);
+    smpl2->SetEnable(true);
+    smpl2->SetAlpha(190);
+    
+    Gui::Root::Instance.AddWidget(smpl2);*/
+    
 
 //    int fps = 0;
 //    uint32_t fpstick = SDL_GetTicks() + 1000;
@@ -867,7 +903,8 @@ int main(int argc, char *argv[])
 //        }
 
     }
-
+    
+    Gui::UA::Deinit();
     sub_4113E8();
 
     SDLWRAP_DEINIT();

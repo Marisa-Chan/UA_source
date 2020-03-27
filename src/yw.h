@@ -2493,6 +2493,9 @@ public:
     
     void SendCRC(int lvlid);
     
+    void UpdateGuiSettings();
+    void LoadGuiFonts();
+    
     void HistoryAktCreate(NC_STACK_ypabact *bact);
     void HistoryAktKill(NC_STACK_ypabact *bact);
     
