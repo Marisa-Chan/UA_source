@@ -2411,8 +2411,8 @@ void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2)
         baseRender_msg rndrs;
 
         rndrs.flags = 0;
-        rndrs.frameTime = bs64->field_4;
-        rndrs.globTime = bs64->field_0;
+        rndrs.frameTime = bs64->DTime;
+        rndrs.globTime = bs64->TimeStamp;
         rndrs.adeCount = 0;
         rndrs.ownerID = 1;
         rndrs.rndrStack = &NC_STACK_base::renderStack;
@@ -3423,7 +3423,7 @@ int ypaworld_func64__sub4(NC_STACK_ypaworld *yw, base_64arg *arg)
         if ( arg->field_8->dword8 == 0xA0 || arg->field_8->downed_key == UAVK_PAUSE )
         {
             yw->field_160c = 1;
-            yw->field_1610 = arg->field_0;
+            yw->field_1610 = arg->TimeStamp;
         }
         return 0;
     }
@@ -3431,7 +3431,7 @@ int ypaworld_func64__sub4(NC_STACK_ypaworld *yw, base_64arg *arg)
     if ( arg->field_8->downed_key )
     {
         yw->field_160c = 0;
-        arg->field_0 = yw->field_1610;
+        arg->TimeStamp = yw->field_1610;
     }
     else
     {
@@ -3445,7 +3445,7 @@ int ypaworld_func64__sub4(NC_STACK_ypaworld *yw, base_64arg *arg)
 
         SFXEngine::SFXe.sub_423EFC(1, a2a, vec3d(0.0), mat3x3::Ident());
 
-        if ( arg->field_0 / 500 & 1 )
+        if ( arg->TimeStamp / 500 & 1 )
         {
             const char *v6 = get_lang_string(yw->string_pointers_p2, 14, "*** GAME PAUSED, HIT KEY TO CONTINUE ***");
 

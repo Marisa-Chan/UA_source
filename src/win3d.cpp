@@ -2050,6 +2050,8 @@ void NC_STACK_win3d::BeginFrame()
 
 void NC_STACK_win3d::EndFrame()
 {
+    SDLWRAP_drawScreen();
+    
     SDLWRAP_flipWindow();
 }
 

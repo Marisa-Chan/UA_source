@@ -24,6 +24,11 @@ template<typename T> inline T ABS(T x)		{ return (x >= 0) ? x : -x; }
 template<typename T> inline T MIN(T a, T b)	{ return (a < b) ? a : b; };
 template<typename T> inline T MAX(T a, T b)	{ return (a > b) ? a : b; };
 
+
+struct Point;
+struct Rect;
+struct PointRect;
+
 struct Point
 {
     int x;
@@ -36,6 +41,8 @@ struct Point
     bool  operator!=(const Point &p)    const { return x != p.x || y != p.y; }
     Point operator+(const Point &delta) const { return Point(x + delta.x, y + delta.y); }
     Point operator-(const Point &delta) const { return Point(x - delta.x, y - delta.y); }
+    
+    Point operator-() const { return Point(-x, -y); } // -Point
 
     void operator+=(const Point &delta) {
             x += delta.x;
@@ -71,6 +78,7 @@ struct Rect
     Rect(int w, int h) : left(0), top(0), right(w), bottom(h) {};
     Rect(Point p) : left(0), top(0), right(p.x), bottom(p.y) {};
     Rect(int x1, int y1, int x2, int y2) : left(x1), top(y1), right(x2), bottom(y2) {};
+    Rect(const SDL_Rect &r) : left(r.x), top(r.y), right(r.x + r.w), bottom(r.y + r.h) {};
 
     bool IsValid() const {
             return (left <= right && top <= bottom);
@@ -84,76 +92,87 @@ struct Rect
     int Height() const { return bottom - top; }
 
     void SetWidth(int Width) {
-            right = left + Width;
+        right = left + Width;
     }
 
     void SetHeight(int Height) {
-            bottom = top + Height;
+        bottom = top + Height;
     }
 
     void SetSize(Point sz) {
-            right = left + sz.x;
-            bottom = top + sz.y;
+        right = left + sz.x;
+        bottom = top + sz.y;
+    }
+    
+    void SetSize(int x, int y) {
+        right = left + x;
+        bottom = top + y;
     }
 
     bool IsIn(int x, int y) const {
-            return (x >= left) && (x < right) && (y >= top) && (y < bottom);
+        if( IsEmpty() )
+            return false;
+        
+        return (x >= left) && (x < right) && (y >= top) && (y < bottom);
     }
     bool IsIn(const Point &p) const {
             return IsIn(p.x, p.y);
     }
     bool IsIn(const Rect &r) const {
-            return (left <= r.left) && (right >= r.right) && (top <= r.top) && (bottom >= r.bottom);
+        if( IsEmpty() )
+            return false;
+        
+        return (left <= r.left) && (right >= r.right) && (top <= r.top) && (bottom >= r.bottom);
     }
 
     bool IsIntersects(const Rect &r) const {
-            return (left < r.right) && (r.left < right) && (top < r.bottom) && (r.top < bottom);
+        return (left < r.right) && (r.left < right) && (top < r.bottom) && (r.top < bottom);
     }
 
     Rect IntersectionRect(const Rect &r) const {
-            if (!IsIntersects(r))
-                    return Rect();
+        if (!IsIntersects(r))
+                return Rect();
 
-            return Rect(MAX(r.left, left), MAX(r.top, top), MIN(r.right, right), MIN(r.bottom, bottom));
+        return Rect(MAX(r.left, left), MAX(r.top, top), MIN(r.right, right), MIN(r.bottom, bottom));
     }
 
     void ClipBy(const Rect &r) {
-            if (top < r.top) top = r.top;
-            else if (top > r.bottom) top = r.bottom;
+        if (top < r.top) top = r.top;
+        else if (top > r.bottom) top = r.bottom;
 
-            if (left < r.left) left = r.left;
-            else if (left > r.right) left = r.right;
+        if (left < r.left) left = r.left;
+        else if (left > r.right) left = r.right;
 
-            if (bottom > r.bottom) bottom = r.bottom;
-            else if (bottom < r.top) bottom = r.top;
+        if (bottom > r.bottom) bottom = r.bottom;
+        else if (bottom < r.top) bottom = r.top;
 
-            if (right > r.right) right = r.right;
-            else if (right < r.left) right = r.left;
+        if (right > r.right) right = r.right;
+        else if (right < r.left) right = r.left;
     }
 
     void ClipBy(int maxw, int maxh) {
-            ClipBy(Rect(0, 0, maxw, maxh));
+        ClipBy(Rect(0, 0, maxw, maxh));
     }
 
     void MoveTo(int x, int y) {
-            bottom += y - top;
-            right += x - left;
-            top = y;
-            left = x;
+        bottom += y - top;
+        right += x - left;
+        top = y;
+        left = x;
     }
 
     void MoveTo(const Point &p) {
-            MoveTo(p.x, p.y);
+        MoveTo(p.x, p.y);
     }
 
     void Translate(int dx, int dy) {
-            left += dx; right += dx;
-            top += dy; bottom += dy;
+        left += dx; right += dx;
+        top += dy; bottom += dy;
     }
 
     void Translate(const Point &p) {
-            left += p.x; right += p.x;
-            top += p.y; bottom += p.y;
+        left += p.x; right += p.x;
+        top += p.y; bottom += p.y;
     }
 
     operator bool() const
@@ -170,6 +189,8 @@ struct Rect
     {
         return Point(Width(), Height());
     }
+    
+    operator PointRect() const;
     
     operator SDL_Rect() const
     {
@@ -195,6 +216,7 @@ struct PointRect
     PointRect(Point p) : x(p.x), y(p.y), w(0), h(0) {};
     PointRect(Point p, int w_, int h_) : x(p.x), y(p.y), w(w_), h(h_) {};
     PointRect(int x_, int y_, int w_, int h_) : x(x_), y(y_), w(w_), h(h_) {};
+    PointRect(const SDL_Rect &r) : x(r.x), y(r.y), w(r.w), h(r.h) {};
     
     int Right() const { return x + w; }
     int Bottom() const { return y + h; }

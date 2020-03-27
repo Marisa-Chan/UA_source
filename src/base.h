@@ -163,8 +163,8 @@ struct baseRender_msg
 
 struct base_64arg
 {
-    int field_0;
-    int field_4;
+    int TimeStamp;
+    int DTime;
     struC5 *field_8;
     int field_C;
     int field_10;

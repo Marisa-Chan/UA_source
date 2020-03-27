@@ -242,6 +242,19 @@ public:
         else
             return str.substr(pos);
     }
+    
+    static std::vector<std::string> Split(const std::string &str, const std::string &chars)
+    {
+        std::vector<std::string> result;
+        
+        Stok parse(str, chars);
+        
+        std::string val;
+        while( parse.GetNext( &val ) )
+            result.push_back(val);
+        
+        return result;
+    }
 private:
     std::string _buf;
     std::string _chars;

@@ -206,3 +206,24 @@ void TileMap::Draw(SDL_Surface *surface, const Common::Rect &pos, uint8_t c)
     SDL_Rect dst = pos;
     SDL_BlitSurface(img->GetSwTex(), &src, surface, &dst);
 }
+
+void TileMap::Fill(SDL_Surface *surface, const Common::Rect &rect, uint8_t c)
+{
+    SDLWRAP::DrawFill(img->GetSwTex(), map[c], surface, rect);
+}
+
+void TileMap::Fill(SDL_Surface *surface, const Common::PointRect &rect, uint8_t c)
+{
+    SDLWRAP::DrawFill(img->GetSwTex(), map[c], surface, rect);
+}
+
+int TileMap::GetWidth(uint8_t c) const
+{
+    return map[c].w;
+}
+
+Common::Point TileMap::GetSize(uint8_t c) const
+{
+    return Common::Point(map[c].w, h);
+}
+

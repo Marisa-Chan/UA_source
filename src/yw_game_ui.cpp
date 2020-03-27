@@ -1829,9 +1829,9 @@ void sub_4C0C00(NC_STACK_ypaworld *yw)
     int v7;
 
     if ( robo_map.field_1E8 & 0x20 )
-        v7 = 115;
+        v7 = 's'; //default fon
     else
-        v7 = 113;
+        v7 = 'q'; //default fon (
 
     const char *v10 = get_lang_string(yw->string_pointers_p2, 50, "MAP");
     char *pcur = GuiBase::FormateTitle(yw, v20, v21, v22, v10, robo_map.cmdstrm.cmdbuf, v7, robo_map.flags);
@@ -5548,14 +5548,14 @@ char * ypaworld_func64__sub7__sub3__sub0__sub3(NC_STACK_ypaworld *yw, char *cur)
     if ( yw->field_2410 == -1 || bzda.field_1D0 & 0x20 )
     {
         FontUA::select_tileset(&pcur, 0);
-        FontUA::store_u8(&pcur, 123);
+        FontUA::store_u8(&pcur, '{');
     }
     else
     {
         int v5 = yw->field_1c0c[ yw->field_2410 ]->_aggr;
         FontUA::select_tileset(&pcur, 0);
-        FontUA::store_u8(&pcur, 123);
-        FontUA::store_u8(&pcur, 32);
+        FontUA::store_u8(&pcur, '{');
+        FontUA::store_u8(&pcur, ' ');
 
         FontUA::select_tileset(&pcur, 25);
         FontUA::store_u8(&pcur, 49);
@@ -5589,14 +5589,14 @@ char * ypaworld_func64__sub7__sub3__sub0__sub3(NC_STACK_ypaworld *yw, char *cur)
 
         pcur = FontUA::FormateClippedText(yw->tiles[0], pcur, a1a, 4 * yw->tiles[0]->map[65].w, 32);
 
-        FontUA::store_u8(&pcur, 32);
+        FontUA::store_u8(&pcur, ' ');
 
         FontUA::select_tileset(&pcur, 0);
     }
 
     FontUA::op17(&pcur, v23);
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 125);
+    FontUA::store_u8(&pcur, ' ');
+    FontUA::store_u8(&pcur, '}');
 
     FontUA::next_line(&pcur);
 
@@ -5945,7 +5945,7 @@ int ypaworld_func64__sub7__sub3__sub1(NC_STACK_ypaworld *yw, ClickBoxInf *winpt)
     return 1;
 }
 
-void ypaworld_func64__sub7__sub3(NC_STACK_ypaworld *yw, struC5 *inpt)
+void SquadManager_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
 {
     if ( squadron_manager.flags & (GuiBase::FLAG_CLOSED | GuiBase::FLAG_ICONIFED) )
     {
@@ -6199,7 +6199,7 @@ void ypaworld_func64__sub7__sub1__sub0(NC_STACK_ypaworld *yw)
     sub_4C40AC(yw);
 }
 
-void  ypaworld_func64__sub7__sub1(NC_STACK_ypaworld *yw, struC5 *inpt)
+void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
 {
     if ( robo_map.IsClosed() )
     {
@@ -7381,8 +7381,8 @@ void ypaworld_func64__sub7(NC_STACK_ypaworld *yw, struC5 *inpt)
 
             ypaworld_func64__sub7__sub4(yw, inpt);
             ypaworld_func64__sub7__sub6(yw, inpt);
-            ypaworld_func64__sub7__sub1(yw, inpt);
-            ypaworld_func64__sub7__sub3(yw, inpt);
+            RoboMap_InputHandle(yw, inpt);
+            SquadManager_InputHandle(yw, inpt);
             ypaworld_func64__sub7__sub0(yw, inpt);
             ypaworld_func64__sub7__sub7(yw, inpt);
         }

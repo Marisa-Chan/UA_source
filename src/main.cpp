@@ -116,7 +116,7 @@ int sb_0x411324__sub0()
         }
 
         dword_520400 = 0;
-        world_update_arg.field_0 = 0;
+        world_update_arg.TimeStamp = 0;
 
         userdata.lastInputEvent = 0;
         userdata.field_0xc = 1;
@@ -220,7 +220,7 @@ int sb_0x411324__sub2__sub0(base_64arg *arg)
 {
     if ( (userdata.p_ypaworld->replayer->field_74 - 3) <= userdata.p_ypaworld->replayer->frame_id  &&  dword_513630 )
     {
-        char *gin_and_tonic = sub_4107A0(arg->field_0);
+        char *gin_and_tonic = sub_4107A0(arg->TimeStamp);
 
         ypaworld->ypaworld_func164();
 
@@ -308,7 +308,7 @@ int sb_0x411324__sub2()
         }
 
         dword_520400 = 0;
-        world_update_arg.field_0 = 0;
+        world_update_arg.TimeStamp = 0;
         userdata.lastInputEvent = 0;
 
         if ( !ypaworld->ypaworld_func156(&userdata) )
@@ -332,8 +332,8 @@ int sb_0x411324__sub2()
 
 int sb_0x411324__sub1()
 {
-    userdata.glblTime = world_update_arg.field_0;
-    userdata.frameTime = world_update_arg.field_4;
+    userdata.glblTime = world_update_arg.TimeStamp;
+    userdata.frameTime = world_update_arg.DTime;
     userdata._input = &input_states;
 
     ypaworld->ypaworld_func158(&userdata);
@@ -423,10 +423,10 @@ int sb_0x411324__sub1()
     }
     else if ( userdata.envAction.action == EnvAction::ACTION_DEMO )
     {
-        char *repname = sub_4107A0(world_update_arg.field_0);
+        char *repname = sub_4107A0(world_update_arg.TimeStamp);
         if ( !repname )
         {
-            userdata.lastInputEvent = world_update_arg.field_0;
+            userdata.lastInputEvent = world_update_arg.TimeStamp;
             return 1;
         }
 
@@ -447,7 +447,7 @@ int sb_0x411324__sub1()
         else
         {
             ypa_log_out("Sorry, unable to init player!\n");
-            world_update_arg.field_0 = 0;
+            world_update_arg.TimeStamp = 0;
             userdata.lastInputEvent = 0;
 
             if ( !ypaworld->ypaworld_func156(&userdata) )
@@ -478,11 +478,13 @@ int sb_0x411324()
         userdata.field_0x10 = 0;
     }
 
-    world_update_arg.field_4 = input_states.period + 1;
+    input_states.period++;
+    
+    world_update_arg.DTime = input_states.period;
     world_update_arg.field_8 = &input_states;
 
-    world_update_arg.field_0 += input_states.period + 1;
-    input_states.period++;
+    world_update_arg.TimeStamp += input_states.period;
+    
 
     // If mouse captured, enable releative mouse control
     if (ypaworld->field_17c0)

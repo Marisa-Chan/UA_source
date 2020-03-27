@@ -950,10 +950,10 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
         if ( do_screenshooting )
         {
-            arg->field_0 -= arg->field_4;
+            arg->TimeStamp -= arg->DTime;
             arg->field_8->period = 40;
-            arg->field_4 = 40;
-            arg->field_0 += arg->field_4;
+            arg->DTime = 40;
+            arg->TimeStamp += arg->DTime;
         }
 
         if ( UserUnit )
@@ -966,7 +966,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             vec3d a3 = UserUnit->_fly_dir * UserUnit->_fly_dir_length;
 
-            SFXEngine::SFXe.sub_423EFC(arg->field_4, field_1334, a3, field_1340);
+            SFXEngine::SFXe.sub_423EFC(arg->DTime, field_1334, a3, field_1340);
         }
 
         if ( field_161c == 1 )
@@ -1008,16 +1008,16 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             }
         }
 
-        timeStamp += arg->field_4;
-        field_1618 = arg->field_4;
+        timeStamp += arg->DTime;
+        field_1618 = arg->DTime;
         field_161c++;
 
         field_1b24.user_action = 0;
         field_1b24.gTime = timeStamp;
-        field_1b24.frameTime = arg->field_4;
+        field_1b24.frameTime = arg->DTime;
         field_1b24.units_count = 0;
         field_1b24.inpt = arg->field_8;
-        field_1B6E = 1024 / arg->field_4;
+        field_1B6E = 1024 / arg->DTime;
         p_1_grp[0][0] = field_1B6E;
 
         ypaworld_func184(World::History::Frame(timeStamp));
@@ -1063,7 +1063,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             sub_4C40AC(this);
             ypaworld_func64__sub9(this);
             ypaworld_func64__sub19(this);
-            ypaworld_func64__sub20(this, arg->field_4);
+            ypaworld_func64__sub20(this, arg->DTime);
 
             if ( !field_138c )
             {
@@ -1084,7 +1084,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                 ypaworld_func64__sub5(this);
 
             if ( sceneRecorder->do_record )
-                recorder_update_time(this, arg->field_4);
+                recorder_update_time(this, arg->DTime);
 
             hudi.field_0 = 0;
             hudi.field_4 = 0;
@@ -1116,10 +1116,10 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             if ( isNetGame )
             {
-                if ( arg->field_4 == 1 )
+                if ( arg->DTime == 1 )
                     field_7586 -= 20;
                 else
-                    field_7586 -= arg->field_4;
+                    field_7586 -= arg->DTime;
 
                 if ( field_7586 <= 0 )
                 {
@@ -6597,11 +6597,11 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
     b64_parms = arg;
     field_161c++;
     field_1b24.user_action = 0;
-    field_1b24.gTime = arg->field_0;
-    field_1b24.frameTime = arg->field_4;
+    field_1b24.gTime = arg->TimeStamp;
+    field_1b24.frameTime = arg->DTime;
     field_1b24.units_count = 0;
     field_1b24.inpt = arg->field_8;
-    field_1B6E = 1024 / arg->field_4;
+    field_1B6E = 1024 / arg->DTime;
 
     p_1_grp[0][0] = field_1B6E;
 
@@ -6617,13 +6617,13 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
     hudi.field_4 = 0;
 
     if ( repl->field_7C != 1 )
-        ypaworld_func163__sub1(this, repl, arg->field_4);
+        ypaworld_func163__sub1(this, repl, arg->DTime);
 
     CameraPrepareRender(repl, UserUnit, arg->field_8);
 
     vec3d a3a = UserUnit->_fly_dir * UserUnit->_fly_dir_length;
 
-    SFXEngine::SFXe.sub_423EFC(arg->field_4, UserUnit->_position, a3a, UserUnit->_rotation);
+    SFXEngine::SFXe.sub_423EFC(arg->DTime, UserUnit->_position, a3a, UserUnit->_rotation);
 
     bact_node *bct = (bact_node *)UserUnit->_subjects_list.head;
 

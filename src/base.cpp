@@ -828,8 +828,8 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
     base_func73(arg);
 
     baseRender_msg base77;
-    base77.frameTime = arg->field_4;
-    base77.globTime = arg->field_0;
+    base77.frameTime = arg->DTime;
+    base77.globTime = arg->TimeStamp;
     base77.rndrStack = &renderStack;
     base77.adeCount = arg->field_C;
     base77.ownerID = ID;
@@ -1109,9 +1109,9 @@ size_t NC_STACK_base::base_func73(base_64arg *arg)
 {
     printf("%s - NOT RECOGINZED ARGUMENT\n","base_func73");
 
-    if ( arg->field_0 != timeStamp )
+    if ( arg->TimeStamp != timeStamp )
     {
-        timeStamp = arg->field_0;
+        timeStamp = arg->TimeStamp;
 
         if ( OBJ_SKELETON )
         {
@@ -1119,14 +1119,14 @@ size_t NC_STACK_base::base_func73(base_64arg *arg)
                 base_func78(arg);
 
             if ( flags & FLAG_MOVING )
-                transform.locPos += transform.vec * arg->field_4;
+                transform.locPos += transform.vec * arg->DTime;
 
             if ( flags & FLAG_ROTATING )
             {
                 int a,b,c;
-                a = (transform.rx * arg->field_4 + transform.ax) % (360 << 16);
-                b = (transform.ry * arg->field_4 + transform.ay) % (360 << 16);
-                c = (transform.rz * arg->field_4 + transform.az) % (360 << 16);
+                a = (transform.rx * arg->DTime + transform.ax) % (360 << 16);
+                b = (transform.ry * arg->DTime + transform.ay) % (360 << 16);
+                c = (transform.rz * arg->DTime + transform.az) % (360 << 16);
 
                 transform.ax = a + (a < 0 ? (360 << 16) : 0);
                 transform.ay = b + (b < 0 ? (360 << 16) : 0);

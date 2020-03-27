@@ -44,6 +44,12 @@ struct TileMap
     void Draw(SDL_Surface *surface, const Common::Point &pos, uint8_t c);
     void Draw(SDL_Surface *surface, const Common::PointRect &posRect, uint8_t c);
     void Draw(SDL_Surface *surface, const Common::Rect &posRect, uint8_t c);
+    
+    void Fill(SDL_Surface *surface, const Common::Rect &rect, uint8_t c);
+    void Fill(SDL_Surface *surface, const Common::PointRect &rect, uint8_t c);
+    
+    int GetWidth(uint8_t c) const;
+    Common::Point GetSize(uint8_t c) const;
 };
 
 struct w3d_a209

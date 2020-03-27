@@ -319,8 +319,6 @@ void SDLWRAP_addHandler(SDL_EventFilter func)
 
 void SDLWRAP_flipWindow()
 {
-    SDLWRAP_drawScreen();
-
     SDL_GL_SwapWindow(window);
 }
 

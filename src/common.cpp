@@ -107,4 +107,10 @@ bool ClipLine(const Rect &clip, Rect *line)
     return true;
 }
 
+
+Rect::operator PointRect() const
+{
+    return PointRect(left, top, Width(), Height());
+}
+
 }
