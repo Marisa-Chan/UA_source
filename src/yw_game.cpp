@@ -2,19 +2,20 @@
 #include <string.h>
 #include <math.h>
 #include "includes.h"
-#include "def_parser.h"
 #include "yw_internal.h"
 #include "yw.h"
 #include "yw_net.h"
 #include "input.h"
+#include "windp.h"
 
 #include "yparobo.h"
 #include "font.h"
+#include "gui/uacommon.h"
 
 extern uint32_t bact_id;
 
 
-NC_STACK_bitmap * loadDisk_screen(_NC_STACK_ypaworld *yw)
+NC_STACK_bitmap * loadDisk_screen(NC_STACK_ypaworld *yw)
 {
     SFXEngine::SFXe.StopMusicTrack();
 
@@ -35,23 +36,22 @@ NC_STACK_bitmap * loadDisk_screen(_NC_STACK_ypaworld *yw)
 
     IDVList init_vals;
     init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, v3);
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE, 1);
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_TEXTURE_SYS, 1);
+    init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
 
-    NC_STACK_bitmap *disk = NC_STACK_ilbm::CInit(&init_vals);
+    NC_STACK_bitmap *disk = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
 
     set_prefix_replacement("rsrc", rsrc_def);
 
     return disk;
 }
 
-void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
+void draw_splashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
 {
     if ( splashScreen )
     {
         rstr_arg204 a4;
 
-        a4.pbitm = splashScreen->getBMD_pBitmap();
+        a4.pbitm = splashScreen->GetResBmp();
 
         a4.float4  = -1.0;
         a4.float8  = -1.0;
@@ -73,31 +73,23 @@ void draw_splashScreen(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
             win3d->display_func263(&v4);
 
             win3d->BeginFrame();
-            win3d->LockSurface();
-
             win3d->raster_func202(&a4);
-
-            win3d->UnlockSurface();
             win3d->EndFrame();
 
             win3d->BeginFrame();
-            win3d->LockSurface();
-
             win3d->raster_func202(&a4);
-
-            win3d->UnlockSurface();
             win3d->EndFrame();
         }
     }
 }
 
-void drawSplashScreenWithTOD(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen, const char *text)
+void drawSplashScreenWithTOD(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen, const char *text)
 {
     if ( splashScreen )
     {
         rstr_arg204 a4;
 
-        a4.pbitm = splashScreen->getBMD_pBitmap();
+        a4.pbitm = splashScreen->GetResBmp();
 
         a4.float4  = -1.0;
         a4.float8  = -1.0;
@@ -119,79 +111,42 @@ void drawSplashScreenWithTOD(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScre
             win3d->display_func263(&v4);
 
             win3d->BeginFrame();
-            win3d->LockSurface();
-
             win3d->raster_func202(&a4);
-
             splashScreen_OutText(yw, win3d, text, yw->screen_width / 7, yw->screen_height / 5);
-
-            win3d->UnlockSurface();
             win3d->EndFrame();
 
             win3d->BeginFrame();
-            win3d->LockSurface();
-
             win3d->raster_func202(&a4);
-
             splashScreen_OutText(yw, win3d, text, yw->screen_width / 7, yw->screen_height / 5);
-
-            win3d->UnlockSurface();
             win3d->EndFrame();
         }
     }
 }
 
-void deleteSplashScreen(_NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
+void deleteSplashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
 {
     if ( splashScreen )
         delete_class_obj(splashScreen);
 }
 
-void sb_0x44ca90__sub4(_NC_STACK_ypaworld *yw)
-{
-    if ( yw->history )
-    {
-        while ( 1 )
-        {
-            yw_f726c_nod *hnode = (yw_f726c_nod *)RemHead(&yw->history->lst);
 
-            if (!hnode)
-                break;
-
-            nc_FreeMem(hnode->bufStart);
-            nc_FreeMem(hnode);
-        }
-
-        nc_FreeMem(yw->history);
-        yw->history = NULL;
-    }
-
-    yw->history = (yw_f726c *)AllocVec(sizeof(yw_f726c), 65537);
-
-    if ( yw->history )
-    {
-        memset(yw->history, 0, sizeof(yw_f726c));
-        init_list(&yw->history->lst);
-    }
-}
-
-int sb_0x44ca90__sub6(_NC_STACK_ypaworld *yw)
+int sb_0x44ca90__sub6(NC_STACK_ypaworld *yw)
 {
     yw->map_events = (map_event *)AllocVec(sizeof(map_event), 65537);
 
     return yw->map_events != NULL;
 }
 
-int sb_0x44ca90__sub7(_NC_STACK_ypaworld *yw, int event_loop_id)
+int sb_0x44ca90__sub7(NC_STACK_ypaworld *yw, int event_loop_id)
 {
     //Event funcs
-    int sub_4D51A4(_NC_STACK_ypaworld *yw);
-    int sub_4D5218(_NC_STACK_ypaworld *yw);
-    int sub_4D5160(_NC_STACK_ypaworld *yw);
-    int sub_4D528C(_NC_STACK_ypaworld *yw);
-    int sub_4D5300(_NC_STACK_ypaworld *yw);
-    int sub_4D5348(_NC_STACK_ypaworld *yw);
-    int sub_4D5360(_NC_STACK_ypaworld *yw);
+    int sub_4D51A4(NC_STACK_ypaworld *yw);
+    int sub_4D5218(NC_STACK_ypaworld *yw);
+    int sub_4D5160(NC_STACK_ypaworld *yw);
+    int sub_4D528C(NC_STACK_ypaworld *yw);
+    int sub_4D5300(NC_STACK_ypaworld *yw);
+    int sub_4D5348(NC_STACK_ypaworld *yw);
+    int sub_4D5360(NC_STACK_ypaworld *yw);
 
     map_event *mevnts = yw->map_events;
     mevnts->field_8 = -1;
@@ -546,7 +501,7 @@ int sb_0x44ca90__sub7(_NC_STACK_ypaworld *yw, int event_loop_id)
     return 1;
 }
 
-void  sub_44F500(_NC_STACK_ypaworld *yw, int id)
+void  sub_44F500(NC_STACK_ypaworld *yw, int id)
 {
     yw_field34 *fld34 = &yw->field_34[id];
 
@@ -563,16 +518,11 @@ void  sub_44F500(_NC_STACK_ypaworld *yw, int id)
         cell->w_type = 0;
 
         if ( yw->blg_map )
-        {
-            bitmap_intern *bitm = yw->blg_map->getBMD_pBitmap();
-
-            uint8_t *tmp = (uint8_t *)bitm->buffer + fld34->x + fld34->y * bitm->width;
-            *tmp = 0;
-        }
+            (*yw->blg_map)(fld34->x, fld34->y) = 0;
     }
 }
 
-int sb_0x44ca90__sub3(_NC_STACK_ypaworld *yw)
+int sb_0x44ca90__sub3(NC_STACK_ypaworld *yw)
 {
     yw->field_30 = (yw_f30 *)AllocVec(sizeof(yw_f30) * 64 * 64, 65537);
 
@@ -617,49 +567,43 @@ int sb_0x44ca90__sub3(_NC_STACK_ypaworld *yw)
     return 1;
 }
 
-void sb_0x44ca90__sub5(_NC_STACK_ypaworld *yw)
+void sb_0x44ca90__sub5(NC_STACK_ypaworld *yw)
 {
     memset(yw->field_80, 0, sizeof(yw_f80) * 8);
 }
 
-void sb_0x44ca90__sub2(_NC_STACK_ypaworld *yw, mapProto *mapp)
+void sb_0x44ca90__sub2(NC_STACK_ypaworld *yw, LevelDesc *mapp)
 {
     NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
 
-    for (int i = 0; i < 8; i++)
+    for (size_t i = 0; i < mapp->Palettes.size(); i++)
     {
-        if (mapp->palettes[i][0])
+        if (!mapp->Palettes[i].empty())
         {
             IDVList init_vals;
-            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, mapp->palettes[i]);
+            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, mapp->Palettes[i].c_str());
             init_vals.Add(NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
 
-            NC_STACK_bitmap *ilbm = NC_STACK_ilbm::CInit(&init_vals);
+            NC_STACK_bitmap *ilbm = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
 
             if (ilbm)
             {
-                rstr_261_arg v7;
-                v7.pal_num = 256;
-                v7.pal_id = i;
-                v7.entrie_id = 0;
-                v7.palette = ilbm->getBMD_palette();
-
                 if ( i )
-                    win3d->display_func261(&v7);
+                    win3d->display_func261(i, *ilbm->getBMD_palette());
                 else
-                    win3d->SetPalette(v7.palette);
+                    win3d->SetPalette(*ilbm->getBMD_palette());
 
                 delete_class_obj(ilbm);
             }
             else
             {
-                ypa_log_out("WARNING: slot #%d [%s] init failed!\n", i, mapp->palettes[i]);
+                ypa_log_out("WARNING: slot #%d [%s] init failed!\n", i, mapp->Palettes[i]);
             }
         }
     }
 }
 
-int sb_0x44ca90__sub8(_NC_STACK_ypaworld *yw)
+int sb_0x44ca90__sub8(NC_STACK_ypaworld *yw)
 {
     yw->samples = (yw_samples *)AllocVec(sizeof(yw_samples), 65537);
     if ( !yw->samples )
@@ -671,95 +615,94 @@ int sb_0x44ca90__sub8(_NC_STACK_ypaworld *yw)
     return 1;
 }
 
-int NC_STACK_ypaworld::LVLoaderCommon(mapProto &mapp, int levelID, int a5)
+int NC_STACK_ypaworld::LVLoaderCommon(LevelDesc &mapp, int levelID, int a5)
 {
     int ok = 0;
 
-    memset(&mapp, 0, sizeof(mapProto));
+    mapp.clear();
 
-    memset(ypaworld.ingamePlayerStatus, 0, sizeof(player_status) * 8);
+    for (auto &p : ingamePlayerStatus)
+        p.clear();
 
-    ypaworld.timeStamp = 0;
-    ypaworld.field_1a04 = 0;
-    ypaworld.field_1a08 = 0;
-    ypaworld.field_1a00 = 0;
-    ypaworld.field_1a1c = 0;
-    ypaworld.field_161c = 0;
+    timeStamp = 0;
+    field_1a04 = 0;
+    field_1a08 = 0;
+    field_1a00 = 0;
+    field_1a1c = 0;
+    field_161c = 0;
 
-    ypaworld.field_2d90->levelID = levelID;
-    ypaworld.field_2d90->field_48 = a5;
-    ypaworld.field_2d90->field_40 = 0;
-    ypaworld.field_2d90->gate_count = 0;
-    ypaworld.field_2d90->supetItems_count = 0;
-    ypaworld.field_2d90->ownerMap__has_vehicles = 0;
-    ypaworld.field_2d90->field_60 = 0;
+    _levelInfo->LevelID = levelID;
+    _levelInfo->Mode = a5;
+    _levelInfo->State = 0;
+    _levelInfo->OwnerMask = 0;
+    _levelInfo->UserMask = 0;
 
-    ypaworld.field_1a60 = 0;
-    ypaworld.field_1a98 = NULL;
-    ypaworld.field_1aac = 0;
-    ypaworld.current_bact = NULL;
-    ypaworld.field_1b78 = NULL;
-    ypaworld.field_1b7c = NULL;
-    ypaworld.field_1b80 = NULL;
-    ypaworld.field_1b84 = NULL;
-    ypaworld.field_1b88 = NULL;
-    ypaworld.field_1ab0 = 0;
-    ypaworld.field_160c = 0;
-    ypaworld.field_1610 = 0;
-    ypaworld.field_7882 = 1;
-    ypaworld.field_7886 = 1;
-    ypaworld.field_788A = 0;
-    ypaworld.field_81AF = 0;
-    ypaworld.field_241c = 0;
-    ypaworld.field_1628 = 0;
-    ypaworld.field_162A = 0;
-    ypaworld.field_1624 = 0;
-    ypaworld.vehicle_sector_ratio_1 = 0;
-    ypaworld.field_8283 = 0;
-    ypaworld.field_1a20 = 0;
+    field_1a60 = 0;
+    field_1a98 = NULL;
+    field_1aac = 0;
+    current_bact = NULL;
+    UserRobo = NULL;
+    UserUnit = NULL;
+    field_1b88 = NULL;
+    field_1ab0 = 0;
+    field_160c = 0;
+    field_1610 = 0;
+    field_7882 = 1;
+    field_7886 = 1;
+    field_788A = 0;
+    field_81AF = 0;
+    field_241c = 0;
+    field_1628 = 0;
+    field_162A = 0;
+    field_1624 = 0;
+    vehicle_sector_ratio_1 = 0;
+    field_8283 = 0;
+    field_1a20 = 0;
 
-    memset(ypaworld.field_2d90->gates, 0, sizeof(gateProto) * 8);
-    memset(ypaworld.field_2d90->supetItems, 0, sizeof(supetItemProto) * 8);
-    for (int i = 0; i < 8; i++)
+    _levelInfo->Gates.clear();
+
+	_levelInfo->SuperItems.clear();
+
+    _Gems.clear();
+    
+    memset(&field_81CB, 0, sizeof(yw_81cb));
+    memset(field_1bac, 0, sizeof(int) * 8);
+
+    dbg_num_sqd_max = 0;
+    dbg_num_vhcl_max = 0;
+    dbg_num_flk_max = 0;
+    dbg_num_wpn_max = 0;
+    dbg_num_robo_max = 0;
+
+    if ( !one_game_res )
     {
-        ypaworld.gems[i].init();
-    }
-    memset(&ypaworld.field_81CB, 0, sizeof(yw_81cb));
-    memset(ypaworld.field_1bac, 0, sizeof(int) * 8);
-
-    ypaworld.dbg_num_sqd_max = 0;
-    ypaworld.dbg_num_vhcl_max = 0;
-    ypaworld.dbg_num_flk_max = 0;
-    ypaworld.dbg_num_wpn_max = 0;
-    ypaworld.dbg_num_robo_max = 0;
-
-    if ( !ypaworld.one_game_res )
-    {
-        if ( ypaworld.game_default_res != ypaworld.shell_default_res )
+        if ( game_default_res != shell_default_res )
         {
-            GFXEngine::GFXe.setResolution(ypaworld.game_default_res);
+            GFXEngine::GFXe.setResolution(game_default_res);
 
-            ypaworld.screen_width = GFXEngine::GFXe.getScreenW();
-            ypaworld.screen_height = GFXEngine::GFXe.getScreenH();
-            ypaworld.win3d = GFXEngine::GFXe.getC3D();
+            screen_width = GFXEngine::GFXe.getScreenW();
+            screen_height = GFXEngine::GFXe.getScreenH();
+            _win3d = GFXEngine::GFXe.getC3D();
 
-            ypaworld.win3d->setWDD_cursor( (ypaworld.field_73CE & 0x40) != 0 );
+            _win3d->setWDD_cursor( (field_73CE & 0x40) != 0 );
 
-            if ( ypaworld.screen_width >= 512 )
+            if ( screen_width >= 512 )
             {
-                ypaworld.win3d->load_font( get_lang_string(ypaworld.string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
+                _win3d->load_font( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
+                Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
             }
             else
             {
-                ypaworld.win3d->load_font( get_lang_string(ypaworld.string_pointers_p2, 16, "Arial,8,400,0") );
+                _win3d->load_font( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
+                Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
             }
         }
     }
 
-    NC_STACK_bitmap *diskScreenImage = loadDisk_screen(&ypaworld);
+    NC_STACK_bitmap *diskScreenImage = loadDisk_screen(this);
 
     if ( diskScreenImage )
-        draw_splashScreen(&ypaworld, diskScreenImage);
+        draw_splashScreen(this, diskScreenImage);
 
 
     char rsr[256];
@@ -768,66 +711,66 @@ int NC_STACK_ypaworld::LVLoaderCommon(mapProto &mapp, int levelID, int a5)
 
     set_prefix_replacement("rsrc", "data:fonts");
 
-    int v19 = load_fonts_and_icons(&ypaworld);
+    int v19 = load_fonts_and_icons();
 
     set_prefix_replacement("rsrc", rsr);
 
     if ( !v19 )
         return 0;
 
-    int tod = loadTOD(&ypaworld, "tod.def");
+    int tod = loadTOD(this, "tod.def");
 
-    const char *text = get_lang_string(ypaworld.string_pointers_p2, tod + 2490, " ");
+    const char *text = get_lang_string(string_pointers_p2, tod + 2490, " ");
 
     tod++;
     if ( tod + 2490 > 2512 )
         tod = 0;
 
-    writeTOD(&ypaworld, "tod.def", tod);
+    writeTOD(this, "tod.def", tod);
 
     if ( diskScreenImage )
     {
-        drawSplashScreenWithTOD(&ypaworld, diskScreenImage, text);
-        deleteSplashScreen(&ypaworld, diskScreenImage);
+        drawSplashScreenWithTOD(this, diskScreenImage, text);
+        deleteSplashScreen(this, diskScreenImage);
     }
 
-    ypaworld.p_1_grp_cnt = 0;
+    p_1_grp_cnt = 0;
     for (int i = 0; i < 8; i++)
     {
-        ypaworld.p_1_grp[0][i] = 0;
-        ypaworld.p_1_grp[1][i] = 0;
-        ypaworld.p_1_grp[2][i] = 100000;
-        ypaworld.p_1_grp[3][i] = 0;
+        p_1_grp[0][i] = 0;
+        p_1_grp[1][i] = 0;
+        p_1_grp[2][i] = 100000;
+        p_1_grp[3][i] = 0;
     }
 
-    sb_0x44ca90__sub4(&ypaworld);
+    _history.Clear();
 
-    ypaworld.audio_volume = SFXEngine::SFXe.getMasterVolume();
+    audio_volume = SFXEngine::SFXe.getMasterVolume();
 
-    sb_0x44ca90__sub8(&ypaworld);
-    sb_0x44ca90__sub6(&ypaworld);
+    sb_0x44ca90__sub8(this);
+    sb_0x44ca90__sub6(this);
 
     set_prefix_replacement("rsrc", "data:");
 
-    if ( sub_4DA41C(&ypaworld, &mapp, ypaworld.LevelNet->mapInfos[ypaworld.field_2d90->levelID].mapPath) && (mapp.flags & 0x7F) == 0x7F )
+    if ( sub_4DA41C(&mapp, LevelNet->mapInfos[_levelInfo->LevelID].mapPath) && (mapp.Flags & 0x7F) == 0x7F )
     {
-        sb_0x44ca90__sub7(&ypaworld, mapp.event_loop);
+        sb_0x44ca90__sub7(this, mapp.EventLoopID);
 
-        if ( !sb_0x44ca90__sub3(&ypaworld) )
+        if ( !sb_0x44ca90__sub3(this) )
             return 0;
 
-        sb_0x44ca90__sub5(&ypaworld);
+        sb_0x44ca90__sub5(this);
 
         char a1[32];
-        sprintf(a1, "data:set%d", mapp.setNumber);
+        sprintf(a1, "data:set%d", mapp.SetID);
 
         set_prefix_replacement("rsrc", a1);
 
-        sb_0x44ca90__sub2(&ypaworld, &mapp);
+        sb_0x44ca90__sub2(this, &mapp);
 
-        if ( yw_LoadSet(&ypaworld, mapp.setNumber) )
+        if ( yw_LoadSet(mapp.SetID) )
         {
-            if ( yw_loadSky(&ypaworld, mapp.sky) )
+            if ( yw_loadSky(this, mapp.SkyStr.c_str()) )
                 ok = 1;
         }
     }
@@ -837,28 +780,25 @@ int NC_STACK_ypaworld::LVLoaderCommon(mapProto &mapp, int levelID, int a5)
     return ok;
 }
 
-int cells_mark_type(_NC_STACK_ypaworld *yw, const char *a2)
+int cells_mark_type(NC_STACK_ypaworld *yw, const char *a2)
 {
     if ( !yw->typ_map )
         return 0;
 
-    bitmap_intern *bitm = yw->typ_map->getBMD_pBitmap();
+    uint8_t *typMap = yw->typ_map->data();
 
-    uint8_t *typMap = (uint8_t *)bitm->buffer;
-
-    yw->sectors_maxX2 = bitm->width;
-    yw->sectors_maxY2 = bitm->height;
+    yw->sectors_maxX2 = yw->typ_map->Width();
+    yw->sectors_maxY2 = yw->typ_map->Height();
 
     yw->map_Width_meters = yw->sectors_maxX2 * 1200.0;
     yw->map_Height_meters = yw->sectors_maxY2 * 1200.0;
 
     int sectors_count = yw->sectors_maxY2 * yw->sectors_maxX2;
 
-    memset(yw->cells, 0, sizeof(cellArea) * sectors_count);
-
     for (int i = 0; i < sectors_count; i++)
     {
         cellArea *cell = &yw->cells[i];
+        cell->clear();
         secType *sectp = &yw->secTypes[ typMap[i] ];
 
         init_list(&cell->units_list);
@@ -881,34 +821,30 @@ int cells_mark_type(_NC_STACK_ypaworld *yw, const char *a2)
     return 1;
 }
 
-int cells_mark_owner(_NC_STACK_ypaworld *yw, const char *a2)
+int cells_mark_owner(NC_STACK_ypaworld *yw, const char *a2)
 {
     memset(yw->sectors_count_by_owner, 0, sizeof(int) * 8);
 
     if ( !yw->own_map )
         return 0;
 
-    bitmap_intern *bitm = yw->own_map->getBMD_pBitmap();
-
-    uint8_t *ownmap = (uint8_t *)bitm->buffer;
-
-    if ( bitm->width != yw->sectors_maxX2 || bitm->height != yw->sectors_maxY2 )
+    if ( (int)yw->own_map->Width() != yw->sectors_maxX2 || (int)yw->own_map->Height() != yw->sectors_maxY2 )
     {
-        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", a2, bitm->width, bitm->height, yw->sectors_maxX2, yw->sectors_maxY2);
-        delete_class_obj(yw->own_map);
+        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", a2, yw->own_map->Width(), yw->own_map->Height(), yw->sectors_maxX2, yw->sectors_maxY2);
+        delete yw->own_map;
         yw->own_map = NULL;
         return 0;
     }
 
 
-    for (int yy = 0; yy < yw->sectors_maxY2; yy++)
+    for (uint32_t yy = 0; yy < yw->own_map->Height(); yy++)
     {
-        uint8_t *ownmapp = ownmap + yy * yw->sectors_maxX2;
+        uint8_t *ownmapp = yw->own_map->Line(yy);
         cellArea *cells = yw->cells + yy * yw->sectors_maxX2;
 
-        for (int xx = 0; xx < yw->sectors_maxX2; xx++)
+        for (uint32_t xx = 0; xx < yw->own_map->Width(); xx++)
         {
-            if ( xx > 0 && yy > 0 && xx != yw->sectors_maxX2 - 1 && yy != yw->sectors_maxY2 - 1 )
+            if ( xx > 0 && yy > 0 && xx != (uint32_t)yw->sectors_maxX2 - 1 && yy != (uint32_t)yw->sectors_maxY2 - 1 )
                 cells[xx].owner = ownmapp[xx];
             else
                 cells[xx].owner = 0;
@@ -920,28 +856,22 @@ int cells_mark_owner(_NC_STACK_ypaworld *yw, const char *a2)
     return 1;
 }
 
-int cells_mark_hight(_NC_STACK_ypaworld *yw, const char *a2)
+int cells_mark_hight(NC_STACK_ypaworld *yw, const char *a2)
 {
     if ( !yw->hgt_map )
         return 0;
 
-    bitmap_intern *bitm = yw->hgt_map->getBMD_pBitmap();
-
-    uint8_t *hgtMap = (uint8_t *)bitm->buffer;
-
-    if ( bitm->width != yw->sectors_maxX2 || bitm->height != yw->sectors_maxY2 )
+    if ( (int)yw->hgt_map->Width() != yw->sectors_maxX2 || (int)yw->hgt_map->Height() != yw->sectors_maxY2 )
     {
-        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", a2, bitm->width, bitm->height, yw->sectors_maxX2, yw->sectors_maxY2);
-        delete_class_obj(yw->hgt_map);
+        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", a2, yw->hgt_map->Width(), yw->hgt_map->Height(), yw->sectors_maxX2, yw->sectors_maxY2);
+        delete yw->hgt_map;
         yw->hgt_map = NULL;
         return 0;
     }
 
-    int sectors_cnt = yw->sectors_maxY2 * yw->sectors_maxX2;
-
-    for (int i = 0; i < sectors_cnt; i++)
+    for (uint32_t i = 0; i < yw->hgt_map->size(); i++)
     {
-        yw->cells[i].height = hgtMap[i] * -100.0;
+        yw->cells[i].height = (*yw->hgt_map)[i] * -100.0;
     }
 
     for (int y = 1; y < yw->sectors_maxY2; y++)
@@ -966,141 +896,128 @@ int cells_mark_hight(_NC_STACK_ypaworld *yw, const char *a2)
     return 1;
 }
 
-int yw_createRobos(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int robos_count, mapRobo *robo)
+bool NC_STACK_ypaworld::yw_createRobos(const std::vector<MapRobo> &Robos)
 {
-    stru_2d90 *f2d90 = yw->field_2d90;
-
-    if ( f2d90->field_48 != 1 )
+    if ( _levelInfo->Mode != 1 )
     {
-        f2d90->ownerMap__has_vehicles = 0;
-        f2d90->field_60 = 2;
+        _levelInfo->OwnerMask = 0;
+        _levelInfo->UserMask = 2;
+        
+        bool first = true;
 
-        for (int i = 0; i < robos_count; i++)
+        for ( const MapRobo &roboInf : Robos)
         {
-            mapRobo *v8 = robo + i;
-
             ypaworld_arg136 v14;
-            v14.stPos.x = v8->pos_x;
-            v14.stPos.y = -30000.0;
-            v14.stPos.z = v8->pos_z;
-
-            v14.vect.x = 0;
-            v14.vect.y = 50000.0;
-            v14.vect.z = 0;
+            v14.stPos = vec3d::X0Z(roboInf.Pos) - vec3d::OY(30000.0);
+            v14.vect = vec3d::OY(50000.0);
             v14.flags = 0;
 
             ypaworld_arg146 v15;
-            v15.vehicle_id = v8->vehicle;
-            v15.pos.x = v8->pos_x;
-            v15.pos.y = v8->pos_y;
-            v15.pos.z = v8->pos_z;
+            v15.vehicle_id = roboInf.VhclID;
+            v15.pos = roboInf.Pos;
 
-            ywo->ypaworld_func136(&v14);
+            ypaworld_func136(&v14);
 
             if ( v14.isect )
-                v15.pos.y = v14.isectPos.y + v8->pos_y;
+                v15.pos.y += v14.isectPos.y;
 
-            NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>( ywo->ypaworld_func146(&v15) );
+            NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>( ypaworld_func146(&v15) );
 
             if ( robo )
             {
                 int v20 = 0;
 
-                ywo->ypaworld_func134(robo);
-
-                __NC_STACK_ypabact *bact_int = robo->getBACT_pBact(); // ypabact_func3
+                ypaworld_func134(robo);
 
                 int v12;
 
-                if ( i )
+                if ( !first )
                 {
-                    v12 = v8->energy;
+                    v12 = roboInf.Energy;
                 }
                 else
                 {
-                    v12 = v8->energy / 4;
+                    v12 = roboInf.Energy / 4;
 
-                    if ( v12 < yw->maxroboenergy )
+                    if ( v12 < _maxRoboEnergy )
                     {
-                        v12 = yw->maxroboenergy;
-                        v20 = yw->maxreloadconst;
+                        v12 = _maxRoboEnergy;
+                        v20 = _maxReloadConst;
                     }
 
                 }
 
-                bact_int->owner = v8->owner;
-                bact_int->energy = v12;
-                bact_int->energy_max = v12;
+                robo->_owner = roboInf.Owner;
+                robo->_energy = v12;
+                robo->_energy_max = v12;
 
                 if ( !v20 )
                 {
-                    if ( v8->reload_const )
-                        v20 = v8->reload_const;
+                    if ( roboInf.ReloadConst )
+                        v20 = roboInf.ReloadConst;
                     else
-                        v20 = bact_int->energy_max;
+                        v20 = robo->_energy_max;
                 }
 
-                bact_int->reload_const = v20;
+                robo->_reload_const = v20;
 
                 robo->setBACT_bactCollisions(1);
                 robo->setROBO_fillMode(15);
                 robo->setROBO_battVehicle(v12);
                 robo->setROBO_battBeam(v12);
 
-                yw->field_2d90->ownerMap__has_vehicles |= 1 << v8->owner;
+                _levelInfo->OwnerMask |= 1 << roboInf.Owner;
 
-                robo->setROBO_epConquer(v8->con_budget);
-                robo->setROBO_epDefense(v8->def_budget);
-                robo->setROBO_epRadar(v8->rad_budget);
-                robo->setROBO_epPower(v8->pow_budget);
-                robo->setROBO_epSafety(v8->saf_budget);
-                robo->setROBO_epChangeplace(v8->cpl_budget);
-                robo->setROBO_epRobo(v8->rob_budget);
-                robo->setROBO_epReconnoitre(v8->rec_budget);
-                robo->setROBO_viewAngle(v8->viewangle);
-                robo->setROBO_safDelay(v8->saf_delay);
-                robo->setROBO_powDelay(v8->pow_delay);
-                robo->setROBO_cplDelay(v8->cpl_delay);
-                robo->setROBO_radDelay(v8->rad_delay);
-                robo->setROBO_defDelay(v8->def_delay);
-                robo->setROBO_conDelay(v8->con_delay);
-                robo->setROBO_recDelay(v8->rec_delay);
-                robo->setROBO_robDelay(v8->rob_delay);
+                robo->setROBO_epConquer(roboInf.ConBudget);
+                robo->setROBO_epDefense(roboInf.DefBudget);
+                robo->setROBO_epRadar(roboInf.RadBudget);
+                robo->setROBO_epPower(roboInf.PowBudget);
+                robo->setROBO_epSafety(roboInf.SafBudget);
+                robo->setROBO_epChangeplace(roboInf.CplBudget);
+                robo->setROBO_epRobo(roboInf.RobBudget);
+                robo->setROBO_epReconnoitre(roboInf.RecBudget);
+                robo->setROBO_viewAngle(roboInf.ViewAngle);
+                robo->setROBO_safDelay(roboInf.SafDelay);
+                robo->setROBO_powDelay(roboInf.PowDelay);
+                robo->setROBO_cplDelay(roboInf.CplDelay);
+                robo->setROBO_radDelay(roboInf.RadDelay);
+                robo->setROBO_defDelay(roboInf.DefDelay);
+                robo->setROBO_conDelay(roboInf.ConDelay);
+                robo->setROBO_recDelay(roboInf.RecDelay);
+                robo->setROBO_robDelay(roboInf.RobDelay);
 
-                if ( !i )
+                if ( first )
                 {
                     robo->setBACT_viewer(1);
                     robo->setBACT_inputting(1);
                 }
             }
+            
+            first = false;
         }
     }
-    return 1;
+    return true;
 }
 
-int sub_44B9B8(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, const char *mapp)
+int sub_44B9B8(NC_STACK_ypaworld *yw, const char *mapp)
 {
     if ( !yw->blg_map )
         return 0;
 
-    bitmap_intern *bitmp = yw->blg_map->getBMD_pBitmap();
-
-    uint8_t *blgMap = (uint8_t *)bitmp->buffer;
-
-    if ( bitmp->width != yw->sectors_maxX2 || bitmp->height != yw->sectors_maxY2 )
+    if ( (int)yw->blg_map->Width() != yw->sectors_maxX2 || (int)yw->blg_map->Height() != yw->sectors_maxY2 )
     {
-        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", mapp, bitmp->width, bitmp->height, yw->sectors_maxX2, yw->sectors_maxY2);
-        delete_class_obj(yw->blg_map);
+        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", mapp, yw->blg_map->Width(), yw->blg_map->Height(), yw->sectors_maxX2, yw->sectors_maxY2);
+        delete yw->blg_map;
         yw->blg_map = NULL;
         return 0;
     }
 
-    for ( int y = 0; y < yw->sectors_maxY2; y++)
+    for ( uint32_t y = 0; y < yw->blg_map->Height(); y++)
     {
-        uint8_t *blgln = blgMap + y * yw->sectors_maxX2;
+        uint8_t *blgln = yw->blg_map->Line(y);
         cellArea *cellln = yw->cells + y * yw->sectors_maxX2;
 
-        for ( int x = 0; x < yw->sectors_maxX2; x++)
+        for ( uint32_t x = 0; x < yw->blg_map->Width(); x++)
         {
             if (blgln[x] && cellln[x].owner)
             {
@@ -1114,7 +1031,7 @@ int sub_44B9B8(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, const char *mapp)
                 arg148.x = x;
                 arg148.y = y;
 
-                ywo->ypaworld_func148(&arg148);
+                yw->ypaworld_func148(&arg148);
             }
         }
     }
@@ -1122,273 +1039,224 @@ int sub_44B9B8(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, const char *mapp)
     return 1;
 }
 
-void yw_InitSquads(_NC_STACK_ypaworld *yw, int squad_cnt, squadProto *squads)
+void NC_STACK_ypaworld::yw_InitSquads(const std::vector<MapSquad> &squads)
 {
-    if ( yw->field_2d90->field_48 != 1 )
+    if ( _levelInfo->Mode != 1 )
     {
-        for (int i = 0; i < squad_cnt; i++)
+        size_t i = 0;
+        for ( const MapSquad &squad : squads )
         {
-            squadProto *squad = squads + i;
+            NC_STACK_yparobo *robo = NULL;
 
-            if (squad->field_0)
+            bact_node *nod = (bact_node *)bact_list.head;
+            while ( nod->next )
             {
-                NC_STACK_yparobo *robo = NULL;
-
-                bact_node *nod = (bact_node *)yw->bact_list.head;
-                while ( nod->next )
+                if ( nod->bact->_bact_type == BACT_TYPES_ROBO && nod->bact->_owner == squad.Owner)
                 {
-                    if ( nod->bact->bact_type == BACT_TYPES_ROBO && nod->bact->owner == squad->owner)
-                    {
-                        robo = dynamic_cast<NC_STACK_yparobo *>(nod->bacto);
-                        break;
-                    }
-
-                    nod = (bact_node *)nod->next;
+                    robo = dynamic_cast<NC_STACK_yparobo *>(nod->bact);
+                    break;
                 }
 
-                if ( !robo )
-                {
-                    ypa_log_out("WARNING: yw_InitSquads(): no host robo for squad[%d], owner %d!\n", i, squad->owner);
-                }
-                else
-                {
-                    robo_arg133 arg133;
-                    arg133.type = squad->vehicle;
-                    arg133.num = squad->num;
-                    arg133.hetero_vehicles = 0;
-                    arg133.field_14 = (squad->useable == 0) + 2;
-
-                    ypaworld_arg136 arg136;
-                    arg136.stPos.x = squad->pos_x;
-                    arg136.stPos.y = -50000.0;
-                    arg136.stPos.z = squad->pos_z;
-                    arg136.vect = vec3d::OY(100000.0);
-                    arg136.flags = 0;
-                    yw->self_full->ypaworld_func136(&arg136);
-
-                    if ( arg136.isect )
-                        arg133.pos = arg136.isectPos - vec3d::OY(50.0);
-                    else
-                    {
-                        yw_130arg sect_info;
-                        sect_info.pos_x = squad->pos_x;
-                        sect_info.pos_z = squad->pos_z;
-
-                        if ( !yw->self_full->ypaworld_func130(&sect_info) )
-                        {
-                            ypa_log_out("yw_InitSquads(): no valid position for squad[%d]!\n", i);
-                            return;
-                        }
-
-                        arg133.pos.x = squad->pos_x;
-                        arg133.pos.y = sect_info.pcell->height;
-                        arg133.pos.z = squad->pos_z;
-                    }
-                    // Create squad by robo method
-                    robo->yparobo_func133(&arg133); // yparobo_func133
-                }
-
-            }
-        }
-    }
-}
-
-void yw_InitBuddies(_NC_STACK_ypaworld *yw)
-{
-
-    int vhcl_ids[128];
-
-    if ( yw->field_2d90->buddies_count )
-    {
-        int squad_sn = 0;
-
-        while ( 1 )
-        {
-            robo_arg133 bact_add;
-            memset(&bact_add, 0, sizeof(robo_arg133));
-
-            bact_add.field_14 = 2;
-
-            int v3 = -1;
-
-            bact_add.hetero_vehicles = vhcl_ids;
-
-            for (int i = 0; i < yw->field_2d90->buddies_count; i++)
-            {
-                yw_buddy *buddy = &yw->field_2d90->buddies[i];
-
-                if (!buddy->field_6)
-                {
-                    if (v3 == -1)
-                    {
-                        v3 = buddy->commandid;
-                        bact_add.type = buddy->type;
-                        bact_add.hetero_vehicles[ bact_add.num ] = buddy->type;
-                        bact_add.num++;
-                        buddy->field_6 = 1;
-
-                    }
-                    else if ( v3 == buddy->commandid )
-                    {
-                        bact_add.hetero_vehicles[ bact_add.num ] = buddy->type;
-                        bact_add.num++;
-                        buddy->field_6 = 1;
-                    }
-                }
+                nod = (bact_node *)nod->next;
             }
 
-            if ( v3 != -1 )
+            if ( !robo )
             {
-                bact_add.pos = yw->field_1b80->position + vec3d( sin(squad_sn * 1.745) * 500.0,
-                               0.0,
-                               cos(squad_sn * 1.745) * 500.0 );
-
-                ypaworld_arg136 arg136;
-                arg136.stPos = bact_add.pos.X0Z() + vec3d(0.5, -50000.0, 0.75);
-                arg136.vect = vec3d::OY(100000.0);
-                arg136.flags = 0;
-
-                yw->self_full->ypaworld_func136(&arg136);
-
-                if ( arg136.isect )
-                    bact_add.pos.y = arg136.isectPos.y + -100.0;
-
-                NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
-
-                robo->yparobo_func133(&bact_add); //robo 133 method
-
-                squad_sn++;
+                ypa_log_out("WARNING: yw_InitSquads(): no host robo for squad[%d], owner %d!\n", i, squad.Owner);
             }
             else
             {
-                for (int i = 0; i < yw->field_2d90->buddies_count; i++)
-                    yw->field_2d90->buddies[i].field_6 = 0;
+                vec3d squadPos;
 
-                break;
-            }
-        }
-    }
-}
+                ypaworld_arg136 arg136;
+                arg136.stPos.x = squad.X;
+                arg136.stPos.y = -50000.0;
+                arg136.stPos.z = squad.Z;
+                arg136.vect = vec3d::OY(100000.0);
+                arg136.flags = 0;
+                ypaworld_func136(&arg136);
 
-void yw_InitTechUpgradeBuildings(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw)
-{
-    yw->field_2b7c = 0;
-    yw->last_modify_build = 0;
-    yw->last_modify_vhcl = 0;
-    yw->last_modify_weapon = 0;
-    yw->field_2b78 = -1;
-
-    for (int i = 0; i < 8; i++)
-    {
-        if ( yw->gems[0].field_0 )
-        {
-            int xx = yw->gems[i].sec_x;
-            int yy = yw->gems[i].sec_y;
-
-            cellArea *cell = &yw->cells[xx + yy * yw->sectors_maxX2];
-
-            if (yw->gems[i].building)
-            {
-                if ( cell->w_type != 3 || yw->gems[i].building != cell->w_id )
+                if ( arg136.isect )
+                    squadPos = arg136.isectPos - vec3d::OY(50.0);
+                else
                 {
-                    ypaworld_arg148 arg148;
-                    arg148.ownerID = cell->owner;
-                    arg148.ownerID2 = cell->owner;
-                    arg148.blg_ID = yw->gems[i].building;
-                    arg148.x = xx;
-                    arg148.y = yy;
-                    arg148.field_C = 1;
-                    arg148.field_18 = 0;
+                    yw_130arg sect_info;
+                    sect_info.pos_x = squad.X;
+                    sect_info.pos_z = squad.Z;
 
-                    ywo->ypaworld_func148(&arg148);
+                    if ( !ypaworld_func130(&sect_info) )
+                    {
+                        ypa_log_out("yw_InitSquads(): no valid position for squad[%d]!\n", i);
+                        return;
+                    }
+
+                    squadPos.x = squad.X;
+                    squadPos.y = sect_info.pcell->height;
+                    squadPos.z = squad.Z;
                 }
+                // Create squad by robo method
+                robo->MakeSquad( std::vector<int>(squad.Count, squad.VhclID), squadPos, squad.Useable); // yparobo_func133
             }
-
-            cell->w_type = 4;
-            cell->w_id = i;
+            
+            i++;
         }
     }
 }
 
-void yw_InitGates(_NC_STACK_ypaworld *yw)
+void yw_InitBuddies(NC_STACK_ypaworld *yw)
 {
-    for (int i = 0; i < yw->field_2d90->gate_count; i++)
+    if ( !yw->_levelInfo->Buddies.empty() )
     {
-        gateProto *gate = &yw->field_2d90->gates[i];
+        int squad_sn = 0;
+        
+        std::vector<MapBuddy> buds = yw->_levelInfo->Buddies;
+        while ( 1 )
+        {
+            std::vector<int> VhclIDS;
+            int wrkID = -1;
+            for (std::vector<MapBuddy>::iterator it = buds.begin(); it != buds.end(); )
+            {
+                if (wrkID == -1 || wrkID == it->CommandID )
+                {
+                    wrkID = it->CommandID;
+                    VhclIDS.push_back(it->Type);
+                    it = buds.erase(it);
+                }
+                else
+                    it++;
+            }
 
-        cellArea *cell = &yw->cells[gate->sec_x + yw->sectors_maxX2 * gate->sec_y];
+            if ( wrkID == -1 )
+                break;
 
-        gate->pcell = cell;
+            vec3d squadPos =    yw->UserRobo->_position +  
+                                vec3d(  sin(squad_sn * 1.745) * 500.0,
+                                        0.0,
+                                        cos(squad_sn * 1.745) * 500.0 );
+
+            ypaworld_arg136 arg136;
+            arg136.stPos = squadPos.X0Z() + vec3d(0.5, -50000.0, 0.75);
+            arg136.vect = vec3d::OY(100000.0);
+            arg136.flags = 0;
+
+            yw->ypaworld_func136(&arg136);
+
+            if ( arg136.isect )
+                squadPos.y = arg136.isectPos.y + -100.0;
+
+            NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->UserRobo);
+
+            robo->MakeSquad(VhclIDS, squadPos, true); //robo 133 method
+
+            squad_sn++;
+        }
+    }
+}
+
+void NC_STACK_ypaworld::yw_InitTechUpgradeBuildings()
+{
+    field_2b7c = 0;
+    last_modify_build = 0;
+    last_modify_vhcl = 0;
+    last_modify_weapon = 0;
+    field_2b78 = -1;
+
+    for (size_t i = 0; i < _Gems.size(); i++)
+    {
+        MapGem &gem = _Gems[i];
+        cellArea *cell = &cells[gem.SecX + gem.SecY * sectors_maxX2];
+
+        if (gem.BuildingID)
+        {
+            if ( cell->w_type != 3 || gem.BuildingID != cell->w_id )
+            {
+                ypaworld_arg148 arg148;
+                arg148.ownerID = cell->owner;
+                arg148.ownerID2 = cell->owner;
+                arg148.blg_ID = gem.BuildingID;
+                arg148.x = gem.SecX;
+                arg148.y = gem.SecY;
+                arg148.field_C = 1;
+                arg148.field_18 = 0;
+
+                ypaworld_func148(&arg148);
+            }
+        }
+
+        cell->w_type = 4;
+        cell->w_id = i;
+    }
+}
+
+void yw_InitGates(NC_STACK_ypaworld *yw)
+{
+    for (size_t i = 0; i < yw->_levelInfo->Gates.size(); i++)
+    {
+        MapGate &gate = yw->_levelInfo->Gates[i];
+
+        gate.PCell = &yw->cells[gate.SecX + yw->sectors_maxX2 * gate.SecY];
 
         ypaworld_arg148 arg148;
-        arg148.ownerID = cell->owner;
-        arg148.ownerID2 = gate->pcell->owner;
-        arg148.blg_ID = gate->closed_bp;
+        arg148.ownerID = gate.PCell->owner;
+        arg148.ownerID2 = gate.PCell->owner;
+        arg148.blg_ID = gate.ClosedBldID;
         arg148.field_C = 1;
-        arg148.x = gate->sec_x;
-        arg148.y = gate->sec_y;
+        arg148.x = gate.SecX;
+        arg148.y = gate.SecY;
         arg148.field_18 = 0;
 
-        yw->self_full->ypaworld_func148(&arg148);
+        yw->ypaworld_func148(&arg148);
 
-        gate->pcell->w_type = 5;
-        gate->pcell->w_id = i;
+        gate.PCell->w_type = 5;
+        gate.PCell->w_id = i;
 
-        for (int j = 0; j < gate->keySectors_count; j++)
+        for (MapKeySector &ks : gate.KeySectors)
         {
-            int xx = gate->keySectors[j].x;
-            int yy = gate->keySectors[j].y;
-
-            if ( xx && xx < yw->sectors_maxX2 - 1 && yy && yy < yw->sectors_maxY2 - 1 )
+            if ( ks.x && ks.x < yw->sectors_maxX2 - 1 && ks.y && ks.y < yw->sectors_maxY2 - 1 )
             {
-                gate->keySectors[j].cell = &yw->cells[xx + yw->sectors_maxX2 * yy];
+                ks.PCell = &yw->cells[ks.x + yw->sectors_maxX2 * ks.y];
             }
         }
     }
 }
 
-void yw_InitSuperItems(_NC_STACK_ypaworld *yw)
+void yw_InitSuperItems(NC_STACK_ypaworld *yw)
 {
-    for (int i = 0; i < yw->field_2d90->supetItems_count; i++)
+    for ( size_t i = 0; i < yw->_levelInfo->SuperItems.size(); i++ )
     {
-        supetItemProto *stoudson = &yw->field_2d90->supetItems[i];
-        cellArea *cell = &yw->cells[stoudson->sec_x + yw->sectors_maxX2 * stoudson->sec_y];
-
-        stoudson->pcell = cell;
+        MapSuperItem &sitem = yw->_levelInfo->SuperItems[i];
+        
+        sitem.PCell = &yw->cells[sitem.SecX + yw->sectors_maxX2 * sitem.SecY];
 
         ypaworld_arg148 arg148;
-        arg148.ownerID = cell->owner;
-        arg148.ownerID2 = stoudson->pcell->owner;
-        arg148.blg_ID = stoudson->inactive_bp;
+        arg148.ownerID = sitem.PCell->owner;
+        arg148.ownerID2 = sitem.PCell->owner;
+        arg148.blg_ID = sitem.InactiveBldID;
         arg148.field_C = 1;
-        arg148.x = stoudson->sec_x;
-        arg148.y = stoudson->sec_y;
+        arg148.x = sitem.SecX;
+        arg148.y = sitem.SecY;
         arg148.field_18 = 0;
 
-        yw->self_full->ypaworld_func148(&arg148);
+        yw->ypaworld_func148(&arg148);
 
-        stoudson->pcell->w_type = 8;
-        stoudson->pcell->w_id = i;
+        sitem.PCell->w_type = 8;
+        sitem.PCell->w_id = i;
 
-        for (int j = 0; j < stoudson->keySectors_count; j++)
+        for ( MapKeySector &ks : sitem.KeySectors )
         {
-            int xx = stoudson->keySectors[j].x;
-            int yy = stoudson->keySectors[j].y;
+            if ( ks.x && ks.x < yw->sectors_maxX2 - 1 && ks.y && ks.y < yw->sectors_maxY2 - 1 )
+                ks.PCell = &yw->cells[ks.x + yw->sectors_maxX2 * ks.y];
 
-            if ( xx && xx < yw->sectors_maxX2 - 1 && yy && yy < yw->sectors_maxY2 - 1 )
-            {
-                stoudson->keySectors[j].cell = &yw->cells[xx + yw->sectors_maxX2 * yy];
-            }
         }
 
-        stoudson->field_EC = 0;
-        stoudson->field_F0 = 0;
-        stoudson->field_F4 = 0;
-        stoudson->field_4 = 0;
+        sitem.ActiveTime = 0;
+        sitem.TriggerTime = 0;
+        sitem.ActivateOwner = 0;
+        sitem.State = 0;
     }
 }
 
-void sub_44F748(_NC_STACK_ypaworld *yw)
+void sub_44F748(NC_STACK_ypaworld *yw)
 {
     // Apply power to sectors and clean power matrix for next compute iteration.
 
@@ -1409,24 +1277,14 @@ void sub_44F748(_NC_STACK_ypaworld *yw)
 }
 
 
-void sub_44F958(_NC_STACK_ypaworld *yw, cellArea *cell, char secX, char secY, uint8_t owner)
+void sub_44F958(NC_STACK_ypaworld *yw, cellArea *cell, char secX, char secY, uint8_t owner)
 {
     if ( cell->owner != owner )
     {
-        yw_arg184 arg184;
-        arg184.t26.secX = secX;
-        arg184.t26.secY = secY;
-        arg184.t26.owner = owner;
-        arg184.type = 2;
-
-        yw->self_full->ypaworld_func184(&arg184);
+        yw->ypaworld_func184( World::History::Conq(secX, secY, owner) );
 
         if ( cell->w_type == 2 )
-        {
-            arg184.type = 6;
-
-            yw->self_full->ypaworld_func184(&arg184);
-        }
+            yw->ypaworld_func184( World::History::PowerST(secX, secY, owner) );
 
         yw->sectors_count_by_owner[cell->owner]--;
         yw->sectors_count_by_owner[owner]++;
@@ -1435,7 +1293,7 @@ void sub_44F958(_NC_STACK_ypaworld *yw, cellArea *cell, char secX, char secY, ui
     }
 }
 
-void sb_0x44fc60__sub0(_NC_STACK_ypaworld *yw, int secX, int secY, cellArea *cell, yw_arg129 *a5, int a6)
+void sb_0x44fc60__sub0(NC_STACK_ypaworld *yw, int secX, int secY, cellArea *cell, yw_arg129 *a5, int a6)
 {
     int energon[8];
 
@@ -1445,14 +1303,8 @@ void sb_0x44fc60__sub0(_NC_STACK_ypaworld *yw, int secX, int secY, cellArea *cel
 
         memset(energon, 0, sizeof(energon));
 
-        __NC_STACK_ypabact *nod = (__NC_STACK_ypabact *)cell->units_list.head;
-
-        while ( nod->next )
-        {
-            energon[nod->owner] += nod->energy;
-
-            nod = (__NC_STACK_ypabact *)nod->next;
-        }
+        for ( NC_STACK_ypabact* &nod : cell->unitsList )
+            energon[nod->_owner] += nod->_energy;
 
         energon[0] = 0;
 
@@ -1467,7 +1319,7 @@ void sb_0x44fc60__sub0(_NC_STACK_ypaworld *yw, int secX, int secY, cellArea *cel
     {
         if ( cell->w_type == 2 )
         {
-            if ( yw->field_1b80->owner == a6 )
+            if ( yw->UserRobo->_owner == a6 )
             {
                 if ( a5 && a5->unit )
                 {
@@ -1477,10 +1329,10 @@ void sb_0x44fc60__sub0(_NC_STACK_ypaworld *yw, int secX, int secY, cellArea *cel
                     v21.txt = NULL;
                     v21.field_C = 45;
 
-                    yw->self_full->ypaworld_func159(&v21);
+                    yw->ypaworld_func159(&v21);
                 }
             }
-            else if ( cell->owner == yw->field_1b80->owner )
+            else if ( cell->owner == yw->UserRobo->_owner )
             {
                 yw_arg159 v24;
                 v24.unit = NULL;
@@ -1488,20 +1340,18 @@ void sb_0x44fc60__sub0(_NC_STACK_ypaworld *yw, int secX, int secY, cellArea *cel
                 v24.txt = NULL;
                 v24.field_C = 67;
 
-                yw->self_full->ypaworld_func159(&v24);
+                yw->ypaworld_func159(&v24);
             }
         }
         else
         {
-            for (int i = 0; i < yw->field_2d90->gate_count; i++)
+            for ( const MapGate &gate : yw->_levelInfo->Gates )
             {
-                gateProto *gate = yw->field_2d90->gates + i;
-
-                for (int j = 0; j < gate->keySectors_count; j++)
+                for ( const MapKeySector &ks : gate.KeySectors )
                 {
-                    if ( cell == gate->keySectors[j].cell )
+                    if ( cell == ks.PCell )
                     {
-                        if ( yw->field_1b80->owner == a6 )
+                        if ( yw->UserRobo->_owner == a6 )
                         {
                             yw_arg159 v23;
                             v23.unit = NULL;
@@ -1509,9 +1359,9 @@ void sb_0x44fc60__sub0(_NC_STACK_ypaworld *yw, int secX, int secY, cellArea *cel
                             v23.txt = NULL;
                             v23.field_C = 82;
 
-                            yw->self_full->ypaworld_func159(&v23);
+                            yw->ypaworld_func159(&v23);
                         }
-                        else if ( yw->field_1b80->owner == cell->owner )
+                        else if ( yw->UserRobo->_owner == cell->owner )
                         {
                             yw_arg159 v22;
                             v22.unit = NULL;
@@ -1519,7 +1369,7 @@ void sb_0x44fc60__sub0(_NC_STACK_ypaworld *yw, int secX, int secY, cellArea *cel
                             v22.txt = NULL;
                             v22.field_C = 81;
 
-                            yw->self_full->ypaworld_func159(&v22);
+                            yw->ypaworld_func159(&v22);
                         }
                     }
                 }
@@ -1530,7 +1380,7 @@ void sb_0x44fc60__sub0(_NC_STACK_ypaworld *yw, int secX, int secY, cellArea *cel
     sub_44F958(yw, cell, secX, secY, a6);
 }
 
-void sb_0x44fc60(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int a5, yw_arg129 *a6)
+void sb_0x44fc60(NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int a5, yw_arg129 *a6)
 {
     if ( secX && secY && yw->sectors_maxX2 - 1 != secX && yw->sectors_maxY2 - 1 != secY )
     {
@@ -1581,7 +1431,7 @@ void sb_0x44fc60(_NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int
 
 
 
-void sub_44DBF8(_NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, struct_44dbf8 &a6, int flags)
+void sub_44DBF8(NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, struct_44dbf8 &a6, int flags)
 {
     int v8 = flags;
 
@@ -1715,7 +1565,7 @@ void sub_44DF60(UAskeleton::Data *arg, int id)
     tr.D = -tmp3.dot( arg->POO[vtx1] );
 }
 
-void sub_44E07C(_NC_STACK_ypaworld *yw, struct_44dbf8 &arg)
+void sub_44E07C(NC_STACK_ypaworld *yw, struct_44dbf8 &arg)
 {
     if ( arg.field_1C == 2 )
     {
@@ -1937,15 +1787,15 @@ void sub_44D8B8(ypaworld_arg136 *arg, const struct_44dbf8 &loc)
 
 void NC_STACK_ypaworld::FFeedback_VehicleChanged()
 {
-    if ( ypaworld.field_739A )
+    if ( field_739A )
     {
-        if ( ypaworld.field_73CE & (4 | 8) )
+        if ( field_73CE & (4 | 8) )
             return;
     }
 
-    if ( ypaworld.field_1b84 )
+    if ( UserUnit )
     {
-        ypaworld.field_7562 = ypaworld.timeStamp;
+        field_7562 = timeStamp;
 
         winp_71arg winp71;
         winp71.effID = NC_STACK_winp::FF_TYPE_ALL;
@@ -1955,8 +1805,8 @@ void NC_STACK_ypaworld::FFeedback_VehicleChanged()
         winp71.p2 = 0;
         winp71.p1 = 0;
 
-        if ( ypaworld.input_class )
-            ypaworld.input_class->wimp_ForceFeedback(&winp71);
+        if ( input_class )
+            input_class->wimp_ForceFeedback(&winp71);
 
         int effectType;
         float v13;
@@ -1971,7 +1821,7 @@ void NC_STACK_ypaworld::FFeedback_VehicleChanged()
         float v25;
 
 
-        switch ( ypaworld.field_1b84->bact_type )
+        switch ( UserUnit->_bact_type )
         {
         case BACT_TYPES_BACT:
             effectType = NC_STACK_winp::FF_TYPE_HELIENGINE;
@@ -2023,8 +1873,8 @@ void NC_STACK_ypaworld::FFeedback_VehicleChanged()
 
         if ( effectType != -1 )
         {
-            float v4 = (ypaworld.field_1b84->mass - v16) / (v13 - v16);
-            float v5 = (ypaworld.field_1b84->maxrot - v15) / (v14 - v15);
+            float v4 = (UserUnit->_mass - v16) / (v13 - v16);
+            float v5 = (UserUnit->_maxrot - v15) / (v14 - v15);
 
             float v21 = (v19 - v24) * v4 + v24;
             float v23 = (v18 - v22) * v4 + v22;
@@ -2046,9 +1896,9 @@ void NC_STACK_ypaworld::FFeedback_VehicleChanged()
             else if ( v20 > v25)
                 v20 = v25;
 
-            ypaworld.field_7566 = effectType;
-            ypaworld.field_756A = v23;
-            ypaworld.field_756E = v21;
+            field_7566 = effectType;
+            field_756A = v23;
+            field_756E = v21;
 
             winp71.effID = effectType;
             winp71.p1 = v21;
@@ -2058,8 +1908,8 @@ void NC_STACK_ypaworld::FFeedback_VehicleChanged()
             winp71.p4 = 0;
             winp71.p3 = 0;
 
-            if ( ypaworld.input_class )
-                ypaworld.input_class->wimp_ForceFeedback(&winp71);
+            if ( input_class )
+                input_class->wimp_ForceFeedback(&winp71);
 
             winp71.state = NC_STACK_winp::FF_STATE_START;
             winp71.p1 = v20;
@@ -2068,8 +1918,8 @@ void NC_STACK_ypaworld::FFeedback_VehicleChanged()
             winp71.p2 = 0;
             winp71.effID = NC_STACK_winp::FF_TYPE_ROTDAMPER;
 
-            if ( ypaworld.input_class )
-                ypaworld.input_class->wimp_ForceFeedback(&winp71);
+            if ( input_class )
+                input_class->wimp_ForceFeedback(&winp71);
         }
     }
 }
@@ -2077,7 +1927,7 @@ void NC_STACK_ypaworld::FFeedback_VehicleChanged()
 
 
 
-NC_STACK_ypabact *yw_createUnit(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int model_id)
+NC_STACK_ypabact *yw_createUnit(NC_STACK_ypaworld *yw, int model_id)
 {
     const char *unit_classes_names [11] =
     {
@@ -2095,17 +1945,15 @@ NC_STACK_ypabact *yw_createUnit(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, 
     };
 
     NC_STACK_ypabact *bacto = NULL;
-    __NC_STACK_ypabact *bact = NULL;
 
     // Find dead units
     bact_node *node = (bact_node *)yw->dead_cache.head;
 
     while (node->next)
     {
-        if (node->bact->bact_type == model_id)
+        if (node->bact->_bact_type == model_id)
         {
-            bacto = node->bact->self;
-            bact = node->bact;
+            bacto = node->bact;
             break;
         }
 
@@ -2115,22 +1963,20 @@ NC_STACK_ypabact *yw_createUnit(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, 
     if ( !bacto )
     {
         IDVList init_vals;
-        init_vals.Add(NC_STACK_ypabact::BACT_ATT_WORLD, ywo);
+        init_vals.Add(NC_STACK_ypabact::BACT_ATT_WORLD, yw);
 
-        bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class(unit_classes_names[model_id], &init_vals) );
+        bacto = Nucleus::CTFInit<NC_STACK_ypabact>(unit_classes_names[model_id], init_vals);
 
         if ( !bacto )
             return NULL;
-
-        bact = bacto->getBACT_pBact();
     }
 
     bacto->Renew(); // Reset bact
 
-    bact->gid = bact_id;
-    bact->owner = 0;
+    bacto->_gid = bact_id;
+    bacto->_owner = 0;
 
-    bact->rotation = mat3x3::Ident();
+    bacto->_rotation = mat3x3::Ident();
 
     bact_id++;
 
@@ -2153,9 +1999,9 @@ void sub_44BF34(vhclSndFX *sndfx)
             for (int i = 0; i < sndfx->extS.cnt; i++)
             {
                 IDVList init_vals;
-                init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->extSampleNames[i]);
+                init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->extSampleNames[i].c_str());
 
-                sndfx->wavs[i] = (NC_STACK_wav *)init_get_class("wav.class", &init_vals);
+                sndfx->wavs[i] = Nucleus::CInit<NC_STACK_wav>(init_vals);
 
                 if ( sndfx->wavs[i] )
                 {
@@ -2183,9 +2029,9 @@ void sub_44BF34(vhclSndFX *sndfx)
         else if ( sndfx->sample_name[0] )
         {
             IDVList init_vals;
-            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->sample_name);
+            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->sample_name.c_str());
 
-            sndfx->single_sample = (NC_STACK_wav *)init_get_class("wav.class", &init_vals);
+            sndfx->single_sample = Nucleus::CInit<NC_STACK_wav>(init_vals);
 
             if ( !sndfx->single_sample )
                 ypa_log_out("Warning: Could not load sample %s.\n", sndfx->sample_name);
@@ -2196,7 +2042,7 @@ void sub_44BF34(vhclSndFX *sndfx)
 }
 
 
-void sub_4D7F60(_NC_STACK_ypaworld *yw, int x, int y, stru_a3 *sct, baseRender_msg *bs77)
+void sub_4D7F60(NC_STACK_ypaworld *yw, int x, int y, stru_a3 *sct, baseRender_msg *bs77)
 {
     sct->dword8 = 0;
     sct->dword4 = 0;
@@ -2226,7 +2072,7 @@ void sub_4D7F60(_NC_STACK_ypaworld *yw, int x, int y, stru_a3 *sct, baseRender_m
     }
 }
 
-void sub_4D806C(_NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
+void sub_4D806C(NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
 {
     if ( sct->dword8 )
     {
@@ -2298,18 +2144,14 @@ void sub_4D806C(_NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
         }
     }
 
-    __NC_STACK_ypabact *bact = (__NC_STACK_ypabact *)sct->p_cell->units_list.head;
-
-    while ( bact->next )
+    for ( NC_STACK_ypabact* &bact : sct->p_cell->unitsList )
     {
-        if ( sct->dword8 || bact->bact_type == BACT_TYPES_ROBO)
-            bact->self->Render(bs77);
-
-        bact = (__NC_STACK_ypabact *)bact->next;
+        if ( sct->dword8 || bact->_bact_type == BACT_TYPES_ROBO)
+            bact->Render(bs77);
     }
 }
 
-void yw_renderSky(_NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
+void yw_renderSky(NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
 {
     if ( yw->sky_loaded_base )
     {
@@ -2317,7 +2159,7 @@ void yw_renderSky(_NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
         uint32_t flags = rndr_params->flags;
 
         flag_xyz v5;
-        v5.v = yw->current_bact->position + vec3d::OY(yw->field_15f4);
+        v5.v = yw->current_bact->_position + vec3d::OY(yw->field_15f4);
         v5.flag = 7;
 
         yw->sky_loaded_base->base_func68(&v5);
@@ -2334,7 +2176,7 @@ void yw_renderSky(_NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
 }
 
 
-int sb_0x4d7c08__sub1__sub0__sub0(_NC_STACK_ypaworld *yw, float xx, float yy)
+int sb_0x4d7c08__sub1__sub0__sub0(NC_STACK_ypaworld *yw, float xx, float yy)
 {
     int v7 = ((xx + 150) / 300) / 4;
     int v8 = ((-yy + 150) / 300) / 4;
@@ -2342,8 +2184,8 @@ int sb_0x4d7c08__sub1__sub0__sub0(_NC_STACK_ypaworld *yw, float xx, float yy)
     if ( v7 <= 0 || v7 >= yw->sectors_maxX2 || v8 <= 0 || v8 >= yw->sectors_maxY2 || !yw->current_bact )
         return 0;
 
-    int v11 = abs(yw->current_bact->sectX - v7);
-    int v12 = abs(yw->current_bact->sectY - v8);
+    int v11 = abs(yw->current_bact->_sectX - v7);
+    int v12 = abs(yw->current_bact->_sectY - v8);
 
     if ( v11 + v12 <= (yw->field_1368 - 1) / 2 )
         return 1;
@@ -2351,7 +2193,7 @@ int sb_0x4d7c08__sub1__sub0__sub0(_NC_STACK_ypaworld *yw, float xx, float yy)
     return 0;
 }
 
-void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float posx, float posy, baseRender_msg *arg)
+void sb_0x4d7c08__sub1__sub0(NC_STACK_ypaworld *yw, float xx, float yy, float posx, float posy, baseRender_msg *arg)
 {
     if ( yw->superbomb_wall_vproto )
     {
@@ -2362,7 +2204,7 @@ void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float p
                 int v10 = yw->VhclProtos[yw->superbomb_wall_vproto].vp_normal;
 
                 NC_STACK_base *wall_base = yw->vhcls_models[v10].base;
-                TForm3D *wall_trigo = yw->vhcls_models[v10].trigo;
+                TFEngine::TForm3D *wall_trigo = yw->vhcls_models[v10].trigo;
 
                 if ( wall_base && wall_trigo )
                 {
@@ -2384,7 +2226,7 @@ void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float p
                         v22.stPos.z = yy;
                         v22.flags = 0;
 
-                        yw->self_full->ypaworld_func136(&v22);
+                        yw->ypaworld_func136(&v22);
 
                         if ( v22.isect )
                         {
@@ -2422,24 +2264,22 @@ void sb_0x4d7c08__sub1__sub0(_NC_STACK_ypaworld *yw, float xx, float yy, float p
     }
 }
 
-void sb_0x4d7c08__sub1(_NC_STACK_ypaworld *yw, baseRender_msg *arg)
+void sb_0x4d7c08__sub1(NC_STACK_ypaworld *yw, baseRender_msg *arg)
 {
     // Render super items
-    for (int i = 0; i < yw->field_2d90->supetItems_count; i++)
+    for ( const MapSuperItem &sitem : yw->_levelInfo->SuperItems )
     {
-        supetItemProto *supr = &yw->field_2d90->supetItems[i];
-
-        if ( supr->field_4 == 3 )
+        if ( sitem.State == 3 )
         {
-            float a4 = supr->sec_x * 1200.0 + 600.0;
-            float a5 = -(supr->sec_y * 1200.0 + 600.0);
+            float a4 = sitem.SecX * 1200.0 + 600.0;
+            float a5 = -(sitem.SecY * 1200.0 + 600.0);
 
 
             float v14 = sqrt( POW2(yw->map_Width_meters) + POW2(yw->map_Height_meters) );
 
-            if ( supr->field_104 > 300 && supr->field_104 < v14 )
+            if ( sitem.CurrentRadius > 300 && sitem.CurrentRadius < v14 )
             {
-                float v17 = (2 * supr->field_104) * C_PI / 300.0;
+                float v17 = (2 * sitem.CurrentRadius) * C_PI / 300.0;
 
                 if ( v17 > 2.0 )
                 {
@@ -2447,7 +2287,7 @@ void sb_0x4d7c08__sub1(_NC_STACK_ypaworld *yw, baseRender_msg *arg)
 
                     for (float j = 0.0; j < 6.283; j = j + v9 )
                     {
-                        float v10 = supr->field_104;
+                        float v10 = sitem.CurrentRadius;
                         float a3 = v10 * sin(j) + a5;
                         float a2 = v10 * cos(j) + a4;
 
@@ -2460,16 +2300,16 @@ void sb_0x4d7c08__sub1(_NC_STACK_ypaworld *yw, baseRender_msg *arg)
 }
 
 
-NC_STACK_base * sb_0x4d7c08__sub3__sub0(_NC_STACK_ypaworld *yw, stru_a3 *sct, stru_a3 *sct2, float a4, float a5)
+NC_STACK_base * sb_0x4d7c08__sub3__sub0(NC_STACK_ypaworld *yw, stru_a3 *sct, stru_a3 *sct2, float a4, float a5)
 {
     if ( sct->dword4 != 1 || sct2->dword4 != 1 || (sct->dword8 != 1 && sct2->dword8 != 1) )
         return 0;
 
-    int i = yw->secTypes[ sct->p_cell->type_id ].field_1;
-    int j = yw->secTypes[ sct2->p_cell->type_id ].field_1;
+    int x = yw->secTypes[ sct->p_cell->type_id ].field_1;
+    int y = yw->secTypes[ sct2->p_cell->type_id ].field_1;
 
-    NC_STACK_base *bs = yw->slurps2[i][j].skeletons_bas;
-    UAskeleton::Data *skel = yw->slurps2[i][j].skeleton_internal;
+    NC_STACK_base *bs = yw->slurps2[x][y].skeletons_bas;
+    UAskeleton::Data *skel = yw->slurps2[x][y].skeleton_internal;
 
     flag_xyz grp_1;
     grp_1.flag = 5;
@@ -2490,16 +2330,16 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub0(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
     return bs;
 }
 
-NC_STACK_base * sb_0x4d7c08__sub3__sub1(_NC_STACK_ypaworld *yw, stru_a3 *sct, stru_a3 *sct2, float a4, float a5)
+NC_STACK_base * sb_0x4d7c08__sub3__sub1(NC_STACK_ypaworld *yw, stru_a3 *sct, stru_a3 *sct2, float a4, float a5)
 {
     if ( sct->dword4 != 1 || sct2->dword4 != 1 || (sct->dword8 != 1 && sct2->dword8 != 1) )
         return NULL;
 
-    int i = yw->secTypes[ sct->p_cell->type_id ].field_1;
-    int j = yw->secTypes[ sct2->p_cell->type_id ].field_1;
+    int x = yw->secTypes[ sct->p_cell->type_id ].field_1;
+    int y = yw->secTypes[ sct2->p_cell->type_id ].field_1;
 
-    NC_STACK_base *bs = yw->slurps1[i][j].skeletons_bas;
-    UAskeleton::Data *skel = yw->slurps1[i][j].skeleton_internal;
+    NC_STACK_base *bs = yw->slurps1[x][y].skeletons_bas;
+    UAskeleton::Data *skel = yw->slurps1[x][y].skeleton_internal;
 
     flag_xyz grp_1;
     grp_1.flag = 5;
@@ -2525,7 +2365,7 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub1(_NC_STACK_ypaworld *yw, stru_a3 *sct, st
 
 stru_a3 rendering_sectors[YW_RENDER_SECTORS_DEF * 2][ YW_RENDER_SECTORS_DEF * 2];
 
-void sb_0x4d7c08__sub3(_NC_STACK_ypaworld *yw, baseRender_msg *arg)
+void sb_0x4d7c08__sub3(NC_STACK_ypaworld *yw, baseRender_msg *arg)
 {
     //Render empty sectors and modify landscape linking parts
     for (int i = 0; i < yw->field_1368; i++)
@@ -2562,20 +2402,20 @@ void sb_0x4d7c08__sub3(_NC_STACK_ypaworld *yw, baseRender_msg *arg)
     }
 }
 
-void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs64, int a2)
+void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2)
 {
     if ( yw->current_bact )
     {
-        TForm3D *v5 = sub_430A28();
+        TFEngine::TForm3D *v5 = TFEngine::Engine.GetViewPoint();
 
         if ( v5 )
-            sub_430A38(v5);
+            v5->CalcGlobal();
 
         baseRender_msg rndrs;
 
         rndrs.flags = 0;
-        rndrs.frameTime = bs64->field_4;
-        rndrs.globTime = bs64->field_0;
+        rndrs.frameTime = bs64->DTime;
+        rndrs.globTime = bs64->TimeStamp;
         rndrs.adeCount = 0;
         rndrs.ownerID = 1;
         rndrs.rndrStack = &NC_STACK_base::renderStack;
@@ -2607,7 +2447,7 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
             {
                 stru_a3 *sct = &rendering_sectors[v29 + j][v29 - v28];
 
-                sub_4D7F60(yw, j + yw->current_bact->sectX, -v28 + yw->current_bact->sectY, sct, &rndrs);
+                sub_4D7F60(yw, j + yw->current_bact->_sectX, -v28 + yw->current_bact->_sectY, sct, &rndrs);
 
                 if ( sct->dword4 )
                     sub_4D806C(yw, sct, &rndrs);
@@ -2620,7 +2460,7 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
                 {
                     stru_a3 *sct = &rendering_sectors[v29 + j][v29 + v28];
 
-                    sub_4D7F60(yw, j + yw->current_bact->sectX, v28 + yw->current_bact->sectY, sct, &rndrs);
+                    sub_4D7F60(yw, j + yw->current_bact->_sectX, v28 + yw->current_bact->_sectY, sct, &rndrs);
 
                     if ( sct->dword4 )
                         sub_4D806C(yw, sct, &rndrs);
@@ -2639,26 +2479,24 @@ void sb_0x4d7c08(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, base_64arg *bs6
         yw->field_1B6A = rndrs.adeCount;
         yw->field_1b6c = rndrs.rndrStack->getSize();
 
-        yw->win3d->BeginScene();
+        yw->_win3d->BeginScene();
 
         if (NC_STACK_win3d::win3d_keys[18].value.val)
             rndrs.rndrStack->render(true, RenderStack::comparePrio);
         else
             rndrs.rndrStack->render(false);
 
-        yw->win3d->EndScene();
+        yw->_win3d->EndScene();
 
         if ( a2 )
         {
-            yw->win3d->LockSurface();
             sb_0x4d7c08__sub0(yw);
-            yw->win3d->UnlockSurface();
         }
     }
 }
 
 
-void sb_0x456384__sub0__sub0(_NC_STACK_ypaworld *yw)
+void sb_0x456384__sub0__sub0(NC_STACK_ypaworld *yw)
 {
     for( int y = 0; y < yw->sectors_maxY2; y++ )
     {
@@ -2676,7 +2514,7 @@ void sb_0x456384__sub0__sub0(_NC_STACK_ypaworld *yw)
     yw->field_3c = 0;
 }
 
-int sb_0x456384__sub0(_NC_STACK_ypaworld *yw, int x, int y, int power)
+int sb_0x456384__sub0(NC_STACK_ypaworld *yw, int x, int y, int power)
 {
     int v13 = 0;
     cellArea *cell = &yw->cells[x + y * yw->sectors_maxX2];
@@ -2713,7 +2551,7 @@ int sb_0x456384__sub0(_NC_STACK_ypaworld *yw, int x, int y, int power)
 }
 
 
-void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, int ownerid2, int blg_id, int a7)
+void sb_0x456384(NC_STACK_ypaworld *yw, int x, int y, int ownerid2, int blg_id, int a7)
 {
     uamessage_bldVhcl bvMsg;
     memset(&bvMsg, 0, sizeof(bvMsg));
@@ -2728,15 +2566,8 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
 
     if ( x && y && yw->sectors_maxX2 - 1 != x && yw->sectors_maxY2 - 1 != y )
     {
-        bitmap_intern *bitm_blg = yw->blg_map->getBMD_pBitmap();
-
-        uint8_t *tmp = (uint8_t *)bitm_blg->buffer + x + y * bitm_blg->width;
-        *tmp = blg_id;
-
-        bitmap_intern *bitm_typ = yw->typ_map->getBMD_pBitmap();
-
-        tmp = (uint8_t *)bitm_typ->buffer + x + y * bitm_typ->width;
-        *tmp = bld->sec_type;
+        (*yw->blg_map)(x, y) = blg_id;
+        (*yw->typ_map)(x, y) = bld->sec_type;
 
         cell->type_id = bld->sec_type;
         cell->energy_power = 0;
@@ -2773,9 +2604,9 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
 
         while(node->next)
         {
-            if (node->bact->bact_type == BACT_TYPES_ROBO && node->bact->owner == ownerid2)
+            if (node->bact->_bact_type == BACT_TYPES_ROBO && node->bact->_owner == ownerid2)
             {
-                robo = dynamic_cast<NC_STACK_yparobo *>(node->bacto);
+                robo = dynamic_cast<NC_STACK_yparobo *>(node->bact);
                 break;
             }
 
@@ -2784,7 +2615,7 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
 
         if ( yw->isNetGame )
         {
-            if ( robo != yw->field_1b78 )
+            if ( robo != yw->UserRobo )
                 v43 = 0;
         }
 
@@ -2811,15 +2642,12 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                     v33.pos.y = bld->sbacts[i].sbact_pos_y;
                     v33.pos.z = bld->sbacts[i].sbact_pos_z - (y * 1200.0 + 600.0);
 
-                    NC_STACK_ypabact *gun_obj = ywo->ypaworld_func146(&v33);
+                    NC_STACK_ypabact *gun_obj = yw->ypaworld_func146(&v33);
                     NC_STACK_ypagun *gunn = dynamic_cast<NC_STACK_ypagun *>(gun_obj);
 
                     if ( gun_obj )
                     {
-                        __NC_STACK_ypabact *gbct;
-                        gbct = gun_obj->getBACT_pBact();
-
-                        gbct->owner = ownerid2;
+                        gun_obj->_owner = ownerid2;
 
                         if (gunn)
                         {
@@ -2835,23 +2663,23 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
 
                         gunn->SetStateInternal(&v34);
 
-                        gbct->scale_time = 500;
-                        gbct->scale.x = 1.0;
-                        gbct->scale.y = 1.0;
-                        gbct->scale.z = 1.0;
+                        gun_obj->_scale_time = 500;
+                        gun_obj->_scale.x = 1.0;
+                        gun_obj->_scale.y = 1.0;
+                        gun_obj->_scale.z = 1.0;
 
-                        gbct->host_station = robo;
-                        gbct->commandID = v39;
+                        gun_obj->_host_station = robo;
+                        gun_obj->_commandID = v39;
 
                         if ( yw->isNetGame )
                         {
-                            gbct->gid |= ownerid2 << 24;
+                            gun_obj->_gid |= ownerid2 << 24;
 
-                            bvMsg.vhcl[i].id = gbct->gid;
+                            bvMsg.vhcl[i].id = gun_obj->_gid;
                             bvMsg.vhcl[i].base.x = bld->sbacts[i].sbact_dir_x;
                             bvMsg.vhcl[i].base.y = bld->sbacts[i].sbact_dir_y;
                             bvMsg.vhcl[i].base.z = bld->sbacts[i].sbact_dir_z;
-                            bvMsg.vhcl[i].pos = gbct->position;
+                            bvMsg.vhcl[i].pos = gun_obj->_position;
                             bvMsg.vhcl[i].protoID = bld->sbacts[i].sbact_vehicle;
                         }
 
@@ -2878,37 +2706,35 @@ void sb_0x456384(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int x, int y, i
                 yw_arg181 v31;
                 v31.recvFlags = 2;
                 v31.recvID = 0;
-                v31.senderID = yw->GameShell->callSIGN;
+                v31.senderID = yw->GameShell->callSIGN.c_str();
                 v31.senderFlags = 1;
                 v31.data = &bvMsg;
                 v31.dataSize = sizeof(bvMsg);
                 v31.garant = 1;
 
-                yw->self_full->ypaworld_func181(&v31);
+                yw->ypaworld_func181(&v31);
             }
         }
     }
 }
 
-void ypaworld_func148__sub0(_NC_STACK_ypaworld *yw, int x, int y)
+void ypaworld_func148__sub0(NC_STACK_ypaworld *yw, int x, int y)
 {
-    __NC_STACK_ypabact *node = (__NC_STACK_ypabact *) yw->cells[yw->sectors_maxX2 * y + x].units_list.head;
-
-    while ( node->next )
+    for ( NC_STACK_ypabact* &node : yw->cells[yw->sectors_maxX2 * y + x].unitsList )
     {
         int v5 = 0;
 
         if ( yw->isNetGame )
         {
-            if ( node->owner == yw->field_1b84->owner )
+            if ( node->_owner == yw->UserUnit->_owner )
             {
-                if ( node->status != BACT_STATUS_DEAD && node->status != BACT_STATUS_BEAM && node->status != BACT_STATUS_CREATE )
+                if ( node->_status != BACT_STATUS_DEAD && node->_status != BACT_STATUS_BEAM && node->_status != BACT_STATUS_CREATE )
                 {
-                    if ( node->bact_type == BACT_TYPES_GUN )
+                    if ( node->_bact_type == BACT_TYPES_GUN )
                     {
-                        NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( node->self );
+                        NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( node );
 
-                        if (!gun->getGUN_roboGun())
+                        if (!gun->IsRoboGun())
                             v5 = 1;
                     }
                 }
@@ -2916,13 +2742,13 @@ void ypaworld_func148__sub0(_NC_STACK_ypaworld *yw, int x, int y)
         }
         else
         {
-            if ( node->status != BACT_STATUS_DEAD && node->status != BACT_STATUS_BEAM && node->status != BACT_STATUS_CREATE )
+            if ( node->_status != BACT_STATUS_DEAD && node->_status != BACT_STATUS_BEAM && node->_status != BACT_STATUS_CREATE )
             {
-                if ( node->bact_type == BACT_TYPES_GUN )
+                if ( node->_bact_type == BACT_TYPES_GUN )
                 {
-                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( node->self );
+                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( node );
 
-                    if (!gun->getGUN_roboGun())
+                    if (!gun->IsRoboGun())
                         v5 = 1;
                 }
             }
@@ -2934,14 +2760,12 @@ void ypaworld_func148__sub0(_NC_STACK_ypaworld *yw, int x, int y)
             v8.energy = -22000000;
             v8.unit = NULL;
 
-            node->self->ModifyEnergy(&v8);
+            node->ModifyEnergy(&v8);
         }
-
-        node = (__NC_STACK_ypabact *)node->next;
     }
 }
 
-int ypaworld_func148__sub1(_NC_STACK_ypaworld *yw, int id, int a4, int x, int y, int ownerID2, char blg_ID)
+int ypaworld_func148__sub1(NC_STACK_ypaworld *yw, int id, int a4, int x, int y, int ownerID2, char blg_ID)
 {
     if ( id < 8 && !yw->field_80[id].field_0 && x && y && x != yw->sectors_maxX2 - 1 && y != yw->sectors_maxY2 - 1 )
     {
@@ -2961,9 +2785,9 @@ int ypaworld_func148__sub1(_NC_STACK_ypaworld *yw, int id, int a4, int x, int y,
 
         while (node->next)
         {
-            if ( node->bact->bact_type == BACT_TYPES_ROBO && ownerID2 == node->bact->owner )
+            if ( node->bact->_bact_type == BACT_TYPES_ROBO && ownerID2 == node->bact->_owner )
             {
-                SFXEngine::SFXe.startSound(&node->bact->soundcarrier, 11);
+                SFXEngine::SFXe.startSound(&node->bact->_soundcarrier, 11);
                 break;
             }
 
@@ -3048,29 +2872,29 @@ void ypaworld_func137__sub0(ypaworld_arg137 *arg, const struct_44dbf8 &a2)
     }
 }
 
-__NC_STACK_ypabact * sub_48C244(NC_STACK_ypaworld *ywo, int a2, char owner)
+NC_STACK_ypabact * NC_STACK_ypaworld::FindBactByCmdOwn(int commandID, char owner)
 {
-    bact_node *robos = (bact_node *)ywo->ypaworld.bact_list.head;
+    bact_node *robos = (bact_node *)bact_list.head;
     while (robos->next)
     {
-        if ( robos->bact->bact_type == BACT_TYPES_ROBO && robos->bact->owner == owner)
+        if ( robos->bact->_bact_type == BACT_TYPES_ROBO && robos->bact->_owner == owner)
         {
-            if ( robos->bact->commandID == a2 )
+            if ( robos->bact->_commandID == commandID )
             {
-                if ( robos->bact->status == BACT_STATUS_DEAD )
+                if ( robos->bact->_status == BACT_STATUS_DEAD )
                     return NULL;
                 else
                     return robos->bact;
             }
             else
             {
-                bact_node *units = (bact_node *)robos->bact->subjects_list.head;
+                bact_node *units = (bact_node *)robos->bact->_subjects_list.head;
                 while (units->next)
                 {
 
-                    if ( units->bact->commandID == a2 )
+                    if ( units->bact->_commandID == commandID )
                     {
-                        if ( units->bact->status == BACT_STATUS_DEAD )
+                        if ( units->bact->_status == BACT_STATUS_DEAD )
                             return NULL;
                         else
                             return units->bact;
@@ -3088,7 +2912,7 @@ __NC_STACK_ypabact * sub_48C244(NC_STACK_ypaworld *ywo, int a2, char owner)
 }
 
 
-void ypaworld_func64__sub20(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int dtime)
+void ypaworld_func64__sub20(NC_STACK_ypaworld *yw, int dtime)
 {
     for(int i = 0; i < 8; i++)
     {
@@ -3110,15 +2934,15 @@ void ypaworld_func64__sub20(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int 
                 v11->w_type = 0;
                 v11->w_id = 0;
 
-                sb_0x456384(ywo, yw, v10, v8, yw->field_80[i].ownerID2, a6, 0);
+                sb_0x456384(yw, v10, v8, yw->field_80[i].ownerID2, a6, 0);
 
-                if ( yw->field_80[i].ownerID2 == yw->field_1b80->owner )
+                if ( yw->field_80[i].ownerID2 == yw->UserRobo->_owner )
                 {
                     if ( yw->BuildProtos[a6].model_id )
                     {
                         yw_arg159 arg159;
 
-                        arg159.unit = yw->field_1b80;
+                        arg159.unit = yw->UserRobo;
                         arg159.txt = 0;
                         arg159.field_4 = 65;
 
@@ -3131,7 +2955,7 @@ void ypaworld_func64__sub20(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int 
                         else
                             arg159.field_C = 0;
 
-                        ywo->ypaworld_func159(&arg159);
+                        yw->ypaworld_func159(&arg159);
                     }
                 }
             }
@@ -3139,7 +2963,7 @@ void ypaworld_func64__sub20(NC_STACK_ypaworld *ywo, _NC_STACK_ypaworld *yw, int 
     }
 }
 
-void ypaworld_func64__sub6__sub0(_NC_STACK_ypaworld *yw)
+void ypaworld_func64__sub6__sub0(NC_STACK_ypaworld *yw)
 {
     for(int i = 0; i < 8; i++)
         yw->field_1bac[i] = 0;
@@ -3148,35 +2972,35 @@ void ypaworld_func64__sub6__sub0(_NC_STACK_ypaworld *yw)
 
     while (robo_node->next)
     {
-        if ( robo_node->bact->bact_type == BACT_TYPES_ROBO )
+        if ( robo_node->bact->_bact_type == BACT_TYPES_ROBO )
         {
-            if ( robo_node->bact->status != BACT_STATUS_DEAD &&  robo_node->bact->status != BACT_STATUS_BEAM )
+            if ( robo_node->bact->_status != BACT_STATUS_DEAD &&  robo_node->bact->_status != BACT_STATUS_BEAM )
             {
-                bact_node *comnd_node = (bact_node *)robo_node->bact->subjects_list.head;
+                bact_node *comnd_node = (bact_node *)robo_node->bact->_subjects_list.head;
 
                 while(comnd_node->next)
                 {
-                    if ( comnd_node->bact->status != BACT_STATUS_DEAD && comnd_node->bact->status != BACT_STATUS_BEAM )
+                    if ( comnd_node->bact->_status != BACT_STATUS_DEAD && comnd_node->bact->_status != BACT_STATUS_BEAM )
                     {
                         int a4 = 0;
 
-                        if ( comnd_node->bact->bact_type == BACT_TYPES_GUN )
+                        if ( comnd_node->bact->_bact_type == BACT_TYPES_GUN )
                         {
-                            NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( comnd_node->bact->self );
-                            a4 = gun->getGUN_roboGun();
+                            NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( comnd_node->bact );
+                            a4 = gun->IsRoboGun();
                         }
 
                         if ( a4 == 0 )
                         {
-                            yw->field_1bac[ comnd_node->bact->owner ]++;
+                            yw->field_1bac[ comnd_node->bact->_owner ]++;
 
 
-                            bact_node *unit_node = (bact_node *)comnd_node->bact->subjects_list.head;
+                            bact_node *unit_node = (bact_node *)comnd_node->bact->_subjects_list.head;
 
                             while( unit_node->next )
                             {
-                                if ( unit_node->bact->status != BACT_STATUS_DEAD && unit_node->bact->status != BACT_STATUS_BEAM )
-                                    yw->field_1bac[ unit_node->bact->owner ]++;
+                                if ( unit_node->bact->_status != BACT_STATUS_DEAD && unit_node->bact->_status != BACT_STATUS_BEAM )
+                                    yw->field_1bac[ unit_node->bact->_owner ]++;
 
                                 unit_node = (bact_node *)unit_node->next;
                             }
@@ -3194,7 +3018,7 @@ void ypaworld_func64__sub6__sub0(_NC_STACK_ypaworld *yw)
 }
 
 
-void ypaworld_func64__sub6(_NC_STACK_ypaworld *yw)
+void ypaworld_func64__sub6(NC_STACK_ypaworld *yw)
 {
     int v13[8];
 
@@ -3234,7 +3058,7 @@ void ypaworld_func64__sub6(_NC_STACK_ypaworld *yw)
             {
                 if ( yw->unit_limit_type_1 == 1 )
                 {
-                    int v16 = yw->field_1bac[yw->field_1b80->owner] - yw->unit_limit_1;
+                    int v16 = yw->field_1bac[yw->UserRobo->_owner] - yw->unit_limit_1;
 
                     if ( v16 > 0 )
                     {
@@ -3263,7 +3087,7 @@ void ypaworld_func64__sub6(_NC_STACK_ypaworld *yw)
 }
 
 
-void ypaworld_func64__sub5__sub0(_NC_STACK_ypaworld *yw, int a2)
+void ypaworld_func64__sub5__sub0(NC_STACK_ypaworld *yw, int a2)
 {
     yw_field34 *v3 = &yw->field_34[a2];
 
@@ -3318,7 +3142,7 @@ void ypaworld_func64__sub5__sub0(_NC_STACK_ypaworld *yw, int a2)
     }
 }
 
-void ypaworld_func64__sub5(_NC_STACK_ypaworld *yw)
+void ypaworld_func64__sub5(NC_STACK_ypaworld *yw)
 {
     // Recompute power on sectors
     if ( yw->field_38 ) // If we have powerstations
@@ -3342,76 +3166,49 @@ void ypaworld_func64__sub5(_NC_STACK_ypaworld *yw)
     }
 }
 
-int sub_47EDDC(yw_f726c *hist, int bufsize)
+
+void NC_STACK_ypaworld::sub_4D12D8(int id, int a3)
 {
-    yw_f726c_nod *node = (yw_f726c_nod *)AllocVec(sizeof(yw_f726c_nod), 65537);
+    MapSuperItem &sitem = _levelInfo->SuperItems[id];
 
-    if ( node )
-    {
-        node->bufStart = (uint8_t *)AllocVec(bufsize, 65537);
-        if ( node->bufStart )
-        {
-            node->bufEnd = &node->bufStart[bufsize];
-
-            AddTail(&hist->lst, node);
-
-            hist->last_bufStart = node->bufStart;
-            hist->last_bufEnd = node->bufEnd;
-            hist->numNodes++;
-            return 1;
-        }
-        else
-        {
-            nc_FreeMem(node);
-        }
-    }
-
-    return 0;
-}
-
-
-void sub_4D12D8(_NC_STACK_ypaworld *yw, int id, int a3)
-{
-    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
-
-    sitem->field_4 = 1;
-    sitem->field_F0 = 0;
-    sitem->field_F4 = sitem->pcell->owner;
+    sitem.State = 1;
+    sitem.TriggerTime = 0;
+    sitem.ActivateOwner = sitem.PCell->owner;
 
     if ( !a3 )
     {
-        sitem->field_EC = yw->timeStamp;
-        sitem->field_FC = 0;
-        sitem->field_100 = 0;
-        sitem->field_F8 = sitem->countdown;
+        sitem.ActiveTime = timeStamp;
+        sitem.LastTenSec = 0;
+        sitem.LastSec = 0;
+        sitem.CountDown = sitem.TimerValue;
     }
 
     ypaworld_arg148 arg148;
-    arg148.ownerID = sitem->pcell->owner;
-    arg148.ownerID2 = sitem->pcell->owner;
-    arg148.blg_ID = sitem->active_bp;
+    arg148.ownerID = sitem.PCell->owner;
+    arg148.ownerID2 = sitem.PCell->owner;
+    arg148.blg_ID = sitem.ActiveBldID;
     arg148.field_C = 1;
-    arg148.x = sitem->sec_x;
-    arg148.y = sitem->sec_y;
+    arg148.x = sitem.SecX;
+    arg148.y = sitem.SecY;
     arg148.field_18 = 0;
 
-    yw->self_full->ypaworld_func148(&arg148);
+    ypaworld_func148(&arg148);
 
-    sitem->pcell->w_type = 8;
-    sitem->pcell->w_id = id;
+    sitem.PCell->w_type = 8;
+    sitem.PCell->w_id = id;
 
     yw_arg159 arg159;
     arg159.unit = 0;
     arg159.field_4 = 94;
 
-    if ( sitem->type == 1 )
+    if ( sitem.Type == 1 )
     {
-        arg159.txt = get_lang_string(yw->string_pointers_p2, 250, "Superbomb activated.");
+        arg159.txt = get_lang_string(string_pointers_p2, 250, "Superbomb activated.");
         arg159.field_C = 70;
     }
-    else if ( sitem->type == 2 )
+    else if ( sitem.Type == 2 )
     {
-        arg159.txt = get_lang_string(yw->string_pointers_p2, 254, "Superwave activated.");
+        arg159.txt = get_lang_string(string_pointers_p2, 254, "Superwave activated.");
         arg159.field_C = 74;
     }
     else
@@ -3420,41 +3217,41 @@ void sub_4D12D8(_NC_STACK_ypaworld *yw, int id, int a3)
         arg159.txt = "Cant happen.";
     }
 
-    yw->self_full->ypaworld_func159(&arg159);
+    ypaworld_func159(&arg159);
 }
 
-void sub_4D1594(_NC_STACK_ypaworld *yw, int id)
+void NC_STACK_ypaworld::sub_4D1594(int id)
 {
-    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+    MapSuperItem &sitem = _levelInfo->SuperItems[id];
 
-    sitem->field_4 = 2;
+    sitem.State = 2;
 
     ypaworld_arg148 arg148;
-    arg148.ownerID = sitem->pcell->owner;
-    arg148.ownerID2 = sitem->pcell->owner;
-    arg148.blg_ID = sitem->inactive_bp;
+    arg148.ownerID = sitem.PCell->owner;
+    arg148.ownerID2 = sitem.PCell->owner;
+    arg148.blg_ID = sitem.InactiveBldID;
     arg148.field_C = 1;
-    arg148.x = sitem->sec_x;
-    arg148.y = sitem->sec_y;
+    arg148.x = sitem.SecX;
+    arg148.y = sitem.SecY;
     arg148.field_18 = 0;
 
-    yw->self_full->ypaworld_func148(&arg148);
+    ypaworld_func148(&arg148);
 
-    sitem->pcell->w_type = 8;
-    sitem->pcell->w_id = id;
+    sitem.PCell->w_type = 8;
+    sitem.PCell->w_id = id;
 
     yw_arg159 arg159;
     arg159.unit = 0;
     arg159.field_4 = 93;
 
-    if ( sitem->type == 1 )
+    if ( sitem.Type == 1 )
     {
-        arg159.txt = get_lang_string(yw->string_pointers_p2, 252, "Superbomb frozen.");
+        arg159.txt = get_lang_string(string_pointers_p2, 252, "Superbomb frozen.");
         arg159.field_C = 72;
     }
-    else if ( sitem->type == 2 )
+    else if ( sitem.Type == 2 )
     {
-        arg159.txt = get_lang_string(yw->string_pointers_p2, 256, "Superwave frozen.");
+        arg159.txt = get_lang_string(string_pointers_p2, 256, "Superwave frozen.");
         arg159.field_C = 76;
     }
     else
@@ -3463,43 +3260,43 @@ void sub_4D1594(_NC_STACK_ypaworld *yw, int id)
         arg159.txt = "Cant happen.";
     }
 
-    yw->self_full->ypaworld_func159(&arg159);
+    ypaworld_func159(&arg159);
 }
 
-void sub_4D1444(_NC_STACK_ypaworld *yw, int id)
+void NC_STACK_ypaworld::sub_4D1444(int id)
 {
-    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
-    sitem->field_4 = 3;
-    sitem->field_F0 = yw->timeStamp;
+    MapSuperItem &sitem = _levelInfo->SuperItems[id];
+    sitem.State = 3;
+    sitem.TriggerTime = timeStamp;
 
     ypaworld_arg148 arg148;
-    arg148.ownerID = sitem->pcell->owner;
-    arg148.ownerID2 = sitem->pcell->owner;
-    arg148.blg_ID = sitem->trigger_bp;
+    arg148.ownerID = sitem.PCell->owner;
+    arg148.ownerID2 = sitem.PCell->owner;
+    arg148.blg_ID = sitem.TriggerBldID;
     arg148.field_C = 1;
-    arg148.x = sitem->sec_x;
-    arg148.y = sitem->sec_y;
+    arg148.x = sitem.SecX;
+    arg148.y = sitem.SecY;
     arg148.field_18 = 0;
 
-    yw->self_full->ypaworld_func148(&arg148);
+    ypaworld_func148(&arg148);
 
-    sitem->pcell->w_type = 8;
-    sitem->pcell->w_id = id;
+    sitem.PCell->w_type = 8;
+    sitem.PCell->w_id = id;
 
-    yw->field_2d90->supetItems[id].field_108 = 0;
+    sitem.LastRadius = 0;
 
     yw_arg159 arg159;
     arg159.field_4 = 95;
     arg159.unit = 0;
 
-    if ( sitem->type == 1 )
+    if ( sitem.Type == 1 )
     {
-        arg159.txt = get_lang_string(yw->string_pointers_p2, 251, "Superbomb triggered.");
+        arg159.txt = get_lang_string(string_pointers_p2, 251, "Superbomb triggered.");
         arg159.field_C = 71;
     }
-    else if ( sitem->type == 2 )
+    else if ( sitem.Type == 2 )
     {
-        arg159.txt = get_lang_string(yw->string_pointers_p2, 255, "Superwave triggered.");
+        arg159.txt = get_lang_string(string_pointers_p2, 255, "Superwave triggered.");
         arg159.field_C = 75;
     }
     else
@@ -3508,31 +3305,31 @@ void sub_4D1444(_NC_STACK_ypaworld *yw, int id)
         arg159.txt = "Cant happen.";
     }
 
-    yw->self_full->ypaworld_func159(&arg159);
+    ypaworld_func159(&arg159);
 }
 
 
-__NC_STACK_ypabact * sb_0x47b028__sub0(uint32_t bactid, _NC_STACK_ypaworld *yw)
+NC_STACK_ypabact * sb_0x47b028__sub0(uint32_t bactid, NC_STACK_ypaworld *yw)
 {
     bact_node *station = (bact_node *)yw->bact_list.head;
 
     while ( station->next )
     {
-        if ( bactid == station->bact->gid )
+        if ( bactid == station->bact->_gid )
             return station->bact;
 
-        bact_node *commander = (bact_node *)station->bact->subjects_list.head;
+        bact_node *commander = (bact_node *)station->bact->_subjects_list.head;
 
         while ( commander->next )
         {
-            if ( bactid == commander->bact->gid )
+            if ( bactid == commander->bact->_gid )
                 return station->bact;
 
-            bact_node *slave = (bact_node *)commander->bact->subjects_list.head;
+            bact_node *slave = (bact_node *)commander->bact->_subjects_list.head;
 
             while ( slave->next )
             {
-                if ( bactid == slave->bact->gid )
+                if ( bactid == slave->bact->_gid )
                     return station->bact;
 
                 slave = (bact_node *)slave->next;
@@ -3547,79 +3344,79 @@ __NC_STACK_ypabact * sb_0x47b028__sub0(uint32_t bactid, _NC_STACK_ypaworld *yw)
     return NULL;
 }
 
-void sb_0x47b028(_NC_STACK_ypaworld *yw, bact_node *bct1, bact_node *bct2, int a3)
+void NC_STACK_ypaworld::sb_0x47b028(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bct1, NC_STACK_ypabact *bct2, int a3)
 {
     bact_arg80 arg80;
-    arg80.pos = bct1->bact->position;
+    arg80.pos = bct1->_position;
 
-    if ( bct1->bact->bact_type == BACT_TYPES_GUN )
+    if ( bct1->_bact_type == BACT_TYPES_GUN )
         arg80.field_C = 4;
     else
         arg80.field_C = 0;
 
-    bct1->bacto->SetPosition(&arg80);
+    bct1->SetPosition(&arg80);
 
-    if ( bct1->bact->bact_type == BACT_TYPES_GUN )
+    if ( bct1->_bact_type == BACT_TYPES_GUN )
     {
-        NC_STACK_ypagun *guno = (NC_STACK_ypagun *)bct1->bacto;
+        NC_STACK_ypagun *guno = (NC_STACK_ypagun *)bct1;
 
-        guno->ypagun_func128(guno->ypagun.basis, false);
+        guno->ypagun_func128(guno->_gunBasis, false);
     }
 
     setState_msg arg78;
-    arg78.newStatus = bct1->bact->status;
+    arg78.newStatus = bct1->_status;
     arg78.setFlags = 0;
     arg78.unsetFlags = 0;
-    bct1->bacto->SetState(&arg78);
+    bct1->SetState(&arg78);
 
-    if ( bct1->bact->status_flg & BACT_STFLAG_DEATH2 )
+    if ( bct1->_status_flg & BACT_STFLAG_DEATH2 )
     {
         arg78.newStatus = BACT_STATUS_NOPE;
         arg78.unsetFlags = 0;
         arg78.setFlags = BACT_STFLAG_DEATH2;
-        bct1->bacto->SetState(&arg78);
+        bct1->SetState(&arg78);
     }
 
-    if ( bct1->bact->status_flg & BACT_STFLAG_FIRE )
+    if ( bct1->_status_flg & BACT_STFLAG_FIRE )
     {
         arg78.newStatus = BACT_STATUS_NOPE;
         arg78.unsetFlags = 0;
         arg78.setFlags = BACT_STFLAG_FIRE;
-        bct1->bacto->SetState(&arg78);
+        bct1->SetState(&arg78);
     }
 
     if ( !a3 )
     {
-        bct1->bact->host_station = dynamic_cast<NC_STACK_yparobo *>(bct2->bacto);
-        bct1->bact->owner = bct2->bact->owner;
+        bct1->_host_station = dynamic_cast<NC_STACK_yparobo *>(bct2);
+        bct1->_owner = bct2->_owner;
     }
 
-    if ( bct1->bact->primTtype == BACT_TGT_TYPE_UNIT )
+    if ( bct1->_primTtype == BACT_TGT_TYPE_UNIT )
     {
-        bct1->bact->primTtype = BACT_TGT_TYPE_NONE;
+        bct1->_primTtype = BACT_TGT_TYPE_NONE;
 
         setTarget_msg arg67;
-        arg67.tgt.pbact = sb_0x47b028__sub0((int)(size_t)bct1->bact->primT.pbact, yw);
+        arg67.tgt.pbact = sb_0x47b028__sub0((int)(size_t)bct1->_primT.pbact, yw);
         arg67.tgt_type = BACT_TGT_TYPE_UNIT_IND;
         arg67.priority = 0;
-        bct1->bacto->SetTarget(&arg67);
+        bct1->SetTarget(&arg67);
     }
 
-    if ( bct1->bact->primTtype == BACT_TGT_TYPE_CELL )
+    if ( bct1->_primTtype == BACT_TGT_TYPE_CELL )
     {
-        bct1->bact->primTtype = BACT_TGT_TYPE_NONE;
+        bct1->_primTtype = BACT_TGT_TYPE_NONE;
 
         setTarget_msg arg67_1;
         arg67_1.tgt_type = BACT_TGT_TYPE_CELL_IND;
-        arg67_1.tgt_pos = bct1->bact->primTpos;
+        arg67_1.tgt_pos = bct1->_primTpos;
         arg67_1.priority = 0;
 
-        bct1->bacto->SetTarget(&arg67_1);
+        bct1->SetTarget(&arg67_1);
     }
 }
 
 
-int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
+int ypaworld_func64__sub4(NC_STACK_ypaworld *yw, base_64arg *arg)
 {
     if ( yw->isNetGame )
         return 0;
@@ -3629,7 +3426,7 @@ int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
         if ( arg->field_8->dword8 == 0xA0 || arg->field_8->downed_key == UAVK_PAUSE )
         {
             yw->field_160c = 1;
-            yw->field_1610 = arg->field_0;
+            yw->field_1610 = arg->TimeStamp;
         }
         return 0;
     }
@@ -3637,21 +3434,21 @@ int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
     if ( arg->field_8->downed_key )
     {
         yw->field_160c = 0;
-        arg->field_0 = yw->field_1610;
+        arg->TimeStamp = yw->field_1610;
     }
     else
     {
-        yw->win3d->BeginFrame();
+        yw->_win3d->BeginFrame();
 
-        yw->win3d->setRSTR_BGpen(0);
+        yw->_win3d->setRSTR_BGpen(0);
 
-        yw->win3d->raster_func192(NULL);
+        yw->_win3d->raster_func192(NULL);
 
         vec3d a2a = yw->field_1334 + vec3d::OY(50000.0);
 
         SFXEngine::SFXe.sub_423EFC(1, a2a, vec3d(0.0), mat3x3::Ident());
 
-        if ( arg->field_0 / 500 & 1 )
+        if ( arg->TimeStamp / 500 & 1 )
         {
             const char *v6 = get_lang_string(yw->string_pointers_p2, 14, "*** GAME PAUSED, HIT KEY TO CONTINUE ***");
 
@@ -3671,26 +3468,24 @@ int ypaworld_func64__sub4(_NC_STACK_ypaworld *yw, base_64arg *arg)
             arg209.includ = 0;
             arg209.cmdbuf = v10;
 
-            yw->win3d->LockSurface();
-            yw->win3d->raster_func209(&arg209);
-            yw->win3d->UnlockSurface();
+            yw->_win3d->raster_func209(&arg209);
         }
 
         SFXEngine::SFXe.sb_0x424c74();
 
-        yw->win3d->EndFrame();
+        yw->_win3d->EndFrame();
     }
     return 1;
 }
 
 
-void ypaworld_func64__sub2(_NC_STACK_ypaworld *yw)
+void ypaworld_func64__sub2(NC_STACK_ypaworld *yw)
 {
     yw->field_1b70 = 0;
 
-    if ( yw->field_1b78 != yw->field_1b7c )
+    if ( yw->UserRobo != yw->UserUnit )
     {
-        NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->field_1b78);
+        NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->UserRobo);
 
         roboGun *guns = robo->getROBO_guns();
 
@@ -3698,7 +3493,7 @@ void ypaworld_func64__sub2(_NC_STACK_ypaworld *yw)
         {
             for (int i = 0; i < 8; i++)
             {
-                if ( yw->field_1b7c == guns[i].gun_obj )
+                if ( yw->UserUnit == guns[i].gun_obj )
                     yw->field_1b70 = 1;
             }
         }
@@ -3706,21 +3501,20 @@ void ypaworld_func64__sub2(_NC_STACK_ypaworld *yw)
 }
 
 
-void ypaworld_func64__sub9(_NC_STACK_ypaworld *yw)
+void ypaworld_func64__sub9(NC_STACK_ypaworld *yw)
 {
-    for (int i = 0; i < yw->field_2d90->gate_count ; i++ )
+    for ( size_t i = 0; i < yw->_levelInfo->Gates.size(); i++ )
     {
-        gateProto *gate = &yw->field_2d90->gates[i];
-
+        const MapGate &gate = yw->_levelInfo->Gates[i];
         int v21 = 6;
 
-        if ( gate->pcell->owner == yw->field_1b80->owner )
+        if ( gate.PCell->owner == yw->UserRobo->_owner )
         {
-            for(int j = 0; j < gate->keySectors_count; j++)
+            for( const MapKeySector &ks : gate.KeySectors )
             {
-                if (gate->keySectors[j].cell)
+                if (ks.PCell)
                 {
-                    if (gate->keySectors[j].cell->owner != yw->field_1b80->owner)
+                    if (ks.PCell->owner != yw->UserRobo->_owner)
                     {
                         v21 = 5;
                         break;
@@ -3733,23 +3527,23 @@ void ypaworld_func64__sub9(_NC_STACK_ypaworld *yw)
             v21 = 5;
         }
 
-        if ( gate->pcell->w_type != v21 )
+        if ( gate.PCell->w_type != v21 )
         {
             ypaworld_arg148 arg148;
-            arg148.ownerID = gate->pcell->owner;
-            arg148.ownerID2 = gate->pcell->owner;
+            arg148.ownerID = gate.PCell->owner;
+            arg148.ownerID2 = gate.PCell->owner;
             arg148.field_C = 1;
-            arg148.x = gate->sec_x;
-            arg148.y = gate->sec_y;
+            arg148.x = gate.SecX;
+            arg148.y = gate.SecY;
             arg148.field_18 = 0;
 
             if ( v21 == 6 )
             {
-                arg148.blg_ID = gate->opened_bp;
+                arg148.blg_ID = gate.OpenBldID;
             }
             else
             {
-                arg148.blg_ID = gate->closed_bp;
+                arg148.blg_ID = gate.ClosedBldID;
 
                 yw_arg159 arg159;
                 arg159.unit = 0;
@@ -3757,28 +3551,26 @@ void ypaworld_func64__sub9(_NC_STACK_ypaworld *yw)
                 arg159.txt = get_lang_string(yw->string_pointers_p2, 224, "TRANSPORTER GATE CLOSED!");
                 arg159.field_C = 24;
 
-                yw->self_full->ypaworld_func159(&arg159);
+                yw->ypaworld_func159(&arg159);
             }
 
-            yw->self_full->ypaworld_func148(&arg148);
+            yw->ypaworld_func148(&arg148);
 
-            gate->pcell->w_type = v21;
-            gate->pcell->w_id = i;
+            gate.PCell->w_type = v21;
+            gate.PCell->w_id = i;
         }
 
         if ( v21 == 6 )
         {
             int energ = 0;
 
-            __NC_STACK_ypabact *v8 = (__NC_STACK_ypabact *)gate->pcell->units_list.head;
-            while (v8->next)
+            for ( NC_STACK_ypabact* &v8 : gate.PCell->unitsList )
             {
-                if ( v8->status != BACT_STATUS_DEAD && v8->status != BACT_STATUS_BEAM )
+                if ( v8->_status != BACT_STATUS_DEAD && v8->_status != BACT_STATUS_BEAM )
                 {
-                    if ( v8->bact_type != BACT_TYPES_ROBO && v8->bact_type != BACT_TYPES_MISSLE && v8->bact_type != BACT_TYPES_GUN )
-                        energ += (v8->energy_max + 99) / 100;
+                    if ( v8->_bact_type != BACT_TYPES_ROBO && v8->_bact_type != BACT_TYPES_MISSLE && v8->_bact_type != BACT_TYPES_GUN )
+                        energ += (v8->_energy_max + 99) / 100;
                 }
-                v8 = (__NC_STACK_ypabact *)v8->next;
             }
 
             if ( energ <= yw->beamenergy )
@@ -3791,7 +3583,7 @@ void ypaworld_func64__sub9(_NC_STACK_ypaworld *yw)
                     arg159_1.txt = get_lang_string(yw->string_pointers_p2, 223, "TRANSPORTER GATE OPENED!");
                     arg159_1.field_C = 23;
 
-                    yw->self_full->ypaworld_func159(&arg159_1);
+                    yw->ypaworld_func159(&arg159_1);
                     yw->field_1a00 = yw->timeStamp;
                 }
             }
@@ -3805,7 +3597,7 @@ void ypaworld_func64__sub9(_NC_STACK_ypaworld *yw)
                     arg159_2.txt = get_lang_string(yw->string_pointers_p2, 258, "WARNING: BEAM GATE FULL!");
                     arg159_2.field_C = 46;
 
-                    yw->self_full->ypaworld_func159(&arg159_2);
+                    yw->ypaworld_func159(&arg159_2);
                     yw->field_1a00 = yw->timeStamp;
                 }
             }
@@ -3814,31 +3606,31 @@ void ypaworld_func64__sub9(_NC_STACK_ypaworld *yw)
 }
 
 
-int sub_4D11C0(_NC_STACK_ypaworld *yw, int id, int owner)
+int sub_4D11C0(NC_STACK_ypaworld *yw, int id, int owner)
 {
-    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+    const MapSuperItem &sitem = yw->_levelInfo->SuperItems[id];
 
-    if ( sitem->pcell->owner != owner )
+    if ( sitem.PCell->owner != owner )
         return 0;
 
-    if ( !sitem->keySectors_count )
+    if ( sitem.KeySectors.empty() )
         return 1;
 
-    for (int i = 0; i < sitem->keySectors_count; i++)
+    for ( const MapKeySector &ks : sitem.KeySectors )
     {
-        if ( sitem->keySectors[i].cell->owner != owner )
+        if ( ks.PCell->owner != owner )
             return 0;
     }
     return 1;
 }
 
-int sub_4D12A0(_NC_STACK_ypaworld *yw, int owner)
+int sub_4D12A0(NC_STACK_ypaworld *yw, int owner)
 {
     bact_node *bct = (bact_node *)yw->bact_list.head;
 
     while ( bct->next )
     {
-        if ( bct->bact->bact_type == BACT_TYPES_ROBO && owner == bct->bact->owner )
+        if ( bct->bact->_bact_type == BACT_TYPES_ROBO && owner == bct->bact->_owner )
             return 1;
 
         bct = (bact_node *)bct->next;
@@ -3847,40 +3639,40 @@ int sub_4D12A0(_NC_STACK_ypaworld *yw, int owner)
     return 0;
 }
 
-void sub_4D16C4(_NC_STACK_ypaworld *yw, int id)
+void sub_4D16C4(NC_STACK_ypaworld *yw, int id)
 {
-    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+    MapSuperItem &sitem = yw->_levelInfo->SuperItems[id];
 
-    sitem->field_4 = 0;
-    sitem->field_EC = 0;
-    sitem->field_F0 = 0;
-    sitem->field_F4 = 0;
-    sitem->field_F8 = 0;
+    sitem.State = 0;
+    sitem.ActiveTime = 0;
+    sitem.TriggerTime = 0;
+    sitem.ActivateOwner = 0;
+    sitem.CountDown = 0;
 
     ypaworld_arg148 arg148;
-    arg148.ownerID = sitem->pcell->owner;
-    arg148.ownerID2 = sitem->pcell->owner;
-    arg148.blg_ID = sitem->inactive_bp;
+    arg148.ownerID = sitem.PCell->owner;
+    arg148.ownerID2 = sitem.PCell->owner;
+    arg148.blg_ID = sitem.InactiveBldID;
     arg148.field_C = 1;
-    arg148.x = sitem->sec_x;
-    arg148.y = sitem->sec_y;
+    arg148.x = sitem.SecX;
+    arg148.y = sitem.SecY;
     arg148.field_18 = 0;
 
-    yw->self_full->ypaworld_func148(&arg148);
+    yw->ypaworld_func148(&arg148);
 
-    sitem->pcell->w_type = 8;
-    sitem->pcell->w_id = id;
+    sitem.PCell->w_type = 8;
+    sitem.PCell->w_id = id;
 
     yw_arg159 arg159;
     arg159.unit = NULL;
     arg159.field_4 = 92;
 
-    if ( sitem->type == 1 )
+    if ( sitem.Type == 1 )
     {
         arg159.txt = get_lang_string(yw->string_pointers_p2, 253, "Superbomb deactivated.");
         arg159.field_C = 73;
     }
-    else if ( sitem->type == 2 )
+    else if ( sitem.Type == 2 )
     {
         arg159.txt = get_lang_string(yw->string_pointers_p2, 257, "Superwave deactivated.");
         arg159.field_C = 77;
@@ -3891,19 +3683,19 @@ void sub_4D16C4(_NC_STACK_ypaworld *yw, int id)
         arg159.txt = "Cant happen.";
     }
 
-    yw->self_full->ypaworld_func159(&arg159);
+    yw->ypaworld_func159(&arg159);
 }
 
-void ypaworld_func64__sub19__sub0(_NC_STACK_ypaworld *yw, int id)
+void ypaworld_func64__sub19__sub0(NC_STACK_ypaworld *yw, int id)
 {
-    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+    MapSuperItem &sitem = yw->_levelInfo->SuperItems[id];
 
     int v7 = 0;
 
     bact_node *v5 = (bact_node *)yw->bact_list.head;
     while(v5->next)
     {
-        if ( v5->bact->bact_type == BACT_TYPES_ROBO && sitem->field_F4 == v5->bact->owner )
+        if ( v5->bact->_bact_type == BACT_TYPES_ROBO && sitem.ActivateOwner == v5->bact->_owner )
         {
             v7 = 1;
             break;
@@ -3914,20 +3706,20 @@ void ypaworld_func64__sub19__sub0(_NC_STACK_ypaworld *yw, int id)
 
     if ( v7 )
     {
-        if ( sub_4D11C0(yw, id, sitem->field_F4) )
+        if ( sub_4D11C0(yw, id, sitem.ActivateOwner) )
         {
-            if ( sitem->field_F8 > 0 )
-                sitem->field_F8 = sitem->field_F8 - yw->field_1618;
+            if ( sitem.CountDown > 0 )
+                sitem.CountDown = sitem.CountDown - yw->field_1618;
             else
-                sub_4D1444(yw, id);
+                yw->sub_4D1444(id);
         }
-        else if ( sitem->keySectors_count )
+        else if ( !sitem.KeySectors.empty() )
         {
-            sub_4D1594(yw, id);
+            yw->sub_4D1594(id);
         }
         else
         {
-            sub_4D12D8(yw, id, 0);
+            yw->sub_4D12D8(id, 0);
         }
     }
     else
@@ -3937,58 +3729,58 @@ void ypaworld_func64__sub19__sub0(_NC_STACK_ypaworld *yw, int id)
 }
 
 
-void ypaworld_func64__sub19__sub3(_NC_STACK_ypaworld *yw, int id)
+void ypaworld_func64__sub19__sub3(NC_STACK_ypaworld *yw, int id)
 {
     if ( yw->GameShell )
     {
-        supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+        MapSuperItem &sitem = yw->_levelInfo->SuperItems[id];
 
-        int v4 = sitem->field_F8 / 1024;
+        int v4 = sitem.CountDown / 1024;
 
-        if ( v4 < 10 && v4 != sitem->field_100 )
+        if ( v4 < 10 && v4 != sitem.LastSec )
         {
             SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
-            sitem->field_100 = v4;
+            sitem.LastSec = v4;
         }
 
         int v5 = v4 / 10;
-        if ( v5 != sitem->field_FC )
+        if ( v5 != sitem.LastTenSec )
         {
             SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
-            sitem->field_FC = v5;
+            sitem.LastTenSec = v5;
         }
     }
 }
 
-int sub_4D1230(_NC_STACK_ypaworld *yw, int id, int a3)
+int sub_4D1230(NC_STACK_ypaworld *yw, int id, int a3)
 {
-    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+    const MapSuperItem &sitem = yw->_levelInfo->SuperItems[id];
 
-    if ( sitem->pcell->owner == a3 )
+    if ( sitem.PCell->owner == a3 )
         return 0;
 
-    if ( !sitem->keySectors_count )
+    if ( sitem.KeySectors.empty() )
         return 1;
 
-    for (int i = 0; i < sitem->keySectors_count; i++)
+    for ( const MapKeySector &ks : sitem.KeySectors )
     {
-        if (sitem->keySectors[i].cell->owner == a3)
+        if (ks.PCell->owner == a3)
             return 0;
     }
 
     return 1;
 }
 
-void ypaworld_func64__sub19__sub1(_NC_STACK_ypaworld *yw, int id)
+void ypaworld_func64__sub19__sub1(NC_STACK_ypaworld *yw, int id)
 {
-    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+    const MapSuperItem &sitem = yw->_levelInfo->SuperItems[id];
 
     int v7 = 0;
 
     bact_node *bct = (bact_node *)yw->bact_list.head;
     while ( bct->next )
     {
-        if ( bct->bact->bact_type == BACT_TYPES_ROBO && sitem->field_F4 == bct->bact->owner )
+        if ( bct->bact->_bact_type == BACT_TYPES_ROBO && sitem.ActivateOwner == bct->bact->_owner )
         {
             v7 = 1;
             break;
@@ -4001,14 +3793,14 @@ void ypaworld_func64__sub19__sub1(_NC_STACK_ypaworld *yw, int id)
         sub_4D16C4(yw, id);
     else
     {
-        if ( sub_4D11C0(yw, id, sitem->field_F4) )
-            sub_4D12D8(yw, id, 1);
-        else if ( sub_4D1230(yw, id, sitem->field_F4) )
+        if ( sub_4D11C0(yw, id, sitem.ActivateOwner) )
+            yw->sub_4D12D8(id, 1);
+        else if ( sub_4D1230(yw, id, sitem.ActivateOwner) )
             sub_4D16C4(yw, id);
     }
 }
 
-void ypaworld_func64__sub19__sub2__sub0__sub0(_NC_STACK_ypaworld *yw, supetItemProto *sitem, float a5, float a6, float a7)
+void ypaworld_func64__sub19__sub2__sub0__sub0(NC_STACK_ypaworld *yw, uint8_t activate, float a5, float a6, float a7)
 {
     int lastt = yw->sectors_maxY2 * yw->sectors_maxX2;
 
@@ -4016,26 +3808,24 @@ void ypaworld_func64__sub19__sub2__sub0__sub0(_NC_STACK_ypaworld *yw, supetItemP
     {
         cellArea *cell = &yw->cells[i];
 
-        __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)cell->units_list.head;
-
-        while(bct->next)
+        for( NC_STACK_ypabact* &bct : cell->unitsList )
         {
             int v9 = 1;
 
             if ( yw->isNetGame )
             {
-                if ( bct->owner != yw->field_1b84->owner || bct->owner == sitem->field_F4 || bct->status == BACT_STATUS_DEAD )
+                if ( bct->_owner != yw->UserUnit->_owner || bct->_owner == activate || bct->_status == BACT_STATUS_DEAD )
                     v9 = 0;
             }
-            else if ( bct->owner == sitem->field_F4 || bct->status == BACT_STATUS_DEAD )
+            else if ( bct->_owner == activate || bct->_status == BACT_STATUS_DEAD )
             {
                 v9 = 0;
             }
 
             if ( v9 )
             {
-                float v10 = a5 - bct->position.x;
-                float v11 = a6 - bct->position.z;
+                float v10 = a5 - bct->_position.x;
+                float v11 = a6 - bct->_position.z;
 
                 if ( sqrt(POW2(v10) + POW2(v11)) < a7 )
                 {
@@ -4043,38 +3833,36 @@ void ypaworld_func64__sub19__sub2__sub0__sub0(_NC_STACK_ypaworld *yw, supetItemP
                     arg84.energy = -22000000;
                     arg84.unit = 0;
 
-                    bct->self->ModifyEnergy(&arg84);
+                    bct->ModifyEnergy(&arg84);
                 }
             }
-
-            bct = (__NC_STACK_ypabact *)bct->next;
         }
 
     }
 }
 
-void ypaworld_func64__sub19__sub2__sub0(_NC_STACK_ypaworld *yw, int id)
+void ypaworld_func64__sub19__sub2__sub0(NC_STACK_ypaworld *yw, int id)
 {
-    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+    MapSuperItem &sitem = yw->_levelInfo->SuperItems[id];
 
-    sitem->field_104 = (yw->timeStamp - sitem->field_F0) * 1200.0 / 2400.0;
+    sitem.CurrentRadius = (yw->timeStamp - sitem.TriggerTime) * 1200.0 / 2400.0;
 
-    float a5 = sitem->sec_x * 1200.0 + 600.0;
-    float a6 = -(sitem->sec_y * 1200.0 + 600.0);
+    float a5 = sitem.SecX * 1200.0 + 600.0;
+    float a6 = -(sitem.SecY * 1200.0 + 600.0);
 
     float v19 = sqrt(POW2(yw->map_Width_meters) + POW2(yw->map_Height_meters));
 
-    if ( sitem->field_104 > 300 && sitem->field_104 - sitem->field_108 > 200 && sitem->field_104 < v19 )
+    if ( sitem.CurrentRadius > 300 && sitem.CurrentRadius - sitem.LastRadius > 200 && sitem.CurrentRadius < v19 )
     {
-        float v9 = (2 * sitem->field_104) * C_PI / 150.0;
+        float v9 = (2 * sitem.CurrentRadius) * C_PI / 150.0;
 
-        sitem->field_108 = sitem->field_104;
+        sitem.LastRadius = sitem.CurrentRadius;
 
         if ( v9 > 2.0 )
         {
             for (float v25 = 0.0; v25 < 6.283 ; v25 += 6.283 / v9 )
             {
-                float v10 = sitem->field_104;
+                float v10 = sitem.CurrentRadius;
                 float v26 = cos(v25) * v10 + a5;
                 float v21 = sin(v25) * v10 + a6;
 
@@ -4086,13 +3874,13 @@ void ypaworld_func64__sub19__sub2__sub0(_NC_STACK_ypaworld *yw, int id)
 
                     yw_arg129 arg129;
                     arg129.pos.x = v26;
-                    arg129.pos.y = sitem->pcell->height;
+                    arg129.pos.y = sitem.PCell->height;
                     arg129.pos.z = v21;
                     arg129.field_10 = 200000;
-                    arg129.field_14 = sitem->field_F4;
+                    arg129.field_14 = sitem.ActivateOwner;
                     arg129.unit = 0;
 
-                    yw->self_full->ypaworld_func129(&arg129);
+                    yw->ypaworld_func129(&arg129);
 
                     yw->fxnumber = v12;
                 }
@@ -4100,16 +3888,16 @@ void ypaworld_func64__sub19__sub2__sub0(_NC_STACK_ypaworld *yw, int id)
         }
     }
 
-    ypaworld_func64__sub19__sub2__sub0__sub0(yw, sitem, a5, a6, sitem->field_104);
+    ypaworld_func64__sub19__sub2__sub0__sub0(yw, sitem.ActivateOwner, a5, a6, sitem.CurrentRadius);
 }
 
-void ypaworld_func64__sub19__sub2(_NC_STACK_ypaworld *yw, int id)
+void ypaworld_func64__sub19__sub2(NC_STACK_ypaworld *yw, int id)
 {
-    supetItemProto *sitem = &yw->field_2d90->supetItems[id];
+    const MapSuperItem &sitem = yw->_levelInfo->SuperItems[id];
 
-    if ( !sub_4D1230(yw, id, sitem->field_F4) && sub_4D12A0(yw, sitem->field_F4) )
+    if ( !sub_4D1230(yw, id, sitem.ActivateOwner) && sub_4D12A0(yw, sitem.ActivateOwner) )
     {
-        if ( sitem->type == 1 )
+        if ( sitem.Type == 1 )
             ypaworld_func64__sub19__sub2__sub0(yw, id);
     }
     else
@@ -4118,21 +3906,21 @@ void ypaworld_func64__sub19__sub2(_NC_STACK_ypaworld *yw, int id)
     }
 }
 
-void ypaworld_func64__sub19(_NC_STACK_ypaworld *yw)
+void ypaworld_func64__sub19(NC_STACK_ypaworld *yw)
 {
-    for (int i = 0; i < yw->field_2d90->supetItems_count; i++)
+    for (size_t i = 0; i < yw->_levelInfo->SuperItems.size(); i++)
     {
-        supetItemProto *sitem = &yw->field_2d90->supetItems[i];
+        const MapSuperItem &sitem = yw->_levelInfo->SuperItems[i];
 
-        if ( sitem->type )
+        if ( sitem.Type )
         {
-            switch ( sitem->field_4 )
+            switch ( sitem.State )
             {
             case 0:
-                if ( sub_4D11C0(yw, i, sitem->pcell->owner) )
+                if ( sub_4D11C0(yw, i, sitem.PCell->owner) )
                 {
-                    if ( sub_4D12A0(yw, sitem->pcell->owner) )
-                        sub_4D12D8(yw, i, 0);
+                    if ( sub_4D12A0(yw, sitem.PCell->owner) )
+                        yw->sub_4D12D8(i, 0);
                 }
                 break;
 
@@ -4156,38 +3944,38 @@ void ypaworld_func64__sub19(_NC_STACK_ypaworld *yw)
     }
 }
 
-void sub_4D6958(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *unit, samples_collection1 *collection)
+void sub_4D6958(NC_STACK_ypaworld *yw, NC_STACK_ypabact *unit, samples_collection1 *collection)
 {
-    if ( unit == yw->field_1b80 )
+    if ( unit == yw->UserRobo )
     {
-        collection->field_0 = yw->field_1b84->position;
+        collection->field_0 = yw->UserUnit->_position;
     }
     else
     {
-        vec3d tmp = unit->position - yw->field_1b84->position;
+        vec3d tmp = unit->_position - yw->UserUnit->_position;
 
         float v11 = tmp.length();
 
         if ( v11 > 0.0 )
             tmp *= (100.0 / v11);
 
-        collection->field_0 = yw->field_1b84->position + tmp;
+        collection->field_0 = yw->UserUnit->_position + tmp;
     }
 }
 
-void ypaworld_func64__sub23(_NC_STACK_ypaworld *yw)
+void ypaworld_func64__sub23(NC_STACK_ypaworld *yw)
 {
     yw_samples *smpls = yw->samples;
 
     if ( smpls->field_0 >= 0 )
     {
-        __NC_STACK_ypabact *unit = smpls->field_360;
+        NC_STACK_ypabact *unit = smpls->field_360;
 
-        if ( unit->status != BACT_STATUS_DEAD )
+        if ( unit->_status != BACT_STATUS_DEAD )
         {
             sub_4D6958(yw, unit, &smpls->field_4);
 
-            smpls->field_4.field_C = yw->field_1b84->fly_dir * yw->field_1b84->fly_dir_length;
+            smpls->field_4.field_C = yw->UserUnit->_fly_dir * yw->UserUnit->_fly_dir_length;
         }
 
         if ( smpls->field_4.samples_data[0].flags & 2 )
@@ -4207,23 +3995,23 @@ void ypaworld_func64__sub23(_NC_STACK_ypaworld *yw)
     }
 }
 
-void ypaworld_func64__sub3(_NC_STACK_ypaworld *yw)
+void ypaworld_func64__sub3(NC_STACK_ypaworld *yw)
 {
-    if ( yw->field_1b84->pSector->owner != yw->field_1b80->owner )
+    if ( yw->UserUnit->_pSector->owner != yw->UserRobo->_owner )
     {
-        if ( yw->field_1b84->pSector->owner )
+        if ( yw->UserUnit->_pSector->owner )
         {
-            if ( yw->field_1b74 == yw->field_1b80->owner || !yw->field_1b74 )
+            if ( yw->field_1b74 == yw->UserRobo->_owner || !yw->field_1b74 )
             {
                 if ( yw->timeStamp - yw->field_1a08 > 10000 )
                 {
                     yw_arg159 arg159;
-                    arg159.unit = yw->field_1b84;
+                    arg159.unit = yw->UserUnit;
                     arg159.field_4 = 24;
                     arg159.txt = get_lang_string(yw->string_pointers_p2, 222, "ENEMY SECTOR ENTERED");
                     arg159.field_C = 22;
 
-                    yw->self_full->ypaworld_func159(&arg159);
+                    yw->ypaworld_func159(&arg159);
                 }
 
                 yw->field_1a08 = yw->timeStamp;
@@ -4232,7 +4020,7 @@ void ypaworld_func64__sub3(_NC_STACK_ypaworld *yw)
     }
 }
 
-void sub_44A094(_NC_STACK_ypaworld *yw)
+void sub_44A094(NC_STACK_ypaworld *yw)
 {
     yw->p_1_grp_cnt++;
 
@@ -4257,53 +4045,40 @@ void sub_44A094(_NC_STACK_ypaworld *yw)
     }
 }
 
-int yw_RestoreVehicleData(_NC_STACK_ypaworld *yw)
+int NC_STACK_ypaworld::yw_RestoreVehicleData()
 {
-    char buf[256];
+    std::string buf = fmt::sprintf("save:%s/%d.rst", GameShell->user_name, _levelInfo->LevelID);
 
-    if ( yw->GameShell )
-    {
-        scrCallBack funcs[3];
-        memset(funcs, 0, sizeof(funcs));
+    ScriptParser::HandlersList parsers {
+        new World::Parsers::VhclProtoParser(this),
+        new World::Parsers::WeaponProtoParser(this),
+        new World::Parsers::BuildProtoParser(this)
+    };
 
-        sprintf(buf, "save:%s/%d.rst", yw->GameShell->user_name, yw->field_2d90->levelID);
-
-        funcs[0].func = VhclProtoParser;
-        funcs[0].world = yw;
-
-        funcs[1].func = WeaponProtoParser;
-        funcs[1].world = yw;
-
-        funcs[2].world2 = yw;
-        funcs[2].func = BuildProtoParser;
-
-        return def_parseFile(buf, 3, funcs, 2);
-    }
-
-    return 1;
+    return ScriptParser::ParseFile(buf, parsers, 0);
 }
 
-void sub_471AB8(_NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::sub_471AB8()
 {
-    if ( yw->field_2d90->field_40 == 1 )
+    if ( _levelInfo->State == 1 )
     {
-        gateProto *gate = &yw->field_2d90->gates[ yw->field_2d90->field_4C ];
+        MapGate &gate = _levelInfo->Gates[ _levelInfo->GateCompleteID ];
 
-        yw->LevelNet->mapInfos[ yw->field_2d90->levelID ].field_0 = 3;
+        LevelNet->mapInfos[ _levelInfo->LevelID ].field_0 = 3;
 
-        for (int i = 0; i < gate->target_level_count; i++)
+        for (int lvl : gate.PassToLevels)
         {
-            if ( yw->LevelNet->mapInfos[ gate->target_levels[i] ].field_0 == 1 )
-                yw->LevelNet->mapInfos[ gate->target_levels[i] ].field_0 = 2;
+            if ( LevelNet->mapInfos[ lvl ].field_0 == 1 )
+                LevelNet->mapInfos[ lvl ].field_0 = 2;
         }
     }
-    else if ( yw->field_2d90->field_40 == 2 && !yw_RestoreVehicleData(yw) )
+    else if ( _levelInfo->State == 2 && !yw_RestoreVehicleData() )
     {
         ypa_log_out("yw_RestoreVehicleData() failed.\n");
     }
 }
 
-void ypaworld_func151__sub6(_NC_STACK_ypaworld *yw)
+void ypaworld_func151__sub6(NC_STACK_ypaworld *yw)
 {
     if ( yw->samples )
     {
@@ -4321,9 +4096,9 @@ void ypaworld_func151__sub6(_NC_STACK_ypaworld *yw)
     }
 }
 
-void sub_4F1A60(__NC_STACK_ypabact *bact)
+void NC_STACK_ypaworld::sub_4F1A60(NC_STACK_ypabact *bact)
 {
-    nlist *a4 = bact->self->getBACT_attackList();
+    nlist *a4 = bact->getBACT_attackList();
 
     while ( 1 )
     {
@@ -4332,20 +4107,20 @@ void sub_4F1A60(__NC_STACK_ypabact *bact)
         if ( !bct )
             break;
 
-        bact_node *v5 = bct->bacto->getBACT_primAttackNode();
-        bact_node *v6 = bct->bacto->getBACT_secnAttackNode();
+        bact_node *v5 = bct->bact->getBACT_primAttackNode();
+        bact_node *v6 = bct->bact->getBACT_secnAttackNode();
 
         if ( bct == v5 )
         {
-            v5->bact->primT.pbact = NULL;
-            v5->bact->primTtype = BACT_TGT_TYPE_NONE;
-            v5->bact->assess_time = 0;
+            v5->bact->_primT.pbact = NULL;
+            v5->bact->_primTtype = BACT_TGT_TYPE_NONE;
+            v5->bact->_assess_time = 0;
         }
         else if ( bct == v6 )
         {
-            v6->bact->secndT.pbact = NULL;
-            v6->bact->secndTtype = BACT_TGT_TYPE_NONE;
-            v6->bact->assess_time = 0;
+            v6->bact->_secndT.pbact = NULL;
+            v6->bact->_secndTtype = BACT_TGT_TYPE_NONE;
+            v6->bact->_assess_time = 0;
         }
         else
         {
@@ -4354,89 +4129,89 @@ void sub_4F1A60(__NC_STACK_ypabact *bact)
     }
 }
 
-void sub_4F1B34(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact)
+void NC_STACK_ypaworld::sub_4F1B34(NC_STACK_ypabact *bact)
 {
-    for(YpamissileList::iterator it = bact->missiles_list.begin(); it != bact->missiles_list.end();)
+    for(YpamissileList::iterator it = bact->_missiles_list.begin(); it != bact->_missiles_list.end();)
     {
-        if ( (*it)->ypabact.primTtype == BACT_TGT_TYPE_UNIT )
+        if ( (*it)->_primTtype == BACT_TGT_TYPE_UNIT )
         {
             bact_node *nd = (*it)->getBACT_primAttackNode();
 
             Remove(nd);
 
-            (*it)->ypabact.primTtype = BACT_TGT_TYPE_NONE;
+            (*it)->_primTtype = BACT_TGT_TYPE_NONE;
         }
 
-        sub_4F1A60(&(*it)->ypabact);
+        sub_4F1A60(*it);
 
-        (*it)->ypabact.parent_bacto = NULL;
+        (*it)->_parent = NULL;
 
-        yw->self_full->ypaworld_func144(*it);
+        ypaworld_func144(*it);
 
-        (*it)->ypabact.status_flg |= BACT_STFLAG_DEATH1;
+        (*it)->_status_flg |= BACT_STFLAG_DEATH1;
 
-        it = bact->missiles_list.erase(it);
+        it = bact->_missiles_list.erase(it);
     }
 }
 
-void sub_4F1BE8(_NC_STACK_ypaworld *yw, bact_node *bct)
+void NC_STACK_ypaworld::sub_4F1BE8(NC_STACK_ypabact *bct)
 {
-    if ( bct->bact->bact_type == BACT_TYPES_GUN )
+    if ( bct->_bact_type == BACT_TYPES_GUN )
     {
-        NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->bacto );
+        NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct );
 
-        if ( gun->getGUN_roboGun() )
+        if ( gun->IsRoboGun() )
         {
-            roboGun *v4 = bct->bact->host_station->getROBO_guns();
+            roboGun *v4 = bct->_host_station->getROBO_guns();
 
             for (int i = 0; i < 8; i++)
             {
-                if ( bct->bacto == v4[i].gun_obj )
+                if ( bct == v4[i].gun_obj )
                     v4[i].gun_obj = NULL;
             }
         }
     }
 }
 
-void sub_4C8EB4(_NC_STACK_ypaworld *yw, bact_node *bct)
+void NC_STACK_ypaworld::sub_4C8EB4(NC_STACK_ypabact *bct)
 {
     while ( 1 )
     {
-        bact_node *cmnder = (bact_node *)bct->bact->subjects_list.head;
+        bact_node *cmnder = (bact_node *)bct->_subjects_list.head;
 
         if ( !cmnder->next )
             break;
 
         while ( 1 )
         {
-            bact_node *slave = (bact_node *)cmnder->bact->subjects_list.head;
+            bact_node *slave = (bact_node *)cmnder->bact->_subjects_list.head;
 
             if ( !slave->next )
                 break;
 
-            sub_4F1B34(yw, slave->bact);
+            sub_4F1B34(slave->bact);
             sub_4F1A60(slave->bact);
-            sub_4F1BE8(yw, slave);
+            sub_4F1BE8(slave->bact);
 
-            slave->bact->status_flg |= BACT_STFLAG_DEATH1;
-            slave->bact->status = BACT_STATUS_DEAD;
+            slave->bact->_status_flg |= BACT_STFLAG_DEATH1;
+            slave->bact->_status = BACT_STATUS_DEAD;
 
-            yw->self_full->ypaworld_func144(slave->bacto);
+            ypaworld_func144(slave->bact);
         }
 
-        sub_4F1B34(yw, cmnder->bact);
+        sub_4F1B34(cmnder->bact);
         sub_4F1A60(cmnder->bact);
-        sub_4F1BE8(yw, cmnder);
+        sub_4F1BE8(cmnder->bact);
 
-        cmnder->bact->status_flg |= BACT_STFLAG_DEATH1;
-        cmnder->bact->status = BACT_STATUS_DEAD;
+        cmnder->bact->_status_flg |= BACT_STFLAG_DEATH1;
+        cmnder->bact->_status = BACT_STATUS_DEAD;
 
-        yw->self_full->ypaworld_func144(cmnder->bacto);
+        ypaworld_func144(cmnder->bact);
     }
 
-    if ( bct->bact->bact_type == BACT_TYPES_ROBO )
+    if ( bct->_bact_type == BACT_TYPES_ROBO )
     {
-        NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(bct->bacto);
+        NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(bct);
 
         roboGun *a4 = robo->getROBO_guns();
 
@@ -4444,14 +4219,14 @@ void sub_4C8EB4(_NC_STACK_ypaworld *yw, bact_node *bct)
             a4[i].gun_obj = NULL;
     }
 
-    sub_4F1A60(bct->bact);
-    sub_4F1B34(yw, bct->bact);
+    sub_4F1A60(bct);
+    sub_4F1B34(bct);
 
-    bct->bact->status = BACT_STATUS_DEAD;
+    bct->_status = BACT_STATUS_DEAD;
 
-    yw->self_full->ypaworld_func144(bct->bacto);
+    ypaworld_func144(bct);
 
-    bct->bact->status_flg |= BACT_STFLAG_DEATH1;
+    bct->_status_flg |= BACT_STFLAG_DEATH1;
 }
 
 void sub_44C144(vhclSndFX *sndfx)
@@ -4472,7 +4247,7 @@ void sub_44C144(vhclSndFX *sndfx)
     }
 }
 
-void ypaworld_func151__sub0(_NC_STACK_ypaworld *yw)
+void ypaworld_func151__sub0(NC_STACK_ypaworld *yw)
 {
     SFXEngine::SFXe.sub_424CC8();
 
@@ -4500,7 +4275,7 @@ void ypaworld_func151__sub0(_NC_STACK_ypaworld *yw)
     }
 }
 
-void ypaworld_func151__sub1(_NC_STACK_ypaworld *yw)
+void ypaworld_func151__sub1(NC_STACK_ypaworld *yw)
 {
     if ( yw->field_34 )
     {
@@ -4516,310 +4291,7 @@ void ypaworld_func151__sub1(_NC_STACK_ypaworld *yw)
     }
 }
 
-void yw_score(_NC_STACK_ypaworld *yw, yw_arg184 *arg, player_status *pl_status)
-{
-    switch ( arg->type )
-    {
-    case 2:
-        pl_status[arg->t26.owner].sectorsTaked++;
-        pl_status[arg->t26.owner].score++;
-        break;
-
-    case 3:
-    {
-        int owner = (arg->t34.field_1 >> 3) & 7;
-        int v8 = arg->t34.field_1 & 0xC0;
-
-        pl_status[owner].destroyed++;
-
-        if ( v8 == 0x80 )
-        {
-            pl_status[owner].destroyedByUser++;
-            pl_status[owner].score += 20;
-        }
-        else if ( v8 == 0xC0 )
-        {
-            pl_status[owner].destroyedByUser++;
-            pl_status[owner].score += 200;
-        }
-        else
-        {
-            pl_status[owner].score += 10;
-        }
-
-        if ( arg->t34.field_2 & 0x8000 )
-            pl_status[owner].score += 1000;
-    }
-    break;
-
-    case 6:
-        pl_status[arg->t26.owner].score += 100;
-        pl_status[arg->t26.owner].power++;
-        break;
-
-    case 7:
-        pl_status[arg->t7.owner].score += 500;
-        pl_status[arg->t7.owner].upgrades++;
-        break;
-
-    default:
-        break;
-    }
-}
-
-uint8_t *yw_histbf_write_evnt(uint8_t *st, yw_arg184 *arg)
-{
-    uint8_t *cr = st;
-
-    switch ( arg->type )
-    {
-    case 1:
-        *cr = arg->type;
-        cr++;
-
-        *(int32_t *)cr = arg->t15.field_1;
-        cr += 4;
-        break;
-
-    case 2:
-    case 6:
-        *cr = arg->type;
-        cr++;
-
-        *cr = arg->t26.secX;
-        cr++;
-
-        *cr = arg->t26.secY;
-        cr++;
-
-        *cr = arg->t26.owner;
-        cr++;
-        break;
-
-    case 3:
-    case 4:
-        *cr = arg->type;
-        cr++;
-
-        *cr = arg->t34.field_1;
-        cr++;
-
-        *(int16_t *)cr = arg->t34.field_2;
-        cr += 2;
-
-        *cr = arg->t34.field_4;
-        cr++;
-
-        *cr = arg->t34.field_5;
-        cr++;
-        break;
-
-    case 5:
-        *cr = arg->type;
-        cr++;
-
-        *(int32_t *)cr = 0;
-        cr += 4;
-
-        printf("MAKE ME histbuff type 5!\n");
-        break;
-
-    case 7:
-        *cr = arg->type;
-        cr++;
-
-        *cr = arg->t7.secX;
-        cr++;
-
-        *cr = arg->t7.secY;
-        cr++;
-
-        *cr = arg->t7.owner;
-        cr++;
-
-        *cr = arg->t7.field_4;
-        cr++;
-
-        *cr = arg->t7.field_5;
-        cr++;
-
-        *(int16_t *)cr = arg->t7.last_vhcl;
-        cr += 2;
-
-        *(int16_t *)cr = arg->t7.last_weapon;
-        cr += 2;
-
-        *(int16_t *)cr = arg->t7.last_build;
-        cr += 2;
-        break;
-
-    default:
-        break;
-    }
-
-    return cr;
-}
-
-uint8_t *yw_histbf_read_evnt(uint8_t *st, yw_arg184 *arg)
-{
-    uint8_t *cr = st;
-
-    switch ( *cr )
-    {
-    case 1:
-        arg->type = *cr;
-        cr++;
-
-        arg->t15.field_1 = *(int32_t *)cr;
-        cr += 4;
-        break;
-
-    case 2:
-    case 6:
-        arg->type = *cr;
-        cr++;
-
-        arg->t26.secX = *cr;
-        cr++;
-
-        arg->t26.secY = *cr;
-        cr++;
-
-        arg->t26.owner = *cr;
-        cr++;
-        break;
-
-    case 3:
-    case 4:
-        arg->type = *cr;
-        cr++;
-
-        arg->t34.field_1 = *cr;
-        cr++;
-
-        arg->t34.field_2 = *(int16_t *)cr;
-        cr += 2;
-
-        arg->t34.field_4 = *cr;
-        cr++;
-
-        arg->t34.field_5 = *cr;
-        cr++;
-        break;
-
-    case 5:
-        arg->type = *cr;
-        cr++;
-
-        arg->t15.field_1 = 0;
-        cr += 4;
-
-        printf("MAKE ME histbuff type 5!\n");
-        break;
-
-    case 7:
-        arg->type = *cr;
-        cr++;
-
-        arg->t7.secX = *cr;
-        cr++;
-
-        arg->t7.secY = *cr;
-        cr++;
-
-        arg->t7.owner = *cr;
-        cr++;
-
-        arg->t7.field_4 = *cr;
-        cr++;
-
-        arg->t7.field_5 = *cr;
-        cr++;
-
-        arg->t7.last_vhcl = *(int16_t *)cr;
-        cr += 2;
-
-        arg->t7.last_weapon = *(int16_t *)cr;
-        cr += 2;
-
-        arg->t7.last_build = *(int16_t *)cr;
-        cr += 2;
-        break;
-
-    default:
-        memset(arg, 0, sizeof(yw_arg184));
-        break;
-    }
-
-    return cr;
-}
-
-void ypaworld_func184__sub0(_NC_STACK_ypaworld *yw, yw_f726c *hist_list, yw_arg184 *arg)
-{
-    if ( hist_list->last_bufStart || sub_47EDDC(hist_list, 4096) )
-    {
-        int tlen = 0;
-
-        switch ( arg->type )
-        {
-        case 1:
-            tlen = 5;
-
-            hist_list->field_C++;
-            hist_list->field_10 = yw->timeStamp;
-
-            if ( hist_list->field_1C )
-            {
-                if ( *hist_list->field_1C == 1 )
-                    hist_list->last_bufStart = hist_list->field_1C;
-            }
-
-            break;
-
-        case 2:
-        case 6:
-            tlen = 4;
-            break;
-
-        case 3:
-        case 4:
-            tlen = 6;
-            break;
-
-        case 5:
-            tlen = 5;
-            break;
-
-        case 7:
-            tlen = 12;
-            break;
-
-        default:
-            break;
-        }
-
-        if ( tlen )
-        {
-            hist_list->field_1C = hist_list->last_bufStart;
-
-            if ( hist_list->last_bufStart + tlen + 1 < hist_list->last_bufEnd || sub_47EDDC(hist_list, 4096) )
-            {
-                hist_list->last_bufStart = yw_histbf_write_evnt(hist_list->last_bufStart, arg);
-            }
-            else
-                return;
-        }
-
-
-        if ( yw->GameShell )
-        {
-            if ( yw->GameShell->isHost )
-                yw_score(yw, arg, yw->ingamePlayerStatus);
-        }
-    }
-}
-
-void ypaworld_func151__sub5(_NC_STACK_ypaworld *yw)
+void ypaworld_func151__sub5(NC_STACK_ypaworld *yw)
 {
     if ( yw->map_events )
     {
@@ -4830,19 +4302,19 @@ void ypaworld_func151__sub5(_NC_STACK_ypaworld *yw)
 
 void NC_STACK_ypaworld::FFeedback_Update()
 {
-    if ( ypaworld.field_739A )
+    if ( field_739A )
     {
-        if ( ypaworld.field_73CE & (4 | 8) )
+        if ( field_73CE & (4 | 8) )
             return;
     }
 
-    if ( ypaworld.field_1b84 )
+    if ( UserUnit )
     {
-        if ( ypaworld.timeStamp - ypaworld.field_7562 > 250 )
+        if ( timeStamp - field_7562 > 250 )
         {
-            ypaworld.field_7562 = ypaworld.timeStamp;
+            field_7562 = timeStamp;
 
-            if ( ypaworld.field_1b84->status == BACT_STATUS_DEAD )
+            if ( UserUnit->_status == BACT_STATUS_DEAD )
             {
                 winp_71arg v13;
                 v13.state = NC_STACK_winp::FF_STATE_UPDATE;
@@ -4850,36 +4322,36 @@ void NC_STACK_ypaworld::FFeedback_Update()
                 v13.p2 = 0.0;
                 v13.p3 = 0.0;
                 v13.p4 = 0.0;
-                v13.effID = ypaworld.field_7566;
+                v13.effID = field_7566;
 
-                if ( ypaworld.input_class )
-                    ypaworld.input_class->wimp_ForceFeedback(&v13);
+                if ( input_class )
+                    input_class->wimp_ForceFeedback(&v13);
             }
             else
             {
-                if ( ypaworld.field_7566 != -1 )
+                if ( field_7566 != -1 )
                 {
-                    float a1 = POW2(ypaworld.field_1b84->force) - POW2(ypaworld.field_1b84->mass) * 100.0;
+                    float a1 = POW2(UserUnit->_force) - POW2(UserUnit->_mass) * 100.0;
 
                     if (a1 < 0.0)
                         a1 = 0.0;
 
-                    float v17 = fabs(ypaworld.field_1b84->fly_dir_length) / ( sqrt(a1) / ypaworld.field_1b84->airconst_static );
+                    float v17 = fabs(UserUnit->_fly_dir_length) / ( sqrt(a1) / UserUnit->_airconst_static );
                     if ( v17 >= 1.0 )
                         v17 = 1.0;
                     else if (v17 < 0.0)
                         v17 = 0.0;
 
                     winp_71arg warg71;
-                    warg71.effID = ypaworld.field_7566;
+                    warg71.effID = field_7566;
                     warg71.state = NC_STACK_winp::FF_STATE_UPDATE;
-                    warg71.p1 = ypaworld.field_756E;
-                    warg71.p2 = ypaworld.field_756A * v17;
+                    warg71.p1 = field_756E;
+                    warg71.p2 = field_756A * v17;
                     warg71.p3 = 0.0;
                     warg71.p4 = 0.0;
 
-                    if ( ypaworld.input_class )
-                        ypaworld.input_class->wimp_ForceFeedback(&warg71);
+                    if ( input_class )
+                        input_class->wimp_ForceFeedback(&warg71);
                 }
             }
         }
@@ -4887,7 +4359,7 @@ void NC_STACK_ypaworld::FFeedback_Update()
         userdata_sample_info *top = SFXEngine::SFXe.SndGetTopShake();
         if ( top )
         {
-            ypaworld.field_7572 = top;
+            field_7572 = top;
             if ( top->startTime == SFXEngine::SFXe.currentTime )
             {
                 winp_71arg warg71;
@@ -4898,34 +4370,34 @@ void NC_STACK_ypaworld::FFeedback_Update()
                 if ( warg71.p1 > 1.0 )
                     warg71.p1 = 1.0;
 
-                vec3d tmp = top->parent_sample_collection->field_0 - ypaworld.field_1b84->position;
+                vec3d tmp = top->parent_sample_collection->field_0 - UserUnit->_position;
 
                 warg71.p2 = top->shakeFX->time;
-                warg71.p3 = ypaworld.field_1b84->rotation.AxisX().dot( tmp );
-                warg71.p4 = -ypaworld.field_1b84->rotation.AxisZ().dot( tmp );
+                warg71.p3 = UserUnit->_rotation.AxisX().dot( tmp );
+                warg71.p4 = -UserUnit->_rotation.AxisZ().dot( tmp );
 
                 if ( warg71.p2 > 0.0 )
                 {
-                    if ( ypaworld.input_class )
-                        ypaworld.input_class->wimp_ForceFeedback(&warg71);
+                    if ( input_class )
+                        input_class->wimp_ForceFeedback(&warg71);
                 }
             }
         }
         else
         {
-            ypaworld.field_7572 = NULL;
+            field_7572 = NULL;
         }
     }
 }
 
-int recorder_startrec(_NC_STACK_ypaworld *yw)
+int recorder_startrec(NC_STACK_ypaworld *yw)
 {
     recorder *rcrd = yw->sceneRecorder;
 
     rcrd->do_record = 0;
     rcrd->field_40 = 0;
     rcrd->seqn++;
-    rcrd->level_id = yw->field_2d90->levelID;
+    rcrd->level_id = yw->_levelInfo->LevelID;
     rcrd->frame_id = 0;
     rcrd->time = 0;
     rcrd->bacts_count = 0;
@@ -4933,7 +4405,7 @@ int recorder_startrec(_NC_STACK_ypaworld *yw)
     rcrd->ainf_size = 0;
 
     char a1[256];
-    sprintf(a1, "env:snaps/m%02d%04d.raw", yw->field_2d90->levelID, rcrd->seqn);
+    sprintf(a1, "env:snaps/m%02d%04d.raw", yw->_levelInfo->LevelID, rcrd->seqn);
 
     FSMgr::FileHandle *fil = uaOpenFile(a1, "wb");
     if ( !fil )
@@ -4963,7 +4435,7 @@ int recorder_startrec(_NC_STACK_ypaworld *yw)
     return 1;
 }
 
-void recorder_stoprec(_NC_STACK_ypaworld *yw)
+void recorder_stoprec(NC_STACK_ypaworld *yw)
 {
     recorder *rcrd = yw->sceneRecorder;
     rcrd->do_record = 0;
@@ -4978,9 +4450,9 @@ void recorder_stoprec(_NC_STACK_ypaworld *yw)
     }
 }
 
-void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
+void sb_0x447720(NC_STACK_ypaworld *yw, struC5 *inpt)
 {
-    if ( inpt->downed_key == UAVK_MULTIPLY && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
+    if ( inpt->downed_key == UAVK_MULTIPLY && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
     {
         sub_4476AC(yw);
 
@@ -4990,13 +4462,13 @@ void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
         info_msg.field_4 = 100;
         info_msg.field_C = 0;
 
-        yw->self_full->ypaworld_func159(&info_msg);
+        yw->ypaworld_func159(&info_msg);
     }
 
 
     if ( yw->do_screenshooting )
     {
-        if ( inpt->downed_key == UAVK_DIVIDE && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
+        if ( inpt->downed_key == UAVK_DIVIDE && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
         {
             yw->do_screenshooting = 0;
 
@@ -5006,7 +4478,7 @@ void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
             info_msg.field_4 = 100;
             info_msg.field_C = 0;
 
-            yw->self_full->ypaworld_func159(&info_msg);
+            yw->ypaworld_func159(&info_msg);
         }
 
 
@@ -5021,7 +4493,7 @@ void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         win3d->display_func274(&v13);
     }
-    else if ( inpt->downed_key == UAVK_DIVIDE && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
+    else if ( inpt->downed_key == UAVK_DIVIDE && (inpt->ClickInf.flag & 0x100 || yw->easy_cheat_keys) )
     {
         yw->screenshot_seq_frame_id = 0;
         yw->do_screenshooting = 1;
@@ -5033,12 +4505,12 @@ void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
         info_msg.field_4 = 100;
         info_msg.field_C = 0;
 
-        yw->self_full->ypaworld_func159(&info_msg);
+        yw->ypaworld_func159(&info_msg);
     }
 
     if ( yw->sceneRecorder->do_record )
     {
-        if ( inpt->downed_key == UAVK_SUBTRACT && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
+        if ( inpt->downed_key == UAVK_SUBTRACT && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
         {
             recorder_stoprec(yw);
 
@@ -5048,13 +4520,13 @@ void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
             info_msg.field_4 = 100;
             info_msg.field_C = 0;
 
-            yw->self_full->ypaworld_func159(&info_msg);
+            yw->ypaworld_func159(&info_msg);
         }
 
     }
     else
     {
-        if ( inpt->downed_key == UAVK_SUBTRACT && (inpt->winp131arg.flag & 0x100 || yw->easy_cheat_keys) )
+        if ( inpt->downed_key == UAVK_SUBTRACT && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
         {
             recorder_startrec(yw);
 
@@ -5064,45 +4536,45 @@ void sb_0x447720(_NC_STACK_ypaworld *yw, struC5 *inpt)
             info_msg.field_4 = 100;
             info_msg.field_C = 0;
 
-            yw->self_full->ypaworld_func159(&info_msg);
+            yw->ypaworld_func159(&info_msg);
         }
     }
 }
 
-void recorder_update_time(_NC_STACK_ypaworld *yw, int dtime)
+void recorder_update_time(NC_STACK_ypaworld *yw, int dtime)
 {
     yw->sceneRecorder->time += dtime;
     yw->sceneRecorder->field_40 -= dtime;
 }
 
 
-void recorder_store_bact(_NC_STACK_ypaworld *yw, recorder *rcrd, YpamissileList &bct_lst);
-void recorder_store_bact(_NC_STACK_ypaworld *yw, recorder *rcrd, nlist *bct_lst);
+void recorder_store_bact(NC_STACK_ypaworld *yw, recorder *rcrd, YpamissileList &bct_lst);
+void recorder_store_bact(NC_STACK_ypaworld *yw, recorder *rcrd, nlist *bct_lst);
 
-void recorder_store_bact(_NC_STACK_ypaworld *yw, recorder *rcrd, YpamissileList &bct_lst)
+void recorder_store_bact(NC_STACK_ypaworld *yw, recorder *rcrd, YpamissileList &bct_lst)
 {
     for(YpamissileList::iterator it = bct_lst.begin(); it != bct_lst.end(); it++)
     {
-        if ( (*it)->ypabact.gid >= 0xFFFF || &(*it)->ypabact == yw->field_1b80 )
+        if ( (*it)->_gid >= 0xFFFF || *it == yw->UserRobo )
         {
             if ( rcrd->bacts_count < rcrd->max_bacts )
             {
-                rcrd->bacts[ rcrd->bacts_count ] = &(*it)->ypabact;
+                rcrd->bacts[ rcrd->bacts_count ] = *it;
                 rcrd->bacts_count++;
             }
 
-            recorder_store_bact(yw, rcrd, (*it)->ypabact.missiles_list);
-            recorder_store_bact(yw, rcrd, &(*it)->ypabact.subjects_list);
+            recorder_store_bact(yw, rcrd, (*it)->_missiles_list);
+            recorder_store_bact(yw, rcrd, &(*it)->_subjects_list);
         }
     }
 }
 
-void recorder_store_bact(_NC_STACK_ypaworld *yw, recorder *rcrd, nlist *bct_lst)
+void recorder_store_bact(NC_STACK_ypaworld *yw, recorder *rcrd, nlist *bct_lst)
 {
     bact_node *bct = (bact_node *)bct_lst->head;
     while (bct->next)
     {
-        if ( bct->bact->gid >= 0xFFFF || bct->bact == yw->field_1b80 )
+        if ( bct->bact->_gid >= 0xFFFF || bct->bact == yw->UserRobo )
         {
             if ( rcrd->bacts_count < rcrd->max_bacts )
             {
@@ -5110,8 +4582,8 @@ void recorder_store_bact(_NC_STACK_ypaworld *yw, recorder *rcrd, nlist *bct_lst)
                 rcrd->bacts_count++;
             }
 
-            recorder_store_bact(yw, rcrd, bct->bact->missiles_list);
-            recorder_store_bact(yw, rcrd, &bct->bact->subjects_list);
+            recorder_store_bact(yw, rcrd, bct->bact->_missiles_list);
+            recorder_store_bact(yw, rcrd, &bct->bact->_subjects_list);
         }
 
         bct = (bact_node *)bct->next;
@@ -5120,54 +4592,54 @@ void recorder_store_bact(_NC_STACK_ypaworld *yw, recorder *rcrd, nlist *bct_lst)
 
 int recorder_sort_bact(const void *a1, const void *a2)
 {
-    return (*(__NC_STACK_ypabact **)a1)->gid - (*(__NC_STACK_ypabact **)a2)->gid;
+    return (*(NC_STACK_ypabact **)a1)->_gid - (*(NC_STACK_ypabact **)a2)->_gid;
 }
 
-void recorder_world_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd)
+void recorder_world_to_frame(NC_STACK_ypaworld *yw, recorder *rcrd)
 {
     rcrd->bacts_count = 0;
     recorder_store_bact(yw, rcrd, &yw->bact_list);
 
-    qsort(rcrd->bacts, rcrd->bacts_count, sizeof(__NC_STACK_ypabact *), recorder_sort_bact);
+    qsort(rcrd->bacts, rcrd->bacts_count, sizeof(NC_STACK_ypabact *), recorder_sort_bact);
 
     for (int i = 0; i < rcrd->bacts_count; i++)
     {
-        __NC_STACK_ypabact *bact = rcrd->bacts[i];
+        NC_STACK_ypabact *bact = rcrd->bacts[i];
 
         trec_bct *oinf = &rcrd->oinf[i];
 
-        oinf->bact_id = bact->gid;
-        oinf->pos = bact->position;
+        oinf->bact_id = bact->_gid;
+        oinf->pos = bact->_position;
 
-        vec3d euler = bact->rotation.GetEuler();
+        vec3d euler = bact->_rotation.GetEuler();
 
         oinf->rot_x = dround(euler.x * 127.0 / C_2PI);
         oinf->rot_y = dround(euler.y * 127.0 / C_2PI);
         oinf->rot_z = dround(euler.z * 127.0 / C_2PI);
 
-        NC_STACK_base *a4 = bact->self->getBACT_visProto();
+        NC_STACK_base *a4 = bact->getBACT_visProto();
 
-        if ( a4 == bact->vp_normal.base )
+        if ( a4 == bact->_vp_normal.base )
         {
             oinf->vp_id = 1;
         }
-        else if ( a4 == bact->vp_fire.base )
+        else if ( a4 == bact->_vp_fire.base )
         {
             oinf->vp_id = 2;
         }
-        else if ( a4 == bact->vp_wait.base )
+        else if ( a4 == bact->_vp_wait.base )
         {
             oinf->vp_id = 3;
         }
-        else if ( a4 == bact->vp_dead.base )
+        else if ( a4 == bact->_vp_dead.base )
         {
             oinf->vp_id = 4;
         }
-        else if ( a4 == bact->vp_megadeth.base )
+        else if ( a4 == bact->_vp_megadeth.base )
         {
             oinf->vp_id = 5;
         }
-        else if ( a4 == bact->vp_genesis.base )
+        else if ( a4 == bact->_vp_genesis.base )
         {
             oinf->vp_id = 6;
         }
@@ -5176,23 +4648,23 @@ void recorder_world_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd)
             oinf->vp_id = 0;
         }
 
-        if (bact->bact_type == BACT_TYPES_MISSLE)
+        if (bact->_bact_type == BACT_TYPES_MISSLE)
             oinf->objType = recorder::OBJ_TYPE_MISSILE;
         else
             oinf->objType = recorder::OBJ_TYPE_VEHICLE;
 
-        oinf->vhcl_id = bact->vehicleID;
+        oinf->vhcl_id = bact->_vehicleID;
 
         uint16_t *ssnd = &rcrd->sound_status[i * 2];
         ssnd[0] = 0;
 
         for (int j = 0; j < 16; j++)
         {
-            if (bact->soundcarrier.samples_data[j].flags & 0x92)
+            if (bact->_soundcarrier.samples_data[j].flags & 0x92)
                 ssnd[0] |= 1 << j;
         }
 
-        ssnd[1] = bact->soundcarrier.samples_data[0].pitch;
+        ssnd[1] = bact->_soundcarrier.samples_data[0].pitch;
     }
 }
 
@@ -5287,14 +4759,14 @@ void recorder_unpack_soundstates(recorder *rcrd)
     }
 }
 
-void recorder_write_frame(_NC_STACK_ypaworld *yw)
+void recorder_write_frame(NC_STACK_ypaworld *yw)
 {
     recorder *rcrd = yw->sceneRecorder;
 
     if ( rcrd->field_40 < 0 )
     {
         recorder_world_to_frame(yw, yw->sceneRecorder);
-        rcrd->ctrl_bact_id = yw->field_1b84->gid;
+        rcrd->ctrl_bact_id = yw->UserUnit->_gid;
         recorder_pack_soundstates(rcrd);
 
 
@@ -5343,7 +4815,7 @@ void recorder_write_frame(_NC_STACK_ypaworld *yw)
                 trec_bct *oinf = &rcrd->oinf[i];
 
                 rcrd->mfile->writeU32L(oinf->bact_id);
-                Vec3dWriteIFF(oinf->pos, rcrd->mfile, false);
+                TFEngine::Vec3dWriteIFF(oinf->pos, rcrd->mfile, false);
                 rcrd->mfile->writeS8(oinf->rot_x);
                 rcrd->mfile->writeS8(oinf->rot_y);
                 rcrd->mfile->writeS8(oinf->rot_z);
@@ -5378,7 +4850,7 @@ void recorder_write_frame(_NC_STACK_ypaworld *yw)
 }
 
 
-int ypaworld_func64__sub22__sub0(_NC_STACK_ypaworld *yw, int event_id)
+int ypaworld_func64__sub22__sub0(NC_STACK_ypaworld *yw, int event_id)
 {
     evnt *ev = &yw->map_events->evnts[event_id];
 
@@ -5501,7 +4973,7 @@ int ypaworld_func64__sub22__sub0(_NC_STACK_ypaworld *yw, int event_id)
     return 1;
 }
 
-void ypaworld_func64__sub22__sub1(_NC_STACK_ypaworld *yw, int evnt_id)
+void ypaworld_func64__sub22__sub1(NC_STACK_ypaworld *yw, int evnt_id)
 {
     map_event *mevent = yw->map_events;
     mevent->field_8 = evnt_id;
@@ -5522,10 +4994,10 @@ void ypaworld_func64__sub22__sub1(_NC_STACK_ypaworld *yw, int evnt_id)
 
     arg159.txt = NULL;
 
-    yw->self_full->ypaworld_func159(&arg159);
+    yw->ypaworld_func159(&arg159);
 }
 
-void ypaworld_func64__sub22(_NC_STACK_ypaworld *yw)
+void ypaworld_func64__sub22(NC_STACK_ypaworld *yw)
 {
     map_event *mevent = yw->map_events;
     if ( mevent->event_loop_id )
@@ -5592,37 +5064,34 @@ int recorder_open_replay(recorder *rcrd)
 }
 
 
-int recorder_create_camera(_NC_STACK_ypaworld *yw)
+int recorder_create_camera(NC_STACK_ypaworld *yw)
 {
     IDVList init_vals;
-    init_vals.Add(NC_STACK_ypabact::BACT_ATT_WORLD, yw->self_full);
+    init_vals.Add(NC_STACK_ypabact::BACT_ATT_WORLD, yw);
 
-    NC_STACK_ypabact *bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class("ypabact.class", &init_vals) );
+    NC_STACK_ypabact *bacto = Nucleus::CInit<NC_STACK_ypabact>(init_vals);
 
     if ( !bacto )
         return 0;
 
-    __NC_STACK_ypabact *bact = &bacto->ypabact;
-
     bacto->Renew();
 
-    bact->gid = 0;
-    bact->owner = 1;
+    bacto->_gid = 0;
+    bacto->_owner = 1;
 
-    bact->rotation = mat3x3::Ident();
+    bacto->_rotation = mat3x3::Ident();
 
-    SFXEngine::SFXe.sub_423DB0(&bact->soundcarrier);
+    SFXEngine::SFXe.sub_423DB0(&bacto->_soundcarrier);
 
-    yw->self_full->ypaworld_func134(bacto);
+    yw->ypaworld_func134(bacto);
 
     bacto->setBACT_viewer(1);
     bacto->setBACT_inputting(1);
 
-    yw->field_1b78 = bacto;
-    yw->field_1b80 = bact;
-    yw->field_1b88 = &bact->subjects_list;
+    yw->UserRobo = bacto;
+    yw->field_1b88 = &bacto->_subjects_list;
 
-    sub_430A20(&bact->tForm);
+    TFEngine::Engine.SetViewPoint(&bacto->_tForm);
 
     return 1;
 }
@@ -5658,7 +5127,7 @@ void recorder_read_framedata(recorder *rcrd)
                 trec_bct *oinf = &rcrd->oinf[i];
 
                 rcrd->mfile->readU32L(oinf->bact_id);
-                Vec3dReadIFF(oinf->pos, rcrd->mfile, false);
+                TFEngine::Vec3dReadIFF(oinf->pos, rcrd->mfile, false);
                 rcrd->mfile->readS8(oinf->rot_x);
                 rcrd->mfile->readS8(oinf->rot_y);
                 rcrd->mfile->readS8(oinf->rot_z);
@@ -5699,10 +5168,9 @@ void recorder_read_framedata(recorder *rcrd)
     }
 }
 
-__NC_STACK_ypabact *recorder_newObject(_NC_STACK_ypaworld *yw, trec_bct *oinf)
+NC_STACK_ypabact *recorder_newObject(NC_STACK_ypaworld *yw, trec_bct *oinf)
 {
     NC_STACK_ypabact *bacto = NULL;
-    __NC_STACK_ypabact *bact = NULL;
 
     if ( oinf->objType == recorder::OBJ_TYPE_VEHICLE )
     {
@@ -5718,26 +5186,24 @@ __NC_STACK_ypabact *recorder_newObject(_NC_STACK_ypaworld *yw, trec_bct *oinf)
 
             prot->model_id = 1;
 
-            bacto = yw->self_full->ypaworld_func146(&arg146);
+            bacto = yw->ypaworld_func146(&arg146);
 
             yw->VhclProtos[oinf->vhcl_id].model_id = v6;
         }
         else
         {
             IDVList init_vals;
-            init_vals.Add(NC_STACK_ypabact::BACT_ATT_WORLD, yw->self_full);
+            init_vals.Add(NC_STACK_ypabact::BACT_ATT_WORLD, yw);
 
-            bacto = dynamic_cast<NC_STACK_ypabact *>( init_get_class("ypabact.class", &init_vals) );
+            bacto = Nucleus::CInit<NC_STACK_ypabact>(init_vals);
             if ( bacto )
             {
-                bact = &bacto->ypabact;
-
                 bacto->Renew();
 
-                bact->gid = 0;
-                bact->owner = 1;
+                bacto->_gid = 0;
+                bacto->_owner = 1;
 
-                bact->rotation = mat3x3::Ident();
+                bacto->_rotation = mat3x3::Ident();
             }
         }
     }
@@ -5747,124 +5213,121 @@ __NC_STACK_ypabact *recorder_newObject(_NC_STACK_ypaworld *yw, trec_bct *oinf)
         arg147.vehicle_id = oinf->vhcl_id;
         arg147.pos = vec3d(0.0, 0.0, 0.0);
 
-        bacto = yw->self_full->ypaworld_func147(&arg147);
+        bacto = yw->ypaworld_func147(&arg147);
     }
 
     if ( bacto )
     {
-        bact = &bacto->ypabact;
+        if ( bacto->_parent )
+            Remove(&bacto->_subject_node);
 
-        if ( bact->parent_bacto )
-            Remove(&bact->subject_node);
-
-        bact->gid = oinf->bact_id;
-        bact->host_station = (NC_STACK_yparobo *)yw->field_1b7c;
-        bact->parent_bacto = yw->field_1b7c;
-        bact->parent_bact = yw->field_1b84;
+        bacto->_gid = oinf->bact_id;
+        bacto->_host_station = (NC_STACK_yparobo *)yw->UserUnit;
+        bacto->_parent = yw->UserUnit;
     }
 
-    return bact;
+    return bacto;
 }
 
-void recorder_set_bact_pos(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, const vec3d &pos)
+void recorder_set_bact_pos(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact, const vec3d &pos)
 {
     yw_130arg arg130;
     arg130.pos_x = pos.x;
     arg130.pos_z = pos.z;
 
-    if ( yw->self_full->ypaworld_func130(&arg130) )
+    if ( yw->ypaworld_func130(&arg130) )
     {
-        if ( bact->pSector )
-            Remove(bact);
+        if ( bact->_pSector )
+            bact->_cellRef.Detach();
 
-        AddTail(&arg130.pcell->units_list, bact);
+        bact->_cellRef = arg130.pcell->unitsList.push_back(bact);
 
-        bact->pSector = arg130.pcell;
-        bact->old_pos = bact->position;
-        bact->position = pos;
-        bact->sectX = arg130.sec_x;
-        bact->sectY = arg130.sec_z;
+        bact->_pSector = arg130.pcell;
+        bact->_old_pos = bact->_position;
+        bact->_position = pos;
+        bact->_sectX = arg130.sec_x;
+        bact->_sectY = arg130.sec_z;
     }
 }
 
-void recorder_updateObject(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, trec_bct *oinf, uint16_t *ssnd, float a5, float a6)
+void recorder_updateObject(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact, trec_bct *oinf, uint16_t *ssnd, float a5, float a6)
 {
     vec3d bct_pos;
-    bct_pos = (oinf->pos - bact->position) * a5 + bact->position;
+    bct_pos = (oinf->pos - bact->_position) * a5 + bact->_position;
 
     recorder_set_bact_pos(yw, bact, bct_pos);
 
-    bact->fly_dir = bact->position - bact->old_pos;
+    bact->_fly_dir = bact->_position - bact->_old_pos;
 
-    float ln = bact->fly_dir.length();
+    float ln = bact->_fly_dir.length();
     if ( ln > 0.0 )
     {
-        bact->fly_dir /= ln;
+        bact->_fly_dir /= ln;
 
         if ( a6 <= 0.0 )
-            bact->fly_dir_length = 0;
+            bact->_fly_dir_length = 0;
         else
-            bact->fly_dir_length = (ln / a6) / 6.0;
+            bact->_fly_dir_length = (ln / a6) / 6.0;
     }
     else
     {
-        bact->fly_dir = vec3d::OX(1.0);
+        bact->_fly_dir = vec3d::OX(1.0);
 
-        bact->fly_dir_length = 0;
+        bact->_fly_dir_length = 0;
     }
 
     mat3x3 tmp = mat3x3::Euler( vec3d(oinf->rot_x, oinf->rot_y, oinf->rot_z) / 127.0 * C_2PI );
 
-    vec3d axisX = (tmp.AxisX() - bact->rotation.AxisX()) * a5 + bact->rotation.AxisX();
+    vec3d axisX = (tmp.AxisX() - bact->_rotation.AxisX()) * a5 + bact->_rotation.AxisX();
 
     if ( axisX.normalise() == 0.0 )
         axisX = vec3d::OX(1.0);
 
-    vec3d axisY = (tmp.AxisY() - bact->rotation.AxisY()) * a5 + bact->rotation.AxisY();
+    vec3d axisY = (tmp.AxisY() - bact->_rotation.AxisY()) * a5 + bact->_rotation.AxisY();
 
     if ( axisY.normalise() == 0.0 )
         axisY = vec3d::OY(1.0);
 
-    vec3d axisZ = (tmp.AxisZ() - bact->rotation.AxisZ()) * a5 + bact->rotation.AxisZ();
+    vec3d axisZ = (tmp.AxisZ() - bact->_rotation.AxisZ()) * a5 + bact->_rotation.AxisZ();
 
     if ( axisZ.normalise() == 0.0 )
         axisZ = vec3d::OZ(1.0);
 
-    bact->rotation = mat3x3::Basis(axisX, axisY, axisZ);
+    bact->_rotation = mat3x3::Basis(axisX, axisY, axisZ);
 
-    TForm3D *v43 = NULL;
+    TFEngine::TForm3D *v43 = NULL;
     NC_STACK_base *v44 = NULL;
 
     switch ( oinf->vp_id )
     {
     case 1:
-        v43 = bact->vp_normal.trigo;
-        v44 = bact->vp_normal.base;
+        v43 = bact->_vp_normal.trigo;
+        v44 = bact->_vp_normal.base;
         break;
 
     case 2:
-        v43 = bact->vp_fire.trigo;
-        v44 = bact->vp_fire.base;
+        v43 = bact->_vp_fire.trigo;
+        v44 = bact->_vp_fire.base;
         break;
 
     case 3:
-        v43 = bact->vp_wait.trigo;
-        v44 = bact->vp_wait.base;
+        v43 = bact->_vp_wait.trigo;
+        v44 = bact->_vp_wait.base;
         break;
 
     case 4:
-        v43 = bact->vp_dead.trigo;
-        v44 = bact->vp_dead.base;
+        v43 = bact->_vp_dead.trigo;
+        v44 = bact->_vp_dead.base;
         break;
 
     case 5:
-        v43 = bact->vp_megadeth.trigo;
-        v44 = bact->vp_megadeth.base;
+        v43 = bact->_vp_megadeth.trigo;
+        v44 = bact->_vp_megadeth.base;
         break;
 
     case 6:
-        v43 = bact->vp_genesis.trigo;
-        v44 = bact->vp_genesis.base;
+        v43 = bact->_vp_genesis.trigo;
+        v44 = bact->_vp_genesis.base;
         break;
 
     default:
@@ -5873,41 +5336,41 @@ void recorder_updateObject(_NC_STACK_ypaworld *yw, __NC_STACK_ypabact *bact, tre
 
     if ( v44 && v43 )
     {
-        bact->self->setBACT_visProto(v44);
-        bact->self->setBACT_vpTransform(v43);
+        bact->setBACT_visProto(v44);
+        bact->setBACT_vpTransform(v43);
     }
 
-    bact->soundcarrier.samples_data[0].pitch = ssnd[1];
+    bact->_soundcarrier.samples_data[0].pitch = ssnd[1];
 
     for(int i = 0; i < 16; i++)
     {
         int v48 = 1 << i;
         if ( v48 & ssnd[0] )
         {
-            if ( !(bact->soundFlags & v48) )
+            if ( !(bact->_soundFlags & v48) )
             {
-                bact->soundFlags |= v48;
-                SFXEngine::SFXe.startSound(&bact->soundcarrier, i);
+                bact->_soundFlags |= v48;
+                SFXEngine::SFXe.startSound(&bact->_soundcarrier, i);
             }
         }
         else
         {
-            if ( bact->soundFlags & v48 )
+            if ( bact->_soundFlags & v48 )
             {
-                bact->soundFlags &= ~v48;
+                bact->_soundFlags &= ~v48;
 
-                if ( bact->soundcarrier.samples_data[i].flags & 1 )
-                    SFXEngine::SFXe.sub_424000(&bact->soundcarrier, i);
+                if ( bact->_soundcarrier.samples_data[i].flags & 1 )
+                    SFXEngine::SFXe.sub_424000(&bact->_soundcarrier, i);
             }
         }
     }
 }
 
 
-void recorder_updateObjectList(_NC_STACK_ypaworld *yw, recorder *rcrd, float a5, int period)
+void recorder_updateObjectList(NC_STACK_ypaworld *yw, recorder *rcrd, float a5, int period)
 {
     float fperiod = period / 1000.0;
-    bact_node *v6 = (bact_node *)yw->field_1b84->subjects_list.head;
+    bact_node *v6 = (bact_node *)yw->UserUnit->_subjects_list.head;
 
     int i = 0;
 
@@ -5918,27 +5381,27 @@ void recorder_updateObjectList(_NC_STACK_ypaworld *yw, recorder *rcrd, float a5,
 
         if ( v6->next )
         {
-            if ( oinf->bact_id > v6->bact->gid )
+            if ( oinf->bact_id > v6->bact->_gid )
             {
                 bact_node *next = (bact_node *)v6->next;
 
-                yw->self_full->ypaworld_func144(v6->bacto);
+                yw->ypaworld_func144(v6->bact);
 
                 v6 = next;
             }
-            else if ( oinf->bact_id < v6->bact->gid )
+            else if ( oinf->bact_id < v6->bact->_gid )
             {
-                __NC_STACK_ypabact *v10 = recorder_newObject(yw, oinf);
+                NC_STACK_ypabact *v10 = recorder_newObject(yw, oinf);
 
                 if ( v10 )
                 {
                     recorder_updateObject(yw, v10, oinf, ssnd, 1.0, fperiod);
 
-                    v10->subject_node.prev = v6->prev;
-                    v10->subject_node.next = v6;
+                    v10->_subject_node.prev = v6->prev;
+                    v10->_subject_node.next = v6;
 
-                    v6->prev->next = &v10->subject_node;
-                    v6->prev = &v10->subject_node;
+                    v6->prev->next = &v10->_subject_node;
+                    v6->prev = &v10->_subject_node;
 
                     i++;
                 }
@@ -5953,15 +5416,15 @@ void recorder_updateObjectList(_NC_STACK_ypaworld *yw, recorder *rcrd, float a5,
         }
         else
         {
-            __NC_STACK_ypabact *v13 = recorder_newObject(yw, oinf);
+            NC_STACK_ypabact *v13 = recorder_newObject(yw, oinf);
 
             if ( v13 )
             {
                 recorder_updateObject(yw, v13, oinf, ssnd, 1.0, fperiod);
 
-                AddTail(&yw->field_1b84->subjects_list, &v13->subject_node);
+                AddTail(&yw->UserUnit->_subjects_list, &v13->_subject_node);
 
-                v6 = (bact_node *)v13->subject_node.next;
+                v6 = (bact_node *)v13->_subject_node.next;
 
                 i++;
             }
@@ -5972,13 +5435,13 @@ void recorder_updateObjectList(_NC_STACK_ypaworld *yw, recorder *rcrd, float a5,
     {
         bact_node *next = (bact_node *)v6->next;
 
-        yw->self_full->ypaworld_func144(v6->bacto);
+        yw->ypaworld_func144(v6->bact);
 
         v6 = next;
     }
 }
 
-int recorder_go_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd, int wanted_frame_id)
+int recorder_go_to_frame(NC_STACK_ypaworld *yw, recorder *rcrd, int wanted_frame_id)
 {
     int frame_id = wanted_frame_id;
     int cur_frame_id = 0;
@@ -6030,7 +5493,7 @@ int recorder_go_to_frame(_NC_STACK_ypaworld *yw, recorder *rcrd, int wanted_fram
 }
 
 
-void ypaworld_func163__sub1(_NC_STACK_ypaworld *yw, recorder *rcrd, int a3)
+void ypaworld_func163__sub1(NC_STACK_ypaworld *yw, recorder *rcrd, int a3)
 {
     if ( a3 )
     {
@@ -6071,7 +5534,7 @@ void ypaworld_func163__sub1(_NC_STACK_ypaworld *yw, recorder *rcrd, int a3)
     }
 }
 
-void ypaworld_func163__sub2__sub1(_NC_STACK_ypaworld *yw, float fperiod, struC5 *inpt)
+void ypaworld_func163__sub2__sub1(NC_STACK_ypaworld *yw, float fperiod, struC5 *inpt)
 {
     recorder *rcrd = yw->replayer;
 
@@ -6107,7 +5570,7 @@ void ypaworld_func163__sub2__sub1(_NC_STACK_ypaworld *yw, float fperiod, struC5 
     rcrd->field_44.x += v21 * v13;
 }
 
-void ypaworld_func163__sub2__sub0(_NC_STACK_ypaworld *yw, float fperiod, struC5 *inpt)
+void ypaworld_func163__sub2__sub0(NC_STACK_ypaworld *yw, float fperiod, struC5 *inpt)
 {
     float v3 = inpt->sliders_vars[10] * 2.5 * fperiod;
 
@@ -6122,49 +5585,49 @@ void ypaworld_func163__sub2__sub0(_NC_STACK_ypaworld *yw, float fperiod, struC5 
     }
 }
 
-void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_ypabact *bact, struC5 *inpt)
+void NC_STACK_ypaworld::CameraPrepareRender(recorder *rcrd, NC_STACK_ypabact *bact, struC5 *inpt)
 {
     extern tehMap robo_map;
     extern squadMan squadron_manager;
 
     float fperiod = inpt->period / 1000.0;
 
-    if ( yw->field_17c0 || !(inpt->winp131arg.flag & 0x80) )
+    if ( field_17c0 || !(inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_DOWN) )
     {
-        if ( yw->field_17c0 )
+        if ( field_17c0 )
         {
-            if ( inpt->winp131arg.flag & 0x80 )
-                yw->field_17c0 = 0;
+            if ( inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_DOWN )
+                field_17c0 = 0;
         }
     }
     else
     {
-        if ( inpt->winp131arg.selected_btn != &robo_map.dialogBox  &&  inpt->winp131arg.selected_btn != &squadron_manager.lstvw.dialogBox )
-            yw->field_17c0 = 1;
+        if ( inpt->ClickInf.selected_btn != &robo_map  &&  inpt->ClickInf.selected_btn != &squadron_manager )
+            field_17c0 = 1;
     }
 
     if ( inpt->but_flags & 1 )
         rcrd->rotation_matrix = mat3x3::Ident();
 
-    ypaworld_func163__sub2__sub1(yw, fperiod, inpt);
+    ypaworld_func163__sub2__sub1(this, fperiod, inpt);
 
-    if ( yw->field_17c0 )
-        ypaworld_func163__sub2__sub0(yw, fperiod, inpt);
+    if ( field_17c0 )
+        ypaworld_func163__sub2__sub0(this, fperiod, inpt);
 
     if ( rcrd->field_80 == 16 )
     {
-        recorder_set_bact_pos(yw, bact, rcrd->field_44);
-        bact->rotation = rcrd->rotation_matrix;
+        recorder_set_bact_pos(this, bact, rcrd->field_44);
+        bact->_rotation = rcrd->rotation_matrix;
     }
     else if ( rcrd->field_80 == 18 )
     {
 
-        bact_node *v11 = (bact_node *)yw->field_1b88->head;
-        __NC_STACK_ypabact *v12 = NULL;
+        bact_node *v11 = (bact_node *)field_1b88->head;
+        NC_STACK_ypabact *v12 = NULL;
 
         while (v11->next)
         {
-            if ( rcrd->field_84 == v11->bact->gid )
+            if ( rcrd->field_84 == v11->bact->_gid )
             {
                 v12 = v11->bact;
                 break;
@@ -6175,20 +5638,20 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
 
         if ( v12 )
         {
-            vec3d v35 = v12->position + v12->rotation.Transpose().Transform(rcrd->field_44);
-            recorder_set_bact_pos(yw, bact, v35);
+            vec3d v35 = v12->_position + v12->_rotation.Transpose().Transform(rcrd->field_44);
+            recorder_set_bact_pos(this, bact, v35);
 
-            bact->rotation = rcrd->rotation_matrix * v12->rotation;
+            bact->_rotation = rcrd->rotation_matrix * v12->_rotation;
         }
     }
     else if ( rcrd->field_80 == 20 )
     {
-        bact_node *v17 = (bact_node *)yw->field_1b88->head;
-        __NC_STACK_ypabact *v18 = NULL;
+        bact_node *v17 = (bact_node *)field_1b88->head;
+        NC_STACK_ypabact *v18 = NULL;
 
         while (v17->next)
         {
-            if ( rcrd->ctrl_bact_id == v17->bact->gid )
+            if ( rcrd->ctrl_bact_id == v17->bact->_gid )
             {
                 v18 = v17->bact;
                 break;
@@ -6199,36 +5662,36 @@ void ypaworld_func163__sub2(_NC_STACK_ypaworld *yw, recorder *rcrd, __NC_STACK_y
 
         if ( v18 )
         {
-            vec3d a3a = v18->position + v18->rotation.Transpose().Transform(rcrd->field_44);
-            recorder_set_bact_pos(yw, bact, a3a);
+            vec3d a3a = v18->_position + v18->_rotation.Transpose().Transform(rcrd->field_44);
+            recorder_set_bact_pos(this, bact, a3a);
 
-            bact->rotation = rcrd->rotation_matrix * v18->rotation;
+            bact->_rotation = rcrd->rotation_matrix * v18->_rotation;
         }
     }
 
-    bact->fly_dir = bact->old_pos - bact->position;
+    bact->_fly_dir = bact->_old_pos - bact->_position;
 
-    float v39 = bact->fly_dir.length();
+    float v39 = bact->_fly_dir.length();
     if ( v39 <= 0.0 )
     {
-        bact->fly_dir = vec3d::OX(1.0);
-        bact->fly_dir_length = 0;
+        bact->_fly_dir = vec3d::OX(1.0);
+        bact->_fly_dir_length = 0;
     }
     else
     {
-        bact->fly_dir /= v39;
+        bact->_fly_dir /= v39;
 
         if ( fperiod <= 0.0 )
-            bact->fly_dir_length = 0;
+            bact->_fly_dir_length = 0;
         else
-            bact->fly_dir_length = (v39 / fperiod) / 6.0;
+            bact->_fly_dir_length = (v39 / fperiod) / 6.0;
     }
 
-    bact->tForm.locPos = bact->position;
-    bact->tForm.locSclRot = bact->rotation;
+    bact->_tForm.locPos = bact->_position;
+    bact->_tForm.locSclRot = bact->_rotation;
 }
 
-char *sub_445654(_NC_STACK_ypaworld *yw, char *in, char *buf, const char *fmt, ...)
+char *sub_445654(NC_STACK_ypaworld *yw, char *in, char *buf, const char *fmt, ...)
 {
     char *cur = in;
 
@@ -6246,7 +5709,7 @@ char *sub_445654(_NC_STACK_ypaworld *yw, char *in, char *buf, const char *fmt, .
     return cur;
 }
 
-void debug_count_units(_NC_STACK_ypaworld *yw)
+void debug_count_units(NC_STACK_ypaworld *yw)
 {
     for (int i = 0; i < 8; i++)
     {
@@ -6267,39 +5730,39 @@ void debug_count_units(_NC_STACK_ypaworld *yw)
 
     while ( robos->next )
     {
-        yw->dbg_num_robo_counter[ robos->bact->owner ]++;
+        yw->dbg_num_robo_counter[ robos->bact->_owner ]++;
 
-        if ( robos->bact->owner )
+        if ( robos->bact->_owner )
         {
-            bact_node *commanders = (bact_node *)robos->bact->subjects_list.head;
+            bact_node *commanders = (bact_node *)robos->bact->_subjects_list.head;
 
             while ( commanders->next )
             {
                 int v5 = 0;
 
-                if ( commanders->bact->bact_type == BACT_TYPES_GUN )
+                if ( commanders->bact->_bact_type == BACT_TYPES_GUN )
                 {
                     v5 = 1;
-                    yw->dbg_num_flk_counter[ commanders->bact->owner ]++;
+                    yw->dbg_num_flk_counter[ commanders->bact->_owner ]++;
                 }
                 else
                 {
-                    yw->dbg_num_sqd_counter[ commanders->bact->owner ]++;
-                    yw->dbg_num_vhcl_counter[ commanders->bact->owner ]++;
+                    yw->dbg_num_sqd_counter[ commanders->bact->_owner ]++;
+                    yw->dbg_num_vhcl_counter[ commanders->bact->_owner ]++;
                 }
 
-                yw->dbg_num_wpn_counter[ commanders->bact->owner ] += commanders->bact->missiles_list.size();
+                yw->dbg_num_wpn_counter[ commanders->bact->_owner ] += commanders->bact->_missiles_list.size();
 
-                bact_node *slaves = (bact_node *)commanders->bact->subjects_list.head;
+                bact_node *slaves = (bact_node *)commanders->bact->_subjects_list.head;
                 while (  slaves->next )
                 {
                     if ( v5 )
-                        yw->dbg_num_flk_counter[ slaves->bact->owner ]++;
+                        yw->dbg_num_flk_counter[ slaves->bact->_owner ]++;
                     else
-                        yw->dbg_num_vhcl_counter[ commanders->bact->owner ]++;
+                        yw->dbg_num_vhcl_counter[ commanders->bact->_owner ]++;
 
 
-                    yw->dbg_num_wpn_counter[ commanders->bact->owner ] += slaves->bact->missiles_list.size();
+                    yw->dbg_num_wpn_counter[ commanders->bact->_owner ] += slaves->bact->_missiles_list.size();
 
                     slaves = (bact_node *)slaves->next;
                 }
@@ -6336,7 +5799,7 @@ void debug_count_units(_NC_STACK_ypaworld *yw)
         yw->dbg_num_robo_max = yw->dbg_num_robo;
 }
 
-void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
+void debug_info_draw(NC_STACK_ypaworld *yw, struC5 *inpt)
 {
     if ( yw->field_1b68 == 0)
     {
@@ -6408,7 +5871,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
             cmd = sub_445654(yw, cmd, buf_sprintf, "prof net: %d", yw->p_1_grp[0][6]);
             FontUA::next_line(&cmd);
 
-            cmd = sub_445654(yw, cmd, buf_sprintf, "sec type/wtype: %d/%d", yw->field_1b84->pSector->type_id, yw->field_1b84->pSector->w_type);
+            cmd = sub_445654(yw, cmd, buf_sprintf, "sec type/wtype: %d/%d", yw->UserUnit->_pSector->type_id, yw->UserUnit->_pSector->w_type);
             FontUA::next_line(&cmd);
 
             cmd = sub_445654(yw, cmd, buf_sprintf, "beam energy: %d", yw->beamenergy);
@@ -6429,7 +5892,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
             cmd = sub_445654(yw, cmd, buf_sprintf, "num wpn: %d,%d", yw->dbg_num_wpn, yw->dbg_num_wpn_max);
             FontUA::next_line(&cmd);
 
-            cmd = sub_445654(yw, cmd, buf_sprintf, "reload const: %d", yw->field_1b80->reload_const);
+            cmd = sub_445654(yw, cmd, buf_sprintf, "reload const: %d", yw->UserRobo->_reload_const);
             FontUA::next_line(&cmd);
 
             cmd = sub_445654(
@@ -6553,7 +6016,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 if ( yw->windp )
                 {
                     int v100[7];
-                    yw->windp->windp_func91(v100);
+                    yw->windp->GetStats(v100);
 
                     FontUA::next_line(&cmd);
 
@@ -6621,25 +6084,23 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                 if (v109)
                     break;
 
-                if ( v61->bact->bact_type == BACT_TYPES_ROBO && v61->bact->owner != 1 ) // FIXME owner
+                if ( v61->bact->_bact_type == BACT_TYPES_ROBO && v61->bact->_owner != 1 ) // FIXME owner
                 {
                     v110++;
 
                     if ( yw->field_1b68 - 3 <= v110 )
                     {
-                        NC_STACK_yparobo *roboo = dynamic_cast<NC_STACK_yparobo *>(v61->bacto);
-                        __NC_STACK_yparobo *robo = &roboo->stack__yparobo;
-                        __NC_STACK_ypabact *rbact = &roboo->ypabact;
+                        NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(v61->bact);
 
                         v109 = 1;
 
-                        cmd = sub_445654(yw, cmd, buf_sprintf, "robo owner %d with energy %d / %d / %d / %d", rbact->owner, rbact->energy, robo->field_509, robo->field_50D, rbact->energy_max);
+                        cmd = sub_445654(yw, cmd, buf_sprintf, "robo owner %d with energy %d / %d / %d / %d", robo->_owner, robo->_energy, robo->_roboBuildSpare, robo->_roboVehicleSpare, robo->_energy_max);
                         FontUA::next_line(&cmd);
 
                         const char *v71;
                         const char *v73;
 
-                        switch (robo->field_2FD)
+                        switch (robo->_roboBuildingDuty)
                         {
                         case 0x10:
                             v71 = "radar";
@@ -6662,7 +6123,7 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                             break;
                         }
 
-                        switch (robo->vehicle_type)
+                        switch (robo->_roboVehicleDuty)
                         {
                         case 0:
                             v73 = "nothing";
@@ -6693,81 +6154,81 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
                         FontUA::next_line(&cmd);
 
                         cmd = sub_445654(yw, cmd, buf_sprintf, "    wait power %d, radar %d, flak %d, location %d",
-                                         robo->field_265 / 1000,
-                                         robo->radar_delay / 1000,
-                                         robo->safety_delay / 1000,
-                                         robo->field_2B1 / 1000);
+                                         robo->_roboPowerDelay / 1000,
+                                         robo->_roboRadarDelay / 1000,
+                                         robo->_roboSafetyDelay / 1000,
+                                         robo->_roboPositionDelay / 1000);
 
                         FontUA::next_line(&cmd);
 
                         cmd = sub_445654(yw, cmd, buf_sprintf, "    wait conquer %d, defense %d, recon %d, robo %d",
-                                         robo->conq_delay / 1000,
-                                         robo->field_281 / 1000,
-                                         robo->field_2C9 / 1000,
-                                         robo->field_2E1 / 1000);
+                                         robo->_roboConqDelay / 1000,
+                                         robo->_roboEnemyDelay / 1000,
+                                         robo->_roboExploreDelay / 1000,
+                                         robo->_roboDangerDelay / 1000);
                         FontUA::next_line(&cmd);
 
                         cmd = sub_445654(yw, cmd, buf_sprintf, "    values  ");
                         FontUA::next_line(&cmd);
 
-                        if ( robo->field_265 > 0 )
+                        if ( robo->_roboPowerDelay > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "power -1, ");
                         else
-                            cmd = sub_445654(yw, cmd, buf_sprintf, "power %d, ", robo->field_251);
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "power %d, ", robo->_roboPowerValue);
 
                         FontUA::next_line(&cmd);
 
-                        if ( robo->radar_delay > 0 )
+                        if ( robo->_roboRadarDelay > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "radar -1, ");
                         else
-                            cmd = sub_445654(yw, cmd, buf_sprintf, "radar %d, ", robo->radar_value);
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "radar %d, ", robo->_roboRadarValue);
 
                         FontUA::next_line(&cmd);
 
-                        if ( robo->safety_delay > 0 )
+                        if ( robo->_roboSafetyDelay > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "flak -1, ");
                         else
-                            cmd = sub_445654(yw, cmd, buf_sprintf, "flak %d, ", robo->safety_value);
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "flak %d, ", robo->_roboSafetyValue);
 
                         FontUA::next_line(&cmd);
 
-                        if ( robo->field_2B1 > 0 )
+                        if ( robo->_roboPositionDelay > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "power -1, ");
                         else
-                            cmd = sub_445654(yw, cmd, buf_sprintf, "power %d, ", robo->field_29D);
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "power %d, ", robo->_roboPositionValue);
 
                         FontUA::next_line(&cmd);
 
-                        if ( robo->field_281 > 0 )
+                        if ( robo->_roboEnemyDelay > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "defense -1, ");
                         else
-                            cmd = sub_445654(yw, cmd, buf_sprintf, "defense %d, ", robo->field_269);
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "defense %d, ", robo->_roboEnemyValue);
 
                         FontUA::next_line(&cmd);
 
-                        if ( robo->conq_delay > 0 )
+                        if ( robo->_roboConqDelay > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "conquer -1, ");
                         else
-                            cmd = sub_445654(yw, cmd, buf_sprintf, "conquer %d, ", robo->conq_value);
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "conquer %d, ", robo->_roboConqValue);
 
                         FontUA::next_line(&cmd);
 
-                        if ( robo->field_2C9 > 0 )
+                        if ( robo->_roboExploreDelay > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "recon -1, ");
                         else
-                            cmd = sub_445654(yw, cmd, buf_sprintf, "recon %d, ", robo->field_2B5);
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "recon %d, ", robo->_roboExploreValue);
 
                         FontUA::next_line(&cmd);
 
-                        if ( robo->field_2E1 > 0 )
+                        if ( robo->_roboDangerDelay > 0 )
                             cmd = sub_445654(yw, cmd, buf_sprintf, "robo -1, ");
                         else
-                            cmd = sub_445654(yw, cmd, buf_sprintf, "robo %d, ", robo->field_2CD);
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "robo %d, ", robo->_roboDangerValue);
 
                         FontUA::next_line(&cmd);
 
-                        if ( robo->roboState & NC_STACK_yparobo::ROBOSTATE_DOCKINUSE )
-                            cmd = sub_445654(yw, cmd, buf_sprintf, "dock energy %d time %d", robo->dock_energ, robo->dock_time);
+                        if ( robo->_roboState & NC_STACK_yparobo::ROBOSTATE_DOCKINUSE )
+                            cmd = sub_445654(yw, cmd, buf_sprintf, "dock energy %d time %d", robo->_roboDockEnerg, robo->_roboDockTime);
                     }
                 }
 
@@ -6789,15 +6250,12 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
         FontUA::set_end(&cmd);
 
-        yw->win3d->LockSurface();
-
         w3d_a209 arg209;
         arg209.cmdbuf = dbg_txt;
         arg209.includ = 0;
 
-        yw->win3d->raster_func209(&arg209);
+        yw->_win3d->raster_func209(&arg209);
 
-        yw->win3d->UnlockSurface();
 
         if ( v104 )
         {
@@ -6817,15 +6275,15 @@ void debug_info_draw(_NC_STACK_ypaworld *yw, struC5 *inpt)
 
 //Scene events funcs
 
-int sub_4D51A4(_NC_STACK_ypaworld *yw)
+int sub_4D51A4(NC_STACK_ypaworld *yw)
 {
     bact_node *bct = (bact_node *)yw->bact_list.head;
 
     while ( bct->next )
     {
 
-        if ( bct->bact != yw->field_1b80 && bct->bact->bact_type == BACT_TYPES_ROBO && bct->bact->status != BACT_STATUS_DEAD )
-            return (yw->field_1b80 != yw->field_1b84 && !yw->field_1b70) || yw->field_2414;
+        if ( bct->bact != yw->UserRobo && bct->bact->_bact_type == BACT_TYPES_ROBO && bct->bact->_status != BACT_STATUS_DEAD )
+            return (yw->UserRobo != yw->UserUnit && !yw->field_1b70) || yw->field_2414;
 
         bct = (bact_node *)bct->next;
     }
@@ -6833,15 +6291,15 @@ int sub_4D51A4(_NC_STACK_ypaworld *yw)
     return 1;
 }
 
-int sub_4D5218(_NC_STACK_ypaworld *yw)
+int sub_4D5218(NC_STACK_ypaworld *yw)
 {
     bact_node *bct = (bact_node *)yw->bact_list.head;
 
     while ( bct->next )
     {
 
-        if ( bct->bact != yw->field_1b80 && bct->bact->bact_type == BACT_TYPES_ROBO && bct->bact->status != BACT_STATUS_DEAD )
-            return (yw->field_1b80 != yw->field_1b84 && !yw->field_1b70) || yw->field_2414 <= 0;
+        if ( bct->bact != yw->UserRobo && bct->bact->_bact_type == BACT_TYPES_ROBO && bct->bact->_status != BACT_STATUS_DEAD )
+            return (yw->UserRobo != yw->UserUnit && !yw->field_1b70) || yw->field_2414 <= 0;
 
         bct = (bact_node *)bct->next;
     }
@@ -6849,14 +6307,14 @@ int sub_4D5218(_NC_STACK_ypaworld *yw)
     return 1;
 }
 
-int sub_4D5160(_NC_STACK_ypaworld *yw)
+int sub_4D5160(NC_STACK_ypaworld *yw)
 {
     bact_node *bct = (bact_node *)yw->bact_list.head;
 
     while ( bct->next )
     {
 
-        if ( bct->bact != yw->field_1b80 && bct->bact->bact_type == BACT_TYPES_ROBO && bct->bact->status != BACT_STATUS_DEAD )
+        if ( bct->bact != yw->UserRobo && bct->bact->_bact_type == BACT_TYPES_ROBO && bct->bact->_status != BACT_STATUS_DEAD )
             return 0;
 
         bct = (bact_node *)bct->next;
@@ -6865,7 +6323,7 @@ int sub_4D5160(_NC_STACK_ypaworld *yw)
     return 1;
 }
 
-int sub_4D528C(_NC_STACK_ypaworld *yw)
+int sub_4D528C(NC_STACK_ypaworld *yw)
 {
     extern tehMap robo_map;
 
@@ -6874,8 +6332,8 @@ int sub_4D528C(_NC_STACK_ypaworld *yw)
     while ( bct->next )
     {
 
-        if ( bct->bact != yw->field_1b80 && bct->bact->bact_type == BACT_TYPES_ROBO && bct->bact->status != BACT_STATUS_DEAD )
-            return (yw->field_1b80 != yw->field_1b84 && !yw->field_1b70) || !(robo_map.flags & GuiBase::FLAG_CLOSED);
+        if ( bct->bact != yw->UserRobo && bct->bact->_bact_type == BACT_TYPES_ROBO && bct->bact->_status != BACT_STATUS_DEAD )
+            return (yw->UserRobo != yw->UserUnit && !yw->field_1b70) || robo_map.IsOpen();
 
         bct = (bact_node *)bct->next;
     }
@@ -6883,7 +6341,7 @@ int sub_4D528C(_NC_STACK_ypaworld *yw)
     return 1;
 }
 
-int sub_4D5300(_NC_STACK_ypaworld *yw)
+int sub_4D5300(NC_STACK_ypaworld *yw)
 {
     if ( !yw->field_38 )
         return 0;
@@ -6892,7 +6350,7 @@ int sub_4D5300(_NC_STACK_ypaworld *yw)
     {
         if ( yw->field_34[i].p_cell )
         {
-            if ( yw->field_34[i].p_cell->owner == yw->field_1b80->owner )
+            if ( yw->field_34[i].p_cell->owner == yw->UserRobo->_owner )
             {
                 return 1;
             }
@@ -6902,18 +6360,44 @@ int sub_4D5300(_NC_STACK_ypaworld *yw)
     return 0;
 }
 
-int sub_4D5348(_NC_STACK_ypaworld *yw)
+int sub_4D5348(NC_STACK_ypaworld *yw)
 {
-    return yw->field_1b80->pSector->w_type == 2;
+    return yw->UserRobo->_pSector->w_type == 2;
 }
 
-int sub_4D5360(_NC_STACK_ypaworld *yw)
+int sub_4D5360(NC_STACK_ypaworld *yw)
 {
-    for (int i = 0; i < yw->field_2d90->gate_count; i++)
+    for (const MapGate &gate : yw->_levelInfo->Gates)
     {
-        if ( yw->field_2d90->gates[i].pcell->w_type == 6 )
+        if ( gate.PCell->w_type == 6 )
             return 1;
     }
 
     return 0;
+}
+
+void NC_STACK_ypaworld::HistoryAktCreate(NC_STACK_ypabact *bact)
+{
+    ypaworld_func184( World::History::VhclCreate(bact->_owner, bact->_vehicleID, bact->_position.x * 256.0 / bact->_wrldX, bact->_position.z * 256.0 / bact->_wrldY) );
+}
+
+void NC_STACK_ypaworld::HistoryAktKill(NC_STACK_ypabact *bact)
+{
+    if ( bact->_killer )
+    {
+        uint8_t owners = (bact->_killer->_owner << 3) | bact->_owner;
+
+        if ( bact->_killer->getBACT_viewer() || (bact->_killer->_status_flg & BACT_STFLAG_ISVIEW) )
+            owners |= 0x80;
+
+        if ( bact->getBACT_viewer() || (bact->_status_flg & BACT_STFLAG_ISVIEW) )
+            owners |= 0x40;
+
+        uint16_t vp = bact->_vehicleID;
+
+        if ( bact->_bact_type == BACT_TYPES_ROBO )
+            vp |= 0x8000;
+
+        ypaworld_func184( World::History::VhclKill(owners, vp, bact->_position.x * 256.0 / bact->_wrldX, bact->_position.z * 256.0 / bact->_wrldY) );
+    }
 }

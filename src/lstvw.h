@@ -1,16 +1,21 @@
 #ifndef LSTVW_H_INCLUDED
 #define LSTVW_H_INCLUDED
 
-struct _NC_STACK_ypaworld;
+#include <list>
 
-struct GuiBase : public nnode
+struct NC_STACK_ypaworld;
+
+struct GuiBase;
+typedef std::list<GuiBase *> GuiBaseList;
+
+class GuiBase : public ClickBox
 {
+public:
     int flags;
-    ClickBox dialogBox;
     ClickBox iconBox;
     char *iconString;
     w3d_a209 cmdstrm;
-    void (*postDraw)(_NC_STACK_ypaworld *);
+    void (*postDraw)(NC_STACK_ypaworld *);
 
     enum FLAG
     {
@@ -25,14 +30,28 @@ struct GuiBase : public nnode
         FLAG_WITH_HELP = 0x100
     };
 
-    void OpenDialog(_NC_STACK_ypaworld *yw);
-    void CloseDialog(_NC_STACK_ypaworld *yw);
+    void Detach();
+    void Attach(GuiBaseList &);
 
-    static char * FormateTitle(_NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const char *title, char *in, uint8_t postf_char, int flag);
+    static char * FormateTitle(NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const char *title, char *in, uint8_t postf_char, int flag);
+
+    GuiBase() : flags(0), iconString(NULL), postDraw(NULL), AttachedTo(NULL) {};
+
+
+    inline bool IsClosed() {
+        return ((flags & FLAG_CLOSED) != 0);
+    };
+    inline bool IsOpen() {
+        return ((flags & FLAG_CLOSED) == 0);
+    };
+
+protected:
+    GuiBaseList *AttachedTo;
 };
 
-struct GuiList : public GuiBase
+class GuiList : public GuiBase
 {
+public:
     int scrollTimer;
     int listFlags;
     int closeChar;
@@ -138,27 +157,27 @@ struct GuiList : public GuiBase
     };
 
 
-    int Init(_NC_STACK_ypaworld *yw, tInit &parameters);
-    int InitBuffers(_NC_STACK_ypaworld *yw);
-    int initDialogStrings(_NC_STACK_ypaworld *yw);
+    int Init(NC_STACK_ypaworld *yw, tInit &parameters);
+    int InitBuffers(NC_STACK_ypaworld *yw);
+    int initDialogStrings(NC_STACK_ypaworld *yw);
     int initButtons();
 
     void Free();
 
-    void SetRect(_NC_STACK_ypaworld *yw, int xpos, int ypos);
+    void SetRect(NC_STACK_ypaworld *yw, int xpos, int ypos);
 
-    void Formate(_NC_STACK_ypaworld *yw);
-    void FormateTitle(_NC_STACK_ypaworld *yw);
-    void FormateScrollbar(_NC_STACK_ypaworld *yw);
-    void FormateItemBlock(_NC_STACK_ypaworld *yw);
-    void ScrollParamsFromEntries(_NC_STACK_ypaworld *yw);
+    void Formate(NC_STACK_ypaworld *yw);
+    void FormateTitle(NC_STACK_ypaworld *yw);
+    void FormateScrollbar(NC_STACK_ypaworld *yw);
+    void FormateItemBlock(NC_STACK_ypaworld *yw);
+    void ScrollParamsFromEntries(NC_STACK_ypaworld *yw);
 
-    void InputHandle(_NC_STACK_ypaworld *yw, struC5 *struc);
+    void InputHandle(NC_STACK_ypaworld *yw, struC5 *struc);
 
     void PosOnSelected(int a2);
 
-    char *ItemsPreLayout(_NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5);
-    char *ItemsPostLayout(_NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5);
+    char *ItemsPreLayout(NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5);
+    char *ItemsPostLayout(NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5);
 };
 
 

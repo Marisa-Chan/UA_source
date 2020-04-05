@@ -2,7 +2,6 @@
 #include <string.h>
 
 #include "includes.h"
-#include "def_parser.h"
 #include "yw.h"
 #include "yw_internal.h"
 #include "lstvw.h"
@@ -10,7 +9,7 @@
 
 extern GuiList stru_5C91D0;
 
-void ypaworld_func158__sub4__sub1__sub4__sub3(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub3(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
     SFXEngine::SFXe.StopMusicTrack();
     if ( yw->GameShell->missiontrack )
@@ -19,15 +18,15 @@ void ypaworld_func158__sub4__sub1__sub4__sub3(_NC_STACK_ypaworld *yw, struC5 *in
         SFXEngine::SFXe.PlayMusicTrack();
     }
 
-    brf->startTime = brf->currTime;
-    brf->briefStage = 5;
+    brf->StartTime = brf->CurrTime;
+    brf->Stage = 5;
 
-    brf->field_2F40.pbitm = brf->mbmap_img->getBMD_pBitmap();
+    brf->MapBlitParams.pbitm = brf->MbmapImg->GetResBmp();
 
-    brf->field_2F64.x1 = -0.4515625;
-    brf->field_2F64.y1 = -0.324999988079;
-    brf->field_2F64.x2 = brf->field_2F64.x1;
-    brf->field_2F64.y2 = brf->field_2F64.y1;
+    brf->MapBlitStart.x1 = -0.4515625;
+    brf->MapBlitStart.y1 = -0.324999988079;
+    brf->MapBlitStart.x2 = brf->MapBlitStart.x1;
+    brf->MapBlitStart.y2 = brf->MapBlitStart.y1;
 
     float v17, v16;
 
@@ -47,52 +46,52 @@ void ypaworld_func158__sub4__sub1__sub4__sub3(_NC_STACK_ypaworld *yw, struC5 *in
         v16 = (float)yw->sectors_maxY2 / (float)yw->sectors_maxX2;
     }
 
-    brf->field_2F40.float4 = -1.0;
-    brf->field_2F40.float8 = -1.0;
-    brf->field_2F40.floatC = 1.0;
-    brf->field_2F40.float10 = 1.0;
+    brf->MapBlitParams.float4 = -1.0;
+    brf->MapBlitParams.float8 = -1.0;
+    brf->MapBlitParams.floatC = 1.0;
+    brf->MapBlitParams.float10 = 1.0;
 
-    brf->field_2F74.x1 = -0.4515625 - v17 * 0.4828125;
-    brf->field_2F74.y1 = -0.325 - v16 * 0.6083333333333334;
-    brf->field_2F74.x2 = brf->field_2F74.x1 + v17 * 0.965625;
-    brf->field_2F74.y2 = brf->field_2F74.y1 + v16 * 1.216666666666667;
-    brf->field_2F40.float14 = brf->field_2F64.x1;
-    brf->field_2F40.float18 = brf->field_2F64.y1;
-    brf->field_2F40.float1C = brf->field_2F64.x2;
-    brf->field_2F40.float20 = brf->field_2F64.y2;
-    brf->field_2E80 = 0;
-    brf->field_2E84 = brf->currTime;
+    brf->MapBlitEnd.x1 = -0.4515625 - v17 * 0.4828125;
+    brf->MapBlitEnd.y1 = -0.325 - v16 * 0.6083333333333334;
+    brf->MapBlitEnd.x2 = brf->MapBlitEnd.x1 + v17 * 0.965625;
+    brf->MapBlitEnd.y2 = brf->MapBlitEnd.y1 + v16 * 1.216666666666667;
+    brf->MapBlitParams.float14 = brf->MapBlitStart.x1;
+    brf->MapBlitParams.float18 = brf->MapBlitStart.y1;
+    brf->MapBlitParams.float1C = brf->MapBlitStart.x2;
+    brf->MapBlitParams.float20 = brf->MapBlitStart.y2;
+    brf->TextTime = 0;
+    brf->PreTextTime = brf->CurrTime;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub4(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub4(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    int v5 = brf->currTime - brf->startTime;
+    int v5 = brf->CurrTime - brf->StartTime;
 
     if ( v5 >= 600 )
     {
-        brf->field_2F40.float14 = brf->field_2F74.x1;
-        brf->field_2F40.float18 = brf->field_2F74.y1;
-        brf->field_2F40.float1C = brf->field_2F74.x2;
-        brf->field_2F40.float20 = brf->field_2F74.y2;
-        brf->briefStage = 6;
+        brf->MapBlitParams.float14 = brf->MapBlitEnd.x1;
+        brf->MapBlitParams.float18 = brf->MapBlitEnd.y1;
+        brf->MapBlitParams.float1C = brf->MapBlitEnd.x2;
+        brf->MapBlitParams.float20 = brf->MapBlitEnd.y2;
+        brf->Stage = 6;
 
         displ_arg263 v4;
         v4.bitm = yw->pointers__bitm[5];
         v4.pointer_id = 6;
 
-        yw->win3d->display_func263(&v4);
+        yw->_win3d->display_func263(&v4);
     }
     else
     {
         float v3 = v5 * 0.0016666667;
-        brf->field_2F40.float14 = (brf->field_2F74.x1 - brf->field_2F64.x1) * v3 + brf->field_2F64.x1;
-        brf->field_2F40.float18 = (brf->field_2F74.y1 - brf->field_2F64.y1) * v3 + brf->field_2F64.y1;
-        brf->field_2F40.float1C = (brf->field_2F74.x2 - brf->field_2F64.x2) * v3 + brf->field_2F64.x2;
-        brf->field_2F40.float20 = (brf->field_2F74.y2 - brf->field_2F64.y2) * v3 + brf->field_2F64.y2;
+        brf->MapBlitParams.float14 = (brf->MapBlitEnd.x1 - brf->MapBlitStart.x1) * v3 + brf->MapBlitStart.x1;
+        brf->MapBlitParams.float18 = (brf->MapBlitEnd.y1 - brf->MapBlitStart.y1) * v3 + brf->MapBlitStart.y1;
+        brf->MapBlitParams.float1C = (brf->MapBlitEnd.x2 - brf->MapBlitStart.x2) * v3 + brf->MapBlitStart.x2;
+        brf->MapBlitParams.float20 = (brf->MapBlitEnd.y2 - brf->MapBlitStart.y2) * v3 + brf->MapBlitStart.y2;
     }
 }
 
-int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
+int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
 {
     char rsr[256];
     strcpy(rsr, get_prefix_replacement("rsrc"));
@@ -133,15 +132,14 @@ int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
             return 0;
         }
 
-        nlist *kid_list = yw->additionalSet->getBASE_kidList();
-
         int kid_id = 0;
+        BaseList &kids_list = yw->additionalSet->getBASE_kidList();
 
-        for (base_node *bnode = (base_node *)kid_list->head; bnode->next; bnode = (base_node *)bnode->next)
+        for(BaseList::iterator it = kids_list.begin(); it != kids_list.end(); it++)
         {
             if ( kid_id == 0 )
             {
-                if ( !sub_44A12C(yw, bnode->self_full) )
+                if ( !sub_44A12C(yw, *it) )
                 {
                     delete fil;
                     return 0;
@@ -149,7 +147,7 @@ int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
             }
             else if ( kid_id == 1 )
             {
-                if ( !yw_parse_lego(yw, fil, bnode->self_full) )
+                if ( !yw_parse_lego(yw, fil, *it) )
                 {
                     delete fil;
                     return 0;
@@ -169,7 +167,7 @@ int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
             }
             else if ( kid_id == 2 )
             {
-                if ( !sub_44A97C(yw, bnode->self_full) )
+                if ( !sub_44A97C(yw, *it) )
                 {
                     delete fil;
                     return 0;
@@ -187,159 +185,125 @@ int yw_MBLoadSet(_NC_STACK_ypaworld *yw, int setID)
     return 1;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub5(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub5(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    brf->field_2F84 = 1;
-    brf->field_2E80 = brf->currTime;
-    brf->tp2_count = 0;
+    brf->AddObjectsFlag = true;
+    brf->TextTime = brf->CurrTime;
+    brf->Objects.clear();
 
-    if ( yw_MBLoadSet(yw, brf->map_prototype.setNumber) )
+    if ( yw_MBLoadSet(yw, brf->Desc.SetID) )
     {
-        brf->briefStage = 7;
+        brf->Stage = 7;
 
         displ_arg263 v6;
         v6.bitm = yw->pointers__bitm[0];
         v6.pointer_id = 1;
 
-        yw->win3d->display_func263(&v6);
+        yw->_win3d->display_func263(&v6);
     }
     else
     {
-        brf->briefStage = 1;
+        brf->Stage = 1;
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub6(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub6(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    brf_obj *brobj = &brf->brf_objs;
-    brobj->field_0 = 0;
-    brobj->object_id = 0;
+    brf->ViewingObject = BriefObject();
 
-    brf->activeElement = -1;
-    brf->elementsCount = 1;
+    brf->ActiveElementID = -1;
+    brf->ElementsCount = 1;
 
-    brf->briefStage = 8;
-    brf->startTime = brf->currTime;
+    brf->Stage = 8;
+    brf->StartTime = brf->CurrTime;
 
-    brf->mouseSelectedElement = -1;
-    brf->field_2F90 = -1;
-    brf->field_2E88 = get_lang_string(yw->string_pointers_p2, 150, "YOU ARE HERE");
+    brf->SelectedObjID = -1;
+    brf->ObjDescription = get_lang_string(yw->string_pointers_p2, 150, "YOU ARE HERE");
 }
 
-int sub_4EBBA8(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, float xpos, float ypos, int a5, const char *title, int a7, int a8, int a9, int vehicle_id, int a11)
+void NC_STACK_ypaworld::BriefingSetObject(const BriefObject &obj, bool doAdd)
 {
-    brf_obj *brobj = &brf->brf_objs;
+    brief.ViewingObjectStartTime = brief.CurrTime;
+    
+    brief.ViewingObject = obj;
 
-    brf_t2 *brtp2 = &brf->tp2[brf->tp2_count];
+    if ( doAdd )
+        brief.Objects.push_back( obj );
 
-    brobj->field_C = brf->currTime;
-    brobj->xpos = xpos;
-    brobj->ypos = ypos;
-    brobj->field_2C = a5;
-    brobj->field_0 = a9;
-
-    brobj->object_id = vehicle_id;
-    memset(brobj->title, 0, 128);
-    strcpy(brobj->title, title);
-
-    if ( a11 )
-    {
-        brtp2->xpos = xpos;
-        brtp2->ypos = ypos;
-        brtp2->field_C = a7;
-        brtp2->field_D = a8;
-        brtp2->field_E = a5;
-
-        brtp2->field_8 = a9;
-        brtp2->vehicle_id = vehicle_id;
-        memset(brtp2->title, 0, 128);
-        strcpy(brtp2->title, title);
-
-        brf->tp2_count++;
-
-        if ( brf->tp2_count >= 32 )
-            brf->tp2_count = 31;
-    }
-
-    if ( yw->GameShell )
-        SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 11);
-
-    return 0;
+    if ( GameShell )
+        SFXEngine::SFXe.startSound(&GameShell->samples1_info, 11);
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub7(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub7(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    if ( brf->currTime - brf->startTime >= 2500 )
+    if ( brf->CurrTime - brf->StartTime >= 2500 )
     {
-        brf->briefStage = 9;
+        brf->Stage = 9;
     }
-    else if ( brf->activeElement )
+    else if ( brf->ActiveElementID )
     {
-        mapRobo *robo = brf->map_prototype.mapRobos;
-        const char *v6 = get_lang_string(yw->string_pointers_p2, robo[0].vehicle + 1200, yw->VhclProtos[ robo[0].vehicle ].name);
+        MapRobo &robo = brf->Desc.Robos[0];
+        const char *v6 = get_lang_string(yw->string_pointers_p2, robo.VhclID + 1200, yw->VhclProtos[ robo.VhclID ].name.c_str());
 
-        brf->activeElement = 0;
-        sub_4EBBA8(yw, brf, robo[0].pos_x, robo[0].pos_z, 25, v6, 26, robo[0].owner + 128, 2, robo[0].vehicle, brf->field_2F84);
+        brf->ActiveElementID = 0;
+        yw->BriefingSetObject( BriefObject(BriefObject::TYPE_VEHICLE, robo.VhclID, robo.Pos.x, robo.Pos.z,
+                                           26, 128 + robo.Owner, 25,
+                                           v6), 
+                               brf->AddObjectsFlag);
     }
 }
 
-void yw_BriefSetupKeySectors(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void yw_BriefSetupKeySectors(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    if ( brf->field_2F90 )
+    brf->ViewingObject = BriefObject();
+
+    brf->ActiveElementID = -1;
+    brf->ElementsCount = 0;
+    brf->StartTime = brf->CurrTime;
+
+    brf->ObjDescription = get_lang_string(yw->string_pointers_p2, 151, "PRIMARY TARGETS");
+
+    for (const MapGate &gate : yw->_levelInfo->Gates )
     {
-        brf->brf_objs.object_id = 0;
-        brf->brf_objs.field_0 = 0;
+        if ( gate.MbStatus != 1 )
+            brf->ElementsCount += gate.KeySectors.size();
     }
 
-    brf->activeElement = -1;
-    brf->elementsCount = 0;
-    brf->startTime = brf->currTime;
-
-    brf->field_2E88 = get_lang_string(yw->string_pointers_p2, 151, "PRIMARY TARGETS");
-
-    for (int i = 0; i < yw->field_2d90->gate_count; i++ )
-    {
-        gateProto *gate = &yw->field_2d90->gates[i];
-
-        if ( gate->mb_status != 1 )
-            brf->elementsCount += gate->keySectors_count;
-    }
-
-    if ( brf->elementsCount == 0 )
-        brf->briefStage = 12;
+    if ( brf->ElementsCount == 0 )
+        brf->Stage = 12;
     else
-        brf->briefStage = 11;
+        brf->Stage = 11;
 }
 
-void yw_BriefUpdateKeySectors(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void yw_BriefUpdateKeySectors(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    int elmID = (brf->currTime - brf->startTime) / 2500;
+    int elmID = (brf->CurrTime - brf->StartTime) / 2500;
 
-    if ( elmID >= brf->elementsCount )
+    if ( elmID >= brf->ElementsCount )
     {
-        brf->briefStage = 12;
+        brf->Stage = 12;
     }
-    else if ( elmID != brf->activeElement )
+    else if ( elmID != brf->ActiveElementID )
     {
-        brf->activeElement = elmID;
+        brf->ActiveElementID = elmID;
         int ksID = 0; /* Current key sector */
 
-        for (int i = 0; i <  yw->field_2d90->gate_count ; i++ )
+        for ( const MapGate &gate : yw->_levelInfo->Gates )
         {
-            if ( yw->field_2d90->gates[i].mb_status != 1 )
+            if ( gate.MbStatus != 1 )
             {
-                for (int j = 0; j < yw->field_2d90->gates[i].keySectors_count; j++)
+                for (const MapKeySector &ks : gate.KeySectors)
                 {
-                    keysec *ks = &yw->field_2d90->gates[i].keySectors[j];
-
                     if ( elmID == ksID)
                     {
-                        float xpos = ks->x * 1200.0 + 600.0;
-                        float ypos = -(ks->y * 1200.0 + 600.0);
-                        uint8_t v12 = *( (uint8_t *)brf->typ_map_bitm->buffer + ks->x + ks->y * brf->typ_map_bitm->width );
+                        float xpos = ks.x * 1200.0 + 600.0;
+                        float ypos = -(ks.y * 1200.0 + 600.0);
+                        uint8_t v12 = (*yw->typ_map)(ks.x, ks.y);
                         const char *v13 = get_lang_string(yw->string_pointers_p2, 157, "KEY SECTOR");
 
-                        sub_4EBBA8(yw, brf, xpos, ypos, 25, v13, 26, 146, 1, v12, brf->field_2F84);
+                        yw->BriefingSetObject( BriefObject( BriefObject::TYPE_SECTOR, v12, xpos, ypos, 26, 146, 25, 
+                                                            v13),
+                                               brf->AddObjectsFlag);
                     }
 
                     ksID++;
@@ -349,113 +313,100 @@ void yw_BriefUpdateKeySectors(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf 
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub10(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub10(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    if ( brf->field_2F90 )
+    brf->ViewingObject = BriefObject();
+
+    brf->ActiveElementID = -1;
+    brf->ElementsCount = 0;
+    brf->StartTime = brf->CurrTime;
+    brf->ObjDescription = get_lang_string(yw->string_pointers_p2, 152, "TECHNOLOGY UPGRADES");
+
+    for ( const MapGem &gem : yw->_Gems)
     {
-        brf->brf_objs.object_id = 0;
-        brf->brf_objs.field_0 = 0;
+        if ( gem.MbStatus != 1 )
+            brf->ElementsCount++;
     }
 
-    brf->activeElement = -1;
-    brf->elementsCount = 0;
-    brf->startTime = brf->currTime;
-    brf->field_2E88 = get_lang_string(yw->string_pointers_p2, 152, "TECHNOLOGY UPGRADES");
-
-    for (int i = 0; i < 8; i++)
-    {
-        if (yw->gems[i].field_0)
-        {
-            if ( yw->gems[i].mb_status != 1 )
-                brf->elementsCount++;
-        }
-    }
-
-    brf->briefStage = (brf->elementsCount == 0) + 14;
+    brf->Stage = (brf->ElementsCount == 0) + 14;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub11(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub11(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    int v5 = (brf->currTime - brf->startTime) / 2500;
-    if ( v5 >= brf->elementsCount )
+    int elmID = (brf->CurrTime - brf->StartTime) / 2500;
+    if ( elmID >= brf->ElementsCount )
     {
-        brf->briefStage = 15;
+        brf->Stage = 15;
     }
-    else if ( v5 != brf->activeElement )
+    else if ( elmID != brf->ActiveElementID )
     {
-        brf->activeElement = v5;
-        int v6 = v5;
+        brf->ActiveElementID = elmID;
 
-        gemProto * v9 = yw->gems;
+        const MapGem * pGem = &yw->_Gems[0];
 
-        for (int i = 0; i < 8; i++)
+        for (const MapGem &gem : yw->_Gems)
         {
-            v9 = &yw->gems[i];
+            pGem = &gem;
 
-            if (yw->gems[i].field_0)
+            if (gem.MbStatus != 1)
             {
-                if (yw->gems[i].mb_status != 1)
-                {
-                    if (v6 == 0)
-                        break;
+                if (elmID == 0)
+                    break;
 
-                    v6--;
-                }
+                elmID--;
             }
         }
 
-        float xpos = v9->sec_x * 1200.0 + 600.0;
-        float ypos = -(v9->sec_y * 1200.0 + 600.0);
-        int v13 = yw->BuildProtos[v9->building].sec_type;
+        float xpos = pGem->SecX * 1200.0 + 600.0;
+        float ypos = -(pGem->SecY * 1200.0 + 600.0);
+        int v13 = yw->BuildProtos[pGem->BuildingID].sec_type;
         const char *v14 = get_lang_string(yw->string_pointers_p2, 158, "TECH UPGRADE");
 
-        sub_4EBBA8(yw, brf, xpos, ypos, 25, v14, 26, 144, 1, v13, brf->field_2F84);
+        yw->BriefingSetObject( BriefObject( BriefObject::TYPE_SECTOR, v13, xpos, ypos, 26, 144, 25, 
+                                            v14 ),  
+                               brf->AddObjectsFlag);
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub12(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub12(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    if ( brf->field_2F90 )
+    brf->ViewingObject = BriefObject();
+
+    brf->ActiveElementID = -1;
+    brf->StartTime = brf->CurrTime;
+
+    brf->ObjDescription = get_lang_string(yw->string_pointers_p2, 153, "ENEMY DEFENSE STATIONS");
+    brf->ElementsCount = 0;
+
+    for (size_t i = 1; i < brf->Desc.Robos.size(); i++)
     {
-        brf->brf_objs.object_id = 0;
-        brf->brf_objs.field_0 = 0;
+        if (brf->Desc.Robos[i].MbStatus != 1)
+            brf->ElementsCount++;
     }
 
-    brf->activeElement = -1;
-    brf->startTime = brf->currTime;
-
-    brf->field_2E88 = get_lang_string(yw->string_pointers_p2, 153, "ENEMY DEFENSE STATIONS");
-    brf->elementsCount = 0;
-
-    for (int i = 1; i < brf->map_prototype.mapRobos_count; i++)
-    {
-        if (brf->map_prototype.mapRobos[i].mb_status != 1)
-            brf->elementsCount++;
-    }
-
-    brf->briefStage = (brf->elementsCount == 0) + 17;
+    brf->Stage = 17 + (brf->ElementsCount == 0);
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub13(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub13(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    int v5 = (brf->currTime - brf->startTime) / 2500;
+    int v5 = (brf->CurrTime - brf->StartTime) / 2500;
 
-    if ( v5 >= brf->elementsCount )
+    if ( v5 >= brf->ElementsCount )
     {
-        brf->briefStage = 18;
+        brf->Stage = 18;
     }
-    else if ( v5 != brf->activeElement )
+    else if ( v5 != brf->ActiveElementID )
     {
         int v6 = v5;
-        brf->activeElement = v5;
+        brf->ActiveElementID = v5;
 
-        mapRobo *v9 = &brf->map_prototype.mapRobos[1];
+        MapRobo *robo = &brf->Desc.Robos[1];
 
-        for (int i = 1; i < brf->map_prototype.mapRobos_count; i++)
+        for (size_t i = 1; i < brf->Desc.Robos.size(); i++)
         {
-            v9 = &brf->map_prototype.mapRobos[i];
+            robo = &brf->Desc.Robos[i];
 
-            if (brf->map_prototype.mapRobos[i].mb_status != 1)
+            if (robo->MbStatus != 1)
             {
                 if (v6 == 0)
                     break;
@@ -464,53 +415,51 @@ void ypaworld_func158__sub4__sub1__sub4__sub13(_NC_STACK_ypaworld *yw, struC5 *i
             }
         }
 
-        const char *v11 = get_lang_string(yw->string_pointers_p2, v9->vehicle + 1200, yw->VhclProtos[ v9->vehicle ].name);
-        sub_4EBBA8(yw, brf, v9->pos_x, v9->pos_z, 25, v11, 26, v9->owner + 128, 2, v9->vehicle, brf->field_2F84);
+        const char *v11 = get_lang_string(yw->string_pointers_p2, robo->VhclID + 1200, yw->VhclProtos[ robo->VhclID ].name.c_str());
+        yw->BriefingSetObject( BriefObject( BriefObject::TYPE_VEHICLE, robo->VhclID, robo->Pos.x, robo->Pos.z, 26, 128 + robo->Owner, 25, 
+                                            v11 ),  
+                               brf->AddObjectsFlag);
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub14(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub14(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    if ( brf->field_2F90 )
+    brf->ViewingObject = BriefObject();
+
+    brf->ActiveElementID = -1;
+    brf->ElementsCount = 0;
+    brf->StartTime = brf->CurrTime;
+
+    brf->ObjDescription = get_lang_string(yw->string_pointers_p2, 154, "ENEMY FORCES");
+
+    for ( const MapSquad &squad : brf->Desc.Squads )
     {
-        brf->brf_objs.object_id = 0;
-        brf->brf_objs.field_0 = 0;
+        if ( squad.Owner != brf->Desc.PlayerOwner && squad.MbStatus != 1)
+            brf->ElementsCount++;
     }
 
-    brf->activeElement = -1;
-    brf->elementsCount = 0;
-    brf->startTime = brf->currTime;
-
-    brf->field_2E88 = get_lang_string(yw->string_pointers_p2, 154, "ENEMY FORCES");
-
-    for (int i = 0; i < brf->map_prototype.squad_count; i++)
-    {
-        if ( brf->map_prototype.squads[i].owner != brf->map_prototype.playerOwner && brf->map_prototype.squads[i].mb_status != 1)
-            brf->elementsCount++;
-    }
-
-    brf->briefStage = (brf->elementsCount == 0) + 20;
+    brf->Stage = (brf->ElementsCount == 0) + 20;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub15(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub15(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    int v5 = (brf->currTime - brf->startTime) / 2500;
-    if ( v5 >= brf->elementsCount )
+    int v5 = (brf->CurrTime - brf->StartTime) / 2500;
+    if ( v5 >= brf->ElementsCount )
     {
-        brf->briefStage = 21;
+        brf->Stage = 21;
     }
-    else if ( v5 != brf->activeElement )
+    else if ( v5 != brf->ActiveElementID )
     {
-        brf->activeElement = v5;
+        brf->ActiveElementID = v5;
         int v6 = v5;
 
-        squadProto *v9 = NULL;
+        const MapSquad *squad = NULL;
 
-        for (int i = 0; i < brf->map_prototype.squad_count; i++)
+        for ( const MapSquad &it : brf->Desc.Squads )
         {
-            v9 = &brf->map_prototype.squads[i];
+            squad = &it;
 
-            if ( brf->map_prototype.squads[i].owner != brf->map_prototype.playerOwner && brf->map_prototype.squads[i].mb_status != 1)
+            if ( it.Owner != brf->Desc.PlayerOwner && it.MbStatus != 1)
             {
                 if ( v6 == 0 )
                     break;
@@ -518,62 +467,59 @@ void ypaworld_func158__sub4__sub1__sub4__sub15(_NC_STACK_ypaworld *yw, struC5 *i
             }
         }
 
-        if ( v9 )
+        if ( squad )
         {
-            const char *v11 = get_lang_string(yw->string_pointers_p2, v9->vehicle + 1200, yw->VhclProtos[v9->vehicle].name);
+            const char *v11 = get_lang_string(yw->string_pointers_p2, squad->VhclID + 1200, yw->VhclProtos[squad->VhclID].name.c_str());
 
             char a1[128];
-            sprintf(a1, "%d %s", v9->num, v11);
+            sprintf(a1, "%d %s", squad->Count, v11);
 
-            sub_4EBBA8(yw, brf, v9->pos_x, v9->pos_z, 36, a1, 26, v9->owner + 136, 2, v9->vehicle, brf->field_2F84);
+            yw->BriefingSetObject( BriefObject( BriefObject::TYPE_VEHICLE, squad->VhclID, squad->X, squad->Z, 26, 136 + squad->Owner, 36, 
+                                                a1 ),  
+                                   brf->AddObjectsFlag);
         }
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub16(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub16(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    if ( brf->field_2F90 )
+    brf->ViewingObject = BriefObject();
+    
+    brf->ActiveElementID = -1;
+    brf->ElementsCount = 0;
+    brf->Stage = 23;
+    brf->ObjDescription = "FRIENDLY SUPPORT FORCES";
+
+    brf->StartTime = brf->CurrTime;
+
+    for ( const MapSquad &it : brf->Desc.Squads )
     {
-        brf->brf_objs.object_id = 0;
-        brf->brf_objs.field_0 = 0;
-    }
-    brf->activeElement = -1;
-    brf->elementsCount = 0;
-    brf->briefStage = 23;
-    brf->field_2E88 = "FRIENDLY SUPPORT FORCES";
-
-    brf->startTime = brf->currTime;
-
-    for (int i = 0; i < brf->map_prototype.squad_count; i++)
-    {
-        squadProto *v5 = &brf->map_prototype.squads[i];
-
-        if ( v5->owner == brf->map_prototype.playerOwner && v5->mb_status != 1)
-            brf->elementsCount++;
+        if ( it.Owner == brf->Desc.PlayerOwner && it.MbStatus != 1)
+            brf->ElementsCount++;
     }
 
-    brf->briefStage = (brf->elementsCount == 0) + 23;
+    brf->Stage = (brf->ElementsCount == 0) + 23;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub17(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub17(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    int v5 = (brf->currTime - brf->startTime) / 2500;
-    if ( v5 >= brf->elementsCount )
+    int v5 = (brf->CurrTime - brf->StartTime) / 2500;
+    if ( v5 >= brf->ElementsCount )
     {
-        brf->briefStage = 24;
+        brf->Stage = 24;
     }
-    else if ( v5 != brf->activeElement )
+    else if ( v5 != brf->ActiveElementID )
     {
         int v6 = v5;
-        brf->activeElement = v5;
+        brf->ActiveElementID = v5;
 
-        squadProto *v9 = NULL;
+        const MapSquad *squad = NULL;
 
-        for (int i = 0; i < brf->map_prototype.squad_count; i++)
+        for ( const MapSquad &it : brf->Desc.Squads )
         {
-            v9 = &brf->map_prototype.squads[i];
+            squad = &it;
 
-            if ( v9->owner == brf->map_prototype.playerOwner && v9->mb_status != 1)
+            if ( it.Owner == brf->Desc.PlayerOwner && it.MbStatus != 1)
             {
                 if ( v6 == 0 )
                     break;
@@ -582,178 +528,161 @@ void ypaworld_func158__sub4__sub1__sub4__sub17(_NC_STACK_ypaworld *yw, struC5 *i
             }
         }
 
-        if ( v9 )
+        if ( squad )
         {
-            const char *v11 = get_lang_string(yw->string_pointers_p2, v9->vehicle + 1200, yw->VhclProtos[v9->vehicle].name);
+            const char *v11 = get_lang_string(yw->string_pointers_p2, squad->VhclID + 1200, yw->VhclProtos[squad->VhclID].name.c_str());
 
             char title[128];
-            sprintf(title, "%d %s", v9->num, v11);
+            sprintf(title, "%d %s", squad->Count, v11);
 
-            sub_4EBBA8(yw, brf, v9->pos_x, v9->pos_z, 25, title, 26, v9->owner + 136, 2, v9->vehicle, brf->field_2F84);
+            yw->BriefingSetObject( BriefObject( BriefObject::TYPE_VEHICLE, squad->VhclID, squad->X, squad->Z, 26, 136 + squad->Owner, 25, 
+                                                title ),  
+                                   brf->AddObjectsFlag);
         }
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub18(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub18(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    if ( brf->field_2F90 )
+    brf->ViewingObject = BriefObject();
+
+    brf->ActiveElementID = -1;
+    brf->ElementsCount = 0;
+
+    brf->Stage = 26;
+    brf->StartTime = brf->CurrTime;
+
+    brf->ObjDescription = get_lang_string(yw->string_pointers_p2, 156, "TRANSPORTER GATES");
+
+    for ( const MapGate &gate : yw->_levelInfo->Gates )
     {
-        brf->brf_objs.object_id = 0;
-        brf->brf_objs.field_0 = 0;
+        if (gate.MbStatus != 1)
+            brf->ElementsCount++;
     }
 
-    brf->activeElement = -1;
-    brf->elementsCount = 0;
-
-    brf->briefStage = 26;
-    brf->startTime = brf->currTime;
-
-    brf->field_2E88 = get_lang_string(yw->string_pointers_p2, 156, "TRANSPORTER GATES");
-
-    for (int i = 0; i < yw->field_2d90->gate_count; i++)
-    {
-        if (yw->field_2d90->gates[i].mb_status != 1)
-            brf->elementsCount++;
-    }
-
-    brf->briefStage = (brf->elementsCount == 0) + 26;
+    brf->Stage = (brf->ElementsCount == 0) + 26;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub19(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub19(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
-    int v6 = (brf->currTime - brf->startTime) / 2500;
+    int elmID = (brf->CurrTime - brf->StartTime) / 2500;
 
-    if ( v6 >= brf->elementsCount )
+    if ( elmID >= brf->ElementsCount )
     {
-        brf->briefStage = 27;
+        brf->Stage = 27;
     }
-    else if ( v6 != brf->activeElement )
+    else if ( elmID != brf->ActiveElementID )
     {
-        brf->activeElement = v6;
+        brf->ActiveElementID = elmID;
 
-        int v66 = v6;
+        const MapGate *pGate = &yw->_levelInfo->Gates[0];
 
-        gateProto *v3 = yw->field_2d90->gates;
-
-        for ( int i = 0; i < yw->field_2d90->gate_count; i++)
+        for ( const MapGate &gate : yw->_levelInfo->Gates )
         {
-            v3 = &yw->field_2d90->gates[i];
+            pGate = &gate;
 
-            if (yw->field_2d90->gates[i].mb_status != 1)
+            if (gate.MbStatus != 1)
             {
-                if ( v66 == 0 )
+                if ( elmID == 0 )
                     break;
 
-                v66--;
+                elmID--;
             }
         }
 
-        float xpos = v3->sec_x * 1200.0 + 600.0;
-        float ypos = -(v3->sec_y * 1200.0 + 600.0);
-        int v13 = yw->BuildProtos[ v3->closed_bp ].sec_type;
+        float xpos = pGate->SecX * 1200.0 + 600.0;
+        float ypos = -(pGate->SecY * 1200.0 + 600.0);
+        int v13 = yw->BuildProtos[ pGate->ClosedBldID ].sec_type;
         const char *v14 = get_lang_string(yw->string_pointers_p2, 159, "BEAM GATE");
 
-        sub_4EBBA8(yw, brf, xpos, ypos, 25, v14, 26, 145, 1, v13, brf->field_2F84);
+        yw->BriefingSetObject( BriefObject( BriefObject::TYPE_SECTOR, v13, xpos, ypos, 26, 145, 25, 
+                                            v14 ),  
+                               brf->AddObjectsFlag);
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub21(_NC_STACK_ypaworld *yw, struC5 *inpt, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub21(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
 {
     int v20 = -1;
 
-    if ( !inpt->winp131arg.selected_btn )
+    if ( !inpt->ClickInf.selected_btn )
     {
-        float mx = (float)inpt->winp131arg.move[0].x / (float)yw->screen_width;
-        float my = (float)inpt->winp131arg.move[0].y / (float)yw->screen_height;
+        float mx = (float)inpt->ClickInf.move.screenPos.x / (float)yw->screen_width;
+        float my = (float)inpt->ClickInf.move.screenPos.y / (float)yw->screen_height;
 
-        for (int i = 0; i < brf->tp2_count; i++)
+        for (size_t i = 0; i < brf->Objects.size(); i++)
         {
-            brf_t2 *v10 = &brf->tp2[i];
+            BriefObject &obj = brf->Objects[i];
 
-            float v13 = v10->xpos / yw->map_Width_meters * (brf->field_2F74.x2 - brf->field_2F74.x1) + brf->field_2F74.x1;
+            float v13 = obj.X / yw->map_Width_meters * (brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1) + brf->MapBlitEnd.x1;
             float v15 = (v13 + 1.0) * 0.5;
 
-            float v14 = -v10->ypos / yw->map_Height_meters * (brf->field_2F74.y2 - brf->field_2F74.y1) + brf->field_2F74.y1;
+            float v14 = -obj.Y / yw->map_Height_meters * (brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1) + brf->MapBlitEnd.y1;
             float v23 = 0.5 * (v14 + 1.0);
 
             if ( v15 + -0.025 < mx && v15 + 0.025 > mx && v23 + -0.025 < my && v23 + 0.025 > my )
                 v20 = i;
         }
 
-        if ( v20 == -1 || v20 == brf->mouseSelectedElement )
+        if ( v20 == -1 || v20 == brf->SelectedObjID )
         {
-            if ( v20 != brf->mouseSelectedElement && brf->mouseSelectedElement != -1 )
+            if ( v20 != brf->SelectedObjID && brf->SelectedObjID != -1 )
             {
-                brf_obj *br_obj = &brf->brf_objs;
-//                br_obj[ brf->field_2F90 ].field_0 = 0;
-//                br_obj[ brf->field_2F90 ].object_id = 0;
-                br_obj->field_0 = 0;      //Only one brf_obj!
-                br_obj->object_id = 0;
-
-                brf->mouseSelectedElement = -1;
-                brf->field_2F90 = -1;
+                brf->ViewingObject = BriefObject();
+                brf->SelectedObjID = -1;
             }
         }
         else
         {
-            brf_t2 *v16 = &brf->tp2[v20];
-            brf->mouseSelectedElement = v20;
-            brf->field_2F90 = sub_4EBBA8(yw, brf, v16->xpos, v16->ypos, v16->field_E, v16->title, v16->field_C, v16->field_D, v16->field_8, v16->vehicle_id, 0);
+            brf->SelectedObjID = v20;
+            yw->BriefingSetObject( brf->Objects[v20], false);
         }
     }
 }
 
-void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
+void sub_4ED434(NC_STACK_ypaworld *yw, BriefengScreen *brf)
 {
     char *v3 = stru_5C91D0.itemBlock;
 
-    if ( brf->field_2E80 > 0 )
+    if ( brf->TextTime > 0 )
     {
-        const char *ln = brf->LEVEL_BRIEF_INFO;
-
-        int v5 = 1;
-
-        while( 1 )
+        int numLines = 1;
+		size_t pos = brf->BriefingText.find_first_of("\n\r");
+        while( pos != std::string::npos )
         {
-            ln = strpbrk(ln, "\n\r");
-            if (!ln)
-                break;
-
-            ln++;
-            v5++;
+        	pos = brf->BriefingText.find_first_of("\n\r", pos + 1);
+            numLines++;
         }
 
-        int v34 = brf->currTime - brf->field_2E80;
+        int v34 = brf->CurrTime - brf->TextTime;
         int v33 = 100 * v34;
 
-        stru_5C91D0.numEntries = v5;
+        stru_5C91D0.numEntries = numLines;
 
         v3 = stru_5C91D0.ItemsPreLayout(yw, v3, 16, "   ");
 
         int v37 = 0;
 
-        ln = brf->LEVEL_BRIEF_INFO;
+        pos = 0;
 
         while ( 1 )
         {
-            int en = 0;
+            bool endline = false;
 
-            char a4[512];
+            size_t stpos = pos;
+            pos = brf->BriefingText.find_first_of("\n\r", stpos);
 
-            const char *epos = strpbrk(ln, "\n\r");
+            std::string line;
 
-            if (epos)
+            if (pos == std::string::npos)
             {
-                int len = epos - ln;
-                memcpy(a4, ln, len);
-                a4[len] = 0;
-
-                ln = epos + 1;
+                endline = true;
+                line = brf->BriefingText.substr(stpos);
             }
             else
             {
-                en = 1;
-                strcpy(a4, ln);
+                line = brf->BriefingText.substr(stpos, pos - stpos);
+                pos++;
             }
 
             int v12 = 0;
@@ -783,14 +712,14 @@ void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
             {
                 FontUA::set_txtColor(&v3, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
 
-                v3 = FontUA::TextRelWidthItem(yw->tiles[16], v3, a4, v12, 4);
+                v3 = FontUA::TextRelWidthItem(yw->tiles[16], v3, line.c_str(), v12, 4);
 
                 FontUA::next_line(&v3);
             }
 
             v37++;
 
-            if ( en )
+            if ( endline )
             {
                 v3 = stru_5C91D0.ItemsPostLayout(yw, v3, 16, "   ");
                 break;
@@ -799,7 +728,7 @@ void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
     }
     else
     {
-        int v20 = brf->currTime - brf->field_2E84;
+        int v20 = brf->CurrTime - brf->PreTextTime;
 
         const char *v21 = get_lang_string(yw->string_pointers_p2, 2467, "LOADING MISSION OBJECTIVES...");
 
@@ -832,55 +761,42 @@ void sub_4ED434(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
     FontUA::set_end(&v3);
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub1(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub1(NC_STACK_ypaworld *yw, BriefengScreen *brf)
 {
     char v27[1024];
     char *pos = v27;
 
     int v39 = -1;
 
-    for (int i = 0; i < brf->tp2_count; i++)
+    for ( BriefObject &obj : brf->Objects)
     {
-        brf_t2 *v31 = &brf->tp2[i];
         int v29 = 1;
 
-        for (int j = 0; j < 1; j++)
+        if ( brf->ViewingObject && brf->ViewingObject == obj )
         {
-            brf_obj *brobj = &brf->brf_objs + j;
-
-            if ( brobj->field_0 )
+            if ( (brf->CurrTime / 200) & 1 )
             {
-                if ( v31->field_8 == brobj->field_0 )
-                {
-                    if ( v31->vehicle_id == brobj->object_id && brobj->xpos == v31->xpos && brobj->ypos == v31->ypos )
-                    {
-                        if ( (brf->currTime / 200) & 1 )
-                        {
-                            v29 = 0;
-                            break;
-                        }
-                    }
-                }
+                v29 = 0;
             }
         }
 
         if ( v29 )
         {
-            if ( v39 != v31->field_C)
+            if ( v39 != obj.TileSet)
             {
-                v39 = v31->field_C;
-                FontUA::select_tileset(&pos, v31->field_C);
+                v39 = obj.TileSet;
+                FontUA::select_tileset(&pos, obj.TileSet);
             }
 
-            int v38 = yw->tiles[(int)v31->field_C]->font_height / 2;
+            int v38 = yw->tiles[(int)obj.TileSet]->h / 2;
 
-            float v15 = (brf->field_2F74.x2 - brf->field_2F74.x1) * (v31->xpos / yw->map_Width_meters) + brf->field_2F74.x1;
-            float v14 = (brf->field_2F74.y2 - brf->field_2F74.y1) * (-v31->ypos / yw->map_Height_meters) + brf->field_2F74.y1;
+            float v15 = (brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1) * (obj.X / yw->map_Width_meters) + brf->MapBlitEnd.x1;
+            float v14 = (brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1) * (-obj.Y / yw->map_Height_meters) + brf->MapBlitEnd.y1;
 
             FontUA::set_center_xpos(&pos, (v15 * (yw->screen_width / 2)) - v38);
             FontUA::set_center_ypos(&pos, (v14 * (yw->screen_height / 2)) - v38);
 
-            FontUA::store_u8(&pos, v31->field_D);
+            FontUA::store_u8(&pos, obj.TileID);
         }
     }
 
@@ -891,10 +807,10 @@ void ypaworld_func158__sub4__sub1__sub4__sub1(_NC_STACK_ypaworld *yw, big_ypa_Br
     v28.cmdbuf = v27;
     v28.includ = NULL;
 
-    yw->win3d->raster_func209(&v28);
+    yw->_win3d->raster_func209(&v28);
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub0(_NC_STACK_ypaworld *yw)
+void ypaworld_func158__sub4__sub1__sub4__sub0(NC_STACK_ypaworld *yw)
 {
     int w = yw->screen_width / 2;
     int h = yw->screen_height / 2;
@@ -912,7 +828,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub0(_NC_STACK_ypaworld *yw)
     FontUA::set_center_ypos(&pos, 4 + v37);
     FontUA::set_txtColor(&pos, yw->iniColors[66].r, yw->iniColors[66].g, yw->iniColors[66].b);
 
-    const char *v7 = get_lang_string(yw->string_pointers_p2, yw->field_2d90->levelID + 1800, yw->field_2d90->map_name);
+    const char *v7 = get_lang_string(yw->string_pointers_p2, yw->_levelInfo->LevelID + 1800, yw->_levelInfo->MapName.c_str());
 
     pos = FontUA::FormateCenteredSkipableItem(yw->tiles[16], pos, v7, v34 - v35);
     FontUA::set_end(&pos);
@@ -921,19 +837,16 @@ void ypaworld_func158__sub4__sub1__sub4__sub0(_NC_STACK_ypaworld *yw)
     v32.cmdbuf = buf;
     v32.includ = NULL;
 
-    yw->win3d->raster_func209(&v32);
+    yw->_win3d->raster_func209(&v32);
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, struC5 *inpt, int obj_id, char a4)
+void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, BriefengScreen *brf, struC5 *inpt, int obj_id, char a4)
 {
-    //brf_obj *br_obj = &brf->brf_objs + obj_id; //By first design it had more than 1 brf_obj
-    brf_obj *br_obj = &brf->brf_objs;
-
-    if ( br_obj->field_0 )
+    if ( brf->ViewingObject.ObjType )
     {
-        int v8 = brf->currTime - br_obj->field_C;
-        float v26 = -br_obj->ypos / yw->map_Height_meters;
-        float v27 = br_obj->xpos / yw->map_Width_meters;
+        int v8 = brf->CurrTime - brf->ViewingObjectStartTime;
+        float v26 = -brf->ViewingObject.Y / yw->map_Height_meters;
+        float v27 = brf->ViewingObject.X / yw->map_Width_meters;
 
         if ( v8 > 50 )
         {
@@ -942,10 +855,10 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
                 w3d_func198arg v20;
                 w3d_func198arg v21;
 
-                v21.x1 = (brf->field_2F74.x2 - brf->field_2F74.x1) * v27 + brf->field_2F74.x1;
+                v21.x1 = (brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1) * v27 + brf->MapBlitEnd.x1;
                 v21.x2 = v21.x1;
-                v21.y1 = (brf->field_2F74.y2 - brf->field_2F74.y1) * v26 + brf->field_2F74.y1;
-                v21.y2 = br_obj->field_1C;
+                v21.y1 = (brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1) * v26 + brf->MapBlitEnd.y1;
+                v21.y2 = brf->ViewingObjectRect.y2;
 
                 v20.y1 = v21.y2;
                 v20.y2 = v21.y2;
@@ -953,33 +866,23 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
                 if ( obj_id >= 3 )
                 {
                     v20.x1 = v21.x1;
-                    v20.x2 = br_obj->field_18;
+                    v20.x2 = brf->ViewingObjectRect.x2;
                 }
                 else
                 {
-                    v20.x1 = br_obj->field_10;
+                    v20.x1 = brf->ViewingObjectRect.x1;
                     v20.x2 = v21.x1;
                 }
 
-                rstr_arg217 v22;
+                yw->_win3d->raster_func217(0xA0A0);
+                yw->_win3d->raster_func198(&v20);
 
-                v22.dword4 = 0x7070;
-//                v22.dword8 = 0xFFFFFFFF;
-                v22.dword0 = 0xA0A0;
-
-                yw->win3d->raster_func217(&v22);
-                yw->win3d->raster_func198(&v20);
-
-                v22.dword4 = 0x7070;
-//                v22.dword8 = 0xFFFFFFFF;
-                v22.dword0 = 0x4040;
-
-                yw->win3d->raster_func217(&v22);
-                yw->win3d->raster_func198(&v21);
+                yw->_win3d->raster_func217(0x4040);
+                yw->_win3d->raster_func198(&v21);
             }
         }
 
-        if ( v8 > 50 && br_obj->title[0] )
+        if ( v8 > 50 && !brf->ViewingObject.Title.empty() )
         {
             if ( a4 & 2 )
             {
@@ -991,8 +894,8 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
                 else
                     v13 = 100 * v11 / 500;
 
-                int xpos = ((br_obj->field_10 + br_obj->field_18) * 0.5) * (yw->screen_width / 2);
-                int ypos = ((yw->screen_height / 2) * br_obj->field_1C - yw->tiles[16]->font_height + -1.0);
+                int xpos = ((brf->ViewingObjectRect.x1 + brf->ViewingObjectRect.x2) / 2.0) * (yw->screen_width / 2);
+                int ypos = ((yw->screen_height / 2) * brf->ViewingObjectRect.y2 - yw->tiles[16]->h + -1.0);
 
                 char cmdbuf[128];
                 char *pos = cmdbuf;
@@ -1002,7 +905,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
                 FontUA::set_center_ypos(&pos, ypos);
                 FontUA::set_txtColor(&pos, yw->iniColors[66].r, yw->iniColors[66].g, yw->iniColors[66].b);
 
-                pos = FontUA::TextRelWidthItem(yw->tiles[16], pos, br_obj->title, v13, 16);
+                pos = FontUA::TextRelWidthItem(yw->tiles[16], pos, brf->ViewingObject.Title.c_str(), v13, 16);
 
                 FontUA::set_end(&pos);
 
@@ -1010,50 +913,50 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(_NC_STACK_ypaworld *yw, big_ypa_Br
                 v23.cmdbuf = cmdbuf;
                 v23.includ = NULL;
 
-                yw->win3d->raster_func209(&v23);
+                yw->_win3d->raster_func209(&v23);
             }
         }
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
+void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
 {
-    big_ypa_Brf *brf = &yw->brief;
+    BriefengScreen *brf = &yw->brief;
 
-    if ( yw->brief.briefStage == 28 )
+    if ( yw->brief.Stage == 28 )
     {
-        sub_4491A0(yw, yw->brief.movie);
-        brf->briefStage = 4;
+        yw->sub_4491A0(yw->brief.MovieStr);
+        brf->Stage = 4;
     }
     else
     {
 
-        switch ( yw->brief.field_2E6C )
+        switch ( yw->brief.TimerStatus )
         {
         case 0:
-            yw->brief.currTime += inpt->period;
+            yw->brief.CurrTime += inpt->period;
             break;
 
         case 1:
             inpt->period = 1;
-            yw->brief.currTime += inpt->period;
+            yw->brief.CurrTime += inpt->period;
             break;
 
         case 2:
-            yw->brief.currTime += inpt->period;
+            yw->brief.CurrTime += inpt->period;
 
-            if ( yw->brief.briefStage == 30 )
+            if ( yw->brief.Stage == 30 )
             {
-                yw->brief.briefStage = 31;
-                yw->brief.field_2E6C = 0;
+                yw->brief.Stage = 31;
+                yw->brief.TimerStatus = 0;
             }
-            else if ( yw->brief.activeElement == -1 )
+            else if ( yw->brief.ActiveElementID == -1 )
             {
-                yw->brief.field_2E6C = 0;
+                yw->brief.TimerStatus = 0;
             }
             else
             {
-                switch (yw->brief.briefStage)
+                switch (yw->brief.Stage)
                 {
                 case 8:
                 case 11:
@@ -1062,26 +965,26 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
                 case 20:
                 case 23:
                 case 26:
-                    yw->brief.currTime = 2500 * (yw->brief.activeElement + 1) + yw->brief.startTime;
+                    yw->brief.CurrTime = 2500 * (yw->brief.ActiveElementID + 1) + yw->brief.StartTime;
                     break;
                 default:
                     break;
                 }
 
-                yw->brief.field_2E6C = 0;
+                yw->brief.TimerStatus = 0;
             }
             break;
 
         case 3:
-            yw->brief.field_2E6C = 0;
-            yw->brief.briefStage = 29;
+            yw->brief.TimerStatus = 0;
+            yw->brief.Stage = 29;
             break;
 
         default:
             break;
         }
 
-        switch ( yw->brief.briefStage )
+        switch ( yw->brief.Stage )
         {
         case 4:
             ypaworld_func158__sub4__sub1__sub4__sub3(yw, inpt, brf);
@@ -1096,72 +999,72 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
             ypaworld_func158__sub4__sub1__sub4__sub6(yw, inpt, brf);
             break;
         case 8:
-            if ( yw->brief.mouseSelectedElement == -1 )
+            if ( yw->brief.SelectedObjID == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub7(yw, inpt, brf);
             break;
         case 9:
-            yw->brief.briefStage = 25;
+            yw->brief.Stage = 25;
             break;
         case 10:
             yw_BriefSetupKeySectors(yw, inpt, brf);
             break;
         case 11:
-            if ( yw->brief.mouseSelectedElement == -1 )
+            if ( yw->brief.SelectedObjID == -1 )
                 yw_BriefUpdateKeySectors(yw, inpt, brf);
             break;
         case 12:
-            yw->brief.briefStage = 13;
+            yw->brief.Stage = 13;
             break;
         case 13:
             ypaworld_func158__sub4__sub1__sub4__sub10(yw, inpt, brf);
             break;
         case 14:
-            if ( yw->brief.mouseSelectedElement == -1 )
+            if ( yw->brief.SelectedObjID == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub11(yw, inpt, brf);
             break;
         case 15:
-            yw->brief.briefStage = 16;
+            yw->brief.Stage = 16;
             break;
         case 16:
             ypaworld_func158__sub4__sub1__sub4__sub12(yw, inpt, brf);
             break;
         case 17:
-            if ( yw->brief.mouseSelectedElement == -1 )
+            if ( yw->brief.SelectedObjID == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub13(yw, inpt, brf);
             break;
         case 18:
-            yw->brief.briefStage = 19;
+            yw->brief.Stage = 19;
             break;
         case 19:
             ypaworld_func158__sub4__sub1__sub4__sub14(yw, inpt, brf);
             break;
         case 20:
-            if ( yw->brief.mouseSelectedElement == -1 )
+            if ( yw->brief.SelectedObjID == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub15(yw, inpt, brf);
             break;
         case 21:
-            yw->brief.briefStage = 22;
+            yw->brief.Stage = 22;
             break;
         case 22:
             ypaworld_func158__sub4__sub1__sub4__sub16(yw, inpt, brf);
             break;
         case 23:
-            if ( yw->brief.mouseSelectedElement == -1 )
+            if ( yw->brief.SelectedObjID == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub17(yw, inpt, brf);
             break;
         case 24:
-            yw->brief.field_2F84 = 0;
-            yw->brief.briefStage = 7;
+            yw->brief.AddObjectsFlag = false;
+            yw->brief.Stage = 7;
             break;
         case 25:
             ypaworld_func158__sub4__sub1__sub4__sub18(yw, inpt, brf);
             break;
         case 26:
-            if ( yw->brief.mouseSelectedElement == -1 )
+            if ( yw->brief.SelectedObjID == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub19(yw, inpt, brf);
             break;
         case 27:
-            yw->brief.briefStage = 10;
+            yw->brief.Stage = 10;
             break;
         default:
             break;
@@ -1174,13 +1077,11 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
 
         ypaworld_func158__sub4__sub1__sub4__sub21(yw, inpt, brf);
 
-        yw->win3d->LockSurface();
-
-        if ( brf->briefing_map )
+        if ( brf->BriefingMapImg )
         {
             rstr_arg204 a4;
 
-            a4.pbitm = brf->briefing_map->getBMD_pBitmap();
+            a4.pbitm = brf->BriefingMapImg->GetResBmp();
 
             a4.float4 = -1.0;
             a4.floatC = 1.0;
@@ -1191,18 +1092,14 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
             a4.float18 = -1.0;
             a4.float20 = 1.0;
 
-            yw->win3d->raster_func204(&a4);
+            yw->_win3d->raster_func204(&a4);
         }
 
-        yw->win3d->raster_func204(&brf->field_2F40);
+        yw->_win3d->raster_func204(&brf->MapBlitParams);
 
-        yw->win3d->UnlockSurface();
-
-        yw->win3d->draw2DandFlush();
+        yw->_win3d->draw2DandFlush();
 
         ypaworld_func158__DrawVehicle(yw, brf, inpt);
-
-        yw->win3d->LockSurface();
 
         ypaworld_func158__sub4__sub1__sub4__sub1(yw, brf);
         ypaworld_func158__sub4__sub1__sub4__sub0(yw);
@@ -1210,11 +1107,9 @@ void ypaworld_func158__sub4__sub1__sub4(_NC_STACK_ypaworld *yw, UserData *usr, s
         w3d_a209 v10;
         v10 = stru_5C91D0.cmdstrm;
 
-        yw->win3d->raster_func209(&v10);
+        yw->_win3d->raster_func209(&v10);
 
         ypaworld_func158__sub4__sub1__sub4__sub2(yw, brf, inpt, 0, 2);
-
-        yw->win3d->UnlockSurface();
     }
 }
 
@@ -1247,12 +1142,12 @@ void sub_449310(ua_fRect *rect)
         rect->y2 = -1.0;
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub0(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub6__sub0(NC_STACK_ypaworld *yw, struC5 *struc, BriefengScreen *brf)
 {
-    brf->startTime = brf->currTime;
-    brf->briefStage = 5;
+    brf->StartTime = brf->CurrTime;
+    brf->Stage = 5;
 
-    brf->field_2F40.pbitm = brf->mbmap_img->getBMD_pBitmap();
+    brf->MapBlitParams.pbitm = brf->MbmapImg->GetResBmp();
 
     float v21, v22;
 
@@ -1276,10 +1171,10 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(_NC_STACK_ypaworld *yw, struC5 *st
     float v20 = 1.0 / (float)yw->sectors_maxX2;
 
     int v8, v9;
-    if ( brf->field_41A0 )
+    if ( brf->ZoomFromGate )
     {
-        v8 = yw->field_2d90->gates[ yw->field_2d90->field_4C ].sec_x;
-        v9 = yw->field_2d90->gates[ yw->field_2d90->field_4C ].sec_y;
+        v8 = yw->_levelInfo->Gates[ yw->_levelInfo->GateCompleteID ].SecX;
+        v9 = yw->_levelInfo->Gates[ yw->_levelInfo->GateCompleteID ].SecY;
     }
     else
     {
@@ -1290,101 +1185,90 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(_NC_STACK_ypaworld *yw, struC5 *st
     float v11 = 2.0 * ((float)v9 / (float)yw->sectors_maxY2) - 1.0;
     float v12 = 2.0 * ((float)v8 / (float)yw->sectors_maxX2) - 1.0;
 
-    brf->field_2F64.x1 = v12 - v20;
-    brf->field_2F64.y1 = v11 - v19;
-    brf->field_2F64.x2 = v20 + v12;
-    brf->field_2F64.y2 = v11 + v19;
-    sub_449310(&brf->field_2F64);
+    brf->MapBlitStart.x1 = v12 - v20;
+    brf->MapBlitStart.y1 = v11 - v19;
+    brf->MapBlitStart.x2 = v20 + v12;
+    brf->MapBlitStart.y2 = v11 + v19;
+    sub_449310(&brf->MapBlitStart);
 
-    brf->field_2F74.x1 = -0.4515625 - v21 * 0.4828125;
-    brf->field_2F74.y1 = -0.325 - v22 * 0.6083333333333334;
-    brf->field_2F74.x2 = brf->field_2F74.x1 + v21 * 0.965625;
-    brf->field_2F74.y2 = brf->field_2F74.y1 + v22 * 1.216666666666667;
-    sub_449310(&brf->field_2F74);
+    brf->MapBlitEnd.x1 = -0.4515625 - v21 * 0.4828125;
+    brf->MapBlitEnd.y1 = -0.325 - v22 * 0.6083333333333334;
+    brf->MapBlitEnd.x2 = brf->MapBlitEnd.x1 + v21 * 0.965625;
+    brf->MapBlitEnd.y2 = brf->MapBlitEnd.y1 + v22 * 1.216666666666667;
+    sub_449310(&brf->MapBlitEnd);
 
-    brf->field_2F40.float4 = brf->field_2F64.x1;
-    brf->field_2F40.float8 = brf->field_2F64.y1;
-    brf->field_2F40.floatC = brf->field_2F64.x2;
-    brf->field_2F40.float10 = brf->field_2F64.y2;
+    brf->MapBlitParams.float4 = brf->MapBlitStart.x1;
+    brf->MapBlitParams.float8 = brf->MapBlitStart.y1;
+    brf->MapBlitParams.floatC = brf->MapBlitStart.x2;
+    brf->MapBlitParams.float10 = brf->MapBlitStart.y2;
 
-    brf->field_2F40.float14 = brf->field_2F74.x1;
-    brf->field_2F40.float18 = brf->field_2F74.y1;
-    brf->field_2F40.float1C = brf->field_2F74.x2;
-    brf->field_2F40.float20 = brf->field_2F74.y2;
+    brf->MapBlitParams.float14 = brf->MapBlitEnd.x1;
+    brf->MapBlitParams.float18 = brf->MapBlitEnd.y1;
+    brf->MapBlitParams.float1C = brf->MapBlitEnd.x2;
+    brf->MapBlitParams.float20 = brf->MapBlitEnd.y2;
 
     if ( yw->GameShell )
         SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 11);
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub1(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub6__sub1(NC_STACK_ypaworld *yw, struC5 *struc, BriefengScreen *brf)
 {
-    int v4 = brf->currTime - brf->startTime;
+    int v4 = brf->CurrTime - brf->StartTime;
 
     if ( v4 >= 600 )
     {
-        brf->field_2F40.float4 = -1.0;
-        brf->field_2F40.float8 = -1.0;
-        brf->field_2F40.floatC = 1.0;
-        brf->field_2F40.float10 = 1.0;
+        brf->MapBlitParams.float4 = -1.0;
+        brf->MapBlitParams.float8 = -1.0;
+        brf->MapBlitParams.floatC = 1.0;
+        brf->MapBlitParams.float10 = 1.0;
 
-        brf->field_2F40.float14 = brf->field_2F74.x1;
-        brf->field_2F40.float18 = brf->field_2F74.y1;
-        brf->field_2F40.float1C = brf->field_2F74.x2;
-        brf->field_2F40.float20 = brf->field_2F74.y2;
-        brf->briefStage = 6;
+        brf->MapBlitParams.float14 = brf->MapBlitEnd.x1;
+        brf->MapBlitParams.float18 = brf->MapBlitEnd.y1;
+        brf->MapBlitParams.float1C = brf->MapBlitEnd.x2;
+        brf->MapBlitParams.float20 = brf->MapBlitEnd.y2;
+        brf->Stage = 6;
     }
     else
     {
         float v3 = v4 / 600.0;
-        brf->field_2F40.float4 = brf->field_2F64.x1 + (-1.0 - brf->field_2F64.x1) * v3;
-        brf->field_2F40.float8 = brf->field_2F64.y1 + (-1.0 - brf->field_2F64.y1) * v3;
-        brf->field_2F40.floatC = brf->field_2F64.x2 + (1.0 - brf->field_2F64.x2) * v3;
-        brf->field_2F40.float10 = brf->field_2F64.y2 + (1.0 - brf->field_2F64.y2) * v3;
-        brf->field_2F40.float14 = brf->field_2F74.x1;
-        brf->field_2F40.float18 = brf->field_2F74.y1;
-        brf->field_2F40.float1C = brf->field_2F74.x2;
-        brf->field_2F40.float20 = brf->field_2F74.y2;
+        brf->MapBlitParams.float4 = brf->MapBlitStart.x1 + (-1.0 - brf->MapBlitStart.x1) * v3;
+        brf->MapBlitParams.float8 = brf->MapBlitStart.y1 + (-1.0 - brf->MapBlitStart.y1) * v3;
+        brf->MapBlitParams.floatC = brf->MapBlitStart.x2 + (1.0 - brf->MapBlitStart.x2) * v3;
+        brf->MapBlitParams.float10 = brf->MapBlitStart.y2 + (1.0 - brf->MapBlitStart.y2) * v3;
+        brf->MapBlitParams.float14 = brf->MapBlitEnd.x1;
+        brf->MapBlitParams.float18 = brf->MapBlitEnd.y1;
+        brf->MapBlitParams.float1C = brf->MapBlitEnd.x2;
+        brf->MapBlitParams.float20 = brf->MapBlitEnd.y2;
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub2(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub6__sub2(NC_STACK_ypaworld *yw, struC5 *struc, BriefengScreen *brf)
 {
-    brf->startTime = brf->currTime;
-    brf->briefStage = 8;
-    brf->field_41D8 = 0;
+    brf->StartTime = brf->CurrTime;
+    brf->Stage = 8;
+    brf->LastFrameTimeStamp = 0;
 
-    bitmap_intern *v5 = brf->copy2_of_ownmap->getBMD_pBitmap();
-    bitmap_intern *a4 = yw->copyof_ownermap->getBMD_pBitmap();
-
-    memcpy(v5->buffer, a4->buffer, a4->width * a4->height);
-
-
-    v5 = brf->copy2_of_typmap->getBMD_pBitmap();
-    a4 = yw->copyof_typemap->getBMD_pBitmap();
-
-    memcpy(v5->buffer, a4->buffer, a4->width * a4->height);
+    brf->OwnMap = *yw->copyof_ownermap;
+    brf->TypMap = *yw->copyof_typemap;
 
     for (int i = 0; i < 8; i++)
-        brf->copy_of_playerstatus[i] = yw->playerstatus[i];
+        brf->StatsGlobal[i] = yw->playerstatus[i];
 
-    memset(brf->field_42BC, 0, sizeof(brf->field_42BC));
+    for (auto &x : brf->StatsIngame)
+        x.clear();
 
-    brf->tp1_count = 0;
-    memset(brf->tp1, 0, sizeof(brf->tp1));
+    brf->Upgrades.clear();
 }
 
-void yw_DebriefConqSector(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg, int time, int stime)
+void yw_DebriefConqSector(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::History::Conq *arg, uint32_t time, uint32_t stime)
 {
-    int sx = arg->t26.secX;
-    int sy = arg->t26.secY;
-    int own = arg->t26.owner;
-    int dtime = time - stime;
+    uint32_t dtime = time - stime;
 
-    *( (uint8_t *)brf->copy2_of_ownmap_bitm->buffer + sx + sy * brf->copy2_of_ownmap_bitm->width) = own;
+    brf->OwnMap(arg->secX, arg->secY) = arg->owner;
 
-    if ( stime == brf->field_41D8 )
+    if ( stime == brf->LastFrameTimeStamp )
     {
-        yw_score(yw, arg, brf->field_42BC);
+        arg->AddScore(&brf->StatsIngame);
 
         if ( yw->GameShell )
             SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 12);
@@ -1392,15 +1276,15 @@ void yw_DebriefConqSector(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *a
 
     if ( dtime < 30000 )
     {
-        if ( own )
+        if ( arg->owner )
         {
-            if ( brf->wireless_db_skels[3] )
+            if ( brf->VectorGfx[3] )
             {
-                float v20 = (brf->field_2F74.x2 - brf->field_2F74.x1) / (float)yw->sectors_maxX2;
-                float v21 = (brf->field_2F74.y2 - brf->field_2F74.y1) / (float)yw->sectors_maxY2;
+                float v20 = (brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1) / (float)yw->sectors_maxX2;
+                float v21 = (brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1) / (float)yw->sectors_maxY2;
 
-                float a3a = (float)sx * v20 + brf->field_2F74.x1 + v20 * 0.5;
-                float a4a = (float)sy * v21 + brf->field_2F74.y1 + v21 * 0.5;
+                float a3a = (float)arg->secX * v20 + brf->MapBlitEnd.x1 + v20 * 0.5;
+                float a4a = (float)arg->secY * v21 + brf->MapBlitEnd.y1 + v21 * 0.5;
 
                 float v19 = 1.0 - (float )dtime / 30000.0;
 
@@ -1412,20 +1296,20 @@ void yw_DebriefConqSector(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *a
                 float a9 = v20 * v19;
                 float a10 = v21 * v19;
 
-                yw_RenderVector2D(yw, brf->wireless_db_skels[3], a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10,  yw_GetColor(yw, own), NULL, NULL);
+                yw_RenderVector2D(yw, brf->VectorGfx[3]->GetSkelet(), a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10,  yw_GetColor(yw, arg->owner), NULL, NULL);
             }
         }
     }
 }
 
-void yw_DebriefVhclKill(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg, int time, int stime)
+void yw_DebriefVhclKill(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::History::VhclKill *arg, uint32_t time, uint32_t stime)
 {
-    int own = arg->t34.field_1 & 7;
-    int dtime = time - stime;
+    int own = arg->owners & 7;
+    uint32_t dtime = time - stime;
 
-    if ( stime == brf->field_41D8 )
+    if ( stime == brf->LastFrameTimeStamp )
     {
-        yw_score(yw, arg, brf->field_42BC);
+        arg->AddScore(&brf->StatsIngame);
 
         if ( yw->GameShell )
             SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 13);
@@ -1433,13 +1317,13 @@ void yw_DebriefVhclKill(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg
 
     if ( dtime < 120000 )
     {
-        if ( brf->wireless_db_skels[1] )
+        if ( brf->VectorGfx[1] )
         {
-            float v12 = brf->field_2F74.x2 - brf->field_2F74.x1;
-            float v13 = brf->field_2F74.y2 - brf->field_2F74.y1;
+            float v12 = brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1;
+            float v13 = brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1;
 
-            float a3a = v12 * (arg->t34.field_4 / 256.0) + brf->field_2F74.x1;
-            float a4a = v13 * (arg->t34.field_5 / 256.0) + brf->field_2F74.y1;
+            float a3a = v12 * (arg->posX / 256.0) + brf->MapBlitEnd.x1;
+            float a4a = v13 * (arg->posY / 256.0) + brf->MapBlitEnd.y1;
 
             float v25;
 
@@ -1460,23 +1344,23 @@ void yw_DebriefVhclKill(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg
             float a9 = ((v12 / (float)yw->sectors_maxX2) / 2.0) * v25;
             float a10 = ((v13 / (float)yw->sectors_maxY2) / 2.0) * v25;
 
-            yw_RenderVector2D(yw, brf->wireless_db_skels[1], a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10, yw_GetColor(yw, own), NULL, NULL);
+            yw_RenderVector2D(yw, brf->VectorGfx[1]->GetSkelet(), a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10, yw_GetColor(yw, own), NULL, NULL);
         }
     }
 }
 
-void yw_DebriefVhclCreate(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg, int time, int stime)
+void yw_DebriefVhclCreate(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::History::VhclCreate *arg, int time, int stime)
 {
     int dtime = time - stime;
     if ( dtime < 45000 )
     {
-        if ( brf->wireless_db_skels[1] )
+        if ( brf->VectorGfx[1] )
         {
-            float v13 = brf->field_2F74.x2 - brf->field_2F74.x1;
-            float v14 = brf->field_2F74.y2 - brf->field_2F74.y1;
+            float v13 = brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1;
+            float v14 = brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1;
 
-            float a3a = v13 * (arg->t34.field_4 / 256.0) + brf->field_2F74.x1;
-            float a4a = v14 * (arg->t34.field_5 / 256.0) + brf->field_2F74.y1;
+            float a3a = v13 * (arg->posX / 256.0) + brf->MapBlitEnd.x1;
+            float a4a = v14 * (arg->posY / 256.0) + brf->MapBlitEnd.y1;
 
             float v22 = dtime / 45000.0;
 
@@ -1488,67 +1372,44 @@ void yw_DebriefVhclCreate(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *a
             float a9 = ((v13 / (float)yw->sectors_maxX2) / 8.0) * v22;
             float a10 = ((v14 / (float)yw->sectors_maxY2) / 8.0) * v22;
 
-            yw_RenderVector2D(yw, brf->wireless_db_skels[1], a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10, yw_GetColor(yw, arg->t34.field_1), NULL, NULL);
+            yw_RenderVector2D(yw, brf->VectorGfx[1]->GetSkelet(), a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10, yw_GetColor(yw, arg->owner), NULL, NULL);
         }
     }
 }
 
-void yw_DebriefAddTechUpgrade(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, yw_arg184 *arg)
+void yw_DebriefAddTechUpgrade(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::History::Upgrade *arg)
 {
-    int v4 = arg->t7.field_4;
-    int last_vhcl = arg->t7.last_vhcl;
-    int last_weapon = arg->t7.last_weapon;
-    int last_build = arg->t7.last_build;
-
-    int v5 = 0;
-
-    if ( !yw->field_727c || arg->t7.owner == yw->field_7280 )
+    if ( !yw->field_727c || arg->owner == yw->field_7280 )
     {
-        for (int i = 0; i < brf->tp1_count; i++)
+        for (auto &u : brf->Upgrades)
         {
-            brf_t1 *v8 = &brf->tp1[i];
-
-            if ( v8->field_0 == v4 && v8->last_vhcl == last_vhcl && v8->last_weapon == last_weapon && v8->last_build == last_build)
-            {
-                v5 = 1;
-                break;
-            }
+            if ( u.upgradeType == arg->upgradeType && u.lastVhcl == arg->lastVhcl && u.lastWeapon == arg->lastWeapon && u.lastBuild == arg->lastBuild)
+                return;
         }
 
-        if ( !v5 )
-        {
-            if ( brf->tp1_count >= 7 )
-                brf->tp1_count = 6;
-
-            brf_t1 *v9 = &brf->tp1[brf->tp1_count];
-
-            v9->field_0 = v4;
-            v9->last_build = last_build;
-            v9->last_vhcl = last_vhcl;
-            v9->last_weapon = last_weapon;
-
-            brf->tp1_count++;
-        }
+        //CHECKME if it needed to limit
+        /*if ( brf->tp1_count >= 7 ) 
+            brf->tp1_count = 6;*/
+        
+        brf->Upgrades.push_back(*arg);
     }
 }
 
-void yw_DebriefRenderSectorsOwners(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
+void yw_DebriefRenderSectorsOwners(NC_STACK_ypaworld *yw, BriefengScreen *brf)
 {
-    uint8_t *ownmap = (uint8_t *)brf->copy2_of_ownmap_bitm->buffer;
-
-    yw->win3d->LockSurface();
-
-    float v3 = (brf->field_2F74.x2 - brf->field_2F74.x1) / (float)yw->sectors_maxX2;
-    float v4 = (brf->field_2F74.y2 - brf->field_2F74.y1) / (float)yw->sectors_maxY2;
+    float v3 = (brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1) / (float)yw->sectors_maxX2;
+    float v4 = (brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1) / (float)yw->sectors_maxY2;
 
     float v19 = v3 / 10.0;
     float v16 = v4 / 10.0;
 
-    float v21 = brf->field_2F74.y1 + v4 * 0.5;
+    float v21 = brf->MapBlitEnd.y1 + v4 * 0.5;
 
     for (int yy = 0; yy < yw->sectors_maxY2; yy++)
     {
-        float v23 = brf->field_2F74.x1 + v3 * 0.5;
+        float v23 = brf->MapBlitEnd.x1 + v3 * 0.5;
+        
+        uint8_t *ownmap = brf->OwnMap.Line(yy);
 
         for (int xx = 0; xx < yw->sectors_maxX2; xx++)
         {
@@ -1572,14 +1433,9 @@ void yw_DebriefRenderSectorsOwners(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
                     arg198_1.x2 = v23;
                     arg198_1.y2 = v21 + v16;
 
-                    rstr_arg217 arg217;
-                    arg217.dword0 = yw_GetColor(yw, owner);
-                    arg217.dword4 = arg217.dword0;
-//                    arg217.dword8 = -1;
-
-                    yw->win3d->raster_func217(&arg217);
-                    yw->win3d->raster_func198(&arg198);
-                    yw->win3d->raster_func198(&arg198_1);
+                    yw->_win3d->raster_func217( yw_GetColor(yw, owner) );
+                    yw->_win3d->raster_func198(&arg198);
+                    yw->_win3d->raster_func198(&arg198_1);
                 }
             }
 
@@ -1589,18 +1445,16 @@ void yw_DebriefRenderSectorsOwners(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
 
         v21 += v4;
     }
-
-    yw->win3d->UnlockSurface();
 }
 
 
-void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf)
+void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(NC_STACK_ypaworld *yw, BriefengScreen *brf)
 {
     int v14 = (yw->screen_width / 2) * -0.934375;
     int v13 = (yw->screen_width / 2) * 0.03125;
     int v16 = (yw->screen_height / 2) * -0.9333333333333333;
 
-    const char *v7 = get_lang_string(yw->string_pointers_p2, yw->field_2d90->levelID + 1800, yw->field_2d90->map_name);
+    const char *v7 = get_lang_string(yw->string_pointers_p2, yw->_levelInfo->LevelID + 1800, yw->_levelInfo->MapName.c_str());
 
     char cmdBuff[264];
     char *cur = cmdBuff;
@@ -1619,10 +1473,10 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(_NC_STACK_ypaworld *yw, big_
     arg209.cmdbuf = cmdBuff;
     arg209.includ = 0;
 
-    yw->win3d->raster_func209(&arg209);
+    yw->_win3d->raster_func209(&arg209);
 }
 
-char * yw_DebriefKillsTitleLine(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
+char * yw_DebriefKillsTitleLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in, int a4)
 {
     char *cur = in;
 
@@ -1661,7 +1515,7 @@ int sub_4EF2A8(const void *a1, const void *a2)
     return ((debrif_t1 *)a2)->status - ((debrif_t1 *)a1)->status;
 }
 
-char * yw_DebriefKillsScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
+char * yw_DebriefKillsScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in, int a4)
 {
     char *cur = in;
     int a2 = 0;
@@ -1670,10 +1524,10 @@ char * yw_DebriefKillsScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
 
     for (int i = 0; i < 8; i++)
     {
-        if ( (1 << i) & yw->field_2d90->ownerMap__has_vehicles )
+        if ( (1 << i) & yw->_levelInfo->OwnerMask )
         {
             v28[a2].owner = i;
-            v28[a2].status = brf->field_42BC[i].destroyed;
+            v28[a2].status = brf->StatsIngame[i].destroyed;
             a2++;
         }
     }
@@ -1684,7 +1538,7 @@ char * yw_DebriefKillsScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
     for (int i = 0; i < a2; i++)
     {
         int clr_id;
-        const char *who;
+        std::string who;
 
         switch ( v28[i].owner )
         {
@@ -1736,14 +1590,10 @@ char * yw_DebriefKillsScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
         elms[0].postfixChar = 0;
         elms[0].flags = 36;
 
-        char a1[32];
-
         if ( yw->field_727c || v28[i].owner == yw->playerOwner )
-            sprintf(a1, "%d", brf->field_42BC[ v28[i].owner ].destroyedByUser);
+            elms[1].txt = fmt::sprintf("%d", brf->StatsIngame[ v28[i].owner ].destroyedByUser);
         else
-            sprintf(a1, "-");
-
-        elms[1].txt = a1;
+            elms[1].txt = "-";
         elms[1].spaceChar = 32;
         elms[1].fontID = 15;
         elms[1].prefixChar = 0;
@@ -1751,10 +1601,7 @@ char * yw_DebriefKillsScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
         elms[1].flags = 36;
         elms[1].width = a4 * 0.3;
 
-        char v30[32];
-        sprintf(v30, "%d", brf->field_42BC[ v28[i].owner ].destroyed);
-
-        elms[2].txt = v30;
+        elms[2].txt = fmt::sprintf("%d", brf->StatsIngame[ v28[i].owner ].destroyed);
         elms[2].width = a4 * 0.3;
         elms[2].fontID = 15;
         elms[2].spaceChar = 32;
@@ -1770,7 +1617,7 @@ char * yw_DebriefKillsScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
     return cur;
 }
 
-char * yw_DebriefMPlayScoreTitle(_NC_STACK_ypaworld *yw, char *in, int a4)
+char * yw_DebriefMPlayScoreTitle(NC_STACK_ypaworld *yw, char *in, int a4)
 {
     char *cur = in;
 
@@ -1789,7 +1636,7 @@ char * yw_DebriefMPlayScoreTitle(_NC_STACK_ypaworld *yw, char *in, int a4)
     return FormateColumnItem(yw, cur, 1, &elm);
 }
 
-char *yw_DebriefMPlayScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
+char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in, int a4)
 {
     char *cur = in;
 
@@ -1804,10 +1651,10 @@ char *yw_DebriefMPlayScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, i
 
         for (int i = 0; i < 8; i++)
         {
-            if ( (1 << i) & yw->field_2d90->ownerMap__has_vehicles )
+            if ( (1 << i) & yw->_levelInfo->OwnerMask )
             {
                 v32[a2].owner = i;
-                v32[a2].status = brf->field_42BC[i].score;
+                v32[a2].status = brf->StatsIngame[i].score;
                 a2++;
             }
         }
@@ -1817,7 +1664,7 @@ char *yw_DebriefMPlayScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, i
         for (int i = 0; i < a2; i++)
         {
             int clr_id;
-            const char *who;
+            std::string who;
 
             switch ( v32[i].owner )
             {
@@ -1869,10 +1716,7 @@ char *yw_DebriefMPlayScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, i
             a4a[0].flags = 36;
             a4a[0].width = a4 * 0.5;
 
-            char a1[32];
-            sprintf(a1, "%d", brf->field_42BC[ v32[i].owner ].score);
-
-            a4a[1].txt = a1;
+            a4a[1].txt = fmt::sprintf("%d", brf->StatsIngame[ v32[i].owner ].score);
             a4a[1].width = a4 * 0.5;
             a4a[1].fontID = 15;
             a4a[1].spaceChar = 32;
@@ -1899,10 +1743,7 @@ char *yw_DebriefMPlayScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, i
         v35[0].fontID = 15;
         v35[0].flags = 36;
 
-        char v34[32];
-        sprintf(v34, "%d", brf->field_42BC[1].score);
-
-        v35[1].txt = v34;
+        v35[1].txt = fmt::sprintf("%d", brf->StatsIngame[yw->playerOwner].score);
         v35[1].fontID = 15;
         v35[1].spaceChar = 32;
         v35[1].prefixChar = 0;
@@ -1922,9 +1763,9 @@ char *yw_DebriefMPlayScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, i
         v35[0].postfixChar = 0;
         v35[0].fontID = 15;
 
-        sprintf(v34, "%d", brf->field_42BC[1].score + brf->copy_of_playerstatus[1].score);
+        
 
-        v35[1].txt = v34;
+        v35[1].txt = fmt::sprintf("%d", brf->StatsIngame[yw->playerOwner].score + brf->StatsGlobal[yw->playerOwner].score);
         v35[1].fontID = 15;
         v35[1].spaceChar = 32;
         v35[1].postfixChar = 0;
@@ -1939,7 +1780,7 @@ char *yw_DebriefMPlayScore(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, i
     return cur;
 }
 
-char * yw_DebriefRenderTime(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, int a4)
+char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in, int a4)
 {
     char *cur = in;
     FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
@@ -1955,12 +1796,9 @@ char * yw_DebriefRenderTime(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
         v30[0].flags = 36;
         v30[0].fontID = 15;
 
-        int v12 = brf->field_41D8 / 1024;
+        int v12 = brf->LastFrameTimeStamp / 1024;
 
-        char a1[30];
-        sprintf(a1, "%02d:%02d:%02d", v12 / 60 / 60, v12 / 60 % 60, v12 % 60);
-
-        v30[1].txt = a1;
+        v30[1].txt = fmt::sprintf("%02d:%02d:%02d", v12 / 60 / 60, v12 / 60 % 60, v12 % 60);
         v30[1].fontID = 15;
         v30[1].spaceChar = 32;
         v30[1].prefixChar = 0;
@@ -1982,12 +1820,9 @@ char * yw_DebriefRenderTime(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
         a4a[0].flags = 36;
         a4a[0].fontID = 15;
 
-        int v19 = brf->field_41D8 / 1024;
+        int v19 = brf->LastFrameTimeStamp / 1024;
 
-        char v28[32];
-        sprintf(v28, "%02d:%02d:%02d", v19 / 60 / 60, v19 / 60 % 60, v19 % 60);
-
-        a4a[1].txt = v28;
+        a4a[1].txt = fmt::sprintf("%02d:%02d:%02d", v19 / 60 / 60, v19 / 60 % 60, v19 % 60);
         a4a[1].width = a4 * 0.3;
         a4a[1].fontID = 15;
         a4a[1].spaceChar = 32;
@@ -2007,10 +1842,9 @@ char * yw_DebriefRenderTime(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
         a4a[0].postfixChar = 0;
         a4a[0].fontID = 15;
 
-        v19 = (brf->field_41D8 + brf->copy_of_playerstatus[1].elapsedTime) / 1024;
-        sprintf(v28, "%02d:%02d:%02d", v19 / 60 / 60, v19 / 60 % 60, v19 % 60);
+        v19 = (brf->LastFrameTimeStamp + brf->StatsGlobal[yw->playerOwner].elapsedTime) / 1024;
 
-        a4a[1].txt = v28;
+        a4a[1].txt = fmt::sprintf("%02d:%02d:%02d", v19 / 60 / 60, v19 / 60 % 60, v19 % 60);
         a4a[1].fontID = 15;
         a4a[1].spaceChar = 32;
         a4a[1].width = a4 * 0.3;
@@ -2026,7 +1860,7 @@ char * yw_DebriefRenderTime(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in, 
     return cur;
 }
 
-char * yw_DebriefScoreTable(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in)
+char * yw_DebriefScoreTable(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in)
 {
     char *cur = in;
 
@@ -2051,71 +1885,69 @@ char * yw_DebriefScoreTable(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in)
     return yw_DebriefRenderTime(yw, brf, cur, v14);
 }
 
-char * yw_DebriefTechUpgradeLine(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, brf_t1 *tp1, char *in, int a5)
+char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, const World::History::Upgrade &upg, char *in, int a5)
 {
     char *cur = in;
 
-    int last_weapon = tp1->last_weapon;
-    int last_vhcl   = tp1->last_vhcl;
-    int last_build  = tp1->last_build;
+    int lastWeapon = upg.lastWeapon;
+    int lastVhcl   = upg.lastVhcl;
+    int lastBuild  = upg.lastBuild;
 
-    if ( !last_vhcl && last_weapon )
+    if ( !lastVhcl && lastWeapon )
     {
         for (int i = 0; i < 256; i++)
         {
-            if (yw->VhclProtos[i].weapon == last_weapon)
+            if (yw->VhclProtos[i].weapon == lastWeapon)
             {
-                last_vhcl = i;
+                lastVhcl = i;
                 break;
             }
         }
 
-        if ( !last_vhcl )
+        if ( !lastVhcl )
             return cur;
     }
 
-    if ( !last_weapon && last_vhcl )
+    if ( !lastWeapon && lastVhcl )
     {
-        last_weapon = yw->VhclProtos[ last_vhcl ].weapon;
+        lastWeapon = yw->VhclProtos[ lastVhcl ].weapon;
 
-        if ( last_weapon == -1 )
-            last_weapon = 0;
+        if ( lastWeapon == -1 )
+            lastWeapon = 0;
     }
 
     VhclProto *vhcl = NULL;
     WeapProto *wpn  = NULL;
     BuildProto *bld = NULL;
 
-    if ( last_vhcl )
-        vhcl = &yw->VhclProtos[last_vhcl];
+    if ( lastVhcl )
+        vhcl = &yw->VhclProtos[lastVhcl];
 
-    if ( last_build )
-        bld = &yw->BuildProtos[last_build];
+    if ( lastBuild )
+        bld = &yw->BuildProtos[lastBuild];
 
-    if ( last_weapon )
-        wpn = &yw->WeaponProtos[last_weapon];
+    if ( lastWeapon )
+        wpn = &yw->WeaponProtos[lastWeapon];
 
-    const char *v13 = " ";
-    const char *v14 = " ";
-    const char *v33 = " ";
-
-    char a1[256];
+    std::string v13 = " ";
+    std::string v14 = " ";
+    std::string v33 = " ";
 
     if ( vhcl )
     {
-        v33 = get_lang_string(yw->string_pointers_p2, last_vhcl + 1200, vhcl->name);
+        v33 = get_lang_string(yw->string_pointers_p2, lastVhcl + 1200, vhcl->name.c_str());
     }
     else if ( bld )
     {
         if ( yw->field_727c )
-            v33 = get_lang_string(yw->string_pointers_p2, last_build + 1700, bld->name);
+            v33 = get_lang_string(yw->string_pointers_p2, lastBuild + 1700, bld->name.c_str());
         else
-            v33 = get_lang_string(yw->string_pointers_p2, last_build + 1500, bld->name);
+            v33 = get_lang_string(yw->string_pointers_p2, lastBuild + 1500, bld->name.c_str());
     }
 
-    switch ( tp1->field_0 )
+    switch ( upg.upgradeType )
     {
-    case 1:
+    case World::UPGRADE_WEAPON:
         if ( wpn )
         {
             if ( vhcl )
@@ -2123,64 +1955,59 @@ char * yw_DebriefTechUpgradeLine(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, brf_t
                 v13 = get_lang_string(yw->string_pointers_p2, 2459, "WEAPON UPGRADE:");
 
                 if ( vhcl->num_weapons > 1 )
-                    sprintf(a1, "(%d x%d)", wpn->energy / 100, vhcl->num_weapons);
+                    v14 = fmt::sprintf("(%d x%d)", wpn->energy / 100, vhcl->num_weapons);
                 else
-                    sprintf(a1, "(%d)", wpn->energy / 100);
-
-
-                v14 = a1;
+                    v14 = fmt::sprintf("(%d)", wpn->energy / 100);
             }
         }
         break;
 
-    case 2:
+    case World::UPGRADE_ARMOR:
         if ( vhcl )
         {
             v13 = get_lang_string(yw->string_pointers_p2, 2460, "ARMOR UPGRADE:");
 
-            sprintf(a1, "(%d%%)", vhcl->shield);
-            v14 = a1;
+            v14 = fmt::sprintf("(%d%%)", vhcl->shield);
         }
         break;
 
-    case 3:
+    case World::UPGRADE_VEHICLE:
         if ( vhcl )
         {
             v13 = get_lang_string(yw->string_pointers_p2, 2461, "NEW VEHICLE TECH:");
         }
         break;
 
-    case 4:
+    case World::UPGRADE_BUILDING:
         if ( bld )
         {
             v13 = get_lang_string(yw->string_pointers_p2, 2462, "NEW BUILDING TECH:");
         }
         break;
 
-    case 5:
+    case World::UPGRADE_RADARE:
         if ( vhcl )
         {
             v13 = get_lang_string(yw->string_pointers_p2, 2463, "RADAR UPGRADE:");
         }
         break;
 
-    case 6:
+    case World::UPGRADE_BLDVHCL:
         if ( vhcl )
         {
             if ( bld )
             {
                 if ( yw->field_727c )
-                    strcpy(a1, get_lang_string(yw->string_pointers_p2, last_build + 1700, bld->name));
+                    v14 = get_lang_string(yw->string_pointers_p2, lastBuild + 1700, bld->name.c_str());
                 else
-                    strcpy(a1, get_lang_string(yw->string_pointers_p2, last_build + 1500, bld->name));
+                    v14 = get_lang_string(yw->string_pointers_p2, lastBuild + 1500, bld->name.c_str());
 
                 v13 = get_lang_string(yw->string_pointers_p2, 2464, "COMBINED UPGRADE:");
-                v14 = a1;
             }
         }
         break;
 
-    case 7:
+    case World::UPGRADE_GENERIC:
         v13 = get_lang_string(yw->string_pointers_p2, 2465, "GENERIC TECH UPGRADE");
         break;
 
@@ -2188,44 +2015,40 @@ char * yw_DebriefTechUpgradeLine(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, brf_t
         break;
     }
 
-    if ( v13 && v33 && v14 )
-    {
+    FontUA::ColumnItem elm[3];
 
-        FontUA::ColumnItem elm[3];
+    elm[0].txt = v13;
+    elm[0].spaceChar = 32;
+    elm[0].flags = 36;
+    elm[0].prefixChar = 0;
+    elm[0].postfixChar = 0;
+    elm[0].width = a5 * 0.48;
+    elm[0].fontID = 15;
 
-        elm[0].txt = v13;
-        elm[0].spaceChar = 32;
-        elm[0].flags = 36;
-        elm[0].prefixChar = 0;
-        elm[0].postfixChar = 0;
-        elm[0].width = a5 * 0.48;
-        elm[0].fontID = 15;
+    elm[1].flags = 36;
+    elm[1].fontID = 15;
+    elm[1].spaceChar = 32;
+    elm[1].prefixChar = 0;
+    elm[1].postfixChar = 0;
+    elm[1].txt = v33;
+    elm[1].width = a5 * 0.3;
 
-        elm[1].flags = 36;
-        elm[1].fontID = 15;
-        elm[1].spaceChar = 32;
-        elm[1].prefixChar = 0;
-        elm[1].postfixChar = 0;
-        elm[1].txt = v33;
-        elm[1].width = a5 * 0.3;
+    elm[2].flags = 36;
+    elm[2].fontID = 15;
+    elm[2].spaceChar = 32;
+    elm[2].prefixChar = 0;
+    elm[2].postfixChar = 0;
+    elm[2].width = a5 * 0.22;
+    elm[2].txt = v14;
 
-        elm[2].flags = 36;
-        elm[2].fontID = 15;
-        elm[2].spaceChar = 32;
-        elm[2].prefixChar = 0;
-        elm[2].postfixChar = 0;
-        elm[2].width = a5 * 0.22;
-        elm[2].txt = v14;
+    cur = FontUA::FormateColumnItem(yw, cur, 3, elm);
 
-        cur = FontUA::FormateColumnItem(yw, cur, 3, elm);
-
-        FontUA::next_line(&cur);
-    }
+    FontUA::next_line(&cur);
 
     return cur;
 }
 
-char * yw_DebriefTechUpgradesTable(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, char *in)
+char * yw_DebriefTechUpgradesTable(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in)
 {
     char *cur = in;
 
@@ -2235,18 +2058,18 @@ char * yw_DebriefTechUpgradesTable(_NC_STACK_ypaworld *yw, big_ypa_Brf *brf, cha
 
     FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
 
-    for (int i = 0; i < brf->tp1_count; i++)
-        cur = yw_DebriefTechUpgradeLine(yw, brf, &brf->tp1[i], cur,  (yw->screen_width / 2) * 0.984375 );
+    for ( const auto &upg : brf->Upgrades )
+        cur = yw_DebriefTechUpgradeLine(yw, brf, upg, cur,  (yw->screen_width / 2) * 0.984375 );
 
     return cur;
 }
 
-void yw_DebriefRunDebrief(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *brf)
+void yw_DebriefRunDebrief(NC_STACK_ypaworld *yw, struC5 *struc, BriefengScreen *brf)
 {
     char cmdbuf[2048];
     char *cur = cmdbuf;
 
-    int a4 = brf->currTime - brf->startTime;
+    uint32_t dtime = brf->CurrTime - brf->StartTime;
 
     yw_DebriefRenderSectorsOwners(yw, brf);
 
@@ -2255,163 +2078,143 @@ void yw_DebriefRunDebrief(_NC_STACK_ypaworld *yw, struC5 *struc, big_ypa_Brf *br
 
     FontUA::set_end(&cur);
 
-    int v6 = 0;
+    uint32_t _lastFrameTimeStamp = 0;
 
     w3d_a209 v24;
     v24.includ = 0;
     v24.cmdbuf = cmdbuf;
 
-    yw->win3d->LockSurface();
-    yw->win3d->raster_func209(&v24);
+    yw->_win3d->raster_func209(&v24);
 
     int v26 = 0;
+    
+    
 
-    if ( brf->briefStage == 8 )
+    if ( brf->Stage == 8 )
     {
-        yw_f726c_nod *hist_nod = (yw_f726c_nod *)yw->history->lst.head;
+        bool readLoop = true;
+        auto reader = yw->_history.GetReader();
+        
+        World::History::Instance HistDecoders;
 
-        while ( hist_nod->next )
+        while (readLoop && !reader.Eof())
         {
-            if ( v26 )
-                break;
-
-            int tlen = 0;
-            int v28 = 1;
-
-            uint8_t *v9 = hist_nod->bufStart;
-
-            yw_arg184 arg184;
-
-            while (v28)
+            World::History::Record *decoder = HistDecoders[ reader.ReadU8() ];
+            if (decoder)
             {
-                yw_histbf_read_evnt(v9, &arg184);
-
-                switch ( arg184.type )
+                World::History::FillDecoderBStrm(decoder, &reader);
+                
+                switch(decoder->type)
                 {
-                case 0:
-                    tlen = 0;
-                    v28 = 0;
-                    break;
+                case World::History::TYPE_FRAME:
+                {
+                    World::History::Frame *frm = static_cast<World::History::Frame *>(decoder);
+                    
+                    _lastFrameTimeStamp = frm->TimeStamp;
 
-                case 1:
-                    tlen = 5;
+                    if ( _lastFrameTimeStamp >= brf->LastFrameTimeStamp )
+                        brf->LastFrameTimeStamp = _lastFrameTimeStamp;
 
-                    v6 = arg184.t15.field_1;
-
-                    if ( v6 >= brf->field_41D8 )
-                        brf->field_41D8 = v6;
-
-                    if ( v6 >= a4 )
+                    if ( _lastFrameTimeStamp >= dtime )
                     {
                         v26 = 1;
-                        v28 = 0;
+                        readLoop = false;
                     }
+                }
+                break;
+
+                case World::History::TYPE_CONQ:
+                    yw_DebriefConqSector(yw, brf, static_cast<World::History::Conq *>(decoder), dtime, _lastFrameTimeStamp);
                     break;
 
-                case 2:
-                    tlen = 4;
-                    yw_DebriefConqSector(yw, brf, &arg184, a4, v6);
+                case World::History::TYPE_VHCLKILL:
+                    yw_DebriefVhclKill(yw, brf, static_cast<World::History::VhclKill *>(decoder), dtime, _lastFrameTimeStamp);
                     break;
 
-                case 3:
-                    tlen = 6;
-                    yw_DebriefVhclKill(yw, brf, &arg184, a4, v6);
+                case World::History::TYPE_VHCLCREATE:
+                    yw_DebriefVhclCreate(yw, brf, static_cast<World::History::VhclCreate *>(decoder), dtime, _lastFrameTimeStamp);
                     break;
 
-                case 4:
-                    tlen = 6;
-                    yw_DebriefVhclCreate(yw, brf, &arg184, a4, v6);
-                    break;
-
-                case 6:
-                    tlen = 4;
-                    if ( v6 == brf->field_41D8 )
+                case World::History::TYPE_POWERST:
+                    if ( _lastFrameTimeStamp == brf->LastFrameTimeStamp )
                     {
-                        yw_score(yw, &arg184, brf->field_42BC);
+                        decoder->AddScore(&brf->StatsIngame);
 
                         if ( yw->GameShell )
                             SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 14);
                     }
                     break;
 
-                case 7:
-                    tlen = 12;
-                    if ( v6 == brf->field_41D8 )
+                case World::History::TYPE_UPGRADE:
+                    if ( _lastFrameTimeStamp == brf->LastFrameTimeStamp )
                     {
-                        yw_score(yw, &arg184, brf->field_42BC);
-                        yw_DebriefAddTechUpgrade(yw, brf, &arg184);
+                        decoder->AddScore(&brf->StatsIngame);
+                        yw_DebriefAddTechUpgrade(yw, brf, static_cast<World::History::Upgrade *>(decoder));
 
                         if ( yw->GameShell )
                             SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 14);
 
                     }
-                    break;
-
-                case 5:
                     break;
 
                 default:
-                    v28 = 0;
+                    readLoop = false;
                     break;
                 }
-
-                v9 += tlen;
             }
-
-            hist_nod = (yw_f726c_nod *)hist_nod->next;
+            else
+            {
+                readLoop = false;
+            }
         }
 
         if ( !v26 )
         {
-            brf->briefStage = 9;
+            brf->Stage = 9;
             if ( yw->field_727c )
             {
                 for (int i = 0; i < 8; i ++)
-                    brf->field_42BC[i] = yw->ingamePlayerStatus[i];
+                    brf->StatsIngame[i] = yw->ingamePlayerStatus[i];
             }
         }
     }
 
     ypaworld_func158__sub4__sub1__sub6__sub3__sub6(yw, brf);
-
-    yw->win3d->UnlockSurface();
 }
 
-void yw_debriefUpdate(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
+void yw_debriefUpdate(NC_STACK_ypaworld *yw, struC5 *inpt)
 {
-    big_ypa_Brf *brf = &yw->brief;
+    BriefengScreen *brf = &yw->brief;
 
-    if ( yw->history )
+    if ( yw->_history.Size() ) //FIXME
     {
-        if ( yw->brief.field_2E6C == 0 )
+        if ( yw->brief.TimerStatus == 0 )
         {
-            if ( brf->briefStage == 8 )
+            if ( brf->Stage == 8 )
             {
-                brf->currTime += 60 * inpt->period;
+                brf->CurrTime += 60 * inpt->period;
             }
-            else if ( brf->briefStage != 9 )
+            else if ( brf->Stage != 9 )
             {
-                brf->currTime += inpt->period;
+                brf->CurrTime += inpt->period;
             }
         }
-        else if ( yw->brief.field_2E6C == 1 )
+        else if ( yw->brief.TimerStatus == 1 )
         {
             inpt->period = 1;
         }
-        else if ( yw->brief.field_2E6C == 3 )
+        else if ( yw->brief.TimerStatus == 3 )
         {
-            brf->field_2E6C = 0;
-            brf->briefStage = 7;
+            brf->TimerStatus = 0;
+            brf->Stage = 7;
         }
 
-        if ( brf->briefStage != 4 )
+        if ( brf->Stage != 4 )
         {
-            yw->win3d->LockSurface();
-
-            if ( brf->briefing_map )
+            if ( brf->BriefingMapImg )
             {
                 rstr_arg204 arg204;
-                arg204.pbitm = brf->briefing_map->getBMD_pBitmap();
+                arg204.pbitm = brf->BriefingMapImg->GetResBmp();
 
                 arg204.float4 = -1.0;
                 arg204.floatC = 1.0;
@@ -2422,14 +2225,13 @@ void yw_debriefUpdate(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
                 arg204.float18 = -1.0;
                 arg204.float20 = 1.0;
 
-                yw->win3d->raster_func204(&arg204);
+                yw->_win3d->raster_func204(&arg204);
             }
 
-            yw->win3d->raster_func204(&brf->field_2F40);
-            yw->win3d->UnlockSurface();
+            yw->_win3d->raster_func204(&brf->MapBlitParams);
         }
 
-        switch ( brf->briefStage )
+        switch ( brf->Stage )
         {
         case 4:
             ypaworld_func158__sub4__sub1__sub6__sub0(yw, inpt, brf);
@@ -2440,7 +2242,7 @@ void yw_debriefUpdate(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
             break;
 
         case 6:
-            brf->briefStage = 7;
+            brf->Stage = 7;
             break;
 
         case 7:
@@ -2458,6 +2260,6 @@ void yw_debriefUpdate(_NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
     }
     else
     {
-        yw->brief.briefStage = 2;
+        yw->brief.Stage = 2;
     }
 }

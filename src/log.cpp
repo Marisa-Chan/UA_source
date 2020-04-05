@@ -578,7 +578,7 @@ void log_dinput_error(const char *title, const char *msg, unsigned int msgid)
         log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "Unsupported");
         break;
     default:
-        log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s\n", title, msg, "<unknown>");
+        log_dinputlog("FAIL MSG: title=%s, msg=%s, err=%s id = 0x%x\n", title, msg, "<unknown>", msgid);
         break;
     }
 }

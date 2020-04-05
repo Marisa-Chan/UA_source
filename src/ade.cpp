@@ -4,43 +4,36 @@
 #include "utils.h"
 
 
-const NewClassDescr NC_STACK_ade::description("ade.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_ade::description("ade.class", &newinstance);
 
 
-size_t NC_STACK_ade::func0(IDVList *stak)
+size_t NC_STACK_ade::func0(IDVList &stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
 
-    __NC_STACK_ade *ade = &stack__ade;
-
-    ade->self = this;
-
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
-        {
-            IDVPair &val = it->second;
+        IDVPair &val = it->second;
 
-            if ( !val.skip() )
+        if ( !val.skip() )
+        {
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case ADE_ATT_BKCHECK:
-                    setADE_bkCheck(val.value.i_data);
-                    break;
-                case ADE_ATT_DPTHFADE:
-                    setADE_depthFade(val.value.i_data);
-                    break;
-                case ADE_ATT_POINT:
-                    setADE_point(val.value.i_data);
-                    break;
-                case ADE_ATT_POLY:
-                    setADE_poly(val.value.i_data);
-                    break;
-                default:
-                    break;
-                }
+            case ADE_ATT_BKCHECK:
+                setADE_bkCheck(val.value.i_data);
+                break;
+            case ADE_ATT_DPTHFADE:
+                setADE_depthFade(val.value.i_data);
+                break;
+            case ADE_ATT_POINT:
+                setADE_point(val.value.i_data);
+                break;
+            case ADE_ATT_POLY:
+                setADE_poly(val.value.i_data);
+                break;
+            default:
+                break;
             }
         }
     }
@@ -50,39 +43,39 @@ size_t NC_STACK_ade::func0(IDVList *stak)
 
 size_t NC_STACK_ade::func1()
 {
-    if ( stack__ade.flags & ADE_FLAG_INLIST )
-        Remove(&stack__ade);
+    if ( AttachedTo )
+    {
+        AttachedTo->remove(this);
+        AttachedTo = NULL;
+    }
 
     return NC_STACK_nucleus::func1();
 }
 
-size_t NC_STACK_ade::func2(IDVList *stak)
+size_t NC_STACK_ade::func2(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
-        {
-            IDVPair &val = it->second;
+        IDVPair &val = it->second;
 
-            if ( !val.skip() )
+        if ( !val.skip() )
+        {
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case ADE_ATT_BKCHECK:
-                    setADE_bkCheck(val.value.i_data);
-                    break;
-                case ADE_ATT_DPTHFADE:
-                    setADE_depthFade(val.value.i_data);
-                    break;
-                case ADE_ATT_POINT:
-                    setADE_point(val.value.i_data);
-                    break;
-                case ADE_ATT_POLY:
-                    setADE_poly(val.value.i_data);
-                    break;
-                default:
-                    break;
-                }
+            case ADE_ATT_BKCHECK:
+                setADE_bkCheck(val.value.i_data);
+                break;
+            case ADE_ATT_DPTHFADE:
+                setADE_depthFade(val.value.i_data);
+                break;
+            case ADE_ATT_POINT:
+                setADE_point(val.value.i_data);
+                break;
+            case ADE_ATT_POLY:
+                setADE_poly(val.value.i_data);
+                break;
+            default:
+                break;
             }
         }
     }
@@ -91,36 +84,33 @@ size_t NC_STACK_ade::func2(IDVList *stak)
 }
 
 
-size_t NC_STACK_ade::func3(IDVList *stak)
+size_t NC_STACK_ade::func3(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
-        {
-            IDVPair &val = it->second;
+        IDVPair &val = it->second;
 
-            if ( !val.skip() )
+        if ( !val.skip() )
+        {
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case ADE_ATT_BKCHECK:
-                    *(int *)val.value.p_data = getADE_bkCheck();
-                    break;
-                case ADE_ATT_DPTHFADE:
-                    *(int *)val.value.p_data = getADE_depthFade();
-                    break;
-                case ADE_ATT_POINT:
-                    *(int *)val.value.p_data = getADE_point();
-                    break;
-                case ADE_ATT_POLY:
-                    *(int *)val.value.p_data = getADE_poly();
-                    break;
-                case ADE_ATT_PADE:
-                    *(__NC_STACK_ade **)val.value.p_data = getADE_pAde();
-                    break;
-                default:
-                    break;
-                }
+            case ADE_ATT_BKCHECK:
+                *(int *)val.value.p_data = getADE_bkCheck();
+                break;
+            case ADE_ATT_DPTHFADE:
+                *(int *)val.value.p_data = getADE_depthFade();
+                break;
+            case ADE_ATT_POINT:
+                *(int *)val.value.p_data = getADE_point();
+                break;
+            case ADE_ATT_POLY:
+                *(int *)val.value.p_data = getADE_poly();
+                break;
+            case ADE_ATT_PADE:
+//                    *(__NC_STACK_ade **)val.value.p_data = getADE_pAde();
+                break;
+            default:
+                break;
             }
         }
     }
@@ -155,9 +145,6 @@ size_t NC_STACK_ade::func5(IFFile **file)
 
             if ( !obj_ok )
                 break;
-
-            this->stack__ade.self = this;
-
         }
         else if ( chunk->TAG == TAG_STRC )
         {
@@ -194,7 +181,6 @@ size_t NC_STACK_ade::func5(IFFile **file)
 size_t NC_STACK_ade::func6(IFFile **file)
 {
     IFFile *mfile = *file;
-    __NC_STACK_ade *ade = &stack__ade;
 
     if ( mfile->pushChunk(TAG_ADE, TAG_FORM, -1) )
         return 0;
@@ -206,9 +192,9 @@ size_t NC_STACK_ade::func6(IFFile **file)
 
     mfile->writeS16B(1);
     mfile->writeS8(0);
-    mfile->writeS8( ade->flags & (ADE_FLAG_BKCHECK | ADE_FLAG_DPTHFADE) );
-    mfile->writeS16B(ade->point);
-    mfile->writeS16B(ade->poly);
+    mfile->writeS8( flags & (ADE_FLAG_BKCHECK | ADE_FLAG_DPTHFADE) );
+    mfile->writeS16B(point);
+    mfile->writeS16B(poly);
     mfile->writeS16B(0);
 
     mfile->popChunk();
@@ -216,15 +202,16 @@ size_t NC_STACK_ade::func6(IFFile **file)
 }
 
 // Add ade to list
-size_t NC_STACK_ade::ade_func64(nlist **lst)
+size_t NC_STACK_ade::ade_func64(AdeList &lst)
 {
-    __NC_STACK_ade *ade = &stack__ade;
+    if ( AttachedTo )
+    {
+        AttachedTo->remove(this);
+        AttachedTo = NULL;
+    }
 
-    if ( ade->flags & 1 )
-        Remove(ade);
-
-    AddTail(*lst, ade);
-    ade->flags |= 1;
+    lst.push_back(this);
+    AttachedTo = &lst;
 
     return 1;
 }
@@ -238,59 +225,59 @@ size_t NC_STACK_ade::ade_func65(area_arg_65 *arg)
 
 int NC_STACK_ade::getADE_bkCheck()
 {
-    if ( (stack__ade.flags & ADE_FLAG_BKCHECK) )
+    if ( (flags & ADE_FLAG_BKCHECK) )
         return 1;
     return 0;
 }
 
 int NC_STACK_ade::getADE_depthFade()
 {
-    if ( (stack__ade.flags & ADE_FLAG_DPTHFADE) )
+    if ( (flags & ADE_FLAG_DPTHFADE) )
         return 1;
     return 0;
 }
 
 int NC_STACK_ade::getADE_point()
 {
-    return stack__ade.point;
+    return point;
 }
 
 int NC_STACK_ade::getADE_poly()
 {
-    return stack__ade.poly;
+    return poly;
 }
 
-__NC_STACK_ade *NC_STACK_ade::getADE_pAde()
-{
-    return &stack__ade;
-}
+//__NC_STACK_ade *NC_STACK_ade::getADE_pAde()
+//{
+//    return &stack__ade;
+//}
 
 
 
 void NC_STACK_ade::setADE_bkCheck(int arg)
 {
     if ( arg )
-        stack__ade.flags |= ADE_FLAG_BKCHECK;
+        flags |= ADE_FLAG_BKCHECK;
     else
-        stack__ade.flags &= ~ADE_FLAG_BKCHECK;
+        flags &= ~ADE_FLAG_BKCHECK;
 }
 
 void NC_STACK_ade::setADE_depthFade(int arg)
 {
     if ( arg )
-        stack__ade.flags |= ADE_FLAG_DPTHFADE;
+        flags |= ADE_FLAG_DPTHFADE;
     else
-        stack__ade.flags &= ~ADE_FLAG_DPTHFADE;
+        flags &= ~ADE_FLAG_DPTHFADE;
 }
 
 void NC_STACK_ade::setADE_point(int arg)
 {
-    stack__ade.point = arg;
+    point = arg;
 }
 
 void NC_STACK_ade::setADE_poly(int arg)
 {
-    stack__ade.poly = arg;
+    poly = arg;
 }
 
 
@@ -299,19 +286,19 @@ size_t NC_STACK_ade::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return (size_t)func2( (IDVList *)data );
+        return (size_t)func2( *(IDVList *)data );
     case 3:
-        return (size_t)func3( (IDVList *)data );
+        return (size_t)func3( *(IDVList *)data );
     case 5:
         return (size_t)func5( (IFFile **)data );
     case 6:
         return (size_t)func6( (IFFile **)data );
     case 64:
-        return (size_t)ade_func64( (nlist **)data );
+        return (size_t)ade_func64( (AdeList &)data );
     default:
         break;
     }

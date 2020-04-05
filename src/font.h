@@ -75,7 +75,7 @@ void set_txtColor(char **pos, uint8_t r, uint8_t g, uint8_t b);
 
 struct ColumnItem
 {
-    const char *txt;
+    std::string txt;
     int width;
     uint8_t fontID;
     uint8_t spaceChar;
@@ -85,7 +85,6 @@ struct ColumnItem
 
     ColumnItem()
     {
-        txt = NULL;
         width = 0;
         fontID = 0;
         spaceChar = 0;
@@ -97,13 +96,13 @@ struct ColumnItem
 
 
 // funcs related
-char *FormateClippedText(tiles_stru *, char *curpos, const char *str, int width_space, char chr);
-char *FormateCenteredSkipableItem(tiles_stru *, char *in, const char *str, int width);
-char *TextRelWidthItem(tiles_stru *, char *pos, const char *txt, int wdth, int arg);
+char *FormateClippedText(TileMap *, char *curpos, const char *str, int width_space, char chr);
+char *FormateCenteredSkipableItem(TileMap *, char *in, const char *str, int width);
+char *TextRelWidthItem(TileMap *, char *pos, const char *txt, int wdth, int arg);
 
-char *FormateColumnItem(_NC_STACK_ypaworld *yw, char *cmdbuf, int num, ColumnItem *a4);
-char *FormateTextAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg);
-char *FormateAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg);
+char *FormateColumnItem(NC_STACK_ypaworld *yw, char *cmdbuf, int num, ColumnItem *a4);
+char *FormateTextAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg);
+char *FormateAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg);
 };
 
 #endif //FONT_H_INCLUDED

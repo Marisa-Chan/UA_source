@@ -13,7 +13,7 @@ struct __NC_STACK_wav
 class NC_STACK_wav: public NC_STACK_sample
 {
 public:
-    virtual rsrc * rsrc_func64(IDVList *stak);
+    virtual rsrc * rsrc_func64(IDVList &stak);
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_wav() {
@@ -30,7 +30,7 @@ public:
     };
 
     //Data
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
     __NC_STACK_wav stack__wav;
 };

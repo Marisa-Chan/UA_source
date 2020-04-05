@@ -5,50 +5,32 @@
 #include "utils.h"
 
 
-const NewClassDescr NC_STACK_ilbm::description("ilbm.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_ilbm::description("ilbm.class", &newinstance);
 
-NC_STACK_ilbm *NC_STACK_ilbm::CInit(IDVList *stak)
-{
-    NC_STACK_ilbm *tmp = new NC_STACK_ilbm();
-    if (!tmp)
-        return NULL;
-
-    if (!tmp->func0(stak))
-    {
-        delete tmp;
-        return NULL;
-    }
-
-    return tmp;
-}
-
-size_t NC_STACK_ilbm::func0(IDVList *stak)
+size_t NC_STACK_ilbm::func0(IDVList &stak)
 {
     if ( !NC_STACK_bitmap::func0(stak) )
         return 0;
 
-    if ( stak )
-    {
-        if ( stak->Get(ILBM_ATT_FMT, 0) )
-            stack__ilbm.flags |= 1;
-    }
+    if ( stak.Get(ILBM_ATT_FMT, 0) )
+        stack__ilbm.flags |= 1;
 
     return 1;
 }
 
-size_t NC_STACK_ilbm::func2(IDVList *stak)
+size_t NC_STACK_ilbm::func2(IDVList &stak)
 {
-    IDVList::iterator it = stak->find(ILBM_ATT_FMT);
+    IDVList::iterator it = stak.find(ILBM_ATT_FMT);
 
-    if ( it != stak->end() )
+    if ( it != stak.end() )
         setILBM_saveFmt( it->second.value.i_data );
 
     return NC_STACK_bitmap::func2(stak);
 }
 
-size_t NC_STACK_ilbm::func3(IDVList *stak)
+size_t NC_STACK_ilbm::func3(IDVList &stak)
 {
-    int *val = (int *)stak->GetPointer(ILBM_ATT_FMT, NULL);
+    int *val = (int *)stak.GetPointer(ILBM_ATT_FMT, NULL);
 
     if ( val )
         *val = getILBM_saveFmt();
@@ -120,12 +102,12 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile)
 
         stk.Add(RSRC_ATT_NAME, name);
         stk.Add(RSRC_ATT_TRYSHARED, 1);
-        stk.Add(BMD_ATT_TEXTURE, 1);
+        stk.Add(BMD_ATT_CONVCOLOR, 1);
 
         if ( has_opl )
             stk.Add(BMD_ATT_OUTLINE, &opls);
 
-        return NC_STACK_bitmap::func0(&stk);
+        return NC_STACK_bitmap::func0(stk);
     }
     return 0;
 }
@@ -189,18 +171,21 @@ size_t NC_STACK_ilbm::func6(IFFile **pmfile)
     return 0;
 }
 
-void ILBM_BODY_READ__sub0(BMHD_type *bmhd, uint8_t *ilbm_data, void *_img_buffer)
+void ILBM_BODY_READ__sub0(BMHD_type *bmhd, const std::vector<int8_t> &ilbm_data, ResBitmap *img)
 {
     uint8_t masks[8] = {1, 2, 4, 8, 16, 32, 64, 128};
 
-    uint8_t *img_buffer = (uint8_t *)_img_buffer;
+    SDL_LockSurface(img->swTex);
     uint8_t udp[1024];
 
     int pln_w = (bmhd->width + 7) / 8;
     pln_w += (pln_w & 1);
+    
+    int inByte = 0;
 
     for (int y = 0; y < bmhd->height; y++)
     {
+        uint8_t *img_buffer = (uint8_t *)img->swTex->pixels + y * img->swTex->pitch;
         if ( bmhd->compression )
         {
             for (int plan = 0; plan < bmhd->nPlanes; plan++)
@@ -211,8 +196,8 @@ void ILBM_BODY_READ__sub0(BMHD_type *bmhd, uint8_t *ilbm_data, void *_img_buffer
 
                 while (x < pln_w)
                 {
-                    int n = *(signed char *)ilbm_data;
-                    ilbm_data++;
+                    int n = ilbm_data[inByte];
+                    inByte++;
 
                     if (n == -128)
                     {
@@ -221,8 +206,8 @@ void ILBM_BODY_READ__sub0(BMHD_type *bmhd, uint8_t *ilbm_data, void *_img_buffer
                     else if ( n < 0)
                     {
                         n = -n + 1;
-                        int dat = *ilbm_data;
-                        ilbm_data++;
+                        int dat = ilbm_data[inByte];
+                        inByte++;
                         for (int i = 0; i < n; i++)
                         {
                             udp[planOff + x] = dat;
@@ -232,8 +217,8 @@ void ILBM_BODY_READ__sub0(BMHD_type *bmhd, uint8_t *ilbm_data, void *_img_buffer
                     else if (n >= 0)
                     {
                         int cnt = n + 1;
-                        memcpy(udp + planOff + x, ilbm_data, cnt);
-                        ilbm_data += cnt;
+                        memcpy(udp + planOff + x, ilbm_data.data() + inByte, cnt);
+                        inByte += cnt;
                         x += cnt;
                     }
                 }
@@ -244,8 +229,8 @@ void ILBM_BODY_READ__sub0(BMHD_type *bmhd, uint8_t *ilbm_data, void *_img_buffer
             for (int plan = 0; plan < bmhd->nPlanes; plan++)
             {
                 int planOff = plan << 7;
-                memcpy(udp + planOff, ilbm_data, pln_w);
-                ilbm_data += pln_w;
+                memcpy(udp + planOff, ilbm_data.data() + inByte, pln_w);
+                inByte += pln_w;
             }
         }
         for (int x = 0; x < bmhd->width; x++)
@@ -265,43 +250,42 @@ void ILBM_BODY_READ__sub0(BMHD_type *bmhd, uint8_t *ilbm_data, void *_img_buffer
             img_buffer++;
         }
     }
+    SDL_UnlockSurface(img->swTex);
 }
 
-int ILBM_BODY_READ(IFFile *mfile, BMHD_type *bmhd, bitmap_intern *bitm)
+int ILBM_BODY_READ(IFFile *mfile, BMHD_type *bmhd, ResBitmap *bitm)
 {
-    if ( bitm->buffer )
-    {
-        IFFile::Context *chunk = mfile->getCurrentChunk();
+    if ( !bitm->swTex )
+        return false;
 
-        uint8_t *buffer = (uint8_t *)AllocVec(chunk->TAG_SIZE, 1);
+    IFFile::Context *chunk = mfile->getCurrentChunk();
 
-        if ( buffer )
-        {
-            mfile->read(buffer, chunk->TAG_SIZE);
+    std::vector<int8_t> buffer;
+    buffer.resize(chunk->TAG_SIZE);
 
-            ILBM_BODY_READ__sub0(bmhd, buffer, bitm->buffer);
+    mfile->read(buffer.data(), chunk->TAG_SIZE);
 
-            nc_FreeMem(buffer);
+    ILBM_BODY_READ__sub0(bmhd, buffer, bitm);
 
-            return 1;
-        }
-    }
-    return 0;
+    return true;
 }
 
-rsrc * NC_STACK_ilbm::READ_ILBM(IDVList *stak, IFFile *mfil, int val5)
+rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
 {
     int ILBM__OR__VBMP;
 
     BMHD_type bmhd;
     VBMP_type vbmp;
     IDVList loclist;
-    rsrc *res = NULL;
+    
+    rsrc *res = NC_STACK_rsrc::rsrc_func64(stak);
+    int convertColor = stak.Get(BMD_ATT_CONVCOLOR, 0);
+    int alphaPalette = stak.Get(ATT_ALPHAPALETTE, 1);
+    
+    if (!res)
+        return NULL;
 
-    if (!stak)
-        stak = &loclist;
-
-    bitmap_intern *bitm = NULL;
+    ResBitmap *bitm = NULL;
 
     if ( mfil->parse() )
     {
@@ -357,19 +341,12 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList *stak, IFFile *mfil, int val5)
             mfil->readU16B(bmhd.pageWidth);
             mfil->readU16B(bmhd.pageHeight);
 
-            stak->Add(BMD_ATT_WIDTH, bmhd.width);
-            stak->Add(BMD_ATT_HEIGHT, bmhd.height);
-
-            res = NC_STACK_bitmap::rsrc_func64(stak); // bitmap_func64
-            if ( res )
-            {
-                bitm = (bitmap_intern *)res->data;
-                if ( !bitm )
-                {
-                    rsrc_func65(res);
-                    return NULL;
-                }
-            }
+            bitm = new ResBitmap;
+            bitm->width = bmhd.width;
+            bitm->height = bmhd.height;
+            
+            res->data = bitm;
+            
             mfil->parse();
         }
         else if ( tag == TAG_HEAD )
@@ -377,34 +354,23 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList *stak, IFFile *mfil, int val5)
             mfil->readU16B(vbmp.width);
             mfil->readU16B(vbmp.height);
             mfil->readU16B(vbmp.flags);
+            
+            bitm = new ResBitmap;
+            bitm->width = vbmp.width;
+            bitm->height = vbmp.height;
+            
+            res->data = bitm;
 
-            stak->Add(BMD_ATT_WIDTH, vbmp.width);
-            stak->Add(BMD_ATT_HEIGHT, vbmp.height);
-
-            res = NC_STACK_bitmap::rsrc_func64(stak); // bitmap_func64
-            // creation of bitmap internal structure and allocation buffer, creation of surface, texture and palette
-            if ( res )
-            {
-                bitm = (bitmap_intern *)res->data;
-                if ( !bitm )
-                {
-                    rsrc_func65(res);
-                    return NULL;
-                }
-            }
             mfil->parse();
         }
         else if ( tag == TAG_CMAP )
         {
             if ( bitm )
             {
-                if ( !bitm->pallete )
-                {
-                    bitm->pallete = new UA_PALETTE;
-                    bitm->flags |= BITMAP_FLAG_HAS_PALETTE;
-                }
-
-                if ( bitm->pallete )
+                if ( !bitm->palette )
+                    bitm->palette = new UA_PALETTE;
+                
+                if ( bitm->palette )
                 {
                     for (int i = 0; i < 256; i++)
                     {
@@ -412,10 +378,10 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList *stak, IFFile *mfil, int val5)
                         mfil->readU8(r);
                         mfil->readU8(g);
                         mfil->readU8(b);
-                        bitm->pallete->pal_entries[i].r = r;
-                        bitm->pallete->pal_entries[i].g = g;
-                        bitm->pallete->pal_entries[i].b = b;
-                        bitm->pallete->pal_entries[i].a = 255;
+                        bitm->palette->at(i).r = r;
+                        bitm->palette->at(i).g = g;
+                        bitm->palette->at(i).b = b;
+                        bitm->palette->at(i).a = 255;
                     }
                 }
             }
@@ -423,43 +389,27 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList *stak, IFFile *mfil, int val5)
         }
         else if ( tag == TAG_BODY )
         {
-            int success = 0;
+            bool success = false;
 
             if ( bitm )
             {
-                NC_STACK_display *w3d = engines.display___win3d;
-                int locked = 1;
-
-                if ( w3d && bitm->flags & BITMAP_FLAG_TEXTURE )
+                bitm->swTex = SDL_CreateRGBSurface(0, bitm->width, bitm->height, 8, 0, 0, 0, 0);
+                
+                if ( ILBM__OR__VBMP )
                 {
-                    if ( ! w3d->LockTexture(bitm) )
-                        locked = 0;
+                    success = ILBM_BODY_READ(mfil, &bmhd, bitm);
                 }
-
-                if ( locked )
+                else if ( bitm->swTex )              // VBMP READ
                 {
-                    if ( ILBM__OR__VBMP )
-                    {
-                        success = ILBM_BODY_READ(mfil, &bmhd, bitm);
-                    }
-                    else if ( bitm->buffer )              // VBMP READ
-                    {
-                        mfil->read(bitm->buffer, bitm->width * bitm->height);
-                        success = 1;
-                    }
-                    else
-                    {
-                        success = 0;
-                    }
-
-                    if ( w3d && bitm->flags & BITMAP_FLAG_TEXTURE )
-                    {
-                        w3d->UnlockTexture(bitm); // win3d_func270
-                        if ( val5 )
-                            bitm->flags |= BITMAP_FLAG_TRANSP;
-
-                        w3d->TextureApplyPalette(bitm); // win3d_func267
-                    }
+                    SDL_LockSurface(bitm->swTex);
+                    for(int y = 0; y < bitm->height; y++)
+                        mfil->read((uint8_t *)bitm->swTex->pixels + y * bitm->swTex->pitch, bitm->width);                   
+                    SDL_UnlockSurface(bitm->swTex);
+                    success = true;
+                }
+                else
+                {
+                    success = false;
                 }
             }
             if ( !success )
@@ -474,14 +424,49 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList *stak, IFFile *mfil, int val5)
             mfil->skipChunk();
         }
     }
+    
+    if (bitm && bitm->swTex)
+    {
+        if (bitm->swTex->format->palette)
+        {
+            UA_PALETTE *pal = bitm->palette;
+            if (!pal)
+                pal = engines.display___win3d->GetPalette();
+            
+            if (alphaPalette && convertColor)
+            {
+                UA_PALETTE tmp;
+                engines.display___win3d->ConvAlphaPalette(&tmp, *pal, transp);
+                SDL_SetPaletteColors(bitm->swTex->format->palette, tmp.data(), 0, 256);
+            }
+            else
+                SDL_SetPaletteColors(bitm->swTex->format->palette, pal->data(), 0, 256);
+        }
+
+        if ( convertColor )
+        {
+            SDL_Surface *screenFmt = ConvertToScreen(bitm->swTex);
+            if (screenFmt)
+            {
+                SDL_FreeSurface(bitm->swTex);
+                bitm->swTex = screenFmt;
+
+                if (bitm->palette)
+                {
+                    delete bitm->palette;
+                    bitm->palette = NULL;
+                }
+            }
+        }
+    }
     return res;
 }
 
 
 // Create ilbm resource node and fill rsrc field data
-rsrc * NC_STACK_ilbm::rsrc_func64(IDVList *stak)
+rsrc * NC_STACK_ilbm::rsrc_func64(IDVList &stak)
 {
-    const char *resName = stak->GetConstChar(RSRC_ATT_NAME, NULL);
+    const char *resName = stak.GetConstChar(RSRC_ATT_NAME, NULL);
     const char *reassignName = NULL;
 
     if ( !resName )
@@ -515,7 +500,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(IDVList *stak)
             reassignName = "hi/gamma/fx3.ilbm";
     }
 
-    IFFile *mfile = (IFFile *)stak->GetPointer(RSRC_ATT_PIFFFILE, NULL);
+    IFFile *mfile = (IFFile *)stak.GetPointer(RSRC_ATT_PIFFFILE, NULL);
 
     int selfOpened = 0;
 
@@ -523,7 +508,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(IDVList *stak)
     {
         if ( mfile )
         {
-            stak->Add(BMD_ATT_TEXTURE, 1);
+            stak.Add(BMD_ATT_CONVCOLOR, 1);
 
             mfile->parse();
             mfile->skipChunk();
@@ -540,7 +525,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(IDVList *stak)
     {
         if ( mfile )
         {
-            stak->Add(BMD_ATT_TEXTURE, 1);
+            stak.Add(BMD_ATT_CONVCOLOR, 1);
         }
         else
         {
@@ -560,7 +545,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(IDVList *stak)
     return res;
 }
 
-void ILBM__WRITE_TO_FILE_BMHD(IFFile *mfile, bitmap_intern *bitm)
+void ILBM__WRITE_TO_FILE_BMHD(IFFile *mfile, ResBitmap *bitm)
 {
     mfile->pushChunk(0, TAG_BMHD, -1); //20 bytes
 
@@ -581,7 +566,7 @@ void ILBM__WRITE_TO_FILE_BMHD(IFFile *mfile, bitmap_intern *bitm)
     mfile->popChunk();
 }
 
-int ILBM__WRITE_TO_FILE_BODY(IFFile *mfile, bitmap_intern *bitm)
+int ILBM__WRITE_TO_FILE_BODY(IFFile *mfile, ResBitmap *bitm)
 {
     int planeSz = 2 * ((bitm->width + 15) / 16);
     uint8_t *buf = (uint8_t *)AllocVec(planeSz, 1);
@@ -591,7 +576,8 @@ int ILBM__WRITE_TO_FILE_BODY(IFFile *mfile, bitmap_intern *bitm)
 
     mfile->pushChunk(0, TAG_BODY, 8 * bitm->height * planeSz);
 
-    uint8_t *bfline = (uint8_t *)bitm->buffer;
+    SDL_LockSurface(bitm->swTex);
+    const uint8_t *bfline = (uint8_t *)bitm->swTex->pixels;
 
     for (int i = bitm->height; i > 0; i-- )
     {
@@ -610,13 +596,14 @@ int ILBM__WRITE_TO_FILE_BODY(IFFile *mfile, bitmap_intern *bitm)
 
         bfline += bitm->width;
     }
+    SDL_UnlockSurface(bitm->swTex);
 
     mfile->popChunk();
     nc_FreeMem(buf);
     return 1;
 }
 
-int ILBM__WRITE_TO_FILE(IFFile *mfile, bitmap_intern *bitm)
+int ILBM__WRITE_TO_FILE(IFFile *mfile, ResBitmap *bitm)
 {
     if ( mfile->pushChunk(TAG_ILBM, TAG_FORM, -1) )
         return 0;
@@ -624,10 +611,10 @@ int ILBM__WRITE_TO_FILE(IFFile *mfile, bitmap_intern *bitm)
 
     ILBM__WRITE_TO_FILE_BMHD(mfile, bitm);
 
-    if ( bitm->pallete )
+    if ( bitm->palette )
     {
         mfile->pushChunk(0, TAG_CMAP, 256 * 3);
-        mfile->write(bitm->pallete, 256 * 3);
+        mfile->write(bitm->palette, 256 * 3);
         mfile->popChunk();
     }
 
@@ -637,7 +624,7 @@ int ILBM__WRITE_TO_FILE(IFFile *mfile, bitmap_intern *bitm)
     return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
 
-int VBMP__WRITE_TO_FILE(IFFile *mfile, bitmap_intern *bitm)
+int VBMP__WRITE_TO_FILE(IFFile *mfile, ResBitmap *bitm)
 {
     int pixelCount = bitm->height * bitm->width;
     if ( mfile->pushChunk(TAG_VBMP, TAG_FORM, -1) )
@@ -651,15 +638,19 @@ int VBMP__WRITE_TO_FILE(IFFile *mfile, bitmap_intern *bitm)
 
     mfile->popChunk();
 
-    if ( bitm->pallete )
+    if ( bitm->palette )
     {
         mfile->pushChunk(0, TAG_CMAP, 256 * 3);
-        mfile->write(bitm->pallete, 256 * 3);
+        mfile->write(bitm->palette, 256 * 3);
         mfile->popChunk();
     }
 
     mfile->pushChunk(0, TAG_BODY, pixelCount);
-    mfile->write(bitm->buffer, pixelCount);
+    
+    SDL_LockSurface(bitm->swTex);
+    mfile->write(bitm->swTex->pixels, pixelCount);
+    SDL_UnlockSurface(bitm->swTex);
+    
     mfile->popChunk();
 
     return mfile->popChunk() == IFFile::IFF_ERR_OK;
@@ -690,7 +681,7 @@ size_t NC_STACK_ilbm::rsrc_func66(rsrc_func66_arg *arg)
 
     bitmap_func130(&v6);
 
-    if ( !v6.pbitm || !v6.pbitm->buffer )
+    if ( !v6.pbitm || !v6.pbitm->swTex )
         return 0;
 
     int res;
@@ -729,17 +720,17 @@ size_t NC_STACK_ilbm::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 5:
         return (size_t)func5( (IFFile **)data );
     case 6:
         return (size_t)func6( (IFFile **)data );
     case 64:
-        return (size_t)rsrc_func64( (IDVList *)data );
+        return (size_t)rsrc_func64( *(IDVList *)data );
     case 66:
         return (size_t)rsrc_func66( (rsrc_func66_arg *)data );
     default:

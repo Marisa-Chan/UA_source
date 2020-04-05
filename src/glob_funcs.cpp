@@ -16,130 +16,105 @@ void *AllocVec(size_t size, int a2)
 }
 
 
-char * file_path_copy_manipul(const char *src, char *dst, int size)
+std::string file_path_copy_manipul(const std::string &src)
 {
-    char buf1[256];
+    std::string buf1 = src;
 
-    dst[size - 1] = 0;
+    int stpos = 0;
+    if ( buf1.length() > 2 && buf1[1] == ':' ) //disk name, e.g. C:/D:/Y:/...
+        stpos = 2;
 
-    strcpy(buf1, src);
+    size_t fndPos = buf1.find(':', stpos);
 
-    char *v8;
+    if ( fndPos == std::string::npos )
+        return buf1;
 
-    if ( strlen(buf1) <= 2 || buf1[1] != ':' )
-        v8 = buf1;
-    else
-        v8 = buf1 + 2;
 
-    while ( *v8 != ':' )
+    std::string kword = buf1.substr(0, fndPos);
+
+    for (std::list<TKVPair>::iterator it = engines.kvPairs.begin(); it != engines.kvPairs.end(); it++)
     {
-        if ( !(*v8) )
+        if ( !StriCmp(it->name, kword) )
         {
-            v8 = NULL;
-            break;
+            std::string buf2;
+            if (it->value.back() == ':') // if value has colon - do not add slash
+                buf2 = it->value + buf1.substr(fndPos + 1);
+            else
+                buf2 = it->value + '/' + buf1.substr(fndPos + 1);
+
+            return file_path_copy_manipul(buf2);
         }
-        v8++;
     }
 
-    if ( !v8 )
-        return strncpy(dst, buf1, size - 1);
+    buf1[fndPos] = '/';
 
-    *v8 = 0;
-
-    std::list<TKVPair *>::iterator it;
-    for (it = engines.kvPairs.begin(); it != engines.kvPairs.end(); it++)
-    {
-        if ( strcasecmp((*it)->name.c_str(), buf1) == 0 )
-            break;
-    }
-
-    *v8 = '/';
-
-    if ( it != engines.kvPairs.end() )
-    {
-        char buf2[512];
-
-        strcpy(buf2, (*it)->value.c_str());
-
-        if (buf2[strlen(buf2) - 1] == ':')
-            v8++;
-
-        strcat(buf2, v8);
-
-        strncpy(dst, buf2, size - 1);
-
-        return file_path_copy_manipul(buf2, dst, size);
-    }
-
-    return strncpy(dst, buf1, size - 1);
+    return buf1;
 }
 
 const char * get_prefix_replacement(const char *prefix)
 {
-    for(std::list<TKVPair *>::iterator it = engines.kvPairs.begin(); it != engines.kvPairs.end(); it++)
+    for(std::list<TKVPair>::iterator it = engines.kvPairs.begin(); it != engines.kvPairs.end(); it++)
     {
-        if ( strcasecmp((*it)->name.c_str(), prefix ) == 0 )
-            return (*it)->value.c_str();
+        if ( strcasecmp(it->name.c_str(), prefix ) == 0 )
+            return it->value.c_str();
     }
 
     return "";
 }
 
-void set_prefix_replacement(const char *str1, const char *str2)
+std::string get_prefix_replacement(const std::string &prefix)
 {
-    for (std::list<TKVPair *>::iterator it = engines.kvPairs.begin(); it != engines.kvPairs.end(); it++)
+    for( auto &x : engines.kvPairs )
     {
-        if ( strcasecmp((*it)->name.c_str(), str1) == 0 )
+        if ( !StriCmp(x.name, prefix ) )
+            return x.value;
+    }
+
+    return "";
+}
+
+void set_prefix_replacement(const std::string &str1, const std::string &str2)
+{
+    for (std::list<TKVPair>::iterator it = engines.kvPairs.begin(); it != engines.kvPairs.end(); it++)
+    {
+        if ( !StriCmp(it->name, str1) )
         {
-            (*it)->value = str2;
+            it->value = str2;
             return;
         }
     }
 
-    TKVPair *tmp = new TKVPair;
+    engines.kvPairs.emplace_front();
 
-    tmp->name = str1;
-    tmp->value = str2;
+    TKVPair &tmp = engines.kvPairs.front();
 
-    engines.kvPairs.push_front(tmp);
+    tmp.name = str1;
+    tmp.value = str2;
 }
 
-
-void correct_slashes_and_3_ext(const char *src, char *dst, int sz)
+std::string SetPathKeys(const std::string &name, const std::string &value)
 {
-    strncpy(dst, src, sz - 1);
-
-    char *v4 = dst;
-
-    while( (*v4) )
+    for( auto &x : engines.kvPairs )
     {
-        if (*v4 == '/')
-            *v4 = '\\';
-        v4++;
-    }
-
-    v4 = dst;
-
-    while ((*v4))
-    {
-        if (*v4 == '.')
+        if ( !StriCmp(x.name, name) )
         {
-            v4++;
-            if (strlen(v4) > 3)
-                v4[3] = 0;
-
-            break;
+            std::string old = x.value;
+            x.value = value;
+            return old;
         }
-        v4++;
     }
+
+    engines.kvPairs.emplace_front();
+    TKVPair &tmp = engines.kvPairs.front();
+    tmp.name = name;
+    tmp.value = value;
+    return "";
 }
 
 
-
-void sub_412810(const char *a1, char *a2, int num)
+void sub_412810(const std::string &src, std::string &dst)
 {
-    char v6[256];
-    file_path_copy_manipul(a1, v6, 256);
-    correct_slashes_and_3_ext(v6, a2, num);
+    dst = file_path_copy_manipul(src);
+    correctSeparatorAndExt(dst);
 }
 

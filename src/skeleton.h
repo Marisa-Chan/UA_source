@@ -112,8 +112,6 @@ struct skeleton_130_arg
     int num_indexes;
 };
 
-struct TForm3D;
-
 struct skeleton_arg_132
 {
     mat4x4 tform;
@@ -137,9 +135,9 @@ struct skeleton_arg133
 class NC_STACK_skeleton: public NC_STACK_rsrc
 {
 public:
-    virtual size_t func0(IDVList *stak);
-    virtual size_t func3(IDVList *stak);
-    virtual rsrc * rsrc_func64(IDVList *stak);
+    virtual size_t func0(IDVList &stak);
+    virtual size_t func3(IDVList &stak);
+    virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func65(rsrc *pres);
     virtual __NC_STACK_skeleton * skeleton_func128(IDVPair *);
     virtual size_t skeleton_func129(skeleton_129_arg *arg);
@@ -162,8 +160,6 @@ public:
         return new NC_STACK_skeleton();
     };
 
-    static NC_STACK_skeleton * CInit(IDVList *stak);
-
     enum SKEL_ATT
     {
         SKEL_ATT_PSKELET = 0x80002000,
@@ -173,7 +169,7 @@ public:
         SKEL_ATT_POLYPNTCNT = 0x80002004
     };
 
-    virtual UAskeleton::Data *getSKEL_pSkelet();
+    virtual UAskeleton::Data *GetSkelet();
     virtual int getSKEL_pntCount();
     virtual int getSKEL_senCount();
     virtual int getSKEL_polyCount();
@@ -185,7 +181,7 @@ protected:
 
 public:
     //Data
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
     __NC_STACK_skeleton stack__skeleton;
 };

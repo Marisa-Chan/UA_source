@@ -4,11 +4,15 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL_ttf.h>
+#include <string>
 #if defined(__APPLE__) && defined(__MACH__)
 #include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
 #endif
+
+#include "common.h"
+
 
 void SDLWRAP_INIT();
 void SDLWRAP_DEINIT();
@@ -22,9 +26,16 @@ struct SDLWRAP_Point
 
 void SDLWRAP_resizeWindow(int w, int h);
 
-SDL_Surface *SDLWRAP_getScreenSurface();
+namespace SDLWRAP 
+{
+    SDL_Surface *Screen();
+    
+    void DrawLine(SDL_Surface *surface, const Common::Rect &line, uint8_t cr, uint8_t cg, uint8_t cb);
+    void BlitScaleMasked(SDL_Surface *src, Common::Rect sRect, SDL_Surface *mask, uint8_t index, SDL_Surface *dst, Common::Rect dRect);
+    void DrawFill(SDL_Surface *src, const Common::Rect &sRect, SDL_Surface *dst, const Common::Rect &dRect);
+}
 
-TTF_Font *SDLWRAP_loadFont(const char *fontname, int height);
+TTF_Font *SDLWRAP_loadFont(const std::string &fontname, int height);
 
 uint8_t *SDLWRAP_makeScreenCopy(int &ow, int &oh);
 uint8_t *SDLWRAP_makeDepthScreenCopy(int &ow, int &oh);

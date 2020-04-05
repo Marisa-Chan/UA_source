@@ -11,68 +11,58 @@
 
 #include <math.h>
 
-const NewClassDescr NC_STACK_ypamissile::description("ypamissile.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_ypamissile::description("ypamissile.class", &newinstance);
 
-size_t NC_STACK_ypamissile::func0(IDVList *stak)
+size_t NC_STACK_ypamissile::func0(IDVList &stak)
 {
     if ( !NC_STACK_ypabact::func0(stak) )
         return 0;
 
-    stack__ypamissile.selfie = &ypabact;
+    _bact_type = BACT_TYPES_MISSLE;
 
-    ypabact.bact_type = BACT_TYPES_MISSLE;
+    _mislEmitter = NULL;
+    _mislLifeTime = 5000;
+    _mislDelayTime = 0;
+    _mislType = MISL_BOMB;
 
-    stack__ypamissile.ejaculator_bact = 0;
-    stack__ypamissile.life_time = 5000;
-    stack__ypamissile.delay_time = 0;
-    stack__ypamissile.field_c = 1;
-
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BACT_ATT_WORLD:
-                    stack__ypamissile.ywo = (NC_STACK_ypaworld *)val.value.p_data;
-                    stack__ypamissile.yw = &stack__ypamissile.ywo->ypaworld;
-                    break;
+            case BACT_ATT_VIEWER:
+                setBACT_viewer(val.value.i_data);
+                break;
 
-                case BACT_ATT_VIEWER:
-                    setBACT_viewer(val.value.i_data);
-                    break;
+            case MISS_ATT_LAUNCHER:
+                setMISS_launcher((NC_STACK_ypabact *)val.value.p_data);
+                break;
 
-                case MISS_ATT_LAUNCHER:
-                    setMISS_launcher((__NC_STACK_ypabact *)val.value.p_data);
-                    break;
+            case MISS_ATT_TYPE:
+                setMISS_type(val.value.i_data);
+                break;
 
-                case MISS_ATT_TYPE:
-                    setMISS_type(val.value.i_data);
-                    break;
+            case MISS_ATT_LIFETIME:
+                setMISS_lifeTime(val.value.i_data);
+                break;
 
-                case MISS_ATT_LIFETIME:
-                    setMISS_lifeTime(val.value.i_data);
-                    break;
+            case MISS_ATT_DELAY:
+                setMISS_delay(val.value.i_data);
+                break;
 
-                case MISS_ATT_DELAY:
-                    setMISS_delay(val.value.i_data);
-                    break;
+            case MISS_ATT_DRIVETIME:
+                setMISS_driveTime(val.value.i_data);
+                break;
 
-                case MISS_ATT_DRIVETIME:
-                    setMISS_driveTime(val.value.i_data);
-                    break;
+            case MISS_ATT_IGNOREBUILDS:
+                setMISS_ignoreBuilds ( val.value.i_data );
+                break;
 
-                case MISS_ATT_IGNOREBUILDS:
-                    setMISS_ignoreBuilds ( val.value.i_data );
-                    break;
-
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -85,87 +75,84 @@ size_t NC_STACK_ypamissile::func1()
     return NC_STACK_ypabact::func1();
 }
 
-size_t NC_STACK_ypamissile::func2(IDVList *stak)
+size_t NC_STACK_ypamissile::func2(IDVList &stak)
 {
     NC_STACK_ypabact::func2(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BACT_ATT_VIEWER:
-                    setBACT_viewer(val.value.i_data);
-                    break;
+            case BACT_ATT_VIEWER:
+                setBACT_viewer(val.value.i_data);
+                break;
 
-                case MISS_ATT_LAUNCHER:
-                    setMISS_launcher((__NC_STACK_ypabact *)val.value.p_data);
-                    break;
+            case MISS_ATT_LAUNCHER:
+                setMISS_launcher((NC_STACK_ypabact *)val.value.p_data);
+                break;
 
-                case MISS_ATT_TYPE:
-                    setMISS_type(val.value.i_data);
-                    break;
+            case MISS_ATT_TYPE:
+                setMISS_type(val.value.i_data);
+                break;
 
-                case MISS_ATT_LIFETIME:
-                    setMISS_lifeTime(val.value.i_data);
-                    break;
+            case MISS_ATT_LIFETIME:
+                setMISS_lifeTime(val.value.i_data);
+                break;
 
-                case MISS_ATT_DELAY:
-                    setMISS_delay(val.value.i_data);
-                    break;
+            case MISS_ATT_DELAY:
+                setMISS_delay(val.value.i_data);
+                break;
 
-                case MISS_ATT_DRIVETIME:
-                    setMISS_driveTime(val.value.i_data);
-                    break;
+            case MISS_ATT_DRIVETIME:
+                setMISS_driveTime(val.value.i_data);
+                break;
 
-                case MISS_ATT_IGNOREBUILDS:
-                    setMISS_ignoreBuilds ( val.value.i_data );
-                    break;
+            case MISS_ATT_IGNOREBUILDS:
+                setMISS_ignoreBuilds ( val.value.i_data );
+                break;
 
-                case MISS_ATT_POW_HELI:
-                    setMISS_powHeli(val.value.i_data);
-                    break;
+            case MISS_ATT_POW_HELI:
+                setMISS_powHeli(val.value.i_data);
+                break;
 
-                case MISS_ATT_POW_TANK:
-                    setMISS_powTank(val.value.i_data);
-                    break;
+            case MISS_ATT_POW_TANK:
+                setMISS_powTank(val.value.i_data);
+                break;
 
-                case MISS_ATT_POW_FLYER:
-                    setMISS_powFlyer(val.value.i_data);
-                    break;
+            case MISS_ATT_POW_FLYER:
+                setMISS_powFlyer(val.value.i_data);
+                break;
 
-                case MISS_ATT_POW_ROBO:
-                    setMISS_powRobo(val.value.i_data);
-                    break;
+            case MISS_ATT_POW_ROBO:
+                setMISS_powRobo(val.value.i_data);
+                break;
 
-                case MISS_ATT_RAD_HELI:
-                    setMISS_radHeli(val.value.i_data);
-                    break;
+            case MISS_ATT_RAD_HELI:
+                setMISS_radHeli(val.value.i_data);
+                break;
 
-                case MISS_ATT_RAD_TANK:
-                    setMISS_radTank(val.value.i_data);
-                    break;
+            case MISS_ATT_RAD_TANK:
+                setMISS_radTank(val.value.i_data);
+                break;
 
-                case MISS_ATT_RAD_FLYER:
-                    setMISS_radFlyer(val.value.i_data);
-                    break;
+            case MISS_ATT_RAD_FLYER:
+                setMISS_radFlyer(val.value.i_data);
+                break;
 
-                case MISS_ATT_RAD_ROBO:
-                    setMISS_radRobo(val.value.i_data);
-                    break;
+            case MISS_ATT_RAD_ROBO:
+                setMISS_radRobo(val.value.i_data);
+                break;
 
-                case MISS_ATT_STHEIGHT:
-                    setMISS_startHeight(val.value.i_data);
-                    break;
+            case MISS_ATT_STHEIGHT:
+                setMISS_startHeight(val.value.i_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -173,83 +160,80 @@ size_t NC_STACK_ypamissile::func2(IDVList *stak)
     return 1;
 }
 
-size_t NC_STACK_ypamissile::func3(IDVList *stak)
+size_t NC_STACK_ypamissile::func3(IDVList &stak)
 {
     NC_STACK_ypabact::func3(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case MISS_ATT_LAUNCHER:
-                    *(__NC_STACK_ypabact **)val.value.p_data = getMISS_launcher();
-                    break;
+            case MISS_ATT_LAUNCHER:
+                *(NC_STACK_ypabact **)val.value.p_data = getMISS_launcher();
+                break;
 
-                case MISS_ATT_TYPE:
-                    *(int *)val.value.p_data = getMISS_type();
-                    break;
+            case MISS_ATT_TYPE:
+                *(int *)val.value.p_data = getMISS_type();
+                break;
 
-                case MISS_ATT_LIFETIME:
-                    *(int *)val.value.p_data = getMISS_lifeTime();
-                    break;
+            case MISS_ATT_LIFETIME:
+                *(int *)val.value.p_data = getMISS_lifeTime();
+                break;
 
-                case MISS_ATT_DELAY:
-                    *(int *)val.value.p_data = getMISS_delay();
-                    break;
+            case MISS_ATT_DELAY:
+                *(int *)val.value.p_data = getMISS_delay();
+                break;
 
-                case MISS_ATT_DRIVETIME:
-                    *(int *)val.value.p_data = getMISS_driveTime();
-                    break;
+            case MISS_ATT_DRIVETIME:
+                *(int *)val.value.p_data = getMISS_driveTime();
+                break;
 
-                case MISS_ATT_IGNOREBUILDS:
-                    *(int *)val.value.p_data = getMISS_ignoreBuilds();
-                    break;
+            case MISS_ATT_IGNOREBUILDS:
+                *(int *)val.value.p_data = getMISS_ignoreBuilds();
+                break;
 
-                case MISS_ATT_POW_HELI:
-                    *(int *)val.value.p_data = getMISS_powHeli();
-                    break;
+            case MISS_ATT_POW_HELI:
+                *(int *)val.value.p_data = getMISS_powHeli();
+                break;
 
-                case MISS_ATT_POW_TANK:
-                    *(int *)val.value.p_data = getMISS_powTank();
-                    break;
+            case MISS_ATT_POW_TANK:
+                *(int *)val.value.p_data = getMISS_powTank();
+                break;
 
-                case MISS_ATT_POW_FLYER:
-                    *(int *)val.value.p_data = getMISS_powFlyer();
-                    break;
+            case MISS_ATT_POW_FLYER:
+                *(int *)val.value.p_data = getMISS_powFlyer();
+                break;
 
-                case MISS_ATT_POW_ROBO:
-                    *(int *)val.value.p_data = getMISS_powRobo();
-                    break;
+            case MISS_ATT_POW_ROBO:
+                *(int *)val.value.p_data = getMISS_powRobo();
+                break;
 
-                case MISS_ATT_RAD_HELI:
-                    *(int *)val.value.p_data = getMISS_radHeli();
-                    break;
+            case MISS_ATT_RAD_HELI:
+                *(int *)val.value.p_data = getMISS_radHeli();
+                break;
 
-                case MISS_ATT_RAD_TANK:
-                    *(int *)val.value.p_data = getMISS_radTank();
-                    break;
+            case MISS_ATT_RAD_TANK:
+                *(int *)val.value.p_data = getMISS_radTank();
+                break;
 
-                case MISS_ATT_RAD_FLYER:
-                    *(int *)val.value.p_data = getMISS_radFlyer();
-                    break;
+            case MISS_ATT_RAD_FLYER:
+                *(int *)val.value.p_data = getMISS_radFlyer();
+                break;
 
-                case MISS_ATT_RAD_ROBO:
-                    *(int *)val.value.p_data = getMISS_radRobo();
-                    break;
+            case MISS_ATT_RAD_ROBO:
+                *(int *)val.value.p_data = getMISS_radRobo();
+                break;
 
-                case MISS_ATT_STHEIGHT:
-                    *(int *)val.value.p_data = getMISS_startHeight();
-                    break;
+            case MISS_ATT_STHEIGHT:
+                *(int *)val.value.p_data = getMISS_startHeight();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -259,24 +243,16 @@ size_t NC_STACK_ypamissile::func3(IDVList *stak)
 
 void NC_STACK_ypamissile::AI_layer1(update_msg *arg)
 {
-    __NC_STACK_ypamissile *miss = &stack__ypamissile;
-    __NC_STACK_ypabact *bact = miss->selfie;
+    if ( _status == BACT_STATUS_DEAD )
+        _yls_time -= arg->frameTime;
 
-    if ( miss->selfie->status == BACT_STATUS_DEAD )
+
+    if ( _primTtype )
     {
-        int a4 = getBACT_yourLastSeconds();
-
-        a4 -= arg->frameTime;
-
-        setBACT_yourLastSeconds(a4);
-    }
-
-    if ( bact->primTtype )
-    {
-        if ( bact->primTtype == BACT_TGT_TYPE_UNIT )
-            bact->target_vec = bact->primT.pbact->position - bact->position;
+        if ( _primTtype == BACT_TGT_TYPE_UNIT )
+            _target_vec = _primT.pbact->_position - _position;
         else
-            bact->target_vec = bact->primTpos - bact->position;
+            _target_vec = _primTpos - _position;
     }
 
     AI_layer2(arg);
@@ -287,102 +263,96 @@ void NC_STACK_ypamissile::AI_layer2(update_msg *arg)
     AI_layer3(arg);
 }
 
-int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
+bool NC_STACK_ypamissile::TubeCollisionTest()
 {
-    __NC_STACK_ypabact *bact = miss->selfie;
+    vec3d collisionSumPosition(0.0, 0.0, 0.0);
+    int collisionCount = 0;
+    float collisionSumRadius = 0.0;
 
-    int v90 = 0;
-
-    vec3d v78(0.0, 0.0, 0.0);
-
-    int v81 = 0;
-    float v91 = 0.0;
-
-    int a5 = miss->ejaculator_bact->self->getBACT_inputting();
+    int a5 = _mislEmitter->getBACT_inputting();
 
     if ( !a5 )
-        a5 = bact->self->getBACT_viewer();
+        a5 = getBACT_viewer();
 
     yw_130arg arg130;
-    arg130.pos_x = bact->old_pos.x;
-    arg130.pos_z = bact->old_pos.z;
-    miss->ywo->ypaworld_func130(&arg130);
+    arg130.pos_x = _old_pos.x;
+    arg130.pos_z = _old_pos.z;
+    _world->ypaworld_func130(&arg130);
 
-    cellArea *v68[3];
+    cellArea *pCells[3];
 
-    v68[0] = arg130.pcell;
+    pCells[0] = arg130.pcell;
 
-    arg130.pos_x = bact->position.x;
-    arg130.pos_z = bact->position.z;
-    miss->ywo->ypaworld_func130(&arg130);
+    arg130.pos_x = _position.x;
+    arg130.pos_z = _position.z;
+    _world->ypaworld_func130(&arg130);
 
-    v68[2] = arg130.pcell;
+    pCells[2] = arg130.pcell;
 
-    if ( arg130.pcell == v68[0] )
+    if ( arg130.pcell == pCells[0] )
     {
-        v68[1] = v68[0];
+        pCells[1] = pCells[0];
     }
     else
     {
-        arg130.pos_x = (bact->position.x - bact->old_pos.x) * 0.5 + bact->old_pos.x;
-        arg130.pos_z = (bact->position.z - bact->old_pos.z) * 0.5 + bact->old_pos.z;
-        miss->ywo->ypaworld_func130(&arg130);
+        arg130.pos_x = (_position.x - _old_pos.x) * 0.5 + _old_pos.x;
+        arg130.pos_z = (_position.z - _old_pos.z) * 0.5 + _old_pos.z;
+        _world->ypaworld_func130(&arg130);
 
-        v68[1] = arg130.pcell;
+        pCells[1] = arg130.pcell;
     }
 
     for (int i = 0; i < 3; i++)
     {
-        if ( i == 0 || v68[i] != v68[i - 1] )
+        if ( i == 0 || pCells[i] != pCells[i - 1] )
         {
-            if (v68[i] == NULL)
-                ypa_log_out("ypamissile_func70__sub0 NULL sector i = %d, 621: %f %f 62D: %f %f \n", i, bact->position.x, bact->position.z, bact->old_pos.x, bact->old_pos.z);
+            if (pCells[i] == NULL)
+                ypa_log_out("ypamissile_func70__sub0 NULL sector i = %d, 621: %f %f 62D: %f %f \n", i, _position.x, _position.z, _old_pos.x, _old_pos.z);
 
-            __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)v68[ i ]->units_list.head;
-            for (; bct->next ; bct = (__NC_STACK_ypabact *)bct->next)
+            for ( NC_STACK_ypabact* &bct : pCells[i]->unitsList )
             {
-                if ( bct == bact || bct == miss->ejaculator_bact || bct->bact_type == BACT_TYPES_MISSLE || bct->status == BACT_STATUS_DEAD )
+                if ( bct == this || bct == _mislEmitter || bct->_bact_type == BACT_TYPES_MISSLE || bct->_status == BACT_STATUS_DEAD )
                     continue;
 
-                if (bct->bact_type == BACT_TYPES_GUN && bct->shield >= 100)
+                if (bct->_bact_type == BACT_TYPES_GUN && bct->_shield >= 100)
                 {
-                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
+                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( bct );
 
-                    if ( gun->getGUN_roboGun() )
+                    if ( gun->IsRoboGun() )
                         continue;
                 }
 
-                if ( !a5 && bct->owner == miss->ejaculator_bact->owner )
+                if ( !a5 && bct->_owner == _mislEmitter->_owner )
                 {
                     continue;
                 }
 
-                if (miss->ejaculator_bact->bact_type == BACT_TYPES_GUN)
+                if (_mislEmitter->_bact_type == BACT_TYPES_GUN)
                 {
-                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( miss->ejaculator_bact->self );
+                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( _mislEmitter );
 
-                    if (bct->owner == bact->owner)
+                    if (bct->_owner == _owner)
                     {
-                        if (gun->getGUN_roboGun())
+                        if (gun->IsRoboGun())
                         {
-                            if (bct->bact_type == BACT_TYPES_ROBO)
+                            if (bct->_bact_type == BACT_TYPES_ROBO)
                                 continue;
 
-                            if (bct->bact_type == BACT_TYPES_GUN )
+                            if (bct->_bact_type == BACT_TYPES_GUN )
                             {
-                                NC_STACK_ypagun *bgun = dynamic_cast<NC_STACK_ypagun *>( bct->self );
+                                NC_STACK_ypagun *bgun = dynamic_cast<NC_STACK_ypagun *>( bct );
 
-                                if (bgun->getGUN_roboGun())
+                                if (bgun->IsRoboGun())
                                     continue;
                             }
                         }
                     }
                 }
 
-                if ( miss->field_c == 1 && bct->position.y < miss->posy )
+                if ( _mislType == MISL_BOMB && bct->_position.y < _mislStartHeight )
                     continue;
 
-                rbcolls *v82 = bct->self->getBACT_collNodes();
+                rbcolls *v82 = bct->getBACT_collNodes();
 
                 int v7;
                 if ( v82 )
@@ -400,20 +370,20 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                         roboColl *v8 = &v82->roboColls[j];
                         radius = v8->robo_coll_radius;
 
-                        ttmp = bct->position + bct->rotation.Transpose().Transform(v8->coll_pos);
+                        ttmp = bct->_position + bct->_rotation.Transpose().Transform(v8->coll_pos);
                     }
                     else
                     {
-                        ttmp = bct->position;
-                        radius = bct->radius;
+                        ttmp = bct->_position;
+                        radius = bct->_radius;
                     }
 
                     if ( !v82 || radius >= 0.01 )
                     {
-                        vec3d to_enemy = ttmp - bact->old_pos;
-                        vec3d dist_vect = bact->position - bact->old_pos;
+                        vec3d to_enemy = ttmp - _old_pos;
+                        vec3d dist_vect = _position - _old_pos;
 
-                        if ( to_enemy.dot( bact->rotation.AxisZ() )>= 0.3 )
+                        if ( to_enemy.dot( _rotation.AxisZ() )>= 0.3 )
                         {
                             float dist_vect_len = dist_vect.normalise();
 
@@ -421,33 +391,33 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
 
                             float wpn_radius = 0.0;
 
-                            switch ( bct->bact_type )
+                            switch ( bct->_bact_type )
                             {
                             case BACT_TYPES_BACT:
-                                wpn_radius = miss->radius_heli;
+                                wpn_radius = _mislRadiusHeli;
                                 break;
 
                             case BACT_TYPES_TANK:
                             case BACT_TYPES_CAR:
-                                wpn_radius = miss->radius_tank;
+                                wpn_radius = _mislRadiusTank;
                                 break;
 
                             case BACT_TYPES_FLYER:
                             case BACT_TYPES_UFO:
-                                wpn_radius = miss->radius_flyer;
+                                wpn_radius = _mislRadiusFlyer;
                                 break;
 
                             case BACT_TYPES_ROBO:
-                                wpn_radius = miss->radius_robo;
+                                wpn_radius = _mislRadiusRobo;
                                 break;
 
                             default:
-                                wpn_radius = bact->radius;
+                                wpn_radius = _radius;
                                 break;
                             }
 
                             if ( wpn_radius == 0.0)
-                                wpn_radius = bact->radius;
+                                wpn_radius = _radius;
 
                             float vp_len = vp.length();
                             float to_enemy_len = to_enemy.length();
@@ -458,60 +428,56 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                                     Will hit only when distance ~ wpn_radius */
                                 if ( sqrt( POW2(dist_vect_len) + POW2(vp_len) ) > fabs(to_enemy_len - wpn_radius) )
                                 {
-                                    NC_STACK_ypabact *a1 = miss->ywo->getYW_userHostStation();
+                                    NC_STACK_ypabact *a1 = _world->getYW_userHostStation();
 
-                                    __NC_STACK_ypabact *v85;
-                                    v85 = a1->getBACT_pBact();
+                                    collisionSumRadius += radius;
+                                    collisionCount++;
+                                    collisionSumPosition += bct->_position;
 
-                                    v90 = 1;
+                                    bct->_status_flg &= ~BACT_STFLAG_LAND;
 
-                                    v91 += radius;
-                                    v81++;
+                                    
 
-                                    bct->status_flg &= ~0x200;
-
-                                    v78 += bct->position;
-
-                                    int v83 = bct->self->getBACT_inputting();
+                                    int v83 = bct->getBACT_inputting();
 
                                     int v92 = 0;
 
-                                    switch ( bct->bact_type )
+                                    switch ( bct->_bact_type )
                                     {
                                     case BACT_TYPES_BACT:
-                                        v92 = bact->energy * miss->energy_heli;
+                                        v92 = _energy * _mislEnergyHeli;
                                         break;
 
                                     case BACT_TYPES_TANK:
                                     case BACT_TYPES_CAR:
-                                        v92 = bact->energy * miss->energy_tank;
+                                        v92 = _energy * _mislEnergyTank;
                                         break;
 
                                     case BACT_TYPES_FLYER:
                                     case BACT_TYPES_UFO:
-                                        v92 = bact->energy * miss->energy_flyer;
+                                        v92 = _energy * _mislEnergyFlyer;
                                         break;
 
                                     case BACT_TYPES_ROBO:
-                                        v92 = bact->energy * miss->energy_robo;
+                                        v92 = _energy * _mislEnergyRobo;
                                         break;
 
                                     default:
-                                        v92 = bact->energy;
+                                        v92 = _energy;
                                         break;
                                     }
 
                                     float v46;
                                     float v47;
 
-                                    if ( v83 || bct->status_flg & BACT_STFLAG_ISVIEW )
+                                    if ( v83 || bct->_status_flg & BACT_STFLAG_ISVIEW )
                                     {
-                                        v46 = v92 * (100 - bct->shield);
+                                        v46 = v92 * (100 - bct->_shield);
                                         v47 = 250;
                                     }
                                     else
                                     {
-                                        v46 = v92 * (100 - bct->shield);
+                                        v46 = v92 * (100 - bct->_shield);
                                         v47 = 100.0;
                                     }
 
@@ -520,10 +486,10 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
                                     {
                                         bact_arg84 arg84;
                                         arg84.energy = -v92;
-                                        arg84.unit = miss->ejaculator_bact;
+                                        arg84.unit = _mislEmitter;
 
-                                        if ( v85->owner == bact->owner || !miss->yw->isNetGame )
-                                            bct->self->ModifyEnergy(&arg84);
+                                        if ( a1->_owner == _owner || !_world->isNetGame )
+                                            bct->ModifyEnergy(&arg84);
                                     }
 
                                     break;
@@ -537,72 +503,65 @@ int ypamissile_func70__sub0(__NC_STACK_ypamissile *miss)
         }
     }
 
-    if ( v90 )
+    if ( collisionCount > 0 )
     {
-        float v48 = (float)v81;
+        // Set new position between collided objects
+        _position = collisionSumPosition / (float)collisionCount;
 
-        bact->position = v78 / v48;
+        collisionSumRadius /= (float)collisionCount;
 
-        v91 *= v48;
-
-        if ( v91 >= 50.0 )
+        if ( collisionSumRadius >= 50.0 )
         {
-            vec3d v54 = bact->position - bact->old_pos;
+            vec3d posDelta = _position - _old_pos;
+            float deltaLen = posDelta.length();
 
-            float v100 = v54.length();
+            if ( deltaLen < 1.0 )
+                deltaLen = 1.0;
 
-            if ( v100 < 1.0 )
-                v100 = 1.0;
-
-            bact->position -= v54 * v91 / v100;
+            _position -= (posDelta / deltaLen) * collisionSumRadius;
         }
     }
 
-    return v90;
+    return collisionCount > 0;
 }
 
-void ypamissile_func70__sub1(__NC_STACK_ypamissile *miss, move_msg *arg74)
+vec3d NC_STACK_ypamissile::CalcForceVector()
 {
-    __NC_STACK_ypabact *bact = miss->selfie;
+    _thraction = _force;
 
-    bact->thraction = bact->force;
-
-    arg74->vec = bact->fly_dir * bact->fly_dir_length * bact->airconst + bact->target_dir * bact->thraction - vec3d(0.0, bact->mass * 9.80665, 0.0);
-
-    arg74->vec.normalise();
+    return vec3d::Normalise(  _fly_dir * _fly_dir_length * _airconst
+                            + _target_dir * _thraction
+                            - vec3d(0.0, _mass * 9.80665, 0.0));
 }
 
 void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
 {
-    __NC_STACK_ypamissile *miss = &stack__ypamissile;
-    __NC_STACK_ypabact *bact = miss->selfie;
+    _world->ypaworld_func145(this);
 
-    miss->ywo->ypaworld_func145(bact);
-
-    float v40 = bact->target_vec.length();
+    float v40 = _target_vec.length();
 
     if ( v40 > 0.1 )
     {
-        if ( bact->primTtype != BACT_TGT_TYPE_DRCT )
-            bact->target_dir = bact->target_vec / v40;
+        if ( _primTtype != BACT_TGT_TYPE_DRCT )
+            _target_dir = _target_vec / v40;
     }
 
-    bact->AI_time1 = 0;
+    _AI_time1 = 0;
 
-    bact->thraction = bact->force;
+    _thraction = _force;
 
     float v38 = arg->frameTime * 0.001;
 
-    if ( bact->status == BACT_STATUS_NORMAL )
+    if ( _status == BACT_STATUS_NORMAL )
     {
-        if ( miss->field_2D & 2)
-            miss->delay_time -= arg->frameTime;
+        if ( _mislFlags & FLAG_MISL_COUNTDELAY)
+            _mislDelayTime -= arg->frameTime;
 
-        if ( miss->field_2D & 2  &&  miss->delay_time <= 0 )
+        if ( (_mislFlags & FLAG_MISL_COUNTDELAY)  &&  _mislDelayTime <= 0 )
         {
-            ypamissile_func129(NULL);
+            ApplyImpulse();
 
-            miss->selfie->status = BACT_STATUS_DEAD;
+            _status = BACT_STATUS_DEAD;
 
             setState_msg arg78;
             arg78.setFlags = BACT_STFLAG_DEATH2;
@@ -611,16 +570,16 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
 
             SetState(&arg78);
 
-            if ( !(miss->field_2D & 4) || !miss->selfie->pSector->w_type )
+            if ( !(_mislFlags & FLAG_MISL_IGNOREBUILDS) || !_pSector->w_type )
             {
-                if ( miss->yw->field_1b80->owner == miss->selfie->owner || !miss->yw->isNetGame )
+                if ( _world->UserRobo->_owner == _owner || !_world->isNetGame )
                 {
                     yw_arg129 v25;
 
-                    v25.pos.x = bact->fly_dir.x * 5.0 + bact->position.x;
-                    v25.pos.z = bact->fly_dir.z * 5.0 + bact->position.z;
-                    v25.field_10 = bact->energy;
-                    v25.unit = miss->ejaculator_bact;
+                    v25.pos.x = _fly_dir.x * 5.0 + _position.x;
+                    v25.pos.z = _fly_dir.z * 5.0 + _position.z;
+                    v25.field_10 = _energy;
+                    v25.unit = _mislEmitter;
 
                     ChangeSectorEnergy(&v25);
                 }
@@ -630,33 +589,31 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
         {
             move_msg arg74;
 
-            switch ( miss->field_c )
+            switch ( _mislType )
             {
-            case 1:
+            case MISL_BOMB:
                 arg74.field_0 = v38;
                 arg74.flag = 1;
                 Move(&arg74);
                 break;
 
-            case 2:
+            case MISL_DIRECT:
                 arg74.field_0 = v38;
                 arg74.flag = 0;
-
-                ypamissile_func70__sub1(miss, &arg74);
+                arg74.vec = CalcForceVector();
                 Move(&arg74);
                 break;
 
-            case 3:
+            case MISL_TARGETED:
                 arg74.field_0 = v38;
                 arg74.flag = 0;
-
-                ypamissile_func70__sub1(miss, &arg74);
+                arg74.vec = CalcForceVector();
                 Move(&arg74);
                 break;
 
-            case 4:
+            case MISL_GRENADE:
                 arg74.field_0 = v38;
-                arg74.vec = bact->fly_dir;
+                arg74.vec = _fly_dir;
                 arg74.flag = 0;
 
                 Move(&arg74);
@@ -666,10 +623,10 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
                 break;
             }
 
-            if ( ypamissile_func70__sub0(miss) )
+            if ( TubeCollisionTest() )
             {
                 setState_msg arg78;
-                ypamissile_func129(NULL);
+                ApplyImpulse();
 
                 arg78.newStatus = BACT_STATUS_DEAD;
                 arg78.unsetFlags = 0;
@@ -677,112 +634,108 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
 
                 SetState(&arg78);
 
-                ypamissile_func128(NULL);
+                ResetViewing();
+                return;
             }
-            else if ( miss->field_c != 6 )
+            
+            if ( _mislType == MISL_INTERNAL )
+                return;
+            
+            ypaworld_arg136 arg136;
+            arg136.stPos = _old_pos;
+            arg136.vect = _position - _old_pos;
+            arg136.flags = 0;
+
+            _world->ypaworld_func136(&arg136);
+
+            if ( arg136.isect )
             {
-                ypaworld_arg136 arg136;
-                arg136.stPos = bact->old_pos;
-                arg136.vect = bact->position - bact->old_pos;
-                arg136.flags = 0;
+                AlignMissileByNormal( arg136.skel->polygons[ arg136.polyID ].Normal() );
 
-                miss->ywo->ypaworld_func136(&arg136);
+                _position = arg136.isectPos;
 
-                if ( arg136.isect )
+                ResetViewing();
+
+                _mislType = MISL_INTERNAL;
+                _mislFlags |= FLAG_MISL_COUNTDELAY;
+
+                if ( !_mislDelayTime )
                 {
-                    miss_arg130 arg131;
-                    arg131.pos = arg136.skel->polygons[ arg136.polyID ].Normal();
+                    ApplyImpulse();
 
-                    ypamissile_func131(&arg131);
+                    _status = BACT_STATUS_DEAD;
 
-                    bact->position = arg136.isectPos;
+                    setState_msg arg78;
+                    arg78.setFlags = BACT_STFLAG_DEATH2;
+                    arg78.unsetFlags = 0;
+                    arg78.newStatus = BACT_STATUS_NOPE;
 
-                    ypamissile_func128(NULL);
+                    SetState(&arg78);
 
-                    miss->field_c = 6;
-                    miss->field_2D |= 2;
-
-                    if ( !miss->delay_time )
+                    if ( !(_mislFlags & FLAG_MISL_IGNOREBUILDS) || !_pSector->w_type )
                     {
-                        ypamissile_func129(NULL);
-
-                        miss->selfie->status = BACT_STATUS_DEAD;
-
-                        setState_msg arg78;
-                        arg78.setFlags = BACT_STFLAG_DEATH2;
-                        arg78.unsetFlags = 0;
-                        arg78.newStatus = BACT_STATUS_NOPE;
-
-                        SetState(&arg78);
-
-                        if ( !(miss->field_2D & 4) || !miss->selfie->pSector->w_type )
+                        if ( _world->UserRobo->_owner == _owner || !_world->isNetGame )
                         {
-                            if ( miss->yw->field_1b80->owner == miss->selfie->owner || !miss->yw->isNetGame )
-                            {
-                                yw_arg129 v25;
+                            yw_arg129 v25;
 
-                                v25.pos.x = bact->fly_dir.x * 5.0 + bact->position.x;
-                                v25.pos.z = bact->fly_dir.z * 5.0 + bact->position.z;
-                                v25.field_10 = bact->energy;
-                                v25.unit = miss->ejaculator_bact;
+                            v25.pos.x = _fly_dir.x * 5.0 + _position.x;
+                            v25.pos.z = _fly_dir.z * 5.0 + _position.z;
+                            v25.field_10 = _energy;
+                            v25.unit = _mislEmitter;
 
-                                ChangeSectorEnergy(&v25);
-                            }
-                        }
-                    }
-
-                    int a4 = miss->ejaculator_bact->self->getBACT_inputting();
-
-                    if ( a4 )
-                    {
-                        if ( miss->ejaculator_bact->host_station == miss->ejaculator_bact->parent_bacto )
-                        {
-                            if ( miss->ejaculator_bact->host_station )
-                            {
-                                setTarget_msg arg67;
-                                arg67.tgt_type = BACT_TGT_TYPE_CELL;
-                                arg67.tgt_pos = bact->position;
-                                arg67.priority = 0;
-
-                                miss->ejaculator_bact->self->SetTarget(&arg67);
-                            }
+                            ChangeSectorEnergy(&v25);
                         }
                     }
                 }
+
+                int a4 = _mislEmitter->getBACT_inputting();
+
+                if ( a4 )
+                {
+                    if ( _mislEmitter->_host_station == _mislEmitter->_parent )
+                    {
+                        if ( _mislEmitter->_host_station )
+                        {
+                            setTarget_msg arg67;
+                            arg67.tgt_type = BACT_TGT_TYPE_CELL;
+                            arg67.tgt_pos = _position;
+                            arg67.priority = 0;
+
+                            _mislEmitter->SetTarget(&arg67);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                _mislDriveTime -= arg->frameTime;
+
+                if ( _mislDriveTime < 0 )
+                {
+                    _mislType = MISL_BOMB;
+
+                    _airconst = 10.0;
+                    _airconst_static = 10.0;
+                }
+
+                _mislLifeTime -= arg->frameTime;
+
+                if ( _mislLifeTime >= 0 )
+                {
+                    AlignMissile( arg->frameTime * 0.001 );
+                }
                 else
                 {
-                    miss->drive_time -= arg->frameTime;
+                    ApplyImpulse();
 
-                    if ( miss->drive_time < 0 )
-                    {
-                        miss->field_c = 1;
+                    setState_msg arg78;
+                    arg78.unsetFlags = 0;
+                    arg78.setFlags = 0;
+                    arg78.newStatus = BACT_STATUS_DEAD;
 
-                        bact->airconst = 10.0;
-                        bact->airconst_static = 10.0;
-                    }
+                    SetState(&arg78);
 
-                    miss->life_time -= arg->frameTime;
-
-                    if ( miss->life_time >= 0 )
-                    {
-                        miss_arg130 arg130;
-                        arg130.period = arg->frameTime * 0.001;
-
-                        ypamissile_func130(&arg130);
-                    }
-                    else
-                    {
-                        ypamissile_func129(NULL);
-
-                        setState_msg arg78;
-                        arg78.unsetFlags = 0;
-                        arg78.setFlags = 0;
-                        arg78.newStatus = BACT_STATUS_DEAD;
-
-                        SetState(&arg78);
-
-                        ypamissile_func128(NULL);
-                    }
+                    ResetViewing();
                 }
             }
         }
@@ -791,55 +744,49 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
 
 void NC_STACK_ypamissile::User_layer(update_msg *arg)
 {
-    __NC_STACK_ypamissile *miss = &stack__ypamissile;
-    __NC_STACK_ypabact *bact = miss->selfie;
+    _old_pos = _position;
 
-    bact->old_pos = bact->position;
-
-    if (bact->status == BACT_STATUS_NORMAL)
+    if (_status == BACT_STATUS_NORMAL)
         AI_layer1(arg);
     else
-        ypamissile_func128(NULL);
+        ResetViewing();
 }
 
 void NC_STACK_ypamissile::Move(move_msg *arg)
 {
-    __NC_STACK_ypamissile *miss = &stack__ypamissile;
-    __NC_STACK_ypabact *bact = miss->selfie;
-
-    bact->old_pos = bact->position;
+    _old_pos = _position;
 
     float v8;
 
-    if ( bact->status != BACT_STATUS_DEAD && miss->field_c != 1 )
-        v8 = bact->mass * 9.80665;
+    if ( _status != BACT_STATUS_DEAD && _mislType != MISL_BOMB )
+        v8 = _mass * 9.80665;
     else
-        v8 = bact->mass * 39.2266;
+        v8 = _mass * 39.2266;
 
     vec3d v26(0.0, 0.0, 0.0);
 
     if ( !(arg->flag & 1) )
-        v26 = arg->vec * bact->thraction;
+        v26 = arg->vec * _thraction;
 
-    vec3d vec1 = vec3d(0.0, v8, 0.0) + v26 - bact->fly_dir * (bact->fly_dir_length * bact->airconst);
+    vec3d vec1 = vec3d(0.0, v8, 0.0) + v26 - _fly_dir * (_fly_dir_length * _airconst);
 
     float v33 = vec1.normalise();
 
     if ( v33 > 0.0 )
     {
-        vec3d v36 = bact->fly_dir * bact->fly_dir_length + vec1 * (v33 / bact->mass * arg->field_0);
+        vec3d v36 = _fly_dir * _fly_dir_length + vec1 * (v33 / _mass * arg->field_0);
 
         float v32 = v36.length();
 
         if ( v32 > 0.0 )
             v36 /= v32;
 
-        bact->fly_dir = v36;
+        _fly_dir = v36;
 
-        bact->fly_dir_length = v32;
+        _fly_dir_length = v32;
     }
 
-    bact->position += bact->fly_dir * (bact->fly_dir_length * arg->field_0 * 6.0);
+    _position += _fly_dir * (_fly_dir_length * arg->field_0 * 6.0);
 
     CorrectPositionInLevelBox(NULL);
 }
@@ -853,155 +800,139 @@ void NC_STACK_ypamissile::Renew()
 {
     NC_STACK_ypabact::Renew();
 
-    __NC_STACK_ypamissile *miss = &stack__ypamissile;
-
-    miss->field_2D  = 0;
-    miss->delay_time = 0;
+    _mislFlags  = 0;
+    _mislDelayTime = 0;
 
     setBACT_yourLastSeconds(3000);
 }
 
 size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
 {
-    __NC_STACK_ypamissile *miss = &stack__ypamissile;
-    __NC_STACK_ypabact *bact = miss->selfie;
-
-    SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 2);
-    SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 0);
-    SFXEngine::SFXe.sub_424000(&bact->soundcarrier, 1);
+    SFXEngine::SFXe.sub_424000(&_soundcarrier, 2);
+    SFXEngine::SFXe.sub_424000(&_soundcarrier, 0);
+    SFXEngine::SFXe.sub_424000(&_soundcarrier, 1);
 
     if ( arg->newStatus )
-        bact->status = arg->newStatus;
+        _status = arg->newStatus;
 
     if ( arg->setFlags )
-        bact->status_flg |= arg->setFlags;
+        _status_flg |= arg->setFlags;
 
     if ( arg->unsetFlags )
-        bact->status_flg &= ~arg->unsetFlags;
+        _status_flg &= ~arg->unsetFlags;
 
     if ( arg->newStatus == BACT_STATUS_DEAD )
     {
-        setBACT_visProto(bact->vp_dead.base);
-        setBACT_vpTransform(bact->vp_dead.trigo);
+        setBACT_visProto(_vp_dead.base);
+        setBACT_vpTransform(_vp_dead.trigo);
 
-        SFXEngine::SFXe.startSound(&bact->soundcarrier, 2);
+        SFXEngine::SFXe.startSound(&_soundcarrier, 2);
 
         StartDestFX(1);
 
-        bact->fly_dir_length = 0;
+        _fly_dir_length = 0;
     }
 
     if ( arg->newStatus == BACT_STATUS_NORMAL )
     {
-        setBACT_visProto(bact->vp_normal.base);
-        setBACT_vpTransform(bact->vp_normal.trigo);
+        setBACT_visProto(_vp_normal.base);
+        setBACT_vpTransform(_vp_normal.trigo);
 
-        SFXEngine::SFXe.startSound(&bact->soundcarrier, 0);
+        SFXEngine::SFXe.startSound(&_soundcarrier, 0);
     }
 
     if ( arg->unsetFlags == BACT_STFLAG_DEATH2 )
     {
-        setBACT_visProto(bact->vp_normal.base);
-        setBACT_vpTransform(bact->vp_normal.trigo);
+        setBACT_visProto(_vp_normal.base);
+        setBACT_vpTransform(_vp_normal.trigo);
 
-        SFXEngine::SFXe.startSound(&bact->soundcarrier, 0);
+        SFXEngine::SFXe.startSound(&_soundcarrier, 0);
     }
 
     if ( arg->setFlags == BACT_STFLAG_DEATH2 )
     {
-        bact->status = BACT_STATUS_DEAD;
+        _status = BACT_STATUS_DEAD;
 
-        setBACT_visProto(bact->vp_megadeth.base);
-        setBACT_vpTransform(bact->vp_megadeth.trigo);
+        setBACT_visProto(_vp_megadeth.base);
+        setBACT_vpTransform(_vp_megadeth.trigo);
 
-        SFXEngine::SFXe.startSound(&bact->soundcarrier, 2);
+        SFXEngine::SFXe.startSound(&_soundcarrier, 2);
 
         StartDestFX(2);
 
-        bact->fly_dir_length = 0;
+        _fly_dir_length = 0;
     }
 
     return 1;
 }
 
-void NC_STACK_ypamissile::ypamissile_func128(void *)
+void NC_STACK_ypamissile::ResetViewing()
 {
-    __NC_STACK_ypamissile *miss = &stack__ypamissile;
-
-    int a4 = getBACT_viewer();
-
-    if ( a4 )
+    if ( getBACT_viewer() )
     {
         setBACT_viewer(0);
         setBACT_inputting(0);
 
-        if ( miss->ejaculator_bact->status != BACT_STATUS_DEAD || (size_t)miss->ejaculator_bact->parent_bacto <= 3 )
+        if ( _mislEmitter->_status != BACT_STATUS_DEAD || (size_t)_mislEmitter->_parent <= 3 )
         {
-            miss->ejaculator_bact->self->setBACT_viewer(1);
-            miss->ejaculator_bact->self->setBACT_inputting(1);
+            _mislEmitter->setBACT_viewer(1);
+            _mislEmitter->setBACT_inputting(1);
         }
         else
         {
-            miss->ejaculator_bact->parent_bacto->setBACT_viewer(1);
-            miss->ejaculator_bact->parent_bacto->setBACT_inputting(1);
+            _mislEmitter->_parent->setBACT_viewer(1);
+            _mislEmitter->_parent->setBACT_inputting(1);
         }
 
     }
 }
 
-void NC_STACK_ypamissile::ypamissile_func129(void *)
+void NC_STACK_ypamissile::ApplyImpulse()
 {
-    __NC_STACK_ypamissile *miss = &stack__ypamissile;
-    __NC_STACK_ypabact *bact = miss->selfie;
-
     bact_arg83 arg83;
-    arg83.energ = bact->energy;
-    arg83.pos = bact->position;
-    arg83.pos2 = bact->fly_dir;
-    arg83.force = bact->fly_dir_length;
-    arg83.mass = bact->mass;
+    arg83.energ = _energy;
+    arg83.pos = _position;
+    arg83.pos2 = _fly_dir;
+    arg83.force = _fly_dir_length;
+    arg83.mass = _mass;
 
-    float v16 = bact->fly_dir_length * bact->mass;
+    float v16 = _fly_dir_length * _mass;
 
-    if ( v16 > miss->yw->max_impulse && miss->yw->max_impulse > 0.0 )
+    if ( v16 > _world->max_impulse && _world->max_impulse > 0.0 )
     {
-        float v7 = miss->yw->max_impulse / v16;
+        float v7 = _world->max_impulse / v16;
         arg83.force *= v7;
         arg83.mass *= v7;
     }
 
-    __NC_STACK_ypabact *bct = (__NC_STACK_ypabact *)bact->pSector->units_list.head;
-
-    while(bct->next)
+    for( NC_STACK_ypabact* &bct : _pSector->unitsList )
     {
-        if ( bct->bact_type != BACT_TYPES_MISSLE && bct->bact_type != BACT_TYPES_ROBO && bct->bact_type != BACT_TYPES_TANK && bct->bact_type != BACT_TYPES_CAR && bct->bact_type != BACT_TYPES_GUN && bct->bact_type != BACT_TYPES_HOVER && !(bct->status_flg & BACT_STFLAG_DEATH2) )
+        if ( bct->_bact_type != BACT_TYPES_MISSLE && bct->_bact_type != BACT_TYPES_ROBO && bct->_bact_type != BACT_TYPES_TANK && bct->_bact_type != BACT_TYPES_CAR && bct->_bact_type != BACT_TYPES_GUN && bct->_bact_type != BACT_TYPES_HOVER && !(bct->_status_flg & BACT_STFLAG_DEATH2) )
         {
             int v10 = 1;
 
-            if ( miss->yw->isNetGame )
+            if ( _world->isNetGame )
             {
-                if ( bact->owner != bct->owner )
+                if ( _owner != bct->_owner )
                     v10 = 0;
             }
 
             if ( v10 )
-                bct->self->ApplyImpulse(&arg83);
+                bct->ApplyImpulse(&arg83);
         }
-
-        bct = (__NC_STACK_ypabact *)bct->next;
     }
 
-    if ( miss->yw->isNetGame )
+    if ( _world->isNetGame )
     {
         uamessage_impulse impMsg;
         impMsg.msgID = UAMSG_IMPULSE;
-        impMsg.owner = bact->owner;
-        impMsg.id = bact->gid;
-        impMsg.pos = bact->position;
-        impMsg.impulse = bact->energy;
-        impMsg.dir = bact->fly_dir;
-        impMsg.dir_len = bact->fly_dir_length;
-        impMsg.mass = bact->mass;
+        impMsg.owner = _owner;
+        impMsg.id = _gid;
+        impMsg.pos = _position;
+        impMsg.impulse = _energy;
+        impMsg.dir = _fly_dir;
+        impMsg.dir_len = _fly_dir_length;
+        impMsg.mass = _mass;
 
         yw_arg181 arg181;
         arg181.recvID = 0;
@@ -1010,75 +941,91 @@ void NC_STACK_ypamissile::ypamissile_func129(void *)
         arg181.garant = 1;
         arg181.data = &impMsg;
 
-        miss->ywo->ypaworld_func181(&arg181);
+        _world->ypaworld_func181(&arg181);
     }
 }
 
-void NC_STACK_ypamissile::ypamissile_func130(miss_arg130 *arg)
+void NC_STACK_ypamissile::AlignMissile(float dtime)
 {
-    __NC_STACK_ypamissile *miss = &stack__ypamissile;
-    __NC_STACK_ypabact *bact = miss->selfie;
-
-    if ( bact->fly_dir != vec3d(0.0, 0.0, 0.0) )
+    if ( _fly_dir != vec3d(0.0, 0.0, 0.0) )
     {
-        vec3d dir = bact->rotation.AxisZ(); // Get Z-axis, as dir
-        vec3d u = dir * bact->fly_dir; // vector cross product
+        vec3d dir = _rotation.AxisZ(); // Get Z-axis, as dir
+        vec3d u = vec3d::Normalise(dir * _fly_dir); // vector cross product
 
-        float v37 = u.normalise(); // normalise and get length
-
-        if ( v37 > 0.0 )
+        // If length == 0 - no rotation
+        if ( u.length() > 0.0 )
         {
             //scalar cross product
-            float v52 = clp_acos( dir.dot(bact->fly_dir) );
+            float rotAngle = clp_acos( dir.dot(_fly_dir) );
 
-            if ( miss->field_c == 1 )
+            if ( _mislType == MISL_BOMB )
             {
-                if ( arg )
+                if ( dtime != 0.0 )
                 {
-                    float mxrot = bact->maxrot * arg->period;
+                    float mxrot = _maxrot * dtime;
 
-                    if ( v52 < -mxrot )
-                        v52 = -mxrot;
+                    if ( rotAngle < -mxrot )
+                        rotAngle = -mxrot;
 
-                    if ( v52 > mxrot )
-                        v52 = mxrot;
+                    if ( rotAngle > mxrot )
+                        rotAngle = mxrot;
                 }
             }
 
-            if ( fabs(v52) > MISSILE_BOMB_MIN_ANGLE )
-                bact->rotation *= mat3x3::AxisAngle(u, v52);
+            if ( fabs(rotAngle) > BOMB_MIN_ANGLE )
+                _rotation *= mat3x3::AxisAngle(u, rotAngle);
         }
 
-        if ( miss->field_2D & 1 )
+        // Fix camera Z-axis rotation
+        if ( _mislFlags & FLAG_MISL_VIEW )
         {
-            float v44 = clp_acos( bact->rotation.AxisX().XZ().length() );
+            float ZAngle = clp_acos( _rotation.AxisX().XZ().length() ); // Get degree of current Z-axis rotation
 
-            if ( miss->selfie->rotation.m11 < 0.0 )
-                v44 = C_PI - v44;
+            if ( _rotation.m11 < 0.0 )
+                ZAngle = C_PI - ZAngle;
 
-            if ( miss->selfie->rotation.m01 < 0.0 )
-                v44 = -v44;
+            if ( _rotation.m01 < 0.0 )
+                ZAngle = -ZAngle;
 
-            bact->rotation = mat3x3::RotateZ(-v44) * bact->rotation;
+            _rotation = mat3x3::RotateZ(-ZAngle) * _rotation;
         }
     }
 }
 
-void NC_STACK_ypamissile::ypamissile_func131(miss_arg130 *arg)
+void NC_STACK_ypamissile::AlignMissileByNormal(const vec3d &normal)
 {
-    vec3d vec1 = ypabact.rotation.AxisY();
+    vec3d UpVector = _rotation.AxisY();
 
-    vec3d vaxis = vec1 * arg->pos;
+    vec3d vaxis = UpVector * normal;
 
     if ( vaxis.normalise() != 0.0 )
     {
-        float v12 = clp_acos( vec1.dot(arg->pos) );
+        float angle = clp_acos( UpVector.dot(normal) );
 
-        if ( fabs(v12) > BACT_MIN_ANGLE )
-            ypabact.rotation *= mat3x3::AxisAngle(vaxis, v12);
+        if ( fabs(angle) > BACT_MIN_ANGLE )
+            _rotation *= mat3x3::AxisAngle(vaxis, angle);
     }
 }
 
+
+NC_STACK_ypamissile::NC_STACK_ypamissile() 
+{
+    _mislType = 0;
+    _mislEmitter = NULL;
+    _mislLifeTime = 0;
+    _mislDriveTime = 0;
+    _mislDelayTime = 0;
+    _mislFlags = 0;
+    _mislStartHeight = 0.;
+    _mislEnergyHeli = 0.;
+    _mislEnergyTank = 0.;
+    _mislEnergyFlyer = 0.;
+    _mislEnergyRobo = 0.;
+    _mislRadiusHeli = 0.;
+    _mislRadiusTank = 0.;
+    _mislRadiusFlyer = 0.;
+    _mislRadiusRobo = 0.;
+}
 
 
 void NC_STACK_ypamissile::setBACT_viewer(int vwr)
@@ -1086,164 +1033,164 @@ void NC_STACK_ypamissile::setBACT_viewer(int vwr)
     NC_STACK_ypabact::setBACT_viewer(vwr);
 
     if ( vwr )
-        stack__ypamissile.field_2D |= 1;
+        _mislFlags |= FLAG_MISL_VIEW;
     else
-        stack__ypamissile.field_2D &= ~1;
+        _mislFlags &= ~FLAG_MISL_VIEW;
 }
 
-void NC_STACK_ypamissile::setMISS_launcher(__NC_STACK_ypabact *bact)
+void NC_STACK_ypamissile::setMISS_launcher(NC_STACK_ypabact *bact)
 {
-    stack__ypamissile.ejaculator_bact = bact;
+    _mislEmitter = bact;
 }
 
 void NC_STACK_ypamissile::setMISS_type(int tp)
 {
-    stack__ypamissile.field_c = tp;
+    _mislType = tp;
 }
 
 void NC_STACK_ypamissile::setMISS_lifeTime(int time)
 {
-    stack__ypamissile.life_time = time;
+    _mislLifeTime = time;
 }
 
 void NC_STACK_ypamissile::setMISS_delay(int delay)
 {
-    stack__ypamissile.delay_time = delay;
+    _mislDelayTime = delay;
 }
 
 void NC_STACK_ypamissile::setMISS_driveTime(int time)
 {
-    stack__ypamissile.drive_time = time;
+    _mislDriveTime = time;
 }
 
 void NC_STACK_ypamissile::setMISS_ignoreBuilds(int ign)
 {
     if ( ign )
-        stack__ypamissile.field_2D |= 4;
+        _mislFlags |= FLAG_MISL_IGNOREBUILDS;
     else
-        stack__ypamissile.field_2D &= ~4;
+        _mislFlags &= ~FLAG_MISL_IGNOREBUILDS;
 }
 
 void NC_STACK_ypamissile::setMISS_powHeli(int po)
 {
-    stack__ypamissile.energy_heli = po * 0.001;
+    _mislEnergyHeli = po * 0.001;
 }
 
 void NC_STACK_ypamissile::setMISS_powTank(int po)
 {
-    stack__ypamissile.energy_tank = po * 0.001;
+    _mislEnergyTank = po * 0.001;
 }
 
 void NC_STACK_ypamissile::setMISS_powFlyer(int po)
 {
-    stack__ypamissile.energy_flyer = po * 0.001;
+    _mislEnergyFlyer = po * 0.001;
 }
 
 void NC_STACK_ypamissile::setMISS_powRobo(int po)
 {
-    stack__ypamissile.energy_robo = po * 0.001;
+    _mislEnergyRobo = po * 0.001;
 }
 
 void NC_STACK_ypamissile::setMISS_radHeli(int rad)
 {
-    stack__ypamissile.radius_heli = rad;
+    _mislRadiusHeli = rad;
 }
 
 void NC_STACK_ypamissile::setMISS_radTank(int rad)
 {
-    stack__ypamissile.radius_tank = rad;
+    _mislRadiusTank = rad;
 }
 
 void NC_STACK_ypamissile::setMISS_radFlyer(int rad)
 {
-    stack__ypamissile.radius_flyer = rad;
+    _mislRadiusFlyer = rad;
 }
 
 void NC_STACK_ypamissile::setMISS_radRobo(int rad)
 {
-    stack__ypamissile.radius_robo = rad;
+    _mislRadiusRobo = rad;
 }
 
 void NC_STACK_ypamissile::setMISS_startHeight(int posy)
 {
-    stack__ypamissile.posy = posy;
+    _mislStartHeight = posy;
 }
 
 
 
-__NC_STACK_ypabact *NC_STACK_ypamissile::getMISS_launcher()
+NC_STACK_ypabact *NC_STACK_ypamissile::getMISS_launcher()
 {
-    return stack__ypamissile.ejaculator_bact;
+    return _mislEmitter;
 }
 
 int NC_STACK_ypamissile::getMISS_type()
 {
-    return stack__ypamissile.field_c;
+    return _mislType;
 }
 
 int NC_STACK_ypamissile::getMISS_lifeTime()
 {
-    return stack__ypamissile.life_time;
+    return _mislLifeTime;
 }
 
 int NC_STACK_ypamissile::getMISS_delay()
 {
-    return stack__ypamissile.delay_time;
+    return _mislDelayTime;
 }
 
 int NC_STACK_ypamissile::getMISS_driveTime()
 {
-    return stack__ypamissile.drive_time;
+    return _mislDriveTime;
 }
 
 int NC_STACK_ypamissile::getMISS_ignoreBuilds()
 {
-    return stack__ypamissile.field_2D & 4;
+    return (_mislFlags & FLAG_MISL_IGNOREBUILDS) != 0;
 }
 
 int NC_STACK_ypamissile::getMISS_powHeli()
 {
-    return stack__ypamissile.energy_heli * 1000.0;
+    return _mislEnergyHeli * 1000.0;
 }
 
 int NC_STACK_ypamissile::getMISS_powTank()
 {
-    return stack__ypamissile.energy_tank * 1000.0;
+    return _mislEnergyTank * 1000.0;
 }
 
 int NC_STACK_ypamissile::getMISS_powFlyer()
 {
-    return stack__ypamissile.energy_flyer * 1000.0;
+    return _mislEnergyFlyer * 1000.0;
 }
 
 int NC_STACK_ypamissile::getMISS_powRobo()
 {
-    return stack__ypamissile.energy_robo * 1000.0;
+    return _mislEnergyRobo * 1000.0;
 }
 
 int NC_STACK_ypamissile::getMISS_radHeli()
 {
-    return stack__ypamissile.radius_heli;
+    return _mislRadiusHeli;
 }
 
 int NC_STACK_ypamissile::getMISS_radTank()
 {
-    return stack__ypamissile.radius_tank;
+    return _mislRadiusTank;
 }
 
 int NC_STACK_ypamissile::getMISS_radFlyer()
 {
-    return stack__ypamissile.radius_flyer;
+    return _mislRadiusFlyer;
 }
 
 int NC_STACK_ypamissile::getMISS_radRobo()
 {
-    return stack__ypamissile.radius_robo;
+    return _mislRadiusRobo;
 }
 
 int NC_STACK_ypamissile::getMISS_startHeight()
 {
-    return stack__ypamissile.posy;
+    return _mislStartHeight;
 }
 
 
@@ -1252,13 +1199,13 @@ size_t NC_STACK_ypamissile::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 68:
         AI_layer1( (update_msg *)data );
         return 1;
@@ -1283,16 +1230,10 @@ size_t NC_STACK_ypamissile::compatcall(int method_id, void *data)
     case 119:
         return (size_t)SetStateInternal( (setState_msg *)data );
     case 128:
-        ypamissile_func128( (void *)data );
+        ResetViewing();
         return 1;
     case 129:
-        ypamissile_func129( (void *)data );
-        return 1;
-    case 130:
-        ypamissile_func130( (miss_arg130 *)data );
-        return 1;
-    case 131:
-        ypamissile_func131( (miss_arg130 *)data );
+        ApplyImpulse();
         return 1;
     default:
         break;

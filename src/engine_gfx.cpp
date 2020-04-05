@@ -1,6 +1,8 @@
 #include "includes.h"
 #include "engine_gfx.h"
 #include "utils.h"
+#include "common.h"
+#include "gui/root.h"
 
 GFXEngine GFXEngine::GFXe;
 
@@ -44,24 +46,17 @@ void GFXEngine::deinit()
 
 int GFXEngine::sub_422CE8(const char *display, const char *display2, int gfxmode)
 {
-    char buf[33];
-
     if ( *display )
     {
         IDVList vals;
         vals.Add(NC_STACK_display::ATT_DISPLAY_ID, gfxmode);
 
-        strcpy(buf, display);
-
-        cls3D = dynamic_cast<NC_STACK_win3d *>( init_get_class(buf, &vals) );
+        cls3D = Nucleus::CTFInit<NC_STACK_win3d>(display, vals);
 
         if ( !cls3D )
         {
             if ( *display2 )
-            {
-                strcpy(buf, display2);
-                cls3D = dynamic_cast<NC_STACK_win3d *>( init_get_class(buf, &vals) );
-            }
+                cls3D = Nucleus::CTFInit<NC_STACK_win3d>(display2, vals);
         }
         if ( !cls3D )
             ypa_log_out("gfx.engine: display driver init failed!\n");
@@ -70,6 +65,9 @@ int GFXEngine::sub_422CE8(const char *display, const char *display2, int gfxmode
     {
         ypa_log_out("gfx.engine: no display driver name given!\n");
     }
+
+    Gui::Root::Instance.SetScreenSize(cls3D->GetSize());
+
     return cls3D != NULL;
 }
 
@@ -79,12 +77,12 @@ int GFXEngine::loadPal(const char *palette_ilbm)
     vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, palette_ilbm);
     vals.Add(NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
 
-    NC_STACK_bitmap *ilbm = NC_STACK_ilbm::CInit(&vals);
+    NC_STACK_bitmap *ilbm = Nucleus::CInit<NC_STACK_ilbm>(vals);
 
     if (!ilbm)
         return 0;
 
-    cls3D->SetPalette( ilbm->getBMD_palette() );
+    cls3D->SetPalette( *ilbm->getBMD_palette() );
 
     delete_class_obj(ilbm);
 
@@ -116,10 +114,19 @@ void GFXEngine::setResolution(int res)
     UA_PALETTE *screen_palette = cls3D->GetPalette();
 
     UA_PALETTE palette_copy;
-    memset(&palette_copy, 0, sizeof(palette_copy));
 
     if ( screen_palette )
         palette_copy = *screen_palette; // Copy palette
+    else
+    {
+        for(auto &x : palette_copy)
+        {
+            x.r = 0;
+            x.g = 0;
+            x.b = 0;
+            x.a = 0;
+        }
+    }
 
     cls3D->EndFrame();
 
@@ -129,31 +136,25 @@ void GFXEngine::setResolution(int res)
     {
         cls3D->BeginFrame();
 
-        cls3D->SetPalette(&palette_copy);
+        cls3D->SetPalette(palette_copy);
     }
 }
 
-void GFXEngine::setTracyRmp(bitmap_intern *rmp)
+void GFXEngine::setTracyRmp(ResBitmap *rmp)
 {
     cls3D->setRSTR_trcRmp(rmp);
 }
 
-void GFXEngine::setShadeRmp(bitmap_intern *rmp)
+void GFXEngine::setShadeRmp(ResBitmap *rmp)
 {
     cls3D->setRSTR_shdRmp(rmp);
 }
 
 
 
-tiles_stru * GFXEngine::getTileset(int id)
+TileMap * GFXEngine::getTileset(int id)
 {
-    rstr_207_arg arg207;
-
-    arg207.tiles = 0;
-    arg207.id = id;
-
-    cls3D->raster_func208(&arg207);
-    return arg207.tiles;
+    return cls3D->raster_func208(id);
 }
 
 void GFXEngine::drawText(w3d_a209 *arg)
@@ -163,12 +164,70 @@ void GFXEngine::drawText(w3d_a209 *arg)
     cls3D->raster_func209(&arg209);
 }
 
-void GFXEngine::setTileset(tiles_stru *tileset, int id)
+void GFXEngine::setTileset(TileMap *tileset, int id)
 {
-    rstr_207_arg arg;
-
-    arg.tiles = tileset;
-    arg.id = id;
-
-    cls3D->raster_func207(&arg);
+    cls3D->raster_func207(id, tileset);
 }
+
+
+TileMap::TileMap()
+{
+    img = NULL;
+    h = 0;
+}
+    
+TileMap::~TileMap()
+{
+    if (img)
+        Nucleus::Delete(img);
+}
+
+void TileMap::Draw(SDL_Surface *surface, const Common::Point &pos, uint8_t c)
+{
+    SDL_Rect src = map[c];
+    SDL_Rect dst = pos;
+    SDL_BlitSurface(img->GetSwTex(), &src, surface, &dst);
+}
+
+void TileMap::Draw(SDL_Surface *surface, const Common::PointRect &pos, uint8_t c)
+{
+    SDL_Rect src = map[c];
+    if (src.w > pos.w)
+        src.w = pos.w;
+    if (src.h > pos.h)
+        src.h = pos.h;    
+    SDL_Rect dst = pos;
+    SDL_BlitSurface(img->GetSwTex(), &src, surface, &dst);
+}
+
+void TileMap::Draw(SDL_Surface *surface, const Common::Rect &pos, uint8_t c)
+{
+    SDL_Rect src = map[c];
+    if (src.w > pos.Width())
+        src.w = pos.Width();
+    if (src.h > pos.Height())
+        src.h = pos.Height();    
+    SDL_Rect dst = pos;
+    SDL_BlitSurface(img->GetSwTex(), &src, surface, &dst);
+}
+
+void TileMap::Fill(SDL_Surface *surface, const Common::Rect &rect, uint8_t c)
+{
+    SDLWRAP::DrawFill(img->GetSwTex(), map[c], surface, rect);
+}
+
+void TileMap::Fill(SDL_Surface *surface, const Common::PointRect &rect, uint8_t c)
+{
+    SDLWRAP::DrawFill(img->GetSwTex(), map[c], surface, rect);
+}
+
+int TileMap::GetWidth(uint8_t c) const
+{
+    return map[c].w;
+}
+
+Common::Point TileMap::GetSize(uint8_t c) const
+{
+    return Common::Point(map[c].w, h);
+}
+

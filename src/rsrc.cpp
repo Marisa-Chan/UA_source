@@ -2,7 +2,7 @@
 
 #include "rsrc.h"
 
-const NewClassDescr NC_STACK_rsrc::description("rsrc.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_rsrc::description("rsrc.class", &newinstance);
 
 RSRCList NC_STACK_rsrc::privateList;
 RSRCList NC_STACK_rsrc::publicList;
@@ -18,7 +18,7 @@ rsrc *rsrc_find(RSRCList *list, const char *name)
     return NULL;
 }
 
-size_t NC_STACK_rsrc::func0(IDVList *stak)
+size_t NC_STACK_rsrc::func0(IDVList &stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
@@ -26,11 +26,8 @@ size_t NC_STACK_rsrc::func0(IDVList *stak)
     const char *res_name = NULL;
     int reuse_loaded = 1;
 
-    if (stak)
-    {
-        res_name = stak->GetConstChar(RSRC_ATT_NAME, NULL);
-        reuse_loaded = stak->Get(RSRC_ATT_TRYSHARED, 1);
-    }
+    res_name = stak.GetConstChar(RSRC_ATT_NAME, NULL);
+    reuse_loaded = stak.Get(RSRC_ATT_TRYSHARED, 1);
 
     if ( !res_name )
     {
@@ -51,8 +48,8 @@ size_t NC_STACK_rsrc::func0(IDVList *stak)
         res->ref_cnt++;
         resource = res;
 
-        if ( stak && stak->Get(RSRC_ATT_DONTCOPY, 0) )
-            flags |= 1;
+        if ( stak.Get(RSRC_ATT_DONTCOPY, 0) )
+            _flags |= 1;
 
         return 1;
     }
@@ -78,45 +75,42 @@ size_t NC_STACK_rsrc::func1()
     return NC_STACK_nucleus::func1();
 }
 
-size_t NC_STACK_rsrc::func3(IDVList *stak)
+size_t NC_STACK_rsrc::func3(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case RSRC_ATT_NAME:
-                    *(const char **)val.value.p_data = getRsrc_name();
-                    break;
+            case RSRC_ATT_NAME:
+                *(const char **)val.value.p_data = getRsrc_name();
+                break;
 
-                case RSRC_ATT_PDATA:
-                    *(void **)val.value.p_data = getRsrc_pData();
-                    break;
+            case RSRC_ATT_PDATA:
+                *(void **)val.value.p_data = getRsrc_pData();
+                break;
 
-                case RSRC_ATT_TRYSHARED:
-                    *(int *)val.value.p_data = getRsrc_tryShared();
-                    break;
+            case RSRC_ATT_TRYSHARED:
+                *(int *)val.value.p_data = getRsrc_tryShared();
+                break;
 
-                case RSRC_ATT_DONTCOPY:
-                    *(int *)val.value.p_data = getRsrc_dontCopy();
-                    break;
+            case RSRC_ATT_DONTCOPY:
+                *(int *)val.value.p_data = getRsrc_dontCopy();
+                break;
 
-                case RSRC_ATT_SHAREDLIST:
-                    *(RSRCList **)val.value.p_data = getRsrc_sharedList();
-                    break;
+            case RSRC_ATT_SHAREDLIST:
+                *(RSRCList **)val.value.p_data = getRsrc_sharedList();
+                break;
 
-                case RSRC_ATT_PRIVATELIST:
-                    *(RSRCList **)val.value.p_data = getRsrc_privateList();
-                    break;
+            case RSRC_ATT_PRIVATELIST:
+                *(RSRCList **)val.value.p_data = getRsrc_privateList();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -125,14 +119,11 @@ size_t NC_STACK_rsrc::func3(IDVList *stak)
 }
 
 // Allocate resource node
-rsrc * NC_STACK_rsrc::rsrc_func64(IDVList *stak)
+rsrc * NC_STACK_rsrc::rsrc_func64(IDVList &stak)
 {
-    if (!stak)
-        return NULL;
-
-    const char *resname = stak->GetConstChar(RSRC_ATT_NAME, NULL);
-    int shared = stak->Get(RSRC_ATT_TRYSHARED, 1);
-    int toTail = stak->Get(RSRC_ATT_LISTYPE, 0);
+    const char *resname = stak.GetConstChar(RSRC_ATT_NAME, NULL);
+    int shared = stak.Get(RSRC_ATT_TRYSHARED, 1);
+    int toTail = stak.Get(RSRC_ATT_LISTYPE, 0);
 
     if ( !resname )
         return NULL;
@@ -195,7 +186,7 @@ void *NC_STACK_rsrc::getRsrc_pData()
 
 int NC_STACK_rsrc::getRsrc_dontCopy()
 {
-    if (flags & 1)
+    if (_flags & 1)
         return 1;
 
     return 0;
@@ -217,13 +208,13 @@ size_t NC_STACK_rsrc::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 64:
-        return (size_t)rsrc_func64( (IDVList *)data );
+        return (size_t)rsrc_func64( *(IDVList *)data );
     case 65:
         return (size_t)rsrc_func65( (rsrc *)data );
     default:

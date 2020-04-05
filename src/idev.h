@@ -5,11 +5,6 @@
 
 class NC_STACK_idev;
 
-struct __NC_STACK_idev
-{
-
-};
-
 struct win_64arg
 {
     int field_0;
@@ -27,7 +22,7 @@ struct winp_66arg
 
 struct winp_68arg
 {
-    const char *keyname;
+    std::string keyname;
     uint32_t id;
 };
 
@@ -67,7 +62,6 @@ public:
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_idev() {
-        memset(&stack__idev, 0, sizeof(stack__idev));
     };
     virtual ~NC_STACK_idev() {};
 
@@ -80,9 +74,7 @@ public:
     };
 
     //Data
-    static const NewClassDescr description;
-
-    __NC_STACK_idev stack__idev;
+    static const Nucleus::ClassDescr description;
 };
 
 #endif // IDEV_H_INCLUDED

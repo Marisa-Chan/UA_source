@@ -1,8 +1,11 @@
 #include <string>
 #include <list>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_net.h>
 #include "wrapSDL.h"
 #include "fsmgr.h"
+#include "utils.h"
+#include "fmtlib/printf.h"
 
 
 static SDL_Window *window = NULL;
@@ -37,17 +40,16 @@ int VK_Map[SDL_NUM_SCANCODES];*/
 
 static struct FontLookup
 {
-    const char *sign; // Font name or part
-    const char *alt1;
-    const char *alt2;
+    const std::string sign; // Font name or part
+    const std::string alt1;
+    const std::string alt2;
 } fontsLookup[] =
 {
     {"arial", "liberation sans", ""},
     {"dungeon", "xolonium bold", "xolonium regular"},
     {"ms sans serif", "microsoft sans serif", "liberation serif"},
     {"courier", "liberation mono", ""},
-    {"small font", "press start 2p", ""},
-    {NULL, NULL, NULL}
+    {"small font", "press start 2p", ""}
 };
 
 void SDLWRAP_ScanFonts()
@@ -60,11 +62,11 @@ void SDLWRAP_ScanFonts()
 
     fontsList.clear();
 
-    FSMgr::DirIter *dir = FSMgr::iDir::readDir("fonts/");
+    FSMgr::DirIter dir = FSMgr::iDir::readDir("fonts/");
     if (dir)
     {
         FSMgr::iNode *nod = NULL;
-        while(dir->getNext(nod))
+        while(dir.getNext(&nod))
         {
             if (nod && nod->getType() == FSMgr::iNode::NTYPE_FILE)
             {
@@ -74,7 +76,7 @@ void SDLWRAP_ScanFonts()
 
                 if( strstr(tmp.c_str(), ".ttf") || strstr(tmp.c_str(), ".otf") || strstr(tmp.c_str(), ".fon") )
                 {
-                    TTF_Font *fnt = TTF_OpenFont(nod->getPath(), 12);
+                    TTF_Font *fnt = TTF_OpenFont(nod->getPath().c_str(), 12);
                     if (fnt)
                     {
                         FontNode *nd = new FontNode;
@@ -89,8 +91,6 @@ void SDLWRAP_ScanFonts()
                 }
             }
         }
-
-        delete dir;
     }
 }
 
@@ -240,6 +240,8 @@ void SDLWRAP_INIT()
     SDLWRAP_ScanFonts();
 
     IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP);
+
+    SDLNet_Init();
 }
 
 void SDLWRAP_DEINIT()
@@ -275,8 +277,8 @@ int SDLWRAP_UPDATE()
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
-        for(std::list< SDL_EventFilter >::iterator it = eventHandlers.begin(); it != eventHandlers.end(); it++)
-            (*it)(NULL, &event);
+        for(auto &e : eventHandlers)
+            (e)(NULL, &event);
 
         switch(event.type)
         {
@@ -317,8 +319,6 @@ void SDLWRAP_addHandler(SDL_EventFilter func)
 
 void SDLWRAP_flipWindow()
 {
-    SDLWRAP_drawScreen();
-
     SDL_GL_SwapWindow(window);
 }
 
@@ -351,38 +351,31 @@ void SDLWRAP_setFullscreen(uint32_t full, SDL_DisplayMode *mode)
     }
 }
 
-SDL_Surface *SDLWRAP_getScreenSurface()
+std::string SDLWRAP_FindFont(const std::string &fontName)
 {
-    return screen;
-}
-
-const char *SDLWRAP_FindFont(const char *fontName)
-{
-    for(std::list< FontNode *>::iterator it = fontsList.begin(); it != fontsList.end(); it++)
+    for(FontNode *fnt : fontsList )
     {
-        if (*it)
+        if (fnt)
         {
-            FontNode *fntn = *it;
-
-            if (strcasecmp(fontName, fntn->name.c_str()) == 0)
-                return fntn->filepath.c_str();
+            if (StriCmp(fontName, fnt->name) == 0)
+                return fnt->filepath;
             else
             {
-                std::string ttmp = fntn->name;
+                std::string ttmp = fnt->name;
                 ttmp += " ";
-                ttmp += fntn->stylename;
+                ttmp += fnt->stylename;
 
-                if (strcasecmp(fontName, ttmp.c_str()) == 0)
-                    return fntn->filepath.c_str();
+                if (StriCmp(fontName, ttmp) == 0)
+                    return fnt->filepath;
             }
         }
     }
 
-    return NULL;
+    return std::string();
 }
 
 
-TTF_Font *SDLWRAP_loadFont(const char *fontname, int height)
+TTF_Font *SDLWRAP_loadFont(const std::string &fontname, int height)
 {
     std::string tmp2 = fontname;
     for (size_t i = 0; i < tmp2.length(); i++)
@@ -390,51 +383,51 @@ TTF_Font *SDLWRAP_loadFont(const char *fontname, int height)
 
     TTF_Font *fnt = NULL;
 
-    const char *filename = SDLWRAP_FindFont(tmp2.c_str());
+    std::string filename = SDLWRAP_FindFont(tmp2);
 
-    if (!filename)
+    if (filename.empty())
     {
-        for(int i = 0; fontsLookup[i].sign != NULL; i++ )
+        for( const FontLookup &lookup : fontsLookup )
         {
-            if ( strcmp(tmp2.c_str(), fontsLookup[i].sign) == 0 )
+            if ( !StriCmp(tmp2, lookup.sign) )
             {
-                filename = SDLWRAP_FindFont(fontsLookup[i].alt1);
+                filename = SDLWRAP_FindFont(lookup.alt1);
 
-                if (filename)
+                if (!filename.empty())
                     break;
 
-                filename = SDLWRAP_FindFont(fontsLookup[i].alt2);
+                filename = SDLWRAP_FindFont(lookup.alt2);
 
-                if (filename)
+                if (!filename.empty())
                     break;
             }
         }
     }
 
-    if (!filename)
+    if (filename.empty())
     {
-        for(int i = 0; fontsLookup[i].sign != NULL; i++ )
+        for( const FontLookup &lookup : fontsLookup )
         {
-            if ( strstr(tmp2.c_str(), fontsLookup[i].sign) != NULL )
+            if ( tmp2.find(lookup.sign) != std::string::npos )
             {
-                filename = SDLWRAP_FindFont(fontsLookup[i].alt1);
+                filename = SDLWRAP_FindFont(lookup.alt1);
 
-                if (filename)
+                if (!filename.empty())
                     break;
 
-                filename = SDLWRAP_FindFont(fontsLookup[i].alt2);
+                filename = SDLWRAP_FindFont(lookup.alt2);
 
-                if (filename)
+                if (!filename.empty())
                     break;
             }
         }
     }
 
-    if (filename)
-        fnt = TTF_OpenFont(filename, height);
+    if (!filename.empty())
+        fnt = TTF_OpenFont(filename.c_str(), height);
 
     if (!fnt)
-        printf("Can't load font %s %d\n", fontname, height);
+        fmt::printf("Can't load font %s %d\n", fontname, height);
 
     return fnt;
 }
@@ -521,4 +514,311 @@ void SDLWRAP_restoreWindow()
 {
     SDL_RestoreWindow(window);
     SDL_Delay(250);
+}
+
+
+
+namespace SDLWRAP
+{
+    
+SDL_Surface *Screen()
+{
+    return screen;
+}
+
+// Draw line Bresenham's algorithm
+void DrawLine(SDL_Surface *surface, const Common::Rect &line, uint8_t cr, uint8_t cg, uint8_t cb )
+{
+    if ((!line.Width() && !line.Height()) || 
+         !Common::Rect(surface->w, surface->h).IsIn(Common::Point(line.left, line.top)) ||
+         !Common::Rect(surface->w, surface->h).IsIn(Common::Point(line.right, line.bottom)) )
+        return;
+    
+    int rilWidth = surface->pitch / surface->format->BytesPerPixel;
+
+    int xCount = Common::ABS(line.Width());
+    int yCount = Common::ABS(line.Height());
+
+    uint32_t color = SDL_MapRGBA(surface->format, cr, cg, cb, 255);
+
+    int stepAdd, stepOdd;
+    int steps, subSteps;
+
+    if ( xCount <= yCount )
+    {
+        if ( line.bottom <= line.top )
+            stepAdd = -rilWidth;
+        else
+            stepAdd = rilWidth;
+
+        if ( line.right <= line.left )
+            stepOdd = -1;
+        else
+            stepOdd = 1;
+
+        steps = yCount;
+        subSteps = xCount;
+    }
+    else
+    {
+        if ( line.right <= line.left )
+            stepAdd = -1;
+        else
+            stepAdd = 1;
+
+        if ( line.bottom <= line.top )
+            stepOdd = -rilWidth;
+        else
+            stepOdd = rilWidth;
+        
+        steps = xCount;
+        subSteps = yCount;
+    }
+
+    int incr1 = 2 * subSteps;
+    int t = 2 * subSteps - steps;
+    int incr2 = 2 * (subSteps - steps);
+    
+    SDL_LockSurface(surface);
+    
+    void *surfPos = (void *) ((uint8_t *) surface->pixels 
+                    + line.top * surface->pitch 
+                    + line.left * surface->format->BytesPerPixel );
+
+    switch(surface->format->BytesPerPixel)
+    {
+        case 1:
+        {
+            uint8_t *surf = (uint8_t *)surfPos;
+
+            for (int i = 0; i <= steps; i++) // Verify i bound
+            {
+                *surf = color;
+                if ( t > 0 )
+                {
+                    t += incr2;
+                    surf += stepOdd;
+                }
+                else
+                    t += incr1;
+
+                surf += stepAdd;
+            }
+        }
+        break;
+        
+        case 2:
+        {
+            uint16_t *surf = (uint16_t *)surfPos;
+
+            for (int i = 0; i <= steps; i++) // Verify i bound
+            {
+                *surf = color;
+                if ( t > 0 )
+                {
+                    t += incr2;
+                    surf += stepOdd;
+                }
+                else
+                    t += incr1;
+
+                surf += stepAdd;
+            }
+        }
+        break;
+        
+        case 4:
+        {
+            uint32_t *surf = (uint32_t *)surfPos;
+
+            for (int i = 0; i <= steps; i++) // Verify i bound
+            {
+                *surf = color;
+                if ( t > 0 )
+                {
+                    t += incr2;
+                    surf += stepOdd;
+                }
+                else
+                    t += incr1;
+
+                surf += stepAdd;
+            }
+        }
+        break;
+        
+        default:
+        break;
+    }
+    
+    SDL_UnlockSurface(surface);
+}
+
+void BlitScaleMasked(SDL_Surface *src, Common::Rect sRect, SDL_Surface *mask, uint8_t index, SDL_Surface *dst, Common::Rect dRect)
+{
+    if (mask->format->BitsPerPixel != 8)
+        return;
+        
+    if (src->w != mask->w || src->h != mask->h)
+        return;
+    
+    if (sRect.IsEmpty() || !sRect.IsValid())
+        sRect = Common::Rect(src->w, src->h);
+    else if (!Common::Rect(src->w, src->h).IsIn(sRect))
+        return;
+    
+    if (dRect.IsEmpty() || !dRect.IsValid())
+        dRect = Common::Rect(dst->w, dst->h);
+    else if (!Common::Rect(dst->w, dst->h).IsIn(dRect))
+        return;
+    
+    // Try fast
+    if (src->format->format == dst->format->format)
+    {
+        switch(src->format->BytesPerPixel)
+        {
+            case 2:
+            {
+                SDL_LockSurface(src);
+                SDL_LockSurface(mask);
+                SDL_LockSurface(dst);
+                
+                int32_t dY = (sRect.Height() << 16) / dRect.Height();
+                int32_t dX = (sRect.Width()  << 16) / dRect.Width();
+                
+                int32_t srcY  = sRect.top << 16;
+                for (int y = dRect.top; y < dRect.bottom; y++)
+                {
+                    uint16_t *dBuf = (uint16_t *)((uint8_t *)dst->pixels + y * dst->pitch) + dRect.left;
+                    uint16_t *sBuf = (uint16_t *)((uint8_t *)src->pixels + (srcY >> 16) * src->pitch) + sRect.left;
+                    uint8_t  *mBuf = (uint8_t *)mask->pixels + (srcY >> 16) * mask->pitch + sRect.left;
+                    
+                    int32_t xx = 0;
+                    for (int x = dRect.left; x < dRect.right; x++)
+                    {
+                        if (mBuf[xx >> 16] == index)
+                            *dBuf = sBuf[xx >> 16];
+                        dBuf++;
+                        xx += dX;
+                    }
+                    srcY += dY;
+                }
+                
+                SDL_UnlockSurface(dst);
+                SDL_UnlockSurface(mask);
+                SDL_UnlockSurface(src);
+            }
+            break;
+            
+            case 4:
+            {
+                SDL_LockSurface(src);
+                SDL_LockSurface(mask);
+                SDL_LockSurface(dst);
+                
+                int32_t dY = (sRect.Height() << 16) / dRect.Height();
+                int32_t dX = (sRect.Width()  << 16) / dRect.Width();
+                
+                int32_t srcY  = sRect.top << 16;
+                for (int y = dRect.top; y < dRect.bottom; y++)
+                {
+                    uint32_t *dBuf = (uint32_t *)((uint8_t *)dst->pixels + y * dst->pitch) + dRect.left;
+                    uint32_t *sBuf = (uint32_t *)((uint8_t *)src->pixels + (srcY >> 16) * src->pitch) + sRect.left;
+                    uint8_t  *mBuf = (uint8_t *)mask->pixels + (srcY >> 16) * mask->pitch + sRect.left;
+                    
+                    int32_t xx = 0;
+                    for (int x = dRect.left; x < dRect.right; x++)
+                    {
+                        if (mBuf[xx >> 16] == index)
+                            *dBuf = sBuf[xx >> 16];
+                        dBuf++;
+                        xx += dX;
+                    }
+                    srcY += dY;
+                }
+                
+                SDL_UnlockSurface(dst);
+                SDL_UnlockSurface(mask);
+                SDL_UnlockSurface(src);
+            }
+            break;
+            
+            default:
+            break;
+        }
+    }
+    else // Slow
+    {
+        SDL_LockSurface(src);
+        SDL_LockSurface(mask);
+        SDL_LockSurface(dst);
+
+        uint8_t sbpp = src->format->BytesPerPixel;
+        uint8_t dbpp = dst->format->BytesPerPixel;
+        
+        int32_t dY = (sRect.Height() << 16) / dRect.Height();
+        int32_t dX = (sRect.Width()  << 16) / dRect.Width();
+
+        int32_t srcY  = sRect.top << 16;
+        for (int y = dRect.top; y < dRect.bottom; y++)
+        {
+            uint8_t *dBuf = (uint8_t *)dst->pixels + y * dst->pitch + dRect.left * dbpp;
+            uint8_t *sBuf = (uint8_t *)src->pixels + (srcY >> 16) * src->pitch + sRect.left * sbpp;
+            uint8_t  *mBuf = (uint8_t *)mask->pixels + (srcY >> 16) * mask->pitch + sRect.left;
+
+            int32_t xx = 0;
+            for (int x = dRect.left; x < dRect.right; x++)
+            {
+                if (mBuf[xx >> 16] == index)
+                {
+                    uint8_t r,g,b;
+                    uint32_t clr = 0;
+                    
+                    uint8_t *spix = sBuf + (xx >> 16) * sbpp;
+                    for(int i = 0; i < sbpp; i++)
+                        clr |= spix[i] << (i * 8);
+                    
+                    SDL_GetRGB(clr, src->format, &r, &g, &b);
+                    clr = SDL_MapRGB(dst->format, r, g, b);
+                    
+                    for(int i = 0; i < dbpp; i++)
+                        dBuf[i] = (clr >> (i * 8)) & 0xFF;
+                }
+                dBuf += dbpp;
+                xx += dX;
+            }
+            srcY += dY;
+        }
+
+        SDL_UnlockSurface(dst);
+        SDL_UnlockSurface(mask);
+        SDL_UnlockSurface(src);
+    }
+}
+
+void DrawFill(SDL_Surface *src, const Common::Rect &sRect, SDL_Surface *dst, const Common::Rect &dRect)
+{
+    if (sRect.IsEmpty() || dRect.IsEmpty())
+        return;
+    
+    SDL_Rect lsrc = sRect;
+    SDL_Rect ldst;
+    
+    for(ldst.y = dRect.top; ldst.y < dRect.bottom; ldst.y += lsrc.h)
+    {
+        if (dRect.bottom - ldst.y < lsrc.h)
+            lsrc.h = dRect.bottom - ldst.y;
+        
+        lsrc.w = sRect.Width();
+        
+        for(ldst.x = dRect.left; ldst.x < dRect.right; ldst.x += lsrc.w)
+        {
+            if (dRect.right - ldst.x < lsrc.w)
+                lsrc.w = dRect.right - ldst.x;
+            
+            SDL_BlitSurface(src, &lsrc, dst, &ldst);
+        }
+    }
+}
+
 }

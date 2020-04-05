@@ -2,59 +2,62 @@
 #define ENGINE_GFX_H_INCLUDED
 
 #include <inttypes.h>
+#include <array>
 #include "wrapSDL.h"
 #include "engine_tform.h"
+#include "nucleas.h"
 
 #define GFX_MAX_VERTEX 12
 
 class NC_STACK_win3d;
 class NC_STACK_bitmap;
 
-struct tile_xy
-{
-    int byteoff;
-    int width;
-};
+typedef std::array<SDL_Color, 256> UA_PALETTE;
 
-struct UA_PALETTE
-{
-    SDL_Color pal_entries[256];
-};
-
-struct bitmap_intern
-{
-    void *buffer;
+struct ResBitmap
+{    
     int16_t width;
     int16_t height;
-    int16_t pitch;
-    UA_PALETTE *pallete;
-    uint32_t flags;
+    UA_PALETTE *palette;
     SDL_Surface *swTex;
     GLuint hwTex;
+    
+    ResBitmap()
+    {
+        width = 0;
+        height = 0;
+        palette = NULL;
+        swTex = NULL;
+        hwTex = 0;
+    }
 };
 
-struct tiles_stru
+struct TileMap
 {
-    NC_STACK_bitmap *font_image;
-    bitmap_intern *field_4;
-    void  *field_8;
-    tile_xy *chars;
-    int font_height;
-    int field_12;
-    int field_14;
-};
-
-
-struct rstr_207_arg
-{
-    tiles_stru *tiles;
-    int id;
+    NC_STACK_bitmap *img;
+    std::array<Common::PointRect, 256> map;
+    int h;
+    
+    TileMap();  
+    ~TileMap();
+    
+    void Draw(SDL_Surface *surface, const Common::Point &pos, uint8_t c);
+    void Draw(SDL_Surface *surface, const Common::PointRect &posRect, uint8_t c);
+    void Draw(SDL_Surface *surface, const Common::Rect &posRect, uint8_t c);
+    
+    void Fill(SDL_Surface *surface, const Common::Rect &rect, uint8_t c);
+    void Fill(SDL_Surface *surface, const Common::PointRect &rect, uint8_t c);
+    
+    int GetWidth(uint8_t c) const;
+    Common::Point GetSize(uint8_t c) const;
 };
 
 struct w3d_a209
 {
     char *cmdbuf;
     char **includ;
+
+    w3d_a209() : cmdbuf(NULL), includ(NULL) {};
 };
 
 struct tUtV
@@ -74,7 +77,7 @@ struct polysDatSub
     float g;
     float b;
     float distance[GFX_MAX_VERTEX];
-    bitmap_intern *pbitm;
+    ResBitmap *pbitm;
 };
 
 
@@ -89,13 +92,13 @@ public:
     NC_STACK_win3d *getC3D();
 
     void setResolution(int res);
-    void setTracyRmp(bitmap_intern *rmp);
-    void setShadeRmp(bitmap_intern *rmp);
+    void setTracyRmp(ResBitmap *rmp);
+    void setShadeRmp(ResBitmap *rmp);
 
     int loadPal(const char *palette_ilbm);
 
-    void setTileset(tiles_stru *tileset, int id);
-    tiles_stru * getTileset(int id);
+    void setTileset(TileMap *tileset, int id);
+    TileMap * getTileset(int id);
     void drawText(w3d_a209 *arg);
 
     static void defRenderFunc(void *dat);

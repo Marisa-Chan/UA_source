@@ -13,6 +13,8 @@
 
 #include "font.h"
 
+#include "gui/root.h"
+
 struct gfxMode
 {
     int w;
@@ -27,7 +29,7 @@ struct gfxMode
 std::list<gfxMode *> graphicsModes;
 SDL_Cursor *cursors[11];
 
-const NewClassDescr NC_STACK_win3d::description("win3d.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_win3d::description("win3d.class", &newinstance);
 
 key_value_stru NC_STACK_win3d::win3d_keys[21] =
 {
@@ -46,7 +48,7 @@ key_value_stru NC_STACK_win3d::win3d_keys[21] =
     {"gfx.disable_lowres", KEY_TYPE_BOOL, 0},
     {"gfx.export_window_mode", KEY_TYPE_BOOL, 0},
     {"gfx.blending", KEY_TYPE_DIGIT, 0},
-    {"gfx.solidfont", KEY_TYPE_BOOL, true},          //15
+    {"gfx.solidfont", KEY_TYPE_BOOL, false},          //15
     {"gfx.vsync", KEY_TYPE_DIGIT, 1},
     {"gfx.maxfps", KEY_TYPE_DIGIT, 60},
     {"gfx.newsky", KEY_TYPE_BOOL, false},
@@ -166,10 +168,8 @@ __NC_STACK_win3d::__NC_STACK_win3d()
 {
     width = 0;
     height = 0;
-    surface_locked_surfaceData = NULL;
     screenSurface = NULL;
     currentCursor = 0;
-    surface_locked_pitch = 0;
     forcesoftcursor = 0;
     movie_player = 0;
     field_38 = 0;
@@ -197,7 +197,6 @@ __NC_STACK_win3d::__NC_STACK_win3d()
     colorkey = 0;
 
     pixfmt = NULL;
-    colorKey = 0;
     glPixfmt = 0;
     glPixtype = 0;
 
@@ -390,11 +389,6 @@ void NC_STACK_win3d::AddScreenText(const char *string, int p1, int p2, int p3, i
 
 void NC_STACK_win3d::DrawScreenText()
 {
-    int lkd = stack__win3d.screenSurface->locked;
-
-    if (lkd)
-        UnlockSurface();
-
     ScreenFont *font = &stack__win3d.font;
 
     font->r = 255;
@@ -408,9 +402,6 @@ void NC_STACK_win3d::DrawScreenText()
     }
 
     font->entries.clear();
-
-    if (lkd)
-        LockSurface();
 }
 
 int win3dInitialisation(__NC_STACK_win3d *w3d)
@@ -468,7 +459,6 @@ int NC_STACK_win3d::initPixelFormats()
     curr.format = SDLWRAP_CorrectFormat(curr.format);
 
     w3d->pixfmt = SDL_AllocFormat( curr.format );
-    w3d->colorKey = SDL_MapRGBA(w3d->pixfmt, 255, 255, 0, 255);
 
     SDLWRAP_GL_mapFormat(curr.format, &w3d->glPixfmt, &w3d->glPixtype);
 
@@ -614,7 +604,7 @@ SDL_Cursor *NC_STACK_win3d::wrapLoadCursor(const char *name)
 
     FSMgr::FileHandle *fil = uaOpenFile(cur.c_str(), "rb");
 
-    SDL_Color pal[256];
+    UA_PALETTE pal;
 
     if (!fil)
         return NULL;
@@ -791,6 +781,8 @@ int NC_STACK_win3d::load_font(const char *fontname)
     {
         if (!stack__win3d.solidFont)
             TTF_SetFontHinting(stack__win3d.font.ttfFont, TTF_HINTING_LIGHT);
+        else
+            TTF_SetFontHinting(stack__win3d.font.ttfFont, TTF_HINTING_MONO);
 
         return 1;
     }
@@ -800,7 +792,7 @@ int NC_STACK_win3d::load_font(const char *fontname)
     return 0;
 }
 
-size_t NC_STACK_win3d::windd_func0(IDVList *stak)
+size_t NC_STACK_win3d::windd_func0(IDVList &stak)
 {
     int txt16bit_def = read_yes_no_status("env/txt16bit.def", 1);
     int drawprim_def = read_yes_no_status("env/drawprim.def", 0);
@@ -826,7 +818,7 @@ size_t NC_STACK_win3d::windd_func0(IDVList *stak)
     }
 
 
-    int v7 = stak->Get(ATT_DISPLAY_ID, 0);
+    int v7 = stak.Get(ATT_DISPLAY_ID, 0);
 
     gfxMode *picked = NULL;
     if ( v7 )
@@ -851,8 +843,8 @@ size_t NC_STACK_win3d::windd_func0(IDVList *stak)
     log_d3dlog(" picked mode %s\n", picked->name.c_str());
 
 
-    stak->Add(ATT_WIDTH, picked->w);
-    stak->Add(ATT_HEIGHT, picked->h);
+    stak.Add(ATT_WIDTH, picked->w);
+    stak.Add(ATT_HEIGHT, picked->h);
 
     if ( !NC_STACK_display::func0(stak) )
         return 0;
@@ -889,6 +881,8 @@ size_t NC_STACK_win3d::windd_func0(IDVList *stak)
     SDL_Delay(250);
 
     SDLWRAP_resizeWindow(picked->w, picked->h);
+    
+    win3d->screenSurface = SDLWRAP::Screen();
 
     if (win3d_keys[16].value.val == 0)
     {
@@ -942,7 +936,7 @@ size_t NC_STACK_win3d::windd_func0(IDVList *stak)
 
 
 
-size_t NC_STACK_win3d::func0(IDVList *stak)
+size_t NC_STACK_win3d::func0(IDVList &stak)
 {
     get_keyvalue_from_ini(0, win3d_keys, 21);
 
@@ -1015,41 +1009,38 @@ size_t NC_STACK_win3d::func1()
     return NC_STACK_display::func1();
 }
 
-size_t NC_STACK_win3d::func2(IDVList *stak)
+size_t NC_STACK_win3d::func2(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case WDD_ATT_CURSOR:
-                    setWDD_cursor(val.value.i_data);
-                    break;
+            case WDD_ATT_CURSOR:
+                setWDD_cursor(val.value.i_data);
+                break;
 
-                case WDD_ATT_DIS_LOWRES:
-                    setWDD_disLowRes(val.value.i_data);
-                    break;
+            case WDD_ATT_DIS_LOWRES:
+                setWDD_disLowRes(val.value.i_data);
+                break;
 
-                case WDD_ATT_16BIT_TEX:
-                    setWDD_16bitTex(val.value.i_data);
-                    break;
+            case WDD_ATT_16BIT_TEX:
+                setWDD_16bitTex(val.value.i_data);
+                break;
 
-                case WDD_ATT_DRAW_PRIM:
-                    setWDD_drawPrim(val.value.i_data);
-                    break;
+            case WDD_ATT_DRAW_PRIM:
+                setWDD_drawPrim(val.value.i_data);
+                break;
 
-                case WDD_ATT_TEXFILT:
-                    setW3D_texFilt(val.value.i_data);
-                    break;
+            case WDD_ATT_TEXFILT:
+                setW3D_texFilt(val.value.i_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -1057,127 +1048,33 @@ size_t NC_STACK_win3d::func2(IDVList *stak)
     return NC_STACK_display::func2(stak);
 }
 
-size_t NC_STACK_win3d::func3(IDVList *stak)
+size_t NC_STACK_win3d::func3(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case ATT_DISPLAY_ID:
-                    *(int *)val.value.p_data = getDISP_displID();
-                    break;
-                case WDD_ATT_16BIT_TEX:
-                    *(int *)val.value.p_data = getWDD_16bitTex();
-                    break;
-                case WDD_ATT_DRAW_PRIM:
-                    *(int *)val.value.p_data = getWDD_drawPrim();
-                    break;
+            case ATT_DISPLAY_ID:
+                *(int *)val.value.p_data = getDISP_displID();
+                break;
+            case WDD_ATT_16BIT_TEX:
+                *(int *)val.value.p_data = getWDD_16bitTex();
+                break;
+            case WDD_ATT_DRAW_PRIM:
+                *(int *)val.value.p_data = getWDD_drawPrim();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
 
     return NC_STACK_display::func3(stak);
-}
-
-
-// Draw line
-void sub_43CD40(__NC_STACK_win3d *w3d, int x1, int y1, int x2, int y2, unsigned int r, unsigned int g, unsigned int b, int, int, int )
-{
-    if ( w3d->surface_locked_surfaceData )
-    {
-        int BytesPerColor = w3d->pixfmt->BytesPerPixel;
-
-        int rilWidth = w3d->surface_locked_pitch / (unsigned int)BytesPerColor;
-
-        int xCount = abs(x2 - x1);
-        int yCount = abs(y2 - y1);
-
-        uint32_t color = SDL_MapRGBA(w3d->pixfmt, r, g, b, 255);
-
-        int dy, dx;
-
-        if ( xCount <= yCount )
-        {
-            if ( y2 <= y1 )
-                dy = -rilWidth;
-            else
-                dy = rilWidth;
-
-            if ( x2 <= x1 )
-                dx = -1;
-            else
-                dx = 1;
-
-            int tmp = xCount;
-            xCount = yCount;
-            yCount = tmp;
-        }
-        else
-        {
-            if ( x2 <= x1 )
-                dy = -1;
-            else
-                dy = 1;
-
-            if ( y2 <= y1 )
-                dx = -rilWidth;
-            else
-                dx = rilWidth;
-        }
-
-        int v27 = 2 * yCount;
-        int v17 = 2 * yCount - xCount;
-        int v18 = 2 * (yCount - xCount);
-
-        if ( BytesPerColor == 2 )
-        {
-            uint16_t *surf = ((uint16_t *)w3d->surface_locked_surfaceData + rilWidth * y1 + x1);
-
-            for (int i = 0; i <= xCount; i++) // Verify i bound
-            {
-                *surf = color;
-                if ( v17 > 0 )
-                {
-                    v17 += v18;
-                    surf += dx;
-                }
-                else
-                {
-                    v17 += v27;
-                }
-                surf += dy;
-            }
-        }
-        else if ( BytesPerColor == 4 )
-        {
-            uint32_t *surf = ((uint32_t *)w3d->surface_locked_surfaceData + rilWidth * y1 + x1);
-
-            for (int i = 0; i <= xCount; i++) // Verify i bound
-            {
-                *surf = color;
-                if ( v17 > 0 )
-                {
-                    v17 += v18;
-                    surf += dx;
-                }
-                else
-                {
-                    v17 += v27;
-                }
-                surf += dy;
-            }
-        }
-    }
 }
 
 size_t NC_STACK_win3d::raster_func192(IDVPair *)
@@ -1188,7 +1085,6 @@ size_t NC_STACK_win3d::raster_func192(IDVPair *)
 size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
 {
     __NC_STACK_display *rstr = &stack__display;
-    __NC_STACK_win3d *w3d = &stack__win3d;
 
     float tX = rstr->field_554 - 1.0;
     float tY = rstr->field_558 - 1.0;
@@ -1198,14 +1094,11 @@ size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
     int x1 = (arg->x1 + 1.0) * tX;
     int x2 = (arg->x2 + 1.0) * tX;
 
-    sub_43CD40(w3d, x1, y1, x2, y2,
-               (rstr->field_4 >> 16) & 0xFF,
-               (rstr->field_4 >> 8) & 0xFF,
-               rstr->field_4 & 0xFF,
-               (rstr->field_8 >> 16) & 0xFF,
-               (rstr->field_8 >> 8) & 0xFF,
-               rstr->field_8 & 0xFF);
-
+    SDLWRAP::DrawLine(stack__win3d.screenSurface,
+                      Common::Rect(x1, y1, x2, y2),
+                      (rstr->field_4 >> 16) & 0xFF,
+                      (rstr->field_4 >> 8) & 0xFF,
+                      rstr->field_4 & 0xFF);
     return 1;
 }
 
@@ -1213,188 +1106,47 @@ size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
 size_t NC_STACK_win3d::raster_func199(w3d_func199arg *arg)
 {
     __NC_STACK_display *rstr = &stack__display;
-    __NC_STACK_win3d *w3d = &stack__win3d;
 
-    sub_43CD40(w3d,
-               rstr->field_54c + arg->x1,
-               rstr->field_550 + arg->y1,
-               rstr->field_54c + arg->x2,
-               rstr->field_550 + arg->y2,
-               (rstr->field_4 >> 16) & 0xFF,
-               (rstr->field_4 >> 8) & 0xFF,
-               rstr->field_4 & 0xFF,
-               (rstr->field_8 >> 16) & 0xFF,
-               (rstr->field_8 >> 8) & 0xFF,
-               rstr->field_8 & 0xFF);
+    SDLWRAP::DrawLine(stack__win3d.screenSurface,
+                      Common::Rect(rstr->field_54c + arg->x1, rstr->field_550 + arg->y1,
+                                   rstr->field_54c + arg->x2, rstr->field_550 + arg->y2),
+                      (rstr->field_4 >> 16) & 0xFF,
+                      (rstr->field_4 >> 8) & 0xFF,
+                      rstr->field_4 & 0xFF);
 
     return 1;
 }
 
-int sub_420C74(ua_dRect *a1, ua_dRect *inout)
+void NC_STACK_win3d::sub_420EDC(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b)
 {
-    int flag1 = 0;
+    Common::Rect tmp1(x1, y1, x2, y2);
 
-    if ( inout->y1 > a1->y2 )
-        flag1 = 8;
-    else if ( inout->y1 < a1->y1 )
-        flag1 = 4;
-
-    if ( inout->x1 > a1->x2 )
-        flag1 |= 2;
-    else if ( inout->x1 < a1->x1 )
-        flag1 |= 1;
-
-    int flag2 = 0;
-
-    if ( inout->y2 > a1->y2 )
-        flag2 = 8;
-    else if (inout->y2 < a1->y1)
-        flag2 = 4;
-
-    if ( inout->x2 > a1->x2 )
-        flag2 |= 2;
-    else if ( inout->x2 < a1->x1 )
-        flag2 |= 1;
-
-    int loop = 1;
-    int v18 = 1;
-
-    int tmp_x1 = inout->x1;
-    int tmp_x2 = inout->x2;
-    int tmp_y1 = inout->y1;
-    int tmp_y2 = inout->y2;
-
-    while ( loop )
+    if ( Common::ClipLine(stack__display._clip, &tmp1) )
     {
-        if ( (flag2 | flag1) == 0 )
+        Common::Rect tmp2 = tmp1;
+        
+
+        if ( stack__display._inverseClip.IsEmpty() || !Common::ClipLine(stack__display._inverseClip, &tmp2) )
         {
-            loop = 0;
-            break;
-        }
-
-        if ( (flag2 & flag1) != 0 )
-        {
-            loop = 0;
-            v18 = -1;
-            break;
-        }
-
-        v18 = 0;
-
-        int flag;
-
-        if ( flag1 )
-            flag = flag1;
-        else
-            flag = flag2;
-
-        int dy = tmp_y2 - tmp_y1;
-        int dx = tmp_x2 - tmp_x1;
-
-        int vX = 0, vY = 0;
-
-        if ( flag & 4 )
-        {
-            vY = a1->y1;
-            vX = dx * (a1->y1 - tmp_y1) / dy + tmp_x1;
-        }
-        else if ( flag & 8 )
-        {
-            vY = a1->y2;
-            vX = dx * (a1->y2 - tmp_y1) / dy + tmp_x1;
-        }
-        else if ( flag & 1 )
-        {
-            vX = a1->x1;
-            vY = dy * (a1->x1 - tmp_x1) / (tmp_x2 - tmp_x1) + tmp_y1;
-        }
-        else if ( flag & 2 )
-        {
-            vX = a1->x2;
-            vY = dy * (a1->x2 - tmp_x1) / (tmp_x2 - tmp_x1) + tmp_y1;
-        }
-
-        if ( flag == flag1 )
-        {
-            tmp_y1 = vY;
-            tmp_x1 = vX;
+            SDLWRAP::DrawLine(stack__win3d.screenSurface, tmp1, r, g, b);
         }
         else
         {
-            tmp_y2 = vY;
-            tmp_x2 = vX;
-        }
-
-        int newFlag = 0;
-
-        if ( vY > a1->y2 )
-            newFlag = 8;
-        else if ( vY < a1->y1 )
-            newFlag = 4;
-
-        if ( vX > a1->x2 )
-            newFlag |= 2;
-        else if ( vX < a1->x1 )
-            newFlag |= 1;
-
-        if ( flag == flag1 )
-            flag1 = newFlag;
-        else
-            flag2 = newFlag;
-    }
-
-    if ( v18 == 0 )
-    {
-        inout->x1 = tmp_x1;
-        inout->y1 = tmp_y1;
-        inout->x2 = tmp_x2;
-        inout->y2 = tmp_y2;
-    }
-
-    return v18;
-}
-
-void sub_420EDC(__NC_STACK_display *rstr, __NC_STACK_win3d *w3d, int x1, int y1, int x2, int y2, int r, unsigned int g, unsigned int b, unsigned int a11, int a12, int a13)
-{
-    ua_dRect tmp1;
-
-    tmp1.x1 = x1;
-    tmp1.x2 = x2;
-    tmp1.y1 = y1;
-    tmp1.y2 = y2;
-
-    if ( sub_420C74(&rstr->field_24, &tmp1) != -1 )
-    {
-        ua_dRect tmp2 = tmp1;
-
-        int v14;
-
-        if ( rstr->field_38.x1 == rstr->field_38.x2 )
-            v14 = -1;
-        else
-            v14 = sub_420C74(&rstr->field_38, &tmp2);
-
-        if ( v14 == -1 )
-        {
-            sub_43CD40(w3d, tmp2.x1, tmp2.y1, tmp2.x2, tmp2.y2, r, g, b, a11, a12, a13);
-        }
-        else if ( !v14 )
-        {
-            if ( tmp2.x2 != tmp1.x2 || tmp2.y2 != tmp1.y2 )
+            if ( tmp2.right != tmp1.right || tmp2.bottom != tmp1.bottom )
             {
-                if ( tmp2.x1 != tmp1.x1 || tmp2.y1 != tmp1.y1 )
+                if ( tmp2.left != tmp1.left || tmp2.top != tmp1.top )
                 {
-                    sub_43CD40(w3d, tmp1.x1, tmp1.y1, tmp2.x1, tmp2.y1, r, g, b, a11, a12, a13);
-                    sub_43CD40(w3d, tmp2.x2, tmp2.y2, tmp1.x2, tmp1.y2, r, g, b, a11, a12, a13);
+                    SDLWRAP::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
+                    SDLWRAP::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
                 }
                 else
                 {
-                    sub_43CD40(w3d, tmp2.x2, tmp2.y2, tmp1.x2, tmp1.y2, r, g, b, a11, a12, a13);
+                    SDLWRAP::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
                 }
             }
             else
             {
-                sub_43CD40(w3d, tmp1.x1, tmp1.y1, tmp2.x1, tmp2.y1, r, g, b, a11, a12, a13);
+                SDLWRAP::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
             }
         }
     }
@@ -1403,7 +1155,6 @@ void sub_420EDC(__NC_STACK_display *rstr, __NC_STACK_win3d *w3d, int x1, int y1,
 size_t NC_STACK_win3d::raster_func200(w3d_func198arg *arg)
 {
     __NC_STACK_display *rstr = &stack__display;
-    __NC_STACK_win3d *w3d = &stack__win3d;
 
     float tX = rstr->field_554 - 1.0;
     float tY = rstr->field_558 - 1.0;
@@ -1413,13 +1164,10 @@ size_t NC_STACK_win3d::raster_func200(w3d_func198arg *arg)
     int x1 = (arg->x1 + 1.0) * tX;
     int x2 = (arg->x2 + 1.0) * tX;
 
-    sub_420EDC(rstr, w3d, x1, y1, x2, y2,
+    sub_420EDC (x1, y1, x2, y2,
                (rstr->field_4 >> 16) & 0xFF,
                (rstr->field_4 >> 8) & 0xFF,
-               rstr->field_4 & 0xFF,
-               (rstr->field_8 >> 16) & 0xFF,
-               (rstr->field_8 >> 8) & 0xFF,
-               rstr->field_8 & 0xFF);
+               rstr->field_4 & 0xFF);
 
     return 1;
 }
@@ -1427,88 +1175,23 @@ size_t NC_STACK_win3d::raster_func200(w3d_func198arg *arg)
 size_t NC_STACK_win3d::raster_func201(w3d_func199arg *arg)
 {
     __NC_STACK_display *rstr = &stack__display;
-    __NC_STACK_win3d *w3d = &stack__win3d;
 
-    sub_420EDC(rstr, w3d,
-               rstr->field_54c + arg->x1,
+    sub_420EDC(rstr->field_54c + arg->x1,
                rstr->field_550 + arg->y1,
                rstr->field_54c + arg->x2,
                rstr->field_550 + arg->y2,
                (rstr->field_4 >> 16) & 0xFF,
                (rstr->field_4 >> 8) & 0xFF,
-               rstr->field_4 & 0xFF,
-               (rstr->field_8 >> 16) & 0xFF,
-               (rstr->field_8 >> 8) & 0xFF,
-               rstr->field_8 & 0xFF);
+               rstr->field_4 & 0xFF);
 
     return 1;
-}
-
-void sub_43CEE0(__NC_STACK_win3d *w3d, void *srcBuf, int width, int a1, int a2, int a3, int a4, int x1, int y1, int x2, int y2)
-{
-    if ( w3d->surface_locked_surfaceData )
-    {
-        if (w3d->pixfmt->BytesPerPixel == 2)
-        {
-            uint16_t *dstSurf = (uint16_t *)w3d->surface_locked_surfaceData;
-            if ( x2 != x1 && y2 != y1 )
-            {
-                uint32_t v21 = a2 << 16;
-                for (int i = y1; i < y2; i++ )
-                {
-                    uint16_t *buf = &dstSurf[i * (w3d->surface_locked_pitch / w3d->pixfmt->BytesPerPixel)];
-
-                    uint32_t v13 = a1 << 16;
-                    if ( x1 < x2 )
-                    {
-                        uint16_t *cur = buf + x1;
-                        uint16_t *bend = buf + x2;
-                        while(cur < bend)
-                        {
-                            *cur = ((uint16_t *)srcBuf)[width * (v21 >> 16) + (v13 >> 16)];
-                            v13 += ((a3 - a1) << 16) / (x2 - x1);
-                            cur++;
-                        }
-                    }
-                    v21 += ((a4 - a2) << 16) / (y2 - y1);
-                }
-            }
-        }
-        else if (w3d->pixfmt->BytesPerPixel == 4)
-        {
-            uint32_t *dstSurf = (uint32_t *)w3d->surface_locked_surfaceData;
-            if ( x2 != x1 && y2 != y1 )
-            {
-                uint32_t v21 = a2 << 16;
-                for (int i = y1; i < y2; i++ )
-                {
-                    uint32_t *buf = &dstSurf[i * (w3d->surface_locked_pitch / w3d->pixfmt->BytesPerPixel)];
-
-                    uint32_t v13 = a1 << 16;
-                    if ( x1 < x2 )
-                    {
-                        uint32_t *cur = buf + x1;
-                        uint32_t *bend = buf + x2;
-                        while(cur < bend)
-                        {
-                            *cur =  ((uint32_t*)srcBuf)[width * (v21 >> 16) + (v13 >> 16)];
-                            v13 += ((a3 - a1) << 16) / (x2 - x1);
-                            cur++;
-                        }
-                    }
-                    v21 += ((a4 - a2) << 16) / (y2 - y1);
-                }
-            }
-        }
-    }
 }
 
 size_t NC_STACK_win3d::raster_func202(rstr_arg204 *arg)
 {
     __NC_STACK_display *rstr = &stack__display;
-    __NC_STACK_win3d *w3d = &stack__win3d;
 
-    bitmap_intern *pbitm = arg->pbitm;
+    ResBitmap *pbitm = arg->pbitm;
 
     int a1 = (arg->float4 + 1.0) * (arg->pbitm->width / 2);
     int a2 = (arg->float8 + 1.0) * (arg->pbitm->height / 2);
@@ -1519,19 +1202,28 @@ size_t NC_STACK_win3d::raster_func202(rstr_arg204 *arg)
     int a6 = rstr->field_558 * (arg->float18 + 1.0);
     int a7 = rstr->field_554 * (arg->float1C + 1.0);
     int a8 = rstr->field_558 * (arg->float20 + 1.0);
-
-    LockTexture(pbitm);
-
-    sub_43CEE0(w3d, (uint16_t *)pbitm->buffer, pbitm->width, a1, a2, a3, a4, a5, a6, a7, a8);
-
-    UnlockTexture(pbitm);
+    
+    SDL_Rect src;
+    src.x = a1;
+    src.y = a2;
+    src.w = a3 - a1;
+    src.h = a4 - a2;
+    
+    SDL_Rect dst;
+    dst.x = a5;
+    dst.y = a6;
+    dst.w = a7 - a5;
+    dst.h = a8 - a6;
+    
+    SDL_BlitScaled(pbitm->swTex, &src, stack__win3d.screenSurface, &dst);
+    
     return 1;
 }
 
 
 int win3d_func204__sub0(__NC_STACK_display *rstr, rstr_loc204 *arg)
 {
-    if ( rstr->field_24.x1 > arg->dword20 || rstr->field_24.x2 < arg->dword18 || rstr->field_24.y1 > arg->dword24 || rstr->field_24.y2 < arg->dword1C )
+    if ( rstr->_clip.left > arg->dword20 || rstr->_clip.right < arg->dword18 || rstr->_clip.top > arg->dword24 || rstr->_clip.bottom < arg->dword1C )
         return 0;
 
     int d04 = arg->dword4;
@@ -1545,28 +1237,28 @@ int win3d_func204__sub0(__NC_STACK_display *rstr, rstr_loc204 *arg)
     int d24 = arg->dword24;
 
 
-    if ( d18 < rstr->field_24.x1 )
+    if ( d18 < rstr->_clip.left )
     {
-        d04 += (rstr->field_24.x1 - d18) * (d0C - d04) / (d20 - d18);
-        d18 = rstr->field_24.x1;
+        d04 += (rstr->_clip.left - d18) * (d0C - d04) / (d20 - d18);
+        d18 = rstr->_clip.left;
     }
 
-    if ( d20 > rstr->field_24.x2 )
+    if ( d20 > rstr->_clip.right )
     {
-        d0C += (d0C - d04) * (rstr->field_24.x2 - d20) / (d20 - d18);
-        d20 = rstr->field_24.x2;
+        d0C += (rstr->_clip.right - d20) * (d0C - d04) / (d20 - d18);
+        d20 = rstr->_clip.right;
     }
 
-    if ( d1C < rstr->field_24.y1 )
+    if ( d1C < rstr->_clip.top )
     {
-        d08 += (d10 - d08) * (rstr->field_24.y1 - d1C) / (d24 - d1C);
-        d1C = rstr->field_24.y1;
+        d08 += (rstr->_clip.top - d1C) * (d10 - d08) / (d24 - d1C);
+        d1C = rstr->_clip.top;
     }
 
-    if ( d24 > rstr->field_24.y2 )
+    if ( d24 > rstr->_clip.bottom )
     {
-        d10 += (rstr->field_24.y2 - d24) * (d10 - d08) / (d24 - d1C);
-        d24 = rstr->field_24.y2;
+        d10 += (rstr->_clip.bottom - d24) * (d10 - d08) / (d24 - d1C);
+        d24 = rstr->_clip.bottom;
     }
 
     arg->dword4 = d04;
@@ -1603,11 +1295,19 @@ size_t NC_STACK_win3d::raster_func204(rstr_arg204 *arg)
 
     if ( win3d_func204__sub0(rstr, &loc) )
     {
-        LockTexture(loc.pbitm);
+        SDL_Rect src;
+        src.x = loc.dword4;
+        src.y = loc.dword8;
+        src.w = loc.dwordC - loc.dword4;
+        src.h = loc.dword10 - loc.dword8;
 
-        sub_43CEE0(w3d, (uint16_t *)loc.pbitm->buffer, loc.pbitm->width, loc.dword4, loc.dword8, loc.dwordC, loc.dword10, loc.dword18, loc.dword1C, loc.dword20, loc.dword24);
+        SDL_Rect dst;
+        dst.x = loc.dword18;
+        dst.y = loc.dword1C;
+        dst.w = loc.dword20 - loc.dword18;
+        dst.h = loc.dword24 - loc.dword1C;
 
-        UnlockTexture(loc.pbitm);
+        SDL_BlitScaled(loc.pbitm->swTex, &src, w3d->screenSurface, &dst);
     }
 
 
@@ -1948,333 +1648,278 @@ size_t NC_STACK_win3d::raster_func206(polysDat *arg)
     return 1;
 }
 
-void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char **arr)
+void NC_STACK_win3d::win3d_func209__sub0(TileMap **tiles, char *cmdline, char **arr)
 {
     __NC_STACK_win3d *w3d = &stack__win3d;
 
     int v11;
 
+    int bytesPerColor = w3d->screenSurface->format->BytesPerPixel;
 
-    if ( w3d->surface_locked_surfaceData )
+    char *curpos = cmdline;
+    int w_pixels = w3d->screenSurface->pitch / bytesPerColor;
+    TileMap *tile = NULL;
+
+    int x_out = 0;
+    int y_out = 0;
+
+    int x_out_txt = 0;
+    int y_out_txt = 0;
+    int txt_flag = 0;
+
+    int y_pos_line = 0;
+    int x_pos_line = 0;
+
+    int rilHeight, rilWidth;
+
+    if ( w3d->flags & 8 )
     {
-        int bytesPerColor = w3d->pixfmt->BytesPerPixel;
+        rilHeight = w3d->height / 2;
+        rilWidth = w3d->width / 2;
+    }
+    else
+    {
+        rilHeight = w3d->height;
+        rilWidth = w3d->width;
+    }
 
-        char *curpos = cmdline;
-        int w_pixels = w3d->surface_locked_pitch / bytesPerColor;
-        tiles_stru *tile = NULL;
+    int halfWidth = rilWidth / 2;
+    int halfHeight = rilHeight / 2;
+
+    int line_width = 0;
+    int line_height = 0;
+
+    //if v11 = 0 - clone first column of tile  (count = line_width)
+    //if v11 = 1 - normal copy of tile
+    v11 = 1;
 
 
-        int x_out = 0;
-        int y_out = 0;
-
-        int x_out_txt = 0;
-        int y_out_txt = 0;
-        int txt_flag = 0;
-
-        int y_pos_line = 0;
-        int x_pos_line = 0;
+    int x_off = 0;
+    int y_off = 0;
 
 
+    char *positions[64];
+    int position_idx = 0;
 
-        int rilHeight, rilWidth;
+    positions[position_idx] = NULL;
+    position_idx++;
 
-        if ( w3d->flags & 8 )
+    while ( 1 )
+    {
+        int v13 = FontUA::get_u8(&curpos);
+
+        if ( v13 )
         {
-            rilHeight = w3d->height / 2;
-            rilWidth = w3d->width / 2;
-        }
-        else
-        {
-            rilHeight = w3d->height;
-            rilWidth = w3d->width;
-        }
+            Common::PointRect &chrr = tile->map[v13];
 
-        int halfWidth = rilWidth / 2;
-        int halfHeight = rilHeight / 2;
+            int cpy_width;
 
-        int line_width = 0;
-        int line_height = 0;
+            if ( line_width )
+                cpy_width = line_width - x_off;
+            else
+                cpy_width = chrr.w - x_off;
 
-        //if v11 = 0 - clone first column of tile  (count = line_width)
-        //if v11 = 1 - normal copy of tile
-        v11 = 1;
+            int cpy_height = line_height - y_off;
 
-
-        int x_off = 0;
-        int y_off = 0;
-
-
-        char *positions[64];
-        int position_idx = 0;
-
-        positions[position_idx] = NULL;
-        position_idx++;
-
-        while ( 1 )
-        {
-            int v13 = FontUA::get_u8(&curpos);
-
-            if ( v13 )
+            SDL_Rect srcR, dstR;
+            dstR.x = x_out;
+            dstR.y = y_out;
+            dstR.w = cpy_width;
+            dstR.h = cpy_height;
+            
+            srcR.x = chrr.x + x_off;
+            srcR.y = chrr.y + y_off;
+            srcR.h = cpy_height;
+            
+            if (v11)
+                srcR.w = cpy_width;
+            else
+                srcR.w = 1;
+            
+            for(int i = 0; i < cpy_width; i += srcR.w)
             {
-                tile_xy *chrr = &tile->chars[v13];
+                SDL_BlitSurface(tile->img->GetSwTex(), &srcR, w3d->screenSurface, &dstR);
+                dstR.x += srcR.w;
+            }                
 
-                int cpy_width, src_width;
+            line_width = 0;
+            x_off = 0;
+            x_out += cpy_width;
+            v11 = 1;
+        }
+        else // 0
+        {
+            int opcode = FontUA::get_u8(&curpos);
 
-                if ( line_width )
-                    cpy_width = line_width - x_off;
-                else
-                    cpy_width = chrr->width - x_off;
+            switch ( opcode )
+            {
+            case 0: // End
+                position_idx--;
 
-                int cpy_height = line_height - y_off;
+                curpos = positions[position_idx];
+                if ( curpos )
+                    break;
 
-                if ( v11 )
-                    src_width = tile->field_4->width - cpy_width;
-                else
-                    src_width = tile->field_4->width;
+                DrawScreenText();
+                return;
 
-                LockTexture(tile->field_4);
+            case 1: // x pos from center
+                x_out = halfWidth + FontUA::get_s16(&curpos);
+                x_pos_line = x_out;
 
-                if (bytesPerColor == 2)
-                {
-                    uint16_t *srcpixel = (uint16_t *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
-                    uint16_t *dstpixel = (uint16_t *)w3d->surface_locked_surfaceData + w_pixels * y_out + x_out;
-                    uint16_t *maxdst = (uint16_t *)w3d->surface_locked_surfaceData + w_pixels * rilHeight;
+                y_pos_line = y_out;
+                y_off = 0;
 
-                    for (int j = cpy_height; j > 0; j--)
-                    {
-                        for (int i = cpy_width; i > 0; i--)
-                        {
-                            if (*srcpixel != w3d->colorKey)
-                                *dstpixel = *srcpixel;
+                line_height = tile->h;
+                break;
 
-                            srcpixel += v11;
-                            dstpixel++;
+            case 2: // y pos from center
+                y_out = halfHeight + FontUA::get_s16(&curpos);
+                x_pos_line = x_out;
 
-                            if (dstpixel >= maxdst)
-                                break;
-                        }
+                y_pos_line = y_out;
+                y_off = 0;
 
-                        srcpixel += src_width;
-                        dstpixel += (w_pixels - cpy_width);
+                line_height = tile->h;
+                break;
 
-                        if (dstpixel >= maxdst)
-                            break;
-                    }
+            case 3: //xpos
+                x_out = FontUA::get_s16(&curpos);
+                if ( x_out < 0 )
+                    x_out += w_pixels;
 
-                }
-                else if (bytesPerColor == 4)
-                {
-                    uint32_t *srcpixel = (uint32_t *)tile->field_4->buffer + chrr->byteoff + x_off + y_off * tile->field_4->width;
-                    uint32_t *dstpixel = (uint32_t *)w3d->surface_locked_surfaceData + w_pixels * y_out + x_out;
-                    uint32_t *maxdst = (uint32_t *)w3d->surface_locked_surfaceData + w_pixels * rilHeight;
+                x_pos_line = x_out;
+                y_pos_line = y_out;
 
-                    for (int j = cpy_height; j > 0; j--)
-                    {
-                        for (int i = cpy_width; i > 0; i--)
-                        {
-                            if (*srcpixel != w3d->colorKey)
-                                *dstpixel = *srcpixel;
+                line_height = tile->h;
+                y_off = 0;
+                break;
 
-                            srcpixel += v11;
-                            dstpixel++;
+            case 4: //ypos
+                y_out = FontUA::get_s16(&curpos);
+                if ( y_out < 0 )
+                    y_out += rilHeight;
 
-                            if (dstpixel >= maxdst)
-                                break;
-                        }
+                x_pos_line = x_out;
+                y_pos_line = y_out;
 
-                        srcpixel += src_width;
-                        dstpixel += (w_pixels - cpy_width);
+                line_height = tile->h;
+                y_off = 0;
+                break;
 
-                        if (dstpixel >= maxdst)
-                            break;
-                    }
-                }
-                else
-                {
-                    printf("win3d_func209__sub0, BytesPerPixel == %d\n", bytesPerColor);
-                }
+            case 5: //add to x pos
+                x_out += FontUA::get_s16(&curpos);
+                break;
 
-                UnlockTexture(tile->field_4);
+            case 6: //add to y pos
+                y_out += FontUA::get_s16(&curpos);
+                break;
 
-                line_width = 0;
-                x_off = 0;
-                x_out += cpy_width;
-                v11 = 1;
+            case 7: //next line
+                y_out = (line_height - y_off) + y_pos_line;
+                y_pos_line = y_out;
+                x_out = x_pos_line;
+
+                y_off = 0;
+                line_height = tile->h;
+                break;
+
+            case 8: // Select tileset
+                tile = tiles[FontUA::get_u8(&curpos)];
+                break;
+
+            case 9: // Include another cmdlist source
+            {
+                int azaza = FontUA::get_u8(&curpos);
+                positions[position_idx] = curpos;
+                position_idx++;
+                curpos = arr[azaza];
             }
-            else // 0
+            break;
+
+            case 10:
+                line_width = FontUA::get_u8(&curpos);
+
+                v11 = 0;
+                x_off = 0;
+
+                break;
+
+            case 11:
+
+                line_width = FontUA::get_u8(&curpos);
+
+                v11 = 0;
+                x_off = 0;
+
+                line_width -= (x_out - x_pos_line);
+                break;
+
+            case 12: // Set x offset
+                x_off = FontUA::get_u8(&curpos);
+                break;
+
+            case 13: // Set x width
+                line_width = FontUA::get_u8(&curpos);
+                break;
+
+            case 14: // Set y offset
+                y_off = FontUA::get_u8(&curpos);
+                break;
+
+            case 15: // Set y height
+                line_height = FontUA::get_u8(&curpos);
+                break;
+
+            case 16: // Full reset tileset
+                tile = tiles[FontUA::get_u8(&curpos)];
+                line_height = tile->h;
+                y_off = 0;
+                break;
+
+            case 17:
+                line_width = FontUA::get_s16(&curpos);
+                v11 = 0;
+                x_off = 0;
+                line_width -= (x_out - x_pos_line);
+                break;
+
+            case 18: // Add text
             {
-                int opcode = FontUA::get_u8(&curpos);
+                int block_width = FontUA::get_s16(&curpos);
+                int flag = txt_flag | FontUA::get_u16(&curpos);
 
-                switch ( opcode )
-                {
-                case 0: // End
-                    position_idx--;
+                char *txtpos = (char *)curpos;
 
-                    curpos = positions[position_idx];
-                    if ( curpos )
-                        break;
+                curpos += strlen(txtpos) + 1;
+                AddScreenText(txtpos, x_out_txt, y_out_txt, block_width, tile->h, flag);
+            }
+            break;
 
-                    DrawScreenText();
-                    return;
-
-                case 1: // x pos from center
-                    x_out = halfWidth + FontUA::get_s16(&curpos);
-                    x_pos_line = x_out;
-
-                    y_pos_line = y_out;
-                    y_off = 0;
-
-                    line_height = tile->font_height;
-                    break;
-
-                case 2: // y pos from center
-                    y_out = halfHeight + FontUA::get_s16(&curpos);
-                    x_pos_line = x_out;
-
-                    y_pos_line = y_out;
-                    y_off = 0;
-
-                    line_height = tile->font_height;
-                    break;
-
-                case 3: //xpos
-                    x_out = FontUA::get_s16(&curpos);
-                    if ( x_out < 0 )
-                        x_out += w_pixels;
-
-                    x_pos_line = x_out;
-                    y_pos_line = y_out;
-
-                    line_height = tile->font_height;
-                    y_off = 0;
-                    break;
-
-                case 4: //ypos
-                    y_out = FontUA::get_s16(&curpos);
-                    if ( y_out < 0 )
-                        y_out += rilHeight;
-
-                    x_pos_line = x_out;
-                    y_pos_line = y_out;
-
-                    line_height = tile->font_height;
-                    y_off = 0;
-                    break;
-
-                case 5: //add to x pos
-                    x_out += FontUA::get_s16(&curpos);
-                    break;
-
-                case 6: //add to y pos
-                    y_out += FontUA::get_s16(&curpos);
-                    break;
-
-                case 7: //next line
-                    y_out = (line_height - y_off) + y_pos_line;
-                    y_pos_line = y_out;
-                    x_out = x_pos_line;
-
-                    y_off = 0;
-                    line_height = tile->font_height;
-                    break;
-
-                case 8: // Select tileset
-                    tile = tiles[FontUA::get_u8(&curpos)];
-                    break;
-
-                case 9: // Include another cmdlist source
-                {
-                    int azaza = FontUA::get_u8(&curpos);
-                    positions[position_idx] = curpos;
-                    position_idx++;
-                    curpos = arr[azaza];
-                }
+            case 19: // Copy current x/y pos for text output
+                x_out_txt = x_out;
+                y_out_txt = y_out;
                 break;
 
-                case 10:
-                    line_width = FontUA::get_u8(&curpos);
-
-                    v11 = 0;
-                    x_off = 0;
-
-                    break;
-
-                case 11:
-
-                    line_width = FontUA::get_u8(&curpos);
-
-                    v11 = 0;
-                    x_off = 0;
-
-                    line_width -= (x_out - x_pos_line);
-                    break;
-
-                case 12: // Set x offset
-                    x_off = FontUA::get_u8(&curpos);
-                    break;
-
-                case 13: // Set x width
-                    line_width = FontUA::get_u8(&curpos);
-                    break;
-
-                case 14: // Set y offset
-                    y_off = FontUA::get_u8(&curpos);
-                    break;
-
-                case 15: // Set y height
-                    line_height = FontUA::get_u8(&curpos);
-                    break;
-
-                case 16: // Full reset tileset
-                    tile = tiles[FontUA::get_u8(&curpos)];
-                    line_height = tile->font_height;
-                    y_off = 0;
-                    break;
-
-                case 17:
-                    line_width = FontUA::get_s16(&curpos);
-                    v11 = 0;
-                    x_off = 0;
-                    line_width -= (x_out - x_pos_line);
-                    break;
-
-                case 18: // Add text
-                {
-                    int block_width = FontUA::get_s16(&curpos);
-                    int flag = txt_flag | FontUA::get_u16(&curpos);
-
-                    char *txtpos = (char *)curpos;
-
-                    curpos += strlen(txtpos) + 1;
-                    AddScreenText(txtpos, x_out_txt, y_out_txt, block_width, tile->font_height, flag);
-                }
+            case 20: // Add txtout flag
+                txt_flag |= FontUA::get_u16(&curpos);
                 break;
 
-                case 19: // Copy current x/y pos for text output
-                    x_out_txt = x_out;
-                    y_out_txt = y_out;
-                    break;
-
-                case 20: // Add txtout flag
-                    txt_flag |= FontUA::get_u16(&curpos);
-                    break;
-
-                case 21: // Delete txtout flag
-                    txt_flag &= ~(FontUA::get_u16(&curpos));
-                    break;
-
-                case 22: // set color for font
-                {
-                    int r = FontUA::get_u16(&curpos);
-
-                    int g = FontUA::get_u16(&curpos);
-
-                    int b = FontUA::get_u16(&curpos);
-
-                    AddScreenText(0, r, g, b, 0, 0x20);
-                }
+            case 21: // Delete txtout flag
+                txt_flag &= ~(FontUA::get_u16(&curpos));
                 break;
-                }
+
+            case 22: // set color for font
+            {
+                int r = FontUA::get_u16(&curpos);
+
+                int g = FontUA::get_u16(&curpos);
+
+                int b = FontUA::get_u16(&curpos);
+
+                AddScreenText(0, r, g, b, 0, 0x20);
+            }
+            break;
             }
         }
     }
@@ -2282,7 +1927,7 @@ void NC_STACK_win3d::win3d_func209__sub0(tiles_stru **tiles, char *cmdline, char
 
 void NC_STACK_win3d::raster_func209(w3d_a209 *arg)
 {
-    win3d_func209__sub0(stack__display.tiles, arg->cmdbuf, arg->includ);
+    win3d_func209__sub0(stack__display.tiles.data(), arg->cmdbuf, arg->includ);
 }
 
 
@@ -2329,130 +1974,21 @@ void NC_STACK_win3d::EndScene()
     stack__win3d.sceneBeginned = 0;
 }
 
-void NC_STACK_win3d::LockSurface()
-{
-    stack__win3d.screenSurface = SDLWRAP_getScreenSurface();
-
-    SDL_LockSurface(stack__win3d.screenSurface);
-
-    stack__win3d.surface_locked_surfaceData = stack__win3d.screenSurface->pixels;
-    stack__win3d.surface_locked_pitch = stack__win3d.screenSurface->pitch;
-}
-
-void NC_STACK_win3d::UnlockSurface()
-{
-    if ( stack__win3d.surface_locked_surfaceData )
-    {
-        SDL_UnlockSurface(stack__win3d.screenSurface);
-
-        stack__win3d.surface_locked_surfaceData = NULL;
-        stack__win3d.surface_locked_pitch = 0;
-    }
-}
-
-
-
-
-void win3d_func218__sub0(__NC_STACK_win3d *w3d, void *buf1, int width, uint8_t *buf2, int elmnt, ua_dRect rect, ua_dRect rect2)
-{
-    if ( w3d->surface_locked_surfaceData )
-    {
-        if (w3d->pixfmt->BytesPerPixel == 2)
-        {
-            uint16_t *locked = (uint16_t *)w3d->surface_locked_surfaceData;
-
-            int wdth = w3d->surface_locked_pitch / w3d->pixfmt->BytesPerPixel;
-
-
-            if ( rect2.x2 != rect2.x1 && rect2.y2 != rect2.y1 )
-            {
-                int v15 = rect.y1 << 16;
-
-                uint16_t *lkdLine = &locked[wdth * rect2.y1];
-
-                for (int i = rect2.y1; i < rect2.y2; i++)
-                {
-                    uint16_t *bf = (uint16_t *)buf1;
-                    uint16_t *bf1line = &bf[width * (v15 >> 16)];
-                    uint8_t *bf2line = &buf2[width * (v15 >> 16)];
-
-                    int v13 = rect.x1 << 16;
-
-                    uint16_t *lkdPos = &lkdLine[rect2.x1];
-                    for (int j = rect2.x1; j < rect2.x2; j++)
-                    {
-                        if (bf2line[v13 >> 16] == elmnt)
-                            *lkdPos = bf1line[v13 >> 16];
-                        lkdPos++;
-                        v13 += ((rect.x2 - rect.x1) << 16) / (rect2.x2 - rect2.x1);
-                    }
-
-
-                    lkdLine += wdth;
-                    v15 += ((rect.y2 - rect.y1) << 16) / (rect2.y2 - rect2.y1);
-                }
-            }
-        }
-        else if (w3d->pixfmt->BytesPerPixel == 4)
-        {
-            uint32_t *locked = (uint32_t *)w3d->surface_locked_surfaceData;
-
-            int wdth = w3d->surface_locked_pitch / w3d->pixfmt->BytesPerPixel;
-
-
-            if ( rect2.x2 != rect2.x1 && rect2.y2 != rect2.y1 )
-            {
-                int v15 = rect.y1 << 16;
-
-                uint32_t *lkdLine = &locked[wdth * rect2.y1];
-
-                for (int i = rect2.y1; i < rect2.y2; i++)
-                {
-                    uint32_t *bf = (uint32_t *)buf1;
-                    uint32_t *bf1line = &bf[width * (v15 >> 16)];
-                    uint8_t *bf2line = &buf2[width * (v15 >> 16)];
-
-                    int v13 = rect.x1 << 16;
-
-                    uint32_t *lkdPos = &lkdLine[rect2.x1];
-                    for (int j = rect2.x1; j < rect2.x2; j++)
-                    {
-                        if (bf2line[v13 >> 16] == elmnt)
-                            *lkdPos = bf1line[v13 >> 16];
-                        lkdPos++;
-                        v13 += ((rect.x2 - rect.x1) << 16) / (rect2.x2 - rect2.x1);
-                    }
-
-
-                    lkdLine += wdth;
-                    v15 += ((rect.y2 - rect.y1) << 16) / (rect2.y2 - rect2.y1);
-                }
-            }
-        }
-    }
-}
-
-
 void NC_STACK_win3d::raster_func218(rstr_218_arg *arg)
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
     __NC_STACK_display *rstr = &stack__display;
 
-    ua_dRect rect1, rect2;
+    Common::Rect sRect( (arg->rect1.x1 + 1.0) * (arg->bitm_intern->width / 2),
+                        (arg->rect1.y1 + 1.0) * (arg->bitm_intern->height / 2),
+                        (arg->rect1.x2 + 1.0) * (arg->bitm_intern->width / 2),
+                        (arg->rect1.y2 + 1.0) * (arg->bitm_intern->height / 2) );
 
-    rect1.x1 = (arg->rect1.x1 + 1.0) * (arg->bitm_intern->width / 2);
-    rect1.y1 = (arg->rect1.y1 + 1.0) * (arg->bitm_intern->height / 2);
-    rect1.x2 = (arg->rect1.x2 + 1.0) * (arg->bitm_intern->width / 2);
-    rect1.y2 = (arg->rect1.y2 + 1.0) * (arg->bitm_intern->height / 2);
+    Common::Rect dRect( (arg->rect2.x1 + 1.0) * rstr->field_554,
+                        (arg->rect2.y1 + 1.0) * rstr->field_558,
+                        (arg->rect2.x2 + 1.0) * rstr->field_554,
+                        (arg->rect2.y2 + 1.0) * rstr->field_558 );
 
-    rect2.x1 = (arg->rect2.x1 + 1.0) * rstr->field_554;
-    rect2.y1 = (arg->rect2.y1 + 1.0) * rstr->field_558;
-    rect2.x2 = (arg->rect2.x2 + 1.0) * rstr->field_554;
-    rect2.y2 = (arg->rect2.y2 + 1.0) * rstr->field_558;
-
-    LockTexture(arg->bitm_intern);
-    win3d_func218__sub0(w3d, (uint16_t *)arg->bitm_intern->buffer, arg->bitm_intern->width, (uint8_t *)arg->bitm_intern2->buffer, arg->flg, rect1, rect2);
-    UnlockTexture(arg->bitm_intern);
+    SDLWRAP::BlitScaleMasked(arg->bitm_intern->swTex, sRect, arg->bitm_intern2->swTex, arg->flg, stack__win3d.screenSurface, dRect);
 }
 
 size_t NC_STACK_win3d::display_func256(windd_arg256 *inout)
@@ -2503,11 +2039,6 @@ void NC_STACK_win3d::BeginFrame()
 {
     __NC_STACK_win3d *w3d = &stack__win3d;
 
-    w3d->screenSurface = SDLWRAP_getScreenSurface();
-
-    w3d->surface_locked_pitch = 0;
-    w3d->surface_locked_surfaceData = NULL;
-
     SDL_FillRect(w3d->screenSurface, NULL, SDL_MapRGBA(w3d->screenSurface->format, 0, 0, 0, 0) );
 
     glPushAttrib(GL_DEPTH_WRITEMASK);
@@ -2521,13 +2052,11 @@ void NC_STACK_win3d::BeginFrame()
 
 void NC_STACK_win3d::EndFrame()
 {
+    Gui::Root::Instance.Draw(SDLWRAP::Screen());
+    SDLWRAP_drawScreen();
+    Gui::Root::Instance.HwCompose();
+    
     SDLWRAP_flipWindow();
-}
-
-
-void NC_STACK_win3d::display_func261(rstr_261_arg *arg)
-{
-    NC_STACK_display::display_func261(arg);
 }
 
 
@@ -2588,242 +2117,56 @@ void NC_STACK_win3d::display_func263(displ_arg263 *arg)
     NC_STACK_display::display_func263(arg);
 }
 
-bool NC_STACK_win3d::AllocTexture(bitmap_intern *bitm)
+bool NC_STACK_win3d::AllocTexture(ResBitmap *bitm)
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
-    if (bitm->flags & BITMAP_FLAG_TEXTURE)
+    if (bitm->swTex && !bitm->hwTex)
     {
-        if (bitm->swTex)
-            return false;
+        glPushAttrib(GL_TEXTURE_2D | GL_TEXTURE_BINDING_2D);
 
-#if SDL_VERSION_ATLEAST(2,0,5)
-        bitm->swTex = SDL_CreateRGBSurfaceWithFormat(0, bitm->width, bitm->height, w3d->pixfmt->BitsPerPixel, w3d->pixfmt->format);
-#else
-        bitm->swTex = SDL_CreateRGBSurface(0, bitm->width, bitm->height, w3d->pixfmt->BitsPerPixel, w3d->pixfmt->Rmask, w3d->pixfmt->Gmask, w3d->pixfmt->Bmask, w3d->pixfmt->Amask );
-#endif
+        glGenTextures(1, &bitm->hwTex);
 
-        if (!bitm->swTex)
-            return false;
-
-        bitm->pitch = bitm->swTex->pitch;
-
-        if ( !(bitm->flags & BITMAP_FLAG_SYSMEM) )
+        if (!bitm->hwTex)
         {
-            if (bitm->hwTex)
-                return false;
-
-            glPushAttrib(GL_TEXTURE_2D | GL_TEXTURE_BINDING_2D);
-
-            glGenTextures(1, &bitm->hwTex);
-
-            if (!bitm->hwTex)
-            {
-                glPopAttrib();
-                return false;
-            }
-
-            glBindTexture(GL_TEXTURE_2D, bitm->hwTex);
-
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, w3d->glPixfmt, w3d->glPixtype, bitm->swTex->pixels);
-
             glPopAttrib();
+            return false;
         }
-    }
 
-    return true;
-}
+        glBindTexture(GL_TEXTURE_2D, bitm->hwTex);
 
-void NC_STACK_win3d::TextureApplyPalette(bitmap_intern *bitm)
-{
-    if ( !(bitm->flags & BITMAP_FLAG_TEXTURE) )
-        return;
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    int BytesPerColor = stack__win3d.pixfmt->BytesPerPixel;
-
-    if ( BytesPerColor == 1 )
-        return;
-
-    uint32_t tmpPal[256];
-
-    for (int i = 0; i < 256; i++)
-    {
-        int r,g,b,a;
-        a = 255;
-
-        if ( bitm->pallete )
+        if (bitm->swTex->format->format == stack__win3d.pixfmt->format)
         {
-            r = bitm->pallete->pal_entries[i].r;
-            g = bitm->pallete->pal_entries[i].g;
-            b = bitm->pallete->pal_entries[i].b;
+            SDL_LockSurface(bitm->swTex);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, stack__win3d.glPixfmt, stack__win3d.glPixtype, bitm->swTex->pixels);
+            SDL_UnlockSurface(bitm->swTex);
         }
         else
         {
-            r = stack__display.palette.pal_entries[i].r;
-            g = stack__display.palette.pal_entries[i].g;
-            b = stack__display.palette.pal_entries[i].b;
+            SDL_Surface *conv = SDL_ConvertSurface(bitm->swTex, stack__win3d.pixfmt, 0);
+            
+            SDL_LockSurface(conv);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, stack__win3d.glPixfmt, stack__win3d.glPixtype, bitm->swTex->pixels);
+            SDL_UnlockSurface(conv);
+            
+            SDL_FreeSurface(conv);
         }
-
-        // If surface hardware
-        if ( !(bitm->flags & BITMAP_FLAG_SYSMEM) )
-        {
-            if (r == 255 && g == 255 && b == 0)
-            {
-                a = 0;
-                r = 0;
-                g = 0;
-                b = 0;
-            }
-            else
-            {
-                if (!can_destblend && can_srcblend && (bitm->flags & BITMAP_FLAG_TRANSP))
-                {
-                    int mx = (r >= g) ? (r > b ? r: b) : (g > b ? g : b);
-
-                    if (mx <= 8)
-                    {
-                        r = 0;
-                        g = 0;
-                        b = 0;
-                        a = 0;
-                    }
-                    else
-                    {
-                        float prm = mx;
-                        r = 255.0 * (r / prm);
-                        g = 255.0 * (g / prm);
-                        b = 255.0 * (b / prm);
-                        a = mx;
-                    }
-                }
-                else
-                {
-                    a = 255;
-                }
-            }
-        }
-
-        tmpPal[i] = SDL_MapRGBA(stack__win3d.pixfmt, r, g, b, a);
+        
+        glPopAttrib();
     }
-
-    bool lockd = bitm->flags & BITMAP_FLAG_LOCKED;
-
-    if (!lockd)
-        LockTexture(bitm);
-
-    if (BytesPerColor == 2)
-    {
-        uint8_t *indexes = (uint8_t *)bitm->swTex->pixels + (bitm->swTex->w * bitm->swTex->h) - 1;
-        uint16_t *glpix = (uint16_t *)bitm->swTex->pixels + (bitm->swTex->w * bitm->swTex->h) - 1;
-
-        for (int i = (bitm->swTex->w * bitm->swTex->h); i > 0; i--)
-        {
-            *glpix = tmpPal[*indexes];
-            indexes--;
-            glpix--;
-        }
-    }
-    else if (BytesPerColor == 4)
-    {
-        uint8_t *indexes = (uint8_t *)bitm->swTex->pixels + (bitm->swTex->w * bitm->swTex->h) - 1;
-        uint32_t *glpix = (uint32_t *)bitm->swTex->pixels + (bitm->swTex->w * bitm->swTex->h) - 1;
-
-        for (int i = (bitm->swTex->w * bitm->swTex->h); i > 0; i--)
-        {
-            *glpix = tmpPal[*indexes];
-            indexes--;
-            glpix--;
-        }
-    }
-
-    if (!lockd)
-        UnlockTexture(bitm);
-}
-
-
-void NC_STACK_win3d::FreeTexture(bitmap_intern *bitm)
-{
-    if ( bitm->flags & BITMAP_FLAG_TEXTURE )
-    {
-        if ( !(bitm->flags & BITMAP_FLAG_SYSMEM) )
-        {
-            if ( bitm->hwTex )
-                glDeleteTextures(1, &bitm->hwTex);
-
-            bitm->hwTex = 0;
-        }
-
-        if ( bitm->swTex )
-        {
-            SDL_FreeSurface(bitm->swTex);
-            bitm->swTex = NULL;
-        }
-    }
-}
-
-
-
-size_t NC_STACK_win3d::LockTexture(bitmap_intern *bitm)
-{
-    if ( bitm->flags & BITMAP_FLAG_LOCKED )
-        return true;
-
-    if ( bitm->flags & BITMAP_FLAG_TEXTURE )
-    {
-        SDL_LockSurface(bitm->swTex);
-        bitm->buffer = bitm->swTex->pixels;
-    }
-
-    bitm->flags |= BITMAP_FLAG_LOCKED;
 
     return true;
 }
 
-void NC_STACK_win3d::UpdateHwTexture(bitmap_intern *bitm)
+void NC_STACK_win3d::FreeTexture(ResBitmap *bitm)
 {
-    if (!bitm)
-        return;
+    if ( bitm->hwTex )
+        glDeleteTextures(1, &bitm->hwTex);
 
-    if (bitm->hwTex == 0)
-        return;
-
-    bool lockd = bitm->swTex->locked;
-
-    if (!lockd)
-        SDL_LockSurface(bitm->swTex);
-
-    glPushAttrib(GL_TEXTURE_2D | GL_TEXTURE_BINDING_2D);
-
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, bitm->hwTex);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, bitm->swTex->w, bitm->swTex->h, stack__win3d.glPixfmt, stack__win3d.glPixtype, bitm->swTex->pixels);
-
-    glPopAttrib();
-
-    if (!lockd)
-        SDL_UnlockSurface(bitm->swTex);
-}
-
-void NC_STACK_win3d::UnlockTexture(bitmap_intern *bitm)
-{
-    if ( !(bitm->flags & BITMAP_FLAG_LOCKED) )
-        return;
-
-    if ( bitm->flags & BITMAP_FLAG_TEXTURE )
-    {
-        if ( !(bitm->flags & BITMAP_FLAG_SYSMEM) )
-            UpdateHwTexture(bitm);
-
-        SDL_UnlockSurface(bitm->swTex);
-        bitm->buffer = NULL;
-    }
-
-    bitm->flags &= ~BITMAP_FLAG_LOCKED;
+    bitm->hwTex = 0;
 }
 
 void NC_STACK_win3d::display_func271(IDVPair *stak)
@@ -2887,9 +2230,7 @@ void NC_STACK_win3d::display_func274(const char **name)
     FSMgr::FileHandle *fil = uaOpenFile(filename, "wb");
     if ( fil )
     {
-        LockSurface();
         win3d_func274__sub0(w3d, fil);
-        UnlockSurface();
         delete fil;
     }
 }
@@ -3045,7 +2386,9 @@ void NC_STACK_win3d::setW3D_texFilt(int arg)
 
 void NC_STACK_win3d::draw2DandFlush()
 {
+    Gui::Root::Instance.Draw(SDLWRAP::Screen());
     SDLWRAP_drawScreen();
+    Gui::Root::Instance.HwCompose();
 
     SDL_FillRect(stack__win3d.screenSurface, NULL, SDL_MapRGBA(stack__win3d.screenSurface->format, 0, 0, 0, 0) );
 }
@@ -3118,9 +2461,54 @@ void NC_STACK_win3d::_setFrustumClip(float _near, float _far)
     frustum[15] = 0.0;
 }
 
-SDL_Surface * NC_STACK_win3d::ConvertToScreen(SDL_Surface *src)
+void NC_STACK_win3d::ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool transp)
 {
-    return SDL_ConvertSurface(src, stack__win3d.pixfmt, 0);
+    for (uint16_t i = 0; i < dst->size(); i++)
+    {
+        SDL_Color &c = (*dst)[i];
+        c = src[i];
+        c.a = 255;
+
+        if (c.a == 255 && c.g == 255 && c.b == 0)
+        {
+            c.a = 0;
+            c.r = 0;
+            c.g = 0;
+            c.b = 0;
+        }
+        else
+        {
+            if (!can_destblend && can_srcblend && transp)
+            {
+                int mx = (c.r >= c.g) ? (c.r > c.b ? c.r: c.b) : (c.g > c.b ? c.g : c.b);
+
+                if (mx <= 8)
+                {
+                    c.r = 0;
+                    c.g = 0;
+                    c.b = 0;
+                    c.a = 0;
+                }
+                else
+                {
+                    float prm = mx;
+                    c.r = 255.0 * (c.r / prm);
+                    c.g = 255.0 * (c.g / prm);
+                    c.b = 255.0 * (c.b / prm);
+                    c.a = mx;
+                }
+            }
+            else
+            {
+                c.a = 255;
+            }
+        }
+    }
+}
+
+SDL_PixelFormat *NC_STACK_win3d::GetScreenFormat()
+{
+    return stack__win3d.screenSurface->format;
 }
 
 
@@ -3129,13 +2517,13 @@ size_t NC_STACK_win3d::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        func3( (IDVList *)data );
+        func3( *(IDVList *)data );
         return 1;
     case 192:
         return (size_t)raster_func192( (IDVPair *)data );
@@ -3170,10 +2558,10 @@ size_t NC_STACK_win3d::compatcall(int method_id, void *data)
         EndScene();
         return 1;
     case 215:
-        LockSurface();
+        //LockSurface();
         return 1;
     case 216:
-        UnlockSurface();
+        //UnlockSurface();
         return 1;
     case 218:
         raster_func218( (rstr_218_arg *)data );
@@ -3193,17 +2581,11 @@ size_t NC_STACK_win3d::compatcall(int method_id, void *data)
         display_func263( (displ_arg263 *)data );
         return 1;
     case 266:
-        return (size_t)AllocTexture( (bitmap_intern *)data );
+        return (size_t)AllocTexture( (ResBitmap *)data );
     case 267:
-        TextureApplyPalette( (bitmap_intern *)data );
         return 1;
     case 268:
-        FreeTexture( (bitmap_intern *)data );
-        return 1;
-    case 269:
-        return (size_t)LockTexture( (bitmap_intern *)data );
-    case 270:
-        UnlockTexture( (bitmap_intern *)data );
+        FreeTexture( (ResBitmap *)data );
         return 1;
     case 271:
         display_func271( (IDVPair *)data );

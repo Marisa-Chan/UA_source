@@ -2,27 +2,80 @@
 #include "nucleas.h"
 #include "utils.h"
 
-const NewClassDescr NC_STACK_nucleus::description("nucleus.class", &newinstance);
-
-size_t NC_STACK_nucleus::func0(IDVList *stak)
+namespace Nucleus
 {
-    if (stak)
+ClassList ClassList::Instance;
+
+ClassList::iterator ClassList::find(const std::string &clsname)
+{
+    for(iterator it = begin(); it != end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        if (!StriCmp(clsname, it->_classname) )
+            return it;
+    }
+
+    return end();
+}
+
+ClassDescr::ClassDescr(const std::string &clsname,  NC_STACK_nucleus *(*newinst)() )
+: _classname(clsname)
+, _newinstance(newinst)
+{};
+
+
+
+NC_STACK_nucleus *CFInit(const std::string &classname, IDVList &stak)
+{
+    ClassList::iterator it = ClassList::Instance.find(classname);
+    if (it == ClassList::Instance.end())
+        return NULL;
+
+    NC_STACK_nucleus *inst = it->_newinstance();
+
+    if ( !inst->func0(stak) )
+    {
+        delete inst;
+        return NULL;
+    }
+
+    return inst;
+}
+
+NC_STACK_nucleus *CFInit(const std::string &classname)
+{
+    IDVList empty;
+    return CFInit(classname, empty);
+}
+
+void Delete(NC_STACK_nucleus *clas)
+{
+    clas->func1();
+    delete clas;
+}
+
+}
+
+
+
+
+const Nucleus::ClassDescr NC_STACK_nucleus::description("nucleus.class", &newinstance);
+
+size_t NC_STACK_nucleus::func0(IDVList &stak)
+{
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    {
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case NC_ATT_NAME:
-                    setName((const char *)val.value.p_data);
-                    break;
+            case NC_ATT_NAME:
+                setName((const char *)val.value.p_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -37,25 +90,22 @@ size_t NC_STACK_nucleus::func1()
     return 1;
 }
 
-size_t NC_STACK_nucleus::func2(IDVList *stak)
+size_t NC_STACK_nucleus::func2(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case NC_ATT_NAME:
-                    setName((const char *)val.value.p_data);
-                    break;
+            case NC_ATT_NAME:
+                setName((const char *)val.value.p_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -63,29 +113,26 @@ size_t NC_STACK_nucleus::func2(IDVList *stak)
     return 1;
 }
 
-size_t NC_STACK_nucleus::func3(IDVList *stak)
+size_t NC_STACK_nucleus::func3(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case NC_ATT_NAME:
-                    *(const char **)val.value.p_data = NAME.c_str();
-                    break;
+            case NC_ATT_NAME:
+                *(const char **)val.value.p_data = NAME.c_str();
+                break;
 
-                case NC_ATT_CLASSNAME:
-                    *(const char **)val.value.p_data = getClassName();
-                    break;
+            case NC_ATT_CLASSNAME:
+                *(const char **)val.value.p_data = getClassName();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -169,13 +216,13 @@ size_t NC_STACK_nucleus::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return (size_t)func2( (IDVList *)data );
+        return (size_t)func2( *(IDVList *)data );
     case 3:
-        return (size_t)func3( (IDVList *)data );
+        return (size_t)func3( *(IDVList *)data );
     case 5:
         return (size_t)func5( (IFFile **)data );
     case 6:
@@ -191,31 +238,6 @@ size_t NC_STACK_nucleus::compatcall(int method_id, void *data)
 
 
 
-NC_STACK_nucleus * init_get_class(const char *classname, IDVList *stak)
-{
-    IDVList NullList;
-
-    if (stak == NULL)
-        stak = &NullList;
-
-    const NewClassDescr *cls_descr = getClassAllocator(classname);
-
-    if (!cls_descr)
-        return NULL;
-
-    NC_STACK_nucleus *class_examplar = cls_descr->newinstance();
-
-    //class object constructor
-    if ( !class_examplar->func0(stak) )
-    {
-        delete class_examplar;
-        return NULL;
-    }
-
-    return class_examplar;
-}
-
-
 int delete_class_obj(NC_STACK_nucleus *cls)
 {
     int ret = cls->func1();
@@ -225,9 +247,9 @@ int delete_class_obj(NC_STACK_nucleus *cls)
     return ret;
 }
 
-NC_STACK_nucleus * READ_OBJT(IFFile *mfile)
+NC_STACK_nucleus *NC_STACK_nucleus::READ_OBJT(IFFile *mfile)
 {
-    const NewClassDescr *clss = NULL;
+    Nucleus::ClassList::iterator clss = Nucleus::ClassList::Instance.end();
     NC_STACK_nucleus *obj = NULL;
     while ( 1 )
     {
@@ -249,9 +271,8 @@ NC_STACK_nucleus * READ_OBJT(IFFile *mfile)
             if ( mfile->read(classname, 256) < 0 )
                 return NULL;
 
-            clss = getClassAllocator(classname); // get_class(classname);
-
-            if ( !clss )
+            clss = Nucleus::ClassList::Instance.find(classname);
+            if ( clss == Nucleus::ClassList::Instance.end() )
             {
                 return NULL;
             }
@@ -263,7 +284,7 @@ NC_STACK_nucleus * READ_OBJT(IFFile *mfile)
         {
             IFFile *v11 = mfile;
 
-            obj = clss->newinstance();
+            obj = clss->_newinstance();
 
             if ( !obj->func5(&v11) )
             {
@@ -281,37 +302,6 @@ NC_STACK_nucleus * READ_OBJT(IFFile *mfile)
         }
     }
     return obj;
-}
-
-NC_STACK_base *READ_BAS_FILE(const char *fname)
-{
-    NC_STACK_base *result = NULL;
-
-    FSMgr::FileHandle *fil = uaOpenFile(fname, "rb");
-    if ( !fil )
-        return NULL;
-
-    IFFile *mfile = new IFFile(fil, false, true);
-    if ( !mfile )
-    {
-        delete fil;
-        return NULL;
-    }
-
-    if ( !mfile->parse() )
-    {
-        IFFile::Context *chunk = mfile->getCurrentChunk();
-        if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_MC2 && !mfile->parse() )
-        {
-            chunk = mfile->getCurrentChunk();
-            if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
-                result = (NC_STACK_base *)READ_OBJT(mfile);
-        }
-    }
-
-    delete mfile;
-
-    return result;
 }
 
 int sub_4117F8(NC_STACK_nucleus *obj, IFFile *mfile)

@@ -21,6 +21,7 @@
 					<Add library="SDL2" />
 					<Add library="SDL2_ttf" />
 					<Add library="SDL2_image" />
+					<Add library="SDL2_net" />
 					<Add library="GL" />
 					<Add library="openal" />
 					<Add library="vorbisfile" />
@@ -32,8 +33,6 @@
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option host_application="wine" />
-				<Option run_host_application_in_terminal="0" />
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-std=c++11" />
@@ -43,6 +42,7 @@
 					<Add library="SDL2" />
 					<Add library="SDL2_ttf" />
 					<Add library="SDL2_image" />
+					<Add library="SDL2_net" />
 					<Add library="GL" />
 					<Add library="openal" />
 					<Add library="vorbisfile" />
@@ -54,7 +54,10 @@
 			<Add option="-std=c++11" />
 			<Add option="-fexceptions" />
 			<Add option="-mno-ms-bitfields" />
+			<Add option="-Wno-class-memaccess" />
 		</Compiler>
+		<Unit filename="3ds.cpp" />
+		<Unit filename="3ds.h" />
 		<Unit filename="IFFile.cpp" />
 		<Unit filename="IFFile.h" />
 		<Unit filename="MC.cpp" />
@@ -89,6 +92,9 @@
 		<Unit filename="engine_miles.h" />
 		<Unit filename="engine_tform.cpp" />
 		<Unit filename="engine_tform.h" />
+		<Unit filename="fmtlib/core.h" />
+		<Unit filename="fmtlib/format.cc" />
+		<Unit filename="fmtlib/printf.h" />
 		<Unit filename="font.cpp" />
 		<Unit filename="font.h" />
 		<Unit filename="fsmgr.cpp" />
@@ -112,12 +118,35 @@
 		<Unit filename="itimer.h" />
 		<Unit filename="iwimp.cpp" />
 		<Unit filename="iwimp.h" />
+		<Unit filename="listnode.h" />
 		<Unit filename="log.cpp" />
 		<Unit filename="log.h" />
 		<Unit filename="lstvw.cpp" />
 		<Unit filename="lstvw.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="matrix.h" />
+		<Unit filename="netlib/addrseq.h" />
+		<Unit filename="netlib/client.cpp" />
+		<Unit filename="netlib/client.h" />
+		<Unit filename="netlib/client_threads.cpp" />
+		<Unit filename="netlib/errcode.h" />
+		<Unit filename="netlib/events.h" />
+		<Unit filename="netlib/inpacket.h" />
+		<Unit filename="netlib/netsession.h" />
+		<Unit filename="netlib/netuser.h" />
+		<Unit filename="netlib/sendstorage.h" />
+		<Unit filename="netlib/server.cpp" />
+		<Unit filename="netlib/server.h" />
+		<Unit filename="netlib/server_session.cpp" />
+		<Unit filename="netlib/server_threads.cpp" />
+		<Unit filename="netlib/single.cpp" />
+		<Unit filename="netlib/single.h" />
+		<Unit filename="netlib/single_threads.cpp" />
+		<Unit filename="netlib/tick.h" />
+		<Unit filename="netlib/types.h" />
+		<Unit filename="netlib/utils.h" />
+		<Unit filename="netlib/zndNet.cpp" />
+		<Unit filename="netlib/zndNet.h" />
 		<Unit filename="network.cpp" />
 		<Unit filename="network.h" />
 		<Unit filename="nlist.cpp" />
@@ -134,6 +163,7 @@
 		<Unit filename="skeleton.h" />
 		<Unit filename="sklt.cpp" />
 		<Unit filename="sklt.h" />
+		<Unit filename="types.h" />
 		<Unit filename="utils.cpp" />
 		<Unit filename="utils.h" />
 		<Unit filename="vectors.h" />
@@ -147,6 +177,10 @@
 		<Unit filename="winp.h" />
 		<Unit filename="wintimer.cpp" />
 		<Unit filename="wintimer.h" />
+		<Unit filename="world/parsers.cpp" />
+		<Unit filename="world/parsers.h" />
+		<Unit filename="world/saveparsers.cpp" />
+		<Unit filename="world/saveparsers.h" />
 		<Unit filename="wrapSDL.cpp" />
 		<Unit filename="wrapSDL.h" />
 		<Unit filename="wrapal.cpp" />
@@ -177,7 +211,6 @@
 		<Unit filename="yw_internal.h" />
 		<Unit filename="yw_net.cpp" />
 		<Unit filename="yw_net.h" />
-		<Unit filename="yw_protos.cpp" />
 		<Unit filename="yw_save.cpp" />
 		<Extensions>
 			<code_completion />

@@ -28,7 +28,7 @@ public:
     };
 
     //Data
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
     __NC_STACK_wintimer stack__wintimer;
 };

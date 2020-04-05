@@ -6,10 +6,10 @@
 #include "input.h"
 
 
-const NewClassDescr NC_STACK_input::description("input.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_input::description("input.class", &newinstance);
 
 
-size_t NC_STACK_input::func0(IDVList *stak)
+size_t NC_STACK_input::func0(IDVList &stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
@@ -134,16 +134,19 @@ const char * input__parse__inputkey_node(const char *a1, nlist *lst)
     return NULL;
 }
 
-int input__set_buttons_and_sliders(__NC_STACK_input *inp, input__func64__params *arg)
+bool NC_STACK_input::input_func64(uint8_t type, uint32_t index, const std::string &val)
 {
+    if (type != Input::ITYPE_BUTTON && type != Input::ITYPE_SLIDER)
+        return false;
+
     nlist *v6;
 
-    if ( arg->type_id == 4 )
-        v6 = &inp->buttons_lists[arg->item_number];
+    if ( type == Input::ITYPE_BUTTON )
+        v6 = &stack__input.buttons_lists[index];
     else
-        v6 = &inp->sliders_lists[arg->item_number];
+        v6 = &stack__input.sliders_lists[index];
 
-    if ( arg->value )
+    if ( !val.empty() )
     {
         while ( 1 )
         {
@@ -158,7 +161,7 @@ int input__set_buttons_and_sliders(__NC_STACK_input *inp, input__func64__params 
             nc_FreeMem(node);
         }
 
-        const char *v3 = arg->value;
+        const char *v3 = val.c_str();
 
         while (v3)
             v3 = input__parse__inputkey_node(v3, v6);
@@ -167,12 +170,7 @@ int input__set_buttons_and_sliders(__NC_STACK_input *inp, input__func64__params 
         {
             if ( node->driver_name[0] && node->keyname[0] )
             {
-                char classname[256];
-
-                strcpy(classname, node->driver_name);
-                strcat(classname, ".class");
-
-                node->driver_obj = dynamic_cast<NC_STACK_idev *>( init_get_class(classname, 0) );
+                node->driver_obj = Nucleus::CTFInit<NC_STACK_idev>(std::string(node->driver_name) + ".class");
                 if ( node->driver_obj )
                 {
                     const char *v26 = node->keyname;
@@ -189,68 +187,45 @@ int input__set_buttons_and_sliders(__NC_STACK_input *inp, input__func64__params 
             }
         }
     }
-    return 1;
+    return true;
 }
 
-size_t NC_STACK_input::input_func64(input__func64__params *arg)
+bool NC_STACK_input::InitDriver(uint8_t type, const std::string &val)
 {
-    char classname[256];
-
-    __NC_STACK_input *inp = &stack__input;
-
-    switch ( arg->type_id )
+    switch ( type )
     {
-    case 1:                                     // input.wimp
-        if ( inp->wimp )
-            delete_class_obj(inp->wimp);
+    case Input::ITYPE_WIMP:                                     // input.wimp
+        if ( stack__input.wimp )
+            delete_class_obj(stack__input.wimp);
 
-        strcpy(classname, arg->value);
-        strcat(classname, ".class");
-
-        inp->wimp = dynamic_cast<NC_STACK_iwimp *>( init_get_class(classname, 0) );
-        if ( !inp->wimp )
-            return 0;
+        stack__input.wimp = Nucleus::CTFInit<NC_STACK_iwimp>(val + ".class");
+        if ( !stack__input.wimp )
+            return false;
         break;
 
-    case 2:                                     // input.timer
-        if ( inp->timer )
-            delete_class_obj(inp->timer);
+    case Input::ITYPE_TIMER:                                   // input.timer
+        if ( stack__input.timer )
+            delete_class_obj(stack__input.timer);
 
-        strcpy(classname, arg->value);
-        strcat(classname, ".class");
-
-        inp->timer = dynamic_cast<NC_STACK_itimer *>( init_get_class(classname, 0) );
-        if ( !inp->timer )
-            return 0;
+        stack__input.timer = Nucleus::CTFInit<NC_STACK_itimer>(val + ".class");
+        if ( !stack__input.timer )
+            return false;
         break;
 
-    case 3:
-        if ( inp->keyboard )
-            delete_class_obj(inp->keyboard);
+    case Input::ITYPE_KBD:
+        if ( stack__input.keyboard )
+            delete_class_obj(stack__input.keyboard);
 
-        strcpy(classname, arg->value);
-        strcat(classname, ".class");
-
-        inp->keyboard = dynamic_cast<NC_STACK_idev *>( init_get_class(classname, 0) );
-        if ( !inp->keyboard )
-            return 0;
-        break;
-
-    case 4:
-        if ( !input__set_buttons_and_sliders(inp, arg) )
-            return 0;
-        break;
-
-    case 5:
-        if ( !input__set_buttons_and_sliders(inp, arg) )
-            return 0;
+        stack__input.keyboard = Nucleus::CTFInit<NC_STACK_idev>(val + ".class");
+        if ( !stack__input.keyboard )
+            return false;
         break;
 
     default:
-        return 0;
+        return false;
         break;
     }
-    return 1;
+    return true;
 }
 
 void sub_41CC94(nlist *lst, inp_l65 *loc, int arg)
@@ -323,7 +298,7 @@ void NC_STACK_input::input_func65(struC5 *arg)
     inp->field_4 += arg->period;
 
     if ( inp->wimp &&
-            inp->wimp->iwimp_func128(NULL) )
+            inp->wimp->HasFocus() )
     {
         if ( inp->keyboard )
         {
@@ -338,7 +313,7 @@ void NC_STACK_input::input_func65(struC5 *arg)
             arg->chr = v15.chr;
         }
 
-        inp->wimp->iwimp_func131(&arg->winp131arg);
+        inp->wimp->CheckClick(&arg->ClickInf);
 
         for (int i = 0; i < 32; i++)
         {
@@ -434,15 +409,19 @@ void NC_STACK_input::keyb_queryHotkey(idev_query_arg *arg)
     stack__input.keyboard->idev_func70(arg);
 }
 
-void NC_STACK_input::wimp_addClickNode(iwimp_arg129 *arg)
+void NC_STACK_input::wimp_addClickNodeFront(ClickBox *box)
 {
-    stack__input.wimp->iwimp_func129(arg);
+    stack__input.wimp->AddClickBoxFront(box);
 }
 
-
-void NC_STACK_input::wimp_remClickNode(iwimp_arg129 *arg)
+void NC_STACK_input::wimp_addClickNodeBack(ClickBox *box)
 {
-    stack__input.wimp->iwimp_func130(arg);
+    stack__input.wimp->AddClickBoxBack(box);
+}
+
+void NC_STACK_input::wimp_remClickNode(ClickBox *box)
+{
+    stack__input.wimp->RemoveClickBox(box);
 }
 
 
@@ -474,11 +453,11 @@ size_t NC_STACK_input::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 64:
-        return (size_t)input_func64( (input__func64__params *)data );
+        return 1;//(size_t)input_func64( (input__func64__params *)data );
     case 65:
         input_func65( (struC5 *)data );
         return 1;
@@ -488,4 +467,21 @@ size_t NC_STACK_input::compatcall(int method_id, void *data)
         break;
     }
     return NC_STACK_nucleus::compatcall(method_id, data);
+}
+
+
+
+namespace Input
+{
+std::array<KeyInfo, 256> KeysInfo;
+
+int GetKeyIdByName(const std::string &name)
+{
+    for (uint32_t i = 0; i < KeysInfo.size(); i++)
+    {
+        if (!StriCmp(KeysInfo[i]._name, name) )
+            return i;
+    }
+    return -1;
+}
 }

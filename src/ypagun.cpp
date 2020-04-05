@@ -8,59 +8,56 @@
 #include "yparobo.h"
 
 
-const NewClassDescr NC_STACK_ypagun::description("ypagun.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_ypagun::description("ypagun.class", &newinstance);
 
-size_t NC_STACK_ypagun::func0(IDVList *stak)
+size_t NC_STACK_ypagun::func0(IDVList &stak)
 {
     if ( !NC_STACK_ypabact::func0(stak) )
         return 0;
 
-    ypabact.bact_type = BACT_TYPES_GUN;
+    _bact_type = BACT_TYPES_GUN;
 
-    ypagun.gunType = GUN_TYPE_REAL;
-    ypagun.fireTime = 100;
+    _gunType = GUN_TYPE_REAL;
+    _gunFireTime = 100;
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case GUN_ATT_SIDEANGLE:
-                    setGUN_sideAngle(val.value.i_data);
-                    break;
+            case GUN_ATT_SIDEANGLE:
+                setGUN_sideAngle(val.value.i_data);
+                break;
 
-                case GUN_ATT_UPANGLE:
-                    setGUN_upAngle(val.value.i_data);
-                    break;
+            case GUN_ATT_UPANGLE:
+                setGUN_upAngle(val.value.i_data);
+                break;
 
-                case GUN_ATT_DOWNANGLE:
-                    setGUN_downAngle(val.value.i_data);
-                    break;
+            case GUN_ATT_DOWNANGLE:
+                setGUN_downAngle(val.value.i_data);
+                break;
 
-                case GUN_ATT_FIRETYPE:
-                    setGUN_fireType(val.value.i_data);
-                    break;
+            case GUN_ATT_FIRETYPE:
+                setGUN_fireType(val.value.i_data);
+                break;
 
-                case GUN_ATT_FIRETIME:
-                    setGUN_fireTime(val.value.i_data);
-                    break;
+            case GUN_ATT_FIRETIME:
+                setGUN_fireTime(val.value.i_data);
+                break;
 
-                case GUN_ATT_SETGROUND:
-                    setGUN_setGround ( val.value.i_data );
-                    break;
+            case GUN_ATT_SETGROUND:
+                setGUN_setGround ( val.value.i_data );
+                break;
 
-                case GUN_ATT_ROBOGUN:
-                    setGUN_roboGun ( val.value.i_data );
-                    break;
+            case GUN_ATT_ROBOGUN:
+                setGUN_roboGun ( val.value.i_data );
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -73,51 +70,48 @@ size_t NC_STACK_ypagun::func1()
     return NC_STACK_ypabact::func1();
 }
 
-size_t NC_STACK_ypagun::func2(IDVList *stak)
+size_t NC_STACK_ypagun::func2(IDVList &stak)
 {
     NC_STACK_ypabact::func2(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case GUN_ATT_SIDEANGLE:
-                    setGUN_sideAngle(val.value.i_data);
-                    break;
+            case GUN_ATT_SIDEANGLE:
+                setGUN_sideAngle(val.value.i_data);
+                break;
 
-                case GUN_ATT_UPANGLE:
-                    setGUN_upAngle(val.value.i_data);
-                    break;
+            case GUN_ATT_UPANGLE:
+                setGUN_upAngle(val.value.i_data);
+                break;
 
-                case GUN_ATT_DOWNANGLE:
-                    setGUN_downAngle(val.value.i_data);
-                    break;
+            case GUN_ATT_DOWNANGLE:
+                setGUN_downAngle(val.value.i_data);
+                break;
 
-                case GUN_ATT_FIRETYPE:
-                    setGUN_fireType(val.value.i_data);
-                    break;
+            case GUN_ATT_FIRETYPE:
+                setGUN_fireType(val.value.i_data);
+                break;
 
-                case GUN_ATT_FIRETIME:
-                    setGUN_fireTime(val.value.i_data);
-                    break;
+            case GUN_ATT_FIRETIME:
+                setGUN_fireTime(val.value.i_data);
+                break;
 
-                case GUN_ATT_SETGROUND:
-                    setGUN_setGround ( val.value.i_data );
-                    break;
+            case GUN_ATT_SETGROUND:
+                setGUN_setGround ( val.value.i_data );
+                break;
 
-                case GUN_ATT_ROBOGUN:
-                    setGUN_roboGun ( val.value.i_data );
-                    break;
+            case GUN_ATT_ROBOGUN:
+                setGUN_roboGun ( val.value.i_data );
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -125,51 +119,48 @@ size_t NC_STACK_ypagun::func2(IDVList *stak)
     return 1;
 }
 
-size_t NC_STACK_ypagun::func3(IDVList *stak)
+size_t NC_STACK_ypagun::func3(IDVList &stak)
 {
     NC_STACK_ypabact::func3(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case GUN_ATT_SIDEANGLE:
-                    *(int *)val.value.p_data = getGUN_sideAngle();
-                    break;
+            case GUN_ATT_SIDEANGLE:
+                *(int *)val.value.p_data = getGUN_sideAngle();
+                break;
 
-                case GUN_ATT_UPANGLE:
-                    *(int *)val.value.p_data = getGUN_upAngle();
-                    break;
+            case GUN_ATT_UPANGLE:
+                *(int *)val.value.p_data = getGUN_upAngle();
+                break;
 
-                case GUN_ATT_DOWNANGLE:
-                    *(int *)val.value.p_data = getGUN_downAngle();
-                    break;
+            case GUN_ATT_DOWNANGLE:
+                *(int *)val.value.p_data = getGUN_downAngle();
+                break;
 
-                case GUN_ATT_FIRETYPE:
-                    *(int *)val.value.p_data = getGUN_fireType();
-                    break;
+            case GUN_ATT_FIRETYPE:
+                *(int *)val.value.p_data = getGUN_fireType();
+                break;
 
-                case GUN_ATT_FIRETIME:
-                    *(int *)val.value.p_data = getGUN_fireTime();
-                    break;
+            case GUN_ATT_FIRETIME:
+                *(int *)val.value.p_data = getGUN_fireTime();
+                break;
 
-                case GUN_ATT_SETGROUND:
-                    *(int *)val.value.p_data = getGUN_setGround();
-                    break;
+            case GUN_ATT_SETGROUND:
+                *(int *)val.value.p_data = getGUN_setGround();
+                break;
 
-                case GUN_ATT_ROBOGUN:
-                    *(int *)val.value.p_data = getGUN_roboGun();
-                    break;
+            case GUN_ATT_ROBOGUN:
+                *(int *)val.value.p_data = IsRoboGun();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -181,18 +172,18 @@ size_t NC_STACK_ypagun::func3(IDVList *stak)
 bool NC_STACK_ypagun::CheckPedestal()
 {
     ypaworld_arg136 arg136;
-    arg136.stPos = ypabact.position;
+    arg136.stPos = _position;
     arg136.vect.x = 0;
 
-    if ( ypagun.gunFlags & GUN_FLAGS_FALLDOWN )
-        arg136.vect.y = -ypabact.height;
+    if ( _gunFlags & GUN_FLAGS_FALLDOWN )
+        arg136.vect.y = -_height;
     else
-        arg136.vect.y = ypabact.height;
+        arg136.vect.y = _height;
 
     arg136.vect.z = 0;
     arg136.flags = 0;
 
-    ypabact.ywo->ypaworld_func136(&arg136);
+    _world->ypaworld_func136(&arg136);
 
     return arg136.isect != 0;
 }
@@ -201,32 +192,32 @@ void NC_STACK_ypagun::AI_layer3(update_msg *arg)
 {
     float fTime = arg->frameTime / 1000.0;
 
-    switch ( ypabact.status )
+    switch ( _status )
     {
     case BACT_STATUS_NORMAL:
     case BACT_STATUS_IDLE:
     {
-        if ( !(ypagun.gunFlags & GUN_FLAGS_ROBO) )
+        if ( !(_gunFlags & GUN_FLAGS_ROBO) )
         {
-            if ( ypabact.clock - ypagun.downTime > 800 )
+            if ( _clock - _gunDownTime > 800 )
             {
-                ypagun.downTime = ypabact.clock;
+                _gunDownTime = _clock;
 
                 if ( !CheckPedestal() )
                 {
-                    ypabact.energy = -10;
+                    _energy = -10;
                     break;
                 }
             }
         }
 
-        if ( ypagun.gunType == GUN_TYPE_REAL && ypagun.fireCount > 0 )
+        if ( _gunType == GUN_TYPE_REAL && _gunFireCount > 0 )
         {
-            ypagun.fireCount -= arg->frameTime;
+            _gunFireCount -= arg->frameTime;
 
-            if ( ypagun.fireCount <= 0 )
+            if ( _gunFireCount <= 0 )
             {
-                ypagun.fireCount = 0;
+                _gunFireCount = 0;
 
                 setState_msg arg78;
                 arg78.unsetFlags = BACT_STFLAG_FIRE;
@@ -237,11 +228,11 @@ void NC_STACK_ypagun::AI_layer3(update_msg *arg)
             }
         }
 
-        if ( ypabact.secndTtype != BACT_TGT_TYPE_UNIT )
+        if ( _secndTtype != BACT_TGT_TYPE_UNIT )
         {
-            if ( !ypabact.secndTtype && ypagun.gunType == GUN_TYPE_PROTO )
+            if ( !_secndTtype && _gunType == GUN_TYPE_PROTO )
             {
-                if ( ypabact.status_flg & BACT_STFLAG_FIRE )
+                if ( _status_flg & BACT_STFLAG_FIRE )
                 {
                     setState_msg arg78;
                     arg78.unsetFlags = BACT_STFLAG_FIRE;
@@ -254,7 +245,7 @@ void NC_STACK_ypagun::AI_layer3(update_msg *arg)
             break;
         }
 
-        vec3d vTgt = ypabact.secndT.pbact->position - ypabact.position;
+        vec3d vTgt = _secndT.pbact->_position - _position;
 
         float dist = vTgt.length();
 
@@ -270,18 +261,18 @@ void NC_STACK_ypagun::AI_layer3(update_msg *arg)
 
         // local X coordinate axis. Used for calculate rotation on XZ-plane
         // because always lie on XZ-plane
-        vec3d lx = ypagun.rott * ypagun.basis;
+        vec3d lx = _gunRott * _gunBasis;
 
         // Calculate projection gun rotation X-axis onto XZ basis plane
-        vec2d xzRot( ypabact.rotation.AxisX().dot(lx),
-                     ypabact.rotation.AxisX().dot(ypagun.basis));
+        vec2d xzRot( _rotation.AxisX().dot(lx),
+                     _rotation.AxisX().dot(_gunBasis));
 
         // Normolise for unit circle.
         // If it's too short - X-rotation-axis near -/+rott axis,
         if (xzRot.normalise() > 0.001)
             xzAngle = xzRot.xyAngle();
 
-        vec2d xzWant( vTgt.dot(ypagun.basis),
+        vec2d xzWant( vTgt.dot(_gunBasis),
                       vTgt.dot(-lx) );
 
         if ( xzWant.normalise() > 0.001 )
@@ -289,18 +280,18 @@ void NC_STACK_ypagun::AI_layer3(update_msg *arg)
         else
             xzWanted = xzAngle;
 
-        if ( ypagun.maxSide <= 3.1 )
+        if ( _gunMaxSide <= 3.1 )
         {
-            if ( xzWanted < -ypagun.maxSide )
-                xzWanted = -ypagun.maxSide;
+            if ( xzWanted < -_gunMaxSide )
+                xzWanted = -_gunMaxSide;
 
-            if ( xzWanted > ypagun.maxSide )
-                xzWanted = ypagun.maxSide;
+            if ( xzWanted > _gunMaxSide )
+                xzWanted = _gunMaxSide;
         }
 
         float xz_delta = xzWanted - xzAngle;
 
-        if ( ypagun.maxSide > 3.1 )
+        if ( _gunMaxSide > 3.1 )
         {
             if ( fabs(xz_delta) > C_PI )
             {
@@ -312,7 +303,7 @@ void NC_STACK_ypagun::AI_layer3(update_msg *arg)
             }
         }
 
-        float MaxRot = ypabact.maxrot * fTime;
+        float MaxRot = _maxrot * fTime;
 
         if ( xz_delta >= 0.0 )
         {
@@ -326,19 +317,19 @@ void NC_STACK_ypagun::AI_layer3(update_msg *arg)
         }
 
         if ( fabs(xz_delta) > 0.001 )
-            ypabact.rotation *= mat3x3(ypagun.rott, xz_delta);
+            _rotation *= mat3x3(_gunRott, xz_delta);
 
-        vec3d invRed = -ypagun.rott;
+        vec3d invRed = -_gunRott;
 
-        float y_angle = clp_asin( invRed.dot(ypabact.rotation.AxisZ()) );
+        float y_angle = clp_asin( invRed.dot(_rotation.AxisZ()) );
 
         float y_want = clp_asin( invRed.dot( vTgt ) );
 
-        if ( y_want > ypagun.maxUp )
-            y_want = ypagun.maxUp;
+        if ( y_want > _gunMaxUp )
+            y_want = _gunMaxUp;
 
-        if ( y_want < -ypagun.maxDown )
-            y_want = -ypagun.maxDown;
+        if ( y_want < -_gunMaxDown )
+            y_want = -_gunMaxDown;
 
         float y_delta = y_want - y_angle;
 
@@ -348,16 +339,16 @@ void NC_STACK_ypagun::AI_layer3(update_msg *arg)
             y_delta = -MaxRot;
 
         if ( fabs(y_delta) > 0.001 )
-            ypabact.rotation = mat3x3::RotateX(y_delta * 0.3) * ypabact.rotation;
+            _rotation = mat3x3::RotateX(y_delta * 0.3) * _rotation;
 
         bact_arg75 arg75;
         arg75.fperiod = fTime;
-        arg75.g_time = ypabact.clock;
-        arg75.target.pbact = ypabact.secndT.pbact;
+        arg75.g_time = _clock;
+        arg75.target.pbact = _secndT.pbact;
 
         FightWithBact(&arg75);
 
-        if ( !TestTargetSector(ypabact.secndT.pbact) )
+        if ( !TestTargetSector(_secndT.pbact) )
         {
             setTarget_msg arg67;
             arg67.tgt_type = BACT_TGT_TYPE_NONE;
@@ -365,7 +356,7 @@ void NC_STACK_ypagun::AI_layer3(update_msg *arg)
 
             SetTarget(&arg67);
 
-            if ( ypagun.gunType == GUN_TYPE_PROTO )
+            if ( _gunType == GUN_TYPE_PROTO )
             {
                 setState_msg arg78;
                 arg78.unsetFlags = BACT_STFLAG_FIRE;
@@ -383,9 +374,9 @@ void NC_STACK_ypagun::AI_layer3(update_msg *arg)
         break;
 
     case BACT_STATUS_CREATE:
-        ypabact.scale_time -= arg->frameTime;
+        _scale_time -= arg->frameTime;
 
-        if ( ypabact.scale_time <= 0 )
+        if ( _scale_time <= 0 )
         {
             setState_msg arg78;
             arg78.newStatus = BACT_STATUS_NORMAL;
@@ -405,22 +396,22 @@ void NC_STACK_ypagun::User_layer(update_msg *arg)
 {
     float fTime = arg->frameTime / 1000.0;
 
-    if ( ypabact.status == BACT_STATUS_NORMAL )
+    if ( _status == BACT_STATUS_NORMAL )
     {
-        if ( ypagun.gunFlags & GUN_FLAGS_ROBO || CheckPedestal() )
+        if ( _gunFlags & GUN_FLAGS_ROBO || CheckPedestal() )
         {
-            if ( ypabact.viewer_position.length() >= 3.0 )
+            if ( _viewer_position.length() >= 3.0 )
             {
                 float v33 = arg->frameTime + 50.0;
 
-                ypabact.viewer_position *= 50.0 / v33;
+                _viewer_position *= 50.0 / v33;
             }
             else
             {
-                ypabact.viewer_position = 0;
+                _viewer_position = 0;
             }
 
-            if ( ypabact.status_flg & BACT_STFLAG_FIRE )
+            if ( _status_flg & BACT_STFLAG_FIRE )
             {
                 if ( !(arg->inpt->but_flags & 1) && !(arg->inpt->but_flags & 2) )
                 {
@@ -435,10 +426,10 @@ void NC_STACK_ypagun::User_layer(update_msg *arg)
 
             bact_arg79 arg79;
             arg79.tgType = BACT_TGT_TYPE_CELL;
-            arg79.tgt_pos = ypabact.position + ypabact.rotation.AxisZ() * (1200.0 * 3.0);
+            arg79.tgt_pos = _position + _rotation.AxisZ() * (1200.0 * 3.0);
 
             bact_arg106 arg106;
-            arg106.field_4 = ypabact.rotation.AxisZ();
+            arg106.field_4 = _rotation.AxisZ();
             arg106.field_0 = 5;
 
             if ( UserTargeting(&arg106) )
@@ -449,23 +440,23 @@ void NC_STACK_ypagun::User_layer(update_msg *arg)
 
             if ( arg->inpt->but_flags & 1 || arg->inpt->but_flags & 2 )
             {
-                if ( ypagun.gunType == GUN_TYPE_REAL )
+                if ( _gunType == GUN_TYPE_REAL )
                 {
-                    arg79.weapon = ypabact.weapon;
-                    arg79.direction = ypabact.rotation.AxisZ();
-                    arg79.g_time = ypabact.clock;
-                    arg79.start_point = ypabact.fire_pos;
+                    arg79.weapon = _weapon;
+                    arg79.direction = _rotation.AxisZ();
+                    arg79.g_time = _clock;
+                    arg79.start_point = _fire_pos;
                     arg79.flags = ((arg->inpt->but_flags & 2) != 0) | 2;
 
                     if ( LaunchMissile(&arg79) )
                     {
-                        ypabact.viewer_position = vec3d(0, 0, -25.0);
+                        _viewer_position = vec3d(0, 0, -25.0);
                     }
                 }
-                else if ( ypagun.gunType == GUN_TYPE_PROTO )
+                else if ( _gunType == GUN_TYPE_PROTO )
                 {
 //            if ( ~(ypabact.field_3D6 & 0x100) ) CHECK IT
-                    if ( !(ypabact.status_flg & BACT_STFLAG_FIRE) )
+                    if ( !(_status_flg & BACT_STFLAG_FIRE) )
                     {
                         setState_msg arg78;
                         arg78.unsetFlags = 0;
@@ -476,75 +467,75 @@ void NC_STACK_ypagun::User_layer(update_msg *arg)
                     }
 
                     bact_arg105 arg105;
-                    arg105.field_0 = ypabact.rotation.AxisZ();
+                    arg105.field_0 = _rotation.AxisZ();
                     arg105.field_C = fTime;
-                    arg105.field_10 = ypabact.clock;
+                    arg105.field_10 = _clock;
 
                     FireMinigun(&arg105);
 
-                    if ( ypagun.gunFlags & GUN_FLAGS_SHOT )
+                    if ( _gunFlags & GUN_FLAGS_SHOT )
                     {
-                        ypagun.gunFlags &= ~GUN_FLAGS_SHOT;
+                        _gunFlags &= ~GUN_FLAGS_SHOT;
                     }
                     else
                     {
-                        ypagun.gunFlags |= GUN_FLAGS_SHOT;
+                        _gunFlags |= GUN_FLAGS_SHOT;
 
-                        ypabact.viewer_position = vec3d(0, -20.0, -30.0);
+                        _viewer_position = vec3d(0, -20.0, -30.0);
                     }
                 }
             }
 
-            float yRot = arg->inpt->sliders_vars[0] * ypabact.maxrot * fTime;
+            float yRot = arg->inpt->sliders_vars[0] * _maxrot * fTime;
 
             if ( fabs( yRot ) > 0.001 )
             {
-                vec3d tmp = ypagun.rott * ypagun.basis;
+                vec3d tmp = _gunRott * _gunBasis;
 
-                float yAngle = clp_acos( tmp.dot( ypabact.rotation.AxisX() ) );
+                float yAngle = clp_acos( tmp.dot( _rotation.AxisX() ) );
 
-                if ( tmp.x * ypabact.rotation.m02 - tmp.z * ypabact.rotation.m00 > 0.0 )
+                if ( tmp.x * _rotation.m02 - tmp.z * _rotation.m00 > 0.0 )
                     yAngle = -yAngle;
 
-                if ( yAngle + yRot < -ypagun.maxSide )
-                    yRot = -ypagun.maxSide - yAngle;
+                if ( yAngle + yRot < -_gunMaxSide )
+                    yRot = -_gunMaxSide - yAngle;
 
-                if ( yAngle + yRot > ypagun.maxSide )
-                    yRot = ypagun.maxSide - yAngle;
+                if ( yAngle + yRot > _gunMaxSide )
+                    yRot = _gunMaxSide - yAngle;
 
-                ypabact.rotation *= mat3x3(ypagun.rott, yRot, MAT_FLAG_INV_SIN);
+                _rotation *= mat3x3(_gunRott, yRot, MAT_FLAG_INV_SIN);
             }
 
-            float xRot = arg->inpt->sliders_vars[1] * ypabact.maxrot * fTime;
+            float xRot = arg->inpt->sliders_vars[1] * _maxrot * fTime;
 
             if ( fabs(xRot) > 0.001 )
             {
-                vec3d tmp = -ypagun.rott;
-                float xAngle = clp_asin( tmp.dot( ypabact.rotation.AxisZ() ) );
+                vec3d tmp = -_gunRott;
+                float xAngle = clp_asin( tmp.dot( _rotation.AxisZ() ) );
 
-                if ( xAngle + xRot < -ypagun.maxDown )
-                    xRot = -ypagun.maxDown - xAngle;
+                if ( xAngle + xRot < -_gunMaxDown )
+                    xRot = -_gunMaxDown - xAngle;
 
-                if ( xAngle + xRot > ypagun.maxUp )
-                    xRot = ypagun.maxUp - xAngle;
+                if ( xAngle + xRot > _gunMaxUp )
+                    xRot = _gunMaxUp - xAngle;
 
-                ypabact.rotation = mat3x3::RotateX(xRot) * ypabact.rotation;
+                _rotation = mat3x3::RotateX(xRot) * _rotation;
             }
 
-            ypabact.viewer_rotation = ypabact.rotation;
+            _viewer_rotation = _rotation;
         }
         else
         {
-            ypabact.energy = -10;
+            _energy = -10;
         }
     }
-    else if ( ypabact.status == BACT_STATUS_DEAD )
+    else if ( _status == BACT_STATUS_DEAD )
         DeadTimeUpdate(arg);
 }
 
 void NC_STACK_ypagun::FightWithBact(bact_arg75 *arg)
 {
-    vec3d vTgt = arg->target.pbact->position - ypabact.position;
+    vec3d vTgt = arg->target.pbact->_position - _position;
 
     float dist = vTgt.length();
 
@@ -553,16 +544,16 @@ void NC_STACK_ypagun::FightWithBact(bact_arg75 *arg)
 
     vTgt /= dist;
 
-    if ( dist <= 2400.0 && vTgt.dot( ypabact.rotation.AxisZ() ) >= 0.95 )
+    if ( dist <= 2400.0 && vTgt.dot( _rotation.AxisZ() ) >= 0.95 )
     {
-        if ( ypagun.gunType == GUN_TYPE_REAL )
+        if ( _gunType == GUN_TYPE_REAL )
         {
             bact_arg79 arg79;
             arg79.direction = vTgt;
-            arg79.start_point = ypabact.fire_pos;
+            arg79.start_point = _fire_pos;
             arg79.tgType = BACT_TGT_TYPE_UNIT;
             arg79.target.pbact = arg->target.pbact;
-            arg79.weapon = ypabact.weapon;
+            arg79.weapon = _weapon;
             arg79.g_time = arg->g_time;
             arg79.flags = 0;
 
@@ -572,11 +563,11 @@ void NC_STACK_ypagun::FightWithBact(bact_arg75 *arg)
 
                 if ( !a5 )
                 {
-                    YpamissileList::reverse_iterator it = ypabact.missiles_list.rbegin();
-                    if ( it != ypabact.missiles_list.rend() )
+                    YpamissileList::reverse_iterator it = _missiles_list.rbegin();
+                    if ( it != _missiles_list.rend() )
                         (*it)->setMISS_ignoreBuilds(1);
                 }
-                ypagun.fireCount = ypagun.fireTime;
+                _gunFireCount = _gunFireTime;
 
                 setState_msg arg78;
                 arg78.unsetFlags = 0;
@@ -586,9 +577,9 @@ void NC_STACK_ypagun::FightWithBact(bact_arg75 *arg)
                 SetState(&arg78);
             }
         }
-        else if ( ypagun.gunType == GUN_TYPE_PROTO )
+        else if ( _gunType == GUN_TYPE_PROTO )
         {
-            if ( !(ypabact.status_flg & BACT_STFLAG_FIRE) )
+            if ( !(_status_flg & BACT_STFLAG_FIRE) )
             {
                 setState_msg arg78;
                 arg78.unsetFlags = 0;
@@ -601,12 +592,12 @@ void NC_STACK_ypagun::FightWithBact(bact_arg75 *arg)
             bact_arg105 arg105;
             arg105.field_C = arg->fperiod;
             arg105.field_10 = arg->g_time;
-            arg105.field_0 = ypabact.rotation.AxisZ();
+            arg105.field_0 = _rotation.AxisZ();
 
             FireMinigun(&arg105);
         }
     }
-    else if ( ypagun.gunType == GUN_TYPE_PROTO )
+    else if ( _gunType == GUN_TYPE_PROTO )
     {
         setState_msg arg78;
         arg78.setFlags = 0;
@@ -619,16 +610,16 @@ void NC_STACK_ypagun::FightWithBact(bact_arg75 *arg)
 
 void NC_STACK_ypagun::Die()
 {
-    if ( !(ypabact.status_flg & BACT_STFLAG_DEATH1) )
+    if ( !(_status_flg & BACT_STFLAG_DEATH1) )
     {
         NC_STACK_ypabact::Die();
 
         int v6 = 1;
         HandleVisChildrens(&v6);
 
-        if ( ypagun.gunFlags & GUN_FLAGS_ROBO )
+        if ( _gunFlags & GUN_FLAGS_ROBO )
         {
-            roboGun *hostGun = ypabact.host_station->getROBO_guns();
+            roboGun *hostGun = _host_station->getROBO_guns();
 
             for (int i = 0; i < 8; i++)
             {
@@ -644,7 +635,7 @@ size_t NC_STACK_ypagun::SetPosition(bact_arg80 *arg)
     if ( !NC_STACK_ypabact::SetPosition(arg) )
         return 0;
 
-    if ( ypagun.gunFlags & GUN_FLAGS_GROUND )
+    if ( _gunFlags & GUN_FLAGS_GROUND )
     {
         ypaworld_arg136 arg136;
         arg136.stPos.x = arg->pos.x;
@@ -655,19 +646,19 @@ size_t NC_STACK_ypagun::SetPosition(bact_arg80 *arg)
         arg136.vect.z = 0;
         arg136.flags = 0;
 
-        ypabact.ywo->ypaworld_func136(&arg136);
+        _world->ypaworld_func136(&arg136);
 
         if ( arg136.isect )
-            ypabact.position.y = arg136.isectPos.y - ypabact.overeof;
+            _position.y = arg136.isectPos.y - _overeof;
 
         ypagun_func128(vec3d(0, 0, 1.0), false);
     }
     else if ( !(arg->field_C & 4) )
     {
-        ypabact.position.y = arg->pos.y + ypabact.pSector->height;
+        _position.y = arg->pos.y + _pSector->height;
     }
 
-    ypabact.old_pos = ypabact.position;
+    _old_pos = _position;
 
     int v12 = 2;
     HandleVisChildrens(&v12);
@@ -677,13 +668,13 @@ size_t NC_STACK_ypagun::SetPosition(bact_arg80 *arg)
 
 void NC_STACK_ypagun::EnergyInteract(update_msg *arg)
 {
-    if ( ypabact.status != BACT_STATUS_DEAD )
+    if ( _status != BACT_STATUS_DEAD )
     {
-        if ( ypabact.pSector->owner == ypabact.owner )
-            ypabact.energy += ypabact.energy_max * (arg->frameTime / 1000.0) * ypabact.pSector->energy_power / 40000.0;
+        if ( _pSector->owner == _owner )
+            _energy += _energy_max * (arg->frameTime / 1000.0) * _pSector->energy_power / 40000.0;
 
-        if ( ypabact.energy > ypabact.energy_max )
-            ypabact.energy = ypabact.energy_max;
+        if ( _energy > _energy_max )
+            _energy = _energy_max;
     }
 }
 
@@ -691,19 +682,19 @@ void NC_STACK_ypagun::Renew()
 {
     NC_STACK_ypabact::Renew();
 
-    ypagun.gunFlags = 0;
-    ypagun.downTime = 0;
+    _gunFlags = 0;
+    _gunDownTime = 0;
 
     setBACT_extraViewer(1);
 
-    ypabact.viewer_position = vec3d(0, 0, 0);
+    _viewer_position = vec3d(0, 0, 0);
 
-    ypabact.viewer_rotation = ypabact.rotation;
+    _viewer_rotation = _rotation;
 }
 
-size_t NC_STACK_ypagun::TestTargetSector(__NC_STACK_ypabact *cel_unit)
+size_t NC_STACK_ypagun::TestTargetSector(NC_STACK_ypabact *cel_unit)
 {
-    vec3d vTgt = cel_unit->position - ypabact.position;
+    vec3d vTgt = cel_unit->_position - _position;
 
     float dist = vTgt.length();
 
@@ -715,20 +706,20 @@ size_t NC_STACK_ypagun::TestTargetSector(__NC_STACK_ypabact *cel_unit)
 
     vTgt /= dist;
 
-    if ( C_PI_2 - clp_acos( vTgt.dot(-ypagun.rott) ) > ypagun.maxUp )
+    if ( C_PI_2 - clp_acos( vTgt.dot(-_gunRott) ) > _gunMaxUp )
         return 0;
 
-    if ( C_PI_2 - clp_acos( vTgt.dot(ypagun.rott) ) > ypagun.maxDown )
+    if ( C_PI_2 - clp_acos( vTgt.dot(_gunRott) ) > _gunMaxDown )
         return 0;
 
-    vec3d tmp = vTgt - ypagun.rott * vTgt.dot(ypagun.rott);
+    vec3d tmp = vTgt - _gunRott * vTgt.dot(_gunRott);
 
     float ln = tmp.length();
 
     if ( ln <= 0.1 )
         return 1;
 
-    if ( clp_acos( tmp.dot(ypagun.basis) / ln ) <= ypagun.maxSide )
+    if ( clp_acos( tmp.dot(_gunBasis) / ln ) <= _gunMaxSide )
         return 1;
 
     return 0;
@@ -742,8 +733,8 @@ void NC_STACK_ypagun::ypagun_func128(const vec3d &_basis, bool directDown)
     if ( ln > 0.001 )
         basis /= ln;
 
-    ypagun.basis = basis;
-    ypabact.rotation.SetZ( basis );
+    _gunBasis = basis;
+    _rotation.SetZ( basis );
 
     if ( basis.y != 0.0 )
     {
@@ -751,141 +742,141 @@ void NC_STACK_ypagun::ypagun_func128(const vec3d &_basis, bool directDown)
         {
             float v12 = -1.0 / ( basis.y / basis.XZ().length() );
 
-            ypabact.rotation.m11 = sqrt(POW2(v12) / (POW2(v12) + 1.0));
+            _rotation.m11 = sqrt(POW2(v12) / (POW2(v12) + 1.0));
 
             if ( basis.x != 0.0 )
             {
-                float v14 = 1.0 - POW2(ypabact.rotation.m11);
-                ypabact.rotation.m10 = sqrt( v14 / (POW2(basis.z) / (POW2(basis.x)) + 1.0) );
-                ypabact.rotation.m12 = sqrt( v14 - POW2(ypabact.rotation.m10) );
+                float v14 = 1.0 - POW2(_rotation.m11);
+                _rotation.m10 = sqrt( v14 / (POW2(basis.z) / (POW2(basis.x)) + 1.0) );
+                _rotation.m12 = sqrt( v14 - POW2(_rotation.m10) );
             }
             else
             {
-                float v17 = 1.0 - POW2(ypabact.rotation.m11);
-                ypabact.rotation.m12 = sqrt( v17 / (POW2(basis.x) / (POW2(basis.z)) + 1.0) );
-                ypabact.rotation.m10 = sqrt( v17 - POW2(ypabact.rotation.m12) );
+                float v17 = 1.0 - POW2(_rotation.m11);
+                _rotation.m12 = sqrt( v17 / (POW2(basis.x) / (POW2(basis.z)) + 1.0) );
+                _rotation.m10 = sqrt( v17 - POW2(_rotation.m12) );
             }
 
             if ( basis.x < 0.0 )
-                ypabact.rotation.m10 = -ypabact.rotation.m10;
+                _rotation.m10 = -_rotation.m10;
 
             if ( basis.z < 0.0 )
-                ypabact.rotation.m12 = -ypabact.rotation.m12;
+                _rotation.m12 = -_rotation.m12;
 
             if ( basis.y > 0.0 )
             {
-                ypabact.rotation.m10 = -ypabact.rotation.m10;
-                ypabact.rotation.m12 = -ypabact.rotation.m12;
+                _rotation.m10 = -_rotation.m10;
+                _rotation.m12 = -_rotation.m12;
             }
         }
         else
         {
-            ypabact.rotation.SetY( vec3d(0.0, 0.0, 1.0) );
+            _rotation.SetY( vec3d(0.0, 0.0, 1.0) );
         }
     }
     else
     {
-        ypabact.rotation.SetY( vec3d(0.0, 1.0, 0.0) );
+        _rotation.SetY( vec3d(0.0, 1.0, 0.0) );
     }
 
     if ( directDown )
     {
-        ypagun.gunFlags |= GUN_FLAGS_FALLDOWN;
-        ypabact.rotation.SetY( -ypabact.rotation.AxisY() );
+        _gunFlags |= GUN_FLAGS_FALLDOWN;
+        _rotation.SetY( -_rotation.AxisY() );
     }
 
-    ypabact.rotation.SetX( ypabact.rotation.AxisY() * ypabact.rotation.AxisZ() );
+    _rotation.SetX( _rotation.AxisY() * _rotation.AxisZ() );
 
-    ypagun.rott = ypabact.rotation.AxisY();
+    _gunRott = _rotation.AxisY();
 }
 
 
 vec3d NC_STACK_ypagun::ypagun_func129(const vec3d &axis, float angle)
 {
-    ypagun.basis = mat3x3(axis, -angle, MAT_FLAG_INV_SIN).Transform(ypagun.basis);
+    _gunBasis = mat3x3(axis, -angle, MAT_FLAG_INV_SIN).Transform(_gunBasis);
 
-    ypabact.rotation *= mat3x3(axis, angle, MAT_FLAG_INV_SIN);
+    _rotation *= mat3x3(axis, angle, MAT_FLAG_INV_SIN);
 
-    return ypagun.basis;
+    return _gunBasis;
 }
 
 
 void NC_STACK_ypagun::setGUN_sideAngle(int angl)
 {
-    ypagun.maxSide = angl / 1000.0;
+    _gunMaxSide = angl / 1000.0;
 }
 
 void NC_STACK_ypagun::setGUN_upAngle(int angl)
 {
-    ypagun.maxUp = angl / 1000.0;
+    _gunMaxUp = angl / 1000.0;
 }
 
 void NC_STACK_ypagun::setGUN_downAngle(int angl)
 {
-    ypagun.maxDown = angl / 1000.0;
+    _gunMaxDown = angl / 1000.0;
 }
 
 void NC_STACK_ypagun::setGUN_fireType(int tp)
 {
-    ypagun.gunType = tp;
+    _gunType = tp;
 }
 
 void NC_STACK_ypagun::setGUN_fireTime(int time)
 {
-    ypagun.fireTime = time;
+    _gunFireTime = time;
 }
 
 void NC_STACK_ypagun::setGUN_setGround(int grnd)
 {
     if ( grnd )
-        ypagun.gunFlags |= GUN_FLAGS_GROUND;
+        _gunFlags |= GUN_FLAGS_GROUND;
     else
-        ypagun.gunFlags &= ~GUN_FLAGS_GROUND;
+        _gunFlags &= ~GUN_FLAGS_GROUND;
 }
 
 void NC_STACK_ypagun::setGUN_roboGun(int rbo)
 {
     if ( rbo )
-        ypagun.gunFlags |= GUN_FLAGS_ROBO;
+        _gunFlags |= GUN_FLAGS_ROBO;
     else
-        ypagun.gunFlags &= ~GUN_FLAGS_ROBO;
+        _gunFlags &= ~GUN_FLAGS_ROBO;
 }
 
 
 
 int NC_STACK_ypagun::getGUN_sideAngle()
 {
-    return ypagun.maxSide * 1000.0;
+    return _gunMaxSide * 1000.0;
 }
 
 int NC_STACK_ypagun::getGUN_upAngle()
 {
-    return ypagun.maxUp * 1000.0;
+    return _gunMaxUp * 1000.0;
 }
 
 int NC_STACK_ypagun::getGUN_downAngle()
 {
-    return ypagun.maxDown * 1000.0;
+    return _gunMaxDown * 1000.0;
 }
 
 int NC_STACK_ypagun::getGUN_fireType()
 {
-    return ypagun.gunType;
+    return _gunType;
 }
 
 int NC_STACK_ypagun::getGUN_fireTime()
 {
-    return ypagun.fireTime;
+    return _gunFireTime;
 }
 
 bool NC_STACK_ypagun::getGUN_setGround()
 {
-    return (ypagun.gunFlags & GUN_FLAGS_GROUND) != 0;
+    return (_gunFlags & GUN_FLAGS_GROUND) != 0;
 }
 
-bool NC_STACK_ypagun::getGUN_roboGun()
+bool NC_STACK_ypagun::IsRoboGun()
 {
-    return (ypagun.gunFlags & GUN_FLAGS_ROBO) != 0;
+    return (_gunFlags & GUN_FLAGS_ROBO) != 0;
 }
 
 
@@ -894,13 +885,13 @@ size_t NC_STACK_ypagun::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 70:
         AI_layer3( (update_msg *)data );
         return 1;
@@ -922,7 +913,7 @@ size_t NC_STACK_ypagun::compatcall(int method_id, void *data)
         Renew();
         return 1;
     case 111:
-        return (size_t)TestTargetSector( (__NC_STACK_ypabact *)data );
+        return (size_t)TestTargetSector( (NC_STACK_ypabact *)data );
     case 128:
         //ypagun_func128( (gun_arg128 *)data );
         return 1;

@@ -9,58 +9,76 @@
 #include "font.h"
 
 
-const NewClassDescr NC_STACK_button::description("button.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_button::description("button.class", &newinstance);
 
-size_t NC_STACK_button::func0(IDVList *stak)
+void NC_STACK_button::clear()
+{
+    x = 0;
+    y = 0;
+    w = 0;
+    h = 0;
+    buttons.clear();
+
+    field_d8.clear();
+    idd = 0;
+    visible = false;
+    field_19c = 0;
+    field_19D = 0;
+    field_19E = 0;
+    field_19F = 0;
+    field_1A0 = 0;
+    field_1A1 = 0;
+    screen_width = 0;
+    screen_height = 0;
+}
+
+size_t NC_STACK_button::func0(IDVList &stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
 
-    stack__button.field_19F = 97;
-    stack__button.field_1A0 = 115;
-    stack__button.field_1A1 = 99;
+    field_19F = 97;
+    field_1A0 = 115;
+    field_1A1 = 99;
 
-    stack__button.field_19c = 97;
-    stack__button.field_19D = 99;
-    stack__button.field_19E = 32;
+    field_19c = 97;
+    field_19D = 99;
+    field_19E = 32;
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BTN_ATT_X:
-                    setBTN_x(val.value.i_data);
-                    break;
-                case BTN_ATT_Y:
-                    setBTN_y(val.value.i_data);
-                    break;
-                case BTN_ATT_W:
-                    setBTN_w(val.value.i_data);
-                    break;
-                case BTN_ATT_H:
-                    setBTN_h(val.value.i_data);
-                    break;
-                case BTN_ATT_CHARS:
-                    setBTN_chars((const char *)val.value.p_data);
-                    break;
+            case BTN_ATT_X:
+                setBTN_x(val.value.i_data);
+                break;
+            case BTN_ATT_Y:
+                setBTN_y(val.value.i_data);
+                break;
+            case BTN_ATT_W:
+                setBTN_w(val.value.i_data);
+                break;
+            case BTN_ATT_H:
+                setBTN_h(val.value.i_data);
+                break;
+            case BTN_ATT_CHARS:
+                setBTN_chars((const char *)val.value.p_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
 
-    if ( stack__button.btn_width > 0 && stack__button.btn_height > 0 )
+    if ( w > 0 && h > 0 )
     {
-        stack__button.screen_width = GFXEngine::GFXe.getScreenW();
-        stack__button.screen_height = GFXEngine::GFXe.getScreenH();
+        screen_width = GFXEngine::GFXe.getScreenW();
+        screen_height = GFXEngine::GFXe.getScreenH();
     }
     else
     {
@@ -73,57 +91,48 @@ size_t NC_STACK_button::func0(IDVList *stak)
 
 size_t NC_STACK_button::func1()
 {
-    __NC_STACK_button *btn = &stack__button;
-
-    for (int i = 0; i < 48; i++)
+    for (WidgetArr::iterator it = field_d8.begin(); it != field_d8.end(); it++)
     {
-        if (btn->field_d8[i])
-        {
-            if (btn->field_d8[i]->button_type == 5)
-                nc_FreeMem(btn->field_d8[i]->field_41C);
-            nc_FreeMem(btn->field_d8[i]);
-        }
-
-        if (btn->buttons[i])
-            nc_FreeMem(btn->buttons[i]);
+        if (it->button_type == NC_STACK_button::TYPE_SLIDER)
+            delete it->field_41C;
     }
+
+    field_d8.clear();
+    buttons.clear();
 
     return NC_STACK_nucleus::func1();
 }
 
-size_t NC_STACK_button::func2(IDVList *stak)
+size_t NC_STACK_button::func2(IDVList &stak)
 {
     NC_STACK_nucleus::func2(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BTN_ATT_X:
-                    setBTN_x(val.value.i_data);
-                    break;
-                case BTN_ATT_Y:
-                    setBTN_y(val.value.i_data);
-                    break;
-                case BTN_ATT_W:
-                    setBTN_w(val.value.i_data);
-                    break;
-                case BTN_ATT_H:
-                    setBTN_h(val.value.i_data);
-                    break;
-                case BTN_ATT_CHARS:
-                    setBTN_chars((const char *)val.value.p_data);
-                    break;
+            case BTN_ATT_X:
+                setBTN_x(val.value.i_data);
+                break;
+            case BTN_ATT_Y:
+                setBTN_y(val.value.i_data);
+                break;
+            case BTN_ATT_W:
+                setBTN_w(val.value.i_data);
+                break;
+            case BTN_ATT_H:
+                setBTN_h(val.value.i_data);
+                break;
+            case BTN_ATT_CHARS:
+                setBTN_chars((const char *)val.value.p_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -131,39 +140,36 @@ size_t NC_STACK_button::func2(IDVList *stak)
     return 1;
 }
 
-size_t NC_STACK_button::func3(IDVList *stak)
+size_t NC_STACK_button::func3(IDVList &stak)
 {
     NC_STACK_nucleus::func3(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BTN_ATT_X:
-                    *(int *)val.value.p_data = getBTN_x();
-                    break;
-                case BTN_ATT_Y:
-                    *(int *)val.value.p_data = getBTN_y();
-                    break;
-                case BTN_ATT_W:
-                    *(int *)val.value.p_data = getBTN_w();
-                    break;
-                case BTN_ATT_H:
-                    *(int *)val.value.p_data = getBTN_h();
-                    break;
-                case BTN_ATT_PBTN:
-                    *(__NC_STACK_button **)val.value.p_data = getBTN_pButton();
-                    break;
+            case BTN_ATT_X:
+                *(int *)val.value.p_data = getBTN_x();
+                break;
+            case BTN_ATT_Y:
+                *(int *)val.value.p_data = getBTN_y();
+                break;
+            case BTN_ATT_W:
+                *(int *)val.value.p_data = getBTN_w();
+                break;
+            case BTN_ATT_H:
+                *(int *)val.value.p_data = getBTN_h();
+                break;
+            case BTN_ATT_PBTN:
+                *(NC_STACK_button **)val.value.p_data = this;
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -172,62 +178,62 @@ size_t NC_STACK_button::func3(IDVList *stak)
 }
 
 // Update slider
-void sub_436F58(__NC_STACK_button *btn, button_str2 *sbt)
+void NC_STACK_button::sub_436F58(NC_STACK_button *btn, button_str2 *sbt)
 {
-    button_str2_t2 *sbttt = sbt->field_41C;
+    Slider *sbttt = sbt->field_41C;
 
-    if ( sbttt->field_0 > sbttt->field_2 )
-        sbttt->field_0 = sbttt->field_2;
+    if ( sbttt->value > sbttt->max )
+        sbttt->value = sbttt->max;
 
-    if ( sbttt->field_0 < sbttt->field_4)
-        sbttt->field_0 = sbttt->field_4;
+    if ( sbttt->value < sbttt->min)
+        sbttt->value = sbttt->min;
 
-    int v7 = sbt->width / (sbttt->field_2 - sbttt->field_4 + 1) + 1;
+    int v7 = sbt->width / (sbttt->max - sbttt->min + 1) + 1;
 
     if ( v7 < 6 )
         v7 = 6;
 
-    sbttt->field_6 = (float)((sbttt->field_0 - sbttt->field_4) * (sbt->width - v7) / (sbttt->field_2 - sbttt->field_4)) + 0.5;
+    sbttt->field_6_ = (float)((sbttt->value - sbttt->min) * (sbt->width - v7) / (sbttt->max - sbttt->min)) + 0.5;
 
-    if ( sbttt->field_6 < 0 )
-        sbttt->field_6 = 0;
+    if ( sbttt->field_6_ < 0 )
+        sbttt->field_6_ = 0;
 
-    sbttt->field_8 = v7 + sbttt->field_6;
+    sbttt->field_8_ = v7 + sbttt->field_6_;
 
-    if ( sbttt->field_8 > sbt->width )
-        sbttt->field_8 = sbt->width;
+    if ( sbttt->field_8_ > sbt->width )
+        sbttt->field_8_ = sbt->width;
 
     char *cpt = sbt->caption;
 
-    if ( sbttt->field_6 > 0 )
+    if ( sbttt->field_6_ > 0 )
     {
-        if ( sbt->state & 0x10 )
+        if ( sbt->flags & FLAG_BORDER )
         {
             FontUA::store_u8(&cpt, btn->field_19F);
 
-            if ( sbttt->field_6 > 1 )
+            if ( sbttt->field_6_ > 1 )
             {
-                FontUA::op17(&cpt, sbttt->field_6);
+                FontUA::op17(&cpt, sbttt->field_6_);
                 FontUA::store_u8(&cpt, btn->field_1A0);
             }
         }
         else
         {
-            FontUA::op17(&cpt, sbttt->field_6);
+            FontUA::op17(&cpt, sbttt->field_6_);
             FontUA::store_u8(&cpt, btn->field_1A0);
         }
     }
 
     FontUA::store_u8(&cpt, btn->field_19c);
 
-    FontUA::op17(&cpt, sbttt->field_8);
+    FontUA::op17(&cpt, sbttt->field_8_);
 
     FontUA::store_u8(&cpt, btn->field_19E);
     FontUA::store_u8(&cpt, btn->field_19D);
 
-    if ( sbt->state & 0x10 )
+    if ( sbt->flags & FLAG_BORDER )
     {
-        if ( sbttt->field_8 < sbt->width - 1 )
+        if ( sbttt->field_8_ < sbt->width - 1 )
         {
             FontUA::op17(&cpt, sbt->width - 1);
 
@@ -235,7 +241,7 @@ void sub_436F58(__NC_STACK_button *btn, button_str2 *sbt)
             FontUA::store_u8(&cpt, btn->field_1A1);
         }
     }
-    else if ( sbttt->field_8 < sbt->width )
+    else if ( sbttt->field_8_ < sbt->width )
     {
         FontUA::op17(&cpt, sbt->width - 1);
 
@@ -246,91 +252,83 @@ void sub_436F58(__NC_STACK_button *btn, button_str2 *sbt)
 
 size_t NC_STACK_button::button_func64(button_64_arg *arg)
 {
-    __NC_STACK_button *btn = &stack__button;
+    /*if ( idd >= 48 )
+        return 0;*/
 
-    int idd = btn->idd;
+    buttons.emplace_back();
+    field_d8.emplace_back(); //field_d8[idd] = (button_str2 *)AllocVec(sizeof(button_str2), 65537);
 
-    if ( btn->idd >= 48 )
+    button_str2 &sbt = field_d8[idd];
+    ButtonBox &bt = buttons[idd];
+
+    if (   arg->button_type != TYPE_BUTTON
+            && arg->button_type != TYPE_CHECKBX
+            && arg->button_type != TYPE_CAPTION
+            && arg->button_type != TYPE_RADIOBTN
+            && arg->button_type != TYPE_SLIDER )
         return 0;
 
-    btn->buttons[idd] = (ButtonBox *)AllocVec(sizeof(ButtonBox), 65537);
+    sbt.button_type = arg->button_type;
 
-    if ( !btn->buttons[idd] )
-        return 0;
-
-    btn->field_d8[idd] = (button_str2 *)AllocVec(sizeof(button_str2), 65537);
-
-    button_str2 *sbt = btn->field_d8[idd];
-
-    if ( arg->button_type != 1 && arg->button_type != 2 && arg->button_type != 3 && arg->button_type != 4 && arg->button_type != 5 )
-        return 0;
-
-    sbt->button_type = arg->button_type;
-
-    if ( arg->button_type != 5 )
+    if ( arg->button_type != NC_STACK_button::TYPE_SLIDER )
     {
         if ( !arg->caption )
             return 0;
 
-        strncpy(sbt->caption, arg->caption, 511);
+        strncpy(sbt.caption, arg->caption, 511);
 
         if ( arg->caption2 )
-            strncpy(sbt->caption2, arg->caption2, 511);
+            strncpy(sbt.caption2, arg->caption2, 511);
         else
-            strcpy(sbt->caption2, sbt->caption);
+            strcpy(sbt.caption2, sbt.caption);
     }
 
-    sbt->xpos = arg->xpos;
-    sbt->ypos = arg->ypos;
-    sbt->width = arg->width;
+    sbt.xpos = arg->xpos;
+    sbt.ypos = arg->ypos;
+    sbt.width = arg->width;
 
-    if ( sbt->xpos < 0 || sbt->ypos < 0 || sbt->width < 0 || sbt->width + sbt->xpos > btn->btn_width )
+    if ( sbt.xpos < 0 || sbt.ypos < 0 || sbt.width < 0 || sbt.width + sbt.xpos > w )
         return 0;
 
-    sbt->field_40A = arg->field_1C;
-    sbt->down_id = arg->down_id;
-    sbt->up_id = arg->up_id;
-    sbt->pressed_id = arg->pressed_id;
-    sbt->txt_r = arg->txt_r;
-    sbt->txt_g = arg->txt_g;
-    sbt->txt_b = arg->txt_b;
+    sbt.down_id = arg->down_id;
+    sbt.up_id = arg->up_id;
+    sbt.pressed_id = arg->pressed_id;
+    sbt.txt_r = arg->txt_r;
+    sbt.txt_g = arg->txt_g;
+    sbt.txt_b = arg->txt_b;
 
-    btn->idd++;
+    bt.x = sbt.xpos;
+    bt.y = sbt.ypos;
+    bt.w = sbt.width;
 
-    ButtonBox *bt = btn->buttons[idd];
-
-    bt->x = sbt->xpos;
-    bt->y = sbt->ypos;
-    bt->w = sbt->width;
-
-    if ( sbt->button_type == 3 )
-        bt->h = 0;
+    if ( sbt.button_type == TYPE_CAPTION )
+        bt.h = 0;
     else
-        bt->h = GFXEngine::GFXe.getTileset( arg->tileset_up )->font_height;
+        bt.h = GFXEngine::GFXe.getTileset( arg->tileset_up )->h;
 
-    btn->field_10++;
+    idd++;
 
-    sbt->button_id = arg->button_id;
-    sbt->tileset_down = arg->tileset_down;
-    sbt->tileset_up = arg->tileset_up;
-    sbt->field_42E = arg->field_3A;
-    sbt->state = arg->state;
+    sbt.button_id = arg->button_id;
+    sbt.tileset_down = arg->tileset_down;
+    sbt.tileset_up = arg->tileset_up;
+    sbt.field_42E = arg->field_3A;
+    sbt.flags = arg->flags;
 
-    sbt->state |= 8;
+    sbt.flags |= FLAG_DRAW;
 
-    if ( sbt->button_type == 5 )
+    if ( sbt.button_type == TYPE_SLIDER )
     {
         if ( !arg->field_34 )
             return 0;
 
-        button_str2_t2 *sbtt = (button_str2_t2 *)AllocVec(sizeof(button_str2_t2), 65537);
+        Slider *sbtt = new Slider;
         if ( sbtt )
         {
             *sbtt = *arg->field_34;
 
-            sbt->field_41C = sbtt;
+            sbt.field_41C = sbtt;
 
-            sub_436F58(btn, sbt);
+            sub_436F58(this, &sbt);
             return 1;
         }
     }
@@ -340,27 +338,19 @@ size_t NC_STACK_button::button_func64(button_64_arg *arg)
     return 0;
 }
 
-size_t NC_STACK_button::button_func65(int *butID)
+size_t NC_STACK_button::button_func65(int butID)
 {
-    __NC_STACK_button *btn = &stack__button;
-
     int id = button_func72(butID);
 
-    if ( id >= 0 && id < btn->idd )
+    if ( id >= 0 && id < idd )
     {
-        nc_FreeMem(btn->field_d8[id]);
-        nc_FreeMem(btn->buttons[id]);
+        if (field_d8[id].field_41C)
+            delete field_d8[id].field_41C;
 
-        for (int i = id; i < 47; i++)
-        {
-            btn->buttons[i] = btn->buttons[i + 1];
-            btn->field_d8[i] = btn->field_d8[i + 1];
-        }
+        field_d8.erase( field_d8.begin() + id );
+        buttons.erase( buttons.begin() + id );
 
-        btn->idd--;
-        btn->buttons[47] = NULL;
-        btn->field_d8[47] = NULL;
-        btn->field_10--;
+        idd--;
 
         return 1;
     }
@@ -370,20 +360,18 @@ size_t NC_STACK_button::button_func65(int *butID)
 
 size_t NC_STACK_button::button_func66(button_66arg *arg)
 {
-    __NC_STACK_button *btn = &stack__button;
+    int id = button_func72(arg->butID);
 
-    int id = button_func72(&arg->butID);
-
-    if ( id >= 0 && id < btn->idd )
+    if ( id >= 0 && id < idd )
     {
-        if ( btn->field_d8[id]->button_type != 3 )
+        if ( field_d8[id].button_type != TYPE_CAPTION )
         {
-            btn->buttons[id]->w = btn->field_d8[id]->width;
-            btn->buttons[id]->h = GFXEngine::GFXe.getTileset( btn->field_d8[id]->tileset_down )->font_height;
+            buttons[id].w = field_d8[id].width;
+            buttons[id].h = GFXEngine::GFXe.getTileset( field_d8[id].tileset_down )->h;
         }
 
-        btn->field_d8[id]->state &= 0xFFFD;
-        btn->field_d8[id]->state |= 8;
+        field_d8[id].flags &= ~FLAG_DISABLED;
+        field_d8[id].flags |= FLAG_DRAW;
         return 1;
     }
 
@@ -392,18 +380,16 @@ size_t NC_STACK_button::button_func66(button_66arg *arg)
 
 size_t NC_STACK_button::button_func67(button_66arg *arg)
 {
-    __NC_STACK_button *btn = &stack__button;
+    int id = button_func72(arg->butID);
 
-    int id = button_func72(&arg->butID);
-
-    if ( id >= 0 && id < btn->idd )
+    if ( id >= 0 && id < idd )
     {
-        btn->buttons[id]->w = 0;
-        btn->buttons[id]->h = 0;
-        btn->field_d8[id]->state |= 2;
+        buttons[id].w = 0;
+        buttons[id].h = 0;
+        field_d8[id].flags |= FLAG_DISABLED;
 
         if ( !arg->field_4 )
-            btn->field_d8[id]->state &= 0xFFF7;
+            field_d8[id].flags &= ~FLAG_DRAW;
 
         return 1;
     }
@@ -411,249 +397,220 @@ size_t NC_STACK_button::button_func67(button_66arg *arg)
     return 0;
 }
 
-size_t NC_STACK_button::button_func68(int *arg)
+size_t NC_STACK_button::Show()
 {
-    __NC_STACK_button *btn = &stack__button;
-
-    if ( *arg == 1 )
+    if ( !visible )
     {
-        if ( !(btn->field_19A & 1) )
-        {
-            btn->field_19A |= 1;
-            INPe.AddClickBox(btn, 0);
-        }
-    }
-    else if ( *arg == 2 )
-    {
-        if ( btn->field_19A & 1 )
-        {
-            btn->field_19A &= 0xFFFE;
-            INPe.RemClickBox(btn);
-        }
+        visible = true;
+        INPe.AddClickBoxFront(this);
     }
 
     return 1;
 }
 
-size_t NC_STACK_button::button_func69(struC5 *arg)
+size_t NC_STACK_button::Hide()
 {
-    __NC_STACK_button *btn = &stack__button;
-
-    int v46 = 0;
-
-    if ( !(arg->winp131arg.flag & 1) )
-        return 0;
-
-    if ( arg->winp131arg.flag & 2 )
+    if ( visible )
     {
-        for (int i = 0; i < 48; i++)
+        visible = false;
+        INPe.RemClickBox(this);
+    }
+
+    return 1;
+}
+
+NC_STACK_button::ResCode NC_STACK_button::button_func69(struC5 *arg)
+{
+    ResCode result = ResCode(0);
+
+    if ( !(arg->ClickInf.flag & ClickBoxInf::FLAG_OK) )
+        return ResCode(0);
+
+    if ( arg->ClickInf.flag & ClickBoxInf::FLAG_LM_DOWN )
+    {
+        for (WidgetArr::iterator it = field_d8.begin(); it != field_d8.end(); it++)
         {
-            if (btn->field_d8[i])
-                btn->field_d8[i]->state &= 0xFFFB;
+            it->flags &= ~FLAG_DOWN;
         }
     }
 
-    if (arg->winp131arg.flag & 8)
+    if (arg->ClickInf.flag & ClickBoxInf::FLAG_LM_UP)
     {
-        for (int i = 0; i < 48; i++)
+        for (WidgetArr::iterator it = field_d8.begin(); it != field_d8.end(); it++)
         {
-            button_str2 *sbt = btn->field_d8[i];
-            if ( sbt )
+            if ( it->button_type == TYPE_SLIDER )
             {
-                if ( sbt->button_type == 5 )
+                if ( it->flags & FLAG_DOWN )
                 {
-                    if ( sbt->state & 4 )
-                    {
-                        sbt->state &= 0xFFFB;
-                        sbt->state &= 0xFFFE;
-                        sbt->field_41C->field_A = 0;
+                    it->flags &= ~(FLAG_PRESSED | FLAG_DOWN);
+                    it->field_41C->pressPart = 0;
 
-                        return (sbt->button_id << 16) | sbt->up_id;
-                    }
+                    return ResCode(it->up_id, it->button_id);
                 }
             }
         }
     }
 
-    if ( arg->winp131arg.flag & 4 )
+    if ( arg->ClickInf.flag & ClickBoxInf::FLAG_LM_HOLD )
     {
-        if ( btn == arg->winp131arg.selected_btn && arg->winp131arg.selected_btnID != -1 && (btn->field_d8[arg->winp131arg.selected_btnID]->state & 4) )
+        if ( this == arg->ClickInf.selected_btn && arg->ClickInf.selected_btnID != -1 && (field_d8[arg->ClickInf.selected_btnID].flags & FLAG_DOWN) )
         {
-            button_str2 *sbt = btn->field_d8[arg->winp131arg.selected_btnID];
+            button_str2 &sbt = field_d8[arg->ClickInf.selected_btnID];
 
-            if ( sbt->button_type == 1 )
-                sbt->state |= 1;
+            if ( sbt.button_type == TYPE_BUTTON )
+                sbt.flags |= FLAG_PRESSED;
         }
         else
         {
-            for (int i = 0; i < 48; i++)
+            for (WidgetArr::iterator it = field_d8.begin(); it != field_d8.end(); it++)
             {
-                if ( btn->field_d8[i] )
-                {
-                    if ( btn->field_d8[i]->button_type == 1 )
-                        btn->field_d8[i]->state &= 0xFFFE;
-                }
+                if (it->button_type == TYPE_BUTTON)
+                    it->flags &= ~FLAG_PRESSED;
             }
         }
 
-        for (int i = 0; i < 48; i++)
+        for (WidgetArr::iterator it = field_d8.begin(); it != field_d8.end(); it++)
         {
-            button_str2 *sbt = btn->field_d8[i];
-
-            if ( sbt )
+            if (it->button_type == TYPE_SLIDER && it->flags & FLAG_DOWN)
             {
-                if (sbt->button_type == 5)
+                Slider *sbttt = it->field_41C;
+
+                if (sbttt->pressPart == 2)
                 {
-                    if (sbt->state & 4)
-                    {
-                        button_str2_t2 *sbttt = sbt->field_41C;
+                    if (it->flags & FLAG_PRESSED)
+                        result = ResCode(it->pressed_id, it->button_id);
 
-                        if (sbttt->field_A == 2)
-                        {
-                            if (sbt->state & 1)
-                                v46 = (sbt->button_id << 16) | sbt->pressed_id;
+                    int v21 = (arg->ClickInf.move.screenPos.x - sbttt->scrDownX) * (sbttt->max - sbttt->min + 1);
 
-                            int v21 = (arg->winp131arg.move[0].x - sbttt->field_E) * (sbttt->field_2 - sbttt->field_4 + 1);
+                    sbttt->value = sbttt->oldValue + v21 / it->width;
 
-                            sbttt->field_0 = sbttt->field_C + v21 / sbt->width;
+                    if ( sbttt->value < sbttt->min )
+                        sbttt->value = sbttt->min;
 
-                            if ( sbttt->field_0 < sbttt->field_4 )
-                                sbttt->field_0 = sbttt->field_4;
+                    if ( sbttt->value > sbttt->max )
+                        sbttt->value = sbttt->max;
 
-                            if ( sbttt->field_0 > sbttt->field_2 )
-                                sbttt->field_0 = sbttt->field_2;
-
-                            sub_436F58(btn, sbt);
-                        }
-                    }
+                    sub_436F58(this, &(*it));
                 }
             }
         }
     }
 
-    if ( btn == arg->winp131arg.selected_btn )
+    if ( this == arg->ClickInf.selected_btn )
     {
-        if ( arg->winp131arg.flag & 2 )
-            v46 = 3;
+        if ( arg->ClickInf.flag & ClickBoxInf::FLAG_LM_DOWN )
+            result = ResCode(3);
 
-        if ( arg->winp131arg.selected_btnID != -1 )
+        if ( arg->ClickInf.selected_btnID != -1 && arg->ClickInf.selected_btnID < (int)field_d8.size())
         {
-            button_str2 *sbt = btn->field_d8[arg->winp131arg.selected_btnID];
-            if ( sbt )
+            button_str2 &sbt = field_d8[arg->ClickInf.selected_btnID];
+            result = ResCode(0, sbt.button_id);
+
+            switch ( sbt.button_type )
             {
-                v46 = sbt->button_id << 16;
-
-                switch ( sbt->button_type )
+            case TYPE_BUTTON:
+                if ( arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
                 {
-                case 4:
-                    if ( !(arg->winp131arg.flag & 0x10) )
-                        return (sbt->button_id << 16);
-
-                    for (int i = 0; i < 48; i++)
-                    {
-                        button_str2 *tmp = btn->field_d8[i];
-                        if (tmp)
-                        {
-                            if (tmp->button_type == 4)
-                                tmp->state &= 0xFFFA;
-                        }
-                    }
-                    sbt->state |= 5;
-                    return (sbt->button_id << 16) | sbt->down_id;
-
-                case 2:
-                    if ( !(arg->winp131arg.flag & 0x10) )
-                        return (sbt->button_id << 16);
-
-                    if ( sbt->state & 1 )
-                    {
-                        sbt->state &= 0xFFFE;
-                        return sbt->up_id | (sbt->button_id << 16);
-                    }
-                    else
-                    {
-                        sbt->state |= 1;
-                        return sbt->down_id | (sbt->button_id << 16);
-                    }
-                    break;
-
-                case 1:
-                    if ( arg->winp131arg.flag & 0x10 )
-                    {
-                        sbt->state |= 5;
-                        v46 = (sbt->button_id << 16) | sbt->down_id;
-                    }
-
-                    if ( arg->winp131arg.flag & 0x20 )
-                    {
-                        if ( sbt->state & 1 )
-                            v46 = (sbt->button_id << 16) | sbt->pressed_id;
-                    }
-
-                    if ( (arg->winp131arg.flag & 0x40) )
-                    {
-                        if ( sbt->state & 4 )
-                        {
-                            sbt->state &= 0xFFFA;
-                            v46 = (sbt->button_id << 16) | sbt->up_id;
-                        }
-                    }
-
-                    return v46;
-                case 5:
-                    if ( !(arg->winp131arg.flag & 0x40) )
-                    {
-                        if ( arg->winp131arg.flag & 0x10 )
-                        {
-                            button_str2_t2 *sbttt = sbt->field_41C;
-                            if ( arg->winp131arg.ldw_pos[2].x < sbttt->field_6 )
-                            {
-                                sbttt->field_A = 1;
-                                if ( sbttt->field_0 > sbttt->field_4 )
-                                    sbttt->field_0 -= 1;
-                            }
-                            else if ( arg->winp131arg.ldw_pos[2].x <= sbttt->field_8 )
-                            {
-                                sbttt->field_A = 2;
-                                sbttt->field_C = sbttt->field_0;
-                                sbttt->field_E = arg->winp131arg.ldw_pos[0].x;
-                            }
-                            else
-                            {
-                                sbttt->field_A = 3;
-                                if ( sbttt->field_0 < sbttt->field_2 )
-                                    sbttt->field_0 += 1;
-                            }
-
-                            sbt->state |= 5;
-                            v46 = (sbt->button_id << 16) | sbt->down_id;
-                        }
-                        else if ( arg->winp131arg.flag & 0x20 )
-                        {
-                            v46 |= sbt->pressed_id;
-                        }
-                    }
-                    sub_436F58(btn, sbt);
-                    return v46;
-                default:
-                    return v46;
+                    sbt.flags |= FLAG_PRESSED | FLAG_DOWN;
+                    result = ResCode(sbt.down_id, sbt.button_id);
                 }
+
+                if ( arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_HOLD )
+                {
+                    if ( sbt.flags & FLAG_PRESSED )
+                        result = ResCode(sbt.pressed_id, sbt.button_id);
+                }
+
+                if ( (arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_UP) )
+                {
+                    if ( sbt.flags & FLAG_DOWN )
+                    {
+                        sbt.flags &= ~(FLAG_PRESSED | FLAG_DOWN);
+                        result = ResCode(sbt.up_id, sbt.button_id);
+                    }
+                }
+
+                break;
+
+            case TYPE_CHECKBX:
+                if ( !(arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN) )
+                    return ResCode(0, sbt.button_id);
+
+                if ( sbt.flags & FLAG_PRESSED )
+                {
+                    sbt.flags &= ~FLAG_PRESSED;
+                    return ResCode(sbt.up_id, sbt.button_id);
+                }
+                else
+                {
+                    sbt.flags |= FLAG_PRESSED;
+                    return ResCode(sbt.down_id, sbt.button_id);
+                }
+                break;
+
+            case TYPE_RADIOBTN:
+                if ( arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
+                {
+                    UnsetRadioButtons();
+                    sbt.flags |= FLAG_PRESSED | FLAG_DOWN;
+                    result = ResCode(sbt.down_id, sbt.button_id);
+                }
+                break;
+
+            case TYPE_SLIDER:
+                if ( !(arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_UP) )
+                {
+                    if ( arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
+                    {
+                        Slider *sbttt = sbt.field_41C;
+                        if ( arg->ClickInf.ldw_pos.btnPos.x < sbttt->field_6_ )
+                        {
+                            sbttt->pressPart = 1;
+                            if ( sbttt->value > sbttt->min )
+                                sbttt->value -= 1;
+                        }
+                        else if ( arg->ClickInf.ldw_pos.btnPos.x <= sbttt->field_8_ )
+                        {
+                            sbttt->pressPart = 2;
+                            sbttt->oldValue = sbttt->value;
+                            sbttt->scrDownX = arg->ClickInf.ldw_pos.screenPos.x;
+                        }
+                        else
+                        {
+                            sbttt->pressPart = 3;
+                            if ( sbttt->value < sbttt->max )
+                                sbttt->value += 1;
+                        }
+
+                        sbt.flags |= FLAG_PRESSED | FLAG_DOWN;
+                        result = ResCode(sbt.down_id, sbt.button_id);
+                    }
+                    else if ( arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_HOLD )
+                    {
+                        result = ResCode(sbt.pressed_id, sbt.button_id);
+                    }
+                }
+                sub_436F58(this, &sbt);
+                break;
+
+            default:
+                break;
             }
         }
     }
-    return v46;
+    return result;
 }
 
 
-void button_func70__sub1(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
+void NC_STACK_button::button_func70__sub1(NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
 {
     int v6;
 
-    if ( sbt->state & 2 )
+    if ( sbt->flags & FLAG_DISABLED )
     {
         v6 = sbt->field_42E;
     }
-    else if ( !(sbt->state & 1) || sbt->state & 0x80 )
+    else if ( !(sbt->flags & FLAG_PRESSED) || (sbt->flags & FLAG_NOPRESS) )
     {
         v6 = sbt->tileset_up;
     }
@@ -662,25 +619,25 @@ void button_func70__sub1(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
         v6 = sbt->tileset_down;
     }
 
-    tiles_stru *v7 = GFXEngine::GFXe.getTileset(v6);
+    TileMap *v7 = GFXEngine::GFXe.getTileset(v6);
 
 
     char *v8 = *pbuf;
 
     FontUA::select_tileset(&v8, v6);
 
-    FontUA::set_center_xpos(&v8, sbt->xpos + btn->xpos - (btn->screen_width / 2));
+    FontUA::set_center_xpos(&v8, sbt->xpos + btn->x - (btn->screen_width / 2));
 
-    FontUA::set_center_ypos(&v8, sbt->ypos + btn->ypos - (btn->screen_height / 2));
+    FontUA::set_center_ypos(&v8, sbt->ypos + btn->y - (btn->screen_height / 2));
 
     int tmp = sbt->width;
 
-    if ( sbt->button_type != 3 )
+    if ( sbt->button_type != TYPE_CAPTION )
     {
-        if ( sbt->state & 0x10 )
+        if ( sbt->flags & FLAG_BORDER )
         {
             FontUA::store_u8(&v8, btn->field_19c); //Padding gfx
-            tmp += -v7->chars[btn->field_19c].width - v7->chars[btn->field_19D].width;
+            tmp += -v7->map[btn->field_19c].w - v7->map[btn->field_19D].w;
         }
     }
 
@@ -690,9 +647,9 @@ void button_func70__sub1(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
 
     FontUA::store_u8(&v8, btn->field_19E); //Padding gfx
 
-    if ( sbt->button_type != 3 )
+    if ( sbt->button_type != TYPE_CAPTION )
     {
-        if ( sbt->state & 0x10 )
+        if ( sbt->flags & FLAG_BORDER )
         {
             FontUA::store_u8(&v8, btn->field_19D); //Padding gfx
         }
@@ -701,9 +658,9 @@ void button_func70__sub1(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
     int v17;
     char *v18;
 
-    if ( sbt->state & 1 )
+    if ( sbt->flags & FLAG_PRESSED )
     {
-        if ( sbt->state & 0x80 )
+        if ( sbt->flags & FLAG_NOPRESS )
             v17 = 0;
         else
             v17 = 16;
@@ -716,11 +673,11 @@ void button_func70__sub1(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
         v18 = sbt->caption;
     }
 
-    if ( sbt->state & 0x20 )
+    if ( sbt->flags & FLAG_CENTER )
     {
         v17 |= 4;
     }
-    else if ( sbt->state & 0x100 )
+    else if ( sbt->flags & FLAG_RALIGN )
     {
         v17 |= 2;
     }
@@ -736,17 +693,17 @@ void button_func70__sub1(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
     *pbuf = v8;
 }
 
-void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
+void NC_STACK_button::button_func70__sub0(NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
 {
     char *v5 = *pbuf;
     int v6 = 0;
     int v7;
 
-    if ( sbt->state & 2 )
+    if ( sbt->flags & FLAG_DISABLED )
     {
         v7 = sbt->field_42E;
     }
-    else if ( sbt->state & 1 )
+    else if ( sbt->flags & FLAG_PRESSED )
     {
         v7 = sbt->tileset_down;
     }
@@ -755,33 +712,33 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
         v7 = sbt->tileset_up;
     }
 
-    tiles_stru *v8 = GFXEngine::GFXe.getTileset(v7);
+    TileMap *v8 = GFXEngine::GFXe.getTileset(v7);
 
     int strwdth = 0;
 
-    if ( sbt->state & 1 )
+    if ( sbt->flags & FLAG_PRESSED )
     {
         int caplen = strlen(sbt->caption2);
 
         for (int i = 0; i < caplen; i++)
-            strwdth += v8->chars[(uint8_t)sbt->caption2[i]].width;
+            strwdth += v8->map[(uint8_t)sbt->caption2[i]].w;
     }
     else
     {
         int caplen = strlen(sbt->caption);
 
         for (int i = 0; i < caplen; i++)
-            strwdth += v8->chars[(uint8_t)sbt->caption[i]].width;
+            strwdth += v8->map[(uint8_t)sbt->caption[i]].w;
     }
 
-    int v47 = (sbt->width - strwdth - v8->chars[btn->field_19c].width) / 2;
+    int v47 = (sbt->width - strwdth - v8->map[btn->field_19c].w) / 2;
 
     FontUA::select_tileset(&v5, v7);
 
-    FontUA::set_center_xpos(&v5, btn->xpos + sbt->xpos - (btn->screen_width / 2));
-    FontUA::set_center_ypos(&v5, btn->ypos + sbt->ypos - (btn->screen_height / 2));
+    FontUA::set_center_xpos(&v5, btn->x + sbt->xpos - (btn->screen_width / 2));
+    FontUA::set_center_ypos(&v5, btn->y + sbt->ypos - (btn->screen_height / 2));
 
-    if ( sbt->button_type == 5 )
+    if ( sbt->button_type == TYPE_SLIDER )
     {
         int v22 = 0;
         while ( sbt->caption[v22] != 0 || sbt->caption[v22 + 1] != 0 )
@@ -795,18 +752,18 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
     {
         int16_t ttmp = sbt->width;
 
-        if ( sbt->button_type != 3 )
+        if ( sbt->button_type != TYPE_CAPTION )
         {
-            if ( sbt->state & 0x10 )
+            if ( sbt->flags & FLAG_BORDER )
             {
                 FontUA::store_u8(&v5, btn->field_19c);
-                ttmp += -v8->chars[btn->field_19c].width - v8->chars[btn->field_19D].width;
+                ttmp += -v8->map[btn->field_19c].w - v8->map[btn->field_19D].w;
             }
         }
 
         if ( v47 > 0 )
         {
-            if ( sbt->state & 0x20 )
+            if ( sbt->flags & FLAG_CENTER )
             {
                 FontUA::op10(&v5, v47);
 
@@ -818,7 +775,7 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
 
         char *capt;
 
-        if ( sbt->state & 1 )
+        if ( sbt->flags & FLAG_PRESSED )
             capt = sbt->caption2;
         else
             capt = sbt->caption;
@@ -826,8 +783,8 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
         int v26 = 0;
         while ( capt[v26] )
         {
-            tile_xy *v28 = &v8->chars[(uint8_t)capt[v26]];
-            if ( v28->width + v6 > ttmp )
+            Common::PointRect &pr = v8->map[(uint8_t)capt[v26]];
+            if ( pr.w + v6 > ttmp )
             {
                 if ( (ttmp - v6) > 2 )
                 {
@@ -840,7 +797,7 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
                 break;
             }
 
-            v6 += v28->width;
+            v6 += pr.w;
 
             FontUA::store_s8(&v5, capt[v26]);
 
@@ -849,9 +806,9 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
 
         if ( v6 < ttmp )
         {
-            if ( sbt->button_type != 3 && sbt->state & 0x10 )
+            if ( sbt->button_type != TYPE_CAPTION && sbt->flags & FLAG_BORDER )
             {
-                FontUA::op17(&v5, sbt->width - v8->chars[btn->field_19D].width);
+                FontUA::op17(&v5, sbt->width - v8->map[btn->field_19D].w);
             }
             else
             {
@@ -860,9 +817,9 @@ void button_func70__sub0(__NC_STACK_button *btn, button_str2 *sbt, char **pbuf)
             FontUA::store_u8(&v5, btn->field_19E);
         }
 
-        if ( sbt->button_type != 3 )
+        if ( sbt->button_type != TYPE_CAPTION )
         {
-            if ( sbt->state & 0x10 )
+            if ( sbt->flags & FLAG_BORDER )
             {
                 FontUA::store_u8(&v5, btn->field_19D);
             }
@@ -875,23 +832,18 @@ char button_tmpbuf[5008];
 
 size_t NC_STACK_button::button_func70(void *)
 {
-    __NC_STACK_button *btn = &stack__button;
-
     char *pbuf = button_tmpbuf;
 
-    if ( btn->field_19A & 1 )
+    if ( visible )
     {
-        for (int i = 0; i < 48 ; i++ )
+        for (WidgetArr::iterator it = field_d8.begin(); it != field_d8.end(); it++)
         {
-            if ( !btn->field_d8[i] )
-                break;
-
-            if ( btn->field_d8[i]->state & 8 )
+            if ( it->flags & FLAG_DRAW )
             {
-                if ( btn->field_d8[i]->state & 0x40 )
-                    button_func70__sub1(btn, btn->field_d8[i], &pbuf);
+                if ( it->flags & FLAG_TEXT )
+                    button_func70__sub1(this, &*it, &pbuf);
                 else
-                    button_func70__sub0(btn, btn->field_d8[i], &pbuf);
+                    button_func70__sub0(this, &*it, &pbuf);
             }
         }
         FontUA::set_end(&pbuf);
@@ -906,128 +858,120 @@ size_t NC_STACK_button::button_func70(void *)
     return 1;
 }
 
-size_t NC_STACK_button::button_func71(button_71arg *arg)
+bool NC_STACK_button::button_func71(int butID, const std::string &field_4, const std::string &field_8)
 {
-    __NC_STACK_button *btn = &stack__button;
-    int v5 = button_func72(&arg->butID);
+    int v5 = button_func72(butID);
 
-    if ( v5 >= 0 && v5 < btn->idd &&  arg->field_4 )
+    if ( v5 >= 0 && v5 < idd &&  !field_4.empty() )
     {
-        button_str2 *v7 = btn->field_d8[v5];
+        button_str2 &v7 = field_d8[v5];
 
-        strncpy(v7->caption, arg->field_4, 511);
+        strncpy(v7.caption, field_4.c_str(), 511);
 
-        if ( arg->field_8 )
+        if ( !field_8.empty() )
         {
-            strncpy(v7->caption2, arg->field_8, 511);
+            strncpy(v7.caption2, field_8.c_str(), 511);
         }
         else
         {
-            strcpy(v7->caption2, v7->caption);
+            strcpy(v7.caption2, v7.caption);
         }
-        return 1;
+        return true;
     }
 
-    return 0;
+    return false;
 }
 
-int NC_STACK_button::button_func72(int *butid)
+bool NC_STACK_button::button_func71(int butID, const std::string &field_4)
 {
-    __NC_STACK_button *btn = &stack__button;
+    int v5 = button_func72(butID);
 
-    for (int i = 0; i < 48; i++)
+    if ( v5 >= 0 && v5 < idd &&  !field_4.empty() )
     {
-        if (btn->field_d8[i])
-        {
-            if (btn->field_d8[i]->button_id == *butid)
-                return i;
-        }
+        button_str2 &v7 = field_d8[v5];
+
+        strncpy(v7.caption, field_4.c_str(), 511);
+        strncpy(v7.caption2, field_4.c_str(), 511);
+
+        return true;
+    }
+
+    return false;
+}
+
+int NC_STACK_button::button_func72(int butid)
+{
+    for (unsigned int i = 0; i < field_d8.size(); i++)
+    {
+        if (field_d8[i].button_id == butid)
+            return i;
     }
     return -1;
 }
 
-size_t NC_STACK_button::button_func73(button_66arg *arg)
+void NC_STACK_button::button_func73(button_66arg *arg)
 {
-    __NC_STACK_button *btn = &stack__button;
-    int id = button_func72(&arg->butID);
+    int id = button_func72(arg->butID);
 
-    if ( id >= 0 && id < btn->idd )
+    if ( id < 0 || id >= idd )
+        return;
+
+    button_str2 &b = field_d8[id];
+
+    if ( b.button_type == TYPE_BUTTON || b.button_type == TYPE_CHECKBX || b.button_type == TYPE_RADIOBTN )
     {
-        if ( btn->field_d8[id]->button_type >= 1 )
-        {
-            if ( btn->field_d8[id]->button_type > 2 )
-            {
-                if ( btn->field_d8[id]->button_type != 4 )
-                    return 0;
+        if ( b.button_type == TYPE_RADIOBTN )
+            UnsetRadioButtons();
 
-                for (int i = 0; i < 48; i++)
-                {
-                    if (btn->field_d8[i])
-                    {
-                        if (btn->field_d8[i]->button_type == 4)
-                            btn->field_d8[i]->state &= 0xFFFA;
-                    }
-                }
-            }
-
-            if ( arg->field_4 == 1 )
-                btn->field_d8[id]->state |= 5;
-            else if ( arg->field_4 == 2 )
-                btn->field_d8[id]->state &= 0xFFFA;
-        }
+        if ( arg->field_4 == 1 )
+            b.flags |= FLAG_PRESSED | FLAG_DOWN;
+        else if ( arg->field_4 == 2 )
+            b.flags &= ~(FLAG_PRESSED | FLAG_DOWN);
     }
-
-    return 1;
 }
 
-button_str2_t2 * NC_STACK_button::button_func74(int *butid)
+NC_STACK_button::Slider * NC_STACK_button::button_func74(int butid)
 {
-    __NC_STACK_button *btn = &stack__button;
     int id = button_func72(butid);
 
-    if ( id != -1 && btn->field_d8[id]->button_type == 5)
-    {
-        return btn->field_d8[id]->field_41C;
-    }
+    if ( id != -1 && field_d8[id].button_type == TYPE_SLIDER)
+        return field_d8[id].field_41C;
+
     return NULL;
 }
 
-size_t NC_STACK_button::button_func75(int *butid)
+size_t NC_STACK_button::button_func75(int butid)
 {
-    __NC_STACK_button *btn = &stack__button;
     int id = button_func72(butid);
 
-    if ( id != -1 && btn->field_d8[id]->button_type == 5)
-    {
-        sub_436F58(btn, btn->field_d8[id]);
-    }
+    if ( id != -1 && field_d8[id].button_type == TYPE_SLIDER)
+        sub_436F58(this, &field_d8[id]);
 
     return 1;
 }
 
 size_t NC_STACK_button::button_func76(button_arg76 *arg)
 {
-    __NC_STACK_button *btn = &stack__button;
-    int id = button_func72(&arg->butID);
+    int id = button_func72(arg->butID);
 
-    if ( id >= 0 && id < btn->idd )
+    if ( id >= 0 && id < idd )
     {
         if (arg->xpos != -1)
         {
-            btn->field_d8[id]->xpos = arg->xpos;
-            btn->buttons[id]->x = arg->xpos;
+            field_d8[id].xpos = arg->xpos;
+            buttons[id].x = arg->xpos;
         }
 
         if (arg->ypos != -1)
         {
-            btn->field_d8[id]->ypos = arg->ypos;
-            btn->buttons[id]->y = arg->ypos;
+            field_d8[id].ypos = arg->ypos;
+            buttons[id].y = arg->ypos;
         }
 
         if (arg->width != -1)
         {
-            btn->field_d8[id]->width = arg->width;
-            btn->buttons[id]->w = arg->width;
+            field_d8[id].width = arg->width;
+            buttons[id].w = arg->width;
         }
         return 1;
     }
@@ -1036,59 +980,64 @@ size_t NC_STACK_button::button_func76(button_arg76 *arg)
 }
 
 
-
-void NC_STACK_button::setBTN_x(int x)
+void NC_STACK_button::UnsetRadioButtons()
 {
-    stack__button.xpos = x;
+    for (WidgetArr::iterator it = field_d8.begin(); it != field_d8.end(); it++)
+    {
+        if ( it->button_type == TYPE_RADIOBTN )
+            it->flags &= ~(FLAG_DOWN | FLAG_PRESSED);
+    }
 }
 
-void NC_STACK_button::setBTN_y(int y)
+
+
+void NC_STACK_button::setBTN_x(int _x)
 {
-    stack__button.ypos = y;
+    x = _x;
 }
 
-void NC_STACK_button::setBTN_w(int w)
+void NC_STACK_button::setBTN_y(int _y)
 {
-    stack__button.btn_width = w;
+    y = _y;
 }
 
-void NC_STACK_button::setBTN_h(int h)
+void NC_STACK_button::setBTN_w(int _w)
 {
-    stack__button.btn_height = h;
+    w = _w;
+}
+
+void NC_STACK_button::setBTN_h(int _h)
+{
+    h = _h;
 }
 
 void NC_STACK_button::setBTN_chars(const char *chrs)
 {
     const uint8_t *v4 = (const uint8_t *)chrs;
-    stack__button.field_19c = v4[0];
-    stack__button.field_19D = v4[1];
-    stack__button.field_19E = v4[2];
+    field_19c = v4[0];
+    field_19D = v4[1];
+    field_19E = v4[2];
 }
 
 
 int NC_STACK_button::getBTN_x()
 {
-    return stack__button.xpos;
+    return x;
 }
 
 int NC_STACK_button::getBTN_y()
 {
-    return stack__button.ypos;
+    return y;
 }
 
 int NC_STACK_button::getBTN_w()
 {
-    return stack__button.btn_width;
+    return w;
 }
 
 int NC_STACK_button::getBTN_h()
 {
-    return stack__button.btn_height;
-}
-
-__NC_STACK_button *NC_STACK_button::getBTN_pButton()
-{
-    return &stack__button;
+    return h;
 }
 
 
@@ -1097,37 +1046,44 @@ size_t NC_STACK_button::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return (size_t)func2( (IDVList *)data );
+        return (size_t)func2( *(IDVList *)data );
     case 3:
-        return (size_t)func3( (IDVList *)data );
+        return (size_t)func3( *(IDVList *)data );
     case 64:
         return (size_t)button_func64( (button_64_arg *)data );
     case 65:
-        return (size_t)button_func65( (int *)data );
+        return (size_t)button_func65( (size_t)data );
     case 66:
         return (size_t)button_func66( (button_66arg *)data );
     case 67:
         return (size_t)button_func67( (button_66arg *)data );
     case 68:
-        return (size_t)button_func68( (int *)data );
+        if ((bool)data)
+            return Show();
+        else
+            return Hide();
     case 69:
-        return (size_t)button_func69( (struC5 *)data );
+    {
+        ResCode r = button_func69( (struC5 *)data );
+        return (size_t) (r.code | (r.btn << 16));
+    }
     case 70:
         return (size_t)button_func70( (void *)data );
     case 71:
-        return (size_t)button_func71( (button_71arg *)data );
+        return false;//(size_t)button_func71( (button_71arg *)data );
     case 72:
-        return (size_t)button_func72( (int *)data );
+        return (size_t)button_func72( (size_t )data );
     case 73:
-        return (size_t)button_func73( (button_66arg *)data );
+        button_func73( (button_66arg *)data );
+        return 1;
     case 74:
-        return (size_t)button_func74( (int *)data );
+        return (size_t)button_func74( (size_t)data );
     case 75:
-        return (size_t)button_func75( (int *)data );
+        return (size_t)button_func75( (size_t)data );
     case 76:
         return (size_t)button_func76( (button_arg76 *)data );
     default:

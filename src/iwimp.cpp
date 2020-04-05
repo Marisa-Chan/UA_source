@@ -7,130 +7,123 @@
 
 
 
-const NewClassDescr NC_STACK_iwimp::description("iwimp.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_iwimp::description("iwimp.class", &newinstance);
 
 
 
-size_t NC_STACK_iwimp::func0(IDVList *stak)
+size_t NC_STACK_iwimp::func0(IDVList &stak)
 {
     if ( !NC_STACK_idev::func0(stak) )
         return 0;
 
-    init_list(&stack__iwimp.list);
+    cboxList.clear();
 
     return 1;
 }
 
-size_t NC_STACK_iwimp::iwimp_func128(IDVPair *)
+void NC_STACK_iwimp::AddClickBoxFront(ClickBox *box)
 {
-    return 1;
+    cboxList.push_front(box);
 }
 
-void NC_STACK_iwimp::iwimp_func129(iwimp_arg129 *arg)
+void NC_STACK_iwimp::AddClickBoxBack(ClickBox *box)
 {
-    nlist *lst = &stack__iwimp.list;
-
-    if ( arg->field_4 & 1 )
-        AddHead(lst, arg->node);
-    else
-        AddTail(lst, arg->node);
+    cboxList.push_back(box);
 }
 
-void NC_STACK_iwimp::iwimp_func130(iwimp_arg129 *arg)
+void NC_STACK_iwimp::RemoveClickBox(ClickBox *box)
 {
-    Remove(arg->node);
+    cboxList.remove(box);
 }
 
-void sub_41D538(__NC_STACK_iwimp *wimp, winp_131arg *arg, shortPoint *points)
+void NC_STACK_iwimp::GetClick(ClickBoxInf *click, MousePos &mouse)
 {
-    ClickBox *btn = (ClickBox *)wimp->list.head;
-
-    if ( btn->next )
+    for(std::list<ClickBox *>::iterator it = cboxList.begin();
+            it != cboxList.end();
+            it++)
     {
-        while ( 1 )
+        ClickBox *box = *it;
+
+        mouse.boxPos.x = mouse.screenPos.x - box->x;
+        mouse.boxPos.y = mouse.screenPos.y - box->y;
+
+        if ( mouse.boxPos.x >= 0 && mouse.boxPos.x < box->w &&
+                mouse.boxPos.y >= 0 && mouse.boxPos.y < box->h )
         {
-            points[1].x = points[0].x - btn->xpos;
-            points[1].y = points[0].y - btn->ypos;
+            click->selected_btn = box;
 
-            if ( points[1].x >= 0 && points[1].x < btn->btn_width &&
-                    points[1].y >= 0 && points[1].y < btn->btn_height )
-                break;
-
-            btn = (ClickBox *)btn->next;
-            if ( !btn->next )
-                return;
-        }
-
-        arg->selected_btn = btn;
-
-        if ( btn->field_10 )
-        {
-            for (int i = 0; i < btn->field_10; i++)
+            for (unsigned int i = 0; i < box->buttons.size(); i++)
             {
-                ButtonBox *v11 = btn->buttons[i];
+                ButtonBox &btn = box->buttons[i];
 
-                points[2].x = points[1].x - v11->x;
-                points[2].y = points[1].y - v11->y;
+                mouse.btnPos.x = mouse.boxPos.x - btn.x;
+                mouse.btnPos.y = mouse.boxPos.y - btn.y;
 
-                if ( points[2].x >= 0 && points[2].x < v11->w &&
-                        points[2].y >= 0 && points[2].y < v11->h )
+                if ( mouse.btnPos.x >= 0 && mouse.btnPos.x < btn.w &&
+                        mouse.btnPos.y >= 0 && mouse.btnPos.y < btn.h )
                 {
-                    arg->selected_btnID = i;
+                    click->selected_btnID = i;
                     break;
                 }
             }
+            break;
         }
     }
 }
 
-void NC_STACK_iwimp::iwimp_func131(winp_131arg *arg)
+void NC_STACK_iwimp::CheckClick(ClickBoxInf *arg)
 {
-    __NC_STACK_iwimp *wimp = &stack__iwimp;
-
-    arg->flag |= 1;
+    arg->flag |= ClickBoxInf::FLAG_OK;
     arg->selected_btn = NULL;
     arg->selected_btnID = -1;
 
-    sub_41D538(wimp, arg, arg->move);
+    GetClick(arg, arg->move);
 
-    if ( arg->flag & 4 )
+    if ( arg->flag & ClickBoxInf::FLAG_LM_HOLD )
     {
         if ( arg->selected_btnID >= 0 &&
-                wimp->selected_btn == arg->selected_btn &&
-                wimp->selected_btnID == arg->selected_btnID )
-            arg->flag |= 0x20;
+                selectedCbox == arg->selected_btn &&
+                selectedButton == arg->selected_btnID )
+            arg->flag |= ClickBoxInf::FLAG_BTN_HOLD;
     }
 
-    if ( arg->flag & 2 )
+    if ( arg->flag & ClickBoxInf::FLAG_LM_DOWN )
     {
-        sub_41D538(wimp, arg, arg->ldw_pos);
+        GetClick(arg, arg->ldw_pos);
 
         if ( arg->selected_btnID == -1 )
         {
-            wimp->selected_btn = 0;
-            wimp->selected_btnID = -1;
+            selectedCbox = 0;
+            selectedButton = -1;
         }
         else
         {
-            wimp->selected_btn = arg->selected_btn;
-            wimp->selected_btnID = arg->selected_btnID;
-            arg->flag |= 0x10;
+            selectedCbox = arg->selected_btn;
+            selectedButton = arg->selected_btnID;
+            arg->flag |= ClickBoxInf::FLAG_BTN_DOWN;
         }
     }
 
-    if ( arg->flag & 8 )
+    if ( arg->flag & ClickBoxInf::FLAG_LM_UP )
     {
-        sub_41D538(wimp, arg, arg->lup_pos);
+        GetClick(arg, arg->lup_pos);
 
         if ( arg->selected_btn )
         {
-            if ( arg->selected_btn == wimp->selected_btn &&
-                    arg->selected_btnID == wimp->selected_btnID )
-                arg->flag |= 0x40;
+            if ( arg->selected_btn == selectedCbox &&
+                    arg->selected_btnID == selectedButton )
+                arg->flag |= ClickBoxInf::FLAG_BTN_UP;
         }
-        wimp->selected_btnID = -1;
-        wimp->selected_btn = 0;
+        selectedButton = -1;
+        selectedCbox = 0;
     }
+}
+
+void NC_STACK_iwimp::clear()
+{
+    cboxList.clear();
+    selectedCbox = 0;
+    selectedButton = 0;
 }
 
 
@@ -139,17 +132,11 @@ size_t NC_STACK_iwimp::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 128:
-        return (size_t)iwimp_func128( (IDVPair *)data );
-    case 129:
-        iwimp_func129( (iwimp_arg129 *)data );
-        return 1;
-    case 130:
-        iwimp_func130( (iwimp_arg129 *)data );
-        return 1;
+        return (size_t)HasFocus();
     case 131:
-        iwimp_func131( (winp_131arg *)data );
+        CheckClick( (ClickBoxInf *)data );
         return 1;
     default:
         break;

@@ -10,11 +10,9 @@
 #define BACT_MIN_ANGLE 0.0002
 
 class NC_STACK_ypabact;
-struct __NC_STACK_ypabact;
 class NC_STACK_ypamissile;
 
 class NC_STACK_ypaworld;
-struct _NC_STACK_ypaworld;
 
 class NC_STACK_yparobo;
 
@@ -22,8 +20,9 @@ struct yw_arg129;
 
 struct cellArea;
 
-typedef RefList<NC_STACK_ypabact *> YpabactList;
-typedef RefList<NC_STACK_ypamissile *> YpamissileList;
+//typedef RefList<NC_STACK_ypabact *> YpabactList;
+//typedef RefList<NC_STACK_ypamissile *> YpamissileList;
+typedef std::list<NC_STACK_ypamissile *> YpamissileList;
 
 struct destFX
 {
@@ -47,12 +46,10 @@ struct destFX
 
 struct bact_node : public nnode
 {
-    NC_STACK_ypabact *bacto;
-    __NC_STACK_ypabact *bact;
+    NC_STACK_ypabact *bact;
 
     bact_node()
     {
-        bacto = NULL;
         bact = NULL;
     }
 };
@@ -141,7 +138,7 @@ enum BACT_OFLAG
 
 union BactTarget
 {
-    __NC_STACK_ypabact *pbact;
+    NC_STACK_ypabact *pbact;
     cellArea *pcell;
 };
 
@@ -151,13 +148,38 @@ struct roboColl
     float robo_coll_radius;
     vec3d coll_pos;
     vec3d field_10;
+
+    roboColl()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        robo_coll_radius = 0.;
+        coll_pos = vec3d();
+        field_10 = vec3d();
+    }
 };
 
 struct rbcolls
 {
     int field_0;
-    char robo_coll_num;
-    roboColl roboColls[16];
+    int8_t robo_coll_num;
+    std::array<roboColl, 16> roboColls;
+
+    rbcolls()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        field_0 = 0;
+        robo_coll_num = 0;
+        for ( auto &c : roboColls )
+            c.clear();
+    }
 };
 
 enum BACT_TYPES
@@ -175,179 +197,9 @@ enum BACT_TYPES
     BACT_TYPES_HOVER = 10 //No real class
 };
 
-struct __NC_STACK_ypabact : public nnode
-{
-    NC_STACK_ypabact *self;
-    int sectX;
-    int sectY;
-    cellArea *pSector;
-    float wrldX;
-    float wrldY;
-    int16_t secMaxX;
-    int16_t secMaxY;
-    int bact_type;
-    uint32_t gid; // global bact id
-    uint8_t vehicleID; // vehicle id, from scr files
-    char bflags;
-    int commandID;
-    NC_STACK_yparobo *host_station; // parent robo?
-    NC_STACK_ypabact *parent_bacto;
-    __NC_STACK_ypabact *parent_bact;
-    nlist subjects_list;
-    bact_node subject_node;
-    samples_collection1 soundcarrier;
-    int soundFlags;
-    int volume;
-    int pitch;
-    float pitch_max;
-    int energy;
-    int energy_max;
-    int reload_const;
-//    int16_t field_3CE;
-    char shield;
-//    char field_3D1;
-    char radar; // num sectors view
-    uint8_t owner;
-    char aggr;
-    char status;
-    int status_flg; //Additional status flags
-//    int field_3DA;
-    char primTtype;
-    char secndTtype;
-    int primT_cmdID;
-    int secndT_cmdID;
-    BactTarget primT;
-    vec3d primTpos;
-    BactTarget secndT;
-    vec3d sencdTpos;
-
-    float adist_sector;
-    float adist_bact;
-    float sdist_sector;
-    float sdist_bact;
-    vec3d waypoints[32]; //waypoints
-    int16_t current_waypoint;
-    int16_t waypoints_count;
-    int m_cmdID;
-    uint8_t m_owner;
-    int fe_cmdID; // found enemy group ID
-    int fe_time; //
-    float mass;
-    float force;
-    float airconst;
-    float airconst_static;
-    float maxrot;
-
-    vec3d viewer_position;
-    mat3x3 viewer_rotation;
-    float viewer_horiz_angle;
-    float viewer_vert_angle;
-    float viewer_max_up;
-    float viewer_max_down;
-    float viewer_max_side;
-
-    float thraction;
-    vec3d fly_dir;
-    float fly_dir_length;
-
-    vec3d position; //Current pos
-    vec3d old_pos; //Prev pos
-    vec3d target_vec; //Vector to target
-    vec3d target_dir; //Target 1-vector direction
-    mat3x3 rotation;
-
-    float height;
-    float height_max_user;
-    vec3d scale;
-    vhclBases vp_normal;
-    vhclBases vp_fire;
-    vhclBases vp_wait;
-    vhclBases vp_dead;
-    vhclBases vp_megadeth;
-    vhclBases vp_genesis;
-    int vp_active;
-    extra_vproto vp_extra[3];
-    int vp_extra_mode;
-    destFX destroyFX[16];
-    float radius;
-    float viewer_radius;
-    float overeof;
-    float viewer_overeof;
-//    float pos_x_cntr;
-//
-//    float pos_y_cntr;
-
-    TForm3D tForm;
-    int clock;           // local time
-    int AI_time1;
-    int AI_time2;
-//    int field_921;
-//    int field_925;
-    int search_time1;
-    int search_time2;
-    int scale_time;
-    int brkfr_time;
-    int brkfr_time2;
-//    int field_93D;
-    int newtarget_time;
-    int assess_time;
-    int waitCol_time; //Used in tank
-    int slider_time;
-//    int field_951;
-    int dead_time;
-    int beam_time;
-    int energy_time;
-    vec3d mpos;
-    int weapon;
-    char weapon_flags;
-    int mgun;
-    char num_weapons;
-
-    YpamissileList missiles_list;
-    int weapon_time;
-    vec3d fire_pos;
-    float gun_angle;
-    float gun_angle_user;
-    float gun_leftright;
-    float gun_radius;
-    float gun_power;
-    int mgun_time;
-    int salve_counter;
-    int kill_after_shot;
-    float heading_speed;
-    __NC_STACK_ypabact *killer;
-    int16_t killer_owner;
-    int16_t reb_count;
-    int atk_ret;
-    uint32_t lastFrmStamp;
-    mat3x3 netDRot;
-    mat3x3 netRotation;
-    vec3d netDSpeed;
-    float scale_start;
-    float scale_speed;
-    float scale_accel;
-    int scale_duration;
-    int scale_pos;
-    int scale_delay;
-    NC_STACK_base *vp_fx_models[32];
-    TForm3D *vp_fx_tform[32];
-
-    int oflags;
-    NC_STACK_ypaworld *ywo;
-    _NC_STACK_ypaworld *yw;
-    vhclBases current_vp;
-    nlist attackers_list;
-    bact_node attack_node_prim;
-    bact_node attack_node_scnd;
-    int yls_time;
-
-    __NC_STACK_ypabact();
-};
-
 struct newMaster_msg
 {
-    NC_STACK_ypabact *bacto;
-    __NC_STACK_ypabact *bact;
+    NC_STACK_ypabact *bact;
     nlist *list;
 };
 
@@ -372,13 +224,13 @@ struct update_msg
     int units_count;
     int user_action;
     int protoID;
-    __NC_STACK_ypabact *selectBact;
+    NC_STACK_ypabact *selectBact;
     cellArea *target_Sect;
     int target_sect_x;
     int target_sect_y;
     int target_point_flags;
     vec3d target_point;
-    __NC_STACK_ypabact *target_Bact;
+    NC_STACK_ypabact *target_Bact;
     int energy;
 
     update_msg()
@@ -419,7 +271,7 @@ struct bact_arg124
 struct bact_arg84
 {
     int energy;
-    __NC_STACK_ypabact *unit;
+    NC_STACK_ypabact *unit;
 };
 
 struct bact_arg88
@@ -449,8 +301,8 @@ struct bact_arg81
 
 struct bact_arg90
 {
-    __NC_STACK_ypabact *unit;
-    __NC_STACK_ypabact *ret_unit;
+    NC_STACK_ypabact *unit;
+    NC_STACK_ypabact *ret_unit;
     int field_8;
     float pos_x;
     float pos_z;
@@ -459,7 +311,7 @@ struct bact_arg90
 struct bact_arg109
 {
     int field_0;
-    __NC_STACK_ypabact *field_4;
+    NC_STACK_ypabact *field_4;
 };
 
 struct bact_arg92
@@ -478,7 +330,7 @@ struct bact_hudi
     float field_C;
     float field_10;
     float field_14;
-    __NC_STACK_ypabact *field_18;
+    NC_STACK_ypabact *field_18;
 
     bact_hudi()
     {
@@ -503,7 +355,7 @@ struct bact_arg106
 {
     int field_0;
     vec3d field_4;
-    __NC_STACK_ypabact *ret_bact;
+    NC_STACK_ypabact *ret_bact;
 };
 
 struct bact_arg79
@@ -559,10 +411,18 @@ struct bact_arg83
 class NC_STACK_ypabact: public NC_STACK_nucleus
 {
 public:
-    virtual size_t func0(IDVList *stak);
+    enum TA
+    {
+        TA_CANCEL,
+        TA_MOVE,
+        TA_FIGHT,
+        TA_IGNORE
+    };
+public:
+    virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func2(IDVList *stak);
-    virtual size_t func3(IDVList *stak);
+    virtual size_t func2(IDVList &stak);
+    virtual size_t func3(IDVList &stak);
     virtual void Update(update_msg *arg);
     virtual void Render(baseRender_msg *arg);
     virtual void SetTarget(setTarget_msg *arg);
@@ -609,10 +469,10 @@ public:
     virtual size_t GetFightMotivation(float *arg);
     virtual void ReorganizeGroup(bact_arg109 *arg);
     virtual size_t TargetAssess(bact_arg110 *arg);
-    virtual size_t TestTargetSector(__NC_STACK_ypabact *);
+    virtual size_t TestTargetSector(NC_STACK_ypabact *);
     virtual void BeamingTimeUpdate(update_msg *arg);
     virtual void StartDestFX(uint8_t arg);
-    virtual void CorrectPositionOnLand(void *);
+    virtual void CorrectPositionOnLand();
     virtual void CorrectPositionInLevelBox(void *);
     virtual void NetUpdate(update_msg *arg);
     virtual void ypabact_func117(update_msg *arg);
@@ -626,9 +486,7 @@ public:
     virtual size_t SetPath(bact_arg124 *arg);
 
     virtual size_t compatcall(int method_id, void *data);
-    NC_STACK_ypabact()
-    {
-    };
+    NC_STACK_ypabact();
     virtual ~NC_STACK_ypabact() {};
 
     virtual const char * getClassName()
@@ -645,7 +503,6 @@ public:
     {
         BACT_ATT_WORLD = 0x80001001,
         BACT_ATT_PTRANSFORM = 0x80001002,
-        BACT_ATT_PBACT = 0x80001003,
         BACT_ATT_VIEWER = 0x80001004,
         BACT_ATT_INPUTTING = 0x80001005,
         BACT_ATT_EXACTCOLL = 0x80001006,
@@ -673,14 +530,13 @@ public:
     virtual void setBACT_yourLastSeconds(int);
     virtual void setBACT_visProto(NC_STACK_base *);
     virtual void setBACT_aggression(int);
-    virtual void setBACT_vpTransform(TForm3D *);
+    virtual void setBACT_vpTransform(TFEngine::TForm3D *);
     virtual void setBACT_extraViewer(int);
     virtual void setBACT_alwaysRender(int);
 
 
     virtual NC_STACK_ypaworld *getBACT_pWorld();
-    virtual TForm3D *getBACT_pTransform();
-    virtual __NC_STACK_ypabact *getBACT_pBact();
+    virtual TFEngine::TForm3D *getBACT_pTransform();
     virtual int getBACT_viewer();
     virtual int getBACT_inputting();
     virtual int getBACT_exactCollisions();
@@ -691,23 +547,205 @@ public:
     virtual NC_STACK_base *getBACT_visProto();
     virtual int getBACT_aggression();
     virtual rbcolls *getBACT_collNodes();
-    virtual TForm3D *getBACT_vpTransform();
+    virtual TFEngine::TForm3D *getBACT_vpTransform();
     virtual int getBACT_extraViewer();
     virtual bact_node *getBACT_primAttackNode();
     virtual bact_node *getBACT_secnAttackNode();
     virtual int getBACT_alwaysRender();
+    
+    virtual bool IsGroundUnit() { return false; };
+    
+    static bool IsNeedsWaypoints( NC_STACK_ypabact *bact);
+    
+    void sub_4843BC(NC_STACK_ypabact *bact2, int a3);
+    void sub_493480(NC_STACK_ypabact *bact2, int mode);
+    void StartDestFX__sub0(const destFX &fx);
 
-
+    void DoTargetWaypoint();
     void FixSectorFall();
     void FixBeyondTheWorld();
+    
+    void CopyTargetOf(NC_STACK_ypabact *commander);
+    
+    static World::CellBactList::Node& CellClearCallback(NC_STACK_ypabact *bact)
+    {
+        return bact->_cellRef;
+    }
 
     //Data
-    static const NewClassDescr description;
+public:
+    static const Nucleus::ClassDescr description;
+public:
+    //ypabactTHINGTOREPLACE;
+    
+    
+    World::CellBactList::Node _cellRef;
+    
+    int _sectX;
+    int _sectY;
+    cellArea *_pSector;
+    float _wrldX;
+    float _wrldY;
+    int16_t _secMaxX;
+    int16_t _secMaxY;
+    int _bact_type;
+    uint32_t _gid; // global bact id
+    uint8_t _vehicleID; // vehicle id, from scr files
+    char _bflags;
+    int _commandID;
+    NC_STACK_yparobo *_host_station; // parent robo?
+    NC_STACK_ypabact *_parent;
+    nlist _subjects_list;
+    bact_node _subject_node;
+    samples_collection1 _soundcarrier;
+    int _soundFlags;
+    int _volume;
+    int _pitch;
+    float _pitch_max;
+    int _energy;
+    int _energy_max;
+    int _reload_const;
+//    int16_t field_3CE;
+    char _shield;
+//    char field_3D1;
+    char _radar; // num sectors view
+    uint8_t _owner;
+    char _aggr;
+    char _status;
+    int _status_flg; //Additional status flags
+//    int field_3DA;
+    char _primTtype;
+    char _secndTtype;
+    int _primT_cmdID;
+    int _secndT_cmdID;
+    BactTarget _primT;
+    vec3d _primTpos;
+    BactTarget _secndT;
+    vec3d _sencdTpos;
 
-    __NC_STACK_ypabact ypabact;
+    float _adist_sector;
+    float _adist_bact;
+    float _sdist_sector;
+    float _sdist_bact;
+    vec3d _waypoints[32]; //waypoints
+    int16_t _current_waypoint;
+    int16_t _waypoints_count;
+    int _m_cmdID;
+    uint8_t _m_owner;
+    int _fe_cmdID; // found enemy group ID
+    int _fe_time; //
+    float _mass;
+    float _force;
+    float _airconst;
+    float _airconst_static;
+    float _maxrot;
+
+    vec3d _viewer_position;
+    mat3x3 _viewer_rotation;
+    float _viewer_horiz_angle;
+    float _viewer_vert_angle;
+    float _viewer_max_up;
+    float _viewer_max_down;
+    float _viewer_max_side;
+
+    float _thraction;
+    vec3d _fly_dir;
+    float _fly_dir_length;
+
+    vec3d _position; //Current pos
+    vec3d _old_pos; //Prev pos
+    vec3d _target_vec; //Vector to target
+    vec3d _target_dir; //Target 1-vector direction
+    mat3x3 _rotation;
+
+    float _height;
+    float _height_max_user;
+    vec3d _scale;
+    vhclBases _vp_normal;
+    vhclBases _vp_fire;
+    vhclBases _vp_wait;
+    vhclBases _vp_dead;
+    vhclBases _vp_megadeth;
+    vhclBases _vp_genesis;
+    int _vp_active;
+    extra_vproto _vp_extra[3];
+    int _vp_extra_mode;
+    std::array<destFX, 16> _destroyFX;
+    float _radius;
+    float _viewer_radius;
+    float _overeof;
+    float _viewer_overeof;
+//    float pos_x_cntr;
+//
+//    float pos_y_cntr;
+
+    TFEngine::TForm3D _tForm;
+    int _clock;           // local time
+    int _AI_time1;
+    int _AI_time2;
+//    int field_921;
+//    int field_925;
+    int _search_time1;
+    int _search_time2;
+    int _scale_time;
+    int _brkfr_time;
+    int _brkfr_time2;
+//    int field_93D;
+    int _newtarget_time;
+    int _assess_time;
+    int _waitCol_time; //Used in tank
+    int _slider_time;
+//    int field_951;
+    int _dead_time;
+    int _beam_time;
+    int _energy_time;
+    vec3d _mpos;
+    int _weapon;
+    char _weapon_flags;
+    int _mgun;
+    char _num_weapons;
+
+    YpamissileList _missiles_list;
+    int _weapon_time;
+    vec3d _fire_pos;
+    float _gun_angle;
+    float _gun_angle_user;
+    float _gun_leftright;
+    float _gun_radius;
+    float _gun_power;
+    int _mgun_time;
+    int _salve_counter;
+    int _kill_after_shot;
+    float _heading_speed;
+    NC_STACK_ypabact *_killer;
+    int16_t _killer_owner;
+    int16_t _reb_count;
+    int _atk_ret;
+    uint32_t _lastFrmStamp;
+    mat3x3 _netDRot;
+    mat3x3 _netRotation;
+    vec3d _netDSpeed;
+    float _scale_start;
+    float _scale_speed;
+    float _scale_accel;
+    int _scale_duration;
+    int _scale_pos;
+    int _scale_delay;
+    NC_STACK_base *_vp_fx_models[32];
+    TFEngine::TForm3D *_vp_fx_tform[32];
+
+    int _oflags;
+    NC_STACK_ypaworld *_yw;
+    vhclBases _current_vp;
+    nlist _attackers_list;
+    bact_node _attack_node_prim;
+    bact_node _attack_node_scnd;
+    int _yls_time;  
+    
+protected:
+    NC_STACK_ypaworld *_world;
 };
 
-void sub_493DB0(__NC_STACK_ypabact *bact, __NC_STACK_ypabact *bact2, NC_STACK_ypaworld *ywo);
-void sb_0x4874c4(__NC_STACK_ypabact *bact, int a2, int a3, float a4);
+void sb_0x4874c4(NC_STACK_ypabact *bact, int a2, int a3, float a4);
 
 #endif // YBACT_H_INCLUDED

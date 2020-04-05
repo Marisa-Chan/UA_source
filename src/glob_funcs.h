@@ -7,6 +7,7 @@
 #include "MC.h"
 #include "ini.h"
 
+
 struct TKVPair
 {
     std::string name;
@@ -23,7 +24,7 @@ struct g_engines
     const char *some_params_pointers[32];
     int some_params_count;
     NC_STACK_display *display___win3d;
-    std::list<TKVPair *> kvPairs;
+    std::list<TKVPair> kvPairs;
 
     g_engines()
     {
@@ -47,12 +48,14 @@ void *AllocVec(size_t size, int a2);
 
 
 const char * get_prefix_replacement(const char *prefix);
-void set_prefix_replacement(const char *str1, const char *str2);
+std::string get_prefix_replacement(const std::string &prefix);
+void set_prefix_replacement(const std::string &str1, const std::string &str2);
+std::string SetPathKeys(const std::string &name, const std::string &value);
 
-char * file_path_copy_manipul(const char *src, char *dst, int size);
+std::string file_path_copy_manipul(const std::string &src);
 
 
-void sub_412810(const char *a1, char *a2, int num);
+void sub_412810(const std::string &src, std::string &dst);
 
 void fpsLimitter(int value);
 bool tuneGetWeaponRadiusFix();

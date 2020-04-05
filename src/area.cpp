@@ -13,9 +13,9 @@
 #include "engine_gfx.h"
 
 
-const NewClassDescr NC_STACK_area::description("area.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_area::description("area.class", &newinstance);
 
-size_t NC_STACK_area::func0(IDVList *stak)
+size_t NC_STACK_area::func0(IDVList &stak)
 {
     if ( !NC_STACK_ade::func0(stak) )
         return 0;
@@ -25,63 +25,60 @@ size_t NC_STACK_area::func0(IDVList *stak)
     stack__area.shadeVal = 0;
     stack__area.polflags = 0;
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case ADE_ATT_DPTHFADE:
-                    setADE_depthFade ( val.value.i_data );
-                    break;
-                case ADE_ATT_POLY:
-                    setADE_bkCheck( val.value.i_data );
-                    break;
-                case AREA_ATT_TEXBITM:
-                    setAREA_bitm ( (NC_STACK_bitmap *)val.value.p_data );
-                    break;
-                case AREA_ATT_COLORVAL:
-                    setAREA_colorVal( val.value.i_data );
-                    break;
-                case AREA_ATT_MAP:
-                    setAREA_map( val.value.i_data );
-                    break;
+            case ADE_ATT_DPTHFADE:
+                setADE_depthFade ( val.value.i_data );
+                break;
+            case ADE_ATT_POLY:
+                setADE_bkCheck( val.value.i_data );
+                break;
+            case AREA_ATT_TEXBITM:
+                setAREA_bitm ( (NC_STACK_bitmap *)val.value.p_data );
+                break;
+            case AREA_ATT_COLORVAL:
+                setAREA_colorVal( val.value.i_data );
+                break;
+            case AREA_ATT_MAP:
+                setAREA_map( val.value.i_data );
+                break;
 
-                case AREA_ATT_TEX:
-                    setAREA_tex( val.value.i_data );
-                    break;
+            case AREA_ATT_TEX:
+                setAREA_tex( val.value.i_data );
+                break;
 
-                case AREA_ATT_SHADE:
-                    setAREA_shade ( val.value.i_data );
-                    break;
+            case AREA_ATT_SHADE:
+                setAREA_shade ( val.value.i_data );
+                break;
 
-                case AREA_ATT_TRACY:
-                    setAREA_tracy ( val.value.i_data );
-                    break;
+            case AREA_ATT_TRACY:
+                setAREA_tracy ( val.value.i_data );
+                break;
 
-                case AREA_ATT_TRACYMODE:
-                    setAREA_tracymode( val.value.i_data );
-                    break;
+            case AREA_ATT_TRACYMODE:
+                setAREA_tracymode( val.value.i_data );
+                break;
 
-                case AREA_ATT_TRACYBITM:
-                    setAREA_tracybitm ( (NC_STACK_bitmap *)val.value.p_data );
-                    break;
+            case AREA_ATT_TRACYBITM:
+                setAREA_tracybitm ( (NC_STACK_bitmap *)val.value.p_data );
+                break;
 
-                case AREA_ATT_SHADEVAL:
-                    setAREA_shadeVal ( val.value.i_data );
-                    break;
+            case AREA_ATT_SHADEVAL:
+                setAREA_shadeVal ( val.value.i_data );
+                break;
 
-                case AREA_ATT_TRACYVAL:
-                    setAREA_tracyVal ( val.value.i_data );
-                    break;
+            case AREA_ATT_TRACYVAL:
+                setAREA_tracyVal ( val.value.i_data );
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -100,71 +97,68 @@ size_t NC_STACK_area::func1()
     return NC_STACK_ade::func1();
 }
 
-size_t NC_STACK_area::func2(IDVList *stak)
+size_t NC_STACK_area::func2(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case ADE_ATT_DPTHFADE:
-                    setADE_depthFade ( val.value.i_data );
-                    break;
-                case ADE_ATT_POLY:
-                    setADE_bkCheck( val.value.i_data );
-                    break;
-                case AREA_ATT_TEXBITM:
-                    setAREA_bitm ( (NC_STACK_bitmap *)val.value.p_data );
-                    break;
-                case AREA_ATT_COLORVAL:
-                    setAREA_colorVal( val.value.i_data );
-                    break;
-                case AREA_ATT_MAP:
-                    setAREA_map( val.value.i_data );
-                    break;
+            case ADE_ATT_DPTHFADE:
+                setADE_depthFade ( val.value.i_data );
+                break;
+            case ADE_ATT_POLY:
+                setADE_bkCheck( val.value.i_data );
+                break;
+            case AREA_ATT_TEXBITM:
+                setAREA_bitm ( (NC_STACK_bitmap *)val.value.p_data );
+                break;
+            case AREA_ATT_COLORVAL:
+                setAREA_colorVal( val.value.i_data );
+                break;
+            case AREA_ATT_MAP:
+                setAREA_map( val.value.i_data );
+                break;
 
-                case AREA_ATT_TEX:
-                    setAREA_tex( val.value.i_data );
-                    break;
+            case AREA_ATT_TEX:
+                setAREA_tex( val.value.i_data );
+                break;
 
-                case AREA_ATT_SHADE:
-                    setAREA_shade ( val.value.i_data );
-                    break;
+            case AREA_ATT_SHADE:
+                setAREA_shade ( val.value.i_data );
+                break;
 
-                case AREA_ATT_TRACY:
-                    setAREA_tracy ( val.value.i_data );
-                    break;
+            case AREA_ATT_TRACY:
+                setAREA_tracy ( val.value.i_data );
+                break;
 
-                case AREA_ATT_TRACYMODE:
-                    setAREA_tracymode( val.value.i_data );
-                    break;
+            case AREA_ATT_TRACYMODE:
+                setAREA_tracymode( val.value.i_data );
+                break;
 
-                case AREA_ATT_TRACYBITM:
-                    setAREA_tracybitm ( (NC_STACK_bitmap *)val.value.p_data );
-                    break;
+            case AREA_ATT_TRACYBITM:
+                setAREA_tracybitm ( (NC_STACK_bitmap *)val.value.p_data );
+                break;
 
-                case AREA_ATT_SHADEVAL:
-                    setAREA_shadeVal ( val.value.i_data );
-                    break;
+            case AREA_ATT_SHADEVAL:
+                setAREA_shadeVal ( val.value.i_data );
+                break;
 
-                case AREA_ATT_TRACYVAL:
-                    setAREA_tracyVal ( val.value.i_data );
-                    break;
-                case AREA_ATT_BLOB1:
-                    setAREA_blob1( val.value.i_data );
-                    break;
-                case AREA_ATT_BLOB2:
-                    setAREA_blob2( val.value.i_data );
-                    break;
+            case AREA_ATT_TRACYVAL:
+                setAREA_tracyVal ( val.value.i_data );
+                break;
+            case AREA_ATT_BLOB1:
+                setAREA_blob1( val.value.i_data );
+                break;
+            case AREA_ATT_BLOB2:
+                setAREA_blob2( val.value.i_data );
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -172,65 +166,62 @@ size_t NC_STACK_area::func2(IDVList *stak)
     return NC_STACK_ade::func2(stak);
 }
 
-size_t NC_STACK_area::func3(IDVList *stak)
+size_t NC_STACK_area::func3(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case AREA_ATT_TEXBITM:
-                    *(NC_STACK_bitmap **)val.value.p_data = getAREA_bitm();
-                    break;
+            case AREA_ATT_TEXBITM:
+                *(NC_STACK_bitmap **)val.value.p_data = getAREA_bitm();
+                break;
 
-                case AREA_ATT_COLORVAL:
-                    *(int *)val.value.p_data = getAREA_colorVal();
-                    break;
+            case AREA_ATT_COLORVAL:
+                *(int *)val.value.p_data = getAREA_colorVal();
+                break;
 
-                case AREA_ATT_MAP:
-                    *(int *)val.value.p_data = getAREA_map();
-                    break;
+            case AREA_ATT_MAP:
+                *(int *)val.value.p_data = getAREA_map();
+                break;
 
-                case AREA_ATT_TEX:
-                    *(int *)val.value.p_data = getAREA_tex();
-                    break;
+            case AREA_ATT_TEX:
+                *(int *)val.value.p_data = getAREA_tex();
+                break;
 
-                case AREA_ATT_SHADE:
-                    *(int *)val.value.p_data = getAREA_shade();
-                    break;
+            case AREA_ATT_SHADE:
+                *(int *)val.value.p_data = getAREA_shade();
+                break;
 
-                case AREA_ATT_TRACY:
-                    *(int *)val.value.p_data = getAREA_tracy();
-                    break;
+            case AREA_ATT_TRACY:
+                *(int *)val.value.p_data = getAREA_tracy();
+                break;
 
-                case AREA_ATT_TRACYMODE:
-                    *(int *)val.value.p_data = getAREA_tracymode();
-                    break;
+            case AREA_ATT_TRACYMODE:
+                *(int *)val.value.p_data = getAREA_tracymode();
+                break;
 
-                case AREA_ATT_TRACYBITM:
-                    *(NC_STACK_bitmap **)val.value.p_data = getAREA_tracybitm();
-                    break;
+            case AREA_ATT_TRACYBITM:
+                *(NC_STACK_bitmap **)val.value.p_data = getAREA_tracybitm();
+                break;
 
-                case AREA_ATT_SHADEVAL:
-                    *(int *)val.value.p_data = getAREA_shadeVal();
-                    break;
+            case AREA_ATT_SHADEVAL:
+                *(int *)val.value.p_data = getAREA_shadeVal();
+                break;
 
-                case AREA_ATT_TRACYVAL:
-                    *(int *)val.value.p_data = getAREA_tracyVal();
-                    break;
+            case AREA_ATT_TRACYVAL:
+                *(int *)val.value.p_data = getAREA_tracyVal();
+                break;
 
-                //            case AREA_ATT_PolInfo:
-                //                *(int **)val.value = &area->field_10;
-                //                break;
+            //            case AREA_ATT_PolInfo:
+            //                *(int **)val.value = &area->field_10;
+            //                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -563,6 +554,7 @@ void NC_STACK_area::setAREA_bitm(NC_STACK_bitmap *bitm)
             delete_class_obj(stack__area.texImg);
 
         stack__area.texImg = bitm;
+        bitm->PrepareTexture();
     }
 }
 
@@ -629,6 +621,7 @@ void NC_STACK_area::setAREA_tracybitm(NC_STACK_bitmap *bitm)
             delete_class_obj(stack__area.tracyImg);
 
         stack__area.tracyImg = bitm;
+        bitm->PrepareTexture();
     }
 }
 
@@ -754,13 +747,13 @@ size_t NC_STACK_area::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return (size_t)func2( (IDVList *)data );
+        return (size_t)func2( *(IDVList *)data );
     case 3:
-        return (size_t)func3( (IDVList *)data );
+        return (size_t)func3( *(IDVList *)data );
     case 5:
         return (size_t)func5( (IFFile **)data );
     case 6:

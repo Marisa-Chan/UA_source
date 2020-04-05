@@ -5,22 +5,7 @@
 #include "utils.h"
 
 
-const NewClassDescr NC_STACK_bitmap::description("bitmap.class", &newinstance);
-
-NC_STACK_bitmap *NC_STACK_bitmap::CInit(IDVList *stak)
-{
-    NC_STACK_bitmap *tmp = new NC_STACK_bitmap();
-    if (!tmp)
-        return NULL;
-
-    if (!tmp->func0(stak))
-    {
-        delete tmp;
-        return NULL;
-    }
-
-    return tmp;
-}
+const Nucleus::ClassDescr NC_STACK_bitmap::description("bitmap.class", &newinstance);
 
 int NC_STACK_bitmap::sub_416704(pixel_2d *src)
 {
@@ -75,7 +60,7 @@ int NC_STACK_bitmap::sub_416704(pixel_2d *src)
 }
 
 
-size_t NC_STACK_bitmap::func0(IDVList *stak)
+size_t NC_STACK_bitmap::func0(IDVList &stak)
 {
     if ( !NC_STACK_rsrc::func0(stak) )
         return 0;
@@ -84,13 +69,12 @@ size_t NC_STACK_bitmap::func0(IDVList *stak)
 
     pixel_2d *v9 = NULL;
 
-    if (stak)
-        v9 = (pixel_2d *)stak->GetPointer(BMD_ATT_OUTLINE, NULL);
+    v9 = (pixel_2d *)stak.GetPointer(BMD_ATT_OUTLINE, NULL);
 
     if ( v9 )
         sub_416704(v9);
 
-    internal->bitm_intern = (bitmap_intern *)getRsrc_pData();
+    internal->bitm_intern = (ResBitmap *)getRsrc_pData();
 
     return 1;
 }
@@ -110,56 +94,44 @@ size_t NC_STACK_bitmap::func1()
     return NC_STACK_rsrc::func1();
 }
 
-size_t NC_STACK_bitmap::func2(IDVList *stak)
+size_t NC_STACK_bitmap::func2(IDVList &stak)
 {
-    pixel_2d *v5 = (pixel_2d *)stak->GetPointer(BMD_ATT_OUTLINE, NULL);
+    pixel_2d *v5 = (pixel_2d *)stak.GetPointer(BMD_ATT_OUTLINE, NULL);
     if ( v5 )
         setBMD_outline(v5);
 
-    UA_PALETTE *ppal = (UA_PALETTE *)stak->GetPointer(BMD_ATT_PCOLORMAP, NULL);
+    UA_PALETTE *ppal = (UA_PALETTE *)stak.GetPointer(BMD_ATT_PCOLORMAP, NULL);
     if ( ppal )
         setBMD_palette(ppal);
 
     return NC_STACK_rsrc::func2(stak);
 }
 
-size_t NC_STACK_bitmap::func3(IDVList *stak)
+size_t NC_STACK_bitmap::func3(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BMD_ATT_PBITMAP:
-                    *(bitmap_intern **)val.value.p_data = getBMD_pBitmap();
-                    break;
-                case BMD_ATT_OUTLINE:
-                    *(void **)val.value.p_data = NULL;
-                    break;
-                case BMD_ATT_WIDTH:
-                    *(int *)val.value.p_data = getBMD_width();
-                    break;
-                case BMD_ATT_HEIGHT:
-                    *(int *)val.value.p_data = getBMD_height();
-                    break;
-                case BMD_ATT_BUFFER:
-                    *(void **)val.value.p_data = getBMD_buffer();
-                    break;
-                case BMD_ATT_HAS_COLORMAP:
-                    *(int *)val.value.p_data = getBMD_hasPalette();
-                    break;
-                case BMD_ATT_PCOLORMAP:
-                    *(UA_PALETTE **)val.value.p_data = getBMD_palette();
-                    break;
+            case BMD_ATT_OUTLINE:
+                *(void **)val.value.p_data = NULL;
+                break;
+            case BMD_ATT_WIDTH:
+                *(int *)val.value.p_data = getBMD_width();
+                break;
+            case BMD_ATT_HEIGHT:
+                *(int *)val.value.p_data = getBMD_height();
+                break;
+            case BMD_ATT_HAS_COLORMAP:
+                *(int *)val.value.p_data = getBMD_hasPalette();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -168,78 +140,52 @@ size_t NC_STACK_bitmap::func3(IDVList *stak)
 }
 
 // Create bitmap resource node and fill rsrc field data
-rsrc * NC_STACK_bitmap::rsrc_func64(IDVList *stak)
+rsrc * NC_STACK_bitmap::rsrc_func64(IDVList &stak)
 {
     rsrc *res = NC_STACK_rsrc::rsrc_func64(stak);// rsrc_func64
-    if ( res && stak )
+    if ( res )
     {
-        int width = stak->Get(BMD_ATT_WIDTH, 0);
-        int height = stak->Get(BMD_ATT_HEIGHT, 0);
-        int colormap = stak->Get(BMD_ATT_HAS_COLORMAP, 0);
-        int create_texture = stak->Get(BMD_ATT_TEXTURE, 0);
-        int sysmem = stak->Get(BMD_ATT_TEXTURE_SYS, 0);// software surface
+        int width = stak.Get(BMD_ATT_WIDTH, 0);
+        int height = stak.Get(BMD_ATT_HEIGHT, 0);
+        int colormap = stak.Get(BMD_ATT_HAS_COLORMAP, 0);
+        //int create_texture = stak.Get(BMD_ATT_TEXTURE, 0);
 
 
-        if ( (width && height) || colormap )
+        if ( width && height )
         {
-            bitmap_intern *intern = (bitmap_intern *)AllocVec(sizeof(bitmap_intern), 65537);
+            ResBitmap *intern = new ResBitmap;
 
             if ( intern )
             {
                 if (colormap)
-                {
-                    intern->flags |= BITMAP_FLAG_HAS_PALETTE;
-                    intern->pallete = new UA_PALETTE;
-                }
+                    intern->palette = new UA_PALETTE;
 
-                if ( colormap && intern->pallete == NULL )
+                intern->width = width;
+                intern->height = height;
+
+                if ( !colormap )
                 {
-                    nc_FreeMem(intern);
+                    intern->width = width;
+                    intern->height = height;
+
+                    // allocate buffer, create palette, surface and texture
+                    intern->swTex = CreateSurfaceScreenFormat(width, height);
+                    if (!intern->swTex)
+                    {
+                        delete intern;
+                        return res;
+                    }
                 }
                 else
                 {
-                    if ( width && height )
+                    intern->swTex = SDL_CreateRGBSurface(0, width, height, 8, 0, 0, 0, 0);
+                    if ( !intern->swTex )
                     {
-                        intern->width = width;
-                        intern->height = height;
-                        if ( create_texture && engines.display___win3d )
-                        {
-                            intern->width = width;
-                            intern->flags = intern->flags | BITMAP_FLAG_TEXTURE;
-                            intern->height = height;
-
-                            if ( sysmem )
-                                intern->flags = intern->flags | BITMAP_FLAG_SYSMEM;
-
-                            // allocate buffer, create palette, surface and texture
-                            if ( !engines.display___win3d->AllocTexture(intern) )
-                            {
-                                nc_FreeMem(intern);
-                                return res;
-                            }
-                        }
-                        else
-                        {
-                            void *buf = stak->GetPointer(BMD_ATT_BUFFER, NULL);
-                            intern->pitch = width;
-                            if ( buf )
-                            {
-                                intern->buffer = buf;
-                                intern->flags = intern->flags | BITMAP_FLAG_EXTDATA;
-                            }
-                            else
-                            {
-                                intern->buffer = AllocVec(height * width, 65537);
-                                if ( !intern->buffer )
-                                {
-                                    nc_FreeMem(intern);
-                                    return res;
-                                }
-                            }
-                        }
+                        delete intern;
+                        return res;
                     }
-                    res->data = intern;
                 }
+                res->data = intern;
             }
         }
     }
@@ -248,24 +194,20 @@ rsrc * NC_STACK_bitmap::rsrc_func64(IDVList *stak)
 
 size_t NC_STACK_bitmap::rsrc_func65(rsrc *res)
 {
-    bitmap_intern *intern = (bitmap_intern *)(res)->data;
+    ResBitmap *intern = (ResBitmap *)(res)->data;
 
     if ( intern )
     {
-        if ( intern->flags & BITMAP_FLAG_TEXTURE  &&  engines.display___win3d )
-        {
+        if ( intern->hwTex )
             engines.display___win3d->FreeTexture(intern);
-        }
-        else if ( !(intern->flags & BITMAP_FLAG_EXTDATA) )
-        {
-            if ( intern->buffer )
-                nc_FreeMem(intern->buffer);
-        }
 
-        if ( intern->pallete )
-            delete intern->pallete;
+        if ( intern->swTex )
+            SDL_FreeSurface(intern->swTex);
 
-        nc_FreeMem(intern);
+        if ( intern->palette )
+            delete intern->palette;
+
+        delete intern;
         res->data = NULL;
     }
 
@@ -298,13 +240,13 @@ void NC_STACK_bitmap::setBMD_outline(pixel_2d *otl)
 
 void NC_STACK_bitmap::setBMD_palette(UA_PALETTE *newPal)
 {
-    if ( stack__bitmap.bitm_intern->pallete )
-        *stack__bitmap.bitm_intern->pallete = *newPal;
+    if ( stack__bitmap.bitm_intern->palette )
+        *stack__bitmap.bitm_intern->palette = *newPal;
 }
 
 
 
-bitmap_intern * NC_STACK_bitmap::getBMD_pBitmap()
+ResBitmap * NC_STACK_bitmap::GetResBmp()
 {
     return stack__bitmap.bitm_intern;
 }
@@ -325,18 +267,10 @@ int NC_STACK_bitmap::getBMD_height()
     return 0;
 }
 
-void *NC_STACK_bitmap::getBMD_buffer()
-{
-    if (stack__bitmap.bitm_intern)
-        return stack__bitmap.bitm_intern->buffer;
-
-    return NULL;
-}
-
 int NC_STACK_bitmap::getBMD_hasPalette()
 {
     if (stack__bitmap.bitm_intern)
-        return stack__bitmap.bitm_intern->pallete != NULL;
+        return stack__bitmap.bitm_intern->palette != NULL;
 
     return 0;
 }
@@ -344,26 +278,62 @@ int NC_STACK_bitmap::getBMD_hasPalette()
 UA_PALETTE *NC_STACK_bitmap::getBMD_palette()
 {
     if (stack__bitmap.bitm_intern)
-        return stack__bitmap.bitm_intern->pallete;
+        return stack__bitmap.bitm_intern->palette;
 
     return NULL;
 }
 
+SDL_Surface * NC_STACK_bitmap::GetSwTex()
+{
+    if (stack__bitmap.bitm_intern)
+        return stack__bitmap.bitm_intern->swTex;
+
+    return NULL;
+}
+
+void NC_STACK_bitmap::PrepareTexture( bool force )
+{
+    if (!stack__bitmap.bitm_intern)
+        return;
+    
+    if (stack__bitmap.bitm_intern->hwTex && !force)
+        return;
+    
+    if (stack__bitmap.bitm_intern->hwTex)
+        engines.display___win3d->FreeTexture(stack__bitmap.bitm_intern);
+        
+    engines.display___win3d->AllocTexture(stack__bitmap.bitm_intern);
+}
+
+SDL_Surface * NC_STACK_bitmap::ConvertToScreen(SDL_Surface *src)
+{
+    return SDL_ConvertSurface(src, engines.display___win3d->GetScreenFormat(), 0);
+}
+
+SDL_Surface *NC_STACK_bitmap::CreateSurfaceScreenFormat(int width, int height)
+{
+    SDL_PixelFormat *fmt = engines.display___win3d->GetScreenFormat();
+#if SDL_VERSION_ATLEAST(2,0,5)
+    return SDL_CreateRGBSurfaceWithFormat(0, width, height, fmt->BitsPerPixel, fmt->format);
+#else
+    return SDL_CreateRGBSurface(0, width, height, fmt->BitsPerPixel, fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask );
+#endif
+}
 
 size_t NC_STACK_bitmap::compatcall(int method_id, void *data)
 {
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 64:
-        return (size_t)rsrc_func64( (IDVList *)data );
+        return (size_t)rsrc_func64( *(IDVList *)data );
     case 65:
         return rsrc_func65( (rsrc *)data );
     case 128:

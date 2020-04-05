@@ -36,10 +36,10 @@ struct rsrc_func66_arg
 class NC_STACK_rsrc: public NC_STACK_nucleus
 {
 public:
-    virtual size_t func0(IDVList *stak);
+    virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func3(IDVList *stak);
-    virtual rsrc * rsrc_func64(IDVList *stak);
+    virtual size_t func3(IDVList &stak);
+    virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func65(rsrc *res);
     virtual size_t rsrc_func66(rsrc_func66_arg *arg) {
         return 0;
@@ -50,7 +50,7 @@ public:
     NC_STACK_rsrc()
     {
         resource = NULL;
-        flags = 0;
+        _flags = 0;
     };
 
     virtual ~NC_STACK_rsrc() {};
@@ -88,11 +88,11 @@ public:
 
     //Data
 public:
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
 protected:
     rsrc *resource;
-    uint32_t flags;
+    uint32_t _flags;
 
 protected:
     static RSRCList privateList;

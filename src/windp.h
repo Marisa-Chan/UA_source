@@ -1,10 +1,11 @@
 #ifndef WINDP_H_INCLUDED
 #define WINDP_H_INCLUDED
 
-
+#include <string>
 #include "nucleas.h"
 #include "network.h"
 #include "lstvw.h"
+#include "netlib/zndNet.h"
 
 enum FREE_FRACTION
 {
@@ -15,49 +16,18 @@ enum FREE_FRACTION
 };
 
 
-struct windp_t1
+struct ProviderStruct
 {
-    char name[64];
-    //int guid[4];
-    //void *connection;
+    std::string name;
+    int type;
+    //guid or other
+
+    void clear()
+    {
+        name = "";
+        type = 0;
+    }
 };
-
-struct windp_intern
-{
-    void init();
-
-//  int connect_numb;
-    windp_t1 connections[64];
-    /*  _DWORD dword1504;
-      IDirectPlay3 *dplay3;
-      int providerID;
-      int connType;
-      int num_sessions;
-      windp_t2 sessions[64];
-      int act_sess;
-      windp_t2 own_sess;
-      int sess_joined;
-      int sess_created;
-      char version_ident[128];*/
-    int version_check;
-    /*windp_t3 players[4];
-    int num_players;*/
-    char *norm_block;
-    //char *big_block;
-    int norm_size;
-    /*int big_size;
-    int guaranteed;
-    char *sndBuff;
-    int sndBuff_size;
-    int sndBuff_off;*/
-    int guaranteed_md;
-    /*nlist recv_list;
-    nlist send_list;
-    HANDLE mevent;*/
-    int debug;
-};
-
-
 
 struct windp_getNameMsg
 {
@@ -102,7 +72,7 @@ struct windp_recvMsg
 
 struct windp_arg82
 {
-    char *senderID;
+    const char *senderID;
     int senderFlags;
     char *receiverID;
     int receiverFlags;
@@ -112,31 +82,29 @@ struct windp_arg82
 struct windp_arg87
 {
     char callSIGN[64];
-    char field_40;
-    char field_41;
+    char isHoster;
+    char isClient;
 };
 
 
 
 
-struct _NC_STACK_ypaworld;
+struct NC_STACK_ypaworld;
 struct UserData;
 
-void yw_HandleNetMsg(_NC_STACK_ypaworld *yw);
-void sub_46B328(UserData *usr);
-void yw_NetOKProvider(UserData *usr);
-void yw_JoinNetGame(UserData *usr);
-void sub_46D698(UserData *usr);
-void yw_CheckCDs(UserData *usr);
-void yw_CheckCRCs(_NC_STACK_ypaworld *yw);
-int ypaworld_func158__sub0__sub8(UserData *usr, const char**, const char**);
-void yw_NetPrintStartInfo(UserData *usr);
-int yw_DestroyPlayer(_NC_STACK_ypaworld *yw, const char *playerName);
+void yw_HandleNetMsg(NC_STACK_ypaworld *yw);
+
+
+void yw_CheckCRCs(NC_STACK_ypaworld *yw);
+
+
+int yw_DestroyPlayer(NC_STACK_ypaworld *yw, const char *playerName);
 
 
 
-struct netgamelst: public GuiBase
+class netgamelst: public GuiBase
 {
+public:
     int field_1CC;
     int field_1D0;
     int field_1D4;
@@ -147,50 +115,58 @@ struct netgamelst: public GuiBase
 
 extern netgamelst netgame_wnd;
 
-void sb_0x451034__sub6(_NC_STACK_ypaworld *yw);
-void ypaworld_func64__sub7__sub5(_NC_STACK_ypaworld *yw, struC5 *inpt);
-void ypaworld_func151__sub7(UserData *usr);
+void sb_0x451034__sub6(NC_STACK_ypaworld *yw);
+void ypaworld_func64__sub7__sub5(NC_STACK_ypaworld *yw, struC5 *inpt);
+
 
 
 
 class NC_STACK_windp: public NC_STACK_network
 {
 public:
-    virtual size_t func0(IDVList *stak);
+    virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func3(IDVList *stak);
-    virtual size_t windp_func64();
-    virtual size_t windp_func65(windp_getNameMsg *arg);
-    virtual size_t windp_func66(const char *provName);
-    virtual size_t windp_func67(windp_t1 **pconn);
-    virtual size_t windp_func68(IDVPair *stak);
-    virtual size_t windp_func69(windp_getNameMsg *arg);
-    virtual size_t windp_func70(const char *stak);
-    virtual size_t windp_func71(windp_openSessionMsg *os);
-    virtual size_t windp_func72(IDVPair *stak);
-    virtual size_t windp_func73(IDVPair *stak);
-    virtual size_t windp_func74(IDVPair *stak);
-    virtual size_t windp_func75(const char *sessName);
-    virtual size_t windp_func76(windp_createPlayerMsg *pl);
-    virtual size_t windp_func77(const char *playerName);
-    virtual size_t windp_func78(IDVPair *stak);
-    virtual size_t windp_func79(windp_arg79 *stak);
-    virtual size_t windp_func80(IDVPair *stak);
-    virtual size_t windp_func81(windp_recvMsg *recv);
-    virtual size_t windp_func82(windp_arg82 *stak);
-    virtual size_t windp_func83(IDVPair *stak);
-    virtual size_t windp_func84(int *);
-    virtual size_t windp_func85(IDVPair *stak);
-    virtual size_t windp_func86(IDVPair *stak);
-    virtual size_t windp_func87(windp_arg87 *arg);
-    virtual size_t windp_func88(IDVPair *stak);
-    virtual size_t windp_func89(const char **arg);
-    virtual size_t windp_func90(IDVPair *stak);
-    virtual size_t windp_func91(int *);
+    virtual size_t func3(IDVList &stak);
+
+    virtual size_t EnumProviders();
+    virtual size_t GetProviderName(windp_getNameMsg *arg);
+    virtual size_t SelectProvider(const char *provName);
+    virtual size_t GetProviderData(ProviderStruct **pconn);
+
+    virtual size_t EnumSessions(IDVPair *stak);
+    virtual size_t GetSessionName(windp_getNameMsg *arg);
+    virtual size_t JoinSession(const char *stak);
+    virtual size_t CreateSession(windp_openSessionMsg *os);
+    virtual size_t GetSessionData(IDVPair *stak);
+    virtual size_t CloseSession(IDVPair *stak);
+    virtual size_t GetSessionStatus();
+    virtual size_t SetSessionName(const char *sessName);
+
+    virtual size_t CreatePlayer(windp_createPlayerMsg *pl);
+    virtual size_t DeletePlayer(const char *playerName);
+    virtual size_t EnumPlayers(IDVPair *stak);
+    virtual size_t GetPlayerData(windp_arg79 *stak);
+
+    virtual size_t SendMessage(IDVPair *stak);
+    virtual size_t RecvMessage(windp_recvMsg *recv);
+    virtual size_t FlushBuffer(windp_arg82 &stak);
+
+    virtual size_t GetCaps(IDVPair *stak);
+    virtual size_t LockSession(int *);
+    virtual size_t Reset(IDVPair *stak);
+    virtual size_t CountPlayers(IDVPair *stak);
+
+    virtual bool GetRemoteStart(windp_arg87 *arg);
+
+    virtual size_t GetLocalName(IDVPair *stak);
+    virtual void   SetVersion(const char *arg);
+    virtual size_t GetProvType(IDVPair *stak);
+
+    virtual size_t GetStats(int *);
 
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_windp() {
-        memset(&wdp_intern, 0, sizeof(wdp_intern));
+        //memset(&wdp_intern, 0, sizeof(wdp_intern));
     };
     virtual ~NC_STACK_windp() {};
 
@@ -202,17 +178,73 @@ public:
         return new NC_STACK_windp();
     };
 
+    enum
+    {
+        MSG_T_UNKNOWN = 0,
+        MSG_T_PLAYER = 1,
+        MSG_T_ALL = 2
+    };
+
+    enum
+    {
+        SESSION_STATUS_NONE = 0,
+        SESSION_STATUS_JOINED = 1,
+        SESSION_STATUS_HOSTING = 2
+    };
 
     bool init();
     void deinit();
     int getNumPlayers();
 
+protected:
+    enum
+    {
+        MAX_PROVIDERS = 2, //64,
+    };
+
+    void _clear();
 
 
     //Data
-    static const NewClassDescr description;
+public:
+    static const Nucleus::ClassDescr description;
 
-    windp_intern wdp_intern;
+
+    int numProviders;
+    ProviderStruct providers[MAX_PROVIDERS];
+    int providerID;
+    int connType;
+
+    ZNDNet::ZNDClient *zcli;
+    ZNDNet::ZNDSingle *zhost;
+    ZNDNet::ZNDNet    *zcon;
+    /*  _DWORD dword1504;
+      IDirectPlay3 *dplay3;
+      int providerID;
+      int connType;
+      int num_sessions;
+      windp_t2 sessions[64];
+      int act_sess;
+      windp_t2 own_sess;
+      int sess_joined;
+      int sess_created;*/
+    std::string version_ident;
+    int version_check;
+    /*windp_t3 players[4];
+    int num_players;*/
+    char *norm_block;
+    //char *big_block;
+    int norm_size;
+    /*int big_size;
+    int guaranteed;*/
+    char *sndBuff;
+    int sndBuff_size;
+    int sndBuff_off;
+    int guaranteed_md;
+    /*nlist recv_list;
+    nlist send_list;
+    HANDLE mevent;*/
+    int debug;
 };
 
 #endif // WINDP_H_INCLUDED

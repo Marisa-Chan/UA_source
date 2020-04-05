@@ -6,39 +6,28 @@
 #include "utils.h"
 
 
-const NewClassDescr NC_STACK_display::description("display.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_display::description("display.class", &newinstance);
 
 
-size_t NC_STACK_display::func0(IDVList *stak)
+size_t NC_STACK_display::func0(IDVList &stak)
 {
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
 
     dprintf("MAKE ME %s\n","raster_func0");
 
-    if (stak)
-    {
-        width = stak->Get(ATT_WIDTH, 0);
-        height = stak->Get(ATT_HEIGHT, 0);
-    }
-    else
-    {
-        width = 0;
-        height = 0;
-    }
+    _width = stak.Get(ATT_WIDTH, 0);
+    _height = stak.Get(ATT_HEIGHT, 0);
 
 //    rstr->bitm_intern = (bitmap_intern *)getRsrc_pData();
 
-    stack__display.field_24.x1 = 0;
-    stack__display.field_24.y1 = 0;
-    stack__display.field_24.x2 = width - 1;
-    stack__display.field_24.y2 = height - 1;
+    stack__display._clip = Common::Rect(_width - 1, _height - 1);
 
-    stack__display.field_54c = width / 2;
-    stack__display.field_550 = height / 2;
+    stack__display.field_54c = _width / 2;
+    stack__display.field_550 = _height / 2;
 
-    stack__display.field_554 = width / 2;
-    stack__display.field_558 = height / 2;
+    stack__display.field_554 = _width / 2;
+    stack__display.field_558 = _height / 2;
 
     engines.display___win3d = this;
 
@@ -51,45 +40,42 @@ size_t NC_STACK_display::func1()
     return NC_STACK_nucleus::func1();
 }
 
-size_t NC_STACK_display::func2(IDVList *stak)
+size_t NC_STACK_display::func2(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case ATT_PALETTE:
-                    SetPalette((UA_PALETTE *)val.value.p_data);
-                    break;
+            case ATT_PALETTE:
+                SetPalette(*(UA_PALETTE *)val.value.p_data);
+                break;
 
-                case ATT_FGPEN:
-                    setRSTR_FGpen(val.value.u_data);
-                    break;
+            case ATT_FGPEN:
+                SetPen(val.value.u_data);
+                break;
 
-                case ATT_BGPEN:
-                    setRSTR_BGpen(val.value.u_data);
-                    break;
+            case ATT_BGPEN:
+                setRSTR_BGpen(val.value.u_data);
+                break;
 
-                case ATT_SHADE_RMP:
-                    setRSTR_shdRmp((bitmap_intern *)val.value.p_data);
-                    break;
+            case ATT_SHADE_RMP:
+                setRSTR_shdRmp((ResBitmap *)val.value.p_data);
+                break;
 
-                case ATT_TRACY_RMP:
-                    setRSTR_trcRmp((bitmap_intern *)val.value.p_data);
-                    break;
+            case ATT_TRACY_RMP:
+                setRSTR_trcRmp((ResBitmap *)val.value.p_data);
+                break;
 
-                case ATT_FGAPEN:
-                    setRSTR_FGApen(val.value.i_data);
-                    break;
+            case ATT_FGAPEN:
+                setRSTR_FGApen(val.value.i_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -97,10 +83,10 @@ size_t NC_STACK_display::func2(IDVList *stak)
     return NC_STACK_nucleus::func2(stak);
 }
 
-size_t NC_STACK_display::func3(IDVList *stak)
+size_t NC_STACK_display::func3(IDVList &stak)
 {
-    IDVList::iterator it = stak->find(ATT_PALETTE);
-    if ( it != stak->end() )
+    IDVList::iterator it = stak.find(ATT_PALETTE);
+    if ( it != stak.end() )
     {
         *(UA_PALETTE **)it->second.value.p_data = GetPalette();
     }
@@ -183,33 +169,27 @@ size_t NC_STACK_display::raster_func206(polysDatSub *)
     return 0;
 }
 
-void NC_STACK_display::raster_func207(rstr_207_arg *arg)
+void NC_STACK_display::raster_func207(int id, TileMap *tiles)
 {
-    __NC_STACK_display *rstr = &stack__display;
-    rstr->tiles[arg->id] = arg->tiles;
+    stack__display.tiles[id] = tiles;
 }
 
-void NC_STACK_display::raster_func208(rstr_207_arg *arg)
+TileMap *NC_STACK_display::raster_func208(int id)
 {
-    __NC_STACK_display *rstr = &stack__display;
+    return stack__display.tiles[id];
+}
 
-    if ( arg->tiles )
+int NC_STACK_display::raster_func208(TileMap *tiles)
+{
+    if ( tiles )
     {
-        arg->id = -1;
-
         for (int i = 0; i < 256; i++)
         {
-            if (rstr->tiles[i] == arg->tiles)
-            {
-                arg->id = i;
-                break;
-            }
+            if (stack__display.tiles[i] == tiles)
+                return i;
         }
     }
-    else
-    {
-        arg->tiles = rstr->tiles[arg->id];
-    }
+    return -1;
 }
 
 void NC_STACK_display::raster_func209(w3d_a209 *)
@@ -221,20 +201,20 @@ void NC_STACK_display::raster_func210(ua_fRect *arg)
 {
     __NC_STACK_display *rstr = &stack__display;
 
-    rstr->field_24.x1 = (arg->x1 + 1.0) * (rstr->field_554 + -1.0);
-    rstr->field_24.y1 = (arg->y1 + 1.0) * (rstr->field_558 + -1.0);
-    rstr->field_24.x2 = (arg->x2 + 1.0) * (rstr->field_554 + -1.0);
-    rstr->field_24.y2 = (arg->y2 + 1.0) * (rstr->field_558 + -1.0);
+    rstr->_clip = Common::Rect( (arg->x1 + 1.0) * (rstr->field_554 + -1.0),
+                                (arg->y1 + 1.0) * (rstr->field_558 + -1.0),
+                                (arg->x2 + 1.0) * (rstr->field_554 + -1.0),
+                                (arg->y2 + 1.0) * (rstr->field_558 + -1.0) );
 }
 
 void NC_STACK_display::raster_func211(ua_dRect *arg)
 {
     __NC_STACK_display *rstr = &stack__display;
 
-    rstr->field_24.x1 = rstr->field_54c + arg->x1;
-    rstr->field_24.y1 = rstr->field_550 + arg->y1;
-    rstr->field_24.x2 = rstr->field_54c + arg->x2;
-    rstr->field_24.y2 = rstr->field_550 + arg->y2;
+    rstr->_clip = Common::Rect( rstr->field_54c + arg->x1,
+                                rstr->field_550 + arg->y1,
+                                rstr->field_54c + arg->x2,
+                                rstr->field_550 + arg->y2 );
 }
 
 size_t NC_STACK_display::raster_func212(IDVPair *)
@@ -251,26 +231,11 @@ void NC_STACK_display::EndScene()
 {
 }
 
-void NC_STACK_display::LockSurface()
+
+size_t NC_STACK_display::raster_func217(uint32_t color)
 {
-}
-
-void NC_STACK_display::UnlockSurface()
-{
-}
-
-size_t NC_STACK_display::raster_func217(rstr_arg217 *arg)
-{
-    __NC_STACK_display *rstr = &stack__display;
-
-    if ( arg->dword0 != 0xFFFFFFFF )
-        rstr->field_4 = arg->dword0;
-
-    if ( arg->dword4 != 0xFFFFFFFF )
-        rstr->field_8 = arg->dword4;
-
-//    if ( arg->dword8 != 0xFFFFFFFF )
-//        rstr->BG_Color = arg->dword8;
+    if ( color != 0xFFFFFFFF )
+        stack__display.field_4 = color;
 
     return 0;
 }
@@ -294,23 +259,24 @@ size_t NC_STACK_display::raster_func220(IDVPair *)
 
 void NC_STACK_display::raster_func221(ua_dRect *arg)
 {
-    __NC_STACK_display *rstr = &stack__display;
-
-    rstr->field_38.x1 = rstr->field_54c + arg->x1;
-    rstr->field_38.y1 = rstr->field_550 + arg->y1;
-    rstr->field_38.x2 = rstr->field_54c + arg->x2;
-    rstr->field_38.y2 = rstr->field_550 + arg->y2;
+    stack__display._inverseClip.left = stack__display.field_54c + arg->x1;
+    stack__display._inverseClip.top = stack__display.field_550 + arg->y1;
+    stack__display._inverseClip.right = stack__display.field_54c + arg->x2;
+    stack__display._inverseClip.bottom = stack__display.field_550 + arg->y2;
 }
 
 
 
 
-void NC_STACK_display::display_func261(rstr_261_arg *arg)
+void NC_STACK_display::display_func261(int ID, UA_PALETTE &pal, int from, int num)
 {
-    __NC_STACK_display *displ = &stack__display;
+    for (int i = 0; i < num; i++)
+        stack__display.field_300[ID][from + i] = pal[i];
+}
 
-    for (int i = 0; i < arg->pal_num; i++)
-        displ->field_300[arg->pal_id].pal_entries[arg->entrie_id + i] = arg->palette->pal_entries[i];
+void NC_STACK_display::display_func261(int ID, UA_PALETTE &pal)
+{
+    stack__display.field_300[ID] = pal;
 }
 
 void NC_STACK_display::display_func262(rstr_262_arg *arg)
@@ -325,10 +291,10 @@ void NC_STACK_display::display_func262(rstr_262_arg *arg)
 
         for (int j = 0; j < arg->cnt; j++)
         {
-            UA_PALETTE *pal = &displ->field_300[ arg->slot[j] ];
-            tmpr += arg->weight[j] * pal->pal_entries[i].r;
-            tmpg += arg->weight[j] * pal->pal_entries[i].g;
-            tmpb += arg->weight[j] * pal->pal_entries[i].b;
+            UA_PALETTE &pal = displ->field_300[ arg->slot[j] ];
+            tmpr += arg->weight[j] * pal[i].r;
+            tmpg += arg->weight[j] * pal[i].g;
+            tmpb += arg->weight[j] * pal[i].b;
         }
 
         tmpr >>= 8;
@@ -342,9 +308,9 @@ void NC_STACK_display::display_func262(rstr_262_arg *arg)
         if (tmpb > 255)
             tmpb = 255;
 
-        displ->palette.pal_entries[i].r = tmpr;
-        displ->palette.pal_entries[i].g = tmpg;
-        displ->palette.pal_entries[i].b = tmpb;
+        displ->palette[i].r = tmpr;
+        displ->palette[i].g = tmpg;
+        displ->palette[i].b = tmpb;
     }
 }
 
@@ -370,45 +336,18 @@ void NC_STACK_display::display_func263(displ_arg263 *arg)
 //}
 
 
-bool NC_STACK_display::AllocTexture(bitmap_intern *pbitm)
+bool NC_STACK_display::AllocTexture(ResBitmap *pbitm)
 {
-    bitmap_intern *bitm = pbitm;
-
-    bitm->pitch = bitm->width;
-    bitm->buffer = AllocVec(bitm->width * bitm->height, 65537);
-    bitm->flags |= BITMAP_FLAG_TEXTURE;
-    return bitm->buffer != NULL;
+    return false;
 }
 
-void NC_STACK_display::TextureApplyPalette(bitmap_intern *)
+void NC_STACK_display::FreeTexture(ResBitmap *pbitm)
 {
 }
 
-void NC_STACK_display::FreeTexture(bitmap_intern *pbitm)
+UA_PALETTE * NC_STACK_display::display_func273(int paletteId)
 {
-    bitmap_intern *bitm = pbitm;
-    if (bitm->buffer)
-    {
-        nc_FreeMem(bitm->buffer);
-        bitm->buffer = NULL;
-    }
-}
-
-size_t NC_STACK_display::LockTexture(bitmap_intern *)
-{
-    return 1;
-}
-
-void NC_STACK_display::UnlockTexture(bitmap_intern *)
-{
-}
-
-UA_PALETTE * NC_STACK_display::display_func273(rstr_261_arg *arg)
-{
-    __NC_STACK_display *displ = &stack__display;
-
-    arg->palette = &displ->field_300[arg->pal_id];
-    return arg->palette;
+    return &stack__display.field_300[paletteId];
 }
 
 void NC_STACK_display::display_func274(const char **)
@@ -418,18 +357,11 @@ void NC_STACK_display::display_func274(const char **)
 
 
 
-void NC_STACK_display::SetPalette(UA_PALETTE *newPal)
+void NC_STACK_display::SetPalette(UA_PALETTE &newPal)
 {
-    rstr_261_arg arg_261;
+    display_func261(0, newPal);
+
     rstr_262_arg arg_262;
-
-    arg_261.palette = newPal;
-    arg_261.pal_id = 0;
-    arg_261.entrie_id = 0;
-    arg_261.pal_num = 256;
-
-    display_func261(&arg_261);
-
     int v11 = 0;
     int v12 = 256;
     arg_262.slot = &v11;
@@ -440,7 +372,7 @@ void NC_STACK_display::SetPalette(UA_PALETTE *newPal)
 };
 
 
-void NC_STACK_display::setRSTR_FGpen(uint32_t pen)
+void NC_STACK_display::SetPen(uint32_t pen)
 {
     stack__display.field_4 = pen;
 }
@@ -450,14 +382,14 @@ void NC_STACK_display::setRSTR_BGpen(uint32_t pen)
 //    stack__display.BG_Color = pen;
 }
 
-void NC_STACK_display::setRSTR_shdRmp(bitmap_intern *rmp)
+void NC_STACK_display::setRSTR_shdRmp(ResBitmap *rmp)
 {
 //	rstr->field_10 = rmp;
 //	if ( rmp )
 //		rstr->field_14 = rmp->buffer;
 }
 
-void NC_STACK_display::setRSTR_trcRmp(bitmap_intern *rmp)
+void NC_STACK_display::setRSTR_trcRmp(ResBitmap *rmp)
 {
 //	rstr->field_18 = rmp;
 //	if ( rmp )
@@ -466,7 +398,7 @@ void NC_STACK_display::setRSTR_trcRmp(bitmap_intern *rmp)
 
 void NC_STACK_display::setRSTR_FGApen(uint32_t pen)
 {
-    stack__display.field_8 = pen;
+    //stack__display.field_8 = pen;
 }
 
 
@@ -477,12 +409,12 @@ UA_PALETTE *NC_STACK_display::GetPalette()
 
 int16_t NC_STACK_display::GetWidth()
 {
-    return width;
+    return _width;
 }
 
 int16_t NC_STACK_display::GetHeight()
 {
-    return height;
+    return _height;
 }
 
 
@@ -491,13 +423,13 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 192:
         return (size_t)raster_func192( (IDVPair *)data );
 //    case 193:
@@ -521,10 +453,10 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
     case 206:
         return (size_t)raster_func206( (polysDatSub *)data );
     case 207:
-        raster_func207( (rstr_207_arg *)data );
+        //raster_func207( (rstr_207_arg *)data );
         return 1;
     case 208:
-        raster_func208( (rstr_207_arg *)data );
+        //raster_func208( (rstr_207_arg *)data );
         return 1;
     case 209:
         raster_func209( (w3d_a209 *)data );
@@ -544,13 +476,14 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
         EndScene();
         return 1;
     case 215:
-        LockSurface();
+        //LockSurface();
         return 1;
     case 216:
-        UnlockSurface();
+        //UnlockSurface();
         return 1;
     case 217:
-        return (size_t)raster_func217( (rstr_arg217 *)data );
+        //return (size_t)raster_func217( (rstr_arg217 *)data );
+        return 1;
     case 218:
         raster_func218( (rstr_218_arg *)data );
         return 1;
@@ -562,7 +495,7 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
         raster_func221( (ua_dRect *)data );
         return 1;
     case 261:
-        display_func261( (rstr_261_arg *)data );
+        //display_func261( (rstr_261_arg *)data );
         return 1;
     case 262:
         display_func262( (rstr_262_arg *)data );
@@ -577,20 +510,14 @@ size_t NC_STACK_display::compatcall(int method_id, void *data)
 //        display_func265( (void *)data );
 //        return 1;
     case 266:
-        return (size_t)AllocTexture( (bitmap_intern *)data );
+        return (size_t)AllocTexture( (ResBitmap *)data );
     case 267:
-        TextureApplyPalette( (bitmap_intern *)data );
         return 1;
     case 268:
-        FreeTexture( (bitmap_intern *)data );
-        return 1;
-    case 269:
-        return (size_t)LockTexture( (bitmap_intern *)data );
-    case 270:
-        UnlockTexture( (bitmap_intern *)data );
+        FreeTexture( (ResBitmap *)data );
         return 1;
     case 273:
-        return (size_t)display_func273( (rstr_261_arg *)data );
+        return (size_t)display_func273( (size_t)data );
     case 274:
         display_func274( (const char **)data );
         return 1;

@@ -6,7 +6,7 @@
 #include "utils.h"
 
 
-const NewClassDescr NC_STACK_bmpanim::description("bmpanim.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_bmpanim::description("bmpanim.class", &newinstance);
 
 
 static int dword_515200 = 0;
@@ -15,12 +15,12 @@ static int dword_5B2410;
 static tUtV *dword_5A11A0[256];
 
 
-size_t NC_STACK_bmpanim::func0(IDVList *stak)
+size_t NC_STACK_bmpanim::func0(IDVList &stak)
 {
 //    if (stak)
 //    {
 //        IDVList::iterator it = stak->find(BANM_ATT_NAME);
-//        if ( it != stak->end() )
+//        if ( it != stak.end() )
 //            (*it).id = RSRC_ATT_NAME;
 //    }
 
@@ -33,8 +33,7 @@ size_t NC_STACK_bmpanim::func0(IDVList *stak)
     stack__bmpanim.time_ovr = 0;
     stack__bmpanim.current_frame = stack__bmpanim.bmpanm_intern->start_frame;
 
-    if (stak)
-        stack__bmpanim.anim_type = stak->Get(BANM_ATT_ANIMTYPE, 0);
+    stack__bmpanim.anim_type = stak.Get(BANM_ATT_ANIMTYPE, 0);
 
     return 1;
 }
@@ -44,54 +43,47 @@ size_t NC_STACK_bmpanim::func1()
     return NC_STACK_bitmap::func1();
 }
 
-size_t NC_STACK_bmpanim::func2(IDVList *stak)
+size_t NC_STACK_bmpanim::func2(IDVList &stak)
 {
-    IDVList::iterator it = stak->find(BANM_ATT_ANIMTYPE);
-    if ( it != stak->end() )
+    IDVList::iterator it = stak.find(BANM_ATT_ANIMTYPE);
+    if ( it != stak.end() )
         setBANM_animType(it->second.value.i_data);
 
     return NC_STACK_bitmap::func2(stak);
 }
 
-size_t NC_STACK_bmpanim::func3(IDVList *stak)
+size_t NC_STACK_bmpanim::func3(IDVList &stak)
 {
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BMD_ATT_PBITMAP:
-                    *(bitmap_intern **)val.value.p_data = getBMD_pBitmap();
-                    break;
-                case BMD_ATT_OUTLINE:
-                case BMD_ATT_BUFFER:
-                    *(void **)val.value.p_data = NULL;
-                    break;
-                case BMD_ATT_WIDTH:
-                case BMD_ATT_HEIGHT:
-                    *(int *)val.value.p_data = 0;
-                    break;
-                case BANM_ATT_NAME:
-                    *(const char **)val.value.p_data = getBANM_name();
-                    break;
-                case BANM_ATT_CLASSNAME:
-                    *(const char **)val.value.p_data = getBANM_classname();
-                    break;
-                case BANM_ATT_FRAMECNT:
-                    *(int *)val.value.p_data = getBANM_framecnt();
-                    break;
-                case BANM_ATT_ANIMTYPE:
-                    *(int *)val.value.p_data = getBANM_animtype();
-                    break;
+            case BMD_ATT_OUTLINE:
+                *(void **)val.value.p_data = NULL;
+                break;
+            case BMD_ATT_WIDTH:
+            case BMD_ATT_HEIGHT:
+                *(int *)val.value.p_data = 0;
+                break;
+            case BANM_ATT_NAME:
+                *(const char **)val.value.p_data = getBANM_name();
+                break;
+            case BANM_ATT_CLASSNAME:
+                *(const char **)val.value.p_data = getBANM_classname();
+                break;
+            case BANM_ATT_FRAMECNT:
+                *(int *)val.value.p_data = getBANM_framecnt();
+                break;
+            case BANM_ATT_ANIMTYPE:
+                *(int *)val.value.p_data = getBANM_animtype();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -145,7 +137,7 @@ size_t NC_STACK_bmpanim::func5(IFFile **file)
     stk.Add(BANM_ATT_NAME, anmName);
     stk.Add(BANM_ATT_ANIMTYPE, animType);
 
-    return func0(&stk);
+    return func0(stk);
 }
 
 size_t NC_STACK_bmpanim::func6(IFFile **file)
@@ -380,12 +372,12 @@ int bmpanim_func64__sub1__sub2(void *fil, bmpAnim_t1 *arg)
                         vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, pbmpAnm_titles[i]);
                         vals.Add(NC_STACK_rsrc::RSRC_ATT_DONTCOPY, 1);
 
-                        frames[i].bitmObj = dynamic_cast<NC_STACK_bitmap *>( init_get_class(arg->className, &vals) );
+                        frames[i].bitmObj = Nucleus::CInit<NC_STACK_bitmap>(vals);
 
                         if ( !frames[i].bitmObj )
                             return 0;
 
-                        frames[i].bitm_intern = frames[i].bitmObj->getBMD_pBitmap();
+                        frames[i].bitm_intern = frames[i].bitmObj->GetResBmp();
                         frames[i].title = pbmpAnm_titles[i];
                     }
                     return 1;
@@ -632,11 +624,11 @@ int bmpanim_func64__sub0__sub0(bmpAnim_t1 *t1, char **a2, const char *className)
         vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, out);
         vals.Add(NC_STACK_rsrc::RSRC_ATT_DONTCOPY, 1);
 
-        t1->bitm_buff[i].bitmObj = dynamic_cast<NC_STACK_bitmap *>( init_get_class(className, &vals) );
+        t1->bitm_buff[i].bitmObj = Nucleus::CTFInit<NC_STACK_bitmap>(className, vals);
         if ( !t1->bitm_buff[i].bitmObj )
             return 0;
 
-        t1->bitm_buff[i].bitm_intern = t1->bitm_buff[i].bitmObj->getBMD_pBitmap();
+        t1->bitm_buff[i].bitm_intern = t1->bitm_buff[i].bitmObj->GetResBmp();
 
         t1->bitm_buff[i].title = out;
 
@@ -763,33 +755,29 @@ bmpAnim_t1 * bmpanim_func64__sub0(const char *className, char **a2, pixel_2d **a
 }
 
 // Create bmpanim resource node and fill rsrc field data
-rsrc * NC_STACK_bmpanim::rsrc_func64(IDVList *stak)
+rsrc * NC_STACK_bmpanim::rsrc_func64(IDVList &stak)
 {
-    IDVList loclist;
-    if (!stak)
-        stak = &loclist;
-
-    stak->Add(RSRC_ATT_LISTYPE, 1);
+    stak.Add(RSRC_ATT_LISTYPE, 1);
 
     rsrc *res = NC_STACK_bitmap::rsrc_func64(stak);// rsrc_func64
     if ( res )
     {
 
-        const char *a1 = stak->GetConstChar(BANM_ATT_CLASSNAME, NULL);
+        const char *a1 = stak.GetConstChar(BANM_ATT_CLASSNAME, NULL);
         if ( a1 )
         {
-            char **titles = (char **)stak->GetPointer(BANM_ATT_FILE_TITLES, NULL);
-            pixel_2d **opls = (pixel_2d **)stak->GetPointer(BANM_ATT_OUTLINES, NULL);
-            int num = stak->Get(BANM_ATT_FRAMECNT, 0);
-            bmpanm_loc *v7 = (bmpanm_loc *)stak->GetPointer(BANM_ATT_SEQDATA, NULL);
+            char **titles = (char **)stak.GetPointer(BANM_ATT_FILE_TITLES, NULL);
+            pixel_2d **opls = (pixel_2d **)stak.GetPointer(BANM_ATT_OUTLINES, NULL);
+            int num = stak.Get(BANM_ATT_FRAMECNT, 0);
+            bmpanm_loc *v7 = (bmpanm_loc *)stak.GetPointer(BANM_ATT_SEQDATA, NULL);
 
             if ( titles && opls && num && v7 )
                 res->data = bmpanim_func64__sub0(a1, titles, opls, num, v7);
         }
         else
         {
-            const char *v9 = stak->GetConstChar(RSRC_ATT_NAME, NULL);
-            IFFile *v10 = (IFFile *)stak->GetPointer(RSRC_ATT_PIFFFILE, NULL);
+            const char *v9 = stak.GetConstChar(RSRC_ATT_NAME, NULL);
+            IFFile *v10 = (IFFile *)stak.GetPointer(RSRC_ATT_PIFFFILE, NULL);
             if ( v9 )
                 res->data = bmpanim_func64__sub1(v9, v10);
         }
@@ -1059,7 +1047,7 @@ void NC_STACK_bmpanim::setBANM_animType(int newType)
     stack__bmpanim.anim_type = newType;
 }
 
-bitmap_intern * NC_STACK_bmpanim::getBMD_pBitmap()
+ResBitmap * NC_STACK_bmpanim::GetResBmp()
 {
     return stack__bmpanim.current_frame->bitm;
 }
@@ -1099,25 +1087,34 @@ int NC_STACK_bmpanim::getBANM_animtype()
     return stack__bmpanim.anim_type;
 }
 
+void NC_STACK_bmpanim::PrepareTexture( bool force )
+{
+    if (!stack__bmpanim.bmpanm_intern)
+        return;
+    
+    for(int i = 0; i < stack__bmpanim.bmpanm_intern->bitm_buff_cnt; i++)
+        stack__bmpanim.bmpanm_intern->bitm_buff[i].bitmObj->PrepareTexture(force);
+}
+
 
 size_t NC_STACK_bmpanim::compatcall(int method_id, void *data)
 {
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 5:
         return (size_t)func5( (IFFile **)data );
     case 6:
         return (size_t)func6( (IFFile **)data );
     case 64:
-        return (size_t)rsrc_func64( (IDVList *)data );
+        return (size_t)rsrc_func64( *(IDVList *)data );
     case 65:
         return rsrc_func65( (rsrc *)data );
     case 66:

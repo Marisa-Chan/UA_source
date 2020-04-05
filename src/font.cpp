@@ -310,7 +310,7 @@ void FontUA::set_txtColor(char **pos, uint8_t r, uint8_t g, uint8_t b)
 
 // Funcs
 
-char * FontUA::FormateClippedText(tiles_stru *, char *curpos, const char *str, int width_space, char space_chr)
+char * FontUA::FormateClippedText(TileMap *, char *curpos, const char *str, int width_space, char space_chr)
 {
     char *tmp = curpos;
 
@@ -341,7 +341,7 @@ char * FontUA::FormateClippedText(tiles_stru *, char *curpos, const char *str, i
     return tmp;
 }
 
-char * FontUA::FormateCenteredSkipableItem(tiles_stru *, char *in, const char *str, int width)
+char * FontUA::FormateCenteredSkipableItem(TileMap *, char *in, const char *str, int width)
 {
     char *cur = in;
     if ( width > 0 )
@@ -352,7 +352,7 @@ char * FontUA::FormateCenteredSkipableItem(tiles_stru *, char *in, const char *s
     return cur;
 }
 
-char * FontUA::TextRelWidthItem(tiles_stru *, char *pos, const char *txt, int wdth, int arg)
+char * FontUA::TextRelWidthItem(TileMap *, char *pos, const char *txt, int wdth, int arg)
 {
     char *tmp = pos;
 
@@ -374,17 +374,17 @@ char * FontUA::TextRelWidthItem(tiles_stru *, char *pos, const char *txt, int wd
 
 
 
-char * FontUA::FormateTextAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg)
+char * FontUA::FormateTextAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg)
 {
-    tiles_stru *v3 = yw->tiles[ arg->fontID ];
+    TileMap *v3 = yw->tiles[ arg->fontID ];
 
     int v4 = arg->width;
 
     if ( arg->flags & 1 )
-        v4 -= v3->chars[arg->prefixChar].width;
+        v4 -= v3->map[arg->prefixChar].w;
 
     if ( arg->flags & 2 )
-        v4 -= v3->chars[arg->postfixChar].width;
+        v4 -= v3->map[arg->postfixChar].w;
 
     char *tmp = cmdbuf;
     FontUA::select_tileset(&tmp, arg->fontID);
@@ -429,7 +429,7 @@ char * FontUA::FormateTextAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmd
             v20 = 4;
         }
 
-        FontUA::add_txt(&tmp, v4, v20, arg->txt);
+        FontUA::add_txt(&tmp, v4, v20, arg->txt.c_str());
     }
 
     if ( arg->flags & 2 )
@@ -439,48 +439,45 @@ char * FontUA::FormateTextAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmd
     return tmp;
 }
 
-char *FontUA::FormateAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg)
+char *FontUA::FormateAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg)
 {
-    tiles_stru *v30 = yw->tiles[ arg->fontID ];
+    TileMap *tset = yw->tiles[ arg->fontID ];
 
     int v28 = 0;
     int v29 = 0;
     int v27 = 0;
     int v26 = 0;
 
-    int v6 = 0;
-    const char *v8 = arg->txt;
-    while ( *v8 )
-    {
-        v6 += v30->chars[ (uint8_t)*v8 ].width;
-        v8++;
-    }
+    int txtWidth = 0;
+    
+    for ( auto c : arg->txt )
+        txtWidth += tset->map[ c ].w;
 
-    int v10 = arg->width - v6;
+    int freeWidth = arg->width - txtWidth;
     if ( arg->flags & 1 )
-        v10 -= v30->chars[arg->prefixChar].width;
+        freeWidth -= tset->map[arg->prefixChar].w;
     if ( arg->flags & 2 )
-        v10 -= v30->chars[arg->postfixChar].width;
+        freeWidth -= tset->map[arg->postfixChar].w;
 
     char *tmp = cmdbuf;
     FontUA::select_tileset(&tmp, arg->fontID);
 
-    if ( v10 <= 0 )
+    if ( freeWidth <= 0 )
     {
-        if ( v10 < 0 )
+        if ( freeWidth < 0 )
         {
             if ( arg->flags & 4 )
             {
-                v29 = -v10;
+                v29 = -freeWidth;
             }
             else if ( arg->flags & 8 )
             {
-                v28 = -v10;
+                v28 = -freeWidth;
             }
             else if ( arg->flags & 0x10 )
             {
-                v28 = (-v10) / 2;
-                v29 = (-v10) - ((-v10) / 2);
+                v28 = (-freeWidth) / 2;
+                v29 = (-freeWidth) - ((-freeWidth) / 2);
             }
         }
     }
@@ -488,38 +485,38 @@ char *FontUA::FormateAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmdbuf, 
     {
         if ( arg->flags & 4 )
         {
-            v26 = v10;
+            v26 = freeWidth;
         }
         else if ( arg->flags & 8 )
         {
-            v27 = v10;
+            v27 = freeWidth;
         }
         else if ( arg->flags & 0x10 )
         {
-            v27 = v10 / 2;
-            v26 = v10 - (v10 / 2);
+            v27 = freeWidth / 2;
+            v26 = freeWidth - (freeWidth / 2);
         }
     }
 
-    int v16 = v6 - v29 - v28;
+    int v16 = txtWidth - v29 - v28;
 
     if ( arg->flags & 1 )
         FontUA::store_u8(&tmp, arg->prefixChar);
 
     int chr = 0;
 
-    const char *v7 = arg->txt;
+    size_t cI = 0;
 
     while (v28 > 0)
     {
-        chr = *v7;
-        v7++;
-        v28 -= v30->chars[(uint8_t)chr].width;
+        chr = arg->txt[cI];
+        cI++;
+        v28 -= tset->map[(uint8_t)chr].w;
     }
 
     if ( v28 < 0 )
     {
-        FontUA::set_xoff(&tmp, v28 + v30->chars[(uint8_t)chr].width);
+        FontUA::set_xoff(&tmp, v28 + tset->map[(uint8_t)chr].w);
         FontUA::store_u8(&tmp, chr);
     }
 
@@ -544,17 +541,21 @@ char *FontUA::FormateAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmdbuf, 
         chr = 0;
         while ( v16 >= 0 )
         {
-            chr = *v7;
-            v7++;
-            if ( chr == 0)
+            if (cI >= arg->txt.size())
+            {
+                chr = 0;
                 break;
+            }
+            
+            chr = arg->txt[cI];
+            cI++;
 
-            v16 -= v30->chars[(uint8_t)chr].width;
+            v16 -= tset->map[(uint8_t)chr].w;
             FontUA::store_u8(&tmp, chr);
         }
         if (chr)
         {
-            FontUA::set_xwidth(&tmp, v16 + v30->chars[(uint8_t)chr].width);
+            FontUA::set_xwidth(&tmp, v16 + tset->map[(uint8_t)chr].w);
             FontUA::store_u8(&tmp, chr);
         }
     }
@@ -580,7 +581,7 @@ char *FontUA::FormateAlignedClippedString(_NC_STACK_ypaworld *yw, char *cmdbuf, 
 }
 
 
-char * FontUA::FormateColumnItem(_NC_STACK_ypaworld *yw, char *cmdbuf, int num, ColumnItem *a4)
+char * FontUA::FormateColumnItem(NC_STACK_ypaworld *yw, char *cmdbuf, int num, ColumnItem *a4)
 {
     char *tmp = cmdbuf;
     for (int i = 0; i < num; i++)

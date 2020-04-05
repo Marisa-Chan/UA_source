@@ -16,6 +16,10 @@
 #include "engine_gfx.h"
 #include "engine_input.h"
 
+#include "gui/widget.h"
+#include "gui/uawidgets.h"
+
+
 int dword_513638 = 0;
 int dword_51362C = 0;
 int dword_513630 = 0;
@@ -40,7 +44,7 @@ int sub_4107FC(UserData *usr)
 
     arg171.usr = usr;
     arg171.usertxt = "settings.tmp";
-    arg171.field_4 = usr->user_name;
+    arg171.field_4 = usr->user_name.c_str();
     arg171.field_8 = 193;
     arg171.field_10 = 0;
 
@@ -50,11 +54,11 @@ int sub_4107FC(UserData *usr)
 void sub_410628()
 {
     char buf[300];
-    sprintf(buf, "%s/user.txt", userdata.user_name);
+    sprintf(buf, "%s/user.txt", userdata.user_name.c_str());
 
     yw_arg172 arg171;
     arg171.usertxt = buf;
-    arg171.field_4 = userdata.user_name;
+    arg171.field_4 = userdata.user_name.c_str();
     arg171.usr = &userdata;
     arg171.field_8 = 255;
     arg171.field_10 = 0;
@@ -64,7 +68,7 @@ void sub_410628()
     FSMgr::FileHandle *fil = uaOpenFile("env:user.def", "w");
     if ( fil )
     {
-        strcpy(buf, userdata.user_name);
+        strcpy(buf, userdata.user_name.c_str());
         fil->write(buf, strlen(buf));
         delete fil;
     }
@@ -74,24 +78,24 @@ int sb_0x411324__sub0()
 {
     ypaworld->base_func64(&world_update_arg);
 
-    stru_2d90 *var_2d90 = ypaworld->getYW_levelInfo();
+    LevelInfo *var_2d90 = ypaworld->getYW_levelInfo();
 
     char buf[200];
 
-    switch( var_2d90->field_40 )
+    switch( var_2d90->State )
     {
     case 1:
     case 2:
     {
-        ypaworld->ypaworld_func151(NULL);
+        ypaworld->ypaworld_func151();
 
-        if ( dword_513638 || var_2d90->field_40 == 2 )
+        if ( dword_513638 || var_2d90->State == 2 )
         {
             yw_arg172 arg172;
             arg172.usr = &userdata;
             arg172.usertxt = "settings.tmp";
             arg172.field_10 = 0;
-            arg172.field_4 = userdata.user_name;
+            arg172.field_4 = userdata.user_name.c_str();
             arg172.field_8 = 0xC1;
 
             if ( !ypaworld->ypaworld_func172(&arg172) )
@@ -105,20 +109,20 @@ int sb_0x411324__sub0()
         if ( userdata.remoteMode )
             v0 = 0;
 
-        if ( userdata.field_46 == 6 )
+        if ( userdata.envMode == ENVMODE_NETPLAY )
         {
-            userdata.field_4E = 1;
-            userdata.field_46 = 5;
+            userdata.returnToTitle = true;
+            userdata.envMode = ENVMODE_SINGLEPLAY;
         }
         else
         {
-            userdata.field_4E = 0;
+            userdata.returnToTitle = false;
         }
 
         dword_520400 = 0;
-        world_update_arg.field_0 = 0;
+        world_update_arg.TimeStamp = 0;
 
-        userdata.field_5457 = 0;
+        userdata.lastInputEvent = 0;
         userdata.field_0xc = 1;
 
         if ( ypaworld->ypaworld_func156(&userdata) )
@@ -140,9 +144,9 @@ int sb_0x411324__sub0()
 
     case 4:
     {
-        ypaworld->ypaworld_func151(NULL);
+        ypaworld->ypaworld_func151();
 
-        sprintf(buf, "save:%s/%d.rst", userdata.user_name, var_2d90->levelID);
+        sprintf(buf, "save:%s/%d.rst", userdata.user_name.c_str(), var_2d90->LevelID);
 
         yw_arg169 arg169;
         arg169.saveFile = buf;
@@ -161,7 +165,7 @@ int sb_0x411324__sub0()
         arg169.usr = &userdata;
         arg169.saveFile = buf;
 
-        sprintf(buf, "save:%s/%d.sgm", userdata.user_name, 0);
+        sprintf(buf, "save:%s/%d.sgm", userdata.user_name.c_str(), 0);
 
         if ( !ypaworld->ypaworld_func170(&arg169) )
             ypa_log_out("Warning, Save error\n");
@@ -172,12 +176,12 @@ int sb_0x411324__sub0()
 
     case 7:
     {
-        ypaworld->ypaworld_func151(NULL);
+        ypaworld->ypaworld_func151();
 
         yw_arg169 arg169;
         arg169.usr = &userdata;
         arg169.saveFile = buf;
-        sprintf(buf, "save:%s/%d.sgm", userdata.user_name, 0);
+        sprintf(buf, "save:%s/%d.sgm", userdata.user_name.c_str(), 0);
 
         if ( !ypaworld->ypaworld_func169(&arg169) )
             ypa_log_out("Warning, load error\n");
@@ -220,9 +224,9 @@ int sb_0x411324__sub2__sub0(base_64arg *arg)
 {
     if ( (userdata.p_ypaworld->replayer->field_74 - 3) <= userdata.p_ypaworld->replayer->frame_id  &&  dword_513630 )
     {
-        char *gin_and_tonic = sub_4107A0(arg->field_0);
+        char *gin_and_tonic = sub_4107A0(arg->TimeStamp);
 
-        ypaworld->ypaworld_func164(NULL);
+        ypaworld->ypaworld_func164();
 
         if ( !ypaworld->ypaworld_func162(gin_and_tonic) )
         {
@@ -290,7 +294,7 @@ int sb_0x411324__sub2()
 {
     if ( !sb_0x411324__sub2__sub0(&world_update_arg) )
     {
-        ypaworld->ypaworld_func164(NULL);
+        ypaworld->ypaworld_func164();
 
         if ( dword_513638 )
         {
@@ -298,7 +302,7 @@ int sb_0x411324__sub2()
             arg172.usr = &userdata;
             arg172.usertxt = "settings.tmp";
             arg172.field_10 = 0;
-            arg172.field_4 = userdata.user_name;
+            arg172.field_4 = userdata.user_name.c_str();
             arg172.field_8 = 193;
 
             if ( !ypaworld->ypaworld_func172(&arg172) )
@@ -308,8 +312,8 @@ int sb_0x411324__sub2()
         }
 
         dword_520400 = 0;
-        world_update_arg.field_0 = 0;
-        userdata.field_5457 = 0;
+        world_update_arg.TimeStamp = 0;
+        userdata.lastInputEvent = 0;
 
         if ( !ypaworld->ypaworld_func156(&userdata) )
         {
@@ -319,7 +323,7 @@ int sb_0x411324__sub2()
             return 0;
         }
 
-        userdata.p_ypaworld->field_2d90->field_40 = 8;
+        userdata.p_ypaworld->_levelInfo->State = 8;
 
         dword_520400 = 1;
 
@@ -332,15 +336,15 @@ int sb_0x411324__sub2()
 
 int sb_0x411324__sub1()
 {
-    userdata.glblTime = world_update_arg.field_0;
-    userdata.frameTime = world_update_arg.field_4;
-    userdata.field_3A = &input_states;
+    userdata.glblTime = world_update_arg.TimeStamp;
+    userdata.frameTime = world_update_arg.DTime;
+    userdata._input = &input_states;
 
     ypaworld->ypaworld_func158(&userdata);
 
-    if ( userdata.field_0x2fbc == 1 )
+    if ( userdata.envAction.action == EnvAction::ACTION_QUIT )
         return 0;
-    else if ( userdata.field_0x2fbc == 2 )
+    else if ( userdata.envAction.action == EnvAction::ACTION_PLAY )
     {
         sub_410628();
         ypaworld->ypaworld_func157(&userdata);
@@ -351,7 +355,7 @@ int sb_0x411324__sub1()
             return 0;
 
         yw_arg161 v22;
-        v22.lvlID = userdata.field_0x2fc0;
+        v22.lvlID = userdata.envAction.params[0];
         v22.field_4 = 0;
 
         if ( !ypaworld->ypaworld_func183(&v22) )
@@ -364,11 +368,11 @@ int sb_0x411324__sub1()
         dword_520400 = 2;
         INPe.sub_412D28(&input_states);
     }
-    else if ( userdata.field_0x2fbc == 3 )
+    else if ( userdata.envAction.action == EnvAction::ACTION_LOAD )
     {
         dword_520400 = 0;
 
-        stru_2d90 *a4 = ypaworld->getYW_levelInfo();
+        LevelInfo *a4 = ypaworld->getYW_levelInfo();
 
         sub_410628();
         ypaworld->ypaworld_func157(&userdata);
@@ -381,11 +385,11 @@ int sb_0x411324__sub1()
         arg169.saveFile = a1;
         arg169.usr = &userdata;
 
-        sprintf(a1, "save:%s/%d.sgm", userdata.user_name, 0);
+        sprintf(a1, "save:%s/%d.sgm", userdata.user_name.c_str(), 0);
 
         if ( !ypaworld->ypaworld_func169(&arg169) )
         {
-            ypa_log_out("Error while loading level (level %d, User %s\n", a4->levelID, userdata.user_name);
+            ypa_log_out("Error while loading level (level %d, User %s\n", a4->LevelID, userdata.user_name.c_str());
 
             ypaworld->ypaworld_func155(&userdata);
             return 0;
@@ -393,7 +397,7 @@ int sb_0x411324__sub1()
         dword_520400 = 2;
         INPe.sub_412D28(&input_states);
     }
-    else if ( userdata.field_0x2fbc == 4 )
+    else if ( userdata.envAction.action == EnvAction::ACTION_NETPLAY )
     {
         sub_410628();
 
@@ -405,7 +409,7 @@ int sb_0x411324__sub1()
         ypaworld->ypaworld_func157(&userdata);
 
         yw_arg161 v22;
-        v22.lvlID = userdata.field_0x2fc0;
+        v22.lvlID = userdata.envAction.params[0];
         v22.field_4 = 0;
 
         dword_520400 = 0;
@@ -421,12 +425,12 @@ int sb_0x411324__sub1()
         dword_520400 = 2;
         INPe.sub_412D28(&input_states);
     }
-    else if ( userdata.field_0x2fbc == 5 )
+    else if ( userdata.envAction.action == EnvAction::ACTION_DEMO )
     {
-        char *repname = sub_4107A0(world_update_arg.field_0);
+        char *repname = sub_4107A0(world_update_arg.TimeStamp);
         if ( !repname )
         {
-            userdata.field_5457 = world_update_arg.field_0;
+            userdata.lastInputEvent = world_update_arg.TimeStamp;
             return 1;
         }
 
@@ -447,8 +451,8 @@ int sb_0x411324__sub1()
         else
         {
             ypa_log_out("Sorry, unable to init player!\n");
-            world_update_arg.field_0 = 0;
-            userdata.field_5457 = 0;
+            world_update_arg.TimeStamp = 0;
+            userdata.lastInputEvent = 0;
 
             if ( !ypaworld->ypaworld_func156(&userdata) )
             {
@@ -478,17 +482,21 @@ int sb_0x411324()
         userdata.field_0x10 = 0;
     }
 
-    world_update_arg.field_4 = input_states.period + 1;
+    input_states.period++;
+    
+    world_update_arg.DTime = input_states.period;
     world_update_arg.field_8 = &input_states;
 
-    world_update_arg.field_0 += input_states.period + 1;
-    input_states.period++;
+    world_update_arg.TimeStamp += input_states.period;
+    
 
     // If mouse captured, enable releative mouse control
-    if (ypaworld->ypaworld.field_17c0)
+    if (ypaworld->field_17c0)
         SDLWRAP_releativeMouse(true);
     else
         SDLWRAP_releativeMouse(false);
+    
+    Gui::Root::Instance.TimersUpdate( input_states.period );
 
     if ( dword_520400 == 1 )
     {
@@ -532,7 +540,7 @@ int add_to_params_list(const char *a1)
 void deinit_globl_engines()
 {
     if ( tform_inited )
-        TFe.deinit();
+        TFEngine::Engine.deinit();
     if ( input_inited )
         INPe.deinit();
     if ( audio_inited )
@@ -547,7 +555,7 @@ int WinMain__sub0__sub0()
 {
     ypaworld = 0;
     dword_520400 = 0;
-    memset(&userdata, 0, sizeof(UserData));
+    userdata.clear();
     memset(&input_states, 0, sizeof(struC5));
     memset(&world_update_arg, 0, sizeof(base_64arg));
 
@@ -584,7 +592,7 @@ int WinMain__sub0__sub0()
     gfx_inited = GFXEngine::GFXe.init();
     audio_inited = SFXEngine::SFXe.init();
     input_inited = INPe.init();
-    tform_inited = TFe.init();
+    tform_inited = TFEngine::Engine.init();
 
     if ( !audio_inited )
     {
@@ -619,7 +627,7 @@ int yw_initGameWithSettings()
 {
     FSMgr::FileHandle *user_def = uaOpenFile("env:user.def", "r");
 
-    char a1[300];
+    std::string a1;
 
     if ( user_def )
     {
@@ -627,7 +635,7 @@ int yw_initGameWithSettings()
 
         user_def->gets(v11, 300);
 
-        sprintf(a1, "save:%s/user.txt", v11);
+        a1 = fmt::sprintf("save:%s/user.txt", v11);
 
         FSMgr::FileHandle *user_txt = uaOpenFile(a1, "r");
 
@@ -635,47 +643,44 @@ int yw_initGameWithSettings()
         {
             delete user_txt;
 
-            strcpy(userdata.user_name, v11);
-            sprintf(a1, "%s/user.txt", v11);
+            userdata.user_name = v11;
+            a1 = fmt::sprintf("%s/user.txt", v11);
         }
         else
         {
             ypa_log_out("Warning: default user file doesn't exist (%s)\n", a1);
-            strcpy(a1, "sdu7/user.txt");
-            strcpy(userdata.user_name, "SDU7");
+            a1 = fmt::sprintf("sdu7/user.txt");
+            userdata.user_name = "SDU7";
         }
 
         delete user_def;
     }
     else
     {
-        strcpy(a1, "sdu7/user.txt");
-        strcpy(userdata.user_name, "SDU7");
+        a1 = fmt::sprintf("sdu7/user.txt");
+        userdata.user_name = "SDU7";
         ypa_log_out("Warning: No default user set\n");
     }
 
     userdata.field_1612 = -1;
 
     int v8 = 1;
-    profilesNode *node = (profilesNode *)userdata.files_list.head;
-
-    while ( node->next )
+    for ( ProfileList::iterator it = userdata.profiles.begin(); it != userdata.profiles.end(); it++ )
     {
-        if ( !strcasecmp(node->profile_subdir, userdata.user_name) )
+        if ( !StriCmp(it->name, userdata.user_name) )
         {
             userdata.field_1612 = v8;
             break;
         }
 
         v8++;
-        node = (profilesNode *)node->next;
     }
 
     yw_arg172 v13;
 
-    v13.usertxt = a1;
+    v13.usertxt = a1.c_str();
     v13.usr = &userdata;
-    v13.field_4 = userdata.user_name;
+    v13.field_4 = userdata.user_name.c_str();
     v13.field_8 = 255;
     v13.field_10 = 1;
 
@@ -684,20 +689,19 @@ int yw_initGameWithSettings()
 
 void ReadSnapsDir()
 {
-    FSMgr::DirIter *dir = uaOpenDir("env:snaps/");
+    FSMgr::DirIter dir = uaOpenDir("env:snaps/");
 
     if ( dir )
     {
         FSMgr::iNode *entr;
-        while ( dir->getNext(entr) )
+        while ( dir.getNext(&entr) )
         {
-            if ( entr->getType() == FSMgr::iNode::NTYPE_FILE && userdata.snap_count < 32 && !strnicmp(entr->getName(), "demo", 4) )
+            if ( entr->getType() == FSMgr::iNode::NTYPE_FILE && userdata.snap_count < 32 && !strnicmp(entr->getName().c_str(), "demo", 4) )
             {
-                sprintf( userdata.snaps[ userdata.snap_count ], "env:snaps/%s", entr->getName());
+                sprintf( userdata.snaps[ userdata.snap_count ], "env:snaps/%s", entr->getName().c_str());
                 userdata.snap_count++;
             }
         }
-        delete dir;
     }
 }
 
@@ -707,7 +711,7 @@ void sub_4113E8()
     {
         if ( dword_520400 == 2 )
         {
-            ypaworld->ypaworld_func151(NULL);
+            ypaworld->ypaworld_func151();
             ypaworld->ypaworld_func155(&userdata);
         }
         else if ( dword_520400 == 1 )
@@ -733,7 +737,10 @@ int WinMain__sub0__sub1()
     IDVList init_vals;
     init_vals.Add(NC_STACK_ypaworld::YW_ATT_BUILD_DATE, buildDate);
 
-    ypaworld = dynamic_cast<NC_STACK_ypaworld *>( init_get_class("ypaworld.class", &init_vals) );
+    ypaworld = Nucleus::CInit<NC_STACK_ypaworld>(init_vals);
+    
+    Gui::UA::yw = ypaworld;
+    
     if ( !ypaworld )
     {
         ypa_log_out("Unable to init ypaworld.class\n");
@@ -807,6 +814,7 @@ int main(int argc, char *argv[])
 //		return 0;
 //	}
 
+    Gui::UA::Init();
     FSMgr::iDir::setBaseDir("");
     SDLWRAP_INIT();
 
@@ -818,6 +826,32 @@ int main(int argc, char *argv[])
     fixWeaponRadius = tuneKeys[0].value.val;
 
     uint32_t ticks = 0;
+    
+    Gui::Root::Instance.SetHwCompose(true);
+    ypaworld->LoadGuiFonts();
+    
+    // New gui test windows
+    /*Gui::UAWindow *smpl = new Gui::UAWindow("Test1", Common::PointRect(100, 100, 200, 300), 
+        Gui::UAWindow::FLAG_WND_RESIZEABLE | 
+        Gui::UAWindow::FLAG_WND_VSCROLL | 
+        Gui::UAWindow::FLAG_WND_CLOSE );
+    smpl->SetEnable(true);
+    smpl->SetAlpha(190);
+
+    Gui::Root::Instance.AddWidget(smpl);
+    
+    Gui::UAWindow *smpl2 = new Gui::UAWindow("Test2", Common::PointRect(115, 120, 50, 60), 
+        Gui::UAWindow::FLAG_WND_RESIZEABLE | 
+        Gui::UAWindow::FLAG_WND_VSCROLL | 
+        Gui::UAWindow::FLAG_WND_CLOSE |
+        Gui::UAWindow::FLAG_WND_HELP | 
+        Gui::UAWindow::FLAG_WND_MAXM |
+        Gui::UAWindow::FLAG_WND_HSCROLL);
+    smpl2->SetEnable(true);
+    smpl2->SetAlpha(190);
+    
+    Gui::Root::Instance.AddWidget(smpl2);*/
+    
 
 //    int fps = 0;
 //    uint32_t fpstick = SDL_GetTicks() + 1000;
@@ -869,7 +903,8 @@ int main(int argc, char *argv[])
 //        }
 
     }
-
+    
+    Gui::UA::Deinit();
     sub_4113E8();
 
     SDLWRAP_DEINIT();

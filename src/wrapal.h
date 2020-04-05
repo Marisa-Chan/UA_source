@@ -2,7 +2,7 @@
 #define WRAP_AL_H_INCLUDED
 
 #include <list>
-#include <deque>
+#include <vector>
 #if defined(__APPLE__) && defined(__MACH__)
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
@@ -61,28 +61,28 @@ protected:
     void _clearQueue();
     bool _fill_n_queue(int bufID);
 
-    waldev *device;
+    const waldev *_device;
 
-    ALuint source;
-    std::deque<ALuint> buffers;
-    std::deque<uint8_t *> smplBuffers;
-    std::deque<bool> used;
+    ALuint _source;
+    std::vector<ALuint> _buffers;
+    std::vector< std::vector<uint8_t> > _smplBuffers;
+    std::vector<bool> _used;
 
-    ALenum format;
-    int freq;
+    ALenum _format;
+    int _freq;
 
-    SDL_mutex *mutex;
-    int status;
-    size_t loops;
+    SDL_mutex *_mutex;
+    int _status;
+    size_t _loops;
 
-    bool endStreamed;
+    bool _endStreamed;
 
-    ALfloat cVolume;
-    ALfloat mVolume;
+    ALfloat _cVolume;
+    ALfloat _mVolume;
 
-    const size_t BufSZ;
+    const size_t _BufSZ;
 
-    void (*eosfunc)(void *);
+    void (*_eosfunc)(void *);
 };
 
 class walsmpl: public CTsmpl
@@ -100,9 +100,9 @@ protected:
     virtual void _rewind();
     virtual void _reset();
 
-    void *start;
-    size_t len;
-    size_t pos;
+    void *_start;
+    size_t _len;
+    size_t _pos;
 };
 
 

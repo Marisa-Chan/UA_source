@@ -83,7 +83,7 @@ struct sndExt
 struct sndExtends
 {
     int cnt;
-    sndExt sndExts[8];
+    std::array<sndExt, 8> sndExts;
 
     sndExtends()
     {
@@ -94,8 +94,8 @@ struct sndExtends
     {
         cnt = 0;
 
-        for(int i = 0; i < 8; i++)
-            sndExts[i].clear();
+        for(auto &x : sndExts)
+            x.clear();
     }
 };
 
@@ -172,7 +172,7 @@ public:
     void deinit();
 
     void setMasterVolume(int);
-    void setReverseStereo(int);
+    void setReverseStereo(bool);
 
     int getMasterVolume();
 
@@ -241,7 +241,7 @@ public:
     userdata_sample_info *soundSources[AUDIO_CHANNELS];
     userdata_sample_info *palFXs[8];
     userdata_sample_info *ShakeFXs[4];
-    int audio_rev_stereo;
+    bool audio_rev_stereo;
     int dword_546F0C;
     size_t currentTime;
     int dword_546F14;

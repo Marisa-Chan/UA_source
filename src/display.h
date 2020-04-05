@@ -2,6 +2,7 @@
 #define DISPLAY_H_INCLUDED
 
 #include "engine_gfx.h"
+#include "common.h"
 
 struct ua_dRect
 {
@@ -17,114 +18,39 @@ struct ua_fRect
     float y1;
     float x2;
     float y2;
+    
+    ua_fRect(float sx1, float sy1, float sx2, float sy2)
+    : x1(sx1), y1(sy1), x2(sx2), y2(sy2)
+    {}
+
+    ua_fRect()
+    {
+    	clear();
+    }
+    
+    void clear()
+    {
+    	x1 = 0.;
+    	y1 = 0.;
+    	x2 = 0.;
+    	y2 = 0.;
+    }
 };
 
 
 struct __NC_STACK_display
 {
-    //bitmap_intern *bitm_intern;
     uint32_t field_4; // Color?
-    uint32_t field_8; // and Color2 ?
-    //uint32_t BG_Color;
-//  int field_10;
-//  int field_14;
-//  int field_18;
-//  int field_1c;
-//  int field_20;
-    ua_dRect field_24;
-    ua_dRect field_38;
-//  int field_4c;
-//  int field_50;
-//  int field_54;
-//  int field_58;
-//  int field_5c;
-//  int field_60;
-//  int field_64;
-//  int field_68;
-//  int field_6c;
-//  int field_70;
-//  int field_74;
-//  int field_78;
-//  int field_7c;
-//  int field_80;
-//  int field_84;
-//  int field_88;
-//  int field_8c;
-//  int field_90;
-//  int field_94;
-//  int field_98;
-//  int field_9c;
-//  int field_a0;
-//  int field_a4;
-//  int field_a8;
-//  int field_ac;
-//  int field_b0;
-//  int field_b4;
-//  int field_b8;
-//  int field_bc;
-//  int field_c0;
-//  int field_c4;
-//  int field_c8;
-//  int field_cc;
-//  int field_d0;
-//  int field_d4;
-//  int field_d8;
-//  int field_dc;
-//  int field_e0;
-//  int field_e4;
-//  int field_e8;
-//  int field_ec;
-//  int field_f0;
-//  int field_f4;
-//  int field_f8;
-//  int field_fc;
-//  int field_100;
-//  int field_104;
-//  int field_108;
-//  int field_10c;
-//  int field_110;
-//  int field_114;
-//  int field_118;
-//  int field_11c;
-//  int field_120;
-//  int field_124;
-//  int field_128;
-//  int field_12c;
-//  int field_130;
-//  int field_134;
-//  int field_138;
-//  int field_13c;
-//  int field_140;
-//  int field_144;
-//  int field_148;
-    tiles_stru *tiles[256];
+    Common::Rect _clip;
+    Common::Rect _inverseClip;
+    std::array<TileMap *, 256> tiles;
     int field_54c;
     int field_550;
     float field_554;
     float field_558;
-//  int field_55c;
-//  int field_560;
-//  int field_564;
-//  int field_568;
-//  int field_56c;
-//  int field_570;
-//  int field_574;
-//  int field_578;
-//  int field_57c;
-//  int field_580;
-//  int field_584;
-//  int field_588;
-//  int field_58c;
-//  int field_590;
-//  int field_594;
-//  int field_598;
-//  int field_59c;
-
-
+    
     UA_PALETTE palette;
     UA_PALETTE field_300[8];
-//    bitmap_intern *pointer_bitm;
-//    int field_1b04;
 };
 
 
@@ -148,7 +74,7 @@ struct w3d_func199arg
 
 struct rstr_arg204
 {
-    bitmap_intern *pbitm;
+    ResBitmap *pbitm;
     float float4;
     float float8;
     float floatC;
@@ -157,11 +83,29 @@ struct rstr_arg204
     float float18;
     float float1C;
     float float20;
+
+    rstr_arg204()
+    {
+    	clear();
+    }
+
+    void clear()
+    {
+    	pbitm = NULL;
+		float4 = 0.;
+		float8 = 0.;
+		floatC = 0.;
+		float10 = 0.;
+		float14 = 0.;
+		float18 = 0.;
+		float1C = 0.;
+		float20 = 0.;
+    }
 };
 
 struct rstr_loc204
 {
-    bitmap_intern *pbitm;
+    ResBitmap *pbitm;
     int dword4;
     int dword8;
     int dwordC;
@@ -173,28 +117,13 @@ struct rstr_loc204
     int dword24;
 };
 
-struct rstr_arg217
-{
-    uint32_t dword0;
-    uint32_t dword4;
-//    uint32_t dword8;
-};
-
 struct rstr_218_arg
 {
-    bitmap_intern *bitm_intern;
-    bitmap_intern *bitm_intern2;
+    ResBitmap *bitm_intern;
+    ResBitmap *bitm_intern2;
     int flg;
     ua_fRect rect1;
     ua_fRect rect2;
-};
-
-struct rstr_261_arg
-{
-    int pal_id;
-    int entrie_id;
-    int pal_num;
-    UA_PALETTE *palette;
 };
 
 struct rstr_262_arg
@@ -206,7 +135,7 @@ struct rstr_262_arg
 
 struct displ_arg263
 {
-    bitmap_intern *bitm;
+    ResBitmap *bitm;
     int pointer_id;
 };
 
@@ -221,10 +150,10 @@ struct windd_arg256
 class NC_STACK_display: public NC_STACK_nucleus
 {
 public:
-    virtual size_t func0(IDVList *stak);
+    virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func2(IDVList *stak);
-    virtual size_t func3(IDVList *stak);
+    virtual size_t func2(IDVList &stak);
+    virtual size_t func3(IDVList &stak);
     virtual size_t raster_func192(IDVPair *);
 //    virtual size_t raster_func193(bitmap_intern **out);
     virtual size_t raster_func198(w3d_func198arg *);
@@ -236,17 +165,16 @@ public:
     virtual size_t raster_func204(rstr_arg204 *);
     virtual size_t raster_func205(IDVPair *);
     virtual size_t raster_func206(polysDatSub *);
-    virtual void raster_func207(rstr_207_arg *arg);
-    virtual void raster_func208(rstr_207_arg *arg);
+    virtual void raster_func207(int id, TileMap *tiles);
+    virtual TileMap *raster_func208(int id);
+    virtual int raster_func208(TileMap *tiles);
     virtual void raster_func209(w3d_a209 *);
     virtual void raster_func210(ua_fRect *arg);
     virtual void raster_func211(ua_dRect *arg);
     virtual size_t raster_func212(IDVPair *);
     virtual void BeginScene();
     virtual void EndScene();
-    virtual void LockSurface();
-    virtual void UnlockSurface();
-    virtual size_t raster_func217(rstr_arg217 *arg);
+    virtual size_t raster_func217(uint32_t color);
     virtual void raster_func218(rstr_218_arg *arg);
     virtual size_t raster_func219(IDVPair *);
     virtual size_t raster_func220(IDVPair *);
@@ -257,19 +185,17 @@ public:
     virtual void BeginFrame() {};
     virtual void EndFrame() {};
 
-    virtual void display_func261(rstr_261_arg *arg);
+    virtual void display_func261(int ID, UA_PALETTE &pal, int from, int num);
+    virtual void display_func261(int ID, UA_PALETTE &pal);
     virtual void display_func262(rstr_262_arg *arg);
     virtual void display_func263(displ_arg263 *arg);
 //    virtual void display_func264(void *);
 //    virtual void display_func265(void *);
-    virtual bool AllocTexture(bitmap_intern *pbitm);
-    virtual void TextureApplyPalette(bitmap_intern *pbitm);
-    virtual void FreeTexture(bitmap_intern *pbitm);
-    virtual size_t LockTexture(bitmap_intern *);
-    virtual void UnlockTexture(bitmap_intern *);
+    virtual bool AllocTexture(ResBitmap *pbitm);
+    virtual void FreeTexture(ResBitmap *pbitm);
     virtual void display_func271(IDVPair *stak) {};
     virtual void display_func272(IDVPair *) {};
-    virtual UA_PALETTE * display_func273(rstr_261_arg *arg);
+    virtual UA_PALETTE * display_func273(int paletteId);
     virtual void display_func274(const char **);
 
 
@@ -284,7 +210,7 @@ public:
     };
 
     static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_display();
+        return NULL;//new NC_STACK_display();
     };
 
     enum DISP_ATT
@@ -314,12 +240,12 @@ public:
     };
 
     //Set
-    virtual void SetPalette(UA_PALETTE *);
+    virtual void SetPalette(UA_PALETTE &pal);
 
-    virtual void setRSTR_FGpen(uint32_t pen);
+    virtual void SetPen(uint32_t pen);
     virtual void setRSTR_BGpen(uint32_t pen);
-    virtual void setRSTR_shdRmp(bitmap_intern *rmp);
-    virtual void setRSTR_trcRmp(bitmap_intern *rmp);
+    virtual void setRSTR_shdRmp(ResBitmap *rmp);
+    virtual void setRSTR_trcRmp(ResBitmap *rmp);
     virtual void setRSTR_FGApen(uint32_t pen);
 
     //Get
@@ -328,15 +254,21 @@ public:
     virtual int16_t GetWidth();
     virtual int16_t GetHeight();
 
+    Common::Point GetSize() const { return Common::Point(_width, _height); };
+    
+    
+    virtual void ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool transp) = 0;
+    virtual SDL_PixelFormat *GetScreenFormat() = 0;
+
     //Data
 public:
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
     __NC_STACK_display stack__display;
 
 protected:
-    int16_t width;
-    int16_t height;
+    int16_t _width;
+    int16_t _height;
 };
 
 #endif // DISPLAY_H_INCLUDED

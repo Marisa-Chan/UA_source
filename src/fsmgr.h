@@ -21,13 +21,15 @@ class iNode
     friend class iDir;
 
 public:
-    iNode(const char *name, const char *path, iDir *parent = NULL);
+    iNode(const std::string &name, const std::string &path, iDir *parent = NULL);
     virtual ~iNode() {};
 
     int getType();
-    const char *getPath();
-    void getVPath(std::string &out);
-    const char *getName();
+    std::string getPath() const;
+    //const std::string &getPath();
+    std::string getVPath() const;
+    std::string getName() const;
+    //const std::string &getName();
 
     enum NTYPE
     {
@@ -47,7 +49,7 @@ protected:
 class iFile: public iNode
 {
 public:
-    iFile(const char *name, const char *path, iDir *parent = NULL);
+    iFile(const std::string &name, const std::string &path, iDir *parent = NULL);
 };
 
 
@@ -56,37 +58,37 @@ class iDir: public iNode
     friend class DirIter;
 
 public:
-    iDir(const char *name, const char *path, iDir *parent = NULL);
+    iDir(const std::string &name, const std::string &path, iDir *parent = NULL);
     virtual ~iDir();
 
     void addNode(iNode *nw);
 
-    iNode *getNode(const char *name);
+    iNode *getNode(const std::string &name);
 
     void _dumpdir();
 
     void flush();
 
-    static iNode *findNode(const char *path);
-    static bool fileExist(const char *path);
+    static iNode *findNode(const std::string &path);
+    static bool fileExist(const std::string &path);
 
-    static void setBaseDir(const char *path);
-    static bool replacePath(const char *path, const char *diskPath);
+    static void setBaseDir(const std::string &path);
+    static bool replacePath(const std::string &path, const std::string &diskPath);
 
-    static bool createDir(const char *path);
-    static bool deleteDir(const char *path);
-    static DirIter *readDir(const char *path);
-    static FileHandle *openFile(const char *path, const char *mode);
-    static FileHandle *openFile(iNode *nod, const char *mode);
-    static bool deleteFile(const char *path);
+    static bool createDir(const std::string &path);
+    static bool deleteDir(const std::string &path);
+    static DirIter readDir(const std::string &path);
+    static FileHandle *openFile(const std::string &path, const std::string &mode);
+    static FileHandle *openFile(iNode *nod, const std::string &mode);
+    static bool deleteFile(const std::string &path);
 
 
 protected:
     std::list<iNode *> nodes;
 
-    static iDir *_scanDir(iDir *_node, const char *_name, const char *_path, iDir *_parent);
-    static iNode *_createNodeFromPath(const char *diskPath);
-    static iNode *_parseNodePath(const char *path, std::string &out);
+    static iDir *_scanDir(iDir *_node, const std::string &_name, const std::string &_path, iDir *_parent);
+    static iNode *_createNodeFromPath(const std::string &diskPath);
+    static iNode *_parseNodePath(const std::string &path, std::string *out);
 };
 
 
@@ -94,19 +96,22 @@ protected:
 class DirIter
 {
 public:
-    DirIter(iDir *dr);
+    explicit DirIter(iDir *dr);
+    DirIter();
     iNode *getNext();
-    bool getNext(iNode * &node);
+    bool getNext(iNode **node);
+
+    explicit operator bool() const;
 
 private:
-    std::list<iNode *> *lst;
-    std::list<iNode *>::iterator cur;
+    iDir *_d;
+    std::list<iNode *>::iterator _cur;
 };
 
 class FileHandle
 {
 public:
-    FileHandle(const char *diskPath, const char *mode);
+    FileHandle(const std::string &diskPath, const std::string &mode);
     virtual ~FileHandle();
 
     size_t read(void *buf, size_t num);
@@ -115,9 +120,10 @@ public:
     size_t tell();
     int seek(long int offset, int origin);
     char *gets(char *str, int num);
-    int puts(const char *str);
-    int printf(const char *format, ...);
-    int vprintf(const char *format,va_list args);
+    int puts(const std::string &str);
+    int printf(const std::string &format, ...);
+    int vprintf(const std::string &format,va_list args);
+    bool ReadLine(std::string *out);
 
     uint8_t readU8();
     int8_t readS8();

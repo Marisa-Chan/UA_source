@@ -2,6 +2,8 @@
 #define UTILS_H_INCLUDED
 
 #include <math.h>
+#include <string.h>
+#include <regex>
 
 #define C_2PI		6.28318530717958647693
 #define C_PI		3.14159265358979323846
@@ -109,7 +111,7 @@ struct __attribute__((packed)) shortPoint
     short x;
     short y;
 
-    shortPoint(int a)
+    shortPoint(int32_t a)
     {
         x = a & 0xFFFF;
         y = a >> 16;
@@ -119,7 +121,10 @@ struct __attribute__((packed)) shortPoint
 };
 
 const char *get_lang_string(char **array, int id, const char *def);
+
+#ifndef strnicmp
 int strnicmp (const char *s1, const char *s2, size_t n);
+#endif
 
 uint32_t fileCrc32(const char *filename, uint32_t _crc = 0);
 
@@ -131,13 +136,14 @@ int dround(double val);
 uint32_t profiler_begin();
 uint32_t profiler_end(uint32_t prev);
 
-FSMgr::FileHandle *uaOpenFile(const char *src_path, const char *mode);
-FSMgr::DirIter *uaOpenDir(const char *dir);
+//FSMgr::FileHandle *uaOpenFile(const char *src_path, const char *mode);
+FSMgr::FileHandle *uaOpenFile(const std::string &src_path, const std::string &mode);
+FSMgr::DirIter uaOpenDir(const std::string &dir);
 
-bool uaDeleteFile(const char *path);
-bool uaDeleteDir(const char *path);
-bool uaCreateDir(const char *path);
-bool uaFileExist(const char *src_path, const char *prefix);
+bool uaDeleteFile(const std::string &path);
+bool uaDeleteDir(const std::string &path);
+bool uaCreateDir(const std::string &path);
+bool uaFileExist(const std::string &path);
 
 inline double clp_asin(double x)
 {
@@ -162,6 +168,134 @@ inline double fSign(double x)
     if (x < 0.0)
         return -1.0;
     return 1.0;
+}
+
+void correctSeparatorAndExt(std::string &str);
+
+int StriCmp(const std::string &a, const std::string &b);
+bool StrGetBool(const std::string &str);
+
+
+
+
+class Stok
+{
+public:
+    Stok(const std::string &in, const std::string &chars)
+    {
+        _buf = in;
+        _chars = chars;
+        _pos = 0;
+    }
+
+    Stok(const std::string &chars)
+    {
+        _buf.clear();
+        _chars = chars;
+        _pos = 0;
+    }
+
+    bool GetNext(std::string *word)
+    {
+        if (_buf.empty() || _pos >= _buf.size() || _pos == std::string::npos)
+            return false;
+
+        _pos = _buf.find_first_not_of(_chars, _pos);
+        if (_pos == std::string::npos)
+            return false;
+
+        size_t next = _buf.find_first_of(_chars, _pos);
+
+        if (next != std::string::npos)
+            *word = _buf.substr(_pos, next - _pos);
+        else
+            *word = _buf.substr(_pos);
+
+        _pos = next;
+        return true;
+    }
+
+    bool GetNext(std::string *word, const std::string &chars)
+    {
+        _chars = chars;
+        return GetNext(word);
+    }
+
+    Stok& operator=(const std::string &b)
+    {
+        _buf = b;
+        _pos = 0;
+        return *this;
+    }
+
+    /*** Only for one result ***/
+    static std::string Fast(const std::string &str, const std::string &chars)
+    {
+        size_t pos = str.find_first_not_of(chars);
+        if (pos == std::string::npos)
+            return std::string();
+
+        size_t next = str.find_first_of(chars, pos);
+
+        if (next != std::string::npos)
+            return str.substr(pos, next - pos);
+        else
+            return str.substr(pos);
+    }
+    
+    static std::vector<std::string> Split(const std::string &str, const std::string &chars)
+    {
+        std::vector<std::string> result;
+        
+        Stok parse(str, chars);
+        
+        std::string val;
+        while( parse.GetNext( &val ) )
+            result.push_back(val);
+        
+        return result;
+    }
+private:
+    std::string _buf;
+    std::string _chars;
+    size_t      _pos;
+};
+
+namespace Utils
+{
+    
+inline void StringSetEnd(std::string *str, const std::string &chars)
+{
+    size_t line_end = str->find_first_of(chars);
+    if (line_end != std::string::npos)
+        str->erase(line_end);
+}
+
+
+inline uint16_t UL16Byte(const void *dat)
+{
+    return ((uint8_t *)dat)[0] | (((uint8_t *)dat)[1] << 8);
+}
+
+inline uint32_t UL32Byte(const void *dat)
+{
+    return ((uint8_t *)dat)[0] | (((uint8_t *)dat)[1] << 8) | (((uint8_t *)dat)[2] << 16) | (((uint8_t *)dat)[3] << 24);
+}
+
+inline void ByteUL16(void *dat, uint16_t v)
+{
+    ((uint8_t *)dat)[0] = v & 0xFF;
+    ((uint8_t *)dat)[1] = (v >> 8) & 0xFF;
+}
+
+inline void ByteUL32(void *dat, uint16_t v)
+{
+    ((uint8_t *)dat)[0] = v & 0xFF;
+    ((uint8_t *)dat)[1] = (v >> 8) & 0xFF;
+    ((uint8_t *)dat)[2] = (v >> 16) & 0xFF;
+    ((uint8_t *)dat)[3] = (v >> 24) & 0xFF;
+}
+
 }
 
 #endif // UTILS_H_INCLUDED

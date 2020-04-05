@@ -6,8 +6,9 @@
 #include "utils.h"
 #include "log.h"
 #include "inp_ff.h"
+#include "gui/widget.h"
 
-const NewClassDescr NC_STACK_winp::description("winp.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_winp::description("winp.class", &newinstance);
 
 struct winp__func67__internal
 {
@@ -390,95 +391,104 @@ int InputWatch(void *, SDL_Event *event)
     break;
 
     case SDL_MOUSEBUTTONDOWN:
-        if (event->button.button == SDL_BUTTON_LEFT)
+        if ( !Gui::Root::Instance.MouseDown(Common::Point(event->button.x, event->button.y), event->button.button) )
         {
-            mouseState.l_state = 1;
-            mouseState.ld_pos.x = event->button.x;
-            mouseState.ld_pos.y = event->button.y;
+            if (event->button.button == SDL_BUTTON_LEFT)
+            {
+                mouseState.l_state = 1;
+                mouseState.ld_pos.x = event->button.x;
+                mouseState.ld_pos.y = event->button.y;
 
-            SDLWRAP_mousePosNorm(mouseState.ld_pos);
+                SDLWRAP_mousePosNorm(mouseState.ld_pos);
 
-            mouseState.ld_cnt++;
+                mouseState.ld_cnt++;
 
-            vkkeydown(0x81);
-        }
-        else if (event->button.button == SDL_BUTTON_RIGHT)
-        {
-            mouseState.r_state = 1;
-            mouseState.rd_pos.x = event->button.x;
-            mouseState.rd_pos.y = event->button.y;
+                vkkeydown(0x81);
+            }
+            else if (event->button.button == SDL_BUTTON_RIGHT)
+            {
+                mouseState.r_state = 1;
+                mouseState.rd_pos.x = event->button.x;
+                mouseState.rd_pos.y = event->button.y;
 
-            SDLWRAP_mousePosNorm(mouseState.rd_pos);
+                SDLWRAP_mousePosNorm(mouseState.rd_pos);
 
-            mouseState.rd_cnt++;
+                mouseState.rd_cnt++;
 
-            vkkeydown(0x82);
-        }
-        else if (event->button.button == SDL_BUTTON_MIDDLE)
-        {
-            mouseState.m_state = 1;
-            mouseState.md_pos.x = event->button.x;
-            mouseState.md_pos.y = event->button.y;
+                vkkeydown(0x82);
+            }
+            else if (event->button.button == SDL_BUTTON_MIDDLE)
+            {
+                mouseState.m_state = 1;
+                mouseState.md_pos.x = event->button.x;
+                mouseState.md_pos.y = event->button.y;
 
-            SDLWRAP_mousePosNorm(mouseState.md_pos);
+                SDLWRAP_mousePosNorm(mouseState.md_pos);
 
-            mouseState.md_cnt++;
+                mouseState.md_cnt++;
 
-            vkkeydown(0x83);
+                vkkeydown(0x83);
+            }
         }
 
         break;
 
     case SDL_MOUSEBUTTONUP:
-        if (event->button.button == SDL_BUTTON_LEFT)
+        if ( !Gui::Root::Instance.MouseUp(Common::Point(event->button.x, event->button.y), event->button.button) )
         {
-            mouseState.l_state = 0;
-            mouseState.lu_pos.x = event->button.x;
-            mouseState.lu_pos.y = event->button.y;
+            if (event->button.button == SDL_BUTTON_LEFT)
+            {
+                mouseState.l_state = 0;
+                mouseState.lu_pos.x = event->button.x;
+                mouseState.lu_pos.y = event->button.y;
 
-            SDLWRAP_mousePosNorm(mouseState.lu_pos);
+                SDLWRAP_mousePosNorm(mouseState.lu_pos);
 
-            mouseState.lu_cnt++;
+                mouseState.lu_cnt++;
 
-            vkkeyup(0x81);
+                vkkeyup(0x81);
 
-            if ((event->button.clicks & 1) == 0)
-                mouseState.dbl_state = 1;
-        }
-        else if (event->button.button == SDL_BUTTON_RIGHT)
-        {
-            mouseState.r_state = 0;
-            mouseState.ru_pos.x = event->button.x;
-            mouseState.ru_pos.y = event->button.y;
+                if ((event->button.clicks & 1) == 0)
+                    mouseState.dbl_state = 1;
+            }
+            else if (event->button.button == SDL_BUTTON_RIGHT)
+            {
+                mouseState.r_state = 0;
+                mouseState.ru_pos.x = event->button.x;
+                mouseState.ru_pos.y = event->button.y;
 
-            SDLWRAP_mousePosNorm(mouseState.ru_pos);
+                SDLWRAP_mousePosNorm(mouseState.ru_pos);
 
-            mouseState.ru_cnt++;
+                mouseState.ru_cnt++;
 
-            vkkeyup(0x82);
-        }
-        else if (event->button.button == SDL_BUTTON_MIDDLE)
-        {
-            mouseState.m_state = 0;
-            mouseState.mu_pos.x = event->button.x;
-            mouseState.mu_pos.y = event->button.y;
+                vkkeyup(0x82);
+            }
+            else if (event->button.button == SDL_BUTTON_MIDDLE)
+            {
+                mouseState.m_state = 0;
+                mouseState.mu_pos.x = event->button.x;
+                mouseState.mu_pos.y = event->button.y;
 
-            SDLWRAP_mousePosNorm(mouseState.mu_pos);
+                SDLWRAP_mousePosNorm(mouseState.mu_pos);
 
-            mouseState.mu_cnt++;
+                mouseState.mu_cnt++;
 
-            vkkeyup(0x83);
+                vkkeyup(0x83);
+            }
         }
 
         break;
 
     case SDL_MOUSEMOTION:
-        mouseState.pos.x = event->motion.x;
-        mouseState.pos.y = event->motion.y;
-        mouseState.__xrel.x = event->motion.xrel;
-        mouseState.__xrel.y = event->motion.yrel;
+        if ( !Gui::Root::Instance.MouseMove(Common::Point(event->button.x, event->button.y)) )
+        {
+            mouseState.pos.x = event->motion.x;
+            mouseState.pos.y = event->motion.y;
+            mouseState.__xrel.x = event->motion.xrel;
+            mouseState.__xrel.y = event->motion.yrel;
 
-        SDLWRAP_mousePosNorm(mouseState.pos);
+            SDLWRAP_mousePosNorm(mouseState.pos);
+        }
         break;
 
     default:
@@ -494,7 +504,7 @@ int InputWatch(void *, SDL_Event *event)
 
 
 
-size_t NC_STACK_winp::func0(IDVList *stak)
+size_t NC_STACK_winp::func0(IDVList &stak)
 {
     if ( !NC_STACK_iwimp::func0(stak) )
         return 0;
@@ -509,12 +519,12 @@ size_t NC_STACK_winp::func1()
     return NC_STACK_iwimp::func1();
 }
 
-size_t NC_STACK_winp::func2(IDVList *stak)
+size_t NC_STACK_winp::func2(IDVList &stak)
 {
     return NC_STACK_iwimp::func2(stak);
 }
 
-size_t NC_STACK_winp::func3(IDVList *stk)
+size_t NC_STACK_winp::func3(IDVList &stk)
 {
     return NC_STACK_iwimp::func3(stk);
 }
@@ -813,7 +823,7 @@ int NC_STACK_winp::idev_func68(winp_68arg *arg)
     {
         for ( int i = 0; i < 128; i++ )
         {
-            if ( !strcasecmp(winp_keys[i].keyname, arg->keyname) && winp_keys[i].keytype == 1 )
+            if ( !StriCmp(winp_keys[i].keyname, arg->keyname) && winp_keys[i].keytype == 1 )
             {
                 winp->hotKeys[ arg->id ] = winp_keys[i].keycode;
                 return 3;
@@ -1131,11 +1141,6 @@ void NC_STACK_winp::idev_func71(winp_71arg *arg)
     }
 }
 
-size_t NC_STACK_winp::iwimp_func128(IDVPair *stak)
-{
-    return 1;
-}
-
 void winp_func131__sub1()
 {
     if ( joyEnable )
@@ -1234,14 +1239,14 @@ void winp_func131__sub1()
     }
 }
 
-void NC_STACK_winp::iwimp_func131(winp_131arg *arg)
+void NC_STACK_winp::CheckClick(ClickBoxInf *arg)
 {
     arg->flag = 0;
 
     winp_func131__sub1();
 
-    arg->move[0].x = mouseState.pos.x;
-    arg->move[0].y = mouseState.pos.y;
+    arg->move.screenPos.x = mouseState.pos.x;
+    arg->move.screenPos.y = mouseState.pos.y;
 
     mouseState.move.x = mouseState.__xrel.x;
     mouseState.move.y = mouseState.__xrel.y;
@@ -1249,41 +1254,41 @@ void NC_STACK_winp::iwimp_func131(winp_131arg *arg)
     mouseState.__xrel.y = 0;
 
     if ( mouseState.l_state )
-        arg->flag |= 4;
+        arg->flag |= ClickBoxInf::FLAG_LM_HOLD;
     if ( mouseState.m_state )
-        arg->flag |= 0x800;
+        arg->flag |= ClickBoxInf::FLAG_MM_HOLD;
     if ( mouseState.r_state )
-        arg->flag |= 0x100;
+        arg->flag |= ClickBoxInf::FLAG_RM_HOLD;
     if ( mouseState.dbl_state )
-        arg->flag |= 0x2000;
+        arg->flag |= ClickBoxInf::FLAG_DBL_CLICK;
 
     if ( mouseState.ld_cnt > 0 )
     {
-        arg->ldw_pos[0].x = mouseState.ld_pos.x;
-        arg->ldw_pos[0].y = mouseState.ld_pos.y;
-        arg->flag |= 2;
+        arg->ldw_pos.screenPos.x = mouseState.ld_pos.x;
+        arg->ldw_pos.screenPos.y = mouseState.ld_pos.y;
+        arg->flag |= ClickBoxInf::FLAG_LM_DOWN;
     }
     if ( mouseState.lu_cnt > 0 )
     {
-        arg->lup_pos[0].x = mouseState.lu_pos.x;
-        arg->lup_pos[0].y = mouseState.lu_pos.y;
-        arg->flag |= 8;
+        arg->lup_pos.screenPos.x = mouseState.lu_pos.x;
+        arg->lup_pos.screenPos.y = mouseState.lu_pos.y;
+        arg->flag |= ClickBoxInf::FLAG_LM_UP;
     }
     if ( mouseState.rd_cnt > 0 )
     {
-        arg->flag |= 0x80;
+        arg->flag |= ClickBoxInf::FLAG_RM_DOWN;
     }
     if ( mouseState.ru_cnt > 0 )
     {
-        arg->flag |= 0x200;
+        arg->flag |= ClickBoxInf::FLAG_RM_UP;
     }
     if ( mouseState.md_cnt > 0 )
     {
-        arg->flag |= 0x400;
+        arg->flag |= ClickBoxInf::FLAG_MM_DOWN;
     }
     if ( mouseState.mu_cnt > 0 )
     {
-        arg->flag |= 0x1000;
+        arg->flag |= ClickBoxInf::FLAG_MM_UP;
     }
 
     mouseState.dbl_state = 0;
@@ -1294,7 +1299,7 @@ void NC_STACK_winp::iwimp_func131(winp_131arg *arg)
     mouseState.md_cnt = 0;
     mouseState.mu_cnt = 0;
 
-    NC_STACK_iwimp::iwimp_func131(arg);
+    NC_STACK_iwimp::CheckClick(arg);
 }
 
 void NC_STACK_winp::initfirst()
@@ -1460,14 +1465,14 @@ size_t NC_STACK_winp::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        func2( (IDVList *)data );
+        func2( *(IDVList *)data );
         return 1;
     case 3:
-        func3( (IDVList *)data );
+        func3( *(IDVList *)data );
         return 1;
     case 64:
         idev_func64( (win_64arg *)data );
@@ -1491,10 +1496,8 @@ size_t NC_STACK_winp::compatcall(int method_id, void *data)
     case 71:
         idev_func71( (winp_71arg *)data );
         return 1;
-    case 128:
-        return (size_t)iwimp_func128( (IDVPair *)data );
     case 131:
-        iwimp_func131( (winp_131arg *)data );
+        CheckClick( (ClickBoxInf *)data );
         return 1;
     default:
         break;

@@ -136,8 +136,6 @@ int INPEngine::init()
 {
     NC_STACK_winp::initfirst();
 
-    input__func64__params arg64;
-
     memset(input_timer, 0, sizeof(input_timer));
     memset(input_wimp, 0, sizeof(input_wimp));
     memset(input_keyboard, 0, sizeof(input_keyboard));
@@ -147,7 +145,7 @@ int INPEngine::init()
 
     get_keyvalue_from_ini(0, input_keyconfig, 116);
 
-    input_class = (NC_STACK_input *)init_get_class("input.class", 0);
+    input_class = Nucleus::CInit<NC_STACK_input>();
 
     if ( !input_class )
     {
@@ -155,15 +153,11 @@ int INPEngine::init()
         return 0;
     }
 
-    const char *val = (const char *)input_keyconfig[1].value.pval; // input.timer
+    std::string val = (const char *)input_keyconfig[1].value.pval; // input.timer
 
-    if ( *val )
+    if ( !val.empty() )
     {
-        arg64.item_number = 0;
-        arg64.type_id = 2;
-        arg64.value = val;
-
-        if ( ! input_class->input_func64(&arg64) )
+        if ( ! input_class->InitDriver(Input::ITYPE_TIMER, val) )
             ypa_log_out("input.engine: WARNING: Timer object creation failed.\n");
     }
     else
@@ -173,13 +167,9 @@ int INPEngine::init()
 
     val = (const char *)input_keyconfig[2].value.pval; // input.wimp
 
-    if ( *val )
+    if ( !val.empty() )
     {
-        arg64.item_number = 0;
-        arg64.type_id = 1;
-        arg64.value = val;
-
-        if ( ! input_class->input_func64(&arg64) )
+        if ( ! input_class->InitDriver(Input::ITYPE_WIMP, val) )
             ypa_log_out("input.engine: WARNING: Wimp object creation failed.\n");
     }
     else
@@ -189,13 +179,9 @@ int INPEngine::init()
 
     val = (const char *)input_keyconfig[3].value.pval; // input.keyboard
 
-    if ( *val )
+    if ( !val.empty() )
     {
-        arg64.item_number = 0;
-        arg64.type_id = 3;
-        arg64.value = val;
-
-        if ( ! input_class->input_func64(&arg64) )
+        if ( ! input_class->InitDriver(Input::ITYPE_KBD, val) )
             ypa_log_out("input.engine: WARNING: Keyboard object creation failed.\n");
     }
     else
@@ -207,13 +193,9 @@ int INPEngine::init()
     {
         val = (const char *)input_keyconfig[4 + i].value.pval; // input_buttons
 
-        if ( *val )
+        if ( !val.empty() )
         {
-            arg64.item_number = i;
-            arg64.type_id = 4;
-            arg64.value = val;
-
-            if ( ! input_class->input_func64(&arg64) )
+            if ( ! input_class->input_func64(Input::ITYPE_BUTTON, i, val) )
                 ypa_log_out("input.engine: WARNING: Button[%d] object creation failed.\n", i);
         }
     }
@@ -222,13 +204,9 @@ int INPEngine::init()
     {
         val = (const char *)input_keyconfig[36 + i].value.pval; // input_sliders
 
-        if ( *val )
+        if ( !val.empty() )
         {
-            arg64.item_number = i;
-            arg64.type_id = 5;
-            arg64.value = val;
-
-            if ( ! input_class->input_func64(&arg64) )
+            if ( ! input_class->input_func64(Input::ITYPE_SLIDER, i, val) )
                 ypa_log_out("input.engine: WARNING: Slider[%d] object creation failed.\n", i);
         }
     }
@@ -237,7 +215,7 @@ int INPEngine::init()
     {
         val = (const char *)input_keyconfig[68 + i].value.pval; // input_hotkeys
 
-        if ( *val )
+        if ( !val.empty() )
         {
             winp_68arg arg68;
             arg68.keyname = val;
@@ -271,23 +249,18 @@ void INPEngine::sub_412D28(struC5 *a1)
     input_class->input_func65(a1);
 }
 
-void INPEngine::AddClickBox(ClickBox *btn, int a2)
+void INPEngine::AddClickBoxFront(ClickBox *box)
 {
-    iwimp_arg129 iwimp129;
-
-    iwimp129.node = btn;
-    iwimp129.field_4 = a2 == 0;
-
-    input_class->wimp_addClickNode(&iwimp129);
+    input_class->wimp_addClickNodeFront(box);
 }
 
-void INPEngine::RemClickBox(ClickBox *btn)
+void INPEngine::AddClickBoxBack(ClickBox *box)
 {
-    iwimp_arg129 iwimp129;
+    input_class->wimp_addClickNodeBack(box);
+}
 
-    iwimp129.node = btn;
-    iwimp129.field_4 = 0;
-
-    input_class->wimp_remClickNode(&iwimp129);
+void INPEngine::RemClickBox(ClickBox *box)
+{
+    input_class->wimp_remClickNode(box);
 }
 

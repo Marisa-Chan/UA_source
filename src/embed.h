@@ -18,7 +18,7 @@ struct embd_node: public nnode
 class NC_STACK_embed: public NC_STACK_nucleus
 {
 public:
-    virtual size_t func0(IDVPair *);
+    virtual size_t func0(IDVList &);
     virtual size_t func1();
     virtual size_t func5(IFFile **file);
     virtual size_t func6(IFFile **file);
@@ -38,7 +38,7 @@ public:
     };
 
     //Data
-    static const NewClassDescr description;
+    static const Nucleus::ClassDescr description;
 
     __NC_STACK_embed stack__embed;
 };

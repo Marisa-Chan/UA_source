@@ -12,44 +12,39 @@
 #include "log.h"
 
 
-const NewClassDescr NC_STACK_ypacar::description("ypacar.class", &newinstance);
+const Nucleus::ClassDescr NC_STACK_ypacar::description("ypacar.class", &newinstance);
 
-
-size_t NC_STACK_ypacar::func0(IDVList *stak)
+NC_STACK_ypacar::NC_STACK_ypacar() 
+{
+    _carKamikaze = false;
+    _carBlast = 0;
+}
+    
+size_t NC_STACK_ypacar::func0(IDVList &stak)
 {
     if ( !NC_STACK_ypatank::func0(stak) )
         return 0;
 
-    stack__ypacar.bact_internal = &ypabact;
+    _bact_type = BACT_TYPES_CAR;
 
-    ypabact.bact_type = BACT_TYPES_CAR;
-
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case BACT_ATT_WORLD:
-                    stack__ypacar.ywo = (NC_STACK_ypaworld *)val.value.p_data;
-                    stack__ypacar.yw = &stack__ypacar.ywo->ypaworld;
-                    break;
+            case CAR_ATT_KAMIKAZE:
+                setCAR_kamikaze(val.value.i_data);
+                break;
 
-                case CAR_ATT_KAMIKAZE:
-                    setCAR_kamikaze(val.value.i_data);
-                    break;
+            case CAR_ATT_BLAST:
+                setCAR_blast(val.value.i_data);
+                break;
 
-                case CAR_ATT_BLAST:
-                    setCAR_blast(val.value.i_data);
-                    break;
-
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -62,31 +57,28 @@ size_t NC_STACK_ypacar::func1()
     return NC_STACK_ypatank::func1();
 }
 
-size_t NC_STACK_ypacar::func2(IDVList *stak)
+size_t NC_STACK_ypacar::func2(IDVList &stak)
 {
     NC_STACK_ypatank::func2(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case CAR_ATT_KAMIKAZE:
-                    setCAR_kamikaze(val.value.i_data);
-                    break;
+            case CAR_ATT_KAMIKAZE:
+                setCAR_kamikaze(val.value.i_data);
+                break;
 
-                case CAR_ATT_BLAST:
-                    setCAR_blast(val.value.i_data);
-                    break;
+            case CAR_ATT_BLAST:
+                setCAR_blast(val.value.i_data);
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -94,31 +86,28 @@ size_t NC_STACK_ypacar::func2(IDVList *stak)
     return 1;
 }
 
-size_t NC_STACK_ypacar::func3(IDVList *stak)
+size_t NC_STACK_ypacar::func3(IDVList &stak)
 {
     NC_STACK_ypatank::func3(stak);
 
-    if (stak)
+    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
     {
-        for(IDVList::iterator it = stak->begin(); it != stak->end(); it++)
+        IDVPair &val = it->second;
+
+        if ( !val.skip() )
         {
-            IDVPair &val = it->second;
-
-            if ( !val.skip() )
+            switch (val.id)
             {
-                switch (val.id)
-                {
-                case CAR_ATT_KAMIKAZE:
-                    *(int *)val.value.p_data = getCAR_kamikaze();
-                    break;
+            case CAR_ATT_KAMIKAZE:
+                *(int *)val.value.p_data = getCAR_kamikaze();
+                break;
 
-                case CAR_ATT_BLAST:
-                    *(int *)val.value.p_data = getCAR_blast();
-                    break;
+            case CAR_ATT_BLAST:
+                *(int *)val.value.p_data = getCAR_blast();
+                break;
 
-                default:
-                    break;
-                }
+            default:
+                break;
             }
         }
     }
@@ -126,15 +115,12 @@ size_t NC_STACK_ypacar::func3(IDVList *stak)
     return 1;
 }
 
-void ypacar_func71__sub0(NC_STACK_ypacar *caro)
+void NC_STACK_ypacar::DoKamikaze()
 {
-    __NC_STACK_ypacar *car = &caro->stack__ypacar;
-    __NC_STACK_ypabact *bact = &caro->ypabact;
-
     float v53;
 
-    if ( car->field_10 >= 10000 )
-        v53 = log(10000.0 / car->field_10) * -428.5714285714286;
+    if ( _carBlast >= 10000 )
+        v53 = log(10000.0 / _carBlast) * -428.5714285714286;
     else
         v53 = 1.0;
 
@@ -147,46 +133,46 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
         for (int j = 0; j <= v4; j++)
         {
             yw_arg129 arg120;
-            arg120.field_10 = exp( sqrt( POW2(i) + POW2(j) ) * (1200.0 * -2.8) / 1200.0 ) * car->field_10;
-            arg120.pos = vec3d(i, 0, j) * 300.0 + bact->position.X0Z();
-            arg120.unit = bact;
+            arg120.field_10 = exp( sqrt( POW2(i) + POW2(j) ) * (1200.0 * -2.8) / 1200.0 ) * _carBlast;
+            arg120.pos = vec3d(i, 0, j) * 300.0 + _position.X0Z();
+            arg120.unit = this;
 
-            if ( arg120.pos.x > 1200.0  &&  arg120.pos.x < bact->wrldX - 1200.0  &&  arg120.pos.z < -1200.0  &&  arg120.pos.z > bact->wrldY + 1200.0 )
-                caro->ChangeSectorEnergy(&arg120);
+            if ( arg120.pos.x > 1200.0  &&  arg120.pos.x < _wrldX - 1200.0  &&  arg120.pos.z < -1200.0  &&  arg120.pos.z > _wrldY + 1200.0 )
+                ChangeSectorEnergy(&arg120);
 
             if ( i )
             {
-                arg120.pos.x = bact->position.x - i * 300.0;
-                arg120.pos.z = bact->position.z + j * 300.0;
+                arg120.pos.x = _position.x - i * 300.0;
+                arg120.pos.z = _position.z + j * 300.0;
 
                 if ( arg120.pos.x > 1200.0 )
                 {
-                    if ( arg120.pos.x < bact->wrldX - 1200.0 && arg120.pos.z < -1200.0 && arg120.pos.z > bact->wrldY + 1200.0 )
-                        caro->ChangeSectorEnergy(&arg120);
+                    if ( arg120.pos.x < _wrldX - 1200.0 && arg120.pos.z < -1200.0 && arg120.pos.z > _wrldY + 1200.0 )
+                        ChangeSectorEnergy(&arg120);
                 }
             }
 
             if ( j )
             {
-                arg120.pos.x = bact->position.x + i * 300.0;
-                arg120.pos.z = bact->position.z - j * 300.0;
+                arg120.pos.x = _position.x + i * 300.0;
+                arg120.pos.z = _position.z - j * 300.0;
 
                 if ( arg120.pos.x > 1200.0 )
                 {
-                    if ( arg120.pos.x < bact->wrldX - 1200.0  &&  arg120.pos.z < -1200.0  &&  arg120.pos.z > bact->wrldY + 1200.0 )
-                        caro->ChangeSectorEnergy(&arg120);
+                    if ( arg120.pos.x < _wrldX - 1200.0  &&  arg120.pos.z < -1200.0  &&  arg120.pos.z > _wrldY + 1200.0 )
+                        ChangeSectorEnergy(&arg120);
                 }
             }
 
             if ( i && j )
             {
-                arg120.pos.x = bact->position.x - i * 300.0;
-                arg120.pos.z = bact->position.z - j * 300.0;
+                arg120.pos.x = _position.x - i * 300.0;
+                arg120.pos.z = _position.z - j * 300.0;
 
                 if ( arg120.pos.x > 1200.0 )
                 {
-                    if ( arg120.pos.x < bact->wrldX - 1200.0  &&  arg120.pos.z < -1200.0  &&  arg120.pos.z > bact->wrldY + 1200.0 )
-                        caro->ChangeSectorEnergy(&arg120);
+                    if ( arg120.pos.x < _wrldX - 1200.0  &&  arg120.pos.z < -1200.0  &&  arg120.pos.z > _wrldY + 1200.0 )
+                        ChangeSectorEnergy(&arg120);
                 }
             }
         }
@@ -200,37 +186,35 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
 
         for (int j = 0; j <= v59; j++ )
         {
-            int v16 = i + bact->sectX;
-            int v18 = j + bact->sectY;
+            int v16 = i + _sectX;
+            int v18 = j + _sectY;
 
-            if ( v16 > 0 && v16 < bact->secMaxX - 1  &&  v18 > 0 && v18 < bact->secMaxY - 1 )
+            if ( v16 > 0 && v16 < _secMaxX - 1  &&  v18 > 0 && v18 < _secMaxY - 1 )
             {
-                __NC_STACK_ypabact *v19 = (__NC_STACK_ypabact *)bact->pSector[i + j * bact->secMaxX].units_list.head;
-
-                while ( v19->next )
+                for ( NC_STACK_ypabact* &v19 : _pSector[i + j * _secMaxX].unitsList )
                 {
                     int v63 = 0;
 
-                    if ( v19 != bact )
+                    if ( v19 != this )
                     {
-                        if ( v19->bact_type != BACT_TYPES_MISSLE )
+                        if ( v19->_bact_type != BACT_TYPES_MISSLE )
                         {
-                            vec3d tmp = bact->position - v19->position;
+                            vec3d tmp = _position - v19->_position;
 
-                            int v26 = exp(tmp.length() * -2.8 / 1200.0) * car->field_10;
-                            int v67 = ((1.0 - (float)v19->shield * 0.01) * (float)v26);
+                            int v26 = exp(tmp.length() * -2.8 / 1200.0) * _carBlast;
+                            int v67 = ((1.0 - (float)v19->_shield * 0.01) * (float)v26);
 
-                            v19->energy -= v67;
+                            v19->_energy -= v67;
 
-                            if ( car->yw->isNetGame )
+                            if ( _world->isNetGame )
                             {
                                 v63 = 1;
 
                                 uamessage_vhclEnergy veMsg;
                                 veMsg.msgID = UAMSG_VHCLENERGY;
-                                veMsg.tstamp = car->yw->timeStamp;
-                                veMsg.owner = v19->owner;
-                                veMsg.id = v19->gid;
+                                veMsg.tstamp = _world->timeStamp;
+                                veMsg.owner = v19->_owner;
+                                veMsg.id = v19->_gid;
                                 veMsg.energy = -v67;
 
                                 yw_arg181 arg181;
@@ -238,124 +222,116 @@ void ypacar_func71__sub0(NC_STACK_ypacar *caro)
                                 arg181.recvFlags = 2;
                                 arg181.senderFlags = 1;
                                 arg181.dataSize = sizeof(veMsg);
-                                arg181.senderID = car->yw->GameShell->callSIGN;
+                                arg181.senderID = _world->GameShell->callSIGN.c_str();
                                 arg181.garant = 1;
                                 arg181.data = &veMsg;
 
-                                car->ywo->ypaworld_func181(&arg181);
+                                _world->ypaworld_func181(&arg181);
                             }
                         }
 
-                        if ( v19->energy <= 0 || v19->bact_type == BACT_TYPES_MISSLE )
+                        if ( v19->_energy <= 0 || v19->_bact_type == BACT_TYPES_MISSLE )
                         {
                             setState_msg arg78;
                             arg78.setFlags = 0;
                             arg78.unsetFlags = 0;
                             arg78.newStatus = BACT_STATUS_DEAD;
 
-                            if ( v19->bact_type == BACT_TYPES_MISSLE )
-                                v19->self->SetState(&arg78);
+                            if ( v19->_bact_type == BACT_TYPES_MISSLE )
+                                v19->SetState(&arg78);
                             else
-                                v19->self->SetStateInternal(&arg78);
+                                v19->SetStateInternal(&arg78);
 
-                            if ( v19->bact_type == BACT_TYPES_ROBO )
+                            if ( v19->_bact_type == BACT_TYPES_ROBO )
                             {
                                 if ( !v63 )
                                 {
                                     yw_arg177 arg177;
                                     arg177.bact = v19;
-                                    arg177.field_4 = bact->owner;
+                                    arg177.field_4 = _owner;
 
-                                    car->ywo->ypaworld_func177(&arg177);
+                                    _world->ypaworld_func177(&arg177);
                                 }
                             }
                         }
                     }
-
-                    v19 = (__NC_STACK_ypabact *)v19->next;
                 }
 
             }
         }
     }
 
-    bact->rotation.m21 = 1.9;
+    _rotation.m21 = 1.9;
 
-    vec3d az = bact->rotation.AxisZ();
+    vec3d az = _rotation.AxisZ();
     az.normalise();
 
-    bact->rotation.SetZ(az);
+    _rotation.SetZ(az);
 
-    if ( fabs(bact->rotation.m22) <= 0.1 )
+    if ( fabs(_rotation.m22) <= 0.1 )
     {
-        float m20 = bact->rotation.m20;
+        float m20 = _rotation.m20;
 
         NDIV_CARRY(m20);
 
-        bact->rotation.m02 = sqrt( 1.0 / (POW2(bact->rotation.m22) / (POW2(m20)) + 1.0) );
-        bact->rotation.m00 = -bact->rotation.m22 * bact->rotation.m02 / m20;
+        _rotation.m02 = sqrt( 1.0 / (POW2(_rotation.m22) / (POW2(m20)) + 1.0) );
+        _rotation.m00 = -_rotation.m22 * _rotation.m02 / m20;
     }
     else
     {
-        float m22 = bact->rotation.m22;
+        float m22 = _rotation.m22;
 
         NDIV_CARRY(m22);
 
-        bact->rotation.m00 = sqrt( 1.0 / (POW2(bact->rotation.m20) / (POW2(m22)) + 1.0) );
-        bact->rotation.m02 = -bact->rotation.m20 * bact->rotation.m00 / m22;
+        _rotation.m00 = sqrt( 1.0 / (POW2(_rotation.m20) / (POW2(m22)) + 1.0) );
+        _rotation.m02 = -_rotation.m20 * _rotation.m00 / m22;
     }
 
-    bact->rotation.m01 = 0.0;
+    _rotation.m01 = 0.0;
 
-    if ( bact->rotation.AxisZ().XZ().cross( bact->rotation.AxisX().XZ() ) > 0.0 )
+    if ( _rotation.AxisZ().XZ().cross( _rotation.AxisX().XZ() ) > 0.0 )
     {
-        bact->rotation.m00 = -bact->rotation.m00;
-        bact->rotation.m02 = -bact->rotation.m02;
+        _rotation.m00 = -_rotation.m00;
+        _rotation.m02 = -_rotation.m02;
     }
 
-    bact->rotation.SetY( bact->rotation.AxisZ() * bact->rotation.AxisX() );
+    _rotation.SetY( _rotation.AxisZ() * _rotation.AxisX() );
 
-    bact->fly_dir = -bact->rotation.AxisZ();
+    _fly_dir = -_rotation.AxisZ();
 
-    bact->fly_dir_length = 200.0;
-    bact->status_flg &= ~BACT_STFLAG_LAND;
-    bact->bact_type = BACT_TYPES_FLYER;
+    _fly_dir_length = 200.0;
+    _status_flg &= ~BACT_STFLAG_LAND;
+    _bact_type = BACT_TYPES_FLYER;
 
     setState_msg arg78;
     arg78.newStatus = BACT_STATUS_DEAD;
     arg78.setFlags = 0;
     arg78.unsetFlags = 0;
 
-    caro->SetState(&arg78);
+    SetState(&arg78);
 
-    bact->bact_type = BACT_TYPES_CAR;
-    bact->energy = -10;
+    _bact_type = BACT_TYPES_CAR;
+    _energy = -10;
 }
 
 void NC_STACK_ypacar::User_layer(update_msg *arg)
 {
-    __NC_STACK_ypacar *car = &stack__ypacar;
-    __NC_STACK_ypabact *bact = &ypabact;
-
-    bact->airconst = bact->airconst_static;
+    _airconst = _airconst_static;
 
     int a4 = getBACT_bactCollisions();
 
-    bact->old_pos = bact->position;
+    _old_pos = _position;
 
     float v78 = arg->frameTime / 1000.0;
+    vec3d oldPos = _rotation.AxisZ();
 
-    tank_arg129 arg129;
-    arg129.field_0 = v78;
-    arg129.field_4 = bact->rotation.AxisZ();
-
-    if (bact->status == BACT_STATUS_DEAD)
+    if (_status == BACT_STATUS_DEAD)
         DeadTimeUpdate(arg);
-    else if (bact->status == BACT_STATUS_NORMAL || bact->status == BACT_STATUS_IDLE)
+    else if (_status == BACT_STATUS_NORMAL || _status == BACT_STATUS_IDLE)
     {
-        if ( bact->fly_dir_length != 0.0 )
+        if ( _fly_dir_length != 0.0 )
         {
-            if ( ! (bact->status_flg & BACT_STFLAG_FIRE) )
+            if ( ! (_status_flg & BACT_STFLAG_FIRE) )
             {
                 setState_msg arg78;
                 arg78.newStatus = BACT_STATUS_NORMAL;
@@ -367,9 +343,9 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
         }
         else
         {
-            if ( bact->primTtype != BACT_TGT_TYPE_CELL || (bact->primTpos.XZ() - bact->position.XZ()).length() <= 800.0 )
+            if ( _primTtype != BACT_TGT_TYPE_CELL || (_primTpos.XZ() - _position.XZ()).length() <= 800.0 )
             {
-                if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
+                if ( !(_status_flg & BACT_STFLAG_FIRE) )
                 {
                     setState_msg arg78;
                     arg78.newStatus = BACT_STATUS_IDLE;
@@ -379,14 +355,14 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
                     SetState(&arg78);
                 }
 
-                bact->status = BACT_STATUS_NORMAL;
+                _status = BACT_STATUS_NORMAL;
             }
             else
             {
 
-                if ( bact->status_flg & BACT_STFLAG_FIRE )
+                if ( _status_flg & BACT_STFLAG_FIRE )
                 {
-                    bact->status = BACT_STATUS_IDLE;
+                    _status = BACT_STATUS_IDLE;
                 }
                 else
                 {
@@ -402,25 +378,25 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
 
         if ( arg->inpt->sliders_vars[3] != 0.0 )
         {
-            if ( bact->fly_dir_length != 0.0 )
+            if ( _fly_dir_length != 0.0 )
             {
-                float v63 = fabs(bact->fly_dir_length);
-                float angle = -arg->inpt->sliders_vars[3] * bact->maxrot * v78 * (sqrt(v63) * 0.2);
+                float v63 = fabs(_fly_dir_length);
+                float angle = -arg->inpt->sliders_vars[3] * _maxrot * v78 * (sqrt(v63) * 0.2);
 
-                bact->rotation = mat3x3::RotateY(angle) * bact->rotation;
+                _rotation = mat3x3::RotateY(angle) * _rotation;
             }
         }
 
-        if ( (bact->fly_dir_length < 0.0 && bact->thraction > 0.0) || (bact->fly_dir_length > 0.0 && bact->thraction < 0.0) )
+        if ( (_fly_dir_length < 0.0 && _thraction > 0.0) || (_fly_dir_length > 0.0 && _thraction < 0.0) )
         {
-            if ( fabs(bact->fly_dir.y) > 0.1 )
+            if ( fabs(_fly_dir.y) > 0.1 )
             {
                 float v74 = 1.0 - (v78 * 4.0);
 
                 if ( v74 < 0.1 )
                     v74 = 0.1;
 
-                bact->fly_dir_length *= v74;
+                _fly_dir_length *= v74;
             }
         }
 
@@ -432,41 +408,41 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
         else if ( v76 > 1.0)
             v76 = 1.0;
 
-        bact->thraction += bact->force * (v78 * 0.75) * v76;
+        _thraction += _force * (v78 * 0.75) * v76;
 
         float v69;
         if ( arg->inpt->but_flags & 0x80000000 )
-            v69 = bact->force * v65;
+            v69 = _force * v65;
         else
-            v69 = bact->force;
+            v69 = _force;
 
-        if ( bact->thraction > v69 )
-            bact->thraction = v69;
+        if ( _thraction > v69 )
+            _thraction = v69;
 
-        if ( bact->thraction < -v69 )
-            bact->thraction = -v69;
+        if ( _thraction < -v69 )
+            _thraction = -v69;
 
         if ( fabs(v76) > 0.001 )
-            bact->status_flg |= BACT_STFLAG_MOVE;
+            _status_flg |= BACT_STFLAG_MOVE;
 
-        bact->gun_angle_user += v78 * arg->inpt->sliders_vars[5];
+        _gun_angle_user += v78 * arg->inpt->sliders_vars[5];
 
-        if ( bact->gun_angle_user < -0.3 )
-            bact->gun_angle_user = -0.3;
+        if ( _gun_angle_user < -0.3 )
+            _gun_angle_user = -0.3;
 
-        if ( bact->gun_angle_user > 0.8 )
-            bact->gun_angle_user = 0.8;
+        if ( _gun_angle_user > 0.8 )
+            _gun_angle_user = 0.8;
 
         bact_arg79 arg79;
         arg79.tgType = BACT_TGT_TYPE_DRCT;
-        arg79.tgt_pos = bact->rotation.AxisZ();
+        arg79.tgt_pos = _rotation.AxisZ();
 
         float corW, corH;
         GFXEngine::GFXe.getC3D()->getAspectCorrection(corW, corH, true);
 
         bact_arg106 arg106;
         arg106.field_0 = 5;
-        arg106.field_4 = bact->rotation.AxisZ() - vec3d::OY(bact->gun_angle_user * corH);
+        arg106.field_4 = _rotation.AxisZ() - vec3d::OY(_gun_angle_user * corH);
 
         if ( UserTargeting(&arg106) )
         {
@@ -476,23 +452,23 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
 
         if ( arg->inpt->but_flags & 1 || arg->inpt->but_flags & 2 )
         {
-            if ( car->field_c )
+            if ( _carKamikaze )
             {
-                ypacar_func71__sub0(this);
+                DoKamikaze();
             }
             else
             {
-                arg79.weapon = bact->weapon;
-                arg79.direction = bact->rotation.AxisZ() - bact->rotation.AxisY() * bact->gun_angle_user * corH;
-                arg79.g_time = bact->clock;
+                arg79.weapon = _weapon;
+                arg79.direction = _rotation.AxisZ() - _rotation.AxisY() * _gun_angle_user * corH;
+                arg79.g_time = _clock;
 
-                if ( bact->clock % 2 )
-                    arg79.start_point.x = -bact->fire_pos.x;
+                if ( _clock % 2 )
+                    arg79.start_point.x = -_fire_pos.x;
                 else
-                    arg79.start_point.x = bact->fire_pos.x;
+                    arg79.start_point.x = _fire_pos.x;
 
-                arg79.start_point.y = bact->fire_pos.y;
-                arg79.start_point.z = bact->fire_pos.z;
+                arg79.start_point.y = _fire_pos.y;
+                arg79.start_point.z = _fire_pos.z;
 
                 arg79.flags = ((arg->inpt->but_flags & 2) != 0) | 2;
 
@@ -500,9 +476,9 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
             }
         }
 
-        if ( bact->mgun != -1 )
+        if ( _mgun != -1 )
         {
-            if ( bact->status_flg & BACT_STFLAG_FIRE )
+            if ( _status_flg & BACT_STFLAG_FIRE )
             {
                 if ( !(arg->inpt->but_flags & 4) )
                 {
@@ -517,7 +493,7 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
 
             if ( arg->inpt->but_flags & 4 )
             {
-                if ( !(bact->status_flg & BACT_STFLAG_FIRE) )
+                if ( !(_status_flg & BACT_STFLAG_FIRE) )
                 {
                     setState_msg arg78;
                     arg78.setFlags = BACT_STFLAG_FIRE;
@@ -528,35 +504,35 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
                 }
 
                 bact_arg105 arg105;
-                arg105.field_0 = bact->rotation.AxisZ() - bact->rotation.AxisY() * bact->gun_angle_user * corH;
+                arg105.field_0 = _rotation.AxisZ() - _rotation.AxisY() * _gun_angle_user * corH;
                 arg105.field_C = v78;
-                arg105.field_10 = bact->clock;
+                arg105.field_10 = _clock;
 
                 FireMinigun(&arg105);
             }
         }
 
-        if ( bact->status_flg & BACT_STFLAG_LAND )
+        if ( _status_flg & BACT_STFLAG_LAND )
         {
             move_msg arg74;
 
             if ( arg->inpt->but_flags & 8 )
             {
-                bact->thraction = 0;
+                _thraction = 0;
 
-                if ( fabs(bact->fly_dir_length) >= 4.0 )
+                if ( fabs(_fly_dir_length) >= 4.0 )
                 {
                     float v75 = 1.0 - v78 * 4.0;
 
                     if ( v75 < 0.1 )
                         v75 = 0.1;
 
-                    bact->fly_dir_length *= v75 * 0.1;
+                    _fly_dir_length *= v75 * 0.1;
                 }
                 else
                 {
-                    bact->status_flg &= ~BACT_STFLAG_MOVE;
-                    bact->fly_dir_length = 0;
+                    _status_flg &= ~BACT_STFLAG_MOVE;
+                    _fly_dir_length = 0;
                 }
 
                 arg74.flag = 2;
@@ -569,34 +545,34 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
             arg74.flag = 0;
             arg74.field_0 = v78;
 
-            if ( bact->status_flg & BACT_STFLAG_MOVE )
+            if ( _status_flg & BACT_STFLAG_MOVE )
                 Move(&arg74);
 
             if ( a4 && CollisionWithBact(arg->frameTime) )
             {
-                ypatank_func129(&arg129);
+                AlignVehicleUser(v78, oldPos);
             }
             else
             {
                 ypaworld_arg136 arg136;
 
-                arg136.stPos = bact->old_pos;
-                arg136.vect = bact->position - bact->old_pos;
+                arg136.stPos = _old_pos;
+                arg136.vect = _position - _old_pos;
                 arg136.flags = 0;
 
-                car->ywo->ypaworld_func136(&arg136);
+                _world->ypaworld_func136(&arg136);
 
                 if ( arg136.isect )
                 {
 
-                    bact->position = bact->old_pos;
+                    _position = _old_pos;
 
-                    bact->fly_dir_length = 0;
-                    bact->thraction = 0;
+                    _fly_dir_length = 0;
+                    _thraction = 0;
                 }
                 else
                 {
-                    ypatank_func129(&arg129);
+                    AlignVehicleUser(v78, oldPos);
                 }
             }
         }
@@ -611,48 +587,42 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
     }
 }
 
-size_t NC_STACK_ypacar::ypatank_func128(tank_arg128 *arg)
+int NC_STACK_ypacar::AlignVehicleAI(float dtime, vec3d *pNormal)
 {
-    __NC_STACK_ypacar *car = &stack__ypacar;
-    __NC_STACK_ypabact *bact = &ypabact;
-
-    arg->field_10 = 0;
-
     int a4 = getBACT_viewer();
 
     float v5;
 
     if ( a4 )
-        v5 = bact->viewer_overeof;
+        v5 = _viewer_overeof;
     else
-        v5 = bact->overeof;
+        v5 = _overeof;
 
     ypaworld_arg136 arg136;
-    arg136.stPos = bact->rotation.AxisY() * v5 + bact->position - vec3d::OY(50.0);
-    arg136.vect = vec3d::OY( bact->overeof + 110.0 );
+    arg136.stPos = _rotation.AxisY() * v5 + _position - vec3d::OY(50.0);
+    arg136.vect = vec3d::OY( _overeof + 110.0 );
     arg136.flags = 0;
 
-    car->ywo->ypaworld_func136(&arg136);
+    _world->ypaworld_func136(&arg136);
 
     if ( !arg136.isect )
-        return 0;
+        return ALIGN_NONE;
 
-    UAskeleton::Polygon *v8 = &arg136.skel->polygons[ arg136.polyID ];
+    vec3d normal = arg136.skel->polygons[ arg136.polyID ].Normal();
 
-    if ( v8->B < 0.6 )
+    if ( normal.y < 0.6 )
     {
-        arg->field_10 |= 1;
-        arg->field_14 = arg136.skel->polygons[ arg136.polyID ].Normal();
-
-        return 0;
+        if (pNormal)
+            *pNormal = normal;
+        return ALIGN_NORMAL;
     }
 
-    vec3d vaxis = bact->rotation.AxisY() * v8->Normal();
+    vec3d vaxis = _rotation.AxisY() * normal;
 
     if ( vaxis.normalise() > 0.0 )
     {
-        float v56 = clp_acos( bact->rotation.AxisY().dot( v8->Normal() ) );
-        float v45 = bact->maxrot * 2.0 * arg->field_0;
+        float v56 = clp_acos( _rotation.AxisY().dot( normal ) );
+        float v45 = _maxrot * 2.0 * dtime;
 
         if ( v56 > v45 )
             v56 = v45;
@@ -660,23 +630,20 @@ size_t NC_STACK_ypacar::ypatank_func128(tank_arg128 *arg)
         if ( fabs(v56) < 0.01 )
             v56 = 0.0;
 
-        bact->rotation *= mat3x3::AxisAngle(vaxis, v56);
+        _rotation *= mat3x3::AxisAngle(vaxis, v56);
     }
 
-    bact->position = arg136.isectPos - bact->rotation.AxisY() * v5;
+    _position = arg136.isectPos - _rotation.AxisY() * v5;
 
-    return 1;
+    return ALIGN_DONE;
 }
 
-void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, vec3d &darg)
+vec3d NC_STACK_ypacar::CarTip(float dtime, const vec3d &oldDir, vec3d rot)
 {
-    //__NC_STACK_ypacar *car = &caro->stack__ypacar;
-    __NC_STACK_ypabact *bact = &caro->ypabact;
+    vec2d tmp = _rotation.AxisZ().XZ();
+    vec2d varg = oldDir.XZ();
 
-    vec2d tmp = bact->rotation.AxisZ().XZ();
-    vec2d varg = arg->field_4.XZ();
-
-    int a4 = bact->self->getBACT_viewer();
+    int a4 = getBACT_viewer();
     float v73;
 
     if ( a4 )
@@ -684,13 +651,13 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, vec3d &darg)
     else
         v73 = -0.2;
 
-    float v78 = bact->thraction - bact->airconst * bact->fly_dir_length;
+    float v78 = _thraction - _airconst * _fly_dir_length;
 
     if ( fabs(v78) > 0.1 )
     {
-        float v8 = v73 * v78 / bact->force;
+        float v8 = v73 * v78 / _force;
 
-        darg = mat3x3::AxisAngle(bact->rotation.AxisX(), v8).Transform(darg);
+        rot = mat3x3::AxisAngle(_rotation.AxisX(), v8).Transform(rot);
     }
 
     float v76 = tmp.dot( varg );
@@ -708,25 +675,24 @@ void ypacar_func129__sub0(NC_STACK_ypacar *caro, tank_arg129 *arg, vec3d &darg)
     v76 = v76 / tmpsq;
 
 
-    if (arg->field_0 != 0.0)
+    if (dtime != 0.0)
     {
-        float v77 = clp_acos(v76) * (fabs(bact->fly_dir_length) * 0.002 / arg->field_0);
+        float v77 = clp_acos(v76) * (fabs(_fly_dir_length) * 0.002 / dtime);
 
         if ( v77 > 0.001 )
         {
             if ( tmp.cross(varg) < 0.0 )
                 v77 = -v77;
 
-            darg = mat3x3::AxisAngle(bact->rotation.AxisZ(), v77).Transform(darg);
+            rot = mat3x3::AxisAngle(_rotation.AxisZ(), v77).Transform(rot);
         }
     }
+    
+    return rot;
 }
 
-size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
+int NC_STACK_ypacar::AlignVehicleUser(float dtime, const vec3d &oldDir)
 {
-    __NC_STACK_ypacar *car = &stack__ypacar;
-    __NC_STACK_ypabact *bact = &ypabact;
-
     float v162 = 1.73;
     float v166 = 1.7;
     int v158 = 0;
@@ -739,53 +705,53 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
     float v5;
 
     if ( a4 )
-        v5 = bact->viewer_overeof;
+        v5 = _viewer_overeof;
     else
-        v5 = bact->overeof;
+        v5 = _overeof;
 
     vec3d t1, t2, t3;
     float v167;
 
-    if ( bact->fly_dir_length < 0.0 )
+    if ( _fly_dir_length < 0.0 )
     {
-        t1 = bact->position + (bact->rotation.AxisX() - bact->rotation.AxisZ()) * bact->viewer_radius * 0.7071;
+        t1 = _position + (_rotation.AxisX() - _rotation.AxisZ()) * _viewer_radius * 0.7071;
 
-        t2 = bact->position + bact->rotation.AxisZ() * bact->viewer_radius;
+        t2 = _position + _rotation.AxisZ() * _viewer_radius;
 
-        t3 = bact->position + (-bact->rotation.AxisX() - bact->rotation.AxisZ()) * bact->viewer_radius * 0.7071;
+        t3 = _position + (-_rotation.AxisX() - _rotation.AxisZ()) * _viewer_radius * 0.7071;
 
         v167 = -1.0;
     }
     else
     {
-        t1 = bact->position + (bact->rotation.AxisX() + bact->rotation.AxisZ()) * bact->viewer_radius * 0.7071;
+        t1 = _position + (_rotation.AxisX() + _rotation.AxisZ()) * _viewer_radius * 0.7071;
 
-        t2 = bact->position - bact->rotation.AxisZ() * bact->viewer_radius;
+        t2 = _position - _rotation.AxisZ() * _viewer_radius;
 
-        t3 = bact->position + (-bact->rotation.AxisX() + bact->rotation.AxisZ()) * bact->viewer_radius * 0.7071;
+        t3 = _position + (-_rotation.AxisX() + _rotation.AxisZ()) * _viewer_radius * 0.7071;
 
         v167 = 1.0;
     }
 
-    t1 += vec3d::OY(bact->viewer_overeof);
-    t2 += vec3d::OY(bact->viewer_overeof);
-    t3 += vec3d::OY(bact->viewer_overeof);
+    t1 += vec3d::OY(_viewer_overeof);
+    t2 += vec3d::OY(_viewer_overeof);
+    t3 += vec3d::OY(_viewer_overeof);
 
     ypaworld_arg136 arg136, arg136_1, arg136_2;
 
-    arg136.stPos = bact->position - vec3d::OY(v162 * bact->viewer_radius);
+    arg136.stPos = _position - vec3d::OY(v162 * _viewer_radius);
     arg136.vect = (t1 - arg136.stPos) * v166;
     arg136.flags = 0;
 
-    arg136_1.stPos = bact->position - vec3d::OY(v162 * bact->viewer_radius);
+    arg136_1.stPos = _position - vec3d::OY(v162 * _viewer_radius);
     arg136_1.vect = (t2 - arg136_1.stPos) * v166;
     arg136_1.flags = 0;
 
-    arg136_2.stPos = bact->position - vec3d::OY(v162 * bact->viewer_radius);
+    arg136_2.stPos = _position - vec3d::OY(v162 * _viewer_radius);
     arg136_2.vect = (t3 - arg136_2.stPos) * v166;
     arg136_2.flags = 0;
 
-    car->ywo->ypaworld_func136(&arg136);
+    _world->ypaworld_func136(&arg136);
 
     if ( arg136.isect )
     {
@@ -793,29 +759,29 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
         if ( fabs(v48->B) < 0.6 )
         {
-            float v176 = bact->rotation.AxisZ().dot( v48->Normal() ) * v167;
+            float v176 = _rotation.AxisZ().dot( v48->Normal() ) * v167;
 
             if ( v176 <= 0.0 )
             {
-                bact->thraction = 0;
+                _thraction = 0;
             }
             else
             {
                 if ( v176 >= 0.82 )
                 {
-                    bact->thraction = 0;
-                    bact->fly_dir_length = 0;
-                    bact->position = bact->old_pos;
+                    _thraction = 0;
+                    _fly_dir_length = 0;
+                    _position = _old_pos;
                 }
                 else
                 {
-                    bact->position.x = bact->old_pos.x - v48->A * 10.0;
-                    bact->position.z = bact->old_pos.z - v48->C * 10.0;
+                    _position.x = _old_pos.x - v48->A * 10.0;
+                    _position.z = _old_pos.z - v48->C * 10.0;
                 }
 
-                if ( bact->fly_dir_length > 2.333333333333334 )
+                if ( _fly_dir_length > 2.333333333333334 )
                 {
-                    SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
+                    SFXEngine::SFXe.startSound(&_soundcarrier, 5);
 
                     if ( v149 )
                     {
@@ -826,7 +792,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
                         arg180.effects_type = 5;
                         arg180.field_4 = 1.0;
 
-                        car->ywo->ypaworld_func180(&arg180);
+                        _world->ypaworld_func180(&arg180);
                     }
                 }
             }
@@ -838,12 +804,12 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
         if ( !v149 )
             return 2;
 
-        arg136.isectPos = bact->position + arg136.vect - vec3d::OY(v162 * bact->viewer_radius);
+        arg136.isectPos = _position + arg136.vect - vec3d::OY(v162 * _viewer_radius);
 
         v158 = 1;
     }
 
-    car->ywo->ypaworld_func136(&arg136_1);
+    _world->ypaworld_func136(&arg136_1);
 
     if ( arg136_1.isect )
     {
@@ -851,29 +817,29 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
         if ( fabs(v54->B) < 0.6 )
         {
-            float v182 = bact->rotation.AxisZ().dot( v54->Normal() ) * v167;
+            float v182 = _rotation.AxisZ().dot( v54->Normal() ) * v167;
 
             if ( v182 <= 0.0 )
             {
-                bact->thraction = 0;
+                _thraction = 0;
             }
             else
             {
                 if ( v182 >= 0.82 )
                 {
-                    bact->fly_dir_length = 0;
-                    bact->position = bact->old_pos;
-                    bact->thraction = 0;
+                    _fly_dir_length = 0;
+                    _position = _old_pos;
+                    _thraction = 0;
                 }
                 else
                 {
-                    bact->position.x = bact->old_pos.x - v54->A * 10.0;
-                    bact->position.z = bact->old_pos.z - v54->C * 10.0;
+                    _position.x = _old_pos.x - v54->A * 10.0;
+                    _position.z = _old_pos.z - v54->C * 10.0;
                 }
 
-                if ( bact->fly_dir_length > 2.333333333333334 )
+                if ( _fly_dir_length > 2.333333333333334 )
                 {
-                    SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
+                    SFXEngine::SFXe.startSound(&_soundcarrier, 5);
 
                     if ( v149 )
                     {
@@ -883,7 +849,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
                         arg180.field_C = arg136_1.isectPos.z;
                         arg180.effects_type = 5;
 
-                        car->ywo->ypaworld_func180(&arg180);
+                        _world->ypaworld_func180(&arg180);
                     }
                 }
             }
@@ -896,12 +862,12 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
         if ( !v149 )
             return 1;
 
-        arg136_1.isectPos = bact->position + arg136_1.vect - vec3d::OY(v162 * bact->viewer_radius);
+        arg136_1.isectPos = _position + arg136_1.vect - vec3d::OY(v162 * _viewer_radius);
 
         v160 = 1;
     }
 
-    car->ywo->ypaworld_func136(&arg136_2);
+    _world->ypaworld_func136(&arg136_2);
 
     if ( arg136_2.isect )
     {
@@ -909,13 +875,13 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
         if ( fabs(v54->B) < 0.6 )
         {
-            bact->position += bact->fly_dir * bact->fly_dir_length * arg->field_0 * 6.0;
+            _position += _fly_dir * _fly_dir_length * dtime * 6.0;
 
-            bact->thraction = 0;
+            _thraction = 0;
 
-            if ( bact->fly_dir_length < -2.333333333333334 )
+            if ( _fly_dir_length < -2.333333333333334 )
             {
-                SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
+                SFXEngine::SFXe.startSound(&_soundcarrier, 5);
 
                 if ( v149 )
                 {
@@ -925,7 +891,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
                     arg180.field_C = arg136_2.isectPos.z;
                     arg180.effects_type = 5;
 
-                    car->ywo->ypaworld_func180(&arg180);
+                    _world->ypaworld_func180(&arg180);
                 }
             }
             return 3;
@@ -933,7 +899,7 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
     }
     else
     {
-        arg136_2.isectPos = bact->position + arg136_2.vect - vec3d::OY(v162 * bact->viewer_radius);
+        arg136_2.isectPos = _position + arg136_2.vect - vec3d::OY(v162 * _viewer_radius);
 
         v161 = 1;
     }
@@ -943,21 +909,21 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
         if ( v167 > 0.0 )
         {
             ypaworld_arg136 arg136_3;
-            arg136_3.stPos = bact->position;
+            arg136_3.stPos = _position;
 
-            arg136_3.vect = bact->rotation.AxisZ() * bact->viewer_radius;
+            arg136_3.vect = _rotation.AxisZ() * _viewer_radius;
 
             arg136_3.flags = 0;
 
-            car->ywo->ypaworld_func136(&arg136_3);
+            _world->ypaworld_func136(&arg136_3);
 
             if ( arg136_3.isect )
             {
                 if ( arg136_3.skel->polygons[ arg136_3.polyID ].B < 0.6 )
                 {
-                    if ( bact->fly_dir_length > 2.333333333333334 )
+                    if ( _fly_dir_length > 2.333333333333334 )
                     {
-                        SFXEngine::SFXe.startSound(&bact->soundcarrier, 5);
+                        SFXEngine::SFXe.startSound(&_soundcarrier, 5);
 
                         if ( v149 )
                         {
@@ -967,13 +933,13 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
                             arg180.field_C = arg136_3.isectPos.z;
                             arg180.effects_type = 5;
 
-                            car->ywo->ypaworld_func180(&arg180);
+                            _world->ypaworld_func180(&arg180);
                         }
                     }
 
-                    bact->thraction = 0;
-                    bact->fly_dir_length = 0;
-                    bact->position = bact->old_pos;
+                    _thraction = 0;
+                    _fly_dir_length = 0;
+                    _position = _old_pos;
                 }
             }
         }
@@ -998,12 +964,12 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
         int v151 = getTANK_tip();
 
         if ( v151 )
-            ypacar_func129__sub0(this, arg, tmp3);
+            tmp3 = CarTip(dtime, oldDir, tmp3);
 
 
-        float v72 = fabs(bact->fly_dir_length);
+        float v72 = fabs(_fly_dir_length);
 
-        vec3d vaxis = bact->rotation.AxisY() * tmp3;
+        vec3d vaxis = _rotation.AxisY() * tmp3;
 
         float v173;
 
@@ -1014,87 +980,82 @@ size_t NC_STACK_ypacar::ypatank_func129(tank_arg129 *arg)
 
         if ( vaxis.normalise() > 0.0 )
         {
-            float angle = clp_acos( bact->rotation.AxisY().dot( tmp3 ) );
-            float maxrot = bact->maxrot * 2.0 * arg->field_0;
+            float angle = clp_acos( _rotation.AxisY().dot( tmp3 ) );
+            float maxrot = _maxrot * 2.0 * dtime;
 
             if ( angle > maxrot )
                 angle = maxrot;
 
             if ( fabs(angle) > v173 )
-                bact->rotation *= mat3x3::AxisAngle(vaxis, angle);
+                _rotation *= mat3x3::AxisAngle(vaxis, angle);
         }
     }
 
     if ( !arg136.isect && !arg136_1.isect && !arg136_2.isect )
     {
-        bact->status_flg &= ~BACT_STFLAG_LAND;
+        _status_flg &= ~BACT_STFLAG_LAND;
         return 0;
     }
 
     if ( !v158 && !v160 && !v161 )
     {
-        bact->position.y = (arg136.isectPos.y + arg136_1.isectPos.y + arg136_2.isectPos.y) * 0.33333334 - v5;
+        _position.y = (arg136.isectPos.y + arg136_1.isectPos.y + arg136_2.isectPos.y) * 0.33333334 - v5;
         return 0;
     }
 
-    float v90 = bact->viewer_overeof * v166 * 0.8;
+    float v90 = _viewer_overeof * v166 * 0.8;
 
     ypaworld_arg136 arg136_4;
-    arg136_4.stPos = bact->position - vec3d::OY(v90);
+    arg136_4.stPos = _position - vec3d::OY(v90);
     arg136_4.vect = vec3d::OY(v90 * 2.0);
     arg136_4.flags = 0;
 
-    car->ywo->ypaworld_func136(&arg136_4);
+    _world->ypaworld_func136(&arg136_4);
 
     if ( arg136_4.isect && (!arg136_4.isect || arg136_4.skel->polygons[ arg136_4.polyID ].B >= 0.6) )
     {
-        bact->position.y = arg136_4.isectPos.y - v5;
+        _position.y = arg136_4.isectPos.y - v5;
         return 0;
     }
 
     vec3d tf(0.0, 0.0, 0.0);
 
-    bact->status_flg &= ~BACT_STFLAG_LAND;
+    _status_flg &= ~BACT_STFLAG_LAND;
 
     if ( v158 )
-        tf += bact->rotation.AxisZ() * v167 - bact->rotation.AxisX();
+        tf += _rotation.AxisZ() * v167 - _rotation.AxisX();
 
     if ( v160 )
-        tf += bact->rotation.AxisZ() * v167 + bact->rotation.AxisX();
+        tf += _rotation.AxisZ() * v167 + _rotation.AxisX();
 
     if ( v161 )
-        tf -= bact->rotation.AxisZ() * v167;
+        tf -= _rotation.AxisZ() * v167;
 
-    bact->position += tf * (arg->field_0 * 400.0);
+    _position += tf * (dtime * 400.0);
 
     return 0;
 }
 
 
-void NC_STACK_ypacar::setCAR_kamikaze(int kam)
+void NC_STACK_ypacar::setCAR_kamikaze(bool kam)
 {
-    if (kam)
-        stack__ypacar.field_c |= 1;
-    else
-        stack__ypacar.field_c &= ~1;
+    _carKamikaze = kam;
 }
 
-void NC_STACK_ypacar::setCAR_blast(int bla)
+void NC_STACK_ypacar::setCAR_blast(int blast)
 {
-    stack__ypacar.field_10 = bla;
+    _carBlast = blast;
 }
 
 
-int NC_STACK_ypacar::getCAR_kamikaze()
+bool NC_STACK_ypacar::getCAR_kamikaze()
 {
-    if (stack__ypacar.field_c & 1)
-        return 1;
-    return 0;
+    return _carKamikaze;
 }
 
 int NC_STACK_ypacar::getCAR_blast()
 {
-    return stack__ypacar.field_10;
+    return _carBlast;
 }
 
 
@@ -1103,20 +1064,16 @@ size_t NC_STACK_ypacar::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 0:
-        return (size_t)func0( (IDVList *)data );
+        return (size_t)func0( *(IDVList *)data );
     case 1:
         return (size_t)func1();
     case 2:
-        return func2( (IDVList *)data );
+        return func2( *(IDVList *)data );
     case 3:
-        return func3( (IDVList *)data );
+        return func3( *(IDVList *)data );
     case 71:
         User_layer( (update_msg *)data );
         return 1;
-    case 128:
-        return (size_t)ypatank_func128( (tank_arg128 *)data );
-    case 129:
-        return (size_t)ypatank_func129( (tank_arg129 *)data );
     default:
         break;
     }
