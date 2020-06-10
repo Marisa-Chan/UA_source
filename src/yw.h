@@ -762,7 +762,7 @@ struct cellArea : public nnode
     float height;
     float averg_height;
     
-    cellArea() : unitsList(this, NC_STACK_ypabact::CellClearCallback) { clear(); };
+    cellArea() : unitsList(this, NC_STACK_ypabact::GetCellRefNode) { clear(); };
     
     int GetEnergy()
     {

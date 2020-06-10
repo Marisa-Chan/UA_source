@@ -567,7 +567,7 @@ public:
     
     void CopyTargetOf(NC_STACK_ypabact *commander);
     
-    static World::CellBactList::Node& CellClearCallback(NC_STACK_ypabact *bact)
+    static World::CellBactList::Node& GetCellRefNode(NC_STACK_ypabact *&bact)
     {
         return bact->_cellRef;
     }

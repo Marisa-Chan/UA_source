@@ -10,7 +10,7 @@ public:
     
     typedef RefList<T> _T_List;
     typedef typename std::list<T>::iterator _T_interListIter;
-    typedef Node& (* _T_Clear)(T);
+    typedef Node& (* _T_RefNodeCallBack)(T&);
     
     class Node
     {
@@ -60,8 +60,8 @@ public:
     using std::list<T>::insert;
     using std::list<T>::size;
     
-    RefList(void *O) : _o(O), _clearMethod(NULL) {};
-    RefList(void *O, _T_Clear ClrMethod) : _o(O), _clearMethod(ClrMethod) {};
+    RefList(void *O, int LType = 0) : _o(O), _refNodeCallBack(NULL), ListType(LType) {};
+    RefList(void *O, _T_RefNodeCallBack RefNodeCallBack, int LType = 0) : _o(O), _refNodeCallBack(RefNodeCallBack), ListType(LType) {};
     
     Node push_back(T c)
     {
@@ -80,11 +80,11 @@ public:
     
     void clear()
     {
-        if (_clearMethod)
+        if (_refNodeCallBack)
         {
             while(this->begin() != this->end())
             {
-                _clearMethod(this->front())._pList = NULL;
+                _refNodeCallBack(this->front())._pList = NULL;
                 this->erase(this->begin());
             }
         }
@@ -94,9 +94,10 @@ public:
     
 public:
     void * const _o; // Pointer to object that contain this list
+    const int ListType; // Identify list by this
     
 protected:
-    _T_Clear _clearMethod;
+    _T_RefNodeCallBack _refNodeCallBack;
 };
 
 #endif // LISTNODE_H_INCLUDED
