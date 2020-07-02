@@ -60,8 +60,8 @@ public:
     using std::list<T>::insert;
     using std::list<T>::size;
     
-    RefList(void *O, int LType = 0) : _o(O), _refNodeCallBack(NULL), ListType(LType) {};
-    RefList(void *O, _T_RefNodeCallBack RefNodeCallBack, int LType = 0) : _o(O), _refNodeCallBack(RefNodeCallBack), ListType(LType) {};
+    RefList(void *O, int LType = 0) : _o(O), ListType(LType), _refNodeCallBack(NULL) {};
+    RefList(void *O, _T_RefNodeCallBack RefNodeCallBack, int LType = 0) : _o(O), ListType(LType), _refNodeCallBack(RefNodeCallBack) {};
     
     Node push_back(T c)
     {
