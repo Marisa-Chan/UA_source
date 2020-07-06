@@ -17,7 +17,7 @@ typedef std::list< std::string > StringList;
 
 namespace World
 {
-typedef RefList<NC_STACK_ypabact *> CellBactList;
+typedef RefList<NC_STACK_ypabact *> RefBactList;
 
 struct player_status
 {

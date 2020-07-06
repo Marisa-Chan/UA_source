@@ -37,6 +37,11 @@ struct Tvec2d
     {
         return sqrt( x * x + y * y);
     }
+    
+    T square() const
+    {
+        return x * x + y * y;
+    }
 
     T norm() const
     {
@@ -246,6 +251,11 @@ struct Tvec3d
     T length() const
     {
         return sqrt( x * x + y * y + z * z );
+    }
+    
+    T square() const
+    {
+        return x * x + y * y + z * z;
     }
 
     T normalise()

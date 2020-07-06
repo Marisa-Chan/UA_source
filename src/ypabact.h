@@ -5,6 +5,7 @@
 #include "engine_tform.h"
 #include "base.h"
 #include "listnode.h"
+#include "types.h"
 
 // !!!! if period is small, then this never happen
 #define BACT_MIN_ANGLE 0.0002
@@ -200,7 +201,7 @@ enum BACT_TYPES
 struct newMaster_msg
 {
     NC_STACK_ypabact *bact;
-    nlist *list;
+    World::RefBactList *list;
 };
 
 struct bact_arg80
@@ -283,7 +284,7 @@ struct bact_arg94
 {
     int field_0;
     vec3d pos1;
-    vec3d pos2;
+    //vec3d pos2;
 };
 
 struct move_msg
@@ -460,7 +461,7 @@ public:
     virtual void CreationTimeUpdate(update_msg *arg);
     virtual size_t IsDestroyed();
     virtual size_t CheckFireAI(bact_arg101 *arg);
-    virtual void MarkSectorsForView(IDVPair *arg);
+    virtual void MarkSectorsForView();
     virtual void ypabact_func103(IDVPair *arg);
     virtual void StuckFree(update_msg *arg);
     virtual size_t FireMinigun(bact_arg105 *arg);
@@ -567,9 +568,14 @@ public:
     
     void CopyTargetOf(NC_STACK_ypabact *commander);
     
-    static World::CellBactList::Node& GetCellRefNode(NC_STACK_ypabact *&bact)
+    static World::RefBactList::Node& GetCellRefNode(NC_STACK_ypabact *&bact)
     {
         return bact->_cellRef;
+    }
+    
+    static World::RefBactList::Node& GetKidRefNode(NC_STACK_ypabact *&bact)
+    {
+        return bact->_kidRef;
     }
 
     //Data
@@ -579,7 +585,7 @@ public:
     //ypabactTHINGTOREPLACE;
     
     
-    World::CellBactList::Node _cellRef;
+    World::RefBactList::Node _cellRef;
     
     int _sectX;
     int _sectY;
@@ -595,8 +601,8 @@ public:
     int _commandID;
     NC_STACK_yparobo *_host_station; // parent robo?
     NC_STACK_ypabact *_parent;
-    nlist _subjects_list;
-    bact_node _subject_node;
+    World::RefBactList _kidList;
+    World::RefBactList::Node _kidRef;
     samples_collection1 _soundcarrier;
     int _soundFlags;
     int _volume;

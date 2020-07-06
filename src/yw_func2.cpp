@@ -1624,12 +1624,12 @@ int UserData::ypaworld_func158__sub0__sub7()
     return 1;
 }
 
-void sub_4811E8(NC_STACK_ypaworld *yw, int id)
+void NC_STACK_ypaworld::sub_4811E8(int id)
 {
-    if ( id > yw->field_17c4 )
+    if ( id > field_17c4 )
     {
-        yw->field_17c8 = 0;
-        yw->field_17c4 = id;
+        field_17c8 = 0;
+        field_17c4 = id;
     }
 }
 
@@ -1641,47 +1641,47 @@ void UserData::sub_4DE248(int id)
         break;
 
     case 1001:
-        sub_4811E8(p_ypaworld, 0x7B);
+        p_ypaworld->sub_4811E8(0x7B);
         break;
 
     case 1003:
-        sub_4811E8(p_ypaworld, 0x78);
+        p_ypaworld->sub_4811E8(0x78);
         break;
 
     case 1004:
-        sub_4811E8(p_ypaworld, 0x79);
+        p_ypaworld->sub_4811E8(0x79);
         break;
 
     case 1005:
-        sub_4811E8(p_ypaworld, 0x7A);
+        p_ypaworld->sub_4811E8(0x7A);
         break;
 
     case 1007:
-        sub_4811E8(p_ypaworld, 0x83);
+        p_ypaworld->sub_4811E8(0x83);
         break;
 
     case 1008:
-        sub_4811E8(p_ypaworld, 0x7C);
+        p_ypaworld->sub_4811E8(0x7C);
         break;
 
     case 1011:
-        sub_4811E8(p_ypaworld, 0x81);
+        p_ypaworld->sub_4811E8(0x81);
         break;
 
     case 1013:
-        sub_4811E8(p_ypaworld, 0x80);
+        p_ypaworld->sub_4811E8(0x80);
         break;
 
     case 1014:
-        sub_4811E8(p_ypaworld, 0x82);
+        p_ypaworld->sub_4811E8(0x82);
         break;
 
     case 1015:
-        sub_4811E8(p_ypaworld, 0x7F);
+        p_ypaworld->sub_4811E8(0x7F);
         break;
 
     case 1016:
-        sub_4811E8(p_ypaworld, 0x88);
+        p_ypaworld->sub_4811E8(0x88);
         break;
 
     case 1017:
@@ -1689,89 +1689,89 @@ void UserData::sub_4DE248(int id)
     case 1107:
     case 1167:
     case 1218:
-        sub_4811E8(p_ypaworld, 0x89);
+        p_ypaworld->sub_4811E8(0x89);
         break;
 
     case 1018:
-        sub_4811E8(p_ypaworld, 0x6A);
+        p_ypaworld->sub_4811E8(0x6A);
         break;
 
     case 1019:
         if ( sub_4EDCC4(p_ypaworld) )
         {
             if ( p_ypaworld->_levelInfo->State == 9 )
-                sub_4811E8(p_ypaworld, 0x49);
+                p_ypaworld->sub_4811E8(0x49);
             else
-                sub_4811E8(p_ypaworld, 0x8B);
+                p_ypaworld->sub_4811E8(0x8B);
         }
         else
         {
-            sub_4811E8(p_ypaworld, 0x8A);
+            p_ypaworld->sub_4811E8(0x8A);
         }
         break;
 
     case 1020:
-        sub_4811E8(p_ypaworld, 0x4A);
+        p_ypaworld->sub_4811E8(0x4A);
         break;
 
     case 1050:
-        sub_4811E8(p_ypaworld, 0xC4);
+        p_ypaworld->sub_4811E8(0xC4);
         break;
 
     case 1051:
-        sub_4811E8(p_ypaworld, 0xC1);
+        p_ypaworld->sub_4811E8(0xC1);
         break;
 
     case 1053:
-        sub_4811E8(p_ypaworld, 0xC3);
+        p_ypaworld->sub_4811E8(0xC3);
         break;
 
     case 1054:
-        sub_4811E8(p_ypaworld, 0xC2);
+        p_ypaworld->sub_4811E8(0xC2);
         break;
 
     case 1055:
-        sub_4811E8(p_ypaworld, 0xC5);
+        p_ypaworld->sub_4811E8(0xC5);
         break;
 
     case 1056:
-        sub_4811E8(p_ypaworld, 0xC6);
+        p_ypaworld->sub_4811E8(0xC6);
         break;
 
     case 1061:
-        sub_4811E8(p_ypaworld, 0x4D);
+        p_ypaworld->sub_4811E8(0x4D);
         break;
 
     case 1101:
-        sub_4811E8(p_ypaworld, 0x76);
+        p_ypaworld->sub_4811E8(0x76);
         break;
 
     case 1102:
-        sub_4811E8(p_ypaworld, 0xA8);
+        p_ypaworld->sub_4811E8(0xA8);
         break;
 
     case 1103:
-        sub_4811E8(p_ypaworld, 0xA9);
+        p_ypaworld->sub_4811E8(0xA9);
         break;
 
     case 1104:
-        sub_4811E8(p_ypaworld, 0x77);
+        p_ypaworld->sub_4811E8(0x77);
         break;
 
     case 1105:
         switch ( field_0x1744 )
         {
         case 1:
-            sub_4811E8(p_ypaworld, 0xAB);
+            p_ypaworld->sub_4811E8(0xAB);
             break;
         case 2:
-            sub_4811E8(p_ypaworld, 0xAA);
+            p_ypaworld->sub_4811E8(0xAA);
             break;
         case 3:
-            sub_4811E8(p_ypaworld, 0xAD);
+            p_ypaworld->sub_4811E8(0xAD);
             break;
         case 4:
-            sub_4811E8(p_ypaworld, 0xAC);
+            p_ypaworld->sub_4811E8(0xAC);
             break;
         default:
             break;
@@ -1782,101 +1782,101 @@ void UserData::sub_4DE248(int id)
         switch ( field_0x1744 )
         {
         case 0:
-            sub_4811E8(p_ypaworld, 0xAE);
+            p_ypaworld->sub_4811E8(0xAE);
             break;
         case 1:
-            sub_4811E8(p_ypaworld, 0xB0);
+            p_ypaworld->sub_4811E8(0xB0);
             break;
         case 2:
-            sub_4811E8(p_ypaworld, 0xAF);
+            p_ypaworld->sub_4811E8(0xAF);
             break;
         case 3:
-            sub_4811E8(p_ypaworld, 0xB2);
+            p_ypaworld->sub_4811E8(0xB2);
             break;
         case 4:
-            sub_4811E8(p_ypaworld, 0xB1);
+            p_ypaworld->sub_4811E8(0xB1);
             break;
         default:
             break;
         }
         break;
     case 1150:
-        sub_4811E8(p_ypaworld, 0x4E);
+        p_ypaworld->sub_4811E8(0x4E);
         break;
 
     case 1151:
-        sub_4811E8(p_ypaworld, 0xB7);
+        p_ypaworld->sub_4811E8(0xB7);
         break;
 
     case 1152:
-        sub_4811E8(p_ypaworld, 0xBE);
+        p_ypaworld->sub_4811E8(0xBE);
         break;
 
     case 1154:
-        sub_4811E8(p_ypaworld, 0xBF);
+        p_ypaworld->sub_4811E8(0xBF);
         break;
 
     case 1156:
-        sub_4811E8(p_ypaworld, 0xB5);
+        p_ypaworld->sub_4811E8(0xB5);
         break;
 
     case 1157:
-        sub_4811E8(p_ypaworld, 0xB8);
+        p_ypaworld->sub_4811E8(0xB8);
         break;
 
     case 1159:
-        sub_4811E8(p_ypaworld, 0xC0);
+        p_ypaworld->sub_4811E8(0xC0);
         break;
 
     case 1160:
-        sub_4811E8(p_ypaworld, 0xB9);
+        p_ypaworld->sub_4811E8(0xB9);
         break;
 
     case 1161:
-        sub_4811E8(p_ypaworld, 0xB4);
+        p_ypaworld->sub_4811E8(0xB4);
         break;
 
     case 1162:
-        sub_4811E8(p_ypaworld, 0xB3);
+        p_ypaworld->sub_4811E8(0xB3);
         break;
 
     case 1163:
-        sub_4811E8(p_ypaworld, 0xBD);
+        p_ypaworld->sub_4811E8(0xBD);
         break;
 
     case 1164:
-        sub_4811E8(p_ypaworld, 0xBB);
+        p_ypaworld->sub_4811E8(0xBB);
         break;
 
     case 1165:
-        sub_4811E8(p_ypaworld, 0xBC);
+        p_ypaworld->sub_4811E8(0xBC);
         break;
 
     case 1166:
-        sub_4811E8(p_ypaworld, 0x4F);
+        p_ypaworld->sub_4811E8(0x4F);
         break;
 
     case 1172:
-        sub_4811E8(p_ypaworld, 0x4B);
+        p_ypaworld->sub_4811E8(0x4B);
         break;
 
     case 1201:
         switch ( netSelMode )
         {
         case 0:
-            sub_4811E8(p_ypaworld, 0x8E);
+            p_ypaworld->sub_4811E8(0x8E);
             break;
         case 1:
-            sub_4811E8(p_ypaworld, 0x91);
+            p_ypaworld->sub_4811E8(0x91);
             break;
         case 2:
-            sub_4811E8(p_ypaworld, 0x8F);
+            p_ypaworld->sub_4811E8(0x8F);
             break;
         case 3:
-            sub_4811E8(p_ypaworld, 0x90);
+            p_ypaworld->sub_4811E8(0x90);
             break;
         case 4:
-            sub_4811E8(p_ypaworld, 0x92);
+            p_ypaworld->sub_4811E8(0x92);
             break;
         default:
             break;
@@ -1886,30 +1886,30 @@ void UserData::sub_4DE248(int id)
     case 1202:
         if ( netSelMode == 1 )
         {
-            sub_4811E8(p_ypaworld, 0x6E);
+            p_ypaworld->sub_4811E8(0x6E);
         }
         else if ( netSelMode == 4 )
         {
-            sub_4811E8(p_ypaworld, 0x6F);
+            p_ypaworld->sub_4811E8(0x6F);
         }
         break;
 
     case 1203:
-        sub_4811E8(p_ypaworld, 0x8C);
+        p_ypaworld->sub_4811E8(0x8C);
         break;
 
     case 1205:
         switch ( netSelMode )
         {
         case 1:
-            sub_4811E8(p_ypaworld, 0x94);
+            p_ypaworld->sub_4811E8(0x94);
             break;
         case 2:
-            sub_4811E8(p_ypaworld, 0x93);
+            p_ypaworld->sub_4811E8(0x93);
             break;
         case 3:
         case 4:
-            sub_4811E8(p_ypaworld, 0x95);
+            p_ypaworld->sub_4811E8(0x95);
             break;
         default:
             break;
@@ -1917,42 +1917,42 @@ void UserData::sub_4DE248(int id)
         break;
 
     case 1206:
-        sub_4811E8(p_ypaworld, 0x70);
+        p_ypaworld->sub_4811E8(0x70);
         break;
 
     case 1207:
-        sub_4811E8(p_ypaworld, 0x71);
+        p_ypaworld->sub_4811E8(0x71);
         break;
 
     case 1208:
-        sub_4811E8(p_ypaworld, 0x72);
+        p_ypaworld->sub_4811E8(0x72);
         break;
 
     case 1209:
-        sub_4811E8(p_ypaworld, 0x73);
+        p_ypaworld->sub_4811E8(0x73);
         break;
 
     case 1219:
         if ( rdyStart )
-            sub_4811E8(p_ypaworld, 0x75);
+            p_ypaworld->sub_4811E8(0x75);
         else
-            sub_4811E8(p_ypaworld, 0x74);
+            p_ypaworld->sub_4811E8(0x74);
         break;
 
     case 1225:
-        sub_4811E8(p_ypaworld, 0x4C);
+        p_ypaworld->sub_4811E8(0x4C);
         break;
 
     case 1250:
-        sub_4811E8(p_ypaworld, 0x6C);
+        p_ypaworld->sub_4811E8(0x6C);
         break;
 
     case 1251:
-        sub_4811E8(p_ypaworld, 0x6D);
+        p_ypaworld->sub_4811E8(0x6D);
         break;
 
     case 1252:
-        sub_4811E8(p_ypaworld, 0x89);
+        p_ypaworld->sub_4811E8(0x89);
         break;
     }
 }
@@ -2610,9 +2610,9 @@ void UserData::sub_46AA0C()
 }
 
 
-int sub_449678(NC_STACK_ypaworld *yw, struC5 *struc, int kkode)
+int NC_STACK_ypaworld::sub_449678(struC5 *struc, int kkode)
 {
-    return struc->downed_key == kkode && ( (struc->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD) || yw->easy_cheat_keys );
+    return struc->downed_key == kkode && ( (struc->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD) || easy_cheat_keys );
 }
 
 void UserData::ypaworld_func158__sub0__sub4()
@@ -3986,7 +3986,7 @@ void UserData::GameShellUiHandleInput()
             switch ( field_19DA )
             {
             case 0:
-                if ( sub_449678(p_ypaworld, _input, 'A') ) // VK_A
+                if ( p_ypaworld->sub_449678(_input, 'A') ) // VK_A
                 {
                     field_19D6 = glblTime;
                     field_19DA++;
@@ -3999,7 +3999,7 @@ void UserData::GameShellUiHandleInput()
                 break;
 
             case 1:
-                if ( sub_449678(p_ypaworld, _input, 'M') )
+                if ( p_ypaworld->sub_449678(_input, 'M') )
                 {
                     field_19D6 = glblTime;
                     field_19DA++;
@@ -4012,7 +4012,7 @@ void UserData::GameShellUiHandleInput()
                 break;
 
             case 2:
-                if ( sub_449678(p_ypaworld, _input, 'O') )
+                if ( p_ypaworld->sub_449678(_input, 'O') )
                 {
                     field_19D6 = glblTime;
                     field_19DA++;
@@ -4025,7 +4025,7 @@ void UserData::GameShellUiHandleInput()
                 break;
 
             case 3:
-                if ( sub_449678(p_ypaworld, _input, 'K') )
+                if ( p_ypaworld->sub_449678(_input, 'K') )
                 {
                     ypaworld_func158__sub0__sub4();
                     SFXEngine::SFXe.startSound(&samples2_info, 3);

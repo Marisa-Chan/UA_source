@@ -557,7 +557,7 @@ int WinMain__sub0__sub0()
     dword_520400 = 0;
     userdata.clear();
     memset(&input_states, 0, sizeof(struC5));
-    memset(&world_update_arg, 0, sizeof(base_64arg));
+    memset(&world_update_arg, 0, sizeof(world_update_arg));
 
     if ( !init_classesLists_and_variables() )
     {

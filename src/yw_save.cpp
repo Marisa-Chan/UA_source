@@ -733,130 +733,56 @@ int yw_write_bact(NC_STACK_ypabact *bct, FSMgr::FileHandle *fil)
     return 1;
 }
 
-int yw_write_robo(NC_STACK_ypaworld *yw, NC_STACK_yparobo *robo, FSMgr::FileHandle *fil)
+bool NC_STACK_ypaworld::yw_write_robo(NC_STACK_yparobo *robo, FSMgr::FileHandle *fil)
 {
-    char buf[300];
-
-    sprintf(buf, "\nbegin_robo %d\n", robo->_vehicleID);
-    fil->write(buf, strlen(buf));
+    fil->printf("\nbegin_robo %d\n", robo->_vehicleID);
 
     const char *isuser = "no";
 
-    if (robo == yw->UserRobo)
+    if (robo == UserRobo)
         isuser = "yes";
 
-    sprintf(buf, "    is_user_robo   = %s\n", isuser);
-    fil->write(buf, strlen(buf));
+    fil->printf("    is_user_robo   = %s\n", isuser);
 
     if ( !yw_write_bact(robo, fil) )
-        return 0;
+        return false;
 
-    sprintf(buf, "    owner          = %d\n", robo->_owner);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    robostate      = %d\n", robo->_roboState & 0xC00F );
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    dockenergy     = %d\n", robo->_roboDockEnerg);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    dockcount      = %d\n", robo->_roboDockCnt);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    dockuser       = %d\n", robo->_roboDockUser);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    docktime       = %d\n", robo->_roboDockTime);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    docktargetpos  = %2.2f_%2.2f\n", robo->_roboDockTargetPos.x, robo->_roboDockTargetPos.z);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    docktargetID   = %d\n", robo->_roboDockTargetCommandID);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    docktargettype = %d\n", robo->_roboDockTargetType);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    dockaggr       = %d\n", robo->_roboDockAggr);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    battvehicle    = %d\n", robo->_roboEnergyLife);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    battbeam       = %d\n", robo->_roboEnergyMove);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    fillmodus      = %d\n", robo->_roboFillMode);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    maximum        = %d\n", robo->_energy_max);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    buildspare     = %d\n", robo->_roboBuildSpare);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    vhoriz         = %7.5f\n", robo->_viewer_horiz_angle);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    vvert          = %7.5f\n", robo->_viewer_vert_angle);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    con_budget     = %d\n", robo->_roboEpConquer);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    def_budget     = %d\n", robo->_roboEpDefense);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    rec_budget     = %d\n", robo->_roboEpRecon);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    rob_budget     = %d\n", robo->_roboEpRobo);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    rad_budget     = %d\n", robo->_roboEpRadar);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    pow_budget     = %d\n", robo->_roboEpPower);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    saf_budget     = %d\n", robo->_roboEpSafety);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    cpl_budget     = %d\n", robo->_roboEpChangePlace);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    saf_delay     = %d\n", robo->_roboSafetyDelay);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    pow_delay     = %d\n", robo->_roboPowerDelay);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    rad_delay     = %d\n", robo->_roboRadarDelay);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    cpl_delay     = %d\n", robo->_roboPositionDelay);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    def_delay     = %d\n", robo->_roboEnemyDelay);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    con_delay     = %d\n", robo->_roboConqDelay);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    rec_delay     = %d\n", robo->_roboExploreDelay);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    rob_delay     = %d\n", robo->_roboDangerDelay);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "    reload_const  = %d\n", robo->_reload_const);
-    fil->write(buf, strlen(buf));
-
-    sprintf(buf, "end\n\n");
-    fil->write(buf, strlen(buf));
-
-    return 1;
+    fil->printf("    owner          = %d\n", robo->_owner);
+    fil->printf("    robostate      = %d\n", robo->_roboState & 0xC00F );
+    fil->printf("    dockenergy     = %d\n", robo->_roboDockEnerg);
+    fil->printf("    dockcount      = %d\n", robo->_roboDockCnt);
+    fil->printf("    dockuser       = %d\n", robo->_roboDockUser);
+    fil->printf("    docktime       = %d\n", robo->_roboDockTime);
+    fil->printf("    docktargetpos  = %2.2f_%2.2f\n", robo->_roboDockTargetPos.x, robo->_roboDockTargetPos.z);
+    fil->printf("    docktargetID   = %d\n", robo->_roboDockTargetCommandID);
+    fil->printf("    docktargettype = %d\n", robo->_roboDockTargetType);
+    fil->printf("    dockaggr       = %d\n", robo->_roboDockAggr);
+    fil->printf("    battvehicle    = %d\n", robo->_roboEnergyLife);
+    fil->printf("    battbeam       = %d\n", robo->_roboEnergyMove);
+    fil->printf("    fillmodus      = %d\n", robo->_roboFillMode);
+    fil->printf("    maximum        = %d\n", robo->_energy_max);
+    fil->printf("    buildspare     = %d\n", robo->_roboBuildSpare);
+    fil->printf("    vhoriz         = %7.5f\n", robo->_viewer_horiz_angle);
+    fil->printf("    vvert          = %7.5f\n", robo->_viewer_vert_angle);
+    fil->printf("    con_budget     = %d\n", robo->_roboEpConquer);
+    fil->printf("    def_budget     = %d\n", robo->_roboEpDefense);
+    fil->printf("    rec_budget     = %d\n", robo->_roboEpRecon);
+    fil->printf("    rob_budget     = %d\n", robo->_roboEpRobo);
+    fil->printf("    rad_budget     = %d\n", robo->_roboEpRadar);
+    fil->printf("    pow_budget     = %d\n", robo->_roboEpPower);
+    fil->printf("    saf_budget     = %d\n", robo->_roboEpSafety);
+    fil->printf("    cpl_budget     = %d\n", robo->_roboEpChangePlace);
+    fil->printf("    saf_delay     = %d\n", robo->_roboSafetyDelay);
+    fil->printf("    pow_delay     = %d\n", robo->_roboPowerDelay);
+    fil->printf("    rad_delay     = %d\n", robo->_roboRadarDelay);
+    fil->printf("    cpl_delay     = %d\n", robo->_roboPositionDelay);
+    fil->printf("    def_delay     = %d\n", robo->_roboEnemyDelay);
+    fil->printf("    con_delay     = %d\n", robo->_roboConqDelay);
+    fil->printf("    rec_delay     = %d\n", robo->_roboExploreDelay);
+    fil->printf("    rob_delay     = %d\n", robo->_roboDangerDelay);
+    fil->printf("    reload_const  = %d\n", robo->_reload_const);
+    fil->printf("end\n\n");
+    return true;
 }
 
 int yw_write_gun(NC_STACK_ypabact *bct, FSMgr::FileHandle *fil)
@@ -957,82 +883,75 @@ int yw_write_extraviewer(NC_STACK_ypabact *bct, FSMgr::FileHandle *fil)
     return 0;
 }
 
-int yw_write_units(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
+bool NC_STACK_ypaworld::yw_write_units(FSMgr::FileHandle *fil)
 {
-    bact_node *station = (bact_node *)yw->bact_list.tailpred;
-    while (station->prev)
+    for ( World::RefBactList::reverse_iterator staIt = _unitsList.rbegin(); staIt != _unitsList.rend(); staIt++ )
     {
-        if ( station->bact->_status != BACT_STATUS_DEAD )
+        NC_STACK_ypabact *station = *staIt;
+        
+        if ( station->_status != BACT_STATUS_DEAD )
         {
-            if ( !yw_write_robo(yw, (NC_STACK_yparobo *)station->bact, fil) )
-                return 0;
+            if ( !yw_write_robo((NC_STACK_yparobo *)station, fil) )
+                return false;
 
-            bact_node *commander = (bact_node *)station->bact->_subjects_list.tailpred;
-
-            while ( commander->prev )
+            for ( World::RefBactList::reverse_iterator comIt = station->_kidList.rbegin(); comIt != station->_kidList.rend(); comIt++ )
             {
-                int a4 = 0;
+                NC_STACK_ypabact *commander = *comIt;
+                bool a4 = false;
 
-                if ( commander->bact->_bact_type == BACT_TYPES_GUN )
+                if ( commander->_bact_type == BACT_TYPES_GUN )
                 {
-                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( commander->bact );
+                    NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( commander );
                     a4 = gun->IsRoboGun();
                 }
 
                 if ( !a4 )
                 {
-                    if ( !yw_write_commander(commander->bact, fil) )
-                        return 0;
+                    if ( !yw_write_commander(commander, fil) )
+                        return false;
                 }
                 else
                 {
-                    int v8 = commander->bact->getBACT_viewer();
+                    int v8 = commander->getBACT_viewer();
 
                     if ( v8 )
                     {
-                        if ( !yw_write_extraviewer(commander->bact, fil) )
-                            return 0;
+                        if ( !yw_write_extraviewer(commander, fil) )
+                            return false;
                     }
                 }
-
-                bact_node *slave = (bact_node *)commander->bact->_subjects_list.tailpred;
-
-                while ( slave->prev )
+                
+                for ( World::RefBactList::reverse_iterator slvIt = commander->_kidList.rbegin(); slvIt != commander->_kidList.rend(); slvIt++ )
                 {
-                    int v9 = 0;
-                    if ( slave->bact->_bact_type == BACT_TYPES_GUN )
+                    NC_STACK_ypabact *slave = *slvIt;
+                    bool v9 = false;
+                    if ( slave->_bact_type == BACT_TYPES_GUN )
                     {
-                        NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( slave->bact );
+                        NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( slave );
                         v9 = gun->IsRoboGun();
                     }
 
                     if ( !v9 )
                     {
-                        if ( !yw_write_slave(slave->bact, fil) )
-                            return 0;
+                        if ( !yw_write_slave(slave, fil) )
+                            return false;
                     }
                     else
                     {
-                        int v10 = slave->bact->getBACT_viewer();
+                        int v10 = slave->getBACT_viewer();
 
                         if ( v10 )
                         {
-                            if ( !yw_write_extraviewer(slave->bact, fil) )
-                                return 0;
+                            if ( !yw_write_extraviewer(slave, fil) )
+                                return false;
                         }
                     }
-
-                    slave = (bact_node *)slave->prev;
                 }
-
-                commander = (bact_node *)commander->prev;
             }
         }
-
-        station = (bact_node *)station->prev;
     }
 
-    return 1;
+    return true;
 }
 
 int yw_write_wunderinfo(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)

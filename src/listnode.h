@@ -2,14 +2,17 @@
 #define LISTNODE_H_INCLUDED
 
 #include <list>
+#include <vector>
 
 template <typename T> class RefList: protected std::list<T>
 {
 public:
     class Node;
+    typedef std::vector<T> SafeCopy;
     
+    typedef std::list<T> _T_Base;
     typedef RefList<T> _T_List;
-    typedef typename std::list<T>::iterator _T_interListIter;
+    typedef typename _T_Base::iterator _T_interListIter;
     typedef Node& (* _T_RefNodeCallBack)(T&);
     
     class Node
@@ -22,6 +25,26 @@ public:
             _pList = lst;
             _it = it;
         };
+        
+        ~Node()
+        {
+            Detach();
+        }
+        
+        Node(Node && b)
+        {
+            _pList = b._pList;
+            _it = b._it;
+            b._pList = NULL;
+        }
+        
+        Node& operator=(Node && b)
+        {
+            _pList = b._pList;
+            _it = b._it;
+            b._pList = NULL;
+            return *this;
+        }
         
         void Detach()
         {
@@ -37,7 +60,12 @@ public:
             return (_pList != NULL);
         }
         
-        T *PList()
+        operator _T_interListIter() const
+        {
+            return _it;
+        }
+        
+        _T_List *PList()
         {
             return _pList;
         }
@@ -55,41 +83,66 @@ public:
     };
     
 public:
-    using std::list<T>::begin;
-    using std::list<T>::end;
-    using std::list<T>::insert;
-    using std::list<T>::size;
+    using _T_Base::begin;
+    using _T_Base::end;
+    using _T_Base::rbegin;
+    using _T_Base::rend;
+    using _T_Base::size;
+    using _T_Base::front;
+    using _T_Base::back;
+    using _T_Base::erase;
+    using _T_Base::iterator;
+    using _T_Base::reverse_iterator;
+    using _T_Base::empty;
+    
     
     RefList(void *O, int LType = 0) : _o(O), ListType(LType), _refNodeCallBack(NULL) {};
-    RefList(void *O, _T_RefNodeCallBack RefNodeCallBack, int LType = 0) : _o(O), ListType(LType), _refNodeCallBack(RefNodeCallBack) {};
+    RefList(void *O, _T_RefNodeCallBack RefNodeCallBack, int LType = 0) : _o(O), ListType(LType), _refNodeCallBack(RefNodeCallBack){};
+    ~RefList()
+    {
+        clear();
+    }
     
     Node push_back(T c)
     {
-        return Node(this, insert(this->end(), c));
+        return Node(this, _T_Base::insert(end(), c));
     }
     
     Node push_front(T c)
     {
-        return Node(this, insert(this->front(), c));
+        return Node(this, _T_Base::insert(begin(), c));
+    }
+    
+    Node insert(_T_interListIter iter, T c)
+    {
+        return Node(this, _T_Base::insert(iter, c));
     }
     
     void unsafe_clear()
     {
-        std::list<T>::clear();
+        _T_Base::clear();
     }
     
     void clear()
     {
         if (_refNodeCallBack)
         {
-            while(this->begin() != this->end())
+            while(!empty())
             {
-                _refNodeCallBack(this->front())._pList = NULL;
-                this->erase(this->begin());
+                _refNodeCallBack(front())._pList = NULL;
+                erase(begin());
             }
         }
         else
-            std::list<T>::clear();
+            _T_Base::clear();
+    }
+    
+    const SafeCopy safe_iter() const
+    {
+        SafeCopy tmp;
+        tmp.reserve(_T_Base::size());
+        tmp.assign(_T_Base::begin(), _T_Base::end());
+        return tmp;
     }
     
 public:

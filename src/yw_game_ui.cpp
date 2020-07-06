@@ -131,28 +131,28 @@ uint32_t yw_GetColor(NC_STACK_ypaworld *yw, int color_id)
     return yw->iniColors[color_id].color;
 }
 
-void sb_0x4c87fc(NC_STACK_ypaworld *yw, const char *a2, GuiBase *lstvw)
+void NC_STACK_ypaworld::sb_0x4c87fc(const char *a2, GuiBase *lstvw)
 {
-    yw->GuiWinOpen(&lstvw2);
-    yw->GuiWinToFront(&lstvw2);
+    GuiWinOpen(&lstvw2);
+    GuiWinToFront(&lstvw2);
 
     dword_5BAF98 = a2;
     dword_5BAFAC = lstvw;
     dword_5BAF9C = 3;
 }
 
-void sub_449DE8(NC_STACK_ypaworld *yw, const char *a2)
+void NC_STACK_ypaworld::sub_449DE8(const char *a2)
 {
-    if ( !yw->isNetGame )
+    if ( !isNetGame )
     {
-        const char *v4 = get_lang_string(yw->string_pointers_p2, 2486, "REALLY LAUNCH ONLINE HELP ?");
+        const char *v4 = get_lang_string(string_pointers_p2, 2486, "REALLY LAUNCH ONLINE HELP ?");
 
-        sb_0x4c87fc(yw, v4, &exit_menu);
+        sb_0x4c87fc(v4, &exit_menu);
 
         dword_5C8B78 = 13;
 
-        yw->field_81AF = NULL;
-        yw->field_81B3 = a2;
+        field_81AF = NULL;
+        field_81B3 = a2;
     }
 }
 
@@ -215,7 +215,7 @@ void sub_4C3A54(NC_STACK_ypaworld *yw)
             {
                 bzda.field_1CC = 0x2B;
 
-                if ( yw->field_2410 != -1 )
+                if ( yw->_activeCmdrRemapIndex != -1 )
                     bzda.field_1CC = 0x2F;
             }
 
@@ -458,13 +458,11 @@ void sub_4F72E8(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact)
 
 void  sb_0x4f8f64__sub1__sub0(NC_STACK_ypaworld *yw)
 {
-    bact_node *v2 = (bact_node *)yw->bact_list.head;
-
-    while( v2->next )
+    for( NC_STACK_ypabact* &bact : yw->_unitsList )
     {
-        if ( v2->bact->_bact_type == BACT_TYPES_ROBO && v2->bact != yw->UserRobo )
+        if ( bact->_bact_type == BACT_TYPES_ROBO && bact != yw->UserRobo )
         {
-            NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(v2->bact);
+            NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(bact);
 
             for (int i = 0; i < 8; i++)
             {
@@ -521,7 +519,7 @@ void  sb_0x4f8f64__sub1__sub0(NC_STACK_ypaworld *yw)
                     float a5 = (v10 % yw->sectors_maxX2) * 1200.0 + 600.0;
                     float a6 = -((v10 / yw->sectors_maxX2) * 1200.0 + 600.0);
 
-                    sub_4F68FC(yw->_win3d, v2->bact->_position.x, v2->bact->_position.z, a5, a6, yw_GetColor(yw, i));
+                    sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, a5, a6, yw_GetColor(yw, i));
                 }
             }
 
@@ -532,7 +530,7 @@ void  sb_0x4f8f64__sub1__sub0(NC_STACK_ypaworld *yw)
                 float v28 = (robo->_roboBuildingCellID % yw->sectors_maxX2) * 1200.0 + 600.0;
 
                 if ( (yw->timeStamp / 300) & 1 )
-                    sub_4F68FC(yw->_win3d, v2->bact->_position.x, v2->bact->_position.z, v28, v26, yw_GetColor(yw, 0));
+                    sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, v28, v26, yw_GetColor(yw, 0));
             }
 
             if ( robo->_roboVehicleDuty )
@@ -542,11 +540,10 @@ void  sb_0x4f8f64__sub1__sub0(NC_STACK_ypaworld *yw)
 
                 if ( (yw->timeStamp / 300) & 1 )
                 {
-                    sub_4F68FC(yw->_win3d, v2->bact->_position.x, v2->bact->_position.z, v22, v27, yw_GetColor(yw, 7));
+                    sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, v22, v27, yw_GetColor(yw, 7));
                 }
             }
         }
-        v2 = (bact_node *)v2->next;
     }
 }
 
@@ -585,28 +582,25 @@ void sb_0x4f8f64__sub1(NC_STACK_ypaworld *yw)
     {
         if ( robo_map.field_1EC & 4 )
         {
-            for (int i = 0; i < yw->field_2414; i++)
+            for (int i = 0; i < yw->_cmdrsCount; i++)
             {
-                NC_STACK_ypabact *tmp = yw->field_1c0c[i];
+                NC_STACK_ypabact *tmp = yw->_cmdrsRemap[i];
 
                 if (tmp->_status != BACT_STATUS_DEAD)
                     sub_4F72E8(yw, tmp);
 
-                bact_node *bct = (bact_node *)tmp->_subjects_list.head;
-                while(bct->next)
+                for( NC_STACK_ypabact* &bct : tmp->_kidList )
                 {
-                    if ( bct->bact->_status != BACT_STATUS_DEAD )
-                        sub_4F72E8(yw, bct->bact);
-
-                    bct = (bact_node *)bct->next;
+                    if ( bct->_status != BACT_STATUS_DEAD )
+                        sub_4F72E8(yw, bct);
                 }
             }
         }
         else
         {
-            if ( yw->field_2410 != -1 )
+            if ( yw->_activeCmdrRemapIndex != -1 )
             {
-                NC_STACK_ypabact *tmp = yw->field_1c0c[yw->field_2410];
+                NC_STACK_ypabact *tmp = yw->_cmdrsRemap[yw->_activeCmdrRemapIndex];
 
                 if ( tmp->_status != BACT_STATUS_DEAD )
                     sub_4F72E8(yw, tmp);
@@ -1188,14 +1182,10 @@ char * sub_4F7BE8(NC_STACK_ypaworld *yw, char *cur, NC_STACK_ypabact *bact, int 
 
         pcur = sub_4F6980(pcur, bact->_position.x, bact->_position.z, a4, a5, a6);
 
-        bact_node *nd = (bact_node *)bact->_subjects_list.head;
-
-        while(nd->next)
+        for( NC_STACK_ypabact* &kid : bact->_kidList )
         {
-            if ( nd->bact->_status != BACT_STATUS_DEAD )
-                pcur = sub_4F6980(pcur, nd->bact->_position.x, nd->bact->_position.z, a4, a5, a6);
-
-            nd = (bact_node *)nd->next;
+            if ( kid->_status != BACT_STATUS_DEAD )
+                pcur = sub_4F6980(pcur, kid->_position.x, kid->_position.z, a4, a5, a6);
         }
     }
     return pcur;
@@ -1420,9 +1410,9 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
     }
     else
     {
-        if ( yw->field_2410 != -1 )
+        if ( yw->_activeCmdrRemapIndex != -1 )
         {
-            NC_STACK_ypabact *v47 = yw->field_1c0c[yw->field_2410];
+            NC_STACK_ypabact *v47 = yw->_cmdrsRemap[yw->_activeCmdrRemapIndex];
 
             if ( v47 )
             {
@@ -1490,13 +1480,13 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
         }
     }
 
-    if ( yw->field_2420 )
+    if ( yw->_lastMsgSender )
     {
         if ( yw->timeStamp / 300 & 1 )
         {
             FontUA::select_tileset(&pcur, v114);
 
-            pcur = sub_4F6980(pcur, yw->field_2420->_position.x, yw->field_2420->_position.z, 0x8A, a4, a5);
+            pcur = sub_4F6980(pcur, yw->_lastMsgSender->_position.x, yw->_lastMsgSender->_position.z, 0x8A, a4, a5);
         }
     }
 
@@ -3204,17 +3194,17 @@ char * buy_list_update_sub(NC_STACK_ypaworld *yw, int a2, GuiList *lstvw, char *
     return pcur;
 }
 
-float sub_4498F4(NC_STACK_ypaworld *yw)
+float NC_STACK_ypaworld::sub_4498F4()
 {
     float v3 = 1.0;
 
-    if ( yw->isNetGame )
+    if ( isNetGame )
     {
-        if ( yw->unit_limit_type_1 == 2 )
+        if ( unit_limit_type_1 == 2 )
         {
-            int v1 = yw->field_1bac[yw->UserRobo->_owner] - yw->unit_limit_1;
+            int v1 = field_1bac[UserRobo->_owner] - unit_limit_1;
             if ( v1 > 0 )
-                v3 = (yw->unit_limit_arg_1 * v1) * 0.01 + 1.0;
+                v3 = (unit_limit_arg_1 * v1) * 0.01 + 1.0;
         }
     }
 
@@ -3257,7 +3247,7 @@ char * gui_update_create_btn__sub0(NC_STACK_ypaworld *yw)
 
             VhclProto *v6 = &yw->VhclProtos[v5];
 
-            int v17 = dround(sub_4498F4(yw) * 2 * v6->energy / 100.0);
+            int v17 = dround(yw->sub_4498F4() * 2 * v6->energy / 100.0);
 
             const char *v8 = get_lang_string(yw->string_pointers_p2, v5 + 1200, v6->name.c_str());
 
@@ -3271,7 +3261,7 @@ char * gui_update_create_btn__sub0(NC_STACK_ypaworld *yw)
             int v9 = bzda.field_4DC[ v3 ].d;
             BuildProto *v10 = &yw->BuildProtos[v9];
 
-            int v18 = dround(sub_4498F4(yw) * v10->energy / 100.0);
+            int v18 = dround(yw->sub_4498F4() * v10->energy / 100.0);
             int v12;
 
             if ( yw->isNetGame )
@@ -3403,7 +3393,7 @@ char *gui_update_player_panel(NC_STACK_ypaworld *yw, char *cur)
 
     if ( yw->UserRobo == yw->UserUnit )
     {
-        if ( yw->field_2414 > 0 )
+        if ( yw->_cmdrsCount > 0 )
             v35 = 0x80;
 
         if ( bzda.field_8DC )
@@ -3426,13 +3416,13 @@ char *gui_update_player_panel(NC_STACK_ypaworld *yw, char *cur)
 
         if ( yw->UserUnit->_bact_type == BACT_TYPES_GUN )
         {
-            if ( yw->field_2414 > 0 )
+            if ( yw->_cmdrsCount > 0 )
                 v35 = 0x90;
         }
-        else if ( yw->field_2414 > 1 )
+        else if ( yw->_cmdrsCount > 1 )
             v35 = 0x90;
 
-        if ( &yw->UserUnit->_subjects_list != (nlist *)yw->UserUnit->_subjects_list.tailpred )
+        if ( !yw->UserUnit->_kidList.empty() )
             v35 |= 0x40;
     }
     else
@@ -3441,10 +3431,10 @@ char *gui_update_player_panel(NC_STACK_ypaworld *yw, char *cur)
 
         if ( yw->UserUnit->_bact_type == BACT_TYPES_GUN )
         {
-            if ( yw->field_2414 > 0 )
+            if ( yw->_cmdrsCount > 0 )
                 v35 = 0xF0;
         }
-        else if ( yw->field_2414 > 1 )
+        else if ( yw->_cmdrsCount > 1 )
             v35 = 0xF0;
     }
 
@@ -3785,25 +3775,19 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub6(NC_STACK_ypaworld *yw)
     if ( yw->field_241c == yw->UserRobo->_gid )
         return yw->UserRobo;
 
-    bact_node *v4 = (bact_node *)yw->UserRobo->_subjects_list.head;
-    while( v4->next )
+    for( NC_STACK_ypabact* &comm : yw->UserRobo->_kidList )
     {
-        if ( v4->bact->_status != BACT_STATUS_DEAD && v4->bact->_status != BACT_STATUS_CREATE && v4->bact->_status != BACT_STATUS_BEAM )
+        if ( comm->_status != BACT_STATUS_DEAD && comm->_status != BACT_STATUS_CREATE && comm->_status != BACT_STATUS_BEAM )
         {
-            if ( yw->field_241c == v4->bact->_gid )
-                return v4->bact;
+            if ( yw->field_241c == comm->_gid )
+                return comm;
 
-
-            bact_node *v7 = (bact_node *)v4->bact->_subjects_list.head;
-            while( v7->next )
+            for( NC_STACK_ypabact* &unit : comm->_kidList )
             {
-                if ( v7->bact->_status != BACT_STATUS_DEAD && v7->bact->_status != BACT_STATUS_CREATE && v7->bact->_status != BACT_STATUS_BEAM && yw->field_241c == v7->bact->_gid )
-                    return v7->bact;
-
-                v7 = (bact_node *)v7->next;
+                if ( unit->_status != BACT_STATUS_DEAD && unit->_status != BACT_STATUS_CREATE && unit->_status != BACT_STATUS_BEAM && yw->field_241c == unit->_gid )
+                    return unit;
             }
         }
-        v4 = (bact_node *)v4->next;
     }
 
     return NULL;
@@ -3811,9 +3795,7 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub6(NC_STACK_ypaworld *yw)
 
 void ypaworld_func64__sub7__sub2__sub7(NC_STACK_ypaworld *yw)
 {
-    NC_STACK_ypabact *v3 = yw->UserUnit->_parent;
-
-    if ( !v3 || v3 != yw->UserRobo )
+    if ( !yw->UserUnit->_parent || yw->UserUnit->_parent != yw->UserRobo )
     {
         if ( yw->UserUnit->_bact_type != BACT_TYPES_ROBO && yw->UserUnit->_bact_type != BACT_TYPES_MISSLE && yw->UserUnit->_bact_type != BACT_TYPES_GUN )
         {
@@ -4076,7 +4058,7 @@ int ypaworld_func64__sub7__sub2__sub3(NC_STACK_ypaworld *yw, struC5 *inpt)
     case 40:
     case 41:
     case 42:
-        if ( yw->field_2410 != -1 )
+        if ( yw->_activeCmdrRemapIndex != -1 )
         {
             int v16;
 
@@ -4103,7 +4085,7 @@ int ypaworld_func64__sub7__sub2__sub3(NC_STACK_ypaworld *yw, struC5 *inpt)
                 break;
             }
 
-            yw->field_1c0c[ yw->field_2410 ]->setBACT_aggression(v16);
+            yw->_cmdrsRemap[ yw->_activeCmdrRemapIndex ]->setBACT_aggression(v16);
 
             if ( yw->GameShell )
                 SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
@@ -4111,7 +4093,7 @@ int ypaworld_func64__sub7__sub2__sub3(NC_STACK_ypaworld *yw, struC5 *inpt)
         break;
 
     case 43:
-        sub_449DE8(yw, get_lang_string(yw->string_pointers_p2, 767, "help\\l17.html")); //MAKE ME
+        yw->sub_449DE8(get_lang_string(yw->string_pointers_p2, 767, "help\\l17.html")); //MAKE ME
         break;
 
     case 46:
@@ -4132,35 +4114,35 @@ int ypaworld_func64__sub7__sub2__sub3(NC_STACK_ypaworld *yw, struC5 *inpt)
 
 NC_STACK_ypabact * sb_0x4c63d0__sub0(NC_STACK_ypaworld *yw)
 {
-    if ( yw->field_2410 == -1 )
+    if ( yw->_activeCmdrRemapIndex == -1 )
     {
-        if ( yw->field_2414 <= 0 )
+        if ( yw->_cmdrsCount <= 0 )
             return yw->UserRobo;
         else
-            return yw->field_1c0c[0];
+            return yw->_cmdrsRemap[0];
     }
     else
-        return yw->field_1c0c[ yw->field_2410 ];
+        return yw->_cmdrsRemap[ yw->_activeCmdrRemapIndex ];
 }
 
 NC_STACK_ypabact * sb_0x4c63d0__sub1(NC_STACK_ypaworld *yw, int a2)
 {
-    for (int i = 0; i < yw->field_2414; i++)
+    for (int i = 0; i < yw->_cmdrsCount; i++)
     {
-        if ( a2 == yw->field_1c0c[i]->_commandID )
+        if ( a2 == yw->_cmdrsRemap[i]->_commandID )
         {
-            if ( i + 1 < yw->field_2414 )
-                return yw->field_1c0c[ i + 1 ];
+            if ( i + 1 < yw->_cmdrsCount )
+                return yw->_cmdrsRemap[ i + 1 ];
 
-            return yw->field_1c0c[ 0 ];
+            return yw->_cmdrsRemap[ 0 ];
         }
     }
 
-    if ( yw->field_2410 != -1 )
-        return yw->field_1c0c[ yw->field_2410 ];
+    if ( yw->_activeCmdrRemapIndex != -1 )
+        return yw->_cmdrsRemap[ yw->_activeCmdrRemapIndex ];
 
-    if ( yw->field_2414 > 0 )
-        return yw->field_1c0c[0];
+    if ( yw->_cmdrsCount > 0 )
+        return yw->_cmdrsRemap[0];
 
     return yw->UserRobo;
 }
@@ -4169,42 +4151,42 @@ NC_STACK_ypabact * sb_0x4c63d0(NC_STACK_ypaworld *yw)
 {
     if ( yw->UserUnit == yw->UserRobo || yw->field_1b70 )
     {
-        if ( yw->field_2410 == -1 )
+        if ( yw->_activeCmdrRemapIndex == -1 )
         {
-            if ( yw->field_2414 <= 0 )
+            if ( yw->_cmdrsCount <= 0 )
                 return yw->UserRobo;
             else
-                return yw->field_1c0c[0];
+                return yw->_cmdrsRemap[0];
         }
         else
         {
-            return yw->field_1c0c[ yw->field_2410 ];
+            return yw->_cmdrsRemap[ yw->_activeCmdrRemapIndex ];
         }
     }
     else
     {
         if ( yw->UserUnit->_status == BACT_STATUS_DEAD )
         {
-            for (int i = 0; i < yw->field_2414; i++)
+            for (int i = 0; i < yw->_cmdrsCount; i++)
             {
-                if ( yw->field_1a10 == yw->field_1c0c[i]->_commandID )
-                    return yw->field_1c0c[i];
+                if ( yw->field_1a10 == yw->_cmdrsRemap[i]->_commandID )
+                    return yw->_cmdrsRemap[i];
             }
 
             return sb_0x4c63d0__sub0(yw);
         }
         else if ( yw->UserUnit->_bact_type == BACT_TYPES_GUN )
         {
-            if ( yw->field_2410 == -1 )
+            if ( yw->_activeCmdrRemapIndex == -1 )
             {
-                if ( yw->field_2414 <= 0 )
+                if ( yw->_cmdrsCount <= 0 )
                     return yw->UserRobo;
                 else
-                    return yw->field_1c0c[0];
+                    return yw->_cmdrsRemap[0];
             }
             else
             {
-                return yw->field_1c0c[ yw->field_2410 ];
+                return yw->_cmdrsRemap[ yw->_activeCmdrRemapIndex ];
             }
         }
         else
@@ -4311,24 +4293,30 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub5(NC_STACK_ypaworld *yw)
 
 NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub4(NC_STACK_ypaworld *yw)
 {
-    bact_node *v4;
-
     if ( yw->UserUnit->_parent == yw->UserUnit->_host_station )
-        v4 = (bact_node *)yw->UserUnit->_subjects_list.head;
-    else
-        v4 = (bact_node *)yw->UserUnit->_subject_node.next;
-
-    while (v4->next)
     {
-        if ( v4->bact->_status != BACT_STATUS_CREATE && v4->bact->_status != BACT_STATUS_DEAD && v4->bact->_status != BACT_STATUS_BEAM )
-            return v4->bact;
-
-        v4 = (bact_node *)v4->next;
+        for ( NC_STACK_ypabact* &unit : yw->UserUnit->_kidList )
+        {
+            if ( unit->_status != BACT_STATUS_CREATE && unit->_status != BACT_STATUS_DEAD && unit->_status != BACT_STATUS_BEAM )
+            return unit;
+        }
+    }
+    else
+    {
+        World::RefBactList *lst = yw->UserUnit->_kidRef.PList();
+        if (lst)
+        {
+            for( World::RefBactList::iterator it = yw->UserUnit->_kidRef; it != lst->end(); it++) // Start from current unit in this list
+            {
+               if ( (*it)->_status != BACT_STATUS_CREATE && (*it)->_status != BACT_STATUS_DEAD && (*it)->_status != BACT_STATUS_BEAM )
+                    return *it;
+            }
+        }
     }
 
     if ( yw->UserUnit->_parent != yw->UserUnit->_host_station )
     {
-        if ( ((size_t)yw->UserUnit->_parent) < 0x10 ) // DIRTY!
+        if ( ((size_t)yw->UserUnit->_parent) < 0x10 ) // FIXME!
             return NULL;
         else
             return yw->UserUnit->_parent;
@@ -4492,7 +4480,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
         {
         case (0x80 | 0x1F):
         {
-            NC_STACK_ypabact *v9 = sub_449518(yw);
+            NC_STACK_ypabact *v9 = yw->GetLastMsgSender();
 
             if ( v9 )
                 bact1 = v9;
@@ -4739,7 +4727,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
 
                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
                 {
-                    sub_449DE8(yw, get_lang_string(yw->string_pointers_p2, 767, "help\\l17.html")); //MAKE ME
+                    yw->sub_449DE8(get_lang_string(yw->string_pointers_p2, 767, "help\\l17.html")); //MAKE ME
                 }
 
                 sub_481204(yw, 48, 171);
@@ -5221,19 +5209,19 @@ void ypaworld_func64__sub7__sub7(NC_STACK_ypaworld *yw, struC5 *inpt)
         switch ( winpt->selected_btnID )
         {
         case 0:
-            sub_4811E8(yw, 35);
+            yw->sub_4811E8(35);
             break;
 
         case 1:
-            sub_4811E8(yw, 36);
+            yw->sub_4811E8(36);
             break;
 
         case 2:
-            sub_4811E8(yw, 37);
+            yw->sub_4811E8(37);
             break;
 
         case 3:
-            sub_4811E8(yw, 39);
+            yw->sub_4811E8(39);
             break;
 
         default:
@@ -5447,7 +5435,7 @@ char * ypaworld_func64__sub7__sub3__sub0__sub0(NC_STACK_ypaworld *yw, NC_STACK_y
 
     if ( bact == yw->UserUnit && ttt )
         FontUA::store_u8(&pv, 33);
-    else if ( yw->field_2420 == bact && ttt )
+    else if ( yw->_lastMsgSender == bact && ttt )
         FontUA::store_u8(&pv, 34);
     else
         FontUA::store_u8(&pv, sub_4C7134(yw, bact));
@@ -5459,19 +5447,18 @@ char * ypaworld_func64__sub7__sub3__sub0__sub0(NC_STACK_ypaworld *yw, NC_STACK_y
 
     int v41 = squadron_manager.field_2D4;
 
-    bact_node *nod = (bact_node *)bact->_subjects_list.head;
-    while (nod->next)
+    for ( NC_STACK_ypabact* &kid : bact->_kidList )
     {
-        if ( nod->bact->_status != BACT_STATUS_DEAD && nod->bact->_status != BACT_STATUS_CREATE && nod->bact->_status != BACT_STATUS_BEAM )
+        if ( kid->_status != BACT_STATUS_DEAD && kid->_status != BACT_STATUS_CREATE && kid->_status != BACT_STATUS_BEAM )
         {
-            if ( nod->bact == yw->UserUnit && ttt )
+            if ( kid == yw->UserUnit && ttt )
                 FontUA::store_u8(&pv, 33);
-            else if ( nod->bact == yw->field_2420 && ttt )
+            else if ( kid == yw->_lastMsgSender && ttt )
                 FontUA::store_u8(&pv, 34);
             else
-                FontUA::store_u8(&pv, sub_4C7134(yw, nod->bact));
+                FontUA::store_u8(&pv, sub_4C7134(yw, kid));
 
-            if ( nod->bact == v44 )
+            if ( kid == v44 )
                 v46 = v41;
 
             v41 += squadron_manager.field_2CC;
@@ -5479,14 +5466,12 @@ char * ypaworld_func64__sub7__sub3__sub0__sub0(NC_STACK_ypaworld *yw, NC_STACK_y
             if ( pv - v39 >= 60 )
                 break;
         }
-
-        nod = (bact_node *)nod->next;
     }
 
     FontUA::store_u8(&pv, 0);
 
     int v22;
-    if ( yw->field_2410 == -1 || bact != yw->field_1c0c[ yw->field_2410 ] || bzda.field_1D0 & 0x20 )
+    if ( yw->_activeCmdrRemapIndex == -1 || bact != yw->_cmdrsRemap[ yw->_activeCmdrRemapIndex ] || bzda.field_1D0 & 0x20 )
         v22 = 0;
     else
         v22 = 9;
@@ -5545,14 +5530,14 @@ char * ypaworld_func64__sub7__sub3__sub0__sub3(NC_STACK_ypaworld *yw, char *cur)
     char *pcur = cur;
     int v23 = squadron_manager.entryWidth - yw->font_default_w__b;
 
-    if ( yw->field_2410 == -1 || bzda.field_1D0 & 0x20 )
+    if ( yw->_activeCmdrRemapIndex == -1 || bzda.field_1D0 & 0x20 )
     {
         FontUA::select_tileset(&pcur, 0);
         FontUA::store_u8(&pcur, '{');
     }
     else
     {
-        int v5 = yw->field_1c0c[ yw->field_2410 ]->_aggr;
+        int v5 = yw->_cmdrsRemap[ yw->_activeCmdrRemapIndex ]->_aggr;
         FontUA::select_tileset(&pcur, 0);
         FontUA::store_u8(&pcur, '{');
         FontUA::store_u8(&pcur, ' ');
@@ -5583,7 +5568,7 @@ char * ypaworld_func64__sub7__sub3__sub0__sub3(NC_STACK_ypaworld *yw, char *cur)
         FontUA::select_tileset(&pcur, 0);
 
         char a1a[32];
-        sprintf(a1a, " %d", yw->field_2418 + 1);
+        sprintf(a1a, " %d", yw->_kidsCount + 1);
 
         FontUA::set_txtColor(&pcur, yw->iniColors[60].r, yw->iniColors[60].g, yw->iniColors[60].b);
 
@@ -5668,21 +5653,21 @@ void sub_4C707C(NC_STACK_ypaworld *yw)
 {
     memset(squadron_manager.squads, 0, sizeof(squadron_manager.squads));
 
-    if ( squadron_manager.firstShownEntries + squadron_manager.shownEntries >= yw->field_2414 + 1 )
+    if ( squadron_manager.firstShownEntries + squadron_manager.shownEntries >= yw->_cmdrsCount + 1 )
     {
-        squadron_manager.firstShownEntries = yw->field_2414 + 1 - squadron_manager.shownEntries;
+        squadron_manager.firstShownEntries = yw->_cmdrsCount + 1 - squadron_manager.shownEntries;
 
         if ( squadron_manager.firstShownEntries < 0 )
             squadron_manager.firstShownEntries = 0;
     }
 
     int v5 = squadron_manager.firstShownEntries;
-    for (int i = 0; i < yw->field_2414 + 1; i++ )
+    for (int i = 0; i < yw->_cmdrsCount + 1; i++ )
     {
         NC_STACK_ypabact *v6;
 
         if ( i )
-            v6 = yw->field_1c0c[i - 1];
+            v6 = yw->_cmdrsRemap[i - 1];
         else
             v6 = yw->UserRobo;
 
@@ -5690,36 +5675,32 @@ void sub_4C707C(NC_STACK_ypaworld *yw)
             squadron_manager.squads[i - v5] = v6;
     }
 
-    squadron_manager.numEntries = yw->field_2414 + 1;
+    squadron_manager.numEntries = yw->_cmdrsCount + 1;
 }
 
 
-int ypaworld_func64__sub7__sub3__sub2(NC_STACK_ypaworld *yw)
+bool NC_STACK_ypaworld::ypaworld_func64__sub7__sub3__sub2()
 {
-    NC_STACK_ypabact *bct = yw->field_1c0c[squadron_manager.field_2B4];
+    NC_STACK_ypabact *bct = _cmdrsRemap[squadron_manager.field_2B4];
     if ( !bct )
-        return 0;
+        return false;
 
     if ( bct == squadron_manager.field_2BC )
     {
         if (bct->_status != BACT_STATUS_DEAD && bct->_status != BACT_STATUS_CREATE && bct->_status != BACT_STATUS_BEAM )
-            return 1;
+            return true;
     }
 
 
-    bact_node *bbct = (bact_node *)bct->_subjects_list.head;
-    while (bbct->next)
+    for ( NC_STACK_ypabact* &kid : bct->_kidList )
     {
-        if ( bbct->bact == squadron_manager.field_2BC )
+        if ( kid == squadron_manager.field_2BC )
         {
-            int v5 = bbct->bact->_status;
-            if ( v5 != BACT_STATUS_DEAD && v5 != BACT_STATUS_CREATE && v5 != BACT_STATUS_BEAM )
-                return 1;
+            if ( kid->_status != BACT_STATUS_DEAD && kid->_status != BACT_STATUS_CREATE && kid->_status != BACT_STATUS_BEAM )
+                return true;
         }
-
-        bbct = (bact_node *)bbct->next;
     }
-    return 0;
+    return false;
 }
 
 void ypaworld_func64__sub7__sub3__sub3(NC_STACK_ypaworld *yw, ClickBoxInf *winpt)
@@ -5736,28 +5717,32 @@ void ypaworld_func64__sub7__sub3__sub3(NC_STACK_ypaworld *yw, ClickBoxInf *winpt
             {
                 NC_STACK_ypabact *v3 = NULL;
 
-                bact_node *v13 = &squadron_manager.field_2BC->_subject_node;
-                while(v13->next)
+                World::RefBactList *kidlist = squadron_manager.field_2BC->_kidRef.PList();
+                if (kidlist)
                 {
-                    bact_arg109 arg109;
+                    World::RefBactList::iterator it = squadron_manager.field_2BC->_kidRef;
 
-                    bact_node *next1 = (bact_node *)v13->next;
-
-                    if ( v3 )
+                    while(it != kidlist->end())
                     {
-                        arg109.field_4 = v13->bact;
-                        arg109.field_0 = 4;
-                    }
-                    else
-                    {
-                        arg109.field_4 = NULL;
-                        arg109.field_0 = 3;
+                        NC_STACK_ypabact *itbact = *it;
+                        it++;
 
-                        v3 = v13->bact;
-                    }
-                    v3->ReorganizeGroup(&arg109);
+                        bact_arg109 arg109;
 
-                    v13 = next1;
+                        if ( v3 )
+                        {
+                            arg109.field_4 = itbact;
+                            arg109.field_0 = 4;
+                        }
+                        else
+                        {
+                            arg109.field_4 = NULL;
+                            arg109.field_0 = 3;
+
+                            v3 = itbact;
+                        }
+                        v3->ReorganizeGroup(&arg109);
+                    }
                 }
             }
         }
@@ -5769,9 +5754,9 @@ void ypaworld_func64__sub7__sub3__sub3(NC_STACK_ypaworld *yw, ClickBoxInf *winpt
 
             squadron_manager.field_2BC->ReorganizeGroup(&arg109);
         }
-        yw->field_240c = squadron_manager.field_2BC->_commandID;
+        yw->_activeCmdrID = squadron_manager.field_2BC->_commandID;
         sub_4C707C(yw);
-        sub_4C40AC(yw);
+        yw->sub_4C40AC();
     }
     else
     {
@@ -5788,17 +5773,20 @@ void ypaworld_func64__sub7__sub3__sub3(NC_STACK_ypaworld *yw, ClickBoxInf *winpt
             {
                 if ( squadron_manager.field_2BC->_host_station != squadron_manager.field_2BC->_parent )
                 {
-                    bact_node *v9 = &squadron_manager.field_2BC->_subject_node;
-                    while (v9->next)
+                    World::RefBactList *kidlist = squadron_manager.field_2BC->_kidRef.PList();
+                    if (kidlist)
                     {
-                        bact_node *next1 = (bact_node *)v9->next;
+                        World::RefBactList::iterator it = squadron_manager.field_2BC->_kidRef;
+                        while ( it != kidlist->end() )
+                        {
+                            NC_STACK_ypabact *itbact = *it;
+                            it++;
 
-                        bact_arg109 arg109;
-                        arg109.field_0 = 1;
-                        arg109.field_4 = v6;
-                        v9->bact->ReorganizeGroup(&arg109);
-
-                        v9 = next1;
+                            bact_arg109 arg109;
+                            arg109.field_0 = 1;
+                            arg109.field_4 = v6;
+                            itbact->ReorganizeGroup(&arg109);
+                        }
                     }
                 }
                 else
@@ -5816,29 +5804,29 @@ void ypaworld_func64__sub7__sub3__sub3(NC_STACK_ypaworld *yw, ClickBoxInf *winpt
                 arg109.field_4 = squadron_manager.field_2BC;
                 v6->ReorganizeGroup(&arg109);
             }
-            yw->field_240c = v6->_commandID;
+            yw->_activeCmdrID = v6->_commandID;
             sub_4C707C(yw);
-            sub_4C40AC(yw);
+            yw->sub_4C40AC();
         }
     }
 }
 
-void ypaworld_func64__sub7__sub3__sub4(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact)
+void NC_STACK_ypaworld::ypaworld_func64__sub7__sub3__sub4(NC_STACK_ypabact *bact)
 {
     if ( bact->_status == BACT_STATUS_NORMAL )
     {
         if ( bact->_status_flg & BACT_STFLAG_ESCAPE )
-            sub_4811E8(yw, 34);
+            sub_4811E8(34);
         else if ( bact->_secndTtype )
-            sub_4811E8(yw, 32);
+            sub_4811E8(32);
         else if ( bact->_primTtype )
-            sub_4811E8(yw, 33);
+            sub_4811E8(33);
     }
     else if (bact->_status == BACT_STATUS_IDLE)
-        sub_4811E8(yw, 31);
+        sub_4811E8(31);
 }
 
-NC_STACK_ypabact * sub_4C7B0C(NC_STACK_ypaworld *yw, int sqid, int a3)
+NC_STACK_ypabact * NC_STACK_ypaworld::sub_4C7B0C(int sqid, int a3)
 {
     NC_STACK_ypabact *v3 = squadron_manager.squads[sqid];
 
@@ -5849,11 +5837,11 @@ NC_STACK_ypabact * sub_4C7B0C(NC_STACK_ypaworld *yw, int sqid, int a3)
         return NULL;
     }
 
-    if ( v3 == yw->UserRobo )
+    if ( v3 == UserRobo )
     {
         squadron_manager.field_2B0 = -1;
         squadron_manager.field_2AC = -1;
-        return yw->UserRobo;
+        return UserRobo;
     }
 
     squadron_manager.field_2B0 = -1;
@@ -5874,21 +5862,16 @@ NC_STACK_ypabact * sub_4C7B0C(NC_STACK_ypaworld *yw, int sqid, int a3)
 
     int v6 = squadron_manager.field_2B0;
 
-    bact_node *node = (bact_node *)v3->_subjects_list.head;
-
-    while(node->next)
+    for(NC_STACK_ypabact * &bact : v3->_kidList)
     {
-        int v8 = node->bact->_status;
-        if (v8 != 2 && v8 != 4 && v8 != 5)
+        if (bact->_status != BACT_STATUS_DEAD && bact->_status != BACT_STATUS_CREATE && bact->_status != BACT_STATUS_BEAM)
         {
             v6--;
             if (v6 == -1)
             {
-                return node->bact;
+                return bact;
             }
         }
-
-        node = (bact_node *)node->next;
     }
 
     squadron_manager.field_2B0 = -1;
@@ -5896,7 +5879,7 @@ NC_STACK_ypabact * sub_4C7B0C(NC_STACK_ypaworld *yw, int sqid, int a3)
     return NULL;
 }
 
-int ypaworld_func64__sub7__sub3__sub1(NC_STACK_ypaworld *yw, ClickBoxInf *winpt)
+int NC_STACK_ypaworld::ypaworld_func64__sub7__sub3__sub1(ClickBoxInf *winpt)
 {
     if ( winpt->selected_btnID < 8 )
         return 0;
@@ -5905,7 +5888,7 @@ int ypaworld_func64__sub7__sub3__sub1(NC_STACK_ypaworld *yw, ClickBoxInf *winpt)
     if ( winpt->selected_btnID - 8 + squadron_manager.firstShownEntries >= squadron_manager.numEntries )
         return 0;
 
-    NC_STACK_ypabact *v5 = sub_4C7B0C(yw, winpt->selected_btnID - 8, winpt->move.btnPos.x);
+    NC_STACK_ypabact *v5 = sub_4C7B0C(winpt->selected_btnID - 8, winpt->move.btnPos.x);
 
     if ( !v5 )
         return 0;
@@ -5918,11 +5901,11 @@ int ypaworld_func64__sub7__sub3__sub1(NC_STACK_ypaworld *yw, ClickBoxInf *winpt)
             robo_map.field_1ED = 0;
             robo_map.field_1DC = v5->_position.z;
 
-            sub_4C1814(yw, robo_map.field_1CC - robo_map.field_244, robo_map.field_1D2);
+            sub_4C1814(this, robo_map.field_1CC - robo_map.field_244, robo_map.field_1D2);
         }
     }
 
-    if ( v5 == yw->UserRobo )
+    if ( v5 == UserRobo )
         return 0;
 
     squadron_manager.field_2B4 = squadron_manager.field_2AC;
@@ -5945,21 +5928,21 @@ int ypaworld_func64__sub7__sub3__sub1(NC_STACK_ypaworld *yw, ClickBoxInf *winpt)
     return 1;
 }
 
-void SquadManager_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
+void NC_STACK_ypaworld::SquadManager_InputHandle(struC5 *inpt)
 {
     if ( squadron_manager.flags & (GuiBase::FLAG_CLOSED | GuiBase::FLAG_ICONIFED) )
     {
         squadron_manager.field_2A8 &= 0xFFFFFFFE;
-        squadron_manager.InputHandle(yw, inpt);
+        squadron_manager.InputHandle(this, inpt);
     }
     else
     {
         ClickBoxInf *winpt = &inpt->ClickInf;
-        sub_4C707C(yw);
+        sub_4C707C(this);
 
         if ( squadron_manager.field_2A8 & 1 )
         {
-            if ( ypaworld_func64__sub7__sub3__sub2(yw) && (winpt->flag & (ClickBoxInf::FLAG_LM_HOLD | ClickBoxInf::FLAG_RM_HOLD)) != (ClickBoxInf::FLAG_LM_HOLD | ClickBoxInf::FLAG_RM_HOLD) )
+            if ( ypaworld_func64__sub7__sub3__sub2() && (winpt->flag & (ClickBoxInf::FLAG_LM_HOLD | ClickBoxInf::FLAG_RM_HOLD)) != (ClickBoxInf::FLAG_LM_HOLD | ClickBoxInf::FLAG_RM_HOLD) )
             {
                 if ( winpt->flag & (ClickBoxInf::FLAG_LM_HOLD | ClickBoxInf::FLAG_RM_HOLD) )
                 {
@@ -5968,7 +5951,7 @@ void SquadManager_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
                 }
                 else
                 {
-                    ypaworld_func64__sub7__sub3__sub3(yw, winpt);
+                    ypaworld_func64__sub7__sub3__sub3(this, winpt);
                     squadron_manager.field_2A8 &= 0xFFFFFFFC;
                 }
             }
@@ -5983,45 +5966,45 @@ void SquadManager_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
             {
                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
                 {
-                    sub_449DE8(yw, get_lang_string(yw->string_pointers_p2, 765, "help\\l15.html")); //MAKE ME
+                    sub_449DE8(get_lang_string(string_pointers_p2, 765, "help\\l15.html")); //MAKE ME
                 }
-                sub_4811E8(yw, 0x30);
+                sub_4811E8(0x30);
             }
-            if ( winpt->selected_btnID == 6 && yw->field_2410 != -1 && !(bzda.field_1D0 & 0x20) )
+            if ( winpt->selected_btnID == 6 && this->_activeCmdrRemapIndex != -1 && !(bzda.field_1D0 & 0x20) )
             {
-                int v9 = (winpt->move.btnPos.x - squadron_manager.field_2DC) / yw->tiles[24]->map[49].w;
+                int v9 = (winpt->move.btnPos.x - squadron_manager.field_2DC) / tiles[24]->map[49].w;
 
                 if ( v9 >= 0 && v9 <= 4 )
                 {
                     if ( winpt->flag & ClickBoxInf::FLAG_BTN_DOWN )
                     {
-                        yw->field_1c0c[yw->field_2410]->setBACT_aggression(25 * v9);
+                        _cmdrsRemap[_activeCmdrRemapIndex]->setBACT_aggression(25 * v9);
 
-                        if ( yw->GameShell )
-                            SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
+                        if ( GameShell )
+                            SFXEngine::SFXe.startSound(&GameShell->samples1_info, 3);
                     }
                 }
 
                 switch ( v9 )
                 {
                 case 0:
-                    sub_481204(yw, 12, 166);
+                    sub_481204(this, 12, 166);
                     break;
 
                 case 1:
-                    sub_481204(yw, 13, 167);
+                    sub_481204(this, 13, 167);
                     break;
 
                 case 2:
-                    sub_481204(yw, 14, 168);
+                    sub_481204(this, 14, 168);
                     break;
 
                 case 3:
-                    sub_481204(yw, 15, 169);
+                    sub_481204(this, 15, 169);
                     break;
 
                 case 4:
-                    sub_481204(yw, 16, 170);
+                    sub_481204(this, 16, 170);
                     break;
 
                 default:
@@ -6029,12 +6012,12 @@ void SquadManager_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
                 }
 
                 if ( winpt->move.btnPos.x >= squadron_manager.field_2D8 )
-                    sub_4811E8(yw, 46);
+                    sub_4811E8(46);
             }
 
             if ( winpt->flag & (ClickBoxInf::FLAG_RM_DOWN | ClickBoxInf::FLAG_LM_DOWN) )
             {
-                if ( ypaworld_func64__sub7__sub3__sub1(yw, winpt) )
+                if ( ypaworld_func64__sub7__sub3__sub1(winpt) )
                 {
                     squadron_manager.field_2A8 &= 0xFFFFFFFC;
                     squadron_manager.field_2A8 |= 1;
@@ -6056,15 +6039,15 @@ void SquadManager_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
                     if ( v18 )
                     {
                         if ( winpt->move.btnPos.x < squadron_manager.field_2D0 )
-                            ypaworld_func64__sub7__sub3__sub4(yw, v18);
+                            ypaworld_func64__sub7__sub3__sub4(v18);
                     }
                 }
             }
         }
 
-        squadron_manager.InputHandle(yw, inpt);
-        squadron_manager.Formate(yw);
-        ypaworld_func64__sub7__sub3__sub0(yw, inpt);
+        squadron_manager.InputHandle(this, inpt);
+        squadron_manager.Formate(this);
+        ypaworld_func64__sub7__sub3__sub0(this, inpt);
     }
 }
 
@@ -6194,9 +6177,9 @@ void ypaworld_func64__sub7__sub1__sub0(NC_STACK_ypaworld *yw)
         bzda.field_1D0 = bzda.field_1CC & 0x20;
 
     if ( v13 )
-        yw->field_240c = v13->_commandID;
+        yw->_activeCmdrID = v13->_commandID;
 
-    sub_4C40AC(yw);
+    yw->sub_4C40AC();
 }
 
 void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
@@ -6335,8 +6318,8 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
 
                 if ( v25 <= 1 && v27 <= 1 )
                 {
-                    yw->field_2410 = -1;
-                    yw->field_240c = 0;
+                    yw->_activeCmdrRemapIndex = -1;
+                    yw->_activeCmdrID = 0;
 
                     if ( bzda.field_1D0 & 0x28 )
                         bzda.field_1D0 = bzda.field_1CC & 1;
@@ -6538,10 +6521,10 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
                 {
                     robo_map.flags &= ~GuiBase::FLAG_HELP_DOWN;
-                    sub_449DE8(yw, get_lang_string(yw->string_pointers_p2, 764, "help\\l14.html")); //MAKE ME
+                    yw->sub_449DE8(get_lang_string(yw->string_pointers_p2, 764, "help\\l14.html")); //MAKE ME
                 }
 
-                sub_4811E8(yw, 48);
+                yw->sub_4811E8(48);
                 break;
 
             case 7:
@@ -6674,13 +6657,13 @@ GuiBase * ypaworld_func64__sub7__sub6__sub1()
     return dword_5BAFAC;
 }
 
-void sub_47DB04(NC_STACK_ypaworld *yw, char a2)
+void NC_STACK_ypaworld::sub_47DB04(char a2)
 {
     yw_arg181 v3;
 
     uamessage_exit exMsg;
     exMsg.msgID = UAMSG_EXIT;
-    exMsg.owner = yw->GameShell->netPlayerOwner;
+    exMsg.owner = GameShell->netPlayerOwner;
     exMsg.norm = a2;
 
     v3.recvID = 0;
@@ -6689,9 +6672,9 @@ void sub_47DB04(NC_STACK_ypaworld *yw, char a2)
     v3.dataSize = sizeof(exMsg);
     v3.garant = 1;
 
-    yw->ypaworld_func181(&v3);
+    ypaworld_func181(&v3);
 
-    yw->GameShell->sentAQ = 0;
+    GameShell->sentAQ = 0;
 }
 
 char * sub_451714(TileMap *, char *cur, const char *a3, int a2, uint8_t a4)
@@ -6818,40 +6801,40 @@ void ypaworld_func64__sub7__sub6__sub3(NC_STACK_ypaworld *yw, int a2, int a4)
 }
 
 
-void ypaworld_func64__sub7__sub6(NC_STACK_ypaworld *yw, struC5 *inpt)
+void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(struC5 *inpt)
 {
     if ( exit_menu.IsClosed() )
     {
-        if ( yw->_levelInfo->State )
+        if ( _levelInfo->State )
         {
-            if ( yw->_levelInfo->State == 6 )
+            if ( _levelInfo->State == 6 )
             {
                 yw_arg159 v18;
                 v18.unit = 0;
                 v18.field_4 = 10;
-                v18.txt = get_lang_string(yw->string_pointers_p2, 259, "GAME SAVED OK.");
+                v18.txt = get_lang_string(string_pointers_p2, 259, "GAME SAVED OK.");
                 v18.field_C = 0;
 
-                yw->ypaworld_func159(&v18);
+                ypaworld_func159(&v18);
             }
 
-            yw->_levelInfo->State = 0;
+            _levelInfo->State = 0;
         }
     }
     else
     {
-        if ( yw->_levelInfo->State != 3 )
+        if ( _levelInfo->State != 3 )
         {
-            yw->_levelInfo->State = 3;
+            _levelInfo->State = 3;
 
-            if ( yw->GameShell )
+            if ( GameShell )
             {
-                yw->field_1604 = sub_47B388(0, yw->GameShell->user_name.c_str()) != 0;
+                field_1604 = sub_47B388(0, GameShell->user_name.c_str()) != 0;
 
-                if ( ypaworld_func64__sub7__sub6__sub0(yw->_levelInfo->LevelID, yw->GameShell->user_name.c_str()) )
-                    yw->field_1608 = 1;
+                if ( ypaworld_func64__sub7__sub6__sub0(_levelInfo->LevelID, GameShell->user_name.c_str()) )
+                    field_1608 = 1;
                 else
-                    yw->field_1608 = 0;
+                    field_1608 = 0;
             }
         }
     }
@@ -6865,28 +6848,28 @@ void ypaworld_func64__sub7__sub6(NC_STACK_ypaworld *yw, struC5 *inpt)
             switch ( dword_5C8B78 )
             {
             case 8:
-                yw->_levelInfo->State = 2;
+                _levelInfo->State = 2;
 
-                if ( yw->isNetGame )
-                    sub_47DB04(yw, 1);
+                if ( isNetGame )
+                    sub_47DB04(1);
 
                 break;
 
             case 9:
-                yw->_levelInfo->State = 6;
+                _levelInfo->State = 6;
                 break;
 
             case 10:
-                yw->_levelInfo->State = 7;
+                _levelInfo->State = 7;
                 break;
 
             case 11:
-                yw->_levelInfo->State = 4;
+                _levelInfo->State = 4;
                 break;
 
             case 13:
-                yw->field_81AF = yw->field_81B3;
-                yw->field_81B3 = NULL;
+                field_81AF = field_81B3;
+                field_81B3 = NULL;
                 break;
 
             default:
@@ -6903,7 +6886,7 @@ void ypaworld_func64__sub7__sub6(NC_STACK_ypaworld *yw, struC5 *inpt)
 
     if ( exit_menu.IsClosed() )
     {
-        exit_menu.InputHandle(yw, inpt);
+        exit_menu.InputHandle(this, inpt);
     }
     else
     {
@@ -6912,26 +6895,26 @@ void ypaworld_func64__sub7__sub6(NC_STACK_ypaworld *yw, struC5 *inpt)
         int a2 = 0;
         int a4 = 0;
 
-        if ( !yw->field_1604 )
+        if ( !field_1604 )
             a4 = 1024;
 
-        if ( !yw->field_1608 )
+        if ( !field_1608 )
             a4 |= 0x800;
 
-        if ( yw->UserUnit->_status == BACT_STATUS_DEAD )
+        if ( UserUnit->_status == BACT_STATUS_DEAD )
             a4 |= 0x200;
 
-        if ( yw->isNetGame )
+        if ( isNetGame )
             a4 |= 0xE00;
 
         if ( inpt->ClickInf.selected_btn == &exit_menu )
         {
-            if ( yw->GameShell )
+            if ( GameShell )
             {
                 if ( inpt->ClickInf.selected_btnID >= 8 )
                 {
                     if ( winpt->flag & ClickBoxInf::FLAG_BTN_DOWN )
-                        SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
+                        SFXEngine::SFXe.startSound(&GameShell->samples1_info, 3);
                 }
             }
 
@@ -6939,9 +6922,9 @@ void ypaworld_func64__sub7__sub6(NC_STACK_ypaworld *yw, struC5 *inpt)
             {
             case 7:
                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
-                    sub_449DE8(yw, get_lang_string(yw->string_pointers_p2, 766, "help\\l16.html"));
+                    sub_449DE8(get_lang_string(string_pointers_p2, 766, "help\\l16.html"));
 
-                sub_4811E8(yw, 0x30);
+                sub_4811E8(0x30);
                 break;
 
             case 8:
@@ -6953,10 +6936,10 @@ void ypaworld_func64__sub7__sub6(NC_STACK_ypaworld *yw, struC5 *inpt)
                     dword_5C8B78 = 8;
 
                     if ( sub_4C885C() != 3 )
-                        yw->GuiWinClose( &exit_menu );
+                        GuiWinClose( &exit_menu );
 
-                    const char *v13 = get_lang_string(yw->string_pointers_p2, 2480, "REALLY EXIT MISSION ?");
-                    sb_0x4c87fc(yw, v13, &exit_menu);
+                    const char *v13 = get_lang_string(string_pointers_p2, 2480, "REALLY EXIT MISSION ?");
+                    sb_0x4c87fc(v13, &exit_menu);
                 }
                 break;
 
@@ -6971,10 +6954,10 @@ void ypaworld_func64__sub7__sub6(NC_STACK_ypaworld *yw, struC5 *inpt)
                         dword_5C8B78 = 9;
 
                         if ( sub_4C885C() != 3 )
-                            yw->GuiWinClose( &exit_menu );
+                            GuiWinClose( &exit_menu );
 
-                        const char *v14 = get_lang_string(yw->string_pointers_p2, 2481, "REALLY SAVE GAME ?");
-                        sb_0x4c87fc(yw, v14, &exit_menu);
+                        const char *v14 = get_lang_string(string_pointers_p2, 2481, "REALLY SAVE GAME ?");
+                        sb_0x4c87fc(v14, &exit_menu);
                     }
                 }
                 break;
@@ -6990,10 +6973,10 @@ void ypaworld_func64__sub7__sub6(NC_STACK_ypaworld *yw, struC5 *inpt)
                         dword_5C8B78 = 10;
 
                         if ( sub_4C885C() != 3 )
-                            yw->GuiWinClose( &exit_menu );
+                            GuiWinClose( &exit_menu );
 
-                        const char *v15 = get_lang_string(yw->string_pointers_p2, 2482, "REALLY LOAD GAME ?");
-                        sb_0x4c87fc(yw, v15, &exit_menu);
+                        const char *v15 = get_lang_string(string_pointers_p2, 2482, "REALLY LOAD GAME ?");
+                        sb_0x4c87fc(v15, &exit_menu);
                     }
                 }
                 break;
@@ -7009,10 +6992,10 @@ void ypaworld_func64__sub7__sub6(NC_STACK_ypaworld *yw, struC5 *inpt)
                         dword_5C8B78 = 11;
 
                         if ( sub_4C885C() != 3 )
-                            yw->GuiWinClose( &exit_menu );
+                            GuiWinClose( &exit_menu );
 
-                        const char *v16 = get_lang_string(yw->string_pointers_p2, 2483, "REALLY RESTART MISSION ?");
-                        sb_0x4c87fc(yw, v16, &exit_menu);
+                        const char *v16 = get_lang_string(string_pointers_p2, 2483, "REALLY RESTART MISSION ?");
+                        sb_0x4c87fc(v16, &exit_menu);
                     }
                 }
                 break;
@@ -7022,7 +7005,7 @@ void ypaworld_func64__sub7__sub6(NC_STACK_ypaworld *yw, struC5 *inpt)
                     a2 |= 0x1000;
 
                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
-                    yw->GuiWinClose( &exit_menu );
+                    GuiWinClose( &exit_menu );
 
                 break;
 
@@ -7030,10 +7013,10 @@ void ypaworld_func64__sub7__sub6(NC_STACK_ypaworld *yw, struC5 *inpt)
                 break;
             }
         }
-        exit_menu.InputHandle(yw, inpt);
-        exit_menu.Formate(yw);
+        exit_menu.InputHandle(this, inpt);
+        exit_menu.Formate(this);
 
-        ypaworld_func64__sub7__sub6__sub3(yw, a2, a4);
+        ypaworld_func64__sub7__sub6__sub3(this, a2, a4);
     }
 }
 
@@ -7132,28 +7115,28 @@ char * ypaworld_func64__sub7__sub4__sub0__sub0(NC_STACK_ypaworld *yw, char *cur,
     return pcur;
 }
 
-void ypaworld_func64__sub7__sub4__sub0(NC_STACK_ypaworld *yw, int a2)
+void NC_STACK_ypaworld::ypaworld_func64__sub7__sub4__sub0(int a2)
 {
-    char *pcur = lstvw2.ItemsPreLayout(yw, lstvw2.itemBlock, 0, "{ }");
+    char *pcur = lstvw2.ItemsPreLayout(this, lstvw2.itemBlock, 0, "{ }");
 
-    FontUA::set_txtColor(&pcur, yw->iniColors[60].r, yw->iniColors[60].g, yw->iniColors[60].b);
+    FontUA::set_txtColor(&pcur, iniColors[60].r, iniColors[60].g, iniColors[60].b);
 
-    pcur = sub_4C8534(yw, pcur, dword_5BAF98);
-    pcur = sub_4C8534(yw, pcur, " ");
+    pcur = sub_4C8534(this, pcur, dword_5BAF98);
+    pcur = sub_4C8534(this, pcur, " ");
 
-    FontUA::set_txtColor(&pcur, yw->iniColors[68].r, yw->iniColors[68].g, yw->iniColors[68].b);
+    FontUA::set_txtColor(&pcur, iniColors[68].r, iniColors[68].g, iniColors[68].b);
 
-    pcur = ypaworld_func64__sub7__sub4__sub0__sub0(yw, pcur, a2);
-    pcur = lstvw2.ItemsPostLayout(yw, pcur, 0, "xyz");
+    pcur = ypaworld_func64__sub7__sub4__sub0__sub0(this, pcur, a2);
+    pcur = lstvw2.ItemsPostLayout(this, pcur, 0, "xyz");
 
     FontUA::set_end(&pcur);
 }
 
-void ypaworld_func64__sub7__sub4(NC_STACK_ypaworld *yw, struC5 *inpt)
+void NC_STACK_ypaworld::ypaworld_func64__sub7__sub4(struC5 *inpt)
 {
     if ( lstvw2.IsClosed() )
     {
-        lstvw2.InputHandle(yw, inpt);
+        lstvw2.InputHandle(this, inpt);
     }
     else
     {
@@ -7161,9 +7144,9 @@ void ypaworld_func64__sub7__sub4(NC_STACK_ypaworld *yw, struC5 *inpt)
 
         int a1_1 = 0;
 
-        if ( yw->field_826F == UAVK_RETURN )
+        if ( field_826F == UAVK_RETURN )
         {
-            yw->GuiWinClose( &lstvw2 );
+            GuiWinClose( &lstvw2 );
 
             dword_5BAF9C = 1;
 
@@ -7171,9 +7154,9 @@ void ypaworld_func64__sub7__sub4(NC_STACK_ypaworld *yw, struC5 *inpt)
             inpt->downed_key_2 = 0;
             inpt->dword8 = 0;
         }
-        else if ( yw->field_826F == UAVK_ESCAPE )
+        else if ( field_826F == UAVK_ESCAPE )
         {
-            yw->GuiWinClose( &lstvw2 );
+            GuiWinClose( &lstvw2 );
 
             dword_5BAF9C = 2;
 
@@ -7183,12 +7166,12 @@ void ypaworld_func64__sub7__sub4(NC_STACK_ypaworld *yw, struC5 *inpt)
         }
         else if ( inpt->ClickInf.selected_btn == &lstvw2 )
         {
-            if ( yw->GameShell )
+            if ( GameShell )
             {
                 if ( inpt->ClickInf.selected_btnID >= 8 )
                 {
                     if ( winpt->flag & ClickBoxInf::FLAG_BTN_DOWN )
-                        SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
+                        SFXEngine::SFXe.startSound(&GameShell->samples1_info, 3);
                 }
             }
 
@@ -7199,7 +7182,7 @@ void ypaworld_func64__sub7__sub4(NC_STACK_ypaworld *yw, struC5 *inpt)
 
                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
                 {
-                    yw->GuiWinClose( &lstvw2 );
+                    GuiWinClose( &lstvw2 );
                     dword_5BAF9C = 1;
                 }
             }
@@ -7210,28 +7193,28 @@ void ypaworld_func64__sub7__sub4(NC_STACK_ypaworld *yw, struC5 *inpt)
 
                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
                 {
-                    yw->GuiWinClose( &lstvw2 );
+                    GuiWinClose( &lstvw2 );
                     dword_5BAF9C = 2;
                 }
             }
         }
 
-        lstvw2.InputHandle(yw, inpt);
-        lstvw2.Formate(yw);
-        ypaworld_func64__sub7__sub4__sub0(yw, a1_1);
+        lstvw2.InputHandle(this, inpt);
+        lstvw2.Formate(this);
+        ypaworld_func64__sub7__sub4__sub0(a1_1);
     }
 }
 
 
-void ypaworld_func64__sub7(NC_STACK_ypaworld *yw, struC5 *inpt)
+void NC_STACK_ypaworld::ypaworld_func64__sub7(struC5 *inpt)
 {
     ClickBoxInf *winpt = &inpt->ClickInf;
 
-    if ( yw->UserUnit->_bact_type != BACT_TYPES_MISSLE )
+    if ( UserUnit->_bact_type != BACT_TYPES_MISSLE )
     {
         if ( winpt->flag & ClickBoxInf::FLAG_OK )
         {
-            for(GuiBaseList::iterator it = yw->field_17a0.begin(); it != yw->field_17a0.end(); it++)
+            for(GuiBaseList::iterator it = field_17a0.begin(); it != field_17a0.end(); it++)
             {
                 GuiBase *llst = *it;
 
@@ -7265,7 +7248,7 @@ void ypaworld_func64__sub7(NC_STACK_ypaworld *yw, struC5 *inpt)
                             INPe.RemClickBox(&v9->iconBox);
                             INPe.AddClickBoxFront(v9);
 
-                            v9->Attach(yw->field_17a0);
+                            v9->Attach(field_17a0);
                         }
                     }
                     else
@@ -7275,7 +7258,7 @@ void ypaworld_func64__sub7(NC_STACK_ypaworld *yw, struC5 *inpt)
                             INPe.RemClickBox(v9);
                             INPe.AddClickBoxFront(v9);
 
-                            v9->Attach(yw->field_17a0);
+                            v9->Attach(field_17a0);
                         }
 
                         if ( v9->flags & 0x10 )
@@ -7287,8 +7270,8 @@ void ypaworld_func64__sub7(NC_STACK_ypaworld *yw, struC5 *inpt)
 
                                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_DOWN )
                                 {
-                                    if ( yw->GameShell )
-                                        SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
+                                    if ( GameShell )
+                                        SFXEngine::SFXe.startSound(&GameShell->samples1_info, 3);
                                 }
 
                                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
@@ -7306,7 +7289,7 @@ void ypaworld_func64__sub7(NC_STACK_ypaworld *yw, struC5 *inpt)
                                         v9->flags |= 0x20;
                                     }
 
-                                    v9->Attach(yw->field_17a0);
+                                    v9->Attach(field_17a0);
                                 }
                             }
                         }
@@ -7317,11 +7300,11 @@ void ypaworld_func64__sub7(NC_STACK_ypaworld *yw, struC5 *inpt)
                             {
                                 if ( winpt->selected_btnID == 1 )
                                 {
-                                    yw->draggingLock = 1;
-                                    yw->draggingItem = v9;
-                                    yw->isDragging = 1;
-                                    yw->draggingPos.x = winpt->ldw_pos.boxPos.x;
-                                    yw->draggingPos.y = winpt->ldw_pos.boxPos.y;
+                                    draggingLock = 1;
+                                    draggingItem = v9;
+                                    isDragging = 1;
+                                    draggingPos.x = winpt->ldw_pos.boxPos.x;
+                                    draggingPos.y = winpt->ldw_pos.boxPos.y;
                                 }
                             }
                         }
@@ -7329,64 +7312,64 @@ void ypaworld_func64__sub7(NC_STACK_ypaworld *yw, struC5 *inpt)
                 }
             }
 
-            if ( yw->isDragging )
+            if ( isDragging )
             {
                 if ( winpt->flag & ClickBoxInf::FLAG_LM_HOLD )
                 {
-                    int v13 = winpt->move.screenPos.x - yw->draggingPos.x;
-                    int v15 = winpt->move.screenPos.y - yw->draggingPos.y;
+                    int v13 = winpt->move.screenPos.x - draggingPos.x;
+                    int v15 = winpt->move.screenPos.y - draggingPos.y;
 
                     if ( v13 >= 0 )
                     {
-                        if ( yw->draggingItem->w + v13 > yw->screen_width )
-                            v13 = yw->screen_width - yw->draggingItem->w;
+                        if ( draggingItem->w + v13 > screen_width )
+                            v13 = screen_width - draggingItem->w;
                     }
                     else
                     {
                         v13 = 0;
                     }
 
-                    if ( v15 >= yw->icon_energy__h )
+                    if ( v15 >= icon_energy__h )
                     {
-                        if ( yw->draggingItem->h + v15 > yw->screen_height - yw->icon0___h )
-                            v15 = yw->screen_height - yw->icon0___h - yw->draggingItem->h;
+                        if ( draggingItem->h + v15 > screen_height - icon0___h )
+                            v15 = screen_height - icon0___h - draggingItem->h;
                     }
                     else
                     {
-                        v15 = yw->icon_energy__h;
+                        v15 = icon_energy__h;
                     }
 
-                    yw->draggingItem->y = v15;
-                    yw->draggingItem->x = v13;
+                    draggingItem->y = v15;
+                    draggingItem->x = v13;
 
-                    char *tmp = &yw->draggingItem->cmdstrm.cmdbuf[5];
-                    FontUA::store_s16(&tmp, v13 - (yw->screen_width / 2)); //HACKY UPDATE!
+                    char *tmp = &draggingItem->cmdstrm.cmdbuf[5];
+                    FontUA::store_s16(&tmp, v13 - (screen_width / 2)); //HACKY UPDATE!
 
-                    tmp = &yw->draggingItem->cmdstrm.cmdbuf[9];
-                    FontUA::store_s16(&tmp, v15 - (yw->screen_height / 2)); //HACKY UPDATE!
+                    tmp = &draggingItem->cmdstrm.cmdbuf[9];
+                    FontUA::store_s16(&tmp, v15 - (screen_height / 2)); //HACKY UPDATE!
                 }
             }
 
-            if ( yw->isDragging )
+            if ( isDragging )
             {
                 if ( !(winpt->flag & ClickBoxInf::FLAG_LM_HOLD) )
                 {
-                    yw->draggingLock = 0;
-                    yw->isDragging = 0;
+                    draggingLock = 0;
+                    isDragging = 0;
                 }
             }
 
-            if ( yw->isNetGame )
-                ypaworld_func64__sub7__sub5(yw, inpt);
+            if ( isNetGame )
+                ypaworld_func64__sub7__sub5(this, inpt);
 
-            ypaworld_func64__sub7__sub4(yw, inpt);
-            ypaworld_func64__sub7__sub6(yw, inpt);
-            RoboMap_InputHandle(yw, inpt);
-            SquadManager_InputHandle(yw, inpt);
-            ypaworld_func64__sub7__sub0(yw, inpt);
-            ypaworld_func64__sub7__sub7(yw, inpt);
+            ypaworld_func64__sub7__sub4(inpt);
+            ypaworld_func64__sub7__sub6(inpt);
+            RoboMap_InputHandle(this, inpt);
+            SquadManager_InputHandle(inpt);
+            ypaworld_func64__sub7__sub0(this, inpt);
+            ypaworld_func64__sub7__sub7(this, inpt);
         }
-        ypaworld_func64__sub7__sub2(yw, inpt);
+        ypaworld_func64__sub7__sub2(this, inpt);
     }
 }
 
@@ -7399,41 +7382,38 @@ void ypaworld_func64__sub7(NC_STACK_ypaworld *yw, struC5 *inpt)
 
 
 
-NC_STACK_ypabact * sub_449518(NC_STACK_ypaworld *yw)
+NC_STACK_ypabact * NC_STACK_ypaworld::GetLastMsgSender()
 {
     NC_STACK_ypabact *v2 = NULL;
 
     if ( info_log.field_255C )
     {
-        for (int i = 0; i < yw->field_2414; i++)
+        for (int i = 0; i < _cmdrsCount; i++)
         {
             if ( v2 )
                 break;
 
-            if ( info_log.field_255C == yw->field_1c0c[i]->_gid )
+            if ( info_log.field_255C == _cmdrsRemap[i]->_gid )
             {
-                v2 = yw->field_1c0c[i];
+                v2 = _cmdrsRemap[i];
             }
             else
             {
-                bact_node *v5 = (bact_node *)yw->field_1c0c[i]->_subjects_list.head;
-                while (v5->next)
+                for (NC_STACK_ypabact * &bact : _cmdrsRemap[i]->_kidList)
                 {
-                    if ( v5->bact->_status != BACT_STATUS_DEAD && v5->bact->_status != BACT_STATUS_CREATE && v5->bact->_status != BACT_STATUS_BEAM && v5->bact->_gid == info_log.field_255C )
+                    if ( bact->_status != BACT_STATUS_DEAD && bact->_status != BACT_STATUS_CREATE && bact->_status != BACT_STATUS_BEAM && bact->_gid == info_log.field_255C )
                     {
-                        v2 = v5->bact;
+                        v2 = bact;
                         break;
                     }
-
-                    v5 = (bact_node *)v5->next;
                 }
             }
         }
 
         if ( v2 )
         {
-            if ( (yw->timeStamp - info_log.field_2560) > 10000 )
-                v2 = 0;
+            if ( (timeStamp - info_log.field_2560) > 10000 )
+                return NULL;
         }
     }
     return v2;
@@ -7445,39 +7425,36 @@ int sub_4C3E34(const void *a1, const void *a2)
 }
 
 
-void sub_4C40AC(NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::sub_4C40AC()
 {
     int v3 = 0;
-    if ( yw->field_1b88 )
+    if ( _UserRoboKidsList )
     {
-        bact_node *v4 = (bact_node *)yw->field_1b88->tailpred;
-
-        while (v4->prev)
+        for ( NC_STACK_ypabact * &bact : *_UserRoboKidsList)
         {
-            if (v4->bact->_status != BACT_STATUS_DEAD && v4->bact->_status != BACT_STATUS_BEAM && v4->bact->_bact_type != BACT_TYPES_GUN)
+            if (bact->_status != BACT_STATUS_DEAD && bact->_status != BACT_STATUS_BEAM && bact->_bact_type != BACT_TYPES_GUN)
             {
-                yw->field_1c0c[v3] = v4->bact;
+                _cmdrsRemap[v3] = bact;
                 v3++;
             }
-
-            v4 = (bact_node *)v4->prev;
         }
     }
-    yw->field_2414 = v3;
+    _cmdrsCount = v3;
 
+    // FIXME
     // Do not sort it for select really last added bact?
     // May produce another bug.
     // Adding new vehicles must be reworked
-    qsort(yw->field_1c0c, v3, sizeof(NC_STACK_ypabact *), sub_4C3E34);
+    qsort(_cmdrsRemap, v3, sizeof(NC_STACK_ypabact *), sub_4C3E34);
 
     if ( v3 )
     {
-        if ( !yw->field_240c )
+        if ( _activeCmdrID == 0 )
         {
             if ( bzda.field_1D0 & 6 )
             {
-                yw->field_240c = yw->field_1c0c[v3 - 1]->_commandID;
-                yw->field_2410 = v3 - 1;
+                _activeCmdrID = _cmdrsRemap[v3 - 1]->_commandID;
+                _activeCmdrRemapIndex = v3 - 1;
             }
         }
         else
@@ -7486,40 +7463,31 @@ void sub_4C40AC(NC_STACK_ypaworld *yw)
 
             for (v10 = 0; v10 < v3; v10++)
             {
-                if (yw->field_240c == yw->field_1c0c[v10]->_commandID)
+                if (_activeCmdrID == _cmdrsRemap[v10]->_commandID)
                 {
-                    yw->field_2410 = v10;
+                    _activeCmdrRemapIndex = v10;
                     break;
                 }
             }
 
             if ( v10 == v3 )
-                yw->field_2410 = -1;
+                _activeCmdrRemapIndex = -1;
         }
     }
     else
     {
-        yw->field_2410 = -1;
+        _activeCmdrRemapIndex = -1;
     }
 
-    if ( yw->field_2410 == -1 )
+    if ( _activeCmdrRemapIndex == -1 )
     {
-        yw->field_2418 = 0;
+        _kidsCount = 0;
     }
     else
     {
-        bact_node *tmpnd = (bact_node *)yw->field_1c0c[ yw->field_2410 ]->_subjects_list.tailpred;
-        int i = 0;
-
-        while (tmpnd->prev)
-        {
-            i++;
-            tmpnd = (bact_node *)tmpnd->prev;
-        }
-
-        yw->field_2418 = i;
+        _kidsCount = _cmdrsRemap[ _activeCmdrRemapIndex ]->_kidList.size();
     }
-    yw->field_2420 = sub_449518(yw);
+    _lastMsgSender = GetLastMsgSender();
 }
 
 void ypaworld_func64__sub14(NC_STACK_ypaworld *yw)
@@ -10899,12 +10867,12 @@ void ypaworld_func2__sub0__sub1(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, 
 
 
 
-int yw_MouseFindCreationPoint(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
+int NC_STACK_ypaworld::yw_MouseFindCreationPoint(ClickBoxInf *winp)
 {
-    const VhclProto &vhcl = yw->VhclProtos[bzda.field_2DC[bzda.field_8EC]];
+    const VhclProto &vhcl = VhclProtos[bzda.field_2DC[bzda.field_8EC]];
 
-    vec3d v47( (float)(winp->move.screenPos.x - (yw->screen_width / 2)) / (float)(yw->screen_width / 2),
-               (float)(winp->move.screenPos.y - (yw->screen_height / 2)) / (float)(yw->screen_height / 2),
+    vec3d v47( (float)(winp->move.screenPos.x - (screen_width / 2)) / (float)(screen_width / 2),
+               (float)(winp->move.screenPos.y - (screen_height / 2)) / (float)(screen_height / 2),
                1.0 );
 
     v47.normalise();
@@ -10926,17 +10894,17 @@ int yw_MouseFindCreationPoint(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
 
                 vec3d v55 = v51 + vec3d(v62 * cos(v60),  v62 * sin(v60),  0.0);
 
-                mat3x3 corrected = yw->field_1340;
-                yw->_win3d->matrixAspectCorrection(corrected, true);
+                mat3x3 corrected = field_1340;
+                _win3d->matrixAspectCorrection(corrected, true);
 
                 vec3d v37 = corrected.Transpose().Transform(v55);
 
                 ypaworld_arg136 arg149;
-                arg149.stPos = yw->field_1334;
+                arg149.stPos = field_1334;
                 arg149.vect = v37;
                 arg149.flags = 0;
 
-                yw->ypaworld_func149(&arg149);
+                ypaworld_func149(&arg149);
 
                 if ( !arg149.isect )
                 {
@@ -10945,8 +10913,8 @@ int yw_MouseFindCreationPoint(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
                     if ( v48 > 0.0 )
                         v37 /= v48;
 
-                    yw->field_1a8c = v37;
-                    yw->field_1a9c = v48;
+                    field_1a8c = v37;
+                    field_1a9c = v48;
 
                     return 1;
                 }
@@ -10961,47 +10929,47 @@ int yw_MouseFindCreationPoint(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
     return 0;
 }
 
-int sb_0x4d3d44(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
+int NC_STACK_ypaworld::sb_0x4d3d44(ClickBoxInf *winp)
 {
-    if ( yw->field_1a58 & 8 || bzda.field_8EC == -1 )
+    if ( field_1a58 & 8 || bzda.field_8EC == -1 )
         return 4;
 
-    NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->UserRobo);
+    NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(UserRobo);
 
     int a4 = robo->getROBO_battVehicle();
 
-    if ( yw->field_1b24.energy > a4 )
+    if ( field_1b24.energy > a4 )
         return 2;
 
 
-    if ( !yw_MouseFindCreationPoint(yw, winp) )
+    if ( !yw_MouseFindCreationPoint(winp) )
         return 1;
 
-    if ( yw->isNetGame && !yw->unit_limit_type_1 && yw->unit_limit_1 <= yw->field_1bac[yw->UserRobo->_owner] )
+    if ( isNetGame && !unit_limit_type_1 && unit_limit_1 <= field_1bac[UserRobo->_owner] )
         return 3;
 
     return 0;
 }
 
-int ypaworld_func64__sub21__sub2(NC_STACK_ypaworld *yw)
+int NC_STACK_ypaworld::ypaworld_func64__sub21__sub2()
 {
-    if ( !(yw->field_1a58 & 0x10) || bzda.field_8F4 == -1 )
+    if ( !(field_1a58 & 0x10) || bzda.field_8F4 == -1 )
         return 1;
 
-    cellArea *v2 = yw->field_1a60;
+    cellArea *v2 = field_1a60;
 
-    NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->UserRobo);
+    NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(UserRobo);
 
     int a4 = robo->getROBO_battVehicle();
 
-    if ( yw->field_1b24.energy > a4 )
+    if ( field_1b24.energy > a4 )
         return 6;
 
-    if ( v2->owner && v2->owner != yw->UserRobo->_owner )
+    if ( v2->owner && v2->owner != UserRobo->_owner )
         return 2;
 
-    int v6 = abs(yw->field_1a64 - yw->UserRobo->_sectX);
-    int v10 = abs(yw->field_1A66 - yw->UserRobo->_sectY);
+    int v6 = abs(field_1a64 - UserRobo->_sectX);
+    int v10 = abs(field_1A66 - UserRobo->_sectY);
 
     if ( !v6 && !v10 )
         return 3;
@@ -11012,54 +10980,54 @@ int ypaworld_func64__sub21__sub2(NC_STACK_ypaworld *yw)
     if ( v2->w_type == 1 )
         return 5;
 
-    if ( v2->w_type == 4 || v2->w_type == 5 || v2->w_type == 6 || v2->w_type == 8 || (v2->w_type == 7 && yw->isNetGame) )
+    if ( v2->w_type == 4 || v2->w_type == 5 || v2->w_type == 6 || v2->w_type == 8 || (v2->w_type == 7 && isNetGame) )
         return 1;
 
     return 0;
 }
 
 
-int ypaworld_func64__sub21__sub3(NC_STACK_ypaworld *yw)
+int NC_STACK_ypaworld::ypaworld_func64__sub21__sub3()
 {
-    if ( !(yw->field_1a58 & 0x10) )
+    if ( !(field_1a58 & 0x10) )
         return 6;
 
-    if ( !((1 << yw->UserRobo->_owner) & yw->field_1a60->view_mask) )
+    if ( !((1 << UserRobo->_owner) & field_1a60->view_mask) )
         return 3;
 
-    if ( yw->field_1a60->w_type == 1 )
+    if ( field_1a60->w_type == 1 )
         return 6;
 
-    float v5 = yw->field_1a6c.x - yw->UserRobo->_position.x;
-    float v6 = yw->field_1a6c.y - yw->UserRobo->_position.y;
-    float v8 = yw->field_1a6c.z - yw->UserRobo->_position.z;
+    float v5 = field_1a6c.x - UserRobo->_position.x;
+    float v6 = field_1a6c.y - UserRobo->_position.y;
+    float v8 = field_1a6c.z - UserRobo->_position.z;
 
     float v15 = sqrt(POW2(v5) + POW2(v6) + POW2(v8));
 
     if ( v15 < 100.0 )
         return 4;
 
-    int v9 = yw->field_1a60->w_type;
+    int v9 = field_1a60->w_type;
 
     int v18 = 0;
 
-    if ( v9 != 6 && (v9 != 2 || yw->field_1a60->owner != yw->UserRobo->_owner) )
+    if ( v9 != 6 && (v9 != 2 || field_1a60->owner != UserRobo->_owner) )
     {
         v18 = (POW2(v15) / 230.4);
     }
 
-    NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->UserRobo);
+    NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(UserRobo);
 
     int a4 = robo->getROBO_battBeam();
 
-    yw->field_1b24.energy = v18;
+    field_1b24.energy = v18;
 
     if ( v18 > a4 )
         return 1;
 
-    for ( NC_STACK_ypabact* &v11 : yw->field_1a60->unitsList )
+    for ( NC_STACK_ypabact* &v11 : field_1a60->unitsList )
     {
-        if ( v11->_bact_type == BACT_TYPES_ROBO && v11->_status != BACT_STATUS_DEAD && v11->_owner != yw->UserRobo->_owner )
+        if ( v11->_bact_type == BACT_TYPES_ROBO && v11->_status != BACT_STATUS_DEAD && v11->_owner != UserRobo->_owner )
             return 5;
     }
 
@@ -11077,10 +11045,10 @@ int ypaworld_func64__sub21__sub3(NC_STACK_ypaworld *yw)
         for (int i = -3; i <= 3; i++)
         {
             arg136.stPos.y = -25000.0;
-            arg136.stPos.x = yw->field_1a6c.x - j * 57.14285714285715;
-            arg136.stPos.z = yw->field_1a6c.z - i * 57.14285714285715;
+            arg136.stPos.x = field_1a6c.x - j * 57.14285714285715;
+            arg136.stPos.z = field_1a6c.z - i * 57.14285714285715;
 
-            yw->ypaworld_func136(&arg136);
+            ypaworld_func136(&arg136);
 
             if ( arg136.isect )
             {
@@ -11096,50 +11064,50 @@ int ypaworld_func64__sub21__sub3(NC_STACK_ypaworld *yw)
     if ( abs(v19 - v20) > 800 )
         return 2;
 
-    if ( yw->field_1a6c.x < 1500.0 || yw->field_1a6c.z > -1500.0 || yw->field_1a6c.x > yw->map_Width_meters - 1500.0 || yw->field_1a6c.z < 1500.0 - yw->map_Height_meters )
+    if ( field_1a6c.x < 1500.0 || field_1a6c.z > -1500.0 || field_1a6c.x > map_Width_meters - 1500.0 || field_1a6c.z < 1500.0 - map_Height_meters )
         return 2;
 
-    yw->field_1a6c.y = v20 - yw->UserRobo->_height;
+    field_1a6c.y = v20 - UserRobo->_height;
     return 0;
 }
 
-int ypaworld_func64__sub21__sub4(NC_STACK_ypaworld *yw, struC5 *arg, int a3)
+int NC_STACK_ypaworld::ypaworld_func64__sub21__sub4(struC5 *arg, int a3)
 {
-    if ( !yw->field_1ab0 && arg->but_flags & 0x10 )
+    if ( !field_1ab0 && arg->but_flags & 0x10 )
     {
-        yw->field_1ab0 = 1;
-        yw->field_1ab4 = 0;
+        field_1ab0 = 1;
+        field_1ab4 = 0;
         return a3;
     }
 
-    if ( yw->field_1ab0 && !(arg->but_flags & 0x10) )
+    if ( field_1ab0 && !(arg->but_flags & 0x10) )
     {
-        yw->field_1ab0 = 0;
+        field_1ab0 = 0;
         return a3;
     }
 
-    if ( yw->field_1ab0   &&   a3 == 2 &&   arg->ClickInf.flag & ClickBoxInf::FLAG_LM_DOWN )
+    if ( field_1ab0   &&   a3 == 2 &&   arg->ClickInf.flag & ClickBoxInf::FLAG_LM_DOWN )
     {
-        if ( yw->field_1ab4 )
+        if ( field_1ab4 )
         {
-            float v8 = yw->field_1ab8.x - yw->field_1a6c.x;
-            float v9 = yw->field_1ab8.z - yw->field_1a6c.z;
+            float v8 = field_1ab8.x - field_1a6c.x;
+            float v9 = field_1ab8.z - field_1a6c.z;
 
             if ( sqrt( POW2(v8) + POW2(v9) ) < 100.0 )
             {
-                yw->field_1ab4++;
+                field_1ab4++;
                 return 13;
             }
 
-            yw->field_1ab4++;
+            field_1ab4++;
 
             return 12;
         }
         else
         {
-            yw->field_1ab8 = yw->field_1a6c;
+            field_1ab8 = field_1a6c;
 
-            yw->field_1ab4++;
+            field_1ab4++;
 
             return 11;
         }
@@ -11148,52 +11116,51 @@ int ypaworld_func64__sub21__sub4(NC_STACK_ypaworld *yw, struC5 *arg, int a3)
     return a3;
 }
 
-int ypaworld_func64__sub21__sub6(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
+bool NC_STACK_ypaworld::ypaworld_func64__sub21__sub6(ClickBoxInf *winp)
 {
     if ( winp->flag & ClickBoxInf::FLAG_DBL_CLICK
-            && yw->field_1aac
-            && abs(winp->move.screenPos.x - yw->field_1aa4) < 4
-            && abs(winp->move.screenPos.y - yw->field_1aa8) < 4 )
+            && field_1aac
+            && abs(winp->move.screenPos.x - field_1aa4) < 4
+            && abs(winp->move.screenPos.y - field_1aa8) < 4 )
     {
-        yw->field_1aa0 = 0;
-        yw->field_1aa4 = 0;
-        yw->field_1aa8 = 0;
+        field_1aa0 = 0;
+        field_1aa4 = 0;
+        field_1aa8 = 0;
 
-        yw->field_1a98 = yw->field_1aac;
-        yw->field_1aac = NULL;
+        field_1a98 = field_1aac;
+        field_1aac = NULL;
 
-        yw->field_1a58 |= 0x20;
+        field_1a58 |= 0x20;
 
-        return 1;
+        return true;
     }
     else
     {
-        if ( (winp->flag & ClickBoxInf::FLAG_LM_DOWN)   &&   yw->field_1a58 & 0x20   &&   yw->UserRobo->_owner == yw->field_1a98->_owner )
+        if ( (winp->flag & ClickBoxInf::FLAG_LM_DOWN)   &&   field_1a58 & 0x20   &&   UserRobo->_owner == field_1a98->_owner )
         {
-            yw->field_1aa0 = yw->timeStamp;
-            yw->field_1aac = yw->field_1a98;
-            yw->field_1aa4 = winp->move.screenPos.x;
-            yw->field_1aa8 = winp->move.screenPos.y;
+            field_1aa0 = timeStamp;
+            field_1aac = field_1a98;
+            field_1aa4 = winp->move.screenPos.x;
+            field_1aa8 = winp->move.screenPos.y;
         }
         else if ( winp->flag & ClickBoxInf::FLAG_LM_DOWN )
         {
-            if ( !(yw->field_1a58 & 0x20) )
+            if ( !(field_1a58 & 0x20) )
             {
-                yw->field_1aac = NULL;
-                yw->field_1aa4 = 0;
-                yw->field_1aa8 = 0;
-                yw->field_1aa0 = 0;
+                field_1aac = NULL;
+                field_1aa4 = 0;
+                field_1aa8 = 0;
+                field_1aa0 = 0;
             }
         }
-        return 0;
     }
-    return 0;
+    return false;
 }
 
 
-void ypaworld_func64__sub21__sub1__sub0(NC_STACK_ypaworld *yw, struC5 *arg)
+void NC_STACK_ypaworld::ypaworld_func64__sub21__sub1__sub0(struC5 *arg)
 {
-    yw->field_1a58 = 0;
+    field_1a58 = 0;
 
     ClickBoxInf *winp = &arg->ClickInf;
 
@@ -11201,28 +11168,28 @@ void ypaworld_func64__sub21__sub1__sub0(NC_STACK_ypaworld *yw, struC5 *arg)
     {
         if ( winp->selected_btn )
         {
-            yw->field_1a58 |= 4;
+            field_1a58 |= 4;
 
             if ( winp->selected_btn == &robo_map )
             {
                 if ( winp->selected_btnID == 17 )
-                    yw->field_1a58 |= 8;
+                    field_1a58 |= 8;
             }
             else if ( winp->selected_btn == &squadron_manager )
             {
                 if ( winp->selected_btnID >= 8 && (squadron_manager.firstShownEntries + winp->selected_btnID - 8) < squadron_manager.numEntries )
-                    yw->field_1a58 |= 0x40;
+                    field_1a58 |= 0x40;
             }
         }
 
         if ( bzda.field_1D0 == 8 )
-            yw->field_1a58 |= 2;
+            field_1a58 |= 2;
         else if ( bzda.field_1D0 == 1 || bzda.field_1D0 == 2 || bzda.field_1D0 == 4 || bzda.field_1D0 == 16 || bzda.field_1D0 == 32 )
-            yw->field_1a58 |= 0x83;
+            field_1a58 |= 0x83;
     }
 }
 
-void yw_MAP_MouseSelect(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
+void NC_STACK_ypaworld::yw_MAP_MouseSelect(ClickBoxInf *winp)
 {
     int v23 = winp->move.btnPos.x + robo_map.field_1D8 / robo_map.field_1E0 - (robo_map.field_1F8 / 2);
     int v24 = winp->move.btnPos.y - (robo_map.field_1DC / robo_map.field_1E4) - (robo_map.field_1FC / 2);
@@ -11232,26 +11199,26 @@ void yw_MAP_MouseSelect(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
     int v10 = v23 >> v9;
     int v11 = v24 >> v9;
 
-    if ( v10 >= 1  &&  v11 >= 1  &&  yw->sectors_maxX2 - 1 > v10  &&  yw->sectors_maxY2 - 1 > v11 )
+    if ( v10 >= 1  &&  v11 >= 1  &&  sectors_maxX2 - 1 > v10  &&  sectors_maxY2 - 1 > v11 )
     {
-        cellArea *v12 = &yw->cells[yw->sectors_maxX2 * v11 + v10];
+        cellArea *v12 = &cells[sectors_maxX2 * v11 + v10];
 
-        if ( yw->field_1a58 & 1 )
+        if ( field_1a58 & 1 )
         {
-            yw->field_1a60 = v12;
-            yw->field_1a58 |= 0x10;
-            yw->field_1a64 = v10;
-            yw->field_1A66 = v11;
-            yw->field_1a6c.x = (float)v23 * robo_map.field_1E0 + 0.5;
-            yw->field_1a6c.y = v12->height;
-            yw->field_1a6c.z = -((float)v24 * robo_map.field_1E4 + 0.75);
+            field_1a60 = v12;
+            field_1a58 |= 0x10;
+            field_1a64 = v10;
+            field_1A66 = v11;
+            field_1a6c.x = (float)v23 * robo_map.field_1E0 + 0.5;
+            field_1a6c.y = v12->height;
+            field_1a6c.z = -((float)v24 * robo_map.field_1E4 + 0.75);
 
-            yw->field_1a7c.x = (float)v10 * 1200.0 + 600.0;
-            yw->field_1a7c.y = v12->height;
-            yw->field_1a7c.z = -((float)v11 * 1200.0 + 600.0);
+            field_1a7c.x = (float)v10 * 1200.0 + 600.0;
+            field_1a7c.y = v12->height;
+            field_1a7c.z = -((float)v11 * 1200.0 + 600.0);
         }
 
-        if ( yw->field_1a58 & 2 && !(bzda.field_1D0 & 0x30) && ((1 << yw->UserRobo->_owner) & v12->view_mask ) )
+        if ( field_1a58 & 2 && !(bzda.field_1D0 & 0x30) && ((1 << UserRobo->_owner) & v12->view_mask ) )
         {
 
             int v16 = 0;
@@ -11260,7 +11227,7 @@ void yw_MAP_MouseSelect(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
             {
                 for( NC_STACK_ypabact* &v17 : v12->unitsList )
                 {
-                    if ( (v16 != 1 || v17->_owner != yw->UserRobo->_owner) && (v16 || v17->_owner == yw->UserRobo->_owner) )
+                    if ( (v16 != 1 || v17->_owner != UserRobo->_owner) && (v16 || v17->_owner == UserRobo->_owner) )
                     {
                         if ( v17->_status != BACT_STATUS_CREATE && v17->_status != BACT_STATUS_DEAD && v17->_status != BACT_STATUS_BEAM && v17->_bact_type != BACT_TYPES_MISSLE )
                         {
@@ -11269,10 +11236,10 @@ void yw_MAP_MouseSelect(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
 
                             if ( abs(v19 - v23) <= 8 && abs(-v20 - v24) <= 8 )
                             {
-                                yw->field_1a58 |= 0x20;
+                                field_1a58 |= 0x20;
 
-                                yw->field_1a98 = v17;
-                                yw->field_1a58 &= 0xFFFFFFEF;
+                                field_1a98 = v17;
+                                field_1a58 &= 0xFFFFFFEF;
 
                                 v16 = 2;
                                 break;
@@ -11287,20 +11254,20 @@ void yw_MAP_MouseSelect(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
     }
 }
 
-void yw_SMAN_MouseSelect(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
+void NC_STACK_ypaworld::yw_SMAN_MouseSelect(ClickBoxInf *winp)
 {
-    if ( yw->field_1a58 & 2 )
+    if ( field_1a58 & 2 )
     {
         int v3 = winp->selected_btnID - 8;
 
-        NC_STACK_ypabact *v4 = sub_4C7B0C(yw, v3, winp->move.btnPos.x);
+        NC_STACK_ypabact *v4 = sub_4C7B0C(v3, winp->move.btnPos.x);
 
         if ( v4 )
         {
             if ( v4->_status != BACT_STATUS_CREATE && v4->_status != BACT_STATUS_DEAD && v4->_status != BACT_STATUS_BEAM )
             {
-                yw->field_1a98 = v4;
-                yw->field_1a58 |= 0x20;
+                field_1a98 = v4;
+                field_1a58 |= 0x20;
             }
         }
         else
@@ -11314,21 +11281,21 @@ void yw_SMAN_MouseSelect(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
 
                 if ( v4 )
                 {
-                    yw->field_1a98 = v4;
-                    yw->field_1a58 |= 0x20;
+                    field_1a98 = v4;
+                    field_1a58 |= 0x20;
                 }
             }
         }
     }
 }
 
-void ypaworld_func64__sub21__sub1__sub3__sub0(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
+void NC_STACK_ypaworld::ypaworld_func64__sub21__sub1__sub3__sub0(ClickBoxInf *winp)
 {
-    float v3 = (float)(winp->move.screenPos.x - (yw->screen_width / 2)) / (float)(yw->screen_width / 2);
-    float v4 = (float)(winp->move.screenPos.y - (yw->screen_height / 2)) / (float)(yw->screen_height / 2);
+    float v3 = (float)(winp->move.screenPos.x - (screen_width / 2)) / (float)(screen_width / 2);
+    float v4 = (float)(winp->move.screenPos.y - (screen_height / 2)) / (float)(screen_height / 2);
 
-    mat3x3 corrected = yw->field_1340;
-    yw->_win3d->matrixAspectCorrection(corrected, true);
+    mat3x3 corrected = field_1340;
+    _win3d->matrixAspectCorrection(corrected, true);
 
     float v16 = corrected.m00 * v3 + corrected.m10 * v4 + corrected.m20;
     float v17 = corrected.m01 * v3 + corrected.m11 * v4 + corrected.m21;
@@ -11336,79 +11303,79 @@ void ypaworld_func64__sub21__sub1__sub3__sub0(NC_STACK_ypaworld *yw, ClickBoxInf
 
     float v14 = sqrt(POW2(v16) + POW2(v17) + POW2(v18));
 
-    yw->field_1a8c.x = v16 / v14;
-    yw->field_1a8c.y = v17 / v14;
-    yw->field_1a8c.z = v18 / v14;
+    field_1a8c.x = v16 / v14;
+    field_1a8c.y = v17 / v14;
+    field_1a8c.z = v18 / v14;
 }
 
-void yw_3D_MouseSelect(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
+void NC_STACK_ypaworld::yw_3D_MouseSelect(ClickBoxInf *winp)
 {
-    ypaworld_func64__sub21__sub1__sub3__sub0(yw, winp);
+    ypaworld_func64__sub21__sub1__sub3__sub0(winp);
 
     yw_arg150 arg150;
     arg150.field_24 = NULL;
-    arg150.pos = yw->field_1334;
-    arg150.field_18 = yw->field_1a8c * yw->field_15e4;
-    arg150.unit = yw->current_bact;
+    arg150.pos = field_1334;
+    arg150.field_18 = field_1a8c * field_15e4;
+    arg150.unit = current_bact;
 
     ypaworld_arg136 arg149;
     arg149.stPos = arg150.pos;
     arg149.vect = arg150.field_18;
     arg149.flags = 0;
 
-    yw->ypaworld_func149(&arg149);
+    ypaworld_func149(&arg149);
 
-    yw->ypaworld_func150(&arg150);
+    ypaworld_func150(&arg150);
 
     float v27, v28;
 
     if ( arg149.isect )
     {
-        yw->field_1a58 |= 0x10;
+        field_1a58 |= 0x10;
 
-        yw->field_1a9c = (arg149.isectPos - yw->field_1334).length();
+        field_1a9c = (arg149.isectPos - field_1334).length();
 
-        v27 = yw->field_1a9c;
+        v27 = field_1a9c;
     }
 
     if ( arg150.field_24 )
     {
-        yw->field_1a58 |= 0x20;
+        field_1a58 |= 0x20;
 
-        yw->field_1a9c = arg150.field_28;
+        field_1a9c = arg150.field_28;
 
-        v28 = yw->field_1a9c;
+        v28 = field_1a9c;
     }
 
-    if ( (yw->field_1a58 & 0x30) == 0x30 )
+    if ( (field_1a58 & 0x30) == 0x30 )
     {
         if ( v27 >= v28 )
         {
-            yw->field_1a9c = v28;
-            yw->field_1a58 &= 0xFFFFFFEF;
+            field_1a9c = v28;
+            field_1a58 &= 0xFFFFFFEF;
         }
         else
         {
-            yw->field_1a9c = v27;
-            yw->field_1a58 &= 0xFFFFFFDF;
+            field_1a9c = v27;
+            field_1a58 &= 0xFFFFFFDF;
         }
     }
 
-    if ( yw->field_1a58 & 0x10 )
+    if ( field_1a58 & 0x10 )
     {
         int v12 = -arg149.isectPos.z / 1200.0;
         int v25 = arg149.isectPos.x / 1200.0;
 
-        yw->field_1a60 = &yw->cells[v12 * yw->sectors_maxX2 + v25];
-        yw->field_1a64 = v25;
-        yw->field_1A66 = v12;
-        yw->field_1a6c = arg149.isectPos;
-        yw->field_1a7c.x = v25 * 1200.0 + 600.0;
-        yw->field_1a7c.y = yw->field_1a60->height;
-        yw->field_1a7c.z = -(v12 * 1200.0 + 600.0);
+        field_1a60 = &cells[v12 * sectors_maxX2 + v25];
+        field_1a64 = v25;
+        field_1A66 = v12;
+        field_1a6c = arg149.isectPos;
+        field_1a7c.x = v25 * 1200.0 + 600.0;
+        field_1a7c.y = field_1a60->height;
+        field_1a7c.z = -(v12 * 1200.0 + 600.0);
     }
 
-    if ( yw->field_1a58 & 0x20 )
+    if ( field_1a58 & 0x20 )
     {
         int v20 = 0;
 
@@ -11416,48 +11383,48 @@ void yw_3D_MouseSelect(NC_STACK_ypaworld *yw, ClickBoxInf *winp)
             v20 = 1;
 
         if ( v20 )
-            yw->field_1a58 &= 0xFFFFFFDF;
+            field_1a58 &= 0xFFFFFFDF;
         else
-            yw->field_1a98 = arg150.field_24;
+            field_1a98 = arg150.field_24;
     }
 }
 
 
-void yw_MouseSelect(NC_STACK_ypaworld *yw, struC5 *arg)
+void NC_STACK_ypaworld::yw_MouseSelect(struC5 *arg)
 {
-    ypaworld_func64__sub21__sub1__sub0(yw, arg);
+    ypaworld_func64__sub21__sub1__sub0(arg);
 
-    if ( yw->field_1a58 & 4 )
+    if ( field_1a58 & 4 )
     {
-        if ( yw->field_1a58 & 8 )
+        if ( field_1a58 & 8 )
         {
-            yw_MAP_MouseSelect(yw, &arg->ClickInf);
+            yw_MAP_MouseSelect(&arg->ClickInf);
         }
-        else if ( yw->field_1a58 & 0x40 )
+        else if ( field_1a58 & 0x40 )
         {
-            yw_SMAN_MouseSelect(yw, &arg->ClickInf);
+            yw_SMAN_MouseSelect(&arg->ClickInf);
         }
     }
     else
     {
-        yw_3D_MouseSelect(yw, &arg->ClickInf);
+        yw_3D_MouseSelect(&arg->ClickInf);
     }
 }
 
-void ypaworld_func64__sub21__sub7(NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::ypaworld_func64__sub21__sub7()
 {
-    yw->field_1b24.energy = 0;
+    field_1b24.energy = 0;
 
     if ( bzda.field_1D0 == 2 || bzda.field_1D0 == 4 )
     {
         if ( bzda.field_8EC != -1 )
         {
-            yw->field_1b24.energy = dround(sub_4498F4(yw) * (2 * yw->VhclProtos[bzda.field_2DC[bzda.field_8EC]].energy));
+            field_1b24.energy = dround(sub_4498F4() * (2 * VhclProtos[bzda.field_2DC[bzda.field_8EC]].energy));
         }
     }
     else if ( bzda.field_1D0 == 16 && bzda.field_8F4 != -1 )
     {
-        yw->field_1b24.energy = dround(sub_4498F4(yw) * yw->BuildProtos[bzda.field_3DC[bzda.field_8F4]].energy);
+        field_1b24.energy = dround(sub_4498F4() * BuildProtos[bzda.field_3DC[bzda.field_8F4]].energy);
     }
 }
 
@@ -11488,45 +11455,45 @@ int sub_4D3C80(NC_STACK_ypaworld *yw)
     return 0;
 }
 
-void ypaworld_func64__sub21__sub5(NC_STACK_ypaworld *yw, int arg)
+void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
 {
     switch ( arg )
     {
     case 8:
-        if ( yw->field_1a98->_bact_type != BACT_TYPES_GUN && yw->field_1a98 != yw->UserRobo )
+        if ( field_1a98->_bact_type != BACT_TYPES_GUN && field_1a98 != UserRobo )
         {
-            if ( sub_4D3C80(yw) )
+            if ( sub_4D3C80(this) )
             {
-                yw->field_240c = yw->field_1a98->_commandID;
-                sub_4C40AC(yw);
+                _activeCmdrID = field_1a98->_commandID;
+                sub_4C40AC();
             }
         }
 
-        if ( yw->UserRobo != yw->field_1a98 )
+        if ( UserRobo != field_1a98 )
             bzda.field_1D0 = bzda.field_1CC & 1;
         else
             bzda.field_1D0 = bzda.field_1CC & 0x20;
         break;
 
     case 2:
-        if (yw->field_2410 >= 0)
+        if (_activeCmdrRemapIndex >= 0)
         {
-            yw->field_1b24.user_action = 2;
-            yw->field_1b24.selectBact = yw->field_1c0c[yw->field_2410];
+            field_1b24.user_action = 2;
+            field_1b24.selectBact = _cmdrsRemap[_activeCmdrRemapIndex];
 
-            if ( yw->field_1a58 & 0x10 )
+            if ( field_1a58 & 0x10 )
             {
-                yw->field_1b24.target_Sect = yw->field_1a60;
-                yw->field_1b24.target_sect_x = yw->field_1a64;
-                yw->field_1b24.target_sect_y = yw->field_1A66;
-                yw->field_1b24.target_point_flags = yw->field_1a68;
-                yw->field_1b24.target_point = yw->field_1a6c;
-                yw->field_1b24.target_Bact = NULL;
+                field_1b24.target_Sect = field_1a60;
+                field_1b24.target_sect_x = field_1a64;
+                field_1b24.target_sect_y = field_1A66;
+                field_1b24.target_point_flags = field_1a68;
+                field_1b24.target_point = field_1a6c;
+                field_1b24.target_Bact = NULL;
             }
             else
             {
-                yw->field_1b24.target_Sect = 0;
-                yw->field_1b24.target_Bact = yw->field_1a98;
+                field_1b24.target_Sect = 0;
+                field_1b24.target_Bact = field_1a98;
             }
 
             bzda.field_1D0 = bzda.field_1CC & 1;
@@ -11536,85 +11503,85 @@ void ypaworld_func64__sub21__sub5(NC_STACK_ypaworld *yw, int arg)
     case 11:
     case 12:
     case 13:
-        if (yw->field_2410 >= 0)
+        if (_activeCmdrRemapIndex >= 0)
         {
-            yw->field_1b24.user_action = arg;
-            yw->field_1b24.selectBact = yw->field_1c0c[yw->field_2410];
+            field_1b24.user_action = arg;
+            field_1b24.selectBact = _cmdrsRemap[_activeCmdrRemapIndex];
 
-            if ( yw->field_1a58 & 0x30 )
+            if ( field_1a58 & 0x30 )
             {
-                yw->field_1b24.target_Sect = yw->field_1a60;
-                yw->field_1b24.target_sect_x = yw->field_1a64;
-                yw->field_1b24.target_sect_y = yw->field_1A66;
-                yw->field_1b24.target_point_flags = yw->field_1a68;
-                yw->field_1b24.target_point = yw->field_1a6c;
-                yw->field_1b24.target_Bact = NULL;
+                field_1b24.target_Sect = field_1a60;
+                field_1b24.target_sect_x = field_1a64;
+                field_1b24.target_sect_y = field_1A66;
+                field_1b24.target_point_flags = field_1a68;
+                field_1b24.target_point = field_1a6c;
+                field_1b24.target_Bact = NULL;
             }
         }
         break;
 
     case 3:
-        yw->field_1b24.user_action = 3;
-        yw->field_1b24.protoID = bzda.field_2DC[bzda.field_8EC];
-        yw->field_1b24.target_point = yw->field_1a8c * yw->field_1a9c + yw->field_1334;
+        field_1b24.user_action = 3;
+        field_1b24.protoID = bzda.field_2DC[bzda.field_8EC];
+        field_1b24.target_point = field_1a8c * field_1a9c + field_1334;
 
         bzda.field_1D0 = 4;
 
-        yw->field_2410 = -1;
-        yw->field_240c = 0;
+        _activeCmdrRemapIndex = -1;
+        _activeCmdrID = 0;
         break;
 
     case 4:
-        if (yw->field_2410 >= 0)
+        if (_activeCmdrRemapIndex >= 0)
         {
-            yw->field_1b24.user_action = 4;
-            yw->field_1b24.selectBact = yw->field_1c0c[yw->field_2410];
+            field_1b24.user_action = 4;
+            field_1b24.selectBact = _cmdrsRemap[_activeCmdrRemapIndex];
 
-            yw->field_1b24.protoID = bzda.field_2DC[bzda.field_8EC];
-            yw->field_1b24.target_point = yw->field_1a8c * yw->field_1a9c + yw->field_1334;
+            field_1b24.protoID = bzda.field_2DC[bzda.field_8EC];
+            field_1b24.target_point = field_1a8c * field_1a9c + field_1334;
         }
         break;
 
     case 5:
-        sb_0x4c66f8(yw, yw->field_1a98, yw->current_bact);
+        sb_0x4c66f8(this, field_1a98, current_bact);
 
-        if ( yw->field_1a98->_bact_type != BACT_TYPES_GUN && yw->field_1a98 != yw->UserRobo )
+        if ( field_1a98->_bact_type != BACT_TYPES_GUN && field_1a98 != UserRobo )
         {
-            if ( sub_4D3C80(yw) )
+            if ( sub_4D3C80(this) )
             {
-                yw->field_240c = yw->field_1a98->_commandID;
-                sub_4C40AC(yw);
+                _activeCmdrID = field_1a98->_commandID;
+                sub_4C40AC();
             }
         }
         break;
 
     case 6:
-        yw->field_1b24.user_action = 6;
-        yw->field_1b24.protoID = bzda.field_3DC[bzda.field_8F4];
-        yw->field_1b24.target_Sect = yw->field_1a60;
-        yw->field_1b24.target_sect_x = yw->field_1a64;
-        yw->field_1b24.target_sect_y = yw->field_1A66;
-        yw->field_1b24.target_point_flags = yw->field_1a68;
-        yw->field_1b24.target_point = yw->field_1a6c;
-        yw->field_1b24.target_Bact = NULL;
+        field_1b24.user_action = 6;
+        field_1b24.protoID = bzda.field_3DC[bzda.field_8F4];
+        field_1b24.target_Sect = field_1a60;
+        field_1b24.target_sect_x = field_1a64;
+        field_1b24.target_sect_y = field_1A66;
+        field_1b24.target_point_flags = field_1a68;
+        field_1b24.target_point = field_1a6c;
+        field_1b24.target_Bact = NULL;
         bzda.field_1D0 = bzda.field_1CC & 1;
         break;
 
     case 10:
-        yw->field_1b24.user_action = 10;
-        yw->field_1b24.target_Sect = yw->field_1a60;
-        yw->field_1b24.target_sect_x = yw->field_1a64;
-        yw->field_1b24.target_sect_y = yw->field_1A66;
-        yw->field_1b24.target_point_flags = yw->field_1a68;
-        yw->field_1b24.target_point = yw->field_1a6c;
-        yw->field_1b24.target_Bact = NULL;
+        field_1b24.user_action = 10;
+        field_1b24.target_Sect = field_1a60;
+        field_1b24.target_sect_x = field_1a64;
+        field_1b24.target_sect_y = field_1A66;
+        field_1b24.target_point_flags = field_1a68;
+        field_1b24.target_point = field_1a6c;
+        field_1b24.target_Bact = NULL;
         bzda.field_1D0 = 1;
         break;
 
     case 19:
-        yw->current_bact->setBACT_viewer(0);
-        yw->current_bact->setBACT_inputting(0);
-        yw->field_1a98->setBACT_viewer(1);
+        current_bact->setBACT_viewer(0);
+        current_bact->setBACT_inputting(0);
+        field_1a98->setBACT_viewer(1);
         break;
 
     default:
@@ -11623,22 +11590,22 @@ void ypaworld_func64__sub21__sub5(NC_STACK_ypaworld *yw, int arg)
 }
 
 
-void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
+void NC_STACK_ypaworld::ypaworld_func64__sub21(struC5 *arg)
 {
-    if ( yw->UserRobo && (arg->ClickInf.flag & ClickBoxInf::FLAG_OK) && yw->current_bact )
+    if ( UserRobo && (arg->ClickInf.flag & ClickBoxInf::FLAG_OK) && current_bact )
     {
-        yw_MouseSelect(yw, arg);
-        ypaworld_func64__sub21__sub7(yw);
+        yw_MouseSelect(arg);
+        ypaworld_func64__sub21__sub7();
 
         int v5 = 0;
         int v6 = 0;
         int v8 = 0;
 
-        if ( yw->field_17c0 )
+        if ( field_17c0 )
         {
             v6 = -1;
         }
-        else if ( yw->draggingLock || ((yw->field_1a58 & 4) && !(yw->field_1a58 & 0x48)) )
+        else if ( draggingLock || ((field_1a58 & 4) && !(field_1a58 & 0x48)) )
         {
             v6 = 0;
         }
@@ -11654,17 +11621,17 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
 
             if ( bzda.field_1D0 == 1 )
             {
-                if ( !(yw->field_1a58 & 0x10) )
+                if ( !(field_1a58 & 0x10) )
                 {
-                    if ( (yw->field_1a58 & 0x20) )
+                    if ( (field_1a58 & 0x20) )
                     {
-                        if ( yw->UserRobo->_owner == yw->field_1a98->_owner )
+                        if ( UserRobo->_owner == field_1a98->_owner )
                         {
                             v8 = 8;
                             v6 = 2;
                             v5 = 64;
                         }
-                        else if ( yw->field_2410 != -1 )
+                        else if ( _activeCmdrRemapIndex != -1 )
                         {
                             v8 = 2;
                             v6 = 3;
@@ -11672,9 +11639,9 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
                         }
                     }
                 }
-                else if ( yw->field_2410 != -1 )
+                else if ( _activeCmdrRemapIndex != -1 )
                 {
-                    if ( yw->UserRobo->_owner == yw->field_1a60->owner && (1 << yw->UserRobo->_owner) & yw->field_1a60->view_mask )
+                    if ( UserRobo->_owner == field_1a60->owner && (1 << UserRobo->_owner) & field_1a60->view_mask )
                     {
                         v8 = 2;
                         v6 = 4;
@@ -11690,9 +11657,9 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
             }
             else if ( bzda.field_1D0 == 2 )
             {
-                if ( !(yw->field_1a58 & 8) )
+                if ( !(field_1a58 & 8) )
                 {
-                    if ( (yw->field_1a58 & 0x20) && yw->UserRobo->_owner == yw->field_1a98->_owner )
+                    if ( (field_1a58 & 0x20) && UserRobo->_owner == field_1a98->_owner )
                     {
                         v8 = 8;
                         v6 = 2;
@@ -11700,7 +11667,7 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
                     }
                     else
                     {
-                        switch ( sb_0x4d3d44(yw, &arg->ClickInf) )
+                        switch ( sb_0x4d3d44(&arg->ClickInf) )
                         {
                         case 0:
                             v8 = 3;
@@ -11725,13 +11692,13 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
                         }
                     }
                 }
-                else if ( yw->field_2410 != -1 )
+                else if ( _activeCmdrRemapIndex != -1 )
                 {
-                    if ( !(yw->field_1a58 & 0x10) )
+                    if ( !(field_1a58 & 0x10) )
                     {
-                        if ( yw->field_1a58 & 0x20 )
+                        if ( field_1a58 & 0x20 )
                         {
-                            if ( yw->UserRobo->_owner == yw->field_1a98->_owner )
+                            if ( UserRobo->_owner == field_1a98->_owner )
                             {
                                 v8 = 8;
                                 v6 = 2;
@@ -11745,7 +11712,7 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
                             }
                         }
                     }
-                    else if ( yw->UserRobo->_owner == yw->field_1a60->owner && (1 << yw->UserRobo->_owner) & yw->field_1a60->view_mask )
+                    else if ( UserRobo->_owner == field_1a60->owner && (1 << UserRobo->_owner) & field_1a60->view_mask )
                     {
                         v8 = 2;
                         v6 = 4;
@@ -11761,17 +11728,17 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
             }
             else if ( bzda.field_1D0 == 4 )
             {
-                if ( !(yw->field_1a58 & 8) )
+                if ( !(field_1a58 & 8) )
                 {
-                    if ( (yw->field_1a58 & 0x20) && yw->UserRobo->_owner == yw->field_1a98->_owner )
+                    if ( (field_1a58 & 0x20) && UserRobo->_owner == field_1a98->_owner )
                     {
                         v8 = 8;
                         v6 = 2;
                         v5 = 64;
                     }
-                    else if ( yw->field_2410 != -1 )
+                    else if ( _activeCmdrRemapIndex != -1 )
                     {
-                        switch ( sb_0x4d3d44(yw, &arg->ClickInf) )
+                        switch ( sb_0x4d3d44(&arg->ClickInf) )
                         {
                         case 0:
                             v8 = 4;
@@ -11796,14 +11763,14 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
                         }
                     }
                 }
-                else if ( yw->field_2410 != -1 )
+                else if ( _activeCmdrRemapIndex != -1 )
                 {
 
-                    if ( !(yw->field_1a58 & 0x10) )
+                    if ( !(field_1a58 & 0x10) )
                     {
-                        if ( yw->field_1a58 & 0x20 )
+                        if ( field_1a58 & 0x20 )
                         {
-                            if ( yw->UserRobo->_owner == yw->field_1a98->_owner )
+                            if ( UserRobo->_owner == field_1a98->_owner )
                             {
                                 v8 = 8;
                                 v6 = 2;
@@ -11817,7 +11784,7 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
                             }
                         }
                     }
-                    else if ( yw->UserRobo->_owner == yw->field_1a60->owner && (1 << yw->UserRobo->_owner) & yw->field_1a60->view_mask )
+                    else if ( UserRobo->_owner == field_1a60->owner && (1 << UserRobo->_owner) & field_1a60->view_mask )
                     {
                         v8 = 2;
                         v6 = 4;
@@ -11833,14 +11800,14 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
             }
             else if (bzda.field_1D0 == 8 )
             {
-                if ( yw->field_1a58 & 0x20 )
+                if ( field_1a58 & 0x20 )
                 {
                     if ( arg->downed_key_2 == UAVK_F7 && arg->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD )
                     {
                         v8 = 19;
                         v6 = 8;
                     }
-                    else if ( yw->UserRobo->_owner == yw->field_1a98->_owner )
+                    else if ( UserRobo->_owner == field_1a98->_owner )
                     {
                         v8 = 5;
                         v6 = 8;
@@ -11850,9 +11817,9 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
             }
             else if ( bzda.field_1D0 == 16 )
             {
-                if ( yw->field_1a58 & 0x20 )
+                if ( field_1a58 & 0x20 )
                 {
-                    if ( yw->UserRobo->_owner == yw->field_1a98->_owner )
+                    if ( UserRobo->_owner == field_1a98->_owner )
                     {
                         v8 = 8;
                         v6 = 2;
@@ -11867,7 +11834,7 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
                 }
                 else
                 {
-                    switch ( ypaworld_func64__sub21__sub2(yw) )
+                    switch ( ypaworld_func64__sub21__sub2() )
                     {
                     case 0:
                         v8 = 6;
@@ -11902,9 +11869,9 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
             }
             else if ( bzda.field_1D0 == 32 )
             {
-                if ( yw->field_1a58 & 0x20 )
+                if ( field_1a58 & 0x20 )
                 {
-                    if ( yw->UserRobo->_owner == yw->field_1a98->_owner )
+                    if ( UserRobo->_owner == field_1a98->_owner )
                     {
                         v8 = 8;
                         v6 = 2;
@@ -11919,7 +11886,7 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
                 }
                 else
                 {
-                    switch ( ypaworld_func64__sub21__sub3(yw) )
+                    switch ( ypaworld_func64__sub21__sub3() )
                     {
                     case 0:
                         v8 = 10;
@@ -11949,10 +11916,10 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
                 }
             }
 
-            int v18 = ypaworld_func64__sub21__sub4(yw, arg, v8);
-            yw->field_1a5c = v18;
+            int v18 = ypaworld_func64__sub21__sub4(arg, v8);
+            field_1a5c = v18;
 
-            if ( ypaworld_func64__sub21__sub6(yw, &arg->ClickInf) )
+            if ( ypaworld_func64__sub21__sub6(&arg->ClickInf) )
             {
                 v18 = 5;
                 v6 = 8;
@@ -11960,13 +11927,13 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
             }
 
             if ( arg->ClickInf.flag & ClickBoxInf::FLAG_LM_DOWN )
-                ypaworld_func64__sub21__sub5(yw, v18);
+                ypaworld_func64__sub21__sub5(v18);
 
             if ( (arg->ClickInf.flag & ClickBoxInf::FLAG_LM_HOLD) && v18 )
                 v6 = 0;
         }
 
-        if ( yw->field_1b1c )
+        if ( field_1b1c )
             v6 = -1;
 
         displ_arg263 v19;
@@ -11974,7 +11941,7 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
         if ( v6 == -1 )
             v19.bitm = NULL;
         else
-            v19.bitm = yw->pointers__bitm[v6];
+            v19.bitm = pointers__bitm[v6];
 
         switch ( v6 )
         {
@@ -12030,16 +11997,16 @@ void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg)
         if ( squadron_manager.field_2A8 & 1 )
             v19.pointer_id = 1;
 
-        yw->_win3d->display_func263(&v19);
+        _win3d->display_func263(&v19);
 
         if ( v5 )
-            sub_4811E8(yw, v5);
+            sub_4811E8(v5);
     }
 }
 
 
 
-void ypaworld_func64__sub1(NC_STACK_ypaworld *yw, struC5 *inpt)
+void NC_STACK_ypaworld::ypaworld_func64__sub1(struC5 *inpt)
 {
     //Precompute input
     ClickBoxInf *winp = &inpt->ClickInf;
@@ -12048,47 +12015,47 @@ void ypaworld_func64__sub1(NC_STACK_ypaworld *yw, struC5 *inpt)
 
     int v38 = 0;
 
-    if ( yw->timeStamp - yw->field_1a0c < 500 )
+    if ( timeStamp - field_1a0c < 500 )
         inpt->but_flags &= 0xFFFFFFFE;
 
-    if ( yw->timeStamp - yw->field_1a0c > 5000 )
-        yw->field_1a20 = 0;
+    if ( timeStamp - field_1a0c > 5000 )
+        field_1a20 = 0;
 
-    if ( yw->field_739A )
+    if ( field_739A )
     {
-        if ( yw->field_73CE & 4 )
+        if ( field_73CE & 4 )
             v38 = 1;
     }
 
-    yw->field_162A = 0;
+    field_162A = 0;
 
     if ( inpt->but_flags & 1 )
     {
-        if ( !yw->field_1628 )
-            yw->field_162A = 1;
+        if ( !field_1628 )
+            field_162A = 1;
 
-        yw->field_1628 = 1;
+        field_1628 = 1;
     }
     else
     {
-        yw->field_1628 = 0;
+        field_1628 = 0;
     }
 
-    if ( yw->UserUnit->_status == BACT_STATUS_DEAD )
+    if ( UserUnit->_status == BACT_STATUS_DEAD )
     {
-        yw->field_17c0 = 0;
+        field_17c0 = 0;
     }
     else if ( winp->flag & ClickBoxInf::FLAG_RM_DOWN )
     {
-        if ( yw->field_17c0
+        if ( field_17c0
                 || winp->selected_btn == &robo_map
                 || winp->selected_btn == &bzda
                 || winp->selected_btn == &squadron_manager
-                || (!(bzda.field_1D0 & 1) && yw->field_2410 != -1) )
+                || (!(bzda.field_1D0 & 1) && _activeCmdrRemapIndex != -1) )
         {
-            if ( yw->field_17c0 )
+            if ( field_17c0 )
             {
-                yw->field_17c0 = 0;
+                field_17c0 = 0;
             }
             else
             {
@@ -12098,7 +12065,7 @@ void ypaworld_func64__sub1(NC_STACK_ypaworld *yw, struC5 *inpt)
         }
         else
         {
-            yw->field_17c0 = 1;
+            field_17c0 = 1;
 
             NC_STACK_input *input = INPe.getPInput();
 
@@ -12110,7 +12077,7 @@ void ypaworld_func64__sub1(NC_STACK_ypaworld *yw, struC5 *inpt)
     if ( gui_lstvw.IsOpen() )
         inpt->sliders_vars[1] = 0;
 
-    if ( yw->field_17c0 ) // If grabbed mouse
+    if ( field_17c0 ) // If grabbed mouse
     {
         // Piu-piu mazafaka
         winp->selected_btnID = -1;
@@ -12127,102 +12094,102 @@ void ypaworld_func64__sub1(NC_STACK_ypaworld *yw, struC5 *inpt)
         if ( winp->flag & ClickBoxInf::FLAG_MM_HOLD )
             inpt->but_flags |= 8;
 
-        sub_4811E8(yw, 0x50);
+        sub_4811E8(0x50);
     }
 
     if ( !v38 )
     {
-        int v13 = yw->UserUnit->_bact_type == BACT_TYPES_TANK || yw->UserUnit->_bact_type == BACT_TYPES_CAR;
-        int v34 = yw->UserUnit->_bact_type == BACT_TYPES_ROBO;
+        int v13 = UserUnit->_bact_type == BACT_TYPES_TANK || UserUnit->_bact_type == BACT_TYPES_CAR;
+        int v34 = UserUnit->_bact_type == BACT_TYPES_ROBO;
 
-        if ( !yw->field_161c )
+        if ( !field_161c )
         {
-            yw->field_788E = inpt->sliders_vars[12];
-            yw->field_7892 = inpt->sliders_vars[13];
-            yw->field_7896 = inpt->sliders_vars[14];
-            yw->field_789A = inpt->sliders_vars[15];
-            yw->field_789E = inpt->sliders_vars[16];
+            field_788E = inpt->sliders_vars[12];
+            field_7892 = inpt->sliders_vars[13];
+            field_7896 = inpt->sliders_vars[14];
+            field_789A = inpt->sliders_vars[15];
+            field_789E = inpt->sliders_vars[16];
         }
 
-        int v45 = fabs(yw->field_788E - inpt->sliders_vars[12]) >= 0.05;
-        int v44 = fabs(yw->field_7892 - inpt->sliders_vars[13]) >= 0.05;
-        int v46 = fabs(yw->field_7896 - inpt->sliders_vars[14]) >= 0.05;
-        int v43 = fabs(yw->field_789A - inpt->sliders_vars[15]) >= 0.05;
-        int v47 = fabs(yw->field_789E - inpt->sliders_vars[16]) >= 0.05;
+        int v45 = fabs(field_788E - inpt->sliders_vars[12]) >= 0.05;
+        int v44 = fabs(field_7892 - inpt->sliders_vars[13]) >= 0.05;
+        int v46 = fabs(field_7896 - inpt->sliders_vars[14]) >= 0.05;
+        int v43 = fabs(field_789A - inpt->sliders_vars[15]) >= 0.05;
+        int v47 = fabs(field_789E - inpt->sliders_vars[16]) >= 0.05;
 
         if ( v45 || v44 || v46 || v43 || v47)
         {
-            yw->field_788E = inpt->sliders_vars[12];
-            yw->field_7892 = inpt->sliders_vars[13];
-            yw->field_7896 = inpt->sliders_vars[14];
-            yw->field_789A = inpt->sliders_vars[15];
-            yw->field_789E = inpt->sliders_vars[16];
+            field_788E = inpt->sliders_vars[12];
+            field_7892 = inpt->sliders_vars[13];
+            field_7896 = inpt->sliders_vars[14];
+            field_789A = inpt->sliders_vars[15];
+            field_789E = inpt->sliders_vars[16];
         }
 
-        if ( yw->field_7882 )
+        if ( field_7882 )
         {
             if ( v45 )
-                yw->field_7882 = 0;
+                field_7882 = 0;
         }
         else
         {
             if ( ( v13 && inpt->sliders_vars[3] != 0.0 ) || inpt->sliders_vars[0] != 0.0 )
-                yw->field_7882 = 1;
+                field_7882 = 1;
         }
 
-        if ( yw->field_7886 )
+        if ( field_7886 )
         {
             if ( v44 || v43 || v47 )
-                yw->field_7886 = 0;
+                field_7886 = 0;
         }
         else
         {
             if ( v13 )
             {
-                if ( (yw->field_73CE & World::PREF_ALTJOYSTICK ) && inpt->sliders_vars[5] != 0.0 )
-                    yw->field_7886 = 1;
+                if ( (field_73CE & World::PREF_ALTJOYSTICK ) && inpt->sliders_vars[5] != 0.0 )
+                    field_7886 = 1;
                 else if ( inpt->sliders_vars[4] != 0.0 )
-                    yw->field_7886 = 1;
+                    field_7886 = 1;
             }
             else if ( inpt->sliders_vars[1] != 0.0 )
-                yw->field_7886 = 1;
+                field_7886 = 1;
         }
 
-        if ( yw->field_788A )
+        if ( field_788A )
         {
             if ( v46 || v43 || v47 )
-                yw->field_788A = 0;
+                field_788A = 0;
         }
         else
         {
             if ( v13 )
             {
-                if ( (yw->field_73CE & World::PREF_ALTJOYSTICK) && inpt->sliders_vars[4] != 0.0 )
-                    yw->field_788A = 1;
+                if ( (field_73CE & World::PREF_ALTJOYSTICK) && inpt->sliders_vars[4] != 0.0 )
+                    field_788A = 1;
             }
             else if ( !v34 && inpt->sliders_vars[2] != 0.0 )
-                yw->field_788A = 1;
+                field_788A = 1;
         }
 
         if ( inpt->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
         {
             if ( !(v43 || v44 || v45 || v46 || v47) )
             {
-                yw->field_7886 = 1;
-                yw->field_7882 = 1;
+                field_7886 = 1;
+                field_7882 = 1;
             }
         }
 
-        if ( yw->field_7882 )
+        if ( field_7882 )
             inpt->sliders_vars[12] = 0;
 
-        if ( yw->field_7886 )
+        if ( field_7886 )
             inpt->sliders_vars[13] = 0;
 
-        if ( yw->field_788A )
+        if ( field_788A )
             inpt->sliders_vars[14] = 0;
 
-        if ( !yw->field_7882 )
+        if ( !field_7882 )
         {
             if ( v13 )
                 inpt->sliders_vars[3] += inpt->sliders_vars[12];
@@ -12230,11 +12197,11 @@ void ypaworld_func64__sub1(NC_STACK_ypaworld *yw, struC5 *inpt)
                 inpt->sliders_vars[0] += inpt->sliders_vars[12];
         }
 
-        if ( !yw->field_7886 )
+        if ( !field_7886 )
         {
             if ( v13 )
             {
-                if ( yw->field_73CE & World::PREF_ALTJOYSTICK )
+                if ( field_73CE & World::PREF_ALTJOYSTICK )
                 {
                     if ( inpt->sliders_vars[16] != 0.0 )
                         inpt->sliders_vars[5] += inpt->sliders_vars[16];
@@ -12258,11 +12225,11 @@ void ypaworld_func64__sub1(NC_STACK_ypaworld *yw, struC5 *inpt)
             }
         }
 
-        if ( !yw->field_788A )
+        if ( !field_788A )
         {
             if ( v13 )
             {
-                if ( yw->field_73CE & World::PREF_ALTJOYSTICK )
+                if ( field_73CE & World::PREF_ALTJOYSTICK )
                 {
                     if ( inpt->sliders_vars[4] != 0.0 )
                     {

@@ -55,6 +55,13 @@ struct uamessage_vhclDataI;
 
 namespace World
 {
+    
+enum BLIST_TYPES
+{
+    BLIST_UNITS = 1, // Used in world for store all bacts
+    BLIST_CACHE = 2, // Used in world for store cached dead bacts
+    BLIST_KIDS  = 3, // Used in bact class for store kid units
+};
 
 enum COLOR_IDS
 {
@@ -758,7 +765,7 @@ struct cellArea : public nnode
     char w_type;
     uint8_t w_id;
     nlist units_list; // Units in this sector
-    World::CellBactList unitsList;
+    World::RefBactList unitsList;
     float height;
     float averg_height;
     
@@ -2469,15 +2476,17 @@ public:
     int load_fonts_and_icons();
     int yw_LoadSet(int setID);
     
-    void sb_0x47b028(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bct1, NC_STACK_ypabact *bct2, int a3);
+    void sb_0x47b028(NC_STACK_ypabact *bct1, NC_STACK_ypabact *bct2, int a3);
+    NC_STACK_ypabact * sb_0x47b028__sub0(uint32_t bactid); // CHECK IT
+    
     void yw_processVhclDataMsgs(uamessage_vhclData *msg, NC_STACK_ypabact *host_node);
     NC_STACK_ypabact * yw_getHostByOwner(uint8_t owner);
     void yw_netApplyVhclDataE(NC_STACK_ypabact *bact, uamessage_vhclDataE *dat, int id, uint32_t timestamp);
     void yw_netApplyVhclDataI(NC_STACK_ypabact *bact, uamessage_vhclDataI *dat, int id, uint32_t timestamp);
-    void sub_4C8EB4(NC_STACK_ypabact *bct);
-    void sub_4F1B34(NC_STACK_ypabact *bact);
+    void NetRemove(NC_STACK_ypabact *bct);
+    void NetReleaseMissiles(NC_STACK_ypabact *bact);
     void sub_4F1BE8(NC_STACK_ypabact *bct);
-    void sub_4F1A60(NC_STACK_ypabact *bact);
+    void NetDeleteAttacker(NC_STACK_ypabact *bact);
     void BriefingSetObject(const BriefObject &obj, bool doAdd);
     
     
@@ -2491,6 +2500,18 @@ public:
     void yw_InitSquads(const std::vector<MapSquad> &squads);
     
     
+    NC_STACK_ypabact *yw_createUnit(int model_id);
+    void sb_0x456384(int x, int y, int ownerid2, int blg_id, int a7);
+    int sb_0x456384__sub0(int x, int y, int power);
+    void sb_0x456384__sub0__sub0();
+    
+    void sub_44F958(cellArea *cell, char secX, char secY, uint8_t owner);
+    int ypaworld_func148__sub1(int id, int a4, int x, int y, int ownerID2, char blg_ID);
+    
+    void debug_info_draw(struC5 *inpt);
+    void debug_count_units();
+    
+    
     void SendCRC(int lvlid);
     
     void UpdateGuiSettings();
@@ -2498,6 +2519,94 @@ public:
     
     void HistoryAktCreate(NC_STACK_ypabact *bact);
     void HistoryAktKill(NC_STACK_ypabact *bact);
+    
+    
+    int sub_449678(struC5 *struc, int kkode);
+    
+    bool yw_write_units(FSMgr::FileHandle *fil);
+    bool yw_write_robo(NC_STACK_yparobo *robo, FSMgr::FileHandle *fil);
+    
+    void ypaworld_func64__sub6__sub0();
+    
+    void ypaworld_func64__sub19__sub2__sub0__sub0(uint8_t activate, float a5, float a6, float a7);
+    void ypaworld_func64__sub19__sub2__sub0(int id);
+    void ypaworld_func64__sub19__sub2(int id);
+    void ypaworld_func64__sub19__sub1(int id);
+    void ypaworld_func64__sub19__sub0(int id);
+    void ypaworld_func64__sub19();
+    void sub_4D16C4(int id);
+    bool sub_4D1230(int id, int a3);
+    bool sub_4D11C0(int id, int owner);
+    bool sub_4D12A0(int owner);
+    
+    void sub_4C40AC();
+    NC_STACK_ypabact *GetLastMsgSender();
+    
+    void ypaworld_func64__sub7(struC5 *inpt);
+    void ypaworld_func64__sub7__sub4(struC5 *inpt);
+    void ypaworld_func64__sub7__sub4__sub0(int a2);
+    void ypaworld_func64__sub7__sub3__sub4(NC_STACK_ypabact *bact);
+    bool ypaworld_func64__sub7__sub3__sub2();
+    
+    void yw_MouseSelect(struC5 *arg);
+    void ypaworld_func64__sub21__sub1__sub0(struC5 *arg);
+    
+    void yw_MAP_MouseSelect(ClickBoxInf *winp);
+    
+    void ypaworld_func64__sub21__sub1__sub3__sub0(ClickBoxInf *winp);
+    void yw_3D_MouseSelect(ClickBoxInf *winp);
+    
+    void ypaworld_func64__sub21(struC5 *arg);
+    void ypaworld_func64__sub21__sub7();
+    float sub_4498F4();
+    
+    int ypaworld_func64__sub7__sub3__sub1(ClickBoxInf *winpt);
+    void yw_SMAN_MouseSelect(ClickBoxInf *winp);
+    void SquadManager_InputHandle(struC5 *inpt);
+    NC_STACK_ypabact * sub_4C7B0C(int sqid, int a3);
+    
+    bool recorder_create_camera();
+    void recorder_updateObjectList(recorder *rcrd, float a5, int period);
+    void recorder_updateObject(NC_STACK_ypabact *bact, trec_bct *oinf, uint16_t *ssnd, float a5, float a6);
+    void recorder_set_bact_pos(NC_STACK_ypabact *bact, const vec3d &pos);
+    int recorder_go_to_frame(recorder *rcrd, int wanted_frame_id);
+    void recorder_store_bact(recorder *rcrd, World::RefBactList &bct_lst);
+    void recorder_store_bact( recorder *rcrd, YpamissileList &bct_lst);
+    void recorder_world_to_frame(recorder *rcrd);
+    void recorder_write_frame();
+    NC_STACK_ypabact *recorder_newObject(trec_bct *oinf);
+    void ypaworld_func163__sub1(recorder *rcrd, int a3);
+    
+    void sub_4811E8(int id);
+    void ypaworld_func64__sub1(struC5 *inpt);
+    void ypaworld_func64__sub21__sub5(int arg);
+    
+    
+    bool ypaworld_func64__sub21__sub6(ClickBoxInf *winp);
+    int ypaworld_func64__sub21__sub4(struC5 *arg, int a3);
+    int ypaworld_func64__sub21__sub3();
+    int ypaworld_func64__sub21__sub2();
+    int sb_0x4d3d44(ClickBoxInf *winp);
+    void ypaworld_func64__sub7__sub6(struC5 *inpt);
+    
+    int yw_MouseFindCreationPoint(ClickBoxInf *winp);
+    
+    void sb_0x4c87fc(const char *a2, GuiBase *lstvw);
+    void sub_47DB04(char a2);
+    void sub_449DE8(const char *a2);
+    
+    
+    
+    int sb_0x44ca90__sub7(int event_loop_id);
+    
+    //Event funcs
+    static int sub_4D528C(NC_STACK_ypaworld *);
+    static int sub_4D51A4(NC_STACK_ypaworld *);
+    static int sub_4D5218(NC_STACK_ypaworld *);
+    static int sub_4D5160(NC_STACK_ypaworld *);
+    static int sub_4D5300(NC_STACK_ypaworld *);
+    static int sub_4D5348(NC_STACK_ypaworld *);
+    static int sub_4D5360(NC_STACK_ypaworld *);
     
 
 public:
@@ -2522,8 +2631,8 @@ public:
     int field_3c;
     int set_number;
     NC_STACK_base *additionalSet;
-    nlist bact_list;
-    nlist dead_cache;
+    World::RefBactList _unitsList;
+    World::RefBactList _deadCacheList;
     vhclBases *vhcls_models;
     cityBases *legos;
     subSec *subSectors;
@@ -2646,18 +2755,18 @@ public:
     int field_1b74;
     NC_STACK_ypabact *UserRobo;
     NC_STACK_ypabact *UserUnit;
-    nlist *field_1b88;
+    World::RefBactList *_UserRoboKidsList;
     int sectors_count_by_owner[8];
     int field_1bac[8];
     float field_1bcc[8];
     float field_1bec[8];
-    NC_STACK_ypabact *field_1c0c[512];
-    int field_240c;
-    int field_2410;
-    int field_2414;
-    int field_2418;
+    NC_STACK_ypabact *_cmdrsRemap[512];
+    int _activeCmdrID;
+    int _activeCmdrRemapIndex;
+    int _cmdrsCount;
+    int _kidsCount;
     uint32_t field_241c;
-    NC_STACK_ypabact *field_2420;
+    NC_STACK_ypabact *_lastMsgSender;
     int field_2424;
     int do_screenshooting;
     int screenshot_seq_id; //Screenshoting sequence id

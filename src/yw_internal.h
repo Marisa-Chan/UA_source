@@ -75,7 +75,6 @@ NC_STACK_bitmap * sub_44816C(NC_STACK_bitmap *src, const char *name);
 
 void ypaworld_func158__sub3(NC_STACK_ypaworld *yw, UserData *usr);
 
-int sub_449678(NC_STACK_ypaworld *yw, struC5 *struc, int kkode);
 void sub_46D0F8(const char *path);
 
 int init_prototypes(NC_STACK_ypaworld *yw);
@@ -96,8 +95,6 @@ int yw_write_item_modifers(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
 void sb_0x44ac24(NC_STACK_ypaworld *yw);
 void sub_4EAC80(NC_STACK_ypaworld *yw);
 
-void sub_4811E8(NC_STACK_ypaworld *yw, int id);
-
 
 int cells_mark_type(NC_STACK_ypaworld *yw, const char *a2);
 int cells_mark_owner(NC_STACK_ypaworld *yw, const char *a2);
@@ -117,7 +114,6 @@ void sub_44D8B8(ypaworld_arg136 *arg, const struct_44dbf8 &loc);
 void ypaworld_func2__sub0__sub0(NC_STACK_ypaworld *yw);
 void ypaworld_func2__sub0__sub1(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypabact *bact2);
 
-NC_STACK_ypabact *yw_createUnit(NC_STACK_ypaworld *yw, int model_id);
 void sub_44BF34(vhclSndFX *sndfx);
 
 
@@ -125,7 +121,6 @@ void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2);
 void sb_0x44fc60(NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int a5, yw_arg129 *a6);
 void  sub_44F500(NC_STACK_ypaworld *yw, int id);
 
-void sb_0x456384(NC_STACK_ypaworld *yw, int x, int y, int ownerid2, int blg_id, int a7);
 
 void ypaworld_func148__sub0(NC_STACK_ypaworld *yw, int x, int y);
 int ypaworld_func148__sub1(NC_STACK_ypaworld *yw, int id, int a4, int x, int y, int ownerID2, char blg_ID);
@@ -139,7 +134,6 @@ void sb_0x4d7c08__sub0(NC_STACK_ypaworld *yw);
 void draw_tooltip(NC_STACK_ypaworld *yw);
 
 void sub_4C40AC(NC_STACK_ypaworld *yw);
-NC_STACK_ypabact *sub_449518(NC_STACK_ypaworld *yw);
 
 
 class squadMan: public GuiList
@@ -354,11 +348,7 @@ void ypaworld_func64__sub20(NC_STACK_ypaworld *ywo, int dtime);
 void ypaworld_func64__sub6(NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub5(NC_STACK_ypaworld *yw);
 
-void sub_44F958(NC_STACK_ypaworld *yw, cellArea *cell, char secX, char secY, uint8_t owner);
-
 void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg);
-
-void ypaworld_func64__sub1(NC_STACK_ypaworld *yw, struC5 *inpt);
 
 
 
@@ -407,7 +397,6 @@ void yw_debriefUpdate(NC_STACK_ypaworld *yw, struC5 *inpt);
 void sub_4D6958(NC_STACK_ypaworld *yw, NC_STACK_ypabact *unit, samples_collection1 *collection);
 
 int sub_4C885C();
-void sb_0x4c87fc(NC_STACK_ypaworld *yw, const char *a2, GuiBase *lstvw);
 void sub_4476AC(NC_STACK_ypaworld *yw);
 
 int recorder_create_camera(NC_STACK_ypaworld *yw);
@@ -415,7 +404,6 @@ int recorder_go_to_frame(NC_STACK_ypaworld *yw, recorder *rcrd, int wanted_frame
 int recorder_open_replay(recorder *rcrd);
 void recorder_stoprec(NC_STACK_ypaworld *yw);
 
-void debug_info_draw(NC_STACK_ypaworld *yw, struC5 *inpt);
 void ypaworld_func163__sub1(NC_STACK_ypaworld *yw, recorder *rcrd, int a3);
 
 char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, float y, int value, int maxval, int valCH, int valBG, const char *a10, const char *a11, int flag = 0);

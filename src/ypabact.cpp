@@ -21,6 +21,7 @@ char **dword_5490B0; // ypaworld strings
 
 
 NC_STACK_ypabact::NC_STACK_ypabact()
+: _kidList(this, GetKidRefNode, World::BLIST_KIDS)
 {
     _sectX = 0;
     _sectY = 0;
@@ -151,7 +152,7 @@ size_t NC_STACK_ypabact::func0(IDVList &stak)
         return 0;
 
     init_list(&_attackers_list);
-    init_list(&_subjects_list);
+    _kidList.clear();
     _missiles_list.clear();
 
     _gid = ypabact_id;
@@ -165,7 +166,7 @@ size_t NC_STACK_ypabact::func0(IDVList &stak)
     _attack_node_prim.bact = this;
     _attack_node_scnd.bact = this;
     
-    _subject_node.bact = this;
+    //_kidRef.bact = this;
 
 
 
@@ -351,21 +352,13 @@ size_t NC_STACK_ypabact::func1()
         _cellRef.Detach();
 
     if ( _parent )
-        Remove(&_subject_node);
+        _kidRef.Detach();
 
-    while (1)
-    {
-        bact_node *nd = (bact_node *)_subjects_list.head;
-
-        if (!nd->next)
-            break;
-
-        delete_class_obj(nd->bact);
-    }
-
+    while (!_kidList.empty())
+        Nucleus::Delete(_kidList.front());
 
     for (YpamissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end(); it++)
-        delete_class_obj(*it);
+        Nucleus::Delete(*it);
 
     _missiles_list.clear();
 
@@ -675,20 +668,20 @@ void NC_STACK_ypabact::FixBeyondTheWorld()
 
 void sub_481F94(NC_STACK_ypabact *bact)
 {
-
     for (YpamissileList::iterator it = bact->_missiles_list.begin(); it != bact->_missiles_list.end(); )
     {
-        if ( (*it)->getBACT_yourLastSeconds() <= 0 )
+        NC_STACK_ypamissile *misl = *it;
+        if ( misl->getBACT_yourLastSeconds() <= 0 )
         {
             setTarget_msg arg67;
             arg67.tgt_type = BACT_TGT_TYPE_NONE;
             arg67.priority = 0;
 
-            (*it)->SetTarget(&arg67);
+            misl->SetTarget(&arg67);
 
-            (*it)->_parent = NULL;
+            misl->_parent = NULL;
 
-            (*it)->Release();
+            misl->Release();
 
             it = bact->_missiles_list.erase(it);
         }
@@ -698,10 +691,9 @@ void sub_481F94(NC_STACK_ypabact *bact)
 }
 
 
-TFEngine::TForm3D bact_cam;
-
 void NC_STACK_ypabact::Update(update_msg *arg)
 {
+    static TFEngine::TForm3D bact_cam;
     TFEngine::Engine.SetViewPoint(&bact_cam);
 
     yw_130arg sect_info;
@@ -767,12 +759,10 @@ void NC_STACK_ypabact::Update(update_msg *arg)
 
     for(YpamissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end();)
     {
-        YpamissileList::iterator next = it;
-        next++;
+        NC_STACK_ypamissile *misl = *it;
+        it++;
 
-        (*it)->Update(arg);
-
-        it = next;
+        misl->Update(arg);
     }
 
     sub_481F94(this);
@@ -803,17 +793,17 @@ void NC_STACK_ypabact::Update(update_msg *arg)
 
     arg->units_count = 0;
 
-    bact_node *bnod = (bact_node *)_subjects_list.head;
-
-    while (bnod->next)
+    /** 
+     * Because missiles can cause 'ModifyEnergy' and 'Die' methods of upper bact
+     * in hierarchy Update->Update - it can remove all bacts from list in
+     * iteration. So we just needs to get safe copy of list for modify without
+     * worry of lists modify.
+     **/
+    for ( NC_STACK_ypabact *bnod : _kidList.safe_iter() )
     {
-        bact_node *next_node = (bact_node *)bnod->next;
-
-        bnod->bact->Update(arg);
+        bnod->Update(arg);
 
         arg->units_count++;
-
-        bnod = next_node;
     }
 
     arg->units_count = numbid;
@@ -1061,18 +1051,14 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
 
         if ( arg->tgt_type == BACT_TGT_TYPE_CELL || arg->tgt_type == BACT_TGT_TYPE_UNIT )
         {
-            bact_node *node = (bact_node *)_subjects_list.head;
-
-            while ( node->next )
+            for ( NC_STACK_ypabact* &node : _kidList )
             {
-                if ( node->bact->_status != BACT_STATUS_DEAD)
+                if ( node->_status != BACT_STATUS_DEAD)
                 {
-                    node->bact->SetTarget(arg);
+                    node->SetTarget(arg);
                     if ( !(_status_flg & BACT_STFLAG_WAYPOINT)  )
-                        node->bact->_status_flg &= ~(BACT_STFLAG_WAYPOINT | BACT_STFLAG_WAYPOINTCCL);
+                        node->_status_flg &= ~(BACT_STFLAG_WAYPOINT | BACT_STFLAG_WAYPOINTCCL);
                 }
-
-                node = (bact_node *)node->next;
             }
         }
     }
@@ -1162,13 +1148,10 @@ void NC_STACK_ypabact::AI_layer1(update_msg *arg)
         {
             bool doFight = _target_vec.length() < 800.0;
 
-            bact_node *node = (bact_node *)_subjects_list.head;
-
-            int v44 = 0;
-
-            while (node->next)
+            int unitId = 0;
+            for (NC_STACK_ypabact* &node : _kidList)
             {
-                if ( node->bact->_status != BACT_STATUS_DEAD )
+                if ( node->_status != BACT_STATUS_DEAD )
                 {
                     if ( doFight )
                     {
@@ -1180,7 +1163,7 @@ void NC_STACK_ypabact::AI_layer1(update_msg *arg)
                     else
                     {
                         bact_arg94 v35;
-                        v35.field_0 = v44;
+                        v35.field_0 = unitId;
                         GetFormationPosition(&v35);
 
                         v36.tgt_type = BACT_TGT_TYPE_FRMT;
@@ -1188,11 +1171,9 @@ void NC_STACK_ypabact::AI_layer1(update_msg *arg)
                         v36.tgt_pos = v35.pos1;
                     }
 
-                    node->bact->SetTarget(&v36);
+                    node->SetTarget(&v36);
                 }
-
-                node = (bact_node *)node->next;
-                v44++;
+                unitId++;
             }
         }
     }
@@ -1272,8 +1253,8 @@ void NC_STACK_ypabact::AI_layer2(update_msg *arg)
         arg67.tgt_type = BACT_TGT_TYPE_NONE;
         arg67.priority = 1;
 
-        for(bact_node *nod = (bact_node *)_subjects_list.head; nod->next; nod = (bact_node *)nod->next)
-            nod->bact->SetTarget(&arg67);
+        for(NC_STACK_ypabact* &nod : _kidList)
+            nod->SetTarget(&arg67);
 
         SetTarget(&arg67);
 
@@ -1376,20 +1357,16 @@ void NC_STACK_ypabact::AI_layer2(update_msg *arg)
 
                 if ( _host_station == _parent && _secndTtype == BACT_TGT_TYPE_CELL )
                 {
-                    bact_node *nod = (bact_node *)_subjects_list.head;
-
-                    while( nod->next )
+                    for(NC_STACK_ypabact* &nod : _kidList)
                     {
-                        if ( nod->bact->_secndTtype == BACT_TGT_TYPE_NONE || nod->bact->_secndTtype == BACT_TGT_TYPE_FRMT )
+                        if ( nod->_secndTtype == BACT_TGT_TYPE_NONE || nod->_secndTtype == BACT_TGT_TYPE_FRMT )
                         {
                             setTarget_msg arg67;
                             arg67.tgt_type = BACT_TGT_TYPE_CELL;
                             arg67.tgt_pos = _sencdTpos;
                             arg67.priority = 1;
-                            nod->bact->SetTarget(&arg67);
+                            nod->SetTarget(&arg67);
                         }
-
-                        nod = (bact_node *)nod->next;
                     }
                 }
             }
@@ -2352,7 +2329,7 @@ void NC_STACK_ypabact::AddSubject(NC_STACK_ypabact *kid)
     newMaster_msg arg73;
 
     arg73.bact = this;
-    arg73.list = &_subjects_list;
+    arg73.list = &_kidList;
 
     kid->SetNewMaster(&arg73);
 }
@@ -2360,10 +2337,10 @@ void NC_STACK_ypabact::AddSubject(NC_STACK_ypabact *kid)
 void NC_STACK_ypabact::SetNewMaster(newMaster_msg *arg)
 {
     if ( _parent )
-        Remove(&_subject_node);
+        _kidRef.Detach();
 
-    AddHead(arg->list, &_subject_node);
-
+    _kidRef = arg->list->push_front(this);
+    
     _parent = arg->bact;
 }
 
@@ -3095,66 +3072,54 @@ void NC_STACK_ypabact::Die()
 
     deadMsg.killerOwner = _killer_owner;
 
-    bact_node *v74 = NULL;
+    NC_STACK_ypabact *deputy = NULL;
 
-    bact_node *v4 = (bact_node *)_subjects_list.head;
-
-    if (v4->next)
+    if (!_kidList.empty())
     {
 
-        while (v4->next)
+        for (World::RefBactList::iterator it = _kidList.begin(); it != _kidList.end(); )
         {
-            bact_node *next_node = (bact_node *)v4->next;
+            // Forward dereference iterator and next
+            NC_STACK_ypabact *kid = *it;
+            it++;
 
-            if ( v4->bact->_status == BACT_STATUS_DEAD )
+            if ( kid->_status == BACT_STATUS_DEAD )
             {
                 if ( (size_t)_parent <= 2 )
-                    _world->ypaworld_func134(v4->bact);
+                    _world->ypaworld_func134(kid);
                 else
-                    _parent->AddSubject(v4->bact);
+                    _parent->AddSubject(kid);
 
-                v4->bact->_status_flg |= BACT_STFLAG_NOMSG;
+                kid->_status_flg |= BACT_STFLAG_NOMSG;
             }
             else
             {
-                float v9 = v4->bact->_position.x - _position.x;
-                float v10 = v4->bact->_position.z - _position.z;
+                float kidLen = (kid->_position.XZ() - _position.XZ()).square();
 
-                float v73 = POW2(v9) + POW2(v10);
+                float deputyLen;
 
-                float v14;
-
-                if ( v74 )
-                    v14 = POW2(v74->bact->_position.x - _position.x) + POW2(v74->bact->_position.z - _position.z);
+                if ( deputy )
+                    deputyLen = (deputy->_position.XZ() - _position.XZ()).square();
                 else
-                    v14 = (POW2(maxx) + POW2(maxy)) * 1200.0 * 1200.0;
+                    deputyLen = (POW2(maxx) + POW2(maxy)) * 1200.0 * 1200.0;
 
-                if ( v4->bact->_bact_type == BACT_TYPES_UFO )
-                    v73 = (POW2(maxx) + POW2(maxy)) * 1200.0 * 1200.0 - 1000.0;
+                if ( kid->_bact_type == BACT_TYPES_UFO )
+                    kidLen = (POW2(maxx) + POW2(maxy)) * 1200.0 * 1200.0 - 1000.0;
 
-                if ( v73 <= v14 )
-                    v74 = v4;
+                if ( kidLen <= deputyLen )
+                    deputy = kid;
             }
-
-            v4 = next_node;
         }
 
-        if ( v74 )
+        if ( deputy )
         {
             if ( (size_t)_parent != 1 )
-                _parent->AddSubject(v74->bact);
+                _parent->AddSubject(deputy);
             else
-                _world->ypaworld_func134(v74->bact);
+                _world->ypaworld_func134(deputy);
 
-            while ( 1 )
-            {
-                bact_node *v16 = (bact_node *)_subjects_list.head;
-
-                if ( !v16->next )
-                    break;
-
-                v74->bact->AddSubject(v16->bact);
-            }
+            while ( !_kidList.empty() )
+                deputy->AddSubject(_kidList.front());
 
             setTarget_msg arg67;
             arg67.tgt_pos = _primTpos;
@@ -3162,51 +3127,44 @@ void NC_STACK_ypabact::Die()
             arg67.tgt_type = _primTtype;
             arg67.priority = 0;
 
-            v74->bact->SetTarget(&arg67);
+            deputy->SetTarget(&arg67);
 
-            ypabact_func77__sub0(this, v74->bact);
+            ypabact_func77__sub0(this, deputy);
 
-            v74->bact->_commandID = _commandID;
-            v74->bact->_aggr = _aggr;
+            deputy->_commandID = _commandID;
+            deputy->_aggr = _aggr;
 
             if ( _world->isNetGame )
             {
                 if (_owner)
-                    deadMsg.newParent = v74->bact->_gid;
+                    deadMsg.newParent = deputy->_gid;
             }
         }
         else
         {
-            bact_node *v64 = (bact_node *)_subjects_list.head;
-
-            while(v64->next)
+            for(World::RefBactList::iterator kidXit = _kidList.begin(); kidXit != _kidList.end(); )
             {
-                bact_node *v21 = (bact_node *)v64->bact->_subjects_list.head;
-
-                while (v21->next)
+                NC_STACK_ypabact *kidX = *kidXit;
+                kidXit++;
+                
+                for ( World::RefBactList::iterator kidYit = kidX->_kidList.begin(); kidYit != kidX->_kidList.end(); )
                 {
-                    bact_node *next2 = (bact_node *)v21->next;
+                    NC_STACK_ypabact *kidY = *kidYit;
+                    kidYit++;
 
-                    _world->ypaworld_func134(v21->bact);
+                    _world->ypaworld_func134(kidY);
 
-                    if ( v21->bact->_status != BACT_STATUS_DEAD )
-                        ypa_log_out("Scheisse, da hфngt noch ein Lebendiger unter der Leiche! owner %d, state %d, class %d\n", v21->bact->_owner, v21->bact->_status, _bact_type);
-
-                    v21 = next2;
+                    if ( kidY->_status != BACT_STATUS_DEAD )
+                        ypa_log_out("Scheisse, da hфngt noch ein Lebendiger unter der Leiche! owner %d, state %d, class %d\n", kidY->_owner, kidY->_status, _bact_type);
                 }
-
-                bact_node *next1 = (bact_node *)v64->next;
-
-                _world->ypaworld_func134(v64->bact);
-
-                v64 = next1;
+                _world->ypaworld_func134(kidX);
             }
         }
     }
 
     NC_STACK_ypabact *v76 = _world->getYW_userHostStation();
 
-    if ( !v74 && _host_station == _parent && !(_status_flg & BACT_STFLAG_NOMSG) )
+    if ( !deputy && _host_station == _parent && !(_status_flg & BACT_STFLAG_NOMSG) )
     {
         robo_arg134 v53;
 
@@ -3558,9 +3516,14 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
                 wobj->_position = wobj->_position - wobj->_rotation.AxisZ() * 30.0;
         }
 
+        /** Missiles will be stored in another list
+         *  so kidref will be not attached to anything.
+         *  Looks it's somehow related to mentioned problem with dead cache.
+        **/
+        
         if ( wobj->_parent )
         {
-            Remove(&wobj->_subject_node);
+            wobj->_kidRef.Detach();
             wobj->_parent = NULL;
         }
 
@@ -3696,14 +3659,8 @@ size_t NC_STACK_ypabact::SetPosition(bact_arg80 *arg)
 
 void NC_STACK_ypabact::GetSummary(bact_arg81 *arg)
 {
-    bact_node *node = (bact_node *)_subjects_list.head;
-
-    while ( node->next )
-    {
-        node->bact->GetSummary(arg);
-
-        node = (bact_node *)node->next;
-    }
+    for ( NC_STACK_ypabact* &node : _kidList )
+        node->GetSummary(arg);
 
     if ( _status != BACT_STATUS_DEAD )
     {
@@ -4550,17 +4507,14 @@ void NC_STACK_ypabact::ypabact_func89(IDVPair *arg)
 }
 
 
-int GetSectorTarget__sub0__sub0(NC_STACK_ypabact *unit)
+bool GetSectorTarget__sub0__sub0(NC_STACK_ypabact *unit)
 {
-    bact_node *node = (bact_node *)unit->_subjects_list.head;
-    while ( node->next )
+    for ( NC_STACK_ypabact* &node : unit->_kidList )
     {
-        if ( node->bact->_secndTtype != BACT_TGT_TYPE_UNIT )
-            return 1;
-
-        node = (bact_node *)node->next;
+        if ( node->_secndTtype != BACT_TGT_TYPE_UNIT )
+            return true;
     }
-    return 0;
+    return false;
 }
 
 NC_STACK_ypabact * GetSectorTarget__sub0(cellArea *cell, NC_STACK_ypabact *unit, float *radius, char *job)
@@ -5091,7 +5045,7 @@ void NC_STACK_ypabact::GetFormationPosition(bact_arg94 *arg)
     }
 
     // With y = 0
-    arg->pos2 = vec3d::X0Z( arg->pos1.XZ() - _position.XZ() );
+    //arg->pos2 = vec3d::X0Z( arg->pos1.XZ() - _position.XZ() );
 }
 
 void NC_STACK_ypabact::ypabact_func95(IDVPair *arg)
@@ -5165,7 +5119,7 @@ void NC_STACK_ypabact::Renew()
     memset(&_vp_extra, 0, sizeof(extra_vproto) * 3);
 
     init_list(&_attackers_list);
-    init_list(&_subjects_list);
+    _kidList.clear();
     _missiles_list.clear();
 
     _attack_node_scnd.next = NULL;
@@ -5413,7 +5367,7 @@ size_t NC_STACK_ypabact::CheckFireAI(bact_arg101 *arg)
     return 0;
 }
 
-void NC_STACK_ypabact::MarkSectorsForView(IDVPair *arg)
+void NC_STACK_ypabact::MarkSectorsForView()
 {
     if ( _bact_type != BACT_TYPES_MISSLE )
     {
@@ -5479,13 +5433,8 @@ void NC_STACK_ypabact::MarkSectorsForView(IDVPair *arg)
                 }
             }
 
-            bact_node *v15 = (bact_node *)_subjects_list.head;
-            while( v15->next )
-            {
-                v15->bact->MarkSectorsForView(NULL);
-
-                v15 = (bact_node *)v15->next;
-            }
+            for( NC_STACK_ypabact* &kid : _kidList )
+                kid->MarkSectorsForView();
         }
     }
 }
@@ -5815,35 +5764,35 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
                 arg147.pos = v80;
                 arg147.vehicle_id = _mgun;
 
-                NC_STACK_ypamissile *v57 = _world->ypaworld_func147(&arg147);
+                NC_STACK_ypamissile *gunFireBact = _world->ypaworld_func147(&arg147);
 
-                if ( v57 )
+                if ( gunFireBact )
                 {
-                    v57->_owner = _owner;
+                    gunFireBact->_owner = _owner;
 
-                    if ( v57->_parent )
+                    if ( gunFireBact->_parent )
                     {
-                        Remove(&v57->_subject_node);
-                        v57->_parent = NULL;
+                        gunFireBact->_kidRef.Detach();
+                        gunFireBact->_parent = NULL;
                     }
 
-                    _missiles_list.push_back(v57);
+                    _missiles_list.push_back(gunFireBact);
 
                     setState_msg v69;
                     v69.newStatus = BACT_STATUS_DEAD;
                     v69.setFlags = 0;
                     v69.unsetFlags = 0;
 
-                    v57->SetStateInternal(&v69);
+                    gunFireBact->SetStateInternal(&v69);
 
                     if ( v96 )
                     {
                         v69.setFlags = BACT_STFLAG_DEATH2;
                         v69.newStatus = BACT_STATUS_NOPE;
                         v69.unsetFlags = 0;
-                        v57->SetStateInternal(&v69);
+                        gunFireBact->SetStateInternal(&v69);
 
-                        v57->AlignMissileByNormal( v59.skel->polygons[ v59.polyID ].Normal() );
+                        gunFireBact->AlignMissileByNormal( v59.skel->polygons[ v59.polyID ].Normal() );
                     }
                 }
             }
@@ -6163,27 +6112,24 @@ NC_STACK_ypabact *sb_0x493984__sub1(NC_STACK_ypabact *bact)
 
     NC_STACK_ypabact *new_leader = NULL;
 
-    bact_node *kid_unit = (bact_node *)bact->_subjects_list.head;
-    while ( kid_unit->next )
+    for ( NC_STACK_ypabact* &kid_unit : bact->_kidList )
     {
-        if ( kid_unit->bact->_status != BACT_STATUS_DEAD )
+        if ( kid_unit->_status != BACT_STATUS_DEAD )
         {
-            int a4 = kid_unit->bact->getBACT_inputting();
+            int a4 = kid_unit->getBACT_inputting();
 
             if ( !a4 )
             {
 
-                float v17 = (v12.XZ() - kid_unit->bact->_position.XZ()).length();
+                float v17 = (v12.XZ() - kid_unit->_position.XZ()).length();
 
-                if ( !new_leader || (kid_unit->bact->_bact_type != BACT_TYPES_UFO && v14 > v17) || (new_leader->_bact_type == BACT_TYPES_UFO && (kid_unit->bact->_bact_type != BACT_TYPES_UFO || v14 > v17 )) )
+                if ( !new_leader || (kid_unit->_bact_type != BACT_TYPES_UFO && v14 > v17) || (new_leader->_bact_type == BACT_TYPES_UFO && (kid_unit->_bact_type != BACT_TYPES_UFO || v14 > v17 )) )
                 {
-                    new_leader = kid_unit->bact;
+                    new_leader = kid_unit;
                     v14 = v17;
                 }
             }
         }
-
-        kid_unit = (bact_node *)kid_unit->next;
     }
     return new_leader;
 }
@@ -6193,31 +6139,27 @@ NC_STACK_ypabact *sb_0x493984__sub0(NC_STACK_ypabact *bact)
     float tmp = 0.0;
     NC_STACK_ypabact *new_leader = NULL;
 
-    bact_node *kid_unit = (bact_node *)bact->_subjects_list.head;
-    while ( kid_unit->next )
+    for ( NC_STACK_ypabact* &kid_unit : bact->_kidList )
     {
-        NC_STACK_ypabact *v4 = kid_unit->bact;
-
-        if ( v4->_status != BACT_STATUS_DEAD )
+        if ( kid_unit->_status != BACT_STATUS_DEAD )
         {
             float v10;
-            if ( v4->_bact_type == BACT_TYPES_UFO )
+            if ( kid_unit->_bact_type == BACT_TYPES_UFO )
             {
                 v10 = 0.0;
             }
             else
             {
-                float v8 = 1.0 - ( (bact->_position.XZ() - v4->_position.XZ()).length() / 110400.0);
-                v10 = (float)v4->_energy / (float)v4->_energy_max + v8;
+                float v8 = 1.0 - ( (bact->_position.XZ() - kid_unit->_position.XZ()).length() / 110400.0);
+                v10 = (float)kid_unit->_energy / (float)kid_unit->_energy_max + v8;
             }
 
             if ( !new_leader || tmp < v10 )
             {
-                new_leader = v4;
+                new_leader = kid_unit;
                 tmp = v10;
             }
         }
-        kid_unit = (bact_node *)kid_unit->next;
     }
 
     return new_leader;
@@ -6225,7 +6167,7 @@ NC_STACK_ypabact *sb_0x493984__sub0(NC_STACK_ypabact *bact)
 
 NC_STACK_ypabact *sb_0x493984(NC_STACK_ypabact *bact, int a2)
 {
-    if ( bact->_subjects_list.head->next )
+    if ( !bact->_kidList.empty() )
     {
         NC_STACK_ypabact *new_leader = NULL;
 
@@ -6243,17 +6185,14 @@ NC_STACK_ypabact *sb_0x493984(NC_STACK_ypabact *bact, int a2)
 
             new_leader->CopyTargetOf(bact);
 
-            bact_node *kid_unit = (bact_node *)bact->_subjects_list.head;
-
-            while ( kid_unit->next )
+            for ( World::RefBactList::iterator it = bact->_kidList.begin(); it != bact->_kidList.end(); )
             {
-                bact_node *next1 = (bact_node *)kid_unit->next;
+                NC_STACK_ypabact *kid_unit = *it;
+                it++;
 
-                new_leader->AddSubject(kid_unit->bact);
+                new_leader->AddSubject(kid_unit);
 
-                kid_unit->bact->CopyTargetOf(new_leader);
-
-                kid_unit = next1;
+                kid_unit->CopyTargetOf(new_leader);
             }
             new_leader->_commandID = bact->_commandID;
             return new_leader;
@@ -6273,11 +6212,11 @@ void NC_STACK_ypabact::sub_493480(NC_STACK_ypabact *bact2, int mode)
         ordMsg.num = 0;
         ordMsg.commID = bact2->_commandID;
 
-        for ( bact_node *bct = (bact_node *)bact2->_subjects_list.head; bct->next; bct = (bact_node *)bct->next )
+        for ( NC_STACK_ypabact* &bct : bact2->_kidList )
         {
             if ( ordMsg.num < 500 )
             {
-                ordMsg.units[ordMsg.num] = bct->bact->_gid;
+                ordMsg.units[ordMsg.num] = bct->_gid;
                 ordMsg.num++;
             }
         }
@@ -6316,18 +6255,16 @@ void NC_STACK_ypabact::ReorganizeGroup(bact_arg109 *arg)
 
                 arg->field_4->AddSubject(this);
 
-                while ( 1 )
+                while ( !_kidList.empty() )
                 {
-                    bact_node *v6 = (bact_node *)_subjects_list.head;
-                    if ( !v6->next )
-                        break;
+                    NC_STACK_ypabact *kid = _kidList.front();
 
-                    v6->bact->_aggr = arg->field_4->_aggr;
-                    v6->bact->_commandID = arg->field_4->_commandID;
+                    kid->_aggr = arg->field_4->_aggr;
+                    kid->_commandID = arg->field_4->_commandID;
 
-                    v6->bact->CopyTargetOf(arg->field_4);
-
-                    arg->field_4->AddSubject(v6->bact);
+                    arg->field_4->AddSubject(kid);
+                    
+                    kid->CopyTargetOf(arg->field_4);
                 }
 
                 CopyTargetOf(arg->field_4);
@@ -6357,16 +6294,14 @@ void NC_STACK_ypabact::ReorganizeGroup(bact_arg109 *arg)
 
                     AddSubject(arg->field_4);
 
-                    while ( 1 )
+                    while ( !arg->field_4->_kidList.empty() )
                     {
-                        bact_node *v10 = (bact_node *)arg->field_4->_subjects_list.head;;
-                        if ( !v10->next )
-                            break;
+                        NC_STACK_ypabact *kid = arg->field_4->_kidList.front();
+                        
+                        AddSubject(kid);
+                        kid->_aggr = arg->field_4->_aggr;
 
-                        AddSubject(v10->bact);
-                        v10->bact->_aggr = arg->field_4->_aggr;
-
-                        v10->bact->CopyTargetOf(this);
+                        kid->CopyTargetOf(this);
                     }
 
                     _commandID = arg->field_4->_commandID;
@@ -7129,10 +7064,10 @@ void NC_STACK_ypabact::NetUpdate(update_msg *upd)
 
     ypabact_func117(upd);
 
-    for ( YpamissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end(); it++ )
+    for ( NC_STACK_ypamissile* &misl : _missiles_list )
     {
-        (*it)->setMISS_launcher(this);
-        (*it)->Update(upd);
+        misl->setMISS_launcher(this);
+        misl->Update(upd);
     }
 
     sub_481F94(this);
@@ -7148,9 +7083,9 @@ void NC_STACK_ypabact::NetUpdate(update_msg *upd)
 
     upd->units_count = 0;
 
-    for ( bact_node *bct = (bact_node *)_subjects_list.head; bct->next; bct = (bact_node *)bct->next )
+    for (NC_STACK_ypabact* &bct : _kidList)
     {
-        bct->bact->NetUpdate(upd);
+        bct->NetUpdate(upd);
         upd->units_count++;
     }
 
@@ -8093,26 +8028,22 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
 void SetPath__sub0(NC_STACK_ypabact *bact, int a2)
 {
-    bact_node *kidunit = (bact_node *)bact->_subjects_list.head;
-
-    while ( kidunit->next )
+    for (NC_STACK_ypabact* &kidunit : bact->_kidList)
     {
-        kidunit->bact->_waypoints_count = bact->_waypoints_count;
-        kidunit->bact->_current_waypoint = a2;
+        kidunit->_waypoints_count = bact->_waypoints_count;
+        kidunit->_current_waypoint = a2;
 
-        kidunit->bact->_status_flg |= BACT_STFLAG_WAYPOINT;
+        kidunit->_status_flg |= BACT_STFLAG_WAYPOINT;
 
         if ( bact->_status_flg & BACT_STFLAG_WAYPOINTCCL )
-            kidunit->bact->_status_flg |= BACT_STFLAG_WAYPOINTCCL;
+            kidunit->_status_flg |= BACT_STFLAG_WAYPOINTCCL;
         else
-            kidunit->bact->_status_flg &= ~BACT_STFLAG_WAYPOINTCCL;
+            kidunit->_status_flg &= ~BACT_STFLAG_WAYPOINTCCL;
 
         for (int i = 0; i < 32; i++)
         {
-            kidunit->bact->_waypoints[i] = bact->_waypoints[i];
+            kidunit->_waypoints[i] = bact->_waypoints[i];
         }
-
-        kidunit = (bact_node *)kidunit->next;
     }
 }
 
@@ -8155,22 +8086,18 @@ size_t NC_STACK_ypabact::SetPath(bact_arg124 *arg)
     arg67.priority = 0;
     SetTarget(&arg67);
 
-    bact_node * kidunit = (bact_node *)_subjects_list.head;
-
-    while ( kidunit->next )
+    for (NC_STACK_ypabact* &kidunit : _kidList)
     {
-        if ( (kidunit->bact->_bact_type == BACT_TYPES_CAR || kidunit->bact->_bact_type == BACT_TYPES_TANK) && _pSector != kidunit->bact->_pSector )
+        if ( (kidunit->_bact_type == BACT_TYPES_CAR || kidunit->_bact_type == BACT_TYPES_TANK) && _pSector != kidunit->_pSector )
         {
             bact_arg124 arg125;
             arg125.steps_cnt = maxsteps;
-            arg125.from = kidunit->bact->_position.XZ();
+            arg125.from = kidunit->_position.XZ();
             arg125.to = arg->to;
             arg125.field_12 = arg->field_12;
 
-            kidunit->bact->SetPath(&arg125);
+            kidunit->SetPath(&arg125);
         }
-
-        kidunit = (bact_node *)kidunit->next;
     }
 
     return 1;
@@ -8217,14 +8144,8 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
             {
                 if ( !(_status_flg & BACT_STFLAG_WAYPOINT) || !(_status_flg & BACT_STFLAG_WAYPOINTCCL) )
                 {
-                    bact_node *node = (bact_node *)_subjects_list.head;
-
-                    while(node->next)
-                    {
-                        node->bact->CopyTargetOf(this);
-
-                        node = (bact_node *)node->next;
-                    }
+                    for (NC_STACK_ypabact* &node : _kidList)
+                        node->CopyTargetOf(this);
                 }
             }
             else
@@ -8318,15 +8239,9 @@ void NC_STACK_ypabact::setBACT_visProto(NC_STACK_base *vp)
 void NC_STACK_ypabact::setBACT_aggression(int aggr)
 {
     _aggr = aggr;
-
-    bact_node *nod = (bact_node *)_subjects_list.head;
-
-    while ( nod->next )
-    {
-        nod->bact->_aggr = aggr;
-
-        nod = (bact_node *)nod->next;
-    }
+    
+    for (NC_STACK_ypabact* &nod : _kidList)
+        nod->_aggr = aggr;
 }
 
 void NC_STACK_ypabact::setBACT_vpTransform(TFEngine::TForm3D *tr)
@@ -8443,9 +8358,9 @@ bool NC_STACK_ypabact::IsNeedsWaypoints( NC_STACK_ypabact *bact)
     if (bact->IsGroundUnit())
         return true;
     
-    for (bact_node *node = (bact_node *)bact->_subjects_list.head; node->next; node = (bact_node *)node->next)
+    for (NC_STACK_ypabact* &unit : bact->_kidList)
     {
-        if (node->bact->IsGroundUnit())
+        if (unit->IsGroundUnit())
             return true;
     }
     
@@ -8570,7 +8485,7 @@ size_t NC_STACK_ypabact::compatcall(int method_id, void *data)
     case 101:
         return (size_t)CheckFireAI( (bact_arg101 *)data );
     case 102:
-        MarkSectorsForView( (IDVPair *)data );
+        MarkSectorsForView();
         return 1;
     case 103:
         ypabact_func103( (IDVPair *)data );
