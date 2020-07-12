@@ -169,7 +169,7 @@ rsrc * NC_STACK_bitmap::rsrc_func64(IDVList &stak)
                     intern->height = height;
 
                     // allocate buffer, create palette, surface and texture
-                    intern->swTex = CreateSurfaceScreenFormat(width, height);
+                    intern->swTex = engines.display___win3d->CreateSurfaceScreenFormat(width, height);
                     if (!intern->swTex)
                     {
                         delete intern;
@@ -305,20 +305,6 @@ void NC_STACK_bitmap::PrepareTexture( bool force )
     engines.display___win3d->AllocTexture(stack__bitmap.bitm_intern);
 }
 
-SDL_Surface * NC_STACK_bitmap::ConvertToScreen(SDL_Surface *src)
-{
-    return SDL_ConvertSurface(src, engines.display___win3d->GetScreenFormat(), 0);
-}
-
-SDL_Surface *NC_STACK_bitmap::CreateSurfaceScreenFormat(int width, int height)
-{
-    SDL_PixelFormat *fmt = engines.display___win3d->GetScreenFormat();
-#if SDL_VERSION_ATLEAST(2,0,5)
-    return SDL_CreateRGBSurfaceWithFormat(0, width, height, fmt->BitsPerPixel, fmt->format);
-#else
-    return SDL_CreateRGBSurface(0, width, height, fmt->BitsPerPixel, fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask );
-#endif
-}
 
 size_t NC_STACK_bitmap::compatcall(int method_id, void *data)
 {

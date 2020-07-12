@@ -6,6 +6,7 @@
 #include "image.h"
 #include "win3d.h"
 #include "utils.h"
+#include "includes.h"
 
 #include "glob_funcs.h"
 
@@ -159,7 +160,7 @@ rsrc * NC_STACK_image::rsrc_func64(IDVList &stak)
     
     if (convertColor)
     {
-        SDL_Surface *screenFmt = ConvertToScreen(loaded);
+        SDL_Surface *screenFmt = engines.display___win3d->ConvertToScreenFormat(loaded);
         if (screenFmt)
         {
             SDL_FreeSurface(bitm->swTex);

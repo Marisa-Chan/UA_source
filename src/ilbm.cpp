@@ -445,7 +445,7 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
 
         if ( convertColor )
         {
-            SDL_Surface *screenFmt = ConvertToScreen(bitm->swTex);
+            SDL_Surface *screenFmt = engines.display___win3d->ConvertToScreenFormat(bitm->swTex);
             if (screenFmt)
             {
                 SDL_FreeSurface(bitm->swTex);

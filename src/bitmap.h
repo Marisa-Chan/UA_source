@@ -87,9 +87,6 @@ public:
     int sub_416704(pixel_2d *a3);
     
     virtual void PrepareTexture( bool force = false );
-    
-    static SDL_Surface *ConvertToScreen(SDL_Surface *src);
-    static SDL_Surface *CreateSurfaceScreenFormat(int width, int height);
 
 public:
     //Data

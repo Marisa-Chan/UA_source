@@ -2511,6 +2511,39 @@ SDL_PixelFormat *NC_STACK_win3d::GetScreenFormat()
     return stack__win3d.screenSurface->format;
 }
 
+SDL_Surface *NC_STACK_win3d::CreateSurfaceScreenFormat(int width, int height)
+{
+    SDL_PixelFormat *fmt = engines.display___win3d->GetScreenFormat();
+#if SDL_VERSION_ATLEAST(2,0,5)
+    return SDL_CreateRGBSurfaceWithFormat(0, width, height, fmt->BitsPerPixel, fmt->format);
+#else
+    return SDL_CreateRGBSurface(0, width, height, fmt->BitsPerPixel, fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask );
+#endif
+}
+
+SDL_Surface *NC_STACK_win3d::ConvertToScreenFormat(SDL_Surface *src)
+{
+#if (SDL_COMPILEDVERSION == SDL_VERSIONNUM(2, 0, 12))
+    /***
+     * Workaround for bug with convertation of surface with palette introduced
+     * in SDL2 2.0.12 and fixed soon but after release.
+     ***/
+    if (src->format->BytesPerPixel == 1)
+    {
+        SDL_Surface *tmp = CreateSurfaceScreenFormat(src->w, src->h);
+        SDL_BlendMode blend = SDL_BLENDMODE_NONE;
+        SDL_GetSurfaceBlendMode(src, &blend);
+        SDL_SetSurfaceBlendMode(src, SDL_BLENDMODE_NONE);
+        SDL_BlitSurface(src, NULL, tmp, NULL);
+        SDL_SetSurfaceBlendMode(src, blend);
+        return tmp;
+    }
+    else
+        return SDL_ConvertSurface(src, stack__win3d.screenSurface->format, 0);
+#else
+    return SDL_ConvertSurface(src, stack__win3d.screenSurface->format, 0);
+#endif
+}
 
 size_t NC_STACK_win3d::compatcall(int method_id, void *data)
 {

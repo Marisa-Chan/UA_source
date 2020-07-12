@@ -259,6 +259,8 @@ public:
     
     virtual void ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool transp) = 0;
     virtual SDL_PixelFormat *GetScreenFormat() = 0;
+    virtual SDL_Surface *CreateSurfaceScreenFormat(int width, int height) = 0;
+    virtual SDL_Surface *ConvertToScreenFormat(SDL_Surface *src) = 0;
 
     //Data
 public:

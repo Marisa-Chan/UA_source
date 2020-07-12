@@ -207,6 +207,8 @@ public:
 
     virtual void ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool transp);
     virtual SDL_PixelFormat *GetScreenFormat();
+    virtual SDL_Surface *CreateSurfaceScreenFormat(int width, int height);
+    virtual SDL_Surface *ConvertToScreenFormat(SDL_Surface *src);
 
 protected:
     int initPolyEngine();
