@@ -135,7 +135,7 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     draggingItem = NULL;
 //shortPoint field_17b8;
     draggingLock = 0;
-    field_17c0 = 0; // Grab mouse for unit steer-turn
+    _mouseGrabbed = 0; // Grab mouse for unit steer-turn
     field_17c4 = 0;
     field_17c8 = 0;
     tooltips = NULL;
@@ -6233,7 +6233,7 @@ char * sb_0x481264__sub0(NC_STACK_ypaworld *yw, int a2)
 
 void draw_tooltip(NC_STACK_ypaworld *yw)
 {
-    if ( yw->field_17c0 || (yw->field_17c4 && !yw->field_1b1c) )
+    if ( yw->_mouseGrabbed || (yw->field_17c4 && !yw->field_1b1c) )
     {
         const char *tooltip = get_lang_string(yw->string_pointers_p2, yw->field_17c4 + 800, yw->tooltips[ yw->field_17c4 ]);
         int v15 = -(yw->font_default_h + yw->icon0___h + yw->font_default_h / 4);

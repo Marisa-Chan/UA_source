@@ -1333,7 +1333,7 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
 
                 pcur = sub_4F6980(pcur, yw->field_1a98->_position.x, yw->field_1a98->_position.z, 0x86, a4, a5);
             }
-            else if ( yw->field_1a58 & 0x10 && yw->field_17c0 == 0)
+            else if ( yw->field_1a58 & 0x10 && yw->_mouseGrabbed == 0)
             {
                 if ( yw->field_1a60->owner == yw->UserRobo->_owner && ( (1 << yw->UserRobo->_owner) & yw->field_1a60->view_mask ) )
                 {
@@ -4443,7 +4443,7 @@ void sb_0x4c66f8(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypabac
 
             if ( bact1 == yw->UserRobo )
             {
-                yw->field_17c0 = 0;
+                yw->_mouseGrabbed = 0;
                 sb_0x4c66f8__sub0(yw);
             }
             else
@@ -11601,7 +11601,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(struC5 *arg)
         int v6 = 0;
         int v8 = 0;
 
-        if ( field_17c0 )
+        if ( _mouseGrabbed )
         {
             v6 = -1;
         }
@@ -12043,19 +12043,19 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(struC5 *inpt)
 
     if ( UserUnit->_status == BACT_STATUS_DEAD )
     {
-        field_17c0 = 0;
+        _mouseGrabbed = 0;
     }
     else if ( winp->flag & ClickBoxInf::FLAG_RM_DOWN )
     {
-        if ( field_17c0
+        if ( _mouseGrabbed
                 || winp->selected_btn == &robo_map
                 || winp->selected_btn == &bzda
                 || winp->selected_btn == &squadron_manager
                 || (!(bzda.field_1D0 & 1) && _activeCmdrRemapIndex != -1) )
         {
-            if ( field_17c0 )
+            if ( _mouseGrabbed )
             {
-                field_17c0 = 0;
+                _mouseGrabbed = 0;
             }
             else
             {
@@ -12065,7 +12065,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(struC5 *inpt)
         }
         else
         {
-            field_17c0 = 1;
+            _mouseGrabbed = 1;
 
             NC_STACK_input *input = INPe.getPInput();
 
@@ -12077,7 +12077,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(struC5 *inpt)
     if ( gui_lstvw.IsOpen() )
         inpt->sliders_vars[1] = 0;
 
-    if ( field_17c0 ) // If grabbed mouse
+    if ( _mouseGrabbed ) // If grabbed mouse
     {
         // Piu-piu mazafaka
         winp->selected_btnID = -1;

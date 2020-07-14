@@ -1308,7 +1308,7 @@ int yw_InitMouseStuff(NC_STACK_ypaworld *yw)
 int NC_STACK_ypaworld::yw_LoadSet(int setID)
 {
     _win3d = GFXEngine::GFXe.getC3D();
-    field_17c0 = 0;
+    _mouseGrabbed = 0;
 
     char buf[1024];
     sprintf(buf, "data:set%d", setID);

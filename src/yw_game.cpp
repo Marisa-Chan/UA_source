@@ -5489,18 +5489,18 @@ void NC_STACK_ypaworld::CameraPrepareRender(recorder *rcrd, NC_STACK_ypabact *ba
 
     float fperiod = inpt->period / 1000.0;
 
-    if ( field_17c0 || !(inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_DOWN) )
+    if ( _mouseGrabbed || !(inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_DOWN) )
     {
-        if ( field_17c0 )
+        if ( _mouseGrabbed )
         {
             if ( inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_DOWN )
-                field_17c0 = 0;
+                _mouseGrabbed = 0;
         }
     }
     else
     {
         if ( inpt->ClickInf.selected_btn != &robo_map  &&  inpt->ClickInf.selected_btn != &squadron_manager )
-            field_17c0 = 1;
+            _mouseGrabbed = 1;
     }
 
     if ( inpt->but_flags & 1 )
@@ -5508,7 +5508,7 @@ void NC_STACK_ypaworld::CameraPrepareRender(recorder *rcrd, NC_STACK_ypabact *ba
 
     ypaworld_func163__sub2__sub1(this, fperiod, inpt);
 
-    if ( field_17c0 )
+    if ( _mouseGrabbed )
         ypaworld_func163__sub2__sub0(this, fperiod, inpt);
 
     if ( rcrd->field_80 == 16 )

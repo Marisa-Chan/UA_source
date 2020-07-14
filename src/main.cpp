@@ -491,7 +491,7 @@ int sb_0x411324()
     
 
     // If mouse captured, enable releative mouse control
-    if (ypaworld->field_17c0)
+    if (ypaworld->_mouseGrabbed)
         SDLWRAP_releativeMouse(true);
     else
         SDLWRAP_releativeMouse(false);

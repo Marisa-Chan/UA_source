@@ -2694,7 +2694,7 @@ public:
     shortPoint draggingPos;
     bool draggingLock;
 
-    int field_17c0; // Grab mouse for unit steer-turn
+    int _mouseGrabbed; // Grab mouse for unit steer-turn
     int field_17c4;
     int field_17c8;
     const char **tooltips;
