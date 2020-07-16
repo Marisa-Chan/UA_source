@@ -291,7 +291,7 @@ int32_t IFFile::write(const void *buf, int32_t sz)
         return IFF_ERR_SYNTAX;
 
     if ( ctx->TAG_SIZE != -1 &&
-            ctx->position + sz <= ctx->TAG_SIZE)
+            ctx->position + sz > ctx->TAG_SIZE)
     {
         if ( ctx->TAG_SIZE == ctx->position )
             return 0;

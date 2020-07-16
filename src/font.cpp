@@ -450,7 +450,7 @@ char *FontUA::FormateAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, C
 
     int txtWidth = 0;
     
-    for ( auto c : arg->txt )
+    for ( uint8_t c : arg->txt )
         txtWidth += tset->map[ c ].w;
 
     int freeWidth = arg->width - txtWidth;

@@ -209,7 +209,7 @@ void UATileButton::Draw(SDL_Surface *surface, const Common::Rect &dirt)
     }
     
     int usedWidth = 0;
-    for ( auto t: *tileStr )
+    for ( uint8_t t: *tileStr )
         usedWidth += tilesStrSet->map[ t ].w;
     
     int dx = 0;
@@ -237,7 +237,7 @@ void UATileButton::Draw(SDL_Surface *surface, const Common::Rect &dirt)
         }
     }
     
-    for ( auto t: *tileStr )
+    for ( uint8_t t: *tileStr )
     {
         if (dx >= maxW)
             break;
@@ -279,7 +279,7 @@ Common::Point UATileButton::FixSizes(Common::Point sz)
     sz.y = tiles->h;
 
     int minW = 0;
-    for (auto t: _upTiles)
+    for (uint8_t t: _upTiles)
         minW += valtiles->map[t].w;
         
     if (!(_btnFlags & FLAG_NOBORDERS))
