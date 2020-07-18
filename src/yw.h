@@ -764,8 +764,7 @@ struct cellArea : public nnode
     uint8_t view_mask; // Who can view this sector (mask)
     char w_type;
     uint8_t w_id;
-    nlist units_list; // Units in this sector
-    World::RefBactList unitsList;
+    World::RefBactList unitsList; // Units in this sector
     float height;
     float averg_height;
     
@@ -813,7 +812,6 @@ struct cellArea : public nnode
         w_type = 0;
         w_id = 0;
         
-        init_list(&units_list);
         unitsList.clear();
         
         height = 0.0;

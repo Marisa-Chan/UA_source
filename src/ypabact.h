@@ -581,9 +581,7 @@ public:
     //Data
 public:
     static const Nucleus::ClassDescr description;
-public:
-    //ypabactTHINGTOREPLACE;
-    
+public:    
     
     World::RefBactList::Node _cellRef;
     

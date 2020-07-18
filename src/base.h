@@ -124,13 +124,6 @@ struct flag_xyz2
     int z;
 };
 
-struct base_66_arg_struct //Parent info struct
-{
-    NC_STACK_base *parent;
-    TFEngine::TForm3D *parent_field_1c;
-    nlist *KIDS;
-};
-
 struct baseRender_msg
 {
     int frameTime;

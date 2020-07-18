@@ -794,8 +794,6 @@ int cells_mark_type(NC_STACK_ypaworld *yw, const char *a2)
         cell->clear();
         secType *sectp = &yw->secTypes[ typMap[i] ];
 
-        init_list(&cell->units_list);
-
         cell->type_id = typMap[i];
         cell->comp_type = sectp->field_0;
         cell->energy_power = 0;
