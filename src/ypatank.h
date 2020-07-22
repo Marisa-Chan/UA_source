@@ -49,9 +49,9 @@ public:
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ypatank();
     virtual ~NC_STACK_ypatank() {};
-
-    virtual const char * getClassName() {
-        return "ypatank.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

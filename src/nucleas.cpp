@@ -128,7 +128,7 @@ size_t NC_STACK_nucleus::func3(IDVList &stak)
                 break;
 
             case NC_ATT_CLASSNAME:
-                *(const char **)val.value.p_data = getClassName();
+                *(const char **)val.value.p_data = GetClassName().c_str();
                 break;
 
             default:
@@ -309,13 +309,12 @@ int sub_4117F8(NC_STACK_nucleus *obj, IFFile *mfile)
     if ( mfile->pushChunk(TAG_OBJT, TAG_FORM, -1) )
         return 0;
 
-    const char *clsname = obj->getClassName();
-    int namesz = strlen(clsname) + 1;
+    std::string clsname = obj->GetClassName();
 
-    if ( mfile->pushChunk(0, TAG_CLID, namesz) )
+    if ( mfile->pushChunk(0, TAG_CLID, clsname.length() + 1) )
         return 0;
 
-    if ( mfile->write(clsname, namesz) < 0 )
+    if ( mfile->write(clsname.c_str(), clsname.length() + 1) < 0 )
         return 0;
 
     mfile->popChunk();

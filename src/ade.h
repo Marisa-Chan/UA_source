@@ -38,9 +38,9 @@ public:
         AttachedTo = NULL;
     };
     virtual ~NC_STACK_ade() {};
-
-    virtual const char * getClassName() {
-        return "ade.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

@@ -25,9 +25,9 @@ public:
         clear();
     };
     virtual ~NC_STACK_iwimp() {};
-
-    virtual const char * getClassName() {
-        return "iwimp.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

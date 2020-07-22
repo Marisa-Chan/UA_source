@@ -21,9 +21,9 @@ public:
         memset(&stack__itimer, 0, sizeof(stack__itimer));
     };
     virtual ~NC_STACK_itimer() {};
-
-    virtual const char * getClassName() {
-        return "itimer.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

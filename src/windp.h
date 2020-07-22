@@ -169,9 +169,9 @@ public:
         //memset(&wdp_intern, 0, sizeof(wdp_intern));
     };
     virtual ~NC_STACK_windp() {};
-
-    virtual const char * getClassName() {
-        return "windp.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

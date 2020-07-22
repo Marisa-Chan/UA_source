@@ -151,9 +151,9 @@ public:
         memset(&stack__skeleton, 0, sizeof(stack__skeleton));
     };
     virtual ~NC_STACK_skeleton() {};
-
-    virtual const char * getClassName() {
-        return "skeleton.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

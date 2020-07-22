@@ -27,9 +27,9 @@ public:
         _ufoFlags       = 0;
     };
     virtual ~NC_STACK_ypaufo() {};
-
-    virtual const char * getClassName() {
-        return "ypaufo.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

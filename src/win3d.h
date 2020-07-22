@@ -161,9 +161,9 @@ public:
         //memset(&stack__win3d, 0, sizeof(stack__win3d));
     };
     virtual ~NC_STACK_win3d() {};
-
-    virtual const char * getClassName() {
-        return "win3d.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

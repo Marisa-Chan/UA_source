@@ -25,9 +25,9 @@ public:
         _flyerType    = 0;
     };
     virtual ~NC_STACK_ypaflyer() {};
-
-    virtual const char * getClassName() {
-        return "ypaflyer.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

@@ -49,9 +49,9 @@ public:
         memset(&stack__ilbm, 0, sizeof(stack__ilbm));
     };
     virtual ~NC_STACK_ilbm() {};
-
-    virtual const char * getClassName() {
-        return "ilbm.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

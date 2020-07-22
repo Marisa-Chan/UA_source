@@ -42,9 +42,9 @@ public:
         memset(&stack__amesh, 0, sizeof(stack__amesh));
     };
     virtual ~NC_STACK_amesh() {};
-
-    virtual const char * getClassName() {
-        return "amesh.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

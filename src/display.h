@@ -204,9 +204,9 @@ public:
         memset(&stack__display, 0, sizeof(stack__display));
     };
     virtual ~NC_STACK_display() {};
-
-    virtual const char * getClassName() {
-        return "display.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

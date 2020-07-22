@@ -145,8 +145,8 @@ public:
     };
     virtual ~NC_STACK_nucleus() {};
 
-    virtual const char * getClassName() {
-        return "nucleus.class";
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

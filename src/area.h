@@ -55,9 +55,9 @@ public:
         memset(&stack__area, 0, sizeof(stack__area));
     };
     virtual ~NC_STACK_area() {};
-
-    virtual const char * getClassName() {
-        return "area.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

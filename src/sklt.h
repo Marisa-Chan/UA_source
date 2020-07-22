@@ -21,9 +21,9 @@ public:
         memset(&stack__sklt, 0, sizeof(stack__sklt));
     };
     virtual ~NC_STACK_sklt() {};
-
-    virtual const char * getClassName() {
-        return "sklt.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

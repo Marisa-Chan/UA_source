@@ -31,9 +31,9 @@ public:
         memset(&stack__sample, 0, sizeof(stack__sample));
     };
     virtual ~NC_STACK_sample() {};
-
-    virtual const char * getClassName() {
-        return "sample.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

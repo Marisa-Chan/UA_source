@@ -11,9 +11,9 @@ public:
 
     NC_STACK_image();
     virtual ~NC_STACK_image();
-
-    virtual const char * getClassName() {
-        return "image.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

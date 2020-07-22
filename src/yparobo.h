@@ -92,9 +92,9 @@ public:
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_yparobo();
     virtual ~NC_STACK_yparobo() {};
-
-    virtual const char * getClassName(){
-        return "yparobo.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

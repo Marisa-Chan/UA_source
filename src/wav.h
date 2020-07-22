@@ -20,9 +20,9 @@ public:
         memset(&stack__wav, 0, sizeof(stack__wav));
     };
     virtual ~NC_STACK_wav() {};
-
-    virtual const char * getClassName() {
-        return "wav.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

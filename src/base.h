@@ -212,9 +212,9 @@ public:
         OBJT = NULL;
     };
     virtual ~NC_STACK_base() {};
-
-    virtual const char * getClassName() {
-        return "base.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

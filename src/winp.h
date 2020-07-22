@@ -34,9 +34,9 @@ public:
         memset(&stack__winp, 0, sizeof(stack__winp));
     };
     virtual ~NC_STACK_winp() {};
-
-    virtual const char * getClassName() {
-        return "winp.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

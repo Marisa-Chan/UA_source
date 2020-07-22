@@ -71,9 +71,9 @@ public:
         memset(&stack__bmpanim, 0, sizeof(stack__bmpanim));
     };
     virtual ~NC_STACK_bmpanim() {};
-
-    virtual const char * getClassName() {
-        return "bmpanim.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

@@ -93,8 +93,8 @@ public:
     NC_STACK_3ds();
     virtual ~NC_STACK_3ds();
 
-    virtual const char * getClassName() {
-        return "3ds.class";
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

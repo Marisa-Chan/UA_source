@@ -150,13 +150,12 @@ size_t NC_STACK_embed::func6(IFFile **file)
                         NC_STACK_rsrc *embd_obj = node->objects[i];
                         if ( embd_obj )
                         {
-                            const char *classname, *resname;
-                            classname = embd_obj->getClassName();
-                            resname = embd_obj->getRsrc_name();
+                            std::string classname = embd_obj->GetClassName();
+                            std::string resname = embd_obj->getRsrc_name();
 
                             mfile->pushChunk(0, TAG_EMRS, -1);
-                            mfile->write(classname, strlen(classname) + 1);
-                            mfile->write(resname, strlen(resname) + 1);
+                            mfile->write(classname.c_str(), classname.length() + 1);
+                            mfile->write(resname.c_str(), resname.length() + 1);
                             mfile->writeU8(0);
                             mfile->popChunk();
 

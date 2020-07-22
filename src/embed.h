@@ -28,9 +28,9 @@ public:
         memset(&stack__embed, 0, sizeof(stack__embed));
     };
     virtual ~NC_STACK_embed() {};
-
-    virtual const char * getClassName() {
-        return "embed.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

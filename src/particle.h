@@ -93,10 +93,9 @@ public:
         msetter = false;
     };
     virtual ~NC_STACK_particle() {};
-
-    virtual const char * getClassName()
-    {
-        return "particle.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance()

@@ -54,9 +54,9 @@ public:
     };
 
     virtual ~NC_STACK_rsrc() {};
-
-    virtual const char * getClassName() {
-        return "rsrc.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

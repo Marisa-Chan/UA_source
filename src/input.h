@@ -91,9 +91,9 @@ public:
         memset(&stack__input, 0, sizeof(stack__input));
     };
     virtual ~NC_STACK_input() {};
-
-    virtual const char * getClassName() {
-        return "input.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

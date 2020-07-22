@@ -18,9 +18,9 @@ public:
         memset(&stack__wintimer, 0, sizeof(stack__wintimer));
     };
     virtual ~NC_STACK_wintimer() {};
-
-    virtual const char * getClassName() {
-        return "wintimer.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

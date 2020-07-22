@@ -2327,10 +2327,9 @@ public:
     virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ypaworld();
     virtual ~NC_STACK_ypaworld() {};
-
-    virtual const char * getClassName()
-    {
-        return "ypaworld.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance()

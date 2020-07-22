@@ -51,9 +51,9 @@ public:
         memset(&stack__bitmap, 0, sizeof(stack__bitmap));
     };
     virtual ~NC_STACK_bitmap() {};
-
-    virtual const char * getClassName() {
-        return "bitmap.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

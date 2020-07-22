@@ -65,8 +65,8 @@ public:
     };
     virtual ~NC_STACK_idev() {};
 
-    virtual const char * getClassName() {
-        return "idev.class";
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

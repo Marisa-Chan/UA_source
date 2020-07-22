@@ -156,8 +156,8 @@ public:
     };
     virtual ~NC_STACK_button() {};
 
-    virtual const char * getClassName() {
-        return "button.class";
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {

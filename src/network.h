@@ -21,9 +21,9 @@ public:
         memset(&stack__network, 0, sizeof(stack__network));
     };
     virtual ~NC_STACK_network() {};
-
-    virtual const char * getClassName() {
-        return "network.class";
+    
+    virtual const std::string &GetClassName() const {
+        return description._classname;
     };
 
     static NC_STACK_nucleus * newinstance() {
