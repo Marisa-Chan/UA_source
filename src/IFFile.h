@@ -61,6 +61,7 @@ public:
     bool readFloatB(float &dst);
     bool readFloatL(double &dst);
     bool readFloatB(double &dst);
+    std::string readStr(int maxSz);
 
     bool writeU8(uint8_t val);
     bool writeS8(int8_t val);
@@ -74,7 +75,6 @@ public:
     bool writeS32B(int32_t val);
     bool writeFloatL(float val);
     bool writeFloatB(float val);
-
 
     static IFFile *openIFFile(const char *filename, bool forWrite);
 

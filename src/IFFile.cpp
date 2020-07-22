@@ -486,6 +486,14 @@ bool IFFile::readFloatB(double &dst)
     return true;
 }
 
+std::string IFFile::readStr(int maxSz)
+{
+    char *bf = new char[maxSz];
+    std::string tmp(bf, read(bf, maxSz));
+    delete[] bf;
+    return tmp;
+}
+
 bool IFFile::writeU8(uint8_t val)
 {
     return write(&val, 1) == 1;

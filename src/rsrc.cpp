@@ -168,6 +168,14 @@ const char * NC_STACK_rsrc::getRsrc_name()
     return NULL;
 }
 
+const std::string NC_STACK_rsrc::getRsrc_name() const
+{
+    if ( resource )
+        return resource->name;
+
+    return std::string();
+}
+
 int NC_STACK_rsrc::getRsrc_tryShared()
 {
     if ( resource )

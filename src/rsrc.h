@@ -79,6 +79,7 @@ public:
 
     //Get
     virtual const char * getRsrc_name();
+    virtual const std::string getRsrc_name() const;
     virtual int getRsrc_tryShared();
     virtual void *getRsrc_pData();
     virtual int getRsrc_dontCopy();
