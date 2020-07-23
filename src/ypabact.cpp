@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <math.h>
+#include <stack>
 #include "yw.h"
 #include "ypabact.h"
 #include "yparobo.h"
@@ -7737,14 +7738,12 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
     {
         for (int yy = 0; yy < _world->sectors_maxY2; yy++)
         {
-            cellArea *cll = &_world->cells[xx + yy * _world->sectors_maxX2];
+            cellArea &cll = _world->cells[xx + yy * _world->sectors_maxX2];
 
-            cll->pf_flags = 0;
-            cll->cost_to_this = 0;
-            cll->cost_to_target = 0;
-            cll->pf_treenode.next = NULL;
-            cll->pf_treenode.prev = NULL;
-            cll->pf_treeup= NULL;
+            cll.pf_flags = 0;
+            cll.cost_to_this = 0;
+            cll.cost_to_target = 0;
+            cll.pf_treeup= NULL;
         }
     }
 
@@ -7770,8 +7769,7 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
         return 1;
     }
 
-    nlist open_list;
-    init_list(&open_list);
+    std::list<cellArea *> openList;
 
     cellArea *start_pcell = NULL;
 
@@ -7789,7 +7787,6 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
     cellArea *current_pcell = start_pcell;
 
-    init_list(&start_pcell->pf_treelist);
     start_pcell->cost_to_this = 0;
 
     int v23 = abs(to_sec_x - from_sec_x);
@@ -7802,9 +7799,9 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
     while ( 1 )
     {
 
-        for(int dx = -1; dx < 2; dx++)
+        for(int dx = -1; dx <= 1; dx++)
         {
-            for(int dz = -1; dz < 2; dz++)
+            for(int dz = -1; dz <= 1; dz++)
             {
                 if ( dx == 0.0 && dz == 0.0 )
                     continue;
@@ -7884,12 +7881,7 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
                     cell_tzx->cost_to_target = new_cost_to_target;
 
                     if ( !(cell_tzx->pf_flags & CELL_PFLAGS_IN_OLST) )
-                        AddTail(&open_list, cell_tzx);
-
-                    if ( cell_tzx->pf_flags & CELL_PFLAGS_IN_OLST )
-                        Remove(&cell_tzx->pf_treenode);
-
-                    AddTail(&current_pcell->pf_treelist, &cell_tzx->pf_treenode);
+                        openList.push_back(cell_tzx);
 
                     cell_tzx->pf_treeup = current_pcell;
                     cell_tzx->pf_flags |= CELL_PFLAGS_IN_OLST;
@@ -7899,46 +7891,42 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
 
 
-        if ( !open_list.head->next )
+        if ( openList.empty() )
         {
             arg->steps_cnt = 0;
             return 0;
         }
 
-        cellArea *selected_cell = (cellArea *)open_list.head;
-        float selected_value = selected_cell->cost_to_this + selected_cell->cost_to_target;
-
-        cellArea *tmp_cell = (cellArea *)open_list.head;
-        while (tmp_cell->next)
+        std::list<cellArea *>::iterator it = openList.begin();
+        
+        std::list<cellArea *>::iterator selected = it;
+        float selected_value = (*selected)->cost_to_this + (*selected)->cost_to_target;
+        
+        for(it++; it != openList.end(); it++)
         {
-            float v49 = tmp_cell->cost_to_this + tmp_cell->cost_to_target;
+            float v49 = (*it)->cost_to_this + (*it)->cost_to_target;
 
             if ( v49 < selected_value )
             {
-                selected_cell = tmp_cell;
+                selected = it;
                 selected_value = v49;
             }
-
-            tmp_cell = (cellArea *)tmp_cell->next;
         }
+        
+        current_pcell = *selected;
+        current_sec_x = current_pcell->pos_x;
+        current_sec_z = current_pcell->pos_y;
 
-        current_sec_x = selected_cell->pos_x;
-        current_sec_z = selected_cell->pos_y;
-        current_pcell = selected_cell;
+        openList.erase(selected); // Remove OLIST
 
-        init_list(&selected_cell->pf_treelist);
-
-        Remove(selected_cell);
-
-        selected_cell->pf_flags &= ~CELL_PFLAGS_IN_OLST;
-        selected_cell->pf_flags |= CELL_PFLAGS_IN_CLST;
+        current_pcell->pf_flags &= ~CELL_PFLAGS_IN_OLST;
+        current_pcell->pf_flags |= CELL_PFLAGS_IN_CLST;
 
         if ( current_sec_x == to_sec_x && current_sec_z == to_sec_z )
             break;
     }
 
-    nlist way_list;
-    init_list(&way_list);
+    std::stack<cellArea *> pathCells;
 
     cellArea *iter_cell = NULL;
 
@@ -7951,19 +7939,22 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
     while(iter_cell)
     {
-        AddHead(&way_list, iter_cell);
+        pathCells.push(iter_cell);
         iter_cell = iter_cell->pf_treeup;
     }
+    int way_list;
 
-    cellArea *curcell = (cellArea *)way_list.head;
-    cellArea *nextcell = (cellArea *)way_list.head->next;
+    cellArea *curcell = pathCells.top();
+    pathCells.pop();
+    
+    cellArea *nextcell = pathCells.top();
 
     int v61 = nextcell->pos_x - curcell->pos_x;
     int v62 = nextcell->pos_y - curcell->pos_y;
 
     int step_id = 0;
 
-    while ( nextcell->next )
+    while ( !pathCells.empty() )
     {
         if ( maxsteps <= 1 || nextcell == target_pcell)
         {
@@ -7973,7 +7964,9 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
         }
 
         curcell = nextcell;
-        nextcell = (cellArea *)nextcell->next;
+        
+        pathCells.pop();
+        nextcell = pathCells.top();
 
         if ( nextcell->pos_x - curcell->pos_x != v61 || nextcell->pos_y - curcell->pos_y != v62 )
         {
@@ -8015,12 +8008,6 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
             step_id++;
         }
     }
-
-    while ( way_list.head->next )
-        Remove(way_list.head);
-
-    while ( open_list.head->next )
-        Remove(open_list.head);
 
     arg->steps_cnt = step_id + 1;
     return 1;

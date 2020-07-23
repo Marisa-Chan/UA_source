@@ -743,7 +743,7 @@ enum CELL_PFLAGS
     CELL_PFLAGS_IN_OLST = 2  // Sector in open list
 };
 
-struct cellArea : public nnode
+struct cellArea
 {
     int pos_x;
     int pos_y;
@@ -752,8 +752,6 @@ struct cellArea : public nnode
     char pf_flags; // Pathfind flags
     float cost_to_this;
     float cost_to_target;
-    nlist pf_treelist;
-    nnode pf_treenode;
     cellArea *pf_treeup;
 
     uint8_t owner;
