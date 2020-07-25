@@ -7942,7 +7942,6 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
         pathCells.push(iter_cell);
         iter_cell = iter_cell->pf_treeup;
     }
-    int way_list;
 
     cellArea *curcell = pathCells.top();
     pathCells.pop();
