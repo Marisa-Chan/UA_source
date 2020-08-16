@@ -327,14 +327,14 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
             if ( !INPe.getPInput()->keyb_setHotkey(&zz) )
             {
                 ypa_log_out("WARNING: cannot set hotkey %d with %s\n", cfgIdex, buf.c_str());
-                return ScriptParser::RESULT_BAD_DATA;
+                return ScriptParser::RESULT_OK;
             }
 
             int gsIndex = UserData::KeyIndexFromConfig(World::KEYC_TYPE_HOTKEY, cfgIdex);
             if ( gsIndex == -1 )
             {
                 ypa_log_out("Unknown number in hotkey-declaration (%d)\n", cfgIdex);
-                return ScriptParser::RESULT_BAD_DATA;
+                return ScriptParser::RESULT_OK;
             }
 
             _o.GameShell->keyConfig[ gsIndex ].inp_type = World::KEYC_TYPE_HOTKEY;
@@ -347,7 +347,7 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
                 if ( _o.GameShell->keyConfig[ gsIndex ].KeyCode == -1 )
                 {
                     ypa_log_out("Unknown keyword for hotkey: %s\n", tmp.c_str());
-                    return ScriptParser::RESULT_BAD_DATA;
+                    return ScriptParser::RESULT_OK;
                 }
                 ok = true;
             }
