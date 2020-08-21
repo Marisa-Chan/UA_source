@@ -33,8 +33,8 @@ int yw_InitTooltips(NC_STACK_ypaworld *yw);
 int loadTOD(NC_STACK_ypaworld *yw, const char *fname);
 int writeTOD(NC_STACK_ypaworld *yw, const char *fname, int tod);
 
-void sb_0x4eb94c(NC_STACK_ypaworld *yw, BriefengScreen *brf, struC5 *struc, int a5);
-void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, BriefengScreen *brf, struC5 *struc);
+void sb_0x4eb94c(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *struc, int a5);
+void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *struc);
 
 void set_keys_vals(NC_STACK_ypaworld *yw);
 void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr);
@@ -61,7 +61,7 @@ void yw_calcPlayerScore(NC_STACK_ypaworld *yw);
 
 int sub_4DA41C(NC_STACK_ypaworld *yw, LevelDesc *mapp, const char *fname);
 
-void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt);
+void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, InputState *inpt);
 
 NC_STACK_base *load_set_base();
 
@@ -316,7 +316,7 @@ struct map_event
     evnt evnts[16];
 };
 
-void ypaworld_func64__sub7(NC_STACK_ypaworld *yw, struC5 *inpt);
+void ypaworld_func64__sub7(NC_STACK_ypaworld *yw, InputState *inpt);
 void ypaworld_func64__sub8(NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub14(NC_STACK_ypaworld *yw);
 
@@ -348,7 +348,7 @@ void ypaworld_func64__sub20(NC_STACK_ypaworld *ywo, int dtime);
 void ypaworld_func64__sub6(NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub5(NC_STACK_ypaworld *yw);
 
-void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, struC5 *arg);
+void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, InputState *arg);
 
 
 
@@ -362,7 +362,7 @@ void ypaworld_func64__sub3(NC_STACK_ypaworld *yw);
 void sub_44A094(NC_STACK_ypaworld *yw);
 
 void FFeedback_Update(NC_STACK_ypaworld *yw);
-void sb_0x447720(NC_STACK_ypaworld *yw, struC5 *inpt);
+void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt);
 void recorder_update_time(NC_STACK_ypaworld *yw, int dtime);
 void recorder_write_frame(NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub22(NC_STACK_ypaworld *yw);
@@ -393,7 +393,7 @@ void deleteSplashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen);
 
 void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection = false);
 uint32_t yw_GetColor(NC_STACK_ypaworld *yw, int color_id);
-void yw_debriefUpdate(NC_STACK_ypaworld *yw, struC5 *inpt);
+void yw_debriefUpdate(NC_STACK_ypaworld *yw, InputState *inpt);
 void sub_4D6958(NC_STACK_ypaworld *yw, NC_STACK_ypabact *unit, samples_collection1 *collection);
 
 int sub_4C885C();

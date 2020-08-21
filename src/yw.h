@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <array>
+#include <string>
 
 #include "types.h"
 #include "memstream.h"
@@ -141,59 +142,59 @@ enum PREFERENCES_FLAGS
     PREF_ALTJOYSTICK    = 0x200,
 };
 
-enum KEYCONF
+enum INPUT_BIND
 {
-    KEYC_TYPE_BUTTON        = 1,
-    KEYC_TYPE_SLIDER        = 2,
-    KEYC_TYPE_HOTKEY        = 3,
+    INPUT_BIND_TYPE_BUTTON        = 1,
+    INPUT_BIND_TYPE_SLIDER        = 2,
+    INPUT_BIND_TYPE_HOTKEY        = 3,
 
-    KEYC_PAUSE      = 1,
-    KEYC_QUIT       = 2,
-    KEYC_DRIVE_DIR  = 3,
-    KEYC_DRIVE_SPEED= 4,
-    KEYC_GUN_HEIGHT = 5,
-    KEYC_FLY_HEIGHT = 6,
-    KEYC_FLY_SPEED  = 7,
-    KEYC_FLY_DIR    = 8,
-    KEYC_BRAKE      = 9,
-    KEYC_FIRE       = 10,
-    KEYC_CAMFIRE    = 11,
-    KEYC_GUN        = 12,
-    KEYC_SET_COMM   = 13,
-    KEYC_HUD        = 14,
-    KEYC_AUTOPILOT  = 15,
-    KEYC_ORDER      = 16,
-    KEYC_NEW        = 17,
-    KEYC_ADD        = 18,
-    KEYC_SQ_MANAGE  = 19,
-    KEYC_AGGR_1     = 20,
-    KEYC_AGGR_2     = 21,
-    KEYC_AGGR_3     = 22,
-    KEYC_AGGR_4     = 23,
-    KEYC_AGGR_5     = 24,
-    KEYC_MAP        = 25,
-    KEYC_WAPOINT    = 26,
-    KEYC_LANDLAYER  = 27,
-    KEYC_OWNER      = 28,
-    KEYC_HEIGHT     = 29,
-    KEYC_MINIMAP    = 30,
-    KEYC_LOCKVIEW   = 31,
-    KEYC_ZOOMIN     = 32,
-    KEYC_ZOOMOUT    = 33,
-    KEYC_LOG_WND    = 34,
-    KEYC_CONTROL    = 35,
-    KEYC_LAST_SEAT  = 36,
-    KEYC_ATTACK     = 37,
-    KEYC_TO_HOST    = 38,
-    KEYC_TO_COMM    = 39,
-    KEYC_NEXT_UNIT  = 40,
-    KEYC_NEXT_COMM  = 41,
-    KEYC_LAST_MSG   = 42,
-    KEYC_TO_ALL     = 43,
-    KEYC_HELP       = 44,
-    KEYC_ANALYZER   = 45,
+    INPUT_BIND_PAUSE      = 1,
+    INPUT_BIND_QUIT       = 2,
+    INPUT_BIND_DRIVE_DIR  = 3,
+    INPUT_BIND_DRIVE_SPEED= 4,
+    INPUT_BIND_GUN_HEIGHT = 5,
+    INPUT_BIND_FLY_HEIGHT = 6,
+    INPUT_BIND_FLY_SPEED  = 7,
+    INPUT_BIND_FLY_DIR    = 8,
+    INPUT_BIND_BRAKE      = 9,
+    INPUT_BIND_FIRE       = 10,
+    INPUT_BIND_CAMFIRE    = 11,
+    INPUT_BIND_GUN        = 12,
+    INPUT_BIND_SET_COMM   = 13,
+    INPUT_BIND_HUD        = 14,
+    INPUT_BIND_AUTOPILOT  = 15,
+    INPUT_BIND_ORDER      = 16,
+    INPUT_BIND_NEW        = 17,
+    INPUT_BIND_ADD        = 18,
+    INPUT_BIND_SQ_MANAGE  = 19,
+    INPUT_BIND_AGGR_1     = 20,
+    INPUT_BIND_AGGR_2     = 21,
+    INPUT_BIND_AGGR_3     = 22,
+    INPUT_BIND_AGGR_4     = 23,
+    INPUT_BIND_AGGR_5     = 24,
+    INPUT_BIND_MAP        = 25,
+    INPUT_BIND_WAPOINT    = 26,
+    INPUT_BIND_LANDLAYER  = 27,
+    INPUT_BIND_OWNER      = 28,
+    INPUT_BIND_HEIGHT     = 29,
+    INPUT_BIND_MINIMAP    = 30,
+    INPUT_BIND_LOCKVIEW   = 31,
+    INPUT_BIND_ZOOMIN     = 32,
+    INPUT_BIND_ZOOMOUT    = 33,
+    INPUT_BIND_LOG_WND    = 34,
+    INPUT_BIND_CONTROL    = 35,
+    INPUT_BIND_LAST_SEAT  = 36,
+    INPUT_BIND_ATTACK     = 37,
+    INPUT_BIND_TO_HOST    = 38,
+    INPUT_BIND_TO_COMM    = 39,
+    INPUT_BIND_NEXT_UNIT  = 40,
+    INPUT_BIND_NEXT_COMM  = 41,
+    INPUT_BIND_LAST_MSG   = 42,
+    INPUT_BIND_TO_ALL     = 43,
+    INPUT_BIND_HELP       = 44,
+    INPUT_BIND_ANALYZER   = 45,
 
-    KEYC_KEY_NUMBER = 46,
+    INPUT_BIND_MAX        = 46,
 };
 
 enum SOUND_ID
@@ -345,20 +346,6 @@ struct audiotrack_adv
     audiotrack_adv() : min_delay(0), max_delay(0) {};
 };
 
-struct inp_key_setting
-{
-    int16_t inp_type;
-    int16_t keyID;
-    int16_t KeyCode;
-    int16_t slider_neg;
-    int16_t field_8;
-    int16_t field_A;
-    int16_t field_C;
-    int16_t field_E;
-    int field_10;
-    const char *slider_name;
-};
-
 
 struct ProfilesNode
 {
@@ -440,6 +427,30 @@ class UserData
 friend class World::Parsers::ShellSoundParser;
 
 public:
+    struct TInputConf
+    {
+        uint8_t Type;
+        int16_t KeyID;
+        int16_t PKeyCode;
+        int16_t NKeyCode;
+        int16_t PKeyCodeBkp;
+        int16_t NKeyCodeBkp;
+        int16_t PKeyCodeDef;
+        int16_t NKeyCodeDef;
+        uint8_t SetFlags;
+        
+        TInputConf()
+        : Type(0), KeyID(0), PKeyCode(0), NKeyCode(0)
+        , PKeyCodeBkp(0), NKeyCodeBkp(0), PKeyCodeDef(0), NKeyCodeDef(0)
+        , SetFlags(0) {};
+        
+        TInputConf(uint8_t type, int16_t keyID, int16_t pKey, int16_t nKey = 0)
+        : Type(type), KeyID(keyID), PKeyCode(pKey), NKeyCode(nKey)
+        , PKeyCodeBkp(pKey), NKeyCodeBkp(nKey), PKeyCodeDef(pKey), NKeyCodeDef(nKey)
+        , SetFlags(0) {};
+    };
+
+public:
     int field_0x0;
     int field_0x4;
     int field_0x8;
@@ -449,7 +460,7 @@ public:
 
     NC_STACK_ypaworld *p_YW;
     NC_STACK_ypaworld *p_ypaworld;
-    struC5 *_input;
+    InputState *_input;
     int frameTime;
     uint32_t glblTime;
 
@@ -469,7 +480,7 @@ public:
     NC_STACK_button *titel_button;
     NC_STACK_button *button_input_button;
     GuiList input_listview;
-    int field_D36;
+    size_t field_D36;
     int field_D3A;
     bool inp_joystick;
     int field_D42;
@@ -599,7 +610,8 @@ public:
 
     EnvAction envAction;
 
-    inp_key_setting keyConfig[46];
+    std::array<TInputConf, World::INPUT_BIND_MAX>  InputConfig;
+    std::array<std::string, World::INPUT_BIND_MAX> InputConfigTitle;
 
     int16_t field_3426;
     int16_t shelltrack;
@@ -644,8 +656,8 @@ public:
     void ypaworld_func158__sub0__sub1();
     void ypaworld_func158__sub0__sub3();
     void yw_returnToTitle();
-    void sb_0x46a8c0();
-    void sb_0x46a8c0__sub0();
+    void InputPageCancel();
+    void InputConfCancel();
     void sub_46A3C0();
     void sub_46C914();
     void sub_46C748();
@@ -671,8 +683,8 @@ public:
     int ypaworld_func158__sub0__sub7();
     void sub_46D9E0(int a2, const char *txt1, const char *txt2, int a5);
     void sub_46D2B4();
-    void sub_457BC0();
-    void ypaworld_func158__sub0__sub0();
+    void InputConfCopyToBackup();
+    void InputConfigRestoreDefault();
     void sub_46C5F0(int a2);
     void  ypaworld_func158__sub0__sub5(int a2);
     void sub_46A7F8();
@@ -680,7 +692,7 @@ public:
 
     bool  ShellSoundsLoad();
 
-    static int KeyIndexFromConfig(uint32_t type, uint32_t index);
+    static int InputIndexFromConfig(uint32_t type, uint32_t index);
 
 protected:
     bool LoadSample(int block, int sampleID, const std::string &file);
@@ -2415,8 +2427,8 @@ protected:
 
     void GUI_Close();
 
-    void CameraPrepareRender(recorder *rcrd, NC_STACK_ypabact *bact, struC5 *inpt);
-    bool IsAnyInput(struC5 *struc);
+    void CameraPrepareRender(recorder *rcrd, NC_STACK_ypabact *bact, InputState *inpt);
+    bool IsAnyInput(InputState *struc);
 
 
     void GameShellUiOpenNetwork(); // On main menu "Multiplayer" press
@@ -2425,7 +2437,7 @@ protected:
     void GameShellInitBkgMode(int mode);
     bool GameShellInitBkg();
 
-    int  ypaworld_func158__sub0__sub0__sub0();
+    int  InputConfigLoadDefault();
 
 public:
     void GuiWinToFront(GuiBase *);
@@ -2503,7 +2515,7 @@ public:
     void sub_44F958(cellArea *cell, char secX, char secY, uint8_t owner);
     int ypaworld_func148__sub1(int id, int a4, int x, int y, int ownerID2, char blg_ID);
     
-    void debug_info_draw(struC5 *inpt);
+    void debug_info_draw(InputState *inpt);
     void debug_count_units();
     
     
@@ -2516,7 +2528,7 @@ public:
     void HistoryAktKill(NC_STACK_ypabact *bact);
     
     
-    int sub_449678(struC5 *struc, int kkode);
+    int sub_449678(InputState *struc, int kkode);
     
     bool yw_write_units(FSMgr::FileHandle *fil);
     bool yw_write_robo(NC_STACK_yparobo *robo, FSMgr::FileHandle *fil);
@@ -2537,27 +2549,27 @@ public:
     void sub_4C40AC();
     NC_STACK_ypabact *GetLastMsgSender();
     
-    void ypaworld_func64__sub7(struC5 *inpt);
-    void ypaworld_func64__sub7__sub4(struC5 *inpt);
+    void ypaworld_func64__sub7(InputState *inpt);
+    void ypaworld_func64__sub7__sub4(InputState *inpt);
     void ypaworld_func64__sub7__sub4__sub0(int a2);
     void ypaworld_func64__sub7__sub3__sub4(NC_STACK_ypabact *bact);
     bool ypaworld_func64__sub7__sub3__sub2();
     
-    void yw_MouseSelect(struC5 *arg);
-    void ypaworld_func64__sub21__sub1__sub0(struC5 *arg);
+    void yw_MouseSelect(InputState *arg);
+    void ypaworld_func64__sub21__sub1__sub0(InputState *arg);
     
     void yw_MAP_MouseSelect(ClickBoxInf *winp);
     
     void ypaworld_func64__sub21__sub1__sub3__sub0(ClickBoxInf *winp);
     void yw_3D_MouseSelect(ClickBoxInf *winp);
     
-    void ypaworld_func64__sub21(struC5 *arg);
+    void ypaworld_func64__sub21(InputState *arg);
     void ypaworld_func64__sub21__sub7();
     float sub_4498F4();
     
     int ypaworld_func64__sub7__sub3__sub1(ClickBoxInf *winpt);
     void yw_SMAN_MouseSelect(ClickBoxInf *winp);
-    void SquadManager_InputHandle(struC5 *inpt);
+    void SquadManager_InputHandle(InputState *inpt);
     NC_STACK_ypabact * sub_4C7B0C(int sqid, int a3);
     
     bool recorder_create_camera();
@@ -2573,22 +2585,24 @@ public:
     void ypaworld_func163__sub1(recorder *rcrd, int a3);
     
     void sub_4811E8(int id);
-    void ypaworld_func64__sub1(struC5 *inpt);
+    void ypaworld_func64__sub1(InputState *inpt);
     void ypaworld_func64__sub21__sub5(int arg);
     
     
     bool ypaworld_func64__sub21__sub6(ClickBoxInf *winp);
-    int ypaworld_func64__sub21__sub4(struC5 *arg, int a3);
+    int ypaworld_func64__sub21__sub4(InputState *arg, int a3);
     int ypaworld_func64__sub21__sub3();
     int ypaworld_func64__sub21__sub2();
     int sb_0x4d3d44(ClickBoxInf *winp);
-    void ypaworld_func64__sub7__sub6(struC5 *inpt);
+    void ypaworld_func64__sub7__sub6(InputState *inpt);
     
     int yw_MouseFindCreationPoint(ClickBoxInf *winp);
     
     void sb_0x4c87fc(const char *a2, GuiBase *lstvw);
     void sub_47DB04(char a2);
     void sub_449DE8(const char *a2);
+    
+    void LoadKeyNames();
     
     
     
@@ -2686,7 +2700,7 @@ public:
 
     int isDragging;
     GuiBase *draggingItem;
-    shortPoint draggingPos;
+    Common::Point draggingPos;
     bool draggingLock;
 
     int _mouseGrabbed; // Grab mouse for unit steer-turn

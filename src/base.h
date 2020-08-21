@@ -158,7 +158,7 @@ struct base_64arg
 {
     int TimeStamp;
     int DTime;
-    struC5 *field_8;
+    InputState *field_8;
     int field_C;
     int field_10;
 };

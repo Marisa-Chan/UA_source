@@ -5,115 +5,68 @@
 #include "winp.h"
 #include "utils.h"
 #include "log.h"
-#include "inp_ff.h"
 #include "gui/widget.h"
 
 const Nucleus::ClassDescr NC_STACK_winp::description("winp.class", &newinstance);
 
-struct winp__func67__internal
-{
-    const char *keyname;
-    int keytype;
-    int keycode;
-    int down;
-};
+std::map<int16_t, int16_t> NC_STACK_winp::KBDMapping;
 
-struct SDLWRAP_mouseState
-{
-    int l_state;
-    int r_state;
-    int m_state;
-    int dbl_state;
+int NC_STACK_winp::_kbdLastDown;
+int NC_STACK_winp::_kbdLastHit;
+std::queue<int32_t> NC_STACK_winp::_inputText;
 
-    int lu_cnt, ld_cnt;
-    int ru_cnt, rd_cnt;
-    int mu_cnt, md_cnt;
+bool NC_STACK_winp::_mLstate;
+bool NC_STACK_winp::_mRstate;
+bool NC_STACK_winp::_mMstate;
+bool NC_STACK_winp::_mDBLstate;
 
-    SDLWRAP_Point pos;
-    SDLWRAP_Point move;
-    SDLWRAP_Point __xrel;
+int NC_STACK_winp::_mLUcnt, NC_STACK_winp::_mLDcnt;
+int NC_STACK_winp::_mRUcnt, NC_STACK_winp::_mRDcnt;
+int NC_STACK_winp::_mMUcnt, NC_STACK_winp::_mMDcnt;
 
-    SDLWRAP_Point ld_pos;
-    SDLWRAP_Point rd_pos;
-    SDLWRAP_Point md_pos;
+Common::Point NC_STACK_winp::_mPos;
+Common::Point NC_STACK_winp::_mMove;
+Common::Point NC_STACK_winp::_mMoveQuery;
 
-    SDLWRAP_Point lu_pos;
-    SDLWRAP_Point ru_pos;
-    SDLWRAP_Point mu_pos;
-};
+Common::Point NC_STACK_winp::_mLDpos;
+Common::Point NC_STACK_winp::_mRDpos;
+Common::Point NC_STACK_winp::_mMDpos;
 
-#define KEYBCHARBUFF 8
-
-struct SDLWRAP_keybState
-{
-    int keyb_cont;
-    int keyb_norm;
-
-    int charBuff[KEYBCHARBUFF];
-    int charBuffCnt;
-};
+Common::Point NC_STACK_winp::_mLUpos;
+Common::Point NC_STACK_winp::_mRUpos;
+Common::Point NC_STACK_winp::_mMUpos;
 
 
-winp__func67__internal winp_keys[129] = {{"nop", 1, 0xFF, 0},       {"esc", 1, UAVK_ESCAPE, 0},       {"space", 1, UAVK_SPACE, 0},      {"up", 1, UAVK_UP, 0},        {"down", 1, UAVK_DOWN, 0},
-    {"left", 1, UAVK_LEFT, 0},   {"right", 1, UAVK_RIGHT, 0},      {"f1", 1, UAVK_F1, 0},            {"f2", 1, UAVK_F2, 0},        {"f3", 1, UAVK_F3, 0},
-    {"f4", 1, UAVK_F4, 0},       {"f5", 1, UAVK_F5, 0},            {"f6", 1, UAVK_F6, 0},            {"f7", 1, UAVK_F7, 0},        {"f8", 1, UAVK_F8, 0},
-    {"f9", 1, UAVK_F9, 0},       {"f10", 1, UAVK_F10, 0},          {"f11", 1, UAVK_F11, 0},          {"f12", 1, UAVK_F12, 0},      {"bs", 1, UAVK_BACK, 0},
-    {"tab", 1, UAVK_TAB, 0},     {"clear", 1, UAVK_CLEAR, 0},      {"return", 1, UAVK_RETURN, 0},    {"ctrl", 1, UAVK_CONTROL, 0}, {"rshift", 1, UAVK_SHIFT, 0},
-    {"lshift", 1, UAVK_SHIFT, 0},{"shift", 1, UAVK_SHIFT, 0},      {"alt", 1, UAVK_MENU, 0},         {"pause", 1, UAVK_PAUSE, 0},  {"pageup", 1, UAVK_PRIOR, 0},
-    {"pagedown", 1, UAVK_NEXT, 0},{"end", 1, UAVK_END, 0},         {"home", 1, UAVK_HOME, 0},        {"select", 1, UAVK_SELECT, 0},{"execute", 1, UAVK_EXECUTE, 0},
-    {"snapshot", 1, UAVK_SNAPSHOT, 0},{"ins", 1, UAVK_INSERT, 0},  {"del", 1, UAVK_DELETE, 0},       {"help", 1, UAVK_HELP, 0},    {"1", 1, 0x31, 0},
-    {"2", 1, 0x32, 0},         {"3", 1, 0x33, 0},              {"4", 1, 0x34, 0},              {"5", 1, 0x35, 0},          {"6", 1, 0x36, 0},
-    {"7", 1, 0x37, 0},         {"8", 1, 0x38, 0},              {"9", 1, 0x39, 0},              {"0", 1, 0x30, 0},          {"a", 1, 0x41, 0},
-    {"b", 1, 0x42, 0},         {"c", 1, 0x43, 0},              {"d", 1, 0x44, 0},              {"e", 1, 0x45, 0},          {"f", 1, 0x46, 0},
-    {"g", 1, 0x47, 0},         {"h", 1, 0x48, 0},              {"i", 1, 0x49, 0},              {"j", 1, 0x4a, 0},          {"k", 1, 0x4b, 0},
-    {"l", 1, 0x4c, 0},         {"m", 1, 0x4d, 0},              {"n", 1, 0x4e, 0},              {"o", 1, 0x4f, 0},          {"p", 1, 0x50, 0},
-    {"q", 1, 0x51, 0},         {"r", 1, 0x52, 0},              {"s", 1, 0x53, 0},              {"t", 1, 0x54, 0},          {"u", 1, 0x55, 0},
-    {"v", 1, 0x56, 0},         {"w", 1, 0x57, 0},              {"x", 1, 0x58, 0},              {"y", 1, 0x59, 0},          {"z", 1, 0x5a, 0},
-    {"num0", 1, UAVK_NUMPAD0, 0},{"num1", 1, UAVK_NUMPAD1, 0},     {"num2", 1, UAVK_NUMPAD2, 0},     {"num3", 1, UAVK_NUMPAD3, 0}, {"num4", 1, UAVK_NUMPAD4, 0},
-    {"num5", 1, UAVK_NUMPAD5, 0},{"num6", 1, UAVK_NUMPAD6, 0},     {"num7", 1, UAVK_NUMPAD7, 0},     {"num8", 1, UAVK_NUMPAD8, 0}, {"num9", 1, UAVK_NUMPAD9, 0},
-    {"nummul", 1, UAVK_MULTIPLY, 0},{"numplus", 1, UAVK_ADD, 0},   {"numdot", 1, UAVK_DECIMAL, 0},   {"numminus", 1, UAVK_SUBTRACT, 0},{"enter", 1, UAVK_SEPARATOR, 0},
-    {"numdiv", 1, UAVK_DIVIDE, 0},{"extra1", 1, UAVK_OEM_COMMA, 0},{"extra2", 1, UAVK_OEM_PERIOD, 0},{"extra3", 1, UAVK_OEM_MINUS, 0},{"extra4", 1, UAVK_OEM_102, 0},
-    {"extra5", 1, UAVK_OEM_1, 0}, {"extra6", 1, UAVK_OEM_PLUS, 0}, {"extra7", 1, UAVK_OEM_3, 0},     {"extra8", 1, UAVK_OEM_7, 0}, {"extra9", 1, UAVK_OEM_2, 0},
-    {"extra10", 1, UAVK_OEM_6, 0},{"extra11", 1, UAVK_OEM_5, 0},   {"extra12", 1, UAVK_OEM_4, 0},    {"extra13", 1, UAVK_OEM_8, 0},{"extra14", 1, UAVK_SCROLL, 0},
-    {"extra15", 1, UAVK_NUMLOCK, 0},{"extra16", 1, UAVK_F13, 0},   {"extra17", 1, UAVK_F14, 0},      {"extra18", 1, UAVK_F15, 0},  {"lmb", 1, 0x81, 0},
-    {"rmb", 1, 0x82, 0},       {"mmb", 1, 0x83, 0},            {"mousex", 2, 0x84, 0},         {"mousey", 2, 0x85, 0},     {"joyb0", 1, 0x86, 0},
-    {"joyb1", 1, 0x87, 0},     {"joyb2", 1, 0x88, 0},          {"joyb3", 1, 0x89, 0},          {"joyb4", 1, 0x8a, 0},      {"joyb5", 1, 0x8b, 0},
-    {"joyb6", 1, 0x8c, 0},     {"joyb7", 1, 0x8d, 0},          {"joyx", 2, 0x8e, 0},           {"joyy", 2, 0x8f, 0},       {"joythrottle", 2, 0x90, 0},
-    {"joyhatx", 2, 0x91, 0},{"joyhaty", 2, 0x92, 0},{"joyrudder", 2, 0x93, 0}, {NULL, 0, -1, 0}
-};
+bool                 NC_STACK_winp::_joyEnable = false;
+SDL_JoystickGUID     NC_STACK_winp::_joyWantGuid;
 
-SDLWRAP_mouseState mouseState;
-SDLWRAP_keybState keybState;
-int SDLtoVK[SDL_NUM_SCANCODES];
-uint8_t vk_map[256];
+SDL_Joystick        *NC_STACK_winp::_joyHandle = NULL;
+SDL_Haptic          *NC_STACK_winp::_joyHaptic = NULL;
 
-int joydevid = -1;
-bool joyEnable = false;
-SDL_JoystickGUID wantGuid;
+std::array<int, 32>  NC_STACK_winp::_joyAxisMap;
+std::array<bool, 32> NC_STACK_winp::_joyAxisMapInv;
+std::array<int, 32>  NC_STACK_winp::_joyButtonMap;
+std::array<int, 4>   NC_STACK_winp::_joyHatMap;
 
-SDL_Joystick *sdljoy = NULL;
-SDL_Haptic* sdlHaptic = NULL;
+uint32_t             NC_STACK_winp::_joyButtonStates;
+Common::Point        NC_STACK_winp::_joyPov;
+Common::Point        NC_STACK_winp::_joyXYpos;
+Common::Point        NC_STACK_winp::_joyZRZpos;
 
-int joyAxisMap[32];
-bool joyAxisMapInv[32];
-int joyButtonMap[32];
-int joyHatMap[4];
+Input::FF::TankEngine     NC_STACK_winp::_ffTankEngine;
+Input::FF::JetEngine      NC_STACK_winp::_ffJetEngine;
+Input::FF::CopterEngine   NC_STACK_winp::_ffCopterEngine;
+Input::FF::RotationDamper NC_STACK_winp::_ffRotDamper;
+Input::FF::MiniGun        NC_STACK_winp::_ffMGun;
+Input::FF::MissileFire    NC_STACK_winp::_ffMissFire;
+Input::FF::GrenadeFire    NC_STACK_winp::_ffGrenadeFire;
+Input::FF::BombFire       NC_STACK_winp::_ffBombFire;
+Input::FF::Collision      NC_STACK_winp::_ffCollide;
+Input::FF::Shake          NC_STACK_winp::_ffShake;
 
-uint32_t joyButtonStates;
-SDLWRAP_Point joyPov;
-SDLWRAP_Point joyXYpos;
-SDLWRAP_Point joyZRZpos;
 
-static FF_TankEngine ffTankEngine;
-static FF_JetEngine ffJetEngine;
-static FF_CopterEngine ffCopterEngine;
-static FF_RotationDamper ffRotDamper;
-static FF_MiniGun ffMGun;
-static FF_MissileFire ffMissFire;
-static FF_GrenadeFire ffGrenadeFire;
-static FF_BombFire ffBombFire;
-static FF_Collision ffCollide;
-static FF_Shake ffShake;
+
+
 
 void sdlInputResetLog()
 {
@@ -138,49 +91,40 @@ void sdlInputLog(const char *format, ...)
     va_end(va);
 }
 
-SDL_JoystickGUID sdlReadJoyGuid()
+SDL_JoystickGUID NC_STACK_winp::sdlReadJoyGuid()
 {
     SDL_JoystickGUID guid;
 
     FSMgr::FileHandle *f = uaOpenFile("env/sdlJoy.txt", "r");
     if ( f )
     {
-        char buf[64] = "";
-        f->gets(buf, 64);
+        std::string buf;
+        f->ReadLine(&buf);
         delete f;
 
-        char *eo = strpbrk(buf, "\r\n");
+        size_t endp = buf.find_first_of("\r\n");
 
-        if (eo)
-            *eo = 0;
+        if (endp != std::string::npos)
+            buf.erase(endp);
 
-        guid = SDL_JoystickGetGUIDFromString(buf);
+        guid = SDL_JoystickGetGUIDFromString(buf.c_str());
     }
     else
-    {
-        for (size_t i = 0; i < sizeof(guid.data); i++)
-            guid.data[i] = 0;
-    }
+        std::memset(&guid, 0, sizeof(SDL_JoystickGUID));
 
     return guid;
 }
 
-bool sdlGUIDcmp(SDL_JoystickGUID &gd1, SDL_JoystickGUID &gd2)
+bool NC_STACK_winp::sdlGUIDcmp(SDL_JoystickGUID &gd1, SDL_JoystickGUID &gd2)
 {
-    for (size_t i = 0; i < sizeof(gd1.data); i++)
-    {
-        if ( gd1.data[i] != gd2.data[i] )
-            return false;
-    }
-
-    return true;
+    return std::memcmp(&gd1, &gd2, sizeof(SDL_JoystickGUID)) == 0;
 }
 
-int sdlJoyAxis(SDL_Joystick* joystick, int axis)
+int NC_STACK_winp::sdlJoyAxis(SDL_Joystick* joystick, int axis)
 {
-    int tmp = SDL_JoystickGetAxis(joystick, joyAxisMap[axis]);
+    int tmp = SDL_JoystickGetAxis(joystick, _joyAxisMap[axis]);
 
-    if ( joyAxisMapInv[axis] )
+    if ( _joyAxisMapInv[axis] )
         tmp = -tmp;
 
     if (abs(tmp) <= 6553) // 20% deadzone
@@ -196,124 +140,77 @@ int sdlJoyAxis(SDL_Joystick* joystick, int axis)
     return tmp;
 }
 
-void sdlJoyReadMapping(SDL_Joystick* joystick)
+void NC_STACK_winp::sdlJoyReadMapping(SDL_Joystick* joystick)
 {
-    const char *ignoreChars = " \t\n\r";
+    char bf[64];
+    SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(joystick), bf, 64);
+    std::string guid(bf);
 
-    char guid[64];
-    SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(joystick), guid, 64);
+    for (size_t i = 0; i < MAXJOYHAT; i++)
+        _joyHatMap[i] = i;
 
-    for (size_t i = 0; i < 4; i++)
-        joyHatMap[i] = i;
-
-    for (size_t i = 0; i < 32; i++)
+    for (size_t i = 0; i < MAXJOYMAP; i++)
     {
-        joyAxisMap[i] = i;
-        joyAxisMapInv[i] = false;
-        joyButtonMap[i] = i;
+        _joyAxisMap[i] = i;
+        _joyAxisMapInv[i] = false;
+        _joyButtonMap[i] = i;
     }
 
     FSMgr::FileHandle *f = uaOpenFile("joyconf.txt", "r");
 
     if ( f )
     {
-        char buf[4096];
-
-        while ( f->gets(buf, 4096) )
+        std::string buf;
+        while ( f->ReadLine(&buf) )
         {
-            int i = 0;
-            std::string tmp = "";
-
-            while(buf[i])
+            std::vector<std::string> splt = Stok::Split(buf, " :\t\n\r");
+            if (splt.size() >= 3 && !StriCmp(splt[0], bf))
             {
-                if ( !strchr(ignoreChars, buf[i]) )
+                for(int i = 0; i < ((splt.size() - 1) / 2); i++)
                 {
-                    if (buf[i] == ':')
-                        break;
-                    else
-                        tmp += buf[i];
-                }
-
-                i++;
-            }
-
-            if (tmp.length() > 0 && !strcasecmp(tmp.c_str(), guid))
-            {
-                while(buf[i])
-                {
-                    tmp = "";
-                    std::string val = "";
-
-                    bool valread = false;
-
-                    while(buf[i])
+                    std::string &tp = splt.at(1 + i * 2);
+                    std::string &val = splt.at(1 + i * 2 + 1);
+                    
+                    if(tolower(tp[0]) == 'a')
                     {
-                        if ( !strchr(ignoreChars, buf[i]) )
-                        {
-                            if (buf[i] == ':')
-                            {
-                                valread = true;
-                            }
-                            else
-                            {
-                                if (valread)
-                                    val += tolower(buf[i]);
-                                else
-                                    tmp += tolower(buf[i]);
-                            }
+                        int axis = std::stoi( tp.substr(1) );
+                        int realaxis = std::stoi( val );
 
-                        }
-                        else
+                        if ( axis < MAXJOYMAP && axis >= 0 && abs(realaxis) < MAXJOYMAP)
                         {
-                            if (valread)
-                                break;
+                            if ( realaxis < 0 )
+                                _joyAxisMapInv[ axis ] = true;
+                            
+                            realaxis = abs(realaxis);
+                            
+                            _joyAxisMap[ axis ] = realaxis;
+                            sdlInputLog("\tAxis map %c%d -> %d\n", (_joyAxisMapInv[ axis ] ? '-' : ' '), realaxis, axis);
                         }
 
-                        i++;
                     }
-
-                    if (tmp.length() > 0 && val.length() > 0)
+                    else if (tolower(tp[0]) == 'b')
                     {
-                        if(tmp[0] == 'a')
+                        int btn = std::stoi( tp.substr(1) );
+                        int realbtn = abs(  std::stoi( val )  );
+
+                        if ( btn < MAXJOYMAP && btn >= 0 && realbtn < MAXJOYMAP)
                         {
-                            int axis = atoi( tmp.c_str() + 1 );
-                            int realaxis = abs(  atoi( val.c_str() )  );
-
-                            if ( axis < 32 && axis >= 0 && realaxis < 32)
-                            {
-                                if ( strpbrk(val.c_str(), "-") )
-                                    joyAxisMapInv[ axis ] = true;
-
-                                joyAxisMap[ axis ] = realaxis;
-                                sdlInputLog("\tAxis map %c%d -> %d\n", (joyAxisMapInv[ axis ] ? '-' : ' '), realaxis, axis);
-                            }
-
+                            _joyButtonMap[ btn ] = realbtn;
+                            sdlInputLog("\tButton map %d -> %d\n", realbtn, btn);
                         }
-                        else if (tmp[0] == 'b')
-                        {
-                            int btn = atoi( tmp.c_str() + 1 );
-                            int realbtn = abs(  atoi( val.c_str() )  );
+                    }
+                    else if (tolower(tp[0]) == 'h')
+                    {
+                        int hat = std::stoi( tp.substr(1) );
+                        int realhat = abs(  std::stoi( val )  );
 
-                            if ( btn < 32 && btn >= 0 && realbtn < 32)
-                            {
-                                joyButtonMap[ btn ] = realbtn;
-                                sdlInputLog("\tButton map %d -> %d\n", realbtn, btn);
-                            }
-                        }
-                        else if (tmp[0] == 'h')
+                        if ( hat < MAXJOYHAT && hat >= 0 && realhat < MAXJOYHAT)
                         {
-                            int hat = atoi( tmp.c_str() + 1 );
-                            int realhat = abs(  atoi( val.c_str() )  );
-
-                            if ( hat < 4 && hat >= 0 && realhat < 4)
-                            {
-                                joyHatMap[ hat ] = realhat;
-                                sdlInputLog("\tHat map %d -> %d\n", realhat, hat);
-                            }
+                            _joyHatMap[ hat ] = realhat;
+                            sdlInputLog("\tHat map %d -> %d\n", realhat, hat);
                         }
                     }
                 }
-
                 break;
             }
         }
@@ -322,70 +219,53 @@ void sdlJoyReadMapping(SDL_Joystick* joystick)
     }
 }
 
-
-void vkkeydown(int vk)
+    
+void NC_STACK_winp::KeyDown(int16_t vk)
 {
-    if ( vk_map[vk] != 0xFF )
-        winp_keys[ vk_map[vk] ].down = 1;
+    if ( vk != Input::KEY_NONE )
+        NC_STACK_input::KeyMatrix.at(vk).down = true;
 
-    keybState.keyb_cont = vk;
-    keybState.keyb_norm = vk;
+    _kbdLastDown = vk;
+    _kbdLastHit = vk;
 }
 
-
-void keydown(int sdl_vk)
+void NC_STACK_winp::KeyUp(int16_t vk)
 {
-    int vk = SDLtoVK[sdl_vk];
+    if ( vk != Input::KEY_NONE )
+        NC_STACK_input::KeyMatrix.at(vk).down = false;
 
-    if (vk)
-        vkkeydown(vk);
+    if (_kbdLastDown == vk)
+        _kbdLastDown = Input::KEY_NONE;
 }
 
-void vkkeyup(int vk)
-{
-    if ( vk_map[vk] != 0xFF )
-        winp_keys[ vk_map[vk] ].down = 0;
-
-    if (keybState.keyb_cont == vk)
-        keybState.keyb_cont = 0;
-}
-
-void keyup(int sdl_vk)
-{
-    int vk = SDLtoVK[sdl_vk];
-
-    if (vk)
-        vkkeyup(vk);
-}
-
-int InputWatch(void *, SDL_Event *event)
+int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
 {
     switch(event->type)
     {
     case SDL_KEYDOWN:
-        //printf("%d %d %d %d\n", SDL_SCANCODE_SPACE, event->key.keysym.scancode, SDLtoVK[event->key.keysym.scancode], vk_map[ SDLtoVK[event->key.keysym.scancode] ]);
-        keydown(event->key.keysym.scancode);
+        {
+            auto it = KBDMapping.find(event->key.keysym.scancode);
+            if (it != KBDMapping.end())
+                KeyDown(it->second);
+        }
         break;
 
     case SDL_KEYUP:
-        keyup(event->key.keysym.scancode);
+        {
+            auto it = KBDMapping.find(event->key.keysym.scancode);
+            if (it != KBDMapping.end())
+                KeyUp(it->second);
+        }
         break;
 
     case SDL_TEXTINPUT:
     {
-        const char *chrs = event->text.text;
-
-        while(*chrs)
+        for( char c : event->text.text)
         {
-            if ( keybState.charBuffCnt < KEYBCHARBUFF )
-            {
-                keybState.charBuff[ keybState.charBuffCnt ] = *chrs;
-                keybState.charBuffCnt++;
-            }
-            else
+            if (!c || _inputText.size() >= MAXCHARQUEUE)
                 break;
-
-            chrs++;
+            
+            _inputText.push(c);
         }
     }
     break;
@@ -395,39 +275,39 @@ int InputWatch(void *, SDL_Event *event)
         {
             if (event->button.button == SDL_BUTTON_LEFT)
             {
-                mouseState.l_state = 1;
-                mouseState.ld_pos.x = event->button.x;
-                mouseState.ld_pos.y = event->button.y;
+                _mLstate = true;
+                _mLDpos.x = event->button.x;
+                _mLDpos.y = event->button.y;
 
-                SDLWRAP_mousePosNorm(mouseState.ld_pos);
+                _mLDpos = SDLWRAP::MousePosNorm(_mLDpos);
 
-                mouseState.ld_cnt++;
+                _mLDcnt++;
 
-                vkkeydown(0x81);
+                KeyDown(Input::KEY_LMB);
             }
             else if (event->button.button == SDL_BUTTON_RIGHT)
             {
-                mouseState.r_state = 1;
-                mouseState.rd_pos.x = event->button.x;
-                mouseState.rd_pos.y = event->button.y;
+                _mRstate = true;
+                _mRDpos.x = event->button.x;
+                _mRDpos.y = event->button.y;
 
-                SDLWRAP_mousePosNorm(mouseState.rd_pos);
+                _mRDpos = SDLWRAP::MousePosNorm(_mRDpos);
 
-                mouseState.rd_cnt++;
+                _mRDcnt++;
 
-                vkkeydown(0x82);
+                KeyDown(Input::KEY_RMB);
             }
             else if (event->button.button == SDL_BUTTON_MIDDLE)
             {
-                mouseState.m_state = 1;
-                mouseState.md_pos.x = event->button.x;
-                mouseState.md_pos.y = event->button.y;
+                _mMstate = true;
+                _mMDpos.x = event->button.x;
+                _mMDpos.y = event->button.y;
 
-                SDLWRAP_mousePosNorm(mouseState.md_pos);
+                _mMDpos = SDLWRAP::MousePosNorm(_mMDpos);
 
-                mouseState.md_cnt++;
+                _mMDcnt++;
 
-                vkkeydown(0x83);
+                KeyDown(Input::KEY_MMB);
             }
         }
 
@@ -438,42 +318,42 @@ int InputWatch(void *, SDL_Event *event)
         {
             if (event->button.button == SDL_BUTTON_LEFT)
             {
-                mouseState.l_state = 0;
-                mouseState.lu_pos.x = event->button.x;
-                mouseState.lu_pos.y = event->button.y;
+                _mLstate = false;
+                _mLUpos.x = event->button.x;
+                _mLUpos.y = event->button.y;
 
-                SDLWRAP_mousePosNorm(mouseState.lu_pos);
+                _mLUpos = SDLWRAP::MousePosNorm(_mLUpos);
 
-                mouseState.lu_cnt++;
+                _mLUcnt++;
 
-                vkkeyup(0x81);
+                KeyUp(Input::KEY_LMB);
 
                 if ((event->button.clicks & 1) == 0)
-                    mouseState.dbl_state = 1;
+                    _mDBLstate = true;
             }
             else if (event->button.button == SDL_BUTTON_RIGHT)
             {
-                mouseState.r_state = 0;
-                mouseState.ru_pos.x = event->button.x;
-                mouseState.ru_pos.y = event->button.y;
+                _mRstate = false;
+                _mRUpos.x = event->button.x;
+                _mRUpos.y = event->button.y;
 
-                SDLWRAP_mousePosNorm(mouseState.ru_pos);
+                _mRUpos = SDLWRAP::MousePosNorm(_mRUpos);
 
-                mouseState.ru_cnt++;
+                _mRUcnt++;
 
-                vkkeyup(0x82);
+                KeyUp(Input::KEY_RMB);
             }
             else if (event->button.button == SDL_BUTTON_MIDDLE)
             {
-                mouseState.m_state = 0;
-                mouseState.mu_pos.x = event->button.x;
-                mouseState.mu_pos.y = event->button.y;
+                _mMstate = false;
+                _mMUpos.x = event->button.x;
+                _mMUpos.y = event->button.y;
 
-                SDLWRAP_mousePosNorm(mouseState.mu_pos);
+                _mMUpos = SDLWRAP::MousePosNorm(_mMUpos);
 
-                mouseState.mu_cnt++;
+                _mMUcnt++;
 
-                vkkeyup(0x83);
+                KeyUp(Input::KEY_MMB);
             }
         }
 
@@ -482,12 +362,9 @@ int InputWatch(void *, SDL_Event *event)
     case SDL_MOUSEMOTION:
         if ( !Gui::Root::Instance.MouseMove(Common::Point(event->button.x, event->button.y)) )
         {
-            mouseState.pos.x = event->motion.x;
-            mouseState.pos.y = event->motion.y;
-            mouseState.__xrel.x = event->motion.xrel;
-            mouseState.__xrel.y = event->motion.yrel;
-
-            SDLWRAP_mousePosNorm(mouseState.pos);
+            _mPos = SDLWRAP::MousePosNorm( Common::Point(event->motion.x, event->motion.y) );
+            _mMoveQuery = Common::Point(event->motion.xrel, event->motion.yrel);
+            
         }
         break;
 
@@ -501,15 +378,12 @@ int InputWatch(void *, SDL_Event *event)
 
 
 
-
-
-
 size_t NC_STACK_winp::func0(IDVList &stak)
 {
     if ( !NC_STACK_iwimp::func0(stak) )
         return 0;
 
-    stack__winp.remapIndex = -1;
+    _bindedKey = -1;
 
     return 1;
 }
@@ -529,609 +403,525 @@ size_t NC_STACK_winp::func3(IDVList &stk)
     return NC_STACK_iwimp::func3(stk);
 }
 
-void NC_STACK_winp::idev_func64(win_64arg *arg)
+bool NC_STACK_winp::GetState()
 {
-    __NC_STACK_winp *winp = &stack__winp;
+    if ( _bindedKey < 0 )
+        return false;
 
-    if ( winp->remapIndex < 0 )
+    switch ( _bindedKey )
     {
-        arg->keyState = 0;
+    case Input::KEY_LMB:
+        return _mLstate;
+        break;
+    case Input::KEY_RMB:
+        return _mRstate;
+        break;
+    case Input::KEY_MMB:
+        return _mMstate;
+        break;
+    case Input::KEY_JOYB0:
+    case Input::KEY_JOYB1:
+    case Input::KEY_JOYB2:
+    case Input::KEY_JOYB3:
+    case Input::KEY_JOYB4:
+    case Input::KEY_JOYB5:
+    case Input::KEY_JOYB6:
+    case Input::KEY_JOYB7:
+        if ( _joyButtonStates & (1 << (_bindedKey - Input::KEY_JOYB0)) )
+            return true;
+        else
+            return false;
+        break;
+    default:
+        return NC_STACK_input::KeyMatrix.at(_bindedKey).down;
     }
-    else
-    {
-        winp__func67__internal *v4 = &winp_keys[winp->remapIndex];
-        switch ( v4->keycode )
-        {
-        case 0x81:
-            arg->keyState = mouseState.l_state;
-            break;
-        case 0x83:
-            arg->keyState = mouseState.m_state;
-            break;
-        case 0x82:
-            arg->keyState = mouseState.r_state;
-            break;
-        case 0x86:
-        case 0x87:
-        case 0x88:
-        case 0x89:
-        case 0x8A:
-        case 0x8B:
-        case 0x8C:
-        case 0x8D:
-            if ( !(joyButtonStates & (1 << ((v4->keycode & 0xFF) - 0x86)) ) )
-                arg->keyState = 0;
-            else
-                arg->keyState = 1;
-            break;
-        default:
-            arg->keyState = v4->down;
-
-            break;
-        }
-    }
+    
+    return false;
 }
 
-void NC_STACK_winp::idev_func65(win_64arg *arg)
+float NC_STACK_winp::GetSlider()
 {
-    __NC_STACK_winp *winp = &stack__winp;
-
-    if ( winp->remapIndex < 0 )
-    {
-        arg->field_8 = 0;
-        return;
-    }
+    if ( _bindedKey < 0 )
+        return 0.0;
 
     int v6 = 1;
 
-    switch ( winp_keys[winp->remapIndex].keycode )
+    switch ( _bindedKey )
     {
-    case 0x84:
-    {
-        winp->mouseDelta += mouseState.move.x * 8;
-
-        if ( mouseState.move.x )
-            v6 = 0;
-    }
-    break;
-
-    case 0x85:
-    {
-        winp->mouseDelta += mouseState.move.y * 8;
-
-        if ( mouseState.move.y )
-            v6 = 0;
-    }
-    break;
-
-    case 0x8E:
-    {
-        int v12 = winp->mouseDelta;
-
-        if ( v12 > joyXYpos.x )
+        case Input::KEY_MOUSEX:
         {
-            v12 -= 37;
+            _sliderPos += _mMove.x * 8;
 
-            if ( v12 < joyXYpos.x )
-                v12 = joyXYpos.x;
-        }
-        else if ( v12 < joyXYpos.x )
-        {
-            v12 += 37;
-
-            if ( v12 > joyXYpos.x )
-                v12 = joyXYpos.x;
-        }
-        winp->mouseDelta = v12;
-        v6 = 0;
-    }
-    break;
-
-    case 0x8F:
-    {
-        int v12 = winp->mouseDelta;
-
-        if ( v12 > joyXYpos.y )
-        {
-            v12 -= 37;
-
-            if ( v12 < joyXYpos.y )
-                v12 = joyXYpos.y;
-        }
-        else if ( v12 < joyXYpos.y )
-        {
-            v12 += 37;
-
-            if ( v12 > joyXYpos.y )
-                v12 = joyXYpos.y;
-        }
-        winp->mouseDelta = v12;
-        v6 = 0;
-    }
-    break;
-
-    case 0x90:
-    {
-        int v12 = winp->mouseDelta;
-
-        if ( v12 > -joyZRZpos.x )
-        {
-            v12 -= 37;
-
-            if ( v12 < -joyZRZpos.x )
-                v12 = -joyZRZpos.x;
-        }
-        else if ( v12 < -joyZRZpos.x )
-        {
-            v12 += 37;
-
-            if ( v12 > -joyZRZpos.x )
-                v12 = -joyZRZpos.x;
-        }
-        winp->mouseDelta = v12;
-        v6 = 0;
-    }
-    break;
-
-    case 0x93:
-    {
-        int v12 = winp->mouseDelta;
-
-        if ( v12 > joyZRZpos.y )
-        {
-            v12 -= 37;
-
-            if ( v12 < joyZRZpos.y )
-                v12 = joyZRZpos.y;
-        }
-        else if ( v12 < joyZRZpos.y )
-        {
-            v12 += 37;
-
-            if ( v12 > joyZRZpos.y )
-                v12 = joyZRZpos.y;
-        }
-        winp->mouseDelta = v12;
-        v6 = 0;
-    }
-    break;
-
-    case 0x91:
-    {
-        int v12 = winp->mouseDelta;
-
-        if ( v12 > joyPov.x )
-        {
-            v12 -= 37;
-
-            if ( v12 < joyPov.x )
-                v12 = joyPov.x;
-        }
-        else if ( v12 < joyPov.x )
-        {
-            v12 += 37;
-
-            if ( v12 > joyPov.x )
-                v12 = joyPov.x;
-        }
-        winp->mouseDelta = v12;
-        v6 = 0;
-    }
-    break;
-
-    case 0x92:
-    {
-        int v12 = winp->mouseDelta;
-
-        if ( v12 > joyPov.y )
-        {
-            v12 -= 37;
-
-            if ( v12 < joyPov.y )
-                v12 = joyPov.y;
-        }
-        else if ( v12 < joyPov.y )
-        {
-            v12 += 37;
-
-            if ( v12 > joyPov.y )
-                v12 = joyPov.y;
-        }
-        winp->mouseDelta = v12;
-        v6 = 0;
-    }
-    break;
-
-    default:
-        if (winp_keys[ winp->remapIndex ].down )
-        {
-            v6 = 0;
-            winp->mouseDelta += 37;
+            if ( _mMove.x )
+                v6 = 0;
         }
         break;
+
+        case Input::KEY_MOUSEY:
+        {
+            _sliderPos += _mMove.y * 8;
+
+            if ( _mMove.y )
+                v6 = 0;
+        }
+        break;
+
+        case Input::KEY_JOYX:
+        {
+            int v12 = _sliderPos;
+
+            if ( v12 > _joyXYpos.x )
+            {
+                v12 -= 37;
+
+                if ( v12 < _joyXYpos.x )
+                    v12 = _joyXYpos.x;
+            }
+            else if ( v12 < _joyXYpos.x )
+            {
+                v12 += 37;
+
+                if ( v12 > _joyXYpos.x )
+                    v12 = _joyXYpos.x;
+            }
+            _sliderPos = v12;
+            v6 = 0;
+        }
+        break;
+
+        case Input::KEY_JOYY:
+        {
+            int v12 = _sliderPos;
+
+            if ( v12 > _joyXYpos.y )
+            {
+                v12 -= 37;
+
+                if ( v12 < _joyXYpos.y )
+                    v12 = _joyXYpos.y;
+            }
+            else if ( v12 < _joyXYpos.y )
+            {
+                v12 += 37;
+
+                if ( v12 > _joyXYpos.y )
+                    v12 = _joyXYpos.y;
+            }
+            _sliderPos = v12;
+            v6 = 0;
+        }
+        break;
+
+        case Input::KEY_JOYTHROTTLE:
+        {
+            int v12 = _sliderPos;
+
+            if ( v12 > -_joyZRZpos.x )
+            {
+                v12 -= 37;
+
+                if ( v12 < -_joyZRZpos.x )
+                    v12 = -_joyZRZpos.x;
+            }
+            else if ( v12 < -_joyZRZpos.x )
+            {
+                v12 += 37;
+
+                if ( v12 > -_joyZRZpos.x )
+                    v12 = -_joyZRZpos.x;
+            }
+            _sliderPos = v12;
+            v6 = 0;
+        }
+        break;
+
+        case Input::KEY_JOYHATX:
+        {
+            int v12 = _sliderPos;
+
+            if ( v12 > _joyPov.x )
+            {
+                v12 -= 37;
+
+                if ( v12 < _joyPov.x )
+                    v12 = _joyPov.x;
+            }
+            else if ( v12 < _joyPov.x )
+            {
+                v12 += 37;
+
+                if ( v12 > _joyPov.x )
+                    v12 = _joyPov.x;
+            }
+            _sliderPos = v12;
+            v6 = 0;
+        }
+        break;
+
+        case Input::KEY_JOYHATY:
+        {
+            int v12 = _sliderPos;
+
+            if ( v12 > _joyPov.y )
+            {
+                v12 -= 37;
+
+                if ( v12 < _joyPov.y )
+                    v12 = _joyPov.y;
+            }
+            else if ( v12 < _joyPov.y )
+            {
+                v12 += 37;
+
+                if ( v12 > _joyPov.y )
+                    v12 = _joyPov.y;
+            }
+            _sliderPos = v12;
+            v6 = 0;
+        }
+        break;
+        
+        case Input::KEY_JOYRUDDER:
+        {
+            int v12 = _sliderPos;
+
+            if ( v12 > _joyZRZpos.y )
+            {
+                v12 -= 37;
+
+                if ( v12 < _joyZRZpos.y )
+                    v12 = _joyZRZpos.y;
+            }
+            else if ( v12 < _joyZRZpos.y )
+            {
+                v12 += 37;
+
+                if ( v12 > _joyZRZpos.y )
+                    v12 = _joyZRZpos.y;
+            }
+            _sliderPos = v12;
+            v6 = 0;
+        }
+        break;
+
+        default:
+            if (NC_STACK_input::KeyMatrix.at( _bindedKey ).down )
+            {
+                v6 = 0;
+                _sliderPos += 37;
+            }
+            break;
     }
 
     if ( v6 )
-        winp->mouseDelta = 8 * winp->mouseDelta / 10;
+        _sliderPos = 8 * _sliderPos / 10;
 
-    if ( winp->mouseDelta > 300 )
-        winp->mouseDelta = 300;
-    else if ( winp->mouseDelta < -300 )
-        winp->mouseDelta = -300;
+    if ( _sliderPos > 300 )
+        _sliderPos = 300;
+    else if ( _sliderPos < -300 )
+        _sliderPos = -300;
 
-    arg->field_8 = winp->mouseDelta / 300.0;
+    return _sliderPos / 300.0;
 }
 
-void NC_STACK_winp::idev_func66(winp_66arg *arg)
+void NC_STACK_winp::QueryKeyboard(InputState *arg)
 {
-    __NC_STACK_winp *winp = &stack__winp;
+    arg->HotKeyID = -1;
+    arg->KbdLastDown = _kbdLastDown;
+    arg->KbdLastHit = _kbdLastHit;
+    
+    _kbdLastHit = Input::KEY_NONE;
 
-    arg->dword8 = 0;
-    arg->downed_key_2 = keybState.keyb_cont;
-    arg->downed_key = keybState.keyb_norm;
+    arg->chr = 0;
 
-    keybState.keyb_norm = 0;
-
-    arg->chr = keybState.charBuff[0];
-
-    if ( keybState.charBuffCnt )
+    if ( !_inputText.empty() )
     {
-        int tmp = keybState.charBuffCnt - 1;
-        keybState.charBuffCnt--;
-
-        for (int i = 0; i < tmp; i++)
-            keybState.charBuff[i] = keybState.charBuff[i + 1];
-
-        keybState.charBuffCnt = tmp;
-    }
-
-    keybState.charBuff[keybState.charBuffCnt] = 0;
-
-    if ( arg->downed_key )
-    {
-        for (int i = 0; i < 48; i++)
-        {
-            if (winp->hotKeys[i] == arg->downed_key)
-            {
-                arg->dword8 = i | 0x80;
-                break;
-            }
-        }
+       arg->chr = _inputText.front();
+       _inputText.pop();
     }
 }
 
-int NC_STACK_winp::idev_func67(const char **arg)
+bool NC_STACK_winp::BindKey(const std::string &keyName)
 {
-    __NC_STACK_winp *winp = &stack__winp;
-
-    for(int i = 0; i < 128; i++)
-    {
-        if ( !strcasecmp(winp_keys[i].keyname, *arg) )
-        {
-            winp->remapIndex = i;
-            return winp_keys[i].keytype;
-        }
-    }
-    return 0;
+    int16_t id = NC_STACK_input::GetKeyIDByName(keyName);
+    if (id == -1)
+        return false;
+    
+    _bindedKey = id;
+    return NC_STACK_input::KeyMatrix.at(id).IsSlider;
 }
 
-int NC_STACK_winp::idev_func68(winp_68arg *arg)
+void NC_STACK_winp::ResetSlider()
 {
-    __NC_STACK_winp *winp = &stack__winp;
-
-    if ( arg->id < 48 )
-    {
-        for ( int i = 0; i < 128; i++ )
-        {
-            if ( !StriCmp(winp_keys[i].keyname, arg->keyname) && winp_keys[i].keytype == 1 )
-            {
-                winp->hotKeys[ arg->id ] = winp_keys[i].keycode;
-                return 3;
-            }
-        }
-    }
-    return 0;
-}
-
-void NC_STACK_winp::idev_func69(int arg)
-{
-    __NC_STACK_winp *winp = &stack__winp;
-
-    if ( arg == 1 )
-        winp->mouseDelta = 0;
-}
-
-void NC_STACK_winp::idev_func70(idev_query_arg *arg)
-{
-    //printf("CHECK ARG TYPE %s\n","winp_func70");
-
-    __NC_STACK_winp *winp = &stack__winp;
-
-    if ( arg->keycode )
-    {
-        for ( int i = 0; i < 48; i++ )
-        {
-            if ( winp->hotKeys[i] == arg->keycode )
-            {
-                arg->hotkey = i | 0x80;
-                break;
-            }
-        }
-    }
-    else if ( arg->hotkey )
-    {
-        int tmp = arg->hotkey & 0x7F;
-        if (tmp < 48)
-            arg->keycode = winp->hotKeys[tmp];
-    }
+    _sliderPos = 0;
 }
 
 void NC_STACK_winp::FFDOTankEngine(int state, float p1, float p2)
 {
-    if ( ffTankEngine.OK() )
+    if ( _ffTankEngine.OK() )
     {
         if ( state == FF_STATE_START )
         {
-            ffTankEngine.Stop();
-            ffJetEngine.Stop();
-            ffCopterEngine.Stop();
+            _ffTankEngine.Stop();
+            _ffJetEngine.Stop();
+            _ffCopterEngine.Stop();
 
-            ffTankEngine.Run();
+            _ffTankEngine.Run();
 
             float a2 = p1 * 16383.0; // 5000
             float a3 = 1000.0 / (p2 * 13.0 + 5.0);
-            ffTankEngine.Update(a2, a3);
+            _ffTankEngine.Update(a2, a3);
         }
         else if ( state == FF_STATE_STOP )
         {
-            ffTankEngine.Stop();
+            _ffTankEngine.Stop();
         }
         else if ( state == FF_STATE_UPDATE )
         {
             float v5 = p1 * 19660.0; // 6000
             float v6 = 1000.0 / (p2 * 13.0 + 5.0);
-            ffTankEngine.Update(v5, v6);
+            _ffTankEngine.Update(v5, v6);
         }
     }
 }
 
 void NC_STACK_winp::FFDOJetEngine(int state, float p1, float p2)
 {
-    if ( ffJetEngine.OK() )
+    if ( _ffJetEngine.OK() )
     {
         if ( state == FF_STATE_START)
         {
-            ffTankEngine.Stop();
-            ffJetEngine.Stop();
-            ffCopterEngine.Stop();
+            _ffTankEngine.Stop();
+            _ffJetEngine.Stop();
+            _ffCopterEngine.Stop();
 
-            ffJetEngine.Run();
+            _ffJetEngine.Run();
 
             float a2 = p1 * 19660.0; // 6000
             float a3 = 1000.0 / (p2 * 12.0 + 14.0);
-            ffJetEngine.Update(a2, a3);
+            _ffJetEngine.Update(a2, a3);
         }
         else if ( state == FF_STATE_STOP )
         {
-            ffJetEngine.Stop();
+            _ffJetEngine.Stop();
         }
         else if ( state == FF_STATE_UPDATE )
         {
             float v5 = p1 * 19660.0; // 6000
             float v6 = 1000.0 / (p2 * 12.0 + 14.0);
-            ffJetEngine.Update(v5, v6);
+            _ffJetEngine.Update(v5, v6);
         }
     }
 }
 
 void NC_STACK_winp::FFDOHeliEngine(int state, float p1, float p2)
 {
-    if ( ffCopterEngine.OK() )
+    if ( _ffCopterEngine.OK() )
     {
         if ( state == FF_STATE_START )
         {
-            ffTankEngine.Stop();
-            ffJetEngine.Stop();
-            ffCopterEngine.Stop();
+            _ffTankEngine.Stop();
+            _ffJetEngine.Stop();
+            _ffCopterEngine.Stop();
 
-            ffCopterEngine.Run();
+            _ffCopterEngine.Run();
 
             float a2 = p1 * 26213.6; //8000.0;
             float a3 = 1000.0 / (p2 * 12.0 + 6.0);
-            ffCopterEngine.Update(a2, a3);
+            _ffCopterEngine.Update(a2, a3);
         }
         else if ( state == FF_STATE_STOP )
         {
-            ffCopterEngine.Stop();
+            _ffCopterEngine.Stop();
         }
         else if ( state == FF_STATE_UPDATE )
         {
             float v5 = p1 * 26213.6; //8000.0;
             float v6 = 1000.0 / (p2 * 12.0 + 6.0);
-            ffCopterEngine.Update(v5, v6);
+            _ffCopterEngine.Update(v5, v6);
         }
     }
 }
 
 void NC_STACK_winp::FFDORotDamper(int state, float p1)
 {
-    if ( ffRotDamper.OK() )
+    if ( _ffRotDamper.OK() )
     {
         if ( state == FF_STATE_START )
         {
-            ffRotDamper.Stop();
+            _ffRotDamper.Stop();
 
-            ffRotDamper.Update(p1 * 32767.0);
+            _ffRotDamper.Update(p1 * 32767.0);
 
-            ffRotDamper.Run();
+            _ffRotDamper.Run();
         }
         else if ( state == FF_STATE_STOP )
         {
-            ffRotDamper.Stop();
+            _ffRotDamper.Stop();
         }
     }
 }
 
 void NC_STACK_winp::FFDOMiniGun(int state)
 {
-    if ( ffMGun.OK() )
+    if ( _ffMGun.OK() )
     {
         if ( state == FF_STATE_START )
         {
-            ffMGun.Stop();
+            _ffMGun.Stop();
 
-            ffMGun.Run();
+            _ffMGun.Run();
         }
         else if ( state == FF_STATE_STOP )
         {
-            ffMGun.Stop();
+            _ffMGun.Stop();
         }
     }
 }
 
 void NC_STACK_winp::FFDOMissileFire(int state)
 {
-    if ( ffMissFire.OK() )
+    if ( _ffMissFire.OK() )
     {
         if ( state == FF_STATE_START )
         {
-            ffMissFire.Stop();
-            ffGrenadeFire.Stop();
-            ffBombFire.Stop();
+            _ffMissFire.Stop();
+            _ffGrenadeFire.Stop();
+            _ffBombFire.Stop();
 
-            ffMissFire.Run();
+            _ffMissFire.Run();
         }
         else if ( state == FF_STATE_STOP )
         {
-            ffMissFire.Stop();
+            _ffMissFire.Stop();
         }
     }
 }
 
 void NC_STACK_winp::FFDOGrenadeFire(int state)
 {
-    if ( ffGrenadeFire.OK() )
+    if ( _ffGrenadeFire.OK() )
     {
         if ( state == FF_STATE_START )
         {
-            ffMissFire.Stop();
-            ffGrenadeFire.Stop();
-            ffBombFire.Stop();
+            _ffMissFire.Stop();
+            _ffGrenadeFire.Stop();
+            _ffBombFire.Stop();
 
-            ffGrenadeFire.Run();
+            _ffGrenadeFire.Run();
         }
         else if ( state == FF_STATE_STOP )
         {
-            ffGrenadeFire.Stop();
+            _ffGrenadeFire.Stop();
         }
     }
 }
 
 void NC_STACK_winp::FFDOBombFire(int state)
 {
-    if ( ffBombFire.OK() )
+    if ( _ffBombFire.OK() )
     {
         if ( state == FF_STATE_START )
         {
-            ffMissFire.Stop();
-            ffGrenadeFire.Stop();
-            ffBombFire.Stop();
+            _ffMissFire.Stop();
+            _ffGrenadeFire.Stop();
+            _ffBombFire.Stop();
 
-            ffBombFire.Run();
+            _ffBombFire.Run();
         }
         else if ( state == FF_STATE_STOP )
         {
-            ffBombFire.Stop();
+            _ffBombFire.Stop();
         }
     }
 }
 
 void NC_STACK_winp::FFDOCollision(int state, float a2, float a3, float a4)
 {
-    if ( ffCollide.OK() )
+    if ( _ffCollide.OK() )
     {
         if ( state == FF_STATE_START )
         {
-            ffCollide.Stop();
+            _ffCollide.Stop();
 
-            ffCollide.Update(a2, a3, a4);
+            _ffCollide.Update(a2, a3, a4);
 
-            ffCollide.Run();
+            _ffCollide.Run();
         }
         else if ( state == FF_STATE_STOP )
         {
-            ffCollide.Stop();
+            _ffCollide.Stop();
         }
     }
 }
 
 void NC_STACK_winp::FFDOShake(int state, float a2, float a3, float a4, float a5)
 {
-    if ( ffShake.OK() )
+    if ( _ffShake.OK() )
     {
         if ( state == FF_STATE_START )
         {
-            ffShake.Stop();
+            _ffShake.Stop();
 
-            ffShake.Update(a2, a3, a4, a5);
+            _ffShake.Update(a2, a3, a4, a5);
 
-            ffShake.Run();
+            _ffShake.Run();
         }
         else if ( state == FF_STATE_STOP )
         {
-            ffShake.Stop();
+            _ffShake.Stop();
         }
     }
 }
 
 void NC_STACK_winp::FFstopAll()
 {
-    ffTankEngine.Stop();
-    ffJetEngine.Stop();
-    ffCopterEngine.Stop();
-    ffRotDamper.Stop();
-    ffMGun.Stop();
-    ffMissFire.Stop();
-    ffGrenadeFire.Stop();
-    ffBombFire.Stop();
-    ffCollide.Stop();
-    ffShake.Stop();
+    _ffTankEngine.Stop();
+    _ffJetEngine.Stop();
+    _ffCopterEngine.Stop();
+    _ffRotDamper.Stop();
+    _ffMGun.Stop();
+    _ffMissFire.Stop();
+    _ffGrenadeFire.Stop();
+    _ffBombFire.Stop();
+    _ffCollide.Stop();
+    _ffShake.Stop();
 }
 
 
-void NC_STACK_winp::idev_func71(winp_71arg *arg)
+void NC_STACK_winp::ForceFeedBack(uint8_t state, uint8_t effID, float p1, float p2, float p3, float p4)
 {
-    switch ( arg->effID )
+    switch ( effID )
     {
     case FF_TYPE_TANKENGINE:
-        FFDOTankEngine(arg->state, arg->p1, arg->p2);
+        FFDOTankEngine(state, p1, p2);
         break;
     case FF_TYPE_JETENGINE:
-        FFDOJetEngine(arg->state, arg->p1, arg->p2);
+        FFDOJetEngine(state, p1, p2);
         break;
     case FF_TYPE_HELIENGINE:
-        FFDOHeliEngine(arg->state, arg->p1, arg->p2);
+        FFDOHeliEngine(state, p1, p2);
         break;
     case FF_TYPE_ROTDAMPER:
-        FFDORotDamper(arg->state, arg->p1);
+        FFDORotDamper(state, p1);
         break;
     case FF_TYPE_MINIGUN:
-        FFDOMiniGun(arg->state);
+        FFDOMiniGun(state);
         break;
     case FF_TYPE_MISSILEFIRE:
-        FFDOMissileFire(arg->state);
+        FFDOMissileFire(state);
         break;
     case FF_TYPE_GRENADEFIRE:
-        FFDOGrenadeFire(arg->state);
+        FFDOGrenadeFire(state);
         break;
     case FF_TYPE_BOMBFIRE:
-        FFDOBombFire(arg->state);
+        FFDOBombFire(state);
         break;
     case FF_TYPE_COLLISION:
-        FFDOCollision(arg->state, arg->p1, arg->p3, arg->p4);
+        FFDOCollision(state, p1, p3, p4);
         break;
     case FF_TYPE_SHAKE:
-        FFDOShake(arg->state, arg->p1, arg->p2, arg->p3, arg->p4);
+        FFDOShake(state, p1, p2, p3, p4);
         break;
     case FF_TYPE_ALL:
         FFstopAll();
@@ -1141,100 +931,100 @@ void NC_STACK_winp::idev_func71(winp_71arg *arg)
     }
 }
 
-void winp_func131__sub1()
+void NC_STACK_winp::CheckJoy()
 {
-    if ( joyEnable )
+    if ( _joyEnable )
     {
-        uint32_t prevBtnState = joyButtonStates;
-        joyButtonStates = 0;
-        memset(&joyXYpos, 0, sizeof(joyXYpos));
-        memset(&joyZRZpos, 0, sizeof(joyZRZpos));
+        uint32_t prevBtnState = _joyButtonStates;
+        _joyButtonStates = 0;
+        _joyXYpos = Common::Point();
+        _joyZRZpos = Common::Point();
 
-        joyXYpos.x = sdlJoyAxis(sdljoy, 0);
-        joyXYpos.y = sdlJoyAxis(sdljoy, 1);
+        _joyXYpos.x = sdlJoyAxis(_joyHandle, 0);
+        _joyXYpos.y = sdlJoyAxis(_joyHandle, 1);
 
-        int joyaxs = SDL_JoystickNumAxes(sdljoy);
+        int joyaxs = SDL_JoystickNumAxes(_joyHandle);
 
         if ( joyaxs > 2 )
-            joyZRZpos.x = sdlJoyAxis(sdljoy, 2);
+            _joyZRZpos.x = sdlJoyAxis(_joyHandle, 2);
         else
-            joyZRZpos.x = -300;
+            _joyZRZpos.x = -300;
 
         if ( joyaxs > 3 )
-            joyZRZpos.y = sdlJoyAxis(sdljoy, 3);
+            _joyZRZpos.y = sdlJoyAxis(_joyHandle, 3);
         else
-            joyZRZpos.y = 0;
+            _joyZRZpos.y = 0;
 
         for (int i = 0; i < 8; i++ )
         {
-            if ( SDL_JoystickGetButton(sdljoy, joyButtonMap[i]) )
+            if ( SDL_JoystickGetButton(_joyHandle, _joyButtonMap[i]) )
             {
-                joyButtonStates |= 1 << i;
+                _joyButtonStates |= 1 << i;
 
                 if ( !((1 << i) & prevBtnState) )
-                    vkkeydown(i + 0x86);
+                    KeyDown(i + Input::KEY_JOYB0);
             }
             else if ( (1 << i) & prevBtnState )
             {
-                vkkeyup(i + 0x86);
+                KeyUp(i + Input::KEY_JOYB0);
             }
         }
 
-        if ( SDL_JoystickNumHats(sdljoy) > 0)
+        if ( SDL_JoystickNumHats(_joyHandle) > 0)
         {
-            switch( SDL_JoystickGetHat(sdljoy, joyHatMap[0]) )
+            switch( SDL_JoystickGetHat(_joyHandle, _joyHatMap[0]) )
             {
             case SDL_HAT_UP:
-                joyPov.x = 0;
-                joyPov.y = 300;
+                _joyPov.x = 0;
+                _joyPov.y = 300;
                 break;
 
             case SDL_HAT_RIGHTUP:
-                joyPov.x = 212;
-                joyPov.y = 212;
+                _joyPov.x = 212;
+                _joyPov.y = 212;
                 break;
 
             case SDL_HAT_RIGHT:
-                joyPov.x = 300;
-                joyPov.y = 0;
+                _joyPov.x = 300;
+                _joyPov.y = 0;
                 break;
 
             case SDL_HAT_RIGHTDOWN:
-                joyPov.x = 212;
-                joyPov.y = -212;
+                _joyPov.x = 212;
+                _joyPov.y = -212;
                 break;
 
             case SDL_HAT_DOWN:
-                joyPov.x = 0;
-                joyPov.y = -300;
+                _joyPov.x = 0;
+                _joyPov.y = -300;
                 break;
 
             case SDL_HAT_LEFTDOWN:
-                joyPov.x = -212;
-                joyPov.y = -212;
+                _joyPov.x = -212;
+                _joyPov.y = -212;
                 break;
 
             case SDL_HAT_LEFT:
-                joyPov.x = -300;
-                joyPov.y = 0;
+                _joyPov.x = -300;
+                _joyPov.y = 0;
                 break;
 
             case SDL_HAT_LEFTUP:
-                joyPov.x = -212;
-                joyPov.y = 212;
+                _joyPov.x = -212;
+                _joyPov.y = 212;
                 break;
 
             case SDL_HAT_CENTERED:
             default:
-                joyPov.x = 0;
-                joyPov.y = 0;
+                _joyPov.x = 0;
+                _joyPov.y = 0;
                 break;
             }
         }
         else
         {
-            joyPov.x = 0;
-            joyPov.y = 0;
+            _joyPov.x = 0;
+            _joyPov.y = 0;
         }
     }
 }
@@ -1243,158 +1033,182 @@ void NC_STACK_winp::CheckClick(ClickBoxInf *arg)
 {
     arg->flag = 0;
 
-    winp_func131__sub1();
+    CheckJoy();
 
-    arg->move.screenPos.x = mouseState.pos.x;
-    arg->move.screenPos.y = mouseState.pos.y;
+    arg->move.ScreenPos = _mPos;
+    _mMove = _mMoveQuery;
+    
+    _mMoveQuery = Common::Point();
 
-    mouseState.move.x = mouseState.__xrel.x;
-    mouseState.move.y = mouseState.__xrel.y;
-    mouseState.__xrel.x = 0;
-    mouseState.__xrel.y = 0;
-
-    if ( mouseState.l_state )
+    if ( _mLstate )
         arg->flag |= ClickBoxInf::FLAG_LM_HOLD;
-    if ( mouseState.m_state )
+    if ( _mMstate )
         arg->flag |= ClickBoxInf::FLAG_MM_HOLD;
-    if ( mouseState.r_state )
+    if ( _mRstate )
         arg->flag |= ClickBoxInf::FLAG_RM_HOLD;
-    if ( mouseState.dbl_state )
+    if ( _mDBLstate )
         arg->flag |= ClickBoxInf::FLAG_DBL_CLICK;
 
-    if ( mouseState.ld_cnt > 0 )
+    if ( _mLDcnt > 0 )
     {
-        arg->ldw_pos.screenPos.x = mouseState.ld_pos.x;
-        arg->ldw_pos.screenPos.y = mouseState.ld_pos.y;
+        arg->ldw_pos.ScreenPos.x = _mLDpos.x;
+        arg->ldw_pos.ScreenPos.y = _mLDpos.y;
         arg->flag |= ClickBoxInf::FLAG_LM_DOWN;
     }
-    if ( mouseState.lu_cnt > 0 )
+    if ( _mLUcnt > 0 )
     {
-        arg->lup_pos.screenPos.x = mouseState.lu_pos.x;
-        arg->lup_pos.screenPos.y = mouseState.lu_pos.y;
+        arg->lup_pos.ScreenPos.x = _mLUpos.x;
+        arg->lup_pos.ScreenPos.y = _mLUpos.y;
         arg->flag |= ClickBoxInf::FLAG_LM_UP;
     }
-    if ( mouseState.rd_cnt > 0 )
+    if ( _mRDcnt > 0 )
     {
         arg->flag |= ClickBoxInf::FLAG_RM_DOWN;
     }
-    if ( mouseState.ru_cnt > 0 )
+    if ( _mRUcnt > 0 )
     {
         arg->flag |= ClickBoxInf::FLAG_RM_UP;
     }
-    if ( mouseState.md_cnt > 0 )
+    if ( _mMDcnt > 0 )
     {
         arg->flag |= ClickBoxInf::FLAG_MM_DOWN;
     }
-    if ( mouseState.mu_cnt > 0 )
+    if ( _mMUcnt > 0 )
     {
         arg->flag |= ClickBoxInf::FLAG_MM_UP;
     }
 
-    mouseState.dbl_state = 0;
-    mouseState.ld_cnt = 0;
-    mouseState.lu_cnt = 0;
-    mouseState.rd_cnt = 0;
-    mouseState.ru_cnt = 0;
-    mouseState.md_cnt = 0;
-    mouseState.mu_cnt = 0;
+    _mDBLstate = false;
+    _mLDcnt = 0;
+    _mLUcnt = 0;
+    _mRDcnt = 0;
+    _mRUcnt = 0;
+    _mMDcnt = 0;
+    _mMUcnt = 0;
 
     NC_STACK_iwimp::CheckClick(arg);
 }
 
 void NC_STACK_winp::initfirst()
 {
-    memset(SDLtoVK, 0, sizeof(SDLtoVK));
-
-    SDLtoVK[SDL_SCANCODE_BACKSPACE]   = UAVK_BACK;
-    SDLtoVK[SDL_SCANCODE_TAB]         = UAVK_TAB;
-    SDLtoVK[SDL_SCANCODE_CLEAR]       = UAVK_CLEAR;
-    SDLtoVK[SDL_SCANCODE_RETURN]      = UAVK_RETURN;
-    SDLtoVK[SDL_SCANCODE_MENU]        = UAVK_MENU;
-    SDLtoVK[SDL_SCANCODE_CAPSLOCK]    = UAVK_CAPITAL;
-    SDLtoVK[SDL_SCANCODE_ESCAPE]      = UAVK_ESCAPE;
-    SDLtoVK[SDL_SCANCODE_SPACE]       = UAVK_SPACE;
-    SDLtoVK[SDL_SCANCODE_PAGEUP]      = UAVK_PRIOR;
-    SDLtoVK[SDL_SCANCODE_PAGEDOWN]    = UAVK_NEXT;
-    SDLtoVK[SDL_SCANCODE_END]         = UAVK_END;
-    SDLtoVK[SDL_SCANCODE_HOME]        = UAVK_HOME;
-    SDLtoVK[SDL_SCANCODE_LEFT]        = UAVK_LEFT;
-    SDLtoVK[SDL_SCANCODE_UP]          = UAVK_UP;
-    SDLtoVK[SDL_SCANCODE_RIGHT]       = UAVK_RIGHT;
-    SDLtoVK[SDL_SCANCODE_DOWN]        = UAVK_DOWN;
-    SDLtoVK[SDL_SCANCODE_PRINTSCREEN]       = UAVK_PRINT;
-    SDLtoVK[SDL_SCANCODE_INSERT]      = UAVK_INSERT;
-    SDLtoVK[SDL_SCANCODE_DELETE]      = UAVK_DELETE;
-    SDLtoVK[SDL_SCANCODE_HELP]        = UAVK_HELP;
-
-    for (int i=0; i< 9; i++)
-        SDLtoVK[SDL_SCANCODE_1 + i]   = UAVK_0 + 1 + i;
-
-    SDLtoVK[SDL_SCANCODE_0]   = UAVK_0;
-
-    for (int i=0; i<= 25; i++)
-        SDLtoVK[SDL_SCANCODE_A + i]   = UAVK_A + i;
-
-    SDLtoVK[SDL_SCANCODE_KP_0]         = UAVK_NUMPAD0;
-    SDLtoVK[SDL_SCANCODE_KP_1]         = UAVK_NUMPAD1;
-    SDLtoVK[SDL_SCANCODE_KP_2]         = UAVK_NUMPAD2;
-    SDLtoVK[SDL_SCANCODE_KP_3]         = UAVK_NUMPAD3;
-    SDLtoVK[SDL_SCANCODE_KP_4]         = UAVK_NUMPAD4;
-    SDLtoVK[SDL_SCANCODE_KP_5]         = UAVK_NUMPAD5;
-    SDLtoVK[SDL_SCANCODE_KP_6]         = UAVK_NUMPAD6;
-    SDLtoVK[SDL_SCANCODE_KP_7]         = UAVK_NUMPAD7;
-    SDLtoVK[SDL_SCANCODE_KP_8]         = UAVK_NUMPAD8;
-    SDLtoVK[SDL_SCANCODE_KP_9]         = UAVK_NUMPAD9;
-    SDLtoVK[SDL_SCANCODE_KP_MULTIPLY] = UAVK_MULTIPLY;
-    SDLtoVK[SDL_SCANCODE_KP_PLUS]     = UAVK_ADD;
-    SDLtoVK[SDL_SCANCODE_KP_MINUS]    = UAVK_SUBTRACT;
-    SDLtoVK[SDL_SCANCODE_KP_PERIOD]   = UAVK_DECIMAL;
-    SDLtoVK[SDL_SCANCODE_KP_DIVIDE]   = UAVK_DIVIDE;
-
-    for (int i=0; i< 15; i++)
-        SDLtoVK[SDL_SCANCODE_F1 + i]  = UAVK_F1+i;
-
-    SDLtoVK[SDL_SCANCODE_NUMLOCKCLEAR]     = UAVK_NUMLOCK;
-    SDLtoVK[SDL_SCANCODE_SCROLLLOCK]   = UAVK_SCROLL;
-    SDLtoVK[SDL_SCANCODE_LSHIFT]      = UAVK_SHIFT;
-    SDLtoVK[SDL_SCANCODE_RSHIFT]      = UAVK_SHIFT;
-    SDLtoVK[SDL_SCANCODE_LCTRL]       = UAVK_CONTROL;
-    SDLtoVK[SDL_SCANCODE_RCTRL]       = UAVK_CONTROL;
-    SDLtoVK[SDL_SCANCODE_MENU]        = UAVK_RMENU;
-    SDLtoVK[SDL_SCANCODE_LEFTBRACKET] = UAVK_OEM_4;
-    SDLtoVK[SDL_SCANCODE_RIGHTBRACKET] = UAVK_OEM_6;
-    SDLtoVK[SDL_SCANCODE_SEMICOLON]   = UAVK_OEM_1;
-    SDLtoVK[SDL_SCANCODE_BACKSLASH]   = UAVK_OEM_5;
-    SDLtoVK[SDL_SCANCODE_APOSTROPHE]   = UAVK_OEM_7;
-    SDLtoVK[SDL_SCANCODE_SLASH]   = UAVK_OEM_2;
-    SDLtoVK[SDL_SCANCODE_BACKSLASH]   = UAVK_OEM_3;
-    SDLtoVK[SDL_SCANCODE_COMMA]   = UAVK_OEM_COMMA;
-    SDLtoVK[SDL_SCANCODE_PERIOD]  = UAVK_OEM_PERIOD;
-    SDLtoVK[SDL_SCANCODE_MINUS]  = UAVK_OEM_MINUS;
-    SDLtoVK[SDL_SCANCODE_EQUALS]   = UAVK_OEM_PLUS;
-
-    memset(vk_map, 0xFF, sizeof(vk_map));
-    for (int i = 0; i < 256; i++)
-    {
-        int j = 0;
-        while (winp_keys[j].keytype)
-        {
-            if (i == winp_keys[j].keycode && vk_map[i] == 0xFF)
-            {
-                vk_map[i] = j;
-                break;
-            }
-
-            j++;
-        }
-    }
+    KBDMapping.clear();
+    
+    KBDMapping[SDL_SCANCODE_ESCAPE]      = Input::KEY_ESCAPE;
+    KBDMapping[SDL_SCANCODE_SPACE]       = Input::KEY_SPACE;
+    KBDMapping[SDL_SCANCODE_UP]          = Input::KEY_UP;
+    KBDMapping[SDL_SCANCODE_DOWN]        = Input::KEY_DOWN;
+    KBDMapping[SDL_SCANCODE_LEFT]        = Input::KEY_LEFT;
+    KBDMapping[SDL_SCANCODE_RIGHT]       = Input::KEY_RIGHT;
+    KBDMapping[SDL_SCANCODE_F1]          = Input::KEY_F1;
+    KBDMapping[SDL_SCANCODE_F2]          = Input::KEY_F2;
+    KBDMapping[SDL_SCANCODE_F3]          = Input::KEY_F3;
+    KBDMapping[SDL_SCANCODE_F4]          = Input::KEY_F4;
+    KBDMapping[SDL_SCANCODE_F5]          = Input::KEY_F5;
+    KBDMapping[SDL_SCANCODE_F6]          = Input::KEY_F6;
+    KBDMapping[SDL_SCANCODE_F7]          = Input::KEY_F7;
+    KBDMapping[SDL_SCANCODE_F8]          = Input::KEY_F8;
+    KBDMapping[SDL_SCANCODE_F9]          = Input::KEY_F9;
+    KBDMapping[SDL_SCANCODE_F10]         = Input::KEY_F10;
+    KBDMapping[SDL_SCANCODE_F11]         = Input::KEY_F11;
+    KBDMapping[SDL_SCANCODE_F12]         = Input::KEY_F12;
+    KBDMapping[SDL_SCANCODE_BACKSPACE]   = Input::KEY_BACKSPACE;
+    KBDMapping[SDL_SCANCODE_TAB]         = Input::KEY_TAB;
+    KBDMapping[SDL_SCANCODE_CLEAR]       = Input::KEY_CLEAR;
+    KBDMapping[SDL_SCANCODE_RETURN]      = Input::KEY_RETURN;
+    KBDMapping[SDL_SCANCODE_LCTRL]       = Input::KEY_CTRL;
+    KBDMapping[SDL_SCANCODE_RCTRL]       = Input::KEY_CTRL;
+    KBDMapping[SDL_SCANCODE_RSHIFT]      = Input::KEY_SHIFT;
+    KBDMapping[SDL_SCANCODE_LSHIFT]      = Input::KEY_SHIFT;
+    KBDMapping[SDL_SCANCODE_LALT]        = Input::KEY_ALT;
+    KBDMapping[SDL_SCANCODE_RALT]        = Input::KEY_ALT;
+    KBDMapping[SDL_SCANCODE_PAUSE]       = Input::KEY_PAUSE;
+    KBDMapping[SDL_SCANCODE_PAGEUP]      = Input::KEY_PGUP;
+    KBDMapping[SDL_SCANCODE_PAGEDOWN]    = Input::KEY_PGDOWN;
+    KBDMapping[SDL_SCANCODE_END]         = Input::KEY_END;
+    KBDMapping[SDL_SCANCODE_HOME]        = Input::KEY_HOME;
+    KBDMapping[SDL_SCANCODE_SELECT]      = Input::KEY_SELECT;
+    KBDMapping[SDL_SCANCODE_EXECUTE]     = Input::KEY_EXECUTE;
+    KBDMapping[SDL_SCANCODE_PRINTSCREEN] = Input::KEY_SNAPSHOT;
+    KBDMapping[SDL_SCANCODE_INSERT]      = Input::KEY_INSERT;
+    KBDMapping[SDL_SCANCODE_DELETE]      = Input::KEY_DELETE;
+    KBDMapping[SDL_SCANCODE_HELP]        = Input::KEY_HELP;
+    KBDMapping[SDL_SCANCODE_1]           = Input::KEY_1;
+    KBDMapping[SDL_SCANCODE_2]           = Input::KEY_2;
+    KBDMapping[SDL_SCANCODE_3]           = Input::KEY_3;
+    KBDMapping[SDL_SCANCODE_4]           = Input::KEY_4;
+    KBDMapping[SDL_SCANCODE_5]           = Input::KEY_5;
+    KBDMapping[SDL_SCANCODE_6]           = Input::KEY_6;
+    KBDMapping[SDL_SCANCODE_7]           = Input::KEY_7;
+    KBDMapping[SDL_SCANCODE_8]           = Input::KEY_8;
+    KBDMapping[SDL_SCANCODE_9]           = Input::KEY_9;
+    KBDMapping[SDL_SCANCODE_0]           = Input::KEY_0;
+    KBDMapping[SDL_SCANCODE_A]           = Input::KEY_A;
+    KBDMapping[SDL_SCANCODE_B]           = Input::KEY_B;
+    KBDMapping[SDL_SCANCODE_C]           = Input::KEY_C;
+    KBDMapping[SDL_SCANCODE_D]           = Input::KEY_D;
+    KBDMapping[SDL_SCANCODE_E]           = Input::KEY_E;
+    KBDMapping[SDL_SCANCODE_F]           = Input::KEY_F;
+    KBDMapping[SDL_SCANCODE_G]           = Input::KEY_G;
+    KBDMapping[SDL_SCANCODE_H]           = Input::KEY_H;
+    KBDMapping[SDL_SCANCODE_I]           = Input::KEY_I;
+    KBDMapping[SDL_SCANCODE_J]           = Input::KEY_J;
+    KBDMapping[SDL_SCANCODE_K]           = Input::KEY_K;
+    KBDMapping[SDL_SCANCODE_L]           = Input::KEY_L;
+    KBDMapping[SDL_SCANCODE_M]           = Input::KEY_M;
+    KBDMapping[SDL_SCANCODE_N]           = Input::KEY_N;
+    KBDMapping[SDL_SCANCODE_O]           = Input::KEY_O;
+    KBDMapping[SDL_SCANCODE_P]           = Input::KEY_P;
+    KBDMapping[SDL_SCANCODE_Q]           = Input::KEY_Q;
+    KBDMapping[SDL_SCANCODE_R]           = Input::KEY_R;
+    KBDMapping[SDL_SCANCODE_S]           = Input::KEY_S;
+    KBDMapping[SDL_SCANCODE_T]           = Input::KEY_T;
+    KBDMapping[SDL_SCANCODE_U]           = Input::KEY_U;
+    KBDMapping[SDL_SCANCODE_V]           = Input::KEY_V;
+    KBDMapping[SDL_SCANCODE_W]           = Input::KEY_W;
+    KBDMapping[SDL_SCANCODE_X]           = Input::KEY_X;
+    KBDMapping[SDL_SCANCODE_Y]           = Input::KEY_Y;
+    KBDMapping[SDL_SCANCODE_Z]           = Input::KEY_Z;
+    KBDMapping[SDL_SCANCODE_KP_0]        = Input::KEY_NUM0;
+    KBDMapping[SDL_SCANCODE_KP_1]        = Input::KEY_NUM1;
+    KBDMapping[SDL_SCANCODE_KP_2]        = Input::KEY_NUM2;
+    KBDMapping[SDL_SCANCODE_KP_3]        = Input::KEY_NUM3;
+    KBDMapping[SDL_SCANCODE_KP_4]        = Input::KEY_NUM4;
+    KBDMapping[SDL_SCANCODE_KP_5]        = Input::KEY_NUM5;
+    KBDMapping[SDL_SCANCODE_KP_6]        = Input::KEY_NUM6;
+    KBDMapping[SDL_SCANCODE_KP_7]        = Input::KEY_NUM7;
+    KBDMapping[SDL_SCANCODE_KP_8]        = Input::KEY_NUM8;
+    KBDMapping[SDL_SCANCODE_KP_9]        = Input::KEY_NUM9;
+    KBDMapping[SDL_SCANCODE_KP_MULTIPLY] = Input::KEY_NUMMUL;
+    KBDMapping[SDL_SCANCODE_KP_PLUS]     = Input::KEY_NUMPLUS;
+    KBDMapping[SDL_SCANCODE_KP_PERIOD]   = Input::KEY_NUMDOT;
+    KBDMapping[SDL_SCANCODE_KP_MINUS]    = Input::KEY_NUMMINUS;
+    KBDMapping[SDL_SCANCODE_KP_ENTER]    = Input::KEY_NUMENTER;
+    KBDMapping[SDL_SCANCODE_KP_DIVIDE]   = Input::KEY_NUMDIV;
+    KBDMapping[SDL_SCANCODE_COMMA]       = Input::KEY_EXTRA1;
+    KBDMapping[SDL_SCANCODE_PERIOD]      = Input::KEY_EXTRA2;
+    KBDMapping[SDL_SCANCODE_MINUS]       = Input::KEY_EXTRA3;
+    KBDMapping[SDL_SCANCODE_BACKSLASH]   = Input::KEY_EXTRA4;
+    KBDMapping[SDL_SCANCODE_SEMICOLON]   = Input::KEY_EXTRA5;
+    KBDMapping[SDL_SCANCODE_EQUALS]      = Input::KEY_EXTRA6;
+    KBDMapping[SDL_SCANCODE_GRAVE]       = Input::KEY_EXTRA7;
+    KBDMapping[SDL_SCANCODE_APOSTROPHE]  = Input::KEY_EXTRA8;
+    KBDMapping[SDL_SCANCODE_SLASH]       = Input::KEY_EXTRA9;
+    KBDMapping[SDL_SCANCODE_RIGHTBRACKET]= Input::KEY_EXTRA10;
+    KBDMapping[SDL_SCANCODE_BACKSLASH]   = Input::KEY_EXTRA11;
+    KBDMapping[SDL_SCANCODE_LEFTBRACKET] = Input::KEY_EXTRA12;
+    //KBDMapping[???]       = Input::KEY_EXTRA13; // 	OEM_8 (§ !)
+    KBDMapping[SDL_SCANCODE_SCROLLLOCK]  = Input::KEY_EXTRA14;
+    KBDMapping[SDL_SCANCODE_NUMLOCKCLEAR]= Input::KEY_EXTRA15;
+    KBDMapping[SDL_SCANCODE_F13]         = Input::KEY_EXTRA16;
+    KBDMapping[SDL_SCANCODE_F14]         = Input::KEY_EXTRA17;
+    KBDMapping[SDL_SCANCODE_F15]         = Input::KEY_EXTRA18;
 
     //Joy staff
 
-    joyEnable = false;
+    _joyEnable = false;
 
     sdlInputResetLog();
-    wantGuid = sdlReadJoyGuid();
+    _joyWantGuid = sdlReadJoyGuid();
 
     int numJoy = SDL_NumJoysticks();
 
@@ -1409,54 +1223,60 @@ void NC_STACK_winp::initfirst()
 
             sdlInputLog("Found joystick #%d: %s\n\tGUID:%s\n", i, SDL_JoystickNameForIndex(i), guidBuff);
 
-            if (!sdljoy && sdlGUIDcmp(jGUID, wantGuid) )
-            {
-                sdljoy = SDL_JoystickOpen(i);
-                joydevid = i;
-            }
+            if (!_joyHandle && sdlGUIDcmp(jGUID, _joyWantGuid) )
+                _joyHandle = SDL_JoystickOpen(i);
         }
 
-        if ( !sdljoy )
-            sdljoy = SDL_JoystickOpen(0);
+        if ( !_joyHandle )
+            _joyHandle = SDL_JoystickOpen(0);
 
-        sdlHaptic = SDL_HapticOpenFromJoystick(sdljoy);
+        _joyHaptic = SDL_HapticOpenFromJoystick(_joyHandle);
     }
     else
     {
         sdlInputLog("No joysticks found\n");
     }
 
-    if (sdljoy)
+    if (_joyHandle)
     {
-        joyEnable = true;
-        sdlInputLog("\nSelected joystick: %s\n", SDL_JoystickName(sdljoy));
-        sdlInputLog("\tAxes:%d\tHats:%d\tButtons:%d\tBalls:%d\n", SDL_JoystickNumAxes(sdljoy), SDL_JoystickNumHats(sdljoy), SDL_JoystickNumButtons(sdljoy), SDL_JoystickNumBalls(sdljoy));
-        sdlJoyReadMapping(sdljoy);
+        _joyEnable = true;
+        sdlInputLog("\nSelected joystick: %s\n", SDL_JoystickName(_joyHandle));
+        sdlInputLog("\tAxes:%d\tHats:%d\tButtons:%d\tBalls:%d\n", SDL_JoystickNumAxes(_joyHandle), SDL_JoystickNumHats(_joyHandle), SDL_JoystickNumButtons(_joyHandle), SDL_JoystickNumBalls(_joyHandle));
+        sdlJoyReadMapping(_joyHandle);
         sdlInputLog("\n");
     }
 
+    _mLstate = false;
+    _mRstate = false;
+    _mMstate = false;
+    _mDBLstate = false;
 
-    memset(&keybState, 0, sizeof(keybState));
-    memset(&mouseState, 0, sizeof(mouseState));
+    _mLUcnt = 0;
+    _mLDcnt = 0;
+    _mRUcnt = 0;
+    _mRDcnt = 0;
+    _mMUcnt = 0;
+    _mMDcnt = 0;
+    
+    _kbdLastDown = 0;
+    _kbdLastHit = 0;
 
-    joyButtonStates = 0;
+    _joyButtonStates = 0;
 
-    SDLWRAP_addHandler(InputWatch);
+    SDLWRAP::EventsAddHandler(InputWatch);
 
-    keybState.charBuffCnt = 0;
-
-    if (sdlHaptic)
+    if (_joyHaptic)
     {
-        ffTankEngine.Bind(sdlHaptic);
-        ffJetEngine.Bind(sdlHaptic);
-        ffCopterEngine.Bind(sdlHaptic);
-        ffRotDamper.Bind(sdlHaptic);
-        ffMGun.Bind(sdlHaptic);
-        ffMissFire.Bind(sdlHaptic);
-        ffGrenadeFire.Bind(sdlHaptic);
-        ffBombFire.Bind(sdlHaptic);
-        ffCollide.Bind(sdlHaptic);
-        ffShake.Bind(sdlHaptic);
+        _ffTankEngine.Bind(_joyHaptic);
+        _ffJetEngine.Bind(_joyHaptic);
+        _ffCopterEngine.Bind(_joyHaptic);
+        _ffRotDamper.Bind(_joyHaptic);
+        _ffMGun.Bind(_joyHaptic);
+        _ffMissFire.Bind(_joyHaptic);
+        _ffGrenadeFire.Bind(_joyHaptic);
+        _ffBombFire.Bind(_joyHaptic);
+        _ffCollide.Bind(_joyHaptic);
+        _ffShake.Bind(_joyHaptic);
     }
 }
 
@@ -1474,27 +1294,16 @@ size_t NC_STACK_winp::compatcall(int method_id, void *data)
     case 3:
         func3( *(IDVList *)data );
         return 1;
-    case 64:
-        idev_func64( (win_64arg *)data );
-        return 1;
     case 65:
-        idev_func65( (win_64arg *)data );
+        GetSlider();
         return 1;
     case 66:
-        idev_func66( (winp_66arg *)data );
+        QueryKeyboard( (InputState *)data );
         return 1;
     case 67:
-        return (size_t)idev_func67( (const char **)data );
-    case 68:
-        return (size_t)idev_func68( (winp_68arg *)data );
+        return (size_t)BindKey( (const char *)data );
     case 69:
-        idev_func69( (int)(size_t)data );
-        return 1;
-    case 70:
-        idev_func70( (idev_query_arg *)data );
-        return 1;
-    case 71:
-        idev_func71( (winp_71arg *)data );
+        ResetSlider();
         return 1;
     case 131:
         CheckClick( (ClickBoxInf *)data );

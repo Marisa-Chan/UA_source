@@ -413,7 +413,7 @@ void NC_STACK_ypagun::User_layer(update_msg *arg)
 
             if ( _status_flg & BACT_STFLAG_FIRE )
             {
-                if ( !(arg->inpt->but_flags & 1) && !(arg->inpt->but_flags & 2) )
+                if ( !arg->inpt->Buttons.IsAny({0, 1}) )
                 {
                     setState_msg arg78;
                     arg78.setFlags = 0;
@@ -438,7 +438,7 @@ void NC_STACK_ypagun::User_layer(update_msg *arg)
                 arg79.tgType = BACT_TGT_TYPE_UNIT;
             }
 
-            if ( arg->inpt->but_flags & 1 || arg->inpt->but_flags & 2 )
+            if ( arg->inpt->Buttons.IsAny({0, 1}) )
             {
                 if ( _gunType == GUN_TYPE_REAL )
                 {
@@ -446,7 +446,7 @@ void NC_STACK_ypagun::User_layer(update_msg *arg)
                     arg79.direction = _rotation.AxisZ();
                     arg79.g_time = _clock;
                     arg79.start_point = _fire_pos;
-                    arg79.flags = ((arg->inpt->but_flags & 2) != 0) | 2;
+                    arg79.flags = (arg->inpt->Buttons.Is(1) ? 1 : 0) | 2;
 
                     if ( LaunchMissile(&arg79) )
                     {
@@ -486,7 +486,7 @@ void NC_STACK_ypagun::User_layer(update_msg *arg)
                 }
             }
 
-            float yRot = arg->inpt->sliders_vars[0] * _maxrot * fTime;
+            float yRot = arg->inpt->Sliders[0] * _maxrot * fTime;
 
             if ( fabs( yRot ) > 0.001 )
             {
@@ -506,7 +506,7 @@ void NC_STACK_ypagun::User_layer(update_msg *arg)
                 _rotation *= mat3x3(_gunRott, yRot, MAT_FLAG_INV_SIN);
             }
 
-            float xRot = arg->inpt->sliders_vars[1] * _maxrot * fTime;
+            float xRot = arg->inpt->Sliders[1] * _maxrot * fTime;
 
             if ( fabs(xRot) > 0.001 )
             {

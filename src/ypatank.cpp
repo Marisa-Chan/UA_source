@@ -860,7 +860,7 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
             }
         }
 
-        float v85 = -arg->inpt->sliders_vars[3] * _maxrot * v90 * 2.0;
+        float v85 = -arg->inpt->Sliders[3] * _maxrot * v90 * 2.0;
 
         if ( fabs(v85) > 0.0 )
             _rotation = mat3x3::RotateY(v85) * _rotation;
@@ -878,7 +878,7 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
             }
         }
 
-        float v88 = arg->inpt->sliders_vars[4];
+        float v88 = arg->inpt->Sliders[4];
         float v75 = fabs(v88);
 
         if ( v88 > 1.0 )
@@ -890,7 +890,7 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
 
         float v78;
 
-        if ( arg->inpt->but_flags & 0x80000000 )
+        if ( arg->inpt->Buttons.Is(31) )
             v78 = _force * v75;
         else
             v78 = _force;
@@ -903,7 +903,7 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
         if ( fabs(v88) > 0.001 )
             _status_flg |= BACT_STFLAG_MOVE;
 
-        _gun_angle_user += v90 * arg->inpt->sliders_vars[5];
+        _gun_angle_user += v90 * arg->inpt->Sliders[5];
 
         if ( _gun_angle_user < -0.3 )
             _gun_angle_user = -0.3;
@@ -912,7 +912,7 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
             _gun_angle_user = 0.8;
 
 
-        _gun_leftright = _gun_leftright - v90 * arg->inpt->sliders_vars[15];
+        _gun_leftright = _gun_leftright - v90 * arg->inpt->Sliders[15];
 
         if ( _gun_leftright < -0.8 )
             _gun_leftright = -0.8;
@@ -949,7 +949,7 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
             arg79.tgType = BACT_TGT_TYPE_UNIT;
         }
 
-        if ( arg->inpt->but_flags & 1 || arg->inpt->but_flags & 2 )
+        if ( arg->inpt->Buttons.IsAny({0, 1}) )
         {
             arg79.direction = v67;
             arg79.weapon = _weapon;
@@ -962,7 +962,7 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
 
             arg79.start_point.y = _fire_pos.y;
             arg79.start_point.z = _fire_pos.z;
-            arg79.flags = (arg->inpt->but_flags & 2) != 0;
+            arg79.flags = (arg->inpt->Buttons.Is(1) ? 1 : 0);
             arg79.flags |= 2;
 
             LaunchMissile(&arg79);
@@ -972,7 +972,7 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
         {
             if ( _status_flg & BACT_STFLAG_FIRE )
             {
-                if ( !(arg->inpt->but_flags & 4) )
+                if ( !(arg->inpt->Buttons.Is(2)) )
                 {
                     setState_msg arg78;
                     arg78.setFlags = 0;
@@ -983,7 +983,7 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
                 }
             }
 
-            if ( arg->inpt->but_flags & 4 )
+            if ( arg->inpt->Buttons.Is(2) )
             {
                 if ( !(_status_flg & BACT_STFLAG_FIRE) )
                 {
@@ -1009,7 +1009,7 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
         {
             move_msg arg74;
 
-            if ( arg->inpt->but_flags & 8 )
+            if ( arg->inpt->Buttons.Is(3) )
             {
                 _thraction = 0;
 

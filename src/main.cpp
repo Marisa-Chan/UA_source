@@ -128,7 +128,7 @@ int sb_0x411324__sub0()
         if ( ypaworld->ypaworld_func156(&userdata) )
         {
             dword_520400 = 1;
-            INPe.sub_412D28(&input_states);
+            INPe.QueryInput(&input_states);
 
             if (!v0)
                 return 0;
@@ -155,7 +155,7 @@ int sb_0x411324__sub0()
         if ( !ypaworld->ypaworld_func169(&arg169) )
             ypa_log_out("Warning, load error\n");
 
-        INPe.sub_412D28(&input_states);
+        INPe.QueryInput(&input_states);
     }
     break;
 
@@ -170,7 +170,7 @@ int sb_0x411324__sub0()
         if ( !ypaworld->ypaworld_func170(&arg169) )
             ypa_log_out("Warning, Save error\n");
 
-        INPe.sub_412D28(&input_states);
+        INPe.QueryInput(&input_states);
     }
     break;
 
@@ -186,7 +186,7 @@ int sb_0x411324__sub0()
         if ( !ypaworld->ypaworld_func169(&arg169) )
             ypa_log_out("Warning, load error\n");
 
-        INPe.sub_412D28(&input_states);
+        INPe.QueryInput(&input_states);
     }
     break;
 
@@ -232,7 +232,7 @@ int sb_0x411324__sub2__sub0(base_64arg *arg)
         {
             dword_520400 = 1;
 
-            INPe.sub_412D28(&input_states);
+            INPe.QueryInput(&input_states);
 
             return 0;
         }
@@ -249,37 +249,37 @@ int sb_0x411324__sub2__sub0(base_64arg *arg)
 
     int cont_play = 1;
 
-    if ( arg->field_8->downed_key == 'N' )
+    if ( arg->field_8->KbdLastHit == Input::KEY_N )
     {
         arg165.field_0 = 4;
     }
-    else if ( arg->field_8->downed_key == 'P' )
+    else if ( arg->field_8->KbdLastHit == Input::KEY_P )
     {
         arg165.field_0 = 2;
     }
-    else if ( arg->field_8->downed_key == 'R' )
+    else if ( arg->field_8->KbdLastHit == Input::KEY_R )
     {
         arg165.field_0 = 3;
     }
-    else if ( arg->field_8->downed_key == 'S' )
+    else if ( arg->field_8->KbdLastHit == Input::KEY_S )
     {
         arg165.field_0 = 1;
     }
-    else if ( arg->field_8->downed_key == 'V' )
+    else if ( arg->field_8->KbdLastHit == Input::KEY_V )
     {
         arg165.frame = -10;
         arg165.field_0 = 7;
     }
-    else if ( arg->field_8->downed_key == 'B' )
+    else if ( arg->field_8->KbdLastHit == Input::KEY_B )
     {
         arg165.field_0 = 5;
     }
-    else if ( arg->field_8->downed_key == 'M' )
+    else if ( arg->field_8->KbdLastHit == Input::KEY_M )
     {
         arg165.frame = 10;
         arg165.field_0 = 7;
     }
-    else if ( arg->field_8->downed_key == UAVK_SPACE || arg->field_8->downed_key == UAVK_ESCAPE )
+    else if ( arg->field_8->KbdLastHit == Input::KEY_SPACE || arg->field_8->KbdLastHit == Input::KEY_ESCAPE )
     {
         cont_play = 0;
     }
@@ -327,9 +327,9 @@ int sb_0x411324__sub2()
 
         dword_520400 = 1;
 
-        memset(&input_states, 0, sizeof(struC5));
+        input_states.Clear();
 
-        INPe.sub_412D28(&input_states);
+        INPe.QueryInput(&input_states);
     }
     return 1;
 }
@@ -366,7 +366,7 @@ int sb_0x411324__sub1()
             return 0;
         }
         dword_520400 = 2;
-        INPe.sub_412D28(&input_states);
+        INPe.QueryInput(&input_states);
     }
     else if ( userdata.envAction.action == EnvAction::ACTION_LOAD )
     {
@@ -395,7 +395,7 @@ int sb_0x411324__sub1()
             return 0;
         }
         dword_520400 = 2;
-        INPe.sub_412D28(&input_states);
+        INPe.QueryInput(&input_states);
     }
     else if ( userdata.envAction.action == EnvAction::ACTION_NETPLAY )
     {
@@ -423,7 +423,7 @@ int sb_0x411324__sub1()
         }
 
         dword_520400 = 2;
-        INPe.sub_412D28(&input_states);
+        INPe.QueryInput(&input_states);
     }
     else if ( userdata.envAction.action == EnvAction::ACTION_DEMO )
     {
@@ -464,7 +464,7 @@ int sb_0x411324__sub1()
             dword_520400 = 1;
         }
 
-        INPe.sub_412D28(&input_states);
+        INPe.QueryInput(&input_states);
     }
 
     return 1;
@@ -473,21 +473,21 @@ int sb_0x411324__sub1()
 
 int sb_0x411324()
 {
-    memset(&input_states, 0, sizeof(struC5));
-    INPe.sub_412D28(&input_states);
+    input_states.Clear();
+    INPe.QueryInput(&input_states);
 
     if ( userdata.field_0x10 )
     {
-        input_states.period = 1;
+        input_states.Period = 1;
         userdata.field_0x10 = 0;
     }
 
-    input_states.period++;
+    input_states.Period++;
     
-    world_update_arg.DTime = input_states.period;
+    world_update_arg.DTime = input_states.Period;
     world_update_arg.field_8 = &input_states;
 
-    world_update_arg.TimeStamp += input_states.period;
+    world_update_arg.TimeStamp += input_states.Period;
     
 
     // If mouse captured, enable releative mouse control
@@ -496,7 +496,7 @@ int sb_0x411324()
     else
         SDLWRAP_releativeMouse(false);
     
-    Gui::Root::Instance.TimersUpdate( input_states.period );
+    Gui::Root::Instance.TimersUpdate( input_states.Period );
 
     if ( dword_520400 == 1 )
     {
@@ -556,7 +556,7 @@ int WinMain__sub0__sub0()
     ypaworld = 0;
     dword_520400 = 0;
     userdata.clear();
-    memset(&input_states, 0, sizeof(struC5));
+    input_states.Clear();
     memset(&world_update_arg, 0, sizeof(world_update_arg));
 
     if ( !init_classesLists_and_variables() )

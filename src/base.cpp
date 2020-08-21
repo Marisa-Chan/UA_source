@@ -1205,24 +1205,24 @@ size_t NC_STACK_base::base_func78(base_64arg *arg)
 
     flags |= (FLAG_MOVING | FLAG_ROTATING);
 
-    if ( arg->field_8->but_flags & 0x80000000 )
+    if ( arg->field_8->Buttons.Is(31) )
     {
         transform.ay = 0;
         transform.az = 0;
         transform.ax = 0;
     }
 
-    transform.rx = -arg->field_8->sliders_vars[31] * 16384.0;
-    transform.ry = -arg->field_8->sliders_vars[30] * 16384.0;
-    transform.rz = -arg->field_8->sliders_vars[29] * 16384.0;
+    transform.rx = -arg->field_8->Sliders[31] * 16384.0;
+    transform.ry = -arg->field_8->Sliders[30] * 16384.0;
+    transform.rz = -arg->field_8->Sliders[29] * 16384.0;
 
-    transform.vec.x = -arg->field_8->sliders_vars[28] * transform.locSclRot.m20;
+    transform.vec.x = -arg->field_8->Sliders[28] * transform.locSclRot.m20;
     transform.vec.y = 0;
-    transform.vec.z = -arg->field_8->sliders_vars[28] * transform.locSclRot.m22;
+    transform.vec.z = -arg->field_8->Sliders[28] * transform.locSclRot.m22;
 
-    transform.vec.x += -arg->field_8->sliders_vars[27] * transform.locSclRot.m20;
-    transform.vec.y += -arg->field_8->sliders_vars[27] * transform.locSclRot.m21;
-    transform.vec.z += -arg->field_8->sliders_vars[27] * transform.locSclRot.m22;
+    transform.vec.x += -arg->field_8->Sliders[27] * transform.locSclRot.m20;
+    transform.vec.y += -arg->field_8->Sliders[27] * transform.locSclRot.m21;
+    transform.vec.z += -arg->field_8->Sliders[27] * transform.locSclRot.m22;
 
     return 1;
 }

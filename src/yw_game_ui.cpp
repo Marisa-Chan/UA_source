@@ -2973,17 +2973,7 @@ void sub_4C8524(NC_STACK_ypaworld *yw)
 void NC_STACK_ypaworld::FFeedback_StopAll()
 {
     if ( input_class )
-    {
-        winp_71arg winp71;
-        winp71.state = NC_STACK_winp::FF_STATE_STOP;
-        winp71.p4 = 0;
-        winp71.p3 = 0;
-        winp71.p2 = 0;
-        winp71.p1 = 0;
-        winp71.effID = NC_STACK_winp::FF_TYPE_ALL;
-
-        input_class->wimp_ForceFeedback(&winp71);
-    }
+        input_class->ForceFeedback(NC_STACK_winp::FF_STATE_STOP, NC_STACK_winp::FF_TYPE_ALL);
 }
 
 int sb_0x451034(NC_STACK_ypaworld *yw)
@@ -3808,11 +3798,11 @@ void ypaworld_func64__sub7__sub2__sub7(NC_STACK_ypaworld *yw)
     }
 }
 
-int ypaworld_func64__sub7__sub2__sub3(NC_STACK_ypaworld *yw, struC5 *inpt)
+int ypaworld_func64__sub7__sub2__sub3(NC_STACK_ypaworld *yw, InputState *inpt)
 {
     ClickBoxInf *winpt = &inpt->ClickInf;
 
-    switch ( inpt->dword8 - 0x80 )
+    switch ( inpt->HotKeyID )
     {
     case 0:
         if ( bzda.field_1CC & 1 )
@@ -3975,7 +3965,7 @@ int ypaworld_func64__sub7__sub2__sub3(NC_STACK_ypaworld *yw, struC5 *inpt)
                 winpt->selected_btnID = 4;
                 winpt->selected_btn = &bzda;
                 winpt->flag |= ClickBoxInf::FLAG_BTN_UP;
-                inpt->dword8 = 0;
+                inpt->HotKeyID = -1;
             }
         }
         else
@@ -4062,25 +4052,25 @@ int ypaworld_func64__sub7__sub2__sub3(NC_STACK_ypaworld *yw, struC5 *inpt)
         {
             int v16;
 
-            switch ( inpt->dword8 )
+            switch ( inpt->HotKeyID )
             {
-            case (0x80 | 0x26):
+            case 38:
                 v16 = 0;
                 break;
 
-            case (0x80 | 0x27):
+            case 39:
                 v16 = 25;
                 break;
 
-            case (0x80 | 0x28):
+            case 40:
                 v16 = 50;
                 break;
 
-            case (0x80 | 0x29):
+            case 41:
                 v16 = 75;
                 break;
 
-            case (0x80 | 0x2A):
+            case 42:
                 v16 = 100;
                 break;
             }
@@ -4464,7 +4454,7 @@ void sb_0x4c66f8(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypabac
 
 
 
-void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
+void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, InputState *inpt)
 {
     ClickBoxInf *winpt = &inpt->ClickInf;
 
@@ -4476,30 +4466,30 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
     int a2a = 1;
     if ( bzda.field_1D4 & 1 )
     {
-        switch ( inpt->dword8 )
+        switch ( inpt->HotKeyID )
         {
-        case (0x80 | 0x1F):
-        {
-            NC_STACK_ypabact *v9 = yw->GetLastMsgSender();
+            case 31:
+            {
+                NC_STACK_ypabact *v9 = yw->GetLastMsgSender();
 
-            if ( v9 )
-                bact1 = v9;
-        }
-        break;
-
-        case (0x80 | 0x2C):
-            bact1 = ypaworld_func64__sub7__sub2__sub6(yw);
+                if ( v9 )
+                    bact1 = v9;
+            }
             break;
 
-        case (0x80 | 0x2D):
-            ypaworld_func64__sub7__sub2__sub7(yw);
-            break;
+            case 44:
+                bact1 = ypaworld_func64__sub7__sub2__sub6(yw);
+                break;
 
-        default:
-            if ( inpt->dword8 )
-                a2a = ypaworld_func64__sub7__sub2__sub3(yw, inpt);
+            case 45:
+                ypaworld_func64__sub7__sub2__sub7(yw);
+                break;
 
-            break;
+            default:
+                if ( inpt->HotKeyID >= 0 )
+                    a2a = ypaworld_func64__sub7__sub2__sub3(yw, inpt);
+
+                break;
         }
 
         if ( yw->UserUnit->_status == BACT_STATUS_DEAD )
@@ -4507,19 +4497,19 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
             if ( yw->field_162A )
             {
                 bact1 = sb_0x4c63d0(yw);
-                inpt->but_flags &= 0xFFFFFFFE;
+                inpt->Buttons.UnSet(0);
             }
         }
 
         if ( gui_lstvw.IsOpen() )
         {
-            if ( yw->field_826F == 27 || yw->field_826F == 13 )
+            if ( yw->field_826F == Input::KEY_ESCAPE || yw->field_826F == Input::KEY_RETURN )
             {
                 yw->GuiWinClose(&gui_lstvw);
 
-                inpt->downed_key_2 = 0;
-                inpt->dword8 = 0;
-                inpt->downed_key = 0;
+                inpt->KbdLastDown = Input::KEY_NONE;
+                inpt->HotKeyID = -1;
+                inpt->KbdLastHit = Input::KEY_NONE;
             }
         }
 
@@ -4556,7 +4546,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
                         if ( bzda.field_1D0 & 0x16 )
                         {
                             bzda.field_1D0 = bzda.field_1CC & 1;
-                            sub_481204(yw, 3, 130);
+                            sub_481204(yw, 3, 2);
                         }
                         else
                         {
@@ -4576,14 +4566,14 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
                         }
                     }
                     else
-                        sub_481204(yw, 3, 130);
+                        sub_481204(yw, 3, 2);
 
                 }
                 else if ( bzda.field_1D0 & 0x16 )
                 {
                     bzda.field_1D0 = bzda.field_1CC & 1;
 
-                    sub_481204(yw, 3, 130);
+                    sub_481204(yw, 3, 2);
                 }
                 else
                 {
@@ -4603,7 +4593,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
                         bzda.field_1D0 = 2;
 
                     a2a = 0;
-                    sub_481204(yw, 3, 130);
+                    sub_481204(yw, 3, 2);
                 }
                 break;
 
@@ -4616,7 +4606,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
                         bzda.field_1D0 = 8;
                 }
 
-                sub_481204(yw, 5, 132);
+                sub_481204(yw, 5, 4);
                 break;
 
             case 2: //MAP
@@ -4646,9 +4636,9 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
                 }
 
                 if ( winpt->selected_btnID == 2 )
-                    sub_481204(yw, 8, 136);
+                    sub_481204(yw, 8, 8);
                 else if ( winpt->selected_btnID == 3 )
-                    sub_481204(yw, 9, 137);
+                    sub_481204(yw, 9, 9);
 
                 break;
 
@@ -4664,7 +4654,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
                         bzda.field_1D0 = 1;
                 }
 
-                sub_481204(yw, 17, 149);
+                sub_481204(yw, 17, 21);
                 break;
 
             case 5:
@@ -4678,7 +4668,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
                         bact1 = NULL;
                 }
 
-                sub_481204(yw, 18, 151);
+                sub_481204(yw, 18, 23);
                 break;
 
             case 6: // Cycle through units in squad
@@ -4690,14 +4680,14 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
                     if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
                         bact1 = ypaworld_func64__sub7__sub2__sub5(yw);
 
-                    sub_481204(yw, 2, 150);
+                    sub_481204(yw, 2, 22);
                 }
                 else
                 {
                     if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
                         bact1 = ypaworld_func64__sub7__sub2__sub4(yw);
 
-                    sub_481204(yw, 19, 150);
+                    sub_481204(yw, 19, 22);
                 }
                 break;
 
@@ -4708,7 +4698,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
                     bact1 = sb_0x4c63d0(yw);
 
-                sub_481204(yw, 20, 148);
+                sub_481204(yw, 20, 20);
                 break;
 
             case 8:
@@ -4718,7 +4708,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
                     ypaworld_func64__sub7__sub2__sub10(yw);
 
-                sub_481204(yw, 47, 174);
+                sub_481204(yw, 47, 46);
                 break;
 
             case 9:
@@ -4730,7 +4720,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
                     yw->sub_449DE8(get_lang_string(yw->string_pointers_p2, 767, "help\\l17.html")); //MAKE ME
                 }
 
-                sub_481204(yw, 48, 171);
+                sub_481204(yw, 48, 43);
                 break;
 
             case 10:
@@ -4745,7 +4735,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, struC5 *inpt)
                         ypaworld_func64__sub7__sub2__sub9(yw);
                 }
 
-                sub_481204(yw, 21, 152);
+                sub_481204(yw, 21, 24);
                 break;
 
             default:
@@ -5175,7 +5165,7 @@ char * ypaworld_func64__sub7__sub7__sub0(NC_STACK_ypaworld *yw)
     return pcur;
 }
 
-void ypaworld_func64__sub7__sub7(NC_STACK_ypaworld *yw, struC5 *inpt)
+void ypaworld_func64__sub7__sub7(NC_STACK_ypaworld *yw, InputState *inpt)
 {
     ClickBoxInf *winpt = &inpt->ClickInf;
 
@@ -5601,7 +5591,7 @@ char * ypaworld_func64__sub7__sub3__sub0__sub3(NC_STACK_ypaworld *yw, char *cur)
 
 
 
-void ypaworld_func64__sub7__sub3__sub0(NC_STACK_ypaworld *yw, struC5 *inpt)
+void ypaworld_func64__sub7__sub3__sub0(NC_STACK_ypaworld *yw, InputState *inpt)
 {
     ClickBoxInf *winpt = &inpt->ClickInf;
 
@@ -5637,7 +5627,7 @@ void ypaworld_func64__sub7__sub3__sub0(NC_STACK_ypaworld *yw, struC5 *inpt)
 
     if ( squadron_manager.field_2A8 & 1 )
     {
-        if ( squadron_manager.field_2C8 != winpt->move.screenPos.x || squadron_manager.field_2CA != winpt->move.screenPos.y )
+        if ( squadron_manager.field_2C8 != winpt->move.ScreenPos.x || squadron_manager.field_2CA != winpt->move.ScreenPos.y )
         {
             pcur = sub_4C7950(yw, pcur, squadron_manager.field_2C4, squadron_manager.field_2C6);
 
@@ -5888,7 +5878,7 @@ int NC_STACK_ypaworld::ypaworld_func64__sub7__sub3__sub1(ClickBoxInf *winpt)
     if ( winpt->selected_btnID - 8 + squadron_manager.firstShownEntries >= squadron_manager.numEntries )
         return 0;
 
-    NC_STACK_ypabact *v5 = sub_4C7B0C(winpt->selected_btnID - 8, winpt->move.btnPos.x);
+    NC_STACK_ypabact *v5 = sub_4C7B0C(winpt->selected_btnID - 8, winpt->move.BtnPos.x);
 
     if ( !v5 )
         return 0;
@@ -5910,25 +5900,25 @@ int NC_STACK_ypaworld::ypaworld_func64__sub7__sub3__sub1(ClickBoxInf *winpt)
 
     squadron_manager.field_2B4 = squadron_manager.field_2AC;
     squadron_manager.field_2B8 = squadron_manager.field_2B0;
-    squadron_manager.field_2C8 = winpt->move.screenPos.x;
+    squadron_manager.field_2C8 = winpt->move.ScreenPos.x;
     squadron_manager.field_2BC = v5;
 
     if ( v5->_parent == v5->_host_station )
     {
-        squadron_manager.field_2C0 = -(winpt->move.btnPos.x - squadron_manager.field_2D0);
+        squadron_manager.field_2C0 = -(winpt->move.BtnPos.x - squadron_manager.field_2D0);
     }
     else
     {
-        int v11 = winpt->move.btnPos.x - squadron_manager.field_2D4;
+        int v11 = winpt->move.BtnPos.x - squadron_manager.field_2D4;
         squadron_manager.field_2C0 = -(v11 % squadron_manager.field_2CC);
     }
 
-    squadron_manager.field_2C2 = -winpt->move.btnPos.y;
-    squadron_manager.field_2CA = winpt->move.screenPos.y;
+    squadron_manager.field_2C2 = -winpt->move.BtnPos.y;
+    squadron_manager.field_2CA = winpt->move.ScreenPos.y;
     return 1;
 }
 
-void NC_STACK_ypaworld::SquadManager_InputHandle(struC5 *inpt)
+void NC_STACK_ypaworld::SquadManager_InputHandle(InputState *inpt)
 {
     if ( squadron_manager.flags & (GuiBase::FLAG_CLOSED | GuiBase::FLAG_ICONIFED) )
     {
@@ -5946,8 +5936,8 @@ void NC_STACK_ypaworld::SquadManager_InputHandle(struC5 *inpt)
             {
                 if ( winpt->flag & (ClickBoxInf::FLAG_LM_HOLD | ClickBoxInf::FLAG_RM_HOLD) )
                 {
-                    squadron_manager.field_2C4 = winpt->move.screenPos.x + squadron_manager.field_2C0;
-                    squadron_manager.field_2C6 = winpt->move.screenPos.y + squadron_manager.field_2C2;
+                    squadron_manager.field_2C4 = winpt->move.ScreenPos.x + squadron_manager.field_2C0;
+                    squadron_manager.field_2C6 = winpt->move.ScreenPos.y + squadron_manager.field_2C2;
                 }
                 else
                 {
@@ -5972,7 +5962,7 @@ void NC_STACK_ypaworld::SquadManager_InputHandle(struC5 *inpt)
             }
             if ( winpt->selected_btnID == 6 && this->_activeCmdrRemapIndex != -1 && !(bzda.field_1D0 & 0x20) )
             {
-                int v9 = (winpt->move.btnPos.x - squadron_manager.field_2DC) / tiles[24]->map[49].w;
+                int v9 = (winpt->move.BtnPos.x - squadron_manager.field_2DC) / tiles[24]->map[49].w;
 
                 if ( v9 >= 0 && v9 <= 4 )
                 {
@@ -5988,30 +5978,30 @@ void NC_STACK_ypaworld::SquadManager_InputHandle(struC5 *inpt)
                 switch ( v9 )
                 {
                 case 0:
-                    sub_481204(this, 12, 166);
+                    sub_481204(this, 12, 38);
                     break;
 
                 case 1:
-                    sub_481204(this, 13, 167);
+                    sub_481204(this, 13, 39);
                     break;
 
                 case 2:
-                    sub_481204(this, 14, 168);
+                    sub_481204(this, 14, 40);
                     break;
 
                 case 3:
-                    sub_481204(this, 15, 169);
+                    sub_481204(this, 15, 41);
                     break;
 
                 case 4:
-                    sub_481204(this, 16, 170);
+                    sub_481204(this, 16, 42);
                     break;
 
                 default:
                     break;
                 }
 
-                if ( winpt->move.btnPos.x >= squadron_manager.field_2D8 )
+                if ( winpt->move.BtnPos.x >= squadron_manager.field_2D8 )
                     sub_4811E8(46);
             }
 
@@ -6025,8 +6015,8 @@ void NC_STACK_ypaworld::SquadManager_InputHandle(struC5 *inpt)
                     if ( winpt->flag & ClickBoxInf::FLAG_RM_DOWN )
                         squadron_manager.field_2A8 |= 3;
 
-                    squadron_manager.field_2C4 = winpt->move.screenPos.x + squadron_manager.field_2C0;
-                    squadron_manager.field_2C6 = winpt->move.screenPos.y + squadron_manager.field_2C2;
+                    squadron_manager.field_2C4 = winpt->move.ScreenPos.x + squadron_manager.field_2C0;
+                    squadron_manager.field_2C6 = winpt->move.ScreenPos.y + squadron_manager.field_2C2;
                 }
             }
             if ( squadron_manager.mouseItem != -1 )
@@ -6038,7 +6028,7 @@ void NC_STACK_ypaworld::SquadManager_InputHandle(struC5 *inpt)
                     NC_STACK_ypabact *v18 = squadron_manager.squads[v17];
                     if ( v18 )
                     {
-                        if ( winpt->move.btnPos.x < squadron_manager.field_2D0 )
+                        if ( winpt->move.BtnPos.x < squadron_manager.field_2D0 )
                             ypaworld_func64__sub7__sub3__sub4(v18);
                     }
                 }
@@ -6182,7 +6172,7 @@ void ypaworld_func64__sub7__sub1__sub0(NC_STACK_ypaworld *yw)
     yw->sub_4C40AC();
 }
 
-void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
+void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
 {
     if ( robo_map.IsClosed() )
     {
@@ -6197,45 +6187,45 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
         if ( yw->field_1b68 )
             robo_map.field_1EF = -1;
 
-        switch ( inpt->dword8 )
+        switch ( inpt->HotKeyID )
         {
-        case (0x80 | 0x0A):
+        case 10:
             winpt->selected_btn = &robo_map;
             winpt->selected_btnID = 3;
             winpt->flag |= ClickBoxInf::FLAG_BTN_DOWN;
             break;
 
-        case (0x80 | 0x0B):
+        case 11:
             winpt->selected_btn = &robo_map;
             winpt->selected_btnID = 4;
             winpt->flag |= ClickBoxInf::FLAG_BTN_DOWN;
             break;
 
-        case (0x80 | 0x0C):
+        case 12:
             winpt->selected_btn = &robo_map;
             winpt->selected_btnID = 5;
             winpt->flag |= ClickBoxInf::FLAG_BTN_DOWN;
             break;
 
-        case (0x80 | 0x0E):
+        case 14:
             winpt->selected_btn = &robo_map;
             winpt->selected_btnID = 6;
             winpt->flag |= ClickBoxInf::FLAG_BTN_DOWN;
             break;
 
-        case (0x80 | 0x10):
+        case 16:
             winpt->selected_btn = &robo_map;
             winpt->selected_btnID = 7;
             winpt->flag |= ClickBoxInf::FLAG_BTN_UP;
             break;
 
-        case (0x80 | 0x11):
+        case 17:
             winpt->selected_btn = &robo_map;
             winpt->selected_btnID = 8;
             winpt->flag |= ClickBoxInf::FLAG_BTN_UP;
             break;
 
-        case (0x80 | 0x12):
+        case 18:
             winpt->selected_btn = &robo_map;
             winpt->selected_btnID = 9;
             winpt->flag |= ClickBoxInf::FLAG_BTN_UP;
@@ -6249,8 +6239,8 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
         {
             if ( winpt->flag & ClickBoxInf::FLAG_LM_HOLD )
             {
-                int v15 = winpt->move.screenPos.x + robo_map.field_218;
-                int v16 = winpt->move.screenPos.y + robo_map.field_21A;
+                int v15 = winpt->move.ScreenPos.x + robo_map.field_218;
+                int v16 = winpt->move.ScreenPos.y + robo_map.field_21A;
 
                 if ( v15 < robo_map.field_210 )
                     v15 = robo_map.field_210;
@@ -6282,7 +6272,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
             if ( winpt->flag & ClickBoxInf::FLAG_LM_HOLD )
             {
                 robo_map.field_1ED = 0;
-                robo_map.field_1D8 = (yw->sectors_maxX2 * 1200.0) / (float)robo_map.field_1CC * (float)(winpt->move.screenPos.x - robo_map.field_21C ) + robo_map.field_220;
+                robo_map.field_1D8 = (yw->sectors_maxX2 * 1200.0) / (float)robo_map.field_1CC * (float)(winpt->move.ScreenPos.x - robo_map.field_21C ) + robo_map.field_220;
             }
             else
             {
@@ -6295,7 +6285,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
             if ( winpt->flag & ClickBoxInf::FLAG_LM_HOLD )
             {
                 robo_map.field_1ED = 0;
-                robo_map.field_1DC = robo_map.field_224 - (yw->sectors_maxY2 * 1200.0) / (float)robo_map.field_1D2 * (float)(winpt->move.screenPos.y - robo_map.field_21E);
+                robo_map.field_1DC = robo_map.field_224 - (yw->sectors_maxY2 * 1200.0) / (float)robo_map.field_1D2 * (float)(winpt->move.ScreenPos.y - robo_map.field_21E);
             }
             else
             {
@@ -6308,13 +6298,13 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
             if ( winpt->flag & ClickBoxInf::FLAG_RM_HOLD )
             {
                 robo_map.field_1ED = 0;
-                robo_map.field_1D8 = robo_map.field_220 + (float)(robo_map.field_21C - winpt->move.screenPos.x) * robo_map.field_1E0;
-                robo_map.field_1DC = robo_map.field_224 - (float)(robo_map.field_21E - winpt->move.screenPos.y) * robo_map.field_1E4;
+                robo_map.field_1D8 = robo_map.field_220 + (float)(robo_map.field_21C - winpt->move.ScreenPos.x) * robo_map.field_1E0;
+                robo_map.field_1DC = robo_map.field_224 - (float)(robo_map.field_21E - winpt->move.ScreenPos.y) * robo_map.field_1E4;
             }
             else
             {
-                int v25 = abs(robo_map.field_21C - winpt->move.screenPos.x);
-                int v27 = abs(robo_map.field_21E - winpt->move.screenPos.y);
+                int v25 = abs(robo_map.field_21C - winpt->move.ScreenPos.x);
+                int v27 = abs(robo_map.field_21E - winpt->move.ScreenPos.y);
 
                 if ( v25 <= 1 && v27 <= 1 )
                 {
@@ -6330,8 +6320,8 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
         }
         else if ( robo_map.field_1E8 & 0x200 )
         {
-            dword_516518 = winpt->move.screenPos.x;
-            dword_51651C = winpt->move.screenPos.y;
+            dword_516518 = winpt->move.ScreenPos.x;
+            dword_51651C = winpt->move.ScreenPos.y;
 
             sub_4C1FBC();
 
@@ -6357,8 +6347,8 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
                 if ( winpt->selected_btnID == 17 )
                 {
                     robo_map.field_220 = robo_map.field_1D8;
-                    robo_map.field_21C = winpt->move.screenPos.x;
-                    robo_map.field_21E = winpt->move.screenPos.y;
+                    robo_map.field_21C = winpt->move.ScreenPos.x;
+                    robo_map.field_21E = winpt->move.ScreenPos.y;
                     robo_map.field_224 = robo_map.field_1DC;
                     robo_map.field_1E8 |= 0x10;
                     yw->draggingLock = 1;
@@ -6370,8 +6360,8 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
                 if ( winpt->selected_btnID == 17 )
                 {
                     robo_map.field_1E8 |= 0x200;
-                    dword_516510 = winpt->move.screenPos.x;
-                    dword_516514 = winpt->move.screenPos.y;
+                    dword_516510 = winpt->move.ScreenPos.x;
+                    dword_516514 = winpt->move.ScreenPos.y;
                     dword_516518 = dword_516510;
                     dword_51651C = dword_516514;
 
@@ -6395,22 +6385,22 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
                 switch ( winpt->selected_btnID )
                 {
                 case 16:
-                    robo_map.field_218 = robo_map.w - winpt->ldw_pos.screenPos.x;
-                    robo_map.field_21A = robo_map.h - winpt->ldw_pos.screenPos.y;
+                    robo_map.field_218 = robo_map.w - winpt->ldw_pos.ScreenPos.x;
+                    robo_map.field_21A = robo_map.h - winpt->ldw_pos.ScreenPos.y;
 
                     robo_map.field_1E8 |= 1;
                     yw->draggingLock = 1;
                     break;
 
                 case 14:
-                    robo_map.field_21C = winpt->ldw_pos.screenPos.x;
+                    robo_map.field_21C = winpt->ldw_pos.ScreenPos.x;
                     robo_map.field_220 = robo_map.field_1D8;
                     robo_map.field_1E8 |= 2;
                     yw->draggingLock = 1;
                     break;
 
                 case 11:
-                    robo_map.field_21E = winpt->ldw_pos.screenPos.y;
+                    robo_map.field_21E = winpt->ldw_pos.ScreenPos.y;
                     robo_map.field_224 = robo_map.field_1DC;
                     robo_map.field_1E8 |= 4;
                     yw->draggingLock = 1;
@@ -6552,31 +6542,31 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, struC5 *inpt)
             switch ( winpt->selected_btnID )
             {
             case 3:
-                sub_481204(yw, 22, 138);
+                sub_481204(yw, 22, 10);
                 break;
 
             case 4:
-                sub_481204(yw, 23, 139);
+                sub_481204(yw, 23, 11);
                 break;
 
             case 5:
-                sub_481204(yw, 24, 140);
+                sub_481204(yw, 24, 12);
                 break;
 
             case 6:
-                sub_481204(yw, 26, 142);
+                sub_481204(yw, 26, 14);
                 break;
 
             case 7:
-                sub_481204(yw, 29, 144);
+                sub_481204(yw, 29, 16);
                 break;
 
             case 8:
-                sub_481204(yw, 28, 145);
+                sub_481204(yw, 28, 17);
                 break;
 
             case 9:
-                sub_481204(yw, 30, 146);
+                sub_481204(yw, 30, 18);
                 break;
 
             default:
@@ -6619,7 +6609,7 @@ void ypaworld_func64__sub7__sub0__sub0(NC_STACK_ypaworld *yw)
     FontUA::set_end(&pcur);
 }
 
-void ypaworld_func64__sub7__sub0(NC_STACK_ypaworld *yw, struC5 *inpt)
+void ypaworld_func64__sub7__sub0(NC_STACK_ypaworld *yw, InputState *inpt)
 {
     if ( info_log.flags & (GuiBase::FLAG_CLOSED | GuiBase::FLAG_ICONIFED) )
     {
@@ -6801,7 +6791,7 @@ void ypaworld_func64__sub7__sub6__sub3(NC_STACK_ypaworld *yw, int a2, int a4)
 }
 
 
-void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(struC5 *inpt)
+void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(InputState *inpt)
 {
     if ( exit_menu.IsClosed() )
     {
@@ -7132,7 +7122,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub4__sub0(int a2)
     FontUA::set_end(&pcur);
 }
 
-void NC_STACK_ypaworld::ypaworld_func64__sub7__sub4(struC5 *inpt)
+void NC_STACK_ypaworld::ypaworld_func64__sub7__sub4(InputState *inpt)
 {
     if ( lstvw2.IsClosed() )
     {
@@ -7144,25 +7134,25 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub4(struC5 *inpt)
 
         int a1_1 = 0;
 
-        if ( field_826F == UAVK_RETURN )
+        if ( field_826F == Input::KEY_RETURN )
         {
             GuiWinClose( &lstvw2 );
 
             dword_5BAF9C = 1;
 
-            inpt->downed_key = 0;
-            inpt->downed_key_2 = 0;
-            inpt->dword8 = 0;
+            inpt->KbdLastHit = Input::KEY_NONE;
+            inpt->KbdLastDown = Input::KEY_NONE;
+            inpt->HotKeyID = -1;
         }
-        else if ( field_826F == UAVK_ESCAPE )
+        else if ( field_826F == Input::KEY_ESCAPE )
         {
             GuiWinClose( &lstvw2 );
 
             dword_5BAF9C = 2;
 
-            inpt->downed_key = 0;
-            inpt->downed_key_2 = 0;
-            inpt->dword8 = 0;
+            inpt->KbdLastHit = Input::KEY_NONE;
+            inpt->KbdLastDown = Input::KEY_NONE;
+            inpt->HotKeyID = -1;
         }
         else if ( inpt->ClickInf.selected_btn == &lstvw2 )
         {
@@ -7206,7 +7196,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub4(struC5 *inpt)
 }
 
 
-void NC_STACK_ypaworld::ypaworld_func64__sub7(struC5 *inpt)
+void NC_STACK_ypaworld::ypaworld_func64__sub7(InputState *inpt)
 {
     ClickBoxInf *winpt = &inpt->ClickInf;
 
@@ -7303,8 +7293,8 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7(struC5 *inpt)
                                     draggingLock = 1;
                                     draggingItem = v9;
                                     isDragging = 1;
-                                    draggingPos.x = winpt->ldw_pos.boxPos.x;
-                                    draggingPos.y = winpt->ldw_pos.boxPos.y;
+                                    draggingPos.x = winpt->ldw_pos.BoxPos.x;
+                                    draggingPos.y = winpt->ldw_pos.BoxPos.y;
                                 }
                             }
                         }
@@ -7316,8 +7306,8 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7(struC5 *inpt)
             {
                 if ( winpt->flag & ClickBoxInf::FLAG_LM_HOLD )
                 {
-                    int v13 = winpt->move.screenPos.x - draggingPos.x;
-                    int v15 = winpt->move.screenPos.y - draggingPos.y;
+                    int v13 = winpt->move.ScreenPos.x - draggingPos.x;
+                    int v15 = winpt->move.ScreenPos.y - draggingPos.y;
 
                     if ( v13 >= 0 )
                     {
@@ -10871,8 +10861,8 @@ int NC_STACK_ypaworld::yw_MouseFindCreationPoint(ClickBoxInf *winp)
 {
     const VhclProto &vhcl = VhclProtos[bzda.field_2DC[bzda.field_8EC]];
 
-    vec3d v47( (float)(winp->move.screenPos.x - (screen_width / 2)) / (float)(screen_width / 2),
-               (float)(winp->move.screenPos.y - (screen_height / 2)) / (float)(screen_height / 2),
+    vec3d v47( (float)(winp->move.ScreenPos.x - (screen_width / 2)) / (float)(screen_width / 2),
+               (float)(winp->move.ScreenPos.y - (screen_height / 2)) / (float)(screen_height / 2),
                1.0 );
 
     v47.normalise();
@@ -11071,16 +11061,16 @@ int NC_STACK_ypaworld::ypaworld_func64__sub21__sub3()
     return 0;
 }
 
-int NC_STACK_ypaworld::ypaworld_func64__sub21__sub4(struC5 *arg, int a3)
+int NC_STACK_ypaworld::ypaworld_func64__sub21__sub4(InputState *arg, int a3)
 {
-    if ( !field_1ab0 && arg->but_flags & 0x10 )
+    if ( !field_1ab0 && arg->Buttons.Is(4) )
     {
         field_1ab0 = 1;
         field_1ab4 = 0;
         return a3;
     }
 
-    if ( field_1ab0 && !(arg->but_flags & 0x10) )
+    if ( field_1ab0 && !(arg->Buttons.Is(4)) )
     {
         field_1ab0 = 0;
         return a3;
@@ -11120,8 +11110,8 @@ bool NC_STACK_ypaworld::ypaworld_func64__sub21__sub6(ClickBoxInf *winp)
 {
     if ( winp->flag & ClickBoxInf::FLAG_DBL_CLICK
             && field_1aac
-            && abs(winp->move.screenPos.x - field_1aa4) < 4
-            && abs(winp->move.screenPos.y - field_1aa8) < 4 )
+            && abs(winp->move.ScreenPos.x - field_1aa4) < 4
+            && abs(winp->move.ScreenPos.y - field_1aa8) < 4 )
     {
         field_1aa0 = 0;
         field_1aa4 = 0;
@@ -11140,8 +11130,8 @@ bool NC_STACK_ypaworld::ypaworld_func64__sub21__sub6(ClickBoxInf *winp)
         {
             field_1aa0 = timeStamp;
             field_1aac = field_1a98;
-            field_1aa4 = winp->move.screenPos.x;
-            field_1aa8 = winp->move.screenPos.y;
+            field_1aa4 = winp->move.ScreenPos.x;
+            field_1aa8 = winp->move.ScreenPos.y;
         }
         else if ( winp->flag & ClickBoxInf::FLAG_LM_DOWN )
         {
@@ -11158,7 +11148,7 @@ bool NC_STACK_ypaworld::ypaworld_func64__sub21__sub6(ClickBoxInf *winp)
 }
 
 
-void NC_STACK_ypaworld::ypaworld_func64__sub21__sub1__sub0(struC5 *arg)
+void NC_STACK_ypaworld::ypaworld_func64__sub21__sub1__sub0(InputState *arg)
 {
     field_1a58 = 0;
 
@@ -11191,8 +11181,8 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub1__sub0(struC5 *arg)
 
 void NC_STACK_ypaworld::yw_MAP_MouseSelect(ClickBoxInf *winp)
 {
-    int v23 = winp->move.btnPos.x + robo_map.field_1D8 / robo_map.field_1E0 - (robo_map.field_1F8 / 2);
-    int v24 = winp->move.btnPos.y - (robo_map.field_1DC / robo_map.field_1E4) - (robo_map.field_1FC / 2);
+    int v23 = winp->move.BtnPos.x + robo_map.field_1D8 / robo_map.field_1E0 - (robo_map.field_1F8 / 2);
+    int v24 = winp->move.BtnPos.y - (robo_map.field_1DC / robo_map.field_1E4) - (robo_map.field_1FC / 2);
 
     int v9 = robo_map.field_1EE + 2;
 
@@ -11260,7 +11250,7 @@ void NC_STACK_ypaworld::yw_SMAN_MouseSelect(ClickBoxInf *winp)
     {
         int v3 = winp->selected_btnID - 8;
 
-        NC_STACK_ypabact *v4 = sub_4C7B0C(v3, winp->move.btnPos.x);
+        NC_STACK_ypabact *v4 = sub_4C7B0C(v3, winp->move.BtnPos.x);
 
         if ( v4 )
         {
@@ -11291,8 +11281,8 @@ void NC_STACK_ypaworld::yw_SMAN_MouseSelect(ClickBoxInf *winp)
 
 void NC_STACK_ypaworld::ypaworld_func64__sub21__sub1__sub3__sub0(ClickBoxInf *winp)
 {
-    float v3 = (float)(winp->move.screenPos.x - (screen_width / 2)) / (float)(screen_width / 2);
-    float v4 = (float)(winp->move.screenPos.y - (screen_height / 2)) / (float)(screen_height / 2);
+    float v3 = (float)(winp->move.ScreenPos.x - (screen_width / 2)) / (float)(screen_width / 2);
+    float v4 = (float)(winp->move.ScreenPos.y - (screen_height / 2)) / (float)(screen_height / 2);
 
     mat3x3 corrected = field_1340;
     _win3d->matrixAspectCorrection(corrected, true);
@@ -11390,7 +11380,7 @@ void NC_STACK_ypaworld::yw_3D_MouseSelect(ClickBoxInf *winp)
 }
 
 
-void NC_STACK_ypaworld::yw_MouseSelect(struC5 *arg)
+void NC_STACK_ypaworld::yw_MouseSelect(InputState *arg)
 {
     ypaworld_func64__sub21__sub1__sub0(arg);
 
@@ -11590,7 +11580,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
 }
 
 
-void NC_STACK_ypaworld::ypaworld_func64__sub21(struC5 *arg)
+void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
 {
     if ( UserRobo && (arg->ClickInf.flag & ClickBoxInf::FLAG_OK) && current_bact )
     {
@@ -11802,7 +11792,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(struC5 *arg)
             {
                 if ( field_1a58 & 0x20 )
                 {
-                    if ( arg->downed_key_2 == UAVK_F7 && arg->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD )
+                    if ( arg->KbdLastDown == Input::KEY_F7 && arg->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD )
                     {
                         v8 = 19;
                         v6 = 8;
@@ -12006,17 +11996,17 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(struC5 *arg)
 
 
 
-void NC_STACK_ypaworld::ypaworld_func64__sub1(struC5 *inpt)
+void NC_STACK_ypaworld::ypaworld_func64__sub1(InputState *inpt)
 {
     //Precompute input
     ClickBoxInf *winp = &inpt->ClickInf;
 
-    inpt->but_flags &= 0x7FFFFFFF;
+    inpt->Buttons.UnSet(31);
 
     int v38 = 0;
 
     if ( timeStamp - field_1a0c < 500 )
-        inpt->but_flags &= 0xFFFFFFFE;
+        inpt->Buttons.UnSet(0);
 
     if ( timeStamp - field_1a0c > 5000 )
         field_1a20 = 0;
@@ -12029,7 +12019,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(struC5 *inpt)
 
     field_162A = 0;
 
-    if ( inpt->but_flags & 1 )
+    if ( inpt->Buttons.Is(0) )
     {
         if ( !field_1628 )
             field_162A = 1;
@@ -12069,13 +12059,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(struC5 *inpt)
 
             NC_STACK_input *input = INPe.getPInput();
 
-            input->slider_reset(10, 1);
-            input->slider_reset(11, 1);
+            input->ResetSlider(10);
+            input->ResetSlider(11);
         }
     }
 
     if ( gui_lstvw.IsOpen() )
-        inpt->sliders_vars[1] = 0;
+        inpt->Sliders[1] = 0;
 
     if ( _mouseGrabbed ) // If grabbed mouse
     {
@@ -12083,16 +12073,16 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(struC5 *inpt)
         winp->selected_btnID = -1;
         winp->flag &= ~(ClickBoxInf::FLAG_BTN_DOWN | ClickBoxInf::FLAG_BTN_HOLD | ClickBoxInf::FLAG_BTN_UP);
 
-        inpt->sliders_vars[0] += inpt->sliders_vars[10];
-        inpt->sliders_vars[1] += inpt->sliders_vars[11];
-        inpt->sliders_vars[3] += inpt->sliders_vars[10];
-        inpt->sliders_vars[5] -= inpt->sliders_vars[11] * 1.5;
+        inpt->Sliders[0] += inpt->Sliders[10];
+        inpt->Sliders[1] += inpt->Sliders[11];
+        inpt->Sliders[3] += inpt->Sliders[10];
+        inpt->Sliders[5] -= inpt->Sliders[11] * 1.5;
 
         if ( winp->flag & ClickBoxInf::FLAG_LM_HOLD )
-            inpt->but_flags |= 1;
+            inpt->Buttons.Set(0);
 
         if ( winp->flag & ClickBoxInf::FLAG_MM_HOLD )
-            inpt->but_flags |= 8;
+            inpt->Buttons.Set(3);
 
         sub_4811E8(0x50);
     }
@@ -12104,26 +12094,26 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(struC5 *inpt)
 
         if ( !field_161c )
         {
-            field_788E = inpt->sliders_vars[12];
-            field_7892 = inpt->sliders_vars[13];
-            field_7896 = inpt->sliders_vars[14];
-            field_789A = inpt->sliders_vars[15];
-            field_789E = inpt->sliders_vars[16];
+            field_788E = inpt->Sliders[12];
+            field_7892 = inpt->Sliders[13];
+            field_7896 = inpt->Sliders[14];
+            field_789A = inpt->Sliders[15];
+            field_789E = inpt->Sliders[16];
         }
 
-        int v45 = fabs(field_788E - inpt->sliders_vars[12]) >= 0.05;
-        int v44 = fabs(field_7892 - inpt->sliders_vars[13]) >= 0.05;
-        int v46 = fabs(field_7896 - inpt->sliders_vars[14]) >= 0.05;
-        int v43 = fabs(field_789A - inpt->sliders_vars[15]) >= 0.05;
-        int v47 = fabs(field_789E - inpt->sliders_vars[16]) >= 0.05;
+        int v45 = fabs(field_788E - inpt->Sliders[12]) >= 0.05;
+        int v44 = fabs(field_7892 - inpt->Sliders[13]) >= 0.05;
+        int v46 = fabs(field_7896 - inpt->Sliders[14]) >= 0.05;
+        int v43 = fabs(field_789A - inpt->Sliders[15]) >= 0.05;
+        int v47 = fabs(field_789E - inpt->Sliders[16]) >= 0.05;
 
         if ( v45 || v44 || v46 || v43 || v47)
         {
-            field_788E = inpt->sliders_vars[12];
-            field_7892 = inpt->sliders_vars[13];
-            field_7896 = inpt->sliders_vars[14];
-            field_789A = inpt->sliders_vars[15];
-            field_789E = inpt->sliders_vars[16];
+            field_788E = inpt->Sliders[12];
+            field_7892 = inpt->Sliders[13];
+            field_7896 = inpt->Sliders[14];
+            field_789A = inpt->Sliders[15];
+            field_789E = inpt->Sliders[16];
         }
 
         if ( field_7882 )
@@ -12133,7 +12123,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(struC5 *inpt)
         }
         else
         {
-            if ( ( v13 && inpt->sliders_vars[3] != 0.0 ) || inpt->sliders_vars[0] != 0.0 )
+            if ( ( v13 && inpt->Sliders[3] != 0.0 ) || inpt->Sliders[0] != 0.0 )
                 field_7882 = 1;
         }
 
@@ -12146,12 +12136,12 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(struC5 *inpt)
         {
             if ( v13 )
             {
-                if ( (field_73CE & World::PREF_ALTJOYSTICK ) && inpt->sliders_vars[5] != 0.0 )
+                if ( (field_73CE & World::PREF_ALTJOYSTICK ) && inpt->Sliders[5] != 0.0 )
                     field_7886 = 1;
-                else if ( inpt->sliders_vars[4] != 0.0 )
+                else if ( inpt->Sliders[4] != 0.0 )
                     field_7886 = 1;
             }
-            else if ( inpt->sliders_vars[1] != 0.0 )
+            else if ( inpt->Sliders[1] != 0.0 )
                 field_7886 = 1;
         }
 
@@ -12164,10 +12154,10 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(struC5 *inpt)
         {
             if ( v13 )
             {
-                if ( (field_73CE & World::PREF_ALTJOYSTICK) && inpt->sliders_vars[4] != 0.0 )
+                if ( (field_73CE & World::PREF_ALTJOYSTICK) && inpt->Sliders[4] != 0.0 )
                     field_788A = 1;
             }
-            else if ( !v34 && inpt->sliders_vars[2] != 0.0 )
+            else if ( !v34 && inpt->Sliders[2] != 0.0 )
                 field_788A = 1;
         }
 
@@ -12181,20 +12171,20 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(struC5 *inpt)
         }
 
         if ( field_7882 )
-            inpt->sliders_vars[12] = 0;
+            inpt->Sliders[12] = 0;
 
         if ( field_7886 )
-            inpt->sliders_vars[13] = 0;
+            inpt->Sliders[13] = 0;
 
         if ( field_788A )
-            inpt->sliders_vars[14] = 0;
+            inpt->Sliders[14] = 0;
 
         if ( !field_7882 )
         {
             if ( v13 )
-                inpt->sliders_vars[3] += inpt->sliders_vars[12];
+                inpt->Sliders[3] += inpt->Sliders[12];
             else
-                inpt->sliders_vars[0] += inpt->sliders_vars[12];
+                inpt->Sliders[0] += inpt->Sliders[12];
         }
 
         if ( !field_7886 )
@@ -12203,25 +12193,25 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(struC5 *inpt)
             {
                 if ( field_73CE & World::PREF_ALTJOYSTICK )
                 {
-                    if ( inpt->sliders_vars[16] != 0.0 )
-                        inpt->sliders_vars[5] += inpt->sliders_vars[16];
+                    if ( inpt->Sliders[16] != 0.0 )
+                        inpt->Sliders[5] += inpt->Sliders[16];
                     else
-                        inpt->sliders_vars[5] += inpt->sliders_vars[13] * 2.0;
+                        inpt->Sliders[5] += inpt->Sliders[13] * 2.0;
                 }
                 else
                 {
 
-                    if ( fabs(inpt->sliders_vars[13]) < 0.3 )
-                        inpt->but_flags |= 8;
+                    if ( fabs(inpt->Sliders[13]) < 0.3 )
+                        inpt->Buttons.Set(3);
                     else
-                        inpt->sliders_vars[4] += -inpt->sliders_vars[13];
+                        inpt->Sliders[4] += -inpt->Sliders[13];
 
-                    inpt->but_flags |= 0x80000000;
+                    inpt->Buttons.Set(31);
                 }
             }
             else
             {
-                inpt->sliders_vars[1] += inpt->sliders_vars[13];
+                inpt->Sliders[1] += inpt->Sliders[13];
             }
         }
 
@@ -12231,41 +12221,41 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(struC5 *inpt)
             {
                 if ( field_73CE & World::PREF_ALTJOYSTICK )
                 {
-                    if ( inpt->sliders_vars[4] != 0.0 )
+                    if ( inpt->Sliders[4] != 0.0 )
                     {
                     }
-                    else if ( fabs(inpt->sliders_vars[14]) < 0.3 )
+                    else if ( fabs(inpt->Sliders[14]) < 0.3 )
                     {
-                        inpt->but_flags |= 8;
+                        inpt->Buttons.Set(3);
                     }
                     else
-                        inpt->sliders_vars[4] += inpt->sliders_vars[14];
+                        inpt->Sliders[4] += inpt->Sliders[14];
 
-                    inpt->but_flags |= 0x80000000;
+                    inpt->Buttons.Set(31);
                 }
                 else
                 {
-                    if ( inpt->sliders_vars[5] == 0.0 )
-                        inpt->sliders_vars[5] += inpt->sliders_vars[16];
+                    if ( inpt->Sliders[5] == 0.0 )
+                        inpt->Sliders[5] += inpt->Sliders[16];
                 }
             }
             else
             {
-                if ( inpt->sliders_vars[2] == 0.0 )
-                    inpt->sliders_vars[2] += inpt->sliders_vars[14];
+                if ( inpt->Sliders[2] == 0.0 )
+                    inpt->Sliders[2] += inpt->Sliders[14];
             }
         }
-        if ( inpt->but_flags & 0x10000 )
-            inpt->but_flags |= 1;
+        if ( inpt->Buttons.Is(16) )
+            inpt->Buttons.Set(0);
 
-        if ( inpt->but_flags & 0x20000 )
-            inpt->but_flags |= 4;
+        if ( inpt->Buttons.Is(17) )
+            inpt->Buttons.Set(2);
 
-        if ( inpt->but_flags & 0x40000 )
-            inpt->but_flags |= 2;
+        if ( inpt->Buttons.Is(18) )
+            inpt->Buttons.Set(1);
 
-        if ( inpt->but_flags & 0x80000 )
-            inpt->but_flags |= 8;
+        if ( inpt->Buttons.Is(19) )
+            inpt->Buttons.Set(3);
     }
 }
 

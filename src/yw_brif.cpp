@@ -9,7 +9,7 @@
 
 extern GuiList stru_5C91D0;
 
-void ypaworld_func158__sub4__sub1__sub4__sub3(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub3(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     SFXEngine::SFXe.StopMusicTrack();
     if ( yw->GameShell->missiontrack )
@@ -63,7 +63,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub3(NC_STACK_ypaworld *yw, struC5 *inp
     brf->PreTextTime = brf->CurrTime;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub4(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub4(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     int v5 = brf->CurrTime - brf->StartTime;
 
@@ -185,7 +185,7 @@ int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
     return 1;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub5(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub5(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     brf->AddObjectsFlag = true;
     brf->TextTime = brf->CurrTime;
@@ -207,7 +207,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub5(NC_STACK_ypaworld *yw, struC5 *inp
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub6(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub6(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     brf->ViewingObject = BriefObject();
 
@@ -234,7 +234,7 @@ void NC_STACK_ypaworld::BriefingSetObject(const BriefObject &obj, bool doAdd)
         SFXEngine::SFXe.startSound(&GameShell->samples1_info, 11);
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub7(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub7(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     if ( brf->CurrTime - brf->StartTime >= 2500 )
     {
@@ -253,7 +253,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub7(NC_STACK_ypaworld *yw, struC5 *inp
     }
 }
 
-void yw_BriefSetupKeySectors(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void yw_BriefSetupKeySectors(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     brf->ViewingObject = BriefObject();
 
@@ -275,7 +275,7 @@ void yw_BriefSetupKeySectors(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen
         brf->Stage = 11;
 }
 
-void yw_BriefUpdateKeySectors(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void yw_BriefUpdateKeySectors(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     int elmID = (brf->CurrTime - brf->StartTime) / 2500;
 
@@ -313,7 +313,7 @@ void yw_BriefUpdateKeySectors(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScree
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub10(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub10(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     brf->ViewingObject = BriefObject();
 
@@ -331,7 +331,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub10(NC_STACK_ypaworld *yw, struC5 *in
     brf->Stage = (brf->ElementsCount == 0) + 14;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub11(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub11(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     int elmID = (brf->CurrTime - brf->StartTime) / 2500;
     if ( elmID >= brf->ElementsCount )
@@ -368,7 +368,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub11(NC_STACK_ypaworld *yw, struC5 *in
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub12(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub12(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     brf->ViewingObject = BriefObject();
 
@@ -387,7 +387,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub12(NC_STACK_ypaworld *yw, struC5 *in
     brf->Stage = 17 + (brf->ElementsCount == 0);
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub13(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub13(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     int v5 = (brf->CurrTime - brf->StartTime) / 2500;
 
@@ -422,7 +422,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub13(NC_STACK_ypaworld *yw, struC5 *in
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub14(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub14(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     brf->ViewingObject = BriefObject();
 
@@ -441,7 +441,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub14(NC_STACK_ypaworld *yw, struC5 *in
     brf->Stage = (brf->ElementsCount == 0) + 20;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub15(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub15(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     int v5 = (brf->CurrTime - brf->StartTime) / 2500;
     if ( v5 >= brf->ElementsCount )
@@ -481,7 +481,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub15(NC_STACK_ypaworld *yw, struC5 *in
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub16(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub16(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     brf->ViewingObject = BriefObject();
     
@@ -501,7 +501,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub16(NC_STACK_ypaworld *yw, struC5 *in
     brf->Stage = (brf->ElementsCount == 0) + 23;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub17(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub17(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     int v5 = (brf->CurrTime - brf->StartTime) / 2500;
     if ( v5 >= brf->ElementsCount )
@@ -542,7 +542,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub17(NC_STACK_ypaworld *yw, struC5 *in
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub18(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub18(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     brf->ViewingObject = BriefObject();
 
@@ -563,7 +563,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub18(NC_STACK_ypaworld *yw, struC5 *in
     brf->Stage = (brf->ElementsCount == 0) + 26;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub19(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub19(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     int elmID = (brf->CurrTime - brf->StartTime) / 2500;
 
@@ -601,14 +601,14 @@ void ypaworld_func158__sub4__sub1__sub4__sub19(NC_STACK_ypaworld *yw, struC5 *in
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub21(NC_STACK_ypaworld *yw, struC5 *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub21(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
 {
     int v20 = -1;
 
     if ( !inpt->ClickInf.selected_btn )
     {
-        float mx = (float)inpt->ClickInf.move.screenPos.x / (float)yw->screen_width;
-        float my = (float)inpt->ClickInf.move.screenPos.y / (float)yw->screen_height;
+        float mx = (float)inpt->ClickInf.move.ScreenPos.x / (float)yw->screen_width;
+        float my = (float)inpt->ClickInf.move.ScreenPos.y / (float)yw->screen_height;
 
         for (size_t i = 0; i < brf->Objects.size(); i++)
         {
@@ -840,7 +840,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub0(NC_STACK_ypaworld *yw)
     yw->_win3d->raster_func209(&v32);
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, BriefengScreen *brf, struC5 *inpt, int obj_id, char a4)
+void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *inpt, int obj_id, char a4)
 {
     if ( brf->ViewingObject.ObjType )
     {
@@ -919,7 +919,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, BriefengScr
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, struC5 *inpt)
+void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, InputState *inpt)
 {
     BriefengScreen *brf = &yw->brief;
 
@@ -934,16 +934,16 @@ void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, st
         switch ( yw->brief.TimerStatus )
         {
         case 0:
-            yw->brief.CurrTime += inpt->period;
+            yw->brief.CurrTime += inpt->Period;
             break;
 
         case 1:
-            inpt->period = 1;
-            yw->brief.CurrTime += inpt->period;
+            inpt->Period = 1;
+            yw->brief.CurrTime += inpt->Period;
             break;
 
         case 2:
-            yw->brief.CurrTime += inpt->period;
+            yw->brief.CurrTime += inpt->Period;
 
             if ( yw->brief.Stage == 30 )
             {
@@ -1142,7 +1142,7 @@ void sub_449310(ua_fRect *rect)
         rect->y2 = -1.0;
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub0(NC_STACK_ypaworld *yw, struC5 *struc, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub6__sub0(NC_STACK_ypaworld *yw, InputState *struc, BriefengScreen *brf)
 {
     brf->StartTime = brf->CurrTime;
     brf->Stage = 5;
@@ -1211,7 +1211,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(NC_STACK_ypaworld *yw, struC5 *str
         SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 11);
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub1(NC_STACK_ypaworld *yw, struC5 *struc, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub6__sub1(NC_STACK_ypaworld *yw, InputState *struc, BriefengScreen *brf)
 {
     int v4 = brf->CurrTime - brf->StartTime;
 
@@ -1242,7 +1242,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub1(NC_STACK_ypaworld *yw, struC5 *str
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub2(NC_STACK_ypaworld *yw, struC5 *struc, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub6__sub2(NC_STACK_ypaworld *yw, InputState *struc, BriefengScreen *brf)
 {
     brf->StartTime = brf->CurrTime;
     brf->Stage = 8;
@@ -2064,7 +2064,7 @@ char * yw_DebriefTechUpgradesTable(NC_STACK_ypaworld *yw, BriefengScreen *brf, c
     return cur;
 }
 
-void yw_DebriefRunDebrief(NC_STACK_ypaworld *yw, struC5 *struc, BriefengScreen *brf)
+void yw_DebriefRunDebrief(NC_STACK_ypaworld *yw, InputState *struc, BriefengScreen *brf)
 {
     char cmdbuf[2048];
     char *cur = cmdbuf;
@@ -2182,7 +2182,7 @@ void yw_DebriefRunDebrief(NC_STACK_ypaworld *yw, struC5 *struc, BriefengScreen *
     ypaworld_func158__sub4__sub1__sub6__sub3__sub6(yw, brf);
 }
 
-void yw_debriefUpdate(NC_STACK_ypaworld *yw, struC5 *inpt)
+void yw_debriefUpdate(NC_STACK_ypaworld *yw, InputState *inpt)
 {
     BriefengScreen *brf = &yw->brief;
 
@@ -2192,16 +2192,16 @@ void yw_debriefUpdate(NC_STACK_ypaworld *yw, struC5 *inpt)
         {
             if ( brf->Stage == 8 )
             {
-                brf->CurrTime += 60 * inpt->period;
+                brf->CurrTime += 60 * inpt->Period;
             }
             else if ( brf->Stage != 9 )
             {
-                brf->CurrTime += inpt->period;
+                brf->CurrTime += inpt->Period;
             }
         }
         else if ( yw->brief.TimerStatus == 1 )
         {
-            inpt->period = 1;
+            inpt->Period = 1;
         }
         else if ( yw->brief.TimerStatus == 3 )
         {

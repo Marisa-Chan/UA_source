@@ -155,8 +155,11 @@ bool InputParser::IsScope(ScriptParser::Parser &parser, const std::string &word,
 {
     if ( !StriCmp(word, "new_input") )
     {
-        for( auto &k: _o.GameShell->keyConfig )
-            k.KeyCode = 0;
+        for( UserData::TInputConf &k: _o.GameShell->InputConfig )
+        {
+            k.PKeyCode = 0;
+            k.NKeyCode = 0;
+        }
         return true;
     }
     else if ( !StriCmp(word, "modify_input") )
@@ -226,29 +229,29 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
             bool ok = false;
             int cfgIdex = std::stoi( Stok::Fast(p1.substr(13), "] \t=\n") );
 
-            if ( !INPe.getPInput()->input_func64(Input::ITYPE_SLIDER, cfgIdex, buf) )
+            if ( !INPe.getPInput()->SetInputExpression(true, cfgIdex, buf) )
             {
                 ypa_log_out("WARNING: cannot set slider %d with %s\n", cfgIdex, buf.c_str());
                 return ScriptParser::RESULT_BAD_DATA;
             }
 
 
-            int gsIndex = UserData::KeyIndexFromConfig(World::KEYC_TYPE_SLIDER, cfgIdex);
+            int gsIndex = UserData::InputIndexFromConfig(World::INPUT_BIND_TYPE_SLIDER, cfgIdex);
             if ( gsIndex == -1 )
             {
                 ypa_log_out("Unknown number in slider-declaration (%d)\n", cfgIdex);
                 return ScriptParser::RESULT_BAD_DATA;
             }
-            _o.GameShell->keyConfig[ gsIndex ].inp_type = World::KEYC_TYPE_SLIDER;
-            _o.GameShell->keyConfig[ gsIndex ].keyID = cfgIdex;
+            _o.GameShell->InputConfig[ gsIndex ].Type = World::INPUT_BIND_TYPE_SLIDER;
+            _o.GameShell->InputConfig[ gsIndex ].KeyID = cfgIdex;
 
             Stok stok(buf, " :\t\n");
             std::string tmp;
             if ( stok.GetNext(&tmp) && stok.GetNext(&tmp) ) // skip drivername before ':'
             {
-                _o.GameShell->keyConfig[ gsIndex ].slider_neg = Input::GetKeyIdByName(tmp);
+                _o.GameShell->InputConfig[ gsIndex ].NKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
 
-                if ( _o.GameShell->keyConfig[ gsIndex ].slider_neg == -1 )
+                if ( _o.GameShell->InputConfig[ gsIndex ].NKeyCode == -1 )
                 {
                     ypa_log_out("Unknown keyword for slider %s\n", tmp.c_str());
                     return ScriptParser::RESULT_BAD_DATA;
@@ -256,9 +259,9 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
                 if ( stok.GetNext(&tmp) && stok.GetNext(&tmp) ) // skip drivername before ':'
                 {
-                    _o.GameShell->keyConfig[ gsIndex ].KeyCode = Input::GetKeyIdByName(tmp);
+                    _o.GameShell->InputConfig[ gsIndex ].PKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
 
-                    if ( _o.GameShell->keyConfig[ gsIndex ].KeyCode == -1 )
+                    if ( _o.GameShell->InputConfig[ gsIndex ].PKeyCode == -1 )
                     {
                         ypa_log_out("Unknown keyword for slider %s\n", tmp.c_str());
                         return ScriptParser::RESULT_BAD_DATA;
@@ -279,28 +282,28 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
             int cfgIdex = std::stoi( Stok::Fast(p1.substr(13), "] \t=\n") );
 
-            if ( !INPe.getPInput()->input_func64(Input::ITYPE_BUTTON, cfgIdex, buf) )
+            if ( !INPe.getPInput()->SetInputExpression(false, cfgIdex, buf) )
             {
                 ypa_log_out("WARNING: cannot set button %d with %s\n", cfgIdex, buf.c_str());
                 return ScriptParser::RESULT_BAD_DATA;
             }
 
-            int gsIndex = UserData::KeyIndexFromConfig(World::KEYC_TYPE_BUTTON, cfgIdex);
+            int gsIndex = UserData::InputIndexFromConfig(World::INPUT_BIND_TYPE_BUTTON, cfgIdex);
             if ( gsIndex == -1 )
             {
                 ypa_log_out("Unknown number in button-declaration (%d)\n", cfgIdex);
                 return ScriptParser::RESULT_BAD_DATA;
             }
-            _o.GameShell->keyConfig[ gsIndex ].inp_type = World::KEYC_TYPE_BUTTON;
-            _o.GameShell->keyConfig[ gsIndex ].keyID = cfgIdex;
+            _o.GameShell->InputConfig[ gsIndex ].Type = World::INPUT_BIND_TYPE_BUTTON;
+            _o.GameShell->InputConfig[ gsIndex ].KeyID = cfgIdex;
 
             Stok stok(buf, " :\t\n");
             std::string tmp;
             if ( stok.GetNext(&tmp) && stok.GetNext(&tmp) ) // skip drivername before ':'
             {
-                _o.GameShell->keyConfig[ gsIndex ].KeyCode = Input::GetKeyIdByName(tmp);
+                _o.GameShell->InputConfig[ gsIndex ].PKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
 
-                if ( _o.GameShell->keyConfig[ gsIndex ].KeyCode == -1 )
+                if ( _o.GameShell->InputConfig[ gsIndex ].PKeyCode == -1 )
                 {
                     ypa_log_out("Unknown keyword for button %s\n", tmp);
                     return ScriptParser::RESULT_BAD_DATA;
@@ -320,31 +323,27 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
             int cfgIdex = std::stoi( Stok::Fast(p1.substr(13), "] \t=\n") );
 
-            winp_68arg zz;
-            zz.keyname = buf;
-            zz.id = cfgIdex;
-
-            if ( !INPe.getPInput()->keyb_setHotkey(&zz) )
+            if ( !INPe.getPInput()->SetHotKey(cfgIdex, buf) )
             {
                 ypa_log_out("WARNING: cannot set hotkey %d with %s\n", cfgIdex, buf.c_str());
                 return ScriptParser::RESULT_OK;
             }
 
-            int gsIndex = UserData::KeyIndexFromConfig(World::KEYC_TYPE_HOTKEY, cfgIdex);
+            int gsIndex = UserData::InputIndexFromConfig(World::INPUT_BIND_TYPE_HOTKEY, cfgIdex);
             if ( gsIndex == -1 )
             {
                 ypa_log_out("Unknown number in hotkey-declaration (%d)\n", cfgIdex);
                 return ScriptParser::RESULT_OK;
             }
 
-            _o.GameShell->keyConfig[ gsIndex ].inp_type = World::KEYC_TYPE_HOTKEY;
-            _o.GameShell->keyConfig[ gsIndex ].keyID = cfgIdex;
+            _o.GameShell->InputConfig[ gsIndex ].Type = World::INPUT_BIND_TYPE_HOTKEY;
+            _o.GameShell->InputConfig[ gsIndex ].KeyID = cfgIdex;
 
             std::string tmp = Stok::Fast(buf, " :\t\n");
             if ( !tmp.empty() )
             {
-                _o.GameShell->keyConfig[ gsIndex ].KeyCode = Input::GetKeyIdByName(tmp);
-                if ( _o.GameShell->keyConfig[ gsIndex ].KeyCode == -1 )
+                _o.GameShell->InputConfig[ gsIndex ].PKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
+                if ( _o.GameShell->InputConfig[ gsIndex ].PKeyCode == -1 )
                 {
                     ypa_log_out("Unknown keyword for hotkey: %s\n", tmp.c_str());
                     return ScriptParser::RESULT_OK;

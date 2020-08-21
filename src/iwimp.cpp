@@ -44,11 +44,11 @@ void NC_STACK_iwimp::GetClick(ClickBoxInf *click, MousePos &mouse)
     {
         ClickBox *box = *it;
 
-        mouse.boxPos.x = mouse.screenPos.x - box->x;
-        mouse.boxPos.y = mouse.screenPos.y - box->y;
+        mouse.BoxPos.x = mouse.ScreenPos.x - box->x;
+        mouse.BoxPos.y = mouse.ScreenPos.y - box->y;
 
-        if ( mouse.boxPos.x >= 0 && mouse.boxPos.x < box->w &&
-                mouse.boxPos.y >= 0 && mouse.boxPos.y < box->h )
+        if ( mouse.BoxPos.x >= 0 && mouse.BoxPos.x < box->w &&
+                mouse.BoxPos.y >= 0 && mouse.BoxPos.y < box->h )
         {
             click->selected_btn = box;
 
@@ -56,11 +56,11 @@ void NC_STACK_iwimp::GetClick(ClickBoxInf *click, MousePos &mouse)
             {
                 ButtonBox &btn = box->buttons[i];
 
-                mouse.btnPos.x = mouse.boxPos.x - btn.x;
-                mouse.btnPos.y = mouse.boxPos.y - btn.y;
+                mouse.BtnPos.x = mouse.BoxPos.x - btn.x;
+                mouse.BtnPos.y = mouse.BoxPos.y - btn.y;
 
-                if ( mouse.btnPos.x >= 0 && mouse.btnPos.x < btn.w &&
-                        mouse.btnPos.y >= 0 && mouse.btnPos.y < btn.h )
+                if ( mouse.BtnPos.x >= 0 && mouse.BtnPos.x < btn.w &&
+                        mouse.BtnPos.y >= 0 && mouse.BtnPos.y < btn.h )
                 {
                     click->selected_btnID = i;
                     break;

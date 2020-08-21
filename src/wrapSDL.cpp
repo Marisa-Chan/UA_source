@@ -20,7 +20,11 @@ static bool curRelMouse = false;
 static int sW = 640, sH = 480;
 static int curW = 640, curH = 480;
 
-static std::list< SDL_EventFilter > eventHandlers;
+namespace SDLWRAP
+{
+static std::list< SDL_EventFilter > EventHandlers;
+}
+
 
 struct FontNode
 {
@@ -215,7 +219,7 @@ void SDLWRAP_drawScreen()
 
 void SDLWRAP_INIT()
 {
-    eventHandlers.clear();
+    SDLWRAP::EventHandlers.clear();
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC) < 0)
     {
@@ -277,7 +281,7 @@ int SDLWRAP_UPDATE()
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
-        for(auto &e : eventHandlers)
+        for(SDL_EventFilter &e : SDLWRAP::EventHandlers)
             (e)(NULL, &event);
 
         switch(event.type)
@@ -307,14 +311,6 @@ int SDLWRAP_UPDATE()
     }
 
     return 0;
-}
-
-
-
-
-void SDLWRAP_addHandler(SDL_EventFilter func)
-{
-    eventHandlers.push_back(func);
 }
 
 void SDLWRAP_flipWindow()
@@ -472,24 +468,7 @@ uint8_t *SDLWRAP_makeDepthScreenCopy(int &ow, int &oh)
     return buf;
 }
 
-void SDLWRAP_mousePosNorm(SDLWRAP_Point &in)
-{
-    if (sW != curW || sH != curH)
-    {
-        in.x = ((float)in.x / (float)curW) * (float)sW;
-        in.y = ((float)in.y / (float)curH) * (float)sH;
-    }
 
-    if (in.x < 0)
-        in.x = 0;
-    if (in.x >= sW)
-        in.x = sW - 1;
-
-    if (in.y < 0)
-        in.y = 0;
-    if (in.y >= sH)
-        in.y = sH - 1;
-}
 
 void SDLWRAP_releativeMouse(bool mode)
 {
@@ -519,11 +498,15 @@ void SDLWRAP_restoreWindow()
 
 
 namespace SDLWRAP
-{
-    
+{    
 SDL_Surface *Screen()
 {
     return screen;
+}
+
+void EventsAddHandler(SDL_EventFilter func)
+{
+    EventHandlers.push_back(func);
 }
 
 // Draw line Bresenham's algorithm
@@ -819,6 +802,27 @@ void DrawFill(SDL_Surface *src, const Common::Rect &sRect, SDL_Surface *dst, con
             SDL_BlitSurface(src, &lsrc, dst, &ldst);
         }
     }
+}
+
+Common::Point MousePosNorm(Common::Point in)
+{
+    if (sW != curW || sH != curH)
+    {
+        in.x = ((float)in.x / (float)curW) * (float)sW;
+        in.y = ((float)in.y / (float)curH) * (float)sH;
+    }
+
+    if (in.x < 0)
+        in.x = 0;
+    if (in.x >= sW)
+        in.x = sW - 1;
+
+    if (in.y < 0)
+        in.y = 0;
+    if (in.y >= sH)
+        in.y = sH - 1;
+    
+    return in;
 }
 
 }

@@ -98,108 +98,87 @@ int yw_write_user(FSMgr::FileHandle *fil, UserData *usr)
 
 int yw_write_input(FSMgr::FileHandle *fil, UserData *usr)
 {
-    char buf[300];
-
-    sprintf(buf, "new_input\n");
-    fil->write(buf, strlen(buf));
+    fil->printf("new_input\n");
 
     if ( usr->p_ypaworld->field_73CE & 4 )
-        sprintf(buf, "    joystick = no\n");
+        fil->printf("    joystick = no\n");
     else
-        sprintf(buf, "    joystick = yes\n");
-
-    fil->write(buf, strlen(buf));
+        fil->printf("    joystick = yes\n");
 
     if ( usr->inp_altjoystick )
-        sprintf(buf, "    altjoystick = yes\n");
+        fil->printf("    altjoystick = yes\n");
     else
-        sprintf(buf, "    altjoystick = no\n");
-
-    fil->write(buf, strlen(buf));
+        fil->printf("    altjoystick = no\n");
 
     if ( usr->p_ypaworld->field_73CE & 8 )
-        sprintf(buf, "    forcefeedback = no\n");
+        fil->printf("    forcefeedback = no\n");
     else
-        sprintf(buf, "    forcefeedback = yes\n");
+        fil->printf("    forcefeedback = yes\n");
 
-    fil->write(buf, strlen(buf));
-
-    for (int i = 1; i < 46; i++)
+    for (size_t i = 1; i < usr->InputConfig.size(); i++)
     {
-        if ( usr->keyConfig[i].inp_type == World::KEYC_TYPE_BUTTON )
+        if ( usr->InputConfig[i].Type == World::INPUT_BIND_TYPE_BUTTON )
         {
-            sprintf(buf, "    input.button[%d] = ", usr->keyConfig[i].keyID);
+            fil->printf("    input.button[%d] = ", usr->InputConfig[i].KeyID);
+            fil->printf("$");
 
-            strcat(buf, "$");
-
-            if ( usr->keyConfig[i].KeyCode )
-            {
-                strcat(buf, Input::KeysInfo[usr->keyConfig[i].KeyCode]._name.c_str());
-            }
+            if ( usr->InputConfig[i].PKeyCode )
+                fil->printf(NC_STACK_input::KeyNamesTable.at(usr->InputConfig[i].PKeyCode).Name);
             else
-            {
-                strcat(buf, "nop");
-            }
+                fil->printf("nop");
         }
-        else if ( usr->keyConfig[i].inp_type == World::KEYC_TYPE_SLIDER )
+        else if ( usr->InputConfig[i].Type == World::INPUT_BIND_TYPE_SLIDER )
         {
-            sprintf(buf, "    input.slider[%d] = ", usr->keyConfig[i].keyID);
+            fil->printf("    input.slider[%d] = ", usr->InputConfig[i].KeyID);
 
-            strcat(buf, "~#");
-            strcat(buf, "$");
+            fil->printf("~#");
+            fil->printf("$");
 
-
-            if ( usr->keyConfig[i].slider_neg )
+            if ( usr->InputConfig[i].NKeyCode != Input::KEY_NONE )
             {
-                strcat(buf, Input::KeysInfo[ usr->keyConfig[i].slider_neg ]._name.c_str());
+                fil->printf(NC_STACK_input::KeyNamesTable.at(usr->InputConfig[i].NKeyCode).Name);
             }
             else
             {
-                ypa_log_out("Slider(neg) %s is not declared!\n", usr->keyConfig[i].slider_name);
+                ypa_log_out("Slider(neg) %s is not declared!\n", usr->InputConfigTitle[i].c_str());
                 ypa_log_out("Use space-key for it\n");
 
-                strcat(buf, "space");
+                fil->printf("space");
             }
 
-            strcat(buf, "_#");
-            strcat(buf, "$");
+            fil->printf("_#");
+            fil->printf("$");
 
-            if ( usr->keyConfig[i].KeyCode )
+            if ( usr->InputConfig[i].PKeyCode != Input::KEY_NONE )
             {
-                strcat(buf, Input::KeysInfo[ usr->keyConfig[i].KeyCode ]._name.c_str());
+                fil->printf(NC_STACK_input::KeyNamesTable.at(usr->InputConfig[i].PKeyCode).Name);
             }
             else
             {
-                ypa_log_out("Slider(pos) %s is not declared!\n", usr->keyConfig[i].slider_name);
+                ypa_log_out("Slider(pos) %s is not declared!\n", usr->InputConfigTitle[i].c_str());
                 ypa_log_out("Use space-key for it\n");
 
-                strcat(buf, "space");
+                fil->printf("space");
             }
         }
-        else if ( usr->keyConfig[i].inp_type == World::KEYC_TYPE_HOTKEY )
+        else if ( usr->InputConfig[i].Type == World::INPUT_BIND_TYPE_HOTKEY )
         {
-            sprintf(buf, "    input.hotkey[%d] = ", usr->keyConfig[i].keyID);
+            fil->printf("    input.hotkey[%d] = ", usr->InputConfig[i].KeyID);
 
-            if ( usr->keyConfig[i].KeyCode )
-            {
-                strcat(buf, Input::KeysInfo[ usr->keyConfig[i].KeyCode ]._name.c_str());
-            }
+            if ( usr->InputConfig[i].PKeyCode != Input::KEY_NONE )
+                fil->printf(NC_STACK_input::KeyNamesTable.at(usr->InputConfig[i].PKeyCode).Name);
             else
-            {
-                strcat(buf, "nop");
-            }
+                fil->printf("nop");
         }
         else
             continue;
 
-        strcat(buf, "         ; ");
-        strcat(buf, usr->keyConfig[i].slider_name);
-        strcat(buf, "\n");
-        fil->write(buf, strlen(buf));
+        fil->printf("         ; ");
+        fil->printf(usr->InputConfigTitle[i]);
+        fil->printf("\n");
     }
 
-    sprintf(buf, "end\n\n");
-    fil->write(buf, strlen(buf));
+    fil->printf("end\n\n");
 
     return 1;
 }

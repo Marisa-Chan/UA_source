@@ -17,7 +17,7 @@ uint32_t wintimer_func64__sub0()
 //        return SDL_GetTicks();
 }
 
-int NC_STACK_wintimer::itimer_func64(void *)
+int NC_STACK_wintimer::itimer_func64()
 {
     __NC_STACK_wintimer *tmr = &stack__wintimer;
 
@@ -39,7 +39,7 @@ size_t NC_STACK_wintimer::compatcall(int method_id, void *data)
     switch( method_id )
     {
     case 64:
-        return (size_t)itimer_func64( (void *)data );
+        return (size_t)itimer_func64();
     default:
         break;
     }

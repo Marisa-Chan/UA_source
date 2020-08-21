@@ -221,7 +221,7 @@ struct update_msg
 {
     int gTime;
     int frameTime;
-    struC5 *inpt;
+    InputState *inpt;
     int units_count;
     int user_action;
     int protoID;

@@ -1,6 +1,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include <math.h>
+#include <string>
 #include "includes.h"
 #include "yw.h"
 
@@ -137,7 +138,7 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     draggingLock = 0;
     _mouseGrabbed = 0; // Grab mouse for unit steer-turn
     field_17c4 = 0;
-    field_17c8 = 0;
+    field_17c8 = -1;
     tooltips = NULL;
 //rgbiColor iniColors[70];
     field_1a00 = 0;
@@ -345,7 +346,7 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     unit_limit_1 = 0;
     unit_limit_arg_1 = 0;
     unit_limit_type_1 = 0;
-    field_826F = 0;
+    field_826F = Input::KEY_NONE;
     TOD_ID = 0;
     beam_energy_start = 0;
     beam_energy_add = 0;
@@ -932,16 +933,16 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
     extern bool SPEED_DOWN_NET; //In yw_net.cpp
 
     if ( (gui_lstvw.IsClosed() && lstvw2.IsClosed())
-            || (arg->field_8->downed_key != UAVK_RETURN && arg->field_8->downed_key != UAVK_ESCAPE) )
+            || (arg->field_8->KbdLastHit != Input::KEY_RETURN && arg->field_8->KbdLastHit != Input::KEY_ESCAPE) )
     {
-        field_826F = 0;
+        field_826F = Input::KEY_NONE;
     }
     else
     {
-        field_826F = arg->field_8->downed_key;
-        arg->field_8->downed_key = 0;
-        arg->field_8->downed_key_2 = 0;
-        arg->field_8->dword8 = 0;
+        field_826F = arg->field_8->KbdLastHit;
+        arg->field_8->KbdLastHit = Input::KEY_NONE;
+        arg->field_8->KbdLastDown = Input::KEY_NONE;
+        arg->field_8->HotKeyID = -1;
     }
 
     if ( !ypaworld_func64__sub4(this, arg) )
@@ -956,7 +957,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
         if ( do_screenshooting )
         {
             arg->TimeStamp -= arg->DTime;
-            arg->field_8->period = 40;
+            arg->field_8->Period = 40;
             arg->DTime = 40;
             arg->TimeStamp += arg->DTime;
         }
@@ -996,18 +997,18 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             if ( field_1b1c )
             {
-                if ( winp->move.screenPos.x != field_1b20 || winp->move.screenPos.y != field_1b22 )
+                if ( winp->move.ScreenPos.x != field_1b20 || winp->move.ScreenPos.y != field_1b22 )
                     field_1b1c = 0;
             }
             else
             {
-                if ( arg->field_8->downed_key )
+                if ( arg->field_8->KbdLastHit != Input::KEY_NONE )
                 {
-                    if ( arg->field_8->downed_key != 0x81 && arg->field_8->downed_key != 0x83 && arg->field_8->downed_key != 0x82 && !(arg->field_8->but_flags & 0x10) )
+                    if ( arg->field_8->KbdLastHit != Input::KEY_LMB && arg->field_8->KbdLastHit != Input::KEY_RMB && arg->field_8->KbdLastHit != Input::KEY_MMB && !(arg->field_8->Buttons.Is(4)) )
                     {
                         field_1b1c = 1;
-                        field_1b20 = winp->move.screenPos.x;
-                        field_1b22 = winp->move.screenPos.y;
+                        field_1b20 = winp->move.ScreenPos.x;
+                        field_1b22 = winp->move.ScreenPos.y;
                     }
                 }
             }
@@ -2780,13 +2781,7 @@ void UserData::sub_46D2B4()
     int v10 = field_D36;
 
     for (int i = 0; i <= 48; i++)
-    {
-        winp_68arg winpArg;
-        winpArg.id = i;
-        winpArg.keyname = "nop";
-
-        input_class->keyb_setHotkey(&winpArg);
-    }
+        input_class->SetHotKey(i, "nop");
 
     for (int i = 1; i <= 45; i++)
     {
@@ -2817,7 +2812,7 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
     usr->video_mode_list.clear();
     usr->lang_dlls.clear();
 
-    set_keys_vals(this);
+    LoadKeyNames();
 
     fill_videmodes_list(usr);
     listSaveDir("save:");
@@ -2857,208 +2852,54 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
 
     usr->field_FBE = 0;
 
-    usr->keyConfig[3].inp_type = World::KEYC_TYPE_SLIDER;
-    usr->keyConfig[3].keyID = 3;
-    usr->keyConfig[3].KeyCode = 39;
-    usr->keyConfig[3].slider_neg = 37;
-
-
-    usr->keyConfig[4].inp_type = World::KEYC_TYPE_SLIDER;
-    usr->keyConfig[4].keyID = 4;
-    usr->keyConfig[4].KeyCode = 38;
-    usr->keyConfig[4].slider_neg = 40;
-
-    usr->keyConfig[8].inp_type = World::KEYC_TYPE_SLIDER;
-    usr->keyConfig[8].keyID = 0;
-    usr->keyConfig[8].KeyCode = 39;
-    usr->keyConfig[8].slider_neg = 37;
-
-
-    usr->keyConfig[6].inp_type = World::KEYC_TYPE_SLIDER;
-    usr->keyConfig[6].keyID = 1;
-    usr->keyConfig[6].KeyCode = 38;
-    usr->keyConfig[6].slider_neg = 40;
-
-    usr->keyConfig[7].inp_type = World::KEYC_TYPE_SLIDER;
-    usr->keyConfig[7].keyID = 2;
-    usr->keyConfig[7].KeyCode = 17;
-    usr->keyConfig[7].slider_neg = 16;
-
-    usr->keyConfig[5].inp_type = World::KEYC_TYPE_SLIDER;
-    usr->keyConfig[5].keyID = 5;
-    usr->keyConfig[5].KeyCode = 65;
-    usr->keyConfig[5].slider_neg = 89;
-
-    usr->keyConfig[10].inp_type = World::KEYC_TYPE_BUTTON;
-    usr->keyConfig[10].keyID = 0;
-    usr->keyConfig[10].KeyCode = 32;
-
-    usr->keyConfig[11].inp_type = World::KEYC_TYPE_BUTTON;
-    usr->keyConfig[11].keyID = 1;
-    usr->keyConfig[11].KeyCode = 9;
-
-    usr->keyConfig[12].inp_type = World::KEYC_TYPE_BUTTON;
-    usr->keyConfig[12].keyID = 2;
-    usr->keyConfig[12].KeyCode = 13;
-
-    usr->keyConfig[9].inp_type = World::KEYC_TYPE_BUTTON;
-    usr->keyConfig[9].keyID = 3;
-    usr->keyConfig[9].KeyCode = 96;
-
-    usr->keyConfig[14].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[14].keyID = 25;
-    usr->keyConfig[14].KeyCode = 86;
-
-    usr->keyConfig[17].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[17].keyID = 2;
-    usr->keyConfig[17].KeyCode = 78;
-
-    usr->keyConfig[18].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[18].keyID = 3;
-    usr->keyConfig[18].KeyCode = 65;
-
-    usr->keyConfig[16].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[16].keyID = 0;
-    usr->keyConfig[16].KeyCode = 79;
-
-    usr->keyConfig[37].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[37].keyID = 1;
-    usr->keyConfig[37].KeyCode = 32;
-
-    usr->keyConfig[35].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[35].keyID = 4;
-    usr->keyConfig[35].KeyCode = 67;
-
-    usr->keyConfig[15].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[15].keyID = 7;
-    usr->keyConfig[15].KeyCode = 71;
-
-    usr->keyConfig[25].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[25].keyID = 8;
-    usr->keyConfig[25].KeyCode = 77;
-
-    usr->keyConfig[19].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[19].keyID = 9;
-    usr->keyConfig[19].KeyCode = 70;
-
-    usr->keyConfig[27].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[27].keyID = 10;
-    usr->keyConfig[27].KeyCode = 0;
-
-    usr->keyConfig[28].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[28].keyID = 11;
-    usr->keyConfig[28].KeyCode = 0;
-
-    usr->keyConfig[29].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[29].keyID = 12;
-    usr->keyConfig[29].KeyCode = 0;
-
-    usr->keyConfig[31].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[31].keyID = 14;
-    usr->keyConfig[31].KeyCode = 0;
-
-    usr->keyConfig[32].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[32].keyID = 16;
-    usr->keyConfig[32].KeyCode = 0;
-
-    usr->keyConfig[33].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[33].keyID = 17;
-    usr->keyConfig[33].KeyCode = 0;
-
-    usr->keyConfig[30].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[30].keyID = 18;
-    usr->keyConfig[30].KeyCode = 0;
-
-    usr->keyConfig[41].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[41].keyID = 20;
-    usr->keyConfig[41].KeyCode = 112;
-
-    usr->keyConfig[38].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[38].keyID = 21;
-    usr->keyConfig[38].KeyCode = 113;
-
-    usr->keyConfig[40].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[40].keyID = 22;
-    usr->keyConfig[40].KeyCode = 114;
-
-    usr->keyConfig[39].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[39].keyID = 23;
-    usr->keyConfig[39].KeyCode = 115;
-
-    usr->keyConfig[2].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[2].keyID = 24;
-    usr->keyConfig[2].KeyCode = 27;
-
-    usr->keyConfig[34].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[34].keyID = 27;
-    usr->keyConfig[34].KeyCode = 0;
-
-    usr->keyConfig[42].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[42].keyID = 31;
-    usr->keyConfig[42].KeyCode = 8;
-
-    usr->keyConfig[1].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[1].keyID = 32;
-    usr->keyConfig[1].KeyCode = 0;
-
-    usr->keyConfig[43].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[43].keyID = 37;
-    usr->keyConfig[43].KeyCode = 101;
-
-    usr->keyConfig[20].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[20].keyID = 38;
-    usr->keyConfig[20].KeyCode = 49;
-
-    usr->keyConfig[21].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[21].keyID = 39;
-    usr->keyConfig[21].KeyCode = 50;
-
-    usr->keyConfig[22].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[22].keyID = 40;
-    usr->keyConfig[22].KeyCode = 51;
-
-    usr->keyConfig[23].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[23].keyID = 41;
-    usr->keyConfig[23].KeyCode = 52;
-
-    usr->keyConfig[24].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[24].keyID = 42;
-    usr->keyConfig[24].KeyCode = 53;
-
-    usr->keyConfig[26].inp_type = World::KEYC_TYPE_BUTTON;
-    usr->keyConfig[26].keyID = 4;
-    usr->keyConfig[26].KeyCode = 16;
-
-    usr->keyConfig[44].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[44].keyID = 43;
-    usr->keyConfig[44].KeyCode = 0;
-
-    usr->keyConfig[36].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[36].keyID = 44;
-    usr->keyConfig[36].KeyCode = 0;
-
-    usr->keyConfig[13].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[13].keyID = 45;
-    usr->keyConfig[13].KeyCode = 0;
-
-    usr->keyConfig[45].inp_type = World::KEYC_TYPE_HOTKEY;
-    usr->keyConfig[45].keyID = 46;
-    usr->keyConfig[45].KeyCode = 0;
+    usr->InputConfig[World::INPUT_BIND_DRIVE_DIR]   = UserData::TInputConf(World::INPUT_BIND_TYPE_SLIDER, 3,  Input::KEY_RIGHT, Input::KEY_LEFT);
+    usr->InputConfig[World::INPUT_BIND_DRIVE_SPEED] = UserData::TInputConf(World::INPUT_BIND_TYPE_SLIDER, 4,  Input::KEY_UP, Input::KEY_DOWN);
+    usr->InputConfig[World::INPUT_BIND_FLY_DIR]     = UserData::TInputConf(World::INPUT_BIND_TYPE_SLIDER, 0,  Input::KEY_RIGHT, Input::KEY_LEFT);
+    usr->InputConfig[World::INPUT_BIND_FLY_HEIGHT]  = UserData::TInputConf(World::INPUT_BIND_TYPE_SLIDER, 1,  Input::KEY_UP, Input::KEY_DOWN);
+    usr->InputConfig[World::INPUT_BIND_FLY_SPEED]   = UserData::TInputConf(World::INPUT_BIND_TYPE_SLIDER, 2,  Input::KEY_CTRL, Input::KEY_SHIFT);
+    usr->InputConfig[World::INPUT_BIND_GUN_HEIGHT]  = UserData::TInputConf(World::INPUT_BIND_TYPE_SLIDER, 5,  Input::KEY_A, Input::KEY_Y);
+    usr->InputConfig[World::INPUT_BIND_FIRE]        = UserData::TInputConf(World::INPUT_BIND_TYPE_BUTTON, 0,  Input::KEY_SPACE);
+    usr->InputConfig[World::INPUT_BIND_CAMFIRE]     = UserData::TInputConf(World::INPUT_BIND_TYPE_BUTTON, 1,  Input::KEY_TAB);
+    usr->InputConfig[World::INPUT_BIND_GUN]         = UserData::TInputConf(World::INPUT_BIND_TYPE_BUTTON, 2,  Input::KEY_RETURN);
+    usr->InputConfig[World::INPUT_BIND_BRAKE]       = UserData::TInputConf(World::INPUT_BIND_TYPE_BUTTON, 3,  Input::KEY_NUM0);
+    usr->InputConfig[World::INPUT_BIND_HUD]         = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 25, Input::KEY_V);
+    usr->InputConfig[World::INPUT_BIND_NEW]         = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 2,  Input::KEY_N);
+    usr->InputConfig[World::INPUT_BIND_ADD]         = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 3,  Input::KEY_A);
+    usr->InputConfig[World::INPUT_BIND_ORDER]       = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 0,  Input::KEY_O);
+    usr->InputConfig[World::INPUT_BIND_ATTACK]      = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 1,  Input::KEY_SPACE);
+    usr->InputConfig[World::INPUT_BIND_CONTROL]     = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 4,  Input::KEY_C);
+    usr->InputConfig[World::INPUT_BIND_AUTOPILOT]   = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 7,  Input::KEY_G);
+    usr->InputConfig[World::INPUT_BIND_MAP]         = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 8,  Input::KEY_M);
+    usr->InputConfig[World::INPUT_BIND_SQ_MANAGE]   = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 9,  Input::KEY_F);
+    usr->InputConfig[World::INPUT_BIND_LANDLAYER]   = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 10, Input::KEY_NONE);
+    usr->InputConfig[World::INPUT_BIND_OWNER]       = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 11, Input::KEY_NONE);
+    usr->InputConfig[World::INPUT_BIND_HEIGHT]      = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 12, Input::KEY_NONE);
+    usr->InputConfig[World::INPUT_BIND_LOCKVIEW]    = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 14, Input::KEY_NONE);
+    usr->InputConfig[World::INPUT_BIND_ZOOMIN]      = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 16, Input::KEY_NONE);
+    usr->InputConfig[World::INPUT_BIND_ZOOMOUT]     = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 17, Input::KEY_NONE);
+    usr->InputConfig[World::INPUT_BIND_MINIMAP]     = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 18, Input::KEY_NONE);
+    usr->InputConfig[World::INPUT_BIND_NEXT_COMM]   = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 20, Input::KEY_F1);
+    usr->InputConfig[World::INPUT_BIND_TO_HOST]     = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 21, Input::KEY_F2);
+    usr->InputConfig[World::INPUT_BIND_NEXT_UNIT]   = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 22, Input::KEY_F3);
+    usr->InputConfig[World::INPUT_BIND_TO_COMM]     = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 23, Input::KEY_F4);
+    usr->InputConfig[World::INPUT_BIND_QUIT]        = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 24, Input::KEY_ESCAPE);
+    usr->InputConfig[World::INPUT_BIND_LOG_WND]     = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 27, Input::KEY_NONE);
+    usr->InputConfig[World::INPUT_BIND_LAST_MSG]    = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 31, Input::KEY_BACKSPACE);
+    usr->InputConfig[World::INPUT_BIND_PAUSE]       = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 32, Input::KEY_NONE);
+    usr->InputConfig[World::INPUT_BIND_TO_ALL]      = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 37, Input::KEY_NUM5);
+    usr->InputConfig[World::INPUT_BIND_AGGR_1]      = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 38, Input::KEY_1);
+    usr->InputConfig[World::INPUT_BIND_AGGR_2]      = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 39, Input::KEY_2);
+    usr->InputConfig[World::INPUT_BIND_AGGR_3]      = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 40, Input::KEY_3);
+    usr->InputConfig[World::INPUT_BIND_AGGR_4]      = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 41, Input::KEY_4);
+    usr->InputConfig[World::INPUT_BIND_AGGR_5]      = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 42, Input::KEY_5);
+    usr->InputConfig[World::INPUT_BIND_WAPOINT]     = UserData::TInputConf(World::INPUT_BIND_TYPE_BUTTON, 4,  Input::KEY_SHIFT);
+    usr->InputConfig[World::INPUT_BIND_HELP]        = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 43, Input::KEY_NONE);
+    usr->InputConfig[World::INPUT_BIND_LAST_SEAT]   = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 44, Input::KEY_NONE);
+    usr->InputConfig[World::INPUT_BIND_SET_COMM]    = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 45, Input::KEY_NONE);
+    usr->InputConfig[World::INPUT_BIND_ANALYZER]    = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 46, Input::KEY_NONE);
 
     usr->sub_46D2B4();
-
-    for (int i = 1; i < 46; i++)
-    {
-        usr->keyConfig[i].field_8 = usr->keyConfig[i].KeyCode;
-        usr->keyConfig[i].field_A = usr->keyConfig[i].slider_neg;
-    }
-
-    for (int i = 1; i < 46; i++)
-    {
-        usr->keyConfig[i].field_C = usr->keyConfig[i].KeyCode;
-        usr->keyConfig[i].field_E = usr->keyConfig[i].slider_neg;
-    }
-
+    
     usr->field_1756 = -2;
 
     windp_arg87 v67;
@@ -3584,53 +3425,53 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         usr->p_ypaworld->_win3d->setWDD_cursor(0);
     }
 
-    set_keys_vals(this);
+    LoadKeyNames();
 
-    usr->keyConfig[1].slider_name = get_lang_string(ypaworld__string_pointers, 544, "PAUSE");
-    usr->keyConfig[2].slider_name = get_lang_string(ypaworld__string_pointers, 536, "QUIT");
-    usr->keyConfig[3].slider_name = get_lang_string(ypaworld__string_pointers, 500, "DRIVE DIR");
-    usr->keyConfig[4].slider_name = get_lang_string(ypaworld__string_pointers, 501, "DRIVE SPEED");
-    usr->keyConfig[5].slider_name = get_lang_string(ypaworld__string_pointers, 511, "GUN HEIGHT");
-    usr->keyConfig[6].slider_name = get_lang_string(ypaworld__string_pointers, 502, "FLY HEIGHT");
-    usr->keyConfig[7].slider_name = get_lang_string(ypaworld__string_pointers, 503, "FLY SPEED");
-    usr->keyConfig[8].slider_name = get_lang_string(ypaworld__string_pointers, 504, "FLY DIR");
-    usr->keyConfig[9].slider_name = get_lang_string(ypaworld__string_pointers, 505, "STOP");
-    usr->keyConfig[10].slider_name = get_lang_string(ypaworld__string_pointers, 506, "FIRE");
-    usr->keyConfig[11].slider_name = get_lang_string(ypaworld__string_pointers, 507, "FIRE VIEW");
-    usr->keyConfig[12].slider_name = get_lang_string(ypaworld__string_pointers, 508, "FIRE GUN");
-    usr->keyConfig[13].slider_name = get_lang_string(ypaworld__string_pointers, 561, "MAKE CURRENT VEHICLE COMMANDER");
-    usr->keyConfig[14].slider_name = get_lang_string(ypaworld__string_pointers, 541, "HEADUP DISPLAY");
-    usr->keyConfig[15].slider_name = get_lang_string(ypaworld__string_pointers, 520, "AUTOPILOT");
-    usr->keyConfig[16].slider_name = get_lang_string(ypaworld__string_pointers, 513, "ORDER");
-    usr->keyConfig[17].slider_name = get_lang_string(ypaworld__string_pointers, 515, "NEW");
-    usr->keyConfig[18].slider_name = get_lang_string(ypaworld__string_pointers, 516, "ADD");
-    usr->keyConfig[19].slider_name = get_lang_string(ypaworld__string_pointers, 522, "FINDER");
-    usr->keyConfig[20].slider_name = get_lang_string(ypaworld__string_pointers, 553, "AGGR: COME BACK");
-    usr->keyConfig[21].slider_name = get_lang_string(ypaworld__string_pointers, 554, "AGGR: FIGHT TARGET");
-    usr->keyConfig[22].slider_name = get_lang_string(ypaworld__string_pointers, 555, "AGGR: FIGHT ENEMIES TOO");
-    usr->keyConfig[23].slider_name = get_lang_string(ypaworld__string_pointers, 556, "AGGR: CONQUER ALL ENEMY AREA TOO");
-    usr->keyConfig[24].slider_name = get_lang_string(ypaworld__string_pointers, 557, "AGGR: GO AMOK");
-    usr->keyConfig[25].slider_name = get_lang_string(ypaworld__string_pointers, 521, "MAP");
-    usr->keyConfig[26].slider_name = get_lang_string(ypaworld__string_pointers, 558, "SELECT WAYPOINT");
-    usr->keyConfig[27].slider_name = get_lang_string(ypaworld__string_pointers, 523, "LANDSCAPE");
-    usr->keyConfig[28].slider_name = get_lang_string(ypaworld__string_pointers, 524, "OWNER");
-    usr->keyConfig[29].slider_name = get_lang_string(ypaworld__string_pointers, 525, "HEIGHT");
-    usr->keyConfig[30].slider_name = get_lang_string(ypaworld__string_pointers, 531, "MAP MINI");
-    usr->keyConfig[31].slider_name = get_lang_string(ypaworld__string_pointers, 527, "LOCK VIEWER");
-    usr->keyConfig[32].slider_name = get_lang_string(ypaworld__string_pointers, 529, "ZOOM IN");
-    usr->keyConfig[33].slider_name = get_lang_string(ypaworld__string_pointers, 530, "ZOOM OUT");
-    usr->keyConfig[34].slider_name = get_lang_string(ypaworld__string_pointers, 538, "LOGWIN");
-    usr->keyConfig[35].slider_name = get_lang_string(ypaworld__string_pointers, 517, "CONTROL");
-    usr->keyConfig[36].slider_name = get_lang_string(ypaworld__string_pointers, 560, "GOTO LAST OCCUPIED VEHICLE");
-    usr->keyConfig[37].slider_name = get_lang_string(ypaworld__string_pointers, 514, "FIGHT");
-    usr->keyConfig[38].slider_name = get_lang_string(ypaworld__string_pointers, 533, "TO ROBO");
-    usr->keyConfig[39].slider_name = get_lang_string(ypaworld__string_pointers, 535, "TO COMMANDER");
-    usr->keyConfig[40].slider_name = get_lang_string(ypaworld__string_pointers, 534, "NEXT MAN");
-    usr->keyConfig[41].slider_name = get_lang_string(ypaworld__string_pointers, 532, "NEXT COM");
-    usr->keyConfig[42].slider_name = get_lang_string(ypaworld__string_pointers, 543, "JUMP TO LASTMSG-SENDER");
-    usr->keyConfig[43].slider_name = get_lang_string(ypaworld__string_pointers, 552, "MESSAGE TO ALL PLAYERS");
-    usr->keyConfig[44].slider_name = get_lang_string(ypaworld__string_pointers, 559, "HELP");
-    usr->keyConfig[45].slider_name = get_lang_string(ypaworld__string_pointers, 562, "SITUATION ANALYZER");
+    usr->InputConfigTitle[World::INPUT_BIND_PAUSE]       = get_lang_string(ypaworld__string_pointers, 544, "PAUSE");
+    usr->InputConfigTitle[World::INPUT_BIND_QUIT]        = get_lang_string(ypaworld__string_pointers, 536, "QUIT");
+    usr->InputConfigTitle[World::INPUT_BIND_DRIVE_DIR]   = get_lang_string(ypaworld__string_pointers, 500, "DRIVE DIR");
+    usr->InputConfigTitle[World::INPUT_BIND_DRIVE_SPEED] = get_lang_string(ypaworld__string_pointers, 501, "DRIVE SPEED");
+    usr->InputConfigTitle[World::INPUT_BIND_GUN_HEIGHT]  = get_lang_string(ypaworld__string_pointers, 511, "GUN HEIGHT");
+    usr->InputConfigTitle[World::INPUT_BIND_FLY_HEIGHT]  = get_lang_string(ypaworld__string_pointers, 502, "FLY HEIGHT");
+    usr->InputConfigTitle[World::INPUT_BIND_FLY_SPEED]   = get_lang_string(ypaworld__string_pointers, 503, "FLY SPEED");
+    usr->InputConfigTitle[World::INPUT_BIND_FLY_DIR]     = get_lang_string(ypaworld__string_pointers, 504, "FLY DIR");
+    usr->InputConfigTitle[World::INPUT_BIND_BRAKE]       = get_lang_string(ypaworld__string_pointers, 505, "STOP");
+    usr->InputConfigTitle[World::INPUT_BIND_FIRE]        = get_lang_string(ypaworld__string_pointers, 506, "FIRE");
+    usr->InputConfigTitle[World::INPUT_BIND_CAMFIRE]     = get_lang_string(ypaworld__string_pointers, 507, "FIRE VIEW");
+    usr->InputConfigTitle[World::INPUT_BIND_GUN]         = get_lang_string(ypaworld__string_pointers, 508, "FIRE GUN");
+    usr->InputConfigTitle[World::INPUT_BIND_SET_COMM]    = get_lang_string(ypaworld__string_pointers, 561, "MAKE CURRENT VEHICLE COMMANDER");
+    usr->InputConfigTitle[World::INPUT_BIND_HUD]         = get_lang_string(ypaworld__string_pointers, 541, "HEADUP DISPLAY");
+    usr->InputConfigTitle[World::INPUT_BIND_AUTOPILOT]   = get_lang_string(ypaworld__string_pointers, 520, "AUTOPILOT");
+    usr->InputConfigTitle[World::INPUT_BIND_ORDER]       = get_lang_string(ypaworld__string_pointers, 513, "ORDER");
+    usr->InputConfigTitle[World::INPUT_BIND_NEW]         = get_lang_string(ypaworld__string_pointers, 515, "NEW");
+    usr->InputConfigTitle[World::INPUT_BIND_ADD]         = get_lang_string(ypaworld__string_pointers, 516, "ADD");
+    usr->InputConfigTitle[World::INPUT_BIND_SQ_MANAGE]   = get_lang_string(ypaworld__string_pointers, 522, "FINDER");
+    usr->InputConfigTitle[World::INPUT_BIND_AGGR_1]      = get_lang_string(ypaworld__string_pointers, 553, "AGGR: COME BACK");
+    usr->InputConfigTitle[World::INPUT_BIND_AGGR_2]      = get_lang_string(ypaworld__string_pointers, 554, "AGGR: FIGHT TARGET");
+    usr->InputConfigTitle[World::INPUT_BIND_AGGR_3]      = get_lang_string(ypaworld__string_pointers, 555, "AGGR: FIGHT ENEMIES TOO");
+    usr->InputConfigTitle[World::INPUT_BIND_AGGR_4]      = get_lang_string(ypaworld__string_pointers, 556, "AGGR: CONQUER ALL ENEMY AREA TOO");
+    usr->InputConfigTitle[World::INPUT_BIND_AGGR_5]      = get_lang_string(ypaworld__string_pointers, 557, "AGGR: GO AMOK");
+    usr->InputConfigTitle[World::INPUT_BIND_MAP]         = get_lang_string(ypaworld__string_pointers, 521, "MAP");
+    usr->InputConfigTitle[World::INPUT_BIND_WAPOINT]     = get_lang_string(ypaworld__string_pointers, 558, "SELECT WAYPOINT");
+    usr->InputConfigTitle[World::INPUT_BIND_LANDLAYER]   = get_lang_string(ypaworld__string_pointers, 523, "LANDSCAPE");
+    usr->InputConfigTitle[World::INPUT_BIND_OWNER]       = get_lang_string(ypaworld__string_pointers, 524, "OWNER");
+    usr->InputConfigTitle[World::INPUT_BIND_HEIGHT]      = get_lang_string(ypaworld__string_pointers, 525, "HEIGHT");
+    usr->InputConfigTitle[World::INPUT_BIND_MINIMAP]     = get_lang_string(ypaworld__string_pointers, 531, "MAP MINI");
+    usr->InputConfigTitle[World::INPUT_BIND_LOCKVIEW]    = get_lang_string(ypaworld__string_pointers, 527, "LOCK VIEWER");
+    usr->InputConfigTitle[World::INPUT_BIND_ZOOMIN]      = get_lang_string(ypaworld__string_pointers, 529, "ZOOM IN");
+    usr->InputConfigTitle[World::INPUT_BIND_ZOOMOUT]     = get_lang_string(ypaworld__string_pointers, 530, "ZOOM OUT");
+    usr->InputConfigTitle[World::INPUT_BIND_LOG_WND]     = get_lang_string(ypaworld__string_pointers, 538, "LOGWIN");
+    usr->InputConfigTitle[World::INPUT_BIND_CONTROL]     = get_lang_string(ypaworld__string_pointers, 517, "CONTROL");
+    usr->InputConfigTitle[World::INPUT_BIND_LAST_SEAT]   = get_lang_string(ypaworld__string_pointers, 560, "GOTO LAST OCCUPIED VEHICLE");
+    usr->InputConfigTitle[World::INPUT_BIND_ATTACK]      = get_lang_string(ypaworld__string_pointers, 514, "FIGHT");
+    usr->InputConfigTitle[World::INPUT_BIND_TO_HOST]     = get_lang_string(ypaworld__string_pointers, 533, "TO ROBO");
+    usr->InputConfigTitle[World::INPUT_BIND_TO_COMM]     = get_lang_string(ypaworld__string_pointers, 535, "TO COMMANDER");
+    usr->InputConfigTitle[World::INPUT_BIND_NEXT_UNIT]   = get_lang_string(ypaworld__string_pointers, 534, "NEXT MAN");
+    usr->InputConfigTitle[World::INPUT_BIND_NEXT_COMM]   = get_lang_string(ypaworld__string_pointers, 532, "NEXT COM");
+    usr->InputConfigTitle[World::INPUT_BIND_LAST_MSG]    = get_lang_string(ypaworld__string_pointers, 543, "JUMP TO LASTMSG-SENDER");
+    usr->InputConfigTitle[World::INPUT_BIND_TO_ALL]      = get_lang_string(ypaworld__string_pointers, 552, "MESSAGE TO ALL PLAYERS");
+    usr->InputConfigTitle[World::INPUT_BIND_HELP]        = get_lang_string(ypaworld__string_pointers, 559, "HELP");
+    usr->InputConfigTitle[World::INPUT_BIND_ANALYZER]    = get_lang_string(ypaworld__string_pointers, 562, "SITUATION ANALYZER");
 
     int v259_4;
 
@@ -6217,42 +6058,27 @@ void NC_STACK_ypaworld::GameShellBkgProcess()
     }
 }
 
-
-char byte_5AFC10[64];
-
-char * sb_0x481264__sub0(NC_STACK_ypaworld *yw, int a2)
-{
-    byte_5AFC10[0] = 0;
-
-    if (  !yw->GameShell || Input::KeysInfo[a2]._title.empty() )
-        return NULL;
-
-    sprintf(byte_5AFC10, "[%s]", Input::KeysInfo[a2]._title.c_str());
-    return byte_5AFC10;
-}
-
 void draw_tooltip(NC_STACK_ypaworld *yw)
 {
     if ( yw->_mouseGrabbed || (yw->field_17c4 && !yw->field_1b1c) )
     {
         const char *tooltip = get_lang_string(yw->string_pointers_p2, yw->field_17c4 + 800, yw->tooltips[ yw->field_17c4 ]);
         int v15 = -(yw->font_default_h + yw->icon0___h + yw->font_default_h / 4);
-        char *v2 = NULL;
-        if ( yw->field_17c8 )
+        std::string v2;
+        
+        if ( yw->field_17c8 != -1 )
         {
             NC_STACK_input *inpt = INPe.getPInput();
 
-            idev_query_arg v11;
-            v11.keycode = 0;
-            v11.hotkey = yw->field_17c8;
+            int16_t keycode = inpt->GetHotKey(yw->field_17c8);
 
-            inpt->keyb_queryHotkey(&v11);
-
-            if ( v11.keycode )
+            if ( keycode != Input::KEY_NONE )
             {
-                v2 = sb_0x481264__sub0(yw, v11.keycode);
-                if ( v2 )
+                if ( yw->GameShell && !NC_STACK_input::KeyTitle.at(keycode).empty())
+                {
+                    v2 = fmt::sprintf("[%s]", NC_STACK_input::KeyTitle.at(keycode));
                     v15 = -(yw->icon0___h + 2 * yw->font_default_h + yw->font_default_h / 4);
+                }
             }
         }
 
@@ -6264,11 +6090,11 @@ void draw_tooltip(NC_STACK_ypaworld *yw)
         FontUA::set_xpos(&pos, 0);
         FontUA::set_ypos(&pos, v15);
 
-        if ( v2 )
+        if ( !v2.empty() )
         {
             FontUA::set_txtColor(&pos, yw->iniColors[61].r, yw->iniColors[61].g, yw->iniColors[61].b);
 
-            pos = FontUA::FormateCenteredSkipableItem(yw->tiles[15], pos, v2, yw->screen_width);
+            pos = FontUA::FormateCenteredSkipableItem(yw->tiles[15], pos, v2.c_str(), yw->screen_width);
 
             FontUA::next_line(&pos);
         }
@@ -6286,7 +6112,7 @@ void draw_tooltip(NC_STACK_ypaworld *yw)
 
         yw->_win3d->raster_func209(&v10);
     }
-    yw->field_17c8 = 0;
+    yw->field_17c8 = -1;
     yw->field_17c4 = 0;
 }
 
@@ -6309,15 +6135,15 @@ void sub_4476AC(NC_STACK_ypaworld *yw)
 int PrevMouseX = 0;
 int PrevMouseY = 0;
 
-bool NC_STACK_ypaworld::IsAnyInput(struC5 *struc)
+bool NC_STACK_ypaworld::IsAnyInput(InputState *struc)
 {
     bool click = (struc->ClickInf.flag & ~ClickBoxInf::FLAG_OK);
-    bool mousemove = struc->ClickInf.move.screenPos.x != PrevMouseX || PrevMouseY != struc->ClickInf.move.screenPos.y;
+    bool mousemove = struc->ClickInf.move.ScreenPos.x != PrevMouseX || PrevMouseY != struc->ClickInf.move.ScreenPos.y;
 
-    PrevMouseX = struc->ClickInf.move.screenPos.x;
-    PrevMouseY = struc->ClickInf.move.screenPos.y;
+    PrevMouseX = struc->ClickInf.move.ScreenPos.x;
+    PrevMouseY = struc->ClickInf.move.ScreenPos.y;
 
-    return struc->downed_key_2 || struc->downed_key || struc->dword8 || click || mousemove;
+    return struc->KbdLastDown != Input::KEY_NONE || struc->KbdLastHit != Input::KEY_NONE || struc->HotKeyID >= 0 || click || mousemove;
 }
 
 void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
@@ -6379,7 +6205,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 //    nullsub_7();
     }
 
-    if ( sub_449678(usr->_input, UAVK_MULTIPLY) )
+    if ( sub_449678(usr->_input, Input::KEY_NUMMUL) )
         sub_4476AC(this);
 
     if ( usr->netSelMode == 4 )
@@ -7577,7 +7403,7 @@ size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg)
     }
 
     if ( arg->field_8 & 2 )
-        usr->sub_457BC0();
+        usr->InputConfCopyToBackup();
 
     if ( arg->field_10 & 1 )
         ypaworld_func167(usr); // Update menu values
@@ -7588,64 +7414,59 @@ size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg)
 
 size_t NC_STACK_ypaworld::ypaworld_func173(UserData *usr)
 {
-    char v28[500];
-    memset(v28, 0, 500);
+    std::string keyConfStr;
 
-    if ( usr->field_D36 < 1 || usr->field_D36 > 45 )
+    if ( usr->field_D36 < 1 || usr->field_D36 >= usr->InputConfig.size() )
         return 0;
 
-    inp_key_setting *v5 = &usr->keyConfig[usr->field_D36];
+    UserData::TInputConf &kconf = usr->InputConfig.at(usr->field_D36);
 
-    if ( Input::KeysInfo[v5->field_10]._name.empty() )
+    if ( NC_STACK_input::KeyNamesTable.at(kconf.PKeyCode).Name.empty() )
         return 0;
 
-    if ( v5->inp_type == World::KEYC_TYPE_SLIDER && Input::KeysInfo[v5->slider_neg]._name.empty() )
+    if ( kconf.Type == World::INPUT_BIND_TYPE_SLIDER && NC_STACK_input::KeyNamesTable.at(kconf.NKeyCode).Name.empty() )
         return 0;
 
-    if ( v5->inp_type == World::KEYC_TYPE_SLIDER )
+    if ( kconf.Type == World::INPUT_BIND_TYPE_SLIDER )
     {
-        strcpy(v28, "~#");
-        strcat(v28, "winp:");
-        strcat(v28, Input::KeysInfo[v5->slider_neg]._name.c_str());
-        strcat(v28, " #");
-        strcat(v28, "winp:");
+        keyConfStr += "~#";
+        keyConfStr += "winp:";
+        keyConfStr += NC_STACK_input::KeyNamesTable.at(kconf.NKeyCode).Name;
+        keyConfStr += " #";
+        keyConfStr += "winp:";
     }
-    else if ( v5->inp_type == World::KEYC_TYPE_BUTTON )
+    else if ( kconf.Type == World::INPUT_BIND_TYPE_BUTTON )
     {
-        strcpy(v28, "winp:");
+        keyConfStr += "winp:";
     }
 
-    if ( Input::KeysInfo[ v5->KeyCode ]._name.empty() )
+    if ( NC_STACK_input::KeyNamesTable.at(kconf.PKeyCode).Name.empty() )
         return 0;
 
-    strcat(v28, Input::KeysInfo[ v5->KeyCode ]._name.c_str());
+    keyConfStr += NC_STACK_input::KeyNamesTable.at(kconf.PKeyCode).Name;
 
     NC_STACK_input *v38 = INPe.getPInput();
 
-    if ( v5->inp_type == World::KEYC_TYPE_HOTKEY )
+    if ( kconf.Type == World::INPUT_BIND_TYPE_HOTKEY )
     {
-        winp_68arg v33;
-        v33.keyname = v28;
-        v33.id = v5->keyID;
-
-        if ( !v38->keyb_setHotkey(&v33) )
-            ypa_log_out("input.engine: WARNING: Hotkey[%d] (%s) not accepted.\n", v5->keyID, v33.keyname);
+        if ( !v38->SetHotKey(kconf.KeyID, keyConfStr) )
+            ypa_log_out("input.engine: WARNING: Hotkey[%d] (%s) not accepted.\n", kconf.KeyID, keyConfStr.c_str());
     }
     else
     {
-        if ( v5->inp_type == World::KEYC_TYPE_BUTTON )
+        if ( kconf.Type == World::INPUT_BIND_TYPE_BUTTON )
         {
-            if ( !v38->input_func64(Input::ITYPE_BUTTON, v5->keyID, v28) )
-                ypa_log_out("input.engine: WARNING: Button[%d] (%s) not accepted.\n", v5->keyID, v28);
+            if ( !v38->SetInputExpression(false, kconf.KeyID, keyConfStr) )
+                ypa_log_out("input.engine: WARNING: Button[%d] (%s) not accepted.\n", kconf.KeyID, keyConfStr.c_str());
         }
         else
         {
-            if ( !v38->input_func64(Input::ITYPE_SLIDER, v5->keyID, v28) )
-                ypa_log_out("input.engine: WARNING: Slider[%d] (%s) not accepted.\n", v5->keyID, v28);
+            if ( !v38->SetInputExpression(true, kconf.KeyID, keyConfStr) )
+                ypa_log_out("input.engine: WARNING: Slider[%d] (%s) not accepted.\n", kconf.KeyID, keyConfStr);
         }
     }
-    v5->field_A = v5->slider_neg;
-    v5->field_8 = v5->KeyCode;
+    kconf.NKeyCodeBkp = kconf.NKeyCode;
+    kconf.PKeyCodeBkp = kconf.PKeyCode;
     return 1;
 }
 
@@ -7833,88 +7654,46 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
             return;
     }
 
-    winp_71arg arg71;
-
     switch ( arg->effects_type )
     {
     case 0:
-        arg71.state = NC_STACK_winp::FF_STATE_START;
-        arg71.p4 = 0;
-        arg71.p3 = 0;
-        arg71.p2 = 0;
-        arg71.p1 = 0;
-        arg71.effID = NC_STACK_winp::FF_TYPE_MISSILEFIRE;
-
         if ( input_class )
-            input_class->wimp_ForceFeedback(&arg71);
+            input_class->ForceFeedback(NC_STACK_winp::FF_STATE_START, NC_STACK_winp::FF_TYPE_MISSILEFIRE);
 
         break;
 
     case 1:
-        arg71.state = NC_STACK_winp::FF_STATE_START;
-        arg71.p4 = 0;
-        arg71.p3 = 0;
-        arg71.p2 = 0;
-        arg71.p1 = 0;
-        arg71.effID = NC_STACK_winp::FF_TYPE_GRENADEFIRE;
-
         if ( input_class )
-            input_class->wimp_ForceFeedback(&arg71);
+            input_class->ForceFeedback(NC_STACK_winp::FF_STATE_START, NC_STACK_winp::FF_TYPE_GRENADEFIRE);
 
         break;
 
     case 2:
-        arg71.state = NC_STACK_winp::FF_STATE_START;
-        arg71.p4 = 0;
-        arg71.p3 = 0;
-        arg71.p2 = 0;
-        arg71.p1 = 0;
-        arg71.effID = NC_STACK_winp::FF_TYPE_BOMBFIRE;
-
         if ( input_class )
-            input_class->wimp_ForceFeedback(&arg71);
+            input_class->ForceFeedback(NC_STACK_winp::FF_STATE_START, NC_STACK_winp::FF_TYPE_BOMBFIRE);
 
         break;
 
     case 3:
-        arg71.state = NC_STACK_winp::FF_STATE_START;
-        arg71.p4 = 0;
-        arg71.p3 = 0;
-        arg71.p2 = 0;
-        arg71.p1 = 0;
-        arg71.effID = NC_STACK_winp::FF_TYPE_MINIGUN;
-
         if ( input_class )
-            input_class->wimp_ForceFeedback(&arg71);
+            input_class->ForceFeedback(NC_STACK_winp::FF_STATE_START, NC_STACK_winp::FF_TYPE_MINIGUN);
 
         break;
 
     case 4:
-        arg71.state = NC_STACK_winp::FF_STATE_STOP;
-        arg71.p4 = 0;
-        arg71.p3 = 0;
-        arg71.p2 = 0;
-        arg71.p1 = 0;
-        arg71.effID = NC_STACK_winp::FF_TYPE_MINIGUN;
-
         if ( input_class )
-            input_class->wimp_ForceFeedback(&arg71);
+            input_class->ForceFeedback(NC_STACK_winp::FF_STATE_STOP, NC_STACK_winp::FF_TYPE_MINIGUN);
 
         break;
 
     case 5:
     {
         NC_STACK_ypabact *bct = UserUnit;
-
-        arg71.effID = NC_STACK_winp::FF_TYPE_COLLISION;
-        arg71.state = NC_STACK_winp::FF_STATE_START;
-        arg71.p1 = arg->field_4;
-        arg71.p2 = 0;
-        arg71.p3 = (arg->field_C - bct->_position.z) * bct->_rotation.m02 + (arg->field_8 - bct->_position.x) * bct->_rotation.m00;
-        arg71.p4 = -((arg->field_8 - bct->_position.x) * bct->_rotation.m20 + (arg->field_C - bct->_position.z) * bct->_rotation.m22);
-
         if ( input_class )
-            input_class->wimp_ForceFeedback(&arg71);
+            input_class->ForceFeedback(NC_STACK_winp::FF_STATE_START, NC_STACK_winp::FF_TYPE_COLLISION,
+            arg->field_4, 0.0,
+            (arg->field_C - bct->_position.z) * bct->_rotation.m02 + (arg->field_8 - bct->_position.x) * bct->_rotation.m00,
+            -((arg->field_8 - bct->_position.x) * bct->_rotation.m20 + (arg->field_C - bct->_position.z) * bct->_rotation.m22));
 
     }
     break;

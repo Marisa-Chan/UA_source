@@ -1,10 +1,10 @@
 #ifndef ENGINE_INPUT_H_INCLUDED
 #define ENGINE_INPUT_H_INCLUDED
 
+#include <vector>
 #include "utils.h"
 #include "nlist.h"
-
-#include <vector>
+#include "common.h"
 
 class NC_STACK_input;
 
@@ -41,9 +41,16 @@ public:
 
 struct MousePos
 {
-    shortPoint screenPos;
-    shortPoint boxPos;
-    shortPoint btnPos;
+    Common::Point ScreenPos;
+    Common::Point BoxPos;
+    Common::Point BtnPos;
+    
+    void clear()
+    {
+        ScreenPos = Common::Point();
+        BoxPos = Common::Point();
+        BtnPos = Common::Point();
+    }
 };
 
 struct ClickBoxInf
@@ -72,22 +79,32 @@ struct ClickBoxInf
     MousePos move;
     MousePos ldw_pos;
     MousePos lup_pos;
+    
+    void clear()
+    {
+        flag = 0;
+        selected_btn = NULL;
+        selected_btnID = 0;
+        move.clear();
+        ldw_pos.clear();
+        lup_pos.clear();
+    }
 };
 
-struct struC5
+struct InputState
 {
-    int period;
-    uint8_t downed_key_2;
-    uint8_t downed_key;
-    uint8_t dword8;
-    uint8_t chr;
-    char field_8;
-    int16_t field_9;
-    int16_t field_B;
-    int field_D;
-    float sliders_vars[32];
-    int but_flags;
+    uint32_t Period;
+    int16_t  KbdLastDown;
+    int16_t  KbdLastHit;
+    int16_t  HotKeyID;
+    uint8_t  chr;
+
+    float Sliders[32];
+    Common::BitMan Buttons;
     ClickBoxInf ClickInf;
+    
+    
+    void Clear();
 };
 
 class INPEngine
@@ -99,7 +116,7 @@ public:
 
     NC_STACK_input *getPInput();
 
-    void sub_412D28(struC5 *a1);
+    void QueryInput(InputState *a1);
     void AddClickBoxFront(ClickBox *box);
     void AddClickBoxBack(ClickBox *box);
 

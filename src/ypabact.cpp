@@ -2035,10 +2035,10 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
             }
         }
 
-        float v110 = arg->inpt->sliders_vars[1] * _maxrot * v106;
-        float v103 = -arg->inpt->sliders_vars[0] * _maxrot * v106;
+        float v110 = arg->inpt->Sliders[1] * _maxrot * v106;
+        float v103 = -arg->inpt->Sliders[0] * _maxrot * v106;
 
-        if ( (fabs(_fly_dir.y) > 0.98 || _fly_dir_length == 0.0) && _rotation.m11 > 0.996 && arg->inpt->sliders_vars[1] == 0.0 )
+        if ( (fabs(_fly_dir.y) > 0.98 || _fly_dir_length == 0.0) && _rotation.m11 > 0.996 && arg->inpt->Sliders[1] == 0.0 )
         {
             vec2d axisX = _rotation.AxisX().XZ();;
 
@@ -2110,7 +2110,7 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
         _rotation = mat3x3::RotateZ(v104 * 0.5) * _rotation; // local
         _rotation *= mat3x3::RotateY(v103 * 0.5); // global
 
-        _thraction += _force * v106 * 0.5 * arg->inpt->sliders_vars[2];
+        _thraction += _force * v106 * 0.5 * arg->inpt->Sliders[2];
 
         if ( _thraction < 0.0 )
             _thraction = 0;
@@ -2151,7 +2151,7 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
             v61.tgType = BACT_TGT_TYPE_UNIT;
         }
 
-        if ( arg->inpt->but_flags & 1 || arg->inpt->but_flags & 2 )
+        if ( arg->inpt->Buttons.IsAny({0, 1}) )
         {
             v61.direction = vec3d(0.0, 0.0, 0.0);
             v61.weapon = _weapon;
@@ -2164,7 +2164,7 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
 
             v61.start_point.y = _fire_pos.y;
             v61.start_point.z = _fire_pos.z;
-            v61.flags = ((arg->inpt->but_flags & 2) != 0) | 2;
+            v61.flags = (arg->inpt->Buttons.Is(1) ? 1 : 0) | 2;
 
             LaunchMissile(&v61);
         }
@@ -2173,7 +2173,7 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
         {
             if ( _status_flg & BACT_STFLAG_FIRE )
             {
-                if ( !(arg->inpt->but_flags & 4) )
+                if ( !(arg->inpt->Buttons.Is(2)) )
                 {
                     arg78.setFlags = 0;
                     arg78.newStatus = BACT_STATUS_NOPE;
@@ -2183,7 +2183,7 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
                 }
             }
 
-            if ( arg->inpt->but_flags & 4 )
+            if ( arg->inpt->Buttons.Is(2) )
             {
                 if ( !(_status_flg & BACT_STFLAG_FIRE) )
                 {
@@ -2204,7 +2204,7 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
             }
         }
 
-        if ( arg->inpt->but_flags & 8 )
+        if ( arg->inpt->Buttons.Is(3) )
         {
             HandBrake(arg);
 

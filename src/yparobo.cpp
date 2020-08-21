@@ -4955,13 +4955,13 @@ void NC_STACK_yparobo::AI_layer3(update_msg *arg)
 
 void NC_STACK_yparobo::yparobo_func71__sub0(update_msg *arg)
 {
-    struC5 *inpt = arg->inpt;
+    InputState *inpt = arg->inpt;
     float v18 = arg->frameTime / 1000.0;
 
 
-    if ( inpt->sliders_vars[1] < -0.001 )
+    if ( inpt->Sliders[1] < -0.001 )
     {
-        _viewer_vert_angle += inpt->sliders_vars[1] * _maxrot * v18 * 2.0;
+        _viewer_vert_angle += inpt->Sliders[1] * _maxrot * v18 * 2.0;
 
         if ( _viewer_vert_angle > _viewer_max_up )
             _viewer_vert_angle = _viewer_max_up;
@@ -4969,9 +4969,9 @@ void NC_STACK_yparobo::yparobo_func71__sub0(update_msg *arg)
         if ( _viewer_vert_angle < -_viewer_max_down )
             _viewer_vert_angle = -_viewer_max_down;
     }
-    else if (inpt->sliders_vars[1] > 0.001)
+    else if (inpt->Sliders[1] > 0.001)
     {
-        _viewer_vert_angle += inpt->sliders_vars[1] * _maxrot * v18 * 2.0;
+        _viewer_vert_angle += inpt->Sliders[1] * _maxrot * v18 * 2.0;
 
         if ( _viewer_vert_angle > _viewer_max_up )
             _viewer_vert_angle = _viewer_max_up;
@@ -4980,9 +4980,9 @@ void NC_STACK_yparobo::yparobo_func71__sub0(update_msg *arg)
             _viewer_vert_angle = -_viewer_max_down;
     }
 
-    if ( inpt->sliders_vars[0] < -0.001 )
+    if ( inpt->Sliders[0] < -0.001 )
     {
-        _viewer_horiz_angle -= inpt->sliders_vars[0] * _maxrot * v18 * 2.0;
+        _viewer_horiz_angle -= inpt->Sliders[0] * _maxrot * v18 * 2.0;
 
         if ( _viewer_max_side < 3.15 )
         {
@@ -4993,9 +4993,9 @@ void NC_STACK_yparobo::yparobo_func71__sub0(update_msg *arg)
                 _viewer_horiz_angle = -_viewer_max_side;
         }
     }
-    else if (inpt->sliders_vars[0] > 0.001)
+    else if (inpt->Sliders[0] > 0.001)
     {
-        _viewer_horiz_angle -= inpt->sliders_vars[0] * _maxrot * v18 * 2.0;
+        _viewer_horiz_angle -= inpt->Sliders[0] * _maxrot * v18 * 2.0;
 
         if ( _viewer_max_side < 3.15 )
         {
@@ -5031,7 +5031,7 @@ void NC_STACK_yparobo::User_layer(update_msg *arg)
             searchEnemyRobo();
             usersRoboEnergyCheck();
 
-            if ( arg->inpt->but_flags & 8 )
+            if ( arg->inpt->Buttons.Is(3) )
                 HandBrake(arg);
 
             doUserCommands(arg);

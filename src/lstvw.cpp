@@ -620,7 +620,7 @@ char *GuiList::ItemsPostLayout(NC_STACK_ypaworld *yw, char *cmdbuf, int tileset,
 }
 
 
-void GuiList::InputHandle(NC_STACK_ypaworld *yw, struC5 *struc)
+void GuiList::InputHandle(NC_STACK_ypaworld *yw, InputState *struc)
 {
     if ( flags & (FLAG_CLOSED | FLAG_ICONIFED) )
     {
@@ -645,7 +645,7 @@ void GuiList::InputHandle(NC_STACK_ypaworld *yw, struC5 *struc)
 
     if ( listFlags & GLIST_FLAG_KEYB_INPUT )
     {
-        if ( struc->downed_key == UAVK_UP )
+        if ( struc->KbdLastHit == Input::KEY_UP )
         {
             selectedEntry--;
             if ( selectedEntry < 0 )
@@ -658,7 +658,7 @@ void GuiList::InputHandle(NC_STACK_ypaworld *yw, struC5 *struc)
                 firstShownEntries = selectedEntry;
             }
         }
-        else if ( struc->downed_key == UAVK_DOWN )
+        else if ( struc->KbdLastHit == Input::KEY_DOWN )
         {
             selectedEntry++;
             if ( selectedEntry >= numEntries )
@@ -684,8 +684,8 @@ void GuiList::InputHandle(NC_STACK_ypaworld *yw, struC5 *struc)
     {
         if ( v6->flag & ClickBoxInf::FLAG_LM_HOLD )
         {
-            int xps = v6->move.screenPos.x + rszX;
-            int yps = v6->move.screenPos.y + rszY;
+            int xps = v6->move.ScreenPos.x + rszX;
+            int yps = v6->move.ScreenPos.y + rszY;
 
             int v43 = lowerVborder + upperVborder + entryHeight * maxShownEntries;
             int v44 = lowerVborder + upperVborder + entryHeight * minShownEntries;
@@ -744,8 +744,8 @@ void GuiList::InputHandle(NC_STACK_ypaworld *yw, struC5 *struc)
     {
         if ( v6->flag & ClickBoxInf::FLAG_LM_HOLD )
         {
-            btnStart += struc->ClickInf.move.screenPos.y - scrlY;
-            scrlY = struc->ClickInf.move.screenPos.y;
+            btnStart += struc->ClickInf.move.ScreenPos.y - scrlY;
+            scrlY = struc->ClickInf.move.ScreenPos.y;
             if ( btnStart >= 0 )
             {
                 if ( btnStart + btnSize > scrlSize )
@@ -799,15 +799,15 @@ void GuiList::InputHandle(NC_STACK_ypaworld *yw, struC5 *struc)
 
             if ( scrollTimer > 0 )
             {
-                scrollTimer -= struc->period;
+                scrollTimer -= struc->Period;
             }
             else
             {
                 scrollTimer = 70;
 
-                if ( struc->ClickInf.move.screenPos.y >= ypos + v40.y )
+                if ( struc->ClickInf.move.ScreenPos.y >= ypos + v40.y )
                 {
-                    if ( struc->ClickInf.move.screenPos.y > ypos + v27.y + v27.h )
+                    if ( struc->ClickInf.move.ScreenPos.y > ypos + v27.y + v27.h )
                     {
                         firstShownEntries++;
 
@@ -831,9 +831,9 @@ void GuiList::InputHandle(NC_STACK_ypaworld *yw, struC5 *struc)
                 }
             }
 
-            if ( struc->ClickInf.move.screenPos.y >= ypos + v40.y )
+            if ( struc->ClickInf.move.ScreenPos.y >= ypos + v40.y )
             {
-                if ( struc->ClickInf.move.screenPos.y > ypos + v27.y + v27.h )
+                if ( struc->ClickInf.move.ScreenPos.y > ypos + v27.y + v27.h )
                     selectedEntry = shownEntries + firstShownEntries - 1;
             }
             else
@@ -861,7 +861,7 @@ void GuiList::InputHandle(NC_STACK_ypaworld *yw, struC5 *struc)
             {
                 if ( scrollTimer > 0 )
                 {
-                    scrollTimer -= struc->period;
+                    scrollTimer -= struc->Period;
                 }
                 else
                 {
@@ -876,7 +876,7 @@ void GuiList::InputHandle(NC_STACK_ypaworld *yw, struC5 *struc)
             {
                 if ( scrollTimer > 0 )
                 {
-                    scrollTimer -= struc->period;
+                    scrollTimer -= struc->Period;
                 }
                 else
                 {
@@ -897,13 +897,13 @@ void GuiList::InputHandle(NC_STACK_ypaworld *yw, struC5 *struc)
             if ( v6->selected_btnID == 3 )
             {
                 listFlags |= GLIST_FLAG_IN_SCROLLING;
-                scrlY = v6->ldw_pos.screenPos.y;
+                scrlY = v6->ldw_pos.ScreenPos.y;
             }
             else if ( v6->selected_btnID == 5 )
             {
                 listFlags |= GLIST_FLAG_IN_RESIZING;
-                rszX = v3 - v6->ldw_pos.screenPos.x;
-                rszY = v41 - v6->ldw_pos.screenPos.y;
+                rszX = v3 - v6->ldw_pos.ScreenPos.x;
+                rszY = v41 - v6->ldw_pos.ScreenPos.y;
             }
 
             if ( v6->selected_btnID >= 8 )

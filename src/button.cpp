@@ -419,7 +419,7 @@ size_t NC_STACK_button::Hide()
     return 1;
 }
 
-NC_STACK_button::ResCode NC_STACK_button::button_func69(struC5 *arg)
+NC_STACK_button::ResCode NC_STACK_button::button_func69(InputState *arg)
 {
     ResCode result = ResCode(0);
 
@@ -480,7 +480,7 @@ NC_STACK_button::ResCode NC_STACK_button::button_func69(struC5 *arg)
                     if (it->flags & FLAG_PRESSED)
                         result = ResCode(it->pressed_id, it->button_id);
 
-                    int v21 = (arg->ClickInf.move.screenPos.x - sbttt->scrDownX) * (sbttt->max - sbttt->min + 1);
+                    int v21 = (arg->ClickInf.move.ScreenPos.x - sbttt->scrDownX) * (sbttt->max - sbttt->min + 1);
 
                     sbttt->value = sbttt->oldValue + v21 / it->width;
 
@@ -563,17 +563,17 @@ NC_STACK_button::ResCode NC_STACK_button::button_func69(struC5 *arg)
                     if ( arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
                     {
                         Slider *sbttt = sbt.field_41C;
-                        if ( arg->ClickInf.ldw_pos.btnPos.x < sbttt->field_6_ )
+                        if ( arg->ClickInf.ldw_pos.BtnPos.x < sbttt->field_6_ )
                         {
                             sbttt->pressPart = 1;
                             if ( sbttt->value > sbttt->min )
                                 sbttt->value -= 1;
                         }
-                        else if ( arg->ClickInf.ldw_pos.btnPos.x <= sbttt->field_8_ )
+                        else if ( arg->ClickInf.ldw_pos.BtnPos.x <= sbttt->field_8_ )
                         {
                             sbttt->pressPart = 2;
                             sbttt->oldValue = sbttt->value;
-                            sbttt->scrDownX = arg->ClickInf.ldw_pos.screenPos.x;
+                            sbttt->scrDownX = arg->ClickInf.ldw_pos.ScreenPos.x;
                         }
                         else
                         {
@@ -1068,7 +1068,7 @@ size_t NC_STACK_button::compatcall(int method_id, void *data)
             return Hide();
     case 69:
     {
-        ResCode r = button_func69( (struC5 *)data );
+        ResCode r = button_func69( (InputState *)data );
         return (size_t) (r.code | (r.btn << 16));
     }
     case 70:

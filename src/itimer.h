@@ -12,7 +12,7 @@ struct __NC_STACK_itimer
 class NC_STACK_itimer: public NC_STACK_nucleus
 {
 public:
-    virtual int itimer_func64(void *) {
+    virtual int itimer_func64() {
         return 1;
     };
 

@@ -138,7 +138,7 @@ public:
     virtual size_t button_func67(button_66arg *arg);
     virtual size_t Show(); // Part of 68th method
     virtual size_t Hide(); // Part of 68th method
-    virtual ResCode button_func69(struC5 *arg);
+    virtual ResCode button_func69(InputState *arg);
     virtual size_t button_func70(void *);
     bool button_func71(int butID, const std::string &field_4, const std::string &field_8);
     bool button_func71(int butID, const std::string &field_4);

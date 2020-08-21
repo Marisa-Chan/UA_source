@@ -1785,16 +1785,8 @@ void NC_STACK_ypaworld::FFeedback_VehicleChanged()
     {
         field_7562 = timeStamp;
 
-        winp_71arg winp71;
-        winp71.effID = NC_STACK_winp::FF_TYPE_ALL;
-        winp71.state = NC_STACK_winp::FF_STATE_STOP;
-        winp71.p4 = 0;
-        winp71.p3 = 0;
-        winp71.p2 = 0;
-        winp71.p1 = 0;
-
         if ( input_class )
-            input_class->wimp_ForceFeedback(&winp71);
+            input_class->ForceFeedback(NC_STACK_winp::FF_STATE_STOP, NC_STACK_winp::FF_TYPE_ALL);
 
         int effectType;
         float v13;
@@ -1888,26 +1880,11 @@ void NC_STACK_ypaworld::FFeedback_VehicleChanged()
             field_756A = v23;
             field_756E = v21;
 
-            winp71.effID = effectType;
-            winp71.p1 = v21;
-            winp71.state = NC_STACK_winp::FF_STATE_START;
-            winp71.p2 = v23;
-
-            winp71.p4 = 0;
-            winp71.p3 = 0;
+            if ( input_class )
+                input_class->ForceFeedback(NC_STACK_winp::FF_STATE_START, effectType, v21, v23);
 
             if ( input_class )
-                input_class->wimp_ForceFeedback(&winp71);
-
-            winp71.state = NC_STACK_winp::FF_STATE_START;
-            winp71.p1 = v20;
-            winp71.p4 = 0;
-            winp71.p3 = 0;
-            winp71.p2 = 0;
-            winp71.effID = NC_STACK_winp::FF_TYPE_ROTDAMPER;
-
-            if ( input_class )
-                input_class->wimp_ForceFeedback(&winp71);
+                input_class->ForceFeedback(NC_STACK_winp::FF_STATE_START, NC_STACK_winp::FF_TYPE_ROTDAMPER, v20);
         }
     }
 }
@@ -3363,7 +3340,7 @@ int ypaworld_func64__sub4(NC_STACK_ypaworld *yw, base_64arg *arg)
 
     if ( !yw->field_160c )
     {
-        if ( arg->field_8->dword8 == 0xA0 || arg->field_8->downed_key == UAVK_PAUSE )
+        if ( arg->field_8->HotKeyID == 32 || arg->field_8->KbdLastHit == Input::KEY_PAUSE )
         {
             yw->field_160c = 1;
             yw->field_1610 = arg->TimeStamp;
@@ -3371,7 +3348,7 @@ int ypaworld_func64__sub4(NC_STACK_ypaworld *yw, base_64arg *arg)
         return 0;
     }
 
-    if ( arg->field_8->downed_key )
+    if ( arg->field_8->KbdLastHit != Input::KEY_NONE )
     {
         yw->field_160c = 0;
         arg->TimeStamp = yw->field_1610;
@@ -4222,16 +4199,8 @@ void NC_STACK_ypaworld::FFeedback_Update()
 
             if ( UserUnit->_status == BACT_STATUS_DEAD )
             {
-                winp_71arg v13;
-                v13.state = NC_STACK_winp::FF_STATE_UPDATE;
-                v13.p1 = 0.0;
-                v13.p2 = 0.0;
-                v13.p3 = 0.0;
-                v13.p4 = 0.0;
-                v13.effID = field_7566;
-
                 if ( input_class )
-                    input_class->wimp_ForceFeedback(&v13);
+                    input_class->ForceFeedback(NC_STACK_winp::FF_STATE_UPDATE, field_7566);
             }
             else
             {
@@ -4248,16 +4217,9 @@ void NC_STACK_ypaworld::FFeedback_Update()
                     else if (v17 < 0.0)
                         v17 = 0.0;
 
-                    winp_71arg warg71;
-                    warg71.effID = field_7566;
-                    warg71.state = NC_STACK_winp::FF_STATE_UPDATE;
-                    warg71.p1 = field_756E;
-                    warg71.p2 = field_756A * v17;
-                    warg71.p3 = 0.0;
-                    warg71.p4 = 0.0;
-
                     if ( input_class )
-                        input_class->wimp_ForceFeedback(&warg71);
+                        input_class->ForceFeedback(NC_STACK_winp::FF_STATE_UPDATE, field_7566,
+                                                        field_756E, field_756A * v17);
                 }
             }
         }
@@ -4268,24 +4230,21 @@ void NC_STACK_ypaworld::FFeedback_Update()
             field_7572 = top;
             if ( top->startTime == SFXEngine::SFXe.currentTime )
             {
-                winp_71arg warg71;
-                warg71.effID = NC_STACK_winp::FF_TYPE_SHAKE;
-                warg71.state = NC_STACK_winp::FF_STATE_START;
-
-                warg71.p1 = top->shkMag;
-                if ( warg71.p1 > 1.0 )
-                    warg71.p1 = 1.0;
+                float p1 = top->shkMag;
+                if ( p1 > 1.0 )
+                    p1 = 1.0;
 
                 vec3d tmp = top->parent_sample_collection->field_0 - UserUnit->_position;
 
-                warg71.p2 = top->shakeFX->time;
-                warg71.p3 = UserUnit->_rotation.AxisX().dot( tmp );
-                warg71.p4 = -UserUnit->_rotation.AxisZ().dot( tmp );
+                float p2 = top->shakeFX->time;
+                float p3 = UserUnit->_rotation.AxisX().dot( tmp );
+                float p4 = -UserUnit->_rotation.AxisZ().dot( tmp );
 
-                if ( warg71.p2 > 0.0 )
+                if ( p2 > 0.0 )
                 {
                     if ( input_class )
-                        input_class->wimp_ForceFeedback(&warg71);
+                        input_class->ForceFeedback(NC_STACK_winp::FF_STATE_START, NC_STACK_winp::FF_TYPE_SHAKE,
+                                                        p1, p2, p3, p4);
                 }
             }
         }
@@ -4356,9 +4315,9 @@ void recorder_stoprec(NC_STACK_ypaworld *yw)
     }
 }
 
-void sb_0x447720(NC_STACK_ypaworld *yw, struC5 *inpt)
+void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt)
 {
-    if ( inpt->downed_key == UAVK_MULTIPLY && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
+    if ( inpt->KbdLastHit == Input::KEY_NUMMUL && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
     {
         sub_4476AC(yw);
 
@@ -4374,7 +4333,7 @@ void sb_0x447720(NC_STACK_ypaworld *yw, struC5 *inpt)
 
     if ( yw->do_screenshooting )
     {
-        if ( inpt->downed_key == UAVK_DIVIDE && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
+        if ( inpt->KbdLastHit == Input::KEY_NUMDIV && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
         {
             yw->do_screenshooting = 0;
 
@@ -4399,7 +4358,7 @@ void sb_0x447720(NC_STACK_ypaworld *yw, struC5 *inpt)
 
         win3d->display_func274(&v13);
     }
-    else if ( inpt->downed_key == UAVK_DIVIDE && (inpt->ClickInf.flag & 0x100 || yw->easy_cheat_keys) )
+    else if ( inpt->KbdLastHit == Input::KEY_NUMDIV && (inpt->ClickInf.flag & 0x100 || yw->easy_cheat_keys) )
     {
         yw->screenshot_seq_frame_id = 0;
         yw->do_screenshooting = 1;
@@ -4416,7 +4375,7 @@ void sb_0x447720(NC_STACK_ypaworld *yw, struC5 *inpt)
 
     if ( yw->sceneRecorder->do_record )
     {
-        if ( inpt->downed_key == UAVK_SUBTRACT && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
+        if ( inpt->KbdLastHit == Input::KEY_NUMMINUS && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
         {
             recorder_stoprec(yw);
 
@@ -4432,7 +4391,7 @@ void sb_0x447720(NC_STACK_ypaworld *yw, struC5 *inpt)
     }
     else
     {
-        if ( inpt->downed_key == UAVK_SUBTRACT && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
+        if ( inpt->KbdLastHit == Input::KEY_NUMMINUS && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
         {
             recorder_startrec(yw);
 
@@ -5429,16 +5388,16 @@ void NC_STACK_ypaworld::ypaworld_func163__sub1(recorder *rcrd, int dTime)
     }
 }
 
-void ypaworld_func163__sub2__sub1(NC_STACK_ypaworld *yw, float fperiod, struC5 *inpt)
+void ypaworld_func163__sub2__sub1(NC_STACK_ypaworld *yw, float fperiod, InputState *inpt)
 {
     recorder *rcrd = yw->replayer;
 
     float v20 = rcrd->rotation_matrix.m20;
     float v18 = rcrd->rotation_matrix.m22;
 
-    float v13 = inpt->sliders_vars[0] * 250.0 * fperiod;
-    float v14 = -inpt->sliders_vars[2] * 250.0 * fperiod;
-    float v15 = -inpt->sliders_vars[1] * 150.0 * fperiod;
+    float v13 = inpt->Sliders[0] * 250.0 * fperiod;
+    float v14 = -inpt->Sliders[2] * 250.0 * fperiod;
+    float v15 = -inpt->Sliders[1] * 150.0 * fperiod;
 
     float v17 = sqrt( POW2(v20) + POW2(v18) );
     if ( v17 > 0.0 )
@@ -5465,14 +5424,14 @@ void ypaworld_func163__sub2__sub1(NC_STACK_ypaworld *yw, float fperiod, struC5 *
     rcrd->field_44.x += v21 * v13;
 }
 
-void ypaworld_func163__sub2__sub0(NC_STACK_ypaworld *yw, float fperiod, struC5 *inpt)
+void ypaworld_func163__sub2__sub0(NC_STACK_ypaworld *yw, float fperiod, InputState *inpt)
 {
-    float v3 = inpt->sliders_vars[10] * 2.5 * fperiod;
+    float v3 = inpt->Sliders[10] * 2.5 * fperiod;
 
     if ( fabs(v3) > 0.001 )
         yw->replayer->rotation_matrix = mat3x3::RotateY(-v3) * yw->replayer->rotation_matrix;
 
-    float v5 = inpt->sliders_vars[11] * 2.5 * fperiod;
+    float v5 = inpt->Sliders[11] * 2.5 * fperiod;
 
     if ( fabs(v5) > 0.001 )
     {
@@ -5480,12 +5439,12 @@ void ypaworld_func163__sub2__sub0(NC_STACK_ypaworld *yw, float fperiod, struC5 *
     }
 }
 
-void NC_STACK_ypaworld::CameraPrepareRender(recorder *rcrd, NC_STACK_ypabact *bact, struC5 *inpt)
+void NC_STACK_ypaworld::CameraPrepareRender(recorder *rcrd, NC_STACK_ypabact *bact, InputState *inpt)
 {
     extern tehMap robo_map;
     extern squadMan squadron_manager;
 
-    float fperiod = inpt->period / 1000.0;
+    float fperiod = inpt->Period / 1000.0;
 
     if ( _mouseGrabbed || !(inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_DOWN) )
     {
@@ -5501,7 +5460,7 @@ void NC_STACK_ypaworld::CameraPrepareRender(recorder *rcrd, NC_STACK_ypabact *ba
             _mouseGrabbed = 1;
     }
 
-    if ( inpt->but_flags & 1 )
+    if ( inpt->Buttons.Is(0) )
         rcrd->rotation_matrix = mat3x3::Ident();
 
     ypaworld_func163__sub2__sub1(this, fperiod, inpt);
@@ -5662,11 +5621,11 @@ void NC_STACK_ypaworld::debug_count_units()
         dbg_num_robo_max = dbg_num_robo;
 }
 
-void NC_STACK_ypaworld::debug_info_draw(struC5 *inpt)
+void NC_STACK_ypaworld::debug_info_draw(InputState *inpt)
 {
     if ( field_1b68 == 0)
     {
-        if ( sub_449678(inpt, UAVK_F9) )
+        if ( sub_449678(inpt, Input::KEY_F9) )
             field_1b68++;
     }
     else
@@ -5915,7 +5874,7 @@ void NC_STACK_ypaworld::debug_info_draw(struC5 *inpt)
         {
             for (int i = 0; i < 17; i++)
             {
-                cmd = sub_445654(this, cmd, buf_sprintf, "slider[%d] = %f", i, inpt->sliders_vars[i]);
+                cmd = sub_445654(this, cmd, buf_sprintf, "slider[%d] = %f", i, inpt->Sliders[i]);
                 FontUA::next_line(&cmd);
             }
 
@@ -5923,7 +5882,7 @@ void NC_STACK_ypaworld::debug_info_draw(struC5 *inpt)
 
             for (int i = 0; i < 32; i++)
             {
-                if ( inpt->but_flags & (1 << i) )
+                if ( inpt->Buttons.Is(i) )
                     buf += 'O';
                 else
                     buf += '_';
@@ -5932,7 +5891,7 @@ void NC_STACK_ypaworld::debug_info_draw(struC5 *inpt)
             cmd = sub_445654(this, cmd, buf_sprintf, buf.c_str());
             FontUA::next_line(&cmd);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "keycode = %d", inpt->downed_key_2);
+            cmd = sub_445654(this, cmd, buf_sprintf, "keycode = %d", inpt->KbdLastDown);
             FontUA::next_line(&cmd);
         }
         else
@@ -6122,7 +6081,7 @@ void NC_STACK_ypaworld::debug_info_draw(struC5 *inpt)
         }
         else
         {
-            if ( sub_449678(inpt, UAVK_F9) )
+            if ( sub_449678(inpt, Input::KEY_F9) )
                 field_1b68++;
         }
     }

@@ -745,7 +745,7 @@ void NC_STACK_ypaflyer::User_layer(update_msg *arg)
         vec3d a3;
         a3 = _rotation.AxisZ();
 
-        float v60 = -arg->inpt->sliders_vars[0] * _maxrot * a2;
+        float v60 = -arg->inpt->Sliders[0] * _maxrot * a2;
 
         if ( a4 )
         {
@@ -853,7 +853,7 @@ void NC_STACK_ypaflyer::User_layer(update_msg *arg)
 
         _rotation *= mat3x3::RotateY(v60);
 
-        _thraction += _force * (a2 * 0.3) * arg->inpt->sliders_vars[2];
+        _thraction += _force * (a2 * 0.3) * arg->inpt->Sliders[2];
 
         if ( _thraction > _force )
             _thraction = _force;
@@ -862,7 +862,7 @@ void NC_STACK_ypaflyer::User_layer(update_msg *arg)
             _thraction = 0;
 
 
-        _flyerBoost = (fabs(_fly_dir_length) / 111.0 + 1.0) * (arg->inpt->sliders_vars[1] * 20000.0) * 0.5 + _mass * 9.80665;
+        _flyerBoost = (fabs(_fly_dir_length) / 111.0 + 1.0) * (arg->inpt->Sliders[1] * 20000.0) * 0.5 + _mass * 9.80665;
 
         float v22 = _pSector->height - _position.y;
 
@@ -887,7 +887,7 @@ void NC_STACK_ypaflyer::User_layer(update_msg *arg)
             arg79.target.pbact = arg106.ret_bact;
         }
 
-        if ( arg->inpt->but_flags & 1 || arg->inpt->but_flags & 2 )
+        if ( arg->inpt->Buttons.IsAny({0, 1}) )
         {
             arg79.direction = vec3d(0.0, 0.0, 0.0);
             arg79.weapon = _weapon;
@@ -900,7 +900,7 @@ void NC_STACK_ypaflyer::User_layer(update_msg *arg)
 
             arg79.start_point.y = _fire_pos.y;
             arg79.start_point.z = _fire_pos.z;
-            arg79.flags = ((arg->inpt->but_flags & 2) != 0) | 2;
+            arg79.flags = (arg->inpt->Buttons.Is(1) ? 1 : 0) | 2;
 
             LaunchMissile(&arg79);
         }
@@ -909,7 +909,7 @@ void NC_STACK_ypaflyer::User_layer(update_msg *arg)
         {
             if ( _status_flg & BACT_STFLAG_FIRE )
             {
-                if ( !(arg->inpt->but_flags & 4) )
+                if ( !arg->inpt->Buttons.Is(2) )
                 {
                     setState_msg arg78;
                     arg78.setFlags = 0;
@@ -920,7 +920,7 @@ void NC_STACK_ypaflyer::User_layer(update_msg *arg)
                 }
             }
 
-            if ( arg->inpt->but_flags & 4 )
+            if ( arg->inpt->Buttons.Is(2))
             {
                 if ( !(_status_flg & BACT_STFLAG_FIRE) )
                 {
@@ -942,7 +942,7 @@ void NC_STACK_ypaflyer::User_layer(update_msg *arg)
             }
         }
 
-        if ( arg->inpt->but_flags & 8 )
+        if ( arg->inpt->Buttons.Is(3) )
             HandBrake(arg);
 
         if ( _status_flg & BACT_STFLAG_LAND )

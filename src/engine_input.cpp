@@ -195,7 +195,7 @@ int INPEngine::init()
 
         if ( !val.empty() )
         {
-            if ( ! input_class->input_func64(Input::ITYPE_BUTTON, i, val) )
+            if ( ! input_class->SetInputExpression(false, i, val) )
                 ypa_log_out("input.engine: WARNING: Button[%d] object creation failed.\n", i);
         }
     }
@@ -206,7 +206,7 @@ int INPEngine::init()
 
         if ( !val.empty() )
         {
-            if ( ! input_class->input_func64(Input::ITYPE_SLIDER, i, val) )
+            if ( ! input_class->SetInputExpression(true, i, val) )
                 ypa_log_out("input.engine: WARNING: Slider[%d] object creation failed.\n", i);
         }
     }
@@ -217,11 +217,7 @@ int INPEngine::init()
 
         if ( !val.empty() )
         {
-            winp_68arg arg68;
-            arg68.keyname = val;
-            arg68.id = i;
-
-            if ( ! input_class->keyb_setHotkey(&arg68) )
+            if ( ! input_class->SetHotKey(i, val) )
                 ypa_log_out("input.engine: WARNING: Hotkey[%d] (%s) not accepted.\n", i, val);
         }
     }
@@ -244,9 +240,9 @@ NC_STACK_input *INPEngine::getPInput()
 }
 
 
-void INPEngine::sub_412D28(struC5 *a1)
+void INPEngine::QueryInput(InputState *a1)
 {
-    input_class->input_func65(a1);
+    input_class->QueryInput(a1);
 }
 
 void INPEngine::AddClickBoxFront(ClickBox *box)
@@ -264,3 +260,18 @@ void INPEngine::RemClickBox(ClickBox *box)
     input_class->wimp_remClickNode(box);
 }
 
+
+void InputState::Clear()
+{
+    Period = 0;
+    KbdLastDown = Input::KEY_NONE;
+    KbdLastHit   = Input::KEY_NONE;
+    HotKeyID     = -1;
+    chr          = 0;
+
+    for ( float &sld : Sliders )
+        sld = 0.0;
+
+    Buttons.clear();
+    ClickInf.clear();
+}

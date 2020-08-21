@@ -3,17 +3,19 @@
 
 #include <SDL2/SDL_haptic.h>
 
-class SDL_FFEffect
+namespace Input { namespace FF {
+    
+class FFEffect
 {
 public:
-    SDL_FFEffect()
+    FFEffect()
     {
         effectID = -1;
         haptic = NULL;
         SDL_memset( &descr, 0, sizeof(descr) );
     }
 
-    virtual ~SDL_FFEffect()
+    virtual ~FFEffect()
     {
         Unbind();
     }
@@ -98,10 +100,10 @@ protected:
     SDL_Haptic *haptic;
 };
 
-class FF_TankEngine: public SDL_FFEffect
+class TankEngine: public FFEffect
 {
 public:
-    FF_TankEngine()
+    TankEngine()
     {
         DefaultPeriodic(descr);
 
@@ -120,17 +122,17 @@ public:
         updater.periodic.magnitude = magnitude;
         updater.periodic.period = period;
 
-        SDL_FFEffect::Update(updater);
+        FFEffect::Update(updater);
     }
 
 protected:
     SDL_HapticEffect updater;
 };
 
-class FF_JetEngine: public SDL_FFEffect
+class JetEngine: public FFEffect
 {
 public:
-    FF_JetEngine()
+    JetEngine()
     {
         DefaultPeriodic(descr);
 
@@ -149,17 +151,17 @@ public:
         updater.periodic.magnitude = magnitude;
         updater.periodic.period = period;
 
-        SDL_FFEffect::Update(updater);
+        FFEffect::Update(updater);
     }
 
 protected:
     SDL_HapticEffect updater;
 };
 
-class FF_CopterEngine: public SDL_FFEffect
+class CopterEngine: public FFEffect
 {
 public:
-    FF_CopterEngine()
+    CopterEngine()
     {
         DefaultPeriodic(descr);
 
@@ -176,17 +178,17 @@ public:
         updater.periodic.magnitude = magnitude;
         updater.periodic.period = period;
 
-        SDL_FFEffect::Update(updater);
+        FFEffect::Update(updater);
     }
 
 protected:
     SDL_HapticEffect updater;
 };
 
-class FF_RotationDamper: public SDL_FFEffect
+class RotationDamper: public FFEffect
 {
 public:
-    FF_RotationDamper()
+    RotationDamper()
     {
         descr.type = SDL_HAPTIC_DAMPER;
 
@@ -222,17 +224,17 @@ public:
         updater.condition.right_coeff[1] = coef;
         updater.condition.left_coeff[1] = coef;
 
-        SDL_FFEffect::Update(updater);
+        FFEffect::Update(updater);
     }
 
 protected:
     SDL_HapticEffect updater;
 };
 
-class FF_MiniGun: public SDL_FFEffect
+class MiniGun: public FFEffect
 {
 public:
-    FF_MiniGun()
+    MiniGun()
     {
         DefaultPeriodic(descr);
 
@@ -252,10 +254,10 @@ public:
     }
 };
 
-class FF_MissileFire: public SDL_FFEffect
+class MissileFire: public FFEffect
 {
 public:
-    FF_MissileFire()
+    MissileFire()
     {
         DefaultPeriodic(descr);
 
@@ -273,10 +275,10 @@ public:
     }
 };
 
-class FF_GrenadeFire: public SDL_FFEffect
+class GrenadeFire: public FFEffect
 {
 public:
-    FF_GrenadeFire()
+    GrenadeFire()
     {
         descr.type = SDL_HAPTIC_RAMP;
 
@@ -299,10 +301,10 @@ public:
     }
 };
 
-class FF_BombFire: public SDL_FFEffect
+class BombFire: public FFEffect
 {
 public:
-    FF_BombFire()
+    BombFire()
     {
         descr.type = SDL_HAPTIC_RAMP;
 
@@ -325,10 +327,10 @@ public:
     }
 };
 
-class FF_Collision: public SDL_FFEffect
+class Collision: public FFEffect
 {
 public:
-    FF_Collision()
+    Collision()
     {
         descr.type = SDL_HAPTIC_RAMP;
 
@@ -360,17 +362,17 @@ public:
         updater.ramp.direction.dir[0] = x * 1000.0;
         updater.ramp.direction.dir[1] = y * 1000.0;
 
-        SDL_FFEffect::Update(updater);
+        FFEffect::Update(updater);
     }
 
 protected:
     SDL_HapticEffect updater;
 };
 
-class FF_Shake: public SDL_FFEffect
+class Shake: public FFEffect
 {
 public:
-    FF_Shake()
+    Shake()
     {
         DefaultPeriodic(descr);
 
@@ -408,11 +410,13 @@ public:
         updater.periodic.direction.dir[0] = x * 1000.0;
         updater.periodic.direction.dir[1] = y * 1000.0;
 
-        SDL_FFEffect::Update(updater);
+        FFEffect::Update(updater);
     }
 
 protected:
     SDL_HapticEffect updater;
 };
+
+}}
 
 #endif

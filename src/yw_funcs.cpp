@@ -1547,11 +1547,11 @@ void NC_STACK_ypaworld::sub_4491A0(const std::string &movie_fname)
 
     _win3d->windd_func323(&v6);
 
-    INPe.sub_412D28(&input_states);
+    INPe.QueryInput(&input_states);
 
-    input_states.downed_key = 0;
-    input_states.downed_key_2 = 0;
-    input_states.dword8 = 0;
+    input_states.KbdLastHit = Input::KEY_NONE;
+    input_states.KbdLastDown = Input::KEY_NONE;
+    input_states.HotKeyID = -1;
 }
 
 void sub_44A908(NC_STACK_ypaworld *yw)
@@ -1666,10 +1666,10 @@ void yw_freeDebrief(NC_STACK_ypaworld *yw)
 }
 
 // Select map
-void ypaworld_func158__sub4__sub1__sub0(NC_STACK_ypaworld *yw, struC5 *inpt)
+void ypaworld_func158__sub4__sub1__sub0(NC_STACK_ypaworld *yw, InputState *inpt)
 {
-    float v3 = (float)inpt->ClickInf.move.screenPos.x / (float)yw->screen_width;
-    float v4 = (float)inpt->ClickInf.move.screenPos.y / (float)yw->screen_height;
+    float v3 = (float)inpt->ClickInf.move.ScreenPos.x / (float)yw->screen_width;
+    float v4 = (float)inpt->ClickInf.move.ScreenPos.y / (float)yw->screen_height;
 
     if (v3 < 0.0)
         v3 = 0.0;
@@ -2323,7 +2323,7 @@ void NC_STACK_ypaworld::ypaworld_func158__sub4__sub1()
         {
             if ( _levelInfo->State == 5 )
             {
-                if ( GameShell->_input->downed_key == UAVK_RETURN )
+                if ( GameShell->_input->KbdLastHit == Input::KEY_RETURN )
                     brief.Stage = 1;
 
                 if ( brief.Stage == 1 )
@@ -3517,7 +3517,11 @@ void UserData::clear()
     confirm_button = NULL;
     field_0x2fb4 = 0;
 
-    memset(keyConfig, 0, sizeof(keyConfig));
+    for(std::string &str : InputConfigTitle)
+        str.clear();
+    
+    for(TInputConf &cfg : InputConfig)
+        cfg = TInputConf();
 
     field_3426 = 0;
     shelltrack = 0;

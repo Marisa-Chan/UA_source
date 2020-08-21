@@ -4255,9 +4255,9 @@ int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
 
     SDL_Delay(50);
 
-    struC5 inpt;
-    memset(&inpt, 0, sizeof(struC5));
-    INPe.sub_412D28(&inpt);
+    InputState inpt;
+    inpt.Clear();
+    INPe.QueryInput(&inpt);
 
     char buf[1024];
     char *cur = buf;
@@ -4269,7 +4269,7 @@ int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
     FontUA::add_txt(&cur, 2 * yw->screen_width / 3 - 1, 1,  get_lang_string(ypaworld__string_pointers, 651, "WAITING FOR PLAYERS: ") );
     FontUA::next_line(&cur);
 
-    yw->netStartTime -= inpt.period;
+    yw->netStartTime -= inpt.Period;
     if ( yw->netStartTime > 0 )
     {
         char tmpstr[128];

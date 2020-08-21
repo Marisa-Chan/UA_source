@@ -172,7 +172,7 @@ public:
     void FormateItemBlock(NC_STACK_ypaworld *yw);
     void ScrollParamsFromEntries(NC_STACK_ypaworld *yw);
 
-    void InputHandle(NC_STACK_ypaworld *yw, struC5 *struc);
+    void InputHandle(NC_STACK_ypaworld *yw, InputState *struc);
 
     void PosOnSelected(int a2);
 

@@ -106,20 +106,6 @@ int read_yes_no_status(const char *file, int result);
 
 float SWAP32F(float f);
 
-struct __attribute__((packed)) shortPoint
-{
-    short x;
-    short y;
-
-    shortPoint(int32_t a)
-    {
-        x = a & 0xFFFF;
-        y = a >> 16;
-    }
-
-    shortPoint(): x(0), y(0) {}
-};
-
 const char *get_lang_string(char **array, int id, const char *def);
 
 #ifndef strnicmp
