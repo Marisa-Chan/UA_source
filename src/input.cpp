@@ -374,28 +374,6 @@ int16_t NC_STACK_input::GetHotKey(uint16_t id)
     return Input::KEY_NONE;
 }
 
-
-size_t NC_STACK_input::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 0:
-        return (size_t)func0( *(IDVList *)data );
-    case 1:
-        return (size_t)func1();
-    case 64:
-        return 1;//(size_t)input_func64( (input__func64__params *)data );
-    case 65:
-        QueryInput( (InputState *)data );
-        return 1;
-    default:
-        break;
-    }
-    return NC_STACK_nucleus::compatcall(method_id, data);
-}
-
-
-
 std::array<Input::KeyInfo, Input::KEY_MAX> NC_STACK_input::KeyMatrix {{
     {Input::KEY_NONE, false},       {Input::KEY_ESCAPE, false},         
     {Input::KEY_SPACE, false},      {Input::KEY_UP, false},      

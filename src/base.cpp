@@ -1528,58 +1528,6 @@ int NC_STACK_base::getBASE_embdRsrc()
 
 
 
-
-size_t NC_STACK_base::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 0:
-        return (size_t)func0( *(IDVList *)data );
-    case 1:
-        return (size_t)func1();
-    case 2:
-        return (size_t)func2( *(IDVList *)data );
-    case 3:
-        return (size_t)func3( *(IDVList *)data );
-    case 5:
-        return (size_t)func5( (IFFile **)data );
-    case 6:
-        return (size_t)func6( (IFFile **)data );
-    case 64:
-        return (size_t)base_func64( (base_64arg *)data );
-    case 65:
-        return (size_t)base_func65( (NC_STACK_base *)data );
-    case 66:
-        return 0;//(size_t)base_func66( (base_66_arg_struct *)data );
-    case 67:
-        return (size_t)base_func67( (NC_STACK_base **)data );
-    case 68:
-        return (size_t)base_func68( (flag_xyz *)data );
-    case 69:
-        return (size_t)base_func69( (flag_xyz *)data );
-    case 70:
-        return (size_t)base_func70( (flag_xyz2 *)data );
-    case 71:
-        return (size_t)base_func71( (flag_xyz2 *)data );
-    case 72:
-        return (size_t)base_func72( (flag_xyz *)data );
-    case 73:
-        return (size_t)base_func73( (base_64arg *)data );
-    case 77:
-        return (size_t)base_func77( (baseRender_msg *)data );
-    case 78:
-        return (size_t)base_func78( (base_64arg *)data );
-    case 79:
-        return (size_t)base_func79( (NC_STACK_base **)data );
-    default:
-        break;
-    }
-    return NC_STACK_nucleus::compatcall(method_id, data);
-}
-
-
-
-
 NC_STACK_base *NC_STACK_base::READ_BAS_FILE(const char *fname)
 {
     NC_STACK_base *result = NULL;

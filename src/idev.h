@@ -22,8 +22,6 @@ public:
     virtual void ResetSlider() {};
     virtual void ForceFeedBack(uint8_t state, uint8_t effID, float p1 = 0.0, float p2 = 0.0, float p3 = 0.0, float p4 = 0.0) {};
 
-
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_idev() {};
     virtual ~NC_STACK_idev() {};
 

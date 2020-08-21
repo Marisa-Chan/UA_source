@@ -739,29 +739,3 @@ int NC_STACK_area::getAREA_tracyVal()
 {
     return stack__area.tracyVal;
 }
-
-
-
-size_t NC_STACK_area::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 0:
-        return (size_t)func0( *(IDVList *)data );
-    case 1:
-        return (size_t)func1();
-    case 2:
-        return (size_t)func2( *(IDVList *)data );
-    case 3:
-        return (size_t)func3( *(IDVList *)data );
-    case 5:
-        return (size_t)func5( (IFFile **)data );
-    case 6:
-        return (size_t)func6( (IFFile **)data );
-    case 65:
-        return (size_t)ade_func65( (area_arg_65 *)data );
-    default:
-        break;
-    }
-    return NC_STACK_ade::compatcall(method_id, data);
-}

@@ -47,7 +47,6 @@ public:
     virtual void AlignMissile(float dtime = 0.0);
     virtual void AlignMissileByNormal(const vec3d &normal);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ypamissile();
     virtual ~NC_STACK_ypamissile() {};
     

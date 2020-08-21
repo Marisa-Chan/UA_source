@@ -18,7 +18,6 @@ public:
     virtual void Renew();
     virtual void HandBrake(update_msg *arg);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ypaflyer() 
     {
         _flyerBoost = 0.0;

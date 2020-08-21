@@ -46,7 +46,6 @@ public:
     virtual size_t bitmap_func129(IDVPair *);
     virtual void bitmap_func130(bitmap_arg130 *out);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_bitmap() {
         memset(&stack__bitmap, 0, sizeof(stack__bitmap));
     };

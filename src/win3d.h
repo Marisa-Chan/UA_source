@@ -155,7 +155,6 @@ public:
     virtual void windd_func324(wdd_func324arg *inout);
     virtual void windd_func325(wdd_func324arg *arg);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_win3d() {
         _setFrustumClip(1.0, 8192.0);
         //memset(&stack__win3d, 0, sizeof(stack__win3d));

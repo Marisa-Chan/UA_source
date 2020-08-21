@@ -44,7 +44,6 @@ public:
     virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func66(rsrc_func66_arg *arg);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ilbm() {
         memset(&stack__ilbm, 0, sizeof(stack__ilbm));
     };

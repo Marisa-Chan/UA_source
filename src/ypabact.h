@@ -486,7 +486,6 @@ public:
     virtual size_t PathFinder(bact_arg124 *arg);
     virtual size_t SetPath(bact_arg124 *arg);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ypabact();
     virtual ~NC_STACK_ypabact() {};
     

@@ -199,7 +199,6 @@ public:
     virtual size_t base_func78(base_64arg *arg);
     virtual size_t base_func79(NC_STACK_base **arg);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_base() {
         ID = 0;
         flags = 0;

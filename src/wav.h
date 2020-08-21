@@ -15,7 +15,6 @@ class NC_STACK_wav: public NC_STACK_sample
 public:
     virtual rsrc * rsrc_func64(IDVList &stak);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_wav() {
         memset(&stack__wav, 0, sizeof(stack__wav));
     };

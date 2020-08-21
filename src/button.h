@@ -148,7 +148,6 @@ public:
     size_t button_func75(int butid);
     virtual size_t button_func76(button_arg76 *arg);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_button() {
         clear();
         field_d8.reserve(ClickBox::RESERVED);

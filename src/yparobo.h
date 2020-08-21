@@ -89,7 +89,6 @@ public:
     virtual bool MakeSquad(const std::vector<int> &VhclIDS, vec3d pos, bool usable);
     virtual int placeMessage(robo_arg134 *arg);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_yparobo();
     virtual ~NC_STACK_yparobo() {};
     

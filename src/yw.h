@@ -2334,7 +2334,6 @@ public:
     virtual void ypaworld_func184(const World::History::Record &arg);
     virtual void ypaworld_func185(void *arg);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ypaworld();
     virtual ~NC_STACK_ypaworld() {};
     

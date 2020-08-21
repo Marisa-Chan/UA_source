@@ -150,22 +150,4 @@ void *NC_STACK_sample::getSMPL_buffer()
 }
 
 
-size_t NC_STACK_sample::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 0:
-        return (size_t)func0( *(IDVList *)data );
-    case 3:
-        return func3( *(IDVList *)data );
-    case 64:
-        return (size_t)rsrc_func64( *(IDVList *)data );
-    case 65:
-        return rsrc_func65( (rsrc *)data );
-    case 128:
-        return (size_t)sample_func128( (void **)data );
-    default:
-        break;
-    }
-    return NC_STACK_rsrc::compatcall(method_id, data);
-}
+

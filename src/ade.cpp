@@ -280,27 +280,3 @@ void NC_STACK_ade::setADE_poly(int arg)
     poly = arg;
 }
 
-
-size_t NC_STACK_ade::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 0:
-        return (size_t)func0( *(IDVList *)data );
-    case 1:
-        return (size_t)func1();
-    case 2:
-        return (size_t)func2( *(IDVList *)data );
-    case 3:
-        return (size_t)func3( *(IDVList *)data );
-    case 5:
-        return (size_t)func5( (IFFile **)data );
-    case 6:
-        return (size_t)func6( (IFFile **)data );
-    case 64:
-        return (size_t)ade_func64( (AdeList &)data );
-    default:
-        break;
-    }
-    return NC_STACK_nucleus::compatcall(method_id, data);
-}

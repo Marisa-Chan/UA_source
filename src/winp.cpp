@@ -1280,36 +1280,3 @@ void NC_STACK_winp::initfirst()
     }
 }
 
-size_t NC_STACK_winp::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 0:
-        return (size_t)func0( *(IDVList *)data );
-    case 1:
-        return (size_t)func1();
-    case 2:
-        func2( *(IDVList *)data );
-        return 1;
-    case 3:
-        func3( *(IDVList *)data );
-        return 1;
-    case 65:
-        GetSlider();
-        return 1;
-    case 66:
-        QueryKeyboard( (InputState *)data );
-        return 1;
-    case 67:
-        return (size_t)BindKey( (const char *)data );
-    case 69:
-        ResetSlider();
-        return 1;
-    case 131:
-        CheckClick( (ClickBoxInf *)data );
-        return 1;
-    default:
-        break;
-    }
-    return NC_STACK_iwimp::compatcall(method_id, data);
-}

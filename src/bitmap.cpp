@@ -305,32 +305,3 @@ void NC_STACK_bitmap::PrepareTexture( bool force )
     engines.display___win3d->AllocTexture(stack__bitmap.bitm_intern);
 }
 
-
-size_t NC_STACK_bitmap::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 0:
-        return (size_t)func0( *(IDVList *)data );
-    case 1:
-        return (size_t)func1();
-    case 2:
-        return func2( *(IDVList *)data );
-    case 3:
-        return func3( *(IDVList *)data );
-    case 64:
-        return (size_t)rsrc_func64( *(IDVList *)data );
-    case 65:
-        return rsrc_func65( (rsrc *)data );
-    case 128:
-        return (size_t)bitmap_func128( (IDVPair *)data );
-    case 129:
-        return (size_t)bitmap_func129( (IDVPair *)data );
-    case 130:
-        bitmap_func130( (bitmap_arg130 *)data );
-        return 1;
-    default:
-        break;
-    }
-    return NC_STACK_rsrc::compatcall(method_id, data);
-}

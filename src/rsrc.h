@@ -45,8 +45,6 @@ public:
         return 0;
     };
 
-    virtual size_t compatcall(int method_id, void *data);
-
     NC_STACK_rsrc()
     {
         resource = NULL;

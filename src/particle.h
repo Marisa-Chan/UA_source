@@ -85,7 +85,6 @@ public:
     virtual size_t particle_func134(int *iid);
     virtual size_t particle_func135(int *iid);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_particle()
     {
         memset(&stack__particle, 0, sizeof(stack__particle));

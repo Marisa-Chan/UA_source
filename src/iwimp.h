@@ -20,7 +20,6 @@ public:
     virtual void RemoveClickBox(ClickBox *box);
     virtual void CheckClick(ClickBoxInf *arg);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_iwimp() {
         clear();
     };

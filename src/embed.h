@@ -12,7 +12,6 @@ public:
     virtual size_t func5(IFFile **file);
     virtual size_t func6(IFFile **file);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_embed() {};
     virtual ~NC_STACK_embed() {};
     

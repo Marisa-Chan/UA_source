@@ -50,7 +50,6 @@ public:
     virtual size_t func6(IFFile **file);
     virtual size_t ade_func65(area_arg_65 *arg);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_area() {
         memset(&stack__area, 0, sizeof(stack__area));
     };

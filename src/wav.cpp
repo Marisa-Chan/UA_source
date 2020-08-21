@@ -125,14 +125,3 @@ rsrc * NC_STACK_wav::rsrc_func64(IDVList &stak)
     return NULL;
 }
 
-size_t NC_STACK_wav::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 64:
-        return (size_t)rsrc_func64( *(IDVList *)data );
-    default:
-        break;
-    }
-    return NC_STACK_sample::compatcall(method_id, data);
-}

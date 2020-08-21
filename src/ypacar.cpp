@@ -1059,23 +1059,3 @@ int NC_STACK_ypacar::getCAR_blast()
 }
 
 
-size_t NC_STACK_ypacar::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 0:
-        return (size_t)func0( *(IDVList *)data );
-    case 1:
-        return (size_t)func1();
-    case 2:
-        return func2( *(IDVList *)data );
-    case 3:
-        return func3( *(IDVList *)data );
-    case 71:
-        User_layer( (update_msg *)data );
-        return 1;
-    default:
-        break;
-    }
-    return NC_STACK_ypatank::compatcall(method_id, data);
-}

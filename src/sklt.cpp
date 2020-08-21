@@ -543,21 +543,3 @@ size_t NC_STACK_sklt::rsrc_func66(rsrc_func66_arg *arg)
     return arg->OpenedStream;
 }
 
-
-size_t NC_STACK_sklt::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 5:
-        return (size_t)func5( (IFFile **)data );
-    case 6:
-        return (size_t)func6( (IFFile **)data );
-    case 64:
-        return (size_t)rsrc_func64( *(IDVList *)data );
-    case 66:
-        return (size_t)rsrc_func66( (rsrc_func66_arg *)data );
-    default:
-        break;
-    }
-    return NC_STACK_skeleton::compatcall(method_id, data);
-}

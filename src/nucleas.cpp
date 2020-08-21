@@ -211,32 +211,6 @@ const std::string &NC_STACK_nucleus::getName() const
 }
 
 
-size_t NC_STACK_nucleus::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 0:
-        return (size_t)func0( *(IDVList *)data );
-    case 1:
-        return (size_t)func1();
-    case 2:
-        return (size_t)func2( *(IDVList *)data );
-    case 3:
-        return (size_t)func3( *(IDVList *)data );
-    case 5:
-        return (size_t)func5( (IFFile **)data );
-    case 6:
-        return (size_t)func6( (IFFile **)data );
-    default:
-        break;
-    }
-    return 0;
-}
-
-
-
-
-
 
 int delete_class_obj(NC_STACK_nucleus *cls)
 {

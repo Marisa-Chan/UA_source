@@ -22,7 +22,6 @@ public:
     virtual void ypagun_func128(const vec3d &basis, bool directDown);
     virtual vec3d ypagun_func129(const vec3d &axis, float angle);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ypagun()
     {
         _gunMaxUp    = 0.0;

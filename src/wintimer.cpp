@@ -33,15 +33,3 @@ int NC_STACK_wintimer::itimer_func64()
     return period;
 }
 
-
-size_t NC_STACK_wintimer::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 64:
-        return (size_t)itimer_func64();
-    default:
-        break;
-    }
-    return NC_STACK_itimer::compatcall(method_id, data);
-}

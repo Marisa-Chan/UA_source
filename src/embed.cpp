@@ -138,20 +138,3 @@ size_t NC_STACK_embed::func6(IFFile **file)
     return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
 
-size_t NC_STACK_embed::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 0:
-        return (size_t)func0( *(IDVList *)data );
-    case 1:
-        return (size_t)func1();
-    case 5:
-        return (size_t)func5( (IFFile **)data );
-    case 6:
-        return (size_t)func6( (IFFile **)data );
-    default:
-        break;
-    }
-    return NC_STACK_nucleus::compatcall(method_id, data);
-}

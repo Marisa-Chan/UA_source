@@ -214,7 +214,6 @@ public:
     int16_t GetHotKeyID(int16_t keycode);
     int16_t GetHotKey(uint16_t id);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_input() {};
     virtual ~NC_STACK_input() {};
     

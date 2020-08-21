@@ -30,7 +30,6 @@ public:
     virtual size_t ade_func64(AdeList &lst);
     virtual size_t ade_func65(area_arg_65 *arg);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ade() {
         flags = 0;
         point = 0;

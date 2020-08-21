@@ -990,36 +990,3 @@ int NC_STACK_ypaufo::getUFO_togo()
 {
     return _ufoTogo;
 }
-
-
-size_t NC_STACK_ypaufo::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 0:
-        return (size_t)func0( *(IDVList *)data );
-    case 1:
-        return (size_t)func1();
-    case 2:
-        return func2( *(IDVList *)data );
-    case 3:
-        return func3( *(IDVList *)data );
-    case 70:
-        AI_layer3( (update_msg *)data );
-        return 1;
-    case 71:
-        User_layer( (update_msg *)data );
-        return 1;
-    case 74:
-        Move( (move_msg *)data );
-        return 1;
-    case 80:
-        return (size_t)SetPosition( (bact_arg80 *)data );
-    case 96:
-        Renew();
-        return 1;
-    default:
-        break;
-    }
-    return NC_STACK_ypabact::compatcall(method_id, data);
-}

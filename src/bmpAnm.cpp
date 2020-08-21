@@ -1095,35 +1095,3 @@ void NC_STACK_bmpanim::PrepareTexture( bool force )
     for(int i = 0; i < stack__bmpanim.bmpanm_intern->bitm_buff_cnt; i++)
         stack__bmpanim.bmpanm_intern->bitm_buff[i].bitmObj->PrepareTexture(force);
 }
-
-
-size_t NC_STACK_bmpanim::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 0:
-        return (size_t)func0( *(IDVList *)data );
-    case 1:
-        return (size_t)func1();
-    case 2:
-        return func2( *(IDVList *)data );
-    case 3:
-        return func3( *(IDVList *)data );
-    case 5:
-        return (size_t)func5( (IFFile **)data );
-    case 6:
-        return (size_t)func6( (IFFile **)data );
-    case 64:
-        return (size_t)rsrc_func64( *(IDVList *)data );
-    case 65:
-        return rsrc_func65( (rsrc *)data );
-    case 66:
-        return (size_t)rsrc_func66( (rsrc_func66_arg *)data );
-    case 130:
-        bitmap_func130( (bitmap_arg130 *)data );
-        return 1;
-    default:
-        break;
-    }
-    return NC_STACK_bitmap::compatcall(method_id, data);
-}

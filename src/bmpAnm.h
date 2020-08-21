@@ -66,7 +66,6 @@ public:
     virtual size_t rsrc_func66(rsrc_func66_arg *sv);
     virtual void bitmap_func130(bitmap_arg130 *arg);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_bmpanim() {
         memset(&stack__bmpanim, 0, sizeof(stack__bmpanim));
     };

@@ -585,32 +585,3 @@ int NC_STACK_amesh::getAMESH_numpoly()
 {
     return stack__amesh.polyCnt;
 }
-
-
-
-size_t NC_STACK_amesh::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 0:
-        return (size_t)func0( *(IDVList *)data );
-    case 1:
-        return (size_t)func1();
-    case 2:
-        return func2( *(IDVList *)data );
-        return 1;
-    case 3:
-        return func3( *(IDVList *)data );
-        return 1;
-    case 5:
-        return (size_t)func5( (IFFile **)data );
-    case 6:
-        return (size_t)func6( (IFFile **)data );
-    case 65:
-        ade_func65( (area_arg_65 *)data );
-        return 1;
-    default:
-        break;
-    }
-    return NC_STACK_area::compatcall(method_id, data);
-}

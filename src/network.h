@@ -16,7 +16,6 @@ public:
     virtual size_t func2(IDVList &stak);
     virtual size_t func3(IDVList &stak);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_network() {
         memset(&stack__network, 0, sizeof(stack__network));
     };

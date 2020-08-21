@@ -16,7 +16,6 @@ public:
         return 1;
     };
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_itimer() {
         memset(&stack__itimer, 0, sizeof(stack__itimer));
     };

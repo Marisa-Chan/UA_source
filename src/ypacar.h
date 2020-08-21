@@ -15,7 +15,6 @@ public:
     virtual int AlignVehicleAI(float dtime, vec3d *pNormal);
     virtual int AlignVehicleUser(float dtime, const vec3d &oldDir);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ypacar();
     virtual ~NC_STACK_ypacar() {};
 

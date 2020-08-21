@@ -146,7 +146,6 @@ public:
     virtual size_t skeleton_func132(skeleton_arg_132 *arg);
     virtual bool skeleton_func133(skeleton_arg133 *arg);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_skeleton() {
         memset(&stack__skeleton, 0, sizeof(stack__skeleton));
     };

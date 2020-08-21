@@ -399,32 +399,3 @@ int NC_STACK_skeleton::getSKEL_polyCount()
 
 
 
-size_t NC_STACK_skeleton::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 0:
-        return (size_t)func0( *(IDVList *)data );
-    case 3:
-        return (size_t)func3( *(IDVList *)data );
-    case 64:
-        return (size_t)rsrc_func64( *(IDVList *)data );
-    case 65:
-        return (size_t)rsrc_func65( (rsrc *)data );
-    case 128:
-        return (size_t)skeleton_func128( (IDVPair *)data );
-    case 129:
-        return (size_t)skeleton_func129( (skeleton_129_arg *)data );
-    case 130:
-        return (size_t)skeleton_func130( (skeleton_130_arg *)data );
-    case 131:
-        return (size_t)skeleton_func131( (int *)data );
-    case 132:
-        return (size_t)skeleton_func132( (skeleton_arg_132 *)data );
-    case 133:
-        return (size_t)skeleton_func133( (skeleton_arg133 *)data );
-    default:
-        break;
-    }
-    return NC_STACK_rsrc::compatcall(method_id, data);
-}

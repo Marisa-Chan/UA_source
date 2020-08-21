@@ -198,8 +198,6 @@ public:
     virtual UA_PALETTE * display_func273(int paletteId);
     virtual void display_func274(const char **);
 
-
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_display() {
         memset(&stack__display, 0, sizeof(stack__display));
     };

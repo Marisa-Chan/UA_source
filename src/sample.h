@@ -26,7 +26,6 @@ public:
     virtual size_t rsrc_func65(rsrc *pres);
     virtual void * sample_func128(void **arg);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_sample() {
         memset(&stack__sample, 0, sizeof(stack__sample));
     };

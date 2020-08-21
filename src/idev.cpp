@@ -7,17 +7,3 @@
 
 
 const Nucleus::ClassDescr NC_STACK_idev::description("idev.class", &newinstance);
-
-
-size_t NC_STACK_idev::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 69:
-        ResetSlider();
-        return 1;
-    default:
-        break;
-    }
-    return NC_STACK_nucleus::compatcall(method_id, data);
-}

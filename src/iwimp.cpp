@@ -127,20 +127,3 @@ void NC_STACK_iwimp::clear()
 }
 
 
-size_t NC_STACK_iwimp::compatcall(int method_id, void *data)
-{
-    switch( method_id )
-    {
-    case 0:
-        return (size_t)func0( *(IDVList *)data );
-    case 128:
-        return (size_t)HasFocus();
-    case 131:
-        CheckClick( (ClickBoxInf *)data );
-        return 1;
-    default:
-        break;
-    }
-    return NC_STACK_idev::compatcall(method_id, data);
-}
-

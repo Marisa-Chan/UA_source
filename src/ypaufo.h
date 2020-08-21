@@ -17,7 +17,6 @@ public:
     virtual size_t SetPosition(bact_arg80 *arg);
     virtual void Renew();
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_ypaufo() 
     {
         _ufoTogo        = 0.0;

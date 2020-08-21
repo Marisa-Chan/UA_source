@@ -13,7 +13,6 @@ class NC_STACK_wintimer: public NC_STACK_itimer
 public:
     virtual int itimer_func64();
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_wintimer() {
         memset(&stack__wintimer, 0, sizeof(stack__wintimer));
     };

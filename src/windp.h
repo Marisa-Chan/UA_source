@@ -164,7 +164,6 @@ public:
 
     virtual size_t GetStats(int *);
 
-    virtual size_t compatcall(int method_id, void *data);
     NC_STACK_windp() {
         //memset(&wdp_intern, 0, sizeof(wdp_intern));
     };
