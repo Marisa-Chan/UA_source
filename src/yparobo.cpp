@@ -16,10 +16,10 @@ const Nucleus::ClassDescr NC_STACK_yparobo::description("yparobo.class", &newins
 char **dword_54B0E0; // ypaworld strings
 int dword_5B1128 = 1;
 
-key_value_stru yparobo_keys[2] =
+Common::Ini::KeyList yparobo_keys
 {
-    {"game.newai", KEY_TYPE_BOOL, 1},
-    {"game.timeline", KEY_TYPE_DIGIT, 600000}
+    Common::Ini::Key("game.newai",    Common::Ini::KT_BOOL, true),
+    Common::Ini::Key("game.timeline", Common::Ini::KT_DIGIT, (int32_t)600000)
 };
 
 robo_t2 stru_5B0628[100];
@@ -5584,10 +5584,10 @@ void NC_STACK_yparobo::Renew()
 
     setBACT_yourLastSeconds(3000);
 
-    get_keyvalue_from_ini(NULL, yparobo_keys, 2);
+    Common::Ini::ParseIniFile(DefaultIniFile, &yparobo_keys);
 
-    _roboNewAI = yparobo_keys[0].value.val;
-    _roboTimeScale = yparobo_keys[1].value.val;
+    _roboNewAI = yparobo_keys[0].Get<bool>();
+    _roboTimeScale = yparobo_keys[1].Get<int>();
 }
 
 void NC_STACK_yparobo::HandBrake(update_msg *)

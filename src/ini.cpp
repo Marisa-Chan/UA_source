@@ -1,86 +1,82 @@
-#include <stdio.h>
 #include "ini.h"
 #include "includes.h"
 
-
-int get_keyvalue_from_ini(const char *ini_filename, key_value_stru *key, unsigned int key_count)
+namespace Common {
+namespace Ini {
+    
+void ParseLine(std::string line, KeyList *lst)
 {
-    char buf[256];
+    size_t endp = line.find_first_of(";\r\n");
+    
+    if (endp != std::string::npos)
+        line.erase(endp);
+    
+    Stok splt(line, "= \t");
+    std::string token;
 
-    if ( !ini_filename )
-        ini_filename = "nucleus.ini";
-
-    FSMgr::FileHandle *fil = FSMgr::iDir::openFile(ini_filename, "r");
-
-    if ( !fil )
-        return 0;
-
-    int param_line = 0;
-    while ( 1 )
+    if ( splt.GetNext(&token) )
     {
-        char * readed = fil->gets(buf, 256);
-
-        if ( !readed )
+        for ( Key &v : *lst )
         {
-            if ( param_line >= engines.some_params_count )
-                break;
-
-            strcpy(buf, engines.some_params_pointers[param_line]);
-            param_line++;
-        }
-
-        char *strip = strpbrk(buf, ";\r\n");
-        if ( strip )
-            *strip = 0;
-
-        char *token = strtok(buf, "= \t");
-        if ( token )
-        {
-            for (unsigned int i = 0; i < key_count; ++i )
+            if ( !StriCmp(v.Name, token) )
             {
-                key_value_stru *kkey = key + i;
-                if ( !strcasecmp(kkey->key, token) )
+                std::string tmp;
+                switch ( v.Type )
                 {
-                    char *tmp = NULL;
+                case KT_DIGIT:
+                    if ( splt.GetNext(&tmp) )
+                        v.Value = (int32_t)std::stol(tmp, NULL, 0);
+                    break;
 
-                    switch ( kkey->key_type )
+                case KT_BOOL:
+                    if ( splt.GetNext(&tmp) )
                     {
-                    case KEY_TYPE_DIGIT:
-                        tmp = strtok(0, "= \t");
-                        if ( tmp )
-                            kkey->value.val = strtol(tmp, NULL, 0);
-                        break;
-
-                    case KEY_TYPE_BOOL:
-                        tmp = strtok(0, "= \t");
-                        if ( tmp )
-                        {
-                            if ( StrGetBool(tmp) )
-                                kkey->value.val = 1;
-                            else
-                                kkey->value.val = 0;
-                        }
-                        break;
-
-                    case KEY_TYPE_STRING1:
-                        tmp = strtok(0, "= \t");
-                        if ( tmp )
-                            strncpy((char *)kkey->value.pval, tmp, 128);
-                        break;
-
-                    case KEY_TYPE_STRING2:
-                        tmp = strtok(0, "=");
-                        if ( tmp )
-                            strncpy((char *)kkey->value.pval, tmp, 128);
-                        break;
-                    default:
-                        break;
+                        if ( StrGetBool(tmp) )
+                            v.Value = true;
+                        else
+                            v.Value = false;
                     }
+                    break;
+
+                case KT_WORD:
+                    if ( splt.GetNext(&tmp) )
+                        v.Value = std::string(tmp);
+                    break;
+
+                case KT_STRING:
+                    if ( splt.GetNext(&tmp, "=") )
+                        v.Value = std::string(tmp);
+                    break;
+                    
+                default:
+                    break;
                 }
             }
         }
     }
+}
 
+bool ParseIniFile(std::string iniFile, KeyList *lst)
+{
+    if ( iniFile.empty() )
+        return false;
+
+    FSMgr::FileHandle *fil = FSMgr::iDir::openFile(iniFile, "r");
+
+    if ( !fil )
+        return false;
+
+    std::string buf;
+    while ( fil->ReadLine(&buf) )
+        ParseLine(buf, lst);
+    
     delete fil;
-    return 1;
+    
+    for( int i = 0; i < engines.some_params_count; i++ )
+        ParseLine(engines.some_params_pointers[i], lst);
+
+    return true;
+}
+
+}
 }

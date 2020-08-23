@@ -132,6 +132,8 @@ void Delete(NC_STACK_nucleus *clas);
 class NC_STACK_nucleus
 {
 public:
+    const std::string DefaultIniFile {"nucleus.ini"};
+public:
     virtual size_t func0(IDVList &stak);
     virtual size_t func1();
     virtual size_t func2(IDVList &stak);

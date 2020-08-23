@@ -13,11 +13,11 @@ const Nucleus::ClassDescr NC_STACK_windp::description("windp.class", &newinstanc
 
 const char *SERV_STR = "UA:SOURCE TEST NETWORK";
 
-key_value_stru windp_keys[3] =
+Common::Ini::KeyList windp_keys
 {
-    {"net.gmode", KEY_TYPE_DIGIT, 0},               //0
-    {"net.versioncheck", KEY_TYPE_BOOL, 1},
-    {"game.debug", KEY_TYPE_BOOL, 0}
+    Common::Ini::Key("net.gmode",  Common::Ini::KT_DIGIT),               //0
+    Common::Ini::Key("net.versioncheck", Common::Ini::KT_BOOL, true),
+    Common::Ini::Key("game.debug", Common::Ini::KT_BOOL)
 };
 
 size_t NC_STACK_windp::func0(IDVList &stak)
@@ -32,10 +32,10 @@ size_t NC_STACK_windp::func0(IDVList &stak)
     }
 
     EnumProviders();
-    get_keyvalue_from_ini(NULL, windp_keys, 3);
-    guaranteed_md = windp_keys[0].value.val;
-    version_check = windp_keys[1].value.val;
-    debug = windp_keys[2].value.val;
+    Common::Ini::ParseIniFile(DefaultIniFile, &windp_keys);
+    guaranteed_md = windp_keys[0].Get<int>();
+    version_check = windp_keys[1].Get<bool>();
+    debug = windp_keys[2].Get<bool>();
     return 1;
 }
 

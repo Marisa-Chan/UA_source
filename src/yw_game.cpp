@@ -2126,7 +2126,7 @@ void yw_renderSky(NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
         yw->sky_loaded_base->base_func68(&v5);
 
         rndr_params->maxZ = 32000.0;
-        if (NC_STACK_win3d::win3d_keys[18].value.val)
+        if (NC_STACK_win3d::win3d_keys[18].Get<bool>())
             rndr_params->flags = NC_STACK_display::RFLAGS_SKY;
 
         yw->sky_loaded_base->base_func77(rndr_params);
@@ -2442,7 +2442,7 @@ void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2)
 
         yw->_win3d->BeginScene();
 
-        if (NC_STACK_win3d::win3d_keys[18].value.val)
+        if (NC_STACK_win3d::win3d_keys[18].Get<bool>())
             rndrs.rndrStack->render(true, RenderStack::comparePrio);
         else
             rndrs.rndrStack->render(false);

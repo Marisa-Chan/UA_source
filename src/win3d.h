@@ -233,7 +233,7 @@ public:
 
     __NC_STACK_win3d stack__win3d;
 
-    static key_value_stru win3d_keys[21];
+    static Common::Ini::KeyList win3d_keys;
 
 protected:
     GLdouble frustum[16];

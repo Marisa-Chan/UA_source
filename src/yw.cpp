@@ -17,12 +17,12 @@
 
 const Nucleus::ClassDescr NC_STACK_ypaworld::description("ypaworld.class", &newinstance);
 
-key_value_stru ypaworld_keys[4] =
+Common::Ini::KeyList ypaworld_keys
 {
-    {"netgame.exclusivegem", KEY_TYPE_BOOL, 1},
-    {"net.waitstart", KEY_TYPE_DIGIT, 150000},
-    {"net.kickoff", KEY_TYPE_DIGIT, 20000},
-    {"game.debug", KEY_TYPE_BOOL, 0}
+    Common::Ini::Key("netgame.exclusivegem", Common::Ini::KT_BOOL, true),
+    Common::Ini::Key("net.waitstart",        Common::Ini::KT_DIGIT, (int32_t)150000),
+    Common::Ini::Key("net.kickoff",          Common::Ini::KT_DIGIT, (int32_t)20000),
+    Common::Ini::Key("game.debug",           Common::Ini::KT_BOOL)
 };
 
 int word_5A50C2;
@@ -2802,9 +2802,9 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
     _levelInfo->State = 8;
     usr->envMode = ENVMODE_TITLE;
 
-    get_keyvalue_from_ini(0, ypaworld_keys, 4);
+    Common::Ini::ParseIniFile(DefaultIniFile, &ypaworld_keys);
 
-    netgame_exclusivegem = ypaworld_keys[0].value.val;
+    netgame_exclusivegem = ypaworld_keys[0].Get<bool>();
 
     ypaworld__string_pointers = getYW_localeStrings();
 

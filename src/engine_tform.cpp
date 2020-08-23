@@ -6,15 +6,17 @@
 
 TFEngine TFEngine::Engine;
 
-key_value_stru tform_keys[4] = {{"tform.backplane", KEY_TYPE_DIGIT, 0x1000},
-    {"tform.frontplane", KEY_TYPE_DIGIT, 0x10},
-    {"tform.zoomx", KEY_TYPE_DIGIT, 0x140},
-    {"tform.zoomy", KEY_TYPE_DIGIT, 0xC8}
+Common::Ini::KeyList tform_keys
+{
+    Common::Ini::Key("tform.backplane",  Common::Ini::KT_DIGIT, (int32_t)4096),
+    Common::Ini::Key("tform.frontplane", Common::Ini::KT_DIGIT, (int32_t)16),
+    Common::Ini::Key("tform.zoomx",      Common::Ini::KT_DIGIT, (int32_t)320),
+    Common::Ini::Key("tform.zoomy",      Common::Ini::KT_DIGIT, (int32_t)200)
 };
 
 int TFEngine::init()
 {
-    get_keyvalue_from_ini(0, tform_keys, 4);
+    Common::Ini::ParseIniFile(NC_STACK_nucleus::DefaultIniFile, &tform_keys);
 
     SinCos_table = new SinCos[361];
 

@@ -1,48 +1,74 @@
 #ifndef INI_H_INCLUDED
 #define INI_H_INCLUDED
 
-union valP
-{
-    int val;
-    void *pval;
+#include <string>
+#include <vector>
+#include "any-lite/any.hpp"
 
-    valP()
-    {
-        pval = NULL;
-        val = 0;
-    }
-
-    valP(char *str)
-    {
-        pval = (void *)str;
-    }
-
-    valP(void *str)
-    {
-        pval = str;
-    }
-
-    valP(int d)
-    {
-        val = d;
-    }
-};
+namespace Common {
+namespace Ini {
 
 enum KEY_TYPE
 {
-    KEY_TYPE_DIGIT = 0x0,
-    KEY_TYPE_STRING1 = 0x1,
-    KEY_TYPE_BOOL = 0x2,
-    KEY_TYPE_STRING2 = 0x3,
+    KT_DIGIT = 0x0,
+    KT_WORD  = 0x1,
+    KT_BOOL  = 0x2,
+    KT_STRING = 0x3,
 };
 
-struct key_value_stru
+struct Key
 {
-    const char *key;
-    KEY_TYPE key_type;
-    valP value;
+    const std::string Name;
+    KEY_TYPE Type;
+    nonstd::any Value;
+    
+    Key(const std::string &k, KEY_TYPE t, nonstd::any v)
+    : Name(k), Type(t), Value(v)
+    {}
+    
+    Key(const std::string &k, KEY_TYPE t)
+    : Name(k), Type(t)
+    {
+        switch(t)
+        {
+            default:
+            case KT_DIGIT:
+                Value = (int32_t)0;
+                break;
+            
+            case KT_WORD:
+            case KT_STRING:
+                Value = std::string();
+                break;
+                
+            case KT_BOOL:
+                Value = false;
+                break;
+        }
+    }
+    
+    template <typename T>
+    T Get()
+    {
+        T t;
+        try
+        {
+            t = nonstd::any_cast<T>(Value);
+        }
+        catch (const nonstd::bad_any_cast& e)
+        {
+            printf("%s %s\n", Name.c_str(), e.what());
+        }
+        return t;
+    }
 };
 
-int get_keyvalue_from_ini(const char *ini_filename, key_value_stru *key, unsigned int key_count);
+typedef std::vector<Key> KeyList;
+
+bool ParseIniFile(std::string iniFile, KeyList *lst);
+
+
+}
+}
 
 #endif // INI_H_INCLUDED

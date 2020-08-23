@@ -5,12 +5,12 @@
 
 SFXEngine SFXEngine::SFXe;
 
-key_value_stru audio_keys[4] =
+Common::Ini::KeyList audio_keys
 {
-    {"audio.channels", KEY_TYPE_DIGIT, 4},
-    {"audio.volume", KEY_TYPE_DIGIT, 127},
-    {"audio.num_palfx", KEY_TYPE_DIGIT, 4},
-    {"audio.rev_stereo", KEY_TYPE_BOOL, 0}
+    Common::Ini::Key("audio.channels", Common::Ini::KT_DIGIT, (int32_t)4),
+    Common::Ini::Key("audio.volume",   Common::Ini::KT_DIGIT, (int32_t)127),
+    Common::Ini::Key("audio.num_palfx", Common::Ini::KT_DIGIT, (int32_t)4),
+    Common::Ini::Key("audio.rev_stereo", Common::Ini::KT_BOOL)
 };
 
 void wrapper_setSampleVRP(void *, walsmpl *hSample, int rate, int volume, int pan)
@@ -65,12 +65,12 @@ int SFXEngine::init()
     musMaxDelay = 0;
     musTrack = 0;
 
-    get_keyvalue_from_ini(NULL, audio_keys, 4);
+    Common::Ini::ParseIniFile(NC_STACK_nucleus::DefaultIniFile, &audio_keys);
 
-    audio_channels = audio_keys[0].value.val;
-    audio_volume = audio_keys[1].value.val;
-    audio_num_palfx = audio_keys[2].value.val;
-    audio_rev_stereo = audio_keys[3].value.val;
+    audio_channels  = audio_keys[0].Get<int>();
+    audio_volume    = audio_keys[1].Get<int>();
+    audio_num_palfx = audio_keys[2].Get<int>();
+    audio_rev_stereo = audio_keys[3].Get<bool>();
 
     if ( audio_volume > 127 )
         audio_volume = 127;

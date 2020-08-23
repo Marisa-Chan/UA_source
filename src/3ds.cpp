@@ -658,7 +658,7 @@ size_t NC_STACK_3ds::base_func77(baseRender_msg *arg)
                             if (datSub->vertexes[j].z > maxz)
                                 maxz = datSub->vertexes[j].z;
 
-                        if ( NC_STACK_win3d::win3d_keys[18].value.val )
+                        if ( NC_STACK_win3d::win3d_keys[18].Get<bool>() )
                         {
                             float maxln = 0.0;
 
@@ -669,7 +669,7 @@ size_t NC_STACK_3ds::base_func77(baseRender_msg *arg)
                                     maxln = datSub->distance[j];
                             }
 
-                            if (maxln > NC_STACK_win3d::win3d_keys[19].value.val)
+                            if (maxln > NC_STACK_win3d::win3d_keys[19].Get<int>())
                                 datSub->renderFlags |= NC_STACK_display::RFLAGS_FALLOFF;
                         }
 

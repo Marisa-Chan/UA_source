@@ -95,7 +95,7 @@ public:
     void setTracyRmp(ResBitmap *rmp);
     void setShadeRmp(ResBitmap *rmp);
 
-    int loadPal(const char *palette_ilbm);
+    int loadPal(const std::string &palette_ilbm);
 
     void setTileset(TileMap *tileset, int id);
     TileMap * getTileset(int id);
@@ -104,7 +104,7 @@ public:
     static void defRenderFunc(void *dat);
 
 private:
-    int sub_422CE8(const char *display, const char *display2, int gfxmode);
+    int sub_422CE8(const std::string &display, const std::string &display2, int gfxmode);
 
 //Data
 public:

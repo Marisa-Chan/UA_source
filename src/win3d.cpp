@@ -31,29 +31,29 @@ SDL_Cursor *cursors[11];
 
 const Nucleus::ClassDescr NC_STACK_win3d::description("win3d.class", &newinstance);
 
-key_value_stru NC_STACK_win3d::win3d_keys[21] =
+Common::Ini::KeyList NC_STACK_win3d::win3d_keys
 {
-    {"gfx.dither", KEY_TYPE_BOOL, 0},               //0
-    {"gfx.filter", KEY_TYPE_BOOL, 0},
-    {"gfx.antialias", KEY_TYPE_BOOL, 0},
-    {"gfx.alpha", KEY_TYPE_DIGIT, 0xC0},
-    {"gfx.zbuf_when_tracy", KEY_TYPE_BOOL, 0},
-    {"gfx.colorkey", KEY_TYPE_BOOL, 0},             //5
-    {"gfx.force_emul", KEY_TYPE_BOOL, 0},
-    {"gfx.force_soft_cursor", KEY_TYPE_BOOL, 0},
-    {"gfx.all_modes", KEY_TYPE_BOOL, 0},
-    {"gfx.movie_player", KEY_TYPE_BOOL, 1},
-    {"gfx.force_alpha_textures", KEY_TYPE_BOOL, 0}, //10
-    {"gfx.use_draw_primitive", KEY_TYPE_BOOL, 0},
-    {"gfx.disable_lowres", KEY_TYPE_BOOL, 0},
-    {"gfx.export_window_mode", KEY_TYPE_BOOL, 0},
-    {"gfx.blending", KEY_TYPE_DIGIT, 0},
-    {"gfx.solidfont", KEY_TYPE_BOOL, false},          //15
-    {"gfx.vsync", KEY_TYPE_DIGIT, 1},
-    {"gfx.maxfps", KEY_TYPE_DIGIT, 60},
-    {"gfx.newsky", KEY_TYPE_BOOL, false},
-    {"gfx.skydistance", KEY_TYPE_DIGIT, 3000},
-    {"gfx.skylength", KEY_TYPE_DIGIT, 500}               //20
+    Common::Ini::Key("gfx.dither",       Common::Ini::KT_BOOL),               //0
+    Common::Ini::Key("gfx.filter",       Common::Ini::KT_BOOL),
+    Common::Ini::Key("gfx.antialias",    Common::Ini::KT_BOOL),
+    Common::Ini::Key("gfx.alpha",        Common::Ini::KT_DIGIT, (int32_t)192),
+    Common::Ini::Key("gfx.zbuf_when_tracy", Common::Ini::KT_BOOL),
+    Common::Ini::Key("gfx.colorkey",     Common::Ini::KT_BOOL),             //5
+    Common::Ini::Key("gfx.force_emul",   Common::Ini::KT_BOOL),
+    Common::Ini::Key("gfx.force_soft_cursor", Common::Ini::KT_BOOL),
+    Common::Ini::Key("gfx.all_modes",    Common::Ini::KT_BOOL),
+    Common::Ini::Key("gfx.movie_player", Common::Ini::KT_BOOL, true),
+    Common::Ini::Key("gfx.force_alpha_textures", Common::Ini::KT_BOOL), //10
+    Common::Ini::Key("gfx.use_draw_primitive", Common::Ini::KT_BOOL),
+    Common::Ini::Key("gfx.disable_lowres", Common::Ini::KT_BOOL),
+    Common::Ini::Key("gfx.export_window_mode", Common::Ini::KT_BOOL),
+    Common::Ini::Key("gfx.blending",     Common::Ini::KT_DIGIT),
+    Common::Ini::Key("gfx.solidfont",    Common::Ini::KT_BOOL),          //15
+    Common::Ini::Key("gfx.vsync",        Common::Ini::KT_DIGIT, (int32_t)1),
+    Common::Ini::Key("gfx.maxfps",       Common::Ini::KT_DIGIT, (int32_t)60),
+    Common::Ini::Key("gfx.newsky",       Common::Ini::KT_BOOL),
+    Common::Ini::Key("gfx.skydistance",  Common::Ini::KT_DIGIT, (int32_t)3000),
+    Common::Ini::Key("gfx.skylength",    Common::Ini::KT_DIGIT, (int32_t)500)               //20
 };
 
 
@@ -796,25 +796,34 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
 {
     int txt16bit_def = read_yes_no_status("env/txt16bit.def", 1);
     int drawprim_def = read_yes_no_status("env/drawprim.def", 0);
-    int export_window_mode = win3d_keys[13].value.val;     // gfx.export_window_mode
+    int export_window_mode = win3d_keys[13].Get<bool>();     // gfx.export_window_mode
 
-    if (win3d_keys[14].value.val == 0)
+    switch(win3d_keys[14].Get<int>())
     {
-        can_srcblend = 1;
-        can_destblend = 0;
-        can_stippling = 0;
-    }
-    else if (win3d_keys[14].value.val == 1)
-    {
-        can_srcblend = 1;
-        can_destblend = 1;
-        can_stippling = 0;
-    }
-    else if (win3d_keys[14].value.val == 2)
-    {
-        can_srcblend = 0;
-        can_destblend = 0;
-        can_stippling = 1;
+        case 0:
+        {
+            can_srcblend = 1;
+            can_destblend = 0;
+            can_stippling = 0;
+        }
+        break;
+        
+        default:
+        case 1:
+        {
+            can_srcblend = 1;
+            can_destblend = 1;
+            can_stippling = 0;
+        }
+        break;
+    
+        case 2:
+        {
+            can_srcblend = 0;
+            can_destblend = 0;
+            can_stippling = 1;
+        }
+        break;
     }
 
 
@@ -853,13 +862,13 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
 
     win3d->forcesoftcursor = 0;
     win3d->sort_id = picked->sortid;
-    win3d->movie_player = win3d_keys[9].value.val;
-    win3d->disable_lowres = win3d_keys[12].value.val;
+    win3d->movie_player = win3d_keys[9].Get<bool>();
+    win3d->disable_lowres = win3d_keys[12].Get<bool>();
     win3d->txt16bit = txt16bit_def;
     win3d->use_simple_d3d = drawprim_def;
     win3d->export_window_mode = export_window_mode;
 
-    win3d->solidFont = win3d_keys[15].value.val;
+    win3d->solidFont = win3d_keys[15].Get<bool>();
 
     win3d->windowed = picked->windowed; ////HACK
 
@@ -884,21 +893,26 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
     
     win3d->screenSurface = SDLWRAP::Screen();
 
-    if (win3d_keys[16].value.val == 0)
+    switch( win3d_keys[16].Get<int>() )
     {
-        SDL_GL_SetSwapInterval(0);
-    }
-    else if (win3d_keys[16].value.val == 1)
-    {
-        SDL_GL_SetSwapInterval(1);
-    }
-    else if (win3d_keys[16].value.val == 2)
-    {
-        if ( SDL_GL_SetSwapInterval(-1) == -1)
+        case 0:
+            SDL_GL_SetSwapInterval(0);
+            break;
+        
+        default:
+        case 1:
             SDL_GL_SetSwapInterval(1);
+            break;
+        
+        case 2:
+            {
+                if ( SDL_GL_SetSwapInterval(-1) == -1)
+                    SDL_GL_SetSwapInterval(1);
+            }
+            break;
     }
 
-    fpsLimitter(win3d_keys[17].value.val);
+    fpsLimitter(win3d_keys[17].Get<int>());
 
     load_font("MS Sans Serif,12,400,0");
 
@@ -938,18 +952,18 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
 
 size_t NC_STACK_win3d::func0(IDVList &stak)
 {
-    get_keyvalue_from_ini(0, win3d_keys, 21);
+    Common::Ini::ParseIniFile(DefaultIniFile, &win3d_keys);
 
     if ( !windd_func0(stak) )
         return 0;
 
     __NC_STACK_win3d *w3d = &stack__win3d;
 
-    w3d->dither = win3d_keys[0].value.val;
-    w3d->filter = win3d_keys[1].value.val;
-    w3d->antialias = win3d_keys[2].value.val;
-    w3d->zbuf_when_tracy = win3d_keys[4].value.val;
-    w3d->colorkey = win3d_keys[5].value.val;
+    w3d->dither = win3d_keys[0].Get<bool>();
+    w3d->filter = win3d_keys[1].Get<bool>();
+    w3d->antialias = win3d_keys[2].Get<bool>();
+    w3d->zbuf_when_tracy = win3d_keys[4].Get<bool>();
+    w3d->colorkey = win3d_keys[5].Get<bool>();
 
     if ( can_srcblend )
         w3d->alpha = 192;
@@ -1595,7 +1609,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, int a5, int a6)
         w3d->rendStates2[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
     }
 
-    if (win3d_keys[18].value.val)
+    if (win3d_keys[18].Get<bool>())
     {
         if (polysDat->renderFlags & RFLAGS_SKY)
         {
@@ -1611,8 +1625,8 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, int a5, int a6)
             w3d->rendStates2[SHADEMODE] = 1;//D3DSHADE_FLAT;
             w3d->rendStates2[STIPPLEENABLE] = 0;
 
-            float transDist = win3d_keys[19].value.val;
-            float transLen = win3d_keys[20].value.val;
+            float transDist = win3d_keys[19].Get<int>();
+            float transLen = win3d_keys[20].Get<int>();
 
             for (int i = 0; i < polysDat->vertexCount; i++)
             {

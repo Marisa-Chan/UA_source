@@ -55,7 +55,7 @@ void UA::LoadFont(const std::string &fontstr)
     if (!_UATTF)
         return;
    
-    if (!NC_STACK_win3d::win3d_keys[15].value.val)
+    if (!NC_STACK_win3d::win3d_keys[15].Get<bool>())
         TTF_SetFontHinting(_UATTF, TTF_HINTING_LIGHT);
     else
         TTF_SetFontHinting(_UATTF, TTF_HINTING_MONO);
@@ -123,7 +123,7 @@ void UA::DrawText(SDL_Surface *srf, const std::string &text, int flag, const SDL
 
     SDL_Surface *tmp;
 
-    if (NC_STACK_win3d::win3d_keys[15].value.val)
+    if (NC_STACK_win3d::win3d_keys[15].Get<bool>())
     {
         tmp = TTF_RenderUTF8_Solid(_UATTF, text.c_str(), clr);
         SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_NONE);
@@ -144,7 +144,7 @@ void UA::DrawText(SDL_Surface *srf, const std::string &text, int flag, const SDL
 
     clr = color;
     
-    if (NC_STACK_win3d::win3d_keys[15].value.val)
+    if (NC_STACK_win3d::win3d_keys[15].Get<bool>())
     {
         SDL_SetPaletteColors(tmp->format->palette, &clr, 1, 1);
     }

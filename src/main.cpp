@@ -30,9 +30,9 @@ int tform_inited = 0;
 int audio_inited = 0;
 int input_inited = 0;
 
-key_value_stru tuneKeys[1] =
+Common::Ini::KeyList tuneKeys
 {
-    {"tune.weapon_radius", KEY_TYPE_BOOL, 0}               //0
+    Common::Ini::Key("tune.weapon_radius", Common::Ini::KT_BOOL)               //0
 };
 
 static bool fixWeaponRadius = false;
@@ -821,9 +821,9 @@ int main(int argc, char *argv[])
     if ( !WinMain__sub0(argc, argv) )
         return 0;
 
-    get_keyvalue_from_ini(NULL, tuneKeys, 1);
+    Common::Ini::ParseIniFile(NC_STACK_nucleus::DefaultIniFile, &tuneKeys);
 
-    fixWeaponRadius = tuneKeys[0].value.val;
+    fixWeaponRadius = tuneKeys[0].Get<bool>();
 
     uint32_t ticks = 0;
     
