@@ -166,7 +166,7 @@ void NC_STACK_winp::sdlJoyReadMapping(SDL_Joystick* joystick)
             std::vector<std::string> splt = Stok::Split(buf, " :\t\n\r");
             if (splt.size() >= 3 && !StriCmp(splt[0], bf))
             {
-                for(int i = 0; i < ((splt.size() - 1) / 2); i++)
+                for(size_t i = 0; i < ((splt.size() - 1) / 2); i++)
                 {
                     std::string &tp = splt.at(1 + i * 2);
                     std::string &val = splt.at(1 + i * 2 + 1);
