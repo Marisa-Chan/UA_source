@@ -197,7 +197,7 @@ public:
         else
             *word = _buf.substr(_pos);
 
-        _pos = next;
+        _pos = _buf.find_first_not_of(_chars, next);
         return true;
     }
 
