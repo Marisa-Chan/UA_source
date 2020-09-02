@@ -12,25 +12,25 @@ size_t NC_STACK_ade::func0(IDVList &stak)
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
 
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case ADE_ATT_BKCHECK:
-                setADE_bkCheck(val.value.i_data);
+                setADE_bkCheck(val.Get<int32_t>());
                 break;
             case ADE_ATT_DPTHFADE:
-                setADE_depthFade(val.value.i_data);
+                setADE_depthFade(val.Get<int32_t>());
                 break;
             case ADE_ATT_POINT:
-                setADE_point(val.value.i_data);
+                setADE_point(val.Get<int32_t>());
                 break;
             case ADE_ATT_POLY:
-                setADE_poly(val.value.i_data);
+                setADE_poly(val.Get<int32_t>());
                 break;
             default:
                 break;
@@ -51,73 +51,6 @@ size_t NC_STACK_ade::func1()
 
     return NC_STACK_nucleus::func1();
 }
-
-size_t NC_STACK_ade::func2(IDVList &stak)
-{
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case ADE_ATT_BKCHECK:
-                setADE_bkCheck(val.value.i_data);
-                break;
-            case ADE_ATT_DPTHFADE:
-                setADE_depthFade(val.value.i_data);
-                break;
-            case ADE_ATT_POINT:
-                setADE_point(val.value.i_data);
-                break;
-            case ADE_ATT_POLY:
-                setADE_poly(val.value.i_data);
-                break;
-            default:
-                break;
-            }
-        }
-    }
-
-    return NC_STACK_nucleus::func2(stak);
-}
-
-
-size_t NC_STACK_ade::func3(IDVList &stak)
-{
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case ADE_ATT_BKCHECK:
-                *(int *)val.value.p_data = getADE_bkCheck();
-                break;
-            case ADE_ATT_DPTHFADE:
-                *(int *)val.value.p_data = getADE_depthFade();
-                break;
-            case ADE_ATT_POINT:
-                *(int *)val.value.p_data = getADE_point();
-                break;
-            case ADE_ATT_POLY:
-                *(int *)val.value.p_data = getADE_poly();
-                break;
-            case ADE_ATT_PADE:
-//                    *(__NC_STACK_ade **)val.value.p_data = getADE_pAde();
-                break;
-            default:
-                break;
-            }
-        }
-    }
-
-    return NC_STACK_nucleus::func3(stak);
-}
-
 
 size_t NC_STACK_ade::func5(IFFile **file)
 {

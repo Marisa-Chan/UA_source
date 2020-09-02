@@ -16,8 +16,8 @@ size_t NC_STACK_display::func0(IDVList &stak)
 
     dprintf("MAKE ME %s\n","raster_func0");
 
-    _width = stak.Get(ATT_WIDTH, 0);
-    _height = stak.Get(ATT_HEIGHT, 0);
+    _width = stak.Get<int32_t>(ATT_WIDTH, 0);
+    _height = stak.Get<int32_t>(ATT_HEIGHT, 0);
 
 //    rstr->bitm_intern = (bitmap_intern *)getRsrc_pData();
 
@@ -39,63 +39,6 @@ size_t NC_STACK_display::func1()
     engines.display___win3d = NULL;
     return NC_STACK_nucleus::func1();
 }
-
-size_t NC_STACK_display::func2(IDVList &stak)
-{
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case ATT_PALETTE:
-                SetPalette(*(UA_PALETTE *)val.value.p_data);
-                break;
-
-            case ATT_FGPEN:
-                SetPen(val.value.u_data);
-                break;
-
-            case ATT_BGPEN:
-                setRSTR_BGpen(val.value.u_data);
-                break;
-
-            case ATT_SHADE_RMP:
-                setRSTR_shdRmp((ResBitmap *)val.value.p_data);
-                break;
-
-            case ATT_TRACY_RMP:
-                setRSTR_trcRmp((ResBitmap *)val.value.p_data);
-                break;
-
-            case ATT_FGAPEN:
-                setRSTR_FGApen(val.value.i_data);
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    return NC_STACK_nucleus::func2(stak);
-}
-
-size_t NC_STACK_display::func3(IDVList &stak)
-{
-    IDVList::iterator it = stak.find(ATT_PALETTE);
-    if ( it != stak.end() )
-    {
-        *(UA_PALETTE **)it->second.value.p_data = GetPalette();
-    }
-
-    return NC_STACK_nucleus::func3(stak);
-}
-
-
-
 
 size_t NC_STACK_display::raster_func192(IDVPair *)
 {

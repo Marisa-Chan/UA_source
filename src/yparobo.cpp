@@ -63,108 +63,108 @@ size_t NC_STACK_yparobo::func0(IDVList &stak)
     _roboWFlags = 0;
     _roboFillMode = 15;
 
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case BACT_ATT_INPUTTING:
-                setBACT_inputting(val.value.i_data);
+                setBACT_inputting(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_EP_CONQUER:
-                setROBO_epConquer(val.value.i_data);
+                setROBO_epConquer(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_EP_DEFENSE:
-                setROBO_epDefense(val.value.i_data);
+                setROBO_epDefense(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_EP_RADAR:
-                setROBO_epRadar(val.value.i_data);
+                setROBO_epRadar(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_EP_POWER:
-                setROBO_epPower(val.value.i_data);
+                setROBO_epPower(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_EP_SAFETY:
-                setROBO_epSafety(val.value.i_data);
+                setROBO_epSafety(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_BATT_VEHICLE:
-                setROBO_battVehicle(val.value.i_data);
+                setROBO_battVehicle(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_BATT_BUILDING:
-                setROBO_battBuilding(val.value.i_data);
+                setROBO_battBuilding(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_BATT_BEAM:
-                setROBO_battBeam(val.value.i_data);
+                setROBO_battBeam(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_FILL_MODE:
-                setROBO_fillMode(val.value.i_data);
+                setROBO_fillMode(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_WAIT_SWAY:
-                setROBO_waitSway( val.value.i_data );
+                setROBO_waitSway( val.Get<int32_t>() );
                 break;
 
             case ROBO_ATT_WAIT_ROTATE:
-                setROBO_waitRotate( val.value.i_data );
+                setROBO_waitRotate( val.Get<int32_t>() );
                 break;
 
             case ROBO_ATT_EP_CHANGEPLACE:
-                setROBO_epChangeplace(val.value.i_data);
+                setROBO_epChangeplace(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_EP_RECONNOITRE:
-                setROBO_epReconnoitre(val.value.i_data);
+                setROBO_epReconnoitre(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_EP_ROBO:
-                setROBO_epRobo(val.value.i_data);
+                setROBO_epRobo(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_VIEWANGLE:
-                setROBO_viewAngle(val.value.i_data);
+                setROBO_viewAngle(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_SAFDELAY:
-                setROBO_safDelay(val.value.i_data);
+                setROBO_safDelay(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_POWDELAY:
-                setROBO_powDelay(val.value.i_data);
+                setROBO_powDelay(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_RADDELAY:
-                setROBO_radDelay(val.value.i_data);
+                setROBO_radDelay(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_CPLDELAY:
-                setROBO_cplDelay(val.value.i_data);
+                setROBO_cplDelay(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_DEFDELAY:
-                setROBO_defDelay(val.value.i_data);
+                setROBO_defDelay(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_CONDELAY:
-                setROBO_conDelay(val.value.i_data);
+                setROBO_conDelay(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_ROBDELAY:
-                setROBO_robDelay(val.value.i_data);
+                setROBO_robDelay(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_RECDELAY:
-                setROBO_recDelay(val.value.i_data);
+                setROBO_recDelay(val.Get<int32_t>());
                 break;
 
             default:
@@ -191,245 +191,116 @@ size_t NC_STACK_yparobo::func2(IDVList &stak)
 {
     NC_STACK_ypabact::func2(stak);
 
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case BACT_ATT_INPUTTING:
-                setBACT_inputting(val.value.i_data);
+                setBACT_inputting(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_PROTO:
-                setROBO_proto((roboProto *)val.value.p_data);
+                setROBO_proto(val.Get<roboProto *>());
                 break;
 
             case ROBO_ATT_EP_CONQUER:
-                setROBO_epConquer(val.value.i_data);
+                setROBO_epConquer(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_EP_DEFENSE:
-                setROBO_epDefense(val.value.i_data);
+                setROBO_epDefense(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_EP_RADAR:
-                setROBO_epRadar(val.value.i_data);
+                setROBO_epRadar(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_EP_POWER:
-                setROBO_epPower(val.value.i_data);
+                setROBO_epPower(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_EP_SAFETY:
-                setROBO_epSafety(val.value.i_data);
+                setROBO_epSafety(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_COMM_COUNT:
-                setROBO_commCount(val.value.i_data);
+                setROBO_commCount(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_BATT_VEHICLE:
-                setROBO_battVehicle(val.value.i_data);
+                setROBO_battVehicle(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_BATT_BUILDING:
-                setROBO_battBuilding(val.value.i_data);
+                setROBO_battBuilding(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_BATT_BEAM:
-                setROBO_battBeam(val.value.i_data);
+                setROBO_battBeam(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_FILL_MODE:
-                setROBO_fillMode(val.value.i_data);
+                setROBO_fillMode(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_WAIT_SWAY:
-                setROBO_waitSway( val.value.i_data );
+                setROBO_waitSway( val.Get<int32_t>() );
                 break;
 
             case ROBO_ATT_WAIT_ROTATE:
-                setROBO_waitRotate( val.value.i_data );
+                setROBO_waitRotate( val.Get<int32_t>() );
                 break;
 
             case ROBO_ATT_EP_CHANGEPLACE:
-                setROBO_epChangeplace(val.value.i_data);
+                setROBO_epChangeplace(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_EP_RECONNOITRE:
-                setROBO_epReconnoitre(val.value.i_data);
+                setROBO_epReconnoitre(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_EP_ROBO:
-                setROBO_epRobo(val.value.i_data);
+                setROBO_epRobo(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_VIEWANGLE:
-                setROBO_viewAngle(val.value.i_data);
+                setROBO_viewAngle(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_SAFDELAY:
-                setROBO_safDelay(val.value.i_data);
+                setROBO_safDelay(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_POWDELAY:
-                setROBO_powDelay(val.value.i_data);
+                setROBO_powDelay(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_RADDELAY:
-                setROBO_radDelay(val.value.i_data);
+                setROBO_radDelay(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_CPLDELAY:
-                setROBO_cplDelay(val.value.i_data);
+                setROBO_cplDelay(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_DEFDELAY:
-                setROBO_defDelay(val.value.i_data);
+                setROBO_defDelay(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_CONDELAY:
-                setROBO_conDelay(val.value.i_data);
+                setROBO_conDelay(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_ROBDELAY:
-                setROBO_robDelay(val.value.i_data);
+                setROBO_robDelay(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_RECDELAY:
-                setROBO_recDelay(val.value.i_data);
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    return 1;
-}
-
-size_t NC_STACK_yparobo::func3(IDVList &stak)
-{
-    NC_STACK_ypabact::func3(stak);
-
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case BACT_ATT_COLLNODES:
-                *(rbcolls **)val.value.p_data = getBACT_collNodes();
-                break;
-
-            case ROBO_ATT_EP_CONQUER:
-                *(int *)val.value.p_data = getROBO_epConquer();
-                break;
-
-            case ROBO_ATT_EP_DEFENSE:
-                *(int *)val.value.p_data = getROBO_epDefense();
-                break;
-
-            case ROBO_ATT_EP_RADAR:
-                *(int *)val.value.p_data = getROBO_epRadar();
-                break;
-
-            case ROBO_ATT_EP_POWER:
-                *(int *)val.value.p_data = getROBO_epPower();
-                break;
-
-            case ROBO_ATT_EP_SAFETY:
-                *(int *)val.value.p_data = getROBO_epSafety();
-                break;
-
-            case ROBO_ATT_COMM_COUNT:
-                *(int *)val.value.p_data = getROBO_commCount();
-                break;
-
-            case ROBO_ATT_BATT_VEHICLE:
-                *(int *)val.value.p_data = getROBO_battVehicle();
-                break;
-
-            case ROBO_ATT_BATT_BUILDING:
-                *(int *)val.value.p_data = getROBO_battBuilding();
-                break;
-
-            case ROBO_ATT_BATT_BEAM:
-                *(int *)val.value.p_data = getROBO_battBeam();
-                break;
-
-            case ROBO_ATT_FILL_MODE:
-                *(int *)val.value.p_data = getROBO_fillMode();
-                break;
-
-            case ROBO_ATT_GUNS:
-                *(roboGun **)val.value.p_data = getROBO_guns();
-                break;
-
-            case ROBO_ATT_EP_CHANGEPLACE:
-                *(int *)val.value.p_data = getROBO_epChangeplace();
-                break;
-
-            case ROBO_ATT_EP_RECONNOITRE:
-                *(int *)val.value.p_data = getROBO_epReconnoitre();
-                break;
-
-            case ROBO_ATT_EP_ROBO:
-                *(int *)val.value.p_data = getROBO_epRobo();
-                break;
-
-            case ROBO_ATT_ROBOSTATE:
-                *(int *)val.value.p_data = getROBO_roboState();
-                break;
-
-            case ROBO_ATT_SAFDELAY:
-                *(int *)val.value.p_data = getROBO_safDelay();
-                break;
-
-            case ROBO_ATT_POWDELAY:
-                *(int *)val.value.p_data = getROBO_powDelay();
-                break;
-
-            case ROBO_ATT_RADDELAY:
-                *(int *)val.value.p_data = getROBO_radDelay();
-                break;
-
-            case ROBO_ATT_CPLDELAY:
-                *(int *)val.value.p_data = getROBO_cplDelay();
-                break;
-
-            case ROBO_ATT_DEFDELAY:
-                *(int *)val.value.p_data = getROBO_defDelay();
-                break;
-
-            case ROBO_ATT_CONDELAY:
-                *(int *)val.value.p_data = getROBO_conDelay();
-                break;
-
-            case ROBO_ATT_ROBDELAY:
-                *(int *)val.value.p_data = getROBO_robDelay();
-                break;
-
-            case ROBO_ATT_RECDELAY:
-                *(int *)val.value.p_data = getROBO_recDelay();
-                break;
-
-            case ROBO_ATT_LOADFLAGS:
-                *(int *)val.value.p_data = getROBO_loadFlags();
-                break;
-
-            case ROBO_ATT_LOSSFLAGS:
-                *(int *)val.value.p_data = getROBO_lossFlags();
-                break;
-
-            case ROBO_ATT_ABSRELOAD:
-                *(int *)val.value.p_data = getROBO_absReload();
+                setROBO_recDelay(val.Get<int32_t>());
                 break;
 
             default:

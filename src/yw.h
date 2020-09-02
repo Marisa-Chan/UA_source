@@ -2277,8 +2277,6 @@ friend class World::Parsers::SaveSuperBombParser;
 public:
     virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func2(IDVList &stak);
-    virtual size_t func3(IDVList &stak);
     virtual size_t base_func64(base_64arg *arg);
     virtual void ypaworld_func129(yw_arg129 *arg);
     virtual size_t ypaworld_func130(yw_130arg *arg);
@@ -2374,7 +2372,7 @@ public:
         YW_ATT_LVL_INFO = 0x8000201A,
         YW_ATT_DESTROY_FX = 0x8000201B,
         YW_ATT_PNET = 0x8000201C,
-        YW_ATT_BUILD_DATE = 0x8000201D,
+        YW_ATT_BUILD_DATE = 0x8000201D,     //std::string
         YW_ATT_DONT_RENDER = 0x8000201E,
         YW_ATT_INVULNERABLE = 0x8000201F
     };
@@ -2687,7 +2685,7 @@ public:
     int timeStamp;
     int field_1618;
     int field_161c;
-    char *buildDate;
+    std::string buildDate;
     int field_1624;
     int16_t field_1628;
     int16_t field_162A;

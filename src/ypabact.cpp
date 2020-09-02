@@ -200,23 +200,23 @@ size_t NC_STACK_ypabact::func0(IDVList &stak)
     _sdist_bact = 100.0;
     _oflags = BACT_OFLAG_EXACTCOLL;
 
-    _world = (NC_STACK_ypaworld *)stak.GetPointer(BACT_ATT_WORLD, 0);// get ypaworld
+    _world = stak.Get<NC_STACK_ypaworld *>(BACT_ATT_WORLD, NULL);// get ypaworld
 
     if ( _world )
     {
-        for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+        for( auto& it : stak )
         {
-            IDVPair &val = it->second;
+            IDVPair &val = it.second;
 
-            if ( !val.skip() )
+            if ( !val.Skip )
             {
-                switch (val.id)
+                switch (val.ID)
                 {
                 case BACT_ATT_VIEWER:
                 {
                     uamessage_viewer viewMsg;
 
-                    if ( val.value.i_data )
+                    if ( val.Get<int32_t>() )
                     {
                         _world->ypaworld_func131(this); //Set current bact
 
@@ -263,7 +263,7 @@ size_t NC_STACK_ypabact::func0(IDVList &stak)
                 break;
 
                 case BACT_ATT_INPUTTING:
-                    if ( val.value.i_data )
+                    if ( val.Get<int32_t>() )
                     {
                         _oflags |= BACT_OFLAG_USERINPT;
                         _world->setYW_userVehicle(this);
@@ -275,43 +275,43 @@ size_t NC_STACK_ypabact::func0(IDVList &stak)
                     break;
 
                 case BACT_ATT_EXACTCOLL:
-                    setBACT_exactCollisions(val.value.i_data);
+                    setBACT_exactCollisions(val.Get<int32_t>());
                     break;
 
                 case BACT_ATT_BACTCOLL:
-                    setBACT_bactCollisions ( val.value.i_data );
+                    setBACT_bactCollisions ( val.Get<int32_t>() );
                     break;
 
                 case BACT_ATT_AIRCONST:
-                    setBACT_airconst(val.value.i_data);
+                    setBACT_airconst(val.Get<int32_t>());
                     break;
 
                 case BACT_ATT_LANDINGONWAIT:
-                    setBACT_landingOnWait ( val.value.i_data );
+                    setBACT_landingOnWait ( val.Get<int32_t>() );
                     break;
 
                 case BACT_ATT_YOURLS:
-                    setBACT_yourLastSeconds(val.value.i_data);
+                    setBACT_yourLastSeconds(val.Get<int32_t>());
                     break;
 
                 case BACT_ATT_VISPROT:
-                    setBACT_visProto( (NC_STACK_base *)val.value.p_data);
+                    setBACT_visProto( val.Get<NC_STACK_base *>());
                     break;
 
                 case BACT_ATT_AGGRESSION:
-                    setBACT_aggression(val.value.i_data);
+                    setBACT_aggression(val.Get<int32_t>());
                     break;
 
                 case BACT_ATT_VPTRANSFORM:
-                    setBACT_vpTransform( (TFEngine::TForm3D *)val.value.p_data);
+                    setBACT_vpTransform( val.Get<TFEngine::TForm3D *>());
                     break;
 
                 case BACT_ATT_EXTRAVIEWER:
-                    setBACT_extraViewer ( val.value.i_data );
+                    setBACT_extraViewer ( val.Get<int32_t>() );
                     break;
 
                 case BACT_ATT_ALWAYSRENDER:
-                    setBACT_alwaysRender ( val.value.i_data );
+                    setBACT_alwaysRender ( val.Get<int32_t>() );
                     break;
 
                 default:
@@ -467,62 +467,60 @@ void NC_STACK_ypabact::CopyTargetOf(NC_STACK_ypabact *unit)
 
 size_t NC_STACK_ypabact::func2(IDVList &stak)
 {
-    NC_STACK_nucleus::func2(stak);
-
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case BACT_ATT_VIEWER:
-                setBACT_viewer(val.value.i_data);
+                setBACT_viewer(val.Get<int32_t>());
                 break;
 
             case BACT_ATT_INPUTTING:
-                setBACT_inputting(val.value.i_data);
+                setBACT_inputting(val.Get<int32_t>());
                 break;
 
             case BACT_ATT_EXACTCOLL:
-                setBACT_exactCollisions ( val.value.i_data );
+                setBACT_exactCollisions ( val.Get<int32_t>() );
                 break;
 
             case BACT_ATT_BACTCOLL:
-                setBACT_bactCollisions ( val.value.i_data );
+                setBACT_bactCollisions ( val.Get<int32_t>() );
                 break;
 
             case BACT_ATT_AIRCONST:
-                setBACT_airconst(val.value.i_data);
+                setBACT_airconst(val.Get<int32_t>());
                 break;
 
             case BACT_ATT_LANDINGONWAIT:
-                setBACT_landingOnWait ( val.value.i_data );
+                setBACT_landingOnWait ( val.Get<int32_t>() );
                 break;
 
             case BACT_ATT_YOURLS:
-                setBACT_yourLastSeconds(val.value.i_data);
+                setBACT_yourLastSeconds(val.Get<int32_t>());
                 break;
 
             case BACT_ATT_VISPROT:
-                setBACT_visProto( (NC_STACK_base *)val.value.p_data);
+                setBACT_visProto( val.Get<NC_STACK_base *>());
                 break;
 
             case BACT_ATT_AGGRESSION:
-                setBACT_aggression(val.value.i_data);
+                setBACT_aggression(val.Get<int32_t>());
                 break;
 
             case BACT_ATT_VPTRANSFORM:
-                setBACT_vpTransform((TFEngine::TForm3D *)val.value.p_data);
+                setBACT_vpTransform( val.Get<TFEngine::TForm3D *>());
                 break;
 
             case BACT_ATT_EXTRAVIEWER:
-                setBACT_extraViewer ( val.value.i_data );
+                setBACT_extraViewer ( val.Get<int32_t>() );
                 break;
 
             case BACT_ATT_ALWAYSRENDER:
-                setBACT_alwaysRender ( val.value.i_data );
+                setBACT_alwaysRender ( val.Get<int32_t>() );
                 break;
 
             default:
@@ -533,99 +531,6 @@ size_t NC_STACK_ypabact::func2(IDVList &stak)
 
     return 1;
 }
-
-size_t NC_STACK_ypabact::func3(IDVList &stak)
-{
-    NC_STACK_nucleus::func3(stak);
-
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case BACT_ATT_WORLD:
-                *(NC_STACK_ypaworld **)val.value.p_data = getBACT_pWorld();
-                break;
-
-            case BACT_ATT_PTRANSFORM:
-                *(TFEngine::TForm3D **)val.value.p_data = getBACT_pTransform();
-                break;
-
-            case BACT_ATT_VIEWER:
-                *(int *)val.value.p_data = getBACT_viewer();
-                break;
-
-            case BACT_ATT_INPUTTING:
-                *(int *)val.value.p_data = getBACT_inputting();
-                break;
-
-            case BACT_ATT_EXACTCOLL:
-                *(int *)val.value.p_data = getBACT_exactCollisions();
-                break;
-
-            case BACT_ATT_BACTCOLL:
-                *(int *)val.value.p_data = getBACT_bactCollisions();
-                break;
-
-            case BACT_ATT_ATTACKLIST:
-                *(nlist **)val.value.p_data = getBACT_attackList();
-                break;
-
-            case BACT_ATT_LANDINGONWAIT:
-                *(int *)val.value.p_data = getBACT_landingOnWait();
-                break;
-
-            case BACT_ATT_YOURLS:
-                *(int *)val.value.p_data = getBACT_yourLastSeconds();
-                break;
-
-            case BACT_ATT_VISPROT:
-                *(NC_STACK_base **)val.value.p_data = getBACT_visProto();
-                break;
-
-            case BACT_ATT_AGGRESSION:
-                *(int *)val.value.p_data = getBACT_aggression();
-                break;
-
-            case BACT_ATT_COLLNODES:
-                *(rbcolls **)val.value.p_data = getBACT_collNodes();
-                break;
-
-            case BACT_ATT_VPTRANSFORM:
-                *(TFEngine::TForm3D **)val.value.p_data = getBACT_vpTransform();
-                break;
-
-            case BACT_ATT_EXTRAVIEWER:
-                *(int *)val.value.p_data = getBACT_extraViewer();
-                break;
-
-            case BACT_ATT_P_ATTACKNODE:
-                *(bact_node **)val.value.p_data = getBACT_primAttackNode();
-                break;
-
-            case BACT_ATT_S_ATTACKNODE:
-                *(bact_node **)val.value.p_data = getBACT_secnAttackNode();
-                break;
-
-            case BACT_ATT_ALWAYSRENDER:
-                *(int *)val.value.p_data = getBACT_alwaysRender();
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    return 1;
-}
-
-
-
-
 
 
 void NC_STACK_ypabact::FixSectorFall()

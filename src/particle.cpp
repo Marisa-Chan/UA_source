@@ -259,14 +259,13 @@ void particle_recalc(NC_STACK_particle::__NC_STACK_particle *prtcl)
 
 int sub_41A8D0(NC_STACK_particle::__NC_STACK_particle *prtcl)
 {
-    IDVList init_vals;
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "particle_sklt");
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_TRYSHARED, 2);
-    init_vals.Add(NC_STACK_skeleton::SKEL_ATT_POINTSCNT, 5);
-    init_vals.Add(NC_STACK_skeleton::SKEL_ATT_POLYCNT, 1);
-    init_vals.Add(NC_STACK_skeleton::SKEL_ATT_POLYPNTCNT, 4);
-
-    NC_STACK_skeleton *sklt = Nucleus::CInit<NC_STACK_skeleton>(init_vals);
+    NC_STACK_skeleton *sklt = Nucleus::CInit<NC_STACK_skeleton>( {
+        {NC_STACK_rsrc::RSRC_ATT_NAME, std::string("particle_sklt")},
+        {NC_STACK_rsrc::RSRC_ATT_TRYSHARED, (int32_t)2},
+        {NC_STACK_skeleton::SKEL_ATT_POINTSCNT, (int32_t)5},
+        {NC_STACK_skeleton::SKEL_ATT_POLYCNT, (int32_t)1},
+        {NC_STACK_skeleton::SKEL_ATT_POLYPNTCNT, (int32_t)4} } );
+        
     prtcl->particle_sklt = sklt;
 
     if ( !sklt )
@@ -412,68 +411,68 @@ size_t NC_STACK_particle::func0(IDVList &stak)
     stack__particle.ctxGenEnd = 1000;
     stack__particle.field_9c = 50.0;
 
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case ADE_ATT_DPTHFADE:
-                setADE_bkCheck( val.value.i_data );
+                setADE_bkCheck( val.Get<int32_t>() );
                 break;
 
             case ADE_ATT_POINT:
-                setADE_point( val.value.i_data );
+                setADE_point( val.Get<int32_t>() );
                 break;
 
             case PRTCL_ATT_STSPEED:
-                setPRTCL_startSpeed( val.value.i_data );
+                setPRTCL_startSpeed( val.Get<int32_t>() );
                 break;
 
             case PRTCL_ATT_NUMCONT:
-                setPRTCL_numContexts( val.value.i_data );
+                setPRTCL_numContexts( val.Get<int32_t>() );
                 break;
 
             case PRTCL_ATT_CONTLFTIME:
-                setPRTCL_contextLifetime( val.value.i_data );
+                setPRTCL_contextLifetime( val.Get<int32_t>() );
                 break;
 
             case PRTCL_ATT_BIRTRATE:
-                setPRTCL_birthRate( val.value.i_data );
+                setPRTCL_birthRate( val.Get<int32_t>() );
                 break;
 
             case PRTCL_ATT_LFTIME:
-                setPRTCL_lifeTime( val.value.i_data );
+                setPRTCL_lifeTime( val.Get<int32_t>() );
                 break;
 
             case PRTCL_ATT_PADE:
-                setPRTCL_pADE( (NC_STACK_area *)val.value.p_data );
+                setPRTCL_pADE( val.Get<NC_STACK_area *>() );
                 break;
 
             case PRTCL_ATT_STSIZE:
-                setPRTCL_startSize( val.value.i_data );
+                setPRTCL_startSize( val.Get<int32_t>() );
                 break;
 
             case PRTCL_ATT_ENDSIZE:
-                setPRTCL_endSize( val.value.i_data );
+                setPRTCL_endSize( val.Get<int32_t>() );
                 break;
 
             case PRTCL_ATT_STGEN:
-                setPRTCL_startGen( val.value.i_data );
+                setPRTCL_startGen( val.Get<int32_t>() );
                 break;
 
             case PRTCL_ATT_ENDGEN:
-                setPRTCL_endGen( val.value.i_data );
+                setPRTCL_endGen( val.Get<int32_t>() );
                 break;
 
             case PRTCL_ATT_NOISE:
-                setPRTCL_noise( val.value.i_data );
+                setPRTCL_noise( val.Get<int32_t>() );
                 break;
 
             case PRTCL_ATT_PPADE:
-                setPRTCL_ppADE ((NC_STACK_ade **)val.value.p_data);
+                setPRTCL_ppADE ( val.Get<NC_STACK_ade **>() );
                 break;
 
             default:
@@ -517,152 +516,6 @@ size_t NC_STACK_particle::func1()
         delete_class_obj(prtcl->particle_sklt);
 
     return NC_STACK_ade::func1();
-}
-
-size_t NC_STACK_particle::func2(IDVList &stak)
-{
-    startSetter();
-
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case ADE_ATT_DPTHFADE:
-                setADE_bkCheck( val.value.i_data );
-                break;
-
-            case ADE_ATT_POINT:
-                setADE_point( val.value.i_data );
-                break;
-
-            case PRTCL_ATT_STSPEED:
-                setPRTCL_startSpeed( val.value.i_data );
-                break;
-
-            case PRTCL_ATT_NUMCONT:
-                setPRTCL_numContexts( val.value.i_data );
-                break;
-
-            case PRTCL_ATT_CONTLFTIME:
-                setPRTCL_contextLifetime( val.value.i_data );
-                break;
-
-            case PRTCL_ATT_BIRTRATE:
-                setPRTCL_birthRate( val.value.i_data );
-                break;
-
-            case PRTCL_ATT_LFTIME:
-                setPRTCL_lifeTime( val.value.i_data );
-                break;
-
-            case PRTCL_ATT_PADE:
-                setPRTCL_pADE( (NC_STACK_area *)val.value.p_data );
-                break;
-
-            case PRTCL_ATT_STSIZE:
-                setPRTCL_startSize( val.value.i_data );
-                break;
-
-            case PRTCL_ATT_ENDSIZE:
-                setPRTCL_endSize( val.value.i_data );
-                break;
-
-            case PRTCL_ATT_STGEN:
-                setPRTCL_startGen( val.value.i_data );
-                break;
-
-            case PRTCL_ATT_ENDGEN:
-                setPRTCL_endGen( val.value.i_data );
-                break;
-
-            case PRTCL_ATT_NOISE:
-                setPRTCL_noise( val.value.i_data );
-                break;
-
-            case PRTCL_ATT_PPADE:
-                setPRTCL_ppADE ((NC_STACK_ade **)val.value.p_data);
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    endSetter();
-
-    return NC_STACK_ade::func2(stak);
-}
-
-size_t NC_STACK_particle::func3(IDVList &stak)
-{
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case PRTCL_ATT_STSPEED:
-                *(int *)val.value.p_data = getPRTCL_startSpeed();
-                break;
-
-            case PRTCL_ATT_NUMCONT:
-                *(int *)val.value.p_data = getPRTCL_numContexts();
-                break;
-
-            case PRTCL_ATT_CONTLFTIME:
-                *(int *)val.value.p_data = getPRTCL_contextLifetime();
-                break;
-
-            case PRTCL_ATT_BIRTRATE:
-                *(int *)val.value.p_data = getPRTCL_birthRate();
-                break;
-
-            case PRTCL_ATT_LFTIME:
-                *(int *)val.value.p_data = getPRTCL_lifeTime();
-                break;
-
-            case PRTCL_ATT_PADE:
-                *(NC_STACK_ade **)val.value.p_data = getPRTCL_pADE();
-                break;
-
-            case PRTCL_ATT_STSIZE:
-                *(int *)val.value.p_data = getPRTCL_startSize();
-                break;
-
-            case PRTCL_ATT_ENDSIZE:
-                *(int *)val.value.p_data = getPRTCL_endSize();
-                break;
-
-            case PRTCL_ATT_STGEN:
-                *(int *)val.value.p_data = getPRTCL_startGen();
-                break;
-
-            case PRTCL_ATT_ENDGEN:
-                *(int *)val.value.p_data = getPRTCL_endGen();
-                break;
-
-            case PRTCL_ATT_NOISE:
-                *(int *)val.value.p_data = getPRTCL_noise();
-                break;
-
-            case PRTCL_ATT_PPADE:
-                *(NC_STACK_ade ***)val.value.p_data = getPRTCL_ppADE();
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    return NC_STACK_ade::func3(stak);
 }
 
 int NC_STACK_particle::particle_func5__sub0(IFFile *mfile)

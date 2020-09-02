@@ -78,12 +78,10 @@ size_t NC_STACK_embed::func5(IFFile **file)
             if (resname.back() == '\0')
                 resname.pop_back();
 
-            IDVList init_atts;
-            init_atts.Add(NC_STACK_rsrc::RSRC_ATT_NAME, resname.c_str());
-            init_atts.Add(NC_STACK_rsrc::RSRC_ATT_TRYSHARED, 1);
-            init_atts.Add(NC_STACK_rsrc::RSRC_ATT_PIFFFILE, mfile);
-
-            NC_STACK_rsrc *embd_class = Nucleus::CTFInit<NC_STACK_rsrc>(classname, init_atts);
+            NC_STACK_rsrc *embd_class = Nucleus::CTFInit<NC_STACK_rsrc>(classname,
+               {{NC_STACK_rsrc::RSRC_ATT_NAME, resname},
+                {NC_STACK_rsrc::RSRC_ATT_TRYSHARED, (int32_t)1},
+                {NC_STACK_rsrc::RSRC_ATT_PIFFFILE, mfile}});
 
             if ( !embd_class )
             {

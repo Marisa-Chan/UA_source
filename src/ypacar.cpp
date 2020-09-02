@@ -27,20 +27,20 @@ size_t NC_STACK_ypacar::func0(IDVList &stak)
 
     _bact_type = BACT_TYPES_CAR;
 
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case CAR_ATT_KAMIKAZE:
-                setCAR_kamikaze(val.value.i_data);
+                setCAR_kamikaze(val.Get<int32_t>());
                 break;
 
             case CAR_ATT_BLAST:
-                setCAR_blast(val.value.i_data);
+                setCAR_blast(val.Get<int32_t>());
                 break;
 
             default:
@@ -61,49 +61,20 @@ size_t NC_STACK_ypacar::func2(IDVList &stak)
 {
     NC_STACK_ypatank::func2(stak);
 
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case CAR_ATT_KAMIKAZE:
-                setCAR_kamikaze(val.value.i_data);
+                setCAR_kamikaze(val.Get<int32_t>());
                 break;
 
             case CAR_ATT_BLAST:
-                setCAR_blast(val.value.i_data);
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    return 1;
-}
-
-size_t NC_STACK_ypacar::func3(IDVList &stak)
-{
-    NC_STACK_ypatank::func3(stak);
-
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case CAR_ATT_KAMIKAZE:
-                *(int *)val.value.p_data = getCAR_kamikaze();
-                break;
-
-            case CAR_ATT_BLAST:
-                *(int *)val.value.p_data = getCAR_blast();
+                setCAR_blast(val.Get<int32_t>());
                 break;
 
             default:

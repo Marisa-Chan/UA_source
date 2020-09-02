@@ -52,12 +52,13 @@ size_t NC_STACK_sklt::func5(IFFile **file)
 
     if ( !getted )
         return 0;
+    
+    IDVList stak {
+        {RSRC_ATT_NAME, std::string(name)},
+        {RSRC_ATT_TRYSHARED, (int32_t)1} };
 
-    IDVList initVals;
-    initVals.Add(RSRC_ATT_NAME, name);
-    initVals.Add(RSRC_ATT_TRYSHARED, 1);
-
-    if ( !NC_STACK_skeleton::func0(initVals) )
+    if ( !NC_STACK_skeleton::func0(stak) 
+        )
         return 0;
 
     return 1;
@@ -99,7 +100,7 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, IDVList &stak, IFFile *mfile, int 
     else
         return NULL;
 
-    stak.Add(NC_STACK_skeleton::SKEL_ATT_POINTSCNT, num);
+    stak.Add(NC_STACK_skeleton::SKEL_ATT_POINTSCNT, (int32_t)num);
 
     rsrc *res = obj->NC_STACK_skeleton::rsrc_func64(stak);
     if ( res )
@@ -441,10 +442,10 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, IDVList &stak, IFFile *mfile)
 // Create sklt resource node and fill rsrc field data
 rsrc * NC_STACK_sklt::rsrc_func64(IDVList &stak)
 {
-    const char *filename = stak.GetConstChar(RSRC_ATT_NAME, NULL);
-    if ( filename )
+    const std::string filename = stak.Get<std::string>(RSRC_ATT_NAME, "");
+    if ( !filename.empty() )
     {
-        IFFile *mfile = (IFFile *)stak.GetPointer(RSRC_ATT_PIFFFILE, NULL);
+        IFFile *mfile = stak.Get<IFFile *>(RSRC_ATT_PIFFFILE, NULL);
 
         int selfopened = 0;
 

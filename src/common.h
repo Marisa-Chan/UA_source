@@ -469,14 +469,7 @@ public:
     using BASE::clear;
     
     uint32_t GetSize() const { return BASE::size() * 32; };
-    void Resize(uint32_t sz) { BASE::resize( (sz + 31) / 32 ); };
-    
-    uint32_t Grow(uint32_t num = 1)
-    {
-        if (num)
-            BASE::resize( BASE::size() + num );
-        return GetSize();
-    }
+    void Resize(uint32_t sz) { BASE::resize( (sz + 31) / 32 , 0 ); };
     
     operator bool() const
     {
@@ -559,7 +552,7 @@ public:
     {
         uint32_t bt = bit >> 5;
         if (bt >= BASE::size())
-            BASE::resize(bt + 1);
+            BASE::resize(bt + 1, 0);
         
         BASE::at(bt) |= (1 << (bit & 0x1F));  
     }
@@ -573,7 +566,7 @@ public:
     void Set(const BitMan &bits)
     {
         if (BASE::size() < bits.size())
-            BASE::resize( bits.size() );
+            BASE::resize( bits.size() , 0 );
         
         for(size_t i = 0; i < bits.size(); i++)
             at(i) |= bits.at(i);
@@ -602,7 +595,7 @@ public:
     {
         uint32_t bt = bit >> 5;
         if (bt >= BASE::size())
-            BASE::resize(bt + 1);      
+            BASE::resize(bt + 1, 0);      
         
         BASE::at(bt) ^= (1 << (bit & 0x1F));  
     }
@@ -616,7 +609,7 @@ public:
     void XSet(const BitMan &bits)
     {
         if (BASE::size() < bits.size())
-            BASE::resize( bits.size() );
+            BASE::resize( bits.size() , 0 );
         
         for(size_t i = 0; i < bits.size(); i++)
             at(i) ^= bits.at(i);

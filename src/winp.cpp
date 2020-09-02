@@ -393,15 +393,6 @@ size_t NC_STACK_winp::func1()
     return NC_STACK_iwimp::func1();
 }
 
-size_t NC_STACK_winp::func2(IDVList &stak)
-{
-    return NC_STACK_iwimp::func2(stak);
-}
-
-size_t NC_STACK_winp::func3(IDVList &stk)
-{
-    return NC_STACK_iwimp::func3(stk);
-}
 
 bool NC_STACK_winp::GetState()
 {

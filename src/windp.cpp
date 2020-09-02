@@ -103,11 +103,6 @@ size_t NC_STACK_windp::func1()
     return NC_STACK_nucleus::func1();
 }
 
-size_t NC_STACK_windp::func3(IDVList &stak)
-{
-    return NC_STACK_nucleus::func3(stak);
-}
-
 size_t NC_STACK_windp::EnumProviders()
 {
     numProviders = 2;
@@ -346,7 +341,7 @@ size_t NC_STACK_windp::GetLocalName(IDVPair *stak)
     return 0;
 }
 
-void NC_STACK_windp::SetVersion(const char *ver)
+void NC_STACK_windp::SetVersion(const std::string &ver)
 {
     //set session ident
     version_ident = ver;
@@ -554,7 +549,7 @@ void UserData::sub_46B328()
         p_ypaworld->windp->FlushBuffer(flushmsg);
 
         char bff[300];
-        sprintf(bff, "%d%s%s%s%s", netLevelID, "|", callSIGN.c_str(), "|", p_ypaworld->buildDate);
+        sprintf(bff, "%d%s%s%s%s", netLevelID, "|", callSIGN.c_str(), "|", p_ypaworld->buildDate.c_str());
 
         p_ypaworld->windp->SetSessionName(bff);
     }
@@ -675,7 +670,7 @@ void UserData::sub_46B328()
         if (isHost)
         {
             char bff[300];
-            sprintf(bff, "%d%s%s%s%s", netLevelID, "|", callSIGN.c_str(), "|", p_ypaworld->buildDate);
+            sprintf(bff, "%d%s%s%s%s", netLevelID, "|", callSIGN.c_str(), "|", p_ypaworld->buildDate.c_str());
 
             if (p_ypaworld->windp->GetProvType(NULL) == 4) //MODEM!!!!
                 p_ypaworld->_win3d->windd_func320(NULL);

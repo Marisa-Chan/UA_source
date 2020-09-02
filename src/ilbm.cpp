@@ -12,31 +12,12 @@ size_t NC_STACK_ilbm::func0(IDVList &stak)
     if ( !NC_STACK_bitmap::func0(stak) )
         return 0;
 
-    if ( stak.Get(ILBM_ATT_FMT, 0) )
+    if ( stak.Get<int32_t>(ILBM_ATT_FMT, 0) )
         stack__ilbm.flags |= 1;
 
     return 1;
 }
 
-size_t NC_STACK_ilbm::func2(IDVList &stak)
-{
-    IDVList::iterator it = stak.find(ILBM_ATT_FMT);
-
-    if ( it != stak.end() )
-        setILBM_saveFmt( it->second.value.i_data );
-
-    return NC_STACK_bitmap::func2(stak);
-}
-
-size_t NC_STACK_ilbm::func3(IDVList &stak)
-{
-    int *val = (int *)stak.GetPointer(ILBM_ATT_FMT, NULL);
-
-    if ( val )
-        *val = getILBM_saveFmt();
-
-    return NC_STACK_bitmap::func3(stak);
-}
 
 size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile)
 {
@@ -98,14 +79,13 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile)
 
     if ( has_nam2 )
     {
-        IDVList stk;
-
-        stk.Add(RSRC_ATT_NAME, name);
-        stk.Add(RSRC_ATT_TRYSHARED, 1);
-        stk.Add(BMD_ATT_CONVCOLOR, 1);
+        IDVList stk {
+            {RSRC_ATT_NAME, std::string(name)},
+            {RSRC_ATT_TRYSHARED, (int32_t)1},
+            {BMD_ATT_CONVCOLOR, (int32_t)1}};
 
         if ( has_opl )
-            stk.Add(BMD_ATT_OUTLINE, &opls);
+            stk.Add(BMD_ATT_OUTLINE, (pixel_2d *)opls);
 
         return NC_STACK_bitmap::func0(stk);
     }
@@ -276,11 +256,10 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
 
     BMHD_type bmhd;
     VBMP_type vbmp;
-    IDVList loclist;
     
     rsrc *res = NC_STACK_rsrc::rsrc_func64(stak);
-    int convertColor = stak.Get(BMD_ATT_CONVCOLOR, 0);
-    int alphaPalette = stak.Get(ATT_ALPHAPALETTE, 1);
+    int convertColor = stak.Get<int32_t>(BMD_ATT_CONVCOLOR, 0);
+    int alphaPalette = stak.Get<int32_t>(ATT_ALPHAPALETTE, 1);
     
     if (!res)
         return NULL;
@@ -466,41 +445,41 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
 // Create ilbm resource node and fill rsrc field data
 rsrc * NC_STACK_ilbm::rsrc_func64(IDVList &stak)
 {
-    const char *resName = stak.GetConstChar(RSRC_ATT_NAME, NULL);
+    const std::string resName = stak.Get<std::string>(RSRC_ATT_NAME, "");
     const char *reassignName = NULL;
 
-    if ( !resName )
+    if ( resName.empty() )
         return NULL;
 
     if ( can_destblend )
     {
-        if ( !strcasecmp(resName, "fx1.ilbm") )
+        if ( !StriCmp(resName, "fx1.ilbm") )
             reassignName = "hi/alpha/fx1.ilbm";
-        else if ( !strcasecmp(resName, "fx2.ilbm") )
+        else if ( !StriCmp(resName, "fx2.ilbm") )
             reassignName = "hi/alpha/fx2.ilbm";
-        else if ( !strcasecmp(resName, "fx3.ilbm") )
+        else if ( !StriCmp(resName, "fx3.ilbm") )
             reassignName = "hi/alpha/fx3.ilbm";
     }
     else if ( can_stippling )
     {
-        if ( !strcasecmp(resName, "fx1.ilbm") )
+        if ( !StriCmp(resName, "fx1.ilbm") )
             reassignName = "hi/beta/fx1.ilbm";
-        else if ( !strcasecmp(resName, "fx2.ilbm") )
+        else if ( !StriCmp(resName, "fx2.ilbm") )
             reassignName = "hi/beta/fx2.ilbm";
-        else if ( !strcasecmp(resName, "fx3.ilbm") )
+        else if ( !StriCmp(resName, "fx3.ilbm") )
             reassignName = "hi/beta/fx3.ilbm";
     }
     else if ( can_srcblend )
     {
-        if ( !strcasecmp(resName, "fx1.ilbm") )
+        if ( !StriCmp(resName, "fx1.ilbm") )
             reassignName = "hi/gamma/fx1.ilbm";
-        else if ( !strcasecmp(resName, "fx2.ilbm") )
+        else if ( !StriCmp(resName, "fx2.ilbm") )
             reassignName = "hi/gamma/fx2.ilbm";
-        else if ( !strcasecmp(resName, "fx3.ilbm") )
+        else if ( !StriCmp(resName, "fx3.ilbm") )
             reassignName = "hi/gamma/fx3.ilbm";
     }
 
-    IFFile *mfile = (IFFile *)stak.GetPointer(RSRC_ATT_PIFFFILE, NULL);
+    IFFile *mfile = stak.Get<IFFile *>(RSRC_ATT_PIFFFILE, NULL);
 
     int selfOpened = 0;
 
@@ -525,7 +504,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(IDVList &stak)
     {
         if ( mfile )
         {
-            stak.Add(BMD_ATT_CONVCOLOR, 1);
+            stak.Add(BMD_ATT_CONVCOLOR, (int32_t)1);
         }
         else
         {

@@ -49,7 +49,7 @@ IFFile::~IFFile()
         delete file_handle;
 }
 
-IFFile *IFFile::openIFFile(const char *filename, bool forWrite)
+IFFile *IFFile::openIFFile(const std::string &filename, bool forWrite)
 {
     std::string tmpBuf = "rsrc:";
     tmpBuf += filename;
@@ -57,9 +57,9 @@ IFFile *IFFile::openIFFile(const char *filename, bool forWrite)
     FSMgr::FileHandle *fil;
 
     if (forWrite)
-        fil = uaOpenFile(tmpBuf.c_str(), "wb");
+        fil = uaOpenFile(tmpBuf, "wb");
     else
-        fil = uaOpenFile(tmpBuf.c_str(), "rb");
+        fil = uaOpenFile(tmpBuf, "rb");
 
     if ( !fil )
         return NULL;

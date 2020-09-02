@@ -15,16 +15,16 @@ size_t NC_STACK_ypaflyer::func0(IDVList &stak)
     if ( !NC_STACK_ypabact::func0(stak) )
         return 0;
 
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case FLY_ATT_TYPE:
-                setFLY_type(val.value.i_data);
+                setFLY_type(val.Get<int32_t>());
                 break;
             default:
                 break;
@@ -49,41 +49,16 @@ size_t NC_STACK_ypaflyer::func2(IDVList &stak)
 {
     NC_STACK_ypabact::func2(stak);
 
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case FLY_ATT_TYPE:
-                setFLY_type(val.value.i_data);
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    return 1;
-}
-
-size_t NC_STACK_ypaflyer::func3(IDVList &stak)
-{
-    NC_STACK_ypabact::func3(stak);
-
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case FLY_ATT_TYPE:
-                *(int *)val.value.p_data = getFLY_type();
+                setFLY_type(val.Get<int32_t>());
                 break;
 
             default:

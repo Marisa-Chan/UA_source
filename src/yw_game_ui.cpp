@@ -2884,10 +2884,7 @@ void sb_0x451034__sub9(NC_STACK_ypaworld *yw)
 
     for (int i = 0; i < 14; i++)
     {
-        IDVList init_vals;
-        init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, off_51825C[i]);
-
-        wis->sklts[i] = Nucleus::CInit<NC_STACK_sklt>(init_vals);
+        wis->sklts[i] = Nucleus::CInit<NC_STACK_sklt>({{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(off_51825C[i])}});
 
         if ( wis->sklts[i] )
             wis->sklts_intern[i] = wis->sklts[i]->GetSkelet();
@@ -7828,10 +7825,7 @@ void ypaworld_func159__sub0__sub0(NC_STACK_ypaworld *yw, yw_samples *smpls, cons
         filename += flname;
     }
 
-    IDVList init_vals;
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, filename.c_str());
-
-    NC_STACK_wav *v23 = Nucleus::CInit<NC_STACK_wav>(init_vals);
+    NC_STACK_wav *v23 = Nucleus::CInit<NC_STACK_wav>( {{NC_STACK_rsrc::RSRC_ATT_NAME, filename}} );
 
     set_prefix_replacement("rsrc", rsr);
 

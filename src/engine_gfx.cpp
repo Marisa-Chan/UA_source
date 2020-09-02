@@ -45,15 +45,12 @@ int GFXEngine::sub_422CE8(const std::string &display, const std::string &display
 {
     if ( !display.empty() )
     {
-        IDVList vals;
-        vals.Add(NC_STACK_display::ATT_DISPLAY_ID, gfxmode);
-
-        cls3D = Nucleus::CTFInit<NC_STACK_win3d>(display, vals);
+        cls3D = Nucleus::CTFInit<NC_STACK_win3d>(display, { {NC_STACK_display::ATT_DISPLAY_ID, (int32_t)gfxmode} } );
 
         if ( !cls3D )
         {
             if ( !display2.empty() )
-                cls3D = Nucleus::CTFInit<NC_STACK_win3d>(display2, vals);
+                cls3D = Nucleus::CTFInit<NC_STACK_win3d>(display2, { {NC_STACK_display::ATT_DISPLAY_ID, (int32_t)gfxmode} } );
         }
         if ( !cls3D )
             ypa_log_out("gfx.engine: display driver init failed!\n");
@@ -70,11 +67,9 @@ int GFXEngine::sub_422CE8(const std::string &display, const std::string &display
 
 int GFXEngine::loadPal(const std::string &palette_ilbm)
 {
-    IDVList vals;
-    vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, palette_ilbm.c_str());
-    vals.Add(NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
-
-    NC_STACK_bitmap *ilbm = Nucleus::CInit<NC_STACK_ilbm>(vals);
+    NC_STACK_bitmap *ilbm = Nucleus::CInit<NC_STACK_ilbm>( {
+        {NC_STACK_rsrc::RSRC_ATT_NAME, std::string(palette_ilbm)},
+        {NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, (int32_t)1}} );
 
     if (!ilbm)
         return 0;

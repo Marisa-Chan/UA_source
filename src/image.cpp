@@ -108,16 +108,16 @@ static SDL_RWops * MyCustomRWop(FSMgr::FileHandle *fil)
 
 rsrc * NC_STACK_image::rsrc_func64(IDVList &stak)
 {
-    const char *resName = stak.GetConstChar(RSRC_ATT_NAME, NULL);
-    int convertColor = stak.Get(BMD_ATT_CONVCOLOR, 0);
+    const std::string resName = stak.Get<std::string>(RSRC_ATT_NAME, "");
+    int convertColor = stak.Get<int32_t>(BMD_ATT_CONVCOLOR, 0);
 
-    if ( !resName )
+    if ( resName.empty() )
         return NULL;
 
     std::string tmpBuf = "rsrc:";
     tmpBuf += resName;
 
-    FSMgr::FileHandle *fil = uaOpenFile(tmpBuf.c_str(), "rb");
+    FSMgr::FileHandle *fil = uaOpenFile(tmpBuf, "rb");
     if (!fil)
         return NULL;
 

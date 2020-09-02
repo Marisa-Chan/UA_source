@@ -33,7 +33,7 @@ size_t NC_STACK_bmpanim::func0(IDVList &stak)
     stack__bmpanim.time_ovr = 0;
     stack__bmpanim.current_frame = stack__bmpanim.bmpanm_intern->start_frame;
 
-    stack__bmpanim.anim_type = stak.Get(BANM_ATT_ANIMTYPE, 0);
+    stack__bmpanim.anim_type = stak.Get<int32_t>(BANM_ATT_ANIMTYPE, 0);
 
     return 1;
 }
@@ -43,53 +43,6 @@ size_t NC_STACK_bmpanim::func1()
     return NC_STACK_bitmap::func1();
 }
 
-size_t NC_STACK_bmpanim::func2(IDVList &stak)
-{
-    IDVList::iterator it = stak.find(BANM_ATT_ANIMTYPE);
-    if ( it != stak.end() )
-        setBANM_animType(it->second.value.i_data);
-
-    return NC_STACK_bitmap::func2(stak);
-}
-
-size_t NC_STACK_bmpanim::func3(IDVList &stak)
-{
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case BMD_ATT_OUTLINE:
-                *(void **)val.value.p_data = NULL;
-                break;
-            case BMD_ATT_WIDTH:
-            case BMD_ATT_HEIGHT:
-                *(int *)val.value.p_data = 0;
-                break;
-            case BANM_ATT_NAME:
-                *(const char **)val.value.p_data = getBANM_name();
-                break;
-            case BANM_ATT_CLASSNAME:
-                *(const char **)val.value.p_data = getBANM_classname();
-                break;
-            case BANM_ATT_FRAMECNT:
-                *(int *)val.value.p_data = getBANM_framecnt();
-                break;
-            case BANM_ATT_ANIMTYPE:
-                *(int *)val.value.p_data = getBANM_animtype();
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    return NC_STACK_bitmap::func3(stak);
-}
 
 size_t NC_STACK_bmpanim::func5(IFFile **file)
 {
@@ -131,13 +84,13 @@ size_t NC_STACK_bmpanim::func5(IFFile **file)
 
     if ( !version )
         return 0;
+    
+    IDVList stak {
+        {RSRC_ATT_NAME, std::string(anmName)},
+        {BANM_ATT_NAME, std::string(anmName)},
+        {BANM_ATT_ANIMTYPE, (int32_t)animType}};
 
-    IDVList stk;
-    stk.Add(RSRC_ATT_NAME, anmName);
-    stk.Add(BANM_ATT_NAME, anmName);
-    stk.Add(BANM_ATT_ANIMTYPE, animType);
-
-    return func0(stk);
+    return func0( stak );
 }
 
 size_t NC_STACK_bmpanim::func6(IFFile **file)
@@ -368,11 +321,9 @@ int bmpanim_func64__sub1__sub2(void *fil, bmpAnim_t1 *arg)
 
                     for (int i = 0; i < nm_cnt; i++)
                     {
-                        IDVList vals;
-                        vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, pbmpAnm_titles[i]);
-                        vals.Add(NC_STACK_rsrc::RSRC_ATT_DONTCOPY, 1);
-
-                        frames[i].bitmObj = Nucleus::CInit<NC_STACK_bitmap>(vals);
+                        frames[i].bitmObj = Nucleus::CInit<NC_STACK_bitmap>( {
+                            {NC_STACK_rsrc::RSRC_ATT_NAME, std::string(pbmpAnm_titles[i])},
+                            {NC_STACK_rsrc::RSRC_ATT_DONTCOPY, (int32_t)1}} );
 
                         if ( !frames[i].bitmObj )
                             return 0;
@@ -532,7 +483,7 @@ int sub_4BFD74(void *fil)
     return 0;
 }
 
-bmpAnim_t1 *bmpanim_func64__sub1(const char *name, IFFile *a2)
+bmpAnim_t1 *bmpanim_func64__sub1(const std::string &name, IFFile *a2)
 {
     char buf[256];
     void *ldfrom = a2;
@@ -548,7 +499,7 @@ bmpAnim_t1 *bmpanim_func64__sub1(const char *name, IFFile *a2)
     {
         strcpy(buf, "rsrc:");
         strcat(buf, "rsrcpool/");
-        strcat(buf, name);
+        strcat(buf, name.c_str());
 
         ldfrom = buf;
         dword_515200 = 0;
@@ -582,13 +533,13 @@ bmpAnim_t1 *bmpanim_func64__sub1(const char *name, IFFile *a2)
     return NULL;
 }
 
-int bmpanim_func64__sub0__sub0(bmpAnim_t1 *t1, char **a2, const char *className)
+int bmpanim_func64__sub0__sub0(bmpAnim_t1 *t1, char **a2, const std::string &className)
 {
-    t1->className = (char *)AllocVec(strlen(className) + 1, 1);
+    t1->className = (char *)AllocVec(className.size() + 1, 1);
     if ( !t1->className )
         return 0;
 
-    strcpy(t1->className, className);
+    strcpy(t1->className, className.c_str());
 
     int bfsz = 0;
     int sz = 0;
@@ -620,11 +571,10 @@ int bmpanim_func64__sub0__sub0(bmpAnim_t1 *t1, char **a2, const char *className)
     {
         strcpy(out, *pt);
 
-        IDVList vals;
-        vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, out);
-        vals.Add(NC_STACK_rsrc::RSRC_ATT_DONTCOPY, 1);
-
-        t1->bitm_buff[i].bitmObj = Nucleus::CTFInit<NC_STACK_bitmap>(className, vals);
+        t1->bitm_buff[i].bitmObj = Nucleus::CTFInit<NC_STACK_bitmap>(className,
+           {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(out)},
+            {NC_STACK_rsrc::RSRC_ATT_DONTCOPY, (int32_t)1}} );
+            
         if ( !t1->bitm_buff[i].bitmObj )
             return 0;
 
@@ -725,7 +675,7 @@ int bmpanim_func64__sub0__sub2(bmpAnim_t1 *t1, int num, bmpanm_loc *arg)
     return 1;
 }
 
-bmpAnim_t1 * bmpanim_func64__sub0(const char *className, char **a2, pixel_2d **a3, int a4, bmpanm_loc *a5)
+bmpAnim_t1 * bmpanim_func64__sub0(const std::string &className, char **a2, pixel_2d **a3, int a4, bmpanm_loc *a5)
 {
     bmpAnim_t1 *t1 = (bmpAnim_t1 *)AllocVec(sizeof(bmpAnim_t1), 65537);
 
@@ -757,28 +707,28 @@ bmpAnim_t1 * bmpanim_func64__sub0(const char *className, char **a2, pixel_2d **a
 // Create bmpanim resource node and fill rsrc field data
 rsrc * NC_STACK_bmpanim::rsrc_func64(IDVList &stak)
 {
-    stak.Add(RSRC_ATT_LISTYPE, 1);
+    stak.Add(RSRC_ATT_LISTYPE, (int32_t)1);
 
     rsrc *res = NC_STACK_bitmap::rsrc_func64(stak);// rsrc_func64
     if ( res )
     {
 
-        const char *a1 = stak.GetConstChar(BANM_ATT_CLASSNAME, NULL);
-        if ( a1 )
+        const std::string a1 = stak.Get<std::string>(BANM_ATT_CLASSNAME, "");
+        if ( !a1.empty() )
         {
-            char **titles = (char **)stak.GetPointer(BANM_ATT_FILE_TITLES, NULL);
-            pixel_2d **opls = (pixel_2d **)stak.GetPointer(BANM_ATT_OUTLINES, NULL);
-            int num = stak.Get(BANM_ATT_FRAMECNT, 0);
-            bmpanm_loc *v7 = (bmpanm_loc *)stak.GetPointer(BANM_ATT_SEQDATA, NULL);
+            char **titles = stak.Get<char **>(BANM_ATT_FILE_TITLES, NULL);
+            pixel_2d **opls = stak.Get<pixel_2d **>(BANM_ATT_OUTLINES, NULL);
+            int num = stak.Get<int32_t>(BANM_ATT_FRAMECNT, 0);
+            bmpanm_loc *v7 = stak.Get<bmpanm_loc *>(BANM_ATT_SEQDATA, NULL);
 
             if ( titles && opls && num && v7 )
                 res->data = bmpanim_func64__sub0(a1, titles, opls, num, v7);
         }
         else
         {
-            const char *v9 = stak.GetConstChar(RSRC_ATT_NAME, NULL);
-            IFFile *v10 = (IFFile *)stak.GetPointer(RSRC_ATT_PIFFFILE, NULL);
-            if ( v9 )
+            const std::string v9 = stak.Get<std::string>(RSRC_ATT_NAME, "");
+            IFFile *v10 = stak.Get<IFFile *>(RSRC_ATT_PIFFFILE, NULL);
+            if ( !v9.empty() )
                 res->data = bmpanim_func64__sub1(v9, v10);
         }
 

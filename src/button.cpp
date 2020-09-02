@@ -45,28 +45,28 @@ size_t NC_STACK_button::func0(IDVList &stak)
     field_19D = 99;
     field_19E = 32;
 
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case BTN_ATT_X:
-                setBTN_x(val.value.i_data);
+                setBTN_x(val.Get<int32_t>());
                 break;
             case BTN_ATT_Y:
-                setBTN_y(val.value.i_data);
+                setBTN_y(val.Get<int32_t>());
                 break;
             case BTN_ATT_W:
-                setBTN_w(val.value.i_data);
+                setBTN_w(val.Get<int32_t>());
                 break;
             case BTN_ATT_H:
-                setBTN_h(val.value.i_data);
+                setBTN_h(val.Get<int32_t>());
                 break;
             case BTN_ATT_CHARS:
-                setBTN_chars((const char *)val.value.p_data);
+                setBTN_chars( val.Get<std::string>() );
                 break;
 
             default:
@@ -103,79 +103,6 @@ size_t NC_STACK_button::func1()
     return NC_STACK_nucleus::func1();
 }
 
-size_t NC_STACK_button::func2(IDVList &stak)
-{
-    NC_STACK_nucleus::func2(stak);
-
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case BTN_ATT_X:
-                setBTN_x(val.value.i_data);
-                break;
-            case BTN_ATT_Y:
-                setBTN_y(val.value.i_data);
-                break;
-            case BTN_ATT_W:
-                setBTN_w(val.value.i_data);
-                break;
-            case BTN_ATT_H:
-                setBTN_h(val.value.i_data);
-                break;
-            case BTN_ATT_CHARS:
-                setBTN_chars((const char *)val.value.p_data);
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    return 1;
-}
-
-size_t NC_STACK_button::func3(IDVList &stak)
-{
-    NC_STACK_nucleus::func3(stak);
-
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case BTN_ATT_X:
-                *(int *)val.value.p_data = getBTN_x();
-                break;
-            case BTN_ATT_Y:
-                *(int *)val.value.p_data = getBTN_y();
-                break;
-            case BTN_ATT_W:
-                *(int *)val.value.p_data = getBTN_w();
-                break;
-            case BTN_ATT_H:
-                *(int *)val.value.p_data = getBTN_h();
-                break;
-            case BTN_ATT_PBTN:
-                *(NC_STACK_button **)val.value.p_data = this;
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    return 1;
-}
 
 // Update slider
 void NC_STACK_button::sub_436F58(NC_STACK_button *btn, button_str2 *sbt)
@@ -1011,12 +938,11 @@ void NC_STACK_button::setBTN_h(int _h)
     h = _h;
 }
 
-void NC_STACK_button::setBTN_chars(const char *chrs)
+void NC_STACK_button::setBTN_chars(const std::string &chrs)
 {
-    const uint8_t *v4 = (const uint8_t *)chrs;
-    field_19c = v4[0];
-    field_19D = v4[1];
-    field_19E = v4[2];
+    field_19c = (uint8_t)chrs[0];
+    field_19D = (uint8_t)chrs[1];
+    field_19E = (uint8_t)chrs[2];
 }
 
 

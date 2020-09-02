@@ -33,7 +33,6 @@ public:
     virtual size_t func0(IDVList &stak);
     virtual size_t func1();
     virtual size_t func2(IDVList &stak);
-    virtual size_t func3(IDVList &stak);
     virtual void AI_layer1(update_msg *arg);
     virtual void AI_layer2(update_msg *arg);
     virtual void AI_layer3(update_msg *arg);

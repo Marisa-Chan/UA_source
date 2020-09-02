@@ -32,16 +32,16 @@ size_t NC_STACK_ypatank::func0(IDVList &stak)
 
     _tankFlags = (FLAG_TANK_TIP | FLAG_TANK_ROTWAIT);
 
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case TANK_ATT_TIP:
-                setTANK_tip( val.value.i_data );
+                setTANK_tip( val.Get<int32_t>() );
                 break;
 
             default:
@@ -63,41 +63,16 @@ size_t NC_STACK_ypatank::func2(IDVList &stak)
 {
     NC_STACK_ypabact::func2(stak);
 
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case TANK_ATT_TIP:
-                setTANK_tip( val.value.i_data );
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    return 1;
-}
-
-size_t NC_STACK_ypatank::func3(IDVList &stak)
-{
-    NC_STACK_ypabact::func3(stak);
-
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case TANK_ATT_TIP:
-                *(int *)val.value.p_data = getTANK_tip();
+                setTANK_tip( val.Get<int32_t>() );
                 break;
 
             default:

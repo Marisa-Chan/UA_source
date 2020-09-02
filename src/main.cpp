@@ -734,10 +734,7 @@ int WinMain__sub0__sub1()
 //    strcat(buildDate, " ");
 //    strcat(buildDate, __TIME__);
 
-    IDVList init_vals;
-    init_vals.Add(NC_STACK_ypaworld::YW_ATT_BUILD_DATE, buildDate);
-
-    ypaworld = Nucleus::CInit<NC_STACK_ypaworld>(init_vals);
+    ypaworld = Nucleus::CInit<NC_STACK_ypaworld>( { {NC_STACK_ypaworld::YW_ATT_BUILD_DATE, std::string(buildDate)} } );
     
     Gui::UA::yw = ypaworld;
     

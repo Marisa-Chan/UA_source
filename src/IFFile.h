@@ -76,7 +76,7 @@ public:
     bool writeFloatL(float val);
     bool writeFloatB(float val);
 
-    static IFFile *openIFFile(const char *filename, bool forWrite);
+    static IFFile *openIFFile(const std::string &filename, bool forWrite);
 
 private:
     void _Init();

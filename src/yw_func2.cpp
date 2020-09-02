@@ -1805,10 +1805,7 @@ void sub_4D9550(NC_STACK_ypaworld *yw, int arg)
         usr->field_ADA = 0;
     }
 
-    IDVList init_vals;
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, a1a);
-
-    usr->field_ADA = Nucleus::CInit<NC_STACK_wav>(init_vals);
+    usr->field_ADA = Nucleus::CInit<NC_STACK_wav>({{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(a1a)}});
     if ( usr->field_ADA )
     {
         SFXEngine::SFXe.sub_423DB0(&usr->field_782);
@@ -5038,10 +5035,7 @@ bool UserData::LoadSample(int block, int sampleID, const std::string &file)
 
     set_prefix_replacement("rsrc", "data:");
 
-    IDVList init_vals;
-    init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, file.c_str());
-
-    NC_STACK_wav *wav = Nucleus::CInit<NC_STACK_wav>(init_vals);
+    NC_STACK_wav *wav = Nucleus::CInit<NC_STACK_wav>({{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(file)}});
     if ( !wav )
         return false;
 

@@ -30,13 +30,13 @@ struct __attribute__((packed)) PCM_fmt
     uint16_t BitsPerSample;
 };
 
-rsrc * wav_func64__sub0(NC_STACK_wav *obj, IDVList &stak, const char *filname)
+rsrc * wav_func64__sub0(NC_STACK_wav *obj, IDVList &stak, const std::string &filname)
 {
     char buf[256];
     rsrc *res = NULL;
 
     strcpy(buf, "rsrc:");
-    strcat(buf, filname);
+    strcat(buf, filname.c_str());
 
     FSMgr::FileHandle *fil = uaOpenFile(buf, "rb");
 
@@ -64,8 +64,8 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, IDVList &stak, const char *filname)
 
                 if (sbchunk.SubchunkID == TAG_data)
                 {
-                    stak.Add(NC_STACK_sample::SMPL_ATT_LEN, (int)sbchunk.SubchunkSize);
-                    stak.Add(NC_STACK_sample::SMPL_ATT_TYPE, 1);
+                    stak.Add(NC_STACK_sample::SMPL_ATT_LEN, (int32_t)sbchunk.SubchunkSize);
+                    stak.Add(NC_STACK_sample::SMPL_ATT_TYPE, (int32_t)1);
 
                     res = obj->NC_STACK_sample::rsrc_func64(stak); //Create sampl structure and alloc buff
 
@@ -117,9 +117,9 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, IDVList &stak, const char *filname)
 
 rsrc * NC_STACK_wav::rsrc_func64(IDVList &stak)
 {
-    const char *filename = stak.GetConstChar(RSRC_ATT_NAME, NULL);
+    std::string filename = stak.Get<std::string>(RSRC_ATT_NAME, "");
 
-    if ( filename )
+    if ( !filename.empty() )
         return wav_func64__sub0(this, stak, filename);
 
     return NULL;

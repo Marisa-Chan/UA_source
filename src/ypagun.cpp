@@ -20,40 +20,40 @@ size_t NC_STACK_ypagun::func0(IDVList &stak)
     _gunType = GUN_TYPE_REAL;
     _gunFireTime = 100;
 
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case GUN_ATT_SIDEANGLE:
-                setGUN_sideAngle(val.value.i_data);
+                setGUN_sideAngle(val.Get<int32_t>());
                 break;
 
             case GUN_ATT_UPANGLE:
-                setGUN_upAngle(val.value.i_data);
+                setGUN_upAngle(val.Get<int32_t>());
                 break;
 
             case GUN_ATT_DOWNANGLE:
-                setGUN_downAngle(val.value.i_data);
+                setGUN_downAngle(val.Get<int32_t>());
                 break;
 
             case GUN_ATT_FIRETYPE:
-                setGUN_fireType(val.value.i_data);
+                setGUN_fireType(val.Get<int32_t>());
                 break;
 
             case GUN_ATT_FIRETIME:
-                setGUN_fireTime(val.value.i_data);
+                setGUN_fireTime(val.Get<int32_t>());
                 break;
 
             case GUN_ATT_SETGROUND:
-                setGUN_setGround ( val.value.i_data );
+                setGUN_setGround ( val.Get<int32_t>() );
                 break;
 
             case GUN_ATT_ROBOGUN:
-                setGUN_roboGun ( val.value.i_data );
+                setGUN_roboGun ( val.Get<int32_t>() );
                 break;
 
             default:
@@ -74,40 +74,40 @@ size_t NC_STACK_ypagun::func2(IDVList &stak)
 {
     NC_STACK_ypabact::func2(stak);
 
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case GUN_ATT_SIDEANGLE:
-                setGUN_sideAngle(val.value.i_data);
+                setGUN_sideAngle(val.Get<int32_t>());
                 break;
 
             case GUN_ATT_UPANGLE:
-                setGUN_upAngle(val.value.i_data);
+                setGUN_upAngle(val.Get<int32_t>());
                 break;
 
             case GUN_ATT_DOWNANGLE:
-                setGUN_downAngle(val.value.i_data);
+                setGUN_downAngle(val.Get<int32_t>());
                 break;
 
             case GUN_ATT_FIRETYPE:
-                setGUN_fireType(val.value.i_data);
+                setGUN_fireType(val.Get<int32_t>());
                 break;
 
             case GUN_ATT_FIRETIME:
-                setGUN_fireTime(val.value.i_data);
+                setGUN_fireTime(val.Get<int32_t>());
                 break;
 
             case GUN_ATT_SETGROUND:
-                setGUN_setGround ( val.value.i_data );
+                setGUN_setGround ( val.Get<int32_t>() );
                 break;
 
             case GUN_ATT_ROBOGUN:
-                setGUN_roboGun ( val.value.i_data );
+                setGUN_roboGun ( val.Get<int32_t>() );
                 break;
 
             default:
@@ -118,56 +118,6 @@ size_t NC_STACK_ypagun::func2(IDVList &stak)
 
     return 1;
 }
-
-size_t NC_STACK_ypagun::func3(IDVList &stak)
-{
-    NC_STACK_ypabact::func3(stak);
-
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case GUN_ATT_SIDEANGLE:
-                *(int *)val.value.p_data = getGUN_sideAngle();
-                break;
-
-            case GUN_ATT_UPANGLE:
-                *(int *)val.value.p_data = getGUN_upAngle();
-                break;
-
-            case GUN_ATT_DOWNANGLE:
-                *(int *)val.value.p_data = getGUN_downAngle();
-                break;
-
-            case GUN_ATT_FIRETYPE:
-                *(int *)val.value.p_data = getGUN_fireType();
-                break;
-
-            case GUN_ATT_FIRETIME:
-                *(int *)val.value.p_data = getGUN_fireTime();
-                break;
-
-            case GUN_ATT_SETGROUND:
-                *(int *)val.value.p_data = getGUN_setGround();
-                break;
-
-            case GUN_ATT_ROBOGUN:
-                *(int *)val.value.p_data = IsRoboGun();
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    return 1;
-}
-
 
 bool NC_STACK_ypagun::CheckPedestal()
 {

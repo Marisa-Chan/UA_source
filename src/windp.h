@@ -126,7 +126,6 @@ class NC_STACK_windp: public NC_STACK_network
 public:
     virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func3(IDVList &stak);
 
     virtual size_t EnumProviders();
     virtual size_t GetProviderName(windp_getNameMsg *arg);
@@ -159,7 +158,7 @@ public:
     virtual bool GetRemoteStart(windp_arg87 *arg);
 
     virtual size_t GetLocalName(IDVPair *stak);
-    virtual void   SetVersion(const char *arg);
+    virtual void   SetVersion(const std::string &arg);
     virtual size_t GetProvType(IDVPair *stak);
 
     virtual size_t GetStats(int *);

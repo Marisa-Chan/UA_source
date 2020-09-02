@@ -47,6 +47,12 @@ NC_STACK_nucleus *CFInit(const std::string &classname)
     return CFInit(classname, empty);
 }
 
+NC_STACK_nucleus *CFInit(const std::string &classname, IDVList::TInitList lst)
+{
+    IDVList stak(lst);
+    return CFInit(classname, stak);
+}
+
 void Delete(NC_STACK_nucleus *clas)
 {
     clas->func1();
@@ -62,16 +68,16 @@ const Nucleus::ClassDescr NC_STACK_nucleus::description("nucleus.class", &newins
 
 size_t NC_STACK_nucleus::func0(IDVList &stak)
 {
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case NC_ATT_NAME:
-                setName((const char *)val.value.p_data);
+                setName( val.Get<std::string>() );
                 break;
 
             default:
@@ -86,56 +92,6 @@ size_t NC_STACK_nucleus::func0(IDVList &stak)
 size_t NC_STACK_nucleus::func1()
 {
     NAME.clear();
-
-    return 1;
-}
-
-size_t NC_STACK_nucleus::func2(IDVList &stak)
-{
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case NC_ATT_NAME:
-                setName((const char *)val.value.p_data);
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    return 1;
-}
-
-size_t NC_STACK_nucleus::func3(IDVList &stak)
-{
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case NC_ATT_NAME:
-                *(const char **)val.value.p_data = NAME.c_str();
-                break;
-
-            case NC_ATT_CLASSNAME:
-                *(const char **)val.value.p_data = GetClassName().c_str();
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
 
     return 1;
 }

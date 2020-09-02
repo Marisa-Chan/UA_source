@@ -31,8 +31,6 @@ class NC_STACK_amesh: public NC_STACK_area
 public:
     virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func2(IDVList &stak);
-    virtual size_t func3(IDVList &stak);
     virtual size_t func5(IFFile **file);
     virtual size_t func6(IFFile **file);
     virtual size_t ade_func65(area_arg_65 *arg);

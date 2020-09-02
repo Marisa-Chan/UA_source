@@ -212,12 +212,11 @@ size_t NC_STACK_3ds::readChunkVertex(FSMgr::FileHandle *fil, size_t sz)
 
     printf("vtx %d\n", numvertex);
 
-    IDVList init_vals;
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "3ds_sklt");
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_TRYSHARED, 2);
-    init_vals.Add(NC_STACK_skeleton::SKEL_ATT_POINTSCNT, numvertex);
-
-    OBJ_SKELETON = Nucleus::CInit<NC_STACK_skeleton>(init_vals);
+    OBJ_SKELETON = Nucleus::CInit<NC_STACK_skeleton>( {
+        {NC_STACK_rsrc::RSRC_ATT_NAME, std::string("3ds_sklt")},
+        {NC_STACK_rsrc::RSRC_ATT_TRYSHARED, (int32_t)2},
+        {NC_STACK_skeleton::SKEL_ATT_POINTSCNT, (int32_t)numvertex}});
+        
     UAskeleton::Data *dat = OBJ_SKELETON->GetSkelet();
 
     for (int i = 0; i < numvertex; i++)
@@ -389,15 +388,13 @@ size_t NC_STACK_3ds::readChunkTexMap(d3dsTextureMap &texmap, FSMgr::FileHandle *
 
             if (!texmap.tex)
             {
-                IDVList vals;
-                vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, texName);
-                vals.Add(NC_STACK_rsrc::RSRC_ATT_TRYSHARED, 2);
-                vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
-
                 std::string oldprefix = get_prefix_replacement("rsrc");
                 set_prefix_replacement("rsrc", "");
 
-                texmap.tex = Nucleus::CInit<NC_STACK_image>(vals);
+                texmap.tex = Nucleus::CInit<NC_STACK_image>( {
+                    {NC_STACK_rsrc::RSRC_ATT_NAME, std::string(texName)},
+                    {NC_STACK_rsrc::RSRC_ATT_TRYSHARED, (int32_t)2},
+                    {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}} );
 
                 set_prefix_replacement("rsrc", oldprefix.c_str());
                 printf("%s\n", texName);

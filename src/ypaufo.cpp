@@ -21,20 +21,20 @@ size_t NC_STACK_ypaufo::func0(IDVList &stak)
 
     _ufoTogo = 200.0;
 
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case BACT_ATT_INPUTTING:
-                setBACT_inputting(val.value.i_data);
+                setBACT_inputting(val.Get<int32_t>());
                 break;
 
             case UFO_ATT_TOGO:
-                setUFO_togo(val.value.i_data);
+                setUFO_togo(val.Get<int32_t>());
                 break;
 
             default:
@@ -55,45 +55,20 @@ size_t NC_STACK_ypaufo::func2(IDVList &stak)
 {
     NC_STACK_ypabact::func2(stak);
 
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
+    for( auto& it : stak )
     {
-        IDVPair &val = it->second;
+        IDVPair &val = it.second;
 
-        if ( !val.skip() )
+        if ( !val.Skip )
         {
-            switch (val.id)
+            switch (val.ID)
             {
             case BACT_ATT_INPUTTING:
-                setBACT_inputting(val.value.i_data);
+                setBACT_inputting(val.Get<int32_t>());
                 break;
 
             case UFO_ATT_TOGO:
-                setUFO_togo(val.value.i_data);
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    return 1;
-}
-
-size_t NC_STACK_ypaufo::func3(IDVList &stak)
-{
-    NC_STACK_ypabact::func3(stak);
-
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case UFO_ATT_TOGO:
-                *(int *)val.value.p_data = getUFO_togo();
+                setUFO_togo(val.Get<int32_t>());
                 break;
 
             default:

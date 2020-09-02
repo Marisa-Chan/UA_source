@@ -34,11 +34,9 @@ NC_STACK_bitmap * loadDisk_screen(NC_STACK_ypaworld *yw)
 
     set_prefix_replacement("rsrc", "data:mc2res");
 
-    IDVList init_vals;
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, v3);
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
-
-    NC_STACK_bitmap *disk = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
+    NC_STACK_bitmap *disk = Nucleus::CInit<NC_STACK_ilbm>({
+        {NC_STACK_rsrc::RSRC_ATT_NAME, std::string(v3)},
+        {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}});
 
     set_prefix_replacement("rsrc", rsrc_def);
 
@@ -573,11 +571,9 @@ void sb_0x44ca90__sub2(NC_STACK_ypaworld *yw, LevelDesc *mapp)
     {
         if (!mapp->Palettes[i].empty())
         {
-            IDVList init_vals;
-            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, mapp->Palettes[i].c_str());
-            init_vals.Add(NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, 1);
-
-            NC_STACK_bitmap *ilbm = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
+            NC_STACK_bitmap *ilbm = Nucleus::CInit<NC_STACK_ilbm>({
+                {NC_STACK_rsrc::RSRC_ATT_NAME, mapp->Palettes[i]},
+                {NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, (int32_t)1}});
 
             if (ilbm)
             {
@@ -1894,7 +1890,7 @@ void NC_STACK_ypaworld::FFeedback_VehicleChanged()
 
 NC_STACK_ypabact *NC_STACK_ypaworld::yw_createUnit( int model_id)
 {
-    const char *unit_classes_names [11] =
+    std::array<const std::string, 11> unit_classes_names
     {
         "dummy.class",      // 0
         "ypabact.class",    // 1
@@ -1923,10 +1919,8 @@ NC_STACK_ypabact *NC_STACK_ypaworld::yw_createUnit( int model_id)
 
     if ( !bacto )
     {
-        IDVList init_vals;
-        init_vals.Add(NC_STACK_ypabact::BACT_ATT_WORLD, this);
-
-        bacto = Nucleus::CTFInit<NC_STACK_ypabact>(unit_classes_names[model_id], init_vals);
+        bacto = Nucleus::CTFInit<NC_STACK_ypabact>(unit_classes_names[model_id], 
+            {{NC_STACK_ypabact::BACT_ATT_WORLD, this}} );
 
         if ( !bacto )
             return NULL;
@@ -1959,10 +1953,7 @@ void sub_44BF34(vhclSndFX *sndfx)
         {
             for (int i = 0; i < sndfx->extS.cnt; i++)
             {
-                IDVList init_vals;
-                init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->extSampleNames[i].c_str());
-
-                sndfx->wavs[i] = Nucleus::CInit<NC_STACK_wav>(init_vals);
+                sndfx->wavs[i] = Nucleus::CInit<NC_STACK_wav>( {{NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->extSampleNames[i]}} );
 
                 if ( sndfx->wavs[i] )
                 {
@@ -1989,10 +1980,7 @@ void sub_44BF34(vhclSndFX *sndfx)
         }
         else if ( sndfx->sample_name[0] )
         {
-            IDVList init_vals;
-            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->sample_name.c_str());
-
-            sndfx->single_sample = Nucleus::CInit<NC_STACK_wav>(init_vals);
+            sndfx->single_sample = Nucleus::CInit<NC_STACK_wav>( {{NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->sample_name}} );
 
             if ( !sndfx->single_sample )
                 ypa_log_out("Warning: Could not load sample %s.\n", sndfx->sample_name);
@@ -4925,10 +4913,7 @@ int recorder_open_replay(recorder *rcrd)
 
 bool NC_STACK_ypaworld::recorder_create_camera()
 {
-    IDVList init_vals;
-    init_vals.Add(NC_STACK_ypabact::BACT_ATT_WORLD, this);
-
-    NC_STACK_ypabact *bacto = Nucleus::CInit<NC_STACK_ypabact>(init_vals);
+    NC_STACK_ypabact *bacto = Nucleus::CInit<NC_STACK_ypabact>( {{NC_STACK_ypabact::BACT_ATT_WORLD, this}} );
 
     if ( !bacto )
         return false;
@@ -5051,10 +5036,8 @@ NC_STACK_ypabact *NC_STACK_ypaworld::recorder_newObject(trec_bct *oinf)
         }
         else
         {
-            IDVList init_vals;
-            init_vals.Add(NC_STACK_ypabact::BACT_ATT_WORLD, this);
 
-            bacto = Nucleus::CInit<NC_STACK_ypabact>(init_vals);
+            bacto = Nucleus::CInit<NC_STACK_ypabact>( {{NC_STACK_ypabact::BACT_ATT_WORLD, this}} );
             if ( bacto )
             {
                 bacto->Renew();
@@ -5646,9 +5629,9 @@ void NC_STACK_ypaworld::debug_info_draw(InputState *inpt)
         {
             debug_count_units();
 
-            if ( buildDate )
+            if ( !buildDate.empty() )
             {
-                cmd = sub_445654(this, cmd, buf_sprintf, "build id: %s", buildDate);
+                cmd = sub_445654(this, cmd, buf_sprintf, "build id: %s", buildDate.c_str());
 
                 FontUA::next_line(&cmd);
             }

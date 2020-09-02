@@ -23,12 +23,3 @@ size_t NC_STACK_network::func1()
     return NC_STACK_nucleus::func1();
 }
 
-size_t NC_STACK_network::func2(IDVList &stak)
-{
-    return NC_STACK_nucleus::func2(stak);
-}
-
-size_t NC_STACK_network::func3(IDVList &stak)
-{
-    return NC_STACK_nucleus::func3(stak);
-}

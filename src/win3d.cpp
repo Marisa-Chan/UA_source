@@ -827,7 +827,7 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
     }
 
 
-    int v7 = stak.Get(ATT_DISPLAY_ID, 0);
+    int v7 = stak.Get<int32_t>(ATT_DISPLAY_ID, 0);
 
     gfxMode *picked = NULL;
     if ( v7 )
@@ -852,8 +852,8 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
     log_d3dlog(" picked mode %s\n", picked->name.c_str());
 
 
-    stak.Add(ATT_WIDTH, picked->w);
-    stak.Add(ATT_HEIGHT, picked->h);
+    stak.Add(ATT_WIDTH, (int32_t)picked->w);
+    stak.Add(ATT_HEIGHT, (int32_t)picked->h);
 
     if ( !NC_STACK_display::func0(stak) )
         return 0;
@@ -1023,73 +1023,6 @@ size_t NC_STACK_win3d::func1()
     return NC_STACK_display::func1();
 }
 
-size_t NC_STACK_win3d::func2(IDVList &stak)
-{
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case WDD_ATT_CURSOR:
-                setWDD_cursor(val.value.i_data);
-                break;
-
-            case WDD_ATT_DIS_LOWRES:
-                setWDD_disLowRes(val.value.i_data);
-                break;
-
-            case WDD_ATT_16BIT_TEX:
-                setWDD_16bitTex(val.value.i_data);
-                break;
-
-            case WDD_ATT_DRAW_PRIM:
-                setWDD_drawPrim(val.value.i_data);
-                break;
-
-            case WDD_ATT_TEXFILT:
-                setW3D_texFilt(val.value.i_data);
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    return NC_STACK_display::func2(stak);
-}
-
-size_t NC_STACK_win3d::func3(IDVList &stak)
-{
-    for(IDVList::iterator it = stak.begin(); it != stak.end(); it++)
-    {
-        IDVPair &val = it->second;
-
-        if ( !val.skip() )
-        {
-            switch (val.id)
-            {
-            case ATT_DISPLAY_ID:
-                *(int *)val.value.p_data = getDISP_displID();
-                break;
-            case WDD_ATT_16BIT_TEX:
-                *(int *)val.value.p_data = getWDD_16bitTex();
-                break;
-            case WDD_ATT_DRAW_PRIM:
-                *(int *)val.value.p_data = getWDD_drawPrim();
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
-
-    return NC_STACK_display::func3(stak);
-}
 
 size_t NC_STACK_win3d::raster_func192(IDVPair *)
 {

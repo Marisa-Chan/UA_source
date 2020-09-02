@@ -21,7 +21,6 @@ class NC_STACK_sample: public NC_STACK_rsrc
 {
 public:
     virtual size_t func0(IDVList &stak);
-    virtual size_t func3(IDVList &stak);
     virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func65(rsrc *pres);
     virtual void * sample_func128(void **arg);

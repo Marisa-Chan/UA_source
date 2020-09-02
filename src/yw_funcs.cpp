@@ -48,13 +48,11 @@ TileMap * NC_STACK_ypaworld::yw_LoadFont(const std::string &fontname)
         return NULL;
     }
 
-    IDVList init_vals;
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, bitmap_name.c_str());
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_TRYSHARED, 0);
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
-    init_vals.Add(NC_STACK_ilbm::ATT_ALPHAPALETTE, 0);
-
-    tileset->img = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
+    tileset->img = Nucleus::CInit<NC_STACK_ilbm>({
+        {NC_STACK_rsrc::RSRC_ATT_NAME, std::string(bitmap_name)},
+        {NC_STACK_rsrc::RSRC_ATT_TRYSHARED, (int32_t)0},
+        {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1},
+        {NC_STACK_ilbm::ATT_ALPHAPALETTE, (int32_t)0} });
     if ( !tileset->img )
     {
         delete tileset;
@@ -126,12 +124,10 @@ TileMap * NC_STACK_ypaworld::yw_LoadTileSet(const std::string &bitmap, Common::P
     if ( !tileset )
         return NULL;
 
-    IDVList init_vals;
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, bitmap.c_str());
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1); // Speed up painting
-    init_vals.Add(NC_STACK_ilbm::ATT_ALPHAPALETTE, 0);
-
-    tileset->img = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
+    tileset->img = Nucleus::CInit<NC_STACK_ilbm>({
+        {NC_STACK_rsrc::RSRC_ATT_NAME, std::string(bitmap)},
+        {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}, // Speed up painting
+        {NC_STACK_ilbm::ATT_ALPHAPALETTE, (int32_t)0} });
     if ( !tileset->img )
     {
         delete tileset;
@@ -925,10 +921,7 @@ int yw_parse_lego(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil, NC_STACK_base *
             if ( !v11 )
                 return 0;
 
-            IDVList init_vals;
-            init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, v11);
-
-            NC_STACK_sklt *skelet = Nucleus::CInit<NC_STACK_sklt>(init_vals);
+            NC_STACK_sklt *skelet = Nucleus::CInit<NC_STACK_sklt>({{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(v11)}});
             if ( !skelet )
             {
                 ypa_log_out("Couldn't load sklt (%s)\n", v11);
@@ -1198,10 +1191,7 @@ int sub_44A97C(NC_STACK_ypaworld *yw, NC_STACK_base *base)
 
     set_prefix_replacement("rsrc", "data:mc2res");
 
-    IDVList init_vals;
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "Skeleton/ColSide.sklt");
-
-    NC_STACK_sklt *tmp_skel = Nucleus::CInit<NC_STACK_sklt>(init_vals);
+    NC_STACK_sklt *tmp_skel = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("Skeleton/ColSide.sklt")}} );
     if ( !tmp_skel )
     {
         ypa_log_out("Couldn't create side collision sklt.\n");
@@ -1211,10 +1201,7 @@ int sub_44A97C(NC_STACK_ypaworld *yw, NC_STACK_base *base)
     yw->ColSide.skeleton = tmp_skel;
     yw->ColSide.skeleton_internal = yw->ColSide.skeleton->GetSkelet();
 
-    init_vals.clear();
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "Skeleton/ColCross.sklt");
-
-    tmp_skel = Nucleus::CInit<NC_STACK_sklt>(init_vals);
+    tmp_skel = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("Skeleton/ColCross.sklt")}} );
     if ( !tmp_skel )
     {
         ypa_log_out("Couldn't create cross collision sklt.\n");
@@ -1276,11 +1263,9 @@ int yw_InitMouseStuff(NC_STACK_ypaworld *yw)
             break;
         }
 
-        IDVList init_vals;
-        init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, v5);
-        init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
-
-        yw->pointers[i] = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
+        yw->pointers[i] = Nucleus::CInit<NC_STACK_ilbm>({
+            {NC_STACK_rsrc::RSRC_ATT_NAME, std::string(v5)},
+            {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}});
         if ( !yw->pointers[i] )
         {
             ypa_log_out("yw_select.c/yw_InitMouseStuff()\n");
@@ -1321,10 +1306,7 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
 
     set_prefix_replacement("rsrc", "data:mc2res");
 
-    IDVList init_vals;
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "skeleton/colsub.sklt");
-
-    colsub_sklt = Nucleus::CInit<NC_STACK_sklt>(init_vals);
+    colsub_sklt = Nucleus::CInit<NC_STACK_sklt>({{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("skeleton/colsub.sklt")}});
     if ( !colsub_sklt )
     {
         ypa_log_out("Couldn't load <skeleton/colsub.sklt>, set %d.\n", setID);
@@ -1332,11 +1314,7 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
     }
     colsub_sklt_intrn = colsub_sklt->GetSkelet();
 
-
-    init_vals.clear();
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "skeleton/colcomp.sklt");
-
-    colcomp_sklt = Nucleus::CInit<NC_STACK_sklt>(init_vals);
+    colcomp_sklt = Nucleus::CInit<NC_STACK_sklt>({{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("skeleton/colcomp.sklt")}});
     if ( !colcomp_sklt )
     {
         ypa_log_out("Couldn't load <skeleton/colcomp.sklt>, set %d.\n", setID);
@@ -1431,20 +1409,14 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
         delete fil;
     }
 
-    init_vals.clear();
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "remap/tracyrmp.ilbm");
-
-    tracyrmp_ilbm = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
+    tracyrmp_ilbm = Nucleus::CInit<NC_STACK_ilbm>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("remap/tracyrmp.ilbm")}} );
     if ( !tracyrmp_ilbm )
     {
         ypa_log_out("Couldn't load tracy remap table, set %d.\n", setID);
         return 0;
     }
 
-    init_vals.clear();
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, "remap/shadermp.ilbm");
-
-    shadermp_ilbm = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
+    shadermp_ilbm = Nucleus::CInit<NC_STACK_ilbm>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("remap/shadermp.ilbm")}} );
     if ( !shadermp_ilbm )
     {
         ypa_log_out("Couldn't load shade remap table, set %d.\n", setID);
@@ -2089,20 +2061,16 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3(int lvlid)
 
                 set_prefix_replacement("rsrc", "levels:");
 
-                IDVList init_vals;
-                init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, LevelNet->brief_map[0].map_name.c_str());
-                init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
-
                 if ( LevelNet->brief_map[0].map_name[0] )
-                    brief.BriefingMapImg = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
+                    brief.BriefingMapImg = Nucleus::CInit<NC_STACK_ilbm>( {
+                        {NC_STACK_rsrc::RSRC_ATT_NAME, LevelNet->brief_map[0].map_name},
+                        {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}} );
 
                 set_prefix_replacement("rsrc", "mbpix:");
 
-                init_vals.clear();
-                init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, mproto->Mbmaps[0].Name.c_str());
-                init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
-
-                brief.MbmapImg = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
+                brief.MbmapImg = Nucleus::CInit<NC_STACK_ilbm>( {
+                    {NC_STACK_rsrc::RSRC_ATT_NAME, mproto->Mbmaps[0].Name},
+                    {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}} );
 
                 if ( brief.MbmapImg )
                 {
@@ -2189,7 +2157,7 @@ bool NC_STACK_ypaworld::InitDebrief()
 
     set_prefix_replacement("rsrc", "data:");
 
-    const std::string vGfxName[4] =
+    const std::array<std::string, 4> vGfxName
     {
         "wireless/db_genes.sklt",
         "wireless/db_death.sklt",
@@ -2197,13 +2165,8 @@ bool NC_STACK_ypaworld::InitDebrief()
         "wireless/db_sec.sklt"
     };
 
-    for (int i = 0; i < 4; i++)
-    {
-        IDVList init_vals;
-        init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, vGfxName[i].c_str());
-
-        brief.VectorGfx[i] = Nucleus::CInit<NC_STACK_sklt>(init_vals);
-    }
+    for (size_t i = 0; i < vGfxName.size(); i++)
+        brief.VectorGfx[i] = Nucleus::CInit<NC_STACK_sklt>({{NC_STACK_rsrc::RSRC_ATT_NAME, vGfxName[i]}});
 
     if ( copyof_ownermap )
         brief.OwnMap = *copyof_ownermap;
@@ -2227,21 +2190,16 @@ bool NC_STACK_ypaworld::InitDebrief()
 
     set_prefix_replacement("rsrc", "levels:");
 
-
-    IDVList init_vals;
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, LevelNet->debrief_map[0].map_name.c_str());
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
-
     if ( LevelNet->debrief_map[0].map_name[0] )
-        brief.BriefingMapImg = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
+        brief.BriefingMapImg = Nucleus::CInit<NC_STACK_ilbm>( {
+            {NC_STACK_rsrc::RSRC_ATT_NAME, LevelNet->debrief_map[0].map_name},
+            {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}});
 
     set_prefix_replacement("rsrc", "mbpix:");
 
-    init_vals.clear();
-    init_vals.Add(NC_STACK_rsrc::RSRC_ATT_NAME, v8.Name.c_str());
-    init_vals.Add(NC_STACK_bitmap::BMD_ATT_CONVCOLOR, 1);
-
-    brief.MbmapImg = Nucleus::CInit<NC_STACK_ilbm>(init_vals);
+    brief.MbmapImg = Nucleus::CInit<NC_STACK_ilbm>( {
+        {NC_STACK_rsrc::RSRC_ATT_NAME, v8.Name},
+        {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}});
     if ( !brief.MbmapImg )
     {
         yw_freeDebrief(this);

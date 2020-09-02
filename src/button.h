@@ -130,8 +130,6 @@ public:
 public:
     virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func2(IDVList &stak);
-    virtual size_t func3(IDVList &stak);
     virtual size_t button_func64(button_64_arg *arg);
     virtual size_t button_func65(int butID);
     virtual size_t button_func66(button_66arg *arg);
@@ -177,7 +175,7 @@ public:
     virtual void setBTN_y(int);
     virtual void setBTN_w(int);
     virtual void setBTN_h(int);
-    virtual void setBTN_chars(const char *);
+    virtual void setBTN_chars(const std::string &);
 
     virtual int getBTN_x();
     virtual int getBTN_y();

@@ -54,6 +54,13 @@ T* CInit(IDVList &stak)
     return tmp;
 };
 
+template<class T>
+T* CInit(IDVList::TInitList lst)
+{
+    IDVList stak(lst);
+    return CInit<T>(stak);
+};
+
 /***
     Default class constructor when you exactly
     know what class you are want
@@ -86,6 +93,7 @@ T* CInit()
 ***/
 NC_STACK_nucleus *CFInit(const std::string &classname, IDVList &stak);
 NC_STACK_nucleus *CFInit(const std::string &classname);
+NC_STACK_nucleus *CFInit(const std::string &classname, IDVList::TInitList lst);
 
 
 /***
@@ -114,6 +122,13 @@ T *CTFInit(const std::string &classname, IDVList &stak)
 };
 
 template <class T>
+T *CTFInit(const std::string &classname, IDVList::TInitList lst)
+{
+    IDVList stak(lst);
+    return CTFInit<T>(classname, stak);
+};
+
+template <class T>
 T *CTFInit(const std::string &classname)
 {
     IDVList empty;
@@ -136,8 +151,6 @@ public:
 public:
     virtual size_t func0(IDVList &stak);
     virtual size_t func1();
-    virtual size_t func2(IDVList &stak);
-    virtual size_t func3(IDVList &stak);
     virtual size_t func5(IFFile **file);
     virtual size_t func6(IFFile **file);
 

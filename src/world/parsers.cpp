@@ -572,17 +572,17 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
         {
             _vhcl->model_id = BACT_TYPES_FLYER;
 
-            _vhcl->initParams.Add(NC_STACK_ypaflyer::FLY_ATT_TYPE, 3);
+            _vhcl->initParams.Add(NC_STACK_ypaflyer::FLY_ATT_TYPE, (int32_t)3);
         }
         else if ( !StriCmp(p2, "glider") )
         {
             _vhcl->model_id = BACT_TYPES_FLYER;
-            _vhcl->initParams.Add(NC_STACK_ypaflyer::FLY_ATT_TYPE, 2);
+            _vhcl->initParams.Add(NC_STACK_ypaflyer::FLY_ATT_TYPE, (int32_t)2);
         }
         else if ( !StriCmp(p2, "zeppelin") )
         {
             _vhcl->model_id = BACT_TYPES_FLYER;
-            _vhcl->initParams.Add(NC_STACK_ypaflyer::FLY_ATT_TYPE, 0);
+            _vhcl->initParams.Add(NC_STACK_ypaflyer::FLY_ATT_TYPE, (int32_t)0);
         }
         else
         {
@@ -807,15 +807,15 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
     else if ( !StriCmp(p1, "gun_side_angle") )
     {
-        _vhcl->initParams.Add(NC_STACK_ypagun::GUN_ATT_SIDEANGLE, (int)std::stol(p2, NULL, 0));
+        _vhcl->initParams.Add(NC_STACK_ypagun::GUN_ATT_SIDEANGLE, (int32_t)std::stol(p2, NULL, 0));
     }
     else if ( !StriCmp(p1, "gun_up_angle") )
     {
-        _vhcl->initParams.Add(NC_STACK_ypagun::GUN_ATT_UPANGLE, (int)std::stol(p2, NULL, 0));
+        _vhcl->initParams.Add(NC_STACK_ypagun::GUN_ATT_UPANGLE, (int32_t)std::stol(p2, NULL, 0));
     }
     else if ( !StriCmp(p1, "gun_down_angle") )
     {
-        _vhcl->initParams.Add(NC_STACK_ypagun::GUN_ATT_DOWNANGLE, (int)std::stol(p2, NULL, 0));
+        _vhcl->initParams.Add(NC_STACK_ypagun::GUN_ATT_DOWNANGLE, (int32_t)std::stol(p2, NULL, 0));
     }
     else if ( !StriCmp(p1, "gun_type") )
     {
@@ -834,63 +834,48 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
         }
 
         if ( gun_type )
-            _vhcl->initParams.Add(NC_STACK_ypagun::GUN_ATT_FIRETYPE, gun_type);
+            _vhcl->initParams.Add(NC_STACK_ypagun::GUN_ATT_FIRETYPE, (int32_t)gun_type);
     }
     else if ( !StriCmp(p1, "kamikaze") )
     {
-        _vhcl->initParams.Add(NC_STACK_ypacar::CAR_ATT_KAMIKAZE, 1);
+        _vhcl->initParams.Add(NC_STACK_ypacar::CAR_ATT_KAMIKAZE, (int32_t)1);
 
-        _vhcl->initParams.Add(NC_STACK_ypacar::CAR_ATT_BLAST, (int)std::stol(p2, NULL, 0));
+        _vhcl->initParams.Add(NC_STACK_ypacar::CAR_ATT_BLAST, (int32_t)std::stol(p2, NULL, 0));
     }
     else if ( !StriCmp(p1, "wireframe") )
     {
         if ( _vhcl->wireframe )
             Nucleus::Delete( _vhcl->wireframe );
-
-        IDVList init_vals;
-        init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, p2.c_str());
-
-        _vhcl->wireframe = Nucleus::CInit<NC_STACK_sklt>(init_vals);
+        
+        _vhcl->wireframe = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(p2)}} );
     }
     else if ( !StriCmp(p1, "hud_wireframe") )
     {
         if ( _vhcl->hud_wireframe )
             Nucleus::Delete(_vhcl->hud_wireframe);
 
-        IDVList init_vals;
-        init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, p2.c_str());
-
-        _vhcl->hud_wireframe = Nucleus::CInit<NC_STACK_sklt>(init_vals);
+        _vhcl->hud_wireframe = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(p2)}} );
     }
     else if ( !StriCmp(p1, "mg_wireframe") )
     {
         if ( _vhcl->mg_wireframe )
             Nucleus::Delete(_vhcl->mg_wireframe);
 
-        IDVList init_vals;
-        init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, p2.c_str());
-
-        _vhcl->mg_wireframe = Nucleus::CInit<NC_STACK_sklt>(init_vals);
+        _vhcl->mg_wireframe = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(p2)}} );
     }
     else if ( !StriCmp(p1, "wpn_wireframe_1") )
     {
         if ( _vhcl->wpn_wireframe_1 )
             Nucleus::Delete(_vhcl->wpn_wireframe_1);
 
-        IDVList init_vals;
-        init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, p2.c_str());
-
-        _vhcl->wpn_wireframe_1 = Nucleus::CInit<NC_STACK_sklt>(init_vals);
+        _vhcl->wpn_wireframe_1 = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(p2)}} );
     }
     else if ( !StriCmp(p1, "wpn_wireframe_2") )
     {
         if ( _vhcl->wpn_wireframe_2 )
             Nucleus::Delete(_vhcl->wpn_wireframe_2);
 
-        IDVList init_vals;
-        init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, p2.c_str());
-
-        _vhcl->wpn_wireframe_2 = Nucleus::CInit<NC_STACK_sklt>(init_vals);
+        _vhcl->wpn_wireframe_2 = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(p2)}} );
     }
     else if ( !StriCmp(p1, "vo_type") )
     {
@@ -1025,11 +1010,11 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
     else if ( !StriCmp(p1, "robo_does_twist") )
     {
-        _vhcl->initParams.Add(NC_STACK_yparobo::ROBO_ATT_WAIT_ROTATE, 1);
+        _vhcl->initParams.Add(NC_STACK_yparobo::ROBO_ATT_WAIT_ROTATE, (int32_t)1);
     }
     else if ( !StriCmp(p1, "robo_does_flux") )
     {
-        _vhcl->initParams.Add(NC_STACK_yparobo::ROBO_ATT_WAIT_SWAY, 1);
+        _vhcl->initParams.Add(NC_STACK_yparobo::ROBO_ATT_WAIT_SWAY, (int32_t)1);
     }
     else
         return ParseSndFX(p1, p2);
@@ -1428,10 +1413,7 @@ int WeaponProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p
         if ( _wpn->wireframe )
             Nucleus::Delete(_wpn->wireframe);
 
-        IDVList init_vals;
-        init_vals.Add( NC_STACK_rsrc::RSRC_ATT_NAME, p2.c_str() );
-
-        _wpn->wireframe = Nucleus::CInit<NC_STACK_sklt>(init_vals);
+        _wpn->wireframe = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(p2)}} );
     }
     else if ( !StriCmp(p1, "dest_fx") )
     {
