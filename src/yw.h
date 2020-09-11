@@ -2490,7 +2490,6 @@ public:
     void NetRemove(NC_STACK_ypabact *bct);
     void NetReleaseMissiles(NC_STACK_ypabact *bact);
     void sub_4F1BE8(NC_STACK_ypabact *bct);
-    void NetDeleteAttacker(NC_STACK_ypabact *bact);
     void BriefingSetObject(const BriefObject &obj, bool doAdd);
     
     
@@ -2575,7 +2574,7 @@ public:
     void recorder_set_bact_pos(NC_STACK_ypabact *bact, const vec3d &pos);
     int recorder_go_to_frame(recorder *rcrd, int wanted_frame_id);
     void recorder_store_bact(recorder *rcrd, World::RefBactList &bct_lst);
-    void recorder_store_bact( recorder *rcrd, YpamissileList &bct_lst);
+    void recorder_store_bact( recorder *rcrd, World::MissileList &bct_lst);
     void recorder_world_to_frame(recorder *rcrd);
     void recorder_write_frame();
     NC_STACK_ypabact *recorder_newObject(trec_bct *oinf);

@@ -152,7 +152,7 @@ size_t NC_STACK_ypabact::func0(IDVList &stak)
     if ( !NC_STACK_nucleus::func0(stak) )
         return 0;
 
-    init_list(&_attackers_list);
+    _attackersList.clear();
     _kidList.clear();
     _missiles_list.clear();
 
@@ -164,8 +164,6 @@ size_t NC_STACK_ypabact::func0(IDVList &stak)
     _fly_dir = vec3d(0.0, 0.0, 0.0);
     _fly_dir_length = 0;
     _target_vec = vec3d(0.0, 0.0, 0.0);
-    _attack_node_prim.bact = this;
-    _attack_node_scnd.bact = this;
     
     //_kidRef.bact = this;
 
@@ -358,7 +356,7 @@ size_t NC_STACK_ypabact::func1()
     while (!_kidList.empty())
         Nucleus::Delete(_kidList.front());
 
-    for (YpamissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end(); it++)
+    for (World::MissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end(); it++)
         Nucleus::Delete(*it);
 
     _missiles_list.clear();
@@ -574,7 +572,7 @@ void NC_STACK_ypabact::FixBeyondTheWorld()
 
 void sub_481F94(NC_STACK_ypabact *bact)
 {
-    for (YpamissileList::iterator it = bact->_missiles_list.begin(); it != bact->_missiles_list.end(); )
+    for (World::MissileList::iterator it = bact->_missiles_list.begin(); it != bact->_missiles_list.end(); )
     {
         NC_STACK_ypamissile *misl = *it;
         if ( misl->getBACT_yourLastSeconds() <= 0 )
@@ -663,7 +661,7 @@ void NC_STACK_ypabact::Update(update_msg *arg)
 
     AI_layer1(arg);
 
-    for(YpamissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end();)
+    for(World::MissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end();)
     {
         NC_STACK_ypamissile *misl = *it;
         it++;
@@ -776,7 +774,7 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
     else if ( arg->priority )
     {
         if ( _secndTtype == BACT_TGT_TYPE_UNIT )
-            Remove(&_attack_node_scnd);
+            _secndT.pbact->_attackersList.remove(this);
 
         switch ( arg->tgt_type )
         {
@@ -828,13 +826,7 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
                 else
                 {
                     _sencdTpos = _secndT.pbact->_position;
-
-                    nlist *lst = _secndT.pbact->getBACT_attackList();
-
-                    if ( lst )
-                        AddTail(lst, &_attack_node_scnd);
-                    else
-                        ypa_log_out("Net eigeklink\n");
+                    _secndT.pbact->_attackersList.push_back(this);
                 }
             }
             else
@@ -862,7 +854,7 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
     else
     {
         if ( _primTtype == BACT_TGT_TYPE_UNIT )
-            Remove(&_attack_node_prim);
+            _primT.pbact->_attackersList.remove(this);
 
         switch ( arg->tgt_type )
         {
@@ -916,10 +908,7 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
 
                 _primTpos = _primT.pbact->_position;
 
-                nlist *lst = _primT.pbact->getBACT_attackList();
-
-                if ( lst )
-                    AddTail(lst, &_attack_node_prim);
+                _primT.pbact->_attackersList.push_back(this);
 
                 _primT_cmdID = arg->tgt.pbact->_commandID;
             }
@@ -3128,37 +3117,11 @@ void NC_STACK_ypabact::Die()
 
     }
 
-    while ( 1 )
-    {
-        bact_node *v30 = (bact_node *)RemHead(&_attackers_list);
-
-        if ( !v30 )
-            break;
-
-        bact_node *v68 = v30->bact->getBACT_primAttackNode();
-        bact_node *v69 = v30->bact->getBACT_secnAttackNode();
-
-        if ( v30 == v68 )
-        {
-            v30->bact->_primT.pbact = NULL;
-            v30->bact->_primTtype = BACT_TGT_TYPE_NONE;
-            v30->bact->_assess_time = 0;
-        }
-        else if ( v30 == v69 )
-        {
-            v30->bact->_secndT.pbact = NULL;
-            v30->bact->_secndTtype = BACT_TGT_TYPE_NONE;
-            v30->bact->_assess_time = 0;
-        }
-        else
-        {
-            ypa_log_out("Hein BlЎd\n");
-        }
-    }
+    CleanAttackersTarget();
 
     if ( (size_t)_parent <= 2 )
     {
-        for (YpamissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end(); it = _missiles_list.erase(it))
+        for (World::MissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end(); it = _missiles_list.erase(it))
         {
             NC_STACK_ypamissile *miss = *it;
 
@@ -3182,7 +3145,7 @@ void NC_STACK_ypabact::Die()
     }
     else
     {
-        for (YpamissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end(); it = _missiles_list.erase(it))
+        for (World::MissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end(); it = _missiles_list.erase(it))
         {
             NC_STACK_ypamissile *miss = *it;
 
@@ -3192,26 +3155,14 @@ void NC_STACK_ypabact::Die()
     }
 
     if ( _secndTtype == BACT_TGT_TYPE_UNIT )
-        Remove(&_attack_node_scnd);
+        _secndT.pbact->_attackersList.remove(this);
 
     if ( _primTtype == BACT_TGT_TYPE_UNIT )
-        Remove(&_attack_node_prim);
+        _primT.pbact->_attackersList.remove(this);
 
 
     _secndTtype = BACT_TGT_TYPE_NONE;
     _primTtype = BACT_TGT_TYPE_NONE;
-
-    if ( _attack_node_scnd.next && _attack_node_scnd.prev )
-    {
-        ypa_log_out("ALARM!!! st-Node noch in liste!!! owner %d, class %d\n", _owner, _bact_type);
-        Remove(&_attack_node_scnd);
-    }
-
-    if ( _attack_node_prim.next && _attack_node_prim.prev )
-    {
-        ypa_log_out("ALARM!!! pt-Node noch in liste!!! owner %d, class %d\n", _owner, _bact_type);
-        Remove(&_attack_node_prim);
-    }
 
     _status = BACT_STATUS_DEAD;
     _commandID = 0;
@@ -3590,13 +3541,7 @@ void NC_STACK_ypabact::GetSummary(bact_arg81 *arg)
 
         case 5:
         {
-            bact_node *nd = (bact_node *)_attackers_list.head;
-
-            while (nd->next)
-            {
-                arg->enrg_sum++;
-                nd = (bact_node *)nd->next;
-            }
+            arg->enrg_sum += _attackersList.size();
         }
         break;
 
@@ -4540,20 +4485,15 @@ NC_STACK_ypabact * GetSectorTarget__sub0(cellArea *cell, NC_STACK_ypabact *unit,
                             {
                                 int v29 = 0;
 
-                                nlist *lst = cel_unit->getBACT_attackList();
-
-                                bact_node *bct_nd = (bact_node *)lst->head;
-                                while ( bct_nd->next )
+                                for ( NC_STACK_ypabact *bct_nd : cel_unit->_attackersList )
                                 {
-                                    bact_node *int_bct_nd = bct_nd->bact->getBACT_secnAttackNode();
-
-                                    if ( bct_nd == int_bct_nd && int_bct_nd->bact->_owner == unit->_owner )
+                                    if ( bct_nd->_secndTtype == BACT_TGT_TYPE_UNIT &&
+                                         bct_nd->_secndT.pbact == cel_unit && 
+                                         bct_nd->_owner == unit->_owner )
                                         v29++;
 
                                     if ( v29 > 1 ) // Looks like hack
                                         break;
-
-                                    bct_nd = (bact_node *)bct_nd->next;
                                 }
 
                                 if ( v29 <= 1 && (!v20 || !GetSectorTarget__sub0__sub0(unit)) )
@@ -5024,14 +4964,9 @@ void NC_STACK_ypabact::Renew()
 
     memset(&_vp_extra, 0, sizeof(extra_vproto) * 3);
 
-    init_list(&_attackers_list);
+    _attackersList.clear();
     _kidList.clear();
     _missiles_list.clear();
-
-    _attack_node_scnd.next = NULL;
-    _attack_node_prim.next = NULL;
-    _attack_node_scnd.prev = NULL;
-    _attack_node_prim.prev = NULL;
 }
 
 void NC_STACK_ypabact::HandBrake(update_msg *arg)
@@ -6487,23 +6422,17 @@ size_t NC_STACK_ypabact::TargetAssess(bact_arg110 *arg)
 
             if ( (tgtPos.XZ() - _position.XZ()).length() > 3600.0 )
             {
-                nlist *lst = _secndT.pbact->getBACT_attackList();
-
-                bact_node *v43 = (bact_node *)lst->head;
-
                 int v28 = 0;
 
-                while(v43->next)
+                for( NC_STACK_ypabact *v43 : _secndT.pbact->_attackersList )
                 {
-                    bact_node *v44 = v43->bact->getBACT_secnAttackNode();
-
-                    if ( v43 == v44 && v44->bact->_owner == _owner )
+                    if ( v43->_secndTtype == BACT_TGT_TYPE_UNIT &&
+                         v43->_secndT.pbact == _secndT.pbact &&
+                         v43->_owner == _owner )
                         v28++;
 
                     if ( v28 > 2 )
                         break;
-
-                    v43 = (bact_node *)v43->next;
                 }
 
                 if ( v28 > 2 )
@@ -8188,10 +8117,6 @@ int NC_STACK_ypabact::getBACT_bactCollisions()
     return (_oflags & BACT_OFLAG_BACTCOLL) != 0;
 }
 
-nlist *NC_STACK_ypabact::getBACT_attackList()
-{
-    return &_attackers_list;
-}
 
 int NC_STACK_ypabact::getBACT_landingOnWait()
 {
@@ -8228,16 +8153,6 @@ int NC_STACK_ypabact::getBACT_extraViewer()
     return (_oflags & BACT_OFLAG_EXTRAVIEW) != 0;
 }
 
-bact_node *NC_STACK_ypabact::getBACT_primAttackNode()
-{
-    return &_attack_node_prim;
-}
-
-bact_node *NC_STACK_ypabact::getBACT_secnAttackNode()
-{
-    return &_attack_node_scnd;
-}
-
 int NC_STACK_ypabact::getBACT_alwaysRender()
 {
     return (_oflags & BACT_OFLAG_ALWAYSREND) != 0;
@@ -8258,4 +8173,28 @@ bool NC_STACK_ypabact::IsNeedsWaypoints( NC_STACK_ypabact *bact)
     return false;
 }
 
+void NC_STACK_ypabact::CleanAttackersTarget()
+{
+    for(World::BactList::iterator it = _attackersList.begin();
+        it != _attackersList.end();
+        it = _attackersList.erase(it))
+    {
+        NC_STACK_ypabact *attacker = *it;
 
+        if ( attacker->_primTtype == BACT_TGT_TYPE_UNIT &&
+             attacker->_primT.pbact == this )
+        {
+            attacker->_primT.pbact = NULL;
+            attacker->_primTtype = BACT_TGT_TYPE_NONE;
+            attacker->_assess_time = 0;
+        }
+        
+        if ( attacker->_secndTtype == BACT_TGT_TYPE_UNIT && 
+             attacker->_secndT.pbact == this )
+        {
+            attacker->_secndT.pbact = NULL;
+            attacker->_secndTtype = BACT_TGT_TYPE_NONE;
+            attacker->_assess_time = 0;
+        }
+    }
+}

@@ -1713,7 +1713,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             fndBact->SetStateInternal(&sst);
         }
 
-        yw->NetDeleteAttacker(fndBact);
+        fndBact->CleanAttackersTarget();
 
         for ( NC_STACK_ypabact* &k : fndBact->_kidList )
             log_netlog("+++ D: I am dead, but I have slave ident %d class %d with state %d (%ds)\n", k->_gid, k->_bact_type, k->_status, yw->timeStamp / 1000);
@@ -2040,7 +2040,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         {
             for ( NC_STACK_ypabact* &un : cm->_kidList )
             {
-                yw->NetDeleteAttacker(un);
+                un->CleanAttackersTarget();
                 yw->NetReleaseMissiles(un);
 
                 stm.newStatus = BACT_STATUS_CREATE;
@@ -2060,7 +2060,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                 un->_status_flg |= BACT_STFLAG_DEATH1;
             }
 
-            yw->NetDeleteAttacker(cm);
+            cm->CleanAttackersTarget();
             yw->NetReleaseMissiles(cm);
 
             stm.newStatus = BACT_STATUS_CREATE;
@@ -2080,7 +2080,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             cm->_status_flg |= BACT_STFLAG_DEATH1;
         }
 
-        yw->NetDeleteAttacker(bhost);
+        bhost->CleanAttackersTarget();
         yw->NetReleaseMissiles(bhost);
 
         bhost->_status_flg |= BACT_STFLAG_DEATH1;

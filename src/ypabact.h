@@ -21,9 +21,6 @@ struct yw_arg129;
 
 struct cellArea;
 
-//typedef RefList<NC_STACK_ypabact *> YpabactList;
-//typedef RefList<NC_STACK_ypamissile *> YpamissileList;
-typedef std::list<NC_STACK_ypamissile *> YpamissileList;
 
 struct destFX
 {
@@ -539,7 +536,6 @@ public:
     virtual int getBACT_inputting();
     virtual int getBACT_exactCollisions();
     virtual int getBACT_bactCollisions();
-    virtual nlist *getBACT_attackList();
     virtual int getBACT_landingOnWait();
     virtual int getBACT_yourLastSeconds();
     virtual NC_STACK_base *getBACT_visProto();
@@ -547,8 +543,6 @@ public:
     virtual rbcolls *getBACT_collNodes();
     virtual TFEngine::TForm3D *getBACT_vpTransform();
     virtual int getBACT_extraViewer();
-    virtual bact_node *getBACT_primAttackNode();
-    virtual bact_node *getBACT_secnAttackNode();
     virtual int getBACT_alwaysRender();
     
     virtual bool IsGroundUnit() { return false; };
@@ -562,6 +556,7 @@ public:
     void DoTargetWaypoint();
     void FixSectorFall();
     void FixBeyondTheWorld();
+    void CleanAttackersTarget();
     
     void CopyTargetOf(NC_STACK_ypabact *commander);
     
@@ -706,7 +701,7 @@ public:
     int _mgun;
     char _num_weapons;
 
-    YpamissileList _missiles_list;
+    World::MissileList _missiles_list;
     int _weapon_time;
     vec3d _fire_pos;
     float _gun_angle;
@@ -738,9 +733,7 @@ public:
     int _oflags;
     NC_STACK_ypaworld *_yw;
     vhclBases _current_vp;
-    nlist _attackers_list;
-    bact_node _attack_node_prim;
-    bact_node _attack_node_scnd;
+    World::BactList _attackersList;
     int _yls_time;  
     
 protected:

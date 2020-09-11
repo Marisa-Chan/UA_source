@@ -3643,41 +3643,29 @@ void NC_STACK_yparobo::checkCommander()
                             }
                             else
                             {
-                                NC_STACK_ypabact *v33 = NULL;
-
-                                nlist *v30 = commander->getBACT_attackList();
-
-                                bact_node *v17 = (bact_node *)v30->head;
-                                while (v17->next)
+                                for ( NC_STACK_ypabact *v33 : commander->_attackersList )
                                 {
-                                    if (_world->UserRobo->_owner == v17->bact->_owner)
+                                    if (_world->UserRobo->_owner == v33->_owner)
                                     {
-                                        v33 = v17->bact;
+                                        if ( v33->_bact_type == BACT_TYPES_MISSLE ) //If missile
+                                        {
+                                            NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v33);
+                                            v33 = miss->getMISS_launcher(); //Get emitter bact
+                                        }
+
+                                        if ( v33->_host_station != v33->_parent )
+                                            v33 = v33->_parent;
+
+                                        robo_arg134 arg134;
+                                        arg134.field_8 = 0;
+                                        arg134.field_10 = 0;
+                                        arg134.field_C = 0;
+                                        arg134.field_4 = 19;
+                                        arg134.unit = v33;
+                                        arg134.field_14 = 34;
+                                        placeMessage(&arg134);
                                         break;
                                     }
-
-                                    v17 = (bact_node *)v17->next;
-                                }
-
-                                if ( v33 )
-                                {
-                                    if ( v33->_bact_type == BACT_TYPES_MISSLE ) //If missile
-                                    {
-                                        NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v33);
-                                        v33 = miss->getMISS_launcher(); //Get emitter bact
-                                    }
-
-                                    if ( v33->_host_station != v33->_parent )
-                                        v33 = v33->_parent;
-
-                                    robo_arg134 arg134;
-                                    arg134.field_8 = 0;
-                                    arg134.field_10 = 0;
-                                    arg134.field_C = 0;
-                                    arg134.field_4 = 19;
-                                    arg134.unit = v33;
-                                    arg134.field_14 = 34;
-                                    placeMessage(&arg134);
                                 }
                             }
                         }

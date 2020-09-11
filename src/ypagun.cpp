@@ -513,7 +513,7 @@ void NC_STACK_ypagun::FightWithBact(bact_arg75 *arg)
 
                 if ( !a5 )
                 {
-                    YpamissileList::reverse_iterator it = _missiles_list.rbegin();
+                    World::MissileList::reverse_iterator it = _missiles_list.rbegin();
                     if ( it != _missiles_list.rend() )
                         (*it)->setMISS_ignoreBuilds(1);
                 }

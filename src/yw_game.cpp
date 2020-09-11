@@ -3975,53 +3975,17 @@ void ypaworld_func151__sub6(NC_STACK_ypaworld *yw)
     }
 }
 
-void NC_STACK_ypaworld::NetDeleteAttacker(NC_STACK_ypabact *bact)
-{
-    nlist *a4 = bact->getBACT_attackList();
-
-    while ( 1 )
-    {
-        bact_node *bct = (bact_node *)RemHead(a4);
-
-        if ( !bct )
-            break;
-
-        bact_node *v5 = bct->bact->getBACT_primAttackNode();
-        bact_node *v6 = bct->bact->getBACT_secnAttackNode();
-
-        if ( bct == v5 )
-        {
-            v5->bact->_primT.pbact = NULL;
-            v5->bact->_primTtype = BACT_TGT_TYPE_NONE;
-            v5->bact->_assess_time = 0;
-        }
-        else if ( bct == v6 )
-        {
-            v6->bact->_secndT.pbact = NULL;
-            v6->bact->_secndTtype = BACT_TGT_TYPE_NONE;
-            v6->bact->_assess_time = 0;
-        }
-        else
-        {
-            log_netlog("Hein BlЎd\n");
-        }
-    }
-}
-
 void NC_STACK_ypaworld::NetReleaseMissiles(NC_STACK_ypabact *bact)
 {
-    for(YpamissileList::iterator it = bact->_missiles_list.begin(); it != bact->_missiles_list.end(); it = bact->_missiles_list.erase(it))
+    for(World::MissileList::iterator it = bact->_missiles_list.begin(); it != bact->_missiles_list.end(); it = bact->_missiles_list.erase(it))
     {
         if ( (*it)->_primTtype == BACT_TGT_TYPE_UNIT )
         {
-            bact_node *nd = (*it)->getBACT_primAttackNode();
-
-            Remove(nd);
-
+            (*it)->_primT.pbact->_attackersList.remove( *it );
             (*it)->_primTtype = BACT_TGT_TYPE_NONE;
         }
 
-        NetDeleteAttacker(*it);
+        (*it)->CleanAttackersTarget();
 
         (*it)->_parent = NULL;
 
@@ -4061,7 +4025,7 @@ void NC_STACK_ypaworld::NetRemove(NC_STACK_ypabact *bct)
             NC_STACK_ypabact *slave = cmnder->_kidList.front();
 
             NetReleaseMissiles(slave);
-            NetDeleteAttacker(slave);
+            slave->CleanAttackersTarget();
             sub_4F1BE8(slave);
 
             slave->_status_flg |= BACT_STFLAG_DEATH1;
@@ -4071,7 +4035,7 @@ void NC_STACK_ypaworld::NetRemove(NC_STACK_ypabact *bct)
         }
 
         NetReleaseMissiles(cmnder);
-        NetDeleteAttacker(cmnder);
+        cmnder->CleanAttackersTarget();
         sub_4F1BE8(cmnder);
 
         cmnder->_status_flg |= BACT_STFLAG_DEATH1;
@@ -4090,7 +4054,7 @@ void NC_STACK_ypaworld::NetRemove(NC_STACK_ypabact *bct)
             a4[i].gun_obj = NULL;
     }
 
-    NetDeleteAttacker(bct);
+    bct->CleanAttackersTarget();
     NetReleaseMissiles(bct);
 
     bct->_status = BACT_STATUS_DEAD;
@@ -4401,7 +4365,7 @@ void recorder_update_time(NC_STACK_ypaworld *yw, int dtime)
 }
 
 
-void NC_STACK_ypaworld::recorder_store_bact( recorder *rcrd, YpamissileList &bct_lst)
+void NC_STACK_ypaworld::recorder_store_bact( recorder *rcrd, World::MissileList &bct_lst)
 {
     for( NC_STACK_ypamissile * &bact : bct_lst )
     {
