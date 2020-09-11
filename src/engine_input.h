@@ -3,7 +3,6 @@
 
 #include <vector>
 #include "utils.h"
-#include "nlist.h"
 #include "common.h"
 
 class NC_STACK_input;

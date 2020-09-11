@@ -3,7 +3,6 @@
 
 #include <string>
 #include "nucleas.h"
-#include "nlist.h"
 #include "wintimer.h"
 #include "winp.h"
 

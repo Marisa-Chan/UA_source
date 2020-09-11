@@ -79,7 +79,6 @@ OBJS =  \
 	netlib/single.cpp\
 	netlib/single_threads.cpp\
 	netlib/zndNet.cpp\
-	nlist.cpp\
 	nucleas.cpp\
 	particle.cpp\
 	rsrc.cpp\

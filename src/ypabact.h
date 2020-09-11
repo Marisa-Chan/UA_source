@@ -42,16 +42,6 @@ struct destFX
 };
 
 
-struct bact_node : public nnode
-{
-    NC_STACK_ypabact *bact;
-
-    bact_node()
-    {
-        bact = NULL;
-    }
-};
-
 enum EVPROTO_FLAG
 {
     EVPROTO_FLAG_ACTIVE = 1,
