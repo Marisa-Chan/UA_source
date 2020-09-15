@@ -48,6 +48,9 @@ public:
     
     using std::map<uint32_t, IDVPair>::map;
     
+    IDVList()
+    {}
+    
     IDVList(TInitList pairs)
     {
         for ( const TInitPair &p : pairs )
