@@ -348,124 +348,124 @@ void NC_STACK_ypaworld::LoadKeyNames()
     for (std::string &a: NC_STACK_input::KeyTitle)
         a.clear();
 
-    NC_STACK_input::KeyTitle[Input::KEY_NONE]       = "*";
-    NC_STACK_input::KeyTitle[Input::KEY_ESCAPE]     = get_lang_string(string_pointers_p2, 1001, "ESC");
-    NC_STACK_input::KeyTitle[Input::KEY_SPACE]      = get_lang_string(string_pointers_p2, 1002, "SPACE");
-    NC_STACK_input::KeyTitle[Input::KEY_UP]         = get_lang_string(string_pointers_p2, 1003, "UP");
-    NC_STACK_input::KeyTitle[Input::KEY_DOWN]       = get_lang_string(string_pointers_p2, 1004, "DOWN");
-    NC_STACK_input::KeyTitle[Input::KEY_LEFT]       = get_lang_string(string_pointers_p2, 1005, "LEFT");
-    NC_STACK_input::KeyTitle[Input::KEY_RIGHT]      = get_lang_string(string_pointers_p2, 1006, "RIGHT");
-    NC_STACK_input::KeyTitle[Input::KEY_F1]         = get_lang_string(string_pointers_p2, 1007, "F1");
-    NC_STACK_input::KeyTitle[Input::KEY_F2]         = get_lang_string(string_pointers_p2, 1008, "F2");
-    NC_STACK_input::KeyTitle[Input::KEY_F3]         = get_lang_string(string_pointers_p2, 1009, "F3");
-    NC_STACK_input::KeyTitle[Input::KEY_F4]         = get_lang_string(string_pointers_p2, 1010, "F4");
-    NC_STACK_input::KeyTitle[Input::KEY_F5]         = get_lang_string(string_pointers_p2, 1011, "F5");
-    NC_STACK_input::KeyTitle[Input::KEY_F6]         = get_lang_string(string_pointers_p2, 1012, "F6");
-    NC_STACK_input::KeyTitle[Input::KEY_F7]         = get_lang_string(string_pointers_p2, 1013, "F7");
-    NC_STACK_input::KeyTitle[Input::KEY_F8]         = get_lang_string(string_pointers_p2, 1014, "F8");
-    NC_STACK_input::KeyTitle[Input::KEY_F9]         = get_lang_string(string_pointers_p2, 1015, "F9");
-    NC_STACK_input::KeyTitle[Input::KEY_F10]        = get_lang_string(string_pointers_p2, 1016, "F10");
-    NC_STACK_input::KeyTitle[Input::KEY_F11]        = get_lang_string(string_pointers_p2, 1017, "F11");
-    NC_STACK_input::KeyTitle[Input::KEY_F12]        = get_lang_string(string_pointers_p2, 1018, "F12");
-    NC_STACK_input::KeyTitle[Input::KEY_BACKSPACE]  = get_lang_string(string_pointers_p2, 1019, "BACK");
-    NC_STACK_input::KeyTitle[Input::KEY_TAB]        = get_lang_string(string_pointers_p2, 1020, "TAB");
-    NC_STACK_input::KeyTitle[Input::KEY_CLEAR]      = get_lang_string(string_pointers_p2, 1021, "CLEAR");
-    NC_STACK_input::KeyTitle[Input::KEY_RETURN]     = get_lang_string(string_pointers_p2, 1022, "RETURN");
-    NC_STACK_input::KeyTitle[Input::KEY_CTRL]       = get_lang_string(string_pointers_p2, 1023, "CTRL");
-    NC_STACK_input::KeyTitle[Input::KEY_SHIFT]      = get_lang_string(string_pointers_p2, 1024, "SHIFT");
-    NC_STACK_input::KeyTitle[Input::KEY_ALT]        = get_lang_string(string_pointers_p2, 1025, "ALT");
-    NC_STACK_input::KeyTitle[Input::KEY_PAUSE]      = get_lang_string(string_pointers_p2, 1026, "PAUSE");
-    NC_STACK_input::KeyTitle[Input::KEY_PGUP]       = get_lang_string(string_pointers_p2, 1027, "PGUP");
-    NC_STACK_input::KeyTitle[Input::KEY_PGDOWN]     = get_lang_string(string_pointers_p2, 1028, "PGDOWN");
-    NC_STACK_input::KeyTitle[Input::KEY_END]        = get_lang_string(string_pointers_p2, 1029, "END");
-    NC_STACK_input::KeyTitle[Input::KEY_HOME]       = get_lang_string(string_pointers_p2, 1030, "HOME");
-    NC_STACK_input::KeyTitle[Input::KEY_SELECT]     = get_lang_string(string_pointers_p2, 1031, "SELECT");
-    NC_STACK_input::KeyTitle[Input::KEY_EXECUTE]    = get_lang_string(string_pointers_p2, 1032, "EXEC");
-    NC_STACK_input::KeyTitle[Input::KEY_SNAPSHOT]   = get_lang_string(string_pointers_p2, 1033, "PRINT");
-    NC_STACK_input::KeyTitle[Input::KEY_INSERT]     = get_lang_string(string_pointers_p2, 1034, "INS");
-    NC_STACK_input::KeyTitle[Input::KEY_DELETE]     = get_lang_string(string_pointers_p2, 1035, "DEL");
-    NC_STACK_input::KeyTitle[Input::KEY_HELP]       = get_lang_string(string_pointers_p2, 1036, "HELP");
-    NC_STACK_input::KeyTitle[Input::KEY_1]          = get_lang_string(string_pointers_p2, 1037, "1");
-    NC_STACK_input::KeyTitle[Input::KEY_2]          = get_lang_string(string_pointers_p2, 1038, "2");
-    NC_STACK_input::KeyTitle[Input::KEY_3]          = get_lang_string(string_pointers_p2, 1039, "3");
-    NC_STACK_input::KeyTitle[Input::KEY_4]          = get_lang_string(string_pointers_p2, 1040, "4");
-    NC_STACK_input::KeyTitle[Input::KEY_5]          = get_lang_string(string_pointers_p2, 1041, "5");
-    NC_STACK_input::KeyTitle[Input::KEY_6]          = get_lang_string(string_pointers_p2, 1042, "6");
-    NC_STACK_input::KeyTitle[Input::KEY_7]          = get_lang_string(string_pointers_p2, 1043, "7");
-    NC_STACK_input::KeyTitle[Input::KEY_8]          = get_lang_string(string_pointers_p2, 1044, "8");
-    NC_STACK_input::KeyTitle[Input::KEY_9]          = get_lang_string(string_pointers_p2, 1045, "9");
-    NC_STACK_input::KeyTitle[Input::KEY_0]          = get_lang_string(string_pointers_p2, 1046, "0");
-    NC_STACK_input::KeyTitle[Input::KEY_A]          = get_lang_string(string_pointers_p2, 1047, "A");
-    NC_STACK_input::KeyTitle[Input::KEY_B]          = get_lang_string(string_pointers_p2, 1048, "B");
-    NC_STACK_input::KeyTitle[Input::KEY_C]          = get_lang_string(string_pointers_p2, 1049, "C");
-    NC_STACK_input::KeyTitle[Input::KEY_D]          = get_lang_string(string_pointers_p2, 1050, "D");
-    NC_STACK_input::KeyTitle[Input::KEY_E]          = get_lang_string(string_pointers_p2, 1051, "E");
-    NC_STACK_input::KeyTitle[Input::KEY_F]          = get_lang_string(string_pointers_p2, 1052, "F");
-    NC_STACK_input::KeyTitle[Input::KEY_G]          = get_lang_string(string_pointers_p2, 1053, "G");
-    NC_STACK_input::KeyTitle[Input::KEY_H]          = get_lang_string(string_pointers_p2, 1054, "H");
-    NC_STACK_input::KeyTitle[Input::KEY_I]          = get_lang_string(string_pointers_p2, 1055, "I");
-    NC_STACK_input::KeyTitle[Input::KEY_J]          = get_lang_string(string_pointers_p2, 1056, "J");
-    NC_STACK_input::KeyTitle[Input::KEY_K]          = get_lang_string(string_pointers_p2, 1057, "K");
-    NC_STACK_input::KeyTitle[Input::KEY_L]          = get_lang_string(string_pointers_p2, 1058, "L");
-    NC_STACK_input::KeyTitle[Input::KEY_M]          = get_lang_string(string_pointers_p2, 1059, "M");
-    NC_STACK_input::KeyTitle[Input::KEY_N]          = get_lang_string(string_pointers_p2, 1060, "N");
-    NC_STACK_input::KeyTitle[Input::KEY_O]          = get_lang_string(string_pointers_p2, 1061, "O");
-    NC_STACK_input::KeyTitle[Input::KEY_P]          = get_lang_string(string_pointers_p2, 1062, "P");
-    NC_STACK_input::KeyTitle[Input::KEY_Q]          = get_lang_string(string_pointers_p2, 1063, "Q");
-    NC_STACK_input::KeyTitle[Input::KEY_R]          = get_lang_string(string_pointers_p2, 1064, "R");
-    NC_STACK_input::KeyTitle[Input::KEY_S]          = get_lang_string(string_pointers_p2, 1065, "S");
-    NC_STACK_input::KeyTitle[Input::KEY_T]          = get_lang_string(string_pointers_p2, 1066, "T");
-    NC_STACK_input::KeyTitle[Input::KEY_U]          = get_lang_string(string_pointers_p2, 1067, "U");
-    NC_STACK_input::KeyTitle[Input::KEY_V]          = get_lang_string(string_pointers_p2, 1068, "V");
-    NC_STACK_input::KeyTitle[Input::KEY_W]          = get_lang_string(string_pointers_p2, 1069, "W");
-    NC_STACK_input::KeyTitle[Input::KEY_X]          = get_lang_string(string_pointers_p2, 1070, "X");
-    NC_STACK_input::KeyTitle[Input::KEY_Y]          = get_lang_string(string_pointers_p2, 1071, "Y");
-    NC_STACK_input::KeyTitle[Input::KEY_Z]          = get_lang_string(string_pointers_p2, 1072, "Z");
-    NC_STACK_input::KeyTitle[Input::KEY_NUM0]       = get_lang_string(string_pointers_p2, 1073, "NUM 0");
-    NC_STACK_input::KeyTitle[Input::KEY_NUM1]       = get_lang_string(string_pointers_p2, 1074, "NUM 1");
-    NC_STACK_input::KeyTitle[Input::KEY_NUM2]       = get_lang_string(string_pointers_p2, 1075, "NUM 2");
-    NC_STACK_input::KeyTitle[Input::KEY_NUM3]       = get_lang_string(string_pointers_p2, 1076, "NUM 3");
-    NC_STACK_input::KeyTitle[Input::KEY_NUM4]       = get_lang_string(string_pointers_p2, 1077, "NUM 4");
-    NC_STACK_input::KeyTitle[Input::KEY_NUM5]       = get_lang_string(string_pointers_p2, 1078, "NUM 5");
-    NC_STACK_input::KeyTitle[Input::KEY_NUM6]       = get_lang_string(string_pointers_p2, 1079, "NUM 6");
-    NC_STACK_input::KeyTitle[Input::KEY_NUM7]       = get_lang_string(string_pointers_p2, 1080, "NUM 7");
-    NC_STACK_input::KeyTitle[Input::KEY_NUM8]       = get_lang_string(string_pointers_p2, 1081, "NUM 8");
-    NC_STACK_input::KeyTitle[Input::KEY_NUM9]       = get_lang_string(string_pointers_p2, 1082, "NUM 9");
-    NC_STACK_input::KeyTitle[Input::KEY_NUMMUL]     = get_lang_string(string_pointers_p2, 1083, "MUL");
-    NC_STACK_input::KeyTitle[Input::KEY_NUMPLUS]    = get_lang_string(string_pointers_p2, 1084, "ADD");
-    NC_STACK_input::KeyTitle[Input::KEY_NUMDOT]     = get_lang_string(string_pointers_p2, 1085, "DOT");
-    NC_STACK_input::KeyTitle[Input::KEY_NUMMINUS]   = get_lang_string(string_pointers_p2, 1086, "SUB");
-    NC_STACK_input::KeyTitle[Input::KEY_NUMENTER]   = get_lang_string(string_pointers_p2, 1087, "ENTER");
-    NC_STACK_input::KeyTitle[Input::KEY_NUMDIV]     = get_lang_string(string_pointers_p2, 1088, "DIV");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA1]     = get_lang_string(string_pointers_p2, 1089, "EXTRA_1");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA2]     = get_lang_string(string_pointers_p2, 1090, "EXTRA_2");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA3]     = get_lang_string(string_pointers_p2, 1091, "EXTRA_3");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA4]     = get_lang_string(string_pointers_p2, 1092, "EXTRA_4");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA5]     = get_lang_string(string_pointers_p2, 1093, "EXTRA_5");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA6]     = get_lang_string(string_pointers_p2, 1094, "EXTRA_6");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA7]     = get_lang_string(string_pointers_p2, 1095, "EXTRA_7");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA8]     = get_lang_string(string_pointers_p2, 1096, "EXTRA_8");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA9]     = get_lang_string(string_pointers_p2, 1097, "EXTRA_9");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA10]    = get_lang_string(string_pointers_p2, 1098, "EXTRA_10");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA11]    = get_lang_string(string_pointers_p2, 1099, "EXTRA_11");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA12]    = get_lang_string(string_pointers_p2, 1100, "EXTRA_12");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA13]    = get_lang_string(string_pointers_p2, 1101, "EXTRA_13");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA14]    = get_lang_string(string_pointers_p2, 1102, "EXTRA_14");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA15]    = get_lang_string(string_pointers_p2, 1103, "EXTRA_15");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA16]    = get_lang_string(string_pointers_p2, 1104, "EXTRA_16");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA17]    = get_lang_string(string_pointers_p2, 1105, "EXTRA_17");
-    NC_STACK_input::KeyTitle[Input::KEY_EXTRA18]    = get_lang_string(string_pointers_p2, 1106, "EXTRA_18");
+    NC_STACK_input::KeyTitle[Input::KC_NONE]       = "*";
+    NC_STACK_input::KeyTitle[Input::KC_ESCAPE]     = get_lang_string(string_pointers_p2, 1001, "ESC");
+    NC_STACK_input::KeyTitle[Input::KC_SPACE]      = get_lang_string(string_pointers_p2, 1002, "SPACE");
+    NC_STACK_input::KeyTitle[Input::KC_UP]         = get_lang_string(string_pointers_p2, 1003, "UP");
+    NC_STACK_input::KeyTitle[Input::KC_DOWN]       = get_lang_string(string_pointers_p2, 1004, "DOWN");
+    NC_STACK_input::KeyTitle[Input::KC_LEFT]       = get_lang_string(string_pointers_p2, 1005, "LEFT");
+    NC_STACK_input::KeyTitle[Input::KC_RIGHT]      = get_lang_string(string_pointers_p2, 1006, "RIGHT");
+    NC_STACK_input::KeyTitle[Input::KC_F1]         = get_lang_string(string_pointers_p2, 1007, "F1");
+    NC_STACK_input::KeyTitle[Input::KC_F2]         = get_lang_string(string_pointers_p2, 1008, "F2");
+    NC_STACK_input::KeyTitle[Input::KC_F3]         = get_lang_string(string_pointers_p2, 1009, "F3");
+    NC_STACK_input::KeyTitle[Input::KC_F4]         = get_lang_string(string_pointers_p2, 1010, "F4");
+    NC_STACK_input::KeyTitle[Input::KC_F5]         = get_lang_string(string_pointers_p2, 1011, "F5");
+    NC_STACK_input::KeyTitle[Input::KC_F6]         = get_lang_string(string_pointers_p2, 1012, "F6");
+    NC_STACK_input::KeyTitle[Input::KC_F7]         = get_lang_string(string_pointers_p2, 1013, "F7");
+    NC_STACK_input::KeyTitle[Input::KC_F8]         = get_lang_string(string_pointers_p2, 1014, "F8");
+    NC_STACK_input::KeyTitle[Input::KC_F9]         = get_lang_string(string_pointers_p2, 1015, "F9");
+    NC_STACK_input::KeyTitle[Input::KC_F10]        = get_lang_string(string_pointers_p2, 1016, "F10");
+    NC_STACK_input::KeyTitle[Input::KC_F11]        = get_lang_string(string_pointers_p2, 1017, "F11");
+    NC_STACK_input::KeyTitle[Input::KC_F12]        = get_lang_string(string_pointers_p2, 1018, "F12");
+    NC_STACK_input::KeyTitle[Input::KC_BACKSPACE]  = get_lang_string(string_pointers_p2, 1019, "BACK");
+    NC_STACK_input::KeyTitle[Input::KC_TAB]        = get_lang_string(string_pointers_p2, 1020, "TAB");
+    NC_STACK_input::KeyTitle[Input::KC_CLEAR]      = get_lang_string(string_pointers_p2, 1021, "CLEAR");
+    NC_STACK_input::KeyTitle[Input::KC_RETURN]     = get_lang_string(string_pointers_p2, 1022, "RETURN");
+    NC_STACK_input::KeyTitle[Input::KC_CTRL]       = get_lang_string(string_pointers_p2, 1023, "CTRL");
+    NC_STACK_input::KeyTitle[Input::KC_SHIFT]      = get_lang_string(string_pointers_p2, 1024, "SHIFT");
+    NC_STACK_input::KeyTitle[Input::KC_ALT]        = get_lang_string(string_pointers_p2, 1025, "ALT");
+    NC_STACK_input::KeyTitle[Input::KC_PAUSE]      = get_lang_string(string_pointers_p2, 1026, "PAUSE");
+    NC_STACK_input::KeyTitle[Input::KC_PGUP]       = get_lang_string(string_pointers_p2, 1027, "PGUP");
+    NC_STACK_input::KeyTitle[Input::KC_PGDOWN]     = get_lang_string(string_pointers_p2, 1028, "PGDOWN");
+    NC_STACK_input::KeyTitle[Input::KC_END]        = get_lang_string(string_pointers_p2, 1029, "END");
+    NC_STACK_input::KeyTitle[Input::KC_HOME]       = get_lang_string(string_pointers_p2, 1030, "HOME");
+    NC_STACK_input::KeyTitle[Input::KC_SELECT]     = get_lang_string(string_pointers_p2, 1031, "SELECT");
+    NC_STACK_input::KeyTitle[Input::KC_EXECUTE]    = get_lang_string(string_pointers_p2, 1032, "EXEC");
+    NC_STACK_input::KeyTitle[Input::KC_SNAPSHOT]   = get_lang_string(string_pointers_p2, 1033, "PRINT");
+    NC_STACK_input::KeyTitle[Input::KC_INSERT]     = get_lang_string(string_pointers_p2, 1034, "INS");
+    NC_STACK_input::KeyTitle[Input::KC_DELETE]     = get_lang_string(string_pointers_p2, 1035, "DEL");
+    NC_STACK_input::KeyTitle[Input::KC_HELP]       = get_lang_string(string_pointers_p2, 1036, "HELP");
+    NC_STACK_input::KeyTitle[Input::KC_1]          = get_lang_string(string_pointers_p2, 1037, "1");
+    NC_STACK_input::KeyTitle[Input::KC_2]          = get_lang_string(string_pointers_p2, 1038, "2");
+    NC_STACK_input::KeyTitle[Input::KC_3]          = get_lang_string(string_pointers_p2, 1039, "3");
+    NC_STACK_input::KeyTitle[Input::KC_4]          = get_lang_string(string_pointers_p2, 1040, "4");
+    NC_STACK_input::KeyTitle[Input::KC_5]          = get_lang_string(string_pointers_p2, 1041, "5");
+    NC_STACK_input::KeyTitle[Input::KC_6]          = get_lang_string(string_pointers_p2, 1042, "6");
+    NC_STACK_input::KeyTitle[Input::KC_7]          = get_lang_string(string_pointers_p2, 1043, "7");
+    NC_STACK_input::KeyTitle[Input::KC_8]          = get_lang_string(string_pointers_p2, 1044, "8");
+    NC_STACK_input::KeyTitle[Input::KC_9]          = get_lang_string(string_pointers_p2, 1045, "9");
+    NC_STACK_input::KeyTitle[Input::KC_0]          = get_lang_string(string_pointers_p2, 1046, "0");
+    NC_STACK_input::KeyTitle[Input::KC_A]          = get_lang_string(string_pointers_p2, 1047, "A");
+    NC_STACK_input::KeyTitle[Input::KC_B]          = get_lang_string(string_pointers_p2, 1048, "B");
+    NC_STACK_input::KeyTitle[Input::KC_C]          = get_lang_string(string_pointers_p2, 1049, "C");
+    NC_STACK_input::KeyTitle[Input::KC_D]          = get_lang_string(string_pointers_p2, 1050, "D");
+    NC_STACK_input::KeyTitle[Input::KC_E]          = get_lang_string(string_pointers_p2, 1051, "E");
+    NC_STACK_input::KeyTitle[Input::KC_F]          = get_lang_string(string_pointers_p2, 1052, "F");
+    NC_STACK_input::KeyTitle[Input::KC_G]          = get_lang_string(string_pointers_p2, 1053, "G");
+    NC_STACK_input::KeyTitle[Input::KC_H]          = get_lang_string(string_pointers_p2, 1054, "H");
+    NC_STACK_input::KeyTitle[Input::KC_I]          = get_lang_string(string_pointers_p2, 1055, "I");
+    NC_STACK_input::KeyTitle[Input::KC_J]          = get_lang_string(string_pointers_p2, 1056, "J");
+    NC_STACK_input::KeyTitle[Input::KC_K]          = get_lang_string(string_pointers_p2, 1057, "K");
+    NC_STACK_input::KeyTitle[Input::KC_L]          = get_lang_string(string_pointers_p2, 1058, "L");
+    NC_STACK_input::KeyTitle[Input::KC_M]          = get_lang_string(string_pointers_p2, 1059, "M");
+    NC_STACK_input::KeyTitle[Input::KC_N]          = get_lang_string(string_pointers_p2, 1060, "N");
+    NC_STACK_input::KeyTitle[Input::KC_O]          = get_lang_string(string_pointers_p2, 1061, "O");
+    NC_STACK_input::KeyTitle[Input::KC_P]          = get_lang_string(string_pointers_p2, 1062, "P");
+    NC_STACK_input::KeyTitle[Input::KC_Q]          = get_lang_string(string_pointers_p2, 1063, "Q");
+    NC_STACK_input::KeyTitle[Input::KC_R]          = get_lang_string(string_pointers_p2, 1064, "R");
+    NC_STACK_input::KeyTitle[Input::KC_S]          = get_lang_string(string_pointers_p2, 1065, "S");
+    NC_STACK_input::KeyTitle[Input::KC_T]          = get_lang_string(string_pointers_p2, 1066, "T");
+    NC_STACK_input::KeyTitle[Input::KC_U]          = get_lang_string(string_pointers_p2, 1067, "U");
+    NC_STACK_input::KeyTitle[Input::KC_V]          = get_lang_string(string_pointers_p2, 1068, "V");
+    NC_STACK_input::KeyTitle[Input::KC_W]          = get_lang_string(string_pointers_p2, 1069, "W");
+    NC_STACK_input::KeyTitle[Input::KC_X]          = get_lang_string(string_pointers_p2, 1070, "X");
+    NC_STACK_input::KeyTitle[Input::KC_Y]          = get_lang_string(string_pointers_p2, 1071, "Y");
+    NC_STACK_input::KeyTitle[Input::KC_Z]          = get_lang_string(string_pointers_p2, 1072, "Z");
+    NC_STACK_input::KeyTitle[Input::KC_NUM0]       = get_lang_string(string_pointers_p2, 1073, "NUM 0");
+    NC_STACK_input::KeyTitle[Input::KC_NUM1]       = get_lang_string(string_pointers_p2, 1074, "NUM 1");
+    NC_STACK_input::KeyTitle[Input::KC_NUM2]       = get_lang_string(string_pointers_p2, 1075, "NUM 2");
+    NC_STACK_input::KeyTitle[Input::KC_NUM3]       = get_lang_string(string_pointers_p2, 1076, "NUM 3");
+    NC_STACK_input::KeyTitle[Input::KC_NUM4]       = get_lang_string(string_pointers_p2, 1077, "NUM 4");
+    NC_STACK_input::KeyTitle[Input::KC_NUM5]       = get_lang_string(string_pointers_p2, 1078, "NUM 5");
+    NC_STACK_input::KeyTitle[Input::KC_NUM6]       = get_lang_string(string_pointers_p2, 1079, "NUM 6");
+    NC_STACK_input::KeyTitle[Input::KC_NUM7]       = get_lang_string(string_pointers_p2, 1080, "NUM 7");
+    NC_STACK_input::KeyTitle[Input::KC_NUM8]       = get_lang_string(string_pointers_p2, 1081, "NUM 8");
+    NC_STACK_input::KeyTitle[Input::KC_NUM9]       = get_lang_string(string_pointers_p2, 1082, "NUM 9");
+    NC_STACK_input::KeyTitle[Input::KC_NUMMUL]     = get_lang_string(string_pointers_p2, 1083, "MUL");
+    NC_STACK_input::KeyTitle[Input::KC_NUMPLUS]    = get_lang_string(string_pointers_p2, 1084, "ADD");
+    NC_STACK_input::KeyTitle[Input::KC_NUMDOT]     = get_lang_string(string_pointers_p2, 1085, "DOT");
+    NC_STACK_input::KeyTitle[Input::KC_NUMMINUS]   = get_lang_string(string_pointers_p2, 1086, "SUB");
+    NC_STACK_input::KeyTitle[Input::KC_NUMENTER]   = get_lang_string(string_pointers_p2, 1087, "ENTER");
+    NC_STACK_input::KeyTitle[Input::KC_NUMDIV]     = get_lang_string(string_pointers_p2, 1088, "DIV");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA1]     = get_lang_string(string_pointers_p2, 1089, "EXTRA_1");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA2]     = get_lang_string(string_pointers_p2, 1090, "EXTRA_2");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA3]     = get_lang_string(string_pointers_p2, 1091, "EXTRA_3");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA4]     = get_lang_string(string_pointers_p2, 1092, "EXTRA_4");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA5]     = get_lang_string(string_pointers_p2, 1093, "EXTRA_5");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA6]     = get_lang_string(string_pointers_p2, 1094, "EXTRA_6");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA7]     = get_lang_string(string_pointers_p2, 1095, "EXTRA_7");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA8]     = get_lang_string(string_pointers_p2, 1096, "EXTRA_8");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA9]     = get_lang_string(string_pointers_p2, 1097, "EXTRA_9");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA10]    = get_lang_string(string_pointers_p2, 1098, "EXTRA_10");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA11]    = get_lang_string(string_pointers_p2, 1099, "EXTRA_11");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA12]    = get_lang_string(string_pointers_p2, 1100, "EXTRA_12");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA13]    = get_lang_string(string_pointers_p2, 1101, "EXTRA_13");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA14]    = get_lang_string(string_pointers_p2, 1102, "EXTRA_14");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA15]    = get_lang_string(string_pointers_p2, 1103, "EXTRA_15");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA16]    = get_lang_string(string_pointers_p2, 1104, "EXTRA_16");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA17]    = get_lang_string(string_pointers_p2, 1105, "EXTRA_17");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA18]    = get_lang_string(string_pointers_p2, 1106, "EXTRA_18");
     
-    NC_STACK_input::KeyTitle[Input::KEY_MMB]        = get_lang_string(string_pointers_p2, 1121, "MIDDLE MOUSE");
+    NC_STACK_input::KeyTitle[Input::KC_MMB]        = get_lang_string(string_pointers_p2, 1121, "MIDDLE MOUSE");
 
-    NC_STACK_input::KeyTitle[Input::KEY_JOYB0]      = get_lang_string(string_pointers_p2, 1123, "JOYB0");
-    NC_STACK_input::KeyTitle[Input::KEY_JOYB1]      = get_lang_string(string_pointers_p2, 1124, "JOYB1");
-    NC_STACK_input::KeyTitle[Input::KEY_JOYB2]      = get_lang_string(string_pointers_p2, 1125, "JOYB2");
-    NC_STACK_input::KeyTitle[Input::KEY_JOYB3]      = get_lang_string(string_pointers_p2, 1126, "JOYB3");
-    NC_STACK_input::KeyTitle[Input::KEY_JOYB4]      = get_lang_string(string_pointers_p2, 1127, "JOYB4");
-    NC_STACK_input::KeyTitle[Input::KEY_JOYB5]      = get_lang_string(string_pointers_p2, 1128, "JOYB5");
-    NC_STACK_input::KeyTitle[Input::KEY_JOYB6]      = get_lang_string(string_pointers_p2, 1129, "JOYB6");
-    NC_STACK_input::KeyTitle[Input::KEY_JOYB7]      = get_lang_string(string_pointers_p2, 1130, "JOYB7");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB0]      = get_lang_string(string_pointers_p2, 1123, "JOYB0");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB1]      = get_lang_string(string_pointers_p2, 1124, "JOYB1");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB2]      = get_lang_string(string_pointers_p2, 1125, "JOYB2");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB3]      = get_lang_string(string_pointers_p2, 1126, "JOYB3");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB4]      = get_lang_string(string_pointers_p2, 1127, "JOYB4");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB5]      = get_lang_string(string_pointers_p2, 1128, "JOYB5");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB6]      = get_lang_string(string_pointers_p2, 1129, "JOYB6");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB7]      = get_lang_string(string_pointers_p2, 1130, "JOYB7");
 }
 
 
@@ -668,8 +668,8 @@ void ypaworld_func154__sub0(NC_STACK_ypaworld *yw)
         yw->_win3d->windd_func323(&v5);
 
         INPe.QueryInput(&input_states);
-        input_states.KbdLastHit = Input::KEY_NONE;
-        input_states.KbdLastDown = Input::KEY_NONE;
+        input_states.KbdLastHit = Input::KC_NONE;
+        input_states.KbdLastDown = Input::KC_NONE;
         input_states.HotKeyID = -1;
     }
 }
@@ -2426,7 +2426,7 @@ void UserData::GameShellUiHandleInput()
         {
             if ( modemAskSession )
             {
-                if ( _input->KbdLastHit == Input::KEY_SPACE )
+                if ( _input->KbdLastHit == Input::KC_SPACE )
                 {
                     windd->windd_func320(NULL);
                     p_ypaworld->windp->EnumSessions(NULL);
@@ -2434,7 +2434,7 @@ void UserData::GameShellUiHandleInput()
                 }
             }
         }
-        else if ( p_ypaworld->windp->GetProvType(NULL) != 3 || _input->KbdLastHit == Input::KEY_SPACE )
+        else if ( p_ypaworld->windp->GetProvType(NULL) != 3 || _input->KbdLastHit == Input::KC_SPACE )
         {
             p_ypaworld->windp->EnumSessions(NULL);
         }
@@ -2652,7 +2652,7 @@ void UserData::GameShellUiHandleInput()
                 field_0x1744 = 0;
             sub_46D960();
         }
-        if ( _input->KbdLastHit == Input::KEY_RETURN )
+        if ( _input->KbdLastHit == Input::KC_RETURN )
         {
             switch ( field_0x2fb4 )
             {
@@ -2690,8 +2690,8 @@ void UserData::GameShellUiHandleInput()
     if ( v3 )
     {
         _input->ClickInf.flag = 0;
-        _input->KbdLastHit = Input::KEY_NONE;
-        _input->KbdLastDown = Input::KEY_NONE;
+        _input->KbdLastHit = Input::KC_NONE;
+        _input->KbdLastDown = Input::KC_NONE;
         _input->chr = 0;
         _input->HotKeyID = -1;
     }
@@ -2858,7 +2858,7 @@ void UserData::GameShellUiHandleInput()
         if ( !field_D52 && _input->HotKeyID == 43 )
             p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 759, "help\\19.html");
 
-        if ( _input->KbdLastHit != Input::KEY_NONE )
+        if ( _input->KbdLastHit != Input::KC_NONE )
         {
             if ( field_D52 )
             {
@@ -2883,25 +2883,25 @@ void UserData::GameShellUiHandleInput()
                         field_D3A = 1;
                     }
                 }
-                _input->KbdLastHit = Input::KEY_NONE;
+                _input->KbdLastHit = Input::KC_NONE;
             }
             else
             {
                 input_listview.listFlags |= GuiList::GLIST_FLAG_KEYB_INPUT;
 
-                if ( _input->KbdLastHit == Input::KEY_BACKSPACE  || _input->KbdLastHit == Input::KEY_DELETE)
+                if ( _input->KbdLastHit == Input::KC_BACKSPACE  || _input->KbdLastHit == Input::KC_DELETE)
                 {
                     if (InputConfig[field_D36].Type != World::INPUT_BIND_TYPE_SLIDER)
                         InputConfig[field_D36].PKeyCode = 0;
                 }
-                else if ( _input->KbdLastHit == Input::KEY_RETURN )
+                else if ( _input->KbdLastHit == Input::KC_RETURN )
                 {
                     InputConfig[field_D36].SetFlags = 3;
                     field_D52 = 1;
                     if ( InputConfig[field_D36].Type == World::INPUT_BIND_TYPE_SLIDER )
                         field_D3A = 0;
                 }
-                else if ( _input->KbdLastHit == Input::KEY_ESCAPE )
+                else if ( _input->KbdLastHit == Input::KC_ESCAPE )
                 {
                     InputPageCancel();
                 }
@@ -3034,7 +3034,7 @@ void UserData::GameShellUiHandleInput()
 
     if ( envMode == ENVMODE_SETTINGS )
     {
-        if ( _input->KbdLastHit == Input::KEY_RETURN )
+        if ( _input->KbdLastHit == Input::KC_RETURN )
         {
             if ( video_listvw.IsClosed() && d3d_listvw.IsClosed() )
             {
@@ -3068,7 +3068,7 @@ void UserData::GameShellUiHandleInput()
             }
 
         }
-        else if ( _input->KbdLastHit == Input::KEY_ESCAPE )
+        else if ( _input->KbdLastHit == Input::KC_ESCAPE )
         {
             sub_46A3C0();
             envMode = ENVMODE_TITLE;
@@ -3302,11 +3302,11 @@ void UserData::GameShellUiHandleInput()
 
     if ( envMode == ENVMODE_SELPLAYER ) //Load/Save
     {
-        if ( _input->KbdLastHit != Input::KEY_NONE || _input->chr )
+        if ( _input->KbdLastHit != Input::KC_NONE || _input->chr )
         {
             if ( field_0x1744 )
             {
-                if ( _input->KbdLastHit == Input::KEY_BACKSPACE )
+                if ( _input->KbdLastHit == Input::KC_BACKSPACE )
                 {
                     if ( usernamedir_len > 0 )
                     {
@@ -3314,7 +3314,7 @@ void UserData::GameShellUiHandleInput()
                         usernamedir_len--;
                     }
                 }
-                else if ( _input->KbdLastHit == Input::KEY_RETURN )
+                else if ( _input->KbdLastHit == Input::KC_RETURN )
                 {
                     switch ( field_0x1744 )
                     {
@@ -3356,21 +3356,21 @@ void UserData::GameShellUiHandleInput()
                         break;
                     }
                 }
-                else if ( _input->KbdLastHit == Input::KEY_ESCAPE )
+                else if ( _input->KbdLastHit == Input::KC_ESCAPE )
                 {
                     field_0x1744 = 0;
                 }
-                else if ( _input->KbdLastHit == Input::KEY_LEFT )
+                else if ( _input->KbdLastHit == Input::KC_LEFT )
                 {
                     if ( usernamedir_len > 0 )
                         usernamedir_len--;
                 }
-                else if ( _input->KbdLastHit == Input::KEY_RIGHT )
+                else if ( _input->KbdLastHit == Input::KC_RIGHT )
                 {
                     if ( usernamedir_len < (int)usernamedir.size() )
                         usernamedir_len++;
                 }
-                else if ( _input->KbdLastHit == Input::KEY_DELETE )
+                else if ( _input->KbdLastHit == Input::KC_DELETE )
                 {
                     if ( usernamedir_len < (int)usernamedir.size() )
                         usernamedir.erase(usernamedir_len, 1);
@@ -3390,7 +3390,7 @@ void UserData::GameShellUiHandleInput()
             }
             else
             {
-                if ( _input->KbdLastHit == Input::KEY_ESCAPE )
+                if ( _input->KbdLastHit == Input::KC_ESCAPE )
                     sub_46A7F8();
 
                 if ( _input->HotKeyID == 43 )
@@ -3548,7 +3548,7 @@ void UserData::GameShellUiHandleInput()
     {
         disk_listvw.InputHandle(p_ypaworld, _input);
 
-        if ( disk_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT || _input->KbdLastHit == Input::KEY_UP || _input->KbdLastHit == Input::KEY_DOWN )
+        if ( disk_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT || _input->KbdLastHit == Input::KC_UP || _input->KbdLastHit == Input::KC_DOWN )
         {
             field_1612 = disk_listvw.selectedEntry + 1;
 
@@ -3661,11 +3661,11 @@ void UserData::GameShellUiHandleInput()
     if ( envMode == ENVMODE_SELLOCALE )
     {
 
-        if ( _input->KbdLastHit == Input::KEY_RETURN )
+        if ( _input->KbdLastHit == Input::KC_RETURN )
         {
             sub_46B0E0();
         }
-        else if ( _input->KbdLastHit == Input::KEY_ESCAPE )
+        else if ( _input->KbdLastHit == Input::KC_ESCAPE )
         {
             sub_46AA0C();
         }
@@ -3730,7 +3730,7 @@ void UserData::GameShellUiHandleInput()
 
     if ( envMode == ENVMODE_ABOUT )
     {
-        if ( _input->KbdLastHit == Input::KEY_RETURN || _input->KbdLastHit == Input::KEY_ESCAPE )
+        if ( _input->KbdLastHit == Input::KC_RETURN || _input->KbdLastHit == Input::KC_ESCAPE )
         {
             envMode = ENVMODE_TITLE;
 
@@ -3751,53 +3751,53 @@ void UserData::GameShellUiHandleInput()
             switch ( field_19DA )
             {
             case 0:
-                if ( p_ypaworld->sub_449678(_input, Input::KEY_A) ) // VK_A
+                if ( p_ypaworld->sub_449678(_input, Input::KC_A) ) // VK_A
                 {
                     field_19D6 = glblTime;
                     field_19DA++;
                 }
                 else
                 {
-                    if ( _input->KbdLastHit != Input::KEY_NONE )
+                    if ( _input->KbdLastHit != Input::KC_NONE )
                         field_19DA = 0;
                 }
                 break;
 
             case 1:
-                if ( p_ypaworld->sub_449678(_input, Input::KEY_M) )
+                if ( p_ypaworld->sub_449678(_input, Input::KC_M) )
                 {
                     field_19D6 = glblTime;
                     field_19DA++;
                 }
                 else
                 {
-                    if ( _input->KbdLastHit != Input::KEY_NONE )
+                    if ( _input->KbdLastHit != Input::KC_NONE )
                         field_19DA = 0;
                 }
                 break;
 
             case 2:
-                if ( p_ypaworld->sub_449678(_input, Input::KEY_O) )
+                if ( p_ypaworld->sub_449678(_input, Input::KC_O) )
                 {
                     field_19D6 = glblTime;
                     field_19DA++;
                 }
                 else
                 {
-                    if ( _input->KbdLastHit != Input::KEY_NONE )
+                    if ( _input->KbdLastHit != Input::KC_NONE )
                         field_19DA = 0;
                 }
                 break;
 
             case 3:
-                if ( p_ypaworld->sub_449678(_input, Input::KEY_K) )
+                if ( p_ypaworld->sub_449678(_input, Input::KC_K) )
                 {
                     ypaworld_func158__sub0__sub4();
                     SFXEngine::SFXe.startSound(&samples2_info, 3);
                 }
                 else
                 {
-                    if ( _input->KbdLastHit != Input::KEY_NONE )
+                    if ( _input->KbdLastHit != Input::KC_NONE )
                         field_19DA = 0;
                 }
                 break;
@@ -4176,7 +4176,7 @@ void UserData::GameShellUiHandleInput()
 
         network_listvw.InputHandle(p_ypaworld, _input);
 
-        if ( (network_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT) || _input->KbdLastHit == Input::KEY_UP || _input->KbdLastHit == Input::KEY_DOWN )
+        if ( (network_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT) || _input->KbdLastHit == Input::KC_UP || _input->KbdLastHit == Input::KC_DOWN )
         {
             netSel = network_listvw.selectedEntry;
 
@@ -4221,7 +4221,7 @@ void UserData::GameShellUiHandleInput()
 
     if ( envMode == ENVMODE_NETPLAY )
     {
-        if ( _input->KbdLastHit != Input::KEY_NONE || _input->chr || _input->HotKeyID >= 0 )
+        if ( _input->KbdLastHit != Input::KC_NONE || _input->chr || _input->HotKeyID >= 0 )
         {
             if ( nInputMode )
             {
@@ -4259,7 +4259,7 @@ void UserData::GameShellUiHandleInput()
                     }
                 }
 
-                if ( _input->KbdLastHit == Input::KEY_BACKSPACE && netNameCurPos > 0 )
+                if ( _input->KbdLastHit == Input::KC_BACKSPACE && netNameCurPos > 0 )
                 {
                     int ln = strlen(netName);
 
@@ -4270,17 +4270,17 @@ void UserData::GameShellUiHandleInput()
 
                     netNameCurPos--;
                 }
-                else if ( _input->KbdLastHit == Input::KEY_LEFT )
+                else if ( _input->KbdLastHit == Input::KC_LEFT )
                 {
                     if ( netNameCurPos > 0 )
                         netNameCurPos--;
                 }
-                else if ( _input->KbdLastHit == Input::KEY_RIGHT )
+                else if ( _input->KbdLastHit == Input::KC_RIGHT )
                 {
                     if ( netNameCurPos < (int32_t)strlen(netName) )
                         netNameCurPos++;
                 }
-                else if ( _input->KbdLastHit == Input::KEY_DELETE && netNameCurPos < (int32_t)strlen(netName) )
+                else if ( _input->KbdLastHit == Input::KC_DELETE && netNameCurPos < (int32_t)strlen(netName) )
                 {
                     int ln = strlen(netName);
 
@@ -4291,7 +4291,7 @@ void UserData::GameShellUiHandleInput()
                 }
             }
 
-            if ( _input->KbdLastHit == Input::KEY_RETURN )
+            if ( _input->KbdLastHit == Input::KC_RETURN )
             {
                 switch ( netSelMode )
                 {
@@ -4361,7 +4361,7 @@ void UserData::GameShellUiHandleInput()
                     break;
                 }
             }
-            else if ( _input->KbdLastHit == Input::KEY_ESCAPE )
+            else if ( _input->KbdLastHit == Input::KC_ESCAPE )
             {
                 sub_46D698();
             }
@@ -4393,7 +4393,7 @@ void UserData::GameShellUiHandleInput()
             if ( netSel != -1 )
                 network_listvw.PosOnSelected(netSel);
 
-            _input->KbdLastHit = Input::KEY_NONE;
+            _input->KbdLastHit = Input::KC_NONE;
         }
     }
 

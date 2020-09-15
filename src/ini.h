@@ -8,7 +8,7 @@
 namespace Common {
 namespace Ini {
 
-enum KEY_TYPE
+enum KEYTYPE
 {
     KT_DIGIT = 0x0,
     KT_WORD  = 0x1,
@@ -19,14 +19,14 @@ enum KEY_TYPE
 struct Key
 {
     const std::string Name;
-    KEY_TYPE Type;
+    KEYTYPE Type;
     nonstd::any Value;
     
-    Key(const std::string &k, KEY_TYPE t, nonstd::any v)
+    Key(const std::string &k, KEYTYPE t, nonstd::any v)
     : Name(k), Type(t), Value(v)
     {}
     
-    Key(const std::string &k, KEY_TYPE t)
+    Key(const std::string &k, KEYTYPE t)
     : Name(k), Type(t)
     {
         switch(t)

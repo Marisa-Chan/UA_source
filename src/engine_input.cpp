@@ -250,8 +250,8 @@ void INPEngine::RemClickBox(ClickBox *box)
 void InputState::Clear()
 {
     Period = 0;
-    KbdLastDown = Input::KEY_NONE;
-    KbdLastHit   = Input::KEY_NONE;
+    KbdLastDown = Input::KC_NONE;
+    KbdLastHit   = Input::KC_NONE;
     HotKeyID     = -1;
     chr          = 0;
 

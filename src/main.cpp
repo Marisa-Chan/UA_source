@@ -249,37 +249,37 @@ int sb_0x411324__sub2__sub0(base_64arg *arg)
 
     int cont_play = 1;
 
-    if ( arg->field_8->KbdLastHit == Input::KEY_N )
+    if ( arg->field_8->KbdLastHit == Input::KC_N )
     {
         arg165.field_0 = 4;
     }
-    else if ( arg->field_8->KbdLastHit == Input::KEY_P )
+    else if ( arg->field_8->KbdLastHit == Input::KC_P )
     {
         arg165.field_0 = 2;
     }
-    else if ( arg->field_8->KbdLastHit == Input::KEY_R )
+    else if ( arg->field_8->KbdLastHit == Input::KC_R )
     {
         arg165.field_0 = 3;
     }
-    else if ( arg->field_8->KbdLastHit == Input::KEY_S )
+    else if ( arg->field_8->KbdLastHit == Input::KC_S )
     {
         arg165.field_0 = 1;
     }
-    else if ( arg->field_8->KbdLastHit == Input::KEY_V )
+    else if ( arg->field_8->KbdLastHit == Input::KC_V )
     {
         arg165.frame = -10;
         arg165.field_0 = 7;
     }
-    else if ( arg->field_8->KbdLastHit == Input::KEY_B )
+    else if ( arg->field_8->KbdLastHit == Input::KC_B )
     {
         arg165.field_0 = 5;
     }
-    else if ( arg->field_8->KbdLastHit == Input::KEY_M )
+    else if ( arg->field_8->KbdLastHit == Input::KC_M )
     {
         arg165.frame = 10;
         arg165.field_0 = 7;
     }
-    else if ( arg->field_8->KbdLastHit == Input::KEY_SPACE || arg->field_8->KbdLastHit == Input::KEY_ESCAPE )
+    else if ( arg->field_8->KbdLastHit == Input::KC_SPACE || arg->field_8->KbdLastHit == Input::KC_ESCAPE )
     {
         cont_play = 0;
     }

@@ -222,7 +222,7 @@ void NC_STACK_winp::sdlJoyReadMapping(SDL_Joystick* joystick)
     
 void NC_STACK_winp::KeyDown(int16_t vk)
 {
-    if ( vk != Input::KEY_NONE )
+    if ( vk != Input::KC_NONE )
         NC_STACK_input::KeyMatrix.at(vk).down = true;
 
     _kbdLastDown = vk;
@@ -231,11 +231,11 @@ void NC_STACK_winp::KeyDown(int16_t vk)
 
 void NC_STACK_winp::KeyUp(int16_t vk)
 {
-    if ( vk != Input::KEY_NONE )
+    if ( vk != Input::KC_NONE )
         NC_STACK_input::KeyMatrix.at(vk).down = false;
 
     if (_kbdLastDown == vk)
-        _kbdLastDown = Input::KEY_NONE;
+        _kbdLastDown = Input::KC_NONE;
 }
 
 int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
@@ -283,7 +283,7 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
 
                 _mLDcnt++;
 
-                KeyDown(Input::KEY_LMB);
+                KeyDown(Input::KC_LMB);
             }
             else if (event->button.button == SDL_BUTTON_RIGHT)
             {
@@ -295,7 +295,7 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
 
                 _mRDcnt++;
 
-                KeyDown(Input::KEY_RMB);
+                KeyDown(Input::KC_RMB);
             }
             else if (event->button.button == SDL_BUTTON_MIDDLE)
             {
@@ -307,7 +307,7 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
 
                 _mMDcnt++;
 
-                KeyDown(Input::KEY_MMB);
+                KeyDown(Input::KC_MMB);
             }
         }
 
@@ -326,7 +326,7 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
 
                 _mLUcnt++;
 
-                KeyUp(Input::KEY_LMB);
+                KeyUp(Input::KC_LMB);
 
                 if ((event->button.clicks & 1) == 0)
                     _mDBLstate = true;
@@ -341,7 +341,7 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
 
                 _mRUcnt++;
 
-                KeyUp(Input::KEY_RMB);
+                KeyUp(Input::KC_RMB);
             }
             else if (event->button.button == SDL_BUTTON_MIDDLE)
             {
@@ -353,7 +353,7 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
 
                 _mMUcnt++;
 
-                KeyUp(Input::KEY_MMB);
+                KeyUp(Input::KC_MMB);
             }
         }
 
@@ -401,24 +401,24 @@ bool NC_STACK_winp::GetState()
 
     switch ( _bindedKey )
     {
-    case Input::KEY_LMB:
+    case Input::KC_LMB:
         return _mLstate;
         break;
-    case Input::KEY_RMB:
+    case Input::KC_RMB:
         return _mRstate;
         break;
-    case Input::KEY_MMB:
+    case Input::KC_MMB:
         return _mMstate;
         break;
-    case Input::KEY_JOYB0:
-    case Input::KEY_JOYB1:
-    case Input::KEY_JOYB2:
-    case Input::KEY_JOYB3:
-    case Input::KEY_JOYB4:
-    case Input::KEY_JOYB5:
-    case Input::KEY_JOYB6:
-    case Input::KEY_JOYB7:
-        if ( _joyButtonStates & (1 << (_bindedKey - Input::KEY_JOYB0)) )
+    case Input::KC_JOYB0:
+    case Input::KC_JOYB1:
+    case Input::KC_JOYB2:
+    case Input::KC_JOYB3:
+    case Input::KC_JOYB4:
+    case Input::KC_JOYB5:
+    case Input::KC_JOYB6:
+    case Input::KC_JOYB7:
+        if ( _joyButtonStates & (1 << (_bindedKey - Input::KC_JOYB0)) )
             return true;
         else
             return false;
@@ -439,7 +439,7 @@ float NC_STACK_winp::GetSlider()
 
     switch ( _bindedKey )
     {
-        case Input::KEY_MOUSEX:
+        case Input::KC_MOUSEX:
         {
             _sliderPos += _mMove.x * 8;
 
@@ -448,7 +448,7 @@ float NC_STACK_winp::GetSlider()
         }
         break;
 
-        case Input::KEY_MOUSEY:
+        case Input::KC_MOUSEY:
         {
             _sliderPos += _mMove.y * 8;
 
@@ -457,7 +457,7 @@ float NC_STACK_winp::GetSlider()
         }
         break;
 
-        case Input::KEY_JOYX:
+        case Input::KC_JOYX:
         {
             int v12 = _sliderPos;
 
@@ -480,7 +480,7 @@ float NC_STACK_winp::GetSlider()
         }
         break;
 
-        case Input::KEY_JOYY:
+        case Input::KC_JOYY:
         {
             int v12 = _sliderPos;
 
@@ -503,7 +503,7 @@ float NC_STACK_winp::GetSlider()
         }
         break;
 
-        case Input::KEY_JOYTHROTTLE:
+        case Input::KC_JOYTHROTTLE:
         {
             int v12 = _sliderPos;
 
@@ -526,7 +526,7 @@ float NC_STACK_winp::GetSlider()
         }
         break;
 
-        case Input::KEY_JOYHATX:
+        case Input::KC_JOYHATX:
         {
             int v12 = _sliderPos;
 
@@ -549,7 +549,7 @@ float NC_STACK_winp::GetSlider()
         }
         break;
 
-        case Input::KEY_JOYHATY:
+        case Input::KC_JOYHATY:
         {
             int v12 = _sliderPos;
 
@@ -572,7 +572,7 @@ float NC_STACK_winp::GetSlider()
         }
         break;
         
-        case Input::KEY_JOYRUDDER:
+        case Input::KC_JOYRUDDER:
         {
             int v12 = _sliderPos;
 
@@ -621,7 +621,7 @@ void NC_STACK_winp::QueryKeyboard(InputState *arg)
     arg->KbdLastDown = _kbdLastDown;
     arg->KbdLastHit = _kbdLastHit;
     
-    _kbdLastHit = Input::KEY_NONE;
+    _kbdLastHit = Input::KC_NONE;
 
     arg->chr = 0;
 
@@ -953,11 +953,11 @@ void NC_STACK_winp::CheckJoy()
                 _joyButtonStates |= 1 << i;
 
                 if ( !((1 << i) & prevBtnState) )
-                    KeyDown(i + Input::KEY_JOYB0);
+                    KeyDown(i + Input::KC_JOYB0);
             }
             else if ( (1 << i) & prevBtnState )
             {
-                KeyUp(i + Input::KEY_JOYB0);
+                KeyUp(i + Input::KC_JOYB0);
             }
         }
 
@@ -1084,115 +1084,115 @@ void NC_STACK_winp::initfirst()
 {
     KBDMapping.clear();
     
-    KBDMapping[SDL_SCANCODE_ESCAPE]      = Input::KEY_ESCAPE;
-    KBDMapping[SDL_SCANCODE_SPACE]       = Input::KEY_SPACE;
-    KBDMapping[SDL_SCANCODE_UP]          = Input::KEY_UP;
-    KBDMapping[SDL_SCANCODE_DOWN]        = Input::KEY_DOWN;
-    KBDMapping[SDL_SCANCODE_LEFT]        = Input::KEY_LEFT;
-    KBDMapping[SDL_SCANCODE_RIGHT]       = Input::KEY_RIGHT;
-    KBDMapping[SDL_SCANCODE_F1]          = Input::KEY_F1;
-    KBDMapping[SDL_SCANCODE_F2]          = Input::KEY_F2;
-    KBDMapping[SDL_SCANCODE_F3]          = Input::KEY_F3;
-    KBDMapping[SDL_SCANCODE_F4]          = Input::KEY_F4;
-    KBDMapping[SDL_SCANCODE_F5]          = Input::KEY_F5;
-    KBDMapping[SDL_SCANCODE_F6]          = Input::KEY_F6;
-    KBDMapping[SDL_SCANCODE_F7]          = Input::KEY_F7;
-    KBDMapping[SDL_SCANCODE_F8]          = Input::KEY_F8;
-    KBDMapping[SDL_SCANCODE_F9]          = Input::KEY_F9;
-    KBDMapping[SDL_SCANCODE_F10]         = Input::KEY_F10;
-    KBDMapping[SDL_SCANCODE_F11]         = Input::KEY_F11;
-    KBDMapping[SDL_SCANCODE_F12]         = Input::KEY_F12;
-    KBDMapping[SDL_SCANCODE_BACKSPACE]   = Input::KEY_BACKSPACE;
-    KBDMapping[SDL_SCANCODE_TAB]         = Input::KEY_TAB;
-    KBDMapping[SDL_SCANCODE_CLEAR]       = Input::KEY_CLEAR;
-    KBDMapping[SDL_SCANCODE_RETURN]      = Input::KEY_RETURN;
-    KBDMapping[SDL_SCANCODE_LCTRL]       = Input::KEY_CTRL;
-    KBDMapping[SDL_SCANCODE_RCTRL]       = Input::KEY_CTRL;
-    KBDMapping[SDL_SCANCODE_RSHIFT]      = Input::KEY_SHIFT;
-    KBDMapping[SDL_SCANCODE_LSHIFT]      = Input::KEY_SHIFT;
-    KBDMapping[SDL_SCANCODE_LALT]        = Input::KEY_ALT;
-    KBDMapping[SDL_SCANCODE_RALT]        = Input::KEY_ALT;
-    KBDMapping[SDL_SCANCODE_PAUSE]       = Input::KEY_PAUSE;
-    KBDMapping[SDL_SCANCODE_PAGEUP]      = Input::KEY_PGUP;
-    KBDMapping[SDL_SCANCODE_PAGEDOWN]    = Input::KEY_PGDOWN;
-    KBDMapping[SDL_SCANCODE_END]         = Input::KEY_END;
-    KBDMapping[SDL_SCANCODE_HOME]        = Input::KEY_HOME;
-    KBDMapping[SDL_SCANCODE_SELECT]      = Input::KEY_SELECT;
-    KBDMapping[SDL_SCANCODE_EXECUTE]     = Input::KEY_EXECUTE;
-    KBDMapping[SDL_SCANCODE_PRINTSCREEN] = Input::KEY_SNAPSHOT;
-    KBDMapping[SDL_SCANCODE_INSERT]      = Input::KEY_INSERT;
-    KBDMapping[SDL_SCANCODE_DELETE]      = Input::KEY_DELETE;
-    KBDMapping[SDL_SCANCODE_HELP]        = Input::KEY_HELP;
-    KBDMapping[SDL_SCANCODE_1]           = Input::KEY_1;
-    KBDMapping[SDL_SCANCODE_2]           = Input::KEY_2;
-    KBDMapping[SDL_SCANCODE_3]           = Input::KEY_3;
-    KBDMapping[SDL_SCANCODE_4]           = Input::KEY_4;
-    KBDMapping[SDL_SCANCODE_5]           = Input::KEY_5;
-    KBDMapping[SDL_SCANCODE_6]           = Input::KEY_6;
-    KBDMapping[SDL_SCANCODE_7]           = Input::KEY_7;
-    KBDMapping[SDL_SCANCODE_8]           = Input::KEY_8;
-    KBDMapping[SDL_SCANCODE_9]           = Input::KEY_9;
-    KBDMapping[SDL_SCANCODE_0]           = Input::KEY_0;
-    KBDMapping[SDL_SCANCODE_A]           = Input::KEY_A;
-    KBDMapping[SDL_SCANCODE_B]           = Input::KEY_B;
-    KBDMapping[SDL_SCANCODE_C]           = Input::KEY_C;
-    KBDMapping[SDL_SCANCODE_D]           = Input::KEY_D;
-    KBDMapping[SDL_SCANCODE_E]           = Input::KEY_E;
-    KBDMapping[SDL_SCANCODE_F]           = Input::KEY_F;
-    KBDMapping[SDL_SCANCODE_G]           = Input::KEY_G;
-    KBDMapping[SDL_SCANCODE_H]           = Input::KEY_H;
-    KBDMapping[SDL_SCANCODE_I]           = Input::KEY_I;
-    KBDMapping[SDL_SCANCODE_J]           = Input::KEY_J;
-    KBDMapping[SDL_SCANCODE_K]           = Input::KEY_K;
-    KBDMapping[SDL_SCANCODE_L]           = Input::KEY_L;
-    KBDMapping[SDL_SCANCODE_M]           = Input::KEY_M;
-    KBDMapping[SDL_SCANCODE_N]           = Input::KEY_N;
-    KBDMapping[SDL_SCANCODE_O]           = Input::KEY_O;
-    KBDMapping[SDL_SCANCODE_P]           = Input::KEY_P;
-    KBDMapping[SDL_SCANCODE_Q]           = Input::KEY_Q;
-    KBDMapping[SDL_SCANCODE_R]           = Input::KEY_R;
-    KBDMapping[SDL_SCANCODE_S]           = Input::KEY_S;
-    KBDMapping[SDL_SCANCODE_T]           = Input::KEY_T;
-    KBDMapping[SDL_SCANCODE_U]           = Input::KEY_U;
-    KBDMapping[SDL_SCANCODE_V]           = Input::KEY_V;
-    KBDMapping[SDL_SCANCODE_W]           = Input::KEY_W;
-    KBDMapping[SDL_SCANCODE_X]           = Input::KEY_X;
-    KBDMapping[SDL_SCANCODE_Y]           = Input::KEY_Y;
-    KBDMapping[SDL_SCANCODE_Z]           = Input::KEY_Z;
-    KBDMapping[SDL_SCANCODE_KP_0]        = Input::KEY_NUM0;
-    KBDMapping[SDL_SCANCODE_KP_1]        = Input::KEY_NUM1;
-    KBDMapping[SDL_SCANCODE_KP_2]        = Input::KEY_NUM2;
-    KBDMapping[SDL_SCANCODE_KP_3]        = Input::KEY_NUM3;
-    KBDMapping[SDL_SCANCODE_KP_4]        = Input::KEY_NUM4;
-    KBDMapping[SDL_SCANCODE_KP_5]        = Input::KEY_NUM5;
-    KBDMapping[SDL_SCANCODE_KP_6]        = Input::KEY_NUM6;
-    KBDMapping[SDL_SCANCODE_KP_7]        = Input::KEY_NUM7;
-    KBDMapping[SDL_SCANCODE_KP_8]        = Input::KEY_NUM8;
-    KBDMapping[SDL_SCANCODE_KP_9]        = Input::KEY_NUM9;
-    KBDMapping[SDL_SCANCODE_KP_MULTIPLY] = Input::KEY_NUMMUL;
-    KBDMapping[SDL_SCANCODE_KP_PLUS]     = Input::KEY_NUMPLUS;
-    KBDMapping[SDL_SCANCODE_KP_PERIOD]   = Input::KEY_NUMDOT;
-    KBDMapping[SDL_SCANCODE_KP_MINUS]    = Input::KEY_NUMMINUS;
-    KBDMapping[SDL_SCANCODE_KP_ENTER]    = Input::KEY_NUMENTER;
-    KBDMapping[SDL_SCANCODE_KP_DIVIDE]   = Input::KEY_NUMDIV;
-    KBDMapping[SDL_SCANCODE_COMMA]       = Input::KEY_EXTRA1;
-    KBDMapping[SDL_SCANCODE_PERIOD]      = Input::KEY_EXTRA2;
-    KBDMapping[SDL_SCANCODE_MINUS]       = Input::KEY_EXTRA3;
-    KBDMapping[SDL_SCANCODE_BACKSLASH]   = Input::KEY_EXTRA4;
-    KBDMapping[SDL_SCANCODE_SEMICOLON]   = Input::KEY_EXTRA5;
-    KBDMapping[SDL_SCANCODE_EQUALS]      = Input::KEY_EXTRA6;
-    KBDMapping[SDL_SCANCODE_GRAVE]       = Input::KEY_EXTRA7;
-    KBDMapping[SDL_SCANCODE_APOSTROPHE]  = Input::KEY_EXTRA8;
-    KBDMapping[SDL_SCANCODE_SLASH]       = Input::KEY_EXTRA9;
-    KBDMapping[SDL_SCANCODE_RIGHTBRACKET]= Input::KEY_EXTRA10;
-    KBDMapping[SDL_SCANCODE_BACKSLASH]   = Input::KEY_EXTRA11;
-    KBDMapping[SDL_SCANCODE_LEFTBRACKET] = Input::KEY_EXTRA12;
-    //KBDMapping[???]       = Input::KEY_EXTRA13; // 	OEM_8 (§ !)
-    KBDMapping[SDL_SCANCODE_SCROLLLOCK]  = Input::KEY_EXTRA14;
-    KBDMapping[SDL_SCANCODE_NUMLOCKCLEAR]= Input::KEY_EXTRA15;
-    KBDMapping[SDL_SCANCODE_F13]         = Input::KEY_EXTRA16;
-    KBDMapping[SDL_SCANCODE_F14]         = Input::KEY_EXTRA17;
-    KBDMapping[SDL_SCANCODE_F15]         = Input::KEY_EXTRA18;
+    KBDMapping[SDL_SCANCODE_ESCAPE]      = Input::KC_ESCAPE;
+    KBDMapping[SDL_SCANCODE_SPACE]       = Input::KC_SPACE;
+    KBDMapping[SDL_SCANCODE_UP]          = Input::KC_UP;
+    KBDMapping[SDL_SCANCODE_DOWN]        = Input::KC_DOWN;
+    KBDMapping[SDL_SCANCODE_LEFT]        = Input::KC_LEFT;
+    KBDMapping[SDL_SCANCODE_RIGHT]       = Input::KC_RIGHT;
+    KBDMapping[SDL_SCANCODE_F1]          = Input::KC_F1;
+    KBDMapping[SDL_SCANCODE_F2]          = Input::KC_F2;
+    KBDMapping[SDL_SCANCODE_F3]          = Input::KC_F3;
+    KBDMapping[SDL_SCANCODE_F4]          = Input::KC_F4;
+    KBDMapping[SDL_SCANCODE_F5]          = Input::KC_F5;
+    KBDMapping[SDL_SCANCODE_F6]          = Input::KC_F6;
+    KBDMapping[SDL_SCANCODE_F7]          = Input::KC_F7;
+    KBDMapping[SDL_SCANCODE_F8]          = Input::KC_F8;
+    KBDMapping[SDL_SCANCODE_F9]          = Input::KC_F9;
+    KBDMapping[SDL_SCANCODE_F10]         = Input::KC_F10;
+    KBDMapping[SDL_SCANCODE_F11]         = Input::KC_F11;
+    KBDMapping[SDL_SCANCODE_F12]         = Input::KC_F12;
+    KBDMapping[SDL_SCANCODE_BACKSPACE]   = Input::KC_BACKSPACE;
+    KBDMapping[SDL_SCANCODE_TAB]         = Input::KC_TAB;
+    KBDMapping[SDL_SCANCODE_CLEAR]       = Input::KC_CLEAR;
+    KBDMapping[SDL_SCANCODE_RETURN]      = Input::KC_RETURN;
+    KBDMapping[SDL_SCANCODE_LCTRL]       = Input::KC_CTRL;
+    KBDMapping[SDL_SCANCODE_RCTRL]       = Input::KC_CTRL;
+    KBDMapping[SDL_SCANCODE_RSHIFT]      = Input::KC_SHIFT;
+    KBDMapping[SDL_SCANCODE_LSHIFT]      = Input::KC_SHIFT;
+    KBDMapping[SDL_SCANCODE_LALT]        = Input::KC_ALT;
+    KBDMapping[SDL_SCANCODE_RALT]        = Input::KC_ALT;
+    KBDMapping[SDL_SCANCODE_PAUSE]       = Input::KC_PAUSE;
+    KBDMapping[SDL_SCANCODE_PAGEUP]      = Input::KC_PGUP;
+    KBDMapping[SDL_SCANCODE_PAGEDOWN]    = Input::KC_PGDOWN;
+    KBDMapping[SDL_SCANCODE_END]         = Input::KC_END;
+    KBDMapping[SDL_SCANCODE_HOME]        = Input::KC_HOME;
+    KBDMapping[SDL_SCANCODE_SELECT]      = Input::KC_SELECT;
+    KBDMapping[SDL_SCANCODE_EXECUTE]     = Input::KC_EXECUTE;
+    KBDMapping[SDL_SCANCODE_PRINTSCREEN] = Input::KC_SNAPSHOT;
+    KBDMapping[SDL_SCANCODE_INSERT]      = Input::KC_INSERT;
+    KBDMapping[SDL_SCANCODE_DELETE]      = Input::KC_DELETE;
+    KBDMapping[SDL_SCANCODE_HELP]        = Input::KC_HELP;
+    KBDMapping[SDL_SCANCODE_1]           = Input::KC_1;
+    KBDMapping[SDL_SCANCODE_2]           = Input::KC_2;
+    KBDMapping[SDL_SCANCODE_3]           = Input::KC_3;
+    KBDMapping[SDL_SCANCODE_4]           = Input::KC_4;
+    KBDMapping[SDL_SCANCODE_5]           = Input::KC_5;
+    KBDMapping[SDL_SCANCODE_6]           = Input::KC_6;
+    KBDMapping[SDL_SCANCODE_7]           = Input::KC_7;
+    KBDMapping[SDL_SCANCODE_8]           = Input::KC_8;
+    KBDMapping[SDL_SCANCODE_9]           = Input::KC_9;
+    KBDMapping[SDL_SCANCODE_0]           = Input::KC_0;
+    KBDMapping[SDL_SCANCODE_A]           = Input::KC_A;
+    KBDMapping[SDL_SCANCODE_B]           = Input::KC_B;
+    KBDMapping[SDL_SCANCODE_C]           = Input::KC_C;
+    KBDMapping[SDL_SCANCODE_D]           = Input::KC_D;
+    KBDMapping[SDL_SCANCODE_E]           = Input::KC_E;
+    KBDMapping[SDL_SCANCODE_F]           = Input::KC_F;
+    KBDMapping[SDL_SCANCODE_G]           = Input::KC_G;
+    KBDMapping[SDL_SCANCODE_H]           = Input::KC_H;
+    KBDMapping[SDL_SCANCODE_I]           = Input::KC_I;
+    KBDMapping[SDL_SCANCODE_J]           = Input::KC_J;
+    KBDMapping[SDL_SCANCODE_K]           = Input::KC_K;
+    KBDMapping[SDL_SCANCODE_L]           = Input::KC_L;
+    KBDMapping[SDL_SCANCODE_M]           = Input::KC_M;
+    KBDMapping[SDL_SCANCODE_N]           = Input::KC_N;
+    KBDMapping[SDL_SCANCODE_O]           = Input::KC_O;
+    KBDMapping[SDL_SCANCODE_P]           = Input::KC_P;
+    KBDMapping[SDL_SCANCODE_Q]           = Input::KC_Q;
+    KBDMapping[SDL_SCANCODE_R]           = Input::KC_R;
+    KBDMapping[SDL_SCANCODE_S]           = Input::KC_S;
+    KBDMapping[SDL_SCANCODE_T]           = Input::KC_T;
+    KBDMapping[SDL_SCANCODE_U]           = Input::KC_U;
+    KBDMapping[SDL_SCANCODE_V]           = Input::KC_V;
+    KBDMapping[SDL_SCANCODE_W]           = Input::KC_W;
+    KBDMapping[SDL_SCANCODE_X]           = Input::KC_X;
+    KBDMapping[SDL_SCANCODE_Y]           = Input::KC_Y;
+    KBDMapping[SDL_SCANCODE_Z]           = Input::KC_Z;
+    KBDMapping[SDL_SCANCODE_KP_0]        = Input::KC_NUM0;
+    KBDMapping[SDL_SCANCODE_KP_1]        = Input::KC_NUM1;
+    KBDMapping[SDL_SCANCODE_KP_2]        = Input::KC_NUM2;
+    KBDMapping[SDL_SCANCODE_KP_3]        = Input::KC_NUM3;
+    KBDMapping[SDL_SCANCODE_KP_4]        = Input::KC_NUM4;
+    KBDMapping[SDL_SCANCODE_KP_5]        = Input::KC_NUM5;
+    KBDMapping[SDL_SCANCODE_KP_6]        = Input::KC_NUM6;
+    KBDMapping[SDL_SCANCODE_KP_7]        = Input::KC_NUM7;
+    KBDMapping[SDL_SCANCODE_KP_8]        = Input::KC_NUM8;
+    KBDMapping[SDL_SCANCODE_KP_9]        = Input::KC_NUM9;
+    KBDMapping[SDL_SCANCODE_KP_MULTIPLY] = Input::KC_NUMMUL;
+    KBDMapping[SDL_SCANCODE_KP_PLUS]     = Input::KC_NUMPLUS;
+    KBDMapping[SDL_SCANCODE_KP_PERIOD]   = Input::KC_NUMDOT;
+    KBDMapping[SDL_SCANCODE_KP_MINUS]    = Input::KC_NUMMINUS;
+    KBDMapping[SDL_SCANCODE_KP_ENTER]    = Input::KC_NUMENTER;
+    KBDMapping[SDL_SCANCODE_KP_DIVIDE]   = Input::KC_NUMDIV;
+    KBDMapping[SDL_SCANCODE_COMMA]       = Input::KC_EXTRA1;
+    KBDMapping[SDL_SCANCODE_PERIOD]      = Input::KC_EXTRA2;
+    KBDMapping[SDL_SCANCODE_MINUS]       = Input::KC_EXTRA3;
+    KBDMapping[SDL_SCANCODE_BACKSLASH]   = Input::KC_EXTRA4;
+    KBDMapping[SDL_SCANCODE_SEMICOLON]   = Input::KC_EXTRA5;
+    KBDMapping[SDL_SCANCODE_EQUALS]      = Input::KC_EXTRA6;
+    KBDMapping[SDL_SCANCODE_GRAVE]       = Input::KC_EXTRA7;
+    KBDMapping[SDL_SCANCODE_APOSTROPHE]  = Input::KC_EXTRA8;
+    KBDMapping[SDL_SCANCODE_SLASH]       = Input::KC_EXTRA9;
+    KBDMapping[SDL_SCANCODE_RIGHTBRACKET]= Input::KC_EXTRA10;
+    KBDMapping[SDL_SCANCODE_BACKSLASH]   = Input::KC_EXTRA11;
+    KBDMapping[SDL_SCANCODE_LEFTBRACKET] = Input::KC_EXTRA12;
+    //KBDMapping[???]       = Input::KC_EXTRA13; // 	OEM_8 (§ !)
+    KBDMapping[SDL_SCANCODE_SCROLLLOCK]  = Input::KC_EXTRA14;
+    KBDMapping[SDL_SCANCODE_NUMLOCKCLEAR]= Input::KC_EXTRA15;
+    KBDMapping[SDL_SCANCODE_F13]         = Input::KC_EXTRA16;
+    KBDMapping[SDL_SCANCODE_F14]         = Input::KC_EXTRA17;
+    KBDMapping[SDL_SCANCODE_F15]         = Input::KC_EXTRA18;
 
     //Joy staff
 

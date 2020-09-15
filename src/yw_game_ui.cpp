@@ -4500,13 +4500,13 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, InputState *inpt)
 
         if ( gui_lstvw.IsOpen() )
         {
-            if ( yw->field_826F == Input::KEY_ESCAPE || yw->field_826F == Input::KEY_RETURN )
+            if ( yw->field_826F == Input::KC_ESCAPE || yw->field_826F == Input::KC_RETURN )
             {
                 yw->GuiWinClose(&gui_lstvw);
 
-                inpt->KbdLastDown = Input::KEY_NONE;
+                inpt->KbdLastDown = Input::KC_NONE;
                 inpt->HotKeyID = -1;
-                inpt->KbdLastHit = Input::KEY_NONE;
+                inpt->KbdLastHit = Input::KC_NONE;
             }
         }
 
@@ -7131,24 +7131,24 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub4(InputState *inpt)
 
         int a1_1 = 0;
 
-        if ( field_826F == Input::KEY_RETURN )
+        if ( field_826F == Input::KC_RETURN )
         {
             GuiWinClose( &lstvw2 );
 
             dword_5BAF9C = 1;
 
-            inpt->KbdLastHit = Input::KEY_NONE;
-            inpt->KbdLastDown = Input::KEY_NONE;
+            inpt->KbdLastHit = Input::KC_NONE;
+            inpt->KbdLastDown = Input::KC_NONE;
             inpt->HotKeyID = -1;
         }
-        else if ( field_826F == Input::KEY_ESCAPE )
+        else if ( field_826F == Input::KC_ESCAPE )
         {
             GuiWinClose( &lstvw2 );
 
             dword_5BAF9C = 2;
 
-            inpt->KbdLastHit = Input::KEY_NONE;
-            inpt->KbdLastDown = Input::KEY_NONE;
+            inpt->KbdLastHit = Input::KC_NONE;
+            inpt->KbdLastDown = Input::KC_NONE;
             inpt->HotKeyID = -1;
         }
         else if ( inpt->ClickInf.selected_btn == &lstvw2 )
@@ -11786,7 +11786,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
             {
                 if ( field_1a58 & 0x20 )
                 {
-                    if ( arg->KbdLastDown == Input::KEY_F7 && arg->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD )
+                    if ( arg->KbdLastDown == Input::KC_F7 && arg->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD )
                     {
                         v8 = 19;
                         v6 = 8;

@@ -645,7 +645,7 @@ void GuiList::InputHandle(NC_STACK_ypaworld *yw, InputState *struc)
 
     if ( listFlags & GLIST_FLAG_KEYB_INPUT )
     {
-        if ( struc->KbdLastHit == Input::KEY_UP )
+        if ( struc->KbdLastHit == Input::KC_UP )
         {
             selectedEntry--;
             if ( selectedEntry < 0 )
@@ -658,7 +658,7 @@ void GuiList::InputHandle(NC_STACK_ypaworld *yw, InputState *struc)
                 firstShownEntries = selectedEntry;
             }
         }
-        else if ( struc->KbdLastHit == Input::KEY_DOWN )
+        else if ( struc->KbdLastHit == Input::KC_DOWN )
         {
             selectedEntry++;
             if ( selectedEntry >= numEntries )

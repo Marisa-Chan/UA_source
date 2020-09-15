@@ -3328,7 +3328,7 @@ int ypaworld_func64__sub4(NC_STACK_ypaworld *yw, base_64arg *arg)
 
     if ( !yw->field_160c )
     {
-        if ( arg->field_8->HotKeyID == 32 || arg->field_8->KbdLastHit == Input::KEY_PAUSE )
+        if ( arg->field_8->HotKeyID == 32 || arg->field_8->KbdLastHit == Input::KC_PAUSE )
         {
             yw->field_160c = 1;
             yw->field_1610 = arg->TimeStamp;
@@ -3336,7 +3336,7 @@ int ypaworld_func64__sub4(NC_STACK_ypaworld *yw, base_64arg *arg)
         return 0;
     }
 
-    if ( arg->field_8->KbdLastHit != Input::KEY_NONE )
+    if ( arg->field_8->KbdLastHit != Input::KC_NONE )
     {
         yw->field_160c = 0;
         arg->TimeStamp = yw->field_1610;
@@ -4269,7 +4269,7 @@ void recorder_stoprec(NC_STACK_ypaworld *yw)
 
 void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt)
 {
-    if ( inpt->KbdLastHit == Input::KEY_NUMMUL && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
+    if ( inpt->KbdLastHit == Input::KC_NUMMUL && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
     {
         sub_4476AC(yw);
 
@@ -4285,7 +4285,7 @@ void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt)
 
     if ( yw->do_screenshooting )
     {
-        if ( inpt->KbdLastHit == Input::KEY_NUMDIV && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
+        if ( inpt->KbdLastHit == Input::KC_NUMDIV && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
         {
             yw->do_screenshooting = 0;
 
@@ -4310,7 +4310,7 @@ void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt)
 
         win3d->display_func274(&v13);
     }
-    else if ( inpt->KbdLastHit == Input::KEY_NUMDIV && (inpt->ClickInf.flag & 0x100 || yw->easy_cheat_keys) )
+    else if ( inpt->KbdLastHit == Input::KC_NUMDIV && (inpt->ClickInf.flag & 0x100 || yw->easy_cheat_keys) )
     {
         yw->screenshot_seq_frame_id = 0;
         yw->do_screenshooting = 1;
@@ -4327,7 +4327,7 @@ void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt)
 
     if ( yw->sceneRecorder->do_record )
     {
-        if ( inpt->KbdLastHit == Input::KEY_NUMMINUS && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
+        if ( inpt->KbdLastHit == Input::KC_NUMMINUS && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
         {
             recorder_stoprec(yw);
 
@@ -4343,7 +4343,7 @@ void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt)
     }
     else
     {
-        if ( inpt->KbdLastHit == Input::KEY_NUMMINUS && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
+        if ( inpt->KbdLastHit == Input::KC_NUMMINUS && (inpt->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD || yw->easy_cheat_keys) )
         {
             recorder_startrec(yw);
 
@@ -5572,7 +5572,7 @@ void NC_STACK_ypaworld::debug_info_draw(InputState *inpt)
 {
     if ( field_1b68 == 0)
     {
-        if ( sub_449678(inpt, Input::KEY_F9) )
+        if ( sub_449678(inpt, Input::KC_F9) )
             field_1b68++;
     }
     else
@@ -6028,7 +6028,7 @@ void NC_STACK_ypaworld::debug_info_draw(InputState *inpt)
         }
         else
         {
-            if ( sub_449678(inpt, Input::KEY_F9) )
+            if ( sub_449678(inpt, Input::KC_F9) )
                 field_1b68++;
         }
     }

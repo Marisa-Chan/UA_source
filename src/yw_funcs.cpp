@@ -1521,8 +1521,8 @@ void NC_STACK_ypaworld::sub_4491A0(const std::string &movie_fname)
 
     INPe.QueryInput(&input_states);
 
-    input_states.KbdLastHit = Input::KEY_NONE;
-    input_states.KbdLastDown = Input::KEY_NONE;
+    input_states.KbdLastHit = Input::KC_NONE;
+    input_states.KbdLastDown = Input::KC_NONE;
     input_states.HotKeyID = -1;
 }
 
@@ -2281,7 +2281,7 @@ void NC_STACK_ypaworld::ypaworld_func158__sub4__sub1()
         {
             if ( _levelInfo->State == 5 )
             {
-                if ( GameShell->_input->KbdLastHit == Input::KEY_RETURN )
+                if ( GameShell->_input->KbdLastHit == Input::KC_RETURN )
                     brief.Stage = 1;
 
                 if ( brief.Stage == 1 )
