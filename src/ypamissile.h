@@ -8,7 +8,7 @@ class NC_STACK_ypamissile: public NC_STACK_ypabact
 {
 protected:
     // Bomb rotation speed
-    const int BOMB_MIN_ANGLE = 0.001;
+    const double BOMB_MIN_ANGLE = 0.001;
         
 public:
     
@@ -42,7 +42,7 @@ public:
     virtual void Renew();
     virtual size_t SetStateInternal(setState_msg *arg);
     virtual void ResetViewing();
-    virtual void ApplyImpulse(); // Apply impulse to all in sector
+    virtual void Impact(); // Apply impulse to all in sector
     virtual void AlignMissile(float dtime = 0.0);
     virtual void AlignMissileByNormal(const vec3d &normal);
 

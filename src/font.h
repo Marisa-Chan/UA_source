@@ -103,6 +103,6 @@ char *TextRelWidthItem(TileMap *, char *pos, const char *txt, int wdth, int arg)
 char *FormateColumnItem(NC_STACK_ypaworld *yw, char *cmdbuf, int num, ColumnItem *a4);
 char *FormateTextAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg);
 char *FormateAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg);
-};
+}
 
 #endif //FONT_H_INCLUDED

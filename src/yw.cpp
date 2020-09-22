@@ -1220,7 +1220,7 @@ void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
     if ( !gem.ScriptFile.empty() )
     {
         if ( !sub_4DA354(gem.ScriptFile) )
-            ypa_log_out("yw_ActivateWunderstein: ERROR parsing script %s.\n", gem.ScriptFile);
+            ypa_log_out("yw_ActivateWunderstein: ERROR parsing script %s.\n", gem.ScriptFile.c_str());
     }
     else
     {
@@ -7241,7 +7241,7 @@ size_t NC_STACK_ypaworld::ypaworld_func173(UserData *usr)
         else
         {
             if ( !v38->SetInputExpression(true, kconf.KeyID, keyConfStr) )
-                ypa_log_out("input.engine: WARNING: Slider[%d] (%s) not accepted.\n", kconf.KeyID, keyConfStr);
+                ypa_log_out("input.engine: WARNING: Slider[%d] (%s) not accepted.\n", kconf.KeyID, keyConfStr.c_str());
         }
     }
     kconf.NKeyCodeBkp = kconf.NKeyCode;

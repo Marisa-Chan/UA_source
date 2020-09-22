@@ -648,7 +648,7 @@ int yw_initGameWithSettings()
         }
         else
         {
-            ypa_log_out("Warning: default user file doesn't exist (%s)\n", a1);
+            ypa_log_out("Warning: default user file doesn't exist (%s)\n", a1.c_str());
             a1 = fmt::sprintf("sdu7/user.txt");
             userdata.user_name = "SDU7";
         }

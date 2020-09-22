@@ -1037,7 +1037,7 @@ void UserData::yw_NetPrintStartInfo()
         p_ypaworld->windp->GetProviderData(&arg67);
 
         if ( arg67 )
-            log_netlog("Provider: %s\n", arg67->name);
+            log_netlog("Provider: %s\n", arg67->name.c_str());
         else
             log_netlog("!!! Unknown provider\n");
 

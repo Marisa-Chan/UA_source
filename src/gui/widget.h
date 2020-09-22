@@ -162,7 +162,7 @@ private:
     int    _rooted = Root::LAYER_UNK;
 };
 
-};
+}
 
 #endif
 

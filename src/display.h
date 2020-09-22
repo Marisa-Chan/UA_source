@@ -3,6 +3,7 @@
 
 #include "engine_gfx.h"
 #include "common.h"
+#include "base.h"
 
 struct ua_dRect
 {
@@ -162,7 +163,7 @@ public:
     virtual size_t raster_func203(IDVPair *);
     virtual size_t raster_func204(rstr_arg204 *);
     virtual size_t raster_func205(IDVPair *);
-    virtual size_t raster_func206(polysDatSub *);
+    virtual size_t raster_func206(polysDat *);
     virtual void raster_func207(int id, TileMap *tiles);
     virtual TileMap *raster_func208(int id);
     virtual int raster_func208(TileMap *tiles);

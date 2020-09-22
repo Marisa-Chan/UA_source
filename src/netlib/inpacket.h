@@ -326,6 +326,6 @@ struct Pkt
 };
 
 
-};
+}
 
 #endif

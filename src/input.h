@@ -169,7 +169,7 @@ namespace Input
         const std::string Name;
         KEYCODE   ID;
     };
-};
+}
 
 class NC_STACK_input;
 

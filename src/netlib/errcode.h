@@ -20,7 +20,7 @@ enum
     ERR_DISCONNECT_SERVER  = 0x01,
 };
 
-};
+}
 
 
 #endif

@@ -102,6 +102,6 @@ private:
 /** Sort of sugar **/
 static constexpr auto &ParseFile = Parser::ParseFile;
 static constexpr auto &ParseStringList = Parser::ParseStringList;
-};
+}
 
 #endif //DEFPARSER_H_INCLUDED

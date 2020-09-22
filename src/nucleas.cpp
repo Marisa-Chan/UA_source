@@ -20,7 +20,7 @@ ClassList::iterator ClassList::find(const std::string &clsname)
 ClassDescr::ClassDescr(const std::string &clsname,  NC_STACK_nucleus *(*newinst)() )
 : _classname(clsname)
 , _newinstance(newinst)
-{};
+{}
 
 
 

@@ -28,7 +28,7 @@ TileMap * NC_STACK_ypaworld::yw_LoadFont(const std::string &fontname)
     std::string buf;
     if ( !fil->ReadLine(&buf) )
     {
-        ypa_log_out("yw_LoadFont(): font %s, font definition file corrupt.\n", fontname);
+        ypa_log_out("yw_LoadFont(): font %s, font definition file corrupt.\n", fontname.c_str());
         delete tileset;
         delete fil;
         return NULL;
@@ -43,7 +43,7 @@ TileMap * NC_STACK_ypaworld::yw_LoadFont(const std::string &fontname)
     if ( !tk.GetNext(&bitmap_name) || !tk.GetNext(&fntHeight) )
     {
         delete tileset;
-        ypa_log_out("yw_LoadFont(): font %s, font definition file corrupt.\n", fontname);
+        ypa_log_out("yw_LoadFont(): font %s, font definition file corrupt.\n", fontname.c_str());
         delete fil;
         return NULL;
     }
@@ -56,7 +56,7 @@ TileMap * NC_STACK_ypaworld::yw_LoadFont(const std::string &fontname)
     if ( !tileset->img )
     {
         delete tileset;
-        ypa_log_out("yw_LoadFont(): font %s, couldn't load fontpage %s.\n", fontname, bitmap_name);
+        ypa_log_out("yw_LoadFont(): font %s, couldn't load fontpage %s.\n", fontname.c_str(), bitmap_name.c_str());
         delete fil;
         return NULL;
     }
@@ -483,7 +483,7 @@ int get_level_numb(const std::string &filename)
     if ( v10 < 1 || v10 >= 256 )
     {
         v10 = -1;
-        ypa_log_out("Invalid level num [valid: 0..127] for %s.\n", filename);
+        ypa_log_out("Invalid level num [valid: 0..127] for %s.\n", filename.c_str());
     }
     return v10;
 }

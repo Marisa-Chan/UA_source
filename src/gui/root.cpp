@@ -24,7 +24,7 @@ uint32_t Root::GetNextId()
     auto tmID = _nextId;
     _nextId = (_nextId + 2) & ~(1 << ((sizeof(_nextId) << 3) - 1));
     return tmID;
-};
+}
 
 void Root::AddWidget(Widget *w, bool top)
 {

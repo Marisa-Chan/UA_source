@@ -61,7 +61,7 @@ public:
             SDL_HapticStopEffect(haptic, effectID);
     }
 
-    virtual void Update(SDL_HapticEffect &data)
+    virtual void UpdateHaptic(SDL_HapticEffect &data)
     {
         if (OK())
             SDL_HapticUpdateEffect(haptic, effectID, &data);
@@ -122,7 +122,7 @@ public:
         updater.periodic.magnitude = magnitude;
         updater.periodic.period = period;
 
-        FFEffect::Update(updater);
+        FFEffect::UpdateHaptic(updater);
     }
 
 protected:
@@ -151,7 +151,7 @@ public:
         updater.periodic.magnitude = magnitude;
         updater.periodic.period = period;
 
-        FFEffect::Update(updater);
+        FFEffect::UpdateHaptic(updater);
     }
 
 protected:
@@ -178,7 +178,7 @@ public:
         updater.periodic.magnitude = magnitude;
         updater.periodic.period = period;
 
-        FFEffect::Update(updater);
+        FFEffect::UpdateHaptic(updater);
     }
 
 protected:
@@ -224,7 +224,7 @@ public:
         updater.condition.right_coeff[1] = coef;
         updater.condition.left_coeff[1] = coef;
 
-        FFEffect::Update(updater);
+        FFEffect::UpdateHaptic(updater);
     }
 
 protected:
@@ -362,7 +362,7 @@ public:
         updater.ramp.direction.dir[0] = x * 1000.0;
         updater.ramp.direction.dir[1] = y * 1000.0;
 
-        FFEffect::Update(updater);
+        FFEffect::UpdateHaptic(updater);
     }
 
 protected:
@@ -410,7 +410,7 @@ public:
         updater.periodic.direction.dir[0] = x * 1000.0;
         updater.periodic.direction.dir[1] = y * 1000.0;
 
-        FFEffect::Update(updater);
+        FFEffect::UpdateHaptic(updater);
     }
 
 protected:

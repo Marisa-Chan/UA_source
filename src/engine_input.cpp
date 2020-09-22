@@ -204,7 +204,7 @@ int INPEngine::init()
         if ( !val.empty() )
         {
             if ( ! input_class->SetHotKey(i, val) )
-                ypa_log_out("input.engine: WARNING: Hotkey[%d] (%s) not accepted.\n", i, val);
+                ypa_log_out("input.engine: WARNING: Hotkey[%d] (%s) not accepted.\n", i, val.c_str());
         }
     }
 

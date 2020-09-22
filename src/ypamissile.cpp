@@ -478,7 +478,7 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
 
         if ( (_mislFlags & FLAG_MISL_COUNTDELAY)  &&  _mislDelayTime <= 0 )
         {
-            ApplyImpulse();
+            Impact();
 
             _status = BACT_STATUS_DEAD;
 
@@ -545,7 +545,7 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
             if ( TubeCollisionTest() )
             {
                 setState_msg arg78;
-                ApplyImpulse();
+                Impact();
 
                 arg78.newStatus = BACT_STATUS_DEAD;
                 arg78.unsetFlags = 0;
@@ -580,7 +580,7 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
 
                 if ( !_mislDelayTime )
                 {
-                    ApplyImpulse();
+                    Impact();
 
                     _status = BACT_STATUS_DEAD;
 
@@ -645,7 +645,7 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
                 }
                 else
                 {
-                    ApplyImpulse();
+                    Impact();
 
                     setState_msg arg78;
                     arg78.unsetFlags = 0;
@@ -806,7 +806,7 @@ void NC_STACK_ypamissile::ResetViewing()
     }
 }
 
-void NC_STACK_ypamissile::ApplyImpulse()
+void NC_STACK_ypamissile::Impact()
 {
     bact_arg83 arg83;
     arg83.energ = _energy;

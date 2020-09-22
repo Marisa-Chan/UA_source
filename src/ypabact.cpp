@@ -144,7 +144,7 @@ NC_STACK_ypabact::NC_STACK_ypabact()
     _yls_time = 0;
     
     _world = NULL;
-};
+}
 
 
 size_t NC_STACK_ypabact::func0(IDVList &stak)

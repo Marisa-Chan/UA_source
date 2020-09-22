@@ -106,7 +106,7 @@ size_t NC_STACK_display::raster_func205(IDVPair *)
     return 0;
 }
 
-size_t NC_STACK_display::raster_func206(polysDatSub *)
+size_t NC_STACK_display::raster_func206(polysDat *)
 {
     dprintf("MAKE ME %s\n","raster_func206");
     return 0;
@@ -312,7 +312,7 @@ void NC_STACK_display::SetPalette(UA_PALETTE &newPal)
     arg_262.weight = &v12;
 
     display_func262(&arg_262);
-};
+}
 
 
 void NC_STACK_display::SetPen(uint32_t pen)

@@ -307,7 +307,7 @@ inline uint32_t GetUpgradeLogID(uint8_t upg)
 }
 }
 
-};
+}
 
 
 

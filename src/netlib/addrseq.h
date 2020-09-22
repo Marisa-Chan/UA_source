@@ -34,6 +34,6 @@ struct AddrSeq
     };
 };
 
-};
+}
 
 #endif

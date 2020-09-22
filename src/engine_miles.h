@@ -1,6 +1,7 @@
 #ifndef ENGINE_MILES_H_INCLUDED
 #define ENGINE_MILES_H_INCLUDED
 
+#include <array>
 #include "engine_tform.h"
 #include "sample.h"
 #include "wrapal.h"

@@ -74,6 +74,6 @@ protected:
     UserInfoVect    cUsers;
 };
 
-};
+}
 
 #endif

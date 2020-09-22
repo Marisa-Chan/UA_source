@@ -277,4 +277,4 @@ int ZNDClient::_UpdateThread(void *data)
     return 0;
 }
 
-};
+}

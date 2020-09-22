@@ -351,6 +351,6 @@ struct SendingData
 
 typedef std::list<SendingData *> SendingList;
 
-};
+}
 
 #endif

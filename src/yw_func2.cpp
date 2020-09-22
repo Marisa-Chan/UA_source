@@ -556,7 +556,7 @@ void NC_STACK_ypaworld::listSaveDir(const std::string &saveDir)
     }
     else
     {
-        ypa_log_out("Unknown Game-Directory %s\n", saveDir);
+        ypa_log_out("Unknown Game-Directory %s\n", saveDir.c_str());
     }
 
     playerstatus = savedStatuses;
@@ -773,7 +773,7 @@ void  UserData::sb_0x46ca74()
     v15.field_10 = 0;
 
     if ( ! p_YW->ypaworld_func171(&v15) )
-        ypa_log_out("Warning! Error while saving user data for %s\n", usernamedir);
+        ypa_log_out("Warning! Error while saving user data for %s\n", usernamedir.c_str());
 
     oldsave = fmt::sprintf("save:%s", user_name);
 
@@ -4553,7 +4553,8 @@ void UserData::GameShellUiHandleInput()
         network_button->button_func76(&v393);
 
         std::string tmp = netName;
-        tmp.insert(netNameCurPos, 1, '_');
+        if (tmp.size() > (size_t)netNameCurPos)
+            tmp.insert(netNameCurPos, 1, '_');
         
         network_button->button_func71(1200, tmp);
     }

@@ -92,7 +92,7 @@ struct Data
     };
 };
 
-};
+}
 
 struct __NC_STACK_skeleton
 {

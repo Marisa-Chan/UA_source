@@ -91,8 +91,8 @@ public:
     using _T_Base::front;
     using _T_Base::back;
     using _T_Base::erase;
-    using _T_Base::iterator;
-    using _T_Base::reverse_iterator;
+    using typename _T_Base::iterator;
+    using typename _T_Base::reverse_iterator;
     using _T_Base::empty;
     
     

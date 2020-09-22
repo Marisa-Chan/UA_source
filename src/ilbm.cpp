@@ -532,10 +532,10 @@ void ILBM__WRITE_TO_FILE_BMHD(IFFile *mfile, ResBitmap *bitm)
     mfile->writeU16B(bitm->height);
     mfile->writeU16B(0); // x
     mfile->writeU16B(0); // y
-    mfile->writeS8(8); // nPlanes
-    mfile->writeS8(0); // masking
-    mfile->writeS8(0); // compression
-    mfile->writeS8(0x80); //flags
+    mfile->writeU8(8); // nPlanes
+    mfile->writeU8(0); // masking
+    mfile->writeU8(0); // compression
+    mfile->writeU8(0x80); //flags
     mfile->writeU16B(0); // transparentColor
     mfile->writeS8(22); // xAspect
     mfile->writeS8(22); // yAspect

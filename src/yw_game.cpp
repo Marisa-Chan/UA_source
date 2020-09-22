@@ -586,7 +586,7 @@ void sb_0x44ca90__sub2(NC_STACK_ypaworld *yw, LevelDesc *mapp)
             }
             else
             {
-                ypa_log_out("WARNING: slot #%d [%s] init failed!\n", i, mapp->Palettes[i]);
+                ypa_log_out("WARNING: slot #%d [%s] init failed!\n", i, mapp->Palettes[i].c_str());
             }
         }
     }
@@ -1974,7 +1974,7 @@ void sub_44BF34(vhclSndFX *sndfx)
                 }
                 else
                 {
-                    ypa_log_out("Warning: Could not load sample %s.\n", sndfx->extSampleNames[i]);
+                    ypa_log_out("Warning: Could not load sample %s.\n", sndfx->extSampleNames[i].c_str());
                 }
             }
         }
@@ -1983,7 +1983,7 @@ void sub_44BF34(vhclSndFX *sndfx)
             sndfx->single_sample = Nucleus::CInit<NC_STACK_wav>( {{NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->sample_name}} );
 
             if ( !sndfx->single_sample )
-                ypa_log_out("Warning: Could not load sample %s.\n", sndfx->sample_name);
+                ypa_log_out("Warning: Could not load sample %s.\n", sndfx->sample_name.c_str());
         }
 
         set_prefix_replacement("rsrc", rsr);

@@ -3,9 +3,9 @@
 
 #include <list>
 
-struct NC_STACK_ypaworld;
+class NC_STACK_ypaworld;
 
-struct GuiBase;
+class GuiBase;
 typedef std::list<GuiBase *> GuiBaseList;
 
 class GuiBase : public ClickBox

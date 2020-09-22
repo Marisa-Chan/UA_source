@@ -4931,12 +4931,11 @@ char * ypaworld_func64__sub7__sub7__sub0__sub1(NC_STACK_ypaworld *yw, char *cur,
     int v16;
     if ( a4 & 1 )
     {
-        if ( a5 < 0 )
+        if ( a5 == -1 )
         {
-            if ( a5 == -1 )
-                v16 = 66;
+            v16 = 66;
         }
-        else if ( a5 <= 0 )
+        else if ( a5 == 0 )
         {
             v16 = 67;
         }
@@ -4979,19 +4978,12 @@ char * ypaworld_func64__sub7__sub7__sub0__sub2(NC_STACK_ypaworld *yw, char *cur,
     int v18;
     if ( a4 & 4 )
     {
-        if ( a5 < 0 )
-        {
-            if ( a5 == -1 )
-                v18 = 70;
-        }
-        else if ( a5 <= 0 )
-        {
+        if ( a5 == -1 )
+            v18 = 70;
+        else if ( a5 == 0 )
             v18 = 71;
-        }
         else if ( a5 == 1 )
-        {
             v18 = 69;
-        }
     }
     else
     {
@@ -5033,19 +5025,12 @@ char * ypaworld_func64__sub7__sub7__sub0__sub3(NC_STACK_ypaworld *yw, char *cur,
     int v18;
     if ( a4 & 8 )
     {
-        if ( a5 < 0 )
-        {
-            if ( a5 == -1 )
-                v18 = 78;
-        }
-        else if ( a5 <= 0 )
-        {
+        if ( a5 == -1 )
+            v18 = 78;
+        else if ( a5 == 0 )
             v18 = 79;
-        }
         else if ( a5 == 1 )
-        {
             v18 = 77;
-        }
     }
     else
     {

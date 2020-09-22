@@ -89,6 +89,6 @@ struct SessionInfo
 };
 typedef std::vector<SessionInfo> SessionInfoVect;
 
-};
+}
 
 #endif

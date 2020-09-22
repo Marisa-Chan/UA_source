@@ -3,20 +3,12 @@
 
 #include "sample.h"
 
-struct NC_STACK_wav;
-
-struct __NC_STACK_wav
-{
-
-};
-
 class NC_STACK_wav: public NC_STACK_sample
 {
 public:
     virtual rsrc * rsrc_func64(IDVList &stak);
 
     NC_STACK_wav() {
-        memset(&stack__wav, 0, sizeof(stack__wav));
     };
     virtual ~NC_STACK_wav() {};
     
@@ -30,8 +22,6 @@ public:
 
     //Data
     static const Nucleus::ClassDescr description;
-
-    __NC_STACK_wav stack__wav;
 };
 
 #endif // WAV_H_INCLUDED

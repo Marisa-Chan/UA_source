@@ -305,7 +305,7 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
                 if ( _o.GameShell->InputConfig[ gsIndex ].PKeyCode == -1 )
                 {
-                    ypa_log_out("Unknown keyword for button %s\n", tmp);
+                    ypa_log_out("Unknown keyword for button %s\n", tmp.c_str());
                     return ScriptParser::RESULT_BAD_DATA;
                 }
                 ok = true;
@@ -1992,7 +1992,7 @@ bool SuperItemParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     _o.superbomb_wall_vproto = 0;
     _o.superbomb_center_vproto = 0;
     return true;
-};
+}
 
 int SuperItemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2)
 {
@@ -3438,7 +3438,7 @@ bool LevelStatusParser::IsScope(ScriptParser::Parser &parser, const std::string 
 
     _levelId = std::stoi(opt);
     return true;
-};
+}
 
 int LevelStatusParser::Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2)
 {
@@ -3467,7 +3467,7 @@ bool BuddyParser::IsScope(ScriptParser::Parser &parser, const std::string &word,
         return true;
     }
     return false;
-};
+}
 
 int BuddyParser::Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2)
 {

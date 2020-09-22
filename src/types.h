@@ -7,14 +7,14 @@
 
 
 struct cellArea;
-struct NC_STACK_ypabact;
-struct NC_STACK_ypamissile;
+class NC_STACK_ypabact;
+class NC_STACK_ypamissile;
 
 namespace Engine
 {
 typedef std::list< std::string > StringList;
 
-};
+}
 
 namespace World
 {

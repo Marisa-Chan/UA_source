@@ -227,6 +227,6 @@ struct UserInfo
 };
 typedef std::vector<UserInfo> UserInfoVect;
 
-};
+}
 
 #endif

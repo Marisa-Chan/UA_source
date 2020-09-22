@@ -609,4 +609,4 @@ void ZNDServer::UserToLobby(NetUser *usr, uint8_t type)
     sLobby.users.push_back(usr);
 }
 
-};
+}

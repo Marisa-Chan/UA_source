@@ -280,4 +280,4 @@ int ZNDSingle::_UpdateThread(void *data)
 }
 
 
-};
+}

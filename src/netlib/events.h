@@ -98,6 +98,6 @@ public:
 
 typedef std::list<Event *> EventList;
 
-};
+}
 
 #endif

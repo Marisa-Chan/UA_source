@@ -89,8 +89,8 @@ struct windp_arg87
 
 
 
-struct NC_STACK_ypaworld;
-struct UserData;
+class NC_STACK_ypaworld;
+class UserData;
 
 void yw_HandleNetMsg(NC_STACK_ypaworld *yw);
 

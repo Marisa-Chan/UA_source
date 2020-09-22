@@ -33,6 +33,6 @@ struct Tick64
     }
 };
 
-};
+}
 
 #endif
