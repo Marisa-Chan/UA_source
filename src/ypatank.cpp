@@ -1754,15 +1754,7 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
     {
         if ( v43 )
         {
-            if ( v43 == 16 )
-            {
-                if ( v37 < 1200.0 && v38 > 0.93 )
-                {
-                    if ( v34.y > -0.85 && v34.y < 0.2 )
-                        return 1;
-                }
-            }
-            else if ( v37 < 1200.0 && v38 > 0.93 )
+            if ( v37 < 1200.0 && v38 > 0.93 )
             {
                 if ( v34.y > -0.85 && v34.y < 0.2 )
                     return 1;
@@ -1777,15 +1769,7 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
     {
         if ( v43 )
         {
-            if ( v43 == 16 )
-            {
-                if ( v37 < 1200.0 && v38 > 0.91 )
-                {
-                    if ( v34.y > -0.4 && v34.y < 0.3 )
-                        return 1;
-                }
-            }
-            else if ( v37 < 1200.0 && v38 > 0.91 )
+            if ( v37 < 1200.0 && v38 > 0.91 )
             {
                 if ( v34.y > -0.4 && v34.y < 0.3 )
                     return 1;

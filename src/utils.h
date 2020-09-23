@@ -274,7 +274,7 @@ inline void ByteUL16(void *dat, uint16_t v)
     ((uint8_t *)dat)[1] = (v >> 8) & 0xFF;
 }
 
-inline void ByteUL32(void *dat, uint16_t v)
+inline void ByteUL32(void *dat, uint32_t v)
 {
     ((uint8_t *)dat)[0] = v & 0xFF;
     ((uint8_t *)dat)[1] = (v >> 8) & 0xFF;
