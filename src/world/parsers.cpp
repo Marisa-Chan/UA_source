@@ -2828,7 +2828,7 @@ int LevelGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
     }
     else if ( !StriCmp(p1, "type") )
     {
-        _g->Type =std::stol(p2, NULL, 0);
+        _g->Type = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "script") )
     {

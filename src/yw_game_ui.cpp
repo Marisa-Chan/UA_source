@@ -9397,11 +9397,11 @@ int sb_0x4d7c08__sub0__sub0__sub0(NC_STACK_ypaworld *yw)
 
     int v10 = yw->_Gems[ yw->field_2b78 ].Type;
 
-    if ( v10 == 25 )
+    if ( v10 == World::UPGRADE_WEAPON )
         a8 |= 1;
-    else if ( v10 == 26 )
+    else if ( v10 == World::UPGRADE_ARMOR )
         a8 |= 4;
-    else if ( v10 == 27 )
+    else if ( v10 == World::UPGRADE_VEHICLE )
         a8 |= 8;
 
     if ( v6 )
