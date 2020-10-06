@@ -211,7 +211,7 @@ void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, BriefengScreen *brf, I
     brf->ObjRenderParams.ownerID = 1;
     brf->ObjRenderParams.minZ = 17.0;
     brf->ObjRenderParams.maxZ = 32000.0;
-    brf->ObjRenderParams.flags = 0;
+    brf->ObjRenderParams.flags = NC_STACK_display::RFLAGS_IGNORE_FALLOFF;
     brf->ObjRenderParams.rndrStack = &NC_STACK_base::renderStack;
 
     if ( brf->ViewingObject ) // Not none

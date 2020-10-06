@@ -233,7 +233,8 @@ public:
         RFLAGS_ZEROTRACY = 0x10,
         RFLAGS_LUMTRACY = 0x20,
         RFLAGS_SKY = 0x40,
-        RFLAGS_FALLOFF = 0x80
+        RFLAGS_FALLOFF = 0x80,
+        RFLAGS_IGNORE_FALLOFF = 0x1000,
     };
 
     //Set

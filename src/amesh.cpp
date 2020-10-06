@@ -439,7 +439,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
                 if (datSub->vertexes[j].z > maxz)
                     maxz = datSub->vertexes[j].z;
 
-            if ( NC_STACK_win3d::win3d_keys[18].Get<bool>() )
+            if ( !(arg->flags & NC_STACK_display::RFLAGS_IGNORE_FALLOFF) && NC_STACK_win3d::win3d_keys[18].Get<bool>() )
             {
                 float maxln = 0.0;
 
