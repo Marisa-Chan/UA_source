@@ -1,6 +1,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include <math.h>
+#include <iterator>
 #include "includes.h"
 #include "yw_internal.h"
 #include "yw.h"
@@ -4293,7 +4294,7 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub4(NC_STACK_ypaworld *yw)
         World::RefBactList *lst = yw->UserUnit->_kidRef.PList();
         if (lst)
         {
-            for( World::RefBactList::iterator it = yw->UserUnit->_kidRef; it != lst->end(); it++) // Start from current unit in this list
+            for( World::RefBactList::iterator it = std::next(yw->UserUnit->_kidRef.iter(), 1); it != lst->end(); it++) // Start from current unit in this list
             {
                if ( (*it)->_status != BACT_STATUS_CREATE && (*it)->_status != BACT_STATUS_DEAD && (*it)->_status != BACT_STATUS_BEAM )
                     return *it;

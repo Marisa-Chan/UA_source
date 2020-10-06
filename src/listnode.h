@@ -77,6 +77,11 @@ public:
             return NULL;
         }
         
+        _T_interListIter iter() const
+        {
+            return _it;
+        }
+        
     protected:
         _T_List *_pList;
         _T_interListIter _it;
