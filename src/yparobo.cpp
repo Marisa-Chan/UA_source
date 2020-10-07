@@ -1429,6 +1429,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
             arg134.field_C = 0;
             arg134.field_8 = 0;
             arg134.field_10 = 0;
+            arg134.field_14 = 38;
 
             if ( v8->_primTtype == BACT_TGT_TYPE_CELL )
             {
@@ -1441,8 +1442,10 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                 {
                     arg134.field_4 = 16;
                 }
+                
+                placeMessage(&arg134);
             }
-            else
+            else if ( v8->_primTtype == BACT_TGT_TYPE_UNIT )
             {
                 if ( v8->_primT.pbact->_owner == _owner )
                 {
@@ -1452,10 +1455,9 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                 {
                     arg134.field_4 = 16;
                 }
-            }
 
-            arg134.field_14 = 38;
-            placeMessage(&arg134);
+                placeMessage(&arg134);
+            }
         }
         sub_4A4538(arg->selectBact);
         sub_4AB69C(arg->selectBact, 0);
@@ -3646,7 +3648,7 @@ void NC_STACK_yparobo::checkCommander()
                                 for ( NC_STACK_ypabact *v33 : commander->_attackersList )
                                 {
                                     if (_world->UserRobo->_owner == v33->_owner)
-                                    {
+                                    {                                       
                                         if ( v33->_bact_type == BACT_TYPES_MISSLE ) //If missile
                                         {
                                             NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v33);
