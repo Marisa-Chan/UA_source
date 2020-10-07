@@ -1513,7 +1513,7 @@ void NC_STACK_ypaworld::ypaworld_func134(NC_STACK_ypabact *bact)
 {
     newMaster_msg arg73;
 
-    arg73.bact = (NC_STACK_ypabact *)1;
+    arg73.bact = NULL;
     arg73.list = &_unitsList;
 
     bact->SetNewMaster(&arg73);
@@ -1734,7 +1734,7 @@ void NC_STACK_ypaworld::ypaworld_func144(NC_STACK_ypabact *bacto)
     SFXEngine::SFXe.sub_423DD8(&bacto->_soundcarrier);
 
     newMaster_msg cache;
-    cache.bact = (NC_STACK_ypabact *)1;
+    cache.bact = NULL;
     cache.list = &_deadCacheList;
 
     bacto->SetNewMaster(&cache);
