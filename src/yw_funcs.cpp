@@ -2562,6 +2562,10 @@ char * sub_4DDF78(NC_STACK_ypaworld *yw, GuiList *lstvw, char *pos, int a3)
 
 void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 {
+    const std::array<std::string, 2> connNames
+    { "Host the game"
+    , "Connect to game"};
+    
     bool slct = false;
 
     char *cmd = usr->network_listvw.itemBlock;
@@ -2592,21 +2596,17 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
         {
         case 0: //provider
         {
-            windp_getNameMsg msg;
-            msg.id = i;
-            if ( yw->windp->GetProviderName(&msg) )
+            if (i < 2)
             {
-                str1 = msg.name;
+                str1 = connNames[i];
                 brk = false;
-
+                
                 if (usr->netSel == -1 && i == 0)
                 {
-                    strcpy(usr->netName, msg.name);
-
+                    usr->netName = str1;
                     usr->network_button->button_func71(1200, usr->netName);
                     usr->netSel = 0;
                 }
-
             }
             else
                 str1 = "----";
@@ -2623,7 +2623,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                 for (j = 0; (uint8_t)msg.name[j] >= ' ' && msg.name[j] != '|'; j++ )
                     str1 += msg.name[j];
 
-                int lvlid = atoi(str1.c_str());
+                int lvlid = std::stoi(str1);
 
                 str1 = get_lang_string( yw->string_pointers_p2, lvlid + 1800, yw->LevelNet->mapInfos[ lvlid ].map_name.c_str() );
 
@@ -2650,9 +2650,9 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                         }
                     }
 
-                    lvlid = atoi(str1.c_str());
+                    lvlid = std::stoi(str1);
 
-                    strcpy(usr->netName, yw->LevelNet->mapInfos[ lvlid ].map_name.c_str());
+                    usr->netName = yw->LevelNet->mapInfos[ lvlid ].map_name;
 
                     usr->network_button->button_func71(1200, usr->netName);
 
@@ -2727,7 +2727,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 
                 if ( usr->netSel == -1 && cnt == 0)
                 {
-                    strcpy(usr->netName, usr->map_descriptions[ i ].pstring);
+                    usr->netName = usr->map_descriptions[ i ].pstring;
 
                     usr->network_button->button_func71(1200, usr->netName);
 
@@ -3427,7 +3427,7 @@ void UserData::clear()
     netSelMode = 0;
     netSel = 0;
     nInputMode = 0;
-    memset(netName, 0, sizeof(netName));
+    netName.clear();
 
     netNameCurPos = 0;
     netLevelID = 0;

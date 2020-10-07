@@ -129,7 +129,7 @@ void sb_0x4eb94c__sub1(NC_STACK_ypaworld *yw, bool clockwise, int rot, vec3d *po
             lego->base_func70(&v17);
             lego->base_func68(&v16);
             lego->base_func77(arg);
-
+            
             v30++;
         }
         v22++;
@@ -2422,7 +2422,7 @@ void UserData::GameShellUiHandleInput()
 
     if ( netSelMode == 1 )
     {
-        if ( p_ypaworld->windp->GetProvType(NULL) == 4 )
+        if ( p_ypaworld->windp->GetProvType() == 4 )
         {
             if ( modemAskSession )
             {
@@ -2434,7 +2434,7 @@ void UserData::GameShellUiHandleInput()
                 }
             }
         }
-        else if ( p_ypaworld->windp->GetProvType(NULL) != 3 || _input->KbdLastHit == Input::KC_SPACE )
+        else if ( p_ypaworld->windp->GetProvType() != 3 || _input->KbdLastHit == Input::KC_SPACE )
         {
             p_ypaworld->windp->EnumSessions(NULL);
         }
@@ -3950,14 +3950,14 @@ void UserData::GameShellUiHandleInput()
         case 2:
             if ( r.code == 1200 )
             {
-                if ( netName[0] )
+                if ( !netName.empty() )
                 {
                     callSIGN = netName;
 
                     netSelMode = 1;
                     netSel = -1;
                     network_listvw.firstShownEntries = 0;
-                    netName[0] = 0;
+                    netName = "";
 
                     p_YW->GuiWinOpen( &network_listvw );
                 }
@@ -4034,7 +4034,7 @@ void UserData::GameShellUiHandleInput()
                     network_listvw.firstShownEntries = 0;
                     msgBuffLine = 0;
                     lastSender[0] = 0;
-                    netName[0] = 0;
+                    netName = "";
                     netSelMode = 3;
                 }
             }
@@ -4130,13 +4130,13 @@ void UserData::GameShellUiHandleInput()
 //                    }
 //                }
 
-                if ( netName[0] )
+                if ( !netName.empty() )
                 {
                     uamessage_message msgMsg;
                     msgMsg.msgID = UAMSG_MESSAGE;
                     msgMsg.owner = 0;
 
-                    strncpy(msgMsg.message, netName, 64);
+                    strncpy(msgMsg.message, netName.c_str(), 64);
 
                     v346.senderFlags = 1;
                     v346.data = &msgMsg;
@@ -4150,7 +4150,7 @@ void UserData::GameShellUiHandleInput()
 
                     sub_4D0C24(p_ypaworld, callSIGN.c_str(), msgMsg.message);
 
-                    netName[0] = 0;
+                    netName = "";
                     netNameCurPos = 0;
 
                     int v223 = strtol(msgMsg.message, NULL, 0);
@@ -4213,7 +4213,7 @@ void UserData::GameShellUiHandleInput()
                 break;
             }
 
-            netNameCurPos = strlen(netName);
+            netNameCurPos = netName.size();
         }
 
         network_listvw.Formate(p_ypaworld);
@@ -4232,43 +4232,25 @@ void UserData::GameShellUiHandleInput()
                 else
                     v233 = 38;
 
-                if ( strlen(netName) < v233 )
+                if ( netName.size() < v233 )
                 {
-                    if ( _input->chr > 0x1F )
+                    if ( _input->chr > ' ' && _input->chr != '*' )
                     {
-                        char v354[12];
-                        char v345[12];
-
-                        sprintf(v354, "%c", _input->chr);
-
-                        strcpy(v345, v354);
-
-                        if ( v354[0] == '*' || v345[0] != '*' )
+                        if (netNameCurPos <= (int)netName.size())
                         {
-                            char v313[68];
-
-                            strncpy(v313, netName, netNameCurPos);
-                            strncpy(v313 + netNameCurPos, v345, 1);
-
-                            strcpy(v313 + netNameCurPos + 1, netName + netNameCurPos );
-
-                            strcpy(netName, v313);
-
+                            netName.insert(netNameCurPos, 1, _input->chr);
                             netNameCurPos++;
-                        }
+                        }                           
                     }
                 }
 
                 if ( _input->KbdLastHit == Input::KC_BACKSPACE && netNameCurPos > 0 )
                 {
-                    int ln = strlen(netName);
-
-                    for (int i = netNameCurPos - 1; i < ln - 1; i++)
-                        netName[i] = netName[i + 1];
-
-                    netName[ln - 1] = 0;
-
-                    netNameCurPos--;
+                    if (netNameCurPos > 0 && (int)netName.size() >= netNameCurPos)
+                    {
+                        netName.erase(netNameCurPos - 1, 1);                        
+                        netNameCurPos--;
+                    }
                 }
                 else if ( _input->KbdLastHit == Input::KC_LEFT )
                 {
@@ -4277,17 +4259,13 @@ void UserData::GameShellUiHandleInput()
                 }
                 else if ( _input->KbdLastHit == Input::KC_RIGHT )
                 {
-                    if ( netNameCurPos < (int32_t)strlen(netName) )
+                    if ( netNameCurPos < (int)netName.size() )
                         netNameCurPos++;
                 }
-                else if ( _input->KbdLastHit == Input::KC_DELETE && netNameCurPos < (int32_t)strlen(netName) )
+                else if ( _input->KbdLastHit == Input::KC_DELETE && netNameCurPos < (int)netName.size() )
                 {
-                    int ln = strlen(netName);
-
-                    for (int i = netNameCurPos; i < ln - 1; i++)
-                        netName[i] = netName[i + 1];
-
-                    netName[ln - 1] = 0;
+                    if ( netNameCurPos < (int)netName.size() )
+                        netName.erase(netNameCurPos, 1);
                 }
             }
 
@@ -4314,14 +4292,14 @@ void UserData::GameShellUiHandleInput()
                     break;
 
                 case 2:
-                    if ( netName[0] )
+                    if ( !netName.empty() )
                     {
                         callSIGN = netName;
 
                         netSelMode = 1;
                         netSel = -1;
                         network_listvw.firstShownEntries = 0;
-                        netName[0] = 0;
+                        netName.clear();
                         p_YW->GuiWinOpen( &network_listvw );
                     }
                     break;
@@ -4330,13 +4308,13 @@ void UserData::GameShellUiHandleInput()
                     sub_46B328();
                     break;
                 case 4:
-                    if ( netName[0] )
+                    if ( !netName.empty() )
                     {
                         uamessage_message msgMsg;
                         msgMsg.msgID = UAMSG_MESSAGE;
                         msgMsg.owner = 0;
 
-                        strncpy(msgMsg.message, netName, 64);
+                        strncpy(msgMsg.message, netName.c_str(), 64);
 
                         yw_arg181 v325;
 
@@ -4349,7 +4327,7 @@ void UserData::GameShellUiHandleInput()
                         p_ypaworld->ypaworld_func181(&v325);
 
                         sub_4D0C24(p_ypaworld, callSIGN.c_str(), msgMsg.message);
-                        netName[0] = 0;
+                        netName.clear();
                         netNameCurPos = 0;
 
                         int v271 = strtol(msgMsg.message, NULL, 0);
@@ -4490,8 +4468,8 @@ void UserData::GameShellUiHandleInput()
     v410.butID = 1217;
     network_button->button_func67(&v410);
 
-    if ( (netSelMode != 1 || p_ypaworld->windp->GetProvType(NULL) != 3)
-            && (netSelMode != 1 || modemAskSession != 1 || p_ypaworld->windp->GetProvType(NULL) != 4)
+    if ( (netSelMode != 1 || p_ypaworld->windp->GetProvType() != 3)
+            && (netSelMode != 1 || modemAskSession != 1 || p_ypaworld->windp->GetProvType() != 4)
             && netSelMode )
     {
         v410.butID = 1228;
@@ -4553,7 +4531,7 @@ void UserData::GameShellUiHandleInput()
         network_button->button_func76(&v393);
 
         std::string tmp = netName;
-        if (tmp.size() > (size_t)netNameCurPos)
+        if (tmp.size() >= (size_t)netNameCurPos)
             tmp.insert(netNameCurPos, 1, '_');
         
         network_button->button_func71(1200, tmp);
@@ -4590,7 +4568,7 @@ void UserData::GameShellUiHandleInput()
         break;
 
     case 1:
-        if ( p_ypaworld->windp->GetProvType(NULL) != 4 || !modemAskSession )
+        if ( p_ypaworld->windp->GetProvType() != 4 || !modemAskSession )
         {
             network_button->button_func71(1202, get_lang_string(ypaworld__string_pointers, 402, "NEW"));
 
@@ -4611,7 +4589,7 @@ void UserData::GameShellUiHandleInput()
         {
             network_button->button_func71(1201, get_lang_string(ypaworld__string_pointers, 406, "JOIN"));
         }
-        else if ( p_ypaworld->windp->GetProvType(NULL) != 4 || modemAskSession )
+        else if ( p_ypaworld->windp->GetProvType() != 4 || modemAskSession )
         {
             v410.butID = 1201;
             network_button->button_func67(&v410);

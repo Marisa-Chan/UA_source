@@ -561,7 +561,7 @@ public:
     int16_t netSelMode;
     int16_t netSel;
     int nInputMode;
-    char netName[64];
+    std::string netName;
 
     int16_t netNameCurPos;
     int16_t netLevelID;
