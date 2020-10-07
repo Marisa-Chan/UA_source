@@ -350,16 +350,16 @@ size_t NC_STACK_ypabact::func1()
     if ( _pSector )
         _cellRef.Detach();
 
-    if ( _parent )
-        _kidRef.Detach();
+    _kidRef.Detach();
 
     while (!_kidList.empty())
         Nucleus::Delete(_kidList.front());
 
-    for (World::MissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end(); it++)
-        Nucleus::Delete(*it);
-
-    _missiles_list.clear();
+    while (!_missiles_list.empty())
+    {
+        Nucleus::Delete(_missiles_list.front());
+        _missiles_list.pop_front();        
+    }
 
     return NC_STACK_nucleus::func1();
 }
@@ -597,6 +597,9 @@ void sub_481F94(NC_STACK_ypabact *bact)
 
 void NC_STACK_ypabact::Update(update_msg *arg)
 {
+    if ( _kidRef.IsListType(World::BLIST_CACHE) ) // Do not update units in dead list
+        return;
+        
     static TFEngine::TForm3D bact_cam;
     TFEngine::Engine.SetViewPoint(&bact_cam);
 
@@ -2231,8 +2234,7 @@ void NC_STACK_ypabact::AddSubject(NC_STACK_ypabact *kid)
 
 void NC_STACK_ypabact::SetNewMaster(newMaster_msg *arg)
 {
-    if ( _parent )
-        _kidRef.Detach();
+    _kidRef.Detach();
 
     _kidRef = arg->list->push_front(this);
     
@@ -2980,10 +2982,10 @@ void NC_STACK_ypabact::Die()
 
             if ( kid->_status == BACT_STATUS_DEAD )
             {
-                if ( (size_t)_parent <= 2 )
-                    _world->ypaworld_func134(kid);
-                else
+                if ( _parent )
                     _parent->AddSubject(kid);
+                else
+                    _world->ypaworld_func134(kid);                  
 
                 kid->_status_flg |= BACT_STFLAG_NOMSG;
             }
@@ -3008,7 +3010,7 @@ void NC_STACK_ypabact::Die()
 
         if ( deputy )
         {
-            if ( (size_t)_parent != 1 )
+            if ( _parent )
                 _parent->AddSubject(deputy);
             else
                 _world->ypaworld_func134(deputy);
@@ -3119,7 +3121,17 @@ void NC_STACK_ypabact::Die()
 
     CleanAttackersTarget();
 
-    if ( (size_t)_parent <= 2 )
+    if ( _parent )
+    {
+        for (World::MissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end(); it = _missiles_list.erase(it))
+        {
+            NC_STACK_ypamissile *miss = *it;
+
+            _parent->_missiles_list.push_back(miss);
+            miss->setMISS_launcher( _parent );
+        }
+    }
+    else
     {
         for (World::MissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end(); it = _missiles_list.erase(it))
         {
@@ -3143,16 +3155,7 @@ void NC_STACK_ypabact::Die()
             _world->ypaworld_func144(miss);
         }
     }
-    else
-    {
-        for (World::MissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end(); it = _missiles_list.erase(it))
-        {
-            NC_STACK_ypamissile *miss = *it;
-
-            _parent->_missiles_list.push_back(miss);
-            miss->setMISS_launcher( _parent );
-        }
-    }
+    
 
     if ( _secndTtype == BACT_TGT_TYPE_UNIT )
         _secndT.pbact->_attackersList.remove(this);
@@ -3192,7 +3195,7 @@ void NC_STACK_ypabact::Die()
     {
         if ( !(_oflags & BACT_OFLAG_VIEWER) )
         {
-            if ( (size_t)_parent > 2 )
+            if ( _parent )
                 setBACT_inputting(0);
         }
     }
@@ -3378,11 +3381,8 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
          *  Looks it's somehow related to mentioned problem with dead cache.
         **/
         
-        if ( wobj->_parent )
-        {
-            wobj->_kidRef.Detach();
-            wobj->_parent = NULL;
-        }
+        wobj->_kidRef.Detach();
+        wobj->_parent = NULL;
 
         _missiles_list.push_back(wobj);
 
@@ -5216,9 +5216,7 @@ void NC_STACK_ypabact::MarkSectorsForView()
         {
             int v8 = 0;
 
-            if ((size_t)_parent <= 2)
-                v8 = 1;
-            else
+            if ( _parent )
             {
                 if (_radar >= _parent->_radar)
                     v8 = 1;
@@ -5227,6 +5225,8 @@ void NC_STACK_ypabact::MarkSectorsForView()
                 else if (_sectY != _parent->_sectY)
                     v8 = 1;
             }
+            else
+                v8 = 1;            
 
             if ( v8 )
             {
@@ -5611,11 +5611,8 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
                 {
                     gunFireBact->_owner = _owner;
 
-                    if ( gunFireBact->_parent )
-                    {
-                        gunFireBact->_kidRef.Detach();
-                        gunFireBact->_parent = NULL;
-                    }
+                    gunFireBact->_kidRef.Detach();
+                    gunFireBact->_parent = NULL;
 
                     _missiles_list.push_back(gunFireBact);
 

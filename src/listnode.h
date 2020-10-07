@@ -65,12 +65,12 @@ public:
             return _it;
         }
         
-        _T_List *PList()
+        _T_List *PList() const
         {
             return _pList;
         }
         
-        void *PObj()
+        void *PObj() const
         {
             if (_pList)
                 return _pList->_o;
@@ -80,6 +80,13 @@ public:
         _T_interListIter iter() const
         {
             return _it;
+        }
+        
+        inline bool IsListType(int type) const
+        {
+            if (!_pList)
+                return false;
+            return _pList->ListType == type;
         }
         
     protected:

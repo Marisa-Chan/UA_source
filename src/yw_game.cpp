@@ -3977,21 +3977,24 @@ void ypaworld_func151__sub6(NC_STACK_ypaworld *yw)
 
 void NC_STACK_ypaworld::NetReleaseMissiles(NC_STACK_ypabact *bact)
 {
-    for(World::MissileList::iterator it = bact->_missiles_list.begin(); it != bact->_missiles_list.end(); it = bact->_missiles_list.erase(it))
+    while(!bact->_missiles_list.empty())
     {
-        if ( (*it)->_primTtype == BACT_TGT_TYPE_UNIT )
+        NC_STACK_ypamissile *misl = bact->_missiles_list.front();
+        bact->_missiles_list.pop_front();
+        
+        if ( misl->_primTtype == BACT_TGT_TYPE_UNIT )
         {
-            (*it)->_primT.pbact->_attackersList.remove( *it );
-            (*it)->_primTtype = BACT_TGT_TYPE_NONE;
+            misl->_primT.pbact->_attackersList.remove( misl );
+            misl->_primTtype = BACT_TGT_TYPE_NONE;
         }
 
-        (*it)->CleanAttackersTarget();
+        misl->CleanAttackersTarget();
 
-        (*it)->_parent = NULL;
+        misl->_parent = NULL;
 
-        ypaworld_func144(*it);
+        ypaworld_func144(misl);
 
-        (*it)->_status_flg |= BACT_STFLAG_DEATH1;
+        misl->_status_flg |= BACT_STFLAG_DEATH1;
     }
 }
 
@@ -5024,8 +5027,7 @@ NC_STACK_ypabact *NC_STACK_ypaworld::recorder_newObject(trec_bct *oinf)
 
     if ( bacto )
     {
-        if ( bacto->_parent )
-            bacto->_kidRef.Detach();
+        bacto->_kidRef.Detach();
 
         bacto->_gid = oinf->bact_id;
         bacto->_host_station = (NC_STACK_yparobo *)UserUnit;

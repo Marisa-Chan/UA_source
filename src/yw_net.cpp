@@ -1037,11 +1037,8 @@ bool yw_netRecvUpdate(NC_STACK_ypaworld *yw, uamessage_update *msg, int owner)
 
                 yw_netUpdDataVhcl(dat, tmp, owner, currHost);
 
-                if ( tmp->_parent )
-                {
-                    tmp->_kidRef.Detach();
-                    tmp->_parent = NULL;
-                }
+                tmp->_kidRef.Detach();
+                tmp->_parent = NULL;
 
                 lastBct->_missiles_list.push_back(tmp);
 
@@ -1421,11 +1418,8 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             break;
         }
 
-        if ( weapo->_parent )
-        {
-            weapo->_kidRef.Detach();
-            weapo->_parent = NULL;
-        }
+        weapo->_kidRef.Detach();
+        weapo->_parent = NULL;
 
         weapLauncher->_missiles_list.push_back(weapo);
 
@@ -1627,10 +1621,11 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             
             if ( nd->_status == BACT_STATUS_DEAD )
             {
-                if ( (size_t)fndBact->_parent <= 2 )
-                    yw->ypaworld_func134(nd);
-                else
+                if ( fndBact->_parent )
                     fndBact->_parent->AddSubject(nd);
+                else
+                    yw->ypaworld_func134(nd);
+                    
 
                 nd->_status_flg |= BACT_STFLAG_NOMSG;
             }
@@ -1686,20 +1681,22 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             }
         }
 
-        if ( (size_t)fndBact->_parent <= 2 )
+        if ( fndBact->_parent )
         {
-            yw->NetReleaseMissiles(fndBact);
-        }
-        else
-        {
-            for ( NC_STACK_ypamissile* &miss : fndBact->_missiles_list )
+            while ( !fndBact->_missiles_list.empty() )
             {
+                NC_STACK_ypamissile* miss = fndBact->_missiles_list.front();
+                fndBact->_missiles_list.pop_front();
+                
                 fndBact->_parent->_missiles_list.push_back(miss);
                 miss->setMISS_launcher(fndBact->_parent);
             }
-
-            fndBact->_missiles_list.clear();
         }
+        else
+        {
+            yw->NetReleaseMissiles(fndBact);
+        }
+        
 
         fndBact->_status = BACT_STATUS_DEAD;
 

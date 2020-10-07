@@ -792,7 +792,7 @@ void NC_STACK_ypamissile::ResetViewing()
         setBACT_viewer(0);
         setBACT_inputting(0);
 
-        if ( _mislEmitter->_status != BACT_STATUS_DEAD || (size_t)_mislEmitter->_parent <= 3 )
+        if ( _mislEmitter->_status != BACT_STATUS_DEAD || _mislEmitter->_parent == NULL )
         {
             _mislEmitter->setBACT_viewer(1);
             _mislEmitter->setBACT_inputting(1);

@@ -401,7 +401,7 @@ void sub_4F72E8(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact)
         }
         else
         {
-            if ( (size_t)bact->_parent <= 2 )
+            if ( !bact->_parent )
                 return;
 
             clr = yw_GetColor(yw, 11);
@@ -1159,18 +1159,16 @@ char * sub_4F6DFC(NC_STACK_ypaworld *yw, char *cur, int height, int width, NC_ST
 
 NC_STACK_ypabact * sub_4D3C3C(NC_STACK_ypabact *bact)
 {
-    NC_STACK_ypabact *a4 = bact;
-
     if ( !bact )
         return NULL;
 
-    if ((size_t)bact->_parent <= 2) // DIRT!!!
+    if ( !bact->_parent )
         return NULL;
 
     if ( bact->_parent != bact->_host_station )
-        a4 = bact->_parent;
+        return bact->_parent;
 
-    return a4;
+    return bact;
 }
 
 char * sub_4F7BE8(NC_STACK_ypaworld *yw, char *cur, NC_STACK_ypabact *bact, int a2, int a4, int a5, int a6)
@@ -4294,7 +4292,7 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub4(NC_STACK_ypaworld *yw)
         World::RefBactList *lst = yw->UserUnit->_kidRef.PList();
         if (lst)
         {
-            for( World::RefBactList::iterator it = std::next(yw->UserUnit->_kidRef.iter(), 1); it != lst->end(); it++) // Start from current unit in this list
+            for( World::RefBactList::iterator it = yw->UserUnit->_kidRef.iter(); it != lst->end(); it++) // Start from current unit in this list
             {
                if ( (*it)->_status != BACT_STATUS_CREATE && (*it)->_status != BACT_STATUS_DEAD && (*it)->_status != BACT_STATUS_BEAM )
                     return *it;
@@ -4303,12 +4301,7 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub4(NC_STACK_ypaworld *yw)
     }
 
     if ( yw->UserUnit->_parent != yw->UserUnit->_host_station )
-    {
-        if ( ((size_t)yw->UserUnit->_parent) < 0x10 ) // FIXME!
-            return NULL;
-        else
-            return yw->UserUnit->_parent;
-    }
+        return yw->UserUnit->_parent;
 
     return NULL;
 }
@@ -4660,11 +4653,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, InputState *inpt)
                     bzda.field_91C |= 0x20;
 
                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
-                {
                     bact1 = yw->UserUnit->_parent;
-                    if ( (size_t)bact1 < 0x10 ) // DIRT FROM ***
-                        bact1 = NULL;
-                }
 
                 sub_481204(yw, 18, 23);
                 break;
@@ -11408,21 +11397,17 @@ int sub_4D3C80(NC_STACK_ypaworld *yw)
 
     NC_STACK_ypabact *a4 = yw->field_1a98;
 
-    if ( !yw->field_1a98 || (size_t)yw->field_1a98->_parent <= 2 )
-        a4 = NULL;
-    else
-    {
-        if ( yw->field_1a98->_parent != yw->field_1a98->_host_station )
-            a4= yw->field_1a98->_parent;
-    }
+    if ( !yw->field_1a98 || !yw->field_1a98->_parent )
+        return 0;
 
-    if ( a4 )
-    {
-        yw->field_1a98 = a4;
-        return 1;
-    }
+    if ( yw->field_1a98->_parent != yw->field_1a98->_host_station )
+        a4= yw->field_1a98->_parent;
 
-    return 0;
+    if ( !a4 )
+        return 0;
+    
+    yw->field_1a98 = a4;
+    return 1;
 }
 
 void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
