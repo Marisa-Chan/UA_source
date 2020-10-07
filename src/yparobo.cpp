@@ -3423,7 +3423,7 @@ void NC_STACK_yparobo::searchEnemyRobo()
         {
             if ( (1 << _owner) & unit->_pSector->view_mask )
             {
-                NC_STACK_ypabact *sel = 0;
+                NC_STACK_ypabact *sel = NULL;
                 float selfl = 0.0;
 
                 for (NC_STACK_ypabact* &kbct : _kidList )

@@ -1780,7 +1780,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         }
         else
         {
-            fbact->_killer = 0;
+            fbact->_killer = NULL;
         }
 
         setState_msg v410;

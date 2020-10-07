@@ -3710,7 +3710,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub19__sub2__sub0__sub0(uint8_t activat
                 {
                     bact_arg84 arg84;
                     arg84.energy = -22000000;
-                    arg84.unit = 0;
+                    arg84.unit = NULL;
 
                     bct->ModifyEnergy(&arg84);
                 }
