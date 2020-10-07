@@ -7447,7 +7447,12 @@ void NC_STACK_ypaworld::sub_4C40AC()
     }
     else
     {
-        _kidsCount = _cmdrsRemap[ _activeCmdrRemapIndex ]->_kidList.size();
+        _kidsCount = 0;
+        for ( NC_STACK_ypabact* &bact : _cmdrsRemap[ _activeCmdrRemapIndex ]->_kidList )
+        {
+            if (bact->_status != BACT_STATUS_DEAD && bact->_status != BACT_STATUS_BEAM && bact->_bact_type != BACT_TYPES_GUN)
+                _kidsCount++;
+        }
     }
     _lastMsgSender = GetLastMsgSender();
 }
