@@ -833,11 +833,9 @@ int yw_write_extraviewer(NC_STACK_ypabact *bct, FSMgr::FileHandle *fil)
         sprintf(buf, "\nbegin_extraviewer\n");
         fil->write(buf, strlen(buf));
 
-        NC_STACK_yparobo *roboo = bct->_host_station;
-
         for (int i = 0; i < 8; i++)
         {
-            if ( roboo->_roboGuns[i].gun_obj == bct )
+            if ( bct->_host_station->_roboGuns[i].gun_obj == bct )
             {
                 v7 = i;
                 break;

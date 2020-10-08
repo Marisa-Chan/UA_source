@@ -1639,7 +1639,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             if ( fndBact->_bact_type == BACT_TYPES_GUN )
                 sft = fndBact->_host_station->getROBO_epSafety();
 
-            if ( hst->_owner == ddMsg->killerOwner && fndBact->_host_station == fndBact->_parent && !sft && !(fndBact->_status_flg & BACT_STFLAG_NOMSG) )
+            if ( hst->_owner == ddMsg->killerOwner && fndBact->IsParentMyRobo() && !sft && !(fndBact->_status_flg & BACT_STFLAG_NOMSG) )
             {
                 robo_arg134 rarg134;
                 rarg134.unit = fndBact->_killer;

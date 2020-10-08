@@ -1041,7 +1041,7 @@ void NC_STACK_ypabact::AI_layer1(update_msg *arg)
         if ( _target_vec.length() > 2000.0 )
             _target_vec.y = 0;
 
-        if ( _host_station == _parent &&
+        if ( IsParentMyRobo() &&
              (_oflags & BACT_OFLAG_VIEWER) )
         {
             bool doFight = _target_vec.length() < 800.0;
@@ -1180,7 +1180,7 @@ void NC_STACK_ypabact::AI_layer2(update_msg *arg)
 
             if ( arg90.ret_unit )
             {
-                if ( arg90.ret_unit->_bact_type != BACT_TYPES_ROBO && _parent == _host_station && _host_station == wee && arg90.ret_unit->_commandID != _fe_cmdID && _clock - _fe_time > 45000 )
+                if ( arg90.ret_unit->_bact_type != BACT_TYPES_ROBO && IsParentMyRobo() && _host_station == wee && arg90.ret_unit->_commandID != _fe_cmdID && _clock - _fe_time > 45000 )
                 {
                     bool isRoboGun = false;
                     if ( arg90.ret_unit->_bact_type == BACT_TYPES_GUN )
@@ -1229,7 +1229,7 @@ void NC_STACK_ypabact::AI_layer2(update_msg *arg)
                 if ( (_clock - _search_time2) > 2000 && 
                      _aggr == 75 && 
                     !(_oflags & BACT_OFLAG_VIEWER) && 
-                     _parent == _host_station &&
+                     IsParentMyRobo() &&
                      (_secndTtype == BACT_TGT_TYPE_FRMT || 
                       _secndTtype == BACT_TGT_TYPE_NONE) )
                 {
@@ -1253,7 +1253,7 @@ void NC_STACK_ypabact::AI_layer2(update_msg *arg)
                     }
                 }
 
-                if ( _host_station == _parent && _secndTtype == BACT_TGT_TYPE_CELL )
+                if ( IsParentMyRobo() && _secndTtype == BACT_TGT_TYPE_CELL )
                 {
                     for(NC_STACK_ypabact* &nod : _kidList)
                     {
@@ -2577,7 +2577,7 @@ void NC_STACK_ypabact::FightWithBact(bact_arg75 *arg)
             {
                 _status_flg &= ~BACT_STFLAG_FIGHT_P;
 
-                if ( (_parent == _host_station && _host_station && _host_station == a4) && _status != BACT_STATUS_IDLE && !(_status_flg & BACT_STFLAG_ESCAPE) )
+                if ( (IsParentMyRobo() && _host_station == a4) && _status != BACT_STATUS_IDLE && !(_status_flg & BACT_STFLAG_ESCAPE) )
                 {
                     robo_arg134 arg134;
                     arg134.unit = this;
@@ -2633,7 +2633,7 @@ void NC_STACK_ypabact::FightWithSect(bact_arg75 *arg)
 
     NC_STACK_ypabact *a4 = _world->getYW_userHostStation();
 
-    int v65 = _parent == _host_station && _host_station && _host_station == a4;
+    int v65 = IsParentMyRobo() && _host_station == a4;
 
     float v62 = (_position.XZ() - cellPos->XZ()).length();
 
@@ -3061,7 +3061,7 @@ void NC_STACK_ypabact::Die()
 
     NC_STACK_ypabact *v76 = _world->getYW_userHostStation();
 
-    if ( !deputy && _host_station == _parent && !(_status_flg & BACT_STFLAG_NOMSG) )
+    if ( !deputy && IsParentMyRobo()&& !(_status_flg & BACT_STFLAG_NOMSG) )
     {
         robo_arg134 v53;
 
@@ -4434,7 +4434,7 @@ NC_STACK_ypabact * GetSectorTarget__sub0(cellArea *cell, NC_STACK_ypabact *unit,
 
                             int v20;
 
-                            if ( unit->_parent == unit->_host_station )
+                            if ( unit->IsParentMyRobo() )
                             {
                                 if ( unit->_primTtype == BACT_TGT_TYPE_CELL )
                                 {
@@ -5061,7 +5061,7 @@ void NC_STACK_ypabact::CreationTimeUpdate(update_msg *arg)
         if ( _host_station == a4 )
         {
 
-            if ( _host_station == _parent )
+            if ( IsParentMyRobo() )
             {
                 robo_arg134 v23;
                 v23.unit = this;
@@ -6120,7 +6120,7 @@ void NC_STACK_ypabact::ReorganizeGroup(bact_arg109 *arg)
             }
             else
             {
-                if ( _host_station != _parent )
+                if ( _host_station != _parent && _host_station )
                     _host_station->AddSubject(this);
 
                 if ( arg->field_4 )
@@ -6147,7 +6147,7 @@ void NC_STACK_ypabact::ReorganizeGroup(bact_arg109 *arg)
                 }
                 else
                 {
-                    if ( _host_station != _parent )
+                    if ( _host_station != _parent && _host_station )
                     {
                         int a4 = _host_station->getROBO_commCount();
 
@@ -6166,7 +6166,7 @@ void NC_STACK_ypabact::ReorganizeGroup(bact_arg109 *arg)
         {
             ypa_log_out("ORG_NEWCOMMAND: dead vehicle\n");
         }
-        else
+        else if (_host_station)
         {
 
             if ( _host_station == _parent )
@@ -6193,7 +6193,7 @@ void NC_STACK_ypabact::ReorganizeGroup(bact_arg109 *arg)
         break;
 
     case 4:
-        if ( arg->field_4->_parent == arg->field_4->_host_station )
+        if ( arg->field_4->IsParentMyRobo() )
         {
             NC_STACK_ypabact *v19 = sb_0x493984(arg->field_4, 0);
 
@@ -6397,7 +6397,7 @@ size_t NC_STACK_ypabact::TargetAssess(bact_arg110 *arg)
 
             vec3d tgtPos;
 
-            if ( _parent == _host_station )
+            if ( IsParentMyRobo() )
             {
 
                 if ( _primTtype == BACT_TGT_TYPE_CELL )
@@ -6407,7 +6407,7 @@ size_t NC_STACK_ypabact::TargetAssess(bact_arg110 *arg)
                 else
                     tgtPos = _position;
             }
-            else
+            else if ( _parent )
             {
                 if ( _parent->_primTtype == BACT_TGT_TYPE_CELL )
                     tgtPos = _parent->_primTpos;
@@ -8194,4 +8194,9 @@ void NC_STACK_ypabact::CleanAttackersTarget()
             attacker->_assess_time = 0;
         }
     }
+}
+
+bool NC_STACK_ypabact::IsParentMyRobo() const
+{
+    return (_host_station) && (_parent) && (_host_station == _parent);
 }

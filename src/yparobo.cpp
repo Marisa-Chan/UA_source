@@ -666,14 +666,13 @@ void NC_STACK_yparobo::sb_0x4a7010__sub1__sub0(NC_STACK_ypabact *unit1, NC_STACK
                             if ( v10->_bact_type == BACT_TYPES_GUN && unit1->_owner == v10->_owner && v10->_status != BACT_STATUS_DEAD )
                             {
                                 NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( v10 );
-                                int a4 = gun->IsRoboGun();
 
-                                if ( !a4 )
+                                if ( !gun->IsRoboGun() )
                                 {
-                                    if ( v10->_parent != v10->_host_station )
-                                        sub_4A58C0(unit2, v10->_parent);
-                                    else
+                                    if ( v10->IsParentMyRobo() )
                                         sub_4A58C0(unit2, v10);
+                                    else if (v10->_parent)
+                                        sub_4A58C0(unit2, v10->_parent);
 
                                     unit2->setBACT_aggression(25);
                                     return;
@@ -1404,7 +1403,8 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
             arg->selectBact->ReorganizeGroup(&arg109);
         }
 
-        if ( arg->selectBact->_host_station != arg->selectBact->_parent )
+        if ( arg->selectBact->_host_station != arg->selectBact->_parent &&
+             arg->selectBact->_parent )
             arg->selectBact = arg->selectBact->_parent;
 
         if ( arg->target_Sect )
@@ -1422,7 +1422,8 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
 
             NC_STACK_ypabact *v8 = arg->selectBact;
 
-            if ( v8->_parent != v8->_host_station )
+            if ( v8->_parent != v8->_host_station &&
+                 v8->_parent )
                 v8 = v8->_parent;
 
             arg134.unit = v8;
@@ -3655,7 +3656,8 @@ void NC_STACK_yparobo::checkCommander()
                                             v33 = miss->getMISS_launcher(); //Get emitter bact
                                         }
 
-                                        if ( v33->_host_station != v33->_parent )
+                                        if ( v33->_host_station != v33->_parent &&
+                                             v33->_parent )
                                             v33 = v33->_parent;
 
                                         robo_arg134 arg134;

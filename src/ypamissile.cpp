@@ -611,17 +611,14 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
 
                 if ( a4 )
                 {
-                    if ( _mislEmitter->_host_station == _mislEmitter->_parent )
+                    if ( _mislEmitter->IsParentMyRobo() )
                     {
-                        if ( _mislEmitter->_host_station )
-                        {
-                            setTarget_msg arg67;
-                            arg67.tgt_type = BACT_TGT_TYPE_CELL;
-                            arg67.tgt_pos = _position;
-                            arg67.priority = 0;
+                        setTarget_msg arg67;
+                        arg67.tgt_type = BACT_TGT_TYPE_CELL;
+                        arg67.tgt_pos = _position;
+                        arg67.priority = 0;
 
-                            _mislEmitter->SetTarget(&arg67);
-                        }
+                        _mislEmitter->SetTarget(&arg67);
                     }
                 }
             }

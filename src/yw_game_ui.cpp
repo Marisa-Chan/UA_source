@@ -389,7 +389,7 @@ char * sub_4F6980(char *cur, float a1, float a2, char a3, int a4, int a5)
 
 void sub_4F72E8(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact)
 {
-    if ( bact != yw->UserRobo && bact->_host_station != bact->_parent )
+    if ( bact != yw->UserRobo && bact->_host_station != bact->_parent && bact->_parent )
     {
         uint32_t clr;
         NC_STACK_ypabact *bct;
@@ -552,11 +552,11 @@ void sb_0x4f8f64__sub1(NC_STACK_ypaworld *yw)
 {
     if ( robo_map.field_1E8 & 0x100 )
     {
-        if ( yw->UserRobo != yw->UserUnit )
+        if ( yw->UserRobo != yw->UserUnit && yw->UserUnit->_parent )
         {
             sub_4F68FC(yw->_win3d, yw->UserUnit->_position.x, yw->UserUnit->_position.z, yw->UserUnit->_parent->_position.x, yw->UserUnit->_parent->_position.z, yw_GetColor(yw, 11));
 
-            if ( yw->UserUnit->_parent == yw->UserUnit->_host_station )
+            if ( yw->UserUnit->IsParentMyRobo() )
             {
                 int v7 = 0;
                 float a5, a6;
@@ -3396,7 +3396,7 @@ char *gui_update_player_panel(NC_STACK_ypaworld *yw, char *cur)
         if ( bzda.field_8DC > 1 )
             v35 = 0xD0;
     }
-    else if ( yw->UserUnit->_host_station == yw->UserUnit->_parent )
+    else if ( yw->UserUnit->IsParentMyRobo() )
     {
         v35 = 0x10;
 
@@ -4279,7 +4279,7 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub5(NC_STACK_ypaworld *yw)
 
 NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub4(NC_STACK_ypaworld *yw)
 {
-    if ( yw->UserUnit->_parent == yw->UserUnit->_host_station )
+    if ( yw->UserUnit->IsParentMyRobo() )
     {
         for ( NC_STACK_ypabact* &unit : yw->UserUnit->_kidList )
         {
@@ -4300,7 +4300,7 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub4(NC_STACK_ypaworld *yw)
         }
     }
 
-    if ( yw->UserUnit->_parent != yw->UserUnit->_host_station )
+    if ( yw->UserUnit->_parent != yw->UserUnit->_host_station && yw->UserUnit->_parent )
         return yw->UserUnit->_parent;
 
     return NULL;
@@ -5583,7 +5583,7 @@ void ypaworld_func64__sub7__sub3__sub0(NC_STACK_ypaworld *yw, InputState *inpt)
             }
             else
             {
-                if ( v8->_parent == v8->_host_station )
+                if ( v8->IsParentMyRobo() )
                     pcur = ypaworld_func64__sub7__sub3__sub0__sub0(yw, v8, pcur);
                 else
                     pcur = ypaworld_func64__sub7__sub3__sub0__sub2(yw, pcur);
@@ -5724,7 +5724,7 @@ void ypaworld_func64__sub7__sub3__sub3(NC_STACK_ypaworld *yw, ClickBoxInf *winpt
     {
         NC_STACK_ypabact *v6 = squadron_manager.squads[ winpt->selected_btnID - 8 ];
         int v7;
-        if ( squadron_manager.field_2BC->_host_station == squadron_manager.field_2BC->_parent )
+        if ( squadron_manager.field_2BC->IsParentMyRobo() )
             v7 = v6 == squadron_manager.field_2BC;
         else
             v7 = v6 == squadron_manager.field_2BC->_parent;
@@ -5875,7 +5875,7 @@ int NC_STACK_ypaworld::ypaworld_func64__sub7__sub3__sub1(ClickBoxInf *winpt)
     squadron_manager.field_2C8 = winpt->move.ScreenPos.x;
     squadron_manager.field_2BC = v5;
 
-    if ( v5->_parent == v5->_host_station )
+    if ( v5->IsParentMyRobo() )
     {
         squadron_manager.field_2C0 = -(winpt->move.BtnPos.x - squadron_manager.field_2D0);
     }
@@ -9503,7 +9503,7 @@ void yw_RenderHUDCompass(NC_STACK_ypaworld *yw, sklt_wis *wis)
         yw_RenderVector2D(yw, wis->sklts_intern[3], 0.7, 0.3, v23, -v20, v20, v23, 0.25, 0.3, v9, func, 0, true);
     }
 
-    if ( yw->UserUnit->_host_station == yw->UserUnit->_parent )
+    if ( yw->UserUnit->IsParentMyRobo() )
     {
         int v27 = 0;
 
@@ -10082,14 +10082,14 @@ void yw_RenderCursorOverUnit(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact)
             {
                 float a4 = v34 - 0.08;
 
-                if ( bact->_parent != bact->_host_station || bact->_owner != yw->UserRobo->_owner )
-                {
-                    yw_RenderVector2D(yw, v12, a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.0075, 0.01, v11, NULL, NULL, true);
-                }
-                else
+                if ( bact->IsParentMyRobo() && bact->_owner == yw->UserRobo->_owner )
                 {
                     yw_RenderVector2D(yw, v12, a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.015, 0.02, v11, NULL, NULL, true);
                     yw_RenderVector2D(yw, v12, a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.005, 0.00666, v11, NULL, NULL, true);
+                }
+                else
+                {
+                    yw_RenderVector2D(yw, v12, a3a, a4, 1.0, 0.0, 0.0, 1.0, 0.0075, 0.01, v11, NULL, NULL, true);
                 }
             }
         }
@@ -11406,7 +11406,7 @@ int sub_4D3C80(NC_STACK_ypaworld *yw)
         return 0;
 
     if ( yw->field_1a98->_parent != yw->field_1a98->_host_station )
-        a4= yw->field_1a98->_parent;
+        a4 = yw->field_1a98->_parent;
 
     if ( !a4 )
         return 0;

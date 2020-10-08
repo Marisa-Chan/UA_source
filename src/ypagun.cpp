@@ -567,7 +567,7 @@ void NC_STACK_ypagun::Die()
         int v6 = 1;
         HandleVisChildrens(&v6);
 
-        if ( _gunFlags & GUN_FLAGS_ROBO )
+        if ( (_gunFlags & GUN_FLAGS_ROBO) && _host_station )
         {
             roboGun *hostGun = _host_station->getROBO_guns();
 

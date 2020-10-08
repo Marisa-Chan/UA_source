@@ -11,11 +11,10 @@
 #define BACT_MIN_ANGLE 0.0002
 
 class NC_STACK_ypabact;
+class NC_STACK_yparobo;
 class NC_STACK_ypamissile;
 
 class NC_STACK_ypaworld;
-
-class NC_STACK_yparobo;
 
 struct yw_arg129;
 
@@ -550,6 +549,8 @@ public:
     
     void CopyTargetOf(NC_STACK_ypabact *commander);
     
+    bool IsParentMyRobo() const;
+        
     static World::RefBactList::Node& GetCellRefNode(NC_STACK_ypabact *&bact)
     {
         return bact->_cellRef;
