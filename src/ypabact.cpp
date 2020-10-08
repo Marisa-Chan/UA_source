@@ -664,13 +664,8 @@ void NC_STACK_ypabact::Update(update_msg *arg)
 
     AI_layer1(arg);
 
-    for(World::MissileList::iterator it = _missiles_list.begin(); it != _missiles_list.end();)
-    {
-        NC_STACK_ypamissile *misl = *it;
-        it++;
-
+    for( NC_STACK_ypamissile *misl : Utils::IterateListCopy<NC_STACK_ypamissile *>(_missiles_list))
         misl->Update(arg);
-    }
 
     sub_481F94(this);
 

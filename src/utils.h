@@ -282,6 +282,15 @@ inline void ByteUL32(void *dat, uint32_t v)
     ((uint8_t *)dat)[3] = (v >> 24) & 0xFF;
 }
 
+template <typename T>
+const std::vector<T> IterateListCopy(std::list<T> &lst)
+{
+    std::vector<T> tmp;
+    tmp.reserve(lst.size());
+    tmp.assign(lst.begin(), lst.end());
+    return tmp;
+}
+
 }
 
 #endif // UTILS_H_INCLUDED
